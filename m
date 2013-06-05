@@ -1,172 +1,129 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Fri, 21 Jun 2013 11:43:11 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: pwm-tiehrpwm: Use clk_enable/disable instead
- clk_prepare/unprepare.
-Message-ID: <20130621094310.GA12441@manwe>
-References: <1371556313-6776-1-git-send-email-marek.belisko@streamunlimited.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="liOOAslEiF7prFVr"
-Content-Disposition: inline
-In-Reply-To: <1371556313-6776-1-git-send-email-marek.belisko@streamunlimited.com>
+Return-Path: <tomasz.figa@gmail.com>
+Return-Path: <tomasz.figa@gmail.com>
+From: Tomasz Figa <tomasz.figa@gmail.com>
+Subject: [PATCH 00/15] Final Samsung PWM support cleanup
+Date: Wed,  5 Jun 2013 23:18:05 +0200
+Message-Id: <1370467100-10820-1-git-send-email-tomasz.figa@gmail.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Marek Belisko <marek.belisko@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Marek Belisko <marek.belisko@streamunlimited.com>
+To: linux-arm-kernel@lists.infradead.org
+Cc: linux-samsung-soc@vger.kernel.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, thierry.reding@gmail.com, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>, Tomasz Figa <tomasz.figa@gmail.com>
 
+Since we now have a proper Samsung PWM clocksource driver in place,
+we can proceed with further cleanup of PWM timers support on Samsung SoCs.
 
---liOOAslEiF7prFVr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series attempts to achieve this goal by:
+ 1) moving remaining Samsung platforms to the new clocksource driver
+ 2) removing old clocksource driver
+ 3) adding new multiplatform- and DT-aware PWM driver
+ 4) moving all Samsung platforms to use the new PWM driver
+ 5) removing old PWM driver
+ 6) removing all PWM-related code that is not used anymore
 
-On Tue, Jun 18, 2013 at 01:51:53PM +0200, Marek Belisko wrote:
-> This was found when using pwm-led on am33xx and enable
-> heartbeat trigger.
->=20
-> [  808.624876] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> [  808.629443] [ INFO: inconsistent lock state ]
-> [  808.634021] 3.9.0 #2 Not tainted
-> [  808.637415] ---------------------------------
-> [  808.641981] inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
-> [  808.648288] swapper/0 [HC0[0]:SC1[1]:HE1:SE0] takes:
-> [  808.653494]  (prepare_lock){+.?.+.}, at: [<c027c211>] clk_unprepare+0x=
-15/0x24
-> [  808.661040] {SOFTIRQ-ON-W} state was registered at:
-> [  808.666155]   [<c004ec4d>] __lock_acquire+0x411/0x824
-> [  808.671465]   [<c004f359>] lock_acquire+0x41/0x50
-> [  808.676412]   [<c039ee9d>] mutex_lock_nested+0x31/0x1d8
-> [  808.681912]   [<c027c275>] clk_prepare+0x15/0x28
-> [  808.686764]   [<c0590c6b>] _init+0x117/0x1e0
-> [  808.691256]   [<c0019ef9>] omap_hwmod_for_each+0x29/0x3c
-> [  808.696842]   [<c0591107>] __omap_hwmod_setup_all+0x17/0x2c
-> [  808.702696]   [<c0008653>] do_one_initcall+0xc3/0x10c
-> [  808.708017]   [<c058a627>] kernel_init_freeable+0xa7/0x134
-> [  808.713778]   [<c039a543>] kernel_init+0x7/0x98
-> [  808.718544]   [<c000cd95>] ret_from_fork+0x11/0x3c
-> [  808.723583] irq event stamp: 1379172
-> [  808.727328] hardirqs last  enabled at (1379172): [<c03a0759>] _raw_spi=
-n_unlock_irqrestore+0x21/0x30
-> [  808.736828] hardirqs last disabled at (1379171): [<c03a03c3>] _raw_spi=
-n_lock_irqsave+0x13/0x38
-> [  808.745876] softirqs last  enabled at (1379164): [<c002ae5d>] irq_ente=
-r+0x49/0x4c
-> [  808.753747] softirqs last disabled at (1379165): [<c002aec3>] irq_exit=
-+0x63/0x88
-> [  808.761518]
-> [  808.761518] other info that might help us debug this:
-> [  808.768373]  Possible unsafe locking scenario:
-> [  808.768373]
-> [  808.774578]        CPU0
-> [  808.777141]        ----
-> [  808.779705]   lock(prepare_lock);
-> [  808.783186]   <Interrupt>
-> [  808.785929]     lock(prepare_lock);
-> [  808.789595]
-> [  808.789595]  *** DEADLOCK ***
-> [  808.789595]
-> [  808.795805] 1 lock held by swapper/0:
-> [  808.799643]  #0:  (((&heartbeat_data->timer))){+.-...}, at: [<c002e204=
->] call_timer_fn+0x0/0x90
-> [  808.808814]
-> [  808.808814] stack backtrace:
-> [  808.813402] [<c000ff19>] (unwind_backtrace+0x1/0x98) from [<c039bd75>]=
- (print_usage_bug.part.25+0x16d/0x1cc)
-> [  808.823721] [<c039bd75>] (print_usage_bug.part.25+0x16d/0x1cc) from [<=
-c004e595>] (mark_lock+0x18d/0x434)
-> [  808.833669] [<c004e595>] (mark_lock+0x18d/0x434) from [<c004ec1d>] (__=
-lock_acquire+0x3e1/0x824)
-> [  808.842803] [<c004ec1d>] (__lock_acquire+0x3e1/0x824) from [<c004f359>=
-] (lock_acquire+0x41/0x50)
-> [  808.852031] [<c004f359>] (lock_acquire+0x41/0x50) from [<c039ee9d>] (m=
-utex_lock_nested+0x31/0x1d8)
-> [  808.861433] [<c039ee9d>] (mutex_lock_nested+0x31/0x1d8) from [<c027c21=
-1>] (clk_unprepare+0x15/0x24)
-> [  808.870930] [<c027c211>] (clk_unprepare+0x15/0x24) from [<c019f7bf>] (=
-ehrpwm_pwm_disable+0x5f/0x80)
-> [  808.880431] [<c019f7bf>] (ehrpwm_pwm_disable+0x5f/0x80) from [<c019f29=
-f>] (pwm_disable+0x27/0x28)
-> [  808.889751] [<c019f29f>] (pwm_disable+0x27/0x28) from [<c026f8f3>] (le=
-d_heartbeat_function+0x3f/0xb0)
-> [  808.899431] [<c026f8f3>] (led_heartbeat_function+0x3f/0xb0) from [<c00=
-2e249>] (call_timer_fn+0x45/0x90)
-> [  808.909288] [<c002e249>] (call_timer_fn+0x45/0x90) from [<c002e399>] (=
-run_timer_softirq+0x105/0x17c)
-> [  808.918884] [<c002e399>] (run_timer_softirq+0x105/0x17c) from [<c002ab=
-c5>] (__do_softirq+0xa5/0x150)
-> [  808.928486] [<c002abc5>] (__do_softirq+0xa5/0x150) from [<c002aec3>] (=
-irq_exit+0x63/0x88)
-> [  808.937098] [<c002aec3>] (irq_exit+0x63/0x88) from [<c000d599>] (handl=
-e_IRQ+0x21/0x54)
-> [  808.945415] [<c000d599>] (handle_IRQ+0x21/0x54) from [<c0008495>] (oma=
-p3_intc_handle_irq+0x5d/0x68)
-> [  808.954900] [<c0008495>] (omap3_intc_handle_irq+0x5d/0x68) from [<c000=
-c7ff>] (__irq_svc+0x3f/0x64)
-> [  808.964287] Exception stack(0xc05b1f68 to 0xc05b1fb0)
-> [  808.969587] 1f60:                   00000001 00000001 00000000 0000000=
-0 c05b0000 c0619748
-> [  808.978158] 1f80: c05b0000 c05b0000 c0619748 413fc082 00000000 0000000=
-0 01000000 c05b1fb0
-> [  808.986719] 1fa0: c004f989 c000d6f0 400f0033 ffffffff
-> [  808.992024] [<c000c7ff>] (__irq_svc+0x3f/0x64) from [<c000d6f0>] (cpu_=
-idle+0x60/0x98)
-> [  809.000250] [<c000d6f0>] (cpu_idle+0x60/0x98) from [<c058a535>] (start=
-_kernel+0x1e9/0x234)
->=20
-> Remove non atomic clk api calls and use only atomic for enable/disable be=
-cause
-> can be called from atomic context (led_heartbeat_function is timer callba=
-ck).
+Cleaning up the PWM driver is a bit tricky, because the design of current
+driver makes it completely unsuitable for DT and multiplatform and would
+require a heavy rework to make it usable, breaking any existing Samsung PWM
+users by the way. To avoid any breakage I decided to keep the old driver,
+add new one, move all platforms to it and then remove the old one.
 
-This raises a fundamental question. The PWM subsystem can't make any
-guarantees as to whether pwm_enable() or pwm_disable() can be used in
-atomic contexts. Consider for example the TWL or PCA drivers. Because
-they are accessed via an I2C bus, enabling a PWM that they provide will
-always sleep. Note that PWM client drivers can query whether or not the
-PWM functions may sleep using pwm_can_sleep().
+See particular patches for more detailed descriptions.
 
-I think this patch is still valid, though, it just isn't solving the
-problem completely. One additional comment below.
+On S3C6410-based Tiny6410 (Mini6410-compatible), after enabling pwm-beeper:
 
-[...]
-> @@ -487,6 +487,12 @@ static int ehrpwm_pwm_probe(struct platform_device *=
-pdev)
->  		return PTR_ERR(pc->tbclk);
->  	}
-> =20
-> +	ret =3D clk_prepare(pc->tbclk);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "clk_prepare() failed: %d\n", ret);
-> +		return ret;
-> +	}
+Tested-by: Tomasz Figa <tomasz.figa@gmail.com>
 
-Shouldn't this have a corresponding clk_unprepare() in .remove()?
+Needs testing on other platforms as I could only compile test for them.
 
-And please use my new email address and Cc the linux-pwm mailing list
-for PWM patches. MAINTAINERS in linux-next is up-to-date.
+Tomasz Figa (15):
+  ARM: SAMSUNG: Unify base address definitions of timer block
+  ARM: SAMSUNG: Add new PWM platform device
+  ARM: SAMSUNG: Set PWM platform data
+  ARM: SAMSUNG: Move all platforms to new clocksource driver
+  ARM: SAMSUNG: Remove old samsung-time driver
+  ARM: SAMSUNG: Remove unused PWM timer IRQ chip code
+  pwm: samsung: Rename to pwm-samsung-legacy
+  pwm: Add new pwm-samsung driver
+  ARM: SAMSUNG: Rework private data handling in dev-backlight
+  ARM: SAMSUNG: Modify board files to use new PWM platform device
+  pwm: Remove superseded pwm-samsung-legacy driver
+  ARM: SAMSUNG: Remove old PWM timer platform devices
+  ARM: SAMSUNG: Remove pwm-clock infrastructure
+  ARM: SAMSUNG: Remove remaining uses of plat/regs-timer.h header
+  ARM: SAMSUNG: Remove plat/regs-timer.h header
 
-Thierry
+ arch/arm/Kconfig                                   |   1 -
+ arch/arm/mach-exynos/common.c                      |   3 +
+ arch/arm/mach-exynos/include/mach/irqs.h           |   3 +-
+ arch/arm/mach-exynos/include/mach/map.h            |   1 +
+ arch/arm/mach-exynos/mach-nuri.c                   |   4 +-
+ arch/arm/mach-exynos/mach-origen.c                 |   3 +-
+ arch/arm/mach-exynos/mach-smdk4x12.c               |   3 +-
+ arch/arm/mach-exynos/mach-smdkv310.c               |   3 +-
+ arch/arm/mach-s3c24xx/Kconfig                      |  12 +-
+ arch/arm/mach-s3c24xx/clock-s3c2410.c              |   1 -
+ arch/arm/mach-s3c24xx/clock-s3c2412.c              |   1 -
+ arch/arm/mach-s3c24xx/clock-s3c2416.c              |   2 -
+ arch/arm/mach-s3c24xx/clock-s3c2443.c              |   2 -
+ arch/arm/mach-s3c24xx/common.c                     |  27 +
+ arch/arm/mach-s3c24xx/include/mach/map.h           |   2 +
+ arch/arm/mach-s3c24xx/mach-h1940.c                 |   4 +-
+ arch/arm/mach-s3c24xx/mach-rx1950.c                |   5 +-
+ arch/arm/mach-s3c64xx/Kconfig                      |   4 +-
+ arch/arm/mach-s3c64xx/clock.c                      |   2 -
+ arch/arm/mach-s3c64xx/common.c                     |  32 +-
+ arch/arm/mach-s3c64xx/include/mach/irqs.h          |   8 -
+ arch/arm/mach-s3c64xx/include/mach/map.h           |   1 +
+ arch/arm/mach-s3c64xx/irq-pm.c                     |   2 -
+ arch/arm/mach-s3c64xx/mach-crag6410.c              |   4 +-
+ arch/arm/mach-s3c64xx/mach-hmt.c                   |   4 +-
+ arch/arm/mach-s3c64xx/mach-smartq.c                |   4 +-
+ arch/arm/mach-s3c64xx/mach-smdk6410.c              |   1 +
+ arch/arm/mach-s5p64x0/Kconfig                      |   4 +-
+ arch/arm/mach-s5p64x0/clock-s5p6440.c              |   2 -
+ arch/arm/mach-s5p64x0/clock-s5p6450.c              |   2 -
+ arch/arm/mach-s5p64x0/common.c                     |  27 +
+ arch/arm/mach-s5p64x0/include/mach/irqs.h          |   2 -
+ arch/arm/mach-s5p64x0/include/mach/map.h           |   1 +
+ arch/arm/mach-s5p64x0/mach-smdk6440.c              |   1 +
+ arch/arm/mach-s5p64x0/mach-smdk6450.c              |   1 +
+ arch/arm/mach-s5p64x0/pm.c                         |   3 -
+ arch/arm/mach-s5pc100/Kconfig                      |   2 +-
+ arch/arm/mach-s5pc100/clock.c                      |   2 -
+ arch/arm/mach-s5pc100/common.c                     |  28 +
+ arch/arm/mach-s5pc100/include/mach/irqs.h          |   2 -
+ arch/arm/mach-s5pc100/include/mach/map.h           |   1 +
+ arch/arm/mach-s5pc100/mach-smdkc100.c              |   1 +
+ arch/arm/mach-s5pv210/Kconfig                      |   2 +-
+ arch/arm/mach-s5pv210/clock.c                      |   1 -
+ arch/arm/mach-s5pv210/common.c                     |  28 +
+ arch/arm/mach-s5pv210/include/mach/irqs.h          |   2 -
+ arch/arm/mach-s5pv210/include/mach/map.h           |   1 +
+ arch/arm/mach-s5pv210/mach-smdkv210.c              |   1 +
+ arch/arm/mach-s5pv210/pm.c                         |  10 -
+ arch/arm/plat-samsung/Kconfig                      |  14 -
+ arch/arm/plat-samsung/Makefile                     |   3 -
+ arch/arm/plat-samsung/dev-backlight.c              |  61 ++-
+ arch/arm/plat-samsung/devs.c                       |  42 +-
+ arch/arm/plat-samsung/include/plat/clock.h         |   4 -
+ arch/arm/plat-samsung/include/plat/devs.h          |   1 +
+ arch/arm/plat-samsung/include/plat/irq-vic-timer.h |  13 -
+ arch/arm/plat-samsung/include/plat/irqs.h          |   9 -
+ arch/arm/plat-samsung/include/plat/pwm-clock.h     |  81 ---
+ arch/arm/plat-samsung/include/plat/pwm-core.h      |  24 +
+ arch/arm/plat-samsung/include/plat/regs-timer.h    | 124 -----
+ arch/arm/plat-samsung/include/plat/samsung-time.h  |  23 -
+ arch/arm/plat-samsung/irq-vic-timer.c              |  98 ----
+ arch/arm/plat-samsung/pwm-clock.c                  | 474 -----------------
+ arch/arm/plat-samsung/s5p-irq.c                    |   4 -
+ arch/arm/plat-samsung/samsung-time.c               | 394 --------------
+ drivers/pwm/pwm-samsung.c                          | 575 ++++++++++++++-------
+ 66 files changed, 627 insertions(+), 1580 deletions(-)
+ delete mode 100644 arch/arm/plat-samsung/include/plat/irq-vic-timer.h
+ delete mode 100644 arch/arm/plat-samsung/include/plat/pwm-clock.h
+ create mode 100644 arch/arm/plat-samsung/include/plat/pwm-core.h
+ delete mode 100644 arch/arm/plat-samsung/include/plat/regs-timer.h
+ delete mode 100644 arch/arm/plat-samsung/irq-vic-timer.c
+ delete mode 100644 arch/arm/plat-samsung/pwm-clock.c
+ delete mode 100644 arch/arm/plat-samsung/samsung-time.c
 
---liOOAslEiF7prFVr
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
-
-iQIcBAEBAgAGBQJRxCAuAAoJEN0jrNd/PrOhvoMQALJxwbTLvG2LvARVDkYXyDu5
-sfZikmN0vXctfs6oty1+VdgcTxPjb4kRJIDoGtsFmY7Gn8in4PWwXDAfkzhlOubj
-xbd1w2Gai1dieFpH1TrUPpQigoBR80A1n7CWHQ2cSvY30THS0DzVhPJdZVdnhlRj
-/7SXkyPV722Ramr8iiGn0C9MiXNWFIXsv6ruXvMANZuuql+IeVSF2F5H62YrsYZ7
-hJFvsiiIJ7jajbiC+tY680T40k5abKMT52v/ALwpb1tUk+lsyUBMEfnCPFSPcjZ6
-Uelth4p1Iyvm/RSIX7YOjaS5q+g57MvuuIWIqNb9dtKv48h1pGixQEO9ItUoh+od
-wQtY3c6dA2YhtAF77kI0E4vFPd2z3o+WZA7obNgtCpZXRD3Z5PzdodkDIIVg8y7f
-M3qlSjiBq2ncGB4oYLGs6ym4mvUo5JzThtnKUGyYwgJdx7iWYLnHkUNCBB3XLTOR
-gJgKUBOB1DjeawRDGnkE16ndLXUCJmiyWTJIykWIF9L+UZ1gBIRHSdhUE570qpbR
-gnnna5nThJJzJjYTwbvORYtWVZ+85dvQowPHwYE78VXegZeUB5Z3dLZe74lg358c
-MwVLTOF7y20xbyrt42dprZ9IJ192IvWBosPNlhQVoBFmQTJXU6J6jKbbfj3e0zS1
-vjnpmMLGwa/J85fAokEo
-=gRyT
------END PGP SIGNATURE-----
-
---liOOAslEiF7prFVr--
+-- 
+1.8.2.1
