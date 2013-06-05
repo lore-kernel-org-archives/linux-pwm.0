@@ -1,39 +1,51 @@
 Return-Path: <tomasz.figa@gmail.com>
 Return-Path: <tomasz.figa@gmail.com>
 From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: [PATCH 11/15] pwm: Remove superseded pwm-samsung-legacy driver
-Date: Wed,  5 Jun 2013 23:18:16 +0200
-Message-Id: <1370467100-10820-12-git-send-email-tomasz.figa@gmail.com>
+Subject: [PATCH 12/15] ARM: SAMSUNG: Remove old PWM timer platform devices
+Date: Wed,  5 Jun 2013 23:18:17 +0200
+Message-Id: <1370467100-10820-13-git-send-email-tomasz.figa@gmail.com>
 In-Reply-To: <1370467100-10820-1-git-send-email-tomasz.figa@gmail.com>
 References: <1370467100-10820-1-git-send-email-tomasz.figa@gmail.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: linux-arm-kernel@lists.infradead.org
 Cc: linux-samsung-soc@vger.kernel.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, thierry.reding@gmail.com, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>, Tomasz Figa <tomasz.figa@gmail.com>
 
-This patch removes the now unused pwm-samsung-legacy driver, which was
-replaced by new pwm-samsung driver.
+This patch removes old Samsung PWM timer platform devices that are not
+used any more.
 
 Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
 ---
- drivers/pwm/Makefile             |   1 -
- drivers/pwm/pwm-samsung-legacy.c | 353 ---------------------------------------
- 2 files changed, 354 deletions(-)
- delete mode 100644 drivers/pwm/pwm-samsung-legacy.c
+ arch/arm/plat-samsung/devs.c | 18 ------------------
+ 1 file changed, 18 deletions(-)
 
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 833c3ac..94ba21e 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -8,7 +8,6 @@ obj-$(CONFIG_PWM_LPC32XX)	+= pwm-lpc32xx.o
- obj-$(CONFIG_PWM_MXS)		+= pwm-mxs.o
- obj-$(CONFIG_PWM_PUV3)		+= pwm-puv3.o
- obj-$(CONFIG_PWM_PXA)		+= pwm-pxa.o
--obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung-legacy.o
- obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
- obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
- obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
-diff --git a/drivers/pwm/pwm-samsung-legacy.c b/drivers/pwm/pwm-samsung-legacy.c
-deleted file mode 100644
-index a0ece50..0000000
+diff --git a/arch/arm/plat-samsung/devs.c b/arch/arm/plat-samsung/devs.c
+index 290f63a..8ce0ac0 100644
+--- a/arch/arm/plat-samsung/devs.c
++++ b/arch/arm/plat-samsung/devs.c
+@@ -1098,24 +1098,6 @@ arch_initcall(s5p_pmu_init);
+ /* PWM Timer */
+ 
+ #ifdef CONFIG_SAMSUNG_DEV_PWM
+-
+-#define DEFINE_S3C_TIMER(_tmr_no)			\
+-	.name		= "s3c24xx-pwm",		\
+-	.id		= _tmr_no,			\
+-
+-/*
+- * since we already have an static mapping for the timer,
+- * we do not bother setting any IO resource for the base.
+- */
+-
+-struct platform_device s3c_device_timer[] = {
+-	[0] = { DEFINE_S3C_TIMER(0) },
+-	[1] = { DEFINE_S3C_TIMER(1) },
+-	[2] = { DEFINE_S3C_TIMER(2) },
+-	[3] = { DEFINE_S3C_TIMER(3) },
+-	[4] = { DEFINE_S3C_TIMER(4) },
+-};
+-
+ static struct resource samsung_pwm_resource[] = {
+ 	DEFINE_RES_MEM(SAMSUNG_PA_TIMER, SZ_4K),
+ };
 -- 
 1.8.2.1
