@@ -1,170 +1,144 @@
 Return-Path: <tomasz.figa@gmail.com>
 Return-Path: <tomasz.figa@gmail.com>
 From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: Re: [PATCH 14/15] ARM: SAMSUNG: Remove remaining uses of plat/regs-timer.h header
-Date: Thu, 13 Jun 2013 22:38:57 +0200
-Message-ID: <2199978.JEbm7Iqajq@flatron>
-In-Reply-To: <201306132224.33866.heiko@sntech.de>
-References: <1370467100-10820-1-git-send-email-tomasz.figa@gmail.com> <1370467100-10820-15-git-send-email-tomasz.figa@gmail.com> <201306132224.33866.heiko@sntech.de>
+Subject: Re: [PATCH 00/15] Final Samsung PWM support cleanup
+Date: Wed, 12 Jun 2013 23:48:56 +0200
+Message-ID: <1444953.LmSrOvSyJG@flatron>
+In-Reply-To: <1370467100-10820-1-git-send-email-tomasz.figa@gmail.com>
+References: <1370467100-10820-1-git-send-email-tomasz.figa@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 List-ID: <linux-pwm.vger.kernel.org>
-To: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, thierry.reding@gmail.com, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Mark Brown <broonie@kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>
+To: linux-arm-kernel@lists.infradead.org
+Cc: linux-samsung-soc@vger.kernel.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, thierry.reding@gmail.com, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>
 
-On Thursday 13 of June 2013 22:24:33 Heiko St=FCbner wrote:
-> Am Mittwoch, 5. Juni 2013, 23:18:19 schrieb Tomasz Figa:
-> > This patch removes remaining inclusions of plat/regs-timer.h as a
-> > preparation to remove the header.
->=20
-> hmm, the patch does a bit more than that, as it also removes the savi=
-ng
-> of the registers from the suspend calls, which is most likely handled=
+Hi,
 
-> by the driver now. But the description should possibly reflect that.
+On Wednesday 05 of June 2013 23:18:05 Tomasz Figa wrote:
+> Since we now have a proper Samsung PWM clocksource driver in place,
+> we can proceed with further cleanup of PWM timers support on Samsung
+> SoCs.
+> 
+> This series attempts to achieve this goal by:
+>  1) moving remaining Samsung platforms to the new clocksource driver
+>  2) removing old clocksource driver
+>  3) adding new multiplatform- and DT-aware PWM driver
+>  4) moving all Samsung platforms to use the new PWM driver
+>  5) removing old PWM driver
+>  6) removing all PWM-related code that is not used anymore
+> 
+> Cleaning up the PWM driver is a bit tricky, because the design of
+> current driver makes it completely unsuitable for DT and multiplatform
+> and would require a heavy rework to make it usable, breaking any
+> existing Samsung PWM users by the way. To avoid any breakage I decided
+> to keep the old driver, add new one, move all platforms to it and then
+> remove the old one.
+> 
+> See particular patches for more detailed descriptions.
+> 
+> On S3C6410-based Tiny6410 (Mini6410-compatible), after enabling
+> pwm-beeper:
+> 
+> Tested-by: Tomasz Figa <tomasz.figa@gmail.com>
+> 
+> Needs testing on other platforms as I could only compile test for them.
+> 
+> Tomasz Figa (15):
+>   ARM: SAMSUNG: Unify base address definitions of timer block
+>   ARM: SAMSUNG: Add new PWM platform device
+>   ARM: SAMSUNG: Set PWM platform data
+>   ARM: SAMSUNG: Move all platforms to new clocksource driver
+>   ARM: SAMSUNG: Remove old samsung-time driver
+>   ARM: SAMSUNG: Remove unused PWM timer IRQ chip code
+>   pwm: samsung: Rename to pwm-samsung-legacy
+>   pwm: Add new pwm-samsung driver
+>   ARM: SAMSUNG: Rework private data handling in dev-backlight
+>   ARM: SAMSUNG: Modify board files to use new PWM platform device
+>   pwm: Remove superseded pwm-samsung-legacy driver
+>   ARM: SAMSUNG: Remove old PWM timer platform devices
+>   ARM: SAMSUNG: Remove pwm-clock infrastructure
+>   ARM: SAMSUNG: Remove remaining uses of plat/regs-timer.h header
+>   ARM: SAMSUNG: Remove plat/regs-timer.h header
+> 
+>  arch/arm/Kconfig                                   |   1 -
+>  arch/arm/mach-exynos/common.c                      |   3 +
+>  arch/arm/mach-exynos/include/mach/irqs.h           |   3 +-
+>  arch/arm/mach-exynos/include/mach/map.h            |   1 +
+>  arch/arm/mach-exynos/mach-nuri.c                   |   4 +-
+>  arch/arm/mach-exynos/mach-origen.c                 |   3 +-
+>  arch/arm/mach-exynos/mach-smdk4x12.c               |   3 +-
+>  arch/arm/mach-exynos/mach-smdkv310.c               |   3 +-
+>  arch/arm/mach-s3c24xx/Kconfig                      |  12 +-
+>  arch/arm/mach-s3c24xx/clock-s3c2410.c              |   1 -
+>  arch/arm/mach-s3c24xx/clock-s3c2412.c              |   1 -
+>  arch/arm/mach-s3c24xx/clock-s3c2416.c              |   2 -
+>  arch/arm/mach-s3c24xx/clock-s3c2443.c              |   2 -
+>  arch/arm/mach-s3c24xx/common.c                     |  27 +
+>  arch/arm/mach-s3c24xx/include/mach/map.h           |   2 +
+>  arch/arm/mach-s3c24xx/mach-h1940.c                 |   4 +-
+>  arch/arm/mach-s3c24xx/mach-rx1950.c                |   5 +-
+>  arch/arm/mach-s3c64xx/Kconfig                      |   4 +-
+>  arch/arm/mach-s3c64xx/clock.c                      |   2 -
+>  arch/arm/mach-s3c64xx/common.c                     |  32 +-
+>  arch/arm/mach-s3c64xx/include/mach/irqs.h          |   8 -
+>  arch/arm/mach-s3c64xx/include/mach/map.h           |   1 +
+>  arch/arm/mach-s3c64xx/irq-pm.c                     |   2 -
+>  arch/arm/mach-s3c64xx/mach-crag6410.c              |   4 +-
+>  arch/arm/mach-s3c64xx/mach-hmt.c                   |   4 +-
+>  arch/arm/mach-s3c64xx/mach-smartq.c                |   4 +-
+>  arch/arm/mach-s3c64xx/mach-smdk6410.c              |   1 +
+>  arch/arm/mach-s5p64x0/Kconfig                      |   4 +-
+>  arch/arm/mach-s5p64x0/clock-s5p6440.c              |   2 -
+>  arch/arm/mach-s5p64x0/clock-s5p6450.c              |   2 -
+>  arch/arm/mach-s5p64x0/common.c                     |  27 +
+>  arch/arm/mach-s5p64x0/include/mach/irqs.h          |   2 -
+>  arch/arm/mach-s5p64x0/include/mach/map.h           |   1 +
+>  arch/arm/mach-s5p64x0/mach-smdk6440.c              |   1 +
+>  arch/arm/mach-s5p64x0/mach-smdk6450.c              |   1 +
+>  arch/arm/mach-s5p64x0/pm.c                         |   3 -
+>  arch/arm/mach-s5pc100/Kconfig                      |   2 +-
+>  arch/arm/mach-s5pc100/clock.c                      |   2 -
+>  arch/arm/mach-s5pc100/common.c                     |  28 +
+>  arch/arm/mach-s5pc100/include/mach/irqs.h          |   2 -
+>  arch/arm/mach-s5pc100/include/mach/map.h           |   1 +
+>  arch/arm/mach-s5pc100/mach-smdkc100.c              |   1 +
+>  arch/arm/mach-s5pv210/Kconfig                      |   2 +-
+>  arch/arm/mach-s5pv210/clock.c                      |   1 -
+>  arch/arm/mach-s5pv210/common.c                     |  28 +
+>  arch/arm/mach-s5pv210/include/mach/irqs.h          |   2 -
+>  arch/arm/mach-s5pv210/include/mach/map.h           |   1 +
+>  arch/arm/mach-s5pv210/mach-smdkv210.c              |   1 +
+>  arch/arm/mach-s5pv210/pm.c                         |  10 -
+>  arch/arm/plat-samsung/Kconfig                      |  14 -
+>  arch/arm/plat-samsung/Makefile                     |   3 -
+>  arch/arm/plat-samsung/dev-backlight.c              |  61 ++-
+>  arch/arm/plat-samsung/devs.c                       |  42 +-
+>  arch/arm/plat-samsung/include/plat/clock.h         |   4 -
+>  arch/arm/plat-samsung/include/plat/devs.h          |   1 +
+>  arch/arm/plat-samsung/include/plat/irq-vic-timer.h |  13 -
+>  arch/arm/plat-samsung/include/plat/irqs.h          |   9 -
+>  arch/arm/plat-samsung/include/plat/pwm-clock.h     |  81 ---
+>  arch/arm/plat-samsung/include/plat/pwm-core.h      |  24 +
+>  arch/arm/plat-samsung/include/plat/regs-timer.h    | 124 -----
+>  arch/arm/plat-samsung/include/plat/samsung-time.h  |  23 -
+>  arch/arm/plat-samsung/irq-vic-timer.c              |  98 ----
+>  arch/arm/plat-samsung/pwm-clock.c                  | 474
+> ----------------- arch/arm/plat-samsung/s5p-irq.c                    | 
+>  4 -
+>  arch/arm/plat-samsung/samsung-time.c               | 394 --------------
+> drivers/pwm/pwm-samsung.c                          | 575
+> ++++++++++++++------- 66 files changed, 627 insertions(+), 1580
+> deletions(-)
+>  delete mode 100644 arch/arm/plat-samsung/include/plat/irq-vic-timer.h
+>  delete mode 100644 arch/arm/plat-samsung/include/plat/pwm-clock.h
+>  create mode 100644 arch/arm/plat-samsung/include/plat/pwm-core.h
+>  delete mode 100644 arch/arm/plat-samsung/include/plat/regs-timer.h
+>  delete mode 100644 arch/arm/plat-samsung/irq-vic-timer.c
+>  delete mode 100644 arch/arm/plat-samsung/pwm-clock.c
+>  delete mode 100644 arch/arm/plat-samsung/samsung-time.c
 
-True, although I couldn't test suspend/resume with these patches, becau=
-se=20
-it was already broken before, at least on s3c64xx and/or mini6410.
-
-As an interesting side note, in case of s3c64xx and s5p64x0, existing c=
-ode=20
-was not enough to make suspend/resume of the timer work, as it can be s=
-een=20
-in case of s5pv210, which has it done almost correctly.
-
-Almost, because as far as I know (and I can see in the manual) the TCNT=
-O=20
-register is read only and there is a separate procedure for loading tim=
-er=20
-value manually.
-
-Thanks for review.
+Any comments for this series?
 
 Best regards,
 Tomasz
-
-> > Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
-> > ---
-> >=20
-> >  arch/arm/mach-s3c64xx/irq-pm.c  |  2 --
-> >  arch/arm/mach-s5p64x0/pm.c      |  3 ---
-> >  arch/arm/mach-s5pv210/pm.c      | 10 ----------
-> >  arch/arm/plat-samsung/s5p-irq.c |  1 -
-> >  4 files changed, 16 deletions(-)
-> >=20
-> > diff --git a/arch/arm/mach-s3c64xx/irq-pm.c
-> > b/arch/arm/mach-s3c64xx/irq-pm.c index 0c7e1d9..c3da1b6 100644
-> > --- a/arch/arm/mach-s3c64xx/irq-pm.c
-> > +++ b/arch/arm/mach-s3c64xx/irq-pm.c
-> > @@ -22,7 +22,6 @@
-> >=20
-> >  #include <mach/map.h>
-> > =20
-> >  #include <plat/regs-serial.h>
-> >=20
-> > -#include <plat/regs-timer.h>
-> >=20
-> >  #include <mach/regs-gpio.h>
-> >  #include <plat/cpu.h>
-> >  #include <plat/pm.h>
-> >=20
-> > @@ -43,7 +42,6 @@ static struct sleep_save irq_save[] =3D {
-> >=20
-> >  =09SAVE_ITEM(S3C64XX_EINT0FLTCON2),
-> >  =09SAVE_ITEM(S3C64XX_EINT0FLTCON3),
-> >  =09SAVE_ITEM(S3C64XX_EINT0MASK),
-> >=20
-> > -=09SAVE_ITEM(S3C64XX_TINT_CSTAT),
-> >=20
-> >  };
-> > =20
-> >  static struct irq_grp_save {
-> >=20
-> > diff --git a/arch/arm/mach-s5p64x0/pm.c b/arch/arm/mach-s5p64x0/pm.=
-c
-> > index 97c2a08a..861e15c 100644
-> > --- a/arch/arm/mach-s5p64x0/pm.c
-> > +++ b/arch/arm/mach-s5p64x0/pm.c
-> > @@ -18,7 +18,6 @@
-> >=20
-> >  #include <plat/cpu.h>
-> >  #include <plat/pm.h>
-> >=20
-> > -#include <plat/regs-timer.h>
-> >=20
-> >  #include <plat/wakeup-mask.h>
-> > =20
-> >  #include <mach/regs-clock.h>
-> >=20
-> > @@ -48,8 +47,6 @@ static struct sleep_save s5p64x0_misc_save[] =3D =
-{
-> >=20
-> >  =09SAVE_ITEM(S5P64X0_MEM0CONSLP1),
-> >  =09SAVE_ITEM(S5P64X0_MEM0DRVCON),
-> >  =09SAVE_ITEM(S5P64X0_MEM1DRVCON),
-> >=20
-> > -
-> > -=09SAVE_ITEM(S3C64XX_TINT_CSTAT),
-> >=20
-> >  };
-> > =20
-> >  /* DPLL is present only in S5P6450 */
-> >=20
-> > diff --git a/arch/arm/mach-s5pv210/pm.c b/arch/arm/mach-s5pv210/pm.=
-c
-> > index 2b68a67..3cf3f9c 100644
-> > --- a/arch/arm/mach-s5pv210/pm.c
-> > +++ b/arch/arm/mach-s5pv210/pm.c
-> > @@ -21,7 +21,6 @@
-> >=20
-> >  #include <plat/cpu.h>
-> >  #include <plat/pm.h>
-> >=20
-> > -#include <plat/regs-timer.h>
-> >=20
-> >  #include <mach/regs-irq.h>
-> >  #include <mach/regs-clock.h>
-> >=20
-> > @@ -77,15 +76,6 @@ static struct sleep_save s5pv210_core_save[] =3D=
- {
-> >=20
-> >  =09/* Clock ETC */
-> >  =09SAVE_ITEM(S5P_CLK_OUT),
-> >  =09SAVE_ITEM(S5P_MDNIE_SEL),
-> >=20
-> > -
-> > -=09/* PWM Register */
-> > -=09SAVE_ITEM(S3C2410_TCFG0),
-> > -=09SAVE_ITEM(S3C2410_TCFG1),
-> > -=09SAVE_ITEM(S3C64XX_TINT_CSTAT),
-> > -=09SAVE_ITEM(S3C2410_TCON),
-> > -=09SAVE_ITEM(S3C2410_TCNTB(0)),
-> > -=09SAVE_ITEM(S3C2410_TCMPB(0)),
-> > -=09SAVE_ITEM(S3C2410_TCNTO(0)),
-> >=20
-> >  };
-> > =20
-> >  static int s5pv210_cpu_suspend(unsigned long arg)
-> >=20
-> > diff --git a/arch/arm/plat-samsung/s5p-irq.c
-> > b/arch/arm/plat-samsung/s5p-irq.c index 6729cb2..ddfaca9 100644
-> > --- a/arch/arm/plat-samsung/s5p-irq.c
-> > +++ b/arch/arm/plat-samsung/s5p-irq.c
-> > @@ -17,7 +17,6 @@
-> >=20
-> >  #include <mach/irqs.h>
-> >  #include <mach/map.h>
-> >=20
-> > -#include <plat/regs-timer.h>
-> >=20
-> >  #include <plat/cpu.h>
-> > =20
-> >  void __init s5p_init_irq(u32 *vic, u32 num_vic)
->=20
-> --
-> To unsubscribe from this list: send the line "unsubscribe
-> linux-samsung-soc" in the body of a message to
-> majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
