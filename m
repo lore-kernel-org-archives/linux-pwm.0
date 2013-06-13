@@ -1,50 +1,83 @@
-Return-Path: <arnd@arndb.de>
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 08/15] pwm: Add new pwm-samsung driver
-Date: Mon, 24 Jun 2013 22:55:12 +0200
-References: <1370467100-10820-1-git-send-email-tomasz.figa@gmail.com> <20130624195020.GA7163@mithrandir> <8756440.8o3uDlCqg5@flatron>
-In-Reply-To: <8756440.8o3uDlCqg5@flatron>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Message-Id: <201306242255.12540.arnd@arndb.de>
+Return-Path: <laurent.pinchart+renesas@ideasonboard.com>
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v4 0/5] Renesas TPU PWM support
+Date: Thu, 13 Jun 2013 18:54:43 +0200
+Message-Id: <1371142488-2514-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Tomasz Figa <tomasz.figa@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Tomasz Figa <t.figa@samsung.com>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Heiko =?iso-8859-1?q?St=FCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>
+To: linux-sh@vger.kernel.org
+Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Magnus Damm <magnus.damm@gmail.com>, Simon Horman <horms@verge.net.au>
 
-On Monday 24 June 2013, Tomasz Figa wrote:
-> Wouldn't adding a big comment about why this is enough for this platform 
-> and why anything more sophisticated would be just overengineering in this 
-> case be enough?
-> 
-> As you could see in several versions of the series I linked in my previous 
-> replies, anything that looked decently simply added a lot of glue code and 
-> cross module dependencies without serving any useful purpose, other than 
-> just looking good.
-> 
-> This driver is already a lot better than previous one, because as opposed 
-> to the old one, it gives synchronization that is technically correct. Not 
-> even saying about a lot of other things fixed, like multiplatform-
-> awareness, OF support, coding style, proper handling of dividers, etc., 
-> etc. It would be really bad if all this was put to waste...
+This is the fourth version of the Renesas TPU PWM unit support patches. The
+patch series deprecates and removes the leds-renesas-tpu driver in favor of a
+combination of leds-pwm and pwm-renesas-tpu. As an added bonus patch 4/5
+removes function GPIOs support from the sh73a0 platform. mach-shmobile is now
+free of function GPIOs. We still need volunteer(s) to migrate arch/sh.
 
-I agree. The shared spinlock as the interface between the two drivers
-is clearly a hack, but I think it is an appropriate hack in this special
-case and that's why I suggested using that over the more complex solutions
-that Tomasz suggested.
+I believe I've addressed all comments received in response to v3. I've tested
+the code on Armadillo only as I don't have access to a kota2 board. This is why
+I've added backlight support to Armadillo as part of this set.
 
-The important part is that the DT binding reasonable and could support
-more complex scenarios even though they are highly unlikely.
-We can always change the kernel code to something else if we need to,
-but I could not come up with good *and* simple design. The most obvious
-solution would be to make the clocksource driver the master that exports
-an interface to the pwm driver, but that just adds complexity for the
-common case that just uses the pwm driver but not the clocksource driver.
+The patches are based on Simon's renesas-next-20130613 tag. I've pushed them
+to
 
-The attempt to create a separate MFD glue driver that abstracts the
-interface in the way that pwm-tiecap does also was a failure here, because
-one of the two consumers has to run very early, before we have access to
-most of the device infrastructure the kernel provides.
+        git://linuxtv.org/pinchartl/fbdev.git pinmux/3.10/tpu
 
-	Arnd
+Given the risk of conflicts on arch/arm/mach-shmobile it would probably be
+easier to merge the set through Simon's tree. Thierry, would you be fine with
+that ?
+
+Changes since v3:
+
+- Set the driver name to renesas-tpu-pwm instead of renesas_tpu_pwm
+- Allocate the PWM device in the request handler
+- Fixed device name in sh73a0 clocks lookup array
+- Added support for TPU0 on sh73a0
+
+Changes since v2:
+
+- Dropped SH Mobile arch patches that have already been merged
+- Replaced active_low pdata field with pwm_polarity
+- Replaced TPU_PWM_ID with pwm_lookup's
+- Set the platform_driver .owner field
+- Replaced devm_ioremap_nocache() with devm_ioremap_resource()
+- Added a .set_polarity() implementation
+- Use kernel block comment style
+- Don't enable/disable the clock around clk_get_rate()
+- Removed duplicate sanity checks in the .config() operation
+
+Changes since v1:
+
+- Renamed the pwm-rmob driver to pwm-renesas-tpu, as TPU units are found in
+  Renesas SH-Mobile, R-Mobile and R-Car SoCs.
+- Added TPU clock and pin groups for r8a7790.
+
+Laurent Pinchart (5):
+  pwm: Add Renesas TPU PWM driver
+  ARM: mach-shmobile: armadillo800eva: Add backlight support
+  ARM: mach-shmobile: kota2: Use leds-pwm + pwm-rmob
+  ARM: shmobile: sh73a0: Remove all GPIOs
+  leds: Remove leds-renesas-tpu driver
+
+ arch/arm/mach-shmobile/board-armadillo800eva.c |  54 ++-
+ arch/arm/mach-shmobile/board-kota2.c           | 169 +++++----
+ arch/arm/mach-shmobile/clock-r8a7740.c         |   2 +-
+ arch/arm/mach-shmobile/clock-sh73a0.c          |  12 +-
+ arch/arm/mach-shmobile/include/mach/sh73a0.h   | 373 +------------------
+ drivers/leds/Kconfig                           |  12 -
+ drivers/leds/Makefile                          |   1 -
+ drivers/leds/leds-renesas-tpu.c                | 337 ------------------
+ drivers/pwm/Kconfig                            |  10 +
+ drivers/pwm/Makefile                           |   1 +
+ drivers/pwm/pwm-renesas-tpu.c                  | 475 +++++++++++++++++++++++++
+ include/linux/platform_data/leds-renesas-tpu.h |  14 -
+ include/linux/platform_data/pwm-renesas-tpu.h  |  16 +
+ 13 files changed, 646 insertions(+), 830 deletions(-)
+ delete mode 100644 drivers/leds/leds-renesas-tpu.c
+ create mode 100644 drivers/pwm/pwm-renesas-tpu.c
+ delete mode 100644 include/linux/platform_data/leds-renesas-tpu.h
+ create mode 100644 include/linux/platform_data/pwm-renesas-tpu.h
+
+-- 
+Regards,
+
+Laurent Pinchart
