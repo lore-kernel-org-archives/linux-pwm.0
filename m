@@ -1,66 +1,35 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Wed, 19 Jun 2013 19:10:16 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4] pwm: add sysfs interface
-Message-ID: <20130619171015.GA5528@mithrandir>
-References: <201306101612.07708.hartleys@visionengravers.com>
- <20130611101432.GA932@manwe>
- <51B709F5.8070909@gmail.com>
- <ADE657CA350FB648AAC2C43247A983F0021DA690F61B@AUSP01VMBX24.collaborationhost.net>
- <ADE657CA350FB648AAC2C43247A983F0021DA690F63A@AUSP01VMBX24.collaborationhost.net>
- <20130611183521.GC29842@mithrandir>
- <ADE657CA350FB648AAC2C43247A983F0021DA690F6BE@AUSP01VMBX24.collaborationhost.net>
- <20130611194819.GA29980@mithrandir>
- <ADE657CA350FB648AAC2C43247A983F0021DAC1259B5@AUSP01VMBX24.collaborationhost.net>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Qxx1br4bt0+wmkIi"
-Content-Disposition: inline
-In-Reply-To: <ADE657CA350FB648AAC2C43247A983F0021DAC1259B5@AUSP01VMBX24.collaborationhost.net>
+Return-Path: <axel.lin@ingics.com>
+Return-Path: <axel.lin@ingics.com>
+Message-ID: <1371662009.5355.0.camel@phoenix>
+Subject: [PATCH] pwm: pca9685: Add .owner to struct pwm_ops
+From: Axel Lin <axel.lin@ingics.com>
+Date: Thu, 20 Jun 2013 01:13:29 +0800
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 List-ID: <linux-pwm.vger.kernel.org>
-To: H Hartley Sweeten <hartleys@visionengravers.com>
-Cc: Ryan Mallon <rmallon@gmail.com>, Linux Kernel <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "poeschel@lemonage.de" <poeschel@lemonage.de>, "rob@landley.net" <rob@landley.net>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>, linux-pwm@vger.kernel.org
 
+Add missing .owner of struct pwm_ops. This prevents the module from being
+removed from underneath its users.
 
---Qxx1br4bt0+wmkIi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+---
+ drivers/pwm/pwm-pca9685.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Wed, Jun 19, 2013 at 11:09:13AM -0500, H Hartley Sweeten wrote:
-> On Tuesday, June 11, 2013 12:48 PM, Thierry Reding wrote:
-> >
-> > I'm tempted to take your v5 patch and make a note to clean that up
-> > separately at some point (along with similar changes for the DEBUG_FS
-> > support).
->=20
-> Thierry,
->=20
-> So you want a v6 of this patch or are you ok with v5?
-
-I'll take v5.
-
-Thierry
-
---Qxx1br4bt0+wmkIi
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
-
-iQIcBAEBAgAGBQJRweX3AAoJEN0jrNd/PrOhAUsQALyqaIqnw861Kul16By6KKw1
-a9pzvEjxQBmWOb6Tn5ew+WTuF/ItGRvVk6B48Hqz59bG++ET7peUCiDO3aDWloyy
-YHgIQKrXEfRO0FUZIICA3hcZAGSJNSvzo45DRVz/eDwcgoGlQxHgbaN6x5JMKhkq
-CgpOSyDiOB4Jcw29EA1CcmsMWPR4WYOY26Tw3RKmcrrDFnz2QQBprnXFeZFrv4Sx
-wP+O3sQ3icaONVrXS0m2njIC6hNrPXKYxNzC85T92NHBnlvI41Q5L2SczuU+V20B
-TR8Wdl5RIhPiEJPcpoG3siyrvaCrqSk88Q1XGX5Q6tZrh2NUhOfLsCy2AaPu3fWr
-XePWJl1o8dcwdyAkByd2DbDBZeDMcuv4shRgpbxswueOgmvZNPz4rU9VWznLny9R
-J3hnjw60majz//4lyw8XxFaRPpSq7Mh6u3CGOki7RSLUpWtePrLNoBk4pP0u6zgz
-dRCW6EAFEkSS2A6dRVcXPM4AbMA52+ygVQNhF7igiFbhnT7RhUUPxZAJMLZ2dRPp
-m82SX2pvAEcxWPb2PwxQZo/jFldmJR9zAGWmHmkFSSfEX/14LY7oAl6yVkKjuwK1
-AAHJA95JwiFaIdvoS6Huod7bZ+JBldXq/ELPINRBx3FbT8l4lNdE/g8mpsOz0+Ld
-gUcWeE4lK0L2XErVFWX9
-=x8XR
------END PGP SIGNATURE-----
-
---Qxx1br4bt0+wmkIi--
+diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+index 2afc904..c9f9e65 100644
+--- a/drivers/pwm/pwm-pca9685.c
++++ b/drivers/pwm/pwm-pca9685.c
+@@ -199,6 +199,7 @@ static const struct pwm_ops pca9685_pwm_ops = {
+ 	.config = pca9685_pwm_config,
+ 	.request = pca9685_pwm_request,
+ 	.free = pca9685_pwm_free,
++	.owner = THIS_MODULE,
+ };
+ 
+ static struct regmap_config pca9685_regmap_i2c_config = {
+-- 
+1.8.1.2
