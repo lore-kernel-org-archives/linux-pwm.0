@@ -1,46 +1,52 @@
-Return-Path: <robin@protonic.nl>
-From: Robin van der Gracht <robin@protonic.nl>
-Subject: [PATCH v2] pwm: pwm-mxs: Wait for configuration to apply before disabling PWM.
-Date: Wed, 26 Jun 2013 12:26:13 +0200
-Message-Id: <1372242373-17962-1-git-send-email-robin@protonic.nl>
+Return-Path: <axel.lin@ingics.com>
+Return-Path: <axel.lin@ingics.com>
+Message-ID: <1371662847.5355.2.camel@phoenix>
+Subject: [PATCH] pwm: pca9685: Fix wrong argument to set MODE1_SLEEP bit
+From: Axel Lin <axel.lin@ingics.com>
+Date: Thu, 20 Jun 2013 01:27:27 +0800
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 List-ID: <linux-pwm.vger.kernel.org>
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, shawn.guo@linaro.org, robin@protonic.nl
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>, linux-pwm@vger.kernel.org
 
-We have to be sure that the last configuration has been applied. In most
-cases drivers will have set the duty-cycle to 0%. To prevent the PWM
-from locking at a 100% duty-cycle, we delay disabling the PWM for a
-whole period to make sure any new configuration has been latched.
+Current code actually does not set MODE1_SLEEP bit because the new value for
+bitmask (0x1) is wrong. To set MODE1_SLEEP bit, we should pass MODE1_SLEEP
+as the new value for bitmask.
 
-Signed-off-by: Robin van der Gracht <robin@protonic.nl>
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
 ---
- drivers/pwm/pwm-mxs.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+Hi Steffen,
+I don't have this hardware, can you test if this patch works?
+Thanks,
+Axel
 
-diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
-index a53d309..7e1fa0a 100644
---- a/drivers/pwm/pwm-mxs.c
-+++ b/drivers/pwm/pwm-mxs.c
-@@ -10,6 +10,7 @@
-  */
+ drivers/pwm/pwm-pca9685.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+index c9f9e65..3fb775d 100644
+--- a/drivers/pwm/pwm-pca9685.c
++++ b/drivers/pwm/pwm-pca9685.c
+@@ -190,7 +190,7 @@ static void pca9685_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
  
- #include <linux/clk.h>
-+#include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/io.h>
- #include <linux/kernel.h>
-@@ -113,6 +114,12 @@ static int mxs_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- static void mxs_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	if (--pca->active_cnt == 0)
+ 		regmap_update_bits(pca->regmap, PCA9685_MODE1, MODE1_SLEEP,
+-				   0x1);
++				   MODE1_SLEEP);
+ }
+ 
+ static const struct pwm_ops pca9685_pwm_ops = {
+@@ -264,7 +264,8 @@ static int pca9685_pwm_remove(struct i2c_client *client)
  {
- 	struct mxs_pwm_chip *mxs = to_mxs_pwm_chip(chip);
-+	unsigned int period;
-+
-+	/* Ensure latest configuration applied. */
-+	period = pwm_get_period(pwm);
-+	period = DIV_ROUND_UP(period, NSEC_PER_USEC);
-+	usleep_range(period, period + 1000);
+ 	struct pca9685 *pca = i2c_get_clientdata(client);
  
- 	writel(1 << pwm->hwpwm, mxs->base + PWM_CTRL + CLR);
+-	regmap_update_bits(pca->regmap, PCA9685_MODE1, MODE1_SLEEP, 0x1);
++	regmap_update_bits(pca->regmap, PCA9685_MODE1, MODE1_SLEEP,
++			   MODE1_SLEEP);
  
+ 	return pwmchip_remove(&pca->chip);
+ }
 -- 
-1.7.9.5
+1.8.1.2
