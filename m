@@ -1,305 +1,395 @@
 Return-Path: <tomasz.figa@gmail.com>
 Return-Path: <tomasz.figa@gmail.com>
 From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: [PATCH v2 13/18] ARM: SAMSUNG: Modify board files to use new PWM platform device
-Date: Fri, 21 Jun 2013 00:12:58 +0200
-Message-Id: <1371766383-29077-14-git-send-email-tomasz.figa@gmail.com>
+Subject: [PATCH v2 14/18] pwm: Remove superseded pwm-samsung-legacy driver
+Date: Fri, 21 Jun 2013 00:12:59 +0200
+Message-Id: <1371766383-29077-15-git-send-email-tomasz.figa@gmail.com>
 In-Reply-To: <1371766383-29077-1-git-send-email-tomasz.figa@gmail.com>
 References: <1371766383-29077-1-git-send-email-tomasz.figa@gmail.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: linux-samsung-soc@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Tomasz Figa <tomasz.figa@gmail.com>
 
-This patch modifies any board files using the legacy PWM device to use
-the new device instead.
+This patch removes the now unused pwm-samsung-legacy driver, which was
+replaced by new pwm-samsung driver.
 
 Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
 ---
- arch/arm/mach-s3c24xx/mach-h1940.c    |  4 ++--
- arch/arm/mach-s3c24xx/mach-rx1950.c   |  5 ++---
- arch/arm/mach-s3c64xx/mach-crag6410.c |  4 ++--
- arch/arm/mach-s3c64xx/mach-hmt.c      |  4 ++--
- arch/arm/mach-s3c64xx/mach-smartq.c   |  4 ++--
- arch/arm/mach-s3c64xx/mach-smdk6410.c |  5 +++--
- arch/arm/mach-s5p64x0/mach-smdk6440.c |  5 +++--
- arch/arm/mach-s5p64x0/mach-smdk6450.c |  5 +++--
- arch/arm/mach-s5pc100/mach-smdkc100.c |  5 +++--
- arch/arm/mach-s5pv210/mach-smdkv210.c |  5 +++--
- arch/arm/plat-samsung/dev-backlight.c | 10 ----------
- 11 files changed, 25 insertions(+), 31 deletions(-)
+ drivers/pwm/Makefile             |   1 -
+ drivers/pwm/pwm-samsung-legacy.c | 353 ---------------------------------------
+ 2 files changed, 354 deletions(-)
+ delete mode 100644 drivers/pwm/pwm-samsung-legacy.c
 
-diff --git a/arch/arm/mach-s3c24xx/mach-h1940.c b/arch/arm/mach-s3c24xx/mach-h1940.c
-index af4334d..74dd479 100644
---- a/arch/arm/mach-s3c24xx/mach-h1940.c
-+++ b/arch/arm/mach-s3c24xx/mach-h1940.c
-@@ -512,7 +512,7 @@ static struct platform_pwm_backlight_data backlight_data = {
- static struct platform_device h1940_backlight = {
- 	.name = "pwm-backlight",
- 	.dev  = {
--		.parent = &s3c_device_timer[0].dev,
-+		.parent = &samsung_device_pwm.dev,
- 		.platform_data = &backlight_data,
- 	},
- 	.id   = -1,
-@@ -632,7 +632,7 @@ static struct platform_device *h1940_devices[] __initdata = {
- 	&h1940_device_bluetooth,
- 	&s3c_device_sdi,
- 	&s3c_device_rtc,
--	&s3c_device_timer[0],
-+	&samsung_device_pwm,
- 	&h1940_backlight,
- 	&h1940_lcd_powerdev,
- 	&s3c_device_adc,
-diff --git a/arch/arm/mach-s3c24xx/mach-rx1950.c b/arch/arm/mach-s3c24xx/mach-rx1950.c
-index 44ca018..206b1f7 100644
---- a/arch/arm/mach-s3c24xx/mach-rx1950.c
-+++ b/arch/arm/mach-s3c24xx/mach-rx1950.c
-@@ -530,7 +530,7 @@ static struct platform_pwm_backlight_data rx1950_backlight_data = {
- static struct platform_device rx1950_backlight = {
- 	.name = "pwm-backlight",
- 	.dev = {
--		.parent = &s3c_device_timer[0].dev,
-+		.parent = &samsung_device_pwm.dev,
- 		.platform_data = &rx1950_backlight_data,
- 	},
- };
-@@ -717,8 +717,7 @@ static struct platform_device *rx1950_devices[] __initdata = {
- 	&s3c_device_sdi,
- 	&s3c_device_adc,
- 	&s3c_device_ts,
--	&s3c_device_timer[0],
--	&s3c_device_timer[1],
-+	&samsung_device_pwm,
- 	&rx1950_backlight,
- 	&rx1950_device_gpiokeys,
- 	&power_supply,
-diff --git a/arch/arm/mach-s3c64xx/mach-crag6410.c b/arch/arm/mach-s3c64xx/mach-crag6410.c
-index 8ad88ac..28889cc 100644
---- a/arch/arm/mach-s3c64xx/mach-crag6410.c
-+++ b/arch/arm/mach-s3c64xx/mach-crag6410.c
-@@ -120,7 +120,7 @@ static struct platform_device crag6410_backlight_device = {
- 	.name		= "pwm-backlight",
- 	.id		= -1,
- 	.dev		= {
--		.parent	= &s3c_device_timer[0].dev,
-+		.parent	= &samsung_device_pwm.dev,
- 		.platform_data = &crag6410_backlight_data,
- 	},
- };
-@@ -375,7 +375,7 @@ static struct platform_device *crag6410_devices[] __initdata = {
- 	&s3c_device_fb,
- 	&s3c_device_ohci,
- 	&s3c_device_usb_hsotg,
--	&s3c_device_timer[0],
-+	&samsung_device_pwm,
- 	&s3c64xx_device_iis0,
- 	&s3c64xx_device_iis1,
- 	&samsung_device_keypad,
-diff --git a/arch/arm/mach-s3c64xx/mach-hmt.c b/arch/arm/mach-s3c64xx/mach-hmt.c
-index 5b7f357..f39569e 100644
---- a/arch/arm/mach-s3c64xx/mach-hmt.c
-+++ b/arch/arm/mach-s3c64xx/mach-hmt.c
-@@ -123,7 +123,7 @@ static struct platform_pwm_backlight_data hmt_backlight_data = {
- static struct platform_device hmt_backlight_device = {
- 	.name		= "pwm-backlight",
- 	.dev		= {
--		.parent	= &s3c_device_timer[1].dev,
-+		.parent	= &samsung_device_pwm.dev,
- 		.platform_data = &hmt_backlight_data,
- 	},
- };
-@@ -239,7 +239,7 @@ static struct platform_device *hmt_devices[] __initdata = {
- 	&s3c_device_nand,
- 	&s3c_device_fb,
- 	&s3c_device_ohci,
--	&s3c_device_timer[1],
-+	&samsung_device_pwm,
- 	&hmt_backlight_device,
- 	&hmt_leds_device,
- };
-diff --git a/arch/arm/mach-s3c64xx/mach-smartq.c b/arch/arm/mach-s3c64xx/mach-smartq.c
-index 58ac990..86d980b 100644
---- a/arch/arm/mach-s3c64xx/mach-smartq.c
-+++ b/arch/arm/mach-s3c64xx/mach-smartq.c
-@@ -157,7 +157,7 @@ static struct platform_pwm_backlight_data smartq_backlight_data = {
- static struct platform_device smartq_backlight_device = {
- 	.name		= "pwm-backlight",
- 	.dev		= {
--		.parent	= &s3c_device_timer[1].dev,
-+		.parent	= &samsung_device_pwm.dev,
- 		.platform_data = &smartq_backlight_data,
- 	},
- };
-@@ -246,7 +246,7 @@ static struct platform_device *smartq_devices[] __initdata = {
- 	&s3c_device_i2c0,
- 	&s3c_device_ohci,
- 	&s3c_device_rtc,
--	&s3c_device_timer[1],
-+	&samsung_device_pwm,
- 	&s3c_device_ts,
- 	&s3c_device_usb_hsotg,
- 	&s3c64xx_device_iis0,
-diff --git a/arch/arm/mach-s3c64xx/mach-smdk6410.c b/arch/arm/mach-s3c64xx/mach-smdk6410.c
-index bd3295a..d90b450 100644
---- a/arch/arm/mach-s3c64xx/mach-smdk6410.c
-+++ b/arch/arm/mach-s3c64xx/mach-smdk6410.c
-@@ -274,6 +274,7 @@ static struct platform_device *smdk6410_devices[] __initdata = {
- 	&s3c_device_i2c1,
- 	&s3c_device_fb,
- 	&s3c_device_ohci,
-+	&samsung_device_pwm,
- 	&s3c_device_usb_hsotg,
- 	&s3c64xx_device_iisv4,
- 	&samsung_device_keypad,
-@@ -691,9 +692,9 @@ static void __init smdk6410_machine_init(void)
- 
- 	s3c_ide_set_platdata(&smdk6410_ide_pdata);
- 
--	samsung_bl_set(&smdk6410_bl_gpio_info, &smdk6410_bl_data);
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index 833c3ac..94ba21e 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -8,7 +8,6 @@ obj-$(CONFIG_PWM_LPC32XX)	+= pwm-lpc32xx.o
+ obj-$(CONFIG_PWM_MXS)		+= pwm-mxs.o
+ obj-$(CONFIG_PWM_PUV3)		+= pwm-puv3.o
+ obj-$(CONFIG_PWM_PXA)		+= pwm-pxa.o
+-obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung-legacy.o
+ obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
+ obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
+ obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
+diff --git a/drivers/pwm/pwm-samsung-legacy.c b/drivers/pwm/pwm-samsung-legacy.c
+deleted file mode 100644
+index a0ece50..0000000
+--- a/drivers/pwm/pwm-samsung-legacy.c
++++ /dev/null
+@@ -1,353 +0,0 @@
+-/* drivers/pwm/pwm-samsung.c
+- *
+- * Copyright (c) 2007 Ben Dooks
+- * Copyright (c) 2008 Simtec Electronics
+- *	Ben Dooks <ben@simtec.co.uk>, <ben-linux@fluff.org>
+- *
+- * S3C series PWM device core
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License.
+-*/
 -
- 	platform_add_devices(smdk6410_devices, ARRAY_SIZE(smdk6410_devices));
-+
-+	samsung_bl_set(&smdk6410_bl_gpio_info, &smdk6410_bl_data);
- }
- 
- MACHINE_START(SMDK6410, "SMDK6410")
-diff --git a/arch/arm/mach-s5p64x0/mach-smdk6440.c b/arch/arm/mach-s5p64x0/mach-smdk6440.c
-index 73f71a6..0b00304 100644
---- a/arch/arm/mach-s5p64x0/mach-smdk6440.c
-+++ b/arch/arm/mach-s5p64x0/mach-smdk6440.c
-@@ -162,6 +162,7 @@ static struct platform_device *smdk6440_devices[] __initdata = {
- 	&s3c_device_rtc,
- 	&s3c_device_i2c0,
- 	&s3c_device_i2c1,
-+	&samsung_device_pwm,
- 	&s3c_device_ts,
- 	&s3c_device_wdt,
- 	&s5p6440_device_iis,
-@@ -254,8 +255,6 @@ static void __init smdk6440_machine_init(void)
- 	i2c_register_board_info(1, smdk6440_i2c_devs1,
- 			ARRAY_SIZE(smdk6440_i2c_devs1));
- 
--	samsung_bl_set(&smdk6440_bl_gpio_info, &smdk6440_bl_data);
+-#define pr_fmt(fmt) "pwm-samsung: " fmt
 -
- 	s5p6440_set_lcd_interface();
- 	s3c_fb_set_platdata(&smdk6440_lcd_pdata);
- 
-@@ -264,6 +263,8 @@ static void __init smdk6440_machine_init(void)
- 	s3c_sdhci2_set_platdata(&smdk6440_hsmmc2_pdata);
- 
- 	platform_add_devices(smdk6440_devices, ARRAY_SIZE(smdk6440_devices));
-+
-+	samsung_bl_set(&smdk6440_bl_gpio_info, &smdk6440_bl_data);
- }
- 
- MACHINE_START(SMDK6440, "SMDK6440")
-diff --git a/arch/arm/mach-s5p64x0/mach-smdk6450.c b/arch/arm/mach-s5p64x0/mach-smdk6450.c
-index 18303e1..5949296 100644
---- a/arch/arm/mach-s5p64x0/mach-smdk6450.c
-+++ b/arch/arm/mach-s5p64x0/mach-smdk6450.c
-@@ -180,6 +180,7 @@ static struct platform_device *smdk6450_devices[] __initdata = {
- 	&s3c_device_rtc,
- 	&s3c_device_i2c0,
- 	&s3c_device_i2c1,
-+	&samsung_device_pwm,
- 	&s3c_device_ts,
- 	&s3c_device_wdt,
- 	&s5p6450_device_iis0,
-@@ -273,8 +274,6 @@ static void __init smdk6450_machine_init(void)
- 	i2c_register_board_info(1, smdk6450_i2c_devs1,
- 			ARRAY_SIZE(smdk6450_i2c_devs1));
- 
--	samsung_bl_set(&smdk6450_bl_gpio_info, &smdk6450_bl_data);
+-#include <linux/export.h>
+-#include <linux/kernel.h>
+-#include <linux/platform_device.h>
+-#include <linux/slab.h>
+-#include <linux/err.h>
+-#include <linux/clk.h>
+-#include <linux/io.h>
+-#include <linux/pwm.h>
 -
- 	s5p6450_set_lcd_interface();
- 	s3c_fb_set_platdata(&smdk6450_lcd_pdata);
- 
-@@ -283,6 +282,8 @@ static void __init smdk6450_machine_init(void)
- 	s3c_sdhci2_set_platdata(&smdk6450_hsmmc2_pdata);
- 
- 	platform_add_devices(smdk6450_devices, ARRAY_SIZE(smdk6450_devices));
-+
-+	samsung_bl_set(&smdk6450_bl_gpio_info, &smdk6450_bl_data);
- }
- 
- MACHINE_START(SMDK6450, "SMDK6450")
-diff --git a/arch/arm/mach-s5pc100/mach-smdkc100.c b/arch/arm/mach-s5pc100/mach-smdkc100.c
-index 8c880f7..7c57a22 100644
---- a/arch/arm/mach-s5pc100/mach-smdkc100.c
-+++ b/arch/arm/mach-s5pc100/mach-smdkc100.c
-@@ -194,6 +194,7 @@ static struct platform_device *smdkc100_devices[] __initdata = {
- 	&s3c_device_hsmmc0,
- 	&s3c_device_hsmmc1,
- 	&s3c_device_hsmmc2,
-+	&samsung_device_pwm,
- 	&s3c_device_ts,
- 	&s3c_device_wdt,
- 	&smdkc100_lcd_powerdev,
-@@ -246,9 +247,9 @@ static void __init smdkc100_machine_init(void)
- 	gpio_request(S5PC100_GPH0(6), "GPH0");
- 	smdkc100_lcd_power_set(&smdkc100_lcd_power_data, 0);
- 
--	samsung_bl_set(&smdkc100_bl_gpio_info, &smdkc100_bl_data);
+-#include <mach/map.h>
 -
- 	platform_add_devices(smdkc100_devices, ARRAY_SIZE(smdkc100_devices));
-+
-+	samsung_bl_set(&smdkc100_bl_gpio_info, &smdkc100_bl_data);
- }
- 
- MACHINE_START(SMDKC100, "SMDKC100")
-diff --git a/arch/arm/mach-s5pv210/mach-smdkv210.c b/arch/arm/mach-s5pv210/mach-smdkv210.c
-index d50b6f1..6d72bb99 100644
---- a/arch/arm/mach-s5pv210/mach-smdkv210.c
-+++ b/arch/arm/mach-s5pv210/mach-smdkv210.c
-@@ -218,6 +218,7 @@ static struct platform_device *smdkv210_devices[] __initdata = {
- 	&s3c_device_i2c0,
- 	&s3c_device_i2c1,
- 	&s3c_device_i2c2,
-+	&samsung_device_pwm,
- 	&s3c_device_rtc,
- 	&s3c_device_ts,
- 	&s3c_device_usb_hsotg,
-@@ -316,11 +317,11 @@ static void __init smdkv210_machine_init(void)
- 
- 	s3c_fb_set_platdata(&smdkv210_lcd0_pdata);
- 
--	samsung_bl_set(&smdkv210_bl_gpio_info, &smdkv210_bl_data);
+-#include <plat/regs-timer.h>
 -
- 	s3c_hsotg_set_platdata(&smdkv210_hsotg_pdata);
- 
- 	platform_add_devices(smdkv210_devices, ARRAY_SIZE(smdkv210_devices));
-+
-+	samsung_bl_set(&smdkv210_bl_gpio_info, &smdkv210_bl_data);
- }
- 
- MACHINE_START(SMDKV210, "SMDKV210")
-diff --git a/arch/arm/plat-samsung/dev-backlight.c b/arch/arm/plat-samsung/dev-backlight.c
-index e467a01..d51f956 100644
---- a/arch/arm/plat-samsung/dev-backlight.c
-+++ b/arch/arm/plat-samsung/dev-backlight.c
-@@ -132,14 +132,6 @@ void __init samsung_bl_set(struct samsung_bl_gpio_info *gpio_info,
- 	if (bl_data->check_fb)
- 		samsung_bl_data->check_fb = bl_data->check_fb;
- 
--	/* Register the specific PWM timer dev for Backlight control */
--	ret = platform_device_register(
--			&s3c_device_timer[samsung_bl_data->pwm_id]);
--	if (ret) {
--		printk(KERN_ERR "failed to register pwm timer for backlight: %d\n", ret);
--		goto err_plat_reg1;
+-struct s3c_chip {
+-	struct platform_device	*pdev;
+-
+-	struct clk		*clk_div;
+-	struct clk		*clk;
+-	const char		*label;
+-
+-	unsigned int		 period_ns;
+-	unsigned int		 duty_ns;
+-
+-	unsigned char		 tcon_base;
+-	unsigned char		 pwm_id;
+-	struct pwm_chip		 chip;
+-};
+-
+-#define to_s3c_chip(chip)	container_of(chip, struct s3c_chip, chip)
+-
+-#define pwm_dbg(_pwm, msg...) dev_dbg(&(_pwm)->pdev->dev, msg)
+-
+-static struct clk *clk_scaler[2];
+-
+-static inline int pwm_is_tdiv(struct s3c_chip *chip)
+-{
+-	return clk_get_parent(chip->clk) == chip->clk_div;
+-}
+-
+-#define pwm_tcon_start(pwm) (1 << (pwm->tcon_base + 0))
+-#define pwm_tcon_invert(pwm) (1 << (pwm->tcon_base + 2))
+-#define pwm_tcon_autoreload(pwm) (1 << (pwm->tcon_base + 3))
+-#define pwm_tcon_manulupdate(pwm) (1 << (pwm->tcon_base + 1))
+-
+-static int s3c_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+-{
+-	struct s3c_chip *s3c = to_s3c_chip(chip);
+-	unsigned long flags;
+-	unsigned long tcon;
+-
+-	local_irq_save(flags);
+-
+-	tcon = __raw_readl(S3C2410_TCON);
+-	tcon |= pwm_tcon_start(s3c);
+-	__raw_writel(tcon, S3C2410_TCON);
+-
+-	local_irq_restore(flags);
+-
+-	return 0;
+-}
+-
+-static void s3c_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+-{
+-	struct s3c_chip *s3c = to_s3c_chip(chip);
+-	unsigned long flags;
+-	unsigned long tcon;
+-
+-	local_irq_save(flags);
+-
+-	tcon = __raw_readl(S3C2410_TCON);
+-	tcon &= ~pwm_tcon_start(s3c);
+-	__raw_writel(tcon, S3C2410_TCON);
+-
+-	local_irq_restore(flags);
+-}
+-
+-static unsigned long pwm_calc_tin(struct s3c_chip *s3c, unsigned long freq)
+-{
+-	unsigned long tin_parent_rate;
+-	unsigned int div;
+-
+-	tin_parent_rate = clk_get_rate(clk_get_parent(s3c->clk_div));
+-	pwm_dbg(s3c, "tin parent at %lu\n", tin_parent_rate);
+-
+-	for (div = 2; div <= 16; div *= 2) {
+-		if ((tin_parent_rate / (div << 16)) < freq)
+-			return tin_parent_rate / div;
 -	}
 -
- 	/* Register the Backlight dev */
- 	ret = platform_device_register(samsung_bl_device);
- 	if (ret) {
-@@ -150,8 +142,6 @@ void __init samsung_bl_set(struct samsung_bl_gpio_info *gpio_info,
- 	return;
- 
- err_plat_reg2:
--	platform_device_unregister(&s3c_device_timer[samsung_bl_data->pwm_id]);
--err_plat_reg1:
- 	kfree(samsung_bl_data);
- err_data:
- 	kfree(samsung_bl_device);
+-	return tin_parent_rate / 16;
+-}
+-
+-#define NS_IN_HZ (1000000000UL)
+-
+-static int s3c_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+-		int duty_ns, int period_ns)
+-{
+-	struct s3c_chip *s3c = to_s3c_chip(chip);
+-	unsigned long tin_rate;
+-	unsigned long tin_ns;
+-	unsigned long period;
+-	unsigned long flags;
+-	unsigned long tcon;
+-	unsigned long tcnt;
+-	long tcmp;
+-
+-	/* We currently avoid using 64bit arithmetic by using the
+-	 * fact that anything faster than 1Hz is easily representable
+-	 * by 32bits. */
+-
+-	if (period_ns > NS_IN_HZ || duty_ns > NS_IN_HZ)
+-		return -ERANGE;
+-
+-	if (period_ns == s3c->period_ns &&
+-	    duty_ns == s3c->duty_ns)
+-		return 0;
+-
+-	/* The TCMP and TCNT can be read without a lock, they're not
+-	 * shared between the timers. */
+-
+-	tcmp = __raw_readl(S3C2410_TCMPB(s3c->pwm_id));
+-	tcnt = __raw_readl(S3C2410_TCNTB(s3c->pwm_id));
+-
+-	period = NS_IN_HZ / period_ns;
+-
+-	pwm_dbg(s3c, "duty_ns=%d, period_ns=%d (%lu)\n",
+-		duty_ns, period_ns, period);
+-
+-	/* Check to see if we are changing the clock rate of the PWM */
+-
+-	if (s3c->period_ns != period_ns) {
+-		if (pwm_is_tdiv(s3c)) {
+-			tin_rate = pwm_calc_tin(s3c, period);
+-			clk_set_rate(s3c->clk_div, tin_rate);
+-		} else
+-			tin_rate = clk_get_rate(s3c->clk);
+-
+-		s3c->period_ns = period_ns;
+-
+-		pwm_dbg(s3c, "tin_rate=%lu\n", tin_rate);
+-
+-		tin_ns = NS_IN_HZ / tin_rate;
+-		tcnt = period_ns / tin_ns;
+-	} else
+-		tin_ns = NS_IN_HZ / clk_get_rate(s3c->clk);
+-
+-	/* Note, counters count down */
+-
+-	tcmp = duty_ns / tin_ns;
+-	tcmp = tcnt - tcmp;
+-	/* the pwm hw only checks the compare register after a decrement,
+-	   so the pin never toggles if tcmp = tcnt */
+-	if (tcmp == tcnt)
+-		tcmp--;
+-
+-	pwm_dbg(s3c, "tin_ns=%lu, tcmp=%ld/%lu\n", tin_ns, tcmp, tcnt);
+-
+-	if (tcmp < 0)
+-		tcmp = 0;
+-
+-	/* Update the PWM register block. */
+-
+-	local_irq_save(flags);
+-
+-	__raw_writel(tcmp, S3C2410_TCMPB(s3c->pwm_id));
+-	__raw_writel(tcnt, S3C2410_TCNTB(s3c->pwm_id));
+-
+-	tcon = __raw_readl(S3C2410_TCON);
+-	tcon |= pwm_tcon_manulupdate(s3c);
+-	tcon |= pwm_tcon_autoreload(s3c);
+-	__raw_writel(tcon, S3C2410_TCON);
+-
+-	tcon &= ~pwm_tcon_manulupdate(s3c);
+-	__raw_writel(tcon, S3C2410_TCON);
+-
+-	local_irq_restore(flags);
+-
+-	return 0;
+-}
+-
+-static struct pwm_ops s3c_pwm_ops = {
+-	.enable = s3c_pwm_enable,
+-	.disable = s3c_pwm_disable,
+-	.config = s3c_pwm_config,
+-	.owner = THIS_MODULE,
+-};
+-
+-static int s3c_pwm_probe(struct platform_device *pdev)
+-{
+-	struct device *dev = &pdev->dev;
+-	struct s3c_chip *s3c;
+-	unsigned long flags;
+-	unsigned long tcon;
+-	unsigned int id = pdev->id;
+-	int ret;
+-
+-	if (id == 4) {
+-		dev_err(dev, "TIMER4 is currently not supported\n");
+-		return -ENXIO;
+-	}
+-
+-	s3c = devm_kzalloc(&pdev->dev, sizeof(*s3c), GFP_KERNEL);
+-	if (s3c == NULL) {
+-		dev_err(dev, "failed to allocate pwm_device\n");
+-		return -ENOMEM;
+-	}
+-
+-	/* calculate base of control bits in TCON */
+-	s3c->tcon_base = id == 0 ? 0 : (id * 4) + 4;
+-	s3c->pwm_id = id;
+-	s3c->chip.dev = &pdev->dev;
+-	s3c->chip.ops = &s3c_pwm_ops;
+-	s3c->chip.base = -1;
+-	s3c->chip.npwm = 1;
+-
+-	s3c->clk = devm_clk_get(dev, "pwm-tin");
+-	if (IS_ERR(s3c->clk)) {
+-		dev_err(dev, "failed to get pwm tin clk\n");
+-		return PTR_ERR(s3c->clk);
+-	}
+-
+-	s3c->clk_div = devm_clk_get(dev, "pwm-tdiv");
+-	if (IS_ERR(s3c->clk_div)) {
+-		dev_err(dev, "failed to get pwm tdiv clk\n");
+-		return PTR_ERR(s3c->clk_div);
+-	}
+-
+-	clk_enable(s3c->clk);
+-	clk_enable(s3c->clk_div);
+-
+-	local_irq_save(flags);
+-
+-	tcon = __raw_readl(S3C2410_TCON);
+-	tcon |= pwm_tcon_invert(s3c);
+-	__raw_writel(tcon, S3C2410_TCON);
+-
+-	local_irq_restore(flags);
+-
+-	ret = pwmchip_add(&s3c->chip);
+-	if (ret < 0) {
+-		dev_err(dev, "failed to register pwm\n");
+-		goto err_clk_tdiv;
+-	}
+-
+-	pwm_dbg(s3c, "config bits %02x\n",
+-		(__raw_readl(S3C2410_TCON) >> s3c->tcon_base) & 0x0f);
+-
+-	dev_info(dev, "tin at %lu, tdiv at %lu, tin=%sclk, base %d\n",
+-		 clk_get_rate(s3c->clk),
+-		 clk_get_rate(s3c->clk_div),
+-		 pwm_is_tdiv(s3c) ? "div" : "ext", s3c->tcon_base);
+-
+-	platform_set_drvdata(pdev, s3c);
+-	return 0;
+-
+- err_clk_tdiv:
+-	clk_disable(s3c->clk_div);
+-	clk_disable(s3c->clk);
+-	return ret;
+-}
+-
+-static int s3c_pwm_remove(struct platform_device *pdev)
+-{
+-	struct s3c_chip *s3c = platform_get_drvdata(pdev);
+-	int err;
+-
+-	err = pwmchip_remove(&s3c->chip);
+-	if (err < 0)
+-		return err;
+-
+-	clk_disable(s3c->clk_div);
+-	clk_disable(s3c->clk);
+-
+-	return 0;
+-}
+-
+-#ifdef CONFIG_PM_SLEEP
+-static int s3c_pwm_suspend(struct device *dev)
+-{
+-	struct s3c_chip *s3c = dev_get_drvdata(dev);
+-
+-	/* No one preserve these values during suspend so reset them
+-	 * Otherwise driver leaves PWM unconfigured if same values
+-	 * passed to pwm_config
+-	 */
+-	s3c->period_ns = 0;
+-	s3c->duty_ns = 0;
+-
+-	return 0;
+-}
+-
+-static int s3c_pwm_resume(struct device *dev)
+-{
+-	struct s3c_chip *s3c = dev_get_drvdata(dev);
+-	unsigned long tcon;
+-
+-	/* Restore invertion */
+-	tcon = __raw_readl(S3C2410_TCON);
+-	tcon |= pwm_tcon_invert(s3c);
+-	__raw_writel(tcon, S3C2410_TCON);
+-
+-	return 0;
+-}
+-#endif
+-
+-static SIMPLE_DEV_PM_OPS(s3c_pwm_pm_ops, s3c_pwm_suspend,
+-			s3c_pwm_resume);
+-
+-static struct platform_driver s3c_pwm_driver = {
+-	.driver		= {
+-		.name	= "s3c24xx-pwm",
+-		.owner	= THIS_MODULE,
+-		.pm	= &s3c_pwm_pm_ops,
+-	},
+-	.probe		= s3c_pwm_probe,
+-	.remove		= s3c_pwm_remove,
+-};
+-
+-static int __init pwm_init(void)
+-{
+-	int ret;
+-
+-	clk_scaler[0] = clk_get(NULL, "pwm-scaler0");
+-	clk_scaler[1] = clk_get(NULL, "pwm-scaler1");
+-
+-	if (IS_ERR(clk_scaler[0]) || IS_ERR(clk_scaler[1])) {
+-		pr_err("failed to get scaler clocks\n");
+-		return -EINVAL;
+-	}
+-
+-	ret = platform_driver_register(&s3c_pwm_driver);
+-	if (ret)
+-		pr_err("failed to add pwm driver\n");
+-
+-	return ret;
+-}
+-
+-arch_initcall(pwm_init);
 -- 
 1.8.2.1
