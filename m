@@ -1,85 +1,172 @@
 Return-Path: <thierry.reding@gmail.com>
-Date: Fri, 21 Jun 2013 11:32:08 +0200
+Date: Fri, 21 Jun 2013 11:43:11 +0200
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v5] pwm: add sysfs interface
-Message-ID: <20130621093207.GC31464@manwe>
-References: <201306111039.00344.hartleys@visionengravers.com>
+Subject: Re: [PATCH] pwm: pwm-tiehrpwm: Use clk_enable/disable instead
+ clk_prepare/unprepare.
+Message-ID: <20130621094310.GA12441@manwe>
+References: <1371556313-6776-1-git-send-email-marek.belisko@streamunlimited.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="da4uJneut+ArUgXk"
+	protocol="application/pgp-signature"; boundary="liOOAslEiF7prFVr"
 Content-Disposition: inline
-In-Reply-To: <201306111039.00344.hartleys@visionengravers.com>
+In-Reply-To: <1371556313-6776-1-git-send-email-marek.belisko@streamunlimited.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: H Hartley Sweeten <hartleys@visionengravers.com>
-Cc: Linux Kernel <linux-kernel@vger.kernel.org>, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, poeschel@lemonage.de, Ryan Mallon <rmallon@gmail.com>, rob@landley.net
+To: Marek Belisko <marek.belisko@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Marek Belisko <marek.belisko@streamunlimited.com>
 
 
---da4uJneut+ArUgXk
+--liOOAslEiF7prFVr
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 11, 2013 at 10:38:59AM -0700, H Hartley Sweeten wrote:
-> Add a simple sysfs interface to the generic PWM framework.
+On Tue, Jun 18, 2013 at 01:51:53PM +0200, Marek Belisko wrote:
+> This was found when using pwm-led on am33xx and enable
+> heartbeat trigger.
 >=20
->   /sys/class/pwm/
->   `-- pwmchipN/           for each PWM chip
->       |-- export          (w/o) ask the kernel to export a PWM channel
->       |-- npwm            (r/o) number of PWM channels in this PWM chip
->       |-- pwmX/           for each exported PWM channel
->       |   |-- duty_cycle  (r/w) duty cycle (in nanoseconds)
->       |   |-- enable      (r/w) enable/disable PWM
->       |   |-- period      (r/w) period (in nanoseconds)
->       |   `-- polarity    (r/w) polarity of PWM (normal/inversed)
->       `-- unexport        (w/o) return a PWM channel to the kernel
+> [  808.624876] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> [  808.629443] [ INFO: inconsistent lock state ]
+> [  808.634021] 3.9.0 #2 Not tainted
+> [  808.637415] ---------------------------------
+> [  808.641981] inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+> [  808.648288] swapper/0 [HC0[0]:SC1[1]:HE1:SE0] takes:
+> [  808.653494]  (prepare_lock){+.?.+.}, at: [<c027c211>] clk_unprepare+0x=
+15/0x24
+> [  808.661040] {SOFTIRQ-ON-W} state was registered at:
+> [  808.666155]   [<c004ec4d>] __lock_acquire+0x411/0x824
+> [  808.671465]   [<c004f359>] lock_acquire+0x41/0x50
+> [  808.676412]   [<c039ee9d>] mutex_lock_nested+0x31/0x1d8
+> [  808.681912]   [<c027c275>] clk_prepare+0x15/0x28
+> [  808.686764]   [<c0590c6b>] _init+0x117/0x1e0
+> [  808.691256]   [<c0019ef9>] omap_hwmod_for_each+0x29/0x3c
+> [  808.696842]   [<c0591107>] __omap_hwmod_setup_all+0x17/0x2c
+> [  808.702696]   [<c0008653>] do_one_initcall+0xc3/0x10c
+> [  808.708017]   [<c058a627>] kernel_init_freeable+0xa7/0x134
+> [  808.713778]   [<c039a543>] kernel_init+0x7/0x98
+> [  808.718544]   [<c000cd95>] ret_from_fork+0x11/0x3c
+> [  808.723583] irq event stamp: 1379172
+> [  808.727328] hardirqs last  enabled at (1379172): [<c03a0759>] _raw_spi=
+n_unlock_irqrestore+0x21/0x30
+> [  808.736828] hardirqs last disabled at (1379171): [<c03a03c3>] _raw_spi=
+n_lock_irqsave+0x13/0x38
+> [  808.745876] softirqs last  enabled at (1379164): [<c002ae5d>] irq_ente=
+r+0x49/0x4c
+> [  808.753747] softirqs last disabled at (1379165): [<c002aec3>] irq_exit=
++0x63/0x88
+> [  808.761518]
+> [  808.761518] other info that might help us debug this:
+> [  808.768373]  Possible unsafe locking scenario:
+> [  808.768373]
+> [  808.774578]        CPU0
+> [  808.777141]        ----
+> [  808.779705]   lock(prepare_lock);
+> [  808.783186]   <Interrupt>
+> [  808.785929]     lock(prepare_lock);
+> [  808.789595]
+> [  808.789595]  *** DEADLOCK ***
+> [  808.789595]
+> [  808.795805] 1 lock held by swapper/0:
+> [  808.799643]  #0:  (((&heartbeat_data->timer))){+.-...}, at: [<c002e204=
+>] call_timer_fn+0x0/0x90
+> [  808.808814]
+> [  808.808814] stack backtrace:
+> [  808.813402] [<c000ff19>] (unwind_backtrace+0x1/0x98) from [<c039bd75>]=
+ (print_usage_bug.part.25+0x16d/0x1cc)
+> [  808.823721] [<c039bd75>] (print_usage_bug.part.25+0x16d/0x1cc) from [<=
+c004e595>] (mark_lock+0x18d/0x434)
+> [  808.833669] [<c004e595>] (mark_lock+0x18d/0x434) from [<c004ec1d>] (__=
+lock_acquire+0x3e1/0x824)
+> [  808.842803] [<c004ec1d>] (__lock_acquire+0x3e1/0x824) from [<c004f359>=
+] (lock_acquire+0x41/0x50)
+> [  808.852031] [<c004f359>] (lock_acquire+0x41/0x50) from [<c039ee9d>] (m=
+utex_lock_nested+0x31/0x1d8)
+> [  808.861433] [<c039ee9d>] (mutex_lock_nested+0x31/0x1d8) from [<c027c21=
+1>] (clk_unprepare+0x15/0x24)
+> [  808.870930] [<c027c211>] (clk_unprepare+0x15/0x24) from [<c019f7bf>] (=
+ehrpwm_pwm_disable+0x5f/0x80)
+> [  808.880431] [<c019f7bf>] (ehrpwm_pwm_disable+0x5f/0x80) from [<c019f29=
+f>] (pwm_disable+0x27/0x28)
+> [  808.889751] [<c019f29f>] (pwm_disable+0x27/0x28) from [<c026f8f3>] (le=
+d_heartbeat_function+0x3f/0xb0)
+> [  808.899431] [<c026f8f3>] (led_heartbeat_function+0x3f/0xb0) from [<c00=
+2e249>] (call_timer_fn+0x45/0x90)
+> [  808.909288] [<c002e249>] (call_timer_fn+0x45/0x90) from [<c002e399>] (=
+run_timer_softirq+0x105/0x17c)
+> [  808.918884] [<c002e399>] (run_timer_softirq+0x105/0x17c) from [<c002ab=
+c5>] (__do_softirq+0xa5/0x150)
+> [  808.928486] [<c002abc5>] (__do_softirq+0xa5/0x150) from [<c002aec3>] (=
+irq_exit+0x63/0x88)
+> [  808.937098] [<c002aec3>] (irq_exit+0x63/0x88) from [<c000d599>] (handl=
+e_IRQ+0x21/0x54)
+> [  808.945415] [<c000d599>] (handle_IRQ+0x21/0x54) from [<c0008495>] (oma=
+p3_intc_handle_irq+0x5d/0x68)
+> [  808.954900] [<c0008495>] (omap3_intc_handle_irq+0x5d/0x68) from [<c000=
+c7ff>] (__irq_svc+0x3f/0x64)
+> [  808.964287] Exception stack(0xc05b1f68 to 0xc05b1fb0)
+> [  808.969587] 1f60:                   00000001 00000001 00000000 0000000=
+0 c05b0000 c0619748
+> [  808.978158] 1f80: c05b0000 c05b0000 c0619748 413fc082 00000000 0000000=
+0 01000000 c05b1fb0
+> [  808.986719] 1fa0: c004f989 c000d6f0 400f0033 ffffffff
+> [  808.992024] [<c000c7ff>] (__irq_svc+0x3f/0x64) from [<c000d6f0>] (cpu_=
+idle+0x60/0x98)
+> [  809.000250] [<c000d6f0>] (cpu_idle+0x60/0x98) from [<c058a535>] (start=
+_kernel+0x1e9/0x234)
 >=20
-> Signed-off-by: H Hartley Sweeten <hsweeten@visionengravers.com>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Lars Poeschel <poeschel@lemonage.de>
-> Cc: Ryan Mallon <rmallon@gmail.com>
-> Cc: Rob Landley <rob@landley.net>
-> ---
-> v5: * rename the 'duty' attribute to 'duty_cycle'
->     * make the Kconfig option hidden and enabled when CONFIG_SYSFS
->       is enabled
->     * use sysfs_streq() in pwm_polarity_store()
-> v4: * address a number of issues pointed out by Thierry Reding
->       - fix some typos and wording issues in the Documentation
->       - rename the new source file to sysfs.c
->       - rename some of the variables in sysfs.c to clarify them
->       - fix the period store so it does not change the duty cycle
->       - change the polarity attribute to use a string representation
->       - add a warning message is the pwmchip_sysfs_export() fails
-> v3: * fix an issue with the export/unexport of the PWM chip
-> v2: * add API documentation and update Documentation/pwm.txt
->     * fix some issues pointed out by Ryan Mallon
->     * add the pwm attributes to dev.groups so they are created
->       when the device is registered for the exported PWM
-> v1: * Based on previous work by Lars Poecshel
+> Remove non atomic clk api calls and use only atomic for enable/disable be=
+cause
+> can be called from atomic context (led_heartbeat_function is timer callba=
+ck).
 
-Applied, thanks.
+This raises a fundamental question. The PWM subsystem can't make any
+guarantees as to whether pwm_enable() or pwm_disable() can be used in
+atomic contexts. Consider for example the TWL or PCA drivers. Because
+they are accessed via an I2C bus, enabling a PWM that they provide will
+always sleep. Note that PWM client drivers can query whether or not the
+PWM functions may sleep using pwm_can_sleep().
+
+I think this patch is still valid, though, it just isn't solving the
+problem completely. One additional comment below.
+
+[...]
+> @@ -487,6 +487,12 @@ static int ehrpwm_pwm_probe(struct platform_device *=
+pdev)
+>  		return PTR_ERR(pc->tbclk);
+>  	}
+> =20
+> +	ret =3D clk_prepare(pc->tbclk);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "clk_prepare() failed: %d\n", ret);
+> +		return ret;
+> +	}
+
+Shouldn't this have a corresponding clk_unprepare() in .remove()?
+
+And please use my new email address and Cc the linux-pwm mailing list
+for PWM patches. MAINTAINERS in linux-next is up-to-date.
 
 Thierry
 
---da4uJneut+ArUgXk
+--liOOAslEiF7prFVr
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.20 (GNU/Linux)
 
-iQIcBAEBAgAGBQJRxB2XAAoJEN0jrNd/PrOhQZcP/itozeTE/X74IiDW12mWTJcL
-bLCWdaa2/2P8iZvKjl92gZYzW+hHgapL86m+fKyzg95UNp00e/zsfKnYv2bscj/W
-5p6lDNlY/JE1Q0+HBTouFdcccJ++xJF0zzp5XBA/dyKUJeKL1a1C2wlW2Z53YXBz
-XQJ539bHDqBhk71QjZNfpaGT+rKekiUlXpfRzDuOqhNRJrNAzQoSRhpuTv1BgRGX
-Gnk6Sp3E2FKV+ligE/X/FM6NE8DrhecIUsLfJ9S2yJbNPEJ2h4f5vyoGUI38Dqn6
-Ruz0TqzxmNLohi535D9Du8//+qJoIh4Nx60SG5liYK32IdhPlJy33Pe3kG4ezLNf
-im6Gv7w5vB8/yt1uD8slsXc5fKaqAHNHEBsCB+YVlECoVWJl29/ZebMqbN4e+8w8
-bjr2L1Yimncir8XE74h9geiO3USE8aLaw0zA/K0tsnHE8mUkFF6qdDJ9vt4ZBuR0
-/hcfZgUlcJVXIXtx2fEJr0MsCx9iagrvmbMcR/rOG+wSnLXzX0LneGkhvbgNS+3g
-SccesVrk5a1rBfxCCez4gBWXrhQxrVSWHp9nYSy5z3vtgoO+Rb/KElJQj7Hgxx5y
-xnD41mXhtJZrQ9vP2i0z1eTpYkmlB4GsMDT5pWPm3Mo04BsEHns6/tCvQSk+PWrr
-4cvmYMyZhRdSDwSHsXJ/
-=30+e
+iQIcBAEBAgAGBQJRxCAuAAoJEN0jrNd/PrOhvoMQALJxwbTLvG2LvARVDkYXyDu5
+sfZikmN0vXctfs6oty1+VdgcTxPjb4kRJIDoGtsFmY7Gn8in4PWwXDAfkzhlOubj
+xbd1w2Gai1dieFpH1TrUPpQigoBR80A1n7CWHQ2cSvY30THS0DzVhPJdZVdnhlRj
+/7SXkyPV722Ramr8iiGn0C9MiXNWFIXsv6ruXvMANZuuql+IeVSF2F5H62YrsYZ7
+hJFvsiiIJ7jajbiC+tY680T40k5abKMT52v/ALwpb1tUk+lsyUBMEfnCPFSPcjZ6
+Uelth4p1Iyvm/RSIX7YOjaS5q+g57MvuuIWIqNb9dtKv48h1pGixQEO9ItUoh+od
+wQtY3c6dA2YhtAF77kI0E4vFPd2z3o+WZA7obNgtCpZXRD3Z5PzdodkDIIVg8y7f
+M3qlSjiBq2ncGB4oYLGs6ym4mvUo5JzThtnKUGyYwgJdx7iWYLnHkUNCBB3XLTOR
+gJgKUBOB1DjeawRDGnkE16ndLXUCJmiyWTJIykWIF9L+UZ1gBIRHSdhUE570qpbR
+gnnna5nThJJzJjYTwbvORYtWVZ+85dvQowPHwYE78VXegZeUB5Z3dLZe74lg358c
+MwVLTOF7y20xbyrt42dprZ9IJ192IvWBosPNlhQVoBFmQTJXU6J6jKbbfj3e0zS1
+vjnpmMLGwa/J85fAokEo
+=gRyT
 -----END PGP SIGNATURE-----
 
---da4uJneut+ArUgXk--
+--liOOAslEiF7prFVr--
