@@ -1,49 +1,58 @@
-Return-Path: <tomasz.figa@gmail.com>
-Return-Path: <tomasz.figa@gmail.com>
-From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: [PATCH v3 10/18] pwm: samsung: Rename to pwm-samsung-legacy
-Date: Sat, 22 Jun 2013 15:09:02 +0200
-Message-ID: <72206051.D6kXZYm5YD@flatron>
-In-Reply-To: <1371766383-29077-11-git-send-email-tomasz.figa@gmail.com>
-References: <1371766383-29077-1-git-send-email-tomasz.figa@gmail.com> <1371766383-29077-11-git-send-email-tomasz.figa@gmail.com>
+Return-Path: <linux-pwm-owner@vger.kernel.org>
+Received: from moutng.kundenserver.de ([212.227.17.9]:62198 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1161356Ab3FUOFO (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 21 Jun 2013 10:05:14 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v2 00/18] Final Samsung PWM support cleanup
+Date: Fri, 21 Jun 2013 16:04:38 +0200
+References: <1371766383-29077-1-git-send-email-tomasz.figa@gmail.com>
+In-Reply-To: <1371766383-29077-1-git-send-email-tomasz.figa@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: Text/Plain;
+  charset="iso-8859-15"
+Content-Transfer-Encoding: 7bit
+Message-Id: <201306211604.38443.arnd@arndb.de>
+Sender: linux-pwm-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-To: linux-samsung-soc@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>, Thierry Reding <thierry.reding@gmail.com>
+To: Tomasz Figa <tomasz.figa@gmail.com>
+Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Heiko =?iso-8859-15?q?St=FCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>, Thierry Reding <thierry.reding@gmail.com>
 
-This patch renames the old pwm-samsung driver to pwm-samsung-legacy to
-create place for the new, rewritten, DT- and multiplatform- aware
-pwm-samsung driver that will be added in further patch.
+On Friday 21 June 2013, Tomasz Figa wrote:
+> Since we now have a proper Samsung PWM clocksource driver in place,
+> we can proceed with further cleanup of PWM timers support on Samsung SoCs.
+> 
+> This series attempts to achieve this goal by:
+>  1) moving remaining Samsung platforms to the new clocksource driver
+>  2) removing old clocksource driver
+>  3) adding new multiplatform- and DT-aware PWM driver
+>  4) moving all Samsung platforms to use the new PWM driver
+>  5) removing old PWM driver
+>  6) removing all PWM-related code that is not used anymore
+> 
+> Cleaning up the PWM driver is a bit tricky, because the design of current
+> driver makes it completely unsuitable for DT and multiplatform and would
+> require a heavy rework to make it usable, breaking any existing Samsung PWM
+> users by the way. To avoid any breakage I decided to keep the old driver,
+> add new one, move all platforms to it and then remove the old one.
+> 
+> See particular patches for more detailed descriptions.
+> 
+> On S3C6410-based Tiny6410 (Mini6410-compatible), after enabling pwm-beeper
+> and Exynos4210-based Origen board (with PWM0 attached to a scope):
+> 
+> Tested-by: Tomasz Figa <tomasz.figa@gmail.com>
+> 
 
-Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
----
- drivers/pwm/Makefile                                | 2 +-
- drivers/pwm/{pwm-samsung.c => pwm-samsung-legacy.c} | 0
- 2 files changed, 1 insertion(+), 1 deletion(-)
- rename drivers/pwm/{pwm-samsung.c => pwm-samsung-legacy.c} (100%)
+Looks good to me,
 
-Changes since v2:
- - Used git format-patch -M to detect rename.
- - Corrected commit message.
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 94ba21e..229a599 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -8,7 +8,7 @@ obj-$(CONFIG_PWM_LPC32XX)	+= pwm-lpc32xx.o
- obj-$(CONFIG_PWM_MXS)		+= pwm-mxs.o
- obj-$(CONFIG_PWM_PUV3)		+= pwm-puv3.o
- obj-$(CONFIG_PWM_PXA)		+= pwm-pxa.o
--obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
-+obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung-legacy.o
- obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
- obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
- obj-$(CONFIG_PWM_TIECAP)	+= pwm-tiecap.o
-diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung-legacy.c
-similarity index 100%
-rename from drivers/pwm/pwm-samsung.c
-rename to drivers/pwm/pwm-samsung-legacy.c
--- 
-1.8.2.1
+Two small comments:
+
+* always use 'git format-patch -M' to detect renames (patch 10)
+
+* for new code, don't use __raw_readl and similar functions but
+  use readl_relaxed or plain readl.
+
+	Arnd
