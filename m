@@ -1,17 +1,24 @@
 Return-Path: <tomasz.figa@gmail.com>
 Return-Path: <tomasz.figa@gmail.com>
 From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: [PATCH v2 11/18] pwm: Add new pwm-samsung driver
-Date: Fri, 21 Jun 2013 00:12:56 +0200
-Message-Id: <1371766383-29077-12-git-send-email-tomasz.figa@gmail.com>
-In-Reply-To: <1371766383-29077-1-git-send-email-tomasz.figa@gmail.com>
-References: <1371766383-29077-1-git-send-email-tomasz.figa@gmail.com>
+Subject: [PATCH v3 11/18] pwm: Add new pwm-samsung driver
+Date: Sat, 22 Jun 2013 15:06:25 +0200
+Message-ID: <2925617.TjWXJcIKRC@flatron>
+In-Reply-To: <1371766383-29077-12-git-send-email-tomasz.figa@gmail.com>
+References: <1371766383-29077-1-git-send-email-tomasz.figa@gmail.com> <1371766383-29077-12-git-send-email-tomasz.figa@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 List-ID: <linux-pwm.vger.kernel.org>
 To: linux-samsung-soc@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Tomasz Figa <tomasz.figa@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>, Thierry Reding <thierry.reding@gmail.com>
 
-This patch introduces new Samsung PWM driver, which uses Samsung
-PWM/timer master driver to control shared parts of the hardware.
+This patch introduces new Samsung PWM driver, which is heavily cleaned,
+multiplatform aware and supports DeviceTree based instantiation.
+
+Since on historical hardware PWM block can be shared with clocksource
+driver, a shared spinlock is used to protect access to shared registers,
+already exported from the clocksource driver.
 
 Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
 ---
@@ -19,6 +26,10 @@ Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
  drivers/pwm/pwm-samsung.c | 601 ++++++++++++++++++++++++++++++++++++++++++++++
  2 files changed, 602 insertions(+)
  create mode 100644 drivers/pwm/pwm-samsung.c
+
+Changes since v2:
+ - Replaced __raw_{readl,writel} with {readl,writel}.
+ - Corrected commit message.
 
 diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
 index 229a599..833c3ac 100644
@@ -34,7 +45,7 @@ index 229a599..833c3ac 100644
  obj-$(CONFIG_PWM_TIECAP)	+= pwm-tiecap.o
 diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
 new file mode 100644
-index 0000000..e64122a
+index 0000000..04fa29c
 --- /dev/null
 +++ b/drivers/pwm/pwm-samsung.c
 @@ -0,0 +1,601 @@
@@ -262,15 +273,15 @@ index 0000000..e64122a
 +
 +	spin_lock_irqsave(&samsung_pwm_lock, flags);
 +
-+	tcon = __raw_readl(our_chip->base + REG_TCON);
++	tcon = readl(our_chip->base + REG_TCON);
 +
 +	tcon &= ~TCON_START(tcon_chan);
 +	tcon |= TCON_MANUALUPDATE(tcon_chan);
-+	__raw_writel(tcon, our_chip->base + REG_TCON);
++	writel(tcon, our_chip->base + REG_TCON);
 +
 +	tcon &= ~TCON_MANUALUPDATE(tcon_chan);
 +	tcon |= TCON_START(tcon_chan) | TCON_AUTORELOAD(tcon_chan);
-+	__raw_writel(tcon, our_chip->base + REG_TCON);
++	writel(tcon, our_chip->base + REG_TCON);
 +
 +	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
 +
@@ -286,9 +297,9 @@ index 0000000..e64122a
 +
 +	spin_lock_irqsave(&samsung_pwm_lock, flags);
 +
-+	tcon = __raw_readl(our_chip->base + REG_TCON);
++	tcon = readl(our_chip->base + REG_TCON);
 +	tcon &= ~TCON_AUTORELOAD(tcon_chan);
-+	__raw_writel(tcon, our_chip->base + REG_TCON);
++	writel(tcon, our_chip->base + REG_TCON);
 +
 +	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
 +}
@@ -356,8 +367,8 @@ index 0000000..e64122a
 +				"tin_ns=%u, tcmp=%u/%u\n", tin_ns, tcmp, tcnt);
 +
 +	/* Update PWM registers. */
-+	__raw_writel(tcnt, our_chip->base + REG_TCNTB(pwm->hwpwm));
-+	__raw_writel(tcmp, our_chip->base + REG_TCMPB(pwm->hwpwm));
++	writel(tcnt, our_chip->base + REG_TCNTB(pwm->hwpwm));
++	writel(tcmp, our_chip->base + REG_TCMPB(pwm->hwpwm));
 +
 +	if (test_bit(PWMF_ENABLED, &pwm->flags))
 +		pwm_samsung_enable(chip, pwm);
@@ -378,7 +389,7 @@ index 0000000..e64122a
 +
 +	spin_lock_irqsave(&samsung_pwm_lock, flags);
 +
-+	tcon = __raw_readl(chip->base + REG_TCON);
++	tcon = readl(chip->base + REG_TCON);
 +
 +	if (invert) {
 +		chip->inverter_mask |= BIT(channel);
@@ -388,7 +399,7 @@ index 0000000..e64122a
 +		tcon &= ~TCON_INVERT(tcon_chan);
 +	}
 +
-+	__raw_writel(tcon, chip->base + REG_TCON);
++	writel(tcon, chip->base + REG_TCON);
 +
 +	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
 +}
