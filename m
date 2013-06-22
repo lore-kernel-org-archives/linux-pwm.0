@@ -1,80 +1,185 @@
-Return-Path: <sylvester.nawrocki@gmail.com>
-Return-Path: <sylvester.nawrocki@gmail.com>
-Message-ID: <51C5FC44.6000001@gmail.com>
-Date: Sat, 22 Jun 2013 21:34:28 +0200
-From: Sylwester Nawrocki <sylvester.nawrocki@gmail.com>
-MIME-Version: 1.0
+Return-Path: <tomasz.figa@gmail.com>
+Return-Path: <tomasz.figa@gmail.com>
+From: Tomasz Figa <tomasz.figa@gmail.com>
 Subject: Re: [PATCH v2 00/18] Final Samsung PWM support cleanup
-References: <1371766383-29077-1-git-send-email-tomasz.figa@gmail.com> <201306222001.49600.heiko@sntech.de>
+Date: Sat, 22 Jun 2013 20:04:47 +0200
+Message-ID: <2101400.j50IudOSWr@flatron>
 In-Reply-To: <201306222001.49600.heiko@sntech.de>
-Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+References: <1371766383-29077-1-git-send-email-tomasz.figa@gmail.com> <201306222001.49600.heiko@sntech.de>
+MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 List-ID: <linux-pwm.vger.kernel.org>
-To: Tomasz Figa <tomasz.figa@gmail.com>
-Cc: =?ISO-8859-15?Q?Heiko_St=FCbner?= <heiko@sntech.de>, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Mark Brown <broonie@kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>, Thierry Reding <thierry.reding@gmail.com>
+To: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Mark Brown <broonie@kernel.org>, Thomas Abraham <thomas.abraham@linaro.org>, Thierry Reding <thierry.reding@gmail.com>
 
-Hi,
+Hi Heiko,
 
-W dniu 2013-06-22 20:01, Heiko St=EF=BF=BDbner pisze:
+On Saturday 22 of June 2013 20:01:49 Heiko St=FCbner wrote:
 > Am Freitag, 21. Juni 2013, 00:12:45 schrieb Tomasz Figa:
->> Since we now have a proper Samsung PWM clocksource driver in place,
->> we can proceed with further cleanup of PWM timers support on Samsung SoC=
-s.
->>
->> This series attempts to achieve this goal by:
->>   1) moving remaining Samsung platforms to the new clocksource driver
->>   2) removing old clocksource driver
->>   3) adding new multiplatform- and DT-aware PWM driver
->>   4) moving all Samsung platforms to use the new PWM driver
->>   5) removing old PWM driver
->>   6) removing all PWM-related code that is not used anymore
->>
->> Cleaning up the PWM driver is a bit tricky, because the design of current
->> driver makes it completely unsuitable for DT and multiplatform and would
->> require a heavy rework to make it usable, breaking any existing Samsung =
-PWM
->> users by the way. To avoid any breakage I decided to keep the old driver,
->> add new one, move all platforms to it and then remove the old one.
->>
->> See particular patches for more detailed descriptions.
->>
->> On S3C6410-based Tiny6410 (Mini6410-compatible), after enabling pwm-beep=
-er
->> and Exynos4210-based Origen board (with PWM0 attached to a scope):
->>
->> Tested-by: Tomasz Figa<tomasz.figa@gmail.com>
->
+> > Since we now have a proper Samsung PWM clocksource driver in place,=
+
+> > we can proceed with further cleanup of PWM timers support on Samsun=
+g
+> > SoCs.>=20
+> > This series attempts to achieve this goal by:
+> >  1) moving remaining Samsung platforms to the new clocksource drive=
+r
+> >  2) removing old clocksource driver
+> >  3) adding new multiplatform- and DT-aware PWM driver
+> >  4) moving all Samsung platforms to use the new PWM driver
+> >  5) removing old PWM driver
+> >  6) removing all PWM-related code that is not used anymore
+> >=20
+> > Cleaning up the PWM driver is a bit tricky, because the design of
+> > current driver makes it completely unsuitable for DT and
+> > multiplatform and would require a heavy rework to make it usable,
+> > breaking any existing Samsung PWM users by the way. To avoid any
+> > breakage I decided to keep the old driver, add new one, move all
+> > platforms to it and then remove the old one.
+> >=20
+> > See particular patches for more detailed descriptions.
+> >=20
+> > On S3C6410-based Tiny6410 (Mini6410-compatible), after enabling
+> > pwm-beeper and Exynos4210-based Origen board (with PWM0 attached to=
+ a
+> > scope):
+> >=20
+> > Tested-by: Tomasz Figa <tomasz.figa@gmail.com>
+>=20
 > On a s3c2416 based machine (with the additional two v3 patches)
->
-> Tested-by: Heiko Stuebner<heiko@sntech.de>
+>=20
+> Tested-by: Heiko Stuebner <heiko@sntech.de>
+>=20
+>=20
+> and again thanks for working on this :-)
 
-I have tested this series on Mini2440 board (all v2 patches).
-Only boot testing for now, however I'm going to inspect the PWM
-output signal and will report back if there are any issues.
-I think you could add my
+Thanks for testing!
 
-Tested-by: Sylwester Nawrocki <sylvester.nawrocki@gmail.com>
+I hope we can get this merged ASAP, as this is an important prerequisit=
+e=20
+for further work on S3C24xx and S3C64xx...
 
-I had to revert this patch (introduced between v3.10-rc4 and v3.10-rc5)
+Best regards,
+Tomasz
 
-commit 60e93575476f90a72146b51283f514da655410a7
-Author: Chander Kashyap <chander.kashyap@linaro.org>
-Date:   Tue May 28 18:32:07 2013 +0530
+> > Changes since v1:
+> >  - made sure that suspend/resume is handled correctly in both
+> > =20
+> >    clocksource and PWM drivers,
+> > =20
+> >  - fixed incorrect definition of AUTORELOAD bit for channel 4,
+> >  - fixed order of registering PWM device and calling samsung_bl_set=
+(),
+> > =20
+> >    which assumes that PWM device has been already registered,
+> > =20
+> >  - corrected commit messages of several patches,
+> >  - addressed all the valid comments from reviewers, including clean=
+up
+> > =20
+> >    of most code originally copied from previous PWM driver,
+> > =20
+> >  - rebased on top of current Kgene's for-next,
+> >  - tested on Exynos4210, verifying correct PWM output with a scope.=
 
-     serial: samsung: enable clock before clearing pending interrupts=20
-during init
+> >=20
+> > Needs testing on other platforms as I could only compile test for
+> > them.
+> >=20
+> > Tomasz Figa (18):
+> >   ARM: SAMSUNG: Unify base address definitions of timer block
+> >   ARM: SAMSUNG: Add new PWM platform device
+> >   ARM: SAMSUNG: Set PWM platform data
+> >   clocksource: samsung_pwm_timer: Cache clocksource register addres=
+s
+> >   clocksource: samsung_pwm_timer: Do not use clocksource_mmio
+> >   clocksource: samsung_pwm_timer: Handle suspend/resume correctly
+> >   ARM: SAMSUNG: Move all platforms to new clocksource driver
+> >   ARM: SAMSUNG: Remove old samsung-time driver
+> >   ARM: SAMSUNG: Remove unused PWM timer IRQ chip code
+> >   pwm: samsung: Rename to pwm-samsung-legacy
+> >   pwm: Add new pwm-samsung driver
+> >   ARM: SAMSUNG: Rework private data handling in dev-backlight
+> >   ARM: SAMSUNG: Modify board files to use new PWM platform device
+> >   pwm: Remove superseded pwm-samsung-legacy driver
+> >   ARM: SAMSUNG: Remove old PWM timer platform devices
+> >   ARM: SAMSUNG: Remove pwm-clock infrastructure
+> >   ARM: SAMSUNG: Remove remaining uses of plat/regs-timer.h header
+> >   ARM: SAMSUNG: Remove plat/regs-timer.h header
+> > =20
+> >  arch/arm/Kconfig                                   |   1 -
+> >  arch/arm/mach-s3c24xx/Kconfig                      |  12 +-
+> >  arch/arm/mach-s3c24xx/clock-s3c2410.c              |   1 -
+> >  arch/arm/mach-s3c24xx/clock-s3c2412.c              |   1 -
+> >  arch/arm/mach-s3c24xx/clock-s3c2416.c              |   2 -
+> >  arch/arm/mach-s3c24xx/clock-s3c2443.c              |   2 -
+> >  arch/arm/mach-s3c24xx/common.c                     |  27 +
+> >  arch/arm/mach-s3c24xx/include/mach/map.h           |   2 +
+> >  arch/arm/mach-s3c24xx/mach-h1940.c                 |   4 +-
+> >  arch/arm/mach-s3c24xx/mach-rx1950.c                |   5 +-
+> >  arch/arm/mach-s3c64xx/Kconfig                      |   4 +-
+> >  arch/arm/mach-s3c64xx/clock.c                      |   2 -
+> >  arch/arm/mach-s3c64xx/common.c                     |  32 +-
+> >  arch/arm/mach-s3c64xx/include/mach/irqs.h          |   8 -
+> >  arch/arm/mach-s3c64xx/include/mach/map.h           |   1 +
+> >  arch/arm/mach-s3c64xx/irq-pm.c                     |   2 -
+> >  arch/arm/mach-s3c64xx/mach-crag6410.c              |   4 +-
+> >  arch/arm/mach-s3c64xx/mach-hmt.c                   |   4 +-
+> >  arch/arm/mach-s3c64xx/mach-smartq.c                |   4 +-
+> >  arch/arm/mach-s3c64xx/mach-smdk6410.c              |   5 +-
+> >  arch/arm/mach-s5p64x0/Kconfig                      |   4 +-
+> >  arch/arm/mach-s5p64x0/clock-s5p6440.c              |   2 -
+> >  arch/arm/mach-s5p64x0/clock-s5p6450.c              |   2 -
+> >  arch/arm/mach-s5p64x0/common.c                     |  27 +
+> >  arch/arm/mach-s5p64x0/include/mach/irqs.h          |   2 -
+> >  arch/arm/mach-s5p64x0/include/mach/map.h           |   1 +
+> >  arch/arm/mach-s5p64x0/mach-smdk6440.c              |   5 +-
+> >  arch/arm/mach-s5p64x0/mach-smdk6450.c              |   5 +-
+> >  arch/arm/mach-s5p64x0/pm.c                         |   3 -
+> >  arch/arm/mach-s5pc100/Kconfig                      |   2 +-
+> >  arch/arm/mach-s5pc100/clock.c                      |   2 -
+> >  arch/arm/mach-s5pc100/common.c                     |  28 +
+> >  arch/arm/mach-s5pc100/include/mach/irqs.h          |   2 -
+> >  arch/arm/mach-s5pc100/include/mach/map.h           |   1 +
+> >  arch/arm/mach-s5pc100/mach-smdkc100.c              |   5 +-
+> >  arch/arm/mach-s5pv210/Kconfig                      |   2 +-
+> >  arch/arm/mach-s5pv210/clock.c                      |   1 -
+> >  arch/arm/mach-s5pv210/common.c                     |  28 +
+> >  arch/arm/mach-s5pv210/include/mach/irqs.h          |   2 -
+> >  arch/arm/mach-s5pv210/include/mach/map.h           |   1 +
+> >  arch/arm/mach-s5pv210/mach-smdkv210.c              |   5 +-
+> >  arch/arm/mach-s5pv210/pm.c                         |  10 -
+> >  arch/arm/plat-samsung/Kconfig                      |  14 -
+> >  arch/arm/plat-samsung/Makefile                     |   3 -
+> >  arch/arm/plat-samsung/dev-backlight.c              |  61 +-
+> >  arch/arm/plat-samsung/devs.c                       |  42 +-
+> >  arch/arm/plat-samsung/include/plat/clock.h         |   4 -
+> >  arch/arm/plat-samsung/include/plat/devs.h          |   1 +
+> >  arch/arm/plat-samsung/include/plat/irq-vic-timer.h |  13 -
+> >  arch/arm/plat-samsung/include/plat/irqs.h          |   9 -
+> >  arch/arm/plat-samsung/include/plat/pwm-clock.h     |  81 ---
+> >  arch/arm/plat-samsung/include/plat/pwm-core.h      |  24 +
+> >  arch/arm/plat-samsung/include/plat/regs-timer.h    | 124 ----
+> >  arch/arm/plat-samsung/include/plat/samsung-time.h  |  23 -
+> >  arch/arm/plat-samsung/irq-vic-timer.c              |  98 ---
+> >  arch/arm/plat-samsung/pwm-clock.c                  | 474
+> >  --------------
+> >  arch/arm/plat-samsung/s5p-irq.c                    |   4 -
+> >  arch/arm/plat-samsung/samsung-time.c               | 394 ---------=
+---
+> >  drivers/clocksource/samsung_pwm_timer.c            |  84 +--
+> >  drivers/pwm/pwm-samsung.c                          | 694
+> >=20
+> > ++++++++++++++------- 60 files changed, 766 insertions(+), 1644
+> > deletions(-)
+> >=20
+> >  delete mode 100644 arch/arm/plat-samsung/include/plat/irq-vic-time=
+r.h
+> >  delete mode 100644 arch/arm/plat-samsung/include/plat/pwm-clock.h
+> >  create mode 100644 arch/arm/plat-samsung/include/plat/pwm-core.h
+> >  delete mode 100644 arch/arm/plat-samsung/include/plat/regs-timer.h=
 
-     Ensure that the uart controller clock is enabled prior to writing=20
-to the
-     interrupt mask and pending registers in the s3c24xx_serial_init_port
-     function.
-
-     Signed-off-by: Chander Kashyap <chander.kashyap@linaro.org>
-     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-
-to make serial console working again on Mini2440, but this is a
-different story.
-
-Thanks,
-Sylwester
+> >  delete mode 100644 arch/arm/plat-samsung/irq-vic-timer.c
+> >  delete mode 100644 arch/arm/plat-samsung/pwm-clock.c
+> >  delete mode 100644 arch/arm/plat-samsung/samsung-time.c
