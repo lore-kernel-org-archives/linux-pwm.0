@@ -1,60 +1,81 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Fri, 21 Jun 2013 11:30:45 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
+Return-Path: <horms@verge.net.au>
+Date: Tue, 25 Jun 2013 08:40:03 +0900
+From: Simon Horman <horms@verge.net.au>
 Subject: Re: [PATCH v4 0/5] Renesas TPU PWM support
-Message-ID: <20130621093044.GA31464@manwe>
+Message-ID: <20130624233959.GA11275@verge.net.au>
 References: <1371142488-2514-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
  <2149088.lMDRNEvQpV@avalon>
  <20130621061528.GA30041@verge.net.au>
  <13724411.JArtzQ6F7y@avalon>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Q68bSM7Ycu6FN28Q"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <13724411.JArtzQ6F7y@avalon>
 List-ID: <linux-pwm.vger.kernel.org>
 To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Simon Horman <horms@verge.net.au>, linux-sh@vger.kernel.org, linux-pwm@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>
-
-
---Q68bSM7Ycu6FN28Q
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Cc: linux-sh@vger.kernel.org, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Magnus Damm <magnus.damm@gmail.com>
 
 On Fri, Jun 21, 2013 at 08:43:21AM +0200, Laurent Pinchart wrote:
-[...]
-> Given that it's too late to push this to v3.11 through the ARM SoC tree=
-=20
-> (please correct me if I'm wrong), what about pushing 1/5 through the PWM =
-tree=20
-> for v3.11 and 2/5 to 5/5 through ARM SoC for v3.12 ? Thierry, would you b=
-e=20
+> Hi Simon,
+> 
+> On Friday 21 June 2013 15:15:28 Simon Horman wrote:
+> > On Thu, Jun 20, 2013 at 01:15:11PM +0200, Laurent Pinchart wrote:
+> > > On Monday 17 June 2013 12:31:39 Laurent Pinchart wrote:
+> > > > On Monday 17 June 2013 13:25:49 Simon Horman wrote:
+> > > > > Hi Laurent,
+> > > > > 
+> > > > > I am having a little trouble testing this.
+> > > > > I am wondering if you could guide me as to what .config options I
+> > > > > should have enabled and what values I should be looking for in /sys ?
+> > > > 
+> > > > Sure. You need to enable CONFIG_LEDS_PWM and CONFIG_PWM_RENESAS_TPU).
+> > > > You should then be able to control the LEDs through /sys/class/leds/*.
+> > > 
+> > > Any luck ?
+> > 
+> > Hi Laurent,
+> > 
+> > I have confirmed that I can toggle the G H and J LEDs.
+> 
+> Thank you.
+> 
+> > Should I queue-up this patchset?
+> 
+> Given that it's too late to push this to v3.11 through the ARM SoC tree 
+> (please correct me if I'm wrong), what about pushing 1/5 through the PWM tree 
+> for v3.11 and 2/5 to 5/5 through ARM SoC for v3.12 ? Thierry, would you be 
 > able to pick patch 1/5 for v3.11 ?
 
-Yes, I can do that.
+Yes, it is a bit late for v3.11 for arm-soc - I apologise for
+being partly responsible for the lateness.
 
-Thierry
+I am quite happy with your proposal for patches 1/5.
 
---Q68bSM7Ycu6FN28Q
-Content-Type: application/pgp-signature
+> > On the way I noticed the following:
+> > 
+> > sh-pfc pfc-sh73a0: pin PORT163 already requested by renesas-tpu-pwm.3;
+> > cannot claim for sh-sci.8 sh-pfc pfc-sh73a0: pin-163 (sh-sci.8) status -22
+> 
+> Pin 163 was used for both TPU LEDs and SCIFB RTS in the original board code, 
+> hence the conflict. That's most probably a mistake. Do you have the kota2 
+> schematics ? If so, could you please confirm that pin 163 is used for the LED 
+> only, not for SCIFB RTS ? I'll then send a patch to fix this.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
+I do not have the kota2 schematics.
 
-iQIcBAEBAgAGBQJRxB1EAAoJEN0jrNd/PrOhiUYP/j2rF+8tnz8JVLyUsDZJtH6q
-QtwmEoQ8+dQw82d4hqkZ+SgU5uFzKBelAOJs9BnBIFlxHDnWyuFzRaGsS/Ri8tbV
-AKJa3FnKc6CJcK0zJ9FLR3EG0wTbQzFWDXPqC99+fKy3+6zptWVY/ZaRZEjOiibe
-SMl+s8dd2LuhIRjUU6QAacskaJD8FLqA2ybR2KeeEZNB1NXnw53gUgeYu7EX1Alm
-AbnZDfnaS1oY2sGuBfFQIXUTYjO1jO2M1gCiItjG2nuy9R3XHRGEsHBCU5vBJ1db
-K2Jf1vmSciRfqIvV/PVGzfTj75VUQ0tyEm5tKuhWDqQE/Ovp3Pl+3xfHq+kqn1Cx
-cFPml8AbNbX0ZrQWPw37vIeLgPgOLkAJaFTmke80g/figvk6bRAlfldSy5ZWTINo
-P+9WR4mVF8IZMzqcYILtCF3N8a2wBtkejOK7lLenI0L0YCorxxtyWLssaOzJqIYN
-0yl/BKCXfT1So2SNR0t0ESD+QumJhjCNr7FittyADGsRk/JUUJvbjyaakB26qQ1o
-mh/7wH7X4iplddWkKFdNH1dozMlIAhW73ngIpVDBh7yYAs16UPDYiQ0n8V6thQQp
-caypGgkjm+4+I6sL4i0/VPXFA6zBk3dyzVb0aE9Lm05+O7+PGDqsxqu7fM4elwgI
-U6CDP9MpB+CKMm3nVPv4
-=Owkw
------END PGP SIGNATURE-----
-
---Q68bSM7Ycu6FN28Q--
+> > sh-pfc pfc-sh73a0: pin 1195 is not registered so it cannot be requested
+> > sh-pfc pfc-sh73a0: pin-1195 (sh_keysc.0) status -22
+> > sh-pfc pfc-sh73a0: could not request pin 1195 on device sh-pfc
+> > sh_keysc sh_keysc.0: Error applying setting, reverse things back
+> 
+> I'll work on that.
+> 
+> > My personal feeling is that if these are trivial to fix then it would be
+> > worth doing so. Otherwise a discussion needs to be had about support for the
+> > kota2.
+> 
+> -- 
+> Regards,
+> 
+> Laurent Pinchart
+> 
