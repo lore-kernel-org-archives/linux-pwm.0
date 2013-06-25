@@ -1,81 +1,38 @@
-Return-Path: <horms@verge.net.au>
-Date: Tue, 25 Jun 2013 08:40:03 +0900
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH v4 0/5] Renesas TPU PWM support
-Message-ID: <20130624233959.GA11275@verge.net.au>
-References: <1371142488-2514-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <2149088.lMDRNEvQpV@avalon>
- <20130621061528.GA30041@verge.net.au>
- <13724411.JArtzQ6F7y@avalon>
+Return-Path: <weiyj.lk@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <13724411.JArtzQ6F7y@avalon>
+Date: Tue, 25 Jun 2013 10:09:57 +0800
+Message-ID: <CAPgLHd8x180B9OxscFeiLrnYT4dUf66hZCxSJO_1E+uE5udx0A@mail.gmail.com>
+Subject: [PATCH -next] pwm: renesas-tpu: fix return value check in tpu_probe()
+From: Wei Yongjun <weiyj.lk@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-pwm.vger.kernel.org>
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: linux-sh@vger.kernel.org, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Magnus Damm <magnus.damm@gmail.com>
+To: thierry.reding@gmail.com, laurent.pinchart+renesas@ideasonboard.com, axel.lin@ingics.com
+Cc: yongjun_wei@trendmicro.com.cn, linux-pwm@vger.kernel.org
 
-On Fri, Jun 21, 2013 at 08:43:21AM +0200, Laurent Pinchart wrote:
-> Hi Simon,
-> 
-> On Friday 21 June 2013 15:15:28 Simon Horman wrote:
-> > On Thu, Jun 20, 2013 at 01:15:11PM +0200, Laurent Pinchart wrote:
-> > > On Monday 17 June 2013 12:31:39 Laurent Pinchart wrote:
-> > > > On Monday 17 June 2013 13:25:49 Simon Horman wrote:
-> > > > > Hi Laurent,
-> > > > > 
-> > > > > I am having a little trouble testing this.
-> > > > > I am wondering if you could guide me as to what .config options I
-> > > > > should have enabled and what values I should be looking for in /sys ?
-> > > > 
-> > > > Sure. You need to enable CONFIG_LEDS_PWM and CONFIG_PWM_RENESAS_TPU).
-> > > > You should then be able to control the LEDs through /sys/class/leds/*.
-> > > 
-> > > Any luck ?
-> > 
-> > Hi Laurent,
-> > 
-> > I have confirmed that I can toggle the G H and J LEDs.
-> 
-> Thank you.
-> 
-> > Should I queue-up this patchset?
-> 
-> Given that it's too late to push this to v3.11 through the ARM SoC tree 
-> (please correct me if I'm wrong), what about pushing 1/5 through the PWM tree 
-> for v3.11 and 2/5 to 5/5 through ARM SoC for v3.12 ? Thierry, would you be 
-> able to pick patch 1/5 for v3.11 ?
+From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 
-Yes, it is a bit late for v3.11 for arm-soc - I apologise for
-being partly responsible for the lateness.
+In case of error, the function devm_ioremap_resource() returns ERR_PTR()
+and never returns NULL. The NULL test in the return value check should
+be replaced with IS_ERR().
 
-I am quite happy with your proposal for patches 1/5.
+Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+---
+ drivers/pwm/pwm-renesas-tpu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> > On the way I noticed the following:
-> > 
-> > sh-pfc pfc-sh73a0: pin PORT163 already requested by renesas-tpu-pwm.3;
-> > cannot claim for sh-sci.8 sh-pfc pfc-sh73a0: pin-163 (sh-sci.8) status -22
-> 
-> Pin 163 was used for both TPU LEDs and SCIFB RTS in the original board code, 
-> hence the conflict. That's most probably a mistake. Do you have the kota2 
-> schematics ? If so, could you please confirm that pin 163 is used for the LED 
-> only, not for SCIFB RTS ? I'll then send a patch to fix this.
-
-I do not have the kota2 schematics.
-
-> > sh-pfc pfc-sh73a0: pin 1195 is not registered so it cannot be requested
-> > sh-pfc pfc-sh73a0: pin-1195 (sh_keysc.0) status -22
-> > sh-pfc pfc-sh73a0: could not request pin 1195 on device sh-pfc
-> > sh_keysc sh_keysc.0: Error applying setting, reverse things back
-> 
-> I'll work on that.
-> 
-> > My personal feeling is that if these are trivial to fix then it would be
-> > worth doing so. Otherwise a discussion needs to be had about support for the
-> > kota2.
-> 
-> -- 
-> Regards,
-> 
-> Laurent Pinchart
-> 
+diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
+index 96e0cc4..70950e5 100644
+--- a/drivers/pwm/pwm-renesas-tpu.c
++++ b/drivers/pwm/pwm-renesas-tpu.c
+@@ -410,9 +410,9 @@ static int tpu_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	tpu->base = devm_ioremap_resource(&pdev->dev, res);
+-	if (tpu->base == NULL) {
++	if (IS_ERR(tpu->base)) {
+ 		dev_err(&pdev->dev, "failed to remap I/O memory\n");
+-		return -ENXIO;
++		return PTR_ERR(tpu->base);
+ 	}
+ 
+ 	tpu->clk = devm_clk_get(&pdev->dev, NULL);
