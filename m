@@ -1,83 +1,62 @@
-Return-Path: <str@pengutronix.de>
-Date: Wed, 26 Jun 2013 14:09:35 +0200
-From: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+Date: Wed, 26 Jun 2013 23:33:12 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH] pwm: pca9685: Fix wrong argument to set MODE1_SLEEP bit
-Message-ID: <20130626120935.GA9739@pengutronix.de>
+Message-ID: <20130626213312.GA29479@manwe>
 References: <1371662847.5355.2.camel@phoenix>
- <20130626095106.GB27083@manwe>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="G4iJoqBmSsgzjUCe"
+Content-Disposition: inline
+In-Reply-To: <1371662847.5355.2.camel@phoenix>
+List-ID: <linux-pwm.vger.kernel.org>
+To: Axel Lin <axel.lin@ingics.com>
+Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>, linux-pwm@vger.kernel.org
+
+
+--G4iJoqBmSsgzjUCe
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20130626095106.GB27083@manwe>
-List-ID: <linux-pwm.vger.kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Axel Lin <axel.lin@ingics.com>, linux-pwm@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 26, 2013 at 11:51:07AM +0200, Thierry Reding wrote:
-> On Thu, Jun 20, 2013 at 01:27:27AM +0800, Axel Lin wrote:
-> > Current code actually does not set MODE1_SLEEP bit because the new value for
-> > bitmask (0x1) is wrong. To set MODE1_SLEEP bit, we should pass MODE1_SLEEP
-> > as the new value for bitmask.
-> > 
-> > Signed-off-by: Axel Lin <axel.lin@ingics.com>
-> > ---
-> > Hi Steffen,
-> > I don't have this hardware, can you test if this patch works?
-> > Thanks,
-> > Axel
-> > 
-> >  drivers/pwm/pwm-pca9685.c | 5 +++--
-> >  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> Steffen,
-> 
-> are you able to test or review this? The patch seems good but I'm not
-> familiar with the hardware nor do I have a board to test it on.
-> 
-> Thierry
-> 
-> > 
-> > diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-> > index c9f9e65..3fb775d 100644
-> > --- a/drivers/pwm/pwm-pca9685.c
-> > +++ b/drivers/pwm/pwm-pca9685.c
-> > @@ -190,7 +190,7 @@ static void pca9685_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
-> >  
-> >  	if (--pca->active_cnt == 0)
-> >  		regmap_update_bits(pca->regmap, PCA9685_MODE1, MODE1_SLEEP,
-> > -				   0x1);
-> > +				   MODE1_SLEEP);
-> >  }
-> >  
-> >  static const struct pwm_ops pca9685_pwm_ops = {
-> > @@ -264,7 +264,8 @@ static int pca9685_pwm_remove(struct i2c_client *client)
-> >  {
-> >  	struct pca9685 *pca = i2c_get_clientdata(client);
-> >  
-> > -	regmap_update_bits(pca->regmap, PCA9685_MODE1, MODE1_SLEEP, 0x1);
-> > +	regmap_update_bits(pca->regmap, PCA9685_MODE1, MODE1_SLEEP,
-> > +			   MODE1_SLEEP);
-> >  
-> >  	return pwmchip_remove(&pca->chip);
-> >  }
-> > -- 
+On Thu, Jun 20, 2013 at 01:27:27AM +0800, Axel Lin wrote:
+> Current code actually does not set MODE1_SLEEP bit because the new value =
+for
+> bitmask (0x1) is wrong. To set MODE1_SLEEP bit, we should pass MODE1_SLEEP
+> as the new value for bitmask.
+>=20
+> Signed-off-by: Axel Lin <axel.lin@ingics.com>
+> ---
+> Hi Steffen,
+> I don't have this hardware, can you test if this patch works?
+> Thanks,
+> Axel
+>=20
+>  drivers/pwm/pwm-pca9685.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 
-Hi!
+Applied, thanks.
 
-Looks good. I used regmap_update_bits wrong, obviously. I only provided
-the value (0x1), but did not apply the correct mask to it, which this
-version (with MODE1_SLEEP) does.
+Thierry
 
-So, you may add my
+--G4iJoqBmSsgzjUCe
+Content-Type: application/pgp-signature
 
-	Reviewed-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.20 (GNU/Linux)
 
-Thank you Axel for fixing it,
-Steffen
+iQIcBAEBAgAGBQJRy14YAAoJEN0jrNd/PrOhHFsP/2sCzBTw5DUeNFjk+qS42K3F
+HyDRflNr3hFB6wF8ThmF3xJjZUyxHXW/ae0r9jcJvPsHeI+IbViuoiphS85BZ0bB
+Xhzh7DTvluKEkXpy3tkj7DN9zFaPhQhkmnEi+hh9m65mHo4/tXrvrC5DhSvJylNw
+JQOSCS4Fex9L0LdGaK0bq47QJKL2h5j/2t/mG2SyQ+Zbt/DyOTrhuecxOG5PN+W/
+UWbxbLu+jSGoRHJ39RBpqYvh5CdKRME5TTVI35cJCZL79XvsqAkqT66+Q0Ln3qZR
+LgK0ylhWzAFWHVF0D+fsjxVNhE0b5NV3V0aGHzEmkn5fLhPwM2FmCJUV0fgOchft
+iW9jCsbkzrbqWhTTtqPyYosRv0I/msD70INCP7Vn5M6z8h38y7YKGPdownbedb5z
+4233n+JcIsL0K70xX/xHREOVAIzHg4q4jmGuE0K+JpuDvjTuhaSlRNSkhzSbxT5P
+z8PM1kDCDPAay+hDp6UdXMhWtfVL4bNy6fE+y8kQ/w0Jep4rI+oPs4uMclMuq05/
+JznufONOd1St4Bi6ezGxy+JACbc2S2umnAlGxdlvN5JfieTB3md6GwHuQ5Xg/Gfz
+TI8gMMZtjaFaxIKUjC5QnKjN+z1SDRdL6pYKeNRLlOZHEwuI8f/45RT4FWXCn5y2
+NEoPk/XsMNtvMrb/nb8V
+=NvWq
+-----END PGP SIGNATURE-----
 
-
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+--G4iJoqBmSsgzjUCe--
