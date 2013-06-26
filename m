@@ -1,24 +1,36 @@
 Return-Path: <thierry.reding@gmail.com>
-Date: Wed, 26 Jun 2013 23:34:44 +0200
+Date: Wed, 26 Jun 2013 23:41:59 +0200
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH v2] pwm: pwm-tiehrpwm: Use clk_enable/disable instead
  clk_prepare/unprepare.
-Message-ID: <20130626213443.GB29479@manwe>
+Message-ID: <20130626214158.GC29479@manwe>
 References: <1372250285-11709-1-git-send-email-marek.belisko@streamunlimited.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="b5gNqxB1S1yM7hjW"
+	protocol="application/pgp-signature"; boundary="TYecfFk8j8mZq+dy"
 Content-Disposition: inline
 In-Reply-To: <1372250285-11709-1-git-send-email-marek.belisko@streamunlimited.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Marek Belisko <marek.belisko@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Marek Belisko <marek.belisko@streamunlimited.com>
+To: Philip Avinash <avinashphilip@ti.com>
+Cc: Marek Belisko <marek.belisko@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Marek Belisko <marek.belisko@streamunlimited.com>
 
 
---b5gNqxB1S1yM7hjW
+--TYecfFk8j8mZq+dy
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
+
+Hi Philip,
+
+Can you review and/or test the patch below. It certainly looks good to
+me but so I've applied it to my for-next branch, but I'd prefer to have
+more feedback if possible.
+
+If you don't have the patch in your inbox, drop me a note and I'll
+bounce it to you.
+
+Thanks,
+Thierry
 
 On Wed, Jun 26, 2013 at 02:38:04PM +0200, Marek Belisko wrote:
 > This was found when using pwm-led on am33xx and enable
@@ -128,30 +140,86 @@ ck).
 >=20
 >  drivers/pwm/pwm-tiehrpwm.c |   13 +++++++++++--
 >  1 file changed, 11 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
+> index 8b4c86f..61eab20 100644
+> --- a/drivers/pwm/pwm-tiehrpwm.c
+> +++ b/drivers/pwm/pwm-tiehrpwm.c
+> @@ -359,7 +359,7 @@ static int ehrpwm_pwm_enable(struct pwm_chip *chip, s=
+truct pwm_device *pwm)
+>  	configure_polarity(pc, pwm->hwpwm);
+> =20
+>  	/* Enable TBCLK before enabling PWM device */
+> -	ret =3D clk_prepare_enable(pc->tbclk);
+> +	ret =3D clk_enable(pc->tbclk);
+>  	if (ret) {
+>  		pr_err("Failed to enable TBCLK for %s\n",
+>  				dev_name(pc->chip.dev));
+> @@ -395,7 +395,7 @@ static void ehrpwm_pwm_disable(struct pwm_chip *chip,=
+ struct pwm_device *pwm)
+>  	ehrpwm_modify(pc->mmio_base, AQCSFRC, aqcsfrc_mask, aqcsfrc_val);
+> =20
+>  	/* Disabling TBCLK on PWM disable */
+> -	clk_disable_unprepare(pc->tbclk);
+> +	clk_disable(pc->tbclk);
+> =20
+>  	/* Stop Time base counter */
+>  	ehrpwm_modify(pc->mmio_base, TBCTL, TBCTL_RUN_MASK, TBCTL_STOP_NEXT);
+> @@ -487,6 +487,12 @@ static int ehrpwm_pwm_probe(struct platform_device *=
+pdev)
+>  		return PTR_ERR(pc->tbclk);
+>  	}
+> =20
+> +	ret =3D clk_prepare(pc->tbclk);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "clk_prepare() failed: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+>  	ret =3D pwmchip_add(&pc->chip);
+>  	if (ret < 0) {
+>  		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+> @@ -513,6 +519,7 @@ pwmss_clk_failure:
+>  	pm_runtime_put_sync(&pdev->dev);
+>  	pm_runtime_disable(&pdev->dev);
+>  	pwmchip_remove(&pc->chip);
+> +	clk_unprepare(pc->tbclk);
+>  	return ret;
+>  }
+> =20
+> @@ -520,6 +527,8 @@ static int ehrpwm_pwm_remove(struct platform_device *=
+pdev)
+>  {
+>  	struct ehrpwm_pwm_chip *pc =3D platform_get_drvdata(pdev);
+> =20
+> +	clk_unprepare(pc->tbclk);
+> +
+>  	pm_runtime_get_sync(&pdev->dev);
+>  	/*
+>  	 * Due to hardware misbehaviour, acknowledge of the stop_req
+> --=20
+> 1.7.9.5
+>=20
 
-Applied, thanks.
-
-Thierry
-
---b5gNqxB1S1yM7hjW
+--TYecfFk8j8mZq+dy
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.20 (GNU/Linux)
 
-iQIcBAEBAgAGBQJRy15zAAoJEN0jrNd/PrOh8RMQAMFzfuEt6DujSMJLt5FE5Zz9
-5hF6awbAzxV/QnnDZ/lNbyqS/sPxUTExncF09Sgcdeog9z8PMAhpuwVQ3rKRU7x1
-9MKMkVutiMjyzfT7a6ntT/j7SYvSkA9FB5zoQMQkdCr2OxjCLlffaqzLPdEDwVDC
-Q49PP+psK0EkjEh6DhhcDyxtXgnSJCWOSmQa0CzqWBEjJd1jHwTq3qIz8TYVmL6Q
-/5oBbW0j+wLPg9zrgJ0YBmQNMvlQPUsWikYWixjQtI++heiEl0jTah1oZVMjJY0w
-sMFNqR1SY+AmV1tofD83yS6hzQJSV6/wvYsq5//Ti6ejDC8zSJtXSyOO6Ief2rfY
-NfaorHpv8GAiaCgN5fsambb+lmEXdYyFFuXBcp7uqhw0zlE3gPq7MNa9bG7Uqxz+
-Zv4bPe3brkt+rIroOV9eKQkpSi75yD9GqdATMqKlSeynM+KJkP/MGc0GZaCJVD0O
-WfEzbpVXwzf6Gz8AG/UL/fi9mZ6MnPskS8wjwSYND4Len+MFrbDEnVSkxegLJi5l
-2NkcluYUsmx+GEJoEy8s/co8FDr06B6pWdBcSv1H5aQaZvs8S0gt64amu6e3HZOY
-N9XxmYjeL0530ZJxkJRfWb52bxcDw15c+z4oqhwCpNzn2cvyifIIpMb0pYqMF7F2
-XCt+oOvivpmXB0DFdyKx
-=0cCE
+iQIcBAEBAgAGBQJRy2AmAAoJEN0jrNd/PrOhmz0QAJB37MbZ7396smO0AQ4qoyYO
+zvy/x+aF70+Nx2rnKF8i2IwdUqXlzQHe6cEFj0tNHkP2asv9Uw6gYVOKPf5l/KTT
+8tKEE9F7ntWajlhO8pLlNgly59Od4rCIn9Y1trCGnPWhaXeSiFo0uWy9BroITn7i
+4YQAOhTDo7Hg+5cVgKlCj4r48s977IjNQLACxpkWYJi0lIs/zCBRyIViGBx023Bn
+grpzG9DVUu6lxJJ31GcseOSMx75e+DdfWN33L1sGH12/h1RVUqJm+kdJ2x+fyPlv
+yVqXLY10osVNqlqtLBLqdKUhuEWwPJy+RXW2KdeBd116Mf5U5UfsHzWHCpSYI8Xh
++2hqcSrjqwYzkPOAarJWXI87eeMq4fXj8jTVLZRWzvb9B1CQztYFFOvY4D+RBaB0
+CqvUHdKmsz+d3GN7F5+nFDuRdfbAyRWnJceZK9aCawv7AlywWxBRORLR34j6F6nl
+jA8XxnPw1QbB9/KNY+51y+5/JhSuyXHqRDJ4UvbDn4jTqdwX3gxrVp1MpqNXjVw3
+bvsE9mlAgtsMF65nEUoN6URwtS3duEZ1K58RV1D8UYdYRUV8H5/cQuNvjxab1N8J
+s1HIKAmWx/yyWO4tpVR/HjWui6AN5ArUpouCASEa6Ze7IiYOfxzq5T4uvm3iRbxG
+kFfpUj30qGi9mSYvr2Yi
+=Dfxa
 -----END PGP SIGNATURE-----
 
---b5gNqxB1S1yM7hjW--
+--TYecfFk8j8mZq+dy--
