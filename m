@@ -1,55 +1,43 @@
-Return-Path: <lee.jones@linaro.org>
-Return-Path: <lee.jones@linaro.org>
-Date: Mon, 22 Jul 2013 08:48:24 +0100
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 1/3] mfd: add LP3943 MFD driver
-Message-ID: <20130722074824.GD4681@laptop>
-References: <A874F61F95741C4A9BA573A70FE3998F82E815C3@DQHE06.ent.ti.com>
- <20130717112033.GB3336@laptop>
- <A874F61F95741C4A9BA573A70FE3998F82E83161@DQHE06.ent.ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F82E83161@DQHE06.ent.ti.com>
+Return-Path: <festevam@gmail.com>
+Return-Path: <festevam@gmail.com>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH] pwm: pwm-mxs: Check the return value from stmp_reset_block()
+Date: Tue,  9 Jul 2013 23:25:37 -0300
+Message-Id: <1373423137-31612-1-git-send-email-festevam@gmail.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: "Kim, Milo" <Milo.Kim@ti.com>
-Cc: "sameo@linux.intel.com" <sameo@linux.intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "broonie@kernel.org" <broonie@kernel.org>
+To: thierry.reding@gmail.com
+Cc: shawn.guo@linaro.org, linux-pwm@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-> > > +int lp3943_read_byte(struct lp3943 *l, u8 reg, u8 *read)
-> > 
-> > Not sure I like 'l' as a variable name. The function is small enough
-> > to get away with it in this context, but it would probably be better
-> > if it were renamed to something more meaningful.
-> 
-> LP3943 consists of two devices - GPIO and PWM drivers.
-> So each private data was defined as 
-> 
-> struct lp3943 *l;			/* MFD device */
-> struct lp3943_gpio *lg;		/* GPIO driver */
-> struct lp3943_pwm *lp;		/* PWM driver */
-> 
-> As you pointed, the 'l' may look like a list of something.
-> I'll rename them as below.
-> 
-> struct lp3943 *lp3943;
-> struct lp3943_gpio *lp3943_gpio;
-> struct lp3943_pwm *lp3943_pwm;
+From: Fabio Estevam <fabio.estevam@freescale.com>
 
-Much better thanks.
+stmp_reset_block() may fail, so let's check its return value and propagate it in
+the case of error.
 
-> > > +static const struct i2c_device_id lp3943_ids[] = {
-> > > +	{"lp3943", 0},
-> > 
-> > Lack of consistency ...
-> 
-> I don't know exactly what it means. Do you mean the name of I2C device?
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ drivers/pwm/pwm-mxs.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-No, I was referencing the spaces (or lack of) on the inside of the
-curly brackets.
-
+diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
+index 2c77b81..c2c5a4f 100644
+--- a/drivers/pwm/pwm-mxs.c
++++ b/drivers/pwm/pwm-mxs.c
+@@ -161,9 +161,15 @@ static int mxs_pwm_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, mxs);
+ 
+-	stmp_reset_block(mxs->base);
++	ret = stmp_reset_block(mxs->base);
++	if (ret)
++		goto pwm_remove;
+ 
+ 	return 0;
++
++pwm_remove:
++	pwmchip_remove(&mxs->chip);
++	return ret;
+ }
+ 
+ static int mxs_pwm_remove(struct platform_device *pdev)
 -- 
-Lee Jones
-Linaro ST-Ericsson Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+1.8.1.2
