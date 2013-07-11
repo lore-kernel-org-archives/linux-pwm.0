@@ -1,38 +1,34 @@
 Return-Path: <laurent.pinchart+renesas@ideasonboard.com>
 From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 0/2] Add PWM polarity flag macros for DT
-Date: Thu, 11 Jul 2013 16:37:46 +0200
-Message-Id: <1373553468-6564-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 1/2] ARM i.MX53: mba53: Fix PWM backlight DT node
+Date: Thu, 11 Jul 2013 16:37:47 +0200
+Message-Id: <1373553468-6564-2-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+In-Reply-To: <1373553468-6564-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+References: <1373553468-6564-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: Shawn Guo <shawn.guo@linaro.org>, Steffen Trumtrar <s.trumtrar@pengutronix.de>, Boris BREZILLON <linux-arm@overkiz.com>, Tomasz Figa <t.figa@samsung.com>, Philip Avinash <avinashphilip@ti.com>, Tony Prisk <linux@prisktech.co.nz>, linux-pwm@vger.kernel.org, devicetree-discuss@lists.ozlabs.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hello,
+The i.MX53 PWM controller uses two cells to describe the PWM specifier.
+Remove the extra unused values from the backlight DT node pwms property.
 
-Here's a small patch set that replaces PWM polarity numerical constants with
-macros in DT. The series starts with a fix for an error in the i.MX53 mba53 DT,
-and the second patch then introduces the macros and update both bindings
-documentation and existing DT.
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+---
+ arch/arm/boot/dts/imx53-mba53.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Laurent Pinchart (2):
-  ARM i.MX53: mba53: Fix PWM backlight DT node
-  pwm: Add PWM polarity flag macros for DT
-
- Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt |  6 +++---
- Documentation/devicetree/bindings/pwm/pwm-samsung.txt   |  5 +++--
- Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt  |  5 +++--
- Documentation/devicetree/bindings/pwm/pwm.txt           |  8 +++++---
- Documentation/devicetree/bindings/pwm/vt8500-pwm.txt    |  5 +++--
- arch/arm/boot/dts/am335x-evm.dts                        |  3 ++-
- arch/arm/boot/dts/am335x-evmsk.dts                      |  3 ++-
- arch/arm/boot/dts/imx53-mba53.dts                       |  2 +-
- arch/arm/boot/dts/wm8850-w70v2.dts                      |  3 ++-
- include/dt-bindings/pwm/pwm.h                           | 15 +++++++++++++++
- include/linux/pwm.h                                     |  4 ++--
- 11 files changed, 41 insertions(+), 18 deletions(-)
- create mode 100644 include/dt-bindings/pwm/pwm.h
-
+diff --git a/arch/arm/boot/dts/imx53-mba53.dts b/arch/arm/boot/dts/imx53-mba53.dts
+index aaa33bc..a630902 100644
+--- a/arch/arm/boot/dts/imx53-mba53.dts
++++ b/arch/arm/boot/dts/imx53-mba53.dts
+@@ -27,7 +27,7 @@
+ 
+ 	backlight {
+ 		compatible = "pwm-backlight";
+-		pwms = <&pwm2 0 50000 0 0>;
++		pwms = <&pwm2 0 50000>;
+ 		brightness-levels = <0 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80 84 88 92 96 100>;
+ 		default-brightness-level = <10>;
+ 		enable-gpios = <&gpio7 7 0>;
 -- 
-Regards,
-
-Laurent Pinchart
+1.8.1.5
