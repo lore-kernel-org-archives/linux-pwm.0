@@ -1,77 +1,53 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Wed, 17 Jul 2013 11:20:23 -0700
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/2] pwm: Add PWM polarity flag macros for DT
-Message-ID: <20130717182021.GA24079@dhcp-172-17-186-34.nvidia.com>
-References: <1373553468-6564-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <2883016.87pKJk9n0R@avalon>
- <51E4C073.4020407@wwwdotorg.org>
- <2989497.8E7gzkcamn@avalon>
- <51E6D037.3020706@wwwdotorg.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="mP3DRpeJDSE+ciuQ"
-Content-Disposition: inline
-In-Reply-To: <51E6D037.3020706@wwwdotorg.org>
-List-ID: <linux-pwm.vger.kernel.org>
-To: Stephen Warren <swarren@wwwdotorg.org>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-pwm@vger.kernel.org, Rob Herring <rob.herring@calxeda.com>, linux-omap@vger.kernel.org, Philip Avinash <avinashphilip@ti.com>, Grant Likely <grant.likely@linaro.org>, Boris BREZILLON <linux-arm@overkiz.com>, Steffen Trumtrar <s.trumtrar@pengutronix.de>, devicetree-discuss@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
-
-
---mP3DRpeJDSE+ciuQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Return-Path: <Milo.Kim@ti.com>
+From: "Kim, Milo" <Milo.Kim@ti.com>
+Subject: [PATCH 0/3] LP3943 MFD driver for a GPIO expander and a PWM
+ generator
+Date: Tue, 16 Jul 2013 02:38:14 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F82E815BC@DQHE06.ent.ti.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+List-ID: <linux-pwm.vger.kernel.org>
+To: "sameo@linux.intel.com" <sameo@linux.intel.com>, "lee.jones@linaro.org" <lee.jones@linaro.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-On Wed, Jul 17, 2013 at 11:11:19AM -0600, Stephen Warren wrote:
-> On 07/17/2013 05:00 AM, Laurent Pinchart wrote:
-> > On Monday 15 July 2013 21:39:31 Stephen Warren wrote:
-> ...
-> >> But then there's a problem where people assume that the common flags a=
-re
-> >> always available, and somewhere they aren't... Care is needed in the
-> >> choice of which common flags to define and/or how they're used.
-> >=20
-> > Exactly. That's why I think listing the supported common flags in indiv=
-idual=20
-> > bindings makes sense when some of the flags are not supported by all de=
-vices.=20
-> > As the only PWM flags currently used are common to all PWM devices I ca=
-n leave=20
-> > this out now. I have no strong preference, I'll follow your opinion on =
-this.
->=20
-> Yes, I guess separating the concept of defining common flags and which
-> devices use them is good. And then indeed individual devices need to
-> define which of the common flags they support. I'd still like to see the
-> *definition* of those common flags in some central place (i.e. pwm.txt
-> or a header that defines constants for it), and the other device
-> bindings simply reference that for the actual definitions.
+LP3943 is an integrated device capable of driving 16 output channels.
+It supports a GPIO expander and a PWM generator.
+LP3493 registers are controlled via the I2C interface.
 
-That sounds reasonable to me.
+Patch-set consists of three parts - MFD, GPIO and PWM
+Device tree documentation is updated also.
 
-Thierry
+Milo Kim (3):
+  mfd: add LP3943 MFD driver
+  gpio: add LP3943 I2C GPIO expander driver
+  pwm: add LP3943 PWM driver
 
---mP3DRpeJDSE+ciuQ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+ Documentation/devicetree/bindings/mfd/lp3943.txt |   23 +++
+ drivers/gpio/Kconfig                             |    6 +
+ drivers/gpio/Makefile                            |    1 +
+ drivers/gpio/gpio-lp3943.c                       |  224 ++++++++++++++++++=
+++++
+ drivers/mfd/Kconfig                              |    8 +
+ drivers/mfd/Makefile                             |    1 +
+ drivers/mfd/lp3943.c                             |  206 ++++++++++++++++++=
+++
+ drivers/pwm/Kconfig                              |   10 +
+ drivers/pwm/Makefile                             |    1 +
+ drivers/pwm/pwm-lp3943.c                         |  192 ++++++++++++++++++=
++
+ include/linux/mfd/lp3943.h                       |   98 ++++++++++
+ 11 files changed, 770 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/lp3943.txt
+ create mode 100644 drivers/gpio/gpio-lp3943.c
+ create mode 100644 drivers/mfd/lp3943.c
+ create mode 100644 drivers/pwm/pwm-lp3943.c
+ create mode 100644 include/linux/mfd/lp3943.h
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
+--=20
+1.7.9.5
 
-iQIcBAEBAgAGBQJR5uBlAAoJEN0jrNd/PrOh97QP/1xi4cp9qXADN5RzJzjIh0Qn
-rAtMQCp2NggBKz0p3yueGufLiS1izARSOb13uDJUWeFsikVyhGYng8i3ZRrlaoVA
-ktBoZf5CuSGmqKyURzIBEjc1nxAj4V9H0pKrpinj2XsDBKcVsmjjVHzQRu/tDnXk
-J5GKDgdl2wTwTHmg/9zrYVcuJsOuCPNm2YsGcAaR/7dL9fNHTgfhsrqTANXU+Y7Y
-M1IdG3etDvFrGlDTTnYXtYpDnr49VOuGL3KrFeYaFeQIVAKN+kDbGe2WR2F3O22E
-lDek6DW4hNRgLKdJIwSGIcEDw8AzcKpKHicn3DNvQQtnzzLJ4vNShJzIDfxlj0qg
-ptoOjnz1MB2dsyShOI0z8PvWdhseMndQ5wpXveeJjZ5Ck46USCl3NaysTtmZPYjd
-saabdM/E85g5HQZ79sggqg0st2P3l5TsEFFJ8Ie41ysf6kp8ofXYG8H/OiaAapKz
-hysfTGj6tgtY9jorIO3YdkZX59ALQikfFjawUzFQ4onYcXLymkyHUQI4i20k/wVo
-VQ1SIWbZ8aofbA5kqvdNH/ZSMl8uMgRLrUtd1EPx0scS6F1mf9GvQ/S6q0PKdQGM
-k0yxqk0YWkFtnzM/ccrpI5g29I6mnXiOUTlFSM3V12JAW4+kh6lF7V+m2tRWft3+
-aCEjtkBeqFwvYE+oJezc
-=+FHU
------END PGP SIGNATURE-----
 
---mP3DRpeJDSE+ciuQ--
+Best Regards,
+Milo
