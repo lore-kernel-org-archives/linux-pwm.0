@@ -1,60 +1,63 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Mon, 29 Jul 2013 14:24:33 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: pwm-mxs: Check the return value from
- stmp_reset_block()
-Message-ID: <20130729122432.GE23152@manwe>
-References: <1373423137-31612-1-git-send-email-festevam@gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ytoMbUMiTKPMT3hY"
-Content-Disposition: inline
-In-Reply-To: <1373423137-31612-1-git-send-email-festevam@gmail.com>
+Return-Path: <laurent.pinchart+renesas@ideasonboard.com>
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v2 0/4] Add PWM polarity flag macro for DT
+Date: Thu, 18 Jul 2013 00:54:20 +0200
+Message-Id: <1374101664-21112-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Fabio Estevam <festevam@gmail.com>
-Cc: shawn.guo@linaro.org, linux-pwm@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: devicetree-discuss@lists.ozlabs.org, linux-omap@vger.kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Boris BREZILLON <linux-arm@overkiz.com>, Shawn Guo <shawn.guo@linaro.org>, Steffen Trumtrar <s.trumtrar@pengutronix.de>, Stephen Warren <swarren@wwwdotorg.org>, Tomasz Figa <t.figa@samsung.com>
 
+Hello,
 
---ytoMbUMiTKPMT3hY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Here's a small patch set that replaces PWM polarity numerical constants with
+macros in DT.
 
-On Tue, Jul 09, 2013 at 11:25:37PM -0300, Fabio Estevam wrote:
-> From: Fabio Estevam <fabio.estevam@freescale.com>
->=20
-> stmp_reset_block() may fail, so let's check its return value and propagat=
-e it in
-> the case of error.
->=20
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-> ---
->  drivers/pwm/pwm-mxs.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
+The series is the result of splitting the original patch into four patches
+that
 
-Applied, thanks.
+- add the flag macro (both in a header file and in the PWM DT binding core
+  documentation)
+- use the macro in the PWM core code
+- update existing DT bindings to refer to the PWM DT bindings core
+  documentation
+- update existing DT sources to use the new macro
 
-Thierry
+I believe I've taken all comments received so far into account. Most notable
+changes include
 
---ytoMbUMiTKPMT3hY
-Content-Type: application/pgp-signature
+- splitting the original patch
+- removing the PWM_POLARITY_NORMAL flag, which wasn't a flag but was defined
+  as 0
+- renaming the PWM_POLARITY_INVERSED DT flag to PWM_POLARITY_INVERTED
+- not relying on DT flags and PWM C flags having identical names and values
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
+Laurent Pinchart (4):
+  pwm: Add PWM polarity flag macro for DT
+  pwm: Use the DT macro directly when parsing PWM DT flags
+  pwm: Update DT bindings to reference pwm.txt for cells documentation
+  ARM: dts: Use the PWM polarity flags
 
-iQIcBAEBAgAGBQJR9l8AAAoJEN0jrNd/PrOh8W4P/1sKRiGoRzLLD/VnP8MOSZaY
-Ok2aMLfbhAOMB5eqS0ynqfzvcwEfXlEM46j8O3JWzseoGdH9GphWRTV+Q4Z+8CdL
-VrNjIxRFn92OZCiPl2A68LXc/OpwbuR3AdTNgqePTrrDLfKBnZSrzIm5tyFACRoD
-NS8tGTnez8KsNYMtZwiU+cLVT3pIomhWlvbwUBSAdzU2Ys0JybOUGvlXdlB1W39C
-6/0BxpWlNZbQjxo/b0AcJUSybr0W0pPRGIIXpMd+M7sCIH310uZ9xzUhyGwXrnKD
-3iQJ9urkVp5dRJZ5nkIwO/RLjnQc2qzFrN8PG419FdXdHH36e6yc7RLvyuMKloSl
-EouQ3/chdkgLsT//8v/n69AF/eV4wmGhaDJPGeUwPY7Z7vbDLYeDqSodSnE75kT0
-W/DutgoXcaROmNUY398GAEQ48M21CqMeBhw9tFjMhGY2mgRkMLApXfEjFS8wKUdW
-O5yLaiM+9xoCo5rvvsJJV1n5Cv4unQmGlmVsumpl6ADZp2uCx6paB6dQ2Y8nrtep
-Jp04MHuvAYFPclTDhXndVKxe4GkBDcggVropXBhSWEDwE+MONlf1YsHG2Ef7B/wk
-18BeS/XkuJbnR3KgpDkSeeKl5JOBkZobuyf89PPQC/RLI2SKU5ATRxjAg+W0s07+
-8HnArgVHxkCDsSZQupRd
-=4JKq
------END PGP SIGNATURE-----
+ Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt    |  8 +++-----
+ Documentation/devicetree/bindings/pwm/imx-pwm.txt          |  4 ++--
+ Documentation/devicetree/bindings/pwm/mxs-pwm.txt          |  4 ++--
+ .../devicetree/bindings/pwm/nvidia,tegra20-pwm.txt         |  5 ++---
+ Documentation/devicetree/bindings/pwm/nxp,pca9685-pwm.txt  |  4 ++--
+ Documentation/devicetree/bindings/pwm/pwm-samsung.txt      | 10 +++-------
+ Documentation/devicetree/bindings/pwm/pwm-tiecap.txt       |  8 +++-----
+ Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt     |  8 +++-----
+ Documentation/devicetree/bindings/pwm/pwm.txt              |  7 ++++---
+ Documentation/devicetree/bindings/pwm/spear-pwm.txt        |  5 ++---
+ Documentation/devicetree/bindings/pwm/ti,twl-pwm.txt       |  4 ++--
+ Documentation/devicetree/bindings/pwm/ti,twl-pwmled.txt    |  4 ++--
+ Documentation/devicetree/bindings/pwm/vt8500-pwm.txt       |  8 +++-----
+ arch/arm/boot/dts/am335x-evmsk.dts                         |  3 ++-
+ arch/arm/boot/dts/wm8850-w70v2.dts                         |  3 ++-
+ drivers/pwm/core.c                                         |  7 +++----
+ include/dt-bindings/pwm/pwm.h                              | 14 ++++++++++++++
+ 17 files changed, 54 insertions(+), 52 deletions(-)
+ create mode 100644 include/dt-bindings/pwm/pwm.h
 
---ytoMbUMiTKPMT3hY--
+-- 
+Regards,
+
+Laurent Pinchart
