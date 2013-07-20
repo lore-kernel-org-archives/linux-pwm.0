@@ -1,95 +1,88 @@
 Return-Path: <tomasz.figa@gmail.com>
 Return-Path: <tomasz.figa@gmail.com>
 From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: [PATCH v4 03/20] clocksource: samsung_pwm_timer: Cache clocksource register address
-Date: Sat, 20 Jul 2013 02:04:16 +0200
-Message-Id: <1374278673-25615-5-git-send-email-tomasz.figa@gmail.com>
+Subject: [PATCH v4 06/20] ARM: SAMSUNG: Unify base address definitions of timer block
+Date: Sat, 20 Jul 2013 02:04:19 +0200
+Message-Id: <1374278673-25615-8-git-send-email-tomasz.figa@gmail.com>
 In-Reply-To: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com>
 References: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: linux-samsung-soc@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Tomasz Figa <tomasz.figa@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Tomasz Figa <t.figa@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>
 
-Instead of calculating register every time the timer should be read,
-we can just do it one time at initialization and store the address in
-driver data.
+From: Tomasz Figa <t.figa@samsung.com>
 
-Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
+This patch makes all defintions of timer block base address use the same
+prefix to allow using the common name to define platform device
+resource.
+
+Signed-off-by: Tomasz Figa <t.figa@samsung.com>
+Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
 ---
- drivers/clocksource/samsung_pwm_timer.c | 33 ++++++++-------------------------
- 1 file changed, 8 insertions(+), 25 deletions(-)
+ arch/arm/mach-s3c24xx/include/mach/map.h | 2 ++
+ arch/arm/mach-s3c64xx/include/mach/map.h | 1 +
+ arch/arm/mach-s5p64x0/include/mach/map.h | 1 +
+ arch/arm/mach-s5pc100/include/mach/map.h | 1 +
+ arch/arm/mach-s5pv210/include/mach/map.h | 1 +
+ 5 files changed, 6 insertions(+)
 
-diff --git a/drivers/clocksource/samsung_pwm_timer.c b/drivers/clocksource/samsung_pwm_timer.c
-index e238fb0..823279b 100644
---- a/drivers/clocksource/samsung_pwm_timer.c
-+++ b/drivers/clocksource/samsung_pwm_timer.c
-@@ -55,6 +55,7 @@ EXPORT_SYMBOL(samsung_pwm_lock);
+diff --git a/arch/arm/mach-s3c24xx/include/mach/map.h b/arch/arm/mach-s3c24xx/include/mach/map.h
+index 8ba381f..444793f 100644
+--- a/arch/arm/mach-s3c24xx/include/mach/map.h
++++ b/arch/arm/mach-s3c24xx/include/mach/map.h
+@@ -167,4 +167,6 @@
+ #define S3C_PA_SPI0		S3C2443_PA_SPI0
+ #define S3C_PA_SPI1		S3C2443_PA_SPI1
  
- struct samsung_pwm_clocksource {
- 	void __iomem *base;
-+	void __iomem *source_reg;
- 	unsigned int irq[SAMSUNG_PWM_NUM];
- 	struct samsung_pwm_variant variant;
- 
-@@ -287,23 +288,6 @@ static void __init samsung_clockevent_init(void)
- 	}
- }
- 
--static void __iomem *samsung_timer_reg(void)
--{
--	switch (pwm.source_id) {
--	case 0:
--	case 1:
--	case 2:
--	case 3:
--		return pwm.base + pwm.source_id * 0x0c + 0x14;
--
--	case 4:
--		return pwm.base + 0x40;
--
--	default:
--		BUG();
--	}
--}
--
- /*
-  * Override the global weak sched_clock symbol with this
-  * local implementation which uses the clocksource to get some
-@@ -313,17 +297,11 @@ static void __iomem *samsung_timer_reg(void)
-  */
- static u32 notrace samsung_read_sched_clock(void)
- {
--	void __iomem *reg = samsung_timer_reg();
--
--	if (!reg)
--		return 0;
--
--	return ~__raw_readl(reg);
-+	return ~__raw_readl(pwm.source_reg);
- }
- 
- static void __init samsung_clocksource_init(void)
- {
--	void __iomem *reg = samsung_timer_reg();
- 	unsigned long pclk;
- 	unsigned long clock_rate;
- 	int ret;
-@@ -338,10 +316,15 @@ static void __init samsung_clocksource_init(void)
- 	samsung_time_setup(pwm.source_id, pwm.tcnt_max);
- 	samsung_time_start(pwm.source_id, true);
- 
-+	if (pwm.source_id == 4)
-+		pwm.source_reg = pwm.base + 0x40;
-+	else
-+		pwm.source_reg = pwm.base + pwm.source_id * 0x0c + 0x14;
++#define SAMSUNG_PA_TIMER	S3C2410_PA_TIMER
 +
- 	setup_sched_clock(samsung_read_sched_clock,
- 						pwm.variant.bits, clock_rate);
+ #endif /* __ASM_ARCH_MAP_H */
+diff --git a/arch/arm/mach-s3c64xx/include/mach/map.h b/arch/arm/mach-s3c64xx/include/mach/map.h
+index 8e2097b..f55ccb1 100644
+--- a/arch/arm/mach-s3c64xx/include/mach/map.h
++++ b/arch/arm/mach-s3c64xx/include/mach/map.h
+@@ -121,5 +121,6 @@
+ #define SAMSUNG_PA_ADC		S3C64XX_PA_ADC
+ #define SAMSUNG_PA_CFCON	S3C64XX_PA_CFCON
+ #define SAMSUNG_PA_KEYPAD	S3C64XX_PA_KEYPAD
++#define SAMSUNG_PA_TIMER	S3C64XX_PA_TIMER
  
--	ret = clocksource_mmio_init(reg, "samsung_clocksource_timer",
-+	ret = clocksource_mmio_init(pwm.source_reg, "samsung_clocksource_timer",
- 					clock_rate, 250, pwm.variant.bits,
- 					clocksource_mmio_readl_down);
- 	if (ret)
+ #endif /* __ASM_ARCH_6400_MAP_H */
+diff --git a/arch/arm/mach-s5p64x0/include/mach/map.h b/arch/arm/mach-s5p64x0/include/mach/map.h
+index 0c0175d..50a6e96 100644
+--- a/arch/arm/mach-s5p64x0/include/mach/map.h
++++ b/arch/arm/mach-s5p64x0/include/mach/map.h
+@@ -76,6 +76,7 @@
+ #define S5P_PA_TIMER		S5P64X0_PA_TIMER
+ 
+ #define SAMSUNG_PA_ADC		S5P64X0_PA_ADC
++#define SAMSUNG_PA_TIMER	S5P64X0_PA_TIMER
+ 
+ /* UART */
+ 
+diff --git a/arch/arm/mach-s5pc100/include/mach/map.h b/arch/arm/mach-s5pc100/include/mach/map.h
+index 54bc4f8..2550b61 100644
+--- a/arch/arm/mach-s5pc100/include/mach/map.h
++++ b/arch/arm/mach-s5pc100/include/mach/map.h
+@@ -116,6 +116,7 @@
+ #define SAMSUNG_PA_ADC			S5PC100_PA_TSADC
+ #define SAMSUNG_PA_CFCON		S5PC100_PA_CFCON
+ #define SAMSUNG_PA_KEYPAD		S5PC100_PA_KEYPAD
++#define SAMSUNG_PA_TIMER		S5PC100_PA_TIMER
+ 
+ #define S5PC100_VA_OTHERS		(S3C_VA_SYS + 0x10000)
+ 
+diff --git a/arch/arm/mach-s5pv210/include/mach/map.h b/arch/arm/mach-s5pv210/include/mach/map.h
+index b7c8a19..763929a 100644
+--- a/arch/arm/mach-s5pv210/include/mach/map.h
++++ b/arch/arm/mach-s5pv210/include/mach/map.h
+@@ -139,6 +139,7 @@
+ #define SAMSUNG_PA_ADC			S5PV210_PA_ADC
+ #define SAMSUNG_PA_CFCON		S5PV210_PA_CFCON
+ #define SAMSUNG_PA_KEYPAD		S5PV210_PA_KEYPAD
++#define SAMSUNG_PA_TIMER		S5PV210_PA_TIMER
+ 
+ /* UART */
+ 
 -- 
 1.8.3.2
