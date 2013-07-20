@@ -1,53 +1,35 @@
-Return-Path: <Milo.Kim@ti.com>
-From: "Kim, Milo" <Milo.Kim@ti.com>
-Subject: [PATCH 0/3] LP3943 MFD driver for a GPIO expander and a PWM
- generator
-Date: Tue, 16 Jul 2013 02:38:14 +0000
-Message-ID: <A874F61F95741C4A9BA573A70FE3998F82E815BC@DQHE06.ent.ti.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
+In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F82E815BC@DQHE06.ent.ti.com>
+References: <A874F61F95741C4A9BA573A70FE3998F82E815BC@DQHE06.ent.ti.com>
+Date: Sat, 20 Jul 2013 22:04:13 +0200
+Message-ID: <CACRpkdaJGwPLzzUuHFZye0N5iAwH2Vn8vbdwz6qv9v4F9bmGbg@mail.gmail.com>
+Subject: Re: [PATCH 0/3] LP3943 MFD driver for a GPIO expander and a PWM generator
+From: Linus Walleij <linus.walleij@linaro.org>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-pwm.vger.kernel.org>
-To: "sameo@linux.intel.com" <sameo@linux.intel.com>, "lee.jones@linaro.org" <lee.jones@linaro.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+To: "Kim, Milo" <Milo.Kim@ti.com>
+Cc: "sameo@linux.intel.com" <sameo@linux.intel.com>, "lee.jones@linaro.org" <lee.jones@linaro.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-LP3943 is an integrated device capable of driving 16 output channels.
-It supports a GPIO expander and a PWM generator.
-LP3493 registers are controlled via the I2C interface.
+On Tue, Jul 16, 2013 at 4:38 AM, Kim, Milo <Milo.Kim@ti.com> wrote:
 
-Patch-set consists of three parts - MFD, GPIO and PWM
-Device tree documentation is updated also.
+> LP3943 is an integrated device capable of driving 16 output channels.
+> It supports a GPIO expander and a PWM generator.
 
-Milo Kim (3):
-  mfd: add LP3943 MFD driver
-  gpio: add LP3943 I2C GPIO expander driver
-  pwm: add LP3943 PWM driver
+But actually the data sheet describes it as a LED driver with PWM
+chip.
 
- Documentation/devicetree/bindings/mfd/lp3943.txt |   23 +++
- drivers/gpio/Kconfig                             |    6 +
- drivers/gpio/Makefile                            |    1 +
- drivers/gpio/gpio-lp3943.c                       |  224 ++++++++++++++++++=
-++++
- drivers/mfd/Kconfig                              |    8 +
- drivers/mfd/Makefile                             |    1 +
- drivers/mfd/lp3943.c                             |  206 ++++++++++++++++++=
-++
- drivers/pwm/Kconfig                              |   10 +
- drivers/pwm/Makefile                             |    1 +
- drivers/pwm/pwm-lp3943.c                         |  192 ++++++++++++++++++=
-+
- include/linux/mfd/lp3943.h                       |   98 ++++++++++
- 11 files changed, 770 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/lp3943.txt
- create mode 100644 drivers/gpio/gpio-lp3943.c
- create mode 100644 drivers/mfd/lp3943.c
- create mode 100644 drivers/pwm/pwm-lp3943.c
- create mode 100644 include/linux/mfd/lp3943.h
+Do you have use cases not using it for LEDs but other thing or why
+do you want to model the 16 LED lines as GPIO lines?
+Why can't you just have a drivers/leds/* as for any other LED
+chip?
 
---=20
-1.7.9.5
+Atleast some good explanation of this needs to be found in the
+patch text and also as comments in Kconfig and the code I think.
 
+I'm just fearing that this is some way to satisfy a userspace that
+wants to use the sysfs interface to GPIO to control LEDs and these
+are much better off using the LED sysfs ABI.
 
-Best Regards,
-Milo
+Yours,
+Linus Walleij
