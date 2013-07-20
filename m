@@ -1,55 +1,42 @@
-Return-Path: <linux-pwm-owner@vger.kernel.org>
-Received: from cassiel.sirena.org.uk ([80.68.93.111]:41207 "EHLO
-	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753412Ab3G1MXK (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sun, 28 Jul 2013 08:23:10 -0400
-Date: Sun, 28 Jul 2013 13:22:46 +0100
-From: Mark Brown <broonie@kernel.org>
-Message-ID: <20130728122246.GP9858@sirena.org.uk>
-References: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="YVVuqqmpr1hAxwPf"
-Content-Disposition: inline
+Return-Path: <tomasz.figa@gmail.com>
+Return-Path: <tomasz.figa@gmail.com>
+From: Tomasz Figa <tomasz.figa@gmail.com>
+Subject: [PATCH v4 12/20] pwm: samsung: Rename to pwm-samsung-legacy
+Date: Sat, 20 Jul 2013 02:04:25 +0200
+Message-Id: <1374278673-25615-14-git-send-email-tomasz.figa@gmail.com>
 In-Reply-To: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com>
-Subject: Re: [PATCH v4 00/20] Samsung PWM support cleanup
-Sender: linux-pwm-owner@vger.kernel.org
+References: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Tomasz Figa <tomasz.figa@gmail.com>
-Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>, Thierry Reding <thierry.reding@gmail.com>
+To: linux-samsung-soc@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Tomasz Figa <tomasz.figa@gmail.com>
 
+This patch renames the old pwm-samsung driver to pwm-samsung-legacy to
+create place for the new, rewritten, DT-aware pwm-samsung driver using
+Samsung PWM/timer master driver.
 
---YVVuqqmpr1hAxwPf
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
+---
+ drivers/pwm/Makefile                                | 2 +-
+ drivers/pwm/{pwm-samsung.c => pwm-samsung-legacy.c} | 0
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+ rename drivers/pwm/{pwm-samsung.c => pwm-samsung-legacy.c} (100%)
 
-On Sat, Jul 20, 2013 at 02:04:12AM +0200, Tomasz Figa wrote:
-
-> [Also not sure on what boards, but still]
-> Tested-by: Mark Brown <broonie@linaro.org>
-
-Just retested this (on Cragganmore), still works fine.
-
---YVVuqqmpr1hAxwPf
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
-
-iQIcBAEBAgAGBQJR9Q0SAAoJELSic+t+oim9WkoQAILxgeOz8SZcTJ0TuPChRlK2
-jhoZCjlXJQfxkzoaemRDWqRGqJtL/POe0BbwGldiGencpRb/o4zn11JW5iQowGyq
-L5bWsAnIbgfayeUqDb/xwXUkZutBQkpaBCiiunUNu65bdilOahVDGlOrAJqzMER5
-PgCN8vdd4C42CTeHsHEsb1e81wajTxyTwN85itcv944fUA7LU7nW3vJ1AHq9PQOr
-h0/XX2R6SDSX/PmmVftDFvRHT2ZGbl9O8uqXVZbUUjB8qUll3PlK64167uGXBIX+
-bef6MgI4wFIU3leKwVFCpeuL0WOFPHE9Bx73UEuN4+UVVgFH7X+04O8Zf6yjcQ8V
-mEYok1qf9XHVxjudX/pWPpi4w8zD7933VTUy2sXyKqJnjP5Z1gY+7e3HRScXqUDe
-lxMryTXwEmhN4+AV+eiwxlOT+eQ0n2eQ4YjxyF4ocqMFNPKnLaJyWwEFrwpABZaL
-/mXyDOdagkRMDRgUHKoJy3bkN1uXBATwg03d62Tl4bvlg7K6LN6RXBALqQkelZXC
-73MlUEFZQcDXmO8lNwWsf/uaYoWWncmx2DLx2c7wbdbhbEdoaE0TxX8Jijqn7aqQ
-RsI0OhIUat+6B9rnlOzaA0wNaJlaXgEvxBgJCkonZyZjYcTDjvC4zNQ8EKG2hJbU
-TvGEsWFJABrUGZNzuoC6
-=9v/h
------END PGP SIGNATURE-----
-
---YVVuqqmpr1hAxwPf--
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index 77a8c18..aa94807 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -11,7 +11,7 @@ obj-$(CONFIG_PWM_PCA9685)	+= pwm-pca9685.o
+ obj-$(CONFIG_PWM_PUV3)		+= pwm-puv3.o
+ obj-$(CONFIG_PWM_PXA)		+= pwm-pxa.o
+ obj-$(CONFIG_PWM_RENESAS_TPU)	+= pwm-renesas-tpu.o
+-obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
++obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung-legacy.o
+ obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
+ obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
+ obj-$(CONFIG_PWM_TIECAP)	+= pwm-tiecap.o
+diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung-legacy.c
+similarity index 100%
+rename from drivers/pwm/pwm-samsung.c
+rename to drivers/pwm/pwm-samsung-legacy.c
+-- 
+1.8.3.2
