@@ -1,153 +1,114 @@
 Return-Path: <tomasz.figa@gmail.com>
 Return-Path: <tomasz.figa@gmail.com>
 From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: [PATCH v4 20/20] ARM: SAMSUNG: Remove plat/regs-timer.h header
-Date: Sat, 20 Jul 2013 02:04:33 +0200
-Message-Id: <1374278673-25615-22-git-send-email-tomasz.figa@gmail.com>
+Subject: [PATCH v4 05/20] clocksource: samsung_pwm_timer: Handle suspend/resume correctly
+Date: Sat, 20 Jul 2013 02:04:18 +0200
+Message-Id: <1374278673-25615-7-git-send-email-tomasz.figa@gmail.com>
 In-Reply-To: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com>
 References: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: linux-samsung-soc@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Tomasz Figa <tomasz.figa@gmail.com>
 
-Since all uses of the header has been removed by previous patches it can
-be removed safely.
+Current suspend/resume handling of the driver was broken, because:
+ - periodic timer was being enabled in CLOCK_EVT_MODE_RESUME mode, which
+   does not seem to be correct behavior looking at other platforms,
+ - PWM divisors need to be restored, but they were not,
+ - clockevent interrupt mask needs to be restored, but it was not,
+ - clocksource was being restored in clockevent resume callback.
+
+This patch fixes issues mentioned above, making suspend/resume handling
+in the driver correct.
 
 Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
 ---
- arch/arm/plat-samsung/include/plat/regs-timer.h | 124 ------------------------
- 1 file changed, 124 deletions(-)
- delete mode 100644 arch/arm/plat-samsung/include/plat/regs-timer.h
+ drivers/clocksource/samsung_pwm_timer.c | 42 ++++++++++++++++++++++-----------
+ 1 file changed, 28 insertions(+), 14 deletions(-)
 
-diff --git a/arch/arm/plat-samsung/include/plat/regs-timer.h b/arch/arm/plat-samsung/include/plat/regs-timer.h
-deleted file mode 100644
-index d097d92..0000000
---- a/arch/arm/plat-samsung/include/plat/regs-timer.h
-+++ /dev/null
-@@ -1,124 +0,0 @@
--/* arch/arm/mach-s3c2410/include/mach/regs-timer.h
-- *
-- * Copyright (c) 2003 Simtec Electronics <linux@simtec.co.uk>
-- *		      http://www.simtec.co.uk/products/SWLINUX/
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 as
-- * published by the Free Software Foundation.
-- *
-- * S3C2410 Timer configuration
--*/
+diff --git a/drivers/clocksource/samsung_pwm_timer.c b/drivers/clocksource/samsung_pwm_timer.c
+index 753ffec..282e0e2 100644
+--- a/drivers/clocksource/samsung_pwm_timer.c
++++ b/drivers/clocksource/samsung_pwm_timer.c
+@@ -197,17 +197,6 @@ static int samsung_set_next_event(unsigned long cycles,
+ 	return 0;
+ }
+ 
+-static void samsung_timer_resume(void)
+-{
+-	/* event timer restart */
+-	samsung_time_setup(pwm.event_id, pwm.clock_count_per_tick - 1);
+-	samsung_time_start(pwm.event_id, true);
 -
--#ifndef __ASM_ARCH_REGS_TIMER_H
--#define __ASM_ARCH_REGS_TIMER_H
+-	/* source timer restart */
+-	samsung_time_setup(pwm.source_id, pwm.tcnt_max);
+-	samsung_time_start(pwm.source_id, true);
+-}
 -
--#define S3C_TIMERREG(x) (S3C_VA_TIMER + (x))
--#define S3C_TIMERREG2(tmr,reg) S3C_TIMERREG((reg)+0x0c+((tmr)*0x0c))
+ static void samsung_set_mode(enum clock_event_mode mode,
+ 				struct clock_event_device *evt)
+ {
+@@ -224,20 +213,29 @@ static void samsung_set_mode(enum clock_event_mode mode,
+ 
+ 	case CLOCK_EVT_MODE_UNUSED:
+ 	case CLOCK_EVT_MODE_SHUTDOWN:
+-		break;
 -
--#define S3C2410_TCFG0	      S3C_TIMERREG(0x00)
--#define S3C2410_TCFG1	      S3C_TIMERREG(0x04)
--#define S3C2410_TCON	      S3C_TIMERREG(0x08)
--
--#define S3C64XX_TINT_CSTAT    S3C_TIMERREG(0x44)
--
--#define S3C2410_TCFG_PRESCALER0_MASK (255<<0)
--#define S3C2410_TCFG_PRESCALER1_MASK (255<<8)
--#define S3C2410_TCFG_PRESCALER1_SHIFT (8)
--#define S3C2410_TCFG_DEADZONE_MASK   (255<<16)
--#define S3C2410_TCFG_DEADZONE_SHIFT  (16)
--
--#define S3C2410_TCFG1_MUX4_DIV2	  (0<<16)
--#define S3C2410_TCFG1_MUX4_DIV4	  (1<<16)
--#define S3C2410_TCFG1_MUX4_DIV8	  (2<<16)
--#define S3C2410_TCFG1_MUX4_DIV16  (3<<16)
--#define S3C2410_TCFG1_MUX4_TCLK1  (4<<16)
--#define S3C2410_TCFG1_MUX4_MASK	  (15<<16)
--#define S3C2410_TCFG1_MUX4_SHIFT  (16)
--
--#define S3C2410_TCFG1_MUX3_DIV2	  (0<<12)
--#define S3C2410_TCFG1_MUX3_DIV4	  (1<<12)
--#define S3C2410_TCFG1_MUX3_DIV8	  (2<<12)
--#define S3C2410_TCFG1_MUX3_DIV16  (3<<12)
--#define S3C2410_TCFG1_MUX3_TCLK1  (4<<12)
--#define S3C2410_TCFG1_MUX3_MASK	  (15<<12)
--
--
--#define S3C2410_TCFG1_MUX2_DIV2	  (0<<8)
--#define S3C2410_TCFG1_MUX2_DIV4	  (1<<8)
--#define S3C2410_TCFG1_MUX2_DIV8	  (2<<8)
--#define S3C2410_TCFG1_MUX2_DIV16  (3<<8)
--#define S3C2410_TCFG1_MUX2_TCLK1  (4<<8)
--#define S3C2410_TCFG1_MUX2_MASK	  (15<<8)
--
--
--#define S3C2410_TCFG1_MUX1_DIV2	  (0<<4)
--#define S3C2410_TCFG1_MUX1_DIV4	  (1<<4)
--#define S3C2410_TCFG1_MUX1_DIV8	  (2<<4)
--#define S3C2410_TCFG1_MUX1_DIV16  (3<<4)
--#define S3C2410_TCFG1_MUX1_TCLK0  (4<<4)
--#define S3C2410_TCFG1_MUX1_MASK	  (15<<4)
--
--#define S3C2410_TCFG1_MUX0_DIV2	  (0<<0)
--#define S3C2410_TCFG1_MUX0_DIV4	  (1<<0)
--#define S3C2410_TCFG1_MUX0_DIV8	  (2<<0)
--#define S3C2410_TCFG1_MUX0_DIV16  (3<<0)
--#define S3C2410_TCFG1_MUX0_TCLK0  (4<<0)
--#define S3C2410_TCFG1_MUX0_MASK	  (15<<0)
--
--#define S3C2410_TCFG1_MUX_DIV2	  (0<<0)
--#define S3C2410_TCFG1_MUX_DIV4	  (1<<0)
--#define S3C2410_TCFG1_MUX_DIV8	  (2<<0)
--#define S3C2410_TCFG1_MUX_DIV16   (3<<0)
--#define S3C2410_TCFG1_MUX_TCLK    (4<<0)
--#define S3C2410_TCFG1_MUX_MASK	  (15<<0)
--
--#define S3C64XX_TCFG1_MUX_DIV1	  (0<<0)
--#define S3C64XX_TCFG1_MUX_DIV2	  (1<<0)
--#define S3C64XX_TCFG1_MUX_DIV4	  (2<<0)
--#define S3C64XX_TCFG1_MUX_DIV8    (3<<0)
--#define S3C64XX_TCFG1_MUX_DIV16   (4<<0)
--#define S3C64XX_TCFG1_MUX_TCLK    (5<<0)  /* 3 sets of TCLK */
--#define S3C64XX_TCFG1_MUX_MASK	  (15<<0)
--
--#define S3C2410_TCFG1_SHIFT(x)	  ((x) * 4)
--
--/* for each timer, we have an count buffer, an compare buffer and
-- * an observation buffer
--*/
--
--/* WARNING - timer 4 has no buffer reg, and it's observation is at +4 */
--
--#define S3C2410_TCNTB(tmr)    S3C_TIMERREG2(tmr, 0x00)
--#define S3C2410_TCMPB(tmr)    S3C_TIMERREG2(tmr, 0x04)
--#define S3C2410_TCNTO(tmr)    S3C_TIMERREG2(tmr, (((tmr) == 4) ? 0x04 : 0x08))
--
--#define S3C2410_TCON_T4RELOAD	  (1<<22)
--#define S3C2410_TCON_T4MANUALUPD  (1<<21)
--#define S3C2410_TCON_T4START	  (1<<20)
--
--#define S3C2410_TCON_T3RELOAD	  (1<<19)
--#define S3C2410_TCON_T3INVERT	  (1<<18)
--#define S3C2410_TCON_T3MANUALUPD  (1<<17)
--#define S3C2410_TCON_T3START	  (1<<16)
--
--#define S3C2410_TCON_T2RELOAD	  (1<<15)
--#define S3C2410_TCON_T2INVERT	  (1<<14)
--#define S3C2410_TCON_T2MANUALUPD  (1<<13)
--#define S3C2410_TCON_T2START	  (1<<12)
--
--#define S3C2410_TCON_T1RELOAD	  (1<<11)
--#define S3C2410_TCON_T1INVERT	  (1<<10)
--#define S3C2410_TCON_T1MANUALUPD  (1<<9)
--#define S3C2410_TCON_T1START	  (1<<8)
--
--#define S3C2410_TCON_T0DEADZONE	  (1<<4)
--#define S3C2410_TCON_T0RELOAD	  (1<<3)
--#define S3C2410_TCON_T0INVERT	  (1<<2)
--#define S3C2410_TCON_T0MANUALUPD  (1<<1)
--#define S3C2410_TCON_T0START	  (1<<0)
--
--#endif /*  __ASM_ARCH_REGS_TIMER_H */
--
--
--
+ 	case CLOCK_EVT_MODE_RESUME:
+-		samsung_timer_resume();
+ 		break;
+ 	}
+ }
+ 
++static void samsung_clockevent_resume(struct clock_event_device *cev)
++{
++	samsung_timer_set_prescale(pwm.event_id, pwm.tscaler_div);
++	samsung_timer_set_divisor(pwm.event_id, pwm.tdiv);
++
++	if (pwm.variant.has_tint_cstat) {
++		u32 mask = (1 << pwm.event_id);
++		writel(mask | (mask << 5), pwm.base + REG_TINT_CSTAT);
++	}
++}
++
+ static struct clock_event_device time_event_device = {
+ 	.name		= "samsung_event_timer",
+ 	.features	= CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
+ 	.rating		= 200,
+ 	.set_next_event	= samsung_set_next_event,
+ 	.set_mode	= samsung_set_mode,
++	.resume		= samsung_clockevent_resume,
+ };
+ 
+ static irqreturn_t samsung_clock_event_isr(int irq, void *dev_id)
+@@ -288,6 +286,20 @@ static void __init samsung_clockevent_init(void)
+ 	}
+ }
+ 
++static void samsung_clocksource_suspend(struct clocksource *cs)
++{
++	samsung_time_stop(pwm.source_id);
++}
++
++static void samsung_clocksource_resume(struct clocksource *cs)
++{
++	samsung_timer_set_prescale(pwm.source_id, pwm.tscaler_div);
++	samsung_timer_set_divisor(pwm.source_id, pwm.tdiv);
++
++	samsung_time_setup(pwm.source_id, pwm.tcnt_max);
++	samsung_time_start(pwm.source_id, true);
++}
++
+ static cycle_t samsung_clocksource_read(struct clocksource *c)
+ {
+ 	return ~readl_relaxed(pwm.source_reg);
+@@ -297,6 +309,8 @@ static struct clocksource samsung_clocksource = {
+ 	.name		= "samsung_clocksource_timer",
+ 	.rating		= 250,
+ 	.read		= samsung_clocksource_read,
++	.suspend	= samsung_clocksource_suspend,
++	.resume		= samsung_clocksource_resume,
+ 	.flags		= CLOCK_SOURCE_IS_CONTINUOUS,
+ };
+ 
 -- 
 1.8.3.2
