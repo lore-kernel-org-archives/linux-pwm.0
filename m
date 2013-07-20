@@ -1,177 +1,165 @@
-Return-Path: <Milo.Kim@ti.com>
-From: "Kim, Milo" <Milo.Kim@ti.com>
-Subject: [PATCH v2 2/4] gpio: add LP3943 I2C GPIO expander driver
-Date: Tue, 30 Jul 2013 00:42:21 +0000
-Message-ID: <A874F61F95741C4A9BA573A70FE3998F82E849DF@DQHE06.ent.ti.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+Return-Path: <tomasz.figa@gmail.com>
+Return-Path: <tomasz.figa@gmail.com>
+From: Tomasz Figa <tomasz.figa@gmail.com>
+Subject: [PATCH v4 00/20] Samsung PWM support cleanup
+Date: Sat, 20 Jul 2013 02:04:12 +0200
+Message-Id: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: "linus.walleij@linaro.org" <linus.walleij@linaro.org>
-Cc: "lee.jones@linaro.org" <lee.jones@linaro.org>, "Samuel Ortiz  <sameo@linux.intel.com>, broonie@kernel.org (sameo@linux.intel.com)" <broonie@kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+To: linux-samsung-soc@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Tomasz Figa <tomasz.figa@gmail.com>
 
-VGhpcyBpcyBvbmUgb2YgTFAzOTQzIE1GRCBkcml2ZXIuDQpMUDM5NDMgaXMgY29uZmlndXJhYmxl
-IGFzIGEgR1BJTyBleHBhbmRlciwgdXAgdG8gMTYgR1BJT3MuDQoNCiogQXBwbGljYXRpb24gbm90
-ZTogaG93IHRvIGNvbmZpZ3VyZSBMUDM5NDMgYXMgYSBHUElPIGV4cGFuZGVyDQogIGh0dHA6Ly93
-d3cudGkuY29tL2xpdC9hbi9zbnZhMjg3YS9zbnZhMjg3YS5wZGYNCg0KKiBTdXBwb3J0ZWQgR1BJ
-TyBjb250cm9sbGVyIG9wZXJhdGlvbnMNCiAgcmVxdWVzdCwgZnJlZSwgZGlyZWN0aW9uX2lucHV0
-LCBkaXJlY3Rpb25fb3V0cHV0LCBnZXQgYW5kIHNldA0KDQoqIEdQSU8gZGlyZWN0aW9uIHJlZ2lz
-dGVyIG5vdCBzdXBwb3J0ZWQNCiAgTFAzOTQzIGRvZXNuJ3QgaGF2ZSB0aGUgR1BJTyBkaXJlY3Rp
-b24gcmVnaXN0ZXIuIEl0IG9ubHkgcHJvdmlkZXMgaW5wdXQgYW5kDQogIG91dHB1dCBzdGF0dXMg
-cmVnaXN0ZXJzLg0KICBTbywgcHJpdmF0ZSBkYXRhIGZvciB0aGUgZGlyZWN0aW9uIHNob3VsZCBi
-ZSBoYW5kbGVkIG1hbnVhbGx5Lg0KICBUaGlzIHZhcmlhYmxlIGlzIHVwZGF0ZWQgd2hlbmV2ZXIg
-dGhlIGRpcmVjdGlvbiBpcyBjaGFuZ2VkIGFuZA0KICB1c2VkIGluICdnZXQnIG9wZXJhdGlvbi4N
-Cg0KKiBQaW4gYXNzaWdubWVudA0KICBBIGRyaXZlciBkYXRhLCAncGluX3VzZWQnIGlzIGNoZWNr
-ZWQgd2hlbiBhIEdQSU8gaXMgcmVxdWVzdGVkLg0KICBJZiB0aGUgR1BJTyBpcyBhbHJlYWR5IGFz
-c2lnbmVkLCB0aGVuIHJldHVybnMgYXMgZmFpbHVyZS4NCiAgSWYgdGhlIEdQSU8gaXMgYXZhaWxh
-YmxlLCAncGluX3VzZWQnIGlzIHNldC4NCiAgV2hlbiB0aGUgR1BJTyBpcyBub3QgdXNlZCBhbnlt
-b3JlLCB0aGVuIGl0IGlzIGNsZWFyZWQuDQogIEl0IGlzIGRlZmluZWQgYXMgdW5zaWduZWQgbG9u
-ZyB0eXBlIGZvciBhdG9taWMgYml0IG9wZXJhdGlvbiBBUElzLA0KICBidXQgb25seSBMU0IgMTZi
-aXRzIGFyZSB1c2VkIGJlY2F1c2UgTFAzOTQzIGhhcyAxNiBvdXRwdXRzLg0KDQpDYzogTGludXMg
-V2FsbGVpaiA8bGludXMud2FsbGVpakBsaW5hcm8ub3JnPg0KU2lnbmVkLW9mZi1ieTogTWlsbyBL
-aW0gPG1pbG8ua2ltQHRpLmNvbT4NCi0tLQ0KKiBQYXRjaCB2Mg0KICBVc2UgYml0b3BzIG1hY3Jv
-cyBmb3IgYml0IG1hbmlwdWxhdGlvbnMuDQogIFN1cHBvcnQgZGV2aWNlIHRyZWUgc3RydWN0dXJl
-IGZvciB0aGUgR1BJTyBjb250cm9sbGVyLg0KICBBZGQgcmVxdWVzdCgpIGFuZCBmcmVlKCkgZm9y
-IHRoZSBwaW4gYXNzaWdubWVudC4NCg0KIGRyaXZlcnMvZ3Bpby9LY29uZmlnICAgICAgIHwgICAg
-OCArKw0KIGRyaXZlcnMvZ3Bpby9NYWtlZmlsZSAgICAgIHwgICAgMSArDQogZHJpdmVycy9ncGlv
-L2dwaW8tbHAzOTQzLmMgfCAgMjQyICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrDQogMyBmaWxlcyBjaGFuZ2VkLCAyNTEgaW5zZXJ0aW9ucygrKQ0KIGNyZWF0ZSBt
-b2RlIDEwMDY0NCBkcml2ZXJzL2dwaW8vZ3Bpby1scDM5NDMuYw0KDQpkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9ncGlvL0tjb25maWcgYi9kcml2ZXJzL2dwaW8vS2NvbmZpZw0KaW5kZXggNTczYzQ0OS4u
-YmFmNjE2NiAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvZ3Bpby9LY29uZmlnDQorKysgYi9kcml2ZXJz
-L2dwaW8vS2NvbmZpZw0KQEAgLTMyNSw2ICszMjUsMTQgQEAgY29uZmlnIEdQSU9fQVJJWk9OQQ0K
-IAloZWxwDQogCSAgU3VwcG9ydCBmb3IgR1BJT3Mgb24gV29sZnNvbiBBcml6b25hIGNsYXNzIGRl
-dmljZXMuDQogDQorY29uZmlnIEdQSU9fTFAzOTQzDQorCXRyaXN0YXRlICJUSS9OYXRpb25hbCBT
-ZW1pY29uZHVjdG9yIExQMzk0MyBHUElPIGV4cGFuZGVyIg0KKwlkZXBlbmRzIG9uIE1GRF9MUDM5
-NDMNCisJaGVscA0KKwkgIEdQSU8gZHJpdmVyIGZvciBMUDM5NDMgTUZELg0KKwkgIExQMzk0MyBj
-YW4gYmUgdXNlZCBhcyBhIEdQSU8gZXhwYW5kZXIgd2hpY2ggcHJvdmlkZXMgdXAgdG8gMTYgR1BJ
-T3MuDQorCSAgT3BlbiBkcmFpbiBvdXRwdXRzIGFyZSByZXF1aXJlZCBmb3IgdGhpcyB1c2FnZS4N
-CisNCiBjb25maWcgR1BJT19NQVg3MzAwDQogCXRyaXN0YXRlICJNYXhpbSBNQVg3MzAwIEdQSU8g
-ZXhwYW5kZXIiDQogCWRlcGVuZHMgb24gSTJDDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncGlvL01h
-a2VmaWxlIGIvZHJpdmVycy9ncGlvL01ha2VmaWxlDQppbmRleCAwY2IyZDY1Li5mZjU4MGFjIDEw
-MDY0NA0KLS0tIGEvZHJpdmVycy9ncGlvL01ha2VmaWxlDQorKysgYi9kcml2ZXJzL2dwaW8vTWFr
-ZWZpbGUNCkBAIC0zMSw2ICszMSw3IEBAIG9iai0kKENPTkZJR19HUElPX0lUODc2MUUpCSs9IGdw
-aW8taXQ4NzYxZS5vDQogb2JqLSQoQ09ORklHX0dQSU9fSkFOWl9UVEwpCSs9IGdwaW8tamFuei10
-dGwubw0KIG9iai0kKENPTkZJR19BUkNIX0tTODY5NSkJKz0gZ3Bpby1rczg2OTUubw0KIG9iai0k
-KENPTkZJR19HUElPX0xBTkdXRUxMKQkrPSBncGlvLWxhbmd3ZWxsLm8NCitvYmotJChDT05GSUdf
-R1BJT19MUDM5NDMpCSs9IGdwaW8tbHAzOTQzLm8NCiBvYmotJChDT05GSUdfQVJDSF9MUEMzMlhY
-KQkrPSBncGlvLWxwYzMyeHgubw0KIG9iai0kKENPTkZJR19HUElPX0xZTlhQT0lOVCkJKz0gZ3Bp
-by1seW54cG9pbnQubw0KIG9iai0kKENPTkZJR19HUElPX01BWDczMFgpCSs9IGdwaW8tbWF4NzMw
-eC5vDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncGlvL2dwaW8tbHAzOTQzLmMgYi9kcml2ZXJzL2dw
-aW8vZ3Bpby1scDM5NDMuYw0KbmV3IGZpbGUgbW9kZSAxMDA2NDQNCmluZGV4IDAwMDAwMDAuLjYx
-ODU1ZDkNCi0tLSAvZGV2L251bGwNCisrKyBiL2RyaXZlcnMvZ3Bpby9ncGlvLWxwMzk0My5jDQpA
-QCAtMCwwICsxLDI0MiBAQA0KKy8qDQorICogVEkvTmF0aW9uYWwgU2VtaWNvbmR1Y3RvciBMUDM5
-NDMgR1BJTyBkcml2ZXINCisgKg0KKyAqIENvcHlyaWdodCAyMDEzIFRleGFzIEluc3RydW1lbnRz
-DQorICoNCisgKiBBdXRob3I6IE1pbG8gS2ltIDxtaWxvLmtpbUB0aS5jb20+DQorICoNCisgKiBU
-aGlzIHByb2dyYW0gaXMgZnJlZSBzb2Z0d2FyZTsgeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5k
-L29yIG1vZGlmeQ0KKyAqIGl0IHVuZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIEdlbmVyYWwgUHVi
-bGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5DQorICogdGhlIEZyZWUgU29mdHdhcmUgRm91bmRh
-dGlvbjsgdmVyc2lvbiAyLg0KKyAqLw0KKw0KKyNpbmNsdWRlIDxsaW51eC9iaXRvcHMuaD4NCisj
-aW5jbHVkZSA8bGludXgvZXJyLmg+DQorI2luY2x1ZGUgPGxpbnV4L2dwaW8uaD4NCisjaW5jbHVk
-ZSA8bGludXgvaTJjLmg+DQorI2luY2x1ZGUgPGxpbnV4L21mZC9scDM5NDMuaD4NCisjaW5jbHVk
-ZSA8bGludXgvbW9kdWxlLmg+DQorI2luY2x1ZGUgPGxpbnV4L3BsYXRmb3JtX2RldmljZS5oPg0K
-KyNpbmNsdWRlIDxsaW51eC9zbGFiLmg+DQorDQorI2RlZmluZSB0b19scDM5NDNfZ3BpbyhfY2hp
-cCkJY29udGFpbmVyX29mKF9jaGlwLCBzdHJ1Y3QgbHAzOTQzX2dwaW8sIGNoaXApDQorDQorZW51
-bSBscDM5NDNfZ3Bpb3Mgew0KKwlMUDM5NDNfR1BJTzEsDQorCUxQMzk0M19HUElPMiwNCisJTFAz
-OTQzX0dQSU8zLA0KKwlMUDM5NDNfR1BJTzQsDQorCUxQMzk0M19HUElPNSwNCisJTFAzOTQzX0dQ
-SU82LA0KKwlMUDM5NDNfR1BJTzcsDQorCUxQMzk0M19HUElPOCwNCisJTFAzOTQzX0dQSU85LA0K
-KwlMUDM5NDNfR1BJTzEwLA0KKwlMUDM5NDNfR1BJTzExLA0KKwlMUDM5NDNfR1BJTzEyLA0KKwlM
-UDM5NDNfR1BJTzEzLA0KKwlMUDM5NDNfR1BJTzE0LA0KKwlMUDM5NDNfR1BJTzE1LA0KKwlMUDM5
-NDNfR1BJTzE2LA0KKwlMUDM5NDNfTUFYX0dQSU8sDQorfTsNCisNCitzdHJ1Y3QgbHAzOTQzX2dw
-aW8gew0KKwlzdHJ1Y3QgZ3Bpb19jaGlwIGNoaXA7DQorCXN0cnVjdCBscDM5NDMgKmxwMzk0MzsN
-CisJdTE2IGlucHV0X21hc2s7CQkvKiAxID0gR1BJTyBpcyBpbnB1dCBkaXJlY3Rpb24sIDAgPSBv
-dXRwdXQgKi8NCit9Ow0KKw0KK3N0YXRpYyBpbnQgbHAzOTQzX2dwaW9fcmVxdWVzdChzdHJ1Y3Qg
-Z3Bpb19jaGlwICpjaGlwLCB1bnNpZ25lZCBvZmZzZXQpDQorew0KKwlzdHJ1Y3QgbHAzOTQzX2dw
-aW8gKmxwMzk0M19ncGlvID0gdG9fbHAzOTQzX2dwaW8oY2hpcCk7DQorCXN0cnVjdCBscDM5NDMg
-KmxwMzk0MyA9IGxwMzk0M19ncGlvLT5scDM5NDM7DQorDQorCS8qIFJldHVybiBhbiBlcnJvciBp
-ZiB0aGUgcGluIGlzIGFscmVhZHkgYXNzaWduZWQgKi8NCisJaWYgKHRlc3RfYW5kX3NldF9iaXQo
-b2Zmc2V0LCAmbHAzOTQzLT5waW5fdXNlZCkpDQorCQlyZXR1cm4gLUVCVVNZOw0KKw0KKwlyZXR1
-cm4gMDsNCit9DQorDQorc3RhdGljIHZvaWQgbHAzOTQzX2dwaW9fZnJlZShzdHJ1Y3QgZ3Bpb19j
-aGlwICpjaGlwLCB1bnNpZ25lZCBvZmZzZXQpDQorew0KKwlzdHJ1Y3QgbHAzOTQzX2dwaW8gKmxw
-Mzk0M19ncGlvID0gdG9fbHAzOTQzX2dwaW8oY2hpcCk7DQorCXN0cnVjdCBscDM5NDMgKmxwMzk0
-MyA9IGxwMzk0M19ncGlvLT5scDM5NDM7DQorDQorCWNsZWFyX2JpdChvZmZzZXQsICZscDM5NDMt
-PnBpbl91c2VkKTsNCit9DQorDQorc3RhdGljIGludCBscDM5NDNfZ3Bpb19kaXJlY3Rpb25faW5w
-dXQoc3RydWN0IGdwaW9fY2hpcCAqY2hpcCwgdW5zaWduZWQgb2Zmc2V0KQ0KK3sNCisJc3RydWN0
-IGxwMzk0M19ncGlvICpscDM5NDNfZ3BpbyA9IHRvX2xwMzk0M19ncGlvKGNoaXApOw0KKwlzdHJ1
-Y3QgbHAzOTQzICpscDM5NDMgPSBscDM5NDNfZ3Bpby0+bHAzOTQzOw0KKwljb25zdCBzdHJ1Y3Qg
-bHAzOTQzX3JlZ19jZmcgKm11eCA9IGxwMzk0My0+bXV4X2NmZzsNCisNCisJbHAzOTQzX2dwaW8t
-PmlucHV0X21hc2sgfD0gQklUKG9mZnNldCk7DQorDQorCXJldHVybiBscDM5NDNfdXBkYXRlX2Jp
-dHMobHAzOTQzLCBtdXhbb2Zmc2V0XS5yZWcsIG11eFtvZmZzZXRdLm1hc2ssDQorCQkJCUxQMzk0
-M19HUElPX0lOIDw8IG11eFtvZmZzZXRdLnNoaWZ0KTsNCit9DQorDQorc3RhdGljIGludCBscDM5
-NDNfZ2V0X2dwaW9faW5fc3RhdHVzKHN0cnVjdCBscDM5NDNfZ3BpbyAqbHAzOTQzX2dwaW8sDQor
-CQkJCXN0cnVjdCBncGlvX2NoaXAgKmNoaXAsIHVuc2lnbmVkIG9mZnNldCkNCit7DQorCXU4IGFk
-ZHI7DQorCXU4IHJlYWQ7DQorCWludCBlcnI7DQorDQorCXN3aXRjaCAob2Zmc2V0KSB7DQorCWNh
-c2UgTFAzOTQzX0dQSU8xIC4uLiBMUDM5NDNfR1BJTzg6DQorCQlhZGRyID0gTFAzOTQzX1JFR19H
-UElPX0E7DQorCQlicmVhazsNCisJY2FzZSBMUDM5NDNfR1BJTzkgLi4uIExQMzk0M19HUElPMTY6
-DQorCQlhZGRyID0gTFAzOTQzX1JFR19HUElPX0I7DQorCQlvZmZzZXQgPSBvZmZzZXQgLSA4Ow0K
-KwkJYnJlYWs7DQorCWRlZmF1bHQ6DQorCQlyZXR1cm4gLUVJTlZBTDsNCisJfQ0KKw0KKwllcnIg
-PSBscDM5NDNfcmVhZF9ieXRlKGxwMzk0M19ncGlvLT5scDM5NDMsIGFkZHIsICZyZWFkKTsNCisJ
-aWYgKGVycikNCisJCXJldHVybiBlcnI7DQorDQorCXJldHVybiAhIShyZWFkICYgQklUKG9mZnNl
-dCkpOw0KK30NCisNCitzdGF0aWMgaW50IGxwMzk0M19nZXRfZ3Bpb19vdXRfc3RhdHVzKHN0cnVj
-dCBscDM5NDNfZ3BpbyAqbHAzOTQzX2dwaW8sDQorCQkJCXN0cnVjdCBncGlvX2NoaXAgKmNoaXAs
-IHVuc2lnbmVkIG9mZnNldCkNCit7DQorCXN0cnVjdCBscDM5NDMgKmxwMzk0MyA9IGxwMzk0M19n
-cGlvLT5scDM5NDM7DQorCWNvbnN0IHN0cnVjdCBscDM5NDNfcmVnX2NmZyAqbXV4ID0gbHAzOTQz
-LT5tdXhfY2ZnOw0KKwlpbnQgZXJyOw0KKwl1OCByZWFkOw0KKw0KKwllcnIgPSBscDM5NDNfcmVh
-ZF9ieXRlKGxwMzk0MywgbXV4W29mZnNldF0ucmVnLCAmcmVhZCk7DQorCWlmIChlcnIpDQorCQly
-ZXR1cm4gZXJyOw0KKw0KKwlyZWFkID0gKHJlYWQgJiBtdXhbb2Zmc2V0XS5tYXNrKSA+PiBtdXhb
-b2Zmc2V0XS5zaGlmdDsNCisNCisJaWYgKHJlYWQgPT0gTFAzOTQzX0dQSU9fT1VUX0hJR0gpDQor
-CQlyZXR1cm4gMTsNCisJZWxzZSBpZiAocmVhZCA9PSBMUDM5NDNfR1BJT19PVVRfTE9XKQ0KKwkJ
-cmV0dXJuIDA7DQorCWVsc2UNCisJCXJldHVybiAtRUlOVkFMOw0KK30NCisNCitzdGF0aWMgaW50
-IGxwMzk0M19ncGlvX2dldChzdHJ1Y3QgZ3Bpb19jaGlwICpjaGlwLCB1bnNpZ25lZCBvZmZzZXQp
-DQorew0KKwlzdHJ1Y3QgbHAzOTQzX2dwaW8gKmxwMzk0M19ncGlvID0gdG9fbHAzOTQzX2dwaW8o
-Y2hpcCk7DQorDQorCS8qDQorCSAqIExpbWl0YXRpb246DQorCSAqICAgTFAzOTQzIGRvZXNuJ3Qg
-aGF2ZSB0aGUgR1BJTyBkaXJlY3Rpb24gcmVnaXN0ZXIuIEl0IHByb3ZpZGVzDQorCSAqICAgb25s
-eSBpbnB1dCBhbmQgb3V0cHV0IHN0YXR1cyByZWdpc3RlcnMuDQorCSAqICAgU28sIGRpcmVjdGlv
-biBpbmZvIGlzIHJlcXVpcmVkIHRvIGhhbmRsZSB0aGUgJ2dldCcgb3BlcmF0aW9uLg0KKwkgKiAg
-IFRoaXMgdmFyaWFibGUgaXMgdXBkYXRlZCB3aGVuZXZlciB0aGUgZGlyZWN0aW9uIGlzIGNoYW5n
-ZWQgYW5kDQorCSAqICAgaXQgaXMgdXNlZCBoZXJlLg0KKwkgKi8NCisNCisJaWYgKGxwMzk0M19n
-cGlvLT5pbnB1dF9tYXNrICYgQklUKG9mZnNldCkpDQorCQlyZXR1cm4gbHAzOTQzX2dldF9ncGlv
-X2luX3N0YXR1cyhscDM5NDNfZ3BpbywgY2hpcCwgb2Zmc2V0KTsNCisJZWxzZQ0KKwkJcmV0dXJu
-IGxwMzk0M19nZXRfZ3Bpb19vdXRfc3RhdHVzKGxwMzk0M19ncGlvLCBjaGlwLCBvZmZzZXQpOw0K
-K30NCisNCitzdGF0aWMgdm9pZCBscDM5NDNfZ3Bpb19zZXQoc3RydWN0IGdwaW9fY2hpcCAqY2hp
-cCwgdW5zaWduZWQgb2Zmc2V0LCBpbnQgdmFsdWUpDQorew0KKwlzdHJ1Y3QgbHAzOTQzX2dwaW8g
-KmxwMzk0M19ncGlvID0gdG9fbHAzOTQzX2dwaW8oY2hpcCk7DQorCXN0cnVjdCBscDM5NDMgKmxw
-Mzk0MyA9IGxwMzk0M19ncGlvLT5scDM5NDM7DQorCWNvbnN0IHN0cnVjdCBscDM5NDNfcmVnX2Nm
-ZyAqbXV4ID0gbHAzOTQzLT5tdXhfY2ZnOw0KKwl1OCBkYXRhOw0KKw0KKwlpZiAodmFsdWUpDQor
-CQlkYXRhID0gTFAzOTQzX0dQSU9fT1VUX0hJR0g7DQorCWVsc2UNCisJCWRhdGEgPSBMUDM5NDNf
-R1BJT19PVVRfTE9XOw0KKw0KKwlscDM5NDNfdXBkYXRlX2JpdHMobHAzOTQzLCBtdXhbb2Zmc2V0
-XS5yZWcsIG11eFtvZmZzZXRdLm1hc2ssDQorCQkJZGF0YSA8PCBtdXhbb2Zmc2V0XS5zaGlmdCk7
-DQorfQ0KKw0KK3N0YXRpYyBpbnQgbHAzOTQzX2dwaW9fZGlyZWN0aW9uX291dHB1dChzdHJ1Y3Qg
-Z3Bpb19jaGlwICpjaGlwLCB1bnNpZ25lZCBvZmZzZXQsDQorCQkJCQlpbnQgdmFsdWUpDQorew0K
-KwlzdHJ1Y3QgbHAzOTQzX2dwaW8gKmxwMzk0M19ncGlvID0gdG9fbHAzOTQzX2dwaW8oY2hpcCk7
-DQorDQorCWxwMzk0M19ncGlvX3NldChjaGlwLCBvZmZzZXQsIHZhbHVlKTsNCisJbHAzOTQzX2dw
-aW8tPmlucHV0X21hc2sgJj0gfkJJVChvZmZzZXQpOw0KKw0KKwlyZXR1cm4gMDsNCit9DQorDQor
-c3RhdGljIGNvbnN0IHN0cnVjdCBncGlvX2NoaXAgbHAzOTQzX2dwaW9fY2hpcCA9IHsNCisJLmxh
-YmVsCQkJPSAibHAzOTQzIiwNCisJLm93bmVyCQkJPSBUSElTX01PRFVMRSwNCisJLnJlcXVlc3QJ
-CT0gbHAzOTQzX2dwaW9fcmVxdWVzdCwNCisJLmZyZWUJCQk9IGxwMzk0M19ncGlvX2ZyZWUsDQor
-CS5kaXJlY3Rpb25faW5wdXQJPSBscDM5NDNfZ3Bpb19kaXJlY3Rpb25faW5wdXQsDQorCS5nZXQJ
-CQk9IGxwMzk0M19ncGlvX2dldCwNCisJLmRpcmVjdGlvbl9vdXRwdXQJPSBscDM5NDNfZ3Bpb19k
-aXJlY3Rpb25fb3V0cHV0LA0KKwkuc2V0CQkJPSBscDM5NDNfZ3Bpb19zZXQsDQorCS5iYXNlCQkJ
-PSAtMSwNCisJLm5ncGlvCQkJPSBMUDM5NDNfTUFYX0dQSU8sDQorCS5jYW5fc2xlZXAJCT0gMSwN
-Cit9Ow0KKw0KK3N0YXRpYyBpbnQgbHAzOTQzX2dwaW9fcHJvYmUoc3RydWN0IHBsYXRmb3JtX2Rl
-dmljZSAqcGRldikNCit7DQorCXN0cnVjdCBscDM5NDMgKmxwMzk0MyA9IGRldl9nZXRfZHJ2ZGF0
-YShwZGV2LT5kZXYucGFyZW50KTsNCisJc3RydWN0IGxwMzk0M19ncGlvICpscDM5NDNfZ3BpbzsN
-CisJaW50IHJldDsNCisNCisJbHAzOTQzX2dwaW8gPSBkZXZtX2t6YWxsb2MoJnBkZXYtPmRldiwg
-c2l6ZW9mKCpscDM5NDNfZ3BpbyksDQorCQkJCUdGUF9LRVJORUwpOw0KKwlpZiAoIWxwMzk0M19n
-cGlvKQ0KKwkJcmV0dXJuIC1FTk9NRU07DQorDQorCWxwMzk0M19ncGlvLT5scDM5NDMgPSBscDM5
-NDM7DQorCWxwMzk0M19ncGlvLT5jaGlwID0gbHAzOTQzX2dwaW9fY2hpcDsNCisJbHAzOTQzX2dw
-aW8tPmNoaXAuZGV2ID0gJnBkZXYtPmRldjsNCisNCisJcGxhdGZvcm1fc2V0X2RydmRhdGEocGRl
-diwgbHAzOTQzX2dwaW8pOw0KKw0KKwlyZXQgPSBncGlvY2hpcF9hZGQoJmxwMzk0M19ncGlvLT5j
-aGlwKTsNCisJaWYgKHJldCA8IDApIHsNCisJCWRldl9lcnIoJnBkZXYtPmRldiwgImZhaWxlZCB0
-byBhZGQgR1BJTyBjaGlwOiAlZFxuIiwgcmV0KTsNCisJCXJldHVybiByZXQ7DQorCX0NCisNCisJ
-cmV0dXJuIDA7DQorfQ0KKw0KK3N0YXRpYyBpbnQgbHAzOTQzX2dwaW9fcmVtb3ZlKHN0cnVjdCBw
-bGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQorew0KKwlzdHJ1Y3QgbHAzOTQzX2dwaW8gKmxwMzk0M19n
-cGlvID0gcGxhdGZvcm1fZ2V0X2RydmRhdGEocGRldik7DQorCXJldHVybiBncGlvY2hpcF9yZW1v
-dmUoJmxwMzk0M19ncGlvLT5jaGlwKTsNCit9DQorDQorc3RhdGljIGNvbnN0IHN0cnVjdCBvZl9k
-ZXZpY2VfaWQgbHAzOTQzX2dwaW9fZHRfaWRzW10gPSB7DQorCXsgLmNvbXBhdGlibGUgPSAidGks
-bHAzOTQzLWdwaW8iLCB9LA0KKwl7IH0NCit9Ow0KK01PRFVMRV9ERVZJQ0VfVEFCTEUob2YsIGxw
-Mzk0M19ncGlvX2R0X2lkcyk7DQorDQorc3RhdGljIHN0cnVjdCBwbGF0Zm9ybV9kcml2ZXIgbHAz
-OTQzX2dwaW9fZHJpdmVyID0gew0KKwkucHJvYmUgPSBscDM5NDNfZ3Bpb19wcm9iZSwNCisJLnJl
-bW92ZSA9IGxwMzk0M19ncGlvX3JlbW92ZSwNCisJLmRyaXZlciA9IHsNCisJCS5uYW1lID0gImxw
-Mzk0My1ncGlvIiwNCisJCS5vd25lciA9IFRISVNfTU9EVUxFLA0KKwkJLm9mX21hdGNoX3RhYmxl
-ID0gb2ZfbWF0Y2hfcHRyKGxwMzk0M19ncGlvX2R0X2lkcyksDQorCX0sDQorfTsNCittb2R1bGVf
-cGxhdGZvcm1fZHJpdmVyKGxwMzk0M19ncGlvX2RyaXZlcik7DQorDQorTU9EVUxFX0RFU0NSSVBU
-SU9OKCJMUDM5NDMgR1BJTyBkcml2ZXIiKTsNCitNT0RVTEVfQUxJQVMoInBsYXRmb3JtOmxwMzk0
-My1ncGlvIik7DQorTU9EVUxFX0FVVEhPUigiTWlsbyBLaW0iKTsNCitNT0RVTEVfTElDRU5TRSgi
-R1BMIik7DQotLSANCjEuNy45LjUNCg0KDQpCZXN0IFJlZ2FyZHMsDQpNaWxvDQoNCg0K
+Since we now have a proper Samsung PWM clocksource driver in place,
+we can proceed with further cleanup of PWM timers support on Samsung SoCs.
+
+This series attempts to achieve this goal by:
+ 1) fixing up few things in samsung_pwm_timer clocksource driver,
+ 2) moving remaining Samsung platforms to the new clocksource driver,
+ 3) removing old clocksource driver,
+ 4) adding new multiplatform- and DT-aware PWM driver,
+ 5) moving all Samsung platforms to use the new PWM driver,
+ 6) removing old PWM driver,
+ 7) removing all PWM-related code that is not used anymore.
+
+Cleaning up the PWM driver is a bit tricky, because the design of current
+driver makes it completely unsuitable for DT and multiplatform and would
+require a heavy rework to make it usable, breaking any existing Samsung PWM
+users by the way. To avoid any breakage this series first renames the old
+driver, then adds new one using original name, migrates all platforms to
+use it and then finally removes the old driver.
+
+See particular patches for more detailed descriptions.
+
+[On S3C6410-based Tiny6410 (Mini6410-compatible) with pwm-beeper, SMDK6410
+with PWM backlight and Exynos4210-based Origen board (with PWM0 attached
+to a scope)]
+Tested-by: Tomasz Figa <tomasz.figa@gmail.com>
+
+[On S3C2440-based Mini2440 board]
+Tested-by: Sylwester Nawrocki <sylvester.nawrocki@gmail.com>
+
+[On a s3c2416 based machine]
+Tested-by: Heiko Stuebner <heiko@sntech.de> 
+
+[Also not sure on what boards, but still]
+Tested-by: Mark Brown <broonie@linaro.org>
+
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
+Acked-by: Heiko Stuebner <heiko@sntech.de> 
+
+Changes since v3:
+ - added two extra clocksource driver fixes to the series (patches 1, 2),
+ - added comment explaining why only a simple synchronization is needed
+   between clocksource and PWM drivers,
+ - some stylistic fixes,
+ - rebased to 3.11-rc1.
+Changes since v2:
+ - replaced __raw_{readl,writel} with {readl,writel},
+ - corrected some commit messages,
+ - used git format-patch -M to detect rename.
+Changes since v1:
+ - made sure that suspend/resume is handled correctly in both
+   clocksource and PWM drivers,
+ - fixed incorrect definition of AUTORELOAD bit for channel 4,
+ - fixed order of registering PWM device and calling samsung_bl_set(),
+   which assumes that PWM device has been already registered,
+ - corrected commit messages of several patches,
+ - addressed all the valid comments from reviewers, including cleanup
+   of most code originally copied from previous PWM driver,
+ - rebased on top of current Kgene's for-next,
+ - tested on Exynos4210, verifying correct PWM output with a scope.
+
+Tomasz Figa (20):
+  clocksource: samsung_pwm_timer: Do not request PWM mem region
+  clocksource: samsung_pwm_timer: Correct definition of AUTORELOAD bit
+  clocksource: samsung_pwm_timer: Cache clocksource register address
+  clocksource: samsung_pwm_timer: Do not use clocksource_mmio
+  clocksource: samsung_pwm_timer: Handle suspend/resume correctly
+  ARM: SAMSUNG: Unify base address definitions of timer block
+  ARM: SAMSUNG: Add new PWM platform device
+  ARM: SAMSUNG: Set PWM platform data
+  ARM: SAMSUNG: Move all platforms to new clocksource driver
+  ARM: SAMSUNG: Remove old samsung-time driver
+  ARM: SAMSUNG: Remove unused PWM timer IRQ chip code
+  pwm: samsung: Rename to pwm-samsung-legacy
+  pwm: Add new pwm-samsung driver
+  ARM: SAMSUNG: Rework private data handling in dev-backlight
+  ARM: SAMSUNG: Modify board files to use new PWM platform device
+  pwm: Remove superseded pwm-samsung-legacy driver
+  ARM: SAMSUNG: Remove old PWM timer platform devices
+  ARM: SAMSUNG: Remove pwm-clock infrastructure
+  ARM: SAMSUNG: Remove remaining uses of plat/regs-timer.h header
+  ARM: SAMSUNG: Remove plat/regs-timer.h header
+
+ arch/arm/Kconfig                                   |  11 +-
+ arch/arm/mach-s3c24xx/Kconfig                      |   6 -
+ arch/arm/mach-s3c24xx/clock-s3c2410.c              |   1 -
+ arch/arm/mach-s3c24xx/clock-s3c2412.c              |   1 -
+ arch/arm/mach-s3c24xx/clock-s3c2416.c              |   2 -
+ arch/arm/mach-s3c24xx/clock-s3c2443.c              |   2 -
+ arch/arm/mach-s3c24xx/common.c                     |  27 +
+ arch/arm/mach-s3c24xx/include/mach/map.h           |   2 +
+ arch/arm/mach-s3c24xx/mach-h1940.c                 |   4 +-
+ arch/arm/mach-s3c24xx/mach-rx1950.c                |   5 +-
+ arch/arm/mach-s3c64xx/Kconfig                      |   2 -
+ arch/arm/mach-s3c64xx/clock.c                      |   2 -
+ arch/arm/mach-s3c64xx/common.c                     |  32 +-
+ arch/arm/mach-s3c64xx/include/mach/irqs.h          |   8 -
+ arch/arm/mach-s3c64xx/include/mach/map.h           |   1 +
+ arch/arm/mach-s3c64xx/irq-pm.c                     |   2 -
+ arch/arm/mach-s3c64xx/mach-crag6410.c              |   4 +-
+ arch/arm/mach-s3c64xx/mach-hmt.c                   |   4 +-
+ arch/arm/mach-s3c64xx/mach-smartq.c                |   4 +-
+ arch/arm/mach-s3c64xx/mach-smdk6410.c              |   5 +-
+ arch/arm/mach-s5p64x0/Kconfig                      |   2 -
+ arch/arm/mach-s5p64x0/clock-s5p6440.c              |   2 -
+ arch/arm/mach-s5p64x0/clock-s5p6450.c              |   2 -
+ arch/arm/mach-s5p64x0/common.c                     |  27 +
+ arch/arm/mach-s5p64x0/include/mach/irqs.h          |   2 -
+ arch/arm/mach-s5p64x0/include/mach/map.h           |   1 +
+ arch/arm/mach-s5p64x0/mach-smdk6440.c              |   5 +-
+ arch/arm/mach-s5p64x0/mach-smdk6450.c              |   5 +-
+ arch/arm/mach-s5p64x0/pm.c                         |   3 -
+ arch/arm/mach-s5pc100/Kconfig                      |   1 -
+ arch/arm/mach-s5pc100/clock.c                      |   2 -
+ arch/arm/mach-s5pc100/common.c                     |  28 +
+ arch/arm/mach-s5pc100/include/mach/irqs.h          |   2 -
+ arch/arm/mach-s5pc100/include/mach/map.h           |   1 +
+ arch/arm/mach-s5pc100/mach-smdkc100.c              |   5 +-
+ arch/arm/mach-s5pv210/Kconfig                      |   1 -
+ arch/arm/mach-s5pv210/clock.c                      |   1 -
+ arch/arm/mach-s5pv210/common.c                     |  28 +
+ arch/arm/mach-s5pv210/include/mach/irqs.h          |   2 -
+ arch/arm/mach-s5pv210/include/mach/map.h           |   1 +
+ arch/arm/mach-s5pv210/mach-smdkv210.c              |   5 +-
+ arch/arm/mach-s5pv210/pm.c                         |  10 -
+ arch/arm/plat-samsung/Kconfig                      |  14 -
+ arch/arm/plat-samsung/Makefile                     |   3 -
+ arch/arm/plat-samsung/dev-backlight.c              |  61 +-
+ arch/arm/plat-samsung/devs.c                       |  42 +-
+ arch/arm/plat-samsung/include/plat/clock.h         |   4 -
+ arch/arm/plat-samsung/include/plat/devs.h          |   1 +
+ arch/arm/plat-samsung/include/plat/irq-vic-timer.h |  13 -
+ arch/arm/plat-samsung/include/plat/irqs.h          |   9 -
+ arch/arm/plat-samsung/include/plat/pwm-clock.h     |  81 ---
+ arch/arm/plat-samsung/include/plat/pwm-core.h      |  24 +
+ arch/arm/plat-samsung/include/plat/regs-timer.h    | 124 ----
+ arch/arm/plat-samsung/include/plat/samsung-time.h  |  23 -
+ arch/arm/plat-samsung/irq-vic-timer.c              |  98 ---
+ arch/arm/plat-samsung/pwm-clock.c                  | 474 --------------
+ arch/arm/plat-samsung/s5p-irq.c                    |   4 -
+ arch/arm/plat-samsung/samsung-time.c               | 394 ------------
+ drivers/clocksource/Kconfig                        |   1 -
+ drivers/clocksource/samsung_pwm_timer.c            |  98 +--
+ drivers/pwm/pwm-samsung.c                          | 701 ++++++++++++++-------
+ 61 files changed, 768 insertions(+), 1662 deletions(-)
+ delete mode 100644 arch/arm/plat-samsung/include/plat/irq-vic-timer.h
+ delete mode 100644 arch/arm/plat-samsung/include/plat/pwm-clock.h
+ create mode 100644 arch/arm/plat-samsung/include/plat/pwm-core.h
+ delete mode 100644 arch/arm/plat-samsung/include/plat/regs-timer.h
+ delete mode 100644 arch/arm/plat-samsung/irq-vic-timer.c
+ delete mode 100644 arch/arm/plat-samsung/pwm-clock.c
+ delete mode 100644 arch/arm/plat-samsung/samsung-time.c
+
+-- 
+1.8.3.2
