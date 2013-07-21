@@ -1,106 +1,66 @@
-Return-Path: <tomasz.figa@gmail.com>
-Return-Path: <tomasz.figa@gmail.com>
-From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: [PATCH v5 07/20] ARM: SAMSUNG: Add new PWM platform device
-Date: Mon, 22 Jul 2013 22:52:51 +0200
-Message-ID: <2424688.n7D1SHrQ2V@flatron>
-In-Reply-To: <1374278673-25615-9-git-send-email-tomasz.figa@gmail.com>
-References: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com> <1374278673-25615-9-git-send-email-tomasz.figa@gmail.com>
+Return-Path: <sylvester.nawrocki@gmail.com>
+Return-Path: <sylvester.nawrocki@gmail.com>
+Message-ID: <51EC5F18.8040007@gmail.com>
+Date: Mon, 22 Jul 2013 00:22:16 +0200
+From: Sylwester Nawrocki <sylvester.nawrocki@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Subject: Re: [PATCH v4 00/20] Samsung PWM support cleanup
+References: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com>
+In-Reply-To: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 List-ID: <linux-pwm.vger.kernel.org>
-To: linux-samsung-soc@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>
+To: Tomasz Figa <tomasz.figa@gmail.com>
+Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, =?ISO-8859-1?Q?Heiko_St=FCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>
 
-This patch adds new samsung_device_pwm platform device that represents
-the whole PWM/timer block and includes memory and IRQ resources.
+On 07/20/2013 02:04 AM, Tomasz Figa wrote:
+> Since we now have a proper Samsung PWM clocksource driver in place,
+> we can proceed with further cleanup of PWM timers support on Samsung SoCs.
+>
+> This series attempts to achieve this goal by:
+>   1) fixing up few things in samsung_pwm_timer clocksource driver,
+>   2) moving remaining Samsung platforms to the new clocksource driver,
+>   3) removing old clocksource driver,
+>   4) adding new multiplatform- and DT-aware PWM driver,
+>   5) moving all Samsung platforms to use the new PWM driver,
+>   6) removing old PWM driver,
+>   7) removing all PWM-related code that is not used anymore.
+>
+> Cleaning up the PWM driver is a bit tricky, because the design of current
+> driver makes it completely unsuitable for DT and multiplatform and would
+> require a heavy rework to make it usable, breaking any existing Samsung PWM
+> users by the way. To avoid any breakage this series first renames the old
+> driver, then adds new one using original name, migrates all platforms to
+> use it and then finally removes the old driver.
+>
+> See particular patches for more detailed descriptions.
+>
+> [On S3C6410-based Tiny6410 (Mini6410-compatible) with pwm-beeper, SMDK6410
+> with PWM backlight and Exynos4210-based Origen board (with PWM0 attached
+> to a scope)]
+> Tested-by: Tomasz Figa<tomasz.figa@gmail.com>
+>
+> [On S3C2440-based Mini2440 board]
+> Tested-by: Sylwester Nawrocki<sylvester.nawrocki@gmail.com>
 
-Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
----
- arch/arm/plat-samsung/devs.c                  | 17 +++++++++++++++++
- arch/arm/plat-samsung/include/plat/devs.h     |  1 +
- arch/arm/plat-samsung/include/plat/pwm-core.h | 22 ++++++++++++++++++++++
- 3 files changed, 40 insertions(+)
- create mode 100644 arch/arm/plat-samsung/include/plat/pwm-core.h
+I have retested this series on top of v3.11-rc1 with pwm-backlight (and 
+buzzer
+as the output :)) on Mini2440. It seems to work well - generated frequencies
+are correct. I'll check pulse widths with a scope tomorrow, as it's a 
+bit late
+now. FWIW you can add to this series my:
 
-Changes since v4:
- - cleaned up header of pwm-core.h file.
+Reviewed-by: Sylwester Nawrocki <s.nawrocki@samsung.com>
 
-diff --git a/arch/arm/plat-samsung/devs.c b/arch/arm/plat-samsung/devs.c
-index 0f9c3f4..bba6d78 100644
---- a/arch/arm/plat-samsung/devs.c
-+++ b/arch/arm/plat-samsung/devs.c
-@@ -58,6 +58,7 @@
- #include <plat/keypad.h>
- #include <linux/platform_data/mmc-s3cmci.h>
- #include <linux/platform_data/mtd-nand-s3c2410.h>
-+#include <plat/pwm-core.h>
- #include <plat/sdhci.h>
- #include <linux/platform_data/touchscreen-s3c2410.h>
- #include <linux/platform_data/usb-s3c2410_udc.h>
-@@ -1127,6 +1128,22 @@ struct platform_device s3c_device_timer[] = {
- 	[3] = { DEFINE_S3C_TIMER(3, IRQ_TIMER3) },
- 	[4] = { DEFINE_S3C_TIMER(4, IRQ_TIMER4) },
- };
-+
-+static struct resource samsung_pwm_resource[] = {
-+	DEFINE_RES_MEM(SAMSUNG_PA_TIMER, SZ_4K),
-+};
-+
-+struct platform_device samsung_device_pwm = {
-+	.name		= "samsung-pwm",
-+	.id		= -1,
-+	.num_resources	= ARRAY_SIZE(samsung_pwm_resource),
-+	.resource	= samsung_pwm_resource,
-+};
-+
-+void __init samsung_pwm_set_platdata(struct samsung_pwm_variant *pd)
-+{
-+	samsung_device_pwm.dev.platform_data = pd;
-+}
- #endif /* CONFIG_SAMSUNG_DEV_PWM */
- 
- /* RTC */
-diff --git a/arch/arm/plat-samsung/include/plat/devs.h b/arch/arm/plat-samsung/include/plat/devs.h
-index 87d501f..0dc4ac4 100644
---- a/arch/arm/plat-samsung/include/plat/devs.h
-+++ b/arch/arm/plat-samsung/include/plat/devs.h
-@@ -134,6 +134,7 @@ extern struct platform_device exynos4_device_spdif;
- 
- extern struct platform_device samsung_asoc_idma;
- extern struct platform_device samsung_device_keypad;
-+extern struct platform_device samsung_device_pwm;
- 
- /* s3c2440 specific devices */
- 
-diff --git a/arch/arm/plat-samsung/include/plat/pwm-core.h b/arch/arm/plat-samsung/include/plat/pwm-core.h
-new file mode 100644
-index 0000000..77269a7
---- /dev/null
-+++ b/arch/arm/plat-samsung/include/plat/pwm-core.h
-@@ -0,0 +1,22 @@
-+/*
-+ * Copyright 2013 Tomasz Figa <tomasz.figa@gmail.com>
-+ *
-+ * Samsung PWM controller platform data helpers.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#ifndef __ASM_ARCH_PWM_CORE_H
-+#define __ASM_ARCH_PWM_CORE_H __FILE__
-+
-+#include <clocksource/samsung_pwm.h>
-+
-+#ifdef CONFIG_SAMSUNG_DEV_PWM
-+extern void samsung_pwm_set_platdata(struct samsung_pwm_variant *pd);
-+#else
-+static inline void samsung_pwm_set_platdata(struct samsung_pwm_variant *pd) { }
-+#endif
-+
-+#endif /* __ASM_ARCH_PWM_CORE_H */
--- 
-1.8.3.2
+> [On a s3c2416 based machine]
+> Tested-by: Heiko Stuebner<heiko@sntech.de>
+>
+> [Also not sure on what boards, but still]
+> Tested-by: Mark Brown<broonie@linaro.org>
+>
+> Acked-by: Arnd Bergmann<arnd@arndb.de>
+> Acked-by: Thierry Reding<thierry.reding@gmail.com>
+> Acked-by: Heiko Stuebner<heiko@sntech.de>
+
+Thanks,
+Sylwester
