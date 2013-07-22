@@ -1,53 +1,55 @@
-Return-Path: <Milo.Kim@ti.com>
-From: "Kim, Milo" <Milo.Kim@ti.com>
-Subject: RE: [PATCH 1/3] mfd: add LP3943 MFD driver
-Date: Mon, 22 Jul 2013 01:18:54 +0000
-Message-ID: <A874F61F95741C4A9BA573A70FE3998F82E83161@DQHE06.ent.ti.com>
+Return-Path: <lee.jones@linaro.org>
+Return-Path: <lee.jones@linaro.org>
+Date: Mon, 22 Jul 2013 08:48:24 +0100
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH 1/3] mfd: add LP3943 MFD driver
+Message-ID: <20130722074824.GD4681@laptop>
 References: <A874F61F95741C4A9BA573A70FE3998F82E815C3@DQHE06.ent.ti.com>
  <20130717112033.GB3336@laptop>
-In-Reply-To: <20130717112033.GB3336@laptop>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <A874F61F95741C4A9BA573A70FE3998F82E83161@DQHE06.ent.ti.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F82E83161@DQHE06.ent.ti.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Lee Jones <lee.jones@linaro.org>
+To: "Kim, Milo" <Milo.Kim@ti.com>
 Cc: "sameo@linux.intel.com" <sameo@linux.intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "broonie@kernel.org" <broonie@kernel.org>
 
-SGkgTGVlLA0KVGhhbmtzIGZvciB5b3VyIGRldGFpbGVkIHJldmlldy4NCg0KPiA+IGRpZmYgLS1n
-aXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbWZkL2xwMzk0My50eHQNCj4g
-Yi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbWZkL2xwMzk0My50eHQNCj4gPiBu
-ZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAuLjRlYjI1MWQNCj4gPiAtLS0g
-L2Rldi9udWxsDQo+ID4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL21m
-ZC9scDM5NDMudHh0DQo+ID4gQEAgLTAsMCArMSwyMyBAQA0KPiA+ICtCaW5kaW5ncyBmb3IgVEkv
-TmF0aW9uYWwgU2VtaWNvbmR1Y3RvciBMUDM5NDMgRHJpdmVyDQo+ID4gKw0KPiA+ICtSZXF1aXJl
-ZCBwcm9wZXJ0aWVzOg0KPiA+ICsgIC0gY29tcGF0aWJsZTogInRpLGxwMzk0MyINCj4gPiArICAt
-IHJlZzogN2JpdCBJMkMgc2xhdmUgYWRkcmVzcy4gMHg2MCB+IDB4NjcNCj4gPiArDQo+ID4gK09w
-dGlvbmFsIHByb3BlcnRpZXM6DQo+ID4gKyAgLSB0aSxwd20wLCB0aSxwd20xOiBPdXRwdXQgY2hh
-bm5lbCBkZWZpbml0aW9uIGZvciBQV00gcG9ydCAwIGFuZCAxDQo+ID4gKyAgICAgICAgICAgICAg
-ICAgICAgICAwID0gaW52YWxpZCwgMSA9IExFRDAsIDIgPSBMRUQgMSwgLi4uIDE2ID0gTEVEMTUN
-Cj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBObyBzcGFjZSBoZXJl
-IF4gICAgICBeIGNvbW1hIGhlcmUNCj4gDQo+IFRoaXMgaXMgYWN0dWFsbHkgcHJldHR5IGNvbmZ1
-c2luZy4NCg0KVGhhbmtzIGZvciBjYXRjaGluZyB0aGlzLiBteSB1Z2x5IGZvcm1hdHRpbmcgOigN
-Cg0KPiBBbnkgd2F5IHlvdSBjYW4gcHV0IHRoZSBpbnZhbGlkIGVudHJ5IGF0IHRoZSBlbmQgc28s
-IDAgPT0gTEVEMD8NCj4gDQo+ID4gK0RhdGFzaGVldA0KPiA+ICsgIGh0dHA6Ly93d3cudGkuY29t
-L2xpdC9kcy9zbnZzMjU2Yi9zbnZzMjU2Yi5wZGYNCj4gDQo+IEFoLCBJIHNlZS4uLi4gU28gdGhl
-IGFib3ZlIGFyZSBwaW5zLCByYXRoZXIgdGhhbiBhcmJpdHJhcnkgY2hhbm5lbCBOb3MuDQo+IA0K
-PiBXb3VsZCBpdCBtYWtlIHNlbnNlIHRvIHVzZSBwaW5jdHJsIGluc3RlYWQgdGhlbj8NCg0KSSdt
-IG5vdCBmYW1pbGlhciB3aXRoIHRoZSBQSU5DVFJMIHN1YnN5c3RlbS4gSSdsbCBjaGVjayBpdC4N
-Cg0KPiA+ICtpbnQgbHAzOTQzX3JlYWRfYnl0ZShzdHJ1Y3QgbHAzOTQzICpsLCB1OCByZWcsIHU4
-ICpyZWFkKQ0KPiANCj4gTm90IHN1cmUgSSBsaWtlICdsJyBhcyBhIHZhcmlhYmxlIG5hbWUuIFRo
-ZSBmdW5jdGlvbiBpcyBzbWFsbCBlbm91Z2gNCj4gdG8gZ2V0IGF3YXkgd2l0aCBpdCBpbiB0aGlz
-IGNvbnRleHQsIGJ1dCBpdCB3b3VsZCBwcm9iYWJseSBiZSBiZXR0ZXINCj4gaWYgaXQgd2VyZSBy
-ZW5hbWVkIHRvIHNvbWV0aGluZyBtb3JlIG1lYW5pbmdmdWwuDQoNCkxQMzk0MyBjb25zaXN0cyBv
-ZiB0d28gZGV2aWNlcyAtIEdQSU8gYW5kIFBXTSBkcml2ZXJzLg0KU28gZWFjaCBwcml2YXRlIGRh
-dGEgd2FzIGRlZmluZWQgYXMgDQoNCnN0cnVjdCBscDM5NDMgKmw7CQkJLyogTUZEIGRldmljZSAq
-Lw0Kc3RydWN0IGxwMzk0M19ncGlvICpsZzsJCS8qIEdQSU8gZHJpdmVyICovDQpzdHJ1Y3QgbHAz
-OTQzX3B3bSAqbHA7CQkvKiBQV00gZHJpdmVyICovDQoNCkFzIHlvdSBwb2ludGVkLCB0aGUgJ2wn
-IG1heSBsb29rIGxpa2UgYSBsaXN0IG9mIHNvbWV0aGluZy4NCkknbGwgcmVuYW1lIHRoZW0gYXMg
-YmVsb3cuDQoNCnN0cnVjdCBscDM5NDMgKmxwMzk0MzsNCnN0cnVjdCBscDM5NDNfZ3BpbyAqbHAz
-OTQzX2dwaW87DQpzdHJ1Y3QgbHAzOTQzX3B3bSAqbHAzOTQzX3B3bTsNCg0KPiA+ICtzdGF0aWMg
-Y29uc3Qgc3RydWN0IGkyY19kZXZpY2VfaWQgbHAzOTQzX2lkc1tdID0gew0KPiA+ICsJeyJscDM5
-NDMiLCAwfSwNCj4gDQo+IExhY2sgb2YgY29uc2lzdGVuY3kgLi4uDQoNCkkgZG9uJ3Qga25vdyBl
-eGFjdGx5IHdoYXQgaXQgbWVhbnMuIERvIHlvdSBtZWFuIHRoZSBuYW1lIG9mIEkyQyBkZXZpY2U/
-DQoNClJlZ2FyZHMsDQpNaWxvDQo=
+> > > +int lp3943_read_byte(struct lp3943 *l, u8 reg, u8 *read)
+> > 
+> > Not sure I like 'l' as a variable name. The function is small enough
+> > to get away with it in this context, but it would probably be better
+> > if it were renamed to something more meaningful.
+> 
+> LP3943 consists of two devices - GPIO and PWM drivers.
+> So each private data was defined as 
+> 
+> struct lp3943 *l;			/* MFD device */
+> struct lp3943_gpio *lg;		/* GPIO driver */
+> struct lp3943_pwm *lp;		/* PWM driver */
+> 
+> As you pointed, the 'l' may look like a list of something.
+> I'll rename them as below.
+> 
+> struct lp3943 *lp3943;
+> struct lp3943_gpio *lp3943_gpio;
+> struct lp3943_pwm *lp3943_pwm;
+
+Much better thanks.
+
+> > > +static const struct i2c_device_id lp3943_ids[] = {
+> > > +	{"lp3943", 0},
+> > 
+> > Lack of consistency ...
+> 
+> I don't know exactly what it means. Do you mean the name of I2C device?
+
+No, I was referencing the spaces (or lack of) on the inside of the
+curly brackets.
+
+-- 
+Lee Jones
+Linaro ST-Ericsson Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
