@@ -1,679 +1,103 @@
-Return-Path: <tomasz.figa@gmail.com>
-Return-Path: <tomasz.figa@gmail.com>
-From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: [PATCH v6 13/20] pwm: Add new pwm-samsung driver
-Date: Wed, 24 Jul 2013 01:43:15 +0200
-Message-ID: <1374623475.SoL01ZHzWk@flatron>
-In-Reply-To: <1478465.17AL5GbAI8@flatron>
-References: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com> <1374278673-25615-15-git-send-email-tomasz.figa@gmail.com> <1478465.17AL5GbAI8@flatron>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Return-Path: <wsa@the-dreams.de>
+From: Wolfram Sang <wsa@the-dreams.de>
+Subject: [PATCH 00/27] devm cleanup, part #1, take #3
+Date: Tue, 23 Jul 2013 20:01:33 +0200
+Message-Id: <1374602524-3398-1-git-send-email-wsa@the-dreams.de>
 List-ID: <linux-pwm.vger.kernel.org>
-To: linux-samsung-soc@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>
+To: linux-kernel@vger.kernel.org
+Cc: Wolfram Sang <wsa@the-dreams.de>, alsa-devel@alsa-project.org, Bjorn Helgaas <bhelgaas@google.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Dan Williams <djbw@fb.com>, David Woodhouse <dwmw2@infradead.org>, devel@driverdev.osuosl.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, dri-devel@lists.freedesktop.org, Eduardo Valentin <eduardo.valentin@ti.com>, Eric Miao <eric.y.miao@gmail.com>, Felipe Balbi <balbi@ti.com>, Giuseppe Cavallaro <peppe.cavallaro@st.com>, Grant Likely <grant.likely@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, "James E.J. Bottomley" <JBottomley@parallels.com>, Jaroslav Kysela <perex@perex.cz>, Liam Girdwood <lgirdwood@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, linux-input@vger.kernel.org, linux-media@vger.kernel.org, linux-mips@linux-mips.org, linux-mtd@lists.infradead.org, linux-pci@vger.kernel.org, linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-scsi@vger.kernel.org, linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org, linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org, Mark Brown <broonie@kernel.org>, Mauro Carvalho Chehab <m.chehab@samsung.com>, netdev@vger.kernel.org, "Rafael J. Wysocki" <rjw@sisk.pl>, Ralf Baechle <ralf@linux-mips.org>, Russell King <linux@arm.linux.org.uk>, Santosh Y <santoshsy@gmail.com>, Stephen Warren <swarren@wwwdotorg.org>, Takashi Iwai <tiwai@suse.de>, =?UTF-8?q?Terje=20Bergstr=C3=B6m?= <tbergstrom@nvidia.com>, Thierry Reding <thierry.reding@gmail.com>, Vinayak Holikatti <vinholikatti@gmail.com>, Vinod Koul <vinod.koul@intel.com>, Wan ZongShun <mcuos.com@gmail.com>, Wim Van Sebroeck <wim@iguana.be>, Zhang Rui <rui.zhang@intel.com>
 
-This patch introduces new Samsung PWM driver, which is completely
-rewritten to be multiplatform- and DeviceTree-aware.
+Here is another bit of cleaning up the devm usage. It is again removing the
+resource check with devm_ioremap_resource, because a) new drivers came in and
+b) coccinelle had a bug and missed to find a couple of occasions. Unlike last
+time, I think it is better if these patches go in via the subsystem trees to
+reduce merge conflicts. And there is one driver which I fixed manually because
+the original code needed some bigger update. All is based on v3.11-rc2 and the
+branch can be found at:
 
-In addition, remaining problems of old driver are fixed, such as:
- - proper handling of hardware variants,
- - synchronization on SMP systems,
- - handling of boundary parameter values,
- - hardware sharing with PWM clocksource driver,
- - undefined state of PWM output after stopping PWM channel.
+git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git devm_no_resource_check
 
-Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
-Reviewed-by: Sylwester Nawrocki <s.nawrocki@samsung.com>
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
----
- drivers/pwm/Makefile      |   1 +
- drivers/pwm/pwm-samsung.c | 618 ++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 619 insertions(+)
- create mode 100644 drivers/pwm/pwm-samsung.c
+Other things which happened: I wanted to get rid of devm_request_and_ioremap,
+luckily other people are already working on it. Hooray! I already sent a patch
+series picking another low hanging fruit, i.e. drivers can skip devm_pinctrl
+handling if they are using only the default pin setup. And not devm related,
+there is still my proposal to rename INIT_COMPLETION to reinit_completion, that
+probably needs some more persistence... Yay, so much to clean up \o/
 
-Changes since v5:
- - No functional changes, just following cosmetic improvements.
- - Used BIT() macro to define bits instead of shifting 1s directly.
- - Added comment about bit layout in TCON register.
- - Made macros used to define bits have more meaningful parameter names.
- - Updated commit message.
+Regards,
 
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index aa94807..86a5771 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -12,6 +12,7 @@ obj-$(CONFIG_PWM_PUV3)		+= pwm-puv3.o
- obj-$(CONFIG_PWM_PXA)		+= pwm-pxa.o
- obj-$(CONFIG_PWM_RENESAS_TPU)	+= pwm-renesas-tpu.o
- obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung-legacy.o
-+obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
- obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
- obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
- obj-$(CONFIG_PWM_TIECAP)	+= pwm-tiecap.o
-diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-new file mode 100644
-index 0000000..fcc8b9a
---- /dev/null
-+++ b/drivers/pwm/pwm-samsung.c
-@@ -0,0 +1,618 @@
-+/*
-+ * Copyright (c) 2007 Ben Dooks
-+ * Copyright (c) 2008 Simtec Electronics
-+ *     Ben Dooks <ben@simtec.co.uk>, <ben-linux@fluff.org>
-+ * Copyright (c) 2013 Tomasz Figa <tomasz.figa@gmail.com>
-+ *
-+ * PWM driver for Samsung SoCs
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License.
-+ */
-+
-+#include <linux/bitops.h>
-+#include <linux/clk.h>
-+#include <linux/export.h>
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/pwm.h>
-+#include <linux/slab.h>
-+#include <linux/spinlock.h>
-+#include <linux/time.h>
-+
-+/* For struct samsung_timer_variant and samsung_pwm_lock. */
-+#include <clocksource/samsung_pwm.h>
-+
-+#define REG_TCFG0			0x00
-+#define REG_TCFG1			0x04
-+#define REG_TCON			0x08
-+
-+#define REG_TCNTB(chan)			(0x0c + ((chan) * 0xc))
-+#define REG_TCMPB(chan)			(0x10 + ((chan) * 0xc))
-+
-+#define TCFG0_PRESCALER_MASK		0xff
-+#define TCFG0_PRESCALER1_SHIFT		8
-+
-+#define TCFG1_MUX_MASK			0xf
-+#define TCFG1_SHIFT(chan)		(4 * (chan))
-+
-+/*
-+ * Each channel occupies 4 bits in TCON register, but there is a gap of 4
-+ * bits (one channel) after channel 0, so channels have different numbering
-+ * when accessing TCON register. See to_tcon_channel() function.
-+ *
-+ * In addition, the location of autoreload bit for channel 4 (TCON channel 5)
-+ * in its set of bits is 2 as opposed to 3 for other channels.
-+ */
-+#define TCON_START(chan)		BIT(4 * (chan) + 0)
-+#define TCON_MANUALUPDATE(chan)		BIT(4 * (chan) + 1)
-+#define TCON_INVERT(chan)		BIT(4 * (chan) + 2)
-+#define _TCON_AUTORELOAD(chan)		BIT(4 * (chan) + 3)
-+#define _TCON_AUTORELOAD4(chan)		BIT(4 * (chan) + 2)
-+#define TCON_AUTORELOAD(chan)		\
-+	((chan < 5) ? _TCON_AUTORELOAD(chan) : _TCON_AUTORELOAD4(chan))
-+
-+/**
-+ * struct samsung_pwm_channel - private data of PWM channel
-+ * @period_ns:	current period in nanoseconds programmed to the hardware
-+ * @duty_ns:	current duty time in nanoseconds programmed to the hardware
-+ * @tin_ns:	time of one timer tick in nanoseconds with current timer rate
-+ */
-+struct samsung_pwm_channel {
-+	u32 period_ns;
-+	u32 duty_ns;
-+	u32 tin_ns;
-+};
-+
-+/**
-+ * struct samsung_pwm_chip - private data of PWM chip
-+ * @chip:		generic PWM chip
-+ * @variant:		local copy of hardware variant data
-+ * @inverter_mask:	inverter status for all channels - one bit per channel
-+ * @base:		base address of mapped PWM registers
-+ * @base_clk:		base clock used to drive the timers
-+ * @tclk0:		external clock 0 (can be ERR_PTR if not present)
-+ * @tclk1:		external clock 1 (can be ERR_PTR if not present)
-+ */
-+struct samsung_pwm_chip {
-+	struct pwm_chip chip;
-+	struct samsung_pwm_variant variant;
-+	u8 inverter_mask;
-+
-+	void __iomem *base;
-+	struct clk *base_clk;
-+	struct clk *tclk0;
-+	struct clk *tclk1;
-+};
-+
-+#ifndef CONFIG_CLKSRC_SAMSUNG_PWM
-+/*
-+ * PWM block is shared between pwm-samsung and samsung_pwm_timer drivers
-+ * and some registers need access synchronization. If both drivers are
-+ * compiled in, the spinlock is defined in the clocksource driver,
-+ * otherwise following definition is used.
-+ *
-+ * Currently we do not need any more complex synchronization method
-+ * because all the supported SoCs contain only one instance of the PWM
-+ * IP. Should this change, both drivers will need to be modified to
-+ * properly synchronize accesses to particular instances.
-+ */
-+static DEFINE_SPINLOCK(samsung_pwm_lock);
-+#endif
-+
-+static inline
-+struct samsung_pwm_chip *to_samsung_pwm_chip(struct pwm_chip *chip)
-+{
-+	return container_of(chip, struct samsung_pwm_chip, chip);
-+}
-+
-+static inline unsigned int to_tcon_channel(unsigned int channel)
-+{
-+	/* TCON register has a gap of 4 bits (1 channel) after channel 0 */
-+	return (channel == 0) ? 0 : (channel + 1);
-+}
-+
-+static void pwm_samsung_set_divisor(struct samsung_pwm_chip *pwm,
-+				    unsigned int channel, u8 divisor)
-+{
-+	u8 shift = TCFG1_SHIFT(channel);
-+	unsigned long flags;
-+	u32 reg;
-+	u8 bits;
-+
-+	bits = (fls(divisor) - 1) - pwm->variant.div_base;
-+
-+	spin_lock_irqsave(&samsung_pwm_lock, flags);
-+
-+	reg = readl(pwm->base + REG_TCFG1);
-+	reg &= ~(TCFG1_MUX_MASK << shift);
-+	reg |= bits << shift;
-+	writel(reg, pwm->base + REG_TCFG1);
-+
-+	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
-+}
-+
-+static int pwm_samsung_is_tdiv(struct samsung_pwm_chip *chip, unsigned int chan)
-+{
-+	struct samsung_pwm_variant *variant = &chip->variant;
-+	u32 reg;
-+
-+	reg = readl(chip->base + REG_TCFG1);
-+	reg >>= TCFG1_SHIFT(chan);
-+	reg &= TCFG1_MUX_MASK;
-+
-+	return (BIT(reg) & variant->tclk_mask) == 0;
-+}
-+
-+static unsigned long pwm_samsung_get_tin_rate(struct samsung_pwm_chip *chip,
-+					      unsigned int chan)
-+{
-+	unsigned long rate;
-+	u32 reg;
-+
-+	rate = clk_get_rate(chip->base_clk);
-+
-+	reg = readl(chip->base + REG_TCFG0);
-+	if (chan >= 2)
-+		reg >>= TCFG0_PRESCALER1_SHIFT;
-+	reg &= TCFG0_PRESCALER_MASK;
-+
-+	return rate / (reg + 1);
-+}
-+
-+static unsigned long pwm_samsung_calc_tin(struct samsung_pwm_chip *chip,
-+					  unsigned int chan, unsigned long freq)
-+{
-+	struct samsung_pwm_variant *variant = &chip->variant;
-+	unsigned long rate;
-+	struct clk *clk;
-+	u8 div;
-+
-+	if (!pwm_samsung_is_tdiv(chip, chan)) {
-+		clk = (chan < 2) ? chip->tclk0 : chip->tclk1;
-+		if (!IS_ERR(clk)) {
-+			rate = clk_get_rate(clk);
-+			if (rate)
-+				return rate;
-+		}
-+
-+		dev_warn(chip->chip.dev,
-+			"tclk of PWM %d is inoperational, using tdiv\n", chan);
-+	}
-+
-+	rate = pwm_samsung_get_tin_rate(chip, chan);
-+	dev_dbg(chip->chip.dev, "tin parent at %lu\n", rate);
-+
-+	/*
-+	 * Compare minimum PWM frequency that can be achieved with possible
-+	 * divider settings and choose the lowest divisor that can generate
-+	 * frequencies lower than requested.
-+	 */
-+	for (div = variant->div_base; div < 4; ++div)
-+		if ((rate >> (variant->bits + div)) < freq)
-+			break;
-+
-+	pwm_samsung_set_divisor(chip, chan, BIT(div));
-+
-+	return rate >> div;
-+}
-+
-+static int pwm_samsung_request(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
-+	struct samsung_pwm_channel *our_chan;
-+
-+	if (!(our_chip->variant.output_mask & BIT(pwm->hwpwm))) {
-+		dev_warn(chip->dev,
-+			"tried to request PWM channel %d without output\n",
-+			pwm->hwpwm);
-+		return -EINVAL;
-+	}
-+
-+	our_chan = devm_kzalloc(chip->dev, sizeof(*our_chan), GFP_KERNEL);
-+	if (!our_chan)
-+		return -ENOMEM;
-+
-+	pwm_set_chip_data(pwm, our_chan);
-+
-+	return 0;
-+}
-+
-+static void pwm_samsung_free(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	pwm_set_chip_data(pwm, NULL);
-+	devm_kfree(chip->dev, pwm_get_chip_data(pwm));
-+}
-+
-+static int pwm_samsung_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
-+	unsigned int tcon_chan = to_tcon_channel(pwm->hwpwm);
-+	unsigned long flags;
-+	u32 tcon;
-+
-+	spin_lock_irqsave(&samsung_pwm_lock, flags);
-+
-+	tcon = readl(our_chip->base + REG_TCON);
-+
-+	tcon &= ~TCON_START(tcon_chan);
-+	tcon |= TCON_MANUALUPDATE(tcon_chan);
-+	writel(tcon, our_chip->base + REG_TCON);
-+
-+	tcon &= ~TCON_MANUALUPDATE(tcon_chan);
-+	tcon |= TCON_START(tcon_chan) | TCON_AUTORELOAD(tcon_chan);
-+	writel(tcon, our_chip->base + REG_TCON);
-+
-+	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
-+
-+	return 0;
-+}
-+
-+static void pwm_samsung_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
-+	unsigned int tcon_chan = to_tcon_channel(pwm->hwpwm);
-+	unsigned long flags;
-+	u32 tcon;
-+
-+	spin_lock_irqsave(&samsung_pwm_lock, flags);
-+
-+	tcon = readl(our_chip->base + REG_TCON);
-+	tcon &= ~TCON_AUTORELOAD(tcon_chan);
-+	writel(tcon, our_chip->base + REG_TCON);
-+
-+	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
-+}
-+
-+static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
-+			      int duty_ns, int period_ns)
-+{
-+	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
-+	struct samsung_pwm_channel *chan = pwm_get_chip_data(pwm);
-+	u32 tin_ns = chan->tin_ns, tcnt, tcmp;
-+
-+	/*
-+	 * We currently avoid using 64bit arithmetic by using the
-+	 * fact that anything faster than 1Hz is easily representable
-+	 * by 32bits.
-+	 */
-+	if (period_ns > NSEC_PER_SEC)
-+		return -ERANGE;
-+
-+	if (period_ns == chan->period_ns && duty_ns == chan->duty_ns)
-+		return 0;
-+
-+	tcnt = readl(our_chip->base + REG_TCNTB(pwm->hwpwm));
-+
-+	/* We need tick count for calculation, not last tick. */
-+	++tcnt;
-+
-+	/* Check to see if we are changing the clock rate of the PWM. */
-+	if (chan->period_ns != period_ns) {
-+		unsigned long tin_rate;
-+		u32 period;
-+
-+		period = NSEC_PER_SEC / period_ns;
-+
-+		dev_dbg(our_chip->chip.dev, "duty_ns=%d, period_ns=%d (%u)\n",
-+						duty_ns, period_ns, period);
-+
-+		tin_rate = pwm_samsung_calc_tin(our_chip, pwm->hwpwm, period);
-+
-+		dev_dbg(our_chip->chip.dev, "tin_rate=%lu\n", tin_rate);
-+
-+		tin_ns = NSEC_PER_SEC / tin_rate;
-+		tcnt = period_ns / tin_ns;
-+	}
-+
-+	/* Period is too short. */
-+	if (tcnt <= 1)
-+		return -ERANGE;
-+
-+	/* Note that counters count down. */
-+	tcmp = duty_ns / tin_ns;
-+
-+	/* 0% duty is not available */
-+	if (!tcmp)
-+		++tcmp;
-+
-+	tcmp = tcnt - tcmp;
-+
-+	/* Decrement to get tick numbers, instead of tick counts. */
-+	--tcnt;
-+	/* -1UL will give 100% duty. */
-+	--tcmp;
-+
-+	dev_dbg(our_chip->chip.dev,
-+				"tin_ns=%u, tcmp=%u/%u\n", tin_ns, tcmp, tcnt);
-+
-+	/* Update PWM registers. */
-+	writel(tcnt, our_chip->base + REG_TCNTB(pwm->hwpwm));
-+	writel(tcmp, our_chip->base + REG_TCMPB(pwm->hwpwm));
-+
-+	if (test_bit(PWMF_ENABLED, &pwm->flags))
-+		pwm_samsung_enable(chip, pwm);
-+
-+	chan->period_ns = period_ns;
-+	chan->tin_ns = tin_ns;
-+	chan->duty_ns = duty_ns;
-+
-+	return 0;
-+}
-+
-+static void pwm_samsung_set_invert(struct samsung_pwm_chip *chip,
-+				   unsigned int channel, bool invert)
-+{
-+	unsigned int tcon_chan = to_tcon_channel(channel);
-+	unsigned long flags;
-+	u32 tcon;
-+
-+	spin_lock_irqsave(&samsung_pwm_lock, flags);
-+
-+	tcon = readl(chip->base + REG_TCON);
-+
-+	if (invert) {
-+		chip->inverter_mask |= BIT(channel);
-+		tcon |= TCON_INVERT(tcon_chan);
-+	} else {
-+		chip->inverter_mask &= ~BIT(channel);
-+		tcon &= ~TCON_INVERT(tcon_chan);
-+	}
-+
-+	writel(tcon, chip->base + REG_TCON);
-+
-+	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
-+}
-+
-+static int pwm_samsung_set_polarity(struct pwm_chip *chip,
-+				    struct pwm_device *pwm,
-+				    enum pwm_polarity polarity)
-+{
-+	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
-+	bool invert = (polarity == PWM_POLARITY_NORMAL);
-+
-+	/* Inverted means normal in the hardware. */
-+	pwm_samsung_set_invert(our_chip, pwm->hwpwm, invert);
-+
-+	return 0;
-+}
-+
-+static const struct pwm_ops pwm_samsung_ops = {
-+	.request	= pwm_samsung_request,
-+	.free		= pwm_samsung_free,
-+	.enable		= pwm_samsung_enable,
-+	.disable	= pwm_samsung_disable,
-+	.config		= pwm_samsung_config,
-+	.set_polarity	= pwm_samsung_set_polarity,
-+	.owner		= THIS_MODULE,
-+};
-+
-+#ifdef CONFIG_OF
-+static const struct samsung_pwm_variant s3c24xx_variant = {
-+	.bits		= 16,
-+	.div_base	= 1,
-+	.has_tint_cstat	= false,
-+	.tclk_mask	= BIT(4),
-+};
-+
-+static const struct samsung_pwm_variant s3c64xx_variant = {
-+	.bits		= 32,
-+	.div_base	= 0,
-+	.has_tint_cstat	= true,
-+	.tclk_mask	= BIT(7) | BIT(6) | BIT(5),
-+};
-+
-+static const struct samsung_pwm_variant s5p64x0_variant = {
-+	.bits		= 32,
-+	.div_base	= 0,
-+	.has_tint_cstat	= true,
-+	.tclk_mask	= 0,
-+};
-+
-+static const struct samsung_pwm_variant s5pc100_variant = {
-+	.bits		= 32,
-+	.div_base	= 0,
-+	.has_tint_cstat	= true,
-+	.tclk_mask	= BIT(5),
-+};
-+
-+static const struct of_device_id samsung_pwm_matches[] = {
-+	{ .compatible = "samsung,s3c2410-pwm", .data = &s3c24xx_variant },
-+	{ .compatible = "samsung,s3c6400-pwm", .data = &s3c64xx_variant },
-+	{ .compatible = "samsung,s5p6440-pwm", .data = &s5p64x0_variant },
-+	{ .compatible = "samsung,s5pc100-pwm", .data = &s5pc100_variant },
-+	{ .compatible = "samsung,exynos4210-pwm", .data = &s5p64x0_variant },
-+	{},
-+};
-+
-+static int pwm_samsung_parse_dt(struct samsung_pwm_chip *chip)
-+{
-+	struct device_node *np = chip->chip.dev->of_node;
-+	const struct of_device_id *match;
-+	struct property *prop;
-+	const __be32 *cur;
-+	u32 val;
-+
-+	match = of_match_node(samsung_pwm_matches, np);
-+	if (!match)
-+		return -ENODEV;
-+
-+	memcpy(&chip->variant, match->data, sizeof(chip->variant));
-+
-+	of_property_for_each_u32(np, "samsung,pwm-outputs", prop, cur, val) {
-+		if (val >= SAMSUNG_PWM_NUM) {
-+			dev_err(chip->chip.dev,
-+				"%s: invalid channel index in samsung,pwm-outputs property\n",
-+								__func__);
-+			continue;
-+		}
-+		chip->variant.output_mask |= BIT(val);
-+	}
-+
-+	return 0;
-+}
-+#else
-+static int pwm_samsung_parse_dt(struct samsung_pwm_chip *chip)
-+{
-+	return -ENODEV;
-+}
-+#endif
-+
-+static int pwm_samsung_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct samsung_pwm_chip *chip;
-+	struct resource *res;
-+	unsigned int chan;
-+	int ret;
-+
-+	chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
-+	if (chip == NULL)
-+		return -ENOMEM;
-+
-+	chip->chip.dev = &pdev->dev;
-+	chip->chip.ops = &pwm_samsung_ops;
-+	chip->chip.base = -1;
-+	chip->chip.npwm = SAMSUNG_PWM_NUM;
-+	chip->inverter_mask = BIT(SAMSUNG_PWM_NUM) - 1;
-+
-+	if (IS_ENABLED(CONFIG_OF) && pdev->dev.of_node) {
-+		ret = pwm_samsung_parse_dt(chip);
-+		if (ret)
-+			return ret;
-+
-+		chip->chip.of_xlate = of_pwm_xlate_with_flags;
-+		chip->chip.of_pwm_n_cells = 3;
-+	} else {
-+		if (!pdev->dev.platform_data) {
-+			dev_err(&pdev->dev, "no platform data specified\n");
-+			return -EINVAL;
-+		}
-+
-+		memcpy(&chip->variant, pdev->dev.platform_data,
-+							sizeof(chip->variant));
-+	}
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	chip->base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(chip->base))
-+		return PTR_ERR(chip->base);
-+
-+	chip->base_clk = devm_clk_get(&pdev->dev, "timers");
-+	if (IS_ERR(chip->base_clk)) {
-+		dev_err(dev, "failed to get timer base clk\n");
-+		return PTR_ERR(chip->base_clk);
-+	}
-+
-+	ret = clk_prepare_enable(chip->base_clk);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to enable base clock\n");
-+		return ret;
-+	}
-+
-+	for (chan = 0; chan < SAMSUNG_PWM_NUM; ++chan)
-+		if (chip->variant.output_mask & BIT(chan))
-+			pwm_samsung_set_invert(chip, chan, true);
-+
-+	/* Following clocks are optional. */
-+	chip->tclk0 = devm_clk_get(&pdev->dev, "pwm-tclk0");
-+	chip->tclk1 = devm_clk_get(&pdev->dev, "pwm-tclk1");
-+
-+	platform_set_drvdata(pdev, chip);
-+
-+	ret = pwmchip_add(&chip->chip);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to register PWM chip\n");
-+		clk_disable_unprepare(chip->base_clk);
-+		return ret;
-+	}
-+
-+	dev_dbg(dev, "base_clk at %lu, tclk0 at %lu, tclk1 at %lu\n",
-+		clk_get_rate(chip->base_clk),
-+		!IS_ERR(chip->tclk0) ? clk_get_rate(chip->tclk0) : 0,
-+		!IS_ERR(chip->tclk1) ? clk_get_rate(chip->tclk1) : 0);
-+
-+	return 0;
-+}
-+
-+static int pwm_samsung_remove(struct platform_device *pdev)
-+{
-+	struct samsung_pwm_chip *chip = platform_get_drvdata(pdev);
-+	int ret;
-+
-+	ret = pwmchip_remove(&chip->chip);
-+	if (ret < 0)
-+		return ret;
-+
-+	clk_disable_unprepare(chip->base_clk);
-+
-+	return 0;
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int pwm_samsung_suspend(struct device *dev)
-+{
-+	struct samsung_pwm_chip *chip = dev_get_drvdata(dev);
-+	unsigned int i;
-+
-+	/*
-+	 * No one preserves these values during suspend so reset them.
-+	 * Otherwise driver leaves PWM unconfigured if same values are
-+	 * passed to pwm_config() next time.
-+	 */
-+	for (i = 0; i < SAMSUNG_PWM_NUM; ++i) {
-+		struct pwm_device *pwm = &chip->chip.pwms[i];
-+		struct samsung_pwm_channel *chan = pwm_get_chip_data(pwm);
-+
-+		if (!chan)
-+			continue;
-+
-+		chan->period_ns = 0;
-+		chan->duty_ns = 0;
-+	}
-+
-+	return 0;
-+}
-+
-+static int pwm_samsung_resume(struct device *dev)
-+{
-+	struct samsung_pwm_chip *chip = dev_get_drvdata(dev);
-+	unsigned int chan;
-+
-+	/*
-+	 * Inverter setting must be preserved across suspend/resume
-+	 * as nobody really seems to configure it more than once.
-+	 */
-+	for (chan = 0; chan < SAMSUNG_PWM_NUM; ++chan) {
-+		if (chip->variant.output_mask & BIT(chan))
-+			pwm_samsung_set_invert(chip, chan,
-+					chip->inverter_mask & BIT(chan));
-+	}
-+
-+	return 0;
-+}
-+#endif
-+
-+static const struct dev_pm_ops pwm_samsung_pm_ops = {
-+	SET_SYSTEM_SLEEP_PM_OPS(pwm_samsung_suspend, pwm_samsung_resume)
-+};
-+
-+static struct platform_driver pwm_samsung_driver = {
-+	.driver		= {
-+		.name	= "samsung-pwm",
-+		.owner	= THIS_MODULE,
-+		.pm	= &pwm_samsung_pm_ops,
-+		.of_match_table = of_match_ptr(samsung_pwm_matches),
-+	},
-+	.probe		= pwm_samsung_probe,
-+	.remove		= pwm_samsung_remove,
-+};
-+module_platform_driver(pwm_samsung_driver);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Tomasz Figa <tomasz.figa@gmail.com>");
-+MODULE_ALIAS("platform:samsung-pwm");
+   Wolfram
+
+
+Wolfram Sang (27):
+  arch/mips/lantiq/xway: don't check resource with
+    devm_ioremap_resource
+  drivers/amba: don't check resource with devm_ioremap_resource
+  drivers/cpuidle: don't check resource with devm_ioremap_resource
+  drivers/dma: don't check resource with devm_ioremap_resource
+  drivers/gpu/host1x/drm: don't check resource with
+    devm_ioremap_resource
+  drivers/i2c/busses: don't check resource with devm_ioremap_resource
+  drivers/input/serio: don't check resource with devm_ioremap_resource
+  drivers/iommu: don't check resource with devm_ioremap_resource
+  drivers/media/platform: don't check resource with
+    devm_ioremap_resource
+  drivers/memory: don't check resource with devm_ioremap_resource
+  drivers/mtd/nand: don't check resource with devm_ioremap_resource
+  drivers/net/ethernet/stmicro/stmmac: don't check resource with
+    devm_ioremap_resource
+  drivers/pci/host: don't check resource with devm_ioremap_resource
+  drivers/pinctrl: don't check resource with devm_ioremap_resource
+  drivers/pwm: don't check resource with devm_ioremap_resource
+  drivers/scsi/ufs: don't check resource with devm_ioremap_resource
+  drivers/spi: don't check resource with devm_ioremap_resource
+  drivers/staging/imx-drm: don't check resource with
+    devm_ioremap_resource
+  drivers/usb/phy: don't check resource with devm_ioremap_resource
+  drivers/watchdog: don't check resource with devm_ioremap_resource
+  sound/soc/au1x: don't check resource with devm_ioremap_resource
+  sound/soc/cirrus: don't check resource with devm_ioremap_resource
+  sound/soc/nuc900: don't check resource with devm_ioremap_resource
+  sound/soc/pxa: don't check resource with devm_ioremap_resource
+  sound/soc/tegra: don't check resource with devm_ioremap_resource
+  sound/soc/txx9: don't check resource with devm_ioremap_resource
+  thermal: ti-bandgap: cleanup resource allocation
+
+ arch/mips/lantiq/xway/dma.c                        |    4 ----
+ drivers/amba/tegra-ahb.c                           |    2 --
+ drivers/cpuidle/cpuidle-kirkwood.c                 |    3 ---
+ drivers/dma/mmp_pdma.c                             |    3 ---
+ drivers/dma/mmp_tdma.c                             |    3 ---
+ drivers/gpu/host1x/drm/hdmi.c                      |    3 ---
+ drivers/i2c/busses/i2c-stu300.c                    |    3 ---
+ drivers/input/serio/olpc_apsp.c                    |    3 ---
+ drivers/iommu/tegra-smmu.c                         |    2 --
+ drivers/media/platform/coda.c                      |    5 -----
+ drivers/memory/tegra20-mc.c                        |    2 --
+ drivers/memory/tegra30-mc.c                        |    2 --
+ drivers/mtd/nand/mxc_nand.c                        |    5 -----
+ .../net/ethernet/stmicro/stmmac/stmmac_platform.c  |    3 ---
+ drivers/pci/host/pcie-designware.c                 |   12 ------------
+ drivers/pinctrl/pinctrl-imx.c                      |    3 ---
+ drivers/pinctrl/pinctrl-rockchip.c                 |    5 -----
+ drivers/pinctrl/pinctrl-u300.c                     |    3 ---
+ drivers/pwm/pwm-lpc32xx.c                          |    3 ---
+ drivers/pwm/pwm-renesas-tpu.c                      |    5 -----
+ drivers/scsi/ufs/ufshcd-pltfrm.c                   |    6 ------
+ drivers/spi/spi-bcm2835.c                          |    6 ------
+ drivers/staging/imx-drm/imx-tve.c                  |    5 -----
+ drivers/thermal/ti-soc-thermal/ti-bandgap.c        |   20 ++++----------------
+ drivers/usb/phy/phy-rcar-usb.c                     |    5 -----
+ drivers/watchdog/nuc900_wdt.c                      |    5 -----
+ drivers/watchdog/ts72xx_wdt.c                      |   10 ----------
+ sound/soc/au1x/psc-ac97.c                          |    3 ---
+ sound/soc/cirrus/ep93xx-ac97.c                     |    3 ---
+ sound/soc/cirrus/ep93xx-i2s.c                      |    3 ---
+ sound/soc/nuc900/nuc900-ac97.c                     |    3 ---
+ sound/soc/pxa/mmp-sspa.c                           |    3 ---
+ sound/soc/tegra/tegra20_ac97.c                     |    7 -------
+ sound/soc/txx9/txx9aclc-ac97.c                     |    3 ---
+ 34 files changed, 4 insertions(+), 152 deletions(-)
+
 -- 
-1.8.3.2
+1.7.10.4
