@@ -1,49 +1,168 @@
-Return-Path: <Milo.Kim@ti.com>
-From: "Kim, Milo" <Milo.Kim@ti.com>
-Subject: RE: [PATCH v2 1/4] mfd: add LP3943 MFD driver
-Date: Wed, 31 Jul 2013 23:29:48 +0000
-Message-ID: <A874F61F95741C4A9BA573A70FE3998F82E850A9@DQHE06.ent.ti.com>
-References: <A874F61F95741C4A9BA573A70FE3998F82E849D8@DQHE06.ent.ti.com>
- <20130731115630.GH13298@lee--X1>
-In-Reply-To: <20130731115630.GH13298@lee--X1>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+Return-Path: <devicetree-owner@vger.kernel.org>
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH] pwm: renesas-tpu: Add DT support
+Date: Fri, 26 Jul 2013 00:27:41 +0200
+Message-Id: <1374791261-9850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Sender: devicetree-owner@vger.kernel.org
 List-ID: <linux-pwm.vger.kernel.org>
-To: Lee Jones <lee.jones@linaro.org>
-Cc: "Samuel Ortiz (sameo@linux.intel.com)" <sameo@linux.intel.com>, "broonie@kernel.org" <broonie@kernel.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+To: linux-pwm@vger.kernel.org
+Cc: linux-sh@vger.kernel.org, devicetree@vger.kernel.org
 
-VGhhbmtzIGZvciB0aGUgcmV2aWV3LCBwbGVhc2Ugc2VlIG15IGNvbW1lbnRzLg0KDQo+IDxzbmlw
-PiAqIGxvb2tzIGdvb2QgdXAgdG8gbWUgdXAgdG8gaGVyZSAqDQo+IA0KPiBBbHRob3VnaCwgSSB0
-aGluayB0aGUgMCA9IDEsIDEgPSAyIC4uLiBzdHVmZiBpcyByZWFsbHkgY29uZnVzaW5nLiBJcw0K
-PiB0aGVyZSBub3RoaW5nIHdlIGNhbiBkbyBhYm91dCB0aGF0Pw0KDQpPSywgZW51bSB2YWx1ZSBv
-ZiBscDM5NDNfcHdtX291dHB1dCBjYW4gYmUgY2hhbmdlZCBhcyBiZWxvdw0KYmVjYXVzZSBMUDM5
-NDNfUFdNX0lOVkFMSUQgaXMgbm90IHVzZWQgYW55bW9yZS4NCg0KZW51bSBscDM5NDNfcHdtX291
-dHB1dCB7DQoJTFAzOTQzX1BXTV9PVVQwLA0KCUxQMzk0M19QV01fT1VUMSwNCgkuLi4NCglMUDM5
-NDNfUFdNX09VVDE1LA0KfTsNCg0KVGhlbiwgb3V0cHV0IGluZGV4IHdpbGwgbWF0Y2ggZWFjaCBl
-bnVtIGludGVnZXIgdmFsdWUuDQpEb2VzIGl0IG1ha2Ugc2Vuc2U/DQoNCj4gPiArc3RhdGljIGNv
-bnN0IHN0cnVjdCBpMmNfZGV2aWNlX2lkIGxwMzk0M19pZHNbXSA9IHsNCj4gPiArCXsgImxwMzk0
-MyIsIDAgfSwNCj4gPiArCXsgfQ0KPiA+ICt9Ow0KPiA+ICtNT0RVTEVfREVWSUNFX1RBQkxFKGky
-YywgbHAzOTQzX2lkcyk7DQo+IA0KPiBBcmUgd2UgZXhwZWN0aW5nIHRoaXMgZHJpdmVyIHRvIHN1
-cHBvcnQgbW9yZSBkZXZpY2VzPw0KDQpBdCB0aGlzIG1vbWVudCwgdGhpcyBpcyB0aGUgb25seSBv
-bmUgZGV2aWNlIHN1cHBvcnRlZC4NCg0KPiA+ICtzdGF0aWMgaW50IF9faW5pdCBscDM5NDNfaW5p
-dCh2b2lkKQ0KPiA+ICt7DQo+ID4gKwlyZXR1cm4gaTJjX2FkZF9kcml2ZXIoJmxwMzk0M19kcml2
-ZXIpOw0KPiA+ICt9DQo+ID4gK3N1YnN5c19pbml0Y2FsbChscDM5NDNfaW5pdCk7DQo+ID4gKw0K
-PiA+ICtzdGF0aWMgdm9pZCBfX2V4aXQgbHAzOTQzX2V4aXQodm9pZCkNCj4gPiArew0KPiA+ICsJ
-aTJjX2RlbF9kcml2ZXIoJmxwMzk0M19kcml2ZXIpOw0KPiA+ICt9DQo+ID4gK21vZHVsZV9leGl0
-KGxwMzk0M19leGl0KTsNCj4gDQo+IEkgdGhpbmsgeW91IHdhbnQgdG8gcmVwbGFjZToNCj4gICBs
-cDM5NDNfaW5pdCgpDQo+ICAgbHAzOTQzX2V4aXQNCj4gDQo+IFdpdGg6DQo+ICAgbW9kdWxlX2ky
-Y19kcml2ZXIoKQ0KDQpUaGlzIGlzIHJlbGF0ZWQgd2l0aCBpbml0Y2FsbCBzZXF1ZW5jZS4NClNv
-bWUgcHJvYmxlbSBtYXkgaGFwcGVuIGlmIGFueSBHUElPIG9yIFBXTSBjb25zdW1lciB0cmllcyB0
-byByZXF1ZXN0IGJlZm9yZQ0KTFAzOTQzIE1GRHMgYXJlIGFkZGVkLg0KRm9yIGV4YW1wbGUsIGEg
-R1BJTyBpcyByZXF1ZXN0ZWQgaW4gX3Byb2JlKCkgb2Ygc29tZSBkZXZpY2UuDQpMZXQncyBhc3N1
-bWUgdGhlIEdQSU8gbnVtYmVyIGlzIGluIHJhbmdlIG9mIHdoYXQgTFAzOTQzIEdQSU8gZHJpdmVy
-IHByb3ZpZGVkLg0KVGhlbiwgZ3Bpb19yZXF1ZXN0KCkgd2lsbCBiZSBmYWlsZWQgYmVjYXVzZSB0
-aGUgR1BJTyBpcyBpbnZhbGlkIGF0IHRoaXMgbW9tZW50Lg0KSWYgdGhlIGRldmljZSByZXF1ZXN0
-IGFnYWluIGxhdGVyLCBpdCB3aWxsIGJlIE9LLCBidXQgd2UgY2FuJ3QgZXhwZWN0IHRoaXMgDQpz
-aXR1YXRpb24gZm9yIGV2ZXJ5IGRyaXZlci4NClNvbWUgZHJpdmVycyByZXF1ZXN0IGEgR1BJTyBv
-bmx5IG9uY2UgaW4gX3Byb2JlKCksIG90aGVyIGRldmljZXMgbWF5IHJlcXVlc3QNCmEgR1BJTyBp
-biBzb21lIGNhc2VzLg0KU28sIEkgdGhpbmsgbHAzOTQzX2luaXQoKSBzaG91bGQgYmUgZGVmaW5l
-ZCBhcyBzdWJzeXNfaW5pdGNhbGwoKSBpbnN0ZWFkIG9mIA0KbW9kdWxlX2luaXQoKS4NCg0KQmVz
-dCByZWdhcmRzLA0KTWlsbyAtDQo=
+Specify DT bindings for the TPU PWM controller and add OF support to the
+driver.
+
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+---
+ .../devicetree/bindings/pwm/renesas,tpu-pwm.txt    | 28 +++++++++++++++
+ drivers/pwm/pwm-renesas-tpu.c                      | 41 ++++++++++++++++++----
+ 2 files changed, 62 insertions(+), 7 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
+
+This patch depends on the "[PATCH v2 0/4] Add PWM polarity flag macro for DT"
+series that is scheduled for merge in the PWM tree, and should thus go in via
+the same tree.
+
+The code has been tested on an Armadillo800EVA with additional platform patches
+that I'm going to submit next.
+
+diff --git a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
+new file mode 100644
+index 0000000..b067e84
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
+@@ -0,0 +1,28 @@
++* Renesas R-Car Timer Pulse Unit PWM Controller
++
++Required Properties:
++
++  - compatible: should be one of the following.
++    - "renesas,tpu-r8a73a4": for R8A77A4 (R-Mobile APE6) compatible PWM controller.
++    - "renesas,tpu-r8a7740": for R8A7740 (R-Mobile A1) compatible PWM controller.
++    - "renesas,tpu-r8a7790": for R8A7790 (R-Car H2) compatible PWM controller.
++    - "renesas,tpu-sh7372": for SH7372 (SH-Mobile AP4) compatible PWM controller.
++    - "renesas,tpu": for generic R-Car TPU PWM controller.
++
++  - reg: Base address and length of each memory resource used by the PWM
++    controller hardware module.
++
++  - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
++    the cells format. The only third cell flag supported by this binding is
++    PWM_POLARITY_INVERTED.
++
++Please refer to pwm.txt in this directory for details of the common PWM bindings
++used by client devices.
++
++Example: R8A7740 (R-Car A1) TPU controller node
++
++	tpu: pwm@e6600000 {
++		compatible = "renesas,tpu-r8a7740", "renesas,tpu";
++		reg = <0xe6600000 0x100>;
++		#pwm-cells = <3>;
++	};
+diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
+index 2600892..3eeffff 100644
+--- a/drivers/pwm/pwm-renesas-tpu.c
++++ b/drivers/pwm/pwm-renesas-tpu.c
+@@ -20,6 +20,7 @@
+ #include <linux/ioport.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
++#include <linux/of.h>
+ #include <linux/platform_data/pwm-renesas-tpu.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+@@ -86,7 +87,7 @@ struct tpu_pwm_device {
+ 
+ struct tpu_device {
+ 	struct platform_device *pdev;
+-	struct tpu_pwm_platform_data *pdata;
++	enum pwm_polarity polarities[TPU_CHANNEL_MAX];
+ 	struct pwm_chip chip;
+ 	spinlock_t lock;
+ 
+@@ -228,8 +229,7 @@ static int tpu_pwm_request(struct pwm_chip *chip, struct pwm_device *_pwm)
+ 
+ 	pwm->tpu = tpu;
+ 	pwm->channel = _pwm->hwpwm;
+-	pwm->polarity = tpu->pdata ? tpu->pdata->channels[pwm->channel].polarity
+-		      : PWM_POLARITY_NORMAL;
++	pwm->polarity = tpu->polarities[pwm->channel];
+ 	pwm->prescaler = 0;
+ 	pwm->period = 0;
+ 	pwm->duty = 0;
+@@ -388,6 +388,16 @@ static const struct pwm_ops tpu_pwm_ops = {
+  * Probe and remove
+  */
+ 
++static void tpu_parse_pdata(struct tpu_device *tpu)
++{
++	struct tpu_pwm_platform_data *pdata = tpu->pdev->dev.platform_data;
++	unsigned int i;
++
++	for (i = 0; i < ARRAY_SIZE(tpu->polarities); ++i)
++		tpu->polarities[i] = pdata ? pdata->channels[i].polarity
++				   : PWM_POLARITY_NORMAL;
++}
++
+ static int tpu_probe(struct platform_device *pdev)
+ {
+ 	struct tpu_device *tpu;
+@@ -400,7 +410,11 @@ static int tpu_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	}
+ 
+-	tpu->pdata = pdev->dev.platform_data;
++	spin_lock_init(&tpu->lock);
++	tpu->pdev = pdev;
++
++	/* Initialize device configuration from platform data. */
++	tpu_parse_pdata(tpu);
+ 
+ 	/* Map memory, get clock and pin control. */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+@@ -422,11 +436,10 @@ static int tpu_probe(struct platform_device *pdev)
+ 	/* Initialize and register the device. */
+ 	platform_set_drvdata(pdev, tpu);
+ 
+-	spin_lock_init(&tpu->lock);
+-	tpu->pdev = pdev;
+-
+ 	tpu->chip.dev = &pdev->dev;
+ 	tpu->chip.ops = &tpu_pwm_ops;
++	tpu->chip.of_xlate = of_pwm_xlate_with_flags;
++	tpu->chip.of_pwm_n_cells = 3;
+ 	tpu->chip.base = -1;
+ 	tpu->chip.npwm = TPU_CHANNEL_MAX;
+ 
+@@ -457,12 +470,26 @@ static int tpu_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id tpu_of_table[] = {
++	{ .compatible = "renesas,tpu-r8a73a4", },
++	{ .compatible = "renesas,tpu-r8a7740", },
++	{ .compatible = "renesas,tpu-r8a7790", },
++	{ .compatible = "renesas,tpu-sh7372", },
++	{ .compatible = "renesas,tpu", },
++	{ },
++};
++
++MODULE_DEVICE_TABLE(of, tpu_of_table);
++#endif
++
+ static struct platform_driver tpu_driver = {
+ 	.probe		= tpu_probe,
+ 	.remove		= tpu_remove,
+ 	.driver		= {
+ 		.name	= "renesas-tpu-pwm",
+ 		.owner	= THIS_MODULE,
++		.of_match_table = of_match_ptr(tpu_of_table),
+ 	}
+ };
+ 
+-- 
+Regards,
+
+Laurent Pinchart
+
