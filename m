@@ -1,88 +1,57 @@
-Return-Path: <tomasz.figa@gmail.com>
-Return-Path: <tomasz.figa@gmail.com>
-From: Tomasz Figa <tomasz.figa@gmail.com>
+Date: Mon, 29 Jul 2013 13:44:52 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH v4 13/20] pwm: Add new pwm-samsung driver
-Date: Sun, 21 Jul 2013 23:58:04 +0200
-Message-ID: <4551618.l5Bs8czD9o@flatron>
-In-Reply-To: <51EC3B97.3040107@gmail.com>
-References: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com> <1374278673-25615-15-git-send-email-tomasz.figa@gmail.com> <51EC3B97.3040107@gmail.com>
+Message-ID: <20130729114452.GC23152@manwe>
+References: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com>
+ <1374278673-25615-15-git-send-email-tomasz.figa@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="kfjH4zxOES6UT95V"
+Content-Disposition: inline
+In-Reply-To: <1374278673-25615-15-git-send-email-tomasz.figa@gmail.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Sylwester Nawrocki <sylvester.nawrocki@gmail.com>
-Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>
+To: Tomasz Figa <tomasz.figa@gmail.com>
+Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Heiko =?utf-8?Q?St=C3=BCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>
 
-On Sunday 21 of July 2013 21:50:47 Sylwester Nawrocki wrote:
-> On 07/20/2013 02:04 AM, Tomasz Figa wrote:
-> > This patch introduces new Samsung PWM driver, which uses Samsung
-> > PWM/timer master driver to control shared parts of the hardware.
-> > 
-> > Signed-off-by: Tomasz Figa<tomasz.figa@gmail.com>
-> > ---
-> > 
-> >   drivers/pwm/Makefile      |   1 +
-> >   drivers/pwm/pwm-samsung.c | 606
-> >   ++++++++++++++++++++++++++++++++++++++++++++++ 2 files changed, 607
-> >   insertions(+)
-> >   create mode 100644 drivers/pwm/pwm-samsung.c
-> 
-> [...]
-> 
-> > +static const struct samsung_pwm_variant s3c64xx_variant = {
-> > +	.bits		= 32,
-> > +	.div_base	= 0,
-> 
-> Initialization to 0 could be omitted, since it is implicit.
 
-Well, I'd prefer keeping this as is, for clarity. It improves code 
-readability, because you don't have to look at struct definition to see 
-all the fields.
+--kfjH4zxOES6UT95V
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > +	.has_tint_cstat	= true,
-> > +	.tclk_mask	= BIT(7) | BIT(6) | BIT(5),
-> > +};
-> > +
-> > +static const struct samsung_pwm_variant s5p64x0_variant = {
-> > +	.bits		= 32,
-> > +	.div_base	= 0,
-> 
-> Ditto.
-> 
-> > +	.has_tint_cstat	= true,
-> > +};
-> > +
-> > +static const struct samsung_pwm_variant s5p_variant = {
-> > +	.bits		= 32,
-> > +	.div_base	= 0,
-> 
-> Ditto.
-> 
-> > +	.has_tint_cstat	= true,
-> > +	.tclk_mask	= BIT(5),
-> > +};
-> > +
-> 
-> [...]
-> 
-> > +static int pwm_samsung_remove(struct platform_device *pdev)
-> > +{
-> > +	struct samsung_pwm_chip *chip = platform_get_drvdata(pdev);
-> > +	int ret;
-> > +
-> > +	ret = pwmchip_remove(&chip->chip);
-> > +	if (ret < 0)
-> > +		return ret;
-> 
-> Since return value of the remove() callback is happily ignored by
-> the driver core I think there is no point in returning an error
-> here like this. Wouldn't it be more sensible to just call all the
-> cleanup functions unconditionally ? At least potentially wrong state
-> of the clock could be avoided.
+On Sat, Jul 20, 2013 at 02:04:26AM +0200, Tomasz Figa wrote:
+> This patch introduces new Samsung PWM driver, which uses Samsung
+> PWM/timer master driver to control shared parts of the hardware.
+>=20
+> Signed-off-by: Tomasz Figa <tomasz.figa@gmail.com>
+> ---
+>  drivers/pwm/Makefile      |   1 +
+>  drivers/pwm/pwm-samsung.c | 606 ++++++++++++++++++++++++++++++++++++++++=
+++++++
+>  2 files changed, 607 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-samsung.c
 
-IMHO handling the errors correctly here is more future-proof. Driver core 
-might be modified to handle errors in future and this driver will not need 
-to be modified.
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
 
-Best regards,
-Tomasz
+--kfjH4zxOES6UT95V
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.20 (GNU/Linux)
+
+iQIcBAEBAgAGBQJR9lW0AAoJEN0jrNd/PrOhJYUP/AhHZ+kQTLcP0DwXpMYj9d0f
+hxsjPFt+KHR0jw/gv/3UOr0+TX/546HNTPpiVE9FS8wu9pyhGdk5kB1Lc5ns9nGL
+RPCPMxhZ2oP21l3epiuGxwvJiNaNCjVe63WwQxE6CQZGOtpS5+YFX95rAlnHwSUM
+7I3UHZjJm7qvGzUIGkrI3FZ6+QYQB73OjMNRdMo/FX5mT3uprhtUOJ0tX+dSiRrT
+x4We5aFsO7W8Jee/eT6efhtxtz92qq0Y6OQjQK9scMSzbtFGoT+WDakebTA+Kx9K
+j7ASXqwffqdZFflVVxeEEn839s+LzSyPWI4SvUwV03rXpGYh5NokQFlLyGToicnA
++dZgNkidAZ+L2cDhge/9zNGQLtfs2HwxUSLz86CzCCh3g+7X/KB/ZaVPsYw0pVzl
+rkbWJAFBjZNfrevmUEl0647Bvghpav8tVxqOret0kxlUkZ6die/8P8G+2Ptx6F3s
++OYsHeDDQ+Ixg+QxGZjVNsXslBxWZzROqZt5eqBYGpV0cRTU86UsrIgsa+yTh4g4
+Qsk83mfVBz6B0+0ncwNXaMcWzz6bsJTQNi8Wr73ew2XSD+n0BTABpcWS5JEcuRpU
+jhSMh6SRk+UiNBaeYaJoeUMnMQWlEyYGjnu+cC4N3atbDo6zNFL/EEmj59Pa1rCj
+krS6JmPsZwKxe7mS5sdf
+=TaBY
+-----END PGP SIGNATURE-----
+
+--kfjH4zxOES6UT95V--
