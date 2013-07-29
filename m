@@ -1,88 +1,104 @@
 Return-Path: <thierry.reding@gmail.com>
-Date: Tue, 23 Jul 2013 08:37:49 -0700
+Date: Mon, 29 Jul 2013 14:30:16 +0200
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH v2 0/4] Add PWM polarity flag macro for DT
-Message-ID: <20130723153748.GC2066@dhcp-172-17-186-34.nvidia.com>
+Message-ID: <20130729123015.GF23152@manwe>
 References: <1374101664-21112-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <51E81E1C.20708@wwwdotorg.org>
- <10033310.z2U2FSCElN@avalon>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="8NvZYKFJsRX2Djef"
+	protocol="application/pgp-signature"; boundary="WlEyl6ow+jlIgNUh"
 Content-Disposition: inline
-In-Reply-To: <10033310.z2U2FSCElN@avalon>
+In-Reply-To: <1374101664-21112-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Stephen Warren <swarren@wwwdotorg.org>, devicetree-discuss@lists.ozlabs.org, linux-omap@vger.kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Boris BREZILLON <linux-arm@overkiz.com>, Shawn Guo <shawn.guo@linaro.org>, Steffen Trumtrar <s.trumtrar@pengutronix.de>, Tomasz Figa <t.figa@samsung.com>
+To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Cc: devicetree@vger.kernel.org, linux-omap@vger.kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Boris BREZILLON <linux-arm@overkiz.com>, Shawn Guo <shawn.guo@linaro.org>, Steffen Trumtrar <s.trumtrar@pengutronix.de>, Stephen Warren <swarren@wwwdotorg.org>, Tomasz Figa <t.figa@samsung.com>
 
 
---8NvZYKFJsRX2Djef
+--WlEyl6ow+jlIgNUh
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jul 19, 2013 at 01:29:13PM +0200, Laurent Pinchart wrote:
-> Hi Stephen,
+On Thu, Jul 18, 2013 at 12:54:20AM +0200, Laurent Pinchart wrote:
+> Hello,
 >=20
-> On Thursday 18 July 2013 10:55:56 Stephen Warren wrote:
-> > On 07/17/2013 04:54 PM, Laurent Pinchart wrote:
-> > > Hello,
-> > >=20
-> > > Here's a small patch set that replaces PWM polarity numerical constan=
-ts
-> > > with macros in DT.
-> >=20
-> > The series,
-> > Reviewed-by: Stephen Warren <swarren@nvidia.com>
-> >=20
-> > I'm (very very) slightly hesitant about patch 3/4, since it's moving to=
-wards
-> > all PWMs having to use the same specifier format, whereas specifiers ar=
-e at
-> > least potentially binding-specific, not device-type-specific. However,
-> > consistency is good; there's no need to do something different just for=
- the
-> > heck of it. Equally, there's nothing actually stopping a new binding fr=
-om
-> > defining its own format rather than simply deferring to pwm.txt if it
-> > absolutely has to, so I think this will turn out fine.
+> Here's a small patch set that replaces PWM polarity numerical constants w=
+ith
+> macros in DT.
 >=20
-> Exactly, that's why I don't think it's an issue. pwm.txt defines a common=
-=20
-> format, individual bindings are free to use it or not.
+> The series is the result of splitting the original patch into four patches
+> that
 >=20
-> Thierry, if you're fine with the patches, could you take them in your tre=
-e=20
-> with Stephen's Reviewed-by, or should I report them and send you a pull=
-=20
-> request ?
+> - add the flag macro (both in a header file and in the PWM DT binding core
+>   documentation)
+> - use the macro in the PWM core code
+> - update existing DT bindings to refer to the PWM DT bindings core
+>   documentation
+> - update existing DT sources to use the new macro
+>=20
+> I believe I've taken all comments received so far into account. Most nota=
+ble
+> changes include
+>=20
+> - splitting the original patch
+> - removing the PWM_POLARITY_NORMAL flag, which wasn't a flag but was defi=
+ned
+>   as 0
+> - renaming the PWM_POLARITY_INVERSED DT flag to PWM_POLARITY_INVERTED
+> - not relying on DT flags and PWM C flags having identical names and valu=
+es
+>=20
+> Laurent Pinchart (4):
+>   pwm: Add PWM polarity flag macro for DT
+>   pwm: Use the DT macro directly when parsing PWM DT flags
+>   pwm: Update DT bindings to reference pwm.txt for cells documentation
+>   ARM: dts: Use the PWM polarity flags
+>=20
+>  Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt    |  8 +++-----
+>  Documentation/devicetree/bindings/pwm/imx-pwm.txt          |  4 ++--
+>  Documentation/devicetree/bindings/pwm/mxs-pwm.txt          |  4 ++--
+>  .../devicetree/bindings/pwm/nvidia,tegra20-pwm.txt         |  5 ++---
+>  Documentation/devicetree/bindings/pwm/nxp,pca9685-pwm.txt  |  4 ++--
+>  Documentation/devicetree/bindings/pwm/pwm-samsung.txt      | 10 +++-----=
+--
+>  Documentation/devicetree/bindings/pwm/pwm-tiecap.txt       |  8 +++-----
+>  Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt     |  8 +++-----
+>  Documentation/devicetree/bindings/pwm/pwm.txt              |  7 ++++---
+>  Documentation/devicetree/bindings/pwm/spear-pwm.txt        |  5 ++---
+>  Documentation/devicetree/bindings/pwm/ti,twl-pwm.txt       |  4 ++--
+>  Documentation/devicetree/bindings/pwm/ti,twl-pwmled.txt    |  4 ++--
+>  Documentation/devicetree/bindings/pwm/vt8500-pwm.txt       |  8 +++-----
+>  arch/arm/boot/dts/am335x-evmsk.dts                         |  3 ++-
+>  arch/arm/boot/dts/wm8850-w70v2.dts                         |  3 ++-
+>  drivers/pwm/core.c                                         |  7 +++----
+>  include/dt-bindings/pwm/pwm.h                              | 14 ++++++++=
+++++++
+>  17 files changed, 54 insertions(+), 52 deletions(-)
+>  create mode 100644 include/dt-bindings/pwm/pwm.h
 
-They look good to me. I'll take them into my tree and add Stephen's
-Reviwed-by. It might take me another week, though, as I'm currently
-rather busy with other things.
+Applied, thanks.
 
 Thierry
 
---8NvZYKFJsRX2Djef
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+--WlEyl6ow+jlIgNUh
+Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.11 (GNU/Linux)
+Version: GnuPG v2.0.20 (GNU/Linux)
 
-iQIcBAEBAgAGBQJR7qNMAAoJEN0jrNd/PrOhadoP/1Zy5D/e2IWjPEIb81W7pXax
-w9miYMx8jARl4x4OhdQmWqT36F9Ne/b3Auk1qNBNUrDESjazDtAWfxN6WrwO80IE
-sORDvyK0G75HLRByjR3kwtoM8Hs+F9jR8wYN7ptiYhqAdQBdlSTF1nAOX77EBMGj
-/Vqrf0Dr9+gGt2n3AWSShV8MG54Sa/SU8tGoO+4pfvywuK2Wu4s0ApRz6yUZ7gX4
-9wHHw4OF6nn6feyF6Yo56nFsgmis7MOfXDt3UJem1qoXNPykREpWL/UJxTvN/0fY
-CIBDrAQgtuAwTTGpceVzK+DAIi5O4ZYj1kxn0McaEyl+rf1ieXPS3EnsY0zPaOaV
-Q/PntIArP67nRYDBJzJTsZ352ldULfE+oU8izvk33GxDwIdEMUCcBGBGM8MkU4iB
-wbIZ/ZG83bsH1zieppQU841UZVlgvNo2wVEiPMfUDWZSqtTjygrOth3o1EjGtsPE
-QMT8iF3VoK74Fq0Bl44l3d7YZYoUmQK5zYmeDnPgSh58n9udPPlObBIaX8EY5x9Y
-Uxr459Z7n9hR+5TQRwMoIf2ZNT7b9VRlnUum6XRBMb0xmvRm/9jjw+wbhDSbSQdA
-Xg/lf3UIdoeR0dcvEQg/02C+xQTSoWXqf9QPwTU88eNMWyJY8IvMwKm3U0RSfqfV
-eAebYYwZURBeNqBtyrD9
-=s7ML
+iQIcBAEBAgAGBQJR9mBXAAoJEN0jrNd/PrOhCDAP/1+M1mPj5C9mvfurPK96v+0+
+4btGxrFvJfjpMKweqI3sb7gZ+ulgm/KLVOxzwWu/aFr5TtDjgprQXN9vCEIqsAcU
+MpbP2hQlhSMY7tZ7YYGG/MI+BZ1Lhg31S7mwagP4WJXKwyigD1ruiirAMoYHWunH
+Iy99C4m/pW0of5fdUiQhabJWh7Pg03ePokiCUyk4xqXRWCRPee4Z1HB61CtNtvIg
+vSij3OrtwST9NhQIBUqgxLZGxFSyGveJ4BCTIKzT5b5058ufqirjXgG618SP9UYf
+oM6NBMx8ac/S2hBlnPFSysT3nGQbt8+EEpPyksLA1nZHKG0iYvkQRmEhWXrrfeyL
+Idd2bl/EmNefwS9Hd4RQz7Ssy+/6So5mnpPIAPX6YvSeN00U+Y6RqwdUp5QoPA/G
+bOCtESEfZUsPWSwIm9Rk6+hIy4NY2mfHu+1val9ARS340n7TI9MwW8zZxWF280ZT
+JDNVaIIk5OEd07HMLvoWQ6pnaEPu5HZxXxPpmL7i1gca9bZ5KPW7N3S3PREmA3bd
+asX3qsQ9rh6WJm/n+LjK0bWtMDU4XE8ROXqUXQuxtHC1yMKTBA58FwwFVtu6pWsb
+mq34saCUJ+aULBa1vOb59ULnZLnPPgcVG6Ywnh2wEZ4k1KHRGE3mEJ9DUdLy34a8
+kvP1YK68KgQm0wZ5XLCI
+=09CY
 -----END PGP SIGNATURE-----
 
---8NvZYKFJsRX2Djef--
+--WlEyl6ow+jlIgNUh--
