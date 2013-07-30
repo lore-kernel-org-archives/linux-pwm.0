@@ -1,104 +1,46 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Mon, 29 Jul 2013 14:30:16 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 0/4] Add PWM polarity flag macro for DT
-Message-ID: <20130729123015.GF23152@manwe>
-References: <1374101664-21112-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+Return-Path: <Milo.Kim@ti.com>
+From: "Kim, Milo" <Milo.Kim@ti.com>
+Subject: [PATCH v2 0/4] LP3943 MFD driver for a GPIO expander and a PWM
+ generator
+Date: Tue, 30 Jul 2013 00:42:12 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F82E849D1@DQHE06.ent.ti.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="WlEyl6ow+jlIgNUh"
-Content-Disposition: inline
-In-Reply-To: <1374101664-21112-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Cc: devicetree@vger.kernel.org, linux-omap@vger.kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Boris BREZILLON <linux-arm@overkiz.com>, Shawn Guo <shawn.guo@linaro.org>, Steffen Trumtrar <s.trumtrar@pengutronix.de>, Stephen Warren <swarren@wwwdotorg.org>, Tomasz Figa <t.figa@samsung.com>
+To: "Samuel Ortiz (sameo@linux.intel.com)" <sameo@linux.intel.com>, "lee.jones@linaro.org" <lee.jones@linaro.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+Cc: "broonie@kernel.org" <broonie@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-
---WlEyl6ow+jlIgNUh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, Jul 18, 2013 at 12:54:20AM +0200, Laurent Pinchart wrote:
-> Hello,
->=20
-> Here's a small patch set that replaces PWM polarity numerical constants w=
-ith
-> macros in DT.
->=20
-> The series is the result of splitting the original patch into four patches
-> that
->=20
-> - add the flag macro (both in a header file and in the PWM DT binding core
->   documentation)
-> - use the macro in the PWM core code
-> - update existing DT bindings to refer to the PWM DT bindings core
->   documentation
-> - update existing DT sources to use the new macro
->=20
-> I believe I've taken all comments received so far into account. Most nota=
-ble
-> changes include
->=20
-> - splitting the original patch
-> - removing the PWM_POLARITY_NORMAL flag, which wasn't a flag but was defi=
-ned
->   as 0
-> - renaming the PWM_POLARITY_INVERSED DT flag to PWM_POLARITY_INVERTED
-> - not relying on DT flags and PWM C flags having identical names and valu=
-es
->=20
-> Laurent Pinchart (4):
->   pwm: Add PWM polarity flag macro for DT
->   pwm: Use the DT macro directly when parsing PWM DT flags
->   pwm: Update DT bindings to reference pwm.txt for cells documentation
->   ARM: dts: Use the PWM polarity flags
->=20
->  Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt    |  8 +++-----
->  Documentation/devicetree/bindings/pwm/imx-pwm.txt          |  4 ++--
->  Documentation/devicetree/bindings/pwm/mxs-pwm.txt          |  4 ++--
->  .../devicetree/bindings/pwm/nvidia,tegra20-pwm.txt         |  5 ++---
->  Documentation/devicetree/bindings/pwm/nxp,pca9685-pwm.txt  |  4 ++--
->  Documentation/devicetree/bindings/pwm/pwm-samsung.txt      | 10 +++-----=
---
->  Documentation/devicetree/bindings/pwm/pwm-tiecap.txt       |  8 +++-----
->  Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt     |  8 +++-----
->  Documentation/devicetree/bindings/pwm/pwm.txt              |  7 ++++---
->  Documentation/devicetree/bindings/pwm/spear-pwm.txt        |  5 ++---
->  Documentation/devicetree/bindings/pwm/ti,twl-pwm.txt       |  4 ++--
->  Documentation/devicetree/bindings/pwm/ti,twl-pwmled.txt    |  4 ++--
->  Documentation/devicetree/bindings/pwm/vt8500-pwm.txt       |  8 +++-----
->  arch/arm/boot/dts/am335x-evmsk.dts                         |  3 ++-
->  arch/arm/boot/dts/wm8850-w70v2.dts                         |  3 ++-
->  drivers/pwm/core.c                                         |  7 +++----
->  include/dt-bindings/pwm/pwm.h                              | 14 ++++++++=
-++++++
->  17 files changed, 54 insertions(+), 52 deletions(-)
->  create mode 100644 include/dt-bindings/pwm/pwm.h
-
-Applied, thanks.
-
-Thierry
-
---WlEyl6ow+jlIgNUh
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
-
-iQIcBAEBAgAGBQJR9mBXAAoJEN0jrNd/PrOhCDAP/1+M1mPj5C9mvfurPK96v+0+
-4btGxrFvJfjpMKweqI3sb7gZ+ulgm/KLVOxzwWu/aFr5TtDjgprQXN9vCEIqsAcU
-MpbP2hQlhSMY7tZ7YYGG/MI+BZ1Lhg31S7mwagP4WJXKwyigD1ruiirAMoYHWunH
-Iy99C4m/pW0of5fdUiQhabJWh7Pg03ePokiCUyk4xqXRWCRPee4Z1HB61CtNtvIg
-vSij3OrtwST9NhQIBUqgxLZGxFSyGveJ4BCTIKzT5b5058ufqirjXgG618SP9UYf
-oM6NBMx8ac/S2hBlnPFSysT3nGQbt8+EEpPyksLA1nZHKG0iYvkQRmEhWXrrfeyL
-Idd2bl/EmNefwS9Hd4RQz7Ssy+/6So5mnpPIAPX6YvSeN00U+Y6RqwdUp5QoPA/G
-bOCtESEfZUsPWSwIm9Rk6+hIy4NY2mfHu+1val9ARS340n7TI9MwW8zZxWF280ZT
-JDNVaIIk5OEd07HMLvoWQ6pnaEPu5HZxXxPpmL7i1gca9bZ5KPW7N3S3PREmA3bd
-asX3qsQ9rh6WJm/n+LjK0bWtMDU4XE8ROXqUXQuxtHC1yMKTBA58FwwFVtu6pWsb
-mq34saCUJ+aULBa1vOb59ULnZLnPPgcVG6Ywnh2wEZ4k1KHRGE3mEJ9DUdLy34a8
-kvP1YK68KgQm0wZ5XLCI
-=09CY
------END PGP SIGNATURE-----
-
---WlEyl6ow+jlIgNUh--
+TFAzOTQzIGlzIGFuIGludGVncmF0ZWQgZGV2aWNlIGNhcGFibGUgb2YgZHJpdmluZyAxNiBvdXRw
+dXQgY2hhbm5lbHMuDQpJdCBjYW4gYmUgdXNlZCBmb3IgR1BJTyBleHBhbmRlciBhbmQgUFdNIGdl
+bmVyYXRvcnMuDQpMUDM0OTMgcmVnaXN0ZXJzIGFyZSBjb250cm9sbGVkIHZpYSB0aGUgSTJDIGlu
+dGVyZmFjZS4NCg0KVGhpcyBwYXRjaC1zZXQgY29uc2lzdHMgb2YgZm91ciBwYXJ0cyAtIE1GRCwg
+R1BJTywgUFdNIGFuZCBkZXZpY2UgdHJlZSBiaW5kaW5ncy4NCg0KTWlsbyBLaW0gKDQpOg0KICBt
+ZmQ6IGFkZCBMUDM5NDMgTUZEIGRyaXZlcg0KICBncGlvOiBhZGQgTFAzOTQzIEkyQyBHUElPIGV4
+cGFuZGVyIGRyaXZlcg0KICBwd206IGFkZCBMUDM5NDMgUFdNIGRyaXZlcg0KICBEb2N1bWVudGF0
+aW9uOiBkdDogYmluZGluZ3M6IGFkZCBMUDM5NDMgYmluZGluZ3MNCg0KIC4uLi9kZXZpY2V0cmVl
+L2JpbmRpbmdzL2dwaW8vZ3Bpby1scDM5NDMudHh0ICAgICAgIHwgICA0MiArKysNCiBEb2N1bWVu
+dGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbWZkL2xwMzk0My50eHQgICB8ICAgMzMgKysNCiAu
+Li4vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vcHdtLWxwMzk0My50eHQgICAgICAgICB8ICAgNjUg
+KysrKw0KIGRyaXZlcnMvZ3Bpby9LY29uZmlnICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IHwgICAgOCArDQogZHJpdmVycy9ncGlvL01ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgfCAgICAxICsNCiBkcml2ZXJzL2dwaW8vZ3Bpby1scDM5NDMuYyAgICAgICAgICAgICAg
+ICAgICAgICAgICB8ICAyNDIgKysrKysrKysrKysrKysNCiBkcml2ZXJzL21mZC9LY29uZmlnICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMTEgKw0KIGRyaXZlcnMvbWZkL01ha2Vm
+aWxlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgMSArDQogZHJpdmVycy9tZmQv
+bHAzOTQzLmMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgMTY1ICsrKysrKysrKysN
+CiBkcml2ZXJzL3B3bS9LY29uZmlnICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAg
+MTAgKw0KIGRyaXZlcnMvcHdtL01ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IHwgICAgMSArDQogZHJpdmVycy9wd20vcHdtLWxwMzk0My5jICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgfCAgMzQ4ICsrKysrKysrKysrKysrKysrKysrDQogaW5jbHVkZS9saW51eC9tZmQvbHAz
+OTQzLmggICAgICAgICAgICAgICAgICAgICAgICAgfCAgMTE1ICsrKysrKysNCiAxMyBmaWxlcyBj
+aGFuZ2VkLCAxMDQyIGluc2VydGlvbnMoKykNCiBjcmVhdGUgbW9kZSAxMDA2NDQgRG9jdW1lbnRh
+dGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2dwaW8vZ3Bpby1scDM5NDMudHh0DQogY3JlYXRlIG1v
+ZGUgMTAwNjQ0IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9tZmQvbHAzOTQzLnR4
+dA0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mv
+cHdtL3B3bS1scDM5NDMudHh0DQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvZ3Bpby9ncGlv
+LWxwMzk0My5jDQogY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvbWZkL2xwMzk0My5jDQogY3Jl
+YXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvcHdtL3B3bS1scDM5NDMuYw0KIGNyZWF0ZSBtb2RlIDEw
+MDY0NCBpbmNsdWRlL2xpbnV4L21mZC9scDM5NDMuaA0KDQotLSANCjEuNy45LjUNCg0KDQpCZXN0
+IFJlZ2FyZHMsDQpNaWxvDQoNCg==
