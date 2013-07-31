@@ -1,139 +1,49 @@
-Return-Path: <lee.jones@linaro.org>
-Return-Path: <lee.jones@linaro.org>
-Date: Wed, 31 Jul 2013 12:56:30 +0100
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v2 1/4] mfd: add LP3943 MFD driver
-Message-ID: <20130731115630.GH13298@lee--X1>
+Return-Path: <Milo.Kim@ti.com>
+From: "Kim, Milo" <Milo.Kim@ti.com>
+Subject: RE: [PATCH v2 1/4] mfd: add LP3943 MFD driver
+Date: Wed, 31 Jul 2013 23:29:48 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F82E850A9@DQHE06.ent.ti.com>
 References: <A874F61F95741C4A9BA573A70FE3998F82E849D8@DQHE06.ent.ti.com>
-MIME-Version: 1.0
+ <20130731115630.GH13298@lee--X1>
+In-Reply-To: <20130731115630.GH13298@lee--X1>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F82E849D8@DQHE06.ent.ti.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-ID: <linux-pwm.vger.kernel.org>
-To: "Kim, Milo" <Milo.Kim@ti.com>
+To: Lee Jones <lee.jones@linaro.org>
 Cc: "Samuel Ortiz (sameo@linux.intel.com)" <sameo@linux.intel.com>, "broonie@kernel.org" <broonie@kernel.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Samuel Ortiz <sameo@linux.intel.com>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Signed-off-by: Milo Kim <milo.kim@ti.com>
-> ---
->  drivers/mfd/Kconfig        |   11 +++
->  drivers/mfd/Makefile       |    1 +
->  drivers/mfd/lp3943.c       |  165 ++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/mfd/lp3943.h |  115 ++++++++++++++++++++++++++++++
->  4 files changed, 292 insertions(+)
->  create mode 100644 drivers/mfd/lp3943.c
->  create mode 100644 include/linux/mfd/lp3943.h
-
-<snip> * looks good up to me up to here *
-
-Although, I think the 0 = 1, 1 = 2 ... stuff is really confusing. Is
-there nothing we can do about that?
-
-> +static int lp3943_probe(struct i2c_client *cl, const struct i2c_device_id *id)
-> +{
-> +	struct lp3943 *lp3943;
-> +	int ret;
-> +
-> +	lp3943 = devm_kzalloc(&cl->dev, sizeof(*lp3943), GFP_KERNEL);
-> +	if (!lp3943)
-> +		return -ENOMEM;
-> +
-> +	lp3943->regmap = devm_regmap_init_i2c(cl, &lp3943_regmap_config);
-> +	if (IS_ERR(lp3943->regmap)) {
-> +		ret = PTR_ERR(lp3943->regmap);
-
-Bit of a nit. 
-
-Why don't you: return PTR_ERR(lp3943->regmap);
-
-> +		dev_err(&cl->dev, "Regmap init error: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	lp3943->pdata = cl->dev.platform_data;
-
-Can you change this to use the helper?
-
-dev_get_platdata()
-
-> +	lp3943->dev = &cl->dev;
-> +	lp3943->mux_cfg = lp3943_mux_cfg;
-> +	i2c_set_clientdata(cl, lp3943);
-> +
-> +	ret = mfd_add_devices(lp3943->dev, -1, lp3943_devs,
-> +			ARRAY_SIZE(lp3943_devs), NULL, 0, NULL);
-> +	if (ret) {
-> +		dev_err(lp3943->dev, "failed to add MFD devices: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int lp3943_remove(struct i2c_client *cl)
-> +{
-> +	struct lp3943 *lp3943 = i2c_get_clientdata(cl);
-> +
-> +	mfd_remove_devices(lp3943->dev);
-> +	return 0;
-> +}
-> +
-> +static const struct i2c_device_id lp3943_ids[] = {
-> +	{ "lp3943", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, lp3943_ids);
-
-Are we expecting this driver to support more devices?
-
-> +static const struct of_device_id lp3943_dt_ids[] = {
-> +	{ .compatible = "ti,lp3943", },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, lp3943_dt_ids);
-> +
-> +static struct i2c_driver lp3943_driver = {
-> +	.driver = {
-> +		.name = "lp3943",
-> +		.owner = THIS_MODULE,
-> +		.of_match_table = of_match_ptr(lp3943_dt_ids),
-> +	},
-> +	.probe = lp3943_probe,
-> +	.remove = lp3943_remove,
-> +	.id_table = lp3943_ids,
-> +};
-> +
-> +static int __init lp3943_init(void)
-> +{
-> +	return i2c_add_driver(&lp3943_driver);
-> +}
-> +subsys_initcall(lp3943_init);
-> +
-> +static void __exit lp3943_exit(void)
-> +{
-> +	i2c_del_driver(&lp3943_driver);
-> +}
-> +module_exit(lp3943_exit);
-
-I think you want to replace:
-  lp3943_init()
-  lp3943_exit
-
-With:
-  module_i2c_driver()
-
-> +MODULE_DESCRIPTION("LP3943 MFD Core Driver");
-> +MODULE_AUTHOR("Milo Kim");
-> +MODULE_LICENSE("GPL");
-
--- 
-Lee Jones
-Linaro ST-Ericsson Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+VGhhbmtzIGZvciB0aGUgcmV2aWV3LCBwbGVhc2Ugc2VlIG15IGNvbW1lbnRzLg0KDQo+IDxzbmlw
+PiAqIGxvb2tzIGdvb2QgdXAgdG8gbWUgdXAgdG8gaGVyZSAqDQo+IA0KPiBBbHRob3VnaCwgSSB0
+aGluayB0aGUgMCA9IDEsIDEgPSAyIC4uLiBzdHVmZiBpcyByZWFsbHkgY29uZnVzaW5nLiBJcw0K
+PiB0aGVyZSBub3RoaW5nIHdlIGNhbiBkbyBhYm91dCB0aGF0Pw0KDQpPSywgZW51bSB2YWx1ZSBv
+ZiBscDM5NDNfcHdtX291dHB1dCBjYW4gYmUgY2hhbmdlZCBhcyBiZWxvdw0KYmVjYXVzZSBMUDM5
+NDNfUFdNX0lOVkFMSUQgaXMgbm90IHVzZWQgYW55bW9yZS4NCg0KZW51bSBscDM5NDNfcHdtX291
+dHB1dCB7DQoJTFAzOTQzX1BXTV9PVVQwLA0KCUxQMzk0M19QV01fT1VUMSwNCgkuLi4NCglMUDM5
+NDNfUFdNX09VVDE1LA0KfTsNCg0KVGhlbiwgb3V0cHV0IGluZGV4IHdpbGwgbWF0Y2ggZWFjaCBl
+bnVtIGludGVnZXIgdmFsdWUuDQpEb2VzIGl0IG1ha2Ugc2Vuc2U/DQoNCj4gPiArc3RhdGljIGNv
+bnN0IHN0cnVjdCBpMmNfZGV2aWNlX2lkIGxwMzk0M19pZHNbXSA9IHsNCj4gPiArCXsgImxwMzk0
+MyIsIDAgfSwNCj4gPiArCXsgfQ0KPiA+ICt9Ow0KPiA+ICtNT0RVTEVfREVWSUNFX1RBQkxFKGky
+YywgbHAzOTQzX2lkcyk7DQo+IA0KPiBBcmUgd2UgZXhwZWN0aW5nIHRoaXMgZHJpdmVyIHRvIHN1
+cHBvcnQgbW9yZSBkZXZpY2VzPw0KDQpBdCB0aGlzIG1vbWVudCwgdGhpcyBpcyB0aGUgb25seSBv
+bmUgZGV2aWNlIHN1cHBvcnRlZC4NCg0KPiA+ICtzdGF0aWMgaW50IF9faW5pdCBscDM5NDNfaW5p
+dCh2b2lkKQ0KPiA+ICt7DQo+ID4gKwlyZXR1cm4gaTJjX2FkZF9kcml2ZXIoJmxwMzk0M19kcml2
+ZXIpOw0KPiA+ICt9DQo+ID4gK3N1YnN5c19pbml0Y2FsbChscDM5NDNfaW5pdCk7DQo+ID4gKw0K
+PiA+ICtzdGF0aWMgdm9pZCBfX2V4aXQgbHAzOTQzX2V4aXQodm9pZCkNCj4gPiArew0KPiA+ICsJ
+aTJjX2RlbF9kcml2ZXIoJmxwMzk0M19kcml2ZXIpOw0KPiA+ICt9DQo+ID4gK21vZHVsZV9leGl0
+KGxwMzk0M19leGl0KTsNCj4gDQo+IEkgdGhpbmsgeW91IHdhbnQgdG8gcmVwbGFjZToNCj4gICBs
+cDM5NDNfaW5pdCgpDQo+ICAgbHAzOTQzX2V4aXQNCj4gDQo+IFdpdGg6DQo+ICAgbW9kdWxlX2ky
+Y19kcml2ZXIoKQ0KDQpUaGlzIGlzIHJlbGF0ZWQgd2l0aCBpbml0Y2FsbCBzZXF1ZW5jZS4NClNv
+bWUgcHJvYmxlbSBtYXkgaGFwcGVuIGlmIGFueSBHUElPIG9yIFBXTSBjb25zdW1lciB0cmllcyB0
+byByZXF1ZXN0IGJlZm9yZQ0KTFAzOTQzIE1GRHMgYXJlIGFkZGVkLg0KRm9yIGV4YW1wbGUsIGEg
+R1BJTyBpcyByZXF1ZXN0ZWQgaW4gX3Byb2JlKCkgb2Ygc29tZSBkZXZpY2UuDQpMZXQncyBhc3N1
+bWUgdGhlIEdQSU8gbnVtYmVyIGlzIGluIHJhbmdlIG9mIHdoYXQgTFAzOTQzIEdQSU8gZHJpdmVy
+IHByb3ZpZGVkLg0KVGhlbiwgZ3Bpb19yZXF1ZXN0KCkgd2lsbCBiZSBmYWlsZWQgYmVjYXVzZSB0
+aGUgR1BJTyBpcyBpbnZhbGlkIGF0IHRoaXMgbW9tZW50Lg0KSWYgdGhlIGRldmljZSByZXF1ZXN0
+IGFnYWluIGxhdGVyLCBpdCB3aWxsIGJlIE9LLCBidXQgd2UgY2FuJ3QgZXhwZWN0IHRoaXMgDQpz
+aXR1YXRpb24gZm9yIGV2ZXJ5IGRyaXZlci4NClNvbWUgZHJpdmVycyByZXF1ZXN0IGEgR1BJTyBv
+bmx5IG9uY2UgaW4gX3Byb2JlKCksIG90aGVyIGRldmljZXMgbWF5IHJlcXVlc3QNCmEgR1BJTyBp
+biBzb21lIGNhc2VzLg0KU28sIEkgdGhpbmsgbHAzOTQzX2luaXQoKSBzaG91bGQgYmUgZGVmaW5l
+ZCBhcyBzdWJzeXNfaW5pdGNhbGwoKSBpbnN0ZWFkIG9mIA0KbW9kdWxlX2luaXQoKS4NCg0KQmVz
+dCByZWdhcmRzLA0KTWlsbyAtDQo=
