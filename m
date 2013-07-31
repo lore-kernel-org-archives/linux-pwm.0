@@ -1,96 +1,63 @@
-Return-Path: <Milo.Kim@ti.com>
-From: "Kim, Milo" <Milo.Kim@ti.com>
-Subject: [PATCH v2 4/4] Documentation: dt: bindings: add LP3943 bindings
-Date: Tue, 30 Jul 2013 00:42:29 +0000
-Message-ID: <A874F61F95741C4A9BA573A70FE3998F82E849ED@DQHE06.ent.ti.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Return-Path: <lee.jones@linaro.org>
+Return-Path: <lee.jones@linaro.org>
+Date: Wed, 31 Jul 2013 12:09:29 +0100
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v2 4/4] Documentation: dt: bindings: add LP3943 bindings
+Message-ID: <20130731110929.GG13298@lee--X1>
+References: <A874F61F95741C4A9BA573A70FE3998F82E849ED@DQHE06.ent.ti.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F82E849ED@DQHE06.ent.ti.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Cc: "lee.jones@linaro.org" <lee.jones@linaro.org>, "Samuel Ortiz  <sameo@linux.intel.com>, broonie@kernel.org (sameo@linux.intel.com)" <broonie@kernel.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+To: "Kim, Milo" <Milo.Kim@ti.com>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "Samuel Ortiz (sameo@linux.intel.com)" <sameo@linux.intel.com>, "broonie@kernel.org" <broonie@kernel.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-QmluZGluZ3MgZm9yIExQMzk0MyBNRkQsIEdQSU8gYW5kIFBXTSBjb250cm9sbGVyIGFyZSBhZGRl
-ZC4NCg0KQ2M6IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnDQpDYzogTGVlIEpvbmVzIDxsZWUu
-am9uZXNAbGluYXJvLm9yZz4NCkNjOiBMaW51cyBXYWxsZWlqIDxsaW51cy53YWxsZWlqQGxpbmFy
-by5vcmc+DQpDYzogU2FtdWVsIE9ydGl6IDxzYW1lb0BsaW51eC5pbnRlbC5jb20+DQpDYzogVGhp
-ZXJyeSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT4NClNpZ25lZC1vZmYtYnk6IE1p
-bG8gS2ltIDxtaWxvLmtpbUB0aS5jb20+DQotLS0NCiAuLi4vZGV2aWNldHJlZS9iaW5kaW5ncy9n
-cGlvL2dwaW8tbHAzOTQzLnR4dCAgICAgICB8ICAgNDIgKysrKysrKysrKysrKw0KIERvY3VtZW50
-YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9tZmQvbHAzOTQzLnR4dCAgIHwgICAzMyArKysrKysr
-KysrDQogLi4uL2RldmljZXRyZWUvYmluZGluZ3MvcHdtL3B3bS1scDM5NDMudHh0ICAgICAgICAg
-fCAgIDY1ICsrKysrKysrKysrKysrKysrKysrDQogMyBmaWxlcyBjaGFuZ2VkLCAxNDAgaW5zZXJ0
-aW9ucygrKQ0KIGNyZWF0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmlu
-ZGluZ3MvZ3Bpby9ncGlvLWxwMzk0My50eHQNCiBjcmVhdGUgbW9kZSAxMDA2NDQgRG9jdW1lbnRh
-dGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL21mZC9scDM5NDMudHh0DQogY3JlYXRlIG1vZGUgMTAw
-NjQ0IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vcHdtLWxwMzk0My50eHQN
-Cg0KZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9ncGlvL2dw
-aW8tbHAzOTQzLnR4dCBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9ncGlvL2dw
-aW8tbHAzOTQzLnR4dA0KbmV3IGZpbGUgbW9kZSAxMDA2NDQNCmluZGV4IDAwMDAwMDAuLjk1MmZl
-ZmQNCi0tLSAvZGV2L251bGwNCisrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5n
-cy9ncGlvL2dwaW8tbHAzOTQzLnR4dA0KQEAgLTAsMCArMSw0MiBAQA0KK1RJL05hdGlvbmFsIFNl
-bWljb25kdWN0b3IgTFAzOTQzIEdQSU8gY29udHJvbGxlcg0KKw0KK1JlcXVpcmVkIHByb3BlcnRp
-ZXM6DQorICAtIGNvbXBhdGlibGU6ICJ0aSxscDM5NDMtZ3BpbyINCisgIC0gZ3Bpby1jb250cm9s
-bGVyOiBkZXZpY2Ugbm9kZSBhcyBhIEdQSU8gY29udHJvbGxlcg0KKyAgLSAjZ3Bpby1jZWxsczog
-U2hvdWxkIGJlIHR3by4NCisgICAgMSkgcGluIG51bWJlciBvZmZzZXQNCisgICAgMikgR1BJTyBw
-b2xhcml0eQ0KKyAgICAgICAwID0gYWN0aXZlIGhpZ2gsIDEgPSBhY3RpdmUgbG93DQorDQorRm9y
-IHRoZSBHUElPIHByb3BlcnRpZXMgcGxlYXNlIHJlZmVyIHRvOg0KK0RvY3VtZW50YXRpb24vZGV2
-aWNldHJlZS9iaW5kaW5ncy9ncGlvL2dwaW8udHh0DQorDQorRXhhbXBsZToNCitTaW1wbGUgTEVE
-IGNvbnRyb2xzIHdpdGggTFAzOTQzIEdQSU8gY29udHJvbGxlcg0KKw0KKyZpMmM0IHsNCisJbHAz
-OTQzQDYwIHsNCisJCWNvbXBhdGlibGUgPSAidGksbHAzOTQzIjsNCisJCXJlZyA9IDwweDYwPjsN
-CisNCisJCWdwaW9leDogZ3BpbyB7DQorCQkJY29tcGF0aWJsZSA9ICJ0aSxscDM5NDMtZ3BpbyI7
-DQorCQkJZ3Bpby1jb250cm9sbGVyOw0KKwkJCSNncGlvLWNlbGxzID0gPDI+Ow0KKwkJfTsNCisJ
-fTsNCit9Ow0KKw0KK2xlZHMgew0KKwljb21wYXRpYmxlID0gImdwaW8tbGVkcyI7DQorCWluZGlj
-YXRvcjEgew0KKwkJbGFiZWwgPSAiaW5kaTEiOw0KKwkJZ3Bpb3MgPSA8JmdwaW9leCA5IDE+Owkv
-KiBhY3RpdmUtbG93ICovDQorCX07DQorDQorCWluZGljYXRvcjIgew0KKwkJbGFiZWwgPSAiaW5k
-aTIiOw0KKwkJZ3Bpb3MgPSA8JmdwaW9leCAxMCAxPjsJLyogYWN0aXZlLWxvdyAqLw0KKwkJZGVm
-YXVsdC1zdGF0ZSA9ICJvZmYiOw0KKwl9Ow0KK307DQpkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlv
-bi9kZXZpY2V0cmVlL2JpbmRpbmdzL21mZC9scDM5NDMudHh0IGIvRG9jdW1lbnRhdGlvbi9kZXZp
-Y2V0cmVlL2JpbmRpbmdzL21mZC9scDM5NDMudHh0DQpuZXcgZmlsZSBtb2RlIDEwMDY0NA0KaW5k
-ZXggMDAwMDAwMC4uZWY2Mjc4NA0KLS0tIC9kZXYvbnVsbA0KKysrIGIvRG9jdW1lbnRhdGlvbi9k
-ZXZpY2V0cmVlL2JpbmRpbmdzL21mZC9scDM5NDMudHh0DQpAQCAtMCwwICsxLDMzIEBADQorVEkv
-TmF0aW9uYWwgU2VtaWNvbmR1Y3RvciBMUDM5NDMgTUZEIGRyaXZlcg0KKw0KK1JlcXVpcmVkIHBy
-b3BlcnRpZXM6DQorICAtIGNvbXBhdGlibGU6ICJ0aSxscDM5NDMiDQorICAtIHJlZzogSTJDIHNs
-YXZlIGFkZHJlc3MgKHU4KS4gMHg2MCB+IDB4NjcNCisNCitMUDM5NDMgY29uc2lzdHMgb2YgdHdv
-IHN1Yi1kZXZpY2VzLCBscDM5NDMtZ3BpbyBhbmQgbHAzOTQzLXB3bS4NCisNCitGb3IgdGhlIExQ
-Mzk0MyBHUElPIHByb3BlcnRpZXMgcGxlYXNlIHJlZmVyIHRvOg0KK0RvY3VtZW50YXRpb24vZGV2
-aWNldHJlZS9iaW5kaW5ncy9ncGlvL2dwaW8tbHAzOTQzLnR4dA0KKw0KK0ZvciB0aGUgTFAzOTQz
-IFBXTSBwcm9wZXJ0aWVzIHBsZWFzZSByZWZlciB0bzoNCitEb2N1bWVudGF0aW9uL2RldmljZXRy
-ZWUvYmluZGluZ3MvcHdtL3B3bS1scDM5NDMudHh0DQorDQorRXhhbXBsZToNCisNCitscDM5NDNA
-NjAgew0KKwljb21wYXRpYmxlID0gInRpLGxwMzk0MyI7DQorCXJlZyA9IDwweDYwPjsNCisNCisJ
-Z3Bpb2V4OiBncGlvIHsNCisJCWNvbXBhdGlibGUgPSAidGksbHAzOTQzLWdwaW8iOw0KKwkJZ3Bp
-by1jb250cm9sbGVyOw0KKwkJI2dwaW8tY2VsbHMgPSA8Mj47DQorCX07DQorDQorCXB3bTM5NDM6
-IHB3bSB7DQorCQljb21wYXRpYmxlID0gInRpLGxwMzk0My1wd20iOw0KKwkJI3B3bS1jZWxscyA9
-IDwzPjsNCisJCXRpLHB3bTAgPSA8IDggOSAxMCA+Ow0KKwkJdGkscHdtMSA9IDwxNj47DQorCX07
-DQorfTsNCmRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHdt
-L3B3bS1scDM5NDMudHh0IGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9w
-d20tbHAzOTQzLnR4dA0KbmV3IGZpbGUgbW9kZSAxMDA2NDQNCmluZGV4IDAwMDAwMDAuLjNhNmM3
-ZmMNCi0tLSAvZGV2L251bGwNCisrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5n
-cy9wd20vcHdtLWxwMzk0My50eHQNCkBAIC0wLDAgKzEsNjUgQEANCitUSS9OYXRpb25hbCBTZW1p
-Y29uZHVjdG9yIExQMzk0MyBQV00gY29udHJvbGxlcg0KKw0KK1JlcXVpcmVkIHByb3BlcnRpZXM6
-DQorICAtIGNvbXBhdGlibGU6ICJ0aSxscDM5NDMtcHdtIg0KKyAgLSAjcHdtLWNlbGxzOiBTaG91
-bGQgYmUgdGhyZWUuDQorICAgIDEpIGluZGV4IG9mIFBXTSBjb250cm9sbGVyDQorICAgICAgIDAg
-PSBQV00gMCwgMSA9IFBXTSAxDQorICAgIDIpIFBXTSBzaWduYWwgcGVyaW9kIGluIG5hbm9zZWNv
-bmRzDQorICAgICAgIG1pbiA9IDYyNTAsIG1heCA9IDE2MDAwMDANCisgICAgMykgYml0bWFzayBv
-ZiBvcHRpb25hbCBQV00gcG9sYXJpdHkgZmxhZ3MNCisgICAgICAgMCA9IG5vcm1hbCwgMSA9IGlu
-dmVyc2VkDQorICAtIHRpLHB3bTAgb3IgdGkscHdtMTogT3V0cHV0IHBpbiBudW1iZXIocykgZm9y
-IFBXTSBwb3J0IDAgb3IgMS4NCisgICAgMCA9IGludmFsaWQNCisgICAgMSA9IG91dHB1dCAwDQor
-ICAgIDIgPSBvdXRwdXQgMQ0KKyAgICAuDQorICAgIC4NCisgICAgMTYgPSBvdXRwdXQgMTUNCisN
-CitGb3IgdGhlIFBXTSBwcm9wZXJ0aWVzIHBsZWFzZSByZWZlciB0bzoNCitEb2N1bWVudGF0aW9u
-L2RldmljZXRyZWUvYmluZGluZ3MvcHdtL3B3bS50eHQNCisNCitFeGFtcGxlOg0KK1BXTSAwIGlz
-IGZvciBSR0IgTEVEIGJyaWdodG5lc3MgY29udHJvbA0KK1BXTSAxIGlzIGZvciBicmlnaHRuZXNz
-IGNvbnRyb2wgb2YgTFA4NTU3IGJhY2tsaWdodCBkZXZpY2UNCisNCismaTJjMyB7DQorCWxwMzk0
-M0A2MCB7DQorCQljb21wYXRpYmxlID0gInRpLGxwMzk0MyI7DQorCQlyZWcgPSA8MHg2MD47DQor
-DQorCQkvKg0KKwkJICogUFdNIDAgOiBvdXRwdXQgNywgOCBhbmQgOQ0KKwkJICogUFdNIDEgOiBv
-dXRwdXQgMTUNCisJCSAqLw0KKwkJcHdtMzk0MzogcHdtIHsNCisJCQljb21wYXRpYmxlID0gInRp
-LGxwMzk0My1wd20iOw0KKwkJCSNwd20tY2VsbHMgPSA8Mz47DQorCQkJdGkscHdtMCA9IDwgOCA5
-IDEwID47DQorCQkJdGkscHdtMSA9IDwxNj47DQorCQl9Ow0KKwl9Ow0KKw0KK307DQorDQorLyog
-TEVEcyBjb250cm9sIHdpdGggUFdNIDAgb2YgTFAzOTQzICovDQorcHdtbGVkcyB7DQorCWNvbXBh
-dGlibGUgPSAicHdtLWxlZHMiOw0KKwlyZ2Igew0KKwkJbGFiZWwgPSAiaW5kaTo6cmdiIjsNCisJ
-CXB3bXMgPSA8JnB3bTM5NDMgMCAxMDAwMCAwPjsNCisJCW1heC1icmlnaHRuZXNzID0gPDI1NT47
-DQorCX07DQorfTsNCisNCismaTJjNCB7DQorCS8qIEJhY2tsaWdodCBjb250cm9sIHdpdGggUFdN
-IDEgb2YgTFAzOTQzICovDQorCWJhY2tsaWdodEAyYyB7DQorCQljb21wYXRpYmxlID0gInRpLGxw
-ODU1NyI7DQorCQlyZWcgPSA8MHgyYz47DQorDQorCQlwd21zID0gPCZwd20zOTQzIDEgMTAwMDAg
-MT47CS8qIGludmVyc2VkICovDQorCQlwd20tbmFtZXMgPSAibHA4NTU3IjsNCisJfTsNCit9Ow0K
-LS0gDQoxLjcuOS41DQoNCg0KQmVzdCBSZWdhcmRzLA0KTWlsbw0KDQoNCg==
+On Tue, 30 Jul 2013, Kim, Milo wrote:
+
+> Bindings for LP3943 MFD, GPIO and PWM controller are added.
+> 
+> Cc: devicetree@vger.kernel.org
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Samuel Ortiz <sameo@linux.intel.com>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Signed-off-by: Milo Kim <milo.kim@ti.com>
+> ---
+>  .../devicetree/bindings/gpio/gpio-lp3943.txt       |   42 +++++++++++++
+>  Documentation/devicetree/bindings/mfd/lp3943.txt   |   33 ++++++++++
+>  .../devicetree/bindings/pwm/pwm-lp3943.txt         |   65 ++++++++++++++++++++
+>  3 files changed, 140 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/gpio/gpio-lp3943.txt
+>  create mode 100644 Documentation/devicetree/bindings/mfd/lp3943.txt
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/gpio/gpio-lp3943.txt b/Documentation/devicetree/bindings/gpio/gpio-lp3943.txt
+> new file mode 100644
+> index 0000000..952fefd
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/gpio/gpio-lp3943.txt
+> @@ -0,0 +1,42 @@
+> +TI/National Semiconductor LP3943 GPIO controller
+> +
+> +Required properties:
+> +  - compatible: "ti,lp3943-gpio"
+> +  - gpio-controller: device node as a GPIO controller
+> +  - #gpio-cells: Should be two.
+> +    1) pin number offset
+> +    2) GPIO polarity
+> +       0 = active high, 1 = active low
+
+Please use the defines instead on '0' and '1':
+    include/dt-bindings/gpio/gpio.h
+
+> +		gpios = <&gpioex 9 1>;	/* active-low */
+
+> +		gpios = <&gpioex 10 1>;	/* active-low */
+
+-- 
+Lee Jones
+Linaro ST-Ericsson Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
