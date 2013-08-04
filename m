@@ -1,71 +1,27 @@
-Return-Path: <lee.jones@linaro.org>
-Return-Path: <lee.jones@linaro.org>
-Date: Thu, 8 Aug 2013 10:03:55 +0100
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v2 2/4] gpio: add LP3943 I2C GPIO expander driver
-Message-ID: <20130808090355.GA14515@lee--X1>
-References: <A874F61F95741C4A9BA573A70FE3998F82E849DF@DQHE06.ent.ti.com>
- <CACRpkdZmMh9MwFQKhZPUZ0dKXQ=8Ear_danBSgOD=PYQUk5QxA@mail.gmail.com>
+Return-Path: <olof@lixom.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACRpkdZmMh9MwFQKhZPUZ0dKXQ=8Ear_danBSgOD=PYQUk5QxA@mail.gmail.com>
+In-Reply-To: <6035387.7ekicDUVuU@flatron>
+References: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com>
+	<6035387.7ekicDUVuU@flatron>
+Date: Sun, 4 Aug 2013 12:28:53 -0700
+Message-ID: <CAOesGMjAHsGuXE9bMjGCzrrBFb=qPko_3P67QC4uENa1ktPYiw@mail.gmail.com>
+Subject: Re: [PATCH v4 00/20] Samsung PWM support cleanup
+From: Olof Johansson <olof@lixom.net>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-pwm.vger.kernel.org>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: "Kim, Milo" <Milo.Kim@ti.com>, "Samuel Ortiz (sameo@linux.intel.com)" <sameo@linux.intel.com>, "broonie@kernel.org" <broonie@kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+To: Tomasz Figa <tomasz.figa@gmail.com>
+Cc: "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, =?ISO-8859-1?Q?Heiko_St=FCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>
 
-On Wed, 07 Aug 2013, Linus Walleij wrote:
+On Wed, Jul 31, 2013 at 12:03 PM, Tomasz Figa <tomasz.figa@gmail.com> wrote:
+> Hi Kukjin,
+>
+> Since I think we already got all the necessary Acks, do you want me to
+> send you a pull request or you already have this series applied (I can't
+> see it in your tree on kernel.org)?
 
-> On Tue, Jul 30, 2013 at 2:42 AM, Kim, Milo <Milo.Kim@ti.com> wrote:
-> 
-> > This is one of LP3943 MFD driver.
-> > LP3943 is configurable as a GPIO expander, up to 16 GPIOs.
-> >
-> > * Application note: how to configure LP3943 as a GPIO expander
-> >   http://www.ti.com/lit/an/snva287a/snva287a.pdf
-> >
-> > * Supported GPIO controller operations
-> >   request, free, direction_input, direction_output, get and set
-> >
-> > * GPIO direction register not supported
-> >   LP3943 doesn't have the GPIO direction register. It only provides input and
-> >   output status registers.
-> >   So, private data for the direction should be handled manually.
-> >   This variable is updated whenever the direction is changed and
-> >   used in 'get' operation.
-> >
-> > * Pin assignment
-> >   A driver data, 'pin_used' is checked when a GPIO is requested.
-> >   If the GPIO is already assigned, then returns as failure.
-> >   If the GPIO is available, 'pin_used' is set.
-> >   When the GPIO is not used anymore, then it is cleared.
-> >   It is defined as unsigned long type for atomic bit operation APIs,
-> >   but only LSB 16bits are used because LP3943 has 16 outputs.
-> >
-> > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > Signed-off-by: Milo Kim <milo.kim@ti.com>
-> > ---
-> > * Patch v2
-> >   Use bitops macros for bit manipulations.
-> >   Support device tree structure for the GPIO controller.
-> >   Add request() and free() for the pin assignment.
-> 
-> This adresses all my concerns, nice driver.
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> 
-> I guess this will be merged through the MFD tree along
-> with the MFD core patch? That needs to go in first anyway.
+I'll take it directly. Please send me a pull request.
 
-That's fine, but first:
 
-1/4 Needs Linus to review
-4/4 Needs Thierry's PWM Ack
+Thanks,
 
-After that please send v3 with Linus' Rev-By on this patch.
-
--- 
-Lee Jones
-Linaro ST-Ericsson Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+-Olof
