@@ -1,168 +1,79 @@
-Return-Path: <devicetree-owner@vger.kernel.org>
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH] pwm: renesas-tpu: Add DT support
-Date: Fri, 26 Jul 2013 00:27:41 +0200
-Message-Id: <1374791261-9850-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: devicetree-owner@vger.kernel.org
+Return-Path: <thierry.reding@gmail.com>
+Date: Sun, 4 Aug 2013 13:03:47 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: Determining wich PWM to use
+Message-ID: <20130804110346.GA20305@manwe>
+References: <20130727101824.GA11956@sauron.fritz.box>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="vtzGhvizbBRQ85DL"
+Content-Disposition: inline
+In-Reply-To: <20130727101824.GA11956@sauron.fritz.box>
 List-ID: <linux-pwm.vger.kernel.org>
-To: linux-pwm@vger.kernel.org
-Cc: linux-sh@vger.kernel.org, devicetree@vger.kernel.org
+To: Johannes Thumshirn <morbidrsa@gmail.com>
+Cc: linux-pwm@vger.kernel.org
 
-Specify DT bindings for the TPU PWM controller and add OF support to the
-driver.
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
----
- .../devicetree/bindings/pwm/renesas,tpu-pwm.txt    | 28 +++++++++++++++
- drivers/pwm/pwm-renesas-tpu.c                      | 41 ++++++++++++++++++----
- 2 files changed, 62 insertions(+), 7 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
+--vtzGhvizbBRQ85DL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This patch depends on the "[PATCH v2 0/4] Add PWM polarity flag macro for DT"
-series that is scheduled for merge in the PWM tree, and should thus go in via
-the same tree.
+On Sat, Jul 27, 2013 at 12:18:24PM +0200, Johannes Thumshirn wrote:
+> Hi list,
+>=20
+> I'm currently working on a pwm driver for the BCM2853 (the SoC used on the
+> RaspberryPi). It has two PWM modules, so my question is, how do I determi=
+ne
+> which PWM to use in the .enable, .disable and .configure functions?
 
-The code has been tested on an Armadillo800EVA with additional platform patches
-that I'm going to submit next.
+It depends on what you mean by "two PWM modules". Does it have one
+controller with two PWM outputs or does it have two controllers with one
+or more outputs?
 
-diff --git a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
-new file mode 100644
-index 0000000..b067e84
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
-@@ -0,0 +1,28 @@
-+* Renesas R-Car Timer Pulse Unit PWM Controller
-+
-+Required Properties:
-+
-+  - compatible: should be one of the following.
-+    - "renesas,tpu-r8a73a4": for R8A77A4 (R-Mobile APE6) compatible PWM controller.
-+    - "renesas,tpu-r8a7740": for R8A7740 (R-Mobile A1) compatible PWM controller.
-+    - "renesas,tpu-r8a7790": for R8A7790 (R-Car H2) compatible PWM controller.
-+    - "renesas,tpu-sh7372": for SH7372 (SH-Mobile AP4) compatible PWM controller.
-+    - "renesas,tpu": for generic R-Car TPU PWM controller.
-+
-+  - reg: Base address and length of each memory resource used by the PWM
-+    controller hardware module.
-+
-+  - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
-+    the cells format. The only third cell flag supported by this binding is
-+    PWM_POLARITY_INVERTED.
-+
-+Please refer to pwm.txt in this directory for details of the common PWM bindings
-+used by client devices.
-+
-+Example: R8A7740 (R-Car A1) TPU controller node
-+
-+	tpu: pwm@e6600000 {
-+		compatible = "renesas,tpu-r8a7740", "renesas,tpu";
-+		reg = <0xe6600000 0x100>;
-+		#pwm-cells = <3>;
-+	};
-diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
-index 2600892..3eeffff 100644
---- a/drivers/pwm/pwm-renesas-tpu.c
-+++ b/drivers/pwm/pwm-renesas-tpu.c
-@@ -20,6 +20,7 @@
- #include <linux/ioport.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-+#include <linux/of.h>
- #include <linux/platform_data/pwm-renesas-tpu.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
-@@ -86,7 +87,7 @@ struct tpu_pwm_device {
- 
- struct tpu_device {
- 	struct platform_device *pdev;
--	struct tpu_pwm_platform_data *pdata;
-+	enum pwm_polarity polarities[TPU_CHANNEL_MAX];
- 	struct pwm_chip chip;
- 	spinlock_t lock;
- 
-@@ -228,8 +229,7 @@ static int tpu_pwm_request(struct pwm_chip *chip, struct pwm_device *_pwm)
- 
- 	pwm->tpu = tpu;
- 	pwm->channel = _pwm->hwpwm;
--	pwm->polarity = tpu->pdata ? tpu->pdata->channels[pwm->channel].polarity
--		      : PWM_POLARITY_NORMAL;
-+	pwm->polarity = tpu->polarities[pwm->channel];
- 	pwm->prescaler = 0;
- 	pwm->period = 0;
- 	pwm->duty = 0;
-@@ -388,6 +388,16 @@ static const struct pwm_ops tpu_pwm_ops = {
-  * Probe and remove
-  */
- 
-+static void tpu_parse_pdata(struct tpu_device *tpu)
-+{
-+	struct tpu_pwm_platform_data *pdata = tpu->pdev->dev.platform_data;
-+	unsigned int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(tpu->polarities); ++i)
-+		tpu->polarities[i] = pdata ? pdata->channels[i].polarity
-+				   : PWM_POLARITY_NORMAL;
-+}
-+
- static int tpu_probe(struct platform_device *pdev)
- {
- 	struct tpu_device *tpu;
-@@ -400,7 +410,11 @@ static int tpu_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	}
- 
--	tpu->pdata = pdev->dev.platform_data;
-+	spin_lock_init(&tpu->lock);
-+	tpu->pdev = pdev;
-+
-+	/* Initialize device configuration from platform data. */
-+	tpu_parse_pdata(tpu);
- 
- 	/* Map memory, get clock and pin control. */
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-@@ -422,11 +436,10 @@ static int tpu_probe(struct platform_device *pdev)
- 	/* Initialize and register the device. */
- 	platform_set_drvdata(pdev, tpu);
- 
--	spin_lock_init(&tpu->lock);
--	tpu->pdev = pdev;
--
- 	tpu->chip.dev = &pdev->dev;
- 	tpu->chip.ops = &tpu_pwm_ops;
-+	tpu->chip.of_xlate = of_pwm_xlate_with_flags;
-+	tpu->chip.of_pwm_n_cells = 3;
- 	tpu->chip.base = -1;
- 	tpu->chip.npwm = TPU_CHANNEL_MAX;
- 
-@@ -457,12 +470,26 @@ static int tpu_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id tpu_of_table[] = {
-+	{ .compatible = "renesas,tpu-r8a73a4", },
-+	{ .compatible = "renesas,tpu-r8a7740", },
-+	{ .compatible = "renesas,tpu-r8a7790", },
-+	{ .compatible = "renesas,tpu-sh7372", },
-+	{ .compatible = "renesas,tpu", },
-+	{ },
-+};
-+
-+MODULE_DEVICE_TABLE(of, tpu_of_table);
-+#endif
-+
- static struct platform_driver tpu_driver = {
- 	.probe		= tpu_probe,
- 	.remove		= tpu_remove,
- 	.driver		= {
- 		.name	= "renesas-tpu-pwm",
- 		.owner	= THIS_MODULE,
-+		.of_match_table = of_match_ptr(tpu_of_table),
- 	}
- };
- 
--- 
-Regards,
+If you have one controller with multiple outputs, which seems to be the
+case looking at the driver, then the struct pwm_device's .hwpwm field
+contains the per-chip index of the PWM channel.
 
-Laurent Pinchart
+> If someone wants to have have a look at the preliminary code (far from be=
+ing
+> submittable and only compile tested) it can be found here:
+>=20
+> https://github.com/morbidrsa/linux/blob/rpi-pwm/drivers/pwm/pwm-bcm2835.c
 
+=46rom a quick glance that looks pretty good already. Feel free to send it
+to the mailing list for review anytime.
+
+> 2nd short question, is it considered good practice to encapsulate registe=
+rs in
+> structs? I've seen this a lot on powerpc code.
+
+It's not very common. I certainly prefer the standard way of using
+writel(value, base + offset) and readl(base + offset), or a variation of
+that using driver-specific accessors such as you've done in the above-
+mentioned code.
+
+Thierry
+
+--vtzGhvizbBRQ85DL
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.20 (GNU/Linux)
+
+iQIcBAEBAgAGBQJR/jUSAAoJEN0jrNd/PrOhGR4P/2ay4gqjgYRIoL1GFEeDgqJb
+rnRWjIcWb0u8xJVEx1WF27Ac8a0U0dW0/x3MndjpGpoZrWbbgX68WHoPGelxQxAO
+9Pm/ueNjcZ/s1vlJt1UEGTJK8WFjlEG1jUbohk8KG/ZRX7fCqJPgdUsZEccatk+s
+j6mmNoojAVUBUtSoRJWqrjRUisLz+DCwva5Lla4jRGJ5Y2P1afboabC4FWEBFd9L
+m/7t53u+0UpO6H69yPF1+I5qgV9CkscyyHMT8yBqSkCd6tJT1LQ+IvHU2LNcH5o+
+3ueaaUEn+WU3S3EsV3lsBhWBEtj4/5kW1lXIjdc7Y8cI/2YnONs+Bydg6kLPIdcg
+XGXWcp8bYoivLk4eid9VCuGEYi6/x6tpdck4iBsHnkssVEcT6X5WwModX5RSBywo
+HFlKEjjtbycDygtess72KO76auRZFUoTVJNgDw/i1foLA2hGpn15eVnrdffd2WmN
+X18b9AtQwGo3/rbv7ex5nfewD9zAM+RLq9RhAXSRsYYOokcMOx8J1UOrOPdKWgk8
+8mfKzcZ8iB395huTcaFIXUqPN8IafNr7FThl4L54Ew8ALriujV3tPj4YBwRT+oAx
+IqvfGSqJW4fEl3VoKM7aaCkdS73cO08vijTAZMgN4Q3obvRnjaDAM5gF4OicyLlx
+5rpUDZC5c/efICmUrNeN
+=HscI
+-----END PGP SIGNATURE-----
+
+--vtzGhvizbBRQ85DL--
