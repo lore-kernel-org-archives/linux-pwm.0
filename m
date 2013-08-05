@@ -1,85 +1,73 @@
-Return-Path: <lee.jones@linaro.org>
-Return-Path: <lee.jones@linaro.org>
-Date: Thu, 1 Aug 2013 09:03:31 +0100
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v2 1/4] mfd: add LP3943 MFD driver
-Message-ID: <20130801080331.GK13298@lee--X1>
+Return-Path: <Milo.Kim@ti.com>
+From: "Kim, Milo" <Milo.Kim@ti.com>
+Subject: RE: [PATCH v2 1/4] mfd: add LP3943 MFD driver
+Date: Mon, 5 Aug 2013 07:09:56 +0000
+Message-ID: <A874F61F95741C4A9BA573A70FE3998F82E85CA9@DQHE06.ent.ti.com>
 References: <A874F61F95741C4A9BA573A70FE3998F82E849D8@DQHE06.ent.ti.com>
  <20130731115630.GH13298@lee--X1>
  <A874F61F95741C4A9BA573A70FE3998F82E850A9@DQHE06.ent.ti.com>
-MIME-Version: 1.0
+ <20130801080331.GK13298@lee--X1>
+In-Reply-To: <20130801080331.GK13298@lee--X1>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F82E850A9@DQHE06.ent.ti.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 List-ID: <linux-pwm.vger.kernel.org>
-To: "Kim, Milo" <Milo.Kim@ti.com>
+To: Lee Jones <lee.jones@linaro.org>
 Cc: "Samuel Ortiz (sameo@linux.intel.com)" <sameo@linux.intel.com>, "broonie@kernel.org" <broonie@kernel.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-On Wed, 31 Jul 2013, Kim, Milo wrote:
-
-> Thanks for the review, please see my comments.
-> 
-> > <snip> * looks good up to me up to here *
-> > 
-> > Although, I think the 0 = 1, 1 = 2 ... stuff is really confusing. Is
-> > there nothing we can do about that?
-> 
-> OK, enum value of lp3943_pwm_output can be changed as below
-> because LP3943_PWM_INVALID is not used anymore.
-> 
-> enum lp3943_pwm_output {
-> 	LP3943_PWM_OUT0,
-> 	LP3943_PWM_OUT1,
-> 	...
-> 	LP3943_PWM_OUT15,
-> };
-> 
-> Then, output index will match each enum integer value.
-> Does it make sense?
-
-Not really. IIRC the documentation said that LED0 (which I believe
-you're calling OUT0 here) is located at pin one. So your enum above is
-now incorrect isn't it? As *_OUT0 will be 0 and not 1? Or am I missing
-something?
-
-> > > +static int __init lp3943_init(void)
-> > > +{
-> > > +	return i2c_add_driver(&lp3943_driver);
-> > > +}
-> > > +subsys_initcall(lp3943_init);
-> > > +
-> > > +static void __exit lp3943_exit(void)
-> > > +{
-> > > +	i2c_del_driver(&lp3943_driver);
-> > > +}
-> > > +module_exit(lp3943_exit);
-> > 
-> > I think you want to replace:
-> >   lp3943_init()
-> >   lp3943_exit
-> > 
-> > With:
-> >   module_i2c_driver()
-> 
-> This is related with initcall sequence.
-> Some problem may happen if any GPIO or PWM consumer tries to request before
-> LP3943 MFDs are added.
-> For example, a GPIO is requested in _probe() of some device.
-> Let's assume the GPIO number is in range of what LP3943 GPIO driver provided.
-> Then, gpio_request() will be failed because the GPIO is invalid at this moment.
-> If the device request again later, it will be OK, but we can't expect this 
-> situation for every driver.
-> Some drivers request a GPIO only once in _probe(), other devices may request
-> a GPIO in some cases.
-> So, I think lp3943_init() should be defined as subsys_initcall() instead of 
-> module_init().
-
-No I don't think so. Instead, you should use -EPROBE_DEFER in lieu of
-messing around with initialisation orders.
-
--- 
-Lee Jones
-Linaro ST-Ericsson Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+PiA+ID4gQWx0aG91Z2gsIEkgdGhpbmsgdGhlIDAgPSAxLCAxID0gMiAuLi4gc3R1ZmYgaXMgcmVh
+bGx5IGNvbmZ1c2luZy4gSXMNCj4gPiA+IHRoZXJlIG5vdGhpbmcgd2UgY2FuIGRvIGFib3V0IHRo
+YXQ/DQo+ID4NCj4gPiBPSywgZW51bSB2YWx1ZSBvZiBscDM5NDNfcHdtX291dHB1dCBjYW4gYmUg
+Y2hhbmdlZCBhcyBiZWxvdyBiZWNhdXNlDQo+ID4gTFAzOTQzX1BXTV9JTlZBTElEIGlzIG5vdCB1
+c2VkIGFueW1vcmUuDQo+ID4NCj4gPiBlbnVtIGxwMzk0M19wd21fb3V0cHV0IHsNCj4gPiAJTFAz
+OTQzX1BXTV9PVVQwLA0KPiA+IAlMUDM5NDNfUFdNX09VVDEsDQo+ID4gCS4uLg0KPiA+IAlMUDM5
+NDNfUFdNX09VVDE1LA0KPiA+IH07DQo+ID4NCj4gPiBUaGVuLCBvdXRwdXQgaW5kZXggd2lsbCBt
+YXRjaCBlYWNoIGVudW0gaW50ZWdlciB2YWx1ZS4NCj4gPiBEb2VzIGl0IG1ha2Ugc2Vuc2U/DQo+
+IA0KPiBOb3QgcmVhbGx5LiBJSVJDIHRoZSBkb2N1bWVudGF0aW9uIHNhaWQgdGhhdCBMRUQwICh3
+aGljaCBJIGJlbGlldmUgeW91J3JlDQo+IGNhbGxpbmcgT1VUMCBoZXJlKSBpcyBsb2NhdGVkIGF0
+IHBpbiBvbmUuIFNvIHlvdXIgZW51bSBhYm92ZSBpcyBub3cgaW5jb3JyZWN0DQo+IGlzbid0IGl0
+PyBBcyAqX09VVDAgd2lsbCBiZSAwIGFuZCBub3QgMT8gT3IgYW0gSSBtaXNzaW5nIHNvbWV0aGlu
+Zz8NCg0KSWYgd2UgY29uc2lkZXIgdGhpcyBuYW1pbmcgYXMgdGhlIHBpbiBjb250cm9sIGRlc2Ny
+aXB0aW9uLCBpdCBtYXliZSBjb25mdXNpbmcuDQpIb3dldmVyLCB0aGlzIGVudW0gdHlwZSBtZWFu
+cyBjb25maWd1cmFibGUgcGxhdGZvcm0gZGF0YSB3aGljaCBvdXRwdXQgY2hhbm5lbChzKQ0KYXJl
+IGNvbm5lY3RlZCB0byBMUDM5NDMgUFdNIGNvbnRyb2xsZXIuDQoNCkkndmUgY2hhbmdlZCB0aGlz
+IG5hbWUgZnJvbSBfUFdNX0xFRHggdG8gX1BXTV9PVVR4IGluIHRoZSBzZWNvbmQgcGF0Y2ggYmVj
+YXVzZQ0KUFdNIGlzIHVzZWQgZm9yIG5vdCBvbmx5IExFRCBmdW5jdGlvbiBidXQgYWxzbyBvdGhl
+ciBvcGVyYXRpb25zLg0KWmVybyBiYXNlIGluZGV4IG5vdGF0aW9uIGlzIGRlcml2ZWQgZnJvbSB0
+aGUgZGF0YXNoZWV0Lg0KSWYgSSByZW1vdmUgTFAzOTQzX1BXTV9JTlZBTElELCB0aGVuIGVhY2gg
+ZW51bSB0eXBlIG1hdGNoZXMgd2l0aA0KcmVnaXN0ZXIgaW5kZXgob3Igb2Zmc2V0KSBleGFjdGx5
+LiAoQnV0IEkgbmVlZCB0byBmaXggTFAzOTQzIFBXTSBkcml2ZXIpDQoNCkluIHRoZSBtZWFudGlt
+ZSwgSSd2ZSByZXZpZXdlZCB0aGUgcGluIGNvbnRyb2wgc3Vic3lzdGVtLA0KSSB0aGluayBpdCBp
+cyBub3QgdGhlIGJlc3Qgd2F5IHRvIGltcGxlbWVudCBMUDM5NDMgZHJpdmVyLg0KVGhlIEdQSU8g
+Y29udHJvbGxlciBpcyBPSywgYnV0IEkgY2FuJ3QgbWFrZSBmbGV4aWJsZSBwaW4gYXNzaWdubWVu
+dCBmb3IgdGhlIFBXTQ0Kb3BlcmF0aW9uLg0KRm9yIGV4YW1wbGUsIG11bHRpcGxlIG91dHB1dCBw
+aW5zIGNhbiBiZSBjb250cm9sbGVkIGJ5IG9uZSBQV00gZ2VuZXJhdG9yLg0KVGhlc2UgcGluIGFz
+c2lnbm1lbnQgYXJlIGNvbmZpZ3VyYWJsZSAtIG5vdCBmaXhlZCB0eXBlLg0KQW5kIHBpbm11eCBh
+cmUgb25seSB0d28gY2FzZXMgLSBHUElPIGFuZCBQV00uDQpJIHRoaW5rIGN1cnJlbnQgZHJpdmVy
+IHN0cnVjdHVyZSBpcyBiZXR0ZXIgYmVjYXVzZSBMUDM5NDMgdXNlcyB2ZXJ5IGxpbWl0ZWQNCnBp
+bmN0cmwgZnVuY3Rpb25hbGl0aWVzLg0KQW55IHN1Z2dlc3Rpb24gZm9yIHRoaXM/DQoNCj4gPiA+
+ID4gK3N0YXRpYyBpbnQgX19pbml0IGxwMzk0M19pbml0KHZvaWQpIHsNCj4gPiA+ID4gKwlyZXR1
+cm4gaTJjX2FkZF9kcml2ZXIoJmxwMzk0M19kcml2ZXIpOyB9DQo+ID4gPiA+ICtzdWJzeXNfaW5p
+dGNhbGwobHAzOTQzX2luaXQpOw0KPiA+ID4gPiArDQo+ID4gPiA+ICtzdGF0aWMgdm9pZCBfX2V4
+aXQgbHAzOTQzX2V4aXQodm9pZCkgew0KPiA+ID4gPiArCWkyY19kZWxfZHJpdmVyKCZscDM5NDNf
+ZHJpdmVyKTsNCj4gPiA+ID4gK30NCj4gPiA+ID4gK21vZHVsZV9leGl0KGxwMzk0M19leGl0KTsN
+Cj4gPiA+DQo+ID4gPiBJIHRoaW5rIHlvdSB3YW50IHRvIHJlcGxhY2U6DQo+ID4gPiAgIGxwMzk0
+M19pbml0KCkNCj4gPiA+ICAgbHAzOTQzX2V4aXQNCj4gPiA+DQo+ID4gPiBXaXRoOg0KPiA+ID4g
+ICBtb2R1bGVfaTJjX2RyaXZlcigpDQo+ID4NCj4gPiBUaGlzIGlzIHJlbGF0ZWQgd2l0aCBpbml0
+Y2FsbCBzZXF1ZW5jZS4NCj4gPiBTb21lIHByb2JsZW0gbWF5IGhhcHBlbiBpZiBhbnkgR1BJTyBv
+ciBQV00gY29uc3VtZXIgdHJpZXMgdG8gcmVxdWVzdA0KPiA+IGJlZm9yZQ0KPiA+IExQMzk0MyBN
+RkRzIGFyZSBhZGRlZC4NCj4gPiBGb3IgZXhhbXBsZSwgYSBHUElPIGlzIHJlcXVlc3RlZCBpbiBf
+cHJvYmUoKSBvZiBzb21lIGRldmljZS4NCj4gPiBMZXQncyBhc3N1bWUgdGhlIEdQSU8gbnVtYmVy
+IGlzIGluIHJhbmdlIG9mIHdoYXQgTFAzOTQzIEdQSU8gZHJpdmVyDQo+IHByb3ZpZGVkLg0KPiA+
+IFRoZW4sIGdwaW9fcmVxdWVzdCgpIHdpbGwgYmUgZmFpbGVkIGJlY2F1c2UgdGhlIEdQSU8gaXMg
+aW52YWxpZCBhdCB0aGlzDQo+IG1vbWVudC4NCj4gPiBJZiB0aGUgZGV2aWNlIHJlcXVlc3QgYWdh
+aW4gbGF0ZXIsIGl0IHdpbGwgYmUgT0ssIGJ1dCB3ZSBjYW4ndCBleHBlY3QNCj4gPiB0aGlzIHNp
+dHVhdGlvbiBmb3IgZXZlcnkgZHJpdmVyLg0KPiA+IFNvbWUgZHJpdmVycyByZXF1ZXN0IGEgR1BJ
+TyBvbmx5IG9uY2UgaW4gX3Byb2JlKCksIG90aGVyIGRldmljZXMgbWF5DQo+ID4gcmVxdWVzdCBh
+IEdQSU8gaW4gc29tZSBjYXNlcy4NCj4gPiBTbywgSSB0aGluayBscDM5NDNfaW5pdCgpIHNob3Vs
+ZCBiZSBkZWZpbmVkIGFzIHN1YnN5c19pbml0Y2FsbCgpDQo+ID4gaW5zdGVhZCBvZiBtb2R1bGVf
+aW5pdCgpLg0KPiANCj4gTm8gSSBkb24ndCB0aGluayBzby4gSW5zdGVhZCwgeW91IHNob3VsZCB1
+c2UgLUVQUk9CRV9ERUZFUiBpbiBsaWV1IG9mIG1lc3NpbmcNCj4gYXJvdW5kIHdpdGggaW5pdGlh
+bGlzYXRpb24gb3JkZXJzLg0KDQpPSywgZ290IGl0LiBJJ2xsIHJlcGxhY2UgdGhlbSB3aXRoIG1v
+ZHVsZV9pMmNfZHJpdmVyKCkuIFRoYW5rcyENCg0KQmVzdCBSZWdhcmRzLA0KTWlsbw0KDQo=
