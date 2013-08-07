@@ -1,54 +1,55 @@
-Return-Path: <morbidrsa@gmail.com>
-Return-Path: <morbidrsa@gmail.com>
-Date: Sun, 4 Aug 2013 20:51:37 +0200
-From: Johannes Thumshirn <morbidrsa@gmail.com>
-Subject: Re: Determining wich PWM to use
-Message-ID: <20130804185137.GA10948@sauron>
-References: <20130727101824.GA11956@sauron.fritz.box>
- <20130804110346.GA20305@manwe>
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20130804110346.GA20305@manwe>
+In-Reply-To: <A874F61F95741C4A9BA573A70FE3998F82E849DF@DQHE06.ent.ti.com>
+References: <A874F61F95741C4A9BA573A70FE3998F82E849DF@DQHE06.ent.ti.com>
+Date: Wed, 7 Aug 2013 20:49:22 +0200
+Message-ID: <CACRpkdZmMh9MwFQKhZPUZ0dKXQ=8Ear_danBSgOD=PYQUk5QxA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/4] gpio: add LP3943 I2C GPIO expander driver
+From: Linus Walleij <linus.walleij@linaro.org>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-pwm.vger.kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org
+To: "Kim, Milo" <Milo.Kim@ti.com>
+Cc: "lee.jones@linaro.org" <lee.jones@linaro.org>, "Samuel Ortiz (sameo@linux.intel.com)" <sameo@linux.intel.com>, "broonie@kernel.org" <broonie@kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-On Sun, Aug 04, 2013 at 01:03:47PM +0200, Thierry Reding wrote:
-> On Sat, Jul 27, 2013 at 12:18:24PM +0200, Johannes Thumshirn wrote:
-> > Hi list,
-> > 
-> > I'm currently working on a pwm driver for the BCM2853 (the SoC used on the
-> > RaspberryPi). It has two PWM modules, so my question is, how do I determine
-> > which PWM to use in the .enable, .disable and .configure functions?
-> 
-> It depends on what you mean by "two PWM modules". Does it have one
-> controller with two PWM outputs or does it have two controllers with one
-> or more outputs?
-> 
-> If you have one controller with multiple outputs, which seems to be the
-> case looking at the driver, then the struct pwm_device's .hwpwm field
-> contains the per-chip index of the PWM channel.
-> 
-> > If someone wants to have have a look at the preliminary code (far from being
-> > submittable and only compile tested) it can be found here:
-> > 
-> > https://github.com/morbidrsa/linux/blob/rpi-pwm/drivers/pwm/pwm-bcm2835.c
-> 
-> From a quick glance that looks pretty good already. Feel free to send it
-> to the mailing list for review anytime.
-> 
-> > 2nd short question, is it considered good practice to encapsulate registers in
-> > structs? I've seen this a lot on powerpc code.
-> 
-> It's not very common. I certainly prefer the standard way of using
-> writel(value, base + offset) and readl(base + offset), or a variation of
-> that using driver-specific accessors such as you've done in the above-
-> mentioned code.
-> 
-> Thierry
+On Tue, Jul 30, 2013 at 2:42 AM, Kim, Milo <Milo.Kim@ti.com> wrote:
 
+> This is one of LP3943 MFD driver.
+> LP3943 is configurable as a GPIO expander, up to 16 GPIOs.
+>
+> * Application note: how to configure LP3943 as a GPIO expander
+>   http://www.ti.com/lit/an/snva287a/snva287a.pdf
+>
+> * Supported GPIO controller operations
+>   request, free, direction_input, direction_output, get and set
+>
+> * GPIO direction register not supported
+>   LP3943 doesn't have the GPIO direction register. It only provides input and
+>   output status registers.
+>   So, private data for the direction should be handled manually.
+>   This variable is updated whenever the direction is changed and
+>   used in 'get' operation.
+>
+> * Pin assignment
+>   A driver data, 'pin_used' is checked when a GPIO is requested.
+>   If the GPIO is already assigned, then returns as failure.
+>   If the GPIO is available, 'pin_used' is set.
+>   When the GPIO is not used anymore, then it is cleared.
+>   It is defined as unsigned long type for atomic bit operation APIs,
+>   but only LSB 16bits are used because LP3943 has 16 outputs.
+>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Milo Kim <milo.kim@ti.com>
+> ---
+> * Patch v2
+>   Use bitops macros for bit manipulations.
+>   Support device tree structure for the GPIO controller.
+>   Add request() and free() for the pin assignment.
 
-Thanks. I'll try to get the code submittable till the end of the moth.
+This adresses all my concerns, nice driver.
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Johannes
+I guess this will be merged through the MFD tree along
+with the MFD core patch? That needs to go in first anyway.
+
+Yours,
+Linus Walleij
