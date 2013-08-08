@@ -1,35 +1,69 @@
-Return-Path: <tomasz.figa@gmail.com>
-Return-Path: <tomasz.figa@gmail.com>
-From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: Re: [PATCH v6 13/20] pwm: Add new pwm-samsung driver
-Date: Thu, 08 Aug 2013 14:27:07 -0700 (PDT)
-Message-ID: <1914245.MWaKtJIXGf@flatron>
-In-Reply-To: <CAL1qeaH=r0Yr-8gqy+QctvaM_1awT1aHjT_HjXA71sjpK4BJHg@mail.gmail.com>
-References: <1374278673-25615-1-git-send-email-tomasz.figa@gmail.com> <4144776.HcbubHMX0J@flatron> <CAL1qeaH=r0Yr-8gqy+QctvaM_1awT1aHjT_HjXA71sjpK4BJHg@mail.gmail.com>
+Return-Path: <linux-arm-kernel-bounces+thierry.reding=gmail.com@lists.infradead.org>
+From: Mike Dunn <mikedunn@newsguy.com>
+Subject: [PATCH] ARM: pxa: make pwm driver module_platform_driver
+Date: Thu,  8 Aug 2013 10:00:37 -0700
+Message-Id: <1375981237-7167-1-git-send-email-mikedunn@newsguy.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+thierry.reding=gmail.com@lists.infradead.org
 List-ID: <linux-pwm.vger.kernel.org>
-To: Andrew Bresticker <abrestic@chromium.org>
-Cc: linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-pwm@vger.kernel.org, Kukjin Kim <kgene.kim@samsung.com>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Marek Vasut <marex@denx.de>, linux-pwm@vger.kernel.org, Mike Dunn <mikedunn@newsguy.com>, Thierry Reding <thierry.reding@avionic-design.de>, Haojian Zhuang <haojian.zhuang@gmail.com>, Chao Xie <chao.xie@marvell.com>, Eric Miao <eric.y.miao@gmail.com>, H Hartley Sweeten <hartleys@visionengravers.com>, Robert Jarzmik <robert.jarzmik@free.fr>
 
-On Thursday 08 of August 2013 10:13:27 Andrew Bresticker wrote:
-> > ..it should not be defined as non-static in this case (= an ifdef is
-> > needed in this header). I believe I had this already fixed, not sure
-> > what happened with the fix...
-> 
-> Perhaps this is it: https://patchwork.kernel.org/patch/2787271/.  That
-> should probably land with this patchset too.
+Commit 76abbdde2d95a3807d0dc6bf9f84d03d0dbd4f3d
 
-Oh yes, this is it.
+    pwm: Add sysfs interface
 
-I know what happened now. This series was already queued for 3.11 in 
-Samsung tree. After a bit of testing in linux-next Bart found the build 
-error and sent a fix, which was going to be merged for 3.11 as well. 
-However since there have been some problems just before merge window 
-started, this series had to be dropped, including the fixup patch.
+causes a kernel oops due to a null pointer dereference on pxa platforms.  This
+happens because the class added by the patch is registered in a subsys_initcall
+(initcall4), but the pxa pwm driver is registered in arch_initcall (initcall3).
+If the class is not registered before the driver probe function runs, the oops
+occurs in device_add() when the uninitialized pointers in struct class are
+dereferenced.  I don't see a reason that the driver must be an arch_initcall, so
+this patch makes it a regular module_platform_driver (initcall6), preventing the
+oops.
 
-Thanks for reporting. Let me try to sort this out.
+Signed-off-by: Mike Dunn <mikedunn@newsguy.com>
+---
+ drivers/pwm/pwm-pxa.c | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
-Best regards,
-Tomasz
+diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
+index dc97175..a4d2164 100644
+--- a/drivers/pwm/pwm-pxa.c
++++ b/drivers/pwm/pwm-pxa.c
+@@ -182,16 +182,6 @@ static struct platform_driver pwm_driver = {
+ 	.id_table	= pwm_id_table,
+ };
+ 
+-static int __init pwm_init(void)
+-{
+-	return platform_driver_register(&pwm_driver);
+-}
+-arch_initcall(pwm_init);
+-
+-static void __exit pwm_exit(void)
+-{
+-	platform_driver_unregister(&pwm_driver);
+-}
+-module_exit(pwm_exit);
++module_platform_driver(pwm_driver);
+ 
+ MODULE_LICENSE("GPL v2");
+-- 
+1.8.1.5
+
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
