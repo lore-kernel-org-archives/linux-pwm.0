@@ -1,83 +1,65 @@
 Return-Path: <thierry.reding@gmail.com>
-Date: Wed, 14 Aug 2013 11:17:45 +0200
+Date: Wed, 14 Aug 2013 11:43:47 +0200
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 21/29] pwm: simplify use of devm_ioremap_resource
-Message-ID: <20130814091744.GB2084@ulmo>
-References: <1376471493-22215-1-git-send-email-Julia.Lawall@lip6.fr>
- <1376471493-22215-22-git-send-email-Julia.Lawall@lip6.fr>
+Subject: Re: [PATCH 15/27] drivers/pwm: don't check resource with
+ devm_ioremap_resource
+Message-ID: <20130814094345.GC2084@ulmo>
+References: <1374602524-3398-1-git-send-email-wsa@the-dreams.de>
+ <1374602524-3398-16-git-send-email-wsa@the-dreams.de>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="neYutvxvOLaeuPCA"
+	protocol="application/pgp-signature"; boundary="/e2eDi0V/xtL+Mc8"
 Content-Disposition: inline
-In-Reply-To: <1376471493-22215-22-git-send-email-Julia.Lawall@lip6.fr>
+In-Reply-To: <1374602524-3398-16-git-send-email-wsa@the-dreams.de>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Julia Lawall <Julia.Lawall@lip6.fr>
-Cc: kernel-janitors@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Wolfram Sang <wsa@the-dreams.de>
+Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
 
---neYutvxvOLaeuPCA
+--/e2eDi0V/xtL+Mc8
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 14, 2013 at 11:11:25AM +0200, Julia Lawall wrote:
-> From: Julia Lawall <Julia.Lawall@lip6.fr>
+On Tue, Jul 23, 2013 at 08:01:48PM +0200, Wolfram Sang wrote:
+> devm_ioremap_resource does sanity checks on the given resource. No need to
+> duplicate this in the driver.
 >=20
-> Remove unneeded error handling on the result of a call to
-> platform_get_resource when the value is passed to devm_ioremap_resource.
->=20
-> Move the call to platform_get_resource adjacent to the call to
-> devm_ioremap_resource to make the connection between them more clear.
->=20
-> A simplified version of the semantic patch that makes this change is as
-> follows: (http://coccinelle.lip6.fr/)
->=20
-> // <smpl>
-> @@
-> expression pdev,res,n,e,e1;
-> expression ret !=3D 0;
-> identifier l;
-> @@
->=20
-> - res =3D platform_get_resource(pdev, IORESOURCE_MEM, n);
->   ... when !=3D res
-> - if (res =3D=3D NULL) { ... \(goto l;\|return ret;\) }
->   ... when !=3D res
-> + res =3D platform_get_resource(pdev, IORESOURCE_MEM, n);
->   e =3D devm_ioremap_resource(e1, res);
-> // </smpl>
->=20
-> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
->=20
+> Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
 > ---
+> Please apply via the subsystem-tree.
+>=20
 >  drivers/pwm/pwm-lpc32xx.c     |    3 ---
 >  drivers/pwm/pwm-renesas-tpu.c |    5 -----
->  drivers/pwm/pwm-spear.c       |    7 +------
->  3 files changed, 1 insertion(+), 14 deletions(-)
+>  2 files changed, 8 deletions(-)
 
-Applied, thanks.
+Hi Wolfram,
+
+Julia Lawall just sent a more complete version of this which includes an
+additional change to the pwm-spear driver. I've applied her version, I
+hope you don't mind.
 
 Thierry
 
---neYutvxvOLaeuPCA
+--/e2eDi0V/xtL+Mc8
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.20 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSC0s4AAoJEN0jrNd/PrOhOIAP+wWKMMSQVavp+/ZxjG76Qebk
-670Z4g/5dduzZ7taGFeeCujt+tC0GOr4CClrK7S7LRD7vmsM88bbYkTsOWKs38J2
-uGUKkjbYH724o5UXIy63elkgcA3lLMn0eUAI6CbOrqPtpkBVNV+tmDASH+18crrv
-fa1LsLnQQHxg2m36HNzxqmZV4DjOzCytf1hJXTufRBkgFqqeZwnV58Qt8msasExR
-QNrr0y9noBxjztGdC94fBJsBImIzJreHOhyEJbodmt2k4sK75d8DWlNm4Y6MA+oU
-GZ6W50VoWAEbt3vllzHvxS5uThzmwhB3h9vh4z9qnS+rQJHv1TqvMyelSIlHfYQJ
-i4CvQNGZmraZKCoYtjJuvlVcgQjyFcpSASzwtrEjRofuFH/DSQ2OPtau9y+5n3SM
-MGH74N11YgYFrO8f745mNj/VUgVnIrxzIFzVhjtpDs3GHZD69P0bkFTUkDVBh2DV
-VaZYn2QRnlTmBVNe4HlzXjltqlM53Cq92atKkRb0uzm2KUdq+S+T5xFlW+KGis2z
-/UrNrBC3Cmn4ph8/G76IFZB1m10CrmM9O3s0jkIuTho49F4vfAmI9ynKQCP6L/l1
-zW/1pFxXZQepwiVNTIcwOHKExauS0x3OZledTKQHpJyznNfeAIAKMsQp0b+q/78p
-sE4u7qZlSk8VVZ+67LUE
-=T9i3
+iQIcBAEBAgAGBQJSC1FRAAoJEN0jrNd/PrOhEtAP/2IT55gM+Ak1uuUIIyv+UqVM
+i8Qaj0qt85rYKBDGHEPyJ6GXMh9ftHmARpTlU2hp3T299lGVg6s02eeUCKEQhaYO
+yeuC5Ifg999sCbW8GNvuMKEGnSjRfgCsBbgQjezBNyVUcTvgRQ5mJlTP0p/W8LC5
+93aYmlwZbB8UAoOhoB3heQYInJi8HWmxg1hv3XGq3R7Vv+HpZnXy5TKSevNvjLIO
+nQWJb7IM1PDnq9AlRRgsyav3o3YHNu7Ym54as99x6r85YzaDi2Nw4arXcJF9SHGa
+r4cjpuTZ36Cigxz2WeQFrdZA39TXoEh4Q1sOAQSvt6o0BZNAhSdB69ygxea4fI4m
+NhjT+0sk76gLT2fIX43XctNeH7CNuBllNKBqW3D3FG1MNf4SpZNWZ5Sirepgd0xP
+0TYwfpqjchi+M9iwRKf9Cl/50UYbEUXimrnZFmxnaKkfp7xDjHxKWvNsv7nkLPgi
+KIE5+WHx1f95qbfGnDNwcgTxyixDD+lxaT7JElwQ6JAbK7zR5VyD1gtNN1VGwqgp
+4o8AQ1Pa8RrBuxVOraP/sS8CL0FDYouoEKo6USflNroIXtXe5k1pe3X4UrV99eI0
+SyHNIrWccyShx7mFwcK5PxwNPTtk/q/I6UdMW97YY18aBWRQV/Yq5aULNCp6aS0/
+tN/cqXCov/wzdm3ya1lM
+=mUQk
 -----END PGP SIGNATURE-----
 
---neYutvxvOLaeuPCA--
+--/e2eDi0V/xtL+Mc8--
