@@ -1,36 +1,24 @@
-Return-Path: <linux-arm-kernel-bounces+thierry.reding=gmail.com@lists.infradead.org>
+Return-Path: <Julia.Lawall@lip6.fr>
 From: Julia Lawall <Julia.Lawall@lip6.fr>
-Subject: [PATCH 0/29] simplify use of devm_ioremap_resource
-Date: Wed, 14 Aug 2013 11:11:04 +0200
-Message-Id: <1376471493-22215-1-git-send-email-Julia.Lawall@lip6.fr>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+thierry.reding=gmail.com@lists.infradead.org
+Subject: [PATCH 21/29] pwm: simplify use of devm_ioremap_resource
+Date: Wed, 14 Aug 2013 11:11:25 +0200
+Message-Id: <1376471493-22215-22-git-send-email-Julia.Lawall@lip6.fr>
+In-Reply-To: <1376471493-22215-1-git-send-email-Julia.Lawall@lip6.fr>
+References: <1376471493-22215-1-git-send-email-Julia.Lawall@lip6.fr>
 List-ID: <linux-pwm.vger.kernel.org>
-To: dri-devel@lists.freedesktop.org
-Cc: alsa-devel@alsa-project.org, kernel-janitors@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-ide@vger.kernel.org, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, rtc-linux@googlegroups.com, linux-pm@vger.kernel.org, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: kernel-janitors@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-devm_ioremap_resource often uses the result of a call to
-platform_get_resource as its last argument.  devm_ioremap_resource does
-appropriate error handling on this argument, so error handling can be
-removed from the call site.  To make the connection between the call to
-platform_get_resource and the call to devm_ioremap_resource more clear, the
-former is also moved down to be adjacent to the latter.
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-In many cases, this patch changes the specific error value that is
-returned on failure of platform_get_resource.
+Remove unneeded error handling on the result of a call to
+platform_get_resource when the value is passed to devm_ioremap_resource.
 
-The semantic patch that makes this change is as follows:
-(http://coccinelle.lip6.fr/)
+Move the call to platform_get_resource adjacent to the call to
+devm_ioremap_resource to make the connection between them more clear.
+
+A simplified version of the semantic patch that makes this change is as
+follows: (http://coccinelle.lip6.fr/)
 
 // <smpl>
 @@
@@ -39,22 +27,73 @@ expression ret != 0;
 identifier l;
 @@
 
-(
-  res = platform_get_resource(pdev, IORESOURCE_MEM, n);
-- if (res == NULL) { ... \(goto l;\|return ret;\) }
-  e = devm_ioremap_resource(e1, res);
-|
 - res = platform_get_resource(pdev, IORESOURCE_MEM, n);
   ... when != res
 - if (res == NULL) { ... \(goto l;\|return ret;\) }
   ... when != res
 + res = platform_get_resource(pdev, IORESOURCE_MEM, n);
   e = devm_ioremap_resource(e1, res);
-)
 // </smpl>
 
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+---
+ drivers/pwm/pwm-lpc32xx.c     |    3 ---
+ drivers/pwm/pwm-renesas-tpu.c |    5 -----
+ drivers/pwm/pwm-spear.c       |    7 +------
+ 3 files changed, 1 insertion(+), 14 deletions(-)
+
+diff --git a/drivers/pwm/pwm-lpc32xx.c b/drivers/pwm/pwm-lpc32xx.c
+index efb6c7b..efac99e 100644
+--- a/drivers/pwm/pwm-lpc32xx.c
++++ b/drivers/pwm/pwm-lpc32xx.c
+@@ -124,9 +124,6 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res)
+-		return -EINVAL;
+-
+ 	lpc32xx->base = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(lpc32xx->base))
+ 		return PTR_ERR(lpc32xx->base);
+diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
+index 2600892..444d589 100644
+--- a/drivers/pwm/pwm-renesas-tpu.c
++++ b/drivers/pwm/pwm-renesas-tpu.c
+@@ -404,11 +404,6 @@ static int tpu_probe(struct platform_device *pdev)
+ 
+ 	/* Map memory, get clock and pin control. */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!res) {
+-		dev_err(&pdev->dev, "failed to get I/O memory\n");
+-		return -ENXIO;
+-	}
+-
+ 	tpu->base = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(tpu->base))
+ 		return PTR_ERR(tpu->base);
+diff --git a/drivers/pwm/pwm-spear.c b/drivers/pwm/pwm-spear.c
+index a54d214..8ad26b8 100644
+--- a/drivers/pwm/pwm-spear.c
++++ b/drivers/pwm/pwm-spear.c
+@@ -178,18 +178,13 @@ static int spear_pwm_probe(struct platform_device *pdev)
+ 	int ret;
+ 	u32 val;
+ 
+-	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!r) {
+-		dev_err(&pdev->dev, "no memory resources defined\n");
+-		return -ENODEV;
+-	}
+-
+ 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+ 	if (!pc) {
+ 		dev_err(&pdev->dev, "failed to allocate memory\n");
+ 		return -ENOMEM;
+ 	}
+ 
++	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	pc->mmio_base = devm_ioremap_resource(&pdev->dev, r);
+ 	if (IS_ERR(pc->mmio_base))
+ 		return PTR_ERR(pc->mmio_base);
