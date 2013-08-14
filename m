@@ -1,59 +1,60 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Tue, 13 Aug 2013 09:34:16 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm-backlight: add "max-brightness" property
-Message-ID: <20130813073415.GA9316@ulmo>
-References: <1376345057-29895-1-git-send-email-abrestic@chromium.org>
+Return-Path: <linux-arm-kernel-bounces+thierry.reding=gmail.com@lists.infradead.org>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
+Subject: [PATCH 0/29] simplify use of devm_ioremap_resource
+Date: Wed, 14 Aug 2013 11:11:04 +0200
+Message-Id: <1376471493-22215-1-git-send-email-Julia.Lawall@lip6.fr>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="zhXaljGHf11kAtnf"
-Content-Disposition: inline
-In-Reply-To: <1376345057-29895-1-git-send-email-abrestic@chromium.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+thierry.reding=gmail.com@lists.infradead.org
 List-ID: <linux-pwm.vger.kernel.org>
-To: Andrew Bresticker <abrestic@chromium.org>
-Cc: Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jg1.han@samsung.com>, Olof Johansson <olof@lixom.net>, Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian Campbell <ian.campbell@citrix.com>, Rob Landley <rob@landley.net>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
+To: dri-devel@lists.freedesktop.org
+Cc: alsa-devel@alsa-project.org, kernel-janitors@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-ide@vger.kernel.org, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, linux-samsung-soc@vger.kernel.org, linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, rtc-linux@googlegroups.com, linux-pm@vger.kernel.org, linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
+
+devm_ioremap_resource often uses the result of a call to
+platform_get_resource as its last argument.  devm_ioremap_resource does
+appropriate error handling on this argument, so error handling can be
+removed from the call site.  To make the connection between the call to
+platform_get_resource and the call to devm_ioremap_resource more clear, the
+former is also moved down to be adjacent to the latter.
+
+In many cases, this patch changes the specific error value that is
+returned on failure of platform_get_resource.
+
+The semantic patch that makes this change is as follows:
+(http://coccinelle.lip6.fr/)
+
+// <smpl>
+@@
+expression pdev,res,n,e,e1;
+expression ret != 0;
+identifier l;
+@@
+
+(
+  res = platform_get_resource(pdev, IORESOURCE_MEM, n);
+- if (res == NULL) { ... \(goto l;\|return ret;\) }
+  e = devm_ioremap_resource(e1, res);
+|
+- res = platform_get_resource(pdev, IORESOURCE_MEM, n);
+  ... when != res
+- if (res == NULL) { ... \(goto l;\|return ret;\) }
+  ... when != res
++ res = platform_get_resource(pdev, IORESOURCE_MEM, n);
+  e = devm_ioremap_resource(e1, res);
+)
+// </smpl>
 
 
---zhXaljGHf11kAtnf
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Mon, Aug 12, 2013 at 03:04:17PM -0700, Andrew Bresticker wrote:
-> Specifying each individual brightness value via the "brightness-levels"
-> property can be a pain if we want to use a large continuous range of
-> brightness values.  Add the property "max-brightness", which can be
-> given in place of "brightness-levels", that specifies that all values
-> between 0 and the given value can be used.
-
-This was actually part of my first attempt at a DT binding for this
-driver as well. Some discussion ensued and we ended up changing the
-binding to what it is now. And I think there was even an attempt already
-at adding the same thing you propose (albeit under a different name). So
-instead of repeating myself I'll just point you at the earlier thread:
-
-	https://groups.google.com/forum/#!topic/linux.kernel/UkXktWt6zI0
-
-Thierry
-
---zhXaljGHf11kAtnf
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.20 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSCeF3AAoJEN0jrNd/PrOhms0P/RUg93nY7tRIkL9NrmlRXX/H
-ZOCCwhwWQykCCzE8WPoFsoem43vL0uvZVHet/20U4bZLy9IM5uqOJiXcut4hJe+S
-X8jg+xkNzAJa+A5fiZiEWqLSRdnROYsLpjka8EQ+31/NJ38r6oJz6E/0IxRYOJ2W
-mY9DF9DauTIPSKuJ+7ODC+3/STa4VOwU1tjEDmSeG49I16Ol1iUhw0GQpPVl/uNn
-uAKzPiTN15T/lsb4WoDsrDBTaDXNZMyMxXf5MT8PMEdgtUiQBm1l7SrB8DqnLLjc
-vTZT/cIJISGwzimae1FiwqccVuD2j0CdCoF0YQm4q6BZmimPdvTlQ1bVPLLt3kTQ
-yy2XyWE7G7iQnrp6OFeuDI8wL8b6IHIE6KUr7I8x6Ic7BMKNA54uu87JFQpT21ym
-h3PykGuXnaZXwflGU541VMDJ9KXJ34KnX7aOjj+rWiZic3GZD9jnCF8BSj5bVtED
-fB/jPLwpIMOv15QhNfePB7rW3oyAh6Tj+dURTERG5+f5255wjA1b2Dauadu5fFB7
-a9gzp+9guvWh8vbTVRo9zSbOILaQIURPTeOvOlnWJn4Ae5CUruqd6Vw2GA3/yWCD
-lY8tFlMJ7YabcHZXCP2yfqp06Vn+5so7XZqbuNzTI1smd+idVP5uKsDfSleKQoCu
-jvzvVRetD/USCRigqzxu
-=ywAf
------END PGP SIGNATURE-----
-
---zhXaljGHf11kAtnf--
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
