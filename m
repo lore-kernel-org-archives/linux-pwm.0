@@ -1,41 +1,37 @@
 Return-Path: <voice.shen@atmel.com>
 From: Bo Shen <voice.shen@atmel.com>
-Subject: [v2 PATCH] PWM: atmel-pwm: add PWM controller driver
-Date: Tue, 20 Aug 2013 16:11:55 +0800
-Message-Id: <1376986316-10874-1-git-send-email-voice.shen@atmel.com>
+Subject: [RFC PATCH] pwm: atmel-pwm: add pwm controller driver
+Date: Mon, 19 Aug 2013 11:11:06 +0800
+Message-Id: <1376881866-14214-1-git-send-email-voice.shen@atmel.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: plagnioj@jcrosoft.com, nicolas.ferre@atmel.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, Bo Shen <voice.shen@atmel.com>
 
-Add Atmel PWM controller driver based on PWM framework.
+add atmel pwm controller driver based on PWM framework
 
-This is the basic function implementation of Atmel PWM controller.
-It can work with PWM based led and backlight.
+this is basic function implementation of pwm controller
+it can work with pwm based led and backlight
 
 Signed-off-by: Bo Shen <voice.shen@atmel.com>
 
 ---
-This patch is based on the for-next branch on Linux pwm tree
-Test on at91sam9m10g45ek board with pwm led
-Test on sama5d31ek board with pwm backlight
-
-Changes in v2:
-  - Address the comments from Thierry Reding
-
- .../devicetree/bindings/pwm/atmel-pwm.txt          |   17 +
+This patch is based on Linux v3.11 rc6
+Tested on sama5d31ek and at91sam9m10g45ek board
+---
+ .../devicetree/bindings/pwm/atmel-pwm.txt          |   19 ++
  drivers/pwm/Kconfig                                |    9 +
  drivers/pwm/Makefile                               |    1 +
- drivers/pwm/pwm-atmel.c                            |  328 ++++++++++++++++++++
- 4 files changed, 355 insertions(+)
+ drivers/pwm/pwm-atmel.c                            |  327 ++++++++++++++++++++
+ 4 files changed, 356 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/pwm/atmel-pwm.txt
  create mode 100644 drivers/pwm/pwm-atmel.c
 
 diff --git a/Documentation/devicetree/bindings/pwm/atmel-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
 new file mode 100644
-index 0000000..f7b04f7
+index 0000000..127fcdb
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
-@@ -0,0 +1,17 @@
+@@ -0,0 +1,19 @@
 +Atmel PWM controller
 +
 +Required properties:
@@ -43,8 +39,10 @@ index 0000000..f7b04f7
 +    - "atmel,at91sam9rl-pwm"
 +    - "atmel,sama5-pwm"
 +  - reg: physical base address and length of the controller's registers
-+  - #pwm-cells: Should be 3. See pwm.txt in this directory for a
-+    description of the cells format
++  - #pwm-cells: Should be 3.
++    - The first cell specifies the per-chip index of the PWM to use
++    - The second cell is the period in nanoseconds
++    - The third cell is used to encode the polarity of PWM output
 +
 +Example:
 +
@@ -87,17 +85,17 @@ index 77a8c18..5b193f8 100644
  obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
 diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
 new file mode 100644
-index 0000000..a9af974
+index 0000000..b83d68e
 --- /dev/null
 +++ b/drivers/pwm/pwm-atmel.c
-@@ -0,0 +1,328 @@
+@@ -0,0 +1,327 @@
 +/*
 + * Driver for Atmel Pulse Width Modulation Controller
 + *
 + * Copyright (C) 2013 Atmel Semiconductor Technology Ltd.
 + *		 Bo Shen <voice.shen@atmel.com>
 + *
-+ * GPL v2
++ * GPL v2 or later
 + */
 +
 +#include <linux/clk.h>
@@ -106,69 +104,61 @@ index 0000000..a9af974
 +#include <linux/module.h>
 +#include <linux/of.h>
 +#include <linux/of_device.h>
++#include <linux/pinctrl/consumer.h>
 +#include <linux/platform_device.h>
 +#include <linux/pwm.h>
 +#include <linux/slab.h>
 +
-+/* The following is global registers for PWM controller */
++#define PWM_MR		0x00
 +#define PWM_ENA		0x04
 +#define PWM_DIS		0x08
 +#define PWM_SR		0x0C
-+/* bit field in SR */
-+#define PWM_SR_ALL_CH_ON	0x0F
 +
-+/* The following register is PWM channel related registers */
 +#define PWM_CMR		0x00
-+/* bit field in CMR */
-+#define PWM_CMR_CPOL		(1 << 9)
-+#define PWM_CMR_UPD_CDTY	(1 << 10)
 +
-+/* The following registers for PWM v1 */
++/* The following register for PWM v1 */
 +#define PWMv1_CDTY	0x04
 +#define PWMv1_CPRD	0x08
 +#define PWMv1_CUPD	0x10
 +
-+/* The following registers for PWM v2 */
++/* The following register for PWM v2 */
 +#define PWMv2_CDTY	0x04
 +#define PWMv2_CDTYUPD	0x08
 +#define PWMv2_CPRD	0x0C
 +#define PWMv2_CPRDUPD	0x10
++
++#define PWM_NUM		4
 +
 +struct atmel_pwm_chip {
 +	struct pwm_chip chip;
 +	struct clk *clk;
 +	void __iomem *base;
 +
-+	void (*config)(struct pwm_chip *chip, struct pwm_device *pwm,
-+		       int dty, int prd);
++	void (*config)(struct atmel_pwm_chip *chip, struct pwm_device *pwm,
++			unsigned int dty, unsigned int prd);
 +};
 +
-+static inline struct atmel_pwm_chip *to_atmel_pwm_chip(struct pwm_chip *chip)
-+{
-+	return container_of(chip, struct atmel_pwm_chip, chip);
-+}
++#define to_atmel_pwm_chip(chip) container_of(chip, struct atmel_pwm_chip, chip)
 +
-+static inline u32 atmel_pwm_readl(struct atmel_pwm_chip *chip,
-+				  unsigned long offset)
++static inline u32 atmel_pwm_readl(struct atmel_pwm_chip *chip, int offset)
 +{
 +	return readl(chip->base + offset);
 +}
 +
-+static inline void atmel_pwm_writel(struct atmel_pwm_chip *chip,
-+				    unsigned long offset, unsigned long val)
++static inline void atmel_pwm_writel(struct atmel_pwm_chip *chip, int offset,
++		u32 val)
 +{
 +	writel(val, chip->base + offset);
 +}
 +
-+static inline u32 atmel_pwm_ch_readl(struct atmel_pwm_chip *chip,
-+				     unsigned int ch, unsigned long offset)
++static inline u32 atmel_pwm_ch_readl(struct atmel_pwm_chip *chip, int ch,
++		int offset)
 +{
 +	return readl(chip->base + 0x200 + ch * 0x20 + offset);
 +}
 +
-+static inline void atmel_pwm_ch_writel(struct atmel_pwm_chip *chip,
-+				       unsigned int ch, unsigned long offset,
-+				       unsigned long val)
++static inline void atmel_pwm_ch_writel(struct atmel_pwm_chip *chip, int ch,
++		int offset, u32 val)
 +{
 +	writel(val, chip->base + 0x200 + ch * 0x20 + offset);
 +}
@@ -177,7 +167,8 @@ index 0000000..a9af974
 +		int duty_ns, int period_ns)
 +{
 +	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
-+	unsigned long long val, prd, dty, div, clk_rate;
++	unsigned long long val, prd, dty;
++	unsigned long long div, clk_rate;
 +	int ret, pres = 0;
 +
 +	clk_rate = clk_get_rate(atmel_pwm->clk);
@@ -190,15 +181,11 @@ index 0000000..a9af974
 +		val = clk_rate * duty_ns;
 +		dty = div_u64(val, div);
 +
-+		if (prd < 1 || dty < 0)
++		if (prd < 0x0001 || dty < 0x0)
 +			return -EINVAL;
 +
-+		/*
-+		 * Although the period register is 32 bit,
-+		 * however the LSB 16 bits is used
-+		 */
 +		if (prd > 0xffff || dty > 0xffff) {
-+			if (++pres > 16)
++			if (++pres > 0x10)
 +				return -EINVAL;
 +			continue;
 +		}
@@ -206,40 +193,37 @@ index 0000000..a9af974
 +		break;
 +	}
 +
-+	ret = clk_enable(atmel_pwm->clk);
++	/* Enable clock */
++	ret = clk_prepare_enable(atmel_pwm->clk);
 +	if (ret) {
 +		pr_err("failed to enable pwm clock\n");
 +		return ret;
 +	}
 +
-+	atmel_pwm->config(chip, pwm, dty, prd);
++	atmel_pwm->config(atmel_pwm, pwm, dty, prd);
 +
 +	/* Check whether need to disable clock */
 +	val = atmel_pwm_readl(atmel_pwm, PWM_SR);
-+	if ((val & PWM_SR_ALL_CH_ON) == 0)
-+		clk_disable(atmel_pwm->clk);
++	if ((val & 0xf) == 0)
++		clk_disable_unprepare(atmel_pwm->clk);
 +
 +	return 0;
 +}
 +
-+static void atmel_pwm_config_v1(struct pwm_chip *chip, struct pwm_device *pwm,
-+				int dty, int prd)
++static void atmel_pwm_config_v1(struct atmel_pwm_chip *atmel_pwm,
++		struct pwm_device *pwm, unsigned int dty, unsigned int prd)
 +{
-+	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
 +	unsigned int val;
 +
 +	/*
-+	 * If the PWM channel is disabled, write value to duty and period
-+	 * registers directly.
-+	 * If the PWM channel is enabled, only update the duty register
-+	 *
-+	 * When update duty value, it need to set bit 10 of CMR to 0
++	 * if the pwm channel is enabled, using update register to update
++	 * related register value, or else write it directly
 +	 */
 +	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
 +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMv1_CUPD, dty);
 +
 +		val = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
-+		val &= ~PWM_CMR_UPD_CDTY;
++		val &= ~(1 << 10);
 +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
 +	} else {
 +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMv1_CDTY, dty);
@@ -247,16 +231,12 @@ index 0000000..a9af974
 +	}
 +}
 +
-+static void atmel_pwm_config_v2(struct pwm_chip *chip, struct pwm_device *pwm,
-+				int dty, int prd)
++static void atmel_pwm_config_v2(struct atmel_pwm_chip *atmel_pwm,
++		struct pwm_device *pwm, unsigned int dty, unsigned int prd)
 +{
-+	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
-+
 +	/*
-+	 * If the PWM channel is disabled, write value to duty and period
-+	 * registers directly.
-+	 * If the PWM channel is enabled, using period update register to update
-+	 * value to period register, the same operation to duty register
++	 * if the pwm channel is enabled, using update register to update
++	 * related register value, or else write it directly
 +	 */
 +	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
 +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMv2_CDTYUPD, dty);
@@ -274,20 +254,22 @@ index 0000000..a9af974
 +	u32 val = 0;
 +	int ret;
 +
-+	ret = clk_enable(atmel_pwm->clk);
++	/* Enable clock */
++	ret = clk_prepare_enable(atmel_pwm->clk);
 +	if (ret) {
 +		pr_err("failed to enable pwm clock\n");
 +		return ret;
 +	}
 +
 +	if (polarity == PWM_POLARITY_NORMAL)
-+		val &= ~PWM_CMR_CPOL;
++		val &= ~(1 << 9);
 +	else
-+		val |= PWM_CMR_CPOL;
++		val |= 1 << 9;
 +
 +	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
 +
-+	clk_disable(atmel_pwm->clk);
++	/* Disable clock */
++	clk_disable_unprepare(atmel_pwm->clk);
 +
 +	return 0;
 +}
@@ -310,9 +292,10 @@ index 0000000..a9af974
 +
 +	atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
 +
++	/* Disable clock */
 +	val = atmel_pwm_readl(atmel_pwm, PWM_SR);
-+	if ((val & PWM_SR_ALL_CH_ON) == 0)
-+		clk_disable(atmel_pwm->clk);
++	if ((val & 0xf) == 0)
++		clk_disable_unprepare(atmel_pwm->clk);
 +}
 +
 +static const struct pwm_ops atmel_pwm_ops = {
@@ -324,19 +307,18 @@ index 0000000..a9af974
 +};
 +
 +struct atmel_pwm_data {
-+	void (*config)(struct pwm_chip *chip, struct pwm_device *pwm,
-+		       int dty, int prd);
++	void (*config)(struct atmel_pwm_chip *chip, struct pwm_device *pwm,
++			unsigned int dty, unsigned int prd);
 +};
 +
-+static const struct atmel_pwm_data atmel_pwm_data_v1 = {
++static struct atmel_pwm_data atmel_pwm_data_v1 = {
 +	.config = atmel_pwm_config_v1,
 +};
 +
-+static const struct atmel_pwm_data atmel_pwm_data_v2 = {
++static struct atmel_pwm_data atmel_pwm_data_v2 = {
 +	.config = atmel_pwm_config_v2,
 +};
 +
-+#ifdef CONFIG_OF
 +static const struct of_device_id atmel_pwm_dt_ids[] = {
 +	{
 +		.compatible = "atmel,at91sam9rl-pwm",
@@ -349,7 +331,6 @@ index 0000000..a9af974
 +	},
 +};
 +MODULE_DEVICE_TABLE(of, atmel_pwm_dt_ids);
-+#endif
 +
 +static int atmel_pwm_probe(struct platform_device *pdev)
 +{
@@ -358,29 +339,45 @@ index 0000000..a9af974
 +	const struct atmel_pwm_data *data;
 +	struct atmel_pwm_chip *atmel_pwm;
 +	struct resource *res;
++	struct pinctrl *pinctrl;
 +	int ret;
 +
++	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
++	if (IS_ERR(pinctrl)) {
++		dev_err(&pdev->dev, "failed get pinctrl\n");
++		return PTR_ERR(pinctrl);
++	}
++
 +	atmel_pwm = devm_kzalloc(&pdev->dev, sizeof(*atmel_pwm), GFP_KERNEL);
-+	if (!atmel_pwm)
++	if (!atmel_pwm) {
++		dev_err(&pdev->dev, "out of memory\n");
 +		return -ENOMEM;
++	}
 +
 +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
++	if (!res) {
++		dev_err(&pdev->dev, "no memory resource defined\n");
 +		return -ENODEV;
++	}
 +
 +	atmel_pwm->base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(atmel_pwm->base)) {
++		dev_err(&pdev->dev, "ioremap failed\n");
++		return PTR_ERR(atmel_pwm->base);
++	}
 +
-+	atmel_pwm->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(atmel_pwm->clk))
++	atmel_pwm->clk = devm_clk_get(&pdev->dev, "pwm_clk");
++	if (IS_ERR(atmel_pwm->clk)) {
++		dev_err(&pdev->dev, "clk get failed\n");
 +		return PTR_ERR(atmel_pwm->clk);
-+	clk_prepare(atmel_pwm->clk);
++	}
 +
 +	atmel_pwm->chip.dev = &pdev->dev;
 +	atmel_pwm->chip.ops = &atmel_pwm_ops;
 +	atmel_pwm->chip.of_xlate = of_pwm_xlate_with_flags;
 +	atmel_pwm->chip.of_pwm_n_cells = 3;
 +	atmel_pwm->chip.base = -1;
-+	atmel_pwm->chip.npwm = 4;
++	atmel_pwm->chip.npwm = PWM_NUM;
 +
 +	data = of_id->data;
 +	atmel_pwm->config = data->config;
@@ -393,14 +390,14 @@ index 0000000..a9af974
 +
 +	platform_set_drvdata(pdev, atmel_pwm);
 +
++	dev_info(&pdev->dev, "successfully register pwm\n");
++
 +	return 0;
 +}
 +
 +static int atmel_pwm_remove(struct platform_device *pdev)
 +{
 +	struct atmel_pwm_chip *atmel_pwm = platform_get_drvdata(pdev);
-+
-+	clk_unprepare(atmel_pwm->clk);
 +
 +	return pwmchip_remove(&atmel_pwm->chip);
 +}
