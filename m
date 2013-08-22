@@ -1,94 +1,47 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Fri, 23 Aug 2013 10:04:40 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
+Return-Path: <sha@pengutronix.de>
+Date: Thu, 22 Aug 2013 08:26:10 +0200
+From: Sascha Hauer <s.hauer@pengutronix.de>
 Subject: Re: [PATCH 4/4] Documentation: Add device tree bindings for
  Freescale FTM PWM
-Message-ID: <20130823080439.GE3535@ulmo>
+Message-ID: <20130822062610.GR31036@pengutronix.de>
 References: <1377054462-6283-1-git-send-email-Li.Xiubo@freescale.com>
+ <1377054462-6283-5-git-send-email-Li.Xiubo@freescale.com>
  <1473340.OXSHEp7d4P@flatron>
  <1DD289F6464F0949A2FCA5AA6DC23F827D2244@039-SN2MPN1-013.039d.mgd.msft.net>
- <1522215.zHEjdiga8V@flatron>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="N1GIdlSm9i+YlY4t"
-Content-Disposition: inline
-In-Reply-To: <1522215.zHEjdiga8V@flatron>
-List-ID: <linux-pwm.vger.kernel.org>
-To: Tomasz Figa <tomasz.figa@gmail.com>
-Cc: Xiubo Li-B47053 <B47053@freescale.com>, Guo Shawn-R65073 <r65073@freescale.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>
-
-
---N1GIdlSm9i+YlY4t
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1DD289F6464F0949A2FCA5AA6DC23F827D2244@039-SN2MPN1-013.039d.mgd.msft.net>
+List-ID: <linux-pwm.vger.kernel.org>
+To: Xiubo Li-B47053 <B47053@freescale.com>
+Cc: Tomasz Figa <tomasz.figa@gmail.com>, Guo Shawn-R65073 <r65073@freescale.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>
 
-On Thu, Aug 22, 2013 at 10:25:30AM +0200, Tomasz Figa wrote:
-> On Thursday 22 of August 2013 02:55:42 Xiubo Li-B47053 wrote:
-> > Hi Tomasz,
-> >=20
-> > Thanks for your comments.
-> >=20
-> > > > +- #pwm-cells: Should be 3. Number of cells being used to specify
-> > > > PWM
-> > > > property.
-> > > > +  First cell specifies the per-chip channel index of the PWM
-> > > > to use, the
-> > > > +  second cell is the period in nanoseconds and bit 0 in
-> > > > the third cell is
-> > > > +  used to encode the polarity of PWM output. Set bit
-> > > > 0 of the third in PWM
-> > > > +  specifier to 1 for inverse polarity & set to 0
-> > > > for normal polarity.
-> > >=20
-> > > If the meaning of flags cell is the same as in generic, default PWM
-> > > specifier format, then it should be noted here and generic PWM binding
-> > > documentation mentioned.
-> >=20
-> > OK, How about the following ?
-> > - #pwm-cells: Should be 3. See pwm.txt in this directory for a
-> >   description of the cells format.
->=20
-> I meant just the last cell, which stores flags, but actually this might b=
-e=20
-> a good idea, but with slightly extended description. Something among thos=
-e=20
-> lines:
->=20
->  - #pwm-cells: Should be 3. The default three cell format specified by=20
-> generic PWM bindings are used. Refer to the documentation of generic PWM=
-=20
-> bindings for more information about the meaning of cells.
+On Thu, Aug 22, 2013 at 02:55:42AM +0000, Xiubo Li-B47053 wrote:
+> Hi Tomasz,
+> 
+> Thanks for your comments.
+> 
+> 
+> > Could you explain meaning of this property more precisely? I'm interested
+> > especially how is this related to the PWM IP block and boards.
+> > 
+> 
+> Yes.
+> There are 8 channels most. While the pinctrls of 4th and 5th channels could be
+> used by uart's Rx and Tx, then these 2 channels won't be used for pwm output,
+> so there will be 6 channels available by the pwm.
+> Thus, the pwm chip will register only 6 pwms(6 channels) most("fsl,pwm-channel-orders
+> = {0 1 2 3 6 7}").And also the "fsl,pwm-channel-number" will be 6.
 
-Actually I prefer the second proposal, that is:
+If the chip has eight PWMs I would register all of them. If some of them
+are not routed out by the pinmux then just nothing happens if you use
+them. In a sane devicetree they won't be referenced anyway when they are
+not routed out of the SoC.
 
-> > - #pwm-cells: Should be 3. See pwm.txt in this directory for a
-> >   description of the cells format.
+Sascha
 
-We agreed on that wording in another thread and I'd prefer to be
-consistent across bindings.
-
-Thierry
-
---N1GIdlSm9i+YlY4t
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.21 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSFxeXAAoJEN0jrNd/PrOhaPQP/jLqLt0rZkjw53bgxa+4cp3X
-QAH3ky5tRga2sK1GeAmZfzKqAgINmOqgWTG2GR1Xug5aZT6NYJaG2FR6bHoDblwg
-2b9LqjMTNql45K6mbJePO3B8HsbPeZC9FBCLfbCwXDAydB4oQAyoum08zKhr5rNe
-Si8wix2xbJzr/HafEBwaX2QpNb+C0qU2CsP7Yh6fdxb63AOhoaeLaE1j/f5at/1+
-tscDQOftUZovLxPWQp0cdwlPfvJjOCTggL3Jl5jxX/3UcvQ4zDA3zJFNna5pXMf1
-PH9BcjCfp+NIULW9UNF9qUFKeQH+Ow+F6l3rHASL6tYcCJN2+ImaYOGPicniADjB
-oSYtqOP1ivrwhXVK7sZrCc5bZrxQHFcCD4cb6Rv3BdN4qajTkqhMxB3vQ35DeS1u
-/ETvYhgKWeaj1OFxitlDTJFKqGNFF7VcIOqU9i/ftVz0vj9HgcEg3P5TsPx+XsLm
-KWJONrZbRVPiBmfjArOKpdvaIyu6B1amTBqYTRHE/aIHlSh86yUVNO9UBTZUBPNT
-9Xn2oNcz6HBL+eWMREETIxDlCK7o6K9vTDYHOwEsR2Z7XEyph0KQ6Q2IlAEZ4WLN
-6UhMiENMl61HjN7uKltC1xNyfZZpMZbm5CeptQJXLY4RHeyjnUO39AfbpwkgmEgY
-Zi4Qqp+ukLBR1uD74oKF
-=RJLW
------END PGP SIGNATURE-----
-
---N1GIdlSm9i+YlY4t--
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
