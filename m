@@ -1,49 +1,54 @@
-Return-Path: <B47053@freescale.com>
-From: Xiubo Li <Li.Xiubo@freescale.com>
-Subject: [PATCH 3/4] ARM: dts: Enables ftm pwm device for Vybrid VF610 TOWER board.
-Date: Wed, 21 Aug 2013 11:07:41 +0800
-Message-ID: <1377054462-6283-4-git-send-email-Li.Xiubo@freescale.com>
-In-Reply-To: <1377054462-6283-1-git-send-email-Li.Xiubo@freescale.com>
+Return-Path: <thierry.reding@gmail.com>
+Date: Fri, 23 Aug 2013 11:13:32 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 3/4] ARM: dts: Enables ftm pwm device for Vybrid VF610
+ TOWER board.
+Message-ID: <20130823091331.GI3535@ulmo>
 References: <1377054462-6283-1-git-send-email-Li.Xiubo@freescale.com>
+ <1377054462-6283-4-git-send-email-Li.Xiubo@freescale.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Return-Path: B47053@freescale.com
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="9s922KAXlWjPfK/Q"
+Content-Disposition: inline
+In-Reply-To: <1377054462-6283-4-git-send-email-Li.Xiubo@freescale.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: r65073@freescale.com, thierry.reding@gmail.com
-Cc: grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, swarren@wwwdotorg.org, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+To: Xiubo Li <Li.Xiubo@freescale.com>
+Cc: r65073@freescale.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, swarren@wwwdotorg.org, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 
-Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
----
- arch/arm/boot/dts/vf610-twr.dts | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
 
-diff --git a/arch/arm/boot/dts/vf610-twr.dts b/arch/arm/boot/dts/vf610-twr.dts
-index b3905f5..6f93d8d 100644
---- a/arch/arm/boot/dts/vf610-twr.dts
-+++ b/arch/arm/boot/dts/vf610-twr.dts
-@@ -50,6 +50,23 @@
- 	status = "okay";
- };
- 
-+&pwm0 {
-+	pinctrl-names = "en0", "ds0", "en1", "ds1", "en2", "ds2", "en3", "ds3";
-+	pinctrl-0 = <&pinctrl_pwm0_ch0_en>;
-+	pinctrl-1 = <&pinctrl_pwm0_ch0_ds>;
-+	pinctrl-2 = <&pinctrl_pwm0_ch1_en>;
-+	pinctrl-3 = <&pinctrl_pwm0_ch1_ds>;
-+	pinctrl-4 = <&pinctrl_pwm0_ch2_en>;
-+	pinctrl-5 = <&pinctrl_pwm0_ch2_ds>;
-+	pinctrl-6 = <&pinctrl_pwm0_ch3_en>;
-+	pinctrl-7 = <&pinctrl_pwm0_ch3_ds>;
-+	fsl,pwm-clk-ps = <7>;
-+	fsl,pwm-cpwm = <0>;
-+	fsl,pwm-number = <4>;
-+	fsl,pwm-channels = <0 1 2 3>;
-+	status = "okay";
-+};
-+
- &uart1 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_uart1_1>;
--- 
-1.8.0
+--9s922KAXlWjPfK/Q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Wed, Aug 21, 2013 at 11:07:41AM +0800, Xiubo Li wrote:
+> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
+> ---
+>  arch/arm/boot/dts/vf610-twr.dts | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+
+Same comments as for patch 2/4.
+
+Thierry
+
+--9s922KAXlWjPfK/Q
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.21 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSFye7AAoJEN0jrNd/PrOhiYUP/2mkg+cg2bou0l6uTDjQHI7G
+6SpZV4r+eYJJ8m4uOhyN32Kb1RCufDreKna/E4Pw2du5D4K3t/fjxvF6x5ARGFls
+3yjEPb/xD4TGEpuePGEffkYoJl/ltqiHbHE/sqk/Gyd5gFc7srgNda6gYcbyfAkJ
+RM/IEmOac+p/6SwUeGSaZqhKT4YixnJlxT1lxbfT5YD9yaKBOvM02B3070Rnt/KF
+4ttKks8r+5A0WUKSVESLzT3aZDP8U49mbJwgU5ynCBcwKxZU3eQWalzeNU6EpkMb
+4PRoP2jgPfaLxrBm29PatlALcNPvnfxSAArJoW1PbZbrkGG7bH+U2T88wn5EDnd7
+buQdjoPhzeD/GWdsrkdIpI/2jqEUyVb6Se9xZtI67nNvFXEHZun1HvQ5DbfsJ/iR
+kIpcD/buhsE1hREKs/sGIqk8csCHwkRM77dh1hDW+VCSBRTiQoXd260KXewOcpRA
+eDX/N1mcVPjsW1paoHQHKa8nAfp5zt7rXrhs0SekZzik0G7lqgji3C3Aby04rHhy
+UJC36HWroMH7Bvhe6ueOG5Nsn4Az+4iXJKhnq0G5sAMaJEojPhKWEXnlG/iU+Yz/
+ri1RVvtV6c4I596YKrdvoK53tyyE2fq+vCDSUv71Y32blLoT+yIgJoTo8PBYRaTj
+/MBBSTQIXPbgg8VZYAAB
+=kpwi
+-----END PGP SIGNATURE-----
+
+--9s922KAXlWjPfK/Q--
