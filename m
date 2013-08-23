@@ -1,151 +1,94 @@
-Return-Path: <t.figa@samsung.com>
-From: Tomasz Figa <t.figa@samsung.com>
-Subject: Re: [PATCH 4/4] Documentation: Add device tree bindings for Freescale
- FTM PWM
-Date: Thu, 22 Aug 2013 14:17:53 +0200
-Message-id: <1889970.nK93apnFQd@amdc1227>
-In-reply-to: 
- <1DD289F6464F0949A2FCA5AA6DC23F827D2539@039-SN2MPN1-013.039d.mgd.msft.net>
+Return-Path: <thierry.reding@gmail.com>
+Date: Fri, 23 Aug 2013 10:04:40 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 4/4] Documentation: Add device tree bindings for
+ Freescale FTM PWM
+Message-ID: <20130823080439.GE3535@ulmo>
 References: <1377054462-6283-1-git-send-email-Li.Xiubo@freescale.com>
+ <1473340.OXSHEp7d4P@flatron>
+ <1DD289F6464F0949A2FCA5AA6DC23F827D2244@039-SN2MPN1-013.039d.mgd.msft.net>
  <1522215.zHEjdiga8V@flatron>
- <1DD289F6464F0949A2FCA5AA6DC23F827D2539@039-SN2MPN1-013.039d.mgd.msft.net>
-MIME-version: 1.0
-Content-transfer-encoding: 7Bit
-Content-type: text/plain; charset=us-ascii
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="N1GIdlSm9i+YlY4t"
+Content-Disposition: inline
+In-Reply-To: <1522215.zHEjdiga8V@flatron>
 List-ID: <linux-pwm.vger.kernel.org>
-To: devicetree-discuss@lists.ozlabs.org
-Cc: Xiubo Li-B47053 <B47053@freescale.com>, Tomasz Figa <tomasz.figa@gmail.com>, Guo Shawn-R65073 <r65073@freescale.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>
+To: Tomasz Figa <tomasz.figa@gmail.com>
+Cc: Xiubo Li-B47053 <B47053@freescale.com>, Guo Shawn-R65073 <r65073@freescale.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>
 
-On Thursday 22 of August 2013 09:52:42 Xiubo Li-B47053 wrote:
-> Hi Tomasz,
-> 
-> > > > If the meaning of flags cell is the same as in generic, default PWM
-> > > > specifier format, then it should be noted here and generic PWM
-> > > > binding documentation mentioned.
-> > > 
-> > > OK, How about the following ?
-> > > - #pwm-cells: Should be 3. See pwm.txt in this directory for a
-> > > 
-> > >   description of the cells format.
-> > 
-> > I meant just the last cell, which stores flags, but actually this might
-> > be a good idea, but with slightly extended description. Something among
-> > those
-> > 
-> > lines:
-> >  - #pwm-cells: Should be 3. The default three cell format specified by
-> > 
-> > generic PWM bindings are used. Refer to the documentation of generic
-> > PWM
-> > bindings for more information about the meaning of cells.
-> 
-> That's perfect.
 
-OK.
+--N1GIdlSm9i+YlY4t
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > > > > +- fsl,pwm-clk-ps: the ftm0 pwm clock's prescaler,
-> > > > > divide-by 2^n(n = 0 ~ 7).
-> > > > 
-> > > > Is it a hardware-specific property?
-> > > 
-> > > Yes, I will revise it in v2.
-> > 
-> > I'd like to hear a bit more elaborate description of this property.
-> > What
-> > are the factors that decide what value should be used here?
-> 
-> Sorry, "the ftm0 pwm clock's prescaler" maybe also confuse you, it should
-> be "the ftm pwm counter clock input prescaler".
-> 
-> The ftm's counter clock can be selected as :
-> System clock,
-> Fixed frequency clock,
-> External clock.
-> 
-> And the ftm module clock has only system clock source.
-> 
-> The fixed frequency clock is an alternative clock source for the FTM
-> counter that allows the selection of a clock other than the system clock
-> or an external clock. This clock input is defined by chip integration.
-> Due to FTM hardware implementation limitations, the frequency of the
-> fixed frequency clock must not exceed 1/2 of the system clock frequency.
-> 
-> The external clock passes through a synchronizer clocked by the system
-> clock to assure that counter transitions are properly aligned to system
-> clock transitions.Therefore, to meet Nyquist criteria considering also
-> jitter, the frequency of the external clock source must not exceed 1/4
-> of the system clock frequency.
-> 
-> So, if the fixed frequency clock or external clock equal or exceed the
-> system clock...
+On Thu, Aug 22, 2013 at 10:25:30AM +0200, Tomasz Figa wrote:
+> On Thursday 22 of August 2013 02:55:42 Xiubo Li-B47053 wrote:
+> > Hi Tomasz,
+> >=20
+> > Thanks for your comments.
+> >=20
+> > > > +- #pwm-cells: Should be 3. Number of cells being used to specify
+> > > > PWM
+> > > > property.
+> > > > +  First cell specifies the per-chip channel index of the PWM
+> > > > to use, the
+> > > > +  second cell is the period in nanoseconds and bit 0 in
+> > > > the third cell is
+> > > > +  used to encode the polarity of PWM output. Set bit
+> > > > 0 of the third in PWM
+> > > > +  specifier to 1 for inverse polarity & set to 0
+> > > > for normal polarity.
+> > >=20
+> > > If the meaning of flags cell is the same as in generic, default PWM
+> > > specifier format, then it should be noted here and generic PWM binding
+> > > documentation mentioned.
+> >=20
+> > OK, How about the following ?
+> > - #pwm-cells: Should be 3. See pwm.txt in this directory for a
+> >   description of the cells format.
+>=20
+> I meant just the last cell, which stores flags, but actually this might b=
+e=20
+> a good idea, but with slightly extended description. Something among thos=
+e=20
+> lines:
+>=20
+>  - #pwm-cells: Should be 3. The default three cell format specified by=20
+> generic PWM bindings are used. Refer to the documentation of generic PWM=
+=20
+> bindings for more information about the meaning of cells.
 
-Can't the driver check the frequency of fixed or external clock and 
-calculate optimal divisor value so that it is less than 1/4 of system clock 
-frequency?
+Actually I prefer the second proposal, that is:
 
-> > > > > +- fsl,pwm-number: the number of PWM devices, and is must equal
-> > > > > to
-> > > > > the
-> > > > > number +  of "fsl,pwm-channels".
-> > > > 
-> > > > This is redundant, because you can simply count how many entries
-> > > > have been specified in fsl,pwm-channels.
-> > > 
-> > > Yes, I will revise it in v2.
-> > > And this would be renamed to " fsl,pwm-channel-number", which can be
-> > > more Readable and understood.
-> > 
-> > I meant that you don't need to specify how many entries other property
-> > has in another property, because device tree provides information about
-> > sizes of all properties. So, in parsing code, you would be able to
-> > simply get the size of "fsl,pwm-channels" property in bytes, divide
-> > that by sizeof(u32) and get the numer of cells specified.
-> 
-> OK, I will revise it in v2.
+> > - #pwm-cells: Should be 3. See pwm.txt in this directory for a
+> >   description of the cells format.
 
-As I noted below, it won't be needed anymore. I just commented on this as a 
-side note.
+We agreed on that wording in another thread and I'd prefer to be
+consistent across bindings.
 
-> > > > > +- fsl,pwm-channels: the channels' order which is be used for pwm
-> > > > > +in
-> > > > > ftm0 +  module, and they must be one or some of 0 ~ 7, because
-> > > > > the
-> > > > > ftm0 only has +  8 channels can be used.
-> > > > 
-> > > > Could you explain meaning of this property more precisely? I'm
-> > > > interested especially how is this related to the PWM IP block and
-> > > > boards.
-> > > 
-> > > Yes.
-> > > There are 8 channels most. While the pinctrls of 4th and 5th channels
-> > > could be used by uart's Rx and Tx, then these 2 channels won't be
-> > > used
-> > > for pwm output, so there will be 6 channels available by the pwm.
-> > > Thus, the pwm chip will register only 6 pwms(6 channels)
-> > > most("fsl,pwm-channel-orders = {0 1 2 3 6 7}").And also the
-> > > "fsl,pwm-channel-number" will be 6.
-> > > 
-> > > If hasn't any other problems, I will revise It in v2.
-> > > And this will be renamed to "fsl,pwm-channel-orders", which can be
-> > > more readable and understood.
-> > 
-> > As Sascha Hauer already suggested, you could get rid of both this and
-> > "fsl,pwm-channel-number" properties and simply register all the
-> > channels. This way you will have a deterministic 1:1 mapping of real
-> > hardware channels to channels specified in device tree, which is
-> > definitely the way to go.
-> > 
-> > Now as a safety measure, you could simply move the specification of
-> > pinctrl states from SoC family or SoC level dtsi file to board level
-> > dts, where only pinctrl states of channels used by a particular board
-> > would be specified, so nothing could break operation of other devices
-> > that share pin muxes with remaining channels.
-> 
-> Yes, I was also considering it, but not very be clear yet.
-> Thanks very much for your and Sascha's help.
-> I will try to implement it in v2.
+Thierry
 
-OK, good.
+--N1GIdlSm9i+YlY4t
+Content-Type: application/pgp-signature
 
-Best regards,
-Tomasz
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.21 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSFxeXAAoJEN0jrNd/PrOhaPQP/jLqLt0rZkjw53bgxa+4cp3X
+QAH3ky5tRga2sK1GeAmZfzKqAgINmOqgWTG2GR1Xug5aZT6NYJaG2FR6bHoDblwg
+2b9LqjMTNql45K6mbJePO3B8HsbPeZC9FBCLfbCwXDAydB4oQAyoum08zKhr5rNe
+Si8wix2xbJzr/HafEBwaX2QpNb+C0qU2CsP7Yh6fdxb63AOhoaeLaE1j/f5at/1+
+tscDQOftUZovLxPWQp0cdwlPfvJjOCTggL3Jl5jxX/3UcvQ4zDA3zJFNna5pXMf1
+PH9BcjCfp+NIULW9UNF9qUFKeQH+Ow+F6l3rHASL6tYcCJN2+ImaYOGPicniADjB
+oSYtqOP1ivrwhXVK7sZrCc5bZrxQHFcCD4cb6Rv3BdN4qajTkqhMxB3vQ35DeS1u
+/ETvYhgKWeaj1OFxitlDTJFKqGNFF7VcIOqU9i/ftVz0vj9HgcEg3P5TsPx+XsLm
+KWJONrZbRVPiBmfjArOKpdvaIyu6B1amTBqYTRHE/aIHlSh86yUVNO9UBTZUBPNT
+9Xn2oNcz6HBL+eWMREETIxDlCK7o6K9vTDYHOwEsR2Z7XEyph0KQ6Q2IlAEZ4WLN
+6UhMiENMl61HjN7uKltC1xNyfZZpMZbm5CeptQJXLY4RHeyjnUO39AfbpwkgmEgY
+Zi4Qqp+ukLBR1uD74oKF
+=RJLW
+-----END PGP SIGNATURE-----
+
+--N1GIdlSm9i+YlY4t--
