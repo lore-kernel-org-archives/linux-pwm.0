@@ -1,114 +1,468 @@
 Return-Path: <thierry.reding@gmail.com>
-Date: Fri, 23 Aug 2013 09:58:29 +0200
+Date: Fri, 23 Aug 2013 11:05:24 +0200
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH 1/4] pwm: add freescale ftm pwm driver support
-Message-ID: <20130823075828.GD3535@ulmo>
+Message-ID: <20130823090523.GF3535@ulmo>
 References: <1377054462-6283-1-git-send-email-Li.Xiubo@freescale.com>
  <1377054462-6283-2-git-send-email-Li.Xiubo@freescale.com>
- <20130821073659.GN31036@pengutronix.de>
- <1DD289F6464F0949A2FCA5AA6DC23F827D1C51@039-SN2MPN1-013.039d.mgd.msft.net>
- <20130821095049.GQ31036@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="eqp4TxRxnD4KrmFZ"
+	protocol="application/pgp-signature"; boundary="QNDPHrPUIc00TOLW"
 Content-Disposition: inline
-In-Reply-To: <20130821095049.GQ31036@pengutronix.de>
+In-Reply-To: <1377054462-6283-2-git-send-email-Li.Xiubo@freescale.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Xiubo Li-B47053 <B47053@freescale.com>, Guo Shawn-R65073 <r65073@freescale.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Lu Jingchang-B35083 <B35083@freescale.com>
+To: Xiubo Li <Li.Xiubo@freescale.com>
+Cc: r65073@freescale.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, swarren@wwwdotorg.org, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Jingchang Lu <b35083@freescale.com>
 
 
---eqp4TxRxnD4KrmFZ
+--QNDPHrPUIc00TOLW
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 21, 2013 at 11:50:49AM +0200, Sascha Hauer wrote:
-> On Wed, Aug 21, 2013 at 09:24:56AM +0000, Xiubo Li-B47053 wrote:
-> > TO Sascha,
-> >=20
-> > > > +
-> > > > +	fpc =3D to_fsl_chip(chip);
-> > > > +
-> > > > +	if (WARN_ON(!test_bit(PWMF_REQUESTED, &pwm->flags)))
-> > > > +		return -ESHUTDOWN;
-> > > > +
-> > > > +	statename =3D kasprintf(GFP_KERNEL, "en%d", pwm->hwpwm);
-> > > > +	pins_state =3D pinctrl_lookup_state(fpc->pinctrl,
-> > > > +			statename);
-> > > > +	/* enable pins to be muxed in and configured */
-> > > > +	if (!IS_ERR(pins_state)) {
-> > > > +		ret =3D pinctrl_select_state(fpc->pinctrl, pins_state);
-> > > > +		if (ret)
-> > > > +			dev_warn(&fpc->pdev->dev,
-> > > > +					"could not set default pins\n");
-> > >=20
-> > > Why do you need to manipulate the pinctrl to en/disable a channel?
-> > >=20
-> >=20
-> > This is because in Vybrid VF610 TOWER board, there are 4 leds, and each=
- led's one point(diode's positive pole) is connected to 3.3V,
-> > and the other point is connected to pwm's one channel. When the 4 pinct=
-rls are configured as enable at the same time,=20
-> > the 4 pinctrls is low valtage, and the 4 leds will be lighted up as def=
-ault, then when you enable/disable one led will effects others.
-> >=20
->=20
-> I think the inactive state of a PWM is pretty much undefined by the PWM
-> framework and left to the drivers.
->=20
-> I stumbled upon this aswell. It would be good to think about the
-> inactive state and how the PWM framework could help us here getting
-> things right.
+On Wed, Aug 21, 2013 at 11:07:39AM +0800, Xiubo Li wrote:
+> Add freescale ftm pwm driver support. The ftm pwm device
 
-I'm not sure if imposing what the inactive state should be is a good
-thing to do. For one, it might not be possible to set that particular
-state in all of the PWM drivers. Similarly some drivers may know of a
-more optimal state to put the pin into.
+I think the correct capitalizations are: "Freescale", "FTM" and "PWM".
+There are other occurrences in the rest of the driver that I haven't
+explicitly pointed out.
 
-> There are several things to consider. For a noninverted PWM the inactive
-> state should probably logic 0. For an inverted PWM it should probably be
-> logic 1. I guess several PWM devices have an undefined inactive state,
-> most of the PWM devices probably can control the inactive state by
-> setting the duty cycle to 100% / 0% without actually disabling the PWM.
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index 75840b5..247b4c3 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -62,6 +62,16 @@ config PWM_BFIN
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-bfin.
+> =20
+> +config PWM_FTM
 
-That sounds like a reasonable set of rules. The above should also be
-equivalent to the "no power" state. I think we could possibly write down
-those rules (even though I think they are obvious enough), but enforcing
-one specific state doesn't sound right to me.
+Perhaps name this PWM_FSL_FTM to match the driver name?
 
-> Using the pinctrl is one way to control the inactive state and probaby
-> the only one before initialization. It might be good to wire this up in
-> the core instead of the individual PWM drivers.
+> +	tristate "Freescale FTM PWM support"
+> +	depends on OF
+> +	help
+> +	  Generic FTM PWM framework driver for Freescale VF610 and
+> +	  Layerscape LS-1 SoCs.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called pwm-ftm.
 
-I don't really see how the PWM core can make an educated decision about
-this. The proper inactive state for a PWM can only be known by it's
-corresponding driver. Each driver's .disable() operation should take
-care of putting the PWM into the inactive state. That is, if it can be
-done without too much effort. If putting the PWM into the inactive state
-involves pinmuxing and such, it's probably better to defer that to the
-=2Efree() operation.
+And fix this up to be "pwm-fsl-ftm".
+
+> diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
+[...]
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +#include <linux/err.h>
+> +#include <linux/clk.h>
+> +#include <linux/io.h>
+> +#include <linux/pwm.h>
+> +#include <linux/of_address.h>
+> +#include <linux/pinctrl/consumer.h>
+> +
+> +#define FTM_SC              0x00
+> +#define FTMSC_CPWMS         (0x1 << 5)
+> +#define FTMSC_CLK_MASK      0x03
+> +#define FTMSC_CLK_OFFSET    0x03
+> +#define FTMSC_CLKSYS        (0x01 << 3)
+> +#define FTMSC_CLKFIX        (0x02 << 3)
+> +#define FTMSC_CLKEXT        (0x03 << 3)
+> +#define FTMSC_PS_MASK       0x07
+> +#define FTMSC_PS_OFFSET     0x00
+> +
+> +#define FTM_CNT             0x04
+> +#define FTM_MOD             0x08
+> +
+> +#define FTM_CSC_BASE        0x0C
+> +#define FTM_CSC(_CHANNEL) \
+> +	(FTM_CSC_BASE + (_CHANNEL * 0x08))
+
+I prefer lowercase variables in macros:
+
+	#define FTM_CSC(channel) \
+		(FTM_CSC_BASE + (channel * 8))
+
+> +#define FTMCnSC_MSB         (0x01 << 5)
+> +#define FTMCnSC_MSA         (0x01 << 4)
+> +#define FTMCnSC_ELSB        (0x01 << 3)
+> +#define FTMCnSC_ELSA        (0x01 << 2)
+> +#define FTM_PWMMODE         (FTMCnSC_MSB)
+> +#define FTM_HIGH_TRUE       (FTMCnSC_ELSB)
+> +#define FTM_LOW_TRUE        (FTMCnSC_ELSA)
+
+What's the reason for redefining these? Can't you just use the FTMCnSC_*
+defines directly?
+
+> +#define FTM_CV(_CHANNEL) \
+> +	(FTM_CV_BASE + (_CHANNEL * 0x08))
+
+Same comment as for FTM_CSC above.
+
+> +#define FTM_MAX_CHANNEL     0x08
+
+There should be no need for this. The only place where you use this is
+when assigning it to pwm_chip.npwm, so you may as well use the literal
+there.
+
+> +struct fsl_pwm {
+> +	unsigned long period_cycles;
+> +	unsigned long duty_cycles;
+> +};
+> +
+> +struct fsl_pwm_chip {
+> +	struct mutex lock;
+> +
+> +	struct platform_device *pdev;
+
+You never use this platform_device. And you have to assign &pdev->dev to
+the pwm_chip.dev anyway, so why not just use that consistently and drop
+the pdev field?
+
+> +	struct pwm_chip chip;
+> +
+> +	unsigned int	clk_ps;
+> +	struct clk	*clk;
+> +
+> +	void __iomem	*base;
+> +
+> +	unsigned int	cpwm;
+> +	struct fsl_pwm fpwms[FTM_MAX_CHANNEL];
+
+Please don't do this. Use pwm_set_chip_data()/pwm_get_chip_data() to
+associate per-channel specific data.
+
+> +	/* pinctrl handles */
+
+Nit: it's only a single handle.
+
+> +	struct pinctrl          *pinctrl;
+
+You also use tabs and spaces inconsistently here. I suggest you use a
+single space between the data type and the field name, that way it's
+much easier to stay consistent.
+
+> +static int fsl_pwm_request_channel(struct pwm_chip *chip,
+> +			       struct pwm_device *pwm)
+
+The arguments on the trailing line aren't properly aligned. They should
+be aligned with the arguments on the first line.
+
+> +{
+> +	int ret =3D 0;
+> +	struct fsl_pwm_chip *fpc;
+> +
+> +	fpc =3D to_fsl_chip(chip);
+> +
+> +	ret =3D clk_prepare_enable(fpc->clk);
+
+This should probably be just clk_prepare(). Or is there some reason why
+you can't delay clk_enable() to the .enable() operation?
+
+> +static int fsl_updata_config(struct fsl_pwm_chip *fpc,
+> +			     struct pwm_device *pwm)
+
+Parameter alignment again. Please also check all other functions.
+
+> +{
+> +	int i;
+
+This should be unsigned int.
+
+> +static unsigned long
+> +fsl_rate_to_cycles(struct fsl_pwm_chip *fpc, int time_ns)
+
+The above two lines are 78 characters when joined, so there's no need to
+split them.
+
+Perhaps time_ns should be "unsigned long"?
+
+> +{
+> +	unsigned long ps;
+> +	unsigned long long c;
+> +
+> +	ps =3D (0x01 << fpc->clk_ps);
+
+This is fairly short, so you could do it along with the variable
+declaration. Also there's no need for the parentheses or the hexadecimal
+prefix (0x01 =3D=3D 1):
+
+	unsigned long ps =3D 1 << fpc->clk_ps;
+
+> +	/* The module clk is HZ/s, the time_ns parameter
+> +	 * is based nanosecond, so here should divide
+> +	 * 1000000000UL.
+> +	 */
+
+Block comments should be:
+
+	/*
+	 * ...
+	 * ...
+	 */
+
+Also HZ/s isn't a valid unit for a clock frequency. And time_ns also has
+the _ns suffix to designate the unit, so as a whole that comment doesn't
+add any real information and can just as well be dropped.
+
+> +static int fsl_pwm_config_channel(struct pwm_chip *chip,
+
+I think you can safely drop the _channel suffix from the PWM operations.
+
+> +			      struct pwm_device *pwm,
+> +			      int duty_ns,
+> +			      int period_ns)
+> +{
+> +	unsigned long period_cycles, duty_cycles;
+> +	struct fsl_pwm_chip *fpc;
+> +
+> +	fpc =3D to_fsl_chip(chip);
+> +
+> +	if (WARN_ON(!test_bit(PWMF_REQUESTED, &pwm->flags)))
+> +		return -ESHUTDOWN;
+
+Erm... how do you think this could ever happen? Users need to request a
+PWM to obtain a struct pwm_device, in which case PWMF_REQUESTED will
+always be set. There are a few other occurrences throughout the rest of
+the driver that I haven't pointed out explicitly.
+
+> +	period_cycles =3D fsl_rate_to_cycles(fpc, period_ns);
+> +	if (period_cycles > 0xFFFF) {
+> +		dev_warn(&fpc->pdev->dev,
+> +				"required PWM period cycles(%lu) "
+> +				"overflow 16-bits counter!\n",
+> +				period_cycles);
+> +		period_cycles =3D 0xFFFF;
+> +	}
+> +
+> +	duty_cycles =3D fsl_rate_to_cycles(fpc, duty_ns);
+> +	if (duty_cycles >=3D 0xFFFF) {
+> +		dev_warn(&fpc->pdev->dev,
+> +				"required PWM duty cycles(%lu) "
+> +				"overflow 16-bits counter!\n",
+> +				duty_cycles);
+> +		duty_cycles =3D 0xFFFF - 1;
+> +	}
+> +
+> +	fpc->fpwms[pwm->hwpwm].period_cycles =3D period_cycles;
+> +	fpc->fpwms[pwm->hwpwm].duty_cycles =3D duty_cycles;
+
+You use these for the sole purpose of passing them into the
+fsl_updata_config() function, so I wonder why you can't just pass them
+as parameters and get rid of struct fsl_pwm as a bonus?
+
+> +
+> +	writel(FTM_PWMMODE | FTM_HIGH_TRUE,
+> +			fpc->base + FTM_CSC(pwm->hwpwm));
+> +
+> +	writel(0xF0, fpc->base + FTM_OUTMASK);
+> +	writel(0x0F, fpc->base + FTM_OUTINIT);
+> +	writel(FTM_CNTIN_VAL, fpc->base + FTM_CNTIN);
+> +
+> +	mutex_lock(&fpc->lock);
+> +	fsl_updata_config(fpc, pwm);
+
+And now that I think about it: perhaps this was supposed to be called
+fsl_update_config() instead of fsl_updat*a*_config()?
+
+> +	mutex_unlock(&fpc->lock);
+> +
+> +	return 0;
+> +}
+> +
+> +static int fsl_pwm_set_channel_polarity(struct pwm_chip *chip,
+> +				    struct pwm_device *pwm,
+> +				    enum pwm_polarity polarity)
+> +{
+> +	unsigned long reg;
+> +	struct fsl_pwm_chip *fpc;
+> +
+> +	fpc =3D to_fsl_chip(chip);
+> +
+> +	reg =3D readl(fpc->base + FTM_POL);
+> +	reg &=3D ~(0x01 << pwm->hwpwm);
+
+This would be slightly more canonical as:
+
+	reg &=3D ~BIT(pwm->hwpwm);
+
+> +	reg |=3D (polarity << pwm->hwpwm);
+
+And perhaps here it would be better to be explicit. I think it's
+unlikely that enum pwm_polarity will even gain a third entry, but better
+be safe than sorry:
+
+	if (polarity =3D=3D PWM_POLARITY_INVERSED)
+		reg |=3D BIT(pwm->hwpwm);
+	else
+		reg &=3D ~BIT(pwm->hwpwm);
+
+> +static int is_any_other_channel_enabled(struct pwm_chip *chip,
+> +				    unsigned int cur)
+> +{
+> +	int i;
+> +
+> +	for (i =3D 0; i < chip->npwm; i++) {
+> +		if (i =3D=3D cur)
+> +			continue;
+> +		if (test_bit(PWMF_ENABLED, &chip->pwms[i].flags))
+> +			return 1;
+> +	}
+> +
+> +	return 0;
+> +}
+
+This can probably be better done using a reference/enable count. Instead
+of having to iterate over all PWM channels of the chip and checking
+their flags, just keep track of how many times .enable() and .disable()
+are called.
+
+To make it easier you can probably wrap that into two functions, such as
+fsl_clock_enable() and fsl_clock_disable().
+
+> +static int fsl_pwm_enable_channel(struct pwm_chip *chip,
+> +			      struct pwm_device *pwm)
+> +{
+[...]
+> +	if (is_any_other_channel_enabled(chip, pwm->hwpwm))
+> +		return 0;
+
+This is where you'd call fsl_clock_enable()...
+
+> +	reg =3D readl(fpc->base + FTM_SC);
+> +	reg &=3D ~((FTMSC_CLK_MASK << FTMSC_CLK_OFFSET) |
+> +			(FTMSC_PS_MASK << FTMSC_PS_OFFSET));
+> +	/* select system clock source */
+> +	reg |=3D (FTMSC_CLKSYS | fpc->clk_ps);
+> +	writel(reg, fpc->base + FTM_SC);
+
+=2E.. and run this code in fsl_clock_enable() if the enable count is 0 to
+select the system clock when the first PWM is enabled.
+
+> +static void fsl_pwm_disable_channel(struct pwm_chip *chip,
+> +				struct pwm_device *pwm)
+> +{
+[...]
+> +	if (is_any_other_channel_enabled(chip, pwm->hwpwm))
+> +		return;
+
+Then call fsl_clock_disable() here...
+
+> +	writel(0xFF, fpc->base + FTM_OUTMASK);
+> +	reg =3D readl(fpc->base + FTM_SC);
+> +	reg &=3D ~(FTMSC_CLK_MASK << FTMSC_CLK_OFFSET);
+> +	writel(reg, fpc->base + FTM_SC);
+
+=2E.. and run this code in fsl_clock_disable() if the enable count reaches
+0 so that the clock is disabled when no PWM channels remain on.
+
+> +static int fsl_pwm_parse_dt(struct fsl_pwm_chip *fpc)
+> +{
+[...]
+> +	int ret =3D 0;
+> +	u32 chs[FTM_MAX_CHANNEL];
+> +	struct device_node *np =3D fpc->pdev->dev.of_node;
+> +
+> +	ret =3D of_property_read_u32(np, "fsl,pwm-clk-ps",
+> +				   &fpc->clk_ps);
+> +	if (ret < 0) {
+> +		dev_err(&fpc->pdev->dev,
+> +				"failed to get pwm "
+> +				"clk prescaler : %d\n",
+> +				ret);
+
+Perhaps it's more useful to mention the missing property explicitly in
+the error message:
+
+		dev_err(fpc->chip.dev,
+			"failed to parse \"fsl,pwm-clk-ps\" property: %d\n",
+			ret);
+
+
+> +		return ret;
+> +	}
+> +	if (fpc->clk_ps > 7 || fpc->clk_ps < 0)
+
+clk_ps is unsigned and therefore can't be < 0. And a blank line would be
+useful between the previous line ("}") and this line.
+
+> +static int fsl_pwm_probe(struct platform_device *pdev)
+> +{
+> +	int ret =3D 0;
+> +	struct fsl_pwm_chip *fpc;
+> +	struct resource *res;
+> +
+> +	fpc =3D devm_kzalloc(&pdev->dev, sizeof(*fpc), GFP_KERNEL);
+> +	if (!fpc) {
+> +		dev_err(&pdev->dev,
+> +				"failed to allocate memory\n");
+
+I don't think that's very useful either. If this should indeed ever
+fail, then the driver core will complain about the probe failing and
+include the error code. Since it's the only location where you return
+that error code you know immediately what went wrong.
+
+> +		return -ENOMEM;
+> +	}
+> +
+> +	mutex_init(&fpc->lock);
+> +
+> +	fpc->pdev =3D pdev;
+> +
+> +	ret =3D fsl_pwm_parse_dt(fpc);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	fpc->base =3D devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(fpc->base)) {
+> +		dev_err(&pdev->dev,
+> +				"failed to ioremap() registers\n");
+
+No need for this error message. devm_ioremap_resource() prints out
+errors already on failure.
+
+> +	fpc->chip.dev =3D &pdev->dev;
+> +	fpc->chip.ops =3D &fsl_pwm_ops;
+> +	fpc->chip.of_xlate =3D of_pwm_xlate_with_flags;
+> +	fpc->chip.of_pwm_n_cells =3D 3;
+> +	fpc->chip.base =3D -1;
+> +
+> +	ret =3D pwmchip_add(&fpc->chip);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev,
+> +				"failed to add ftm0 pwm chip %d\n",
+> +				ret);
+
+dev_err() will already include the device name in the error message, so
+I don't think you need the "ftm0" here. Also make sure to use the
+correct capitalization for "PWM". And there is no need to split this
+over so many lines, it all fits on a single line just fine. There are
+other occurrences of this, so please double-check.
 
 Thierry
 
---eqp4TxRxnD4KrmFZ
+--QNDPHrPUIc00TOLW
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.21 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSFxYkAAoJEN0jrNd/PrOhSmwP/i3tXKM+XGrAIlTDAJU4CJLd
-trE08sWjhDJSfpdFhvn7lwNn5JSF3XBkODrzem4YSxbrIs17Q7PDa3LuZVe0evOL
-X+PqvnoUN9U+cMgdZcggKLOmBx2oGKdtOUjK6cisF+4N/ZDi0XBTRcbqMK3Bqmhc
-thUaFo7ShcmIdvauWtV9dmC6BLjffBxZXED4mR7uJoi3agjhp6DMuhx46Br++GcA
-vPnjS5pzX7rcowDi4CIERBJlmOio9wCD8Spf1ExP4inf+hqBOrcRDXAXjKHH4FZ/
-RM9vTGo+jGDHvnskVfL35/Y6ALCNEzU2ey1zKYyesW6kJWs2DGbRbg56d68d6ZKK
-lEcSslUsIn0L1c1WkaHZZaa0XpjgKSE6wpJOsj+y9GRnipJcPG39hNysy5JInYlz
-6Sb9OmiSSA29G5VTgGhMEaIdvxZePUsNsmj2+eu928+Fi2qPqkF3STG4f0uoqBTY
-5E/PzSrgT1VUSuy/+MfbqjmBlUlcE4diozTlfhqtKnl8s5YNQb9B2sTzzMvs5Pxj
-3ptTl5f4WO1dJTHmt+LQLBVZU9pk4esSjslH23b0Ud23UmMLW6KjqEbvjo9NPGc6
-OP1wOKtvQHJGRLYGu3QwD6RS4+qAmj1CW9asxj4Ou3ByW1yR+8ea4OYrccW38v6A
-Nl8fzH/DOXwduEYXoMeQ
-=WKm8
+iQIcBAEBAgAGBQJSFyXTAAoJEN0jrNd/PrOhvTgQAIzWLB7b71TGQ2pR4xFYaLSF
+PgS74skIfWW2p6AJGVUmD0X6PuojLGuJizlgh78uQk5XTXeC0RgyGhf+wxWCQ0Pg
+6kLEUkGh9HggFFQetMBm/KVQ0Q7PXebUD4J7tEbCvcHWeHbCMccW33YU86IAnqw7
+8Y5D+H26L/SboDKwYlS1oZS7MizdvDyrKfwgBjlVhV5+kXtPl0VfdP2wek3dwHrG
+VVYRLsS5XumJHeP7JospFAn/wp/DzLB9eVM/HYAH84X1vxvBrL9rj0QmYnR2tqG9
+VNCqG+VglLlcSYvCDKZHGcpWQIvoosagV5N4r8/wDXQBdN7z1NIfu9m/trV0o37T
+0vpvBFISX3omSPyldOCiWNRiQ0G7v2gWCii5iCT1gEzHJl4tDNw782E06SH11b9V
+pec21n4w1bZIrxgLkrY0cH71CbKysHQ3CIXvGZdmKQWVIFr2ZDNNplqft/3Z+Mmm
+QQ5KmDjB/3b4cCPJNg6LL+UQeTEaiS0uhuXiWO6+xrFMqhKv3wdSM8nNBBl0iJ65
+H6bwYaRAWUf4zg/GJFb2BXvoFqYzr0+joGhkijSTvjao09hMtXrXDwtOU2Y3XObj
+HOCNQetLi2cDtsDEBme6M01uVx156mWZVKdlNrfsb2o6013ERZXrnJihzbKCiMUs
+cU9fKP+Mu5ljBWcjaCHS
+=x3V7
 -----END PGP SIGNATURE-----
 
---eqp4TxRxnD4KrmFZ--
+--QNDPHrPUIc00TOLW--
