@@ -1,56 +1,82 @@
-Return-Path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-db9lp0253.outbound.messaging.microsoft.com ([213.199.154.253]:25313
-	"EHLO db9outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753195Ab3HVHcb convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Thu, 22 Aug 2013 03:32:31 -0400
-From: Xiubo Li-B47053 <B47053@freescale.com>
-Subject: RE: [PATCH 4/4] Documentation: Add device tree bindings for
+Return-Path: <thierry.reding@gmail.com>
+Date: Fri, 23 Aug 2013 09:36:13 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 4/4] Documentation: Add device tree bindings for
  Freescale FTM PWM
-Date: Thu, 22 Aug 2013 07:32:25 +0000
-Message-ID: <1DD289F6464F0949A2FCA5AA6DC23F827D241A@039-SN2MPN1-013.039d.mgd.msft.net>
+Message-ID: <20130823073612.GB3535@ulmo>
 References: <1377054462-6283-1-git-send-email-Li.Xiubo@freescale.com>
  <1377054462-6283-5-git-send-email-Li.Xiubo@freescale.com>
  <1473340.OXSHEp7d4P@flatron>
  <1DD289F6464F0949A2FCA5AA6DC23F827D2244@039-SN2MPN1-013.039d.mgd.msft.net>
  <20130822062610.GR31036@pengutronix.de>
-In-Reply-To: <20130822062610.GR31036@pengutronix.de>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="GID0FwUMdk1T2AWN"
+Content-Disposition: inline
+In-Reply-To: <20130822062610.GR31036@pengutronix.de>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Tomasz Figa <tomasz.figa@gmail.com>, Guo Shawn-R65073 <r65073@freescale.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>
+To: Xiubo Li-B47053 <B47053@freescale.com>, Tomasz Figa <tomasz.figa@gmail.com>, Guo Shawn-R65073 <r65073@freescale.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linus.walleij@linaro.org" <linus.walleij@linaro.org>
 
-Hi Sascha,
 
-> > > Could you explain meaning of this property more precisely? I'm
-> > > interested especially how is this related to the PWM IP block and
-> boards.
-> > >
-> >
+--GID0FwUMdk1T2AWN
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Aug 22, 2013 at 08:26:10AM +0200, Sascha Hauer wrote:
+> On Thu, Aug 22, 2013 at 02:55:42AM +0000, Xiubo Li-B47053 wrote:
+> > Hi Tomasz,
+> >=20
+> > Thanks for your comments.
+> >=20
+> >=20
+> > > Could you explain meaning of this property more precisely? I'm intere=
+sted
+> > > especially how is this related to the PWM IP block and boards.
+> > >=20
+> >=20
 > > Yes.
-> > There are 8 channels most. While the pinctrls of 4th and 5th channels
-> > could be used by uart's Rx and Tx, then these 2 channels won't be used
-> > for pwm output, so there will be 6 channels available by the pwm.
-> > Thus, the pwm chip will register only 6 pwms(6 channels)
-> > most("fsl,pwm-channel-orders = {0 1 2 3 6 7}").And also the "fsl,pwm-
-> > channel-number" will be 6.
-> 
+> > There are 8 channels most. While the pinctrls of 4th and 5th channels c=
+ould be
+> > used by uart's Rx and Tx, then these 2 channels won't be used for pwm o=
+utput,
+> > so there will be 6 channels available by the pwm.
+> > Thus, the pwm chip will register only 6 pwms(6 channels) most("fsl,pwm-=
+channel-orders
+> > =3D {0 1 2 3 6 7}").And also the "fsl,pwm-channel-number" will be 6.
+>=20
 > If the chip has eight PWMs I would register all of them. If some of them
 > are not routed out by the pinmux then just nothing happens if you use
 > them. In a sane devicetree they won't be referenced anyway when they are
 > not routed out of the SoC.
-> 
 
-Yes, that's perfect well.
+In that case, shouldn't this be hooked up to the pinctrl subsystem as
+well? As I understand the above, the logical thing would be for each PWM
+channel's .request() operation to configure the pinmuxing appropriately.
+And if it can't be configured as necessary then .request() should return
+an error (or propagate the error from the pinctrl subsystem).
 
-I will do it in v2.
+Thierry
 
-Thanks very much.
---
-Best Regards,
-Xiubo
+--GID0FwUMdk1T2AWN
+Content-Type: application/pgp-signature
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.21 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSFxDsAAoJEN0jrNd/PrOh6OYQAJVaXDXzX3eYDTx0e+mmLAZn
+GvfKvKNt8iCkyMhQIPkjs7IeORK/dIuWxsGzqOxpUW0XU/vEn3TBRMyN2IdC8yyK
+xXvR2z1uE5vccIzxGuM26TIryDTkTm74OWFAcSGoX5pnKw5jiQ2g/DSYDh5p8tkM
+cGHvUKN0/gvtyY3iwSx8vkpP+2DdeAW5dfBc0JvOuFOkMtvK8Ahy4rK+k/jjTHHl
+aSk9YAwnMPe09x4RITdpHWjVnECEuy9ZlLYZxxtirE69tvmaTgzYA42i/rV98QbP
+iKdfEbNsqm/tOq1xH54KgDBzz1JSu/mQ/1nmo66M1wGQYHPAd4KLuvr7qx8pBDsf
+x6Tox83VPZYdlAcN3ij425fMpkCeGAO6XJnpSESlok3FHFUakEyzCGnYFZ839uU3
+SQVoDqUClD/LC7C+JHdIqILWOEbPMYaLadkNnEoDUzKXv0JkSSsgDT6uiqCDNGby
+yNy2b6Z1qYauAhYtBVi4GA8Dyjuw5gTilK8k3yrpseGQHTXxXaCWxoAkNEHvmj6N
+ztobn3FRRYrP0erjREszrit96BD9ccfgO6JoE7rQfXjl+YMqPv0fEV2pb/2MScLU
+GTuob67JFd8sDvafu2OxLzZnUpYUSJsgFAcZKIXIKdtzbOU5ByAxOQW1ngt6vsbI
+kJ8XAxNb57QIJUHTxNZk
+=vfzZ
+-----END PGP SIGNATURE-----
+
+--GID0FwUMdk1T2AWN--
