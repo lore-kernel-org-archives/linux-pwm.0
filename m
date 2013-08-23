@@ -1,29 +1,32 @@
-Return-Path: <B47053@freescale.com>
-From: Xiubo Li-B47053 <B47053@freescale.com>
-Subject: RE: [PATCH 1/4] pwm: add freescale ftm pwm driver support
-Date: Wed, 21 Aug 2013 10:46:39 +0000
-Message-ID: <1DD289F6464F0949A2FCA5AA6DC23F827D1D4D@039-SN2MPN1-013.039d.mgd.msft.net>
+Return-Path: <thierry.reding@gmail.com>
+Date: Fri, 23 Aug 2013 09:58:29 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/4] pwm: add freescale ftm pwm driver support
+Message-ID: <20130823075828.GD3535@ulmo>
 References: <1377054462-6283-1-git-send-email-Li.Xiubo@freescale.com>
  <1377054462-6283-2-git-send-email-Li.Xiubo@freescale.com>
  <20130821073659.GN31036@pengutronix.de>
  <1DD289F6464F0949A2FCA5AA6DC23F827D1C51@039-SN2MPN1-013.039d.mgd.msft.net>
  <20130821095049.GQ31036@pengutronix.de>
-In-Reply-To: <20130821095049.GQ31036@pengutronix.de>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Return-Path: B47053@freescale.com
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="eqp4TxRxnD4KrmFZ"
+Content-Disposition: inline
+In-Reply-To: <20130821095049.GQ31036@pengutronix.de>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Guo Shawn-R65073 <r65073@freescale.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Lu Jingchang-B35083 <B35083@freescale.com>
-
-TO Sascha,
-
-Thanks very much for your quick reply.
+To: Xiubo Li-B47053 <B47053@freescale.com>, Guo Shawn-R65073 <r65073@freescale.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Lu Jingchang-B35083 <B35083@freescale.com>
 
 
+--eqp4TxRxnD4KrmFZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Wed, Aug 21, 2013 at 11:50:49AM +0200, Sascha Hauer wrote:
+> On Wed, Aug 21, 2013 at 09:24:56AM +0000, Xiubo Li-B47053 wrote:
+> > TO Sascha,
+> >=20
+> > > > +
 > > > > +	fpc =3D to_fsl_chip(chip);
 > > > > +
 > > > > +	if (WARN_ON(!test_bit(PWMF_REQUESTED, &pwm->flags)))
@@ -38,85 +41,74 @@ Thanks very much for your quick reply.
 > > > > +		if (ret)
 > > > > +			dev_warn(&fpc->pdev->dev,
 > > > > +					"could not set default pins\n");
-> > >
+> > >=20
 > > > Why do you need to manipulate the pinctrl to en/disable a channel?
-> > >
-> >
-> > This is because in Vybrid VF610 TOWER board, there are 4 leds, and
-> > each led's one point(diode's positive pole) is connected to 3.3V, and
-> > the other point is connected to pwm's one channel. When the 4 pinctrls
-> are configured as enable at the same time, the 4 pinctrls is low valtage,
-> and the 4 leds will be lighted up as default, then when you
-> enable/disable one led will effects others.
-> >
+> > >=20
+> >=20
+> > This is because in Vybrid VF610 TOWER board, there are 4 leds, and each=
+ led's one point(diode's positive pole) is connected to 3.3V,
+> > and the other point is connected to pwm's one channel. When the 4 pinct=
+rls are configured as enable at the same time,=20
+> > the 4 pinctrls is low valtage, and the 4 leds will be lighted up as def=
+ault, then when you enable/disable one led will effects others.
+> >=20
 >=20
 > I think the inactive state of a PWM is pretty much undefined by the PWM
 > framework and left to the drivers.
 >=20
-> I stumbled upon this aswell. It would be good to think about the inactive
-> state and how the PWM framework could help us here getting things right.
->=20
+> I stumbled upon this aswell. It would be good to think about the
+> inactive state and how the PWM framework could help us here getting
+> things right.
+
+I'm not sure if imposing what the inactive state should be is a good
+thing to do. For one, it might not be possible to set that particular
+state in all of the PWM drivers. Similarly some drivers may know of a
+more optimal state to put the pin into.
+
 > There are several things to consider. For a noninverted PWM the inactive
 > state should probably logic 0. For an inverted PWM it should probably be
 > logic 1. I guess several PWM devices have an undefined inactive state,
 > most of the PWM devices probably can control the inactive state by
 > setting the duty cycle to 100% / 0% without actually disabling the PWM.
->=20
+
+That sounds like a reasonable set of rules. The above should also be
+equivalent to the "no power" state. I think we could possibly write down
+those rules (even though I think they are obvious enough), but enforcing
+one specific state doesn't sound right to me.
+
 > Using the pinctrl is one way to control the inactive state and probaby
 > the only one before initialization. It might be good to wire this up in
 > the core instead of the individual PWM drivers.
->=20
-> These are just the thoughts which first came to my mind.
->=20
 
-That's a very good idea, and I have also thought about it before.
-But from the power dissipation:
-If so, upon my board is up, the pwm core should be alive even I won't use i=
-t.
+I don't really see how the PWM core can make an educated decision about
+this. The proper inactive state for a PWM can only be known by it's
+corresponding driver. Each driver's .disable() operation should take
+care of putting the PWM into the inactive state. That is, if it can be
+done without too much effort. If putting the PWM into the inactive state
+involves pinmuxing and such, it's probably better to defer that to the
+=2Efree() operation.
 
-I think the pwm core should be in idle mode when not using it,
-when any of it's channels is requested and enabled, the pwm core will keep =
-alive.
+Thierry
 
-What do you think about it ?
+--eqp4TxRxnD4KrmFZ
+Content-Type: application/pgp-signature
 
-> Thierry, any more input about this?
->=20
->=20
-> > > > +	fpc =3D dev_get_drvdata(dev);
-> > > > +
-> > > > +	ret =3D kstrtouint(buf, 0, &val);
-> > > > +	if (ret)
-> > > > +		return ret;
-> > > > +
-> > > > +	mutex_lock(&fpc->lock);
-> > > > +	if (!!(val) !=3D !!(fpc->cpwm)) {
-> > > > +		fpc->cpwm =3D !!val;
-> > > > +		fsl_updata_config(fpc, NULL);
-> > > > +	}
-> > > > +	mutex_unlock(&fpc->lock);
-> > > > +
-> > > > +	return count;
-> > > > +}
-> > >
-> > > What is this cpwm thingy?
-> >
-> > Up-down counting mode:
-> > CNTIN(a register) defines the starting value of the count and MOD(a
-> > register) defines the final value of the count. The value of CNTIN is
-> > loaded into the FTM counter, and the counter increments until the
-> > value of MOD is reached, at which point the counter is decremented
-> until it returns to the value of CNTIN and the up-down counting restarts.
->=20
-> The current PWM framework only cares about period times and duty cycles.
-> Why would I want to care about this?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.21 (GNU/Linux)
 
-I will think it over, If this hasn't any help here, I'll drop it in v2.
+iQIcBAEBAgAGBQJSFxYkAAoJEN0jrNd/PrOhSmwP/i3tXKM+XGrAIlTDAJU4CJLd
+trE08sWjhDJSfpdFhvn7lwNn5JSF3XBkODrzem4YSxbrIs17Q7PDa3LuZVe0evOL
+X+PqvnoUN9U+cMgdZcggKLOmBx2oGKdtOUjK6cisF+4N/ZDi0XBTRcbqMK3Bqmhc
+thUaFo7ShcmIdvauWtV9dmC6BLjffBxZXED4mR7uJoi3agjhp6DMuhx46Br++GcA
+vPnjS5pzX7rcowDi4CIERBJlmOio9wCD8Spf1ExP4inf+hqBOrcRDXAXjKHH4FZ/
+RM9vTGo+jGDHvnskVfL35/Y6ALCNEzU2ey1zKYyesW6kJWs2DGbRbg56d68d6ZKK
+lEcSslUsIn0L1c1WkaHZZaa0XpjgKSE6wpJOsj+y9GRnipJcPG39hNysy5JInYlz
+6Sb9OmiSSA29G5VTgGhMEaIdvxZePUsNsmj2+eu928+Fi2qPqkF3STG4f0uoqBTY
+5E/PzSrgT1VUSuy/+MfbqjmBlUlcE4diozTlfhqtKnl8s5YNQb9B2sTzzMvs5Pxj
+3ptTl5f4WO1dJTHmt+LQLBVZU9pk4esSjslH23b0Ud23UmMLW6KjqEbvjo9NPGc6
+OP1wOKtvQHJGRLYGu3QwD6RS4+qAmj1CW9asxj4Ou3ByW1yR+8ea4OYrccW38v6A
+Nl8fzH/DOXwduEYXoMeQ
+=WKm8
+-----END PGP SIGNATURE-----
 
-
-
-Thanks very much.
-
---
-Best Regards,
-Xiubo Li
+--eqp4TxRxnD4KrmFZ--
