@@ -1,54 +1,44 @@
-Date: Fri, 23 Aug 2013 11:13:09 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/4] ARM: dts: Add Freescale ftm pwm node for VF610.
-Message-ID: <20130823091309.GH3535@ulmo>
+Return-Path: <B47053@freescale.com>
+From: Xiubo Li-B47053 <B47053@freescale.com>
+Subject: RE: [PATCH 2/4] ARM: dts: Add Freescale ftm pwm node for VF610.
+Date: Mon, 26 Aug 2013 05:58:41 +0000
+Message-ID: <1DD289F6464F0949A2FCA5AA6DC23F827E420C@039-SN2MPN1-012.039d.mgd.msft.net>
 References: <1377054462-6283-1-git-send-email-Li.Xiubo@freescale.com>
  <1377054462-6283-3-git-send-email-Li.Xiubo@freescale.com>
+ <20130823091309.GH3535@ulmo>
+In-Reply-To: <20130823091309.GH3535@ulmo>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="SUk9VBj82R8Xhb8H"
-Content-Disposition: inline
-In-Reply-To: <1377054462-6283-3-git-send-email-Li.Xiubo@freescale.com>
+Return-Path: B47053@freescale.com
 List-ID: <linux-pwm.vger.kernel.org>
-To: Xiubo Li <Li.Xiubo@freescale.com>
-Cc: r65073@freescale.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, swarren@wwwdotorg.org, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Guo Shawn-R65073 <r65073@freescale.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+
+Hi Thierry,
 
 
---SUk9VBj82R8Xhb8H
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> Subject: Re: [PATCH 2/4] ARM: dts: Add Freescale ftm pwm node for VF610.
+>=20
+> On Wed, Aug 21, 2013 at 11:07:40AM +0800, Xiubo Li wrote:
+> > Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
+> > ---
+> >  arch/arm/boot/dts/vf610.dtsi | 83
+> > +++++++++++++++++++++++++++++++++++++++++++-
+> >  1 file changed, 82 insertions(+), 1 deletion(-)
+>=20
+> Please also pay attention to the correct capitalization in the subject
+> here. "FTM" and "PWM". Furthermore this could probably use more than a
+> single line as patch description.
+>=20
 
-On Wed, Aug 21, 2013 at 11:07:40AM +0800, Xiubo Li wrote:
-> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
-> ---
->  arch/arm/boot/dts/vf610.dtsi | 83 +++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 82 insertions(+), 1 deletion(-)
+Yes, I will revise it in v2.
 
-Please also pay attention to the correct capitalization in the subject
-here. "FTM" and "PWM". Furthermore this could probably use more than a
-single line as patch description.
 
-Thierry
 
---SUk9VBj82R8Xhb8H
-Content-Type: application/pgp-signature
+Thanks very much.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.21 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSFyelAAoJEN0jrNd/PrOhBXkQAJI+69TMKBHD21Mqi9NCseew
-DAu0qXS707U0FMaNgM8iOF2p1S+lHojZrjDQB9gt2HqDzTLNbLo0/GfYm5xObnkj
-G1UsgslgSZ161Wi7eQWif5vG87jBl1brX6DXPKiHViUYbZ4E1JG3gyu7DgSdGUWK
-fncoBvIF0qoPpYXkBj2iX4bq8+sKvXVxwUQs435iLXh3JOHKiF/w89IvOgBsyiH9
-A/x+qmjsjikZTYE2cZVtAlO7jLXgqzH1HK4kgsCJbb2sJKSRPHJff6yHGiJhxlKA
-gQ4YS//qWFUrd7E/ggYtY4UjRYvC5LYIcuB8+t8MzMYxLzPxl1Dh0Ad04vbOTLsl
-FUntukkPPHRJukcaUHvtWx7GTZVIzlnoXQTspDsZpFtV5mI06F4oNCTKOMTPOrB3
-v2HQp0W68HMov+cWZbjUN1fGO3FqysKjQ/eDJ/P5D+X77bZaJS3NLpoNl6pUK+SH
-QP+Kymnh0BEMukES44yB6lQ60scmvAr+RcdFr13A0bc+43sXquQAeox7XfmjaEF8
-vSX4RiRzTnxl4CDW3tY2ekwIJP7XsE9xAdxWvl4BVzt9APM8NpOlBde5KLqgPZ2B
-8OeFodtA2QAz6GD6Ycg3x6mYt5Vf+ed6yWlnZu05IlnQthNsdvCWgZtMUt3Qk0V7
-daL1LB+JMLzMhXkN84Ef
-=LEb+
------END PGP SIGNATURE-----
-
---SUk9VBj82R8Xhb8H--
+--
+Best Regards.
+Xiubo
