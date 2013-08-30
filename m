@@ -1,52 +1,39 @@
-Return-Path: <swarren@wwwdotorg.org>
-Message-ID: <5220FC8C.90908@wwwdotorg.org>
-Date: Fri, 30 Aug 2013 14:11:56 -0600
-From: Stephen Warren <swarren@wwwdotorg.org>
+Return-Path: <B47053@freescale.com>
+From: Xiubo Li <Li.Xiubo@freescale.com>
+Subject: [PATCHv2 0/4] Add Freescale FTM PWM driver for Vybrid VF610 TOWER
+Date: Fri, 30 Aug 2013 17:48:48 +0800
+Message-ID: <1377856132-11290-1-git-send-email-Li.Xiubo@freescale.com>
 MIME-Version: 1.0
-Subject: Re: [PATCH 4/4] Documentation: Add device tree bindings for Freescale
- FTM PWM
-References: <1377054462-6283-1-git-send-email-Li.Xiubo@freescale.com> <1377054462-6283-5-git-send-email-Li.Xiubo@freescale.com> <5EFBF478-CFCC-4E66-A279-25F4A338B05B@kernel.crashing.org>
-In-Reply-To: <5EFBF478-CFCC-4E66-A279-25F4A338B05B@kernel.crashing.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+Return-Path: B47053@freescale.com
 List-ID: <linux-pwm.vger.kernel.org>
-To: Kumar Gala <galak@kernel.crashing.org>
-Cc: Xiubo Li <Li.Xiubo@freescale.com>, r65073@freescale.com, thierry.reding@gmail.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+To: r65073@freescale.com, thierry.reding@gmail.com
+Cc: grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, swarren@wwwdotorg.org, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 
-On 08/30/2013 01:19 PM, Kumar Gala wrote:
-> Should have at least something w/regards to a commit message.
-> 
-> On Aug 20, 2013, at 10:07 PM, Xiubo Li wrote:
-> 
->> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
->> ---
->> .../devicetree/bindings/pwm/fsl-ftm-pwm.txt        | 52 ++++++++++++++++++++++
->> 1 file changed, 52 insertions(+)
->> create mode 100644 Documentation/devicetree/bindings/pwm/fsl-ftm-pwm.txt
->>
->> diff --git a/Documentation/devicetree/bindings/pwm/fsl-ftm-pwm.txt b/Documentation/devicetree/bindings/pwm/fsl-ftm-pwm.txt
->> new file mode 100644
->> index 0000000..698965b
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/pwm/fsl-ftm-pwm.txt
->> @@ -0,0 +1,52 @@
->> +Freescale FTM PWM controller
->> +
->> +Required properties:
->> +- compatible: should be "fsl,vf610-ftm-pwm"
->> +- reg: physical base address and length of the controller's registers
->> +- #pwm-cells: Should be 3. Number of cells being used to specify PWM property.
->> +  First cell specifies the per-chip channel index of the PWM to use, the
->> +  second cell is the period in nanoseconds and bit 0 in the third cell is
->> +  used to encode the polarity of PWM output. Set bit 0 of the third in PWM
->> +  specifier to 1 for inverse polarity & set to 0 for normal polarity.
->> +- fsl,pwm-clk-ps: the ftm0 pwm clock's prescaler, divide-by 2^n(n = 0 ~ 7).
->> +- fsl,pwm-cpwm: Center-Aligned PWM (CPWM) mode.
-> 
-> Should describe this in more detail, what does the value actually mean for what modes there are?
+Hello,
 
-Assuming "CPWM" is clearly explained in the HW documentation for this
-chip (I have no idea if that's actually the case), then is it still
-necessary to explain what this means in *detail*? Perhaps simply "see
-section XXX in the TRM" or "see register XXX, bit YYY in the HW
-documentation" would be enough?
+This patch series is the Freescale FTM PWM implementation. And there are 8
+channels most supported by the FTM PWM. This implementation is only compatible
+with device tree definition.
+
+This patch series is based on linux-next and has been tested on Vybrid VF610TWR
+board using device tree.
+
+Changes in v2:
+- Remove PWM CPWM/EPWM feature and sysfs.
+- Remove some redundant code.
+- Revise some code for more readable.
+- Remove "fsl,pwm-clk-ps", "fsl,pwm-number", "fsl,pwm-channels",etc.
+- Add "fsl,pwm-avaliable-chs", "fsl,pwm-counter-clk", etc.
+- Support 8 channels default in dtsi file.
+- Add counter clock source selection.
+- Rename some function name, macro name, etc.
+- Use PWM's and OF's existing function interfaces.
+- Split clk_unprepare_enable to clk_unprepare and clk_enable,etc.
+- ...
+
+Orignal in v1:
+- Add Freescale FTM PWM driver support.
+- Add Freescale FTM PWM node for VF610.
+- Enable Enables FTM PWM device for Vybrid VF610 TOWER.
+- Add device tree bindings for Freescale.
