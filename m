@@ -1,8 +1,8 @@
 Return-Path: <B47053@freescale.com>
 From: Xiubo Li <Li.Xiubo@freescale.com>
-Subject: [PATCHv2 2/4] ARM: dts: Add Freescale FTM PWM node for VF610.
-Date: Fri, 30 Aug 2013 17:48:50 +0800
-Message-ID: <1377856132-11290-3-git-send-email-Li.Xiubo@freescale.com>
+Subject: [PATCHv2 3/4] ARM: dts: Enables FTM PWM device for Vybrid VF610 TOWER board.
+Date: Fri, 30 Aug 2013 17:48:51 +0800
+Message-ID: <1377856132-11290-4-git-send-email-Li.Xiubo@freescale.com>
 In-Reply-To: <1377856132-11290-1-git-send-email-Li.Xiubo@freescale.com>
 References: <1377856132-11290-1-git-send-email-Li.Xiubo@freescale.com>
 MIME-Version: 1.0
@@ -12,144 +12,30 @@ List-ID: <linux-pwm.vger.kernel.org>
 To: r65073@freescale.com, thierry.reding@gmail.com
 Cc: grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, swarren@wwwdotorg.org, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 
-This adds devicetree for VF610, with necessary support for leds,
-backlight motor, etc.
-And there are 8 channels supported default.
+This adds devicetree for VF610 TOWER board, and there are 6 PWM
+channels avaliable.
 
 Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
 ---
- arch/arm/boot/dts/vf610.dtsi | 103 ++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 102 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/vf610-twr.dts | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm/boot/dts/vf610.dtsi b/arch/arm/boot/dts/vf610.dtsi
-index 67d929c..44787b5 100644
---- a/arch/arm/boot/dts/vf610.dtsi
-+++ b/arch/arm/boot/dts/vf610.dtsi
-@@ -140,6 +140,37 @@
- 				clock-names = "pit";
- 			};
+diff --git a/arch/arm/boot/dts/vf610-twr.dts b/arch/arm/boot/dts/vf610-twr.dts
+index 1a58678..82b0a91 100644
+--- a/arch/arm/boot/dts/vf610-twr.dts
++++ b/arch/arm/boot/dts/vf610-twr.dts
+@@ -57,6 +57,12 @@
+ 	status = "okay";
+ };
  
-+			pwm0: pwm@40038000 {
-+				compatible = "fsl,vf610-ftm-pwm";
-+				#pwm-cells = <3>;
-+				reg = <0x40038000 0x1000>;
-+				clock-names = "ftm0", "ftm0_fix_sel", "ftm0_ext_sel";
-+				clocks = <&clks VF610_CLK_FTM0>,
-+					<&clks VF610_CLK_FTM0_FIX_SEL>,
-+					<&clks VF610_CLK_FTM0_EXT_SEL>;
-+				pinctrl-names = "ch0-active", "ch0-idle", "ch1-active", "ch1-idle",
-+						"ch2-active", "ch2-idle", "ch3-active", "ch3-idle",
-+						"ch4-active", "ch4-idle", "ch5-active", "ch5-idle",
-+						"ch6-active", "ch6-idle", "ch7-active", "ch7-idle";
-+				pinctrl-0 = <&pinctrl_pwm0_ch0_active>;
-+				pinctrl-1 = <&pinctrl_pwm0_ch0_idle>;
-+				pinctrl-2 = <&pinctrl_pwm0_ch1_active>;
-+				pinctrl-3 = <&pinctrl_pwm0_ch1_idle>;
-+				pinctrl-4 = <&pinctrl_pwm0_ch2_active>;
-+				pinctrl-5 = <&pinctrl_pwm0_ch2_idle>;
-+				pinctrl-6 = <&pinctrl_pwm0_ch3_active>;
-+				pinctrl-7 = <&pinctrl_pwm0_ch3_idle>;
-+				pinctrl-8 = <&pinctrl_pwm0_ch4_active>;
-+				pinctrl-9 = <&pinctrl_pwm0_ch4_idle>;
-+				pinctrl-10 = <&pinctrl_pwm0_ch5_active>;
-+				pinctrl-11 = <&pinctrl_pwm0_ch5_idle>;
-+				pinctrl-12 = <&pinctrl_pwm0_ch6_active>;
-+				pinctrl-13 = <&pinctrl_pwm0_ch6_idle>;
-+				pinctrl-14 = <&pinctrl_pwm0_ch7_active>;
-+				pinctrl-15 = <&pinctrl_pwm0_ch7_idle>;
-+				status = "disabled";
-+			};
++&pwm0 {
++	fsl,pwm-counter-clk = "ftm0";
++	fsl,pwm-avaliable-chs = <0 1 2 3 6 7>;
++	status = "okay";
++};
 +
- 			wdog@4003e000 {
- 				compatible = "fsl,vf610-wdt", "fsl,imx21-wdt";
- 				reg = <0x4003e000 0x1000>;
-@@ -270,16 +301,86 @@
- 				};
- 
- 				pwm0 {
--					pinctrl_pwm0_1: pwm0grp_1 {
-+					pinctrl_pwm0_ch0_active: pwm0grp_ch0_active {
- 						fsl,pins = <
- 						VF610_PAD_PTB0__FTM0_CH0	0x1582
-+						>;
-+					};
-+					pinctrl_pwm0_ch0_idle: pwm0grp_ch0_idle {
-+						fsl,pins = <
-+						VF610_PAD_PTB0__FTM0_CH0	0x0000
-+						>;
-+					};
-+					pinctrl_pwm0_ch1_active: pwm0grp_ch1_active {
-+						fsl,pins = <
- 						VF610_PAD_PTB1__FTM0_CH1	0x1582
-+						>;
-+					};
-+					pinctrl_pwm0_ch1_idle: pwm0grp_ch1_idle {
-+						fsl,pins = <
-+						VF610_PAD_PTB1__FTM0_CH1	0x0000
-+						>;
-+					};
-+					pinctrl_pwm0_ch2_active: pwm0grp_ch2_active {
-+						fsl,pins = <
- 						VF610_PAD_PTB2__FTM0_CH2	0x1582
-+						>;
-+					};
-+					pinctrl_pwm0_ch2_idle: pwm0grp_ch2_idle {
-+						fsl,pins = <
-+						VF610_PAD_PTB2__FTM0_CH2	0x0000
-+						>;
-+					};
-+					pinctrl_pwm0_ch3_active: pwm0grp_ch3_active {
-+						fsl,pins = <
- 						VF610_PAD_PTB3__FTM0_CH3	0x1582
-+						>;
-+					};
-+					pinctrl_pwm0_ch3_idle: pwm0grp_ch3_idle {
-+						fsl,pins = <
-+						VF610_PAD_PTB3__FTM0_CH3	0x0000
-+						>;
-+					};
-+					pinctrl_pwm0_ch4_active: pwm0grp_ch4_active {
-+						fsl,pins = <
-+						VF610_PAD_PTB4__FTM0_CH4	0x1582
-+						>;
-+					};
-+					pinctrl_pwm0_ch4_idle: pwm0grp_ch4_idle {
-+						fsl,pins = <
-+						VF610_PAD_PTB4__FTM0_CH4	0x0000
-+						>;
-+					};
-+					pinctrl_pwm0_ch5_active: pwm0grp_ch5_active {
-+						fsl,pins = <
-+						VF610_PAD_PTB5__FTM0_CH5	0x1582
-+						>;
-+					};
-+					pinctrl_pwm0_ch5_idle: pwm0grp_ch5_idle {
-+						fsl,pins = <
-+						VF610_PAD_PTB5__FTM0_CH5	0x0000
-+						>;
-+					};
-+					pinctrl_pwm0_ch6_active: pwm0grp_ch6_active {
-+						fsl,pins = <
- 						VF610_PAD_PTB6__FTM0_CH6	0x1582
-+						>;
-+					};
-+					pinctrl_pwm0_ch6_idle: pwm0grp_ch6_idle {
-+						fsl,pins = <
-+						VF610_PAD_PTB6__FTM0_CH6	0x0000
-+						>;
-+					};
-+					pinctrl_pwm0_ch7_active: pwm0grp_ch7_active {
-+						fsl,pins = <
- 						VF610_PAD_PTB7__FTM0_CH7	0x1582
- 						>;
- 					};
-+					pinctrl_pwm0_ch7_idle: pwm0grp_ch7_idle {
-+						fsl,pins = <
-+						VF610_PAD_PTB7__FTM0_CH7	0x0000
-+						>;
-+					};
- 				};
- 
- 				qspi0 {
+ &uart1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_uart1_1>;
 -- 
 1.8.0
