@@ -1,70 +1,228 @@
 Return-Path: <mikedunn@newsguy.com>
-Message-ID: <522F325B.4090602@newsguy.com>
-Date: Tue, 10 Sep 2013 07:53:15 -0700
 From: Mike Dunn <mikedunn@newsguy.com>
-MIME-Version: 1.0
-Subject: Re: [PATCH v2] pwm: pxa: add device tree support to pwm driver
-References: <1378669218-10944-1-git-send-email-mikedunn@newsguy.com> <20130909120845.GB22197@ulmo> <522E0D72.3080805@newsguy.com> <522E14F5.1020909@wwwdotorg.org>
-In-Reply-To: <522E14F5.1020909@wwwdotorg.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Subject: [RESEND PATCH v2] pwm: pxa: add device tree support to pwm driver
+Date: Mon,  9 Sep 2013 11:30:20 -0700
+Message-Id: <1378751420-19227-1-git-send-email-mikedunn@newsguy.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Stephen Warren <swarren@wwwdotorg.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Haojian Zhuang <haojian.zhuang@linaro.org>, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Chao Xie <chao.xie@marvell.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ian.campbell@citrix.com>
+To: linux-pwm@vger.kernel.org
+Cc: Mike Dunn <mikedunn@newsguy.com>, Grant Likely <grant.likely@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <rob.herring@calxeda.com>, Haojian Zhuang <haojian.zhuang@linaro.org>, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Chao Xie <chao.xie@marvell.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian Campbell <ian.campbell@citrix.com>
 
-On 09/09/2013 11:35 AM, Stephen Warren wrote:
-> On 09/09/2013 12:03 PM, Mike Dunn wrote:
->> On 09/09/2013 05:08 AM, Thierry Reding wrote:
->>> On Sun, Sep 08, 2013 at 12:40:18PM -0700, Mike Dunn wrote:
->>>> This patch adds device tree support to the pxa's pwm driver.  Only an OF match
-> 
->>>> diff --git a/Documentation/devicetree/bindings/pwm/pxa-pwm.txt b/Documentation/devicetree/bindings/pwm/pxa-pwm.txt
-> 
->>>> +Marvell pwm controller
->>>> +
->>>> +Required properties:
->>>> +- compatible:
->>>> +  for pxa25x, pxa27x, pxa168, pxa910: must be compatible = "marvell,pxa250-pwm";
->>>> +- reg: physical base address and length of the registers used by the pwm channel
->>>
->>> "pwm" -> "PWM". There are a few more occurrences that I haven't
->>> explicitly pointed out.
->>>
->>>> +  NB: One device instance must be created for each pwm that is used, so the
->>>> +  length covers only the register window for one pwm output, not that of the
->>>> +  entire pwm controller.  Currently length is 0x10 for all supported devices.
->>>
->>> I'm not sure I like that very much. It seems a wrong representation of
->>> the hardware for the sake of modifying a smaller number of lines in the
->>> driver.
->>
->> I don't like it either, but this is an existing driver defect that will need to
->> be corrected.  To do so, I will need to to survey all the supported processors
->> to determine how many pwm outputs is posessed by each.  And there may be some
->> confusion in that regard; the driver says "pxa25x" has one, but my pxa255
->> developer's manual makes no mention of a pwm.  The pxa270 I am testing on has
->> four, but the driver says "pxa27x" has two, so currently (using platform_data
->> with existing driver) two devices are instantiated, each with two pwms.  It
->> seems that there are many variations within a single generation of the processor
->> family, so to correctly identify the number of pwms, processor identification
->> will have to be made on a finer granularity than the current "pxa25x", for
->> example.  I'm guessing that the hardware designers had this
->> one-device-instance-per-pwm approach in mind when they made the decision to
->> segregate the register sets of each pwm.  I really hope that this sin can be
->> forgiven :)
-> 
-> The DT binding is an ABI, so it needs to correctly represent the HW. As
-> such, I'd say that if the binding is wrong, we need to fix it even if it
-> means a lot of work.
-> 
-> That said, if each PWM truly is a *completely* independent block, with
-> non-overlapping register spaces, there's certainly an argument that it's
-> perfectly acceptable to represent each PWM as a separate DT node...
+This patch adds device tree support to the pxa's pwm driver.  Only an OF match
+table is added; nothing needs to be extracted from the device tree node.  The
+existing platform_device id table is reused for the match table data.  Support
+for inverted polarity is also added.
 
+Tested on a Palm Treo 680 (both platform data and DT cases).
 
-Thanks Stephen.  Yes, each pwm output has its own registers with no common
-control registers.  The only commonality is that they all share a clock in the
-clock unit.  But this is handled in the clock manager.
+Signed-off-by: Mike Dunn <mikedunn@newsguy.com>
+---
+Changle log:
+Resent with expanded Cc list
+v2:
+- of_match_table contains only the "pxa250-pwm" compatible string; require one
+  device instance per pwm
+- add Documentation/devicetree/bindings/pwm/pxa-pwm.txt
+- add support for polarity flag in DT and implement set_polarity() method
+  (the treo 680 inverts the signal between pwm out and backlight)
+- return -EINVAL instead of -ENODEV if platform data or DT node not found
+- output dev_info string if platform data missing
+- expanded CC list of patch
 
-Thanks,
-Mike
+ Documentation/devicetree/bindings/pwm/pxa-pwm.txt | 33 +++++++++++++
+ arch/arm/boot/dts/pxa27x.dtsi                     | 24 ++++++++++
+ drivers/pwm/pwm-pxa.c                             | 57 +++++++++++++++++++++++
+ 3 files changed, 114 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pxa-pwm.txt
+
+diff --git a/Documentation/devicetree/bindings/pwm/pxa-pwm.txt b/Documentation/devicetree/bindings/pwm/pxa-pwm.txt
+new file mode 100644
+index 0000000..7b09bfa
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/pxa-pwm.txt
+@@ -0,0 +1,33 @@
++Marvell pwm controller
++
++Required properties:
++- compatible:
++  for pxa25x, pxa27x, pxa168, pxa910: must be compatible = "marvell,pxa250-pwm";
++- reg: physical base address and length of the registers used by the pwm channel
++  NB: One device instance must be created for each pwm that is used, so the
++  length covers only the register window for one pwm output, not that of the
++  entire pwm controller.  Currently length is 0x10 for all supported devices.
++- #pwm-cells: should be 3.
++   cell 1: the per-chip index of the PWM to use,
++   cell 2: the period in nanoseconds,
++   cell 3: flags; set bit 0 to specify inverse polarity.  The pwm controller
++   does not implement reverse polarity, but some boards may pass the pwm output
++   through an external inverter, which can cause problems if a client device
++   assumes that an increase in the duty cycle results in an increase in output
++   power.  The pwm-backlight is an example of such a client.
++
++Example pwm device node:
++
++pwm0: pwm@40b00000 {
++	compatible = "marvell,pxa250-pwm";
++	reg = <0x40b00000 0x10>;
++	#pwm-cells = <3>;
++};
++
++Example pwm client node:
++
++backlight {
++      	compatible = "pwm-backlight";
++     	pwms = <&pwm0 0 5000000 1>;  /* pwm output is inverted */
++	...
++}
+diff --git a/arch/arm/boot/dts/pxa27x.dtsi b/arch/arm/boot/dts/pxa27x.dtsi
+index d7c5d72..a12fe8e 100644
+--- a/arch/arm/boot/dts/pxa27x.dtsi
++++ b/arch/arm/boot/dts/pxa27x.dtsi
+@@ -10,5 +10,29 @@
+ 			marvell,intc-priority;
+ 			marvell,intc-nr-irqs = <34>;
+ 		};
++
++		pwm0: pwm@40b00000 {
++			compatible = "marvell,pxa250-pwm";
++			reg = <0x40b00000 0x10>;
++			#pwm-cells = <3>;
++		};
++
++		pwm1: pwm@40b00010 {
++			compatible = "marvell,pxa250-pwm";
++			reg = <0x40b00010 0x10>;
++			#pwm-cells = <3>;
++		};
++
++		pwm2: pwm@40c00000 {
++			compatible = "marvell,pxa250-pwm";
++			reg = <0x40c00000 0x10>;
++			#pwm-cells = <3>;
++		};
++
++		pwm3: pwm@40c00010 {
++			compatible = "marvell,pxa250-pwm";
++			reg = <0x40c00010 0x10>;
++			#pwm-cells = <3>;
++		};
+ 	};
+ };
+diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
+index a4d2164..33e6a7d 100644
+--- a/drivers/pwm/pwm-pxa.c
++++ b/drivers/pwm/pwm-pxa.c
+@@ -19,6 +19,7 @@
+ #include <linux/clk.h>
+ #include <linux/io.h>
+ #include <linux/pwm.h>
++#include <linux/of_device.h>
+ 
+ #include <asm/div64.h>
+ 
+@@ -48,6 +49,7 @@ struct pxa_pwm_chip {
+ 
+ 	struct clk	*clk;
+ 	void __iomem	*mmio_base;
++	enum pwm_polarity polarity;
+ };
+ 
+ static inline struct pxa_pwm_chip *to_pxa_pwm_chip(struct pwm_chip *chip)
+@@ -88,6 +90,15 @@ static int pxa_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	else
+ 		dc = (pv + 1) * duty_ns / period_ns;
+ 
++	if (pc->polarity == PWM_POLARITY_INVERSED) {
++		if (dc & PWMDCR_FD)
++			dc = 0;	        /* continuously low */
++		else if (dc == 0)
++			dc = PWMDCR_FD; /* continuously high */
++		else
++			dc = 1023 - dc; /* complement duty cycle */
++	}
++
+ 	/* NOTE: the clock to PWM has to be enabled first
+ 	 * before writing to the registers
+ 	 */
+@@ -117,13 +128,51 @@ static void pxa_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	clk_disable_unprepare(pc->clk);
+ }
+ 
++static int pxa_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
++				enum pwm_polarity polarity)
++{
++	struct pxa_pwm_chip *pc = to_pxa_pwm_chip(chip);
++	pc->polarity = polarity;
++	return 0;
++}
++
+ static struct pwm_ops pxa_pwm_ops = {
+ 	.config = pxa_pwm_config,
+ 	.enable = pxa_pwm_enable,
+ 	.disable = pxa_pwm_disable,
++	.set_polarity = pxa_pwm_set_polarity,
+ 	.owner = THIS_MODULE,
+ };
+ 
++#ifdef CONFIG_OF
++/*
++ * Device tree users should create one device instance for each pwm channel.
++ * Hence we dispense with the HAS_SECONDARY_PWM and "tell" the original driver
++ * code that this is a single channel pxa25x-pwm.
++ */
++static struct of_device_id pwm_of_match[] = {
++	{ .compatible = "marvell,pxa250-pwm", .data = &pwm_id_table[0]},
++	{ }
++};
++MODULE_DEVICE_TABLE(of, pwm_of_match);
++
++static const struct platform_device_id *pxa_pwm_get_id_dt(struct device *dev)
++{
++	const struct of_device_id *pwm_pxa_devid =
++		of_match_device(pwm_of_match, dev);
++	if (pwm_pxa_devid)
++		return (const struct platform_device_id *)pwm_pxa_devid->data;
++	else
++		return NULL;
++}
++#else  /* !CONFIG_OF */
++static const struct platform_device_id *pxa_pwm_get_id_dt(struct device *dev)
++{
++	dev_info(dev, "missing platform data\n");
++	return NULL;
++}
++#endif
++
+ static int pwm_probe(struct platform_device *pdev)
+ {
+ 	const struct platform_device_id *id = platform_get_device_id(pdev);
+@@ -131,6 +180,11 @@ static int pwm_probe(struct platform_device *pdev)
+ 	struct resource *r;
+ 	int ret = 0;
+ 
++	if (id == NULL)		/* using device tree */
++		id = pxa_pwm_get_id_dt(&pdev->dev);
++	if (id == NULL)
++		return -EINVAL;
++
+ 	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
+ 	if (pwm == NULL) {
+ 		dev_err(&pdev->dev, "failed to allocate memory\n");
+@@ -145,6 +199,8 @@ static int pwm_probe(struct platform_device *pdev)
+ 	pwm->chip.ops = &pxa_pwm_ops;
+ 	pwm->chip.base = -1;
+ 	pwm->chip.npwm = (id->driver_data & HAS_SECONDARY_PWM) ? 2 : 1;
++	pwm->chip.of_xlate = of_pwm_xlate_with_flags;
++	pwm->chip.of_pwm_n_cells = 3;
+ 
+ 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	pwm->mmio_base = devm_ioremap_resource(&pdev->dev, r);
+@@ -176,6 +232,7 @@ static struct platform_driver pwm_driver = {
+ 	.driver		= {
+ 		.name	= "pxa25x-pwm",
+ 		.owner	= THIS_MODULE,
++		.of_match_table	= of_match_ptr(pwm_of_match),
+ 	},
+ 	.probe		= pwm_probe,
+ 	.remove		= pwm_remove,
+-- 
+1.8.1.5
