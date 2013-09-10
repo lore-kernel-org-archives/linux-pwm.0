@@ -1,51 +1,114 @@
-Return-Path: <B47053@freescale.com>
-From: Xiubo Li-B47053 <B47053@freescale.com>
-Subject: RE: [PATCHv3 1/4] pwm: Add Freescale FTM PWM driver support
-Date: Tue, 10 Sep 2013 02:35:34 +0000
-Message-ID: <1DD289F6464F0949A2FCA5AA6DC23F828135D9@039-SN2MPN1-013.039d.mgd.msft.net>
+Return-Path: <sha@pengutronix.de>
+Date: Tue, 10 Sep 2013 08:51:46 +0200
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: [PATCHv3 1/4] pwm: Add Freescale FTM PWM driver support
+Message-ID: <20130910065146.GA30088@pengutronix.de>
 References: <1378454907-22728-1-git-send-email-Li.Xiubo@freescale.com>
  <1378454907-22728-2-git-send-email-Li.Xiubo@freescale.com>
- <20130909122008.GC22197@ulmo> <20130909150346.GV30088@pengutronix.de>
-In-Reply-To: <20130909150346.GV30088@pengutronix.de>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Return-Path: B47053@freescale.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1378454907-22728-2-git-send-email-Li.Xiubo@freescale.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Sascha Hauer <s.hauer@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Guo Shawn-R65073 <r65073@freescale.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Lu Jingchang-B35083 <B35083@freescale.com>
+To: Xiubo Li <Li.Xiubo@freescale.com>
+Cc: r65073@freescale.com, thierry.reding@gmail.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, swarren@wwwdotorg.org, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Jingchang Lu <b35083@freescale.com>
 
-> Subject: Re: [PATCHv3 1/4] pwm: Add Freescale FTM PWM driver support
->=20
-> On Mon, Sep 09, 2013 at 02:20:09PM +0200, Thierry Reding wrote:
-> > On Fri, Sep 06, 2013 at 04:08:24PM +0800, Xiubo Li wrote:
-> > > The FTM PWM device can be found on Vybrid VF610 Tower and Layerscape
-> LS-1 SoCs.
-> > >
-> > > Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
-> > > Signed-off-by: Jingchang Lu <b35083@freescale.com>
-> > > ---
-> > >  drivers/pwm/Kconfig       |  10 +
-> > >  drivers/pwm/Makefile      |   1 +
-> > >  drivers/pwm/pwm-fsl-ftm.c | 505
-> > > ++++++++++++++++++++++++++++++++++++++++++++++
-> > >  3 files changed, 516 insertions(+)
-> > >  create mode 100644 drivers/pwm/pwm-fsl-ftm.c
-> >
-> > This looks pretty good to me. I noticed that you didn't Cc Sascha who
-> > commented on this a lot. Can you please resend with him Cc'ed to make
-> > sure he sees this version of the series?
->=20
-> I'm already aware of this, no need to resend. I'll have a look over it
-> tomorrow.
->=20
+On Fri, Sep 06, 2013 at 04:08:24PM +0800, Xiubo Li wrote:
+> The FTM PWM device can be found on Vybrid VF610 Tower and Layerscape LS-1 SoCs.
+> 
+> +
+> +static int fsl_pwm_probe(struct platform_device *pdev)
+> +{
+> +	int ret = 0;
+> +	struct fsl_pwm_chip *fpc;
+> +	struct resource *res;
+> +
+> +	fpc = devm_kzalloc(&pdev->dev, sizeof(*fpc), GFP_KERNEL);
 
-I'm very sorry, next time I will.
+You don't have to output a message when kzalloc fails, but still you
+should check for the result and return an error if necessary.
 
+With this fixed:
 
-Thanks very much.
+Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
 
---
-Best Regards,
-Xiubo
+Sascha
+
+> +
+> +	ret = fsl_pwm_parse_clk_ps(fpc);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	fpc->base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(fpc->base)) {
+> +		ret = PTR_ERR(fpc->base);
+> +		return ret;
+> +	}
+> +
+> +	fpc->pinctrl = devm_pinctrl_get(&pdev->dev);
+> +	if (IS_ERR(fpc->pinctrl)) {
+> +		ret = PTR_ERR(fpc->pinctrl);
+> +		return ret;
+> +	}
+> +
+> +	fpc->chip.ops = &fsl_pwm_ops;
+> +	fpc->chip.of_xlate = of_pwm_xlate_with_flags;
+> +	fpc->chip.of_pwm_n_cells = 3;
+> +	fpc->chip.base = -1;
+> +	fpc->chip.npwm = FTM_MAX_CHANNEL;
+> +	ret = pwmchip_add(&fpc->chip);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed to add PWM chip %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, fpc);
+> +
+> +	return 0;
+> +}
+> +
+> +static int fsl_pwm_remove(struct platform_device *pdev)
+> +{
+> +	struct fsl_pwm_chip *fpc;
+> +
+> +	fpc = platform_get_drvdata(pdev);
+> +
+> +	return pwmchip_remove(&fpc->chip);
+> +}
+> +
+> +static const struct of_device_id fsl_pwm_dt_ids[] = {
+> +	{ .compatible = "fsl,vf610-ftm-pwm", },
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, fsl_pwm_dt_ids);
+> +
+> +static struct platform_driver fsl_pwm_driver = {
+> +	.driver = {
+> +		.name = "fsl-ftm-pwm",
+> +		.owner = THIS_MODULE,
+> +		.of_match_table = of_match_ptr(fsl_pwm_dt_ids),
+> +	},
+> +	.probe = fsl_pwm_probe,
+> +	.remove = fsl_pwm_remove,
+> +};
+> +module_platform_driver(fsl_pwm_driver);
+> +
+> +MODULE_DESCRIPTION("Freescale FTM PWM Driver");
+> +MODULE_AUTHOR("Xiubo Li <Li.Xiubo@freescale.com>");
+> +MODULE_LICENSE("GPL");
+> -- 
+> 1.8.0
+> 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
