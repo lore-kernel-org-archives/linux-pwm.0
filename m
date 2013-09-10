@@ -1,264 +1,125 @@
-Return-Path: <mikedunn@newsguy.com>
-From: Mike Dunn <mikedunn@newsguy.com>
-Subject: [PATCH] pwm-backlight: add support for device tree gpio control
-Date: Tue,  3 Sep 2013 12:26:12 -0700
-Message-Id: <1378236372-15711-1-git-send-email-mikedunn@newsguy.com>
+Return-Path: <thierry.reding@gmail.com>
+Date: Tue, 10 Sep 2013 19:21:31 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] pwm-backlight: add support for device tree gpio control
+Message-ID: <20130910172130.GC22111@ulmo>
+References: <1378236372-15711-1-git-send-email-mikedunn@newsguy.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="zCKi3GIZzVBPywwA"
+Content-Disposition: inline
+In-Reply-To: <1378236372-15711-1-git-send-email-mikedunn@newsguy.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: thierry.reding@gmail.com
-Cc: Mike Dunn <mikedunn@newsguy.com>, Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jg1.han@samsung.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>
+To: Mike Dunn <mikedunn@newsguy.com>
+Cc: Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jg1.han@samsung.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>
 
-This patch adds support for controlling an arbitrary number of gpios to the
-pwm-backlight driver.  This was left as a TODO when initial device tree support
-was added by Thierry a while back.  This functionality replaces the callbacks
-that are passed in the platform data for non-DT cases.  Users can avail
-themselves of this feature by adding a 'gpios' property to the 'backlight' node.
-When the update_status() callback in backlight_ops runs, the gpios listed in the
-property are asserted/deasserted if the specified brightness is non-zero/zero.
 
-Tested on a pxa270-based Palm Treo 680.
+--zCKi3GIZzVBPywwA
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Mike Dunn <mikedunn@newsguy.com>
----
+On Tue, Sep 03, 2013 at 12:26:12PM -0700, Mike Dunn wrote:
+> This patch adds support for controlling an arbitrary number of gpios to t=
+he
+> pwm-backlight driver.  This was left as a TODO when initial device tree s=
+upport
+> was added by Thierry a while back.  This functionality replaces the callb=
+acks
+> that are passed in the platform data for non-DT cases.  Users can avail
+> themselves of this feature by adding a 'gpios' property to the 'backlight=
+' node.
+> When the update_status() callback in backlight_ops runs, the gpios listed=
+ in the
+> property are asserted/deasserted if the specified brightness is non-zero/=
+zero.
+>=20
+> Tested on a pxa270-based Palm Treo 680.
+>=20
+> Signed-off-by: Mike Dunn <mikedunn@newsguy.com>
+> ---
+>=20
+> Thanks for looking!
+>=20
+>  .../bindings/video/backlight/pwm-backlight.txt     |   4 +
+>  drivers/video/backlight/pwm_bl.c                   | 128 +++++++++++++++=
++++---
+>  2 files changed, 113 insertions(+), 19 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/video/backlight/pwm-backli=
+ght.txt b/Documentation/devicetree/bindings/video/backlight/pwm-backlight.t=
+xt
+> index 1e4fc72..4583e68 100644
+> --- a/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
+> +++ b/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
+> @@ -14,6 +14,9 @@ Required properties:
+>  Optional properties:
+>    - pwm-names: a list of names for the PWM devices specified in the
+>                 "pwms" property (see PWM binding[0])
+> +  - gpios:     An arbitrary number of gpios that must be asserted when t=
+he
+> +               backlight is on, and de-asserted when off.  They will be =
+asserted
+> +               in the order they appear, and de-asserted in reverse orde=
+r.
 
-Thanks for looking!
+Do you have a real setup that actually needs multiple GPIOs? Usually
+such a setup requires some kind of timing or other additional constraint
+which can't be represented by this simple binding.
 
- .../bindings/video/backlight/pwm-backlight.txt     |   4 +
- drivers/video/backlight/pwm_bl.c                   | 128 ++++++++++++++++++---
- 2 files changed, 113 insertions(+), 19 deletions(-)
+Looking at the Palm Treo code it seems like the reason why multiple
+GPIOs are needed is because one is to enable the backlight, while the
+other is in fact used to enable the LCD panel. I have been working on a
+patch series to provide simple panel support, specifically to allow the
+separation of backlight and panel power sequencing. Would such a method
+work for your use-case as well? The work that I'm doing is somewhat DRM
+centric, and I don't think there's a DRM driver for PXA, but perhaps it
+would be a good occasion to look at converting the PXA display drivers
+to DRM... =3D)
 
-diff --git a/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt b/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
-index 1e4fc72..4583e68 100644
---- a/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
-+++ b/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
-@@ -14,6 +14,9 @@ Required properties:
- Optional properties:
-   - pwm-names: a list of names for the PWM devices specified in the
-                "pwms" property (see PWM binding[0])
-+  - gpios:     An arbitrary number of gpios that must be asserted when the
-+               backlight is on, and de-asserted when off.  They will be asserted
-+               in the order they appear, and de-asserted in reverse order.
- 
- [0]: Documentation/devicetree/bindings/pwm/pwm.txt
- 
-@@ -25,4 +28,5 @@ Example:
- 
- 		brightness-levels = <0 4 8 16 32 64 128 255>;
- 		default-brightness-level = <6>;
-+		gpios = <&gpio 77 0>, <&gpio 25 1>;  /* gpio 25 is active low */
- 	};
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 1fea627..1e2ab52 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -20,6 +20,12 @@
- #include <linux/pwm.h>
- #include <linux/pwm_backlight.h>
- #include <linux/slab.h>
-+#include <linux/of_gpio.h>
-+
-+struct pwm_bl_gpio {
-+	unsigned int gpio;
-+	enum of_gpio_flags flags;
-+};
- 
- struct pwm_bl_data {
- 	struct pwm_device	*pwm;
-@@ -27,6 +33,8 @@ struct pwm_bl_data {
- 	unsigned int		period;
- 	unsigned int		lth_brightness;
- 	unsigned int		*levels;
-+	unsigned int		num_gpios;
-+	struct pwm_bl_gpio	*gpios;
- 	int			(*notify)(struct device *,
- 					  int brightness);
- 	void			(*notify_after)(struct device *,
-@@ -94,14 +102,77 @@ static const struct backlight_ops pwm_backlight_ops = {
- };
- 
- #ifdef CONFIG_OF
-+static int pwm_backlight_dt_notify(struct device *dev, int brightness)
-+{
-+	struct backlight_device *bl = dev_get_drvdata(dev);
-+	struct pwm_bl_data *pb = bl_get_data(bl);
-+	int i;
-+
-+	if (brightness) {
-+		for (i = 0; i < pb->num_gpios; i++) {
-+			if (pb->gpios[i].flags == OF_GPIO_ACTIVE_LOW)
-+				gpio_set_value(pb->gpios[i].gpio, 0);
-+			else
-+				gpio_set_value(pb->gpios[i].gpio, 1);
-+		}
-+		return 0;
-+	}
-+
-+	/* de-assert gpios in reverse order, in case this is important */
-+	for (i = pb->num_gpios - 1; i >= 0; i--) {
-+		if (pb->gpios[i].flags == OF_GPIO_ACTIVE_LOW)
-+			gpio_set_value(pb->gpios[i].gpio, 1);
-+		else
-+			gpio_set_value(pb->gpios[i].gpio, 0);
-+	}
-+	return 0;
-+}
-+
-+static void pwm_backlight_dt_exit(struct pwm_bl_data *pb)
-+{
-+	int i;
-+
-+	for (i = 0; i < pb->num_gpios; i++)
-+		gpio_free(pb->gpios[i].gpio);
-+}
-+
-+static int pwm_backlight_dt_init(struct device *dev, struct pwm_bl_data *pb)
-+{
-+	int i, j, ret;
-+
-+	/* request gpios and drive in the inactive state */
-+	for (i = 0; i < pb->num_gpios; i++) {
-+		char gpio_name[32];
-+		unsigned long flags;
-+		if (pb->gpios[i].flags == OF_GPIO_ACTIVE_LOW)
-+			flags = GPIOF_OUT_INIT_LOW;
-+		else
-+			flags = GPIOF_OUT_INIT_HIGH;
-+		snprintf(gpio_name, 32, "%s.%d", dev_name(dev), i);
-+		ret = gpio_request_one(pb->gpios[i].gpio, flags, gpio_name);
-+		if (ret) {
-+			dev_err(dev, "gpio #%d request failed\n", i);
-+			goto gpio_err;
-+		}
-+	}
-+	return 0;
-+
-+ gpio_err:
-+	for (j = 0; j < i; j++)
-+		gpio_free(pb->gpios[j].gpio);
-+	return ret;
-+}
-+
- static int pwm_backlight_parse_dt(struct device *dev,
--				  struct platform_pwm_backlight_data *data)
-+				  struct platform_pwm_backlight_data *data,
-+				  struct pwm_bl_data *pb)
- {
- 	struct device_node *node = dev->of_node;
- 	struct property *prop;
- 	int length;
- 	u32 value;
--	int ret;
-+	int ret, i, num_gpios;
-+	size_t gpiosize;
- 
- 	if (!node)
- 		return -ENODEV;
-@@ -138,13 +209,29 @@ static int pwm_backlight_parse_dt(struct device *dev,
- 		data->max_brightness--;
- 	}
- 
--	/*
--	 * TODO: Most users of this driver use a number of GPIOs to control
--	 *       backlight power. Support for specifying these needs to be
--	 *       added.
--	 */
-+	/* read gpios from DT property */
-+	num_gpios = of_gpio_count(node);
-+	if (num_gpios == -ENOENT)
-+		return 0;	/* no 'gpios' property present */
-+	if (num_gpios < 0) {
-+		dev_err(dev, "invalid DT node: gpios\n");
-+		return -EINVAL;
-+	}
-+	gpiosize = sizeof(struct pwm_bl_gpio) * num_gpios;
-+	pb->gpios = devm_kzalloc(dev, gpiosize, GFP_KERNEL);
-+	if (!pb->gpios)
-+		return -ENOMEM;
-+	for (i = 0; i < num_gpios; i++) {
-+		int gpio;
-+		enum of_gpio_flags flags;
-+		gpio = of_get_gpio_flags(node, i, &flags);
-+		pb->gpios[i].gpio = (unsigned int)gpio;
-+		pb->gpios[i].flags = flags;
-+	}
-+	pb->num_gpios = (unsigned int)num_gpios;
-+	pb->notify = pwm_backlight_dt_notify;
- 
--	return 0;
-+	return pwm_backlight_dt_init(dev, pb);
- }
- 
- static struct of_device_id pwm_backlight_of_match[] = {
-@@ -155,10 +242,12 @@ static struct of_device_id pwm_backlight_of_match[] = {
- MODULE_DEVICE_TABLE(of, pwm_backlight_of_match);
- #else
- static int pwm_backlight_parse_dt(struct device *dev,
--				  struct platform_pwm_backlight_data *data)
-+				  struct platform_pwm_backlight_data *data,
-+				  struct pwm_bl_data *pb)
- {
- 	return -ENODEV;
- }
-+static void pwm_backlight_dt_exit(struct pwm_bl_data *pb) {}
- #endif
- 
- static int pwm_backlight_probe(struct platform_device *pdev)
-@@ -171,8 +260,14 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	unsigned int max;
- 	int ret;
- 
-+	pb = devm_kzalloc(&pdev->dev, sizeof(*pb), GFP_KERNEL);
-+	if (!pb) {
-+		dev_err(&pdev->dev, "no memory for state\n");
-+		return -ENOMEM;
-+	}
-+
- 	if (!data) {
--		ret = pwm_backlight_parse_dt(&pdev->dev, &defdata);
-+		ret = pwm_backlight_parse_dt(&pdev->dev, &defdata, pb);
- 		if (ret < 0) {
- 			dev_err(&pdev->dev, "failed to find platform data\n");
- 			return ret;
-@@ -187,20 +282,14 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 			return ret;
- 	}
- 
--	pb = devm_kzalloc(&pdev->dev, sizeof(*pb), GFP_KERNEL);
--	if (!pb) {
--		dev_err(&pdev->dev, "no memory for state\n");
--		ret = -ENOMEM;
--		goto err_alloc;
--	}
--
- 	if (data->levels) {
- 		max = data->levels[data->max_brightness];
- 		pb->levels = data->levels;
- 	} else
- 		max = data->max_brightness;
- 
--	pb->notify = data->notify;
-+	if (pb->notify == NULL)	/* not using DT and its built-in notify() */
-+		pb->notify = data->notify;
- 	pb->notify_after = data->notify_after;
- 	pb->check_fb = data->check_fb;
- 	pb->exit = data->exit;
-@@ -250,9 +339,9 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	}
- 
- 	bl->props.brightness = data->dft_brightness;
-+	platform_set_drvdata(pdev, bl);
- 	backlight_update_status(bl);
- 
--	platform_set_drvdata(pdev, bl);
- 	return 0;
- 
- err_alloc:
-@@ -271,6 +360,7 @@ static int pwm_backlight_remove(struct platform_device *pdev)
- 	pwm_disable(pb->pwm);
- 	if (pb->exit)
- 		pb->exit(&pdev->dev);
-+	pwm_backlight_dt_exit(pb);
- 	return 0;
- }
- 
--- 
-1.8.1.5
+That said, I've had a patch similar to yours in a local tree (in fact in
+the same branch as the panel work I've been doing) for quite some time,
+which allows a single "enable" GPIO to be specified. I haven't gotten
+around to sending it out yet, but I'll do that shortly. The patch is a
+little more involved because it exposes the GPIO via platform data as
+well and therefore has to update a number of board files, too. While
+going over the various board files I found only a single board which can
+actually make use of the new functionality (which I also converted in
+the patch). Any other cases couldn't be implemented by the simple change
+so I suspect they can't either using your proposed binding.
+
+I've been trying for a while to come up with a way to support more use-
+cases, and I keep coming back to the same solution. Since the DT binding
+for power sequences was shot down some time ago, we probably have to
+represent any kind of sequencing in C code. So instead of trying to fit
+everything into a single binding, I think a more maintainable solution
+would be to create separate drivers for the more complex use-cases. That
+could either be done by using separate compatible values within the
+pwm-backlight driver or via completely different drivers. In the latter
+case we should probably think about exporting some of the pwm-backlight
+functionality so that drivers can easily reuse some of the code.
+
+Thierry
+
+--zCKi3GIZzVBPywwA
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.21 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSL1UaAAoJEN0jrNd/PrOhcfwQALBQ7DgM+bzY+NfalVQZktj/
+Mupf/Enksv9XOFOB76I5npxaPISzUG98ORQjak4wznL5t/QQj01e8FJCm7aN6YM+
+BLdjRYf2tKt4EkUfnn/DNv9+CRFjpS5pNmU82SqknaoJ/V6ZyEJGbiNUhgUkirPo
+QVTjKb8tN6qvW3IVsOFUWiO6cQDA0luKmIN9p7yN1NByFVGToVKLTjuI0oi4gXOk
+kZeXF2cQF7+jooq1VD5/Q7nDUsUfU5orMhoH6Jiig1TPvAYTRY3EWE8iuOvLcKBU
+jaEo43Cd7qNpw7p7Jf8P5oAIudN1ljR1yeFJfuJnbtfTOJxdLX6cHjkjfMrHwctI
+7vUSvB+hbK6OAOwW6lR+k2x/e0fPC/gpa3+8GL4hCRRt4dxRCoIK+gAIUnWQ0KMW
+NVrRqMJE3q6FzZ7Reise4h/YFLYqMN59UoVi8lxq3vJRmRgtJkH3QNIMFt2y+X8B
+Y6kw0K7Cc325nckAhFodYT8PzUVOIMXpn8R5lVWB+ekaNRg08gpZ/AQwptjCzRu4
+cc8/Fus88InoL3P1PW1aGHRVv1Xwc/jFfDuKL3uz+vFER3AgNUwAAIg895mURRLu
+twIOFCvbwr406ksrRC/I66gzgn29X86scLvj1b3vT90DM+WV7ghMUzAiHlI6dyeU
+xI6mv38p5Q5EU6iAAqYE
+=lyVK
+-----END PGP SIGNATURE-----
+
+--zCKi3GIZzVBPywwA--
