@@ -1,274 +1,360 @@
 Return-Path: <Milo.Kim@ti.com>
-Message-ID: <52311BB6.4030809@ti.com>
-Date: Thu, 12 Sep 2013 10:41:10 +0900
 From: Milo Kim <milo.kim@ti.com>
+Subject: [PATCH v3 1/4] mfd: add LP3943 MFD driver
+Date: Thu, 12 Sep 2013 10:32:04 +0900
+Message-ID: <1378949524-6143-1-git-send-email-milo.kim@ti.com>
 MIME-Version: 1.0
-Subject: Re: [PATCH 4/4] Documentation: add LP3943 DT bindings and document
-References: <1378949663-6338-1-git-send-email-milo.kim@ti.com>
-In-Reply-To: <1378949663-6338-1-git-send-email-milo.kim@ti.com>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 List-ID: <linux-pwm.vger.kernel.org>
 To: Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>
-Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Milo Kim <milo.kim@ti.com>
 
-Hi Everyone,
+LP3943 has 16 output pins which can be used as GPIO expander and PWM generator.
 
-Please ignore this mail. Version information, 'v3' is missing in the 
-subject.
-Fixed mail has just sent. Please find '[PATCH v3 4/4]' in your mailbox.
-Sorry for the inconvenience.
+* Regmap I2C interface for R/W LP3943 registers
 
-Best regards,
-Milo
+* Atomic operations for output pin assignment
+  The driver should check whether requested pin is available or not.
+  If the pin is already used, pin request returns as a failure.
+  A driver data, 'pin_used' is checked when gpio_request() and
+  pwm_request() are called. If the pin is available, then pin_used is set.
+  And it is cleared when gpio_free() and pwm_free().
 
-On 09/12/2013 10:34 AM, Milo Kim wrote:
-> Bindings for LP3943 MFD, GPIO and PWM controller are added.
-> And LP3943 driver document is added also.
->
-> Cc: devicetree@vger.kernel.org
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Samuel Ortiz <sameo@linux.intel.com>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Signed-off-by: Milo Kim <milo.kim@ti.com>
-> ---
->   Documentation/00-INDEX                             |    2 +
->   .../devicetree/bindings/gpio/gpio-lp3943.txt       |   37 ++++++++++++
->   Documentation/devicetree/bindings/mfd/lp3943.txt   |   33 +++++++++++
->   .../devicetree/bindings/pwm/pwm-lp3943.txt         |   58 ++++++++++++++++++
->   Documentation/lp3943.txt                           |   62 ++++++++++++++++++++
->   5 files changed, 192 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/gpio/gpio-lp3943.txt
->   create mode 100644 Documentation/devicetree/bindings/mfd/lp3943.txt
->   create mode 100644 Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
->   create mode 100644 Documentation/lp3943.txt
->
-> diff --git a/Documentation/00-INDEX b/Documentation/00-INDEX
-> index 0c4cc68..5dd921f 100644
-> --- a/Documentation/00-INDEX
-> +++ b/Documentation/00-INDEX
-> @@ -285,6 +285,8 @@ logo.gif
->   	- full colour GIF image of Linux logo (penguin - Tux).
->   logo.txt
->   	- info on creator of above logo & site to get additional images from.
-> +lp3943.txt
-> +	- info on LP3943 MFD driver structure.
->   m68k/
->   	- directory with info about Linux on Motorola 68k architecture.
->   magic-number.txt
-> diff --git a/Documentation/devicetree/bindings/gpio/gpio-lp3943.txt b/Documentation/devicetree/bindings/gpio/gpio-lp3943.txt
-> new file mode 100644
-> index 0000000..80fcb7d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/gpio/gpio-lp3943.txt
-> @@ -0,0 +1,37 @@
-> +TI/National Semiconductor LP3943 GPIO controller
-> +
-> +Required properties:
-> +  - compatible: "ti,lp3943-gpio"
-> +  - gpio-controller: Marks the device node as a GPIO controller.
-> +  - #gpio-cells: Should be 2. See gpio.txt in this directory for a
-> +                 description of the cells format.
-> +
-> +Example:
-> +Simple LED controls with LP3943 GPIO controller
-> +
-> +&i2c4 {
-> +	lp3943@60 {
-> +		compatible = "ti,lp3943";
-> +		reg = <0x60>;
-> +
-> +		gpioex: gpio {
-> +			compatible = "ti,lp3943-gpio";
-> +			gpio-controller;
-> +			#gpio-cells = <2>;
-> +		};
-> +	};
-> +};
-> +
-> +leds {
-> +	compatible = "gpio-leds";
-> +	indicator1 {
-> +		label = "indi1";
-> +		gpios = <&gpioex 9 GPIO_ACTIVE_LOW>;
-> +	};
-> +
-> +	indicator2 {
-> +		label = "indi2";
-> +		gpios = <&gpioex 10 GPIO_ACTIVE_LOW>;
-> +		default-state = "off";
-> +	};
-> +};
-> diff --git a/Documentation/devicetree/bindings/mfd/lp3943.txt b/Documentation/devicetree/bindings/mfd/lp3943.txt
-> new file mode 100644
-> index 0000000..e8591d6
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/lp3943.txt
-> @@ -0,0 +1,33 @@
-> +TI/National Semiconductor LP3943 MFD driver
-> +
-> +Required properties:
-> +  - compatible: "ti,lp3943"
-> +  - reg: I2C slave address. From 0x60 to 0x67.
-> +
-> +LP3943 consists of two sub-devices, lp3943-gpio and lp3943-pwm.
-> +
-> +For the LP3943 GPIO properties please refer to:
-> +Documentation/devicetree/bindings/gpio/gpio-lp3943.txt
-> +
-> +For the LP3943 PWM properties please refer to:
-> +Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
-> +
-> +Example:
-> +
-> +lp3943@60 {
-> +	compatible = "ti,lp3943";
-> +	reg = <0x60>;
-> +
-> +	gpioex: gpio {
-> +		compatible = "ti,lp3943-gpio";
-> +		gpio-controller;
-> +		#gpio-cells = <2>;
-> +	};
-> +
-> +	pwm3943: pwm {
-> +		compatible = "ti,lp3943-pwm";
-> +		#pwm-cells = <2>;
-> +		ti,pwm0 = <8 9 10>;
-> +		ti,pwm1 = <15>;
-> +	};
-> +};
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-lp3943.txt b/Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
-> new file mode 100644
-> index 0000000..7bd9d3b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
-> @@ -0,0 +1,58 @@
-> +TI/National Semiconductor LP3943 PWM controller
-> +
-> +Required properties:
-> +  - compatible: "ti,lp3943-pwm"
-> +  - #pwm-cells: Should be 2. See pwm.txt in this directory for a
-> +                description of the cells format.
-> +                Note that this hardware limits the period length to the
-> +                range 6250~1600000.
-> +  - ti,pwm0 or ti,pwm1: Output pin number(s) for PWM channel 0 or 1.
-> +    0 = output 0
-> +    1 = output 1
-> +    .
-> +    .
-> +    15 = output 15
-> +
-> +Example:
-> +PWM 0 is for RGB LED brightness control
-> +PWM 1 is for brightness control of LP8557 backlight device
-> +
-> +&i2c3 {
-> +	lp3943@60 {
-> +		compatible = "ti,lp3943";
-> +		reg = <0x60>;
-> +
-> +		/*
-> +		 * PWM 0 : output 8, 9 and 10
-> +		 * PWM 1 : output 15
-> +		 */
-> +		pwm3943: pwm {
-> +			compatible = "ti,lp3943-pwm";
-> +			#pwm-cells = <2>;
-> +			ti,pwm0 = <8 9 10>;
-> +			ti,pwm1 = <15>;
-> +		};
-> +	};
-> +
-> +};
-> +
-> +/* LEDs control with PWM 0 of LP3943 */
-> +pwmleds {
-> +	compatible = "pwm-leds";
-> +	rgb {
-> +		label = "indi::rgb";
-> +		pwms = <&pwm3943 0 10000>;
-> +		max-brightness = <255>;
-> +	};
-> +};
-> +
-> +&i2c4 {
-> +	/* Backlight control with PWM 1 of LP3943 */
-> +	backlight@2c {
-> +		compatible = "ti,lp8557";
-> +		reg = <0x2c>;
-> +
-> +		pwms = <&pwm3943 1 10000>;
-> +		pwm-names = "lp8557";
-> +	};
-> +};
-> diff --git a/Documentation/lp3943.txt b/Documentation/lp3943.txt
-> new file mode 100644
-> index 0000000..576ebd0
-> --- /dev/null
-> +++ b/Documentation/lp3943.txt
-> @@ -0,0 +1,62 @@
-> +TI/National Semiconductor LP3943 MFD driver
-> +===========================================
-> +
-> +LP3943 is an integrated device capable of driving 16 output channels.
-> +It can be used for GPIO expander and PWM generators.
-> +LP3493 registers are controlled via the I2C interface.
-> +
-> +Driver structure
-> +----------------
-> +                                  LED control    General usage for a device
-> +                                  ___________   ____________________________
-> +
-> +  LP3943 MFD ---- GPIO expander    leds-gpio        eg) HW enable pin
-> +              |
-> +              --- PWM generator    leds-pwm         eg) PWM input
-> +
-> +
-> +Why do we need GPIO and PWM drivers instead of LED driver?
-> +To support LED control and general usage, GPIO and PWM drivers are necessary.
-> +
-> +According to the datasheet(1), it's just a LED driver which has 16 channels.
-> +But here is another application, a GPIO expander.(2)
-> +
-> +  (1) http://www.ti.com/lit/ds/snvs256b/snvs256b.pdf
-> +  (2) http://www.ti.com/lit/an/snva287a/snva287a.pdf
-> +
-> +Internal two PWM channels are used for LED dimming effect.
-> +And each output pin can be used as a GPIO as well.
-> +LED functionality can work with GPIOs or PWMs.
-> +LEDs can be controlled with legacy leds-gpio(static brightness) or
-> +leds-pwm drivers(dynamic brightness control).
-> +Additionally, it can be used for generic GPIO and PWM controller.
-> +For example, a GPIO is HW enable pin of a device.
-> +PWM is input pin of a backlight device.
-> +
-> +
-> +LP3943 PWM port map
-> +-------------------
-> +Each PWM channel can be mapped to one or multiple output pins.
-> +
-> +For example, PWM 0 is used for a backlight device.
-> +PWM 1 is for RGB LEDs.
-> +
-> +  PWM channel    Output pins    PWM consumer
-> +  ___________    ___________    ____________
-> +  PWM 0          pin 1          backlight
-> +  PWM 1          pin 7, 8, 9    RGB LEDs
-> +
-> +Then, PWM port map is as below.
-> +PWM 0: num_outputs = 1, output = pin 1
-> +PWM 1: num_outputs = 3, output = pin 7, 8, 9
-> +
-> +The 'lp3943_pwm_map' structure is used for this feature.
-> +
-> +
-> +Device tree supported
-> +---------------------
-> +Please refer to the documents below.
-> +
-> +Documentation/devicetree/bindings/mfd/lp3943.txt
-> +Documentation/devicetree/bindings/gpio/gpio-lp3943.txt
-> +Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
->
+* Device tree support
+  Compatible strings for GPIO and PWM driver.
+  LP3943 platform data is PWM related, so parsing the device tree is
+  implemented in the PWM driver.
+
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Samuel Ortiz <sameo@linux.intel.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Milo Kim <milo.kim@ti.com>
+---
+* Patch v3
+  Now, output pin number is exactly matched with enum value of '
+  lp3943_pwm_output'.
+  Use dev_get_platdata() helper function in probe().
+  Use module_i2c_driver() for initcall.
+
+* Patch v2
+  Handle atomic operations for output pin assignment.
+
+ drivers/mfd/Kconfig        |   11 ++++
+ drivers/mfd/Makefile       |    1 +
+ drivers/mfd/lp3943.c       |  148 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/mfd/lp3943.h |  114 ++++++++++++++++++++++++++++++++++
+ 4 files changed, 274 insertions(+)
+ create mode 100644 drivers/mfd/lp3943.c
+ create mode 100644 include/linux/mfd/lp3943.h
+
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index e0e46f5..7058358 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -715,6 +715,17 @@ config MFD_DM355EVM_MSP
+ 	  boards.  MSP430 firmware manages resets and power sequencing,
+ 	  inputs from buttons and the IR remote, LEDs, an RTC, and more.
+ 
++config MFD_LP3943
++	tristate "TI/National Semiconductor LP3943 MFD Driver"
++	depends on I2C
++	select MFD_CORE
++	select REGMAP_I2C
++	help
++	  Support for the TI/National Semiconductor LP3943.
++	  This driver consists of GPIO and PWM drivers.
++	  With these functionalities, it can be used for LED string control or
++	  general usage such like a GPIO controller and a PWM controller.
++
+ config MFD_LP8788
+ 	bool "TI LP8788 Power Management Unit Driver"
+ 	depends on I2C=y && GENERIC_HARDIRQS
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 15b905c..a6d2b22 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -102,6 +102,7 @@ obj-$(CONFIG_PMIC_DA9052)	+= da9052-core.o
+ obj-$(CONFIG_MFD_DA9052_SPI)	+= da9052-spi.o
+ obj-$(CONFIG_MFD_DA9052_I2C)	+= da9052-i2c.o
+ 
++obj-$(CONFIG_MFD_LP3943)	+= lp3943.o
+ obj-$(CONFIG_MFD_LP8788)	+= lp8788.o lp8788-irq.o
+ 
+ da9055-objs			:= da9055-core.o da9055-i2c.o
+diff --git a/drivers/mfd/lp3943.c b/drivers/mfd/lp3943.c
+new file mode 100644
+index 0000000..d25cc0a
+--- /dev/null
++++ b/drivers/mfd/lp3943.c
+@@ -0,0 +1,148 @@
++/*
++ * TI/National Semiconductor LP3943 MFD Core Driver
++ *
++ * Copyright 2013 Texas Instruments
++ *
++ * Author: Milo Kim <milo.kim@ti.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ */
++
++#include <linux/err.h>
++#include <linux/gpio.h>
++#include <linux/i2c.h>
++#include <linux/mfd/core.h>
++#include <linux/mfd/lp3943.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/slab.h>
++
++#define LP3943_MAX_REGISTERS		0x09
++
++/* Register configuration for pin MUX */
++static const struct lp3943_reg_cfg lp3943_mux_cfg[] = {
++	/* address, mask, shift */
++	{ LP3943_REG_MUX0, 0x03, 0 },
++	{ LP3943_REG_MUX0, 0x0C, 2 },
++	{ LP3943_REG_MUX0, 0x30, 4 },
++	{ LP3943_REG_MUX0, 0xC0, 6 },
++	{ LP3943_REG_MUX1, 0x03, 0 },
++	{ LP3943_REG_MUX1, 0x0C, 2 },
++	{ LP3943_REG_MUX1, 0x30, 4 },
++	{ LP3943_REG_MUX1, 0xC0, 6 },
++	{ LP3943_REG_MUX2, 0x03, 0 },
++	{ LP3943_REG_MUX2, 0x0C, 2 },
++	{ LP3943_REG_MUX2, 0x30, 4 },
++	{ LP3943_REG_MUX2, 0xC0, 6 },
++	{ LP3943_REG_MUX3, 0x03, 0 },
++	{ LP3943_REG_MUX3, 0x0C, 2 },
++	{ LP3943_REG_MUX3, 0x30, 4 },
++	{ LP3943_REG_MUX3, 0xC0, 6 },
++};
++
++static struct mfd_cell lp3943_devs[] = {
++	{
++		.name = "lp3943-pwm",
++		.of_compatible = "ti,lp3943-pwm",
++	},
++	{
++		.name = "lp3943-gpio",
++		.of_compatible = "ti,lp3943-gpio",
++	},
++};
++
++int lp3943_read_byte(struct lp3943 *lp3943, u8 reg, u8 *read)
++{
++	int ret;
++	unsigned int val;
++
++	ret = regmap_read(lp3943->regmap, reg, &val);
++	if (ret < 0)
++		return ret;
++
++	*read = (u8)val;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(lp3943_read_byte);
++
++int lp3943_write_byte(struct lp3943 *lp3943, u8 reg, u8 data)
++{
++	return regmap_write(lp3943->regmap, reg, data);
++}
++EXPORT_SYMBOL_GPL(lp3943_write_byte);
++
++int lp3943_update_bits(struct lp3943 *lp3943, u8 reg, u8 mask, u8 data)
++{
++	return regmap_update_bits(lp3943->regmap, reg, mask, data);
++}
++EXPORT_SYMBOL_GPL(lp3943_update_bits);
++
++static const struct regmap_config lp3943_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = LP3943_MAX_REGISTERS,
++};
++
++static int lp3943_probe(struct i2c_client *cl, const struct i2c_device_id *id)
++{
++	struct lp3943 *lp3943;
++	struct device *dev = &cl->dev;
++
++	lp3943 = devm_kzalloc(dev, sizeof(*lp3943), GFP_KERNEL);
++	if (!lp3943)
++		return -ENOMEM;
++
++	lp3943->regmap = devm_regmap_init_i2c(cl, &lp3943_regmap_config);
++	if (IS_ERR(lp3943->regmap))
++		return PTR_ERR(lp3943->regmap);
++
++	lp3943->pdata = dev_get_platdata(dev);
++	lp3943->dev = dev;
++	lp3943->mux_cfg = lp3943_mux_cfg;
++	i2c_set_clientdata(cl, lp3943);
++
++	return mfd_add_devices(dev, -1, lp3943_devs, ARRAY_SIZE(lp3943_devs),
++			       NULL, 0, NULL);
++}
++
++static int lp3943_remove(struct i2c_client *cl)
++{
++	struct lp3943 *lp3943 = i2c_get_clientdata(cl);
++
++	mfd_remove_devices(lp3943->dev);
++	return 0;
++}
++
++static const struct i2c_device_id lp3943_ids[] = {
++	{ "lp3943", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, lp3943_ids);
++
++#ifdef CONFIG_OF
++static const struct of_device_id lp3943_of_match[] = {
++	{ .compatible = "ti,lp3943", },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, lp3943_of_match);
++#endif
++
++static struct i2c_driver lp3943_driver = {
++	.probe = lp3943_probe,
++	.remove = lp3943_remove,
++	.driver = {
++		.name = "lp3943",
++		.owner = THIS_MODULE,
++		.of_match_table = of_match_ptr(lp3943_of_match),
++	},
++	.id_table = lp3943_ids,
++};
++
++module_i2c_driver(lp3943_driver);
++
++MODULE_DESCRIPTION("LP3943 MFD Core Driver");
++MODULE_AUTHOR("Milo Kim");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/mfd/lp3943.h b/include/linux/mfd/lp3943.h
+new file mode 100644
+index 0000000..3490db7
+--- /dev/null
++++ b/include/linux/mfd/lp3943.h
+@@ -0,0 +1,114 @@
++/*
++ * TI/National Semiconductor LP3943 Device
++ *
++ * Copyright 2013 Texas Instruments
++ *
++ * Author: Milo Kim <milo.kim@ti.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ */
++
++#ifndef __MFD_LP3943_H__
++#define __MFD_LP3943_H__
++
++#include <linux/gpio.h>
++#include <linux/pwm.h>
++#include <linux/regmap.h>
++
++/* Registers */
++#define LP3943_REG_GPIO_A		0x00
++#define LP3943_REG_GPIO_B		0x01
++#define LP3943_REG_PRESCALE0		0x02
++#define LP3943_REG_PWM0			0x03
++#define LP3943_REG_PRESCALE1		0x04
++#define LP3943_REG_PWM1			0x05
++#define LP3943_REG_MUX0			0x06
++#define LP3943_REG_MUX1			0x07
++#define LP3943_REG_MUX2			0x08
++#define LP3943_REG_MUX3			0x09
++
++/* Bit description for LP3943_REG_MUX0 ~ 3 */
++#define LP3943_GPIO_IN			0x00
++#define LP3943_GPIO_OUT_HIGH		0x00
++#define LP3943_GPIO_OUT_LOW		0x01
++#define LP3943_DIM_PWM0			0x02
++#define LP3943_DIM_PWM1			0x03
++
++#define LP3943_NUM_PWMS			2
++
++enum lp3943_pwm_output {
++	LP3943_PWM_OUT0,
++	LP3943_PWM_OUT1,
++	LP3943_PWM_OUT2,
++	LP3943_PWM_OUT3,
++	LP3943_PWM_OUT4,
++	LP3943_PWM_OUT5,
++	LP3943_PWM_OUT6,
++	LP3943_PWM_OUT7,
++	LP3943_PWM_OUT8,
++	LP3943_PWM_OUT9,
++	LP3943_PWM_OUT10,
++	LP3943_PWM_OUT11,
++	LP3943_PWM_OUT12,
++	LP3943_PWM_OUT13,
++	LP3943_PWM_OUT14,
++	LP3943_PWM_OUT15,
++};
++
++/*
++ * struct lp3943_pwm_map
++ * @output: Output pins which are mapped to each PWM channel
++ * @num_outputs: Number of outputs
++ */
++struct lp3943_pwm_map {
++	enum lp3943_pwm_output *output;
++	int num_outputs;
++};
++
++/*
++ * struct lp3943_platform_data
++ * @pwms: Output channel definitions for PWM channel 0 and 1
++ */
++struct lp3943_platform_data {
++	struct lp3943_pwm_map *pwms[LP3943_NUM_PWMS];
++};
++
++/*
++ * struct lp3943_reg_cfg
++ * @reg: Register address
++ * @mask: Register bit mask to be updated
++ * @shift: Register bit shift
++ */
++struct lp3943_reg_cfg {
++	u8 reg;
++	u8 mask;
++	u8 shift;
++};
++
++/*
++ * struct lp3943
++ * @dev: Parent device pointer
++ * @regmap: Used for I2C communication on accessing registers
++ * @pdata: LP3943 platform specific data
++ * @mux_cfg: Register configuration for pin MUX
++ * @pin_used: Bit mask for output pin used.
++ *	      This bitmask is used for pin assignment management.
++ *	      1 = pin used, 0 = available.
++ *	      Only LSB 16 bits are used, but it is unsigned long type
++ *	      for atomic bitwise operations.
++ */
++struct lp3943 {
++	struct device *dev;
++	struct regmap *regmap;
++	struct lp3943_platform_data *pdata;
++	const struct lp3943_reg_cfg *mux_cfg;
++	unsigned long pin_used;
++};
++
++int lp3943_read_byte(struct lp3943 *lp3943, u8 reg, u8 *read);
++int lp3943_write_byte(struct lp3943 *lp3943, u8 reg, u8 data);
++int lp3943_update_bits(struct lp3943 *lp3943, u8 reg, u8 mask, u8 data);
++#endif
+-- 
+1.7.9.5
