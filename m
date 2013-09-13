@@ -1,66 +1,47 @@
-Return-Path: <lee.jones@linaro.org>
-Return-Path: <lee.jones@linaro.org>
-Date: Thu, 12 Sep 2013 16:40:00 +0100
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v3 1/4] mfd: add LP3943 MFD driver
-Message-ID: <20130912154000.GP11227@lee--X1>
-References: <1378949524-6143-1-git-send-email-milo.kim@ti.com>
+Return-Path: <B47053@freescale.com>
+From: Xiubo Li <Li.Xiubo@freescale.com>
+Subject: [PATCHv4 0/4] Add Freescale FTM PWM driver.
+Date: Fri, 13 Sep 2013 13:58:38 +0800
+Message-ID: <1379051922-4930-1-git-send-email-Li.Xiubo@freescale.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1378949524-6143-1-git-send-email-milo.kim@ti.com>
+Content-Type: text/plain
+Return-Path: B47053@freescale.com
 List-ID: <linux-pwm.vger.kernel.org>
-To: Milo Kim <milo.kim@ti.com>
-Cc: Samuel Ortiz <sameo@linux.intel.com>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Thierry Reding <thierry.reding@gmail.com>
+To: r65073@freescale.com, thierry.reding@gmail.com
+Cc: s.hauer@pengutronix.de, swarren@wwwdotorg.org, t.figa@samsung.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 
-On Thu, 12 Sep 2013, Milo Kim wrote:
+Hello,
 
-> LP3943 has 16 output pins which can be used as GPIO expander and PWM generator.
-> 
-> * Regmap I2C interface for R/W LP3943 registers
-> 
-> * Atomic operations for output pin assignment
->   The driver should check whether requested pin is available or not.
->   If the pin is already used, pin request returns as a failure.
->   A driver data, 'pin_used' is checked when gpio_request() and
->   pwm_request() are called. If the pin is available, then pin_used is set.
->   And it is cleared when gpio_free() and pwm_free().
-> 
-> * Device tree support
->   Compatible strings for GPIO and PWM driver.
->   LP3943 platform data is PWM related, so parsing the device tree is
->   implemented in the PWM driver.
-> 
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Samuel Ortiz <sameo@linux.intel.com>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Signed-off-by: Milo Kim <milo.kim@ti.com>
-> ---
-> * Patch v3
->   Now, output pin number is exactly matched with enum value of '
->   lp3943_pwm_output'.
->   Use dev_get_platdata() helper function in probe().
->   Use module_i2c_driver() for initcall.
-> 
-> * Patch v2
->   Handle atomic operations for output pin assignment.
-> 
->  drivers/mfd/Kconfig        |   11 ++++
->  drivers/mfd/Makefile       |    1 +
->  drivers/mfd/lp3943.c       |  148 ++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/mfd/lp3943.h |  114 ++++++++++++++++++++++++++++++++++
->  4 files changed, 274 insertions(+)
->  create mode 100644 drivers/mfd/lp3943.c
->  create mode 100644 include/linux/mfd/lp3943.h
+This patch series is the Freescale FTM PWM implementation. And there are 8 channels most supported by the FTM PWM. This implementation is only compatible with device tree definition.
 
-Code looks good to me. For the MFD parts:
+This patch series is based on linux-next and has been tested on Vybrid VF610 Tower board using device tree.
 
-Acked-by: Lee Jones <lee.jones@linaro.org>
+Changes in v4:
+- Check for the result and return an error for devm_kzalloc().
+- Move pinmux setting from the SoC file to the board specific file.
+- Revise the written mistake of 'ret |= FTMSC_CLKEXT;' --> 'reg |= FTMSC_CLKEXT;'.
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+
+Changes in v3:
+- Remove "availabe" field.
+- Remove "fsl,pwm-avaliable-chs" property.
+- ...
+
+Changes in v2:
+- Remove PWM CPWM/EPWM feature and sysfs.
+- Remove some redundant code.
+- Revise some code for more readable.
+- Remove "fsl,pwm-clk-ps", "fsl,pwm-number", "fsl,pwm-channels",etc.
+- Add "fsl,pwm-avaliable-chs", "fsl,pwm-counter-clk", etc.
+- Support 8 channels default in dtsi file.
+- Add counter clock source selection.
+- Rename some function name, macro name, etc.
+- Use PWM's and OF's existing function interfaces.
+- Split clk_unprepare_enable to clk_unprepare and clk_enable,etc.
+- ...
+
+Added in v1:
+- Add Freescale FTM PWM driver support.
+- Add Freescale FTM PWM node for VF610.
+- Enable Enables FTM PWM device for Vybrid VF610 TOWER.
+- Add device tree bindings for Freescale.
