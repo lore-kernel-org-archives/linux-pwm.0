@@ -1,30 +1,62 @@
-Return-Path: <lee.jones@linaro.org>
-Return-Path: <lee.jones@linaro.org>
-Date: Thu, 12 Sep 2013 16:28:09 +0100
-From: Lee Jones <lee.jones@linaro.org>
+Return-Path: <thierry.reding@gmail.com>
+Date: Sun, 15 Sep 2013 13:17:32 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH v3 0/4] LP3943 MFD driver for a GPIO expander and a PWM
  generator
-Message-ID: <20130912152809.GO11227@lee--X1>
+Message-ID: <20130915111730.GA9765@ulmo>
 References: <1378949441-6073-1-git-send-email-milo.kim@ti.com>
+ <20130912152809.GO11227@lee--X1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="jI8keyz6grp/JLjh"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1378949441-6073-1-git-send-email-milo.kim@ti.com>
+In-Reply-To: <20130912152809.GO11227@lee--X1>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Milo Kim <milo.kim@ti.com>
-Cc: Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Milo Kim <milo.kim@ti.com>, Samuel Ortiz <sameo@linux.intel.com>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
 
-> * Documentation
->   From Thierry's suggestion, detailed driver description was moved to
->   'Documentation/lp3943.txt'.
 
-Really? Why here? Do we really want 1000's of driver docs in /Documentation?
+--jI8keyz6grp/JLjh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-No other driver does this (intel gained from a glancing look).
+On Thu, Sep 12, 2013 at 04:28:09PM +0100, Lee Jones wrote:
+> > * Documentation
+> >   From Thierry's suggestion, detailed driver description was moved to
+> >   'Documentation/lp3943.txt'.
+>=20
+> Really? Why here? Do we really want 1000's of driver docs in /Documentati=
+on?
+>=20
+> No other driver does this (intel gained from a glancing look).
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Well, perhaps the top-level Documentation directory isn't optimal, but I
+think it's a lot better than the commit description. Perhaps an 'mfd'
+subdirectory could be created where documentation such as this could be
+put.
+
+Thierry
+
+--jI8keyz6grp/JLjh
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.21 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSNZdKAAoJEN0jrNd/PrOhOOoP/jyU0KhmBc2DLMHUsNyVwW5J
+vXal5EKRPwHl/XjdS76/vfgH28htNFOups1PRph60Y/7uRj1ftBFqlXJkV99tbSy
+Jq+LL/FFxpDgCJZg5ExzRLksFzc38107m6XbGQhe7Mct5pPehmrAN+fMMTd0SdFs
+039IXajUh3oLlx4Oxr//EAhYXWy440yI0YTHbK90bWPjLy17IpzJkRYGQSRf3m6c
+ar14icHYMiG2k326GYpEImtrH77DuNNVnvrRM5FJM7u01jsUL81E3qxulAlelAu+
+khU+FXUmZCwSNyRMq/Mt0lHKPygXNGz7qj4M/oHo3bFo7B2WzoTc1uFA1w2t8Mse
+CZZarCw5lcsPEBlcJdONReAaJLoo5c4cXJV3SaLsCDbjGlWzylu99Cm62wlQoHLl
+XJwT+tv4tt+5tZzd2D1ZXWj1QJZrVthDc4WaTk5hXCKQtTnoaNO5GEYxjNPD7cWl
+lhh9hmsSoQFuAgHJRi4JkpVyi6vb7vylTUKQPWK/kLTVARlPhW/GyCZltaUzfr5B
+LhBmQnQ/Po+CTXuohQlDZXISsLb0UO4pMI6uwBwR54awI/MdKLryetYJuJ1G6ORB
+SaF25kZI2yqDCc8TcXhN3JNjRy4A9oY34rpGWedbHQOFeX233BoVfdfd5V5JwS+g
+5RlR7IGFM0PmuYO4prSW
+=9x/B
+-----END PGP SIGNATURE-----
+
+--jI8keyz6grp/JLjh--
