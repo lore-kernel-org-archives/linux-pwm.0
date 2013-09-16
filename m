@@ -1,38 +1,40 @@
-Return-Path: <marex@denx.de>
-From: Marek Vasut <marex@denx.de>
-Subject: Re: [PATCH v3] PWM: PXA: add device tree support to PWM driver
-Date: Tue, 17 Sep 2013 01:00:09 +0200
-References: <1379091281-23662-1-git-send-email-mikedunn@newsguy.com> <201309161710.15800.marex@denx.de> <52375FDB.8090405@wwwdotorg.org>
-In-Reply-To: <52375FDB.8090405@wwwdotorg.org>
+Return-Path: <swarren@wwwdotorg.org>
+Message-ID: <52375FB1.5050700@wwwdotorg.org>
+Date: Mon, 16 Sep 2013 13:44:49 -0600
+From: Stephen Warren <swarren@wwwdotorg.org>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="us-ascii"
+Subject: Re: [PATCH v3] PWM: PXA: add device tree support to PWM driver
+References: <1379091281-23662-1-git-send-email-mikedunn@newsguy.com>
+In-Reply-To: <1379091281-23662-1-git-send-email-mikedunn@newsguy.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-Id: <201309170100.09282.marex@denx.de>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Stephen Warren <swarren@wwwdotorg.org>
-Cc: Mike Dunn <mikedunn@newsguy.com>, linux-pwm@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <rob.herring@calxeda.com>, Haojian Zhuang <haojian.zhuang@linaro.org>, Robert Jarzmik <robert.jarzmik@free.fr>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Chao Xie <chao.xie@marvell.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ian.campbell@citrix.com>
+To: Mike Dunn <mikedunn@newsguy.com>
+Cc: linux-pwm@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <rob.herring@calxeda.com>, Haojian Zhuang <haojian.zhuang@linaro.org>, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Chao Xie <chao.xie@marvell.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ian.campbell@citrix.com>
 
-Dear Stephen Warren,
-
-> On 09/16/2013 09:10 AM, Marek Vasut wrote:
-> ...
+On 09/13/2013 10:54 AM, Mike Dunn wrote:
+> This patch adds device tree support to the PXA's PWM driver.  Only an OF match
+> table is added; nothing needs to be extracted from the device tree node.  The
+> existing ID table is reused for the match table data.
 > 
-> > OK, to push it ad-absurdum, shall we not start listing every single
-> > revision of the CPU as well? Like pxa250a0 250a1 etc ? Yes , this
-> > many-to-one mapping is
-> 
-> It's not about CPU revisions, it's about revisions of the SoC that
-> contain the IP block.
+> Tested on a Palm Treo 680 (both platform data and DT cases).
 
-But that doesn't matter if the IP block is the same in all of them.
+> diff --git a/Documentation/devicetree/bindings/pwm/pxa-pwm.txt b/Documentation/devicetree/bindings/pwm/pxa-pwm.txt
 
-> > something I don't quite understand, that's why I'd love to see a good
-> > reasoning from Stephen.
-> 
-> Please see the earlier discussions.
+> +- compatible: should be one of:
+> +  - "marvell,pxa250-pwm"
+> +  - "marvell,pxa270-pwm"
+> +  - "marvell,pxa168-pwm"
+> +  - "marvell,pxa910-pwm"
 
-I did, so I must really be slow or something.
+Not just one of, but possible more than one...
 
-Best regards,
-Marek Vasut
+> diff --git a/arch/arm/boot/dts/pxa27x.dtsi b/arch/arm/boot/dts/pxa27x.dtsi
+
+> +		pwm0: pwm@40b00000 {
+> +			compatible = "marvell,pxa270-pwm";
+
+I thought the assertion was that pax270 and pxa250 were both compatible?
+If so, that should be:
+
+		compatible = "marvell,pxa270-pwm", "marvell,pxa250-pwm";
