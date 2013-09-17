@@ -1,62 +1,35 @@
-Return-Path: <mikedunn@newsguy.com>
-From: Mike Dunn <mikedunn@newsguy.com>
-Subject: [PATCH] pwm-backlight: allow for non-increasing brightness levels
-Date: Thu, 12 Sep 2013 11:35:52 -0700
-Message-Id: <1379010952-8928-1-git-send-email-mikedunn@newsguy.com>
+Return-Path: <sha@pengutronix.de>
+Date: Tue, 17 Sep 2013 11:36:22 +0200
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: [PATCH] pwm-backlight: allow for non-increasing brightness levels
+Message-ID: <20130917093622.GB30088@pengutronix.de>
+References: <1379010952-8928-1-git-send-email-mikedunn@newsguy.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1379010952-8928-1-git-send-email-mikedunn@newsguy.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: thierry.reding@gmail.com
-Cc: Mike Dunn <mikedunn@newsguy.com>, Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jg1.han@samsung.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>
+To: Mike Dunn <mikedunn@newsguy.com>
+Cc: thierry.reding@gmail.com, Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jg1.han@samsung.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>
 
-Currently the driver assumes that the values specified in the brightness-levels
-device tree property increase as they are parsed from left to right.  But boards
-that invert the signal between the PWM output and the backlight will need to
-specify decreasing brightness-levels.  This patch removes the assumption that
-the last element of the array is the max value, and instead searches the array
-for the max value and uses that as the normalizing value when determining the
-duty cycle.
+Hi Mike,
 
-Signed-off-by: Mike Dunn <mikedunn@newsguy.com>
----
- drivers/video/backlight/pwm_bl.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+On Thu, Sep 12, 2013 at 11:35:52AM -0700, Mike Dunn wrote:
+> Currently the driver assumes that the values specified in the brightness-levels
+> device tree property increase as they are parsed from left to right.  But boards
+> that invert the signal between the PWM output and the backlight will need to
+> specify decreasing brightness-levels.  This patch removes the assumption that
+> the last element of the array is the max value, and instead searches the array
+> for the max value and uses that as the normalizing value when determining the
+> duty cycle.
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 1fea627..d66aaa0 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -27,6 +27,7 @@ struct pwm_bl_data {
- 	unsigned int		period;
- 	unsigned int		lth_brightness;
- 	unsigned int		*levels;
-+	unsigned int		max_level;
- 	int			(*notify)(struct device *,
- 					  int brightness);
- 	void			(*notify_after)(struct device *,
-@@ -57,7 +58,7 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
- 
- 		if (pb->levels) {
- 			duty_cycle = pb->levels[brightness];
--			max = pb->levels[max];
-+			max = pb->levels[pb->max_level];
- 		} else {
- 			duty_cycle = brightness;
- 		}
-@@ -195,7 +196,15 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	}
- 
- 	if (data->levels) {
--		max = data->levels[data->max_brightness];
-+		int i, max_value = 0, max_idx = 0;
-+		for (i = 0; i <= data->max_brightness; i++) {
-+			if (data->levels[i] > max_value) {
-+				max_value = data->levels[i];
-+				max_idx = i;
-+			}
-+		}
-+		pb->max_level = max_idx;
-+		max = data->levels[max_idx];
- 		pb->levels = data->levels;
- 	} else
- 		max = data->max_brightness;
+Note there's also support for inverted PWMs in the PWM framework
+provided your hardware supports this.
+
+Sascha
+
 -- 
-1.8.1.5
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
