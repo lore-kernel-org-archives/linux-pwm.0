@@ -1,45 +1,77 @@
-Return-Path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-db8lp0184.outbound.messaging.microsoft.com ([213.199.154.184]:30432
-	"EHLO db8outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752361Ab3IPCtp convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Sun, 15 Sep 2013 22:49:45 -0400
-From: Xiubo Li-B47053 <B47053@freescale.com>
-Subject: RE: [PATCHv4 4/4] Documentation: Add device tree bindings for
+Return-Path: <sha@pengutronix.de>
+Date: Tue, 17 Sep 2013 12:33:01 +0200
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: [PATCHv4 4/4] Documentation: Add device tree bindings for
  Freescale FTM PWM.
-Date: Mon, 16 Sep 2013 02:49:06 +0000
-Message-ID: <1DD289F6464F0949A2FCA5AA6DC23F82833236@039-SN2MPN1-013.039d.mgd.msft.net>
+Message-ID: <20130917103301.GC30088@pengutronix.de>
 References: <1379051922-4930-1-git-send-email-Li.Xiubo@freescale.com>
  <1379051922-4930-5-git-send-email-Li.Xiubo@freescale.com>
- <523392EA.6050909@wwwdotorg.org>
-In-Reply-To: <523392EA.6050909@wwwdotorg.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1379051922-4930-5-git-send-email-Li.Xiubo@freescale.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Stephen Warren <swarren@wwwdotorg.org>, Linus Walleij <linus.walleij@linaro.org>
-Cc: Guo Shawn-R65073 <r65073@freescale.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "t.figa@samsung.com" <t.figa@samsung.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+To: Xiubo Li <Li.Xiubo@freescale.com>
+Cc: r65073@freescale.com, thierry.reding@gmail.com, swarren@wwwdotorg.org, t.figa@samsung.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 
-> > +- fsl,pwm-counter-clk: The FTM PWM counter clock source, should be
-> > +one of the
-> > +  entries in clock-names.
+On Fri, Sep 13, 2013 at 01:58:42PM +0800, Xiubo Li wrote:
+> This adds the Document for Freescale FTM PWM driver under
+> Documentation/devicetree/bindings/pwm/.
 > 
-> So the IP block has 3 input clocks, and also a mux to select which one to
-> use? That sounds slightly unusual, but possible.
+> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
+> ---
+>  .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        | 36 ++++++++++++++++++++++
+>  1 file changed, 36 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
 > 
-> If there is really only 1 clock input to the IP block, and the mux is
-> part of some other module, then this binding should have only 1 entry in
-> clocks.
-> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt b/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+> new file mode 100644
+> index 0000000..e736806
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+> @@ -0,0 +1,36 @@
+> +Freescale FTM PWM controller
+> +
+> +Required properties:
+> +- compatible: Should be "fsl,vf610-ftm-pwm"
+> +- reg: Physical base address and length of the controller's registers
+> +- #pwm-cells: Should be 3. See pwm.txt in this directory for a description of
+> +  the cells format.
+> +- clock-names : Includes the following module clock source entries:
+> +    "ftm0" (system clock),
+> +    "ftm0_fix_sel" (fixed frequency clock),
+> +    "ftm0_ext_sel" (external clock)
+> +- clocks : Must contain an entry list for entries in clock-names.
+> +- fsl,pwm-counter-clk: The FTM PWM counter clock source, should be one of the
+> +  entries in clock-names.
+> +- For each channel's pinctrl, the "chN-active" and "chN-idle" states should be
+> +  implemented at the same time.
 
-Yes, there are 3 input clocks that can be selectable, and the mux is inside the FTM IP block.
+I thought about this active/idle pinctrl stuff again. It should be
+removed from the PWM driver. The above is used to control the PWM output
+state when the PWM is disabled, so that for example a backlight stays
+disabled after a call to pwm_disable.
 
+IMO this is wrong. Instead, the pwm client drivers (pwm_backlight)
+shouldn't assume a particular output state of the PWM after a pwm
+disable. Instead they should simply set the PWM to a duty cycle of 0%
+(or 100% for inverted) to effectively disable it. If then a PWM driver
+can optimize this to actually disabling the PWM completely, then fine,
+but that's an optimization.
 
-Thanks.
+If the handoff of PWM pins from bootloader state to regular state causes
+problems like flashing backlights or LEDs due to the pinctrl framework
+configuring the iomux before the PWM driver takes over, then the pinctrl
+should be done from the client drivers (pwm_backlight, pwm_led), not
+from the pwm driver and not from the pinctrl framework before
+initializing the clients.
 
---
-Best Regard,
-Xiubo
+So NACK to this complex pinctrl setup in this pwm driver.
 
+Sascha
+
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
