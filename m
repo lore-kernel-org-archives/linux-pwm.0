@@ -1,45 +1,53 @@
-Return-Path: <Nicolas.FERRE@atmel.com>
-Message-ID: <523AA6A1.4070000@atmel.com>
-Date: Thu, 19 Sep 2013 09:24:17 +0200
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Return-Path: <linux-arm-kernel-bounces+thierry.reding=gmail.com@lists.infradead.org>
+From: Boris BREZILLON <b.brezillon@overkiz.com>
+Subject: [PATCH 2/2] pwm: atmel-tcb: fix max time computation for slow clk
+ source
+Date: Wed, 18 Sep 2013 17:06:21 +0200
+Message-Id: <1379516781-23379-1-git-send-email-b.brezillon@overkiz.com>
+In-Reply-To: <1379516720-23289-1-git-send-email-b.brezillon@overkiz.com>
+References: <1379516720-23289-1-git-send-email-b.brezillon@overkiz.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>, 
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 MIME-Version: 1.0
-Subject: Re: [PATCH 1/2] pwm: atmel-tcb: add missing clk source config
-References: <1379516720-23289-1-git-send-email-b.brezillon@overkiz.com> <1379516765-23342-1-git-send-email-b.brezillon@overkiz.com>
-In-Reply-To: <1379516765-23342-1-git-send-email-b.brezillon@overkiz.com>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-Path: nicolas.ferre@atmel.com
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+thierry.reding=gmail.com@lists.infradead.org
 List-ID: <linux-pwm.vger.kernel.org>
-To: Boris BREZILLON <b.brezillon@overkiz.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Boris BREZILLON <b.brezillon@overkiz.com>
 
-On 18/09/2013 17:06, Boris BREZILLON :
-> Clock source changes are never applied to the CMR register.
-> This may lead to wrong period/duty cycle configuration.
->
-> Signed-off-by: Boris BREZILLON <b.brezillon@overkiz.com>
+Use the the tcb counter width to compute the maximum time that can be
+represented using the slow clock source instead of the static 16 bit width.
 
-Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Signed-off-by: Boris BREZILLON <b.brezillon@overkiz.com>
+---
+ drivers/pwm/pwm-atmel-tcb.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> ---
->   drivers/pwm/pwm-atmel-tcb.c |    2 ++
->   1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
-> index ba6ce01..0266969 100644
-> --- a/drivers/pwm/pwm-atmel-tcb.c
-> +++ b/drivers/pwm/pwm-atmel-tcb.c
-> @@ -249,6 +249,8 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
->   		}
->   	}
->
-> +	cmr |= (tcbpwm->div & ATMEL_TC_TCCLKS);
-> +
->   	__raw_writel(cmr, regs + ATMEL_TC_REG(group, CMR));
->
->   	if (index == 0)
->
-
-
+diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
+index 0266969..f3dcd02 100644
+--- a/drivers/pwm/pwm-atmel-tcb.c
++++ b/drivers/pwm/pwm-atmel-tcb.c
+@@ -307,7 +307,7 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		i = slowclk;
+ 		rate = 32768;
+ 		min = div_u64(NSEC_PER_SEC, rate);
+-		max = min << 16;
++		max = min << tc->tcb_config->counter_width;
+ 
+ 		/* If period is too big return ERANGE error */
+ 		if (max < period_ns)
 -- 
-Nicolas Ferre
+1.7.9.5
+
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
