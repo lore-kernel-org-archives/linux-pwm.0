@@ -1,80 +1,58 @@
-Return-Path: <alexandre.belloni@free-electrons.com>
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH v2] PWM: atmel-pwm: use request/free instead of enable/disable
-Date: Mon, 30 Sep 2013 17:22:33 +0200
-Message-Id: <1380554553-25676-1-git-send-email-alexandre.belloni@free-electrons.com>
+Return-Path: <mikedunn@newsguy.com>
+From: Mike Dunn <mikedunn@newsguy.com>
+Subject: [PATCH RESEND v5 0/2] PWM: PXA: add device tree support to PWM driver
+Date: Sat, 21 Sep 2013 12:19:32 -0700
+Message-Id: <1379791174-2369-1-git-send-email-mikedunn@newsguy.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, voice.shen@atmel.com, Nicolas Ferre <nicolas.ferre@atmel.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: linux-pwm@vger.kernel.org
+Cc: Mike Dunn <mikedunn@newsguy.com>, Grant Likely <grant.likely@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <rob.herring@calxeda.com>, Haojian Zhuang <haojian.zhuang@linaro.org>, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Chao Xie <chao.xie@marvell.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian Campbell <ian.campbell@citrix.com>
 
-I found that disabling a pwm while it is at a low level will actually put it
-back at a high level. The main symptom is that leds-pwm is calling pwm_disable()
-after setting the duty cycle to 0. Hence, instead of getting a switched off LED,
-you get an LED lit up at full brightness.
+Dang! Sorry, please disregard previous patch set.
+RESENDing because previous set did not include the file
+Documentation/devicetree/bindings/pwm/pxa-pwm.txt
 
-Solve that by using the request and free callbacks to enable and disable the
-pwm channels and the clock.
+This is now a patch set because the changes to pxa27x.dtsi have been moved to a
+separate patch.  This was done so that it can go through the arm-soc tree.
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
-Applies on [PATCH v5] PWM: atmel-pwm: add PWM controller driver
+Changle log:
+v5:
+- changes to pxa27x.dtsi moved to a separate patch
+- minor changes in phrasing made to bindings documentation
+- cast removed from void *
+- dummy functions for !CONFIG_OF removed; called only if (IS_ENABLED(CONFIG_OF)
+- if-else block in pxa_pwm_get_id_dt() replaced with ternary operator
 
-Changes in v2:
-  - add dummies pwm_enable and pwm_disable to be able to register the pwm chip.
+v4:
+- add second "compatible" string to pxa27x.dtsi
+- change phrasing in binding doc pxa-pwm.txt to "one or more of"
 
- drivers/pwm/pwm-atmel.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+v3:
+- remove support for the polarity flag
+- remove per-chip pwm index cell; define custom of_xlate()
+   (now #pwm-cells = <1>)
+- "compatible" strings for all devices added to OF match table
+- various stylistic changes recommended by reviewers
 
-diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-index b4df36c..732312c 100644
---- a/drivers/pwm/pwm-atmel.c
-+++ b/drivers/pwm/pwm-atmel.c
-@@ -206,7 +206,7 @@ static int atmel_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
- 	return 0;
- }
- 
--static int atmel_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-+static int atmel_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
- 	int ret;
-@@ -222,7 +222,7 @@ static int atmel_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	return 0;
- }
- 
--static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-+static void atmel_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
- 
-@@ -231,9 +231,28 @@ static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	clk_disable(atmel_pwm->clk);
- }
- 
-+static int atmel_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	/*
-+	 * This is a dummy function, required to be able to register the pwm
-+	 * chip, see pwmadd_chip() in pwm/core.c
-+	 */
-+	return 0;
-+}
-+
-+static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	/*
-+	 * This is a dummy function, required to be able to register the pwm
-+	 * chip, see pwmadd_chip() in pwm/core.c
-+	 */
-+}
-+
- static const struct pwm_ops atmel_pwm_ops = {
- 	.config = atmel_pwm_config,
- 	.set_polarity = atmel_pwm_set_polarity,
-+	.request = atmel_pwm_request,
-+	.free = atmel_pwm_free,
- 	.enable = atmel_pwm_enable,
- 	.disable = atmel_pwm_disable,
- 	.owner = THIS_MODULE,
+v2:
+- of_match_table contains only the "pxa250-pwm" compatible string; require one
+  device instance per pwm
+- add Documentation/devicetree/bindings/pwm/pxa-pwm.txt
+- add support for polarity flag in DT and implement set_polarity() method
+  (the treo 680 inverts the signal between pwm out and backlight)
+- return -EINVAL instead of -ENODEV if platform data or DT node not found
+- output dev_info string if platform data missing
+- expanded CC list of patch
+
+
+Mike Dunn (2):
+  PWM: PXA: add device tree support to PWM driver
+  PXA: add PWM nodes to pxa27x.dtsi
+
+ Documentation/devicetree/bindings/pwm/pxa-pwm.txt | 30 +++++++++++++
+ arch/arm/boot/dts/pxa27x.dtsi                     | 24 +++++++++++
+ drivers/pwm/pwm-pxa.c                             | 52 ++++++++++++++++++++++-
+ 3 files changed, 105 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pxa-pwm.txt
+
 -- 
-1.8.1.2
+1.8.1.5
