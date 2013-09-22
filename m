@@ -1,63 +1,117 @@
-Return-Path: <lee.jones@linaro.org>
-Return-Path: <lee.jones@linaro.org>
-Date: Thu, 19 Sep 2013 12:56:30 +0100
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v3 4/4] Documentation: add LP3943 DT bindings and document
-Message-ID: <20130919115629.GF22389@lee--X1>
-References: <1378949700-6384-1-git-send-email-milo.kim@ti.com>
- <20130912152455.GN11227@lee--X1>
- <20130915112755.GB9765@ulmo>
- <20130916073000.GA3999@lee--X1>
- <20130919112545.GC10852@ulmo>
+Return-Path: <Milo.Kim@ti.com>
+Message-ID: <523F0040.6050900@ti.com>
+Date: Sun, 22 Sep 2013 23:35:44 +0900
+From: Milo Kim <milo.kim@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20130919112545.GC10852@ulmo>
+Subject: Re: [PATCH v3 4/4] Documentation: add LP3943 DT bindings and document
+References: <1378949700-6384-1-git-send-email-milo.kim@ti.com> <20130912152455.GN11227@lee--X1>
+In-Reply-To: <20130912152455.GN11227@lee--X1>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 List-ID: <linux-pwm.vger.kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Milo Kim <milo.kim@ti.com>, Samuel Ortiz <sameo@linux.intel.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, devicetree@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Samuel Ortiz <sameo@linux.intel.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org
 
-On Thu, 19 Sep 2013, Thierry Reding wrote:
 
-> On Mon, Sep 16, 2013 at 08:30:00AM +0100, Lee Jones wrote:
-> > On Sun, 15 Sep 2013, Thierry Reding wrote:
-> > 
-> > > On Thu, Sep 12, 2013 at 04:24:55PM +0100, Lee Jones wrote:
-> > > > On Thu, 12 Sep 2013, Milo Kim wrote:
-> > > [...]
-> > > > > diff --git a/Documentation/lp3943.txt b/Documentation/lp3943.txt
-> > > > > new file mode 100644
-> > > > > index 0000000..576ebd0
-> > > > > --- /dev/null
-> > > > > +++ b/Documentation/lp3943.txt
-> > > [...]
-> > > > If this stuff is really important (and most of it really isn't), then
-> > > > put it either in the commit log or in the driver.
-> > > 
-> > > I can only speak for myself, but the initial driver commit message is
-> > > about the last place I look for this kind of information. I'd expect it
-> > > to be either somewhere in Documentation/ or in one of the source files.
-> > > In this case I'd probably look at the MFD core driver source file. More
-> > > likely, even, I'd just go google "LP3943" and grab a public datasheet
-> > > from TI where all of this can hopefully be found.
-> > 
-> > The latter option is the most common. If the datasheet is publicly
-> > available, then there is no rhyme nor reason to put it in the kernel
-> > source too. /Documentation is already overloaded, it would be even
-> > more so if each and every driver residing in the kernel decided to
-> > bulk it up further.
-> 
-> Okay. So in this case perhaps Milo should simply drop the documentation
-> file. Perhaps link to the public datasheet from on of the source files,
-> although that could be problematic if the URL isn't permanent.
+Hi Lee,
 
-I'm not sure even that's required.
+On 09/13/2013 12:24 AM, Lee Jones wrote:
+> On Thu, 12 Sep 2013, Milo Kim wrote:
 
-I just Googled it and found the datasheet on the first hit.
+...
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+>> new file mode 100644
+>> index 0000000..576ebd0
+>> --- /dev/null
+>> +++ b/Documentation/lp3943.txt
+>> @@ -0,0 +1,62 @@
+>> +TI/National Semiconductor LP3943 MFD driver
+>> +===========================================
+>> +
+>> +LP3943 is an integrated device capable of driving 16 output channels.
+>> +It can be used for GPIO expander and PWM generators.
+>> +LP3493 registers are controlled via the I2C interface.
+>> +
+>> +Driver structure
+>> +----------------
+>> +                                  LED control    General usage for a device
+>> +                                  ___________   ____________________________
+>> +
+>> +  LP3943 MFD ---- GPIO expander    leds-gpio        eg) HW enable pin
+>> +              |
+>> +              --- PWM generator    leds-pwm         eg) PWM input
+>> +
+>> +
+>> +Why do we need GPIO and PWM drivers instead of LED driver?
+>> +To support LED control and general usage, GPIO and PWM drivers are necessary.
+>> +
+>> +According to the datasheet(1), it's just a LED driver which has 16 channels.
+>> +But here is another application, a GPIO expander.(2)
+>> +
+>> +  (1) http://www.ti.com/lit/ds/snvs256b/snvs256b.pdf
+>> +  (2) http://www.ti.com/lit/an/snva287a/snva287a.pdf
+>> +
+>> +Internal two PWM channels are used for LED dimming effect.
+>> +And each output pin can be used as a GPIO as well.
+>> +LED functionality can work with GPIOs or PWMs.
+>> +LEDs can be controlled with legacy leds-gpio(static brightness) or
+>> +leds-pwm drivers(dynamic brightness control).
+>> +Additionally, it can be used for generic GPIO and PWM controller.
+>> +For example, a GPIO is HW enable pin of a device.
+>> +PWM is input pin of a backlight device.
+>> +
+>> +
+>> +LP3943 PWM port map
+>> +-------------------
+>> +Each PWM channel can be mapped to one or multiple output pins.
+>> +
+>> +For example, PWM 0 is used for a backlight device.
+>> +PWM 1 is for RGB LEDs.
+>> +
+>> +  PWM channel    Output pins    PWM consumer
+>> +  ___________    ___________    ____________
+>> +  PWM 0          pin 1          backlight
+>> +  PWM 1          pin 7, 8, 9    RGB LEDs
+>> +
+>> +Then, PWM port map is as below.
+>> +PWM 0: num_outputs = 1, output = pin 1
+>> +PWM 1: num_outputs = 3, output = pin 7, 8, 9
+>> +
+>> +The 'lp3943_pwm_map' structure is used for this feature.
+>> +
+>> +
+>> +Device tree supported
+>> +---------------------
+>> +Please refer to the documents below.
+>> +
+>> +Documentation/devicetree/bindings/mfd/lp3943.txt
+>> +Documentation/devicetree/bindings/gpio/gpio-lp3943.txt
+>> +Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
+>
+> Why do you need to document your driver in this way?
+>
+> If this stuff is really important (and most of it really isn't), then
+> put it either in the commit log or in the driver.
+
+Unnecessary documentation makes it noisy, but I think the LP3943 still 
+needs the driver documentation for better understanding.
+
+Many people think LP3943 is just LED driver, but I really want to share 
+the application usages - PWM generators and GPIO expanders.
+If the driver just supports LED functionality, then it would be created 
+as LED class driver. However, this patch-set enables more generic driver 
+usages.
+So, this documentation would be helpful.
+
+And I want to keep the code and the documentation separate.
+If the link address is changed, then only documentation file will be 
+modified, not source file.
+
+So, I'd like to create the fifth patch-set with new MFD documentation 
+subdirectory.
+Additionally, LP3943 platform data example code will be added in the 
+'Documentation/mfd/lp3943.txt'. It's for a platform which doesn't 
+support the device tree.
+
+Best regards,
+Milo
