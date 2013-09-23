@@ -1,128 +1,176 @@
 Return-Path: <thierry.reding@gmail.com>
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH 01/10] pwm-backlight: Refactor backlight power on/off
-Date: Mon, 23 Sep 2013 23:40:58 +0200
-Message-Id: <1379972467-11243-2-git-send-email-treding@nvidia.com>
+Subject: [PATCH 08/10] pwm-backlight: Use new enable_gpio field
+Date: Mon, 23 Sep 2013 23:41:05 +0200
+Message-Id: <1379972467-11243-9-git-send-email-treding@nvidia.com>
 In-Reply-To: <1379972467-11243-1-git-send-email-treding@nvidia.com>
 References: <1379972467-11243-1-git-send-email-treding@nvidia.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Tony Lindgren <tony@atomide.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, openezx-devel@lists.openezx.org, linux-samsung-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-In preparation for adding an optional regulator and enable GPIO to the
-driver, split the power on and power off sequences into separate
-functions to reduce code duplication at the multiple call sites.
+Make use of the new enable_gpio field and allow it to be set from DT as
+well. Now that all legacy users of platform data have been converted to
+initialize this field to an invalid value, it is safe to use the field
+from the driver.
 
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/video/backlight/pwm_bl.c | 59 ++++++++++++++++++++++++----------------
- 1 file changed, 36 insertions(+), 23 deletions(-)
+ .../bindings/video/backlight/pwm-backlight.txt     |  3 ++
+ drivers/video/backlight/pwm_bl.c                   | 54 +++++++++++++++++++---
+ 2 files changed, 50 insertions(+), 7 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt b/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
+index 1e4fc72..052eb03 100644
+--- a/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
++++ b/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
+@@ -14,6 +14,7 @@ Required properties:
+ Optional properties:
+   - pwm-names: a list of names for the PWM devices specified in the
+                "pwms" property (see PWM binding[0])
++  - enable-gpios: a list of GPIOs to enable and disable the backlight
+ 
+ [0]: Documentation/devicetree/bindings/pwm/pwm.txt
+ 
+@@ -25,4 +26,6 @@ Example:
+ 
+ 		brightness-levels = <0 4 8 16 32 64 128 255>;
+ 		default-brightness-level = <6>;
++
++		enable-gpios = <&gpio 58 0>;
+ 	};
 diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 36db5d9..8a49b30 100644
+index 8a49b30..506810c 100644
 --- a/drivers/video/backlight/pwm_bl.c
 +++ b/drivers/video/backlight/pwm_bl.c
-@@ -35,6 +35,30 @@ struct pwm_bl_data {
- 	void			(*exit)(struct device *);
- };
+@@ -10,6 +10,8 @@
+  * published by the Free Software Foundation.
+  */
  
-+static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness,
-+				   int max)
-+{
-+	int duty_cycle, err;
++#include <linux/gpio.h>
++#include <linux/of_gpio.h>
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/init.h>
+@@ -27,6 +29,8 @@ struct pwm_bl_data {
+ 	unsigned int		period;
+ 	unsigned int		lth_brightness;
+ 	unsigned int		*levels;
++	int			enable_gpio;
++	unsigned long		enable_gpio_flags;
+ 	int			(*notify)(struct device *,
+ 					  int brightness);
+ 	void			(*notify_after)(struct device *,
+@@ -51,12 +55,27 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness,
+ 		     pb->lth_brightness;
+ 
+ 	pwm_config(pb->pwm, duty_cycle, pb->period);
 +
-+	if (pb->levels) {
-+		duty_cycle = pb->levels[brightness];
-+		max = pb->levels[max];
-+	} else {
-+		duty_cycle = brightness;
++	if (gpio_is_valid(pb->enable_gpio)) {
++		if (pb->enable_gpio_flags & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
++			gpio_set_value(pb->enable_gpio, 0);
++		else
++			gpio_set_value(pb->enable_gpio, 1);
 +	}
 +
-+	duty_cycle = (duty_cycle * (pb->period - pb->lth_brightness) / max) +
-+		     pb->lth_brightness;
-+
-+	pwm_config(pb->pwm, duty_cycle, pb->period);
-+	pwm_enable(pb->pwm);
-+}
-+
-+static void pwm_backlight_power_off(struct pwm_bl_data *pb)
-+{
-+	pwm_disable(pb->pwm);
-+}
-+
- static int pwm_backlight_update_status(struct backlight_device *bl)
+ 	pwm_enable(pb->pwm);
+ }
+ 
+ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
  {
- 	struct pwm_bl_data *pb = bl_get_data(bl);
-@@ -49,24 +73,10 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
- 	if (pb->notify)
- 		brightness = pb->notify(pb->dev, brightness);
- 
--	if (brightness == 0) {
--		pwm_config(pb->pwm, 0, pb->period);
--		pwm_disable(pb->pwm);
--	} else {
--		int duty_cycle;
--
--		if (pb->levels) {
--			duty_cycle = pb->levels[brightness];
--			max = pb->levels[max];
--		} else {
--			duty_cycle = brightness;
--		}
--
--		duty_cycle = pb->lth_brightness +
--		     (duty_cycle * (pb->period - pb->lth_brightness) / max);
--		pwm_config(pb->pwm, duty_cycle, pb->period);
--		pwm_enable(pb->pwm);
--	}
-+	if (brightness > 0)
-+		pwm_backlight_power_on(pb, brightness, max);
-+	else
-+		pwm_backlight_power_off(pb);
- 
- 	if (pb->notify_after)
- 		pb->notify_after(pb->dev, brightness);
-@@ -267,10 +277,11 @@ static int pwm_backlight_remove(struct platform_device *pdev)
- 	struct pwm_bl_data *pb = bl_get_data(bl);
- 
- 	backlight_device_unregister(bl);
--	pwm_config(pb->pwm, 0, pb->period);
--	pwm_disable(pb->pwm);
-+	pwm_backlight_power_off(pb);
+ 	pwm_disable(pb->pwm);
 +
- 	if (pb->exit)
- 		pb->exit(&pdev->dev);
-+
- 	return 0;
++	if (gpio_is_valid(pb->enable_gpio)) {
++		if (pb->enable_gpio_flags & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
++			gpio_set_value(pb->enable_gpio, 1);
++		else
++			gpio_set_value(pb->enable_gpio, 0);
++	}
  }
  
-@@ -282,10 +293,12 @@ static int pwm_backlight_suspend(struct device *dev)
+ static int pwm_backlight_update_status(struct backlight_device *bl)
+@@ -108,6 +127,7 @@ static int pwm_backlight_parse_dt(struct device *dev,
+ 				  struct platform_pwm_backlight_data *data)
+ {
+ 	struct device_node *node = dev->of_node;
++	enum of_gpio_flags flags;
+ 	struct property *prop;
+ 	int length;
+ 	u32 value;
+@@ -148,11 +168,10 @@ static int pwm_backlight_parse_dt(struct device *dev,
+ 		data->max_brightness--;
+ 	}
  
- 	if (pb->notify)
- 		pb->notify(pb->dev, 0);
--	pwm_config(pb->pwm, 0, pb->period);
--	pwm_disable(pb->pwm);
-+
-+	pwm_backlight_power_off(pb);
-+
- 	if (pb->notify_after)
- 		pb->notify_after(pb->dev, 0);
-+
+-	/*
+-	 * TODO: Most users of this driver use a number of GPIOs to control
+-	 *       backlight power. Support for specifying these needs to be
+-	 *       added.
+-	 */
++	data->enable_gpio = of_get_named_gpio_flags(node, "enable-gpios", 0,
++						    &flags);
++	if (gpio_is_valid(data->enable_gpio) && (flags & OF_GPIO_ACTIVE_LOW))
++		data->enable_gpio_flags |= PWM_BACKLIGHT_GPIO_ACTIVE_LOW;
+ 
  	return 0;
  }
+@@ -210,12 +229,30 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	} else
+ 		max = data->max_brightness;
  
-@@ -294,6 +307,7 @@ static int pwm_backlight_resume(struct device *dev)
- 	struct backlight_device *bl = dev_get_drvdata(dev);
++	pb->enable_gpio = data->enable_gpio;
++	pb->enable_gpio_flags = data->enable_gpio_flags;
+ 	pb->notify = data->notify;
+ 	pb->notify_after = data->notify_after;
+ 	pb->check_fb = data->check_fb;
+ 	pb->exit = data->exit;
+ 	pb->dev = &pdev->dev;
  
- 	backlight_update_status(bl);
++	if (gpio_is_valid(pb->enable_gpio)) {
++		unsigned long flags;
 +
++		if (pb->enable_gpio_flags & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
++			flags = GPIOF_OUT_INIT_HIGH;
++		else
++			flags = GPIOF_OUT_INIT_LOW;
++
++		ret = gpio_request_one(pb->enable_gpio, flags, "enable");
++		if (ret < 0) {
++			dev_err(&pdev->dev, "failed to request GPIO#%d: %d\n",
++				pb->enable_gpio, ret);
++			goto err_alloc;
++		}
++	}
++
+ 	pb->pwm = devm_pwm_get(&pdev->dev, NULL);
+ 	if (IS_ERR(pb->pwm)) {
+ 		dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
+@@ -224,7 +261,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 		if (IS_ERR(pb->pwm)) {
+ 			dev_err(&pdev->dev, "unable to request legacy PWM\n");
+ 			ret = PTR_ERR(pb->pwm);
+-			goto err_alloc;
++			goto err_gpio;
+ 		}
+ 	}
+ 
+@@ -249,7 +286,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	if (IS_ERR(bl)) {
+ 		dev_err(&pdev->dev, "failed to register backlight\n");
+ 		ret = PTR_ERR(bl);
+-		goto err_alloc;
++		goto err_gpio;
+ 	}
+ 
+ 	if (data->dft_brightness > data->max_brightness) {
+@@ -265,6 +302,9 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	platform_set_drvdata(pdev, bl);
  	return 0;
- }
- #endif
-@@ -317,4 +331,3 @@ module_platform_driver(pwm_backlight_driver);
- MODULE_DESCRIPTION("PWM based Backlight Driver");
- MODULE_LICENSE("GPL");
- MODULE_ALIAS("platform:pwm-backlight");
--
+ 
++err_gpio:
++	if (gpio_is_valid(pb->enable_gpio))
++		gpio_free(pb->enable_gpio);
+ err_alloc:
+ 	if (data->exit)
+ 		data->exit(&pdev->dev);
 -- 
 1.8.4
