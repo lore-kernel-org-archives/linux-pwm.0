@@ -1,39 +1,128 @@
-Return-Path: <horms@verge.net.au>
-Date: Wed, 25 Sep 2013 14:40:00 +0900
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH 06/10] ARM: shmobile: Initialize PWM backlight
- enable_gpio field
-Message-ID: <20130925053957.GF1916@verge.net.au>
+Return-Path: <thierry.reding@gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [PATCH 01/10] pwm-backlight: Refactor backlight power on/off
+Date: Mon, 23 Sep 2013 23:40:58 +0200
+Message-Id: <1379972467-11243-2-git-send-email-treding@nvidia.com>
+In-Reply-To: <1379972467-11243-1-git-send-email-treding@nvidia.com>
 References: <1379972467-11243-1-git-send-email-treding@nvidia.com>
- <1379972467-11243-7-git-send-email-treding@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1379972467-11243-7-git-send-email-treding@nvidia.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Tony Lindgren <tony@atomide.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Magnus Damm <magnus.damm@gmail.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, openezx-devel@lists.openezx.org, linux-samsung-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Tony Lindgren <tony@atomide.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, openezx-devel@lists.openezx.org, linux-samsung-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, Sep 23, 2013 at 11:41:03PM +0200, Thierry Reding wrote:
-> The GPIO API defines 0 as being a valid GPIO number, so this field needs
-> to be initialized explicitly.
-> 
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> ---
->  arch/arm/mach-shmobile/board-armadillo800eva.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/arch/arm/mach-shmobile/board-armadillo800eva.c b/arch/arm/mach-shmobile/board-armadillo800eva.c
-> index 7f8f607..6ccb854 100644
-> --- a/arch/arm/mach-shmobile/board-armadillo800eva.c
-> +++ b/arch/arm/mach-shmobile/board-armadillo800eva.c
-> @@ -423,6 +423,7 @@ static struct platform_pwm_backlight_data pwm_backlight_data = {
->  	.max_brightness = 255,
->  	.dft_brightness = 255,
->  	.pwm_period_ns = 33333, /* 30kHz */
-> +	.enable_gpio = -1,
->  };
->  
->  static struct platform_device pwm_backlight_device = {
+In preparation for adding an optional regulator and enable GPIO to the
+driver, split the power on and power off sequences into separate
+functions to reduce code duplication at the multiple call sites.
 
-Acked-by: Simon Horman <horms+renesas@verge.net.au>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+---
+ drivers/video/backlight/pwm_bl.c | 59 ++++++++++++++++++++++++----------------
+ 1 file changed, 36 insertions(+), 23 deletions(-)
+
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 36db5d9..8a49b30 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -35,6 +35,30 @@ struct pwm_bl_data {
+ 	void			(*exit)(struct device *);
+ };
+ 
++static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness,
++				   int max)
++{
++	int duty_cycle, err;
++
++	if (pb->levels) {
++		duty_cycle = pb->levels[brightness];
++		max = pb->levels[max];
++	} else {
++		duty_cycle = brightness;
++	}
++
++	duty_cycle = (duty_cycle * (pb->period - pb->lth_brightness) / max) +
++		     pb->lth_brightness;
++
++	pwm_config(pb->pwm, duty_cycle, pb->period);
++	pwm_enable(pb->pwm);
++}
++
++static void pwm_backlight_power_off(struct pwm_bl_data *pb)
++{
++	pwm_disable(pb->pwm);
++}
++
+ static int pwm_backlight_update_status(struct backlight_device *bl)
+ {
+ 	struct pwm_bl_data *pb = bl_get_data(bl);
+@@ -49,24 +73,10 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
+ 	if (pb->notify)
+ 		brightness = pb->notify(pb->dev, brightness);
+ 
+-	if (brightness == 0) {
+-		pwm_config(pb->pwm, 0, pb->period);
+-		pwm_disable(pb->pwm);
+-	} else {
+-		int duty_cycle;
+-
+-		if (pb->levels) {
+-			duty_cycle = pb->levels[brightness];
+-			max = pb->levels[max];
+-		} else {
+-			duty_cycle = brightness;
+-		}
+-
+-		duty_cycle = pb->lth_brightness +
+-		     (duty_cycle * (pb->period - pb->lth_brightness) / max);
+-		pwm_config(pb->pwm, duty_cycle, pb->period);
+-		pwm_enable(pb->pwm);
+-	}
++	if (brightness > 0)
++		pwm_backlight_power_on(pb, brightness, max);
++	else
++		pwm_backlight_power_off(pb);
+ 
+ 	if (pb->notify_after)
+ 		pb->notify_after(pb->dev, brightness);
+@@ -267,10 +277,11 @@ static int pwm_backlight_remove(struct platform_device *pdev)
+ 	struct pwm_bl_data *pb = bl_get_data(bl);
+ 
+ 	backlight_device_unregister(bl);
+-	pwm_config(pb->pwm, 0, pb->period);
+-	pwm_disable(pb->pwm);
++	pwm_backlight_power_off(pb);
++
+ 	if (pb->exit)
+ 		pb->exit(&pdev->dev);
++
+ 	return 0;
+ }
+ 
+@@ -282,10 +293,12 @@ static int pwm_backlight_suspend(struct device *dev)
+ 
+ 	if (pb->notify)
+ 		pb->notify(pb->dev, 0);
+-	pwm_config(pb->pwm, 0, pb->period);
+-	pwm_disable(pb->pwm);
++
++	pwm_backlight_power_off(pb);
++
+ 	if (pb->notify_after)
+ 		pb->notify_after(pb->dev, 0);
++
+ 	return 0;
+ }
+ 
+@@ -294,6 +307,7 @@ static int pwm_backlight_resume(struct device *dev)
+ 	struct backlight_device *bl = dev_get_drvdata(dev);
+ 
+ 	backlight_update_status(bl);
++
+ 	return 0;
+ }
+ #endif
+@@ -317,4 +331,3 @@ module_platform_driver(pwm_backlight_driver);
+ MODULE_DESCRIPTION("PWM based Backlight Driver");
+ MODULE_LICENSE("GPL");
+ MODULE_ALIAS("platform:pwm-backlight");
+-
+-- 
+1.8.4
