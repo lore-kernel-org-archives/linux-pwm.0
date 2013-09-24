@@ -1,27 +1,25 @@
-Date: Tue, 24 Sep 2013 11:32:29 +0200
+Date: Tue, 24 Sep 2013 11:20:53 +0200
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: V2: Agenda for the Edinburgh mini-summit
-Message-ID: <20130924093229.GA19426@ulmo>
+Message-ID: <20130924092053.GB13971@ulmo>
 References: <201309101134.32883.hansverk@cisco.com>
  <52405427.6000002@samsung.com>
  <52406E5C.2020709@schinagl.nl>
  <5240A41A.6050207@gmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ew6BAiZeqk4r7MaW"
+	protocol="application/pgp-signature"; boundary="ADZbWkCsHQ7r3kzd"
 Content-Disposition: inline
 In-Reply-To: <5240A41A.6050207@gmail.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: Sylwester Nawrocki <sylvester.nawrocki@gmail.com>
-Cc: Oliver Schinagl <oliver+list@schinagl.nl>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Hans Verkuil <hansverk@cisco.com>, "media-workshop@linuxtv.org" <media-workshop@linuxtv.org>, Sakari Ailus <sakari.ailus@iki.fi>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>
+Cc: Oliver Schinagl <oliver+list@schinagl.nl>, Sylwester Nawrocki <s.nawrocki@samsung.com>, Hans Verkuil <hansverk@cisco.com>, "media-workshop@linuxtv.org" <media-workshop@linuxtv.org>, Sakari Ailus <sakari.ailus@iki.fi>, Bryan Wu <bryan.wu@canonical.com>, Richard Purdie <rpurdie@rpsys.net>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>
 
 
---ew6BAiZeqk4r7MaW
+--ADZbWkCsHQ7r3kzd
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-
-Resending using Bryan's correct email address.
 
 On Mon, Sep 23, 2013 at 10:27:06PM +0200, Sylwester Nawrocki wrote:
 > On 09/23/2013 06:37 PM, Oliver Schinagl wrote:
@@ -92,25 +90,25 @@ subsystem is a good fit for anything beyond that.
 
 Thierry
 
---ew6BAiZeqk4r7MaW
+--ADZbWkCsHQ7r3kzd
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.21 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSQVwsAAoJEN0jrNd/PrOhRTIQALGU9/sLgFsAwGtbFGuj/IiH
-uG2hexdTSP9ITplRppt+34tcVpuD7W5osnVRV49iCw6fOORR644DUszCzaM/k+nb
-5qiuLeiKJCJJKdReX3vmbUnDN+scaGz3WQIbsqJngtI+bPm7teIDhRJhlgO++AA/
-kMKvYP81KqSTdWd34E7dgYiaso83GR5WovVGAmYaBlm3ApnPCoqVpoD2bJ4PWsEh
-rrbIIs+TORdM0eyxRnaWz+aLBm0MQJW2+3mqx5Q0hPUiXmBG7c8rTPC6fwEDOJ7f
-SLeM/p/58X8g/+82ByASL7tcBF7DZt25yBX163ItG0eYCbQQBUrLGJG7nMtlfcls
-+bNidkjAqL+/rc2cS7d3nKSXr944cQJ0JoQBsENwmO6/wLkxYycqwtXa9E3/kfoC
-MJFTeVg1DQqzVykNCyGr/jaaOMztY6NS/rfMYtB2UtrP26+Cd8sXhAOt392Viou6
-LXA2jyEtq5ha1UH+TcoDSnM+Rzkv2O2uLryVMDzYWT6RgcVHwGOiePUDnA4d2Z20
-q0jVAhVDByNpf2fl+8dJUp6/nWfLQMqcGJJIgafL755r80MmZhLl+rh16tAqKkOj
-je53jrXJj8UDL8sEOxOiUSr/6yGSJSshJQ5pgwHCc4BjQyNtboskNZtrKhZWbwCN
-UkqWyNProiAlzXyu9daW
-=6Cs1
+iQIcBAEBAgAGBQJSQVl1AAoJEN0jrNd/PrOhY54QAK8p+tv+zHaallHRAqW6c1qs
+FRBY7oCORtuCvmVV64oRqsEZMEXOwnSAtxPDxJ/k2hJrVdd1vEa8vF34IwVsfi+s
+QVdiZ3JkVOuZ76bwCBLKq6/u/2VKsdJybSn/TVrvePmMG3mg7YtWP67zgPo9nd8d
+p+e0bZ2yg4dmh+eGwNAcmXAL9N9r0Qgh+AK3wnG+u1cACpIQMzg3PC341caMyVnp
+lA0Z7J7AEWceeoR7DVtuct7ab+VmjwaG0P+nxPTHAF5bp/VjsBhqX6ZahxEkXXC5
+rR9XVsy4wdMORsAvcdmyJKN/0ksN8iNIJGnOZ0P8XraN+11lwYUZxcCxRpydN7Z7
+BYczpi2/pYV8pJR5Ox7xQN1hgz/E6wAEcrJUyGVQ/l1wXViWdrNP6PpI53+hNHcd
+E1PvpDd4/GZJ5FeOntG7EN/fg9EJ4KpiSrh6YkfbeNH04QOgv9c6fF1MVOn0hRbd
+2FJbFtnVeh/WbHzSkjrUW7RHR7RvjG/kn2if24draxwXgbMJABMUoPCsvfvK7kV+
+b4ThU24Pv6BDahJ7TUZLDHaf9khf3ML+8HE06CW2d2bqXqlHXT9HqlICAJrWAsCm
+PoDpWPr5m0CvIxH/8TNEjMGO9pxOnD08Z/OgoagWmBo/c+lXy36IGa74Yc9Kbn4z
+glpK7OQwr6oABeqsVuNI
+=qUEd
 -----END PGP SIGNATURE-----
 
---ew6BAiZeqk4r7MaW--
+--ADZbWkCsHQ7r3kzd--
