@@ -1,110 +1,158 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Thu, 26 Sep 2013 14:02:49 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm-backlight: add support for device tree gpio control
-Message-ID: <20130926120248.GB1680@ulmo>
-References: <1378236372-15711-1-git-send-email-mikedunn@newsguy.com>
- <20130910172130.GC22111@ulmo>
- <523056A6.5060000@newsguy.com>
- <524408BE.40402@ti.com>
+Return-Path: <tomi.valkeinen@ti.com>
+Message-ID: <524427E5.50403@ti.com>
+Date: Thu, 26 Sep 2013 15:26:13 +0300
+From: Tomi Valkeinen <tomi.valkeinen@ti.com>
 MIME-Version: 1.0
+Subject: Re: [PATCH] pwm-backlight: add support for device tree gpio control
+References: <1378236372-15711-1-git-send-email-mikedunn@newsguy.com> <20130910172130.GC22111@ulmo> <523056A6.5060000@newsguy.com> <524408BE.40402@ti.com> <20130926120248.GB1680@ulmo>
+In-Reply-To: <20130926120248.GB1680@ulmo>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="tsOsTdHNUZQcU9Ye"
-Content-Disposition: inline
-In-Reply-To: <524408BE.40402@ti.com>
+	protocol="application/pgp-signature";
+	boundary="UJNc4luPBjkKhjtEhfIh1jvrTTtsENfJ4"
 List-ID: <linux-pwm.vger.kernel.org>
-To: Tomi Valkeinen <tomi.valkeinen@ti.com>
+To: Thierry Reding <thierry.reding@gmail.com>
 Cc: Mike Dunn <mikedunn@newsguy.com>, Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jg1.han@samsung.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>
 
-
---tsOsTdHNUZQcU9Ye
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--UJNc4luPBjkKhjtEhfIh1jvrTTtsENfJ4
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Sep 26, 2013 at 01:13:18PM +0300, Tomi Valkeinen wrote:
-> On 11/09/13 14:40, Mike Dunn wrote:
-> > On 09/10/2013 10:21 AM, Thierry Reding wrote:
+On 26/09/13 15:02, Thierry Reding wrote:
+> On Thu, Sep 26, 2013 at 01:13:18PM +0300, Tomi Valkeinen wrote:
+>> On 11/09/13 14:40, Mike Dunn wrote:
+>>> On 09/10/2013 10:21 AM, Thierry Reding wrote:
+>>
+>>>> Do you have a real setup that actually needs multiple GPIOs? Usually=
+
+>>>> such a setup requires some kind of timing or other additional constr=
+aint
+>>>> which can't be represented by this simple binding.
+>>>>
+>>>> Looking at the Palm Treo code it seems like the reason why multiple
+>>>> GPIOs are needed is because one is to enable the backlight, while th=
+e
+>>>> other is in fact used to enable the LCD panel.=20
+>>>
+>>>
+>>> There are actually four GPIOs involved!  (There is an embarrasingly h=
+orrible
+>>> hack in arch/arm/mach-pxa/palmtreo.c that handles the others.)  One i=
+s almost
+>>> certainly simply backlight power.  The other three are probably LCD r=
+elated.
+>>
+>> When you say "power", do you mean the gpio enables a regulator to feed=
+
+>> power to the backlight? If so, wouldn't that be a regulator, not gpio,=
+
+>> from the bl driver's point of view?
+>>
+>> Generally speaking, this same problem appears in many places, but for
+>> some reason especially in display. I'm a bit hesitant in adding "free
+>> form" gpio/regulator support for drivers, as, as Thierry pointed out,
+>> there are often timing requirements, or sometimes the gpios are
+>> inverted, or sometimes the gpio is, in fact, a reset gpio, where you'l=
+l
+>> assert the gpio for a short moment only.
 >=20
-> >> Do you have a real setup that actually needs multiple GPIOs? Usually
-> >> such a setup requires some kind of timing or other additional constrai=
-nt
-> >> which can't be represented by this simple binding.
-> >>
-> >> Looking at the Palm Treo code it seems like the reason why multiple
-> >> GPIOs are needed is because one is to enable the backlight, while the
-> >> other is in fact used to enable the LCD panel.=20
-> >=20
-> >=20
-> > There are actually four GPIOs involved!  (There is an embarrasingly hor=
-rible
-> > hack in arch/arm/mach-pxa/palmtreo.c that handles the others.)  One is =
-almost
-> > certainly simply backlight power.  The other three are probably LCD rel=
-ated.
+> I sent out another series a few days ago that somewhat obsoletes this
+> patch. What it does is basically add a single enable GPIO that can be
+> used to turn the backlight on and off. In a separate patch, support is
+> added for a power regulator. The combination of both should be able to
+> cover the majority of use-cases.
+
+But Mike's case required 4 GPIOs? Or can that be reduced to one gpio and
+one regulator?
+
+> That series doesn't handle any timing requirements, but again, for the
+> majority of the setups supported by a power supply and enable GPIO the
+> timing doesn't matter.
 >=20
-> When you say "power", do you mean the gpio enables a regulator to feed
-> power to the backlight? If so, wouldn't that be a regulator, not gpio,
-> from the bl driver's point of view?
+>> I haven't seen new versions for the power sequences framework (without=
+
+>> DT support), I think it could help us here a bit by simplifying how we=
+
+>> present the sequences inside the driver. But we still need multiple
+>> drivers or the same driver supporting multiple devices.
 >=20
-> Generally speaking, this same problem appears in many places, but for
-> some reason especially in display. I'm a bit hesitant in adding "free
-> form" gpio/regulator support for drivers, as, as Thierry pointed out,
-> there are often timing requirements, or sometimes the gpios are
-> inverted, or sometimes the gpio is, in fact, a reset gpio, where you'll
-> assert the gpio for a short moment only.
+> I'm not sure if power sequences will be very helpful here. There was an=
 
-I sent out another series a few days ago that somewhat obsoletes this
-patch. What it does is basically add a single enable GPIO that can be
-used to turn the backlight on and off. In a separate patch, support is
-added for a power regulator. The combination of both should be able to
-cover the majority of use-cases.
+> attempt to get those merged, but the patches were NAKed in the end. I'm=
 
-That series doesn't handle any timing requirements, but again, for the
-majority of the setups supported by a power supply and enable GPIO the
-timing doesn't matter.
+> not aware of any work currently being done on them.
 
-> I haven't seen new versions for the power sequences framework (without
-> DT support), I think it could help us here a bit by simplifying how we
-> present the sequences inside the driver. But we still need multiple
-> drivers or the same driver supporting multiple devices.
+I thought the NAK was for the DT parts, not for the sequences as such. I
+don't remember anyone shooting down the idea of defining power sequences
+inside a driver.
 
-I'm not sure if power sequences will be very helpful here. There was an
-attempt to get those merged, but the patches were NAKed in the end. I'm
-not aware of any work currently being done on them.
+> But as I said above, the combination of an enable GPIO and power supply=
 
-But as I said above, the combination of an enable GPIO and power supply
-should be enough to get a lot of use-cases supported.
+> should be enough to get a lot of use-cases supported.
 
-> And I also think that the model where we have just one driver for, say,
-> backlight may not be enough. There may be multiple hardware components,
-> that used together will generate the backlight. And each component
-> requires specific management.
+Yep.
 
-I'm not sure what other components you are talking about here. Can you
-elaborate?
+>> And I also think that the model where we have just one driver for, say=
+,
+>> backlight may not be enough. There may be multiple hardware components=
+,
+>> that used together will generate the backlight. And each component
+>> requires specific management.
+>=20
+> I'm not sure what other components you are talking about here. Can you
+> elaborate?
 
-Thierry
+I don't have any specific case in mind, and maybe these are quite rare.
+But there could be some kind of mix of muxes, regulators, gpios and
+whatnot that need to be managed in certain way to make backlight (or
+display) work.
 
---tsOsTdHNUZQcU9Ye
-Content-Type: application/pgp-signature
+I'm making this up, so I'm not sure if this is sensible, but consider a
+board where there's a mux to select where a backlight gets its PWM
+input, and the mux is controlled via i2c. And maybe insert some kind of
+level shifter in between, enabled with a GPIO. And some third component,
+as this hypothetical board is a development board, and hardware people
+seem to love to make bizarre designs, that work in theory but the SW is
+almost impossible to design...
+
+So to enable the backlight, we might need to do multiple different
+things, depending on which components this particular board has.
+Especially for a mux controlled via i2c it would make sense to have a
+separate driver. Having just a single backlight driver might not be enoug=
+h.
+
+Sometimes, or hopefully often, that kind of complexity can be hidden
+behind common frameworks. For example, enabling a gpio could result in
+the gpio driver enabling a regulator, sending i2c messages, or whatever.
+But I don't think that's possible in all cases.
+
+Anyway, this was really more of "thinking out loud" than any suggestion.
+
+ Tomi
+
+
+
+--UJNc4luPBjkKhjtEhfIh1jvrTTtsENfJ4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.21 (GNU/Linux)
+Version: GnuPG v1.4.12 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iQIcBAEBAgAGBQJSRCJoAAoJEN0jrNd/PrOhn90P/A/xij0rquswxJW82s/KNwss
-JntXJtI77Jwt6CXMBA8mBnDiJAySNurn81Kts71r6wxdyMtKu39LVNJ3QMGjV0VX
-xVqaYCR37J4S78qu6e9CfWLc4PJ+pmxowfWFq0yPg9+Ug9itCjaQ98FMDJWm9QVw
-e/0IdBatWv4ZWA7wihYczwMGBIFtJKf5iaDA1i2S2+CYvz5aaj4LYDEHGZSOijD5
-0c7IF5PY+Bi0/bbidsINIaBRwKj4bjDkYKW1Gi6bhQJ5SGhOIYjUvUvZahXqT2bk
-lw5PVgne7jB5FVtE3wZzeQV4yDs0E2b1V36jpARWtOSCPnf2TurGpMMJ7qROPReG
-Uu+CPr97Cd6inKswyjU7vGATLmBqabeBBjvJFyONFDQCLkt4CzNS/Gjge40y7Hw1
-Vc4hWLtCLNgvXX5lOfadsPEp7sn0Cx1AWTsfOUvO7qRPvW+tbp8cLmBj9RcRO7sx
-8fY35+ddvnB5rCkK7MmyfOYTgKGANrqZReL8yzU53zNLTkkkNsDYupdiumftykFD
-V3qX8FiA8W7oL/W0Hh5Sl9hV6HbhNDow6nfICY5jtIOrs3AbCMyuxlWrSrKNW/Vb
-vCqdrGiz1OFqyRBgA6x8PoFP6CMrBZAFbsOEB7lrNGS+/ITgww7bXAcDnYTSukSH
-6VroKRzGyaUcav0+DAOk
-=qidt
+iQIcBAEBAgAGBQJSRCflAAoJEPo9qoy8lh71Bf0P/3mKJ28JGsVN/IdxkB/bQEF0
+DWuQSi4eJjBW6jWCQhV8HvTNz4su+77x6uZbfYsGweAMP8Bbxm9mIVBxeAjQyys/
+brWK6qKMIIkghDnhAyiqpmTArkQaqS5pHR+/8IA4bmR0X8KcdrtMii2kaaKJbN0P
+DkX4ZXcfVQZMYS7UJXYNscmsgghy17gbquw6c3dBM4Fqs4di2So320a/lzozI7mq
+WxlIqz4+IyAOA6vaCoqG/bbFGstGAK/oRY7sKMt42laqeRKVaDovgTOEBsLRX6O0
+9hDzoibfeQd9FNhezRLrhex82abUX3/YPMT5S0qzzmI4Nxu3wfPj07EhV6fb8/yc
+SRGSn6aJPje5qSYMnBuJcBXJvTqtzprX2mC4nmsJ/R/TVVwheUAg/FJKdmmlrj09
+XCbxnc7YDUHIlwGAnKcfHF782lt6sCIFQ0/S8rj9Q2S3PkH7w72eXHyJJqYG94Vh
+VSh8kFxTg5ehy2pgFzjf+4CUbjyg2THqF5uern/omor7BsdcccgXQxcu8In0UtWa
+LhRY1T1TeEQOXSnSDJUcXSr5paznZEZ6nt0UleDvoQxphQ0UuyJKxOOhkxDdYOJI
+LCEzchmHzsWW1lj/DGNCrSIKJsJ29bSX/BrrtqqJonTbR2Wyhf6V17behiqJJvqV
++mWFDgo4iF9LNqYJ377n
+=NHsJ
 -----END PGP SIGNATURE-----
 
---tsOsTdHNUZQcU9Ye--
+--UJNc4luPBjkKhjtEhfIh1jvrTTtsENfJ4--
