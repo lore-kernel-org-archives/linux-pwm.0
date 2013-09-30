@@ -1,8 +1,8 @@
 Return-Path: <B47053@freescale.com>
 From: Xiubo Li <Li.Xiubo@freescale.com>
-Subject: [PATCHv5 2/4] ARM: dts: Add Freescale FTM PWM node for VF610.
-Date: Mon, 30 Sep 2013 14:13:29 +0800
-Message-ID: <1380521611-2764-3-git-send-email-Li.Xiubo@freescale.com>
+Subject: [PATCHv5 3/4] ARM: dts: Enables FTM PWM device for Vybrid VF610 TOWER board.
+Date: Mon, 30 Sep 2013 14:13:30 +0800
+Message-ID: <1380521611-2764-4-git-send-email-Li.Xiubo@freescale.com>
 In-Reply-To: <1380521611-2764-1-git-send-email-Li.Xiubo@freescale.com>
 References: <1380521611-2764-1-git-send-email-Li.Xiubo@freescale.com>
 MIME-Version: 1.0
@@ -12,35 +12,30 @@ List-ID: <linux-pwm.vger.kernel.org>
 To: r65073@freescale.com, thierry.reding@gmail.com
 Cc: s.hauer@pengutronix.de, swarren@wwwdotorg.org, t.figa@samsung.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 
-This adds devicetree node for VF610, and there are 8 channels supported
-by default.
+Selecting system clock as the counter source clock by default.
 
 Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
 ---
- arch/arm/boot/dts/vf610.dtsi | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/arm/boot/dts/vf610-twr.dts | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/arch/arm/boot/dts/vf610.dtsi b/arch/arm/boot/dts/vf610.dtsi
-index 67d929c..3c23d92 100644
---- a/arch/arm/boot/dts/vf610.dtsi
-+++ b/arch/arm/boot/dts/vf610.dtsi
-@@ -140,6 +140,17 @@
- 				clock-names = "pit";
- 			};
+diff --git a/arch/arm/boot/dts/vf610-twr.dts b/arch/arm/boot/dts/vf610-twr.dts
+index 1a58678..4257054 100644
+--- a/arch/arm/boot/dts/vf610-twr.dts
++++ b/arch/arm/boot/dts/vf610-twr.dts
+@@ -57,6 +57,13 @@
+ 	status = "okay";
+ };
  
-+			pwm0: pwm@40038000 {
-+				compatible = "fsl,vf610-ftm-pwm";
-+				#pwm-cells = <3>;
-+				reg = <0x40038000 0x1000>;
-+				clock-names = "ftm0", "ftm0_fix_sel", "ftm0_ext_sel";
-+				clocks = <&clks VF610_CLK_FTM0>,
-+					<&clks VF610_CLK_FTM0_FIX_SEL>,
-+					<&clks VF610_CLK_FTM0_EXT_SEL>;
-+				status = "disabled";
-+			};
++&pwm0 {
++	fsl,pwm-counter-clk = "ftm0";
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_pwm0_1>;
++	status = "okay";
++};
 +
- 			wdog@4003e000 {
- 				compatible = "fsl,vf610-wdt", "fsl,imx21-wdt";
- 				reg = <0x4003e000 0x1000>;
+ &uart1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_uart1_1>;
 -- 
 1.8.0
