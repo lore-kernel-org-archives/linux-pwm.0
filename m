@@ -1,72 +1,36 @@
-Return-Path: <mikedunn@newsguy.com>
-Message-ID: <524589A3.50700@newsguy.com>
-Date: Fri, 27 Sep 2013 06:35:31 -0700
-From: Mike Dunn <mikedunn@newsguy.com>
+Return-Path: <swarren@wwwdotorg.org>
+Message-ID: <524B13BF.7080902@wwwdotorg.org>
+Date: Tue, 01 Oct 2013 12:26:07 -0600
+From: Stephen Warren <swarren@wwwdotorg.org>
 MIME-Version: 1.0
-Subject: Re: [PATCH] pwm-backlight: add support for device tree gpio control
-References: <1378236372-15711-1-git-send-email-mikedunn@newsguy.com> <20130910172130.GC22111@ulmo> <523056A6.5060000@newsguy.com> <524408BE.40402@ti.com> <20130926120248.GB1680@ulmo> <524427E5.50403@ti.com> <20130926125020.GA2141@ulmo>
-In-Reply-To: <20130926125020.GA2141@ulmo>
+Subject: Re: [PATCH 01/10] pwm-backlight: Refactor backlight power on/off
+References: <1379972467-11243-1-git-send-email-treding@nvidia.com> <1379972467-11243-2-git-send-email-treding@nvidia.com>
+In-Reply-To: <1379972467-11243-2-git-send-email-treding@nvidia.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 List-ID: <linux-pwm.vger.kernel.org>
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>, Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jg1.han@samsung.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>
+Cc: Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Tony Lindgren <tony@atomide.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, openezx-devel@lists.openezx.org, linux-samsung-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 09/26/2013 05:50 AM, Thierry Reding wrote:
-> On Thu, Sep 26, 2013 at 03:26:13PM +0300, Tomi Valkeinen wrote:
->> On 26/09/13 15:02, Thierry Reding wrote:
->>> On Thu, Sep 26, 2013 at 01:13:18PM +0300, Tomi Valkeinen wrote:
->>>> On 11/09/13 14:40, Mike Dunn wrote:
->>>>> On 09/10/2013 10:21 AM, Thierry Reding wrote:
->>>>
->>>>>> Do you have a real setup that actually needs multiple GPIOs? Usually
->>>>>> such a setup requires some kind of timing or other additional constraint
->>>>>> which can't be represented by this simple binding.
->>>>>>
->>>>>> Looking at the Palm Treo code it seems like the reason why multiple
->>>>>> GPIOs are needed is because one is to enable the backlight, while the
->>>>>> other is in fact used to enable the LCD panel. 
->>>>>
->>>>>
->>>>> There are actually four GPIOs involved!  (There is an embarrasingly horrible
->>>>> hack in arch/arm/mach-pxa/palmtreo.c that handles the others.)  One is almost
->>>>> certainly simply backlight power.  The other three are probably LCD related.
->>>>
->>>> When you say "power", do you mean the gpio enables a regulator to feed
->>>> power to the backlight? If so, wouldn't that be a regulator, not gpio,
->>>> from the bl driver's point of view?
->>>>
->>>> Generally speaking, this same problem appears in many places, but for
->>>> some reason especially in display. I'm a bit hesitant in adding "free
->>>> form" gpio/regulator support for drivers, as, as Thierry pointed out,
->>>> there are often timing requirements, or sometimes the gpios are
->>>> inverted, or sometimes the gpio is, in fact, a reset gpio, where you'll
->>>> assert the gpio for a short moment only.
->>>
->>> I sent out another series a few days ago that somewhat obsoletes this
->>> patch. What it does is basically add a single enable GPIO that can be
->>> used to turn the backlight on and off. In a separate patch, support is
->>> added for a power regulator. The combination of both should be able to
->>> cover the majority of use-cases.
->>
->> But Mike's case required 4 GPIOs? Or can that be reduced to one gpio and
->> one regulator?
-> 
-> Well, at least for the backlight it only seemed to involve a single
-> GPIO. The other three were probably related to LCD and therefore not
-> really suitable for a backlight driver. Traditionally it has been that
-> the backlight driver handled these things as well (via the callbacks
-> installed by board setup code). While really they should be handled by a
-> separate driver (for the LCD).
+On 09/23/2013 03:40 PM, Thierry Reding wrote:
+> In preparation for adding an optional regulator and enable GPIO to the
+> driver, split the power on and power off sequences into separate
+> functions to reduce code duplication at the multiple call sites.
 
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
 
-Yes, this is currently my best guess.  This is reverse-engineered and
-unfortunately I'm not yet able to accurately describe my particular use-case.
-Probably as wacky as anything you can imagine, Thierry :)
+> +static void pwm_backlight_power_off(struct pwm_bl_data *pb)
+> +{
+> +	pwm_disable(pb->pwm);
 
-The gpio and regulator patches will probably suffice.  Thierry, can you please
-point me to those patches?  I don't see them in your gitorious tree.  If they
-were posted to linux-pwm, I missed them; sorry.
+Both the call-sites you're replacing do the following before pwm_disable():
 
-Thanks,
-Mike
+		pwm_config(pb->pwm, 0, pb->period);
+
+While I agree that probably shouldn't be necessary, I think it's at
+least worth mentioning that in the commit description just to make it
+obvious that it was a deliberate change. Splitting that change into a
+separate patch might be reasonable in order to keep refactoring and
+functional changes separate, although perhaps it's not worth it.
+
+There are also a couple unrelated whitespace changes thrown in here.
