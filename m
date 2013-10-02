@@ -1,106 +1,70 @@
-Date: Tue, 1 Oct 2013 23:31:27 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 09/10] pwm-backlight: Use an optional power supply
-Message-ID: <20131001213120.GG9201@ulmo.nvidia.com>
+Return-Path: <broonie@sirena.org.uk>
+Date: Wed, 2 Oct 2013 11:35:14 +0100
+From: Mark Brown <broonie@kernel.org>
+Message-ID: <20131002103514.GB4228@sirena.org.uk>
 References: <1379972467-11243-1-git-send-email-treding@nvidia.com>
  <1379972467-11243-10-git-send-email-treding@nvidia.com>
  <524B17ED.1080806@wwwdotorg.org>
  <20131001205310.GD9201@ulmo.nvidia.com>
  <524B37BF.2090300@wwwdotorg.org>
+ <20131001213120.GG9201@ulmo.nvidia.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="FUaywKC54iCcLzqT"
+	protocol="application/pgp-signature"; boundary="OwLcNYc0lM97+oe1"
 Content-Disposition: inline
-In-Reply-To: <524B37BF.2090300@wwwdotorg.org>
+In-Reply-To: <20131001213120.GG9201@ulmo.nvidia.com>
+Subject: Re: [PATCH 09/10] pwm-backlight: Use an optional power supply
 List-ID: <linux-pwm.vger.kernel.org>
-To: Stephen Warren <swarren@wwwdotorg.org>
-Cc: Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Tony Lindgren <tony@atomide.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, openezx-devel@lists.openezx.org, linux-samsung-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Stephen Warren <swarren@wwwdotorg.org>, Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Tony Lindgren <tony@atomide.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, openezx-devel@lists.openezx.org, linux-samsung-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---FUaywKC54iCcLzqT
+--OwLcNYc0lM97+oe1
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 01, 2013 at 02:59:43PM -0600, Stephen Warren wrote:
-> On 10/01/2013 02:53 PM, Thierry Reding wrote:
-> > On Tue, Oct 01, 2013 at 12:43:57PM -0600, Stephen Warren wrote:
-> >> On 09/23/2013 03:41 PM, Thierry Reding wrote:
-> >>> Many backlights require a power supply to work properly. This
-> >>> commit uses a power-supply regulator, if available, to power up
-> >>> and power down the panel.
-> >>=20
-> >> I think that all backlights require a power supply, albeit the
-> >> supply may not be SW-controllable. Hence, shouldn't the regulator
-> >> be mandatory in the binding, yet the driver be defensively coded
-> >> such that if one isn't specified, the driver continues to work?
-> >=20
-> > That has already changed in my local version of this patch.
-> >=20
-> >>> diff --git a/drivers/video/backlight/pwm_bl.c
-> >>> b/drivers/video/backlight/pwm_bl.c
-> >>=20
-> >>> @@ -253,6 +264,16 @@ static int pwm_backlight_probe(struct
-> >>> platform_device *pdev) } }
-> >>>=20
-> >>> +	pb->power_supply =3D devm_regulator_get_optional(&pdev->dev,
-> >>> "power");
-> >>=20
-> >> ... so I think that should be devm_regulator_get(), since the
-> >> regulator isn't really optional.
-> >>=20
-> >>> +	if (IS_ERR(pb->power_supply)) { +		if
-> >>> (PTR_ERR(pb->power_supply) !=3D -ENODEV) { +			ret =3D
-> >>> PTR_ERR(pb->power_supply); +			goto err_gpio; +		} + +
-> >>> pb->power_supply =3D NULL;
-> >>=20
-> >> If devm_regulator_get_optional() returns an error value or a
-> >> valid value, then I don't think that this driver should transmute
-> >> error values into NULL; NULL might be a perfectly valid regulator
-> >> value. Related, I think the if (pb->power_supply) tests should be
-> >> replaced with if (!IS_ERR(pb->power_supply)) instead.
-> >=20
-> > All of that is already done in my local tree. This actually turns
-> > out to work rather smoothly with the new support for optional
-> > regulators. The regulator core will give you a dummy regulator
-> > (assuming it's there physically but hasn't been wired up in
-> > software) that's always on, so the driver doesn't even have to
-> > special case it anymore.
->=20
-> OK, hopefully it (the regulator core) complains about the missing DT
-> property though; I assume you're using regulator_get() not
-> regulator_get_optional(), since the supply really is not optional.
+On Tue, Oct 01, 2013 at 11:31:27PM +0200, Thierry Reding wrote:
+> On Tue, Oct 01, 2013 at 02:59:43PM -0600, Stephen Warren wrote:
 
-It doesn't always. There's a pr_warn() in _regulator_get(), but that's
-only for non-DT (since for DT, has_full_constraints is set to true in
-regulator_init_complete()). Actually that would mean that the regulator
-core will complain as long as init isn't complete. But since, like many
-other drivers, pwm-backlight could use deferred probing it's likely to
-end up being probed after init.
+> > OK, hopefully it (the regulator core) complains about the missing DT
+> > property though; I assume you're using regulator_get() not
+> > regulator_get_optional(), since the supply really is not optional.
 
-Cc'ing Mark Brown.
+> It doesn't always. There's a pr_warn() in _regulator_get(), but that's
+> only for non-DT (since for DT, has_full_constraints is set to true in
+> regulator_init_complete()). Actually that would mean that the regulator
+> core will complain as long as init isn't complete. But since, like many
+> other drivers, pwm-backlight could use deferred probing it's likely to
+> end up being probed after init.
 
-Thierry
+So, part of the thing here is that nobody ever bothers actually creating
+the supplies even when the device fails to load without them - everyone
+is much more keen to complain about needing to do the work than actually
+provide the hookup even though it's generally pretty quick and simple to
+do so.
 
---FUaywKC54iCcLzqT
-Content-Type: application/pgp-signature
+That said we probably should still moan, I'll go and do that.
+
+--OwLcNYc0lM97+oe1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.21 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSSz8tAAoJEN0jrNd/PrOhv0gP/ieeNUf9Ps2XqYD1G3O8YB97
-3KPaGRxbrlpvDzSkanaJ3kxrSx7ZLjRHGSFKiUF2LzKV3hMh3zi2j2RPOAGWeyIc
-dhERNIaNdaySD4uEiM3jtQSVnOXF9Cg8CeQz9vgayDXtB9GIEhSS95d4AuB0odWT
-EZ6cAXeoN7/sNNo8/POw/E3uS3X/vUGmcr1lLsFRVS8onmlCW2gvLiFn7nDpb+mE
-OCvURhEmzjcq+pyVD81qvtlWxj/D7vnvt4mexSqPVh3lDVCtX40rYC4l7hyVio2g
-VZRfhaHggWAWwHqChWgg7dY47dMO6xsL1giRCZ4BBLcLc0DlXn+vgMZjAzdDgqFC
-t3kkuXz576fHRzGaegM6WHJzMHB7oJ28+qki21ITxKqiZ2UYY1vHf2mR15DF++Cl
-jia5Zb2VjNcYMKoiHFePpzxNMKexJLhgIm+37ZpN9kN0KAuntr4bazHAe2g9RIt7
-AJQr+Rw+XGWFb04HCLml9vk/EzHgPrs9HyNwpIVO8tyj7r9A7UGmq/BGTM+ZuWLt
-pDcah1I33FMqyL/UvLvngy02539Nwla6y9flbUW/5amnvHHLlJwy1n33v3mW+IGB
-is2YdRngeXgCo4719YKAGuw4bWRoO7dzqc4e7MdOJ/bk1IMDv8O0Y1g3FyZyPIcT
-TjR4ebBaWU1ca2mvF4li
-=lgk1
+iQIcBAEBAgAGBQJSS/bfAAoJELSic+t+oim9tR4P/37yy5h4t5uz3CSDqHnHC+au
+82G6pkhf0Um4y7jIuX9rZXvca28zjRggqeTgGY6aZe1motZF+Sd7loL493vgbwXX
+xZIk62vWPvs8/73JKYm5nlkilya/+iLBQ5aamZ6qoZJVJxgjIADzyDpCQo6eDWbk
+Jdrj+6vtpn62AL1E26LBDqdrrb6QhhwYDlJG6hbZCjH08j90/vLvm2SgnQXjXLUM
+pzM56HfIDP6y92wOpx8aXCMz1RNA4Iq+nvluhabrxPibb/7JDuV5PGw1hOeIGzLg
+Wqf4eyGU3BaflRiU3mfqeJYZeEyrcW//hIvaoB8grF5zSUJMtVSZtWQV60uURqep
++NrvNMb1ues5I17D+hBuLjgD1PA4T1XphkO0rSDZN+tIDTFoTsvdMNDJIR8qLl3y
+g9vGPLSi9ZF7TzeBPpt4yjyUo5lXFlSCLHwK/djK3GbdyKPZ92vRwmOGNOdwryTf
+ooVENIlNxb8Xnz/5ODcowDtVIlMlZtbRX3UELLknsKVejQn5wxc4O0dD6Zmvq5hZ
+Mo5cgvkEXA1H99c5gZpW+1fX3nvQHMBdroYSdUm2hIapqqVMszXmdEYtgwpwRfWX
+rGbFKHmFHPeGAXyQTXPmK973alWyhpJxEoVEcgj4uNBrJ8hRUsQY8HAYKcPRU0E8
+DCcovqZapyyc8+/F1cGD
+=7eyy
 -----END PGP SIGNATURE-----
 
---FUaywKC54iCcLzqT--
+--OwLcNYc0lM97+oe1--
