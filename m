@@ -1,92 +1,62 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Wed, 2 Oct 2013 19:45:51 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 10/10] pwm-backlight: Allow backlight to remain disabled
- on boot
-Message-ID: <20131002174550.GA29973@ulmo.nvidia.com>
-References: <1379972467-11243-1-git-send-email-treding@nvidia.com>
- <1379972467-11243-11-git-send-email-treding@nvidia.com>
- <524B198B.3010609@wwwdotorg.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="2oS5YaxWCcQjTEyO"
-Content-Disposition: inline
-In-Reply-To: <524B198B.3010609@wwwdotorg.org>
+Return-Path: <21cnbao@gmail.com>
+Return-Path: <21cnbao@gmail.com>
+From: Barry Song <21cnbao@gmail.com>
+Subject: [PATCH] pwm_backlight: avoid short blank screen while doing hibernation
+Date: Sun,  6 Oct 2013 17:06:38 +0800
+Message-Id: <1381050398-12565-1-git-send-email-Baohua.Song@csr.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Stephen Warren <swarren@wwwdotorg.org>
-Cc: Rob Herring <rob.herring@calxeda.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Tony Lindgren <tony@atomide.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, openezx-devel@lists.openezx.org, linux-samsung-soc@vger.kernel.org, linux-sh@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: rpurdie@rpsys.net, jg1.han@samsung.com, thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, workgroup.linux@csr.com, Huayi Li <huayi.li@csr.com>, Barry Song <Baohua.Song@csr.com>
 
+From: Huayi Li <huayi.li@csr.com>
 
---2oS5YaxWCcQjTEyO
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Use SIMPLE_DEV_PM_OPS macro will initialize the member "freeze"
+and "thaw" of pwm_backlight_pm_ops as below,
+	.freeze = suspend_fn,
+	.thaw = resume_fn,
+then during the process of making hibernation snapshot, screen
+will be blank at the moment of freezing, and then light at the
+moment of thawing.
+this is not the right user experience for suspending to disk.
 
-On Tue, Oct 01, 2013 at 12:50:51PM -0600, Stephen Warren wrote:
-> On 09/23/2013 03:41 PM, Thierry Reding wrote:
-[...]
-> > +	if (gpio_is_valid(pb->enable_gpio)) {
-> > +		if (pb->enable_gpio_flags & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
-> > +			gpio_set_value(pb->enable_gpio, 0);
-> > +		else
-> > +			gpio_set_value(pb->enable_gpio, 1);
-> > +	}
->=20
-> ... That assumes that the backlight is on at boot, and hence presumably
-> after this patch still always turns on the backlight, only to turn it
-> off very quickly once the following code in this patch executes:
+so this patch drops freeze and thaw callback, make the LCD is
+always lighting before the final shutdown.
 
-I was just going to fix this, but then saw that the code in .probe() is
-actually this:
+Signed-off-by: Huayi Li <huayi.li@csr.com>
+Signed-off-by: Barry Song <Baohua.Song@csr.com>
+---
+ drivers/video/backlight/pwm_bl.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-	if (gpio_is_valid(pb->enable_gpio)) {
-		unsigned long flags;
-
-		if (pb->enable_gpio_flags & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
-			flags =3D GPIOF_OUT_INIT_HIGH;
-		else
-			flags =3D GPIOF_OUT_INIT_LOW;
-
-		ret =3D gpio_request_one(pb->enable_gpio, flags, "enable");
-		...
-	}
-
-Which sets the backlight up to be disabled by default and is consistent
-with the PWM and regulator setup. Only later, depending on the value of
-boot_off it gets enabled (or stays disabled).
-
-> (and perhaps we also need to avoid turning the backlight off then on if
-> it was already on at boot)
-
-That's true. Although I'm not sure if that's even possible. I think the
-pinctrl driver doesn't touch the registers, but what about the GPIO and
-PWM drivers. It might be impossible to always query the boot status and
-set the internal state based on that. The easiest would probably be if
-both the bootloader and the kernel use the same DT, in which case the
-bootloader could set the backlight-boot-on property, in which case we
-wouldn't need to do anything at .probe() time really.
-
-Thierry
-
---2oS5YaxWCcQjTEyO
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.21 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSTFvOAAoJEN0jrNd/PrOhoSYQAIn7plVDrw1cFYwX7Iqq9EP9
-yJgz+asuveyXcB9yI5iWL48qDoeedWQmGvKQD7JaNiECeQb5f4k+WmwG02V4JqCz
-Om45A5/p8+AbmBz36rdKnZgiU8Bfzef41B7vgdudqTuW+cc0PRLIx/IJMiMK7OCJ
-1hfLc46mkINYH/0YQaUHg/k0u4QyR/zMB5Tt4lglPZdRWea1esvYK4lVwcsWCHHl
-Wo5SfLd1i40dIp7hlpeW7sGqhLrU05iTNGGINh8FCphb1zbhFqA2D/5arCoya9uy
-tzjloVqLzysYP63EfplbvmP15N/c3Uecc1ihIi3cC9gO8WJgVI/qe594WA/+q447
-BCvcCgjrISwfr9Muqkort0ycqnNbELiX/BSInNih9UNESMiTpMaXQAQQI/BtHYy4
-wZB7ShUQOEF4G8OssLGGvRzin0mm46RygoGnICTUorkzonRXo4SZhsDNoPti62eU
-/w816Jv5NN/Ww/vE9f9buPTcPGr/UtcA4M9E8mrGAd3JVr6G7dc9Z4XIjSEyzxf0
-ABuYe/inVterHWR2HT7G769RC/HcnpV5xZnV92kZoaMglfpwhlibFv/FMrzf/r3r
-3vAgiTx+2eD18cj60ntzc8eqf+hXJRd4CFHR8zPwymauLp/r37NGFb+MQOng+Lmm
-T8aCSBJ65TUJWQwNRU//
-=yMQc
------END PGP SIGNATURE-----
-
---2oS5YaxWCcQjTEyO--
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 1fea627..f3b76cb 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -296,16 +296,23 @@ static int pwm_backlight_resume(struct device *dev)
+ 	backlight_update_status(bl);
+ 	return 0;
+ }
++
++static const struct dev_pm_ops pwm_backlight_pm_ops = {
++	.suspend = pwm_backlight_suspend,
++	.resume = pwm_backlight_resume,
++	.poweroff = pwm_backlight_suspend,
++	.restore = pwm_backlight_resume,
++};
+ #endif
+ 
+-static SIMPLE_DEV_PM_OPS(pwm_backlight_pm_ops, pwm_backlight_suspend,
+-			 pwm_backlight_resume);
+ 
+ static struct platform_driver pwm_backlight_driver = {
+ 	.driver		= {
+ 		.name		= "pwm-backlight",
+ 		.owner		= THIS_MODULE,
++#ifdef CONFIG_PM_SLEEP
+ 		.pm		= &pwm_backlight_pm_ops,
++#endif
+ 		.of_match_table	= of_match_ptr(pwm_backlight_of_match),
+ 	},
+ 	.probe		= pwm_backlight_probe,
+-- 
+1.8.2.3
