@@ -1,72 +1,51 @@
 Return-Path: <thierry.reding@gmail.com>
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH v2 03/12] pwm-backlight: Track enable state
-Date: Mon,  7 Oct 2013 13:37:37 +0200
-Message-Id: <1381145866-445-4-git-send-email-treding@nvidia.com>
+Subject: [PATCH v2 04/12] pwm-backlight: Add optional enable GPIO
+Date: Mon,  7 Oct 2013 13:37:38 +0200
+Message-Id: <1381145866-445-5-git-send-email-treding@nvidia.com>
 In-Reply-To: <1381145866-445-1-git-send-email-treding@nvidia.com>
 References: <1381145866-445-1-git-send-email-treding@nvidia.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: Tony Lindgren <tony@atomide.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Follow up patches will add support for more complex means of powering
-the backlight on and off such as using a regulator. To prevent calls to
-the regulator API from becoming unbalanced, keep track of the enabled
-state internally.
+To support a wider variety of backlight setups, introduce an optional
+enable GPIO. Legacy users of the platform data already have a means of
+supporting GPIOs by using the .init(), .exit() and .notify() hooks. DT
+users however cannot use those, so an alternative method is required.
+
+In order to ease the introduction of the optional enable GPIO, make it
+available in the platform data first, so that existing users can be
+converted. Once that has happened a second patch will add code to make
+use of it in the driver.
 
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/video/backlight/pwm_bl.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ include/linux/pwm_backlight.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index ab9d5e6..4053efb 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -27,6 +27,7 @@ struct pwm_bl_data {
- 	unsigned int		period;
- 	unsigned int		lth_brightness;
- 	unsigned int		*levels;
-+	bool			enabled;
- 	int			(*notify)(struct device *,
- 					  int brightness);
- 	void			(*notify_after)(struct device *,
-@@ -40,6 +41,9 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness,
- {
- 	int duty_cycle, err;
+diff --git a/include/linux/pwm_backlight.h b/include/linux/pwm_backlight.h
+index 56f4a86..2de2e27 100644
+--- a/include/linux/pwm_backlight.h
++++ b/include/linux/pwm_backlight.h
+@@ -6,6 +6,9 @@
  
-+	if (pb->enabled)
-+		return;
+ #include <linux/backlight.h>
+ 
++/* TODO: convert to gpiod_*() API once it has been merged */
++#define PWM_BACKLIGHT_GPIO_ACTIVE_LOW	(1 << 0)
 +
- 	if (pb->levels) {
- 		duty_cycle = pb->levels[brightness];
- 		max = pb->levels[max];
-@@ -52,12 +56,18 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness,
- 
- 	pwm_config(pb->pwm, duty_cycle, pb->period);
- 	pwm_enable(pb->pwm);
-+	pb->enabled = true;
- }
- 
- static void pwm_backlight_power_off(struct pwm_bl_data *pb)
- {
-+	if (!pb->enabled)
-+		return;
-+
- 	pwm_config(pb->pwm, 0, pb->period);
- 	pwm_disable(pb->pwm);
-+
-+	pb->enabled = false;
- }
- 
- static int pwm_backlight_update_status(struct backlight_device *bl)
-@@ -216,6 +226,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	pb->check_fb = data->check_fb;
- 	pb->exit = data->exit;
- 	pb->dev = &pdev->dev;
-+	pb->enabled = false;
- 
- 	pb->pwm = devm_pwm_get(&pdev->dev, NULL);
- 	if (IS_ERR(pb->pwm)) {
+ struct platform_pwm_backlight_data {
+ 	int pwm_id;
+ 	unsigned int max_brightness;
+@@ -13,6 +16,8 @@ struct platform_pwm_backlight_data {
+ 	unsigned int lth_brightness;
+ 	unsigned int pwm_period_ns;
+ 	unsigned int *levels;
++	int enable_gpio;
++	unsigned long enable_gpio_flags;
+ 	int (*init)(struct device *dev);
+ 	int (*notify)(struct device *dev, int brightness);
+ 	void (*notify_after)(struct device *dev, int brightness);
 -- 
 1.8.4
