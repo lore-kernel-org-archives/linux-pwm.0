@@ -1,100 +1,63 @@
 Return-Path: <thierry.reding@gmail.com>
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH v2 00/12] pwm-backlight: Add GPIO and power supply support
-Date: Mon,  7 Oct 2013 13:37:34 +0200
-Message-Id: <1381145866-445-1-git-send-email-treding@nvidia.com>
+Subject: [PATCH v2 01/12] pwm-backlight: Improve readability
+Date: Mon,  7 Oct 2013 13:37:35 +0200
+Message-Id: <1381145866-445-2-git-send-email-treding@nvidia.com>
+In-Reply-To: <1381145866-445-1-git-send-email-treding@nvidia.com>
+References: <1381145866-445-1-git-send-email-treding@nvidia.com>
 List-ID: <linux-pwm.vger.kernel.org>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: Tony Lindgren <tony@atomide.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-This series adds the ability to specify a GPIO and a power supply to
-enable a backlight.
+Add more blank lines to increase readability. While at it, remove a
+trailing blank line at the end of the file.
 
-Patch 1 adds some blank lines to make the code look less cluttered in
-various places.
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+---
+ drivers/video/backlight/pwm_bl.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Patch 2 refactors the power on and power off sequences into separate
-functions in preparation for subsequent patches.
-
-Patch 3 adds functionality to track the on/off state of the backlight.
-This is required by subsequent patches to make sure that enabling and
-disabling used resources remains balanced.
-
-Patch 4 adds an optional GPIO to enable a backlight. This patch only
-includes the field within the platform data so that it can be properly
-setup before actually being put to use.
-
-Patches 5 to 9 convert all users of the pwm-backlight driver to use the
-new field. For most of them, this just initializes the field to -1,
-marking the field as unused.
-
-Patch 10 uses the new field within the pwm-backlight driver and at the
-same time allows it to be parsed from device tree.
-
-Patch 11 implements support for an optional power supply. This relies on
-the regulator core to return a dummy regulator when no supply has been
-otherwise setup so the driver doesn't have to handle that specially nor
-require all users to be updated.
-
-Patch 12 adds a way to keep a backlight turned off at boot. This is
-useful when hooking up a backlight with a subsystem such as DRM which
-has more explicit semantics as to when a backlight should be turned on.
-
-Due to the dependencies within the series, I propose to take all these
-patches through the PWM tree, so I'll need acks from OMAP, PXA, Samsung,
-shmobile and Unicore32 maintainers.
-
-Thierry
-
-Thierry Reding (12):
-  pwm-backlight: Improve readability
-  pwm-backlight: Refactor backlight power on/off
-  pwm-backlight: Track enable state
-  pwm-backlight: Add optional enable GPIO
-  ARM: OMAP: Initialize PWM backlight enable_gpio field
-  ARM: pxa: Initialize PWM backlight enable_gpio field
-  ARM: SAMSUNG: Initialize PWM backlight enable_gpio field
-  ARM: shmobile: Initialize PWM backlight enable_gpio field
-  unicore32: Initialize PWM backlight enable_gpio field
-  pwm-backlight: Use new enable_gpio field
-  pwm-backlight: Add power supply support
-  pwm-backlight: Allow backlight to remain disabled on boot
-
- .../bindings/video/backlight/pwm-backlight.txt     |   8 ++
- arch/arm/mach-omap2/board-zoom-peripherals.c       |   1 +
- arch/arm/mach-pxa/cm-x300.c                        |   1 +
- arch/arm/mach-pxa/colibri-pxa270-income.c          |   1 +
- arch/arm/mach-pxa/ezx.c                            |   1 +
- arch/arm/mach-pxa/hx4700.c                         |   1 +
- arch/arm/mach-pxa/lpd270.c                         |   1 +
- arch/arm/mach-pxa/magician.c                       |   1 +
- arch/arm/mach-pxa/mainstone.c                      |   1 +
- arch/arm/mach-pxa/mioa701.c                        |   1 +
- arch/arm/mach-pxa/palm27x.c                        |   1 +
- arch/arm/mach-pxa/palmtc.c                         |  35 +----
- arch/arm/mach-pxa/palmte2.c                        |   1 +
- arch/arm/mach-pxa/pcm990-baseboard.c               |   1 +
- arch/arm/mach-pxa/raumfeld.c                       |   1 +
- arch/arm/mach-pxa/tavorevb.c                       |   2 +
- arch/arm/mach-pxa/viper.c                          |   1 +
- arch/arm/mach-pxa/z2.c                             |   2 +
- arch/arm/mach-pxa/zylonite.c                       |   1 +
- arch/arm/mach-s3c24xx/mach-h1940.c                 |   1 +
- arch/arm/mach-s3c24xx/mach-rx1950.c                |   1 +
- arch/arm/mach-s3c64xx/mach-crag6410.c              |   1 +
- arch/arm/mach-s3c64xx/mach-hmt.c                   |   1 +
- arch/arm/mach-s3c64xx/mach-smartq.c                |   1 +
- arch/arm/mach-s3c64xx/mach-smdk6410.c              |   1 +
- arch/arm/mach-s5p64x0/mach-smdk6440.c              |   1 +
- arch/arm/mach-s5p64x0/mach-smdk6450.c              |   1 +
- arch/arm/mach-s5pc100/mach-smdkc100.c              |   1 +
- arch/arm/mach-s5pv210/mach-smdkv210.c              |   1 +
- arch/arm/mach-shmobile/board-armadillo800eva.c     |   1 +
- arch/arm/plat-samsung/dev-backlight.c              |   5 +
- arch/unicore32/kernel/puv3-nb0916.c                |   1 +
- drivers/video/backlight/pwm_bl.c                   | 149 ++++++++++++++++-----
- include/linux/pwm_backlight.h                      |   7 +
- 34 files changed, 171 insertions(+), 64 deletions(-)
-
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 1fea627..774bce3 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -269,8 +269,10 @@ static int pwm_backlight_remove(struct platform_device *pdev)
+ 	backlight_device_unregister(bl);
+ 	pwm_config(pb->pwm, 0, pb->period);
+ 	pwm_disable(pb->pwm);
++
+ 	if (pb->exit)
+ 		pb->exit(&pdev->dev);
++
+ 	return 0;
+ }
+ 
+@@ -282,10 +284,13 @@ static int pwm_backlight_suspend(struct device *dev)
+ 
+ 	if (pb->notify)
+ 		pb->notify(pb->dev, 0);
++
+ 	pwm_config(pb->pwm, 0, pb->period);
+ 	pwm_disable(pb->pwm);
++
+ 	if (pb->notify_after)
+ 		pb->notify_after(pb->dev, 0);
++
+ 	return 0;
+ }
+ 
+@@ -294,6 +299,7 @@ static int pwm_backlight_resume(struct device *dev)
+ 	struct backlight_device *bl = dev_get_drvdata(dev);
+ 
+ 	backlight_update_status(bl);
++
+ 	return 0;
+ }
+ #endif
+@@ -317,4 +323,3 @@ module_platform_driver(pwm_backlight_driver);
+ MODULE_DESCRIPTION("PWM based Backlight Driver");
+ MODULE_LICENSE("GPL");
+ MODULE_ALIAS("platform:pwm-backlight");
+-
 -- 
 1.8.4
