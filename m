@@ -1,71 +1,100 @@
-Return-Path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailout2.samsung.com ([203.254.224.25]:33712 "EHLO
-	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750719Ab3J2FEu (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 29 Oct 2013 01:04:50 -0400
-From: Jingoo Han <jg1.han@samsung.com>
-References: <1383022663-22315-1-git-send-email-sachin.kamat@linaro.org>
-In-reply-to: <1383022663-22315-1-git-send-email-sachin.kamat@linaro.org>
-Subject: Re: [PATCH 1/1] pwm: samsung: Fix kernel warning while unexporting a
- channel
-Date: Tue, 29 Oct 2013 14:04:48 +0900
-Message-id: <002301ced464$6448bdf0$2cda39d0$%han@samsung.com>
-MIME-version: 1.0
-Content-type: text/plain; charset=us-ascii
-Content-transfer-encoding: 7bit
-Content-language: ko
-Sender: linux-pwm-owner@vger.kernel.org
+Return-Path: <thierry.reding@gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [PATCH v2 00/12] pwm-backlight: Add GPIO and power supply support
+Date: Mon,  7 Oct 2013 13:37:34 +0200
+Message-Id: <1381145866-445-1-git-send-email-treding@nvidia.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: 'Sachin Kamat' <sachin.kamat@linaro.org>, 'Thierry Reding' <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-samsung-soc@vger.kernel.org, 'Tomasz Figa' <tomasz.figa@gmail.com>, 'Jingoo Han' <jg1.han@samsung.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Tuesday, October 29, 2013 1:58 PM, Sachin Kamat wrote:
-> 
-> PWM channel data was set to NULL before freeing it. This caused the
-> following kernel warning while unexporting the channel. Set the channel
-> data to NULL after freeing it.
-> 
-> [   70.495000] WARNING: CPU: 0 PID: 1 at drivers/base/devres.c:805 pwm_put+0x48/0x80()
-> [   70.505000] Modules linked in:
-> [   70.505000] CPU: 0 PID: 1 Comm: sh Not tainted 3.12.0-rc6-next-20131024-00012-gd4aec04-dirty #58
-> [   70.515000] [<c0014ddc>] (unwind_backtrace+0x0/0xf4) from [<c0011784>] (show_stack+0x10/0x14)
-> [   70.525000] [<c0011784>] (show_stack+0x10/0x14) from [<c03a3cbc>] (dump_stack+0x7c/0xb0)
-> [   70.530000] [<c03a3cbc>] (dump_stack+0x7c/0xb0) from [<c001de68>] (warn_slowpath_common+0x6c/0x88)
-> [   70.540000] [<c001de68>] (warn_slowpath_common+0x6c/0x88) from [<c001df20>]
-> (warn_slowpath_null+0x1c/0x24)
-> [   70.550000] [<c001df20>] (warn_slowpath_null+0x1c/0x24) from [<c01d1af8>] (pwm_put+0x48/0x80)
-> [   70.560000] [<c01d1af8>] (pwm_put+0x48/0x80) from [<c01d21c8>] (pwm_unexport_store+0x94/0xac)
-> [   70.565000] [<c01d21c8>] (pwm_unexport_store+0x94/0xac) from [<c010991c>]
-> (sysfs_write_file+0x148/0x1d8)
-> [   70.575000] [<c010991c>] (sysfs_write_file+0x148/0x1d8) from [<c00b2a80>] (vfs_write+0xb4/0x1a0)
-> [   70.585000] [<c00b2a80>] (vfs_write+0xb4/0x1a0) from [<c00b3068>] (SyS_write+0x3c/0x78)
-> [   70.595000] [<c00b3068>] (SyS_write+0x3c/0x78) from [<c000e2e0>] (ret_fast_syscall+0x0/0x30)
-> 
-> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+This series adds the ability to specify a GPIO and a power supply to
+enable a backlight.
 
-Reviewed-by: Jingoo Han <jg1.han@samsung.com>
+Patch 1 adds some blank lines to make the code look less cluttered in
+various places.
 
-Best regards,
-Jingoo Han
+Patch 2 refactors the power on and power off sequences into separate
+functions in preparation for subsequent patches.
 
-> ---
->  drivers/pwm/pwm-samsung.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-> index b2c54c8..6d23eb3 100644
-> --- a/drivers/pwm/pwm-samsung.c
-> +++ b/drivers/pwm/pwm-samsung.c
-> @@ -226,8 +226,8 @@ static int pwm_samsung_request(struct pwm_chip *chip, struct pwm_device *pwm)
-> 
->  static void pwm_samsung_free(struct pwm_chip *chip, struct pwm_device *pwm)
->  {
-> -	pwm_set_chip_data(pwm, NULL);
->  	devm_kfree(chip->dev, pwm_get_chip_data(pwm));
-> +	pwm_set_chip_data(pwm, NULL);
->  }
-> 
->  static int pwm_samsung_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-> --
-> 1.7.9.5
+Patch 3 adds functionality to track the on/off state of the backlight.
+This is required by subsequent patches to make sure that enabling and
+disabling used resources remains balanced.
 
+Patch 4 adds an optional GPIO to enable a backlight. This patch only
+includes the field within the platform data so that it can be properly
+setup before actually being put to use.
+
+Patches 5 to 9 convert all users of the pwm-backlight driver to use the
+new field. For most of them, this just initializes the field to -1,
+marking the field as unused.
+
+Patch 10 uses the new field within the pwm-backlight driver and at the
+same time allows it to be parsed from device tree.
+
+Patch 11 implements support for an optional power supply. This relies on
+the regulator core to return a dummy regulator when no supply has been
+otherwise setup so the driver doesn't have to handle that specially nor
+require all users to be updated.
+
+Patch 12 adds a way to keep a backlight turned off at boot. This is
+useful when hooking up a backlight with a subsystem such as DRM which
+has more explicit semantics as to when a backlight should be turned on.
+
+Due to the dependencies within the series, I propose to take all these
+patches through the PWM tree, so I'll need acks from OMAP, PXA, Samsung,
+shmobile and Unicore32 maintainers.
+
+Thierry
+
+Thierry Reding (12):
+  pwm-backlight: Improve readability
+  pwm-backlight: Refactor backlight power on/off
+  pwm-backlight: Track enable state
+  pwm-backlight: Add optional enable GPIO
+  ARM: OMAP: Initialize PWM backlight enable_gpio field
+  ARM: pxa: Initialize PWM backlight enable_gpio field
+  ARM: SAMSUNG: Initialize PWM backlight enable_gpio field
+  ARM: shmobile: Initialize PWM backlight enable_gpio field
+  unicore32: Initialize PWM backlight enable_gpio field
+  pwm-backlight: Use new enable_gpio field
+  pwm-backlight: Add power supply support
+  pwm-backlight: Allow backlight to remain disabled on boot
+
+ .../bindings/video/backlight/pwm-backlight.txt     |   8 ++
+ arch/arm/mach-omap2/board-zoom-peripherals.c       |   1 +
+ arch/arm/mach-pxa/cm-x300.c                        |   1 +
+ arch/arm/mach-pxa/colibri-pxa270-income.c          |   1 +
+ arch/arm/mach-pxa/ezx.c                            |   1 +
+ arch/arm/mach-pxa/hx4700.c                         |   1 +
+ arch/arm/mach-pxa/lpd270.c                         |   1 +
+ arch/arm/mach-pxa/magician.c                       |   1 +
+ arch/arm/mach-pxa/mainstone.c                      |   1 +
+ arch/arm/mach-pxa/mioa701.c                        |   1 +
+ arch/arm/mach-pxa/palm27x.c                        |   1 +
+ arch/arm/mach-pxa/palmtc.c                         |  35 +----
+ arch/arm/mach-pxa/palmte2.c                        |   1 +
+ arch/arm/mach-pxa/pcm990-baseboard.c               |   1 +
+ arch/arm/mach-pxa/raumfeld.c                       |   1 +
+ arch/arm/mach-pxa/tavorevb.c                       |   2 +
+ arch/arm/mach-pxa/viper.c                          |   1 +
+ arch/arm/mach-pxa/z2.c                             |   2 +
+ arch/arm/mach-pxa/zylonite.c                       |   1 +
+ arch/arm/mach-s3c24xx/mach-h1940.c                 |   1 +
+ arch/arm/mach-s3c24xx/mach-rx1950.c                |   1 +
+ arch/arm/mach-s3c64xx/mach-crag6410.c              |   1 +
+ arch/arm/mach-s3c64xx/mach-hmt.c                   |   1 +
+ arch/arm/mach-s3c64xx/mach-smartq.c                |   1 +
+ arch/arm/mach-s3c64xx/mach-smdk6410.c              |   1 +
+ arch/arm/mach-s5p64x0/mach-smdk6440.c              |   1 +
+ arch/arm/mach-s5p64x0/mach-smdk6450.c              |   1 +
+ arch/arm/mach-s5pc100/mach-smdkc100.c              |   1 +
+ arch/arm/mach-s5pv210/mach-smdkv210.c              |   1 +
+ arch/arm/mach-shmobile/board-armadillo800eva.c     |   1 +
+ arch/arm/plat-samsung/dev-backlight.c              |   5 +
+ arch/unicore32/kernel/puv3-nb0916.c                |   1 +
+ drivers/video/backlight/pwm_bl.c                   | 149 ++++++++++++++++-----
+ include/linux/pwm_backlight.h                      |   7 +
+ 34 files changed, 171 insertions(+), 64 deletions(-)
+
+-- 
+1.8.4
