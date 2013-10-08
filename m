@@ -1,54 +1,109 @@
-Date: Thu, 24 Oct 2013 10:52:10 +0200
+Date: Tue, 8 Oct 2013 15:56:54 +0200
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/1] Documentation/pwm: Fix trivial typos
-Message-ID: <20131024085210.GB10650@ulmo.nvidia.com>
-References: <1382604227-3551-1-git-send-email-sachin.kamat@linaro.org>
+Subject: Re: [PATCHv5 4/4] Documentation: Add device tree bindings for
+ Freescale FTM PWM.
+Message-ID: <20131008135654.GB16550@ulmo.nvidia.com>
+References: <1380521611-2764-1-git-send-email-Li.Xiubo@freescale.com>
+ <1380521611-2764-5-git-send-email-Li.Xiubo@freescale.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="z6Eq5LdranGa6ru8"
+	protocol="application/pgp-signature"; boundary="H1spWtNR+x+ondvy"
 Content-Disposition: inline
-In-Reply-To: <1382604227-3551-1-git-send-email-sachin.kamat@linaro.org>
+In-Reply-To: <1380521611-2764-5-git-send-email-Li.Xiubo@freescale.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, rob@landley.net, trivial@kernel.org
+To: swarren@wwwdotorg.org, ian.campbell@citrix.com, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com
+Cc: r65073@freescale.com, s.hauer@pengutronix.de, t.figa@samsung.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Xiubo Li <Li.Xiubo@freescale.com>
 
 
---z6Eq5LdranGa6ru8
+--H1spWtNR+x+ondvy
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 24, 2013 at 02:13:47PM +0530, Sachin Kamat wrote:
-> Fixes some trivial typos to improve readability.
+On Mon, Sep 30, 2013 at 02:13:31PM +0800, Xiubo Li wrote:
+> This adds the Document for Freescale FTM PWM driver under
+> Documentation/devicetree/bindings/pwm/.
 >=20
-> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
 > ---
->  Documentation/pwm.txt |    4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        | 33 ++++++++++++++++=
+++++++
+>  1 file changed, 33 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
 
-Applied, thanks.
+Can someone of the device tree bindings maintainers review and ACK this?
+I think it'd be good to squash this patch with the driver patch (patch 1
+of this series). I can do that when I apply this.
 
 Thierry
 
---z6Eq5LdranGa6ru8
+>=20
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt b/Docu=
+mentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+> new file mode 100644
+> index 0000000..2c6969a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+> @@ -0,0 +1,33 @@
+> +Freescale FTM PWM controller
+> +
+> +Required properties:
+> +- compatible: Should be "fsl,vf610-ftm-pwm"
+> +- reg: Physical base address and length of the controller's registers
+> +- #pwm-cells: Should be 3. See pwm.txt in this directory for a descripti=
+on of
+> +  the cells format.
+> +- clock-names : Includes the following module clock source entries:
+> +    "ftm0" (system clock),
+> +    "ftm0_fix_sel" (fixed frequency clock),
+> +    "ftm0_ext_sel" (external clock)
+> +- clocks : Must contain a clock specifier for each entry in clock-names.
+> +- fsl,pwm-counter-clk: The FTM PWM counter clock source, should be one o=
+f the
+> +  entries in clock-names.
+> +- pinctrl-names: must contain a "default" entry.
+> +- pinctrl-NNN: One property must exist for each entry in pinctrl-names.
+> +  See ../pinctrl/pinctrl-bindings.txt for details of the property values.
+> +
+> +
+> +Example:
+> +
+> +pwm0: pwm@40038000 {
+> +		compatible =3D "fsl,vf610-ftm-pwm";
+> +		reg =3D <0x40038000 0x1000>;
+> +		#pwm-cells =3D <3>;
+> +		clock-names =3D "ftm0", "ftm0_fix_sel", "ftm0_ext_sel";
+> +		clocks =3D <&clks VF610_CLK_FTM0>,
+> +			<&clks VF610_CLK_FTM0_FIX_SEL>,
+> +			<&clks VF610_CLK_FTM0_EXT_SEL>;
+> +		pinctrl-names =3D "default";
+> +		pinctrl-0 =3D <&pinctrl_pwm0_1>;
+> +		fsl,pwm-counter-clk =3D "ftm0_ext_sel";
+> +};
+> --=20
+> 1.8.0
+>=20
+>=20
+
+--H1spWtNR+x+ondvy
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSaN+6AAoJEN0jrNd/PrOhOXIP/iH03QitMGSMd6ULURxGVECY
-kCPpL8RSXCkzdQ5fBXsMWz+lKh2FMOwPo9o+OIb4ZFgwA3uPW7qHrHe9UGFHMt7f
-/q5q4yBj2SWCv2cGSF87svJJzqJ6JEyga2nc2bECifZt+SuJE2/OrtJ1N9KVjrx+
-do2WxB0G0kTTiRqgICeTly2WG4TtHk4xwViuFC3gwhtuIwHQUAHHqWT+pn6yJqvp
-D4MKJwWeVqP3c9nkWCsj7myyiG/Q50GwwhaSEtCz++Dlyn5eXYReTRbZvmvVjQp8
-PjlJ3mLQ4+lwhvn8RdII/7vWH4OD2r6c57ogZaIyeDzhKbdld1bJ0qdk1MEIC2/K
-Bj+PAyI1Kxs/KBes7Wp+hYeOhq1f+wN790K1wOrpYowtakB9xuJ8v/VeS/1c53eV
-cAD+kAYg1UiaS6uOolOOUoFUMFJcnhpR8+dzBkW6u0ytg4u2c5hDYHqN6BXBoZx6
-AHibXq12W3VP912SRAq+dIUq0CUdpMH/WGtpSP66Z/J3ScMgAd5Wdi0JnNcoBeDU
-ePHt6Bcrt9ySP1H5In7P4JdDQVIKJE/ikdWmvDz+b+DohFN6glNhmPLdtaufzIWg
-rg/5tcECU7Znz7lwtvKktVtjm162Q5ArGW+QCbYwYT5By3rlQj/uwDG41T3+J3Z/
-dz24r2kSwIyxqVZyKI3V
-=HlbM
+iQIcBAEBAgAGBQJSVA8mAAoJEN0jrNd/PrOhEHUP/1PxtT0TcuUa+I4RW/539+Vj
+8dp3U4etNyWLxHJlKcipx4RiFpfh7FnadMoU7vT/qpATGCs9BlVsAn6gOsqh/lXu
+GfdQB76PjFUu6e+l36AVEiiLcj5vxhU4ypZQ1/2Ycb1ZGWM17mbajpMZvlj8AaXH
+k2ALm47v89c/RJw5q1xql9z0fHehlRzSov5eBbJCmVYnXCU2S4sFa2KVSbcfHNvF
+jt5ZQ1/OzM5v5lP3grK8bfWZLc/rSTeFthTvKEGBAdBQjpgWNn+vzrEux/nnGxpV
+h/n3dXJ6Rg04/r7WQAMZxt3AjvG2XvdniWIiGyYJbj207/J3P9rysZmvifqERrI2
+JTDNeBEoqKz1m+hIH1wgNpCmwDbJ1b5+BhmP9285hDgEHVCwLIliklVDLKSlq/Fx
+7CssL/ML43aMoVmRSd647cV2RR8COC2TtD2xyGV5m3aa9zP2lBvBieY4ZMXuO14W
+M7kV6MxjvPJK+7gkpFY7IknlfKAks3b15y22WLKzRjIvSXqRMuIdtUtDQ/ksfH0v
+NuWps9G7R7xoSsVBmo+WDuRlKGuYGY51gIue3pKCLrCjL7mT/iloSKq85MPHcsAO
+XIp9X/mYvbsZYQznn8k9Mibf1jKO4gZV9GUrv0CXYQ4bzuHR+vyB7wt9ojcowglf
+FloPCF6bhwtINt02V4sh
+=lW13
 -----END PGP SIGNATURE-----
 
---z6Eq5LdranGa6ru8--
+--H1spWtNR+x+ondvy--
