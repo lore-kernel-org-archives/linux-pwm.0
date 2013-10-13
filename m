@@ -1,39 +1,71 @@
-Return-Path: <linux-pwm-owner@vger.kernel.org>
-Received: from sauhun.de ([89.238.76.85]:56482 "EHLO pokefinder.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753831Ab3JMQSU (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Sun, 13 Oct 2013 12:18:20 -0400
+Return-Path: <wsa@the-dreams.de>
 From: Wolfram Sang <wsa@the-dreams.de>
-Subject: [PATCH 0/4] remove devm_pinctrl_get_select_default from drivers
-Date: Sun, 13 Oct 2013 18:17:46 +0200
-Message-Id: <1381681071-6021-1-git-send-email-wsa@the-dreams.de>
-Sender: linux-pwm-owner@vger.kernel.org
+Subject: [PATCH 3/4] drivers/pwm: don't use devm_pinctrl_get_select_default() in probe
+Date: Sun, 13 Oct 2013 18:17:49 +0200
+Message-Id: <1381681071-6021-4-git-send-email-wsa@the-dreams.de>
+In-Reply-To: <1381681071-6021-1-git-send-email-wsa@the-dreams.de>
+References: <1381681071-6021-1-git-send-email-wsa@the-dreams.de>
 List-ID: <linux-pwm.vger.kernel.org>
 To: linux-arm-kernel@lists.infradead.org
-Cc: Wolfram Sang <wsa@the-dreams.de>, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org, linux-omap@vger.kernel.org, linux-pwm@vger.kernel.org
+Cc: Wolfram Sang <wsa@the-dreams.de>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-The core does this automatically, no need to do this explicitly in drivers.
-Those patchces should go via the respective subtrees. Thanks!
+Since commit ab78029 (drivers/pinctrl: grab default handles from device core),
+we can rely on device core for setting the default pins. Compile tested only.
 
+Acked-by: Linus Walleij <linus.walleij@linaro.org> (personally at LCE13)
+Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
+---
+ drivers/pwm/pwm-tiecap.c   | 6 ------
+ drivers/pwm/pwm-tiehrpwm.c | 6 ------
+ 2 files changed, 12 deletions(-)
 
-Wolfram Sang (4):
-  drivers/gpu/drm/tilcdc: don't use devm_pinctrl_get_select_default() in
-    probe
-  drivers/mmc/host: don't use devm_pinctrl_get_select_default() in probe
-  drivers/pwm: don't use devm_pinctrl_get_select_default() in probe
-  sound/soc/atmel: don't use devm_pinctrl_get_select_default() in probe
-
- drivers/gpu/drm/tilcdc/tilcdc_panel.c  | 6 ------
- drivers/gpu/drm/tilcdc/tilcdc_slave.c  | 6 ------
- drivers/gpu/drm/tilcdc/tilcdc_tfp410.c | 6 ------
- drivers/mmc/host/mvsdio.c              | 7 +------
- drivers/mmc/host/omap_hsmmc.c          | 7 -------
- drivers/mmc/host/sdhci-esdhc-imx.c     | 8 --------
- drivers/pwm/pwm-tiecap.c               | 6 ------
- drivers/pwm/pwm-tiehrpwm.c             | 6 ------
- sound/soc/atmel/atmel_wm8904.c         | 8 --------
- 9 files changed, 1 insertion(+), 59 deletions(-)
-
+diff --git a/drivers/pwm/pwm-tiecap.c b/drivers/pwm/pwm-tiecap.c
+index c2e2e58..4e5c3d1 100644
+--- a/drivers/pwm/pwm-tiecap.c
++++ b/drivers/pwm/pwm-tiecap.c
+@@ -26,7 +26,6 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/pwm.h>
+ #include <linux/of_device.h>
+-#include <linux/pinctrl/consumer.h>
+ 
+ #include "pwm-tipwmss.h"
+ 
+@@ -208,11 +207,6 @@ static int ecap_pwm_probe(struct platform_device *pdev)
+ 	struct clk *clk;
+ 	struct ecap_pwm_chip *pc;
+ 	u16 status;
+-	struct pinctrl *pinctrl;
+-
+-	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
+-	if (IS_ERR(pinctrl))
+-		dev_warn(&pdev->dev, "unable to select pin group\n");
+ 
+ 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+ 	if (!pc) {
+diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
+index 084f552..a4d8f51 100644
+--- a/drivers/pwm/pwm-tiehrpwm.c
++++ b/drivers/pwm/pwm-tiehrpwm.c
+@@ -26,7 +26,6 @@
+ #include <linux/clk.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/of_device.h>
+-#include <linux/pinctrl/consumer.h>
+ 
+ #include "pwm-tipwmss.h"
+ 
+@@ -439,11 +438,6 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
+ 	struct clk *clk;
+ 	struct ehrpwm_pwm_chip *pc;
+ 	u16 status;
+-	struct pinctrl *pinctrl;
+-
+-	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
+-	if (IS_ERR(pinctrl))
+-		dev_warn(&pdev->dev, "unable to select pin group\n");
+ 
+ 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+ 	if (!pc) {
 -- 
 1.8.4.rc3
-
