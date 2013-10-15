@@ -1,71 +1,61 @@
-Return-Path: <wsa@the-dreams.de>
-From: Wolfram Sang <wsa@the-dreams.de>
-Subject: [PATCH 3/4] drivers/pwm: don't use devm_pinctrl_get_select_default() in probe
-Date: Sun, 13 Oct 2013 18:17:49 +0200
-Message-Id: <1381681071-6021-4-git-send-email-wsa@the-dreams.de>
-In-Reply-To: <1381681071-6021-1-git-send-email-wsa@the-dreams.de>
+Date: Tue, 15 Oct 2013 12:17:22 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 3/4] drivers/pwm: don't use
+ devm_pinctrl_get_select_default() in probe
+Message-ID: <20131015101722.GM7856@ulmo.nvidia.com>
 References: <1381681071-6021-1-git-send-email-wsa@the-dreams.de>
+ <1381681071-6021-4-git-send-email-wsa@the-dreams.de>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="XlS4q8O07AKt4+K1"
+Content-Disposition: inline
+In-Reply-To: <1381681071-6021-4-git-send-email-wsa@the-dreams.de>
 List-ID: <linux-pwm.vger.kernel.org>
-To: linux-arm-kernel@lists.infradead.org
-Cc: Wolfram Sang <wsa@the-dreams.de>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Wolfram Sang <wsa@the-dreams.de>
+Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Since commit ab78029 (drivers/pinctrl: grab default handles from device core),
-we can rely on device core for setting the default pins. Compile tested only.
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org> (personally at LCE13)
-Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
----
- drivers/pwm/pwm-tiecap.c   | 6 ------
- drivers/pwm/pwm-tiehrpwm.c | 6 ------
- 2 files changed, 12 deletions(-)
+--XlS4q8O07AKt4+K1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/pwm/pwm-tiecap.c b/drivers/pwm/pwm-tiecap.c
-index c2e2e58..4e5c3d1 100644
---- a/drivers/pwm/pwm-tiecap.c
-+++ b/drivers/pwm/pwm-tiecap.c
-@@ -26,7 +26,6 @@
- #include <linux/pm_runtime.h>
- #include <linux/pwm.h>
- #include <linux/of_device.h>
--#include <linux/pinctrl/consumer.h>
- 
- #include "pwm-tipwmss.h"
- 
-@@ -208,11 +207,6 @@ static int ecap_pwm_probe(struct platform_device *pdev)
- 	struct clk *clk;
- 	struct ecap_pwm_chip *pc;
- 	u16 status;
--	struct pinctrl *pinctrl;
--
--	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
--	if (IS_ERR(pinctrl))
--		dev_warn(&pdev->dev, "unable to select pin group\n");
- 
- 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
- 	if (!pc) {
-diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
-index 084f552..a4d8f51 100644
---- a/drivers/pwm/pwm-tiehrpwm.c
-+++ b/drivers/pwm/pwm-tiehrpwm.c
-@@ -26,7 +26,6 @@
- #include <linux/clk.h>
- #include <linux/pm_runtime.h>
- #include <linux/of_device.h>
--#include <linux/pinctrl/consumer.h>
- 
- #include "pwm-tipwmss.h"
- 
-@@ -439,11 +438,6 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
- 	struct clk *clk;
- 	struct ehrpwm_pwm_chip *pc;
- 	u16 status;
--	struct pinctrl *pinctrl;
--
--	pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
--	if (IS_ERR(pinctrl))
--		dev_warn(&pdev->dev, "unable to select pin group\n");
- 
- 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
- 	if (!pc) {
--- 
-1.8.4.rc3
+On Sun, Oct 13, 2013 at 06:17:49PM +0200, Wolfram Sang wrote:
+> Since commit ab78029 (drivers/pinctrl: grab default handles from device c=
+ore),
+> we can rely on device core for setting the default pins. Compile tested o=
+nly.
+>=20
+> Acked-by: Linus Walleij <linus.walleij@linaro.org> (personally at LCE13)
+> Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
+> ---
+>  drivers/pwm/pwm-tiecap.c   | 6 ------
+>  drivers/pwm/pwm-tiehrpwm.c | 6 ------
+>  2 files changed, 12 deletions(-)
+
+Applied, thanks.
+
+Thierry
+
+--XlS4q8O07AKt4+K1
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSXRYyAAoJEN0jrNd/PrOhoYIP/1xbqi1YmzEavue0psA1oOFl
+EZxbSLyrsPs4b+s7q60NXPyg6/NNEyXEU4zeIBTCjDWLAN9PS2cLtSES91mKeDLb
+eMoIjNPn3FaPFlbRu2ak8EhHrmFoHsueiLbDIxrGkngRJ6J83aakCJ1fkqkEwCqP
+OcXAP1UsbvBQ1xN+srE6WnfeL3Q62y+Z/PtgWJtC6T8TmpVaFsAB9p4Uv0DCW3tT
+rKLe3euM5i2Az+q9CflT/wQJ5zD9SN1IoDD0+eRWU46C3f/hoIbT/QjHXOnzYKiw
+zjC9jZasYLhdvhQbHlzQukTP+/pmTCIZQuDyC4KHYTmqIyoehi1PxUf/iuOwRfjg
+HJzNiNQvDUElzrRirObmcCzD7NOxjZzYjf3uWaBBNSyV9Uuc3fKz9KDFGiCxyfAh
+OMnuNTPU8ZmmhtGu9nXlhDuFXqfysoqEyMbpcx6Xgr9egYZVDV6uI8i5+t8JK8sh
+qyRmc0cVapR3v/c+2t0cc8P+79SBsq9xmdKGTWZwlQtj3srEAgbeQ1UFk8gsI6nG
+OgNq8YAMBes+pP/9zs34UDZJLTG2ydaX4Lr66gYARAAW1zuaYN78i+q7TyAS8qK5
+SDxOBkMnpCXrVhcjWFEMFE4AiCJN/xI9Ecv2onhKqJpUoadQS1vkhbwpfIO/DKan
+dhN1ltYcHzI+94VrvJfG
+=BB5g
+-----END PGP SIGNATURE-----
+
+--XlS4q8O07AKt4+K1--
