@@ -1,196 +1,208 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Tue, 15 Oct 2013 12:39:33 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: add ep93xx PWM support
-Message-ID: <20131015103932.GN7856@ulmo.nvidia.com>
+Return-Path: <hartleys@visionengravers.com>
+From: Hartley Sweeten <HartleyS@visionengravers.com>
+Subject: RE: [PATCH] pwm: add ep93xx PWM support
+Date: Wed, 16 Oct 2013 01:22:07 +0000
+Message-ID: <DC148C5AA1CEBA4E87973D432B1C2D8817DAE318@P3PWEX4MB008.ex4.secureserver.net>
 References: <201310141457.49208.hartleys@visionengravers.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Pjk796cY0SfIo9Z2"
-Content-Disposition: inline
-In-Reply-To: <201310141457.49208.hartleys@visionengravers.com>
-List-ID: <linux-pwm.vger.kernel.org>
-To: H Hartley Sweeten <hartleys@visionengravers.com>
-Cc: linux-pwm@vger.kernel.org, Linux Kernel <linux-kernel@vger.kernel.org>, Ryan Mallon <rmallon@gmail.com>, arnd@arndb.de, gregkh@linuxfoundation.org
-
-
---Pjk796cY0SfIo9Z2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+ <20131015103932.GN7856@ulmo.nvidia.com>
+In-Reply-To: <20131015103932.GN7856@ulmo.nvidia.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+List-ID: <linux-pwm.vger.kernel.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Linux Kernel <linux-kernel@vger.kernel.org>, Ryan Mallon <rmallon@gmail.com>, "arnd@arndb.de" <arnd@arndb.de>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
 
-On Mon, Oct 14, 2013 at 02:57:48PM -0700, H Hartley Sweeten wrote:
-> Remove the non-standard EP93xx pwm driver in drivers/misc and add
+On Tuesday, October 15, 2013 3:40 AM, Thierry Reding wrote:
+> On Mon, Oct 14, 2013 at 02:57:48PM -0700, H Hartley Sweeten wrote:
+>> Remove the non-standard EP93xx pwm driver in drivers/misc and add
+>
+> pwm -> PWM
 
-pwm -> PWM
+OK
 
-> a new driver for the PWM chips on the EP93xx platforms based on the
-> PWM framework.
->=20
-> These PWM chips each support 1 PWM channel with programmable duty
+>> a new driver for the PWM chips on the EP93xx platforms based on the
+>> PWM framework.
+>>=20
+>> These PWM chips each support 1 PWM channel with programmable duty
+>
+> Perhaps "chips" -> "controllers"?
 
-Perhaps "chips" -> "controllers"?
+OK
 
-> cycle, frequency, and polarity inversion.
->=20
-> Signed-off-by: H Hartley Sweeten <hsweeten@visionengravers.com>
-> Cc: Ryan Mallon <rmallon@gmail.com>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->=20
-> diff --git a/drivers/misc/ep93xx_pwm.c b/drivers/misc/ep93xx_pwm.c
-[...]
-> - *	(c) Copyright 2009  Matthieu Crapet <mcrapet@gmail.com>
-> - *	(c) Copyright 2009  H Hartley Sweeten <hsweeten@visionengravers.com>
-[...]
-> -MODULE_AUTHOR("Matthieu Crapet <mcrapet@gmail.com>, "
-> -	      "H Hartley Sweeten <hsweeten@visionengravers.com>");
-[...]
+>> cycle, frequency, and polarity inversion.
+>>=20
+>> Signed-off-by: H Hartley Sweeten <hsweeten@visionengravers.com>
+>> Cc: Ryan Mallon <rmallon@gmail.com>
+>> Cc: Thierry Reding <thierry.reding@gmail.com>
+>> Cc: Arnd Bergmann <arnd@arndb.de>
+>> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>=20
+>> diff --git a/drivers/misc/ep93xx_pwm.c b/drivers/misc/ep93xx_pwm.c
+> [...]
+>> - *	(c) Copyright 2009  Matthieu Crapet <mcrapet@gmail.com>
+>> - *	(c) Copyright 2009  H Hartley Sweeten <hsweeten@visionengravers.com>
+> [...]
+>> -MODULE_AUTHOR("Matthieu Crapet <mcrapet@gmail.com>, "
+>> -	      "H Hartley Sweeten <hsweeten@visionengravers.com>");
+> [...]
+>
+>> diff --git a/drivers/pwm/pwm-ep93xx.c b/drivers/pwm/pwm-ep93xx.c
+> [...]
+>> + * Copyright (C) 2013 H Hartley Sweeten <hsweeten@visionengravers.com>
+> [...]
+>> +MODULE_AUTHOR("H Hartley Sweeten <hsweeten@visionengravers.com>");
+>
+> Why are you removing Matthieu from the list of authors and copyright
+> here? From a brief look it seems like this new driver is still based on
+> code from the old driver and not a complete rewrite.
 
-> diff --git a/drivers/pwm/pwm-ep93xx.c b/drivers/pwm/pwm-ep93xx.c
-[...]
-> + * Copyright (C) 2013 H Hartley Sweeten <hsweeten@visionengravers.com>
-[...]
-> +MODULE_AUTHOR("H Hartley Sweeten <hsweeten@visionengravers.com>");
+My bad. It is based on the misc driver but I forgot to put Matthieu in as
+one of the original authors when I wrote it.
 
-Why are you removing Matthieu from the list of authors and copyright
-here? From a brief look it seems like this new driver is still based on
-code from the old driver and not a complete rewrite.
+I'll fix that.
 
-> +#include <mach/platform.h>	/* for ep93xx_pwm_{acquire,release}_gpio() */
+>> +#include <mach/platform.h>	/* for ep93xx_pwm_{acquire,release}_gpio() *=
+/
+>
+> I'm not sure how well that will play together with multiplatform support
+> but perhaps that's not an issue for ep93xx?
 
-I'm not sure how well that will play together with multiplatform support
-but perhaps that's not an issue for ep93xx?
+For multiplatform it would probably be a problem. But I don't think anyone
+would be including ep93xx in a multiplatform kernel. If the problem comes u=
+p
+I'll figure out some way to deal with it, probably with a pinctrl driver.
 
-> +static int ep93xx_pwm_request(struct pwm_chip *chip, struct pwm_device *=
-pwm)
-> +{
-> +	struct platform_device *pdev =3D to_platform_device(chip->dev);
-> +
-> +	return ep93xx_pwm_acquire_gpio(pdev);
-> +}
-> +
-> +static void ep93xx_pwm_free(struct pwm_chip *chip, struct pwm_device *pw=
-m)
-> +{
-> +	struct platform_device *pdev =3D to_platform_device(chip->dev);
-> +
-> +	ep93xx_pwm_release_gpio(pdev);
-> +}
-
-This looks like it would belong in the domain of pinctrl, but I suspect
-that ep93xx doesn't support that.
-
-> +static int ep93xx_pwm_config(struct pwm_chip *chip, struct pwm_device *p=
-wm,
-> +			     int duty_ns, int period_ns)
-> +{
-> +	struct ep93xx_pwm *ep93xx_pwm =3D to_ep93xx_pwm(chip);
-> +	void __iomem *base =3D ep93xx_pwm->base;
-> +	unsigned long long c;
-> +	unsigned long period_cycles;
-> +	unsigned long duty_cycles;
-> +	unsigned long term;
-> +	int ret =3D 0;
-> +
-> +	/*
-> +	 * The clock needs to be enabled to access the PWM registers.
-> +	 * Configuration can be changed at any time.
-> +	 */
-> +	if (!test_bit(PWMF_ENABLED, &pwm->flags))
-> +		clk_enable(ep93xx_pwm->clk);
-
-clk_enable() can fail, so you should check the return value and
-propagate errors.
-
-> +static int ep93xx_pwm_polarity(struct pwm_chip *chip, struct pwm_device =
-*pwm,
-> +			       enum pwm_polarity polarity)
-> +{
-> +	struct ep93xx_pwm *ep93xx_pwm =3D to_ep93xx_pwm(chip);
-> +
-> +	/*
-> +	 * The clock needs to be enabled to access the PWM registers.
-> +	 * Polarity can only be changed when the PWM is disabled.
-> +	  */
-
-Nit: the closing */ is wrongly aligned.
-
-> +	clk_enable(ep93xx_pwm->clk);
-
-Needs a check of the return value.
-
-> +	writew(polarity, ep93xx_pwm->base + EP93XX_PWMx_INVERT);
-
-I'd prefer if this did some explicit conversion from the PWM framework
-value to the driver-specific value, even if they happen to be the same
-in this case.
-
-> +static int ep93xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *p=
+>> +static int ep93xx_pwm_request(struct pwm_chip *chip, struct pwm_device =
+*pwm)
+>> +{
+>> +	struct platform_device *pdev =3D to_platform_device(chip->dev);
+>> +
+>> +	return ep93xx_pwm_acquire_gpio(pdev);
+>> +}
+>> +
+>> +static void ep93xx_pwm_free(struct pwm_chip *chip, struct pwm_device *p=
 wm)
-> +{
-> +	struct ep93xx_pwm *ep93xx_pwm =3D to_ep93xx_pwm(chip);
-> +
-> +	clk_enable(ep93xx_pwm->clk);
+>> +{
+>> +	struct platform_device *pdev =3D to_platform_device(chip->dev);
+>> +
+>> +	ep93xx_pwm_release_gpio(pdev);
+>> +}
+>
+> This looks like it would belong in the domain of pinctrl, but I suspect
+> that ep93xx doesn't support that.
 
-Also needs to check the return value.
+It should be but I have not worked out how to support EP93xx GPIOs with a
+pinctrl driver yet. The GPIOs are pretty limited on this platform compared =
+to
+the other pinctrl users.
 
-> +static struct pwm_ops ep93xx_pwm_ops =3D {
+>> +static int ep93xx_pwm_config(struct pwm_chip *chip, struct pwm_device *=
+pwm,
+>> +			     int duty_ns, int period_ns)
+>> +{
+>> +	struct ep93xx_pwm *ep93xx_pwm =3D to_ep93xx_pwm(chip);
+>> +	void __iomem *base =3D ep93xx_pwm->base;
+>> +	unsigned long long c;
+>> +	unsigned long period_cycles;
+>> +	unsigned long duty_cycles;
+>> +	unsigned long term;
+>> +	int ret =3D 0;
+>> +
+>> +	/*
+>> +	 * The clock needs to be enabled to access the PWM registers.
+>> +	 * Configuration can be changed at any time.
+>> +	 */
+>> +	if (!test_bit(PWMF_ENABLED, &pwm->flags))
+>> +		clk_enable(ep93xx_pwm->clk);
+>
+> clk_enable() can fail, so you should check the return value and
+> propagate errors.
 
-static const, please.
+I overlooked that. This will be fixed in the next version.
 
-> +static int ep93xx_pwm_remove(struct platform_device *pdev)
-> +{
-> +	struct ep93xx_pwm *ep93xx_pwm;
-> +
-> +	ep93xx_pwm =3D platform_get_drvdata(pdev);
-> +	if (!ep93xx_pwm)
-> +		return -ENODEV;
+>> +static int ep93xx_pwm_polarity(struct pwm_chip *chip, struct pwm_device=
+ *pwm,
+>> +			       enum pwm_polarity polarity)
+>> +{
+>> +	struct ep93xx_pwm *ep93xx_pwm =3D to_ep93xx_pwm(chip);
+>> +
+>> +	/*
+>> +	 * The clock needs to be enabled to access the PWM registers.
+>> +	 * Polarity can only be changed when the PWM is disabled.
+>> +	  */
+>
+> Nit: the closing */ is wrongly aligned.
 
-No need for this check. It will never happen.
+OK
 
-> +
-> +	return pwmchip_remove(&ep93xx_pwm->chip);
-> +}
-> +
-> +static struct platform_driver ep93xx_pwm_driver =3D {
-> +	.driver		=3D {
-> +		.name	=3D "ep93xx-pwm",
-> +		.owner	=3D THIS_MODULE,
+>> +	clk_enable(ep93xx_pwm->clk);
+>
+> Needs a check of the return value.
 
-This is no longer required because the core sets it to the proper value.
+OK
 
-> +	},
-> +	.probe		=3D ep93xx_pwm_probe,
-> +	.remove		=3D ep93xx_pwm_remove,
-> +};
+>> +	writew(polarity, ep93xx_pwm->base + EP93XX_PWMx_INVERT);
+>
+> I'd prefer if this did some explicit conversion from the PWM framework
+> value to the driver-specific value, even if they happen to be the same
+> in this case.
 
-Oh, and I didn't mention it before, but please get rid of all the
-needless tabs for alignment. It's completely useless and doesn't help
-with readability at all in my opinion.
+OK
 
-Thierry
+>> +static int ep93xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *=
+pwm)
+>> +{
+>> +	struct ep93xx_pwm *ep93xx_pwm =3D to_ep93xx_pwm(chip);
+>> +
+>> +	clk_enable(ep93xx_pwm->clk);
+>
+> Also needs to check the return value.
 
---Pjk796cY0SfIo9Z2
-Content-Type: application/pgp-signature
+OK
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+>> +static struct pwm_ops ep93xx_pwm_ops =3D {
+>
+> static const, please.
 
-iQIcBAEBAgAGBQJSXRtkAAoJEN0jrNd/PrOhZqwQAIURJRKGlz2U6PI7IhWd6JSw
-ORdNtZq55atTmqdC/n4YLzxnGWSRdrMqny2pwZ0me02dcVE4I6ADtLcd+btTUMHk
-zGsWkf96F0obyy0YmGnxEYO0/axjkv6ChYXTn0WxRqznHjxS4KFgv9d6lfQgf8Db
-oQ1YVmae6a8Ih+VyXAJRFbPT15I6wV7Ny5MiKbi4sg65y4xvrazWXF8FuBsnLQCA
-azFurr/XUzbOf3gLGBOB/cQjs4Pm+1HEGxRsuWg0utqjF/Os7bgmUkehITBqQ4Al
-ecdI0TUANwT7diS3zx6BDjYLjifKeCYHx8sXJmItpJsExUvkkIfD55W0EYx7jWhS
-4N4XJns8/JSo8shpDNu2ImEHuKz2ZMye0mrDprsP51MPBlYck4Gh/SEjMfNCaxOY
-iKnzcF2b8K3AtgFgRQddnhU3iRGoDghYBheqEDa0xQsMckVqxdaFJGT/EsnkQp3F
-xsbgG1F4sOxHIJYwkK+sxA/rtE6K01LRAM7xnlxTjsk3VSBLdBkN4Z2DOmONovtD
-OIYM1r1vdEuGvMsvzDCkfh20V549LIa8bNwjFsXuh+/lnAFaG5I1YxeDK/guK5Uh
-7bXQPsXxQM2fRwkIyUkStuMuGP7uC+KoeQIeHs0eTkcogMpLoViQkLoT25CAZm0o
-dytHcK9qd26+wbGSYmPC
-=L4Rv
------END PGP SIGNATURE-----
+OK
 
---Pjk796cY0SfIo9Z2--
+>> +static int ep93xx_pwm_remove(struct platform_device *pdev)
+>> +{
+>> +	struct ep93xx_pwm *ep93xx_pwm;
+>> +
+>> +	ep93xx_pwm =3D platform_get_drvdata(pdev);
+>> +	if (!ep93xx_pwm)
+>> +		return -ENODEV;
+>
+> No need for this check. It will never happen.
+
+OK
+
+>> +
+>> +	return pwmchip_remove(&ep93xx_pwm->chip);
+>> +}
+>> +
+>> +static struct platform_driver ep93xx_pwm_driver =3D {
+>> +	.driver		=3D {
+>> +		.name	=3D "ep93xx-pwm",
+>> +		.owner	=3D THIS_MODULE,
+>
+> This is no longer required because the core sets it to the proper value.
+
+OK
+
+>> +	},
+>> +	.probe		=3D ep93xx_pwm_probe,
+>> +	.remove		=3D ep93xx_pwm_remove,
+>> +};
+>
+> Oh, and I didn't mention it before, but please get rid of all the
+> needless tabs for alignment. It's completely useless and doesn't help
+> with readability at all in my opinion.
+
+Opinions differ.. But I'll remove the tabs.
+
+Thanks for the review,
+Hartley
