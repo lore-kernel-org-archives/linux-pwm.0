@@ -1,32 +1,46 @@
-Return-Path: <hverkuil@xs4all.nl>
-Message-ID: <52664A53.7090807@xs4all.nl>
-Date: Tue, 22 Oct 2013 09:50:11 +0000
-From: Hans Verkuil <hverkuil@xs4all.nl>
+Return-Path: <nvmarkzhang@gmail.com>
+Return-Path: <nvmarkzhang@gmail.com>
+Message-ID: <525F8895.5010806@gmail.com>
+Date: Thu, 17 Oct 2013 14:49:57 +0800
+From: Mark Zhang <nvmarkzhang@gmail.com>
 MIME-Version: 1.0
-Subject: Re: [media-workshop] V2: Agenda for the Edinburgh mini-summit
-References: <201309101134.32883.hansverk@cisco.com> <3335821.8epFKWiJXY@avalon> <CAK5ve-JHEaNrNiYwdMdEiEsD0LnqHG-MEAQv4D-962fYK0=g4A@mail.gmail.com> <2523390.YEHU3IBNqR@avalon> <CAK5ve-+N=GyNk-ryR0LbiUcT0TErFTwK60-vHNEf7112dNyh_A@mail.gmail.com> <525DF0C7.9090407@ti.com> <CAK5ve-K481KMXZJW9Ah8N_NaOYNNgdxABvewqiTOhquUAzr-UA@mail.gmail.com> <525F2311.8000509@ti.com> <1381968755.1905.25.camel@palomino.walls.org> <CAK5ve-Jnbr2C-LPfS9KKNcv8KH-7gkZyp+tj4Qt9-pE=nch8gg@mail.gmail.com> <CAPybu_2KRF_VHkjCEV8d7YOaZo27QJ=TxGTsUOeWO5X_tp8Ozw@mail.gmail.com> <CAK5ve-+PiRDEriYrCpbWq5WTPTq=n-xYZM0D46mDRAZWZi2GWw@mail.gmail.com> <526577FA.7070602@xs4all.nl>
-In-Reply-To: <526577FA.7070602@xs4all.nl>
+Subject: How to set fops in "struct platform_pwm_backlight_data"?
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 List-ID: <linux-pwm.vger.kernel.org>
-To: Bryan Wu <cooloney@gmail.com>
-Cc: Oliver Schinagl <oliver+list@schinagl.nl>, Milo Kim <milo.kim@ti.com>, Paul Walmsley <paul@pwsan.com>, Andy Walls <awalls@md.metrocast.net>, linux-pwm@vger.kernel.org, "media-workshop@linuxtv.org" <media-workshop@linuxtv.org>, Hans Verkuil <hansverk@cisco.com>, Thierry Reding <thierry.reding@gmail.com>, Sakari Ailus <sakari.ailus@iki.fi>, Bryan Wu <bryan.wu@canonical.com>, Sylwester Nawrocki <sylvester.nawrocki@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Linux LED Subsystem <linux-leds@vger.kernel.org>, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>
+To: thierry.reding@gmail.com, rpurdie@rpsys.net, jg1.han@samsung.com, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, tomi.valkeinen@ti.com
+Cc: linux-pwm@vger.kernel.org, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-On 10/21/2013 06:52 PM, Hans Verkuil wrote:
-> On 10/21/2013 06:40 PM, Bryan Wu wrote:
->> Is the time and location of media mini-summit fixed? My colleague
->> might show up if it's not conflicted with ARM mini-summit.
-> 
-> It's in the Glamis room on Wednesday. We start at 9 am and the LED topic
-> is currently scheduled as the second topic so I expect that it will be
-> discussed between 9 and 10 am.
+Hi,
 
+This is the first time I send mail to linux-pwm, I didn't read through
+the mails in this list, so if somebody already asked this question, I'm
+sorry about that.
 
-I just posted the final (at least, I really hope it will be the final) version of
-the agenda to linux-media and media-workshop. The LED topic moved to a somewhat
-later slot and is currently scheduled for 10:50. All these times are tentative so
-for this topic you should probably be there at 10:30 to be safe.
+I wanna set some fops in "struct platform_pwm_backlight_data". But the
+currrent probe function in pwm_bl.c says:
 
-Regards,
+-------
+if (!data) {
+	ret = pwm_backlight_parse_dt(&pdev->dev, &defdata);
+	if (ret < 0) {
+		dev_err(&pdev->dev, "failed to find platform data\n");
+		return ret;
+	}
 
-	Hans
+	data = &defdata;
+}
+-------
+
+This looks like if we set the platform data for pwm backlight device,
+"pwm_backlight_parse_dt" will never have a chance to be called, which
+means the stuffs I defined in backlight DT node will be ignored.
+
+If I don't set the platform data for pwm backlight device, according to
+the pwm_backlight_probe, I will never have a chance to set some fops
+which I need(like "notify", "check_fb"...).
+
+So, what I suppose to do now? Maybe there is a way to set function
+pointers in DT?
+
+Mark
