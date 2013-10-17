@@ -1,46 +1,84 @@
-Return-Path: <nvmarkzhang@gmail.com>
-Return-Path: <nvmarkzhang@gmail.com>
-Message-ID: <525F8895.5010806@gmail.com>
-Date: Thu, 17 Oct 2013 14:49:57 +0800
-From: Mark Zhang <nvmarkzhang@gmail.com>
+Return-Path: <thierry.reding@gmail.com>
+Date: Thu, 17 Oct 2013 09:14:46 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: How to set fops in "struct platform_pwm_backlight_data"?
+Message-ID: <20131017071445.GA2502@ulmo.nvidia.com>
+References: <525F8895.5010806@gmail.com>
 MIME-Version: 1.0
-Subject: How to set fops in "struct platform_pwm_backlight_data"?
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="tThc/1wpZn/ma/RB"
+Content-Disposition: inline
+In-Reply-To: <525F8895.5010806@gmail.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: thierry.reding@gmail.com, rpurdie@rpsys.net, jg1.han@samsung.com, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, tomi.valkeinen@ti.com
-Cc: linux-pwm@vger.kernel.org, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Mark Zhang <nvmarkzhang@gmail.com>
+Cc: rpurdie@rpsys.net, jg1.han@samsung.com, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, tomi.valkeinen@ti.com, linux-pwm@vger.kernel.org, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-Hi,
 
-This is the first time I send mail to linux-pwm, I didn't read through
-the mails in this list, so if somebody already asked this question, I'm
-sorry about that.
+--tThc/1wpZn/ma/RB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I wanna set some fops in "struct platform_pwm_backlight_data". But the
-currrent probe function in pwm_bl.c says:
+On Thu, Oct 17, 2013 at 02:49:57PM +0800, Mark Zhang wrote:
+> Hi,
+>=20
+> This is the first time I send mail to linux-pwm, I didn't read through
+> the mails in this list, so if somebody already asked this question, I'm
+> sorry about that.
+>=20
+> I wanna set some fops in "struct platform_pwm_backlight_data". But the
+> currrent probe function in pwm_bl.c says:
+>=20
+> -------
+> if (!data) {
+> 	ret =3D pwm_backlight_parse_dt(&pdev->dev, &defdata);
+> 	if (ret < 0) {
+> 		dev_err(&pdev->dev, "failed to find platform data\n");
+> 		return ret;
+> 	}
+>=20
+> 	data =3D &defdata;
+> }
+> -------
+>=20
+> This looks like if we set the platform data for pwm backlight device,
+> "pwm_backlight_parse_dt" will never have a chance to be called, which
+> means the stuffs I defined in backlight DT node will be ignored.
+>=20
+> If I don't set the platform data for pwm backlight device, according to
+> the pwm_backlight_probe, I will never have a chance to set some fops
+> which I need(like "notify", "check_fb"...).
+>=20
+> So, what I suppose to do now? Maybe there is a way to set function
+> pointers in DT?
 
--------
-if (!data) {
-	ret = pwm_backlight_parse_dt(&pdev->dev, &defdata);
-	if (ret < 0) {
-		dev_err(&pdev->dev, "failed to find platform data\n");
-		return ret;
-	}
+Perhaps you could describe in more detail what you need the functions
+for.
 
-	data = &defdata;
-}
--------
+Generally you're not supposed to mix DT and platform data. Without more
+info that's about all I can say.
 
-This looks like if we set the platform data for pwm backlight device,
-"pwm_backlight_parse_dt" will never have a chance to be called, which
-means the stuffs I defined in backlight DT node will be ignored.
+Thierry
 
-If I don't set the platform data for pwm backlight device, according to
-the pwm_backlight_probe, I will never have a chance to set some fops
-which I need(like "notify", "check_fb"...).
+--tThc/1wpZn/ma/RB
+Content-Type: application/pgp-signature
 
-So, what I suppose to do now? Maybe there is a way to set function
-pointers in DT?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-Mark
+iQIcBAEBAgAGBQJSX45lAAoJEN0jrNd/PrOh27MQAKzXkIAA16rGqivlJHQAaGTb
+GownGIn9NIAfc2vKVnUK1omHe9kcYMojehJwvU58AC4yQL9nRyQ0ogwM6aywBjOD
+Dv05clJ9CzNcfIOcQXx6cTgqrwIEtSV0aVuvwTARsAyYuiOJEqJ7qQbC3doQlB6B
+7DdSQg7TN1tPYiswHpYy0qHHX44EKmdXVt1D6NOm68HziHjm0ZdPINfYF/egucCj
+jgAHEHLvJH6OlBn3kn9FvmwnUItmqTxuYmp8BN76l3txfXevhNf6CDhJs/5VTlVD
+Cx5pIxU9GXMhRp19omzrnIPdl8pseWIwxbylrGTaa2HUl++kjU9RHq/NwVG2ttmx
+9k4jDgqQapyMHPFvYYSwDxbm0fRaUbdklt6N23iSBGoXRDeWKQA2+yb64O3wBtPK
+8WEbrNrydbf8Gjep/AUNTzObzrKFUw4AScY3sa6MeFMabJxgCoUUgzgjxi8Wvxu4
+weimHtxl/3jRZ5tJ4w7IKY1z/Bkdra9xWFnz9ntxbrFDxaS8pteNI4P9oC+NwzrB
+hohvnk03RyphGfAE++Djpn5zoKds3qMIcWTsxbNrrllwQTOwruDRAyM5656XWESY
+n8VRg23BP4DZghE7zGf3SsU8ucBxMIcILFKFXiP+b95bOlBdl0iJhBkFxPLFxKnh
+bLe2d58vauGSwwurxIxG
+=MbB3
+-----END PGP SIGNATURE-----
+
+--tThc/1wpZn/ma/RB--
