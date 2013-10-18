@@ -1,74 +1,76 @@
 Return-Path: <thierry.reding@gmail.com>
-Date: Thu, 17 Oct 2013 16:18:19 +0200
+Date: Fri, 18 Oct 2013 09:46:24 +0200
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2] pwm: add ep93xx PWM support
-Message-ID: <20131017141818.GB32734@ulmo.nvidia.com>
-References: <201310151840.03569.hartleys@visionengravers.com>
+Subject: Re: [PATCH v2] pwm-backlight: allow for non-increasing brightness
+ levels
+Message-ID: <20131018074623.GA22291@ulmo.nvidia.com>
+References: <1379869196-19377-1-git-send-email-mikedunn@newsguy.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="QKdGvSO+nmPlgiQ/"
+	protocol="application/pgp-signature"; boundary="oyUTqETQ0mS9luUI"
 Content-Disposition: inline
-In-Reply-To: <201310151840.03569.hartleys@visionengravers.com>
+In-Reply-To: <1379869196-19377-1-git-send-email-mikedunn@newsguy.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: H Hartley Sweeten <hartleys@visionengravers.com>
-Cc: linux-pwm@vger.kernel.org, Linux Kernel <linux-kernel@vger.kernel.org>, Ryan Mallon <rmallon@gmail.com>, arnd@arndb.de, gregkh@linuxfoundation.org
+To: Mike Dunn <mikedunn@newsguy.com>
+Cc: Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jg1.han@samsung.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>
 
 
---QKdGvSO+nmPlgiQ/
+--oyUTqETQ0mS9luUI
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 15, 2013 at 06:40:03PM -0700, H Hartley Sweeten wrote:
-> Remove the non-standard EP93xx PWM driver in drivers/misc and add
-> a new driver for the PWM controllers on the EP93xx platform based
-> on the PWM framework.
+On Sun, Sep 22, 2013 at 09:59:56AM -0700, Mike Dunn wrote:
+> Currently the driver assumes that the values specified in the
+> brightness-levels device tree property increase as they are parsed from
+> left to right.  But boards that invert the signal between the PWM output
+> and the backlight will need to specify decreasing brightness-levels.
+> This patch removes the assumption that the last element of the array is
+> the maximum value, and instead searches the array for the maximum value
+> and uses that in the duty cycle calculation.
 >=20
-> These PWM controllers each support 1 PWM channel with programmable
-> duty cycle, frequency, and polarity inversion.
->=20
-> Signed-off-by: H Hartley Sweeten <hsweeten@visionengravers.com>
-> Cc: Ryan Mallon <rmallon@gmail.com>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Mike Dunn <mikedunn@newsguy.com>
 > ---
-> v2: address issues pointed out by Thierry Reding.
+> Changelog:
+> v2:=20
+> - commit message reworded; correct line wrap used
+> - 'max_level' variable renamed to 'scale'
+> - loop counter variable type changed to unsigned int
+> - value held in scale changed from array index to actual maximum level
+> - blank lines added around loop for readability
 >=20
->  drivers/misc/Kconfig      |  13 ---
->  drivers/misc/Makefile     |   1 -
->  drivers/misc/ep93xx_pwm.c | 286 ----------------------------------------=
-------
->  drivers/pwm/Kconfig       |   9 ++
->  drivers/pwm/Makefile      |   1 +
->  drivers/pwm/pwm-ep93xx.c  | 230 +++++++++++++++++++++++++++++++++++++
->  6 files changed, 240 insertions(+), 300 deletions(-)
->  delete mode 100644 drivers/misc/ep93xx_pwm.c
->  create mode 100644 drivers/pwm/pwm-ep93xx.c
+>  drivers/video/backlight/pwm_bl.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
 
-Applied, thanks.
+Hey Mike,
+
+I've pushed a slightly different version of this patch which gets rid of
+the intermediate max variable and uses the new scale field exclusively
+to pass the same information around. Could you look at the patch from my
+for-next branch in the PWM tree and see whether that still works for the
+specific hardware that you need this for?
 
 Thierry
 
---QKdGvSO+nmPlgiQ/
+--oyUTqETQ0mS9luUI
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSX/GqAAoJEN0jrNd/PrOhW7IP/19LXMHr3SgX4AOj3drqrCP3
-BknfpnkYGwEGxwZIVd0UPvpAYm7cqplEzNqptBSEAfk38XAN9MMYCD1fagC4eMwz
-3ZGChB9nYSZg0eYeTpztCnZKsP26lb0ExrrQ9l9OWucU4MY1K65gHPuQyf0GzEYR
-7HHPd14RRq2xMjqgLRewx6/xNsfmApjJGNwhTjUvLwq4QMma82TAPFsl4giRUOuc
-+omN/pQ/CeIsyC84JpJ+NT8Nl+yu/jG8XPhYGIGrFwXe5bgIuxm6tvOujUDY3i9A
-pT5oXZ9GGGH5Bl2ZMdnZBXD8epwMKG63HKzrK8ARCVTIfNJWkRlghGzwlLnm8nAD
-fRxHcAgrFxdfVmWDVO+p/NYc9LCWgEvNsfbigBbM8kol2KVXvTEVP7Us1HGZnUND
-JkahTSdOc2xf66X3GA1lj+45suvUWFjQs+r1/RKzT0n4bPRoOZeFL20HVYOASxxx
-IK7GXLersCwOJUep4ej7nQYM0UXIQb1yrq/T2CiojNUh39tYyT8WORxRTNXw7ilj
-ZS8T2jhOnA5IMJDDLC88OWS6at5riT6/oAvTMkeFVJv+2kbz/gdypFwXDfV+f5Y1
-I6XKtmaDwh1KL2E9jZUviO+xuOD8b1lWaK8KASgq6xDUh7wDpCRNBRCflQMX7snG
-gNlPakZZBvmkqRYtY9Tp
-=r3sz
+iQIcBAEBAgAGBQJSYOdPAAoJEN0jrNd/PrOhtoAP+wVufJIkeGn3gbRZaICS/Rtw
+3sWWkU7djqHezdjQjpivLGkUVZsYW7YOR28OZmhVzSwLzMPZS6GMSgfvVGz7lP6A
+VFFp8ywdGjxqndZItHVh0xahujAvcbWz7xcqZnFcHGwobT6nL5gTBgZNf5yqBubM
+H/OKuLfMMepvWekFi1XFoeMGdxXmwwE+m6RQO4LrpmACx22wUsMfCMULMocSlnjg
+IqjUq3SRHDzwI+QULX4MCQ1knCoMK8bzJDdJx2YskLeBSp0soL6+5k8dHh5ZNIVR
+550xPqnlctwbyHszkW01zlMUJrmZl2CbxBgfXqej8XyQdribedXLAM50sbekoBg8
+PxhuDq4nskIEnYzbStR+XPqgt7aB+KOfuhPVAluKp2kpl7BtBxiUSR3KZv5fcBes
+dL1joPGS6TIKXx93sGJkn0nQ8KzfyGYLidWjRWNCwhB3PCBwFzeTJVQ4x7ZvHwjW
++RYNQpSdjRZJ39vM2ZhAHsWzcjmgM1OJn9kBP2WaL2mC44tDW/5m+i1yKQqWBFuV
+gN0mwloF+G8+98U+cJUXQQYyKdMKkFhLko+d4jkOVEKJZCF7rZl/Aq0zv3PW0DJt
+WUGKE66zUxgw8vc7ikIX1owb/sbz1/UbIKe7G077posIUtHOjkhC17s9iYSoSr4/
+Cz/lAVgx1FL8Uo/NtZBu
+=ql9M
 -----END PGP SIGNATURE-----
 
---QKdGvSO+nmPlgiQ/--
+--oyUTqETQ0mS9luUI--
