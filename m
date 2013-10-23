@@ -1,98 +1,73 @@
 Return-Path: <nvmarkzhang@gmail.com>
 Return-Path: <nvmarkzhang@gmail.com>
-Message-ID: <5267B40A.7080001@gmail.com>
-Date: Wed, 23 Oct 2013 19:33:30 +0800
+Message-ID: <5267A691.8050503@gmail.com>
+Date: Wed, 23 Oct 2013 18:36:01 +0800
 From: Mark Zhang <nvmarkzhang@gmail.com>
 MIME-Version: 1.0
 Subject: Re: How to set fops in "struct platform_pwm_backlight_data"?
-References: <20131017071445.GA2502@ulmo.nvidia.com> <5260BD8C.7000200@gmail.com> <20131022072443.GB8681@ulmo.nvidia.com> <52663D6D.5000806@gmail.com> <20131022124905.GA24255@ulmo.nvidia.com> <52673178.8070805@gmail.com> <20131023080002.GB7404@ulmo.nvidia.com> <52678D99.8090003@gmail.com> <20131023090925.GC11954@ulmo.nvidia.com> <5267A582.9070504@gmail.com> <20131023105456.GB15082@ulmo.nvidia.com>
-In-Reply-To: <20131023105456.GB15082@ulmo.nvidia.com>
+References: <525F8895.5010806@gmail.com> <20131017071445.GA2502@ulmo.nvidia.com> <5260BD8C.7000200@gmail.com> <20131022072443.GB8681@ulmo.nvidia.com> <52663D6D.5000806@gmail.com> <20131022124905.GA24255@ulmo.nvidia.com> <52673178.8070805@gmail.com> <20131023080002.GB7404@ulmo.nvidia.com> <52678D99.8090003@gmail.com> <20131023090925.GC11954@ulmo.nvidia.com>
+In-Reply-To: <20131023090925.GC11954@ulmo.nvidia.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 List-ID: <linux-pwm.vger.kernel.org>
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: rpurdie@rpsys.net, jg1.han@samsung.com, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, tomi.valkeinen@ti.com, linux-pwm@vger.kernel.org, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-On 10/23/2013 06:54 PM, Thierry Reding wrote:
-> On Wed, Oct 23, 2013 at 06:31:30PM +0800, Mark Zhang wrote:
->> On 10/23/2013 05:09 PM, Thierry Reding wrote:
->>> On Wed, Oct 23, 2013 at 04:49:29PM +0800, Mark Zhang wrote:
->>>> On 10/23/2013 04:00 PM, Thierry Reding wrote:
->>>>> On Wed, Oct 23, 2013 at 10:16:24AM +0800, Mark Zhang wrote:
->>>>>> On 10/22/2013 08:49 PM, Thierry Reding wrote:
->>>>>>> On Tue, Oct 22, 2013 at 04:55:09PM +0800, Mark Zhang wrote:
->>>>>>>> On 10/22/2013 03:24 PM, Thierry Reding wrote:
->>>>>>>>> On Fri, Oct 18, 2013 at 12:48:12PM +0800, Mark Zhang wrote:
->>>>>>>> [...]
->>>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> Okay, I just want to set the "notify" function pointer in "struct
->>>>>>>>>> platform_pwm_backlight_data", because I want to tune the brightness
->>>>>>>>>> value before the pwm-bl sets the brightness to hardware. I don't know
->>>>>>>>>> how to do that, unless we define the platform data explicitly.
->>>>>>>>>
->>>>>>>>> Okay, my question should have been what you need the functions for and
->>>>>>>>> why you think you need them.
+On 10/23/2013 05:09 PM, Thierry Reding wrote:
+> On Wed, Oct 23, 2013 at 04:49:29PM +0800, Mark Zhang wrote:
+>> On 10/23/2013 04:00 PM, Thierry Reding wrote:
+>>> On Wed, Oct 23, 2013 at 10:16:24AM +0800, Mark Zhang wrote:
+>>>> On 10/22/2013 08:49 PM, Thierry Reding wrote:
+>>>>> On Tue, Oct 22, 2013 at 04:55:09PM +0800, Mark Zhang wrote:
+>>>>>> On 10/22/2013 03:24 PM, Thierry Reding wrote:
+>>>>>>> On Fri, Oct 18, 2013 at 12:48:12PM +0800, Mark Zhang wrote:
+>>>>>> [...]
 >>>>>>>>>
 >>>>>>>>
->>>>>>>> If I understanding you correctly, I suppose I've said that: "because I
->>>>>>>> want to tune the brightness value before the pwm-bl sets the brightness
->>>>>>>> to hardware".
+>>>>>>>> Okay, I just want to set the "notify" function pointer in "struct
+>>>>>>>> platform_pwm_backlight_data", because I want to tune the brightness
+>>>>>>>> value before the pwm-bl sets the brightness to hardware. I don't know
+>>>>>>>> how to do that, unless we define the platform data explicitly.
 >>>>>>>
->>>>>>> Why do you want to tune the brightness value? What are you trying to
->>>>>>> achieve?
+>>>>>>> Okay, my question should have been what you need the functions for and
+>>>>>>> why you think you need them.
 >>>>>>>
 >>>>>>
->>>>>> Oh, Tegra has a feature named PRISM(aka SmartDimmer). It changes the
->>>>>> color value to make the display looks bright so that we can reduce the
->>>>>> backlight brightness to save power. So everytime PRISM is triggered, we
->>>>>> call "backlight_update_status", then in the "notify" callback, we change
->>>>>> the brightness value which pwm-bl provides by considering the PRISM
->>>>>> compensations.
+>>>>>> If I understanding you correctly, I suppose I've said that: "because I
+>>>>>> want to tune the brightness value before the pwm-bl sets the brightness
+>>>>>> to hardware".
 >>>>>
->>>>> If you automatically call backlight_update_status() everytime PRISM
->>>>> gives you new data, can't you just pass the correct value in in the
->>>>> first place so that you don't have to tweak it in the .notify()
->>>>> callback?
+>>>>> Why do you want to tune the brightness value? What are you trying to
+>>>>> achieve?
+>>>>>
 >>>>
->>>> OK, how to do that? -- "pass the correct value in in the first place"?
+>>>> Oh, Tegra has a feature named PRISM(aka SmartDimmer). It changes the
+>>>> color value to make the display looks bright so that we can reduce the
+>>>> backlight brightness to save power. So everytime PRISM is triggered, we
+>>>> call "backlight_update_status", then in the "notify" callback, we change
+>>>> the brightness value which pwm-bl provides by considering the PRISM
+>>>> compensations.
 >>>
->>> Well, if you call backlight_update_status(), then you can pass in a
->>> brightness value, right? You usually do that by setting the backlight's
->>> props.brightness field.
->>>
->>> So when PRISM gives you new data, you could just read out the current
->>> brightness, compute the new one based on the current one and the PRISM
->>> data, set the props.brightness field to that value and then call
->>> backlight_update_status().
->>>
+>>> If you automatically call backlight_update_status() everytime PRISM
+>>> gives you new data, can't you just pass the correct value in in the
+>>> first place so that you don't have to tweak it in the .notify()
+>>> callback?
 >>
->> The param of "backlight_update_status" is "struct backlight_device *".
->> So you mean after I get a pointer of correct backlight device, just set
->> the brightness value I want to it's "props.brightness" directly?
+>> OK, how to do that? -- "pass the correct value in in the first place"?
 > 
-> Yes.
+> Well, if you call backlight_update_status(), then you can pass in a
+> brightness value, right? You usually do that by setting the backlight's
+> props.brightness field.
 > 
->> I think the "struct backlight_device" should be opaque(although it's
->> definition is in include/linux/backlight.h, I know that), so it's better
->> not to touch it's member directly, that's why I wanna use that "notify"
->> callback.
-> 
-> Well, backlight_update_status() is the only way to change the brightness
-> of a backlight. If nobody ever calls backlight_update_status() then the
-> .notify() callback will never be called either.
+> So when PRISM gives you new data, you could just read out the current
+> brightness, compute the new one based on the current one and the PRISM
+> data, set the props.brightness field to that value and then call
+> backlight_update_status().
 > 
 
-Yes, so this is exactly my understanding before I posted this thread. I
-think "struct backlight_device" is a handle, we get it and call
-"backlight_update_status", then if we wanna change it's default behavior
-or brightness value, we overwrite the fops it provides.
-
-> By the way, what method do you use to control the backlight brightness?
-> Do you use the sysfs interface from userspace?
-> 
-
-Yes.
+Okay, anyway, I got the idea. Actually it's simpler. :)
+I'm just curious that if we can do that in this way, why we need
+"notify" anymore?
 
 Mark
 > Thierry
