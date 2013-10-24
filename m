@@ -1,89 +1,41 @@
-Return-Path: <nvmarkzhang@gmail.com>
-Return-Path: <nvmarkzhang@gmail.com>
-Message-ID: <5267B442.5090203@gmail.com>
-Date: Wed, 23 Oct 2013 19:34:26 +0800
-From: Mark Zhang <nvmarkzhang@gmail.com>
-MIME-Version: 1.0
-Subject: Re: How to set fops in "struct platform_pwm_backlight_data"?
-References: <5260BD8C.7000200@gmail.com> <20131022072443.GB8681@ulmo.nvidia.com> <52663D6D.5000806@gmail.com> <20131022124905.GA24255@ulmo.nvidia.com> <52673178.8070805@gmail.com> <20131023080002.GB7404@ulmo.nvidia.com> <52678D99.8090003@gmail.com> <20131023090925.GC11954@ulmo.nvidia.com> <5267A691.8050503@gmail.com> <5267A8F9.9050907@gmail.com> <20131023105821.GC15082@ulmo.nvidia.com>
-In-Reply-To: <20131023105821.GC15082@ulmo.nvidia.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Return-Path: <sachin.kamat@linaro.org>
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+Subject: [PATCH 1/1] Documentation/pwm: Fix trivial typos
+Date: Thu, 24 Oct 2013 14:13:47 +0530
+Message-Id: <1382604227-3551-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: rpurdie@rpsys.net, jg1.han@samsung.com, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, tomi.valkeinen@ti.com, linux-pwm@vger.kernel.org, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: linux-pwm@vger.kernel.org
+Cc: linux-doc@vger.kernel.org, thierry.reding@gmail.com, rob@landley.net, trivial@kernel.org, sachin.kamat@linaro.org
 
-On 10/23/2013 06:58 PM, Thierry Reding wrote:
-> On Wed, Oct 23, 2013 at 06:46:17PM +0800, Mark Zhang wrote:
->> On 10/23/2013 06:36 PM, Mark Zhang wrote:
->>> On 10/23/2013 05:09 PM, Thierry Reding wrote:
->>>> On Wed, Oct 23, 2013 at 04:49:29PM +0800, Mark Zhang wrote:
->>>>> On 10/23/2013 04:00 PM, Thierry Reding wrote:
->>>>>> On Wed, Oct 23, 2013 at 10:16:24AM +0800, Mark Zhang wrote:
->>>>>>> On 10/22/2013 08:49 PM, Thierry Reding wrote:
->>>>>>>> On Tue, Oct 22, 2013 at 04:55:09PM +0800, Mark Zhang wrote:
->>>>>>>>> On 10/22/2013 03:24 PM, Thierry Reding wrote:
->>>>>>>>>> On Fri, Oct 18, 2013 at 12:48:12PM +0800, Mark Zhang wrote:
->>>>>>>>> [...]
->>>>>>>>>>>>
->>>>>>>>>>>
->>>>>>>>>>> Okay, I just want to set the "notify" function pointer in "struct
->>>>>>>>>>> platform_pwm_backlight_data", because I want to tune the brightness
->>>>>>>>>>> value before the pwm-bl sets the brightness to hardware. I don't know
->>>>>>>>>>> how to do that, unless we define the platform data explicitly.
->>>>>>>>>>
->>>>>>>>>> Okay, my question should have been what you need the functions for and
->>>>>>>>>> why you think you need them.
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> If I understanding you correctly, I suppose I've said that: "because I
->>>>>>>>> want to tune the brightness value before the pwm-bl sets the brightness
->>>>>>>>> to hardware".
->>>>>>>>
->>>>>>>> Why do you want to tune the brightness value? What are you trying to
->>>>>>>> achieve?
->>>>>>>>
->>>>>>>
->>>>>>> Oh, Tegra has a feature named PRISM(aka SmartDimmer). It changes the
->>>>>>> color value to make the display looks bright so that we can reduce the
->>>>>>> backlight brightness to save power. So everytime PRISM is triggered, we
->>>>>>> call "backlight_update_status", then in the "notify" callback, we change
->>>>>>> the brightness value which pwm-bl provides by considering the PRISM
->>>>>>> compensations.
->>>>>>
->>>>>> If you automatically call backlight_update_status() everytime PRISM
->>>>>> gives you new data, can't you just pass the correct value in in the
->>>>>> first place so that you don't have to tweak it in the .notify()
->>>>>> callback?
->>>>>
->>>>> OK, how to do that? -- "pass the correct value in in the first place"?
->>>>
->>>> Well, if you call backlight_update_status(), then you can pass in a
->>>> brightness value, right? You usually do that by setting the backlight's
->>>> props.brightness field.
->>>>
->>>> So when PRISM gives you new data, you could just read out the current
->>>> brightness, compute the new one based on the current one and the PRISM
->>>> data, set the props.brightness field to that value and then call
->>>> backlight_update_status().
->>>>
->>>
->>> Okay, anyway, I got the idea. Actually it's simpler. :)
->>> I'm just curious that if we can do that in this way, why we need
->>> "notify" anymore?
->>
->> Oh, by the way, how about "check_fb" fops? Is there some kind of
->> substitution as well? I mean, if I wanna set "check_fb" and also want to
->> define the backlight device via DT, is there a way to do that?
-> 
-> No, there's no substitution for that. .check_fb() is used to verify that
-> a backlight device is associated with a framebuffer device. There are
-> better ways to check for that with DT, although nothing has been merged
-> into mainline yet.
-> 
+Fixes some trivial typos to improve readability.
 
-Okay, thanks for the explanation.
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+---
+ Documentation/pwm.txt |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Mark
-> Thierry
-> 
+diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
+index 1039b68..93cb979 100644
+--- a/Documentation/pwm.txt
++++ b/Documentation/pwm.txt
+@@ -39,7 +39,7 @@ New users should use the pwm_get() function and pass to it the consumer
+ device or a consumer name. pwm_put() is used to free the PWM device. Managed
+ variants of these functions, devm_pwm_get() and devm_pwm_put(), also exist.
+ 
+-After being requested a PWM has to be configured using:
++After being requested, a PWM has to be configured using:
+ 
+ int pwm_config(struct pwm_device *pwm, int duty_ns, int period_ns);
+ 
+@@ -94,7 +94,7 @@ for new drivers to use the generic PWM framework.
+ A new PWM controller/chip can be added using pwmchip_add() and removed
+ again with pwmchip_remove(). pwmchip_add() takes a filled in struct
+ pwm_chip as argument which provides a description of the PWM chip, the
+-number of PWM devices provider by the chip and the chip-specific
++number of PWM devices provided by the chip and the chip-specific
+ implementation of the supported PWM operations to the framework.
+ 
+ Locking
+-- 
+1.7.9.5
