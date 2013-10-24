@@ -1,41 +1,54 @@
-Return-Path: <sachin.kamat@linaro.org>
-Return-Path: <sachin.kamat@linaro.org>
-From: Sachin Kamat <sachin.kamat@linaro.org>
-Subject: [PATCH 1/1] Documentation/pwm: Fix trivial typos
-Date: Thu, 24 Oct 2013 14:13:47 +0530
-Message-Id: <1382604227-3551-1-git-send-email-sachin.kamat@linaro.org>
+Date: Thu, 24 Oct 2013 10:52:10 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/1] Documentation/pwm: Fix trivial typos
+Message-ID: <20131024085210.GB10650@ulmo.nvidia.com>
+References: <1382604227-3551-1-git-send-email-sachin.kamat@linaro.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="z6Eq5LdranGa6ru8"
+Content-Disposition: inline
+In-Reply-To: <1382604227-3551-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-pwm.vger.kernel.org>
-To: linux-pwm@vger.kernel.org
-Cc: linux-doc@vger.kernel.org, thierry.reding@gmail.com, rob@landley.net, trivial@kernel.org, sachin.kamat@linaro.org
+To: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, rob@landley.net, trivial@kernel.org
 
-Fixes some trivial typos to improve readability.
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
----
- Documentation/pwm.txt |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+--z6Eq5LdranGa6ru8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
-index 1039b68..93cb979 100644
---- a/Documentation/pwm.txt
-+++ b/Documentation/pwm.txt
-@@ -39,7 +39,7 @@ New users should use the pwm_get() function and pass to it the consumer
- device or a consumer name. pwm_put() is used to free the PWM device. Managed
- variants of these functions, devm_pwm_get() and devm_pwm_put(), also exist.
- 
--After being requested a PWM has to be configured using:
-+After being requested, a PWM has to be configured using:
- 
- int pwm_config(struct pwm_device *pwm, int duty_ns, int period_ns);
- 
-@@ -94,7 +94,7 @@ for new drivers to use the generic PWM framework.
- A new PWM controller/chip can be added using pwmchip_add() and removed
- again with pwmchip_remove(). pwmchip_add() takes a filled in struct
- pwm_chip as argument which provides a description of the PWM chip, the
--number of PWM devices provider by the chip and the chip-specific
-+number of PWM devices provided by the chip and the chip-specific
- implementation of the supported PWM operations to the framework.
- 
- Locking
--- 
-1.7.9.5
+On Thu, Oct 24, 2013 at 02:13:47PM +0530, Sachin Kamat wrote:
+> Fixes some trivial typos to improve readability.
+>=20
+> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> ---
+>  Documentation/pwm.txt |    4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+
+Applied, thanks.
+
+Thierry
+
+--z6Eq5LdranGa6ru8
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSaN+6AAoJEN0jrNd/PrOhOXIP/iH03QitMGSMd6ULURxGVECY
+kCPpL8RSXCkzdQ5fBXsMWz+lKh2FMOwPo9o+OIb4ZFgwA3uPW7qHrHe9UGFHMt7f
+/q5q4yBj2SWCv2cGSF87svJJzqJ6JEyga2nc2bECifZt+SuJE2/OrtJ1N9KVjrx+
+do2WxB0G0kTTiRqgICeTly2WG4TtHk4xwViuFC3gwhtuIwHQUAHHqWT+pn6yJqvp
+D4MKJwWeVqP3c9nkWCsj7myyiG/Q50GwwhaSEtCz++Dlyn5eXYReTRbZvmvVjQp8
+PjlJ3mLQ4+lwhvn8RdII/7vWH4OD2r6c57ogZaIyeDzhKbdld1bJ0qdk1MEIC2/K
+Bj+PAyI1Kxs/KBes7Wp+hYeOhq1f+wN790K1wOrpYowtakB9xuJ8v/VeS/1c53eV
+cAD+kAYg1UiaS6uOolOOUoFUMFJcnhpR8+dzBkW6u0ytg4u2c5hDYHqN6BXBoZx6
+AHibXq12W3VP912SRAq+dIUq0CUdpMH/WGtpSP66Z/J3ScMgAd5Wdi0JnNcoBeDU
+ePHt6Bcrt9ySP1H5In7P4JdDQVIKJE/ikdWmvDz+b+DohFN6glNhmPLdtaufzIWg
+rg/5tcECU7Znz7lwtvKktVtjm162Q5ArGW+QCbYwYT5By3rlQj/uwDG41T3+J3Z/
+dz24r2kSwIyxqVZyKI3V
+=HlbM
+-----END PGP SIGNATURE-----
+
+--z6Eq5LdranGa6ru8--
