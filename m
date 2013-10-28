@@ -1,70 +1,110 @@
-Return-Path: <sachin.kamat@linaro.org>
-Return-Path: <sachin.kamat@linaro.org>
-From: Sachin Kamat <sachin.kamat@linaro.org>
-Subject: [PATCH 1/1] pwm: samsung: avoid setting manual update bit unnecessarily
-Date: Wed, 30 Oct 2013 10:21:44 +0530
-Message-Id: <1383108704-3297-1-git-send-email-sachin.kamat@linaro.org>
+Return-Path: <laurent.pinchart+renesas@ideasonboard.com>
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH 00/19] Enable various Renesas drivers on all ARM platforms
+Date: Tue, 29 Oct 2013 00:46:48 +0100
+Message-Id: <1383004027-25036-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: linux-pwm@vger.kernel.org
-Cc: thierry.reding@gmail.com, linux-samsung-soc@vger.kernel.org, tomasz.figa@gmail.com, sachin.kamat@linaro.org, Andrew Bresticker <abrestic@chromium.org>
+To: linux-sh@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, Chris Ball <cjb@laptop.org>, "David S. Miller" <davem@davemloft.net>, David Woodhouse <dwmw2@infradead.org>, dmaengine@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Eduardo Valentin <eduardo.valentin@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guennadi Liakhovetski <g.liakhovetski+renesas@gmail.com>, Ian Molton <ian@mnementh.co.uk>, iommu@lists.linux-foundation.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Joerg Roedel <joro@8bytes.org>, Linus Walleij <linus.walleij@linaro.org>, linux-fbdev@vger.kernel.org, linux-i2c@vger.kernel.org, linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Mark Brown <broonie@kernel.org>, Mauro Carvalho Chehab <m.chehab@samsung.com>, netdev@vger.kernel.org, Samuel Ortiz <samuel@sortiz.org>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Thierry Reding <thierry.reding@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Vinod Koul <vinod.koul@intel.com>, Wolfram Sang <wsa@the-dreams.de>, Zhang Rui <rui.zhang@intel.com>
 
-From: Andrew Bresticker <abrestic@chromium.org>
+Hello,
 
-When possible, avoid setting the manual update bit and starting/stopping
-the PWM when adjusting the PWM as it causes noticable flickering when
-setting the backlight brightness.
+This patch series, based on v3.12-rc7, prepares various Renesas drivers
+for migration to multiplatform kernels by enabling their compilation or
+otherwise fixing them on all ARM platforms. The patches are pretty
+straightforward and are described in their commit message.
 
-Signed-off-by: Andrew Bresticker <abrestic@chromium.org>
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
----
- drivers/pwm/pwm-samsung.c |   23 +++++++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
+I'd like to get all these patches merged in v3.14. As they will need to go
+through their respective subsystems' trees, I would appreciate if all
+maintainers involved could notify me when they merge patches from this series
+in their tree to help me tracking the merge status. I don't plan to send pull
+requests individually for these patches, and I will repost patches
+individually if changes are requested during review.
 
-diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-index b59639e..6d23eb3 100644
---- a/drivers/pwm/pwm-samsung.c
-+++ b/drivers/pwm/pwm-samsung.c
-@@ -34,6 +34,7 @@
- 
- #define REG_TCNTB(chan)			(0x0c + ((chan) * 0xc))
- #define REG_TCMPB(chan)			(0x10 + ((chan) * 0xc))
-+#define REG_TCNTO(chan)			(0x14 + ((chan) * 0xc))
- 
- #define TCFG0_PRESCALER_MASK		0xff
- #define TCFG0_PRESCALER1_SHIFT		8
-@@ -234,15 +235,29 @@ static int pwm_samsung_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
- 	unsigned int tcon_chan = to_tcon_channel(pwm->hwpwm);
- 	unsigned long flags;
--	u32 tcon;
-+	u32 tcon, tcnt, tcnt_o;
- 
- 	spin_lock_irqsave(&samsung_pwm_lock, flags);
- 
- 	tcon = readl(our_chip->base + REG_TCON);
-+	tcnt = readl(our_chip->base + REG_TCNTB(pwm->hwpwm));
-+	tcnt_o = readl(our_chip->base + REG_TCNTO(pwm->hwpwm));
- 
--	tcon &= ~TCON_START(tcon_chan);
--	tcon |= TCON_MANUALUPDATE(tcon_chan);
--	writel(tcon, our_chip->base + REG_TCON);
-+	/*
-+	 * If we've got a big value stuck in the PWM we need to adjust it using
-+	 * manualupdate.  The start bit needs to be off for that to work
-+	 * properly so we only do this if strictly necessary since it can cause
-+	 * the PWM to blink.
-+	 *
-+	 * We will also use manualupdate if we find that the autoreload bit
-+	 * wasn't set previously since the very first time the timer is
-+	 * configured we seem to need to kickstart the PWM.
-+	 */
-+	if ((tcnt_o > tcnt) || !(tcon & TCON_AUTORELOAD(tcon_chan))) {
-+		tcon &= ~TCON_START(tcon_chan);
-+		tcon |= TCON_MANUALUPDATE(tcon_chan);
-+		writel(tcon, our_chip->base + REG_TCON);
-+	}
- 
- 	tcon &= ~TCON_MANUALUPDATE(tcon_chan);
- 	tcon |= TCON_START(tcon_chan) | TCON_AUTORELOAD(tcon_chan);
+If you believe the issue should be solved in a different way (for instance by
+removing the architecture dependency completely) please reply to the cover
+letter to let other maintainers chime in.
+
+Cc: Chris Ball <cjb@laptop.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: dmaengine@vger.kernel.org
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Eduardo Valentin <eduardo.valentin@ti.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Guennadi Liakhovetski <g.liakhovetski+renesas@gmail.com>
+Cc: Ian Molton <ian@mnementh.co.uk>
+Cc: iommu@lists.linux-foundation.org
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: linux-fbdev@vger.kernel.org
+Cc: linux-i2c@vger.kernel.org
+Cc: linux-input@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-media@vger.kernel.org
+Cc: linux-mmc@vger.kernel.org
+Cc: linux-mtd@lists.infradead.org
+Cc: linux-pm@vger.kernel.org
+Cc: linux-pwm@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: linux-spi@vger.kernel.org
+Cc: Magnus Damm <magnus.damm@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Mauro Carvalho Chehab <m.chehab@samsung.com>
+Cc: netdev@vger.kernel.org
+Cc: Samuel Ortiz <samuel@sortiz.org>
+Cc: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
+Cc: Vinod Koul <vinod.koul@intel.com>
+Cc: Wolfram Sang <wsa@the-dreams.de>
+Cc: Zhang Rui <rui.zhang@intel.com>
+
+Laurent Pinchart (19):
+  serial: sh-sci: Enable the driver on all ARM platforms
+  DMA: shdma: Enable the driver on all ARM platforms
+  i2c: sh_mobile: Enable the driver on all ARM platforms
+  input: sh_keysc: Enable the driver on all ARM platforms
+  iommu: shmobile: Enable the driver on all ARM platforms
+  i2c: rcar: Enable the driver on all ARM platforms
+  v4l: sh_vou: Enable the driver on all ARM platforms
+  mmc: sdhi: Enable the driver on all ARM platforms
+  mmc: sh_mmcif: Enable the driver on all ARM platforms
+  mtd: sh_flctl: Enable the driver on all ARM platforms
+  net: sh_eth: Set receive alignment correctly on all ARM platforms
+  irda: sh_irda: Enable the driver on all ARM platforms
+  pinctrl: sh-pfc: Enable the driver on all ARM platforms
+  pwm: pwm-renesas-tpu: Enable the driver on all ARM platforms
+  sh: intc: Enable the driver on all ARM platforms
+  spi: sh_msiof: Enable the driver on all ARM platforms
+  spi: sh_hspi: Enable the driver on all ARM platforms
+  thermal: rcar-thermal: Enable the driver on all ARM platforms
+  fbdev: sh-mobile-lcdcfb: Enable the driver on all ARM platforms
+
+ drivers/dma/sh/Kconfig                | 2 +-
+ drivers/dma/sh/shdmac.c               | 6 +++---
+ drivers/i2c/busses/Kconfig            | 4 ++--
+ drivers/input/keyboard/Kconfig        | 2 +-
+ drivers/iommu/Kconfig                 | 2 +-
+ drivers/media/platform/Kconfig        | 2 +-
+ drivers/mmc/host/Kconfig              | 4 ++--
+ drivers/mmc/host/tmio_mmc_dma.c       | 2 +-
+ drivers/mtd/nand/Kconfig              | 2 +-
+ drivers/net/ethernet/renesas/sh_eth.c | 2 +-
+ drivers/net/ethernet/renesas/sh_eth.h | 2 +-
+ drivers/net/irda/Kconfig              | 2 +-
+ drivers/pinctrl/Makefile              | 2 +-
+ drivers/pinctrl/sh-pfc/Kconfig        | 2 +-
+ drivers/pwm/Kconfig                   | 2 +-
+ drivers/sh/intc/Kconfig               | 2 +-
+ drivers/spi/Kconfig                   | 4 ++--
+ drivers/thermal/Kconfig               | 2 +-
+ drivers/tty/serial/Kconfig            | 2 +-
+ drivers/video/Kconfig                 | 6 +++---
+ 20 files changed, 27 insertions(+), 27 deletions(-)
+
 -- 
-1.7.9.5
+Regards,
+
+Laurent Pinchart
