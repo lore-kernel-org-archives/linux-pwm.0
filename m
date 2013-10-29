@@ -1,35 +1,118 @@
-Return-Path: <galak@codeaurora.org>
-Subject: Re: [RFCv2][PATCHv5 4/4] Documentation: Add device tree bindings for Freescale FTM PWM.
-Mime-Version: 1.0 (Apple Message framework v1283)
-Content-Type: text/plain; charset=us-ascii
-From: Kumar Gala <galak@codeaurora.org>
-In-Reply-To: <1383114204-17264-5-git-send-email-Li.Xiubo@freescale.com>
-Date: Wed, 30 Oct 2013 09:16:44 -0500
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <8CCC6291-F767-463E-8539-216AAF6542E8@codeaurora.org>
-References: <1383114204-17264-1-git-send-email-Li.Xiubo@freescale.com> <1383114204-17264-5-git-send-email-Li.Xiubo@freescale.com>
+Return-Path: <laurent.pinchart+renesas@ideasonboard.com>
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [PATCH v2 00/19] Enable various Renesas drivers on all ARM platforms
+Date: Tue, 29 Oct 2013 23:37:35 +0100
+Message-Id: <1383086274-11049-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Xiubo Li <Li.Xiubo@freescale.com>
-Cc: r65073@freescale.com, thierry.reding@gmail.com, s.hauer@pengutronix.de, swarren@wwwdotorg.org, t.figa@samsung.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+To: linux-sh@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, Chris Ball <cjb@laptop.org>, "David S. Miller" <davem@davemloft.net>, David Woodhouse <dwmw2@infradead.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Eduardo Valentin <eduardo.valentin@ti.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Guennadi Liakhovetski <g.liakhovetski+renesas@gmail.com>, Ian Molton <ian@mnementh.co.uk>, iommu@lists.linux-foundation.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Joerg Roedel <joro@8bytes.org>, Linus Walleij <linus.walleij@linaro.org>, Magnus Damm <magnus.damm@gmail.com>, Mark Brown <broonie@kernel.org>, Mauro Carvalho Chehab <m.chehab@samsung.com>, Samuel Ortiz <samuel@sortiz.org>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Thierry Reding <thierry.reding@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Vinod Koul <vinod.koul@intel.com>, Wolfram Sang <wsa@the-dreams.de>, Zhang Rui <rui.zhang@intel.com>, dmaengine@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-i2c@vger.kernel.org, linux-input@vger.kernel.org, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, netdev@vger.kernel.org
 
+Hello,
 
-On Oct 30, 2013, at 1:23 AM, Xiubo Li wrote:
+This patch series, based on v3.12-rc7, prepares various Renesas drivers
+for migration to multiplatform kernels by enabling their compilation or
+otherwise fixing them on all ARM platforms. The patches are pretty
+straightforward and are described in their commit message.
 
-> This adds the Document for Freescale FTM PWM driver under
-> Documentation/devicetree/bindings/pwm/.
->=20
-> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
-> ---
-> .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        | 29 =
-++++++++++++++++++++++
-> 1 file changed, 29 insertions(+)
-> create mode 100644 =
-Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+Changes since v1:
 
-Acked-by: Kumar Gala <galak@codeaurora.org>
+- The drivers can also be selected when COMPILE_TEST is enabled, regardless of
+  the architecture. This should provide a good compromise between wide build
+  test coverage and not clobbering configuration with drivers useless on
+  non-SuperH, non-ARM platforms.
 
-- k
---=20
-Employee of Qualcomm Innovation Center, Inc.
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, =
-hosted by The Linux Foundation
+- DMA configuration is now unconditional in patch 08/19
+
+I'd like to get all these patches merged in v3.14. As they will need to go
+through their respective subsystems' trees, I would appreciate if all
+maintainers involved could notify me when they merge patches from this series
+in their tree to help me tracking the merge status. I don't plan to send pull
+requests individually for these patches, and I will repost patches
+individually if changes are requested during review.
+
+If you believe the issue should be solved in a different way please reply to
+the cover letter to let other maintainers chime in.
+
+Cc: Chris Ball <cjb@laptop.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Eduardo Valentin <eduardo.valentin@ti.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Guennadi Liakhovetski <g.liakhovetski+renesas@gmail.com>
+Cc: Ian Molton <ian@mnementh.co.uk>
+Cc: iommu@lists.linux-foundation.org
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Magnus Damm <magnus.damm@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Mauro Carvalho Chehab <m.chehab@samsung.com>
+Cc: Samuel Ortiz <samuel@sortiz.org>
+Cc: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
+Cc: Vinod Koul <vinod.koul@intel.com>
+Cc: Wolfram Sang <wsa@the-dreams.de>
+Cc: Zhang Rui <rui.zhang@intel.com>
+Cc: dmaengine@vger.kernel.org
+Cc: linux-fbdev@vger.kernel.org
+Cc: linux-i2c@vger.kernel.org
+Cc: linux-input@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-media@vger.kernel.org
+Cc: linux-mmc@vger.kernel.org
+Cc: linux-mtd@lists.infradead.org
+Cc: linux-pm@vger.kernel.org
+Cc: linux-pwm@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: linux-spi@vger.kernel.org
+Cc: netdev@vger.kernel.org
+
+Laurent Pinchart (19):
+  serial: sh-sci: Enable the driver on all ARM platforms
+  DMA: shdma: Enable the driver on all ARM platforms
+  i2c: sh_mobile: Enable the driver on all ARM platforms
+  input: sh_keysc: Enable the driver on all ARM platforms
+  iommu: shmobile: Enable the driver on all ARM platforms
+  i2c: rcar: Enable the driver on all ARM platforms
+  v4l: sh_vou: Enable the driver on all ARM platforms
+  mmc: sdhi: Enable the driver on all ARM platforms
+  mmc: sh_mmcif: Enable the driver on all ARM platforms
+  mtd: sh_flctl: Enable the driver on all ARM platforms
+  net: sh_eth: Set receive alignment correctly on all ARM platforms
+  irda: sh_irda: Enable the driver on all ARM platforms
+  pinctrl: sh-pfc: Enable the driver on all ARM platforms
+  pwm: pwm-renesas-tpu: Enable the driver on all ARM platforms
+  sh: intc: Enable the driver on all ARM platforms
+  spi: sh_msiof: Enable the driver on all ARM platforms
+  spi: sh_hspi: Enable the driver on all ARM platforms
+  thermal: rcar-thermal: Enable the driver on all ARM platforms
+  fbdev: sh-mobile-lcdcfb: Enable the driver on all ARM platforms
+
+ drivers/dma/sh/Kconfig                | 2 +-
+ drivers/dma/sh/shdmac.c               | 6 +++---
+ drivers/i2c/busses/Kconfig            | 4 ++--
+ drivers/input/keyboard/Kconfig        | 2 +-
+ drivers/iommu/Kconfig                 | 2 +-
+ drivers/media/platform/Kconfig        | 2 +-
+ drivers/mmc/host/Kconfig              | 4 ++--
+ drivers/mmc/host/tmio_mmc_dma.c       | 4 +---
+ drivers/mtd/nand/Kconfig              | 2 +-
+ drivers/net/ethernet/renesas/sh_eth.c | 2 +-
+ drivers/net/ethernet/renesas/sh_eth.h | 2 +-
+ drivers/net/irda/Kconfig              | 2 +-
+ drivers/pinctrl/Makefile              | 2 +-
+ drivers/pinctrl/sh-pfc/Kconfig        | 2 +-
+ drivers/pwm/Kconfig                   | 2 +-
+ drivers/sh/intc/Kconfig               | 2 +-
+ drivers/spi/Kconfig                   | 4 ++--
+ drivers/thermal/Kconfig               | 2 +-
+ drivers/tty/serial/Kconfig            | 2 +-
+ drivers/video/Kconfig                 | 6 +++---
+ 20 files changed, 27 insertions(+), 29 deletions(-)
+
+-- 
+Regards,
+
+Laurent Pinchart
