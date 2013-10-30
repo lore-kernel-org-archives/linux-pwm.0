@@ -1,69 +1,70 @@
-Return-Path: <linux-pwm-owner@vger.kernel.org>
-Received: from mho-03-ewr.mailhop.org ([204.13.248.66]:31706 "EHLO
-	mho-01-ewr.mailhop.org" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751044Ab3J2VXX (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 29 Oct 2013 17:23:23 -0400
-Date: Tue, 29 Oct 2013 14:23:18 -0700
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH/RFC] pwm: omap: Add PWM support using dual-mode timers
-Message-ID: <20131029212318.GI15154@atomide.com>
-References: <20131024173620.0cbbefcf@notabene.brown>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20131024173620.0cbbefcf@notabene.brown>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-Path: <sachin.kamat@linaro.org>
+Return-Path: <sachin.kamat@linaro.org>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+Subject: [PATCH 1/1] pwm: samsung: avoid setting manual update bit unnecessarily
+Date: Wed, 30 Oct 2013 10:21:44 +0530
+Message-Id: <1383108704-3297-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-pwm.vger.kernel.org>
-To: NeilBrown <neilb@suse.de>
-Cc: Thierry Reding <thierry.reding@avionic-design.de>, Grant Erickson <marathon96@gmail.com>, Jon Hunter <jon-hunter@ti.com>, linux-omap@vger.kernel.org, linux-pwm@vger.kernel.org
+To: linux-pwm@vger.kernel.org
+Cc: thierry.reding@gmail.com, linux-samsung-soc@vger.kernel.org, tomasz.figa@gmail.com, sachin.kamat@linaro.org, Andrew Bresticker <abrestic@chromium.org>
 
-* NeilBrown <neilb@suse.de> [131023 23:36]:
-> 
-> I submitted this in December last year.  I got lots of good feedback
-> and fixed some things, but it never got accepted.  Not entirely sure
-> why, maybe I dropped the ball.
-> 
-> Anyway, here is again with device-tree support added.
-> 
-> This is only an RFC and not a real submission for two reasons, both of which
-> are really directed as Jon.
-> 
-> 1/ I have to 
-> 
-> #include <../arch/arm/plat-omap/include/plat/dmtimer.h>
-> 
-> which is incredibly ugly.
-> Is there any reason this cannot be moved to include/linux/omap-dmtimer.h?
+From: Andrew Bresticker <abrestic@chromium.org>
 
-Yes that's what at least dw_apb_timer and sh_timer are doing.
+When possible, avoid setting the manual update bit and starting/stopping
+the PWM when adjusting the PWM as it causes noticable flickering when
+setting the backlight brightness.
+
+Signed-off-by: Andrew Bresticker <abrestic@chromium.org>
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+---
+ drivers/pwm/pwm-samsung.c |   23 +++++++++++++++++++----
+ 1 file changed, 19 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
+index b59639e..6d23eb3 100644
+--- a/drivers/pwm/pwm-samsung.c
++++ b/drivers/pwm/pwm-samsung.c
+@@ -34,6 +34,7 @@
  
-> 2/ I found that I need to call
-> 
-> 	omap_dm_timer_write_counter(omap->dm_timer, DM_TIMER_LOAD_MIN);
-> 
->  when using device-tree.  This is because with devicetree
->  omap_timer_restore_context() is called much more often and it sets the counter
->  register to 0 .. it takes a long time to count up to DM_TIMER_LOAD_MIN from there.
-> 
->  Now I don't object to calling omap_dm_timer_write_counter (though it might be nice if
->  omap_dm_timer_set_load wrote the one value to both LOAD_REG and COUNTER_REG).
->  However it seems wrong that I have to call it *after* starting the counter.
->  Currently _write_counter refuses to run if the timer hasn't been started.
-> 
->  So Jon: 
->    a/ can we change omap_dm_timer_write_counter to work when the timer isn't
->       running?
->    b/ can we have omap_dm_timer_set_load also set the counter?
-> 
-> 
-> For anyone else generous enough to read my code: is this otherwise acceptable?
-
-Did not look beyond the dmtimer stuff, but let's start by moving dmtimer.c to
-live under drivers and move the header, then do the pwm patches.
-
-If there's a bug with the omap_dm_timer_set_load(), then naturally that
-should be done separately as a fix before anything.
-
-Regards,
-
-Tony
+ #define REG_TCNTB(chan)			(0x0c + ((chan) * 0xc))
+ #define REG_TCMPB(chan)			(0x10 + ((chan) * 0xc))
++#define REG_TCNTO(chan)			(0x14 + ((chan) * 0xc))
+ 
+ #define TCFG0_PRESCALER_MASK		0xff
+ #define TCFG0_PRESCALER1_SHIFT		8
+@@ -234,15 +235,29 @@ static int pwm_samsung_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
+ 	unsigned int tcon_chan = to_tcon_channel(pwm->hwpwm);
+ 	unsigned long flags;
+-	u32 tcon;
++	u32 tcon, tcnt, tcnt_o;
+ 
+ 	spin_lock_irqsave(&samsung_pwm_lock, flags);
+ 
+ 	tcon = readl(our_chip->base + REG_TCON);
++	tcnt = readl(our_chip->base + REG_TCNTB(pwm->hwpwm));
++	tcnt_o = readl(our_chip->base + REG_TCNTO(pwm->hwpwm));
+ 
+-	tcon &= ~TCON_START(tcon_chan);
+-	tcon |= TCON_MANUALUPDATE(tcon_chan);
+-	writel(tcon, our_chip->base + REG_TCON);
++	/*
++	 * If we've got a big value stuck in the PWM we need to adjust it using
++	 * manualupdate.  The start bit needs to be off for that to work
++	 * properly so we only do this if strictly necessary since it can cause
++	 * the PWM to blink.
++	 *
++	 * We will also use manualupdate if we find that the autoreload bit
++	 * wasn't set previously since the very first time the timer is
++	 * configured we seem to need to kickstart the PWM.
++	 */
++	if ((tcnt_o > tcnt) || !(tcon & TCON_AUTORELOAD(tcon_chan))) {
++		tcon &= ~TCON_START(tcon_chan);
++		tcon |= TCON_MANUALUPDATE(tcon_chan);
++		writel(tcon, our_chip->base + REG_TCON);
++	}
+ 
+ 	tcon &= ~TCON_MANUALUPDATE(tcon_chan);
+ 	tcon |= TCON_START(tcon_chan) | TCON_AUTORELOAD(tcon_chan);
+-- 
+1.7.9.5
