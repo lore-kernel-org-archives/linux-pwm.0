@@ -1,32 +1,55 @@
-Return-Path: <sachin.kamat@linaro.org>
-Return-Path: <sachin.kamat@linaro.org>
-From: Sachin Kamat <sachin.kamat@linaro.org>
-Subject: [PATCH 1/1] Documentation/pwm: Update supported SoC name for pwm-samsung
-Date: Wed, 30 Oct 2013 10:09:41 +0530
-Message-Id: <1383107981-6638-1-git-send-email-sachin.kamat@linaro.org>
+Return-Path: <B47053@freescale.com>
+From: Xiubo Li <Li.Xiubo@freescale.com>
+Subject: [RFCv2][PATCHv5 0/4] Add Freescale FTM PWM driver.
+Date: Wed, 30 Oct 2013 14:23:20 +0800
+Message-ID: <1383114204-17264-1-git-send-email-Li.Xiubo@freescale.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+Return-Path: B47053@freescale.com
 List-ID: <linux-pwm.vger.kernel.org>
-To: linux-pwm@vger.kernel.org
-Cc: devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com
+To: r65073@freescale.com, thierry.reding@gmail.com
+Cc: s.hauer@pengutronix.de, swarren@wwwdotorg.org, t.figa@samsung.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 
-Updated supported SoC name for pwm-samsung.
+Hello,
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
----
- .../devicetree/bindings/pwm/pwm-samsung.txt        |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This patch series is the Freescale FTM PWM implementation. And there are 8 channels most supported by the FTM PWM. This implementation is only compatible with device tree definition.
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-samsung.txt b/Documentation/devicetree/bindings/pwm/pwm-samsung.txt
-index d61fccd..5538de9 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-samsung.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-samsung.txt
-@@ -15,7 +15,7 @@ Required properties:
-     samsung,s5pc100-pwm - for 32-bit timers present on S5PC100, S5PV210,
- 			  Exynos4210 rev0 SoCs
-     samsung,exynos4210-pwm - for 32-bit timers present on Exynos4210,
--                          Exynos4x12 and Exynos5250 SoCs
-+                          Exynos4x12, Exynos5250 and Exynos5420 SoCs
- - reg: base address and size of register area
- - interrupts: list of timer interrupts (one interrupt per timer, starting at
-   timer 0)
--- 
-1.7.9.5
+This patch series is based on linux-next and has been tested on Vybrid VF610 Tower board using device tree.
+
+
+
+Changes in RFCv2 of PATVHv5:
+- Remove "fsl,pwm-counter-clk"(all the four patches are modified).
+
+Changes in v5:
+- Remove active/idle pinctrl stuff.
+
+Changes in v4:
+- Check for the result and return an error for devm_kzalloc().
+- Move pinmux setting from the SoC file to the board specific file.
+- Revise the written mistake of 'ret |= FTMSC_CLKEXT;' --> 'reg |= FTMSC_CLKEXT;'.
+
+
+Changes in v3:
+- Remove "availabe" field.
+- Remove "fsl,pwm-avaliable-chs" property.
+- ...
+
+Changes in v2:
+- Remove PWM CPWM/EPWM feature and sysfs.
+- Remove some redundant code.
+- Revise some code for more readable.
+- Remove "fsl,pwm-clk-ps", "fsl,pwm-number", "fsl,pwm-channels",etc.
+- Add "fsl,pwm-avaliable-chs", "fsl,pwm-counter-clk", etc.
+- Support 8 channels default in dtsi file.
+- Add counter clock source selection.
+- Rename some function name, macro name, etc.
+- Use PWM's and OF's existing function interfaces.
+- Split clk_unprepare_enable to clk_unprepare and clk_enable,etc.
+- ...
+
+Added in v1:
+- Add Freescale FTM PWM driver support.
+- Add Freescale FTM PWM node for VF610.
+- Enable Enables FTM PWM device for Vybrid VF610 TOWER.
+- Add device tree bindings for Freescale.
