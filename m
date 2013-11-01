@@ -1,56 +1,90 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Mon, 11 Nov 2013 10:25:35 +0100
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/1] Documentation/pwm: Update supported SoC name for
- pwm-samsung
-Message-ID: <20131111092534.GG3884@ulmo.nvidia.com>
-References: <1383107981-6638-1-git-send-email-sachin.kamat@linaro.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="m0vRWufqUC70IDnR"
-Content-Disposition: inline
-In-Reply-To: <1383107981-6638-1-git-send-email-sachin.kamat@linaro.org>
-List-ID: <linux-pwm.vger.kernel.org>
-To: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org, mark.rutland@arm.com
-
-
---m0vRWufqUC70IDnR
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Return-Path: <B47053@freescale.com>
+From: Li Xiubo <B47053@freescale.com>
+Subject: RE: [RFCv2][PATCHv5 0/4] Add Freescale FTM PWM driver.
+Date: Fri, 1 Nov 2013 06:34:00 +0000
+Message-ID: <1DD289F6464F0949A2FCA5AA6DC23F82871744@039-SN2MPN1-013.039d.mgd.msft.net>
+References: <1383114204-17264-1-git-send-email-Li.Xiubo@freescale.com>
+In-Reply-To: <1383114204-17264-1-git-send-email-Li.Xiubo@freescale.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Return-Path: B47053@freescale.com
+List-ID: <linux-pwm.vger.kernel.org>
+To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "rob@landley.net" <rob@landley.net>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On Wed, Oct 30, 2013 at 10:09:41AM +0530, Sachin Kamat wrote:
-> Updated supported SoC name for pwm-samsung.
+Hi Therry,
+
+The binding patch has been acked, how about the other patches ?
+
+If they are all okey, should I sent a another official version again ?
+
+
+Thanks.
+
+
+--
+Xiubo
+
+
+
+> Subject: [RFCv2][PATCHv5 0/4] Add Freescale FTM PWM driver.
 >=20
-> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
-> ---
->  .../devicetree/bindings/pwm/pwm-samsung.txt        |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-
-Applied, thanks.
-
-Thierry
-
---m0vRWufqUC70IDnR
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSgKKOAAoJEN0jrNd/PrOhWPgP/ji9x1nG6a453brTYFw2UEPw
-KnOQ+4U6DXLB05ij/eFi0dufGpPGOqXyaviOwVjZuGDgMyvn6b1oE16/eH9Tgtyp
-YdSKgEc+XZ1iz8OJXIuChDZ6mkc0HvxeW/dQYvy2MxFBPl7E6uYKekKLOdufdxcx
-Jzc3KsocGSearAx95fVEfR9kDCUJ+1KSL/2pbkqhszH7nNhYfahfh+40E8+BTHu8
-Q8cLVN69lXW5oE4FKFit0gxytRPWi1dHCA2kVA8krT09jIREsljzaIcSfE+cZQZo
-M0UDR3uXat61KV69Orrv/b9LISJn9TCYbp0+IP+tQkDIeYbiI3kH9hCsovTlKuA5
-5FS8eGkJsQ/MFFQ1Sg23DxAIALKRoMAqK95Q2rvhlbXJVhbddK0vXjmhB7IZoqGi
-l3jN7EXR9zteLJ4bkqUbT1uneP1tg8ZpDY2ytXIwmNsgR4GhXodFfOoGVI0+SD40
-KfxB2hCF4LuS4ryEw/fxv0wQuXeUv1Go5ZAcdPpy641ZxR8Tt32Ju8SBJ46J2gU1
-WYEfKlEIPz5Smvas92DpCgkeqA8vfQK8CLJFrGY/4b+Mf/oZw1H6qpAGYM1CRMAZ
-BqVlz2/v/cHOCb9pKDSeDlw6Jh0bVta9FDPLt0XVsgUPYGmKr9nXaYLk6rCo+5vQ
-0JrHhW1UH3B+5ogNeh4C
-=oTUe
------END PGP SIGNATURE-----
-
---m0vRWufqUC70IDnR--
+> Hello,
+>=20
+> This patch series is the Freescale FTM PWM implementation. And there are
+> 8 channels most supported by the FTM PWM. This implementation is only
+> compatible with device tree definition.
+>=20
+> This patch series is based on linux-next and has been tested on Vybrid
+> VF610 Tower board using device tree.
+>=20
+>=20
+>=20
+> Changes in RFCv2 of PATVHv5:
+> - Remove "fsl,pwm-counter-clk"(all the four patches are modified).
+>=20
+> Changes in v5:
+> - Remove active/idle pinctrl stuff.
+>=20
+> Changes in v4:
+> - Check for the result and return an error for devm_kzalloc().
+> - Move pinmux setting from the SoC file to the board specific file.
+> - Revise the written mistake of 'ret |=3D FTMSC_CLKEXT;' --> 'reg |=3D
+> FTMSC_CLKEXT;'.
+>=20
+>=20
+> Changes in v3:
+> - Remove "availabe" field.
+> - Remove "fsl,pwm-avaliable-chs" property.
+> - ...
+>=20
+> Changes in v2:
+> - Remove PWM CPWM/EPWM feature and sysfs.
+> - Remove some redundant code.
+> - Revise some code for more readable.
+> - Remove "fsl,pwm-clk-ps", "fsl,pwm-number", "fsl,pwm-channels",etc.
+> - Add "fsl,pwm-avaliable-chs", "fsl,pwm-counter-clk", etc.
+> - Support 8 channels default in dtsi file.
+> - Add counter clock source selection.
+> - Rename some function name, macro name, etc.
+> - Use PWM's and OF's existing function interfaces.
+> - Split clk_unprepare_enable to clk_unprepare and clk_enable,etc.
+> - ...
+>=20
+> Added in v1:
+> - Add Freescale FTM PWM driver support.
+> - Add Freescale FTM PWM node for VF610.
+> - Enable Enables FTM PWM device for Vybrid VF610 TOWER.
+> - Add device tree bindings for Freescale.
+>=20
+>=20
+>=20
+>=20
+>=20
+>=20
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
