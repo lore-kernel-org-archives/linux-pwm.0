@@ -1,35 +1,45 @@
-Return-Path: <christian.gmeiner@gmail.com>
+Return-Path: <sachin.kamat@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <20131108123619.GC31551@ulmo.nvidia.com>
-References: <1381145866-445-1-git-send-email-treding@nvidia.com>
- <CAH9NwWfDRiQ3FegMyx1YBQ5jUgPvc7h2cxd3KgyeDdnsq6UgMw@mail.gmail.com> <20131108123619.GC31551@ulmo.nvidia.com>
-From: Christian Gmeiner <christian.gmeiner@gmail.com>
-Date: Fri, 8 Nov 2013 14:58:56 +0100
-Message-ID: <CAH9NwWc0AjmnXX1uen1z1bX5Z0pRyYrGY9a949L6=ZAF6YeL8w@mail.gmail.com>
-Subject: Re: [PATCH v2 00/12] pwm-backlight: Add GPIO and power supply support
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <1383107981-6638-1-git-send-email-sachin.kamat@linaro.org>
+References: <1383107981-6638-1-git-send-email-sachin.kamat@linaro.org>
+Date: Tue, 5 Nov 2013 14:42:28 +0530
+Message-ID: <CAK9yfHy9nst+gB3wjjnjEXvxDP9es18eEbYMWcHtsDZRx=JzAw@mail.gmail.com>
+Subject: Re: [PATCH 1/1] Documentation/pwm: Update supported SoC name for pwm-samsung
+From: Sachin Kamat <sachin.kamat@linaro.org>
+Content-Type: text/plain; charset=ISO-8859-1
 List-ID: <linux-pwm.vger.kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Tony Lindgren <tony@atomide.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+To: linux-pwm@vger.kernel.org
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-doc@vger.kernel.org, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>
 
-2013/11/8 Thierry Reding <thierry.reding@gmail.com>:
-> On Thu, Nov 07, 2013 at 01:00:04PM +0100, Christian Gmeiner wrote:
->> Hi Thierry
->>
->>
->> This series adds the ability to specify a GPIO and a power supply to
->> > enable a backlight.
->> >
->>
->> Whats the state of this patch set? I am looking for this kind of
->> functionality for a pwm based
->> backlight on a devicetree only imx6 device.
+Hi Thierry,
+
+On 30 October 2013 10:09, Sachin Kamat <sachin.kamat@linaro.org> wrote:
+> Updated supported SoC name for pwm-samsung.
 >
-> Those patches (except the one that adds the backlight-boot-off property)
-> will be part of my pull request for 3.13.
+> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> ---
+>  .../devicetree/bindings/pwm/pwm-samsung.txt        |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-samsung.txt b/Documentation/devicetree/bindings/pwm/pwm-samsung.txt
+> index d61fccd..5538de9 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-samsung.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-samsung.txt
+> @@ -15,7 +15,7 @@ Required properties:
+>      samsung,s5pc100-pwm - for 32-bit timers present on S5PC100, S5PV210,
+>                           Exynos4210 rev0 SoCs
+>      samsung,exynos4210-pwm - for 32-bit timers present on Exynos4210,
+> -                          Exynos4x12 and Exynos5250 SoCs
+> +                          Exynos4x12, Exynos5250 and Exynos5420 SoCs
+>  - reg: base address and size of register area
+>  - interrupts: list of timer interrupts (one interrupt per timer, starting at
+>    timer 0)
+> --
+> 1.7.9.5
 >
 
-That are really good news.. will try this patch set on a 3.12 kernel.
+Can you please pick this one too?
 
---
-Christian Gmeiner, MSc
+-- 
+With warm regards,
+Sachin
