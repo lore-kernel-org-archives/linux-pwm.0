@@ -1,44 +1,27 @@
-Return-Path: <sachin.kamat@linaro.org>
+Return-Path: <christian.gmeiner@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1383620560-3567-1-git-send-email-sangjung.woo@samsung.com>
-References: <1383620560-3567-1-git-send-email-sangjung.woo@samsung.com>
-Date: Tue, 5 Nov 2013 09:17:24 +0530
-Message-ID: <CAK9yfHye0PNxVmuANymK9qE9rqejZh7hy-PANFYV1_O7dqp93g@mail.gmail.com>
-Subject: Re: [PATCH] pwm: samsung: memory leak bugfix in pwm_samsung_free
-From: Sachin Kamat <sachin.kamat@linaro.org>
-Content-Type: text/plain; charset=ISO-8859-1
+In-Reply-To: <1381145866-445-1-git-send-email-treding@nvidia.com>
+References: <1381145866-445-1-git-send-email-treding@nvidia.com>
+From: Christian Gmeiner <christian.gmeiner@gmail.com>
+Date: Thu, 7 Nov 2013 13:44:38 +0100
+Message-ID: <CAH9NwWei-PQQKNqB51eTqh_3z+JXxbGNp7PCnsStrVF7Dg_s5w@mail.gmail.com>
+Subject: Re: [PATCH v2 00/12] pwm-backlight: Add GPIO and power supply support
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-pwm.vger.kernel.org>
-To: Sangjung Woo <sangjung.woo@samsung.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, Tomasz Figa <t.figa@samsung.com>, LKML <linux-kernel@vger.kernel.org>, Jonghwa Lee <jonghwa3.lee@samsung.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Guan Xuetao <gxt@mprc.pku.edu.cn>, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 
-Hi Sangjung,
+Hi Thierry
 
-On 5 November 2013 08:32, Sangjung Woo <sangjung.woo@samsung.com> wrote:
-> There is certainly a kind of memory leak since allocated data (i.e.
-> chip_data) is set NULL before freeing it by calling devm_kfree(). This
-> patch fixes the memory leak bug by modifying its call order.
->
-> Signed-off-by: Sangjung Woo <sangjung.woo@samsung.com>
-> Reviewed-by: Jonghwa Lee <jonghwa3.lee@samsung.com>
-> ---
->  drivers/pwm/pwm-samsung.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-> index fcc8b9a..07b2d9d 100644
-> --- a/drivers/pwm/pwm-samsung.c
-> +++ b/drivers/pwm/pwm-samsung.c
-> @@ -224,8 +224,8 @@ static int pwm_samsung_request(struct pwm_chip *chip, struct pwm_device *pwm)
->
->  static void pwm_samsung_free(struct pwm_chip *chip, struct pwm_device *pwm)
->  {
-> -       pwm_set_chip_data(pwm, NULL);
->         devm_kfree(chip->dev, pwm_get_chip_data(pwm));
-> +       pwm_set_chip_data(pwm, NULL);
->  }
 
-Similar patch has already been applied by Thierry.
+> This series adds the ability to specify a GPIO and a power supply to
+> enable a backlight.
 
--- 
-With warm regards,
-Sachin
+
+Whats the state of this patch set? I am looking for this kind of
+functionality for a pwm based
+backlight on a devicetree only imx6 device.
+
+greets
+--
+Christian Gmeiner, MSc
