@@ -1,32 +1,30 @@
-Return-Path: <B47053@freescale.com>
-From: Li Xiubo <B47053@freescale.com>
+Return-Path: <Li.Xiubo@freescale.com>
+From: Li Xiubo <Li.Xiubo@freescale.com>
 Subject: RE: [RFCv2][PATCHv5 0/4] Add Freescale FTM PWM driver.
-Date: Fri, 1 Nov 2013 06:34:00 +0000
-Message-ID: <1DD289F6464F0949A2FCA5AA6DC23F82871744@039-SN2MPN1-013.039d.mgd.msft.net>
+Date: Thu, 7 Nov 2013 07:00:41 +0000
+Message-ID: <1DD289F6464F0949A2FCA5AA6DC23F82878657@039-SN2MPN1-013.039d.mgd.msft.net>
 References: <1383114204-17264-1-git-send-email-Li.Xiubo@freescale.com>
 In-Reply-To: <1383114204-17264-1-git-send-email-Li.Xiubo@freescale.com>
 Content-Language: en-US
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Return-Path: B47053@freescale.com
+Return-Path: Li.Xiubo@freescale.com
 List-ID: <linux-pwm.vger.kernel.org>
-To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+To: Li Xiubo <Li.Xiubo@freescale.com>, Shawn Guo <Shawn.Guo@freescale.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
 Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "rob@landley.net" <rob@landley.net>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-Hi Therry,
+Hi Thierry,
 
-The binding patch has been acked, how about the other patches ?
+The document binding patch of this patch series has been acked.
+And other patches have been acked before.
 
-If they are all okey, should I sent a another official version again ?
+Should I send a V6 patch series ?
 
-
-Thanks.
+Thanks very much.
 
 
 --
-Xiubo
-
 
 
 > Subject: [RFCv2][PATCHv5 0/4] Add Freescale FTM PWM driver.
@@ -78,13 +76,3 @@ Xiubo
 > - Add Freescale FTM PWM node for VF610.
 > - Enable Enables FTM PWM device for Vybrid VF610 TOWER.
 > - Add device tree bindings for Freescale.
->=20
->=20
->=20
->=20
->=20
->=20
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
