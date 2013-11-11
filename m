@@ -1,58 +1,129 @@
 Return-Path: <thierry.reding@gmail.com>
-Date: Mon, 11 Nov 2013 10:30:11 +0100
+Date: Mon, 11 Nov 2013 10:39:57 +0100
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RFCv2][PATCHv5 0/4] Add Freescale FTM PWM driver.
-Message-ID: <20131111093008.GH3884@ulmo.nvidia.com>
-References: <1383114204-17264-1-git-send-email-Li.Xiubo@freescale.com>
- <1DD289F6464F0949A2FCA5AA6DC23F82878657@039-SN2MPN1-013.039d.mgd.msft.net>
+Subject: Re: [PATCH] pwm-backlight: add support for device tree gpio control
+Message-ID: <20131111093956.GI3884@ulmo.nvidia.com>
+References: <1378236372-15711-1-git-send-email-mikedunn@newsguy.com>
+ <20130910172130.GC22111@ulmo>
+ <523056A6.5060000@newsguy.com>
+ <524408BE.40402@ti.com>
+ <20130926120248.GB1680@ulmo>
+ <524427E5.50403@ti.com>
+ <20130926125020.GA2141@ulmo>
+ <524589A3.50700@newsguy.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="oyqLL/JqMvClXZi1"
+	protocol="application/pgp-signature"; boundary="TKDEsImF70pdVIl+"
 Content-Disposition: inline
-In-Reply-To: <1DD289F6464F0949A2FCA5AA6DC23F82878657@039-SN2MPN1-013.039d.mgd.msft.net>
+In-Reply-To: <524589A3.50700@newsguy.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: Li Xiubo <Li.Xiubo@freescale.com>
-Cc: Shawn Guo <Shawn.Guo@freescale.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "rob@landley.net" <rob@landley.net>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Mike Dunn <mikedunn@newsguy.com>
+Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>, Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jg1.han@samsung.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>
 
 
---oyqLL/JqMvClXZi1
+--TKDEsImF70pdVIl+
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Nov 07, 2013 at 07:00:41AM +0000, Li Xiubo wrote:
-> Hi Thierry,
+On Fri, Sep 27, 2013 at 06:35:31AM -0700, Mike Dunn wrote:
+> On 09/26/2013 05:50 AM, Thierry Reding wrote:
+> > On Thu, Sep 26, 2013 at 03:26:13PM +0300, Tomi Valkeinen wrote:
+> >> On 26/09/13 15:02, Thierry Reding wrote:
+> >>> On Thu, Sep 26, 2013 at 01:13:18PM +0300, Tomi Valkeinen wrote:
+> >>>> On 11/09/13 14:40, Mike Dunn wrote:
+> >>>>> On 09/10/2013 10:21 AM, Thierry Reding wrote:
+> >>>>
+> >>>>>> Do you have a real setup that actually needs multiple GPIOs? Usual=
+ly
+> >>>>>> such a setup requires some kind of timing or other additional cons=
+traint
+> >>>>>> which can't be represented by this simple binding.
+> >>>>>>
+> >>>>>> Looking at the Palm Treo code it seems like the reason why multiple
+> >>>>>> GPIOs are needed is because one is to enable the backlight, while =
+the
+> >>>>>> other is in fact used to enable the LCD panel.=20
+> >>>>>
+> >>>>>
+> >>>>> There are actually four GPIOs involved!  (There is an embarrasingly=
+ horrible
+> >>>>> hack in arch/arm/mach-pxa/palmtreo.c that handles the others.)  One=
+ is almost
+> >>>>> certainly simply backlight power.  The other three are probably LCD=
+ related.
+> >>>>
+> >>>> When you say "power", do you mean the gpio enables a regulator to fe=
+ed
+> >>>> power to the backlight? If so, wouldn't that be a regulator, not gpi=
+o,
+> >>>> from the bl driver's point of view?
+> >>>>
+> >>>> Generally speaking, this same problem appears in many places, but for
+> >>>> some reason especially in display. I'm a bit hesitant in adding "free
+> >>>> form" gpio/regulator support for drivers, as, as Thierry pointed out,
+> >>>> there are often timing requirements, or sometimes the gpios are
+> >>>> inverted, or sometimes the gpio is, in fact, a reset gpio, where you=
+'ll
+> >>>> assert the gpio for a short moment only.
+> >>>
+> >>> I sent out another series a few days ago that somewhat obsoletes this
+> >>> patch. What it does is basically add a single enable GPIO that can be
+> >>> used to turn the backlight on and off. In a separate patch, support is
+> >>> added for a power regulator. The combination of both should be able to
+> >>> cover the majority of use-cases.
+> >>
+> >> But Mike's case required 4 GPIOs? Or can that be reduced to one gpio a=
+nd
+> >> one regulator?
+> >=20
+> > Well, at least for the backlight it only seemed to involve a single
+> > GPIO. The other three were probably related to LCD and therefore not
+> > really suitable for a backlight driver. Traditionally it has been that
+> > the backlight driver handled these things as well (via the callbacks
+> > installed by board setup code). While really they should be handled by a
+> > separate driver (for the LCD).
 >=20
-> The document binding patch of this patch series has been acked.
-> And other patches have been acked before.
 >=20
-> Should I send a V6 patch series ?
+> Yes, this is currently my best guess.  This is reverse-engineered and
+> unfortunately I'm not yet able to accurately describe my particular use-c=
+ase.
+> Probably as wacky as anything you can imagine, Thierry :)
+>=20
+> The gpio and regulator patches will probably suffice.  Thierry, can you p=
+lease
+> point me to those patches?  I don't see them in your gitorious tree.  If =
+they
+> were posted to linux-pwm, I missed them; sorry.
 
-Yes, it'd be great if you can collect the various Acked-by's and send
-them as part of v6.
+I've stumbled across this email and it's not marked as answered, so here
+goes: these patches will be part of my pull request for 3.13. They
+should now be in my tree, although that's now moved to kernel.org. You
+can find it here:
 
-Thanks,
+	https://git.kernel.org/cgit/linux/kernel/git/thierry.reding/linux-pwm.git
+
 Thierry
 
---oyqLL/JqMvClXZi1
+--TKDEsImF70pdVIl+
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSgKOgAAoJEN0jrNd/PrOhkicQAI5nzusu7/A0797KN+UxXD3V
-ssvBtMKbpUaIGRmYB2+2BGTvA/d8TyVOERAzp8E6fnEvvmiVCpBggwlT+q+ExG0q
-tVMpMtyN4BUV/9D34fwAY5dCcrcj4ThyyOaezFtN/wurU1HgGGj2S+MdTSnvP7sQ
-Ov0ve7/aU6G/pGrF/uqI7dzWdTf/9jPGR78bPM1sts9Kr9gKEGaseDKVSPRCoHTO
-Ug9S4v/gea+CCk3A03eUQ/wgDEs1DujMIjq47Wan1IUKZ+5TV/wamKg8tdPzOByh
-2L6wkiPuwo2oeGNuqAMoG9KT0SPmw9MdsoZ99UP7C52dGAoFU41LqNpJxyofFtOb
-p7lKMwnN43s0r9vPht/Zt6dxRlwtWRp8yIKoneoZX98iGe01YWHSRGXvBGOy7VAS
-4jF0FyQy97Qi9pRAovhHyvQNDIRd5GZLWO9CmaLPI2607BEADmYSbLXfNQGHnrJJ
-201oc/tdUnxsNTvSyC980LkoUuFwwXyxLHENVZre1Jqi89ATxO72hakTrWbUh0LN
-lMLaXVa2t4dl7BuqBNmkNDfubkC0YodC5O+Fw2yusgq7uY9vTunvN4yC9KQaWHJu
-Pmpf5HCngMYphAi1F9hwRAKYNTNyxepNJvtRBzz9MYXe++/hBg0or80BlQycuw8H
-lZjxxIPrQuWJQ8ZvI2jn
-=okwO
+iQIcBAEBAgAGBQJSgKXsAAoJEN0jrNd/PrOhHYMP/3F/glcpTv7m1AY8cAM7CLdT
+OnSK+tM+5pWDgEkrTQesLireAZhmSNRte3WoJW0yOs+GZTO2F3GyPfZFaZcWkYPU
+5qgNoe/1lVWYr3vUbBQ/cLh2rbLiNC33FHuac76XffEgxVV+sTeKmTlbMeB+uhfQ
+7HqT4AcROMz+KxdheuFSCMjwLlahWvItsTtmFIOeBY8JiIUeHaHRKLGLR6O20Vas
+OYk+rfBd7fv7f1YwVswpAUbayDrHki9KJD4c5IzZtZjzTedssKlk1pSJvRmArRd3
+Mox7qSrpQLm/ovRt9fLu2hMszNtf89OAfvZmPh/HpnVmK2k4VLifiDmObP90sOUz
+HBdRJJjVVTfVk4wjqWFftDa3CV+GMrHWtEH3hJGX8WNsqjU/Xw8yAt5BotwLFc4U
+cvVYOnFyWZu0DxN2k+bPhJMqChjsc+7Gk3iy/gZdSB6NIC9Fzsmr7bq5Fa4sC1Ps
+ptu0vN0qjLqf5C+8TKE4BbvSTfLIPQtO4xUlqEVlGvFPe13uGKMBgvpVcfOPnFz5
+Sc10s6f0q/UExWjoWPduMbsZzaKfpX5137+Sm/eGgRtD5asD/SrCjTcv1/iFiuBT
+fLbzHKdNqRkVUFHFWG/plCsQoLyuGuAMECX25fWZ7AppGLQwG1YLfN14TUfJfkDB
+EYRiI+dZ+eFnSNXHOSJc
+=WHTv
 -----END PGP SIGNATURE-----
 
---oyqLL/JqMvClXZi1--
+--TKDEsImF70pdVIl+--
