@@ -1,44 +1,56 @@
-Return-Path: <tomasz.figa@gmail.com>
-Return-Path: <tomasz.figa@gmail.com>
-From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: Re: [PATCH 1/1] Documentation/pwm: Update supported SoC name for pwm-samsung
-Date: Sun, 10 Nov 2013 13:35:10 +0100
-Message-ID: <8047745.cL4vAyf7NP@flatron>
-In-Reply-To: <1383107981-6638-1-git-send-email-sachin.kamat@linaro.org>
+Return-Path: <thierry.reding@gmail.com>
+Date: Mon, 11 Nov 2013 10:25:35 +0100
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/1] Documentation/pwm: Update supported SoC name for
+ pwm-samsung
+Message-ID: <20131111092534.GG3884@ulmo.nvidia.com>
 References: <1383107981-6638-1-git-send-email-sachin.kamat@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="m0vRWufqUC70IDnR"
+Content-Disposition: inline
+In-Reply-To: <1383107981-6638-1-git-send-email-sachin.kamat@linaro.org>
 List-ID: <linux-pwm.vger.kernel.org>
 To: Sachin Kamat <sachin.kamat@linaro.org>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-samsung-soc@vger.kernel.org, mark.rutland@arm.com
 
-Hi Sachin,
 
-On Wednesday 30 of October 2013 10:09:41 Sachin Kamat wrote:
+--m0vRWufqUC70IDnR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Oct 30, 2013 at 10:09:41AM +0530, Sachin Kamat wrote:
 > Updated supported SoC name for pwm-samsung.
-> 
+>=20
 > Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
 > ---
 >  .../devicetree/bindings/pwm/pwm-samsung.txt        |    2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-samsung.txt
-> b/Documentation/devicetree/bindings/pwm/pwm-samsung.txt index
-> d61fccd..5538de9 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm-samsung.txt
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-samsung.txt
-> @@ -15,7 +15,7 @@ Required properties:
->      samsung,s5pc100-pwm - for 32-bit timers present on S5PC100,
-> S5PV210, Exynos4210 rev0 SoCs
->      samsung,exynos4210-pwm - for 32-bit timers present on Exynos4210,
-> -                          Exynos4x12 and Exynos5250 SoCs
-> +                          Exynos4x12, Exynos5250 and Exynos5420 SoCs
->  - reg: base address and size of register area
->  - interrupts: list of timer interrupts (one interrupt per timer,
-> starting at timer 0)
 
-Reviewed-by: Tomasz Figa <t.figa@samsung.com>
+Applied, thanks.
 
-Best regards,
-Tomasz
+Thierry
+
+--m0vRWufqUC70IDnR
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSgKKOAAoJEN0jrNd/PrOhWPgP/ji9x1nG6a453brTYFw2UEPw
+KnOQ+4U6DXLB05ij/eFi0dufGpPGOqXyaviOwVjZuGDgMyvn6b1oE16/eH9Tgtyp
+YdSKgEc+XZ1iz8OJXIuChDZ6mkc0HvxeW/dQYvy2MxFBPl7E6uYKekKLOdufdxcx
+Jzc3KsocGSearAx95fVEfR9kDCUJ+1KSL/2pbkqhszH7nNhYfahfh+40E8+BTHu8
+Q8cLVN69lXW5oE4FKFit0gxytRPWi1dHCA2kVA8krT09jIREsljzaIcSfE+cZQZo
+M0UDR3uXat61KV69Orrv/b9LISJn9TCYbp0+IP+tQkDIeYbiI3kH9hCsovTlKuA5
+5FS8eGkJsQ/MFFQ1Sg23DxAIALKRoMAqK95Q2rvhlbXJVhbddK0vXjmhB7IZoqGi
+l3jN7EXR9zteLJ4bkqUbT1uneP1tg8ZpDY2ytXIwmNsgR4GhXodFfOoGVI0+SD40
+KfxB2hCF4LuS4ryEw/fxv0wQuXeUv1Go5ZAcdPpy641ZxR8Tt32Ju8SBJ46J2gU1
+WYEfKlEIPz5Smvas92DpCgkeqA8vfQK8CLJFrGY/4b+Mf/oZw1H6qpAGYM1CRMAZ
+BqVlz2/v/cHOCb9pKDSeDlw6Jh0bVta9FDPLt0XVsgUPYGmKr9nXaYLk6rCo+5vQ
+0JrHhW1UH3B+5ogNeh4C
+=oTUe
+-----END PGP SIGNATURE-----
+
+--m0vRWufqUC70IDnR--
