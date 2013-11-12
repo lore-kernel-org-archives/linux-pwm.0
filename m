@@ -1,129 +1,58 @@
-Return-Path: <thierry.reding@gmail.com>
-Date: Mon, 11 Nov 2013 10:39:57 +0100
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm-backlight: add support for device tree gpio control
-Message-ID: <20131111093956.GI3884@ulmo.nvidia.com>
-References: <1378236372-15711-1-git-send-email-mikedunn@newsguy.com>
- <20130910172130.GC22111@ulmo>
- <523056A6.5060000@newsguy.com>
- <524408BE.40402@ti.com>
- <20130926120248.GB1680@ulmo>
- <524427E5.50403@ti.com>
- <20130926125020.GA2141@ulmo>
- <524589A3.50700@newsguy.com>
+Return-Path: <laurent.pinchart@ideasonboard.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH v2 00/19] Enable various Renesas drivers on all ARM platforms
+Date: Wed, 13 Nov 2013 00:32:06 +0100
+Message-ID: <55374441.jb1As8srky@avalon>
+In-Reply-To: <1383086274-11049-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+References: <1383086274-11049-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="TKDEsImF70pdVIl+"
-Content-Disposition: inline
-In-Reply-To: <524589A3.50700@newsguy.com>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 List-ID: <linux-pwm.vger.kernel.org>
-To: Mike Dunn <mikedunn@newsguy.com>
-Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>, Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jg1.han@samsung.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>
+To: linux-arm-kernel@lists.infradead.org
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-fbdev@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>, Linus Walleij <linus.walleij@linaro.org>, Guennadi Liakhovetski <g.liakhovetski+renesas@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org, Vinod Koul <vinod.koul@intel.com>, Joerg Roedel <joro@8bytes.org>, Magnus Damm <magnus.damm@gmail.com>, Eduardo Valentin <eduardo.valentin@ti.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-serial@vger.kernel.org, linux-input@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>, Chris Ball <cjb@laptop.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, Samuel Ortiz <samuel@sortiz.org>, linux-pm@vger.kernel.org, Ian Molton <ian@mnementh.co.uk>, Mark Brown <broonie@kernel.org>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Greg Kroah-Hartman <gregkh@linuxfoundat>, ion.org, , Dmitry Torokhov <dmitry.torokhov@gmail.com>, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, dmaengine@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, "David S. Miller" <davem@davemloft.net>, Mauro Carvalho Chehab <m.chehab@samsung.com>
 
+Hello,
 
---TKDEsImF70pdVIl+
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tuesday 29 October 2013 23:37:35 Laurent Pinchart wrote:
+> Hello,
+> 
+> This patch series, based on v3.12-rc7, prepares various Renesas drivers
+> for migration to multiplatform kernels by enabling their compilation or
+> otherwise fixing them on all ARM platforms. The patches are pretty
+> straightforward and are described in their commit message.
+> 
+> Changes since v1:
+> 
+> - The drivers can also be selected when COMPILE_TEST is enabled, regardless
+> of the architecture. This should provide a good compromise between wide
+> build test coverage and not clobbering configuration with drivers useless
+> on non-SuperH, non-ARM platforms.
+> 
+> - DMA configuration is now unconditional in patch 08/19
+> 
+> I'd like to get all these patches merged in v3.14. As they will need to go
+> through their respective subsystems' trees, I would appreciate if all
+> maintainers involved could notify me when they merge patches from this
+> series in their tree to help me tracking the merge status. I don't plan to
+> send pull requests individually for these patches, and I will repost
+> patches individually if changes are requested during review.
+> 
+> If you believe the issue should be solved in a different way please reply to
+> the cover letter to let other maintainers chime in.
 
-On Fri, Sep 27, 2013 at 06:35:31AM -0700, Mike Dunn wrote:
-> On 09/26/2013 05:50 AM, Thierry Reding wrote:
-> > On Thu, Sep 26, 2013 at 03:26:13PM +0300, Tomi Valkeinen wrote:
-> >> On 26/09/13 15:02, Thierry Reding wrote:
-> >>> On Thu, Sep 26, 2013 at 01:13:18PM +0300, Tomi Valkeinen wrote:
-> >>>> On 11/09/13 14:40, Mike Dunn wrote:
-> >>>>> On 09/10/2013 10:21 AM, Thierry Reding wrote:
-> >>>>
-> >>>>>> Do you have a real setup that actually needs multiple GPIOs? Usual=
-ly
-> >>>>>> such a setup requires some kind of timing or other additional cons=
-traint
-> >>>>>> which can't be represented by this simple binding.
-> >>>>>>
-> >>>>>> Looking at the Palm Treo code it seems like the reason why multiple
-> >>>>>> GPIOs are needed is because one is to enable the backlight, while =
-the
-> >>>>>> other is in fact used to enable the LCD panel.=20
-> >>>>>
-> >>>>>
-> >>>>> There are actually four GPIOs involved!  (There is an embarrasingly=
- horrible
-> >>>>> hack in arch/arm/mach-pxa/palmtreo.c that handles the others.)  One=
- is almost
-> >>>>> certainly simply backlight power.  The other three are probably LCD=
- related.
-> >>>>
-> >>>> When you say "power", do you mean the gpio enables a regulator to fe=
-ed
-> >>>> power to the backlight? If so, wouldn't that be a regulator, not gpi=
-o,
-> >>>> from the bl driver's point of view?
-> >>>>
-> >>>> Generally speaking, this same problem appears in many places, but for
-> >>>> some reason especially in display. I'm a bit hesitant in adding "free
-> >>>> form" gpio/regulator support for drivers, as, as Thierry pointed out,
-> >>>> there are often timing requirements, or sometimes the gpios are
-> >>>> inverted, or sometimes the gpio is, in fact, a reset gpio, where you=
-'ll
-> >>>> assert the gpio for a short moment only.
-> >>>
-> >>> I sent out another series a few days ago that somewhat obsoletes this
-> >>> patch. What it does is basically add a single enable GPIO that can be
-> >>> used to turn the backlight on and off. In a separate patch, support is
-> >>> added for a power regulator. The combination of both should be able to
-> >>> cover the majority of use-cases.
-> >>
-> >> But Mike's case required 4 GPIOs? Or can that be reduced to one gpio a=
-nd
-> >> one regulator?
-> >=20
-> > Well, at least for the backlight it only seemed to involve a single
-> > GPIO. The other three were probably related to LCD and therefore not
-> > really suitable for a backlight driver. Traditionally it has been that
-> > the backlight driver handled these things as well (via the callbacks
-> > installed by board setup code). While really they should be handled by a
-> > separate driver (for the LCD).
->=20
->=20
-> Yes, this is currently my best guess.  This is reverse-engineered and
-> unfortunately I'm not yet able to accurately describe my particular use-c=
-ase.
-> Probably as wacky as anything you can imagine, Thierry :)
->=20
-> The gpio and regulator patches will probably suffice.  Thierry, can you p=
-lease
-> point me to those patches?  I don't see them in your gitorious tree.  If =
-they
-> were posted to linux-pwm, I missed them; sorry.
+This patch series was a prerequisite for a larger rework of Renesas platforms. 
+However, we've decided to go with an alternative approach that renames Kconfig 
+symbols to avoid touching all the drivers. There is thus no urgency to apply 
+this series anymore.
 
-I've stumbled across this email and it's not marked as answered, so here
-goes: these patches will be part of my pull request for 3.13. They
-should now be in my tree, although that's now moved to kernel.org. You
-can find it here:
+I still plan to enable COMPILE_TEST on Renesas drivers. I will send a v3 of 
+these patches based on the feedback received on v2. Patches from v2 that have 
+already been applied can be dropped, but there's no need to revert them rebase 
+trees as they're not invalid per-se. I will make sure to address the situation 
+in v3. I'm sorry for the inconvenience.
 
-	https://git.kernel.org/cgit/linux/kernel/git/thierry.reding/linux-pwm.git
+-- 
+Regards,
 
-Thierry
-
---TKDEsImF70pdVIl+
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSgKXsAAoJEN0jrNd/PrOhHYMP/3F/glcpTv7m1AY8cAM7CLdT
-OnSK+tM+5pWDgEkrTQesLireAZhmSNRte3WoJW0yOs+GZTO2F3GyPfZFaZcWkYPU
-5qgNoe/1lVWYr3vUbBQ/cLh2rbLiNC33FHuac76XffEgxVV+sTeKmTlbMeB+uhfQ
-7HqT4AcROMz+KxdheuFSCMjwLlahWvItsTtmFIOeBY8JiIUeHaHRKLGLR6O20Vas
-OYk+rfBd7fv7f1YwVswpAUbayDrHki9KJD4c5IzZtZjzTedssKlk1pSJvRmArRd3
-Mox7qSrpQLm/ovRt9fLu2hMszNtf89OAfvZmPh/HpnVmK2k4VLifiDmObP90sOUz
-HBdRJJjVVTfVk4wjqWFftDa3CV+GMrHWtEH3hJGX8WNsqjU/Xw8yAt5BotwLFc4U
-cvVYOnFyWZu0DxN2k+bPhJMqChjsc+7Gk3iy/gZdSB6NIC9Fzsmr7bq5Fa4sC1Ps
-ptu0vN0qjLqf5C+8TKE4BbvSTfLIPQtO4xUlqEVlGvFPe13uGKMBgvpVcfOPnFz5
-Sc10s6f0q/UExWjoWPduMbsZzaKfpX5137+Sm/eGgRtD5asD/SrCjTcv1/iFiuBT
-fLbzHKdNqRkVUFHFWG/plCsQoLyuGuAMECX25fWZ7AppGLQwG1YLfN14TUfJfkDB
-EYRiI+dZ+eFnSNXHOSJc
-=WHTv
------END PGP SIGNATURE-----
-
---TKDEsImF70pdVIl+--
+Laurent Pinchart
