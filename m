@@ -1,55 +1,54 @@
-Return-Path: <alexandre.belloni@free-electrons.com>
-Message-ID: <52834593.4000803@free-electrons.com>
-Date: Wed, 13 Nov 2013 17:25:39 +0800
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-MIME-Version: 1.0
+Return-Path: <plagnioj@jcrosoft.com>
+Date: Wed, 13 Nov 2013 10:56:28 +0100
+From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
 Subject: Re: [PATCH v6 1/2] PWM: atmel-pwm: add PWM controller driver
+Message-ID: <20131113095628.GI28304@ns203013.ovh.net>
 References: <1383292767-11211-1-git-send-email-voice.shen@atmel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <1383292767-11211-1-git-send-email-voice.shen@atmel.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
 List-ID: <linux-pwm.vger.kernel.org>
-To: Bo Shen <voice.shen@atmel.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, nicolas.ferre@atmel.com, linux-kernel@vger.kernel.org, plagnioj@jcrosoft.com, linux-arm-kernel@lists.infradead.org
+To: Bo Shen <voice.shen@atmel.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, nicolas.ferre@atmel.com, alexandre.belloni@free-electrons.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On 01/11/2013 15:59, Bo Shen wrote:
+On 15:59 Fri 01 Nov     , Bo Shen wrote:
 > Add Atmel PWM controller driver based on PWM framework.
->
+> 
 > This is the basic function implementation of Atmel PWM controller.
 > It can work with PWM based led and backlight.
->
+> 
 > Signed-off-by: Bo Shen <voice.shen@atmel.com>
-Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
->
+> 
 > ---
 > Changes in v6:
 >   - using relaxed version for writel and readl
 >   - add none device tree support
 >   - change some define from lower case to upper case
 >   - split device tree binding document as a separate patch
->
+> 
 > Changes in v5:
 >   - call clk_disable directly, if so, it won't cause more than one channel
 >     enabled, the clock can not be disabled.
->
+> 
 > Changes in v4:
 >   - check the return value of clk_prepare()
 >   - change channel register size as constant
->
+> 
 > Changes in v3:
 >   - change compatible string from "atmel,sama5-pwm" to "atmel,sama5d3-pwm"
 >   - Add PWM led example in binding documentation
 >   - Using micro replace hard code
->
+> 
 > Changes in v2:
 >   - Address the comments from Thierry Reding
->
+> 
 >  drivers/pwm/Kconfig     |    9 ++
 >  drivers/pwm/Makefile    |    1 +
 >  drivers/pwm/pwm-atmel.c |  360 +++++++++++++++++++++++++++++++++++++++++++++++
 >  3 files changed, 370 insertions(+)
 >  create mode 100644 drivers/pwm/pwm-atmel.c
->
+> 
 > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
 > index 75840b5..54237b9 100644
 > --- a/drivers/pwm/Kconfig
@@ -403,9 +402,16 @@ Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 > +
 > +	atmel_pwm->chip.dev = &pdev->dev;
 > +	atmel_pwm->chip.ops = &atmel_pwm_ops;
+I get one issue here for non-dt platform
 > +	atmel_pwm->chip.of_xlate = of_pwm_xlate_with_flags;
 > +	atmel_pwm->chip.of_pwm_n_cells = 3;
+those 3 no need
 > +	atmel_pwm->chip.base = -1;
+here we need specify the base from the board so we known which pwn to use
+for DT -1 is good as we use phandle
+
+Best Regards,
+J.
 > +	atmel_pwm->chip.npwm = 4;
 > +
 > +	data = of_id->data;
@@ -448,9 +454,6 @@ Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 > +MODULE_AUTHOR("Bo Shen <voice.shen@atmel.com>");
 > +MODULE_DESCRIPTION("Atmel PWM driver");
 > +MODULE_LICENSE("GPL v2");
-
-
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+> -- 
+> 1.7.9.5
+> 
