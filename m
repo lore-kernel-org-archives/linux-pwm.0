@@ -1,216 +1,169 @@
-Return-Path: <plagnioj@jcrosoft.com>
-Date: Fri, 15 Nov 2013 14:46:46 +0100
-From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Subject: Re: [PATCH v7 1/2] PWM: atmel-pwm: add PWM controller driver
-Message-ID: <20131115134646.GO28304@ns203013.ovh.net>
-References: <1384509208-10762-1-git-send-email-voice.shen@atmel.com>
+Return-Path: <thierry.reding@gmail.com>
+Date: Sat, 16 Nov 2013 12:54:53 +0100
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [GIT PULL] pwm: Changes for v3.13-rc1
+Message-ID: <20131116115452.GA12315@ulmo.nvidia.com>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="envbJBWh7q8WU6mo"
+Content-Disposition: inline
+List-ID: <linux-pwm.vger.kernel.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+
+
+--envbJBWh7q8WU6mo
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1384509208-10762-1-git-send-email-voice.shen@atmel.com>
-List-ID: <linux-pwm.vger.kernel.org>
-To: Bo Shen <voice.shen@atmel.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, nicolas.ferre@atmel.com, alexandre.belloni@free-electrons.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, galak@codeaurora.org, devicetree@vger.kernel.org
 
-On 17:53 Fri 15 Nov     , Bo Shen wrote:
-> Add Atmel PWM controller driver based on PWM framework.
-> 
-> This is the basic function implementation of Atmel PWM controller.
-> It can work with PWM based led and backlight.
-> 
-> Signed-off-by: Bo Shen <voice.shen@atmel.com>
-> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> ---
-> Changes in v7:
->   - fix issue for none device tree issues.
-> 
-> Changes in v6:
->   - using relaxed version for writel and readl
->   - add none device tree support
->   - change some define from lower case to upper case
->   - split device tree binding document as a separate patch
-> 
-> Changes in v5:
->   - call clk_disable directly, if so, it won't cause more than one channel
->     enabled, the clock can not be disabled.
-> 
-> Changes in v4:
->   - check the return value of clk_prepare()
->   - change channel register size as constant
-> 
-> Changes in v3:
->   - change compatible string from "atmel,sama5-pwm" to "atmel,sama5d3-pwm"
->   - Add PWM led example in binding documentation
->   - Using micro replace hard code
-> 
-> Changes in v2:
->   - Address the comments from Thierry Reding
-> 
->  drivers/pwm/Kconfig     |    9 ++
->  drivers/pwm/Makefile    |    1 +
->  drivers/pwm/pwm-atmel.c |  380 +++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 390 insertions(+)
->  create mode 100644 drivers/pwm/pwm-atmel.c
-> 
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index eece329..5043572 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -41,6 +41,15 @@ config PWM_AB8500
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-ab8500.
->  
-> +config PWM_ATMEL
-> +	tristate "Atmel PWM support"
-> +	depends on ARCH_AT91
-> +	help
-> +	  Generic PWM framework driver for Atmel SoC.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called pwm-atmel.
-> +
->  config PWM_ATMEL_TCB
->  	tristate "Atmel TC Block PWM support"
->  	depends on ATMEL_TCLIB && OF
-> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> index 8b754e4..1b99cfb 100644
-> --- a/drivers/pwm/Makefile
-> +++ b/drivers/pwm/Makefile
-> @@ -1,6 +1,7 @@
->  obj-$(CONFIG_PWM)		+= core.o
->  obj-$(CONFIG_PWM_SYSFS)		+= sysfs.o
->  obj-$(CONFIG_PWM_AB8500)	+= pwm-ab8500.o
-> +obj-$(CONFIG_PWM_ATMEL)		+= pwm-atmel.o
->  obj-$(CONFIG_PWM_ATMEL_TCB)	+= pwm-atmel-tcb.o
->  obj-$(CONFIG_PWM_BFIN)		+= pwm-bfin.o
->  obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
-> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-> new file mode 100644
-> index 0000000..d012538
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-atmel.c
-> @@ -0,0 +1,380 @@
-> +/*
-> + * Driver for Atmel Pulse Width Modulation Controller
-> + *
-> + * Copyright (C) 2013 Atmel Corporation
-> + *		 Bo Shen <voice.shen@atmel.com>
-> + *
-> + * Licensed under GPLv2.
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/err.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pwm.h>
-> +#include <linux/slab.h>
-> +
-> +/* The following is global registers for PWM controller */
-> +#define PWM_ENA			0x04
-> +#define PWM_DIS			0x08
-> +#define PWM_SR			0x0C
-> +/* Bit field in SR */
-> +#define PWM_SR_ALL_CH_ON	0x0F
-> +
-> +/* The following register is PWM channel related registers */
-> +#define PWM_CH_REG_OFFSET	0x200
-> +#define PWM_CH_REG_SIZE		0x20
-> +
-> +#define PWM_CMR			0x0
-> +/* Bit field in CMR */
-> +#define PWM_CMR_CPOL		(1 << 9)
-> +#define PWM_CMR_UPD_CDTY	(1 << 10)
-> +
-> +/* The following registers for PWM v1 */
-> +#define PWMV1_CDTY		0x04
-> +#define PWMV1_CPRD		0x08
-> +#define PWMV1_CUPD		0x10
-> +
-> +/* The following registers for PWM v2 */
-> +#define PWMV2_CDTY		0x04
-> +#define PWMV2_CDTYUPD		0x08
-> +#define PWMV2_CPRD		0x0C
-> +#define PWMV2_CPRDUPD		0x10
-> +
-> +/* Max value for duty and period
-> + *
-> + * Although the duty and period register is 32 bit,
-> + * however only the LSB 16 bits are significant.
-> + */
-> +#define PWM_MAX_DTY		0xFFFF
-> +#define PWM_MAX_PRD		0xFFFF
-> +#define PRD_MAX_PRES		10
-> +
-> +struct atmel_pwm_chip {
-> +	struct pwm_chip chip;
-> +	struct clk *clk;
-> +	void __iomem *base;
-> +
-> +	void (*config)(struct pwm_chip *chip, struct pwm_device *pwm,
-> +		       int dty, int prd);
-> +};
-> +
-> +static inline struct atmel_pwm_chip *to_atmel_pwm_chip(struct pwm_chip *chip)
-> +{
-> +	return container_of(chip, struct atmel_pwm_chip, chip);
-> +}
-> +
-> +static inline u32 atmel_pwm_readl(struct atmel_pwm_chip *chip,
-> +				  unsigned long offset)
-> +{
-> +	return readl_relaxed(chip->base + offset);
-> +}
-> +
-> +static inline void atmel_pwm_writel(struct atmel_pwm_chip *chip,
-> +				    unsigned long offset, unsigned long val)
-> +{
-> +	writel_relaxed(val, chip->base + offset);
-> +}
-> +
-> +static inline u32 atmel_pwm_ch_readl(struct atmel_pwm_chip *chip,
-> +				     unsigned int ch, unsigned long offset)
-> +{
-> +	return readl_relaxed(chip->base + PWM_CH_REG_OFFSET +
-> +			ch * PWM_CH_REG_SIZE + offset);
-> +}
-> +
-> +static inline void atmel_pwm_ch_writel(struct atmel_pwm_chip *chip,
-> +				       unsigned int ch, unsigned long offset,
-> +				       unsigned long val)
-> +{
-> +	writel_relaxed(val, chip->base + PWM_CH_REG_OFFSET +
-> +			ch * PWM_CH_REG_SIZE + offset);
-> +}
-> +
-> +static int atmel_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> +		int duty_ns, int period_ns)
-> +{
-> +	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
-> +	unsigned long clk_rate, prd, dty;
-> +	unsigned long long div;
-> +	int ret, pres = 0;
-> +
-> +	clk_rate = clk_get_rate(atmel_pwm->clk);
-> +	div = clk_rate;
-> +
-> +	/* Calculate the period cycles */
-> +	while (div > PWM_MAX_PRD) {
-> +		div = clk_rate / (1 << pres);
-> +		div = div * period_ns;
-> +		/* 1/Hz = 100000000 ns */
-> +		do_div(div, 1000000000);
-> +
-> +		if (pres++ > PRD_MAX_PRES) {
-> +			pr_err("PRES is bigger than maximum pre-scaler\n");
-if we have more than 1 pwm with pr_err we can known which is it use dev_xxx
-instead of all pr_xx
+Hi Linus,
 
+The following changes since commit 272b98c6455f00884f0350f775c5342358ebb73f:
 
-with this Ack
+  Linux 3.12-rc1 (2013-09-16 16:17:51 -0400)
 
-Best Regards,
-J.
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-3.13-rc1
+
+for you to fetch changes up to 1b3f25ce991d528bd0d825b3f14a45904037a382:
+
+  Documentation/pwm: Update supported SoC name for pwm-samsung (2013-11-11 10:23:56 +0100)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Changes for v3.13-rc1
+
+Mostly bug fixes and clean up. There is a new driver, which is actually
+moving a custom PWM driver from drivers/misc.
+
+The majority of the patches are enhancements to the device tree support
+in the pwm-backlight driver. Backlights can now additionally be powered
+using a regulator and enabled using a GPIO in addition to just the PWM
+input.
+
+----------------------------------------------------------------
+Boris BREZILLON (2):
+      pwm: atmel-tcb: add missing clk source config
+      pwm: atmel-tcb: fix max time computation for slow clk source
+
+H Hartley Sweeten (1):
+      pwm: add ep93xx PWM support
+
+Huayi Li (1):
+      pwm_backlight: avoid short blank screen while doing hibernation
+
+Mike Dunn (1):
+      pwm-backlight: Allow for non-increasing brightness levels
+
+Sachin Kamat (10):
+      pwm: imx: Include linux/of.h header
+      pwm: samsung: Include linux/of.h header
+      pwm: twl-led: Include linux/of.h header
+      pwm: twl: Include linux/of.h header
+      pwm: mxs: Remove redundant of_match_ptr
+      pwm: lpc32xx: Remove redundant of_match_ptr
+      pwm: imx: Remove redundant of_match_ptr
+      Documentation/pwm: Fix trivial typos
+      pwm: samsung: Fix kernel warning while unexporting a channel
+      Documentation/pwm: Update supported SoC name for pwm-samsung
+
+Thierry Reding (14):
+      pwm-backlight: Improve readability
+      pwm-backlight: Refactor backlight power on/off
+      pwm-backlight: Track enable state
+      pwm-backlight: Add optional enable GPIO
+      ARM: OMAP: Initialize PWM backlight enable_gpio field
+      ARM: pxa: Initialize PWM backlight enable_gpio field
+      ARM: SAMSUNG: Initialize PWM backlight enable_gpio field
+      ARM: shmobile: Initialize PWM backlight enable_gpio field
+      unicore32: Initialize PWM backlight enable_gpio field
+      pwm-backlight: Use new enable_gpio field
+      pwm-backlight: Add power supply support
+      pwm-backlight: Fix brightness adjustment
+      pwm-backlight: Remove unused variable
+      MAINTAINERS: Move PWM subsystem tree to kernel.org
+
+Wolfram Sang (1):
+      pwm: don't use devm_pinctrl_get_select_default() in probe
+
+ .../devicetree/bindings/pwm/pwm-samsung.txt        |   2 +-
+ .../bindings/video/backlight/pwm-backlight.txt     |   7 +
+ Documentation/pwm.txt                              |   4 +-
+ MAINTAINERS                                        |   3 +-
+ arch/arm/mach-omap2/board-zoom-peripherals.c       |   1 +
+ arch/arm/mach-pxa/cm-x300.c                        |   1 +
+ arch/arm/mach-pxa/colibri-pxa270-income.c          |   1 +
+ arch/arm/mach-pxa/ezx.c                            |   1 +
+ arch/arm/mach-pxa/hx4700.c                         |   1 +
+ arch/arm/mach-pxa/lpd270.c                         |   1 +
+ arch/arm/mach-pxa/magician.c                       |   1 +
+ arch/arm/mach-pxa/mainstone.c                      |   1 +
+ arch/arm/mach-pxa/mioa701.c                        |   1 +
+ arch/arm/mach-pxa/palm27x.c                        |   1 +
+ arch/arm/mach-pxa/palmtc.c                         |  35 +--
+ arch/arm/mach-pxa/palmte2.c                        |   1 +
+ arch/arm/mach-pxa/pcm990-baseboard.c               |   1 +
+ arch/arm/mach-pxa/raumfeld.c                       |   1 +
+ arch/arm/mach-pxa/tavorevb.c                       |   2 +
+ arch/arm/mach-pxa/viper.c                          |   1 +
+ arch/arm/mach-pxa/z2.c                             |   2 +
+ arch/arm/mach-pxa/zylonite.c                       |   1 +
+ arch/arm/mach-s3c24xx/mach-h1940.c                 |   1 +
+ arch/arm/mach-s3c24xx/mach-rx1950.c                |   1 +
+ arch/arm/mach-s3c64xx/mach-crag6410.c              |   1 +
+ arch/arm/mach-s3c64xx/mach-hmt.c                   |   1 +
+ arch/arm/mach-s3c64xx/mach-smartq.c                |   1 +
+ arch/arm/mach-s3c64xx/mach-smdk6410.c              |   1 +
+ arch/arm/mach-s5p64x0/mach-smdk6440.c              |   1 +
+ arch/arm/mach-s5p64x0/mach-smdk6450.c              |   1 +
+ arch/arm/mach-s5pc100/mach-smdkc100.c              |   1 +
+ arch/arm/mach-s5pv210/mach-smdkv210.c              |   1 +
+ arch/arm/mach-shmobile/board-armadillo800eva.c     |   1 +
+ arch/arm/plat-samsung/dev-backlight.c              |   5 +
+ arch/unicore32/kernel/puv3-nb0916.c                |   1 +
+ drivers/misc/Kconfig                               |  13 -
+ drivers/misc/Makefile                              |   1 -
+ drivers/misc/ep93xx_pwm.c                          | 286 ---------------------
+ drivers/pwm/Kconfig                                |   9 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-atmel-tcb.c                        |   4 +-
+ drivers/pwm/pwm-ep93xx.c                           | 230 +++++++++++++++++
+ drivers/pwm/pwm-imx.c                              |   3 +-
+ drivers/pwm/pwm-lpc32xx.c                          |   2 +-
+ drivers/pwm/pwm-mxs.c                              |   2 +-
+ drivers/pwm/pwm-samsung.c                          |   3 +-
+ drivers/pwm/pwm-tiecap.c                           |   6 -
+ drivers/pwm/pwm-tiehrpwm.c                         |   6 -
+ drivers/pwm/pwm-twl-led.c                          |   1 +
+ drivers/pwm/pwm-twl.c                              |   1 +
+ drivers/video/backlight/pwm_bl.c                   | 166 +++++++++---
+ include/linux/pwm_backlight.h                      |   5 +
+ 52 files changed, 434 insertions(+), 392 deletions(-)
+ delete mode 100644 drivers/misc/ep93xx_pwm.c
+ create mode 100644 drivers/pwm/pwm-ep93xx.c
+
+--envbJBWh7q8WU6mo
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSh10MAAoJEN0jrNd/PrOhiiYQAKekSWzyfd9RJKdeeqXOPr9R
+M6gls327ikovLVfeCOHGdFTef4xHrb9TAH20SBpwiDk2vFF7q08KrJn+VwyB2zwX
+xmGYgZKD4x2o4hmBjyxje15bGoOQowedN29qxcxI9JFVFAbhlLhuwawEb0LO1A6S
+JcxKJxtMSiupg2lBU9AGlYPc3XDlUIX8uMsodACCsni+yduK8tPwr7L+XokoZIkE
+sogQaT+ELnwej/AXfUQ+DZCZpzsEFrC7Uilq3+gQ04TS43kkLmYZZuiTWqFNCyOm
+c0QcTptKDpX1ZbUhhP+8bQAuTqjMowLu9VvHaC6LLIDG4sN4veN/+1ZJFhDD9jH9
+LHluDzviD31HMWYGCZNRj7RMC1KU4l06OqiMBsTIZ88bOE/VXdaQW0ggDlKqj/OE
+N31og/ZHjVgxZiRrDpehOd7Ozavy27p2pFaS4LHS8oI9qecqZ7sV7xhI5POSUHyu
+E4m6oL3qV5CVLUbA4Hn9KOv0NeEXghgDllzfE0z37XP05nYWUbHDjG4uRXgqGoFY
+ShprW62YF4rGV59O7tSM0NuXosuagi7Zn4hkDdbYbpOnp4qE3x5qctDZ6/DIaKjB
+LZN4+p6uw4h8a977dd0sMsYVJS1KksRp0+duaZd90AR/He/gLw2fZr53p880uDEf
+dYaO5gB7W9zAzscCj6ga
+=NTVe
+-----END PGP SIGNATURE-----
+
+--envbJBWh7q8WU6mo--
