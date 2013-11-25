@@ -1,59 +1,38 @@
-Return-Path: <broonie@sirena.org.uk>
-Date: Mon, 25 Nov 2013 15:48:37 +0000
-From: Mark Brown <broonie@kernel.org>
-Message-ID: <20131125154837.GF14725@sirena.org.uk>
-References: <20131122142231.GA1741@ulmo.nvidia.com>
- <20131122145224.GO14725@sirena.org.uk>
- <20131125031029.GC11613@S2101-09.ap.freescale.net>
+Return-Path: <festevam@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="0rEjiS+nMGFQ7Kkj"
-Content-Disposition: inline
 In-Reply-To: <20131125031029.GC11613@S2101-09.ap.freescale.net>
+References: <20131122142231.GA1741@ulmo.nvidia.com>
+	<20131122145224.GO14725@sirena.org.uk>
+	<20131125031029.GC11613@S2101-09.ap.freescale.net>
+Date: Mon, 25 Nov 2013 11:26:53 -0200
+Message-ID: <CAOMZO5CtNnma8Sv35P3jeNYQiLV=jdmN0Q7w2_LFMOj-nTbPZg@mail.gmail.com>
 Subject: Re: [PATCH] backlight: pwm_bl: Do not make the regulator mandatory
+From: Fabio Estevam <festevam@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-pwm.vger.kernel.org>
 To: Shawn Guo <shawn.guo@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Fabio Estevam <fabio.estevam@freescale.com>, marex@denx.de, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Mark Brown <broonie@kernel.org>, Fabio Estevam <fabio.estevam@freescale.com>, =?UTF-8?B?TWFyZWsgVmHFoXV0?= <marex@denx.de>, Thierry Reding <thierry.reding@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-pwm@vger.kernel.org
 
+Hi Shawn,
 
---0rEjiS+nMGFQ7Kkj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Mon, Nov 25, 2013 at 11:10:32AM +0800, Shawn Guo wrote:
+On Mon, Nov 25, 2013 at 1:10 AM, Shawn Guo <shawn.guo@linaro.org> wrote:
 
 > Hmm, I'm seeing this breakage on v3.13-rc1 now with the following line
 > in the kernel log.
-
+>
 >   pwm-backlight backlight.18: dummy supplies not allowed
-
+>
 > What's missing here?
 
-Are you racing with the late initcall to flag that DT is present?  Wei
-Ni was looking at hooking this into DT so that when we pass the DT over
-we flag that we have full constraints (or provide a notifier to let
-subsystems do that) but that ground to a halt.
+Yes, this is weird.
 
---0rEjiS+nMGFQ7Kkj
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+linux-next 20131120: backlight fails
+linux-next 20131122: backlight works
+linux-next 20131125: backlight fails
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Looks like we need to apply this one to make sure backlight works:
+http://permalink.gmane.org/gmane.linux.ports.arm.kernel/281826
 
-iQIcBAEBAgAGBQJSk3FSAAoJELSic+t+oim9jlQQAIIhhN3R9W3/c2obafltf2sC
-fq2wNrDBSROB68+R9c03lKS/u24Jgkys6JmUA8s75KAcPkhoP48AGipuTMapEN3z
-6QyLsgQxAiCGlo69UfHm12i9mzQiRo0uMhKKc3JadO/bmxK4Du0hGQZpF7OKNidb
-X6Xd9VNLU/rx9v+UrGo/jE6ihSnibQ4R23lKERJx5QiWgo/fWSRmaoj1GC/mBgj9
-QJ12fPxwo8xsvi/0mjzZvNbTJJ+0UKehGIM7THNQIMZC0xQke4ygsrXO32W4YBqv
-9on4p3diw04PRo3dDl3ySq2KyTwi20PVG2EITKL6QM0VqC//hhXhgkHv6Ci5hMQI
-V9V4xshB4q7dlNokP4/omIWC6HjZmJb6hlbK55amv6cAUHXEkRrtBEsnziGlvDVK
-6WE6u/gba6Da+XJ+Oh4522bnAGXPM25rcArDrbKabnopOGsIgtB3msMOwcFCF2V8
-0os9JNMMHZL/MnC9C76EYTkQw6QmqAJ6zu4ZT/XxFn9U++2IZXySvzaTbD0Weogv
-CVfpcsngGJD2cK7chvaIJtFxMsKfsyRNeqyTeVw3DWfA2+NX7O5I7WgFhiasgZva
-WJkgPN328hnausQ3KnMqAebT3uNNcj+u9ij/2PoFpkEcD6SCymKa92yLV4fU6qX6
-r6ZwhOBX3baTH/3r1SIl
-=SogB
------END PGP SIGNATURE-----
+Regards,
 
---0rEjiS+nMGFQ7Kkj--
+Fabio Estevam
