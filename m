@@ -1,110 +1,62 @@
-Return-Path: <sourav.poddar@ti.com>
-Message-ID: <5294ACE1.9020008@ti.com>
-Date: Tue, 26 Nov 2013 19:44:57 +0530
-From: Sourav Poddar <sourav.poddar@ti.com>
+Return-Path: <thierry.reding@gmail.com>
+Date: Tue, 26 Nov 2013 16:48:59 +0100
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [RFC] backlight: pwm_bl: usage of regulators for turning on of
+ backlight.
+Message-ID: <20131126154858.GA27808@ulmo.nvidia.com>
+References: <5294ACE1.9020008@ti.com>
 MIME-Version: 1.0
-Subject: [RFC] backlight: pwm_bl: usage of regulators for turning on of backlight.
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="HcAYCG3uE/tztfnV"
+Content-Disposition: inline
+In-Reply-To: <5294ACE1.9020008@ti.com>
 List-ID: <linux-pwm.vger.kernel.org>
-To: thierry.reding@gmail.com, jg1.han@samsung.com
-Cc: linux-pwm@vger.kernel.org, Felipe Balbi <balbi@ti.com>
+To: Sourav Poddar <sourav.poddar@ti.com>
+Cc: jg1.han@samsung.com, linux-pwm@vger.kernel.org, Felipe Balbi <balbi@ti.com>
 
-Hi,
 
-This is in regards to the following patch[1] in 3.13-rc1 kernel..
+--HcAYCG3uE/tztfnV
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Should not the usage of 'regulator_enable' should be optional?
+On Tue, Nov 26, 2013 at 07:44:57PM +0530, Sourav Poddar wrote:
+> Hi,
+>=20
+> This is in regards to the following patch[1] in 3.13-rc1 kernel..
+>=20
+> Should not the usage of 'regulator_enable' should be optional?
 
-Without a power-supply node in dts, backlight entires does
-not get populated,
+No, it shouldn't.
 
-[1]:
-commit 22ceeee16eb8f0d04de3ef43a5174fb30ec18af9
-Author: Thierry Reding <treding@nvidia.com>
-Date:   Fri Aug 30 12:38:34 2013 +0200
+> Without a power-supply node in dts, backlight entires does
+> not get populated,
 
-     pwm-backlight: Add power supply support
+That seems to be a bug in the regulator framework. See here[0].
 
-     Backlights require a power supply to work properly. This commit adds a
-     regulator to power up and power down the backlight.
+Thierry
 
-     Signed-off-by: Thierry Reding <treding@nvidia.com>
+[0]: http://www.spinics.net/lists/arm-kernel/msg288215.html
 
-diff --git 
-a/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt 
-b/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
-index 72810cc..764db86 100644
---- a/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
-+++ b/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
-@@ -10,6 +10,7 @@ Required properties:
-        last value in the array represents a 100% duty cycle (brightest).
-    - default-brightness-level: the default brightness level (index into the
-        array defined by the "brightness-levels" property)
-+  - power-supply: regulator for supply voltage
+--HcAYCG3uE/tztfnV
+Content-Type: application/pgp-signature
 
-  Optional properties:
-    - pwm-names: a list of names for the PWM devices specified in the
-@@ -29,5 +30,6 @@ Example:
-          brightness-levels = <0 4 8 16 32 64 128 255>;
-          default-brightness-level = <6>;
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-+        power-supply = <&vdd_bl_reg>;
-          enable-gpios = <&gpio 58 0>;
-      };
-diff --git a/drivers/video/backlight/pwm_bl.c 
-b/drivers/video/backlight/pwm_bl.c
-index cdef4a3..eec6c98 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -21,6 +21,7 @@
-  #include <linux/err.h>
-  #include <linux/pwm.h>
-  #include <linux/pwm_backlight.h>
-+#include <linux/regulator/consumer.h>
-  #include <linux/slab.h>
+iQIcBAEBAgAGBQJSlMLqAAoJEN0jrNd/PrOhRAkP/ipkJDD0xq2AQk7SJ60up/oo
+72yTVB8NsODbOQfWCK++PCRHi25J7WQCGdlWgbwsfVwNzsI2G8uvqgtWmeAKskof
+5hbLpNOSRd02UdQ+fTw6dNMj4cbRIg/qxgRRMYeR7bboVH/rSCSvM6NOio4Zot4M
+ZQKhqy1zNWWFCW0sokkpJccPAwUitec81lE8tQMYOm8KzFTDQAuahADxYd6QBuzR
+kwzaIGMjGeYF6W+LXxWLZE3TkNNa6T0WT8VCpyzE6oICC04/IoPURChjYIIxZHHr
+Z1gEoer+WC+53Cwi6UlLF0XXWQ+EOTRdaJmmUlmSqIHHJj0Pe2GwxiD7PkfeFMsT
+7RaAlbq6uVCbCz1130UJbm35jJwIzkYetjc4h/S++UE9LGY6dImnAZmcjS3Tuxn+
++j7WYfkLYvZetIESRu7rZjJUFxTTsFjLd6izJVMD7ZNkFTQwYc6FGzGCjEk7P2b3
+4RLy3ZbODJye1nWTvYQPymkGNmgd2pf8exkmW7FihkX1OWXPrCfb5V1yKdMcafAO
+ie4VE9+TWCD7vNjYHpEzWGAkvalfkc29ecyOj5GeFWHcPPIUATE3QkIGmKGTke3r
+HkBt/jetCxRERDEZfvuhtKGu3J4hQfA0UxGkrIL4YQKRKDM5TO6eTsLe5xCysHQH
+anwRpW9MQZwxK0ZqNK8N
+=F6q0
+-----END PGP SIGNATURE-----
 
-  struct pwm_bl_data {
-@@ -30,6 +31,7 @@ struct pwm_bl_data {
-      unsigned int        lth_brightness;
-      unsigned int        *levels;
-      bool            enabled;
-+    struct regulator    *power_supply;
-      int            enable_gpio;
-      unsigned long        enable_gpio_flags;
-      int            (*notify)(struct device *,
-@@ -60,6 +62,10 @@ static void pwm_backlight_power_on(struct pwm_bl_data 
-*pb, int brightness,
-
-      pwm_config(pb->pwm, duty_cycle, pb->period);
-
-+    err = regulator_enable(pb->power_supply);
-+    if (err < 0)
-+        dev_err(pb->dev, "failed to enable power supply\n");
-+
-      if (gpio_is_valid(pb->enable_gpio)) {
-          if (pb->enable_gpio_flags & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
-              gpio_set_value(pb->enable_gpio, 0);
-@@ -86,6 +92,7 @@ static void pwm_backlight_power_off(struct pwm_bl_data 
-*pb)
-              gpio_set_value(pb->enable_gpio, 0);
-      }
-
-+    regulator_disable(pb->power_supply);
-      pb->enabled = false;
-  }
-
-@@ -268,6 +275,12 @@ static int pwm_backlight_probe(struct 
-platform_device *pdev)
-          }
-      }
-
-+    pb->power_supply = devm_regulator_get(&pdev->dev, "power");
-+    if (IS_ERR(pb->power_supply)) {
-+        ret = PTR_ERR(pb->power_supply);
-+        goto err_gpio;
-+    }
-+
-      pb->pwm = devm_pwm_get(&pdev->dev, NULL);
-      if (IS_ERR(pb->pwm)) {
-          dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
+--HcAYCG3uE/tztfnV--
