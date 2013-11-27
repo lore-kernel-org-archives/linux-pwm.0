@@ -1,55 +1,46 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCAxLzNdIHB3bTogQWRkIG1jMTN4eHggcHdtIGRyaXZlci4=?=
-Date: Wed, 27 Nov 2013 19:54:24 +0400
-Message-ID: <1385567664.228570055@f131.i.mail.ru>
+From: =?UTF-8?B?UGhpbGlwcGUgUsOpdG9ybmF6?= <philippe.retornaz@gmail.com>
+Subject: Re: [PATCH 1/3] pwm: Add mc13xxx pwm driver.
+Date: Wed, 27 Nov 2013 16:58:33 +0100
+Message-ID: <529616A9.2090909@gmail.com>
 References: <1385566771-366-1-git-send-email-denis@eukrea.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-bk0-f41.google.com ([209.85.214.41]:42963 "EHLO
+	mail-bk0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752246Ab3K0P6g (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 27 Nov 2013 10:58:36 -0500
 In-Reply-To: <1385566771-366-1-git-send-email-denis@eukrea.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?B?RGVuaXMgQ2FyaWtsaQ==?= <denis@eukrea.com>
-Cc: linux-pwm@vger.kernel.org, =?UTF-8?B?U2FtdWVsIE9ydGl6?= <sameo@linux.intel.com>, devicetree@vger.kernel.org, =?UTF-8?B?Um9iIEhlcnJpbmc=?= <rob.herring@calxeda.com>, =?UTF-8?B?VGhpZXJyeSBSZWRpbmc=?= <thierry.reding@gmail.com>, =?UTF-8?B?R3JhbnQgTGlrZWx5?= <grant.likely@linaro.org>, =?UTF-8?B?U2hhd24gR3Vv?= <shawn.guo@linaro.org>, =?UTF-8?B?TGVlIEpvbmVz?= <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Denis Carikli <denis@eukrea.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, devicetree@vger.kernel.org, Rob Herring <rob.herring@calxeda.com>, Grant Likely <grant.likely@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
 
-Hello.
+Hi
 
-...
-> Signed-off-by: Denis Carikli <denis@eukrea.com>
-> ---
->  .../devicetree/bindings/pwm/fsl,mc13xxx-pwm.txt    |   19 ++
->  drivers/mfd/mc13xxx-core.c                         |   11 ++
->  drivers/pwm/Kconfig                                |    6 +
->  drivers/pwm/Makefile                               |    1 +
->  drivers/pwm/pwm-mc13xxx.c                          |  205 ++++++++++++++++++++
->  include/linux/mfd/mc13783.h                        |    2 +
->  6 files changed, 244 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/fsl,mc13xxx-pwm.txt
->  create mode 100644 drivers/pwm/pwm-mc13xxx.c
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/fsl,mc13xxx-pwm.txt b/Documentation/devicetree/bindings/pwm/fsl,mc13xxx-pwm.txt
-> new file mode 100644
-> index 0000000..a1394d0
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/fsl,mc13xxx-pwm.txt
-> @@ -0,0 +1,19 @@
-> +Freescale mc13xxx series PWM drivers.
+> +struct mc13xxx *get_mc13xxx(void)
+> +{
+> +	return mc13xxx_data;
+> +}
+> +EXPORT_SYMBOL_GPL(get_mc13xxx);
 > +
-> +Supported PWMs:
-> +mc13892 series
-> +mc34708 series
+>   int mc13xxx_common_init(struct mc13xxx *mc13xxx,
+>   		struct mc13xxx_platform_data *pdata, int irq)
+>   {
+> @@ -706,6 +714,9 @@ err_revision:
+>   		mc13xxx_add_subdevice(mc13xxx, "%s-pwrbutton");
+>   	}
+>
+> +	/* Linux will not have to handle more than one mc13xxx pmic. */
+> +	mc13xxx_data = mc13xxx;
+> +
 
-MC13892 does not have a dedicated PWM.
-You can probably use the existing driver mc13xxx-led driver.
+Why using a such hack instead of an MFD subdevice ?
 
----
+Regards,
+
+Philippe
+
+
+
