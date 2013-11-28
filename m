@@ -1,459 +1,455 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/3] pwm: Add mc13xxx pwm driver.
-Date: Thu, 28 Nov 2013 21:10:01 +0100
-Message-ID: <20131128201000.GA14689@mithrandir>
-References: <1385566771-366-1-git-send-email-denis@eukrea.com>
+Subject: Re: [PATCHv6 1/4] pwm: Add Freescale FTM PWM driver support
+Date: Thu, 28 Nov 2013 22:25:11 +0100
+Message-ID: <20131128212510.GC14689@mithrandir>
+References: <1384220218-12716-1-git-send-email-Li.Xiubo@freescale.com>
+ <1384220218-12716-2-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="2fHTh5uZTiUOsy+g"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bk0-f44.google.com ([209.85.214.44]:33535 "EHLO
-	mail-bk0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753855Ab3K1UKF (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 28 Nov 2013 15:10:05 -0500
+	protocol="application/pgp-signature"; boundary="E/DnYTRukya0zdZ1"
+Return-path: <linux-doc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1385566771-366-1-git-send-email-denis@eukrea.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1384220218-12716-2-git-send-email-Li.Xiubo@freescale.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Xiubo Li <Li.Xiubo@freescale.com>
+Cc: r65073@freescale.com, s.hauer@pengutronix.de, swarren@wwwdotorg.org, t.figa@samsung.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Alison Wang <b18965@freescale.com>, Jingchang Lu <b35083@freescale.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Denis Carikli <denis@eukrea.com>
-Cc: linux-pwm@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, devicetree@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
 
 
---2fHTh5uZTiUOsy+g
+--E/DnYTRukya0zdZ1
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Nov 27, 2013 at 04:39:29PM +0100, Denis Carikli wrote:
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Grant Likely <grant.likely@linaro.org>
-> Cc: Rob Herring <rob.herring@calxeda.com>
-> Cc: devicetree@vger.kernel.org
-> Cc: linux-pwm@vger.kernel.org
-> Cc: Samuel Ortiz <sameo@linux.intel.com>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: Shawn Guo <shawn.guo@linaro.org>
-> Cc: linux-arm-kernel@lists.infradead.org
-> Signed-off-by: Denis Carikli <denis@eukrea.com>
+On Tue, Nov 12, 2013 at 09:36:55AM +0800, Xiubo Li wrote:
+> The FTM PWM device can be found on Vybrid VF610 Tower and Layerscape LS-1=
+ SoCs.
+>=20
+> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
+> Signed-off-by: Alison Wang <b18965@freescale.com>
+> Signed-off-by: Jingchang Lu <b35083@freescale.com>
+> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
 > ---
->  .../devicetree/bindings/pwm/fsl,mc13xxx-pwm.txt    |   19 ++
->  drivers/mfd/mc13xxx-core.c                         |   11 ++
->  drivers/pwm/Kconfig                                |    6 +
->  drivers/pwm/Makefile                               |    1 +
->  drivers/pwm/pwm-mc13xxx.c                          |  205 ++++++++++++++=
+>  drivers/pwm/Kconfig       |  10 ++
+>  drivers/pwm/Makefile      |   1 +
+>  drivers/pwm/pwm-fsl-ftm.c | 402 ++++++++++++++++++++++++++++++++++++++++=
 ++++++
->  include/linux/mfd/mc13783.h                        |    2 +
->  6 files changed, 244 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/fsl,mc13xxx-pwm=
-=2Etxt
->  create mode 100644 drivers/pwm/pwm-mc13xxx.c
+>  3 files changed, 413 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-fsl-ftm.c
 
-I'll say the same thing I always say: please use "PWM" in prose instead
-of "pwm". It's an abbreviation, so it should be uppercased.
+Sorry for taking so long. Overall this looks pretty good. A few minor
+comments below.
 
-> diff --git a/Documentation/devicetree/bindings/pwm/fsl,mc13xxx-pwm.txt b/=
-Documentation/devicetree/bindings/pwm/fsl,mc13xxx-pwm.txt
-> new file mode 100644
-> index 0000000..a1394d0
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/fsl,mc13xxx-pwm.txt
-> @@ -0,0 +1,19 @@
-> +Freescale mc13xxx series PWM drivers.
-
-The binding doesn't describe drivers, so this should be something like:
-
-	Freescale mc13xxx series PWM controllers
-
-> +Supported PWMs:
-
-Similarily this should be: "Supported PWM controllers:"
-
-> +mc13892 series
-> +mc34708 series
-
-And since this is a list it would make sense to prefix each item with a
-dash.
-
-> +
-> +Required properties:
-> +- compatible: "fsl,mc13892-pwm" or "fsl,mc34708-pwm"
-> +- mfd: phandle to mc13xxx mfd node.
-
-What's that doing here? If this is a function of the mc13xxx device,
-then it should be a child node of the mc13xxx node.
-
-> diff --git a/drivers/mfd/mc13xxx-core.c b/drivers/mfd/mc13xxx-core.c
-> index dbbf8ee..e250f16 100644
-> --- a/drivers/mfd/mc13xxx-core.c
-> +++ b/drivers/mfd/mc13xxx-core.c
-> @@ -133,6 +133,8 @@
-> =20
->  #define MC13XXX_ADC2		45
-> =20
-> +struct mc13xxx *mc13xxx_data;
-> +
->  void mc13xxx_lock(struct mc13xxx *mc13xxx)
->  {
->  	if (!mutex_trylock(&mc13xxx->lock)) {
-> @@ -639,6 +641,12 @@ static inline int mc13xxx_probe_flags_dt(struct mc13=
-xxx *mc13xxx)
->  }
->  #endif
-> =20
-> +struct mc13xxx *get_mc13xxx(void)
-> +{
-> +	return mc13xxx_data;
-> +}
-> +EXPORT_SYMBOL_GPL(get_mc13xxx);
-
-As mentioned elsewhere, this is horrible.
-
->  int mc13xxx_common_init(struct mc13xxx *mc13xxx,
->  		struct mc13xxx_platform_data *pdata, int irq)
->  {
-> @@ -706,6 +714,9 @@ err_revision:
->  		mc13xxx_add_subdevice(mc13xxx, "%s-pwrbutton");
->  	}
-> =20
-> +	/* Linux will not have to handle more than one mc13xxx pmic. */
-> +	mc13xxx_data =3D mc13xxx;
-
-Who says that Linux will never have to handle more than one? Even if you
-could guarantee that, it still sets a bad example.
-
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index eece329..a959ecd 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -100,6 +100,12 @@ config PWM_LPC32XX
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-lpc32xx.
-> =20
-> +config PWM_MC13XXX
-> +	tristate "MC13XXX PWM support"
-> +	depends on MFD_MC13XXX
-> +	help
-> +	  Generic PWM framework driver for Freescale MC13XXX pmic.
-
-PMIC is an abbreviation too, so should be all uppercase.
-
-> diff --git a/drivers/pwm/pwm-mc13xxx.c b/drivers/pwm/pwm-mc13xxx.c
+> diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
 [...]
-> +#include <linux/err.h>
-> +#include <linux/mfd/mc13783.h>
 > +#include <linux/module.h>
+> +#include <linux/kernel.h>
 > +#include <linux/platform_device.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/pwm.h>
 > +#include <linux/slab.h>
+> +#include <linux/err.h>
+> +#include <linux/clk.h>
+> +#include <linux/io.h>
+> +#include <linux/pwm.h>
+> +#include <linux/of_address.h>
 
-Can this please be sorted alphabetically?
+Can you sort these alphabetically, please?
 
+> +#include <dt-bindings/clock/vf610-clock.h>
+
+This can stay separate, and I would even separate it from the others by
+a blank line.
+
+> +#define FTM_SC              0x00
+> +#define FTMSC_CLK_MASK      0x03
+
+Perhaps FTM_SC_CLK_MASK for consistency with the register name? Same for
+all others below.
+
+> +#define FTMSC_CLK_OFFSET    0x03
+
+I think the more common suffix would be _SHIFT. _OFFSET is more
+typically used for registers, not bitfields.
+
+> +#define FTMSC_CLKSYS        (0x01 << 3)
+> +#define FTMSC_CLKFIX        (0x02 << 3)
+> +#define FTMSC_CLKEXT        (0x03 << 3)
+
+Perhaps "<< 3" should be "<< FTM_SC_CLK_SHIFT"? And the names perhaps
+FTM_SC_CLK_{SYS,FIX,EXT}? That somehow "namespaces" all of them.
+
+> +#define FTMSC_PS_MASK       0x07
+> +#define FTMSC_PS_OFFSET     0x00
 > +
-> +#define MHz(x) (1000*1000*x)
+> +#define FTM_CNT             0x04
+> +#define FTM_MOD             0x08
+> +
+> +#define FTM_CSC_BASE        0x0C
+> +#define FTM_CSC(_channel) (FTM_CSC_BASE + ((_channel) * 8))
+> +#define FTMCnSC_MSB         BIT(5)
 
-Please drop this. You use it exactly once, ...
+Same here: FTMCnSC_MSB isn't immediately obvious to be a bit within the
+FTM_CSC register. FTM_CSC_MSB is.
 
-> +#define MC13XXX_REG_PWM_CTL		55
-> +#define MC13XXX_BASE_CLK_FREQ		(MHz(2) / 32)
+> +#define FTM_CNTIN_VAL       0x00
 
-So you can just as well write (2000000 / 32) here.
+Do we really need this?
 
-> +#define MC13XXX_PWM1CLKDIV_SHIFT	6
-> +#define MC13XXX_PWM2DUTY_SHIFT		12
-> +#define MC13XXX_PWMDUTYDIVISOR		32
-> +#define MC13XXX_PWMCLKDIVISOR		64
+> +#define FTM_MAX_CHANNEL     8
 
-This list is totally confusing. I can't tell which of these is a
-register and which isn't. I would at least expect registers to have
-hexadecimal offsets. Better yet, a comment should explain what the
-registers look like.
+This is used only once, so I prefer to just assign .npwm =3D 8 in the
+driver's .probe() implementation.
 
-> +#define MC13XXX_PWM_REG_SIZE		0x3f
-
-This doesn't seem to be a size at all. It's used as a mask, so why not
-call it MC13XXX_PWM_REG_MASK?
-
-> +static int pwm_mc13xxx_config(struct pwm_chip *chip, struct pwm_device *=
-pwm,
-> +			      int duty_ns, int period_ns)
+> +static int fsl_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
 > +{
-> +	struct mc13xxx_pwm_chip *mc13xxx_chip =3D to_mc13xxx_chip(chip);
-> +	struct mc13xxx *mcdev =3D mc13xxx_chip->mcdev;
-> +	struct device *dev =3D  mc13xxx_chip->pwm_chip.dev;
-> +	u32 offset;
-> +	u32 mask =3D MC13XXX_PWM_REG_SIZE;
-> +	u32 val;
 > +	int ret;
-> +	int duty_cycle;
-> +	int min_duty_cycle;
-> +	int period_cycle;
-> +	unsigned long period =3D period_ns;
-
-Many of these can go on a single line. Also it looks like you can reuse
-some of them and thereby reduce the number of local variables. Having
-too many of them makes it very difficult to follow what the code is
-doing.
-
+> +	struct fsl_pwm_chip *fpc;
 > +
-> +	dev_dbg(dev, "requested duty_ns=3D%d and period_ns=3D%d\n",
-> +		duty_ns, period_ns);
+> +	fpc =3D to_fsl_chip(chip);
 
-This can go away.
+You could assign this when declaring the fpc variable to save two lines.
 
-> +
-> +	/* period */
-> +	if (period < MC13XXX_MIN_PERIOD_NS) {
-> +		dev_warn(dev, "period was under the range.\n");
-> +		period =3D MC13XXX_MIN_PERIOD_NS;
-> +	}
-> +
-> +	if (period > MC13XXX_MAX_PERIOD_NS) {
-> +		dev_warn(dev, "period was over the range.\n");
-> +		period =3D MC13XXX_MAX_PERIOD_NS;
-> +	}
-
-Shouldn't both of these be an error instead?
-
-> +
-> +	period_cycle =3D DIV_ROUND_UP(NSEC_PER_SEC, period);
-> +	period_cycle =3D DIV_ROUND_UP(MC13XXX_BASE_CLK_FREQ, period_cycle);
-> +	period_cycle--;
-
-You can save one line here by turning this one into a - 1 appended to
-the previous line.
-
-> +
-> +	offset =3D MC13XXX_REG_PWM_CTL + pwm->hwpwm * MC13XXX_PWM2DUTY_SHIFT +
-> +		MC13XXX_PWM1CLKDIV_SHIFT;
-
-_SHIFT is usually for bitfields, not for register offsets. Perhaps it
-would also be a good idea to move this computation into a macro or
-static inline function, something like:
-
-	#define MC13XXX_PWM_BASE(pwm) (0x37 + ((pwm) * 0xc))
-
-And then use offsets to the individual registers:
-
-	#define MC13XXX_PWM_CTL 0x00
-	#define MC13XXX_PWM_CLKDIV 0x06
-
-Then it becomes much easier to use these:
-
-	unsigned int base =3D MC13XXX_PWM_BASE(pwm->hwpwm);
-
-	ret =3D mc13xxx_reg_read(mcdev, base + MC13XXX_PWM_CTL, &val);
-
-> +
-> +	mc13xxx_lock(mcdev);
-> +	ret =3D mc13xxx_reg_read(mcdev, offset, &val);
-> +	val &=3D ~mask;
-
-Why aren't you using the #define here directly?
-
-> +	val +=3D (period_cycle & mask);
-> +	ret =3D mc13xxx_reg_write(mcdev, offset, val);
-> +	mc13xxx_unlock(mcdev);
-> +
-> +	/* duty cycle */
-> +	min_duty_cycle =3D DIV_ROUND_UP(period, 32);
-> +
-> +	if (duty_ns < min_duty_cycle) {
-> +		dev_warn(dev, "duty cycle is under the range.\n");
-> +		duty_cycle =3D 0;
-
-Again, I think this should be an error and the function should fail when
-this happens.
-
-> +	} else if (duty_ns > period) {
-
-The core code already checks for this.
-
-> +		dev_warn(dev, "duty cycle is over the range.\n");
-> +		duty_cycle =3D 32;
-> +	} else {
-> +		duty_cycle =3D 32 * period;
-> +		duty_cycle =3D DIV_ROUND_UP(period, duty_ns);
-
-Are you sure this is doing what it's supposed to? The second line
-overwrites the first one. Also
-
-Do you have a link to the manual for this controller? I'm very confused
-by all these restrictions and the computations.
-
-> +		duty_cycle--;
-> +		duty_cycle =3D 32 - duty_cycle;
-> +	}
-> +
-> +	offset =3D MC13XXX_REG_PWM_CTL + pwm->hwpwm * MC13XXX_PWM2DUTY_SHIFT;
-> +
-> +	mc13xxx_lock(mcdev);
-> +	ret =3D mc13xxx_reg_read(mcdev, offset, &val);
-> +	val &=3D ~mask;
-> +	val +=3D (duty_cycle & mask);
-
-That's odd. The mask here is 0x3f (63), but the maximum value for the
-duty-cycle is 32 by the above computations, so masking is completely
-unnecessary.
-
-Also, you don't need any parentheses around (duty_cycle & mask). And
-since you're modifying a bitfield, the idiomatic way to write it is with
-a | instead of a +:
-
-	val &=3D ~mask;
-	val |=3D duty_cycle & mask;
-
-> +	ret =3D mc13xxx_reg_write(mcdev, offset, val);
-> +	mc13xxx_unlock(mcdev);
-
-Shouldn't the lock protect both register writes as a whole? Otherwise
-there's still the potential that two such accesses will be interleaved
-and cause undefined behaviour.
-
-> +	return 0;
-
-This returns success no matter what mc13xxx_reg_write() returned.
-
-> +}
-> +
-> +static int pwm_mc13xxx_enable(struct pwm_chip *chip, struct pwm_device *=
-pwm)
-> +{
-> +	/* The hardware doesn't need an enable */
-> +
-> +	return 0;
-> +}
-
-That's not really compatible with the semantics of the PWM subsystem. It
-must be possible to configure the PWM without enabling it. If the
-hardware doesn't have a separate bit to do that, then you'll need to put
-most of the .config() code into .enable(). You could for example compute
-the register values in advance, in .config(), but only write the
-registers in .enable().
-
-> +static void pwm_mc13xxx_disable(struct pwm_chip *chip, struct pwm_device=
- *pwm)
-> +{
-> +	/* The hardware doesn't need a disable */
-> +}
-
-That's unfortunate. So the only way to "disable" the PWM is by setting
-the duty-cycle to 0? In that case it might be good to do that here.
-
-> +
-> +static const struct pwm_ops pwm_mc13xxx_ops =3D {
-> +	.enable		=3D pwm_mc13xxx_enable,
-> +	.disable	=3D pwm_mc13xxx_disable,
-> +	.config		=3D pwm_mc13xxx_config,
-> +	.owner		=3D THIS_MODULE,
-> +};
-
-No tabs for aligning please, just use a single space on either side of
-the assignment operator.
-
-> +static int pwm_mc13xxx_probe(struct platform_device *pdev)
-> +{
-> +	struct mc13xxx_pwm_chip *chip;
-> +	struct mc13xxx *mcdev;
-> +	int err;
-> +
-> +	mcdev =3D get_mc13xxx();
-
-I've mentioned this before, this needs to go away. The usual way to do
-that is to make the PWM device a child of the MFD device and refer to
-the MFD device via pdev->dev.parent.
-
-> +	if (!mcdev) {
-> +		dev_err(&pdev->dev, "failed to find mc13xxx pmic.\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	chip =3D devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
-> +	if (chip =3D=3D NULL) {
-> +		dev_err(&pdev->dev, "failed to allocate memory\n");
-> +		return -ENOMEM;
-> +	}
-
-Don't use error messages for allocation failures. And while at it, can
-you change "chip =3D=3D NULL" to "!chip", please?
-
-> +
-> +	chip->pwm_chip.dev =3D &pdev->dev;
-> +	chip->pwm_chip.ops =3D &pwm_mc13xxx_ops;
-> +	chip->pwm_chip.base =3D pdev->id;
-
-No. This should always be -1 for new drivers.
-
-> +static int pwm_mc13xxx_remove(struct platform_device *pdev)
-> +{
-> +	struct mc13xxx_pwm_chip *chip =3D platform_get_drvdata(pdev);
-> +	int ret;
-> +
-> +	ret =3D pwmchip_remove(&chip->pwm_chip);
-> +	if (ret < 0)
+> +	ret =3D clk_prepare_enable(fpc->sys_clk);
+> +	if (ret)
 > +		return ret;
 > +
 > +	return 0;
 
-This can be just:
+You can save another few lines by making this simply:
 
-	return pwmchip_remove(&chip->pwm_chip);
+	return clk_prepare_enable(fpc->sys_clk);
 
-By the way, that pwm_ prefix on the PWM chip field is somewhat redundant
-since the driver implements only one chip. I suggest you drop it.
+> +static void fsl_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+> +{
+> +	struct fsl_pwm_chip *fpc;
+> +
+> +	fpc =3D to_fsl_chip(chip);
 
-> +#ifdef CONFIG_OF
-> +static const struct of_device_id pwm_mc13xxx_of_match[] =3D {
-> +	{ .compatible =3D "fsl,mc13892-pwm" },
-> +	{ .compatible =3D "fsl,mc34708-pwm" },
+Same comment here.
+
+> +static int fsl_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> +			  int duty_ns, int period_ns)
+> +{
+> +	unsigned long period_cycles, duty_cycles;
+
+I don't think there's a need for the _cycles suffix here.
+
+> +	unsigned long cntin =3D FTM_CNTIN_VAL;
+
+I don't understand why this is needed. FTM_CNTIN_VAL is defined as 0 and
+you never change cntin subsequently, so why not just use the literal 0
+instead?
+
+> +	struct fsl_pwm_chip *fpc;
+> +
+> +	fpc =3D to_fsl_chip(chip);
+> +
+> +	period_cycles =3D fsl_rate_to_cycles(fpc, period_ns);
+> +	if (period_cycles > 0xFFFF) {
+> +		dev_err(chip->dev, "required PWM period cycles(%lu) overflow "
+> +				"16-bits counter!\n", period_cycles);
+> +		return -EINVAL;
+> +	}
+> +
+> +	duty_cycles =3D fsl_rate_to_cycles(fpc, duty_ns);
+> +	if (duty_cycles >=3D 0xFFFF) {
+> +		dev_err(chip->dev, "required PWM duty cycles(%lu) overflow "
+> +				"16-bits counter!\n", duty_cycles);
+> +		return -EINVAL;
+> +	}
+
+I'm not sure the error messages are all that useful. A -EINVAL error
+code should make it pretty clear what the problem is.
+
+> +	writel(FTMCnSC_MSB | FTMCnSC_ELSB, fpc->base + FTM_CSC(pwm->hwpwm));
+> +
+> +	writel(0xF0, fpc->base + FTM_OUTMASK);
+> +	writel(0x0F, fpc->base + FTM_OUTINIT);
+
+The purpose of this eludes me. These seem to be global (not specific to
+channel pwm->hwpwm) registers, so why are they updated whenever a single
+channel is reconfigured?
+
+> +	writel(FTM_CNTIN_VAL, fpc->base + FTM_CNTIN);
+
+This could become simply:
+
+	writel(0, fpc->base + FTM_CNTIN);
+
+> +	writel(period_cycles + cntin - 1, fpc->base + FTM_MOD);
+> +	writel(duty_cycles + cntin, fpc->base + FTM_CV(pwm->hwpwm));
+
+And these:
+
+	writel(period - 1, fpc->base + FTM_MOD);
+	writel(duty, fpc->base + FTM_CV(pwm->hwpwm));
+
+Although now that I think about it, this seems broken. The period is set
+in a global register, so I assume it is valid for all channels. What if
+you want to use different periods for individual channels? The way I
+read this the last one to be configured will win and change the period
+to whatever it wants. Other channels won't even notice.
+
+Is there a way to set the period per channel?
+
+> +static int fsl_counter_clock_enable(struct fsl_pwm_chip *fpc)
+> +{
+> +	int ret;
+> +	unsigned long reg;
+> +
+> +	if (fpc->counter_clk_enable++)
+> +		return 0;
+
+Are you sure this is safe? I think you'll need to use either an atomic
+or a mutex to lock this.
+
+> +	ret =3D clk_prepare_enable(fpc->counter_clk);
+> +	if (ret)
+> +		return ret;
+
+In case clk_prepare_enable() fails, the counter_clk_enable will need to
+be decremented in order to track the state correctly, doesn't it?
+
+> +
+> +	reg =3D readl(fpc->base + FTM_SC);
+> +	reg &=3D ~((FTMSC_CLK_MASK << FTMSC_CLK_OFFSET) |
+> +			(FTMSC_PS_MASK << FTMSC_PS_OFFSET));
+> +	/* select counter clock source */
+
+There should be an empty line between the above two.
+
+> +	switch (fpc->counter_clk_select) {
+> +	case VF610_CLK_FTM0:
+> +		reg |=3D FTMSC_CLKSYS;
+> +		break;
+> +	case VF610_CLK_FTM0_FIX_SEL:
+> +		reg |=3D FTMSC_CLKFIX;
+> +		break;
+> +	case VF610_CLK_FTM0_EXT_SEL:
+> +		reg |=3D FTMSC_CLKEXT;
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +	reg |=3D fpc->clk_ps;
+
+And another one above this line.
+
+> +	writel(reg, fpc->base + FTM_SC);
+
+I think with the proper locking in place what you should do is increment
+counter_clk_enable only here. That makes avoids having to decrement the
+count on error.
+
+Similarly in fsl_counter_clock_disable() you can postpone decrementing
+the count until the very end.
+
+> +static int fsl_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+> +{
+> +	struct fsl_pwm_chip *fpc;
+> +
+> +	fpc =3D to_fsl_chip(chip);
+> +
+> +	fsl_counter_clock_enable(fpc);
+
+This can fail. Should the error be propagated?
+
+> +
+> +	return 0;
+> +}
+> +
+> +static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pw=
+m)
+> +{
+> +	struct fsl_pwm_chip *fpc;
+> +
+> +	fpc =3D to_fsl_chip(chip);
+> +
+> +	fsl_counter_clock_disable(fpc);
+> +}
+
+Same here. Since you can't propagate the error, perhaps an error message
+would be appropriate here?
+
+Also for the locking above, perhaps a good solution would be to acquire
+the lock around the calls to fsl_counter_clock_{enable,disable}() so
+that they can safely assume that they are called with the lock held,
+which will make their implementation a lot simpler.
+
+So what you could do is this:
+
+	static int fsl_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+	{
+		struct fsl_pwm_chip *fpc =3D to_fsl_chip(chip);
+		int ret;
+
+		mutex_lock(&fpc->lock);
+		ret =3D fsl_counter_clock_enable(fpc);
+		mutex_unlock(&fpc->lock);
+
+		return ret;
+	}
+
+And analogously for fsl_pwm_disable().
+
+> +static int fsl_pwm_calculate_ps(struct fsl_pwm_chip *fpc)
+> +{
+> +	unsigned long long sys_rate, counter_rate, ratio;
+> +
+> +	sys_rate =3D clk_get_rate(fpc->sys_clk);
+> +	if (!sys_rate)
+> +		return -EINVAL;
+> +
+> +	counter_rate =3D clk_get_rate(fpc->counter_clk);
+> +	if (!counter_rate) {
+> +		fpc->counter_clk =3D fpc->sys_clk;
+> +		fpc->counter_clk_select =3D VF610_CLK_FTM0;
+> +		dev_warn(fpc->chip.dev,
+> +				"the counter source clock is a dummy clock, "
+> +				"so select the system clock as default!\n");
+> +	}
+> +
+> +	switch (fpc->counter_clk_select) {
+> +	case VF610_CLK_FTM0_FIX_SEL:
+> +		ratio =3D 2 * counter_rate - 1;
+> +		do_div(ratio, sys_rate);
+> +		fpc->clk_ps =3D ratio;
+> +		break;
+> +	case VF610_CLK_FTM0_EXT_SEL:
+> +		ratio =3D 4 * counter_rate - 1;
+> +		do_div(ratio, sys_rate);
+> +		fpc->clk_ps =3D ratio;
+> +		break;
+> +	case VF610_CLK_FTM0:
+> +		fpc->clk_ps =3D 7;
+
+Even though it doesn't matter here, you should still add a break.
+Otherwise if you ever modify the code in the default case, you don't
+have to remember to add it in then.
+
+> +static int fsl_pwm_parse_clk_ps(struct fsl_pwm_chip *fpc)
+> +{
+> +	int ret;
+> +	struct of_phandle_args clkspec;
+> +	struct device_node *np =3D fpc->chip.dev->of_node;
+> +
+> +	fpc->sys_clk =3D devm_clk_get(fpc->chip.dev, "ftm0");
+> +	if (IS_ERR(fpc->sys_clk)) {
+> +		ret =3D PTR_ERR(fpc->sys_clk);
+> +		dev_err(fpc->chip.dev,
+> +				"failed to get \"ftm0\" clock %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	fpc->counter_clk =3D devm_clk_get(fpc->chip.dev, "ftm0_counter");
+> +	if (IS_ERR(fpc->counter_clk)) {
+> +		ret =3D PTR_ERR(fpc->counter_clk);
+> +		dev_err(fpc->chip.dev,
+> +				"failed to get \"ftm0_counter\" clock %d\n",
+> +				ret);
+> +		return ret;
+> +	}
+> +
+> +	ret =3D of_parse_phandle_with_args(np, "clocks", "#clock-cells", 1,
+> +					&clkspec);
+> +	if (ret)
+> +		return ret;
+> +
+> +	fpc->counter_clk_select =3D clkspec.args[0];
+
+This isn't at all pretty. But given that once you have access to a
+struct clk there's no way to identify it, I don't know of a better
+alternative.
+
+> +
+> +	return fsl_pwm_calculate_ps(fpc);
+> +}
+> +
+> +static int fsl_pwm_probe(struct platform_device *pdev)
+> +{
+> +	int ret =3D 0;
+
+There's no need to initialize this.
+
+> +	struct fsl_pwm_chip *fpc;
+> +	struct resource *res;
+> +
+> +	fpc =3D devm_kzalloc(&pdev->dev, sizeof(*fpc), GFP_KERNEL);
+> +	if (!fpc)
+> +		return -ENOMEM;
+> +
+> +	fpc->chip.dev =3D &pdev->dev;
+> +	fpc->counter_clk_enable =3D 0;
+
+You use kzalloc(), so this is already be zeroed out.
+
+> +	ret =3D fsl_pwm_parse_clk_ps(fpc);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	fpc->base =3D devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(fpc->base)) {
+> +		ret =3D PTR_ERR(fpc->base);
+> +		return ret;
+
+You can simply do "return PTR_ERR(fpc->base);" here.
+
+> +	}
+> +
+> +	fpc->chip.ops =3D &fsl_pwm_ops;
+> +	fpc->chip.of_xlate =3D of_pwm_xlate_with_flags;
+> +	fpc->chip.of_pwm_n_cells =3D 3;
+> +	fpc->chip.base =3D -1;
+> +	fpc->chip.npwm =3D FTM_MAX_CHANNEL;
+> +	ret =3D pwmchip_add(&fpc->chip);
+
+There should be a blank linke between the above two.
+
+> +static int fsl_pwm_remove(struct platform_device *pdev)
+> +{
+> +	struct fsl_pwm_chip *fpc;
+> +
+> +	fpc =3D platform_get_drvdata(pdev);
+
+These can go on one line.
+
+> +static const struct of_device_id fsl_pwm_dt_ids[] =3D {
+> +	{ .compatible =3D "fsl,vf610-ftm-pwm", },
 > +	{ /* sentinel */ }
 > +};
-> +MODULE_DEVICE_TABLE(of, pwm_mc13xxx_of_match);
-> +#endif
+> +MODULE_DEVICE_TABLE(of, fsl_pwm_dt_ids);
 > +
-> +static struct platform_driver pwm_mc13xxx_driver =3D {
-> +	.driver		=3D {
-> +		.name	=3D "mc13xxx-pwm",
-> +		.of_match_table =3D of_match_ptr(pwm_mc13xxx_of_match),
-> +		.owner	=3D THIS_MODULE,
+> +static struct platform_driver fsl_pwm_driver =3D {
+> +	.driver =3D {
+> +		.name =3D "fsl-ftm-pwm",
+> +		.owner =3D THIS_MODULE,
+> +		.of_match_table =3D of_match_ptr(fsl_pwm_dt_ids),
 
-=2Eowner is assigned automatically by the core, so this can be dropped.
-
-> +	},
-> +	.probe		=3D pwm_mc13xxx_probe,
-> +	.remove		=3D pwm_mc13xxx_remove,
-
-Please don't use tabs for alignment here. A single space on each side of
-the =3D will do just fine. For the whole structure, not just these two
-fields.
-
-> +};
-> +
-> +module_platform_driver(pwm_mc13xxx_driver);
-
-No blank line between the above two lines.
+No need for of_match_ptr() since you depend on OF. And while at it, you
+can drop the initialization of .owner as well, since the core takes care
+of initializing that nowadays.
 
 Thierry
 
---2fHTh5uZTiUOsy+g
+--E/DnYTRukya0zdZ1
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSl6MXAAoJEN0jrNd/PrOh2rsP+wYK+Ha+f9CYULCxHelmp/qg
-3aGi0KcWaxJU/lt2goV3V9iz50OpF23HZNnJzHTQLsXuIwzaXCVbw6CsyLKpE0FU
-+w8YfUDmPWOX0P+iOJCm5bjufdqABoxHPS/Yy0QhjByhLwFAb0NGy/BLTeIHR43J
-IFbyq4ItaV0pmzFp+TE172hFnuo0sQjanuchMTtRGxoH7bADdOXVJLrazTaFZUga
-aDtF0owPXKxRGJSmVpXycj9Vh1JDbfTCsjPddb92g6SndSZCf9qAaqsFrsmkfFCI
-bCpyHuATC7J25RjX0Vv9ssv5SWxhkYI7GYFnUlDfx91DhRoDVhxxwyS7FTTLj/h1
-/oqyVbyCE2d7BL1B1yHJaFMWTQPmgx4JejeVs9tK49adYyXAn6PBNgOborKxkNui
-2+Rhqz/LwQrRh8NP2drNQ06m1SA+t7VoDbY2kHFB2f7YQ6ftLhpONWV32dPF8FVP
-7SdLSV2zuQ5iVP9NcPQCmrRcTr+h/mmEhvMv6cY33jn3SO7FgiaJlLOuIsjVyhYi
-rBkxLGR1WuR37i9WWLUZuUuQzJ3KCKgX/X1LdXDhDez8pcD4YficJ2sOL79UIaMH
-E5zqlyjdI0oD0iH8Wbu7zuewxPMMQHHh8NLm04unV3FxCnNPNdv4fBcc2tZfovcs
-HBGe03IReAlg/n2pGdGT
-=6am9
+iQIcBAEBAgAGBQJSl7S2AAoJEN0jrNd/PrOhFAIP/ivixOu6yCMuwIeZe7YuAxwP
+Evzr2jHvXcWqqRyAmsDY0DUqH6pmuTRtsfDF3mAnbv83xSIw6eyShCuHFbRxnVP3
+V8Wefma7ORHrUDTRmHfUaZxN7h9R/xXhLq8izrw4CfnfIj7KQRcwsrxHAVfPffwj
+/NDUEyJuvD9Y5WqNkqyckBJ7u3OkfS8pRxxWZcJr8BBKT0BzcBBVgbS1TmjOGuS4
+6HkfLZBrFqSd0GuTTI6sW4aQE1ns9XT4QJA3/uCJntg1DjI8wUeL03ynShWjtrWT
+hlVO8qf3gk6pqFMmkx9YOUdVFml+cqToPGJr3nFHBTZ4rdD71mHY14ADiy/YutKy
+zIgqQHXdxGEhtXhttXNWAhv/N4xYKikFKm5r+ELa1Je33aA7UqQu75ykQLYVlSNy
+/L2KLwKuhvfq+I965cCwXLOsvnlccmz5PfDFZVc28dLS9DqURaZNdFsw9Mt2VKul
+ngkgadJqgwgEhsOWgBHG3n1Hu0BHis05ZwO2HjBO3sON+1RXufng42Fvndu3cHAy
+Z/FzSud/gV1D8uKpN84bnLYbWdmZ7YS48DjoAxLFxbjs+dBXQkalzAw1cTaac6Bt
+Hwfc/ZvIIJXCvjOX+vzy7niW5KhE50ekFJT3swabp1ymdyp4oNJ6YfZ39DYVrElB
+SAQ55P7KDOxl1ybC7d8U
+=nHe8
 -----END PGP SIGNATURE-----
 
---2fHTh5uZTiUOsy+g--
+--E/DnYTRukya0zdZ1--
