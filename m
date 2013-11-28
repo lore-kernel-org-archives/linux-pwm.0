@@ -1,53 +1,108 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCHv6 2/4] ARM: dts: Add Freescale FTM PWM node for VF610.
-Date: Thu, 28 Nov 2013 22:26:45 +0100
-Message-ID: <20131128212644.GD14689@mithrandir>
+Subject: Re: [PATCHv6 4/4] Documentation: Add device tree bindings for
+ Freescale FTM PWM.
+Date: Thu, 28 Nov 2013 22:32:00 +0100
+Message-ID: <20131128213159.GE14689@mithrandir>
 References: <1384220218-12716-1-git-send-email-Li.Xiubo@freescale.com>
- <1384220218-12716-3-git-send-email-Li.Xiubo@freescale.com>
+ <1384220218-12716-5-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="DiL7RhKs8rK9YGuF"
+	protocol="application/pgp-signature"; boundary="SNIs70sCzqvszXB4"
 Return-path: <linux-doc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1384220218-12716-3-git-send-email-Li.Xiubo@freescale.com>
+In-Reply-To: <1384220218-12716-5-git-send-email-Li.Xiubo@freescale.com>
 Sender: linux-doc-owner@vger.kernel.org
 To: Xiubo Li <Li.Xiubo@freescale.com>
 Cc: r65073@freescale.com, s.hauer@pengutronix.de, swarren@wwwdotorg.org, t.figa@samsung.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---DiL7RhKs8rK9YGuF
+--SNIs70sCzqvszXB4
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 12, 2013 at 09:36:56AM +0800, Xiubo Li wrote:
-> This adds devicetree node for VF610, and there are 8 channels supported
-> by default.
+On Tue, Nov 12, 2013 at 09:36:58AM +0800, Xiubo Li wrote:
+> This adds the Document for Freescale FTM PWM driver under
 
-By default? From looking at the driver code it seemed that the device
-always supports 8 channels.
+s/Document/binding documentation/?
+
+> Documentation/devicetree/bindings/pwm/.
+>=20
+> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
+> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+> Acked-by: Kumar Gala <galak@codeaurora.org>
+> ---
+>  .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        | 29 ++++++++++++++++=
+++++++
+>  1 file changed, 29 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+>=20
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt b/Docu=
+mentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+> new file mode 100644
+> index 0000000..5c1cd2b
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+> @@ -0,0 +1,29 @@
+> +Freescale FlexTimer Module(FTM) PWM controller
+
+I think it's customary to have a space before the opening parenthesis.
+
+> +Required properties:
+> +- compatible: Should be "fsl,vf610-ftm-pwm"
+> +- reg: Physical base address and length of the controller's registers
+> +- #pwm-cells: Should be 3. See pwm.txt in this directory for a descripti=
+on of
+> +  the cells format.
+> +- clock-names : Should includes the following module clock source entrie=
+s:
+
+s/includes/include/
+
+> +    "ftm0" (module clock),
+> +    "ftm0_counter" (counter clock),
+> +- clocks : Must contain a clock specifier for each entry in clock-names,
+> +  See clock/clock-bindings.txt for details of the property values.
+
+Note that the order is significant here, at least from the way the
+driver currently implements this. You can probably make this more
+generic in the driver by using of_property_match_string() on the
+clock-names property to find the index of "ftm0_counter" and pass that
+index to the of_parse_phandle_with_args() function to cope with the
+situation where the device tree has the clocks in a different order.
+
+> +Example:
+> +
+> +pwm0: pwm@40038000 {
+> +		compatible =3D "fsl,vf610-ftm-pwm";
+> +		reg =3D <0x40038000 0x1000>;
+> +		#pwm-cells =3D <3>;
+> +		clock-names =3D "ftm0", "ftm0_counter;
+
+There's a missing " at the end here.
 
 Thierry
 
---DiL7RhKs8rK9YGuF
+--SNIs70sCzqvszXB4
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSl7UUAAoJEN0jrNd/PrOhq6sP/2FunsepMC02RZgnhH/wtwXI
-bTHXcMprlEnqOm3aNBujnTsbpTP+1xmHZAz08V9NcPiwWm/UmlPW5ZKBk23ToSsh
-K+hU+hkkuR1sZkrxs0sWvCb1a382VghMI8rrNv6gmV6B/t2F2Kps27H4Em3Ez8Bh
-r0ym8uAgkLt5CrL4otBG++i3bgGN83T9JIDutNz9K2xlW7IPUEkKWJMi019g7Clv
-9ouXJx9uiAPXQHXK8Q6F9rScyVrU1le9qMbk4uNqnqnD6fxE5pWQQYybFkE0oC2T
-f4ePwOIZkaf6tyU2zOT63WBs+rOsddtx8581mIzuApcnErgM0UxRjeXxxfwhbynD
-IdaoWJsA0GAH+ah13xsXCLPdDGNIM/R8BIF+x8579gXs4AgRaYoN1o0a1gqjY/05
-8cqKsDfr+016fyyOCVXSMElMWViS1ri2OtJ2D63MoNc1efVa8Sq1HRajDuip4wgt
-4cTa6HRn9X21xpJFoXHSfRLXQokgr1tw4952qVLmiD80EBPZq0bH7F3wkoNYfrEq
-AX5SG0FTJWwPcq++0rJ4+h8d47gJR9oJ8OEE2MEH2nUnl7dAHHAVXBw7UA2DWDdZ
-TdDvXO+ilRX7JmlgJk+C5Qmfa30dLoyozNBltYkXpQIOdvxpQn6CCMmCu/WRDUjI
-mFGz0Zm4TaT5992QRb87
-=NDfc
+iQIcBAEBAgAGBQJSl7ZPAAoJEN0jrNd/PrOhOc8P/0ka8dZRYnomZdxLpWZzvAm/
+7DpCsaaWm9vs+RO9KPrlpUW59I4gFHZwGQFHoxN3LQn08M/0wUzzQW2Xfd+BjeM1
+3PxpxIQNsrVtHUF8XRvHCXUH1xjN8+8LBL51UzQ5qWhc4auf0QKljL7aagYEuAin
+qS4oXBOfBhMYZlxknY28CpBo5kk/VuCG5yuafoNNl8VOfPJtyGBWGL6HMlC2eTKY
+S/EJRM7j5pnWoUw9Fo+LkooVHJlbGZMG84uTGG9H5SOWyoLDwC0Ndxk2QoiBqQqt
+4dCu4E8k309ftStxd6U4ttcmltkwu0ozqASdfRj/ULBo42kkyzl+o0fb04yTx6vJ
+gPInfHpeR0Yg6EIPLZ3hAuwGC+VCXd3LngAX3hi/E7zR6IrU0524Sr7ULyZzVbFg
+pG9LHzEjFL5Eg7uaUjvpp8JVg5sMqj7IyoQcx80nifQMbIcGPhrnphYKyKmbaYrP
+VVaoRjSwYBXg/VbwVyhklY5YkBSMAkg9DgDuTzvb5UKn/v5YwYEcmI7oSa9fs/UQ
+yN++1pAcGy13fuqBMx/PonYxNbUMVt0xeL3YQ4LRBUD21oBO+1ZIgjsXPuNocVtM
+LAk9AsnvwxkaPQIc57a8mnS48dLV5Gx+wFoUXmX1jgiprvQp2WCA8vcD44IMkVBU
+R+tpD+A3T62Exxl67Je9
+=mPzy
 -----END PGP SIGNATURE-----
 
---DiL7RhKs8rK9YGuF--
+--SNIs70sCzqvszXB4--
