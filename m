@@ -1,108 +1,107 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCHv6 4/4] Documentation: Add device tree bindings for
- Freescale FTM PWM.
-Date: Thu, 28 Nov 2013 22:32:00 +0100
-Message-ID: <20131128213159.GE14689@mithrandir>
+Subject: Re: [PATCHv6 1/4] pwm: Add Freescale FTM PWM driver support
+Date: Thu, 28 Nov 2013 23:37:19 +0100
+Message-ID: <20131128223719.GG14689@mithrandir>
 References: <1384220218-12716-1-git-send-email-Li.Xiubo@freescale.com>
- <1384220218-12716-5-git-send-email-Li.Xiubo@freescale.com>
+ <1384220218-12716-2-git-send-email-Li.Xiubo@freescale.com>
+ <20131128212510.GC14689@mithrandir>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="SNIs70sCzqvszXB4"
-Return-path: <linux-doc-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="Wtrm9ATX0sn6fFKv"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-bk0-f51.google.com ([209.85.214.51]:37698 "EHLO
+	mail-bk0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750948Ab3K1Wh2 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 28 Nov 2013 17:37:28 -0500
 Content-Disposition: inline
-In-Reply-To: <1384220218-12716-5-git-send-email-Li.Xiubo@freescale.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Xiubo Li <Li.Xiubo@freescale.com>
-Cc: r65073@freescale.com, s.hauer@pengutronix.de, swarren@wwwdotorg.org, t.figa@samsung.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+In-Reply-To: <20131128212510.GC14689@mithrandir>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Mike Turquette <mturquette@linaro.org>
+Cc: r65073@freescale.com, s.hauer@pengutronix.de, swarren@wwwdotorg.org, t.figa@samsung.com, grant.likely@linaro.org, linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, mark.rutland@arm.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Alison Wang <b18965@freescale.com>, Jingchang Lu <b35083@freescale.com>, Xiubo Li <Li.Xiubo@freescale.com>
 
 
---SNIs70sCzqvszXB4
+--Wtrm9ATX0sn6fFKv
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 12, 2013 at 09:36:58AM +0800, Xiubo Li wrote:
-> This adds the Document for Freescale FTM PWM driver under
-
-s/Document/binding documentation/?
-
-> Documentation/devicetree/bindings/pwm/.
+On Thu, Nov 28, 2013 at 10:25:11PM +0100, Thierry Reding wrote:
+> On Tue, Nov 12, 2013 at 09:36:55AM +0800, Xiubo Li wrote:
+[...]
+> > +static int fsl_pwm_parse_clk_ps(struct fsl_pwm_chip *fpc)
+> > +{
+> > +	int ret;
+> > +	struct of_phandle_args clkspec;
+> > +	struct device_node *np =3D fpc->chip.dev->of_node;
+> > +
+> > +	fpc->sys_clk =3D devm_clk_get(fpc->chip.dev, "ftm0");
+> > +	if (IS_ERR(fpc->sys_clk)) {
+> > +		ret =3D PTR_ERR(fpc->sys_clk);
+> > +		dev_err(fpc->chip.dev,
+> > +				"failed to get \"ftm0\" clock %d\n", ret);
+> > +		return ret;
+> > +	}
+> > +
+> > +	fpc->counter_clk =3D devm_clk_get(fpc->chip.dev, "ftm0_counter");
+> > +	if (IS_ERR(fpc->counter_clk)) {
+> > +		ret =3D PTR_ERR(fpc->counter_clk);
+> > +		dev_err(fpc->chip.dev,
+> > +				"failed to get \"ftm0_counter\" clock %d\n",
+> > +				ret);
+> > +		return ret;
+> > +	}
+> > +
+> > +	ret =3D of_parse_phandle_with_args(np, "clocks", "#clock-cells", 1,
+> > +					&clkspec);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	fpc->counter_clk_select =3D clkspec.args[0];
 >=20
-> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
-> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Acked-by: Kumar Gala <galak@codeaurora.org>
-> ---
->  .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        | 29 ++++++++++++++++=
-++++++
->  1 file changed, 29 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
->=20
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt b/Docu=
-mentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
-> new file mode 100644
-> index 0000000..5c1cd2b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
-> @@ -0,0 +1,29 @@
-> +Freescale FlexTimer Module(FTM) PWM controller
+> This isn't at all pretty. But given that once you have access to a
+> struct clk there's no way to identify it, I don't know of a better
+> alternative.
 
-I think it's customary to have a space before the opening parenthesis.
+Hi Mike,
 
-> +Required properties:
-> +- compatible: Should be "fsl,vf610-ftm-pwm"
-> +- reg: Physical base address and length of the controller's registers
-> +- #pwm-cells: Should be 3. See pwm.txt in this directory for a descripti=
-on of
-> +  the cells format.
-> +- clock-names : Should includes the following module clock source entrie=
-s:
+I've seen this crop up a number of times now, to varying degrees of
+gravity. In this particular case, the driver needs to know the type of a
+clock because it needs to program this hardware differently depending on
+which clock feeds the counter. Since there is no way to obtain any kind
+of identifying information from a struct clk, drivers need to rely on
+hacks like this and manually reach into the device tree to obtain that
+information.
 
-s/includes/include/
+I'm aware of similar cases which have been solved by using a mux clock
+that takes a set of parents and the .set_parent() operation is then used
+to program registers appropriately. However in all those cases, the mux
+clock (and the parents) have all been part of a single driver, so I am
+not sure if the same would be applicable here.
 
-> +    "ftm0" (module clock),
-> +    "ftm0_counter" (counter clock),
-> +- clocks : Must contain a clock specifier for each entry in clock-names,
-> +  See clock/clock-bindings.txt for details of the property values.
-
-Note that the order is significant here, at least from the way the
-driver currently implements this. You can probably make this more
-generic in the driver by using of_property_match_string() on the
-clock-names property to find the index of "ftm0_counter" and pass that
-index to the of_parse_phandle_with_args() function to cope with the
-situation where the device tree has the clocks in a different order.
-
-> +Example:
-> +
-> +pwm0: pwm@40038000 {
-> +		compatible =3D "fsl,vf610-ftm-pwm";
-> +		reg =3D <0x40038000 0x1000>;
-> +		#pwm-cells =3D <3>;
-> +		clock-names =3D "ftm0", "ftm0_counter;
-
-There's a missing " at the end here.
+Do you have any other suggestions on how this could possibly be solved?
 
 Thierry
 
---SNIs70sCzqvszXB4
+--Wtrm9ATX0sn6fFKv
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSl7ZPAAoJEN0jrNd/PrOhOc8P/0ka8dZRYnomZdxLpWZzvAm/
-7DpCsaaWm9vs+RO9KPrlpUW59I4gFHZwGQFHoxN3LQn08M/0wUzzQW2Xfd+BjeM1
-3PxpxIQNsrVtHUF8XRvHCXUH1xjN8+8LBL51UzQ5qWhc4auf0QKljL7aagYEuAin
-qS4oXBOfBhMYZlxknY28CpBo5kk/VuCG5yuafoNNl8VOfPJtyGBWGL6HMlC2eTKY
-S/EJRM7j5pnWoUw9Fo+LkooVHJlbGZMG84uTGG9H5SOWyoLDwC0Ndxk2QoiBqQqt
-4dCu4E8k309ftStxd6U4ttcmltkwu0ozqASdfRj/ULBo42kkyzl+o0fb04yTx6vJ
-gPInfHpeR0Yg6EIPLZ3hAuwGC+VCXd3LngAX3hi/E7zR6IrU0524Sr7ULyZzVbFg
-pG9LHzEjFL5Eg7uaUjvpp8JVg5sMqj7IyoQcx80nifQMbIcGPhrnphYKyKmbaYrP
-VVaoRjSwYBXg/VbwVyhklY5YkBSMAkg9DgDuTzvb5UKn/v5YwYEcmI7oSa9fs/UQ
-yN++1pAcGy13fuqBMx/PonYxNbUMVt0xeL3YQ4LRBUD21oBO+1ZIgjsXPuNocVtM
-LAk9AsnvwxkaPQIc57a8mnS48dLV5Gx+wFoUXmX1jgiprvQp2WCA8vcD44IMkVBU
-R+tpD+A3T62Exxl67Je9
-=mPzy
+iQIcBAEBAgAGBQJSl8WeAAoJEN0jrNd/PrOhHccP/1zloUswCIV3ruMzP1o0ZSak
+9ZYULNc3caVlbDGFahaJXBIyorqYBP7Ls980pcuLUaf0aPdqV70PyBcv2CtVt6n5
+XV8JW9WZ1vHpLqHOU3cVBC72tkIEdIzQBfNNoC36mX6y8yYWjzvEjAmKfmM2eXph
+/0aAoeFg6RTfsqxPpgsDKP9woCLog5V189rVWDW9/ZFt+egoKPk7gTGza9KAkNyg
+2ThQ1Dh8M2DCcgJ9iWWEz+Yyo0IA3siIbMwiEA7Y6Y0W92qf7LoaAVZ4sz/2z+ce
+ZekWeHDV/+KrwHFSTW1r91/rmO210l7dnUGle2Vu7mDB68SzLtyOEmTkS9BdI2hN
+QnvPCiqgGxYjdXwVfh/Rppa/RDDSbaITP99XftMCBPJsrutay4dh21X9Q83BYSnF
+4S640xNVy2TVo0MgzixJc3uVw07DQRX7QSIL27m67vrrE4hWGknKcsmEt3uX4qD8
+E2ksoIgHg3zwSFelyEfZ2Y6w/7KoZ9i6+kb5y7wLQ/d0VV/6gqc68ed8OT6gm/dU
++1gSpE23GTZNNaKsOaxcvc436SnuGRmPN6pcxdhRacS740pbjEM0juvKjioyMScE
+Sna51Tr9YHfk/4otjIFiNP/HAOskWsepUrqBPBQNf7CNgvaHMrZ4Yd1w6NRLQxc2
+PlztS056LdO2/WeUtAGO
+=Xjht
 -----END PGP SIGNATURE-----
 
---SNIs70sCzqvszXB4--
+--Wtrm9ATX0sn6fFKv--
