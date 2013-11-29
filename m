@@ -1,65 +1,72 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 11/15] pwm: pwm-renesas-tpu: Enable driver compilation
- with COMPILE_TEST
-Date: Fri, 29 Nov 2013 11:53:54 +0100
-Message-ID: <20131129105353.GI22771@ulmo.nvidia.com>
-References: <1385515117-23664-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
- <1385515117-23664-12-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 11/15] pwm: pwm-renesas-tpu: Enable driver compilation with COMPILE_TEST
+Date: Fri, 29 Nov 2013 14:51:25 +0100
+Message-ID: <7787436.L49ODt45in@avalon>
+References: <1385515117-23664-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <1385515117-23664-12-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <20131129105353.GI22771@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="G3juXO9GfR42w+sw"
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1385515117-23664-12-git-send-email-laurent.pinchart+renesas@ideasonboard.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Cc: linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
+Content-Type: multipart/signed; boundary="nextPart2988912.cL2yqq4KJ2"; micalg="pgp-sha1"; protocol="application/pgp-signature"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from perceval.ideasonboard.com ([95.142.166.194]:40089 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751140Ab3K2Nvj (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 29 Nov 2013 08:51:39 -0500
+In-Reply-To: <20131129105353.GI22771@ulmo.nvidia.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
 
 
---G3juXO9GfR42w+sw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+--nextPart2988912.cL2yqq4KJ2
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-On Wed, Nov 27, 2013 at 02:18:33AM +0100, Laurent Pinchart wrote:
-> This helps increasing build testing coverage.
->=20
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: linux-pwm@vger.kernel.org
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.co=
-m>
-> Acked-by: Simon Horman <horms@verge.net.au>
-> ---
->  drivers/pwm/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Thierry,
 
-I'm not sure if this has been answered in any of the various subthreads
-before. I've tried to read through them, but I may have missed some. It
-was mentioned that iowrite16() wasn't supported on all architectures;
-won't this possibly cause randconfig autobuilders to break?
+On Friday 29 November 2013 11:53:54 Thierry Reding wrote:
+> On Wed, Nov 27, 2013 at 02:18:33AM +0100, Laurent Pinchart wrote:
+> > This helps increasing build testing coverage.
+> > 
+> > Cc: Thierry Reding <thierry.reding@gmail.com>
+> > Cc: linux-pwm@vger.kernel.org
+> > Signed-off-by: Laurent Pinchart
+> > <laurent.pinchart+renesas@ideasonboard.com>
+> > Acked-by: Simon Horman <horms@verge.net.au>
+> > ---
+> > 
+> >  drivers/pwm/Kconfig | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> I'm not sure if this has been answered in any of the various subthreads
+> before. I've tried to read through them, but I may have missed some. It
+> was mentioned that iowrite16() wasn't supported on all architectures;
+> won't this possibly cause randconfig autobuilders to break?
 
-Thierry
+That's possible (although it has been reported to me that the situation got 
+fixed on arch/cris in v3.12), but the only way to find out is to try it. That 
+would be a bug in the architecture, and it should then get fixed.
 
---G3juXO9GfR42w+sw
-Content-Type: application/pgp-signature
+-- 
+Regards,
+
+Laurent Pinchart
+
+--nextPart2988912.cL2yqq4KJ2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSmHJBAAoJEN0jrNd/PrOhinoP/1Qv6lb0wEwjxZ2GLL+NNZW0
-jhNrH7V7uz50/vGJBmkdpdVC4RqHzgcp46JwOliDePvVzTtQsTMJw4fFkdADfIVa
-+iLCx/l11FG3Re/LLphYh+wkK9ljN88Ov2917ui482la70DBZ86WNAOEvZRB3Xm+
-Zl/UQumOV7xRiT2Hdng8h0EFAc6fy5RuXSlJuBoWDxlHESNuW/2BWA+uuEoUxL0t
-MxAM2vQks1QyjfhBp2w2hN+Kg3TgBJYAxDFFNfQ0lero3B9qFGLsKAG6iHk2iveh
-WTMKK54PK2IM5kGE44R4CvYHUW16+y+CbG43mcbC6f28tsAv0msVbkKB0f4T5JLc
-HJU1rECsHzNxX12pcupIxMnDTxpeLhlG/23fXFK8op5q4jXqnXWZgZzq/6i70Hjk
-cDwDFhIEZCjTni3WmI/mIoFjwuO2b6hpgdmdfn481tkF+OSN2/Pgg0Z9bVlZu5W4
-I2bJfRrxdZbmwuysbU2Xy1k7oLu0dcu3jvLdiT1Zge+gc+45xiV+R1wajAosXbVu
-nwhBOasZN5uOKHz3QUZch+l+2y3cG4OVNCkyroKobDoC5FO3rs+xc69vGS3Y3Xsn
-4rAk8QuT3FrtBHWsxMT7hQFTkfXfXuXact08X4GITN714L4ePrfKxoSxeiSRn0Ej
-86Zsk+axXI7u7K1tD3N9
-=d53K
+iQEcBAABAgAGBQJSmJvpAAoJEIkPb2GL7hl1b5wH/3eczIp+Y0dVN8xsHSIdJgtu
+mMnceSeMKFtkNmf6IzSAjuKFGSAL7jJ0Vdikdf9LwkX6DAaWs4BzWruP4m79evrm
+sYizEhdaB4BTfjAepwioawTTDU0VYWUT8jOfTERcKu/Kg9Qpbk4F4hKOwr5HApqm
+pm33JHvjbRaZP/ccwZ7FriYkfd5+kGm5Fy72Lygw3BbDBemeMhF7NfV01Lyj8w9i
+YyONtYZ/PQDkYzdUgg3SzTtxUt/VZ0oZbGK3cHW5NwDUaX/s2ox4WpBTjWtTvCMj
+k414oQn6t2QfL1CKrNOISfNNctvBk/X5lLbsbzVTO1OLCBFo9qd+ZkXm5T5DXgc=
+=f+vB
 -----END PGP SIGNATURE-----
 
---G3juXO9GfR42w+sw--
+--nextPart2988912.cL2yqq4KJ2--
+
