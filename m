@@ -1,331 +1,97 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v8 1/2] PWM: atmel-pwm: add PWM controller driver
-Date: Mon, 2 Dec 2013 11:59:58 +0100
-Message-ID: <20131202105957.GD18060@ulmo.nvidia.com>
-References: <1384766002-2852-1-git-send-email-voice.shen@atmel.com>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCHv6 1/4] pwm: Add Freescale FTM PWM driver support
+Date: Mon, 2 Dec 2013 11:02:44 +0000
+Message-ID: <20131202110243.GD12952@e106331-lin.cambridge.arm.com>
+References: <1384220218-12716-1-git-send-email-Li.Xiubo@freescale.com>
+ <1384220218-12716-2-git-send-email-Li.Xiubo@freescale.com>
+ <20131128212510.GC14689@mithrandir>
+ <20131128223719.GG14689@mithrandir>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="2iBwrppp/7QCDedR"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bk0-f53.google.com ([209.85.214.53]:47835 "EHLO
-	mail-bk0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751284Ab3LBLAy (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 2 Dec 2013 06:00:54 -0500
-Content-Disposition: inline
-In-Reply-To: <1384766002-2852-1-git-send-email-voice.shen@atmel.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
-To: Bo Shen <voice.shen@atmel.com>
-Cc: plagnioj@jcrosoft.com, nicolas.ferre@atmel.com, alexandre.belloni@free-electrons.com, galak@codeaurora.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-
-
---2iBwrppp/7QCDedR
 Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-doc-owner@vger.kernel.org>
 Content-Disposition: inline
+In-Reply-To: <20131128223719.GG14689@mithrandir>
+Content-Language: en-US
+Sender: linux-doc-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Mike Turquette <mturquette@linaro.org>, "r65073@freescale.com" <r65073@freescale.com>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, Pawel Moll <Pawel.Moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Alison Wang <b18965@freescale.com>, Jingchang Lu <b3>
+List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Nov 18, 2013 at 05:13:21PM +0800, Bo Shen wrote:
-[...]
-> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-[...]
-> +/* Max value for duty and period
+Hi,
 
-Block comments should be of this form:
+On Thu, Nov 28, 2013 at 10:37:19PM +0000, Thierry Reding wrote:
+> On Thu, Nov 28, 2013 at 10:25:11PM +0100, Thierry Reding wrote:
+> > On Tue, Nov 12, 2013 at 09:36:55AM +0800, Xiubo Li wrote:
+> [...]
+> > > +static int fsl_pwm_parse_clk_ps(struct fsl_pwm_chip *fpc)
+> > > +{
+> > > +	int ret;
+> > > +	struct of_phandle_args clkspec;
+> > > +	struct device_node *np = fpc->chip.dev->of_node;
+> > > +
+> > > +	fpc->sys_clk = devm_clk_get(fpc->chip.dev, "ftm0");
+> > > +	if (IS_ERR(fpc->sys_clk)) {
+> > > +		ret = PTR_ERR(fpc->sys_clk);
+> > > +		dev_err(fpc->chip.dev,
+> > > +				"failed to get \"ftm0\" clock %d\n", ret);
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	fpc->counter_clk = devm_clk_get(fpc->chip.dev, "ftm0_counter");
+> > > +	if (IS_ERR(fpc->counter_clk)) {
+> > > +		ret = PTR_ERR(fpc->counter_clk);
+> > > +		dev_err(fpc->chip.dev,
+> > > +				"failed to get \"ftm0_counter\" clock %d\n",
+> > > +				ret);
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	ret = of_parse_phandle_with_args(np, "clocks", "#clock-cells", 1,
+> > > +					&clkspec);
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	fpc->counter_clk_select = clkspec.args[0];
+> > 
+> > This isn't at all pretty. But given that once you have access to a
+> > struct clk there's no way to identify it, I don't know of a better
+> > alternative.
+> 
+> Hi Mike,
+> 
+> I've seen this crop up a number of times now, to varying degrees of
+> gravity. In this particular case, the driver needs to know the type of a
+> clock because it needs to program this hardware differently depending on
+> which clock feeds the counter. Since there is no way to obtain any kind
+> of identifying information from a struct clk, drivers need to rely on
+> hacks like this and manually reach into the device tree to obtain that
+> information.
 
-	/*
-	 * Max value ...
-	 * ...
-	 */
+Which property of the clock is the consumer concerned with in this case?
 
-> +static int atmel_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> +		int duty_ns, int period_ns)
-> +{
-> +	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
-> +	unsigned long clk_rate, prd, dty;
-> +	unsigned long long div;
-> +	int ret, pres = 0;
-> +
-> +	clk_rate = clk_get_rate(atmel_pwm->clk);
-> +	div = clk_rate;
-> +
-> +	/* Calculate the period cycles */
-> +	while (div > PWM_MAX_PRD) {
-> +		div = clk_rate / (1 << pres);
-> +		div = div * period_ns;
-> +		/* 1/Hz = 100000000 ns */
+From a quick look at the driver it looks like there are actually a
+number of different input lines to the device that share the clock-name
+"ftm0_counter", though they are actually separate and each has a
+different divider. Have I got that right?
 
-I don't think that comment is needed.
+If that's the case, having a unique clock-names value for each of those
+lines would be the solution I'd expect. Then you just have to list the
+one(s) that are wired up, and the driver can figure out the appropriate
+line to use either by requesting by name until it finds a match or
+inspecting the clock-names property.
 
-> +		do_div(div, 1000000000);
-> +
-> +		if (pres++ > PRD_MAX_PRES) {
-> +			dev_err(chip->dev, "pres exceed the maximum value\n");
+Is there some other property of the parent that we care about here?
 
-"exceeds"
+> 
+> I'm aware of similar cases which have been solved by using a mux clock
+> that takes a set of parents and the .set_parent() operation is then used
+> to program registers appropriately. However in all those cases, the mux
+> clock (and the parents) have all been part of a single driver, so I am
+> not sure if the same would be applicable here.
+> 
+> Do you have any other suggestions on how this could possibly be solved?
 
-> +			return -EINVAL;
-> +		}
-> +	}
-> +
-> +	/* Calculate the duty cycles */
-> +	prd = div;
-> +	div *= duty_ns;
-> +	do_div(div, period_ns);
-> +	dty = div;
-> +
-> +	ret = clk_enable(atmel_pwm->clk);
-> +	if (ret) {
-> +		dev_err(chip->dev, "failed to enable pwm clock\n");
+This also feels like the case I describe above. What am I missing? :)
 
-"PWM clock"
-
-> +static void atmel_pwm_config_v1(struct pwm_chip *chip, struct pwm_device *pwm,
-> +				int dty, int prd)
-> +{
-> +	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
-> +	unsigned int val;
-> +
-> +	/*
-> +	 * If the PWM channel is disabled, write value to duty and period
-> +	 * registers directly.
-> +	 * If the PWM channel is enabled, using the update register, it needs
-> +	 * to set bit 10 of CMR to 0
-> +	 */
-
-I think it would make sense to split this comment and move each part
-into the respective conditional branch.
-
-> +	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
-> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CUPD, dty);
-> +
-> +		val = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
-> +		val &= ~PWM_CMR_UPD_CDTY;
-> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
-> +	} else {
-> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CDTY, dty);
-> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CPRD, prd);
-> +	}
-> +}
-> +
-> +static void atmel_pwm_config_v2(struct pwm_chip *chip, struct pwm_device *pwm,
-> +				int dty, int prd)
-> +{
-> +	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
-> +
-> +	/*
-> +	 * If the PWM channel is disabled, write value to duty and period
-> +	 * registers directly.
-> +	 * If the PWM channel is enabled, using the duty update register to
-> +	 * update the value.
-> +	 */
-
-Same here.
-
-> +	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
-> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CDTYUPD, dty);
-> +	} else {
-> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CDTY, dty);
-> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CPRD, prd);
-> +	}
-> +}
-
-Neither version 1 nor version 2 seem to be able to change the period
-while the channel is enabled. Perhaps that should be checked for in
-atmel_pwm_config() and an error (-EBUSY) returned?
-
-> +
-> +static int atmel_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
-> +		enum pwm_polarity polarity)
-> +{
-> +	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
-> +	u32 val = 0;
-> +	int ret;
-> +
-> +	if (polarity == PWM_POLARITY_NORMAL)
-> +		val &= ~PWM_CMR_CPOL;
-> +	else
-> +		val |= PWM_CMR_CPOL;
-
-I think I've mentioned this before, but val is always assigned to 0, so
-clearing a bit is a superfluous. Perhaps you need to readl the CMR
-register first before toggling the bit here?
-
-> +
-> +	ret = clk_enable(atmel_pwm->clk);
-> +	if (ret) {
-> +		dev_err(chip->dev, "failed to enable pwm clock\n");
-
-"PWM clock"
-
-> +#ifdef CONFIG_OF
-> +static const struct of_device_id atmel_pwm_dt_ids[] = {
-> +	{
-> +		.compatible = "atmel,at91sam9rl-pwm",
-> +		.data = &atmel_pwm_data_v1,
-> +	}, {
-> +		.compatible = "atmel,sama5d3-pwm",
-> +		.data = &atmel_pwm_data_v2,
-> +	}, {
-> +		/* sentinel */
-> +	},
-> +};
-> +MODULE_DEVICE_TABLE(of, atmel_pwm_dt_ids);
-> +#endif
-
-I don't think you can do this. You use this table in a call to
-of_match_device() later on, in code which isn't protected by a
-corresponding #ifdef.
-
-> +static inline const struct atmel_pwm_data * __init
-> +	atmel_pwm_get_driver_data(struct platform_device *pdev)
-
-I don't think __init is warranted here. In fact I think this will give
-you a build warning, because this code is called from atmel_pwm_probe(),
-which in turn isn't marked __init.
-
-Also it's probably not worth marking this inline explicitly. It isn't
-all that short, and the compiler will likely inline it anyway since it's
-only called once.
-
-> +{
-> +	if (pdev->dev.of_node) {
-> +		const struct of_device_id *match;
-> +		match = of_match_device(atmel_pwm_dt_ids, &pdev->dev);
-
-Blank line between the above two for readability.
-
-> +		if (match == NULL)
-> +			return NULL;
-> +		return match->data;
-
-Same here. And "if (!match)" rather than "if (match == NULL)".
-
-> +	}
-> +
-> +	return (struct atmel_pwm_data *)
-> +		platform_get_device_id(pdev)->driver_data;
-
-Please use a temporary variable here to make this more readable, like
-so:
-
-	struct platform_device_id *id = platform_get_device_id(pdev);
-
-	...
-
-	return (struct atmel_pwm_data *)id->driver;
-
-> +}
-> +
-> +static int atmel_pwm_probe(struct platform_device *pdev)
-> +{
-> +	const struct atmel_pwm_data *data;
-> +	struct atmel_pwm_chip *atmel_pwm;
-> +	struct resource *res;
-> +	int ret;
-> +
-> +	atmel_pwm = devm_kzalloc(&pdev->dev, sizeof(*atmel_pwm), GFP_KERNEL);
-> +	if (!atmel_pwm)
-> +		return -ENOMEM;
-
-You could move this further down, so that memory doesn't get allocated
-if atmel_pwm_get_driver_data() or platform_get_resource() fails.
-
-> +
-> +	data = atmel_pwm_get_driver_data(pdev);
-> +	if (!data)
-> +		return -ENODEV;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	if (!res)
-> +		return -ENODEV;
-
-No need to check the return value here. devm_ioremap_resource() checks
-it for you.
-
-> +
-> +	atmel_pwm->base = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(atmel_pwm->base))
-> +		return PTR_ERR(atmel_pwm->base);
-> +
-> +	atmel_pwm->clk = devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(atmel_pwm->clk))
-> +		return PTR_ERR(atmel_pwm->clk);
-> +
-> +	ret = clk_prepare(atmel_pwm->clk);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to prepare pwm clock\n");
-
-"PWM clock"
-
-> +		return ret;
-> +	}
-> +
-> +	atmel_pwm->chip.dev = &pdev->dev;
-> +	atmel_pwm->chip.ops = &atmel_pwm_ops;
-> +	if (pdev->dev.of_node) {
-
-Blank line between the above two for readability.
-
-> +		atmel_pwm->chip.of_xlate = of_pwm_xlate_with_flags;
-> +		atmel_pwm->chip.of_pwm_n_cells = 3;
-> +		atmel_pwm->chip.base = -1;
-> +	} else {
-> +		atmel_pwm->chip.base = pdev->id;
-
-That's not correct. The chip cannot be tied to pdev->id, because that ID
-is the instance number of the device. So typically you would have
-devices name like this:
-
-	atmel-pwm.0
-	atmel-pwm.1
-	...
-
-Now, if you have that, then you won't be able to register the second
-instance because the first instance will already have requested PWMs
-0-3, and setting .base to 1 will cause PWMs 1-4 to be requested, which
-intersects with the range of the first instance.
-
-The same applies of course if you have other PWM controllers in the
-system which have similar instance names.
-
-So the right thing to do here is to provide that number via platform
-data so that platform code can define it, knowing in advance all ranges
-for all other PWM controllers and thereby make sure there's no
-intersection.
-
-> +	}
-> +	atmel_pwm->chip.npwm = 4;
-
-Blank line between the above two for readability.
-
-> +	atmel_pwm->config = data->config;
-> +
-> +	ret = pwmchip_add(&atmel_pwm->chip);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed to add pwm chip %d\n", ret);
-
-"PWM chip"
-
-Thierry
-
---2iBwrppp/7QCDedR
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSnGgtAAoJEN0jrNd/PrOhukcP/jwkukzJyg8XrMeUCDgl1msT
-E78Ac3DrrRu8GV3rBdszHAIXydmMl5wo/sadHn9EqhOx5L9xXaAQfMtmgc4Q1VDa
-pwvDvwPGRtKtzhbSflEk5Hsy3f37hXgMQ+/HuCM56Sz3qiSc4Mc4Lh4zEXI1eWNg
-n4v4qYEfwm2qdPZSrT5jw40TvNwcLuPXRS0Ej6kjQCLlNwWSk+fDOVNqKBOnXVBS
-/1oTf4zq6lxM4mZXjswwO/zXpiEzCiJ8dmDNaUbARK0GBkBddxq02AaA5i5cAN+0
-tywympd3tZom1p/SHINg14foEMvp3MOUF5wXRW0b4wXmTwFnG6ZmpnEFmoxifiM5
-DZok9f1qkuXf3eqTFZEHOs4aZrrEtIcpCFtbpxKMJJBoM68wlUZUXs320uEeFh/q
-a4sahRTp7o15NHLnhDvhGF7rYiAaPv+henqnl2NSWgkipfOkuKlm96q37OfCkyE+
-xRivNfNmWzZxSStzYpmCZXk0cnK2i8ci3zHyvwENPd5VuP3KMJUUzDoEtm4uW+Fa
-wJ7P1mJiYQFIhvA7xyh+mlE2YsgVE0OfGvBaONQxcgXI12KZ6Aocf427EQGL1R8e
-gbMuYpnoT/DOV8zKD83OyvcCoWELRRUaNdULDjWDQY6Fw45iMaz7fI/U19m+bwXQ
-kJJhOfH12LuUnVbeTqCV
-=4B2F
------END PGP SIGNATURE-----
-
---2iBwrppp/7QCDedR--
+Thanks,
+Mark.
