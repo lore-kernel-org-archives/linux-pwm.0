@@ -1,69 +1,74 @@
-From: Mike Dunn <mikedunn@newsguy.com>
-Subject: Re: [PATCH RESEND v5 1/2] PWM: PXA: add device tree support to PWM
- driver
-Date: Tue, 03 Dec 2013 10:45:29 -0800
-Message-ID: <529E26C9.30707@newsguy.com>
-References: <1379791174-2369-1-git-send-email-mikedunn@newsguy.com>
- <1379791174-2369-2-git-send-email-mikedunn@newsguy.com>
- <20131203101714.GG21178@ulmo.nvidia.com>
+From: Milo Kim <milo.kim@ti.com>
+Subject: Re: [PATCH v3 3/4] pwm: add LP3943 PWM driver
+Date: Wed, 4 Dec 2013 08:27:08 +0900
+Message-ID: <529E68CC.4090808@ti.com>
+References: <1378949630-6275-1-git-send-email-milo.kim@ti.com> <20131203102455.GH21178@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20131203101714.GG21178@ulmo.nvidia.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Marek Vasut <marex@denx.de>, linux-pwm@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, devicetree@vger.kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Rob Herring <rob.herring@calxeda.com>, Chao Xie <chao.xie@marvell.com>, Haojian Zhuang <haojian.zhuang@linaro.org>, Stephen Warren <swarren@wwwdotorg.org>, Grant Likely <grant.likely@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Robert Jarzmik <robert.jarzmik@free.fr>, linux-arm-kernel@lists.infradead.org, Ian Campbell <ian.campbell@citrix.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([192.94.94.41]:49947 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755218Ab3LCX1N (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Tue, 3 Dec 2013 18:27:13 -0500
+In-Reply-To: <20131203102455.GH21178@ulmo.nvidia.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-
-On 12/03/2013 02:17 AM, Thierry Reding wrote:
-> On Sat, Sep 21, 2013 at 12:19:33PM -0700, Mike Dunn wrote:
->> This patch adds device tree support to the PXA's PWM driver.  Nothing
->> needs to be extracted from the device tree node by the PWM device.
->> Client devices need only specify the period; the per-chip index is
->> implicitly zero because one device node must be present for each PWM
->> output in use.  This approach is more convenient due to the wide
->> variability in the number of PWM channels present across the various PXA
->> variants, and is made possible by the fact that the register sets for
->> each PWM channel are segregated from each other.  An of_xlate() method
->> is added to parse this single-cell node.  The existing ID table is
->> reused for the match table data.
->>
->> Tested on a Palm Treo 680 (both platform data and DT cases).
->>
->> Signed-off-by: Mike Dunn <mikedunn@newsguy.com>
->> ---
->>  Documentation/devicetree/bindings/pwm/pxa-pwm.txt | 30 +++++++++++++
->>  drivers/pwm/pwm-pxa.c                             | 52 ++++++++++++++++++++++-
->>  2 files changed, 81 insertions(+), 1 deletion(-)
->>  create mode 100644 Documentation/devicetree/bindings/pwm/pxa-pwm.txt
-> 
-> Hi Mike,
-> 
-> It looks like this fell through the cracks. Is this patch still the
-> latest one you have? Should it still be applied?
-> 
-> Thierry
-> 
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>, Linus Walleij <linus.walleij@linaro.org>
 
 Hi Thierry,
 
-Funny I should hear from you about this today.... I just turned my attention
-back to this today and noticed that it never made it into your for-next branch.
- Yes, it is the latest.  If the patch still applies cleanly, please feel free.
-Otherwise, I'd be glad to rework it against something more recent.
+On 12/03/2013 07:24 PM, Thierry Reding wrote:
+> On Thu, Sep 12, 2013 at 10:33:50AM +0900, Milo Kim wrote:
+>> This is the other of the LP3943 MFD driver.
+>> LP3943 can be used as a PWM generator, up to 2 channels.
+>>
+>> * Two PWM generators supported
+>>
+>> * Supported PWM operations
+>>    request, free, config, enable and disable
+>>
+>> * Pin assignment
+>>    A driver data, 'pin_used' is checked when a PWM is requested.
+>>    If the output pin is already assigned, then returns as failure.
+>>    If the pin is available, 'pin_used' is set.
+>>    When the PWM is not used anymore, then it is cleared.
+>>    It is defined as unsigned long type for atomic bit operation APIs,
+>>    but only LSB 16bits are used because LP3943 has 16 outputs.
+>>
+>> Cc: Thierry Reding <thierry.reding@gmail.com>
+>> Signed-off-by: Milo Kim <milo.kim@ti.com>
+>> ---
+>> * Patch v3
+>>    Manual polarity not supported any more.
+>>    Add encapsulation functions for accessing internal data structure.
+>>    Use pwm_set_chip_data() and pwm_get_chip_data().
+>>    And other code fixes based on Thierry's feedback.
+>>
+>>   drivers/pwm/Kconfig      |   10 ++
+>>   drivers/pwm/Makefile     |    1 +
+>>   drivers/pwm/pwm-lp3943.c |  314 ++++++++++++++++++++++++++++++++++++++++++++++
+>>   3 files changed, 325 insertions(+)
+>>   create mode 100644 drivers/pwm/pwm-lp3943.c
+>
+> Hi Milo,
+>
+> Is this patchset still the latest version? I've tried to remember the
+> status of this series, but I could only draw a blank.
 
-Also, we never got any ACKs for patch 2/2, which just adds the nodes to
-arch/arm/boot/dts/pxa27x.dtsi
-Any advice on whom to nudge?
+Thanks a lot for this reminder.
+I forgot to check the status.
 
-Thanks much!
-Mike
+The latest one is the v4, but LP3943 PWM driver code is same as v3.
+
+   Update from v3 to v4:
+     Move the driver description from the documentation to the MFD 
+driver file.
+
+There are two things to be ACKed for v4.
+One is the PWM driver. (https://lkml.org/lkml/2013/9/25/11)
+The other is the documentation. (https://lkml.org/lkml/2013/9/25/10)
+
+Thanks,
+   Milo
