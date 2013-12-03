@@ -1,79 +1,84 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH RESEND v5 1/2] PWM: PXA: add device tree support to PWM
- driver
-Date: Tue, 3 Dec 2013 11:17:15 +0100
-Message-ID: <20131203101714.GG21178@ulmo.nvidia.com>
-References: <1379791174-2369-1-git-send-email-mikedunn@newsguy.com>
- <1379791174-2369-2-git-send-email-mikedunn@newsguy.com>
+Subject: Re: [PATCH v3 3/4] pwm: add LP3943 PWM driver
+Date: Tue, 3 Dec 2013 11:24:56 +0100
+Message-ID: <20131203102455.GH21178@ulmo.nvidia.com>
+References: <1378949630-6275-1-git-send-email-milo.kim@ti.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="p7qwJlK53pWzbayA"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ea0-f173.google.com ([209.85.215.173]:55521 "EHLO
-	mail-ea0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752019Ab3LCKSM (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 3 Dec 2013 05:18:12 -0500
+	protocol="application/pgp-signature"; boundary="r5lq+205vWdkqwtk"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1379791174-2369-2-git-send-email-mikedunn@newsguy.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1378949630-6275-1-git-send-email-milo.kim@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Milo Kim <milo.kim@ti.com>
+Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Mike Dunn <mikedunn@newsguy.com>
-Cc: linux-pwm@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Haojian Zhuang <haojian.zhuang@linaro.org>, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Chao Xie <chao.xie@marvell.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian Campbell <ian.campbell@citrix.com>
 
 
---p7qwJlK53pWzbayA
+--r5lq+205vWdkqwtk
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Sep 21, 2013 at 12:19:33PM -0700, Mike Dunn wrote:
-> This patch adds device tree support to the PXA's PWM driver.  Nothing
-> needs to be extracted from the device tree node by the PWM device.
-> Client devices need only specify the period; the per-chip index is
-> implicitly zero because one device node must be present for each PWM
-> output in use.  This approach is more convenient due to the wide
-> variability in the number of PWM channels present across the various PXA
-> variants, and is made possible by the fact that the register sets for
-> each PWM channel are segregated from each other.  An of_xlate() method
-> is added to parse this single-cell node.  The existing ID table is
-> reused for the match table data.
+On Thu, Sep 12, 2013 at 10:33:50AM +0900, Milo Kim wrote:
+> This is the other of the LP3943 MFD driver.
+> LP3943 can be used as a PWM generator, up to 2 channels.
 >=20
-> Tested on a Palm Treo 680 (both platform data and DT cases).
+> * Two PWM generators supported
 >=20
-> Signed-off-by: Mike Dunn <mikedunn@newsguy.com>
+> * Supported PWM operations
+>   request, free, config, enable and disable
+>=20
+> * Pin assignment
+>   A driver data, 'pin_used' is checked when a PWM is requested.
+>   If the output pin is already assigned, then returns as failure.
+>   If the pin is available, 'pin_used' is set.
+>   When the PWM is not used anymore, then it is cleared.
+>   It is defined as unsigned long type for atomic bit operation APIs,
+>   but only LSB 16bits are used because LP3943 has 16 outputs.
+>=20
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Signed-off-by: Milo Kim <milo.kim@ti.com>
 > ---
->  Documentation/devicetree/bindings/pwm/pxa-pwm.txt | 30 +++++++++++++
->  drivers/pwm/pwm-pxa.c                             | 52 +++++++++++++++++=
-+++++-
->  2 files changed, 81 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pxa-pwm.txt
+> * Patch v3
+>   Manual polarity not supported any more.
+>   Add encapsulation functions for accessing internal data structure.
+>   Use pwm_set_chip_data() and pwm_get_chip_data().
+>   And other code fixes based on Thierry's feedback.
+>=20
+>  drivers/pwm/Kconfig      |   10 ++
+>  drivers/pwm/Makefile     |    1 +
+>  drivers/pwm/pwm-lp3943.c |  314 ++++++++++++++++++++++++++++++++++++++++=
+++++++
+>  3 files changed, 325 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-lp3943.c
 
-Hi Mike,
+Hi Milo,
 
-It looks like this fell through the cracks. Is this patch still the
-latest one you have? Should it still be applied?
+Is this patchset still the latest version? I've tried to remember the
+status of this series, but I could only draw a blank.
 
 Thierry
 
---p7qwJlK53pWzbayA
+--r5lq+205vWdkqwtk
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSna+qAAoJEN0jrNd/PrOhEN0P/j/R50+IlIwPL9vuovuV1xj3
-SZJ0gRHT1PXnytE1PFB5+HIbreYhSQTQ79hfYfxSdYi5h2KVcxLneSEkfGYLLAj9
-J70ju3wlKflwYtAp06ssXKxIUVnvYk8kVUxgjpzbq7cMEhHelAvLpcKqD6TnAfIn
-3z8y6ZtzcuzsRHIahFTdB75Kb+tjkWfgLOxDfFUTwzU01xaLDNFIZzU4ngF4Rtqz
-gxXqTKSFDDvsCn5LHgqOxhjSQdA24x7Q+Nc6oMe/XsB0u1HfmuSb+vU7mmaYrMM4
-1ASzxjfTaBHfArx4u2CdjOI+Or/6nlJdknKc1wc/hbFoTTjsuuNZHtQyifFpy2mh
-xg6h05QWJLr/SSckWtkjQ377CSqwvg88Jzlr3TTAtywmuIrNvS2mxt2IgdHZLMKT
-pjlYZhrp4KqlZVwrXgHbO0FL7tpn7BphFD6L9JcwBOYcoxiO/ATuQ3rQ4esRHF6V
-o3lj7JvJFQ/Nla0blL+awexm+sNpwKh1ru6lCGe6naT2IFK4I7TGiu3rc0WLvDG4
-cFxf8z907/1ZS4PmBfhb0dUMcupLJS92PMboyO+lLW3FnkU7rHFihfXFIGq9ezuu
-cAiIs/z0kfhcEYOUjmfQG2UAZLEwT2GU7q4I+0Ra+KrWHZdljev8IiSwQ/ETRIbS
-m8leBaf+QWNUiWkeGsvI
-=YbHE
+iQIcBAEBAgAGBQJSnbF3AAoJEN0jrNd/PrOhqAkP/AqIOrF+xw6W734frmBfQXik
+BYS6Aic0/Tih/fTnxvjXFBegamf6/cBYLewQ8+qltUrVjODQPQB18PmEfRcS8206
+X71pwsNfWG4aKVHtNZYRxIInoKSU80jm6AGSJMjo9SS/ZAoSN6mJiNVJKeCAp3oa
+Fl5LyD6X744SrB8/pE3ak7ZSWWkKeHK6UbY0Ytf03+UgBzD6LYGbyHWJPsa2WZHS
+S6Z/tg56PWmP/coGo4g34jhe9Sl/Nn9rWUen9svEUrWcGfQ8FoMkYrnUOFVxs/xL
+uPusy30TJ6UARjo4KORxIV+tNvM5f0C6G/eGHs2NxgWUsbw3eY9bGqrMuXSVq845
++oi4J747PTGqlTyCIJ+iUZuKoPaYftuGs24Mw026QYxbsJJmyfYEzNI5jg4WR4Jp
+maG+ankJsERYYpIJaEZBWgj5VTDYtAOWGQbOJ+S4YrnABUKGX7sR4GGzL/StQ7MJ
+WJyogOkTD7HDkNRpwpxD6hfQuxxzGwD9WB7HCUkPpoejCOxwrmwWfTRa72U6fhX4
+x4uusdr7fBTPt/fx1VEJOG9hjeKUe39jgVoq5Oj/rXxgnMFQ3aRGFDA8rU8aa8CB
+Ur0MgZMBUsqxEqvtn57PoN5SatIz7B45yhtcC0OmEOhcv3xEcDkOKD/2IXnnYTmJ
+gFnDyFKaTknnVFG5IB2B
+=/gb2
 -----END PGP SIGNATURE-----
 
---p7qwJlK53pWzbayA--
+--r5lq+205vWdkqwtk--
