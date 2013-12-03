@@ -1,14 +1,15 @@
-From: Bo Shen <voice.shen@atmel.com>
-Subject: Re: [PATCH v8 1/2] PWM: atmel-pwm: add PWM controller driver
-Date: Tue, 3 Dec 2013 11:09:12 +0800
-Message-ID: <529D4B58.9020700@atmel.com>
-References: <1384766002-2852-1-git-send-email-voice.shen@atmel.com>
- <20131202105957.GD18060@ulmo.nvidia.com>
+From: Li Xiubo <Li.Xiubo@freescale.com>
+Subject: RE: [RFC] pwm: Add Freescale FTM PWM driver support
+Date: Tue, 3 Dec 2013 04:02:48 +0000
+Message-ID: <1DD289F6464F0949A2FCA5AA6DC23F828E374B@039-SN2MPN1-011.039d.mgd.msft.net>
+References: <1385979309-10505-1-git-send-email-Li.Xiubo@freescale.com>
+ <20131202123406.GK12952@e106331-lin.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20131202105957.GD18060@ulmo.nvidia.com>
+In-Reply-To: <20131202123406.GK12952@e106331-lin.cambridge.arm.com>
+Content-Language: en-US
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -18,335 +19,143 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, nicolas.ferre@atmel.com, linux-kernel@vger.kernel.org, alexandre.belloni@free-electrons.com, Bo Shen <voice.shen@atmel.com>, galak@codeaurora.org, plagnioj@jcrosoft.com, linux-arm-kernel@lists.infradead.org
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: Jingchang Lu <jingchang.lu@freescale.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, Pawel Moll <Pawel.Moll@arm.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "tomasz.figa@gmail.com" <tomasz.figa@gmail.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Huan Wang <Huan.Wang@freescale.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "rob@landley.net" <rob@landley.net>, "galak@codeaurora.org" <galak@codeaurora.org>, grant
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Thierry,
-
-On 12/02/2013 06:59 PM, Thierry Reding wrote:
-> On Mon, Nov 18, 2013 at 05:13:21PM +0800, Bo Shen wrote:
-> [...]
->> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-> [...]
->> +/* Max value for duty and period
+> > I'm sending the RFC patch about the FTM IP block registers read and
+> > write endian fix for comments and more parcticed ideas.
+> >
+> > In Vybird VF610 Tower, all the IP blocks expect LE data. In the LS-1,
+> > some of the IP blocks expect LE data, while others expect BE data. And
+> > the CPU always operates in LE mode in these two platforms.
+> 
+> Could you elaborate on "expect BE data" please? Is this all registers
+> within a given device, or a subset thereof?
+> Are there data structures involved (i.e. buffers)?
 >
-> Block comments should be of this form:
->
-> 	/*
-> 	 * Max value ...
-> 	 * ...
-> 	 */
 
-OK, I will use this style.
+It actually means big-endian mode, and it's all the registers and hasn't any
+buffers or descriptors involved within FTM IP block.
+But maybe in other IP blocks, such as eDMA and USB, should consider about the
+buffers/descriptors issue.
 
->> +static int atmel_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->> +		int duty_ns, int period_ns)
->> +{
->> +	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
->> +	unsigned long clk_rate, prd, dty;
->> +	unsigned long long div;
->> +	int ret, pres = 0;
->> +
->> +	clk_rate = clk_get_rate(atmel_pwm->clk);
->> +	div = clk_rate;
->> +
->> +	/* Calculate the period cycles */
->> +	while (div > PWM_MAX_PRD) {
->> +		div = clk_rate / (1 << pres);
->> +		div = div * period_ns;
->> +		/* 1/Hz = 100000000 ns */
->
-> I don't think that comment is needed.
 
-This is asked to be added.
-And, I think keep it and it won't hurt, what do you think?
+> >
+> > So now I must take care of all these two cases. I'm not very sure if
+> > there is other better ways to resolve this problem. In this patch I
+> > have implemented two functions fsl_pwm_readl() and fsl_pwm_writel() to
+> > replace readl() and writel(). At the same time there should add one
+> > "endianess" property in the DT file.
+> 
+> If you're adding DT properties, binding updates are helpful to describe
+> their intended use.
+> 
 
->> +		do_div(div, 1000000000);
->> +
->> +		if (pres++ > PRD_MAX_PRES) {
->> +			dev_err(chip->dev, "pres exceed the maximum value\n");
->
-> "exceeds"
+Yes, that surely will be added later.
 
-Thanks for correct it.
 
->> +			return -EINVAL;
->> +		}
->> +	}
->> +
->> +	/* Calculate the duty cycles */
->> +	prd = div;
->> +	div *= duty_ns;
->> +	do_div(div, period_ns);
->> +	dty = div;
->> +
->> +	ret = clk_enable(atmel_pwm->clk);
->> +	if (ret) {
->> +		dev_err(chip->dev, "failed to enable pwm clock\n");
->
-> "PWM clock"
+> > +static inline u32 fsl_pwm_readl(struct fsl_pwm_chip *fpc, void
+> > +__iomem *reg) {
+> > +       u32 val;
+> > +
+> > +       val = __raw_readl(reg);
+> > +
+> > +       if (fpc->endianess == FTM_BIG)
+> > +               return be32_to_cpu(val);
+> > +       else
+> > +               return le32_to_cpu(val); }
+> > +
+> > +static inline void fsl_pwm_writel(struct fsl_pwm_chip *fpc, u32 val,
+> > +               void __iomem *reg)
+> > +{
+> > +       if (fpc->endianess == FTM_BIG)
+> > +               val = cpu_to_be32(val);
+> > +       else
+> > +               val = cpu_to_le32(val);
+> > +
+> > +       __raw_writel(val, reg);
+> > +}
+> 
+> Using the __raw variants also loses you the memory barriers. Does this
+> create any ordering issues in the rest of the driver?
+> 
 
-OK, I will change all low case pwm to upper case PWM.
+No, I had checked about this, so I just droped them.
+Maybe it will be much better and safer if there are some memory barriers.
 
->> +static void atmel_pwm_config_v1(struct pwm_chip *chip, struct pwm_device *pwm,
->> +				int dty, int prd)
->> +{
->> +	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
->> +	unsigned int val;
->> +
->> +	/*
->> +	 * If the PWM channel is disabled, write value to duty and period
->> +	 * registers directly.
->> +	 * If the PWM channel is enabled, using the update register, it needs
->> +	 * to set bit 10 of CMR to 0
->> +	 */
->
-> I think it would make sense to split this comment and move each part
-> into the respective conditional branch.
 
-OK, I will split them.
 
->> +	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
->> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CUPD, dty);
->> +
->> +		val = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
->> +		val &= ~PWM_CMR_UPD_CDTY;
->> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
->> +	} else {
->> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CDTY, dty);
->> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CPRD, prd);
->> +	}
->> +}
->> +
->> +static void atmel_pwm_config_v2(struct pwm_chip *chip, struct pwm_device *pwm,
->> +				int dty, int prd)
->> +{
->> +	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
->> +
->> +	/*
->> +	 * If the PWM channel is disabled, write value to duty and period
->> +	 * registers directly.
->> +	 * If the PWM channel is enabled, using the duty update register to
->> +	 * update the value.
->> +	 */
->
-> Same here.
->
->> +	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
->> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CDTYUPD, dty);
->> +	} else {
->> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CDTY, dty);
->> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CPRD, prd);
->> +	}
->> +}
->
-> Neither version 1 nor version 2 seem to be able to change the period
-> while the channel is enabled. Perhaps that should be checked for in
-> atmel_pwm_config() and an error (-EBUSY) returned?
+> > +static int fsl_pwm_probe(struct platform_device *pdev) {
+> > +       int ret;
+> > +       const char *endianess;
+> > +       struct fsl_pwm_chip *fpc;
+> > +       struct resource *res;
+> > +       struct device_node *np = pdev->dev.of_node;
+> > +
+> > +       fpc = devm_kzalloc(&pdev->dev, sizeof(*fpc), GFP_KERNEL);
+> > +       if (!fpc)
+> > +               return -ENOMEM;
+> > +
+> > +       mutex_init(&fpc->lock);
+> > +
+> > +       fpc->chip.dev = &pdev->dev;
+> > +
+> > +       ret = fsl_pwm_parse_clk_ps(fpc);
+> > +       if (ret < 0)
+> > +               return ret;
+> > +
+> > +       if (of_property_read_string(np, "endianess", &endianess))
+> > +               pr_warning("missing \"endianess\" property, "
+> > +                               "the FTM IP block is little "
+> > +                               "endian as default\n");
+> > +       else if (!strcmp("big", endianess))
+> > +               fpc->endianess = FTM_BIG;
+> 
+> Please don't do this.
+> 
+> One option is to have a new compatible string -- a big-endian device can't
+> be poked in the same way as its little-endian variants, so they're not
+> compatible. You can then associate some data with the compatible strings to
+> figure out which accessors to use.
+> 
 
-The period is configured in dt in device tree, or platform data in non 
-device tree. Nowhere will update period. So, not code to update period.
-Am I right? If not, please figure out.
+Do you mean:
++ static const struct of_device_id fsl_pwm_dt_ids[] = {
++        { .compatible = "fsl,vf610-ftm-pwm,big-endian", },
++        { .compatible = "fsl,vf610-ftm-pwm,little-endian", },
++        { /* sentinel */ }
++ };  ?
 
->> +
->> +static int atmel_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
->> +		enum pwm_polarity polarity)
->> +{
->> +	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
->> +	u32 val = 0;
->> +	int ret;
->> +
->> +	if (polarity == PWM_POLARITY_NORMAL)
->> +		val &= ~PWM_CMR_CPOL;
->> +	else
->> +		val |= PWM_CMR_CPOL;
->
-> I think I've mentioned this before, but val is always assigned to 0, so
-> clearing a bit is a superfluous. Perhaps you need to readl the CMR
-> register first before toggling the bit here?
+Or just adding one property in DT file likes:
+			pwm0: pwm@40038000 {
+				compatible = "fsl,vf610-ftm-pwm";
+				#pwm-cells = <3>;
+				reg = <0x40038000 0x1000>;
+				clock-names = "ftm0", "ftm0_fix_sel", "ftm0_ext_sel";
+				clocks = <&clks VF610_CLK_FTM0>,
+					<&clks VF610_CLK_FTM0_FIX_SEL>,
+					<&clks VF610_CLK_FTM0_EXT_SEL>;
++				big-endian;       ---> both registers and buffers/descriptors
+Or 
++				big-endian-regs;  ---> registers
++				big-endian-desc;  ---> buffers or descriptors
+				status = "disabled";
+			};
+And then in FTM driver probe function adds:
++        if (of_get_property(np, "big-endian", NULL))
++                fpc->be_reg = fpc->be_desc = 1;
++        else if (of_get_property(np, "big-endian-regs", NULL))
++                fpc->be_reg = 1;
++        else if (of_get_property(np, "big-endian-desc", NULL))
++                fpc->be_desc = 1;
 
-Thanks, we should read CMR, and set the CPOL accordingly.
+In this case, if all of the following properties is absent, that means they all are
+operated in little-endian mode.
 
->> +
->> +	ret = clk_enable(atmel_pwm->clk);
->> +	if (ret) {
->> +		dev_err(chip->dev, "failed to enable pwm clock\n");
->
-> "PWM clock"
->
->> +#ifdef CONFIG_OF
->> +static const struct of_device_id atmel_pwm_dt_ids[] = {
->> +	{
->> +		.compatible = "atmel,at91sam9rl-pwm",
->> +		.data = &atmel_pwm_data_v1,
->> +	}, {
->> +		.compatible = "atmel,sama5d3-pwm",
->> +		.data = &atmel_pwm_data_v2,
->> +	}, {
->> +		/* sentinel */
->> +	},
->> +};
->> +MODULE_DEVICE_TABLE(of, atmel_pwm_dt_ids);
->> +#endif
->
-> I don't think you can do this. You use this table in a call to
-> of_match_device() later on, in code which isn't protected by a
-> corresponding #ifdef.
+"big-endian"
+"big-endian-regs"
+"big-endian-desc"
 
-I will remove #ifdef.
-
->> +static inline const struct atmel_pwm_data * __init
->> +	atmel_pwm_get_driver_data(struct platform_device *pdev)
->
-> I don't think __init is warranted here. In fact I think this will give
-> you a build warning, because this code is called from atmel_pwm_probe(),
-> which in turn isn't marked __init.
-
-OK, I will remove __init.
-
-> Also it's probably not worth marking this inline explicitly. It isn't
-> all that short, and the compiler will likely inline it anyway since it's
-> only called once.
-
-It only called one, so, it can be inline.
-
->> +{
->> +	if (pdev->dev.of_node) {
->> +		const struct of_device_id *match;
->> +		match = of_match_device(atmel_pwm_dt_ids, &pdev->dev);
->
-> Blank line between the above two for readability.
-
-OK, I will add one blank line.
-
->> +		if (match == NULL)
->> +			return NULL;
->> +		return match->data;
->
-> Same here. And "if (!match)" rather than "if (match == NULL)".
-
-OK, I will change like this.
-
->> +	}
->> +
->> +	return (struct atmel_pwm_data *)
->> +		platform_get_device_id(pdev)->driver_data;
->
-> Please use a temporary variable here to make this more readable, like
-> so:
->
-> 	struct platform_device_id *id = platform_get_device_id(pdev);
->
-> 	...
->
-> 	return (struct atmel_pwm_data *)id->driver;
->
->> +}
-
-OK, I will change like this.
-
->> +static int atmel_pwm_probe(struct platform_device *pdev)
->> +{
->> +	const struct atmel_pwm_data *data;
->> +	struct atmel_pwm_chip *atmel_pwm;
->> +	struct resource *res;
->> +	int ret;
->> +
->> +	atmel_pwm = devm_kzalloc(&pdev->dev, sizeof(*atmel_pwm), GFP_KERNEL);
->> +	if (!atmel_pwm)
->> +		return -ENOMEM;
->
-> You could move this further down, so that memory doesn't get allocated
-> if atmel_pwm_get_driver_data() or platform_get_resource() fails.
-
-OK, I will move this down.
-
->> +
->> +	data = atmel_pwm_get_driver_data(pdev);
->> +	if (!data)
->> +		return -ENODEV;
->> +
->> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +	if (!res)
->> +		return -ENODEV;
->
-> No need to check the return value here. devm_ioremap_resource() checks
-> it for you.
-
-OK, I will remove this check.
-
->> +
->> +	atmel_pwm->base = devm_ioremap_resource(&pdev->dev, res);
->> +	if (IS_ERR(atmel_pwm->base))
->> +		return PTR_ERR(atmel_pwm->base);
->> +
->> +	atmel_pwm->clk = devm_clk_get(&pdev->dev, NULL);
->> +	if (IS_ERR(atmel_pwm->clk))
->> +		return PTR_ERR(atmel_pwm->clk);
->> +
->> +	ret = clk_prepare(atmel_pwm->clk);
->> +	if (ret) {
->> +		dev_err(&pdev->dev, "failed to prepare pwm clock\n");
->
-> "PWM clock"
->
->> +		return ret;
->> +	}
->> +
->> +	atmel_pwm->chip.dev = &pdev->dev;
->> +	atmel_pwm->chip.ops = &atmel_pwm_ops;
->> +	if (pdev->dev.of_node) {
->
-> Blank line between the above two for readability.
-
-OK, I will add blank line.
-
->> +		atmel_pwm->chip.of_xlate = of_pwm_xlate_with_flags;
->> +		atmel_pwm->chip.of_pwm_n_cells = 3;
->> +		atmel_pwm->chip.base = -1;
->> +	} else {
->> +		atmel_pwm->chip.base = pdev->id;
->
-> That's not correct. The chip cannot be tied to pdev->id, because that ID
-> is the instance number of the device. So typically you would have
-> devices name like this:
->
-> 	atmel-pwm.0
-> 	atmel-pwm.1
-> 	...
->
-> Now, if you have that, then you won't be able to register the second
-> instance because the first instance will already have requested PWMs
-> 0-3, and setting .base to 1 will cause PWMs 1-4 to be requested, which
-> intersects with the range of the first instance.
->
-> The same applies of course if you have other PWM controllers in the
-> system which have similar instance names.
->
-> So the right thing to do here is to provide that number via platform
-> data so that platform code can define it, knowing in advance all ranges
-> for all other PWM controllers and thereby make sure there's no
-> intersection.
-
-OK, I will fix this.
-
->> +	}
->> +	atmel_pwm->chip.npwm = 4;
->
-> Blank line between the above two for readability.
-
-OK, I will add blank line.
-
->> +	atmel_pwm->config = data->config;
->> +
->> +	ret = pwmchip_add(&atmel_pwm->chip);
->> +	if (ret < 0) {
->> +		dev_err(&pdev->dev, "failed to add pwm chip %d\n", ret);
->
-> "PWM chip"
->
-> Thierry
-
+--
 Best Regards,
-Bo Shen
