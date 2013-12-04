@@ -1,73 +1,77 @@
-From: Haojian Zhuang <haojian.zhuang@linaro.org>
-Subject: Re: [PATCH RESEND v5 1/2] PWM: PXA: add device tree support to PWM
- driver
-Date: Wed, 04 Dec 2013 09:12:51 +0800
-Message-ID: <529E8193.1040606@linaro.org>
-References: <1379791174-2369-1-git-send-email-mikedunn@newsguy.com> <1379791174-2369-2-git-send-email-mikedunn@newsguy.com> <20131203101714.GG21178@ulmo.nvidia.com> <529E26C9.30707@newsguy.com>
+From: Bo Shen <voice.shen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v8 1/2] PWM: atmel-pwm: add PWM controller driver
+Date: Wed, 4 Dec 2013 10:59:46 +0800
+Message-ID: <529E9AA2.8020400@atmel.com>
+References: <1384766002-2852-1-git-send-email-voice.shen@atmel.com> <20131202105957.GD18060@ulmo.nvidia.com> <529D4B58.9020700@atmel.com> <20131203094326.GB21178@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pd0-f174.google.com ([209.85.192.174]:38088 "EHLO
-	mail-pd0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754710Ab3LDBNA (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 3 Dec 2013 20:13:00 -0500
-Received: by mail-pd0-f174.google.com with SMTP id y13so21374427pdi.33
-        for <linux-pwm@vger.kernel.org>; Tue, 03 Dec 2013 17:12:59 -0800 (PST)
-In-Reply-To: <529E26C9.30707@newsguy.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20131203094326.GB21178-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Mike Dunn <mikedunn@newsguy.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Chao Xie <chao.xie@marvell.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian Campbell <ian.campbell@citrix.com>
 
+Hi Thierry,
 
-On 12/04/2013 02:45 AM, Mike Dunn wrote:
-> On 12/03/2013 02:17 AM, Thierry Reding wrote:
->> On Sat, Sep 21, 2013 at 12:19:33PM -0700, Mike Dunn wrote:
->>> This patch adds device tree support to the PXA's PWM driver.  Nothing
->>> needs to be extracted from the device tree node by the PWM device.
->>> Client devices need only specify the period; the per-chip index is
->>> implicitly zero because one device node must be present for each PWM
->>> output in use.  This approach is more convenient due to the wide
->>> variability in the number of PWM channels present across the various PXA
->>> variants, and is made possible by the fact that the register sets for
->>> each PWM channel are segregated from each other.  An of_xlate() method
->>> is added to parse this single-cell node.  The existing ID table is
->>> reused for the match table data.
+On 12/03/2013 05:43 PM, Thierry Reding wrote:
+> On Tue, Dec 03, 2013 at 11:09:12AM +0800, Bo Shen wrote:
+>> On 12/02/2013 06:59 PM, Thierry Reding wrote:
+>>> On Mon, Nov 18, 2013 at 05:13:21PM +0800, Bo Shen wrote:
+> [...]
+>>>> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+> [...]
+>>>> +	/* Calculate the period cycles */
+>>>> +	while (div > PWM_MAX_PRD) {
+>>>> +		div = clk_rate / (1 << pres);
+>>>> +		div = div * period_ns;
+>>>> +		/* 1/Hz = 100000000 ns */
 >>>
->>> Tested on a Palm Treo 680 (both platform data and DT cases).
+>>> I don't think that comment is needed.
+>>
+>> This is asked to be added.
+>> And, I think keep it and it won't hurt, what do you think?
+>
+> I think it's obvious that you're converting from nanoseconds because of
+> the _ns prefix in period_ns. But if somebody requested this and everyone
+> else thinks it's useful, I'm okay with keeping it.
+>
+>>>> +	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
+>>>> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CDTYUPD, dty);
+>>>> +	} else {
+>>>> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CDTY, dty);
+>>>> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CPRD, prd);
+>>>> +	}
+>>>> +}
 >>>
->>> Signed-off-by: Mike Dunn <mikedunn@newsguy.com>
->>> ---
->>>   Documentation/devicetree/bindings/pwm/pxa-pwm.txt | 30 +++++++++++++
->>>   drivers/pwm/pwm-pxa.c                             | 52 ++++++++++++++++++++++-
->>>   2 files changed, 81 insertions(+), 1 deletion(-)
->>>   create mode 100644 Documentation/devicetree/bindings/pwm/pxa-pwm.txt
->> Hi Mike,
+>>> Neither version 1 nor version 2 seem to be able to change the period
+>>> while the channel is enabled. Perhaps that should be checked for in
+>>> atmel_pwm_config() and an error (-EBUSY) returned?
 >>
->> It looks like this fell through the cracks. Is this patch still the
->> latest one you have? Should it still be applied?
->>
->> Thierry
->>
-> Hi Thierry,
+>> The period is configured in dt in device tree, or platform data in non
+>> device tree. Nowhere will update period. So, not code to update period.
+>> Am I right? If not, please figure out.
 >
-> Funny I should hear from you about this today.... I just turned my attention
-> back to this today and noticed that it never made it into your for-next branch.
->   Yes, it is the latest.  If the patch still applies cleanly, please feel free.
-> Otherwise, I'd be glad to rework it against something more recent.
+> The .config() operation allows the period to be specified. Just because
+> nobody currently changes it at runtime doesn't mean it can't be done.
 >
-> Also, we never got any ACKs for patch 2/2, which just adds the nodes to
-> arch/arm/boot/dts/pxa27x.dtsi
-> Any advice on whom to nudge?
->
-> Thanks much!
-> Mike
+> It is also possible that whoever wrote the device tree or platform data
+> didn't know that the period must be the same for all PWM channels and
+> therefore might use different values. If you check for this, at least
+> they'll notice. If you don't check for it, then they may end up having
+> the period reconfigured behind their backs, which may cause parts of
+> their setup to behave unexpectedly.
+
+Thanks for this information.
+I will add code for changing period.
+
+> Thierry
 >
 
-It's fine to me.
-
-Acked-by: Haojian Zhuang <haojian.zhuang@linaro.org>
-
-Regards
-Haojian
+Best Regards,
+Bo Shen
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
