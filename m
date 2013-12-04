@@ -1,59 +1,30 @@
-From: Axel Lin <axel.lin@ingics.com>
-Subject: [PATCH] pwm: sysfs: Convert to use ATTRIBUTE_GROUPS macro
-Date: Wed, 04 Dec 2013 14:52:50 +0800
-Message-ID: <1386139970.9997.1.camel@phoenix>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v4 0/4] LP3943 MFD driver for a GPIO expander and a PWM
+ generator
+Date: Wed, 4 Dec 2013 08:05:51 +0000
+Message-ID: <20131204080551.GA7469@lee--X1>
+References: <1380082975-6022-1-git-send-email-milo.kim@ti.com>
+ <529E68F0.1090904@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pb0-f53.google.com ([209.85.160.53]:43103 "EHLO
-	mail-pb0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751614Ab3LDGxC (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Dec 2013 01:53:02 -0500
-Received: by mail-pb0-f53.google.com with SMTP id ma3so22878678pbc.12
-        for <linux-pwm@vger.kernel.org>; Tue, 03 Dec 2013 22:53:01 -0800 (PST)
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <529E68F0.1090904@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Milo Kim <milo.kim@ti.com>
+Cc: Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: H Hartley Sweeten <hsweeten@visionengravers.com>, Rob Landley <rob@landley.net>, linux-pwm@vger.kernel.org
 
-Signed-off-by: Axel Lin <axel.lin@ingics.com>
----
- drivers/pwm/sysfs.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
+> Could you check this patchset?
+> Driver documentation was moved from 'Documentation' to
+> 'drivers/mfd/lp3943.c'.
 
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index 8c20332..4bd0c63 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -169,15 +169,7 @@ static struct attribute *pwm_attrs[] = {
- 	&dev_attr_polarity.attr,
- 	NULL
- };
--
--static const struct attribute_group pwm_attr_group = {
--	.attrs		= pwm_attrs,
--};
--
--static const struct attribute_group *pwm_attr_groups[] = {
--	&pwm_attr_group,
--	NULL,
--};
-+ATTRIBUTE_GROUPS(pwm);
- 
- static void pwm_export_release(struct device *child)
- {
-@@ -205,7 +197,7 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
- 	export->child.release = pwm_export_release;
- 	export->child.parent = parent;
- 	export->child.devt = MKDEV(0, 0);
--	export->child.groups = pwm_attr_groups;
-+	export->child.groups = pwm_groups;
- 	dev_set_name(&export->child, "pwm%u", pwm->hwpwm);
- 
- 	ret = device_register(&export->child);
--- 
-1.8.1.2
+Well because the reset of the patch-set wasn't sent as replies to
+[PATCH 0/X], it's now lost in the ulu. You will have to resubmit.
 
-
-
+--=20
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
