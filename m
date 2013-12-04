@@ -1,175 +1,118 @@
 From: Li Xiubo <Li.Xiubo@freescale.com>
-Subject: RE: [RFC] pwm: Add Freescale FTM PWM driver support
-Date: Wed, 4 Dec 2013 03:12:15 +0000
-Message-ID: <1DD289F6464F0949A2FCA5AA6DC23F828E5455@039-SN2MPN1-011.039d.mgd.msft.net>
-References: <1385979309-10505-1-git-send-email-Li.Xiubo@freescale.com>
- <20131202123406.GK12952@e106331-lin.cambridge.arm.com>
- <1DD289F6464F0949A2FCA5AA6DC23F828E374B@039-SN2MPN1-011.039d.mgd.msft.net>
- <20131203103632.GB7552@e106331-lin.cambridge.arm.com>
+Subject: RE: [PATCHv6 1/4] pwm: Add Freescale FTM PWM driver support
+Date: Wed, 4 Dec 2013 06:01:29 +0000
+Message-ID: <1DD289F6464F0949A2FCA5AA6DC23F828E66C5@039-SN2MPN1-011.039d.mgd.msft.net>
+References: <1384220218-12716-1-git-send-email-Li.Xiubo@freescale.com>
+ <1384220218-12716-2-git-send-email-Li.Xiubo@freescale.com>
+ <20131128212510.GC14689@mithrandir> <20131128223719.GG14689@mithrandir>
+ <20131202110243.GD12952@e106331-lin.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20131203103632.GB7552@e106331-lin.cambridge.arm.com>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20131202110243.GD12952@e106331-lin.cambridge.arm.com>
 Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: Jingchang Lu <jingchang.lu@freescale.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, Pawel Moll <Pawel.Moll@arm.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "tomasz.figa@gmail.com" <tomasz.figa@gmail.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Huan Wang <Huan.Wang@freescale.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "rob@landley.net" <rob@landley.net>, "galak@codeaurora.org" <galak@codeaurora.org>, grant
+Sender: linux-doc-owner@vger.kernel.org
+To: Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, "galak@codeaurora.org" <galak@codeaurora.org>
+Cc: Mike Turquette <mturquette@linaro.org>, Shawn Guo <Shawn.Guo@freescale.com>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, Pawel Moll <Pawel.Moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Huan Wang <Huan.Wang@freescale.com>, Jingchang Lu <jingchang.l>
 List-Id: linux-pwm@vger.kernel.org
 
-
-> > > > I'm sending the RFC patch about the FTM IP block registers read
-> > > > and write endian fix for comments and more parcticed ideas.
-> > > >
-> > > > In Vybird VF610 Tower, all the IP blocks expect LE data. In the
-> > > > LS-1, some of the IP blocks expect LE data, while others expect BE
-> > > > data. And the CPU always operates in LE mode in these two platforms.
+> > > > +static int fsl_pwm_parse_clk_ps(struct fsl_pwm_chip *fpc)
+> > > > +{
+> > > > +	int ret;
+> > > > +	struct of_phandle_args clkspec;
+> > > > +	struct device_node *np = fpc->chip.dev->of_node;
+> > > > +
+> > > > +	fpc->sys_clk = devm_clk_get(fpc->chip.dev, "ftm0");
+> > > > +	if (IS_ERR(fpc->sys_clk)) {
+> > > > +		ret = PTR_ERR(fpc->sys_clk);
+> > > > +		dev_err(fpc->chip.dev,
+> > > > +				"failed to get \"ftm0\" clock %d\n", ret);
+> > > > +		return ret;
+> > > > +	}
+> > > > +
+> > > > +	fpc->counter_clk = devm_clk_get(fpc->chip.dev, "ftm0_counter");
+> > > > +	if (IS_ERR(fpc->counter_clk)) {
+> > > > +		ret = PTR_ERR(fpc->counter_clk);
+> > > > +		dev_err(fpc->chip.dev,
+> > > > +				"failed to get \"ftm0_counter\" clock %d\n",
+> > > > +				ret);
+> > > > +		return ret;
+> > > > +	}
+> > > > +
+> > > > +	ret = of_parse_phandle_with_args(np, "clocks", "#clock-cells",
+> 1,
+> > > > +					&clkspec);
+> > > > +	if (ret)
+> > > > +		return ret;
+> > > > +
+> > > > +	fpc->counter_clk_select = clkspec.args[0];
 > > >
-> > > Could you elaborate on "expect BE data" please? Is this all
-> > > registers within a given device, or a subset thereof?
-> > > Are there data structures involved (i.e. buffers)?
-> > >
+> > > This isn't at all pretty. But given that once you have access to a
+> > > struct clk there's no way to identify it, I don't know of a better
+> > > alternative.
 > >
-> > It actually means big-endian mode, and it's all the registers and
-> > hasn't any buffers or descriptors involved within FTM IP block.
-> > But maybe in other IP blocks, such as eDMA and USB, should consider
-> > about the buffers/descriptors issue.
-> 
-> Ok. So all the registers are big-endian, and there are no memory accesses
-> to care about.
-> 
-> So for the binding for this device, we only have one property to worry
-> about -- the endianness of all registers.
-> 
-
-Yes, it is.
-
-> > > > +static inline u32 fsl_pwm_readl(struct fsl_pwm_chip *fpc, void
-> > > > +__iomem *reg) {
-> > > > +       u32 val;
-> > > > +
-> > > > +       val = __raw_readl(reg);
-> > > > +
-> > > > +       if (fpc->endianess == FTM_BIG)
-> > > > +               return be32_to_cpu(val);
-> > > > +       else
-> > > > +               return le32_to_cpu(val); }
-> > > > +
-> > > > +static inline void fsl_pwm_writel(struct fsl_pwm_chip *fpc, u32 val,
-> > > > +               void __iomem *reg) {
-> > > > +       if (fpc->endianess == FTM_BIG)
-> > > > +               val = cpu_to_be32(val);
-> > > > +       else
-> > > > +               val = cpu_to_le32(val);
-> > > > +
-> > > > +       __raw_writel(val, reg);
-> > > > +}
-> > >
-> > > Using the __raw variants also loses you the memory barriers. Does
-> > > this create any ordering issues in the rest of the driver?
-> > >
+> > Hi Mike,
 > >
-> > No, I had checked about this, so I just droped them.
-> > Maybe it will be much better and safer if there are some memory barriers.
+> > I've seen this crop up a number of times now, to varying degrees of
+> > gravity. In this particular case, the driver needs to know the type of a
+> > clock because it needs to program this hardware differently depending on
+> > which clock feeds the counter. Since there is no way to obtain any kind
+> > of identifying information from a struct clk, drivers need to rely on
+> > hacks like this and manually reach into the device tree to obtain that
+> > information.
 > 
-> If you've checked, is it safe or is it not?
+> Which property of the clock is the consumer concerned with in this case?
 > 
 
-Safe, but now I think I should add the memory barriers here, and that will be
-better.
+The "ftm0_counter" clock.
 
-> >
-> >
-> >
-> > > > +static int fsl_pwm_probe(struct platform_device *pdev) {
-> > > > +       int ret;
-> > > > +       const char *endianess;
-> > > > +       struct fsl_pwm_chip *fpc;
-> > > > +       struct resource *res;
-> > > > +       struct device_node *np = pdev->dev.of_node;
-> > > > +
-> > > > +       fpc = devm_kzalloc(&pdev->dev, sizeof(*fpc), GFP_KERNEL);
-> > > > +       if (!fpc)
-> > > > +               return -ENOMEM;
-> > > > +
-> > > > +       mutex_init(&fpc->lock);
-> > > > +
-> > > > +       fpc->chip.dev = &pdev->dev;
-> > > > +
-> > > > +       ret = fsl_pwm_parse_clk_ps(fpc);
-> > > > +       if (ret < 0)
-> > > > +               return ret;
-> > > > +
-> > > > +       if (of_property_read_string(np, "endianess", &endianess))
-> > > > +               pr_warning("missing \"endianess\" property, "
-> > > > +                               "the FTM IP block is little "
-> > > > +                               "endian as default\n");
-> > > > +       else if (!strcmp("big", endianess))
-> > > > +               fpc->endianess = FTM_BIG;
-> > >
-> > > Please don't do this.
-> > >
-> > > One option is to have a new compatible string -- a big-endian device
-> > > can't be poked in the same way as its little-endian variants, so
-> > > they're not compatible. You can then associate some data with the
-> > > compatible strings to figure out which accessors to use.
-> > >
-> >
-> > Do you mean:
-> > + static const struct of_device_id fsl_pwm_dt_ids[] = {
-> > +        { .compatible = "fsl,vf610-ftm-pwm,big-endian", },
-> > +        { .compatible = "fsl,vf610-ftm-pwm,little-endian", },
-> > +        { /* sentinel */ }
-> > + };  ?
-> 
-> That's one option. Something like that would be fine. Then you could store
-> flags in of_device_id::data to tell you which accessors to use.
-> 
-I will have a try.
 
-> >
-> > Or just adding one property in DT file likes:
-> > 			pwm0: pwm@40038000 {
-> > 				compatible = "fsl,vf610-ftm-pwm";
-> > 				#pwm-cells = <3>;
-> > 				reg = <0x40038000 0x1000>;
-> > 				clock-names = "ftm0", "ftm0_fix_sel",
-> "ftm0_ext_sel";
-> > 				clocks = <&clks VF610_CLK_FTM0>,
-> > 					<&clks VF610_CLK_FTM0_FIX_SEL>,
-> > 					<&clks VF610_CLK_FTM0_EXT_SEL>;
-> > +				big-endian;       ---> both registers and
-> buffers/descriptors
-> > Or
-> > +				big-endian-regs;  ---> registers
-> > +				big-endian-desc;  ---> buffers or descriptors
+> From a quick look at the driver it looks like there are actually a
+> number of different input lines to the device that share the clock-name
+> "ftm0_counter", though they are actually separate and each has a
+> different divider. Have I got that right?
 > 
-> As you've described above, in this case we don't need to make the
-> distinction. Other bindings seem to have a "big-endian" boolean property
-> for this case.
-> 
-> It's probably best to align with the existing bindings and use a "big-
-> endian" boolean property.
-> 
-Yes, I agree.
 
-Well as we can see that, PowerPC has already implemented about the big-endian
-and little-endian register reading and writing interfaces for IP block
-devices, which are just I needed here in this case. And also the same with
-other IP blocks in our Vybird , LS-1 and maybe other boards.
-So, I think there should be the similar implementations for ARM too. Or for
-every IP block, we must do the same work then. What do you think about this?
+Yes mostly, there are three different input lines wired to the counter
+clock, but they share only one divider. And between the three lines and
+the divider there is one mux inside of the FTM IP block.
+The three clock sources are:
+"ftm0",
+"ftm0-fix",
+"ftm0-ext".
+		 _____________________________________________________
+		|									|
+		|   +++++++++++		FTM Module				|
+ftm0 -------|-->+         +							|
+		|   +         +     +++++++++++++     ++++++++++++++	|
+ftm0-fix ---|-->+   MUX   +---->+  divider  +---->+  counter   +	|
+		|   +         +     +++++++++++++     ++++++++++++++	|
+ftm0-ext ---|-->+         +							|
+		|   +++++++++++							|
+		|_____________________________________________________|
 
 
 
-Thanks,
+> If that's the case, having a unique clock-names value for each of those
+> lines would be the solution I'd expect. Then you just have to list the
+> one(s) that are wired up, and the driver can figure out the appropriate
+> line to use either by requesting by name until it finds a match or
+> inspecting the clock-names property.
+> 
+
+Hi Kumar,
+In the list archives for mails of "[RFC][PATCHv5 4/4] Documentation: Add
+device tree bindings for Freescale FTM PWM.",we have discussed about this.
+Is there any different with your suggestions or ideas? 
+
+
+> Is there some other property of the parent that we care about here?
+> 
+
+As I know, not yet.
+
 --
-Xiubo
+Best Regards,
+ 
+
