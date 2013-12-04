@@ -1,71 +1,67 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4 4/4] Documentation: add LP3943 DT bindings and document
-Date: Wed, 4 Dec 2013 11:32:13 +0100
-Message-ID: <20131204103213.GB26589@ulmo.nvidia.com>
-References: <1380083109-6284-1-git-send-email-milo.kim@ti.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v4 0/4] LP3943 MFD driver for a GPIO expander and a PWM
+ generator
+Date: Wed, 4 Dec 2013 11:34:32 +0100
+Message-ID: <20131204103431.GC26589@ulmo.nvidia.com>
+References: <1380082975-6022-1-git-send-email-milo.kim@ti.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="K8nIJk4ghYZn606h"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="CblX+4bnyfN0pR09"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1380083109-6284-1-git-send-email-milo.kim-l0cyMroinI0@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Milo Kim <milo.kim-l0cyMroinI0@public.gmane.org>
-Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <1380082975-6022-1-git-send-email-milo.kim@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Milo Kim <milo.kim@ti.com>
+Cc: Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
 
---K8nIJk4ghYZn606h
+--CblX+4bnyfN0pR09
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Sep 25, 2013 at 01:25:09PM +0900, Milo Kim wrote:
-> Bindings for LP3943 MFD, GPIO and PWM controller are added.
+On Wed, Sep 25, 2013 at 01:22:55PM +0900, Milo Kim wrote:
+> LP3943 is an integrated device capable of driving 16 output channels.
+> It can be used for GPIO expander and PWM generators.
+> LP3493 registers are controlled via the I2C interface.
 >=20
-> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> Cc: Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Signed-off-by: Milo Kim <milo.kim-l0cyMroinI0@public.gmane.org>
-> ---
->  .../devicetree/bindings/gpio/gpio-lp3943.txt       |   37 +++++++++++++
->  Documentation/devicetree/bindings/mfd/lp3943.txt   |   33 +++++++++++
->  .../devicetree/bindings/pwm/pwm-lp3943.txt         |   58 ++++++++++++++=
-++++++
->  3 files changed, 128 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/gpio/gpio-lp3943.txt
->  create mode 100644 Documentation/devicetree/bindings/mfd/lp3943.txt
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
+> This patch-set consists of four parts - MFD, GPIO, PWM and documents.
+>=20
+> Update from v3 to v4:
+>   Move the driver description from the documentation to the MFD driver fi=
+le.
+>=20
+> Milo Kim (4):
+>   mfd: add LP3943 MFD driver
+>   gpio: add LP3943 I2C GPIO expander driver
+>   pwm: add LP3943 PWM driver
+>   Documentation: add LP3943 DT bindings and document
 
-The PWM bindings:
+I suspect that given the build-time dependencies Lee may want to take
+all four patches through the MFD tree, so I've acked the PWM parts.
 
-Acked-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Thierry
 
---K8nIJk4ghYZn606h
+--CblX+4bnyfN0pR09
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSnwSsAAoJEN0jrNd/PrOhBVcQAMEDW02jT6UM3pGzNlGLgmJ4
-Eob/QNLgxn0TMWr1JF2dNOT8rNOISIBdwLOJ7qXBPtrgyvCw9HMVrXmNVdGHwblY
-IK9vsvtzn9hTq+sDqbIKCBagHOM92cZvhyPK1FcczJd2JidIjQ8/RUjyCTcvP8TS
-Rtcy6nbpC0BvxONeDVPERMEI/FimF7CwqcW27802otz+xwthZg1VeI/lC8DDSjsr
-oWWxYg2iTQGrcFwXOdmIkJduJs2m7yTr9/RUMBEkHpFM6aMzs5tWa+QOas74mFWG
-aRpTaGx38EGpsfs7EOJ48CO3L6nnKGSNXJpqRmPvJifqX0aFrphlFr1kuP5NqyDF
-B0P3HoZIytmwDAFlH7uPIxWA0rQ951XCbn9ticqyeFhVHYAOYHLYfpNXB1QflWhj
-OG8QMsEUyUynDV+nvIa0nUC3h787PdbNAHeVFFBz/DA7xeZ3c271vJ0LUtUkOAXB
-tAUx4cPuL/e0ZlvGBS35yEx41q8E+zfDdb4faMyEEC7ghLarnJ7K9j+m3icup+s8
-NzX81FQBMsK7fggnwEXO/RB7lVuUBGVDtQFuVplwcXzuMhJ2n2t6dskiKfxF7TUr
-GJ0Zxa307PVvfz5ZpcwoUkkFqIR2aiNAhnrK9dqjrV2x/jnuSj5f9neUK4TW0ZNR
-Oqh2DgxAiUsg24EXvZ+W
-=rb6P
+iQIcBAEBAgAGBQJSnwU3AAoJEN0jrNd/PrOh7oUP/ivmm5ud0khS1wkyAYvT9w4Q
+ZLiIUS4+GIT2kHq9WArXn+69wkw4w9+t4CtWTIpoMBpLWPnVYpWe3ZSiysbk0E1R
+v2dM5KYeorjEEoHS5voRynfVzOt58XUZ9QfODv8Nn0HOCgkmzCl+uPo21MX/KA14
+iUeXV++lg7TMj+leMMaJaWClwMapLHg7q5U+x53DLMT2Qjw2lKdhjr5NqXKghuw+
+KiCL0evwe6JCAQc/5TJDJZrsYaKM1MW/+hSistDB8Deh9v3MzV0xMvPD13Pw7Coo
+nvezs7HawicHpihMkqG4oJxxARa0eFr9s62OcE9znU25twQbsXSQSnkT8g8StlA5
+f9ECApLfciCG9awJl3Nq2QB66HxSAbW3Mz+3FmD00swYcvzSNT9xTu4sWPmhjdX0
+9ZLGMMCH3pLp8TGfsGfDEGEDnbl/ZAesAxu2HWI+P3n2EkDCX6NLT+D2LmjfLOwo
+HAttQ9gnZymTfN7ejhIIsO6gJObcyEsuOE8eArMaOYAXDtnznMbziDI0CcuFgcHT
+o6nhQzuPnRdObfOZPnyeN2A5pZb2yLinklz/MURdKtFbJhgtVt2cBKGt08BUI5eL
+W4tqyEkkzy96iyyBlRGGFPS93jEBm6m5j7RIEh4gg6ZjfcZ8vjtjV4hDMm4v/cgK
+4paYhbBQzKXSU7bObC/5
+=m/Iq
 -----END PGP SIGNATURE-----
 
---K8nIJk4ghYZn606h--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--CblX+4bnyfN0pR09--
