@@ -1,118 +1,59 @@
-From: Li Xiubo <Li.Xiubo@freescale.com>
-Subject: RE: [PATCHv6 1/4] pwm: Add Freescale FTM PWM driver support
-Date: Wed, 4 Dec 2013 06:01:29 +0000
-Message-ID: <1DD289F6464F0949A2FCA5AA6DC23F828E66C5@039-SN2MPN1-011.039d.mgd.msft.net>
-References: <1384220218-12716-1-git-send-email-Li.Xiubo@freescale.com>
- <1384220218-12716-2-git-send-email-Li.Xiubo@freescale.com>
- <20131128212510.GC14689@mithrandir> <20131128223719.GG14689@mithrandir>
- <20131202110243.GD12952@e106331-lin.cambridge.arm.com>
+From: Axel Lin <axel.lin@ingics.com>
+Subject: [PATCH] pwm: sysfs: Convert to use ATTRIBUTE_GROUPS macro
+Date: Wed, 04 Dec 2013 14:52:50 +0800
+Message-ID: <1386139970.9997.1.camel@phoenix>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20131202110243.GD12952@e106331-lin.cambridge.arm.com>
-Content-Language: en-US
-Sender: linux-doc-owner@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, "galak@codeaurora.org" <galak@codeaurora.org>
-Cc: Mike Turquette <mturquette@linaro.org>, Shawn Guo <Shawn.Guo@freescale.com>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "t.figa@samsung.com" <t.figa@samsung.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, Pawel Moll <Pawel.Moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Huan Wang <Huan.Wang@freescale.com>, Jingchang Lu <jingchang.l>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pb0-f53.google.com ([209.85.160.53]:43103 "EHLO
+	mail-pb0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751614Ab3LDGxC (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Dec 2013 01:53:02 -0500
+Received: by mail-pb0-f53.google.com with SMTP id ma3so22878678pbc.12
+        for <linux-pwm@vger.kernel.org>; Tue, 03 Dec 2013 22:53:01 -0800 (PST)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: H Hartley Sweeten <hsweeten@visionengravers.com>, Rob Landley <rob@landley.net>, linux-pwm@vger.kernel.org
 
-> > > > +static int fsl_pwm_parse_clk_ps(struct fsl_pwm_chip *fpc)
-> > > > +{
-> > > > +	int ret;
-> > > > +	struct of_phandle_args clkspec;
-> > > > +	struct device_node *np = fpc->chip.dev->of_node;
-> > > > +
-> > > > +	fpc->sys_clk = devm_clk_get(fpc->chip.dev, "ftm0");
-> > > > +	if (IS_ERR(fpc->sys_clk)) {
-> > > > +		ret = PTR_ERR(fpc->sys_clk);
-> > > > +		dev_err(fpc->chip.dev,
-> > > > +				"failed to get \"ftm0\" clock %d\n", ret);
-> > > > +		return ret;
-> > > > +	}
-> > > > +
-> > > > +	fpc->counter_clk = devm_clk_get(fpc->chip.dev, "ftm0_counter");
-> > > > +	if (IS_ERR(fpc->counter_clk)) {
-> > > > +		ret = PTR_ERR(fpc->counter_clk);
-> > > > +		dev_err(fpc->chip.dev,
-> > > > +				"failed to get \"ftm0_counter\" clock %d\n",
-> > > > +				ret);
-> > > > +		return ret;
-> > > > +	}
-> > > > +
-> > > > +	ret = of_parse_phandle_with_args(np, "clocks", "#clock-cells",
-> 1,
-> > > > +					&clkspec);
-> > > > +	if (ret)
-> > > > +		return ret;
-> > > > +
-> > > > +	fpc->counter_clk_select = clkspec.args[0];
-> > >
-> > > This isn't at all pretty. But given that once you have access to a
-> > > struct clk there's no way to identify it, I don't know of a better
-> > > alternative.
-> >
-> > Hi Mike,
-> >
-> > I've seen this crop up a number of times now, to varying degrees of
-> > gravity. In this particular case, the driver needs to know the type of a
-> > clock because it needs to program this hardware differently depending on
-> > which clock feeds the counter. Since there is no way to obtain any kind
-> > of identifying information from a struct clk, drivers need to rely on
-> > hacks like this and manually reach into the device tree to obtain that
-> > information.
-> 
-> Which property of the clock is the consumer concerned with in this case?
-> 
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+---
+ drivers/pwm/sysfs.c | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
-The "ftm0_counter" clock.
-
-
-> From a quick look at the driver it looks like there are actually a
-> number of different input lines to the device that share the clock-name
-> "ftm0_counter", though they are actually separate and each has a
-> different divider. Have I got that right?
-> 
-
-Yes mostly, there are three different input lines wired to the counter
-clock, but they share only one divider. And between the three lines and
-the divider there is one mux inside of the FTM IP block.
-The three clock sources are:
-"ftm0",
-"ftm0-fix",
-"ftm0-ext".
-		 _____________________________________________________
-		|									|
-		|   +++++++++++		FTM Module				|
-ftm0 -------|-->+         +							|
-		|   +         +     +++++++++++++     ++++++++++++++	|
-ftm0-fix ---|-->+   MUX   +---->+  divider  +---->+  counter   +	|
-		|   +         +     +++++++++++++     ++++++++++++++	|
-ftm0-ext ---|-->+         +							|
-		|   +++++++++++							|
-		|_____________________________________________________|
-
-
-
-> If that's the case, having a unique clock-names value for each of those
-> lines would be the solution I'd expect. Then you just have to list the
-> one(s) that are wired up, and the driver can figure out the appropriate
-> line to use either by requesting by name until it finds a match or
-> inspecting the clock-names property.
-> 
-
-Hi Kumar,
-In the list archives for mails of "[RFC][PATCHv5 4/4] Documentation: Add
-device tree bindings for Freescale FTM PWM.",we have discussed about this.
-Is there any different with your suggestions or ideas? 
-
-
-> Is there some other property of the parent that we care about here?
-> 
-
-As I know, not yet.
-
---
-Best Regards,
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index 8c20332..4bd0c63 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -169,15 +169,7 @@ static struct attribute *pwm_attrs[] = {
+ 	&dev_attr_polarity.attr,
+ 	NULL
+ };
+-
+-static const struct attribute_group pwm_attr_group = {
+-	.attrs		= pwm_attrs,
+-};
+-
+-static const struct attribute_group *pwm_attr_groups[] = {
+-	&pwm_attr_group,
+-	NULL,
+-};
++ATTRIBUTE_GROUPS(pwm);
  
+ static void pwm_export_release(struct device *child)
+ {
+@@ -205,7 +197,7 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
+ 	export->child.release = pwm_export_release;
+ 	export->child.parent = parent;
+ 	export->child.devt = MKDEV(0, 0);
+-	export->child.groups = pwm_attr_groups;
++	export->child.groups = pwm_groups;
+ 	dev_set_name(&export->child, "pwm%u", pwm->hwpwm);
+ 
+ 	ret = device_register(&export->child);
+-- 
+1.8.1.2
+
+
 
