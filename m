@@ -1,97 +1,65 @@
-From: Bo Shen <voice.shen@atmel.com>
-Subject: Re: [PATCH v8 1/2] PWM: atmel-pwm: add PWM controller driver
-Date: Thu, 5 Dec 2013 09:11:28 +0800
-Message-ID: <529FD2C0.6080707@atmel.com>
-References: <1384766002-2852-1-git-send-email-voice.shen@atmel.com>
- <20131202105957.GD18060@ulmo.nvidia.com> <529D4B58.9020700@atmel.com>
- <20131203094326.GB21178@ulmo.nvidia.com> <529E9AA2.8020400@atmel.com>
- <20131204100340.GU19943@ulmo.nvidia.com>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v4 0/4] LP3943 MFD driver for a GPIO expander and a PWM
+ generator
+Date: Thu, 5 Dec 2013 21:43:41 +0000
+Message-ID: <20131205214341.GC29268@sirena.org.uk>
+References: <1380082975-6022-1-git-send-email-milo.kim@ti.com>
+ <20131204103431.GC26589@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20131204100340.GU19943@ulmo.nvidia.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, nicolas.ferre@atmel.com, linux-kernel@vger.kernel.org, alexandre.belloni@free-electrons.com, Bo Shen <voice.shen@atmel.com>, galak@codeaurora.org, plagnioj@jcrosoft.com, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="WbkWELb8d/6oR4nB"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from cassiel.sirena.org.uk ([80.68.93.111]:41965 "EHLO
+	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753224Ab3LEVnq (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Dec 2013 16:43:46 -0500
+Content-Disposition: inline
+In-Reply-To: <20131204103431.GC26589@ulmo.nvidia.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Milo Kim <milo.kim@ti.com>, Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
 
-Hi Thierry,
 
-On 12/04/2013 06:03 PM, Thierry Reding wrote:
-> On Wed, Dec 04, 2013 at 10:59:46AM +0800, Bo Shen wrote:
->> Hi Thierry,
->>
->> On 12/03/2013 05:43 PM, Thierry Reding wrote:
->>> On Tue, Dec 03, 2013 at 11:09:12AM +0800, Bo Shen wrote:
->>>> On 12/02/2013 06:59 PM, Thierry Reding wrote:
->>>>> On Mon, Nov 18, 2013 at 05:13:21PM +0800, Bo Shen wrote:
->>> [...]
->>>>>> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
->>> [...]
->>>>>> +	/* Calculate the period cycles */
->>>>>> +	while (div > PWM_MAX_PRD) {
->>>>>> +		div = clk_rate / (1 << pres);
->>>>>> +		div = div * period_ns;
->>>>>> +		/* 1/Hz = 100000000 ns */
->>>>>
->>>>> I don't think that comment is needed.
->>>>
->>>> This is asked to be added.
->>>> And, I think keep it and it won't hurt, what do you think?
->>>
->>> I think it's obvious that you're converting from nanoseconds because of
->>> the _ns prefix in period_ns. But if somebody requested this and everyone
->>> else thinks it's useful, I'm okay with keeping it.
->>>
->>>>>> +	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
->>>>>> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CDTYUPD, dty);
->>>>>> +	} else {
->>>>>> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CDTY, dty);
->>>>>> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CPRD, prd);
->>>>>> +	}
->>>>>> +}
->>>>>
->>>>> Neither version 1 nor version 2 seem to be able to change the period
->>>>> while the channel is enabled. Perhaps that should be checked for in
->>>>> atmel_pwm_config() and an error (-EBUSY) returned?
->>>>
->>>> The period is configured in dt in device tree, or platform data in non
->>>> device tree. Nowhere will update period. So, not code to update period.
->>>> Am I right? If not, please figure out.
->>>
->>> The .config() operation allows the period to be specified. Just because
->>> nobody currently changes it at runtime doesn't mean it can't be done.
->>>
->>> It is also possible that whoever wrote the device tree or platform data
->>> didn't know that the period must be the same for all PWM channels and
->>> therefore might use different values. If you check for this, at least
->>> they'll notice. If you don't check for it, then they may end up having
->>> the period reconfigured behind their backs, which may cause parts of
->>> their setup to behave unexpectedly.
->>
->> Thanks for this information.
->> I will add code for changing period.
->
-> Just to clarify: I wouldn't want this code to allow changing the period
-> but rather reject incompatible changes to the period with an error code.
+--WbkWELb8d/6oR4nB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-So, in this patch, just check it as you suggested in previous email, 
-would it be OK?
---->8---
-Perhaps that should be checked for in atmel_pwm_config() and an error 
-(-EBUSY) returned?
----8<---
+On Wed, Dec 04, 2013 at 11:34:32AM +0100, Thierry Reding wrote:
+> On Wed, Sep 25, 2013 at 01:22:55PM +0900, Milo Kim wrote:
 
-> Thierry
+> >   mfd: add LP3943 MFD driver
+> >   gpio: add LP3943 I2C GPIO expander driver
+> >   pwm: add LP3943 PWM driver
+> >   Documentation: add LP3943 DT bindings and document
 
-Best Regards,
-Bo Shen
+> I suspect that given the build-time dependencies Lee may want to take
+> all four patches through the MFD tree, so I've acked the PWM parts.
+
+FWIW this isn't an issue with new MFDs - since the function drivers will
+depend on the core driver it's not possible to enable them in Kconfig
+until the core driver is also merged and you don't get bisect issues.
+
+--WbkWELb8d/6oR4nB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSoPOJAAoJELSic+t+oim90fgP/Rr9rCPDaQciOglENW/i2AnN
+Yk5bbdeAeNSjI3GhIdprtb3C/MjqJAGo+TOmDU7HLo1vzIVM54CumZCYqg6qQwKu
+W0X3jadh/PMhDW8v04ixxxNoT7Ag9qCWdGIdO/z2lKq3sDWGEn7nFmRmCQQSK8sx
+u2C+uvrnI98XQ7klNEc/y6yrqAAy/NOKX708INrS4sMFtkLSvory8N512pS53SUM
++2g3hx3LYVvLhBy30nmT7kHRvbC1aSDUmEOPW3XCOFKq5wzqTVy9F2/Ftno0W+I/
+9efSSOD7DgtUWe1mDUZbjA7H+Fbpzp+gNY+9L24mGrD8uTL/Vk7QMvsIpW/2grce
+xuEf66JAKeytsFFkbNcmQSB+NV8rivLyfxJ661a4wVDAFJg7uw46neRoGnCjZqXs
+xinFj2bC4479zkW3PiobTIeh7AHBmKpca7x/7HD1+FqDrpk3vL5SAq7KwAflCRBt
+WqR2JlqRwX19GuGoVWhJq2sYmx0wUdVRvRTzJhoJeZwMrIsZVd/W9C/sbJh3qKgX
+u4vDtO1jwUpMwKddbKIOt5/rjOm4lMmdNG9akwdsR7iplcstIQn9IkMEww4CALM9
+z3r0SModw7MrOVAdEjq9Re7gI+RDhY/NCfhsazieBh7gan5cA9NEGK9pQrTNRicX
+TQJj9JyQ55eNErjHPGsq
+=4LdU
+-----END PGP SIGNATURE-----
+
+--WbkWELb8d/6oR4nB--
