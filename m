@@ -1,69 +1,97 @@
-From: Mike Dunn <mikedunn@newsguy.com>
-Subject: Re: [PATCH RESEND v5 1/2] PWM: PXA: add device tree support to PWM
- driver
-Date: Wed, 04 Dec 2013 10:21:55 -0800
-Message-ID: <529F72C3.7060503@newsguy.com>
-References: <1379791174-2369-1-git-send-email-mikedunn@newsguy.com> <1379791174-2369-2-git-send-email-mikedunn@newsguy.com> <20131203101714.GG21178@ulmo.nvidia.com> <529E26C9.30707@newsguy.com> <20131204092152.GL19943@ulmo.nvidia.com>
+From: Bo Shen <voice.shen@atmel.com>
+Subject: Re: [PATCH v8 1/2] PWM: atmel-pwm: add PWM controller driver
+Date: Thu, 5 Dec 2013 09:11:28 +0800
+Message-ID: <529FD2C0.6080707@atmel.com>
+References: <1384766002-2852-1-git-send-email-voice.shen@atmel.com>
+ <20131202105957.GD18060@ulmo.nvidia.com> <529D4B58.9020700@atmel.com>
+ <20131203094326.GB21178@ulmo.nvidia.com> <529E9AA2.8020400@atmel.com>
+ <20131204100340.GU19943@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from smtp.newsguy.com ([74.209.136.69]:49627 "EHLO smtp.newsguy.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753952Ab3LDSWl (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 4 Dec 2013 13:22:41 -0500
-In-Reply-To: <20131204092152.GL19943@ulmo.nvidia.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20131204100340.GU19943@ulmo.nvidia.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Rob Herring <rob.herring@calxeda.com>, Haojian Zhuang <haojian.zhuang@linaro.org>, Robert Jarzmik <robert.jarzmik@free.fr>, Marek Vasut <marex@denx.de>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Chao Xie <chao.xie@marvell.com>, Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stephen Warren <swarren@wwwdotorg.org>, Ian Campbell <ian.campbell@citrix.com>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, nicolas.ferre@atmel.com, linux-kernel@vger.kernel.org, alexandre.belloni@free-electrons.com, Bo Shen <voice.shen@atmel.com>, galak@codeaurora.org, plagnioj@jcrosoft.com, linux-arm-kernel@lists.infradead.org
+List-Id: linux-pwm@vger.kernel.org
 
-On 12/04/2013 01:21 AM, Thierry Reding wrote:
-> On Tue, Dec 03, 2013 at 10:45:29AM -0800, Mike Dunn wrote:
->> On 12/03/2013 02:17 AM, Thierry Reding wrote:
->>> On Sat, Sep 21, 2013 at 12:19:33PM -0700, Mike Dunn wrote:
->>>> This patch adds device tree support to the PXA's PWM driver.  Nothing
->>>> needs to be extracted from the device tree node by the PWM device.
->>>> Client devices need only specify the period; the per-chip index is
->>>> implicitly zero because one device node must be present for each PWM
->>>> output in use.  This approach is more convenient due to the wide
->>>> variability in the number of PWM channels present across the various PXA
->>>> variants, and is made possible by the fact that the register sets for
->>>> each PWM channel are segregated from each other.  An of_xlate() method
->>>> is added to parse this single-cell node.  The existing ID table is
->>>> reused for the match table data.
->>>>
->>>> Tested on a Palm Treo 680 (both platform data and DT cases).
->>>>
->>>> Signed-off-by: Mike Dunn <mikedunn@newsguy.com>
->>>> ---
->>>>  Documentation/devicetree/bindings/pwm/pxa-pwm.txt | 30 +++++++++++++
->>>>  drivers/pwm/pwm-pxa.c                             | 52 ++++++++++++++++++++++-
->>>>  2 files changed, 81 insertions(+), 1 deletion(-)
->>>>  create mode 100644 Documentation/devicetree/bindings/pwm/pxa-pwm.txt
->>>
->>> Hi Mike,
->>>
->>> It looks like this fell through the cracks. Is this patch still the
->>> latest one you have? Should it still be applied?
->>>
->>> Thierry
->>>
->>
+Hi Thierry,
+
+On 12/04/2013 06:03 PM, Thierry Reding wrote:
+> On Wed, Dec 04, 2013 at 10:59:46AM +0800, Bo Shen wrote:
 >> Hi Thierry,
 >>
->> Funny I should hear from you about this today.... I just turned my attention
->> back to this today and noticed that it never made it into your for-next branch.
->>  Yes, it is the latest.  If the patch still applies cleanly, please feel free.
->> Otherwise, I'd be glad to rework it against something more recent.
-> 
-> I've applied it to my for-next branch (with some minor whitespace fixups
-> and some tuning to how the OF match table is defined). I don't consider
-> any of the changes risky, but it'd be great if you could still test the
-> version that I pushed.
+>> On 12/03/2013 05:43 PM, Thierry Reding wrote:
+>>> On Tue, Dec 03, 2013 at 11:09:12AM +0800, Bo Shen wrote:
+>>>> On 12/02/2013 06:59 PM, Thierry Reding wrote:
+>>>>> On Mon, Nov 18, 2013 at 05:13:21PM +0800, Bo Shen wrote:
+>>> [...]
+>>>>>> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+>>> [...]
+>>>>>> +	/* Calculate the period cycles */
+>>>>>> +	while (div > PWM_MAX_PRD) {
+>>>>>> +		div = clk_rate / (1 << pres);
+>>>>>> +		div = div * period_ns;
+>>>>>> +		/* 1/Hz = 100000000 ns */
+>>>>>
+>>>>> I don't think that comment is needed.
+>>>>
+>>>> This is asked to be added.
+>>>> And, I think keep it and it won't hurt, what do you think?
+>>>
+>>> I think it's obvious that you're converting from nanoseconds because of
+>>> the _ns prefix in period_ns. But if somebody requested this and everyone
+>>> else thinks it's useful, I'm okay with keeping it.
+>>>
+>>>>>> +	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
+>>>>>> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CDTYUPD, dty);
+>>>>>> +	} else {
+>>>>>> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CDTY, dty);
+>>>>>> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CPRD, prd);
+>>>>>> +	}
+>>>>>> +}
+>>>>>
+>>>>> Neither version 1 nor version 2 seem to be able to change the period
+>>>>> while the channel is enabled. Perhaps that should be checked for in
+>>>>> atmel_pwm_config() and an error (-EBUSY) returned?
+>>>>
+>>>> The period is configured in dt in device tree, or platform data in non
+>>>> device tree. Nowhere will update period. So, not code to update period.
+>>>> Am I right? If not, please figure out.
+>>>
+>>> The .config() operation allows the period to be specified. Just because
+>>> nobody currently changes it at runtime doesn't mean it can't be done.
+>>>
+>>> It is also possible that whoever wrote the device tree or platform data
+>>> didn't know that the period must be the same for all PWM channels and
+>>> therefore might use different values. If you check for this, at least
+>>> they'll notice. If you don't check for it, then they may end up having
+>>> the period reconfigured behind their backs, which may cause parts of
+>>> their setup to behave unexpectedly.
+>>
+>> Thanks for this information.
+>> I will add code for changing period.
+>
+> Just to clarify: I wouldn't want this code to allow changing the period
+> but rather reject incompatible changes to the period with an error code.
 
+So, in this patch, just check it as you suggested in previous email, 
+would it be OK?
+--->8---
+Perhaps that should be checked for in atmel_pwm_config() and an error 
+(-EBUSY) returned?
+---8<---
 
-I just tested it... looks good.  Thanks again Thierry.  Thanks also Haojian.
+> Thierry
 
-Mike
-
+Best Regards,
+Bo Shen
