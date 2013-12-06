@@ -1,45 +1,73 @@
-From: Xiubo Li <Li.Xiubo@freescale.com>
-Subject: [RFCv2 endianess 3/4] ARM: dts: Enables FTM PWM device for Vybrid VF610 TOWER board.
-Date: Fri, 6 Dec 2013 13:52:13 +0800
-Message-ID: <1386309134-1822-4-git-send-email-Li.Xiubo@freescale.com>
-References: <1386309134-1822-1-git-send-email-Li.Xiubo@freescale.com>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH RESEND v5 0/4] LP3943 MFD driver for a GPIO expander and
+ a PWM generator
+Date: Fri, 6 Dec 2013 09:09:15 +0000
+Message-ID: <20131206090915.GA12491@lee--X1>
+References: <1386296324-23039-1-git-send-email-milo.kim@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from va3ehsobe010.messaging.microsoft.com ([216.32.180.30]:9981 "EHLO
-	va3outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1752645Ab3LFGnX (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 6 Dec 2013 01:43:23 -0500
-In-Reply-To: <1386309134-1822-1-git-send-email-Li.Xiubo@freescale.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1386296324-23039-1-git-send-email-milo.kim-l0cyMroinI0@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Milo Kim <milo.kim-l0cyMroinI0@public.gmane.org>
+Cc: Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: r65073@freescale.com, thierry.reding@gmail.com, s.hauer@pengutronix.de, galak@codeaurora.org, grant.likely@linaro.org, matt.porter@linaro.org, tomasz.figa@gmail.com, swarren@wwwdotorg.org, mark.rutland@arm.com
-Cc: linux@arm.linux.org.uk, rob@landley.net, ian.campbell@citrix.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org
 
-Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
-Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
----
- arch/arm/boot/dts/vf610-twr.dts | 6 ++++++
- 1 file changed, 6 insertions(+)
+On Fri, 06 Dec 2013, Milo Kim wrote:
 
-diff --git a/arch/arm/boot/dts/vf610-twr.dts b/arch/arm/boot/dts/vf610-twr.dts
-index 82d352f..3130f85 100644
---- a/arch/arm/boot/dts/vf610-twr.dts
-+++ b/arch/arm/boot/dts/vf610-twr.dts
-@@ -83,6 +83,12 @@
- 	status = "okay";
- };
- 
-+&pwm0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_pwm0_1>;
-+	status = "okay";
-+};
+> LP3943 is an integrated device capable of driving 16 output channels.
+> It can be used for GPIO expander and PWM generators.
+> LP3493 registers are controlled via the I2C interface.
+>=20
+> This patch-set consists of four parts - MFD, GPIO, PWM and documents.
+>=20
+> Update from v4 to v5:
+>   Add Thierry's ACK for the PWM driver and the DT documentation
+>=20
+> Milo Kim (4):
+>   mfd: add LP3943 MFD driver
+>   gpio: add LP3943 I2C GPIO expander driver
+>   pwm: add LP3943 PWM driver
+>   Documentation: add LP3943 DT bindings and document
+>=20
+>  .../devicetree/bindings/gpio/gpio-lp3943.txt       |   37 +++
+>  Documentation/devicetree/bindings/mfd/lp3943.txt   |   33 ++
+>  .../devicetree/bindings/pwm/pwm-lp3943.txt         |   58 ++++
+>  drivers/gpio/Kconfig                               |    8 +
+>  drivers/gpio/Makefile                              |    1 +
+>  drivers/gpio/gpio-lp3943.c                         |  242 ++++++++++=
++++++
+>  drivers/mfd/Kconfig                                |   11 +
+>  drivers/mfd/Makefile                               |    1 +
+>  drivers/mfd/lp3943.c                               |  167 ++++++++++=
 +
- &uart1 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_uart1_1>;
--- 
-1.8.4
+>  drivers/pwm/Kconfig                                |   10 +
+>  drivers/pwm/Makefile                               |    1 +
+>  drivers/pwm/pwm-lp3943.c                           |  314 ++++++++++=
+++++++++++
+>  include/linux/mfd/lp3943.h                         |  114 +++++++
+>  13 files changed, 997 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/gpio/gpio-lp394=
+3.txt
+>  create mode 100644 Documentation/devicetree/bindings/mfd/lp3943.txt
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-lp3943.=
+txt
+>  create mode 100644 drivers/gpio/gpio-lp3943.c
+>  create mode 100644 drivers/mfd/lp3943.c
+>  create mode 100644 drivers/pwm/pwm-lp3943.c
+>  create mode 100644 include/linux/mfd/lp3943.h
 
+Patch-set applied, thanks Milo.
 
+--=20
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
