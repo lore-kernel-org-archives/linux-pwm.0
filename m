@@ -1,65 +1,56 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v4 0/4] LP3943 MFD driver for a GPIO expander and a PWM
- generator
-Date: Thu, 5 Dec 2013 21:43:41 +0000
-Message-ID: <20131205214341.GC29268@sirena.org.uk>
-References: <1380082975-6022-1-git-send-email-milo.kim@ti.com>
- <20131204103431.GC26589@ulmo.nvidia.com>
+From: Milo Kim <milo.kim@ti.com>
+Subject: [PATCH v5 0/4] LP3943 MFD driver for a GPIO expander and a PWM generator
+Date: Fri, 6 Dec 2013 11:08:34 +0900
+Message-ID: <1386295714-22323-1-git-send-email-milo.kim@ti.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="WbkWELb8d/6oR4nB"
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from cassiel.sirena.org.uk ([80.68.93.111]:41965 "EHLO
-	cassiel.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753224Ab3LEVnq (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Dec 2013 16:43:46 -0500
-Content-Disposition: inline
-In-Reply-To: <20131204103431.GC26589@ulmo.nvidia.com>
+Received: from bear.ext.ti.com ([192.94.94.41]:33523 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751191Ab3LFCJH (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Thu, 5 Dec 2013 21:09:07 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Milo Kim <milo.kim@ti.com>, Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
+To: Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Milo Kim <milo.kim@ti.com>
 
+LP3943 is an integrated device capable of driving 16 output channels.
+It can be used for GPIO expander and PWM generators.
+LP3493 registers are controlled via the I2C interface.
 
---WbkWELb8d/6oR4nB
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This patch-set consists of four parts - MFD, GPIO, PWM and documents.
 
-On Wed, Dec 04, 2013 at 11:34:32AM +0100, Thierry Reding wrote:
-> On Wed, Sep 25, 2013 at 01:22:55PM +0900, Milo Kim wrote:
+Update from v4 to v5:
+  Add Thierry's ACK for the PWM driver and the DT documentation
 
-> >   mfd: add LP3943 MFD driver
-> >   gpio: add LP3943 I2C GPIO expander driver
-> >   pwm: add LP3943 PWM driver
-> >   Documentation: add LP3943 DT bindings and document
+Milo Kim (4):
+  mfd: add LP3943 MFD driver
+  gpio: add LP3943 I2C GPIO expander driver
+  pwm: add LP3943 PWM driver
+  Documentation: add LP3943 DT bindings and document
 
-> I suspect that given the build-time dependencies Lee may want to take
-> all four patches through the MFD tree, so I've acked the PWM parts.
+ .../devicetree/bindings/gpio/gpio-lp3943.txt       |   37 +++
+ Documentation/devicetree/bindings/mfd/lp3943.txt   |   33 ++
+ .../devicetree/bindings/pwm/pwm-lp3943.txt         |   58 ++++
+ drivers/gpio/Kconfig                               |    8 +
+ drivers/gpio/Makefile                              |    1 +
+ drivers/gpio/gpio-lp3943.c                         |  242 +++++++++++++++
+ drivers/mfd/Kconfig                                |   11 +
+ drivers/mfd/Makefile                               |    1 +
+ drivers/mfd/lp3943.c                               |  167 +++++++++++
+ drivers/pwm/Kconfig                                |   10 +
+ drivers/pwm/Makefile                               |    1 +
+ drivers/pwm/pwm-lp3943.c                           |  314 ++++++++++++++++++++
+ include/linux/mfd/lp3943.h                         |  114 +++++++
+ 13 files changed, 997 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/gpio/gpio-lp3943.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/lp3943.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-lp3943.txt
+ create mode 100644 drivers/gpio/gpio-lp3943.c
+ create mode 100644 drivers/mfd/lp3943.c
+ create mode 100644 drivers/pwm/pwm-lp3943.c
+ create mode 100644 include/linux/mfd/lp3943.h
 
-FWIW this isn't an issue with new MFDs - since the function drivers will
-depend on the core driver it's not possible to enable them in Kconfig
-until the core driver is also merged and you don't get bisect issues.
+-- 
+1.7.10.4
 
---WbkWELb8d/6oR4nB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJSoPOJAAoJELSic+t+oim90fgP/Rr9rCPDaQciOglENW/i2AnN
-Yk5bbdeAeNSjI3GhIdprtb3C/MjqJAGo+TOmDU7HLo1vzIVM54CumZCYqg6qQwKu
-W0X3jadh/PMhDW8v04ixxxNoT7Ag9qCWdGIdO/z2lKq3sDWGEn7nFmRmCQQSK8sx
-u2C+uvrnI98XQ7klNEc/y6yrqAAy/NOKX708INrS4sMFtkLSvory8N512pS53SUM
-+2g3hx3LYVvLhBy30nmT7kHRvbC1aSDUmEOPW3XCOFKq5wzqTVy9F2/Ftno0W+I/
-9efSSOD7DgtUWe1mDUZbjA7H+Fbpzp+gNY+9L24mGrD8uTL/Vk7QMvsIpW/2grce
-xuEf66JAKeytsFFkbNcmQSB+NV8rivLyfxJ661a4wVDAFJg7uw46neRoGnCjZqXs
-xinFj2bC4479zkW3PiobTIeh7AHBmKpca7x/7HD1+FqDrpk3vL5SAq7KwAflCRBt
-WqR2JlqRwX19GuGoVWhJq2sYmx0wUdVRvRTzJhoJeZwMrIsZVd/W9C/sbJh3qKgX
-u4vDtO1jwUpMwKddbKIOt5/rjOm4lMmdNG9akwdsR7iplcstIQn9IkMEww4CALM9
-z3r0SModw7MrOVAdEjq9Re7gI+RDhY/NCfhsazieBh7gan5cA9NEGK9pQrTNRicX
-TQJj9JyQ55eNErjHPGsq
-=4LdU
------END PGP SIGNATURE-----
-
---WbkWELb8d/6oR4nB--
