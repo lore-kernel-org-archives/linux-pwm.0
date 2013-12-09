@@ -1,86 +1,77 @@
-From: randy <lxr1234@hotmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [exynos4412]How to test a pwm device, is there a test program?
-Date: Mon, 9 Dec 2013 19:04:12 +0800
-Message-ID: <BLU0-SMTP1651F8FA9BEEB0257791F09ADD30@phx.gbl>
-References: <BLU0-SMTP2611DD3F4485EEE457F4920ADD00@phx.gbl> <20131209085225.GA27868@ulmo.nvidia.com>
+Date: Mon, 9 Dec 2013 12:55:24 +0100
+Message-ID: <20131209115523.GA17693@ulmo.nvidia.com>
+References: <BLU0-SMTP2611DD3F4485EEE457F4920ADD00@phx.gbl>
+ <20131209085225.GA27868@ulmo.nvidia.com>
+ <BLU0-SMTP1651F8FA9BEEB0257791F09ADD30@phx.gbl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="HlL+5n6rz5pIUxbD"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from blu0-omc4-s14.blu0.hotmail.com ([65.55.111.153]:2286 "EHLO
-	blu0-omc4-s14.blu0.hotmail.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932662Ab3LILER (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 9 Dec 2013 06:04:17 -0500
-In-Reply-To: <20131209085225.GA27868@ulmo.nvidia.com>
+Received: from mail-bk0-f50.google.com ([209.85.214.50]:63433 "EHLO
+	mail-bk0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932604Ab3LIL4e (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 9 Dec 2013 06:56:34 -0500
+Received: by mail-bk0-f50.google.com with SMTP id e11so1333910bkh.9
+        for <linux-pwm@vger.kernel.org>; Mon, 09 Dec 2013 03:56:33 -0800 (PST)
+Content-Disposition: inline
+In-Reply-To: <BLU0-SMTP1651F8FA9BEEB0257791F09ADD30@phx.gbl>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>
+To: randy <lxr1234@hotmail.com>
+Cc: linux-pwm@vger.kernel.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
 
-? 2013?12?09? 16:52, Thierry Reding ??:
-> On Mon, Dec 09, 2013 at 01:22:02AM +0800, randy wrote:
->> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->> 
->> The dts for my board tiny4412 is ready, in my board, the pwm 0
->> is connect to a buzzer. I want to test whether it works, but I
->> don't know any test util. As I have a oscillograph, there is no
->> problem for me to measure whether the output is correct. Thanks
-> 
-> You can use the sysfs interface to easily test the PWM
-> functionality. The documentation for that is in
-> Documentation/pwm.txt and 
-> Documentation/ABI/testing/sysfs-class-pwm.
-> 
-I am sorry for I didn't notice that documents.
-> Generally this should work somewhat like this:
-> 
-> # echo 0 > /sys/class/pwm/pwmchip0/export
-It seems can't work.
-root@mifu:~# LANG=C echo 0 > /sys/class/pwm/pwmchip0/export
-- -bash: echo: write error: Invalid argument
+--HlL+5n6rz5pIUxbD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> # echo 50000 > /sys/class/pwm/pwmchip0/pwm0/period # echo 25000 >
-> /sys/class/pwm/pwmchip0/pwm0/duty_cycle # echo 1 >
-> /sys/class/pwm/pwmchip0/pwm0/enable
-> 
-> Which should configure PWM 0 to run at a period of 50000 ns and a
-> 50% duty-cycle.
-> 
-> # echo 0 > /sys/class/pwm/pwmchip0/pwm0/disable
-> 
-> Stops the PWM signal and when you're done with all the testing you
-> can export the PWM (so that it can be reused):
-> 
-> # echo 0 > /sys/class/pwm/pwmchip0/unexport
-> 
-> Thierry
-Actually, I don't know whether the pwm works or not. In dmesg, I saw:
-[  853.690000] samsung-pwm 139d0000.pwm: tried to request PWM channel
-0 without output
-[  876.930000] samsung-pwm 139d0000.pwm: tried to request PWM channel
-0 without output
-[  879.615000] samsung-pwm 139d0000.pwm: tried to request PWM channel
-1 without output
+On Mon, Dec 09, 2013 at 07:04:12PM +0800, randy wrote:
+[...]
+> Actually, I don't know whether the pwm works or not. In dmesg, I saw:
+> [  853.690000] samsung-pwm 139d0000.pwm: tried to request PWM channel
+> 0 without output
+> [  876.930000] samsung-pwm 139d0000.pwm: tried to request PWM channel
+> 0 without output
+> [  879.615000] samsung-pwm 139d0000.pwm: tried to request PWM channel
+> 1 without output
+>=20
+> in my dts, I only add
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+> pwm@139D0000 {
+> 	status =3D "okay";
+> };
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D
+> is it enough to make pwm work, if the driver in kernel has been correct.
 
-in my dts, I only add
-================================
-pwm@139D0000 {
-	status = "okay";
-};
-================================
-is it enough to make pwm work, if the driver in kernel has been correct.
+It seems like you're missing the samsung,pwm-outputs property (see
+Documentation/devicetree/bindings/pwm/pwm-samsung.txt).
+
+Thierry
+
+--HlL+5n6rz5pIUxbD
+Content-Type: application/pgp-signature
+
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQEcBAEBAgAGBQJSpaOrAAoJEPb4VsMIzTzicUkH+gJXR61k2/29tnZ01FtMprY+
-LFO8taGcFn+P8rHXFm9v6911PBzJtuUtHgGhvjap2nb6cKpvxdGxPey/Jo3tyKwi
-KuNsq1SJUcKBoS2RyqwbBEKkFsHHxtUQhu5IQ3ZjqtWIPsefhgUiPV0LlnmnxH6E
-eLs9NCtuZx0Gb8PekKZRlNK15wAQNKouUFZvOAmeQ8/kR9cOYreWkmgrJUU5AaE2
-qnBqGD8Z4V1I/0qrFlyx5upu87Z3thU6bAy4IxbJGSMb8/ESPsoCIps7EXFLlD3o
-LWkPQNbE6a5I+78Ugb44JNgW6gR/fAFAXReupiteXeAfwhugQOIUSqdtBJNrp6I=
-=w87N
+iQIcBAEBAgAGBQJSpa+rAAoJEN0jrNd/PrOhb/4P/jjwTcVXp+rmihZYlctiZgk0
+ldhWUzd8r3wcft9jorCsIgoZc4yKehxPtUUzct3yunwM1r4OzngznOgM5yIRgA4v
+B7zdi6oNUj12huR5mBix2SEjsEnyppbzHokXF1GWziHyp/B1U9jSNlFOaopeBLR0
+AK3Me4Mjl3QeP59Hv4YDfAs8OmvYX41HoUS9W7Y/Rb4YnjSXWF8jQ8hce581GAhH
+FeVk1nxR93W7JlLKGc11+GH5FJNc/RLirZFoXRD0NzpD4PCx3mh8NSv3aouLjmW6
+bUCz1aobZ5ptZ0SOauN/zoNN39CcYk66ZNMJrfsdb43/pOY7A2PiZzozl507Ba1H
+9fmszBflgQdhkarqAews0SgruUAPawxt257zReM0yPYf/4qtrc5KxSDLqpy8v71O
+BU1q1iiOUX14YeGLC8CMnvLtz2LC6Q+CYyrbR+qAt8ePOq8C378gCjYIkQdy0xdS
+RKPTMEskm7ipT7+fE7YiB8WYxc6Et5YuL4z1mEuILRzGJ+gpGh20cvr+s8ibWssN
+ILYRfw+jj0N0z8PrHU2O9EqfPx+GZZyRKwr7ikzqI/gEdkj0YFibptqj6mDNv89N
+IlSrVan8qdA9KJRviMowLZLz5lfAw1qZ3wVnYdky9fAvfECraPtRIMEHslsX7aT1
+e8W9ypIeZxy/LF/pCqCI
+=ZfnZ
 -----END PGP SIGNATURE-----
+
+--HlL+5n6rz5pIUxbD--
