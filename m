@@ -1,73 +1,63 @@
-From: randy <lxr1234@hotmail.com>
-Subject: Re: [exynos4412]How to test a pwm device, is there a test program?
-Date: Mon, 9 Dec 2013 21:06:37 +0800
-Message-ID: <BLU0-SMTP30A197FE32DA623BBA7713ADD30@phx.gbl>
-References: <BLU0-SMTP2611DD3F4485EEE457F4920ADD00@phx.gbl> <20131209085225.GA27868@ulmo.nvidia.com> <BLU0-SMTP1651F8FA9BEEB0257791F09ADD30@phx.gbl> <20131209115523.GA17693@ulmo.nvidia.com>
+From: Bo Shen <voice.shen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v8 1/2] PWM: atmel-pwm: add PWM controller driver
+Date: Tue, 10 Dec 2013 10:20:33 +0800
+Message-ID: <52A67A71.6020404@atmel.com>
+References: <1384766002-2852-1-git-send-email-voice.shen@atmel.com> <20131202105957.GD18060@ulmo.nvidia.com> <529D4B58.9020700@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from blu0-omc4-s11.blu0.hotmail.com ([65.55.111.150]:48698 "EHLO
-	blu0-omc4-s11.blu0.hotmail.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S932548Ab3LING6 convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 9 Dec 2013 08:06:58 -0500
-In-Reply-To: <20131209115523.GA17693@ulmo.nvidia.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <529D4B58.9020700-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: Thierry Reding <thierry.reding@gmail.com>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi Thierry,
 
-=E4=BA=8E 2013=E5=B9=B412=E6=9C=8809=E6=97=A5 19:55, Thierry Reding =E5=
-=86=99=E9=81=93:
-> On Mon, Dec 09, 2013 at 07:04:12PM +0800, randy wrote: [...]
->> Actually, I don't know whether the pwm works or not. In dmesg, I=20
->> saw: [  853.690000] samsung-pwm 139d0000.pwm: tried to request=20
->> PWM channel 0 without output [  876.930000] samsung-pwm=20
->> 139d0000.pwm: tried to request PWM channel 0 without output [=20
->> 879.615000] samsung-pwm 139d0000.pwm: tried to request PWM=20
->> channel 1 without output
->>=20
->> in my dts, I only add =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=20
->> pwm@139D0000 { status =3D "okay";
-I added
-samsung,pwm-outputs =3D <0>;
->> }; =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D is it enough to make pwm=20
->> work, if the driver in kernel has been correct.
->=20
-> It seems like you're missing the samsung,pwm-outputs property (see
->  Documentation/devicetree/bindings/pwm/pwm-samsung.txt).
->=20
-> Thierry
+On 12/03/2013 11:09 AM, Bo Shen wrote:
+>>> +        atmel_pwm->chip.of_xlate = of_pwm_xlate_with_flags;
+>>> +        atmel_pwm->chip.of_pwm_n_cells = 3;
+>>> +        atmel_pwm->chip.base = -1;
+>>> +    } else {
+>>> +        atmel_pwm->chip.base = pdev->id;
+>>
+>> That's not correct. The chip cannot be tied to pdev->id, because that ID
+>> is the instance number of the device. So typically you would have
+>> devices name like this:
+>>
+>>     atmel-pwm.0
+>>     atmel-pwm.1
+>>     ...
+>>
+>> Now, if you have that, then you won't be able to register the second
+>> instance because the first instance will already have requested PWMs
+>> 0-3, and setting .base to 1 will cause PWMs 1-4 to be requested, which
+>> intersects with the range of the first instance.
+>>
+>> The same applies of course if you have other PWM controllers in the
+>> system which have similar instance names.
+>>
+>> So the right thing to do here is to provide that number via platform
+>> data so that platform code can define it, knowing in advance all ranges
+>> for all other PWM controllers and thereby make sure there's no
+>> intersection.
+>
+> OK, I will fix this.
 
-Well I have make it output to channel 0 now. But it doesn't work with
-the config below. As it is a buzzer, I change your config.
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-root@mifu:~# cat /sys/class/pwm/pwmchip0/pwm0/enable
+After read deeply of PWM framework, for non device tree, I think we'd 
+better let the PWM core to choose chip.base as device tree, while not 
+pass a number through platform data to it. Or else, it will confuse the 
+user to set the chip.base, must set it in correct value to avoid 
+intersection. And, actually we won't use chip.base in driver itself.
 
-1
-root@mifu:~# cat /sys/class/pwm/pwmchip0/pwm0/period
-1000000
-root@mifu:~# cat /sys/class/pwm/pwmchip0/pwm0/duty_cycle
-500000
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-I have used a function generator with Vpp=3D2.2, it works.
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Hi J,
+   what's your opinion?
 
-iQEcBAEBAgAGBQJSpcBdAAoJEPb4VsMIzTzir6kH/izw1ALJVXhEw3C28tj5grKk
-zgJ5eTh4fiATR6nMg9539YTmkH65nmrK7C7QdrwAmsb9t/lnX5ulcZUZmrrRKE+j
-03r+L45PH7Vqx7ZMt3UO74jMThs9+vHFY+Kj0dALoxZsnBS1aaheGaHuShrcTbpG
-ZaKOZs7lSuxuZsWKr1njodYG3hL3z418JISII7DQ7J8RHYQF88JwIAMPw8Ybt1U8
-7J2qA4DDKmQmL/kPQqTiPMfj64fcZ6E8jtLY5jZ0OLN78T8+juHrm+8l5xBm0AFa
-3HNzLrmyAKPYD4yjPI8LYdNhk3EVVOaxA+lcDy26aYJ1PpIHxHuFgGdvqM47eq4=3D
-=3D1SNZ
------END PGP SIGNATURE-----
+Best Regards,
+Bo Shen
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
