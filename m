@@ -1,75 +1,99 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 11/15] pwm: pwm-renesas-tpu: Enable driver compilation with COMPILE_TEST
-Date: Wed, 11 Dec 2013 13:49:53 +0100
-Message-ID: <2487119.M3l3CLesSz@avalon>
-References: <1385515117-23664-1-git-send-email-laurent.pinchart+renesas@ideasonboard.com> <20131129105353.GI22771@ulmo.nvidia.com> <7787436.L49ODt45in@avalon>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v8 1/2] PWM: atmel-pwm: add PWM controller driver
+Date: Wed, 11 Dec 2013 16:21:20 +0100
+Message-ID: <20131211152119.GD31617@ulmo.nvidia.com>
+References: <1384766002-2852-1-git-send-email-voice.shen@atmel.com>
+ <20131202105957.GD18060@ulmo.nvidia.com>
+ <529D4B58.9020700@atmel.com>
+ <52A67A71.6020404@atmel.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart1722428.a4LKQWphW0"; micalg="pgp-sha1"; protocol="application/pgp-signature"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="jCrbxBqMcLqd4mOl"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from perceval.ideasonboard.com ([95.142.166.194]:42979 "EHLO
-	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752967Ab3LKMtq (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 11 Dec 2013 07:49:46 -0500
-In-Reply-To: <7787436.L49ODt45in@avalon>
+Received: from mail-bk0-f47.google.com ([209.85.214.47]:52650 "EHLO
+	mail-bk0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751546Ab3LKPWf (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 11 Dec 2013 10:22:35 -0500
+Content-Disposition: inline
+In-Reply-To: <52A67A71.6020404@atmel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
+To: Bo Shen <voice.shen@atmel.com>
+Cc: plagnioj@jcrosoft.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, nicolas.ferre@atmel.com, linux-kernel@vger.kernel.org, alexandre.belloni@free-electrons.com, galak@codeaurora.org, linux-arm-kernel@lists.infradead.org
 
 
---nextPart1722428.a4LKQWphW0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+--jCrbxBqMcLqd4mOl
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hi Thierry,
+On Tue, Dec 10, 2013 at 10:20:33AM +0800, Bo Shen wrote:
+> Hi Thierry,
+>=20
+> On 12/03/2013 11:09 AM, Bo Shen wrote:
+> >>>+        atmel_pwm->chip.of_xlate =3D of_pwm_xlate_with_flags;
+> >>>+        atmel_pwm->chip.of_pwm_n_cells =3D 3;
+> >>>+        atmel_pwm->chip.base =3D -1;
+> >>>+    } else {
+> >>>+        atmel_pwm->chip.base =3D pdev->id;
+> >>
+> >>That's not correct. The chip cannot be tied to pdev->id, because that ID
+> >>is the instance number of the device. So typically you would have
+> >>devices name like this:
+> >>
+> >>    atmel-pwm.0
+> >>    atmel-pwm.1
+> >>    ...
+> >>
+> >>Now, if you have that, then you won't be able to register the second
+> >>instance because the first instance will already have requested PWMs
+> >>0-3, and setting .base to 1 will cause PWMs 1-4 to be requested, which
+> >>intersects with the range of the first instance.
+> >>
+> >>The same applies of course if you have other PWM controllers in the
+> >>system which have similar instance names.
+> >>
+> >>So the right thing to do here is to provide that number via platform
+> >>data so that platform code can define it, knowing in advance all ranges
+> >>for all other PWM controllers and thereby make sure there's no
+> >>intersection.
+> >
+> >OK, I will fix this.
+>=20
+> After read deeply of PWM framework, for non device tree, I think we'd bet=
+ter
+> let the PWM core to choose chip.base as device tree, while not pass a num=
+ber
+> through platform data to it. Or else, it will confuse the user to set the
+> chip.base, must set it in correct value to avoid intersection. And, actua=
+lly
+> we won't use chip.base in driver itself.
 
-On Friday 29 November 2013 14:51:25 Laurent Pinchart wrote:
-> On Friday 29 November 2013 11:53:54 Thierry Reding wrote:
-> > On Wed, Nov 27, 2013 at 02:18:33AM +0100, Laurent Pinchart wrote:
-> > > This helps increasing build testing coverage.
-> > > 
-> > > Cc: Thierry Reding <thierry.reding@gmail.com>
-> > > Cc: linux-pwm@vger.kernel.org
-> > > Signed-off-by: Laurent Pinchart
-> > > <laurent.pinchart+renesas@ideasonboard.com>
-> > > Acked-by: Simon Horman <horms@verge.net.au>
-> > > ---
-> > > 
-> > >  drivers/pwm/Kconfig | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > I'm not sure if this has been answered in any of the various subthreads
-> > before. I've tried to read through them, but I may have missed some. It
-> > was mentioned that iowrite16() wasn't supported on all architectures;
-> > won't this possibly cause randconfig autobuilders to break?
-> 
-> That's possible (although it has been reported to me that the situation got
-> fixed on arch/cris in v3.12), but the only way to find out is to try it.
-> That would be a bug in the architecture, and it should then get fixed.
+Yes, that should work as well, if you make sure that every user actually
+has the PWM lookup table and doesn't rely on a fixed global index to
+retrieve the PWM channel.
 
-Would you consider picking this patch up for v3.14 ?
+Thierry
 
--- 
-Regards,
-
-Laurent Pinchart
-
---nextPart1722428.a4LKQWphW0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
+--jCrbxBqMcLqd4mOl
+Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQEcBAABAgAGBQJSqF92AAoJEIkPb2GL7hl1UDoH/Ah3klx7HNe3xJLfsuK/GDry
-0F40ERbGf3b5NHX3csKvKzlsHTY0cVdMl4GDEKvEe5pfs4fFDOSaRCLI8Xh4Vg31
-JFsDkcMow7at/06jFhtKUI6KAqzCetAVQSpLWY/ubV0pEIZWvM/7IjCAMje0bhiw
-VBR/MHwVVMAxeizCpTzCAVWVRsCu4n+uavN6VwCCK8lx+avw5BJXxBQ6BUbz5XI9
-CEFvzL9eCJSH4qjb449vdCkDPQMjJ5bgTxWKFbOlPFxCGnpDvo8mUjP4u/bXoGjA
-2f3IJjauG8/95YjDJ64+QXv6dqNdFvuXv3YJFwb3JHykN7+R6ELqoePgf23j9Xs=
-=GMv8
+iQIcBAEBAgAGBQJSqILvAAoJEN0jrNd/PrOhgUcP/05aeW2mXhtLX+GA6aGfbN0v
+SmdDDnqCwHBdZsZ7zp2Bm9rGUmN4PFHL8j45RvfwWuiyvZh78DHFV+w3h8KonY49
+Tj9FRvouaWeDusCahzMX0QVW29WATjffa9O9IlvoTQApUsQSgSEI6Mnkx4U11Ks6
+hOJ7LtqmQmfMDXSBjowG08JSRMlG7vtvokxo3B+atdOkzRsUSnEAiT8YcSrR0CGn
+Cb9xfo3vFB5rHcKPIHHSSRBh1E23+uzyZS+ANeCJ4buHvjhHNT88LnZHbNBqFiRa
+XjmJUPB+KUO6jvPVcq/Xy/gHdJ/gVYX+kvmONUgOeFJo9cYN8NvrcE/ec6Ivb2ER
+m+dk2xsxs/2sqNCbZuWDgcVh1YuiuB688IKUubVJdHMrZYp3Qqs1N2ois+MG50mv
+vhrUXKkq+oxTV58km7MGgy+K0RgMyvUdc+gnkV3KdEHno17AMiWKM9/ALssQbR6l
+QbDb1iWSoL+VRp12WDyCMiC0cdOqPKZcjVn23PvL0NCdqTddaNbvqWwzl6bkI7xl
+d+urt2lyhH0YT9BP3mr3uzErg/C4RX+F2ylIfzbfSLJqDisYwJ5jmvCDoVPIDHzv
+b0QB7KLdRqGwlRv0AoHUHN93wQ+weP/OJCldZETGwgRigk0QsAuGFMSqtg5Pzmls
+/Dd1SuOMUuzg0tBBuBLp
+=pywk
 -----END PGP SIGNATURE-----
 
---nextPart1722428.a4LKQWphW0--
-
+--jCrbxBqMcLqd4mOl--
