@@ -1,107 +1,103 @@
-From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
-Subject: RE: [RFCv2 endianess 1/4] pwm: Add Freescale FTM PWM driver support
-Date: Thu, 12 Dec 2013 02:43:14 +0000
-Message-ID: <d6985022e8aa4e21b618205ddf521d9f@BY2PR03MB505.namprd03.prod.outlook.com>
-References: <1386309134-1822-1-git-send-email-Li.Xiubo@freescale.com>
- <1386309134-1822-2-git-send-email-Li.Xiubo@freescale.com>
- <04e52411558f44d99a603c288e2dcc50@BY2PR03MB505.namprd03.prod.outlook.com>
- <20131210101959.GE1809@e106331-lin.cambridge.arm.com>
- <e806828e7d4f488c88d7bd05bdd007d2@BY2PR03MB505.namprd03.prod.outlook.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [exynos4412]How to test a pwm device, is there a test program?
+Date: Thu, 12 Dec 2013 13:22:04 +0100
+Message-ID: <20131212122204.GG11524@ulmo.nvidia.com>
+References: <BLU0-SMTP2611DD3F4485EEE457F4920ADD00@phx.gbl>
+ <20131209085225.GA27868@ulmo.nvidia.com>
+ <BLU0-SMTP1651F8FA9BEEB0257791F09ADD30@phx.gbl>
+ <20131209115523.GA17693@ulmo.nvidia.com>
+ <BLU0-SMTP30A197FE32DA623BBA7713ADD30@phx.gbl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="JbKQpFqZXJ2T76Sg"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bl2lp0211.outbound.protection.outlook.com ([207.46.163.211]:47600
-	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750945Ab3LLCn3 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 11 Dec 2013 21:43:29 -0500
-In-Reply-To: <e806828e7d4f488c88d7bd05bdd007d2@BY2PR03MB505.namprd03.prod.outlook.com>
-Content-Language: en-US
+Received: from mail-bk0-f53.google.com ([209.85.214.53]:54310 "EHLO
+	mail-bk0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751445Ab3LLMXU (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Dec 2013 07:23:20 -0500
+Received: by mail-bk0-f53.google.com with SMTP id na10so833992bkb.40
+        for <linux-pwm@vger.kernel.org>; Thu, 12 Dec 2013 04:23:19 -0800 (PST)
+Content-Disposition: inline
+In-Reply-To: <BLU0-SMTP30A197FE32DA623BBA7713ADD30@phx.gbl>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "galak@codeaurora.org" <galak@codeaurora.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "matt.porter@linaro.org" <matt.porter@linaro.org>, "tomasz.figa@gmail.com" <tomasz.figa@gmail.com>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, Pawel Moll <Pawel.Moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Huan Wang <Huan.Wang@freescale.com>, "jingchang.lu@freescale.com" <jingchang.lu@freescale.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-
-Hi Mark,
+To: randy <lxr1234@hotmail.com>
+Cc: linux-pwm@vger.kernel.org
 
 
-> > > > +static inline u32 fsl_pwm_readl(struct fsl_pwm_chip *fpc,
-> > > > +             const void __iomem *addr)
-> > > > +{
-> > > > +     if (likely(fpc->big_endian))
-> > > > +             return ioread32be(addr);
-> > > > +     else
-> > > > +             return readl(addr);
-> > > > +}
-> >
-> > It looks a little odd to to have two different accessors here.
-> >
-> > Could these not be unified somehow?
-> >
-> 
-> How about the following :
-> 
-> +static inline u32 fsl_pwm_readl(struct fsl_pwm_chip *fpc,
-> +			const void __iomem *addr)
-> +{
-> +	u32 val;
-> +
-> +	if (likely(fpc->big_endian))
-> +		val = be32_to_cpu(__raw_readl(addr));
-> +	else
-> +		val = le32_to_cpu(__raw_readl(addr));
-> +
-> +	rmb();
-> +
-> +	return val;
-> +}
-> +
-> +static inline void fsl_pwm_writel(struct fsl_pwm_chip *fpc,
-> +			u32 val, void __iomem *addr)
-> +{
-> +	wmb();
-> +
-> +	if (likely(fpc->big_endian))
-> +		__raw_writel(cpu_to_be32(val), addr);
-> +	else
-> +		__raw_writel(cpu_to_le32(val), addr);
-> +}
-> +
-> 
-> 
+--JbKQpFqZXJ2T76Sg
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Or, will these be much better ?
-+++++++++++
-+static inline u32 fsl_pwm_readl(struct fsl_pwm_chip *fpc,
-+		const void __iomem *addr)
-+{
-+	u32 val;
-+
-+	if (likely(fpc->big_endian))
-+		val = be32_to_cpu((__force __be32)__raw_readl(addr));
-+	else
-+		val = le32_to_cpu((__force __le32)__raw_readl(addr));
-+
-+	rmb();
-+
-+	return val;
-+}
-+
-+static inline void fsl_pwm_writel(struct fsl_pwm_chip *fpc,
-+		u32 val, void __iomem *addr)
-+{
-+	wmb();
-+
-+	if (likely(fpc->big_endian))
-+		__raw_writel((__force u32)cpu_to_be32(val), addr);
-+	else
-+		__raw_writel((__force u32)cpu_to_le32(val), addr); }
-+
------------
+On Mon, Dec 09, 2013 at 09:06:37PM +0800, randy wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>=20
+> =E4=BA=8E 2013=E5=B9=B412=E6=9C=8809=E6=97=A5 19:55, Thierry Reding =E5=
+=86=99=E9=81=93:
+> > On Mon, Dec 09, 2013 at 07:04:12PM +0800, randy wrote: [...]
+> >> Actually, I don't know whether the pwm works or not. In dmesg, I=20
+> >> saw: [  853.690000] samsung-pwm 139d0000.pwm: tried to request=20
+> >> PWM channel 0 without output [  876.930000] samsung-pwm=20
+> >> 139d0000.pwm: tried to request PWM channel 0 without output [=20
+> >> 879.615000] samsung-pwm 139d0000.pwm: tried to request PWM=20
+> >> channel 1 without output
+> >>=20
+> >> in my dts, I only add =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=20
+> >> pwm@139D0000 { status =3D "okay";
+> I added
+> samsung,pwm-outputs =3D <0>;
+> >> }; =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D is it enough to make pwm=20
+> >> work, if the driver in kernel has been correct.
+> >=20
+> > It seems like you're missing the samsung,pwm-outputs property (see
+> >  Documentation/devicetree/bindings/pwm/pwm-samsung.txt).
+> >=20
+> > Thierry
+>=20
+> Well I have make it output to channel 0 now. But it doesn't work with
+> the config below. As it is a buzzer, I change your config.
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> root@mifu:~# cat /sys/class/pwm/pwmchip0/pwm0/enable
+>=20
+> 1
+> root@mifu:~# cat /sys/class/pwm/pwmchip0/pwm0/period
+> 1000000
+> root@mifu:~# cat /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+> 500000
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> I have used a function generator with Vpp=3D2.2, it works.
 
+Are you sure the function generator runs at the same frequency? Do you
+have the possibility to check the PWM output with a scope to see if it
+outputs anything?
 
-Thanks,
---
-Xiubo
+Thierry
 
+--JbKQpFqZXJ2T76Sg
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJSqapsAAoJEN0jrNd/PrOhc0sP/iSQrl1x82mfQ2CFbv+vHm/Q
+dbQDgnNgIqJz5eBQBqn8UeO/GWtFPB8kXWoejRRzWx9zBU9/QBw7BQRtlFd+nkZP
++XyZviNlDoaCMws9tf356Q+yU/zocZ9roG1+fXW4q91bA9UgDj8hf0wct0UU1y6r
+X6DUujx+Jro1Q/jBa17YJLCzHNpo8kt5jlNfGYI7qEUvWAuTfoTsuL2FlSpWYGyT
+BAhKAWex+wtbh7Hcse1dgz+SCO69ANwgFYL54aD6ZTKEP9zC297s+vsUoKLCA/af
+VoAJkhyY018drtW3q63Rj+GKWs6I0hh3njTcdc+5/m4wF0409Wq5vqxfhatiaU7T
+T0CLcuyY1/TqcQ0zwIB/4kvXM0bysA75hIYzgRBQAw/Nml31wpvoyyHMWKouOr6t
+t6R140PIMfq4ZjTQf9BL91QtQZ5NetNPncG4sQCUDHbazz8G1bJaoNGtiINTH54Y
+BSZJ5IWF5nBWmzehBoA7tZ+iB1o92xtYreOYjdf58jxJfZPXdV1wQRL6/BD8lOEp
+EcF0aoTRlbUB9qL4Qz52vk2wECTG6kEkgIpFB0H49SkF01eSH5YEGurbl0V9C2YP
+7wqfkogXoJRHz4ZZV6WLMVkk8pS6EaHbFI7RPphx7+ts/tSJCsWHMvJdSGG4sBPc
+Y0zCiZiKOIlJJj8rLs8G
+=v8rY
+-----END PGP SIGNATURE-----
+
+--JbKQpFqZXJ2T76Sg--
