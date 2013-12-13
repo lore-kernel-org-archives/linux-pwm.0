@@ -1,39 +1,64 @@
-From: Xiubo Li <Li.Xiubo@freescale.com>
-Subject: [PATCHv7 3/4] ARM: dts: Enables FTM PWM device for Vybrid VF610 TOWER board.
-Date: Fri, 13 Dec 2013 16:57:06 +0800
-Message-ID: <1386925027-16288-4-git-send-email-Li.Xiubo@freescale.com>
-References: <1386925027-16288-1-git-send-email-Li.Xiubo@freescale.com>
+From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
+Subject: RE: [RFCv2 endianess 1/4] pwm: Add Freescale FTM PWM driver support
+Date: Fri, 13 Dec 2013 09:52:02 +0000
+Message-ID: <51a162531bd447f7bf934018d0526fec@BY2PR03MB505.namprd03.prod.outlook.com>
+References: <1386309134-1822-1-git-send-email-Li.Xiubo@freescale.com>
+ <1386309134-1822-2-git-send-email-Li.Xiubo@freescale.com>
+ <04e52411558f44d99a603c288e2dcc50@BY2PR03MB505.namprd03.prod.outlook.com>
+ <20131210101959.GE1809@e106331-lin.cambridge.arm.com>
+ <e806828e7d4f488c88d7bd05bdd007d2@BY2PR03MB505.namprd03.prod.outlook.com>
+ <d6985022e8aa4e21b618205ddf521d9f@BY2PR03MB505.namprd03.prod.outlook.com>
+ <20131212124222.GK11524@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1386925027-16288-1-git-send-email-Li.Xiubo@freescale.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: mark.rutland@arm.com, s.hauer@pengutronix.de, galak@codeaurora.org, swarren@wwwdotorg.org, t.figa@samsung.com, grant.likely@linaro.org, matt.porter@linaro.org, linux@arm.linux.org.uk, rob@landley.net, tomasz.figa@gmail.com, ian.campbell@citrix.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-bn1blp0186.outbound.protection.outlook.com ([207.46.163.186]:15247
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751802Ab3LMJwM convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Dec 2013 04:52:12 -0500
+In-Reply-To: <20131212124222.GK11524@ulmo.nvidia.com>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "galak@codeaurora.org" <galak@codeaurora.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "matt.porter@linaro.org" <matt.porter@linaro.org>, "tomasz.figa@gmail.com" <tomasz.figa@gmail.com>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, Pawel Moll <Pawel.Moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Huan Wang <Huan.Wang@freescale.com>, Jingchang Lu <jingchang.lu@freescale.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
-Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
----
- arch/arm/boot/dts/vf610-twr.dts | 6 ++++++
- 1 file changed, 6 insertions(+)
+Hi Thierry,
 
-diff --git a/arch/arm/boot/dts/vf610-twr.dts b/arch/arm/boot/dts/vf610-twr.dts
-index 82d352f..3130f85 100644
---- a/arch/arm/boot/dts/vf610-twr.dts
-+++ b/arch/arm/boot/dts/vf610-twr.dts
-@@ -83,6 +83,12 @@
- 	status = "okay";
- };
- 
-+&pwm0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_pwm0_1>;
-+	status = "okay";
-+};
-+
- &uart1 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_uart1_1>;
--- 
-1.8.4
+> I think perhaps what Mark may have meant was something like this:
+> 
+> 	static inline u32 fsl_pwm_readl(struct fsl_pwm_chip *fpc,
+> 					const void __iomem *addr)
+> 	{
+> 		u32 value = readl(addr);
+> 
+> 		if (likely(fpc->big_endian))
+> 			value = be32_to_cpu(value);
+> 		else
+> 			value = le32_to_cpu(value);
+> 
+> 		return value;
+> 	}
+> 
+> 	static inline void fsl_pwm_writel(struct fsl_pwm_chip *fpc, u32 value,
+> 					  const void __iomem *addr)
+> 	{
+> 		if (likely(fpc->big_endian))
+> 			value = cpu_to_be32(value);
+> 		else
+> 			value = cpu_to_le32(value);
+> 
+> 		writel(value, addr);
+> 	}
+> 
+> That way you call the accessors only once, and do the conversion after
+> or before that.
+> 
+
+Yes, this looks better.
+And I have already sent the v7 patches has addressed about this.
+
+--
+Xiubo
