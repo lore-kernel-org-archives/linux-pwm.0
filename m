@@ -1,64 +1,93 @@
-From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
-Subject: RE: [RFCv2 endianess 1/4] pwm: Add Freescale FTM PWM driver support
-Date: Fri, 13 Dec 2013 09:52:02 +0000
-Message-ID: <51a162531bd447f7bf934018d0526fec@BY2PR03MB505.namprd03.prod.outlook.com>
-References: <1386309134-1822-1-git-send-email-Li.Xiubo@freescale.com>
- <1386309134-1822-2-git-send-email-Li.Xiubo@freescale.com>
- <04e52411558f44d99a603c288e2dcc50@BY2PR03MB505.namprd03.prod.outlook.com>
- <20131210101959.GE1809@e106331-lin.cambridge.arm.com>
- <e806828e7d4f488c88d7bd05bdd007d2@BY2PR03MB505.namprd03.prod.outlook.com>
- <d6985022e8aa4e21b618205ddf521d9f@BY2PR03MB505.namprd03.prod.outlook.com>
- <20131212124222.GK11524@ulmo.nvidia.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH/RFC] pwm: omap: Add PWM support using dual-mode timers
+Date: Fri, 13 Dec 2013 09:41:49 -0800
+Message-ID: <20131213174149.GH28184@atomide.com>
+References: <20131024173620.0cbbefcf@notabene.brown>
+ <20131029212318.GI15154@atomide.com>
+ <20131212125929.GL11524@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bn1blp0186.outbound.protection.outlook.com ([207.46.163.186]:15247
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751802Ab3LMJwM convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Dec 2013 04:52:12 -0500
-In-Reply-To: <20131212124222.GK11524@ulmo.nvidia.com>
-Content-Language: en-US
+Received: from mho-02-ewr.mailhop.org ([204.13.248.72]:29938 "EHLO
+	mho-02-ewr.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752122Ab3LMRl4 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Dec 2013 12:41:56 -0500
+Content-Disposition: inline
+In-Reply-To: <20131212125929.GL11524@ulmo.nvidia.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "galak@codeaurora.org" <galak@codeaurora.org>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "matt.porter@linaro.org" <matt.porter@linaro.org>, "tomasz.figa@gmail.com" <tomasz.figa@gmail.com>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "rob@landley.net" <rob@landley.net>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, Pawel Moll <Pawel.Moll@arm.com>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Huan Wang <Huan.Wang@freescale.com>, Jingchang Lu <jingchang.lu@freescale.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: NeilBrown <neilb@suse.de>, Thierry Reding <thierry.reding@avionic-design.de>, Grant Erickson <marathon96@gmail.com>, Jon Hunter <jon-hunter@ti.com>, linux-omap@vger.kernel.org, linux-pwm@vger.kernel.org
 
-Hi Thierry,
+* Thierry Reding <thierry.reding@gmail.com> [131212 05:02]:
+> On Tue, Oct 29, 2013 at 02:23:18PM -0700, Tony Lindgren wrote:
+> > * NeilBrown <neilb@suse.de> [131023 23:36]:
+> > > 
+> > > I submitted this in December last year.  I got lots of good feedback
+> > > and fixed some things, but it never got accepted.  Not entirely sure
+> > > why, maybe I dropped the ball.
+> > > 
+> > > Anyway, here is again with device-tree support added.
+> > > 
+> > > This is only an RFC and not a real submission for two reasons, both of which
+> > > are really directed as Jon.
+> > > 
+> > > 1/ I have to 
+> > > 
+> > > #include <../arch/arm/plat-omap/include/plat/dmtimer.h>
+> > > 
+> > > which is incredibly ugly.
+> > > Is there any reason this cannot be moved to include/linux/omap-dmtimer.h?
+> > 
+> > Yes that's what at least dw_apb_timer and sh_timer are doing.
+> >  
+> > > 2/ I found that I need to call
+> > > 
+> > > 	omap_dm_timer_write_counter(omap->dm_timer, DM_TIMER_LOAD_MIN);
+> > > 
+> > >  when using device-tree.  This is because with devicetree
+> > >  omap_timer_restore_context() is called much more often and it sets the counter
+> > >  register to 0 .. it takes a long time to count up to DM_TIMER_LOAD_MIN from there.
+> > > 
+> > >  Now I don't object to calling omap_dm_timer_write_counter (though it might be nice if
+> > >  omap_dm_timer_set_load wrote the one value to both LOAD_REG and COUNTER_REG).
+> > >  However it seems wrong that I have to call it *after* starting the counter.
+> > >  Currently _write_counter refuses to run if the timer hasn't been started.
+> > > 
+> > >  So Jon: 
+> > >    a/ can we change omap_dm_timer_write_counter to work when the timer isn't
+> > >       running?
+> > >    b/ can we have omap_dm_timer_set_load also set the counter?
+> > > 
+> > > 
+> > > For anyone else generous enough to read my code: is this otherwise acceptable?
+> > 
+> > Did not look beyond the dmtimer stuff, but let's start by moving dmtimer.c to
+> > live under drivers and move the header, then do the pwm patches.
+> 
+> Why does the driver have to move? There is certainly some precedent for
+> having arch-specific code in arch/ but expose the public API via some
+> header in include/linux. Sometimes there's just no proper place for the
+> driver elsewhere, so rather than moving it somewhere more or less random
+> keeping it in arch/arm/plat-omap is just as good.
 
-> I think perhaps what Mark may have meant was something like this:
-> 
-> 	static inline u32 fsl_pwm_readl(struct fsl_pwm_chip *fpc,
-> 					const void __iomem *addr)
-> 	{
-> 		u32 value = readl(addr);
-> 
-> 		if (likely(fpc->big_endian))
-> 			value = be32_to_cpu(value);
-> 		else
-> 			value = le32_to_cpu(value);
-> 
-> 		return value;
-> 	}
-> 
-> 	static inline void fsl_pwm_writel(struct fsl_pwm_chip *fpc, u32 value,
-> 					  const void __iomem *addr)
-> 	{
-> 		if (likely(fpc->big_endian))
-> 			value = cpu_to_be32(value);
-> 		else
-> 			value = cpu_to_le32(value);
-> 
-> 		writel(value, addr);
-> 	}
-> 
-> That way you call the accessors only once, and do the conversion after
-> or before that.
-> 
+There's actually been some developments regarding the dmtimer usage after
+these comments, see below.
 
-Yes, this looks better.
-And I have already sent the v7 patches has addressed about this.
+Basically we don't want to export custom functions as we've seen what kind
+of mess exporting custom interfaces makes. See the current state of omap
+DMA for example.
 
---
-Xiubo
+We've figured out a way to access the timers by doing a request_irq()
+on a timer, then do a clk_set_rate() to select the timer source clock.
+
+And then we need only about five custom functions to program the timer,
+which can be eventually replaced with some Linux generic hardware timer
+framework.
+
+For more info, see the discussion in thread "[PATCH 6/8] devicetree: doc:
+Document ti,timer-parent property".
+
+Regards,
+
+Tony
