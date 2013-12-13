@@ -1,59 +1,74 @@
-From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
-Subject: RE: [PATCHv6 1/4] pwm: Add Freescale FTM PWM driver support
-Date: Fri, 13 Dec 2013 09:30:09 +0000
-Message-ID: <e2fc53d0ff1d4a0a962500be6dc6e019@BY2PR03MB505.namprd03.prod.outlook.com>
-References: <1384220218-12716-1-git-send-email-Li.Xiubo@freescale.com>
- <1384220218-12716-2-git-send-email-Li.Xiubo@freescale.com>
- <20131128212510.GC14689@mithrandir>
+From: Xiubo Li <Li.Xiubo@freescale.com>
+Subject: [PATCHv7 0/4] Add Freescale FTM PWM driver.
+Date: Fri, 13 Dec 2013 16:57:03 +0800
+Message-ID: <1386925027-16288-1-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20131128212510.GC14689@mithrandir>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux@arm.linux.org.uk" <linux@arm.linux.org.uk>, "ian.campbell@citrix.com" <ian.campbell@citrix.com>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "swarren@wwwdotorg.org" <swarren@wwwdotorg.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "rob.herring@calxeda.com" <rob.herring@calxeda.com>, Huan Wang <Huan.Wang@freescale.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "rob@landley.net" <rob@landley.net>, Jingchang Lu <jingchang.lu@freescale.com>, "grant.likely@linaro.org" <grant.likely@linaro.org>, "t.figa@samsung.com" <t.figa@samsung.com>, Shawn
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from tx2ehsobe003.messaging.microsoft.com ([65.55.88.13]:43544 "EHLO
+	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751495Ab3LMJsH (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Dec 2013 04:48:07 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: mark.rutland@arm.com, s.hauer@pengutronix.de, galak@codeaurora.org, swarren@wwwdotorg.org, t.figa@samsung.com, grant.likely@linaro.org, matt.porter@linaro.org, linux@arm.linux.org.uk, rob@landley.net, tomasz.figa@gmail.com, ian.campbell@citrix.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+
+This patch series is the Freescale FTM PWM implementation. And there
+are 8 channels most supported by the FTM PWM. This implementation is
+only compatible with device tree definition.
+
+This patch series is based on linux-next and has been tested on Vybrid
+VF610 Tower board using device tree.
 
 
-> > +	struct fsl_pwm_chip *fpc;
-> > +
-> > +	fpc = to_fsl_chip(chip);
-> > +
-> > +	period_cycles = fsl_rate_to_cycles(fpc, period_ns);
-> > +	if (period_cycles > 0xFFFF) {
-> > +		dev_err(chip->dev, "required PWM period cycles(%lu) overflow "
-> > +				"16-bits counter!\n", period_cycles);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	duty_cycles = fsl_rate_to_cycles(fpc, duty_ns);
-> > +	if (duty_cycles >= 0xFFFF) {
-> > +		dev_err(chip->dev, "required PWM duty cycles(%lu) overflow "
-> > +				"16-bits counter!\n", duty_cycles);
-> > +		return -EINVAL;
-> > +	}
-> 
-> I'm not sure the error messages are all that useful. A -EINVAL error code
-> should make it pretty clear what the problem is.
-> 
+Changes in v7:
+- Add big-endian mode support.
+- Add FTM mutex lock.
+- Add period time check with the current running pwm(s).
+- Recode the counter clock source selecting.
+- Sort some header files alphabetically, etc.
 
-Yes, it is.
+Changes in v6:
+- Remove "fsl,pwm-counter-clk".
 
-But for the pwm leds, there hasn't any check about the return values, if
-there is something wrong, we cannot get any information about this.
+Changes in v5:
+- Remove active/idle pinctrl stuff.
 
-So I think this error messages are useful for this case.
+Changes in v4:
+- Check for the result and return an error for devm_kzalloc().
+- Move pinmux setting from the SoC file to the board specific file.
+- Revise the written mistake of 'ret |= FTMSC_CLKEXT;' --> 'reg |= FTMSC_CLKEXT;'.
 
 
---
-Xiubo
+Changes in v3:
+- Remove "availabe" field.
+- Remove "fsl,pwm-avaliable-chs" property.
+- ...
+
+Changes in v2:
+- Remove PWM CPWM/EPWM feature and sysfs.
+- Remove some redundant code.
+- Revise some code for more readable.
+- Remove "fsl,pwm-clk-ps", "fsl,pwm-number", "fsl,pwm-channels",etc.
+- Add "fsl,pwm-avaliable-chs", "fsl,pwm-counter-clk", etc.
+- Support 8 channels default in dtsi file.
+- Add counter clock source selection.
+- Rename some function name, macro name, etc.
+- Use PWM's and OF's existing function interfaces.
+- Split clk_unprepare_enable to clk_unprepare and clk_enable,etc.
+- ...
+
+Added in v1:
+- Add Freescale FTM PWM driver support.
+- Add Freescale FTM PWM node for VF610.
+- Enable Enables FTM PWM device for Vybrid VF610 TOWER.
+- Add device tree bindings for Freescale.
+
+
+
+
+
+
+
+
