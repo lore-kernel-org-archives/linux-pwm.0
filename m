@@ -1,101 +1,75 @@
-From: Tomasz Figa <tomasz.figa@gmail.com>
-Subject: Re: [exynos4412]How to test a pwm device, is there a test program?
-Date: Sat, 14 Dec 2013 14:05:57 +0100
-Message-ID: <1611879.darQQ1Xxis@flatron>
-References: <BLU0-SMTP2611DD3F4485EEE457F4920ADD00@phx.gbl> <BLU0-SMTP4320E405FB7D782DEAD759ADDC0@phx.gbl> <20131214124408.GG17467@mithrandir>
+From: Axel Lin <axel.lin@ingics.com>
+Subject: [PATCH] pwm: ab8500: Fix wrong value shift for disable/enable pwm
+Date: Sun, 15 Dec 2013 11:32:19 +0800
+Message-ID: <1387078339.22351.2.camel@phoenix>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f52.google.com ([74.125.83.52]:47390 "EHLO
-	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753053Ab3LNNGF convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sat, 14 Dec 2013 08:06:05 -0500
-In-Reply-To: <20131214124408.GG17467@mithrandir>
+Received: from mail-pd0-f170.google.com ([209.85.192.170]:53337 "EHLO
+	mail-pd0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753596Ab3LODcY (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sat, 14 Dec 2013 22:32:24 -0500
+Received: by mail-pd0-f170.google.com with SMTP id g10so4009257pdj.1
+        for <linux-pwm@vger.kernel.org>; Sat, 14 Dec 2013 19:32:23 -0800 (PST)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: randy <lxr1234@hotmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Sachin Kamat <sachin.kamat@linaro.org>, linux-pwm@vger.kernel.org, linux-samsung-soc@vger.kernel.org
+To: Thierry Reding <thierry.reding@avionic-design.de>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Arun Murthy <arun.murthy@stericsson.com>, linux-pwm@vger.kernel.org
 
-Hi Thierry, Ayaka,
+Current code only works when pdev->id is 1. Fix it by passing correct bitvalues
+argument to abx500_mask_and_set_register_interruptible.
 
-On Saturday 14 of December 2013 13:44:09 Thierry Reding wrote:
-> On Thu, Dec 12, 2013 at 10:27:04PM +0800, randy wrote:
-> > -----BEGIN PGP SIGNED MESSAGE-----
-> > Hash: SHA1
-> >=20
-> > =E4=BA=8E 2013=E5=B9=B412=E6=9C=8812=E6=97=A5 20:22, Thierry Reding=
- =E5=86=99=E9=81=93:
-> > > On Mon, Dec 09, 2013 at 09:06:37PM +0800, randy wrote:
-> > >> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
-> > >>=20
-> > >> =E4=BA=8E 2013=E5=B9=B412=E6=9C=8809=E6=97=A5 19:55, Thierry Red=
-ing =E5=86=99=E9=81=93:
-> > >>> On Mon, Dec 09, 2013 at 07:04:12PM +0800, randy wrote: [...]
-> > >>>> Actually, I don't know whether the pwm works or not. In
-> > >>>> dmesg, I saw: [  853.690000] samsung-pwm 139d0000.pwm: tried
-> > >>>> to request PWM channel 0 without output [  876.930000]
-> > >>>> samsung-pwm 139d0000.pwm: tried to request PWM channel 0
-> > >>>> without output [ 879.615000] samsung-pwm 139d0000.pwm: tried
-> > >>>> to request PWM channel 1 without output
-> > >>>>=20
-> > >>>> in my dts, I only add =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=20
-> > >>>> pwm@139D0000 { status =3D "okay";
-> > >> I added samsung,pwm-outputs =3D <0>;
-> > >>>> }; =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D is it enough to make pwm
-> > >>>>  work, if the driver in kernel has been correct.
-> > >>>=20
-> > >>> It seems like you're missing the samsung,pwm-outputs property
-> > >>> (see Documentation/devicetree/bindings/pwm/pwm-samsung.txt).
-> > >>>=20
-> > >>> Thierry
-> > >>=20
-> > >> Well I have make it output to channel 0 now. But it doesn't work
-> > >> with the config below. As it is a buzzer, I change your config.=20
-> > >> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D r=
-oot@mifu:~# cat
-> > >> /sys/class/pwm/pwmchip0/pwm0/enable
-> > >>=20
-> > >> 1 root@mifu:~# cat /sys/class/pwm/pwmchip0/pwm0/period 1000000=20
-> > >> root@mifu:~# cat /sys/class/pwm/pwmchip0/pwm0/duty_cycle 500000=20
-> > >> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
- I have used a
-> > >> function generator with Vpp=3D2.2, it works.
-> > >=20
-> > > Are you sure the function generator runs at the same frequency? D=
-o
-> > > you
-> > Yes, I am sure.
-> > > have the possibility to check the PWM output with a scope to see =
-if
-> > > it outputs anything?
-> > I have used a oscillograph to capture, nothing(althought it show so=
-me
-> > waves, but it is nosie single captured by autoset). I have a scope =
-but
-> > I don't think there is any different.
-> > >=20
-> > > Thierry
-> > Ayaka
-> > Thank you
->=20
-> I don't know what else you could try, so I'm Cc'ing a couple of peopl=
-e
-> who have worked with this driver before, perhaps they can help resolv=
-e
-> this.
+Having defines for DISABLE_PWM/ENABLE_PWM does not make the code better
+in readability because the bitvalues depends on pdev->id.
+Thus drop defines for DISABLE_PWM/ENABLE_PWM.
 
-I suspect invalid hardware configuration here.
+This patch also removes a unnecessary return in ab8500_pwm_disable.
 
-Ayaka, could you post your board dts file with PWM enabled?
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+---
+ drivers/pwm/pwm-ab8500.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-Btw. For topics related to Samsung's platforms, it's good to always CC
-linux-samsung-soc ML.
+diff --git a/drivers/pwm/pwm-ab8500.c b/drivers/pwm/pwm-ab8500.c
+index 1d07a6f..d51dc15 100644
+--- a/drivers/pwm/pwm-ab8500.c
++++ b/drivers/pwm/pwm-ab8500.c
+@@ -20,10 +20,6 @@
+ #define AB8500_PWM_OUT_CTRL2_REG	0x61
+ #define AB8500_PWM_OUT_CTRL7_REG	0x66
+ 
+-/* backlight driver constants */
+-#define ENABLE_PWM			1
+-#define DISABLE_PWM			0
+-
+ struct ab8500_pwm_chip {
+ 	struct pwm_chip chip;
+ };
+@@ -64,7 +60,7 @@ static int ab8500_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ 	ret = abx500_mask_and_set_register_interruptible(chip->dev,
+ 				AB8500_MISC, AB8500_PWM_OUT_CTRL7_REG,
+-				1 << (chip->base - 1), ENABLE_PWM);
++				1 << (chip->base - 1), 1 << (chip->base - 1));
+ 	if (ret < 0)
+ 		dev_err(chip->dev, "%s: Failed to enable PWM, Error %d\n",
+ 							pwm->label, ret);
+@@ -77,11 +73,10 @@ static void ab8500_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ 	ret = abx500_mask_and_set_register_interruptible(chip->dev,
+ 				AB8500_MISC, AB8500_PWM_OUT_CTRL7_REG,
+-				1 << (chip->base - 1), DISABLE_PWM);
++				1 << (chip->base - 1), 0);
+ 	if (ret < 0)
+ 		dev_err(chip->dev, "%s: Failed to disable PWM, Error %d\n",
+ 							pwm->label, ret);
+-	return;
+ }
+ 
+ static const struct pwm_ops ab8500_pwm_ops = {
+-- 
+1.8.1.2
 
-Best regards,
-Tomasz
+
 
