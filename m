@@ -1,105 +1,80 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCHv7 1/4] pwm: Add Freescale FTM PWM driver support
-Date: Tue, 17 Dec 2013 14:19:53 +0100
-Message-ID: <20131217131951.GA2329@ulmo.nvidia.com>
+Date: Tue, 17 Dec 2013 14:22:48 +0100
+Message-ID: <20131217132247.GB2329@ulmo.nvidia.com>
 References: <1386925027-16288-1-git-send-email-Li.Xiubo@freescale.com>
- <1386925027-16288-2-git-send-email-Li.Xiubo@freescale.com>
- <20131217111020.GF13823@ulmo.nvidia.com>
- <20131217115136.GT4360@n2100.arm.linux.org.uk>
- <20131217122431.GA17210@ulmo.nvidia.com>
- <20131217125832.GU4360@n2100.arm.linux.org.uk>
+ <5295539.cCkPY1PpyC@flatron>
+ <20131217124505.GB17210@ulmo.nvidia.com>
+ <1500339.E8bGm7xZUi@flatron>
+ <20131217130435.GV4360@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="5mCyUwZo2JvN/JJP"
-Return-path: <linux-doc-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="vGgW1X5XWziG23Ko"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20131217125832.GU4360@n2100.arm.linux.org.uk>
-Sender: linux-doc-owner@vger.kernel.org
+In-Reply-To: <20131217130435.GV4360@n2100.arm.linux.org.uk>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Xiubo Li <Li.Xiubo@freescale.com>, mark.rutland@arm.com, s.hauer@pengutronix.de, galak@codeaurora.org, swarren@wwwdotorg.org, t.figa@samsung.com, grant.likely@linaro.org, matt.porter@linaro.org, rob@landley.net, tomasz.figa@gmail.com, ian.campbell@citrix.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Alison Wang <b18965@freescale.com>, Jingchang Lu <b35083@freescale.com>
+Cc: Tomasz Figa <tomasz.figa@gmail.com>, Xiubo Li <Li.Xiubo@freescale.com>, mark.rutland@arm.com, s.hauer@pengutronix.de, galak@codeaurora.org, swarren@wwwdotorg.org, t.figa@samsung.com, grant.likely@linaro.org, matt.porter@linaro.org, rob@landley.net, ian.campbell@citrix.com, pawel.moll@arm.com, rob.herring@calxeda.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Alison Wang <b18965@freescale.com>, Jingchang Lu <b35083@freescale.com>
 List-Id: linux-pwm@vger.kernel.org
 
 
---5mCyUwZo2JvN/JJP
+--vGgW1X5XWziG23Ko
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 17, 2013 at 12:58:32PM +0000, Russell King - ARM Linux wrote:
-> On Tue, Dec 17, 2013 at 01:24:33PM +0100, Thierry Reding wrote:
-> > On Tue, Dec 17, 2013 at 11:51:36AM +0000, Russell King - ARM Linux wrot=
-e:
-> > > Same comments here - what memory operations is the wmb() trying to
-> > > serialise?  Does this PWM driver somehow end up doing DMA?
+On Tue, Dec 17, 2013 at 01:04:35PM +0000, Russell King - ARM Linux wrote:
+> On Tue, Dec 17, 2013 at 01:54:35PM +0100, Tomasz Figa wrote:
+> > On Tuesday 17 of December 2013 13:45:06 Thierry Reding wrote:
+> > > I fail to see how that would eliminate the problem with the types. Th=
+at
+> > > said I don't actually see sparse complaining about any type mismatche=
+s.
+> > > That's probably because the various macros implicitly cast to u32.
 > >=20
-> > Not that I can see. But if my understanding is correct, not using the
-> > barriers would allow the compiler and CPU to reorder accesses, and by
-> > that cause the register accesses to potentially happen in the wrong
-> > order.
+> > Well, in BE variant you would read the register using __raw_readl() into
+> > a __be32 and then get an u32 from be32_to_cpu() and return it. Similarly
+> > for writes
 >=20
-> The compiler won't reorder them, but the CPU may if it meets certain
-> criteria.  The architecture guarantees that accesses to device memory
-> within a (minimum of) 1KB block will be ordered.
->=20
-> The ARM ARM is slightly ambiguous in how this is applied - in one
-> place it says that "Accesses must arrive at any particular memory-mapped
-> peripheral or block of memory in program order" and another part it
-> says "The size of a memory mapped peripheral, or a block of memory,
-> is IMPLEMENTATION DEFINED, but is not smaller than 1KByte.  Note
-> This implies that the maximum memory-mapped peripheral size for which
-> the architecture guarantees order for all implementations is 1KB."  See
-> page A3-148.
+> __raw_readl() returns a u32, so you'll get a warning trying to assign a
+> u32 to a __be32.
 
-None of the ARM ARM versions that I have seem to have page A3-148. Which
-version should I be looking at? Not that I'm in any way doubting what
-you're saying, I'd just like to make sure to have the correct reference
-to look at in the future.
+If sparse doesn't complain about the original code here, does that mean
+we have a bug that should be fixed?
 
-> What this means (to me at least) is that on any SoC, the architecture
-> guarantees that accesses _within_ a 1KB device memory block will always
-> be ordered, but two accesses outside of a 1KB block _to the same device_
-> is implementation defined whether it is ordered or not.
+> We do have ioread32() and ioread32be() which do the appropriate conversio=
+n,
+> as well as the write versions too.  They both include the barrier if you'=
+re
+> overly concerned about that.
 
-This means at least every ARM SoC would behave that way. Since this
-driver doesn't have an explicit dependency on ARM I assume it could
-eventually be used on a different architecture. Even more so since
-there's Freescale in the name.
-
-> The interesting point here though is that the "note" contradicts the
-> first definition if you have (eg) AMBA Primecell peripherals which are
-> generally 4KB in size, since if the architecture only guarantees 1KB,
-> then accesses _may_ _not_ arrive at one primecell in program order.
-> Hence, the note is a direct contradiction of the first definition.
-
-Interesting indeed. Perhaps implementation defined in this case means
-that an implementation would have to adjust the size of a memory mapped
-peripheral or block of memory accordingly, depending on the largest
-block within the SoC.
-
-I suppose, though, that if the architecture doesn't give any guarantees
-about it, we can't safely assume that the implementation will.
+A few years ago GregKH commented in response to a patch that ioread*()
+weren't supposed to be used for memory-mapped only devices. The original
+purpose apparently was to allow drivers to work with both I/O and
+memory-mapped devices.
 
 Thierry
 
---5mCyUwZo2JvN/JJP
+--vGgW1X5XWziG23Ko
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJSsE93AAoJEN0jrNd/PrOhCfQP/3cH75pm5Zwulhq3sHErpMrN
-L3b/L2gbKa3SFJ/eHIcYKcykMI0Yj4HdsSsgTYPpZtNFiWUGz+9/lq4x8GQxCv3g
-p7P58wswfifP+zngLIGo00wAtw8ut8ND4xMLfDAu5uBK7We0GAZJ6xEiWjjHiT+Z
-SOKKxal/ZX11rHESNVmA1K3oQgsbDtjXC8p37AF/epxlEqxS6ynEv4cclnlitiw2
-cwQlJeBCZVLZZX2ybt6FMvUkHerLIY3RdWfCfEH+1Bm4gz3i0rg2Il3ZaOl49FeM
-PF7kcuuhQaNVSJHc2NXHj0AZ1d5UYA6P9aQ17pG1X8Llg9LZ85XzycV+yKBqQDg9
-f49uqRPHs+EM8rnPoHzkmKZltWVanhzMS4v2Sjd2f0wk5XkzMGBppZ23baBQMtY+
-NsG+N9yjVNYSVxjOO9XEO1bqOwGuzwi+Ym7DTlybJem9eq55sWnf8hy9wkJaqgnF
-BnsNPvBdr1NmOhaIkunhrR3VdzzkJ2FMaLrNa0iMH+7gyiaCsVwXS5aIUTXPdnEp
-Y1krm29vHTCs8QOo95wa7v46Osh6NZfmu7ZdZHWxMSltTUcCeegd4qGvbUCS8jle
-Wj/FuHUBZK9RIMWcoehi9+ERvEp0ETfJ5W10Y95ncqslxEnt6oITlrdd8GpzHt/r
-xb5qLiXZq08A96yyZMNz
-=Kz+j
+iQIcBAEBAgAGBQJSsFAnAAoJEN0jrNd/PrOhFHAP/18QBTQBzsFYKMuPA3mxwEFc
+9WMVB4Bs7HPvm1y7kvESmbxcKIZX/CIqwJUgr0Z1pEnu19Bfe98/whOzg0VdLfUU
+H2K3d2u2OtZzfEY/0U+HDxQXXefbCJ39it2xaYZvKkwhP3oNzB3wXzAMUtdOAoWn
+2/abpdleVg9a1lo6/A8SJyaBTEXsDWdOHkEUcQeO/tB6XXF+Ab1OrYJWAJm66lzG
+zAy47pcuC3sU4/RmIEeIGzRlNbZcB9NUbOHYZvhygnE1Gw8IpgOnGGUQdI7BJ8NO
+eb01ZubOZfi2KHN4+UM3G5uWg+HJoji5b8h02h6VXYJvyI5NO7Jo5oXK1W/w+uGG
+zeEKJmkk6XDNQy6stDx94jbKt9BAoZ4fwNqEPbQ1Tgqn9Ac2mTedgtfeY3hARxHq
+IzcYfKFjqvFXI1zLzLS7MwPO3Kadjrp5c706KO9nBJsz2T7LIKQ/eGNSKDRZYAWX
+u8L/6VaFYapqDMwpKMYjwvCQdXy/l1qrWRUsbEF74+lYrsnVCYTdx7wPKr9YNkl8
+yFHbDtJm2ESw0l5TNtBuAkIX6GwrzxUs6G4sj5AOPnvMjpIEP0NhZV7B9EwhEMIE
+isRKwJkkYX/M6q1XcVHj/AVZkyqNZwKq1I/ThbySlz8T5AuavmSwiRF7JIYYjZx1
+djaIzF+fbk/kUVBGa4y7
+=1O70
 -----END PGP SIGNATURE-----
 
---5mCyUwZo2JvN/JJP--
+--vGgW1X5XWziG23Ko--
