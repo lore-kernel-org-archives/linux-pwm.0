@@ -1,36 +1,46 @@
 From: Axel Lin <axel.lin@ingics.com>
-Subject: Re: [PATCH] pwm: ab8500: Fix wrong value shift for disable/enable pwm
-Date: Mon, 16 Dec 2013 16:25:41 +0800
-Message-ID: <CAFRkauBoq140S_Xpai0XSG-q3fwC6mw9O8=MzPm7mj4mawwKtw@mail.gmail.com>
-References: <1387078339.22351.2.camel@phoenix>
+Subject: [PATCH] pwm: pca9685: depends on I2C rather than REGMAP_I2C
+Date: Tue, 17 Dec 2013 11:51:29 +0800
+Message-ID: <1387252289.4816.1.camel@phoenix>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pd0-f174.google.com ([209.85.192.174]:54694 "EHLO
-	mail-pd0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752857Ab3LPIZm (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 16 Dec 2013 03:25:42 -0500
-Received: by mail-pd0-f174.google.com with SMTP id y13so4975066pdi.5
-        for <linux-pwm@vger.kernel.org>; Mon, 16 Dec 2013 00:25:41 -0800 (PST)
-In-Reply-To: <1387078339.22351.2.camel@phoenix>
+Received: from mail-pa0-f52.google.com ([209.85.220.52]:43393 "EHLO
+	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751169Ab3LQDve (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 16 Dec 2013 22:51:34 -0500
+Received: by mail-pa0-f52.google.com with SMTP id ld10so3904871pab.11
+        for <linux-pwm@vger.kernel.org>; Mon, 16 Dec 2013 19:51:33 -0800 (PST)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@avionic-design.de>
-Cc: Linus Walleij <linus.walleij@linaro.org>, linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>, linux-pwm@vger.kernel.org
 
-2013/12/15 Axel Lin <axel.lin@ingics.com>:
-> Current code only works when pdev->id is 1. Fix it by passing correct bitvalues
-> argument to abx500_mask_and_set_register_interruptible.
->
-> Having defines for DISABLE_PWM/ENABLE_PWM does not make the code better
-> in readability because the bitvalues depends on pdev->id.
-> Thus drop defines for DISABLE_PWM/ENABLE_PWM.
->
-> This patch also removes a unnecessary return in ab8500_pwm_disable.
+REGMAP_I2C is not a visible config option.
+Thus make PWM_PCA9685 depend on I2c and then select REGMAP_I2C.
 
-Hello Linus,
-I don't have the hardware to test and Arun's email bounce back.
-So I'd appreciate if you can review and test this patch.
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+---
+ drivers/pwm/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Thanks,
-Axel
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 77aef3b..7139e1d 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -122,7 +122,8 @@ config PWM_MXS
+ 
+ config PWM_PCA9685
+ 	tristate "NXP PCA9685 PWM driver"
+-	depends on OF && REGMAP_I2C
++	depends on OF && I2C
++	select REGMAP_I2C
+ 	help
+ 	  Generic PWM framework driver for NXP PCA9685 LED controller.
+ 
+-- 
+1.8.1.2
+
+
+
