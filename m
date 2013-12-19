@@ -1,36 +1,38 @@
-From: Sourav Poddar <sourav.poddar@ti.com>
-Subject: [PATCH 2/3] driver: pwm: ti-ecap: Remove duplicate put_sync call.
-Date: Wed, 18 Dec 2013 17:06:54 +0530
-Message-ID: <1387366615-23182-3-git-send-email-sourav.poddar@ti.com>
-References: <1387366615-23182-1-git-send-email-sourav.poddar@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1387366615-23182-1-git-send-email-sourav.poddar@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, balbi@ti.com, Sourav Poddar <sourav.poddar@ti.com>
+From: Bo Shen <voice.shen@atmel.com>
+Subject: [PATCH] pwm: atmel-pwm: clock can not unprepare after successfully register
+Date: Thu, 19 Dec 2013 11:42:22 +0800
+Message-ID: <1387424542-5864-1-git-send-email-voice.shen@atmel.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from newsmtp5.atmel.com ([204.2.163.5]:20966 "EHLO
+	sjogate2.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752140Ab3LSDn2 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Dec 2013 22:43:28 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: nicolas.ferre@atmel.com, plagnioj@jcrosoft.com, alexandre.belloni@free-electrons.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, Bo Shen <voice.shen@atmel.com>
 
-Remove duplicate 'pm_runtime_put_sync' in the remove path.
+When the PWM controller is registered successfully, the clock can not
+unprepare, so fix it.
 
-Signed-off-by: Sourav Poddar <sourav.poddar@ti.com>
+Signed-off-by: Bo Shen <voice.shen@atmel.com>
 ---
- drivers/pwm/pwm-tiecap.c |    1 -
- 1 files changed, 0 insertions(+), 1 deletions(-)
+ drivers/pwm/pwm-atmel.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pwm/pwm-tiecap.c b/drivers/pwm/pwm-tiecap.c
-index 4e5c3d1..032092c 100644
---- a/drivers/pwm/pwm-tiecap.c
-+++ b/drivers/pwm/pwm-tiecap.c
-@@ -279,7 +279,6 @@ static int ecap_pwm_remove(struct platform_device *pdev)
- 	pwmss_submodule_state_change(pdev->dev.parent, PWMSS_ECAPCLK_STOP_REQ);
- 	pm_runtime_put_sync(&pdev->dev);
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index 657e90a..bf4144a 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -362,6 +362,8 @@ static int atmel_pwm_probe(struct platform_device *pdev)
  
--	pm_runtime_put_sync(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
- 	return pwmchip_remove(&pc->chip);
- }
+ 	platform_set_drvdata(pdev, atmel_pwm);
+ 
++	return ret;
++
+ unprepare_clk:
+ 	clk_unprepare(atmel_pwm->clk);
+ 	return ret;
 -- 
-1.7.1
+1.7.9.5
 
