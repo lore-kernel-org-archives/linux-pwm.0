@@ -1,76 +1,67 @@
-From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
-Subject: RE: [PATCHv6 1/4] pwm: Add Freescale FTM PWM driver support
-Date: Fri, 20 Dec 2013 07:47:24 +0000
-Message-ID: <ef4b36fcabc7492390834857d5250598@BY2PR03MB505.namprd03.prod.outlook.com>
-References: <1384220218-12716-1-git-send-email-Li.Xiubo@freescale.com>
-	<1384220218-12716-2-git-send-email-Li.Xiubo@freescale.com>
- <87y53gy07m.fsf@nbsps.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [PATCH] ARM: pxa: Add dummy backlight power supply on Mitac Mio A701
+Date: Fri, 20 Dec 2013 10:46:52 +0100
+Message-ID: <1387532812-11742-1-git-send-email-thierry.reding@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bn1blp0188.outbound.protection.outlook.com ([207.46.163.188]:55197
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1753854Ab3LTHrj convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Dec 2013 02:47:39 -0500
-In-Reply-To: <87y53gy07m.fsf@nbsps.com>
-Content-Language: en-US
+Received: from mail-bk0-f54.google.com ([209.85.214.54]:41667 "EHLO
+	mail-bk0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755157Ab3LTJsZ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Dec 2013 04:48:25 -0500
+Received: by mail-bk0-f54.google.com with SMTP id v16so1094578bkz.41
+        for <linux-pwm@vger.kernel.org>; Fri, 20 Dec 2013 01:48:24 -0800 (PST)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Bill Pringlemeir <bpringlemeir@nbsps.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+To: Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>
+Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
 
-> > +static int fsl_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> > +			  int duty_ns, int period_ns)
-> > +{
-> > +	unsigned long period_cycles, duty_cycles;
-> > +	unsigned long cntin = FTM_CNTIN_VAL;
-> > +	struct fsl_pwm_chip *fpc;
-> > +
-> > +	fpc = to_fsl_chip(chip);
-> > +
-> > +	period_cycles = fsl_rate_to_cycles(fpc, period_ns);
-> > +	if (period_cycles > 0xFFFF) {
-> > +		dev_err(chip->dev, "required PWM period cycles(%lu) overflow "
-> > +				"16-bits counter!\n", period_cycles);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	duty_cycles = fsl_rate_to_cycles(fpc, duty_ns);
-> > +	if (duty_cycles >= 0xFFFF) {
-> > +		dev_err(chip->dev, "required PWM duty cycles(%lu) overflow "
-> > +				"16-bits counter!\n", duty_cycles);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	writel(FTMCnSC_MSB | FTMCnSC_ELSB, fpc->base + FTM_CSC(pwm->hwpwm));
-> > +
-> > +	writel(0xF0, fpc->base + FTM_OUTMASK);
-> > +	writel(0x0F, fpc->base + FTM_OUTINIT);
-> > +	writel(FTM_CNTIN_VAL, fpc->base + FTM_CNTIN);
-> > +
-> > +	writel(period_cycles + cntin - 1, fpc->base + FTM_MOD);
-> > +	writel(duty_cycles + cntin, fpc->base + FTM_CV(pwm->hwpwm));
-> > +
-> > +	return 0;
-> > +}
-> 
-> Even though the module can support eight channels, the FTM_MOD is global and
-> is updated in each 'config'.  So, if we have two PWMs, and both call 'config'
-> with different periods, the last one to call will win?  There doesn't seem to
-> be any locking/inspection of 'MOD'.  I think this is global to the FTM, while
-> 'FTM_CV()' is per channel.
-> 
-> So we may have 8 PWMs, all with the same period, but with different duty
-> cycles.  Is this correct?  Or are we only supporting one channel per FTM/PWM?
-> 
+Recent changes to the pwm-backlight driver have made the power supply
+mandatory. There is code in the regulator core to deal with situations
+where no regulator is specified and provide a dummy, but that works on
+DT-based boards only.
 
-Yes, that's right.
+The situation can be remedied by adding a dummy regulator during board
+initialization.
 
-And in "[PATCHv7 1/4] pwm: Add Freescale FTM PWM driver support" patch, this has
-been fixed.
+Tested-by: Robert Jarzmik <robert.jarzmik@free.fr>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+---
+ arch/arm/mach-pxa/mioa701.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Best Regards,
-Xiubo
+diff --git a/arch/arm/mach-pxa/mioa701.c b/arch/arm/mach-pxa/mioa701.c
+index f70583fee59f..29997bde277d 100644
+--- a/arch/arm/mach-pxa/mioa701.c
++++ b/arch/arm/mach-pxa/mioa701.c
+@@ -38,6 +38,7 @@
+ #include <linux/mtd/physmap.h>
+ #include <linux/usb/gpio_vbus.h>
+ #include <linux/reboot.h>
++#include <linux/regulator/fixed.h>
+ #include <linux/regulator/max1586.h>
+ #include <linux/slab.h>
+ #include <linux/i2c/pxa-i2c.h>
+@@ -714,6 +715,10 @@ static struct gpio global_gpios[] = {
+ 	{ GPIO56_MT9M111_nOE, GPIOF_OUT_INIT_LOW, "Camera nOE" },
+ };
+ 
++static struct regulator_consumer_supply fixed_5v0_consumers[] = {
++	REGULATOR_SUPPLY("power", "pwm-backlight"),
++};
++
+ static void __init mioa701_machine_init(void)
+ {
+ 	int rc;
+@@ -753,6 +758,10 @@ static void __init mioa701_machine_init(void)
+ 	pxa_set_i2c_info(&i2c_pdata);
+ 	pxa27x_set_i2c_power_info(NULL);
+ 	pxa_set_camera_info(&mioa701_pxacamera_platform_data);
++
++	regulator_register_always_on(0, "fixed-5.0V", fixed_5v0_consumers,
++				     ARRAY_SIZE(fixed_5v0_consumers),
++				     5000000);
+ }
+ 
+ static void mioa701_machine_exit(void)
+-- 
+1.8.4.2
 
