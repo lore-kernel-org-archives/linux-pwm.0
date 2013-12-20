@@ -1,96 +1,62 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: pwm-backlight: 3.13-rc1 regression for old arm machine
-Date: Fri, 20 Dec 2013 10:47:03 +0100
-Message-ID: <20131220094702.GD27787@ulmo.nvidia.com>
-References: <87r49c6bea.fsf@free.fr>
- <20131217095658.GD13823@ulmo.nvidia.com>
- <87iounuy6e.fsf@free.fr>
+Subject: Re: [PATCH] pwm: atmel-pwm: clock can not unprepare after
+ successfully register
+Date: Fri, 20 Dec 2013 10:50:29 +0100
+Message-ID: <20131220095028.GE27787@ulmo.nvidia.com>
+References: <1387424542-5864-1-git-send-email-voice.shen@atmel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="BRE3mIcgqKzpedwo"
+	protocol="application/pgp-signature"; boundary="wchHw8dVAp53YPj8"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bk0-f48.google.com ([209.85.214.48]:63348 "EHLO
-	mail-bk0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755298Ab3LTJsg (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Dec 2013 04:48:36 -0500
-Received: by mail-bk0-f48.google.com with SMTP id r7so1105482bkg.35
-        for <linux-pwm@vger.kernel.org>; Fri, 20 Dec 2013 01:48:35 -0800 (PST)
+Received: from mail-bk0-f42.google.com ([209.85.214.42]:56710 "EHLO
+	mail-bk0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755096Ab3LTJwC (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Dec 2013 04:52:02 -0500
 Content-Disposition: inline
-In-Reply-To: <87iounuy6e.fsf@free.fr>
+In-Reply-To: <1387424542-5864-1-git-send-email-voice.shen@atmel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Robert Jarzmik <robert.jarzmik@free.fr>
-Cc: Haojian Zhuang <haojian.zhuang@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
+To: Bo Shen <voice.shen@atmel.com>
+Cc: nicolas.ferre@atmel.com, plagnioj@jcrosoft.com, alexandre.belloni@free-electrons.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
 
 
---BRE3mIcgqKzpedwo
+--wchHw8dVAp53YPj8
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 17, 2013 at 07:31:21PM +0100, Robert Jarzmik wrote:
-> Thierry Reding <thierry.reding@gmail.com> writes:
+On Thu, Dec 19, 2013 at 11:42:22AM +0800, Bo Shen wrote:
+> When the PWM controller is registered successfully, the clock can not
+> unprepare, so fix it.
 >=20
-> > I hadn't anticipated that =3D(. In fact I had been holding this patch b=
-ack
-> > for a release cycle because I was waiting for a specific regulator patch
-> > to land which provides a dummy regulator if one wasn't specified. It
-> > seems that that patch only works when booting from DT, though.
-> >
-> > The correct way to fix this would be to provide a lookup table with the
-> > dummy regulator in the board file. I've attached a patch (compile-tested
-> > only) that might work.
-> >
-> > If it does, please let me know and, if nobody else volunteers, I'll see
-> > if I can come up with a set of patches to fix this for any other boards
-> > that have the same issue.
-> Actually, it needs a very small "tweak" to work :
-> -	REGULATOR_SUPPLY("power", "pwm-backlight.0"),
-> +	REGULATOR_SUPPLY("power", "pwm-backlight"),
->=20
-> Without it regulator_dev_lookup() won't match the device.
->=20
-> Moreover, it requires a config option, CONFIG_REGULATOR_FIXED_VOLTAGE=3Dy=
-=2E That's
-> not a problem for my specific platform,
+> Signed-off-by: Bo Shen <voice.shen@atmel.com>
+> ---
+>  drivers/pwm/pwm-atmel.c |    2 ++
+>  1 file changed, 2 insertions(+)
 
-Okay. I'll submit a patch with that tweak of yours rolled in and Haojian
-can merge that via the PXA tree.
+Applied, thanks.
 
-> but I haven't seen *any* PXA platform
-> with it activated, which means all defconfigs have to be patched, which is
-> unfortunate.
-
-Unfortunate indeed!
-
-> As for my specific mioa701, your change with the tweak is perfectly fine =
-and
-> tested.
-
-Great, I'll add your Tested-by.
-
-Thanks,
 Thierry
 
---BRE3mIcgqKzpedwo
+--wchHw8dVAp53YPj8
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJStBIWAAoJEN0jrNd/PrOhWIMP/Rw9GlQVaFaunR4E2shNRNMr
-k0nzmD+rLahKG9BBpzTOcDckTiDFDntC1LddVB+OmieKniTy/rLapEjb1OyOmivi
-ROL/AG7IPjQgePxKfHFlWjd6yepF1q0Dmqo5rlR7uTdVgX7M/3glmHhnvgQ8ZWb6
-6fk8xWandPwwpTBK32muZhKaMsvbbjyA5T2XPrT59jsYRoBYytkGPTVwc3V0TTnB
-EVqXkTizW6305GvryNzpZmjYluOZEZTQK0R7I8kGLND7qDFS5TTTXVK1i8NtsEzo
-+SGC6++n900EZsux8QGoDNpx4RSAeP2EqLfv4iqZT6spdm8AH4TTLu8G2PcmqbuT
-k9DEQzTL0RMmB4ni/zj7uhxqxH0u6G32AnSVTzd+613nwDNq+h2WAquhSOeY2wlf
-eB1xezLkeH4FZ4+TB2nsRg67lfqFpKWnilCOPMcgh59GvKkkosChbMYS1h826nKT
-LGp9os8yKZUXPdtA29eeVkMb+nn+Vkl4F+B13R1GcjDWwPbwQE7dhTaM4sqC2ivm
-u9AZmGNvE76hMkv8HfiZUP0YNb5Y79oB0ykWpLsXhs6UkImCWUdR00PvxbYGWfPH
-am+oP1hS8up9JbmWsjCkQzkLtM4BHX6yVZTmLQrfpqZLQ3fRk2VqmE34BVuSZd4h
-VG1hWp3hzNXoDiRZr7y/
-=oaaj
+iQIcBAEBAgAGBQJStBLkAAoJEN0jrNd/PrOhWvwQALQBEb2ZqLAxCldv8tpNLAQq
+4bST2cDVAhk4ct0OIBsu6RpmsnY5cPIfMtMOcuzBw+HRnIzgO/9BJhKZah7W4w4a
+ms2quSmf52MSBRfn6mE5tHtXnrff7Xncd3AtId4IrS8uEPvrIOrS18OQDTSW1qaG
+0ELjItu5t+nGjFpfG6kxTB7bWOSlT02zmjWNwF1gtgNDUl3XzLS2/es3lUXpJJVQ
+84UC5ahjhRzemPLqkN1IqbzEcg4Hr3jLCXAu2bFUPEQabtXqL3uDNJ0iN6xANBia
+f0hjtOwgEMq2LRgB03cQDUdfRgg/KQiZXBm6KIAPugQV+nTTQLzOMfjoktRaNnaU
+OyT0c4shBLW4dKLxy7bH5w9kXmFvNL9TwQYPj4oFNEgGlJKii0PngIeF5F+A4x/3
+e2izJFIgJ87QLq99tORrM8TWMtSsPQOhtE9//85OKz4djsQaxqiLI1nsSOjk20yT
+eb91XpFEJR750K7nCnjlyoWDDdPHsb7WUhU1v38ApnUlNIx7kd1iDVd5zMZA2AXJ
+g+zFOVnMXNQ3LcLc1jMy51gu8zwghzd9sDOi6mAn+ZNDsV3HwudRI8f4QrvlXyn/
+q6ZmUO6yrsL0hr9i1aq6t53YzjiBGD5L69Ak+ZQzGMjfNs5bbnJvY19QXOGG+28F
+A4Yzz2y/R7N3wwEwJAyu
+=bRhX
 -----END PGP SIGNATURE-----
 
---BRE3mIcgqKzpedwo--
+--wchHw8dVAp53YPj8--
