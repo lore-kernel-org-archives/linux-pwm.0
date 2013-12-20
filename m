@@ -1,67 +1,96 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH] ARM: pxa: Add dummy backlight power supply on Mitac Mio A701
-Date: Fri, 20 Dec 2013 10:46:52 +0100
-Message-ID: <1387532812-11742-1-git-send-email-thierry.reding@gmail.com>
+Subject: Re: pwm-backlight: 3.13-rc1 regression for old arm machine
+Date: Fri, 20 Dec 2013 10:47:03 +0100
+Message-ID: <20131220094702.GD27787@ulmo.nvidia.com>
+References: <87r49c6bea.fsf@free.fr>
+ <20131217095658.GD13823@ulmo.nvidia.com>
+ <87iounuy6e.fsf@free.fr>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="BRE3mIcgqKzpedwo"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bk0-f54.google.com ([209.85.214.54]:41667 "EHLO
-	mail-bk0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755157Ab3LTJsZ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Dec 2013 04:48:25 -0500
-Received: by mail-bk0-f54.google.com with SMTP id v16so1094578bkz.41
-        for <linux-pwm@vger.kernel.org>; Fri, 20 Dec 2013 01:48:24 -0800 (PST)
+Received: from mail-bk0-f48.google.com ([209.85.214.48]:63348 "EHLO
+	mail-bk0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755298Ab3LTJsg (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Dec 2013 04:48:36 -0500
+Received: by mail-bk0-f48.google.com with SMTP id r7so1105482bkg.35
+        for <linux-pwm@vger.kernel.org>; Fri, 20 Dec 2013 01:48:35 -0800 (PST)
+Content-Disposition: inline
+In-Reply-To: <87iounuy6e.fsf@free.fr>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>
-Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
+To: Robert Jarzmik <robert.jarzmik@free.fr>
+Cc: Haojian Zhuang <haojian.zhuang@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
 
-Recent changes to the pwm-backlight driver have made the power supply
-mandatory. There is code in the regulator core to deal with situations
-where no regulator is specified and provide a dummy, but that works on
-DT-based boards only.
 
-The situation can be remedied by adding a dummy regulator during board
-initialization.
+--BRE3mIcgqKzpedwo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Tested-by: Robert Jarzmik <robert.jarzmik@free.fr>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
----
- arch/arm/mach-pxa/mioa701.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+On Tue, Dec 17, 2013 at 07:31:21PM +0100, Robert Jarzmik wrote:
+> Thierry Reding <thierry.reding@gmail.com> writes:
+>=20
+> > I hadn't anticipated that =3D(. In fact I had been holding this patch b=
+ack
+> > for a release cycle because I was waiting for a specific regulator patch
+> > to land which provides a dummy regulator if one wasn't specified. It
+> > seems that that patch only works when booting from DT, though.
+> >
+> > The correct way to fix this would be to provide a lookup table with the
+> > dummy regulator in the board file. I've attached a patch (compile-tested
+> > only) that might work.
+> >
+> > If it does, please let me know and, if nobody else volunteers, I'll see
+> > if I can come up with a set of patches to fix this for any other boards
+> > that have the same issue.
+> Actually, it needs a very small "tweak" to work :
+> -	REGULATOR_SUPPLY("power", "pwm-backlight.0"),
+> +	REGULATOR_SUPPLY("power", "pwm-backlight"),
+>=20
+> Without it regulator_dev_lookup() won't match the device.
+>=20
+> Moreover, it requires a config option, CONFIG_REGULATOR_FIXED_VOLTAGE=3Dy=
+=2E That's
+> not a problem for my specific platform,
 
-diff --git a/arch/arm/mach-pxa/mioa701.c b/arch/arm/mach-pxa/mioa701.c
-index f70583fee59f..29997bde277d 100644
---- a/arch/arm/mach-pxa/mioa701.c
-+++ b/arch/arm/mach-pxa/mioa701.c
-@@ -38,6 +38,7 @@
- #include <linux/mtd/physmap.h>
- #include <linux/usb/gpio_vbus.h>
- #include <linux/reboot.h>
-+#include <linux/regulator/fixed.h>
- #include <linux/regulator/max1586.h>
- #include <linux/slab.h>
- #include <linux/i2c/pxa-i2c.h>
-@@ -714,6 +715,10 @@ static struct gpio global_gpios[] = {
- 	{ GPIO56_MT9M111_nOE, GPIOF_OUT_INIT_LOW, "Camera nOE" },
- };
- 
-+static struct regulator_consumer_supply fixed_5v0_consumers[] = {
-+	REGULATOR_SUPPLY("power", "pwm-backlight"),
-+};
-+
- static void __init mioa701_machine_init(void)
- {
- 	int rc;
-@@ -753,6 +758,10 @@ static void __init mioa701_machine_init(void)
- 	pxa_set_i2c_info(&i2c_pdata);
- 	pxa27x_set_i2c_power_info(NULL);
- 	pxa_set_camera_info(&mioa701_pxacamera_platform_data);
-+
-+	regulator_register_always_on(0, "fixed-5.0V", fixed_5v0_consumers,
-+				     ARRAY_SIZE(fixed_5v0_consumers),
-+				     5000000);
- }
- 
- static void mioa701_machine_exit(void)
--- 
-1.8.4.2
+Okay. I'll submit a patch with that tweak of yours rolled in and Haojian
+can merge that via the PXA tree.
 
+> but I haven't seen *any* PXA platform
+> with it activated, which means all defconfigs have to be patched, which is
+> unfortunate.
+
+Unfortunate indeed!
+
+> As for my specific mioa701, your change with the tweak is perfectly fine =
+and
+> tested.
+
+Great, I'll add your Tested-by.
+
+Thanks,
+Thierry
+
+--BRE3mIcgqKzpedwo
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJStBIWAAoJEN0jrNd/PrOhWIMP/Rw9GlQVaFaunR4E2shNRNMr
+k0nzmD+rLahKG9BBpzTOcDckTiDFDntC1LddVB+OmieKniTy/rLapEjb1OyOmivi
+ROL/AG7IPjQgePxKfHFlWjd6yepF1q0Dmqo5rlR7uTdVgX7M/3glmHhnvgQ8ZWb6
+6fk8xWandPwwpTBK32muZhKaMsvbbjyA5T2XPrT59jsYRoBYytkGPTVwc3V0TTnB
+EVqXkTizW6305GvryNzpZmjYluOZEZTQK0R7I8kGLND7qDFS5TTTXVK1i8NtsEzo
++SGC6++n900EZsux8QGoDNpx4RSAeP2EqLfv4iqZT6spdm8AH4TTLu8G2PcmqbuT
+k9DEQzTL0RMmB4ni/zj7uhxqxH0u6G32AnSVTzd+613nwDNq+h2WAquhSOeY2wlf
+eB1xezLkeH4FZ4+TB2nsRg67lfqFpKWnilCOPMcgh59GvKkkosChbMYS1h826nKT
+LGp9os8yKZUXPdtA29eeVkMb+nn+Vkl4F+B13R1GcjDWwPbwQE7dhTaM4sqC2ivm
+u9AZmGNvE76hMkv8HfiZUP0YNb5Y79oB0ykWpLsXhs6UkImCWUdR00PvxbYGWfPH
+am+oP1hS8up9JbmWsjCkQzkLtM4BHX6yVZTmLQrfpqZLQ3fRk2VqmE34BVuSZd4h
+VG1hWp3hzNXoDiRZr7y/
+=oaaj
+-----END PGP SIGNATURE-----
+
+--BRE3mIcgqKzpedwo--
