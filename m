@@ -1,58 +1,39 @@
 From: Xiubo Li <Li.Xiubo@freescale.com>
-Subject: [PATCHv8 2/4] ARM: dts: Add Freescale FTM PWM node for VF610.
-Date: Thu, 2 Jan 2014 17:57:02 +0800
-Message-ID: <1388656624-26570-3-git-send-email-Li.Xiubo@freescale.com>
+Subject: [PATCHv8 3/4] ARM: dts: Enables FTM PWM device for Vybrid VF610 TOWER board.
+Date: Thu, 2 Jan 2014 17:57:03 +0800
+Message-ID: <1388656624-26570-4-git-send-email-Li.Xiubo@freescale.com>
 References: <1388656624-26570-1-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1388656624-26570-1-git-send-email-Li.Xiubo@freescale.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: thierry.reding@gmail.com, shawn.guo@linaro.org, linux-pwm@vger.kernel.org
-Cc: Xiubo Li <Li.Xiubo@freescale.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Xiubo Li <Li.Xiubo@freescale.com>
 List-Id: linux-pwm@vger.kernel.org
-
-This adds devicetree node for VF610, and there are 8 channels
-supported.
 
 Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
 Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
 ---
- arch/arm/boot/dts/vf610.dtsi | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ arch/arm/boot/dts/vf610-twr.dts | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm/boot/dts/vf610.dtsi b/arch/arm/boot/dts/vf610.dtsi
-index d31ce1b..6cce861 100644
---- a/arch/arm/boot/dts/vf610.dtsi
-+++ b/arch/arm/boot/dts/vf610.dtsi
-@@ -152,6 +152,19 @@
- 				clock-names = "pit";
- 			};
+diff --git a/arch/arm/boot/dts/vf610-twr.dts b/arch/arm/boot/dts/vf610-twr.dts
+index c3a3237..d5c6a39 100644
+--- a/arch/arm/boot/dts/vf610-twr.dts
++++ b/arch/arm/boot/dts/vf610-twr.dts
+@@ -100,6 +100,12 @@
+ 	status = "okay";
+ };
  
-+			pwm0: pwm@40038000 {
-+				compatible = "fsl,vf610-ftm-pwm";
-+				#pwm-cells = <3>;
-+				reg = <0x40038000 0x1000>;
-+				clock-names = "ftm_sys", "ftm_ext",
-+					      "ftm_fix", "ftm_cnt_clk_en";
-+				clocks = <&clks VF610_CLK_FTM0>,
-+					<&clks VF610_CLK_FTM0_EXT_SEL>,
-+					<&clks VF610_CLK_FTM0_FIX_SEL>,
-+					<&clks VF610_CLK_FTM0_EXT_FIX_EN>;
-+				status = "disabled";
-+			};
++&pwm0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_pwm0_1>;
++	status = "okay";
++};
 +
- 			wdog@4003e000 {
- 				compatible = "fsl,vf610-wdt", "fsl,imx21-wdt";
- 				reg = <0x4003e000 0x1000>;
+ &uart1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_uart1_1>;
 -- 
 1.8.4
