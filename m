@@ -1,73 +1,66 @@
-From: Xiubo Li <Li.Xiubo@freescale.com>
-Subject: [PATCHv8 4/4] Documentation: Add device tree bindings for Freescale FTM PWM.
-Date: Thu, 2 Jan 2014 17:57:04 +0800
-Message-ID: <1388656624-26570-5-git-send-email-Li.Xiubo@freescale.com>
-References: <1388656624-26570-1-git-send-email-Li.Xiubo@freescale.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCHv8 1/4] pwm: Add Freescale FTM PWM driver support
+Date: Thu, 02 Jan 2014 12:12:50 +0100
+Message-ID: <3716216.GQHQhxMFvx@wuerfel>
+References: <1388656624-26570-1-git-send-email-Li.Xiubo@freescale.com> <1388656624-26570-2-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <1388656624-26570-1-git-send-email-Li.Xiubo@freescale.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: thierry.reding@gmail.com, shawn.guo@linaro.org, linux-pwm@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Xiubo Li <Li.Xiubo@freescale.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from moutng.kundenserver.de ([212.227.17.9]:55870 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750744AbaABLM4 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Jan 2014 06:12:56 -0500
+In-Reply-To: <1388656624-26570-2-git-send-email-Li.Xiubo@freescale.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Xiubo Li <Li.Xiubo@freescale.com>, thierry.reding@gmail.com, shawn.guo@linaro.org, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, Alison Wang <b18965@freescale.com>, linux-kernel@vger.kernel.org, Jingchang Lu <b35083@freescale.com>
 
-This adds the binding documentation for Freescale FlexTimer Module
-(FTM) PWM driver under Documentation/devicetree/bindings/pwm/.
+On Thursday 02 January 2014 17:57:01 Xiubo Li wrote:
+> +static inline u32 ftm_readl(bool big_endian, const void __iomem *addr)
+> +{
+> +       u32 val;
+> +
+> +       val = __raw_readl(addr);
+> +
+> +       if (likely(big_endian))
+> +               val = be32_to_cpu((__force __be32)val);
+> +       else
+> +               val = le32_to_cpu((__force __le32)val);
+> +       rmb();
+> +
+> +       return val;
+> +}
+> +
+> +static inline void ftm_writel(bool big_endian, u32 val, void __iomem *addr)
+> +{
+> +       wmb();
+> +       if (likely(big_endian))
+> +               val = (__force u32)cpu_to_be32(val);
+> +       else
+> +               val = (__force u32)cpu_to_le32(val);
+> +
+> +       __raw_writel(val, addr);
 
-Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
-Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-Acked-by: Kumar Gala <galak@codeaurora.org>
----
- .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        | 38 ++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+These functions definitely need some comments regarding why this is necessary.
+I assume that after 8 rounds of review (that I did not read) this has been
+discussed already, so please explain above the functions why you don't just
+use ioread32be/ioread32 and iowrite32be/iowrite32 here.
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt b/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
-new file mode 100644
-index 0000000..6ae6377
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
-@@ -0,0 +1,38 @@
-+Freescale FlexTimer Module (FTM) PWM controller
-+
-+Required properties:
-+- compatible: Should be "fsl,vf610-ftm-pwm".
-+- reg: Physical base address and length of the controller's registers
-+- #pwm-cells: Should be 3. See pwm.txt in this directory for a description of
-+  the cells format.
-+- clock-names : Should include the following module clock source entries:
-+    "ftm_sys" (module clock, also can be used as counter clock),
-+    "ftm_ext" (external counter clock),
-+    "ftm_fix" (fixed counter clock),
-+    "ftm_cnt_clk_en" (external and fixed counter clock enable/disable).
-+- clocks : Must contain a clock specifier for each entry in clock-names,
-+  See clock/clock-bindings.txt for details of the property values.
-+- pinctrl-names: Must contain a "default" entry.
-+- pinctrl-NNN: One property must exist for each entry in pinctrl-names.
-+  See pinctrl/pinctrl-bindings.txt for details of the property values.
-+- big-endian: If this property is absent, the little endian mode will be in
-+  use as default, or the big endian mode will be in use for all the device
-+  registers.
-+
-+
-+Example:
-+
-+pwm0: pwm@40038000 {
-+		compatible = "fsl,vf610-ftm-pwm";
-+		reg = <0x40038000 0x1000>;
-+		#pwm-cells = <3>;
-+		clock-names = "ftm_sys", "ftm_ext",
-+				"ftm_fix", "ftm_cnt_clk_en";
-+		clocks = <&clks VF610_CLK_FTM0>,
-+			<&clks VF610_CLK_FTM0_EXT_SEL>,
-+			<&clks VF610_CLK_FTM0_FIX_SEL>,
-+			<&clks VF610_CLK_FTM0_EXT_FIX_EN>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_pwm0_1>;
-+		big-endian;
-+};
--- 
-1.8.4
+Also all callers seem to be of the style
 
+       val = ftm_readl(fpc->big_endian, fpc->base + FTM_SC);
 
+so I wonder why you don't just pass the fpc pointer to the function
+and make it
+
+static inline void ftm_readl(struct fsl_pwm_chip *fpc, unsigned long reg, u32 val)
+{
+	if (fpc->big_endian)
+		iowrite32be(val, fpc->base + reg);
+	else
+		iowrite32(val, fpc->base + reg);
+}
+
+	Arnd
