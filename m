@@ -1,101 +1,112 @@
-From: Josh Triplett <josh@joshtriplett.org>
-Subject: Re: [PATCH] drivers: Remove unused devm_*_put functions
-Date: Mon, 6 Jan 2014 00:17:35 -0800
-Message-ID: <20140106081735.GA27508@leaf>
-References: <20131221104920.GA3626@rashika>
- <CACRpkdYyFXt1g-fL9dUTwQLnT4senUjvRpehc6yuQ9rV4ztwSA@mail.gmail.com>
- <CAAVeFuJug5wNZrSr5UcP8w8E0a3iYF=bcNEzJgQaZ=u4CX8Daw@mail.gmail.com>
- <20140103202215.GA12111@leaf>
- <CAAVeFuLgDRKy3a0JOoLxjZjbtbE8s5vpPV+HPe9A-Z2ua8xTGQ@mail.gmail.com>
+From: Alexandre BOURDIOL <alexandre.bourdiol@st.com>
+Subject: RE: [PATCH] pwm: ab8500: Fix wrong value shift for disable/enable
+ pwm
+Date: Mon, 6 Jan 2014 09:55:13 +0100
+Message-ID: <0B9F1C5B86169C4EA9D042C251022E4938C76BA80F@SAFEX1MAIL3.st.com>
+References: <1387078339.22351.2.camel@phoenix>
+ <CACRpkdYBn+niqVD8j_3rkTSfh5x8HtKevw41FuW8oRqsaFeLGQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-gpio-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAAVeFuLgDRKy3a0JOoLxjZjbtbE8s5vpPV+HPe9A-Z2ua8xTGQ@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Alexandre Courbot <gnurou@gmail.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Rashika Kheria <rashika.kheria@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Kishon Vijay Abraham I <kishon@ti.com>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <acourbot@nvidia.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from eu1sys200aog120.obsmtp.com ([207.126.144.149]:43684 "EHLO
+	eu1sys200aog120.obsmtp.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751799AbaAFIzj convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Mon, 6 Jan 2014 03:55:39 -0500
+In-Reply-To: <CACRpkdYBn+niqVD8j_3rkTSfh5x8HtKevw41FuW8oRqsaFeLGQ@mail.gmail.com>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>, Axel Lin <axel.lin@ingics.com>, Philippe BEGNIC ST <philippe.begnic@st.com>
+Cc: Thierry Reding <thierry.reding@avionic-design.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-On Mon, Jan 06, 2014 at 04:48:39PM +0900, Alexandre Courbot wrote:
-> On Sat, Jan 4, 2014 at 5:22 AM, Josh Triplett <josh@joshtriplett.org> wrote:
-> > On Fri, Jan 03, 2014 at 08:07:22PM +0900, Alexandre Courbot wrote:
-> >> On Thu, Jan 2, 2014 at 10:07 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
-> >> > On Sat, Dec 21, 2013 at 11:49 AM, Rashika Kheria
-> >> > <rashika.kheria@gmail.com> wrote:
-> >> >> -/**
-> >> >> - * devm_gpiod_put - Resource-managed gpiod_put()
-> >> >> - * @desc:      GPIO descriptor to dispose of
-> >> >> - *
-> >> >> - * Dispose of a GPIO descriptor obtained with devm_gpiod_get() or
-> >> >> - * devm_gpiod_get_index(). Normally this function will not be called as the GPIO
-> >> >> - * will be disposed of by the resource management code.
-> >> >> - */
-> >> >> -void devm_gpiod_put(struct device *dev, struct gpio_desc *desc)
-> >> >> -{
-> >> >> -       WARN_ON(devres_release(dev, devm_gpiod_release, devm_gpiod_match,
-> >> >> -               &desc));
-> >> >> -}
-> >> >> -EXPORT_SYMBOL(devm_gpiod_put);
-> >> >
-> >> > Alexandre what do you think about this? Can we think of a scenario
-> >> > where explicit garbage collection is going to be needed or should we
-> >> > remove this for now?
-> >>
-> >> Sorry for the delayed reply, I quickly saw the patch and then the
-> >> holidays got in the way. :)
-> >>
-> >> I think all these functions should be kept. It is true that they are
-> >> seldomly used, and that the purpose of devm is to garbage-collect
-> >> resources upon driver removal, but they might (actually, probably
-> >> will) become needed by someone at some point in the future. One
-> >> example I can think of is two drivers that collaborate to share the
-> >> same GPIO line. If they acquire the GPIO through devm_gpiod_get() they
-> >> will need devm_gpiod_put() to release it so the other driver can
-> >> acquire it.
-> >>
-> >> On a more general note, devm_clk_put(), devm_regulator_put(),
-> >> devm_pinctrl_put() and probably others devm_*_put() functions are
-> >> actively used in the kernel, to  support the idea that a devm removal
-> >> function makes sense. That not all the subsystem-provided functions
-> >> are used by mainline drivers does not necessary mean they should be
-> >> removed, especially if they serve a purpose. We should keep our APIs
-> >> consistent and future-proof, not to mention out-of-tree drivers that
-> >> may use them.
-> >>
-> >> So this patch is a nack as far as I'm concerned, not only the GPIO
-> >> part, but the whole of it.
-> >
-> > As far as I can tell, the few calls to the devm_*_put functions I can
-> > see look like unnecessary calls as part of driver/device
-> > uninitialization, and could be removed either directly or with minor
-> > reworking.  That there are only 1-2 calls to each in the entire kernel
-> > is also quite telling.
-> >
-> > In any case, it's disappointing to have a pile of unused functions in
-> > the kernel on the theory that they *might* be needed; it's not like it'd
-> > be hard to retrieve them from git if they're ever needed.
-> 
-> My motivation is mainly API consistency ; and these functions are
-> small enough to not worry too much about them IMHO. If we *really*
-> want to get rid of them when they are unneeded, how about defining
-> them as static inline in the corresponding header file? Since they are
-> short and seldomly used (when used at all), this may be an acceptable
-> compromise.
+Hi,
+That is fine for me.
 
-That seems quite reasonable.
+Best regards and happy new year
+Alexandre BOURDIOL=20
 
-> > However, if you're insistent on keeping them, it'd be easy enough to
-> > provide patches to include an appropriate header with prototypes for
-> > them instead, which would also eliminate the warning this patch series
-> > set out to eliminate.
-> 
-> The patch did not mention any warning, unless I missed something.
-> Would be nice to explicitly mention it in the commit message.
+-----Original Message-----
+=46rom: Linus Walleij [mailto:linus.walleij@linaro.org]=20
+Sent: vendredi 20 d=E9cembre 2013 18:10
+To: Axel Lin; Philippe BEGNIC ST; Alexandre BOURDIOL
+Cc: Thierry Reding; linux-pwm@vger.kernel.org
+Subject: Re: [PATCH] pwm: ab8500: Fix wrong value shift for disable/ena=
+ble pwm
 
-This patch and the others like it are seeking to eliminate
--Wmissing-prototypes warnings from GCC and -Wdecl warnings from Sparse,
-caused by having functions that are neither static nor prototyped in
-advance.
+On Sun, Dec 15, 2013 at 4:32 AM, Axel Lin <axel.lin@ingics.com> wrote:
 
-- Josh Triplett
+> Current code only works when pdev->id is 1. Fix it by passing correct=
+=20
+> bitvalues argument to abx500_mask_and_set_register_interruptible.
+>
+> Having defines for DISABLE_PWM/ENABLE_PWM does not make the code=20
+> better in readability because the bitvalues depends on pdev->id.
+> Thus drop defines for DISABLE_PWM/ENABLE_PWM.
+>
+> This patch also removes a unnecessary return in ab8500_pwm_disable.
+>
+> Signed-off-by: Axel Lin <axel.lin@ingics.com>
+> ---
+>  drivers/pwm/pwm-ab8500.c | 9 ++-------
+>  1 file changed, 2 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/pwm/pwm-ab8500.c b/drivers/pwm/pwm-ab8500.c inde=
+x=20
+> 1d07a6f..d51dc15 100644
+> --- a/drivers/pwm/pwm-ab8500.c
+> +++ b/drivers/pwm/pwm-ab8500.c
+> @@ -20,10 +20,6 @@
+>  #define AB8500_PWM_OUT_CTRL2_REG       0x61
+>  #define AB8500_PWM_OUT_CTRL7_REG       0x66
+>
+> -/* backlight driver constants */
+> -#define ENABLE_PWM                     1
+> -#define DISABLE_PWM                    0
+> -
+>  struct ab8500_pwm_chip {
+>         struct pwm_chip chip;
+>  };
+> @@ -64,7 +60,7 @@ static int ab8500_pwm_enable(struct pwm_chip *chip,=
+=20
+> struct pwm_device *pwm)
+>
+>         ret =3D abx500_mask_and_set_register_interruptible(chip->dev,
+>                                 AB8500_MISC, AB8500_PWM_OUT_CTRL7_REG=
+,
+> -                               1 << (chip->base - 1), ENABLE_PWM);
+> +                               1 << (chip->base - 1), 1 <<=20
+> + (chip->base - 1));
+>         if (ret < 0)
+>                 dev_err(chip->dev, "%s: Failed to enable PWM, Error %=
+d\n",
+>                                                         pwm->label,=20
+> ret); @@ -77,11 +73,10 @@ static void ab8500_pwm_disable(struct=20
+> pwm_chip *chip, struct pwm_device *pwm)
+>
+>         ret =3D abx500_mask_and_set_register_interruptible(chip->dev,
+>                                 AB8500_MISC, AB8500_PWM_OUT_CTRL7_REG=
+,
+> -                               1 << (chip->base - 1), DISABLE_PWM);
+> +                               1 << (chip->base - 1), 0);
+>         if (ret < 0)
+>                 dev_err(chip->dev, "%s: Failed to disable PWM, Error =
+%d\n",
+>                                                         pwm->label, r=
+et);
+> -       return;
+>  }
+>
+>  static const struct pwm_ops ab8500_pwm_ops =3D {
+
+Quoting verbatim som my colleagues can see it.
+
+This patch makes a lot of sense after inspection, so
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+
+But allow Philippe & Alexandre (now added to To:) to have a look at it =
+too.
+
+Yours,
+Linus Walleij
