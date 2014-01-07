@@ -1,54 +1,51 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work-JGs/UdohzUI@public.gmane.org>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSF0gcHdtOiBBZGQgQ0xQUzcxMVggUFdNIHN1cHBvcnQ=?=
-Date: Mon, 06 Jan 2014 20:30:53 +0400
-Message-ID: <1389025853.275494031@f414.i.mail.ru>
-References: <1388547821-10029-1-git-send-email-shc_work@mail.ru>
- <20140106161233.GB6721@ulmo.nvidia.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work-JGs/UdohzUI@public.gmane.org>
+From: Xiubo Li <Li.Xiubo@freescale.com>
+Subject: [PATCH] pwm: core: Use devm_kzalloc instead of kzalloc
+Date: Tue, 7 Jan 2014 14:05:00 +0800
+Message-ID: <1389074700-1825-1-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20140106161233.GB6721-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: =?UTF-8?B?VGhpZXJyeSBSZWRpbmc=?= <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from tx2ehsobe001.messaging.microsoft.com ([65.55.88.11]:7164 "EHLO
+	tx2outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751929AbaAGHAy (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Jan 2014 02:00:54 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Xiubo Li <Li.Xiubo@freescale.com>
 
-SGVsbG8uCgrQn9C+0L3QtdC00LXQu9GM0L3QuNC6LCAgNiDRj9C90LLQsNGA0Y8gMjAxNCwgMTc6
-MTIgKzAxOjAwINC+0YIgVGhpZXJyeSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT46
-Cj4gT24gV2VkLCBKYW4gMDEsIDIwMTQgYXQgMDc6NDM6NDFBTSArMDQwMCwgQWxleGFuZGVyIFNo
-aXlhbiB3cm90ZToKPiA+IEFkZCBhIG5ldyBkcml2ZXIgZm9yIHRoZSBQV00gY29udHJvbGxlcnMg
-b24gdGhlIENMUFM3MTFYIHBsYXRmb3JtCj4gPiBiYXNlZCBvbiB0aGUgUFdNIGZyYW1ld29yay4K
-Li4uCj4gCXN0YXRpYyBpbmxpbmUgdG9fY2xwczcxMXgoc3RydWN0IHB3bV9jaGlwICpjaGlwKQo+
-IAl7Cj4gCQlyZXR1cm4gY29udGFpbmVyX29mKGNoaXAsIHN0cnVjdCBjbHBzNzExeF9jaGlwLCBj
-aGlwKTsKPiAJfQo+IAo+ID4gKwl1bnNpZ25lZCBpbnQgcGVyaW9kLCBmcmVxID0gY2xrX2dldF9y
-YXRlKHByaXYtPmNsayk7Cj4gPiArCj4gPiArCWlmICghZnJlcSkKPiA+ICsJCXJldHVybiAtRUlO
-VkFMOwo+ID4gKwo+ID4gKwkvKiBDYWxjdWxhdGUgYW5kIHN0b3JlIGNvbnN0YW50IHBlcmlvZCB2
-YWx1ZSAqLwo+ID4gKwlwZXJpb2QgPSBESVZfUk9VTkRfQ0xPU0VTVChOU0VDX1BFUl9TRUMsIGZy
-ZXEpOwo+ID4gKwlwd21fc2V0X3BlcmlvZChwd20sIHBlcmlvZCk7Cj4gPiArCXB3bV9zZXRfY2hp
-cF9kYXRhKHB3bSwgKHZvaWQgKikodWludHB0cl90KXBlcmlvZCk7Cj4gCj4gV2h5IHN0b3JlIHRo
-aXMgaW4gY2hpcCBkYXRhIGFnYWluIGlmIGl0IGNhbiBiZSByZXRyaWV2ZWQgZGlyZWN0bHkgZnJv
-bQo+IHRoZSBQV00gZGV2aWNlIHVzaW5nIHB3bV9nZXRfcGVyaW9kKCk/CgpUaGlzIGlzIHVzZWQg
-Zm9yIGNvbXBhcmUgdGhpcyB2YWx1ZSBpbiBwd21fY29uZmlnKCkuCnB3bV9zZXRfcGVyaW9kKCkg
-cG90ZW50aWFsbHkgY2FuIGJlIGNhbGxlZCBmcm9tIGFueSBvdGhlciBwbGFjZSBhbmQgc2V0Cmls
-bGVnYWwgdmFsdWUgZm9yIHVzLCBidXQgd2Ugc2hvdWxkIGNhbGN1bGF0ZSBkdXR5IHJhdGlvIHdp
-dGggb3VyIChwcm9wZXIpIGZyZXF1ZW5jeS4KSXMgbm90IGl0PwoKPiA+ICtzdGF0aWMgaW50IGNs
-cHM3MTF4X3B3bV9lbmFibGUoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2Rldmlj
-ZSAqcHdtKQo+ID4gK3sKPiA+ICsJLyogRG8gbm90aGluZyAqLwo+ID4gKwlyZXR1cm4gMDsKPiA+
-ICt9Cj4gPiArCj4gPiArc3RhdGljIHZvaWQgY2xwczcxMXhfcHdtX2Rpc2FibGUoc3RydWN0IHB3
-bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2RldmljZSAqcHdtKQo+ID4gK3sKPiA+ICsJLyogRG8g
-bm90aGluZyAqLwo+ID4gK30KPiAKPiBJIHRoaW5rIGl0IHdvdWxkIGJlIGJldHRlciBpZiB0aGlz
-IHdvdWxkIHNldCB0aGUgZHV0eSBmaWVsZCB0byAwIHRvIHN0b3AKPiBhbnkgcG90ZW50aWFsIHRv
-Z2dsaW5nIG9mIHRoZSBQV00gc2lnbmFsLiAuZW5hYmxlKCkgY2FuIGxhdGVyIHJlc3RvcmUKPiB0
-aGUgcHJvcGVyIHZhbHVlLgo+IAo+IFRoZSByZWFzb24gZm9yIHRoaXMgaXMgdGhhdCBwd21fZGlz
-YWJsZSgpIGlzIHN1cHBvc2VkIHRvIHN0b3AgdGhlIFBXTQo+IG91dHB1dCBmcm9tIHRvZ2dsaW5n
-IGFuZCBpZiB5b3Ugc2ltcGx5IGlnbm9yZSBpdCB5b3UgZG9uJ3QgY29uZm9ybSB0bwo+IHRoZSBB
-UEkgc3BlY2lmaWNhdGlvbi4KCkkgYWdyZWUgZm9yIHB3bV9kaXNhYmxlKCksIGJ1dCB3aGljaCB2
-YWx1ZSBzaG91bGQgYmUgcmVzdG9yZWQgYnkgcHdtX2VuYWJsZSgpPwpJIHRoaW5rIHdlIHNob3Vs
-ZCBrZWVwIHB3bV9lbmFibGUoKSBhcyBpcywgaS5lLiB3ZSBlbmFibGUgUFdNIHdpdGggZXhpc3Rp
-bmcgdmFsdWUuCgpUaGFua3MuCgotLS0K
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Use devm_kzalloc instead of kzalloc to free automatically and make
+the cleanup paths simpler and the code slightly shorter.
+
+Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
+---
+ drivers/pwm/core.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 2ca9504..74c9f9a 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -80,7 +80,6 @@ static void free_pwms(struct pwm_chip *chip)
+ 
+ 	bitmap_clear(allocated_pwms, chip->base, chip->npwm);
+ 
+-	kfree(chip->pwms);
+ 	chip->pwms = NULL;
+ }
+ 
+@@ -245,7 +244,9 @@ int pwmchip_add(struct pwm_chip *chip)
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	chip->pwms = kzalloc(chip->npwm * sizeof(*pwm), GFP_KERNEL);
++	chip->pwms = devm_kzalloc(chip->dev,
++				  chip->npwm * sizeof(*pwm),
++				  GFP_KERNEL);
+ 	if (!chip->pwms) {
+ 		ret = -ENOMEM;
+ 		goto out;
+-- 
+1.8.4
+
+
