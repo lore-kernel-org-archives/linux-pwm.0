@@ -1,46 +1,60 @@
-From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
-Subject: RE: [PATCH] pwm: core: Use devm_kzalloc instead of kzalloc
-Date: Tue, 7 Jan 2014 07:36:14 +0000
-Message-ID: <20a8a6494bfd4a7e8367e53b13c7b3b2@DM2PR03MB509.namprd03.prod.outlook.com>
-References: <1389074700-1825-1-git-send-email-Li.Xiubo@freescale.com>
- <1389078870.32137.5.camel@joe-AO722>
+From: Xiubo Li <Li.Xiubo@freescale.com>
+Subject: [PATCH v2] pwm: core: Use devm_kcalloc instead of kzalloc
+Date: Tue, 7 Jan 2014 14:45:47 +0800
+Message-ID: <1389077147-15487-1-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-by2lp0239.outbound.protection.outlook.com ([207.46.163.239]:17873
-	"EHLO na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1754056AbaAGHgQ convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Jan 2014 02:36:16 -0500
-In-Reply-To: <1389078870.32137.5.camel@joe-AO722>
-Content-Language: en-US
+Received: from [207.46.163.27] ([207.46.163.27]:43910 "EHLO
+	co9outboundpool.messaging.microsoft.com" rhost-flags-FAIL-FAIL-OK-OK)
+	by vger.kernel.org with ESMTP id S1754732AbaAGHoK (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Jan 2014 02:44:10 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Joe Perches <joe@perches.com>
-Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: thierry.reding@gmail.com
+Cc: joe@perches.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Xiubo Li <Li.Xiubo@freescale.com>
+
+Use devm_kcalloc instead of kzalloc to free automatically and make
+the cleanup paths simpler and the code slightly shorter.
+
+Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
+---
+
+Changed in v2:
+- Use devm_kcalloc instead of devm_kzalloc.
+
+Changed in v1:
+- Use devm_kzalloc instead of kzalloc.
 
 
-> > Use devm_kzalloc instead of kzalloc to free automatically and make
-> > the cleanup paths simpler and the code slightly shorter.
-> []
-> > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> []
-> > @@ -245,7 +244,9 @@ int pwmchip_add(struct pwm_chip *chip)
-> >  	if (ret < 0)
-> >  		goto out;
-> >
-> > -	chip->pwms = kzalloc(chip->npwm * sizeof(*pwm), GFP_KERNEL);
-> > +	chip->pwms = devm_kzalloc(chip->dev,
-> > +				  chip->npwm * sizeof(*pwm),
-> > +				  GFP_KERNEL);
-> 
-> There is a devm_kcalloc and this should likely use it.
-> 
 
-Yes, I will use it.
 
-Thanks,
+ drivers/pwm/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 2ca9504..75220e8 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -80,7 +80,6 @@ static void free_pwms(struct pwm_chip *chip)
  
+ 	bitmap_clear(allocated_pwms, chip->base, chip->npwm);
+ 
+-	kfree(chip->pwms);
+ 	chip->pwms = NULL;
+ }
+ 
+@@ -245,7 +244,8 @@ int pwmchip_add(struct pwm_chip *chip)
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	chip->pwms = kzalloc(chip->npwm * sizeof(*pwm), GFP_KERNEL);
++	chip->pwms = devm_kcalloc(chip->dev, chip->npwm,
++				  sizeof(*pwm), GFP_KERNEL);
+ 	if (!chip->pwms) {
+ 		ret = -ENOMEM;
+ 		goto out;
+-- 
+1.8.4
+
 
