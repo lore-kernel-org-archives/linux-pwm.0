@@ -1,51 +1,87 @@
 From: Xiubo Li <Li.Xiubo@freescale.com>
-Subject: [PATCHv9 2/4] ARM: dts: Add Freescale FTM PWM node for VF610.
-Date: Tue, 7 Jan 2014 16:13:57 +0800
-Message-ID: <1389082438-2199-1-git-send-email-Li.Xiubo@freescale.com>
+Subject: [PATCHv9 4/4] Documentation: Add device tree bindings for Freescale FTM PWM.
+Date: Tue, 7 Jan 2014 16:17:06 +0800
+Message-ID: <1389082626-3919-1-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: shawn.guo@linaro.org, thierry.reding@gmail.com
-Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Xiubo Li <Li.Xiubo@freescale.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-db8lp0185.outbound.messaging.microsoft.com ([213.199.154.185]:56503
+	"EHLO db8outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751325AbaAGJM7 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Jan 2014 04:12:59 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: rob@landley.net, linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Xiubo Li <Li.Xiubo@freescale.com>
 
-This adds devicetree node for VF610, and there are 8 channels
-supported.
+This adds the binding documentation for Freescale FlexTimer Module
+(FTM) PWM driver under Documentation/devicetree/bindings/pwm/.
 
 Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
 Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+Acked-by: Kumar Gala <galak@codeaurora.org>
 ---
 
-No changes since v7.
+For this version I just removed the big-endian mode support, and will add it
+in later separate patches.
 
 
- arch/arm/boot/dts/vf610.dtsi | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+Changes in v9:
+- Remove the big-endian mode support.
 
-diff --git a/arch/arm/boot/dts/vf610.dtsi b/arch/arm/boot/dts/vf610.dtsi
-index d31ce1b..6cce861 100644
---- a/arch/arm/boot/dts/vf610.dtsi
-+++ b/arch/arm/boot/dts/vf610.dtsi
-@@ -152,6 +152,19 @@
- 				clock-names = "pit";
- 			};
- 
-+			pwm0: pwm@40038000 {
-+				compatible = "fsl,vf610-ftm-pwm";
-+				#pwm-cells = <3>;
-+				reg = <0x40038000 0x1000>;
-+				clock-names = "ftm_sys", "ftm_ext",
-+					      "ftm_fix", "ftm_cnt_clk_en";
-+				clocks = <&clks VF610_CLK_FTM0>,
-+					<&clks VF610_CLK_FTM0_EXT_SEL>,
-+					<&clks VF610_CLK_FTM0_FIX_SEL>,
-+					<&clks VF610_CLK_FTM0_EXT_FIX_EN>;
-+				status = "disabled";
-+			};
+Changes in v7 ~ v8:
+- Mainly about big-endian mode support.
+
+[snip] v1~v6
+
+
+
+
+ .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        | 34 ++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt b/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+new file mode 100644
+index 0000000..1c310df
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+@@ -0,0 +1,34 @@
++Freescale FlexTimer Module (FTM) PWM controller
 +
- 			wdog@4003e000 {
- 				compatible = "fsl,vf610-wdt", "fsl,imx21-wdt";
- 				reg = <0x4003e000 0x1000>;
++Required properties:
++- compatible: Should be "fsl,vf610-ftm-pwm".
++- reg: Physical base address and length of the controller's registers
++- #pwm-cells: Should be 3. See pwm.txt in this directory for a description of
++  the cells format.
++- clock-names : Should include the following module clock source entries:
++    "ftm_sys" (module clock, also can be used as counter clock),
++    "ftm_ext" (external counter clock),
++    "ftm_fix" (fixed counter clock),
++    "ftm_cnt_clk_en" (external and fixed counter clock enable/disable).
++- clocks : Must contain a clock specifier for each entry in clock-names,
++  See clock/clock-bindings.txt for details of the property values.
++- pinctrl-names: Must contain a "default" entry.
++- pinctrl-NNN: One property must exist for each entry in pinctrl-names.
++  See pinctrl/pinctrl-bindings.txt for details of the property values.
++
++
++Example:
++
++pwm0: pwm@40038000 {
++		compatible = "fsl,vf610-ftm-pwm";
++		reg = <0x40038000 0x1000>;
++		#pwm-cells = <3>;
++		clock-names = "ftm_sys", "ftm_ext",
++				"ftm_fix", "ftm_cnt_clk_en";
++		clocks = <&clks VF610_CLK_FTM0>,
++			<&clks VF610_CLK_FTM0_EXT_SEL>,
++			<&clks VF610_CLK_FTM0_FIX_SEL>,
++			<&clks VF610_CLK_FTM0_EXT_FIX_EN>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_pwm0_1>;
++};
 -- 
 1.8.4
+
+
