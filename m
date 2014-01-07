@@ -1,60 +1,59 @@
-From: Xiubo Li <Li.Xiubo@freescale.com>
-Subject: [PATCH v2] pwm: core: Use devm_kcalloc instead of kzalloc
-Date: Tue, 7 Jan 2014 14:45:47 +0800
-Message-ID: <1389077147-15487-1-git-send-email-Li.Xiubo@freescale.com>
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: Re: [PATCH] pwm: core: Use devm_kzalloc instead of kzalloc
+Date: Tue, 7 Jan 2014 00:01:27 -0800
+Message-ID: <20140107080127.GD20074@core.coreip.homeip.net>
+References: <1389074700-1825-1-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from [207.46.163.27] ([207.46.163.27]:43910 "EHLO
-	co9outboundpool.messaging.microsoft.com" rhost-flags-FAIL-FAIL-OK-OK)
-	by vger.kernel.org with ESMTP id S1754732AbaAGHoK (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Jan 2014 02:44:10 -0500
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1389074700-1825-1-git-send-email-Li.Xiubo@freescale.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Xiubo Li <Li.Xiubo@freescale.com>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: joe@perches.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Xiubo Li <Li.Xiubo@freescale.com>
 
-Use devm_kcalloc instead of kzalloc to free automatically and make
-the cleanup paths simpler and the code slightly shorter.
+Hi Xiubo,
 
-Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
----
+On Tue, Jan 07, 2014 at 02:05:00PM +0800, Xiubo Li wrote:
+> Use devm_kzalloc instead of kzalloc to free automatically and make
+> the cleanup paths simpler and the code slightly shorter.
+> 
+> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
+> ---
+>  drivers/pwm/core.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+> index 2ca9504..74c9f9a 100644
+> --- a/drivers/pwm/core.c
+> +++ b/drivers/pwm/core.c
+> @@ -80,7 +80,6 @@ static void free_pwms(struct pwm_chip *chip)
+>  
+>  	bitmap_clear(allocated_pwms, chip->base, chip->npwm);
+>  
+> -	kfree(chip->pwms);
+>  	chip->pwms = NULL;
+>  }
+>  
+> @@ -245,7 +244,9 @@ int pwmchip_add(struct pwm_chip *chip)
+>  	if (ret < 0)
+>  		goto out;
+>  
+> -	chip->pwms = kzalloc(chip->npwm * sizeof(*pwm), GFP_KERNEL);
+> +	chip->pwms = devm_kzalloc(chip->dev,
+> +				  chip->npwm * sizeof(*pwm),
+> +				  GFP_KERNEL);
+>  	if (!chip->pwms) {
+>  		ret = -ENOMEM;
+>  		goto out;
 
-Changed in v2:
-- Use devm_kcalloc instead of devm_kzalloc.
+Is it guaranteed that pwmchip_add()/free_pwms() will only be called in
+probe() and remove() paths? It is probably safe assumption, but maybe it
+should be mentioned in comments now that we definitely have this
+restricion.
 
-Changed in v1:
-- Use devm_kzalloc instead of kzalloc.
+Thanks.
 
-
-
-
- drivers/pwm/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 2ca9504..75220e8 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -80,7 +80,6 @@ static void free_pwms(struct pwm_chip *chip)
- 
- 	bitmap_clear(allocated_pwms, chip->base, chip->npwm);
- 
--	kfree(chip->pwms);
- 	chip->pwms = NULL;
- }
- 
-@@ -245,7 +244,8 @@ int pwmchip_add(struct pwm_chip *chip)
- 	if (ret < 0)
- 		goto out;
- 
--	chip->pwms = kzalloc(chip->npwm * sizeof(*pwm), GFP_KERNEL);
-+	chip->pwms = devm_kcalloc(chip->dev, chip->npwm,
-+				  sizeof(*pwm), GFP_KERNEL);
- 	if (!chip->pwms) {
- 		ret = -ENOMEM;
- 		goto out;
 -- 
-1.8.4
-
-
+Dmitry
