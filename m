@@ -1,36 +1,37 @@
-From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
-Subject: RE: [PATCHv9 2/4] ARM: dts: Add Freescale FTM PWM node for VF610.
-Date: Wed, 8 Jan 2014 05:03:26 +0000
-Message-ID: <d7b0a9b5bd134ba0a56b6d737bee4c42@BY2PR03MB505.namprd03.prod.outlook.com>
-References: <1389082438-2199-1-git-send-email-Li.Xiubo@freescale.com>
- <20140107130557.GI12346@S2101-09.ap.freescale.net>
+From: sourav <sourav.poddar@ti.com>
+Subject: Re: [PATCH 0/3] pwm: ti: Miscellaneous Fixes and cleanup for pwm.
+Date: Wed, 8 Jan 2014 12:17:00 +0530
+Message-ID: <52CCF464.6040307@ti.com>
+References: <1387366615-23182-1-git-send-email-sourav.poddar@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bn1lp0157.outbound.protection.outlook.com ([207.46.163.157]:22500
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+Received: from arroyo.ext.ti.com ([192.94.94.40]:40338 "EHLO arroyo.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751821AbaAHFD3 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 8 Jan 2014 00:03:29 -0500
-In-Reply-To: <20140107130557.GI12346@S2101-09.ap.freescale.net>
-Content-Language: en-US
+	id S1750790AbaAHGrF (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Wed, 8 Jan 2014 01:47:05 -0500
+In-Reply-To: <1387366615-23182-1-git-send-email-sourav.poddar@ti.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Shawn Guo <shawn.guo@linaro.org>
-Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Sourav Poddar <sourav.poddar@ti.com>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, balbi@ti.com
 
-
-> Has the FTM PWM device tree bindings been accepted/merged?  Please only
-> send me DTS changes after that.  Also when you send me the DTS changes,
-> please base on imx/dt or for-next branch of my git tree below.
-> 
->   git://git.linaro.org/people/shawnguo/linux-2.6.git
-> 
-
-Yes, I will resend these dt patches after the FTM driver has been merged
-bases on this tree.
-
-Thanks,
-
-Xiubo
+On Wednesday 18 December 2013 05:06 PM, Sourav Poddar wrote:
+> This patch series caters to the issue faced while using tiecap
+> as a module.
+>
+> The patch fix lock dependency issue which leads to crash during rmmod.
+> Also fixes the clock control register setup values during CLK EN call.
+>
+> Sourav Poddar (3):
+>    pwm: core: Rearrange pwm lock usage.
+>    driver: pwm: ti-ecap: Rmove duplicate put_sync call.
+>    driver: pwmss: Disable stop during Enable clock call..
+>
+>   drivers/pwm/core.c        |    4 +++-
+>   drivers/pwm/pwm-tiecap.c  |    1 -
+>   drivers/pwm/pwm-tipwmss.c |    2 ++
+>   3 files changed, 5 insertions(+), 2 deletions(-)
+>
+Gentle ping on this..
