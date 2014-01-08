@@ -1,119 +1,86 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: Add CLPS711X PWM support
-Date: Wed, 8 Jan 2014 14:34:23 +0100
-Message-ID: <20140108133422.GB1592@ulmo.nvidia.com>
-References: <1388547821-10029-1-git-send-email-shc_work@mail.ru>
- <20140106161233.GB6721@ulmo.nvidia.com>
- <1389025853.275494031@f414.i.mail.ru>
+From: Bill Pringlemeir <bpringlemeir@nbsps.com>
+Subject: Re: [PATCHv8 RFC] pwm: Add Freescale FTM PWM driver support
+Date: Wed, 08 Jan 2014 11:36:44 -0500
+Message-ID: <87lhyqa0rn.fsf@nbsps.com>
+References: <1388726661-3391-1-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="eJnRUKwClWJh1Khz"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bk0-f47.google.com ([209.85.214.47]:55872 "EHLO
-	mail-bk0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755388AbaAHNgc (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 8 Jan 2014 08:36:32 -0500
-Content-Disposition: inline
-In-Reply-To: <1389025853.275494031@f414.i.mail.ru>
+Received: from 71-19-161-253.dedicated.allstream.net ([71.19.161.253]:58666
+	"EHLO nsa.nbspaymentsolutions.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1755750AbaAHQnX (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 8 Jan 2014 11:43:23 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Alexander Shiyan <shc_work@mail.ru>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
+To: Xiubo Li <Li.Xiubo@freescale.com>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, grant.likely@linaro.org, rob.herring@calxeda.com, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alison Wang <b18965@freescale.com>, Jingchang Lu <b35083@freescale.com>
 
+On  3 Jan 2014, Li.Xiubo@freescale.com wrote:
 
---eJnRUKwClWJh1Khz
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> The FTM PWM device can be found on Vybrid VF610 Tower and
+> Layerscape LS-1 SoCs.
+>
+> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
+> Signed-off-by: Alison Wang <b18965@freescale.com>
+> Signed-off-by: Jingchang Lu <b35083@freescale.com>
+> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+> ---
+>
+> Hi Thierry, Bill
 
-On Mon, Jan 06, 2014 at 08:30:53PM +0400, Alexander Shiyan wrote:
-> Hello.
->=20
-> =D0=9F=D0=BE=D0=BD=D0=B5=D0=B4=D0=B5=D0=BB=D1=8C=D0=BD=D0=B8=D0=BA,  6 =
-=D1=8F=D0=BD=D0=B2=D0=B0=D1=80=D1=8F 2014, 17:12 +01:00 =D0=BE=D1=82 Thierr=
-y Reding <thierry.reding@gmail.com>:
-> > On Wed, Jan 01, 2014 at 07:43:41AM +0400, Alexander Shiyan wrote:
-> > > Add a new driver for the PWM controllers on the CLPS711X platform
-> > > based on the PWM framework.
-> ...
-> > 	static inline to_clps711x(struct pwm_chip *chip)
-> > 	{
-> > 		return container_of(chip, struct clps711x_chip, chip);
-> > 	}
-> >=20
-> > > +	unsigned int period, freq =3D clk_get_rate(priv->clk);
-> > > +
-> > > +	if (!freq)
-> > > +		return -EINVAL;
-> > > +
-> > > +	/* Calculate and store constant period value */
-> > > +	period =3D DIV_ROUND_CLOSEST(NSEC_PER_SEC, freq);
-> > > +	pwm_set_period(pwm, period);
-> > > +	pwm_set_chip_data(pwm, (void *)(uintptr_t)period);
-> >=20
-> > Why store this in chip data again if it can be retrieved directly from
-> > the PWM device using pwm_get_period()?
->=20
-> This is used for compare this value in pwm_config().
-> pwm_set_period() potentially can be called from any other place and set
-> illegal value for us, but we should calculate duty ratio with our (proper=
-) frequency.
-> Is not it?
+[snip]
 
-Well, that same argument holds for pwm_set_chip_data(). Nothing should
-be calling pwm_set_period() from any other place.
+> +static unsigned long fsl_pwm_calculate_period_cycles(struct fsl_pwm_chip *fpc,
+> +						     unsigned long period_ns,
+> +						     enum fsl_pwm_clk index)
+> +{
+> +	bool bg = fpc->big_endian;
+> +	int ret;
+> +
+> +	fpc->counter_clk_select = FTM_SC_CLK(bg, index);
 
-> > > +static int clps711x_pwm_enable(struct pwm_chip *chip, struct pwm_dev=
-ice *pwm)
-> > > +{
-> > > +	/* Do nothing */
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +static void clps711x_pwm_disable(struct pwm_chip *chip, struct pwm_d=
-evice *pwm)
-> > > +{
-> > > +	/* Do nothing */
-> > > +}
-> >=20
-> > I think it would be better if this would set the duty field to 0 to stop
-> > any potential toggling of the PWM signal. .enable() can later restore
-> > the proper value.
-> >=20
-> > The reason for this is that pwm_disable() is supposed to stop the PWM
-> > output from toggling and if you simply ignore it you don't conform to
-> > the API specification.
->=20
-> I agree for pwm_disable(), but which value should be restored by pwm_enab=
-le()?
-> I think we should keep pwm_enable() as is, i.e. we enable PWM with existi=
-ng value.
+Yes, this is the spirit of what I was suggesting.  The code is much less
+efficient/bigger on the Vybrid with this run-time detection; but this is
+more efficient/smaller than previous versions.  I think that 'bg' can be
+a compiler '#define' base on the configured SOC-systems.  Ie, if the
+kernel config only has 'Vybrid' or only 'LayerScape', then 'bg' can be a
+hard coded value.  The compiler will produce much better code in these
+cases.
 
-Yes, pwm_enable() should restore the previous setting. You should be
-able to do that by querying the PWM device using pwm_get_duty_cycle()
-and reprogram the channel using that value.
+Also, maybe 'distro' people may want to make a 'hand-held' (Debian) or a
+'router' (OpenWRT) distribution and they would only pick either 'Vybrid'
+or 'LayerScape'.  However, if someone wants an 'every ARM under the
+sun', then the code still works.  So, I think that the code is better
+setup for a subsequent patch set like this (or at least just a good).
 
-Thierry
+Especially, the stuff on the I/O swapping in the 'readl()' and
+'writel()' is no longer needed; I think you can use the same function
+for both SOCs.
 
---eJnRUKwClWJh1Khz
-Content-Type: application/pgp-signature
+> +#define __FTM_SWAP32(v) ((u32)(\
+> +	(((u32)(v) & (u32)0x000000ffUL) << 24) |\
+> +	(((u32)(v) & (u32)0x0000ff00UL) <<  8) |\
+> +	(((u32)(v) & (u32)0x00ff0000UL) >>  8) |\
+> +	(((u32)(v) & (u32)0xff000000UL) >> 24)))
+> +#define FTM_SWAP32(b, v)	(b ? __FTM_SWAP32(v) : v)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+I think that there are macros that you could use here.  For instance,
+'#include <linux/swab.h>' (powerpc and arm) has some assembler macros
+that are quite fast for swapping.  If the kernel config has ARCH >= 6
+for ARM, then the very fast 'rev' instruction is used.  If not, then a
+generic version is used as you have coded.  The PowerPC (another
+possible future ARCH for QorIQ/Layerscape SOC?) always has inline
+assembler macros.
 
-iQIcBAEBAgAGBQJSzVPeAAoJEN0jrNd/PrOhE8wP+gIetX/5vGqW2KLCg/znacL0
-kc37yU+HOBKbHtK3aTVuCTvNwc1Ava+rv5wy02cwkRNE1fTSFCmcy8g+F4wYSHOS
-RJIMuw+p+2Uy5dHD1ftayxzOtGPnm2+PZCW1eoxdkT3w2YlwPJLMDRvC30DkR8tZ
-6M4zGsRO5HgHSxZWTh0LqGEUW7VD+S5+ivtqYEExalNUUZ7ax2B+kHxA3ovZzrVV
-vBCJGFeJkinMDb13Tj06w/9zGrQVJf6036A7qdYoOwUIOkGyKE+EjYAkYjV+M2Ua
-6/qoi3SaMrM/qPQJj1KA7ErPHZTpZiBreWlTeI4T967BlUCtNRiQhTOXR9mogU2h
-FkfkVRVKhzQg50aNlaGeObv8WHn/Rdya89GYdXf2nWJfrFlB0NI9h26kAyXjv7Ui
-OWYmtAelZ2w2z9c3PAWBYeKYLw3CSOZ/Opk7Pwobvis26ZX/WopPnQ5NtVTSDSK1
-Uym8EzjM0xlvhi9WJfQwBFT3obX6TNb8+n8rYEthB7pnLmLPGrT39msWJatygvRy
-K94CsMdPLw5zy1uOSqETLYj9h0X1Jna9M/6GESWIWqaCJA9voOCjbaGkZ5ZbjZsH
-u1zqOS1hHLDygKOMwP8ni4J4IHPUJyVnpMZUMeHFJljto3qqyuLdJsYUwmK+H2JT
-ej8MAwq4hJ/Qzu3ME8PI
-=Aqeg
------END PGP SIGNATURE-----
+So,
 
---eJnRUKwClWJh1Khz--
++ #include <linux/swab.h>
+...
++ #define FTM_SWAP32(b, v)	(b ? __swab32(v) : v)
+
+might be better.
+
+Suggested-by: Bill Pringlemeir <bpringlemeir@nbsps.com>
+
+Thanks,
+Bill Pringlemeir.
