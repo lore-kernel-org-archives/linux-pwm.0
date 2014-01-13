@@ -1,12 +1,13 @@
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
-Subject: (unknown)
-Date: Mon, 13 Jan 2014 11:29:46 +0100
-Message-ID: <1389608988-10981-1-git-send-email-LW@KARO-electronics.de>
+Subject: [PATCH 1/2] pwm: imx: indentation cleanup
+Date: Mon, 13 Jan 2014 11:29:47 +0100
+Message-ID: <1389608988-10981-2-git-send-email-LW@KARO-electronics.de>
+References: <1389608988-10981-1-git-send-email-LW@KARO-electronics.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Subject: 
+In-Reply-To: <1389608988-10981-1-git-send-email-LW@KARO-electronics.de>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -17,11 +18,44 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-arm-kernel@lists.infradead.org, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <kernel@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Cc: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 List-Id: linux-pwm@vger.kernel.org
 
-This patchset adds support for inverting the PWM output in hardware by
-setting the POUTC bit in the PWMCR register. This feature is
-controlled via the standard DT flas for PWMs.
-
-The first patch does a minor source cleanup without any functional
-change.
+Q29uc2lzdGVudGx5IHVzZSBUQUJzIGZvciBpbmRlbnRhdGlvbiBhbmQgdGhlIHNhbWUgaW5kZW50
+YXRpb24gbGV2ZWwuCgpTaWduZWQtb2ZmLWJ5OiBMb3RoYXIgV2HDn21hbm4gPExXQEtBUk8tZWxl
+Y3Ryb25pY3MuZGU+Ci0tLQogZHJpdmVycy9wd20vcHdtLWlteC5jIHwgICAyNiArKysrKysrKysr
+KysrLS0tLS0tLS0tLS0tLQogMSBmaWxlcyBjaGFuZ2VkLCAxMyBpbnNlcnRpb25zKCspLCAxMyBk
+ZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20taW14LmMgYi9kcml2ZXJz
+L3B3bS9wd20taW14LmMKaW5kZXggY2M0NzczMy4uM2IwMGE4MiAxMDA2NDQKLS0tIGEvZHJpdmVy
+cy9wd20vcHdtLWlteC5jCisrKyBiL2RyaXZlcnMvcHdtL3B3bS1pbXguYwpAQCAtMjEsMjQgKzIx
+LDI0IEBACiAKIC8qIGkuTVgxIGFuZCBpLk1YMjEgc2hhcmUgdGhlIHNhbWUgUFdNIGZ1bmN0aW9u
+IGJsb2NrOiAqLwogCi0jZGVmaW5lIE1YMV9QV01DICAgIDB4MDAgICAvKiBQV00gQ29udHJvbCBS
+ZWdpc3RlciAqLwotI2RlZmluZSBNWDFfUFdNUyAgICAweDA0ICAgLyogUFdNIFNhbXBsZSBSZWdp
+c3RlciAqLwotI2RlZmluZSBNWDFfUFdNUCAgICAweDA4ICAgLyogUFdNIFBlcmlvZCBSZWdpc3Rl
+ciAqLworI2RlZmluZSBNWDFfUFdNQwkJCTB4MDAgICAvKiBQV00gQ29udHJvbCBSZWdpc3RlciAq
+LworI2RlZmluZSBNWDFfUFdNUwkJCTB4MDQgICAvKiBQV00gU2FtcGxlIFJlZ2lzdGVyICovCisj
+ZGVmaW5lIE1YMV9QV01QCQkJMHgwOCAgIC8qIFBXTSBQZXJpb2QgUmVnaXN0ZXIgKi8KIAotI2Rl
+ZmluZSBNWDFfUFdNQ19FTgkJKDEgPDwgNCkKKyNkZWZpbmUgTVgxX1BXTUNfRU4JCQkoMSA8PCA0
+KQogCiAvKiBpLk1YMjcsIGkuTVgzMSwgaS5NWDM1IHNoYXJlIHRoZSBzYW1lIFBXTSBmdW5jdGlv
+biBibG9jazogKi8KIAotI2RlZmluZSBNWDNfUFdNQ1IgICAgICAgICAgICAgICAgIDB4MDAgICAg
+LyogUFdNIENvbnRyb2wgUmVnaXN0ZXIgKi8KLSNkZWZpbmUgTVgzX1BXTVNBUiAgICAgICAgICAg
+ICAgICAweDBDICAgIC8qIFBXTSBTYW1wbGUgUmVnaXN0ZXIgKi8KLSNkZWZpbmUgTVgzX1BXTVBS
+ICAgICAgICAgICAgICAgICAweDEwICAgIC8qIFBXTSBQZXJpb2QgUmVnaXN0ZXIgKi8KLSNkZWZp
+bmUgTVgzX1BXTUNSX1BSRVNDQUxFUih4KSAgICAoKCh4IC0gMSkgJiAweEZGRikgPDwgNCkKLSNk
+ZWZpbmUgTVgzX1BXTUNSX0RPWkVFTiAgICAgICAgICAgICAgICAoMSA8PCAyNCkKLSNkZWZpbmUg
+TVgzX1BXTUNSX1dBSVRFTiAgICAgICAgICAgICAgICAoMSA8PCAyMykKKyNkZWZpbmUgTVgzX1BX
+TUNSCQkJMHgwMCAgIC8qIFBXTSBDb250cm9sIFJlZ2lzdGVyICovCisjZGVmaW5lIE1YM19QV01T
+QVIJCQkweDBDICAgLyogUFdNIFNhbXBsZSBSZWdpc3RlciAqLworI2RlZmluZSBNWDNfUFdNUFIJ
+CQkweDEwICAgLyogUFdNIFBlcmlvZCBSZWdpc3RlciAqLworI2RlZmluZSBNWDNfUFdNQ1JfUFJF
+U0NBTEVSKHgpCQkoKCh4IC0gMSkgJiAweEZGRikgPDwgNCkKKyNkZWZpbmUgTVgzX1BXTUNSX0RP
+WkVFTgkJKDEgPDwgMjQpCisjZGVmaW5lIE1YM19QV01DUl9XQUlURU4JCSgxIDw8IDIzKQogI2Rl
+ZmluZSBNWDNfUFdNQ1JfREJHRU4JCQkoMSA8PCAyMikKLSNkZWZpbmUgTVgzX1BXTUNSX0NMS1NS
+Q19JUEdfSElHSCAoMiA8PCAxNikKLSNkZWZpbmUgTVgzX1BXTUNSX0NMS1NSQ19JUEcgICAgICAo
+MSA8PCAxNikKLSNkZWZpbmUgTVgzX1BXTUNSX0VOICAgICAgICAgICAgICAoMSA8PCAwKQorI2Rl
+ZmluZSBNWDNfUFdNQ1JfQ0xLU1JDX0lQR19ISUdICSgyIDw8IDE2KQorI2RlZmluZSBNWDNfUFdN
+Q1JfQ0xLU1JDX0lQRwkJKDEgPDwgMTYpCisjZGVmaW5lIE1YM19QV01DUl9FTgkJCSgxIDw8IDAp
+CiAKIHN0cnVjdCBpbXhfY2hpcCB7CiAJc3RydWN0IGNsawkqY2xrX3BlcjsKLS0gCjEuNy4yLjUK
+CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1h
+cm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5v
+cmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0t
+a2VybmVsCg==
