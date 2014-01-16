@@ -1,98 +1,67 @@
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
-Subject: [PATCHv2 2/2] pwm: imx: support polarity inversion
-Date: Thu, 16 Jan 2014 09:06:25 +0100
-Message-ID: <1389859585-14006-3-git-send-email-LW@KARO-electronics.de>
+Subject: [PATCHv2 1/2] pwm: imx: indentation cleanup
+Date: Thu, 16 Jan 2014 09:06:24 +0100
+Message-ID: <1389859585-14006-2-git-send-email-LW@KARO-electronics.de>
 References: <1389859585-14006-1-git-send-email-LW@KARO-electronics.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1389859585-14006-1-git-send-email-LW@KARO-electronics.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <kernel@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 List-Id: linux-pwm@vger.kernel.org
 
-VGhlIGkuTVggUFdNIGNvbnRyb2xsZXIgc3VwcG9ydHMgaW52ZXJ0aW5nIHRoZSBwb2xhcml0eSBv
-ZiB0aGUgUFdNCm91dHB1dC4gTWFrZSB0aGlzIGZlYXR1cmUgYXZhaWxhYmxlIGluIHRoZSBweG0t
-aW14IGRyaXZlci4KClNpZ25lZC1vZmYtYnk6IExvdGhhciBXYcOfbWFubiA8TFdAS0FSTy1lbGVj
-dHJvbmljcy5kZT4KLS0tCiBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHdtL2lt
-eC1wd20udHh0IHwgICAgNSArLQogZHJpdmVycy9wd20vcHdtLWlteC5jICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICB8ICAgNDIgKysrKysrKysrKysrKysrKysrKysrCiAyIGZpbGVzIGNoYW5n
-ZWQsIDQ1IGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvRG9jdW1l
-bnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9pbXgtcHdtLnR4dCBiL0RvY3VtZW50YXRp
-b24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vaW14LXB3bS50eHQKaW5kZXggYjUwZDdhNmQuLmQw
-YjA0YjUgMTAwNjQ0Ci0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20v
-aW14LXB3bS50eHQKKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9p
-bXgtcHdtLnR4dApAQCAtMyw4ICszLDkgQEAgRnJlZXNjYWxlIGkuTVggUFdNIGNvbnRyb2xsZXIK
-IFJlcXVpcmVkIHByb3BlcnRpZXM6CiAtIGNvbXBhdGlibGU6IHNob3VsZCBiZSAiZnNsLDxzb2M+
-LXB3bSIKIC0gcmVnOiBwaHlzaWNhbCBiYXNlIGFkZHJlc3MgYW5kIGxlbmd0aCBvZiB0aGUgY29u
-dHJvbGxlcidzIHJlZ2lzdGVycwotLSAjcHdtLWNlbGxzOiBzaG91bGQgYmUgMi4gU2VlIHB3bS50
-eHQgaW4gdGhpcyBkaXJlY3RvcnkgZm9yIGEgZGVzY3JpcHRpb24gb2YKLSAgdGhlIGNlbGxzIGZv
-cm1hdC4KKy0gI3B3bS1jZWxsczogbWF5IGJlIDIgZm9yIGJhY2t3YXJkcyBjb21wYXRpYmlsaXR5
-IG9yIDMgdG8gc3VwcG9ydAorICBzd2l0Y2hpbmcgdGhlIG91dHB1dCBwb2xhcml0eS4gU2VlIHB3
-bS50eHQgaW4gdGhpcyBkaXJlY3RvcnkgZm9yIGEKKyAgZGVzY3JpcHRpb24gb2YgdGhlIGNlbGxz
-IGZvcm1hdC4KIC0gaW50ZXJydXB0czogVGhlIGludGVycnVwdCBmb3IgdGhlIHB3bSBjb250cm9s
-bGVyCiAKIEV4YW1wbGU6CmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20taW14LmMgYi9kcml2
-ZXJzL3B3bS9wd20taW14LmMKaW5kZXggM2IwMGE4Mi4uMDU0NjFiYiAxMDA2NDQKLS0tIGEvZHJp
-dmVycy9wd20vcHdtLWlteC5jCisrKyBiL2RyaXZlcnMvcHdtL3B3bS1pbXguYwpAQCAtMzYsNiAr
-MzYsNyBAQAogI2RlZmluZSBNWDNfUFdNQ1JfRE9aRUVOCQkoMSA8PCAyNCkKICNkZWZpbmUgTVgz
-X1BXTUNSX1dBSVRFTgkJKDEgPDwgMjMpCiAjZGVmaW5lIE1YM19QV01DUl9EQkdFTgkJCSgxIDw8
-IDIyKQorI2RlZmluZSBNWDNfUFdNQ1JfUE9VVEMJCQkoMSA8PCAxOCkKICNkZWZpbmUgTVgzX1BX
-TUNSX0NMS1NSQ19JUEdfSElHSAkoMiA8PCAxNikKICNkZWZpbmUgTVgzX1BXTUNSX0NMS1NSQ19J
-UEcJCSgxIDw8IDE2KQogI2RlZmluZSBNWDNfUFdNQ1JfRU4JCQkoMSA8PCAwKQpAQCAtMTM4LDYg
-KzEzOSw5IEBAIHN0YXRpYyBpbnQgaW14X3B3bV9jb25maWdfdjIoc3RydWN0IHB3bV9jaGlwICpj
-aGlwLAogCWlmICh0ZXN0X2JpdChQV01GX0VOQUJMRUQsICZwd20tPmZsYWdzKSkKIAkJY3IgfD0g
-TVgzX1BXTUNSX0VOOwogCisJaWYgKHB3bS0+cG9sYXJpdHkgPT0gUFdNX1BPTEFSSVRZX0lOVkVS
-U0VEKQorCQljciB8PSBNWDNfUFdNQ1JfUE9VVEM7CisKIAl3cml0ZWwoY3IsIGlteC0+bW1pb19i
-YXNlICsgTVgzX1BXTUNSKTsKIAogCXJldHVybiAwOwpAQCAtMTU1LDYgKzE1OSwxMSBAQCBzdGF0
-aWMgdm9pZCBpbXhfcHdtX3NldF9lbmFibGVfdjIoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBib29s
-IGVuYWJsZSkKIAllbHNlCiAJCXZhbCAmPSB+TVgzX1BXTUNSX0VOOwogCisJaWYgKGNoaXAtPnB3
-bXNbMF0ucG9sYXJpdHkgPT0gUFdNX1BPTEFSSVRZX0lOVkVSU0VEKQorCQl2YWwgfD0gTVgzX1BX
-TUNSX1BPVVRDOworCWVsc2UKKwkJdmFsICY9IH5NWDNfUFdNQ1JfUE9VVEM7CisKIAl3cml0ZWwo
-dmFsLCBpbXgtPm1taW9fYmFzZSArIE1YM19QV01DUik7CiB9CiAKQEAgLTE5OCw2ICsyMDcsMTcg
-QEAgc3RhdGljIHZvaWQgaW14X3B3bV9kaXNhYmxlKHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3Ry
-dWN0IHB3bV9kZXZpY2UgKnB3bSkKIAljbGtfZGlzYWJsZV91bnByZXBhcmUoaW14LT5jbGtfcGVy
-KTsKIH0KIAorc3RhdGljIGludCBpbXhfcHdtX3NldF9wb2xhcml0eShzdHJ1Y3QgcHdtX2NoaXAg
-KmNoaXAsIHN0cnVjdCBwd21fZGV2aWNlICpwd20sCisJCQkJZW51bSBwd21fcG9sYXJpdHkgcG9s
-YXJpdHkpCit7CisJc3RydWN0IGlteF9jaGlwICppbXggPSB0b19pbXhfY2hpcChjaGlwKTsKKwor
-CWRldl9kYmcoaW14LT5jaGlwLmRldiwgIiVzOiBwb2xhcml0eSBzZXQgdG8gJXNcbiIsIF9fZnVu
-Y19fLAorCQlwb2xhcml0eSA9PSBQV01fUE9MQVJJVFlfSU5WRVJTRUQgPyAiaW52ZXJ0ZWQiIDog
-Im5vcm1hbCIpOworCisJcmV0dXJuIDA7Cit9CisKIHN0YXRpYyBzdHJ1Y3QgcHdtX29wcyBpbXhf
-cHdtX29wcyA9IHsKIAkuZW5hYmxlID0gaW14X3B3bV9lbmFibGUsCiAJLmRpc2FibGUgPSBpbXhf
-cHdtX2Rpc2FibGUsCkBAIC0yMDksNiArMjI5LDcgQEAgc3RydWN0IGlteF9wd21fZGF0YSB7CiAJ
-aW50ICgqY29uZmlnKShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsCiAJCXN0cnVjdCBwd21fZGV2aWNl
-ICpwd20sIGludCBkdXR5X25zLCBpbnQgcGVyaW9kX25zKTsKIAl2b2lkICgqc2V0X2VuYWJsZSko
-c3RydWN0IHB3bV9jaGlwICpjaGlwLCBib29sIGVuYWJsZSk7CisJdW5zaWduZWQgb3V0cHV0X3Bv
-bGFyaXR5OjE7CiB9OwogCiBzdGF0aWMgc3RydWN0IGlteF9wd21fZGF0YSBpbXhfcHdtX2RhdGFf
-djEgPSB7CkBAIC0yMTksNiArMjQwLDcgQEAgc3RhdGljIHN0cnVjdCBpbXhfcHdtX2RhdGEgaW14
-X3B3bV9kYXRhX3YxID0gewogc3RhdGljIHN0cnVjdCBpbXhfcHdtX2RhdGEgaW14X3B3bV9kYXRh
-X3YyID0gewogCS5jb25maWcgPSBpbXhfcHdtX2NvbmZpZ192MiwKIAkuc2V0X2VuYWJsZSA9IGlt
-eF9wd21fc2V0X2VuYWJsZV92MiwKKwkub3V0cHV0X3BvbGFyaXR5ID0gMSwKIH07CiAKIHN0YXRp
-YyBjb25zdCBzdHJ1Y3Qgb2ZfZGV2aWNlX2lkIGlteF9wd21fZHRfaWRzW10gPSB7CkBAIC0yNzEs
-NiArMjkzLDI2IEBAIHN0YXRpYyBpbnQgaW14X3B3bV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2
-aWNlICpwZGV2KQogCQlyZXR1cm4gUFRSX0VSUihpbXgtPm1taW9fYmFzZSk7CiAKIAlkYXRhID0g
-b2ZfaWQtPmRhdGE7CisJaWYgKGRhdGEtPm91dHB1dF9wb2xhcml0eSkgeworCQljb25zdCBzdHJ1
-Y3QgZGV2aWNlX25vZGUgKm5wID0gcGRldi0+ZGV2Lm9mX25vZGU7CisJCXUzMiBudW1fY2VsbHM7
-CisKKwkJZGV2X2RiZygmcGRldi0+ZGV2LCAiUFdNIHN1cHBvcnRzIG91dHB1dCBpbnZlcnNpb25c
-biIpOworCQlyZXQgPSBvZl9wcm9wZXJ0eV9yZWFkX3UzMihucCwgIiNwd20tY2VsbHMiLCAmbnVt
-X2NlbGxzKTsKKwkJaWYgKHJldCA8IDApIHsKKwkJCWRldl9lcnIoJnBkZXYtPmRldiwgIm1pc3Np
-bmcgcHJvcGVydHkgJyNwd20tY2VsbHMnXG4iKTsKKwkJCXJldHVybiByZXQ7CisJCX0KKwkJaWYg
-KG51bV9jZWxscyA9PSAzKSB7CisJCQlpbXhfcHdtX29wcy5zZXRfcG9sYXJpdHkgPSBpbXhfcHdt
-X3NldF9wb2xhcml0eTsKKwkJCWlteC0+Y2hpcC5vZl94bGF0ZSA9IG9mX3B3bV94bGF0ZV93aXRo
-X2ZsYWdzOworCQl9IGVsc2UgaWYgKG51bV9jZWxscyAhPSAyKSB7CisJCQlkZXZfZXJyKCZwZGV2
-LT5kZXYsICInI3B3bS1jZWxscycgbXVzdCBiZSA8Mj4gb3IgPDM+XG4iKTsKKwkJCXJldHVybiAt
-RUlOVkFMOworCQl9CisJCWlteC0+Y2hpcC5vZl9wd21fbl9jZWxscyA9IG51bV9jZWxsczsKKwl9
-CisKIAlpbXgtPmNvbmZpZyA9IGRhdGEtPmNvbmZpZzsKIAlpbXgtPnNldF9lbmFibGUgPSBkYXRh
-LT5zZXRfZW5hYmxlOwogCi0tIAoxLjcuMi41CgoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgt
-YXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3Jn
-L21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+Consistently use TABs for indentation and the same indentation level.
+No functional change.
+
+Signed-off-by: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
+---
+ drivers/pwm/pwm-imx.c |   26 +++++++++++++-------------
+ 1 files changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+index cc47733..3b00a82 100644
+--- a/drivers/pwm/pwm-imx.c
++++ b/drivers/pwm/pwm-imx.c
+@@ -21,24 +21,24 @@
+=20
+ /* i.MX1 and i.MX21 share the same PWM function block: */
+=20
+-#define MX1_PWMC    0x00   /* PWM Control Register */
+-#define MX1_PWMS    0x04   /* PWM Sample Register */
+-#define MX1_PWMP    0x08   /* PWM Period Register */
++#define MX1_PWMC			0x00   /* PWM Control Register */
++#define MX1_PWMS			0x04   /* PWM Sample Register */
++#define MX1_PWMP			0x08   /* PWM Period Register */
+=20
+-#define MX1_PWMC_EN		(1 << 4)
++#define MX1_PWMC_EN			(1 << 4)
+=20
+ /* i.MX27, i.MX31, i.MX35 share the same PWM function block: */
+=20
+-#define MX3_PWMCR                 0x00    /* PWM Control Register */
+-#define MX3_PWMSAR                0x0C    /* PWM Sample Register */
+-#define MX3_PWMPR                 0x10    /* PWM Period Register */
+-#define MX3_PWMCR_PRESCALER(x)    (((x - 1) & 0xFFF) << 4)
+-#define MX3_PWMCR_DOZEEN                (1 << 24)
+-#define MX3_PWMCR_WAITEN                (1 << 23)
++#define MX3_PWMCR			0x00   /* PWM Control Register */
++#define MX3_PWMSAR			0x0C   /* PWM Sample Register */
++#define MX3_PWMPR			0x10   /* PWM Period Register */
++#define MX3_PWMCR_PRESCALER(x)		(((x - 1) & 0xFFF) << 4)
++#define MX3_PWMCR_DOZEEN		(1 << 24)
++#define MX3_PWMCR_WAITEN		(1 << 23)
+ #define MX3_PWMCR_DBGEN			(1 << 22)
+-#define MX3_PWMCR_CLKSRC_IPG_HIGH (2 << 16)
+-#define MX3_PWMCR_CLKSRC_IPG      (1 << 16)
+-#define MX3_PWMCR_EN              (1 << 0)
++#define MX3_PWMCR_CLKSRC_IPG_HIGH	(2 << 16)
++#define MX3_PWMCR_CLKSRC_IPG		(1 << 16)
++#define MX3_PWMCR_EN			(1 << 0)
+=20
+ struct imx_chip {
+ 	struct clk	*clk_per;
+--=20
+1.7.2.5
