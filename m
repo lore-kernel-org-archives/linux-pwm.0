@@ -1,62 +1,63 @@
-From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Subject: Re: [PATCH] pwm: add support for Intel Low Power Subsystem PWM
-Date: Mon, 20 Jan 2014 13:28:14 +0000
-Message-ID: <20140120132814.212929bd@alan.etchedpixels.co.uk>
-References: <1390240808-18582-1-git-send-email-chiau.ee.chew@intel.com>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: PWM...
+Date: Mon, 20 Jan 2014 16:11:47 +0000
+Message-ID: <20140120161147.GS17314@sirena.org.uk>
+References: <20140119164956.GR15937@n2100.arm.linux.org.uk>
+ <CAOesGMi7g=PHjzhkuObkeu+P_c6kUz5uFcND7euafUW56CvsnQ@mail.gmail.com>
+ <20140119193026.GS15937@n2100.arm.linux.org.uk>
+ <201401192126.41543.arnd@arndb.de>
+ <20140120001446.GD9752@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="oXUzUgc67Nrfa9SE"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lxorguk.ukuu.org.uk ([81.2.110.251]:57652 "EHLO
-	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753168AbaATN2h (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jan 2014 08:28:37 -0500
-In-Reply-To: <1390240808-18582-1-git-send-email-chiau.ee.chew@intel.com>
+Received: from mezzanine.sirena.org.uk ([106.187.55.193]:57186 "EHLO
+	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751740AbaATQML (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jan 2014 11:12:11 -0500
+Content-Disposition: inline
+In-Reply-To: <20140120001446.GD9752@verge.net.au>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Chew Chiau Ee <chiau.ee.chew@intel.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Chew Kean Ho <kean.ho.chew@intel.com>, Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
+To: Simon Horman <horms@verge.net.au>
+Cc: Arnd Bergmann <arnd@arndb.de>, linux-pwm@vger.kernel.org, Russell King - ARM Linux <linux@arm.linux.org.uk>, "arm@kernel.org" <arm@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-> +static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> +	int duty_ns, int period_ns)
-> +{
-> +	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
-> +	u8 on_time_div;
-> +	unsigned long c = clk_get_rate(lpwm->clk);
-> +	unsigned long long base_unit, hz = 1000000000UL;
-> +	u32 ctrl;
-> +
-> +	do_div(hz, period_ns);
-> +
-> +	/* The equation is: base_unit = ((hz / c) * 65536) + correction */
-> +	base_unit = hz * 65536;
-> +	do_div(base_unit, c);
-> +	base_unit += PWM_DIVISION_CORRECTION;
-> +	if (base_unit > PWM_LIMIT)
-> +		return -EINVAL;
-> +
-> +	if (duty_ns <= 0)
-> +		duty_ns = 1;
-> +	on_time_div = 255 - (255 * duty_ns / period_ns);
-> +
-> +	ctrl = readl(lpwm->regs + PWM);
-> +	ctrl &= ~(PWM_BASE_UNIT_MASK | PWM_ON_TIME_DIV_MASK);
-> +	ctrl |= (u16) base_unit << PWM_BASE_UNIT_SHIFT;
-> +	ctrl |= on_time_div;
-> +	/* request PWM to update on next cycle */
-> +	ctrl |= PWM_SW_UPDATE;
-> +	writel(ctrl, lpwm->regs + PWM);
-> +
 
-Who handles the locking on all these functions. The pwm layer doesn't but
-simnply exports stuff like pwm_config() directly to other bits of the
-kernel so you are not guaranteed to be called via sysfs.
+--oXUzUgc67Nrfa9SE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-(This btw looks to be a problem with a pile of the other pwm drivers, and
-with the pwm core code which doesn't properly lock its own handling of
-pwm->duty_cycle and pwm->period in pwm_config(), nor pwm->polarity in
-pwm_set_polarity).
+On Mon, Jan 20, 2014 at 09:14:46AM +0900, Simon Horman wrote:
+> On Sun, Jan 19, 2014 at 09:26:40PM +0100, Arnd Bergmann wrote:
 
-I think the core config methods need some kind of locking ?
+> > Right: if you change an existing dts file from #pwm-cells=<2> to
+> > #pwm-cells=<3>, that requires changing all references to the pwm
 
-Alan
+> Would this change imply that old dtbs would no longer work with new kernels?
+
+So long as the code can still handle both values for #pwm-cells existing
+DTBs should work fine.
+
+--oXUzUgc67Nrfa9SE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJS3UrAAAoJELSic+t+oim9kvQP+wdej/aMs043+Gb17yKzCrmI
+/fxt8f+0e23W3a2mumeMWwjlBJXaBc+MNam5GgAOB/HLobTBeb75N/PjyGLvNHR0
+biuQAf/sLstKiftoAo4WcxHpA3Y8eiutnPIkNHSluyX3Pcb/KKGPro2TlL1C41MO
+78Qt8zgjTKLrKl65zsUZzsW/W5xAHPGdtUt6vwWKkB4Z6+v8dAtHmM2x8yB4nC9v
+aG37OftkdAgCPEho7NoDiv26nBRdNHqxcKPRhLrdq4ljvtD9dIly/WLzXW56YGp/
+MSYp/sC63bza7Ck6y7w+szXh4xbUp+rey92btLDBtT0/P6mcF6GJsh0MkgdrgTm+
+av8ElJHBXtimpBx/TCfBXASh5XT4YDnWA11ZxzS5vRcrFo0SWFoqlDycZjgglJsA
+zjfbf/SwNZw0gMQmmA6r5N5ek0OOgqu1uFkbH1BoKLzJRjoEIu26rz7gbQpWAHMf
+TXgv5SeKSFQcUCltTZyTYGUFalUrHoqkloBiRn/V/bbC6NCljUTxqIUwfgIXvnE3
+Ii/c7T25Uk9EANGaEn8DyCUAj+uku8u6lBokaAVZEctUybT3HUETlUdh0T2cMsWd
+tr2kM3al38e6ZgB206RI1tucI99JYAZjwI1Bt3SnY7gbZQiWCt1+06E95qinoFQQ
+MGmcjAlyqqux/T2oglg8
+=ROZ3
+-----END PGP SIGNATURE-----
+
+--oXUzUgc67Nrfa9SE--
