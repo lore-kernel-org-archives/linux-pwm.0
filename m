@@ -1,65 +1,279 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: PWM...
-Date: Mon, 20 Jan 2014 08:24:23 +0100
-Message-ID: <20140120072423.GB19940@pengutronix.de>
-References: <20140119164956.GR15937@n2100.arm.linux.org.uk>
- <CAOesGMi7g=PHjzhkuObkeu+P_c6kUz5uFcND7euafUW56CvsnQ@mail.gmail.com>
- <20140119193026.GS15937@n2100.arm.linux.org.uk>
- <201401192126.41543.arnd@arndb.de>
- <20140120001446.GD9752@verge.net.au>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Chew Chiau Ee <chiau.ee.chew@intel.com>
+Subject: [PATCH] pwm: add support for Intel Low Power Subsystem PWM
+Date: Tue, 21 Jan 2014 02:00:08 +0800
+Message-ID: <1390240808-18582-1-git-send-email-chiau.ee.chew@intel.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:36975 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750735AbaATHYd (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jan 2014 02:24:33 -0500
-Content-Disposition: inline
-In-Reply-To: <20140120001446.GD9752@verge.net.au>
+Received: from mga03.intel.com ([143.182.124.21]:42599 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750942AbaATJ64 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Mon, 20 Jan 2014 04:58:56 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Simon Horman <horms@verge.net.au>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-pwm@vger.kernel.org, Russell King - ARM Linux <linux@arm.linux.org.uk>, "arm@kernel.org" <arm@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Chew Kean Ho <kean.ho.chew@intel.com>, Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
 
-On Mon, Jan 20, 2014 at 09:14:46AM +0900, Simon Horman wrote:
-> On Sun, Jan 19, 2014 at 09:26:40PM +0100, Arnd Bergmann wrote:
-> > On Sunday 19 January 2014, Russell King - ARM Linux wrote:
-> > > On Sun, Jan 19, 2014 at 11:11:41AM -0800, Olof Johansson wrote:
-> > > > On Sun, Jan 19, 2014 at 11:08 AM, Arnd Bergmann <arnd@arndb.de> wrote:
-> > 
-> > > > Ah, yes, if you add a cell that can be done. There'll still be the
-> > > > "dead" first cell that will always be 0, but that's alright.
-> > > 
-> > > Does it not mean that PWM specifications of:
-> > > 
-> > >         <&pwm1 0 n> <&pwm2 0 n>
-> > > 
-> > > would need to be converted to:
-> > > 
-> > >         <&pwm1 0 n 0> <&pwm2 0 n 0>
-> > > 
-> > > in every DT file referring to these PWMs - because isn't this just
-> > > treated in DT as one single array of values?  (If DT knew how many
-> > > were in each specification, we wouldn't need the #foo-cells...)
-> > 
-> > Right: if you change an existing dts file from #pwm-cells=<2> to
-> > #pwm-cells=<3>, that requires changing all references to the pwm
-> > controller at the same time. If both the per-soc .dtsi files
-> > and the per-board .dts files contain references to the same pwm
-> > controller, that can end up in significant work. I have not checked
-> > if this is the case for i.MX though.
-> 
-> Would this change imply that old dtbs would no longer work with new kernels?
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-Not necessarily. With Lothars patch the driver works with pwm-cells=2
-and pwm-cells=3. The only problem is that if you compile an old board
-dts with a new SoC dtsi it will silently fail since the pwm-cells
-setting doesn't match the atcual cells in the dts.
+Add support for Intel Low Power I/O subsystem PWM controllers found on
+Intel BayTrail SoC.
 
-Sascha
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Chew, Kean Ho <kean.ho.chew@intel.com>
+Signed-off-by: Chang, Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
+Signed-off-by: Chew, Chiau Ee <chiau.ee.chew@intel.com>
+---
+ drivers/pwm/Kconfig    |   10 +++
+ drivers/pwm/Makefile   |    1 +
+ drivers/pwm/pwm-lpss.c |  207 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 218 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/pwm/pwm-lpss.c
 
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 6a2a1e0a..4f75589 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -109,6 +109,16 @@ config PWM_LPC32XX
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-lpc32xx.
+ 
++config PWM_LPSS
++	tristate "Intel LPSS PWM support"
++	depends on ACPI
++	help
++	  Generic PWM framework driver for Intel Low Power Subsystem PWM
++	  controller.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called pwm-lpss.
++
+ config PWM_MXS
+ 	tristate "Freescale MXS PWM support"
+ 	depends on ARCH_MXS && OF
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index 1b99cfb..d5b316f 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -8,6 +8,7 @@ obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
+ obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
+ obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
+ obj-$(CONFIG_PWM_LPC32XX)	+= pwm-lpc32xx.o
++obj-$(CONFIG_PWM_LPSS)		+= pwm-lpss.o
+ obj-$(CONFIG_PWM_MXS)		+= pwm-mxs.o
+ obj-$(CONFIG_PWM_PCA9685)	+= pwm-pca9685.o
+ obj-$(CONFIG_PWM_PUV3)		+= pwm-puv3.o
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+new file mode 100644
+index 0000000..a7418ca
+--- /dev/null
++++ b/drivers/pwm/pwm-lpss.c
+@@ -0,0 +1,207 @@
++/*
++ * Intel Low Power Subsystem PWM controller driver
++ *
++ * Copyright (C) 2014, Intel Corporation
++ * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
++ * Author: Chew Kean Ho <kean.ho.chew@intel.com>
++ * Author: Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
++ * Author: Chew Chiau Ee <chiau.ee.chew@intel.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/acpi.h>
++#include <linux/clk.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/pwm.h>
++#include <linux/platform_device.h>
++
++#define PWM				0x00000000
++#define PWM_ENABLE			BIT(31)
++#define PWM_SW_UPDATE			BIT(30)
++#define PWM_BASE_UNIT_SHIFT		8
++#define PWM_BASE_UNIT_MASK		0x00ffff00
++#define PWM_ON_TIME_DIV_MASK		0x000000ff
++#define PWM_DIVISION_CORRECTION		0x2
++#define PWM_LIMIT			(0x8000 + PWM_DIVISION_CORRECTION)
++
++
++struct pwm_lpss_chip {
++	struct pwm_chip chip;
++	void __iomem *regs;
++	struct clk *clk;
++};
++
++static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
++{
++	return container_of(chip, struct pwm_lpss_chip, chip);
++}
++
++static void pwm_lpss_set_state(struct pwm_lpss_chip *lpwm, bool enable)
++{
++	u32 ctrl;
++
++	ctrl = readl(lpwm->regs + PWM);
++	if (enable)
++		ctrl |= PWM_ENABLE;
++	else
++		ctrl &= ~PWM_ENABLE;
++	writel(ctrl, lpwm->regs + PWM);
++}
++
++static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
++	int duty_ns, int period_ns)
++{
++	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
++	u8 on_time_div;
++	unsigned long c = clk_get_rate(lpwm->clk);
++	unsigned long long base_unit, hz = 1000000000UL;
++	u32 ctrl;
++
++	do_div(hz, period_ns);
++
++	/* The equation is: base_unit = ((hz / c) * 65536) + correction */
++	base_unit = hz * 65536;
++	do_div(base_unit, c);
++	base_unit += PWM_DIVISION_CORRECTION;
++	if (base_unit > PWM_LIMIT)
++		return -EINVAL;
++
++	if (duty_ns <= 0)
++		duty_ns = 1;
++	on_time_div = 255 - (255 * duty_ns / period_ns);
++
++	ctrl = readl(lpwm->regs + PWM);
++	ctrl &= ~(PWM_BASE_UNIT_MASK | PWM_ON_TIME_DIV_MASK);
++	ctrl |= (u16) base_unit << PWM_BASE_UNIT_SHIFT;
++	ctrl |= on_time_div;
++	/* request PWM to update on next cycle */
++	ctrl |= PWM_SW_UPDATE;
++	writel(ctrl, lpwm->regs + PWM);
++
++	return 0;
++}
++
++static int pwm_lpss_enable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
++
++	clk_prepare_enable(lpwm->clk);
++	pwm_lpss_set_state(lpwm, true);
++	return 0;
++}
++
++static void pwm_lpss_disable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
++
++	pwm_lpss_set_state(lpwm, false);
++	clk_disable_unprepare(lpwm->clk);
++}
++
++static const struct pwm_ops pwm_lpss_ops = {
++	.config = pwm_lpss_config,
++	.enable = pwm_lpss_enable,
++	.disable = pwm_lpss_disable,
++	.owner = THIS_MODULE,
++};
++
++#ifdef CONFIG_ACPI
++struct pwm_lpss_chip *pwm_lpss_acpi_get_pdata(struct platform_device *pdev)
++{
++	struct pwm_lpss_chip *lpwm;
++	struct resource *r;
++
++	lpwm = devm_kzalloc(&pdev->dev, sizeof(*lpwm), GFP_KERNEL);
++	if (!lpwm) {
++		dev_err(&pdev->dev, "failed to allocate memory for platform data\n");
++		return NULL;
++	}
++
++	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!r) {
++		dev_err(&pdev->dev, "failed to get mmio base\n");
++		return NULL;
++	}
++
++	lpwm->clk = devm_clk_get(&pdev->dev, NULL);
++	if (IS_ERR(lpwm->clk)) {
++		dev_err(&pdev->dev, "failed to get pwm clk\n");
++		return NULL;
++	}
++
++	lpwm->chip.base = -1;
++
++	lpwm->regs = devm_request_and_ioremap(&pdev->dev, r);
++	if (!lpwm->regs)
++		return NULL;
++
++	return lpwm;
++}
++
++static const struct acpi_device_id pwm_lpss_acpi_match[] = {
++	{ "80860F08", 0 },
++	{ "80860F09", 0 },
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, pwm_lpss_acpi_match);
++#else
++struct pwm_lpss_chip *pwm_lpss_acpi_get_pdata(struct platform_device *pdev)
++{
++	return NULL;
++}
++#endif
++
++static int pwm_lpss_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct pwm_lpss_chip *lpwm;
++	int ret;
++
++	lpwm = dev_get_platdata(dev);
++	if (!lpwm) {
++		lpwm = pwm_lpss_acpi_get_pdata(pdev);
++		if (!lpwm)
++			return -ENODEV;
++	}
++
++	lpwm->chip.dev = &pdev->dev;
++	lpwm->chip.ops = &pwm_lpss_ops;
++	lpwm->chip.npwm = 1;
++
++	ret = pwmchip_add(&lpwm->chip);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
++		return ret;
++	}
++
++	platform_set_drvdata(pdev, lpwm);
++	return 0;
++}
++
++static int pwm_lpss_remove(struct platform_device *pdev)
++{
++	struct pwm_lpss_chip *lpwm = platform_get_drvdata(pdev);
++
++	pwm_lpss_set_state(lpwm, false);
++	return pwmchip_remove(&lpwm->chip);
++}
++
++static struct platform_driver pwm_lpss_driver = {
++	.driver = {
++		.name = "pwm-lpss",
++		.acpi_match_table = ACPI_PTR(pwm_lpss_acpi_match),
++	},
++	.probe = pwm_lpss_probe,
++	.remove = pwm_lpss_remove,
++};
++module_platform_driver(pwm_lpss_driver);
++
++MODULE_DESCRIPTION("PWM driver for Intel LPSS");
++MODULE_AUTHOR("Mika Westerberg <mika.westerberg@linux.intel.com>");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:pwm-lpss");
 -- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+1.7.4.4
+
