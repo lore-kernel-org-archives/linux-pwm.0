@@ -1,7 +1,7 @@
-From: Olof Johansson <olof@lixom.net>
+From: Simon Horman <horms@verge.net.au>
 Subject: Re: PWM...
-Date: Sun, 19 Jan 2014 15:33:56 -0800
-Message-ID: <20140119233356.GA4986@quad.lixom.net>
+Date: Mon, 20 Jan 2014 09:14:46 +0900
+Message-ID: <20140120001446.GD9752@verge.net.au>
 References: <20140119164956.GR15937@n2100.arm.linux.org.uk>
  <CAOesGMi7g=PHjzhkuObkeu+P_c6kUz5uFcND7euafUW56CvsnQ@mail.gmail.com>
  <20140119193026.GS15937@n2100.arm.linux.org.uk>
@@ -9,18 +9,16 @@ References: <20140119164956.GR15937@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pb0-f44.google.com ([209.85.160.44]:50706 "EHLO
-	mail-pb0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752411AbaASXfx (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sun, 19 Jan 2014 18:35:53 -0500
-Received: by mail-pb0-f44.google.com with SMTP id rq2so6280725pbb.3
-        for <linux-pwm@vger.kernel.org>; Sun, 19 Jan 2014 15:35:52 -0800 (PST)
+Received: from kirsty.vergenet.net ([202.4.237.240]:37594 "EHLO
+	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752195AbaATAOx (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sun, 19 Jan 2014 19:14:53 -0500
 Content-Disposition: inline
 In-Reply-To: <201401192126.41543.arnd@arndb.de>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Arnd Bergmann <arnd@arndb.de>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, "arm@kernel.org" <arm@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, "arm@kernel.org" <arm@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
 On Sun, Jan 19, 2014 at 09:26:40PM +0100, Arnd Bergmann wrote:
 > On Sunday 19 January 2014, Russell King - ARM Linux wrote:
@@ -49,12 +47,4 @@ On Sun, Jan 19, 2014 at 09:26:40PM +0100, Arnd Bergmann wrote:
 > controller, that can end up in significant work. I have not checked
 > if this is the case for i.MX though.
 
-Only imx53-tx53.dtsi and imx6qdl-sabresd.dtsi seem to reference pwm nodes from
-a dtsi file, the rest are from dts.
-
-Not all of the dts files have to be converted at the same time either;
-the #pwm-cells property can be changed per dts until they've all been
-converted, then the shared SoC dtsi can be converted.
-
-
--Olof
+Would this change imply that old dtbs would no longer work with new kernels?
