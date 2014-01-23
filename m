@@ -1,57 +1,40 @@
-From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
-Subject: Re: [PATCH 1/2] PWM: let of_xlate handlers check args count
-Date: Thu, 23 Jan 2014 11:56:32 +0100
-Message-ID: <20140123115632.6d3f1a58@ipc1.ka-ro>
-References: <20140123083714.3c6e86ae@ipc1.ka-ro>
-	<1390467898-9216-1-git-send-email-s.hauer@pengutronix.de>
-	<1390467898-9216-2-git-send-email-s.hauer@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1390467898-9216-2-git-send-email-s.hauer@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: linux-arm-kernel@lists.infradead.org, Shawn Guo <shawn.guo@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Sachin Kamat <sachin.kamat@linaro.org>
+Subject: [PATCH Resend 1/2] pwm: atmel: Remove redundant of_match_ptr helper
+Date: Thu, 23 Jan 2014 16:28:34 +0530
+Message-ID: <1390474715-6587-1-git-send-email-sachin.kamat@linaro.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pa0-f46.google.com ([209.85.220.46]:61913 "EHLO
+	mail-pa0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751977AbaAWLDG (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Jan 2014 06:03:06 -0500
+Received: by mail-pa0-f46.google.com with SMTP id rd3so1705111pab.5
+        for <linux-pwm@vger.kernel.org>; Thu, 23 Jan 2014 03:03:05 -0800 (PST)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-pwm@vger.kernel.org
+Cc: thierry.reding@gmail.com, sachin.kamat@linaro.org
 
-Hi,
+'atmel_pwm_dt_ids' is always compiled in. Hence the
+helper macro is not needed.
 
-Sascha Hauer wrote:
-> of_pwm_n_cells for the of_xlate handler is stored in struct pwm_chip,
-> but it is only ever used by the of_xlate handler itsel. Remove
-> of_pwm_n_cells from struct pwm_chip and let the handler do the argume=
-nt
-> count checking to simplify the code.
->=20
-This still does not make the PWM_POLARITY flag in the pwms node
-optional as was the goal because of_parse_phandle_with_args() requires
-at least #pwm-cells arguments in the node.
+Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+---
+ drivers/pwm/pwm-atmel.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-So, with a DT configuration like:
-pwm0: pwm@0 {
-	#pwm-cells =3D <3>;
-};
-backlight {
-	pwms =3D <&pwm0 0 100000>;
-};
-the driver will bail out at of_parse_phandle_with_args() in
-of_pwm_get() with the error message:
-"/backlight: arguments longer than property" and never reach your
-clever xlate function.
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index bf4144a14661..45f0fb793528 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -381,7 +381,7 @@ static int atmel_pwm_remove(struct platform_device *pdev)
+ static struct platform_driver atmel_pwm_driver = {
+ 	.driver = {
+ 		.name = "atmel-pwm",
+-		.of_match_table = of_match_ptr(atmel_pwm_dt_ids),
++		.of_match_table = atmel_pwm_dt_ids,
+ 	},
+ 	.id_table = atmel_pwm_devtypes,
+ 	.probe = atmel_pwm_probe,
+-- 
+1.7.9.5
 
-Thus you will still need to replace of_parse_phandle_with_args()
-with different code that copies most but not all of the functionality.
-
-
-Lothar Wa=C3=9Fmann
---=20
-___________________________________________________________
-
-Ka-Ro electronics GmbH | Pascalstra=C3=9Fe 22 | D - 52076 Aachen
-Phone: +49 2408 1402-0 | Fax: +49 2408 1402-10
-Gesch=C3=A4ftsf=C3=BChrer: Matthias Kaussen
-Handelsregistereintrag: Amtsgericht Aachen, HRB 4996
-
-www.karo-electronics.de | info@karo-electronics.de
-___________________________________________________________
