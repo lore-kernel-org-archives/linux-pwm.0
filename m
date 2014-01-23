@@ -1,177 +1,69 @@
 From: Russell King - ARM Linux <linux@arm.linux.org.uk>
 Subject: Re: [PATCHv2 2/2] pwm: imx: support polarity inversion
-Date: Thu, 23 Jan 2014 11:52:03 +0000
-Message-ID: <20140123115203.GV15937@n2100.arm.linux.org.uk>
-References: <1389859585-14006-1-git-send-email-LW@KARO-electronics.de> <1389859585-14006-3-git-send-email-LW@KARO-electronics.de> <20140116160356.GY16215@pengutronix.de> <20140123083714.3c6e86ae@ipc1.ka-ro>
+Date: Thu, 23 Jan 2014 12:33:41 +0000
+Message-ID: <20140123123341.GW15937@n2100.arm.linux.org.uk>
+References: <1389859585-14006-1-git-send-email-LW@KARO-electronics.de> <1389859585-14006-3-git-send-email-LW@KARO-electronics.de> <20140116160356.GY16215@pengutronix.de> <20140123083714.3c6e86ae@ipc1.ka-ro> <20140123115203.GV15937@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-doc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20140123083714.3c6e86ae@ipc1.ka-ro>
+In-Reply-To: <20140123115203.GV15937@n2100.arm.linux.org.uk>
 Sender: linux-doc-owner@vger.kernel.org
 To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>, Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, Rob Landley <rob@landley.net>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <kernel@pengutronix.de>, Kumar Gala <galak@codeaurora.org>, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
+Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Sascha Hauer <s.hauer@pengutronix.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Landley <rob@landley.net>, Kumar Gala <galak@codeaurora.org>, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Jan 23, 2014 at 08:37:14AM +0100, Lothar Wa=DFmann wrote:
-> This wouldn't buy much without a material change to of_pwm_get().
-> The function of_parse_phandle_with_args() called by of_pwm_get()
-> requires the number of args in the pwms property be greater or equal =
-to
-> the #pwm-cells property in the pwm node. Thus, the interesting case o=
-f
-> having #pwm-cells =3D <3> without changing the existing users is
-> prohibited by of_parse_phandle_with_args().
+On Thu, Jan 23, 2014 at 11:52:03AM +0000, Russell King - ARM Linux wrot=
+e:
+> On Thu, Jan 23, 2014 at 08:37:14AM +0100, Lothar Wa=DFmann wrote:
+> > This wouldn't buy much without a material change to of_pwm_get().
+> > The function of_parse_phandle_with_args() called by of_pwm_get()
+> > requires the number of args in the pwms property be greater or equa=
+l to
+> > the #pwm-cells property in the pwm node. Thus, the interesting case=
+ of
+> > having #pwm-cells =3D <3> without changing the existing users is
+> > prohibited by of_parse_phandle_with_args().
+>=20
+> I really don't think that's a problem we need to be concerned with at
+> the moment.  What we need is for the kernel to be able to parse files
+> with #pwm-cells =3D <2> with the pwms property containing two argumen=
+ts,
+> and when they're updated to #pwm-cells =3D <3> with the pwms property
+> containing three arguments.
+>=20
+> Yes, that means all the board dt files need to be updated at the same
+> time to include the additional argument, but I don't see that as a bi=
+g
+> problem.
+>=20
+> What we do need to do is to adjust the PWM parsing code such that it'=
+s
+> possible to use either specification without causing any side effects=
+=2E
+>=20
+> I would test this, but as u-boot is rather fscked at the moment and t=
+he
+> networking has broken on my cubox-i as a result... and it seems that =
+the
+> u-boot developers have pissed off cubox-i u-boot hackers soo much tha=
+t
+> they've dropped u-boot in favour of barebox...
 
-I really don't think that's a problem we need to be concerned with at
-the moment.  What we need is for the kernel to be able to parse files
-with #pwm-cells =3D <2> with the pwms property containing two arguments=
-,
-and when they're updated to #pwm-cells =3D <3> with the pwms property
-containing three arguments.
+Oh, and another reason... the u-boot video settings are totally and utt=
+erly
+buggered to the point that it doesn't produce correct timings, and it s=
+eems
+that u-boot people have zero interest in fixing that, so u-boot mainlin=
+e is
+basically refusing to fix this - another reason to stay away from it.
 
-Yes, that means all the board dt files need to be updated at the same
-time to include the additional argument, but I don't see that as a big
-problem.
-
-What we do need to do is to adjust the PWM parsing code such that it's
-possible to use either specification without causing any side effects.
-
-I would test this, but as u-boot is rather fscked at the moment and the
-networking has broken on my cubox-i as a result... and it seems that th=
-e
-u-boot developers have pissed off cubox-i u-boot hackers soo much that
-they've dropped u-boot in favour of barebox...
-
- drivers/pwm/core.c  | 59 +++++++++++++++++++++++++++++----------------=
---------
- include/linux/pwm.h |  2 ++
- 2 files changed, 34 insertions(+), 27 deletions(-)
-
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 2ca95042a0b9..40adbce8ef0c 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -132,14 +132,11 @@ static int pwm_device_request(struct pwm_device *=
-pwm, const char *label)
- }
-=20
- struct pwm_device *
--of_pwm_xlate_with_flags(struct pwm_chip *pc, const struct of_phandle_a=
-rgs *args)
-+of_pwm_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
- {
- 	struct pwm_device *pwm;
-=20
--	if (pc->of_pwm_n_cells < 3)
--		return ERR_PTR(-EINVAL);
--
--	if (args->args[0] >=3D pc->npwm)
-+	if (args->args_count < 2)
- 		return ERR_PTR(-EINVAL);
-=20
- 	pwm =3D pwm_request_from_chip(pc, args->args[0], NULL);
-@@ -148,33 +145,45 @@ of_pwm_xlate_with_flags(struct pwm_chip *pc, cons=
-t struct of_phandle_args *args)
-=20
- 	pwm_set_period(pwm, args->args[1]);
-=20
--	if (args->args[2] & PWM_POLARITY_INVERTED)
--		pwm_set_polarity(pwm, PWM_POLARITY_INVERSED);
--	else
--		pwm_set_polarity(pwm, PWM_POLARITY_NORMAL);
-+	if (args->args_count > 2) {
-+		int err;
-+
-+		if (args->args[2] & PWM_POLARITY_INVERTED)
-+			err =3D pwm_set_polarity(pwm, PWM_POLARITY_INVERSED);
-+		else
-+			err =3D pwm_set_polarity(pwm, PWM_POLARITY_NORMAL);
-+
-+		pwm_put(pwm);
-+		return ERR_PTR(err);
-+	}
-=20
- 	return pwm;
- }
-+EXPORT_SYMBOL(of_pwm_xlate);
-+
-+struct pwm_device *
-+of_pwm_xlate_with_flags(struct pwm_chip *pc, const struct of_phandle_a=
-rgs *args)
-+{
-+	if (pc->of_pwm_n_cells < 3)
-+		return ERR_PTR(-EINVAL);
-+
-+	if (args->args_count !=3D pc->of_pwm_n_cells)
-+		return ERR_PTR(-EINVAL);
-+
-+	return of_pwm_xlate(pc, args);
-+}
- EXPORT_SYMBOL_GPL(of_pwm_xlate_with_flags);
-=20
- static struct pwm_device *
- of_pwm_simple_xlate(struct pwm_chip *pc, const struct of_phandle_args =
-*args)
- {
--	struct pwm_device *pwm;
--
- 	if (pc->of_pwm_n_cells < 2)
- 		return ERR_PTR(-EINVAL);
-=20
--	if (args->args[0] >=3D pc->npwm)
-+	if (args->args_count !=3D pc->of_pwm_n_cells)
- 		return ERR_PTR(-EINVAL);
-=20
--	pwm =3D pwm_request_from_chip(pc, args->args[0], NULL);
--	if (IS_ERR(pwm))
--		return pwm;
--
--	pwm_set_period(pwm, args->args[1]);
--
--	return pwm;
-+	return of_pwm_xlate(pc, args);
- }
-=20
- static void of_pwmchip_add(struct pwm_chip *chip)
-@@ -536,16 +545,12 @@ struct pwm_device *of_pwm_get(struct device_node =
-*np, const char *con_id)
- 		goto put;
- 	}
-=20
--	if (args.args_count !=3D pc->of_pwm_n_cells) {
--		pr_debug("%s: wrong #pwm-cells for %s\n", np->full_name,
--			 args.np->full_name);
--		pwm =3D ERR_PTR(-EINVAL);
--		goto put;
--	}
--
- 	pwm =3D pc->of_xlate(pc, &args);
--	if (IS_ERR(pwm))
-+	if (IS_ERR(pwm)) {
-+		pr_debug("%s: of_xlate failed for %s: %d\n", np->full_name,
-+			 args.np->full_name, (int)PTR_ERR(pwm));
- 		goto put;
-+	}
-=20
- 	/*
- 	 * If a consumer name was not given, try to look it up from the
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index f0feafd184a0..14a823f77c31 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -188,6 +188,8 @@ struct pwm_device *pwm_request_from_chip(struct pwm=
-_chip *chip,
- 					 unsigned int index,
- 					 const char *label);
-=20
-+struct pwm_device *of_pwm_xlate(struct pwm_chip *pc,
-+		const struct of_phandle_args *args);
- struct pwm_device *of_pwm_xlate_with_flags(struct pwm_chip *pc,
- 		const struct of_phandle_args *args);
-=20
-
+(1024x768 @ 60Hz produces 70Hz refresh on iMX6Q here - I've seen it pro=
+duce
+51Hz on iMX6S, both of which are far enough out that lots of display de=
+vices
+will not accept it as a valid signal.)
 
 --=20
 =46TTC broadband for 0.8mile line: 5.8Mbps down 500kbps up.  Estimation
