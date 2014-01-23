@@ -1,66 +1,63 @@
-From: Sachin Kamat <sachin.kamat@linaro.org>
-Subject: [PATCH Resend 2/2] pwm: pxa: Use of_match_ptr helper
-Date: Thu, 23 Jan 2014 16:28:35 +0530
-Message-ID: <1390474715-6587-2-git-send-email-sachin.kamat@linaro.org>
-References: <1390474715-6587-1-git-send-email-sachin.kamat@linaro.org>
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: [PATCH 1/2] PWM: let of_xlate handlers check args count
+Date: Thu, 23 Jan 2014 12:04:44 +0100
+Message-ID: <20140123110444.GI16215@pengutronix.de>
+References: <20140123083714.3c6e86ae@ipc1.ka-ro>
+ <1390467898-9216-1-git-send-email-s.hauer@pengutronix.de>
+ <1390467898-9216-2-git-send-email-s.hauer@pengutronix.de>
+ <20140123115632.6d3f1a58@ipc1.ka-ro>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pb0-f52.google.com ([209.85.160.52]:58543 "EHLO
-	mail-pb0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751977AbaAWLDI (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Jan 2014 06:03:08 -0500
-Received: by mail-pb0-f52.google.com with SMTP id jt11so1698380pbb.39
-        for <linux-pwm@vger.kernel.org>; Thu, 23 Jan 2014 03:03:07 -0800 (PST)
-In-Reply-To: <1390474715-6587-1-git-send-email-sachin.kamat@linaro.org>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:59630 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751650AbaAWLFQ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Jan 2014 06:05:16 -0500
+Content-Disposition: inline
+In-Reply-To: <20140123115632.6d3f1a58@ipc1.ka-ro>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: thierry.reding@gmail.com, sachin.kamat@linaro.org
+To: Lothar =?iso-8859-15?Q?Wa=DFmann?= <LW@KARO-electronics.de>
+Cc: linux-arm-kernel@lists.infradead.org, Shawn Guo <shawn.guo@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Use the helper instead of defining NULL for CONFIG_OF
-disabled case.
+On Thu, Jan 23, 2014 at 11:56:32AM +0100, Lothar Wa=DFmann wrote:
+> Hi,
+>=20
+> Sascha Hauer wrote:
+> > of_pwm_n_cells for the of_xlate handler is stored in struct pwm_chi=
+p,
+> > but it is only ever used by the of_xlate handler itsel. Remove
+> > of_pwm_n_cells from struct pwm_chip and let the handler do the argu=
+ment
+> > count checking to simplify the code.
+> >=20
+> This still does not make the PWM_POLARITY flag in the pwms node
+> optional as was the goal because of_parse_phandle_with_args() require=
+s
+> at least #pwm-cells arguments in the node.
+>=20
+> So, with a DT configuration like:
+> pwm0: pwm@0 {
+> 	#pwm-cells =3D <3>;
+> };
+> backlight {
+> 	pwms =3D <&pwm0 0 100000>;
+> };
 
-Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
----
- drivers/pwm/pwm-pxa.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+We misunderstood each other. My goal was to allow the driver to also
+work with old devicetrees which specify #pwm-cells =3D <2>, not to allo=
+w
+inconsistent devicetrees like the snippet above.
 
-diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
-index 8d995731cef8..685ae2c96b77 100644
---- a/drivers/pwm/pwm-pxa.c
-+++ b/drivers/pwm/pwm-pxa.c
-@@ -19,6 +19,7 @@
- #include <linux/clk.h>
- #include <linux/io.h>
- #include <linux/pwm.h>
-+#include <linux/of.h>
- #include <linux/of_device.h>
- 
- #include <asm/div64.h>
-@@ -140,13 +141,12 @@ static struct of_device_id pwm_of_match[] = {
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, pwm_of_match);
--#else
--#define pwm_of_match NULL
- #endif
- 
- static const struct platform_device_id *pxa_pwm_get_id_dt(struct device *dev)
- {
--	const struct of_device_id *id = of_match_device(pwm_of_match, dev);
-+	const struct of_device_id *id;
-+	id = of_match_device(of_match_ptr(pwm_of_match), dev);
- 
- 	return id ? id->data : NULL;
- }
-@@ -228,7 +228,7 @@ static struct platform_driver pwm_driver = {
- 	.driver		= {
- 		.name	= "pxa25x-pwm",
- 		.owner	= THIS_MODULE,
--		.of_match_table = pwm_of_match,
-+		.of_match_table = of_match_ptr(pwm_of_match),
- 	},
- 	.probe		= pwm_probe,
- 	.remove		= pwm_remove,
--- 
-1.7.9.5
+Sascha
 
+--=20
+Pengutronix e.K.                           |                           =
+  |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0  =
+  |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-555=
+5 |
