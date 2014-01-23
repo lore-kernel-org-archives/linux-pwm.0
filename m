@@ -1,71 +1,88 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCHv2 2/2] pwm: imx: support polarity inversion
-Date: Thu, 23 Jan 2014 12:33:41 +0000
-Message-ID: <20140123123341.GW15937@n2100.arm.linux.org.uk>
-References: <1389859585-14006-1-git-send-email-LW@KARO-electronics.de> <1389859585-14006-3-git-send-email-LW@KARO-electronics.de> <20140116160356.GY16215@pengutronix.de> <20140123083714.3c6e86ae@ipc1.ka-ro> <20140123115203.GV15937@n2100.arm.linux.org.uk>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH Resend 1/2] pwm: atmel: Remove redundant of_match_ptr
+ helper
+Date: Thu, 23 Jan 2014 13:44:06 +0100
+Message-ID: <20140123124405.GA28527@ulmo.nvidia.com>
+References: <1390474715-6587-1-git-send-email-sachin.kamat@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="PNTmBPCT7hxwcZjr"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-bk0-f43.google.com ([209.85.214.43]:62714 "EHLO
+	mail-bk0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753798AbaAWMoK (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Jan 2014 07:44:10 -0500
+Received: by mail-bk0-f43.google.com with SMTP id mx11so329788bkb.16
+        for <linux-pwm@vger.kernel.org>; Thu, 23 Jan 2014 04:44:09 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <20140123115203.GV15937@n2100.arm.linux.org.uk>
-Sender: linux-doc-owner@vger.kernel.org
-To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
-Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Sascha Hauer <s.hauer@pengutronix.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Landley <rob@landley.net>, Kumar Gala <galak@codeaurora.org>, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <1390474715-6587-1-git-send-email-sachin.kamat@linaro.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Sachin Kamat <sachin.kamat@linaro.org>
+Cc: linux-pwm@vger.kernel.org
 
-On Thu, Jan 23, 2014 at 11:52:03AM +0000, Russell King - ARM Linux wrot=
-e:
-> On Thu, Jan 23, 2014 at 08:37:14AM +0100, Lothar Wa=DFmann wrote:
-> > This wouldn't buy much without a material change to of_pwm_get().
-> > The function of_parse_phandle_with_args() called by of_pwm_get()
-> > requires the number of args in the pwms property be greater or equa=
-l to
-> > the #pwm-cells property in the pwm node. Thus, the interesting case=
- of
-> > having #pwm-cells =3D <3> without changing the existing users is
-> > prohibited by of_parse_phandle_with_args().
->=20
-> I really don't think that's a problem we need to be concerned with at
-> the moment.  What we need is for the kernel to be able to parse files
-> with #pwm-cells =3D <2> with the pwms property containing two argumen=
-ts,
-> and when they're updated to #pwm-cells =3D <3> with the pwms property
-> containing three arguments.
->=20
-> Yes, that means all the board dt files need to be updated at the same
-> time to include the additional argument, but I don't see that as a bi=
-g
-> problem.
->=20
-> What we do need to do is to adjust the PWM parsing code such that it'=
-s
-> possible to use either specification without causing any side effects=
-=2E
->=20
-> I would test this, but as u-boot is rather fscked at the moment and t=
-he
-> networking has broken on my cubox-i as a result... and it seems that =
-the
-> u-boot developers have pissed off cubox-i u-boot hackers soo much tha=
-t
-> they've dropped u-boot in favour of barebox...
 
-Oh, and another reason... the u-boot video settings are totally and utt=
-erly
-buggered to the point that it doesn't produce correct timings, and it s=
-eems
-that u-boot people have zero interest in fixing that, so u-boot mainlin=
-e is
-basically refusing to fix this - another reason to stay away from it.
+--PNTmBPCT7hxwcZjr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-(1024x768 @ 60Hz produces 70Hz refresh on iMX6Q here - I've seen it pro=
-duce
-51Hz on iMX6S, both of which are far enough out that lots of display de=
-vices
-will not accept it as a valid signal.)
+On Thu, Jan 23, 2014 at 04:28:34PM +0530, Sachin Kamat wrote:
+> 'atmel_pwm_dt_ids' is always compiled in. Hence the
+> helper macro is not needed.
+>=20
+> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+> ---
+>  drivers/pwm/pwm-atmel.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
---=20
-=46TTC broadband for 0.8mile line: 5.8Mbps down 500kbps up.  Estimation
-in database were 13.1 to 19Mbit for a good line, about 7.5+ for a bad.
-Estimate before purchase was "up to 13.2Mbit".
+Hi Sachin,
+
+Sorry for taking so long to look at this, things have been pretty
+busy...
+
+> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+> index bf4144a14661..45f0fb793528 100644
+> --- a/drivers/pwm/pwm-atmel.c
+> +++ b/drivers/pwm/pwm-atmel.c
+> @@ -381,7 +381,7 @@ static int atmel_pwm_remove(struct platform_device *p=
+dev)
+>  static struct platform_driver atmel_pwm_driver =3D {
+>  	.driver =3D {
+>  		.name =3D "atmel-pwm",
+> -		.of_match_table =3D of_match_ptr(atmel_pwm_dt_ids),
+> +		.of_match_table =3D atmel_pwm_dt_ids,
+>  	},
+>  	.id_table =3D atmel_pwm_devtypes,
+>  	.probe =3D atmel_pwm_probe,
+
+Given that the driver doesn't depend on OF, I think the right thing to
+do here would be to #ifdef the atmel_pwm_dt_ids so it doesn't waste
+needless memory.
+
+See also my comment to patch 2/2 that I'm about to send out.
+
+Thierry
+
+--PNTmBPCT7hxwcZjr
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJS4Q6VAAoJEN0jrNd/PrOhFqoP/iU0Mk9WhOaN/mAPtWk6KgRd
+jN94C2ph6s3raAawZLBQmAqGIiauNa01woxdlQU9qWW+YOAvcE+LBwI5htv8fsjb
+oM6joSX4aaZ8hRYV34dQmzwl80kEdRtTWbjlRjad40IuAIN8872l8rXDsonjK042
+ZVdeC9nwKsee8tmEmO4iQWHHvErVDGh2KUL9qgl3lUSdLu1hS41dqPmT67OWapnf
+mFsDeP+bwu+W9G7v6YgVFukP25ikafHMaBrLx4Tri/rq3L1UmSM6+jPe9nnZCoHx
+3a5V0QAzHwEBNlerRBsvTElDZ3gybq5TIaKw9oK5TnQAfGSeSq7Pn78KHRSZPHl0
+aSHteM2gtrlO20SQg+e7zSpJLAi3qbOs9N3zU7ir+qAsbxfISNLNqKdh6cXxmMAS
+fQhZtQ+iLDKX3g19CKNkIFx0aXqt8De9s4j1mNiKyhvZ6+vUuQpDsSfwxwVBtffd
++E5ElblnjftAhZ0eYp2eMKtTiFKncIg0RLjC4bB6b5A5wSY63EMvy7VfYCQzfTID
+J3f6+1y3lBq1khr3Eu38cYEZAggjR5sstzN/SwpGnZG+3AYp63LDY/qiMXsQuk4d
+kAt5tCHpK+ndcW6sX/y3e3uB7eioF8ha9HixrrQu6x1HDqG+17cU6pQE38XOZ4eT
+4tnavLbfRXfA/872PUjC
+=HMGL
+-----END PGP SIGNATURE-----
+
+--PNTmBPCT7hxwcZjr--
