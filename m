@@ -1,108 +1,65 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH 1/2] PWM: let of_xlate handlers check args count
-Date: Fri, 24 Jan 2014 08:41:03 +0100
-Message-ID: <20140124074103.GJ16215@pengutronix.de>
-References: <20140123083714.3c6e86ae@ipc1.ka-ro>
- <1390467898-9216-1-git-send-email-s.hauer@pengutronix.de>
- <1390467898-9216-2-git-send-email-s.hauer@pengutronix.de>
- <20140123115632.6d3f1a58@ipc1.ka-ro>
- <20140123110444.GI16215@pengutronix.de>
- <20140123165349.GY15937@n2100.arm.linux.org.uk>
- <20140123173642.GZ15937@n2100.arm.linux.org.uk>
- <20140124064254.0369084d@ipc1.ka-ro>
+From: Sachin Kamat <sachin.kamat@linaro.org>
+Subject: Re: [PATCH Resend 1/2] pwm: atmel: Remove redundant of_match_ptr helper
+Date: Fri, 24 Jan 2014 14:34:32 +0530
+Message-ID: <CAK9yfHy9_hj93ra+RDO=W_bCZDCvsCT0AxwsYOnrZafbyC8CcA@mail.gmail.com>
+References: <1390474715-6587-1-git-send-email-sachin.kamat@linaro.org>
+	<20140123124405.GA28527@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=ISO-8859-1
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:51634 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750864AbaAXHla (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 24 Jan 2014 02:41:30 -0500
-Content-Disposition: inline
-In-Reply-To: <20140124064254.0369084d@ipc1.ka-ro>
+Received: from mail-ob0-f175.google.com ([209.85.214.175]:37774 "EHLO
+	mail-ob0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750825AbaAXJEd (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 24 Jan 2014 04:04:33 -0500
+Received: by mail-ob0-f175.google.com with SMTP id wn1so3285175obc.6
+        for <linux-pwm@vger.kernel.org>; Fri, 24 Jan 2014 01:04:33 -0800 (PST)
+In-Reply-To: <20140123124405.GA28527@ulmo.nvidia.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lothar =?iso-8859-15?Q?Wa=DFmann?= <LW@KARO-electronics.de>
-Cc: Russell King - ARM Linux <linux@arm.linux.org.uk>, Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Landley <rob@landley.net>, Kumar Gala <galak@codeaurora.org>, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org
 
-On Fri, Jan 24, 2014 at 06:42:54AM +0100, Lothar Wa=DFmann wrote:
-> Hi,
->=20
-> > Okay, this works, but there's a problem with pwm-leds.
-> >=20
-> > When the duty cycle is set to zero (when you set the brightness to =
-zero)
-> > pwm-leds decides to disable the PWM after configuring it.  This cau=
-ses
-> > the PWM output to be driven low, causing the LED to go to maximum
-> > brightness.
-> >=20
-> > So, using the inversion at PWM level doesn't work.
-> >=20
-> The problem is that the driver calls pwm_disable() when the duty cycl=
-e is 0.
-> This sets the PWM output low independent from the output polarity set=
-ting.
->=20
-> > To make this work correctly, we really need pwm-leds to do the inve=
-rsion
-> > rather than setting the inversion bit in hardware.
-> >=20
-> The same holds for the pwm-backlight driver.
->=20
-> The easiest fix would be not to call pwm_disable() even for a zero du=
-ty
-> cycle.
+Hi Thierry,
 
-IMO that's the right thing to do anyway due to the different PWM
-hardware controllers we have. I'm thinking about the following patch
-for some time.
+On 23 January 2014 18:14, Thierry Reding <thierry.reding@gmail.com> wrote:
+> On Thu, Jan 23, 2014 at 04:28:34PM +0530, Sachin Kamat wrote:
+>> 'atmel_pwm_dt_ids' is always compiled in. Hence the
+>> helper macro is not needed.
+>>
+>> Signed-off-by: Sachin Kamat <sachin.kamat@linaro.org>
+>> ---
+>>  drivers/pwm/pwm-atmel.c |    2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> Hi Sachin,
+>
+> Sorry for taking so long to look at this, things have been pretty
+> busy...
 
-Sascha
+No problem. Sorry to bother you though.
 
---------------------8<--------------------------
+>
+>> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+>> index bf4144a14661..45f0fb793528 100644
+>> --- a/drivers/pwm/pwm-atmel.c
+>> +++ b/drivers/pwm/pwm-atmel.c
+>> @@ -381,7 +381,7 @@ static int atmel_pwm_remove(struct platform_device *pdev)
+>>  static struct platform_driver atmel_pwm_driver = {
+>>       .driver = {
+>>               .name = "atmel-pwm",
+>> -             .of_match_table = of_match_ptr(atmel_pwm_dt_ids),
+>> +             .of_match_table = atmel_pwm_dt_ids,
+>>       },
+>>       .id_table = atmel_pwm_devtypes,
+>>       .probe = atmel_pwm_probe,
+>
+> Given that the driver doesn't depend on OF, I think the right thing to
+> do here would be to #ifdef the atmel_pwm_dt_ids so it doesn't waste
+> needless memory.
 
-=46rom 9ebbc3d72c71bd97d7fc4458f60ae3ecd5876984 Mon Sep 17 00:00:00 200=
-1
-=46rom: Sascha Hauer <s.hauer@pengutronix.de>
-Date: Fri, 24 Jan 2014 08:34:16 +0100
-Subject: [PATCH] PWM: Document disabled PWM output as undefined
+OK. Will update accordingly.
 
-When disabled PWM hardware reacts differently. Some controllers
-just stop with their current value, others produce a constant high
-or low output, sometimes depending on the output inversion bit. Update
-the documentation to reflect that and request from the PWM consumer
-drivers to set a constant high/low value with duty cycles of 0/100%
-instead of disabling the PWM.
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
----
- Documentation/pwm.txt | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
-index 93cb979..b7e8a31 100644
---- a/Documentation/pwm.txt
-+++ b/Documentation/pwm.txt
-@@ -44,6 +44,8 @@ After being requested, a PWM has to be configured usi=
-ng:
- int pwm_config(struct pwm_device *pwm, int duty_ns, int period_ns);
-=20
- To start/stop toggling the PWM output use pwm_enable()/pwm_disable().
-+The output of a disabled PWM is undefined. Set the duty cycle to 100%
-+for a constant high output and to 0 for constant low output.
-=20
- Using PWMs with the sysfs interface
- -----------------------------------
---=20
-1.8.5.2
-
---=20
-Pengutronix e.K.                           |                           =
-  |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0  =
-  |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-555=
-5 |
+-- 
+With warm regards,
+Sachin
