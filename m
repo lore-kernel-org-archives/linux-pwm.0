@@ -1,26 +1,81 @@
-From: Abdul Nasser <abdulnas500@justin.ddo.jp>
-Subject: Kind Regards
-Date: Sun, 26 Jan 2014 21:57:18 +0000
-Message-ID: <SECEXCHANGECJiLyNfH00004794@mail.standardelectronics.com>
-Reply-To: s.abdulnasser@yahoo.com.hk
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH] pwm: lp3943: Fix potential memory leak during request
+Date: Mon, 27 Jan 2014 09:58:03 +0000
+Message-ID: <20140127095803.GC14478@lee--X1>
+References: <20140123223220.7d68b5f6@spike>
+ <20140124162302.GA28335@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.standardelectronics.com ([74.92.67.124]:55038 "EHLO
-	mail.standardelectronics.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1753468AbaAZXjF convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Sun, 26 Jan 2014 18:39:05 -0500
-Content-Description: Mail message body
+Received: from mail-wg0-f41.google.com ([74.125.82.41]:55404 "EHLO
+	mail-wg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751098AbaA0J6W (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 27 Jan 2014 04:58:22 -0500
+Received: by mail-wg0-f41.google.com with SMTP id n12so3956487wgh.4
+        for <linux-pwm@vger.kernel.org>; Mon, 27 Jan 2014 01:58:21 -0800 (PST)
+Content-Disposition: inline
+In-Reply-To: <20140124162302.GA28335@ulmo.nvidia.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Recipients <abdulnas500@justin.ddo.jp>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Christian Engelmayer <cengelma@gmx.at>, Milo Kim <milo.kim@ti.com>, linux-pwm@vger.kernel.org
 
-Greetings,
-My name is Abdul Nasser Sokariah and I am writing you from Syria, I choose to contact you directly as I need a reliable person to trust who can help me handle my huge deposit  with a vault company in EUROPE, and based on my present situation in Syria, I need you urgently to take possession of everything and further modalities/directives will follow.Please reply to my private  Email: nasserabdul190@yahoo.com
+On Fri, 24 Jan 2014, Thierry Reding wrote:
 
-I wait for your response.
+> On Thu, Jan 23, 2014 at 10:32:20PM +0100, Christian Engelmayer wrote:
+> > Fix a memory leak in the lp3943_pwm_request_map() error handling pa=
+th.
+> > Make sure already allocated pwm map memory is freed correctly.
+> > Detected by Coverity: CID 1162829.
+> >=20
+> > Signed-off-by: Christian Engelmayer <cengelma@gmx.at>
+> > ---
+> >  drivers/pwm/pwm-lp3943.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> >=20
+> > diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
+> > index 8a843a0..a40b9c3 100644
+> > --- a/drivers/pwm/pwm-lp3943.c
+> > +++ b/drivers/pwm/pwm-lp3943.c
+> > @@ -52,8 +52,10 @@ lp3943_pwm_request_map(struct lp3943_pwm *lp3943=
+_pwm, int hwpwm)
+> >  		offset =3D pwm_map->output[i];
+> > =20
+> >  		/* Return an error if the pin is already assigned */
+> > -		if (test_and_set_bit(offset, &lp3943->pin_used))
+> > +		if (test_and_set_bit(offset, &lp3943->pin_used)) {
+> > +			kfree(pwm_map);
+> >  			return ERR_PTR(-EBUSY);
+> > +		}
+> >  	}
+> > =20
+> >  	return pwm_map;
+>=20
+> Lee, since you took this driver via the MFD tree, would you mind pick=
+ing
+> up this fix as well?
 
-Yours truly,
-Abdul Nasser Sokariah
+Everything I have is now in Mainline.
+
+It's best for you to apply it now I think?
+
+> In case you don't have it in your inbox somewhere, you should be able=
+ to
+> grab it from here:
+>=20
+> 	http://patchwork.ozlabs.org/patch/313741/
+>=20
+> In that case:
+>=20
+> Acked-by: Thierry Reding <thierry.reding@gmail.com>
+>=20
+> Thierry
+
+
+
+--=20
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
