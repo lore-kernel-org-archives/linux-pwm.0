@@ -1,78 +1,40 @@
-From: Barry Song <21cnbao@gmail.com>
-Subject: Re: [PATCH v2] pwm: add CSR SiRFSoC PWM driver
-Date: Fri, 31 Jan 2014 20:05:49 +0800
-Message-ID: <CAGsJ_4xFKytv=Mj9eVwGY7RjyUy2W=iSXvnULKyBETYVzMVbOg@mail.gmail.com>
-References: <1391061145-2078-1-git-send-email-21cnbao@gmail.com> <201401302049.27521.arnd@arndb.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Richard Weinberger <richard@nod.at>
+Subject: [PATCH] pwm,renesas-tpu: Add dependency on HAS_IOMEM
+Date: Fri, 31 Jan 2014 13:45:18 +0100
+Message-ID: <1391172318-17853-1-git-send-email-richard@nod.at>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f49.google.com ([209.85.220.49]:54870 "EHLO
-	mail-pa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753951AbaAaMGK (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 31 Jan 2014 07:06:10 -0500
-Received: by mail-pa0-f49.google.com with SMTP id hz1so4304831pad.8
-        for <linux-pwm@vger.kernel.org>; Fri, 31 Jan 2014 04:06:10 -0800 (PST)
-In-Reply-To: <201401302049.27521.arnd@arndb.de>
+Received: from b.ns.miles-group.at ([95.130.255.144]:1660 "EHLO radon.swed.at"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S932145AbaAaMpZ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Fri, 31 Jan 2014 07:45:25 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Rongjun Ying <Rongjun.ying@csr.com>, Huayi Li <Huayi.Li@csr.com>, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>, Barry Song <Baohua.Song@csr.com>
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Weinberger <richard@nod.at>
 
-2014-01-31 Arnd Bergmann <arnd@arndb.de>:
-> On Thursday 30 January 2014, Barry Song wrote:
->> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->> index 7acab93..0a252f8 100644
->> --- a/drivers/pwm/Kconfig
->> +++ b/drivers/pwm/Kconfig
->> @@ -166,6 +166,15 @@ config PWM_SAMSUNG
->>         To compile this driver as a module, choose M here: the module
->>         will be called pwm-samsung.
->>
->> +config PWM_SIRF
->> +     tristate "SiRF PWM support"
->> +     depends on ARCH_SIRF
->> +     help
->
-> please make this "depends on ARCH_SIRF || COMPILE_TEST" if you can, so we
-> can build it on other platforms for test purposes. If you do this, you
-> have to list the full set of dependencies, so probably another
-> "depends on HAVE_CLK".
+On archs like S390 or um this driver cannot build nor work.
+Make it depend on HAS_IOMEM to bypass build failures.
 
-sounds good. it seems we can have this for other PWM drivers as well?
+drivers/built-in.o: In function `tpu_probe':
+drivers/pwm/pwm-renesas-tpu.c:421: undefined reference to `devm_ioremap_resource'
 
->
->> +
->> +#define to_sirf_chip(chip)   container_of(chip, struct sirf_pwm, chip)
->> +
->> +static unsigned int sirf_pwm_ns_to_cycles(struct pwm_chip *chip, unsigned int time_ns)
->> +{
->> +     u64 dividend;
->> +     unsigned int cycle;
->> +     /*
->> +      * on SiRFSoC, OSC input is const, we use it as the source to generate
->> +      * PWM wave
->> +      */
->> +#define SRC_OSC_RATE 26000000ULL
->> +     dividend = SRC_OSC_RATE * time_ns + NSEC_PER_SEC / 2;
->> +     do_div(dividend, NSEC_PER_SEC);
->> +
->> +     cycle = dividend & 0xFFFFFFFFUL;
->> +
->> +     return cycle > 1 ? cycle : 1;
->> +}
->> +
->
-> Is SRC_OSC_RATE the rate of spwm->clk? If so, it would be nice to just call
-> clk_get_rate() here, in case you ever have a chip with a different rate.
->
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ drivers/pwm/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-SRC_OSC_RATE is the fixed frequency of crystal oscillator, but
-spwm->clk comes from the IO bus. the design is a little strange, pwm
-channels don't use the clock of PWM controller to generate
-period/duty, but use other sources.
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 22f2f28..0b7a3c9 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -160,6 +160,7 @@ config PWM_PXA
+ config PWM_RENESAS_TPU
+ 	tristate "Renesas TPU PWM support"
+ 	depends on ARCH_SHMOBILE || COMPILE_TEST
++	depends on HAS_IOMEM
+ 	help
+ 	  This driver exposes the Timer Pulse Unit (TPU) PWM controller found
+ 	  in Renesas chips through the PWM API.
+-- 
+1.8.1.4
 
-> This is a very nice driver otherwise!
->
->         Arnd
-
--barry
