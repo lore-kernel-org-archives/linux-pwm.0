@@ -1,40 +1,35 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: [PATCH] pwm,renesas-tpu: Add dependency on HAS_IOMEM
-Date: Fri, 31 Jan 2014 13:45:18 +0100
-Message-ID: <1391172318-17853-1-git-send-email-richard@nod.at>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v2] pwm: add CSR SiRFSoC PWM driver
+Date: Fri, 31 Jan 2014 16:23:56 +0100
+Message-ID: <201401311623.56902.arnd@arndb.de>
+References: <1391061145-2078-1-git-send-email-21cnbao@gmail.com> <201401302049.27521.arnd@arndb.de> <CAGsJ_4xFKytv=Mj9eVwGY7RjyUy2W=iSXvnULKyBETYVzMVbOg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from b.ns.miles-group.at ([95.130.255.144]:1660 "EHLO radon.swed.at"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S932145AbaAaMpZ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Fri, 31 Jan 2014 07:45:25 -0500
+Received: from moutng.kundenserver.de ([212.227.17.8]:53579 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932499AbaAaPYI (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 31 Jan 2014 10:24:08 -0500
+In-Reply-To: <CAGsJ_4xFKytv=Mj9eVwGY7RjyUy2W=iSXvnULKyBETYVzMVbOg@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Weinberger <richard@nod.at>
+To: Barry Song <21cnbao@gmail.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Rongjun Ying <Rongjun.ying@csr.com>, Huayi Li <Huayi.Li@csr.com>, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>, Barry Song <Baohua.Song@csr.com>
 
-On archs like S390 or um this driver cannot build nor work.
-Make it depend on HAS_IOMEM to bypass build failures.
+On Friday 31 January 2014, Barry Song wrote:
+> >
+> > Is SRC_OSC_RATE the rate of spwm->clk? If so, it would be nice to just call
+> > clk_get_rate() here, in case you ever have a chip with a different rate.
+> >
+> 
+> SRC_OSC_RATE is the fixed frequency of crystal oscillator, but
+> spwm->clk comes from the IO bus. the design is a little strange, pwm
+> channels don't use the clock of PWM controller to generate
+> period/duty, but use other sources.
 
-drivers/built-in.o: In function `tpu_probe':
-drivers/pwm/pwm-renesas-tpu.c:421: undefined reference to `devm_ioremap_resource'
+How about modeling  that other source as a fixed-rate clock in DT
+then?
 
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- drivers/pwm/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 22f2f28..0b7a3c9 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -160,6 +160,7 @@ config PWM_PXA
- config PWM_RENESAS_TPU
- 	tristate "Renesas TPU PWM support"
- 	depends on ARCH_SHMOBILE || COMPILE_TEST
-+	depends on HAS_IOMEM
- 	help
- 	  This driver exposes the Timer Pulse Unit (TPU) PWM controller found
- 	  in Renesas chips through the PWM API.
--- 
-1.8.1.4
-
+	Arnd
