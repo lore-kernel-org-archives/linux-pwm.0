@@ -1,110 +1,46 @@
-From: Robert Jarzmik <robert.jarzmik@free.fr>
-Subject: Re: [PATCH] ARM: pxa: Add dummy backlight power supply on Mitac Mio A701
-Date: Sat, 01 Feb 2014 18:55:42 +0100
-Message-ID: <87k3deiuox.fsf@free.fr>
-References: <1387532812-11742-1-git-send-email-thierry.reding@gmail.com>
-	<87zjn9v7xx.fsf@free.fr> <87txd8vka8.fsf@free.fr>
-	<87ha8y76rn.fsf@free.fr>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from smtpfb1-g21.free.fr ([212.27.42.9]:45019 "EHLO
-	smtpfb1-g21.free.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933102AbaBAR4S (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sat, 1 Feb 2014 12:56:18 -0500
-Received: from smtp5-g21.free.fr (smtp5-g21.free.fr [212.27.42.5])
-	by smtpfb1-g21.free.fr (Postfix) with ESMTP id 48E422DCA6
-	for <linux-pwm@vger.kernel.org>; Sat,  1 Feb 2014 18:56:11 +0100 (CET)
-Sender: linux-pwm-owner@vger.kernel.org
+From: Matt Porter <mporter@linaro.org>
+Subject: [PATCH v2 3/6] iio: enable selection and build of pulse drivers
+Date: Mon,  3 Feb 2014 08:40:29 -0500
+Message-ID: <1391434832-23807-4-git-send-email-mporter@linaro.org>
+References: <1391434832-23807-1-git-send-email-mporter@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1391434832-23807-1-git-send-email-mporter@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <robh+dt@kernel.org>, =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Linux IIO List <linux-iio@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Devicetree List <devicetree@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux OMAP List <linux-omap@vger.kernel.org>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Eric Miao <eric.y.miao@gmail.com>, Russell King <linux@arm.linux.org.uk>
-Cc: Haojian Zhuang <haojian.zhuang@gmail.com>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>
 
-Robert Jarzmik <robert.jarzmik@free.fr> writes:
->> Hi Arnd,
->>
->> I cannot reach Haojian, and my platform is currently screen-broken without
->> Thierry's patch (see [1] and [2]). I'm trying to have it since -rc6, with no luck.
-... zip ...
+Add the pulse driver subdirectory when configuring and building
+IIO.
 
-Hi Eric and Russell,
-
-Since more than a month I've been trying to have a fix applied in the PXA tree,
-since v3.13-rc6. I cannot reach Haojian, and Arnd seems unresponsive too.
-
-The history mails are in [1], the patch in [2].
-
-Your are the 2 other maintainers of the PXA tree, Could you please help me ?
-
-Cheers.
-
---
-Robert
-
-[1]
-http://lists.infradead.org/pipermail/linux-arm-kernel/2014-January/223116.html
-
-
-[2]
-http://lists.infradead.org/pipermail/linux-arm-kernel/2013-December/221013.html
-
----8>---
-
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH] ARM: pxa: Add dummy backlight power supply on Mitac Mio A701
-To: Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Date: Fri, 20 Dec 2013 10:46:52 +0100 (6 weeks, 1 day, 8 hours ago)
-Message-Id: <1387532812-11742-1-git-send-email-thierry.reding@gmail.com>
-X-Mailer: git-send-email 1.8.4.2
-
-Recent changes to the pwm-backlight driver have made the power supply
-mandatory. There is code in the regulator core to deal with situations
-where no regulator is specified and provide a dummy, but that works on
-DT-based boards only.
-
-The situation can be remedied by adding a dummy regulator during board
-initialization.
-
-Tested-by: Robert Jarzmik <robert.jarzmik@free.fr>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Matt Porter <mporter@linaro.org>
 ---
- arch/arm/mach-pxa/mioa701.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/iio/Kconfig  | 1 +
+ drivers/iio/Makefile | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/arch/arm/mach-pxa/mioa701.c b/arch/arm/mach-pxa/mioa701.c
-index f70583fee59f..29997bde277d 100644
---- a/arch/arm/mach-pxa/mioa701.c
-+++ b/arch/arm/mach-pxa/mioa701.c
-@@ -38,6 +38,7 @@
- #include <linux/mtd/physmap.h>
- #include <linux/usb/gpio_vbus.h>
- #include <linux/reboot.h>
-+#include <linux/regulator/fixed.h>
- #include <linux/regulator/max1586.h>
- #include <linux/slab.h>
- #include <linux/i2c/pxa-i2c.h>
-@@ -714,6 +715,10 @@ static struct gpio global_gpios[] = {
- 	{ GPIO56_MT9M111_nOE, GPIOF_OUT_INIT_LOW, "Camera nOE" },
- };
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 5dd0e12..286acc3 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -74,6 +74,7 @@ if IIO_TRIGGER
+    source "drivers/iio/trigger/Kconfig"
+ endif #IIO_TRIGGER
+ source "drivers/iio/pressure/Kconfig"
++source "drivers/iio/pulse/Kconfig"
+ source "drivers/iio/temperature/Kconfig"
  
-+static struct regulator_consumer_supply fixed_5v0_consumers[] = {
-+	REGULATOR_SUPPLY("power", "pwm-backlight"),
-+};
-+
- static void __init mioa701_machine_init(void)
- {
- 	int rc;
-@@ -753,6 +758,10 @@ static void __init mioa701_machine_init(void)
- 	pxa_set_i2c_info(&i2c_pdata);
- 	pxa27x_set_i2c_power_info(NULL);
- 	pxa_set_camera_info(&mioa701_pxacamera_platform_data);
-+
-+	regulator_register_always_on(0, "fixed-5.0V", fixed_5v0_consumers,
-+				     ARRAY_SIZE(fixed_5v0_consumers),
-+				     5000000);
- }
- 
- static void mioa701_machine_exit(void)
+ endif # IIO
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 887d390..9a953c9 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -24,5 +24,6 @@ obj-y += light/
+ obj-y += magnetometer/
+ obj-y += orientation/
+ obj-y += pressure/
++obj-y += pulse/
+ obj-y += temperature/
+ obj-y += trigger/
 -- 
-1.8.4.2
+1.8.4
