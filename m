@@ -1,7 +1,7 @@
 From: Tim Kryger <tim.kryger@linaro.org>
-Subject: [PATCH v2 4/5] ARM: dts: Enable the PWM for bcm28155 AP board
-Date: Tue, 4 Feb 2014 11:51:42 -0800
-Message-ID: <1391543503-14773-5-git-send-email-tim.kryger@linaro.org>
+Subject: [PATCH v2 1/5] Documentation: dt: Add Kona PWM binding
+Date: Tue, 4 Feb 2014 11:51:39 -0800
+Message-ID: <1391543503-14773-2-git-send-email-tim.kryger@linaro.org>
 References: <1391543503-14773-1-git-send-email-tim.kryger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,30 +12,47 @@ To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
 Cc: Tim Kryger <tim.kryger@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Mark the PWM as enabled on the bcm28155 AP board.
+Add the binding description for the Kona PWM controller found on Broadcom's
+mobile SoCs.
 
 Signed-off-by: Tim Kryger <tim.kryger@linaro.org>
 Reviewed-by: Alex Elder <elder@linaro.org>
 Reviewed-by: Markus Mayer <markus.mayer@linaro.org>
 ---
- arch/arm/boot/dts/bcm28155-ap.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../devicetree/bindings/pwm/bcm-kona-pwm.txt       | 24 ++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
 
-diff --git a/arch/arm/boot/dts/bcm28155-ap.dts b/arch/arm/boot/dts/bcm28155-ap.dts
-index 5ff2382..37c72eb 100644
---- a/arch/arm/boot/dts/bcm28155-ap.dts
-+++ b/arch/arm/boot/dts/bcm28155-ap.dts
-@@ -66,6 +66,10 @@
- 		status = "okay";
- 	};
- 
-+	pwm: pwm@3e01a000 {
-+		status = "okay";
-+	};
+diff --git a/Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt b/Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
+new file mode 100644
+index 0000000..c8e2d13
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
+@@ -0,0 +1,24 @@
++Broadcom Kona PWM controller device tree bindings
 +
- 	usbotg: usb@3f120000 {
- 		status = "okay";
- 	};
++This controller has 6 channels.
++
++Required Properties :
++- compatible: should be "brcm,kona-pwm"
++- reg: physical base address and length of the controller's registers
++- clocks: phandle + clock specifier pair for the external clock
++- #pwm-cells: should be 3.  The first cell specifies the per-chip index
++  of the PWM to use, the second cell is the period in nanoseconds, and
++  the third cell is the flags.
++
++Refer to pwm/pwm.txt for generic pwm controller node properties.
++
++Refer to clocks/clock-bindings.txt for generic clock consumer properties.
++
++Example:
++
++pwm: pwm@3e01a000 {
++	compatible = "brcm,bcm11351-pwm", "brcm,kona-pwm";
++	reg = <0x3e01a000 0xc4>;
++	clocks = <&pwm_clk>;
++	#pwm-cells = <3>;
++};
 -- 
 1.8.0.1
 
