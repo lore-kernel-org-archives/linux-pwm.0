@@ -1,44 +1,95 @@
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH v3 0/6] IIO pulse capture support for TI ECAP
-Date: Wed, 05 Feb 2014 23:23:25 +0300
-Message-ID: <52F29DBD.9050305@cogentembedded.com>
-References: <1391626901-31684-1-git-send-email-mporter@linaro.org>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: Re: [PATCH] backlight: add PWM dependencies
+Date: Thu, 06 Feb 2014 15:49:33 +0900
+Message-ID: <000101cf2307$97a3c770$c6eb5650$%han@samsung.com>
+References: <1391518634-6472-1-git-send-email-linus.walleij@linaro.org>
+ <000401cf222f$43263b20$c972b160$%han@samsung.com>
+ <CACRpkdbB8LFM0Vu8VRo4niqxwxUdS-c5gmmWaxbUTbnLCLZbMA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-lb0-f169.google.com ([209.85.217.169]:44769 "EHLO
-	mail-lb0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751152AbaBETXB (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 5 Feb 2014 14:23:01 -0500
-Received: by mail-lb0-f169.google.com with SMTP id q8so697626lbi.0
-        for <linux-pwm@vger.kernel.org>; Wed, 05 Feb 2014 11:22:59 -0800 (PST)
-In-Reply-To: <1391626901-31684-1-git-send-email-mporter@linaro.org>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <CACRpkdbB8LFM0Vu8VRo4niqxwxUdS-c5gmmWaxbUTbnLCLZbMA@mail.gmail.com>
+Content-language: ko
+Sender: linux-kernel-owner@vger.kernel.org
+To: 'Linus Walleij' <linus.walleij@linaro.org>
+Cc: 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, 'Eric Miao' <eric.y.miao@gmail.com>, 'Thierry Reding' <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Matt Porter <mporter@linaro.org>, Jonathan Cameron <jic23@kernel.org>, Grant Likely <grant.likely@secretlab.ca>, Rob Herring <robh+dt@kernel.org>, =?ISO-8859-1?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Devicetree List <devicetree@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux IIO List <linux-iio@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux OMAP List <linux-omap@vger.kernel.org>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 
-Hello.
+On Wednesday, February 05, 2014 5:58 PM, Linus Walleij wrote:
+> On Wed, Feb 5, 2014 at 6:01 AM, Jingoo Han <jg1.han@samsung.com> wrote:
+> > On Tuesday, February 04, 2014 9:57 PM, Linus Walleij wrote:
+> >>
+> >> In some compilations the LM3630A and LP855X backlight drivers
+> >> fail like this:
+> >>
+> >> drivers/built-in.o: In function `lm3630a_pwm_ctrl':
+> >> drivers/video/backlight/lm3630a_bl.c:168: undefined reference to `pwm_config'
+> >> drivers/video/backlight/lm3630a_bl.c:172: undefined reference to `pwm_disable'
+> >> drivers/video/backlight/lm3630a_bl.c:170: undefined reference to `pwm_enable'
+> >> drivers/built-in.o: In function `lp855x_pwm_ctrl':
+> >> drivers/video/backlight/lp855x_bl.c:249: undefined reference to `pwm_config'
+> >> drivers/video/backlight/lp855x_bl.c:253: undefined reference to `pwm_disable'
+> >> drivers/video/backlight/lp855x_bl.c:251: undefined reference to `pwm_enable'
+> >>
+> >> This is because both drivers depend on the PWM framework, so
+> >> add this dependency to their Kconfig entries.
+> >
+> > However, even though, when CONFIG_PWM is not enabled, the problem
+> > should not happen. pwm_config(),pwm_disable(), and pwm_enable()
+> > are already defined for CONFIG_PWM=n case as below.
+> 
+> So you may think but it does happen :-)
+> 
+> I reproduced this with the defconfig for ARM pxa255-idp and enabling
+> all boards for that platform, then enabling all available backlight drivers
+> as compiled-in objects (y).
 
-On 02/05/2014 10:01 PM, Matt Porter wrote:
+However, I cannot reproduce it with mainline kernel 3.14-rc1.
 
-[...]
+1. make pxa255-idp_defconfig
+2. Enabling all boards
+   (System Type -> Intel PXA2xx/PXA3xx Implementations -> ...)
+3. Enabling all available backlight drivers as compiled-in objects (y)
 
-> This series adds support for PWM capture devices within IIO and
-> adds a TI ECAP IIO driver.
+In this case, the LM3630A and LP855X backlight drivers are compiled
+properly as below:
 
-> PWM capture devices are supported using a new IIO "pulse" channel type.
+  drivers/video/backlight/lm3630a_bl.o
+  drivers/video/backlight/lp855x_bl.o
 
-> The IIO ECAP driver implements interrupt driven triggered buffer capture
-> only as raw sample reads are not applicable to this hardware.
-> Initially, the driver supports a single pulse width measurement with
-> configurable polarity. The ECAP hardware can support measurement of a
-> complete period and duty cycle but this is not yet implemented.
+Would you check it with mainline kernel 3.14-rc1?
+If the errors happen, please attach the .config file.
 
-    How about pulse counting? I have the hardware that can also count pulses 
-in addition to measuring the periods, so I'm interested in this work 
-(initially I supported it in driver/misc/ but it got turned down for iio).
+Best regards,
+Jingoo Han
 
-WBR, Sergei
-
+> 
+> > ./include/linux/pwm.h
+> > #if IS_ENABLED(CONFIG_PWM) || IS_ENABLED(CONFIG_HAVE_PWM)
+> >         .....
+> > #else
+> 
+> Hm PXA that I am using defines CONFIG_HAVE_PWM, but doesn't
+> provide the required signatures (pwm_config/pwm_disable/pwm_enable).
+> 
+> One of two things is wrong:
+> 
+> - Either the PXA platform is breaking the CONFIG_HAVE_PWM
+>   contract by not providing pwm_config/pwm_disable/pwm_enable
+>   functions. Then HAVE_PWM should be removed from the PXA
+>   Kconfig selects.
+> 
+> Or:
+> 
+> - There is no such contract that these functions must exist if
+>   CONFIG_HAVE_PWM is defined, and the
+>   #if IS_ENABLED(CONFIG_HAVE_PWM)
+>   should be removed from <linux/pwm.h>
+> 
+> Does anyone know which one it is?
+> 
+> PWM subsystem maintainer? :-)
+> 
+> Yours,
+> Linus Walleij
