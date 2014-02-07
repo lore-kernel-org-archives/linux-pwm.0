@@ -1,59 +1,95 @@
-From: Barry Song <21cnbao@gmail.com>
-Subject: Re: [PATCH v2] pwm: add CSR SiRFSoC PWM driver
-Date: Fri, 7 Feb 2014 10:30:16 +0800
-Message-ID: <CAGsJ_4z8nKUF7+quo6VRyHqr9Z_MiM9TnQt4Vz0Xhh+qWQoupA@mail.gmail.com>
-References: <1391061145-2078-1-git-send-email-21cnbao@gmail.com>
- <201401311623.56902.arnd@arndb.de> <CAGsJ_4xmtt2Pg_mHJmvt9uc3Y4gN7KUT1UOJhbr6FQYdiAH3qw@mail.gmail.com>
- <201402061627.17086.arnd@arndb.de>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: Re: [PATCH] backlight: add PWM dependencies
+Date: Fri, 07 Feb 2014 12:05:41 +0900
+Message-ID: <000d01cf23b1$7c1f8de0$745ea9a0$%han@samsung.com>
+References: <1391518634-6472-1-git-send-email-linus.walleij@linaro.org>
+ <000101cf2307$97a3c770$c6eb5650$%han@samsung.com>
+ <000001cf230c$60ec1ca0$22c455e0$%han@samsung.com>
+ <201402061708.05845.arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pb0-f47.google.com ([209.85.160.47]:48163 "EHLO
-	mail-pb0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750706AbaBGCag (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Feb 2014 21:30:36 -0500
-Received: by mail-pb0-f47.google.com with SMTP id rp16so2599846pbb.6
-        for <linux-pwm@vger.kernel.org>; Thu, 06 Feb 2014 18:30:36 -0800 (PST)
-In-Reply-To: <201402061627.17086.arnd@arndb.de>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-reply-to: <201402061708.05845.arnd@arndb.de>
+Content-language: ko
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: 'Arnd Bergmann' <arnd@arndb.de>, 'Thierry Reding' <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, 'Eric Miao' <eric.y.miao@gmail.com>, 'Linus Walleij' <linus.walleij@linaro.org>, 'Jingoo Han' <jg1.han@samsung.com>, linux-kernel@vger.kernel.org, 'Russell King - ARM Linux' <linux@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Rongjun Ying <Rongjun.ying@csr.com>, Huayi Li <Huayi.Li@csr.com>, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>, Barry Song <Baohua.Song@csr.com>
 
-2014-02-06 23:27 GMT+08:00 Arnd Bergmann <arnd@arndb.de>:
-> On Thursday 06 February 2014, Barry Song wrote:
->> > How about modeling  that other source as a fixed-rate clock in DT
->> > then?
->>
->> sirfsoc clock drivers have a clock node for OSC whose index is "1".
->> do you think the following is the right way to handle?
->>
->> in dts, put both pwm controller clock and OSC
->> 672                         pwm: pwm@b0130000 {
->> 673                                 compatible = "sirf,prima2-pwm";
->> 674                                 #pwm-cells = <2>;
->> 675                                 reg = <0xb0130000 0x10000>;
->> 676                                 clocks = <&clks 21>,  <&clks 1>;
->> 677                                 clock-names = "pwmc", "osc";
->> 678                         };
->>
->> and in pwm-sirf.c driver, use
->> clk = clk_get(dev, "osc");
->> clk_get_rate(clk);
->>
->> to get the rate in probe()?
->
-> Ah, if that's the right clock, it sounds great, yes.
->
-> Just make sure that the clock-names values make sense from the
-> point of view of the pwm node, rather than referring to the
-> name given in the clock provider.
+On Friday, February 07, 2014 1:08 AM, Arnd Bergmann wrote:
+> On Thursday 06 February 2014, Jingoo Han wrote:
+> > In the case of "CONFIG_HAVE_PWM=y && CONFIG_PWM=n", it makes
+> > the problem.
+> >
+> > The HAVE_PWM symbol is only for legacy platforms that provide
+> > the PWM API without using the generic framework. PXA looks to
+> > use the generic PWM framework. Then, how about removing
+> > "select HAVE_PWM" from PXA as below?
+> >
+> 
+> I think this is correct, but we may need additional patches. I notice
+> that INPUT_MAX8997_HAPTIC and INPUT_PWM_BEEPER have a dependency on
+> HAVE_PWM at the moment, so those two drivers become impossible
+> to select after your change.
+> 
+> There is also one use of HAVE_PWM outside of PXA, for ARCH_LPC32XX.
+> This one seems to have the same problem.
 
-from the point of clock provider, it is "osc", from the view of pwm,
-it is the clock source of PWM waves.
-so i guess "clk_pwm_source" is preferred?
+I looked at all HAVE_PWMs in the latest mainline kernel 3.14-rc1.
 
->
->         Arnd
+1. ARM - PXA
+  ./arch/arm/mach-pxa/Kconfig
 
--barry
+2. ARM - NXP LPC32XX
+  ./arc ARM - PXA h/arm/Kconfig
+  config ARCH_LPC32XX
+  	select HAVE_PWM
+
+3. MIPS - Ingenic JZ4740 based machines
+  ./arch/mips/Kconfig
+  config MACH_JZ4740
+  	select HAVE_PWM
+
+However, the legacy PWM drivers for PXA, LPC32XX, and JZ474 were
+already moved to the generic PWM framework.
+  ./drivers/pwm/pwm-pxa.c
+  ./drivers/pwm/pwm-lpc32xx.c
+  ./drivers/pwm/pwm-jz4740.c
+
+In conclusion, HAVE_PWM should be removed, because HAVE_PWM is
+NOT required anymore.
+
+How about the following?
+
+  [PATCH 1/7] ARM: pxa: don't select HAVE_PWM
+  [PATCH 2/7] ARM: lpc32xx: don't select HAVE_PWM
+  [PATCH 3/7] ARM: remove HAVE_PWM config option
+  [PATCH 4/7] MIPS: jz4740: don't select HAVE_PWM
+  [PATCH 5/7] Input: max8997_haptic: remove HAVE_PWM dependencies
+  [PATCH 6/7] Input: pwm-beepe: remove HAVE_PWM dependencies
+  [PATCH 7/7] pwm: don't use IS_ENABLED(CONFIG_HAVE_PWM)
+
+I would like to merge it through PWM tree.
+After merging these patches, all HAVE_PWM will be removed from
+the mainline kernel. Thank you. :-)
+
+Best regards,
+Jingoo Han
+
+> 
+> Finally, I have recently encountered a couple of drivers
+> (BACKLIGHT_LM3630A, BACKLIGHT_LP855X, BACKLIGHT_LP8788) that use
+> the PWM interfaces but are missing a 'depends on PWM'. This is
+> strictly speaking a different problem, but we could try to solve
+> it at the same time.
+> 
+> 	Arnd
