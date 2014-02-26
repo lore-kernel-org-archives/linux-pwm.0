@@ -1,88 +1,84 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2MiBSRVNFTkRdIHB3bTogQWRkIENMUFM3MTFYIFBXTSBz?=
- =?UTF-8?B?dXBwb3J0?=
-Date: Wed, 26 Feb 2014 20:50:46 +0400
-Message-ID: <1393433446.816907298@f337.i.mail.ru>
-References: <1393342067-9086-1-git-send-email-shc_work@mail.ru>
- <5211076.9eDkSrDagS@wuerfel>
- <20140226160046.GD29659@e106331-lin.cambridge.arm.com>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 4/9] pwm: renesas-tpu: Remove unnecessary OOM messages
+Date: Wed, 26 Feb 2014 23:02:50 +0100
+Message-ID: <3505521.zmSNmayePP@avalon>
+References: <000701cf328e$00ed24c0$02c76e40$%han@samsung.com> <1426883.W6NvH3R36B@avalon> <000201cf329b$55607c20$00217460$%han@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from fallback2.mail.ru ([94.100.176.87]:42496 "EHLO
-	fallback2.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752911AbaBZQxh (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Feb 2014 11:53:37 -0500
-In-Reply-To: <20140226160046.GD29659@e106331-lin.cambridge.arm.com>
+Received: from perceval.ideasonboard.com ([95.142.166.194]:46322 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753880AbaBZWBa (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Feb 2014 17:01:30 -0500
+In-Reply-To: <000201cf329b$55607c20$00217460$%han@samsung.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?UTF-8?B?TWFyayBSdXRsYW5k?= <mark.rutland@arm.com>
-Cc: =?UTF-8?B?QXJuZCBCZXJnbWFubg==?= <arnd@arndb.de>, =?UTF-8?B?bGludXgtcHdtQHZnZXIua2VybmVsLm9yZw==?= <linux-pwm@vger.kernel.org>, =?UTF-8?B?VGhpZXJyeSBSZWRpbmc=?= <thierry.reding@gmail.com>, =?UTF-8?B?ZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc=?= <devicetree@vger.kernel.org>, =?UTF-8?B?Um9iIEhlcnJpbmc=?= <robh+dt@kernel.org>, =?UTF-8?B?UGF3ZWwgTW9sbA==?= <Pawel.Moll@arm.com>, =?UTF-8?B?SWFuIENhbXBiZWxs?= <ijc+devicetree@hellion.org.uk>, =?UTF-8?B?S3VtYXIgR2FsYQ==?= <galak@codeaurora.org>, =?UTF-8?B?Z3JhbnQubGlrZWx5QGxpbmFyby5vcmc=?= <grant.likely@linaro.org>
+To: Jingoo Han <jg1.han@samsung.com>
+Cc: 'Joe Perches' <joe@perches.com>, 'Andrew Morton' <akpm@linux-foundation.org>, 'Thierry Reding' <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, 'Laurent Pinchart' <laurent.pinchart+renesas@ideasonboard.com>, 'Simon Horman' <horms@verge.net.au>
 
-SGVsbG8uCgrQodGA0LXQtNCwLCAyNiDRhNC10LLRgNCw0LvRjyAyMDE0LCAxNjowMCBVVEMg0L7R
-giBNYXJrIFJ1dGxhbmQgPG1hcmsucnV0bGFuZEBhcm0uY29tPjoKPiBPbiBUdWUsIEZlYiAyNSwg
-MjAxNCBhdCAwMzo1MDozMlBNICswMDAwLCBBcm5kIEJlcmdtYW5uIHdyb3RlOgo+ID4gT24gVHVl
-c2RheSAyNSBGZWJydWFyeSAyMDE0IDE5OjQ3OjU3IEFsZXhhbmRlciBTaGl5YW4gd3JvdGU6Cj4g
-PiA+INCS0YLQvtGA0L3QuNC6LCAyNSDRhNC10LLRgNCw0LvRjyAyMDE0LCAxNjozMyArMDE6MDAg
-0L7RgiBBcm5kIEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPjoKPiA+ID4gPiBPbiBUdWVzZGF5IDI1
-IEZlYnJ1YXJ5IDIwMTQgMTk6Mjc6NDcgQWxleGFuZGVyIFNoaXlhbiB3cm90ZToKPiA+ID0+ID4g
-Cj4gPiA+ID4gV2UgcmVhbGx5IHdhbnQgdG8gYXZvaWQgd2lsZGNhcmRzIGluIGNvbXBhdGlibGUg
-c3RyaW5ncy4gQ2FuIHlvdSBjYWxsIHRoaXMKPiA+ID4gPiAiY2lycnVzLGNzODk3MTItcHdtIiB0
-byBtYXRjaCB0aGUgZmlyc3QgU29DIHRoYXQgY2FtZSB3aXRoIHRoaXMgaGFyZHdhcmU/Cj4gPiA+
-ID4gT2J2aW91c2x5IGlmIHRoZXJlIHdhcyBzb21lIGNoaXAgYmVmb3JlIHRoYXQgKEknbSBub3Qg
-ZmFtaWxpYXIgd2l0aCB0aGUKPiA+ID4gPiBtb2RlbCBudW1iZXJzKSwgdXNlIHRoYXQgaW5zdGVh
-ZC4KPiA+ID4gPiAKPiA+ID4gPiBZb3UgY2FuIGVpdGhlciBsaXN0IGFsbCBjaGlwcyB5b3Uga25v
-dyB0aGF0IGhhdmUgdGhpcyBpbiB0aGUgZHJpdmVyLAo+ID4gPiA+IG9yIHlvdSB1c2UgImNpcnJ1
-cyxjczg5NzEyLXB3bSIgYXMgdGhlIGZhbGxiYWNrLCBhbmQgdXNlIHRoZSBuYW1lIG9mCj4gPiA+
-ID4gdGhlIFNvQyB5b3UgaGF2ZSBhcyB0aGUgbW9yZSBzcGVjaWZpYyBzdHJpbmcuCj4gPiA+IAo+
-ID4gPiBJdCBzZWVtcyB0aGF0IGluIHRoaXMgY2FzZSB3ZSB3aWxsIG5lZWQgdG8gbW9kaWZ5IHRo
-ZSBjb21wYXRpYmlsaXR5IHN0cmluZwo+ID4gPiBmb3Igb3RoZXIgZHJpdmVycyB0aGF0IGFyZSBh
-bHJlYWR5IGF2YWlsYWJsZSBpbiB0aGUga2VybmVsLi4uCj4gPiAKPiA+IEFoLCByaWdodC4gSSBt
-aXNzZWQgdGhlIGJpbmRpbmcgZm9yIGdwaW8gYW5kIHNlcmlhbCBnb2luZyBpbi4KPiA+IAo+ID4g
-RFQgbWFpbnRhaW5lcnMsIGFueSBzdWdnZXN0aW9uIG9uIGhvdyB3ZSBzaG91bGQgcHJvY2VlZCBo
-ZXJlPwo+ID4gCj4gPiBBRkFJQ1QsIGNscHM3MTF4IHBsYXRmb3JtIHN1cHBvcnQgaXMgc3RpbGwg
-d29yay1pbi1wcm9ncmVzcywgc28gd2UgZG9uJ3QKPiA+IGhhdmUgYW55IHVwc3RyZWFtIHVzZXJz
-IHRvIHdvcnJ5IGFib3V0IHlldCwgYnV0IGNoYW5naW5nIHRoZW0gaXMgc3RpbGwKPiA+IGdvaW5n
-IHRvIGJlIHNsaWdodGx5IG1lc3N5Lgo+IAo+IFdoZW4gYWxsb2NhdGluZyBhbnkgbmV3IGNvbXBh
-dGlibGUgc3RyaW5ncywgYXMgQXJuZCBzYXlzLCB3ZSBzaG91bGQKPiBhdm9pZCB3aWxkY2FyZHMg
-YXMgdGhleSdyZSB1c3VhbGx5IGZhciB0b28gZW5jb21wYXNzaW5nIGFuZCBlbmQgdXAKPiBjYXVz
-aW5nIG1vcmUgdHJvdWJsZSB0aGFuIHRoZXkncmUgd29ydGguCj4gCj4gSW4gdGhpcyBjYXNlIGhv
-dyBwcm9ibGVtYXRpYyBhcmUgdGhlIHdpbGRjYXJkIHN0cmluZ3M/Cj4gCj4gSSBhc3N1bWUgd2Ug
-c3RpbGwgaGF2ZSBzcGVjaWZpYyBzdHJpbmdzIGVhcmxpZXIgaW4gYW55IGNvbXBhdGlibGUgbGlz
-dAo+IGluIGFueSBjYXNlPyBJZiBub3QsIGFuZCB0aGVyZSBhcmUgcG9zc2libGUgZGlmZmVyZW5j
-ZXMsIHRoYXQgc2hvdWxkIGJlCj4gZml4ZWQgcmlnaHQgYXdheS4KPiAKPiBXZSBoYXZlIGEgZmV3
-IG9wdGlvbnM6Cj4gCj4gYSkgVXBkYXRlIHRoZSBkb2NzIG9ubHkuCj4gCj4gICAgTm90ZSBpbiB0
-aGUgZG9jcyB0aGF0ICJjaXJydXMsY2xwczcxMXgtJFVOSVQiIG1lYW5zIGFueXRoaW5nCj4gICAg
-Y29tcGF0aWJsZSB3aXRoIHRoZSAkVU5JVCBpbiB0aGUgY3M4OTcxMi4gVGhpcyBtYXkgYmUKPiAg
-ICBjb3VudGVyLWludHVpdGl2ZSwgYW5kIGlmIGEgbmV3IGNscHM3MTF4IHBsYXRmb3JtIGNvbWVz
-IG91dCB3aXRoIGFuCj4gICAgaW5jb21wYXRpYmxlICRVTklUIGl0IHNob3VsZCBvbWl0ICJjaXJy
-dXMsY2xwczcxMXgtJFVOSVQiIGZyb20gaXRzCj4gICAgY29tcGF0aWJsZSBsaXN0LCBidXQgb3Ro
-ZXJ3aXNlIG5vIGhhcm0gZG9uZS4KPiAKPiBiKSBEZXByZWNhdGUgdGhlIGV4aXN0aW5nIHN0cmlu
-Zy4KPiAgIAo+ICAgIEFkZCAiY2lycnVzLGNzODk3MTItJFVOSVQiIHRvIHRoZSBiaW5kaW5nIGRv
-Y3MgYW5kIGRyaXZlci4gTWFyawo+ICAgICJjaXJydXMsY2xwczcxMXgtJFVOSVQiIGFzIGRlcHJl
-Y2F0ZWQgaW4gdGhlIGJpbmRpbmcgZG9jdW1lbnQuCj4gICAgUmVwbGFjZSAiY2lycnVzLGNscHM3
-MTF4LSRVTklUIiB3aXRoICJjaXJydXMsY3M4OTcxMi0kVU5JVCIgaW4gYWxsCj4gICAgRFRzLgo+
-IAo+ICAgIFRoaXMgd2lsbCBtZWFuIG5ldyBEVEJzIHdvbid0IHdvcmsgd2l0aCBhbiBvbGRlciBr
-ZXJuZWwsIGJ1dCBhcwo+ICAgIHN1cHBvcnQgaXMgYSB3b3JrIGluIHByb2dyZXNzIHRoYXQgbWln
-aHQgbm90IG1hdHRlci4gT2xkIERUQnMgd2lsbAo+ICAgIGNvbnRpbnVlIHRvIGZ1bmN0aW9uLgo+
-IAo+ICAgIElmZiB5b3UgY2FuIGd1YXJhbnRlZSB0aGF0IHRoZSBvbGQgc3RyaW5nIGlzIG5vdCBw
-b3NzaWJseSBiZWluZyB1c2VkCj4gICAgYnkgYW55b25lLCBpdCBjYW4gYmUgZHJvcHBlZCBmcm9t
-IHRoZSBkcml2ZXIuIElmIG5vdCBpdCBoYXMgdG8gcmVtYWluCj4gICAgKHRob3VnaCBjYW4gYmUg
-Y29tbWVudGVkIHRvIGJlIGRlcHJlY2F0ZWQpLCBzbyB0aGF0IG9sZCBEVEJzCj4gICAgZnVuY3Rp
-b24uIEl0J3MgcHJvYmFibHkgYmVzdCB0byBsZWF2ZSBpdCB0aGVyZS4KPiAgIAo+IGMpIERlcHJl
-Y2F0ZSwgbWFpbnRhaW5pbmcgKGZvcndhcmRzKSBjb21wYXRpYmlsaXR5Lgo+IAo+ICAgIEFzIGFi
-b3ZlLCBidXQgcmF0aGVyIHRoYW4gcmVwbGFjaW5nICJjaXJydXMsY2xwczcxMXgtJFVOSVQiIHdp
-dGgKPiAgICAiY2lycnVzLGNzODk3MTItJFVOSVQiIGluIERUcywgcGxhY2UgImNpcnJ1cyxjczg5
-NzEyLSRVTklUIiBiZWZvcmUKPiAgICAiY2lycnVzLGNscHM3MTF4LSRVTklUIiBpbiBEVHMuIFRo
-aXMgYWxsb3dzIG5ldyBEVEJzIHRvIHdvcmsgd2l0aAo+ICAgIG9sZGVyIGtlcm5lbHMgdG9vLiBE
-ZXBlbmRpbmcgb24gd2hhdCBsZXZlbCBvZiBzdXBwb3J0IHlvdSBoYXZlIGluCj4gICAgbWFpbmxp
-bmUgY3VycmVudGx5IHRoaXMgbWF5IG9yIG1heSBub3QgYmUgYW4gaW1wb3J0YW50IGNvbnNpZGVy
-YXRpb24uCgpJZiBJIHVuZGVyc3Rvb2QgY29ycmVjdGx5LCBpbiB0aGUgdmFyaWFudCAiYSIsIHdl
-IGNoYW5nZSBub3RoaW5nLgpJZSBjb21wYXRpYmlsaXR5IHN0cmluZyBpcyBhIGdsb2JhbCB0byBl
-bnRpcmUgcGxhdGZvcm0sIGFuZCBpbiBjYXNlIG9mIGFueQpDUFUgZGlmZmVyZW5jZXMsIHdlIHNp
-bXBseSBhZGQgdGhlIGFkZGl0aW9uYWwgY29tcGF0aWJpbGl0eSBzdHJpbmcgZnVsbHkKbWVldHMg
-dGhlIENQVSBuYW1lLCBmb3IgZXhhbXBsZSBmb3IgQ2lycnVzIExvZ2ljIEVQNzMxMiB0aGlzIHdp
-bGwgYmUKbGlrZTogImNpcnJ1cyxlcDczMTItaHciLCAiY2lycnVzLGNscHM3MTF4LWh3Ii4KQ29y
-cmVjdD8KClRoYW5rcy4KLS0tCg==
+Hi Jingoo,
+
+On Wednesday 26 February 2014 11:34:54 Jingoo Han wrote:
+> On Wednesday, February 26, 2014 11:22 AM, Laurent Pinchart wrote:
+> > On Wednesday 26 February 2014 10:08:10 Jingoo Han wrote:
+> > > The site-specific OOM messages are unnecessary, because they
+> > > duplicate the MM subsystem generic OOM message.
+> > 
+> > While an allocation failure for such a small piece of memory will mean
+> > that we're in trouble far too big for an error message to matter, have you
+> > made sure that all devm_kzalloc() error paths lead to an OOM message being
+> > printed ?
+> 
+> (+cc Joe Perches, Andrew Morton)
+> 
+> Hi Laurent Pinchart,
+> Long time no see! Thank you for your comment.
+
+You're welcome.
+
+> I am not sure that I understand your question exactly.
+> I believe that all devm_kzalloc() error paths lead to
+> an OOM message being printed, because k.alloc and v.alloc
+> failures use dump_stack().
+
+There's so many error code paths in the slab allocator that I got a bit lost, 
+I was just wondering if all of them ended up with a message being printed. 
+It's very probably needless worrying from my side.
+
+> Joe Perches,
+> Would you add some comments on this?
+> If I am wrong, please let me know.
+> 
+> Best regards,
+> Jingoo Han
+> 
+> > > Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+> > > ---
+> > > 
+> > >  drivers/pwm/pwm-renesas-tpu.c |    4 +---
+> > >  1 file changed, 1 insertion(+), 3 deletions(-)
+> > > 
+> > > diff --git a/drivers/pwm/pwm-renesas-tpu.c
+> > > b/drivers/pwm/pwm-renesas-tpu.c
+> > > index aff6ba9..cc13ff4 100644
+> > > --- a/drivers/pwm/pwm-renesas-tpu.c
+> > > +++ b/drivers/pwm/pwm-renesas-tpu.c
+> > > @@ -405,10 +405,8 @@ static int tpu_probe(struct platform_device *pdev)
+> > >  	int ret;
+> > >  	
+> > >  	tpu = devm_kzalloc(&pdev->dev, sizeof(*tpu), GFP_KERNEL);
+> > > -	if (tpu == NULL) {
+> > > -		dev_err(&pdev->dev, "failed to allocate driver data\n");
+> > > +	if (tpu == NULL)
+> > >  		return -ENOMEM;
+> > > -	}
+> > > 
+> > >  	spin_lock_init(&tpu->lock);
+> > >  	tpu->pdev = pdev;
+
+-- 
+Regards,
+
+Laurent Pinchart
+
