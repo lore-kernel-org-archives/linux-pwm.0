@@ -1,70 +1,65 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [GIT PULL] pwm: Fixes for v3.14-rc5
-Date: Wed, 26 Feb 2014 16:08:49 +0100
-Message-ID: <20140226150847.GH29779@ulmo.nvidia.com>
+Subject: Re: [PATCH] pwm: lp3943: Fix potential memory leak during request
+Date: Wed, 26 Feb 2014 16:09:55 +0100
+Message-ID: <20140226150955.GI29779@ulmo.nvidia.com>
+References: <20140123223220.7d68b5f6@spike>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="pfTAc8Cvt8L6I27a"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="U3s59FfKcByyGl+j"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ea0-f176.google.com ([209.85.215.176]:47494 "EHLO
+	mail-ea0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753323AbaBZPJ7 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Feb 2014 10:09:59 -0500
+Received: by mail-ea0-f176.google.com with SMTP id o10so460767eaj.35
+        for <linux-pwm@vger.kernel.org>; Wed, 26 Feb 2014 07:09:58 -0800 (PST)
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20140123223220.7d68b5f6@spike>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Christian Engelmayer <cengelma@gmx.at>
+Cc: Milo Kim <milo.kim@ti.com>, linux-pwm@vger.kernel.org
 
 
---pfTAc8Cvt8L6I27a
+--U3s59FfKcByyGl+j
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hi Linus,
+On Thu, Jan 23, 2014 at 10:32:20PM +0100, Christian Engelmayer wrote:
+> Fix a memory leak in the lp3943_pwm_request_map() error handling path.
+> Make sure already allocated pwm map memory is freed correctly.
+> Detected by Coverity: CID 1162829.
+>=20
+> Signed-off-by: Christian Engelmayer <cengelma@gmx.at>
+> ---
+>  drivers/pwm/pwm-lp3943.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
-The following changes since commit 38dbfb59d1175ef458d006556061adeaa8751b72:
-
-  Linus 3.14-rc1 (2014-02-02 16:42:13 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-3.14-rc5
-
-for you to fetch changes up to 0b7d25c347900e2550398e29e25caf0fefe3cab2:
-
-  pwm: lp3943: Fix potential memory leak during request (2014-02-26 15:45:12 +0100)
+I've applied this and sent it off to Linus for inclusion in v3.14-rc5.
 
 Thanks,
 Thierry
 
-----------------------------------------------------------------
-pwm: Fixes for v3.14-rc5
-
-Just a single trivial patch to plug a memory leak in an error path.
-
-----------------------------------------------------------------
-Christian Engelmayer (1):
-      pwm: lp3943: Fix potential memory leak during request
-
- drivers/pwm/pwm-lp3943.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
---pfTAc8Cvt8L6I27a
+--U3s59FfKcByyGl+j
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTDgN/AAoJEN0jrNd/PrOh1AkP/2sQNeKi73Rm2tkPny0aPwOR
-+I5hsOcp639xBZiezW4t19DKQY4dbme4vgROTIXV7quDwPsYBQhB8+sZuJoH3f+O
-msJI412AHvcW6AhPh+bXvnYaR7geJNHpp5Rd4Zz16w66TCbG3D+8OW1nOs7gOnle
-z+EfLCVDyuFGckSEDwTktNpZ0DFYwELdQSofGzRjdG8UNGkdAfehUYxZ07Kkmb4T
-cq8Dpus2kvJHSvl+iljkQek5U2A+UDM8ycz8UUiD3YAq5xIs0J1mdvHl3OJ1mA9s
-Aku6+Kr7yJIcnZbVdn8PIb41CDIK0910K8+vxHCN4txR8z/yEO/E4EPGqW4jpt1+
-XaqUJ+GusAtk2zM88klfEm2yAr3QZT1x3sgdgGPFtTmS9LsRB8gy0nO8vZB+DV1n
-3zXFEIYjJA8azYXV+aVUIYXQZSgaFANUF+fvzweiAm4snEOlslVI1QeA3X6Z3luo
-YC8YrlxSe7M/d+GxVMEvtAGAD4BTBr9V/cT0CosvzwoZiBqkAwoVfoYpHL2vx783
-Jie49SS5j6syO+g/sZidu6BzZhOESjMs4L5xKnExomzr2/0S1YWjMlvJzB90/VKC
-/zrDR6Mq+5sHOWQ7H+2wE4vyUhXNCMv/EqmOX3rWNVRjFmdTfIgnRT3qvvX/hiV2
-68P2fI37kl1P1KwyED3E
-=nN45
+iQIcBAEBAgAGBQJTDgPDAAoJEN0jrNd/PrOhqSQQAIjEcWukvyTyo6Rsrr/mUR+O
+OmZOdBJHupFMu3T4s6P9OGGkAAX07wd+vMwqYYjOku5HgZ2Yny+WOhQozfPJhVrs
+YeWCsRmxcRWiF8hsu+/E9Ma2dCWeZ59OZYeX8hFhSk8Wzdo5Ukm/Ox7XUHpDGx8p
+2s4hsyKVLNnU1O4U4QaQGePGq32rGXidtybpxzFc42qQh/MHN+tRHE/j9SYMPCpL
+EGqlDKkGBFJ0olTLuNM/1M78VoKu+nw0mOuqmyc6ahtukeYN2trC/zfhkns9xv2g
+67kFj2TPP3W9Pbyknv7wxaPMBwsQCYHYR+cqEmgoy1M+1Po1n9KdhfZXJiPVmpoF
+gB8Jfnu4M6Powl3boi0cIo0Ajk597qqdj36ih49eU3X6J/phfh5nOCtJqruBhPI9
+5mpXrAzgoaqMx3NQL7NGPMIaEIqfgyIlDPC35dAakI6oeDpvE8g50BgEyV/DlvTb
+MV9kcKDhq+ePibniLujOv+ARueP/BlsH/dj+fO3ddD+6RVZ4F1JFq2bJM1fon8nO
+naj+s2OQNJ2qZ0u5bRpnaAXRlP5g830uVM2X0gxfvgOV+IwPZ9QfgtvkJFi1gx8o
+z5LwTgncwWd7ID9ljlusdPL6IW+8RdyeGKWwflzGA3vbdigvpJDGhjstZ4JQiNsX
+6pO1NFmnsmJAmRUDStVN
+=Mo+m
 -----END PGP SIGNATURE-----
 
---pfTAc8Cvt8L6I27a--
+--U3s59FfKcByyGl+j--
