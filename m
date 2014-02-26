@@ -1,80 +1,62 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] backlight: add PWM dependencies
-Date: Wed, 26 Feb 2014 14:25:30 +0100
-Message-ID: <20140226132529.GC29779@ulmo.nvidia.com>
-References: <1391518634-6472-1-git-send-email-linus.walleij@linaro.org>
- <20140210104032.GB20143@ulmo.nvidia.com>
- <CACRpkdb1T1GCqEpy9=fPp4hYQErLYiQqJezrFhoS3x1MU=0S9g@mail.gmail.com>
+From: Richard Weinberger <richard@nod.at>
+Subject: Re: [PATCH] pwm,renesas-tpu: Add dependency on HAS_IOMEM
+Date: Wed, 26 Feb 2014 15:06:31 +0100
+Message-ID: <530DF4E7.1060900@nod.at>
+References: <1391172318-17853-1-git-send-email-richard@nod.at> <20140226120800.GA28939@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="VywGB/WGlW4DM4P8"
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f42.google.com ([74.125.83.42]:33938 "EHLO
-	mail-ee0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751947AbaBZNZe (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Feb 2014 08:25:34 -0500
-Content-Disposition: inline
-In-Reply-To: <CACRpkdb1T1GCqEpy9=fPp4hYQErLYiQqJezrFhoS3x1MU=0S9g@mail.gmail.com>
+Received: from b.ns.miles-group.at ([95.130.255.144]:1661 "EHLO radon.swed.at"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750841AbaBZOGe (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Wed, 26 Feb 2014 09:06:34 -0500
+In-Reply-To: <20140226120800.GA28939@ulmo.nvidia.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Jingoo Han <jg1.han@samsung.com>, Arnd Bergmann <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
---VywGB/WGlW4DM4P8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Am 26.02.2014 13:08, schrieb Thierry Reding:
+> On Fri, Jan 31, 2014 at 01:45:18PM +0100, Richard Weinberger wrote:
+>> On archs like S390 or um this driver cannot build nor work. Make it depend on HAS_IOMEM to bypass build failures.
+>> 
+>> drivers/built-in.o: In function `tpu_probe': drivers/pwm/pwm-renesas-tpu.c:421: undefined reference to `devm_ioremap_resource'
+>> 
+>> Signed-off-by: Richard Weinberger <richard@nod.at> --- drivers/pwm/Kconfig | 1 + 1 file changed, 1 insertion(+)
+> 
+> In the long run I think it might be better to add a dummy implementation for devm_ioremap_resource() in order to make it build properly even for architectures where it isn't
+> implemented.
 
-On Mon, Feb 10, 2014 at 12:09:29PM +0100, Linus Walleij wrote:
-> On Mon, Feb 10, 2014 at 11:40 AM, Thierry Reding
-> <thierry.reding@gmail.com> wrote:
->=20
-> > it seems like at least BACKLIGHT_LP8788 is missing a corresponding
-> > dependency as well.
-> >
-> > I have applied Sascha's patch to remove the obsolete HAVE_PWM symbol,
-> > and this will fix at least the build issues. However it will also cause
-> > the driver to fail at runtime because the pwm_*() functions won't work.
->=20
-> So it definately needs that API, not just stubs.
->=20
-> But isn't it proper for Kconfig to allow you to break things
-> like that by configuring out stuff and have stubs come in?
->=20
-> I'm a bit torn here.
+And what should devm_ioremap_resource() or in general ioremap() do on archs without
+iomem?
+BUG()? Returning a random error and hoping that the driver handles it correctly? :)
 
-After thinking about this some more, I've come to the conclusion that
-the drivers should have the dependency. Kconfig should make sure that
-the resulting drivers work.
+IMHO such a dummy implementation does not make much sense.
 
-If somebody wanted to knowingly build this driver with a configuration
-that won't work at runtime, then they should be using COMPILE_TEST
-instead.
+> For now this looks like the best option. Applied, thanks.
 
-So I'm leaning towards applying this patch if there are no objections.
+Thanks!
 
-Thierry
-
---VywGB/WGlW4DM4P8
-Content-Type: application/pgp-signature
-
+//richard
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Version: GnuPG v2.0.19 (GNU/Linux)
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iQIcBAEBAgAGBQJTDetJAAoJEN0jrNd/PrOh4coP/Als6SaArd/CT4bpdFqdKj3Z
-QjwO4TnR8rKVpdgscGHGJmvdIJMvGP1euoYIFtgpOw4BccZfPJtYVNVLWWS+ovby
-jCmcj66wa++tsDsZWwVVVXOOxyBDTKzPuIBnAK3SQar4cntzufasiBqIjAchSx4l
-uj089YlQ99zq7PD0lTs4tzmkKqDd1UqkwqUZrjOmHdfQDSikjBv4bjjrmYCfbFcl
-2LLNcpRb7DnlYW5oKWwV9XC45LZ0YdXooVsoYrYDqqGXsHMcnxx3d6TTx8eMCshU
-UiyzNrNcvPaJx78xNhVagoQ+P9GididRqtnoahofgLmPYZmtZK9rOWwmoFLFLZeA
-+q3UTCW+iZou5YcXy0Zep6qrLRd9PAf5BcxEYf+gTVpZINwKXGY8W5GkVYZWnMKG
-/AAfF/PeUUm3wtfgN5zhfR1WwWdaHTyV61waI82c0hR2q2TiHxsQM/w6HF50HpD/
-QBpjgZrtVMbrvE2MfcSZKQnBmuJKOC5PZtcc48pGlZ2bWn2cbog0oo1k2zwN5qrd
-h3MnIwAbZRBxJJ4/aTxhPerBhwHGB6nkLnKK1THiBUUvXyLoqk8uph8XRFOAfY9J
-DTcLSXNUeuX3TPBdPx158VdiYGS1OZKxZ2GUGWcSNCNRgpdg5vlnP79jaZaMatsJ
-5O7fgf54k4kc5YN7zwc8
-=F3kA
+iQIcBAEBAgAGBQJTDfTnAAoJEPmeIjfg4Uaa0hsP/1lgoKuMLbfXEw8Z064st3lk
+pOQoQQYiyk9nW5Uj/yjFAq9hly+jtL6YdY9+i2q9aQAaIOqTj0I0VbmMy+1nFrdF
+x7ahD1Z4BAI0PSTj3P8LaYs6Jn+zaok2Zo7B6BlJIvLlNZqqvgQHcCVWHK5srdHu
+sjd6JwpvBykWSmNUMBG2oAkWCTKLjisXTIL1OsIbcyTgBSS7/17dHfaFqhgZJBTI
+L3aHRQYOTEdXJyCRZq4SUwNSBXUdP2AmaDJZ4HQ17nuXUTOTnAMgpVUgidgLasmF
+GAmSDunoi/i7Pu6Vu+562cZhmuzO+uYFo87hDivjn7tTPIJ0OMh4pHeWWaMWVye/
+o9GYI1Ew86Lbekd5Xxhf32hNnhz5RxZlNrnjdO1y2GNW5bt7A5ukF4jY0QEuHC+q
+tgLsS45NIECkqA2hk7nvgRdds1ZaqueuY1dw8mb2jIbuAuR3XXSfjVzdfQiXKxzA
+tXugXynMSP93mHEeOwzc1pRnFl6j1KgbNOMX9MuYwc5corUShab/Z1d+RVWNat7c
+iTn6b/GxWpPeMQv3qXvIe77R2UnFv50M2KW4RXs2MRZdXCbIR2FLojGl0fTp1lNo
+7mTnB/8SnJBbHz5+1tQv2exFfmalNhM78RighfONJcTnmXfvmA20aNo9Kn3IEU0t
+m2V40kQySnkcb7+gRXrR
+=34dU
 -----END PGP SIGNATURE-----
-
---VywGB/WGlW4DM4P8--
