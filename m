@@ -1,84 +1,74 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm,renesas-tpu: Add dependency on HAS_IOMEM
-Date: Wed, 26 Feb 2014 15:12:44 +0100
-Message-ID: <20140226141243.GE29779@ulmo.nvidia.com>
-References: <1391172318-17853-1-git-send-email-richard@nod.at>
- <20140226120800.GA28939@ulmo.nvidia.com>
- <530DF4E7.1060900@nod.at>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 5/6] pwm: enable TI PWMSS if the IIO tiecap driver is
+ selected
+Date: Wed, 26 Feb 2014 15:15:10 +0100
+Message-ID: <20140226141508.GF29779@ulmo.nvidia.com>
+References: <1391626901-31684-1-git-send-email-mporter@linaro.org>
+ <1391626901-31684-6-git-send-email-mporter@linaro.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="kA1LkgxZ0NN7Mz3A"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ea0-f170.google.com ([209.85.215.170]:56343 "EHLO
-	mail-ea0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750813AbaBZOMz (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Feb 2014 09:12:55 -0500
+	protocol="application/pgp-signature"; boundary="nYySOmuH/HDX6pKp"
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <530DF4E7.1060900@nod.at>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1391626901-31684-6-git-send-email-mporter-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Matt Porter <mporter-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Linux IIO List <linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Devicetree List <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux PWM List <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux OMAP List <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux ARM Kernel List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Richard Weinberger <richard@nod.at>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---kA1LkgxZ0NN7Mz3A
+--nYySOmuH/HDX6pKp
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 26, 2014 at 03:06:31PM +0100, Richard Weinberger wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
+On Wed, Feb 05, 2014 at 02:01:40PM -0500, Matt Porter wrote:
+> The IIO TI ECAP driver depends on the TI PWMSS management
+> driver in this subsystem. Enable PWMSS when the IIO TI ECAP
+> driver is selected.
 >=20
-> Am 26.02.2014 13:08, schrieb Thierry Reding:
-> > On Fri, Jan 31, 2014 at 01:45:18PM +0100, Richard Weinberger wrote:
-> >> On archs like S390 or um this driver cannot build nor work. Make it de=
-pend on HAS_IOMEM to bypass build failures.
-> >>=20
-> >> drivers/built-in.o: In function `tpu_probe': drivers/pwm/pwm-renesas-t=
-pu.c:421: undefined reference to `devm_ioremap_resource'
-> >>=20
-> >> Signed-off-by: Richard Weinberger <richard@nod.at> --- drivers/pwm/Kco=
-nfig | 1 + 1 file changed, 1 insertion(+)
-> >=20
-> > In the long run I think it might be better to add a dummy implementatio=
-n for devm_ioremap_resource() in order to make it build properly even for a=
-rchitectures where it isn't
-> > implemented.
+> Signed-off-by: Matt Porter <mporter-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> ---
+>  drivers/pwm/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >=20
-> And what should devm_ioremap_resource() or in general ioremap() do on arc=
-hs without
-> iomem?
-> BUG()? Returning a random error and hoping that the driver handles it cor=
-rectly? :)
->=20
-> IMHO such a dummy implementation does not make much sense.
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index 22f2f28..bd3cc65 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -219,7 +219,7 @@ config  PWM_TIEHRPWM
+> =20
+>  config  PWM_TIPWMSS
+>  	bool
+> -	default y if SOC_AM33XX && (PWM_TIECAP || PWM_TIEHRPWM)
+> +	default y if SOC_AM33XX && (IIO_TIECAP || PWM_TIECAP || PWM_TIEHRPWM)
+>  	help
+>  	  PWM Subsystem driver support for AM33xx SOC.
 
-Well, it could still be useful for drivers that want to support
-COMPILE_TEST. If we just make it return any error drivers should simply
-refuse to probe just like if the error was genuine.
+Perhaps this module should move out of drivers/pwm if it's no longer a
+PWM specific module.
 
 Thierry
 
---kA1LkgxZ0NN7Mz3A
+--nYySOmuH/HDX6pKp
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTDfZbAAoJEN0jrNd/PrOhbRYQAJiD67f0HDwdEibVTdSis2oD
-eU5Ajo8RJ4OoeWNLxEMAgg/2yBU4iwKx51Pt14oM81gBzTFNcR5mS0l+wFloVnXg
-pzgGMfLXtg82FYl7KdnQ2802eQzj+CwHMzTs6din9m2Z/9dFWxWeMKRSvsCwVza5
-PKp5oJpIHQntjvjfcRku0uJl9HnynFecfRDApJTusJELxZcFuUwAjl+pBeCPJ4p7
-H1YRZlDWVUES2aVbiR1X16XZdqCLHd5Azq49IwUAVNy00nCy1TYIuJ1tE0APXk3C
-4HNR41oTBrypkdFECO5h4HKX68jnZPzFAs7DLrIHRKoeB07ds8Gi/RW/6plciG2+
-AgSjql89djFjmDyE5kaO8AJnh3gwJRW9hbaD0I2i2SAL7suVFG5TkOSEvUX8ZDpF
-4SgFz4SZfL0whWmN/UWQKHvVpLryoBfFHKzwr0LAvHfmfkVxEyjpjXxPZoAJSaA7
-iZ9pVh+wwy+cSFL/FjgyxaVg/EN9SPx3ZBP9OZ7qdjJ+/RLAEOMjKiP7EjZE3+Vo
-NKsyDHRkY6ujf++VY0igJfxih2EKQKkOKM7/y3HnEMuRzH8xAOJqdiZmWAouCibh
-E8dJt2zz83WRxYSy/HrcY1ucc1toI06OuqQWZmmUZt2YSwQgEbvA0fFhGJ8HZR6f
-xx+wOFWkCbCFjNc3GsSY
-=Jh9N
+iQIcBAEBAgAGBQJTDfbsAAoJEN0jrNd/PrOhECAP/j2I0zpD7fFA5CK5JNLz4ZdF
+Fxp0JEtEAPHhw/36hcUiillkwbnl3bmPGEsFLjIOmyL22LvMkmiOGsAgkQjcPvcJ
+6cNwu/cn56t4L4k+jQAa0oSCqMIyQTASCUC13b+L/1tGUwBvoXnStarLcBQuWrTX
+fcNs8PCHXqe59+/xL81eIgFMxJuWJ8XvuDWW8jrL9ffg9RH6s5VqZcu5u0WhISlf
+jw+VJurPAZskB553Ve6QFMLAsf5xvfmu4R4Tm7U2vlDxzdYLbEQWCRf87HVipKQr
+3MC3Rm9W2vAFKFFJFwx5oz1WnsCkH7BYt0MyfSn3Tt8WP6TXgS7dZRa85zt42E4P
+4XdUaVTFJ3/ikuFQdVUlD3Hlp4fWZX1TxTBPHF7fiwUxSdkO+PtwYgdmAJvIjEIt
+gFzhX+6de9xBAbj6ei/1VWx9CUPUaKC00GpB9UwuwjYiWAuzuSmc9yIke515Vg8f
+fvtv+b9fgpeU3j5UZ2pXyZKsk2ONZfGQjavEZw99/rM/v+BKXs3PpiGKkOJex+s6
+Cgn0KbhGtvQwKWj55lKLW52G6QHpJlmSE/UCQrcI0sVenrQZt/5nld4JuTKMmKrY
+kSKE9dzozmTLVVHmufj2vojfIWLMXdwl7wGr+mOfxs/wb41Z7gDV1+uZZgpXZ/sT
+Wivk3DjAFknD5cmFYupo
+=gNT3
 -----END PGP SIGNATURE-----
 
---kA1LkgxZ0NN7Mz3A--
+--nYySOmuH/HDX6pKp--
