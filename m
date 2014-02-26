@@ -1,51 +1,59 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: [PATCH] pwm: samsung: Use SIMPLE_DEV_PM_OPS macro
-Date: Wed, 26 Feb 2014 10:17:53 +0900
-Message-ID: <002d01cf3290$92feb840$b8fc28c0$%han@samsung.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 4/9] pwm: renesas-tpu: Remove unnecessary OOM messages
+Date: Wed, 26 Feb 2014 03:22:12 +0100
+Message-ID: <1426883.W6NvH3R36B@avalon>
+References: <000701cf328e$00ed24c0$02c76e40$%han@samsung.com> <000c01cf328f$376b8860$a6429920$%han@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:40663 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750764AbaBZBRz (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Feb 2014 20:17:55 -0500
-Received: from epcpsbgr5.samsung.com
- (u145.gpu120.samsung.co.kr [203.254.230.145])
- by mailout3.samsung.com (Oracle Communications Messaging Server 7u4-24.01
- (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0N1K00LEIWXUMZD0@mailout3.samsung.com> for
- linux-pwm@vger.kernel.org; Wed, 26 Feb 2014 10:17:54 +0900 (KST)
-Content-language: ko
+Received: from perceval.ideasonboard.com ([95.142.166.194]:40149 "EHLO
+	perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750888AbaBZCU5 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Feb 2014 21:20:57 -0500
+In-Reply-To: <000c01cf328f$376b8860$a6429920$%han@samsung.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: 'Thierry Reding' <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>
+To: Jingoo Han <jg1.han@samsung.com>
+Cc: 'Thierry Reding' <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, 'Laurent Pinchart' <laurent.pinchart+renesas@ideasonboard.com>, 'Simon Horman' <horms@verge.net.au>
 
-Use SIMPLE_DEV_PM_OPS macro in order to make the code simpler.
+Hi Jingoo,
 
-Signed-off-by: Jingoo Han <jg1.han@samsung.com>
----
- drivers/pwm/pwm-samsung.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Thank you for the patch.
 
-diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-index b59639e..d66529a 100644
---- a/drivers/pwm/pwm-samsung.c
-+++ b/drivers/pwm/pwm-samsung.c
-@@ -598,9 +598,8 @@ static int pwm_samsung_resume(struct device *dev)
- }
- #endif
- 
--static const struct dev_pm_ops pwm_samsung_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(pwm_samsung_suspend, pwm_samsung_resume)
--};
-+static SIMPLE_DEV_PM_OPS(pwm_samsung_pm_ops, pwm_samsung_suspend,
-+			 pwm_samsung_resume);
- 
- static struct platform_driver pwm_samsung_driver = {
- 	.driver		= {
+On Wednesday 26 February 2014 10:08:10 Jingoo Han wrote:
+> The site-specific OOM messages are unnecessary, because they
+> duplicate the MM subsystem generic OOM message.
+
+While an allocation failure for such a small piece of memory will mean that 
+we're in trouble far too big for an error message to matter, have you made 
+sure that all devm_kzalloc() error paths lead to an OOM message being printed 
+?
+
+> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+> ---
+>  drivers/pwm/pwm-renesas-tpu.c |    4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-renesas-tpu.c b/drivers/pwm/pwm-renesas-tpu.c
+> index aff6ba9..cc13ff4 100644
+> --- a/drivers/pwm/pwm-renesas-tpu.c
+> +++ b/drivers/pwm/pwm-renesas-tpu.c
+> @@ -405,10 +405,8 @@ static int tpu_probe(struct platform_device *pdev)
+>  	int ret;
+> 
+>  	tpu = devm_kzalloc(&pdev->dev, sizeof(*tpu), GFP_KERNEL);
+> -	if (tpu == NULL) {
+> -		dev_err(&pdev->dev, "failed to allocate driver data\n");
+> +	if (tpu == NULL)
+>  		return -ENOMEM;
+> -	}
+> 
+>  	spin_lock_init(&tpu->lock);
+>  	tpu->pdev = pdev;
+
 -- 
-1.7.10.4
+Regards,
 
+Laurent Pinchart
 
