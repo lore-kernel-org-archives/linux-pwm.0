@@ -1,42 +1,71 @@
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [PATCH 5/9] pwm: spear: Remove unnecessary OOM messages
-Date: Wed, 26 Feb 2014 11:56:20 +0530
-Message-ID: <CAKohpokrSZiHAUoQggEnnYADUpE2DSBA0ECoUfPZPZFxTha3CA@mail.gmail.com>
-References: <000701cf328e$00ed24c0$02c76e40$%han@samsung.com>
-	<000d01cf328f$687d54b0$3977fe10$%han@samsung.com>
-	<CAKohpo=xbZ4RNLDtdP3PokQwQksiKRBnuOTPL5z_zywwyOJC3w@mail.gmail.com>
-	<000501cf32af$3ad0ecf0$b072c6d0$%han@samsung.com>
-	<CAKohpon44tVo7K-tPQns1yfs4pBNy9-vY5UPocrHfSPbQ7M5_A@mail.gmail.com>
-	<1393391957.407.1.camel@joe-AO722>
+From: Liu Ying <Ying.Liu@freescale.com>
+Subject: [PATCH] video: pwm backlight: power off when necessary
+Date: Wed, 26 Feb 2014 19:39:12 +0800
+Message-ID: <1393414752-8861-1-git-send-email-Ying.Liu@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oa0-f51.google.com ([209.85.219.51]:61197 "EHLO
-	mail-oa0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750712AbaBZG0X (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Feb 2014 01:26:23 -0500
-Received: by mail-oa0-f51.google.com with SMTP id j17so393244oag.10
-        for <linux-pwm@vger.kernel.org>; Tue, 25 Feb 2014 22:26:22 -0800 (PST)
-In-Reply-To: <1393391957.407.1.camel@joe-AO722>
+Received: from am1ehsobe001.messaging.microsoft.com ([213.199.154.204]:18682
+	"EHLO am1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751200AbaBZLhh (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Feb 2014 06:37:37 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Joe Perches <joe@perches.com>
-Cc: Jingoo Han <jg1.han@samsung.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>
+To: thierry.reding@gmail.com, jg1.han@samsung.com
+Cc: plagnioj@jcrosoft.com, tomi.valkeinen@ti.com, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 26 February 2014 10:49, Joe Perches <joe@perches.com> wrote:
-> Look at warn_alloc_failed() in mm/page_alloc.c
+The pwm backlight should be powered off only in two cases:
+1) pwm polarity is normal and brightness is zero.
+2) pwm polarity is inversed and brightness is maximal,
+   that is, 100% duty.
 
-Okay, there is a print there. But I am not able to reach to this routine
-from devm_kzalloc().
+This patch implements this logic in the pwm backlight driver
+and actually fixes the issue that backlight is on when we
+intend to set the brightness to be zero for an inversed pwm
+signal.  The root cause of the issue is that power is off
+in that case.
 
-devm_kzalloc() <linux/device.h>
-devm_kmalloc() <drivers/base/devres.c>
-alloc_dr() <drivers/base/devres.c>
-kmalloc_track_caller() <linux/slab.h>
-__kmalloc_track_caller() <mm/slab,slub/slob.c> Taking slab as example:
-__do_kmalloc() <mm/slab.c>
-...
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Jingoo Han <jg1.han@samsung.com>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
+Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
+Signed-off-by: Liu Ying <Ying.Liu@freescale.com>
+---
+ drivers/video/backlight/pwm_bl.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-I can see cases where NULL is returned after above paths and the function
-you mentioned wasn't there. So, I am not sure that we will get a print for sure
-for any error that might occur from devm_kzalloc().
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index b75201f..e61e66a 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -100,6 +100,8 @@ static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
+ static int pwm_backlight_update_status(struct backlight_device *bl)
+ {
+ 	struct pwm_bl_data *pb = bl_get_data(bl);
++	enum pwm_polarity polarity = pb->pwm->polarity;
++	int max = bl->props.max_brightness;
+ 	int brightness = bl->props.brightness;
+ 	int duty_cycle;
+ 
+@@ -111,12 +113,14 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
+ 	if (pb->notify)
+ 		brightness = pb->notify(pb->dev, brightness);
+ 
+-	if (brightness > 0) {
++	if ((polarity == PWM_POLARITY_NORMAL && brightness == 0) ||
++	    (polarity == PWM_POLARITY_INVERSED && brightness == max)) {
++		pwm_backlight_power_off(pb);
++	} else {
+ 		duty_cycle = compute_duty_cycle(pb, brightness);
+ 		pwm_config(pb->pwm, duty_cycle, pb->period);
+ 		pwm_backlight_power_on(pb, brightness);
+-	} else
+-		pwm_backlight_power_off(pb);
++	}
+ 
+ 	if (pb->notify_after)
+ 		pb->notify_after(pb->dev, brightness);
+-- 
+1.7.9.5
+
+
