@@ -1,53 +1,53 @@
 From: Jingoo Han <jg1.han@samsung.com>
-Subject: [PATCH 2/9] pwm: i.MX: Remove unnecessary OOM messages
-Date: Wed, 26 Feb 2014 10:04:39 +0900
-Message-ID: <000a01cf328e$b95f0230$2c1d0690$%han@samsung.com>
+Subject: [PATCH 3/9] pwm: pxa: Remove unnecessary OOM messages
+Date: Wed, 26 Feb 2014 10:06:35 +0900
+Message-ID: <000b01cf328e$fea03210$fbe09630$%han@samsung.com>
 References: <000701cf328e$00ed24c0$02c76e40$%han@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailout3.samsung.com ([203.254.224.33]:37254 "EHLO
-	mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750814AbaBZBEk (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Feb 2014 20:04:40 -0500
-Received: from epcpsbgr4.samsung.com
- (u144.gpu120.samsung.co.kr [203.254.230.144])
- by mailout3.samsung.com (Oracle Communications Messaging Server 7u4-24.01
+Received: from mailout4.samsung.com ([203.254.224.34]:30108 "EHLO
+	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751336AbaBZBGh (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Feb 2014 20:06:37 -0500
+Received: from epcpsbgr5.samsung.com
+ (u145.gpu120.samsung.co.kr [203.254.230.145])
+ by mailout4.samsung.com (Oracle Communications Messaging Server 7u4-24.01
  (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0N1K004F0WBRZ0A0@mailout3.samsung.com> for
- linux-pwm@vger.kernel.org; Wed, 26 Feb 2014 10:04:39 +0900 (KST)
+ with ESMTP id <0N1K00CPJWEZA9C0@mailout4.samsung.com> for
+ linux-pwm@vger.kernel.org; Wed, 26 Feb 2014 10:06:35 +0900 (KST)
 In-reply-to: <000701cf328e$00ed24c0$02c76e40$%han@samsung.com>
 Content-language: ko
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: 'Thierry Reding' <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>, 'Sascha Hauer' <s.hauer@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>, 'Eric Miao' <eric.y.miao@gmail.com>, 'Mike Dunn' <mikedunn@newsguy.com>
 
 The site-specific OOM messages are unnecessary, because they
 duplicate the MM subsystem generic OOM message.
 
 Signed-off-by: Jingoo Han <jg1.han@samsung.com>
 ---
- drivers/pwm/pwm-imx.c |    4 +---
+ drivers/pwm/pwm-pxa.c |    4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index cc47733..d797c7b 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -241,10 +241,8 @@ static int imx_pwm_probe(struct platform_device *pdev)
- 		return -ENODEV;
+diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
+index 8d99573..f1e8692 100644
+--- a/drivers/pwm/pwm-pxa.c
++++ b/drivers/pwm/pwm-pxa.c
+@@ -179,10 +179,8 @@ static int pwm_probe(struct platform_device *pdev)
+ 		return -EINVAL;
  
- 	imx = devm_kzalloc(&pdev->dev, sizeof(*imx), GFP_KERNEL);
--	if (imx == NULL) {
+ 	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
+-	if (pwm == NULL) {
 -		dev_err(&pdev->dev, "failed to allocate memory\n");
-+	if (imx == NULL)
++	if (pwm == NULL)
  		return -ENOMEM;
 -	}
  
- 	imx->clk_per = devm_clk_get(&pdev->dev, "per");
- 	if (IS_ERR(imx->clk_per)) {
+ 	pwm->clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(pwm->clk))
 -- 
 1.7.10.4
 
