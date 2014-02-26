@@ -1,69 +1,210 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm,renesas-tpu: Add dependency on HAS_IOMEM
-Date: Wed, 26 Feb 2014 13:08:03 +0100
-Message-ID: <20140226120800.GA28939@ulmo.nvidia.com>
-References: <1391172318-17853-1-git-send-email-richard@nod.at>
+Subject: Re: [PATCHv9 Resend 1/4] pwm: Add Freescale FTM PWM driver support
+Date: Wed, 26 Feb 2014 14:11:11 +0100
+Message-ID: <20140226131109.GA29779@ulmo.nvidia.com>
+References: <1392799137-17188-1-git-send-email-Li.Xiubo@freescale.com>
+ <1392799137-17188-2-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="AhhlLboLdkugWU4S"
+	protocol="application/pgp-signature"; boundary="IS0zKkzwUGydFO0o"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f47.google.com ([74.125.83.47]:60484 "EHLO
-	mail-ee0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751333AbaBZMIJ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Feb 2014 07:08:09 -0500
+Received: from mail-ea0-f176.google.com ([209.85.215.176]:43754 "EHLO
+	mail-ea0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750814AbaBZNLO (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Feb 2014 08:11:14 -0500
 Content-Disposition: inline
-In-Reply-To: <1391172318-17853-1-git-send-email-richard@nod.at>
+In-Reply-To: <1392799137-17188-2-git-send-email-Li.Xiubo@freescale.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Richard Weinberger <richard@nod.at>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Xiubo Li <Li.Xiubo@freescale.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Alison Wang <b18965@freescale.com>, Jingchang Lu <b35083@freescale.com>
 
 
---AhhlLboLdkugWU4S
+--IS0zKkzwUGydFO0o
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jan 31, 2014 at 01:45:18PM +0100, Richard Weinberger wrote:
-> On archs like S390 or um this driver cannot build nor work.
-> Make it depend on HAS_IOMEM to bypass build failures.
->=20
-> drivers/built-in.o: In function `tpu_probe':
-> drivers/pwm/pwm-renesas-tpu.c:421: undefined reference to `devm_ioremap_r=
-esource'
->=20
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> ---
->  drivers/pwm/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
+Hi,
 
-In the long run I think it might be better to add a dummy implementation
-for devm_ioremap_resource() in order to make it build properly even for
-architectures where it isn't implemented.
+Sorry for taking so long to get back to you. Things have been quite busy
+lately. A few more comments below, but we're getting there.
 
-For now this looks like the best option. Applied, thanks.
+On Wed, Feb 19, 2014 at 04:38:54PM +0800, Xiubo Li wrote:
+[...]
+> diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
+[...]
+> +static unsigned long fsl_pwm_calculate_period(struct fsl_pwm_chip *fpc,
+> +					      unsigned long period_ns)
+> +{
+> +	struct clk *cnt_clk[3];
+> +	enum fsl_pwm_clk m0, m1;
+> +	unsigned long fix_rate, ext_rate, cycles;
+> +
+> +	fpc->counter_clk = fpc->sys_clk;
+> +	cycles = fsl_pwm_calculate_period_cycles(fpc, period_ns,
+> +			FSL_PWM_CLK_SYS);
+> +	if (cycles)
+> +		return cycles;
+> +
+> +	cnt_clk[FSL_PWM_CLK_FIX] = devm_clk_get(fpc->chip.dev, "ftm_fix");
+> +	if (IS_ERR(cnt_clk[FSL_PWM_CLK_FIX]))
+> +		return PTR_ERR(cnt_clk[FSL_PWM_CLK_FIX]);
+> +
+> +	cnt_clk[FSL_PWM_CLK_EXT] = devm_clk_get(fpc->chip.dev, "ftm_ext");
+> +	if (IS_ERR(cnt_clk[FSL_PWM_CLK_EXT]))
+> +		return PTR_ERR(cnt_clk[FSL_PWM_CLK_EXT]);
+> +
+> +	fpc->counter_clk_en = devm_clk_get(fpc->chip.dev, "ftm_cnt_clk_en");
+> +	if (IS_ERR(fpc->counter_clk_en))
+> +		return PTR_ERR(fpc->counter_clk_en);
+
+You shouldn't do this. You're obtaining a reference to each of these
+clocks whenever pwm_config() is called. And devres will only clean those
+up after the driver is unbound. Can't you simply keep a reference to
+these within struct fsl_pwm_chip?
+
+> +static int fsl_counter_clock_enable(struct fsl_pwm_chip *fpc)
+> +{
+> +	u32 val;
+> +	int ret;
+> +
+> +	if (fpc->counter_clk_enable++)
+
+This function is always called with the fpc->lock held, so you could
+make this much easier by incrementing the .counter_clk_enable field only
+at the very end of the function. That way...
+
+> +		return 0;
+> +
+> +	ret = clk_prepare_enable(fpc->counter_clk);
+> +	if (ret) {
+> +		fpc->counter_clk_enable--;
+
+... this won't be necessary...
+
+> +		return ret;
+> +	}
+> +
+> +	ret = clk_prepare_enable(fpc->counter_clk_en);
+> +	if (ret) {
+> +		fpc->counter_clk_enable--;
+
+... and neither will this.
+
+> +static int fsl_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+> +{
+> +	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
+> +	u32 val;
+> +	int ret;
+> +
+> +	val = readl(fpc->base + FTM_OUTMASK);
+> +	val &= ~BIT(pwm->hwpwm);
+> +	writel(val, fpc->base + FTM_OUTMASK);
+> +
+> +	mutex_lock(&fpc->lock);
+
+I think you want to extend the lock to cover the FTM_OUTMASK register
+access as well because there could be a race between pwm_enable() and
+pwm_disable().
+
+> +	ret = fsl_counter_clock_enable(fpc);
+> +	mutex_unlock(&fpc->lock);
+> +
+> +	return ret;
+> +}
+
+Can this function be moved somewhere else so fsl_counter_clock_enable()
+and fsl_counter_clock_disable() are grouped together?
+
+> +static void fsl_counter_clock_disable(struct fsl_pwm_chip *fpc)
+> +{
+> +	u32 val;
+> +
+> +	if (--fpc->counter_clk_enable)
+> +		return;
+
+This is going to break. Consider the case where you call pwm_disable()
+on a PWM device and fpc->counter_clk_enable == 1. In that case, this
+will decrement counter_clk_enable to 0 and proceed with the remainder of
+this function.
+
+Now you call pwm_disable() again. The above will decrement again and
+cause fpc->counter_clk_enable to wrap around to UINT_MAX.
+
+So I think a more correct implementation would be:
+
+	/*
+	 * already disabled, do nothing (perhaps output warning message
+	 * to catch unbalanced calls? )
+	 */
+	if (fpc->counter_clk_enable == 0)
+		return;
+
+	/* there are still users, so can't disable yet */
+	if (--fpc->counter_clk_enable > 0)
+		return;
+
+	/* no users left, disable clock */
+
+> +static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+> +{
+> +	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
+> +	u32 val;
+> +
+> +	val = readl(fpc->base + FTM_OUTMASK);
+> +	val |= BIT(pwm->hwpwm);
+> +	writel(val, fpc->base + FTM_OUTMASK);
+> +
+> +	mutex_lock(&fpc->lock);
+
+This lock should also include the access to FTM_OUTMASK above.
+
+> +static int fsl_pwm_probe(struct platform_device *pdev)
+> +{
+[...]
+> +	fpc->sys_clk = devm_clk_get(&pdev->dev, "ftm_sys");
+> +	if (IS_ERR(fpc->sys_clk)) {
+> +		dev_err(&pdev->dev,
+> +				"failed to get \"ftm_sys\" clock\n");
+
+The above easily fits on a single line, no need for the wrapping.
+
+> +		return PTR_ERR(fpc->sys_clk);
+> +	}
+> +
+> +	ret = clk_prepare_enable(fpc->sys_clk);
+> +	if (ret)
+> +		return ret;
+> +
+> +	writel(0x00, fpc->base + FTM_CNTIN);
+> +	writel(0x00, fpc->base + FTM_OUTINIT);
+> +	writel(0xFF, fpc->base + FTM_OUTMASK);
+> +	clk_disable_unprepare(fpc->sys_clk);
+
+This looks out of place somehow, perhaps it should be moved off into a
+separate function? fsl_pwm_init() perhaps.
 
 Thierry
 
---AhhlLboLdkugWU4S
+--IS0zKkzwUGydFO0o
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTDdkgAAoJEN0jrNd/PrOhAe0QAKyUA87zK4ZZmg8Jsg+3PjcL
-oMKK5lfVyVm2hw4A4u/3cX6EKC8sSUtftX1xCrURNGEs/OFdYqNYigUbpdACjEBk
-QzvwkjwgGL65putWA+zt1tRwiN4QXj05p4PNiyf0eRtTJ24UtW2Tb4Zgi4ONuBFY
-cXXT/qlPhjbVFrEhi3XJ5Q4pLQam8ErsTJ10OI48i+H3zwN8san/Uz6m3JXa9KWV
-fPzBmje9oR8gLARz6lqToR/oFJjTARO1t1fnD6E4Z8msTmM7dkEj4Fe7Qd2mgLsk
-C83mm8XkK2dCIuaUku4Qcny6cEjq8N+iQv3Kgf1cUrocCLS/Q1iRHwnA0A+a1mql
-g3OTpI0wgTG+uoLTZIzbgG8JleUlN4YFRTbPNyDeuaFat5wWXgAecFVTh0xS5puJ
-Zoql9ZpmCGaLlvkIH6uBy1QEAthbFD6GRITkfP4XulkW2j8MvJZx5kLGMLNShUR8
-IsLTeKP253iEXnFGVIVxTowRIegaE7ZfU6pSmBs2PoDtxDdhKmdPEg6+2sUTqxBm
-Puv02La8AFlymhfZqWxAsYxvfHIUI4QKhk/9sAoyru2jCKxJG6j11AaupLGyt7Xe
-rMrpPdAgnzNSA3nP73JBvr6fdmx0LpRF0chfKmzuV2r57nFT6l6Z95AubYe2NbJh
-2mShAmiTKIGr9kqvEwSz
-=+DMl
+iQIcBAEBAgAGBQJTDeftAAoJEN0jrNd/PrOh6x4P/3tRxYP+9Ny2cp7q4GmmULZO
+usUiyphxWx8cka6+r/WwiK/nMPnkdxQna8JruMyh6TAMGBCIldBqUnOBih4VANaU
+PpcXKF4Zxs157n5i30VqAKRveJNnWi2a+sRJcssT9mXaUryHDIecsjr9uOWTzMqc
+uXy9lBS3qIU8TvLO3tzVMj4g49FBRiPGPmwMGOh5Zo7C8o+C4q7MJfAsys0L4/m4
+0QjevaIebw5NGxFpMGjCw7Fc6yY6Tm4C5RnE4GcBCwC+wveF6FueHW/nsJXZEiYD
+ojcHmxKWeY7wC0su7AEL08gz0ybonuYBSRoOFVfo1H4qt6znv/Ig2JxCu7rOH3+9
+M0nWqVG5LmqFQ+zC17G1vXD9d18+eV5fERS/bGLM72jkr2WO7bsUMh82W/e4+Opy
+0vTG93gqy8TAF7RESf7VT6BCMcYjUixJY5ppnmjHsAMunv9bcvDiR7vEFFpfXcZe
+orh5rwh+SWlDxHwTTTyvJBUwpb6+6tMVVl+rog7HCuvKn/NaTRYGKvp69ERHRwoN
+MgDq2vEzKQ0fx8diS1qwHuryGKK4lpVkaWrMVhTxL6tsyKR+wNaEOAwZP9pc60bl
+R6rUZtGQCj/dezhqU9jFRLCOX/QFxmOIxXGZdpqaLTrgOJlSz4lfB13PXwUyDdgW
+1Ux78LoaUBFwHE8MshW1
+=AYPX
 -----END PGP SIGNATURE-----
 
---AhhlLboLdkugWU4S--
+--IS0zKkzwUGydFO0o--
