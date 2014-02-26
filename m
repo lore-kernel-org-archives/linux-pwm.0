@@ -1,71 +1,46 @@
-From: Liu Ying <Ying.Liu@freescale.com>
-Subject: [PATCH] video: pwm backlight: power off when necessary
-Date: Wed, 26 Feb 2014 19:39:12 +0800
-Message-ID: <1393414752-8861-1-git-send-email-Ying.Liu@freescale.com>
+From: Richard Weinberger <richard@nod.at>
+Subject: Re: [PATCH] pwm,renesas-tpu: Add dependency on HAS_IOMEM
+Date: Wed, 26 Feb 2014 12:59:57 +0100
+Message-ID: <530DD73D.3020507@nod.at>
+References: <1391172318-17853-1-git-send-email-richard@nod.at>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from am1ehsobe001.messaging.microsoft.com ([213.199.154.204]:18682
-	"EHLO am1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751200AbaBZLhh (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Feb 2014 06:37:37 -0500
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1391172318-17853-1-git-send-email-richard@nod.at>
+Sender: linux-kernel-owner@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Richard Weinberger <richard@nod.at>
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, jg1.han@samsung.com
-Cc: plagnioj@jcrosoft.com, tomi.valkeinen@ti.com, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
 
-The pwm backlight should be powered off only in two cases:
-1) pwm polarity is normal and brightness is zero.
-2) pwm polarity is inversed and brightness is maximal,
-   that is, 100% duty.
+Am 31.01.2014 13:45, schrieb Richard Weinberger:
+> On archs like S390 or um this driver cannot build nor work.
+> Make it depend on HAS_IOMEM to bypass build failures.
+> 
+> drivers/built-in.o: In function `tpu_probe':
+> drivers/pwm/pwm-renesas-tpu.c:421: undefined reference to `devm_ioremap_resource'
+> 
+> Signed-off-by: Richard Weinberger <richard@nod.at>
 
-This patch implements this logic in the pwm backlight driver
-and actually fixes the issue that backlight is on when we
-intend to set the brightness to be zero for an inversed pwm
-signal.  The root cause of the issue is that power is off
-in that case.
+Ping?
 
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Jingoo Han <jg1.han@samsung.com>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
-Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Signed-off-by: Liu Ying <Ying.Liu@freescale.com>
----
- drivers/video/backlight/pwm_bl.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+Thanks,
+//richard
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index b75201f..e61e66a 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -100,6 +100,8 @@ static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
- static int pwm_backlight_update_status(struct backlight_device *bl)
- {
- 	struct pwm_bl_data *pb = bl_get_data(bl);
-+	enum pwm_polarity polarity = pb->pwm->polarity;
-+	int max = bl->props.max_brightness;
- 	int brightness = bl->props.brightness;
- 	int duty_cycle;
- 
-@@ -111,12 +113,14 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
- 	if (pb->notify)
- 		brightness = pb->notify(pb->dev, brightness);
- 
--	if (brightness > 0) {
-+	if ((polarity == PWM_POLARITY_NORMAL && brightness == 0) ||
-+	    (polarity == PWM_POLARITY_INVERSED && brightness == max)) {
-+		pwm_backlight_power_off(pb);
-+	} else {
- 		duty_cycle = compute_duty_cycle(pb, brightness);
- 		pwm_config(pb->pwm, duty_cycle, pb->period);
- 		pwm_backlight_power_on(pb, brightness);
--	} else
--		pwm_backlight_power_off(pb);
-+	}
- 
- 	if (pb->notify_after)
- 		pb->notify_after(pb->dev, brightness);
--- 
-1.7.9.5
-
-
+> ---
+>  drivers/pwm/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index 22f2f28..0b7a3c9 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -160,6 +160,7 @@ config PWM_PXA
+>  config PWM_RENESAS_TPU
+>  	tristate "Renesas TPU PWM support"
+>  	depends on ARCH_SHMOBILE || COMPILE_TEST
+> +	depends on HAS_IOMEM
+>  	help
+>  	  This driver exposes the Timer Pulse Unit (TPU) PWM controller found
+>  	  in Renesas chips through the PWM API.
+> 
