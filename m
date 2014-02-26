@@ -1,74 +1,80 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCHv9 Resend 4/4] Documentation: Add device tree bindings for
- Freescale FTM PWM.
-Date: Wed, 26 Feb 2014 14:13:56 +0100
-Message-ID: <20140226131355.GB29779@ulmo.nvidia.com>
-References: <1392799137-17188-1-git-send-email-Li.Xiubo@freescale.com>
- <1392799137-17188-5-git-send-email-Li.Xiubo@freescale.com>
+Subject: Re: [PATCH] backlight: add PWM dependencies
+Date: Wed, 26 Feb 2014 14:25:30 +0100
+Message-ID: <20140226132529.GC29779@ulmo.nvidia.com>
+References: <1391518634-6472-1-git-send-email-linus.walleij@linaro.org>
+ <20140210104032.GB20143@ulmo.nvidia.com>
+ <CACRpkdb1T1GCqEpy9=fPp4hYQErLYiQqJezrFhoS3x1MU=0S9g@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="dTy3Mrz/UPE2dbVg"
+	protocol="application/pgp-signature"; boundary="VywGB/WGlW4DM4P8"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ea0-f169.google.com ([209.85.215.169]:33453 "EHLO
-	mail-ea0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751432AbaBZNOA (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Feb 2014 08:14:00 -0500
+Received: from mail-ee0-f42.google.com ([74.125.83.42]:33938 "EHLO
+	mail-ee0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751947AbaBZNZe (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Feb 2014 08:25:34 -0500
 Content-Disposition: inline
-In-Reply-To: <1392799137-17188-5-git-send-email-Li.Xiubo@freescale.com>
+In-Reply-To: <CACRpkdb1T1GCqEpy9=fPp4hYQErLYiQqJezrFhoS3x1MU=0S9g@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Xiubo Li <Li.Xiubo@freescale.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jingoo Han <jg1.han@samsung.com>, Arnd Bergmann <arnd@arndb.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
 
---dTy3Mrz/UPE2dbVg
+--VywGB/WGlW4DM4P8
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 19, 2014 at 04:38:57PM +0800, Xiubo Li wrote:
-> This adds the binding documentation for Freescale FlexTimer Module
-> (FTM) PWM driver under Documentation/devicetree/bindings/pwm/.
+On Mon, Feb 10, 2014 at 12:09:29PM +0100, Linus Walleij wrote:
+> On Mon, Feb 10, 2014 at 11:40 AM, Thierry Reding
+> <thierry.reding@gmail.com> wrote:
 >=20
-> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
-> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Reviewed-by: Yuan Yao <yao.yuan@freescale.com>
-> Acked-by: Kumar Gala <galak@codeaurora.org>
-> ---
->  .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        | 34 ++++++++++++++++=
-++++++
->  1 file changed, 34 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+> > it seems like at least BACKLIGHT_LP8788 is missing a corresponding
+> > dependency as well.
+> >
+> > I have applied Sascha's patch to remove the obsolete HAVE_PWM symbol,
+> > and this will fix at least the build issues. However it will also cause
+> > the driver to fail at runtime because the pwm_*() functions won't work.
 >=20
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt b/Docu=
-mentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
-[...]
-> +- clocks : Must contain a clock specifier for each entry in clock-names,
+> So it definately needs that API, not just stubs.
+>=20
+> But isn't it proper for Kconfig to allow you to break things
+> like that by configuring out stuff and have stubs come in?
+>=20
+> I'm a bit torn here.
 
-Nit: A slightly more correct way to say this would be: "Must contain a
-phandle and clock specifier...".
+After thinking about this some more, I've come to the conclusion that
+the drivers should have the dependency. Kconfig should make sure that
+the resulting drivers work.
+
+If somebody wanted to knowingly build this driver with a configuration
+that won't work at runtime, then they should be using COMPILE_TEST
+instead.
+
+So I'm leaning towards applying this patch if there are no objections.
 
 Thierry
 
---dTy3Mrz/UPE2dbVg
+--VywGB/WGlW4DM4P8
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTDeiTAAoJEN0jrNd/PrOhvAwQAIGeUZpSfjwWI36hVO6NUSEk
-Wkk6gkSybGO9gNmyK8WtA/O3f0Y1T5ULzFXKT579dalaIcn9nOii70KH9Y47BE5r
-16E7IU3yHzwGBtX8dilHMMF0bHwI1WQQfBj+LHbQtyBDW0XrSJ8tVMzTsGD+2EaE
-Ef4gDNnCmQprXZuKP2/pGV2jNwoi6xGzBi8JWMxvVrKkoqekOSxxWMPo+KEV104k
-iLFsjZWSFmsY1JshACb34yNLpXxkzVQ4UtAy7ryEf+n5T/+r6Q/4RA01XY3LLlsB
-qGl5qq/NFioq3dmNRl7OKmWxUO1O2vGcFQOWQ8x3UFrXF9TiACbV982GoT9CdGY7
-7KoQ4jpNkZM0zVLxjbHoP7kJB6nfsz7b0R/6awFp7W8jcnqsZNoOj2Xz7I1DKICW
-2oOjHfARkdhtI0mO+3duNLYY97QXc+uPHt+1/5bv6Ut2WWXvczl35r6Q5HTVQW3B
-QxpH0GjzHoosQH5zcPL+79+u2P2PIsoRS+xQ496WP/VvVYPk6RkI4RskKlicRp36
-UmsBAdqM651pSpYp5Bl7c3zvvAcjXQ5Ig4wxZ1xPvpRvtsheHkqc02u6BUQq8X/h
-svbSVf86YtPil0x+2eIfck29M4DhiB0714zNqTZfBT4vn68R6YvuJoED7Xt8UmmF
-zuYAwkXhZh3CGvXQMb3b
-=bWSM
+iQIcBAEBAgAGBQJTDetJAAoJEN0jrNd/PrOh4coP/Als6SaArd/CT4bpdFqdKj3Z
+QjwO4TnR8rKVpdgscGHGJmvdIJMvGP1euoYIFtgpOw4BccZfPJtYVNVLWWS+ovby
+jCmcj66wa++tsDsZWwVVVXOOxyBDTKzPuIBnAK3SQar4cntzufasiBqIjAchSx4l
+uj089YlQ99zq7PD0lTs4tzmkKqDd1UqkwqUZrjOmHdfQDSikjBv4bjjrmYCfbFcl
+2LLNcpRb7DnlYW5oKWwV9XC45LZ0YdXooVsoYrYDqqGXsHMcnxx3d6TTx8eMCshU
+UiyzNrNcvPaJx78xNhVagoQ+P9GididRqtnoahofgLmPYZmtZK9rOWwmoFLFLZeA
++q3UTCW+iZou5YcXy0Zep6qrLRd9PAf5BcxEYf+gTVpZINwKXGY8W5GkVYZWnMKG
+/AAfF/PeUUm3wtfgN5zhfR1WwWdaHTyV61waI82c0hR2q2TiHxsQM/w6HF50HpD/
+QBpjgZrtVMbrvE2MfcSZKQnBmuJKOC5PZtcc48pGlZ2bWn2cbog0oo1k2zwN5qrd
+h3MnIwAbZRBxJJ4/aTxhPerBhwHGB6nkLnKK1THiBUUvXyLoqk8uph8XRFOAfY9J
+DTcLSXNUeuX3TPBdPx158VdiYGS1OZKxZ2GUGWcSNCNRgpdg5vlnP79jaZaMatsJ
+5O7fgf54k4kc5YN7zwc8
+=F3kA
 -----END PGP SIGNATURE-----
 
---dTy3Mrz/UPE2dbVg--
+--VywGB/WGlW4DM4P8--
