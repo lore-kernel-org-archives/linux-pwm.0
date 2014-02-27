@@ -1,45 +1,251 @@
-From: Alexandre Courbot <acourbot@nvidia.com>
-Subject: [PATCH 1/2] ARM: SAMSUNG: remove gpio flags in dev-backlight
-Date: Thu, 27 Feb 2014 14:53:33 +0900
-Message-ID: <1393480414-19473-2-git-send-email-acourbot@nvidia.com>
-References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH] pwm: add support for Intel Low Power Subsystem PWM
+Date: Thu, 27 Feb 2014 11:01:52 +0200
+Message-ID: <20140227090152.GH5018@intel.com>
+References: <1390240808-18582-1-git-send-email-chiau.ee.chew@intel.com>
+ <20140226143822.GG29779@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1393480414-19473-1-git-send-email-acourbot@nvidia.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>
-Cc: linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, Alexandre Courbot <acourbot@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:58971 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750965AbaB0IyT (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Thu, 27 Feb 2014 03:54:19 -0500
+Content-Disposition: inline
+In-Reply-To: <20140226143822.GG29779@ulmo.nvidia.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Chew Chiau Ee <chiau.ee.chew@intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Chew Kean Ho <kean.ho.chew@intel.com>, Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
 
-The pwm-backlight driver is moving to use the gpiod interface,
-which has its own mapping mechanism for platform data GPIOs.
-These mappings carry GPIO properties like active low so they don't have
-to be explicitly handled by GPIO consumers.
+On Wed, Feb 26, 2014 at 03:38:23PM +0100, Thierry Reding wrote:
+> On Tue, Jan 21, 2014 at 02:00:08AM +0800, Chew Chiau Ee wrote:
+> [...]
+> > diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+> [...]
+> > +/*
+> > + * Intel Low Power Subsystem PWM controller driver
+> > + *
+> > + * Copyright (C) 2014, Intel Corporation
+> > + * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > + * Author: Chew Kean Ho <kean.ho.chew@intel.com>
+> > + * Author: Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
+> > + * Author: Chew Chiau Ee <chiau.ee.chew@intel.com>
+> > + *
+> > + * This program is free software; you can redistribute it and/or modify
+> > + * it under the terms of the GNU General Public License version 2 as
+> > + * published by the Free Software Foundation.
+> > + */
+> > +
+> > +#include <linux/acpi.h>
+> > +#include <linux/clk.h>
+> > +#include <linux/device.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/module.h>
+> > +#include <linux/pwm.h>
+> > +#include <linux/platform_device.h>
+> > +
+> > +#define PWM				0x00000000
+> > +#define PWM_ENABLE			BIT(31)
+> > +#define PWM_SW_UPDATE			BIT(30)
+> > +#define PWM_BASE_UNIT_SHIFT		8
+> > +#define PWM_BASE_UNIT_MASK		0x00ffff00
+> > +#define PWM_ON_TIME_DIV_MASK		0x000000ff
+> 
+> Does the documentation really call this "on time"? I've always only seen
+> this called duty-cycle.
 
-Because of this change, the enable_gpio_flags member of
-platform_pwm_backlight_data is going away. dev-backlight was passing
-this member, but had no user making use of it, so it can safely be
-removed. Further GPIOs used by pwm-backlight are expected to be
-defined using the mechanisms provided by the gpiod API.
+Yes, it's called like that in the documentation.
 
-Signed-off-by: Alexandre Courbot <acourbot@nvidia.com>
----
- arch/arm/plat-samsung/dev-backlight.c | 2 --
- 1 file changed, 2 deletions(-)
+> 
+> > +#define PWM_DIVISION_CORRECTION		0x2
+> > +#define PWM_LIMIT			(0x8000 + PWM_DIVISION_CORRECTION)
+> > +
+> > +
+> > +struct pwm_lpss_chip {
+> > +	struct pwm_chip chip;
+> > +	void __iomem *regs;
+> > +	struct clk *clk;
+> > +};
+> > +
+> > +static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
+> > +{
+> > +	return container_of(chip, struct pwm_lpss_chip, chip);
+> > +}
+> > +
+> > +static void pwm_lpss_set_state(struct pwm_lpss_chip *lpwm, bool enable)
+> > +{
+> > +	u32 ctrl;
+> > +
+> > +	ctrl = readl(lpwm->regs + PWM);
+> > +	if (enable)
+> > +		ctrl |= PWM_ENABLE;
+> > +	else
+> > +		ctrl &= ~PWM_ENABLE;
+> > +	writel(ctrl, lpwm->regs + PWM);
+> 
+> Nit: could use more blank lines around readl() and writel(), but I'm
+> told that not everybody likes it that way, so if you absolutely must
+> keep it this way, that's fine, too. =)
+> 
+> Also, is it really necessary to turn this into a function? It's only
+> called in three places, where each call site would only require three
+> lines. This function takes up 12 lines in total, so there's no real
+> gain.
 
-diff --git a/arch/arm/plat-samsung/dev-backlight.c b/arch/arm/plat-samsung/dev-backlight.c
-index be4ad0b21c08..2157c5b539e6 100644
---- a/arch/arm/plat-samsung/dev-backlight.c
-+++ b/arch/arm/plat-samsung/dev-backlight.c
-@@ -124,8 +124,6 @@ void __init samsung_bl_set(struct samsung_bl_gpio_info *gpio_info,
- 		samsung_bl_data->pwm_period_ns = bl_data->pwm_period_ns;
- 	if (bl_data->enable_gpio >= 0)
- 		samsung_bl_data->enable_gpio = bl_data->enable_gpio;
--	if (bl_data->enable_gpio_flags)
--		samsung_bl_data->enable_gpio_flags = bl_data->enable_gpio_flags;
- 	if (bl_data->init)
- 		samsung_bl_data->init = bl_data->init;
- 	if (bl_data->notify)
--- 
-1.9.0
+Good point.
+
+> 
+> > +static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> > +	int duty_ns, int period_ns)
+> 
+> Align arguments on subsequent lines with those of the first line,
+> please.
+
+OK
+
+> 
+> > +{
+> > +	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
+> > +	u8 on_time_div;
+> > +	unsigned long c = clk_get_rate(lpwm->clk);
+> > +	unsigned long long base_unit, hz = 1000000000UL;
+> 
+> "hz" -> "freq"? "1000000000UL" -> "NSECS_PER_SEC"?
+
+OK
+
+> 
+> > +static int pwm_lpss_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+> > +{
+> > +	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
+> > +
+> > +	clk_prepare_enable(lpwm->clk);
+> 
+> You need to check the return value of clk_prepare_enable().
+
+Indeed. Will fix.
+
+> 
+> > +#ifdef CONFIG_ACPI
+> > +struct pwm_lpss_chip *pwm_lpss_acpi_get_pdata(struct platform_device *pdev)
+> > +{
+> > +	struct pwm_lpss_chip *lpwm;
+> > +	struct resource *r;
+> > +
+> > +	lpwm = devm_kzalloc(&pdev->dev, sizeof(*lpwm), GFP_KERNEL);
+> > +	if (!lpwm) {
+> > +		dev_err(&pdev->dev, "failed to allocate memory for platform data\n");
+> 
+> No need to print this message. You should get one from the allocator
+> itself.
+
+OK
+
+> 
+> > +	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > +	if (!r) {
+> > +		dev_err(&pdev->dev, "failed to get mmio base\n");
+> > +		return NULL;
+> > +	}
+> > +
+> > +	lpwm->clk = devm_clk_get(&pdev->dev, NULL);
+> > +	if (IS_ERR(lpwm->clk)) {
+> > +		dev_err(&pdev->dev, "failed to get pwm clk\n");
+> > +		return NULL;
+> > +	}
+> 
+> "pwm" -> "PWM", "clk" -> "clock", please.
+
+OK
+
+> 
+> > +
+> > +	lpwm->chip.base = -1;
+> > +
+> > +	lpwm->regs = devm_request_and_ioremap(&pdev->dev, r);
+> > +	if (!lpwm->regs)
+> 
+> devm_ioremap_resource()? If so, it returns an ERR_PTR() encoded error
+> code on failure, so make sure to check with IS_ERR(lpwm->regs) instead.
+> Also you can get rid of the extra error checking after the call to
+> platform_get_resource() because devm_ioremap_resource() checks for it
+> already.
+> 
+> Furthermore the ordering of calls is somewhat unusual here. I'd prefer
+> platform_get_resource() followed by devm_ioremap_resource() directly.
+
+Yup, we will change that.
+
+> 
+> > +		return NULL;
+> > +
+> > +	return lpwm;
+> > +}
+> > +
+> > +static const struct acpi_device_id pwm_lpss_acpi_match[] = {
+> > +	{ "80860F08", 0 },
+> > +	{ "80860F09", 0 },
+> > +	{ },
+> > +};
+> > +MODULE_DEVICE_TABLE(acpi, pwm_lpss_acpi_match);
+> > +#else
+> > +struct pwm_lpss_chip *pwm_lpss_acpi_get_pdata(struct platform_device *pdev)
+> > +{
+> > +	return NULL;
+> > +}
+> > +#endif
+> 
+> I think that #else is completely dead code since the driver depends on
+> ACPI and therefore CONFIG_ACPI will always be enabled when building this
+> driver.
+
+We are getting PCI enumeration for this device as well but for now we can
+drop the code and add it back later if needed.
+
+> 
+> > +static int pwm_lpss_probe(struct platform_device *pdev)
+> > +{
+> > +	struct device *dev = &pdev->dev;
+> > +	struct pwm_lpss_chip *lpwm;
+> > +	int ret;
+> > +
+> > +	lpwm = dev_get_platdata(dev);
+> 
+> struct pwm_lpss_chip is defined in this source file, how can anybody
+> else know what to fill platform_data with?
+
+Good point. Chiau Ee, do you recall why that thing is there in the first
+place?
+
+> > +	if (!lpwm) {
+> > +		lpwm = pwm_lpss_acpi_get_pdata(pdev);
+> > +		if (!lpwm)
+> > +			return -ENODEV;
+> > +	}
+> [...]
+> > +static struct platform_driver pwm_lpss_driver = {
+> > +	.driver = {
+> > +		.name = "pwm-lpss",
+> > +		.acpi_match_table = ACPI_PTR(pwm_lpss_acpi_match),
+> 
+> ACPI_PTR not needed since the table will always be there.
+
+OK.
+
+> 
+> > +	},
+> > +	.probe = pwm_lpss_probe,
+> > +	.remove = pwm_lpss_remove,
+> > +};
+> > +module_platform_driver(pwm_lpss_driver);
+> > +
+> > +MODULE_DESCRIPTION("PWM driver for Intel LPSS");
+> > +MODULE_AUTHOR("Mika Westerberg <mika.westerberg@linux.intel.com>");
+> > +MODULE_LICENSE("GPL");
+> 
+> The file header says GPL v2, but "GPL" here means "GPL v2 or later".
+
+OK, we will change that to GPLv2.
+
+Thanks a lot for your review! We will do the changes and submit v2.
