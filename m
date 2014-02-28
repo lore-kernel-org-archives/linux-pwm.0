@@ -1,174 +1,521 @@
 From: Barry Song <21cnbao@gmail.com>
 Subject: Re: [PATCH v3] pwm: add CSR SiRFSoC PWM driver
-Date: Fri, 28 Feb 2014 18:07:31 +0800
-Message-ID: <CAGsJ_4z_48pZcXJXkwyuujoq=cEF3Oov5_GBRtHHOufMdEpRGA@mail.gmail.com>
+Date: Fri, 28 Feb 2014 18:33:19 +0800
+Message-ID: <CAGsJ_4yqznr4BAHdk5Hjm1X8BAsiWhMUSTRnriLvykVJ8-8dKw@mail.gmail.com>
 References: <1391855002-26098-1-git-send-email-21cnbao@gmail.com>
  <lel46f$q2d$1@ger.gmane.org> <CAGsJ_4xLtXV6WtVhLgzFAaU9oG5UOt+LonFktBipQf_a6Yutng@mail.gmail.com>
  <CAMiSF3CczVV+Ob++_ACcwE+OXvFH8f9v1E=Q1F5x7Zz1BjCCzg@mail.gmail.com>
- <CAGsJ_4ywPTbUnfVVFFNFMSwG0CGckxKqHZ81rvEDFK-_1H25tA@mail.gmail.com> <CAMiSF3CN33N867TtjatYx1EwaV5qJY=JYsSrVFpQvC+yS1T5rA@mail.gmail.com>
+ <CAGsJ_4ywPTbUnfVVFFNFMSwG0CGckxKqHZ81rvEDFK-_1H25tA@mail.gmail.com>
+ <CAMiSF3CN33N867TtjatYx1EwaV5qJY=JYsSrVFpQvC+yS1T5rA@mail.gmail.com> <CAGsJ_4z_48pZcXJXkwyuujoq=cEF3Oov5_GBRtHHOufMdEpRGA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pd0-f182.google.com ([209.85.192.182]:55595 "EHLO
-	mail-pd0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751018AbaB1KHw (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Feb 2014 05:07:52 -0500
-Received: by mail-pd0-f182.google.com with SMTP id g10so540250pdj.41
-        for <linux-pwm@vger.kernel.org>; Fri, 28 Feb 2014 02:07:51 -0800 (PST)
-In-Reply-To: <CAMiSF3CN33N867TtjatYx1EwaV5qJY=JYsSrVFpQvC+yS1T5rA@mail.gmail.com>
+Received: from mail-pd0-f175.google.com ([209.85.192.175]:58546 "EHLO
+	mail-pd0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751067AbaB1Kdk (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Feb 2014 05:33:40 -0500
+Received: by mail-pd0-f175.google.com with SMTP id x10so567439pdj.34
+        for <linux-pwm@vger.kernel.org>; Fri, 28 Feb 2014 02:33:39 -0800 (PST)
+In-Reply-To: <CAGsJ_4z_48pZcXJXkwyuujoq=cEF3Oov5_GBRtHHOufMdEpRGA@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Romain Izard <romain.izard.pro@gmail.com>
 Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-pwm@vger.kernel.org, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>
 
-2014-02-28 17:06 GMT+08:00 Romain Izard <romain.izard.pro@gmail.com>:
-> Hello Barry,
->
-> 2014-02-28 4:01 GMT+01:00 Barry Song <21cnbao@gmail.com>:
+2014-02-28 18:07 GMT+08:00 Barry Song <21cnbao@gmail.com>:
+> 2014-02-28 17:06 GMT+08:00 Romain Izard <romain.izard.pro@gmail.com>:
+>> Hello Barry,
 >>
->> Hi Romain,
+>> 2014-02-28 4:01 GMT+01:00 Barry Song <21cnbao@gmail.com>:
+>>>
+>>> Hi Romain,
+>>>
+>>> do you have a real user scenarios for this 32KHz? as the 1st step, i
+>>> want a clean and general enough pwm driver, if there is any special
+>>> requirement, i want to execute a "demanding page" when the "page
+>>> fault" happened as this will make the whole flow more smooth. that
+>>> means we make it lazy by incremental patches. but if you do want to
+>>> use it for the moment, it is a "page fault" now. so we can have it
+>>> immediately and it is better you can help to double-test :-)
 >>
->> do you have a real user scenarios for this 32KHz? as the 1st step, i
->> want a clean and general enough pwm driver, if there is any special
->> requirement, i want to execute a "demanding page" when the "page
->> fault" happened as this will make the whole flow more smooth. that
->> means we make it lazy by incremental patches. but if you do want to
->> use it for the moment, it is a "page fault" now. so we can have it
->> immediately and it is better you can help to double-test :-)
->
-> My use case is to connect a Bluetooth module, in fact with a CSR chip.
-> For testing, I will try to see what I can do, as for now my boards are not
-> running with the mainline. But I'm very interested in transitioning on the
-> mainline in due time, so that's the reason I keep an eye on the mailing
-> lists. Conversely, it's not critical at all to get the feature in right now, but
-> it should not be impossible to do so in the future, especially when taking
-> the 'stable interface' aspect of device tree bindings into account.
->
->> 2014-02-27 18:51 GMT+08:00 Romain Izard <romain.izard.pro@gmail.com>:
->>> Perhaps this can be linked with the missing "clock-names" property, as this
->>> will make it possible to add multiple functional clocks, with "iclk" matching
->>> the interface clock (i.e. pwmc), and "fclk0", "fclk1", etc. matching
->>> all supported
->>> functional clocks.
->>>
->>> With only the 26 MHz clock, the node would look like:
->>>
->>> pwm: pwm@b0130000 {
->>>         compatible = "sirf,prima2-pwm";
->>>         #pwm-cells = <2>;
->>>         reg = <0xb0130000 0x10000>;
->>>         clocks = <&clks 21>,  <&clks 1>, <&clks 0>;
->>>         clock-names = "iclk", "fclk0", "fclk3";
->>> };
->>>
->
-> Aargh. I meant this:
->
-> pwm: pwm@b0130000 {
->         compatible = "sirf,prima2-pwm";
->         #pwm-cells = <2>;
->         reg = <0xb0130000 0x10000>;
->         clocks = <&clks 21>,  <&clks 1>;
->         clock-names = "iclk", "fclk0";
-> };
->
->>> The result would look like this with both the 26 MHz and the 32 kHz clocks:
->>>
->>> pwm: pwm@b0130000 {
->>>         compatible = "sirf,prima2-pwm";
->>>         #pwm-cells = <2>;
->>>         reg = <0xb0130000 0x10000>;
->>>         clocks = <&clks 21>,  <&clks 1>, <&clks 0>;
->>>         clock-names = "iclk", "fclk0", "fclk3";
->>> };
->>>
->>> And with all possible clocks:
->>>
->>> pwm: pwm@b0130000 {
->>>         compatible = "sirf,prima2-pwm";
->>>         #pwm-cells = <2>;
->>>         reg = <0xb0130000 0x10000>;
->>>         clocks = <&clks 21>,  <&clks 1>, <&clks 2>, <&clks 3>, <&clks
->>> 0>, <&clks 4>;
->>>         clock-names = "iclk", "fclk0", "fclk1", "fclk2", "fclk3", "fclk4";
->>> };
->>>
->>> The code in the probe function would interpret the clock-name to build
->>> the clock/index mapping table. This would not change a lot the binding you
->>> proposed, as you still can describe only one functional clock, but it describes
->>> which index in the configuration register is linked to the proposed clock.
->>>
+>> My use case is to connect a Bluetooth module, in fact with a CSR chip.
+>> For testing, I will try to see what I can do, as for now my boards are not
+>> running with the mainline. But I'm very interested in transitioning on the
+>> mainline in due time, so that's the reason I keep an eye on the mailing
+>> lists. Conversely, it's not critical at all to get the feature in right now, but
+>> it should not be impossible to do so in the future, especially when taking
+>> the 'stable interface' aspect of device tree bindings into account.
 >>
->> yes. very clear. the only two things left
+>>> 2014-02-27 18:51 GMT+08:00 Romain Izard <romain.izard.pro@gmail.com>:
+>>>> Perhaps this can be linked with the missing "clock-names" property, as this
+>>>> will make it possible to add multiple functional clocks, with "iclk" matching
+>>>> the interface clock (i.e. pwmc), and "fclk0", "fclk1", etc. matching
+>>>> all supported
+>>>> functional clocks.
+>>>>
+>>>> With only the 26 MHz clock, the node would look like:
+>>>>
+>>>> pwm: pwm@b0130000 {
+>>>>         compatible = "sirf,prima2-pwm";
+>>>>         #pwm-cells = <2>;
+>>>>         reg = <0xb0130000 0x10000>;
+>>>>         clocks = <&clks 21>,  <&clks 1>, <&clks 0>;
+>>>>         clock-names = "iclk", "fclk0", "fclk3";
+>>>> };
+>>>>
 >>
->> 1.  fclk should be named for pwm not for rtc, osc and pll, so the
->> names might be ugly by fclk0~N.
+>> Aargh. I meant this:
 >>
-> For me, it's important to keep the number in the name of the clock as it is
-> the source of the information for binding the device tree clock on one side
-> and the clock source index in the selection register on the other side. If
-> we do not do it this way, we cannot easily handle new clocks in the future
-> in the binding.
+>> pwm: pwm@b0130000 {
+>>         compatible = "sirf,prima2-pwm";
+>>         #pwm-cells = <2>;
+>>         reg = <0xb0130000 0x10000>;
+>>         clocks = <&clks 21>,  <&clks 1>;
+>>         clock-names = "iclk", "fclk0";
+>> };
+>>
+>>>> The result would look like this with both the 26 MHz and the 32 kHz clocks:
+>>>>
+>>>> pwm: pwm@b0130000 {
+>>>>         compatible = "sirf,prima2-pwm";
+>>>>         #pwm-cells = <2>;
+>>>>         reg = <0xb0130000 0x10000>;
+>>>>         clocks = <&clks 21>,  <&clks 1>, <&clks 0>;
+>>>>         clock-names = "iclk", "fclk0", "fclk3";
+>>>> };
+>>>>
+>>>> And with all possible clocks:
+>>>>
+>>>> pwm: pwm@b0130000 {
+>>>>         compatible = "sirf,prima2-pwm";
+>>>>         #pwm-cells = <2>;
+>>>>         reg = <0xb0130000 0x10000>;
+>>>>         clocks = <&clks 21>,  <&clks 1>, <&clks 2>, <&clks 3>, <&clks
+>>>> 0>, <&clks 4>;
+>>>>         clock-names = "iclk", "fclk0", "fclk1", "fclk2", "fclk3", "fclk4";
+>>>> };
+>>>>
+>>>> The code in the probe function would interpret the clock-name to build
+>>>> the clock/index mapping table. This would not change a lot the binding you
+>>>> proposed, as you still can describe only one functional clock, but it describes
+>>>> which index in the configuration register is linked to the proposed clock.
+>>>>
+>>>
+>>> yes. very clear. the only two things left
+>>>
+>>> 1.  fclk should be named for pwm not for rtc, osc and pll, so the
+>>> names might be ugly by fclk0~N.
+>>>
+>> For me, it's important to keep the number in the name of the clock as it is
+>> the source of the information for binding the device tree clock on one side
+>> and the clock source index in the selection register on the other side. If
+>> we do not do it this way, we cannot easily handle new clocks in the future
+>> in the binding.
+>>
+>> On the other hand, I strongly dislike the current clock specification
+>> as <&clks #x>.
+>> It would be probably a good thing to add a header linking the numbers
+>> to symbols,
+>> and we would then get:
+>>
+>>         clocks = <&clks SIRFCLK_A6_PWM>,
+>>                 <&clks SIRFCLK_A6_OSC>,
+>>                 <&clks SIRFCLK_A6_PLL1>,
+>>                 <&clks SIRFCLK_A6_PLL2>,
+>>                 <&clks SIRFCLK_A6_RTC>,
+>>                 <&clks SIRFCLK_16_PLL3>;
+>>         clock-names = "iclk", "fclk0", "fclk1", "fclk2", "fclk3", "fclk4";
+>>
+>> Note that as the binary output of the device tree would not change with this, we
+>> do not need to worry about backwards compatibility in this precise case.
 >
-> On the other hand, I strongly dislike the current clock specification
-> as <&clks #x>.
-> It would be probably a good thing to add a header linking the numbers
-> to symbols,
-> and we would then get:
+> this pwm controller is prima2-compatible, so it is actually a pwm
+> controller highly bound with the special SoC.
+> really strange things are we actually care about the clock types. we
+> actually can't think fclk0~fclk4 as same things. for pll, i think it
+> is buggy to use. for rtc, it only service special target for providing
+> bypass 32KHz clock.
 >
->         clocks = <&clks SIRFCLK_A6_PWM>,
->                 <&clks SIRFCLK_A6_OSC>,
->                 <&clks SIRFCLK_A6_PLL1>,
->                 <&clks SIRFCLK_A6_PLL2>,
->                 <&clks SIRFCLK_A6_RTC>,
->                 <&clks SIRFCLK_16_PLL3>;
->         clock-names = "iclk", "fclk0", "fclk1", "fclk2", "fclk3", "fclk4";
+> if we look this controller a separate IP, we need to look 5 clock
+> source to be coequal. but it is not the real case.
+> i think people will hate the things that we have a separate bypass
+> mode for fclk3, why it is 3 but not 2, 1, 4 and 5?
 >
-> Note that as the binary output of the device tree would not change with this, we
-> do not need to worry about backwards compatibility in this precise case.
+> that is why i move to a MACRO 26MHz in the original codes as i think
+> it is a prima2 controller but not a controller used by prima2 even
+> though we always want a IP module to be a IP module suitable for all
+> SoCs.
+>
 
-this pwm controller is prima2-compatible, so it is actually a pwm
-controller highly bound with the special SoC.
-really strange things are we actually care about the clock types. we
-actually can't think fclk0~fclk4 as same things. for pll, i think it
-is buggy to use. for rtc, it only service special target for providing
-bypass 32KHz clock.
+let's have a draft to look whether this is making anything better:
 
-if we look this controller a separate IP, we need to look 5 clock
-source to be coequal. but it is not the real case.
-i think people will hate the things that we have a separate bypass
-mode for fclk3, why it is 3 but not 2, 1, 4 and 5?
+/*
+ * SIRF serial SoC PWM device core driver
+ *
+ * Copyright (c) 2014 Cambridge Silicon Radio Limited, a CSR plc group company.
+ *
+ * Licensed under GPLv2.
+ */
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/device.h>
+#include <linux/platform_device.h>
+#include <linux/clk.h>
+#include <linux/delay.h>
+#include <linux/pwm.h>
+#include <linux/of.h>
+#include <linux/io.h>
 
-that is why i move to a MACRO 26MHz in the original codes as i think
-it is a prima2 controller but not a controller used by prima2 even
-though we always want a IP module to be a IP module suitable for all
-SoCs.
+#define SIRF_PWM_SELECT_PRECLK            0x0
+#define SIRF_PWM_OE                0x4
+#define SIRF_PWM_ENABLE_PRECLOCK        0x8
+#define SIRF_PWM_ENABLE_POSTCLOCK        0xC
+#define SIRF_PWM_GET_WAIT_OFFSET(n)        (0x10 + 0x8*n)
+#define SIRF_PWM_GET_HOLD_OFFSET(n)        (0x14 + 0x8*n)
 
->
->> 2.  the driver need to manage all of the clocks. yes, it can. but it
->> might be ugly again. we can either request the clk at the time of pwm
->> configuration, or get all directy in probe and maintain an array.
->
-> For me, what is important right now is to get the binding right. If the driver
-> cannot do everything the binding allows, this is not a problem. But we define
-> a binding that cannot easily be expanded, we will have problems when we
-> need the new features.
->
->> i am thinking what is the best way for it. if we do that by an
->> incremental patch, it might be more concentrated and understandable.
+#define SIRF_PWM_TR_STEP(n)            (0x48 + 0x8*n)
+#define SIRF_PWM_STEP_HOLD(n)            (0x4c + 0x8*n)
 
-i think bypass mode for rtc will be included immediately since there
-is a real user.
+#define SRC_FIELD_SIZE                3
+#define BYPASS_MODE_BIT                21
+#define TRANS_MODE_SELECT_BIT            7
 
->
-> I'm all for this as well, that why for me the first syntax (corrected
-> up there) should
-> be valid. This way, you do not need to integrate the bypass support in
-> this step,
-> but you can add it later.
->
-> Best regards,
-> --
-> Romain Izard
+struct sirf_pwm {
+    struct pwm_chip    chip;
+    struct mutex mutex;
+    void __iomem *base;
+    struct clk *pwmc_clk;
+    struct clk *sigsrc0_clk;
+    struct clk *sigsrc3_clk;
+    /*
+     * PWM controller uses OSC(default 26MHz) or RTC(default 32768Hz) clock
+     * to generate PWM signals instead of the clock of the controller
+     */
+    unsigned long sigsrc0_clk_rate;
+    unsigned long sigsrc3_clk_rate;
+};
 
--barry
+static inline struct sirf_pwm *to_sirf_pwm_chip(struct pwm_chip *chip)
+{
+    return container_of(chip, struct sirf_pwm, chip);
+}
+
+static u32 sirf_pwm_ns_to_cycles(struct pwm_chip *chip, u32 time_ns)
+{
+    struct sirf_pwm *spwm = to_sirf_pwm_chip(chip);
+    u64 dividend;
+    u32 cycle;
+
+    dividend = (u64)spwm->sigsrc0_clk_rate * time_ns + NSEC_PER_SEC / 2;
+    do_div(dividend, NSEC_PER_SEC);
+
+    cycle = dividend;
+
+    return cycle > 1 ? cycle : 1;
+}
+
+static int sirf_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+            int duty_ns, int period_ns)
+{
+    u32 period_cycles, high_cycles, low_cycles;
+    u32 val;
+    struct sirf_pwm *spwm = to_sirf_pwm_chip(chip);
+    if (unlikely(period_ns == NSEC_PER_SEC/spwm->sigsrc3_clk_rate)) {
+        /*
+         * sigsrc 3 is RTC with typical frequency 32KHz,
+         * bypass RTC clock to WiFi/Bluetooth module
+         */
+        mutex_lock(&spwm->mutex);
+
+        val = readl(spwm->base + SIRF_PWM_SELECT_PRECLK);
+        val |= 0x1 << (BYPASS_MODE_BIT + pwm->hwpwm);
+        val &= ~(0x7 << (SRC_FIELD_SIZE * pwm->hwpwm));
+        val |= 3 << (SRC_FIELD_SIZE * pwm->hwpwm);
+        writel(val, spwm->base + SIRF_PWM_SELECT_PRECLK);
+
+        mutex_unlock(&spwm->mutex);
+    } else {
+        /* use OSC to generate PWM signals */
+        period_cycles = sirf_pwm_ns_to_cycles(chip, period_ns);
+        if (period_cycles == 1)
+            return -EINVAL;
+
+        high_cycles = sirf_pwm_ns_to_cycles(chip, duty_ns);
+        low_cycles = period_cycles - high_cycles;
+
+        mutex_lock(&spwm->mutex);
+
+        val = readl(spwm->base + SIRF_PWM_SELECT_PRECLK);
+        val &= ~(0x1 << (BYPASS_MODE_BIT + pwm->hwpwm));
+        val &= ~(0x7 << (SRC_FIELD_SIZE * pwm->hwpwm));
+        writel(val, spwm->base + SIRF_PWM_SELECT_PRECLK);
+
+        if (high_cycles == period_cycles) {
+            high_cycles--;
+            low_cycles = 1;
+        }
+
+        writel(high_cycles - 1,
+            spwm->base + SIRF_PWM_GET_WAIT_OFFSET(pwm->hwpwm));
+        writel(low_cycles - 1,
+            spwm->base + SIRF_PWM_GET_HOLD_OFFSET(pwm->hwpwm));
+
+        mutex_unlock(&spwm->mutex);
+    }
+
+    return 0;
+}
+
+static int sirf_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+{
+    struct sirf_pwm *spwm = to_sirf_pwm_chip(chip);
+    u32 val;
+
+    mutex_lock(&spwm->mutex);
+
+    /* disable preclock */
+    val = readl(spwm->base + SIRF_PWM_ENABLE_PRECLOCK);
+    val &= ~(1 << pwm->hwpwm);
+    writel(val, spwm->base + SIRF_PWM_ENABLE_PRECLOCK);
+
+    /* select preclock source must after disable preclk*/
+    val = readl(spwm->base + SIRF_PWM_SELECT_PRECLK);
+    val &= ~(0x7 << (SRC_FIELD_SIZE * pwm->hwpwm));
+    writel(val, spwm->base + SIRF_PWM_SELECT_PRECLK);
+    /* wait for some time */
+    usleep_range(100, 100);
+
+    /* enable preclock */
+    val = readl(spwm->base + SIRF_PWM_ENABLE_PRECLOCK);
+    val |= (1 << pwm->hwpwm);
+    writel(val, spwm->base + SIRF_PWM_ENABLE_PRECLOCK);
+
+    /* enable post clock*/
+    val = readl(spwm->base + SIRF_PWM_ENABLE_POSTCLOCK);
+    val |= (1 << pwm->hwpwm);
+    writel(val, spwm->base + SIRF_PWM_ENABLE_POSTCLOCK);
+
+    /* enable output */
+    val = readl(spwm->base + SIRF_PWM_OE);
+    val |= 1 << pwm->hwpwm;
+    val |= 1 << (pwm->hwpwm + TRANS_MODE_SELECT_BIT);
+
+    writel(val, spwm->base + SIRF_PWM_OE);
+
+    mutex_unlock(&spwm->mutex);
+
+    return 0;
+}
+
+static void sirf_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+{
+    u32 val;
+    struct sirf_pwm *spwm = to_sirf_pwm_chip(chip);
+
+    mutex_lock(&spwm->mutex);
+
+    /* disable output */
+    val = readl(spwm->base + SIRF_PWM_OE);
+    val &= ~(1 << pwm->hwpwm);
+    writel(val, spwm->base + SIRF_PWM_OE);
+
+    /* disable postclock */
+    val = readl(spwm->base + SIRF_PWM_ENABLE_POSTCLOCK);
+    val &= ~(1 << pwm->hwpwm);
+    writel(val, spwm->base + SIRF_PWM_ENABLE_POSTCLOCK);
+
+    /* disable preclock */
+    val = readl(spwm->base + SIRF_PWM_ENABLE_PRECLOCK);
+    val &= ~(1 << pwm->hwpwm);
+    writel(val, spwm->base + SIRF_PWM_ENABLE_PRECLOCK);
+
+    mutex_unlock(&spwm->mutex);
+}
+
+static const struct pwm_ops sirf_pwm_ops = {
+    .enable = sirf_pwm_enable,
+    .disable = sirf_pwm_disable,
+    .config = sirf_pwm_config,
+    .owner = THIS_MODULE,
+};
+
+static int sirf_pwm_probe(struct platform_device *pdev)
+{
+    struct sirf_pwm *spwm;
+    struct resource *mem_res;
+    int ret;
+
+    spwm = devm_kzalloc(&pdev->dev, sizeof(*spwm),
+            GFP_KERNEL);
+    if (!spwm)
+        return -ENOMEM;
+
+    platform_set_drvdata(pdev, spwm);
+
+    mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+    spwm->base = devm_ioremap_resource(&pdev->dev, mem_res);
+    if (!spwm->base)
+        return -ENOMEM;
+
+    /*
+     * clock for PWM controller
+     */
+    spwm->pwmc_clk = devm_clk_get(&pdev->dev, "pwmc");
+    if (IS_ERR(spwm->pwmc_clk)) {
+        dev_err(&pdev->dev, "failed to get PWM controller clock\n");
+        return PTR_ERR(spwm->pwmc_clk);
+    }
+
+    ret = clk_prepare_enable(spwm->pwmc_clk);
+    if (ret)
+        return ret;
+
+    /*
+     * clocks to generate PWM signals
+     */
+    spwm->sigsrc0_clk = devm_clk_get(&pdev->dev, "sigsrc0");
+    if (IS_ERR(spwm->sigsrc0_clk)) {
+        dev_err(&pdev->dev, "failed to get PWM signal source clock0\n");
+        ret = PTR_ERR(spwm->sigsrc0_clk);
+        goto err_src0_clk;
+    }
+
+    ret = clk_prepare_enable(spwm->sigsrc0_clk);
+    if (ret)
+        goto err_src0_clk;
+
+    spwm->sigsrc0_clk_rate = clk_get_rate(spwm->sigsrc0_clk);
+
+    spwm->sigsrc3_clk = devm_clk_get(&pdev->dev, "sigsrc3");
+    if (IS_ERR(spwm->sigsrc3_clk)) {
+        dev_err(&pdev->dev, "failed to get PWM signal source clock3\n");
+        ret = PTR_ERR(spwm->sigsrc3_clk);
+        goto err_src3_clk;
+    }
+
+    ret = clk_prepare_enable(spwm->sigsrc3_clk);
+    if (ret)
+        goto err_src3_clk;
+
+    spwm->sigsrc3_clk_rate = clk_get_rate(spwm->sigsrc3_clk);
+
+    spwm->chip.dev = &pdev->dev;
+    spwm->chip.ops = &sirf_pwm_ops;
+    spwm->chip.base = 0;
+    spwm->chip.npwm = 7;
+
+    mutex_init(&spwm->mutex);
+
+    ret = pwmchip_add(&spwm->chip);
+    if (ret < 0) {
+        dev_err(&pdev->dev, "failed to register PWM\n");
+        goto err_pwmadd;
+    }
+
+    return 0;
+
+err_pwmadd:
+    clk_disable_unprepare(spwm->sigsrc3_clk);
+err_src3_clk:
+    clk_disable_unprepare(spwm->sigsrc0_clk);
+err_src0_clk:
+    clk_disable_unprepare(spwm->pwmc_clk);
+
+    return ret;
+}
+
+static int sirf_pwm_remove(struct platform_device *pdev)
+{
+    struct sirf_pwm *spwm = platform_get_drvdata(pdev);
+
+    clk_disable_unprepare(spwm->pwmc_clk);
+    clk_disable_unprepare(spwm->sigsrc0_clk);
+    clk_disable_unprepare(spwm->sigsrc3_clk);
+
+    return pwmchip_remove(&spwm->chip);
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int sirf_pwm_suspend(struct device *dev)
+{
+    struct platform_device *pdev = to_platform_device(dev);
+    struct sirf_pwm *spwm = platform_get_drvdata(pdev);
+
+    clk_disable_unprepare(spwm->pwmc_clk);
+
+    return 0;
+}
+
+static void sirf_pwm_config_restore(struct sirf_pwm *spwm)
+{
+    struct pwm_device *pwm;
+    int i;
+
+    for (i = 0; i < spwm->chip.npwm; i++) {
+        pwm = &spwm->chip.pwms[i];
+        /*
+         * while restoring from hibernation, state of pwm is enabled,
+         * but PWM hardware is not re-enabled
+         */
+        if (test_bit(PWMF_REQUESTED, &pwm->flags) &&
+            test_bit(PWMF_ENABLED, &pwm->flags))
+            sirf_pwm_enable(&spwm->chip, pwm);
+    }
+}
+
+static int sirf_pwm_resume(struct device *dev)
+{
+    struct sirf_pwm *spwm = dev_get_drvdata(dev);
+
+    clk_prepare_enable(spwm->pwmc_clk);
+
+    sirf_pwm_config_restore(spwm);
+
+    return 0;
+}
+
+static int sirf_pwm_restore(struct device *dev)
+{
+    struct sirf_pwm *spwm = dev_get_drvdata(dev);
+
+    /* back from hibernation, clock is already enabled */
+    sirf_pwm_config_restore(spwm);
+
+    return 0;
+}
+
+#else
+#define sirf_pwm_resume NULL
+#define sirf_pwm_suspend NULL
+#define sirf_pwm_restore NULL
+#endif
+
+static const struct dev_pm_ops sirf_pwm_pm_ops = {
+    .suspend = sirf_pwm_suspend,
+    .resume = sirf_pwm_resume,
+    .restore = sirf_pwm_restore,
+};
+
+static const struct of_device_id sirf_pwm_of_match[] = {
+    { .compatible = "sirf,prima2-pwm", },
+    {}
+};
+MODULE_DEVICE_TABLE(of, sirf_pwm_of_match);
+
+static struct platform_driver sirf_pwm_driver = {
+    .driver = {
+        .name = "sirf-pwm",
+        .pm = &sirf_pwm_pm_ops,
+        .of_match_table = sirf_pwm_of_match,
+    },
+    .probe = sirf_pwm_probe,
+    .remove = sirf_pwm_remove,
+};
+
+module_platform_driver(sirf_pwm_driver);
+
+MODULE_DESCRIPTION("SIRF serial SoC PWM device core driver");
+MODULE_AUTHOR("RongJun Ying <Rongjun.Ying@csr.com>");
+MODULE_AUTHOR("Huayi Li <huayi.li@csr.com>");
+MODULE_LICENSE("GPL v2");
