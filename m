@@ -1,88 +1,174 @@
-From: "Chew, Chiau Ee" <chiau.ee.chew@intel.com>
-Subject: RE: [PATCH] pwm: add support for Intel Low Power Subsystem PWM
-Date: Thu, 27 Feb 2014 13:34:57 +0000
-Message-ID: <604BF5F4C5D71041942BC7E84ED659EA0155B371@PGSMSX103.gar.corp.intel.com>
-References: <1390240808-18582-1-git-send-email-chiau.ee.chew@intel.com>
- <20140226143822.GG29779@ulmo.nvidia.com> <20140227090152.GH5018@intel.com>
- <604BF5F4C5D71041942BC7E84ED659EA0155B2E7@PGSMSX103.gar.corp.intel.com>
- <20140227131337.GN5018@intel.com>
+From: Barry Song <21cnbao@gmail.com>
+Subject: Re: [PATCH v3] pwm: add CSR SiRFSoC PWM driver
+Date: Fri, 28 Feb 2014 11:01:33 +0800
+Message-ID: <CAGsJ_4ywPTbUnfVVFFNFMSwG0CGckxKqHZ81rvEDFK-_1H25tA@mail.gmail.com>
+References: <1391855002-26098-1-git-send-email-21cnbao@gmail.com>
+ <lel46f$q2d$1@ger.gmane.org> <CAGsJ_4xLtXV6WtVhLgzFAaU9oG5UOt+LonFktBipQf_a6Yutng@mail.gmail.com>
+ <CAMiSF3CczVV+Ob++_ACcwE+OXvFH8f9v1E=Q1F5x7Zz1BjCCzg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140227131337.GN5018@intel.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Chew, Kean Ho" <kean.ho.chew@intel.com>, "Chang, Rebecca Swee Fun" <rebecca.swee.fun.chang@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pb0-f45.google.com ([209.85.160.45]:61639 "EHLO
+	mail-pb0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750999AbaB1DCE (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Feb 2014 22:02:04 -0500
+Received: by mail-pb0-f45.google.com with SMTP id un15so141156pbc.18
+        for <linux-pwm@vger.kernel.org>; Thu, 27 Feb 2014 19:02:03 -0800 (PST)
+In-Reply-To: <CAMiSF3CczVV+Ob++_ACcwE+OXvFH8f9v1E=Q1F5x7Zz1BjCCzg@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Romain Izard <romain.izard.pro@gmail.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-pwm@vger.kernel.org, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>
 
+2014-02-27 18:51 GMT+08:00 Romain Izard <romain.izard.pro@gmail.com>:
+> 2014-02-27 3:49 GMT+01:00 Barry Song <21cnbao@gmail.com>:
+>> Hello Romain,
+>>
+>> 2014-02-27 0:19 GMT+08:00 Romain Izard <romain.izard.pro@gmail.com>:
+>>>
+>>> Describing the clocks this way seems limiting to me.
+>>>
+>>> Each output of the PWM controller on SiRFatlasVI and SiRFprimaII can
+>>> independently use one clock among many for signal generation, with
+>>> three PLLs and two external clock inputs available.
+>>
+>> yes, that is the hardware spec. and i feel so happy you have read it.
+>> now i get one more sirfsoc friend.
+>>
+>> 32K of RTC is too small to generate a normal PWM signal, PLLs in the
+>> design can change for DVFS.
+>> so that means a notifier callback is needed if PLL is changed for
+>> CPUFreq, this makes SW buggy and complex.
+>>
+> Well, my specific concern was the use of the bypass mode on the 32kHz
+> clock. As the PWM driver is also the interface for external clock distribution,
+> and 32 kHz is a common requirement for external devices, I wish to avoid
+> compounding error rates. I will get a less precise clock if I divide the 26 MHz
+> instead.
 
+Hi Romain,
 
-> -----Original Message-----
-> From: Mika Westerberg [mailto:mika.westerberg@linux.intel.com]
-> Sent: Thursday, February 27, 2014 9:14 PM
-> To: Chew, Chiau Ee
-> Cc: Thierry Reding; linux-pwm@vger.kernel.org; linux-kernel@vger.kernel.org;
-> Chew, Kean Ho; Chang, Rebecca Swee Fun
-> Subject: Re: [PATCH] pwm: add support for Intel Low Power Subsystem PWM
-> 
-> On Thu, Feb 27, 2014 at 09:03:41AM +0000, Chew, Chiau Ee wrote:
-> > > > > +static int pwm_lpss_probe(struct platform_device *pdev) {
-> > > > > +	struct device *dev = &pdev->dev;
-> > > > > +	struct pwm_lpss_chip *lpwm;
-> > > > > +	int ret;
-> > > > > +
-> > > > > +	lpwm = dev_get_platdata(dev);
-> > > >
-> > > > struct pwm_lpss_chip is defined in this source file, how can
-> > > > anybody else know what to fill platform_data with?
-> > >
-> > > Good point. Chiau Ee, do you recall why that thing is there in the first place?
-> >
-> > This is added because we would eventually want to have PCI enumeration
-> > support added. I think we shall find a way to better enable both the
-> > ACPI enumeration and PCI enumeration support.
-> 
-> Agreed. For now, can you please drop the platform data thing from the driver?
-> Thanks.
-> 
+do you have a real user scenarios for this 32KHz? as the 1st step, i
+want a clean and general enough pwm driver, if there is any special
+requirement, i want to execute a "demanding page" when the "page
+fault" happened as this will make the whole flow more smooth. that
+means we make it lazy by incremental patches. but if you do want to
+use it for the moment, it is a "page fault" now. so we can have it
+immediately and it is better you can help to double-test :-)
 
-Ok. Noted.
+>
+>> when i reviewed the source codes in our local git,  i decided to move
+>> to a general and clean SW solution at the first step.
+>>>
+>>> If we specify the source clock for the signal generation in the device
+>>> tree as you do here, we will prevent the use of those different input
+>>> clocks when incompatible frequencies are required, such as 32,768 Hz on
+>>> one output line and 44,100 Hz on another one.
+>>
+>> i prefer we use a normal clock source which can provide normal clock
+>> rates. 26MHz is a suitable one which can provide a big scale.
+>> even though we can use multiple clock sources, clock sources are the
+>> knowledge of PWM and should not be visible to pwm clients as you
+>> mentioned below.
+>>
+> Thanks, I understand how you got to this conclusion.
+>
+>>>
+>>> As the clock tree for SiRF SoCs is described in the source files in
+>>> drivers/clk/sirf/*, it does not appear to me that the functional clock
+>>> needs to be configured in the device tree: the names of available clock
+>>> sources can be provided statically by the device tree matching table the
+>>> pwm-sirf.c.  Moreover, this would continue to work with the current
+>>> (undocumented) bindings for SiRFatlasVI and SiRFprimaII.
+>>
+>> i don't understand "it does not appear to me that the functional clock
+>> needs to be configured in the device tree", we are now using the clock
+>> index in dts.
+>> the index is mapping with the clock indexes in driver codes as you said.
+>>
+> What I meant is that the clock tree in SiRF chips is not described in the
+> DTS, as you can get for example with OMAP chips, but it is defined in
+> tables in the source code. By extension, I meant that the functional clocks
+> used by the PWM module can be hidden from the DTS in the same way.
+> But you're right that it is not was your proposition does, and after checking
+> the previous discussions I see Arnd asked you for this change.
+>
+>>>
 
-> > > > > +	if (!lpwm) {
-> > > > > +		lpwm = pwm_lpss_acpi_get_pdata(pdev);
-> > > > > +		if (!lpwm)
-> > > > > +			return -ENODEV;
-> > > > > +	}
-> > > > [...]
-> > > > > +static struct platform_driver pwm_lpss_driver = {
-> > > > > +	.driver = {
-> > > > > +		.name = "pwm-lpss",
-> > > > > +		.acpi_match_table = ACPI_PTR(pwm_lpss_acpi_match),
-> > > >
-> > > > ACPI_PTR not needed since the table will always be there.
-> > >
-> > > OK.
-> > >
-> > > >
-> > > > > +	},
-> > > > > +	.probe = pwm_lpss_probe,
-> > > > > +	.remove = pwm_lpss_remove,
-> > > > > +};
-> > > > > +module_platform_driver(pwm_lpss_driver);
-> > > > > +
-> > > > > +MODULE_DESCRIPTION("PWM driver for Intel LPSS");
-> > > > > +MODULE_AUTHOR("Mika Westerberg
-> > > <mika.westerberg@linux.intel.com>");
-> > > > > +MODULE_LICENSE("GPL");
-> > > >
-> > > > The file header says GPL v2, but "GPL" here means "GPL v2 or later".
-> > >
-> > > OK, we will change that to GPLv2.
-> > >
-> > > Thanks a lot for your review! We will do the changes and submit v2.
-> >
-> > Ok. I will make the changes accordingly.
-> 
-> Thanks.
+understood.
+
+>>> Alternatively, to keep the configuration in the device tree, all valid
+>>> inputs for this SoC could be described here, instead of a single one.
+>>>
+>>> The choice of the clock used for each output can then be selected when
+>>> configuring an output, with a selection algorithm using the best input for
+>>> a given period in of_xlate() and config() callbacks.
+>>
+>> this is right in case we don't make clock sources visible to PWM
+>> clients. but for the moment, current driver have met the requirement
+>> of PWM clients like LCD and audio codec in our tests.
+>> so i think if there is some special rate we can not met in the future,
+>> we have an incremental patch for that.
+>> we might be able to have a "best-fit" algorithm to figure out
+>> "best-fit" clock source, even a quick check-up table for these special
+>> rates since they are few.
+>
+> Perhaps this can be linked with the missing "clock-names" property, as this
+> will make it possible to add multiple functional clocks, with "iclk" matching
+> the interface clock (i.e. pwmc), and "fclk0", "fclk1", etc. matching
+> all supported
+> functional clocks.
+>
+> With only the 26 MHz clock, the node would look like:
+>
+> pwm: pwm@b0130000 {
+>         compatible = "sirf,prima2-pwm";
+>         #pwm-cells = <2>;
+>         reg = <0xb0130000 0x10000>;
+>         clocks = <&clks 21>,  <&clks 1>, <&clks 0>;
+>         clock-names = "iclk", "fclk0", "fclk3";
+> };
+>
+> The result would look like this with both the 26 MHz and the 32 kHz clocks:
+>
+> pwm: pwm@b0130000 {
+>         compatible = "sirf,prima2-pwm";
+>         #pwm-cells = <2>;
+>         reg = <0xb0130000 0x10000>;
+>         clocks = <&clks 21>,  <&clks 1>, <&clks 0>;
+>         clock-names = "iclk", "fclk0", "fclk3";
+> };
+>
+> And with all possible clocks:
+>
+> pwm: pwm@b0130000 {
+>         compatible = "sirf,prima2-pwm";
+>         #pwm-cells = <2>;
+>         reg = <0xb0130000 0x10000>;
+>         clocks = <&clks 21>,  <&clks 1>, <&clks 2>, <&clks 3>, <&clks
+> 0>, <&clks 4>;
+>         clock-names = "iclk", "fclk0", "fclk1", "fclk2", "fclk3", "fclk4";
+> };
+>
+> The code in the probe function would interpret the clock-name to build
+> the clock/index mapping table. This would not change a lot the binding you
+> proposed, as you still can describe only one functional clock, but it describes
+> which index in the configuration register is linked to the proposed clock.
+>
+
+yes. very clear. the only two things left
+
+1.  fclk should be named for pwm not for rtc, osc and pll, so the
+names might be ugly by fclk0~N.
+
+2.  the driver need to manage all of the clocks. yes, it can. but it
+might be ugly again. we can either request the clk at the time of pwm
+configuration, or get all directy in probe and maintain an array.
+
+i am thinking what is the best way for it. if we do that by an
+incremental patch, it might be more concentrated and understandable.
+
+> --
+> Romain Izard
+
+-barry
