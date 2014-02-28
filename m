@@ -1,65 +1,251 @@
-From: Barry Song <21cnbao@gmail.com>
-Subject: Re: [PATCH v3] pwm: add CSR SiRFSoC PWM driver
-Date: Fri, 28 Feb 2014 13:30:48 +0800
-Message-ID: <CAGsJ_4z=udVOMzFK0TrpFHKHZFOPvYYs0DVrT_1j3KUVsOdspw@mail.gmail.com>
-References: <1391855002-26098-1-git-send-email-21cnbao@gmail.com>
- <lel46f$q2d$1@ger.gmane.org> <CAGsJ_4xLtXV6WtVhLgzFAaU9oG5UOt+LonFktBipQf_a6Yutng@mail.gmail.com>
- <CAMiSF3CczVV+Ob++_ACcwE+OXvFH8f9v1E=Q1F5x7Zz1BjCCzg@mail.gmail.com> <CAGsJ_4ywPTbUnfVVFFNFMSwG0CGckxKqHZ81rvEDFK-_1H25tA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Chew Chiau Ee <chiau.ee.chew@intel.com>
+Subject: [PATCH v2] pwm: add support for Intel Low Power Subsystem PWM
+Date: Fri, 28 Feb 2014 22:50:57 +0800
+Message-ID: <1393599057-26451-1-git-send-email-chiau.ee.chew@intel.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:43481 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750734AbaB1FbJ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Feb 2014 00:31:09 -0500
-Received: by mail-pa0-f44.google.com with SMTP id bj1so280956pad.31
-        for <linux-pwm@vger.kernel.org>; Thu, 27 Feb 2014 21:31:08 -0800 (PST)
-In-Reply-To: <CAGsJ_4ywPTbUnfVVFFNFMSwG0CGckxKqHZ81rvEDFK-_1H25tA@mail.gmail.com>
+Received: from mga02.intel.com ([134.134.136.20]:25227 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751157AbaB1GtU (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Fri, 28 Feb 2014 01:49:20 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Romain Izard <romain.izard.pro@gmail.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-pwm@vger.kernel.org, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>, Huayi Li <huayi.li@csr.com>
+To: Thierry Reding <thierry.reding@gmail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Chew Kean Ho <kean.ho.chew@intel.com>, Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-2014-02-28 11:01 GMT+08:00 Barry Song <21cnbao@gmail.com>:
-> 2014-02-27 18:51 GMT+08:00 Romain Izard <romain.izard.pro@gmail.com>:
->> 2014-02-27 3:49 GMT+01:00 Barry Song <21cnbao@gmail.com>:
->>> Hello Romain,
->>>
->>> 2014-02-27 0:19 GMT+08:00 Romain Izard <romain.izard.pro@gmail.com>:
->>>>
->>>> Describing the clocks this way seems limiting to me.
->>>>
->>>> Each output of the PWM controller on SiRFatlasVI and SiRFprimaII can
->>>> independently use one clock among many for signal generation, with
->>>> three PLLs and two external clock inputs available.
->>>
->>> yes, that is the hardware spec. and i feel so happy you have read it.
->>> now i get one more sirfsoc friend.
->>>
->>> 32K of RTC is too small to generate a normal PWM signal, PLLs in the
->>> design can change for DVFS.
->>> so that means a notifier callback is needed if PLL is changed for
->>> CPUFreq, this makes SW buggy and complex.
->>>
->> Well, my specific concern was the use of the bypass mode on the 32kHz
->> clock. As the PWM driver is also the interface for external clock distribution,
->> and 32 kHz is a common requirement for external devices, I wish to avoid
->> compounding error rates. I will get a less precise clock if I divide the 26 MHz
->> instead.
->
-> Hi Romain,
->
-> do you have a real user scenarios for this 32KHz? as the 1st step, i
-> want a clean and general enough pwm driver, if there is any special
-> requirement, i want to execute a "demanding page" when the "page
-> fault" happened as this will make the whole flow more smooth. that
-> means we make it lazy by incremental patches. but if you do want to
-> use it for the moment, it is a "page fault" now. so we can have it
-> immediately and it is better you can help to double-test :-)
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-Huayi told me bluetooth/wifi is using 32768. if we bypass rtc
-directly, it is better.
-currently the 26MHz can be divided to 32K, but i agree with you that
-bypassing rtc is better.
+Add support for Intel Low Power I/O subsystem PWM controllers found on
+Intel BayTrail SoC.
 
--barry
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Chew, Kean Ho <kean.ho.chew@intel.com>
+Signed-off-by: Chang, Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
+Signed-off-by: Chew, Chiau Ee <chiau.ee.chew@intel.com>
+---
+ drivers/pwm/Kconfig    |   10 +++
+ drivers/pwm/Makefile   |    1 +
+ drivers/pwm/pwm-lpss.c |  179 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 190 insertions(+), 0 deletions(-)
+ create mode 100644 drivers/pwm/pwm-lpss.c
+
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 0b7a3c9..aaa91cc 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -119,6 +119,16 @@ config PWM_LPC32XX
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-lpc32xx.
+ 
++config PWM_LPSS
++	tristate "Intel LPSS PWM support"
++	depends on ACPI
++	help
++	  Generic PWM framework driver for Intel Low Power Subsystem PWM
++	  controller.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called pwm-lpss.
++
+ config PWM_MXS
+ 	tristate "Freescale MXS PWM support"
+ 	depends on ARCH_MXS && OF
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index d8906ec..61bf073 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -9,6 +9,7 @@ obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
+ obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
+ obj-$(CONFIG_PWM_LP3943)	+= pwm-lp3943.o
+ obj-$(CONFIG_PWM_LPC32XX)	+= pwm-lpc32xx.o
++obj-$(CONFIG_PWM_LPSS)		+= pwm-lpss.o
+ obj-$(CONFIG_PWM_MXS)		+= pwm-mxs.o
+ obj-$(CONFIG_PWM_PCA9685)	+= pwm-pca9685.o
+ obj-$(CONFIG_PWM_PUV3)		+= pwm-puv3.o
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+new file mode 100644
+index 0000000..2ecd945
+--- /dev/null
++++ b/drivers/pwm/pwm-lpss.c
+@@ -0,0 +1,179 @@
++/*
++ * Intel Low Power Subsystem PWM controller driver
++ *
++ * Copyright (C) 2014, Intel Corporation
++ * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
++ * Author: Chew Kean Ho <kean.ho.chew@intel.com>
++ * Author: Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
++ * Author: Chew Chiau Ee <chiau.ee.chew@intel.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/acpi.h>
++#include <linux/clk.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/pwm.h>
++#include <linux/platform_device.h>
++
++#define PWM				0x00000000
++#define PWM_ENABLE			BIT(31)
++#define PWM_SW_UPDATE			BIT(30)
++#define PWM_BASE_UNIT_SHIFT		8
++#define PWM_BASE_UNIT_MASK		0x00ffff00
++#define PWM_ON_TIME_DIV_MASK		0x000000ff
++#define PWM_DIVISION_CORRECTION		0x2
++#define PWM_LIMIT			(0x8000 + PWM_DIVISION_CORRECTION)
++#define NSECS_PER_SEC			1000000000UL
++
++struct pwm_lpss_chip {
++	struct pwm_chip chip;
++	void __iomem *regs;
++	struct clk *clk;
++};
++
++static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
++{
++	return container_of(chip, struct pwm_lpss_chip, chip);
++}
++
++static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
++			   int duty_ns, int period_ns)
++{
++	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
++	u8 on_time_div;
++	unsigned long c = clk_get_rate(lpwm->clk);
++	unsigned long long base_unit, freq = NSECS_PER_SEC;
++	u32 ctrl;
++
++	do_div(freq, period_ns);
++
++	/* The equation is: base_unit = ((freq / c) * 65536) + correction */
++	base_unit = freq * 65536;
++	do_div(base_unit, c);
++	base_unit += PWM_DIVISION_CORRECTION;
++	if (base_unit > PWM_LIMIT)
++		return -EINVAL;
++
++	if (duty_ns <= 0)
++		duty_ns = 1;
++	on_time_div = 255 - (255 * duty_ns / period_ns);
++
++	ctrl = readl(lpwm->regs + PWM);
++	ctrl &= ~(PWM_BASE_UNIT_MASK | PWM_ON_TIME_DIV_MASK);
++	ctrl |= (u16) base_unit << PWM_BASE_UNIT_SHIFT;
++	ctrl |= on_time_div;
++	/* request PWM to update on next cycle */
++	ctrl |= PWM_SW_UPDATE;
++	writel(ctrl, lpwm->regs + PWM);
++
++	return 0;
++}
++
++static int pwm_lpss_enable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
++	u32 ctrl;
++	int ret;
++
++	ret = clk_prepare_enable(lpwm->clk);
++	if (ret)
++		return ret;
++
++	ctrl = readl(lpwm->regs + PWM);
++	writel(ctrl | PWM_ENABLE, lpwm->regs + PWM);
++
++	return 0;
++}
++
++static void pwm_lpss_disable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
++	u32 ctrl;
++
++	ctrl = readl(lpwm->regs + PWM);
++	writel(ctrl & ~PWM_ENABLE, lpwm->regs + PWM);
++
++	clk_disable_unprepare(lpwm->clk);
++}
++
++static const struct pwm_ops pwm_lpss_ops = {
++	.config = pwm_lpss_config,
++	.enable = pwm_lpss_enable,
++	.disable = pwm_lpss_disable,
++	.owner = THIS_MODULE,
++};
++
++static const struct acpi_device_id pwm_lpss_acpi_match[] = {
++	{ "80860F08", 0 },
++	{ "80860F09", 0 },
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, pwm_lpss_acpi_match);
++
++static int pwm_lpss_probe(struct platform_device *pdev)
++{
++	struct pwm_lpss_chip *lpwm;
++	struct resource *r;
++	int ret;
++
++	lpwm = devm_kzalloc(&pdev->dev, sizeof(*lpwm), GFP_KERNEL);
++	if (!lpwm)
++		return -ENOMEM;
++
++	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++
++	lpwm->regs = devm_ioremap_resource(&pdev->dev, r);
++	if (IS_ERR(lpwm->regs))
++		return PTR_ERR(lpwm->regs);
++
++	lpwm->clk = devm_clk_get(&pdev->dev, NULL);
++	if (IS_ERR(lpwm->clk)) {
++		dev_err(&pdev->dev, "failed to get PWM clock\n");
++		return PTR_ERR(lpwm->clk);
++	}
++
++	lpwm->chip.dev = &pdev->dev;
++	lpwm->chip.ops = &pwm_lpss_ops;
++	lpwm->chip.base = -1;
++	lpwm->chip.npwm = 1;
++
++	ret = pwmchip_add(&lpwm->chip);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
++		return ret;
++	}
++
++	platform_set_drvdata(pdev, lpwm);
++	return 0;
++}
++
++static int pwm_lpss_remove(struct platform_device *pdev)
++{
++	struct pwm_lpss_chip *lpwm = platform_get_drvdata(pdev);
++	u32 ctrl;
++
++	ctrl = readl(lpwm->regs + PWM);
++	writel(ctrl & ~PWM_ENABLE, lpwm->regs + PWM);
++
++	return pwmchip_remove(&lpwm->chip);
++}
++
++static struct platform_driver pwm_lpss_driver = {
++	.driver = {
++		.name = "pwm-lpss",
++		.acpi_match_table = pwm_lpss_acpi_match,
++	},
++	.probe = pwm_lpss_probe,
++	.remove = pwm_lpss_remove,
++};
++module_platform_driver(pwm_lpss_driver);
++
++MODULE_DESCRIPTION("PWM driver for Intel LPSS");
++MODULE_AUTHOR("Mika Westerberg <mika.westerberg@linux.intel.com>");
++MODULE_LICENSE("GPLv2");
++MODULE_ALIAS("platform:pwm-lpss");
+-- 
+1.7.4.4
+
