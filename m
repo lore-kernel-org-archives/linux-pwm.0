@@ -1,251 +1,153 @@
-From: Chew Chiau Ee <chiau.ee.chew@intel.com>
-Subject: [PATCH v2] pwm: add support for Intel Low Power Subsystem PWM
-Date: Fri, 28 Feb 2014 22:50:57 +0800
-Message-ID: <1393599057-26451-1-git-send-email-chiau.ee.chew@intel.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:25227 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751157AbaB1GtU (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Fri, 28 Feb 2014 01:49:20 -0500
-Sender: linux-pwm-owner@vger.kernel.org
+From: Romain Izard <romain.izard.pro@gmail.com>
+Subject: Re: [PATCH v3] pwm: add CSR SiRFSoC PWM driver
+Date: Fri, 28 Feb 2014 10:06:07 +0100
+Message-ID: <CAMiSF3CN33N867TtjatYx1EwaV5qJY=JYsSrVFpQvC+yS1T5rA@mail.gmail.com>
+References: <1391855002-26098-1-git-send-email-21cnbao@gmail.com>
+ <lel46f$q2d$1@ger.gmane.org>
+ <CAGsJ_4xLtXV6WtVhLgzFAaU9oG5UOt+LonFktBipQf_a6Yutng@mail.gmail.com>
+ <CAMiSF3CczVV+Ob++_ACcwE+OXvFH8f9v1E=Q1F5x7Zz1BjCCzg@mail.gmail.com>
+ <CAGsJ_4ywPTbUnfVVFFNFMSwG0CGckxKqHZ81rvEDFK-_1H25tA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CAGsJ_4ywPTbUnfVVFFNFMSwG0CGckxKqHZ81rvEDFK-_1H25tA@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Barry Song <21cnbao@gmail.com>
+Cc: linux-pwm@vger.kernel.org, DL-SHA-WorkGroupLinux <workgroup.linux@csr.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Chew Kean Ho <kean.ho.chew@intel.com>, Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Hello Barry,
 
-Add support for Intel Low Power I/O subsystem PWM controllers found on
-Intel BayTrail SoC.
+2014-02-28 4:01 GMT+01:00 Barry Song <21cnbao@gmail.com>:
+>
+> Hi Romain,
+>
+> do you have a real user scenarios for this 32KHz? as the 1st step, i
+> want a clean and general enough pwm driver, if there is any special
+> requirement, i want to execute a "demanding page" when the "page
+> fault" happened as this will make the whole flow more smooth. that
+> means we make it lazy by incremental patches. but if you do want to
+> use it for the moment, it is a "page fault" now. so we can have it
+> immediately and it is better you can help to double-test :-)
 
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Signed-off-by: Chew, Kean Ho <kean.ho.chew@intel.com>
-Signed-off-by: Chang, Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
-Signed-off-by: Chew, Chiau Ee <chiau.ee.chew@intel.com>
----
- drivers/pwm/Kconfig    |   10 +++
- drivers/pwm/Makefile   |    1 +
- drivers/pwm/pwm-lpss.c |  179 ++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 190 insertions(+), 0 deletions(-)
- create mode 100644 drivers/pwm/pwm-lpss.c
+My use case is to connect a Bluetooth module, in fact with a CSR chip.
+For testing, I will try to see what I can do, as for now my boards are not
+running with the mainline. But I'm very interested in transitioning on the
+mainline in due time, so that's the reason I keep an eye on the mailing
+lists. Conversely, it's not critical at all to get the feature in right now, but
+it should not be impossible to do so in the future, especially when taking
+the 'stable interface' aspect of device tree bindings into account.
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 0b7a3c9..aaa91cc 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -119,6 +119,16 @@ config PWM_LPC32XX
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-lpc32xx.
- 
-+config PWM_LPSS
-+	tristate "Intel LPSS PWM support"
-+	depends on ACPI
-+	help
-+	  Generic PWM framework driver for Intel Low Power Subsystem PWM
-+	  controller.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-lpss.
-+
- config PWM_MXS
- 	tristate "Freescale MXS PWM support"
- 	depends on ARCH_MXS && OF
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index d8906ec..61bf073 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -9,6 +9,7 @@ obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
- obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
- obj-$(CONFIG_PWM_LP3943)	+= pwm-lp3943.o
- obj-$(CONFIG_PWM_LPC32XX)	+= pwm-lpc32xx.o
-+obj-$(CONFIG_PWM_LPSS)		+= pwm-lpss.o
- obj-$(CONFIG_PWM_MXS)		+= pwm-mxs.o
- obj-$(CONFIG_PWM_PCA9685)	+= pwm-pca9685.o
- obj-$(CONFIG_PWM_PUV3)		+= pwm-puv3.o
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-new file mode 100644
-index 0000000..2ecd945
---- /dev/null
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -0,0 +1,179 @@
-+/*
-+ * Intel Low Power Subsystem PWM controller driver
-+ *
-+ * Copyright (C) 2014, Intel Corporation
-+ * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
-+ * Author: Chew Kean Ho <kean.ho.chew@intel.com>
-+ * Author: Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
-+ * Author: Chew Chiau Ee <chiau.ee.chew@intel.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#include <linux/acpi.h>
-+#include <linux/clk.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/pwm.h>
-+#include <linux/platform_device.h>
-+
-+#define PWM				0x00000000
-+#define PWM_ENABLE			BIT(31)
-+#define PWM_SW_UPDATE			BIT(30)
-+#define PWM_BASE_UNIT_SHIFT		8
-+#define PWM_BASE_UNIT_MASK		0x00ffff00
-+#define PWM_ON_TIME_DIV_MASK		0x000000ff
-+#define PWM_DIVISION_CORRECTION		0x2
-+#define PWM_LIMIT			(0x8000 + PWM_DIVISION_CORRECTION)
-+#define NSECS_PER_SEC			1000000000UL
-+
-+struct pwm_lpss_chip {
-+	struct pwm_chip chip;
-+	void __iomem *regs;
-+	struct clk *clk;
-+};
-+
-+static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
-+{
-+	return container_of(chip, struct pwm_lpss_chip, chip);
-+}
-+
-+static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
-+			   int duty_ns, int period_ns)
-+{
-+	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
-+	u8 on_time_div;
-+	unsigned long c = clk_get_rate(lpwm->clk);
-+	unsigned long long base_unit, freq = NSECS_PER_SEC;
-+	u32 ctrl;
-+
-+	do_div(freq, period_ns);
-+
-+	/* The equation is: base_unit = ((freq / c) * 65536) + correction */
-+	base_unit = freq * 65536;
-+	do_div(base_unit, c);
-+	base_unit += PWM_DIVISION_CORRECTION;
-+	if (base_unit > PWM_LIMIT)
-+		return -EINVAL;
-+
-+	if (duty_ns <= 0)
-+		duty_ns = 1;
-+	on_time_div = 255 - (255 * duty_ns / period_ns);
-+
-+	ctrl = readl(lpwm->regs + PWM);
-+	ctrl &= ~(PWM_BASE_UNIT_MASK | PWM_ON_TIME_DIV_MASK);
-+	ctrl |= (u16) base_unit << PWM_BASE_UNIT_SHIFT;
-+	ctrl |= on_time_div;
-+	/* request PWM to update on next cycle */
-+	ctrl |= PWM_SW_UPDATE;
-+	writel(ctrl, lpwm->regs + PWM);
-+
-+	return 0;
-+}
-+
-+static int pwm_lpss_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
-+	u32 ctrl;
-+	int ret;
-+
-+	ret = clk_prepare_enable(lpwm->clk);
-+	if (ret)
-+		return ret;
-+
-+	ctrl = readl(lpwm->regs + PWM);
-+	writel(ctrl | PWM_ENABLE, lpwm->regs + PWM);
-+
-+	return 0;
-+}
-+
-+static void pwm_lpss_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
-+	u32 ctrl;
-+
-+	ctrl = readl(lpwm->regs + PWM);
-+	writel(ctrl & ~PWM_ENABLE, lpwm->regs + PWM);
-+
-+	clk_disable_unprepare(lpwm->clk);
-+}
-+
-+static const struct pwm_ops pwm_lpss_ops = {
-+	.config = pwm_lpss_config,
-+	.enable = pwm_lpss_enable,
-+	.disable = pwm_lpss_disable,
-+	.owner = THIS_MODULE,
-+};
-+
-+static const struct acpi_device_id pwm_lpss_acpi_match[] = {
-+	{ "80860F08", 0 },
-+	{ "80860F09", 0 },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(acpi, pwm_lpss_acpi_match);
-+
-+static int pwm_lpss_probe(struct platform_device *pdev)
-+{
-+	struct pwm_lpss_chip *lpwm;
-+	struct resource *r;
-+	int ret;
-+
-+	lpwm = devm_kzalloc(&pdev->dev, sizeof(*lpwm), GFP_KERNEL);
-+	if (!lpwm)
-+		return -ENOMEM;
-+
-+	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+
-+	lpwm->regs = devm_ioremap_resource(&pdev->dev, r);
-+	if (IS_ERR(lpwm->regs))
-+		return PTR_ERR(lpwm->regs);
-+
-+	lpwm->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(lpwm->clk)) {
-+		dev_err(&pdev->dev, "failed to get PWM clock\n");
-+		return PTR_ERR(lpwm->clk);
-+	}
-+
-+	lpwm->chip.dev = &pdev->dev;
-+	lpwm->chip.ops = &pwm_lpss_ops;
-+	lpwm->chip.base = -1;
-+	lpwm->chip.npwm = 1;
-+
-+	ret = pwmchip_add(&lpwm->chip);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
-+		return ret;
-+	}
-+
-+	platform_set_drvdata(pdev, lpwm);
-+	return 0;
-+}
-+
-+static int pwm_lpss_remove(struct platform_device *pdev)
-+{
-+	struct pwm_lpss_chip *lpwm = platform_get_drvdata(pdev);
-+	u32 ctrl;
-+
-+	ctrl = readl(lpwm->regs + PWM);
-+	writel(ctrl & ~PWM_ENABLE, lpwm->regs + PWM);
-+
-+	return pwmchip_remove(&lpwm->chip);
-+}
-+
-+static struct platform_driver pwm_lpss_driver = {
-+	.driver = {
-+		.name = "pwm-lpss",
-+		.acpi_match_table = pwm_lpss_acpi_match,
-+	},
-+	.probe = pwm_lpss_probe,
-+	.remove = pwm_lpss_remove,
-+};
-+module_platform_driver(pwm_lpss_driver);
-+
-+MODULE_DESCRIPTION("PWM driver for Intel LPSS");
-+MODULE_AUTHOR("Mika Westerberg <mika.westerberg@linux.intel.com>");
-+MODULE_LICENSE("GPLv2");
-+MODULE_ALIAS("platform:pwm-lpss");
+> 2014-02-27 18:51 GMT+08:00 Romain Izard <romain.izard.pro@gmail.com>:
+>> Perhaps this can be linked with the missing "clock-names" property, as this
+>> will make it possible to add multiple functional clocks, with "iclk" matching
+>> the interface clock (i.e. pwmc), and "fclk0", "fclk1", etc. matching
+>> all supported
+>> functional clocks.
+>>
+>> With only the 26 MHz clock, the node would look like:
+>>
+>> pwm: pwm@b0130000 {
+>>         compatible = "sirf,prima2-pwm";
+>>         #pwm-cells = <2>;
+>>         reg = <0xb0130000 0x10000>;
+>>         clocks = <&clks 21>,  <&clks 1>, <&clks 0>;
+>>         clock-names = "iclk", "fclk0", "fclk3";
+>> };
+>>
+
+Aargh. I meant this:
+
+pwm: pwm@b0130000 {
+        compatible = "sirf,prima2-pwm";
+        #pwm-cells = <2>;
+        reg = <0xb0130000 0x10000>;
+        clocks = <&clks 21>,  <&clks 1>;
+        clock-names = "iclk", "fclk0";
+};
+
+>> The result would look like this with both the 26 MHz and the 32 kHz clocks:
+>>
+>> pwm: pwm@b0130000 {
+>>         compatible = "sirf,prima2-pwm";
+>>         #pwm-cells = <2>;
+>>         reg = <0xb0130000 0x10000>;
+>>         clocks = <&clks 21>,  <&clks 1>, <&clks 0>;
+>>         clock-names = "iclk", "fclk0", "fclk3";
+>> };
+>>
+>> And with all possible clocks:
+>>
+>> pwm: pwm@b0130000 {
+>>         compatible = "sirf,prima2-pwm";
+>>         #pwm-cells = <2>;
+>>         reg = <0xb0130000 0x10000>;
+>>         clocks = <&clks 21>,  <&clks 1>, <&clks 2>, <&clks 3>, <&clks
+>> 0>, <&clks 4>;
+>>         clock-names = "iclk", "fclk0", "fclk1", "fclk2", "fclk3", "fclk4";
+>> };
+>>
+>> The code in the probe function would interpret the clock-name to build
+>> the clock/index mapping table. This would not change a lot the binding you
+>> proposed, as you still can describe only one functional clock, but it describes
+>> which index in the configuration register is linked to the proposed clock.
+>>
+>
+> yes. very clear. the only two things left
+>
+> 1.  fclk should be named for pwm not for rtc, osc and pll, so the
+> names might be ugly by fclk0~N.
+>
+For me, it's important to keep the number in the name of the clock as it is
+the source of the information for binding the device tree clock on one side
+and the clock source index in the selection register on the other side. If
+we do not do it this way, we cannot easily handle new clocks in the future
+in the binding.
+
+On the other hand, I strongly dislike the current clock specification
+as <&clks #x>.
+It would be probably a good thing to add a header linking the numbers
+to symbols,
+and we would then get:
+
+        clocks = <&clks SIRFCLK_A6_PWM>,
+                <&clks SIRFCLK_A6_OSC>,
+                <&clks SIRFCLK_A6_PLL1>,
+                <&clks SIRFCLK_A6_PLL2>,
+                <&clks SIRFCLK_A6_RTC>,
+                <&clks SIRFCLK_16_PLL3>;
+        clock-names = "iclk", "fclk0", "fclk1", "fclk2", "fclk3", "fclk4";
+
+Note that as the binary output of the device tree would not change with this, we
+do not need to worry about backwards compatibility in this precise case.
+
+> 2.  the driver need to manage all of the clocks. yes, it can. but it
+> might be ugly again. we can either request the clk at the time of pwm
+> configuration, or get all directy in probe and maintain an array.
+
+For me, what is important right now is to get the binding right. If the driver
+cannot do everything the binding allows, this is not a problem. But we define
+a binding that cannot easily be expanded, we will have problems when we
+need the new features.
+
+> i am thinking what is the best way for it. if we do that by an
+> incremental patch, it might be more concentrated and understandable.
+
+I'm all for this as well, that why for me the first syntax (corrected
+up there) should
+be valid. This way, you do not need to integrate the bypass support in
+this step,
+but you can add it later.
+
+Best regards,
 -- 
-1.7.4.4
-
+Romain Izard
