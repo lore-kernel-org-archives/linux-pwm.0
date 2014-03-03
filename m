@@ -1,73 +1,78 @@
-From: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2MiBSRVNFTkRdIHB3bTogQWRkIENMUFM3MTFYIFBXTSBz?=
- =?UTF-8?B?dXBwb3J0?=
-Date: Sat, 01 Mar 2014 17:56:35 +0400
-Message-ID: <1393682195.224091960@f280.i.mail.ru>
-References: <1393342067-9086-1-git-send-email-shc_work@mail.ru>
- <20140301100641.cdb4398a4172700cfd318213@mail.ru>
- <201403011240.09137.arnd@arndb.de>
-Reply-To: =?UTF-8?B?QWxleGFuZGVyIFNoaXlhbg==?= <shc_work@mail.ru>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: Re: [PATCH 5/9] pwm: spear: Remove unnecessary OOM messages
+Date: Mon, 03 Mar 2014 10:14:22 +0900
+Message-ID: <008e01cf367d$e926a6b0$bb73f410$%han@samsung.com>
+References: <000701cf328e$00ed24c0$02c76e40$%han@samsung.com>
+ <000d01cf328f$687d54b0$3977fe10$%han@samsung.com>
+ <CAKohpo=xbZ4RNLDtdP3PokQwQksiKRBnuOTPL5z_zywwyOJC3w@mail.gmail.com>
+ <000501cf32af$3ad0ecf0$b072c6d0$%han@samsung.com>
+ <CAKohpon44tVo7K-tPQns1yfs4pBNy9-vY5UPocrHfSPbQ7M5_A@mail.gmail.com>
+ <1393391957.407.1.camel@joe-AO722>
+ <CAKohpokrSZiHAUoQggEnnYADUpE2DSBA0ECoUfPZPZFxTha3CA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from fallback7.mail.ru ([94.100.176.135]:57867 "EHLO
-	fallback7.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752566AbaCAN45 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sat, 1 Mar 2014 08:56:57 -0500
-In-Reply-To: <201403011240.09137.arnd@arndb.de>
+Received: from mailout2.samsung.com ([203.254.224.25]:22400 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752487AbaCCBOb (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sun, 2 Mar 2014 20:14:31 -0500
+Received: from epcpsbgr5.samsung.com
+ (u145.gpu120.samsung.co.kr [203.254.230.145])
+ by mailout2.samsung.com (Oracle Communications Messaging Server 7u4-24.01
+ (7.0.4.24.0) 64bit (built Nov 17 2011))
+ with ESMTP id <0N1U006KK63ZBX10@mailout2.samsung.com> for
+ linux-pwm@vger.kernel.org; Mon, 03 Mar 2014 10:14:23 +0900 (KST)
+In-reply-to: <CAKohpokrSZiHAUoQggEnnYADUpE2DSBA0ECoUfPZPZFxTha3CA@mail.gmail.com>
+Content-language: ko
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?UTF-8?B?QXJuZCBCZXJnbWFubg==?= <arnd@arndb.de>
-Cc: =?UTF-8?B?TWFyayBSdXRsYW5k?= <mark.rutland@arm.com>, =?UTF-8?B?bGludXgtcHdtQHZnZXIua2VybmVsLm9yZw==?= <linux-pwm@vger.kernel.org>, =?UTF-8?B?VGhpZXJyeSBSZWRpbmc=?= <thierry.reding@gmail.com>, =?UTF-8?B?ZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5vcmc=?= <devicetree@vger.kernel.org>, =?UTF-8?B?Um9iIEhlcnJpbmc=?= <robh+dt@kernel.org>, =?UTF-8?B?UGF3ZWwgTW9sbA==?= <Pawel.Moll@arm.com>, =?UTF-8?B?SWFuIENhbXBiZWxs?= <ijc+devicetree@hellion.org.uk>, =?UTF-8?B?S3VtYXIgR2FsYQ==?= <galak@codeaurora.org>, =?UTF-8?B?Z3JhbnQubGlrZWx5QGxpbmFyby5vcmc=?= <grant.likely@linaro.org>
+To: 'Viresh Kumar' <viresh.kumar@linaro.org>, 'Joe Perches' <joe@perches.com>
+Cc: 'Thierry Reding' <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, 'Andrew Morton' <akpm@linux-foundation.org>, 'Laurent Pinchart' <laurent.pinchart@ideasonboard.com>, 'Dan Carpenter' <dan.carpenter@oracle.com>, 'Jingoo Han' <jg1.han@samsung.com>
 
-0KHRg9Cx0LHQvtGC0LAsICAxINC80LDRgNGC0LAgMjAxNCwgMTI6NDAgKzAxOjAwINC+0YIgQXJu
-ZCBCZXJnbWFubiA8YXJuZEBhcm5kYi5kZT46Cj4gT24gU2F0dXJkYXkgMDEgTWFyY2ggMjAxNCwg
-QWxleGFuZGVyIFNoaXlhbiB3cm90ZToKPiA+IEkgd2FudCB0byBlbGFib3JhdGUgb24gdGhlIGN1
-cnJlbnQgQ0xQUzcxMVggbGluZXVwOgo+ID4gUFM3MTEwICAtIEVPTCBPY3RvYmVyIDMwLCAyMDAx
-Cj4gPiBQUzcxMTEgIC0gRU9MIE9jdG9iZXIgMzAsIDIwMDEKPiA+IEVQNzIwOSAgLSBFT0wgQXBy
-aWwgMjUsIDIwMDMKPiA+IEVQNzIxMSAgLSBFT0wgQXByaWwgMjUsIDIwMDMKPiA+IEVQNzIxMiAg
-LSBFT0wgQXByaWwgMjUsIDIwMDMKPiA+IENTODk3MTIgLSBFT0wgQXVndXN0IDE1LCAyMDA1Cj4g
-PiBFUDczMDkgIC0gUHJvZHVjdGlvbgo+ID4gRVA3MzExICAtIFByb2R1Y3Rpb24KPiA+IEVQNzMx
-MiAgLSBQcm9kdWN0aW9uCj4gCj4gVGhhbmtzIGZvciB0aGUgbGlzdC4gSSB3b25kZXIgaWYgdGhl
-cmUgaXMgYSBnb29kIHBsYWNlIHRvIGtlZXAgdGhpcyBpbiB0aGUKPiBrZXJuZWwgc291cmNlIGZv
-ciByZWZlcmVuY2UuCj4gCj4gPiBTbyBhdCB0aGUgbW9tZW50LCBhbmQgbG9uZyBlbm91Z2gsIHBy
-b2R1Y2VkIG9ubHkgdGhyZWUgbW9kZWxzIG9mIENQVXMuCj4gPiBJIGFtIHN1cmUgdGhhdCB0aGUg
-aGFyZHdhcmUgd2l0aCBvbGQgQ1BVcyB3aWxsIG5vdCBiZSBhYmxlIHRvIHVzZSB0aGUKPiA+IG5l
-dyBrZXJuZWwgZHVlIHRvIG1lbW9yeSBsaW1pdGF0aW9ucywgbG93IENQVSBmcmVxdWVuY3ksIGV0
-Yy4KPiA+IAo+ID4gTXkgc3VnZ2VzdGlvbiBpcyB0byBhbHdheXMgdXNlIGEgY29tcGF0aWJpbGl0
-eSBzdHJpbmcgZm9yIHBsYXRmb3JtIGVudGlyZWx5LAo+ID4gaWUgImNpcnJ1cyxjbHBzNzExeC0k
-VU5JVCIsIG90aGVyd2lzZSBpdCBtYXkgcmVzdWx0IGluIG1pc2xlYWRpbmcuCj4gCj4gRnJvbSB5
-b3VyIGxpc3QsIGl0J3MgcHJldHR5IGNsZWFyIHRoYXQgdGhlcmUgd29uJ3QgYmUgYW55IG5ldyBj
-aGlwcyBuYW1lZAo+IFBTNzExeCBmb3IgeCA+IDEsIHNvIHVzaW5nIHRoYXQgc3RyaW5nIGlzIG5v
-dCBhbWJpZ3VvdXMuIFRoYXQgaXMgZ29vZAo+IHRvIGtub3cuIEl0J3MgYWxzbyB0aGUgb2xkZXN0
-IGNoaXAgaW4gdGhlIGZhbWlseSwgc28gbmFtaW5nIHRoaW5ncyBhZnRlciB0aGF0Cj4gaXMgY29u
-c2lzdGVudC4KPiAKPiA+IEluIGFueSBjYXNlLCBJIHdvdWxkIGxpa2UgdG8gaGVhciB0aGUgZmlu
-YWwgZGVjaXNpb24gb24gdGhpcyBpc3N1ZSwKPiA+IHNpbmNlIHRoZXJlIGFyZSBzZXZlcmFsIGRy
-aXZlcnMgYWxyZWFkeSB1c2luZyB0aGlzIHNjaGVtZSBhbmQgc29tZSBkcml2ZXJzCj4gPiBhd2Fp
-dGluZyBhcHBseWluZyBpbnRvIHRoZSBrZXJuZWwuCj4gPiBJIGRvIG5vdCBpbnNpc3Qgb24gaXRz
-IHBvc2l0aW9uLCBidXQganVzdCB3YW50IHRvIGNsYXJpZnkgdG8gbWFrZSBjaGFuZ2VzCj4gPiB0
-byBleGlzdGluZyBkcml2ZXJzIGFuZCB1c2UgdGhlIGFwcHJvdmVkIGNvbXBhdGliaWxpdHkgc3Ry
-aW5nIGluIHRoZSBmdXR1cmUuCj4gPiBBdCB0aGUgY3VycmVudCBzdGFnZSwgdGhlc2UgY2hhbmdl
-cyB3aWxsIG5vdCBsZWFkIHRvIGFueXRoaW5nIHRlcnJpYmxlLgo+IAo+IEhvdyBhYm91dCB3ZSBr
-ZWVwIHVzaW5nIHRoZSBjaXJydXMsY2xwczcxMXggYXMgdGhlIHN0cmluZyB0aGF0IGRyaXZlcnMK
-PiBtYXRjaCBhZ2FpbnN0LCBidXQgY2hhbmdlIHRoZSBEVCByZXByZXNlbnRhdGlvbiB0byBhbHdh
-eXMgbGlzdCB0aGUgc3BlY2lmaWMKPiBtb2RlbCBpbiBhZGRpdGlvbj8gVGhhdCB3YXkgd2UgYXJl
-IHByZXBhcmVkIHRvIGhhbmRsZSBxdWlya3MgaWYgd2UgbmVlZCB0bywKPiBidXQgeW91IGRvbid0
-IGhhdmUgdG8gY2hhbmdlIHRoZSBiaW5kaW5nIGluIGluY29tcGF0aWJsZSB3YXlzLgo+IAo+IFRo
-aXMgbWVhbnMgeW91IHNob3VsZCBsaXN0IGUuZy4KPiAKPiAJY29tcGF0aWJsZSA9ICJjaXJydXMs
-ZXA3MzA5LXB3bSIsICJjaXJydXMsY2xwczcxMXgtcHdtIjsKPiAKPiBvciAKPiAKPiAJY29tcGF0
-aWJsZSA9ICJjaXJydXMsY2xwczcxMTAtcHdtIiwgImNpcnJ1cyxjbHBzNzExeC1wd20iOwo+IAo+
-IGRlcGVuZGluZyBvbiB0aGUgbW9kZWwuIEZvciB1bml0cyB0aGF0IHdlcmUgaW50cm9kdWNlZCBp
-biBhIGxhdGVyCj4gbW9kZWwsIEkgd291bGQgcmVjb21tZW5kIHRvIHVzZSB0aGUgZmlyc3QgbW9k
-ZWwgdGhhdCBoYWQgaXQgcmF0aGVyCj4gdGhhbiB0aGUgb3JpZ2luYWwgY2xwczcxMXggdGhhdCBk
-aWRuJ3QsIGxpa2UKPiAKPiAJY29tcGF0aWJsZSA9ICJjaXJydXMsZXA3MzExLWtpdGNoZW5zaW5r
-IiwgImNpcnJ1cy1lcDcyMTEta2l0Y2hlbnNpbmsiOwo+IAo+IEZvciBiaW5kaW5ncyB0aGF0IGFy
-ZSBhbHJlYWR5IHJldmlld2VkIGFuZCBtZXJnZWQsIEkgd291bGRuJ3QgY2hhbmdlCj4gdGhlbSBh
-bnkgbW9yZSBldmVuIGlmIHRoZXkgaW5hY2N1cmF0ZWx5IGxpc3QgY2xwczcxMXggZm9yIHVuaXRz
-IHRoYXQKPiB3ZXJlIG5vdCBwcmVzZW50IGluIGNscHM3MTExLCBidXQgZm9yIG5ldyBvbmVzIEkn
-ZCBwcmVmZXIgdG8gZm9sbG93Cj4gdGhlIGNvbW1vbiBwcmFjdGljZSB0byB5b3VyIGJlc3Qga25v
-d2xlZGdlLgoKRXhjZWxsZW50LCBsZXQncyBkbyBzby4gSSB3aWxsIHByZXBhcmUgYSBwYXRjaCB0
-aGF0IHdpbGwgY2hhbmdlIGNvbXBhdGliaWxpdHkKc3RyaW5ncyBmb3IgZXhhbXBsZXMgaW4gdGhl
-IGN1cnJlbnQgYmluZGluZ3MgZG9jdW1lbnRzLgpGb3IgdGhpcyBkcml2ZXIgKFBXTSksIEkganVz
-dCBzZW5kIGEgdGhpcmQgdmVyc2lvbi4KCi0tLQo=
+On Wednesday, February 26, 2014 3:26 PM, Viresh Kumar wrote:
+> On 26 February 2014 10:49, Joe Perches <joe@perches.com> wrote:
+> > Look at warn_alloc_failed() in mm/page_alloc.c
+> 
+> Okay, there is a print there. But I am not able to reach to this routine
+> from devm_kzalloc().
+> 
+> devm_kzalloc() <linux/device.h>
+> devm_kmalloc() <drivers/base/devres.c>
+> alloc_dr() <drivers/base/devres.c>
+> kmalloc_track_caller() <linux/slab.h>
+> __kmalloc_track_caller() <mm/slab,slub/slob.c> Taking slab as example:
+> __do_kmalloc() <mm/slab.c>
+
+(+CC Laurent Pinchart, Dan Carpenter)
+
+Right, I also cannot find that warn_alloc_failed() is called, during 
+devm_kzalloc().
+
+However, in the case of vmalloc(), warn_alloc_failed() is called
+as below.
+
+./mm/vmalloc.c
+vmalloc()
+__vmalloc_node_flags()
+__vmalloc_node()
+__vmalloc_node_range()
+
+./mm/page_alloc.c
+warn_alloc_failed()
+
+> ...
+> 
+> I can see cases where NULL is returned after above paths and the function
+> you mentioned wasn't there. So, I am not sure that we will get a print for sure
+> for any error that might occur from devm_kzalloc().
+
+I guess that slab_out_of_memory() <./mm/slub.c> may print it for any errors.
+But, I am not sure. :-(
+
+Joe Perches,
+Would you confirm this?
+
+Best regards,
+Jingoo Han
+
