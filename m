@@ -1,73 +1,40 @@
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH 5/9] pwm: spear: Remove unnecessary OOM messages
-Date: Mon, 3 Mar 2014 12:53:11 +0300
-Message-ID: <20140303095311.GF27552@mwanda>
-References: <000701cf328e$00ed24c0$02c76e40$%han@samsung.com>
- <000d01cf328f$687d54b0$3977fe10$%han@samsung.com>
- <CAKohpo=xbZ4RNLDtdP3PokQwQksiKRBnuOTPL5z_zywwyOJC3w@mail.gmail.com>
- <000501cf32af$3ad0ecf0$b072c6d0$%han@samsung.com>
- <CAKohpon44tVo7K-tPQns1yfs4pBNy9-vY5UPocrHfSPbQ7M5_A@mail.gmail.com>
- <1393391957.407.1.camel@joe-AO722>
- <CAKohpokrSZiHAUoQggEnnYADUpE2DSBA0ECoUfPZPZFxTha3CA@mail.gmail.com>
- <008e01cf367d$e926a6b0$bb73f410$%han@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Barry Song <21cnbao@gmail.com>
+Subject: [PATCH v4 0/4] PWM: add and enable CSR SiRFSoC PWM driver
+Date: Wed,  5 Mar 2014 17:58:25 +0800
+Message-ID: <1394013506-6246-1-git-send-email-21cnbao@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from userp1040.oracle.com ([156.151.31.81]:23875 "EHLO
-	userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753917AbaCCJxf (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 3 Mar 2014 04:53:35 -0500
-Content-Disposition: inline
-In-Reply-To: <008e01cf367d$e926a6b0$bb73f410$%han@samsung.com>
+Received: from mail-pd0-f175.google.com ([209.85.192.175]:50977 "EHLO
+	mail-pd0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754609AbaCEJ6r (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 5 Mar 2014 04:58:47 -0500
+Received: by mail-pd0-f175.google.com with SMTP id x10so848660pdj.6
+        for <linux-pwm@vger.kernel.org>; Wed, 05 Mar 2014 01:58:46 -0800 (PST)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jingoo Han <jg1.han@samsung.com>
-Cc: 'Viresh Kumar' <viresh.kumar@linaro.org>, 'Joe Perches' <joe@perches.com>, 'Thierry Reding' <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, 'Andrew Morton' <akpm@linux-foundation.org>, 'Laurent Pinchart' <laurent.pinchart@ideasonboard.com>
+To: thierry.reding@gmail.com, linux-pwm@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, workgroup.linux@csr.com, Barry Song <Baohua.Song@csr.com>
 
-On Mon, Mar 03, 2014 at 10:14:22AM +0900, Jingoo Han wrote:
-> On Wednesday, February 26, 2014 3:26 PM, Viresh Kumar wrote:
-> > On 26 February 2014 10:49, Joe Perches <joe@perches.com> wrote:
-> > > Look at warn_alloc_failed() in mm/page_alloc.c
-> > 
-> > Okay, there is a print there. But I am not able to reach to this routine
-> > from devm_kzalloc().
-> > 
-> > devm_kzalloc() <linux/device.h>
-> > devm_kmalloc() <drivers/base/devres.c>
-> > alloc_dr() <drivers/base/devres.c>
-> > kmalloc_track_caller() <linux/slab.h>
-> > __kmalloc_track_caller() <mm/slab,slub/slob.c> Taking slab as example:
-> > __do_kmalloc() <mm/slab.c>
-> 
-> (+CC Laurent Pinchart, Dan Carpenter)
-> 
-> Right, I also cannot find that warn_alloc_failed() is called, during 
-> devm_kzalloc().
-> 
-> However, in the case of vmalloc(), warn_alloc_failed() is called
-> as below.
-> 
-> ./mm/vmalloc.c
-> vmalloc()
-> __vmalloc_node_flags()
-> __vmalloc_node()
-> __vmalloc_node_range()
-> 
-> ./mm/page_alloc.c
-> warn_alloc_failed()
-> 
-> > ...
-> > 
-> > I can see cases where NULL is returned after above paths and the function
-> > you mentioned wasn't there. So, I am not sure that we will get a print for sure
-> > for any error that might occur from devm_kzalloc().
-> 
-> I guess that slab_out_of_memory() <./mm/slub.c> may print it for any errors.
-> But, I am not sure. :-(
-> 
+From: Barry Song <Baohua.Song@csr.com>
 
-devm_kzalloc() is just kmalloc().  The OOM error messages are the same.
+Barry Song (3):
+  pwm: sirf: add dt-binding document
+  ARM: dts: sirf: fix the pwm-cells and clocks for pwm
+  ARM: prima2_defconfig: enable PWM and sirf PWM driver
 
-regards,
-dan carpenter
+Huayi Li (1):
+  pwm: add CSR SiRFSoC PWM driver
+
+ Documentation/devicetree/bindings/pwm/pwm-sirf.txt |   23 ++
+ arch/arm/boot/dts/atlas6.dtsi                      |    5 +-
+ arch/arm/boot/dts/prima2.dtsi                      |    6 +-
+ arch/arm/configs/prima2_defconfig                  |    2 +
+ drivers/pwm/Kconfig                                |    9 +
+ drivers/pwm/Makefile                               |    1 +
+ drivers/pwm/pwm-sirf.c                             |  329 ++++++++++++++++++++
+ 7 files changed, 371 insertions(+), 4 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sirf.txt
+ create mode 100644 drivers/pwm/pwm-sirf.c
+
+-- 
+1.7.5.4
 
