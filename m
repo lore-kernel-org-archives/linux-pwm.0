@@ -1,7 +1,7 @@
 From: Tim Kryger <tim.kryger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v3 4/5] ARM: dts: Enable the PWM for bcm28155 AP board
-Date: Wed, 12 Mar 2014 13:15:45 -0700
-Message-ID: <1394655346-30048-5-git-send-email-tim.kryger@linaro.org>
+Subject: [PATCH v3 3/5] ARM: dts: Declare the PWM for bcm11351 (bcm281xx)
+Date: Wed, 12 Mar 2014 13:15:44 -0700
+Message-ID: <1394655346-30048-4-git-send-email-tim.kryger@linaro.org>
 References: <1394655346-30048-1-git-send-email-tim.kryger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,30 +12,34 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mat
 Cc: Tim Kryger <tim.kryger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux PWM List <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Device Tree List <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Doc List <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Linux ARM Kernel List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Mark the PWM as enabled on the bcm28155 AP board.
+Add the device tree node for the PWM on bcm11351 SoCs.
 
 Signed-off-by: Tim Kryger <tim.kryger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Reviewed-by: Alex Elder <elder-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Reviewed-by: Markus Mayer <markus.mayer-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 ---
- arch/arm/boot/dts/bcm28155-ap.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm/boot/dts/bcm11351.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm/boot/dts/bcm28155-ap.dts b/arch/arm/boot/dts/bcm28155-ap.dts
-index 5ff2382..37c72eb 100644
---- a/arch/arm/boot/dts/bcm28155-ap.dts
-+++ b/arch/arm/boot/dts/bcm28155-ap.dts
-@@ -66,6 +66,10 @@
- 		status = "okay";
+diff --git a/arch/arm/boot/dts/bcm11351.dtsi b/arch/arm/boot/dts/bcm11351.dtsi
+index 64d069b..6b05ae6 100644
+--- a/arch/arm/boot/dts/bcm11351.dtsi
++++ b/arch/arm/boot/dts/bcm11351.dtsi
+@@ -193,6 +193,14 @@
+ 		status = "disabled";
  	};
  
 +	pwm: pwm@3e01a000 {
-+		status = "okay";
++		compatible = "brcm,bcm11351-pwm", "brcm,kona-pwm";
++		reg = <0x3e01a000 0xcc>;
++		clocks = <&slave_ccu BCM281XX_SLAVE_CCU_PWM>;
++		#pwm-cells = <3>;
++		status = "disabled";
 +	};
 +
- 	usbotg: usb@3f120000 {
- 		status = "okay";
- 	};
+ 	clocks {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
 -- 
 1.8.0.1
 
