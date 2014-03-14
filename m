@@ -1,51 +1,33 @@
-From: Matt Porter <mporter@linaro.org>
-Subject: Re: [PATCH v3 0/5] Add Broadcom Kona PWM Support
-Date: Fri, 14 Mar 2014 09:43:24 -0400
-Message-ID: <20140314134324.GY25092@beef>
-References: <1394655346-30048-1-git-send-email-tim.kryger@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-doc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1394655346-30048-1-git-send-email-tim.kryger@linaro.org>
-Sender: linux-doc-owner@vger.kernel.org
-To: Tim Kryger <tim.kryger@linaro.org>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH 0/2] PWM: atmel: few fixes
+Date: Fri, 14 Mar 2014 15:19:07 +0100
+Message-ID: <1394806749-29778-1-git-send-email-alexandre.belloni@free-electrons.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:48109 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1755081AbaCNOTQ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Mar 2014 10:19:16 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Bo Shen <voice.shen@atmel.com>, linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-On Wed, Mar 12, 2014 at 01:15:41PM -0700, Tim Kryger wrote:
-> This series introduces the driver for the Kona PWM controller found in
-> Broadcom mobile SoCs like bcm281xx and updates the device tree and the
-> defconfig to enable use of this hardware on the bcm28155 AP board.
-> 
-> Changes since v2:
->   - SoC DTS file updated to use real clock's phandle + specifier
->   - Toggle smooth mode off during apply so new settings take immediately
-> 
-> Changes since v1:
->   - Fixed up macros to be clearer and more complete
->   - Corrected spelling and punctuation mistakes
->   - Added support for polarity
->   - Made peripheral clock use more efficient
->   - Made prescale and duty computation clearer
->   - Moved Makefile addition to keep alphabetical
->   - Split complex lines into multiple steps
-> 
-> Dependencies:
-> The "ARM: dts: Declare the PWM for bcm11351 (bcm281xx)" patch depends
-> upon "ARM: dts: bcm281xx: define real clocks" which is queued up in
-> for-next of arm-soc. See https://lkml.org/lkml/2014/2/14/451
-> 
-> Tim Kryger (5):
->   Documentation: dt: Add Kona PWM binding
->   pwm: kona: Introduce Kona PWM controller support
+Hi,
 
-Thierry, are you planning to merge these first two for 3.15? If so, I
-will apply dts patches for my last mach-bcm 3.15 pull. I don't want to
-do so until the binding is accepted.
+Here are a few improvement for pwm-atmel. The first patch makes the driver
+actually respect the polarity.
 
--Matt
+The second patch is solving an issue that I was trying to solve back in october.
+When the channel was disabled, the output level got inversed. It actually was
+that we had the polarity wrong from the beginning.
 
->   ARM: dts: Declare the PWM for bcm11351 (bcm281xx)
->   ARM: dts: Enable the PWM for bcm28155 AP board
->   ARM: bcm_defconfig: Enable PWM and Backlight
+Alexandre Belloni (2):
+  PWM: atmel-pwm: Fix polarity handling
+  PWM: atmel: correct CDTY calculation
+
+ drivers/pwm/pwm-atmel.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+-- 
+1.8.3.2
+
