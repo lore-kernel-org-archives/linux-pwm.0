@@ -1,67 +1,70 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 0/2] PWM: atmel: few fixes
-Date: Tue, 18 Mar 2014 21:14:08 +0100
-Message-ID: <20140318201403.GC5917@mithrandir>
-References: <1394806749-29778-1-git-send-email-alexandre.belloni@free-electrons.com>
+Subject: Re: [PATCH v3] pwm: Add CLPS711X PWM support
+Date: Tue, 18 Mar 2014 21:23:09 +0100
+Message-ID: <20140318202308.GD5917@mithrandir>
+References: <1394639585-5673-1-git-send-email-shc_work@mail.ru>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="m51xatjYGsM+13rf"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="lc9FT7cWel8HagAv"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-bk0-f54.google.com ([209.85.214.54]:54526 "EHLO
+	mail-bk0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756459AbaCRUXN (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 18 Mar 2014 16:23:13 -0400
 Content-Disposition: inline
-In-Reply-To: <1394806749-29778-1-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Bo Shen <voice.shen@atmel.com>, linux-pwm@vger.kernel.org
+In-Reply-To: <1394639585-5673-1-git-send-email-shc_work@mail.ru>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Alexander Shiyan <shc_work@mail.ru>
+Cc: linux-pwm@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Grant Likely <grant.likely@linaro.org>
 
 
---m51xatjYGsM+13rf
+--lc9FT7cWel8HagAv
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Mar 14, 2014 at 03:19:07PM +0100, Alexandre Belloni wrote:
-> Hi,
+On Wed, Mar 12, 2014 at 07:53:05PM +0400, Alexander Shiyan wrote:
+> Add a new driver for the ARM CLPS711X Pulse Width Modulator (PWM) interfa=
+ce.
+> This CPU contain two 4-bit PWM outputs with constant period, based on CPU
+> PLL frequency. PWM polarity is determined by hardware by power on reset.
 >=20
-> Here are a few improvement for pwm-atmel. The first patch makes the driver
-> actually respect the polarity.
->=20
-> The second patch is solving an issue that I was trying to solve back in o=
-ctober.
-> When the channel was disabled, the output level got inversed. It actually=
- was
-> that we had the polarity wrong from the beginning.
->=20
-> Alexandre Belloni (2):
->   PWM: atmel-pwm: Fix polarity handling
->   PWM: atmel: correct CDTY calculation
->=20
->  drivers/pwm/pwm-atmel.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
+> Signed-off-by: Alexander Shiyan <shc_work@mail.ru>
+> ---
+>  .../bindings/pwm/cirrus,clps711x-pwm.txt           |  16 ++
+>  drivers/pwm/Kconfig                                |   9 ++
+>  drivers/pwm/Makefile                               |   1 +
+>  drivers/pwm/pwm-clps711x.c                         | 176 +++++++++++++++=
+++++++
+>  4 files changed, 202 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/cirrus,clps711x=
+-pwm.txt
+>  create mode 100644 drivers/pwm/pwm-clps711x.c
 
-Both patches applied, thanks.
+Applied, thanks.
 
 Thierry
 
---m51xatjYGsM+13rf
+--lc9FT7cWel8HagAv
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTKKkLAAoJEN0jrNd/PrOhBlgQAIqp9mOCN2/WfUn3kfQ43+5M
-xF4qxEC8BokS8JQrKp0bF4HZrprJFcHuKgSskyN++5UA/89mGzv6v7ZH72dSK8SC
-amJfJ6CqUXpo7lnMfuwj94AwOhWPbBn/7JTx5CLCUxIrkGRlZbesP7p6m8cXzm9n
-ka4r4g4x7lryt//E47PWKmMNYVw0mtvl/9YLlzuQO4hgOngCKrZc1qRmBLvG04K+
-d5PhnxtQ7o7m0usHVgILBQgaV+Ku933tR6glQnHYAwN/8UZdOjp+p9j0A0F0iAsF
-6fzrh9z5nTY9vS+UzU+zgeCjkWUXmFsgVuc7LYv0wHgElMpq35jLcumxeLBMtOs4
-enp2SKMYIftZ0V6ehLZnNSbGHEbcSTWz2hG9dIaKm0ZbRUTAQSZyZ7BSVlNQuMZn
-lilVC9+e+TEa70VKEbkwzE18R4CREpGavllFDpJMeor4Imq32uCCMXKjBWffmz2Z
-TwRTBz65nIyopddMRmFp7nRNXAKE56B2JP/CqwNWjyD3/jptFZOIVNFvYU2mGdtY
-bo6zeCeC80f1TDTR17s0P2YvDQqCvvmawxbHemyE5B6CYkmYGaiaP2G84qzrn4+k
-VdrcE8XwW6SqKMcW3+TyYp+0b6cRuYkoaP4647A+RRCdLgyzTJnKI3Fp9f1yk5rs
-56U7TPBYSn3hJE5XOOwc
-=bNMy
+iQIcBAEBAgAGBQJTKKssAAoJEN0jrNd/PrOhv38P/RuF9DX1TtczvEtHtyxRT0I4
+DSs/ASJlH7ZFAThPFJmg/lkrGiY/S79ElQCRDDzmOV8Kdnd+rvj/TShh1XnUit+w
+nDyvuZpMHMgcLjS3XNeIDkhvBK1zopHgvHhWIrOz5s4r6I9pxMVL+NCoUgNoyGcF
+o+/J6Cq1mpgZi1oTP1mAtmvTcjtdvOB2mqaqqehf+fypD4echZ36Ol2zSRI2/OFN
+6E4DSS3004GzIXboQp6GVQcq4VdYTG0xUULoaCDtXLYywVi66jr0pUyObCZk0Vyb
+4MjcHNuWmIb9G2nVpYwpLjebbxwTJWpGfVi0gZrVChhbKJiENwE40F6Jl9sEkhKd
+4FhZmcpob/MXVxDtuEVt6OlaAJ8xyZhr0lT9KJR2KdODtfAEdgB6qGI3HbnQFPXq
+p8gTPy/vAbtB1KeWDIwE/3LmmiUbxRugtBhDv5IOk+o2YNsCFT2l0HHtNQ7k8AuH
+Z2PE80Y7Bctn9G0leSZjK15ug7QfOMqYaBpt1ySzKjCf6mLGnVifByO48oPdBTcR
+glOJgIDUT5vnLbyWRRNMEO3qly53PVljo2zOj57OdDInheO+A/7DJXdA09EdHcZr
+MiSr8YlojNclPz1gaHc2nByNPtd588HGJ1Vij5As+okVmYecPi1oiZvf/JEHQw99
+L9yGKDl3CIQKvb9gN7V7
+=8gA/
 -----END PGP SIGNATURE-----
 
---m51xatjYGsM+13rf--
+--lc9FT7cWel8HagAv--
