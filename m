@@ -1,77 +1,67 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCHv10 0/4] Add Freescale FTM PWM support
-Date: Tue, 18 Mar 2014 20:44:58 +0100
-Message-ID: <20140318194457.GA5917@mithrandir>
-References: <1393493992-26073-1-git-send-email-Li.Xiubo@freescale.com>
+Subject: Re: [PATCH 0/2] PWM: atmel: few fixes
+Date: Tue, 18 Mar 2014 21:14:08 +0100
+Message-ID: <20140318201403.GC5917@mithrandir>
+References: <1394806749-29778-1-git-send-email-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="YZ5djTAD1cGYuMQK"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bk0-f53.google.com ([209.85.214.53]:54310 "EHLO
-	mail-bk0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751593AbaCRTpD (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 18 Mar 2014 15:45:03 -0400
+	protocol="application/pgp-signature"; boundary="m51xatjYGsM+13rf"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1393493992-26073-1-git-send-email-Li.Xiubo@freescale.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1394806749-29778-1-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Bo Shen <voice.shen@atmel.com>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Xiubo Li <Li.Xiubo@freescale.com>
-Cc: linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---YZ5djTAD1cGYuMQK
+--m51xatjYGsM+13rf
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 27, 2014 at 05:39:48PM +0800, Xiubo Li wrote:
-> Changed in V10:
->   Fix some bugs and adjust the code from Thierry's comments.
+On Fri, Mar 14, 2014 at 03:19:07PM +0100, Alexandre Belloni wrote:
+> Hi,
 >=20
+> Here are a few improvement for pwm-atmel. The first patch makes the driver
+> actually respect the polarity.
 >=20
-> Xiubo Li (4):
->   pwm: Add Freescale FTM PWM driver support
->   ARM: dts: vf610: Add Freescale FTM PWM node.
->   ARM: dts: vf610-twr: Enables FTM PWM device.
->   Documentation: Add device tree bindings for Freescale FTM PWM.
+> The second patch is solving an issue that I was trying to solve back in o=
+ctober.
+> When the channel was disabled, the output level got inversed. It actually=
+ was
+> that we had the polarity wrong from the beginning.
 >=20
->  .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        |  35 ++
->  arch/arm/boot/dts/vf610-twr.dts                    |   6 +
->  arch/arm/boot/dts/vf610.dtsi                       |  13 +
->  drivers/pwm/Kconfig                                |  10 +
->  drivers/pwm/Makefile                               |   1 +
->  drivers/pwm/pwm-fsl-ftm.c                          | 496 +++++++++++++++=
-++++++
->  6 files changed, 561 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
->  create mode 100644 drivers/pwm/pwm-fsl-ftm.c
+> Alexandre Belloni (2):
+>   PWM: atmel-pwm: Fix polarity handling
+>   PWM: atmel: correct CDTY calculation
+>=20
+>  drivers/pwm/pwm-atmel.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
 
-I've applied patches 1 and 4 to the PWM tree, with some minor cosmetic
-fixups that I thought didn't warrant these patches to go through yet
-another revision. =3D)
+Both patches applied, thanks.
 
-Thanks,
 Thierry
 
---YZ5djTAD1cGYuMQK
+--m51xatjYGsM+13rf
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTKKI5AAoJEN0jrNd/PrOhDbEP+gOKW9XIHugIvrXFSwCaJOB6
-USpCF2+AMx1TwEPLcj2caUDcdHnUuse8WVRc0f+jFbZFEBil52UJ5amzHo8I/xOU
-jQKiYmAzUZIyNmaRy25KAoOItXvRQ+/2rMt0rGoUghuKz32nGlMSO1xXpuY7j+2Q
-qe1cGLuSWgFvaRbwcxbWRZ7MeEcQMpRdVgIwmsuDkK9IN1MVGOm+CRrkrF+oEAUi
-xPcyVujR2qQ4JnqeiVZpPxgLZhQs+7gDG2gM1u2rg+CG/Llm9m9YqyMejmjwmuBG
-6KwxwnYHspXqABizCMk2QvStsFy/UT23zGZlW+Jo7/RE96H3xlNtuJ6z+Jq5pGjD
-St/GHGZJ0wsjpK8mKS7PdG5D+bdH+QwuGJXOHmFqXGPdCXzm2mUlnaY88A7trCkb
-WSaRqfBQRCmhWwVnUWjL/yCkDlV8q4mYoFuNA5HdTqYpZUjRXJzm3qdwrHatkEBr
-rz7smtsLl+VdkxoARS1hjW59lsg1EN2gUkGz5aOp3JZF6D/W+ll4ajTc2p6BLVsw
-V+i84YoRc8OHGZDtKhqA4cxhKobA6vjHkMUPO3M8KsddTD/LpFebTFSkLnMVcUX4
-jiIF2CSABU9NnHP5MpePm0Aej/nZcMgrs7GIQGrqwWUFK+8koouP64CoKuUk1DoE
-k4PHW13PCttsCEtJFSat
-=0O3h
+iQIcBAEBAgAGBQJTKKkLAAoJEN0jrNd/PrOhBlgQAIqp9mOCN2/WfUn3kfQ43+5M
+xF4qxEC8BokS8JQrKp0bF4HZrprJFcHuKgSskyN++5UA/89mGzv6v7ZH72dSK8SC
+amJfJ6CqUXpo7lnMfuwj94AwOhWPbBn/7JTx5CLCUxIrkGRlZbesP7p6m8cXzm9n
+ka4r4g4x7lryt//E47PWKmMNYVw0mtvl/9YLlzuQO4hgOngCKrZc1qRmBLvG04K+
+d5PhnxtQ7o7m0usHVgILBQgaV+Ku933tR6glQnHYAwN/8UZdOjp+p9j0A0F0iAsF
+6fzrh9z5nTY9vS+UzU+zgeCjkWUXmFsgVuc7LYv0wHgElMpq35jLcumxeLBMtOs4
+enp2SKMYIftZ0V6ehLZnNSbGHEbcSTWz2hG9dIaKm0ZbRUTAQSZyZ7BSVlNQuMZn
+lilVC9+e+TEa70VKEbkwzE18R4CREpGavllFDpJMeor4Imq32uCCMXKjBWffmz2Z
+TwRTBz65nIyopddMRmFp7nRNXAKE56B2JP/CqwNWjyD3/jptFZOIVNFvYU2mGdtY
+bo6zeCeC80f1TDTR17s0P2YvDQqCvvmawxbHemyE5B6CYkmYGaiaP2G84qzrn4+k
+VdrcE8XwW6SqKMcW3+TyYp+0b6cRuYkoaP4647A+RRCdLgyzTJnKI3Fp9f1yk5rs
+56U7TPBYSn3hJE5XOOwc
+=bNMy
 -----END PGP SIGNATURE-----
 
---YZ5djTAD1cGYuMQK--
+--m51xatjYGsM+13rf--
