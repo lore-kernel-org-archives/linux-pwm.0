@@ -1,103 +1,77 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2] pwm: add support for Intel Low Power Subsystem PWM
-Date: Tue, 18 Mar 2014 16:28:56 +0100
-Message-ID: <20140318152855.GA7237@mithrandir>
-References: <1393599057-26451-1-git-send-email-chiau.ee.chew@intel.com>
+Subject: Re: [PATCHv10 0/4] Add Freescale FTM PWM support
+Date: Tue, 18 Mar 2014 20:44:58 +0100
+Message-ID: <20140318194457.GA5917@mithrandir>
+References: <1393493992-26073-1-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="PEIAKu/WMn1b1Hv9"
+	protocol="application/pgp-signature"; boundary="YZ5djTAD1cGYuMQK"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bk0-f44.google.com ([209.85.214.44]:59925 "EHLO
-	mail-bk0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756459AbaCRP3A (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 18 Mar 2014 11:29:00 -0400
+Received: from mail-bk0-f53.google.com ([209.85.214.53]:54310 "EHLO
+	mail-bk0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751593AbaCRTpD (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 18 Mar 2014 15:45:03 -0400
 Content-Disposition: inline
-In-Reply-To: <1393599057-26451-1-git-send-email-chiau.ee.chew@intel.com>
+In-Reply-To: <1393493992-26073-1-git-send-email-Li.Xiubo@freescale.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Chew Chiau Ee <chiau.ee.chew@intel.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Chew Kean Ho <kean.ho.chew@intel.com>, Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Xiubo Li <Li.Xiubo@freescale.com>
+Cc: linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---PEIAKu/WMn1b1Hv9
+--YZ5djTAD1cGYuMQK
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 28, 2014 at 10:50:57PM +0800, Chew Chiau Ee wrote:
-> From: Mika Westerberg <mika.westerberg@linux.intel.com>
+On Thu, Feb 27, 2014 at 05:39:48PM +0800, Xiubo Li wrote:
+> Changed in V10:
+>   Fix some bugs and adjust the code from Thierry's comments.
 >=20
-> Add support for Intel Low Power I/O subsystem PWM controllers found on
-> Intel BayTrail SoC.
 >=20
-> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> Signed-off-by: Chew, Kean Ho <kean.ho.chew@intel.com>
-> Signed-off-by: Chang, Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
-> Signed-off-by: Chew, Chiau Ee <chiau.ee.chew@intel.com>
-> ---
->  drivers/pwm/Kconfig    |   10 +++
->  drivers/pwm/Makefile   |    1 +
->  drivers/pwm/pwm-lpss.c |  179 ++++++++++++++++++++++++++++++++++++++++++=
+> Xiubo Li (4):
+>   pwm: Add Freescale FTM PWM driver support
+>   ARM: dts: vf610: Add Freescale FTM PWM node.
+>   ARM: dts: vf610-twr: Enables FTM PWM device.
+>   Documentation: Add device tree bindings for Freescale FTM PWM.
+>=20
+>  .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        |  35 ++
+>  arch/arm/boot/dts/vf610-twr.dts                    |   6 +
+>  arch/arm/boot/dts/vf610.dtsi                       |  13 +
+>  drivers/pwm/Kconfig                                |  10 +
+>  drivers/pwm/Makefile                               |   1 +
+>  drivers/pwm/pwm-fsl-ftm.c                          | 496 +++++++++++++++=
 ++++++
->  3 files changed, 190 insertions(+), 0 deletions(-)
->  create mode 100644 drivers/pwm/pwm-lpss.c
+>  6 files changed, 561 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+>  create mode 100644 drivers/pwm/pwm-fsl-ftm.c
 
-Sorry for taking so long to get back to you on this. Things have been
-somewhat crazy lately.
+I've applied patches 1 and 4 to the PWM tree, with some minor cosmetic
+fixups that I thought didn't warrant these patches to go through yet
+another revision. =3D)
 
-This generally looks very good, but I found two issues that escaped last
-time. See below.
-
-> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-[...]
-> +static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> +			   int duty_ns, int period_ns)
-> +{
-> +	struct pwm_lpss_chip *lpwm =3D to_lpwm(chip);
-> +	u8 on_time_div;
-> +	unsigned long c =3D clk_get_rate(lpwm->clk);
-> +	unsigned long long base_unit, freq =3D NSECS_PER_SEC;
-> +	u32 ctrl;
-> +
-> +	do_div(freq, period_ns);
-> +
-> +	/* The equation is: base_unit =3D ((freq / c) * 65536) + correction */
-> +	base_unit =3D freq * 65536;
-> +	do_div(base_unit, c);
-
-clk_get_rate() can return 0, so perhaps it would be safer to check for
-the validity of c before dividing by it. This will probably never
-happen for your driver or platform, but people may look at your driver
-for inspiration at some point, so it should still be handling this
-correctly.
-
-> +MODULE_DESCRIPTION("PWM driver for Intel LPSS");
-> +MODULE_AUTHOR("Mika Westerberg <mika.westerberg@linux.intel.com>");
-> +MODULE_LICENSE("GPLv2");
-
-I think this needs to be "GPL v2".
-
+Thanks,
 Thierry
 
---PEIAKu/WMn1b1Hv9
+--YZ5djTAD1cGYuMQK
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTKGY3AAoJEN0jrNd/PrOhlwsP/Rw3YvlmjSz+Qb0iWflprVjz
-XpB0RBf/zaDkuroyE6iTSaEd447iuWaSSE+mCBfRod3JjeZCPdCrQRB2kqRHpYQD
-Ms0FRqborxwO61B5fPcd6+Xw8NjR3vPKh+NQ5KMl1S/bEPxHeW1SPxBHLwOIr84z
-xMTkDmhjtRVwyc/q7Hran0QF8PBj63eHdT0WDnR0/JQ2rNMY7vR5Di/PEtan8Lcy
-J4Lnv/BQ0vcmclgtbrXQTMuB2Lm8Yl6GwaDJd+d/yuiS0HoigRJz1orik7mt9HdK
-csTGhNkc3niIXocCCdHuvSMhypAtFt5qazul/yKCowbVwmAU3Z/wN2yEZ+sC7oJP
-KKGuwc0O/NgE0o5btIlv4CxTXbm2jrCBlL2lE5184YVz+Cu4CGTTaKEGc3AJ2zCQ
-7K6u8qP8p4qRvx9aI7GbQqSp9sILONoLydzivHM2uFzMDNyGje3dsCngd2oNudE+
-1n4Q/mjZZL3LGE70qGGfg4IPuBrnvQHpX8EAMz92aF6TNzI7IC84kcFKASoKh5xv
-C2sUVVXeEzoxV8lIlKUq8w76yAGWBLuJm7Th8KOLZKvbMllwncNksuoTVd47BiBd
-5+/nbRhuYTykBSbB52Dl9Ba5GQ/vGOCgbkprRuP78J7ZscJ8ewsqY8z1+Vib0SIo
-Y/7us46pPhtAzWiA5MGt
-=rWC0
+iQIcBAEBAgAGBQJTKKI5AAoJEN0jrNd/PrOhDbEP+gOKW9XIHugIvrXFSwCaJOB6
+USpCF2+AMx1TwEPLcj2caUDcdHnUuse8WVRc0f+jFbZFEBil52UJ5amzHo8I/xOU
+jQKiYmAzUZIyNmaRy25KAoOItXvRQ+/2rMt0rGoUghuKz32nGlMSO1xXpuY7j+2Q
+qe1cGLuSWgFvaRbwcxbWRZ7MeEcQMpRdVgIwmsuDkK9IN1MVGOm+CRrkrF+oEAUi
+xPcyVujR2qQ4JnqeiVZpPxgLZhQs+7gDG2gM1u2rg+CG/Llm9m9YqyMejmjwmuBG
+6KwxwnYHspXqABizCMk2QvStsFy/UT23zGZlW+Jo7/RE96H3xlNtuJ6z+Jq5pGjD
+St/GHGZJ0wsjpK8mKS7PdG5D+bdH+QwuGJXOHmFqXGPdCXzm2mUlnaY88A7trCkb
+WSaRqfBQRCmhWwVnUWjL/yCkDlV8q4mYoFuNA5HdTqYpZUjRXJzm3qdwrHatkEBr
+rz7smtsLl+VdkxoARS1hjW59lsg1EN2gUkGz5aOp3JZF6D/W+ll4ajTc2p6BLVsw
+V+i84YoRc8OHGZDtKhqA4cxhKobA6vjHkMUPO3M8KsddTD/LpFebTFSkLnMVcUX4
+jiIF2CSABU9NnHP5MpePm0Aej/nZcMgrs7GIQGrqwWUFK+8koouP64CoKuUk1DoE
+k4PHW13PCttsCEtJFSat
+=0O3h
 -----END PGP SIGNATURE-----
 
---PEIAKu/WMn1b1Hv9--
+--YZ5djTAD1cGYuMQK--
