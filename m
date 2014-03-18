@@ -1,296 +1,81 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 2/5] pwm: kona: Introduce Kona PWM controller support
-Date: Tue, 18 Mar 2014 22:52:32 +0100
-Message-ID: <20140318215231.GH5917@mithrandir>
+Subject: Re: [PATCH v3 0/5] Add Broadcom Kona PWM Support
+Date: Tue, 18 Mar 2014 22:53:58 +0100
+Message-ID: <20140318215357.GI5917@mithrandir>
 References: <1394655346-30048-1-git-send-email-tim.kryger@linaro.org>
- <1394655346-30048-3-git-send-email-tim.kryger@linaro.org>
+ <20140314134324.GY25092@beef>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2645285547936396969=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1394655346-30048-3-git-send-email-tim.kryger@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Tim Kryger <tim.kryger@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Christian Daudt <bcm@fixthebug.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Matt Porter <mporter@linaro.org>, Device Tree List <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Rob Landley <rob@landley.net>, Kumar Gala <galak@codeaurora.org>, Grant Likely <grant.likely@linaro.org>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="k9xkV0rc9XGsukaG"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20140314134324.GY25092@beef>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matt Porter <mporter@linaro.org>
+Cc: Tim Kryger <tim.kryger@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
 
---===============2645285547936396969==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="aF3LVLvitz/VQU3c"
-Content-Disposition: inline
-
-
---aF3LVLvitz/VQU3c
+--k9xkV0rc9XGsukaG
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 12, 2014 at 01:15:43PM -0700, Tim Kryger wrote:
-[...]
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index 22f2f28..1fd42af 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -62,6 +62,16 @@ config PWM_ATMEL_TCB
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-atmel-tcb.
-> =20
-> +config PWM_BCM_KONA
-> +	tristate "Kona PWM support"
-> +	depends on ARCH_BCM_MOBILE
-> +	default y
+On Fri, Mar 14, 2014 at 09:43:24AM -0400, Matt Porter wrote:
+> On Wed, Mar 12, 2014 at 01:15:41PM -0700, Tim Kryger wrote:
+> > This series introduces the driver for the Kona PWM controller found in
+> > Broadcom mobile SoCs like bcm281xx and updates the device tree and the
+> > defconfig to enable use of this hardware on the bcm28155 AP board.
+> >=20
+> > Changes since v2:
+> >   - SoC DTS file updated to use real clock's phandle + specifier
+> >   - Toggle smooth mode off during apply so new settings take immediately
+> >=20
+> > Changes since v1:
+> >   - Fixed up macros to be clearer and more complete
+> >   - Corrected spelling and punctuation mistakes
+> >   - Added support for polarity
+> >   - Made peripheral clock use more efficient
+> >   - Made prescale and duty computation clearer
+> >   - Moved Makefile addition to keep alphabetical
+> >   - Split complex lines into multiple steps
+> >=20
+> > Dependencies:
+> > The "ARM: dts: Declare the PWM for bcm11351 (bcm281xx)" patch depends
+> > upon "ARM: dts: bcm281xx: define real clocks" which is queued up in
+> > for-next of arm-soc. See https://lkml.org/lkml/2014/2/14/451
+> >=20
+> > Tim Kryger (5):
+> >   Documentation: dt: Add Kona PWM binding
+> >   pwm: kona: Introduce Kona PWM controller support
+>=20
+> Thierry, are you planning to merge these first two for 3.15? If so, I
+> will apply dts patches for my last mach-bcm 3.15 pull. I don't want to
+> do so until the binding is accepted.
 
-No "default y", please.
-
-> diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
-[...]
-> +static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int =
-chan)
-> +{
-> +	unsigned long value =3D readl(kp->base + PWM_CONTROL_OFFSET);
-> +
-> +	/*
-> +	 * New duty and period settings are only reflected in the PWM output
-> +	 * after a rising edge of the enable bit.  When smooth bit is set, the
-> +	 * new settings are delayed until the prior PWM period has completed.
-> +	 * Furthermore, if the smooth bit is set, the PWM continues to output a
-> +	 * waveform based on the old settings during the time that the enable
-> +	 * bit is low.  Otherwise the output is a constant high signal while
-> +	 * the enable bit is low.
-> +	 */
-> +
-> +	/* clear enable bit but set smooth bit to maintain old output */
-> +	value |=3D (1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
-
-There's no need for the parentheses here.
-
-> +	value &=3D ~(1 << PWM_CONTROL_ENABLE_SHIFT(chan));
-> +	writel(value, kp->base + PWM_CONTROL_OFFSET);
-> +
-> +	/* set enable bit and clear smooth bit to apply new settings */
-> +	value &=3D ~(1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
-> +	value |=3D (1 << PWM_CONTROL_ENABLE_SHIFT(chan));
-
-Nor here.
-
-> +	writel(value, kp->base + PWM_CONTROL_OFFSET);
-
-I'm curious about how this work. The above writes the control register
-once with smooth set and enable cleared, then immediately rewrites it
-again with smooth cleared and enable set. Are these writes somehow
-queued in hardware, so that the subsequent write becomes active only
-after the current period?
-
-> +static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pw=
-m,
-> +				int duty_ns, int period_ns)
-
-Please align arguments on subsequent lines with those on the first line.
-
-> +{
-> +	struct kona_pwmc *kp =3D dev_get_drvdata(chip->dev);
-
-The proper way to do this would be upcasting using container_of().
-Better yet, define a static inline function that wraps container_of(),
-just like very other driver does.
-
-> +	u64 val, div, clk_rate;
-> +	unsigned long prescale =3D PRESCALE_MIN, pc, dc;
-> +	unsigned int value, chan =3D pwm->hwpwm;
-> +
-> +	/*
-> +	 * Find period count, duty count and prescale to suit duty_ns and
-> +	 * period_ns. This is done according to formulas described below:
-> +	 *
-> +	 * period_ns =3D 10^9 * (PRESCALE + 1) * PC / PWM_CLK_RATE
-> +	 * duty_ns =3D 10^9 * (PRESCALE + 1) * DC / PWM_CLK_RATE
-> +	 *
-> +	 * PC =3D (PWM_CLK_RATE * period_ns) / (10^9 * (PRESCALE + 1))
-> +	 * DC =3D (PWM_CLK_RATE * duty_ns) / (10^9 * (PRESCALE + 1))
-> +	 */
-> +
-> +	clk_rate =3D clk_get_rate(kp->clk);
-
-"rate" is 50% shorter and would do equally well.
-
-> +
-> +	/* There is polarity support in HW but it is easier to manage in SW */
-> +	if (pwm->polarity =3D=3D PWM_POLARITY_INVERSED)
-> +		duty_ns =3D period_ns - duty_ns;
-
-No, this is wrong. You're not actually changing the *polarity* here.
-
-Also I think this is missing a pair of clk_prepare_enable() and
-clk_disable_unprepare().
-
-> +static int kona_pwmc_set_polarity(struct pwm_chip *chip, struct pwm_devi=
-ce *pwm,
-> +				  enum pwm_polarity polarity)
-> +{
-> +	/*
-> +	 * The framework only allows the polarity to be changed when a PWM is
-> +	 * disabled so no immediate action is required here.  When a channel is
-> +	 * enabled, the polarity gets handled as part of the re-config step.
-> +	 */
-> +
-> +	return 0;
-> +}
-
-See above. If you don't want to implement the hardware support for
-inversed polarity, then simply don't implement this.
-
-> +static int kona_pwmc_enable(struct pwm_chip *chip, struct pwm_device *pw=
-m)
-> +{
-> +	struct kona_pwmc *kp =3D dev_get_drvdata(chip->dev);
-> +	int ret;
-> +
-> +	/*
-> +	 * The PWM framework does not clear the enable bit in the flags if an
-> +	 * error is returned from a PWM driver's enable function so it must be
-> +	 * cleared here if any trouble is encountered.
-> +	 */
-> +
-> +	ret =3D clk_prepare_enable(kp->clk);
-> +	if (ret < 0) {
-> +		dev_err(chip->dev, "failed to enable clock: %d\n", ret);
-> +		clear_bit(PWMF_ENABLED, &pwm->flags);
-
-You're not supposed to touch these. This is a bug in the core, and it
-should be fixed in the core.
-
-> +		return ret;
-> +	}
-> +
-> +	ret =3D kona_pwmc_config(chip, pwm, pwm->duty_cycle, pwm->period);
-> +	if (ret < 0) {
-> +		clk_disable_unprepare(kp->clk);
-> +		clear_bit(PWMF_ENABLED, &pwm->flags);
-> +		return ret;
-> +	}
-
-Why are you doing this? .config() should be setting everything up
-according to the given duty cycle and period and .enable() should only
-be enabling a specific channel. Please don't conflate the two.
-
-> +static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *=
-pwm)
-> +{
-> +	struct kona_pwmc *kp =3D dev_get_drvdata(chip->dev);
-> +	unsigned int chan =3D pwm->hwpwm;
-> +
-> +	/*
-> +	 * The "enable" bits in the control register only affect when settings
-> +	 * start to take effect so the only real way to disable the PWM output
-> +	 * is to program a zero duty cycle.
-> +	 */
-
-What's wrong about waiting for the settings to take effect? There's
-nothing about disable that says it should happen *immediately*.
-
-> +
-> +	writel(0, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
-> +	kona_pwmc_apply_settings(kp, chan);
-> +
-> +	/*
-> +	 * When the PWM clock is disabled, the output is pegged high or low
-> +	 * depending on its state at that instant.  To guarantee that the new
-> +	 * settings have taken effect and the output is low a delay of 400ns is
-> +	 * required.
-> +	 */
-> +
-> +	ndelay(400);
-
-Where does this number come from?
-
-> +static int kona_pwmc_probe(struct platform_device *pdev)
-> +{
-> +	struct kona_pwmc *kp;
-> +	struct resource *res;
-> +	unsigned int chan, value;
-[...]
-> +	/* Set smooth mode, push/pull, and normal polarity for all channels */
-> +	for (value =3D 0, chan =3D 0; chan < kp->chip.npwm; chan++) {
-
-Can't you initialize value to 0 when you declare it? That way the for
-loop becomes much more idiomatic.
-
-> +		value |=3D (1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
-> +		value |=3D (1 << PWM_CONTROL_TYPE_SHIFT(chan));
-> +		value |=3D (1 << PWM_CONTROL_POLARITY_SHIFT(chan));
-> +	}
-> +	writel(value, kp->base + PWM_CONTROL_OFFSET);
-
-I'd prefer a blank line between the above two for readability.
-
-> +static struct platform_driver kona_pwmc_driver =3D {
-> +
-
-Gratuitous blank line.
-
-> +	.driver =3D {
-> +		.name =3D "bcm-kona-pwm",
-> +		.of_match_table =3D bcm_kona_pwmc_dt,
-> +	},
-> +	.probe =3D kona_pwmc_probe,
-> +	.remove =3D kona_pwmc_remove,
-> +};
-> +
-
-And here.
-
-> +module_platform_driver(kona_pwmc_driver);
-> +
-> +MODULE_AUTHOR("Broadcom Corporation <bcm-kernel-feedback-list@broadcom.c=
-om>");
-> +MODULE_AUTHOR("Tim Kryger <tkryger@broadcom.com>");
-> +MODULE_DESCRIPTION("Driver for Kona PWM controller");
-
-Perhaps "Broadcom Kona PWM"?
+I've reviewed this and it doesn't look like 3.15 material.
 
 Thierry
 
---aF3LVLvitz/VQU3c
+--k9xkV0rc9XGsukaG
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTKMAfAAoJEN0jrNd/PrOh4jQP/2odnLmSg16B3QgPA/DZkZGl
-7/j0LSH26gNzBuI4Yc8+gubY+f7CWO8CMS74JNIaBsir9YalVM38evnPAnAD8Xmz
-fd8sXlAIakjlNtgmYulUYt5b1BX2SQBeDruLSydmbpD9Dq7Z5XjQyRCl/h2nBDTO
-Qsnz7OEywCrn/mOP2l0g6L6JDI5jywVGV560NNQECXjYjRjjI8ueHn97IvtO3PVD
-Ej7vwK6ApDHtmCPS9u++AwkyuMATsEBNjXElQYi5X4nnTnKht3WzZHBqL2PXWAoU
-aKNsMCzBKhG2Usit6kjYlagCaYTQkkY6lbRv+8Eoa69tM5wbtU8rp/CGTcEqmJwH
-t0jJ/yMsm5e7Hn8fJvSVWyzMrA7bqxoS2fN48XMZAyXM8pUx3zr1GoyVp7gpkTGZ
-uYBdRP2aDL7RxwSK3ry5HPq5xr5gsQXMj7ZoSQW+knQsWzBrD3xgzrP020q4eciS
-b1xQFFpIzgPUnqK8lgGUx/hRM+ewbqTiD/+NnbBdpH7hoecBHbyLW5cuDElyWXsX
-+xj5HP7+pW+sIcLsMTC95cNRbvpz9hhVhLY3iocART5SodG+YBSzVAFAMyfoOwC5
-DKiHkIxsaOq6Ty+GO5W0Kz9Qhy0F6vnNYirVV973AGN1D5S/cjeriZ7mqR/EtHeb
-210zuKWZKrxn/9yVk7da
-=EcSh
+iQIcBAEBAgAGBQJTKMB1AAoJEN0jrNd/PrOh838P/iOx0jBvU8WyFgVf7QAlrPd4
+gFCSHAmju3qqzjuv1k+79aHCuf2MyNeFYG4BBZS6bBg9DpsX4uqtVbyuK1T3A656
+1cIC+dPDDiiU/RgxHYZJehS03BtYobOfGtvI51psuJ+AE5x2ChWGkhsbnCgUTDE2
++gdAy8zb7bYxFZ0UbyUMJvRCSajbrjs2QPTqsGqGgLjr7zsGd7wnzfTJ54lJ9e3e
+lyXfskKMQJrOiZRYAw1vHs9mYBrbApBxf3trJqWj2htqhT+QoEfw9vkjBMjgKJid
+XMc4eocnZLSKsM6LLycVpncMV0Km8p8MBqtriAXDGamND78XyZcHc/k9khhkgY0x
+HPRYkwtbUyNM2SsytU20QuoKz7S+mpy6NnLDNpcfbqbuo7N3fMfwvU7eeGA2U9p1
+ae/C8n2p11DxQPd7Ne3mIQUZ2xYBjzXw132XzmXi7lJpYKAWGUAx0beMEgXZfkFL
+5oTfAtJajZQQQ++uh0ppY7l1upzIaV+Gf+9Nel6/N0GnTmonBEAiN7GU+Bcd1T00
+ocUQoG7yDTsE14v7DdMkSKYl6XMMMieo3V4i712xDnXxnodyHeYLZ+VcZhKwFyH4
+L/wpTzx/T23HPKNWhKVHxN7VY64biHVaBVOjj61kM6DiOinYcxL/ZHE1xxXzvIB7
+xrvVZszr1/r6mRANVMip
+=Rq9l
 -----END PGP SIGNATURE-----
 
---aF3LVLvitz/VQU3c--
-
-
---===============2645285547936396969==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============2645285547936396969==--
+--k9xkV0rc9XGsukaG--
