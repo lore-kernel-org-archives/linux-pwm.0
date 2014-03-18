@@ -1,111 +1,103 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH] PWM: atmel: fix incorrect CDTY value after enabling or disabling
-Date: Fri, 14 Mar 2014 20:05:31 +0100
-Message-ID: <1394823931-2815-1-git-send-email-alexandre.belloni@free-electrons.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2] pwm: add support for Intel Low Power Subsystem PWM
+Date: Tue, 18 Mar 2014 16:28:56 +0100
+Message-ID: <20140318152855.GA7237@mithrandir>
+References: <1393599057-26451-1-git-send-email-chiau.ee.chew@intel.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="PEIAKu/WMn1b1Hv9"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:50215 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751946AbaCNTFm (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Mar 2014 15:05:42 -0400
+Received: from mail-bk0-f44.google.com ([209.85.214.44]:59925 "EHLO
+	mail-bk0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756459AbaCRP3A (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 18 Mar 2014 11:29:00 -0400
+Content-Disposition: inline
+In-Reply-To: <1393599057-26451-1-git-send-email-chiau.ee.chew@intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Bo Shen <voice.shen@atmel.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Chew Chiau Ee <chiau.ee.chew@intel.com>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Chew Kean Ho <kean.ho.chew@intel.com>, Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-pwm-leds calls .config() and .disable() in a row. This exhibits that it may
-happen that the channel gets disabled before CDTY has been updated with CUPD.
-The issue gets quite worse with long periods.
-So, ensure by reading ISR that at least one period has past before disabling the
-channel.
 
-The other issue is that it may happen that CUPD is not flushed before enabling
-the channel so it will update CDTY/CPRD just after one period. So we always set
-CUPD, even when the channel is not enabled.
+--PEIAKu/WMn1b1Hv9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Tested on at91sam9g45 and sama5d31ek.
+On Fri, Feb 28, 2014 at 10:50:57PM +0800, Chew Chiau Ee wrote:
+> From: Mika Westerberg <mika.westerberg@linux.intel.com>
+>=20
+> Add support for Intel Low Power I/O subsystem PWM controllers found on
+> Intel BayTrail SoC.
+>=20
+> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Signed-off-by: Chew, Kean Ho <kean.ho.chew@intel.com>
+> Signed-off-by: Chang, Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
+> Signed-off-by: Chew, Chiau Ee <chiau.ee.chew@intel.com>
+> ---
+>  drivers/pwm/Kconfig    |   10 +++
+>  drivers/pwm/Makefile   |    1 +
+>  drivers/pwm/pwm-lpss.c |  179 ++++++++++++++++++++++++++++++++++++++++++=
+++++++
+>  3 files changed, 190 insertions(+), 0 deletions(-)
+>  create mode 100644 drivers/pwm/pwm-lpss.c
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- drivers/pwm/pwm-atmel.c | 46 +++++++++++++++++++++++++++++-----------------
- 1 file changed, 29 insertions(+), 17 deletions(-)
+Sorry for taking so long to get back to you on this. Things have been
+somewhat crazy lately.
 
-diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-index 0adc952cc4ef..0e589594b1cb 100644
---- a/drivers/pwm/pwm-atmel.c
-+++ b/drivers/pwm/pwm-atmel.c
-@@ -16,11 +16,13 @@
- #include <linux/platform_device.h>
- #include <linux/pwm.h>
- #include <linux/slab.h>
-+#include <linux/delay.h>
- 
- /* The following is global registers for PWM controller */
- #define PWM_ENA			0x04
- #define PWM_DIS			0x08
- #define PWM_SR			0x0C
-+#define PWM_ISR			0x1C
- /* Bit field in SR */
- #define PWM_SR_ALL_CH_ON	0x0F
- 
-@@ -157,24 +159,25 @@ static void atmel_pwm_config_v1(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
- 	unsigned int val;
- 
--	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
--		/*
--		 * If the PWM channel is enabled, using the update register,
--		 * it needs to set bit 10 of CMR to 0
--		 */
--		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CUPD, dty);
- 
--		val = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
--		val &= ~PWM_CMR_UPD_CDTY;
--		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
--	} else {
--		/*
--		 * If the PWM channel is disabled, write value to duty and
--		 * period registers directly.
--		 */
--		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CDTY, dty);
--		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CPRD, prd);
--	}
-+	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CUPD, dty);
-+
-+	val = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
-+	val &= ~PWM_CMR_UPD_CDTY;
-+	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
-+
-+	/*
-+	 * If the PWM channel is enabled, only update CDTY by using the update
-+	 * register, it needs to set bit 10 of CMR to 0
-+	 */
-+	if (test_bit(PWMF_ENABLED, &pwm->flags))
-+		return;
-+	/*
-+	 * If the PWM channel is disabled, write value to duty and period
-+	 * registers directly.
-+	 */
-+	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CDTY, dty);
-+	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CPRD, prd);
- }
- 
- static void atmel_pwm_config_v2(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -245,6 +248,15 @@ static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
- 
-+	/*
-+	 * Wait for at least a complete period to have passed before disabling a
-+	 * channel to be sure that CDTY has been updated
-+	 */
-+	atmel_pwm_readl(atmel_pwm, PWM_ISR);
-+
-+	while (!(atmel_pwm_readl(atmel_pwm, PWM_ISR) & (1 << pwm->hwpwm)))
-+		usleep_range(10, 100);
-+
- 	atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
- 
- 	clk_disable(atmel_pwm->clk);
--- 
-1.8.3.2
+This generally looks very good, but I found two issues that escaped last
+time. See below.
 
+> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+[...]
+> +static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> +			   int duty_ns, int period_ns)
+> +{
+> +	struct pwm_lpss_chip *lpwm =3D to_lpwm(chip);
+> +	u8 on_time_div;
+> +	unsigned long c =3D clk_get_rate(lpwm->clk);
+> +	unsigned long long base_unit, freq =3D NSECS_PER_SEC;
+> +	u32 ctrl;
+> +
+> +	do_div(freq, period_ns);
+> +
+> +	/* The equation is: base_unit =3D ((freq / c) * 65536) + correction */
+> +	base_unit =3D freq * 65536;
+> +	do_div(base_unit, c);
+
+clk_get_rate() can return 0, so perhaps it would be safer to check for
+the validity of c before dividing by it. This will probably never
+happen for your driver or platform, but people may look at your driver
+for inspiration at some point, so it should still be handling this
+correctly.
+
+> +MODULE_DESCRIPTION("PWM driver for Intel LPSS");
+> +MODULE_AUTHOR("Mika Westerberg <mika.westerberg@linux.intel.com>");
+> +MODULE_LICENSE("GPLv2");
+
+I think this needs to be "GPL v2".
+
+Thierry
+
+--PEIAKu/WMn1b1Hv9
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTKGY3AAoJEN0jrNd/PrOhlwsP/Rw3YvlmjSz+Qb0iWflprVjz
+XpB0RBf/zaDkuroyE6iTSaEd447iuWaSSE+mCBfRod3JjeZCPdCrQRB2kqRHpYQD
+Ms0FRqborxwO61B5fPcd6+Xw8NjR3vPKh+NQ5KMl1S/bEPxHeW1SPxBHLwOIr84z
+xMTkDmhjtRVwyc/q7Hran0QF8PBj63eHdT0WDnR0/JQ2rNMY7vR5Di/PEtan8Lcy
+J4Lnv/BQ0vcmclgtbrXQTMuB2Lm8Yl6GwaDJd+d/yuiS0HoigRJz1orik7mt9HdK
+csTGhNkc3niIXocCCdHuvSMhypAtFt5qazul/yKCowbVwmAU3Z/wN2yEZ+sC7oJP
+KKGuwc0O/NgE0o5btIlv4CxTXbm2jrCBlL2lE5184YVz+Cu4CGTTaKEGc3AJ2zCQ
+7K6u8qP8p4qRvx9aI7GbQqSp9sILONoLydzivHM2uFzMDNyGje3dsCngd2oNudE+
+1n4Q/mjZZL3LGE70qGGfg4IPuBrnvQHpX8EAMz92aF6TNzI7IC84kcFKASoKh5xv
+C2sUVVXeEzoxV8lIlKUq8w76yAGWBLuJm7Th8KOLZKvbMllwncNksuoTVd47BiBd
+5+/nbRhuYTykBSbB52Dl9Ba5GQ/vGOCgbkprRuP78J7ZscJ8ewsqY8z1+Vib0SIo
+Y/7us46pPhtAzWiA5MGt
+=rWC0
+-----END PGP SIGNATURE-----
+
+--PEIAKu/WMn1b1Hv9--
