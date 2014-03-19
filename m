@@ -1,83 +1,66 @@
-From: "Chew, Chiau Ee" <chiau.ee.chew@intel.com>
-Subject: RE: [PATCH v2] pwm: add support for Intel Low Power Subsystem PWM
-Date: Wed, 19 Mar 2014 01:25:34 +0000
-Message-ID: <604BF5F4C5D71041942BC7E84ED659EA01568555@PGSMSX103.gar.corp.intel.com>
-References: <1393599057-26451-1-git-send-email-chiau.ee.chew@intel.com>
- <20140318152855.GA7237@mithrandir>
+From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
+Subject: RE: [PATCHv10 0/4] Add Freescale FTM PWM support
+Date: Wed, 19 Mar 2014 06:07:00 +0000
+Message-ID: <14aa9d9e0e874ad4b3f26517e4042986@DM2PR03MB509.namprd03.prod.outlook.com>
+References: <1393493992-26073-1-git-send-email-Li.Xiubo@freescale.com>
+ <20140318194457.GA5917@mithrandir>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:62947 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1757980AbaCSB1Y convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 18 Mar 2014 21:27:24 -0400
-In-Reply-To: <20140318152855.GA7237@mithrandir>
+Received: from mail-bn1lp0142.outbound.protection.outlook.com ([207.46.163.142]:34509
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751941AbaCSGHF convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 19 Mar 2014 02:07:05 -0400
+In-Reply-To: <20140318194457.GA5917@mithrandir>
 Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, "Chew, Kean Ho" <kean.ho.chew@intel.com>, "Chang, Rebecca Swee Fun" <rebecca.swee.fun.chang@intel.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-> On Fri, Feb 28, 2014 at 10:50:57PM +0800, Chew Chiau Ee wrote:
-> > From: Mika Westerberg <mika.westerberg@linux.intel.com>
+
+> Subject: Re: [PATCHv10 0/4] Add Freescale FTM PWM support
+> 
+> On Thu, Feb 27, 2014 at 05:39:48PM +0800, Xiubo Li wrote:
+> > Changed in V10:
+> >   Fix some bugs and adjust the code from Thierry's comments.
 > >
-> > Add support for Intel Low Power I/O subsystem PWM controllers found on
-> > Intel BayTrail SoC.
 > >
-> > Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> > Signed-off-by: Chew, Kean Ho <kean.ho.chew@intel.com>
-> > Signed-off-by: Chang, Rebecca Swee Fun
-> > <rebecca.swee.fun.chang@intel.com>
-> > Signed-off-by: Chew, Chiau Ee <chiau.ee.chew@intel.com>
-> > ---
-> >  drivers/pwm/Kconfig    |   10 +++
-> >  drivers/pwm/Makefile   |    1 +
-> >  drivers/pwm/pwm-lpss.c |  179
-> > ++++++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 190 insertions(+), 0 deletions(-)  create mode
-> > 100644 drivers/pwm/pwm-lpss.c
+> > Xiubo Li (4):
+> >   pwm: Add Freescale FTM PWM driver support
+> >   ARM: dts: vf610: Add Freescale FTM PWM node.
+> >   ARM: dts: vf610-twr: Enables FTM PWM device.
+> >   Documentation: Add device tree bindings for Freescale FTM PWM.
+> >
+> >  .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        |  35 ++
+> >  arch/arm/boot/dts/vf610-twr.dts                    |   6 +
+> >  arch/arm/boot/dts/vf610.dtsi                       |  13 +
+> >  drivers/pwm/Kconfig                                |  10 +
+> >  drivers/pwm/Makefile                               |   1 +
+> >  drivers/pwm/pwm-fsl-ftm.c                          | 496
+> +++++++++++++++++++++
+> >  6 files changed, 561 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+> >  create mode 100644 drivers/pwm/pwm-fsl-ftm.c
 > 
-> Sorry for taking so long to get back to you on this. Things have been somewhat
-> crazy lately.
+> I've applied patches 1 and 4 to the PWM tree, with some minor cosmetic
+> fixups that I thought didn't warrant these patches to go through yet
+> another revision. =)
 > 
-> This generally looks very good, but I found two issues that escaped last time.
-> See below.
->
-> > diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-> [...]
-> > +static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> > +			   int duty_ns, int period_ns)
-> > +{
-> > +	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
-> > +	u8 on_time_div;
-> > +	unsigned long c = clk_get_rate(lpwm->clk);
-> > +	unsigned long long base_unit, freq = NSECS_PER_SEC;
-> > +	u32 ctrl;
-> > +
-> > +	do_div(freq, period_ns);
-> > +
-> > +	/* The equation is: base_unit = ((freq / c) * 65536) + correction */
-> > +	base_unit = freq * 65536;
-> > +	do_div(base_unit, c);
-> 
-> clk_get_rate() can return 0, so perhaps it would be safer to check for the
-> validity of c before dividing by it. This will probably never happen for your
-> driver or platform, but people may look at your driver for inspiration at some
-> point, so it should still be handling this correctly.
-
-Agreed. Will update the code accordingly.
-
-> > +MODULE_DESCRIPTION("PWM driver for Intel LPSS");
-> MODULE_AUTHOR("Mika
-> > +Westerberg <mika.westerberg@linux.intel.com>");
-> > +MODULE_LICENSE("GPLv2");
-> 
-> I think this needs to be "GPL v2".
-
-Ok. Will update this as well.
-
-Thanks for your review!
-
-> 
+> Thanks,
 > Thierry
+
+@Thierry,
+
+Great, Thanks very much, 
+:)
+
+
+Best Regards,
+Xiubo
+
+
+
+
