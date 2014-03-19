@@ -1,7 +1,8 @@
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH 04/16] ARM: at91: sam9263ek: use generic leds_pwm driver
-Date: Wed, 19 Mar 2014 14:03:17 +0100
-Message-ID: <1395234209-15546-5-git-send-email-alexandre.belloni@free-electrons.com>
+Subject: [PATCH 08/16] backlight: pwm_bl: set pwm polarity when using platform
+ data
+Date: Wed, 19 Mar 2014 14:03:21 +0100
+Message-ID: <1395234209-15546-9-git-send-email-alexandre.belloni@free-electrons.com>
 References: <1395234209-15546-1-git-send-email-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,110 +22,46 @@ To: linux-kernel@vger.kernel.org
 Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Bryan Wu <cooloney@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Thierry Reding <thierry.reding@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, linux-leds@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org, Hans-Christian Egtvedt <egtvedt@samfundet.no>
 List-Id: linux-pwm@vger.kernel.org
 
-Switch to the generic leds_pwm driver instead of leds-atmel-pwm.
+Set inversed polarity when .pwm_active_low is set in the platform_data. With
+device tree, this is taken care of by of_pwm_xlate_with_flags(), called from
+of_pwm_get().
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 ---
- arch/arm/mach-at91/board-sam9263ek.c | 56 ++++++++++++++++++++++++++++++------
- 1 file changed, 48 insertions(+), 8 deletions(-)
+ drivers/video/backlight/pwm_bl.c | 8 ++++++++
+ include/linux/pwm_backlight.h    | 1 +
+ 2 files changed, 9 insertions(+)
 
-diff --git a/arch/arm/mach-at91/board-sam9263ek.c b/arch/arm/mach-at91/board-sam9263ek.c
-index 2f931915c80c..f8496868d9ba 100644
---- a/arch/arm/mach-at91/board-sam9263ek.c
-+++ b/arch/arm/mach-at91/board-sam9263ek.c
-@@ -32,6 +32,8 @@
- #include <linux/gpio_keys.h>
- #include <linux/input.h>
- #include <linux/leds.h>
-+#include <linux/pwm.h>
-+#include <linux/leds_pwm.h>
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index b75201ff46f6..ffdd3b2b2742 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -309,6 +309,14 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	if (data->pwm_period_ns > 0)
+ 		pwm_set_period(pb->pwm, data->pwm_period_ns);
  
- #include <video/atmel_lcdc.h>
- 
-@@ -368,21 +370,48 @@ static struct gpio_led ek_leds[] = {
- 		.name			= "ds3",
- 		.gpio			= AT91_PIN_PB7,
- 		.default_trigger	= "heartbeat",
-+	},
-+#if !IS_ENABLED(CONFIG_LEDS_PWM)
-+	{
-+		.name			= "ds1",
-+		.gpio			= AT91_PIN_PB8,
-+		.active_low		= 1,
-+		.default_trigger	= "none",
- 	}
-+#endif
- };
- 
- /*
-  * PWM Leds
-  */
--static struct gpio_led ek_pwm_led[] = {
--	/* For now only DS1 is PWM-driven (by pwm1) */
-+static struct pwm_lookup pwm_lookup[] = {
-+	PWM_LOOKUP("at91sam9rl-pwm", 1, "leds_pwm", "ds1"),
-+};
++	/*
++	 * The DT case is taking care of polarity in of_pwm_get(). For the
++	 * non-DT case, set the polarity from platform data.
++	 */
++	if (data->pwm_active_low)
++		if (pwm_set_polarity(pb->pwm, PWM_POLARITY_INVERSED))
++			dev_err(&pdev->dev, "impossible to invert polarity\n");
 +
-+#if IS_ENABLED(CONFIG_LEDS_PWM)
-+static struct led_pwm pwm_leds[] = {
- 	{
--		.name			= "ds1",
--		.gpio			= 1,	/* is PWM channel number */
--		.active_low		= 1,
--		.default_trigger	= "none",
--	}
-+		.name = "ds1",
-+		.max_brightness = 255,
-+		.pwm_period_ns  = 5000,
-+		.active_low = 1,
-+	},
-+};
-+
-+static struct led_pwm_platform_data pwm_data = {
-+	.num_leds       = ARRAY_SIZE(pwm_leds),
-+	.leds           = pwm_leds,
-+};
-+
-+static struct platform_device leds_pwm = {
-+	.name   = "leds_pwm",
-+	.id     = -1,
-+	.dev    = {
-+		.platform_data = &pwm_data,
-+	},
- };
-+#endif
-+
+ 	pb->period = pwm_get_period(pb->pwm);
+ 	pb->lth_brightness = data->lth_brightness * (pb->period / pb->scale);
  
- /*
-  * CAN
-@@ -402,6 +431,12 @@ static struct at91_can_data ek_can_data = {
- 	.transceiver_switch = sam9263ek_transceiver_switch,
- };
- 
-+static struct platform_device *devices[] __initdata = {
-+#if IS_ENABLED(CONFIG_LEDS_PWM)
-+	&leds_pwm,
-+#endif
-+};
-+
- static void __init ek_board_init(void)
- {
- 	/* Serial */
-@@ -436,9 +471,14 @@ static void __init ek_board_init(void)
- 	at91_add_device_ac97(&ek_ac97_data);
- 	/* LEDs */
- 	at91_gpio_leds(ek_leds, ARRAY_SIZE(ek_leds));
--	at91_pwm_leds(ek_pwm_led, ARRAY_SIZE(ek_pwm_led));
-+	pwm_add_table(pwm_lookup, ARRAY_SIZE(pwm_lookup));
-+#if IS_ENABLED(CONFIG_LEDS_PWM)
-+	at91_add_device_pwm(1 << AT91_PWM1);
-+#endif
- 	/* CAN */
- 	at91_add_device_can(&ek_can_data);
-+	/* Other platform devices */
-+	platform_add_devices(devices, ARRAY_SIZE(devices));
- }
- 
- MACHINE_START(AT91SAM9263EK, "Atmel AT91SAM9263-EK")
+diff --git a/include/linux/pwm_backlight.h b/include/linux/pwm_backlight.h
+index 2de2e275b2cb..b924fce5c97a 100644
+--- a/include/linux/pwm_backlight.h
++++ b/include/linux/pwm_backlight.h
+@@ -15,6 +15,7 @@ struct platform_pwm_backlight_data {
+ 	unsigned int dft_brightness;
+ 	unsigned int lth_brightness;
+ 	unsigned int pwm_period_ns;
++	bool pwm_active_low;
+ 	unsigned int *levels;
+ 	int enable_gpio;
+ 	unsigned long enable_gpio_flags;
 -- 
 1.8.3.2
