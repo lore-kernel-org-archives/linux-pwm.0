@@ -1,66 +1,83 @@
-From: Tim Kryger <tim.kryger@linaro.org>
-Subject: Re: [PATCH v3 2/5] pwm: kona: Introduce Kona PWM controller support
-Date: Tue, 18 Mar 2014 18:06:03 -0700
-Message-ID: <CAAYSxhpW-N7UdpsGE7JHvOJxQcvURRPdAOhiVkK=4EHc7E03gQ@mail.gmail.com>
-References: <1394655346-30048-1-git-send-email-tim.kryger@linaro.org>
-	<1394655346-30048-3-git-send-email-tim.kryger@linaro.org>
-	<20140318215231.GH5917@mithrandir>
-	<CAAYSxhri0evgrbCPew6-MTXVmpzm7Oa6TpmJTSGZpTcV=876HQ@mail.gmail.com>
+From: "Chew, Chiau Ee" <chiau.ee.chew@intel.com>
+Subject: RE: [PATCH v2] pwm: add support for Intel Low Power Subsystem PWM
+Date: Wed, 19 Mar 2014 01:25:34 +0000
+Message-ID: <604BF5F4C5D71041942BC7E84ED659EA01568555@PGSMSX103.gar.corp.intel.com>
+References: <1393599057-26451-1-git-send-email-chiau.ee.chew@intel.com>
+ <20140318152855.GA7237@mithrandir>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oa0-f42.google.com ([209.85.219.42]:62978 "EHLO
-	mail-oa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758240AbaCSBGE (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 18 Mar 2014 21:06:04 -0400
-Received: by mail-oa0-f42.google.com with SMTP id i4so7743982oah.15
-        for <linux-pwm@vger.kernel.org>; Tue, 18 Mar 2014 18:06:03 -0700 (PDT)
-In-Reply-To: <CAAYSxhri0evgrbCPew6-MTXVmpzm7Oa6TpmJTSGZpTcV=876HQ@mail.gmail.com>
+Received: from mga11.intel.com ([192.55.52.93]:62947 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1757980AbaCSB1Y convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 18 Mar 2014 21:27:24 -0400
+In-Reply-To: <20140318152855.GA7237@mithrandir>
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, "Chew, Kean Ho" <kean.ho.chew@intel.com>, "Chang, Rebecca Swee Fun" <rebecca.swee.fun.chang@intel.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-On Tue, Mar 18, 2014 at 4:47 PM, Tim Kryger <tim.kryger@linaro.org> wrote:
-> On Tue, Mar 18, 2014 at 2:52 PM, Thierry Reding
-> <thierry.reding@gmail.com> wrote:
->> On Wed, Mar 12, 2014 at 01:15:43PM -0700, Tim Kryger wrote:
-
->>> +
->>> +     /* There is polarity support in HW but it is easier to manage in SW */
->>> +     if (pwm->polarity == PWM_POLARITY_INVERSED)
->>> +             duty_ns = period_ns - duty_ns;
->>
->> No, this is wrong. You're not actually changing the *polarity* here.
+> On Fri, Feb 28, 2014 at 10:50:57PM +0800, Chew Chiau Ee wrote:
+> > From: Mika Westerberg <mika.westerberg@linux.intel.com>
+> >
+> > Add support for Intel Low Power I/O subsystem PWM controllers found on
+> > Intel BayTrail SoC.
+> >
+> > Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > Signed-off-by: Chew, Kean Ho <kean.ho.chew@intel.com>
+> > Signed-off-by: Chang, Rebecca Swee Fun
+> > <rebecca.swee.fun.chang@intel.com>
+> > Signed-off-by: Chew, Chiau Ee <chiau.ee.chew@intel.com>
+> > ---
+> >  drivers/pwm/Kconfig    |   10 +++
+> >  drivers/pwm/Makefile   |    1 +
+> >  drivers/pwm/pwm-lpss.c |  179
+> > ++++++++++++++++++++++++++++++++++++++++++++++++
+> >  3 files changed, 190 insertions(+), 0 deletions(-)  create mode
+> > 100644 drivers/pwm/pwm-lpss.c
+> 
+> Sorry for taking so long to get back to you on this. Things have been somewhat
+> crazy lately.
+> 
+> This generally looks very good, but I found two issues that escaped last time.
+> See below.
 >
-> Please elaborate.  I don't understand what is wrong here.
->
-> Does polarity influence the output while a PWM is disabled?
->
+> > diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+> [...]
+> > +static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> > +			   int duty_ns, int period_ns)
+> > +{
+> > +	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
+> > +	u8 on_time_div;
+> > +	unsigned long c = clk_get_rate(lpwm->clk);
+> > +	unsigned long long base_unit, freq = NSECS_PER_SEC;
+> > +	u32 ctrl;
+> > +
+> > +	do_div(freq, period_ns);
+> > +
+> > +	/* The equation is: base_unit = ((freq / c) * 65536) + correction */
+> > +	base_unit = freq * 65536;
+> > +	do_div(base_unit, c);
+> 
+> clk_get_rate() can return 0, so perhaps it would be safer to check for the
+> validity of c before dividing by it. This will probably never happen for your
+> driver or platform, but people may look at your driver for inspiration at some
+> point, so it should still be handling this correctly.
 
->>> +static int kona_pwmc_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
->>> +                               enum pwm_polarity polarity)
->>> +{
->>> +     /*
->>> +      * The framework only allows the polarity to be changed when a PWM is
->>> +      * disabled so no immediate action is required here.  When a channel is
->>> +      * enabled, the polarity gets handled as part of the re-config step.
->>> +      */
->>> +
->>> +     return 0;
->>> +}
->>
->> See above. If you don't want to implement the hardware support for
->> inversed polarity, then simply don't implement this.
->
-> I had originally planned to omit polarity support but because it
-> affects the binding (which is treated as ABI), it wouldn't be possible
-> to add it in later without defining a new compatible string.
+Agreed. Will update the code accordingly.
 
-I would like to get this right but it occurred to me that there may be
-a way to defer the implementation of this feature without disrupting
-the binding.
+> > +MODULE_DESCRIPTION("PWM driver for Intel LPSS");
+> MODULE_AUTHOR("Mika
+> > +Westerberg <mika.westerberg@linux.intel.com>");
+> > +MODULE_LICENSE("GPLv2");
+> 
+> I think this needs to be "GPL v2".
 
-Would it be acceptable to continue using #pwm-cells = <3> and
-of_pwm_xlate_with_flags but return -EINVAL from kona_pwmc_set_polarity
-if PWM_POLARITY_INVERSED is specified?
+Ok. Will update this as well.
+
+Thanks for your review!
+
+> 
+> Thierry
