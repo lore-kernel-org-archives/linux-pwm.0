@@ -1,71 +1,24 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH 05/16] ARM: at91: at91sam9rl: switch to generic PWM framework
-Date: Wed, 19 Mar 2014 14:03:18 +0100
-Message-ID: <1395234209-15546-6-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1395234209-15546-1-git-send-email-alexandre.belloni@free-electrons.com>
-Return-path: <linux-leds-owner@vger.kernel.org>
-In-Reply-To: <1395234209-15546-1-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-leds-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Subject: pwm: imx: support output polarity inversion
+Date: Wed, 19 Mar 2014 14:22:52 +0100
+Message-ID: <1395235375-12925-1-git-send-email-LW@KARO-electronics.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.karo-electronics.de ([81.173.242.67]:50165 "EHLO
+	mail.karo-electronics.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933771AbaCSNYQ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 19 Mar 2014 09:24:16 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 
-Switch to the pwm/pwm-atmel driver instead of misc/atmel_pwm
+This patch series adds support for polarity inversion to the pwm-imx
+driver. 
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- arch/arm/mach-at91/at91sam9rl.c         |  1 +
- arch/arm/mach-at91/at91sam9rl_devices.c | 11 ++---------
- 2 files changed, 3 insertions(+), 9 deletions(-)
+Changes wrt. v2:
+- make the use of '#pwm-cells = <3>' optional, so that the change does
+  not break existing DT blobs as suggested by Arnd Bergmann and Sascha
+  Hauer.
 
-diff --git a/arch/arm/mach-at91/at91sam9rl.c b/arch/arm/mach-at91/at91sam9rl.c
-index 4d2006351d1d..bc035a9ff53c 100644
---- a/arch/arm/mach-at91/at91sam9rl.c
-+++ b/arch/arm/mach-at91/at91sam9rl.c
-@@ -199,6 +199,7 @@ static struct clk_lookup periph_clocks_lookups[] = {
- 	CLKDEV_CON_DEV_ID("pclk", "fffc4000.ssc", &ssc1_clk),
- 	CLKDEV_CON_DEV_ID(NULL, "i2c-at91sam9g20.0", &twi0_clk),
- 	CLKDEV_CON_DEV_ID(NULL, "i2c-at91sam9g20.1", &twi1_clk),
-+	CLKDEV_CON_DEV_ID(NULL, "at91sam9rl-pwm", &pwm_clk),
- 	CLKDEV_CON_ID("pioA", &pioA_clk),
- 	CLKDEV_CON_ID("pioB", &pioB_clk),
- 	CLKDEV_CON_ID("pioC", &pioC_clk),
-diff --git a/arch/arm/mach-at91/at91sam9rl_devices.c b/arch/arm/mach-at91/at91sam9rl_devices.c
-index 9ccae034119c..a396d6d56ffe 100644
---- a/arch/arm/mach-at91/at91sam9rl_devices.c
-+++ b/arch/arm/mach-at91/at91sam9rl_devices.c
-@@ -797,9 +797,7 @@ static void __init at91_add_device_watchdog(void) {}
-  *  PWM
-  * --------------------------------------------------------------------*/
- 
--#if defined(CONFIG_ATMEL_PWM)
--static u32 pwm_mask;
--
-+#if IS_ENABLED(CONFIG_PWM_ATMEL)
- static struct resource pwm_resources[] = {
- 	[0] = {
- 		.start	= AT91SAM9RL_BASE_PWMC,
-@@ -814,11 +812,8 @@ static struct resource pwm_resources[] = {
- };
- 
- static struct platform_device at91sam9rl_pwm0_device = {
--	.name	= "atmel_pwm",
-+	.name	= "at91sam9rl-pwm",
- 	.id	= -1,
--	.dev	= {
--		.platform_data		= &pwm_mask,
--	},
- 	.resource	= pwm_resources,
- 	.num_resources	= ARRAY_SIZE(pwm_resources),
- };
-@@ -837,8 +832,6 @@ void __init at91_add_device_pwm(u32 mask)
- 	if (mask & (1 << AT91_PWM3))
- 		at91_set_B_periph(AT91_PIN_PD8, 1);	/* enable PWM3 */
- 
--	pwm_mask = mask;
--
- 	platform_device_register(&at91sam9rl_pwm0_device);
- }
- #else
--- 
-1.8.3.2
