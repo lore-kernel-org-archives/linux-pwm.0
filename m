@@ -1,63 +1,78 @@
-From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
-Subject: [PATCHv3 2/3] pwm: imx: indentation cleanup
-Date: Wed, 19 Mar 2014 14:22:54 +0100
-Message-ID: <1395235375-12925-3-git-send-email-LW@KARO-electronics.de>
-References: <1395235375-12925-1-git-send-email-LW@KARO-electronics.de>
+From: Hans-Christian Egtvedt <egtvedt@samfundet.no>
+Subject: Re: [PATCH 09/16] avr32/at32ap: switch to the generic PWM framework
+Date: Wed, 19 Mar 2014 15:18:20 +0100
+Message-ID: <20140319141820.GA20872@samfundet.no>
+References: <1395234209-15546-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <1395234209-15546-10-git-send-email-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.karo-electronics.de ([81.173.242.67]:50167 "EHLO
-	mail.karo-electronics.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S934163AbaCSNYR (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 19 Mar 2014 09:24:17 -0400
-In-Reply-To: <1395235375-12925-1-git-send-email-LW@KARO-electronics.de>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1395234209-15546-10-git-send-email-alexandre.belloni@free-electrons.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Bryan Wu <cooloney@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, linux-leds@vger.kernel.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org, Haavard Skinnemoen <hskinnemoen@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 
+Around Wed 19 Mar 2014 14:03:22 +0100 or thereabout, Alexandre Belloni wrote:
+> Switch to the pwm/pwm-atmel driver instead of misc/atmel_pwm
+> 
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-Signed-off-by: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
----
- drivers/pwm/pwm-imx.c |   21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+Acked-by: Hans-Christian Egtvedt <egtvedt@samfundet.no>
 
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index cc47733..52aac5e 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -25,20 +25,21 @@
- #define MX1_PWMS    0x04   /* PWM Sample Register */
- #define MX1_PWMP    0x08   /* PWM Period Register */
-=20
--#define MX1_PWMC_EN		(1 << 4)
-+#define MX1_PWMC_EN			(1 << 4)
-=20
- /* i.MX27, i.MX31, i.MX35 share the same PWM function block: */
-=20
--#define MX3_PWMCR                 0x00    /* PWM Control Register */
--#define MX3_PWMSAR                0x0C    /* PWM Sample Register */
--#define MX3_PWMPR                 0x10    /* PWM Period Register */
--#define MX3_PWMCR_PRESCALER(x)    (((x - 1) & 0xFFF) << 4)
--#define MX3_PWMCR_DOZEEN                (1 << 24)
--#define MX3_PWMCR_WAITEN                (1 << 23)
-+#define MX3_PWMCR			0x00	  /* PWM Control Register */
-+#define MX3_PWMSAR			0x0C	  /* PWM Sample Register */
-+#define MX3_PWMPR			0x10	  /* PWM Period Register */
-+#define MX3_PWMCR_PRESCALER(x)		((((x) - 1) & 0xFFF) << 4)
-+#define MX3_PWMCR_DOZEEN		(1 << 24)
-+#define MX3_PWMCR_WAITEN		(1 << 23)
- #define MX3_PWMCR_DBGEN			(1 << 22)
--#define MX3_PWMCR_CLKSRC_IPG_HIGH (2 << 16)
--#define MX3_PWMCR_CLKSRC_IPG      (1 << 16)
--#define MX3_PWMCR_EN              (1 << 0)
-+#define MX3_PWMCR_POUTC			(1 << 18)
-+#define MX3_PWMCR_CLKSRC_IPG_HIGH	(2 << 16)
-+#define MX3_PWMCR_CLKSRC_IPG		(1 << 16)
-+#define MX3_PWMCR_EN			(1 << 0)
-=20
- struct imx_chip {
- 	struct clk	*clk_per;
---=20
-1.7.10.4
+> ---
+>  arch/avr32/mach-at32ap/at32ap700x.c | 7 ++-----
+>  1 file changed, 2 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/avr32/mach-at32ap/at32ap700x.c b/arch/avr32/mach-at32ap/at32ap700x.c
+> index a1f4d1e91b52..db85b5ec3351 100644
+> --- a/arch/avr32/mach-at32ap/at32ap700x.c
+> +++ b/arch/avr32/mach-at32ap/at32ap700x.c
+> @@ -1553,7 +1553,7 @@ static struct resource atmel_pwm0_resource[] __initdata = {
+>  	IRQ(24),
+>  };
+>  static struct clk atmel_pwm0_mck = {
+> -	.name		= "pwm_clk",
+> +	.name		= "at91sam9rl-pwm",
 
+I found this a tiny bit weird, but found the matching instance in
+drivers/pwm/pwm-atmel.c
+
+IMHO it would initially have been better to call it atpwm_v1 or something
+similar, more generic. But I guess that is too late to change at this point.
+
+>  	.parent		= &pbb_clk,
+>  	.mode		= pbb_clk_mode,
+>  	.get_rate	= pbb_clk_get_rate,
+> @@ -1568,7 +1568,7 @@ struct platform_device *__init at32_add_device_pwm(u32 mask)
+>  	if (!mask)
+>  		return NULL;
+>  
+> -	pdev = platform_device_alloc("atmel_pwm", 0);
+> +	pdev = platform_device_alloc("at91sam9rl-pwm", 0);
+>  	if (!pdev)
+>  		return NULL;
+>  
+> @@ -1576,9 +1576,6 @@ struct platform_device *__init at32_add_device_pwm(u32 mask)
+>  				ARRAY_SIZE(atmel_pwm0_resource)))
+>  		goto out_free_pdev;
+>  
+> -	if (platform_device_add_data(pdev, &mask, sizeof(mask)))
+> -		goto out_free_pdev;
+> -
+>  	pin_mask = 0;
+>  	if (mask & (1 << 0))
+>  		pin_mask |= (1 << 28);
+-- 
+mvh
+Hans-Christian Egtvedt
