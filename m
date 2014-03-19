@@ -1,85 +1,82 @@
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH 10/16] avr32: MRMT: use generic leds_pwm driver
-Date: Wed, 19 Mar 2014 14:03:23 +0100
-Message-ID: <1395234209-15546-11-git-send-email-alexandre.belloni@free-electrons.com>
+Subject: [PATCH 03/16] ARM: at91: at91sam9263: switch to generic PWM framework
+Date: Wed, 19 Mar 2014 14:03:16 +0100
+Message-ID: <1395234209-15546-4-git-send-email-alexandre.belloni@free-electrons.com>
 References: <1395234209-15546-1-git-send-email-alexandre.belloni@free-electrons.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1395234209-15546-1-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-kernel@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Bryan Wu <cooloney@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Thierry Reding <thierry.reding@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, linux-leds@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org, Hans-Christian Egtvedt <egtvedt@samfundet.no>
 List-Id: linux-pwm@vger.kernel.org
 
-Switch to the generic leds_pwm driver instead of leds-atmel-pwm.
+Switch to the pwm/pwm-atmel driver instead of misc/atmel_pwm
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 ---
- arch/avr32/boards/atngw100/mrmt.c | 35 +++++++++++++++++++++++------------
- 1 file changed, 23 insertions(+), 12 deletions(-)
+ arch/arm/mach-at91/at91sam9263.c         |  1 +
+ arch/arm/mach-at91/at91sam9263_devices.c | 11 ++---------
+ 2 files changed, 3 insertions(+), 9 deletions(-)
 
-diff --git a/arch/avr32/boards/atngw100/mrmt.c b/arch/avr32/boards/atngw100/mrmt.c
-index 1ba09e4c02b1..134e94c3d504 100644
---- a/arch/avr32/boards/atngw100/mrmt.c
-+++ b/arch/avr32/boards/atngw100/mrmt.c
-@@ -17,6 +17,8 @@
- #include <linux/types.h>
- #include <linux/fb.h>
- #include <linux/leds.h>
-+#include <linux/pwm.h>
-+#include <linux/leds_pwm.h>
- #include <linux/input.h>
- #include <linux/gpio_keys.h>
- #include <linux/atmel_serial.h>
-@@ -155,21 +157,29 @@ static struct platform_device rmt_ts_device = {
+diff --git a/arch/arm/mach-at91/at91sam9263.c b/arch/arm/mach-at91/at91sam9263.c
+index 37b90f4b990c..d0c2d4955cd7 100644
+--- a/arch/arm/mach-at91/at91sam9263.c
++++ b/arch/arm/mach-at91/at91sam9263.c
+@@ -198,6 +198,7 @@ static struct clk_lookup periph_clocks_lookups[] = {
+ 	CLKDEV_CON_DEV_ID("spi_clk", "atmel_spi.1", &spi1_clk),
+ 	CLKDEV_CON_DEV_ID("t0_clk", "atmel_tcb.0", &tcb_clk),
+ 	CLKDEV_CON_DEV_ID(NULL, "i2c-at91sam9260.0", &twi_clk),
++	CLKDEV_CON_DEV_ID(NULL, "at91sam9rl-pwm", &pwm_clk),
+ 	/* fake hclk clock */
+ 	CLKDEV_CON_DEV_ID("hclk", "at91_ohci", &ohci_clk),
+ 	CLKDEV_CON_ID("pioA", &pioA_clk),
+diff --git a/arch/arm/mach-at91/at91sam9263_devices.c b/arch/arm/mach-at91/at91sam9263_devices.c
+index 4aeadddbc181..160acd96cdda 100644
+--- a/arch/arm/mach-at91/at91sam9263_devices.c
++++ b/arch/arm/mach-at91/at91sam9263_devices.c
+@@ -1129,9 +1129,7 @@ static void __init at91_add_device_watchdog(void) {}
+  *  PWM
+  * --------------------------------------------------------------------*/
  
- #ifdef CONFIG_BOARD_MRMT_BL_PWM
- /* PWM LEDs: LCD Backlight, etc */
--static struct gpio_led rmt_pwm_led[] = {
--	/* here the "gpio" is actually a PWM channel */
--	{ .name = "backlight",	.gpio = PWM_CH_BL, },
-+static struct pwm_lookup pwm_lookup[] = {
-+	PWM_LOOKUP("at91sam9rl-pwm", PWM_CH_BL, "leds_pwm", "ds1"),
+-#if defined(CONFIG_ATMEL_PWM)
+-static u32 pwm_mask;
+-
++#if IS_ENABLED(CONFIG_PWM_ATMEL)
+ static struct resource pwm_resources[] = {
+ 	[0] = {
+ 		.start	= AT91SAM9263_BASE_PWMC,
+@@ -1146,11 +1144,8 @@ static struct resource pwm_resources[] = {
  };
  
--static struct gpio_led_platform_data rmt_pwm_led_data = {
--	.num_leds	= ARRAY_SIZE(rmt_pwm_led),
--	.leds		= rmt_pwm_led,
-+static struct led_pwm pwm_leds[] = {
-+	{
-+		.name = "backlight",
-+		.max_brightness = 255,
-+		.pwm_period_ns  = 5000,
-+		.active_low = 1,
-+	},
-+};
-+
-+static struct led_pwm_platform_data pwm_data = {
-+	.num_leds       = ARRAY_SIZE(pwm_leds),
-+	.leds           = pwm_leds,
+ static struct platform_device at91sam9263_pwm0_device = {
+-	.name	= "atmel_pwm",
++	.name	= "at91sam9rl-pwm",
+ 	.id	= -1,
+-	.dev	= {
+-		.platform_data		= &pwm_mask,
+-	},
+ 	.resource	= pwm_resources,
+ 	.num_resources	= ARRAY_SIZE(pwm_resources),
  };
+@@ -1169,8 +1164,6 @@ void __init at91_add_device_pwm(u32 mask)
+ 	if (mask & (1 << AT91_PWM3))
+ 		at91_set_B_periph(AT91_PIN_PB29, 1);	/* enable PWM3 */
  
--static struct platform_device rmt_pwm_led_dev = {
--	.name		= "leds-atmel-pwm",
--	.id		= -1,
--	.dev		= {
--		.platform_data	= &rmt_pwm_led_data,
-+static struct platform_device leds_pwm = {
-+	.name   = "leds_pwm",
-+	.id     = -1,
-+	.dev    = {
-+		.platform_data = &pwm_data,
- 	},
- };
- #endif
-@@ -325,7 +335,8 @@ static int __init mrmt1_init(void)
- #ifdef CONFIG_BOARD_MRMT_BL_PWM
- 	/* Use PWM for Backlight controls */
- 	at32_add_device_pwm(1 << PWM_CH_BL);
--	platform_device_register(&rmt_pwm_led_dev);
-+	pwm_add_table(pwm_lookup, ARRAY_SIZE(pwm_lookup));
-+	platform_device_register(&leds_pwm);
+-	pwm_mask = mask;
+-
+ 	platform_device_register(&at91sam9263_pwm0_device);
+ }
  #else
- 	/* Backlight always on */
- 	udelay( 1 );
 -- 
 1.8.3.2
