@@ -1,52 +1,55 @@
-From: Hans-Christian Egtvedt <egtvedt@samfundet.no>
-Subject: Re: [PATCH 14/16] backlight: atmel-pwm-bl: remove obsolete driver
-Date: Wed, 19 Mar 2014 15:22:32 +0100
-Message-ID: <20140319142231.GF20872@samfundet.no>
-References: <1395234209-15546-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1395234209-15546-15-git-send-email-alexandre.belloni@free-electrons.com>
+From: Tim Kryger <tim.kryger@linaro.org>
+Subject: [PATCH v4 1/5] Documentation: dt: Add Kona PWM binding
+Date: Wed, 19 Mar 2014 17:12:24 -0700
+Message-ID: <1395274348-25259-2-git-send-email-tim.kryger@linaro.org>
+References: <1395274348-25259-1-git-send-email-tim.kryger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from cassarossa.samfundet.no ([193.35.52.29]:42865 "EHLO
-	cassarossa.samfundet.no" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965253AbaCSOWo (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 19 Mar 2014 10:22:44 -0400
-Content-Disposition: inline
-In-Reply-To: <1395234209-15546-15-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1395274348-25259-1-git-send-email-tim.kryger@linaro.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>
+Cc: Tim Kryger <tim.kryger@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
 
-Around Wed 19 Mar 2014 14:03:27 +0100 or thereabout, Alexandre Belloni wrote:
-> The atmel-pwm-bl driver is now obsolete. It is not used by any mainlined boards
-> and is replaced by the generic pwm_bl with the pawm-atmel driver using the
-> generic PWM framework.
-> 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Add the binding description for the Kona PWM controller found on Broadcom's
+mobile SoCs.
 
-Acked-by: Hans-Christian Egtvedt <egtvedt@samfundet.no>
+Signed-off-by: Tim Kryger <tim.kryger@linaro.org>
+Reviewed-by: Alex Elder <elder@linaro.org>
+Reviewed-by: Markus Mayer <markus.mayer@linaro.org>
+---
+ .../devicetree/bindings/pwm/bcm-kona-pwm.txt       |   21 ++++++++++++++++++++
+ 1 files changed, 21 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
 
-> ---
->  drivers/video/backlight/Kconfig        |  11 --
->  drivers/video/backlight/Makefile       |   1 -
->  drivers/video/backlight/atmel-pwm-bl.c | 223 ---------------------------------
->  include/linux/atmel-pwm-bl.h           |  43 -------
->  4 files changed, 278 deletions(-)
->  delete mode 100644 drivers/video/backlight/atmel-pwm-bl.c
->  delete mode 100644 include/linux/atmel-pwm-bl.h
-
-<snipp diff>
-
-> -MODULE_AUTHOR("Hans-Christian egtvedt <hans-christian.egtvedt@atmel.com>");
->
-
-sob )':
-
-Great cleanup though.
-
-<snipp diff>
-
+diff --git a/Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt b/Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
+new file mode 100644
+index 0000000..8eae9fe
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
+@@ -0,0 +1,21 @@
++Broadcom Kona PWM controller device tree bindings
++
++This controller has 6 channels.
++
++Required Properties :
++- compatible: should contain "brcm,kona-pwm"
++- reg: physical base address and length of the controller's registers
++- clocks: phandle + clock specifier pair for the external clock
++- #pwm-cells: Should be 3. See pwm.txt in this directory for a
++  description of the cells format.
++
++Refer to clocks/clock-bindings.txt for generic clock consumer properties.
++
++Example:
++
++pwm: pwm@3e01a000 {
++	compatible = "brcm,bcm11351-pwm", "brcm,kona-pwm";
++	reg = <0x3e01a000 0xc4>;
++	clocks = <&pwm_clk>;
++	#pwm-cells = <3>;
++};
 -- 
-mvh
-Hans-Christian Egtvedt
+1.7.0.4
+
