@@ -1,259 +1,93 @@
-From: Chew Chiau Ee <chiau.ee.chew@intel.com>
-Subject: [PATCH v3] pwm: add support for Intel Low Power Subsystem PWM
-Date: Thu, 20 Mar 2014 22:04:23 +0800
-Message-ID: <1395324263-4282-1-git-send-email-chiau.ee.chew@intel.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:13540 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751153AbaCTGCW (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Thu, 20 Mar 2014 02:02:22 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v3 2/5] pwm: kona: Introduce Kona PWM controller support
+Date: Thu, 20 Mar 2014 15:48:38 +0100
+Message-ID: <20140320144833.GA25092@ulmo>
+References: <1394655346-30048-1-git-send-email-tim.kryger@linaro.org>
+ <1394655346-30048-3-git-send-email-tim.kryger@linaro.org>
+ <20140318215231.GH5917@mithrandir>
+ <CAAYSxhri0evgrbCPew6-MTXVmpzm7Oa6TpmJTSGZpTcV=876HQ@mail.gmail.com>
+ <CAAYSxhpW-N7UdpsGE7JHvOJxQcvURRPdAOhiVkK=4EHc7E03gQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="fUYQa+Pmc3FrFX/N"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAAYSxhpW-N7UdpsGE7JHvOJxQcvURRPdAOhiVkK=4EHc7E03gQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tim Kryger <tim.kryger@linaro.org>
+Cc: Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-Add support for Intel Low Power I/O subsystem PWM controllers found on
-Intel BayTrail SoC.
+--fUYQa+Pmc3FrFX/N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Signed-off-by: Chew, Kean Ho <kean.ho.chew@intel.com>
-Signed-off-by: Chang, Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
-Signed-off-by: Chew, Chiau Ee <chiau.ee.chew@intel.com>
----
- changelog v3:
- * check validity of clk_get_rate()'s return value before division
- * update MODULE_LICENSE()line
+On Tue, Mar 18, 2014 at 06:06:03PM -0700, Tim Kryger wrote:
+> On Tue, Mar 18, 2014 at 4:47 PM, Tim Kryger <tim.kryger@linaro.org> wrote:
+> > On Tue, Mar 18, 2014 at 2:52 PM, Thierry Reding <thierry.reding@gmail.c=
+om> wrote:
+> >> On Wed, Mar 12, 2014 at 01:15:43PM -0700, Tim Kryger wrote:
+[...]
+> >>> +static int kona_pwmc_set_polarity(struct pwm_chip *chip, struct pwm_=
+device *pwm,
+> >>> +                               enum pwm_polarity polarity)
+> >>> +{
+> >>> +     /*
+> >>> +      * The framework only allows the polarity to be changed when a =
+PWM is
+> >>> +      * disabled so no immediate action is required here.  When a ch=
+annel is
+> >>> +      * enabled, the polarity gets handled as part of the re-config =
+step.
+> >>> +      */
+> >>> +
+> >>> +     return 0;
+> >>> +}
+> >>
+> >> See above. If you don't want to implement the hardware support for
+> >> inversed polarity, then simply don't implement this.
+> >
+> > I had originally planned to omit polarity support but because it
+> > affects the binding (which is treated as ABI), it wouldn't be possible
+> > to add it in later without defining a new compatible string.
+>=20
+> I would like to get this right but it occurred to me that there may be
+> a way to defer the implementation of this feature without disrupting
+> the binding.
+>=20
+> Would it be acceptable to continue using #pwm-cells =3D <3> and
+> of_pwm_xlate_with_flags but return -EINVAL from kona_pwmc_set_polarity
+> if PWM_POLARITY_INVERSED is specified?
 
- drivers/pwm/Kconfig    |   10 +++
- drivers/pwm/Makefile   |    1 +
- drivers/pwm/pwm-lpss.c |  183 ++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 194 insertions(+), 0 deletions(-)
- create mode 100644 drivers/pwm/pwm-lpss.c
+This was recently discussed for the pwm-imx driver. And you can easily
+support #pwm-cells =3D <2> and #pwm-cells =3D <3> with the same binding. So
+you could start with #pwm-cells =3D <2>, leaving out .set_polarity() and
+implement it later on, extending the binding in a backwards-compatible
+way to support the polarity flag.
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 1445ba1..5b34ff2 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -138,6 +138,16 @@ config PWM_LPC32XX
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-lpc32xx.
- 
-+config PWM_LPSS
-+	tristate "Intel LPSS PWM support"
-+	depends on ACPI
-+	help
-+	  Generic PWM framework driver for Intel Low Power Subsystem PWM
-+	  controller.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-lpss.
-+
- config PWM_MXS
- 	tristate "Freescale MXS PWM support"
- 	depends on ARCH_MXS && OF
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 82f294e..e57d2c3 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -11,6 +11,7 @@ obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
- obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
- obj-$(CONFIG_PWM_LP3943)	+= pwm-lp3943.o
- obj-$(CONFIG_PWM_LPC32XX)	+= pwm-lpc32xx.o
-+obj-$(CONFIG_PWM_LPSS)		+= pwm-lpss.o
- obj-$(CONFIG_PWM_MXS)		+= pwm-mxs.o
- obj-$(CONFIG_PWM_PCA9685)	+= pwm-pca9685.o
- obj-$(CONFIG_PWM_PUV3)		+= pwm-puv3.o
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-new file mode 100644
-index 0000000..449e372
---- /dev/null
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -0,0 +1,183 @@
-+/*
-+ * Intel Low Power Subsystem PWM controller driver
-+ *
-+ * Copyright (C) 2014, Intel Corporation
-+ * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
-+ * Author: Chew Kean Ho <kean.ho.chew@intel.com>
-+ * Author: Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
-+ * Author: Chew Chiau Ee <chiau.ee.chew@intel.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#include <linux/acpi.h>
-+#include <linux/clk.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/pwm.h>
-+#include <linux/platform_device.h>
-+
-+#define PWM				0x00000000
-+#define PWM_ENABLE			BIT(31)
-+#define PWM_SW_UPDATE			BIT(30)
-+#define PWM_BASE_UNIT_SHIFT		8
-+#define PWM_BASE_UNIT_MASK		0x00ffff00
-+#define PWM_ON_TIME_DIV_MASK		0x000000ff
-+#define PWM_DIVISION_CORRECTION		0x2
-+#define PWM_LIMIT			(0x8000 + PWM_DIVISION_CORRECTION)
-+#define NSECS_PER_SEC			1000000000UL
-+
-+struct pwm_lpss_chip {
-+	struct pwm_chip chip;
-+	void __iomem *regs;
-+	struct clk *clk;
-+};
-+
-+static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
-+{
-+	return container_of(chip, struct pwm_lpss_chip, chip);
-+}
-+
-+static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
-+			   int duty_ns, int period_ns)
-+{
-+	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
-+	u8 on_time_div;
-+	unsigned long c;
-+	unsigned long long base_unit, freq = NSECS_PER_SEC;
-+	u32 ctrl;
-+
-+	do_div(freq, period_ns);
-+
-+	/* The equation is: base_unit = ((freq / c) * 65536) + correction */
-+	base_unit = freq * 65536;
-+
-+	c = clk_get_rate(lpwm->clk);
-+	if (!c)
-+		return -EINVAL;
-+
-+	do_div(base_unit, c);
-+	base_unit += PWM_DIVISION_CORRECTION;
-+	if (base_unit > PWM_LIMIT)
-+		return -EINVAL;
-+
-+	if (duty_ns <= 0)
-+		duty_ns = 1;
-+	on_time_div = 255 - (255 * duty_ns / period_ns);
-+
-+	ctrl = readl(lpwm->regs + PWM);
-+	ctrl &= ~(PWM_BASE_UNIT_MASK | PWM_ON_TIME_DIV_MASK);
-+	ctrl |= (u16) base_unit << PWM_BASE_UNIT_SHIFT;
-+	ctrl |= on_time_div;
-+	/* request PWM to update on next cycle */
-+	ctrl |= PWM_SW_UPDATE;
-+	writel(ctrl, lpwm->regs + PWM);
-+
-+	return 0;
-+}
-+
-+static int pwm_lpss_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
-+	u32 ctrl;
-+	int ret;
-+
-+	ret = clk_prepare_enable(lpwm->clk);
-+	if (ret)
-+		return ret;
-+
-+	ctrl = readl(lpwm->regs + PWM);
-+	writel(ctrl | PWM_ENABLE, lpwm->regs + PWM);
-+
-+	return 0;
-+}
-+
-+static void pwm_lpss_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
-+	u32 ctrl;
-+
-+	ctrl = readl(lpwm->regs + PWM);
-+	writel(ctrl & ~PWM_ENABLE, lpwm->regs + PWM);
-+
-+	clk_disable_unprepare(lpwm->clk);
-+}
-+
-+static const struct pwm_ops pwm_lpss_ops = {
-+	.config = pwm_lpss_config,
-+	.enable = pwm_lpss_enable,
-+	.disable = pwm_lpss_disable,
-+	.owner = THIS_MODULE,
-+};
-+
-+static const struct acpi_device_id pwm_lpss_acpi_match[] = {
-+	{ "80860F09", 0 },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(acpi, pwm_lpss_acpi_match);
-+
-+static int pwm_lpss_probe(struct platform_device *pdev)
-+{
-+	struct pwm_lpss_chip *lpwm;
-+	struct resource *r;
-+	int ret;
-+
-+	lpwm = devm_kzalloc(&pdev->dev, sizeof(*lpwm), GFP_KERNEL);
-+	if (!lpwm)
-+		return -ENOMEM;
-+
-+	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+
-+	lpwm->regs = devm_ioremap_resource(&pdev->dev, r);
-+	if (IS_ERR(lpwm->regs))
-+		return PTR_ERR(lpwm->regs);
-+
-+	lpwm->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(lpwm->clk)) {
-+		dev_err(&pdev->dev, "failed to get PWM clock\n");
-+		return PTR_ERR(lpwm->clk);
-+	}
-+
-+	lpwm->chip.dev = &pdev->dev;
-+	lpwm->chip.ops = &pwm_lpss_ops;
-+	lpwm->chip.base = -1;
-+	lpwm->chip.npwm = 1;
-+
-+	ret = pwmchip_add(&lpwm->chip);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
-+		return ret;
-+	}
-+
-+	platform_set_drvdata(pdev, lpwm);
-+	return 0;
-+}
-+
-+static int pwm_lpss_remove(struct platform_device *pdev)
-+{
-+	struct pwm_lpss_chip *lpwm = platform_get_drvdata(pdev);
-+	u32 ctrl;
-+
-+	ctrl = readl(lpwm->regs + PWM);
-+	writel(ctrl & ~PWM_ENABLE, lpwm->regs + PWM);
-+
-+	return pwmchip_remove(&lpwm->chip);
-+}
-+
-+static struct platform_driver pwm_lpss_driver = {
-+	.driver = {
-+		.name = "pwm-lpss",
-+		.acpi_match_table = pwm_lpss_acpi_match,
-+	},
-+	.probe = pwm_lpss_probe,
-+	.remove = pwm_lpss_remove,
-+};
-+module_platform_driver(pwm_lpss_driver);
-+
-+MODULE_DESCRIPTION("PWM driver for Intel LPSS");
-+MODULE_AUTHOR("Mika Westerberg <mika.westerberg@linux.intel.com>");
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:pwm-lpss");
--- 
-1.7.4.4
+Thierry
 
+--fUYQa+Pmc3FrFX/N
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTKv/BAAoJEN0jrNd/PrOh2vIP+gJbx4xyYb81pWcYDtkeGDnJ
+UBWg9M3obFI/gdndUQr2LWe9i19sn/W4FCwOwobLI1IOpE1okMvohlggnF/utzE7
+qyPoaHc3W/dV4pAzOxNDbStRA4gEoSnTS4jHHf7a8WgCbau0ywXRDWzpYNt7ZbAo
+XTyN3yQBvdj1uOdvGI+DdI1cegAPNF2kWacY5yS40eFw+rkE1HpHOBshAc7M8Xki
+MK3RUSrGLGzO6QWdoVzov0QX9YxmiScCwJFxyVGbjCu+Pf0ybfPwiKjgrx7/a1eP
+O0Q2N+zY4wU5Lo11pzvihzeNwa9wxYto/4GQdUBpyE5hHpTPZBMLi4jCZDiVM0AZ
+vJmt16nWEuVtcEbNptLph4kyQHMldvwiMVxki+y5IupcQRW2YNHY93Ejqeu5t5Io
+ia7n6x5izERMTgjVV6rDSDy+YhD1wXI7BYvBkc84Ei6owNseJ9mT5k+CfPmajn6m
++WXiDbXKZeLITjD9kDZuHFqImq6J1xDTcPs8NOu0yfFd8qKgPFpU7EZRD7qBUwwG
+CEvf17UHmjnSckGNI5wakuR01hNuytv37/h1kkzYDiK/THv0WO8FQ9G6t3PJ+UVY
+evmCApac44yeyEfhtWUPlV3iMh2ydGNoCoMIlYFwlK6/eHqwGnoYscfou/NLZgPj
+xZ8BBMXxwb4Qos2daB0U
+=FtTx
+-----END PGP SIGNATURE-----
+
+--fUYQa+Pmc3FrFX/N--
