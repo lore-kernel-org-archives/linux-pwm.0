@@ -1,57 +1,42 @@
-From: Tim Kryger <tim.kryger@linaro.org>
-Subject: Re: [PATCH v3 2/5] pwm: kona: Introduce Kona PWM controller support
-Date: Thu, 20 Mar 2014 12:54:46 -0700
-Message-ID: <CAAYSxhothsZp6k2pKnA4XdTKf06+_rw95GPGJqRb2=xP6gJPNQ@mail.gmail.com>
-References: <1394655346-30048-1-git-send-email-tim.kryger@linaro.org>
-	<1394655346-30048-3-git-send-email-tim.kryger@linaro.org>
-	<20140318215231.GH5917@mithrandir>
-	<CAAYSxhri0evgrbCPew6-MTXVmpzm7Oa6TpmJTSGZpTcV=876HQ@mail.gmail.com>
-	<20140320155732.GB25092@ulmo>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: Re: [PATCH 14/16] backlight: atmel-pwm-bl: remove obsolete driver
+Date: Fri, 21 Mar 2014 09:51:16 +0900
+Message-ID: <000101cf449f$aa609960$ff21cc20$%han@samsung.com>
+References: <1395234209-15546-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <1395234209-15546-15-git-send-email-alexandre.belloni@free-electrons.com>
+ <20140319142231.GF20872@samfundet.no>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140320155732.GB25092@ulmo>
+In-reply-to: <20140319142231.GF20872@samfundet.no>
+Content-language: ko
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
+To: 'Hans-Christian Egtvedt' <egtvedt@samfundet.no>, 'Alexandre Belloni' <alexandre.belloni@free-electrons.com>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 'Nicolas Ferre' <nicolas.ferre@atmel.com>, 'Jean-Christophe Plagniol-Villard' <plagnioj@jcrosoft.com>, 'Haavard Skinnemoen' <hskinnemoen@gmail.com>, 'Bryan Wu' <cooloney@gmail.com>, 'Richard Purdie' <rpurdie@rpsys.net>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, 'Thierry Reding' <thierry.reding@gmail.com>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Mar 20, 2014 at 8:57 AM, Thierry Reding
-<thierry.reding@gmail.com> wrote:
-> On Tue, Mar 18, 2014 at 04:47:36PM -0700, Tim Kryger wrote:
->> On Tue, Mar 18, 2014 at 2:52 PM, Thierry Reding
->> <thierry.reding@gmail.com> wrote:
->> > On Wed, Mar 12, 2014 at 01:15:43PM -0700, Tim Kryger wrote:
+On Wednesday, March 19, 2014 11:23 PM, Hans-Christian Egtvedt wrote:
+> Around Wed 19 Mar 2014 14:03:27 +0100 or thereabout, Alexandre Belloni wrote:
+> > The atmel-pwm-bl driver is now obsolete. It is not used by any mainlined boards
+> > and is replaced by the generic pwm_bl with the pawm-atmel driver using the
+> > generic PWM framework.
+> >
+> > Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> 
+> Acked-by: Hans-Christian Egtvedt <egtvedt@samfundet.no>
 
->> >> +     tristate "Kona PWM support"
->> >> +     depends on ARCH_BCM_MOBILE
->> >> +     default y
->> >
->> > No "default y", please.
->>
->> Even though it depends on ARCH_BCM_MOBILE?  It seems like a reasonable
->> default.
->
-> Well, that's only true until somebody decides to turn that dependency
-> into something like:
->
->         depends on ARCH_BCM_MOBILE || COMPILE_TEST
+Acked-by: Jingoo Han <jg1.han@samsung.com>
 
-Do you expect someone would actually make such a change?
+Best regards,
+Jingoo Han
 
->
->> These SoCs target mobile phones which almost always have a backlight
->> controlled by the PWM.
->
-> And you can easily turn it on in bcm_defconfig and/or multi_v7_defconfig
-> if you want it enabled "by default".
-
-Except that is not what default means.
-
-Having a sensible default value in the Kconfig is convenient and
-enables savedefconfig to create minimal configuration files.
-
-Are you firmly opposed to this?
-
-Thanks Again,
-Tim
+> 
+> > ---
+> >  drivers/video/backlight/Kconfig        |  11 --
+> >  drivers/video/backlight/Makefile       |   1 -
+> >  drivers/video/backlight/atmel-pwm-bl.c | 223 ---------------------------------
+> >  include/linux/atmel-pwm-bl.h           |  43 -------
+> >  4 files changed, 278 deletions(-)
+> >  delete mode 100644 drivers/video/backlight/atmel-pwm-bl.c
+> >  delete mode 100644 include/linux/atmel-pwm-bl.h
