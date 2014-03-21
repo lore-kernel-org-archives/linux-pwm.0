@@ -1,42 +1,53 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: Re: [PATCH 14/16] backlight: atmel-pwm-bl: remove obsolete driver
-Date: Fri, 21 Mar 2014 09:51:16 +0900
-Message-ID: <000101cf449f$aa609960$ff21cc20$%han@samsung.com>
-References: <1395234209-15546-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1395234209-15546-15-git-send-email-alexandre.belloni@free-electrons.com>
- <20140319142231.GF20872@samfundet.no>
+From: Xiubo Li <Li.Xiubo@freescale.com>
+Subject: [PATCH 3/3] pwm: ftm-pwm: Add big-endian support
+Date: Fri, 21 Mar 2014 12:53:10 +0800
+Message-ID: <1395377590-23537-4-git-send-email-Li.Xiubo@freescale.com>
+References: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <20140319142231.GF20872@samfundet.no>
-Content-language: ko
+In-Reply-To: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: 'Hans-Christian Egtvedt' <egtvedt@samfundet.no>, 'Alexandre Belloni' <alexandre.belloni@free-electrons.com>
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 'Nicolas Ferre' <nicolas.ferre@atmel.com>, 'Jean-Christophe Plagniol-Villard' <plagnioj@jcrosoft.com>, 'Haavard Skinnemoen' <hskinnemoen@gmail.com>, 'Bryan Wu' <cooloney@gmail.com>, 'Richard Purdie' <rpurdie@rpsys.net>, 'Greg Kroah-Hartman' <gregkh@linuxfoundation.org>, 'Thierry Reding' <thierry.reding@gmail.com>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>
+To: thierry.reding@gmail.com, linux-pwm@vger.kernel.org
+Cc: broonie@kernel.org, swarren@nvidia.com, linux-kernel@vger.kernel.org, Xiubo Li <Li.Xiubo@freescale.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wednesday, March 19, 2014 11:23 PM, Hans-Christian Egtvedt wrote:
-> Around Wed 19 Mar 2014 14:03:27 +0100 or thereabout, Alexandre Belloni wrote:
-> > The atmel-pwm-bl driver is now obsolete. It is not used by any mainlined boards
-> > and is replaced by the generic pwm_bl with the pawm-atmel driver using the
-> > generic PWM framework.
-> >
-> > Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> 
-> Acked-by: Hans-Christian Egtvedt <egtvedt@samfundet.no>
+Now for the following scenarios:
 
-Acked-by: Jingoo Han <jg1.han@samsung.com>
+     SoC     |  CPU   | FTM-PWM | 'big-endian' property is needed?
+-------------|--------|---------|---------------------------------
+    Vybird   |  LE    |   LE    |     No
+     LS1     |  LE    |   BE    |     Yes
+     LS2     |  LE    |   LE    |     No
 
-Best regards,
-Jingoo Han
+Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
+---
+ drivers/pwm/pwm-fsl-ftm.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-> 
-> > ---
-> >  drivers/video/backlight/Kconfig        |  11 --
-> >  drivers/video/backlight/Makefile       |   1 -
-> >  drivers/video/backlight/atmel-pwm-bl.c | 223 ---------------------------------
-> >  include/linux/atmel-pwm-bl.h           |  43 -------
-> >  4 files changed, 278 deletions(-)
-> >  delete mode 100644 drivers/video/backlight/atmel-pwm-bl.c
-> >  delete mode 100644 include/linux/atmel-pwm-bl.h
+diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
+index 5d999c1..9a82741 100644
+--- a/drivers/pwm/pwm-fsl-ftm.c
++++ b/drivers/pwm/pwm-fsl-ftm.c
+@@ -409,6 +409,7 @@ static struct regmap_config fsl_pwm_regmap_config = {
+ 
+ static int fsl_pwm_probe(struct platform_device *pdev)
+ {
++	struct device_node *np = pdev->dev.of_node;
+ 	struct fsl_pwm_chip *fpc;
+ 	struct resource *res;
+ 	void __iomem *base;
+@@ -422,6 +423,11 @@ static int fsl_pwm_probe(struct platform_device *pdev)
+ 
+ 	fpc->chip.dev = &pdev->dev;
+ 
++	if (of_property_read_bool(np, "big-endian"))
++		fsl_pwm_regmap_config.val_format_endian = REGMAP_ENDIAN_BIG;
++	else
++		fsl_pwm_regmap_config.val_format_endian = REGMAP_ENDIAN_NATIVE;
++
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	base = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(base))
+-- 
+1.8.4
