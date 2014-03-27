@@ -1,126 +1,63 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 Subject: Re: [PATCH 00/16] move at91 and avr32 to the PWM framework, remove
  obsolete drivers
-Date: Thu, 27 Mar 2014 18:43:26 +0100
-Message-ID: <5334633E.6050708@atmel.com>
+Date: Thu, 27 Mar 2014 19:21:00 +0100
+Message-ID: <20140327182100.GH2915@piout.net>
 References: <1395234209-15546-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <5334633E.6050708@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.243]:43041 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753351AbaC0Rnd (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Mar 2014 13:43:33 -0400
-In-Reply-To: <1395234209-15546-1-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5334633E.6050708@atmel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: linux-kernel@vger.kernel.org, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Bryan Wu <cooloney@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, linux-arm-kernel@lists.infradead.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-kernel@vger.kernel.org, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Bryan Wu <cooloney@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>
-Cc: linux-arm-kernel@lists.infradead.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
 
-On 19/03/2014 14:03, Alexandre Belloni :
-> Hi,
-> 
-> This patch set swtiches the at91 and avr32 SoCs and board to the generic PWM
-> framework. This allows to remove the obsolete leds-atmel-pwm, atmel-pwm-bl and
-> atmel_pwm drivers.
-> 
-> The first 6 patches take care of the AT91 boards and removes a useless function
-> in the process.
-> 
-> Patch 7 makes pwm-ateml buildable for AVR32
-> 
-> Patch 8 allows setting the pwm polarity for pwm_bl when using platform data.
-> This is required afterwards for the favr-32
-> 
-> Patches 9-13 take care of the AVR32 boards. This has only been compile tested as
-> I don't own any of those boards.
-> 
-> And the last 3 patches are removing the now obsolete drivers.
-> 
-> As a note, the atmel_pwm driver has two features not yet available through
-> pwm-atmel:
->  - it is possible to pass an IRQ handler that will get called each time one of
->    the channel period has been acheived.
->  - it was possible to set clka and clkb, two clock that divided mck before
->    feeding the pwm controller.
-> 
-> Those features are not used by anything in the mainline. I'm not sure we can
-> implement the first one. We'll get back the second one once all the boards have
-> swtiched to the common clock framework.
-> 
-> 
-> Alexandre Belloni (16):
->   ARM: at91: at91sam9g45: switch to generic PWM framework
->   ARM: at91: sam9m10g45ek: use generic leds_pwm driver
->   ARM: at91: at91sam9263: switch to generic PWM framework
->   ARM: at91: sam9263ek: use generic leds_pwm driver
->   ARM: at91: at91sam9rl: switch to generic PWM framework
->   ARM: at91: remove useless at91_pwm_leds()
->   PWM: atmel: allow building for AVR32
->   backlight: pwm_bl: set pwm polarity when using platform data
->   avr32/at32ap: switch to the generic PWM framework
->   avr32: MRMT: use generic leds_pwm driver
->   avr32: merisc: use generic leds_pwm driver
->   avr32: favr-32: use generic pwm_bl driver
->   avr32: update defconfig to use the generic PWM framework
->   backlight: atmel-pwm-bl: remove obsolete driver
->   leds: atmel-pwm: remove obsolete driver
->   misc: atmel_pwm: remove obsolete driver
+Hi,
 
-I am fine with the whole series. For the AT91 specific bits, you can add my:
+On 27/03/2014 at 18:43:26 +0100, Nicolas Ferre wrote :
+> On 19/03/2014 14:03, Alexandre Belloni :
+> > Alexandre Belloni (16):
+> >   ARM: at91: at91sam9g45: switch to generic PWM framework
+> >   ARM: at91: sam9m10g45ek: use generic leds_pwm driver
+> >   ARM: at91: at91sam9263: switch to generic PWM framework
+> >   ARM: at91: sam9263ek: use generic leds_pwm driver
+> >   ARM: at91: at91sam9rl: switch to generic PWM framework
+> >   ARM: at91: remove useless at91_pwm_leds()
+> >   PWM: atmel: allow building for AVR32
+> >   backlight: pwm_bl: set pwm polarity when using platform data
 
-Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Please wait for Thierry Reding to comment on this one...
 
-It is a very nice cleanup and I can take the series with me in the AT91
-git tree (likely the at91-3.16-cleanup or at91-3.16-drivers branch) if
-everybody agree.
+> >   avr32/at32ap: switch to the generic PWM framework
+> >   avr32: MRMT: use generic leds_pwm driver
+> >   avr32: merisc: use generic leds_pwm driver
+> >   avr32: favr-32: use generic pwm_bl driver
+> >   avr32: update defconfig to use the generic PWM framework
+> >   backlight: atmel-pwm-bl: remove obsolete driver
+> >   leds: atmel-pwm: remove obsolete driver
 
-Bye,
+...watch out for the small typo (pawm-atmel) I made there...
 
->  arch/arm/mach-at91/at91sam9263.c           |   1 +
->  arch/arm/mach-at91/at91sam9263_devices.c   |  11 +-
->  arch/arm/mach-at91/at91sam9g45.c           |   1 +
->  arch/arm/mach-at91/at91sam9g45_devices.c   |  11 +-
->  arch/arm/mach-at91/at91sam9rl.c            |   1 +
->  arch/arm/mach-at91/at91sam9rl_devices.c    |  11 +-
->  arch/arm/mach-at91/board-sam9263ek.c       |  56 +++-
->  arch/arm/mach-at91/board-sam9m10g45ek.c    |  43 ++-
->  arch/arm/mach-at91/board.h                 |   1 -
->  arch/arm/mach-at91/leds.c                  |  37 ---
->  arch/avr32/boards/atngw100/mrmt.c          |  35 ++-
->  arch/avr32/boards/favr-32/setup.c          |  49 ++--
->  arch/avr32/boards/merisc/setup.c           |  34 ++-
->  arch/avr32/configs/atngw100_mrmt_defconfig |   5 +-
->  arch/avr32/configs/atstk1002_defconfig     |   5 +-
->  arch/avr32/configs/atstk1003_defconfig     |   5 +-
->  arch/avr32/configs/atstk1004_defconfig     |   5 +-
->  arch/avr32/configs/atstk1006_defconfig     |   5 +-
->  arch/avr32/configs/favr-32_defconfig       |   6 +-
->  arch/avr32/configs/merisc_defconfig        |   5 +-
->  arch/avr32/mach-at32ap/at32ap700x.c        |   7 +-
->  drivers/leds/Kconfig                       |   8 -
->  drivers/leds/Makefile                      |   1 -
->  drivers/leds/leds-atmel-pwm.c              | 149 -----------
->  drivers/misc/Kconfig                       |   9 -
->  drivers/misc/Makefile                      |   1 -
->  drivers/misc/atmel_pwm.c                   | 402 -----------------------------
->  drivers/pwm/Kconfig                        |   2 +-
->  drivers/video/backlight/Kconfig            |  11 -
->  drivers/video/backlight/Makefile           |   1 -
->  drivers/video/backlight/atmel-pwm-bl.c     | 223 ----------------
->  drivers/video/backlight/pwm_bl.c           |   8 +
->  include/linux/atmel-pwm-bl.h               |  43 ---
->  include/linux/atmel_pwm.h                  |  70 -----
->  include/linux/pwm_backlight.h              |   1 +
->  35 files changed, 199 insertions(+), 1064 deletions(-)
->  delete mode 100644 drivers/leds/leds-atmel-pwm.c
->  delete mode 100644 drivers/misc/atmel_pwm.c
->  delete mode 100644 drivers/video/backlight/atmel-pwm-bl.c
->  delete mode 100644 include/linux/atmel-pwm-bl.h
->  delete mode 100644 include/linux/atmel_pwm.h
+> >   misc: atmel_pwm: remove obsolete driver
+> 
+> I am fine with the whole series. For the AT91 specific bits, you can add my:
+> 
+> Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+> 
+> It is a very nice cleanup and I can take the series with me in the AT91
+> git tree (likely the at91-3.16-cleanup or at91-3.16-drivers branch) if
+> everybody agree.
 > 
 
+... but I believe you can take it through your tree as it mostly depends
+on AT91 and Hans-Christian seemed fine with the modifications on avr32.
+
+Regards,
 
 -- 
-Nicolas Ferre
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
