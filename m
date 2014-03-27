@@ -1,46 +1,68 @@
 From: Tim Kryger <tim.kryger@linaro.org>
-Subject: [PATCH v5 5/5] ARM: bcm_defconfig: Enable PWM and Backlight
-Date: Wed, 26 Mar 2014 17:49:03 -0700
-Message-ID: <1395881343-13985-6-git-send-email-tim.kryger@linaro.org>
-References: <1395881343-13985-1-git-send-email-tim.kryger@linaro.org>
+Subject: [PATCH v5 0/5] Add Broadcom Kona PWM Support
+Date: Wed, 26 Mar 2014 17:48:58 -0700
+Message-ID: <1395881343-13985-1-git-send-email-tim.kryger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1395881343-13985-1-git-send-email-tim.kryger@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>
 Cc: Tim Kryger <tim.kryger@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Enable PWM drivers and the PWM-based backlight driver.
+This series introduces the driver for the Kona PWM controller found in
+Broadcom mobile SoCs like bcm281xx and updates the device tree and the
+defconfig to enable use of this hardware on the bcm28155 AP board.
 
-Signed-off-by: Tim Kryger <tim.kryger@linaro.org>
-Reviewed-by: Alex Elder <elder@linaro.org>
-Reviewed-by: Markus Mayer <markus.mayer@linaro.org>
----
- arch/arm/configs/bcm_defconfig |    3 +++
- 1 file changed, 3 insertions(+)
+Changes since v4:
+  - Added in real polarity support
+  - Labeled trigger bits as such rather than use the name from hw docs
+  - Listed unsual hardware characteristics at the top of the file
+  - Removed default from Kconfig and update defconfig accordingly
+  - Always use unsigned int for temporary register values
 
-diff --git a/arch/arm/configs/bcm_defconfig b/arch/arm/configs/bcm_defconfig
-index 3b2b7bd..593df57 100644
---- a/arch/arm/configs/bcm_defconfig
-+++ b/arch/arm/configs/bcm_defconfig
-@@ -88,6 +88,7 @@ CONFIG_FB=y
- CONFIG_BACKLIGHT_LCD_SUPPORT=y
- CONFIG_LCD_CLASS_DEVICE=y
- CONFIG_BACKLIGHT_CLASS_DEVICE=y
-+CONFIG_BACKLIGHT_PWM=y
- # CONFIG_USB_SUPPORT is not set
- CONFIG_MMC=y
- CONFIG_MMC_UNSAFE_RESUME=y
-@@ -101,6 +102,8 @@ CONFIG_LEDS_TRIGGERS=y
- CONFIG_LEDS_TRIGGER_TIMER=y
- CONFIG_LEDS_TRIGGER_HEARTBEAT=y
- CONFIG_LEDS_TRIGGER_DEFAULT_ON=y
-+CONFIG_PWM=y
-+CONFIG_PWM_BCM_KONA=y
- CONFIG_EXT4_FS=y
- CONFIG_EXT4_FS_POSIX_ACL=y
- CONFIG_EXT4_FS_SECURITY=y
+Changes since v3:
+  - Removed polarity support for now
+  - Cleaned up whitespace issues, shortened some variable names
+  - Use container_of instead of dev_get_drvdata to get private data
+  - Removed workaround for PWM framework bug
+  - Reworded some binding documentation
+
+Changes since v2:
+  - SoC DTS file updated to use real clock's phandle + specifier
+  - Toggle smooth mode off during apply so new settings take immediately
+
+Changes since v1:
+  - Fixed up macros to be clearer and more complete
+  - Corrected spelling and punctuation mistakes
+  - Added support for polarity
+  - Made peripheral clock use more efficient
+  - Made prescale and duty computation clearer
+  - Moved Makefile addition to keep alphabetical
+  - Split complex lines into multiple steps
+
+Dependencies:
+The "ARM: dts: Declare the PWM for bcm11351 (bcm281xx)" patch depends
+upon "ARM: dts: bcm281xx: define real clocks" which is queued up in
+for-next of arm-soc. See https://lkml.org/lkml/2014/2/14/451
+
+Tim Kryger (5):
+  Documentation: dt: Add Kona PWM binding
+  pwm: kona: Introduce Kona PWM controller support
+  ARM: dts: Declare the PWM for bcm11351 (bcm281xx)
+  ARM: dts: Enable the PWM for bcm28155 AP board
+  ARM: bcm_defconfig: Enable PWM and Backlight
+
+ .../devicetree/bindings/pwm/bcm-kona-pwm.txt       |   21 ++
+ arch/arm/boot/dts/bcm11351.dtsi                    |    8 +
+ arch/arm/boot/dts/bcm28155-ap.dts                  |    4 +
+ arch/arm/configs/bcm_defconfig                     |    3 +
+ drivers/pwm/Kconfig                                |    9 +
+ drivers/pwm/Makefile                               |    1 +
+ drivers/pwm/pwm-bcm-kona.c                         |  319 ++++++++++++++++++++
+ 7 files changed, 365 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
+ create mode 100644 drivers/pwm/pwm-bcm-kona.c
+
 -- 
 1.7.9.5
