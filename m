@@ -1,51 +1,59 @@
-From: Bryan Wu <cooloney@gmail.com>
-Subject: Re: [PATCH 0/2] pwm-backlight: switch to gpiod interface (part 1)
-Date: Wed, 26 Mar 2014 17:08:55 -0700
-Message-ID: <CAK5ve-K7-Qk-VX33ZMWh3WEYOQND_o_TG6Hk28Y7r8dVgVtg9A@mail.gmail.com>
-References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com> <CAAVeFuKE163O3Kcdy-WCCEesJMCQ-fcLe8Op5f=VE7ZovFptqA@mail.gmail.com>
+From: Tim Kryger <tim.kryger@linaro.org>
+Subject: [PATCH v5 1/5] Documentation: dt: Add Kona PWM binding
+Date: Wed, 26 Mar 2014 17:48:59 -0700
+Message-ID: <1395881343-13985-2-git-send-email-tim.kryger@linaro.org>
+References: <1395881343-13985-1-git-send-email-tim.kryger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAAVeFuKE163O3Kcdy-WCCEesJMCQ-fcLe8Op5f=VE7ZovFptqA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Courbot <gnurou@gmail.com>
-Cc: Alexandre Courbot <acourbot@nvidia.com>, Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-gw2-out.broadcom.com ([216.31.210.63]:34071 "EHLO
+	mail-gw2-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754693AbaC0AtM (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Mar 2014 20:49:12 -0400
+In-Reply-To: <1395881343-13985-1-git-send-email-tim.kryger@linaro.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>
+Cc: Tim Kryger <tim.kryger@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 
-On Tue, Mar 25, 2014 at 10:01 PM, Alexandre Courbot <gnurou@gmail.com> wrote:
-> Ping Thierry, can you have a look at this series? It is quite similar
-> to the same change you merged for panel-simple (although I cannot see
-> it in -next neither).
->
+Add the binding description for the Kona PWM controller found on Broadcom's
+mobile SoCs.
 
-I think Jingoo can help to review this as well. Jingoo, can you help
-to review. Actually it looks good to me.
+Signed-off-by: Tim Kryger <tim.kryger@linaro.org>
+Reviewed-by: Alex Elder <elder@linaro.org>
+Reviewed-by: Markus Mayer <markus.mayer@linaro.org>
+---
+ .../devicetree/bindings/pwm/bcm-kona-pwm.txt       |   21 ++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
 
--Bryan
+diff --git a/Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt b/Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
+new file mode 100644
+index 0000000..8eae9fe
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
+@@ -0,0 +1,21 @@
++Broadcom Kona PWM controller device tree bindings
++
++This controller has 6 channels.
++
++Required Properties :
++- compatible: should contain "brcm,kona-pwm"
++- reg: physical base address and length of the controller's registers
++- clocks: phandle + clock specifier pair for the external clock
++- #pwm-cells: Should be 3. See pwm.txt in this directory for a
++  description of the cells format.
++
++Refer to clocks/clock-bindings.txt for generic clock consumer properties.
++
++Example:
++
++pwm: pwm@3e01a000 {
++	compatible = "brcm,bcm11351-pwm", "brcm,kona-pwm";
++	reg = <0x3e01a000 0xc4>;
++	clocks = <&pwm_clk>;
++	#pwm-cells = <3>;
++};
+-- 
+1.7.9.5
 
-> On Thu, Feb 27, 2014 at 2:53 PM, Alexandre Courbot <acourbot@nvidia.com> wrote:
->> These two patches initiate the switch of the pwm-backlight driver to
->> the gpiod GPIO interface, as it considerably simplifies the code.
->>
->> For compatibility with current users of the driver, it is still possible
->> to pass the enable GPIO number as platform data. Two platforms are still
->> relying on this feature (pxa/palmtc and shmobile/armadillo800eva) which
->> will be removed as soon as its last users are switched to GPIO mapping
->> tables.
->>
->> Alexandre Courbot (2):
->>   ARM: SAMSUNG: remove gpio flags in dev-backlight
->>   pwm-backlight: switch to gpiod interface
->>
->>  arch/arm/plat-samsung/dev-backlight.c |  2 -
->>  drivers/video/backlight/pwm_bl.c      | 72 +++++++++++++++--------------------
->>  include/linux/pwm_backlight.h         |  5 +--
->>  3 files changed, 32 insertions(+), 47 deletions(-)
->>
->> --
->> 1.9.0
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-gpio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
