@@ -1,59 +1,102 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: Re: [PATCH 0/2] pwm-backlight: switch to gpiod interface (part 1)
-Date: Thu, 27 Mar 2014 10:04:37 +0900
-Message-ID: <000801cf4958$8678ff20$936afd60$%han@samsung.com>
-References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com>
- <CAAVeFuKE163O3Kcdy-WCCEesJMCQ-fcLe8Op5f=VE7ZovFptqA@mail.gmail.com>
- <CAK5ve-K7-Qk-VX33ZMWh3WEYOQND_o_TG6Hk28Y7r8dVgVtg9A@mail.gmail.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: MX28: leds/pwm: Using pwm driven led as heartbeat leads to kernel
+ warning
+Date: Thu, 27 Mar 2014 18:14:59 +0100
+Message-ID: <53345C93.9040005@i2se.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <CAK5ve-K7-Qk-VX33ZMWh3WEYOQND_o_TG6Hk28Y7r8dVgVtg9A@mail.gmail.com>
-Content-language: ko
-Sender: linux-kernel-owner@vger.kernel.org
-To: 'Bryan Wu' <cooloney@gmail.com>, 'Alexandre Courbot' <gnurou@gmail.com>
-Cc: 'Alexandre Courbot' <acourbot@nvidia.com>, 'Thierry Reding' <thierry.reding@gmail.com>, 'Ben Dooks' <ben-linux@fluff.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, 'Linux Kernel Mailing List' <linux-kernel@vger.kernel.org>, 'Jingoo Han' <jg1.han@samsung.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from moutng.kundenserver.de ([212.227.126.131]:53690 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756045AbaC0RO7 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Mar 2014 13:14:59 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Fabio Estevam <fabio.estevam@freescale.com>
+Cc: Shawn Guo <shawn.guo@freescale.com>, Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <kernel@pengutronix.de>, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
 
-On Thursday, March 27, 2014 9:09 AM, Bryan Wu wrote:
-> On Tue, Mar 25, 2014 at 10:01 PM, Alexandre Courbot <gnurou@gmail.com> wrote:
-> > Ping Thierry, can you have a look at this series? It is quite similar
-> > to the same change you merged for panel-simple (although I cannot see
-> > it in -next neither).
-> >
-> 
-> I think Jingoo can help to review this as well. Jingoo, can you help
-> to review. Actually it looks good to me.
+Hello,
 
-Sorry, I cannot review this pwm-backlight code, I don't have
-knowledge about pwm-backlight and gpiod. I think that Thierry
-will review this correctly.
+i'm using a i.MX28 custom board with two leds and Kernel 3.14-rc5.
 
-Best regards,
-Jingoo Han
+Here is the relevant dts part:
 
-> 
-> -Bryan
-> 
-> > On Thu, Feb 27, 2014 at 2:53 PM, Alexandre Courbot <acourbot@nvidia.com> wrote:
-> >> These two patches initiate the switch of the pwm-backlight driver to
-> >> the gpiod GPIO interface, as it considerably simplifies the code.
-> >>
-> >> For compatibility with current users of the driver, it is still possible
-> >> to pass the enable GPIO number as platform data. Two platforms are still
-> >> relying on this feature (pxa/palmtc and shmobile/armadillo800eva) which
-> >> will be removed as soon as its last users are switched to GPIO mapping
-> >> tables.
-> >>
-> >> Alexandre Courbot (2):
-> >>   ARM: SAMSUNG: remove gpio flags in dev-backlight
-> >>   pwm-backlight: switch to gpiod interface
-> >>
-> >>  arch/arm/plat-samsung/dev-backlight.c |  2 -
-> >>  drivers/video/backlight/pwm_bl.c      | 72 +++++++++++++++--------------------
-> >>  include/linux/pwm_backlight.h         |  5 +--
-> >>  3 files changed, 32 insertions(+), 47 deletions(-)
-> >>
-> >> --
-> >> 1.9.0
+pwmleds {
+        compatible = "pwm-leds";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pwm0_pins_b>; /* MX28_PAD_AUART1_RX__PWM_0 */
+       
+        led0 {
+            label = "duckbill:red";
+            pwms = <&pwm 0 7812500>;
+            max-brightness = <127>;
+            linux,default-trigger = "none";
+        };
+};
+
+gpioleds {
+        compatible = "gpio-leds";
+        pinctrl-names = "default";
+        pinctrl-0 = <&led_pins>;
+
+        led1 {
+            label = "duckbill:green";
+            gpios = <&gpio3 5 0>;
+            linux,default-trigger = "heartbeat";
+        };
+};
+
+The gpio driven led works perfect as heartbeat. But if i change the
+trigger of the pwm
+driven led from none to heartbeat, it results always in a kernel warning
+and the pwm led
+keeps on:
+
+[  248.916168] WARNING: CPU: 0 PID: 0 at kernel/locking/mutex.c:856
+mutex_trylock+0x184/0x1a4()
+[  248.924745] DEBUG_LOCKS_WARN_ON(in_interrupt())
+[  248.929136] Modules linked in:
+[  248.932517] CPU: 0 PID: 0 Comm: swapper Not tainted 3.14.0-rc5 #18
+[  248.938781] [<c0015420>] (unwind_backtrace) from [<c0012cb0>]
+(show_stack+0x10/0x14)
+[  248.946672] [<c0012cb0>] (show_stack) from [<c001daf8>]
+(warn_slowpath_common+0x6c/0x8c)
+[  248.954902] [<c001daf8>] (warn_slowpath_common) from [<c001dbac>]
+(warn_slowpath_fmt+0x30/0x40)
+[  248.963742] [<c001dbac>] (warn_slowpath_fmt) from [<c045df74>]
+(mutex_trylock+0x184/0x1a4)
+[  248.972147] [<c045df74>] (mutex_trylock) from [<c0360950>]
+(clk_prepare_lock+0xc/0xec)
+[  248.980132] [<c0360950>] (clk_prepare_lock) from [<c0362020>]
+(clk_get_rate+0xc/0x68)
+[  248.988105] [<c0362020>] (clk_get_rate) from [<c028d07c>]
+(mxs_pwm_config+0x20/0x198)
+[  248.996098] [<c028d07c>] (mxs_pwm_config) from [<c028bde8>]
+(pwm_config+0x60/0x70)
+[  249.003824] [<c028bde8>] (pwm_config) from [<c034b61c>]
+(__led_pwm_set+0x1c/0x3c)
+[  249.011442] [<c034b61c>] (__led_pwm_set) from [<c034bc3c>]
+(led_heartbeat_function+0x70/0x110)
+[  249.020114] [<c034bc3c>] (led_heartbeat_function) from [<c00292f0>]
+(call_timer_fn+0x7c/0x164)
+[  249.028856] [<c00292f0>] (call_timer_fn) from [<c00295c8>]
+(run_timer_softirq+0x1f0/0x260)
+[  249.037267] [<c00295c8>] (run_timer_softirq) from [<c002255c>]
+(__do_softirq+0xc4/0x2f0)
+[  249.045507] [<c002255c>] (__do_softirq) from [<c0022890>]
+(irq_exit+0xa4/0x10c)
+[  249.052966] [<c0022890>] (irq_exit) from [<c0010240>]
+(handle_IRQ+0x34/0x84)
+[  249.060079] [<c0010240>] (handle_IRQ) from [<c0013524>]
+(__irq_svc+0x44/0x54)
+[  249.067358] [<c0013524>] (__irq_svc) from [<c00107f8>]
+(arch_cpu_idle+0x40/0x48)
+[  249.074916] [<c00107f8>] (arch_cpu_idle) from [<c005deb8>]
+(cpu_startup_entry+0x70/0x198)
+[  249.083258] [<c005deb8>] (cpu_startup_entry) from [<c060aac8>]
+(start_kernel+0x2a8/0x2f8)
+
+Best regards
+Stefan Wahren
+
