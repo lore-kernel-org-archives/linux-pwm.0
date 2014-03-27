@@ -1,68 +1,59 @@
-From: Tim Kryger <tim.kryger@linaro.org>
-Subject: [PATCH v5 0/5] Add Broadcom Kona PWM Support
-Date: Wed, 26 Mar 2014 17:48:58 -0700
-Message-ID: <1395881343-13985-1-git-send-email-tim.kryger@linaro.org>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: Re: [PATCH 0/2] pwm-backlight: switch to gpiod interface (part 1)
+Date: Thu, 27 Mar 2014 10:04:37 +0900
+Message-ID: <000801cf4958$8678ff20$936afd60$%han@samsung.com>
+References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com>
+ <CAAVeFuKE163O3Kcdy-WCCEesJMCQ-fcLe8Op5f=VE7ZovFptqA@mail.gmail.com>
+ <CAK5ve-K7-Qk-VX33ZMWh3WEYOQND_o_TG6Hk28Y7r8dVgVtg9A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <CAK5ve-K7-Qk-VX33ZMWh3WEYOQND_o_TG6Hk28Y7r8dVgVtg9A@mail.gmail.com>
+Content-language: ko
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>
-Cc: Tim Kryger <tim.kryger@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
+To: 'Bryan Wu' <cooloney@gmail.com>, 'Alexandre Courbot' <gnurou@gmail.com>
+Cc: 'Alexandre Courbot' <acourbot@nvidia.com>, 'Thierry Reding' <thierry.reding@gmail.com>, 'Ben Dooks' <ben-linux@fluff.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, 'Linux Kernel Mailing List' <linux-kernel@vger.kernel.org>, 'Jingoo Han' <jg1.han@samsung.com>
 List-Id: linux-pwm@vger.kernel.org
 
-This series introduces the driver for the Kona PWM controller found in
-Broadcom mobile SoCs like bcm281xx and updates the device tree and the
-defconfig to enable use of this hardware on the bcm28155 AP board.
+On Thursday, March 27, 2014 9:09 AM, Bryan Wu wrote:
+> On Tue, Mar 25, 2014 at 10:01 PM, Alexandre Courbot <gnurou@gmail.com> wrote:
+> > Ping Thierry, can you have a look at this series? It is quite similar
+> > to the same change you merged for panel-simple (although I cannot see
+> > it in -next neither).
+> >
+> 
+> I think Jingoo can help to review this as well. Jingoo, can you help
+> to review. Actually it looks good to me.
 
-Changes since v4:
-  - Added in real polarity support
-  - Labeled trigger bits as such rather than use the name from hw docs
-  - Listed unsual hardware characteristics at the top of the file
-  - Removed default from Kconfig and update defconfig accordingly
-  - Always use unsigned int for temporary register values
+Sorry, I cannot review this pwm-backlight code, I don't have
+knowledge about pwm-backlight and gpiod. I think that Thierry
+will review this correctly.
 
-Changes since v3:
-  - Removed polarity support for now
-  - Cleaned up whitespace issues, shortened some variable names
-  - Use container_of instead of dev_get_drvdata to get private data
-  - Removed workaround for PWM framework bug
-  - Reworded some binding documentation
+Best regards,
+Jingoo Han
 
-Changes since v2:
-  - SoC DTS file updated to use real clock's phandle + specifier
-  - Toggle smooth mode off during apply so new settings take immediately
-
-Changes since v1:
-  - Fixed up macros to be clearer and more complete
-  - Corrected spelling and punctuation mistakes
-  - Added support for polarity
-  - Made peripheral clock use more efficient
-  - Made prescale and duty computation clearer
-  - Moved Makefile addition to keep alphabetical
-  - Split complex lines into multiple steps
-
-Dependencies:
-The "ARM: dts: Declare the PWM for bcm11351 (bcm281xx)" patch depends
-upon "ARM: dts: bcm281xx: define real clocks" which is queued up in
-for-next of arm-soc. See https://lkml.org/lkml/2014/2/14/451
-
-Tim Kryger (5):
-  Documentation: dt: Add Kona PWM binding
-  pwm: kona: Introduce Kona PWM controller support
-  ARM: dts: Declare the PWM for bcm11351 (bcm281xx)
-  ARM: dts: Enable the PWM for bcm28155 AP board
-  ARM: bcm_defconfig: Enable PWM and Backlight
-
- .../devicetree/bindings/pwm/bcm-kona-pwm.txt       |   21 ++
- arch/arm/boot/dts/bcm11351.dtsi                    |    8 +
- arch/arm/boot/dts/bcm28155-ap.dts                  |    4 +
- arch/arm/configs/bcm_defconfig                     |    3 +
- drivers/pwm/Kconfig                                |    9 +
- drivers/pwm/Makefile                               |    1 +
- drivers/pwm/pwm-bcm-kona.c                         |  319 ++++++++++++++++++++
- 7 files changed, 365 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
- create mode 100644 drivers/pwm/pwm-bcm-kona.c
-
--- 
-1.7.9.5
+> 
+> -Bryan
+> 
+> > On Thu, Feb 27, 2014 at 2:53 PM, Alexandre Courbot <acourbot@nvidia.com> wrote:
+> >> These two patches initiate the switch of the pwm-backlight driver to
+> >> the gpiod GPIO interface, as it considerably simplifies the code.
+> >>
+> >> For compatibility with current users of the driver, it is still possible
+> >> to pass the enable GPIO number as platform data. Two platforms are still
+> >> relying on this feature (pxa/palmtc and shmobile/armadillo800eva) which
+> >> will be removed as soon as its last users are switched to GPIO mapping
+> >> tables.
+> >>
+> >> Alexandre Courbot (2):
+> >>   ARM: SAMSUNG: remove gpio flags in dev-backlight
+> >>   pwm-backlight: switch to gpiod interface
+> >>
+> >>  arch/arm/plat-samsung/dev-backlight.c |  2 -
+> >>  drivers/video/backlight/pwm_bl.c      | 72 +++++++++++++++--------------------
+> >>  include/linux/pwm_backlight.h         |  5 +--
+> >>  3 files changed, 32 insertions(+), 47 deletions(-)
+> >>
+> >> --
+> >> 1.9.0
