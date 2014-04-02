@@ -1,70 +1,64 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: [PATCH v2] pwm: pxa: Use of_match_ptr()
-Date: Thu, 03 Apr 2014 12:44:54 +0900
-Message-ID: <000d01cf4eef$13881770$3a984650$%han@samsung.com>
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: [PATCHv3 3/3] pwm: imx: support output polarity inversion
+Date: Wed, 2 Apr 2014 07:45:49 +0200
+Message-ID: <20140402054549.GW17250@pengutronix.de>
+References: <1395235375-12925-1-git-send-email-LW@KARO-electronics.de>
+ <1395996540-10999-1-git-send-email-LW@KARO-electronics.de>
+ <1395996540-10999-4-git-send-email-LW@KARO-electronics.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailout4.samsung.com ([203.254.224.34]:22630 "EHLO
-	mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758860AbaDCDo5 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Apr 2014 23:44:57 -0400
-Received: from epcpsbgr5.samsung.com
- (u145.gpu120.samsung.co.kr [203.254.230.145])
- by mailout4.samsung.com (Oracle Communications Messaging Server 7u4-24.01
- (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0N3F00I6CRQVYP50@mailout4.samsung.com> for
- linux-pwm@vger.kernel.org; Thu, 03 Apr 2014 12:44:55 +0900 (KST)
-Content-language: ko
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1395996540-10999-4-git-send-email-LW@KARO-electronics.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lothar =?iso-8859-15?Q?Wa=DFmann?= <LW@KARO-electronics.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <kernel@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>
 List-Id: linux-pwm@vger.kernel.org
-To: 'Thierry Reding' <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>, 'Eric Miao' <eric.y.miao@gmail.com>
 
-Use of_match_ptr(), because of_match_ptr() returns NULL pointer
-when CONFIG_OF is disabled.
+Hi Lothar,
 
-Signed-off-by: Jingoo Han <jg1.han@samsung.com>
----
-Changes since v1:
-- Add of_match_ptr() to of_match_device() in order to fix compile error
-  when CONFIG_OF=n.
+On Fri, Mar 28, 2014 at 09:49:00AM +0100, Lothar Wa=DFmann wrote:
+>  static struct pwm_ops imx_pwm_ops =3D {
+>  	.enable =3D imx_pwm_enable,
+>  	.disable =3D imx_pwm_disable,
+> @@ -210,6 +228,7 @@ struct imx_pwm_data {
+>  	int (*config)(struct pwm_chip *chip,
+>  		struct pwm_device *pwm, int duty_ns, int period_ns);
+>  	void (*set_enable)(struct pwm_chip *chip, bool enable);
+> +	unsigned output_polarity:1;
+>  };
+> =20
+>  static struct imx_pwm_data imx_pwm_data_v1 =3D {
+> @@ -220,6 +239,7 @@ static struct imx_pwm_data imx_pwm_data_v1 =3D {
+>  static struct imx_pwm_data imx_pwm_data_v2 =3D {
+>  	.config =3D imx_pwm_config_v2,
+>  	.set_enable =3D imx_pwm_set_enable_v2,
+> +	.output_polarity =3D 1,
+>  };
+> =20
+>  static const struct of_device_id imx_pwm_dt_ids[] =3D {
+> @@ -272,6 +292,11 @@ static int imx_pwm_probe(struct platform_device =
+*pdev)
+>  		return PTR_ERR(imx->mmio_base);
+> =20
+>  	data =3D of_id->data;
+> +	if (data->output_polarity) {
+> +		dev_dbg(&pdev->dev, "PWM supports output inversion\n");
+> +		imx_pwm_ops.set_polarity =3D imx_pwm_set_polarity;
+> +	}
 
- drivers/pwm/pwm-pxa.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+You shouldn't modify imx_pwm_ops in the probe function, it's not good
+style and prevents us from making the ops const.
 
-diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
-index cd356d8..024e6a4 100644
---- a/drivers/pwm/pwm-pxa.c
-+++ b/drivers/pwm/pwm-pxa.c
-@@ -140,14 +140,13 @@ static const struct of_device_id pwm_of_match[] = {
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, pwm_of_match);
--#else
--#define pwm_of_match NULL
- #endif
- 
- static const struct platform_device_id *pxa_pwm_get_id_dt(struct device *dev)
- {
--	const struct of_device_id *id = of_match_device(pwm_of_match, dev);
-+	const struct of_device_id *id;
- 
-+	id = of_match_device(of_match_ptr(pwm_of_match), dev);
- 	return id ? id->data : NULL;
- }
- 
-@@ -228,7 +227,7 @@ static struct platform_driver pwm_driver = {
- 	.driver		= {
- 		.name	= "pxa25x-pwm",
- 		.owner	= THIS_MODULE,
--		.of_match_table = pwm_of_match,
-+		.of_match_table = of_match_ptr(pwm_of_match),
- 	},
- 	.probe		= pwm_probe,
- 	.remove		= pwm_remove,
--- 
-1.7.10.4
+Sascha
 
-
+--=20
+Pengutronix e.K.                           |                           =
+  |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0  =
+  |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-555=
+5 |
