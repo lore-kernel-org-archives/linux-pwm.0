@@ -1,50 +1,57 @@
-From: Wolfram Sang <wsa@the-dreams.de>
-Subject: [PATCH 2/2] pwm: tiehrpwm: inline accessor functions
-Date: Wed,  2 Apr 2014 13:56:22 +0200
-Message-ID: <1396439802-6813-2-git-send-email-wsa@the-dreams.de>
-References: <1396439802-6813-1-git-send-email-wsa@the-dreams.de>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: Re: [PATCH 5/9] pwm: spear: Remove unnecessary OOM messages
+Date: Thu, 03 Apr 2014 12:24:54 +0900
+Message-ID: <000601cf4eec$47f4aee0$d7de0ca0$%han@samsung.com>
+References: <000701cf328e$00ed24c0$02c76e40$%han@samsung.com>
+ <6028232.VHmxlGjlXi@avalon>
+ <CAKohponXNmXPZP2Umz3BfRnXyOPX5Fa9606Lc42ORnOuevifEw@mail.gmail.com>
+ <24037035.nXcZgi4Mc2@avalon> <005801cf39db$e1a37240$a4ea56c0$%han@samsung.com>
+ <20140310122237.GA26681@ulmo.nvidia.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from sauhun.de ([89.238.76.85]:51355 "EHLO pokefinder.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1758442AbaDBL5A (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 2 Apr 2014 07:57:00 -0400
-In-Reply-To: <1396439802-6813-1-git-send-email-wsa@the-dreams.de>
+Received: from mailout2.samsung.com ([203.254.224.25]:52439 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758923AbaDCDY5 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Apr 2014 23:24:57 -0400
+Received: from epcpsbgr4.samsung.com
+ (u144.gpu120.samsung.co.kr [203.254.230.144])
+ by mailout2.samsung.com (Oracle Communications Messaging Server 7u4-24.01
+ (7.0.4.24.0) 64bit (built Nov 17 2011))
+ with ESMTP id <0N3F00MS7QTIBV10@mailout2.samsung.com> for
+ linux-pwm@vger.kernel.org; Thu, 03 Apr 2014 12:24:54 +0900 (KST)
+In-reply-to: <20140310122237.GA26681@ulmo.nvidia.com>
+Content-language: ko
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: Wolfram Sang <wsa@sang-engineering.com>, Thierry Reding <thierry.reding@gmail.com>
+To: 'Thierry Reding' <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>
 
-From: Wolfram Sang <wsa@sang-engineering.com>
+On Monday, March 10, 2014 9:23 PM, Thierry Reding wrote:
+> On Fri, Mar 07, 2014 at 05:04:36PM +0900, Jingoo Han wrote:
 
-These elementary functions should be inlined for fastest access. Also
-fixes this warning as a side-effect (when no PM_SLEEP is selected):
+[....]
 
-drivers/pwm/pwm-tiehrpwm.c:141:12: warning: 'ehrpwm_read' defined but not used [-Wunused-function]
+> >
+> > Hi Thierry Reding,
+> >
+> > There seems to be no objection. :-)
+> > Would you accept these patches?
+> > Thank you.
+> 
+> All 9 patches applied, thanks.
 
-Signed-off-by: Wolfram Sang <wsa@sang-engineering.com>
----
- drivers/pwm/pwm-tiehrpwm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Hi Thierry,
 
-diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
-index b2544296430a..232a4be11e67 100644
---- a/drivers/pwm/pwm-tiehrpwm.c
-+++ b/drivers/pwm/pwm-tiehrpwm.c
-@@ -138,12 +138,12 @@ static inline struct ehrpwm_pwm_chip *to_ehrpwm_pwm_chip(struct pwm_chip *chip)
- 	return container_of(chip, struct ehrpwm_pwm_chip, chip);
- }
- 
--static u16 ehrpwm_read(void __iomem *base, int offset)
-+static inline u16 ehrpwm_read(void __iomem *base, int offset)
- {
- 	return readw(base + offset);
- }
- 
--static void ehrpwm_write(void __iomem *base, int offset, unsigned int val)
-+static inline void ehrpwm_write(void __iomem *base, int offset, unsigned int val)
- {
- 	writew(val & 0xFFFF, base + offset);
- }
--- 
-1.9.0
+I cannot find these patches from your pwm git tree. [1]
+Would you confirm it? :-) Thank you.
+
+[1] http://git.kernel.org/cgit/linux/kernel/git/thierry.reding/linux-pwm.git/log/?h=for-next
+
+Best regards,
+Jingoo Han
+
+> 
+> Thierry
 
