@@ -1,126 +1,121 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [GIT PULL] pwm: Changes for v3.15-rc1
-Date: Fri, 4 Apr 2014 11:09:28 +0200
-Message-ID: <20140404090928.GA29738@ulmo>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: MX28: leds/pwm: Using pwm driven led as heartbeat leads to kernel
+ warning
+Date: Fri, 04 Apr 2014 15:54:52 +0200
+Message-ID: <533EB9AC.6040708@i2se.com>
+References: <53345C93.9040005@i2se.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="zYM0uCDKw75PZbzx"
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bk0-f47.google.com ([209.85.214.47]:36217 "EHLO
-	mail-bk0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752125AbaDDJKN (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 4 Apr 2014 05:10:13 -0400
-Content-Disposition: inline
+Received: from moutng.kundenserver.de ([212.227.17.10]:63267 "EHLO
+	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753015AbaDDNz3 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 4 Apr 2014 09:55:29 -0400
+In-Reply-To: <53345C93.9040005@i2se.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Fabio Estevam <fabio.estevam@freescale.com>, Shawn Guo <shawn.guo@freescale.com>, Thierry Reding <thierry.reding@gmail.com>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>
+Cc: Sascha Hauer <kernel@pengutronix.de>, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-leds@vger.kernel.org
 
+Hello again,
 
---zYM0uCDKw75PZbzx
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Am 27.03.2014 18:14, schrieb Stefan Wahren:
+> Hello,
+>
+> i'm using a i.MX28 custom board with two leds and Kernel 3.14-rc5.
+>
+> Here is the relevant dts part:
+>
+> pwmleds {
+>         compatible = "pwm-leds";
+>         pinctrl-names = "default";
+>         pinctrl-0 = <&pwm0_pins_b>; /* MX28_PAD_AUART1_RX__PWM_0 */
+>        
+>         led0 {
+>             label = "duckbill:red";
+>             pwms = <&pwm 0 7812500>;
+>             max-brightness = <127>;
+>             linux,default-trigger = "none";
+>         };
+> };
+>
+> gpioleds {
+>         compatible = "gpio-leds";
+>         pinctrl-names = "default";
+>         pinctrl-0 = <&led_pins>;
+>
+>         led1 {
+>             label = "duckbill:green";
+>             gpios = <&gpio3 5 0>;
+>             linux,default-trigger = "heartbeat";
+>         };
+> };
+>
+> The gpio driven led works perfect as heartbeat. But if i change the
+> trigger of the pwm
+> driven led from none to heartbeat, it results always in a kernel warning
+> and the pwm led
+> keeps on:
+>
+> [  248.916168] WARNING: CPU: 0 PID: 0 at kernel/locking/mutex.c:856
+> mutex_trylock+0x184/0x1a4()
+> [  248.924745] DEBUG_LOCKS_WARN_ON(in_interrupt())
+> [  248.929136] Modules linked in:
+> [  248.932517] CPU: 0 PID: 0 Comm: swapper Not tainted 3.14.0-rc5 #18
+> [  248.938781] [<c0015420>] (unwind_backtrace) from [<c0012cb0>]
+> (show_stack+0x10/0x14)
+> [  248.946672] [<c0012cb0>] (show_stack) from [<c001daf8>]
+> (warn_slowpath_common+0x6c/0x8c)
+> [  248.954902] [<c001daf8>] (warn_slowpath_common) from [<c001dbac>]
+> (warn_slowpath_fmt+0x30/0x40)
+> [  248.963742] [<c001dbac>] (warn_slowpath_fmt) from [<c045df74>]
+> (mutex_trylock+0x184/0x1a4)
+> [  248.972147] [<c045df74>] (mutex_trylock) from [<c0360950>]
+> (clk_prepare_lock+0xc/0xec)
+> [  248.980132] [<c0360950>] (clk_prepare_lock) from [<c0362020>]
+> (clk_get_rate+0xc/0x68)
+> [  248.988105] [<c0362020>] (clk_get_rate) from [<c028d07c>]
+> (mxs_pwm_config+0x20/0x198)
+> [  248.996098] [<c028d07c>] (mxs_pwm_config) from [<c028bde8>]
+> (pwm_config+0x60/0x70)
+> [  249.003824] [<c028bde8>] (pwm_config) from [<c034b61c>]
+> (__led_pwm_set+0x1c/0x3c)
+> [  249.011442] [<c034b61c>] (__led_pwm_set) from [<c034bc3c>]
+> (led_heartbeat_function+0x70/0x110)
+> [  249.020114] [<c034bc3c>] (led_heartbeat_function) from [<c00292f0>]
+> (call_timer_fn+0x7c/0x164)
+> [  249.028856] [<c00292f0>] (call_timer_fn) from [<c00295c8>]
+> (run_timer_softirq+0x1f0/0x260)
+> [  249.037267] [<c00295c8>] (run_timer_softirq) from [<c002255c>]
+> (__do_softirq+0xc4/0x2f0)
+> [  249.045507] [<c002255c>] (__do_softirq) from [<c0022890>]
+> (irq_exit+0xa4/0x10c)
+> [  249.052966] [<c0022890>] (irq_exit) from [<c0010240>]
+> (handle_IRQ+0x34/0x84)
+> [  249.060079] [<c0010240>] (handle_IRQ) from [<c0013524>]
+> (__irq_svc+0x44/0x54)
+> [  249.067358] [<c0013524>] (__irq_svc) from [<c00107f8>]
+> (arch_cpu_idle+0x40/0x48)
+> [  249.074916] [<c00107f8>] (arch_cpu_idle) from [<c005deb8>]
+> (cpu_startup_entry+0x70/0x198)
+> [  249.083258] [<c005deb8>] (cpu_startup_entry) from [<c060aac8>]
+> (start_kernel+0x2a8/0x2f8)
+>
+> Best regards
+> Stefan Wahren
+>
 
-Hi Linus,
+the problem is still reproducable in Mainline 3.14.0 and gives the same
+warning message.
+Also i add linux-leds in CC.
 
-The following changes since commit 38dbfb59d1175ef458d006556061adeaa8751b72:
+Are there any advices to narrow down the problem?
 
-  Linus 3.14-rc1 (2014-02-02 16:42:13 -0800)
+Is this problem specific to i.MX28 PWM (i don't have other kind of
+hardware)?
 
-are available in the git repository at:
+Can anybody reproduce this problem?
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-3.15-rc1
-
-for you to fetch changes up to 2ae69a460413615c82381b240df3800a909100d3:
-
-  pwm: pxa: Constify OF match table (2014-04-01 14:06:43 +0200)
-
-Thanks,
-Thierry
-
-----------------------------------------------------------------
-pwm: Changes for v3.15-rc1
-
-The legacy HAVE_PWM Kconfig symbol is finally being retired. Thanks a
-lot to Sascha Hauer for doing that.
-
-Three new drivers are added: Freescale FTM, Cirrus Logic CLPS711X and
-Intel Low Power Subsystem.
-
-An assortment of fixes and cleanups rounds things off for this release
-cycle.
-
-----------------------------------------------------------------
-Alexander Shiyan (1):
-      pwm: Add CLPS711X PWM support
-
-Alexandre Belloni (2):
-      pwm: atmel: Fix polarity handling
-      pwm: atmel: correct CDTY calculation
-
-Jingoo Han (2):
-      pwm: samsung: Use SIMPLE_DEV_PM_OPS macro
-      pwm: pxa: Use of_match_ptr()
-
-Mika Westerberg (1):
-      pwm: add support for Intel Low Power Subsystem PWM
-
-Richard Weinberger (1):
-      pwm: renesas-tpu: Add dependency on HAS_IOMEM
-
-Sascha Hauer (1):
-      pwm: Remove obsolete HAVE_PWM Kconfig symbol
-
-Thierry Reding (3):
-      Revert "pwm: pxa: Use of_match_ptr()"
-      pwm: pxa: Fix typo "pwm" -> "PWM"
-      pwm: pxa: Constify OF match table
-
-Xiubo Li (2):
-      pwm: Add Freescale FTM PWM driver support
-      Documentation: Add device tree bindings for Freescale FTM PWM.
-
- .../bindings/pwm/cirrus,clps711x-pwm.txt           |  16 +
- .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        |  35 ++
- arch/arm/Kconfig                                   |   4 -
- arch/arm/mach-pxa/Kconfig                          |  15 -
- arch/mips/Kconfig                                  |   1 -
- drivers/input/misc/Kconfig                         |   4 +-
- drivers/pwm/Kconfig                                |  30 ++
- drivers/pwm/Makefile                               |   3 +
- drivers/pwm/pwm-atmel.c                            |   9 +-
- drivers/pwm/pwm-clps711x.c                         | 176 ++++++++
- drivers/pwm/pwm-fsl-ftm.c                          | 495 +++++++++++++++++++++
- drivers/pwm/pwm-lpss.c                             | 183 ++++++++
- drivers/pwm/pwm-pxa.c                              |   4 +-
- drivers/pwm/pwm-samsung.c                          |   5 +-
- include/linux/pwm.h                                |   2 +-
- 15 files changed, 952 insertions(+), 30 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/pwm/cirrus,clps711x-pwm.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
- create mode 100644 drivers/pwm/pwm-clps711x.c
- create mode 100644 drivers/pwm/pwm-fsl-ftm.c
- create mode 100644 drivers/pwm/pwm-lpss.c
-
---zYM0uCDKw75PZbzx
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTPnbIAAoJEN0jrNd/PrOhi+IP+gKEt85mBnI6IWvQtjUs9eEc
-DJmr5Wdtd0NLbU4E86QrRXfL8JDqmlOvybdmJ4510ChrTUCk+qIcK4aDHwmkqH11
-x8wDTBslRc66R66Dq+e2JDKWL+WkBxqYUuvkeLwd55h2QZ5XqZIsodEo1sPct3dD
-J4K+wAoVl20BkXXf19KlJtiMaKXq5XeC9kb4l1eEqUldixNqQwkPe0TbcLTBz11R
-GDUrsSIjCI8EEHU0MijpNFmLBLNbQiiNRrM89OwHxzH/wnfDiyRIJjbOi2PtoMhY
-KV9xsewRWQxHjcVGx47PL78RaK+C4qm2CDHSxYqcVjy65M0hlGV+XaxqEkvBLRQ2
-WTKgTwAsehJ6HDHzJZg3bkGy2uSN4syCp04+MG1E5v+5wF3x1w6WvK52MsixNXmv
-06Z4ajBXR5HJp1iiQnIYuOtWS+nfR2xbrfEpziTqR3iSx5pAxNnWBU5KTk9GpMt4
-YSbFzRJDy5IJAaJEiA6HGDS4EVmUXN+N3fd9HgCfCd00sQqnhhg2TMFKzWpAfDRK
-p24CDP0twoGfS2BvOxTeSZvovselsSJH7EMGl3jyYr+oVk1N2D67ch5tTXjbQ31P
-YmKJtIQl/+an8eH01yV9BiFV+FvfE/icwF+ftVLAo2Qz79csRe/Lr/6NujBgQdyE
-EwM0LNMCNtLi0esWjmLO
-=Taii
------END PGP SIGNATURE-----
-
---zYM0uCDKw75PZbzx--
+Kind regards
+Stefan Wahren
