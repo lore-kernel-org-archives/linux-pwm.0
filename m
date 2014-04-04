@@ -1,70 +1,126 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2] pwm: pxa: Use of_match_ptr()
-Date: Fri, 4 Apr 2014 10:49:21 +0200
-Message-ID: <20140404084920.GB474@ulmo>
-References: <000d01cf4eef$13881770$3a984650$%han@samsung.com>
+Subject: [GIT PULL] pwm: Changes for v3.15-rc1
+Date: Fri, 4 Apr 2014 11:09:28 +0200
+Message-ID: <20140404090928.GA29738@ulmo>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="+pHx0qQiF2pBVqBT"
+	protocol="application/pgp-signature"; boundary="zYM0uCDKw75PZbzx"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bk0-f46.google.com ([209.85.214.46]:61861 "EHLO
-	mail-bk0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751655AbaDDIuG (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 4 Apr 2014 04:50:06 -0400
-Received: by mail-bk0-f46.google.com with SMTP id v15so256195bkz.5
-        for <linux-pwm@vger.kernel.org>; Fri, 04 Apr 2014 01:50:05 -0700 (PDT)
+Received: from mail-bk0-f47.google.com ([209.85.214.47]:36217 "EHLO
+	mail-bk0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752125AbaDDJKN (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 4 Apr 2014 05:10:13 -0400
 Content-Disposition: inline
-In-Reply-To: <000d01cf4eef$13881770$3a984650$%han@samsung.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jingoo Han <jg1.han@samsung.com>
-Cc: linux-pwm@vger.kernel.org, 'Eric Miao' <eric.y.miao@gmail.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---+pHx0qQiF2pBVqBT
+--zYM0uCDKw75PZbzx
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Apr 03, 2014 at 12:44:54PM +0900, Jingoo Han wrote:
-> Use of_match_ptr(), because of_match_ptr() returns NULL pointer
-> when CONFIG_OF is disabled.
->=20
-> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
-> ---
-> Changes since v1:
-> - Add of_match_ptr() to of_match_device() in order to fix compile error
->   when CONFIG_OF=3Dn.
->=20
->  drivers/pwm/pwm-pxa.c |    7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
+Hi Linus,
 
-I already fixed this in the PWM tree before submitting the 3.15 pull
-request. What I did was rather revert the original patch because given
-the use in pxa_pwm_get_id_dt() there isn't any real advantages to using
-of_match_ptr() anymore.
+The following changes since commit 38dbfb59d1175ef458d006556061adeaa8751b72:
 
+  Linus 3.14-rc1 (2014-02-02 16:42:13 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-3.15-rc1
+
+for you to fetch changes up to 2ae69a460413615c82381b240df3800a909100d3:
+
+  pwm: pxa: Constify OF match table (2014-04-01 14:06:43 +0200)
+
+Thanks,
 Thierry
 
---+pHx0qQiF2pBVqBT
+----------------------------------------------------------------
+pwm: Changes for v3.15-rc1
+
+The legacy HAVE_PWM Kconfig symbol is finally being retired. Thanks a
+lot to Sascha Hauer for doing that.
+
+Three new drivers are added: Freescale FTM, Cirrus Logic CLPS711X and
+Intel Low Power Subsystem.
+
+An assortment of fixes and cleanups rounds things off for this release
+cycle.
+
+----------------------------------------------------------------
+Alexander Shiyan (1):
+      pwm: Add CLPS711X PWM support
+
+Alexandre Belloni (2):
+      pwm: atmel: Fix polarity handling
+      pwm: atmel: correct CDTY calculation
+
+Jingoo Han (2):
+      pwm: samsung: Use SIMPLE_DEV_PM_OPS macro
+      pwm: pxa: Use of_match_ptr()
+
+Mika Westerberg (1):
+      pwm: add support for Intel Low Power Subsystem PWM
+
+Richard Weinberger (1):
+      pwm: renesas-tpu: Add dependency on HAS_IOMEM
+
+Sascha Hauer (1):
+      pwm: Remove obsolete HAVE_PWM Kconfig symbol
+
+Thierry Reding (3):
+      Revert "pwm: pxa: Use of_match_ptr()"
+      pwm: pxa: Fix typo "pwm" -> "PWM"
+      pwm: pxa: Constify OF match table
+
+Xiubo Li (2):
+      pwm: Add Freescale FTM PWM driver support
+      Documentation: Add device tree bindings for Freescale FTM PWM.
+
+ .../bindings/pwm/cirrus,clps711x-pwm.txt           |  16 +
+ .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        |  35 ++
+ arch/arm/Kconfig                                   |   4 -
+ arch/arm/mach-pxa/Kconfig                          |  15 -
+ arch/mips/Kconfig                                  |   1 -
+ drivers/input/misc/Kconfig                         |   4 +-
+ drivers/pwm/Kconfig                                |  30 ++
+ drivers/pwm/Makefile                               |   3 +
+ drivers/pwm/pwm-atmel.c                            |   9 +-
+ drivers/pwm/pwm-clps711x.c                         | 176 ++++++++
+ drivers/pwm/pwm-fsl-ftm.c                          | 495 +++++++++++++++++++++
+ drivers/pwm/pwm-lpss.c                             | 183 ++++++++
+ drivers/pwm/pwm-pxa.c                              |   4 +-
+ drivers/pwm/pwm-samsung.c                          |   5 +-
+ include/linux/pwm.h                                |   2 +-
+ 15 files changed, 952 insertions(+), 30 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/cirrus,clps711x-pwm.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
+ create mode 100644 drivers/pwm/pwm-clps711x.c
+ create mode 100644 drivers/pwm/pwm-fsl-ftm.c
+ create mode 100644 drivers/pwm/pwm-lpss.c
+
+--zYM0uCDKw75PZbzx
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTPnIQAAoJEN0jrNd/PrOhe0oQAJxC2+SFVxAjndbMM1sUzhZS
-F/6KHlu1v4vw/Oe5hA0sQPh18Tmxep8snwlxgbeQ9TKgLvVL4oT6DOv8xtL2l6Kf
-J4+2sWI8Bz2eueMKY9uVmNohNU3LDHLuThhpZRMOzn9uHx4h3cjdjXZuMxiWBKfI
-tLaQ48IIkQzIHjDiPsU3SAaqNbjmn04waaTfOrjkOKpmrH6Edf7tI9KXrwdqJLxN
-RkTat31b2yONxfaMO2Z6jM9WwySsmtJtRRFMHr1XNuPs++6ghzOkKaAUx6yAYb4j
-X+/JV49CODNCaEoEzINFCcuVC5DSRLCnJjrkM40rBMvBHnZTN0Kpiizm+87zaG7m
-CSeiBbWBrTNiNVuFA52P02Bg9rSHVdvsdpRyifTqYfZNSC51xQka6BoSVw0BgFca
-w5eFLX8W6jolqI/vN4Vb0lH0c1+2foWXCiMx7bWQRpsJrtXNUMDZr+qhS7HkzsNB
-x3beg/uoJto1+iFr8sW7gTGQngzJq4VdwWaAFKLZtfn+vV+z9reuJl0JfY8hOh4c
-Q6B79biykucWw2w+TW7a/ysNVqrupAiPb/S0OX22ACNzgXIbumKFbC9dCCaQlgc7
-5KgCM2AoGXoV+8dDKXJqT/ZT9ShQ8R1GFp8Zx0Xpf4V/zT0kgh598P1R1xjSG205
-OG7dLK1i6O7JuQlZBYrV
-=rydn
+iQIcBAEBAgAGBQJTPnbIAAoJEN0jrNd/PrOhi+IP+gKEt85mBnI6IWvQtjUs9eEc
+DJmr5Wdtd0NLbU4E86QrRXfL8JDqmlOvybdmJ4510ChrTUCk+qIcK4aDHwmkqH11
+x8wDTBslRc66R66Dq+e2JDKWL+WkBxqYUuvkeLwd55h2QZ5XqZIsodEo1sPct3dD
+J4K+wAoVl20BkXXf19KlJtiMaKXq5XeC9kb4l1eEqUldixNqQwkPe0TbcLTBz11R
+GDUrsSIjCI8EEHU0MijpNFmLBLNbQiiNRrM89OwHxzH/wnfDiyRIJjbOi2PtoMhY
+KV9xsewRWQxHjcVGx47PL78RaK+C4qm2CDHSxYqcVjy65M0hlGV+XaxqEkvBLRQ2
+WTKgTwAsehJ6HDHzJZg3bkGy2uSN4syCp04+MG1E5v+5wF3x1w6WvK52MsixNXmv
+06Z4ajBXR5HJp1iiQnIYuOtWS+nfR2xbrfEpziTqR3iSx5pAxNnWBU5KTk9GpMt4
+YSbFzRJDy5IJAaJEiA6HGDS4EVmUXN+N3fd9HgCfCd00sQqnhhg2TMFKzWpAfDRK
+p24CDP0twoGfS2BvOxTeSZvovselsSJH7EMGl3jyYr+oVk1N2D67ch5tTXjbQ31P
+YmKJtIQl/+an8eH01yV9BiFV+FvfE/icwF+ftVLAo2Qz79csRe/Lr/6NujBgQdyE
+EwM0LNMCNtLi0esWjmLO
+=Taii
 -----END PGP SIGNATURE-----
 
---+pHx0qQiF2pBVqBT--
+--zYM0uCDKw75PZbzx--
