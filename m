@@ -1,95 +1,84 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 09/16] avr32/at32ap: switch to the generic PWM framework
-Date: Mon, 7 Apr 2014 13:28:23 +0200
-Message-ID: <20140407112821.GC26985@ulmo>
-References: <1395234209-15546-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1395234209-15546-10-git-send-email-alexandre.belloni@free-electrons.com>
- <20140319141820.GA20872@samfundet.no>
+Subject: Re: [PATCHv3 1/3] pwm: make the PWM_POLARITY flag in DTB optional
+Date: Mon, 7 Apr 2014 13:36:53 +0200
+Message-ID: <20140407113652.GE26985@ulmo>
+References: <1395235375-12925-1-git-send-email-LW@KARO-electronics.de>
+ <1395996540-10999-1-git-send-email-LW@KARO-electronics.de>
+ <1395996540-10999-2-git-send-email-LW@KARO-electronics.de>
+ <20140402055350.GX17250@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="c3bfwLpm8qysLVxt"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="qFgkTsE6LiHkLPZw"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-bk0-f44.google.com ([209.85.214.44]:54071 "EHLO
+	mail-bk0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754274AbaDGLhn (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Apr 2014 07:37:43 -0400
 Content-Disposition: inline
-In-Reply-To: <20140319141820.GA20872@samfundet.no>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Hans-Christian Egtvedt <egtvedt@samfundet.no>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jingoo Han <jg1.han@samsung.com>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
+In-Reply-To: <20140402055350.GX17250@pengutronix.de>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Lothar =?utf-8?Q?Wa=C3=9Fmann?= <LW@KARO-electronics.de>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <kernel@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>
 
 
---c3bfwLpm8qysLVxt
-Content-Type: text/plain; charset=us-ascii
+--qFgkTsE6LiHkLPZw
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 19, 2014 at 03:18:20PM +0100, Hans-Christian Egtvedt wrote:
-> Around Wed 19 Mar 2014 14:03:22 +0100 or thereabout, Alexandre Belloni wr=
-ote:
-> > Switch to the pwm/pwm-atmel driver instead of misc/atmel_pwm
-> >=20
-> > Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+On Wed, Apr 02, 2014 at 07:53:50AM +0200, Sascha Hauer wrote:
+> On Fri, Mar 28, 2014 at 09:48:58AM +0100, Lothar Wa=C3=9Fmann wrote:
+[...]
+> > @@ -183,8 +173,11 @@ static void of_pwmchip_add(struct pwm_chip *chip)
+> >  		return;
+> > =20
+> >  	if (!chip->of_xlate) {
+> > -		chip->of_xlate =3D of_pwm_simple_xlate;
+> > -		chip->of_pwm_n_cells =3D 2;
+> > +		chip->of_xlate =3D of_pwm_xlate;
+> > +		if (chip->ops->set_polarity)
+> > +			chip->of_pwm_n_cells =3D 3;
+> > +		else
+> > +			chip->of_pwm_n_cells =3D 2;
 >=20
-> Acked-by: Hans-Christian Egtvedt <egtvedt@samfundet.no>
->=20
-> > ---
-> >  arch/avr32/mach-at32ap/at32ap700x.c | 7 ++-----
-> >  1 file changed, 2 insertions(+), 5 deletions(-)
-> >=20
-> > diff --git a/arch/avr32/mach-at32ap/at32ap700x.c b/arch/avr32/mach-at32=
-ap/at32ap700x.c
-> > index a1f4d1e91b52..db85b5ec3351 100644
-> > --- a/arch/avr32/mach-at32ap/at32ap700x.c
-> > +++ b/arch/avr32/mach-at32ap/at32ap700x.c
-> > @@ -1553,7 +1553,7 @@ static struct resource atmel_pwm0_resource[] __in=
-itdata =3D {
-> >  	IRQ(24),
-> >  };
-> >  static struct clk atmel_pwm0_mck =3D {
-> > -	.name		=3D "pwm_clk",
-> > +	.name		=3D "at91sam9rl-pwm",
->=20
-> I found this a tiny bit weird, but found the matching instance in
-> drivers/pwm/pwm-atmel.c
->=20
-> IMHO it would initially have been better to call it atpwm_v1 or something
-> similar, more generic. But I guess that is too late to change at this poi=
-nt.
+> I think the presence of the set_polarity callback shouldn't influence
+> the number of cells the parser expects. As commented on 2/2 this doesn't
+> actually mean the device actually support polarity inversion.
 
-Generally when you call clk_get(dev, NULL), you'll pass in the consumer
-device as "dev". Now the avr32 clock implementation compares that to the
-device associated with the clock, which for the case of the PWM pwm0_mck
-is the PWM controller (at32_add_device_pwm() for reference). So it seems
-to be set up properly (the PWM controller is the consumer).
+How so? A driver should only implement .set_polarity() if it supports
+changing the polarity.
 
-Also since the consumer ID isn't specified to the clk_get() call, the
-name of the clock (what's being changed in the above hunk) shouldn't
-matter because it won't match anyway.
+That said, I agree that the presence of .set_polarity() shouldn't
+determine the number of cells. You could have any number of other flags
+set via the third cell.
 
-Now that I look at it more closely, I wonder how clk_get(dev, NULL) can
-even work on avr32, since there's no check for id =3D=3D NULL and therefore
-NULL will be blindly passed into strcmp() and then crash.
+> Also, polarity inversion could still be done in software for hardware
+> that doesn't support it.
+
+No. You cannot emulate polarity inversion in software.
 
 Thierry
 
---c3bfwLpm8qysLVxt
+--qFgkTsE6LiHkLPZw
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTQovVAAoJEN0jrNd/PrOhucMP/AoHAzsOLJ8icc3WxuDeKNY6
-/iZXiKYAOTW9/P7d1aerqWy2hc3wA7+hyOIQl7JtCWZ/cCO+/5b1Xp67LWn9OKQO
-6TwrNphjftw8OGEzgi0ENgM46WYWwdtZF7PZPv6F5+HdwegQjUJBDnja8o8gQBle
-o0U1KyZ+ycjOYGIc9+tNF6Omi6MbA9Q5HVKsLO621EmcSCxuGZqfO6Kv7gMn79Ib
-+U0C99mPadGEhxgXGu6WIvR0mDZEl1jS0Typ9Jcc5WEtClrlD58/GZJjiu2xUKG7
-OCITv3A1JmFRZ0+2d9OreXSUlzbUBKFZX0tvbmIdfDwuIFyYvMDGwofFX+N3htDm
-GjjFZsHz2QjGnzIFtmkuBroi/kSvgvauXhc8RTwc4bz1E6FL89of1YJFpZewRY93
-PpNvv0wKXd3OOcT7NZg+Z0sDBRlorOurGRQzPqW1zsF605Du54EoiQiZdNo1IVfV
-rJjeQQ4oGSIowepcFuuzLcRL3uLlfS/zVJMe3G4OlSC/knCORLUN07DzpceQrJcN
-mb083m4AV5tbKnjMc2nXu78Th6LmlWG+ZFgOI0mF0rcIK1SedkBj2wXUEVWL+KyV
-PMoDhJyO1Joguxw1fksl+zIvYEDIB8NCEiqi/Oj5O/bQ1mw5Hxx9qQ87Jfexi7aW
-R+IlGh54dZmwsMUEum54
-=b9uY
+iQIcBAEBAgAGBQJTQo3UAAoJEN0jrNd/PrOhQNcP/RJV8/Ub9uxHf8c3Z9JvTtAW
+5xXXWe97oNT+G+Hfhfb01NcmYKQUvffryGQw7fX9aR7HSU3TyOJXwSRo+imLEz/B
+XEHzM4mX3taKVRH8XQsJrcmD1e7U2JhxVqtSv3aFxxT2uMlNp900/G5nGogsSFPi
+1N07P/d5yWP+WjriG6IAuaYd5JlfB7Vo24ptUeTiY0AXAWV/u4KMocSr6WemzkvZ
+yk2R8pMvOiGc3yjAFW7eh6bMi1enDqfx+HXoIEtk5CIAWBWD0dl4hqEdXoo9P/ZU
+cjuxB/ecQoef/aiAGecHDIH0sRrAaS7T/8dbzXZWt/y4AD0tkC0xax0jR2PWCvFd
+qE2tovVKPzyDVnxxGlXjRABNbU3SyjpS2GbSLx0lwbcnlVONywHaqFK2nzxZ0f8w
+qGVJZmB0O+nTttPqBIAfivr8BrgSEF6z+BQqFKdIn02xWfHlyRNE1Idh+GEuczUt
+Xi/bMMX0txFCDLFXrTA0WkO7MakQaJJm1+NM20aP1fW11VXD5c+eNmv0qPJRs90S
+kDTHAy/B+lmNGD3hnN6zonP5d9xVuxozTgT5hn14M/PDW7Ym+N3pOmxgbCTJXpzh
+iTzdYmjy23C8A8cM0WaOp2qPZ5SzOmx+RCE010eTJH4BQjVL3TCZNXGV41CAttHB
+6f/RbHEeybUZcB06EM34
+=Ou+i
 -----END PGP SIGNATURE-----
 
---c3bfwLpm8qysLVxt--
+--qFgkTsE6LiHkLPZw--
