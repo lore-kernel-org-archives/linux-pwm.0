@@ -1,84 +1,95 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 08/16] backlight: pwm_bl: set pwm polarity when using
- platform data
-Date: Mon, 7 Apr 2014 13:16:40 +0200
-Message-ID: <20140407111639.GB26985@ulmo>
+Subject: Re: [PATCH 09/16] avr32/at32ap: switch to the generic PWM framework
+Date: Mon, 7 Apr 2014 13:28:23 +0200
+Message-ID: <20140407112821.GC26985@ulmo>
 References: <1395234209-15546-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1395234209-15546-9-git-send-email-alexandre.belloni@free-electrons.com>
+ <1395234209-15546-10-git-send-email-alexandre.belloni@free-electrons.com>
+ <20140319141820.GA20872@samfundet.no>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="E39vaYmALEf/7YXx"
+	protocol="application/pgp-signature"; boundary="c3bfwLpm8qysLVxt"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1395234209-15546-9-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <20140319141820.GA20872@samfundet.no>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jingoo Han <jg1.han@samsung.com>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
+To: Hans-Christian Egtvedt <egtvedt@samfundet.no>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jingoo Han <jg1.han@samsung.com>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---E39vaYmALEf/7YXx
+--c3bfwLpm8qysLVxt
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 19, 2014 at 02:03:21PM +0100, Alexandre Belloni wrote:
-> Set inversed polarity when .pwm_active_low is set in the platform_data. W=
-ith
-> device tree, this is taken care of by of_pwm_xlate_with_flags(), called f=
-rom
-> of_pwm_get().
+On Wed, Mar 19, 2014 at 03:18:20PM +0100, Hans-Christian Egtvedt wrote:
+> Around Wed 19 Mar 2014 14:03:22 +0100 or thereabout, Alexandre Belloni wr=
+ote:
+> > Switch to the pwm/pwm-atmel driver instead of misc/atmel_pwm
+> >=20
+> > Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 >=20
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> ---
->  drivers/video/backlight/pwm_bl.c | 8 ++++++++
->  include/linux/pwm_backlight.h    | 1 +
->  2 files changed, 9 insertions(+)
+> Acked-by: Hans-Christian Egtvedt <egtvedt@samfundet.no>
 >=20
-> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/p=
-wm_bl.c
-> index b75201ff46f6..ffdd3b2b2742 100644
-> --- a/drivers/video/backlight/pwm_bl.c
-> +++ b/drivers/video/backlight/pwm_bl.c
-> @@ -309,6 +309,14 @@ static int pwm_backlight_probe(struct platform_devic=
-e *pdev)
->  	if (data->pwm_period_ns > 0)
->  		pwm_set_period(pb->pwm, data->pwm_period_ns);
-> =20
-> +	/*
-> +	 * The DT case is taking care of polarity in of_pwm_get(). For the
-> +	 * non-DT case, set the polarity from platform data.
-> +	 */
-> +	if (data->pwm_active_low)
-> +		if (pwm_set_polarity(pb->pwm, PWM_POLARITY_INVERSED))
-> +			dev_err(&pdev->dev, "impossible to invert polarity\n");
+> > ---
+> >  arch/avr32/mach-at32ap/at32ap700x.c | 7 ++-----
+> >  1 file changed, 2 insertions(+), 5 deletions(-)
+> >=20
+> > diff --git a/arch/avr32/mach-at32ap/at32ap700x.c b/arch/avr32/mach-at32=
+ap/at32ap700x.c
+> > index a1f4d1e91b52..db85b5ec3351 100644
+> > --- a/arch/avr32/mach-at32ap/at32ap700x.c
+> > +++ b/arch/avr32/mach-at32ap/at32ap700x.c
+> > @@ -1553,7 +1553,7 @@ static struct resource atmel_pwm0_resource[] __in=
+itdata =3D {
+> >  	IRQ(24),
+> >  };
+> >  static struct clk atmel_pwm0_mck =3D {
+> > -	.name		=3D "pwm_clk",
+> > +	.name		=3D "at91sam9rl-pwm",
+>=20
+> I found this a tiny bit weird, but found the matching instance in
+> drivers/pwm/pwm-atmel.c
+>=20
+> IMHO it would initially have been better to call it atpwm_v1 or something
+> similar, more generic. But I guess that is too late to change at this poi=
+nt.
 
-Could this perhaps be solved by adding a field to the PWM lookup table
-that's used for non-DT cases? The idea being that we can use the same
-interfaces for DT and non-DT cases, so we should try to move both
-towards the same representation.
+Generally when you call clk_get(dev, NULL), you'll pass in the consumer
+device as "dev". Now the avr32 clock implementation compares that to the
+device associated with the clock, which for the case of the PWM pwm0_mck
+is the PWM controller (at32_add_device_pwm() for reference). So it seems
+to be set up properly (the PWM controller is the consumer).
+
+Also since the consumer ID isn't specified to the clk_get() call, the
+name of the clock (what's being changed in the above hunk) shouldn't
+matter because it won't match anyway.
+
+Now that I look at it more closely, I wonder how clk_get(dev, NULL) can
+even work on avr32, since there's no check for id =3D=3D NULL and therefore
+NULL will be blindly passed into strcmp() and then crash.
 
 Thierry
 
---E39vaYmALEf/7YXx
+--c3bfwLpm8qysLVxt
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTQokXAAoJEN0jrNd/PrOhYwQP/3iS086fybBevF1BDVESvgLK
-Z+iw30tfhnbHyAoxyc7044d3+BNgtdRFR/EF3TPUrnwSbK3FaU6zfg+iacxvdor4
-Ti/yH/FlV/Y1/Z0Ku5LdEXX+3wYu76NDmrastygh/gSqAOJWNgnijEEBGxboBWKg
-XFZNCoPLCWFQaZ0Mm2Szhr/XIA6ENU9Lul+c5TFHYI85HhkRwEI3NrVeR+LkqQEY
-J/a9FpGAExNvm3Ks4U3tKVvj7wEQkWiGUraGZsV/ecITsTN0dJ1M92ATtnvkMffl
-DVKNqkmoY3p/2bzThEhAVFq/N+QU6yIQwzt4iHrsadnqeIrajzHhfWs4hYUt7Wz9
-AR2RNcTUxXRoLNR7lJtXrx1gFAcYXqYzub09ghtMM25tpUAdX6nfQ2orIsFSBYi9
-IT0bERQySx97gKsr6TTW8epwZ8wFt7AKjOSUIi4a/SqliwIOAlMOC5WUaQwZ/e1P
-PAwEA70B+9jqlAPqWXSssno2DTGuZ8Pa6WZmYrq+WizOpicE+Bvx0HdC3+66ojt6
-K0CjQoPFC+2vF0og1M/N+UGg4CC+jBJNO/mHBx9TLWOfhEI5lRrjZtzUkj64KUmY
-bnyNtH/0Zclic/JRMOQA1oUK8wo35dpFDGm5IvkLX7YE/I1cCffV+9WdHo8O4KPx
-dmy11yA2Tc1yW99vUWpk
-=cgnq
+iQIcBAEBAgAGBQJTQovVAAoJEN0jrNd/PrOhucMP/AoHAzsOLJ8icc3WxuDeKNY6
+/iZXiKYAOTW9/P7d1aerqWy2hc3wA7+hyOIQl7JtCWZ/cCO+/5b1Xp67LWn9OKQO
+6TwrNphjftw8OGEzgi0ENgM46WYWwdtZF7PZPv6F5+HdwegQjUJBDnja8o8gQBle
+o0U1KyZ+ycjOYGIc9+tNF6Omi6MbA9Q5HVKsLO621EmcSCxuGZqfO6Kv7gMn79Ib
++U0C99mPadGEhxgXGu6WIvR0mDZEl1jS0Typ9Jcc5WEtClrlD58/GZJjiu2xUKG7
+OCITv3A1JmFRZ0+2d9OreXSUlzbUBKFZX0tvbmIdfDwuIFyYvMDGwofFX+N3htDm
+GjjFZsHz2QjGnzIFtmkuBroi/kSvgvauXhc8RTwc4bz1E6FL89of1YJFpZewRY93
+PpNvv0wKXd3OOcT7NZg+Z0sDBRlorOurGRQzPqW1zsF605Du54EoiQiZdNo1IVfV
+rJjeQQ4oGSIowepcFuuzLcRL3uLlfS/zVJMe3G4OlSC/knCORLUN07DzpceQrJcN
+mb083m4AV5tbKnjMc2nXu78Th6LmlWG+ZFgOI0mF0rcIK1SedkBj2wXUEVWL+KyV
+PMoDhJyO1Joguxw1fksl+zIvYEDIB8NCEiqi/Oj5O/bQ1mw5Hxx9qQ87Jfexi7aW
+R+IlGh54dZmwsMUEum54
+=b9uY
 -----END PGP SIGNATURE-----
 
---E39vaYmALEf/7YXx--
+--c3bfwLpm8qysLVxt--
