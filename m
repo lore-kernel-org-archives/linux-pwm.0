@@ -1,56 +1,50 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCHv3 1/3] pwm: make the PWM_POLARITY flag in DTB optional
-Date: Wed, 9 Apr 2014 09:16:16 +0200
-Message-ID: <20140409071614.GA9886@ulmo>
+Date: Wed, 9 Apr 2014 09:22:50 +0200
+Message-ID: <20140409072248.GB9886@ulmo>
 References: <1395235375-12925-1-git-send-email-LW@KARO-electronics.de>
  <1395996540-10999-1-git-send-email-LW@KARO-electronics.de>
  <1395996540-10999-2-git-send-email-LW@KARO-electronics.de>
  <20140402055350.GX17250@pengutronix.de>
  <20140407113652.GE26985@ulmo>
  <20140408070259.68923987@ipc1.ka-ro>
- <CAAYSxhpL_0FJvuvGODMTZDm7DtK3eBTVYdhf1Ot7PW94gSM8iw@mail.gmail.com>
- <20140409080450.4856681c@ipc1.ka-ro>
+ <CAAYSxhpqe1BVDigMKQ18qEpYNyHGFQ6n5cXWdnUO7HZKSCwzWQ@mail.gmail.com>
+ <20140409061209.GF27055@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="yrj/dFKFPuw6o+aM"
+	protocol="application/pgp-signature"; boundary="oLBj+sq0vYjzfsbl"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bk0-f47.google.com ([209.85.214.47]:61037 "EHLO
-	mail-bk0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932187AbaDIHRM (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 9 Apr 2014 03:17:12 -0400
+Received: from mail-bk0-f50.google.com ([209.85.214.50]:38113 "EHLO
+	mail-bk0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752672AbaDIHXq (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 9 Apr 2014 03:23:46 -0400
 Content-Disposition: inline
-In-Reply-To: <20140409080450.4856681c@ipc1.ka-ro>
+In-Reply-To: <20140409061209.GF27055@pengutronix.de>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lothar =?utf-8?Q?Wa=C3=9Fmann?= <LW@KARO-electronics.de>
-Cc: Tim Kryger <tim.kryger@linaro.org>, Sascha Hauer <s.hauer@pengutronix.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <kernel@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Tim Kryger <tim.kryger@linaro.org>, Lothar =?utf-8?Q?Wa=C3=9Fmann?= <LW@karo-electronics.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <kernel@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>
 
 
---yrj/dFKFPuw6o+aM
+--oLBj+sq0vYjzfsbl
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 09, 2014 at 08:04:50AM +0200, Lothar Wa=C3=9Fmann wrote:
-> Hi,
->=20
-> Tim Kryger wrote:
+On Wed, Apr 09, 2014 at 08:12:09AM +0200, Sascha Hauer wrote:
+> On Tue, Apr 08, 2014 at 01:43:22PM -0700, Tim Kryger wrote:
 > > On Mon, Apr 7, 2014 at 10:02 PM, Lothar Wa=C3=9Fmann <LW@karo-electroni=
-cs.de>wrote:
-> > >
-> > >
+cs.de> wrote:
 > > > Thierry Reding wrote:
-> > >
-> > > > No. You cannot emulate polarity inversion in software.
-> > > >
+> >=20
+> > >> No. You cannot emulate polarity inversion in software.
+> > >>
 > > > Why not?
 > > >
 > > > duty_ns =3D period_ns - duty_ns;
-> > >
 > >=20
 > > Since I made the same mistake, I will pass along the pointer Thierry ga=
-ve
-> > me.
+ve me.
 > >=20
 > > In include/linux/pwm.h the second difference for an inverted signal is
 > > described.
@@ -72,44 +66,44 @@ ve
 > > Of course, I suspect not all PWM hardware respects this definition of
 > > inverted output.
 > >=20
-> > Either way, hacking the duty in software certainly would get the high/l=
-ow
-> > order wrong.
-> >=20
-> OK. But for a periodic signal this doesn't make any difference. It's
-> just a matter of where you set your reference point.
-> Only if you program the PWM to create a single cycle you would see the
-> difference. I wonder if this is a real life usecase though.
+> > Either way, hacking the duty in software certainly would get the
+> > high/low order wrong.
+>=20
+> This only relevant if you have some reference signal the PWM must be
+> relative to, for example if you combine multiple PWMs for motor control.
+> For PWMs used for backlight or beepers a signal inversion in software is
+> perfectly fine. And I also think that it makes sense to put it once into
+> the framework instead of bothering all consumer drivers with the
+> inversion.
 
-It doesn't make a difference if all you're concerned about is the signal
-power (which happens to be the case for LED and backlight use-cases).
+The PWM framework itself doesn't have enough knowledge about what a PWM
+is being used for. Therefore it cannot determine whether emulating
+polarity inversion by reversing the duty cycle will be appropriate.
 
-Currently any in-kernel users only care about the signal power, but
-there's no guarantee that it will stay that way. Furthermore, PWM
-channels are exposed to userspace via sysfs, so code that we don't
-actually see may rely on this behaviour.
+Putting such functionality into the core will prevent PWM channels from
+being used for cases where the signal polarity does matter.
 
 Thierry
 
---yrj/dFKFPuw6o+aM
+--oLBj+sq0vYjzfsbl
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTRPO+AAoJEN0jrNd/PrOhcDgP/1cPcVJGUa8QSwMKTEk4qQ0B
-aINyoOvVc5JPK7wZ6qfqhEob5VNiliJT7IO/OKIKNfCe8zDvVb1iL0vRA+Ixs3TI
-So3HcdiYLd24Gd4rYb/gdFvYN5dZukPRCGG+MZy2YNjF5cDwjXI1I5JTfClK6rq7
-l3Ylr1RqO5Eca2ndEmSsJqGA7L9DaScB/ctQgfUTR2taEeMisq+6DEZR+YKsN5hg
-yyrWWAJjYYqM5YVQUFilIFuuIOHW3fvwt+HSaFK6jZnNv7HUE/eJLuuWIfBCBCaq
-c6kUGVmJJT2ZlBMsu/LSnJH9lE0CnjlyG4VZ1yvqA+qBF3JT1+d6639hZkw/oYho
-pXqxcrialFLk9lHeZ9tKfZ1aXMdKO83KItLXeFrdAwenBismAsv3pdqZAPFBTGWz
-4hfSB9xduLuNiZkCfdzNjsDyRUYGqKfBjOo0MG6xvfGoECrSoeL0e3hYMzN6riUk
-fMa7IbRTm4OiprOK1jJT6qzHWcD59sl96cLiki0buNhJisobUghfuzhkC7r6HUEN
-qbIHBBxP6TYTrcaX3OsCxH3fLIu47ZoJkM3dOhVzwqS1+ZHH7g679fpnDFc7/Uj7
-gmLtNA5Wag/5w2McFLgnozMNir2FQYfcDCxJLEePUFQ4tLYPGG/8PsQPoOkVZRfc
-jST9RQMcRhWNiedX4hcm
-=emDn
+iQIcBAEBAgAGBQJTRPVIAAoJEN0jrNd/PrOhW+kP/2SXBSep3q6wn+YsRYiVoNes
+coOYOG/R8HlbayawosXhyaBNHFaFW+SNiNluy/9yEHEXpuAd6Yq9uQ7a+jXAHjtm
+QfbrZtuF3JOWhlK1XYTcHzVLOzNjFwo8YghDpr2r++y+ueqwKlP11FXXqP+mPo/j
+glpdS/wI/JiMng0+M9nL0Cy+DJDMtcdkFgAsriDga5lLGfXXmUYdSaG6A5HylsTN
+JRIF/Ulyv58RwrhUgLoVciNAK6UgRK68kkEMF2Ed09RZvmC+bLNFrvJ4YoAxZcXP
+PG/YvGbzueP1j/210zhjW/gFSxHDKHcB52MpmFJ13jmlYmx+Qo53To5EwNFeGG/c
+ObOu30a/PdB/9UNMS1j/jMwMvfL8AMuEH+W39iI2x9FMRJutxALW89X8X4YgcGlP
+QzklStfiZMZF0n4psSsArBZkA8CAnOQO8CdyeA/w5A+jNnZxsswfwIPOCa+q2K7H
+DzRdJPq7HNaKYUjARKq2eRmQJw3CIcok3d8UmY1Z6dB3bkGBrcR5VWevChtiW+9w
+t+EyUbfC9r5BCU9HqWY8GeSUUfwUTasPQobFRdrNwPVMGkjwiGwl/mxitKHGAt5h
+Sacrd/l99arHBVw18Rtcfk3FSle5qCBEc83Eps1XYmr4CeWYeI98VyeJAwRFUTRo
+tDbAmG+ztYtDOhik8HBC
+=BJBY
 -----END PGP SIGNATURE-----
 
---yrj/dFKFPuw6o+aM--
+--oLBj+sq0vYjzfsbl--
