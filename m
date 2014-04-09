@@ -1,69 +1,48 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH] pwm: mxs: set pwm_chip can_sleep flag
-Date: Wed, 9 Apr 2014 00:44:18 +0100
-Message-ID: <20140408234418.GL16119@n2100.arm.linux.org.uk>
-References: <1396956597-26159-1-git-send-email-shawn.guo@freescale.com> <5343FDD3.3070308@i2se.com> <20140408141832.GA8861@piout.net> <53442997.70209@i2se.com> <20140408231654.GA13898@piout.net>
+From: Stephen Warren <swarren@wwwdotorg.org>
+Subject: Re: [rfc]pwm: add BCM2835 PWM driver
+Date: Tue, 08 Apr 2014 19:27:37 -0600
+Message-ID: <5344A209.7010507@wwwdotorg.org>
+References: <1396532680-30352-1-git-send-email-bart.tanghe@thomasmore.be> <CAAYSxhpTV1-k7ROzJnnOhNcrZRUTzAfFc6YtLKLx6oZVUEHNxQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:54477 "EHLO
-	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1758096AbaDHXow (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Apr 2014 19:44:52 -0400
-Content-Disposition: inline
-In-Reply-To: <20140408231654.GA13898@piout.net>
+Received: from avon.wwwdotorg.org ([70.85.31.133]:56027 "EHLO
+	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756800AbaDIBfU (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Apr 2014 21:35:20 -0400
+In-Reply-To: <CAAYSxhpTV1-k7ROzJnnOhNcrZRUTzAfFc6YtLKLx6oZVUEHNxQ@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Stefan Wahren <stefan.wahren@i2se.com>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org, Shawn Guo <shawn.guo@freescale.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
+To: Tim Kryger <tim.kryger@linaro.org>, Bart Tanghe <bart.tanghe@thomasmore.be>
+Cc: Thierry Reding <thierry.reding@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, linux-rpi-kernel@lists.infradead.org
 
-On Wed, Apr 09, 2014 at 01:16:54AM +0200, Alexandre Belloni wrote:
-> On 08/04/2014 at 18:53:43 +0200, Stefan Wahren wrote :
-> > i applied these 5 patches, but it doesn't fix the problem.
-> > 
-> > Here are my results for the pwm driver led on i.MX28:
-> > 
-> > version                  | trigger: none          | trigger: heartbeat
-> > -----------------------------------------------------------------------------
-> > 3.14                     | OK                     | NOT OK (WARNING, LED
-> > permanent on)
-> >   + shawn's patch        | OK                     | NOT OK (LED
-> > permanent on)
-> >     + russell's patches  | OK                     | NOT OK (LED
-> > permanent on)
-> >       + active-low       | NOT OK (inverse logic) | NOT OK (LED
-> > permanent on)
-> > 
-> > Russell's patches work as expected, but have not influence on the heartbeat.
-> > 
+On 04/08/2014 05:02 PM, Tim Kryger wrote:
+> On Thu, Apr 3, 2014 at 6:44 AM, Bart Tanghe <bart.tanghe@thomasmore.be> wrote:
+>> need some recommendation
+>> the memory mapped io registers of the bcm2835 pwm hardware are spreaded
+>> over the memory mapped io
+>> gpio config 0x20200004 - clk config 0x201010A0 - pwm configuration 0x2020C000
+>> to handle this, I've used the base address of the memory mapped io
+>> so I can use positive offsets
 > 
-> Yeah, I got it wrong or explained badly.
+> So the registers for this PWM are located in three distinct memory regions?
+...
+>> +struct bcm2835_pwm_chip {
+>> +       struct pwm_chip chip;
+>> +       struct device *dev;
+>> +       int channel;
+>> +       void __iomem *mmio;
 > 
-> So, if without Russell's patches, your pwm is not inversed, then you would
-> have to set active_low and inverse the pwm.
-> If it was inversed, then you'll have to set active_low and let the pwm
-> with the normal polarity. I know this is a bit contrived but this was
-> exactly my point why we shouldn't call it active_low.
+> One pointer isn't going to be enough.  You need three.
 > 
-> Can you try to switch the polarity when setting active_low ?
+> I suggest renaming the first and adding two more:
 > 
-> I'm not home, else I'll try on my i.mx28 boards...
+> void __iomem *base_pwm;
+> void __iomem *base_clk;
+> void __iomem *base_alt;
 
-I just tried heartbeat here, on iMX6, and it works fine.  That's with this
-in the DT:
-
-        pwmleds {
-                compatible = "pwm-leds";
-                pinctrl-names = "default";
-                pinctrl-0 = <&pinctrl_cubox_i_pwm1>;
-
-                front {
-                        active-low;
-                        label = "imx6:red:front";
-                        pwms = <&pwm1 0 50000>;
-                };
-        };
-
--- 
-FTTC broadband for 0.8mile line: now at 9.7Mbps down 460kbps up... slowly
-improving, and getting towards what was expected from it.
+Sorry, I forgot about this patch. One comment here; the PWM driver can't
+touch the clock or alt registers; those should be owned by the clock
+driver, and the driver for whatever alt is (pinmux - don't recall what
+it's touching there).
