@@ -1,109 +1,107 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCHv3 1/3] pwm: make the PWM_POLARITY flag in DTB optional
-Date: Wed, 9 Apr 2014 09:22:50 +0200
-Message-ID: <20140409072248.GB9886@ulmo>
-References: <1395235375-12925-1-git-send-email-LW@KARO-electronics.de>
- <1395996540-10999-1-git-send-email-LW@KARO-electronics.de>
- <1395996540-10999-2-git-send-email-LW@KARO-electronics.de>
- <20140402055350.GX17250@pengutronix.de>
- <20140407113652.GE26985@ulmo>
- <20140408070259.68923987@ipc1.ka-ro>
- <CAAYSxhpqe1BVDigMKQ18qEpYNyHGFQ6n5cXWdnUO7HZKSCwzWQ@mail.gmail.com>
- <20140409061209.GF27055@pengutronix.de>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH] pwm: mxs: set pwm_chip can_sleep flag
+Date: Wed, 9 Apr 2014 10:23:41 +0200
+Message-ID: <20140409082341.GV29751@pengutronix.de>
+References: <1396956597-26159-1-git-send-email-shawn.guo@freescale.com>
+ <5343FDD3.3070308@i2se.com>
+ <20140408175904.GT29751@pengutronix.de>
+ <20140408234243.GB13898@piout.net>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="oLBj+sq0vYjzfsbl"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bk0-f50.google.com ([209.85.214.50]:38113 "EHLO
-	mail-bk0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752672AbaDIHXq (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 9 Apr 2014 03:23:46 -0400
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:55986 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756557AbaDIIXo (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 9 Apr 2014 04:23:44 -0400
 Content-Disposition: inline
-In-Reply-To: <20140409061209.GF27055@pengutronix.de>
+In-Reply-To: <20140408234243.GB13898@piout.net>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Tim Kryger <tim.kryger@linaro.org>, Lothar =?utf-8?Q?Wa=C3=9Fmann?= <LW@karo-electronics.de>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <kernel@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>, Shawn Guo <shawn.guo@freescale.com>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
 
+Hello,
 
---oLBj+sq0vYjzfsbl
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Apr 09, 2014 at 08:12:09AM +0200, Sascha Hauer wrote:
-> On Tue, Apr 08, 2014 at 01:43:22PM -0700, Tim Kryger wrote:
-> > On Mon, Apr 7, 2014 at 10:02 PM, Lothar Wa=C3=9Fmann <LW@karo-electroni=
-cs.de> wrote:
-> > > Thierry Reding wrote:
+On Wed, Apr 09, 2014 at 01:42:43AM +0200, Alexandre Belloni wrote:
+> On 08/04/2014 at 19:59:04 +0200, Uwe Kleine-K=F6nig wrote :
+> > On Tue, Apr 08, 2014 at 03:46:59PM +0200, Stefan Wahren wrote:
+> > > Am 08.04.2014 13:29, schrieb Shawn Guo:
+> > > Unfortunately the led still don't behave as expected. If i set th=
+e led
+> > > trigger to heartbeat the led goes on and stays in this state.
+> > >=20
+> > > May be this has something to do with the following discussion
+> > >=20
+> > > http://comments.gmane.org/gmane.linux.leds/208
+> > I guess that's your problem, yes. Does patch 2 of my series (i.e.
+> > http://thread.gmane.org/gmane.linux.ports.arm.kernel/282593/focus=3D=
+282596)
+> > help you?
 > >=20
-> > >> No. You cannot emulate polarity inversion in software.
-> > >>
-> > > Why not?
-> > >
-> > > duty_ns =3D period_ns - duty_ns;
-> >=20
-> > Since I made the same mistake, I will pass along the pointer Thierry ga=
-ve me.
-> >=20
-> > In include/linux/pwm.h the second difference for an inverted signal is
-> > described.
-> >=20
-> > /**
-> >  * enum pwm_polarity - polarity of a PWM signal
-> >  * @PWM_POLARITY_NORMAL: a high signal for the duration of the duty-
-> >  * cycle, followed by a low signal for the remainder of the pulse
-> >  * period
-> >  * @PWM_POLARITY_INVERSED: a low signal for the duration of the duty-
-> >  * cycle, followed by a high signal for the remainder of the pulse
-> >  * period
-> >  */
-> > enum pwm_polarity {
-> > PWM_POLARITY_NORMAL,
-> > PWM_POLARITY_INVERSED,
-> > };
-> >=20
-> > Of course, I suspect not all PWM hardware respects this definition of
-> > inverted output.
-> >=20
-> > Either way, hacking the duty in software certainly would get the
-> > high/low order wrong.
 >=20
-> This only relevant if you have some reference signal the PWM must be
-> relative to, for example if you combine multiple PWMs for motor control.
-> For PWMs used for backlight or beepers a signal inversion in software is
-> perfectly fine. And I also think that it makes sense to put it once into
-> the framework instead of bothering all consumer drivers with the
-> inversion.
+> While I had exactly the same issue back in september and wrote the ex=
+act
+> same patch that got rejected. I would agree with Thierry here taht we
+> need to keep the pwm_disable() there as it potentially allows to save
+> power.
+>
+> However, it seems to not work quite well with PWMs from Freescale (se=
+e
+> the thread from Russell). Or I would say with PWM with an undefined
+> state when disabled and I believe we are soon to find more.
+>=20
+> We could either:
+>  - add a flag like can_sleep that would allow driver to know that the
+>    pwm always has to be enable to get sane results.
+>
+>  - or introduce functions like prepare/unprepare to be called from pr=
+obe
+>    and remove in the leds-pwm driver and that will enable/disable the
+> channel in pwm-mxs. pwm_enable/pwm_disable not doing anything.
+There are a few more options. I repeat your's to get a single list:
 
-The PWM framework itself doesn't have enough knowledge about what a PWM
-is being used for. Therefore it cannot determine whether emulating
-polarity inversion by reversing the duty cycle will be appropriate.
+ a) Somehow tell the API users that pwm_disable might not result in a
+    flat zero after set_duty(0).
+ a') Anchor in the API that users must not expect anything from the pwm
+    pin after pwm_disable.
+ b) Make pwm_enable/pwm_disable noops on i.MX28
+ c) Make set_duty only return when the new value reached the pin.
+ d) Make pwm_disable wait to yield the expected result
+ d') Make pwm_disable wait if the last programmed duty cycle is 0 or
+    full period.
+ e) Introduce a new callback that does the waiting, e.g. a .commit
+    callback
+ e') Introduce a new callback pwm_config_sync that does wait
+    appropriatly, keep pwm_config as is.
+ f) Make the i.MX28 driver switch the pin the gpio mode with the
+    expected output level in pwm_disable.
 
-Putting such functionality into the core will prevent PWM channels from
-being used for cases where the signal polarity does matter.
+a') is a special case of a); d') is a special case of d), ditto for e')
+and e).
 
-Thierry
+a) and e) would result in changes in the pwm API. For c) I'd like to
+make the API docs more explicit, too. (i.e. demand that the new
+configuration is already active after pwm_config returns)
 
---oLBj+sq0vYjzfsbl
-Content-Type: application/pgp-signature
+Both e) and a) have the drawback that the API becomes more complicated
+and users will get it wrong. a) and b) are bad from a power management
+POV. Maybe c) is what most users expect, but d) and d') are more
+effective as they result in less waiting and still are good enough. f)
+is more complicated to implement, also it depends on a gpio being
+available in hardware. So if we choose f) we still might need a fallbac=
+k
+implementation from the other options.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+My series implemented a'), but Thierry didn't like it. I think my
+favorite is e').
 
-iQIcBAEBAgAGBQJTRPVIAAoJEN0jrNd/PrOhW+kP/2SXBSep3q6wn+YsRYiVoNes
-coOYOG/R8HlbayawosXhyaBNHFaFW+SNiNluy/9yEHEXpuAd6Yq9uQ7a+jXAHjtm
-QfbrZtuF3JOWhlK1XYTcHzVLOzNjFwo8YghDpr2r++y+ueqwKlP11FXXqP+mPo/j
-glpdS/wI/JiMng0+M9nL0Cy+DJDMtcdkFgAsriDga5lLGfXXmUYdSaG6A5HylsTN
-JRIF/Ulyv58RwrhUgLoVciNAK6UgRK68kkEMF2Ed09RZvmC+bLNFrvJ4YoAxZcXP
-PG/YvGbzueP1j/210zhjW/gFSxHDKHcB52MpmFJ13jmlYmx+Qo53To5EwNFeGG/c
-ObOu30a/PdB/9UNMS1j/jMwMvfL8AMuEH+W39iI2x9FMRJutxALW89X8X4YgcGlP
-QzklStfiZMZF0n4psSsArBZkA8CAnOQO8CdyeA/w5A+jNnZxsswfwIPOCa+q2K7H
-DzRdJPq7HNaKYUjARKq2eRmQJw3CIcok3d8UmY1Z6dB3bkGBrcR5VWevChtiW+9w
-t+EyUbfC9r5BCU9HqWY8GeSUUfwUTasPQobFRdrNwPVMGkjwiGwl/mxitKHGAt5h
-Sacrd/l99arHBVw18Rtcfk3FSle5qCBEc83Eps1XYmr4CeWYeI98VyeJAwRFUTRo
-tDbAmG+ztYtDOhik8HBC
-=BJBY
------END PGP SIGNATURE-----
+Best regards
+Uwe
 
---oLBj+sq0vYjzfsbl--
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
