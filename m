@@ -1,44 +1,59 @@
-From: Tim Kryger <tim.kryger@linaro.org>
-Subject: [RESEND PATCH v5 3/5] ARM: dts: Declare the PWM for bcm11351 (bcm281xx)
-Date: Wed, 9 Apr 2014 09:23:09 -0700
-Message-ID: <1397060591-5060-4-git-send-email-tim.kryger@linaro.org>
-References: <1397060591-5060-1-git-send-email-tim.kryger@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1397060591-5060-1-git-send-email-tim.kryger@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Rob Landley <rob@landley.net>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>
-Cc: Tim Kryger <tim.kryger@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH 1/2] pwm: add period and polarity to struct pwm_lookup
+Date: Wed,  9 Apr 2014 20:04:08 +0200
+Message-ID: <1397066649-3767-2-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1397066649-3767-1-git-send-email-alexandre.belloni@free-electrons.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:34426 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S933353AbaDISFw (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 9 Apr 2014 14:05:52 -0400
+In-Reply-To: <1397066649-3767-1-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>, Philipp Zabel <philipp.zabel@gmail.com>, Paul Parsons <lost.distance@yahoo.com>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-sh@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-Add the device tree node for the PWM on bcm11351 SoCs.
+Adds a period and a polarity member to struct pwm_lookup so that when performing
+a lookup using the lookup table instead of device tree, we are able to set the
+period and the polarity accordingly like what is done in
+of_pwm_xlate_with_flags.
 
-Signed-off-by: Tim Kryger <tim.kryger@linaro.org>
-Reviewed-by: Alex Elder <elder@linaro.org>
-Reviewed-by: Markus Mayer <markus.mayer@linaro.org>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 ---
- arch/arm/boot/dts/bcm11351.dtsi |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/pwm/core.c  | 5 +++++
+ include/linux/pwm.h | 2 ++
+ 2 files changed, 7 insertions(+)
 
-diff --git a/arch/arm/boot/dts/bcm11351.dtsi b/arch/arm/boot/dts/bcm11351.dtsi
-index 64d069b..6b05ae6 100644
---- a/arch/arm/boot/dts/bcm11351.dtsi
-+++ b/arch/arm/boot/dts/bcm11351.dtsi
-@@ -193,6 +193,14 @@
- 		status = "disabled";
- 	};
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index a80471399c20..206e5996359c 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -663,6 +663,11 @@ struct pwm_device *pwm_get(struct device *dev, const char *con_id)
  
-+	pwm: pwm@3e01a000 {
-+		compatible = "brcm,bcm11351-pwm", "brcm,kona-pwm";
-+		reg = <0x3e01a000 0xcc>;
-+		clocks = <&slave_ccu BCM281XX_SLAVE_CCU_PWM>;
-+		#pwm-cells = <3>;
-+		status = "disabled";
-+	};
+ 	if (chip)
+ 		pwm = pwm_request_from_chip(chip, index, con_id ?: dev_id);
++	if (IS_ERR(pwm))
++		return pwm;
 +
- 	clocks {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
++	pwm_set_period(pwm, p->period);
++	pwm_set_polarity(pwm, p->polarity);
+ 
+ 	mutex_unlock(&pwm_lookup_lock);
+ 
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 4717f54051cb..2f45e2fe5b93 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -274,6 +274,8 @@ struct pwm_lookup {
+ 	unsigned int index;
+ 	const char *dev_id;
+ 	const char *con_id;
++	unsigned int period;
++	enum pwm_polarity polarity;
+ };
+ 
+ #define PWM_LOOKUP(_provider, _index, _dev_id, _con_id)	\
 -- 
-1.7.9.5
+1.8.3.2
+
