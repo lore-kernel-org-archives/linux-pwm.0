@@ -1,49 +1,37 @@
-From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
-Subject: RE: [PATCH 0/3] FTM PWM adds regmap and endianness support.
-Date: Thu, 10 Apr 2014 06:05:31 +0000
-Message-ID: <1e190701f1b54403b94057472c7cbc56@BY2PR03MB505.namprd03.prod.outlook.com>
-References: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: Re: [PATCH 2/2] pwm: use PWM_LOOKUP to set the period and polarity
+Date: Thu, 10 Apr 2014 09:37:03 +0200
+Message-ID: <20140410073702.GF2879@piout.net>
+References: <1397066649-3767-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <1397066649-3767-3-git-send-email-alexandre.belloni@free-electrons.com>
+ <20140409231549.GD2187@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bl2lp0212.outbound.protection.outlook.com ([207.46.163.212]:46423
-	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S933287AbaDJGFw convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 10 Apr 2014 02:05:52 -0400
-In-Reply-To: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
-Content-Language: en-US
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20140409231549.GD2187@verge.net.au>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Tony Lindgren <tony@atomide.com>, Philipp Zabel <philipp.zabel@gmail.com>, Paul Parsons <lost.distance@yahoo.com>, Magnus Damm <magnus.damm@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-sh@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-Therry,
-
-Ping :)
-
-
-
-> -----Original Message-----
-> From: Xiubo Li [mailto:Li.Xiubo@freescale.com]
-> Sent: Friday, March 21, 2014 12:53 PM
-> To: thierry.reding@gmail.com; linux-pwm@vger.kernel.org
-> Cc: broonie@kernel.org; swarren@nvidia.com; linux-kernel@vger.kernel.org;
-> Xiubo Li-B47053
-> Subject: [PATCH 0/3] FTM PWM adds regmap and endianness support.
+On 10/04/2014 at 08:15:49 +0900, Simon Horman wrote :
+> On Wed, Apr 09, 2014 at 08:04:09PM +0200, Alexandre Belloni wrote:
+> > Now that the PWM core is able to set the period and polarity based on
+> > the lookup table, add those to PWM_LOOKUP to ease their usage.
 > 
+> I would prefer if this change was made in a non-atomic manner.
 > 
-> Xiubo Li (3):
->   pwm: ftm-pwm: Clean up the code.
->   pwm: ftm-pwm: Convert to direct regmap API usage.
->   pwm: ftm-pwm: Add big-endian support
-> 
->  drivers/pwm/pwm-fsl-ftm.c | 96 ++++++++++++++++++++++++++--------------------
-> -
->  1 file changed, 53 insertions(+), 43 deletions(-)
-> 
-> --
-> 1.8.4
+> 1. Add new infrastructure
+> 2. Update users individually
+> 3. Remove old infrastructure
 > 
 
+I agree this would be better but I'm not sure how you can modify a macro
+without renaming it or changing it everywhere at once. Like said, I'm
+open to creating a new macro.
+
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
