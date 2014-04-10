@@ -1,71 +1,48 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: Re: [PATCH 1/2] ARM: SAMSUNG: remove gpio flags in dev-backlight
-Date: Thu, 10 Apr 2014 18:51:45 +0900
-Message-ID: <000701cf54a2$7c1379c0$743a6d40$%han@samsung.com>
-References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com>
- <1393480414-19473-2-git-send-email-acourbot@nvidia.com>
- <CAAVeFu+XUzZ7ozMOcp6A-gZJ9o8DZFrdh1j4LvCQtoTcu=PP1g@mail.gmail.com>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [PATCH] pwm: atmel: set pwm_chip can_sleep flag
+Date: Thu, 10 Apr 2014 15:51:35 +0200
+Message-ID: <5346A1E7.4010000@atmel.com>
+References: <1397067969-19905-1-git-send-email-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <CAAVeFu+XUzZ7ozMOcp6A-gZJ9o8DZFrdh1j4LvCQtoTcu=PP1g@mail.gmail.com>
-Content-language: ko
-Sender: linux-kernel-owner@vger.kernel.org
-To: 'Alexandre Courbot' <gnurou@gmail.com>, 'Alexandre Courbot' <acourbot@nvidia.com>
-Cc: 'Thierry Reding' <thierry.reding@gmail.com>, 'Bryan Wu' <cooloney@gmail.com>, 'Ben Dooks' <ben-linux@fluff.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, 'Linux Kernel Mailing List' <linux-kernel@vger.kernel.org>, 'Jingoo Han' <jg1.han@samsung.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from eusmtp01.atmel.com ([212.144.249.243]:37216 "EHLO
+	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933057AbaDJNvj (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 10 Apr 2014 09:51:39 -0400
+In-Reply-To: <1397067969-19905-1-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Thursday, April 10, 2014 1:17 PM, Alexandre Courbot wrote:
+On 09/04/2014 20:26, Alexandre Belloni :
+> atmel_pwm_config() calls clk_get_rate() which might sleep, so we need to set
+> pwm_chip can_sleep flag.
 > 
-> Ping, can I have the Samsung folks review and ,aybe even merge this
-> patch? enable_gpio_flags is never used in any code, is replaced by
-> gpiod, and we would like to remove it altogether from pwm_bl. Thanks!
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-OK, I see. It looks good.
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 
-As far as I know, 'enable_gpio_flags' has not been being used
-for Samsung platform. So, there will be no side effect,
-if 'enable_gpio_flags' is removed from 'arch/arm/plat-samsung'
-directory.
-
-Reviewed-by: Jingoo Han <jg1.han@samsung.com>
-
-Best regards,
-Jingoo Han
-
+> ---
+>  drivers/pwm/pwm-atmel.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> Alex.
+> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+> index 0e589594b1cb..180e34e46617 100644
+> --- a/drivers/pwm/pwm-atmel.c
+> +++ b/drivers/pwm/pwm-atmel.c
+> @@ -369,6 +369,7 @@ static int atmel_pwm_probe(struct platform_device *pdev)
+>  
+>  	atmel_pwm->chip.base = -1;
+>  	atmel_pwm->chip.npwm = 4;
+> +	atmel_pwm->chip.can_sleep = true;
+>  	atmel_pwm->config = data->config;
+>  
+>  	ret = pwmchip_add(&atmel_pwm->chip);
 > 
-> On Thu, Feb 27, 2014 at 2:53 PM, Alexandre Courbot <acourbot@nvidia.com> wrote:
-> > The pwm-backlight driver is moving to use the gpiod interface,
-> > which has its own mapping mechanism for platform data GPIOs.
-> > These mappings carry GPIO properties like active low so they don't have
-> > to be explicitly handled by GPIO consumers.
-> >
-> > Because of this change, the enable_gpio_flags member of
-> > platform_pwm_backlight_data is going away. dev-backlight was passing
-> > this member, but had no user making use of it, so it can safely be
-> > removed. Further GPIOs used by pwm-backlight are expected to be
-> > defined using the mechanisms provided by the gpiod API.
-> >
-> > Signed-off-by: Alexandre Courbot <acourbot@nvidia.com>
-> > ---
-> >  arch/arm/plat-samsung/dev-backlight.c | 2 --
-> >  1 file changed, 2 deletions(-)
-> >
-> > diff --git a/arch/arm/plat-samsung/dev-backlight.c b/arch/arm/plat-samsung/dev-backlight.c
-> > index be4ad0b21c08..2157c5b539e6 100644
-> > --- a/arch/arm/plat-samsung/dev-backlight.c
-> > +++ b/arch/arm/plat-samsung/dev-backlight.c
-> > @@ -124,8 +124,6 @@ void __init samsung_bl_set(struct samsung_bl_gpio_info *gpio_info,
-> >                 samsung_bl_data->pwm_period_ns = bl_data->pwm_period_ns;
-> >         if (bl_data->enable_gpio >= 0)
-> >                 samsung_bl_data->enable_gpio = bl_data->enable_gpio;
-> > -       if (bl_data->enable_gpio_flags)
-> > -               samsung_bl_data->enable_gpio_flags = bl_data->enable_gpio_flags;
-> >         if (bl_data->init)
-> >                 samsung_bl_data->init = bl_data->init;
-> >         if (bl_data->notify)
-> > --
-> > 1.9.0
+
+
+-- 
+Nicolas Ferre
