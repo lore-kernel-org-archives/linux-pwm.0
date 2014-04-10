@@ -1,109 +1,71 @@
-From: Liu Ying <Ying.Liu@freescale.com>
-Subject: [PATCH v2] pwm: i.MX: Avoid sample fifo overflow for i.MX pwm version2
-Date: Thu, 10 Apr 2014 17:23:49 +0800
-Message-ID: <1397121829-19331-1-git-send-email-Ying.Liu@freescale.com>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: Re: [PATCH 1/2] ARM: SAMSUNG: remove gpio flags in dev-backlight
+Date: Thu, 10 Apr 2014 18:51:45 +0900
+Message-ID: <000701cf54a2$7c1379c0$743a6d40$%han@samsung.com>
+References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com>
+ <1393480414-19473-2-git-send-email-acourbot@nvidia.com>
+ <CAAVeFu+XUzZ7ozMOcp6A-gZJ9o8DZFrdh1j4LvCQtoTcu=PP1g@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from am1ehsobe004.messaging.microsoft.com ([213.199.154.207]:16902
-	"EHLO am1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S933057AbaDJJVh convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Thu, 10 Apr 2014 05:21:37 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <CAAVeFu+XUzZ7ozMOcp6A-gZJ9o8DZFrdh1j4LvCQtoTcu=PP1g@mail.gmail.com>
+Content-language: ko
+Sender: linux-kernel-owner@vger.kernel.org
+To: 'Alexandre Courbot' <gnurou@gmail.com>, 'Alexandre Courbot' <acourbot@nvidia.com>
+Cc: 'Thierry Reding' <thierry.reding@gmail.com>, 'Bryan Wu' <cooloney@gmail.com>, 'Ben Dooks' <ben-linux@fluff.org>, 'Kukjin Kim' <kgene.kim@samsung.com>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, 'Linux Kernel Mailing List' <linux-kernel@vger.kernel.org>, 'Jingoo Han' <jg1.han@samsung.com>
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: s.hauer@pengutronix.de, shawn.guo@freescale.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, LW@KARO-electronics.de
 
-The i.MX pwm version2 is embedded in several i.MX SoCs, such
-as i.MX27, i.MX51 and i.MX6SL.  There are four 16bit sample
-fifos in this IP, each of which determines the duty period
-of a PWM waveform in one full cycle.  The IP spec mentions
-that we should not write a fourth sample because the fifo
-will become full and trigger a fifo write error(FWE) which
-will prevent the PWM from starting once it is enabled.  In
-order to avoid any sample fifo overflow issue, this patch
-does software reset to clear all the sample fifos in the
-very beginning of the pwm configuration function.
+On Thursday, April 10, 2014 1:17 PM, Alexandre Courbot wrote:
+> 
+> Ping, can I have the Samsung folks review and ,aybe even merge this
+> patch? enable_gpio_flags is never used in any code, is replaced by
+> gpiod, and we would like to remove it altogether from pwm_bl. Thanks!
 
-The fifo overflow issue can be reproduced by the following
-commands on the i.MX6SL evk platform, assuming we use pwm2
-for the debug LED which is driven by the pin HSIC_STROBE
-and the maximal brightness is 255.
-echo 0   > /sys/class/leds/user/brightness
-echo 0   > /sys/class/leds/user/brightness
-echo 0   > /sys/class/leds/user/brightness
-echo 0   > /sys/class/leds/user/brightness
-echo 255 > /sys/class/leds/user/brightness
-Here, FWE happens(PWMSR register reads 0x58) and the LED
-can not be lighten.
+OK, I see. It looks good.
 
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Shawn Guo <shawn.guo@freescale.com>
-Cc: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
-Cc: linux-pwm@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Signed-off-by: Liu Ying <Ying.Liu@freescale.com>
----
-v1->v2:
-* To address Lothar Wa=C3=9Fmann's comment, add a timeout mechanism
-  instead of endless polling the SWR bit to be cleared by the
-  hardware.
+As far as I know, 'enable_gpio_flags' has not been being used
+for Samsung platform. So, there will be no side effect,
+if 'enable_gpio_flags' is removed from 'arch/arm/plat-samsung'
+directory.
 
- drivers/pwm/pwm-imx.c |   17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+Reviewed-by: Jingoo Han <jg1.han@samsung.com>
 
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index cc47733..8929b0d 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -14,6 +14,7 @@
- #include <linux/slab.h>
- #include <linux/err.h>
- #include <linux/clk.h>
-+#include <linux/delay.h>
- #include <linux/io.h>
- #include <linux/pwm.h>
- #include <linux/of.h>
-@@ -38,8 +39,11 @@
- #define MX3_PWMCR_DBGEN			(1 << 22)
- #define MX3_PWMCR_CLKSRC_IPG_HIGH (2 << 16)
- #define MX3_PWMCR_CLKSRC_IPG      (1 << 16)
-+#define MX3_PWMCR_SWR		  (1 << 3)
- #define MX3_PWMCR_EN              (1 << 0)
-=20
-+#define MX3_PWM_SWR_LOOP	  5
-+
- struct imx_chip {
- 	struct clk	*clk_per;
- 	struct clk	*clk_ipg;
-@@ -103,10 +107,23 @@ static int imx_pwm_config_v2(struct pwm_chip *chi=
-p,
- 		struct pwm_device *pwm, int duty_ns, int period_ns)
- {
- 	struct imx_chip *imx =3D to_imx_chip(chip);
-+	struct device *dev =3D chip->dev;
- 	unsigned long long c;
- 	unsigned long period_cycles, duty_cycles, prescale;
-+	int wait_count =3D 0;
- 	u32 cr;
-=20
-+	/* do software reset in case fifo overflows */
-+	writel(MX3_PWMCR_SWR, imx->mmio_base + MX3_PWMCR);
-+	do {
-+		usleep_range(200, 1000);
-+		cr =3D readl(imx->mmio_base + MX3_PWMCR);
-+	} while ((cr & MX3_PWMCR_SWR) &&
-+		 (wait_count++ < MX3_PWM_SWR_LOOP));
-+
-+	if (cr & MX3_PWMCR_SWR)
-+		dev_warn(dev, "software reset timeout\n");
-+
- 	c =3D clk_get_rate(imx->clk_per);
- 	c =3D c * period_ns;
- 	do_div(c, 1000000000);
---=20
-1.7.9.5
+Best regards,
+Jingoo Han
 
-
+> 
+> Alex.
+> 
+> On Thu, Feb 27, 2014 at 2:53 PM, Alexandre Courbot <acourbot@nvidia.com> wrote:
+> > The pwm-backlight driver is moving to use the gpiod interface,
+> > which has its own mapping mechanism for platform data GPIOs.
+> > These mappings carry GPIO properties like active low so they don't have
+> > to be explicitly handled by GPIO consumers.
+> >
+> > Because of this change, the enable_gpio_flags member of
+> > platform_pwm_backlight_data is going away. dev-backlight was passing
+> > this member, but had no user making use of it, so it can safely be
+> > removed. Further GPIOs used by pwm-backlight are expected to be
+> > defined using the mechanisms provided by the gpiod API.
+> >
+> > Signed-off-by: Alexandre Courbot <acourbot@nvidia.com>
+> > ---
+> >  arch/arm/plat-samsung/dev-backlight.c | 2 --
+> >  1 file changed, 2 deletions(-)
+> >
+> > diff --git a/arch/arm/plat-samsung/dev-backlight.c b/arch/arm/plat-samsung/dev-backlight.c
+> > index be4ad0b21c08..2157c5b539e6 100644
+> > --- a/arch/arm/plat-samsung/dev-backlight.c
+> > +++ b/arch/arm/plat-samsung/dev-backlight.c
+> > @@ -124,8 +124,6 @@ void __init samsung_bl_set(struct samsung_bl_gpio_info *gpio_info,
+> >                 samsung_bl_data->pwm_period_ns = bl_data->pwm_period_ns;
+> >         if (bl_data->enable_gpio >= 0)
+> >                 samsung_bl_data->enable_gpio = bl_data->enable_gpio;
+> > -       if (bl_data->enable_gpio_flags)
+> > -               samsung_bl_data->enable_gpio_flags = bl_data->enable_gpio_flags;
+> >         if (bl_data->init)
+> >                 samsung_bl_data->init = bl_data->init;
+> >         if (bl_data->notify)
+> > --
+> > 1.9.0
