@@ -1,48 +1,40 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH] pwm: atmel: set pwm_chip can_sleep flag
-Date: Thu, 10 Apr 2014 15:51:35 +0200
-Message-ID: <5346A1E7.4010000@atmel.com>
-References: <1397067969-19905-1-git-send-email-alexandre.belloni@free-electrons.com>
+From: Alexandre Courbot <gnurou@gmail.com>
+Subject: Re: [PATCH 1/2] ARM: SAMSUNG: remove gpio flags in dev-backlight
+Date: Thu, 10 Apr 2014 23:14:16 +0900
+Message-ID: <CAAVeFuKJnSk2XSsMZZKMfyabzJ5CYdqWdE91H5uHiYFC1r6HxA@mail.gmail.com>
+References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com>
+ <1393480414-19473-2-git-send-email-acourbot@nvidia.com> <CAAVeFu+XUzZ7ozMOcp6A-gZJ9o8DZFrdh1j4LvCQtoTcu=PP1g@mail.gmail.com>
+ <000701cf54a2$7c1379c0$743a6d40$%han@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.243]:37216 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933057AbaDJNvj (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 10 Apr 2014 09:51:39 -0400
-In-Reply-To: <1397067969-19905-1-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <000701cf54a2$7c1379c0$743a6d40$%han@samsung.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jingoo Han <jg1.han@samsung.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Alexandre Courbot <acourbot@nvidia.com>, Bryan Wu <cooloney@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On 09/04/2014 20:26, Alexandre Belloni :
-> atmel_pwm_config() calls clk_get_rate() which might sleep, so we need to set
-> pwm_chip can_sleep flag.
-> 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+On Thu, Apr 10, 2014 at 6:51 PM, Jingoo Han <jg1.han@samsung.com> wrote:
+> On Thursday, April 10, 2014 1:17 PM, Alexandre Courbot wrote:
+>>
+>> Ping, can I have the Samsung folks review and ,aybe even merge this
+>> patch? enable_gpio_flags is never used in any code, is replaced by
+>> gpiod, and we would like to remove it altogether from pwm_bl. Thanks!
+>
+> OK, I see. It looks good.
+>
+> As far as I know, 'enable_gpio_flags' has not been being used
+> for Samsung platform. So, there will be no side effect,
+> if 'enable_gpio_flags' is removed from 'arch/arm/plat-samsung'
+> directory.
+>
+> Reviewed-by: Jingoo Han <jg1.han@samsung.com>
 
-Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Great, thanks. Ben, Kukjin, could we have your Acked-by?
 
-> ---
->  drivers/pwm/pwm-atmel.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-> index 0e589594b1cb..180e34e46617 100644
-> --- a/drivers/pwm/pwm-atmel.c
-> +++ b/drivers/pwm/pwm-atmel.c
-> @@ -369,6 +369,7 @@ static int atmel_pwm_probe(struct platform_device *pdev)
->  
->  	atmel_pwm->chip.base = -1;
->  	atmel_pwm->chip.npwm = 4;
-> +	atmel_pwm->chip.can_sleep = true;
->  	atmel_pwm->config = data->config;
->  
->  	ret = pwmchip_add(&atmel_pwm->chip);
-> 
+Thierry, if the Samsung maintainers are ok with it, and 2/2 of this
+series is also ok for you (you merged the same for simple-panel
+already), can you take both into your tree?
 
-
--- 
-Nicolas Ferre
+Thanks,
+Alex.
