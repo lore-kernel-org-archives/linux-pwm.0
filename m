@@ -1,124 +1,57 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH 2/2] pwm: use PWM_LOOKUP to set the period and polarity
-Date: Thu, 10 Apr 2014 08:15:49 +0900
-Message-ID: <20140409231549.GD2187@verge.net.au>
-References: <1397066649-3767-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1397066649-3767-3-git-send-email-alexandre.belloni@free-electrons.com>
+From: Alexandre Courbot <gnurou@gmail.com>
+Subject: Re: [PATCH 1/2] ARM: SAMSUNG: remove gpio flags in dev-backlight
+Date: Thu, 10 Apr 2014 13:17:29 +0900
+Message-ID: <CAAVeFu+XUzZ7ozMOcp6A-gZJ9o8DZFrdh1j4LvCQtoTcu=PP1g@mail.gmail.com>
+References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com> <1393480414-19473-2-git-send-email-acourbot@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:37892 "EHLO
-	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932820AbaDIXPy (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 9 Apr 2014 19:15:54 -0400
-Content-Disposition: inline
-In-Reply-To: <1397066649-3767-3-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1393480414-19473-2-git-send-email-acourbot@nvidia.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alexandre Courbot <acourbot@nvidia.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Tony Lindgren <tony@atomide.com>, Philipp Zabel <philipp.zabel@gmail.com>, Paul Parsons <lost.distance@yahoo.com>, Magnus Damm <magnus.damm@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-sh@vger.kernel.org
 
-On Wed, Apr 09, 2014 at 08:04:09PM +0200, Alexandre Belloni wrote:
-> Now that the PWM core is able to set the period and polarity based on
-> the lookup table, add those to PWM_LOOKUP to ease their usage.
+Ping, can I have the Samsung folks review and ,aybe even merge this
+patch? enable_gpio_flags is never used in any code, is replaced by
+gpiod, and we would like to remove it altogether from pwm_bl. Thanks!
 
-I would prefer if this change was made in a non-atomic manner.
+Alex.
 
-1. Add new infrastructure
-2. Update users individually
-3. Remove old infrastructure
-
-> 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+On Thu, Feb 27, 2014 at 2:53 PM, Alexandre Courbot <acourbot@nvidia.com> wrote:
+> The pwm-backlight driver is moving to use the gpiod interface,
+> which has its own mapping mechanism for platform data GPIOs.
+> These mappings carry GPIO properties like active low so they don't have
+> to be explicitly handled by GPIO consumers.
+>
+> Because of this change, the enable_gpio_flags member of
+> platform_pwm_backlight_data is going away. dev-backlight was passing
+> this member, but had no user making use of it, so it can safely be
+> removed. Further GPIOs used by pwm-backlight are expected to be
+> defined using the mechanisms provided by the gpiod API.
+>
+> Signed-off-by: Alexandre Courbot <acourbot@nvidia.com>
 > ---
->  Documentation/pwm.txt                          | 3 ++-
->  arch/arm/mach-omap2/board-omap3beagle.c        | 3 ++-
->  arch/arm/mach-pxa/hx4700.c                     | 3 ++-
->  arch/arm/mach-shmobile/board-armadillo800eva.c | 3 ++-
->  include/linux/pwm.h                            | 4 +++-
->  5 files changed, 11 insertions(+), 5 deletions(-)
-> 
-> diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
-> index 93cb97974986..f38f99cda64f 100644
-> --- a/Documentation/pwm.txt
-> +++ b/Documentation/pwm.txt
-> @@ -19,7 +19,8 @@ should instead register a static mapping that can be used to match PWM
->  consumers to providers, as given in the following example:
->  
->  	static struct pwm_lookup board_pwm_lookup[] = {
-> -		PWM_LOOKUP("tegra-pwm", 0, "pwm-backlight", NULL),
-> +		PWM_LOOKUP("tegra-pwm", 0, "pwm-backlight", NULL,
-> +			   50000, PWM_POLARITY_NORMAL),
->  	};
->  
->  	static void __init board_init(void)
-> diff --git a/arch/arm/mach-omap2/board-omap3beagle.c b/arch/arm/mach-omap2/board-omap3beagle.c
-> index d6ed819ff15c..54c135a5b4f7 100644
-> --- a/arch/arm/mach-omap2/board-omap3beagle.c
-> +++ b/arch/arm/mach-omap2/board-omap3beagle.c
-> @@ -61,7 +61,8 @@
->  
->  static struct pwm_lookup pwm_lookup[] = {
->  	/* LEDB -> PMU_STAT */
-> -	PWM_LOOKUP("twl-pwmled", 1, "leds_pwm", "beagleboard::pmu_stat"),
-> +	PWM_LOOKUP("twl-pwmled", 1, "leds_pwm", "beagleboard::pmu_stat",
-> +		   7812500, PWM_POLARITY_NORMAL),
->  };
->  
->  static struct led_pwm pwm_leds[] = {
-> diff --git a/arch/arm/mach-pxa/hx4700.c b/arch/arm/mach-pxa/hx4700.c
-> index a7c30eb0c8db..c66ad4edc5e3 100644
-> --- a/arch/arm/mach-pxa/hx4700.c
-> +++ b/arch/arm/mach-pxa/hx4700.c
-> @@ -574,7 +574,8 @@ static struct platform_device backlight = {
->  };
->  
->  static struct pwm_lookup hx4700_pwm_lookup[] = {
-> -	PWM_LOOKUP("pxa27x-pwm.1", 0, "pwm-backlight", NULL),
-> +	PWM_LOOKUP("pxa27x-pwm.1", 0, "pwm-backlight", NULL,
-> +		   30923, PWM_POLARITY_NORMAL),
->  };
->  
->  /*
-> diff --git a/arch/arm/mach-shmobile/board-armadillo800eva.c b/arch/arm/mach-shmobile/board-armadillo800eva.c
-> index 2858f380beae..e2c4c5010f19 100644
-> --- a/arch/arm/mach-shmobile/board-armadillo800eva.c
-> +++ b/arch/arm/mach-shmobile/board-armadillo800eva.c
-> @@ -416,7 +416,8 @@ static struct platform_device pwm_device = {
->  };
->  
->  static struct pwm_lookup pwm_lookup[] = {
-> -	PWM_LOOKUP("renesas-tpu-pwm", 2, "pwm-backlight.0", NULL),
-> +	PWM_LOOKUP("renesas-tpu-pwm", 2, "pwm-backlight.0", NULL,
-> +		   33333, PWM_POLARITY_NORMAL),
->  };
->  
->  /* LCDC and backlight */
-> diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-> index 2f45e2fe5b93..e90628cac8fa 100644
-> --- a/include/linux/pwm.h
-> +++ b/include/linux/pwm.h
-> @@ -278,12 +278,14 @@ struct pwm_lookup {
->  	enum pwm_polarity polarity;
->  };
->  
-> -#define PWM_LOOKUP(_provider, _index, _dev_id, _con_id)	\
-> +#define PWM_LOOKUP(_provider, _index, _dev_id, _con_id, _period, _polarity) \
->  	{						\
->  		.provider = _provider,			\
->  		.index = _index,			\
->  		.dev_id = _dev_id,			\
->  		.con_id = _con_id,			\
-> +		.period = _period,			\
-> +		.polarity = _polarity			\
->  	}
->  
->  #if IS_ENABLED(CONFIG_PWM)
-> -- 
-> 1.8.3.2
-> 
+>  arch/arm/plat-samsung/dev-backlight.c | 2 --
+>  1 file changed, 2 deletions(-)
+>
+> diff --git a/arch/arm/plat-samsung/dev-backlight.c b/arch/arm/plat-samsung/dev-backlight.c
+> index be4ad0b21c08..2157c5b539e6 100644
+> --- a/arch/arm/plat-samsung/dev-backlight.c
+> +++ b/arch/arm/plat-samsung/dev-backlight.c
+> @@ -124,8 +124,6 @@ void __init samsung_bl_set(struct samsung_bl_gpio_info *gpio_info,
+>                 samsung_bl_data->pwm_period_ns = bl_data->pwm_period_ns;
+>         if (bl_data->enable_gpio >= 0)
+>                 samsung_bl_data->enable_gpio = bl_data->enable_gpio;
+> -       if (bl_data->enable_gpio_flags)
+> -               samsung_bl_data->enable_gpio_flags = bl_data->enable_gpio_flags;
+>         if (bl_data->init)
+>                 samsung_bl_data->init = bl_data->init;
+>         if (bl_data->notify)
 > --
-> To unsubscribe from this list: send the line "unsubscribe linux-sh" in
+> 1.9.0
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-gpio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
