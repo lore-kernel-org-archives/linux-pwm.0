@@ -1,7 +1,7 @@
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCHv2 4/7] ARM: sun4i: dt: add PWM support
-Date: Sat, 12 Apr 2014 23:25:56 +0200
-Message-ID: <1397337959-12408-5-git-send-email-alexandre.belloni@free-electrons.com>
+Subject: [PATCHv2 7/7] ARM: sunxi: dt: add PWM support for the cubietruck
+Date: Sat, 12 Apr 2014 23:25:59 +0200
+Message-ID: <1397337959-12408-8-git-send-email-alexandre.belloni@free-electrons.com>
 References: <1397337959-12408-1-git-send-email-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,31 +21,30 @@ To: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <maxime.ripard@free
 Cc: linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Add the PWM bindings for the Allwinner A10.
+Enable the PWM for both PWM channels on the cubietruck. They can be found on
+connector CN8.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 ---
- arch/arm/boot/dts/sun4i-a10.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm/boot/dts/sun7i-a20-cubietruck.dts | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sun4i-a10.dtsi b/arch/arm/boot/dts/sun4i-a10.dtsi
-index 109e796e4a69..bb11c422526b 100644
---- a/arch/arm/boot/dts/sun4i-a10.dtsi
-+++ b/arch/arm/boot/dts/sun4i-a10.dtsi
-@@ -563,6 +563,14 @@
- 			interrupts = <24>;
+diff --git a/arch/arm/boot/dts/sun7i-a20-cubietruck.dts b/arch/arm/boot/dts/sun7i-a20-cubietruck.dts
+index cb25d3c8da58..0c3bd127a5fd 100644
+--- a/arch/arm/boot/dts/sun7i-a20-cubietruck.dts
++++ b/arch/arm/boot/dts/sun7i-a20-cubietruck.dts
+@@ -63,6 +63,12 @@
+ 			};
  		};
  
 +		pwm: pwm@01c20e00 {
-+			compatible = "allwinner,sun4i-a10-pwm";
-+			reg = <0x01c20e00 0xc>;
-+			clocks = <&osc24M>;
-+			#pwm-cells = <3>;
-+			status = "disabled";
++			pinctrl-names = "default";
++			pinctrl-0 = <&pwm0_pins_a>, <&pwm1_pins_a>;
++			status = "okay";
 +		};
 +
- 		sid: eeprom@01c23800 {
- 			compatible = "allwinner,sun4i-a10-sid";
- 			reg = <0x01c23800 0x10>;
+ 		uart0: serial@01c28000 {
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&uart0_pins_a>;
 -- 
 1.8.3.2
