@@ -1,59 +1,56 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCHv2 2/7] pwm: sunxi: document OF bindings
-Date: Sat, 12 Apr 2014 23:25:54 +0200
-Message-ID: <1397337959-12408-3-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1397337959-12408-1-git-send-email-alexandre.belloni@free-electrons.com>
+From: Shawn Guo <shawn.guo@freescale.com>
+Subject: Re: [PATCH v2] pwm: i.MX: Avoid sample fifo overflow for i.MX pwm
+ version2
+Date: Sun, 13 Apr 2014 15:46:45 +0800
+Message-ID: <20140413074643.GD24180@dragon>
+References: <1397121829-19331-1-git-send-email-Ying.Liu@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1397337959-12408-1-git-send-email-alexandre.belloni@free-electrons.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from am1ehsobe004.messaging.microsoft.com ([213.199.154.207]:23782
+	"EHLO am1outboundpool.messaging.microsoft.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751147AbaDMHrC convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Sun, 13 Apr 2014 03:47:02 -0400
+Content-Disposition: inline
+In-Reply-To: <1397121829-19331-1-git-send-email-Ying.Liu@freescale.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Liu Ying <Ying.Liu@freescale.com>
+Cc: thierry.reding@gmail.com, s.hauer@pengutronix.de, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, LW@KARO-electronics.de
 
-This is the documentation for the Allwinner Socs PWM bindings.
+On Thu, Apr 10, 2014 at 05:23:49PM +0800, Liu Ying wrote:
+> The i.MX pwm version2 is embedded in several i.MX SoCs, such
+> as i.MX27, i.MX51 and i.MX6SL.  There are four 16bit sample
+> fifos in this IP, each of which determines the duty period
+> of a PWM waveform in one full cycle.  The IP spec mentions
+> that we should not write a fourth sample because the fifo
+> will become full and trigger a fifo write error(FWE) which
+> will prevent the PWM from starting once it is enabled.  In
+> order to avoid any sample fifo overflow issue, this patch
+> does software reset to clear all the sample fifos in the
+> very beginning of the pwm configuration function.
+>=20
+> The fifo overflow issue can be reproduced by the following
+> commands on the i.MX6SL evk platform, assuming we use pwm2
+> for the debug LED which is driven by the pin HSIC_STROBE
+> and the maximal brightness is 255.
+> echo 0   > /sys/class/leds/user/brightness
+> echo 0   > /sys/class/leds/user/brightness
+> echo 0   > /sys/class/leds/user/brightness
+> echo 0   > /sys/class/leds/user/brightness
+> echo 255 > /sys/class/leds/user/brightness
+> Here, FWE happens(PWMSR register reads 0x58) and the LED
+> can not be lighten.
+>=20
+> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: Shawn Guo <shawn.guo@freescale.com>
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- Documentation/devicetree/bindings/pwm/pwm-sunxi.txt | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sunxi.txt
+Acked-by: Shawn Guo <shawn.guo@freescale.com>
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-sunxi.txt b/Documentation/devicetree/bindings/pwm/pwm-sunxi.txt
-new file mode 100644
-index 000000000000..9eda87e7d233
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-sunxi.txt
-@@ -0,0 +1,20 @@
-+Allwinner PWM controller
-+
-+Required properties:
-+  - compatible: should be one of:
-+    - "allwinner,sun4i-a10-pwm"
-+    - "allwinner,sun7i-a20-pwm"
-+  - reg: physical base address and length of the controller's registers
-+  - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
-+    the cells format.
-+  - clocks: from common clock binding, handle to the parent clock.
-+
-+Example:
-+
-+	pwm: pwm@01c20e00 {
-+		compatible = "allwinner,sun7i-a20-pwm";
-+		reg = <0x01c20e00 0xc>;
-+		clocks = <&osc24M>;
-+		#pwm-cells = <3>;
-+		status = "disabled";
-+	};
--- 
-1.8.3.2
+> Cc: Lothar Wa=DFmann <LW@KARO-electronics.de>
+> Cc: linux-pwm@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Signed-off-by: Liu Ying <Ying.Liu@freescale.com>
+
