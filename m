@@ -1,61 +1,76 @@
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCHv2 2/7] pwm: sunxi: document OF bindings
-Date: Tue, 15 Apr 2014 11:00:23 +0200
-Message-ID: <20140415090023.GB3207@lukather>
-References: <1397337959-12408-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1397337959-12408-3-git-send-email-alexandre.belloni@free-electrons.com>
+From: "Chew, Chiau Ee" <chiau.ee.chew@intel.com>
+Subject: RE: [PATCH] pwm_lpss: Add support for PCI devices
+Date: Tue, 15 Apr 2014 09:06:23 +0000
+Message-ID: <604BF5F4C5D71041942BC7E84ED659EA01570E5F@PGSMSX103.gar.corp.intel.com>
+References: <1397311131-13371-1-git-send-email-chiau.ee.chew@intel.com>
+ <20140414081805.GI19349@intel.com>
+ <604BF5F4C5D71041942BC7E84ED659EA01570E28@PGSMSX103.gar.corp.intel.com>
+ <20140415090332.GO19349@intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="s/l3CgOIzMHHjg/5"
-Return-path: <linux-doc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1397337959-12408-3-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140415090332.GO19349@intel.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Alan Cox <alan@linux.intel.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
+> On Tue, Apr 15, 2014 at 08:41:02AM +0000, Chew, Chiau Ee wrote:
+> >
+> >
+> > > > +static struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev,
+> > > > +			struct resource *r, struct pwm_lpss_boardinfo *info)
+> > > >  {
+> > > >  	struct pwm_lpss_chip *lpwm;
+> > > > -	struct resource *r;
+> > > >  	int ret;
+> > > >
+> > > > -	lpwm = devm_kzalloc(&pdev->dev, sizeof(*lpwm), GFP_KERNEL);
+> > > > +	lpwm = devm_kzalloc(dev, sizeof(*lpwm), GFP_KERNEL);
+> > > >  	if (!lpwm)
+> > > > -		return -ENOMEM;
+> > > > -
+> > > > -	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > > > +		return ERR_PTR(-ENOMEM);
+> > > >
+> > > > -	lpwm->regs = devm_ioremap_resource(&pdev->dev, r);
+> > > > +	lpwm->regs = devm_ioremap_resource(dev, r);
+> > > >  	if (IS_ERR(lpwm->regs))
+> > > > -		return PTR_ERR(lpwm->regs);
+> > > > -
+> > > > -	lpwm->clk = devm_clk_get(&pdev->dev, NULL);
+> > > > -	if (IS_ERR(lpwm->clk)) {
+> > > > -		dev_err(&pdev->dev, "failed to get PWM clock\n");
+> > > > -		return PTR_ERR(lpwm->clk);
+> > > > +		return lpwm->regs;
+> > > > +
+> > > > +	if (info) {
+> > > > +		lpwm->clk_rate = info->clk_rate;
+> > > > +	} else {
+> > > > +		lpwm->clk = devm_clk_get(dev, NULL);
+> > > > +		if (IS_ERR(lpwm->clk)) {
+> > > > +			dev_err(dev, "failed to get PWM clock\n");
+> > > > +			return (void *)lpwm->clk;
+> > >
+> > > Why the cast here?
+> >
+> > Alan, please do correct me if I describe wrongly on the purpose that you add
+> the cast here.
+> >
+> > As you can see, pwm_lpss_probe() is expected to return a pointer of type
+> struct pwm_lpss_chip.  On the other hand,
+> > the return of devm_clk_get() would be a pointer of type struct clk. So
+> > if were to use lpwm->clk as the return value of pwm_lpss_probe() , a cast
+> would be needed since the pointer type is different from the expected one. The
+> compiler would complain on " warning: return from incompatible pointer type"
+> > if without the cast.
+> 
+> I think you can use ERR_CAST() here.
 
---s/l3CgOIzMHHjg/5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+You are right....ERR_CAST() can be used. 
 
-On Sat, Apr 12, 2014 at 11:25:54PM +0200, Alexandre Belloni wrote:
-> This is the documentation for the Allwinner Socs PWM bindings.
->=20
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Ok...i will clean up the patch and resend a v2 version.
 
-Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
-
-Thanks!
-Maxime
-
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
-
---s/l3CgOIzMHHjg/5
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.14 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTTPUmAAoJEBx+YmzsjxAgEswP/3nGtzEXR0/AWIorqS9h10X0
-jX90HPo90g4zJrauqFqfBouUWSQhsrF40Le2KATkoPpWrPbrTawdIX5aswCQegtS
-A0BoZxCJDjJbKjHc4X5u4YU87JsXejWjfgQGp8wAdR5dqCtGpI0EeAyk+XuEfSS0
-UX4OU7XBDPLHUGq2Y7jbJdlnOixjscQtN7b+lIB/fE1OehtxcWBjuQ4fdoqFIIJB
-TW6X+mB7G4OfrVJ8l9+ClTPPyFgowimlG9DXJ6mFlAKQIuKjbDGpCzKKabg7fsKt
-rdlB9Au9l5Qa0HoFMs14wfre7U8TF1hVarTZXt/J4YEvETi6iMOcAzCfJIJa9Kfm
-EBXB0EDSpiXedVanOIX8p7NiKKd4bxOCnubXfzsS7r8ZbnyrbUozZn5Z+4er7hvK
-VqiaofPUdqT4jl/oCFGZnXD6f+uzHZpVVAxRbpsL2mS6fwVPiSyMI2IPcp/MkMuk
-YAaGvJLjWeA7U/hFT5cxQ7dVXenZOWc3nVYz7pVDyJJ9Nx1vtInS2qUTL6EAQ7lU
-CSyqd+bCtlCiyFC/1822v81Js79PNAShSKVbTUxy2Ss7cMhUdOVP8zZ9ons2QIiz
-XIOanzuRQdXjnet360oRCst0kcBCazxHoS8hjdPvfL3Xo9XETxnog7vhHVkGpBaN
-QoSsKA+glELddN+JOzZS
-=/KnY
------END PGP SIGNATURE-----
-
---s/l3CgOIzMHHjg/5--
+Thanks for the review and feedback.
