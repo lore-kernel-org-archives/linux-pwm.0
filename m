@@ -1,86 +1,63 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCHv2 02/11] ARM: shmobile: Armadillo 800 EVA: initialize all
- struct pwm_lookup members
-Date: Tue, 15 Apr 2014 07:58:22 +0900
-Message-ID: <20140414225822.GG22518@verge.net.au>
-References: <1397512793-10325-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1397512793-10325-3-git-send-email-alexandre.belloni@free-electrons.com>
+From: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Subject: Re: [PATCHv2 07/11] ARM: OMAP3: Beagle: use PWM_LOOKUP to initialize
+ struct pwm_lookup
+Date: Tue, 15 Apr 2014 10:01:44 +0300
+Message-ID: <534CD958.4000303@ti.com>
+References: <1397512793-10325-1-git-send-email-alexandre.belloni@free-electrons.com> <1397512793-10325-8-git-send-email-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:48828 "EHLO
-	kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753777AbaDNW60 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Apr 2014 18:58:26 -0400
-Content-Disposition: inline
-In-Reply-To: <1397512793-10325-3-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <1397512793-10325-8-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>, Philipp Zabel <philipp.zabel@gmail.com>, Paul Parsons <lost.distance@yahoo.com>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Bryan Wu <cooloney@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-sh@vger.kernel.org, linux-leds@vger.kernel.org, linux-fbdev@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Tony Lindgren <tony@atomide.com>, Philipp Zabel <philipp.zabel@gmail.com>, Paul Parsons <lost.distance@yahoo.com>, Magnus Damm <magnus.damm@gmail.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Bryan Wu <cooloney@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-sh@vger.kernel.org, linux-leds@vger.kernel.org, linux-fbdev@vger.kernel.org
 
-On Mon, Apr 14, 2014 at 11:59:44PM +0200, Alexandre Belloni wrote:
-> Initializing all the struct pwm_lookup members allows to get rid of the struct
-> tpu_pwm_platform_data as the polarity initialization will be taken care of by
-> the PWM core.
-> 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-
-
-This looks good to me.
-Please let me know when the driver code has been merged and
-I'll take this patch. Likewise for the other shmobile patch in this series.
-
+On 04/15/2014 12:59 AM, Alexandre Belloni wrote:
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.co=
+m>
 > ---
->  arch/arm/mach-shmobile/board-armadillo800eva.c | 20 +++++++++-----------
->  1 file changed, 9 insertions(+), 11 deletions(-)
-> 
-> diff --git a/arch/arm/mach-shmobile/board-armadillo800eva.c b/arch/arm/mach-shmobile/board-armadillo800eva.c
-> index 2858f380beae..1bf61dad9a35 100644
-> --- a/arch/arm/mach-shmobile/board-armadillo800eva.c
-> +++ b/arch/arm/mach-shmobile/board-armadillo800eva.c
-> @@ -31,7 +31,7 @@
->  #include <linux/gpio_keys.h>
->  #include <linux/regulator/driver.h>
->  #include <linux/pinctrl/machine.h>
-> -#include <linux/platform_data/pwm-renesas-tpu.h>
-> +#include <linux/pwm.h>
->  #include <linux/pwm_backlight.h>
->  #include <linux/regulator/fixed.h>
->  #include <linux/regulator/gpio-regulator.h>
-> @@ -399,24 +399,22 @@ static struct resource pwm_resources[] = {
->  	},
->  };
->  
-> -static struct tpu_pwm_platform_data pwm_device_data = {
-> -	.channels[2] = {
-> -		.polarity = PWM_POLARITY_INVERSED,
-> -	}
-> -};
-> -
->  static struct platform_device pwm_device = {
->  	.name = "renesas-tpu-pwm",
->  	.id = -1,
-> -	.dev = {
-> -		.platform_data = &pwm_device_data,
+>  arch/arm/mach-omap2/board-omap3beagle.c | 10 ++--------
+>  1 file changed, 2 insertions(+), 8 deletions(-)
+>=20
+> diff --git a/arch/arm/mach-omap2/board-omap3beagle.c b/arch/arm/mach-=
+omap2/board-omap3beagle.c
+> index f27e1ec90b5e..54c135a5b4f7 100644
+> --- a/arch/arm/mach-omap2/board-omap3beagle.c
+> +++ b/arch/arm/mach-omap2/board-omap3beagle.c
+> @@ -61,14 +61,8 @@
+> =20
+>  static struct pwm_lookup pwm_lookup[] =3D {
+>  	/* LEDB -> PMU_STAT */
+> -	{
+> -		.provider =3D "twl-pwmled",
+> -		.index =3D 1,
+> -		.dev_id =3D "leds_pwm",
+> -		.con_id =3D "beagleboard::pmu_stat",
+> -		.period =3D 7812500,
+> -		.polarity =3D PWM_POLARITY_NORMAL,
 > -	},
->  	.num_resources = ARRAY_SIZE(pwm_resources),
->  	.resource = pwm_resources,
+> +	PWM_LOOKUP("twl-pwmled", 1, "leds_pwm", "beagleboard::pmu_stat",
+> +		   7812500, PWM_POLARITY_NORMAL),
+
+Why do you need to do this in two steps?
+In patch 4 you removed the existing PWM_LOOKUP() and now you are adding=
+ it back.
+Would not be simpler if you just add the two new parameters in patch 4 =
+(the
+812500, PWM_POLARITY_NORMAL)?
+
 >  };
->  
->  static struct pwm_lookup pwm_lookup[] = {
-> -	PWM_LOOKUP("renesas-tpu-pwm", 2, "pwm-backlight.0", NULL),
-> +	{
-> +		.provider = "renesas-tpu-pwm",
-> +		.index = 2,
-> +		.dev_id = "pwm-backlight.0",
-> +		.con_id = NULL,
-> +		.period = 33333,
-> +		.polarity = PWM_POLARITY_INVERSED,
-> +	},
->  };
->  
->  /* LCDC and backlight */
-> -- 
-> 1.8.3.2
-> 
+> =20
+>  static struct led_pwm pwm_leds[] =3D {
+>=20
+
+
+--=20
+P=E9ter
+--
+To unsubscribe from this list: send the line "unsubscribe linux-omap" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
