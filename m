@@ -1,64 +1,43 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: Re: [PATCH] pwm_lpss: Add support for PCI devices
-Date: Tue, 15 Apr 2014 12:03:32 +0300
-Message-ID: <20140415090332.GO19349@intel.com>
+From: "Chew, Chiau Ee" <chiau.ee.chew@intel.com>
+Subject: RE: [PATCH] pwm_lpss: Add support for PCI devices
+Date: Tue, 15 Apr 2014 08:59:31 +0000
+Message-ID: <604BF5F4C5D71041942BC7E84ED659EA01570E4F@PGSMSX103.gar.corp.intel.com>
 References: <1397311131-13371-1-git-send-email-chiau.ee.chew@intel.com>
- <20140414081805.GI19349@intel.com>
- <604BF5F4C5D71041942BC7E84ED659EA01570E28@PGSMSX103.gar.corp.intel.com>
+ <534A67B8.80600@linux.intel.com>
+ <604BF5F4C5D71041942BC7E84ED659EA01570A7A@PGSMSX103.gar.corp.intel.com>
+ <20140414085911.GL19349@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <604BF5F4C5D71041942BC7E84ED659EA01570E28@PGSMSX103.gar.corp.intel.com>
+In-Reply-To: <20140414085911.GL19349@intel.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Chew, Chiau Ee" <chiau.ee.chew@intel.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Alan Cox <alan@linux.intel.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: "Li, Aubrey" <aubrey.li@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Alan Cox <alan@linux.intel.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Apr 15, 2014 at 08:41:02AM +0000, Chew, Chiau Ee wrote:
-> 
-> 
-> > > +static struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev,
-> > > +			struct resource *r, struct pwm_lpss_boardinfo *info)
-> > >  {
-> > >  	struct pwm_lpss_chip *lpwm;
-> > > -	struct resource *r;
-> > >  	int ret;
+> On Mon, Apr 14, 2014 at 02:05:25AM +0000, Chew, Chiau Ee wrote:
+> > > >  MODULE_DESCRIPTION("PWM driver for Intel LPSS");
+> > > >MODULE_AUTHOR("Mika  Westerberg
+> > > ><mika.westerberg@linux.intel.com>");
+> > > >  MODULE_LICENSE("GPL v2");
+> > > >  MODULE_ALIAS("platform:pwm-lpss");
 > > >
-> > > -	lpwm = devm_kzalloc(&pdev->dev, sizeof(*lpwm), GFP_KERNEL);
-> > > +	lpwm = devm_kzalloc(dev, sizeof(*lpwm), GFP_KERNEL);
-> > >  	if (!lpwm)
-> > > -		return -ENOMEM;
-> > > -
-> > > -	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > > +		return ERR_PTR(-ENOMEM);
+> > > Looks a good idea to combine pci and acpi driver together.
+> > > Since pci driver is added, here the alias need to be refined.
+> > > Others look good.
 > > >
-> > > -	lpwm->regs = devm_ioremap_resource(&pdev->dev, r);
-> > > +	lpwm->regs = devm_ioremap_resource(dev, r);
-> > >  	if (IS_ERR(lpwm->regs))
-> > > -		return PTR_ERR(lpwm->regs);
-> > > -
-> > > -	lpwm->clk = devm_clk_get(&pdev->dev, NULL);
-> > > -	if (IS_ERR(lpwm->clk)) {
-> > > -		dev_err(&pdev->dev, "failed to get PWM clock\n");
-> > > -		return PTR_ERR(lpwm->clk);
-> > > +		return lpwm->regs;
-> > > +
-> > > +	if (info) {
-> > > +		lpwm->clk_rate = info->clk_rate;
-> > > +	} else {
-> > > +		lpwm->clk = devm_clk_get(dev, NULL);
-> > > +		if (IS_ERR(lpwm->clk)) {
-> > > +			dev_err(dev, "failed to get PWM clock\n");
-> > > +			return (void *)lpwm->clk;
-> > 
-> > Why the cast here?
+> > > Thanks,
+> > > -Aubrey
+> >
+> > Ok. I will change it to MODULE_ALIAS("pci/platform:pwm-lpss");
 > 
-> Alan, please do correct me if I describe wrongly on the purpose that you add the cast here.
+> Hmm, does that really work like that?
 > 
-> As you can see, pwm_lpss_probe() is expected to return a pointer of type struct pwm_lpss_chip.  On the other hand,   
-> the return of devm_clk_get() would be a pointer of type struct clk. So if were to use lpwm->clk as the return value of pwm_lpss_probe() , 
-> a cast would be needed since the pointer type is different from the expected one. The compiler would complain on " warning: return from incompatible pointer type"
-> if without the cast.
+> For PCI and ACPI you already have tables with MODULE_DEVICE_TABLE().
+> 
+> For pure platform driver (which is probably not going to be used) you nede to
+> have MODULE_ALIAS() if you want modprobe to load it automagically.
 
-I think you can use ERR_CAST() here.
+Ok, looks like MODULE_ALIAS() is a redundant. I will remove it.
