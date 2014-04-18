@@ -1,255 +1,55 @@
-From: Chew Chiau Ee <chiau.ee.chew@intel.com>
-Subject: [PATCH v3] pwm_lpss: Add support for PCI devices
-Date: Fri, 18 Apr 2014 19:17:40 +0800
-Message-ID: <1397819860-22213-1-git-send-email-chiau.ee.chew@intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Chew Chiau Ee <chiau.ee.chew@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Alan Cox <alan@linux.intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Tim Kryger <tim.kryger@linaro.org>
+Subject: [PATCH v6 1/5] Documentation: dt: Add Kona PWM binding
+Date: Fri, 18 Apr 2014 09:44:50 -0700
+Message-ID: <1397839494-21049-2-git-send-email-tim.kryger@linaro.org>
+References: <1397839494-21049-1-git-send-email-tim.kryger@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1397839494-21049-1-git-send-email-tim.kryger@linaro.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>
+Cc: Tim Kryger <tim.kryger@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Alan Cox <alan@linux.intel.com>
+Add the binding description for the Kona PWM controller found on Broadcom's
+mobile SoCs.
 
-Not all systems enumerate the PWM devices via ACPI. They can also be exposed
-via the PCI interface.
-
-Signed-off-by: Alan Cox <alan@linux.intel.com>
-Signed-off-by: Chew, Chiau Ee <chiau.ee.chew@intel.com>
+Signed-off-by: Tim Kryger <tim.kryger@linaro.org>
+Reviewed-by: Alex Elder <elder@linaro.org>
+Reviewed-by: Markus Mayer <markus.mayer@linaro.org>
 ---
- drivers/pwm/pwm-lpss.c |  161 ++++++++++++++++++++++++++++++++++++++---------
- 1 files changed, 130 insertions(+), 31 deletions(-)
+ .../devicetree/bindings/pwm/bcm-kona-pwm.txt       |   21 ++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 449e372..c718ad1 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -6,6 +6,7 @@
-  * Author: Chew Kean Ho <kean.ho.chew@intel.com>
-  * Author: Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
-  * Author: Chew Chiau Ee <chiau.ee.chew@intel.com>
-+ * Author: Alan Cox <alan@linux.intel.com>
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License version 2 as
-@@ -19,6 +20,9 @@
- #include <linux/module.h>
- #include <linux/pwm.h>
- #include <linux/platform_device.h>
-+#include <linux/pci.h>
+diff --git a/Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt b/Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
+new file mode 100644
+index 0000000..8eae9fe
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
+@@ -0,0 +1,21 @@
++Broadcom Kona PWM controller device tree bindings
 +
-+static int pci_drv, plat_drv;	/* So we know which drivers registered */
- 
- #define PWM				0x00000000
- #define PWM_ENABLE			BIT(31)
-@@ -34,6 +38,16 @@ struct pwm_lpss_chip {
- 	struct pwm_chip chip;
- 	void __iomem *regs;
- 	struct clk *clk;
-+	unsigned long clk_rate;
++This controller has 6 channels.
++
++Required Properties :
++- compatible: should contain "brcm,kona-pwm"
++- reg: physical base address and length of the controller's registers
++- clocks: phandle + clock specifier pair for the external clock
++- #pwm-cells: Should be 3. See pwm.txt in this directory for a
++  description of the cells format.
++
++Refer to clocks/clock-bindings.txt for generic clock consumer properties.
++
++Example:
++
++pwm: pwm@3e01a000 {
++	compatible = "brcm,bcm11351-pwm", "brcm,kona-pwm";
++	reg = <0x3e01a000 0xc4>;
++	clocks = <&pwm_clk>;
++	#pwm-cells = <3>;
 +};
-+
-+struct pwm_lpss_boardinfo {
-+	unsigned long clk_rate;
-+};
-+
-+/* BayTrail */
-+static const struct pwm_lpss_boardinfo byt_info = {
-+	25000000
- };
- 
- static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
-@@ -55,7 +69,7 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	/* The equation is: base_unit = ((freq / c) * 65536) + correction */
- 	base_unit = freq * 65536;
- 
--	c = clk_get_rate(lpwm->clk);
-+	c = lpwm->clk_rate;
- 	if (!c)
- 		return -EINVAL;
- 
-@@ -113,52 +127,48 @@ static const struct pwm_ops pwm_lpss_ops = {
- 	.owner = THIS_MODULE,
- };
- 
--static const struct acpi_device_id pwm_lpss_acpi_match[] = {
--	{ "80860F09", 0 },
--	{ },
--};
--MODULE_DEVICE_TABLE(acpi, pwm_lpss_acpi_match);
--
--static int pwm_lpss_probe(struct platform_device *pdev)
-+static struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev,
-+					    struct resource *r,
-+					    struct pwm_lpss_boardinfo *info)
- {
- 	struct pwm_lpss_chip *lpwm;
--	struct resource *r;
- 	int ret;
- 
--	lpwm = devm_kzalloc(&pdev->dev, sizeof(*lpwm), GFP_KERNEL);
-+	lpwm = devm_kzalloc(dev, sizeof(*lpwm), GFP_KERNEL);
- 	if (!lpwm)
--		return -ENOMEM;
--
--	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+		return ERR_PTR(-ENOMEM);
- 
--	lpwm->regs = devm_ioremap_resource(&pdev->dev, r);
-+	lpwm->regs = devm_ioremap_resource(dev, r);
- 	if (IS_ERR(lpwm->regs))
--		return PTR_ERR(lpwm->regs);
--
--	lpwm->clk = devm_clk_get(&pdev->dev, NULL);
--	if (IS_ERR(lpwm->clk)) {
--		dev_err(&pdev->dev, "failed to get PWM clock\n");
--		return PTR_ERR(lpwm->clk);
-+		return lpwm->regs;
-+
-+	if (info) {
-+		lpwm->clk_rate = info->clk_rate;
-+	} else {
-+		lpwm->clk = devm_clk_get(dev, NULL);
-+		if (IS_ERR(lpwm->clk)) {
-+			dev_err(dev, "failed to get PWM clock\n");
-+			return ERR_CAST(lpwm->clk);
-+		}
-+		lpwm->clk_rate = clk_get_rate(lpwm->clk);
- 	}
- 
--	lpwm->chip.dev = &pdev->dev;
-+	lpwm->chip.dev = dev;
- 	lpwm->chip.ops = &pwm_lpss_ops;
- 	lpwm->chip.base = -1;
- 	lpwm->chip.npwm = 1;
- 
- 	ret = pwmchip_add(&lpwm->chip);
- 	if (ret) {
--		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
--		return ret;
-+		dev_err(dev, "failed to add PWM chip: %d\n", ret);
-+		return ERR_PTR(ret);
- 	}
- 
--	platform_set_drvdata(pdev, lpwm);
--	return 0;
-+	return lpwm;
- }
- 
--static int pwm_lpss_remove(struct platform_device *pdev)
-+static int pwm_lpss_remove(struct pwm_lpss_chip *lpwm)
- {
--	struct pwm_lpss_chip *lpwm = platform_get_drvdata(pdev);
- 	u32 ctrl;
- 
- 	ctrl = readl(lpwm->regs + PWM);
-@@ -167,15 +177,104 @@ static int pwm_lpss_remove(struct platform_device *pdev)
- 	return pwmchip_remove(&lpwm->chip);
- }
- 
--static struct platform_driver pwm_lpss_driver = {
-+static int pwm_lpss_probe_pci(struct pci_dev *pdev,
-+			      const struct pci_device_id *id)
-+{
-+	const struct pwm_lpss_boardinfo *info;
-+	struct pwm_lpss_chip *lpwm;
-+	int err;
-+
-+	err = pci_enable_device(pdev);
-+	if (err < 0)
-+		return err;
-+
-+	info = (struct pwm_lpss_boardinfo *)id->driver_data;
-+	lpwm = pwm_lpss_probe(&pdev->dev, &pdev->resource[0], info);
-+	if (IS_ERR(lpwm))
-+		return PTR_ERR(lpwm);
-+
-+	pci_set_drvdata(pdev, lpwm);
-+	return 0;
-+}
-+
-+static void pwm_lpss_remove_pci(struct pci_dev *pdev)
-+{
-+	struct pwm_lpss_chip *lpwm = pci_get_drvdata(pdev);
-+
-+	pwm_lpss_remove(lpwm);
-+	pci_disable_device(pdev);
-+}
-+
-+static struct pci_device_id pwm_lpss_pci_ids[] = {
-+	{ PCI_VDEVICE(INTEL, 0x0f08), (unsigned long)&byt_info},
-+	{ PCI_VDEVICE(INTEL, 0x0f09), (unsigned long)&byt_info},
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(pci, pwm_lpss_pci_ids);
-+
-+static struct pci_driver pwm_lpss_driver_pci = {
-+	.name = "pwm-lpss",
-+	.id_table = pwm_lpss_pci_ids,
-+	.probe = pwm_lpss_probe_pci,
-+	.remove = pwm_lpss_remove_pci,
-+};
-+
-+static int pwm_lpss_probe_platform(struct platform_device *pdev)
-+{
-+	struct pwm_lpss_chip *lpwm;
-+	struct resource *r;
-+
-+	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+
-+	lpwm = pwm_lpss_probe(&pdev->dev, r, NULL);
-+	if (IS_ERR(lpwm))
-+		return PTR_ERR(lpwm);
-+
-+	platform_set_drvdata(pdev, lpwm);
-+	return 0;
-+}
-+
-+static int pwm_lpss_remove_platform(struct platform_device *pdev)
-+{
-+	struct pwm_lpss_chip *lpwm = platform_get_drvdata(pdev);
-+
-+	return pwm_lpss_remove(lpwm);
-+}
-+
-+static const struct acpi_device_id pwm_lpss_acpi_match[] = {
-+	{ "80860F09", 0 },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(acpi, pwm_lpss_acpi_match);
-+
-+static struct platform_driver pwm_lpss_driver_platform = {
- 	.driver = {
- 		.name = "pwm-lpss",
- 		.acpi_match_table = pwm_lpss_acpi_match,
- 	},
--	.probe = pwm_lpss_probe,
--	.remove = pwm_lpss_remove,
-+	.probe = pwm_lpss_probe_platform,
-+	.remove = pwm_lpss_remove_platform,
- };
--module_platform_driver(pwm_lpss_driver);
-+
-+static int __init pwm_init(void)
-+{
-+	pci_drv = pci_register_driver(&pwm_lpss_driver_pci);
-+	plat_drv = platform_driver_register(&pwm_lpss_driver_platform);
-+	if (pci_drv && plat_drv)
-+		return pci_drv;
-+
-+	return 0;
-+}
-+module_init(pwm_init);
-+
-+static void __exit pwm_exit(void)
-+{
-+	if (!pci_drv)
-+		pci_unregister_driver(&pwm_lpss_driver_pci);
-+	if (!plat_drv)
-+		platform_driver_unregister(&pwm_lpss_driver_platform);
-+}
-+module_exit(pwm_exit);
- 
- MODULE_DESCRIPTION("PWM driver for Intel LPSS");
- MODULE_AUTHOR("Mika Westerberg <mika.westerberg@linux.intel.com>");
 -- 
-1.7.4.4
+1.7.9.5
+
