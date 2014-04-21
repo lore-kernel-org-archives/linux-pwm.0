@@ -1,78 +1,46 @@
-From: Tim Kryger <tim.kryger@linaro.org>
-Subject: [PATCH v6 0/5] Add Broadcom Kona PWM Support
-Date: Fri, 18 Apr 2014 09:44:49 -0700
-Message-ID: <1397839494-21049-1-git-send-email-tim.kryger@linaro.org>
+From: Alexandre Courbot <gnurou@gmail.com>
+Subject: Re: [PATCH 1/2] ARM: SAMSUNG: remove gpio flags in dev-backlight
+Date: Mon, 21 Apr 2014 15:07:50 +0900
+Message-ID: <CAAVeFuKeT9+m_yFc8ihfc_p5W--dCm0-eO+ccjv99WOwurAirQ@mail.gmail.com>
+References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com>
+ <1393480414-19473-2-git-send-email-acourbot@nvidia.com> <CAAVeFu+XUzZ7ozMOcp6A-gZJ9o8DZFrdh1j4LvCQtoTcu=PP1g@mail.gmail.com>
+ <000701cf54a2$7c1379c0$743a6d40$%han@samsung.com> <CAAVeFuKJnSk2XSsMZZKMfyabzJ5CYdqWdE91H5uHiYFC1r6HxA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>, Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy
- Dunlap <rdunlap@infradead.org>, Christian Daudt <bcm@fixthebug.org>, Grant
- Likely <grant.likely@linaro.org>
-Cc: Linux PWM List <linux-pwm@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Tim Kryger <tim.kryger@linaro.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ve0-f179.google.com ([209.85.128.179]:45639 "EHLO
+	mail-ve0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751259AbaDUGIL (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Apr 2014 02:08:11 -0400
+In-Reply-To: <CAAVeFuKJnSk2XSsMZZKMfyabzJ5CYdqWdE91H5uHiYFC1r6HxA@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Jingoo Han <jg1.han@samsung.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Alexandre Courbot <acourbot@nvidia.com>, Bryan Wu <cooloney@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-This series introduces the driver for the Kona PWM controller found in
-Broadcom mobile SoCs like bcm281xx and updates the device tree and the
-defconfig to enable use of this hardware on the bcm28155 AP board.
+On Thu, Apr 10, 2014 at 11:14 PM, Alexandre Courbot <gnurou@gmail.com> wrote:
+> On Thu, Apr 10, 2014 at 6:51 PM, Jingoo Han <jg1.han@samsung.com> wrote:
+>> On Thursday, April 10, 2014 1:17 PM, Alexandre Courbot wrote:
+>>>
+>>> Ping, can I have the Samsung folks review and ,aybe even merge this
+>>> patch? enable_gpio_flags is never used in any code, is replaced by
+>>> gpiod, and we would like to remove it altogether from pwm_bl. Thanks!
+>>
+>> OK, I see. It looks good.
+>>
+>> As far as I know, 'enable_gpio_flags' has not been being used
+>> for Samsung platform. So, there will be no side effect,
+>> if 'enable_gpio_flags' is removed from 'arch/arm/plat-samsung'
+>> directory.
+>>
+>> Reviewed-by: Jingoo Han <jg1.han@samsung.com>
+>
+> Great, thanks. Ben, Kukjin, could we have your Acked-by?
+>
+> Thierry, if the Samsung maintainers are ok with it, and 2/2 of this
+> series is also ok for you (you merged the same for simple-panel
+> already), can you take both into your tree?
 
-Changes since v5:
-  - Rebased on v3.15-rc1
-
-Changes since v4:
-  - Added in real polarity support
-  - Labeled trigger bits as such rather than use the name from hw docs
-  - Listed unsual hardware characteristics at the top of the file
-  - Removed default from Kconfig and update defconfig accordingly
-  - Always use unsigned int for temporary register values
-
-Changes since v3:
-  - Removed polarity support for now
-  - Cleaned up whitespace issues, shortened some variable names
-  - Use container_of instead of dev_get_drvdata to get private data
-  - Removed workaround for PWM framework bug
-  - Reworded some binding documentation
-
-Changes since v2:
-  - SoC DTS file updated to use real clock's phandle + specifier
-  - Toggle smooth mode off during apply so new settings take immediately
-
-Changes since v1:
-  - Fixed up macros to be clearer and more complete
-  - Corrected spelling and punctuation mistakes
-  - Added support for polarity
-  - Made peripheral clock use more efficient
-  - Made prescale and duty computation clearer
-  - Moved Makefile addition to keep alphabetical
-  - Split complex lines into multiple steps
-
-
-Tim Kryger (5):
-  Documentation: dt: Add Kona PWM binding
-  pwm: kona: Introduce Kona PWM controller support
-  ARM: dts: Declare the PWM for bcm11351 (bcm281xx)
-  ARM: dts: Enable the PWM for bcm28155 AP board
-  ARM: bcm_defconfig: Enable PWM and Backlight
-
- .../devicetree/bindings/pwm/bcm-kona-pwm.txt       |   21 ++
- arch/arm/boot/dts/bcm11351.dtsi                    |    8 +
- arch/arm/boot/dts/bcm28155-ap.dts                  |    4 +
- arch/arm/configs/bcm_defconfig                     |    3 +
- drivers/pwm/Kconfig                                |    9 +
- drivers/pwm/Makefile                               |    1 +
- drivers/pwm/pwm-bcm-kona.c                         |  319 ++++++++++++++++++++
- 7 files changed, 365 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
- create mode 100644 drivers/pwm/pwm-bcm-kona.c
-
--- 
-1.7.9.5
+Last call - could we have a Acked-by from Ben or Kukjin and merge this
+through Thierry's tree? Otherwise I will just have to drop this
+series, which would be sad.
