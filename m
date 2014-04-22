@@ -1,46 +1,74 @@
-From: Alexandre Courbot <gnurou@gmail.com>
-Subject: Re: [PATCH 1/2] ARM: SAMSUNG: remove gpio flags in dev-backlight
-Date: Mon, 21 Apr 2014 15:07:50 +0900
-Message-ID: <CAAVeFuKeT9+m_yFc8ihfc_p5W--dCm0-eO+ccjv99WOwurAirQ@mail.gmail.com>
-References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com>
- <1393480414-19473-2-git-send-email-acourbot@nvidia.com> <CAAVeFu+XUzZ7ozMOcp6A-gZJ9o8DZFrdh1j4LvCQtoTcu=PP1g@mail.gmail.com>
- <000701cf54a2$7c1379c0$743a6d40$%han@samsung.com> <CAAVeFuKJnSk2XSsMZZKMfyabzJ5CYdqWdE91H5uHiYFC1r6HxA@mail.gmail.com>
+From: Liu Ying <Ying.Liu@freescale.com>
+Subject: Re: [PATCH v2] pwm: i.MX: Avoid sample fifo overflow for i.MX pwm
+ version2
+Date: Tue, 22 Apr 2014 16:48:44 +0800
+Message-ID: <53562CEC.6040902@freescale.com>
+References: <1397121829-19331-1-git-send-email-Ying.Liu@freescale.com>
+ <20140413074643.GD24180@dragon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ve0-f179.google.com ([209.85.128.179]:45639 "EHLO
-	mail-ve0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751259AbaDUGIL (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Apr 2014 02:08:11 -0400
-In-Reply-To: <CAAVeFuKJnSk2XSsMZZKMfyabzJ5CYdqWdE91H5uHiYFC1r6HxA@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20140413074643.GD24180@dragon>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, s.hauer@pengutronix.de, linux-arm-kernel@lists.infradead.org, Shawn Guo <shawn.guo@freescale.com>, LW@KARO-electronics.de
 List-Id: linux-pwm@vger.kernel.org
-To: Jingoo Han <jg1.han@samsung.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Alexandre Courbot <acourbot@nvidia.com>, Bryan Wu <cooloney@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-On Thu, Apr 10, 2014 at 11:14 PM, Alexandre Courbot <gnurou@gmail.com> wrote:
-> On Thu, Apr 10, 2014 at 6:51 PM, Jingoo Han <jg1.han@samsung.com> wrote:
->> On Thursday, April 10, 2014 1:17 PM, Alexandre Courbot wrote:
->>>
->>> Ping, can I have the Samsung folks review and ,aybe even merge this
->>> patch? enable_gpio_flags is never used in any code, is replaced by
->>> gpiod, and we would like to remove it altogether from pwm_bl. Thanks!
->>
->> OK, I see. It looks good.
->>
->> As far as I know, 'enable_gpio_flags' has not been being used
->> for Samsung platform. So, there will be no side effect,
->> if 'enable_gpio_flags' is removed from 'arch/arm/plat-samsung'
->> directory.
->>
->> Reviewed-by: Jingoo Han <jg1.han@samsung.com>
->
-> Great, thanks. Ben, Kukjin, could we have your Acked-by?
->
-> Thierry, if the Samsung maintainers are ok with it, and 2/2 of this
-> series is also ok for you (you merged the same for simple-panel
-> already), can you take both into your tree?
+Hi Thierry,
 
-Last call - could we have a Acked-by from Ben or Kukjin and merge this
-through Thierry's tree? Otherwise I will just have to drop this
-series, which would be sad.
+On 04/13/2014 03:46 PM, Shawn Guo wrote:
+> On Thu, Apr 10, 2014 at 05:23:49PM +0800, Liu Ying wrote:
+>> The i.MX pwm version2 is embedded in several i.MX SoCs, such
+>> as i.MX27, i.MX51 and i.MX6SL.  There are four 16bit sample
+>> fifos in this IP, each of which determines the duty period
+>> of a PWM waveform in one full cycle.  The IP spec mentions
+>> that we should not write a fourth sample because the fifo
+>> will become full and trigger a fifo write error(FWE) which
+>> will prevent the PWM from starting once it is enabled.  In
+>> order to avoid any sample fifo overflow issue, this patch
+>> does software reset to clear all the sample fifos in the
+>> very beginning of the pwm configuration function.
+>>
+>> The fifo overflow issue can be reproduced by the following
+>> commands on the i.MX6SL evk platform, assuming we use pwm2
+>> for the debug LED which is driven by the pin HSIC_STROBE
+>> and the maximal brightness is 255.
+>> echo 0   > /sys/class/leds/user/brightness
+>> echo 0   > /sys/class/leds/user/brightness
+>> echo 0   > /sys/class/leds/user/brightness
+>> echo 0   > /sys/class/leds/user/brightness
+>> echo 255 > /sys/class/leds/user/brightness
+>> Here, FWE happens(PWMSR register reads 0x58) and the LED
+>> can not be lighten.
+>>
+>> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+>> Cc: Shawn Guo <shawn.guo@freescale.com>
+> =
+
+> Acked-by: Shawn Guo <shawn.guo@freescale.com>
+> =
+
+>> Cc: Lothar Wa=DFmann <LW@KARO-electronics.de>
+>> Cc: linux-pwm@vger.kernel.org
+>> Cc: linux-arm-kernel@lists.infradead.org
+>> Signed-off-by: Liu Ying <Ying.Liu@freescale.com>
+> =
+
+
+I've got Shawn's ack on this patch.
+If no objections, could you take it into your PWM tree?
+
+Thanks.
+
+-- =
+
+Liu Ying
