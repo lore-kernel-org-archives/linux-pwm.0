@@ -1,74 +1,29 @@
-From: Liu Ying <Ying.Liu@freescale.com>
-Subject: Re: [PATCH v2] pwm: i.MX: Avoid sample fifo overflow for i.MX pwm
- version2
-Date: Tue, 22 Apr 2014 16:48:44 +0800
-Message-ID: <53562CEC.6040902@freescale.com>
-References: <1397121829-19331-1-git-send-email-Ying.Liu@freescale.com>
- <20140413074643.GD24180@dragon>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH v3] pwm_lpss: Add support for PCI devices
+Date: Tue, 22 Apr 2014 14:46:18 +0300
+Message-ID: <20140422114618.GN30677@intel.com>
+References: <1397819860-22213-1-git-send-email-chiau.ee.chew@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20140413074643.GD24180@dragon>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, s.hauer@pengutronix.de, linux-arm-kernel@lists.infradead.org, Shawn Guo <shawn.guo@freescale.com>, LW@KARO-electronics.de
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga03.intel.com ([143.182.124.21]:45751 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932147AbaDVLin (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Tue, 22 Apr 2014 07:38:43 -0400
+Content-Disposition: inline
+In-Reply-To: <1397819860-22213-1-git-send-email-chiau.ee.chew@intel.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Chew Chiau Ee <chiau.ee.chew@intel.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Alan Cox <alan@linux.intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi Thierry,
+On Fri, Apr 18, 2014 at 07:17:40PM +0800, Chew Chiau Ee wrote:
+> From: Alan Cox <alan@linux.intel.com>
+> 
+> Not all systems enumerate the PWM devices via ACPI. They can also be exposed
+> via the PCI interface.
+> 
+> Signed-off-by: Alan Cox <alan@linux.intel.com>
+> Signed-off-by: Chew, Chiau Ee <chiau.ee.chew@intel.com>
 
-On 04/13/2014 03:46 PM, Shawn Guo wrote:
-> On Thu, Apr 10, 2014 at 05:23:49PM +0800, Liu Ying wrote:
->> The i.MX pwm version2 is embedded in several i.MX SoCs, such
->> as i.MX27, i.MX51 and i.MX6SL.  There are four 16bit sample
->> fifos in this IP, each of which determines the duty period
->> of a PWM waveform in one full cycle.  The IP spec mentions
->> that we should not write a fourth sample because the fifo
->> will become full and trigger a fifo write error(FWE) which
->> will prevent the PWM from starting once it is enabled.  In
->> order to avoid any sample fifo overflow issue, this patch
->> does software reset to clear all the sample fifos in the
->> very beginning of the pwm configuration function.
->>
->> The fifo overflow issue can be reproduced by the following
->> commands on the i.MX6SL evk platform, assuming we use pwm2
->> for the debug LED which is driven by the pin HSIC_STROBE
->> and the maximal brightness is 255.
->> echo 0   > /sys/class/leds/user/brightness
->> echo 0   > /sys/class/leds/user/brightness
->> echo 0   > /sys/class/leds/user/brightness
->> echo 0   > /sys/class/leds/user/brightness
->> echo 255 > /sys/class/leds/user/brightness
->> Here, FWE happens(PWMSR register reads 0x58) and the LED
->> can not be lighten.
->>
->> Cc: Sascha Hauer <s.hauer@pengutronix.de>
->> Cc: Shawn Guo <shawn.guo@freescale.com>
-> =
-
-> Acked-by: Shawn Guo <shawn.guo@freescale.com>
-> =
-
->> Cc: Lothar Wa=DFmann <LW@KARO-electronics.de>
->> Cc: linux-pwm@vger.kernel.org
->> Cc: linux-arm-kernel@lists.infradead.org
->> Signed-off-by: Liu Ying <Ying.Liu@freescale.com>
-> =
-
-
-I've got Shawn's ack on this patch.
-If no objections, could you take it into your PWM tree?
-
-Thanks.
-
--- =
-
-Liu Ying
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
