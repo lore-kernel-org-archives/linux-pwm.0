@@ -1,58 +1,45 @@
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: Re: [PATCH] pwm: mxs: set pwm_chip can_sleep flag
-Date: Fri, 25 Apr 2014 16:11:11 +0200
-Message-ID: <535A6CFF.2020800@i2se.com>
-References: <1396956597-26159-1-git-send-email-shawn.guo@freescale.com> <5343FDD3.3070308@i2se.com> <20140408175904.GT29751@pengutronix.de> <20140408234243.GB13898@piout.net> <20140409082341.GV29751@pengutronix.de> <20140409100313.GA20704@piout.net> <20140409104652.GC9527@ulmo> <20140409143516.GW29751@pengutronix.de>
+From: Tim Kryger <tim.kryger@linaro.org>
+Subject: [PATCH v6 RESEND 4/5] ARM: dts: Enable the PWM for bcm28155 AP board
+Date: Fri, 25 Apr 2014 11:31:14 -0700
+Message-ID: <1398450675-19609-5-git-send-email-tim.kryger@linaro.org>
+References: <1398450675-19609-1-git-send-email-tim.kryger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.130]:51856 "EHLO
-	moutng.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751593AbaDYOLo (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 25 Apr 2014 10:11:44 -0400
-In-Reply-To: <20140409143516.GW29751@pengutronix.de>
+Received: from mail-gw2-out.broadcom.com ([216.31.210.63]:64366 "EHLO
+	mail-gw2-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751346AbaDYSbW (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 25 Apr 2014 14:31:22 -0400
+In-Reply-To: <1398450675-19609-1-git-send-email-tim.kryger@linaro.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?ISO-8859-1?Q?Uwe_Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Shawn Guo <shawn.guo@freescale.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>
+Cc: Tim Kryger <tim.kryger@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 
-Hi,
+Mark the PWM as enabled on the bcm28155 AP board.
 
-Am 09.04.2014 16:35, schrieb Uwe Kleine-K=F6nig:
-> Hello,
->
-> On Wed, Apr 09, 2014 at 12:46:53PM +0200, Thierry Reding wrote:
->>
->> My preference would be simply d). Mostly because I don't like specia=
-l
->> cases and especially because I don't see an advantage in special cas=
-ing
->> 0 and full period duty cycles. That doesn't mean of course that driv=
-ers
->> can't special case if they really want or have to.
-> Well d' is just an optimisation, because if you have a duty cycle
-> between 0 and full (exclusive) and no other means of syncronisation
-> you cannot influence where pwm_disable stops the output, at low or hi=
-gh.
->
-> Do we have cases where pwm_disable makes the pin high-z? Or something
-> else which violates the assumption "pwm_config(pwm, 0, period);
-> pwm_disable(pwm); makes the pin 0"?
-> =20
->> That said I've also been thinking about adding support for e), which
->> would allow atomically changing the duty cycle, period and polarity =
-of a
->> channel. This might become necessary at some point.
-> On i.MX28 you cannot change atomically, only program atomically. The
-> current period will end regularily anyhow as programmed before. But
-> maybe that's what you mean?!
->
-> Best regards
-> Uwe
->
+Signed-off-by: Tim Kryger <tim.kryger@linaro.org>
+Reviewed-by: Alex Elder <elder@linaro.org>
+Reviewed-by: Markus Mayer <markus.mayer@linaro.org>
+---
+ arch/arm/boot/dts/bcm28155-ap.dts |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-i want to ask gently, if somebody working on this issue?
+diff --git a/arch/arm/boot/dts/bcm28155-ap.dts b/arch/arm/boot/dts/bcm28155-ap.dts
+index af3da55..9ce91dd 100644
+--- a/arch/arm/boot/dts/bcm28155-ap.dts
++++ b/arch/arm/boot/dts/bcm28155-ap.dts
+@@ -69,6 +69,10 @@
+ 		status = "okay";
+ 	};
+ 
++	pwm: pwm@3e01a000 {
++		status = "okay";
++	};
++
+ 	usbotg: usb@3f120000 {
+ 		vusb_d-supply = <&usbldo_reg>;
+ 		vusb_a-supply = <&iosr1_reg>;
+-- 
+1.7.9.5
 
-Regards,
-Stefan Wahren
