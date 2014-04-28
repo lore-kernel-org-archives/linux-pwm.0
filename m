@@ -1,68 +1,57 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 3/3] pwm: ftm-pwm: Add big-endian support
-Date: Mon, 28 Apr 2014 17:02:08 +0200
-Message-ID: <20140428150207.GD28443@ulmo>
+From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
+Subject: RE: [PATCH 3/3] pwm: ftm-pwm: Add big-endian support
+Date: Mon, 28 Apr 2014 15:11:11 +0000
+Message-ID: <3f5658518174446e8edfc0038235e4fc@BY2PR03MB505.namprd03.prod.outlook.com>
 References: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
- <1395377590-23537-4-git-send-email-Li.Xiubo@freescale.com>
+ <1395377590-23537-4-git-send-email-Li.Xiubo@freescale.com>,<20140428150207.GD28443@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="qOrJKOH36bD5yhNe"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1395377590-23537-4-git-send-email-Li.Xiubo@freescale.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Xiubo Li <Li.Xiubo@freescale.com>
-Cc: linux-pwm@vger.kernel.org, broonie@kernel.org, swarren@nvidia.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-by2lp0237.outbound.protection.outlook.com ([207.46.163.237]:14698
+	"EHLO na01-by2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1756477AbaD1PLO convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 11:11:14 -0400
+In-Reply-To: <20140428150207.GD28443@ulmo>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "broonie@kernel.org" <broonie@kernel.org>, "swarren@nvidia.com" <swarren@nvidia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
 
---qOrJKOH36bD5yhNe
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> > Now for the following scenarios:
+> >
+> >      SoC     |  CPU   | FTM-PWM | 'big-endian' property is needed?
+> > -------------|--------|---------|---------------------------------
+> >     Vybird   |  LE    |   LE    |     No
+> >     LS1     |  LE    |   BE    |     Yes
+> >     LS2     |  LE    |   LE    |     No
+> >
+> > Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
+> > ---
+> >  drivers/pwm/pwm-fsl-ftm.c | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> 
+> And this should probably describe in text what happens. The table may
+> look good, but you don't give a real description of what the change
+> does.
+> 
 
-On Fri, Mar 21, 2014 at 12:53:10PM +0800, Xiubo Li wrote:
-> Now for the following scenarios:
->=20
->      SoC     |  CPU   | FTM-PWM | 'big-endian' property is needed?
-> -------------|--------|---------|---------------------------------
->     Vybird   |  LE    |   LE    |     No
->      LS1     |  LE    |   BE    |     Yes
->      LS2     |  LE    |   LE    |     No
->=20
-> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
-> ---
->  drivers/pwm/pwm-fsl-ftm.c | 6 ++++++
->  1 file changed, 6 insertions(+)
+I will follow your advice.
 
-And this should probably describe in text what happens. The table may
-look good, but you don't give a real description of what the change
-does.
 
-Oh, and doesn't this change need to update the device tree binding since
-you now have an additional property?
+> Oh, and doesn't this change need to update the device tree binding since
+> you now have an additional property?
+>
 
-Thierry
+Yes, you are right. I just forgot it.
 
---qOrJKOH36bD5yhNe
-Content-Type: application/pgp-signature
+I will add update it.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Thanks very much.
 
-iQIcBAEBAgAGBQJTXm1vAAoJEN0jrNd/PrOh+MMP/3UHzshvRhDwvm1LpAIu9SUy
-jBQKgno8lAvmuAkteA/ZxFs1lvFyLpAnq6GpHkMK1cScVby7Ij77rxOy8poYaKvp
-wXLMnvfWlPnD6Ln+FcqGnsIyaFxRDlxRs8d35oMd2pRIA9hvong4vMKsCn6XFjUG
-6MKbB6jn9hMOA8UIxM3b81m6XxSZPwcJqdxAtvuS+/ZQ1V3CoG30B1mJ3d12Cwcz
-qh0sCvQ3uuaeJvLtXaV71DcGKZkhbKbMQhsdaO9GAG/mr80I1RPtUDCptoavsDNR
-nX3xCsTYlB53RhCL4lGpfamUwSjb1nbAIdwK1jyYniMMWw2+aT1U2UYA2RsqK7tI
-PdHHnt5ZkrYy3L+QN1b1c4QHO5DxhDq6ZcQc6vPDD2kOQfgwCM5+UvydfWq8iwqE
-Tg5u1H875TdMzYu3F6lxWvaqNoc6grQyNefLonUn8/1SE3+IWEmGtMZaHWS/XHHt
-FW3uXl/yqrRo9W4VdrMzZkqPRdZ70h4/14O1pGtHcI/vKbT3xyTQxylvnJ4WkAqi
-wxnTdAzrbhOok/dMpDwMa0X0PTY2v5kEHcrcIkyaLrZgxaUu9ADV63edHdmaSgrA
-/mULjDFGx05DD76YzK9faVuDsI7dewDQ84RjEaV8PnaHl3ksxVOzCsZx+qXNDllR
-4OavEcJrstcPY8Ahkakm
-=lsXu
------END PGP SIGNATURE-----
+BRs
+XIubo
 
---qOrJKOH36bD5yhNe--
