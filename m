@@ -1,71 +1,109 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH] pwm: imx: Support very long period lengths
-Date: Mon, 28 Apr 2014 11:22:55 +0200
-Message-ID: <20140428092255.GO5858@pengutronix.de>
-References: <1398675331-10980-1-git-send-email-xobs@kosagi.com>
- <1398675331-10980-2-git-send-email-xobs@kosagi.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v6 RESEND 0/5] Add Broadcom Kona PWM Support
+Date: Mon, 28 Apr 2014 13:07:32 +0200
+Message-ID: <20140428110731.GH19455@ulmo>
+References: <1398450675-19609-1-git-send-email-tim.kryger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Q6STzHxy03qt/hK9"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:48024 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754349AbaD1JW6 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 05:22:58 -0400
+Received: from mail-ee0-f42.google.com ([74.125.83.42]:62423 "EHLO
+	mail-ee0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754440AbaD1LJF (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 07:09:05 -0400
 Content-Disposition: inline
-In-Reply-To: <1398675331-10980-2-git-send-email-xobs@kosagi.com>
+In-Reply-To: <1398450675-19609-1-git-send-email-tim.kryger@linaro.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Sean Cross <xobs@kosagi.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
+To: Tim Kryger <tim.kryger@linaro.org>
+Cc: Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 
-On Mon, Apr 28, 2014 at 04:55:31PM +0800, Sean Cross wrote:
-> The IMX PWM block supports using both the system clock and a 32 kHz
-> clock for driving PWM events.  For very long period lengths, use the
-> 32 kHz clock instead of the high-speed clock.
-> 
-> Signed-off-by: Sean Cross <xobs@kosagi.com>
-> ---
->  drivers/pwm/pwm-imx.c | 14 +++++++++++---
->  1 file changed, 11 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> index cc47733..8410455 100644
-> --- a/drivers/pwm/pwm-imx.c
-> +++ b/drivers/pwm/pwm-imx.c
-> @@ -36,9 +36,11 @@
->  #define MX3_PWMCR_DOZEEN                (1 << 24)
->  #define MX3_PWMCR_WAITEN                (1 << 23)
->  #define MX3_PWMCR_DBGEN			(1 << 22)
-> +#define MX3_PWMCR_CLKSRC_IPG_32K  (3 << 16)
->  #define MX3_PWMCR_CLKSRC_IPG_HIGH (2 << 16)
->  #define MX3_PWMCR_CLKSRC_IPG      (1 << 16)
->  #define MX3_PWMCR_EN              (1 << 0)
-> +#define MX3_SLOW_THRESHOLD_NS	100000
->  
->  struct imx_chip {
->  	struct clk	*clk_per;
-> @@ -107,7 +109,13 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
->  	unsigned long period_cycles, duty_cycles, prescale;
->  	u32 cr;
->  
-> -	c = clk_get_rate(imx->clk_per);
-> +	if (duty_ns > MX3_SLOW_THRESHOLD_NS) {
 
-If anything you have to check the period_cycles, not the duty_cycles.
+--Q6STzHxy03qt/hK9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-100000 seems to be some arbitrary value suitable for some unspecified
-ipg clock rate. I think you should use it when the period_cycles
-register overflows.
+On Fri, Apr 25, 2014 at 11:31:10AM -0700, Tim Kryger wrote:
+> This series introduces the driver for the Kona PWM controller found in
+> Broadcom mobile SoCs like bcm281xx and updates the device tree and the
+> defconfig to enable use of this hardware on the bcm28155 AP board.
+>=20
+> Changes since v5:
+>   - Rebased on v3.15-rc1
+>=20
+> Changes since v4:
+>   - Added in real polarity support
+>   - Labeled trigger bits as such rather than use the name from hw docs
+>   - Listed unsual hardware characteristics at the top of the file
+>   - Removed default from Kconfig and update defconfig accordingly
+>   - Always use unsigned int for temporary register values
+>=20
+> Changes since v3:
+>   - Removed polarity support for now
+>   - Cleaned up whitespace issues, shortened some variable names
+>   - Use container_of instead of dev_get_drvdata to get private data
+>   - Removed workaround for PWM framework bug
+>   - Reworded some binding documentation
+>=20
+> Changes since v2:
+>   - SoC DTS file updated to use real clock's phandle + specifier
+>   - Toggle smooth mode off during apply so new settings take immediately
+>=20
+> Changes since v1:
+>   - Fixed up macros to be clearer and more complete
+>   - Corrected spelling and punctuation mistakes
+>   - Added support for polarity
+>   - Made peripheral clock use more efficient
+>   - Made prescale and duty computation clearer
+>   - Moved Makefile addition to keep alphabetical
+>   - Split complex lines into multiple steps
+>=20
+>=20
+> Tim Kryger (5):
+>   Documentation: dt: Add Kona PWM binding
+>   pwm: kona: Introduce Kona PWM controller support
+>   ARM: dts: Declare the PWM for bcm11351 (bcm281xx)
+>   ARM: dts: Enable the PWM for bcm28155 AP board
+>   ARM: bcm_defconfig: Enable PWM and Backlight
+>=20
+>  .../devicetree/bindings/pwm/bcm-kona-pwm.txt       |   21 ++
+>  arch/arm/boot/dts/bcm11351.dtsi                    |    8 +
+>  arch/arm/boot/dts/bcm28155-ap.dts                  |    4 +
+>  arch/arm/configs/bcm_defconfig                     |    3 +
+>  drivers/pwm/Kconfig                                |    9 +
+>  drivers/pwm/Makefile                               |    1 +
+>  drivers/pwm/pwm-bcm-kona.c                         |  319 ++++++++++++++=
+++++++
+>  7 files changed, 365 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/bcm-kona-pwm.txt
+>  create mode 100644 drivers/pwm/pwm-bcm-kona.c
 
-> +		cr = MX3_PWMCR_CLKSRC_IPG_32K;
-> +		c = 32768;
+I've applied patches 1 and 2 (with two tiny whitespace cleanups) to my
+for-next branch.
 
-How about providing a proper clock instead of hardcoding this?
+Thanks,
+Thierry
 
-Sascha
+--Q6STzHxy03qt/hK9
+Content-Type: application/pgp-signature
 
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTXjZzAAoJEN0jrNd/PrOhkLsP/29qxlKh/dhTfb4gSR+V5t9a
+WwdhhsZNLlNSgQ03c40DwV8DtEHD2Z4BbxeF+ElCYq0xeDU79erEDVIjonu9939v
+jL1FyE0UHU9sLvwU03R7Sjcco3ljbuAG8H1TEsPyw7OKGBmcjrSEBJcgLlcHqXrg
+/z2cOdgOkrBWplxqMUNVr6sh5ErT1584DceUWfJsrD6M3g6Bd39FnKhZrcPPRQAM
+CN8dRcBIXsrelEpJHkLenxgb93ADFZSR1N1tU1UexQn0ufZnDJmAwRFHeTnmPtd3
+kreSGOphiZwvUOy7cNC3Sxj5irCzn8vGcWiixy50SkvRwnCe5C6G+4OBwHKaj+36
+FmdpP/un3AYaZ53pMoCXSYnxiMS/LboMNmXLh70VM/N1tx2j+hAL10u5LzOqFJNU
+WyujvbYAs9e6FwTyLTi24j3BbPRCFJmj/cEWzuqqaMOnVnwq20Z9xFkmfBgkZlV1
+WjPNRq9B1WkV/arbk5SBM7BHrylSEneo4pOl+bgEVVnes2LnL4lhWCMP4G2KAhMa
+KR6vtDpVbzILz2jQbCRC4W93emOv/w+ZnkG9UmOOECf3gLDSzhiE5QPnW5AvIH/s
+4LjuLg9PBCzz5ZykOZVmRPG461nRuUR+oCwuKelFs0gqvmYofa8jZ6e8Rp7Ikgoy
+pHvmyR4lXBY5+KdSgkqU
+=nxgn
+-----END PGP SIGNATURE-----
+
+--Q6STzHxy03qt/hK9--
