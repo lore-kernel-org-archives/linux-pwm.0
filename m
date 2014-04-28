@@ -1,66 +1,53 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3] pwm_lpss: Add support for PCI devices
-Date: Mon, 28 Apr 2014 15:19:54 +0200
-Message-ID: <20140428131953.GB15946@ulmo>
-References: <1397819860-22213-1-git-send-email-chiau.ee.chew@intel.com>
+From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
+Subject: RE: [PATCH 0/3] FTM PWM adds regmap and endianness support.
+Date: Mon, 28 Apr 2014 14:26:57 +0000
+Message-ID: <e5e350afaa7b42cfbd93f52130560064@BY2PR03MB505.namprd03.prod.outlook.com>
+References: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>,<20140428131034.GA15946@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="1LKvkjL3sHcu1TtY"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f44.google.com ([74.125.83.44]:63632 "EHLO
-	mail-ee0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752572AbaD1NVZ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 09:21:25 -0400
-Content-Disposition: inline
-In-Reply-To: <1397819860-22213-1-git-send-email-chiau.ee.chew@intel.com>
+Received: from mail-by2lp0235.outbound.protection.outlook.com ([207.46.163.235]:17166
+	"EHLO na01-by2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1752171AbaD1O1B convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 10:27:01 -0400
+In-Reply-To: <20140428131034.GA15946@ulmo>
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Chew Chiau Ee <chiau.ee.chew@intel.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Alan Cox <alan@linux.intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "broonie@kernel.org" <broonie@kernel.org>, "swarren@nvidia.com" <swarren@nvidia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
 
---1LKvkjL3sHcu1TtY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 18, 2014 at 07:17:40PM +0800, Chew Chiau Ee wrote:
-> From: Alan Cox <alan@linux.intel.com>
->=20
-> Not all systems enumerate the PWM devices via ACPI. They can also be expo=
-sed
-> via the PCI interface.
->=20
-> Signed-off-by: Alan Cox <alan@linux.intel.com>
-> Signed-off-by: Chew, Chiau Ee <chiau.ee.chew@intel.com>
-> ---
->  drivers/pwm/pwm-lpss.c |  161 ++++++++++++++++++++++++++++++++++++++----=
------
->  1 files changed, 130 insertions(+), 31 deletions(-)
 
-Applied, thanks.
+> > Xiubo Li (3):
+> >   pwm: ftm-pwm: Clean up the code.
+> >   pwm: ftm-pwm: Convert to direct regmap API usage.
+> >   pwm: ftm-pwm: Add big-endian support
+> >
+> >  drivers/pwm/pwm-fsl-ftm.c | 96 ++++++++++++++++++++++++++---------------------
+> >  1 file changed, 53 insertions(+), 43 deletions(-)
+>
+> This leaves me with only very vague idea of why this is necessary and
+> why it should be merged.
+>
+> Please describe in more detail (in both the cover-letter and each
+> individual patch) why you want me to apply these patches.
+>
 
-Thierry
+Thanks very much for your reply.
 
---1LKvkjL3sHcu1TtY
-Content-Type: application/pgp-signature
+Should I resend this patch series? If so, I will add some thing like the following:
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+The FTM PWM driver will be used in our Vybrid, LS1 and LS2+ SoCs, and on Vybrid
+and LS2 SoCs, the FTM devices are in LE mode, while on LS1 SoCs it in BE mode.
 
-iQIcBAEBAgAGBQJTXlV5AAoJEN0jrNd/PrOhY5cP/3hz7KX/CrdmJA/MLmJV52Nf
-Wrcd2aF7oxbTVuVOfSnctopzu12iKY19wIfJGogiAUk/5vtZtdpWE/iMc6iKOyP3
-o6IN6D+wD/vVGxvG8m7aSPhx9bOJG28JCu4HANsVNnE9EhDSqVWQasfHrM31ugP9
-jlKR5z01QM5LzwLKo1MdUeef97H4zU9T1H+Uy8BPw/vyxeb18meGBjORUOZnty8D
-5mh6WG94iP6Erj6ee48i6F8ZMEvVi/UPscMWXP0/ObnowQdoQX0qCidDpuoywjwc
-/9iOOTsdY8L+K34fL1xl5QN7siqy4tOaqUSIBs1WdZDRyY/3FGG2YQkYoxgbt/W2
-Sn3erMBqZwHHeMgcnWCvo0heysbwm3AFseoYMnvAVg4H/49yq79krQqqUc1oRlNo
-8ZGwK9TKy8jN1WCXa/Tc6YBZNWp85UuIqhiHpdsyt92lGLwYFxjziN06ns6GhwvG
-etdBKiVncMQjngMLWIrw2pRKXuWJCuso46EAvwgqLX3go/m7Gp1AQvGJ/2fQiLSM
-cjVmvsOgy71FCF4bXFuKRrqNb1OvhqL+at4NjU63da0qrGaqblYnqkgSwh5IH02K
-APdSYpTe00M+TaSEyvhGhee2UUMDt4TZKaD0MuKJFMilSW08COnYx9VYdvN9vhBZ
-bDsj96hBNFFpLOJB+yCJ
-=d74f
------END PGP SIGNATURE-----
+So this patch series add endianness support based on the regmap core, which has
+already support the rich endiannesses for the same device.
 
---1LKvkjL3sHcu1TtY--
+Thanks,
+
+BRs
+Xiubo
