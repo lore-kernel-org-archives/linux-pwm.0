@@ -1,90 +1,59 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 0/3] FTM PWM adds regmap and endianness support.
-Date: Mon, 28 Apr 2014 16:56:16 +0200
-Message-ID: <20140428145615.GA28443@ulmo>
+Subject: Re: [PATCH 1/3] pwm: ftm-pwm: Clean up the code.
+Date: Mon, 28 Apr 2014 16:57:16 +0200
+Message-ID: <20140428145703.GB28443@ulmo>
 References: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
- <20140428131034.GA15946@ulmo>
- <e5e350afaa7b42cfbd93f52130560064@BY2PR03MB505.namprd03.prod.outlook.com>
+ <1395377590-23537-2-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="OgqxwSJOaUobr8KG"
+	protocol="application/pgp-signature"; boundary="bAmEntskrkuBymla"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f50.google.com ([74.125.83.50]:42203 "EHLO
-	mail-ee0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752127AbaD1O5r (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 10:57:47 -0400
+Received: from mail-ee0-f45.google.com ([74.125.83.45]:48896 "EHLO
+	mail-ee0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756498AbaD1O6q (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 10:58:46 -0400
 Content-Disposition: inline
-In-Reply-To: <e5e350afaa7b42cfbd93f52130560064@BY2PR03MB505.namprd03.prod.outlook.com>
+In-Reply-To: <1395377590-23537-2-git-send-email-Li.Xiubo@freescale.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "broonie@kernel.org" <broonie@kernel.org>, "swarren@nvidia.com" <swarren@nvidia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Xiubo Li <Li.Xiubo@freescale.com>
+Cc: linux-pwm@vger.kernel.org, broonie@kernel.org, swarren@nvidia.com, linux-kernel@vger.kernel.org
 
 
---OgqxwSJOaUobr8KG
+--bAmEntskrkuBymla
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 28, 2014 at 02:26:57PM +0000, Li.Xiubo@freescale.com wrote:
->=20
->=20
->=20
-> > > Xiubo Li (3):
-> > >   pwm: ftm-pwm: Clean up the code.
-> > >   pwm: ftm-pwm: Convert to direct regmap API usage.
-> > >   pwm: ftm-pwm: Add big-endian support
-> > >
-> > >  drivers/pwm/pwm-fsl-ftm.c | 96 ++++++++++++++++++++++++++-----------=
-----------
-> > >  1 file changed, 53 insertions(+), 43 deletions(-)
-> >
-> > This leaves me with only very vague idea of why this is necessary and
-> > why it should be merged.
-> >
-> > Please describe in more detail (in both the cover-letter and each
-> > individual patch) why you want me to apply these patches.
-> >
->=20
-> Thanks very much for your reply.
->=20
-> Should I resend this patch series? If so, I will add some thing like the =
-following:
->=20
-> The FTM PWM driver will be used in our Vybrid, LS1 and LS2+ SoCs, and on =
-Vybrid
-> and LS2 SoCs, the FTM devices are in LE mode, while on LS1 SoCs it in BE =
-mode.
->=20
-> So this patch series add endianness support based on the regmap core, whi=
-ch has
-> already support the rich endiannesses for the same device.
+On Fri, Mar 21, 2014 at 12:53:08PM +0800, Xiubo Li wrote:
+> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
+> ---
+>  drivers/pwm/pwm-fsl-ftm.c | 13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
 
-Yes, please resend with that description added where appropriate. I'd
-like to see something like that in the cover letter and, more
-importantly, in the individual patches.
+The patch description here could explain that this is in preparation for
+the conversion to regmap (which I assume it is).
 
 Thierry
 
---OgqxwSJOaUobr8KG
+--bAmEntskrkuBymla
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTXmwPAAoJEN0jrNd/PrOhGdwP/2X4/hvStBXCxfeTUAjpnqQ0
-ZYDiw7B6sQfsCoJ9VQsVYUdpocWvHmMQXjkqzdiE+sm+qh24lMk3ycapFytzjA1W
-hZJ9gT7cJuze0OE/n0QTxwaZ3g8213q1bCK0wgX/YbKCkw/w0dJtgAErq9KzXlpX
-kF75t7Mraq73q9U6QVb8z5k4vzMpXFopSoAD4BfS3KhOP5AX6LHzxaZBtRUeWwgf
-dFfv/CAJzEL+y1NYeos7OiVhbbk+FQ0PcERXsGM5XPEu+4rpgxmb1kXfJ5h6vIqy
-hAE8NUGOX9ckPgkaPFJxvmq4BYw7xD6//UOkFF9n5+CsUcJ0cPMeShAWV99LtYLp
-nrT9BREl7p+ODZodLSs89Bo6bmDPGKkewXQqBCjHGKTRQVvfLWk26o5uULF/N4Bb
-yH8jd7NRZzdotuCADDAkremPQ/M1U5RZD6Rm9rfsTMGw3pcBgm0XzMwQvSkKHLGa
-w01NbRE6LC2QokwkcMjE6CRpZfUsodgJDXM/ukIYrwiQTrog+pq/Mk8H+KX5lUy6
-rH0cZ3K26rBGVM3iV7vXwY9MkMEV+f9lb4J2uvOReVNWXHtNascy0mjIusQKxfM3
-ICeP+/olCxwe6SQtpxjd4g6CuQ0Hh7Gr8Gh2EnxpB7DrsjHRcLAWXne9urPQCYOJ
-XFspTn5+2qJNm2AoFIds
-=S9hs
+iQIcBAEBAgAGBQJTXmxLAAoJEN0jrNd/PrOhPBoP/RV8RIpUjRikN7hOwTRVtjSe
+9B14S8Op4idy0Y9bvSCCeB/HUnVJSoLDGeZCnjxckSdo4gmh+QoOiMqRIIWhYQwO
+SxnRUTjYS6ULjZJVqinTe5u0CJvJb1dWcotY90nSUCEyduVMh2YcltUFzkrsX21j
+OPD1vsOrDOKPIgw6ANAI+vHWPar9NdcvhLIIAbZKauLbR5/6IbkzU2OWuK9WYLIH
+TZkz4itHytJwYrkXDT8RBAev3rdioG4JJob1Zi4FiVU4fs1z7x7CmEdVTiLOFVSS
+XuuECvKnOjrrCWFTY8MmAb/le8ZukFiDBcvsRF3k/6DBf1DeJ9Rj3V981HqqUAZE
+v+BaaZTBJoAJhRax9BMqfLLIX3S4H5A94iUQgY5NXOjV5bZ+37xLF58CgBxL2zvt
+OBl4xX7YXPktiPrsSYLGqdvGVyVW5pWEjz7/fJF7inGzLC0iWX+gKqh/vmMFn9jS
+gom2/fp42u+LG3gXjBrsgappHSVpVk6fhMrRIKIMQwGThQIx+p2KkI/nvo86MQhP
+K3I4J2sncEbTVX6uMtZ8Exlkb5v/fAWKOShwjAwD/T/imasK+/ENKtGgwgt0mPqo
+poned8t/WfpUVZ6rPfXReBfv+asEIMlhb5AaqlYwAExRNGL8L0GDGLCgF1G8YeZT
+eMog+7xHxZDuo88ydkds
+=ISXF
 -----END PGP SIGNATURE-----
 
---OgqxwSJOaUobr8KG--
+--bAmEntskrkuBymla--
