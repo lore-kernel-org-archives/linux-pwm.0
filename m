@@ -1,44 +1,159 @@
 From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCHv3 3/7] ARM: sun4i: dt: add pinmux configuration for the PWM
-Date: Mon, 28 Apr 2014 12:09:20 -0700
-Message-ID: <20140428190920.GA3134@lukather>
+Subject: Re: [PATCHv3 1/7] pwm: Add Allwinner SoC support
+Date: Mon, 28 Apr 2014 12:10:24 -0700
+Message-ID: <20140428191024.GB3134@lukather>
 References: <1398701834-3719-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1398701834-3719-4-git-send-email-alexandre.belloni@free-electrons.com>
+ <1398701834-3719-2-git-send-email-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3647522952791683907=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1398701834-3719-4-git-send-email-alexandre.belloni@free-electrons.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="V0207lvV8h4k8FAm"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1398701834-3719-2-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---===============3647522952791683907==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="fUYQa+Pmc3FrFX/N"
-Content-Disposition: inline
-
-
---fUYQa+Pmc3FrFX/N
+--V0207lvV8h4k8FAm
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 28, 2014 at 06:17:10PM +0200, Alexandre Belloni wrote:
-> Add the pinctrl descriptions for both PWM channels of the Allwinner A10.
+Hi,
+
+On Mon, Apr 28, 2014 at 06:17:08PM +0200, Alexandre Belloni wrote:
+> This adds a generic PWM framework driver for the PWM controller
+> found on Allwinner SoCs.
 >=20
 > Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+> ---
+>  drivers/pwm/Kconfig     |   9 ++
+>  drivers/pwm/Makefile    |   1 +
+>  drivers/pwm/pwm-sunxi.c | 345 ++++++++++++++++++++++++++++++++++++++++++=
+++++++
+>  3 files changed, 355 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-sunxi.c
+>=20
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index 5b34ff29ea38..178b017be827 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -217,6 +217,15 @@ config PWM_SPEAR
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-spear.
+> =20
+> +config PWM_SUNXI
+> +	tristate "Allwinner PWM support"
+> +	depends on ARCH_SUNXI || COMPILE_TEST
+> +	help
+> +	  Generic PWM framework driver for Allwinner SoCs.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called pwm-sunxi.
+> +
+>  config PWM_TEGRA
+>  	tristate "NVIDIA Tegra PWM support"
+>  	depends on ARCH_TEGRA
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index e57d2c38a794..39997ea2e276 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -19,6 +19,7 @@ obj-$(CONFIG_PWM_PXA)		+=3D pwm-pxa.o
+>  obj-$(CONFIG_PWM_RENESAS_TPU)	+=3D pwm-renesas-tpu.o
+>  obj-$(CONFIG_PWM_SAMSUNG)	+=3D pwm-samsung.o
+>  obj-$(CONFIG_PWM_SPEAR)		+=3D pwm-spear.o
+> +obj-$(CONFIG_PWM_SUNXI)		+=3D pwm-sunxi.o
+>  obj-$(CONFIG_PWM_TEGRA)		+=3D pwm-tegra.o
+>  obj-$(CONFIG_PWM_TIECAP)	+=3D pwm-tiecap.o
+>  obj-$(CONFIG_PWM_TIEHRPWM)	+=3D pwm-tiehrpwm.o
+> diff --git a/drivers/pwm/pwm-sunxi.c b/drivers/pwm/pwm-sunxi.c
+> new file mode 100644
+> index 000000000000..0f2d65e8976b
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-sunxi.c
+> @@ -0,0 +1,345 @@
+> +/*
+> + * Driver for Allwinner Pulse Width Modulation Controller
+> + *
+> + * Copyright (C) 2014 Alexandre Belloni <alexandre.belloni@free-electron=
+s.com>
+> + *
+> + * Licensed under GPLv2.
+> + */
+> +
+> +#include <linux/bitops.h>
+> +#include <linux/clk.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/slab.h>
+> +
+> +#define PWM_CTRL_REG		0x0
+> +
+> +#define PWM_CH_PRD_BASE		0x4
+> +#define PWM_CH_PRD_OFF		0x4
+> +#define PWM_CH_PRD(x)		(PWM_CH_PRD_BASE + PWM_CH_PRD_OFF * (x))
+> +
+> +#define PWMCH_OFFSET		15
+> +#define PWM_PRESCAL_MASK	GENMASK(3,0)
+> +#define PWM_PRESCAL_OFF		0
+> +#define PWM_EN			BIT(4)
+> +#define PWM_ACT_STATE		BIT(5)
+> +#define PWM_CLK_GATING		BIT(6)
+> +#define PWM_MODE		BIT(7)
+> +#define PWM_PULSE		BIT(8)
+> +#define PWM_BYPASS		BIT(9)
+> +
+> +#define PWM_RDY_BASE		28
+> +#define PWM_RDY_OFF		1
+> +#define PWM_RDY(x)		BIT(PWM_RDY_BASE + PWM_RDY_OFF * (x))
+> +
+> +#define PWM_PRD_ACT_MASK	0xFF
+> +#define PWM_PRD(x)		((x - 1) << 16)
+> +#define PWM_PRD_MASK		0xFF
+> +
+> +#define	BIT_CH(bit, chan)	(bit << (chan * PWMCH_OFFSET))
+> +
+> +u32 prescal_table[] =3D { 120, 180, 240, 360, 480, 0, 0, 0,
+> +			12000, 24000, 36000, 48000, 72000,
+> +			0, 0, 1 };
+> +
+> +struct sunxi_pwm_data {
+> +	bool has_rdy;
+> +};
+> +
+> +struct sunxi_pwm_chip {
+> +	struct pwm_chip chip;
+> +	struct clk *clk;
+> +	void __iomem *base;
+> +	struct mutex ctrl_lock;
+> +	const struct sunxi_pwm_data *data;
+> +};
+> +
+> +#define to_sunxi_pwm_chip(chip) container_of(chip, struct sunxi_pwm_chip=
+, chip)
+> +
+> +static inline u32 sunxi_pwm_readl(struct sunxi_pwm_chip *chip,
+> +				  unsigned long offset)
+> +{
+> +	return readl_relaxed(chip->base + offset);
+> +}
+> +
+> +static inline void sunxi_pwm_writel(struct sunxi_pwm_chip *chip,
+> +				    unsigned long offset, unsigned long val)
+> +{
+> +	writel_relaxed(val, chip->base + offset);
 
-Applied to sunxi/dt-for-3.16, thanks!
+Actually, this won't work with COMPILE_TEST, since the *_relaxed
+functions are not defined for all the architectures.
 
 Maxime
 
@@ -47,40 +162,26 @@ Maxime Ripard, Free Electrons
 Embedded Linux, Kernel and Android engineering
 http://free-electrons.com
 
---fUYQa+Pmc3FrFX/N
+--V0207lvV8h4k8FAm
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.14 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTXqdgAAoJEBx+YmzsjxAgcKsP/15PON8u+Wyo04Rtn8yhWMIu
-1Ndv10jAz6hH4CPudlleaGSJQIG3Ei5/GCo6LiDhNPg12Lu8wtSdUvpB+FCI4qZV
-mhufE6ZLp1u60eNvLrsso+RQgZf/2XB8S3G+dbSpSqNRGarZ1dri1sQ+WWZMqp8M
-MqJxhpfPqk8U5+6U/WGWBdA3tmpZlrH5EOR0nwNvXVeEKMwEQSjaDS3nxraEm592
-RsP7Fzi+KsQiy2KU5tehhn1f9GnmGSSfeQX5yNbA1TKoBdpEXVPYuNG7avomjW2M
-zKaLabhe0nCYTErZFVG86W9TlEG9T0ZulzaaCjbcvgJEDdViluxPhdeu1SI9Dbsa
-QcMpUBdLC1vpdzZFtTC7gUpScSA42lCFwEMKmHFxwn9kHl7uKV2uPWbeer4hcaCu
-5wYDHnYZ4mNIliLqh1T6mdt2UQvs0/IPHTioaKRmsxDgNEsZOmTLM/rmjogQq/li
-JQ/IbpXtTut0OHAsq2KDGCiG0vuSfFnb58a2X0txTCXm+1QLkVqjPIVXkDxm3+79
-crfdKiEtmqNBAfMm/ud+eZ0PNfkOIzv9q/4LZzY51FiAKWgpD3mE/FgDrw+gu3Nu
-sW7gEo9D0TBw9EAN/ayps7n/ATlvipXdbf622nELtSPeRBK//NQwVaksi/vfLQm6
-s7it6ddaajEMyR6hb3Ty
-=GDIc
+iQIcBAEBAgAGBQJTXqefAAoJEBx+YmzsjxAgN0IQAJ5i3yYllHpuBq91DLkGvw2P
+d8ADQPIRjjkgVeGGqRpzJCRQfvWrcTDQ+E0vuoGy8AbSSd3/jbsA1qhVvLsOnzjF
+R255jBgTjvfdvHIudJbStp1reazhvH914KUtbySPZBp+lsy2msdFq1WkNLZybBCL
+gRSdpoURFkAQ3soh2Wnmi3wb/hTl09VIZP3R9kZzOrjZsRNaX8nukQOaNbYistol
+01lfI+9h2eb6p5CgCHpmSIWYlOsZVRvlGm4PrwdkPpWsPBuK2WLYvNDUjRDGPYz1
+Xz0aMd+Vn/0PtAagVvI54VMXVpq+TDHGxt6qm6FXwxRRYKZlsv4Gogbm81QQ/eBP
+4Z85tUDN8P2RYuQWrnJ4SEpu1kR0WIm6kx05d9AX/K+15cRdazQczkLzUx6/siA+
+dqtv8GVLmgvNeVmuOo2EpBTmEep9GVqNkAldIe+++8Kdlm8AnnfSVs7wg4/XpPnE
+1iTKE+orJhk2kcJ5UKAR9chCCUaEb2OUVotJS1YWOdcM0b5LARJhxAEcOWwX+b0s
+yksRyx+i1ZMQSWS17/4znXjMkJ9ghdEW6HNR8RMINE0ecskRLOMB3L10HdmzMTIn
+hC2EaCBsZsoeSHmEhc/IcUCNaXQ/RCQyF7da/qzHNO8IgaO8Xl4W8NgITjICSGzz
+cW/QzsJf8eaDEVr1CIwl
+=WWWO
 -----END PGP SIGNATURE-----
 
---fUYQa+Pmc3FrFX/N--
-
-
---===============3647522952791683907==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============3647522952791683907==--
+--V0207lvV8h4k8FAm--
