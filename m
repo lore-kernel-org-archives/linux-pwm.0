@@ -1,67 +1,66 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 0/3] FTM PWM adds regmap and endianness support.
-Date: Mon, 28 Apr 2014 15:10:36 +0200
-Message-ID: <20140428131034.GA15946@ulmo>
-References: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
+Subject: Re: [PATCH v3] pwm_lpss: Add support for PCI devices
+Date: Mon, 28 Apr 2014 15:19:54 +0200
+Message-ID: <20140428131953.GB15946@ulmo>
+References: <1397819860-22213-1-git-send-email-chiau.ee.chew@intel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="gKMricLos+KVdGMg"
+	protocol="application/pgp-signature"; boundary="1LKvkjL3sHcu1TtY"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f43.google.com ([74.125.83.43]:60293 "EHLO
-	mail-ee0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755854AbaD1NMG (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 09:12:06 -0400
+Received: from mail-ee0-f44.google.com ([74.125.83.44]:63632 "EHLO
+	mail-ee0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752572AbaD1NVZ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 09:21:25 -0400
 Content-Disposition: inline
-In-Reply-To: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
+In-Reply-To: <1397819860-22213-1-git-send-email-chiau.ee.chew@intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Xiubo Li <Li.Xiubo@freescale.com>
-Cc: linux-pwm@vger.kernel.org, broonie@kernel.org, swarren@nvidia.com, linux-kernel@vger.kernel.org
+To: Chew Chiau Ee <chiau.ee.chew@intel.com>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Alan Cox <alan@linux.intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---gKMricLos+KVdGMg
+--1LKvkjL3sHcu1TtY
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Mar 21, 2014 at 12:53:07PM +0800, Xiubo Li wrote:
+On Fri, Apr 18, 2014 at 07:17:40PM +0800, Chew Chiau Ee wrote:
+> From: Alan Cox <alan@linux.intel.com>
 >=20
-> Xiubo Li (3):
->   pwm: ftm-pwm: Clean up the code.
->   pwm: ftm-pwm: Convert to direct regmap API usage.
->   pwm: ftm-pwm: Add big-endian support
+> Not all systems enumerate the PWM devices via ACPI. They can also be expo=
+sed
+> via the PCI interface.
 >=20
->  drivers/pwm/pwm-fsl-ftm.c | 96 ++++++++++++++++++++++++++---------------=
-------
->  1 file changed, 53 insertions(+), 43 deletions(-)
+> Signed-off-by: Alan Cox <alan@linux.intel.com>
+> Signed-off-by: Chew, Chiau Ee <chiau.ee.chew@intel.com>
+> ---
+>  drivers/pwm/pwm-lpss.c |  161 ++++++++++++++++++++++++++++++++++++++----=
+-----
+>  1 files changed, 130 insertions(+), 31 deletions(-)
 
-This leaves me with only very vague idea of why this is necessary and
-why it should be merged.
-
-Please describe in more detail (in both the cover-letter and each
-individual patch) why you want me to apply these patches.
+Applied, thanks.
 
 Thierry
 
---gKMricLos+KVdGMg
+--1LKvkjL3sHcu1TtY
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTXlNKAAoJEN0jrNd/PrOh7mgP/02OkcFVQMoXAGpqQyExAAht
-cSwZK1mPhLViEuRCRBOHypo9TtpM3fGgHlHlMbqO5TjWeKMllA/SwqfhF8cBBLpU
-BjdYHtAyu2ZVNT1Bv4aLfXA7LuCDkNYTaAoBPuUdkS/dxM4lDHa1We8sauUNVFVp
-xm8BxwrczwyS1niMwQJ2YQGbiXTyA7hxE9eqw8fKq4SaBZLVK2kEq/nO/fJaepg3
-KyjHgXnldM9X5UlqJn28DXk5Gm0sHSlI7ODIYF8fLPnfhndtk5rThCDyqZFC0s4v
-pMSji+0NAlP8deMdRF0low16/ygIAJBhGhq5qmMHFnnVMuyT42SKlrDz7lvTYsaf
-YGeFhNB0li0gRVq8cHD1aBHWmFc79PRrmY83a0cPZ7PsfPzD1PjGbAyU81b52/1l
-NRkhMpOJ2RTQCe8oNrrFKRoY6hxS6McPP2MVgVAMEpeF/IlXbScXnudMa/UHBnm0
-5k2Ymh70s/lqIk/D2Drpw/f7HnJq4xubyAQWIMVW5GsljxkUZQbeLoMgz7Ah0v7/
-ajMiX/wQCfxn478i9ZGpg0oRnyIkSxNRrjzhsD/pYWOstvcVa8WhFjh5ujYEJp6i
-28gRTj4X4WOaC2v16PLW2hS3eO8/6kEpNxL8Tew/G3SbxwPWHo68gs0qn+XBDNO/
-nopQoNt4+PeMhN8IRgK1
-=plMi
+iQIcBAEBAgAGBQJTXlV5AAoJEN0jrNd/PrOhY5cP/3hz7KX/CrdmJA/MLmJV52Nf
+Wrcd2aF7oxbTVuVOfSnctopzu12iKY19wIfJGogiAUk/5vtZtdpWE/iMc6iKOyP3
+o6IN6D+wD/vVGxvG8m7aSPhx9bOJG28JCu4HANsVNnE9EhDSqVWQasfHrM31ugP9
+jlKR5z01QM5LzwLKo1MdUeef97H4zU9T1H+Uy8BPw/vyxeb18meGBjORUOZnty8D
+5mh6WG94iP6Erj6ee48i6F8ZMEvVi/UPscMWXP0/ObnowQdoQX0qCidDpuoywjwc
+/9iOOTsdY8L+K34fL1xl5QN7siqy4tOaqUSIBs1WdZDRyY/3FGG2YQkYoxgbt/W2
+Sn3erMBqZwHHeMgcnWCvo0heysbwm3AFseoYMnvAVg4H/49yq79krQqqUc1oRlNo
+8ZGwK9TKy8jN1WCXa/Tc6YBZNWp85UuIqhiHpdsyt92lGLwYFxjziN06ns6GhwvG
+etdBKiVncMQjngMLWIrw2pRKXuWJCuso46EAvwgqLX3go/m7Gp1AQvGJ/2fQiLSM
+cjVmvsOgy71FCF4bXFuKRrqNb1OvhqL+at4NjU63da0qrGaqblYnqkgSwh5IH02K
+APdSYpTe00M+TaSEyvhGhee2UUMDt4TZKaD0MuKJFMilSW08COnYx9VYdvN9vhBZ
+bDsj96hBNFFpLOJB+yCJ
+=d74f
 -----END PGP SIGNATURE-----
 
---gKMricLos+KVdGMg--
+--1LKvkjL3sHcu1TtY--
