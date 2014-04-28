@@ -1,33 +1,49 @@
-From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
-Subject: RE: [PATCH 1/3] pwm: ftm-pwm: Clean up the code.
-Date: Mon, 28 Apr 2014 15:16:07 +0000
-Message-ID: <6604daa9d83542d9af0fac727b761102@BY2PR03MB505.namprd03.prod.outlook.com>
-References: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
- <1395377590-23537-2-git-send-email-Li.Xiubo@freescale.com>,<20140428145703.GB28443@ulmo>
+From: Matt Porter <mporter@linaro.org>
+Subject: Re: [PATCH v6 RESEND 0/5] Add Broadcom Kona PWM Support
+Date: Mon, 28 Apr 2014 11:19:49 -0400
+Message-ID: <20140428151949.GD7719@beef>
+References: <1398450675-19609-1-git-send-email-tim.kryger@linaro.org>
+ <20140428110731.GH19455@ulmo>
+ <CAAYSxhpOP78EQAM0cWM2RwLu29-0eRVgLCFX3Hob8q=J==5wUA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140428145703.GB28443@ulmo>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "broonie@kernel.org" <broonie@kernel.org>, "swarren@nvidia.com" <swarren@nvidia.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ig0-f179.google.com ([209.85.213.179]:32796 "EHLO
+	mail-ig0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932357AbaD1PTy (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 11:19:54 -0400
+Received: by mail-ig0-f179.google.com with SMTP id hl10so4898824igb.12
+        for <linux-pwm@vger.kernel.org>; Mon, 28 Apr 2014 08:19:53 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <CAAYSxhpOP78EQAM0cWM2RwLu29-0eRVgLCFX3Hob8q=J==5wUA@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Tim Kryger <tim.kryger@linaro.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 
-
-> > Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
-> > ---
-> >  drivers/pwm/pwm-fsl-ftm.c | 13 ++++++-------
-> >  1 file changed, 6 insertions(+), 7 deletions(-)
+On Mon, Apr 28, 2014 at 08:00:39AM -0700, Tim Kryger wrote:
+> On Mon, Apr 28, 2014 at 4:07 AM, Thierry Reding
+> <thierry.reding@gmail.com> wrote:
+> > On Fri, Apr 25, 2014 at 11:31:10AM -0700, Tim Kryger wrote:
+> >> This series introduces the driver for the Kona PWM controller found in
+> >> Broadcom mobile SoCs like bcm281xx and updates the device tree and the
+> >> defconfig to enable use of this hardware on the bcm28155 AP board.
+> >>
 > 
-> The patch description here could explain that this is in preparation for
-> the conversion to regmap (which I assume it is).
->
+> >> Tim Kryger (5):
+> >>   Documentation: dt: Add Kona PWM binding
+> >>   pwm: kona: Introduce Kona PWM controller support
+> >>   ARM: dts: Declare the PWM for bcm11351 (bcm281xx)
+> >>   ARM: dts: Enable the PWM for bcm28155 AP board
+> >>   ARM: bcm_defconfig: Enable PWM and Backlight
+> 
+> > I've applied patches 1 and 2 (with two tiny whitespace cleanups) to my
+> > for-next branch.
+> 
+> Sounds good.  Thank you.
+> 
+> Matt and Christian, are you okay taking patches 3-5 through your tree?
 
-Please see the next version, I`ll explain it.
+Yes, I've now applied them to the appropropriate mach-bcm 3.16 branches.
 
-Thanks,
-
-BRs
-Xiubo
+-Matt
