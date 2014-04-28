@@ -1,118 +1,276 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH] pwm: imx: Support very long period lengths
-Date: Mon, 28 Apr 2014 14:43:01 +0200
-Message-ID: <20140428124301.GS5858@pengutronix.de>
-References: <1398675331-10980-1-git-send-email-xobs@kosagi.com>
- <1398675331-10980-2-git-send-email-xobs@kosagi.com>
- <20140428092255.GO5858@pengutronix.de>
- <535E4521.6070102@kosagi.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Bart Tanghe <bart.tanghe@thomasmore.be>
+Subject: [resend rfc v3] pwm: add BCM2835 PWM driver
+Date: Mon, 28 Apr 2014 14:54:46 +0200
+Message-ID: <1398689686-30317-1-git-send-email-bart.tanghe@thomasmore.be>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:57187 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755757AbaD1MnG (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 08:43:06 -0400
-Content-Disposition: inline
-In-Reply-To: <535E4521.6070102@kosagi.com>
+Received: from baptiste.telenet-ops.be ([195.130.132.51]:54178 "EHLO
+	baptiste.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755685AbaD1Myw (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 08:54:52 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Sean Cross <xobs@kosagi.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
+To: swarren@wwwdotorg.org, tim.kryger@linaro.org
+Cc: thierry.reding@gmail.com, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, Bart Tanghe <bart.tanghe@thomasmore.be>
 
-On Mon, Apr 28, 2014 at 08:10:09PM +0800, Sean Cross wrote:
-> On 04/28/14 17:22, Sascha Hauer wrote:
-> >On Mon, Apr 28, 2014 at 04:55:31PM +0800, Sean Cross wrote:
-> >>The IMX PWM block supports using both the system clock and a 32 kHz
-> >>clock for driving PWM events.  For very long period lengths, use the
-> >>32 kHz clock instead of the high-speed clock.
-> >>
-> >>Signed-off-by: Sean Cross <xobs@kosagi.com>
-> >>---
-> >>  drivers/pwm/pwm-imx.c | 14 +++++++++++---
-> >>  1 file changed, 11 insertions(+), 3 deletions(-)
-> >>
-> >>diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> >>index cc47733..8410455 100644
-> >>--- a/drivers/pwm/pwm-imx.c
-> >>+++ b/drivers/pwm/pwm-imx.c
-> >>@@ -36,9 +36,11 @@
-> >>  #define MX3_PWMCR_DOZEEN                (1 << 24)
-> >>  #define MX3_PWMCR_WAITEN                (1 << 23)
-> >>  #define MX3_PWMCR_DBGEN			(1 << 22)
-> >>+#define MX3_PWMCR_CLKSRC_IPG_32K  (3 << 16)
-> >>  #define MX3_PWMCR_CLKSRC_IPG_HIGH (2 << 16)
-> >>  #define MX3_PWMCR_CLKSRC_IPG      (1 << 16)
-> >>  #define MX3_PWMCR_EN              (1 << 0)
-> >>+#define MX3_SLOW_THRESHOLD_NS	100000
-> >>  struct imx_chip {
-> >>  	struct clk	*clk_per;
-> >>@@ -107,7 +109,13 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
-> >>  	unsigned long period_cycles, duty_cycles, prescale;
-> >>  	u32 cr;
-> >>-	c = clk_get_rate(imx->clk_per);
-> >>+	if (duty_ns > MX3_SLOW_THRESHOLD_NS) {
-> >If anything you have to check the period_cycles, not the duty_cycles.
-> >
-> >100000 seems to be some arbitrary value suitable for some unspecified
-> >ipg clock rate. I think you should use it when the period_cycles
-> >register overflows.
-> In this case, it's for a backlight controller that requires a 100 Hz
-> clock.  But you're right, hard-coding the values is a bad idea.
-> 
-> With the prescaler and the period_cycles register, it might not
-> actually overflow, but instead the resolution might become too poor
-> to be useful.  The prescaler supports dividing by up to 4096, but it
-> gets difficult to hit a particular value.
-
-Hm, this seems to be a common problem. grep for prescale in the pwm
-drivers. It seems several drivers iterate over the possible prescalers
-to find the best values. Maybe it's time to add some helper function
-for this task?
-
-> 
-> So with my target of a 100 Hz clock, it appears as though no values
-> overflow yet I can't use IPG_HIGH.
-> 
-> What is the best way to handle this?
-> >>+		cr = MX3_PWMCR_CLKSRC_IPG_32K;
-> >>+		c = 32768;
-> >How about providing a proper clock instead of hardcoding this?
-> >
-> That seems like a lot of work, and I don't see any other PWM devices
-> that do this.  If I understand the clock system, I'd have to add the
-> following to pwm-imx.c:
-> 
->     - Each PWM would get three new clocks added to its struct
-> imx_chip -- a clk_ipg_mux, a clk_ipg_32k, and a clk_ipg_high
->     - The struct imx_chip would also gain a clk_ckil entry for the
-> 32768 Hz clock
->     - These three clocks would need to be created on _probe() and
-> destroyed on _remove()
->     - clk_ipg_32k would get reparented to ckil (or whatever the
-> 32768 Hz clock is on that platform)
->     - clk_ipg_high would get reparented to imx->clk_per
->     - The recalc_rate(), round_rate(), and set_rate() would need to
-> be implemented (and calculated) for clk_ipg_32k and clk_ipg_high
-
-I didn't mean you should implement the PWM internal mux as clocks. This
-is completely driver internal and it's not necessary to make them real
-clocks.
-
-> 
-> Additionally, "ckil" would need to be added to the pwm entry for
-> every dts file.
-
-Yes, indeed. This way we do not rely on hardcoded values for ckil. ckil
-is 32000Hz on some (admittedly older) SoCs.
-
-So my suggestion is: Add ckil lookup to the pwm nodes of imx6qdl.dtsi,
-do a clk_get(dev, "ckil") in the driver and use it when available.
-
-Sascha
-
--- 
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+	Add some better error handling and Device table support
+	Added Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
+	
+Signed-off-by: Bart Tanghe <bart.tanghe@thomasmore.be>
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
+new file mode 100644
+index 0000000..44c0b95
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
+@@ -0,0 +1,13 @@
++bcm2835 PWM controller
++
++Required properties:
++- compatible: should be "bcrm,pwm-bcm2835"
++- reg: physical base address and length of the controller's registers
++
++Examples:
++
++pwm@0x2020C000 {
++	compatible = "bcrm,pwm-bcm2835";
++	reg = <0x2020C000 0x28>;
++	clocks = <&clk_pwm>;
++};
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 22f2f28..20341a3 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -62,6 +62,18 @@ config PWM_ATMEL_TCB
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-atmel-tcb.
+ 
++config PWM_BCM2835
++	tristate "BCM2835 PWM support"
++	depends on MACH_BCM2835 || MACH_BCM2708
++	help
++	  PWM framework driver for BCM2835 controller (raspberry pi)
++	  Only 1 channel is implemented.
++
++	  The pwm core is tested with a pwm basic frequency of 1Mhz.
++	  Use period above 1000ns
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called pwm-bcm2835.
++
+ config PWM_BFIN
+ 	tristate "Blackfin PWM support"
+ 	depends on BFIN_GPTIMERS
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index d8906ec..9863590 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -3,6 +3,7 @@ obj-$(CONFIG_PWM_SYSFS)		+= sysfs.o
+ obj-$(CONFIG_PWM_AB8500)	+= pwm-ab8500.o
+ obj-$(CONFIG_PWM_ATMEL)		+= pwm-atmel.o
+ obj-$(CONFIG_PWM_ATMEL_TCB)	+= pwm-atmel-tcb.o
++obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
+ obj-$(CONFIG_PWM_BFIN)		+= pwm-bfin.o
+ obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
+ obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
+diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
+new file mode 100644
+index 0000000..ec9829b
+--- /dev/null
++++ b/drivers/pwm/pwm-bcm2835.c
+@@ -0,0 +1,198 @@
++/*
++ * pwm-bcm2835 driver
++ * Standard raspberry pi (gpio18 - pwm0)
++ *
++ * Copyright (C) 2014 Thomas more
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; version 2.
++ */
++
++#include <linux/clk.h>
++#include <linux/err.h>
++#include <linux/io.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/pwm.h>
++
++/*mmio regiser mapping*/
++
++#define DUTY		0x14
++#define PERIOD		0x10
++#define CHANNEL		0x10
++
++#define PWM_ENABLE	0x00000001
++#define PWM_POLARITY	0x00000010
++
++#define MASK_CTL_PWM	0x000000FF
++#define CTL_PWM		0x00000081
++
++#define DRIVER_AUTHOR "Bart Tanghe <bart.tanghe@thomasmore.be>"
++#define DRIVER_DESC "A bcm2835 pwm driver - raspberry pi development platform"
++
++struct bcm2835_pwm_chip {
++	struct pwm_chip chip;
++	struct device *dev;
++	int channel;
++	int scaler;
++	void __iomem *mmio_base;
++};
++
++static inline struct bcm2835_pwm_chip *to_bcm2835_pwm_chip(
++					struct pwm_chip *chip){
++
++	return container_of(chip, struct bcm2835_pwm_chip, chip);
++}
++
++static int bcm2835_pwm_config(struct pwm_chip *chip,
++			      struct pwm_device *pwm,
++			      int duty_ns, int period_ns){
++
++	struct bcm2835_pwm_chip *pc;
++
++	pc = container_of(chip, struct bcm2835_pwm_chip, chip);
++
++	iowrite32(duty_ns/pc->scaler, pc->mmio_base + DUTY);
++	iowrite32(period_ns/pc->scaler, pc->mmio_base + PERIOD);
++
++	return 0;
++}
++
++static int bcm2835_pwm_enable(struct pwm_chip *chip,
++			      struct pwm_device *pwm){
++
++	struct bcm2835_pwm_chip *pc;
++
++	pc = container_of(chip, struct bcm2835_pwm_chip, chip);
++
++	iowrite32(ioread32(pc->mmio_base) | PWM_ENABLE, pc->mmio_base);
++	return 0;
++}
++
++static void bcm2835_pwm_disable(struct pwm_chip *chip,
++				struct pwm_device *pwm)
++{
++	struct bcm2835_pwm_chip *pc;
++
++	pc = to_bcm2835_pwm_chip(chip);
++
++	iowrite32(ioread32(pc->mmio_base) & ~PWM_ENABLE, pc->mmio_base);
++}
++
++static int bcm2835_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
++				enum pwm_polarity polarity)
++{
++	struct bcm2835_pwm_chip *pc;
++
++	pc = to_bcm2835_pwm_chip(chip);
++
++	if (polarity == PWM_POLARITY_NORMAL)
++		iowrite32((ioread32(pc->mmio_base) & ~PWM_POLARITY),
++						pc->mmio_base);
++	else if (polarity == PWM_POLARITY_INVERSED)
++		iowrite32((ioread32(pc->mmio_base) | PWM_POLARITY),
++						pc->mmio_base);
++
++	return 0;
++}
++
++static const struct pwm_ops bcm2835_pwm_ops = {
++	.config = bcm2835_pwm_config,
++	.enable = bcm2835_pwm_enable,
++	.disable = bcm2835_pwm_disable,
++	.set_polarity = bcm2835_set_polarity,
++	.owner = THIS_MODULE,
++};
++
++static int bcm2835_pwm_probe(struct platform_device *pdev)
++{
++	struct bcm2835_pwm_chip *pwm;
++
++	int ret;
++	struct resource *r;
++	u32 start, end;
++	struct clk *clk;
++
++	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
++	if (!pwm) {
++		dev_err(&pdev->dev, "failed to allocate memory\n");
++		return -ENOMEM;
++	}
++
++	pwm->dev = &pdev->dev;
++
++	clk = clk_get(&pdev->dev, NULL);
++	if (IS_ERR(clk)) {
++		dev_err(&pdev->dev, "could not find clk: %ld\n", PTR_ERR(clk));
++		devm_kfree(&pdev->dev, pwm);
++		return PTR_ERR(clk);
++	}
++
++	pwm->scaler = (int)1000000000/clk_get_rate(clk);
++
++	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	pwm->mmio_base = devm_ioremap_resource(&pdev->dev, r);
++	if (IS_ERR(pwm->mmio_base)) {
++		devm_kfree(&pdev->dev, pwm);
++		return PTR_ERR(pwm->mmio_base);
++	}
++
++	start = r->start;
++	end = r->end;
++
++	pwm->chip.dev = &pdev->dev;
++	pwm->chip.ops = &bcm2835_pwm_ops;
++	pwm->chip.npwm = 2;
++
++	ret = pwmchip_add(&pwm->chip);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
++		devm_kfree(&pdev->dev, pwm);
++		return -1;
++	}
++
++	/*set the pwm0 configuration*/
++	iowrite32((ioread32(pwm->mmio_base) & ~MASK_CTL_PWM)
++				| CTL_PWM, pwm->mmio_base);
++
++	platform_set_drvdata(pdev, pwm);
++
++	return 0;
++}
++
++static int bcm2835_pwm_remove(struct platform_device *pdev)
++{
++
++	struct bcm2835_pwm_chip *pc;
++	pc  = platform_get_drvdata(pdev);
++
++	if (WARN_ON(!pc))
++		return -ENODEV;
++
++	return pwmchip_remove(&pc->chip);
++}
++
++static const struct of_device_id bcm2835_pwm_of_match[] = {
++	{ .compatible = "bcrm,pwm-bcm2835", },
++	{ /* sentinel */ }
++};
++
++MODULE_DEVICE_TABLE(of, bcm2835_pwm_of_match);
++
++static struct platform_driver bcm2835_pwm_driver = {
++	.driver = {
++		.name = "pwm-bcm2835",
++		.owner = THIS_MODULE,
++		.of_match_table = bcm2835_pwm_of_match,
++	},
++	.probe = bcm2835_pwm_probe,
++	.remove = bcm2835_pwm_remove,
++};
++module_platform_driver(bcm2835_pwm_driver);
++
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR(DRIVER_AUTHOR);
++MODULE_DESCRIPTION(DRIVER_DESC);
