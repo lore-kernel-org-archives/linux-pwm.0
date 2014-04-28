@@ -1,38 +1,68 @@
-From: Tim Kryger <tim.kryger@linaro.org>
-Subject: Re: [PATCH v6 RESEND 0/5] Add Broadcom Kona PWM Support
-Date: Mon, 28 Apr 2014 08:00:39 -0700
-Message-ID: <CAAYSxhpOP78EQAM0cWM2RwLu29-0eRVgLCFX3Hob8q=J==5wUA@mail.gmail.com>
-References: <1398450675-19609-1-git-send-email-tim.kryger@linaro.org>
-	<20140428110731.GH19455@ulmo>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 3/3] pwm: ftm-pwm: Add big-endian support
+Date: Mon, 28 Apr 2014 17:02:08 +0200
+Message-ID: <20140428150207.GD28443@ulmo>
+References: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
+ <1395377590-23537-4-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="qOrJKOH36bD5yhNe"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140428110731.GH19455@ulmo>
+Content-Disposition: inline
+In-Reply-To: <1395377590-23537-4-git-send-email-Li.Xiubo@freescale.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
+To: Xiubo Li <Li.Xiubo@freescale.com>
+Cc: linux-pwm@vger.kernel.org, broonie@kernel.org, swarren@nvidia.com, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Apr 28, 2014 at 4:07 AM, Thierry Reding
-<thierry.reding@gmail.com> wrote:
-> On Fri, Apr 25, 2014 at 11:31:10AM -0700, Tim Kryger wrote:
->> This series introduces the driver for the Kona PWM controller found in
->> Broadcom mobile SoCs like bcm281xx and updates the device tree and the
->> defconfig to enable use of this hardware on the bcm28155 AP board.
->>
 
->> Tim Kryger (5):
->>   Documentation: dt: Add Kona PWM binding
->>   pwm: kona: Introduce Kona PWM controller support
->>   ARM: dts: Declare the PWM for bcm11351 (bcm281xx)
->>   ARM: dts: Enable the PWM for bcm28155 AP board
->>   ARM: bcm_defconfig: Enable PWM and Backlight
+--qOrJKOH36bD5yhNe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> I've applied patches 1 and 2 (with two tiny whitespace cleanups) to my
-> for-next branch.
+On Fri, Mar 21, 2014 at 12:53:10PM +0800, Xiubo Li wrote:
+> Now for the following scenarios:
+>=20
+>      SoC     |  CPU   | FTM-PWM | 'big-endian' property is needed?
+> -------------|--------|---------|---------------------------------
+>     Vybird   |  LE    |   LE    |     No
+>      LS1     |  LE    |   BE    |     Yes
+>      LS2     |  LE    |   LE    |     No
+>=20
+> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
+> ---
+>  drivers/pwm/pwm-fsl-ftm.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 
-Sounds good.  Thank you.
+And this should probably describe in text what happens. The table may
+look good, but you don't give a real description of what the change
+does.
 
-Matt and Christian, are you okay taking patches 3-5 through your tree?
+Oh, and doesn't this change need to update the device tree binding since
+you now have an additional property?
 
--Tim
+Thierry
+
+--qOrJKOH36bD5yhNe
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTXm1vAAoJEN0jrNd/PrOh+MMP/3UHzshvRhDwvm1LpAIu9SUy
+jBQKgno8lAvmuAkteA/ZxFs1lvFyLpAnq6GpHkMK1cScVby7Ij77rxOy8poYaKvp
+wXLMnvfWlPnD6Ln+FcqGnsIyaFxRDlxRs8d35oMd2pRIA9hvong4vMKsCn6XFjUG
+6MKbB6jn9hMOA8UIxM3b81m6XxSZPwcJqdxAtvuS+/ZQ1V3CoG30B1mJ3d12Cwcz
+qh0sCvQ3uuaeJvLtXaV71DcGKZkhbKbMQhsdaO9GAG/mr80I1RPtUDCptoavsDNR
+nX3xCsTYlB53RhCL4lGpfamUwSjb1nbAIdwK1jyYniMMWw2+aT1U2UYA2RsqK7tI
+PdHHnt5ZkrYy3L+QN1b1c4QHO5DxhDq6ZcQc6vPDD2kOQfgwCM5+UvydfWq8iwqE
+Tg5u1H875TdMzYu3F6lxWvaqNoc6grQyNefLonUn8/1SE3+IWEmGtMZaHWS/XHHt
+FW3uXl/yqrRo9W4VdrMzZkqPRdZ70h4/14O1pGtHcI/vKbT3xyTQxylvnJ4WkAqi
+wxnTdAzrbhOok/dMpDwMa0X0PTY2v5kEHcrcIkyaLrZgxaUu9ADV63edHdmaSgrA
+/mULjDFGx05DD76YzK9faVuDsI7dewDQ84RjEaV8PnaHl3ksxVOzCsZx+qXNDllR
+4OavEcJrstcPY8Ahkakm
+=lsXu
+-----END PGP SIGNATURE-----
+
+--qOrJKOH36bD5yhNe--
