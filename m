@@ -1,67 +1,38 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/3] pwm: ftm-pwm: Convert to direct regmap API usage.
-Date: Mon, 28 Apr 2014 16:59:31 +0200
-Message-ID: <20140428145930.GC28443@ulmo>
-References: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
- <1395377590-23537-3-git-send-email-Li.Xiubo@freescale.com>
+From: Tim Kryger <tim.kryger@linaro.org>
+Subject: Re: [PATCH v6 RESEND 0/5] Add Broadcom Kona PWM Support
+Date: Mon, 28 Apr 2014 08:00:39 -0700
+Message-ID: <CAAYSxhpOP78EQAM0cWM2RwLu29-0eRVgLCFX3Hob8q=J==5wUA@mail.gmail.com>
+References: <1398450675-19609-1-git-send-email-tim.kryger@linaro.org>
+	<20140428110731.GH19455@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="7DO5AaGCk89r4vaK"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f52.google.com ([74.125.83.52]:44960 "EHLO
-	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753557AbaD1PBD (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 11:01:03 -0400
-Content-Disposition: inline
-In-Reply-To: <1395377590-23537-3-git-send-email-Li.Xiubo@freescale.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140428110731.GH19455@ulmo>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Matt Porter <mporter@linaro.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, Christian Daudt <bcm@fixthebug.org>, Grant Likely <grant.likely@linaro.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Device Tree List <devicetree@vger.kernel.org>, Linux Doc List <linux-doc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback List <bcm-kernel-feedback-list@broadcom.com>, Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Xiubo Li <Li.Xiubo@freescale.com>
-Cc: linux-pwm@vger.kernel.org, broonie@kernel.org, swarren@nvidia.com, linux-kernel@vger.kernel.org
 
+On Mon, Apr 28, 2014 at 4:07 AM, Thierry Reding
+<thierry.reding@gmail.com> wrote:
+> On Fri, Apr 25, 2014 at 11:31:10AM -0700, Tim Kryger wrote:
+>> This series introduces the driver for the Kona PWM controller found in
+>> Broadcom mobile SoCs like bcm281xx and updates the device tree and the
+>> defconfig to enable use of this hardware on the bcm28155 AP board.
+>>
 
---7DO5AaGCk89r4vaK
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+>> Tim Kryger (5):
+>>   Documentation: dt: Add Kona PWM binding
+>>   pwm: kona: Introduce Kona PWM controller support
+>>   ARM: dts: Declare the PWM for bcm11351 (bcm281xx)
+>>   ARM: dts: Enable the PWM for bcm28155 AP board
+>>   ARM: bcm_defconfig: Enable PWM and Backlight
 
-On Fri, Mar 21, 2014 at 12:53:09PM +0800, Xiubo Li wrote:
-> Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
-> ---
->  drivers/pwm/pwm-fsl-ftm.c | 83 +++++++++++++++++++++++++----------------------
->  1 file changed, 44 insertions(+), 39 deletions(-)
+> I've applied patches 1 and 2 (with two tiny whitespace cleanups) to my
+> for-next branch.
 
-This could explain the advantages of converting to regmap. Looking at
-this diffstat above, it's not immediately obvious that there's an
-advantage because you end up adding 5 lines.
+Sounds good.  Thank you.
 
-Again I'm guessing this is in preparation to add endianess support, and
-it will be really easy to add that using regmap, so the gains will only
-become obvious later on.
+Matt and Christian, are you okay taking patches 3-5 through your tree?
 
-That's the kind of thing I'd like to see in the patch description. It
-tells me why this patch makes sense.
-
-Thierry
-
---7DO5AaGCk89r4vaK
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTXmzSAAoJEN0jrNd/PrOhvRYP/jYJ24/oiAcaY67EZ5u1XPlT
-HCT4KC2+n6zRh0tZVaKNK8cgcCr3eWD/cA536ItuPICy3pQ0MZob13tHHXb9ZNFq
-5YxJFV5aGq438s+3+i1/c4JmQFpBKwdFcQoO4VP+VLeidGeVpiz6DfIPT5k4e7J1
-IHv8bG6J3Lh67YMi0T+CirlVZyouSBXBrotTTSbYajg5ZYWZoHNLKlH2u7sHpPvw
-IkHc+74kPWttR19vgB2cRRGwwwZJPpGOFIe5OUYKt2Tj/snSZ1yaa0lgl10KOIva
-nLXKIvjE4whaO70S69SMxHgJq3Vxw4Kcp4s/ZKIBDcij6lrwbFSWDD5Ksjv6TAts
-aYZI1a7M30+xheJYr1/3SQdzppg7L0nQRxKfi8BNktUDizUfTG+dxfqIZgGYDFQG
-wm+KHw30R89mWdKFztEy0rRcWxQhKBglbmU3D/LqvP0uET1vhTvpycdxEnoq1/N9
-sPf6/D/LQYYhACTdztuJW17+NL8yFLrSX8Pd1+iipNIYtE98ToIDj+uTDDaHziro
-vDRSGkyPwH8lY2zwGvZdO3NZh4daI+u9ToOIaniro/wOEKwozfOJhrGzrY9UjqzF
-ZAWYjD4TcMV3V8jt6D7Md8ZPmMIJVIc8qJVBewZzp31DzCSULWzSm0ceOgK3+U2J
-IEAkt6AOdY/0kp5KN8Gd
-=Fa26
------END PGP SIGNATURE-----
-
---7DO5AaGCk89r4vaK--
+-Tim
