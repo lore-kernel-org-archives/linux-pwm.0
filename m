@@ -1,276 +1,67 @@
-From: Bart Tanghe <bart.tanghe@thomasmore.be>
-Subject: [resend rfc v3] pwm: add BCM2835 PWM driver
-Date: Mon, 28 Apr 2014 14:54:46 +0200
-Message-ID: <1398689686-30317-1-git-send-email-bart.tanghe@thomasmore.be>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 0/3] FTM PWM adds regmap and endianness support.
+Date: Mon, 28 Apr 2014 15:10:36 +0200
+Message-ID: <20140428131034.GA15946@ulmo>
+References: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gKMricLos+KVdGMg"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from baptiste.telenet-ops.be ([195.130.132.51]:54178 "EHLO
-	baptiste.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755685AbaD1Myw (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 08:54:52 -0400
+Received: from mail-ee0-f43.google.com ([74.125.83.43]:60293 "EHLO
+	mail-ee0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755854AbaD1NMG (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 09:12:06 -0400
+Content-Disposition: inline
+In-Reply-To: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: swarren@wwwdotorg.org, tim.kryger@linaro.org
-Cc: thierry.reding@gmail.com, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, Bart Tanghe <bart.tanghe@thomasmore.be>
+To: Xiubo Li <Li.Xiubo@freescale.com>
+Cc: linux-pwm@vger.kernel.org, broonie@kernel.org, swarren@nvidia.com, linux-kernel@vger.kernel.org
 
-	Add some better error handling and Device table support
-	Added Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
-	
-Signed-off-by: Bart Tanghe <bart.tanghe@thomasmore.be>
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
-new file mode 100644
-index 0000000..44c0b95
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
-@@ -0,0 +1,13 @@
-+bcm2835 PWM controller
-+
-+Required properties:
-+- compatible: should be "bcrm,pwm-bcm2835"
-+- reg: physical base address and length of the controller's registers
-+
-+Examples:
-+
-+pwm@0x2020C000 {
-+	compatible = "bcrm,pwm-bcm2835";
-+	reg = <0x2020C000 0x28>;
-+	clocks = <&clk_pwm>;
-+};
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 22f2f28..20341a3 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -62,6 +62,18 @@ config PWM_ATMEL_TCB
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-atmel-tcb.
- 
-+config PWM_BCM2835
-+	tristate "BCM2835 PWM support"
-+	depends on MACH_BCM2835 || MACH_BCM2708
-+	help
-+	  PWM framework driver for BCM2835 controller (raspberry pi)
-+	  Only 1 channel is implemented.
-+
-+	  The pwm core is tested with a pwm basic frequency of 1Mhz.
-+	  Use period above 1000ns
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-bcm2835.
-+
- config PWM_BFIN
- 	tristate "Blackfin PWM support"
- 	depends on BFIN_GPTIMERS
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index d8906ec..9863590 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -3,6 +3,7 @@ obj-$(CONFIG_PWM_SYSFS)		+= sysfs.o
- obj-$(CONFIG_PWM_AB8500)	+= pwm-ab8500.o
- obj-$(CONFIG_PWM_ATMEL)		+= pwm-atmel.o
- obj-$(CONFIG_PWM_ATMEL_TCB)	+= pwm-atmel-tcb.o
-+obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
- obj-$(CONFIG_PWM_BFIN)		+= pwm-bfin.o
- obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
- obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
-diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
-new file mode 100644
-index 0000000..ec9829b
---- /dev/null
-+++ b/drivers/pwm/pwm-bcm2835.c
-@@ -0,0 +1,198 @@
-+/*
-+ * pwm-bcm2835 driver
-+ * Standard raspberry pi (gpio18 - pwm0)
-+ *
-+ * Copyright (C) 2014 Thomas more
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; version 2.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/pwm.h>
-+
-+/*mmio regiser mapping*/
-+
-+#define DUTY		0x14
-+#define PERIOD		0x10
-+#define CHANNEL		0x10
-+
-+#define PWM_ENABLE	0x00000001
-+#define PWM_POLARITY	0x00000010
-+
-+#define MASK_CTL_PWM	0x000000FF
-+#define CTL_PWM		0x00000081
-+
-+#define DRIVER_AUTHOR "Bart Tanghe <bart.tanghe@thomasmore.be>"
-+#define DRIVER_DESC "A bcm2835 pwm driver - raspberry pi development platform"
-+
-+struct bcm2835_pwm_chip {
-+	struct pwm_chip chip;
-+	struct device *dev;
-+	int channel;
-+	int scaler;
-+	void __iomem *mmio_base;
-+};
-+
-+static inline struct bcm2835_pwm_chip *to_bcm2835_pwm_chip(
-+					struct pwm_chip *chip){
-+
-+	return container_of(chip, struct bcm2835_pwm_chip, chip);
-+}
-+
-+static int bcm2835_pwm_config(struct pwm_chip *chip,
-+			      struct pwm_device *pwm,
-+			      int duty_ns, int period_ns){
-+
-+	struct bcm2835_pwm_chip *pc;
-+
-+	pc = container_of(chip, struct bcm2835_pwm_chip, chip);
-+
-+	iowrite32(duty_ns/pc->scaler, pc->mmio_base + DUTY);
-+	iowrite32(period_ns/pc->scaler, pc->mmio_base + PERIOD);
-+
-+	return 0;
-+}
-+
-+static int bcm2835_pwm_enable(struct pwm_chip *chip,
-+			      struct pwm_device *pwm){
-+
-+	struct bcm2835_pwm_chip *pc;
-+
-+	pc = container_of(chip, struct bcm2835_pwm_chip, chip);
-+
-+	iowrite32(ioread32(pc->mmio_base) | PWM_ENABLE, pc->mmio_base);
-+	return 0;
-+}
-+
-+static void bcm2835_pwm_disable(struct pwm_chip *chip,
-+				struct pwm_device *pwm)
-+{
-+	struct bcm2835_pwm_chip *pc;
-+
-+	pc = to_bcm2835_pwm_chip(chip);
-+
-+	iowrite32(ioread32(pc->mmio_base) & ~PWM_ENABLE, pc->mmio_base);
-+}
-+
-+static int bcm2835_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
-+				enum pwm_polarity polarity)
-+{
-+	struct bcm2835_pwm_chip *pc;
-+
-+	pc = to_bcm2835_pwm_chip(chip);
-+
-+	if (polarity == PWM_POLARITY_NORMAL)
-+		iowrite32((ioread32(pc->mmio_base) & ~PWM_POLARITY),
-+						pc->mmio_base);
-+	else if (polarity == PWM_POLARITY_INVERSED)
-+		iowrite32((ioread32(pc->mmio_base) | PWM_POLARITY),
-+						pc->mmio_base);
-+
-+	return 0;
-+}
-+
-+static const struct pwm_ops bcm2835_pwm_ops = {
-+	.config = bcm2835_pwm_config,
-+	.enable = bcm2835_pwm_enable,
-+	.disable = bcm2835_pwm_disable,
-+	.set_polarity = bcm2835_set_polarity,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int bcm2835_pwm_probe(struct platform_device *pdev)
-+{
-+	struct bcm2835_pwm_chip *pwm;
-+
-+	int ret;
-+	struct resource *r;
-+	u32 start, end;
-+	struct clk *clk;
-+
-+	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
-+	if (!pwm) {
-+		dev_err(&pdev->dev, "failed to allocate memory\n");
-+		return -ENOMEM;
-+	}
-+
-+	pwm->dev = &pdev->dev;
-+
-+	clk = clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(clk)) {
-+		dev_err(&pdev->dev, "could not find clk: %ld\n", PTR_ERR(clk));
-+		devm_kfree(&pdev->dev, pwm);
-+		return PTR_ERR(clk);
-+	}
-+
-+	pwm->scaler = (int)1000000000/clk_get_rate(clk);
-+
-+	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	pwm->mmio_base = devm_ioremap_resource(&pdev->dev, r);
-+	if (IS_ERR(pwm->mmio_base)) {
-+		devm_kfree(&pdev->dev, pwm);
-+		return PTR_ERR(pwm->mmio_base);
-+	}
-+
-+	start = r->start;
-+	end = r->end;
-+
-+	pwm->chip.dev = &pdev->dev;
-+	pwm->chip.ops = &bcm2835_pwm_ops;
-+	pwm->chip.npwm = 2;
-+
-+	ret = pwmchip_add(&pwm->chip);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
-+		devm_kfree(&pdev->dev, pwm);
-+		return -1;
-+	}
-+
-+	/*set the pwm0 configuration*/
-+	iowrite32((ioread32(pwm->mmio_base) & ~MASK_CTL_PWM)
-+				| CTL_PWM, pwm->mmio_base);
-+
-+	platform_set_drvdata(pdev, pwm);
-+
-+	return 0;
-+}
-+
-+static int bcm2835_pwm_remove(struct platform_device *pdev)
-+{
-+
-+	struct bcm2835_pwm_chip *pc;
-+	pc  = platform_get_drvdata(pdev);
-+
-+	if (WARN_ON(!pc))
-+		return -ENODEV;
-+
-+	return pwmchip_remove(&pc->chip);
-+}
-+
-+static const struct of_device_id bcm2835_pwm_of_match[] = {
-+	{ .compatible = "bcrm,pwm-bcm2835", },
-+	{ /* sentinel */ }
-+};
-+
-+MODULE_DEVICE_TABLE(of, bcm2835_pwm_of_match);
-+
-+static struct platform_driver bcm2835_pwm_driver = {
-+	.driver = {
-+		.name = "pwm-bcm2835",
-+		.owner = THIS_MODULE,
-+		.of_match_table = bcm2835_pwm_of_match,
-+	},
-+	.probe = bcm2835_pwm_probe,
-+	.remove = bcm2835_pwm_remove,
-+};
-+module_platform_driver(bcm2835_pwm_driver);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR(DRIVER_AUTHOR);
-+MODULE_DESCRIPTION(DRIVER_DESC);
+
+--gKMricLos+KVdGMg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Mar 21, 2014 at 12:53:07PM +0800, Xiubo Li wrote:
+>=20
+> Xiubo Li (3):
+>   pwm: ftm-pwm: Clean up the code.
+>   pwm: ftm-pwm: Convert to direct regmap API usage.
+>   pwm: ftm-pwm: Add big-endian support
+>=20
+>  drivers/pwm/pwm-fsl-ftm.c | 96 ++++++++++++++++++++++++++---------------=
+------
+>  1 file changed, 53 insertions(+), 43 deletions(-)
+
+This leaves me with only very vague idea of why this is necessary and
+why it should be merged.
+
+Please describe in more detail (in both the cover-letter and each
+individual patch) why you want me to apply these patches.
+
+Thierry
+
+--gKMricLos+KVdGMg
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTXlNKAAoJEN0jrNd/PrOh7mgP/02OkcFVQMoXAGpqQyExAAht
+cSwZK1mPhLViEuRCRBOHypo9TtpM3fGgHlHlMbqO5TjWeKMllA/SwqfhF8cBBLpU
+BjdYHtAyu2ZVNT1Bv4aLfXA7LuCDkNYTaAoBPuUdkS/dxM4lDHa1We8sauUNVFVp
+xm8BxwrczwyS1niMwQJ2YQGbiXTyA7hxE9eqw8fKq4SaBZLVK2kEq/nO/fJaepg3
+KyjHgXnldM9X5UlqJn28DXk5Gm0sHSlI7ODIYF8fLPnfhndtk5rThCDyqZFC0s4v
+pMSji+0NAlP8deMdRF0low16/ygIAJBhGhq5qmMHFnnVMuyT42SKlrDz7lvTYsaf
+YGeFhNB0li0gRVq8cHD1aBHWmFc79PRrmY83a0cPZ7PsfPzD1PjGbAyU81b52/1l
+NRkhMpOJ2RTQCe8oNrrFKRoY6hxS6McPP2MVgVAMEpeF/IlXbScXnudMa/UHBnm0
+5k2Ymh70s/lqIk/D2Drpw/f7HnJq4xubyAQWIMVW5GsljxkUZQbeLoMgz7Ah0v7/
+ajMiX/wQCfxn478i9ZGpg0oRnyIkSxNRrjzhsD/pYWOstvcVa8WhFjh5ujYEJp6i
+28gRTj4X4WOaC2v16PLW2hS3eO8/6kEpNxL8Tew/G3SbxwPWHo68gs0qn+XBDNO/
+nopQoNt4+PeMhN8IRgK1
+=plMi
+-----END PGP SIGNATURE-----
+
+--gKMricLos+KVdGMg--
