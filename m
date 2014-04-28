@@ -1,59 +1,67 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/3] pwm: ftm-pwm: Clean up the code.
-Date: Mon, 28 Apr 2014 16:57:16 +0200
-Message-ID: <20140428145703.GB28443@ulmo>
+Subject: Re: [PATCH 2/3] pwm: ftm-pwm: Convert to direct regmap API usage.
+Date: Mon, 28 Apr 2014 16:59:31 +0200
+Message-ID: <20140428145930.GC28443@ulmo>
 References: <1395377590-23537-1-git-send-email-Li.Xiubo@freescale.com>
- <1395377590-23537-2-git-send-email-Li.Xiubo@freescale.com>
+ <1395377590-23537-3-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="bAmEntskrkuBymla"
+	protocol="application/pgp-signature"; boundary="7DO5AaGCk89r4vaK"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f45.google.com ([74.125.83.45]:48896 "EHLO
-	mail-ee0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756498AbaD1O6q (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 10:58:46 -0400
+Received: from mail-ee0-f52.google.com ([74.125.83.52]:44960 "EHLO
+	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753557AbaD1PBD (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Apr 2014 11:01:03 -0400
 Content-Disposition: inline
-In-Reply-To: <1395377590-23537-2-git-send-email-Li.Xiubo@freescale.com>
+In-Reply-To: <1395377590-23537-3-git-send-email-Li.Xiubo@freescale.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Xiubo Li <Li.Xiubo@freescale.com>
 Cc: linux-pwm@vger.kernel.org, broonie@kernel.org, swarren@nvidia.com, linux-kernel@vger.kernel.org
 
 
---bAmEntskrkuBymla
+--7DO5AaGCk89r4vaK
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Fri, Mar 21, 2014 at 12:53:08PM +0800, Xiubo Li wrote:
+On Fri, Mar 21, 2014 at 12:53:09PM +0800, Xiubo Li wrote:
 > Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
 > ---
->  drivers/pwm/pwm-fsl-ftm.c | 13 ++++++-------
->  1 file changed, 6 insertions(+), 7 deletions(-)
+>  drivers/pwm/pwm-fsl-ftm.c | 83 +++++++++++++++++++++++++----------------------
+>  1 file changed, 44 insertions(+), 39 deletions(-)
 
-The patch description here could explain that this is in preparation for
-the conversion to regmap (which I assume it is).
+This could explain the advantages of converting to regmap. Looking at
+this diffstat above, it's not immediately obvious that there's an
+advantage because you end up adding 5 lines.
+
+Again I'm guessing this is in preparation to add endianess support, and
+it will be really easy to add that using regmap, so the gains will only
+become obvious later on.
+
+That's the kind of thing I'd like to see in the patch description. It
+tells me why this patch makes sense.
 
 Thierry
 
---bAmEntskrkuBymla
+--7DO5AaGCk89r4vaK
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTXmxLAAoJEN0jrNd/PrOhPBoP/RV8RIpUjRikN7hOwTRVtjSe
-9B14S8Op4idy0Y9bvSCCeB/HUnVJSoLDGeZCnjxckSdo4gmh+QoOiMqRIIWhYQwO
-SxnRUTjYS6ULjZJVqinTe5u0CJvJb1dWcotY90nSUCEyduVMh2YcltUFzkrsX21j
-OPD1vsOrDOKPIgw6ANAI+vHWPar9NdcvhLIIAbZKauLbR5/6IbkzU2OWuK9WYLIH
-TZkz4itHytJwYrkXDT8RBAev3rdioG4JJob1Zi4FiVU4fs1z7x7CmEdVTiLOFVSS
-XuuECvKnOjrrCWFTY8MmAb/le8ZukFiDBcvsRF3k/6DBf1DeJ9Rj3V981HqqUAZE
-v+BaaZTBJoAJhRax9BMqfLLIX3S4H5A94iUQgY5NXOjV5bZ+37xLF58CgBxL2zvt
-OBl4xX7YXPktiPrsSYLGqdvGVyVW5pWEjz7/fJF7inGzLC0iWX+gKqh/vmMFn9jS
-gom2/fp42u+LG3gXjBrsgappHSVpVk6fhMrRIKIMQwGThQIx+p2KkI/nvo86MQhP
-K3I4J2sncEbTVX6uMtZ8Exlkb5v/fAWKOShwjAwD/T/imasK+/ENKtGgwgt0mPqo
-poned8t/WfpUVZ6rPfXReBfv+asEIMlhb5AaqlYwAExRNGL8L0GDGLCgF1G8YeZT
-eMog+7xHxZDuo88ydkds
-=ISXF
+iQIcBAEBAgAGBQJTXmzSAAoJEN0jrNd/PrOhvRYP/jYJ24/oiAcaY67EZ5u1XPlT
+HCT4KC2+n6zRh0tZVaKNK8cgcCr3eWD/cA536ItuPICy3pQ0MZob13tHHXb9ZNFq
+5YxJFV5aGq438s+3+i1/c4JmQFpBKwdFcQoO4VP+VLeidGeVpiz6DfIPT5k4e7J1
+IHv8bG6J3Lh67YMi0T+CirlVZyouSBXBrotTTSbYajg5ZYWZoHNLKlH2u7sHpPvw
+IkHc+74kPWttR19vgB2cRRGwwwZJPpGOFIe5OUYKt2Tj/snSZ1yaa0lgl10KOIva
+nLXKIvjE4whaO70S69SMxHgJq3Vxw4Kcp4s/ZKIBDcij6lrwbFSWDD5Ksjv6TAts
+aYZI1a7M30+xheJYr1/3SQdzppg7L0nQRxKfi8BNktUDizUfTG+dxfqIZgGYDFQG
+wm+KHw30R89mWdKFztEy0rRcWxQhKBglbmU3D/LqvP0uET1vhTvpycdxEnoq1/N9
+sPf6/D/LQYYhACTdztuJW17+NL8yFLrSX8Pd1+iipNIYtE98ToIDj+uTDDaHziro
+vDRSGkyPwH8lY2zwGvZdO3NZh4daI+u9ToOIaniro/wOEKwozfOJhrGzrY9UjqzF
+ZAWYjD4TcMV3V8jt6D7Md8ZPmMIJVIc8qJVBewZzp31DzCSULWzSm0ceOgK3+U2J
+IEAkt6AOdY/0kp5KN8Gd
+=Fa26
 -----END PGP SIGNATURE-----
 
---bAmEntskrkuBymla--
+--7DO5AaGCk89r4vaK--
