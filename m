@@ -1,71 +1,76 @@
 From: Xiubo Li <Li.Xiubo@freescale.com>
-Subject: [PATCHv2 1/4] Documentation: Add 'big-endian' property for FTM PWM.
-Date: Tue, 29 Apr 2014 11:33:46 +0800
-Message-ID: <1398742429-10399-2-git-send-email-Li.Xiubo@freescale.com>
+Subject: [PATCHv2 2/4] pwm: ftm-pwm: Clean up the code.
+Date: Tue, 29 Apr 2014 11:33:47 +0800
+Message-ID: <1398742429-10399-3-git-send-email-Li.Xiubo@freescale.com>
 References: <1398742429-10399-1-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bn1blp0185.outbound.protection.outlook.com ([207.46.163.185]:30952
+Received: from mail-bn1blp0184.outbound.protection.outlook.com ([207.46.163.184]:58965
 	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
 	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1754294AbaD2ESV (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Tue, 29 Apr 2014 00:18:21 -0400
+	id S1754372AbaD2ESX (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Tue, 29 Apr 2014 00:18:23 -0400
 In-Reply-To: <1398742429-10399-1-git-send-email-Li.Xiubo@freescale.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: thierry.reding@gmail.com, linux-pwm@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, Xiubo Li <Li.Xiubo@freescale.com>
 
-This add the big endianness usage in the binding docuementation, which
-will run on LS1 SoC.
-
-Now for the following scenarios:
-SoC     |  CPU   | FTM-PWM | 'big-endian' property is needed?
---------|--------|---------|---------------------------------
-Vybird  |  LE    |   LE    |     No
-LS1     |  LE    |   BE    |     Yes
-LS2     |  LE    |   LE    |     No
+This patch intends to prepare for converting to direct regmap
+API usage.
 
 Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
 ---
- Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-fsl-ftm.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt b/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
-index 0bda229..346e2eb 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-fsl-ftm.txt
-@@ -1,5 +1,13 @@
- Freescale FlexTimer Module (FTM) PWM controller
+diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
+index 420169e..4a4ad58 100644
+--- a/drivers/pwm/pwm-fsl-ftm.c
++++ b/drivers/pwm/pwm-fsl-ftm.c
+@@ -21,11 +21,10 @@
+ #include <linux/slab.h>
  
-+The endianness of the FTM PWM devices on different SoCs:
-+SoC     |  CPU   | FTM-PWM | 'big-endian' property is needed?
-+--------|--------|---------|---------------------------------
-+Vybird  |  LE    |   LE    |     No
-+LS1     |  LE    |   BE    |     Yes
-+LS2     |  LE    |   LE    |     No
-+
-+
- Required properties:
- - compatible: Should be "fsl,vf610-ftm-pwm".
- - reg: Physical base address and length of the controller's registers
-@@ -16,7 +24,8 @@ Required properties:
- - pinctrl-names: Must contain a "default" entry.
- - pinctrl-NNN: One property must exist for each entry in pinctrl-names.
-   See pinctrl/pinctrl-bindings.txt for details of the property values.
--
-+- big-endian: One boolean property, for all the device registers, the BE mode
-+  will be in use if it's present, or the LE mode will be in use.
+ #define FTM_SC		0x00
+-#define FTM_SC_CLK_MASK	0x3
+-#define FTM_SC_CLK_SHIFT	3
+-#define FTM_SC_CLK(c)	(((c) + 1) << FTM_SC_CLK_SHIFT)
++#define FTM_SC_CLK_MASK_SHIFT	3
++#define FTM_SC_CLK_MASK	(3 << FTM_SC_CLK_MASK_SHIFT)
++#define FTM_SC_CLK(c)	(((c) + 1) << FTM_SC_CLK_MASK_SHIFT)
+ #define FTM_SC_PS_MASK	0x7
+-#define FTM_SC_PS_SHIFT	0
  
- Example:
+ #define FTM_CNT		0x04
+ #define FTM_MOD		0x08
+@@ -258,7 +257,7 @@ static int fsl_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		}
  
-@@ -32,4 +41,5 @@ pwm0: pwm@40038000 {
- 			<&clks VF610_CLK_FTM0_EXT_FIX_EN>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_pwm0_1>;
-+		big-endian;
- };
+ 		val = readl(fpc->base + FTM_SC);
+-		val &= ~(FTM_SC_PS_MASK << FTM_SC_PS_SHIFT);
++		val &= ~FTM_SC_PS_MASK;
+ 		val |= fpc->clk_ps;
+ 		writel(val, fpc->base + FTM_SC);
+ 		writel(period - 1, fpc->base + FTM_MOD);
+@@ -305,7 +304,7 @@ static int fsl_counter_clock_enable(struct fsl_pwm_chip *fpc)
+ 
+ 	/* select counter clock source */
+ 	val = readl(fpc->base + FTM_SC);
+-	val &= ~(FTM_SC_CLK_MASK << FTM_SC_CLK_SHIFT);
++	val &= ~FTM_SC_CLK_MASK;
+ 	val |= FTM_SC_CLK(fpc->cnt_select);
+ 	writel(val, fpc->base + FTM_SC);
+ 
+@@ -357,7 +356,7 @@ static void fsl_counter_clock_disable(struct fsl_pwm_chip *fpc)
+ 
+ 	/* no users left, disable PWM counter clock */
+ 	val = readl(fpc->base + FTM_SC);
+-	val &= ~(FTM_SC_CLK_MASK << FTM_SC_CLK_SHIFT);
++	val &= ~FTM_SC_CLK_MASK;
+ 	writel(val, fpc->base + FTM_SC);
+ 
+ 	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
 -- 
 1.8.4
 
