@@ -1,49 +1,38 @@
-From: Jan Moskyto Matejka <mq@suse.cz>
-Subject: [PATCH] [linux-next] pwm: lpss: fix const qualifier discard warning
-Date: Fri,  2 May 2014 17:22:59 +0200
-Message-ID: <1399044179-17912-1-git-send-email-mq@suse.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Jan Moskyto Matejka <mq@suse.cz>
+From: Beniamino Galvani <b.galvani@gmail.com>
+Subject: [PATCH] pwm: spear: fix check on pwmchip_add() return value
+Date: Mon,  5 May 2014 23:29:00 +0200
+Message-ID: <1399325340-20416-1-git-send-email-b.galvani@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ee0-f50.google.com ([74.125.83.50]:53403 "EHLO
+	mail-ee0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756349AbaEEV3X (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 5 May 2014 17:29:23 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Beniamino Galvani <b.galvani@gmail.com>
 
-=46ixing this warning:
-drivers/pwm/pwm-lpss.c: In function =E2=80=98pwm_lpss_probe_pci=E2=80=99=
-:
-drivers/pwm/pwm-lpss.c:192:2: warning: passing argument 3 of =E2=80=98p=
-wm_lpss_probe=E2=80=99 discards =E2=80=98const=E2=80=99 qualifier from =
-pointer target type [enabled by default]
-  lpwm =3D pwm_lpss_probe(&pdev->dev, &pdev->resource[0], info);
-  ^
-drivers/pwm/pwm-lpss.c:130:30: note: expected =E2=80=98struct pwm_lpss_=
-boardinfo *=E2=80=99 but argument is of type =E2=80=98const struct pwm_=
-lpss_boardinfo *=E2=80=99
- static struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev,
+pwmchip_add() returns zero on success and a negative value on error,
+so the condition of the check must be inverted.
 
-That warning was introduced in commit 093e00bb3f82f3c67e2d1682e316fc012=
-bcd0d92
-("pwm: lpss: Add support for PCI devices").
-
-Signed-off-by: Jan Moskyto Matejka <mq@suse.cz>
+Signed-off-by: Beniamino Galvani <b.galvani@gmail.com>
 ---
- drivers/pwm/pwm-lpss.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pwm/pwm-spear.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index c718ad1..c4620c1 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -129,6 +129,7 @@ static const struct pwm_ops pwm_lpss_ops =3D {
-=20
- static struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev,
- 					    struct resource *r,
-+					    const
- 					    struct pwm_lpss_boardinfo *info)
- {
- 	struct pwm_lpss_chip *lpwm;
---=20
-1.8.4.5
+diff --git a/drivers/pwm/pwm-spear.c b/drivers/pwm/pwm-spear.c
+index cb2d4f0..945556d 100644
+--- a/drivers/pwm/pwm-spear.c
++++ b/drivers/pwm/pwm-spear.c
+@@ -222,7 +222,7 @@ static int spear_pwm_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	ret = pwmchip_add(&pc->chip);
+-	if (!ret) {
++	if (ret < 0) {
+ 		clk_unprepare(pc->clk);
+ 		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+ 	}
+-- 
+1.7.10.4
+
