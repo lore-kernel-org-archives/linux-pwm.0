@@ -1,38 +1,99 @@
-From: Beniamino Galvani <b.galvani@gmail.com>
-Subject: [PATCH] pwm: spear: fix check on pwmchip_add() return value
-Date: Mon,  5 May 2014 23:29:00 +0200
-Message-ID: <1399325340-20416-1-git-send-email-b.galvani@gmail.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f50.google.com ([74.125.83.50]:53403 "EHLO
-	mail-ee0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756349AbaEEV3X (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 5 May 2014 17:29:23 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/2] ARM: SAMSUNG: remove gpio flags in dev-backlight
+Date: Tue, 6 May 2014 17:17:39 +0200
+Message-ID: <20140506151736.GA7176@ulmo>
+References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com>
+ <1393480414-19473-2-git-send-email-acourbot@nvidia.com>
+ <CAAVeFu+XUzZ7ozMOcp6A-gZJ9o8DZFrdh1j4LvCQtoTcu=PP1g@mail.gmail.com>
+ <000701cf54a2$7c1379c0$743a6d40$%han@samsung.com>
+ <CAAVeFuKJnSk2XSsMZZKMfyabzJ5CYdqWdE91H5uHiYFC1r6HxA@mail.gmail.com>
+ <CAAVeFuKeT9+m_yFc8ihfc_p5W--dCm0-eO+ccjv99WOwurAirQ@mail.gmail.com>
+ <0fa001cf68e7$e7c4c440$b74e4cc0$@samsung.com>
+ <CAAVeFuJYrez9Ugqerys9Un0jRHnwMcwZ9BxnswbF=2m_LpMLSw@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="qDbXVdCdHGoSgWSk"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAAVeFuJYrez9Ugqerys9Un0jRHnwMcwZ9BxnswbF=2m_LpMLSw@mail.gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Alexandre Courbot <gnurou@gmail.com>
+Cc: Kukjin Kim <kgene.kim@samsung.com>, Jingoo Han <jg1.han@samsung.com>, Ben Dooks <ben-linux@fluff.org>, Alexandre Courbot <acourbot@nvidia.com>, Bryan Wu <cooloney@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Beniamino Galvani <b.galvani@gmail.com>
 
-pwmchip_add() returns zero on success and a negative value on error,
-so the condition of the check must be inverted.
 
-Signed-off-by: Beniamino Galvani <b.galvani@gmail.com>
----
- drivers/pwm/pwm-spear.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--qDbXVdCdHGoSgWSk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/pwm/pwm-spear.c b/drivers/pwm/pwm-spear.c
-index cb2d4f0..945556d 100644
---- a/drivers/pwm/pwm-spear.c
-+++ b/drivers/pwm/pwm-spear.c
-@@ -222,7 +222,7 @@ static int spear_pwm_probe(struct platform_device *pdev)
- 	}
- 
- 	ret = pwmchip_add(&pc->chip);
--	if (!ret) {
-+	if (ret < 0) {
- 		clk_unprepare(pc->clk);
- 		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
- 	}
--- 
-1.7.10.4
+On Tue, May 06, 2014 at 11:33:00PM +0900, Alexandre Courbot wrote:
+> On Tue, May 6, 2014 at 1:59 PM, Kukjin Kim <kgene.kim@samsung.com> wrote:
+> > Alexandre Courbot wrote:
+> >>
+> >> On Thu, Apr 10, 2014 at 11:14 PM, Alexandre Courbot <gnurou@gmail.com>
+> >> wrote:
+> >> > On Thu, Apr 10, 2014 at 6:51 PM, Jingoo Han <jg1.han@samsung.com> wr=
+ote:
+> >> >> On Thursday, April 10, 2014 1:17 PM, Alexandre Courbot wrote:
+> >> >>>
+> >> >>> Ping, can I have the Samsung folks review and ,aybe even merge this
+> >> >>> patch? enable_gpio_flags is never used in any code, is replaced by
+> >> >>> gpiod, and we would like to remove it altogether from pwm_bl. Than=
+ks!
+> >> >>
+> >> >> OK, I see. It looks good.
+> >> >>
+> >> >> As far as I know, 'enable_gpio_flags' has not been being used
+> >> >> for Samsung platform. So, there will be no side effect,
+> >> >> if 'enable_gpio_flags' is removed from 'arch/arm/plat-samsung'
+> >> >> directory.
+> >> >>
+> >> >> Reviewed-by: Jingoo Han <jg1.han@samsung.com>
+> >> >
+> >> > Great, thanks. Ben, Kukjin, could we have your Acked-by?
+> >> >
+> >> > Thierry, if the Samsung maintainers are ok with it, and 2/2 of this
+> >> > series is also ok for you (you merged the same for simple-panel
+> >> > already), can you take both into your tree?
+> >>
+> >> Last call - could we have a Acked-by from Ben or Kukjin and merge this
+> >> through Thierry's tree? Otherwise I will just have to drop this
+> >> series, which would be sad.
+> >
+> > Very sorry for late response. I missed... :(
+> >
+> > Looks good to me, so please go ahead with my ack.
+>=20
+> Thanks Kukjin!
+>=20
+> Thierry, do you want me to rebase and resend these (now old) patches?
+> I haven't heard anything from you about them yet.
 
+No, that's fine. I can handle them.
+
+Thanks,
+Thierry
+
+--qDbXVdCdHGoSgWSk
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTaP0QAAoJEN0jrNd/PrOhsKUP/jCCjiohxWsy4f0AFmMJMkXf
+GlQ9G/ry54mNbJXbuEx+EqwZBcjyxUAF2+7Ytzu59tujJsxrd7fuZRRaf+3xm2wR
+VulZnX3Uvy+TtBs0Zgwl25L1uTWqnz5TnIvd9/tPWWJ7qQJ1X7zdmYmxWw2D8pPD
+K24yA6+niZv9Re7c6FrbgE15qu93TzzI5iHudJi4/2ixAvqagPzYlplaW2lZ8cr3
+eEpGDeInel3nXer75Yc2Rz0yBasctIzveFBuO6NLyWcrxnPBM5g6rOFuMLdq5UpS
++xfRnozfraIwiKQBoAuovsW0m7s9a7VbZJm7zPQg1rWGT0HhnkVqzWXtaMdWHEyc
+ZdnbS4g+VxXMpWjgMMDk7xdQ96vPrj5Ss0bWQj4dWgD/89kp/GZ7rrGUSR4jkXmt
+aDiU4cFyKvKBr0HTmkf8CFCnx5ymJuYyFNmJsH+zA0xyEMUGyDZlZrvb93eqHetT
+vj4+G1TBSmTQsVJDqXgDsBTuB08UxpxnGjbwOBEADSk0sCXodetHjIFhysatze5E
+U13xv3kbGJZB/uIrD4gnGcOMJQ2zO3Vvi7IxtMps5kJqu0ti9S+4St0ME9Ii6n/D
+SpUuCiYhiN5TxgQ5z8rJxOKtFW0pvs+4U+KtoZo5rVOVESOTAnxbjGtk0eD8l5EF
+xpD1HFZ5hzlPmJjKsvEO
+=Aaq5
+-----END PGP SIGNATURE-----
+
+--qDbXVdCdHGoSgWSk--
