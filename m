@@ -1,96 +1,75 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/2] pwm-backlight: switch to gpiod interface
-Date: Wed, 7 May 2014 10:18:51 +0200
-Message-ID: <20140507081850.GB6362@ulmo>
-References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com>
- <1393480414-19473-3-git-send-email-acourbot@nvidia.com>
+Subject: Re: [PATCH] pwm: spear: fix check on pwmchip_add() return value
+Date: Wed, 7 May 2014 10:24:11 +0200
+Message-ID: <20140507082410.GC6362@ulmo>
+References: <1399325340-20416-1-git-send-email-b.galvani@gmail.com>
+ <CAOh2x=mWqa=p2d1kRjf0_37DiioJZOJm3Ewv2xpMrNjPy69rvA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="4bRzO86E/ozDv8r1"
-Return-path: <linux-gpio-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="Qbvjkv9qwOGw/5Fx"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1393480414-19473-3-git-send-email-acourbot@nvidia.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Alexandre Courbot <acourbot@nvidia.com>
-Cc: Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <CAOh2x=mWqa=p2d1kRjf0_37DiioJZOJm3Ewv2xpMrNjPy69rvA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Viresh Kumar <viresh.kumar@linaro.org>
+Cc: Beniamino Galvani <b.galvani@gmail.com>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
 
---4bRzO86E/ozDv8r1
+--Qbvjkv9qwOGw/5Fx
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 27, 2014 at 02:53:34PM +0900, Alexandre Courbot wrote:
-> Switch to the new gpiod interface, which allows to handle GPIO
-> properties such as active low transparently and removes a whole bunch of
-> code.
->=20
-> There are still a couple of users of this driver that rely on passing
-> the enable GPIO number through platform data, so a fallback mechanism
-> using a GPIO number is still available to avoid breaking them. It will
-> be removed once current users have switched to the GPIO lookup tables
-> provided by the gpiod interface.
->=20
-> Signed-off-by: Alexandre Courbot <acourbot@nvidia.com>
-> ---
->  drivers/video/backlight/pwm_bl.c | 72 +++++++++++++++++-----------------=
-------
->  include/linux/pwm_backlight.h    |  5 +--
->  2 files changed, 32 insertions(+), 45 deletions(-)
+On Wed, May 07, 2014 at 11:37:25AM +0530, Viresh Kumar wrote:
+> On Tue, May 6, 2014 at 2:59 AM, Beniamino Galvani <b.galvani@gmail.com> wrote:
+> > pwmchip_add() returns zero on success and a negative value on error,
+> > so the condition of the check must be inverted.
+> >
+> > Signed-off-by: Beniamino Galvani <b.galvani@gmail.com>
+> > ---
+> >  drivers/pwm/pwm-spear.c |    2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/pwm/pwm-spear.c b/drivers/pwm/pwm-spear.c
+> > index cb2d4f0..945556d 100644
+> > --- a/drivers/pwm/pwm-spear.c
+> > +++ b/drivers/pwm/pwm-spear.c
+> > @@ -222,7 +222,7 @@ static int spear_pwm_probe(struct platform_device *pdev)
+> >         }
+> >
+> >         ret = pwmchip_add(&pc->chip);
+> > -       if (!ret) {
+> > +       if (ret < 0) {
+> >                 clk_unprepare(pc->clk);
+> >                 dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+> >         }
 
-I've applied this with two tiny changes, see below. Please shout if you
-think that's a bad idea.
-
-> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/p=
-wm_bl.c
-[...]
-> @@ -256,8 +238,6 @@ static int pwm_backlight_probe(struct platform_device=
- *pdev)
-[...]
-> +	pb->enable_gpio =3D devm_gpiod_get(&pdev->dev, "enable");
-> +	if (IS_ERR(pb->enable_gpio)) {
-> +		ret =3D PTR_ERR(pb->enable_gpio);
-> +		if (ret =3D=3D -ENOENT) {
-> +			pb->enable_gpio =3D NULL;
-> +			ret =3D 0;
-> +		} else {
-> +			goto err_alloc;
-> +		}
-
-I dropped the ret =3D 0 here because all error paths set it explicitly and
-the non-error path never uses it. Now all branches have a single
-statement and therefore the braces can be dropped.
-
-> +	/*
-> +	 * Compatibility fallback for drivers still using the integer GPIO
-> +	 * platform data. Must go away soon.
-> +	 */
-> +	if (pb->enable_gpio =3D=3D NULL && gpio_is_valid(data->enable_gpio)) {
-
-Changed the first condition to !pb->enable_gpio for consistency.
+So the current code would run clk_unprepare() on success, but not on
+failure. Does that cause any harm? Is the device still usable after
+this? I'm asking because I'm not sure if this is linux-next material
+or should be a fix for 3.15 (and possibly backported to stable).
 
 Thierry
 
---4bRzO86E/ozDv8r1
+--Qbvjkv9qwOGw/5Fx
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTaexqAAoJEN0jrNd/PrOhCYIP/RMj0qdQSZvWYyXu/EO1bmNB
-C1a6HAAsGe5dqTg5CcRzvkgqUUcZ0pjJ3EMuhZqOCYVguBSkJp+V9xGhVCRRMmm/
-xGM7l3VPfMmzYPHIvZpdR28DgVJtEJYv2GWIfqwTOsuvRPm6WkRDMX7g0hhhuiis
-i14u/4bKKRKnr6RMH7lk6C02o2OqdVYoRM+6DlpMvASwt5ZWfplL619raqODZ04K
-vOp5zAJ5EIr11hl5ofJiGxOS4VgIQcBZlnq1zb24I45/kio4Z5eIQMdx/OPWiHQP
-FfwCBp2O3YAv1+sPEgxLC//KGW9bu2aDAWTiNGR1aWRuRpQ5fonGkbfBbdgFFanL
-41kURPdMWf1/+K5jlUyhNGDvImP/ZyzQybISR9qb2Xqh00nzKSlDpxClwv+/6Kzu
-Grb9ZMZo6xfQ0EbhTu+WuhLJaXu9yaDieTU/8GbUaOzVkFnIFdQqxYBK+xCEo6mh
-6QmHbj+5/i84x/6f8Xbuwhi4aSRB+GbTJUkiy8n7DmtDlxSx8zj/uzacZokrmgJz
-41CyWH65PgglXzNCRhpf/8e8BMJzF/sLBUGZC1crRX8AZ/85pu7ijigDMvkb0EJt
-1ccQxx/NPDJu5xGlHdPQYi0AkIYLZFVDysKI+f3OUKxRDTYm/gs6bVO93DEQ4WeK
-a6td/zWBu7204uQN8IGW
-=J83N
+iQIcBAEBAgAGBQJTae2qAAoJEN0jrNd/PrOh4ZQP/0xZLQM2wcWotQwr2jhN7wkp
+8vJYtQ+zRV0L9Hp63czDZP4A89+MohcfEorhqAZ/vkwaiNwUni3A30fxlK0filY5
+QhsASEixdJX13QucrcU0T3OqmtfqUjyYzaypvfy6B5fqKs3MBDVk8Jain8JxMkWV
+QLUTSLRmtFnNCIY0yL4Is7ZFEclQWgS9r6q7TKM+M34RN/1BuMiui17S2BgtEloQ
+JDAt5s46M/3tW1Zd622a6MmfvxJVHKZJOMDkVqD9YEw/hcd5jrIUA94NAf/u7E6v
+yIQVYIB6SQnlfWOBXzfO5+aI82bg0XOr4X58wccJvxlNK9OwXevyohen6vIzV9pe
+LwRPQz1Diwflo+lUVQYHAA71W6aHlnTBeo8SKqPvdqxZI7/WbM4/9EccfbpPe9R9
+h+3rt5H30mw3xpxlKI86Qf0yEB7XNpNCdNgDsBELseWNmunzX0OfNse+JNg8838j
+lqjJiGN0VarIYPYbyJPxieiJU7nr98ljCc26qJZKgtRp0cI7YE/2qoaKQetxWv0N
+vSZw/SzluRJpKjDSPcnX8dves07qb1/JAsBuyvMmzBuW/94t5OuMoGo7LhvOWd+q
+3GjTMJEvBOivYpvlmDFwa9AD4q92o+esP/F9yDZQr2J4RPt8AMwkC9w+3pS45Gcm
+8NAwn5g0rv2a+wTK61bK
+=/WTE
 -----END PGP SIGNATURE-----
 
---4bRzO86E/ozDv8r1--
+--Qbvjkv9qwOGw/5Fx--
