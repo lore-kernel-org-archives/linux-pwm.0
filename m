@@ -1,81 +1,75 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] [linux-next] pwm: lpss: fix const qualifier discard
- warning
-Date: Wed, 7 May 2014 10:41:38 +0200
-Message-ID: <20140507084137.GD6362@ulmo>
-References: <1399044179-17912-1-git-send-email-mq@suse.cz>
+Subject: Re: [PATCH] pwm: spear: fix check on pwmchip_add() return value
+Date: Wed, 7 May 2014 10:49:00 +0200
+Message-ID: <20140507084900.GE6362@ulmo>
+References: <1399325340-20416-1-git-send-email-b.galvani@gmail.com>
+ <CAOh2x=mWqa=p2d1kRjf0_37DiioJZOJm3Ewv2xpMrNjPy69rvA@mail.gmail.com>
+ <20140507082410.GC6362@ulmo>
+ <CAKohpomkrR715dhyZZQwu_-S6LHsYBOj9YsX9HR6PCMKkMdrVw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="P+33d92oIH25kiaB"
+	protocol="application/pgp-signature"; boundary="ep0oHQY+/Gbo/zt0"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f52.google.com ([74.125.83.52]:49221 "EHLO
-	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754281AbaEGInb (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 7 May 2014 04:43:31 -0400
+Received: from mail-ee0-f49.google.com ([74.125.83.49]:61256 "EHLO
+	mail-ee0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751838AbaEGIux (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 7 May 2014 04:50:53 -0400
 Content-Disposition: inline
-In-Reply-To: <1399044179-17912-1-git-send-email-mq@suse.cz>
+In-Reply-To: <CAKohpomkrR715dhyZZQwu_-S6LHsYBOj9YsX9HR6PCMKkMdrVw@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jan Moskyto Matejka <mq@suse.cz>
-Cc: Alan Cox <alan@linux.intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Viresh Kumar <viresh.kumar@linaro.org>
+Cc: Beniamino Galvani <b.galvani@gmail.com>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
 
---P+33d92oIH25kiaB
-Content-Type: text/plain; charset=utf-8
+--ep0oHQY+/Gbo/zt0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 02, 2014 at 05:22:59PM +0200, Jan Moskyto Matejka wrote:
-> Fixing this warning:
-> drivers/pwm/pwm-lpss.c: In function =E2=80=98pwm_lpss_probe_pci=E2=80=99:
-> drivers/pwm/pwm-lpss.c:192:2: warning: passing argument 3 of =E2=80=98pwm=
-_lpss_probe=E2=80=99 discards =E2=80=98const=E2=80=99 qualifier from pointe=
-r target type [enabled by default]
->   lpwm =3D pwm_lpss_probe(&pdev->dev, &pdev->resource[0], info);
->   ^
-> drivers/pwm/pwm-lpss.c:130:30: note: expected =E2=80=98struct pwm_lpss_bo=
-ardinfo *=E2=80=99 but argument is of type =E2=80=98const struct pwm_lpss_b=
-oardinfo *=E2=80=99
->  static struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev,
+On Wed, May 07, 2014 at 02:02:24PM +0530, Viresh Kumar wrote:
+> On 7 May 2014 13:54, Thierry Reding <thierry.reding@gmail.com> wrote:
+> > So the current code would run clk_unprepare() on success, but not on
+> > failure. Does that cause any harm?
 >=20
-> That warning was introduced in commit 093e00bb3f82f3c67e2d1682e316fc012bc=
-d0d92
-> ("pwm: lpss: Add support for PCI devices").
+> Yeah, that would make the device unusable  as clk_enable will always fail.
+
+Hmm... so ever since this driver was merged in 3.8 it was completely
+broken and nobody noticed? Interesting.
+
+> > Is the device still usable after this?
 >=20
-> Signed-off-by: Jan Moskyto Matejka <mq@suse.cz>
-> ---
->  drivers/pwm/pwm-lpss.c | 1 +
->  1 file changed, 1 insertion(+)
+> Yes, this will fix the bug.
+>=20
+> > I'm asking because I'm not sure if this is linux-next material
+> > or should be a fix for 3.15 (and possibly backported to stable).
+>=20
+> IMO, it should be sent for stable: v3.8+
 
-This was reported over a week ago by the kbuild test robot and I've had
-fixes for this (and an additional sparse warning) in my tree for a while
-now. Interestingly everybody at Intel seems to have forgotten about this
-driver after their patches got merged since nobody cared to respond.
+Since this was obviously broken since 3.8 and nobody noticed I wonder if
+there's really an urgent need for this in stable.
 
-I've now pushed out the patch that I had locally.
-
-Thanks,
 Thierry
 
---P+33d92oIH25kiaB
+--ep0oHQY+/Gbo/zt0
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTafHBAAoJEN0jrNd/PrOhcUYP/iU0bcIspFvzwW5Fa5D6buDx
-9IGZ9mbFeubNwP/bqOLd59JAc9JZqu73WX9CCtV30B7imEmzba7yBOOYP7DYEwkZ
-eh0pJlTPj5Z/KX3p9wLNFY2eJQ302fSCzj0IkI5qrhaWE0XeYJvZ0P8MnbgL5f7J
-oRH66bvKnQZQMj89p0dSwZy9MhlTb0BhR9eUgMUmPB88MA6hq0QE/FjrhOBui/15
-waIHRMLq2XpBtFIJObVRGJDBp6KXpcXMHWbcYEVDaWUtJnyu5mb51WepNac0odmT
-VMZazLfCx3OGSvn65f3oXFwr3Ekae8YfEXVuqKchBxB/vMVHnntlyAglmKpa2hFK
-oWbyauTqlrVYDouYnYq9vuKSoDswGB30GDRh9FfUQI6re7E5K0Nb/csLLLLM26YZ
-kQtnbNZDbP+9h4qewTrpNps14VLBhkqdKIpW9VzTTjph0s+EF3P0OpqoVAKtdhM4
-wDIzhowYoENVRUzZY0oVTxI1F+Ck4lUYQE+sZ8hcTvW3X3C6ZIJf3/r4eTpIm0jc
-UVVfEcoti8kf7nuzFdVT+Lglfnc86cZFDzdKu5L4KvmusiBqVcfzgaE162lA1fhG
-yPB4jyoIUSv70adabMCmseRi/M3UoDhwuR21VNT3JV7M2jgodJkH+zj3f3CeUw6h
-RUmTjPWvHjaFmU5NtbG3
-=C82G
+iQIcBAEBAgAGBQJTafN8AAoJEN0jrNd/PrOhR1UP/iaYKosA2sQqoiLAcFLbm/v6
+aaV0ZGwMVfc7oRimFrxG3TU4xWftvTZ0QlxG4S4dZZQtRBdKVL0mLjCCLGwqkGgp
+oIxfir8XY8IZ1nMluFwhObyEbzwy72/Ukb6h9sPoxuiVolPEEFizXZrV0UxCC7or
+yZZTfHhnhV57qk7OrvP1m4pqbk/NbQy9I0yXYz/V38JyhG61q7pwwu4U7+rg0mH0
+nZv0LsZXVRKRjfVyI5LJ3uzEFVRAZqnCt8D9mpSDAM+oua1jI3F7hgXJEoltgVkU
+jl/TOp7jqG4s3DBGLMLzAxb3xMHcXmx7rBCvakaHkfyaJQWsR69V+ThD317umvx9
+JeTkkaI9lfWt/REG0RAn8cLELiOXqVbBkGb6x5Uua1xswKjtgqwYkks41yIUZNW5
+5gqglPqJrXD0lstZ0Bc0NCee9n3aa7FdGQJyzBZLI4EF1raRb/E5r27C4t58gOaw
+E+LovqbBdiNrk+Q4Ux9gxNKcEo9hYf2s3kJ/eUUHf4S8M6XllvmWnb48w7QZyAc6
+8dBAxT2TgQvoTBxco6uX/Wf02kkGWOQ4DQIWn0MslmSSrneSUlQlnm1GV0TZcYgi
+da3IRoj112qOj3CS+16b0WFpygfLkcDRIdIrqpZJXr5q7UtKOyeKrk2lSVXpbVXv
+CYL5Jeatjn6bs8E3Qpi4
+=yYEN
 -----END PGP SIGNATURE-----
 
---P+33d92oIH25kiaB--
+--ep0oHQY+/Gbo/zt0--
