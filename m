@@ -1,68 +1,81 @@
-From: Alexandre Courbot <gnurou@gmail.com>
-Subject: Re: [PATCH 2/2] pwm-backlight: switch to gpiod interface
-Date: Wed, 7 May 2014 17:39:13 +0900
-Message-ID: <CAAVeFuKWoom82aMmPipkeqeAoNfz35bNTOs3deoYeNXZ0jq0cQ@mail.gmail.com>
-References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com>
- <1393480414-19473-3-git-send-email-acourbot@nvidia.com> <20140507081850.GB6362@ulmo>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] [linux-next] pwm: lpss: fix const qualifier discard
+ warning
+Date: Wed, 7 May 2014 10:41:38 +0200
+Message-ID: <20140507084137.GD6362@ulmo>
+References: <1399044179-17912-1-git-send-email-mq@suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20140507081850.GB6362@ulmo>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Alexandre Courbot <acourbot@nvidia.com>, Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="P+33d92oIH25kiaB"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ee0-f52.google.com ([74.125.83.52]:49221 "EHLO
+	mail-ee0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754281AbaEGInb (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 7 May 2014 04:43:31 -0400
+Content-Disposition: inline
+In-Reply-To: <1399044179-17912-1-git-send-email-mq@suse.cz>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Jan Moskyto Matejka <mq@suse.cz>
+Cc: Alan Cox <alan@linux.intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Wed, May 7, 2014 at 5:18 PM, Thierry Reding <thierry.reding@gmail.com> wrote:
-> On Thu, Feb 27, 2014 at 02:53:34PM +0900, Alexandre Courbot wrote:
->> Switch to the new gpiod interface, which allows to handle GPIO
->> properties such as active low transparently and removes a whole bunch of
->> code.
->>
->> There are still a couple of users of this driver that rely on passing
->> the enable GPIO number through platform data, so a fallback mechanism
->> using a GPIO number is still available to avoid breaking them. It will
->> be removed once current users have switched to the GPIO lookup tables
->> provided by the gpiod interface.
->>
->> Signed-off-by: Alexandre Courbot <acourbot@nvidia.com>
->> ---
->>  drivers/video/backlight/pwm_bl.c | 72 +++++++++++++++++-----------------------
->>  include/linux/pwm_backlight.h    |  5 +--
->>  2 files changed, 32 insertions(+), 45 deletions(-)
->
-> I've applied this with two tiny changes, see below. Please shout if you
-> think that's a bad idea.
 
-I'm fine with both changes. Thanks for picking these two guys!
+--P+33d92oIH25kiaB
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Alex.
+On Fri, May 02, 2014 at 05:22:59PM +0200, Jan Moskyto Matejka wrote:
+> Fixing this warning:
+> drivers/pwm/pwm-lpss.c: In function =E2=80=98pwm_lpss_probe_pci=E2=80=99:
+> drivers/pwm/pwm-lpss.c:192:2: warning: passing argument 3 of =E2=80=98pwm=
+_lpss_probe=E2=80=99 discards =E2=80=98const=E2=80=99 qualifier from pointe=
+r target type [enabled by default]
+>   lpwm =3D pwm_lpss_probe(&pdev->dev, &pdev->resource[0], info);
+>   ^
+> drivers/pwm/pwm-lpss.c:130:30: note: expected =E2=80=98struct pwm_lpss_bo=
+ardinfo *=E2=80=99 but argument is of type =E2=80=98const struct pwm_lpss_b=
+oardinfo *=E2=80=99
+>  static struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev,
+>=20
+> That warning was introduced in commit 093e00bb3f82f3c67e2d1682e316fc012bc=
+d0d92
+> ("pwm: lpss: Add support for PCI devices").
+>=20
+> Signed-off-by: Jan Moskyto Matejka <mq@suse.cz>
+> ---
+>  drivers/pwm/pwm-lpss.c | 1 +
+>  1 file changed, 1 insertion(+)
 
->
->> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-> [...]
->> @@ -256,8 +238,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
-> [...]
->> +     pb->enable_gpio = devm_gpiod_get(&pdev->dev, "enable");
->> +     if (IS_ERR(pb->enable_gpio)) {
->> +             ret = PTR_ERR(pb->enable_gpio);
->> +             if (ret == -ENOENT) {
->> +                     pb->enable_gpio = NULL;
->> +                     ret = 0;
->> +             } else {
->> +                     goto err_alloc;
->> +             }
->
-> I dropped the ret = 0 here because all error paths set it explicitly and
-> the non-error path never uses it. Now all branches have a single
-> statement and therefore the braces can be dropped.
->
->> +     /*
->> +      * Compatibility fallback for drivers still using the integer GPIO
->> +      * platform data. Must go away soon.
->> +      */
->> +     if (pb->enable_gpio == NULL && gpio_is_valid(data->enable_gpio)) {
->
-> Changed the first condition to !pb->enable_gpio for consistency.
->
-> Thierry
+This was reported over a week ago by the kbuild test robot and I've had
+fixes for this (and an additional sparse warning) in my tree for a while
+now. Interestingly everybody at Intel seems to have forgotten about this
+driver after their patches got merged since nobody cared to respond.
+
+I've now pushed out the patch that I had locally.
+
+Thanks,
+Thierry
+
+--P+33d92oIH25kiaB
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTafHBAAoJEN0jrNd/PrOhcUYP/iU0bcIspFvzwW5Fa5D6buDx
+9IGZ9mbFeubNwP/bqOLd59JAc9JZqu73WX9CCtV30B7imEmzba7yBOOYP7DYEwkZ
+eh0pJlTPj5Z/KX3p9wLNFY2eJQ302fSCzj0IkI5qrhaWE0XeYJvZ0P8MnbgL5f7J
+oRH66bvKnQZQMj89p0dSwZy9MhlTb0BhR9eUgMUmPB88MA6hq0QE/FjrhOBui/15
+waIHRMLq2XpBtFIJObVRGJDBp6KXpcXMHWbcYEVDaWUtJnyu5mb51WepNac0odmT
+VMZazLfCx3OGSvn65f3oXFwr3Ekae8YfEXVuqKchBxB/vMVHnntlyAglmKpa2hFK
+oWbyauTqlrVYDouYnYq9vuKSoDswGB30GDRh9FfUQI6re7E5K0Nb/csLLLLM26YZ
+kQtnbNZDbP+9h4qewTrpNps14VLBhkqdKIpW9VzTTjph0s+EF3P0OpqoVAKtdhM4
+wDIzhowYoENVRUzZY0oVTxI1F+Ck4lUYQE+sZ8hcTvW3X3C6ZIJf3/r4eTpIm0jc
+UVVfEcoti8kf7nuzFdVT+Lglfnc86cZFDzdKu5L4KvmusiBqVcfzgaE162lA1fhG
+yPB4jyoIUSv70adabMCmseRi/M3UoDhwuR21VNT3JV7M2jgodJkH+zj3f3CeUw6h
+RUmTjPWvHjaFmU5NtbG3
+=C82G
+-----END PGP SIGNATURE-----
+
+--P+33d92oIH25kiaB--
