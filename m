@@ -1,38 +1,66 @@
-From: Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [PATCH] pwm: spear: fix check on pwmchip_add() return value
-Date: Wed, 7 May 2014 11:37:25 +0530
-Message-ID: <CAOh2x=mWqa=p2d1kRjf0_37DiioJZOJm3Ewv2xpMrNjPy69rvA@mail.gmail.com>
-References: <1399325340-20416-1-git-send-email-b.galvani@gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/2] ARM: SAMSUNG: remove gpio flags in dev-backlight
+Date: Wed, 7 May 2014 10:14:56 +0200
+Message-ID: <20140507081455.GA6362@ulmo>
+References: <1393480414-19473-1-git-send-email-acourbot@nvidia.com>
+ <1393480414-19473-2-git-send-email-acourbot@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="C7zPtVaVf+AK4Oqc"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1399325340-20416-1-git-send-email-b.galvani@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <1393480414-19473-2-git-send-email-acourbot@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Beniamino Galvani <b.galvani@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Alexandre Courbot <acourbot@nvidia.com>
+Cc: Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, Ben Dooks <ben-linux@fluff.org>, Kukjin Kim <kgene.kim@samsung.com>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, May 6, 2014 at 2:59 AM, Beniamino Galvani <b.galvani@gmail.com> wrote:
-> pwmchip_add() returns zero on success and a negative value on error,
-> so the condition of the check must be inverted.
->
-> Signed-off-by: Beniamino Galvani <b.galvani@gmail.com>
-> ---
->  drivers/pwm/pwm-spear.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/pwm/pwm-spear.c b/drivers/pwm/pwm-spear.c
-> index cb2d4f0..945556d 100644
-> --- a/drivers/pwm/pwm-spear.c
-> +++ b/drivers/pwm/pwm-spear.c
-> @@ -222,7 +222,7 @@ static int spear_pwm_probe(struct platform_device *pdev)
->         }
->
->         ret = pwmchip_add(&pc->chip);
-> -       if (!ret) {
-> +       if (ret < 0) {
->                 clk_unprepare(pc->clk);
->                 dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
->         }
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+--C7zPtVaVf+AK4Oqc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Feb 27, 2014 at 02:53:33PM +0900, Alexandre Courbot wrote:
+> The pwm-backlight driver is moving to use the gpiod interface,
+> which has its own mapping mechanism for platform data GPIOs.
+> These mappings carry GPIO properties like active low so they don't have
+> to be explicitly handled by GPIO consumers.
+>=20
+> Because of this change, the enable_gpio_flags member of
+> platform_pwm_backlight_data is going away. dev-backlight was passing
+> this member, but had no user making use of it, so it can safely be
+> removed. Further GPIOs used by pwm-backlight are expected to be
+> defined using the mechanisms provided by the gpiod API.
+>=20
+> Signed-off-by: Alexandre Courbot <acourbot@nvidia.com>
+> ---
+>  arch/arm/plat-samsung/dev-backlight.c | 2 --
+>  1 file changed, 2 deletions(-)
+
+Applied with Kukjin's Acked-by, thanks.
+
+Thierry
+
+--C7zPtVaVf+AK4Oqc
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTaet/AAoJEN0jrNd/PrOhTTgP/2FPIvOFcimTec4M/F0/whf6
+5JaGpsAqvwadgSoDGv3zBxr1N9S2uL11LalPs7g6pNpMBxP0TzEzZ03NLZSOJAfR
+sEDAFdlwr1rLU/sdgGoZHq9c7pEeY06T/vBMI9/Od+3Yc6HMZ5jQykZauiWA21S3
+tmm+elMbsP1+hH6OAI7hEaCf476l26jc43p7gvixOENXmUbrH9UCY6u1qGuwLWYe
+Xz5xHhSF4VcmSbvU9Lm+4VqZGgdQL2oiJqY3jEfId1JyilzDYY9PBRr9BskTtfjD
+G0o502Rtbz0MttnhXGweiPGNgVbxQlPa3SmDb1FDqXVlF9NKmRx9bxkiU7AZcHcL
+G00ZMK16c5BILFS7Qb1t5qS9OQLKm9Okr12QpDZG82zmQAWsCHNEjAGaXhi/+Y2b
+LRPqjlEA/n43NH1qz+G9sLbikPVbXPoa3YJlyUCABmWP0GxEVkWhMfnTbuv0MTg3
+j8MFn7cjqDIhuKAYVuTu6EWqKVcCh7pnosH9T0aT6cIPY734bvsoqfYDT/AmR9HE
+4Q0TNobuR0g0HtG7HgSL5N73aBLpBhOlBLQQwALTW5TfxYI7yNHskamoplwMIdXl
+UJbbgKhd9248ErxbRcl3Vt23SXRzSgsW1fOu8k2Sz6pOzhbYEMA+IgErG1wp9kNp
+kmdD7qFNCfC4CJJidhke
+=2TFU
+-----END PGP SIGNATURE-----
+
+--C7zPtVaVf+AK4Oqc--
