@@ -1,31 +1,47 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: Re: [PATCH] pwm: lpss: remove dependency on clk framework
-Date: Mon, 12 May 2014 10:09:11 +0300
-Message-ID: <20140512070911.GW3722@lahna.fi.intel.com>
-References: <1399624521-26175-1-git-send-email-heikki.krogerus@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Ajay Kumar <ajaykumar.rs@samsung.com>
+Subject: [PATCH] pwm: samsung: do not set manual update bit in
+ pwm_samsung_config
+Date: Mon, 12 May 2014 20:26:21 +0530
+Message-ID: <1399906581-29298-1-git-send-email-ajaykumar.rs@samsung.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:3416 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932111AbaELI27 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 12 May 2014 04:28:59 -0400
-Content-Disposition: inline
-In-Reply-To: <1399624521-26175-1-git-send-email-heikki.krogerus@linux.intel.com>
+Received: from mailout2.samsung.com ([203.254.224.25]:45362 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758634AbaELO5z (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 12 May 2014 10:57:55 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Alan Cox <alan@linux.intel.com>, Chew Chiau Ee <chiau.ee.chew@intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-pwm@vger.kernel.org
+Cc: linux-samsung-soc@vger.kernel.org, ajaynumb@gmail.com, thierry.reding@gmail.com, tomasz.figa@gmail.com, abrestic@chromium.org, jg1.han@samsung.com, sachin.kamat@linaro.org, joshi@samsung.com, prashanth.g@samsung.com, Ajay Kumar <ajaykumar.rs@samsung.com>
 
-On Fri, May 09, 2014 at 11:35:21AM +0300, Heikki Krogerus wrote:
-> Unlike other Intel LPSS devices, the PWM does not have the
-> clock dividers or the gate. All we get from the clock is the
-> rate. Since PCI case uses the driver data to get the rate,
-> we can drop the clk and use the same data also in case of
-> ACPI. The frequency is the same.
-> 
-> Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+pwm_samsung_config sets manual update bit via call to
+pwm_samsung_enable even when the channel is already running.
+This causes noticable flickers on display if we try to change
+the backlight value from 0 to MAX, continiously.
 
-No objections from me,
+So, we remove the call to pwm_samsung_enable from
+pwm_samsung_config to avoid the flicker and this change doesn't
+harm normal working since the pwm_bl core already takes care of
+calling pwm_samsung_enable whenever needed.
 
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Ajay Kumar <ajaykumar.rs@samsung.com>
+---
+ drivers/pwm/pwm-samsung.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
+index d66529a..ba6b650 100644
+--- a/drivers/pwm/pwm-samsung.c
++++ b/drivers/pwm/pwm-samsung.c
+@@ -335,9 +335,6 @@ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	writel(tcnt, our_chip->base + REG_TCNTB(pwm->hwpwm));
+ 	writel(tcmp, our_chip->base + REG_TCMPB(pwm->hwpwm));
+ 
+-	if (test_bit(PWMF_ENABLED, &pwm->flags))
+-		pwm_samsung_enable(chip, pwm);
+-
+ 	chan->period_ns = period_ns;
+ 	chan->tin_ns = tin_ns;
+ 	chan->duty_ns = duty_ns;
+-- 
+1.8.3.2
+
