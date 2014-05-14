@@ -1,68 +1,132 @@
-From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
-Subject: RE: [PATCHv2 0/4] FTM PWM adds regmap and endianness support.
-Date: Tue, 13 May 2014 06:32:25 +0000
-Message-ID: <6abc1298f24d45b1b126f48527299f52@BY2PR03MB505.namprd03.prod.outlook.com>
-References: <1398742429-10399-1-git-send-email-Li.Xiubo@freescale.com>
+From: "Chew, Chiau Ee" <chiau.ee.chew@intel.com>
+Subject: RE: [PATCH] pwm: lpss: remove dependency on clk framework
+Date: Wed, 14 May 2014 07:00:59 +0000
+Message-ID: <604BF5F4C5D71041942BC7E84ED659EA0B004D2D@PGSMSX108.gar.corp.intel.com>
+References: <1399624521-26175-1-git-send-email-heikki.krogerus@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-by2on0070.outbound.protection.outlook.com ([207.46.100.70]:26034
-	"EHLO na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751043AbaEMHEq convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 13 May 2014 03:04:46 -0400
-In-Reply-To: <1398742429-10399-1-git-send-email-Li.Xiubo@freescale.com>
+Received: from mga03.intel.com ([143.182.124.21]:39814 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750717AbaENHDH convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 14 May 2014 03:03:07 -0400
+In-Reply-To: <1399624521-26175-1-git-send-email-heikki.krogerus@linux.intel.com>
 Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-
-Thierry,
-
-Ping:)
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Alan Cox <alan@linux.intel.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
 
-
-> -----Original Message-----
-> From: Xiubo Li [mailto:Li.Xiubo@freescale.com]
-> Sent: Tuesday, April 29, 2014 11:34 AM
-> To: thierry.reding@gmail.com; linux-pwm@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org; Xiubo Li-B47053
-> Subject: [PATCHv2 0/4] FTM PWM adds regmap and endianness support.
+> Unlike other Intel LPSS devices, the PWM does not have the clock dividers or
+> the gate. All we get from the clock is the rate. Since PCI case uses the driver
+> data to get the rate, we can drop the clk and use the same data also in case of
+> ACPI. The frequency is the same.
 > 
-> Convert to direct regmap API usage. Since the regmap core has already
-> support rich endianness modes of device, this patch convert to direct
-> regmap API usage, preparing to support big endianness for LS1 SoC.
+> Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> ---
+>  drivers/pwm/pwm-lpss.c | 32 ++++++++++----------------------
+>  1 file changed, 10 insertions(+), 22 deletions(-)
 > 
-> Using the regmag framework will be more easy to support the endiannesses
-> switching of one same device driver on different SoCs.
+> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c index
+> 44ce6c6..4df994f 100644
+> --- a/drivers/pwm/pwm-lpss.c
+> +++ b/drivers/pwm/pwm-lpss.c
+> @@ -14,7 +14,6 @@
+>   */
 > 
-> The endianness scenarios are:
-> SoC     |  CPU   | FTM-PWM | 'big-endian' property is needed?
-> --------|--------|---------|---------------------------------
-> Vybird  |  LE    |   LE    |     No
-> LS1     |  LE    |   BE    |     Yes
-> LS2     |  LE    |   LE    |     No
+>  #include <linux/acpi.h>
+> -#include <linux/clk.h>
+>  #include <linux/device.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+> @@ -37,7 +36,6 @@ static int pci_drv, plat_drv;	/* So we know which drivers
+> registered */
+>  struct pwm_lpss_chip {
+>  	struct pwm_chip chip;
+>  	void __iomem *regs;
+> -	struct clk *clk;
+>  	unsigned long clk_rate;
+>  };
 > 
-> 
-> 
-> Changes in V2:
-> - Adds detail descriptions of these patches.
-> 
-> 
-> Xiubo Li (4):
->   Documentation: Add 'big-endian' property for FTM PWM.
->   pwm: ftm-pwm: Clean up the code.
->   pwm: ftm-pwm: Convert to direct regmap API usage.
->   pwm: ftm-pwm: Add big-endian support
-> 
->  .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        | 12 ++-
->  drivers/pwm/pwm-fsl-ftm.c                          | 96 ++++++++++++---------
+> @@ -97,11 +95,6 @@ static int pwm_lpss_enable(struct pwm_chip *chip,
+> struct pwm_device *pwm)  {
+>  	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
+>  	u32 ctrl;
+> -	int ret;
 > -
->  2 files changed, 64 insertions(+), 44 deletions(-)
+> -	ret = clk_prepare_enable(lpwm->clk);
+> -	if (ret)
+> -		return ret;
 > 
+>  	ctrl = readl(lpwm->regs + PWM);
+>  	writel(ctrl | PWM_ENABLE, lpwm->regs + PWM); @@ -116,8 +109,6
+> @@ static void pwm_lpss_disable(struct pwm_chip *chip, struct pwm_device
+> *pwm)
+> 
+>  	ctrl = readl(lpwm->regs + PWM);
+>  	writel(ctrl & ~PWM_ENABLE, lpwm->regs + PWM);
+> -
+> -	clk_disable_unprepare(lpwm->clk);
+>  }
+> 
+>  static const struct pwm_ops pwm_lpss_ops = { @@ -142,17 +133,7 @@ static
+> struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev,
+>  	if (IS_ERR(lpwm->regs))
+>  		return ERR_CAST(lpwm->regs);
+> 
+> -	if (info) {
+> -		lpwm->clk_rate = info->clk_rate;
+> -	} else {
+> -		lpwm->clk = devm_clk_get(dev, NULL);
+> -		if (IS_ERR(lpwm->clk)) {
+> -			dev_err(dev, "failed to get PWM clock\n");
+> -			return ERR_CAST(lpwm->clk);
+> -		}
+> -		lpwm->clk_rate = clk_get_rate(lpwm->clk);
+> -	}
+> -
+> +	lpwm->clk_rate = info->clk_rate;
+>  	lpwm->chip.dev = dev;
+>  	lpwm->chip.ops = &pwm_lpss_ops;
+>  	lpwm->chip.base = -1;
+> @@ -221,12 +202,19 @@ static struct pci_driver pwm_lpss_driver_pci = {
+> 
+>  static int pwm_lpss_probe_platform(struct platform_device *pdev)  {
+> +	const struct pwm_lpss_boardinfo *info;
+> +	const struct acpi_device_id *id;
+>  	struct pwm_lpss_chip *lpwm;
+>  	struct resource *r;
+> 
+> +	id = acpi_match_device(pdev->dev.driver->acpi_match_table, &pdev-
+> >dev);
+> +	if (!id)
+> +		return -ENODEV;
+> +
+>  	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> 
+> -	lpwm = pwm_lpss_probe(&pdev->dev, r, NULL);
+> +	info = (struct pwm_lpss_boardinfo *)id->driver_data;
+> +	lpwm = pwm_lpss_probe(&pdev->dev, r, info);
+>  	if (IS_ERR(lpwm))
+>  		return PTR_ERR(lpwm);
+> 
+> @@ -242,7 +230,7 @@ static int pwm_lpss_remove_platform(struct
+> platform_device *pdev)  }
+> 
+>  static const struct acpi_device_id pwm_lpss_acpi_match[] = {
+> -	{ "80860F09", 0 },
+> +	{ "80860F09", (unsigned long)&byt_info },
+>  	{ },
+>  };
+
+Heikki,
+For ACPI mode, the clock rate information for PWM is being setup in the acpi_lpss.c layer.
+Thus, only PCI mode depends on the driver_data to pass in the clock rate information.
+
+
+>  MODULE_DEVICE_TABLE(acpi, pwm_lpss_acpi_match);
 > --
-> 1.8.4
+> 2.0.0.rc2
 
