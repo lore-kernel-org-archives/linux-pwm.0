@@ -1,61 +1,82 @@
-From: Arnd Bergmann <arnd@arndb.de>
+From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [rfc]pwm: add xilinx pwm driver
-Date: Thu, 15 May 2014 18:30:13 +0200
-Message-ID: <16896948.U7hTsgDub4@wuerfel>
-References: <1400066773-14393-1-git-send-email-bart.tanghe@thomasmore.be> <5049141.XmehsUeakV@wuerfel> <5374C773.6070402@monstr.eu>
+Date: Thu, 15 May 2014 22:49:42 +0200
+Message-ID: <20140515204941.GB7136@mithrandir>
+References: <1400066773-14393-1-git-send-email-bart.tanghe@thomasmore.be>
+ <5049141.XmehsUeakV@wuerfel>
+ <5374C773.6070402@monstr.eu>
+ <16896948.U7hTsgDub4@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5374C773.6070402@monstr.eu>
-Sender: linux-kernel-owner@vger.kernel.org
-To: monstr@monstr.eu
-Cc: Bart Tanghe <bart.tanghe@thomasmore.be>, thierry.reding@gmail.com, michal.simek@xilinx.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, rob@landley.net, grant.likely@linaro.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="R3G7APHDIzY6R/pk"
+Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <16896948.U7hTsgDub4@wuerfel>
+Sender: linux-doc-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: monstr@monstr.eu, Bart Tanghe <bart.tanghe@thomasmore.be>, michal.simek@xilinx.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, rob@landley.net, grant.likely@linaro.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Thursday 15 May 2014 15:56:03 Michal Simek wrote:
-> IP is configurable as is normal for us.
-> You can select IP with just one timer.
-> It means register locations for specific timer are fixed.
-> http://www.xilinx.com/support/documentation/ip_documentation/xps_timer.pdf
-> 
-> timer0 - offset 0x0
-> timer1 - offset 0x10 (doesn't need to be synthesized)
-> 
-> There is one interrupt for both timers.
-> 
-> Timers can be as timers (up/down count/ reload with or without IRQs)
-> But then one options is to use both timers and generate PWM signal.
-> From full ip description in DT you can see xlnx,gen0-assert = <1>;
-> which can suggest that this IP can output PMW signal.
-> (We can also detect if PWM0 signal is connected just to be sure
-> that PWM can be enabled).
-> 
-> There is also capture trigger mode where external signal start/stop
-> timer counting.
-> 
-> It means there are 3 modes - timer, capture and PWM.
-> Timer (clocksource, clockevent) requires specific handling,
-> PWM has own subsystem and not sure if there is any subsystem for
-> capture mode. Is there any?
 
-I don't think so. Possibly somewhere in IIO.
+--R3G7APHDIzY6R/pk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Not every timer configuration is suitable for all things
-> but fully configured timer can be used in all 3 modes.
-> 
-> 
-> I think that make sense to register and map all timers in the system
-> and classify them with flags (like can't be used for capture or PMW
-> if there are not outputs connected) and then use the best
-> timer for clocksource and clockevent. The best candidate is IP
-> with the lowest IRQ number in dual timer mode but in general
-> whatever timer can be used that's why we can't probably avoid
-> timer specification in DT.
-> In spite of this smells because you are saying via DT
-> to Linux which timer should be used for what purpose.
+On Thu, May 15, 2014 at 06:30:13PM +0200, Arnd Bergmann wrote:
+> On Thursday 15 May 2014 15:56:03 Michal Simek wrote:
+> > IP is configurable as is normal for us.
+> > You can select IP with just one timer.
+> > It means register locations for specific timer are fixed.
+> > http://www.xilinx.com/support/documentation/ip_documentation/xps_timer.=
+pdf
+> >=20
+> > timer0 - offset 0x0
+> > timer1 - offset 0x10 (doesn't need to be synthesized)
+> >=20
+> > There is one interrupt for both timers.
+> >=20
+> > Timers can be as timers (up/down count/ reload with or without IRQs)
+> > But then one options is to use both timers and generate PWM signal.
+> > From full ip description in DT you can see xlnx,gen0-assert =3D <1>;
+> > which can suggest that this IP can output PMW signal.
+> > (We can also detect if PWM0 signal is connected just to be sure
+> > that PWM can be enabled).
+> >=20
+> > There is also capture trigger mode where external signal start/stop
+> > timer counting.
+> >=20
+> > It means there are 3 modes - timer, capture and PWM.
+> > Timer (clocksource, clockevent) requires specific handling,
+> > PWM has own subsystem and not sure if there is any subsystem for
+> > capture mode. Is there any?
+>=20
+> I don't think so. Possibly somewhere in IIO.
 
-We had discussions about this in the past, but I don't remember the
-outcome of that.
+I think so too. There was a patch set not so long ago that added PWM
+capture support for one of the TI PWM controllers to IIO.
 
-	Arnd
+Thierry
+
+--R3G7APHDIzY6R/pk
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTdShlAAoJEN0jrNd/PrOhTpsP/2duLfN2pnqigHWcaFpPF8AK
+i1SwvQKEMLE/OYZ9QqFHbpPQLypO1PezbfsCTsqhA4l2Y1fHaTYdT2wdiqQVPn7K
+IHGlAg4nXpaw0syKXO+xgsmui7vcSQQGbF8rCWe/vYoj7irMD01pCkiduGHi/yHn
+/ovxTTn8eaf0PgLHNKnjFslCMZjywYctaqGY5OUJk80BpyyqgJL+aPPAg4ZIS57B
+32A98XgxlZkMoyb96jhsdi/+dLe2u4hAAjqR01aKcZJmuvzzHGsH/LqWvAP6+QCK
+PfdkrXlo8TM9itHsq5/xtbmXivH/qLHzSIpuqWexviJ+eqnnv73sHUeVHG2ewMXr
+IVhH/UirDpDhZ2ozUf6skdkRnNeBr25zZHvzhdRvu03qnzdVOKaieXFeoigVSwKC
+A5tIhpuJl8u8f22axFfElznG5CQ240m/hhDg9tne/bV8pgqP1AjhkjePOS5uGLvJ
+Vl+kTafKU5qT0D0BzvDDEpDP0Yk5lG56ByLJqsL9kNhZMOrKX1lmwc00n+FxtP22
+A3SszgAoQ7MYylCov/C32OG2ZOikiHh+obGt+J0LQ4ffo8NlYY2uOTAlUvsgkTgp
+uzFFrf0cG2D2uGFufFo0zM4Q9TTQqDb2HBSoHseBzRc8VGztzxwogO9L6ZFvVCm4
+CXh+J/I+XdxejCKZ74h5
+=zIOg
+-----END PGP SIGNATURE-----
+
+--R3G7APHDIzY6R/pk--
