@@ -1,90 +1,84 @@
-From: Michal Simek <monstr@monstr.eu>
-Subject: Re: [rfc]pwm: add xilinx pwm driver
-Date: Fri, 16 May 2014 10:44:28 +0200
-Message-ID: <5375CFEC.6070008@monstr.eu>
-References: <1400066773-14393-1-git-send-email-bart.tanghe@thomasmore.be> <5049141.XmehsUeakV@wuerfel> <5374C773.6070402@monstr.eu> <16896948.U7hTsgDub4@wuerfel> <20140515204941.GB7136@mithrandir>
-Reply-To: monstr@monstr.eu
+From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
+Subject: Re: [PATCH v3] pwm: i.MX: Avoid sample FIFO overflow for i.MX PWM
+ version2
+Date: Mon, 19 May 2014 07:53:28 +0200
+Message-ID: <20140519075328.7f2ef0c5@ipc1.ka-ro>
+References: <1400217068-22642-1-git-send-email-Ying.Liu@freescale.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="oNpEpmClw9SQNoEwwAAJT4gnvquRAJgco"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140515204941.GB7136@mithrandir>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Arnd Bergmann <arnd@arndb.de>
-Cc: Bart Tanghe <bart.tanghe@thomasmore.be>, michal.simek@xilinx.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, rob@landley.net, grant.likely@linaro.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, Matt Porter <matt.porter@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.karo-electronics.de ([81.173.242.67]:57142 "EHLO
+	mail.karo-electronics.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750738AbaESFxe convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 19 May 2014 01:53:34 -0400
+In-Reply-To: <1400217068-22642-1-git-send-email-Ying.Liu@freescale.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Liu Ying <Ying.Liu@freescale.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, s.hauer@pengutronix.de, shawn.guo@freescale.com, linux-arm-kernel@lists.infradead.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---oNpEpmClw9SQNoEwwAAJT4gnvquRAJgco
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-On 05/15/2014 10:49 PM, Thierry Reding wrote:
-> On Thu, May 15, 2014 at 06:30:13PM +0200, Arnd Bergmann wrote:
->> On Thursday 15 May 2014 15:56:03 Michal Simek wrote:
->>> IP is configurable as is normal for us.
->>> You can select IP with just one timer.
->>> It means register locations for specific timer are fixed.
->>> http://www.xilinx.com/support/documentation/ip_documentation/xps_time=
-r.pdf
->>>
->>> timer0 - offset 0x0
->>> timer1 - offset 0x10 (doesn't need to be synthesized)
->>>
->>> There is one interrupt for both timers.
->>>
->>> Timers can be as timers (up/down count/ reload with or without IRQs)
->>> But then one options is to use both timers and generate PWM signal.
->>> From full ip description in DT you can see xlnx,gen0-assert =3D <1>;
->>> which can suggest that this IP can output PMW signal.
->>> (We can also detect if PWM0 signal is connected just to be sure
->>> that PWM can be enabled).
->>>
->>> There is also capture trigger mode where external signal start/stop
->>> timer counting.
->>>
->>> It means there are 3 modes - timer, capture and PWM.
->>> Timer (clocksource, clockevent) requires specific handling,
->>> PWM has own subsystem and not sure if there is any subsystem for
->>> capture mode. Is there any?
->>
->> I don't think so. Possibly somewhere in IIO.
->=20
-> I think so too. There was a patch set not so long ago that added PWM
-> capture support for one of the TI PWM controllers to IIO.
+Liu Ying wrote:
+[...]
+> @@ -30,6 +32,7 @@
+>  /* i.MX27, i.MX31, i.MX35 share the same PWM function block: */
+> =20
+>  #define MX3_PWMCR                 0x00    /* PWM Control Register */
+> +#define MX3_PWMIR                 0x08    /* PWM Interrupt Register =
+*/
+>  #define MX3_PWMSAR                0x0C    /* PWM Sample Register */
+>  #define MX3_PWMPR                 0x10    /* PWM Period Register */
+>  #define MX3_PWMCR_PRESCALER(x)    (((x - 1) & 0xFFF) << 4)
+> @@ -38,7 +41,12 @@
+>  #define MX3_PWMCR_DBGEN			(1 << 22)
+>  #define MX3_PWMCR_CLKSRC_IPG_HIGH (2 << 16)
+>  #define MX3_PWMCR_CLKSRC_IPG      (1 << 16)
+> +#define MX3_PWMCR_SWR		  (1 << 3)
+>  #define MX3_PWMCR_EN              (1 << 0)
+> +#define MX3_PWMSR_ROV             (1 << 4)
+> +#define MX3_PWMIR_RIE             (1 << 1)
+> +
+You should decide whether to use tabs or spaces for indentation.
+And probably cleanup the indentation of the existing definitions to use
+all the same indentation style.
 
-It is probably this.
-https://lwn.net/Articles/583998/
-https://lkml.org/lkml/2014/2/5/378
+> @@ -128,6 +160,13 @@ static int imx_pwm_config_v2(struct pwm_chip *ch=
+ip,
+>  	else
+>  		period_cycles =3D 0;
+> =20
+> +	if (!enable || duty_cycles =3D=3D 0)
+> +		imx_pwm_software_reset_v2(chip);
+> +	else if (readl(imx->mmio_base + MX3_PWMSAR))
+> +		/* No rollover irq generated if duty peroid is zero. */
+typo: 'period'.
 
-There were some comments in v3 which haven't been fixed.
-Matt: What's the status on this?
+> @@ -135,27 +174,55 @@ static int imx_pwm_config_v2(struct pwm_chip *c=
+hip,
+>  		MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
+>  		MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH;
+> =20
+> -	if (test_bit(PWMF_ENABLED, &pwm->flags))
+> +	if (enable)
+>  		cr |=3D MX3_PWMCR_EN;
+> =20
+>  	writel(cr, imx->mmio_base + MX3_PWMCR);
+> =20
+> +	if (enable && duty_cycles)
+> +		/* No rollover irq generated if duty peroid is zero. */
+dto.
 
-Thanks,
-Michal
 
+Lothar Wa=C3=9Fmann
 --=20
-Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel - Microblaze cpu - http://www.monstr.eu/fdt/
-Maintainer of Linux kernel - Xilinx Zynq ARM architecture
-Microblaze U-BOOT custodian and responsible for u-boot arm zynq platform
+___________________________________________________________
 
+Ka-Ro electronics GmbH | Pascalstra=C3=9Fe 22 | D - 52076 Aachen
+Phone: +49 2408 1402-0 | Fax: +49 2408 1402-10
+Gesch=C3=A4ftsf=C3=BChrer: Matthias Kaussen
+Handelsregistereintrag: Amtsgericht Aachen, HRB 4996
 
-
---oNpEpmClw9SQNoEwwAAJT4gnvquRAJgco
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
-
-iEYEARECAAYFAlN1z/IACgkQykllyylKDCEGhwCaAktbn+VB6o1QuvXYMI8apUDy
-k5EAoIfPdREPcAS0HnZjKjsU8If1NjWf
-=wkuF
------END PGP SIGNATURE-----
-
---oNpEpmClw9SQNoEwwAAJT4gnvquRAJgco--
+www.karo-electronics.de | info@karo-electronics.de
+___________________________________________________________
