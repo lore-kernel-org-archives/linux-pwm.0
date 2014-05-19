@@ -1,49 +1,33 @@
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCHv5 2/2] pwm: sunxi: document OF bindings
-Date: Mon, 19 May 2014 20:10:03 +0200
-Message-ID: <1400523003-27082-3-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1400523003-27082-1-git-send-email-alexandre.belloni@free-electrons.com>
+Subject: [PATCH resend] pwm: atmel: set pwm_chip can_sleep flag
+Date: Mon, 19 May 2014 22:30:44 +0200
+Message-ID: <1400531444-28613-1-git-send-email-alexandre.belloni@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1400523003-27082-1-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 List-Id: linux-pwm@vger.kernel.org
 
-This is the documentation for the Allwinner Socs PWM bindings.
+atmel_pwm_config() calls clk_get_rate() which might sleep, so we need to set
+pwm_chip can_sleep flag.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 ---
- Documentation/devicetree/bindings/pwm/pwm-sunxi.txt | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sunxi.txt
+ drivers/pwm/pwm-atmel.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-sunxi.txt b/Documentation/devicetree/bindings/pwm/pwm-sunxi.txt
-new file mode 100644
-index 000000000000..9eda87e7d233
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-sunxi.txt
-@@ -0,0 +1,20 @@
-+Allwinner PWM controller
-+
-+Required properties:
-+  - compatible: should be one of:
-+    - "allwinner,sun4i-a10-pwm"
-+    - "allwinner,sun7i-a20-pwm"
-+  - reg: physical base address and length of the controller's registers
-+  - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
-+    the cells format.
-+  - clocks: from common clock binding, handle to the parent clock.
-+
-+Example:
-+
-+	pwm: pwm@01c20e00 {
-+		compatible = "allwinner,sun7i-a20-pwm";
-+		reg = <0x01c20e00 0xc>;
-+		clocks = <&osc24M>;
-+		#pwm-cells = <3>;
-+		status = "disabled";
-+	};
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index 0adc952cc4ef..6e700a541ca3 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -357,6 +357,7 @@ static int atmel_pwm_probe(struct platform_device *pdev)
+ 
+ 	atmel_pwm->chip.base = -1;
+ 	atmel_pwm->chip.npwm = 4;
++	atmel_pwm->chip.can_sleep = true;
+ 	atmel_pwm->config = data->config;
+ 
+ 	ret = pwmchip_add(&atmel_pwm->chip);
 -- 
 1.9.1
