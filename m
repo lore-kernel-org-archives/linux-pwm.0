@@ -1,97 +1,57 @@
-From: Liu Ying <Ying.Liu@freescale.com>
+From: Sascha Hauer <s.hauer@pengutronix.de>
 Subject: Re: [PATCH v3] pwm: i.MX: Avoid sample FIFO overflow for i.MX PWM
  version2
-Date: Mon, 19 May 2014 14:52:03 +0800
-Message-ID: <5379AA13.4000904@freescale.com>
+Date: Mon, 19 May 2014 09:11:05 +0200
+Message-ID: <20140519071105.GZ5858@pengutronix.de>
 References: <1400217068-22642-1-git-send-email-Ying.Liu@freescale.com>
- <20140519075328.7f2ef0c5@ipc1.ka-ro>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bn1lp0140.outbound.protection.outlook.com ([207.46.163.140]:9633
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750740AbaESGt2 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 19 May 2014 02:49:28 -0400
-In-Reply-To: <20140519075328.7f2ef0c5@ipc1.ka-ro>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1400217068-22642-1-git-send-email-Ying.Liu@freescale.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Liu Ying <Ying.Liu@freescale.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, shawn.guo@freescale.com, LW@KARO-electronics.de, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?UTF-8?B?TG90aGFyIFdhw59tYW5u?= <LW@KARO-electronics.de>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, s.hauer@pengutronix.de, shawn.guo@freescale.com, linux-arm-kernel@lists.infradead.org
 
-Hi Lothar,
+On Fri, May 16, 2014 at 01:11:08PM +0800, Liu Ying wrote:
+> The i.MX PWM version2 is embedded in several i.MX SoCs,
+> such as i.MX27, i.MX51 and i.MX6SL.  There are four 16bit
+> sample FIFOs in this IP, each of which determines the duty
+> period of a PWM waveform in one full cycle.  The IP spec
+> mentions that we should not write a fourth sample because
+> the FIFOs will become full and trigger a FIFO write error
+> (FWE) which will prevent the PWM from starting once it is
+> enabled.  In order to avoid any sample FIFO overflow issue,
+> this patch clears all sample FIFOs or waits for a rollover
+> event to consume a FIFO slot when necessary.  In this way,
+> only the first FIFO slot will be loaded at most.
+> 
+> Note that the PWM controller will not generate any rollover
+> event if the duty period is zero.  This makes the logic a
+> bit complicated to determine if we clear the sample FIFOs
+> or wait for a rollover event.
+> 
+> The FIFO overflow issue can be reproduced by the following
+> commands on the i.MX6SL EVK platform, assuming we use PWM2
+> for the debug LED which is driven by the pin HSIC_STROBE
+> and the maximal brightness is 255.
+> echo 0   > /sys/class/leds/user/brightness
+> echo 0   > /sys/class/leds/user/brightness
+> echo 0   > /sys/class/leds/user/brightness
+> echo 0   > /sys/class/leds/user/brightness
+> echo 255 > /sys/class/leds/user/brightness
+> Here, FWE happens(PWMSR register reads 0x58) and the LED
+> can not be lighten.
 
-Thanks for your review.
+I find this overly complicated. It adds 89 lines to a 300 lines driver
+for a single workaround. Wouldn't it be sufficient to add a delay
+of period_ns in imx_pwm_config_v2 when the FIFO is full?
 
-On 05/19/2014 01:53 PM, Lothar Wa=C3=9Fmann wrote:
-> Hi,
->=20
-> Liu Ying wrote:
-> [...]
->> @@ -30,6 +32,7 @@
->>  /* i.MX27, i.MX31, i.MX35 share the same PWM function block: */
->> =20
->>  #define MX3_PWMCR                 0x00    /* PWM Control Register *=
-/
->> +#define MX3_PWMIR                 0x08    /* PWM Interrupt Register=
- */
->>  #define MX3_PWMSAR                0x0C    /* PWM Sample Register */
->>  #define MX3_PWMPR                 0x10    /* PWM Period Register */
->>  #define MX3_PWMCR_PRESCALER(x)    (((x - 1) & 0xFFF) << 4)
->> @@ -38,7 +41,12 @@
->>  #define MX3_PWMCR_DBGEN			(1 << 22)
->>  #define MX3_PWMCR_CLKSRC_IPG_HIGH (2 << 16)
->>  #define MX3_PWMCR_CLKSRC_IPG      (1 << 16)
->> +#define MX3_PWMCR_SWR		  (1 << 3)
->>  #define MX3_PWMCR_EN              (1 << 0)
->> +#define MX3_PWMSR_ROV             (1 << 4)
->> +#define MX3_PWMIR_RIE             (1 << 1)
->> +
-> You should decide whether to use tabs or spaces for indentation.
-> And probably cleanup the indentation of the existing definitions to u=
-se
-> all the same indentation style.
+Sascha
 
-Ok, I will generate a separate patch to cleanup the indentation for
-the existing register definitions of both i.MX PWMv1 and PWMv2.
-
->=20
->> @@ -128,6 +160,13 @@ static int imx_pwm_config_v2(struct pwm_chip *c=
-hip,
->>  	else
->>  		period_cycles =3D 0;
->> =20
->> +	if (!enable || duty_cycles =3D=3D 0)
->> +		imx_pwm_software_reset_v2(chip);
->> +	else if (readl(imx->mmio_base + MX3_PWMSAR))
->> +		/* No rollover irq generated if duty peroid is zero. */
-> typo: 'period'.
-
-I will fix this.
-
->=20
->> @@ -135,27 +174,55 @@ static int imx_pwm_config_v2(struct pwm_chip *=
-chip,
->>  		MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
->>  		MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH;
->> =20
->> -	if (test_bit(PWMF_ENABLED, &pwm->flags))
->> +	if (enable)
->>  		cr |=3D MX3_PWMCR_EN;
->> =20
->>  	writel(cr, imx->mmio_base + MX3_PWMCR);
->> =20
->> +	if (enable && duty_cycles)
->> +		/* No rollover irq generated if duty peroid is zero. */
-> dto.
-
-I will fix this.
-
->=20
->=20
-> Lothar Wa=C3=9Fmann
->=20
-
---=20
-Liu Ying
+-- 
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
