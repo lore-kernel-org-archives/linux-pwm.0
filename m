@@ -1,63 +1,98 @@
-From: Thierry Reding <thierry.reding@gmail.com>
+From: Simon Horman <horms@verge.net.au>
 Subject: Re: [PATCHv2 resend 00/11] improve PWM lookup support without device
  tree
-Date: Mon, 19 May 2014 23:08:49 +0200
-Message-ID: <20140519210848.GF30737@mithrandir>
+Date: Tue, 20 May 2014 07:39:13 +0900
+Message-ID: <20140519223913.GE20590@verge.net.au>
 References: <1400532162-29483-1-git-send-email-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="rWhLK7VZz0iBluhq"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f44.google.com ([74.125.83.44]:33510 "EHLO
-	mail-ee0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751243AbaESVIx (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 19 May 2014 17:08:53 -0400
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-sh-owner@vger.kernel.org>
 Content-Disposition: inline
 In-Reply-To: <1400532162-29483-1-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-sh-owner@vger.kernel.org
 To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Tony Lindgren <tony@atomide.com>, Philipp Zabel <philipp.zabel@gmail.com>, Paul Parsons <lost.distance@yahoo.com>, Simon Horman <horms@verge.net.au>, Magnus Damm <magnus.damm@gmail.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Bryan Wu <cooloney@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-sh@vger.kernel.org, linux-leds@vger.kernel.org, linux-fbdev@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, Tony Lindgren <tony@atomide.com>, Philipp Zabel <philipp.zabel@gmail.com>, Paul Parsons <lost.distance@yahoo.com>, Magnus Damm <magnus.damm@gmail.com>, Eric Miao <eric.y.miao@gmail.com>, Haojian Zhuang <haojian.zhuang@gmail.com>, Bryan Wu <cooloney@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-sh@vger.kernel.org, linux-leds@vger.kernel.org, linux-fbdev@vger.kernel.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+List-Id: linux-pwm@vger.kernel.org
 
+[ CCed Laurent Pinchart ]
 
---rWhLK7VZz0iBluhq
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The renesas and shmobile portions of this seem reasonable to me
+and I have checked that there do not seem to be any conflicts
+with changes I already have queued up for v3.16 (and v3.17).
+
+I have CCed Laurent Pinchart as I believe he most recently
+did work on the renesas and shmobile code in question.
 
 On Mon, May 19, 2014 at 10:42:31PM +0200, Alexandre Belloni wrote:
 > Hi,
->=20
+> 
 > Originally sent on Apr 14th, note that this series is blocking another 16
-> patches series, I would like it to be taken in 3.16 if we can agree on th=
-is
+> patches series, I would like it to be taken in 3.16 if we can agree on this
 > implementation.
+> 
+> A patch set as suggested by Thierry to make lookup with the lookup table
+> instead of device tree behave more like when using device tree.
+> 
+> The first patch adds a period and a polarity member to the lookup table and use
+> those to set period and polarity.
+> 
+> Patch 2, 4 and 5 are making use of those new members from the board files.
+> Patch 3 removes useless code since setting the polarity is now handled by the
+> PWM core.
+> 
+> I couldn't decide on a good name for the extended PWM_LOOKUP macro and I believe
+> we won't have to add members to that structure soon so:
+> Patch 6 modifies the PWM_LOOKUP macro to also initialize period and polarity
+> and
+> Patch 7-9 are making use of the new PWM_LOOKUP macro in the board files
+> 
+> Patch 10 and 11 are making the leds-pwm and pwm_bl drivers get the period from
+> the PWM before using pwm_period_ns if it is not already set.
+> 
+> Patch 10 will obviously conflict with the series of Russell reworking the
+> leds-pwm probing. I can rebase if necessary
+> 
+> The final goal would be to get rid of .pwm_period_ns in leds-pwm and pwm_bl
+> after moving all the remaining users (still around 25) to pwm_lookup.
+> 
+> Changes in v2:
+>  - correctly unlock the pwm_lookup_lock mutex before returning.
+>  - don't change PWM_LOOKUP atomically
+>  - remove tpu_pwm_platform_data and the associated header file
+>  - make the leds-pwm and pwm_bl drivers get the period from the PWM
+> 
+> Alexandre Belloni (11):
+>   pwm: add period and polarity to struct pwm_lookup
+>   ARM: shmobile: Armadillo 800 EVA: initialize all struct pwm_lookup
+>     members
+>   pwm: renesas-tpu: remove useless struct tpu_pwm_platform_data
 
-It's kind of late for 3.16 now, but it doesn't look very risky from a
-quick look. I'll sleep on it and if I don't feel too uncomfortable about
-it in the morning I'll apply it for linux-next and see how that goes.
+The above two patches:
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
 
-Thierry
+>   ARM: OMAP3: Beagle: initialize all the struct pwm_lookup members
+>   ARM: pxa: hx4700: initialize all the struct pwm_lookup members
+>   pwm: modify PWM_LOOKUP to initialize all struct pwm_lookup members
+>   ARM: OMAP3: Beagle: use PWM_LOOKUP to initialize struct pwm_lookup
+>   ARM: shmobile: Armadillo 800 EVA: use PWM_LOOKUP to initialize struct
+>     pwm_lookup
 
---rWhLK7VZz0iBluhq
-Content-Type: application/pgp-signature
+The above patch:
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTenLgAAoJEN0jrNd/PrOhJQsP/1C09qs8Y85T+8vvFJH8yWyU
-IKOd3JKjimnPqBXZsa23U9aFr8lBJCFyQGJGayeXTJNw1ql3Chu0B4+HQSbUNOCD
-/3a70J5GnDlB5GU2KOq2i9tfT4/m+Bv3s+3maXB+As6m09ksmt+shO9+kM+NrmGC
-eqX9IOmCKxnbd90vxPCSlgDXQ1jFTcMShwDwaG7iU8rS3aUSHLIaeL2K2Dh10l6R
-1e0ivk4dDWTKxmje9Jq62hlw5BeC7EDVJxtv1bf4HftbHRfbcEVw827Ff8ofnqzF
-If/tFKqm61AtJ8qlfzjdV35dGSd4B3Qm+dh1ZZPQPz45aIzbAi6/jFss6Xcf9PH6
-hMsWJPPrfptfrKWm83kx9ynLHjZgv7zpNztsDh1sZ5pjM73bzfBkCEvu1Mau/rRx
-ZCzgQfUafoH2xlgrShl0c70MZ3qJuc0OLMTSXnxwKwn4TwlWv7Dg/DCHjIgoQBAS
-7trJhhQzhzMSPeVE/kIWQLv0c9mt/EuGekFL7rUMECIYIzZaK7HESERFatk3ZhPI
-/QlzAsLaHA8+J4G674aTI20jiAfkhkFiUCDG6LVmv2NTWF2ean9fDpsJrNSv4voX
-lcQnw2vbnSRvMCHX4PG5F29Mg/Usl76qQAmndN22831gWa5ULfP6Zo7rac0TSJJu
-ABlXVGZkZ8ncXuQzKF85
-=WwQk
------END PGP SIGNATURE-----
-
---rWhLK7VZz0iBluhq--
+>   ARM: pxa: hx4700: use PWM_LOOKUP to initialize struct pwm_lookup
+>   leds: leds-pwm: retrieve configured pwm period
+>   backlight: pwm_bl: retrieve configured pwm period
+> 
+>  Documentation/pwm.txt                          |  3 ++-
+>  arch/arm/mach-omap2/board-omap3beagle.c        |  3 ++-
+>  arch/arm/mach-pxa/hx4700.c                     |  3 ++-
+>  arch/arm/mach-shmobile/board-armadillo800eva.c | 14 +++-----------
+>  drivers/leds/leds-pwm.c                        |  5 ++++-
+>  drivers/pwm/core.c                             |  8 +++++++-
+>  drivers/pwm/pwm-renesas-tpu.c                  | 19 +++----------------
+>  drivers/video/backlight/pwm_bl.c               |  8 +++++---
+>  include/linux/platform_data/pwm-renesas-tpu.h  | 16 ----------------
+>  include/linux/pwm.h                            |  6 +++++-
+>  10 files changed, 33 insertions(+), 52 deletions(-)
+>  delete mode 100644 include/linux/platform_data/pwm-renesas-tpu.h
