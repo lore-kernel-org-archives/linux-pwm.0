@@ -1,74 +1,84 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH RESEND] PWM: ab8500: Fix wrong value shift for
- disable/enable PWM
-Date: Wed, 21 May 2014 12:30:27 +0200
-Message-ID: <20140521103026.GE22783@ulmo>
-References: <1397049594.5246.1.camel@phoenix>
+Subject: Re: [PATCH 5/9] pwm: spear: Remove unnecessary OOM messages
+Date: Wed, 21 May 2014 12:34:59 +0200
+Message-ID: <20140521103458.GF22783@ulmo>
+References: <000701cf328e$00ed24c0$02c76e40$%han@samsung.com>
+ <6028232.VHmxlGjlXi@avalon>
+ <CAKohponXNmXPZP2Umz3BfRnXyOPX5Fa9606Lc42ORnOuevifEw@mail.gmail.com>
+ <24037035.nXcZgi4Mc2@avalon>
+ <005801cf39db$e1a37240$a4ea56c0$%han@samsung.com>
+ <20140310122237.GA26681@ulmo.nvidia.com>
+ <000601cf4eec$47f4aee0$d7de0ca0$%han@samsung.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="5xSkJheCpeK0RUEJ"
+	protocol="application/pgp-signature"; boundary="8JPrznbw0YAQ/KXy"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f46.google.com ([74.125.83.46]:50257 "EHLO
-	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750980AbaEUKco (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 21 May 2014 06:32:44 -0400
-Received: by mail-ee0-f46.google.com with SMTP id t10so1449751eei.33
-        for <linux-pwm@vger.kernel.org>; Wed, 21 May 2014 03:32:43 -0700 (PDT)
+Received: from mail-ee0-f41.google.com ([74.125.83.41]:61841 "EHLO
+	mail-ee0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750980AbaEUKhQ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 21 May 2014 06:37:16 -0400
+Received: by mail-ee0-f41.google.com with SMTP id t10so1408613eei.0
+        for <linux-pwm@vger.kernel.org>; Wed, 21 May 2014 03:37:15 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <1397049594.5246.1.camel@phoenix>
+In-Reply-To: <000601cf4eec$47f4aee0$d7de0ca0$%han@samsung.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Axel Lin <axel.lin@ingics.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre BOURDIOL <alexandre.bourdiol@st.com>, Philippe Begnic <philippe.begnic@st.com>, linux-pwm@vger.kernel.org
+To: Jingoo Han <jg1.han@samsung.com>
+Cc: linux-pwm@vger.kernel.org
 
 
---5xSkJheCpeK0RUEJ
+--8JPrznbw0YAQ/KXy
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 09, 2014 at 09:19:54PM +0800, Axel Lin wrote:
-> Current code only works when pdev->id is 1. Fix it by passing correct bit=
-values
-> argument to abx500_mask_and_set_register_interruptible.
+On Thu, Apr 03, 2014 at 12:24:54PM +0900, Jingoo Han wrote:
+> On Monday, March 10, 2014 9:23 PM, Thierry Reding wrote:
+> > On Fri, Mar 07, 2014 at 05:04:36PM +0900, Jingoo Han wrote:
 >=20
-> Having DISABLE_PWM/ENABLE_PWM does not make the code better in readability
-> because the bitvalues depends on pdev->id.
-> Thus drop defines for DISABLE_PWM/ENABLE_PWM.
+> [....]
 >=20
-> This patch also removes a unnecessary return in ab8500_pwm_disable.
+> > >
+> > > Hi Thierry Reding,
+> > >
+> > > There seems to be no objection. :-)
+> > > Would you accept these patches?
+> > > Thank you.
+> >=20
+> > All 9 patches applied, thanks.
 >=20
-> Signed-off-by: Axel Lin <axel.lin@ingics.com>
-> Acked-by: Linus Walleij <linus.walleij@linaro.org>
-> Acked-by: Alexandre BOURDIOL <alexandre.bourdiol@st.com>
-> Acked-by: Philippe Begnic <philippe.begnic@st.com>
-> ---
->  drivers/pwm/pwm-ab8500.c | 9 ++-------
->  1 file changed, 2 insertions(+), 7 deletions(-)
+> Hi Thierry,
+>=20
+> I cannot find these patches from your pwm git tree. [1]
+> Would you confirm it? :-) Thank you.
+>=20
+> [1] http://git.kernel.org/cgit/linux/kernel/git/thierry.reding/linux-pwm.=
+git/log/?h=3Dfor-next
 
-Applied, thanks.
+It seems like I never replied to this, but the patches have now been
+merged for a while.
 
 Thierry
 
---5xSkJheCpeK0RUEJ
+--8JPrznbw0YAQ/KXy
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTfIBCAAoJEN0jrNd/PrOhvFAP/2kEFt9p3Awrp9sAcvvcvHxL
-Be7zZUez1HcZAEW5PjQwsc1C2e/BgaOik4V3ItmJQVFSkhjkL7i1Bu3Z/bLudUiL
-dQ+UElARfnRuXUORFeyiuZXoqWmPZk4n7GndBu05cuWySKm9KrQvLKT9wHjfQ53C
-FZp3MeftTQl4HsqJGPYAI+AKKXyndTlrfYgWwEeiXj5J3YWIz20pEsinb0CTTtuW
-VgJvTPTx0LBbnSqQ17Q8ugzm1ylwizd7ZhBAmRxhYkL8T9kjCkvmHHN6rNcDPZ8D
-L86uEprr4BIa5umGuHk3FC+HyzWholLv7OmlSkA7vIwVNJPfYMiP7mwtrKVGF+jT
-Gbe9/Qb/DdDMCUOF4gUvRVOvLqFWqo4y7RZc0pirQ+gW7VFiBtlm7bzPoqeO9tS3
-hQgttugqwCSmdyVTb0ITWX324jPJ12YEqcT9GgdDgZshtzNYc46hR8tQ1XB9RgT0
-8Ng5CBwMOONDrUpFcN9x0V/Hibb2zgSMoFnSjR1gieGNSv0z4VJueaIs1zMEaunV
-8PdXoe0/lOfac7Z8v6mzLOco6ms2VXM5Va9eOVjH8yIuTs8dSX3SXaHJbrl1N8Y1
-4ipe9e2Row2fScE4ljA2s6cz1hDsxtIkL4V6YS3KwkQE5A1sB+HpTCBKwxBy1KUk
-MxpMlN8OpKVW2OV23q4l
-=hAil
+iQIcBAEBAgAGBQJTfIFSAAoJEN0jrNd/PrOhlFkP/iksdknWCZfz5LjEgAsDBIbA
+zGGffA7XzrAfqhcW416C8Zt7eebZouIQ+p6qIMFBK3xEwcq/LzLoMlHvxkTowcE7
+GcLmSgi2dKKv9bHLkhF7eYC+qL8L7ogvDjYbeg/74utv0mIHb6dJFZn3zKjb55pw
+a5qS7Ly8Nw2pWj46HT8l86BZPS/hx1w332nhmmjdnUxHAndPRBmylTrZABWAdddi
+CGyHV4gC/e7ShVKs2DlF8lYSGZhLt1ecHrAEOzymGiNTYNpOSHkHH4rx1n5VK6W4
+kQ7ejBtNLKFTBxhr5fTmfSpb8raip7cY8Z6xfmULReeQ2VCOb4TI0mxTX8horLR0
+U9P5TZSMXqv7lkQQ3KZ9E8KGm5L2MCmszz1xHMttCV8oVz9YbH4XpYikyeyaC7a9
+elF9dcyvzQH8GxEWKotQ7nwMKckgLxRrMF+aqMnAPw6Zrupu7lfxxBT9eyJgrQk0
+c+Kty0pVUmx0nzXfwU2qltLBmmgao3zINqeooVPfRl/qfAwE/h7inQgjI56We7Pf
+7/4ziySxaUFYbGQ/91czkMWKMq/fixydFSGzKnX2t+x7HVtSWzXDTCDf77F4WA9z
+HDwWmOLiZS0DkpRkZDSi2AH9THj5Yx2tN+DlYOM32Mc8r4+1pdONc4EpdWknk1ZD
+xvDnCKysZ7TrOdAG5+Hm
+=ncLB
 -----END PGP SIGNATURE-----
 
---5xSkJheCpeK0RUEJ--
+--8JPrznbw0YAQ/KXy--
