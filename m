@@ -1,70 +1,69 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/2] pwm: tiehrpwm: don't build PM related functions when
- not needed
-Date: Wed, 21 May 2014 12:01:49 +0200
-Message-ID: <20140521100147.GA22783@ulmo>
-References: <1396439802-6813-1-git-send-email-wsa@the-dreams.de>
+Subject: Re: [PATCH] pwm: samsung: do not set manual update bit in
+ pwm_samsung_config
+Date: Wed, 21 May 2014 12:20:43 +0200
+Message-ID: <20140521102042.GB22783@ulmo>
+References: <1399906581-29298-1-git-send-email-ajaykumar.rs@samsung.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="dDRMvlgZJXvWKvBx"
+	protocol="application/pgp-signature"; boundary="yEPQxsgoJgBvi8ip"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f41.google.com ([74.125.83.41]:46974 "EHLO
-	mail-ee0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752430AbaEUKEH (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 21 May 2014 06:04:07 -0400
-Received: by mail-ee0-f41.google.com with SMTP id t10so1375016eei.0
-        for <linux-pwm@vger.kernel.org>; Wed, 21 May 2014 03:04:05 -0700 (PDT)
+Received: from mail-ee0-f46.google.com ([74.125.83.46]:56315 "EHLO
+	mail-ee0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751066AbaEUKXB (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 21 May 2014 06:23:01 -0400
 Content-Disposition: inline
-In-Reply-To: <1396439802-6813-1-git-send-email-wsa@the-dreams.de>
+In-Reply-To: <1399906581-29298-1-git-send-email-ajaykumar.rs@samsung.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Wolfram Sang <wsa@the-dreams.de>
-Cc: linux-pwm@vger.kernel.org, Wolfram Sang <wsa@sang-engineering.com>
+To: Ajay Kumar <ajaykumar.rs@samsung.com>
+Cc: linux-pwm@vger.kernel.org, linux-samsung-soc@vger.kernel.org, ajaynumb@gmail.com, tomasz.figa@gmail.com, abrestic@chromium.org, jg1.han@samsung.com, sachin.kamat@linaro.org, joshi@samsung.com, prashanth.g@samsung.com
 
 
---dDRMvlgZJXvWKvBx
+--yEPQxsgoJgBvi8ip
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 02, 2014 at 01:56:21PM +0200, Wolfram Sang wrote:
-> From: Wolfram Sang <wsa@sang-engineering.com>
+On Mon, May 12, 2014 at 08:26:21PM +0530, Ajay Kumar wrote:
+> pwm_samsung_config sets manual update bit via call to
+> pwm_samsung_enable even when the channel is already running.
+> This causes noticable flickers on display if we try to change
+> the backlight value from 0 to MAX, continiously.
 >=20
-> Fixes following warnings on AM335X with no PM_SLEEP
+> So, we remove the call to pwm_samsung_enable from
+> pwm_samsung_config to avoid the flicker and this change doesn't
+> harm normal working since the pwm_bl core already takes care of
+> calling pwm_samsung_enable whenever needed.
 >=20
-> drivers/pwm/pwm-tiehrpwm.c:534:13: warning: 'ehrpwm_pwm_save_context' def=
-ined but not used [-Wunused-function]
-> drivers/pwm/pwm-tiehrpwm.c:548:13: warning: 'ehrpwm_pwm_restore_context' =
-defined but not used [-Wunused-function]
->=20
-> Signed-off-by: Wolfram Sang <wsa@sang-engineering.com>
+> Signed-off-by: Ajay Kumar <ajaykumar.rs@samsung.com>
 > ---
->  drivers/pwm/pwm-tiehrpwm.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/pwm/pwm-samsung.c | 3 ---
+>  1 file changed, 3 deletions(-)
 
-Both patches applied, thanks.
+Applied, thanks.
 
 Thierry
 
---dDRMvlgZJXvWKvBx
+--yEPQxsgoJgBvi8ip
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTfHmLAAoJEN0jrNd/PrOhZmQQALCE+4FnWYIzi5oFmMR6rYgo
-DV+ngqQwGb5xXcaLklUqnhBCR/TU9GEaujX17g+dCX86yiWCerWuRjbxji9Vh0+V
-sUqHftc8RBEJnug5K2RsJ4NZwxuKshg+aOuFd/nJoRMk8ZxPIlG5RfO9dj0NebhJ
-wwUMBWO3yMZYM4eTDdk7u65Jzk1VkMiYBcuZ3hq4mcTOmH3ihpsqkvgkJfSaf9CS
-qexNxZVc8THliSSVXmWKopUhTPTtsHFHchjBR6yK1TA77lVXqzBJ2ySDivPZyAaZ
-ogtwu+8rxmKf21ccqxaeLlyFQPsociH7M17o62brcwm66hAxISMKtjXvyLU8QDMQ
-tknaIbXQ0jCMkVH5M0v4+VDXIb/ZXI89ay8txRAwf09TY6QjQ00iFrrGx6vd0+uL
-M+wh994LYyEPEt1UURISmLIDAvzoHU+lD4O36zUUHs1wNSpbJ4U08B6/lLxBrGjz
-F8xzvsF+kRhkEWNRRf+bgBYPmcn0VaoEQpTTOYnC1O1QcT7cYkPKe4iANqkjpO2F
-m7OCV1pzQgnL35LH8jukCIbsllZS6/Wrm0z1EZ/tI2yDkWA3GW5yf7Of0dPgIxFl
-aFZO2yBFDu7CGWzHy3mpkj2iNySCtiYoj5HhQ10KWJ9P/6aiT9kJz+8TTybRx1t2
-AGBqVV1+EjzUf9OVtqPS
-=wBcj
+iQIcBAEBAgAGBQJTfH36AAoJEN0jrNd/PrOhIxMP/RYLUKRZHVV9akmJIZDkoCmQ
+LDZZCZBM6sBRF+ZQ7BPlRTeYVA6xsnp0OCrw1DR0yf5ciQg+sYR0GgiB4QrVpTSj
+1H4D7kTg9KvULveMdjSQR/aU7RjujXl36MuluG6M+NPh81wP1DIUn2P4q9k5q5+I
+ra4AUheNl6b/VlJcUNoMvyHpbOrV7bRhkGsD9mzVjMMvY5HfhZ9OmOPYDuLkqbBE
+aHqls7QMk4i9jWRXZcGI1SRhyWRn051lfbcs1FAEzFshR6S0sBVaxBae4U2Y7Uso
+LF+dRTfWXrfmYzDHHxqojltNViQ0VeMxl9xKwR2vFOAY4Y5H6WzfTmuyRrTAjz6G
+Wr2W0lAPEhxOSiik8mOIJ6RwH4QuItwtDIFN/f3TZH/VSC4Eg9M+Q4yrrj3jfIxP
+Rw6Yg5IPdJsvkJQ9gKjVT8Hevsz2CHCsTWk0COpoRdz8EizVA79yptPRsYoxJ4Kb
+1hVab4S2IST9TI11R2rzjkX/k3JZIcm/F6n6gDiL1lmDemJcOqy2411AhVuADIFV
+YZdRKfUItnZmKe4slC9EumrFI8mmto0kuxwrdAJGXfSfOFkHQ2705fLHTZExUgS1
+QmEujkggV2ObIz+kDrcQwuEyVYrKHM2pKO1ztToOWeHnbzhMNCqoA+F2tLyLhC0j
+o7uGKaKyVgkEPZtlteAe
+=6ZBB
 -----END PGP SIGNATURE-----
 
---dDRMvlgZJXvWKvBx--
+--yEPQxsgoJgBvi8ip--
