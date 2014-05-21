@@ -1,62 +1,62 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] PWM: lp3943: Set pwm_chip can_sleep flag
-Date: Wed, 21 May 2014 12:25:51 +0200
-Message-ID: <20140521102550.GC22783@ulmo>
-References: <1397579890.10787.1.camel@phoenix>
+Subject: Re: [PATCH] pwm: atmel: set pwm_chip can_sleep flag
+Date: Wed, 21 May 2014 12:26:18 +0200
+Message-ID: <20140521102617.GD22783@ulmo>
+References: <1397067969-19905-1-git-send-email-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="qjNfmADvan18RZcF"
+	protocol="application/pgp-signature"; boundary="Km1U/tdNT/EmXiR1"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ee0-f53.google.com ([74.125.83.53]:40030 "EHLO
-	mail-ee0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750796AbaEUK2J (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 21 May 2014 06:28:09 -0400
-Received: by mail-ee0-f53.google.com with SMTP id c13so1398145eek.40
-        for <linux-pwm@vger.kernel.org>; Wed, 21 May 2014 03:28:07 -0700 (PDT)
+Received: from mail-ee0-f43.google.com ([74.125.83.43]:36913 "EHLO
+	mail-ee0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751066AbaEUK2g (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 21 May 2014 06:28:36 -0400
 Content-Disposition: inline
-In-Reply-To: <1397579890.10787.1.camel@phoenix>
+In-Reply-To: <1397067969-19905-1-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Axel Lin <axel.lin@ingics.com>
-Cc: Milo Kim <milo.kim@ti.com>, linux-pwm@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
 
---qjNfmADvan18RZcF
+--Km1U/tdNT/EmXiR1
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 16, 2014 at 12:38:10AM +0800, Axel Lin wrote:
-> Read/write through I2C can sleep, thus set pwm_chip can_sleep flag.
+On Wed, Apr 09, 2014 at 08:26:09PM +0200, Alexandre Belloni wrote:
+> atmel_pwm_config() calls clk_get_rate() which might sleep, so we need to =
+set
+> pwm_chip can_sleep flag.
 >=20
-> Signed-off-by: Axel Lin <axel.lin@ingics.com>
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 > ---
->  drivers/pwm/pwm-lp3943.c | 1 +
+>  drivers/pwm/pwm-atmel.c | 1 +
 >  1 file changed, 1 insertion(+)
 
 Applied, thanks.
 
 Thierry
 
---qjNfmADvan18RZcF
+--Km1U/tdNT/EmXiR1
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTfH8uAAoJEN0jrNd/PrOhJXcP/iiEm0AZlsgCv80j+JOd20FP
-qbS5F4lre4z+OFRmpPnqAGh5UdIitPO/rn/hFKbN59VdTXVbgYF6PKY6ehk7dlgt
-zdOpawHAsPKMZ20yjBZJL+Vd2BqBzpcI3BcQf5wu5QDXCLWo01FsaAdS+GOyPna7
-pDcK+l2vVuhxlnLafRC3fNqVFkHviX0cq1RHbfcHRD1Q5/LVIVuEvO78Fs5LAIcp
-pgYXxeA7ZDdrukRK46c2/benRwyE5rmY3xYqqHkdjb6SktVoJCsCxyLato7rQF0Q
-27DexfzDTCCKfKFHZ32NJt0MAx+y68ZGegSmlRqyrGOzwZWpNWoK1advn1zgq8E1
-CTlCxF95WT2VlbDi0xi3oOOO56dqvxw7Sjpm+d94u5/W9NRbK1h/HW20Wl9FFMw+
-bVTWIKhbpv68mpglfNnQV5i5F3MFDggiuedGhWCiTlded5xKIO7Bcc0dcY25ZEHU
-gcYIECUw30rM/Q51+SFmV70rggWBIR2XeJRvF0GFQpU2WuBOrqCPZRTCI9lXZqJQ
-lw8Es7vnuUxjwRY5lQAavBonMdlU90bSB3T24hLElOHiU0y3fv0P6R6pEb3tB0Hk
-5bEPHWr9HYIgN0jByQTMyrlg97NPV1cySmrpEpfiEpHOavT5iGQ8T7HYAcr/7mRe
-ldZNcAYuo3eH2yqQaMk4
-=KCLi
+iQIcBAEBAgAGBQJTfH9JAAoJEN0jrNd/PrOhEogQAIUKRCAry7ZiGcK+pSOh+Syg
+0hd8OtjJguCu1EpNHxUhE/4tdCALjCIJZ84OZVTguQ/jVFRRLiMrDJqnL/tS7nh2
+mNjxCEMPBYYZ7h/bXzPTrhzlT21Fy8ht2y9TOQ7EJtZ4+3El2z9g5HIn/09T9G7V
+3AaY/fOpusN9KVWi/uyqRUYwrGVWQWq3dOK+QMT0BFjSSXWo6ngNfrkwbniUA7OO
+IQWmlF6B9w93nVfKk8W5rAj1S4fhfoGEhExDg6XZPLSdWhYaWia8lWS5BibVDQAu
+o0I4vj9Cmzyv6VGeKTtm+/bIAj0ZiW9OIVqpyLTqav5FK/iiGd68PDKJln1lGNXt
+NRdX2GKSaM5Ckewnnzij8khrrUeEyYCVvex6AuS8jlvmGgDuHMZJGQJQyg0uLsE/
+x3rOLMJ1VsjdqpgV1GK6AK2DmB27vGJ8qcGQjLOyAT98hFxmkLpak/T6XcbBvahN
+dlnm3N0EAtVRWK9CCl2oiqdQC/TKsHB+xHULLKcsdT1/GaFC7R0scWmUfws6UC+7
+535LBz7dzfzBQVECF1Xx5WvRZTg/c4PocykNG3BYOoqmGzQNqLIeMjCgl4maFEco
+lYFHegjQ5ul+4tl2B0pk5CqrhXODhpdjCWq0El8fRh7iBTdd6AU94Ba2cPspQeeA
+CEEjJRvVP0FWkO+d+CTo
+=47Rk
 -----END PGP SIGNATURE-----
 
---qjNfmADvan18RZcF--
+--Km1U/tdNT/EmXiR1--
