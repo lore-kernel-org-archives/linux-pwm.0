@@ -1,38 +1,52 @@
-From: Shawn Guo <shawn.guo@freescale.com>
-Subject: Re: [PATCH v2] pwm: imx: set can_sleep flag for imx_pwm
-Date: Fri, 23 May 2014 17:03:22 +0800
-Message-ID: <20140523090321.GA2650@dragon>
-References: <1400834488-2660-1-git-send-email-shawn.guo@freescale.com>
- <20140523084359.GD20155@pengutronix.de>
+From: HUSAM AL SAYED <Husamalsayed@asia.com>
+Subject: Your Urgent reply.
+Date: Mon, 26 May 2014 22:00:48 +0400
+Message-ID: <CAKFyHyqE-jAV0G8GqYW7H_3cUYv2iXVQm5a6-m1VNZWRhKVXAg__13445.4279127114$1401127294$gmane$org@mail.gmail.com>
+Reply-To: Husamalsayed@asia.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bl2lp0204.outbound.protection.outlook.com ([207.46.163.204]:53050
-	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751236AbaEWJDy (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Fri, 23 May 2014 05:03:54 -0400
-Content-Disposition: inline
-In-Reply-To: <20140523084359.GD20155@pengutronix.de>
+Received: from mail-wg0-f68.google.com ([74.125.82.68]:43879 "EHLO
+	mail-wg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752085AbaEZSAu (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 26 May 2014 14:00:50 -0400
+Received: by mail-wg0-f68.google.com with SMTP id x12so2648798wgg.3
+        for <linux-pwm@vger.kernel.org>; Mon, 26 May 2014 11:00:49 -0700 (PDT)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Liu Ying <Ying.Liu@freescale.com>
 
-On Fri, May 23, 2014 at 10:43:59AM +0200, Uwe Kleine-K=F6nig wrote:
-> On Fri, May 23, 2014 at 04:41:28PM +0800, Shawn Guo wrote:
-> > The .config() hook imx_pwm_config() calls clk APIs like clk_prepare=
-()
-> > and clk_get_rate(), which might sleep, so we need to set can_sleep =
-flag
-> > on pwm_chip.
-> Wasn't there a bug that was fixed or at least made more obvious with
-> this change? Is it worth mentioning in the commit log?
+Dear Friend,
 
-The bug should be the one same as what we fixed on pwm-mxs[1].  But I
-did not try to trigger it on pwm-imx myself, because it's obvious.
 
-Shawn
+Compliments of the day.This mail May be a surprise to you Because you
+did not give me the permission to do so and Neither do you know me but
+before I tell you about myself I want you to please forgive me for
+sending this mail without your permission I have been in search of
+someone with this last name so when I saw you online, I was pushed to
+contact you and see how best we can assist each other. I am Mr. Husam
+Al Sayed, a Bank Officer here in U.A.E. I believe it is the wish of
+God for me to come across you now. I am having an important business
+discussion I wish to share with you which I  believe will interest
+you, because it is in connection with your last name and you are going
+to benefit from it.
 
-[1] http://article.gmane.org/gmane.linux.pwm/570
+One Late peter who was among the death victims in the May 27 2006
+Earthquake disaster in Java, Indonesia that killed over 5,000 people.
+He was in Indonesia on a business trip and that was how he met his
+end. My bank management is yet to know about his death, I knew about
+it because he was my friend and I am his account officer.he did not
+mention any Next of Kin/ Heir when the account was opened, and he was
+not married and no children. Last week my Bank Management requested
+that he should give instructions on what to do about his funds,I know
+this will happen and that is why I have been looking for a means to
+handle the situation,
+
+If you are interested send me your private Email Address so that i can
+send you more details of the transaction,
+Thanks for your understanding
+
+I am waiting for your reply.
+
+Best regards,
+
+Mr. Husam Al Sayed
