@@ -1,7 +1,7 @@
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCHv2 08/15] avr32/at32ap: switch to the generic PWM framework
-Date: Thu, 29 May 2014 01:20:11 +0200
-Message-ID: <1401319218-16772-9-git-send-email-alexandre.belloni@free-electrons.com>
+Subject: [PATCHv2 12/15] avr32: update defconfig to use the generic PWM framework
+Date: Thu, 29 May 2014 01:20:15 +0200
+Message-ID: <1401319218-16772-13-git-send-email-alexandre.belloni@free-electrons.com>
 References: <1401319218-16772-1-git-send-email-alexandre.belloni@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1401319218-16772-1-git-send-email-alexandre.belloni@free-electrons.com>
@@ -10,45 +10,198 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Bryan Wu <cooloney@gmail.com>, Jingoo Han <jg1.han@samsung.com>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Switch to the pwm/pwm-atmel driver instead of misc/atmel_pwm
+Now that all boards have switched to the generic PWM framework, update the
+defconfigs to use it.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 Acked-by: Hans-Christian Egtvedt <egtvedt@samfundet.no>
 ---
- arch/avr32/mach-at32ap/at32ap700x.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ arch/avr32/configs/atngw100_mrmt_defconfig | 5 +++--
+ arch/avr32/configs/atstk1002_defconfig     | 5 +++--
+ arch/avr32/configs/atstk1003_defconfig     | 5 +++--
+ arch/avr32/configs/atstk1004_defconfig     | 5 +++--
+ arch/avr32/configs/atstk1006_defconfig     | 5 +++--
+ arch/avr32/configs/merisc_defconfig        | 5 +++--
+ 6 files changed, 18 insertions(+), 12 deletions(-)
 
-diff --git a/arch/avr32/mach-at32ap/at32ap700x.c b/arch/avr32/mach-at32ap/at32ap700x.c
-index a1f4d1e91b52..db85b5ec3351 100644
---- a/arch/avr32/mach-at32ap/at32ap700x.c
-+++ b/arch/avr32/mach-at32ap/at32ap700x.c
-@@ -1553,7 +1553,7 @@ static struct resource atmel_pwm0_resource[] __initdata = {
- 	IRQ(24),
- };
- static struct clk atmel_pwm0_mck = {
--	.name		= "pwm_clk",
-+	.name		= "at91sam9rl-pwm",
- 	.parent		= &pbb_clk,
- 	.mode		= pbb_clk_mode,
- 	.get_rate	= pbb_clk_get_rate,
-@@ -1568,7 +1568,7 @@ struct platform_device *__init at32_add_device_pwm(u32 mask)
- 	if (!mask)
- 		return NULL;
- 
--	pdev = platform_device_alloc("atmel_pwm", 0);
-+	pdev = platform_device_alloc("at91sam9rl-pwm", 0);
- 	if (!pdev)
- 		return NULL;
- 
-@@ -1576,9 +1576,6 @@ struct platform_device *__init at32_add_device_pwm(u32 mask)
- 				ARRAY_SIZE(atmel_pwm0_resource)))
- 		goto out_free_pdev;
- 
--	if (platform_device_add_data(pdev, &mask, sizeof(mask)))
--		goto out_free_pdev;
--
- 	pin_mask = 0;
- 	if (mask & (1 << 0))
- 		pin_mask |= (1 << 28);
+diff --git a/arch/avr32/configs/atngw100_mrmt_defconfig b/arch/avr32/configs/atngw100_mrmt_defconfig
+index 9a57da44eb6f..6838781e966f 100644
+--- a/arch/avr32/configs/atngw100_mrmt_defconfig
++++ b/arch/avr32/configs/atngw100_mrmt_defconfig
+@@ -56,7 +56,6 @@ CONFIG_MTD_CFI_AMDSTD=y
+ CONFIG_MTD_PHYSMAP=y
+ CONFIG_MTD_DATAFLASH=y
+ CONFIG_BLK_DEV_LOOP=y
+-CONFIG_ATMEL_PWM=y
+ CONFIG_NETDEVICES=y
+ CONFIG_NET_ETHERNET=y
+ CONFIG_MACB=y
+@@ -104,8 +103,8 @@ CONFIG_MMC=y
+ CONFIG_MMC_ATMELMCI=y
+ CONFIG_NEW_LEDS=y
+ CONFIG_LEDS_CLASS=y
+-CONFIG_LEDS_ATMEL_PWM=y
+ CONFIG_LEDS_GPIO=y
++CONFIG_LEDS_PWM=y
+ CONFIG_LEDS_TRIGGERS=y
+ CONFIG_LEDS_TRIGGER_TIMER=y
+ CONFIG_LEDS_TRIGGER_HEARTBEAT=y
+@@ -114,6 +113,8 @@ CONFIG_RTC_DRV_S35390A=m
+ CONFIG_RTC_DRV_AT32AP700X=m
+ CONFIG_DMADEVICES=y
+ CONFIG_UIO=y
++CONFIG_PWM=y
++CONFIG_PWM_ATMEL=y
+ CONFIG_EXT2_FS=y
+ CONFIG_EXT2_FS_XATTR=y
+ CONFIG_EXT3_FS=y
+diff --git a/arch/avr32/configs/atstk1002_defconfig b/arch/avr32/configs/atstk1002_defconfig
+index 2813dd2b9138..b056820eef33 100644
+--- a/arch/avr32/configs/atstk1002_defconfig
++++ b/arch/avr32/configs/atstk1002_defconfig
+@@ -64,7 +64,6 @@ CONFIG_BLK_DEV_LOOP=m
+ CONFIG_BLK_DEV_NBD=m
+ CONFIG_BLK_DEV_RAM=m
+ CONFIG_MISC_DEVICES=y
+-CONFIG_ATMEL_PWM=m
+ CONFIG_ATMEL_TCLIB=y
+ CONFIG_ATMEL_SSC=m
+ # CONFIG_SCSI_PROC_FS is not set
+@@ -133,14 +132,16 @@ CONFIG_MMC_TEST=m
+ CONFIG_MMC_ATMELMCI=y
+ CONFIG_NEW_LEDS=y
+ CONFIG_LEDS_CLASS=y
+-CONFIG_LEDS_ATMEL_PWM=m
+ CONFIG_LEDS_GPIO=m
++CONFIG_LEDS_PWM=m
+ CONFIG_LEDS_TRIGGERS=y
+ CONFIG_LEDS_TRIGGER_TIMER=m
+ CONFIG_LEDS_TRIGGER_HEARTBEAT=m
+ CONFIG_RTC_CLASS=y
+ CONFIG_RTC_DRV_AT32AP700X=y
+ CONFIG_DMADEVICES=y
++CONFIG_PWM=y
++CONFIG_PWM_ATMEL=m
+ CONFIG_EXT2_FS=y
+ CONFIG_EXT3_FS=y
+ # CONFIG_EXT3_DEFAULTS_TO_ORDERED is not set
+diff --git a/arch/avr32/configs/atstk1003_defconfig b/arch/avr32/configs/atstk1003_defconfig
+index f8ff3a3baad4..0cd23a303da1 100644
+--- a/arch/avr32/configs/atstk1003_defconfig
++++ b/arch/avr32/configs/atstk1003_defconfig
+@@ -53,7 +53,6 @@ CONFIG_BLK_DEV_LOOP=m
+ CONFIG_BLK_DEV_NBD=m
+ CONFIG_BLK_DEV_RAM=m
+ CONFIG_MISC_DEVICES=y
+-CONFIG_ATMEL_PWM=m
+ CONFIG_ATMEL_TCLIB=y
+ CONFIG_ATMEL_SSC=m
+ # CONFIG_SCSI_PROC_FS is not set
+@@ -112,14 +111,16 @@ CONFIG_MMC_TEST=m
+ CONFIG_MMC_ATMELMCI=y
+ CONFIG_NEW_LEDS=y
+ CONFIG_LEDS_CLASS=y
+-CONFIG_LEDS_ATMEL_PWM=m
+ CONFIG_LEDS_GPIO=m
++CONFIG_LEDS_PWM=m
+ CONFIG_LEDS_TRIGGERS=y
+ CONFIG_LEDS_TRIGGER_TIMER=m
+ CONFIG_LEDS_TRIGGER_HEARTBEAT=m
+ CONFIG_RTC_CLASS=y
+ CONFIG_RTC_DRV_AT32AP700X=y
+ CONFIG_DMADEVICES=y
++CONFIG_PWM=y
++CONFIG_PWM_ATMEL=m
+ CONFIG_EXT2_FS=y
+ CONFIG_EXT3_FS=y
+ # CONFIG_EXT3_DEFAULTS_TO_ORDERED is not set
+diff --git a/arch/avr32/configs/atstk1004_defconfig b/arch/avr32/configs/atstk1004_defconfig
+index 992228e54e38..ac1041f5f85a 100644
+--- a/arch/avr32/configs/atstk1004_defconfig
++++ b/arch/avr32/configs/atstk1004_defconfig
+@@ -53,7 +53,6 @@ CONFIG_BLK_DEV_LOOP=m
+ CONFIG_BLK_DEV_NBD=m
+ CONFIG_BLK_DEV_RAM=m
+ CONFIG_MISC_DEVICES=y
+-CONFIG_ATMEL_PWM=m
+ CONFIG_ATMEL_TCLIB=y
+ CONFIG_ATMEL_SSC=m
+ # CONFIG_SCSI_PROC_FS is not set
+@@ -111,14 +110,16 @@ CONFIG_MMC_TEST=m
+ CONFIG_MMC_ATMELMCI=y
+ CONFIG_NEW_LEDS=y
+ CONFIG_LEDS_CLASS=y
+-CONFIG_LEDS_ATMEL_PWM=m
+ CONFIG_LEDS_GPIO=m
++CONFIG_LEDS_PWM=m
+ CONFIG_LEDS_TRIGGERS=y
+ CONFIG_LEDS_TRIGGER_TIMER=m
+ CONFIG_LEDS_TRIGGER_HEARTBEAT=m
+ CONFIG_RTC_CLASS=y
+ CONFIG_RTC_DRV_AT32AP700X=y
+ CONFIG_DMADEVICES=y
++CONFIG_PWM=y
++CONFIG_PWM_ATMEL=m
+ CONFIG_EXT2_FS=y
+ CONFIG_EXT3_FS=y
+ # CONFIG_EXT3_DEFAULTS_TO_ORDERED is not set
+diff --git a/arch/avr32/configs/atstk1006_defconfig b/arch/avr32/configs/atstk1006_defconfig
+index b8e698b0d1fa..ea4f670cb995 100644
+--- a/arch/avr32/configs/atstk1006_defconfig
++++ b/arch/avr32/configs/atstk1006_defconfig
+@@ -67,7 +67,6 @@ CONFIG_BLK_DEV_LOOP=m
+ CONFIG_BLK_DEV_NBD=m
+ CONFIG_BLK_DEV_RAM=m
+ CONFIG_MISC_DEVICES=y
+-CONFIG_ATMEL_PWM=m
+ CONFIG_ATMEL_TCLIB=y
+ CONFIG_ATMEL_SSC=m
+ # CONFIG_SCSI_PROC_FS is not set
+@@ -136,14 +135,16 @@ CONFIG_MMC_TEST=m
+ CONFIG_MMC_ATMELMCI=y
+ CONFIG_NEW_LEDS=y
+ CONFIG_LEDS_CLASS=y
+-CONFIG_LEDS_ATMEL_PWM=m
+ CONFIG_LEDS_GPIO=m
++CONFIG_LEDS_PWM=m
+ CONFIG_LEDS_TRIGGERS=y
+ CONFIG_LEDS_TRIGGER_TIMER=m
+ CONFIG_LEDS_TRIGGER_HEARTBEAT=m
+ CONFIG_RTC_CLASS=y
+ CONFIG_RTC_DRV_AT32AP700X=y
+ CONFIG_DMADEVICES=y
++CONFIG_PWM=y
++CONFIG_PWM_ATMEL=m
+ CONFIG_EXT2_FS=y
+ CONFIG_EXT3_FS=y
+ # CONFIG_EXT3_DEFAULTS_TO_ORDERED is not set
+diff --git a/arch/avr32/configs/merisc_defconfig b/arch/avr32/configs/merisc_defconfig
+index 91df6b2986be..b9ef4cc85d08 100644
+--- a/arch/avr32/configs/merisc_defconfig
++++ b/arch/avr32/configs/merisc_defconfig
+@@ -55,7 +55,6 @@ CONFIG_MTD_ABSENT=y
+ CONFIG_MTD_PHYSMAP=y
+ CONFIG_MTD_BLOCK2MTD=y
+ CONFIG_BLK_DEV_LOOP=y
+-CONFIG_ATMEL_PWM=y
+ CONFIG_ATMEL_SSC=y
+ CONFIG_SCSI=y
+ CONFIG_BLK_DEV_SD=y
+@@ -103,12 +102,14 @@ CONFIG_MMC=y
+ CONFIG_MMC_ATMELMCI=y
+ CONFIG_NEW_LEDS=y
+ CONFIG_LEDS_CLASS=y
+-CONFIG_LEDS_ATMEL_PWM=y
++CONFIG_LEDS_PWM=y
+ CONFIG_RTC_CLASS=y
+ # CONFIG_RTC_HCTOSYS is not set
+ CONFIG_RTC_DRV_PCF8563=y
+ CONFIG_DMADEVICES=y
+ CONFIG_UIO=y
++CONFIG_PWM=y
++CONFIG_PWM_ATMEL=m
+ CONFIG_EXT2_FS=y
+ # CONFIG_DNOTIFY is not set
+ CONFIG_FUSE_FS=y
 -- 
 1.9.1
