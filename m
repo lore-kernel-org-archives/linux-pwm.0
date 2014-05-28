@@ -1,7 +1,7 @@
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCHv2 13/15] backlight: atmel-pwm-bl: remove obsolete driver
-Date: Thu, 29 May 2014 01:20:16 +0200
-Message-ID: <1401319218-16772-14-git-send-email-alexandre.belloni@free-electrons.com>
+Subject: [PATCHv2 15/15] misc: atmel_pwm: remove obsolete driver
+Date: Thu, 29 May 2014 01:20:18 +0200
+Message-ID: <1401319218-16772-16-git-send-email-alexandre.belloni@free-electrons.com>
 References: <1401319218-16772-1-git-send-email-alexandre.belloni@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1401319218-16772-1-git-send-email-alexandre.belloni@free-electrons.com>
@@ -10,333 +10,535 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Bryan Wu <cooloney@gmail.com>, Jingoo Han <jg1.han@samsung.com>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 List-Id: linux-pwm@vger.kernel.org
 
-The atmel-pwm-bl driver is now obsolete. It is not used by any mainlined boards
-and is replaced by the generic pwm_bl with the pawm-atmel driver using the
-generic PWM framework.
+The misc/atmel_pwm is not used by any mainlined boards and has been replaced by
+the pwm-driver using the generic PWM framework.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Acked-by: Hans-Christian Egtvedt <egtvedt@samfundet.no>
-Acked-by: Jingoo Han <jg1.han@samsung.com>
 ---
- drivers/video/backlight/Kconfig        |  11 --
- drivers/video/backlight/Makefile       |   1 -
- drivers/video/backlight/atmel-pwm-bl.c | 223 ---------------------------------
- include/linux/atmel-pwm-bl.h           |  43 -------
- 4 files changed, 278 deletions(-)
- delete mode 100644 drivers/video/backlight/atmel-pwm-bl.c
- delete mode 100644 include/linux/atmel-pwm-bl.h
+ drivers/misc/Kconfig      |  10 --
+ drivers/misc/Makefile     |   1 -
+ drivers/misc/atmel_pwm.c  | 402 ----------------------------------------------
+ include/linux/atmel_pwm.h |  70 --------
+ 4 files changed, 483 deletions(-)
+ delete mode 100644 drivers/misc/atmel_pwm.c
+ delete mode 100644 include/linux/atmel_pwm.h
 
-diff --git a/drivers/video/backlight/Kconfig b/drivers/video/backlight/Kconfig
-index 5a3eb2ecb525..9bd32b7a7561 100644
---- a/drivers/video/backlight/Kconfig
-+++ b/drivers/video/backlight/Kconfig
-@@ -178,17 +178,6 @@ config BACKLIGHT_ATMEL_LCDC
- 	  If in doubt, it's safe to enable this option; it doesn't kick
- 	  in unless the board's description says it's wired that way.
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index a43d0c467274..b841180c7c74 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -51,16 +51,6 @@ config AD525X_DPOT_SPI
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad525x_dpot-spi.
  
--config BACKLIGHT_ATMEL_PWM
--	tristate "Atmel PWM backlight control"
--	depends on ATMEL_PWM
+-config ATMEL_PWM
+-	tristate "Atmel AT32/AT91 PWM support"
+-	depends on HAVE_CLK
+-	depends on AVR32 || AT91SAM9263 || AT91SAM9RL || AT91SAM9G45
 -	help
--	  Say Y here if you want to use the PWM peripheral in Atmel AT91 and
--	  AVR32 devices. This driver will need additional platform data to know
--	  which PWM instance to use and how to configure it.
+-	  This option enables device driver support for the PWM channels
+-	  on certain Atmel processors.  Pulse Width Modulation is used for
+-	  purposes including software controlled power-efficient backlights
+-	  on LCD displays, motor control, and waveform generation.
 -
--	  To compile this driver as a module, choose M here: the module will be
--	  called atmel-pwm-bl.
--
- config BACKLIGHT_EP93XX
- 	tristate "Cirrus EP93xx Backlight Driver"
- 	depends on FB_EP93XX
-diff --git a/drivers/video/backlight/Makefile b/drivers/video/backlight/Makefile
-index bb820024f346..351451dbb607 100644
---- a/drivers/video/backlight/Makefile
-+++ b/drivers/video/backlight/Makefile
-@@ -25,7 +25,6 @@ obj-$(CONFIG_BACKLIGHT_ADP8860)		+= adp8860_bl.o
- obj-$(CONFIG_BACKLIGHT_ADP8870)		+= adp8870_bl.o
- obj-$(CONFIG_BACKLIGHT_APPLE)		+= apple_bl.o
- obj-$(CONFIG_BACKLIGHT_AS3711)		+= as3711_bl.o
--obj-$(CONFIG_BACKLIGHT_ATMEL_PWM)	+= atmel-pwm-bl.o
- obj-$(CONFIG_BACKLIGHT_BD6107)		+= bd6107.o
- obj-$(CONFIG_BACKLIGHT_CARILLO_RANCH)	+= cr_bllcd.o
- obj-$(CONFIG_BACKLIGHT_CLASS_DEVICE)	+= backlight.o
-diff --git a/drivers/video/backlight/atmel-pwm-bl.c b/drivers/video/backlight/atmel-pwm-bl.c
+ config ATMEL_TCLIB
+ 	bool "Atmel AT32/AT91 Timer/Counter Library"
+ 	depends on (AVR32 || ARCH_AT91)
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index d59ce1261b38..5497d026e651 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -7,7 +7,6 @@ obj-$(CONFIG_AD525X_DPOT)	+= ad525x_dpot.o
+ obj-$(CONFIG_AD525X_DPOT_I2C)	+= ad525x_dpot-i2c.o
+ obj-$(CONFIG_AD525X_DPOT_SPI)	+= ad525x_dpot-spi.o
+ obj-$(CONFIG_INTEL_MID_PTI)	+= pti.o
+-obj-$(CONFIG_ATMEL_PWM)		+= atmel_pwm.o
+ obj-$(CONFIG_ATMEL_SSC)		+= atmel-ssc.o
+ obj-$(CONFIG_ATMEL_TCLIB)	+= atmel_tclib.o
+ obj-$(CONFIG_BMP085)		+= bmp085.o
+diff --git a/drivers/misc/atmel_pwm.c b/drivers/misc/atmel_pwm.c
 deleted file mode 100644
-index 261b1a4ec3d8..000000000000
---- a/drivers/video/backlight/atmel-pwm-bl.c
+index a6dc56e1bc58..000000000000
+--- a/drivers/misc/atmel_pwm.c
 +++ /dev/null
-@@ -1,223 +0,0 @@
--/*
-- * Copyright (C) 2008 Atmel Corporation
-- *
-- * Backlight driver using Atmel PWM peripheral.
-- *
-- * This program is free software; you can redistribute it and/or modify it
-- * under the terms of the GNU General Public License version 2 as published by
-- * the Free Software Foundation.
-- */
--#include <linux/init.h>
--#include <linux/kernel.h>
+@@ -1,402 +0,0 @@
 -#include <linux/module.h>
--#include <linux/platform_device.h>
--#include <linux/fb.h>
--#include <linux/gpio.h>
--#include <linux/backlight.h>
--#include <linux/atmel_pwm.h>
--#include <linux/atmel-pwm-bl.h>
+-#include <linux/clk.h>
+-#include <linux/err.h>
 -#include <linux/slab.h>
+-#include <linux/io.h>
+-#include <linux/interrupt.h>
+-#include <linux/platform_device.h>
+-#include <linux/atmel_pwm.h>
 -
--struct atmel_pwm_bl {
--	const struct atmel_pwm_bl_platform_data	*pdata;
--	struct backlight_device			*bldev;
--	struct platform_device			*pdev;
--	struct pwm_channel			pwmc;
--	int					gpio_on;
--};
 -
--static void atmel_pwm_bl_set_gpio_on(struct atmel_pwm_bl *pwmbl, int on)
--{
--	if (!gpio_is_valid(pwmbl->gpio_on))
--		return;
--
--	gpio_set_value(pwmbl->gpio_on, on ^ pwmbl->pdata->on_active_low);
--}
--
--static int atmel_pwm_bl_set_intensity(struct backlight_device *bd)
--{
--	struct atmel_pwm_bl *pwmbl = bl_get_data(bd);
--	int intensity = bd->props.brightness;
--	int pwm_duty;
--
--	if (bd->props.power != FB_BLANK_UNBLANK)
--		intensity = 0;
--	if (bd->props.fb_blank != FB_BLANK_UNBLANK)
--		intensity = 0;
--
--	if (pwmbl->pdata->pwm_active_low)
--		pwm_duty = pwmbl->pdata->pwm_duty_min + intensity;
--	else
--		pwm_duty = pwmbl->pdata->pwm_duty_max - intensity;
--
--	if (pwm_duty > pwmbl->pdata->pwm_duty_max)
--		pwm_duty = pwmbl->pdata->pwm_duty_max;
--	if (pwm_duty < pwmbl->pdata->pwm_duty_min)
--		pwm_duty = pwmbl->pdata->pwm_duty_min;
--
--	if (!intensity) {
--		atmel_pwm_bl_set_gpio_on(pwmbl, 0);
--		pwm_channel_writel(&pwmbl->pwmc, PWM_CUPD, pwm_duty);
--		pwm_channel_disable(&pwmbl->pwmc);
--	} else {
--		pwm_channel_enable(&pwmbl->pwmc);
--		pwm_channel_writel(&pwmbl->pwmc, PWM_CUPD, pwm_duty);
--		atmel_pwm_bl_set_gpio_on(pwmbl, 1);
--	}
--
--	return 0;
--}
--
--static int atmel_pwm_bl_get_intensity(struct backlight_device *bd)
--{
--	struct atmel_pwm_bl *pwmbl = bl_get_data(bd);
--	u32 cdty;
--	u32 intensity;
--
--	cdty = pwm_channel_readl(&pwmbl->pwmc, PWM_CDTY);
--	if (pwmbl->pdata->pwm_active_low)
--		intensity = cdty - pwmbl->pdata->pwm_duty_min;
--	else
--		intensity = pwmbl->pdata->pwm_duty_max - cdty;
--
--	return intensity & 0xffff;
--}
--
--static int atmel_pwm_bl_init_pwm(struct atmel_pwm_bl *pwmbl)
--{
--	unsigned long pwm_rate = pwmbl->pwmc.mck;
--	unsigned long prescale = DIV_ROUND_UP(pwm_rate,
--			(pwmbl->pdata->pwm_frequency *
--			 pwmbl->pdata->pwm_compare_max)) - 1;
--
--	/*
--	 * Prescale must be power of two and maximum 0xf in size because of
--	 * hardware limit. PWM speed will be:
--	 *	PWM module clock speed / (2 ^ prescale).
--	 */
--	prescale = fls(prescale);
--	if (prescale > 0xf)
--		prescale = 0xf;
--
--	pwm_channel_writel(&pwmbl->pwmc, PWM_CMR, prescale);
--	pwm_channel_writel(&pwmbl->pwmc, PWM_CDTY,
--			pwmbl->pdata->pwm_duty_min +
--			pwmbl->bldev->props.brightness);
--	pwm_channel_writel(&pwmbl->pwmc, PWM_CPRD,
--			pwmbl->pdata->pwm_compare_max);
--
--	dev_info(&pwmbl->pdev->dev, "Atmel PWM backlight driver (%lu Hz)\n",
--		pwmbl->pwmc.mck / pwmbl->pdata->pwm_compare_max /
--		(1 << prescale));
--
--	return pwm_channel_enable(&pwmbl->pwmc);
--}
--
--static const struct backlight_ops atmel_pwm_bl_ops = {
--	.get_brightness = atmel_pwm_bl_get_intensity,
--	.update_status  = atmel_pwm_bl_set_intensity,
--};
--
--static int atmel_pwm_bl_probe(struct platform_device *pdev)
--{
--	struct backlight_properties props;
--	const struct atmel_pwm_bl_platform_data *pdata;
--	struct backlight_device *bldev;
--	struct atmel_pwm_bl *pwmbl;
--	unsigned long flags;
--	int retval;
--
--	pdata = dev_get_platdata(&pdev->dev);
--	if (!pdata)
--		return -ENODEV;
--
--	if (pdata->pwm_compare_max < pdata->pwm_duty_max ||
--			pdata->pwm_duty_min > pdata->pwm_duty_max ||
--			pdata->pwm_frequency == 0)
--		return -EINVAL;
--
--	pwmbl = devm_kzalloc(&pdev->dev, sizeof(struct atmel_pwm_bl),
--				GFP_KERNEL);
--	if (!pwmbl)
--		return -ENOMEM;
--
--	pwmbl->pdev = pdev;
--	pwmbl->pdata = pdata;
--	pwmbl->gpio_on = pdata->gpio_on;
--
--	retval = pwm_channel_alloc(pdata->pwm_channel, &pwmbl->pwmc);
--	if (retval)
--		return retval;
--
--	if (gpio_is_valid(pwmbl->gpio_on)) {
--		/* Turn display off by default. */
--		if (pdata->on_active_low)
--			flags = GPIOF_OUT_INIT_HIGH;
--		else
--			flags = GPIOF_OUT_INIT_LOW;
--
--		retval = devm_gpio_request_one(&pdev->dev, pwmbl->gpio_on,
--						flags, "gpio_atmel_pwm_bl");
--		if (retval)
--			goto err_free_pwm;
--	}
--
--	memset(&props, 0, sizeof(struct backlight_properties));
--	props.type = BACKLIGHT_RAW;
--	props.max_brightness = pdata->pwm_duty_max - pdata->pwm_duty_min;
--	bldev = devm_backlight_device_register(&pdev->dev, "atmel-pwm-bl",
--					&pdev->dev, pwmbl, &atmel_pwm_bl_ops,
--					&props);
--	if (IS_ERR(bldev)) {
--		retval = PTR_ERR(bldev);
--		goto err_free_pwm;
--	}
--
--	pwmbl->bldev = bldev;
--
--	platform_set_drvdata(pdev, pwmbl);
--
--	/* Power up the backlight by default at middle intesity. */
--	bldev->props.power = FB_BLANK_UNBLANK;
--	bldev->props.brightness = bldev->props.max_brightness / 2;
--
--	retval = atmel_pwm_bl_init_pwm(pwmbl);
--	if (retval)
--		goto err_free_pwm;
--
--	atmel_pwm_bl_set_intensity(bldev);
--
--	return 0;
--
--err_free_pwm:
--	pwm_channel_free(&pwmbl->pwmc);
--
--	return retval;
--}
--
--static int atmel_pwm_bl_remove(struct platform_device *pdev)
--{
--	struct atmel_pwm_bl *pwmbl = platform_get_drvdata(pdev);
--
--	atmel_pwm_bl_set_gpio_on(pwmbl, 0);
--	pwm_channel_disable(&pwmbl->pwmc);
--	pwm_channel_free(&pwmbl->pwmc);
--
--	return 0;
--}
--
--static struct platform_driver atmel_pwm_bl_driver = {
--	.driver = {
--		.name = "atmel-pwm-bl",
--	},
--	/* REVISIT add suspend() and resume() */
--	.probe = atmel_pwm_bl_probe,
--	.remove = atmel_pwm_bl_remove,
--};
--
--module_platform_driver(atmel_pwm_bl_driver);
--
--MODULE_AUTHOR("Hans-Christian egtvedt <hans-christian.egtvedt@atmel.com>");
--MODULE_DESCRIPTION("Atmel PWM backlight driver");
--MODULE_LICENSE("GPL");
--MODULE_ALIAS("platform:atmel-pwm-bl");
-diff --git a/include/linux/atmel-pwm-bl.h b/include/linux/atmel-pwm-bl.h
-deleted file mode 100644
-index 0153a47806c2..000000000000
---- a/include/linux/atmel-pwm-bl.h
-+++ /dev/null
-@@ -1,43 +0,0 @@
 -/*
-- * Copyright (C) 2007 Atmel Corporation
+- * This is a simple driver for the PWM controller found in various newer
+- * Atmel SOCs, including the AVR32 series and the AT91sam9263.
 - *
-- * Driver for the AT32AP700X PS/2 controller (PSIF).
-- *
-- * This program is free software; you can redistribute it and/or modify it
-- * under the terms of the GNU General Public License version 2 as published
-- * by the Free Software Foundation.
+- * Chips with current Linux ports have only 4 PWM channels, out of max 32.
+- * AT32UC3A and AT32UC3B chips have 7 channels (but currently no Linux).
+- * Docs are inconsistent about the width of the channel counter registers;
+- * it's at least 16 bits, but several places say 20 bits.
 - */
+-#define	PWM_NCHAN	4		/* max 32 */
 -
--#ifndef __INCLUDE_ATMEL_PWM_BL_H
--#define __INCLUDE_ATMEL_PWM_BL_H
+-struct pwm {
+-	spinlock_t		lock;
+-	struct platform_device	*pdev;
+-	u32			mask;
+-	int			irq;
+-	void __iomem		*base;
+-	struct clk		*clk;
+-	struct pwm_channel	*channel[PWM_NCHAN];
+-	void			(*handler[PWM_NCHAN])(struct pwm_channel *);
+-};
+-
+-
+-/* global PWM controller registers */
+-#define PWM_MR		0x00
+-#define PWM_ENA		0x04
+-#define PWM_DIS		0x08
+-#define PWM_SR		0x0c
+-#define PWM_IER		0x10
+-#define PWM_IDR		0x14
+-#define PWM_IMR		0x18
+-#define PWM_ISR		0x1c
+-
+-static inline void pwm_writel(const struct pwm *p, unsigned offset, u32 val)
+-{
+-	__raw_writel(val, p->base + offset);
+-}
+-
+-static inline u32 pwm_readl(const struct pwm *p, unsigned offset)
+-{
+-	return __raw_readl(p->base + offset);
+-}
+-
+-static inline void __iomem *pwmc_regs(const struct pwm *p, int index)
+-{
+-	return p->base + 0x200 + index * 0x20;
+-}
+-
+-static struct pwm *pwm;
+-
+-static void pwm_dumpregs(struct pwm_channel *ch, char *tag)
+-{
+-	struct device	*dev = &pwm->pdev->dev;
+-
+-	dev_dbg(dev, "%s: mr %08x, sr %08x, imr %08x\n",
+-		tag,
+-		pwm_readl(pwm, PWM_MR),
+-		pwm_readl(pwm, PWM_SR),
+-		pwm_readl(pwm, PWM_IMR));
+-	dev_dbg(dev,
+-		"pwm ch%d - mr %08x, dty %u, prd %u, cnt %u\n",
+-		ch->index,
+-		pwm_channel_readl(ch, PWM_CMR),
+-		pwm_channel_readl(ch, PWM_CDTY),
+-		pwm_channel_readl(ch, PWM_CPRD),
+-		pwm_channel_readl(ch, PWM_CCNT));
+-}
+-
 -
 -/**
-- * struct atmel_pwm_bl_platform_data
-- * @pwm_channel: which PWM channel in the PWM module to use.
-- * @pwm_frequency: PWM frequency to generate, the driver will try to be as
-- *	close as the prescaler allows.
-- * @pwm_compare_max: value to use in the PWM channel compare register.
-- * @pwm_duty_max: maximum duty cycle value, must be less than or equal to
-- *	pwm_compare_max.
-- * @pwm_duty_min: minimum duty cycle value, must be less than pwm_duty_max.
-- * @pwm_active_low: set to one if the low part of the PWM signal increases the
-- *	brightness of the backlight.
-- * @gpio_on: GPIO line to control the backlight on/off, set to -1 if not used.
-- * @on_active_low: set to one if the on/off signal is on when GPIO is low.
+- * pwm_channel_alloc - allocate an unused PWM channel
+- * @index: identifies the channel
+- * @ch: structure to be initialized
 - *
-- * This struct must be added to the platform device in the board code. It is
-- * used by the atmel-pwm-bl driver to setup the GPIO to control on/off and the
-- * PWM device.
+- * Drivers allocate PWM channels according to the board's wiring, and
+- * matching board-specific setup code.  Returns zero or negative errno.
 - */
--struct atmel_pwm_bl_platform_data {
--	unsigned int pwm_channel;
--	unsigned int pwm_frequency;
--	unsigned int pwm_compare_max;
--	unsigned int pwm_duty_max;
--	unsigned int pwm_duty_min;
--	unsigned int pwm_active_low;
--	int gpio_on;
--	unsigned int on_active_low;
+-int pwm_channel_alloc(int index, struct pwm_channel *ch)
+-{
+-	unsigned long	flags;
+-	int		status = 0;
+-
+-	if (!pwm)
+-		return -EPROBE_DEFER;
+-
+-	if (!(pwm->mask & 1 << index))
+-		return -ENODEV;
+-
+-	if (index < 0 || index >= PWM_NCHAN || !ch)
+-		return -EINVAL;
+-	memset(ch, 0, sizeof *ch);
+-
+-	spin_lock_irqsave(&pwm->lock, flags);
+-	if (pwm->channel[index])
+-		status = -EBUSY;
+-	else {
+-		clk_enable(pwm->clk);
+-
+-		ch->regs = pwmc_regs(pwm, index);
+-		ch->index = index;
+-
+-		/* REVISIT: ap7000 seems to go 2x as fast as we expect!! */
+-		ch->mck = clk_get_rate(pwm->clk);
+-
+-		pwm->channel[index] = ch;
+-		pwm->handler[index] = NULL;
+-
+-		/* channel and irq are always disabled when we return */
+-		pwm_writel(pwm, PWM_DIS, 1 << index);
+-		pwm_writel(pwm, PWM_IDR, 1 << index);
+-	}
+-	spin_unlock_irqrestore(&pwm->lock, flags);
+-	return status;
+-}
+-EXPORT_SYMBOL(pwm_channel_alloc);
+-
+-static int pwmcheck(struct pwm_channel *ch)
+-{
+-	int		index;
+-
+-	if (!pwm)
+-		return -ENODEV;
+-	if (!ch)
+-		return -EINVAL;
+-	index = ch->index;
+-	if (index < 0 || index >= PWM_NCHAN || pwm->channel[index] != ch)
+-		return -EINVAL;
+-
+-	return index;
+-}
+-
+-/**
+- * pwm_channel_free - release a previously allocated channel
+- * @ch: the channel being released
+- *
+- * The channel is completely shut down (counter and IRQ disabled),
+- * and made available for re-use.  Returns zero, or negative errno.
+- */
+-int pwm_channel_free(struct pwm_channel *ch)
+-{
+-	unsigned long	flags;
+-	int		t;
+-
+-	spin_lock_irqsave(&pwm->lock, flags);
+-	t = pwmcheck(ch);
+-	if (t >= 0) {
+-		pwm->channel[t] = NULL;
+-		pwm->handler[t] = NULL;
+-
+-		/* channel and irq are always disabled when we return */
+-		pwm_writel(pwm, PWM_DIS, 1 << t);
+-		pwm_writel(pwm, PWM_IDR, 1 << t);
+-
+-		clk_disable(pwm->clk);
+-		t = 0;
+-	}
+-	spin_unlock_irqrestore(&pwm->lock, flags);
+-	return t;
+-}
+-EXPORT_SYMBOL(pwm_channel_free);
+-
+-int __pwm_channel_onoff(struct pwm_channel *ch, int enabled)
+-{
+-	unsigned long	flags;
+-	int		t;
+-
+-	/* OMITTED FUNCTIONALITY:  starting several channels in synch */
+-
+-	spin_lock_irqsave(&pwm->lock, flags);
+-	t = pwmcheck(ch);
+-	if (t >= 0) {
+-		pwm_writel(pwm, enabled ? PWM_ENA : PWM_DIS, 1 << t);
+-		t = 0;
+-		pwm_dumpregs(ch, enabled ? "enable" : "disable");
+-	}
+-	spin_unlock_irqrestore(&pwm->lock, flags);
+-
+-	return t;
+-}
+-EXPORT_SYMBOL(__pwm_channel_onoff);
+-
+-/**
+- * pwm_clk_alloc - allocate and configure CLKA or CLKB
+- * @prescale: from 0..10, the power of two used to divide MCK
+- * @div: from 1..255, the linear divisor to use
+- *
+- * Returns PWM_CPR_CLKA, PWM_CPR_CLKB, or negative errno.  The allocated
+- * clock will run with a period of (2^prescale * div) / MCK, or twice as
+- * long if center aligned PWM output is used.  The clock must later be
+- * deconfigured using pwm_clk_free().
+- */
+-int pwm_clk_alloc(unsigned prescale, unsigned div)
+-{
+-	unsigned long	flags;
+-	u32		mr;
+-	u32		val = (prescale << 8) | div;
+-	int		ret = -EBUSY;
+-
+-	if (prescale >= 10 || div == 0 || div > 255)
+-		return -EINVAL;
+-
+-	spin_lock_irqsave(&pwm->lock, flags);
+-	mr = pwm_readl(pwm, PWM_MR);
+-	if ((mr & 0xffff) == 0) {
+-		mr |= val;
+-		ret = PWM_CPR_CLKA;
+-	} else if ((mr & (0xffff << 16)) == 0) {
+-		mr |= val << 16;
+-		ret = PWM_CPR_CLKB;
+-	}
+-	if (ret > 0)
+-		pwm_writel(pwm, PWM_MR, mr);
+-	spin_unlock_irqrestore(&pwm->lock, flags);
+-	return ret;
+-}
+-EXPORT_SYMBOL(pwm_clk_alloc);
+-
+-/**
+- * pwm_clk_free - deconfigure and release CLKA or CLKB
+- *
+- * Reverses the effect of pwm_clk_alloc().
+- */
+-void pwm_clk_free(unsigned clk)
+-{
+-	unsigned long	flags;
+-	u32		mr;
+-
+-	spin_lock_irqsave(&pwm->lock, flags);
+-	mr = pwm_readl(pwm, PWM_MR);
+-	if (clk == PWM_CPR_CLKA)
+-		pwm_writel(pwm, PWM_MR, mr & ~(0xffff << 0));
+-	if (clk == PWM_CPR_CLKB)
+-		pwm_writel(pwm, PWM_MR, mr & ~(0xffff << 16));
+-	spin_unlock_irqrestore(&pwm->lock, flags);
+-}
+-EXPORT_SYMBOL(pwm_clk_free);
+-
+-/**
+- * pwm_channel_handler - manage channel's IRQ handler
+- * @ch: the channel
+- * @handler: the handler to use, possibly NULL
+- *
+- * If the handler is non-null, the handler will be called after every
+- * period of this PWM channel.  If the handler is null, this channel
+- * won't generate an IRQ.
+- */
+-int pwm_channel_handler(struct pwm_channel *ch,
+-		void (*handler)(struct pwm_channel *ch))
+-{
+-	unsigned long	flags;
+-	int		t;
+-
+-	spin_lock_irqsave(&pwm->lock, flags);
+-	t = pwmcheck(ch);
+-	if (t >= 0) {
+-		pwm->handler[t] = handler;
+-		pwm_writel(pwm, handler ? PWM_IER : PWM_IDR, 1 << t);
+-		t = 0;
+-	}
+-	spin_unlock_irqrestore(&pwm->lock, flags);
+-
+-	return t;
+-}
+-EXPORT_SYMBOL(pwm_channel_handler);
+-
+-static irqreturn_t pwm_irq(int id, void *_pwm)
+-{
+-	struct pwm	*p = _pwm;
+-	irqreturn_t	handled = IRQ_NONE;
+-	u32		irqstat;
+-	int		index;
+-
+-	spin_lock(&p->lock);
+-
+-	/* ack irqs, then handle them */
+-	irqstat = pwm_readl(pwm, PWM_ISR);
+-
+-	while (irqstat) {
+-		struct pwm_channel *ch;
+-		void (*handler)(struct pwm_channel *ch);
+-
+-		index = ffs(irqstat) - 1;
+-		irqstat &= ~(1 << index);
+-		ch = pwm->channel[index];
+-		handler = pwm->handler[index];
+-		if (handler && ch) {
+-			spin_unlock(&p->lock);
+-			handler(ch);
+-			spin_lock(&p->lock);
+-			handled = IRQ_HANDLED;
+-		}
+-	}
+-
+-	spin_unlock(&p->lock);
+-	return handled;
+-}
+-
+-static int __init pwm_probe(struct platform_device *pdev)
+-{
+-	struct resource *r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	int irq = platform_get_irq(pdev, 0);
+-	u32 *mp = pdev->dev.platform_data;
+-	struct pwm *p;
+-	int status = -EIO;
+-
+-	if (pwm)
+-		return -EBUSY;
+-	if (!r || irq < 0 || !mp || !*mp)
+-		return -ENODEV;
+-	if (*mp & ~((1<<PWM_NCHAN)-1)) {
+-		dev_warn(&pdev->dev, "mask 0x%x ... more than %d channels\n",
+-			*mp, PWM_NCHAN);
+-		return -EINVAL;
+-	}
+-
+-	p = kzalloc(sizeof(*p), GFP_KERNEL);
+-	if (!p)
+-		return -ENOMEM;
+-
+-	spin_lock_init(&p->lock);
+-	p->pdev = pdev;
+-	p->mask = *mp;
+-	p->irq = irq;
+-	p->base = ioremap(r->start, resource_size(r));
+-	if (!p->base)
+-		goto fail;
+-	p->clk = clk_get(&pdev->dev, "pwm_clk");
+-	if (IS_ERR(p->clk)) {
+-		status = PTR_ERR(p->clk);
+-		p->clk = NULL;
+-		goto fail;
+-	}
+-
+-	status = request_irq(irq, pwm_irq, 0, pdev->name, p);
+-	if (status < 0)
+-		goto fail;
+-
+-	pwm = p;
+-	platform_set_drvdata(pdev, p);
+-
+-	return 0;
+-
+-fail:
+-	if (p->clk)
+-		clk_put(p->clk);
+-	if (p->base)
+-		iounmap(p->base);
+-
+-	kfree(p);
+-	return status;
+-}
+-
+-static int __exit pwm_remove(struct platform_device *pdev)
+-{
+-	struct pwm *p = platform_get_drvdata(pdev);
+-
+-	if (p != pwm)
+-		return -EINVAL;
+-
+-	clk_enable(pwm->clk);
+-	pwm_writel(pwm, PWM_DIS, (1 << PWM_NCHAN) - 1);
+-	pwm_writel(pwm, PWM_IDR, (1 << PWM_NCHAN) - 1);
+-	clk_disable(pwm->clk);
+-
+-	pwm = NULL;
+-
+-	free_irq(p->irq, p);
+-	clk_put(p->clk);
+-	iounmap(p->base);
+-	kfree(p);
+-
+-	return 0;
+-}
+-
+-static struct platform_driver atmel_pwm_driver = {
+-	.driver = {
+-		.name = "atmel_pwm",
+-		.owner = THIS_MODULE,
+-	},
+-	.remove = __exit_p(pwm_remove),
+-
+-	/* NOTE: PWM can keep running in AVR32 "idle" and "frozen" states;
+-	 * and all AT91sam9263 states, albeit at reduced clock rate if
+-	 * MCK becomes the slow clock (i.e. what Linux labels STR).
+-	 */
 -};
 -
--#endif /* __INCLUDE_ATMEL_PWM_BL_H */
+-module_platform_driver_probe(atmel_pwm_driver, pwm_probe);
+-
+-MODULE_DESCRIPTION("Driver for AT32/AT91 PWM module");
+-MODULE_LICENSE("GPL");
+-MODULE_ALIAS("platform:atmel_pwm");
+diff --git a/include/linux/atmel_pwm.h b/include/linux/atmel_pwm.h
+deleted file mode 100644
+index ea04abb3db8e..000000000000
+--- a/include/linux/atmel_pwm.h
++++ /dev/null
+@@ -1,70 +0,0 @@
+-#ifndef __LINUX_ATMEL_PWM_H
+-#define __LINUX_ATMEL_PWM_H
+-
+-/**
+- * struct pwm_channel - driver handle to a PWM channel
+- * @regs: base of this channel's registers
+- * @index: number of this channel (0..31)
+- * @mck: base clock rate, which can be prescaled and maybe subdivided
+- *
+- * Drivers initialize a pwm_channel structure using pwm_channel_alloc().
+- * Then they configure its clock rate (derived from MCK), alignment,
+- * polarity, and duty cycle by writing directly to the channel registers,
+- * before enabling the channel by calling pwm_channel_enable().
+- *
+- * After emitting a PWM signal for the desired length of time, drivers
+- * may then pwm_channel_disable() or pwm_channel_free().  Both of these
+- * disable the channel, but when it's freed the IRQ is deconfigured and
+- * the channel must later be re-allocated and reconfigured.
+- *
+- * Note that if the period or duty cycle need to be changed while the
+- * PWM channel is operating, drivers must use the PWM_CUPD double buffer
+- * mechanism, either polling until they change or getting implicitly
+- * notified through a once-per-period interrupt handler.
+- */
+-struct pwm_channel {
+-	void __iomem	*regs;
+-	unsigned	index;
+-	unsigned long	mck;
+-};
+-
+-extern int pwm_channel_alloc(int index, struct pwm_channel *ch);
+-extern int pwm_channel_free(struct pwm_channel *ch);
+-
+-extern int pwm_clk_alloc(unsigned prescale, unsigned div);
+-extern void pwm_clk_free(unsigned clk);
+-
+-extern int __pwm_channel_onoff(struct pwm_channel *ch, int enabled);
+-
+-#define pwm_channel_enable(ch)	__pwm_channel_onoff((ch), 1)
+-#define pwm_channel_disable(ch)	__pwm_channel_onoff((ch), 0)
+-
+-/* periodic interrupts, mostly for CUPD changes to period or cycle */
+-extern int pwm_channel_handler(struct pwm_channel *ch,
+-		void (*handler)(struct pwm_channel *ch));
+-
+-/* per-channel registers (banked at pwm_channel->regs) */
+-#define PWM_CMR		0x00		/* mode register */
+-#define		PWM_CPR_CPD	(1 << 10)	/* set: CUPD modifies period */
+-#define		PWM_CPR_CPOL	(1 << 9)	/* set: idle high */
+-#define		PWM_CPR_CALG	(1 << 8)	/* set: center align */
+-#define		PWM_CPR_CPRE	(0xf << 0)	/* mask: rate is mck/(2^pre) */
+-#define		PWM_CPR_CLKA	(0xb << 0)	/* rate CLKA */
+-#define		PWM_CPR_CLKB	(0xc << 0)	/* rate CLKB */
+-#define PWM_CDTY	0x04		/* duty cycle (max of CPRD) */
+-#define PWM_CPRD	0x08		/* period (count up from zero) */
+-#define PWM_CCNT	0x0c		/* counter (20 bits?) */
+-#define PWM_CUPD	0x10		/* update CPRD (or CDTY) next period */
+-
+-static inline void
+-pwm_channel_writel(struct pwm_channel *pwmc, unsigned offset, u32 val)
+-{
+-	__raw_writel(val, pwmc->regs + offset);
+-}
+-
+-static inline u32 pwm_channel_readl(struct pwm_channel *pwmc, unsigned offset)
+-{
+-	return __raw_readl(pwmc->regs + offset);
+-}
+-
+-#endif /* __LINUX_ATMEL_PWM_H */
 -- 
 1.9.1
