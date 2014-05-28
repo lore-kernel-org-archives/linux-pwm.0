@@ -1,83 +1,105 @@
-From: Liu Ying <Ying.Liu@freescale.com>
-Subject: [PATCH v2 2/3] pwm: i.MX: Cleanup indentation for register definitions
-Date: Wed, 28 May 2014 18:50:12 +0800
-Message-ID: <1401274213-8954-2-git-send-email-Ying.Liu@freescale.com>
-References: <1401274213-8954-1-git-send-email-Ying.Liu@freescale.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bl2lp0208.outbound.protection.outlook.com ([207.46.163.208]:9156
-	"EHLO na01-bl2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752510AbaE1KsC (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 28 May 2014 06:48:02 -0400
-In-Reply-To: <1401274213-8954-1-git-send-email-Ying.Liu@freescale.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCHv2 00/15] move at91 and avr32 to the PWM framework, remove obsolete drivers
+Date: Thu, 29 May 2014 01:20:03 +0200
+Message-ID: <1401319218-16772-1-git-send-email-alexandre.belloni@free-electrons.com>
+Return-path: <linux-leds-owner@vger.kernel.org>
+Sender: linux-leds-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Bryan Wu <cooloney@gmail.com>, Jingoo Han <jg1.han@samsung.com>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: thierry.reding@gmail.com, s.hauer@pengutronix.de, shawn.guo@freescale.com, LW@KARO-electronics.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
-This patch contains no logic change to cleanup indentation
-for register definitions only.
+Hi,
 
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Shawn Guo <shawn.guo@freescale.com>
-Cc: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
-Cc: linux-pwm@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Signed-off-by: Liu Ying <Ying.Liu@freescale.com>
----
-v1->v2:
-* Rebase up to the commit(1/3 in this series) which fixes
-  the macro MX3_PWMCR_PRESCALER(x) definition.
+Greg, the whole series has been acked by all the maintainers but you. I know
+that Nicolas was volunteering to take it but maybe you can take it for
+3.16. Else, I believe it will have to wait for 3.17.
 
- drivers/pwm/pwm-imx.c |   26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+This patch set switches the at91 and avr32 SoCs and board to the generic PWM
+framework. This allows to remove the obsolete leds-atmel-pwm, atmel-pwm-bl and
+atmel_pwm drivers.
 
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index 9835e0b..fc47fab 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -21,24 +21,24 @@
-=20
- /* i.MX1 and i.MX21 share the same PWM function block: */
-=20
--#define MX1_PWMC    0x00   /* PWM Control Register */
--#define MX1_PWMS    0x04   /* PWM Sample Register */
--#define MX1_PWMP    0x08   /* PWM Period Register */
-+#define MX1_PWMC			0x00   /* PWM Control Register */
-+#define MX1_PWMS			0x04   /* PWM Sample Register */
-+#define MX1_PWMP			0x08   /* PWM Period Register */
-=20
--#define MX1_PWMC_EN		(1 << 4)
-+#define MX1_PWMC_EN			(1 << 4)
-=20
- /* i.MX27, i.MX31, i.MX35 share the same PWM function block: */
-=20
--#define MX3_PWMCR                 0x00    /* PWM Control Register */
--#define MX3_PWMSAR                0x0C    /* PWM Sample Register */
--#define MX3_PWMPR                 0x10    /* PWM Period Register */
--#define MX3_PWMCR_PRESCALER(x)    ((((x) - 1) & 0xFFF) << 4)
--#define MX3_PWMCR_DOZEEN                (1 << 24)
--#define MX3_PWMCR_WAITEN                (1 << 23)
-+#define MX3_PWMCR			0x00    /* PWM Control Register */
-+#define MX3_PWMSAR			0x0C    /* PWM Sample Register */
-+#define MX3_PWMPR			0x10    /* PWM Period Register */
-+#define MX3_PWMCR_PRESCALER(x)		((((x) - 1) & 0xFFF) << 4)
-+#define MX3_PWMCR_DOZEEN		(1 << 24)
-+#define MX3_PWMCR_WAITEN		(1 << 23)
- #define MX3_PWMCR_DBGEN			(1 << 22)
--#define MX3_PWMCR_CLKSRC_IPG_HIGH (2 << 16)
--#define MX3_PWMCR_CLKSRC_IPG      (1 << 16)
--#define MX3_PWMCR_EN              (1 << 0)
-+#define MX3_PWMCR_CLKSRC_IPG_HIGH	(2 << 16)
-+#define MX3_PWMCR_CLKSRC_IPG		(1 << 16)
-+#define MX3_PWMCR_EN			(1 << 0)
-=20
- struct imx_chip {
- 	struct clk	*clk_per;
---=20
-1.7.9.5
+The first 6 patches take care of the AT91 boards and removes a useless function
+in the process.
 
+Patch 7 makes pwm-atmel buildable for AVR32
+
+Patches 8-12 take care of the AVR32 boards. This has only been compile tested as
+I don't own any of those boards.
+
+And the last 3 patches are removing the now obsolete drivers.
+
+As a note, the atmel_pwm driver has two features not yet available through
+pwm-atmel:
+ - it is possible to pass an IRQ handler that will get called each time one of
+   the channel period has been achieved.
+ - it was possible to set clka and clkb, two clock that divided mck before
+   feeding the pwm controller.
+
+Those features are not used by anything in the mainline. I'm not sure we can
+implement the first one. We'll get back the second one once all the boards have
+switched to the common clock framework.
+
+Changes in v2:
+ - rebased on next-20140528 because of the dependency on the pwm tree
+ - removed the now unnecessary patch to pwm_bl
+ - moved to the new PWM_LOOKUP macro
+
+Alexandre Belloni (15):
+  ARM: at91: at91sam9g45: switch to generic PWM framework
+  ARM: at91: sam9m10g45ek: use generic leds_pwm driver
+  ARM: at91: at91sam9263: switch to generic PWM framework
+  ARM: at91: sam9263ek: use generic leds_pwm driver
+  ARM: at91: at91sam9rl: switch to generic PWM framework
+  ARM: at91: remove useless at91_pwm_leds()
+  PWM: atmel: allow building for AVR32
+  avr32/at32ap: switch to the generic PWM framework
+  avr32: MRMT: use generic leds_pwm driver
+  avr32: merisc: use generic leds_pwm driver
+  avr32: favr-32: use generic pwm_bl driver
+  avr32: update defconfig to use the generic PWM framework
+  backlight: atmel-pwm-bl: remove obsolete driver
+  leds: atmel-pwm: remove obsolete driver
+  misc: atmel_pwm: remove obsolete driver
+
+ arch/arm/mach-at91/at91sam9263.c           |   1 +
+ arch/arm/mach-at91/at91sam9263_devices.c   |  11 +-
+ arch/arm/mach-at91/at91sam9g45.c           |   1 +
+ arch/arm/mach-at91/at91sam9g45_devices.c   |  11 +-
+ arch/arm/mach-at91/at91sam9rl.c            |   1 +
+ arch/arm/mach-at91/at91sam9rl_devices.c    |  11 +-
+ arch/arm/mach-at91/board-sam9263ek.c       |  55 +++-
+ arch/arm/mach-at91/board-sam9m10g45ek.c    |  42 ++-
+ arch/arm/mach-at91/board.h                 |   1 -
+ arch/arm/mach-at91/leds.c                  |  37 ---
+ arch/avr32/boards/atngw100/mrmt.c          |  34 ++-
+ arch/avr32/boards/favr-32/setup.c          |  48 ++--
+ arch/avr32/boards/merisc/setup.c           |  34 ++-
+ arch/avr32/configs/atngw100_mrmt_defconfig |   5 +-
+ arch/avr32/configs/atstk1002_defconfig     |   5 +-
+ arch/avr32/configs/atstk1003_defconfig     |   5 +-
+ arch/avr32/configs/atstk1004_defconfig     |   5 +-
+ arch/avr32/configs/atstk1006_defconfig     |   5 +-
+ arch/avr32/configs/favr-32_defconfig       |   6 +-
+ arch/avr32/configs/merisc_defconfig        |   5 +-
+ arch/avr32/mach-at32ap/at32ap700x.c        |   7 +-
+ drivers/leds/Kconfig                       |   8 -
+ drivers/leds/Makefile                      |   1 -
+ drivers/leds/leds-atmel-pwm.c              | 149 -----------
+ drivers/misc/Kconfig                       |  10 -
+ drivers/misc/Makefile                      |   1 -
+ drivers/misc/atmel_pwm.c                   | 402 -----------------------------
+ drivers/pwm/Kconfig                        |   2 +-
+ drivers/video/backlight/Kconfig            |  11 -
+ drivers/video/backlight/Makefile           |   1 -
+ drivers/video/backlight/atmel-pwm-bl.c     | 223 ----------------
+ include/linux/atmel-pwm-bl.h               |  43 ---
+ include/linux/atmel_pwm.h                  |  70 -----
+ 33 files changed, 186 insertions(+), 1065 deletions(-)
+ delete mode 100644 drivers/leds/leds-atmel-pwm.c
+ delete mode 100644 drivers/misc/atmel_pwm.c
+ delete mode 100644 drivers/video/backlight/atmel-pwm-bl.c
+ delete mode 100644 include/linux/atmel-pwm-bl.h
+ delete mode 100644 include/linux/atmel_pwm.h
+
+-- 
+1.9.1
