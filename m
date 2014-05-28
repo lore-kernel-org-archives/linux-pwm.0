@@ -1,7 +1,7 @@
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCHv2 11/15] avr32: favr-32: use generic pwm_bl driver
-Date: Thu, 29 May 2014 01:20:14 +0200
-Message-ID: <1401319218-16772-12-git-send-email-alexandre.belloni@free-electrons.com>
+Subject: [PATCHv2 08/15] avr32/at32ap: switch to the generic PWM framework
+Date: Thu, 29 May 2014 01:20:11 +0200
+Message-ID: <1401319218-16772-9-git-send-email-alexandre.belloni@free-electrons.com>
 References: <1401319218-16772-1-git-send-email-alexandre.belloni@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1401319218-16772-1-git-send-email-alexandre.belloni@free-electrons.com>
@@ -10,139 +10,45 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Bryan Wu <cooloney@gmail.com>, Jingoo Han <jg1.han@samsung.com>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Switch to the generic pwm_bl driver instead of atmel-pwm-bl.
+Switch to the pwm/pwm-atmel driver instead of misc/atmel_pwm
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 Acked-by: Hans-Christian Egtvedt <egtvedt@samfundet.no>
 ---
- arch/avr32/boards/favr-32/setup.c    | 48 ++++++++++++++++++++++--------------
- arch/avr32/configs/favr-32_defconfig |  6 ++---
- 2 files changed, 33 insertions(+), 21 deletions(-)
+ arch/avr32/mach-at32ap/at32ap700x.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/arch/avr32/boards/favr-32/setup.c b/arch/avr32/boards/favr-32/setup.c
-index 1f121497b517..234cb071c601 100644
---- a/arch/avr32/boards/favr-32/setup.c
-+++ b/arch/avr32/boards/favr-32/setup.c
-@@ -18,7 +18,10 @@
- #include <linux/gpio.h>
- #include <linux/leds.h>
- #include <linux/atmel-mci.h>
--#include <linux/atmel-pwm-bl.h>
-+#include <linux/pwm.h>
-+#include <linux/pwm_backlight.h>
-+#include <linux/regulator/fixed.h>
-+#include <linux/regulator/machine.h>
- #include <linux/spi/spi.h>
- #include <linux/spi/ads7846.h>
- 
-@@ -33,6 +36,8 @@
- #include <mach/board.h>
- #include <mach/portmux.h>
- 
-+#define PWM_BL_CH 2
-+
- /* Oscillator frequencies. These are board-specific */
- unsigned long at32_board_osc_rates[3] = {
- 	[0] = 32768,	/* 32.768 kHz on RTC osc */
-@@ -227,29 +232,36 @@ void __init favr32_setup_leds(void)
- 	platform_device_register(&favr32_led_dev);
- }
- 
--static struct atmel_pwm_bl_platform_data atmel_pwm_bl_pdata = {
--	.pwm_channel		= 2,
--	.pwm_frequency		= 200000,
--	.pwm_compare_max	= 345,
--	.pwm_duty_max		= 345,
--	.pwm_duty_min		= 90,
--	.pwm_active_low		= 1,
--	.gpio_on		= GPIO_PIN_PA(28),
--	.on_active_low		= 0,
-+static struct pwm_lookup pwm_lookup[] = {
-+	PWM_LOOKUP("at91sam9rl-pwm", PWM_BL_CH, "pwm-backlight.0", NULL,
-+		   5000, PWM_POLARITY_INVERSED),
+diff --git a/arch/avr32/mach-at32ap/at32ap700x.c b/arch/avr32/mach-at32ap/at32ap700x.c
+index a1f4d1e91b52..db85b5ec3351 100644
+--- a/arch/avr32/mach-at32ap/at32ap700x.c
++++ b/arch/avr32/mach-at32ap/at32ap700x.c
+@@ -1553,7 +1553,7 @@ static struct resource atmel_pwm0_resource[] __initdata = {
+ 	IRQ(24),
  };
+ static struct clk atmel_pwm0_mck = {
+-	.name		= "pwm_clk",
++	.name		= "at91sam9rl-pwm",
+ 	.parent		= &pbb_clk,
+ 	.mode		= pbb_clk_mode,
+ 	.get_rate	= pbb_clk_get_rate,
+@@ -1568,7 +1568,7 @@ struct platform_device *__init at32_add_device_pwm(u32 mask)
+ 	if (!mask)
+ 		return NULL;
  
--static struct platform_device atmel_pwm_bl_dev = {
--	.name		= "atmel-pwm-bl",
--	.id		= 0,
--	.dev		= {
--		.platform_data = &atmel_pwm_bl_pdata,
-+static struct regulator_consumer_supply fixed_power_consumers[] = {
-+	REGULATOR_SUPPLY("power", "pwm-backlight.0"),
-+};
-+
-+static struct platform_pwm_backlight_data pwm_bl_data = {
-+	.enable_gpio		= GPIO_PIN_PA(28),
-+	.max_brightness		= 255,
-+	.dft_brightness		= 255,
-+	.lth_brightness		= 50,
-+};
-+
-+static struct platform_device pwm_bl_device = {
-+	.name = "pwm-backlight",
-+	.dev = {
-+		.platform_data = &pwm_bl_data,
- 	},
- };
+-	pdev = platform_device_alloc("atmel_pwm", 0);
++	pdev = platform_device_alloc("at91sam9rl-pwm", 0);
+ 	if (!pdev)
+ 		return NULL;
  
- static void __init favr32_setup_atmel_pwm_bl(void)
- {
--	platform_device_register(&atmel_pwm_bl_dev);
--	at32_select_gpio(atmel_pwm_bl_pdata.gpio_on, 0);
-+	pwm_add_table(pwm_lookup, ARRAY_SIZE(pwm_lookup));
-+	regulator_register_always_on(0, "fixed", fixed_power_consumers,
-+				    ARRAY_SIZE(fixed_power_consumers), 3300000);
-+	platform_device_register(&pwm_bl_device);
-+	at32_select_gpio(pwm_bl_data.enable_gpio, 0);
- }
+@@ -1576,9 +1576,6 @@ struct platform_device *__init at32_add_device_pwm(u32 mask)
+ 				ARRAY_SIZE(atmel_pwm0_resource)))
+ 		goto out_free_pdev;
  
- void __init setup_board(void)
-@@ -339,7 +351,7 @@ static int __init favr32_init(void)
- 
- 	set_abdac_rate(at32_add_device_abdac(0, &abdac0_data));
- 
--	at32_add_device_pwm(1 << atmel_pwm_bl_pdata.pwm_channel);
-+	at32_add_device_pwm(1 << PWM_BL_CH);
- 	at32_add_device_spi(1, spi1_board_info, ARRAY_SIZE(spi1_board_info));
- 	at32_add_device_mci(0, &mci0_data);
- 	at32_add_device_usba(0, NULL);
-diff --git a/arch/avr32/configs/favr-32_defconfig b/arch/avr32/configs/favr-32_defconfig
-index 07bed3f7eb5e..b3eb67dc05ac 100644
---- a/arch/avr32/configs/favr-32_defconfig
-+++ b/arch/avr32/configs/favr-32_defconfig
-@@ -67,7 +67,6 @@ CONFIG_MTD_PHYSMAP=y
- CONFIG_BLK_DEV_LOOP=m
- CONFIG_BLK_DEV_NBD=m
- CONFIG_BLK_DEV_RAM=m
--CONFIG_ATMEL_PWM=m
- CONFIG_ATMEL_TCLIB=y
- CONFIG_ATMEL_SSC=m
- CONFIG_NETDEVICES=y
-@@ -108,7 +107,7 @@ CONFIG_FB=y
- CONFIG_FB_ATMEL=y
- CONFIG_BACKLIGHT_LCD_SUPPORT=y
- # CONFIG_LCD_CLASS_DEVICE is not set
--CONFIG_BACKLIGHT_ATMEL_PWM=m
-+CONFIG_BACKLIGHT_PWM=m
- CONFIG_SOUND=m
- CONFIG_SOUND_PRIME=m
- # CONFIG_HID_SUPPORT is not set
-@@ -123,7 +122,6 @@ CONFIG_MMC=y
- CONFIG_MMC_ATMELMCI=y
- CONFIG_NEW_LEDS=y
- CONFIG_LEDS_CLASS=y
--CONFIG_LEDS_ATMEL_PWM=m
- CONFIG_LEDS_GPIO=y
- CONFIG_LEDS_TRIGGERS=y
- CONFIG_LEDS_TRIGGER_TIMER=y
-@@ -132,6 +130,8 @@ CONFIG_LEDS_TRIGGER_DEFAULT_ON=y
- CONFIG_RTC_CLASS=y
- CONFIG_RTC_DRV_AT32AP700X=y
- CONFIG_DMADEVICES=y
-+CONFIG_PWM=y
-+CONFIG_PWM_ATMEL=y
- CONFIG_EXT2_FS=y
- CONFIG_EXT3_FS=y
- # CONFIG_EXT3_FS_XATTR is not set
+-	if (platform_device_add_data(pdev, &mask, sizeof(mask)))
+-		goto out_free_pdev;
+-
+ 	pin_mask = 0;
+ 	if (mask & (1 << 0))
+ 		pin_mask |= (1 << 28);
 -- 
 1.9.1
