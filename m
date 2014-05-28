@@ -1,7 +1,7 @@
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCHv2 07/15] PWM: atmel: allow building for AVR32
-Date: Thu, 29 May 2014 01:20:10 +0200
-Message-ID: <1401319218-16772-8-git-send-email-alexandre.belloni@free-electrons.com>
+Subject: [PATCHv2 06/15] ARM: at91: remove useless at91_pwm_leds()
+Date: Thu, 29 May 2014 01:20:09 +0200
+Message-ID: <1401319218-16772-7-git-send-email-alexandre.belloni@free-electrons.com>
 References: <1401319218-16772-1-git-send-email-alexandre.belloni@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1401319218-16772-1-git-send-email-alexandre.belloni@free-electrons.com>
@@ -10,26 +10,71 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, Bryan Wu <cooloney@gmail.com>, Jingoo Han <jg1.han@samsung.com>, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 List-Id: linux-pwm@vger.kernel.org
 
-The Atmel PWM IP can be found on avr32 chips. This allows selecting and building
-the driver on avr32.
+Now that all at91 boards using leds-atmel-pwm switched to leds-pwm, the
+at91_pwm_leds() function is not used anymore.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 ---
- drivers/pwm/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-at91/board.h |  1 -
+ arch/arm/mach-at91/leds.c  | 37 -------------------------------------
+ 2 files changed, 38 deletions(-)
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 4ad7b89a4cb4..331dfca415c7 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -43,7 +43,7 @@ config PWM_AB8500
+diff --git a/arch/arm/mach-at91/board.h b/arch/arm/mach-at91/board.h
+index 4e773b55bc2d..836e9a537e0c 100644
+--- a/arch/arm/mach-at91/board.h
++++ b/arch/arm/mach-at91/board.h
+@@ -123,6 +123,5 @@ extern void __init at91_add_device_can(struct at91_can_data *data);
  
- config PWM_ATMEL
- 	tristate "Atmel PWM support"
--	depends on ARCH_AT91
-+	depends on ARCH_AT91 || AVR32
- 	help
- 	  Generic PWM framework driver for Atmel SoC.
+  /* LEDs */
+ extern void __init at91_gpio_leds(struct gpio_led *leds, int nr);
+-extern void __init at91_pwm_leds(struct gpio_led *leds, int nr);
  
+ #endif
+diff --git a/arch/arm/mach-at91/leds.c b/arch/arm/mach-at91/leds.c
+index 77c4d8fd03fd..eb22e3357e87 100644
+--- a/arch/arm/mach-at91/leds.c
++++ b/arch/arm/mach-at91/leds.c
+@@ -54,40 +54,3 @@ void __init at91_gpio_leds(struct gpio_led *leds, int nr)
+ void __init at91_gpio_leds(struct gpio_led *leds, int nr) {}
+ #endif
+ 
+-
+-/* ------------------------------------------------------------------------- */
+-
+-#if defined (CONFIG_LEDS_ATMEL_PWM)
+-
+-/*
+- * PWM Leds
+- */
+-
+-static struct gpio_led_platform_data pwm_led_data;
+-
+-static struct platform_device at91_pwm_leds_device = {
+-	.name			= "leds-atmel-pwm",
+-	.id			= -1,
+-	.dev.platform_data	= &pwm_led_data,
+-};
+-
+-void __init at91_pwm_leds(struct gpio_led *leds, int nr)
+-{
+-	int i;
+-	u32 pwm_mask = 0;
+-
+-	if (!nr)
+-		return;
+-
+-	for (i = 0; i < nr; i++)
+-		pwm_mask |= (1 << leds[i].gpio);
+-
+-	pwm_led_data.leds = leds;
+-	pwm_led_data.num_leds = nr;
+-
+-	at91_add_device_pwm(pwm_mask);
+-	platform_device_register(&at91_pwm_leds_device);
+-}
+-#else
+-void __init at91_pwm_leds(struct gpio_led *leds, int nr){}
+-#endif
 -- 
 1.9.1
