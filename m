@@ -1,84 +1,51 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: pwm: atmel: problem when disable pwm
-Date: Wed, 4 Jun 2014 16:46:39 +0200
-Message-ID: <20140604144639.GI28484@ulmo>
-References: <CACqcpZDziJs7QUKVYwio=La5LyRzBd+xeeRW=dPFcPzw0Wrn5Q@mail.gmail.com>
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Subject: [PATCH] pwm-backlight:
+Date: Fri,  6 Jun 2014 13:02:09 +0200
+Message-ID: <1402052529-22761-1-git-send-email-LW@KARO-electronics.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="y96v7rNg6HAoELs5"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-we0-f178.google.com ([74.125.82.178]:35569 "EHLO
-	mail-we0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751495AbaFDOtZ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Jun 2014 10:49:25 -0400
-Content-Disposition: inline
-In-Reply-To: <CACqcpZDziJs7QUKVYwio=La5LyRzBd+xeeRW=dPFcPzw0Wrn5Q@mail.gmail.com>
+Received: from mail.karo-electronics.de ([81.173.242.67]:57649 "EHLO
+	mail.karo-electronics.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751740AbaFFLCn (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 6 Jun 2014 07:02:43 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?utf-8?Q?Rapha=C3=ABl?= Poggi <poggi.raph@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Bryan Wu <cooloney@gmail.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jingoo Han <jg1.han@samsung.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Cc: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 
+commit 257462dbf3ed pwm-backlight: switch to gpiod interface
+introduced a regression leading to acquiring a bogus GPIO-0 when
+configured from DT without an 'enable-gpios' property.
+The driver will happily accept the 0 initialized 'enable_gpio' member
+of the struct platform_pwm_backlight_data as valid gpio number, and
+request this GPIO as enable pin. In case of multiple driver instances,
+the second will fail to register with the error message:
+pwm-backlight backlight1.23: failed to request GPIO#0: -16
 
---y96v7rNg6HAoELs5
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+=46ix this by setting enable_gpio in the pdata struct to -EINVAL.
 
-Adding in the linux-pwm mailing list.
+Signed-off-by: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
+---
+ drivers/video/backlight/pwm_bl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Wed, Jun 04, 2014 at 02:56:13PM +0200, Rapha=C3=ABl Poggi wrote:
-> Hello,
->=20
-> I'm using the pwm-atmel driver to control led, but i'm facing a problem.
->=20
-> When writing "echo 0 > /sys/class/leds/d1/brightness" (to switch off
-> the led) sometimes the led stayed active.
->=20
-> After investigation I think this problem is due to this function:
->=20
-> static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *p=
-wm)
-> {
->     struct atmel_pwm_chip *atmel_pwm =3D to_atmel_pwm_chip(chip);
->=20
->     atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
->=20
->     clk_disable(atmel_pwm->clk);
-> }
->=20
-> By disable the pwm channel, I think the duty cycle "0" has not been
-> update, and the channel is disable and stayed in active state (high or
-> low depending of polarity).
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight=
+/pwm_bl.c
+index 38ca88b..3d265c4 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -178,7 +178,7 @@ static int pwm_backlight_parse_dt(struct device *de=
+v,
+ 		data->dft_brightness =3D value;
+ 		data->max_brightness--;
+ 	}
+-
++	data->enable_gpio =3D -EINVAL;
+ 	return 0;
+ }
+=20
+--=20
+1.7.10.4
 
-This sounds like a bug that could be fixed by this commit:
-
-	916030db4399 pwm: atmel: correct CDTY calculation
-
-What version of the kernel are you seeing this problem with? The above
-commit was first added in v3.15-rc1, so maybe try that or any later
-version to see if that fixes it.
-
-Thierry
-
---y96v7rNg6HAoELs5
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJTjzFPAAoJEN0jrNd/PrOhFwYP/jilqQOr3F9spUHB4AwtN8F4
-97kAO9/pUda4tAmGxjtHkDskhc8T//g12IpThz9HTmX+BdvxB7he/syy8iAeA5b5
-jjwdxnQ2QeQ89I9C7pyQOyMPMGW3VP+0hk1OMmGT6tImk2ZRZHJH6RGMRpGY1ovp
-1l3/L/VhBET7QDNi8dheAVCjeSBQZL51PX1h1e7b9Im+ttbiB9wL46B4kQsI1J5S
-qrOmHkJ7PxfBcJ5ghf1M64LNLnFj+aDMitrBuSBDAXCIfe1ikZliB4e2nfHCkO1C
-93n/dkzYAIwutrg5kHPwuPvXY/VfFpeZO6gPEN86Vdw8Q7lVo1KPTN2KCZQrJDyp
-/imFgkor8NGe1ZU9bRXMQRCcR/o1AUg8NPYUwKavi8baa0uIjT0+yF+eeLICujsz
-0xhn0PJgso6h6rebLquHnCa3i4Z2N69f7Nh3XHFLCUyF/KkXWBx3GUTAtJhsd06N
-QFi/mKmwci5Lnz2XEti3A/S/TArIz2BaCGWYkIGGBFxL6+fJ6Y4lJ/Pzsz4ys6Fz
-oKxxx+xpmnjPB2OIhJJ9/Yem0eDTHMwck7hEPserjqhHU8/SeRgx9N1YGdYZcSPY
-Z5OPcgUMfN4fhieHRgBhCyRCdnB70e0KTD8zqKM2KxCfk50ek3vYWFoh+UPPuAhT
-h+nVYTUXfEg6pP36PCos
-=M8dI
------END PGP SIGNATURE-----
-
---y96v7rNg6HAoELs5--
