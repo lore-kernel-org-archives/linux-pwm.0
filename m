@@ -1,60 +1,138 @@
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
-Subject: [PATCHv4 3/4] pwm: imx: indentation cleanup
-Date: Thu, 12 Jun 2014 14:52:47 +0200
-Message-ID: <1402577568-10037-4-git-send-email-LW@KARO-electronics.de>
+Subject: [PATCHv4 4/4] pwm: imx: support output polarity inversion
+Date: Thu, 12 Jun 2014 14:52:48 +0200
+Message-ID: <1402577568-10037-5-git-send-email-LW@KARO-electronics.de>
 References: <1402577568-10037-1-git-send-email-LW@KARO-electronics.de>
  <1402577568-10037-2-git-send-email-LW@KARO-electronics.de>
  <1402577568-10037-3-git-send-email-LW@KARO-electronics.de>
+ <1402577568-10037-4-git-send-email-LW@KARO-electronics.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1402577568-10037-3-git-send-email-LW@KARO-electronics.de>
+In-Reply-To: <1402577568-10037-4-git-send-email-LW@KARO-electronics.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <kernel@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>, Tony Prisk <linux@prisktech.co.nz>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
+The i.MX pwm unit on i.MX27 and newer SoCs provides a configurable
+output polarity. This patch adds support to utilize this feature where
+available.
 
 Signed-off-by: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
 ---
- drivers/pwm/pwm-imx.c |   21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/pwm/pwm-imx.c |   38 +++++++++++++++++++++++++++++++++++---
+ 1 file changed, 35 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index d797c7b..582ac3a 100644
+index 582ac3a..7357bbb 100644
 --- a/drivers/pwm/pwm-imx.c
 +++ b/drivers/pwm/pwm-imx.c
-@@ -25,20 +25,21 @@
- #define MX1_PWMS    0x04   /* PWM Sample Register */
- #define MX1_PWMP    0x08   /* PWM Period Register */
+@@ -138,6 +138,8 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
 =20
--#define MX1_PWMC_EN		(1 << 4)
-+#define MX1_PWMC_EN			(1 << 4)
+ 	if (test_bit(PWMF_ENABLED, &pwm->flags))
+ 		cr |=3D MX3_PWMCR_EN;
++	if (pwm->polarity =3D=3D PWM_POLARITY_INVERSED)
++		cr |=3D MX3_PWMCR_POUTC;
 =20
- /* i.MX27, i.MX31, i.MX35 share the same PWM function block: */
+ 	writel(cr, imx->mmio_base + MX3_PWMCR);
 =20
--#define MX3_PWMCR                 0x00    /* PWM Control Register */
--#define MX3_PWMSAR                0x0C    /* PWM Sample Register */
--#define MX3_PWMPR                 0x10    /* PWM Period Register */
--#define MX3_PWMCR_PRESCALER(x)    (((x - 1) & 0xFFF) << 4)
--#define MX3_PWMCR_DOZEEN                (1 << 24)
--#define MX3_PWMCR_WAITEN                (1 << 23)
-+#define MX3_PWMCR			0x00	  /* PWM Control Register */
-+#define MX3_PWMSAR			0x0C	  /* PWM Sample Register */
-+#define MX3_PWMPR			0x10	  /* PWM Period Register */
-+#define MX3_PWMCR_PRESCALER(x)		((((x) - 1) & 0xFFF) << 4)
-+#define MX3_PWMCR_DOZEEN		(1 << 24)
-+#define MX3_PWMCR_WAITEN		(1 << 23)
- #define MX3_PWMCR_DBGEN			(1 << 22)
--#define MX3_PWMCR_CLKSRC_IPG_HIGH (2 << 16)
--#define MX3_PWMCR_CLKSRC_IPG      (1 << 16)
--#define MX3_PWMCR_EN              (1 << 0)
-+#define MX3_PWMCR_POUTC			(1 << 18)
-+#define MX3_PWMCR_CLKSRC_IPG_HIGH	(2 << 16)
-+#define MX3_PWMCR_CLKSRC_IPG		(1 << 16)
-+#define MX3_PWMCR_EN			(1 << 0)
+@@ -156,6 +158,11 @@ static void imx_pwm_set_enable_v2(struct pwm_chip =
+*chip, bool enable)
+ 	else
+ 		val &=3D ~MX3_PWMCR_EN;
 =20
- struct imx_chip {
- 	struct clk	*clk_per;
++	if (chip->pwms[0].polarity =3D=3D PWM_POLARITY_INVERSED)
++		val |=3D MX3_PWMCR_POUTC;
++	else
++		val &=3D ~MX3_PWMCR_POUTC;
++
+ 	writel(val, imx->mmio_base + MX3_PWMCR);
+ }
+=20
+@@ -199,27 +206,49 @@ static void imx_pwm_disable(struct pwm_chip *chip=
+, struct pwm_device *pwm)
+ 	clk_disable_unprepare(imx->clk_per);
+ }
+=20
+-static struct pwm_ops imx_pwm_ops =3D {
++static int imx_pwm_set_polarity(struct pwm_chip *chip, struct pwm_devi=
+ce *pwm,
++				enum pwm_polarity polarity)
++{
++	struct imx_chip *imx =3D to_imx_chip(chip);
++
++	dev_dbg(imx->chip.dev, "%s: polarity set to %s\n", __func__,
++		polarity =3D=3D PWM_POLARITY_INVERSED ? "inverted" : "normal");
++
++	return 0;
++}
++
++static struct pwm_ops imx_pwm_ops_v1 =3D {
+ 	.enable =3D imx_pwm_enable,
+ 	.disable =3D imx_pwm_disable,
+ 	.config =3D imx_pwm_config,
+ 	.owner =3D THIS_MODULE,
+ };
+=20
++static struct pwm_ops imx_pwm_ops_v2 =3D {
++	.enable =3D imx_pwm_enable,
++	.disable =3D imx_pwm_disable,
++	.set_polarity =3D imx_pwm_set_polarity,
++	.config =3D imx_pwm_config,
++	.owner =3D THIS_MODULE,
++};
++
+ struct imx_pwm_data {
+ 	int (*config)(struct pwm_chip *chip,
+ 		struct pwm_device *pwm, int duty_ns, int period_ns);
+ 	void (*set_enable)(struct pwm_chip *chip, bool enable);
++	struct pwm_ops *pwm_ops;
+ };
+=20
+ static struct imx_pwm_data imx_pwm_data_v1 =3D {
+ 	.config =3D imx_pwm_config_v1,
+ 	.set_enable =3D imx_pwm_set_enable_v1,
++	.pwm_ops =3D &imx_pwm_ops_v1,
+ };
+=20
+ static struct imx_pwm_data imx_pwm_data_v2 =3D {
+ 	.config =3D imx_pwm_config_v2,
+ 	.set_enable =3D imx_pwm_set_enable_v2,
++	.pwm_ops =3D &imx_pwm_ops_v2,
+ };
+=20
+ static const struct of_device_id imx_pwm_dt_ids[] =3D {
+@@ -241,6 +270,10 @@ static int imx_pwm_probe(struct platform_device *p=
+dev)
+ 	if (!of_id)
+ 		return -ENODEV;
+=20
++	data =3D of_id->data;
++	if (data->pwm_ops->set_polarity)
++		dev_dbg(&pdev->dev, "PWM supports output inversion\n");
++
+ 	imx =3D devm_kzalloc(&pdev->dev, sizeof(*imx), GFP_KERNEL);
+ 	if (imx =3D=3D NULL)
+ 		return -ENOMEM;
+@@ -259,7 +292,7 @@ static int imx_pwm_probe(struct platform_device *pd=
+ev)
+ 		return PTR_ERR(imx->clk_ipg);
+ 	}
+=20
+-	imx->chip.ops =3D &imx_pwm_ops;
++	imx->chip.ops =3D data->pwm_ops;
+ 	imx->chip.dev =3D &pdev->dev;
+ 	imx->chip.base =3D -1;
+ 	imx->chip.npwm =3D 1;
+@@ -269,7 +302,6 @@ static int imx_pwm_probe(struct platform_device *pd=
+ev)
+ 	if (IS_ERR(imx->mmio_base))
+ 		return PTR_ERR(imx->mmio_base);
+=20
+-	data =3D of_id->data;
+ 	imx->config =3D data->config;
+ 	imx->set_enable =3D data->set_enable;
+=20
 --=20
 1.7.10.4
