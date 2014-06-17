@@ -1,66 +1,344 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: PWM DMA interface
-Date: Wed, 18 Jun 2014 00:54:05 +0200
-Message-ID: <20140617225401.GA25525@mithrandir>
-References: <CFBB4FD9.4313A%gordon@raspberrypi.org>
+Subject: Re: [PATCHv5 1/2] pwm: Add Allwinner SoC support
+Date: Wed, 18 Jun 2014 01:26:06 +0200
+Message-ID: <20140617232605.GB25525@mithrandir>
+References: <1400523003-27082-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <1400523003-27082-2-git-send-email-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="sdtB3X0nJg68CQEu"
+	protocol="application/pgp-signature"; boundary="i9LlY+UWpKt15+FH"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wg0-f46.google.com ([74.125.82.46]:60554 "EHLO
-	mail-wg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755944AbaFQWyI (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Jun 2014 18:54:08 -0400
-Received: by mail-wg0-f46.google.com with SMTP id y10so23393wgg.29
-        for <linux-pwm@vger.kernel.org>; Tue, 17 Jun 2014 15:54:07 -0700 (PDT)
+Received: from mail-we0-f172.google.com ([74.125.82.172]:37331 "EHLO
+	mail-we0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753597AbaFQX0K (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Jun 2014 19:26:10 -0400
 Content-Disposition: inline
-In-Reply-To: <CFBB4FD9.4313A%gordon@raspberrypi.org>
+In-Reply-To: <1400523003-27082-2-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Gordon Hollingworth <gordon@raspberrypi.org>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
 
---sdtB3X0nJg68CQEu
+--i9LlY+UWpKt15+FH
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 09, 2014 at 10:49:46AM +0000, Gordon Hollingworth wrote:
-> Hi,
->=20
-> I've been writing a driver that uses the PWM to talk to devices that
-> communicate through a pwm like signal.  To achieve this some devices have
-> a dma interface that you can stream data at to the pwm...
->=20
-> We use something similar to this on Raspberry Pi to do audio output, we
-> use the PWM interface to output a 'stream' of audio data which is
-> subsequently filtered (RC filter) to give an audio output.
+On Mon, May 19, 2014 at 08:10:02PM +0200, Alexandre Belloni wrote:
+[...]
+> diff --git a/drivers/pwm/pwm-sunxi.c b/drivers/pwm/pwm-sunxi.c
+[...]
+> +#include <linux/bitops.h>
+> +#include <linux/clk.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/slab.h>
 
-What kind of audio data is this? Is it able to play back any arbitrary
-audio signal?
+These should be ordered alphabetically.
+
+> +#define PWM_CTRL_REG		0x0
+> +
+> +#define PWM_CH_PRD_BASE		0x4
+> +#define PWM_CH_PRD_OFF		0x4
+
+Is this supposed to be an offset? If so, then maybe it should be named
+PWM_CH_PRD_OFFSET?
+
+> +#define PWM_CH_PRD(x)		(PWM_CH_PRD_BASE + PWM_CH_PRD_OFF * (x))
+
+x is the channel number? If so maybe call that parameter "ch"?
+
+> +#define PWMCH_OFFSET		15
+> +#define PWM_PRESCAL_MASK	GENMASK(3, 0)
+> +#define PWM_PRESCAL_OFF		0
+> +#define PWM_EN			BIT(4)
+> +#define PWM_ACT_STATE		BIT(5)
+> +#define PWM_CLK_GATING		BIT(6)
+> +#define PWM_MODE		BIT(7)
+> +#define PWM_PULSE		BIT(8)
+> +#define PWM_BYPASS		BIT(9)
+> +
+> +#define PWM_RDY_BASE		28
+> +#define PWM_RDY_OFF		1
+> +#define PWM_RDY(x)		BIT(PWM_RDY_BASE + PWM_RDY_OFF * (x))
+
+Some comments as for PWM_CH_PRD above.
+
+> +#define PWM_PRD_ACT_MASK	GENMASK(7, 0)
+
+This seems to be unused.
+
+> +#define PWM_PRD(x)		((x - 1) << 16)
+
+x should be enclosed in ().
+
+> +#define PWM_PRD_MASK		GENMASK(7, 0)
+> +
+> +#define	BIT_CH(bit, chan)	(bit << (chan * PWMCH_OFFSET))
+
+There should be a space instead of a tab between "define" and
+"BIT_CH(...)".
+
+> +u32 prescal_table[] = { 120, 180, 240, 360, 480, 0, 0, 0,
+> +			12000, 24000, 36000, 48000, 72000,
+> +			0, 0, 1 };
+
+static const? Also this is oddly formatted. I'd prefer:
+
+	static const u32 prescal_table[] = {
+		...
+		...
+	};
+
+Also for readability I'd go for "prescaler_table" or "prescale_table".
+
+> +struct sunxi_pwm_data {
+> +	bool has_rdy;
+> +};
+> +
+> +struct sunxi_pwm_chip {
+> +	struct pwm_chip chip;
+> +	struct clk *clk;
+> +	void __iomem *base;
+> +	struct mutex ctrl_lock;
+> +	const struct sunxi_pwm_data *data;
+> +};
+> +
+> +#define to_sunxi_pwm_chip(chip) container_of(chip, struct sunxi_pwm_chip, chip)
+
+This should be a static inline function.
+
+> +static inline u32 sunxi_pwm_readl(struct sunxi_pwm_chip *chip,
+> +				  unsigned long offset)
+> +{
+> +	return readl(chip->base + offset);
+> +}
+> +
+> +static inline void sunxi_pwm_writel(struct sunxi_pwm_chip *chip,
+> +				    unsigned long offset, unsigned long val)
+
+Make val u32 for consistency with sunxi_pwm_readl()? Also I'd prefer if
+this function preserved the same parameter order as writel().
+
+> +static int sunxi_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> +			    int duty_ns, int period_ns)
+> +{
+> +	struct sunxi_pwm_chip *sunxi_pwm = to_sunxi_pwm_chip(chip);
+> +	u32 clk_rate, prd, dty;
+> +	u64 div;
+> +	u32 val, clk_gate;
+
+These can both go onto the same line as the other u32s above.
+
+> +	int i, ret;
+
+I think i should be unsigned. And maybe rename ret to err since it's not
+used as a return value at all.
+
+> +
+> +	clk_rate = clk_get_rate(sunxi_pwm->clk);
+> +
+> +	/* First, test without any divider */
+> +	i = PWM_PRESCAL_MASK;
+
+I don't see where this value of I is used.
+
+> +	div = clk_rate * period_ns;
+> +	do_div(div, 1000000000);
+> +	if (div > PWM_PRD_MASK) {
+> +		/* Then go up from the first divider */
+> +		for (i = 0; i < PWM_PRESCAL_MASK; i++) {
+> +			if (!prescal_table[i])
+> +				continue;
+> +			div = clk_rate / prescal_table[i];
+> +			div = div * period_ns;
+> +			do_div(div, 1000000000);
+
+Maybe:
+
+	div = clk_rate / prescal_table[i];
+	do_div(div * period_ns, 1000000000);
+
+? Also 1000000000 == NSEC_PER_SEC, so maybe use that instead.
+
+> +			if (div <= PWM_PRD_MASK)
+> +				break;
+> +		}
+> +	}
+> +
+> +	if (div > PWM_PRD_MASK) {
+> +		dev_err(chip->dev, "prescaler exceeds the maximum value\n");
+
+Nit: the prescaler doesn't exceed anything. Rather the period exceeds
+the maximum.
+
+> +		return -EINVAL;
+> +	}
+> +
+> +	prd = div;
+> +	div *= duty_ns;
+> +	do_div(div, period_ns);
+> +	dty = div;
+> +
+> +	ret = clk_prepare_enable(sunxi_pwm->clk);
+> +	if (ret) {
+> +		dev_err(chip->dev, "failed to enable PWM clock\n");
+> +		return ret;
+> +	}
+> +
+> +	mutex_lock(&sunxi_pwm->ctrl_lock);
+> +	val = sunxi_pwm_readl(sunxi_pwm, PWM_CTRL_REG);
+> +
+> +	if (sunxi_pwm->data->has_rdy && (val & PWM_RDY(pwm->hwpwm))) {
+> +		mutex_unlock(&sunxi_pwm->ctrl_lock);
+> +		clk_disable_unprepare(sunxi_pwm->clk);
+> +		return -EBUSY;
+> +	}
+> +
+> +	clk_gate = val & BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
+> +	if (clk_gate) {
+> +		val &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
+> +		sunxi_pwm_writel(sunxi_pwm, PWM_CTRL_REG, val);
+> +	}
+> +
+> +	val = sunxi_pwm_readl(sunxi_pwm, PWM_CTRL_REG);
+> +	val &= ~BIT_CH(PWM_PRESCAL_MASK, pwm->hwpwm);
+> +	val |= i;
+
+Ah, this is where the initial value is used. Perhaps rename i to
+prescaler to make it more obvious what it is.
+
+> +	sunxi_pwm_writel(sunxi_pwm, PWM_CTRL_REG, val);
+> +
+> +	sunxi_pwm_writel(sunxi_pwm, PWM_CH_PRD(pwm->hwpwm), dty | PWM_PRD(prd));
+
+Maybe split this into two lines for readability:
+
+	val = dty | PWM_PRD(prd);
+	sunxi_pwm_writel(...);
+
+Also does dty need to be range-checked so it doesn't spill over into the
+PRD field?
+
+> +static int sunxi_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+> +				  enum pwm_polarity polarity)
+> +{
+> +	struct sunxi_pwm_chip *sunxi_pwm = to_sunxi_pwm_chip(chip);
+> +	u32 val;
+> +	int ret;
+> +
+> +	ret = clk_prepare_enable(sunxi_pwm->clk);
+> +	if (ret) {
+> +		dev_err(chip->dev, "failed to enable PWM clock\n");
+> +		return ret;
+> +	}
+> +
+> +	mutex_lock(&sunxi_pwm->ctrl_lock);
+> +	val = sunxi_pwm_readl(sunxi_pwm, PWM_CTRL_REG);
+> +
+> +	if (polarity != PWM_POLARITY_NORMAL)
+> +		val &= ~BIT_CH(PWM_ACT_STATE, pwm->hwpwm);
+> +	else
+> +		val |= BIT_CH(PWM_ACT_STATE, pwm->hwpwm);
+> +
+> +
+
+There's an extra blank line here.
+
+> +static int sunxi_pwm_probe(struct platform_device *pdev)
+> +{
+> +	struct sunxi_pwm_chip *sunxi_pwm;
+
+Perhaps just "pwm" or "sunxi"? sunxi_pwm is kind of redundant.
+
+> +	struct resource *res;
+> +	int ret;
+> +
+> +	const struct of_device_id *match;
+
+There should be no blank line above this one.
+
+> +
+> +	match = of_match_device(sunxi_pwm_dt_ids, &pdev->dev);
+> +	if (!match || !match->data)
+
+None of this can ever happen. match would only be NULL if the table
+doesn't contain a matching entry for this device. But in that case the
+driver's .probe() wouldn't have been called anyway. And none of the
+entries have a NULL .data field, so no need to check for that either.
+
+> +		return -ENODEV;
+> +
+> +	sunxi_pwm = devm_kzalloc(&pdev->dev, sizeof(*sunxi_pwm), GFP_KERNEL);
+> +	if (!sunxi_pwm)
+> +		return -ENOMEM;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	sunxi_pwm->base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(sunxi_pwm->base))
+> +		return PTR_ERR(sunxi_pwm->base);
+> +
+> +	sunxi_pwm->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(sunxi_pwm->clk))
+> +		return PTR_ERR(sunxi_pwm->clk);
+> +
+> +	sunxi_pwm->chip.dev = &pdev->dev;
+> +	sunxi_pwm->chip.ops = &sunxi_pwm_ops;
+> +
+> +	sunxi_pwm->chip.base = -1;
+
+Why the blank line between the above?
+
+> +	sunxi_pwm->chip.npwm = 2;
+> +	sunxi_pwm->chip.can_sleep = true;
+> +	sunxi_pwm->chip.of_xlate = of_pwm_xlate_with_flags;
+> +	sunxi_pwm->chip.of_pwm_n_cells = 3;
+> +	sunxi_pwm->data = match->data;
+> +
+> +	mutex_init(&sunxi_pwm->ctrl_lock);
+> +
+> +	ret = clk_prepare_enable(sunxi_pwm->clk);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "failed to enable PWM clock\n");
+> +		goto error;
+> +	}
+> +
+> +	/* By default, the polarity is inversed, set it to normal */
+> +	sunxi_pwm_writel(sunxi_pwm, PWM_CTRL_REG,
+> +			 BIT_CH(PWM_ACT_STATE, 0) |
+> +			 BIT_CH(PWM_ACT_STATE, 1));
+> +	clk_disable_unprepare(sunxi_pwm->clk);
+
+Why do you need to do this here? Doesn't this potentially cause
+transients if a bootloader had this configured with inversed polarity?
 
 Thierry
 
---sdtB3X0nJg68CQEu
+--i9LlY+UWpKt15+FH
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJToMcJAAoJEN0jrNd/PrOhiwwP/2wR9adHBx8esQuZ3F32F0O1
-G1Vs2UV8Vm+r+2ZJlUuuKvIUIWLqfvs+NhXzsPzm8UUHlex7Kt1reE3W8fuB4nZ+
-H5oxnrZbYKBBHZ10c8s/upI+hzjYYL1dzVbQKFpl8LXAaM9PIRnZGKAgpvmnxbrE
-nq56RnHLFkgQSZx0fuCd6LXOwPyMvXQAXHKu0yN3BgGiXvx9BJwCPcO9c7ZuVsBv
-2x5V/eqH29gF96WITvdjjmLUD+0WDWgeQERgE7RbzBAAJdDnjgD6Cxavx0ldyIEw
-T8jw1LW7OPCEfZ9qbMOQ/XDgGJFnurj8y0qQpX/YYB07o0MI2Kw3QIVnI8VkLYec
-p82SEkZ/D7QtQYVi8nDnbBo/cJntuwakIny9W5K/oU1TgV1zvnDwvNmZuuaZUtzu
-1gpcs1Xipw4RMjKxd+/2KWORDVvgKUBmp28H3bcVBjan+GZWub6ZH8VnM3AGfthl
-df0WZe8o4t3jv7HcPd+TYiMosLkbkQK//6mUFqnU5XNisNQB2p5T47rcjBPj0YLx
-bTVeMFdQJjM8uGnvG+lq0RH1R8YGzKqXhQa6eIMlBvMsW/0xu5kleuFtO0ivdcuL
-RL6UH1o9mRG38/NC+zxN7QLRLJ0ddrJdWzT9oeJ7MJ+6zNvzbymEOofDG0jDnDye
-KNdZvDVbtl4F1vvzZom/
-=zZ5f
+iQIcBAEBAgAGBQJToM6NAAoJEN0jrNd/PrOhIt4P/A7i4tMP0DWFcoWSO8d9CFKP
+8+bs86AfppvIH9xvZVe7kHWZWNKv/768pe62Wwry5hkvb26y/VYrXuhZCjLeW9zd
++Wn/gdo46tGuBORzf0wuJxpcuzgKgYQicI7Hh4vEvqEP678DJCMq1qmWoRE+mAK3
+gTYjfZwiz1eudvaBGefPdzXijVI2WJ7vTUAp+dgH9a/OdGQRLjH7lg0+sBQn32CL
+QC3mcW838Z57bIv63gQad7PYFLA9atJLFWKzQxcbe/Sp9jWuz10a92WabVJoIAbp
+p6OhZzjoON2fxuNbOUCdzeNAkOIW/Z5LKi5uoWzLEKEWvADVweVfi1FsEkf5De62
+W15zP9BQrLViNSrfbNEWJVGmBQfobhx84jw+T8Sc5sPe5guINpcClUU6QksWMsSR
+tsYjd/UT1cBxTb2gxKsnoTuGacPW1OjMneXnDO7f2NMKjYOe1ugGj8QbmjR+u0F6
+xYUlHKRN3REFxXKXVa9/avOiJMD16cuZQFq5dS90qVyZrF8ZsW0m8zg3XrLeADw7
+Tj1n0bdpPfls8zLOQLCUTYZQVhhCCtjrVJ/mbQMUUCEbeVn4sjuNJM1x37YKwt7l
+UjJ4DtQRM4lNU55bWdldD5p0LsaiIHWqSMqr/grV/MZaTobenC5yP3QSF6XNXgft
+cpUHcvnV+tHGYEzriM+x
+=MPpa
 -----END PGP SIGNATURE-----
 
---sdtB3X0nJg68CQEu--
+--i9LlY+UWpKt15+FH--
