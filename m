@@ -1,65 +1,66 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/3] pwm: rockchip: document device tree bindings
-Date: Tue, 17 Jun 2014 23:45:32 +0200
-Message-ID: <20140617214529.GB24743@mithrandir>
-References: <1399504115-16257-1-git-send-email-b.galvani@gmail.com>
- <1399504115-16257-3-git-send-email-b.galvani@gmail.com>
+Subject: Re: PWM DMA interface
+Date: Wed, 18 Jun 2014 00:54:05 +0200
+Message-ID: <20140617225401.GA25525@mithrandir>
+References: <CFBB4FD9.4313A%gordon@raspberrypi.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="dc+cDN39EJAMEtIO"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="sdtB3X0nJg68CQEu"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wg0-f46.google.com ([74.125.82.46]:60554 "EHLO
+	mail-wg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755944AbaFQWyI (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Jun 2014 18:54:08 -0400
+Received: by mail-wg0-f46.google.com with SMTP id y10so23393wgg.29
+        for <linux-pwm@vger.kernel.org>; Tue, 17 Jun 2014 15:54:07 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <1399504115-16257-3-git-send-email-b.galvani@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Beniamino Galvani <b.galvani@gmail.com>
-Cc: Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+In-Reply-To: <CFBB4FD9.4313A%gordon@raspberrypi.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Gordon Hollingworth <gordon@raspberrypi.org>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
 
---dc+cDN39EJAMEtIO
+--sdtB3X0nJg68CQEu
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 08, 2014 at 01:08:34AM +0200, Beniamino Galvani wrote:
-[...]
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt b/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
-> new file mode 100644
-> index 0000000..35deba4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
-> @@ -0,0 +1,17 @@
-> +Rockchip PWM controller
-> +
-> +Required properties:
-> + - compatible: should be "rockchip,rk2928-pwm"
-> + - reg: physical base address and length of the controller's registers
-> + - clocks: phandle and clock specifier of the PWM reference clock
-> + - #pwm-cells: should be 2. See pwm.txt in this directory for a
-> +   description of the cell format
+On Mon, Jun 09, 2014 at 10:49:46AM +0000, Gordon Hollingworth wrote:
+> Hi,
+>=20
+> I've been writing a driver that uses the PWM to talk to devices that
+> communicate through a pwm like signal.  To achieve this some devices have
+> a dma interface that you can stream data at to the pwm...
+>=20
+> We use something similar to this on Raspberry Pi to do audio output, we
+> use the PWM interface to output a 'stream' of audio data which is
+> subsequently filtered (RC filter) to give an audio output.
 
-Nit: this sentence should have a full stop at the end.
+What kind of audio data is this? Is it able to play back any arbitrary
+audio signal?
 
 Thierry
 
---dc+cDN39EJAMEtIO
+--sdtB3X0nJg68CQEu
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJToLb5AAoJEN0jrNd/PrOhWZQQAIqrRizkqAgQMAEwTZHQR15Z
-qPByCxXAnJWqrGt6bbA9d7C3x2u/ztoZhy7D3gClrImL+wsB3ygbBKonHTEHG7Bq
-Wp5Eu+Uu6LPleSOMkVfV7tyXVm87q1eoh/A29XwOiElsNaX50uHcZk8vnGRTS/Wg
-mHGNJCj1z1oFMnvhIij2EPgXxp9QhePo3dujIm7n7zzaIckiVGGvo180MAiL3xyq
-nnIQPpQFWZq8t3FxkzR6thcd+MuozUqaMysDn36tzjDCna2637FcfyQCQEKmEmbv
-bdrKtXVDutaLDJLVIQWlvIOT3FCCgqZ/moQH/j6x2U25Fme8RT1iLEesZNbKSl1s
-+vaKOC5crtIn2xNn9xES77pwWHaW6xNzXumVDOhaOjoXFdt3M5QaCv0caGBZfvKa
-8+TPH6z61GtlVvvZd9Gv/mIeNeo5mMALpkOpMIKR0PPuNsLeT2/8jj3lVQhDM+8B
-B7CwlPScV5E22xiRtAMqAxYKMiz9grrdCt/WCtKlkwRBm2UNeKnHiOGmoGlcIekn
-zSdd2UW9JxO50z9CrrPWhe24P8VmtJPaZ4IIQjuLrFglHytvKf5nA/pTYWW94mtq
-HIfHpbx/TOPhbji8c4CgHlUXCGmfpXTaZxCJAoTspHiJDZoFtdS4jEdk1Xh32T/3
-OFS5xdLhvE1q4uDGC5Lg
-=Tgdh
+iQIcBAEBAgAGBQJToMcJAAoJEN0jrNd/PrOhiwwP/2wR9adHBx8esQuZ3F32F0O1
+G1Vs2UV8Vm+r+2ZJlUuuKvIUIWLqfvs+NhXzsPzm8UUHlex7Kt1reE3W8fuB4nZ+
+H5oxnrZbYKBBHZ10c8s/upI+hzjYYL1dzVbQKFpl8LXAaM9PIRnZGKAgpvmnxbrE
+nq56RnHLFkgQSZx0fuCd6LXOwPyMvXQAXHKu0yN3BgGiXvx9BJwCPcO9c7ZuVsBv
+2x5V/eqH29gF96WITvdjjmLUD+0WDWgeQERgE7RbzBAAJdDnjgD6Cxavx0ldyIEw
+T8jw1LW7OPCEfZ9qbMOQ/XDgGJFnurj8y0qQpX/YYB07o0MI2Kw3QIVnI8VkLYec
+p82SEkZ/D7QtQYVi8nDnbBo/cJntuwakIny9W5K/oU1TgV1zvnDwvNmZuuaZUtzu
+1gpcs1Xipw4RMjKxd+/2KWORDVvgKUBmp28H3bcVBjan+GZWub6ZH8VnM3AGfthl
+df0WZe8o4t3jv7HcPd+TYiMosLkbkQK//6mUFqnU5XNisNQB2p5T47rcjBPj0YLx
+bTVeMFdQJjM8uGnvG+lq0RH1R8YGzKqXhQa6eIMlBvMsW/0xu5kleuFtO0ivdcuL
+RL6UH1o9mRG38/NC+zxN7QLRLJ0ddrJdWzT9oeJ7MJ+6zNvzbymEOofDG0jDnDye
+KNdZvDVbtl4F1vvzZom/
+=zZ5f
 -----END PGP SIGNATURE-----
 
---dc+cDN39EJAMEtIO--
+--sdtB3X0nJg68CQEu--
