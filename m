@@ -1,73 +1,55 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCHv5 2/2] pwm: sunxi: document OF bindings
-Date: Wed, 18 Jun 2014 01:29:00 +0200
-Message-ID: <20140617232859.GC25525@mithrandir>
-References: <1400523003-27082-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1400523003-27082-3-git-send-email-alexandre.belloni@free-electrons.com>
+From: Jingoo Han <jg1.han@samsung.com>
+Subject: [PATCH] pwm: pwm-tipwmss: remove unnecessary OOM messages
+Date: Wed, 18 Jun 2014 14:50:08 +0900
+Message-ID: <000001cf8ab9$294b0940$7be11bc0$%han@samsung.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="69pVuxX8awAiJ7fD"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wg0-f51.google.com ([74.125.82.51]:59313 "EHLO
-	mail-wg0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751798AbaFQX3F (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Jun 2014 19:29:05 -0400
-Content-Disposition: inline
-In-Reply-To: <1400523003-27082-3-git-send-email-alexandre.belloni@free-electrons.com>
+Received: from mailout1.samsung.com ([203.254.224.24]:32090 "EHLO
+	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756586AbaFRFuK (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Jun 2014 01:50:10 -0400
+Received: from epcpsbgr3.samsung.com
+ (u143.gpu120.samsung.co.kr [203.254.230.143])
+ by mailout1.samsung.com (Oracle Communications Messaging Server 7u4-24.01
+ (7.0.4.24.0) 64bit (built Nov 17 2011))
+ with ESMTP id <0N7C009KPO7KCC20@mailout1.samsung.com> for
+ linux-pwm@vger.kernel.org; Wed, 18 Jun 2014 14:50:08 +0900 (KST)
+Content-language: ko
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: 'Thierry Reding' <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>, 'Philip Avinash' <avinashphilip@ti.com>
+
+The site-specific OOM messages are unnecessary, because they
+duplicate the MM subsystem generic OOM message. The following
+checkpatch warning is also removed.
+
+  WARNING: Possible unnecessary 'out of memory' message
+
+Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+---
+ drivers/pwm/pwm-tipwmss.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/pwm/pwm-tipwmss.c b/drivers/pwm/pwm-tipwmss.c
+index 3b119bc..67481dc 100644
+--- a/drivers/pwm/pwm-tipwmss.c
++++ b/drivers/pwm/pwm-tipwmss.c
+@@ -62,10 +62,8 @@ static int pwmss_probe(struct platform_device *pdev)
+ 	struct device_node *node = pdev->dev.of_node;
+ 
+ 	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
+-	if (!info) {
+-		dev_err(&pdev->dev, "failed to allocate memory\n");
++	if (!info)
+ 		return -ENOMEM;
+-	}
+ 
+ 	mutex_init(&info->pwmss_lock);
+ 
+-- 
+1.7.10.4
 
 
---69pVuxX8awAiJ7fD
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Mon, May 19, 2014 at 08:10:03PM +0200, Alexandre Belloni wrote:
-> This is the documentation for the Allwinner Socs PWM bindings.
-
-"SoCs".
-
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-sunxi.txt b/Documentation/devicetree/bindings/pwm/pwm-sunxi.txt
-[...]
-> +Allwinner PWM controller
-
-"Allwinner SoC"?
-
-> +
-> +Required properties:
-> +  - compatible: should be one of:
-> +    - "allwinner,sun4i-a10-pwm"
-> +    - "allwinner,sun7i-a20-pwm"
-> +  - reg: physical base address and length of the controller's registers
-> +  - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
-> +    the cells format.
-> +  - clocks: from common clock binding, handle to the parent clock.
-
-This is a sentence, so should start with a capital letter.
-
-Thierry
-
---69pVuxX8awAiJ7fD
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJToM87AAoJEN0jrNd/PrOhq4kP/104c9xxYm3H38x1BkD+dbM8
-GfTt7I/Dvkhk1jt0feM0Fd76Rz07QFx1RFb8N9mgYLFNGNzAoRIywO72S+Ng33bp
-ypuirnsW96aImje3CwMrJtrKGi8HrbocT5kt9f5muasQNCg3+7y/1Txy2UKuUp7G
-nQOtrNHtj+2JXoyAN6ClLg4TCC+giNrlXKaaMEGzhJHl0Rv8AXA3G+JCNwbV9chV
-kj+wZhr5l8yZQyg7NrBuYwGmFYvIyq5R3hpl8gsZHO0ubCZp+Fe9GYWoG3CkWwPK
-wZEKIjVuMLC+4HzGuBtkJDTZVEC3n4ySlviAj+7ECF0m0RQ4fvMJ13vZvJmE2MBS
-tUiZlQEXg1RTxdS6MgqFdAhmK22QQbTGpZoRuE3X4D7a1vOU4VOVnHawUaMGGbXx
-L0Jwsd3lIEpxLPoa2wHkMmOh7qRsl745Y1BZ/ATIuqAC4byQ9ldsfzGfB0LFAcY/
-qNASoWOarqTpuxXvmY+dBFpO54IeT/M67l5auonaKG1dJXwq7LIBO04hYv0hYPKG
-0743XTtirOHjKXMfTumGllHKTyeZDt9dg2hyRmaBBMj4qngnUyiYkHPZxBcDyK4W
-vaMFJtcTZO5M21GTxEGshVPIKcgXvwjUE5Xc8wKqAQQN55WSPP7gYpevhA+p30Om
-14ZOhA5Baojhqb2ZFAwF
-=282s
------END PGP SIGNATURE-----
-
---69pVuxX8awAiJ7fD--
