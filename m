@@ -1,59 +1,82 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v2 1/7] ARM: stih407: Add DT nodes for for PWM
-Date: Wed, 18 Jun 2014 16:26:56 +0100
-Message-ID: <20140618152656.GE15956@lee--X1>
+Subject: [PATCH v2 3/7] ARM: stih416: Add DT nodes for PWM
+Date: Wed, 18 Jun 2014 16:28:24 +0100
+Message-ID: <20140618152824.GF15956@lee--X1>
 References: <1403103172-19856-1-git-send-email-lee.jones@linaro.org>
+ <1403103172-19856-3-git-send-email-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1403103172-19856-1-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1403103172-19856-3-git-send-email-lee.jones@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: kernel@stlinux.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, maxime.coquelin@st.com, patrice.chotard@st.com, srinivas.kandagatla@gmail.com, devicetree@vger.kernel.org, ajitpal.singh@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-ARM: stih407: Add DT nodes for for PWM
+ARM: stih416: Add DT nodes for PWM
 
-Supply top level nodes for the STiH407 based development boards.
+Supply top level nodes for the STiH416 based development boards.
 The Pinctrl configuration has already been applied, so the only
 missing piece of the DT puzzle is for a board's DTB to enable
 the nodes.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 
-diff --git a/arch/arm/boot/dts/stih407.dtsi b/arch/arm/boot/dts/stih407.dtsi
-index 4f9024f..e9766a4 100644
---- a/arch/arm/boot/dts/stih407.dtsi
-+++ b/arch/arm/boot/dts/stih407.dtsi
-@@ -259,5 +259,32 @@
+diff --git a/arch/arm/boot/dts/stih416.dtsi b/arch/arm/boot/dts/stih416.dtsi
+index 06473c5..f95e469 100644
+--- a/arch/arm/boot/dts/stih416.dtsi
++++ b/arch/arm/boot/dts/stih416.dtsi
+@@ -102,7 +102,7 @@
+ 			interrupts	= <0 210 0>;
+ 			pinctrl-names 	= "default";
+ 			pinctrl-0 	= <&pinctrl_sbc_serial1>;
+-			clocks          = <&clk_sysin>;
++			clocks		= <&clk_sysin>;
+ 		};
  
- 			status = "disabled";
+ 		i2c@fed40000 {
+@@ -236,5 +236,45 @@
+ 			resets	= <&powerdown STIH416_KEYSCAN_POWERDOWN>,
+ 				  <&softreset STIH416_KEYSCAN_SOFTRESET>;
  		};
 +
-+		/* COMMS PWM Module */
-+		pwm0: pwm@9810000 {
++		/* SAS PWM Module */
++		pwm0: pwm@fed10000 {
 +			compatible	= "st,sti-pwm";
 +			status		= "disabled";
 +			#pwm-cells	= <2>;
-+			reg		= <0x9810000 0x68>;
++			reg		= <0xfed10000 0x68>;
++
 +			pinctrl-names	= "default";
-+			pinctrl-0	= <&pinctrl_pwm0_chan0_default>;
++			pinctrl-0 = 	<&pinctrl_pwm0_chan0_default
++					&pinctrl_pwm0_chan1_default
++					&pinctrl_pwm0_chan2_default
++					&pinctrl_pwm0_chan3_default>;
++
 +			clock-names	= "pwm";
 +			clocks		= <&clk_sysin>;
 +		};
 +
 +		/* SBC PWM Module */
-+		pwm1: pwm@9510000 {
++		pwm1: pwm@fe510000 {
 +			compatible	= "st,sti-pwm";
 +			status		= "disabled";
 +			#pwm-cells	= <2>;
-+			reg		= <0x9510000 0x68>;
++			reg		= <0xfe510000 0x68>;
++
 +			pinctrl-names	= "default";
 +			pinctrl-0	= <&pinctrl_pwm1_chan0_default
-+					&pinctrl_pwm1_chan1_default
++					/*
++					 * Shared with SBC_OBS_NOTRST.  Don't
++					 * enable unless you really know what
++					 * you're doing.
++					 *
++					 * &pinctrl_pwm1_chan1_default
++					 */
 +					&pinctrl_pwm1_chan2_default
 +					&pinctrl_pwm1_chan3_default>;
++
 +			clock-names	= "pwm";
 +			clocks		= <&clk_sysin>;
 +		};
