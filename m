@@ -1,55 +1,43 @@
-From: Jingoo Han <jg1.han@samsung.com>
-Subject: [PATCH] pwm: pwm-tipwmss: remove unnecessary OOM messages
-Date: Wed, 18 Jun 2014 14:50:08 +0900
-Message-ID: <000001cf8ab9$294b0940$7be11bc0$%han@samsung.com>
+From: Gordon Hollingworth <gordon@raspberrypi.org>
+Subject: Re: PWM DMA interface
+Date: Wed, 18 Jun 2014 08:20:58 +0000
+Message-ID: <61114322-BF2B-4E67-B4B9-30E20D7D60CD@raspberrypi.org>
+References: <CFBB4FD9.4313A%gordon@raspberrypi.org>,<20140617225401.GA25525@mithrandir>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailout1.samsung.com ([203.254.224.24]:32090 "EHLO
-	mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756586AbaFRFuK (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Jun 2014 01:50:10 -0400
-Received: from epcpsbgr3.samsung.com
- (u143.gpu120.samsung.co.kr [203.254.230.143])
- by mailout1.samsung.com (Oracle Communications Messaging Server 7u4-24.01
- (7.0.4.24.0) 64bit (built Nov 17 2011))
- with ESMTP id <0N7C009KPO7KCC20@mailout1.samsung.com> for
- linux-pwm@vger.kernel.org; Wed, 18 Jun 2014 14:50:08 +0900 (KST)
-Content-language: ko
+Received: from mail1.bemta3.messagelabs.com ([195.245.230.177]:12321 "EHLO
+	mail1.bemta3.messagelabs.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S964953AbaFRI2M convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Wed, 18 Jun 2014 04:28:12 -0400
+In-Reply-To: <20140617225401.GA25525@mithrandir>
+Content-Language: en-GB
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: 'Thierry Reding' <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, 'Jingoo Han' <jg1.han@samsung.com>, 'Philip Avinash' <avinashphilip@ti.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-The site-specific OOM messages are unnecessary, because they
-duplicate the MM subsystem generic OOM message. The following
-checkpatch warning is also removed.
+Yes within the limitations of the simple RC filter but basically it's working like a one bit DAC
 
-  WARNING: Possible unnecessary 'out of memory' message
-
-Signed-off-by: Jingoo Han <jg1.han@samsung.com>
----
- drivers/pwm/pwm-tipwmss.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/pwm/pwm-tipwmss.c b/drivers/pwm/pwm-tipwmss.c
-index 3b119bc..67481dc 100644
---- a/drivers/pwm/pwm-tipwmss.c
-+++ b/drivers/pwm/pwm-tipwmss.c
-@@ -62,10 +62,8 @@ static int pwmss_probe(struct platform_device *pdev)
- 	struct device_node *node = pdev->dev.of_node;
- 
- 	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
--	if (!info) {
--		dev_err(&pdev->dev, "failed to allocate memory\n");
-+	if (!info)
- 		return -ENOMEM;
--	}
- 
- 	mutex_init(&info->pwmss_lock);
- 
--- 
-1.7.10.4
+Gordon
 
 
+> On 17 Jun 2014, at 23:54, "Thierry Reding" <thierry.reding@gmail.com> wrote:
+> 
+>> On Mon, Jun 09, 2014 at 10:49:46AM +0000, Gordon Hollingworth wrote:
+>> Hi,
+>> 
+>> I've been writing a driver that uses the PWM to talk to devices that
+>> communicate through a pwm like signal.  To achieve this some devices have
+>> a dma interface that you can stream data at to the pwm...
+>> 
+>> We use something similar to this on Raspberry Pi to do audio output, we
+>> use the PWM interface to output a 'stream' of audio data which is
+>> subsequently filtered (RC filter) to give an audio output.
+> 
+> What kind of audio data is this? Is it able to play back any arbitrary
+> audio signal?
+> 
+> Thierry
