@@ -1,74 +1,61 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v2 7/7] pwm: st: Supply Device Tree binding documentation for
- ST's PWM IP
-Date: Wed, 18 Jun 2014 16:29:32 +0100
-Message-ID: <20140618152932.GG15956@lee--X1>
-References: <1403103172-19856-1-git-send-email-lee.jones@linaro.org>
- <1403103172-19856-7-git-send-email-lee.jones@linaro.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: PWM DMA interface
+Date: Thu, 19 Jun 2014 00:12:01 +0200
+Message-ID: <20140618221200.GE26514@mithrandir>
+References: <CFBB4FD9.4313A%gordon@raspberrypi.org>
+ <20140617225401.GA25525@mithrandir>
+ <61114322-BF2B-4E67-B4B9-30E20D7D60CD@raspberrypi.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="a+b56+3nqLzpiR9O"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ie0-f181.google.com ([209.85.223.181]:36145 "EHLO
-	mail-ie0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752064AbaFRP3l (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Jun 2014 11:29:41 -0400
-Received: by mail-ie0-f181.google.com with SMTP id y20so815810ier.26
-        for <linux-pwm@vger.kernel.org>; Wed, 18 Jun 2014 08:29:40 -0700 (PDT)
+Received: from mail-wg0-f47.google.com ([74.125.82.47]:47747 "EHLO
+	mail-wg0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751310AbaFRWMF (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Jun 2014 18:12:05 -0400
+Received: by mail-wg0-f47.google.com with SMTP id k14so1458012wgh.6
+        for <linux-pwm@vger.kernel.org>; Wed, 18 Jun 2014 15:12:03 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <1403103172-19856-7-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <61114322-BF2B-4E67-B4B9-30E20D7D60CD@raspberrypi.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: kernel@stlinux.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, maxime.coquelin@st.com, patrice.chotard@st.com, srinivas.kandagatla@gmail.com, devicetree@vger.kernel.org, ajitpal.singh@st.com
+To: Gordon Hollingworth <gordon@raspberrypi.org>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-pwm: st: Supply Device Tree binding documentation for ST's PWM IP
-    
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-st.txt b/Documentation/devicetree/bindings/pwm/pwm-st.txt
-new file mode 100644
-index 0000000..84d2fb8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-st.txt
-@@ -0,0 +1,41 @@
-+STMicroelectronics PWM driver bindings
-+--------------------------------------
-+
-+Required parameters:
-+- compatible :		"st,pwm"
-+- #pwm-cells : 		Number of cells used to specify a PWM. First cell
-+			specifies the per-chip index of the PWM to use and the
-+			second cell is the period in nanoseconds - fixed to 2
-+			for STiH41x.
-+- reg :			Physical base address and length of the controller's
-+			registers.
-+- pinctrl-names: 	Set to "default".
-+- pinctrl-0: 		List of phandles pointing to pin configuration nodes
-+			for PWM module.
-+			For Pinctrl properties, please refer to [1].
-+- clock-names: 		Set to "pwm".
-+- clocks: 		phandle of the clock used by the PWM module.
-+			For Clk properties, please refer to [2].
-+
-+Optional properties:
-+- st,pwm-num-chan:	Number of available channels. If not passed, the driver
-+			will consider single channel by default.
-+
-+[1] Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
-+[2] Documentation/devicetree/bindings/clock/clock-bindings.txt
-+
-+Example:
-+
-+pwm1: pwm@fe510000 {
-+	compatible = "st,pwm";
-+	reg = <0xfe510000 0x68>;
-+	#pwm-cells = <2>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_pwm1_chan0_default
-+		     &pinctrl_pwm1_chan1_default
-+		     &pinctrl_pwm1_chan2_default
-+		     &pinctrl_pwm1_chan3_default>;
-+	clocks = <&clk_sysin>;
-+	clock-names = "pwm";
-+	st,pwm-num-chan = <4>;
-+};
+--a+b56+3nqLzpiR9O
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Wed, Jun 18, 2014 at 08:20:58AM +0000, Gordon Hollingworth wrote:
+> Yes within the limitations of the simple RC filter but basically it's
+> working like a one bit DAC
+
+Perhaps a better way to expose this, then, would be as a proper sound
+device so that the standard ALSA tools can be used to play back audio
+rather than needing a set of custom tools.
+
+Thierry
+
+--a+b56+3nqLzpiR9O
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJTog6wAAoJEN0jrNd/PrOhGrEP/RzkfcO7XN74UCGyyTSahaj2
+t4F8GZ3Y+aL2/6UUC6mjRvqWN7wmBKVRYND2AqCGRnTD4w8sc0+WpRFttkiF0y6J
+IC3ByFYaayBckl4LGUkw4KWB/gEdya7r3HVX2cevTOxLoT+we03i137lzQxmNwUK
+P6sgvyZxFNp0bK7hpIPb9+SjVgeW1/Vo2b45Sp/VMLN/t0SOWGTZibq9utO3wJrR
+DPXFj4wK9REwmiTEeoMPGRfJJSvDtsqcHhwfYPBxr6flLLjTi1z/NssRR7NeY0xu
+sUjvTr0X3awP1JEJ56L8Rf9CE0lrU3IOWOkoVurOQD/jmerxx5PaHUJUcglYos5C
+kOTuIaCZ9cJxS3KDzUN2CByhsJWLi0CPyd/GWGi+SJ+6ycIA1WdPTA8yc9oQx6YW
+UUCEZzcF1DMTI1c0QM3g6EhSWIlVv/P3EMSo3i5BFyMEBuGxVclkjZHt9V2OM3LF
+yszUDCk69SpamSPHmzhSDuRnsrn9VDAp/zeUZIiHCYP9/Lmdmxj9F7SskqHKSmLP
+W0f5av8xmrEZ5tLnfsUxyOnOCwGVcSoNMIrNmYb5C1uOl+mEHLZQ3R02idZKcY0Y
+6R7fYjriBlsFDYLSom/llM641xabnz9wbgCR+uJWSsax5SHqlOXCMKyNgCvuOUeK
+I8nfuQKsjbbdP93hRvuj
+=4FBo
+-----END PGP SIGNATURE-----
+
+--a+b56+3nqLzpiR9O--
