@@ -1,54 +1,54 @@
-From: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Subject: Re: [PATCH 6/7] pwm: st: Add new driver for ST's PWM IP
-Date: Thu, 19 Jun 2014 12:32:59 +0100
-Message-ID: <20140619113259.GO32514@n2100.arm.linux.org.uk>
-References: <1403103172-19856-1-git-send-email-lee.jones@linaro.org> <1403103172-19856-6-git-send-email-lee.jones@linaro.org> <20140618231127.GF26514@mithrandir> <20140619084404.GA26560@lee--X1>
+From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH v2 4/7] ARM: at91/dt: split sama5d3 lcd pin definitions
+ to match RGB mode configs
+Date: Thu, 19 Jun 2014 13:42:10 +0200
+Message-ID: <53A2CC92.6050508@free-electrons.com>
+References: <1402329860-27520-1-git-send-email-boris.brezillon@free-electrons.com> <1402329860-27520-5-git-send-email-boris.brezillon@free-electrons.com> <53A28C2C.1010001@atmel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from gw-1.arm.linux.org.uk ([78.32.30.217]:35342 "EHLO
-	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1757273AbaFSLdJ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Jun 2014 07:33:09 -0400
-Content-Disposition: inline
-In-Reply-To: <20140619084404.GA26560@lee--X1>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <53A28C2C.1010001@atmel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Bo Shen <voice.shen@atmel.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, David Airlie <airlied@linux.ie>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org, Jean-Jacques Hiblot <jjhiblot@traphandler.com>, linux-doc@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, kernel@stlinux.com, devicetree@vger.kernel.org, srinivas.kandagatla@gmail.com, patrice.chotard@st.com, linux-kernel@vger.kernel.org, ajitpal.singh@st.com, linux-arm-kernel@lists.infradead.org, maxime.coquelin@st.com
 
-On Thu, Jun 19, 2014 at 09:44:04AM +0100, Lee Jones wrote:
-> On Thu, 19 Jun 2014, Thierry Reding wrote:
-> > On Wed, Jun 18, 2014 at 03:52:51PM +0100, Lee Jones wrote:
-> > > +#include <linux/clk.h>
-> > > +#include <linux/math64.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/of.h>
-> > > +#include <linux/platform_device.h>
-> > > +#include <linux/pwm.h>
-> > > +#include <linux/regmap.h>
-> > > +#include <linux/slab.h>
-> > > +#include <linux/mfd/syscon.h>
-> > > +#include <linux/time.h>
-> > 
-> > These should be sorted alphabetically.
-> 
-> Really? :)
 
-Yes, as a general rule, for two reasons:
+On 19/06/2014 09:07, Bo Shen wrote:
+> Hi Boris,
+>
+> On 06/10/2014 12:04 AM, Boris BREZILLON wrote:
+>> The HLCDC (High LCD Controller) IP supports 4 different output mode
+>> (RGB444, RGB565, RGB666 and RGB888) and the pin muxing depends on the
+>> chosen RGB mode.
+>>
+>> Split the pin definition to be able to set the pin config according
+>> to the
+>> selected mode.
+>>
+>> Signed-off-by: Boris BREZILLON <boris.brezillon@free-electrons.com>
+>> ---
+>>   arch/arm/boot/dts/sama5d3_lcd.dtsi | 127
+>> ++++++++++++++++++++++++++++---------
+>>   1 file changed, 96 insertions(+), 31 deletions(-)
+>
+> On sama5d3xek board, it only works in 24bits output mode. And it
+> depends on the hardware design. So, I think only keep only one pinctrl
+> configuration.
 
-- It helps to reduce conflicts when two people add two different header
-  files at a later date (provided they don't ignore the sorting and add
-  them both at the end of the list.)
+As you pointed out (during our discussion on IRC) sama5d3 SoCs support
+several pin muxing for LCDDAT pins.
+I'll take care to define all these pin mux here and select the
+appropriate ones in sama5d3xdm.dtsi (patch 6) instead of
+sama5d3_lcd.dtsi (patch 5).
 
-- It helps reduce the chance of having the same include listed twice
-  (sometimes silently caused at git merge time) since it means if two
-  people independently add the same include in the same place in the
-  list, git will cope.  Eg, if one adds an include in one random place
-  in the list, and someone else adds the same in another random place in
-  the list, the result will be two includes of the same file.  If they're
-  sufficiently far apart, git will not flag a conflict.
+
+Best Regards,
+
+Boris
 
 -- 
-FTTC broadband for 0.8mile line: now at 9.7Mbps down 460kbps up... slowly
-improving, and getting towards what was expected from it.
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
