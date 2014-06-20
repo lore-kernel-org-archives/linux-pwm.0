@@ -1,164 +1,86 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 6/7] pwm: st: Add new driver for ST's PWM IP
-Date: Sat, 21 Jun 2014 00:27:13 +0200
-Message-ID: <20140620222712.GB29400@mithrandir>
-References: <1403103172-19856-1-git-send-email-lee.jones@linaro.org>
- <1403103172-19856-6-git-send-email-lee.jones@linaro.org>
- <20140618231127.GF26514@mithrandir>
- <20140619084404.GA26560@lee--X1>
- <53A2F342.7030606@st.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/3] pwm: add Rockchip SoC PWM support
+Date: Sat, 21 Jun 2014 00:29:54 +0200
+Message-ID: <20140620222953.GC29400@mithrandir>
+References: <1399504115-16257-1-git-send-email-b.galvani@gmail.com>
+ <1399504115-16257-2-git-send-email-b.galvani@gmail.com>
+ <20140617214253.GA24743@mithrandir>
+ <20140620220034.GA927@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Fba/0zbH8Xs+Fj9o"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="96YOpH+ONegL0A3E"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-we0-f173.google.com ([74.125.82.173]:47304 "EHLO
+	mail-we0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1030220AbaFTW36 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Jun 2014 18:29:58 -0400
 Content-Disposition: inline
-In-Reply-To: <53A2F342.7030606-qxv4g6HH51o@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Ajit Pal <ajitpal.singh-qxv4g6HH51o@public.gmane.org>
-Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org" <kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Maxime COQUELIN <maxime.coquelin-qxv4g6HH51o@public.gmane.org>, Patrice CHOTARD <patrice.chotard-qxv4g6HH51o@public.gmane.org>, "srinivas.kandagatla-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <srinivas.kandagatla-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20140620220034.GA927@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Beniamino Galvani <b.galvani@gmail.com>
+Cc: Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
 
 
---Fba/0zbH8Xs+Fj9o
+--96YOpH+ONegL0A3E
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 19, 2014 at 07:57:14PM +0530, Ajit Pal wrote:
-> On Thursday 19 June 2014 02:14 PM, Lee Jones wrote:
-> >On Thu, 19 Jun 2014, Thierry Reding wrote:
-> >>On Wed, Jun 18, 2014 at 03:52:51PM +0100, Lee Jones wrote:
+On Sat, Jun 21, 2014 at 12:00:36AM +0200, Beniamino Galvani wrote:
+> On Tue, Jun 17, 2014 at 11:42:58PM +0200, Thierry Reding wrote:
+> > On Thu, May 08, 2014 at 01:08:33AM +0200, Beniamino Galvani wrote:
 [...]
-> >>>+                   cdata->max_prescale + 1, sizeof(unsigned long),
-> >>>+                   st_pwm_cmp_periods);
-> >>>+   if (!found) {
-> >>>+           dev_err(dev, "failed to find matching period\n");
-> >>>+           return -EINVAL;
-> >>>+   }
-> >>>+
-> >>>+   prescale =3D found - &pc->pwm_periods[0];
-> >>
-> >>This is somewhat unconventional. None of the other drivers precompute
-> >>possible periods and I'm not convinced that it's an advantage. Setting
-> >>the period (and configuring the PWM in general) is a fairly uncommon
-> >>operation.
-> >
-> >Another one for Ajit I feel.
+> > > diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+[...]
+> > > +static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_dev=
+ice *pwm,
+> > > +			       int duty_ns, int period_ns)
+> > > +{
+> > > +	struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
+> > > +	unsigned long clk_rate, period, duty;
+> > > +	u64 div;
+> > > +	int ret;
+> > > +
+> > > +	clk_rate =3D clk_get_rate(pc->clk);
+> > > +
+> > > +	/*
+> > > +	 * Since period and duty cycle registers have a width of 32
+> > > +	 * bits, every possible input period can be obtained using the
+> > > +	 * default prescaler value for all practical clock rate values.
+> > > +	 */
+> > > +	div =3D clk_rate;
+> > > +	div *=3D period_ns;
+> >=20
+> > Perhaps shorten this to "div =3D clk_rate * period_ns;"?
 >=20
-> For ST PWM IP, the PWM period is fixed to 256 local clock pulses.There is=
- no
-> register interface to select PWM periods.To change the period we have to
-> change the prescaler.
-> We precompute the possible periods, so as to avoid the calculations
-> everytime the .config function is called. Based upon a matching period we
-> then select the prescaler.
-> Sorry but why do you think precomputing is not helpful ?
+> I will change this, adding a cast to avoid the truncation of the
+> result to 32 bits: "div =3D (u64)clk_rate * period_ns;"
 
-Mostly I dislike it here because it sticks out as nobody else is doing
-it. Secondly I'm not convinced that it gives you much of a performance
-gain since the computations aren't that involved and typically the
-period isn't changed all that often.
-
-Also computing the value directly in .config() makes the code much
-easier to follow.
-
-> >>>+static int st_pwm_enable(struct pwm_chip *chip, struct pwm_device *pw=
-m)
-> >>>+{
-> >>>+   struct st_pwm_chip *pc =3D to_st_pwmchip(chip);
-> >>>+   struct device *dev =3D pc->dev;
-> >>>+   int ret;
-> >>>+
-> >>>+   ret =3D clk_enable(pc->clk);
-> >>>+   if (ret)
-> >>>+           return ret;
-> >>>+
-> >>>+   ret =3D regmap_field_write(pc->pwm_en, 1);
-> >>>+   if (ret)
-> >>>+           dev_err(dev, "%s,pwm_en write failed\n", __func__);
->=20
-> >>
-> >>This error message is somewhat cryptic, perhaps:
-> >>
-> >>       "failed to enable PWM"
-> >
-> >Agreed.  I also can't believe I missed that nasty __func__ too.
-> >
-> >>? Also what implications does this have on controllers with multiple
-> >>channels?
-> >
-> >I believe this enables both channels, but I'm sure Ajit will correct
-> >me if I'm wrong.
->=20
-> Yes it enables all channels.Unfortunately we do not have the facility to
-> enable/disable individual channels on the ST PWM IP.
-
-That's bad. If you can't control them separately then there's no way you
-can guarantee the semantics of the PWM framework.
-
-> >>>+   dev_dbg(dev, "pwm counter :%u\n", val);
-> >>>+
-> >>>+   clk_disable(pc->clk);
-> >>>+}
-> >>>+
-> >>>+static const struct pwm_ops st_pwm_ops =3D {
-> >>>+   .config =3D st_pwm_config,
-> >>>+   .enable =3D st_pwm_enable,
-> >>>+   .disable =3D st_pwm_disable,
-> >>>+   .owner =3D THIS_MODULE,
-> >>>+};
-> >>>+
-> >>>+static int st_pwm_probe_dt(struct st_pwm_chip *pc)
-> >>>+{
-> >>>+   struct device *dev =3D pc->dev;
-> >>>+   const struct reg_field *reg_fields;
-> >>>+   struct device_node *np =3D dev->of_node;
-> >>>+   struct st_pwm_compat_data *cdata =3D pc->cdata;
-> >>>+   u32 num_chan;
-> >>>+
-> >>>+   of_property_read_u32(np, "st,pwm-num-chan", &num_chan);
-> >>>+   if (num_chan)
-> >>>+           cdata->num_chan =3D num_chan;
-> >>
-> >>I don't like this very much. What influences the number of channels? Is
-> >>it that specific SoC revisions have one and others have two?
-> >
-> >Ajit?
-> >
-> Depends on the board type on which the SoC is used.
-
-I don't understand. How can the board influence the number of PWM
-channels that the SoC supports? It does make sense for a board to define
-how many of them are actually *used*, but that's nothing that DT should
-contain nor that the driver should care about. The driver (and DT for
-that matter) should expose the hardware block's full capabilities. The
-use-case is what should determine what's used and what not.
+Alternatively you could simply make clk_rate a u64 since it's only used
+in this context anyway.
 
 Thierry
 
---Fba/0zbH8Xs+Fj9o
+--96YOpH+ONegL0A3E
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJTpLVAAAoJEN0jrNd/PrOhxo8P/2NPA4B7hscu4BkkbyMkVUYu
-lZlU4XCZx5r2SMg6i+GKHrJPr/P51g3g5t7B7mTmSTz42HIWc+zHheaYqMr9ABU+
-jR27jQlt697tLX7IeRsKAAIJkH2OR8LsSwy00NxpdPBufQjM1slWBCgzymKcTd4O
-JE2GO0CIerUl375GX/CR8lnjHXe3LWfQ5F7OYYlRi8N1EowV7CjvWKqwDicBa+ii
-vA4ZIGkhnrHl4avRTDAOLF85pg5cf5sMLrm5Coe+MoHucoHVvD/Gz9U3rrUdETK9
-r3n59o1noDifzxPd9epznPjS4uas2ROtoQuUfEzIxnGOdNm6UtI5N6nhksivtD/d
-DGae3rgDR9DgAsqTgBiAXL32IwFTGXzK5LRvzVQIHEjtL12Eivgd/zZYnlWHsJGK
-2tcwRFaKuuMY8dqVPnaBGi3LMOFYoDq01Gp+GUMvea6xrry0R3Ph5ArCDKhcW0OV
-dB6Osf1y9zemKuZaLb5t/AjkFOu+caf1cfZXRepIvkcOxMHQsa8yR6em/tnX6vYn
-implY79FOS2yOZk55OEQ20nQBlGp93jXon66qm6QZ5Tbyqnag0FKPiI20aHRVZJm
-BRRW3X87vmKbukj7H4KPG9j7p4R0x8UbLGyARBfUWyRCtlXtDw6SAB0BmpIFL8EC
-vBQeyN6E7slGtf7GbvZ7
-=3bAs
+iQIcBAEBAgAGBQJTpLXhAAoJEN0jrNd/PrOhZQwP/AmbUmZ4KPGzknYJlVMGra0p
+DeDeyOwKxZ0pU+zfOEFNRLJJ/Y4eI6mhzCTPPU8O6HR/Qgf+n8PoULXvl9hgOhow
+p9eiqEldDzMWM0YxJCBvyosxJ+kpEp2uuYX2jpJoWOIdYS204RrpkY+jMtLcdp9N
+5EHx04+23Fqm1MvGvM3/uGVDsvDxYsWK44uvdMJ/gtKfWdLemCivXq5NDZnpJDiv
+oGRaJ6uJJcLgWYDcB1ns5VjyeXD6MbE94OIzWQ/g9pYcFO9I8YMeY36xV2JEVxDA
+OGY3kjc3MiwG2kHOaU+pmeWYLFb+QueOISLN7g6oEKM48igT78UW2JwF+RTPAC3Z
+aSUxfWBu7JTwke6fQ5q+CjDhM+9ZVU99+DXj2TEY/F0oO0Dml2V2IjNGWg7A601+
+s+2GJT/HXEM4VWahy79rOC3iUaFkCpaf1FlhdcuQqC9aSdHqvsV2zWbXBx2fo8r5
+Xe0ZPDpt6nHiTZRz+ETWNnjGMroTKRmsRDQSORtwCeIW47pA55W8X98X+FJNeAew
+C2N8ZnjmHBtF6i2/2faVqpnwAyu+ZdW9tLKdzckLoqItv3s1lHgMb8tdMaw6zFtx
+wH7kchqGsfEPV8/B/LFc3PsMO7cioF5/i0RqQ9V3uYkBp/4Pj30Z9YlrY87lfp1c
+jvn8wMBv/a+vw3oXgaaR
+=D5LL
 -----END PGP SIGNATURE-----
 
---Fba/0zbH8Xs+Fj9o--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--96YOpH+ONegL0A3E--
