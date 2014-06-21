@@ -1,86 +1,52 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/3] pwm: add Rockchip SoC PWM support
-Date: Sat, 21 Jun 2014 00:29:54 +0200
-Message-ID: <20140620222953.GC29400@mithrandir>
-References: <1399504115-16257-1-git-send-email-b.galvani@gmail.com>
- <1399504115-16257-2-git-send-email-b.galvani@gmail.com>
- <20140617214253.GA24743@mithrandir>
- <20140620220034.GA927@gmail.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="96YOpH+ONegL0A3E"
+From: Beniamino Galvani <b.galvani@gmail.com>
+Subject: [PATCH v2 0/3] Add Rockchip Soc PWM driver
+Date: Sat, 21 Jun 2014 16:22:05 +0200
+Message-ID: <1403360528-12757-1-git-send-email-b.galvani@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-we0-f173.google.com ([74.125.82.173]:47304 "EHLO
+Received: from mail-we0-f173.google.com ([74.125.82.173]:43495 "EHLO
 	mail-we0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1030220AbaFTW36 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Jun 2014 18:29:58 -0400
-Content-Disposition: inline
-In-Reply-To: <20140620220034.GA927@gmail.com>
+	with ESMTP id S1752371AbaFUOXm (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sat, 21 Jun 2014 10:23:42 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Beniamino Galvani <b.galvani@gmail.com>
-Cc: Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, Beniamino Galvani <b.galvani@gmail.com>
 
+This series adds support for the PWM controller found on Rockchip
+RK29, RK30 and RK31 SoCs. It is based on the documentation publicly
+available [0] and kernel sources from Rockchip [1] and has been tested
+on RK3188.
 
---96YOpH+ONegL0A3E
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The last patch, which adds device tree nodes in the dts, depends on
+the clocks introduced by Heiko in his recent submission of a new clk
+driver for Rockchip RK3188.
 
-On Sat, Jun 21, 2014 at 12:00:36AM +0200, Beniamino Galvani wrote:
-> On Tue, Jun 17, 2014 at 11:42:58PM +0200, Thierry Reding wrote:
-> > On Thu, May 08, 2014 at 01:08:33AM +0200, Beniamino Galvani wrote:
-[...]
-> > > diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-[...]
-> > > +static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_dev=
-ice *pwm,
-> > > +			       int duty_ns, int period_ns)
-> > > +{
-> > > +	struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
-> > > +	unsigned long clk_rate, period, duty;
-> > > +	u64 div;
-> > > +	int ret;
-> > > +
-> > > +	clk_rate =3D clk_get_rate(pc->clk);
-> > > +
-> > > +	/*
-> > > +	 * Since period and duty cycle registers have a width of 32
-> > > +	 * bits, every possible input period can be obtained using the
-> > > +	 * default prescaler value for all practical clock rate values.
-> > > +	 */
-> > > +	div =3D clk_rate;
-> > > +	div *=3D period_ns;
-> >=20
-> > Perhaps shorten this to "div =3D clk_rate * period_ns;"?
->=20
-> I will change this, adding a cast to avoid the truncation of the
-> result to 32 bits: "div =3D (u64)clk_rate * period_ns;"
+[0] http://dl.radxa.com/rock/docs/hw/ds/Rockchip%20RK30xx%20TRM%20V2.0.pdf
+[1] https://github.com/rkchrome/kernel
 
-Alternatively you could simply make clk_rate a u64 since it's only used
-in this context anyway.
+Changes in v2:
+  * address comments from Thierry Reding:
+    - remove dependency on OF
+    - use NSEC_PER_SEC from time.h
+    - fix MODULE_DEVICE_TABLE name
+    - make pwm_ops struct const
+    - indentation and cosmetics
 
-Thierry
+Beniamino Galvani (3):
+  pwm: add Rockchip SoC PWM support
+  pwm: rockchip: document device tree bindings
+  ARM: dts: rk3xxx: add PWM nodes
 
---96YOpH+ONegL0A3E
-Content-Type: application/pgp-signature
+ .../devicetree/bindings/pwm/pwm-rockchip.txt       |   17 ++
+ arch/arm/boot/dts/rk3188.dtsi                      |   40 +++++
+ arch/arm/boot/dts/rk3xxx.dtsi                      |   32 ++++
+ drivers/pwm/Kconfig                                |    7 +
+ drivers/pwm/Makefile                               |    1 +
+ drivers/pwm/pwm-rockchip.c                         |  177 ++++++++++++++++++++
+ 6 files changed, 274 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
+ create mode 100644 drivers/pwm/pwm-rockchip.c
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+-- 
+1.7.10.4
 
-iQIcBAEBAgAGBQJTpLXhAAoJEN0jrNd/PrOhZQwP/AmbUmZ4KPGzknYJlVMGra0p
-DeDeyOwKxZ0pU+zfOEFNRLJJ/Y4eI6mhzCTPPU8O6HR/Qgf+n8PoULXvl9hgOhow
-p9eiqEldDzMWM0YxJCBvyosxJ+kpEp2uuYX2jpJoWOIdYS204RrpkY+jMtLcdp9N
-5EHx04+23Fqm1MvGvM3/uGVDsvDxYsWK44uvdMJ/gtKfWdLemCivXq5NDZnpJDiv
-oGRaJ6uJJcLgWYDcB1ns5VjyeXD6MbE94OIzWQ/g9pYcFO9I8YMeY36xV2JEVxDA
-OGY3kjc3MiwG2kHOaU+pmeWYLFb+QueOISLN7g6oEKM48igT78UW2JwF+RTPAC3Z
-aSUxfWBu7JTwke6fQ5q+CjDhM+9ZVU99+DXj2TEY/F0oO0Dml2V2IjNGWg7A601+
-s+2GJT/HXEM4VWahy79rOC3iUaFkCpaf1FlhdcuQqC9aSdHqvsV2zWbXBx2fo8r5
-Xe0ZPDpt6nHiTZRz+ETWNnjGMroTKRmsRDQSORtwCeIW47pA55W8X98X+FJNeAew
-C2N8ZnjmHBtF6i2/2faVqpnwAyu+ZdW9tLKdzckLoqItv3s1lHgMb8tdMaw6zFtx
-wH7kchqGsfEPV8/B/LFc3PsMO7cioF5/i0RqQ9V3uYkBp/4Pj30Z9YlrY87lfp1c
-jvn8wMBv/a+vw3oXgaaR
-=D5LL
------END PGP SIGNATURE-----
-
---96YOpH+ONegL0A3E--
