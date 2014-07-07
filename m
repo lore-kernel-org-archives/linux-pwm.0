@@ -1,18 +1,18 @@
 From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: [PATCH v3 01/11] mfd: add atmel-hlcdc driver
-Date: Mon,  7 Jul 2014 16:51:01 +0200
-Message-ID: <1404744671-1629-2-git-send-email-boris.brezillon@free-electrons.com>
-References: <1404744671-1629-1-git-send-email-boris.brezillon@free-electrons.com>
+Subject: [RESEND PATCH v3 01/11] mfd: add atmel-hlcdc driver
+Date: Mon,  7 Jul 2014 18:42:54 +0200
+Message-ID: <1404751384-5077-2-git-send-email-boris.brezillon@free-electrons.com>
+References: <1404751384-5077-1-git-send-email-boris.brezillon@free-electrons.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:57622 "EHLO
+Received: from top.free-electrons.com ([176.31.233.9]:58912 "EHLO
 	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753032AbaGGOvb (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Jul 2014 10:51:31 -0400
-In-Reply-To: <1404744671-1629-1-git-send-email-boris.brezillon@free-electrons.com>
+	with ESMTP id S1751224AbaGGQnL (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Jul 2014 12:43:11 -0400
+In-Reply-To: <1404751384-5077-1-git-send-email-boris.brezillon@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>
-Cc: Jean-Jacques Hiblot <jjhiblot@traphandler.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, Bo Shen <voice.shen@atmel.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>
+Cc: Jean-Jacques Hiblot <jjhiblot@traphandler.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, Bo Shen <voice.shen@atmel.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Robert Nelson <robertcnelson@gmail.com>, Tim Niemeyer <tim.niemeyer@corscience.de>, Boris BREZILLON <boris.brezillon@free-electrons.com>
 
 The HLCDC IP available on some Atmel SoCs (i.e. at91sam9n12, at91sam9x5
 family or sama5d3 family) exposes 2 subdevices:
