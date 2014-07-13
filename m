@@ -1,45 +1,31 @@
-From: Chen Gang <gang.chen.5i5j@gmail.com>
-Subject: [PATCH] drivers/pwm/Kconfig: Let PWM_CLPS711X depend on HAS_IOMEM
-Date: Sun, 13 Jul 2014 19:49:27 +0800
-Message-ID: <53C27247.2010300@gmail.com>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+Date: Sun, 13 Jul 2014 15:26:08 +0200
+Message-ID: <53C288F0.3070001@metafoo.de>
+References: <53C1F7DE.3060102@gmail.com>	<201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f42.google.com ([209.85.220.42]:62031 "EHLO
-	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751358AbaGMLt3 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sun, 13 Jul 2014 07:49:29 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-input-owner@vger.kernel.org>
+In-Reply-To: <53C25551.1050909@nod.at>
+Sender: linux-input-owner@vger.kernel.org
+To: Richard Weinberger <richard@nod.at>
+Cc: Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>, Chen Gang <gang.chen.5i5j@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dmitry.torokhov@gmail.com, thierry.reding@gmail.com, jic23@kernel.org, wim@iguana.be, Benjamin Herrenschmidt <benh@kernel.crashing.org>, kys@microsoft.com, Martin Schwidefsky <schwidefsky@de.ibm.com>, teg@jklm.no, Mischa.Jonker@synopsys.com, msalter@redhat.com, knaack.h@gmx.de, rdunlap@infradead.org, linux-input@vger.kernel.org, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org, Liqin Chen <liqin.linux@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Richard Weinberger <richard@nod.at>, Liqin Chen <liqin.linux@gmail.com>, Lennox Wu <lennox.wu@gmail.com>
 
-PWM_CLPS711X needs HAS_IOMEM, so let it depend on HAS_IOMEM.
+On 07/13/2014 11:45 AM, Richard Weinberger wrote:
+> Am 13.07.2014 11:27, schrieb Lennox Wu:
+>> As I said before, some configurations don't make sense.
+>
+> If such a configuration can be achieved using allmod/yesconfig it has to be fixed.
+> Chen's fixes seem reasonable as not all architectures support iomem.
 
-The related error (with allmodconfig under score):
+Maybe we should stub out ioremap() and friends when COMPILE_TEST is enabled to 
+avoid these linker errors. That's in my opinion better than turning most of the 
+'depends on COMPILE_TEST' into 'depends on COMPILE_TEST && HAS_IOMEM'. The 
+issue comes up quite a lot and it is often overlooked when adding a driver that 
+can be build when COMPILE_TEST is enabled.
 
-    MODPOST 1365 modules
-  ERROR: "devm_ioremap_resource" [drivers/pwm/pwm-clps711x.ko] undefined!
+- Lars
 
-
-Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
----
- drivers/pwm/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 4ad7b89..2faf5ce 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -82,7 +82,7 @@ config PWM_BFIN
- 
- config PWM_CLPS711X
- 	tristate "CLPS711X PWM support"
--	depends on ARCH_CLPS711X || COMPILE_TEST
-+	depends on (ARCH_CLPS711X || COMPILE_TEST) && HAS_IOMEM
- 	help
- 	  Generic PWM framework driver for Cirrus Logic CLPS711X.
- 
--- 
-1.7.11.7
