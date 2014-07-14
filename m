@@ -1,58 +1,105 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v2 00/11] pwm: Introduce ST's PWM driver
-Date: Mon, 14 Jul 2014 15:33:21 +0100
-Message-ID: <1405348412-7352-1-git-send-email-lee.jones@linaro.org>
+Subject: [PATCH v2 02/11] ARM: stih416: Add Pinctrl settings for PWM
+Date: Mon, 14 Jul 2014 15:33:23 +0100
+Message-ID: <1405348412-7352-3-git-send-email-lee.jones@linaro.org>
+References: <1405348412-7352-1-git-send-email-lee.jones@linaro.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ie0-f172.google.com ([209.85.223.172]:33229 "EHLO
-	mail-ie0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755441AbaGNOdn (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Jul 2014 10:33:43 -0400
-Received: by mail-ie0-f172.google.com with SMTP id lx4so1255023iec.3
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Jul 2014 07:33:42 -0700 (PDT)
+Received: from mail-ig0-f182.google.com ([209.85.213.182]:45825 "EHLO
+	mail-ig0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755669AbaGNOdt (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Jul 2014 10:33:49 -0400
+Received: by mail-ig0-f182.google.com with SMTP id c1so1782430igq.9
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Jul 2014 07:33:47 -0700 (PDT)
+In-Reply-To: <1405348412-7352-1-git-send-email-lee.jones@linaro.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: lee.jones@linaro.org, kernel@stlinux.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, ajitpal.singh@st.com
 
-Hi Thierry,
+Supply the Pinctrl configuration to enable PWM{0,1} lines on STiH416
+based development boards.
 
-I'm pretty sure all of your review comments have been tended to
-now.  Some have been fixed-up by myself and re-rolled into the
-original set.  The larger changes have been fixed as subsequent
-patches for ease of review and history tracking on the internal
-kernel.
+Signed-off-by: Ajit Pal Singh <ajitpal.singh@st.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ arch/arm/boot/dts/stih416-pinctrl.dtsi | 50 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
-Kind regards,
-Lee
-
-Ajit Pal Singh (4):
-  pwm: st: Fix PWM prescaler handling
-  pwm: sti: Ensure same period values for all channels
-  pwm: sti: Sync between enable/disable calls
-  pwm: sti: Remove PWM period table
-
-Lee Jones (7):
-  ARM: stih407: Add DT nodes for for PWM
-  ARM: stih416: Add Pinctrl settings for PWM
-  ARM: stih416: Add DT nodes for PWM
-  ARM: stih416-b2020e: Enable PWM on the B2020 Rev-E
-  ARM: multi_v7_defconfig: Enable ST's PWM driver
-  pwm: sti: Add new driver for ST's PWM IP
-  pwm: sti: Supply Device Tree binding documentation for ST's PWM IP
-
- Documentation/devicetree/bindings/pwm/pwm-st.txt |  41 +++
- arch/arm/boot/dts/stih407.dtsi                   |  28 ++
- arch/arm/boot/dts/stih416-b2020e.dts             |  10 +
- arch/arm/boot/dts/stih416-pinctrl.dtsi           |  50 +++
- arch/arm/boot/dts/stih416.dtsi                   |  44 ++-
- arch/arm/configs/multi_v7_defconfig              |   1 +
- drivers/pwm/Kconfig                              |  10 +
- drivers/pwm/Makefile                             |   1 +
- drivers/pwm/pwm-sti.c                            | 418 +++++++++++++++++++++++
- 9 files changed, 602 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-st.txt
- create mode 100644 drivers/pwm/pwm-sti.c
-
+diff --git a/arch/arm/boot/dts/stih416-pinctrl.dtsi b/arch/arm/boot/dts/stih416-pinctrl.dtsi
+index ee6c119..04e61d6 100644
+--- a/arch/arm/boot/dts/stih416-pinctrl.dtsi
++++ b/arch/arm/boot/dts/stih416-pinctrl.dtsi
+@@ -207,6 +207,29 @@
+ 					};
+ 				};
+ 			};
++
++			pwm1 {
++				pinctrl_pwm1_chan0_default: pwm1-0-default {
++					st,pins {
++						pwm-out    = <&PIO3 0 ALT1 OUT>;
++					};
++				};
++				pinctrl_pwm1_chan1_default: pwm1-1-default {
++					st,pins {
++						pwm-out    = <&PIO4 4 ALT1 OUT>;
++					};
++				};
++				pinctrl_pwm1_chan2_default: pwm1-2-default {
++					st,pins {
++						pwm-out    = <&PIO4 6 ALT3 OUT>;
++					};
++				};
++				pinctrl_pwm1_chan3_default: pwm1-3-default {
++					st,pins {
++						pwm-out    = <&PIO4 7 ALT3 OUT>;
++					};
++				};
++			};
+ 		};
+ 
+ 		pin-controller-front {
+@@ -301,6 +324,14 @@
+ 				st,bank-name	= "PIO31";
+ 			};
+ 
++			pwm0 {
++				pinctrl_pwm0_chan0_default: pwm0-0-default {
++					st,pins {
++						pwm-out    = <&PIO9 7 ALT2 OUT>;
++					};
++				};
++			};
++
+ 			serial2-oe {
+ 				pinctrl_serial2_oe: serial2-1 {
+ 					st,pins {
+@@ -467,6 +498,25 @@
+ 					};
+ 				};
+ 			};
++
++			pwm0 {
++				pinctrl_pwm0_chan1_default: pwm0-1-default {
++					st,pins {
++						pwm-out    = <&PIO13 2 ALT2 OUT>;
++					};
++				};
++				pinctrl_pwm0_chan2_default: pwm0-2-default {
++					st,pins {
++						pwm-out    = <&PIO15 2 ALT4 OUT>;
++					};
++				};
++				pinctrl_pwm0_chan3_default: pwm0-3-default {
++					st,pins {
++						pwm-out    = <&PIO17 4 ALT1 OUT>;
++					};
++				};
++			};
++
+ 		};
+ 
+ 		pin-controller-fvdp-fe {
 -- 
 1.8.3.2
 
