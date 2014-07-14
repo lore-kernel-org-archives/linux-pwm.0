@@ -1,105 +1,91 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v2 02/11] ARM: stih416: Add Pinctrl settings for PWM
-Date: Mon, 14 Jul 2014 15:33:23 +0100
-Message-ID: <1405348412-7352-3-git-send-email-lee.jones@linaro.org>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v2 03/11] ARM: stih416: Add DT nodes for PWM
+Date: Mon, 14 Jul 2014 15:33:24 +0100
+Message-ID: <1405348412-7352-4-git-send-email-lee.jones@linaro.org>
 References: <1405348412-7352-1-git-send-email-lee.jones@linaro.org>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ig0-f182.google.com ([209.85.213.182]:45825 "EHLO
-	mail-ig0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755669AbaGNOdt (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Jul 2014 10:33:49 -0400
-Received: by mail-ig0-f182.google.com with SMTP id c1so1782430igq.9
-        for <linux-pwm@vger.kernel.org>; Mon, 14 Jul 2014 07:33:47 -0700 (PDT)
-In-Reply-To: <1405348412-7352-1-git-send-email-lee.jones@linaro.org>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1405348412-7352-1-git-send-email-lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ajitpal.singh-qxv4g6HH51o@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: lee.jones@linaro.org, kernel@stlinux.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, ajitpal.singh@st.com
 
-Supply the Pinctrl configuration to enable PWM{0,1} lines on STiH416
-based development boards.
+Supply top level nodes for the STiH416 based development boards.
+The Pinctrl configuration has already been applied, so the only
+missing piece of the DT puzzle is for a board's DTB to enable
+the nodes.
 
-Signed-off-by: Ajit Pal Singh <ajitpal.singh@st.com>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Ajit Pal Singh <ajitpal.singh-qxv4g6HH51o@public.gmane.org>
+Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 ---
- arch/arm/boot/dts/stih416-pinctrl.dtsi | 50 ++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+ arch/arm/boot/dts/stih416.dtsi | 44 +++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 43 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/stih416-pinctrl.dtsi b/arch/arm/boot/dts/stih416-pinctrl.dtsi
-index ee6c119..04e61d6 100644
---- a/arch/arm/boot/dts/stih416-pinctrl.dtsi
-+++ b/arch/arm/boot/dts/stih416-pinctrl.dtsi
-@@ -207,6 +207,29 @@
- 					};
- 				};
- 			};
-+
-+			pwm1 {
-+				pinctrl_pwm1_chan0_default: pwm1-0-default {
-+					st,pins {
-+						pwm-out    = <&PIO3 0 ALT1 OUT>;
-+					};
-+				};
-+				pinctrl_pwm1_chan1_default: pwm1-1-default {
-+					st,pins {
-+						pwm-out    = <&PIO4 4 ALT1 OUT>;
-+					};
-+				};
-+				pinctrl_pwm1_chan2_default: pwm1-2-default {
-+					st,pins {
-+						pwm-out    = <&PIO4 6 ALT3 OUT>;
-+					};
-+				};
-+				pinctrl_pwm1_chan3_default: pwm1-3-default {
-+					st,pins {
-+						pwm-out    = <&PIO4 7 ALT3 OUT>;
-+					};
-+				};
-+			};
+diff --git a/arch/arm/boot/dts/stih416.dtsi b/arch/arm/boot/dts/stih416.dtsi
+index 84758d7..c28ef85 100644
+--- a/arch/arm/boot/dts/stih416.dtsi
++++ b/arch/arm/boot/dts/stih416.dtsi
+@@ -102,7 +102,7 @@
+ 			interrupts	= <0 210 0>;
+ 			pinctrl-names 	= "default";
+ 			pinctrl-0 	= <&pinctrl_sbc_serial1>;
+-			clocks          = <&clk_sysin>;
++			clocks		= <&clk_sysin>;
  		};
  
- 		pin-controller-front {
-@@ -301,6 +324,14 @@
- 				st,bank-name	= "PIO31";
- 			};
- 
-+			pwm0 {
-+				pinctrl_pwm0_chan0_default: pwm0-0-default {
-+					st,pins {
-+						pwm-out    = <&PIO9 7 ALT2 OUT>;
-+					};
-+				};
-+			};
-+
- 			serial2-oe {
- 				pinctrl_serial2_oe: serial2-1 {
- 					st,pins {
-@@ -467,6 +498,25 @@
- 					};
- 				};
- 			};
-+
-+			pwm0 {
-+				pinctrl_pwm0_chan1_default: pwm0-1-default {
-+					st,pins {
-+						pwm-out    = <&PIO13 2 ALT2 OUT>;
-+					};
-+				};
-+				pinctrl_pwm0_chan2_default: pwm0-2-default {
-+					st,pins {
-+						pwm-out    = <&PIO15 2 ALT4 OUT>;
-+					};
-+				};
-+				pinctrl_pwm0_chan3_default: pwm0-3-default {
-+					st,pins {
-+						pwm-out    = <&PIO17 4 ALT1 OUT>;
-+					};
-+				};
-+			};
-+
+ 		i2c@fed40000 {
+@@ -236,5 +236,47 @@
+ 			resets	= <&powerdown STIH416_KEYSCAN_POWERDOWN>,
+ 				  <&softreset STIH416_KEYSCAN_SOFTRESET>;
  		};
- 
- 		pin-controller-fvdp-fe {
++
++		/* SAS PWM Module */
++		pwm0: pwm@fed10000 {
++			compatible	= "st,sti-pwm";
++			status		= "disabled";
++			#pwm-cells	= <2>;
++			reg		= <0xfed10000 0x68>;
++
++			pinctrl-names	= "default";
++			pinctrl-0 = 	<&pinctrl_pwm0_chan0_default
++					&pinctrl_pwm0_chan1_default
++					&pinctrl_pwm0_chan2_default
++					&pinctrl_pwm0_chan3_default>;
++
++			clock-names	= "pwm";
++			clocks		= <&clk_sysin>;
++			st,pwm-num-chan = <4>;
++		};
++
++		/* SBC PWM Module */
++		pwm1: pwm@fe510000 {
++			compatible	= "st,sti-pwm";
++			status		= "disabled";
++			#pwm-cells	= <2>;
++			reg		= <0xfe510000 0x68>;
++
++			pinctrl-names	= "default";
++			pinctrl-0	= <&pinctrl_pwm1_chan0_default
++					/*
++					 * Shared with SBC_OBS_NOTRST.  Don't
++					 * enable unless you really know what
++					 * you're doing.
++					 *
++					 * &pinctrl_pwm1_chan1_default
++					 */
++					&pinctrl_pwm1_chan2_default
++					&pinctrl_pwm1_chan3_default>;
++
++			clock-names	= "pwm";
++			clocks		= <&clk_sysin>;
++			st,pwm-num-chan = <3>;
++		};
+ 	};
+ };
 -- 
 1.8.3.2
 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
