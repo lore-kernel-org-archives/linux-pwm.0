@@ -1,50 +1,58 @@
-From: Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>
-Subject: Re: [PATCH v2] hwmon: pwm-fan: Add pwm-fan driver
-Date: Mon, 14 Jul 2014 16:25:25 +0200
-Message-ID: <20140714142525.GB7668@distanz.ch>
-References: <1405345835-17089-1-git-send-email-k.debski@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1405345835-17089-1-git-send-email-k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Kamil Debski <k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lm-sensors-GZX6beZjE8VD60Wz+7aTrA@public.gmane.org, t.figa-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH v2 00/11] pwm: Introduce ST's PWM driver
+Date: Mon, 14 Jul 2014 15:33:21 +0100
+Message-ID: <1405348412-7352-1-git-send-email-lee.jones@linaro.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ie0-f172.google.com ([209.85.223.172]:33229 "EHLO
+	mail-ie0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755441AbaGNOdn (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Jul 2014 10:33:43 -0400
+Received: by mail-ie0-f172.google.com with SMTP id lx4so1255023iec.3
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Jul 2014 07:33:42 -0700 (PDT)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, kernel@stlinux.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, ajitpal.singh@st.com
 
-On 2014-07-14 at 15:50:35 +0200, Kamil Debski <k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
-> The pwm-fan driver enables control of fans connected to PWM lines.
-> This driver uses the PWM framework, so it is compatible with all
-> PWM devices that provide drivers through the PWM framework.
-> 
-> Signed-off-by: Kamil Debski <k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> ---
-> Changes since v1:
-> - added documentation to Documentation/hwmon
-> - fix checkpatch errors
-> 	- added extra description to Kconfig
-> 	- removed whitespace errors
-> - include files rearranged to be in alphabetical order
-> - remove unused sysfs entry pwm1_enable
-> - changed the behavior of the set_pwm function
-> 	- when 0 PWM value is set pwm_disable is run
-> 	- pwm_config return value is checked for errors
-> - use of ATTRIBUTE_GROUPS was added
-> - removed "Not enouch memory" error message
-> - fixed probe return value in case of devm_of_pwm_get error
-> - changed hwmon_device_register_with_groups to
->   devm_hwmon_device_register_with_groups
-> - changes suspend/resume to use pwm_disable/enable
-> - removed unnecessary CONFIG_PM_SLEEP ifdefs
+Hi Thierry,
 
-pwm_fan_suspend and pwm_fan_resume should still be enclosed in #ifdef
-CONFIG_PM_SLEEP, otherwise you'll get 'defined but not used' compiler
-warnings when building without CONFIG_PM being set.
+I'm pretty sure all of your review comments have been tended to
+now.  Some have been fixed-up by myself and re-rolled into the
+original set.  The larger changes have been fixed as subsequent
+patches for ease of review and history tracking on the internal
+kernel.
 
-Cheers
-Tobias
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Kind regards,
+Lee
+
+Ajit Pal Singh (4):
+  pwm: st: Fix PWM prescaler handling
+  pwm: sti: Ensure same period values for all channels
+  pwm: sti: Sync between enable/disable calls
+  pwm: sti: Remove PWM period table
+
+Lee Jones (7):
+  ARM: stih407: Add DT nodes for for PWM
+  ARM: stih416: Add Pinctrl settings for PWM
+  ARM: stih416: Add DT nodes for PWM
+  ARM: stih416-b2020e: Enable PWM on the B2020 Rev-E
+  ARM: multi_v7_defconfig: Enable ST's PWM driver
+  pwm: sti: Add new driver for ST's PWM IP
+  pwm: sti: Supply Device Tree binding documentation for ST's PWM IP
+
+ Documentation/devicetree/bindings/pwm/pwm-st.txt |  41 +++
+ arch/arm/boot/dts/stih407.dtsi                   |  28 ++
+ arch/arm/boot/dts/stih416-b2020e.dts             |  10 +
+ arch/arm/boot/dts/stih416-pinctrl.dtsi           |  50 +++
+ arch/arm/boot/dts/stih416.dtsi                   |  44 ++-
+ arch/arm/configs/multi_v7_defconfig              |   1 +
+ drivers/pwm/Kconfig                              |  10 +
+ drivers/pwm/Makefile                             |   1 +
+ drivers/pwm/pwm-sti.c                            | 418 +++++++++++++++++++++++
+ 9 files changed, 602 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-st.txt
+ create mode 100644 drivers/pwm/pwm-sti.c
+
+-- 
+1.8.3.2
+
