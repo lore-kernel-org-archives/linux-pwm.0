@@ -1,91 +1,70 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v2 03/11] ARM: stih416: Add DT nodes for PWM
-Date: Mon, 14 Jul 2014 15:33:24 +0100
-Message-ID: <1405348412-7352-4-git-send-email-lee.jones@linaro.org>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH v2 01/11] ARM: stih407: Add DT nodes for for PWM
+Date: Mon, 14 Jul 2014 15:33:22 +0100
+Message-ID: <1405348412-7352-2-git-send-email-lee.jones@linaro.org>
 References: <1405348412-7352-1-git-send-email-lee.jones@linaro.org>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1405348412-7352-1-git-send-email-lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ajitpal.singh-qxv4g6HH51o@public.gmane.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ie0-f171.google.com ([209.85.223.171]:64416 "EHLO
+	mail-ie0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755442AbaGNOdq (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Jul 2014 10:33:46 -0400
+Received: by mail-ie0-f171.google.com with SMTP id at1so3343407iec.30
+        for <linux-pwm@vger.kernel.org>; Mon, 14 Jul 2014 07:33:45 -0700 (PDT)
+In-Reply-To: <1405348412-7352-1-git-send-email-lee.jones@linaro.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, kernel@stlinux.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, ajitpal.singh@st.com
 
-Supply top level nodes for the STiH416 based development boards.
+Supply top level nodes for the STiH407 based development boards.
 The Pinctrl configuration has already been applied, so the only
 missing piece of the DT puzzle is for a board's DTB to enable
 the nodes.
 
-Signed-off-by: Ajit Pal Singh <ajitpal.singh-qxv4g6HH51o@public.gmane.org>
-Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Signed-off-by: Ajit Pal Singh <ajitpal.singh@st.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- arch/arm/boot/dts/stih416.dtsi | 44 +++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 43 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/stih407.dtsi | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/arch/arm/boot/dts/stih416.dtsi b/arch/arm/boot/dts/stih416.dtsi
-index 84758d7..c28ef85 100644
---- a/arch/arm/boot/dts/stih416.dtsi
-+++ b/arch/arm/boot/dts/stih416.dtsi
-@@ -102,7 +102,7 @@
- 			interrupts	= <0 210 0>;
- 			pinctrl-names 	= "default";
- 			pinctrl-0 	= <&pinctrl_sbc_serial1>;
--			clocks          = <&clk_sysin>;
-+			clocks		= <&clk_sysin>;
- 		};
+diff --git a/arch/arm/boot/dts/stih407.dtsi b/arch/arm/boot/dts/stih407.dtsi
+index 4f9024f..dc58b34 100644
+--- a/arch/arm/boot/dts/stih407.dtsi
++++ b/arch/arm/boot/dts/stih407.dtsi
+@@ -259,5 +259,33 @@
  
- 		i2c@fed40000 {
-@@ -236,5 +236,47 @@
- 			resets	= <&powerdown STIH416_KEYSCAN_POWERDOWN>,
- 				  <&softreset STIH416_KEYSCAN_SOFTRESET>;
+ 			status = "disabled";
  		};
 +
-+		/* SAS PWM Module */
-+		pwm0: pwm@fed10000 {
++		/* COMMS PWM Module */
++		pwm0: pwm@9810000 {
 +			compatible	= "st,sti-pwm";
 +			status		= "disabled";
 +			#pwm-cells	= <2>;
-+			reg		= <0xfed10000 0x68>;
-+
++			reg		= <0x9810000 0x68>;
 +			pinctrl-names	= "default";
-+			pinctrl-0 = 	<&pinctrl_pwm0_chan0_default
-+					&pinctrl_pwm0_chan1_default
-+					&pinctrl_pwm0_chan2_default
-+					&pinctrl_pwm0_chan3_default>;
-+
++			pinctrl-0	= <&pinctrl_pwm0_chan0_default>;
 +			clock-names	= "pwm";
 +			clocks		= <&clk_sysin>;
-+			st,pwm-num-chan = <4>;
 +		};
 +
 +		/* SBC PWM Module */
-+		pwm1: pwm@fe510000 {
++		pwm1: pwm@9510000 {
 +			compatible	= "st,sti-pwm";
 +			status		= "disabled";
 +			#pwm-cells	= <2>;
-+			reg		= <0xfe510000 0x68>;
-+
++			reg		= <0x9510000 0x68>;
 +			pinctrl-names	= "default";
 +			pinctrl-0	= <&pinctrl_pwm1_chan0_default
-+					/*
-+					 * Shared with SBC_OBS_NOTRST.  Don't
-+					 * enable unless you really know what
-+					 * you're doing.
-+					 *
-+					 * &pinctrl_pwm1_chan1_default
-+					 */
++					&pinctrl_pwm1_chan1_default
 +					&pinctrl_pwm1_chan2_default
 +					&pinctrl_pwm1_chan3_default>;
-+
 +			clock-names	= "pwm";
 +			clocks		= <&clk_sysin>;
-+			st,pwm-num-chan = <3>;
++			st,pwm-num-chan = <4>;
 +		};
  	};
  };
 -- 
 1.8.3.2
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
