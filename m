@@ -1,51 +1,51 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-Date: Mon, 14 Jul 2014 10:57:10 +0200
-Message-ID: <53C39B66.4060500@nod.at>
-References: <201407130545.23004.marex@denx.de>
- <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com>
- <53C25551.1050909@nod.at> <53C288F0.3070001@metafoo.de>
- <53C28C4A.70907@nod.at> <53C29015.5070607@metafoo.de>
- <53C291C8.6050303@nod.at> <53C296C2.30304@metafoo.de>
- <20140713192202.GA19090@kroah.com> <53C2DF12.6040507@nod.at>
- <20140713201753.GA29955@kroah.com> <53C39569.9020802@nod.at>
- <53C3994C.1010309@metafoo.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <53C3994C.1010309@metafoo.de>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: driverdev-devel-bounces@linuxdriverproject.org
-To: Lars-Peter Clausen <lars@metafoo.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Marek Vasut <marex@denx.de>, Liqin Chen <liqin.linux@gmail.com>, devel@driverdev.osuosl.org, Chen Gang <gang.chen.5i5j@gmail.com>, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, dmitry.torokhov@gmail.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, teg@jklm.no, Martin Schwidefsky <schwidefsky@de.ibm.com>, thierry.reding@gmail.com, jic23@kernel.org, msalter@redhat.com, knaack.h@gmx.de, linux-input@vger.kernel.org, Mischa.Jonker@synopsys.com, Lennox Wu <lennox.wu@gmail.com>, linux-watchdog@vger.kernel.org
+From: Chen Gang <gang.chen.5i5j@gmail.com>
+Subject: Re: [PATCH] drivers/pwm/Kconfig: Let PWM_CLPS711X depend on HAS_IOMEM
+Date: Mon, 14 Jul 2014 17:14:05 +0800
+Message-ID: <6A7CA9C8-7BC4-44BA-AE71-63BDADFF9023@gmail.com>
+References: <53C27247.2010300@gmail.com> <20140714081843.GK2081@ulmo>
+Mime-Version: 1.0 (Mac OS X Mail 7.2 \(1874\))
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pd0-f173.google.com ([209.85.192.173]:49784 "EHLO
+	mail-pd0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751204AbaGNJKB convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Jul 2014 05:10:01 -0400
+In-Reply-To: <20140714081843.GK2081@ulmo>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Chen Gang <gang.chen.5i5j@gmail.com>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Richard Weinberger <richard@nod.at>, Liqin Chen <liqin.linux@gmail.com>, Lennox Wu <lennox.wu@gmail.com>
 
-Am 14.07.2014 10:48, schrieb Lars-Peter Clausen:
-> On 07/14/2014 10:31 AM, Richard Weinberger wrote:
->> Am 13.07.2014 22:17, schrieb Greg Kroah-Hartman:
->>> On Sun, Jul 13, 2014 at 09:33:38PM +0200, Richard Weinberger wrote:
->>>> Maybe we could add COMPILE_TEST to the version string too?
->>>> Just to detect such kernels fast in user bug reports...
->>>
->>> What kind of bug report are you going to get?
->>
->> User manages to enable CONFIG_FOO by selecting COMPILE_TEST and
->> complains that it does not work. :)
-> 
-> These drivers are typically drivers for some SoC peripheral and the device will simply physically not exist on a platform that does not provide HAS_IOMEM. This is not really any
-> different from making the driver selectable via COMPILE_TEST for any other platform. To hit the issue you'd have to instantiate a device driver instance for a device that
-> physically does not exist. This will always result in a failure.
 
-Okay, you have convinced me. :)
+=E5=9C=A8 2014=E5=B9=B47=E6=9C=8814=E6=97=A5=EF=BC=8C=E4=B8=8B=E5=8D=88=
+4:18=EF=BC=8CThierry Reding <thierry.reding@gmail.com> =E5=86=99=E9=81=93=
+=EF=BC=9A
 
-Thanks,
-//richard
+> On Sun, Jul 13, 2014 at 07:49:27PM +0800, Chen Gang wrote:
+>> PWM_CLPS711X needs HAS_IOMEM, so let it depend on HAS_IOMEM.
+>>=20
+>> The related error (with allmodconfig under score):
+>>=20
+>>    MODPOST 1365 modules
+>>  ERROR: "devm_ioremap_resource" [drivers/pwm/pwm-clps711x.ko] undefi=
+ned!
+>>=20
+>>=20
+>> Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
+>> ---
+>> drivers/pwm/Kconfig | 2 +-
+>> 1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> NAK given the discussion in the other thread.
+>=20
+> Thierry
+
+OK, thanks, and I shall continue focusing the other thread, and send re=
+lated patch after
+get conclusion (hope I can finish within this week).
+
+Thanks
+=E2=80=94
+Chen Gang
+Open share, and attitude like air water, and life which God blessed.
