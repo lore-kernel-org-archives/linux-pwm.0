@@ -1,66 +1,28 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] drivers/pwm/Kconfig: Let PWM_CLPS711X depend on HAS_IOMEM
-Date: Mon, 14 Jul 2014 10:18:43 +0200
-Message-ID: <20140714081843.GK2081@ulmo>
-References: <53C27247.2010300@gmail.com>
+From: Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+Date: Mon, 14 Jul 2014 10:31:37 +0200
+Message-ID: <53C39569.9020802@nod.at>
+References: <201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at> <53C288F0.3070001@metafoo.de> <53C28C4A.70907@nod.at> <53C29015.5070607@metafoo.de> <53C291C8.6050303@nod.at> <53C296C2.30304@metafoo.de> <20140713192202.GA19090@kroah.com> <53C2DF12.6040507@nod.at> <20140713201753.GA29955@kroah.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Qo8f1a4rgWw9S/zY"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wg0-f49.google.com ([74.125.82.49]:55897 "EHLO
-	mail-wg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753523AbaGNISv (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Jul 2014 04:18:51 -0400
-Content-Disposition: inline
-In-Reply-To: <53C27247.2010300@gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20140713201753.GA29955-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, teg-B22kvLQNl6c@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Lennox Wu <lennox.wu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Chen Gang <gang.chen.5i5j-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marex-ynQEQJNshbs@public.gmane.org>, Liqin Chen <liqin.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, knaack.h-Mmb7MZpHnFY@public.gmane.org, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Mischa.Jonker-HKixBCOQz3hWk0Htik3J/w@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Chen Gang <gang.chen.5i5j@gmail.com>
-Cc: linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Richard Weinberger <richard@nod.at>, Liqin Chen <liqin.linux@gmail.com>, Lennox Wu <lennox.wu@gmail.com>
 
+Am 13.07.2014 22:17, schrieb Greg Kroah-Hartman:
+> On Sun, Jul 13, 2014 at 09:33:38PM +0200, Richard Weinberger wrote:
+>> Maybe we could add COMPILE_TEST to the version string too?
+>> Just to detect such kernels fast in user bug reports...
+> 
+> What kind of bug report are you going to get?
 
---Qo8f1a4rgWw9S/zY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+User manages to enable CONFIG_FOO by selecting COMPILE_TEST and
+complains that it does not work. :)
 
-On Sun, Jul 13, 2014 at 07:49:27PM +0800, Chen Gang wrote:
-> PWM_CLPS711X needs HAS_IOMEM, so let it depend on HAS_IOMEM.
->=20
-> The related error (with allmodconfig under score):
->=20
->     MODPOST 1365 modules
->   ERROR: "devm_ioremap_resource" [drivers/pwm/pwm-clps711x.ko] undefined!
->=20
->=20
-> Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
-> ---
->  drivers/pwm/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-
-NAK given the discussion in the other thread.
-
-Thierry
-
---Qo8f1a4rgWw9S/zY
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJTw5JjAAoJEN0jrNd/PrOhM20QAKbymSE1rQmcqRRZ2F7G1bRU
-RKeFrCGPadaOYwyA7ek+xns+KwTxzSuFzSdJBuYc/iHBFtkyN9tXKSnNAX69AULB
-ovYUF1470Mf6AhCDrrjMK3AGMjfEdessGpQIxtMyFHIZnln5soXX0o+Wcpm3hqRD
-yMwDeeEOjHUSNKjAyXI7yxTotR2yPJpbx1JO25ukN+rvz48bnn/Nw7Alpe1aDvj9
-ZkYXHfo/UyJ0R9gh3k6gSW2o2l/KiHW4nsT2HeerIvpUtKTKe9oSlaHmCupu8sRS
-/82ESn2ZeHN6MBl5iAUOOZG05ne4g2WuiypR4V6TkSUP+gARwqxBWlMGKGd0iONm
-9kr6I5+QQqX80K+YF9hvnJsj/jjY3gryii5uFgJo6nqadqSpafFjIDCVc96R/We2
-TQ+nEy8+R2gVDxdHtoq2H/rlW7vTyA0487N54wM0inAVMD41HXV8h54lasX1AQ+i
-w+xSLQvj3vsv47S4XXnYWGCpuO2Iq0aYSjrUZ00D3V4jxltuNxITFnQnSR07Zu1i
-T5lxjpcE2RRl71P1xztXVfwFx1nbdr8SZzBQbHvz6wtVLIAYgX8wtnTCIOTwQ1NS
-7cFmHttKwL19nmi6YAsPjOlGaGtAwHSBIrEBHVvAMoC6dDpAKAC0obCA66nHV/Ck
-TpVuo27PP/0i3to2mbrO
-=jhfS
------END PGP SIGNATURE-----
-
---Qo8f1a4rgWw9S/zY--
+Thanks,
+//richard
