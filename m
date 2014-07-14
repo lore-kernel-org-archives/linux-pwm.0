@@ -1,51 +1,56 @@
-From: Chen Gang <gang.chen.5i5j@gmail.com>
-Subject: Re: [PATCH] drivers/pwm/Kconfig: Let PWM_CLPS711X depend on HAS_IOMEM
-Date: Mon, 14 Jul 2014 17:14:05 +0800
-Message-ID: <6A7CA9C8-7BC4-44BA-AE71-63BDADFF9023@gmail.com>
-References: <53C27247.2010300@gmail.com> <20140714081843.GK2081@ulmo>
+From: Chen Gang <gang.chen.5i5j-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for 'devm_ioremap_resource'
+Date: Mon, 14 Jul 2014 17:22:39 +0800
+Message-ID: <5A40E1FC-CA61-4AFF-B205-4BAC175AA7AC@gmail.com>
+References: <201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at> <53C288F0.3070001@metafoo.de> <53C28C4A.70907@nod.at> <53C29015.5070607@metafoo.de> <53C291C8.6050303@nod.at> <53C296C2.30304@metafoo.de> <20140713192202.GA19090@kroah.com> <53C2DF12.6040507@nod.at> <20140713201753.GA29955@kroah.com> <53C39569.9020802@nod.at> <53C3994C.1010309@metafoo.de> <53C39B66.4060500@nod.at>
 Mime-Version: 1.0 (Mac OS X Mail 7.2 \(1874\))
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pd0-f173.google.com ([209.85.192.173]:49784 "EHLO
-	mail-pd0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751204AbaGNJKB convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Jul 2014 05:10:01 -0400
-In-Reply-To: <20140714081843.GK2081@ulmo>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <53C39B66.4060500-/L3Ra7n9ekc@public.gmane.org>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>
+Cc: Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, teg-B22kvLQNl6c@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lennox Wu <lennox.wu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Chen Gang <gang.chen.5i5j-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marex-ynQEQJNshbs@public.gmane.org>, Liqin Chen <liqin.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devel-gWbeCf7V1WCQmaza687I9mD2FQJk+8+b@public.gmane.org, linux-watchdog-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, knaack.h-Mmb7MZpHnFY@public.gmane.org, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Mischa.Jonker-HKixBCOQz3hWk0Htik3J/w@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Chen Gang <gang.chen.5i5j@gmail.com>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Richard Weinberger <richard@nod.at>, Liqin Chen <liqin.linux@gmail.com>, Lennox Wu <lennox.wu@gmail.com>
 
 
 =E5=9C=A8 2014=E5=B9=B47=E6=9C=8814=E6=97=A5=EF=BC=8C=E4=B8=8B=E5=8D=88=
-4:18=EF=BC=8CThierry Reding <thierry.reding@gmail.com> =E5=86=99=E9=81=93=
-=EF=BC=9A
+4:57=EF=BC=8CRichard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org> =E5=86=99=E9=81=93=EF=BC=
+=9A
 
-> On Sun, Jul 13, 2014 at 07:49:27PM +0800, Chen Gang wrote:
->> PWM_CLPS711X needs HAS_IOMEM, so let it depend on HAS_IOMEM.
+> Am 14.07.2014 10:48, schrieb Lars-Peter Clausen:
+>> On 07/14/2014 10:31 AM, Richard Weinberger wrote:
+>>> Am 13.07.2014 22:17, schrieb Greg Kroah-Hartman:
+>>>> On Sun, Jul 13, 2014 at 09:33:38PM +0200, Richard Weinberger wrote=
+:
+>>>>> Maybe we could add COMPILE_TEST to the version string too?
+>>>>> Just to detect such kernels fast in user bug reports...
+>>>>=20
+>>>> What kind of bug report are you going to get?
+>>>=20
+>>> User manages to enable CONFIG_FOO by selecting COMPILE_TEST and
+>>> complains that it does not work. :)
 >>=20
->> The related error (with allmodconfig under score):
->>=20
->>    MODPOST 1365 modules
->>  ERROR: "devm_ioremap_resource" [drivers/pwm/pwm-clps711x.ko] undefi=
-ned!
->>=20
->>=20
->> Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
->> ---
->> drivers/pwm/Kconfig | 2 +-
->> 1 file changed, 1 insertion(+), 1 deletion(-)
+>> These drivers are typically drivers for some SoC peripheral and the =
+device will simply physically not exist on a platform that does not pro=
+vide HAS_IOMEM. This is not really any
+>> different from making the driver selectable via COMPILE_TEST for any=
+ other platform. To hit the issue you'd have to instantiate a device dr=
+iver instance for a device that
+>> physically does not exist. This will always result in a failure.
 >=20
-> NAK given the discussion in the other thread.
+> Okay, you have convinced me. :)
 >=20
-> Thierry
 
-OK, thanks, and I shall continue focusing the other thread, and send re=
-lated patch after
-get conclusion (hope I can finish within this week).
+OK, thank all of you, and I shall send the related patch for it.=20
 
-Thanks
+I will try to finish it within this week.
+
+Thanks.
 =E2=80=94
 Chen Gang
-Open share, and attitude like air water, and life which God blessed.
+Open, share, and attitude like air, water, and life which God blessed.-=
+-
+To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
