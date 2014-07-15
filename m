@@ -1,85 +1,147 @@
-From: Chen Gang <gang.chen.5i5j@gmail.com>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-Date: Tue, 15 Jul 2014 09:11:19 +0800
-Message-ID: <53C47FB7.6080304@gmail.com>
-References: <201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at> <53C288F0.3070001@metafoo.de> <53C28C4A.70907@nod.at> <53C29015.5070607@metafoo.de> <53C291C8.6050303@nod.at> <53C296C2.30304@metafoo.de> <20140713192202.GA19090@kroah.com> <53C2DF12.6040507@nod.at> <20140713201753.GA29955@kroah.com> <53C39569.9020802@nod.at> <53C3994C.1010309@metafoo.de> <53C39B66.4060500@nod.at> <5A40E1FC-CA61-4AFF-B205-4BAC175AA7AC@gmail.com> <53C47725.8000005@gmail.com> <53C47B76.4080306@roeck-us.net>
+From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Subject: Re: [RESEND PATCH v3 06/11] drm: add DT bindings documentation for
+ atmel-hlcdc-dc driver
+Date: Tue, 15 Jul 2014 12:06:19 +0200
+Message-ID: <20140715120619.7f29c458@bbrezillon>
+References: <1404751384-5077-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1404751384-5077-7-git-send-email-boris.brezillon@free-electrons.com>
+ <20140714100542.GB9870@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pd0-f173.google.com ([209.85.192.173]:42830 "EHLO
-	mail-pd0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753690AbaGOBL2 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Jul 2014 21:11:28 -0400
-In-Reply-To: <53C47B76.4080306@roeck-us.net>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20140714100542.GB9870@ulmo>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, dri-devel@lists.freedesktop.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Lee Jones <lee.jones@linaro.org>, Jean-Jacques Hiblot <jjhiblot@traphandler.com>, Samuel Ortiz <sameo@linux.intel.com>, Tim Niemeyer <tim.niemeyer@corscience.de>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-pwm@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Kumar Gala <galak@codeaurora.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Guenter Roeck <linux@roeck-us.net>, Richard Weinberger <richard@nod.at>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no, Thierry Reding <thierry.reding@gmail.com>, Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>, Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com, linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>, Mischa.Jonker@synopsys.com, jic23@kernel.org, arnd@arndb.de, Geert Uytterhoeven <geert@linux-m68k.org>
 
+Hello Thierry,
 
+On Mon, 14 Jul 2014 12:05:43 +0200
+Thierry Reding <thierry.reding@gmail.com> wrote:
 
-On 07/15/2014 08:53 AM, Guenter Roeck wrote:
-> On 07/14/2014 05:34 PM, Chen Gang wrote:
->> On 07/14/2014 05:22 PM, Chen Gang wrote:
->>>
->>> =E5=9C=A8 2014=E5=B9=B47=E6=9C=8814=E6=97=A5=EF=BC=8C=E4=B8=8B=E5=8D=
-=884:57=EF=BC=8CRichard Weinberger <richard@nod.at> =E5=86=99=E9=81=93=EF=
-=BC=9A
->>>
->>>> Am 14.07.2014 10:48, schrieb Lars-Peter Clausen:
->>>>> On 07/14/2014 10:31 AM, Richard Weinberger wrote:
->>>>>> Am 13.07.2014 22:17, schrieb Greg Kroah-Hartman:
->>>>>>> On Sun, Jul 13, 2014 at 09:33:38PM +0200, Richard Weinberger wr=
-ote:
->>>>>>>> Maybe we could add COMPILE_TEST to the version string too?
->>>>>>>> Just to detect such kernels fast in user bug reports...
->>>>>>>
->>>>>>> What kind of bug report are you going to get?
->>>>>>
->>>>>> User manages to enable CONFIG_FOO by selecting COMPILE_TEST and
->>>>>> complains that it does not work. :)
->>>>>
->>>>> These drivers are typically drivers for some SoC peripheral and t=
-he
->>>>> device will simply physically not exist on a platform that does n=
-ot
->>>>> provide HAS_IOMEM. This is not really any
->>>>> different from making the driver selectable via COMPILE_TEST for
->>>>> any other platform. To hit the issue you'd have to instantiate a
->>>>> device driver instance for a device that
->>>>> physically does not exist. This will always result in a failure.
->>>>
->>>> Okay, you have convinced me. :)
->>>>
->>
->> After search the history patches, I found one related patch which ma=
-de
->> by myself (when I am in Asianux):
->>
->>    "https://lkml.org/lkml/2013/7/1/641"
->>
->> For me, it is a long discussion, and forced many members have to joi=
-n
->> in. Please help check again.
->>
->=20
-> One thing you could try would be to return NULL (or where appropriate
-> an error) in the #else case of CONFIG_HAS_IOMEM and CONFIG_HAS_IOPORT=
-,
-> ie dont take COMPILE_TEST into account at all. Obviously that means
-> you won't be able to dump a warning message in the COMPILE_TEST
-> case, but at least the code would compile. The rejection of above pat=
-ch
-> would make a good case for this approach.
->=20
+> On Mon, Jul 07, 2014 at 06:42:59PM +0200, Boris BREZILLON wrote:
+> > The Atmel HLCDC (HLCD Controller) IP available on some Atmel SoCs (i.e.
+> > at91sam9n12, at91sam9x5 family or sama5d3 family) provides a display
+> > controller device.
+> > 
+> > The HLCDC block provides a single RGB output port, and only supports LCD
+> > panels connection to LCD panels for now.
+> > 
+> > The atmel,panel property link the HLCDC RGB output with the LCD panel
+> > connected on this port (note that the HLCDC RGB connector implementation
+> > makes use of the DRM panel framework).
+> > 
+> > Connection to other external devices (DRM bridges) might be added later by
+> > mean of a new atmel,xxx (atmel,bridge) property.
+> > 
+> > Signed-off-by: Boris BREZILLON <boris.brezillon@free-electrons.com>
+> > ---
+> >  .../devicetree/bindings/drm/atmel-hlcdc-dc.txt     | 59 ++++++++++++++++++++++
+> >  1 file changed, 59 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
+> 
+> This is the wrong directory. Device tree bindings describe hardware, but
+> DRM is a Linux-specific framework. And yes, there are already files in
+> that directory, I know, but that doesn't make it any better.
+> 
+> I suggest either devicetree/bindings/gpu or devicetree/bindings/video.
 
-OK, thanks: at least, it can be improved.  But still welcome any other
-opinions of another related members.
+No problem, I'll move the documentation into devicetree/bindings/video
+(the HLCDC does not provide any 3D rendering functionality and thus
+I'm not sure moving the bindings documentation into
+devicetree/bindings/gpu makes sense).
 
-Thanks.
---=20
-Chen Gang
+> 
+> > diff --git a/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
+> [...]
+> > +The Atmel HLCDC Display Controller is subdevice of the HLCDC MFD device.
+> > +See Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt for more details.
+> 
+> I think it's better to refer to these using relative filenames. When the
+> device tree bindings are moved out of the kernel tree, they may no
+> longer use the same hierarchy.
 
-Open, share, and attitude like air, water, and life which God blessed
+Sure.
+By relative path you mean ../../mfd/atmel-hlcdc.txt or just
+mfd/atmel-hlcdc.txt ?
+
+> 
+> > +Required properties:
+> > + - compatible: value should be one of the following:
+> > +   "atmel,hlcdc-dc"
+> 
+> There's only one value, so perhaps: should be "atmel,hlcdc-dc".
+
+Yes, I'll fix that.
+
+> 
+> > + - atmel,panel: Should contain a phandle with 2 parameters.
+> > +   The first cell is a phandle to a DRM panel device
+> > +   The second cell encodes the RGB mode, which can take the following values:
+> > +   * 0: RGB444
+> > +   * 1: RGB565
+> > +   * 2: RGB666
+> > +   * 3: RGB888
+> 
+> These are properties of the panel and should be obtained from the panel
+> directly rather than an additional cell in this specifier.
+
+Okay.
+What's the preferred way of doing this ?
+What about defining an rgb-mode property in the panel node.
+
+BTW, have you received this series [1] adding support for the LCD panel
+I'm testing this driver with.
+
+[1] https://lkml.org/lkml/2014/6/5/612
+
+> 
+> > +   The third cell encodes specific flags describing LCD signals configuration
+> > +   (see Atmel's datasheet for a full description of these fields):
+> > +   * bit 0: HSPOL: Horizontal Synchronization Pulse Polarity
+> > +   * bit 1: VSPOL: Vertical Synchronization Pulse Polarity
+> > +   * bit 2: VSPDLYS: Vertical Synchronization Pulse Start
+> > +   * bit 3: VSPDLYE: Vertical Synchronization Pulse End
+> > +   * bit 4: DISPPOL: Display Signal Polarity
+> > +   * bit 7: DISPDLY: LCD Controller Display Power Signal Synchronization
+> > +   * bit 12: VSPSU: LCD Controller Vertical synchronization Pulse Setup Configuration
+> > +   * bit 13: VSPHO: LCD Controller Vertical synchronization Pulse Hold Configuration
+> > +   * bit 16-20: GUARDTIME: LCD DISPLAY Guard Time
+> 
+> Similarly for most of these: HSPOL and VSPOL seem to correspond to the
+> DRM_MODE_FLAG_{{P,N},{H,V}}SYNC flags in struct drm_display_mode. And
+> VSPDLYS as well as VSPDLYE sound like they may be vsync_start and
+> vsync_end of the same structure.
+
+I agree with HSPOL and VSPOL.
+
+> 
+> As for the others, maybe if you could explain what exactly they are we
+> may be able to find a better fit.
+
+Atmel datasheets include several timing diagrams [2] (chapter "32.6.17
+Output Timing Generation" page 603), and I think you will get more
+informations from these diagrams than if I try to explain what I
+understood ;-).
+
+Best Regards,
+
+Boris
+
+[1]https://lkml.org/lkml/2014/6/5/612
+[2]http://www.atmel.com/Images/Atmel_11121_32-bit-Cortex-A5-Microcontroller_SAMA5D3_Datasheet.pdf
+
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
