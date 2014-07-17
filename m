@@ -1,36 +1,127 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-Date: Thu, 17 Jul 2014 20:09:17 +0200
-Message-ID: <53C8114D.30601@nod.at>
-References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel>
- <53C7A819.40403@metafoo.de> <6485666.LVFO2YCEQx@wuerfel>
+From: Beniamino Galvani <b.galvani@gmail.com>
+Subject: Re: [PATCH 2/2] pwm: add this series patch to support for rk-pwm and
+ vop-pwm.
+Date: Thu, 17 Jul 2014 21:24:59 +0200
+Message-ID: <20140717192459.GA4617@gmail.com>
+References: <1405577294-19336-1-git-send-email-caesar.wang@rock-chips.com>
+ <1405577294-19336-3-git-send-email-caesar.wang@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <6485666.LVFO2YCEQx@wuerfel>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: driverdev-devel-bounces@linuxdriverproject.org
-To: Arnd Bergmann <arnd@arndb.de>, Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no, Thierry Reding <thierry.reding@gmail.com>, Lennox Wu <lennox.wu@gmail.com>, linux-watchdog@vger.kernel.org, Marek Vasut <marex@denx.de>, Liqin Chen <liqin.linux@gmail.com>, Geert Uytterhoeven <geert@linux-m68k.org>, msalter@redhat.com, Guenter Roeck <linux@roeck-us.net>, devel@driverdev.osuosl.org, Chen Gang <gang.chen.5i5j@gmail.com>, linux-input@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, dmitry.torokhov@gmail.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>, Mischa.Jonker@synopsys.com, jic23@kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1405577294-19336-3-git-send-email-caesar.wang@rock-chips.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: caesar <caesar.wang@rock-chips.com>
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, rdunlap@infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, cf@rock-chips.com, addy.ke@rock-chips.com, xjq@rock-chips.com, huangtao@rock-chips.com, hj@rock-chips.com
 List-Id: linux-pwm@vger.kernel.org
 
-Am 17.07.2014 12:48, schrieb Arnd Bergmann:
-> AFAICT, NO_IOMEM only has a real purpose on UML these days. Could we take
-> a shortcut here and make COMPILE_TEST depend on !UML? Getting random stuff
-> to build on UML seems pointless to me and we special-case it in a number of
-> places already.
+On Thu, Jul 17, 2014 at 02:08:14PM +0800, caesar wrote:
+> Signed-off-by: caesar <caesar.wang@rock-chips.com>
 
-If UML is the only arch without io memory the dependency on !UML seems
-reasonable to me. :-)
+Hi Caesar,
 
-Thanks,
-//richard
+just a couple of comments below.
+
+> ---
+>  drivers/pwm/pwm-rockchip.c | 108 ++++++++++++++++++++++++++++++++++++---------
+>  1 file changed, 88 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+> index eec2145..59b0380 100644
+> --- a/drivers/pwm/pwm-rockchip.c
+> +++ b/drivers/pwm/pwm-rockchip.c
+> @@ -2,6 +2,7 @@
+>   * PWM driver for Rockchip SoCs
+>   *
+>   * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
+> + * Copyright (C) 2014 Caesar Wang <caesar.wang@rock-chips.com>
+>   *
+>   * This program is free software; you can redistribute it and/or
+>   * modify it under the terms of the GNU General Public License
+> @@ -12,6 +13,8 @@
+>  #include <linux/io.h>
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/of_address.h>
+
+These two should be swapped to keep the alphabetical order of the
+includes.
+
+>  #include <linux/platform_device.h>
+>  #include <linux/pwm.h>
+>  #include <linux/time.h>
+> @@ -23,14 +26,37 @@
+>  #define PWM_CTRL_TIMER_EN	(1 << 0)
+>  #define PWM_CTRL_OUTPUT_EN	(1 << 3)
+> +
+
+[...]
+
+>  static int rockchip_pwm_probe(struct platform_device *pdev)
+>  {
+> +	const struct of_device_id *of_id =
+> +	    of_match_device(rockchip_pwm_dt_ids, &pdev->dev);
+> +	struct device_node *np = pdev->dev.of_node;
+>  	struct rockchip_pwm_chip *pc;
+>  	struct resource *r;
+>  	int ret;
+> @@ -119,9 +185,12 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+>  		return -ENOMEM;
+>  
+>  	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	pc->base = devm_ioremap_resource(&pdev->dev, r);
+> -	if (IS_ERR(pc->base))
+> -		return PTR_ERR(pc->base);
+> +	pc->base = of_iomap(np, 0);
+> +	if (!pc->base) {
+> +		dev_err(&pdev->dev, "failed to map controller\n");
+> +		ret = -ENOMEM;
+> +		goto fail_map;
+> +	}
+
+I think that this change is not needed. devm_ioremap_resource()
+guarantees an automatic unmapping when the device is destroyed.
+
+Moreover, when of_iomap() fails you don't need to call iounmap().
+
+Beniamino
+
+>  
+>  	pc->clk = devm_clk_get(&pdev->dev, NULL);
+>  	if (IS_ERR(pc->clk))
+> @@ -133,6 +202,7 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+>  
+>  	platform_set_drvdata(pdev, pc);
+>  
+> +	pc->data = of_id->data;
+>  	pc->chip.dev = &pdev->dev;
+>  	pc->chip.ops = &rockchip_pwm_ops;
+>  	pc->chip.base = -1;
+> @@ -145,6 +215,10 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	return ret;
+> +
+> +fail_map:
+> +	iounmap(pc->base);
+> +	return ret;
+>  }
+>  
+>  static int rockchip_pwm_remove(struct platform_device *pdev)
+> @@ -156,12 +230,6 @@ static int rockchip_pwm_remove(struct platform_device *pdev)
+>  	return pwmchip_remove(&pc->chip);
+>  }
+>  
+> -static const struct of_device_id rockchip_pwm_dt_ids[] = {
+> -	{ .compatible = "rockchip,rk2928-pwm" },
+> -	{ /* sentinel */ }
+> -};
+> -MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);
+> -
+>  static struct platform_driver rockchip_pwm_driver = {
+>  	.driver = {
+>  		.name = "rockchip-pwm",
+> -- 
+> 1.9.1
+> 
