@@ -1,235 +1,233 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-Date: Wed, 16 Jul 2014 18:58:20 -0700
-Message-ID: <53C72DBC.5020900@roeck-us.net>
-References: <201407130545.23004.marex@denx.de> <CAF0htA60juBVkPo2HQKMDGcEr-wRzRVL_6JgHAa+7WVE_E8M0Q@mail.gmail.com> <53C25551.1050909@nod.at> <53C288F0.3070001@metafoo.de> <53C28C4A.70907@nod.at> <53C29015.5070607@metafoo.de> <53C291C8.6050303@nod.at> <53C296C2.30304@metafoo.de> <20140713192202.GA19090@kroah.com> <53C2DF12.6040507@nod.at> <20140713201753.GA29955@kroah.com> <53C39569.9020802@nod.at> <53C3994C.1010309@metafoo.de> <53C39B66.4060500@nod.at> <5A40E1FC-CA61-4AFF-B205-4BAC175AA7AC@gmail.com> <53C47725.8000005@gmail.com> <53C47B76.4080306@roeck-us.net> <53C47FB7.6080304@gmail.com> <53C53CE1.4090803@gmail.com> <53C7269E.4010702@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: caesar <caesar.wang@rock-chips.com>
+Subject: [PATCH 2/2] pwm: add this series patch to support for rk-pwm and vop-pwm.
+Date: Thu, 17 Jul 2014 14:08:14 +0800
+Message-ID: <1405577294-19336-3-git-send-email-caesar.wang@rock-chips.com>
+References: <1405577294-19336-1-git-send-email-caesar.wang@rock-chips.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.active-venture.com ([67.228.131.205]:52580 "EHLO
-	mail.active-venture.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750727AbaGQB6X (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Jul 2014 21:58:23 -0400
-In-Reply-To: <53C7269E.4010702@gmail.com>
+Received: from regular2.263xmail.com ([211.157.152.3]:34714 "EHLO
+	regular2.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753603AbaGQGIq (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 17 Jul 2014 02:08:46 -0400
+In-Reply-To: <1405577294-19336-1-git-send-email-caesar.wang@rock-chips.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Chen Gang <gang.chen.5i5j@gmail.com>, Richard Weinberger <richard@nod.at>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no, Thierry Reding <thierry.reding@gmail.com>, Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>, Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com, linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>, Mischa.Jonker@synopsys.com, jic23@kernel.org, arnd@arndb.de, Geert Uytterhoeven <geert@linux-m68k.org>
+To: thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, rdunlap@infradead.org
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, cf@rock-chips.com, addy.ke@rock-chips.com, xjq@rock-chips.com, huangtao@rock-chips.com, hj@rock-chips.com, caesar <caesar.wang@rock-chips.com>
 
-On 07/16/2014 06:27 PM, Chen Gang wrote:
->
->
-> On 07/15/2014 10:38 PM, Chen Gang wrote:
->> On 07/15/2014 09:11 AM, Chen Gang wrote:
->>>
->>>
->>> On 07/15/2014 08:53 AM, Guenter Roeck wrote:
->>>> On 07/14/2014 05:34 PM, Chen Gang wrote:
->>>>> On 07/14/2014 05:22 PM, Chen Gang wrote:
->>>>>>
->>>>>> =E5=9C=A8 2014=E5=B9=B47=E6=9C=8814=E6=97=A5=EF=BC=8C=E4=B8=8B=E5=
-=8D=884:57=EF=BC=8CRichard Weinberger <richard@nod.at> =E5=86=99=E9=81=93=
-=EF=BC=9A
->>>>>>
->>>>>>> Am 14.07.2014 10:48, schrieb Lars-Peter Clausen:
->>>>>>>> On 07/14/2014 10:31 AM, Richard Weinberger wrote:
->>>>>>>>> Am 13.07.2014 22:17, schrieb Greg Kroah-Hartman:
->>>>>>>>>> On Sun, Jul 13, 2014 at 09:33:38PM +0200, Richard Weinberger=
- wrote:
->>>>>>>>>>> Maybe we could add COMPILE_TEST to the version string too?
->>>>>>>>>>> Just to detect such kernels fast in user bug reports...
->>>>>>>>>>
->>>>>>>>>> What kind of bug report are you going to get?
->>>>>>>>>
->>>>>>>>> User manages to enable CONFIG_FOO by selecting COMPILE_TEST a=
-nd
->>>>>>>>> complains that it does not work. :)
->>>>>>>>
->>>>>>>> These drivers are typically drivers for some SoC peripheral an=
-d the
->>>>>>>> device will simply physically not exist on a platform that doe=
-s not
->>>>>>>> provide HAS_IOMEM. This is not really any
->>>>>>>> different from making the driver selectable via COMPILE_TEST f=
-or
->>>>>>>> any other platform. To hit the issue you'd have to instantiate=
- a
->>>>>>>> device driver instance for a device that
->>>>>>>> physically does not exist. This will always result in a failur=
-e.
->>>>>>>
->>>>>>> Okay, you have convinced me. :)
->>>>>>>
->>>>>
->>>>> After search the history patches, I found one related patch which=
- made
->>>>> by myself (when I am in Asianux):
->>>>>
->>>>>     "https://lkml.org/lkml/2013/7/1/641"
->>>>>
->>>>> For me, it is a long discussion, and forced many members have to =
-join
->>>>> in. Please help check again.
->>>>>
->>>>
->>>> One thing you could try would be to return NULL (or where appropri=
-ate
->>>> an error) in the #else case of CONFIG_HAS_IOMEM and CONFIG_HAS_IOP=
-ORT,
->>>> ie dont take COMPILE_TEST into account at all. Obviously that mean=
-s
->>>> you won't be able to dump a warning message in the COMPILE_TEST
->>>> case, but at least the code would compile. The rejection of above =
-patch
->>>> would make a good case for this approach.
->>>>
->
-> For me, only let 'devm_io*map*' support COMPILE_TEST is OK, that can =
-fix
-> all related issues:
->
->
-> [PATCH] lib: devres: Add dumy functions to support COMPILE_TEST when =
-no IOMEM
->
-> For some architectures which no IOMEM, 'devres' will be skipped. But
-> many drivers may still want COMPILE_TEST, so let 'devres' support it.
->
-> The related error (with allmodconfig under score):
->
->      MODPOST 1365 modules
->    ERROR: "devm_ioremap_resource" [drivers/watchdog/tegra_wdt.ko] und=
-efined!
->    ERROR: "devm_ioremap_resource" [drivers/watchdog/of_xilinx_wdt.ko]=
- undefined!
->    ERROR: "devm_ioremap_resource" [drivers/staging/iio/adc/mxs-lradc.=
-ko] undefined!
->    ERROR: "devm_ioremap_resource" [drivers/pwm/pwm-clps711x.ko] undef=
-ined!
->    ERROR: "devm_ioremap_resource" [drivers/input/serio/olpc_apsp.ko] =
-undefined!
->    ERROR: "devm_ioremap_resource" [drivers/input/serio/arc_ps2.ko] un=
-defined!
->    ERROR: "devm_ioremap_resource" [drivers/rtc/rtc-xgene.ko] undefine=
-d!
->    ERROR: "devm_ioremap_resource" [drivers/rtc/rtc-stk17ta8.ko] undef=
-ined!
->    ERROR: "devm_ioremap_resource" [drivers/rtc/rtc-ds1742.ko] undefin=
-ed!
->    ERROR: "devm_ioremap_resource" [drivers/rtc/rtc-ds1553.ko] undefin=
-ed!
->    ERROR: "devm_ioremap_resource" [drivers/rtc/rtc-ds1511.ko] undefin=
-ed!
->    ERROR: "devm_ioremap_resource" [drivers/rtc/rtc-ds1286.ko] undefin=
-ed!
->    ERROR: "devm_ioremap" [drivers/rtc/rtc-rp5c01.ko] undefined!
->    ERROR: "devm_ioremap" [drivers/rtc/rtc-msm6242.ko] undefined!
->    ERROR: "devm_ioremap" [drivers/rtc/rtc-m48t59.ko] undefined!
->    ERROR: "devm_ioremap" [drivers/rtc/rtc-m48t35.ko] undefined!
->    ERROR: "devm_ioremap" [drivers/rtc/rtc-bq4802.ko] undefined!
->
->
-> Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
-> ---
->   include/linux/device.h |  9 +++++++++
->   include/linux/io.h     | 30 +++++++++++++++++++++++++++++-
->   2 files changed, 38 insertions(+), 1 deletion(-)
->
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index c2421e0..a7500c3 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -630,7 +630,16 @@ extern unsigned long devm_get_free_pages(struct =
-device *dev,
->   					 gfp_t gfp_mask, unsigned int order);
->   extern void devm_free_pages(struct device *dev, unsigned long addr)=
-;
->
-> +#ifdef CONFIG_HAS_IOMEM
->   void __iomem *devm_ioremap_resource(struct device *dev, struct reso=
-urce *res);
-> +#elif defined(CONFIG_COMPILE_TEST)
+Signed-off-by: caesar <caesar.wang@rock-chips.com>
+---
+ drivers/pwm/pwm-rockchip.c | 108 ++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 88 insertions(+), 20 deletions(-)
 
-I would make it #else
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index eec2145..59b0380 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -2,6 +2,7 @@
+  * PWM driver for Rockchip SoCs
+  *
+  * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
++ * Copyright (C) 2014 Caesar Wang <caesar.wang@rock-chips.com>
+  *
+  * This program is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU General Public License
+@@ -12,6 +13,8 @@
+ #include <linux/io.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/of_address.h>
+ #include <linux/platform_device.h>
+ #include <linux/pwm.h>
+ #include <linux/time.h>
+@@ -23,14 +26,37 @@
+ #define PWM_CTRL_TIMER_EN	(1 << 0)
+ #define PWM_CTRL_OUTPUT_EN	(1 << 3)
+ 
++#define RK_PRESCALER		1
+ #define PRESCALER		2
+ 
++#define PWM_CONTINUOUS		(1 << 1)
++#define PWM_DUTY_POSITIVE		(1 << 3)
++#define PWM_INACTIVE_NEGATIVE		(0 << 4)
++#define PWM_OUTPUT_LEFT		(0 << 5)
++#define PWM_LP_DISABLE		(0 << 8)
++
++#define RK_PWM_ENABLE		(1 << 0)
++
++#define VOP_PWM_CTRL		0x00		/* VOP-PWM Control Register */
++#define VOP_PWM_CNTR		0x0c
++
++
+ struct rockchip_pwm_chip {
+ 	struct pwm_chip chip;
+ 	struct clk *clk;
++	const struct rockchip_pwm_data *data;
+ 	void __iomem *base;
+ };
+ 
++struct rockchip_pwm_data {
++	u32 duty;
++	u32 period;
++	u32 reg_cntr;
++	u32 reg_ctrl;
++	int prescaler;
++	u32 enable_conf;
++};
++
+ static inline struct rockchip_pwm_chip *to_rockchip_pwm_chip(struct pwm_chip *c)
+ {
+ 	return container_of(c, struct rockchip_pwm_chip, chip);
+@@ -52,20 +78,20 @@ static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	 * default prescaler value for all practical clock rate values.
+ 	 */
+ 	div = clk_rate * period_ns;
+-	do_div(div, PRESCALER * NSEC_PER_SEC);
++	do_div(div, pc->data->prescaler * NSEC_PER_SEC);
+ 	period = div;
+ 
+ 	div = clk_rate * duty_ns;
+-	do_div(div, PRESCALER * NSEC_PER_SEC);
++	do_div(div, pc->data->prescaler * NSEC_PER_SEC);
+ 	duty = div;
+ 
+ 	ret = clk_enable(pc->clk);
+ 	if (ret)
+ 		return ret;
+ 
+-	writel(period, pc->base + PWM_LRC);
+-	writel(duty, pc->base + PWM_HRC);
+-	writel(0, pc->base + PWM_CNTR);
++	writel(period, pc->base + pc->data->period);
++	writel(duty, pc->base + pc->data->duty);
++	writel(0, pc->base + pc->data->reg_cntr);
+ 
+ 	clk_disable(pc->clk);
+ 
+@@ -82,9 +108,9 @@ static int rockchip_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	if (ret)
+ 		return ret;
+ 
+-	val = readl_relaxed(pc->base + PWM_CTRL);
+-	val |= PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN;
+-	writel_relaxed(val, pc->base + PWM_CTRL);
++	val = readl_relaxed(pc->base + pc->data->reg_ctrl);
++	val |= pc->data->enable_conf;
++	writel_relaxed(val, pc->base + pc->data->reg_ctrl);
+ 
+ 	return 0;
+ }
+@@ -94,9 +120,9 @@ static void rockchip_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
+ 	u32 val;
+ 
+-	val = readl_relaxed(pc->base + PWM_CTRL);
+-	val &= ~(PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN);
+-	writel_relaxed(val, pc->base + PWM_CTRL);
++	val = readl_relaxed(pc->base + pc->data->reg_ctrl);
++	val &= ~pc->data->enable_conf;
++	writel_relaxed(val, pc->base + pc->data->reg_ctrl);
+ 
+ 	clk_disable(pc->clk);
+ }
+@@ -108,8 +134,48 @@ static const struct pwm_ops rockchip_pwm_ops = {
+ 	.owner = THIS_MODULE,
+ };
+ 
++static struct rockchip_pwm_data pwm_data_v1 = {
++	.duty = PWM_HRC,
++	.period = PWM_LRC,
++	.reg_cntr = PWM_CNTR,
++	.reg_ctrl = PWM_CTRL,
++	.prescaler = PRESCALER,
++	.enable_conf = PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN,
++};
++
++static struct rockchip_pwm_data pwm_data_v2 = {
++	.duty = PWM_LRC,
++	.period = PWM_HRC,
++	.reg_cntr = PWM_CNTR,
++	.reg_ctrl = PWM_CTRL,
++	.prescaler = RK_PRESCALER,
++	.enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | RK_PWM_ENABLE |
++		PWM_CONTINUOUS | PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE,
++};
++
++static struct rockchip_pwm_data pwm_data_vop = {
++	.duty = PWM_LRC,
++	.period = PWM_HRC,
++	.reg_cntr = VOP_PWM_CNTR,
++	.reg_ctrl = VOP_PWM_CTRL,
++	.prescaler = RK_PRESCALER,
++	.enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | RK_PWM_ENABLE |
++		PWM_CONTINUOUS | PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE,
++};
++
++static const struct of_device_id rockchip_pwm_dt_ids[] = {
++	{ .compatible = "rockchip,rk2928-pwm", .data = &pwm_data_v1},
++	{ .compatible = "rockchip,rk3288-pwm", .data = &pwm_data_v2},
++	{ .compatible = "rockchip,vop-pwm", .data = &pwm_data_vop},
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);
++
+ static int rockchip_pwm_probe(struct platform_device *pdev)
+ {
++	const struct of_device_id *of_id =
++	    of_match_device(rockchip_pwm_dt_ids, &pdev->dev);
++	struct device_node *np = pdev->dev.of_node;
+ 	struct rockchip_pwm_chip *pc;
+ 	struct resource *r;
+ 	int ret;
+@@ -119,9 +185,12 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	pc->base = devm_ioremap_resource(&pdev->dev, r);
+-	if (IS_ERR(pc->base))
+-		return PTR_ERR(pc->base);
++	pc->base = of_iomap(np, 0);
++	if (!pc->base) {
++		dev_err(&pdev->dev, "failed to map controller\n");
++		ret = -ENOMEM;
++		goto fail_map;
++	}
+ 
+ 	pc->clk = devm_clk_get(&pdev->dev, NULL);
+ 	if (IS_ERR(pc->clk))
+@@ -133,6 +202,7 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, pc);
+ 
++	pc->data = of_id->data;
+ 	pc->chip.dev = &pdev->dev;
+ 	pc->chip.ops = &rockchip_pwm_ops;
+ 	pc->chip.base = -1;
+@@ -145,6 +215,10 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	return ret;
++
++fail_map:
++	iounmap(pc->base);
++	return ret;
+ }
+ 
+ static int rockchip_pwm_remove(struct platform_device *pdev)
+@@ -156,12 +230,6 @@ static int rockchip_pwm_remove(struct platform_device *pdev)
+ 	return pwmchip_remove(&pc->chip);
+ }
+ 
+-static const struct of_device_id rockchip_pwm_dt_ids[] = {
+-	{ .compatible = "rockchip,rk2928-pwm" },
+-	{ /* sentinel */ }
+-};
+-MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);
+-
+ static struct platform_driver rockchip_pwm_driver = {
+ 	.driver = {
+ 		.name = "rockchip-pwm",
+-- 
+1.9.1
 
-> +static inline void __iomem *devm_ioremap_resource(struct device *dev=
-,
-> +						struct resource *res)
-> +{
-> +	pr_warn("no hardware io memory, only for COMPILE_TEST\n");
-
-dev_warn
-
-> +	return (__force void __iomem *)ERR_PTR(-ENXIO);
-> +}
-> +#endif /* CONFIG_HAS_IOMEM || CONFIG_COMPILE_TEST */
->
->   /* allows to add/remove a custom action to devres stack */
->   int devm_add_action(struct device *dev, void (*action)(void *), voi=
-d *data);
-> diff --git a/include/linux/io.h b/include/linux/io.h
-> index b76e6e5..59128aa 100644
-> --- a/include/linux/io.h
-> +++ b/include/linux/io.h
-> @@ -58,14 +58,42 @@ static inline void devm_ioport_unmap(struct devic=
-e *dev, void __iomem *addr)
->   }
->   #endif
->
-> +#ifdef CONFIG_HAS_IOMEM
-> +
->   void __iomem *devm_ioremap(struct device *dev, resource_size_t offs=
-et,
->   			    unsigned long size);
->   void __iomem *devm_ioremap_nocache(struct device *dev, resource_siz=
-e_t offset,
->   				    unsigned long size);
->   void devm_iounmap(struct device *dev, void __iomem *addr);
-> +void devm_ioremap_release(struct device *dev, void *res);
-> +
-> +#elif defined(CONFIG_COMPILE_TEST)
-> +
-
-Same as above - I would suggest to use #else.
-
-> +static inline void __iomem *devm_ioremap(struct device *dev,
-> +				resource_size_t offset, unsigned long size)
-> +{
-> +	pr_warn("no hardware io memory, only for COMPILE_TEST\n");
-> +	return NULL;
-> +}
-> +static inline void __iomem *devm_ioremap_nocache(struct device *dev,
-> +				resource_size_t offset, unsigned long size)
-> +{
-> +	pr_warn("no hardware io memory, only for COMPILE_TEST\n");
-
-dev_warn
-
-Guenter
-
-> +	return NULL;
-> +}
-> +
-> +static inline void devm_iounmap(struct device *dev, void __iomem *ad=
-dr)
-> +{
-> +}
-> +
-> +static inline void devm_ioremap_release(struct device *dev, void *re=
-s)
-> +{
-> +}
-> +
-> +#endif /* CONFIG_HAS_IOMEM || CONFIG_COMPILE_TEST */
-> +
->   int check_signature(const volatile void __iomem *io_addr,
->   			const unsigned char *signature, int length);
-> -void devm_ioremap_release(struct device *dev, void *res);
->
->   /*
->    * Some systems do not have legacy ISA devices.
->
 
