@@ -1,58 +1,84 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-Date: Fri, 18 Jul 2014 12:51:10 +0200
-Message-ID: <53C8FC1E.9090003@nod.at>
-References: <201407130545.23004.marex@denx.de> <6823014.2plXDE9VA9@wuerfel> <53C7A819.40403@metafoo.de> <6485666.LVFO2YCEQx@wuerfel> <53C8114D.30601@nod.at> <53C86C10.2000608@gmail.com> <53C8CE59.3060103@nod.at> <53C8FA78.1020501@gmail.com>
+From: caesar <caesar.wang@rock-chips.com>
+Subject: Re: [PATCH 2/2] pwm: add this series patch to support for rk-pwm
+ and vop-pwm.
+Date: Fri, 18 Jul 2014 19:04:24 +0800
+Message-ID: <53C8FF38.8010506@rock-chips.com>
+References: <1405577294-19336-1-git-send-email-caesar.wang@rock-chips.com> <1405577294-19336-3-git-send-email-caesar.wang@rock-chips.com> <20140717192459.GA4617@gmail.com> <53C8AB34.3050102@rock-chips.com> <20140718100341.GA30497@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-input-owner@vger.kernel.org>
-In-Reply-To: <53C8FA78.1020501@gmail.com>
-Sender: linux-input-owner@vger.kernel.org
-To: Chen Gang <gang.chen.5i5j@gmail.com>, Arnd Bergmann <arnd@arndb.de>, Lars-Peter Clausen <lars@metafoo.de>
-Cc: Guenter Roeck <linux@roeck-us.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no, Thierry Reding <thierry.reding@gmail.com>, Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>, Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com, linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>, Mischa.Jonker@synopsys.com, jic23@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20140718100341.GA30497@ulmo>
+Sender: linux-doc-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Beniamino Galvani <b.galvani@gmail.com>, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, rdunlap@infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, cf@rock-chips.com, addy.ke@rock-chips.com, xjq@rock-chips.com, huangtao@rock-chips.com, hj@rock-chips.com
 List-Id: linux-pwm@vger.kernel.org
 
-Am 18.07.2014 12:44, schrieb Chen Gang:
-> On 07/18/2014 03:35 PM, Richard Weinberger wrote:
->> Am 18.07.2014 02:36, schrieb Chen Gang:
+Hi Thierry,
+
+=E4=BA=8E 2014=E5=B9=B407=E6=9C=8818=E6=97=A5 18:03, Thierry Reding =E5=
+=86=99=E9=81=93:
+> On Fri, Jul 18, 2014 at 01:05:56PM +0800, caesar wrote:
+>> =E4=BA=8E 2014=E5=B9=B407=E6=9C=8818=E6=97=A5 03:24, Beniamino Galva=
+ni =E5=86=99=E9=81=93:
+>>> On Thu, Jul 17, 2014 at 02:08:14PM +0800, caesar wrote:
+> [...]
+>>>> @@ -119,9 +185,12 @@ static int rockchip_pwm_probe(struct platform=
+_device *pdev)
+>>>>   		return -ENOMEM;
+>>>>   	r =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>> -	pc->base =3D devm_ioremap_resource(&pdev->dev, r);
+>>>> -	if (IS_ERR(pc->base))
+>>>> -		return PTR_ERR(pc->base);
+>>>> +	pc->base =3D of_iomap(np, 0);
+>>>> +	if (!pc->base) {
+>>>> +		dev_err(&pdev->dev, "failed to map controller\n");
+>>>> +		ret =3D -ENOMEM;
+>>>> +		goto fail_map;
+>>>> +	}
+>>> I think that this change is not needed. devm_ioremap_resource()
+>>> guarantees an automatic unmapping when the device is destroyed.
 >>>
->>> On 07/18/2014 02:09 AM, Richard Weinberger wrote:
->>>> Am 17.07.2014 12:48, schrieb Arnd Bergmann:
->>>>> AFAICT, NO_IOMEM only has a real purpose on UML these days. Could we take
->>>>> a shortcut here and make COMPILE_TEST depend on !UML? Getting random stuff
->>>>> to build on UML seems pointless to me and we special-case it in a number of
->>>>> places already.
->>>>
->>>> If UML is the only arch without io memory the dependency on !UML seems
->>>> reasonable to me. :-)
->>>>
+>>> Moreover, when of_iomap() fails you don't need to call iounmap().
 >>>
->>> For me, if only uml left, I suggest to implement dummy functions within
->>> uml instead of let CONFIG_UML appear in generic include directory. And
->>> then remove all HAS_IOMEM and NO_IOMEM from kernel.
+>>> Beniamino
+>> VOP-PWM base has be requested for lcdc.
+> Why?
+VOP is  a seperate controllers for rk3288 and genenation SoCs.
+The VOP contains lcdc,pwm......
+
+=46or example :Rk3288 SOC address mapping
+
+lcdc0: lcdc@ff930000                     vop0pwm: pwm@ff9301a0
+reg =3D <0xff930000 0x10000>       reg =3D <0xff9301a0 0x10>;
+offset =3D 0x10000                            offset =3D 0x10
+
+lcdc1: lcdc@ff940000                    vop1pwm: pwm@ff9401a0
+reg =3D <0xff940000 0x10000>      reg =3D <0xff9401a0 0x10>;
+offset =3D 0x10000                           offset =3D 0x10
+
+In a word, lcdc and vop-pwm has shared the map address.
+>> When I use devm_ioremap_resource(), the vop-pwm will request region =
+fail.
 >>
->> Erm, this is something completely different.
->> I thought we're focusing on COMPILE_TEST?
+>> Example:.931020] rockchip-pwm ff9401a0.pwm: can't request region for
+>> resource [mem 0xff9401a0-0xff9401af] /pwm@ff9401a0.
+>> So ,I have to charge it.
 >>
-> 
-> COMPILE_TEST is none-architecture specific, but UML is. So in generic
-> include folder, if we're focusing on choosing whether COMPILE_TEST or
-> UML, for me, I will choose COMPILE_TEST.
-> 
-> If we're not only focusing on COMPILE_TEST, for me, if something only
-> depend on one architecture, I'd like to put them under "arch/*/" folder.
-> 
-> Especially, after that, we can remove all HAS_IOMEM and NO_IOMEM, nobody
-> has to think of them again. :-)
+>> I will be simplyfied by having:
+>> - pc->base =3D devm_ioremap_resource(&pdev->dev, r);
+>> + if (!strcmp(of_id->compatible, "rockchip,vop-pwm"))
+>> + pc->base =3D devm_ioremap(&pdev->dev, r->start, resource_size(r));
+>> + else
+>> + pc->base =3D devm_ioremap_resource(&pdev->dev, r);
+>>
+>> Maybe, Could you give me better suggestions for it?
+> The right thing to do is not have two drivers access the same device.
+> Why does lcdc request the PWM register region?
+>
+> Thierry
+Ditto,
+Maybe,Could you give me a better suggestion to do it?
 
-And then we end up with a solution that on UML a lot of completely useless
-drivers are build which fail in various interesting manners because you'll
-add stubs for all kinds of io memory related functions to arch/um/?
-We had this kind of discussion already. You'll need more than ioremap...
 
-I like Arnd's idea *much* more to make COMPILE_TEST depend on !UML.
-
-Thanks,
-//richard
