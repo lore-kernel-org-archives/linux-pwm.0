@@ -1,84 +1,145 @@
-From: caesar <caesar.wang@rock-chips.com>
-Subject: Re: [PATCH 2/2] pwm: add this series patch to support for rk-pwm
- and vop-pwm.
-Date: Fri, 18 Jul 2014 19:04:24 +0800
-Message-ID: <53C8FF38.8010506@rock-chips.com>
-References: <1405577294-19336-1-git-send-email-caesar.wang@rock-chips.com> <1405577294-19336-3-git-send-email-caesar.wang@rock-chips.com> <20140717192459.GA4617@gmail.com> <53C8AB34.3050102@rock-chips.com> <20140718100341.GA30497@ulmo>
+From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Subject: Re: [RESEND PATCH v3 06/11] drm: add DT bindings documentation for
+ atmel-hlcdc-dc driver
+Date: Fri, 18 Jul 2014 16:51:52 +0200
+Message-ID: <20140718165152.0a9fde09@bbrezillon>
+References: <1404751384-5077-1-git-send-email-boris.brezillon@free-electrons.com>
+	<1404751384-5077-7-git-send-email-boris.brezillon@free-electrons.com>
+	<20140714100542.GB9870@ulmo>
+	<20140715120619.7f29c458@bbrezillon>
+	<20140715103136.GA6616@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20140718100341.GA30497@ulmo>
-Sender: linux-doc-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Beniamino Galvani <b.galvani@gmail.com>, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, rdunlap@infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, cf@rock-chips.com, addy.ke@rock-chips.com, xjq@rock-chips.com, huangtao@rock-chips.com, hj@rock-chips.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:42065 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1756477AbaGROv5 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 18 Jul 2014 10:51:57 -0400
+In-Reply-To: <20140715103136.GA6616@ulmo>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Jean-Jacques Hiblot <jjhiblot@traphandler.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, Bo Shen <voice.shen@atmel.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Robert Nelson <robertcnelson@gmail.com>, Tim Niemeyer <tim.niemeyer@corscience>
 
 Hi Thierry,
 
-=E4=BA=8E 2014=E5=B9=B407=E6=9C=8818=E6=97=A5 18:03, Thierry Reding =E5=
-=86=99=E9=81=93:
-> On Fri, Jul 18, 2014 at 01:05:56PM +0800, caesar wrote:
->> =E4=BA=8E 2014=E5=B9=B407=E6=9C=8818=E6=97=A5 03:24, Beniamino Galva=
-ni =E5=86=99=E9=81=93:
->>> On Thu, Jul 17, 2014 at 02:08:14PM +0800, caesar wrote:
+Oops, I missed this reply.
+
+On Tue, 15 Jul 2014 12:31:37 +0200
+Thierry Reding <thierry.reding@gmail.com> wrote:
+
+> On Tue, Jul 15, 2014 at 12:06:19PM +0200, Boris BREZILLON wrote:
+> > On Mon, 14 Jul 2014 12:05:43 +0200 Thierry Reding <thierry.reding@gmail.com> wrote:
+> > > On Mon, Jul 07, 2014 at 06:42:59PM +0200, Boris BREZILLON wrote:
 > [...]
->>>> @@ -119,9 +185,12 @@ static int rockchip_pwm_probe(struct platform=
-_device *pdev)
->>>>   		return -ENOMEM;
->>>>   	r =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>>> -	pc->base =3D devm_ioremap_resource(&pdev->dev, r);
->>>> -	if (IS_ERR(pc->base))
->>>> -		return PTR_ERR(pc->base);
->>>> +	pc->base =3D of_iomap(np, 0);
->>>> +	if (!pc->base) {
->>>> +		dev_err(&pdev->dev, "failed to map controller\n");
->>>> +		ret =3D -ENOMEM;
->>>> +		goto fail_map;
->>>> +	}
->>> I think that this change is not needed. devm_ioremap_resource()
->>> guarantees an automatic unmapping when the device is destroyed.
->>>
->>> Moreover, when of_iomap() fails you don't need to call iounmap().
->>>
->>> Beniamino
->> VOP-PWM base has be requested for lcdc.
-> Why?
-VOP is  a seperate controllers for rk3288 and genenation SoCs.
-The VOP contains lcdc,pwm......
+> > > > diff --git a/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
+> > > [...]
+> > > > +The Atmel HLCDC Display Controller is subdevice of the HLCDC MFD device.
+> > > > +See Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt for more details.
+> > > 
+> > > I think it's better to refer to these using relative filenames. When the
+> > > device tree bindings are moved out of the kernel tree, they may no
+> > > longer use the same hierarchy.
+> > 
+> > Sure.
+> > By relative path you mean ../../mfd/atmel-hlcdc.txt or just
+> > mfd/atmel-hlcdc.txt ?
+> 
+> I think the former is more explicit.
 
-=46or example :Rk3288 SOC address mapping
+Okay.
 
-lcdc0: lcdc@ff930000                     vop0pwm: pwm@ff9301a0
-reg =3D <0xff930000 0x10000>       reg =3D <0xff9301a0 0x10>;
-offset =3D 0x10000                            offset =3D 0x10
+> 
+> > > > + - atmel,panel: Should contain a phandle with 2 parameters.
+> > > > +   The first cell is a phandle to a DRM panel device
+> > > > +   The second cell encodes the RGB mode, which can take the following values:
+> > > > +   * 0: RGB444
+> > > > +   * 1: RGB565
+> > > > +   * 2: RGB666
+> > > > +   * 3: RGB888
+> > > 
+> > > These are properties of the panel and should be obtained from the panel
+> > > directly rather than an additional cell in this specifier.
+> > 
+> > Okay.
+> > What's the preferred way of doing this ?
+> > What about defining an rgb-mode property in the panel node.
+> 
+> There's .bpc in struct drm_display_info, I suspect that it could be used
+> for this. Alternatively, maybe we could extend the list of color formats
+> that go into drm_display_info.color_formats? RGB444 is already covered.
 
-lcdc1: lcdc@ff940000                    vop1pwm: pwm@ff9401a0
-reg =3D <0xff940000 0x10000>      reg =3D <0xff9401a0 0x10>;
-offset =3D 0x10000                           offset =3D 0x10
+I don't think this color_formats field is intended to represent data
+stream format going through the bus.
+Moreover, AFAIU, RGB444 in this definition represent RGB 4:4:4 (chroma
+subsampling rate) and not 12 bits signals (4 bits for each color).
 
-In a word, lcdc and vop-pwm has shared the map address.
->> When I use devm_ioremap_resource(), the vop-pwm will request region =
-fail.
->>
->> Example:.931020] rockchip-pwm ff9401a0.pwm: can't request region for
->> resource [mem 0xff9401a0-0xff9401af] /pwm@ff9401a0.
->> So ,I have to charge it.
->>
->> I will be simplyfied by having:
->> - pc->base =3D devm_ioremap_resource(&pdev->dev, r);
->> + if (!strcmp(of_id->compatible, "rockchip,vop-pwm"))
->> + pc->base =3D devm_ioremap(&pdev->dev, r->start, resource_size(r));
->> + else
->> + pc->base =3D devm_ioremap_resource(&pdev->dev, r);
->>
->> Maybe, Could you give me better suggestions for it?
-> The right thing to do is not have two drivers access the same device.
-> Why does lcdc request the PWM register region?
->
-> Thierry
-Ditto,
-Maybe,Could you give me a better suggestion to do it?
+Anyway I'll propose a patch series adding a new field to
+drm_display_info to encode the mediabus format (as discussed with
+Laurent and you).
+
+> 
+> Also, like Laurent said, this shouldn't go into the device tree, since
+> it's already implied by the panel's compatible value, so we'd be
+> duplicating information.
+
+Again, this is not necessarily true (depending on your board design).
+One can decide to connect an RGB888 panel on an RGB666 bus and connect
+the missing pins to ground.
+
+> 
+> > BTW, have you received this series [1] adding support for the LCD panel
+> > I'm testing this driver with.
+> > 
+> > [1] https://lkml.org/lkml/2014/6/5/612
+> 
+> I don't think I've seen it in my inbox, let me check my archives.
+> 
+> > > > +   The third cell encodes specific flags describing LCD signals configuration
+> > > > +   (see Atmel's datasheet for a full description of these fields):
+> > > > +   * bit 0: HSPOL: Horizontal Synchronization Pulse Polarity
+> > > > +   * bit 1: VSPOL: Vertical Synchronization Pulse Polarity
+> > > > +   * bit 2: VSPDLYS: Vertical Synchronization Pulse Start
+> > > > +   * bit 3: VSPDLYE: Vertical Synchronization Pulse End
+> > > > +   * bit 4: DISPPOL: Display Signal Polarity
+> > > > +   * bit 7: DISPDLY: LCD Controller Display Power Signal Synchronization
+> > > > +   * bit 12: VSPSU: LCD Controller Vertical synchronization Pulse Setup Configuration
+> > > > +   * bit 13: VSPHO: LCD Controller Vertical synchronization Pulse Hold Configuration
+> > > > +   * bit 16-20: GUARDTIME: LCD DISPLAY Guard Time
+> > > 
+> > > Similarly for most of these: HSPOL and VSPOL seem to correspond to the
+> > > DRM_MODE_FLAG_{{P,N},{H,V}}SYNC flags in struct drm_display_mode. And
+> > > VSPDLYS as well as VSPDLYE sound like they may be vsync_start and
+> > > vsync_end of the same structure.
+> > 
+> > I agree with HSPOL and VSPOL.
+> > 
+> > > 
+> > > As for the others, maybe if you could explain what exactly they are we
+> > > may be able to find a better fit.
+> > 
+> > Atmel datasheets include several timing diagrams [2] (chapter "32.6.17
+> > Output Timing Generation" page 603), and I think you will get more
+> > informations from these diagrams than if I try to explain what I
+> > understood ;-).
+> 
+> These look like knobs to tune the signal in a very fine-grained manner.
+> To be honest, maybe the best way to solve this would be by omitting them
+> for now and choose some default that's likely to work on most devices.
+> Does the panel that you use specify how it expects HSYNC to be timed vs.
+> VSYNC?
 
 
+No it doesn't, and I agree that we should leave these specific timing
+tweaks unimplemented until we really need them.
+
+Regards,
+
+Boris
+
+
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
