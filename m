@@ -1,38 +1,210 @@
 From: Caesar Wang <caesar.wang@rock-chips.com>
-Subject: [PATCH v2 0/2] This series adds support for Rockchip SoCs integrated PWM.
-Date: Sat, 19 Jul 2014 20:55:27 +0800
-Message-ID: <1405774529-26027-1-git-send-email-caesar.wang@rock-chips.com>
+Subject: [PATCH v2 2/2] pwm: add this patch to support the new pwm of Rockchip SoCs
+Date: Sat, 19 Jul 2014 20:55:29 +0800
+Message-ID: <1405774529-26027-3-git-send-email-caesar.wang@rock-chips.com>
+References: <1405774529-26027-1-git-send-email-caesar.wang@rock-chips.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1405774529-26027-1-git-send-email-caesar.wang@rock-chips.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: heiko@sntech.de, thierry.reding@gmail.com, b.galvani@gmail.com
 Cc: cf@rock-chips.com, huangtao@rock-chips.com, addy.ke@rock-chips.com, xjq@rock-chips.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, Caesar Wang <caesar.wang@rock-chips.com>
 List-Id: linux-pwm@vger.kernel.org
 
-This patch will make applying on the top of Beniamino's submission,
-the Beniamino's submission come from [1].
+Suggested-by: Beniamino Galvani <b.galvani@gmail.com>
+Signed-off-by: Caesar Wang <caesar.wang@rock-chips.com>
+---
+ drivers/pwm/pwm-rockchip.c | 97 +++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 79 insertions(+), 18 deletions(-)
 
-[1]:
-https://git.kernel.org/cgit/linux/kernel/git/thierry.reding/linux-pwm.git/log/?h=for-next
-
-Beniamino's submission won't be used from genenation Rockchip SoCs.
-So I have to add the new pwm for next genenation Rockchip SoCs.
-
-Tested on RK3288 SDK board.
-
-Changes in v2:
-    * address comments from Beniamino Galvani Reding:
-      - remove #include <linux/of_address.h>. 
-      - of_iomap be removed,and devm_ioremap replace it.
-      - remove a line no be used.
-
-Caesar Wang (2):
-  [PATCH v2 1/2] pwm: add this patch to introduce for rk-pwm and vop-pwm
-
-  [PATCH v2 2/2] pwm: add this patch to support the new pwm of Rockchip SoCs
-
- .../devicetree/bindings/pwm/pwm-rockchip.txt       | 13 +--
- drivers/pwm/pwm-rockchip.c                         | 97 ++++++++++++++++++----
- 2 files changed, 87 insertions(+), 23 deletions(-)
-
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index eec2145..3628a1b 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -2,6 +2,7 @@
+  * PWM driver for Rockchip SoCs
+  *
+  * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
++ * Copyright (C) 2014 Caesar Wang <caesar.wang@rock-chips.com>
+  *
+  * This program is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU General Public License
+@@ -12,6 +13,7 @@
+ #include <linux/io.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
++#include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/pwm.h>
+ #include <linux/time.h>
+@@ -23,14 +25,36 @@
+ #define PWM_CTRL_TIMER_EN	(1 << 0)
+ #define PWM_CTRL_OUTPUT_EN	(1 << 3)
+ 
++#define RK_PRESCALER		1
+ #define PRESCALER		2
+ 
++#define PWM_CONTINUOUS		(1 << 1)
++#define PWM_DUTY_POSITIVE	(1 << 3)
++#define PWM_INACTIVE_NEGATIVE	(0 << 4)
++#define PWM_OUTPUT_LEFT		(0 << 5)
++#define PWM_LP_DISABLE		(0 << 8)
++
++#define RK_PWM_ENABLE		(1 << 0)
++
++#define VOP_PWM_CTRL		0x00		/* VOP-PWM Control Register */
++#define VOP_PWM_CNTR		0x0c
++
+ struct rockchip_pwm_chip {
+ 	struct pwm_chip chip;
+ 	struct clk *clk;
++	const struct rockchip_pwm_data *data;
+ 	void __iomem *base;
+ };
+ 
++struct rockchip_pwm_data {
++	u32 duty;
++	u32 period;
++	u32 reg_cntr;
++	u32 reg_ctrl;
++	int prescaler;
++	u32 enable_conf;
++};
++
+ static inline struct rockchip_pwm_chip *to_rockchip_pwm_chip(struct pwm_chip *c)
+ {
+ 	return container_of(c, struct rockchip_pwm_chip, chip);
+@@ -52,20 +76,20 @@ static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	 * default prescaler value for all practical clock rate values.
+ 	 */
+ 	div = clk_rate * period_ns;
+-	do_div(div, PRESCALER * NSEC_PER_SEC);
++	do_div(div, pc->data->prescaler * NSEC_PER_SEC);
+ 	period = div;
+ 
+ 	div = clk_rate * duty_ns;
+-	do_div(div, PRESCALER * NSEC_PER_SEC);
++	do_div(div, pc->data->prescaler * NSEC_PER_SEC);
+ 	duty = div;
+ 
+ 	ret = clk_enable(pc->clk);
+ 	if (ret)
+ 		return ret;
+ 
+-	writel(period, pc->base + PWM_LRC);
+-	writel(duty, pc->base + PWM_HRC);
+-	writel(0, pc->base + PWM_CNTR);
++	writel(period, pc->base + pc->data->period);
++	writel(duty, pc->base + pc->data->duty);
++	writel(0, pc->base + pc->data->reg_cntr);
+ 
+ 	clk_disable(pc->clk);
+ 
+@@ -82,9 +106,9 @@ static int rockchip_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	if (ret)
+ 		return ret;
+ 
+-	val = readl_relaxed(pc->base + PWM_CTRL);
+-	val |= PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN;
+-	writel_relaxed(val, pc->base + PWM_CTRL);
++	val = readl_relaxed(pc->base + pc->data->reg_ctrl);
++	val |= pc->data->enable_conf;
++	writel_relaxed(val, pc->base + pc->data->reg_ctrl);
+ 
+ 	return 0;
+ }
+@@ -94,9 +118,9 @@ static void rockchip_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
+ 	u32 val;
+ 
+-	val = readl_relaxed(pc->base + PWM_CTRL);
+-	val &= ~(PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN);
+-	writel_relaxed(val, pc->base + PWM_CTRL);
++	val = readl_relaxed(pc->base + pc->data->reg_ctrl);
++	val &= ~(pc->data->enable_conf);
++	writel_relaxed(val, pc->base + pc->data->reg_ctrl);
+ 
+ 	clk_disable(pc->clk);
+ }
+@@ -108,8 +132,47 @@ static const struct pwm_ops rockchip_pwm_ops = {
+ 	.owner = THIS_MODULE,
+ };
+ 
++static struct rockchip_pwm_data pwm_data_v1 = {
++	.duty = PWM_HRC,
++	.period = PWM_LRC,
++	.reg_cntr = PWM_CNTR,
++	.reg_ctrl = PWM_CTRL,
++	.prescaler = PRESCALER,
++	.enable_conf = PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN,
++};
++
++static struct rockchip_pwm_data pwm_data_v2 = {
++	.duty = PWM_LRC,
++	.period = PWM_HRC,
++	.reg_cntr = PWM_CNTR,
++	.reg_ctrl = PWM_CTRL,
++	.prescaler = RK_PRESCALER,
++	.enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | RK_PWM_ENABLE |
++		PWM_CONTINUOUS | PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE,
++};
++
++static struct rockchip_pwm_data pwm_data_vop = {
++	.duty = PWM_LRC,
++	.period = PWM_HRC,
++	.reg_cntr = VOP_PWM_CNTR,
++	.reg_ctrl = VOP_PWM_CTRL,
++	.prescaler = RK_PRESCALER,
++	.enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | RK_PWM_ENABLE |
++		PWM_CONTINUOUS | PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE,
++};
++
++static const struct of_device_id rockchip_pwm_dt_ids[] = {
++	{ .compatible = "rockchip,rk2928-pwm", .data = &pwm_data_v1},
++	{ .compatible = "rockchip,rk3288-pwm", .data = &pwm_data_v2},
++	{ .compatible = "rockchip,vop-pwm", .data = &pwm_data_vop},
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);
++
+ static int rockchip_pwm_probe(struct platform_device *pdev)
+ {
++	const struct of_device_id *of_id =
++	    of_match_device(rockchip_pwm_dt_ids, &pdev->dev);
+ 	struct rockchip_pwm_chip *pc;
+ 	struct resource *r;
+ 	int ret;
+@@ -119,7 +182,10 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	pc->base = devm_ioremap_resource(&pdev->dev, r);
++	if (!strcmp(of_id->compatible, "rockchip,vop-pwm"))
++		pc->base = devm_ioremap(&pdev->dev, r->start, resource_size(r));
++	else
++		pc->base = devm_ioremap_resource(&pdev->dev, r);
+ 	if (IS_ERR(pc->base))
+ 		return PTR_ERR(pc->base);
+ 
+@@ -133,6 +199,7 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, pc);
+ 
++	pc->data = of_id->data;
+ 	pc->chip.dev = &pdev->dev;
+ 	pc->chip.ops = &rockchip_pwm_ops;
+ 	pc->chip.base = -1;
+@@ -156,12 +223,6 @@ static int rockchip_pwm_remove(struct platform_device *pdev)
+ 	return pwmchip_remove(&pc->chip);
+ }
+ 
+-static const struct of_device_id rockchip_pwm_dt_ids[] = {
+-	{ .compatible = "rockchip,rk2928-pwm" },
+-	{ /* sentinel */ }
+-};
+-MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);
+-
+ static struct platform_driver rockchip_pwm_driver = {
+ 	.driver = {
+ 		.name = "rockchip-pwm",
 -- 
 1.9.1
