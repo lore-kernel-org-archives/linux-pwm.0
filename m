@@ -1,15 +1,17 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [RESEND PATCH v3 06/11] drm: add DT bindings documentation for
  atmel-hlcdc-dc driver
-Date: Mon, 21 Jul 2014 14:55:23 +0200
-Message-ID: <20140721125522.GE15238@ulmo>
+Date: Mon, 21 Jul 2014 14:56:26 +0200
+Message-ID: <20140721125624.GF15238@ulmo>
 References: <1404751384-5077-1-git-send-email-boris.brezillon@free-electrons.com>
- <20140721115737.1377a5fd@bbrezillon> <20140721121245.GA15238@ulmo>
- <1616525.bcHvjgnZ4T@avalon> <20140721143428.078b68a4@bbrezillon>
+ <1404751384-5077-7-git-send-email-boris.brezillon@free-electrons.com>
+ <20140714100542.GB9870@ulmo> <20140715120619.7f29c458@bbrezillon>
+ <20140715103136.GA6616@ulmo> <20140718165152.0a9fde09@bbrezillon>
+ <20140721121513.GB15238@ulmo> <20140721143321.5bda6ea9@bbrezillon>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1413851757=="
+Content-Type: multipart/mixed; boundary="===============0261748964=="
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20140721143428.078b68a4@bbrezillon>
+In-Reply-To: <20140721143321.5bda6ea9@bbrezillon>
 List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
@@ -24,131 +26,136 @@ Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Nicolas Fer
 List-Id: linux-pwm@vger.kernel.org
 
 
---===============1413851757==
+--===============0261748964==
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="0H629O+sVkh21xTi"
+	protocol="application/pgp-signature"; boundary="Y/WcH0a6A93yCHGr"
 Content-Disposition: inline
 
 
---0H629O+sVkh21xTi
+--Y/WcH0a6A93yCHGr
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 21, 2014 at 02:34:28PM +0200, Boris BREZILLON wrote:
-> On Mon, 21 Jul 2014 14:16:42 +0200
-> Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
+On Mon, Jul 21, 2014 at 02:33:21PM +0200, Boris BREZILLON wrote:
+> On Mon, 21 Jul 2014 14:15:16 +0200
+> Thierry Reding <thierry.reding@gmail.com> wrote:
 >=20
-> > Hi Thierry,
-> >=20
-> > On Monday 21 July 2014 14:12:47 Thierry Reding wrote:
-> > > On Mon, Jul 21, 2014 at 11:57:37AM +0200, Boris BREZILLON wrote:
-> > > > On Mon, 21 Jul 2014 11:32:55 +0200 Laurent Pinchart wrote:
-> > > >> On Monday 21 July 2014 11:24:38 Boris BREZILLON wrote:
-> > > >>> On Mon, 21 Jul 2014 10:59:12 +0200 Thierry Reding wrote:
-> > > >>>> On Fri, Jul 18, 2014 at 05:43:34PM +0200, Boris BREZILLON wrote:
-> > > >>>> [...]
-> > > >>>>=20
-> > > >>>>>>>>>> + - atmel,panel: Should contain a phandle with 2 parameter=
-s.
-> > > >>>>>>>>>> +   The first cell is a phandle to a DRM panel device
-> > > >>>>>>>>>> +   The second cell encodes the RGB mode, which can take t=
-he
-> > > >>>>>>>>>> following values:
-> > > >>>>>>>>>> +   * 0: RGB444
-> > > >>>>>>>>>> +   * 1: RGB565
-> > > >>>>>>>>>> +   * 2: RGB666
-> > > >>>>>>>>>> +   * 3: RGB888
-> > > >>>>>>>>>=20
-> > > >>>>>>>>> These are properties of the panel and should be obtained fr=
-om
-> > > >>>>>>>>> the panel directly rather than an additional cell in this
-> > > >>>>>>>>> specifier.
-> > > >>>>>>>>=20
-> > > >>>>>>>> Okay.
-> > > >>>>>>>> What's the preferred way of doing this ?
-> > > >>>>>>>> What about defining an rgb-mode property in the panel node.
-> > > >>>>>>>=20
-> > > >>>>>>> There's .bpc in struct drm_display_info, I suspect that it co=
-uld
-> > > >>>>>>> be used for this. Alternatively, maybe we could extend the li=
-st
-> > > >>>>>>> of color formats that go into drm_display_info.color_formats?
-> > > >>>>>>> RGB444 is already covered.
-> > > >>>>>=20
-> > > >>>>> I forgot to ask about bpc meaning. If, as I think, it means "bi=
-ts
-> > > >>>>> per color" then it cannot be used to encode RGB565 where green
-> > > >>>>> color is encoded on 6 bits and red and blue are encoded on 5 bi=
-ts.
-> > > >>>>=20
-> > > >>>> Yes, I agree that bps is not a good fit for what you need here.
-> > > >>>=20
-> > > >>> Okay, then I think we can replace bpc and color_formats by a
-> > > >>> bus_formats table containing all supported formats, and use an en=
-um
-> > > >>> (something similar to v4l2_mbus_pixelcode defined in v4l2-mediabu=
-s.h
-> > > >>> [1]) to list the available formats.
-> > > >>>=20
-> > > >>> As this implies quite a few changes in crtc core and some drm dri=
-vers
-> > > >>> (nouveau, i915 and radeon), I'd like to be sure this is what both=
- of
-> > > >>> you had in mind.
-> > > >>=20
-> > > >> I think it is, but just to make sure I understand you correctly, c=
-ould
-> > > >> you just show how the drm_display_info structure would look like ?
+> > On Fri, Jul 18, 2014 at 04:51:52PM +0200, Boris BREZILLON wrote:
+> > > Hi Thierry,
+> > >=20
+> > > Oops, I missed this reply.
+> > >=20
+> > > On Tue, 15 Jul 2014 12:31:37 +0200
+> > > Thierry Reding <thierry.reding@gmail.com> wrote:
+> > >=20
+> > > > On Tue, Jul 15, 2014 at 12:06:19PM +0200, Boris BREZILLON wrote:
+> > > > > On Mon, 14 Jul 2014 12:05:43 +0200 Thierry Reding <thierry.reding=
+@gmail.com> wrote:
+> > > > > > On Mon, Jul 07, 2014 at 06:42:59PM +0200, Boris BREZILLON wrote:
+> > > > [...]
+> > > > > > > diff --git a/Documentation/devicetree/bindings/drm/atmel-hlcd=
+c-dc.txt b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
+> > > > > > [...]
+> > > > > > > +The Atmel HLCDC Display Controller is subdevice of the HLCDC=
+ MFD device.
+> > > > > > > +See Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt fo=
+r more details.
+> > > > > >=20
+> > > > > > I think it's better to refer to these using relative filenames.=
+ When the
+> > > > > > device tree bindings are moved out of the kernel tree, they may=
+ no
+> > > > > > longer use the same hierarchy.
+> > > > >=20
+> > > > > Sure.
+> > > > > By relative path you mean ../../mfd/atmel-hlcdc.txt or just
+> > > > > mfd/atmel-hlcdc.txt ?
 > > > >=20
-> > > > The new drm_display_info structure should look like this [2] (except
-> > > > that color_formats and bpc have not be removed yet), and [1] is just
-> > > > here to show how the video_bus_format enum would look like.
+> > > > I think the former is more explicit.
+> > >=20
+> > > Okay.
+> > >=20
 > > > >=20
-> > > > [1] http://code.bulix.org/rfd0yx-86557
-> > > > [2] http://code.bulix.org/7n03b4-86556
+> > > > > > > + - atmel,panel: Should contain a phandle with 2 parameters.
+> > > > > > > +   The first cell is a phandle to a DRM panel device
+> > > > > > > +   The second cell encodes the RGB mode, which can take the =
+following values:
+> > > > > > > +   * 0: RGB444
+> > > > > > > +   * 1: RGB565
+> > > > > > > +   * 2: RGB666
+> > > > > > > +   * 3: RGB888
+> > > > > >=20
+> > > > > > These are properties of the panel and should be obtained from t=
+he panel
+> > > > > > directly rather than an additional cell in this specifier.
+> > > > >=20
+> > > > > Okay.
+> > > > > What's the preferred way of doing this ?
+> > > > > What about defining an rgb-mode property in the panel node.
+> > > >=20
+> > > > There's .bpc in struct drm_display_info, I suspect that it could be=
+ used
+> > > > for this. Alternatively, maybe we could extend the list of color fo=
+rmats
+> > > > that go into drm_display_info.color_formats? RGB444 is already cove=
+red.
 > > >=20
-> > > Quoting from your paste:
+> > > I don't think this color_formats field is intended to represent data
+> > > stream format going through the bus.
+> > > Moreover, AFAIU, RGB444 in this definition represent RGB 4:4:4 (chroma
+> > > subsampling rate) and not 12 bits signals (4 bits for each color).
 > > >=20
-> > > 	+   const enum video_bus_format *bus_formats;
-> > > 	+   int nbus_formats;
+> > > Anyway I'll propose a patch series adding a new field to
+> > > drm_display_info to encode the mediabus format (as discussed with
+> > > Laurent and you).
 > > >=20
-> > > Do we really need more than one?
+> > > >=20
+> > > > Also, like Laurent said, this shouldn't go into the device tree, si=
+nce
+> > > > it's already implied by the panel's compatible value, so we'd be
+> > > > duplicating information.
+> > >=20
+> > > Again, this is not necessarily true (depending on your board design).
+> > > One can decide to connect an RGB888 panel on an RGB666 bus and connect
+> > > the missing pins to ground.
 > >=20
-> > We do if we want to replace the color_formats and bpc fields.
-> >=20
+> > I think in that case the board design itself could be considered as an
+> > RGB888 to RGB666 bridge, and I think that's what the device tree should
+> > be describing rather than a panel with a variable number of input
+> > formats.
 >=20
-> Yes, that's what I was about to answer :-).
+> So, you're suggesting to add an RGB to RGB drm_bridge driver (and
+> the appropriate DT bindings) to handle this case, right ?
 
-Maybe we don't need to replace color_formats and bpc field immediately.
-That could be done in a follow-up patch.
+Yes, exactly.
 
 Thierry
 
---0H629O+sVkh21xTi
+--Y/WcH0a6A93yCHGr
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJTzQ26AAoJEN0jrNd/PrOhXpwP/1jw6XI6V+3qM3p3tiungob8
-C19a/s9lrO3kteMAy5wG5WmV5/WoLUrqOY4hTqJPHUgzck0x8oOI3YG7/pbseP9u
-Yg44Ohd4Xz4WTU9h/ZoI4P521facXzfMVhAgN/SfJl+t/2i7aqL/LZCn7qX9MMFz
-UK/guAGRfNgOLhJ4moMZEcs8VE1++XTVGUL3vVBNBMjp0YCavnPxvhhaxfZVttIm
-V6FUxCQ4M6ou0mLyU9QBEp5UiBC9elckcBM38p+OkN5X0IoY59e7hBL5QpUqzSKl
-PeRFXCdvG6JsKzcyzOOSxAlhsJLOcciuvVtLz38aN1MXTb6p31JlS8XZUVpNP6K9
-GED6dG0SPQ1EAiuM2eQ7xzB0b69cyfuWXQNT4tIDrwPM+KPt0TTwCYq7odNiMXD5
-3ICmpH3fOYS3Od1ux0eXLV4+nUvnSX8KmfD1GlBeXqne9qwP/ipgoWPvKFRu5yvI
-Ov0Rvh6eiqZwb09MSLmb9o0MUoqWnINy8SvxyKhd+OQCwsFTtYzqYO49KE66RhYy
-2coZ0W00bGnDLJmt0vi38hwdP4gd9LaaB0czxb7F6Tcvj429Ebf9XK7nET32RdvG
-dfUALqRAx4NlPPtPsWFab2hGWOT3PH/xI7D8Wp5009n7JCT2jS6rD5Pk3YoDncA7
-zSjXvY2GBTd9tnvJJuId
-=xLJw
+iQIcBAEBAgAGBQJTzQ34AAoJEN0jrNd/PrOhN1EP/20lQDIjPPUQj2DRQdvKtOeU
+7zRyNlDQPismCfs1smIB3nqxkGpvA/tU4TcbHKbyr1fRgq2GZ+/1CloaZTgHy3Ly
+ObGTd7MXZR8HydIYxwumbBvHaWgYVfa0z8/7A4slM46XQytT2unri6onjnTC+Lfn
+C+xP5h4AZpyn/BAcezksV8WfIthZvjhrSu8sSYIQqruyBYIqWRU3vniYX+rWTthw
+hMfRRr4AuKCInL4fQnJu1HLVZxdY9vvDLzOqYrwVsMBQa82t/mS/giC0r8eY7+MN
+yQuJ4QhF11SZsCRpRji17dXLfHs+/X+lzKTwRkQoDk+H1kOqaDFLdPBEbXx6l8eL
+GX+qfRvNKzPTzhIa2doqJuB3Dcpt4OfiVvHPhxi2zH7kGi5cfPpusK0xf55ZZO1I
+49MzqYW8c6X3eWWv5QB0Tk4nEKMmXw0YdAIxNBEs7Y5VZo8QoKq2xWnF6QOUZVdV
+L85QZuQFL+SW/XuG99eJn61ILBHMLuZX6wu2y3APCEoJVM1cTjy+oSOgxzDibLDF
+G/ghkAfSYoyQ8Mx4U5gOnEWDcvnO0AE5JKfFqmIP0Pe5wD0vxyeUIDboDpQ9I0ol
+Gzcnc5+e4R/oGQSQGdD4qhjjJUsyzQdS+Un0iqraI7ZEvP+CL6hnYYLNx406Clhg
+01l7z8dvbIlTsFuWner3
+=OWNM
 -----END PGP SIGNATURE-----
 
---0H629O+sVkh21xTi--
+--Y/WcH0a6A93yCHGr--
 
---===============1413851757==
+--===============0261748964==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -159,4 +166,4 @@ dri-devel mailing list
 dri-devel@lists.freedesktop.org
 http://lists.freedesktop.org/mailman/listinfo/dri-devel
 
---===============1413851757==--
+--===============0261748964==--
