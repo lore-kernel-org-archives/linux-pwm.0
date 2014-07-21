@@ -1,18 +1,15 @@
-From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Subject: Re: [RESEND PATCH v3 06/11] drm: add DT bindings documentation for
  atmel-hlcdc-dc driver
-Date: Mon, 21 Jul 2014 11:24:38 +0200
-Message-ID: <20140721112438.60452e09@bbrezillon>
+Date: Mon, 21 Jul 2014 11:32:55 +0200
+Message-ID: <1486972.oIqOcvGYCb@avalon>
 References: <1404751384-5077-1-git-send-email-boris.brezillon@free-electrons.com>
- <1404751384-5077-7-git-send-email-boris.brezillon@free-electrons.com>
- <20140714100542.GB9870@ulmo> <20140715120619.7f29c458@bbrezillon>
- <20140715103136.GA6616@ulmo> <20140718165152.0a9fde09@bbrezillon>
- <20140718174334.209e99c1@bbrezillon> <20140721085908.GI8843@ulmo>
+ <20140721085908.GI8843@ulmo> <20140721112438.60452e09@bbrezillon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20140721085908.GI8843@ulmo>
+In-Reply-To: <20140721112438.60452e09@bbrezillon>
 List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
@@ -22,57 +19,57 @@ List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
 Errors-To: dri-devel-bounces@lists.freedesktop.org
 Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, dri-devel@lists.freedesktop.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Lee Jones <lee.jones@linaro.org>, Jean-Jacques Hiblot <jjhiblot@traphandler.com>, Samuel Ortiz <sameo@linux.intel.com>, Tim Niemeyer <tim.niemeyer@corscience.de>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-pwm@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Kumar Gala <galak@codeaurora.org>
+To: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, dri-devel@lists.freedesktop.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Bo Shen <voice.shen@atmel.com>, Lee Jones <lee.jones@linaro.org>, Jean-Jacques Hiblot <jjhiblot@traphandler.com>, Samuel Ortiz <sameo@linux.intel.com>, Tim Niemeyer <tim.niemeyer@corscience.de>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-pwm@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Kumar Gala <galak@codeaurora.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, 21 Jul 2014 10:59:12 +0200
-Thierry Reding <thierry.reding@gmail.com> wrote:
+Hi Boris,
 
-> On Fri, Jul 18, 2014 at 05:43:34PM +0200, Boris BREZILLON wrote:
-> [...]
-> > > > > > > + - atmel,panel: Should contain a phandle with 2 parameters.
-> > > > > > > +   The first cell is a phandle to a DRM panel device
-> > > > > > > +   The second cell encodes the RGB mode, which can take the following values:
-> > > > > > > +   * 0: RGB444
-> > > > > > > +   * 1: RGB565
-> > > > > > > +   * 2: RGB666
-> > > > > > > +   * 3: RGB888
-> > > > > > 
-> > > > > > These are properties of the panel and should be obtained from the panel
-> > > > > > directly rather than an additional cell in this specifier.
-> > > > > 
-> > > > > Okay.
-> > > > > What's the preferred way of doing this ?
-> > > > > What about defining an rgb-mode property in the panel node.
-> > > > 
-> > > > There's .bpc in struct drm_display_info, I suspect that it could be used
-> > > > for this. Alternatively, maybe we could extend the list of color formats
-> > > > that go into drm_display_info.color_formats? RGB444 is already covered.
-> > > 
+On Monday 21 July 2014 11:24:38 Boris BREZILLON wrote:
+> On Mon, 21 Jul 2014 10:59:12 +0200 Thierry Reding wrote:
+> > On Fri, Jul 18, 2014 at 05:43:34PM +0200, Boris BREZILLON wrote:
+> > [...]
 > > 
-> > I forgot to ask about bpc meaning. If, as I think, it means "bits per
-> > color" then it cannot be used to encode RGB565 where green color is
-> > encoded on 6 bits and red and blue are encoded on 5 bits. 
+> >>>>>>> + - atmel,panel: Should contain a phandle with 2 parameters.
+> >>>>>>> +   The first cell is a phandle to a DRM panel device
+> >>>>>>> +   The second cell encodes the RGB mode, which can take the
+> >>>>>>> following values:
+> >>>>>>> +   * 0: RGB444
+> >>>>>>> +   * 1: RGB565
+> >>>>>>> +   * 2: RGB666
+> >>>>>>> +   * 3: RGB888
+> >>>>>> 
+> >>>>>> These are properties of the panel and should be obtained from
+> >>>>>> the panel directly rather than an additional cell in this specifier.
+> >>>>> 
+> >>>>> Okay.
+> >>>>> What's the preferred way of doing this ?
+> >>>>> What about defining an rgb-mode property in the panel node.
+> >>>> 
+> >>>> There's .bpc in struct drm_display_info, I suspect that it could be
+> >>>> used for this. Alternatively, maybe we could extend the list of color
+> >>>> formats that go into drm_display_info.color_formats? RGB444 is already
+> >>>> covered.
+> >> 
+> >> I forgot to ask about bpc meaning. If, as I think, it means "bits per
+> >> color" then it cannot be used to encode RGB565 where green color is
+> >> encoded on 6 bits and red and blue are encoded on 5 bits.
+> > 
+> > Yes, I agree that bps is not a good fit for what you need here.
 > 
-> Yes, I agree that bps is not a good fit for what you need here.
+> Okay, then I think we can replace bpc and color_formats by a bus_formats
+> table containing all supported formats, and use an enum (something
+> similar to v4l2_mbus_pixelcode defined in v4l2-mediabus.h [1]) to list
+> the available formats.
+> 
+> As this implies quite a few changes in crtc core and some drm drivers
+> (nouveau, i915 and radeon), I'd like to be sure this is what both of you
+> had in mind.
 
-Okay, then I think we can replace bpc and color_formats by a bus_formats
-table containing all supported formats, and use an enum (something
-similar to v4l2_mbus_pixelcode defined in v4l2-mediabus.h [1]) to list
-the available formats.
-
-As this implies quite a few changes in crtc core and some drm drivers
-(nouveau, i915 and radeon), I'd like to be sure this is what both of you
-had in mind.
-
-Best Regards,
-
-Boris
-
-[1]http://lxr.free-electrons.com/source/include/uapi/linux/v4l2-mediabus.h#L37
+I think it is, but just to make sure I understand you correctly, could you 
+just show how the drm_display_info structure would look like ?
 
 -- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Regards,
+
+Laurent Pinchart
