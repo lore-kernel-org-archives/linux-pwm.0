@@ -1,89 +1,112 @@
-From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: Re: [RESEND PATCH v3 06/11] drm: add DT bindings documentation for
- atmel-hlcdc-dc driver
-Date: Mon, 21 Jul 2014 11:57:37 +0200
-Message-ID: <20140721115737.1377a5fd@bbrezillon>
-References: <1404751384-5077-1-git-send-email-boris.brezillon@free-electrons.com>
- <20140721085908.GI8843@ulmo> <20140721112438.60452e09@bbrezillon>
- <1486972.oIqOcvGYCb@avalon>
+From: caesar <caesar.wang@rock-chips.com>
+Subject: Re: [PATCH v2 1/2] pwm: add this patch to introduce for rk-pwm and
+ vop-pwm
+Date: Mon, 21 Jul 2014 18:39:07 +0800
+Message-ID: <53CCEDCB.5010500@rock-chips.com>
+References: <1405774529-26027-1-git-send-email-caesar.wang@rock-chips.com> <1405774529-26027-2-git-send-email-caesar.wang@rock-chips.com> <20140721085716.GH8843@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1486972.oIqOcvGYCb@avalon>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, dri-devel@lists.freedesktop.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Bo Shen <voice.shen@atmel.com>, Lee Jones <lee.jones@linaro.org>, Jean-Jacques Hiblot <jjhiblot@traphandler.com>, Samuel Ortiz <sameo@linux.intel.com>, Tim Niemeyer <tim.niemeyer@corscience.de>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-pwm@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Kumar Gala <galak@codeaurora.org>
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from regular1.263xmail.com ([211.150.99.140]:58344 "EHLO
+	regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754324AbaGUKji (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Jul 2014 06:39:38 -0400
+In-Reply-To: <20140721085716.GH8843@ulmo>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: heiko@sntech.de, b.galvani@gmail.com, cf@rock-chips.com, huangtao@rock-chips.com, addy.ke@rock-chips.com, xjq@rock-chips.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, 21 Jul 2014 11:32:55 +0200
-Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
+Hi Thierry,
 
-> Hi Boris,
-> 
-> On Monday 21 July 2014 11:24:38 Boris BREZILLON wrote:
-> > On Mon, 21 Jul 2014 10:59:12 +0200 Thierry Reding wrote:
-> > > On Fri, Jul 18, 2014 at 05:43:34PM +0200, Boris BREZILLON wrote:
-> > > [...]
-> > > 
-> > >>>>>>> + - atmel,panel: Should contain a phandle with 2 parameters.
-> > >>>>>>> +   The first cell is a phandle to a DRM panel device
-> > >>>>>>> +   The second cell encodes the RGB mode, which can take the
-> > >>>>>>> following values:
-> > >>>>>>> +   * 0: RGB444
-> > >>>>>>> +   * 1: RGB565
-> > >>>>>>> +   * 2: RGB666
-> > >>>>>>> +   * 3: RGB888
-> > >>>>>> 
-> > >>>>>> These are properties of the panel and should be obtained from
-> > >>>>>> the panel directly rather than an additional cell in this specifier.
-> > >>>>> 
-> > >>>>> Okay.
-> > >>>>> What's the preferred way of doing this ?
-> > >>>>> What about defining an rgb-mode property in the panel node.
-> > >>>> 
-> > >>>> There's .bpc in struct drm_display_info, I suspect that it could be
-> > >>>> used for this. Alternatively, maybe we could extend the list of color
-> > >>>> formats that go into drm_display_info.color_formats? RGB444 is already
-> > >>>> covered.
-> > >> 
-> > >> I forgot to ask about bpc meaning. If, as I think, it means "bits per
-> > >> color" then it cannot be used to encode RGB565 where green color is
-> > >> encoded on 6 bits and red and blue are encoded on 5 bits.
-> > > 
-> > > Yes, I agree that bps is not a good fit for what you need here.
-> > 
-> > Okay, then I think we can replace bpc and color_formats by a bus_formats
-> > table containing all supported formats, and use an enum (something
-> > similar to v4l2_mbus_pixelcode defined in v4l2-mediabus.h [1]) to list
-> > the available formats.
-> > 
-> > As this implies quite a few changes in crtc core and some drm drivers
-> > (nouveau, i915 and radeon), I'd like to be sure this is what both of you
-> > had in mind.
-> 
-> I think it is, but just to make sure I understand you correctly, could you 
-> just show how the drm_display_info structure would look like ?
-> 
+=E4=BA=8E 2014=E5=B9=B407=E6=9C=8821=E6=97=A5 16:57, Thierry Reding =E5=
+=86=99=E9=81=93:
+> On Sat, Jul 19, 2014 at 08:55:28PM +0800, Caesar Wang wrote:
+>> Signed-off-by: Caesar Wang <caesar.wang@rock-chips.com>
+>> ---
+>>   Documentation/devicetree/bindings/pwm/pwm-rockchip.txt | 13 ++++++=
+++-----
+>>   1 file changed, 8 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt =
+b/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
+>> index 3182126..bb6e7f1 100644
+>> --- a/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
+>> +++ b/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
+>> @@ -1,11 +1,14 @@
+>>   Rockchip PWM controller
+>>  =20
+>>   Required properties:
+>> - - compatible: should be "rockchip,rk2928-pwm"
+>> - - reg: physical base address and length of the controller's regist=
+ers
+>> - - clocks: phandle and clock specifier of the PWM reference clock
+>> - - #pwm-cells: should be 2. See pwm.txt in this directory for a
+>> -   description of the cell format.
+> Can you please stick to the original format rather than removing the
+> space in the first column? It makes it difficult to see what's being
+> changed by this patch.
+ok=EF=BC=8C
+>> +- compatible: should be "rockchip,<name>-pwm"should be one of follo=
+wing:
+> I think it should be either 'should be "rockchip,<name>-pwm"' or 'sho=
+uld
+> be one of the following', not both.
+Seems reasonable.
+>
+>> +    "rockchip,rk2928-pwm" - support the old version PWM for RK29xx,=
+RK3066,RK3188 SoCs.
+>> +    "rockchip,rk3288-pwm" - support the new version PWM for RK3036,=
+RK3288 SoCs.
+>> +    "rockchip,vop-pwm" - support rockchip integrated VOP-PWM for RK=
+32 SoCs.
+> "old version PWM" and "new version PWM" can be dropped. Maybe:
+>
+> 	"rockchip,rk2928-pwm": found on RK29xx, RK3066 and RK3188 SoCs
+> 	"rockchip,rk3288-pwm": found on RK3036 and RK3288 SoCs
+> 	"rockchip,vop-pwm": found integrated in VOP on RK32xx SoCs
+>
+> ? Could you explain a little what this VOP is? Also since the above s=
+ays
+> that "rockchip,rk3288-pwm" is supported on RK3036, the compatible val=
+ue
+> should really be "rockchip,rk3036-pwm" since we usually list the chip
+> that an IP block was first used in (I'm assuming here that RK3036 is
+> older than RK3288).
+the SoC rk3036 is newer than rk3288. Maybe I will remove the rk3036.
+It's the genenation Soc.
 
-The new drm_display_info structure should look like this [2] (except
-that color_formats and bpc have not be removed yet), and [1] is just
-here to show how the video_bus_format enum would look like.
+VOP is the display interface from memory frame buffer to display device=
+=20
+(LCD panel, LVDS,MIPI, eDP, HDMI and TV set).
+VOP is connected to an AHB bus through an AHB slave and AXI bus through=
+=20
+an AXI master.
+The register setting is configured through the AHB slave interface and=20
+the display frame data
+is read through the AXI master interface.
+=46urthermore, there is adata path between IEP and VOP, which can provi=
+de=20
+frame data from IEP to VOP.
 
-[1] http://code.bulix.org/rfd0yx-86557
-[2] http://code.bulix.org/7n03b4-86556
+If you are interested in it,I will sent the vop doc for you and explain=
+ it.
+>> +- reg: physical base address and length of the controller's registe=
+rs.
+>> +- clocks: phandle and clock specifier of the PWM reference clock.
+>> +- #pwm-cells: should be 2. See pwm.txt in this directory for a
+>> +  description of the cell format.
+> These are all unchanged (except for the first column's space being
+> removed and the full-stops for reg and clocks properties). Please kee=
+p
+> with the original formatting so that it becomes obvious what the patc=
+h
+> changes.
+>
+> Thierry
+I will fix this and the other issuses in v3,thanks.
 
+Caesar
 
-
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
