@@ -1,128 +1,124 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RESEND PATCH v3 06/11] drm: add DT bindings documentation for
- atmel-hlcdc-dc driver
-Date: Mon, 21 Jul 2014 15:54:12 +0200
-Message-ID: <20140721135410.GA13770@ulmo>
-References: <1404751384-5077-1-git-send-email-boris.brezillon@free-electrons.com>
- <20140721133034.GI15238@ulmo>
- <20140721154313.1de8bf6f@bbrezillon>
- <1605488.5CKVSJec67@avalon>
+From: caesar <caesar.wang@rock-chips.com>
+Subject: Re: [PATCH v2 2/2] pwm: add this patch to support the new pwm of
+ Rockchip SoCs
+Date: Mon, 21 Jul 2014 22:10:04 +0800
+Message-ID: <53CD1F3C.3070000@rock-chips.com>
+References: <1405774529-26027-1-git-send-email-caesar.wang@rock-chips.com> <1405774529-26027-3-git-send-email-caesar.wang@rock-chips.com> <20140721085001.GG8843@ulmo> <53CD0E82.6030901@rock-chips.com> <20140721132723.GH15238@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="vtzGhvizbBRQ85DL"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wi0-f180.google.com ([209.85.212.180]:43182 "EHLO
-	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932099AbaGUNyQ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Jul 2014 09:54:16 -0400
-Content-Disposition: inline
-In-Reply-To: <1605488.5CKVSJec67@avalon>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140721132723.GH15238@ulmo>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: heiko@sntech.de, b.galvani@gmail.com, cf@rock-chips.com, huangtao@rock-chips.com, addy.ke@rock-chips.com, xjq@rock-chips.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Boris BREZILLON <boris.brezillon@free-electrons.com>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Jean-Jacques Hiblot <jjhiblot@traphandler.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, Bo Shen <voice.shen@atmel.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Robert Nelson <robertcnelson@gmail.com>, Tim Niemeyer <tim.niemeyer@corscience>
 
 
---vtzGhvizbBRQ85DL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+=E4=BA=8E 2014=E5=B9=B407=E6=9C=8821=E6=97=A5 21:27, Thierry Reding =E5=
+=86=99=E9=81=93:
+> On Mon, Jul 21, 2014 at 08:58:42PM +0800, caesar wrote:
+>> =E4=BA=8E 2014=E5=B9=B407=E6=9C=8821=E6=97=A5 16:50, Thierry Reding =
+=E5=86=99=E9=81=93:
+>>> On Sat, Jul 19, 2014 at 08:55:29PM +0800, Caesar Wang wrote:
+> [...]
+>>>>   	struct rockchip_pwm_chip *pc;
+>>>>   	struct resource *r;
+>>>>   	int ret;
+>>>> @@ -119,7 +182,10 @@ static int rockchip_pwm_probe(struct platform=
+_device *pdev)
+>>>>   		return -ENOMEM;
+>>>>   	r =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>> -	pc->base =3D devm_ioremap_resource(&pdev->dev, r);
+>>>> +	if (!strcmp(of_id->compatible, "rockchip,vop-pwm"))
+>>>> +		pc->base =3D devm_ioremap(&pdev->dev, r->start, resource_size(r=
+));
+>>>> +	else
+>>>> +		pc->base =3D devm_ioremap_resource(&pdev->dev, r);
+>>> Sorry, this still isn't an option. You really shouldn't remap I/O
+>>> regions that other drivers may be using. You hinted at a shared reg=
+ister
+>>> space during the review of the initial version. Can you provide mor=
+e
+>>> detail about what exactly the memory map looks like of the rk3288? =
+Is
+>>> there some kind of technical reference manual that I could look at?=
+ Or
+>>> do you have a device tree extract that shows what the memory map lo=
+oks
+>>> like?
+>>>
+>>> Thierry
+>> Maybe,you can look at the ARM: dts: rk3288:
+>> https://github.com/rkchrome/kernel/blob/master/arch/arm/boot/dts/rk3=
+288.dtsi
+>> There is some lcdc and vop-pwm map address for rk3288.
+>>
+>> ,and you can look at the vop-introduce.pdf and vop-register.pdf in A=
+nnex.
+>>
+>> Maybe,I should put the vop-pwm in lcdc driver,but I don't hope do so=
+ it.
+>>
+>> Could you give a suggestion to solve it? Thanks.
+> It looks like you could turn the lcdc device into an MFD device so th=
+at
+> it can instantiate two devices, one for the display controller, the
+> other for the PWM. Or perhaps it would even work with only a single
+> child device.
+>
+> The device tree would become something like this:
+>
+> 	lcdc@ff930000 {
+> 		compatible =3D "rockchip,rk3288-lcdc";
+> 		...
+>
+> 		pwm@ff9301a0 {
+> 			compatible =3D "rockchip,vop-pwm";
+> 			...
+> 		};
+> 	};
+>
+> And your driver would do something like:
+>
+> 	static const struct resource pwm_resources[] =3D {
+> 		{
+> 			.start =3D 0x1a0,
+> 			.end =3D 0x1af,
+> 			.flags =3D IORESOURCE_MEM,
+> 		},
+> 	};
+>
+> 	static const struct mfd_cell subdevices[] =3D {
+> 		{
+> 			.name =3D "pwm",
+> 			.id =3D 1,
+> 			.of_compatible =3D "rockchip,vop-pwm",
+> 			.num_resources =3D ARRAY_SIZE(pwm_resources),
+> 			.resources =3D pwm_resources,
+> 		},
+> 	};
+>
+> 	static int lcdc_probe(struct platform_device *pdev)
+> 	{
+> 		struct resource *regs;
+> 		...
+>
+> 		regs =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>
+> 		...
+>
+> 		err =3D mfd_add_devices(&pdev->dev, 0, subdevices, ARRAY_SIZE(subde=
+vices),
+> 				      regs, NULL, NULL);
+> 		...
+> 	}
+>
+> Thierry
 
-On Mon, Jul 21, 2014 at 03:47:52PM +0200, Laurent Pinchart wrote:
-> Hi Boris,
->=20
-> On Monday 21 July 2014 15:43:13 Boris BREZILLON wrote:
-> > On Mon, 21 Jul 2014 15:30:35 +0200 Thierry Reding wrote:
-> > > On Mon, Jul 21, 2014 at 03:22:05PM +0200, Laurent Pinchart wrote:
-> > >> On Monday 21 July 2014 14:55:23 Thierry Reding wrote:
-> > >>> On Mon, Jul 21, 2014 at 02:34:28PM +0200, Boris BREZILLON wrote:
-> > >>>> On Mon, 21 Jul 2014 14:16:42 +0200 Laurent Pinchart wrote:
-> > >>>>> On Monday 21 July 2014 14:12:47 Thierry Reding wrote:
-> > >>>>>> On Mon, Jul 21, 2014 at 11:57:37AM +0200, Boris BREZILLON wrote:
-> > >>
-> > >> [snip]
-> > >>=20
-> > >>>>>>> The new drm_display_info structure should look like this [2]
-> > >>>>>>> (except that color_formats and bpc have not be removed yet), and
-> > >>>>>>> [1] is just here to show how the video_bus_format enum would lo=
-ok
-> > >>>>>>> like.
-> > >>>>>>>=20
-> > >>>>>>> [1] http://code.bulix.org/rfd0yx-86557
-> > >>>>>>> [2] http://code.bulix.org/7n03b4-86556
-> > >>>>>>=20
-> > >>>>>> Quoting from your paste:
-> > >>>>>> 	+   const enum video_bus_format *bus_formats;
-> > >>>>>> 	+   int nbus_formats;
-> > >>>>>>=20
-> > >>>>>> Do we really need more than one?
-> > >>>>>=20
-> > >>>>> We do if we want to replace the color_formats and bpc fields.
-> > >>>>=20
-> > >>>> Yes, that's what I was about to answer :-).
-> > >>>=20
-> > >>> Maybe we don't need to replace color_formats and bpc field
-> > >>> immediately. That could be done in a follow-up patch.
-> > >>=20
-> > >> We don't need to replace them right now, but we should at least agre=
-e on
-> > >> how to replace them. Introducing a new field that would need to be
-> > >> replaced in the near future when removing color_formats and bpc would
-> > >> be a waste of time.
-> > >
-> > > Sure. One of the problems I see with replacing color_formats and bpc
-> > > with the above is that some of the bits within color_formats are set
-> > > when the EDID is parsed. That implies that if they are replaced with
-> > > an array of formats, the array would need to be reallocated during ED=
-ID
-> > > parsing. That sounds like ugliness.
-> > >=20
-> > > But if you can find a nice way to make it work that'd be great.
-> >=20
-> > How about using a list instead of an array ?
-> > This way we can add elements to this list when parsing the EDID.
-> >=20
-> > Or we can just define a maximum size for the bus_formats array when
-> > retrieving this info from EDID. If I'm correct we have at most 18 bus
-> > formats:
-> >  - 3 color formats:
-> >    * RGB 4:4:4
-> >    * YCbCr 4:4:4
-> >    * YCbCr 4:4:2
-> >  - 6 color depths: 6, 8, 10, 12, 14 and 16 bits per color
->=20
-> bpc isn't a bitmask, so EDID supports up to three formats only.
->=20
-> The color_formats field is computed in the drm_add_display_info() functio=
-n.=20
-> You could easily turn it into a local variable and allocate and fill the=
-=20
-> formats array at the end of the function.
+Seems resonable.
 
-But you also need to be careful to keep whatever formats the driver
-might have set explicitly.
+I will fix this and the other issues v3,Thanks.
 
-Thierry
-
---vtzGhvizbBRQ85DL
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJTzRuCAAoJEN0jrNd/PrOh5EIQAK41tJ7vwEPGXz92Cfo0tMFz
-SefzJNoPWkcIcINftcGV3gZ6UeulodvRsuTm5I1ilYCsok4+AtF/QwkjvvVpXM0Q
-tmJ5i8eSK97jvNoi/gU81sms9dz8qFFda8ObjHCeP6yQxCslWceKvJPDINzUxjY5
-stE4WwK++HB3oAsrj39lDCuHq4DE2hNXst8pTYcrmIkN8IqQ7L4EzVigX/QWnUls
-N1HHPrekoJiR0k+msk1iuNWXXx+5CHpXxYSlDlEBc+tnNbNyuYuBzVU3Y6RMmLYx
-JGGOBAHwt/lPLxyZJeIIPvaFdkmHtPNjXCsjEelNdkyPTGM4dX6kiIzr9XA3uRzY
-EtNznE8KCIwm0zTXU2BGPCFqUb8NufhSAG6Bsof3kSOCEo/HpW8MkGllW84doFHg
-A8r50+QHleoqMj29Yie9tg0SJHW6zupMbmZawHWNeCqJ6aZXvdTT3smAH9r1Hor6
-+ZCka/3xPduC2c5zKjtM/TJM0Od9vgjJ1N3NFEtM7coSZF+JZlrobyIEBi1iqa+o
-gcqJpJe85qDZKQCwweRNjBGPISzEzr7wdQ7eYVc4d6A1050SC4KrvuLDs+u1tzUH
-3A9ydDqinTTejlHKQYY9hwQ8TT7U5w7AJ3aLK9Il3/UpIX+4zOTLejPAn2sXvl1m
-S1W9TXWsulNn4X5k/fOZ
-=XMJw
------END PGP SIGNATURE-----
-
---vtzGhvizbBRQ85DL--
+Caesar
