@@ -1,111 +1,90 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 1/2] pwm: add this patch to introduce for rk-pwm and
- vop-pwm
-Date: Mon, 21 Jul 2014 10:57:17 +0200
-Message-ID: <20140721085716.GH8843@ulmo>
-References: <1405774529-26027-1-git-send-email-caesar.wang@rock-chips.com>
- <1405774529-26027-2-git-send-email-caesar.wang@rock-chips.com>
+Subject: Re: [RESEND PATCH v3 06/11] drm: add DT bindings documentation for
+ atmel-hlcdc-dc driver
+Date: Mon, 21 Jul 2014 10:59:12 +0200
+Message-ID: <20140721085908.GI8843@ulmo>
+References: <1404751384-5077-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1404751384-5077-7-git-send-email-boris.brezillon@free-electrons.com>
+ <20140714100542.GB9870@ulmo>
+ <20140715120619.7f29c458@bbrezillon>
+ <20140715103136.GA6616@ulmo>
+ <20140718165152.0a9fde09@bbrezillon>
+ <20140718174334.209e99c1@bbrezillon>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="xQmOcGOVkeO43v2v"
+	protocol="application/pgp-signature"; boundary="7IgncvKP0CVPV/ZZ"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wi0-f174.google.com ([209.85.212.174]:58313 "EHLO
-	mail-wi0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753266AbaGUI5V (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Jul 2014 04:57:21 -0400
+Received: from mail-wi0-f181.google.com ([209.85.212.181]:49815 "EHLO
+	mail-wi0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753036AbaGUI7Q (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Jul 2014 04:59:16 -0400
 Content-Disposition: inline
-In-Reply-To: <1405774529-26027-2-git-send-email-caesar.wang@rock-chips.com>
+In-Reply-To: <20140718174334.209e99c1@bbrezillon>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Caesar Wang <caesar.wang@rock-chips.com>
-Cc: heiko@sntech.de, b.galvani@gmail.com, cf@rock-chips.com, huangtao@rock-chips.com, addy.ke@rock-chips.com, xjq@rock-chips.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Cc: Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Jean-Jacques Hiblot <jjhiblot@traphandler.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, Bo Shen <voice.shen@atmel.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Robert Nelson <robertcnelson@gmail.com>, Tim Niemeyer <tim.niemeyer@corscience>
 
 
---xQmOcGOVkeO43v2v
+--7IgncvKP0CVPV/ZZ
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Jul 19, 2014 at 08:55:28PM +0800, Caesar Wang wrote:
-> Signed-off-by: Caesar Wang <caesar.wang@rock-chips.com>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-rockchip.txt | 13 ++++++++-----
->  1 file changed, 8 insertions(+), 5 deletions(-)
+On Fri, Jul 18, 2014 at 05:43:34PM +0200, Boris BREZILLON wrote:
+[...]
+> > > > > > + - atmel,panel: Should contain a phandle with 2 parameters.
+> > > > > > +   The first cell is a phandle to a DRM panel device
+> > > > > > +   The second cell encodes the RGB mode, which can take the fo=
+llowing values:
+> > > > > > +   * 0: RGB444
+> > > > > > +   * 1: RGB565
+> > > > > > +   * 2: RGB666
+> > > > > > +   * 3: RGB888
+> > > > >=20
+> > > > > These are properties of the panel and should be obtained from the=
+ panel
+> > > > > directly rather than an additional cell in this specifier.
+> > > >=20
+> > > > Okay.
+> > > > What's the preferred way of doing this ?
+> > > > What about defining an rgb-mode property in the panel node.
+> > >=20
+> > > There's .bpc in struct drm_display_info, I suspect that it could be u=
+sed
+> > > for this. Alternatively, maybe we could extend the list of color form=
+ats
+> > > that go into drm_display_info.color_formats? RGB444 is already covere=
+d.
+> >=20
 >=20
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt b/Doc=
-umentation/devicetree/bindings/pwm/pwm-rockchip.txt
-> index 3182126..bb6e7f1 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
-> @@ -1,11 +1,14 @@
->  Rockchip PWM controller
-> =20
->  Required properties:
-> - - compatible: should be "rockchip,rk2928-pwm"
-> - - reg: physical base address and length of the controller's registers
-> - - clocks: phandle and clock specifier of the PWM reference clock
-> - - #pwm-cells: should be 2. See pwm.txt in this directory for a
-> -   description of the cell format.
+> I forgot to ask about bpc meaning. If, as I think, it means "bits per
+> color" then it cannot be used to encode RGB565 where green color is
+> encoded on 6 bits and red and blue are encoded on 5 bits.=20
 
-Can you please stick to the original format rather than removing the
-space in the first column? It makes it difficult to see what's being
-changed by this patch.
-
-> +- compatible: should be "rockchip,<name>-pwm"should be one of following:
-
-I think it should be either 'should be "rockchip,<name>-pwm"' or 'should
-be one of the following', not both.
-
-> +    "rockchip,rk2928-pwm" - support the old version PWM for RK29xx,RK306=
-6,RK3188 SoCs.
-> +    "rockchip,rk3288-pwm" - support the new version PWM for RK3036,RK328=
-8 SoCs.
-> +    "rockchip,vop-pwm" - support rockchip integrated VOP-PWM for RK32 So=
-Cs.
-
-"old version PWM" and "new version PWM" can be dropped. Maybe:
-
-	"rockchip,rk2928-pwm": found on RK29xx, RK3066 and RK3188 SoCs
-	"rockchip,rk3288-pwm": found on RK3036 and RK3288 SoCs
-	"rockchip,vop-pwm": found integrated in VOP on RK32xx SoCs
-
-? Could you explain a little what this VOP is? Also since the above says
-that "rockchip,rk3288-pwm" is supported on RK3036, the compatible value
-should really be "rockchip,rk3036-pwm" since we usually list the chip
-that an IP block was first used in (I'm assuming here that RK3036 is
-older than RK3288).
-
-> +- reg: physical base address and length of the controller's registers.
-> +- clocks: phandle and clock specifier of the PWM reference clock.
-> +- #pwm-cells: should be 2. See pwm.txt in this directory for a
-> +  description of the cell format.
-
-These are all unchanged (except for the first column's space being
-removed and the full-stops for reg and clocks properties). Please keep
-with the original formatting so that it becomes obvious what the patch
-changes.
+Yes, I agree that bps is not a good fit for what you need here.
 
 Thierry
 
---xQmOcGOVkeO43v2v
+--7IgncvKP0CVPV/ZZ
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJTzNXsAAoJEN0jrNd/PrOhBf8QAK0fSsvV2zvWSlg4g43Vve2p
-G9i4BKXJQiNftszGVUeena0CdeLESSrDepp04mvqj8CVBYJ+k6kF4hvbU0vRG3d4
-5RQiUwCvWcOSSwsAvex3WWD5cn6unOOZafZ8c/njHZZjLycwPA6XtjAnrEM9QKb+
-xWOXFgqyEV7gLhV+g6IS91wuSL0pgQtmDKj0fsfsC7CK3VU7ciLz2jFE6/44ssQG
-Qt4RX0s2WwEfl3ijsYWLRbCiFoOuJpROhpI4jKVrr1YpKXFIycoBvEEpDiLOp/T+
-Csnx0LC5nQbeynSlG2dO17HIw5J4CwLQkI/UM1lcM2VFJygfWYqFy8TEHAk3kZo0
-MsRj5ENeQQ8ezxu4rETJuaedVefnaYciRsHnQbr5374xxflC+zzhTWSn0yNwUFFf
-QwxvO2pj9Ltn6X+6BKfZD96OoncmfSp5PmQ4Hx9rwVpByJ76/g+Njk6iZy7DIqcD
-2N+tu986Qsy2OkYd789tfkoDyOWm02+3c0PsLsX9BfeNztmVcK0hy9HsIPksxx44
-sk5iFluiQgKkUzV+tqj2mtRnbCiSYN6STf1Ni+hQrdyIP+iuJmnKKTf6/uEhJWxw
-Cg7+892CURmbmVwHHdoAa9mHQZTZwR/D+6ZllklJgDnjsC+yZh7EaeBIxRoG8Ruc
-SQG0mwORl+iLimXVVYGE
-=1VGz
+iQIcBAEBAgAGBQJTzNZcAAoJEN0jrNd/PrOhBCcP/RhGt4elUooEp/AqHD7bMfm+
+RuMS1CvVBknan4436X+X+EzVUcc5UR0BX54Zxi+5+eo9uX3txAEYiZhXILe1AueK
+eWZsQErlsHjT/VMmtBTtXROKxPgPeoFDQbStsWDiTIR68oWQQ8cNCBFzVx1QDprV
+wJYQDvNKRjmM1UTZEkiwQJ97RamcTGfezOSYEWQ+zqMhspigB1YF+8VuIBqvaWUu
+8AI14xB9OVpoys5j5u0fAVvl1K3Sj+jLNo74ESyjw4x6cijp1VdfdiVTCrTPK3E0
+Ipl2gJZjLQURojYxly4VVKL4OAVt7InLEwlZvuEniArEyRNpgW4l4Yj2Gif9HQTR
+Mp2qxev6lT3c+7LJagRPoxanVWDvLIPA5upH6CazE4U8xD2SKB7CFNb7XK+YAPgh
+iYRav6A6M2Sm4tS7z2IxTFPrjPh3SZnj7iPeD/jxJ6WFxx8qfdHKQGOEW02TWN6f
+hXJCrnnmETxEt3ErnhjhdpQj2XLr1suNE9sUN6nk4TyVwrmIxE20xbnOSY6UyCj9
+K2cziINDeQ8oA/kSIxU3F4/APeT+G5XzlM75XeTqO3+M6NI7UXYy/mZdGZb/yYUa
+DtQ4jaU/MWF2g1B4R3LlxQjkqhKOUOgH3AIEdnMU5h740aeLWEpNh8XZPR+GJClL
+mxNZt2Grbm7SiKe3gJiv
+=cl++
 -----END PGP SIGNATURE-----
 
---xQmOcGOVkeO43v2v--
+--7IgncvKP0CVPV/ZZ--
