@@ -1,135 +1,138 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [RESEND PATCH v3 06/11] drm: add DT bindings documentation for
- atmel-hlcdc-dc driver
-Date: Mon, 21 Jul 2014 15:26:12 +0200
-Message-ID: <2273675.A51UonkrgF@avalon>
-References: <1404751384-5077-1-git-send-email-boris.brezillon@free-electrons.com>
- <20140721143321.5bda6ea9@bbrezillon> <20140721125624.GF15238@ulmo>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2 2/2] pwm: add this patch to support the new pwm of
+ Rockchip SoCs
+Date: Mon, 21 Jul 2014 15:27:24 +0200
+Message-ID: <20140721132723.GH15238@ulmo>
+References: <1405774529-26027-1-git-send-email-caesar.wang@rock-chips.com>
+ <1405774529-26027-3-git-send-email-caesar.wang@rock-chips.com>
+ <20140721085001.GG8843@ulmo>
+ <53CD0E82.6030901@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0475406756=="
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20140721125624.GF15238@ulmo>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, dri-devel@lists.freedesktop.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Bo Shen <voice.shen@atmel.com>, Lee Jones <lee.jones@linaro.org>, Jean-Jacques Hiblot <jjhiblot@traphandler.com>, Samuel Ortiz <sameo@linux.intel.com>, Tim Niemeyer <tim.niemeyer@corscience.de>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-pwm@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Kumar Gala <galak@codeaurora.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="aF3LVLvitz/VQU3c"
+Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <53CD0E82.6030901@rock-chips.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: caesar <caesar.wang@rock-chips.com>
+Cc: heiko@sntech.de, b.galvani@gmail.com, cf@rock-chips.com, huangtao@rock-chips.com, addy.ke@rock-chips.com, xjq@rock-chips.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---===============0475406756==
-Content-Type: multipart/signed; boundary="nextPart3588957.OQjje9jzoQ"; micalg="pgp-sha1"; protocol="application/pgp-signature"
-
-
---nextPart3588957.OQjje9jzoQ
+--aF3LVLvitz/VQU3c
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="us-ascii"
 
-Hi Thierry,
-
-On Monday 21 July 2014 14:56:26 Thierry Reding wrote:
-> On Mon, Jul 21, 2014 at 02:33:21PM +0200, Boris BREZILLON wrote:
-> > On Mon, 21 Jul 2014 14:15:16 +0200 Thierry Reding wrote:
-> >> On Fri, Jul 18, 2014 at 04:51:52PM +0200, Boris BREZILLON wrote:
-> >>> On Tue, 15 Jul 2014 12:31:37 +0200 Thierry Reding wrote:
-> >>>> On Tue, Jul 15, 2014 at 12:06:19PM +0200, Boris BREZILLON wrote:=
-
-> >>>>> On Mon, 14 Jul 2014 12:05:43 +0200 Thierry Reding wrote:
-> >>>>>> On Mon, Jul 07, 2014 at 06:42:59PM +0200, Boris BREZILLON wrot=
-e:
-
-[snip]
-
-> >>>>>>> + - atmel,panel: Should contain a phandle with 2 parameters.
-> >>>>>>> +   The first cell is a phandle to a DRM panel device
-> >>>>>>> +   The second cell encodes the RGB mode, which can take the
-> >>>>>>> following values: +   * 0: RGB444
-> >>>>>>> +   * 1: RGB565
-> >>>>>>> +   * 2: RGB666
-> >>>>>>> +   * 3: RGB888
-> >>>>>>=20
-> >>>>>> These are properties of the panel and should be obtained from
-> >>>>>> the panel directly rather than an additional cell in this
-> >>>>>> specifier.
-> >>>>>=20
-> >>>>> Okay.
-> >>>>> What's the preferred way of doing this ?
-> >>>>> What about defining an rgb-mode property in the panel node.
-
-[snip]
-
-> >>>> Also, like Laurent said, this shouldn't go into the device tree,=
-
-> >>>> since it's already implied by the panel's compatible value, so w=
-e'd
-> >>>> be duplicating information.
-> >>>=20
-> >>> Again, this is not necessarily true (depending on your board desi=
-gn).
-> >>> One can decide to connect an RGB888 panel on an RGB666 bus and co=
-nnect
-> >>> the missing pins to ground.
-> >>=20
-> >> I think in that case the board design itself could be considered a=
-s an
-> >> RGB888 to RGB666 bridge, and I think that's what the device tree s=
-hould
-> >> be describing rather than a panel with a variable number of input
-> >> formats.
-> >=20
-> > So, you're suggesting to add an RGB to RGB drm_bridge driver (and
-> > the appropriate DT bindings) to handle this case, right ?
+On Mon, Jul 21, 2014 at 08:58:42PM +0800, caesar wrote:
+> =E4=BA=8E 2014=E5=B9=B407=E6=9C=8821=E6=97=A5 16:50, Thierry Reding =E5=
+=86=99=E9=81=93:
+> >On Sat, Jul 19, 2014 at 08:55:29PM +0800, Caesar Wang wrote:
+[...]
+> >>  	struct rockchip_pwm_chip *pc;
+> >>  	struct resource *r;
+> >>  	int ret;
+> >>@@ -119,7 +182,10 @@ static int rockchip_pwm_probe(struct platform_devi=
+ce *pdev)
+> >>  		return -ENOMEM;
+> >>  	r =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> >>-	pc->base =3D devm_ioremap_resource(&pdev->dev, r);
+> >>+	if (!strcmp(of_id->compatible, "rockchip,vop-pwm"))
+> >>+		pc->base =3D devm_ioremap(&pdev->dev, r->start, resource_size(r));
+> >>+	else
+> >>+		pc->base =3D devm_ioremap_resource(&pdev->dev, r);
+> >Sorry, this still isn't an option. You really shouldn't remap I/O
+> >regions that other drivers may be using. You hinted at a shared register
+> >space during the review of the initial version. Can you provide more
+> >detail about what exactly the memory map looks like of the rk3288? Is
+> >there some kind of technical reference manual that I could look at? Or
+> >do you have a device tree extract that shows what the memory map looks
+> >like?
+> >
+> >Thierry
+> Maybe,you can look at the ARM: dts: rk3288:
+> https://github.com/rkchrome/kernel/blob/master/arch/arm/boot/dts/rk3288.d=
+tsi
+> There is some lcdc and vop-pwm map address for rk3288.
 >=20
-> Yes, exactly.
+> ,and you can look at the vop-introduce.pdf and vop-register.pdf in Annex.
+>=20
+> Maybe,I should put the vop-pwm in lcdc driver,but I don't hope do so it.
+>=20
+> Could you give a suggestion to solve it? Thanks.
 
-Wouldn't it be possible to implement RGB666 -> RGB888 support in a less=
-=20
-complex way ? A standalone driver to describe signal routing seems like=
- an=20
-overly complex solution to me. I would prefer making the routing a prop=
-erly of=20
-the link instead of a separate device.
+It looks like you could turn the lcdc device into an MFD device so that
+it can instantiate two devices, one for the display controller, the
+other for the PWM. Or perhaps it would even work with only a single
+child device.
 
-=2D-=20
-Regards,
+The device tree would become something like this:
 
-Laurent Pinchart
+	lcdc@ff930000 {
+		compatible =3D "rockchip,rk3288-lcdc";
+		...
 
---nextPart3588957.OQjje9jzoQ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
+		pwm@ff9301a0 {
+			compatible =3D "rockchip,vop-pwm";
+			...
+		};
+	};
+
+And your driver would do something like:
+
+	static const struct resource pwm_resources[] =3D {
+		{
+			.start =3D 0x1a0,
+			.end =3D 0x1af,
+			.flags =3D IORESOURCE_MEM,
+		},
+	};
+
+	static const struct mfd_cell subdevices[] =3D {
+		{
+			.name =3D "pwm",
+			.id =3D 1,
+			.of_compatible =3D "rockchip,vop-pwm",
+			.num_resources =3D ARRAY_SIZE(pwm_resources),
+			.resources =3D pwm_resources,
+		},
+	};
+
+	static int lcdc_probe(struct platform_device *pdev)
+	{
+		struct resource *regs;
+		...
+
+		regs =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+
+		...
+
+		err =3D mfd_add_devices(&pdev->dev, 0, subdevices, ARRAY_SIZE(subdevices),
+				      regs, NULL, NULL);
+		...
+	}
+
+Thierry
+
+--aF3LVLvitz/VQU3c
+Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAABAgAGBQJTzRT0AAoJEIkPb2GL7hl1f3gH+wUUwsZqOTwdYRHYLdJneW0L
-LHHxTztWlbK+YuZ/p+gGjpbLf6dJydVrSg0ngTlOcp1XE6TMeIb33hBPDWEriu0o
-36txqOFNFXRuWjWgHQQ8XddkOEKvMOKk926ERpqlmPIccV42yBDUJUHbpaguPid1
-Uki2paXO/3V4sQ5lP8O43tjpNpdi5SwYGHs7vbl5EAp0CpaKPBGOWA28JzqG58gz
-Hdpa2uezQu8fENL+pI45BdW8QSZu6kx7Nis9vvBbNUgIuUYcXKjW+YPSb2cqAogm
-i3Nx0V1gqIP40aoqtTtNWxpDc/PJ8FeR/mqR4TIELnPT4mXPW6/iO1p6YgXM8Lk=
-=/Zms
+iQIcBAEBAgAGBQJTzRU7AAoJEN0jrNd/PrOh7dsQAInTbWuoVW/K6x4oJpJT6TsB
+YXX6rYenM499oYxtEpNz2V3Ltqf8LicHhudYJw2i91D22nI1HhfT5NsmB/uFq0A8
+bz84w3JPT2CxKXClojizSX9B5P7c+hzf3CY7U7FFhjeWRW0Q5736Z597VEdO4KQq
+q+QQWyT5d3j+0qKREXu6rdsJUxBCyPiIKKddOpX8pqUAn8m1w88chV2EN+KfEA8M
+GERcBT4bclynWsF/Z/ZL1K1a57YjkjQtS1M7Gf5zIMXd+j1gKD2ltAEUqEasiLDM
+F1YcTXg6I90Jt+9DVs1kEKmu0Aeq49JbupYigymBG/bOnfwGRoyKheanwDrpE0I1
+P+71iSHTLn0BHsapmNIH66ghw1DNs90JtRNPEw7nvBnt9ASsifgpSCESaNbMpw1S
++Q+DixTVao0Z6TBOcdt/a1dCRIKQi7IzH7H73J8ucX8+GB2vxRJvmt1iaXHcySK1
+U4VElUaI4w1+0OtO3VqzD0jn7Py/lISqhEQoyo8dTEWoKs9HxdiPosWGHgm2rr3A
+fiND2DG1sQieA/qykvUxFrkT4cVoAybXP9c9qix+IGQXyNKr5AtXCDNWrOdnZJM2
+qKy0odtnSx5O8S0xZFl9KodBU2C8KxtvhPgMqM/b/b9KZUVFSobj/to7Uwq1xTOn
+Ae5SCfKGE8vYoJM5jhAz
+=OU1H
 -----END PGP SIGNATURE-----
 
---nextPart3588957.OQjje9jzoQ--
-
-
---===============0475406756==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-dri-devel mailing list
-dri-devel@lists.freedesktop.org
-http://lists.freedesktop.org/mailman/listinfo/dri-devel
-
---===============0475406756==--
+--aF3LVLvitz/VQU3c--
