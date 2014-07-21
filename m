@@ -1,71 +1,102 @@
-From: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Subject: Re: [RESEND PATCH v3 06/11] drm: add DT bindings documentation for
-	atmel-hlcdc-dc driver
-Date: Mon, 21 Jul 2014 18:06:30 +0100
-Message-ID: <20140721170630.GG21766@n2100.arm.linux.org.uk>
-References: <1404751384-5077-1-git-send-email-boris.brezillon@free-electrons.com> <20140721143428.078b68a4@bbrezillon> <20140721125522.GE15238@ulmo> <2695740.osZpCPIB8S@avalon> <20140721133034.GI15238@ulmo> <20140721154313.1de8bf6f@bbrezillon>
+ atmel-hlcdc-dc driver
+Date: Mon, 21 Jul 2014 20:30:31 +0200
+Message-ID: <6062556.5zQdTSJFua@avalon>
+References: <1404751384-5077-1-git-send-email-boris.brezillon@free-electrons.com>
+ <20140721135410.GA13770@ulmo> <20140721162136.286f5b62@bbrezillon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20140721154313.1de8bf6f@bbrezillon>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Bo Shen <voice.shen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jean-Jacques Hiblot <jjhiblot-dLKeG7h1OhBDOHtkgc7UlQ@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Tim Niemeyer <tim.niemeyer-pDveNdigDaDu9UdzE1sIFA@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Robert Nelson <robertcnelson-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Andrew Victor <linux-PelNFVqkFnVyf+4FbqDuWQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thomas Petazzoni <thomas.petazzoni@free-el>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20140721162136.286f5b62@bbrezillon>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, dri-devel@lists.freedesktop.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Bo Shen <voice.shen@atmel.com>, Lee Jones <lee.jones@linaro.org>, Jean-Jacques Hiblot <jjhiblot@traphandler.com>, Samuel Ortiz <sameo@linux.intel.com>, Tim Niemeyer <tim.niemeyer@corscience.de>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-pwm@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Kumar Gala <galak@codeaurora.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Jul 21, 2014 at 03:43:13PM +0200, Boris BREZILLON wrote:
-> How about using a list instead of an array ?
-> This way we can add elements to this list when parsing the EDID.
-> 
-> Or we can just define a maximum size for the bus_formats array when
-> retrieving this info from EDID. If I'm correct we have at most 18 bus
-> formats:
->  - 3 color formats:
->    * RGB 4:4:4
->    * YCbCr 4:4:4
->    * YCbCr 4:4:2
->  - 6 color depths: 6, 8, 10, 12, 14 and 16 bits per color
+Hi Boris and Thierry,
 
-This starts to worry me.  What are we trying to do here - are we trying
-to encode the connection between the CRTC and the encoder, the encoder
-and the connector, or the connector and the device?
+On Monday 21 July 2014 16:21:36 Boris BREZILLON wrote:
+> On Mon, 21 Jul 2014 15:54:12 +0200 Thierry Reding wrote:
+> > On Mon, Jul 21, 2014 at 03:47:52PM +0200, Laurent Pinchart wrote:
+> >> On Monday 21 July 2014 15:43:13 Boris BREZILLON wrote:
+> >>> On Mon, 21 Jul 2014 15:30:35 +0200 Thierry Reding wrote:
+> >>>> On Mon, Jul 21, 2014 at 03:22:05PM +0200, Laurent Pinchart wrote:
+> >>>>> On Monday 21 July 2014 14:55:23 Thierry Reding wrote:
+> >>>>>> On Mon, Jul 21, 2014 at 02:34:28PM +0200, Boris BREZILLON wrote:
+> >>>>>>> On Mon, 21 Jul 2014 14:16:42 +0200 Laurent Pinchart wrote:
+> >>>>>>>> On Monday 21 July 2014 14:12:47 Thierry Reding wrote:
 
-The encoder to connector and connector to device is mostly a function of
-the interface spec itself (for example, many HDMI encoders take either a
-RGB or YUV input and can convert it to the HDMI specified colourspaces for
-transmission over the connector.)
+[snip]
 
-If you want to do encoder to connector, what about VGA or some other
-analogue signalling such as TV composite?  It's easy to take this too
-far...
+> >>>>>>>>> Quoting from your paste:
+> >>>>>>>>> 	+   const enum video_bus_format *bus_formats;
+> >>>>>>>>> 	+   int nbus_formats;
+> >>>>>>>>> 
+> >>>>>>>>> Do we really need more than one?
+> >>>>>>>> 
+> >>>>>>>> We do if we want to replace the color_formats and bpc fields.
+> >>>>>>> 
+> >>>>>>> Yes, that's what I was about to answer :-).
+> >>>>>> 
+> >>>>>> Maybe we don't need to replace color_formats and bpc field
+> >>>>>> immediately. That could be done in a follow-up patch.
+> >>>>> 
+> >>>>> We don't need to replace them right now, but we should at least
+> >>>>> agree on how to replace them. Introducing a new field that would
+> >>>>> need to be replaced in the near future when removing color_formats
+> >>>>> and bpc would be a waste of time.
+> >>>> 
+> >>>> Sure. One of the problems I see with replacing color_formats and bpc
+> >>>> with the above is that some of the bits within color_formats are set
+> >>>> when the EDID is parsed. That implies that if they are replaced with
+> >>>> an array of formats, the array would need to be reallocated during
+> >>>> EDID parsing. That sounds like ugliness.
+> >>>> 
+> >>>> But if you can find a nice way to make it work that'd be great.
+> >>> 
+> >>> How about using a list instead of an array ?
+> >>> This way we can add elements to this list when parsing the EDID.
+> >>> 
+> >>> Or we can just define a maximum size for the bus_formats array when
+> >>> retrieving this info from EDID. If I'm correct we have at most 18 bus
+> >>> 
+> >>> formats:
+> >>>  - 3 color formats:
+> >>>    * RGB 4:4:4
+> >>>    * YCbCr 4:4:4
+> >>>    * YCbCr 4:4:2
+> >>>  - 6 color depths: 6, 8, 10, 12, 14 and 16 bits per color
+> >> 
+> >> bpc isn't a bitmask, so EDID supports up to three formats only.
+> >> 
+> >> The color_formats field is computed in the drm_add_display_info()
+> >> function. You could easily turn it into a local variable and allocate
+> >> and fill the formats array at the end of the function.
+> > 
+> > But you also need to be careful to keep whatever formats the driver might
+> > have set explicitly.
 
-Surely the only one which matters is the CRTC to the encoder - that's
-certainly true of all the setups I've come across so far.  As for that
-interface, CRTCs I've seen can produce a /wide/ range of different
-representations.
+Do we have drivers that explicitly add formats to the formats parsed from EDID 
+data ? If so, what's the use case ?
 
-Some CRTCs (eg, AMBA CLCD) produce R, G, B signals scrunched down on to
-the LSB bits of a LCD data bus (so RGB888 uses 24 bits, RGB444 would
-use the LSB 12 bits of those 24 - rather than outputting the R4 bits on
-a subset of the R8 bits.)
+> Okay, in this case, using a list is a better idea, don't you think ?
 
-What about RGB565 - where you have differing number of bits for the
-green channel from red/blue?
+I'd prefer an array if possible, as that would be easier to use for drivers.
 
-Then you have red/blue colour swapping at the CRTC (and similar for YUV)
-such as on Dove / Armada.
-
-Then there are some encoders have the ability to almost arbitarily map
-their input pins according to whatever you choose (eg, TDA998x).
-
-This problem isn't as quite as simple as "this is what EDID gives us"
-and "these are the number of bits representing a colour".
+In any case, we need to define who allocates and frees the array or the list 
+elements, how and when.
 
 -- 
-FTTC broadband for 0.8mile line: currently at 9.5Mbps down 400kbps up
-according to speedtest.net.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Regards,
+
+Laurent Pinchart
