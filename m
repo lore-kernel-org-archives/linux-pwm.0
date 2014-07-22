@@ -1,67 +1,73 @@
 From: Varka Bhadram <varkabhadram@gmail.com>
-Subject: Re: [PATCH v4 02/11] mfd: add documentation for atmel-hlcdc DT bindings
-Date: Tue, 22 Jul 2014 20:02:53 +0530
-Message-ID: <53CE7615.4070001@gmail.com>
-References: <1406034695-15534-1-git-send-email-boris.brezillon@free-electrons.com> <1406034695-15534-3-git-send-email-boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH v4 04/11] pwm: add DT bindings documentation for atmel-hlcdc-pwm
+ driver
+Date: Tue, 22 Jul 2014 20:06:11 +0530
+Message-ID: <53CE76DB.7030902@gmail.com>
+References: <1406034695-15534-1-git-send-email-boris.brezillon@free-electrons.com> <1406034695-15534-5-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f48.google.com ([209.85.220.48]:62502 "EHLO
-	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754841AbaGVOdB (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 22 Jul 2014 10:33:01 -0400
-In-Reply-To: <1406034695-15534-3-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1406034695-15534-5-git-send-email-boris.brezillon@free-electrons.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Boris BREZILLON <boris.brezillon@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Clark <robdclark@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Bo Shen <voice.shen@atmel.com>
+List-Id: linux-pwm@vger.kernel.org
 
 
 On Tuesday 22 July 2014 06:41 PM, Boris BREZILLON wrote:
-> The HLCDC IP available on some Atmel SoCs (i.e. at91sam9n12, at91sam9x5
-> family or sama5d3 family) exposes 2 subdevices:
-> - a display controller (controlled by a DRM driver)
-> - a PWM chip
+> The HLCDC IP available in some Atmel SoCs (i.e. sam9x5i.e. at91sam9n12,
+> at91sam9x5 family or sama5d3 family) provide a PWM device.
 >
-> This patch adds documentation for atmel-hlcdc DT bindings.
+> The DT bindings used for this PWM device is following the default 3 cells
+> bindings described in Documentation/devicetree/bindings/pwm/pwm.txt.
 >
 > Signed-off-by: Boris BREZILLON <boris.brezillon@free-electrons.com>
 > ---
->   .../devicetree/bindings/mfd/atmel-hlcdc.txt        | 50 ++++++++++++++++++++++
->   1 file changed, 50 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt
+>   .../devicetree/bindings/pwm/atmel-hlcdc-pwm.txt    | 55 ++++++++++++++++++++++
+>   1 file changed, 55 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
 >
-> diff --git a/Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt b/Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt
+> diff --git a/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
 > new file mode 100644
-> index 0000000..e9cc1b2
+> index 0000000..86ad3e2
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt
-> @@ -0,0 +1,50 @@
-> +Device-Tree bindings for Atmel's HLCDC (High LCD Controller) MFD driver
+> +++ b/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
+> @@ -0,0 +1,55 @@
+> +Device-Tree bindings for Atmel's HLCDC (High LCD Controller) PWM driver
+> +
+> +The Atmel HLCDC PWM is subdevice of the HLCDC MFD device.
+> +See ../mfd/atmel-hlcdc.txt for more details.
 > +
 > +Required properties:
 > + - compatible: value should be one of the following:
-> +   "atmel,sama5d3-hlcdc"
-> + - reg: base address and size of the HLCDC device registers.
-> + - clock-names: the name of the 3 clocks requested by the HLCDC device.
-> +   Should contain "periph_clk", "sys_clk" and "slow_clk".
-> + - clocks: should contain the 3 clocks requested by the HLCDC device.
-> +
+> +   "atmel,hlcdc-pwm"
+> + - pinctr-names: the pin control state names. Should contain "default".
+> + - pinctrl-0: should contain the pinctrl states described by pinctrl
+> +   default.
+> + - #pwm-cells: should be set to 3. This PWM chip use the default 3 cells
+> +   bindings defined in Documentation/devicetree/bindings/pwm/pwm.txt.
+> +   The first cell encodes the PWM id (0 is the only acceptable value here,
+> +   because the chip only provide one PWM).
+> +   The second cell encodes the PWM period in nanoseconds.
+> +   The third cell encodes the PWM flags (the only supported flag is
+> +   PWM_POLARITY_INVERTED)
 
-These bindings not clearly readable. It would be readable if
-
+It will be readable if:
 Required properties:
-  - compatible	: value should be one of the following:"atmel,sama5d3-hlcdc"
-  - reg		: base address and size of the HLCDC device registers.
-  - clock-names	: the name of the 3 clocks requested by the HLCDC device.
-		  Should contain "periph_clk", "sys_clk" and "slow_clk".
-  - clocks	: should contain the 3 clocks requested by the HLCDC device.
-
-......
+  - compatible	: value should be one of the following: "atmel,hlcdc-pwm"
+  - pinctr-names	: the pin control state names. Should contain "default".
+  - pinctrl-0	: should contain the pinctrl states described by pinctrl default.
+  - #pwm-cells	: should be set to 3. This PWM chip use the default 3 cells
+		  bindings defined in Documentation/devicetree/bindings/pwm/pwm.txt.
+		  The first cell encodes the PWM id (0 is the only acceptable value here,
+		  because the chip only provide one PWM).
+		  The second cell encodes the PWM period in nanoseconds.
+		  The third cell encodes the PWM flags (the only supported flag is
+		  PWM_POLARITY_INVERTED)
+....
 
 
 -- 
 Regards,
 Varka Bhadram
-
