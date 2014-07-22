@@ -1,8 +1,8 @@
 From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: [PATCH v4 08/11] ARM: AT91/dt: add alternative pin muxing for sama5d3
- lcd pins
-Date: Tue, 22 Jul 2014 15:11:32 +0200
-Message-ID: <1406034695-15534-9-git-send-email-boris.brezillon@free-electrons.com>
+Subject: [PATCH v4 10/11] ARM: at91/dt: add LCD panel description to
+ sama5d3xdm.dtsi
+Date: Tue, 22 Jul 2014 15:11:34 +0200
+Message-ID: <1406034695-15534-11-git-send-email-boris.brezillon@free-electrons.com>
 References: <1406034695-15534-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,80 +22,84 @@ To: Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <p
 Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Define alternative pin muxing for the LCDC pins.
+Add LCD panel related nodes (backlight, regulators and panel) to sama5d3
+Display Module dtsi.
+
+Reference LCD pin muxing used by sama5d3xek boards.
 
 Signed-off-by: Boris BREZILLON <boris.brezillon@free-electrons.com>
 ---
- arch/arm/boot/dts/sama5d3_lcd.dtsi | 50 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+ arch/arm/boot/dts/sama5d3xdm.dtsi | 58 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sama5d3_lcd.dtsi b/arch/arm/boot/dts/sama5d3_lcd.dtsi
-index 2186b89..e7581f6 100644
---- a/arch/arm/boot/dts/sama5d3_lcd.dtsi
-+++ b/arch/arm/boot/dts/sama5d3_lcd.dtsi
-@@ -82,6 +82,28 @@
- 							 AT91_PIOA 13 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD13 pin */
- 							 AT91_PIOA 14 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD14 pin */
- 							 AT91_PIOA 15 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD15 pin */
-+							 AT91_PIOA 16 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD16 pin */
-+							 AT91_PIOA 17 AT91_PERIPH_A AT91_PINCTRL_NONE>;	/* LCDD17 pin */
-+					};
-+
-+					pinctrl_lcd_rgb666_alt: lcd-rgb-2-alt {
-+						atmel,pins =
-+							<AT91_PIOA 0 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD0 pin */
-+							 AT91_PIOA 1 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD1 pin */
-+							 AT91_PIOA 2 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD2 pin */
-+							 AT91_PIOA 3 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD3 pin */
-+							 AT91_PIOA 4 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD4 pin */
-+							 AT91_PIOA 5 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD5 pin */
-+							 AT91_PIOA 6 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD6 pin */
-+							 AT91_PIOA 7 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD7 pin */
-+							 AT91_PIOA 8 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD8 pin */
-+							 AT91_PIOA 9 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD9 pin */
-+							 AT91_PIOA 10 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD10 pin */
-+							 AT91_PIOA 11 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD11 pin */
-+							 AT91_PIOA 12 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD12 pin */
-+							 AT91_PIOA 13 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD13 pin */
-+							 AT91_PIOA 14 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD14 pin */
-+							 AT91_PIOA 15 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD15 pin */
- 							 AT91_PIOC 14 AT91_PERIPH_C AT91_PINCTRL_NONE	/* LCDD16 pin */
- 							 AT91_PIOC 13 AT91_PERIPH_C AT91_PINCTRL_NONE>;	/* LCDD17 pin */
+diff --git a/arch/arm/boot/dts/sama5d3xdm.dtsi b/arch/arm/boot/dts/sama5d3xdm.dtsi
+index 035ab72..91975eb 100644
+--- a/arch/arm/boot/dts/sama5d3xdm.dtsi
++++ b/arch/arm/boot/dts/sama5d3xdm.dtsi
+@@ -36,6 +36,64 @@
  					};
-@@ -104,6 +126,34 @@
- 							 AT91_PIOA 13 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD13 pin */
- 							 AT91_PIOA 14 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD14 pin */
- 							 AT91_PIOA 15 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD15 pin */
-+							 AT91_PIOA 16 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD16 pin */
-+							 AT91_PIOA 17 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD17 pin */
-+							 AT91_PIOA 18 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD18 pin */
-+							 AT91_PIOA 19 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD19 pin */
-+							 AT91_PIOA 20 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD20 pin */
-+							 AT91_PIOA 21 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD21 pin */
-+							 AT91_PIOA 22 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD22 pin */
-+							 AT91_PIOA 23 AT91_PERIPH_A AT91_PINCTRL_NONE>;	/* LCDD23 pin */
-+					};
+ 				};
+ 			};
 +
-+					pinctrl_lcd_rgb888_alt: lcd-rgb-3-alt {
-+						atmel,pins =
-+							<AT91_PIOA 0 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD0 pin */
-+							 AT91_PIOA 1 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD1 pin */
-+							 AT91_PIOA 2 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD2 pin */
-+							 AT91_PIOA 3 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD3 pin */
-+							 AT91_PIOA 4 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD4 pin */
-+							 AT91_PIOA 5 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD5 pin */
-+							 AT91_PIOA 6 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD6 pin */
-+							 AT91_PIOA 7 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD7 pin */
-+							 AT91_PIOA 8 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD8 pin */
-+							 AT91_PIOA 9 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD9 pin */
-+							 AT91_PIOA 10 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD10 pin */
-+							 AT91_PIOA 11 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD11 pin */
-+							 AT91_PIOA 12 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD12 pin */
-+							 AT91_PIOA 13 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD13 pin */
-+							 AT91_PIOA 14 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD14 pin */
-+							 AT91_PIOA 15 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD15 pin */
- 							 AT91_PIOC 14 AT91_PERIPH_C AT91_PINCTRL_NONE	/* LCDD16 pin */
- 							 AT91_PIOC 13 AT91_PERIPH_C AT91_PINCTRL_NONE	/* LCDD17 pin */
- 							 AT91_PIOC 12 AT91_PERIPH_C AT91_PINCTRL_NONE	/* LCDD18 pin */
++			hlcdc: hlcdc@f0030000 {
++				hlcdc-display-controller {
++					pinctrl-names = "default";
++					pinctrl-0 = <&pinctrl_lcd_base &pinctrl_lcd_rgb888_alt>;
++
++					port@0 {
++						hlcdc_panel_output: endpoint@0 {
++							reg = <0>;
++							remote-endpoint = <&panel_input>;
++						};
++					};
++				};
++			};
++		};
++	};
++
++	bl_reg: backlight_regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "backlight-power-supply";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		status = "disabled";
++	};
++
++	panel_reg: panel_regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "panel-power-supply";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		status = "disabled";
++	};
++
++	backlight: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&hlcdc_pwm 0 50000 0>;
++		brightness-levels = <0 4 8 16 32 64 128 255>;
++		default-brightness-level = <6>;
++		power-supply = <&bl_reg>;
++		status = "disabled";
++	};
++
++	panel: panel {
++		compatible = "foxlink,fl500wvr00-a0t", "simple-panel";
++		backlight = <&backlight>;
++		power-supply = <&panel_reg>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		status = "disabled";
++
++		port@0 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			panel_input: endpoint@0 {
++				reg = <0>;
++				remote-endpoint = <&hlcdc_panel_output>;
++			};
+ 		};
+ 	};
+ };
 -- 
 1.8.3.2
