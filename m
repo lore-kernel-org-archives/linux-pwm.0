@@ -1,8 +1,8 @@
 From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: [PATCH v4 10/11] ARM: at91/dt: add LCD panel description to
- sama5d3xdm.dtsi
-Date: Tue, 22 Jul 2014 15:11:34 +0200
-Message-ID: <1406034695-15534-11-git-send-email-boris.brezillon@free-electrons.com>
+Subject: [PATCH v4 06/11] drm: add DT bindings documentation for
+ atmel-hlcdc-dc driver
+Date: Tue, 22 Jul 2014 15:11:30 +0200
+Message-ID: <1406034695-15534-7-git-send-email-boris.brezillon@free-electrons.com>
 References: <1406034695-15534-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,84 +22,85 @@ To: Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <p
 Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Add LCD panel related nodes (backlight, regulators and panel) to sama5d3
-Display Module dtsi.
+The Atmel HLCDC (HLCD Controller) IP available on some Atmel SoCs (i.e.
+at91sam9n12, at91sam9x5 family or sama5d3 family) provides a display
+controller device.
 
-Reference LCD pin muxing used by sama5d3xek boards.
+The HLCDC block provides a single RGB output port, and only supports LCD
+panels connection to LCD panels for now.
+
+The atmel,panel property link the HLCDC RGB output with the LCD panel
+connected on this port (note that the HLCDC RGB connector implementation
+makes use of the DRM panel framework).
+
+Connection to other external devices (DRM bridges) might be added later by
+mean of a new atmel,xxx (atmel,bridge) property.
 
 Signed-off-by: Boris BREZILLON <boris.brezillon@free-electrons.com>
 ---
- arch/arm/boot/dts/sama5d3xdm.dtsi | 58 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 58 insertions(+)
+ .../devicetree/bindings/drm/atmel-hlcdc-dc.txt     | 54 ++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
 
-diff --git a/arch/arm/boot/dts/sama5d3xdm.dtsi b/arch/arm/boot/dts/sama5d3xdm.dtsi
-index 035ab72..91975eb 100644
---- a/arch/arm/boot/dts/sama5d3xdm.dtsi
-+++ b/arch/arm/boot/dts/sama5d3xdm.dtsi
-@@ -36,6 +36,64 @@
- 					};
- 				};
- 			};
+diff --git a/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
+new file mode 100644
+index 0000000..73b9860
+--- /dev/null
++++ b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
+@@ -0,0 +1,54 @@
++Device-Tree bindings for Atmel's HLCDC (High LCD Controller) DRM driver
 +
-+			hlcdc: hlcdc@f0030000 {
-+				hlcdc-display-controller {
-+					pinctrl-names = "default";
-+					pinctrl-0 = <&pinctrl_lcd_base &pinctrl_lcd_rgb888_alt>;
++The Atmel HLCDC Display Controller is subdevice of the HLCDC MFD device.
++See ../mfd/atmel-hlcdc.txt for more details.
 +
-+					port@0 {
-+						hlcdc_panel_output: endpoint@0 {
-+							reg = <0>;
-+							remote-endpoint = <&panel_input>;
-+						};
-+					};
-+				};
-+			};
-+		};
-+	};
++Required properties:
++ - compatible: value should be "atmel,hlcdc-display-controller"
++ - interrupts: the HLCDC interrupt definition
++ - pinctrl-names: the pin control state names. Should contain "default".
++ - pinctrl-0: should contain the default pinctrl states.
++ - #address-cells: should be set to 1.
++ - #size-cells: should be set to 0.
 +
-+	bl_reg: backlight_regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "backlight-power-supply";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		status = "disabled";
-+	};
++Required children nodes:
++ Children nodes are encoding available output ports and their connections
++ to external devices using the OF graph reprensentation (see ../graph.txt).
++ At least one port node is required.
 +
-+	panel_reg: panel_regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "panel-power-supply";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		status = "disabled";
-+	};
++Example:
 +
-+	backlight: backlight {
-+		compatible = "pwm-backlight";
-+		pwms = <&hlcdc_pwm 0 50000 0>;
-+		brightness-levels = <0 4 8 16 32 64 128 255>;
-+		default-brightness-level = <6>;
-+		power-supply = <&bl_reg>;
-+		status = "disabled";
-+	};
-+
-+	panel: panel {
-+		compatible = "foxlink,fl500wvr00-a0t", "simple-panel";
-+		backlight = <&backlight>;
-+		power-supply = <&panel_reg>;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
++	hlcdc: hlcdc@f0030000 {
++		compatible = "atmel,sama5d3-hlcdc";
++		reg = <0xf0030000 0x2000>;
++		clocks = <&lcdc_clk>, <&lcdck>, <&clk32k>;
++		clock-names = "periph_clk","sys_clk", "slow_clk";
 +		status = "disabled";
 +
-+		port@0 {
++		hlcdc-display-controller {
++			compatible = "atmel,hlcdc-display-controller";
++			interrupts = <36 IRQ_TYPE_LEVEL_HIGH 0>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&pinctrl_lcd_base &pinctrl_lcd_rgb888>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
 +
-+			panel_input: endpoint@0 {
++			port@0 {
++				#address-cells = <1>;
++				#size-cells = <0>;
 +				reg = <0>;
-+				remote-endpoint = <&hlcdc_panel_output>;
++
++				hlcdc_panel_output: endpoint@0 {
++					reg = <0>;
++					remote-endpoint = <&panel_input>;
++				};
 +			};
- 		};
- 	};
- };
++		};
++
++		hlcdc_pwm: hlcdc-pwm {
++			compatible = "atmel,hlcdc-pwm";
++			pinctrl-names = "default";
++			pinctrl-0 = <&pinctrl_lcd_pwm>;
++			#pwm-cells = <3>;
++		};
++	};
 -- 
 1.8.3.2
