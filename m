@@ -1,80 +1,290 @@
-From: Chen Gang <gang.chen.5i5j@gmail.com>
-Subject: Re: [PATCH] drivers/pwm/Kconfig: Let PWM_CLPS711X depend on HAS_IOMEM
-Date: Wed, 23 Jul 2014 19:51:48 +0800
-Message-ID: <53CFA1D4.5060603@gmail.com>
-References: <53C27247.2010300@gmail.com> <20140714081843.GK2081@ulmo> <6A7CA9C8-7BC4-44BA-AE71-63BDADFF9023@gmail.com> <20140714093310.GC9755@ulmo> <8FB3DF93-7766-4B0D-9D6B-001861925A9F@gmail.com>
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+Subject: Re: [PATCH v3 2/2] pwm: rockchip: Added to support for RK3288 SoC
+Date: Wed, 23 Jul 2014 18:01:46 +0200
+Message-ID: <1648580.P46ct6rREY@diego>
+References: <1406097521-6457-1-git-send-email-caesar.wang@rock-chips.com> <1406097521-6457-3-git-send-email-caesar.wang@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f52.google.com ([209.85.220.52]:65438 "EHLO
-	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755798AbaGWLvy (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 23 Jul 2014 07:51:54 -0400
-In-Reply-To: <8FB3DF93-7766-4B0D-9D6B-001861925A9F@gmail.com>
+Received: from gloria.sntech.de ([95.129.55.99]:48723 "EHLO gloria.sntech.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754151AbaGWQA1 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Wed, 23 Jul 2014 12:00:27 -0400
+In-Reply-To: <1406097521-6457-3-git-send-email-caesar.wang@rock-chips.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Richard Weinberger <richard@nod.at>, Liqin Chen <liqin.linux@gmail.com>, Lennox Wu <lennox.wu@gmail.com>
+To: Caesar Wang <caesar.wang@rock-chips.com>
+Cc: thierry.reding@gmail.com, b.galvani@gmail.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, cf@rock-chips.com, huangtao@rock-chips.com, hj@rock-chips.com, xjq@rock-chips.com, addy.ke@rock-chips.com
 
-Oh, sorry, after a long discussion, we have to keep current status no
-touch -- let individual modules depends on HAS_IOMEM if they need it.
+Hi Caesar.
 
-So, this patch is still alive, please help check it, when you have time=
-=2E
+Am Mittwoch, 23. Juli 2014, 14:38:41 schrieb Caesar Wang:
+> This patch added to support the PWM controller found on
+> RK3288 SoC.
+> 
+> Signed-off-by: Caesar Wang <caesar.wang@rock-chips.com>
+> ---
+>  drivers/pwm/pwm-rockchip.c | 141
+> +++++++++++++++++++++++++++++++++++++++------ 1 file changed, 122
+> insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+> index eec2145..8d72a98 100644
+> --- a/drivers/pwm/pwm-rockchip.c
+> +++ b/drivers/pwm/pwm-rockchip.c
+> @@ -2,6 +2,7 @@
+>   * PWM driver for Rockchip SoCs
+>   *
+>   * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
+> + * Copyright (C) 2014 Caesar Wang <caesar.wang@rock-chips.com>
 
-Thanks.
+you might want to check who actually holds the copyright for your 
+contributions, I guess a "Copyright (C) 2014 Rockchip"-something would be more 
+appropriate?
 
-On 07/14/2014 06:00 PM, Chen Gang wrote:
->=20
-> =E5=9C=A8 2014=E5=B9=B47=E6=9C=8814=E6=97=A5=EF=BC=8C=E4=B8=8B=E5=8D=88=
-5:33=EF=BC=8CThierry Reding <thierry.reding@gmail.com> =E5=86=99=E9=81=93=
-=EF=BC=9A
->=20
->> On Mon, Jul 14, 2014 at 05:14:05PM +0800, Chen Gang wrote:
->>>
->>> =E5=9C=A8 2014=E5=B9=B47=E6=9C=8814=E6=97=A5=EF=BC=8C=E4=B8=8B=E5=8D=
-=884:18=EF=BC=8CThierry Reding <thierry.reding@gmail.com> =E5=86=99=E9=81=
-=93=EF=BC=9A
->>>
->>>> On Sun, Jul 13, 2014 at 07:49:27PM +0800, Chen Gang wrote:
->>>>> PWM_CLPS711X needs HAS_IOMEM, so let it depend on HAS_IOMEM.
->>>>>
->>>>> The related error (with allmodconfig under score):
->>>>>
->>>>>   MODPOST 1365 modules
->>>>> ERROR: "devm_ioremap_resource" [drivers/pwm/pwm-clps711x.ko] unde=
-fined!
->>>>>
->>>>>
->>>>> Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
->>>>> ---
->>>>> drivers/pwm/Kconfig | 2 +-
->>>>> 1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> NAK given the discussion in the other thread.
->>>>
->>>> Thierry
->>>
->>> OK, thanks, and I shall continue focusing the other thread, and sen=
-d related patch after
->>> get conclusion (hope I can finish within this week).
->>
->> Great, thanks for taking care of this.
->>
->=20
-> That what I should/will do. I start the related thread, so I have dut=
-y to try
-> to finish it in time. :-)
->=20
-> Thanks.
-> =E2=80=94
-> Chen Gang
-> Open, share, and attitude like air, water, and life which God blessed=
-=2E
->=20
 
---=20
-Chen Gang
+>   *
+>   * This program is free software; you can redistribute it and/or
+>   * modify it under the terms of the GNU General Public License
+> @@ -12,6 +13,7 @@
+>  #include <linux/io.h>
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+> +#include <linux/of_device.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/pwm.h>
+>  #include <linux/time.h>
+> @@ -25,17 +27,89 @@
+> 
+>  #define PRESCALER		2
+> 
+> +#define PWM_ENABLE		(1 << 0)
+> +#define PWM_CONTINUOUS		(1 << 1)
+> +#define PWM_DUTY_POSITIVE	(1 << 3)
+> +#define PWM_INACTIVE_NEGATIVE	(0 << 4)
+> +#define PWM_OUTPUT_LEFT		(0 << 5)
+> +#define PWM_LP_DISABLE		(0 << 8)
+> +
+>  struct rockchip_pwm_chip {
+>  	struct pwm_chip chip;
+>  	struct clk *clk;
+> +	const struct rockchip_pwm_data *data;
+>  	void __iomem *base;
+>  };
+> 
+> +struct rockchip_pwm_regs {
+> +	unsigned long duty;
+> +	unsigned long period;
+> +	unsigned long cntr;
+> +	unsigned long ctrl;
+> +};
+> +
+> +struct rockchip_pwm_data {
+> +	struct rockchip_pwm_regs regs;
+> +	unsigned int prescaler;
+> +
+> +	void (*set_enable)(struct pwm_chip *chip, bool enable);
+> +};
+> +
+>  static inline struct rockchip_pwm_chip *to_rockchip_pwm_chip(struct
+> pwm_chip *c) {
+>  	return container_of(c, struct rockchip_pwm_chip, chip);
+>  }
+> 
+> +static void rockchip_pwm_set_enable_v1(struct pwm_chip *chip, bool enable)
+> +{
+> +	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
+> +	u32 val = 0;
+> +	u32 enable_conf = PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN;
+> +
+> +	val = readl_relaxed(pc->base + pc->data->regs.ctrl);
+> +
+> +	if (enable)
+> +		val |= enable_conf;
+> +	else
+> +		val &= ~enable_conf;
+> +
+> +	writel_relaxed(val, pc->base + pc->data->regs.ctrl);
+> +}
+> +
+> +static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip, bool enable)
+> +{
+> +	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
+> +	u32 val = 0;
+> +	u32 enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE |
+> +		PWM_CONTINUOUS | PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE;
+> +
+> +	val = readl_relaxed(pc->base + pc->data->regs.ctrl);
+> +
+> +	if (enable)
+> +		val |= enable_conf;
+> +	else
+> +		val &= ~enable_conf;
+> +
+> +	writel_relaxed(val, pc->base + pc->data->regs.ctrl);
+> +}
+> +
+> +static void rockchip_pwm_set_enable_vop(struct pwm_chip *chip, bool enable)
+> +{
+> +	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
+> +	u32 val = 0;
+> +	u32 enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE |
+> +		PWM_CONTINUOUS | PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE;
+> +
+> +	val = readl_relaxed(pc->base + pc->data->regs.ctrl);
+> +
+> +	if (enable)
+> +		val |= enable_conf;
+> +	else
+> +		val &= ~enable_conf;
+> +
+> +	writel_relaxed(val, pc->base + pc->data->regs.ctrl);
+> +}
 
-Open, share, and attitude like air, water, and life which God blessed
+not sure if I'm just blind ... do rockchip_pwm_set_enable_v2 and 
+rockchip_pwm_set_enable_vop differ at all?
+
+If they don't differ, I guess pwm_data_vop should just use 
+rockchip_pwm_set_enable_v2 instead of duplicating it.
+
+
+Heiko
+
+> +
+>  static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device
+> *pwm, int duty_ns, int period_ns)
+>  {
+> @@ -52,20 +126,20 @@ static int rockchip_pwm_config(struct pwm_chip *chip,
+> struct pwm_device *pwm, * default prescaler value for all practical clock
+> rate values.
+>  	 */
+>  	div = clk_rate * period_ns;
+> -	do_div(div, PRESCALER * NSEC_PER_SEC);
+> +	do_div(div, pc->data->prescaler * NSEC_PER_SEC);
+>  	period = div;
+> 
+>  	div = clk_rate * duty_ns;
+> -	do_div(div, PRESCALER * NSEC_PER_SEC);
+> +	do_div(div, pc->data->prescaler * NSEC_PER_SEC);
+>  	duty = div;
+> 
+>  	ret = clk_enable(pc->clk);
+>  	if (ret)
+>  		return ret;
+> 
+> -	writel(period, pc->base + PWM_LRC);
+> -	writel(duty, pc->base + PWM_HRC);
+> -	writel(0, pc->base + PWM_CNTR);
+> +	writel(period, pc->base + pc->data->regs.period);
+> +	writel(duty, pc->base + pc->data->regs.duty);
+> +	writel(0, pc->base + pc->data->regs.cntr);
+> 
+>  	clk_disable(pc->clk);
+> 
+> @@ -76,15 +150,12 @@ static int rockchip_pwm_enable(struct pwm_chip *chip,
+> struct pwm_device *pwm) {
+>  	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
+>  	int ret;
+> -	u32 val;
+> 
+>  	ret = clk_enable(pc->clk);
+>  	if (ret)
+>  		return ret;
+> 
+> -	val = readl_relaxed(pc->base + PWM_CTRL);
+> -	val |= PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN;
+> -	writel_relaxed(val, pc->base + PWM_CTRL);
+> +	pc->data->set_enable(chip, true);
+> 
+>  	return 0;
+>  }
+> @@ -92,11 +163,8 @@ static int rockchip_pwm_enable(struct pwm_chip *chip,
+> struct pwm_device *pwm) static void rockchip_pwm_disable(struct pwm_chip
+> *chip, struct pwm_device *pwm) {
+>  	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
+> -	u32 val;
+> 
+> -	val = readl_relaxed(pc->base + PWM_CTRL);
+> -	val &= ~(PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN);
+> -	writel_relaxed(val, pc->base + PWM_CTRL);
+> +	pc->data->set_enable(chip, false);
+> 
+>  	clk_disable(pc->clk);
+>  }
+> @@ -108,12 +176,52 @@ static const struct pwm_ops rockchip_pwm_ops = {
+>  	.owner = THIS_MODULE,
+>  };
+> 
+> +static const struct rockchip_pwm_data pwm_data_v1 = {
+> +	.regs.duty = PWM_HRC,
+> +	.regs.period = PWM_LRC,
+> +	.regs.cntr = PWM_CNTR,
+> +	.regs.ctrl = PWM_CTRL,
+> +	.prescaler = PRESCALER,
+> +	.set_enable = rockchip_pwm_set_enable_v1,
+> +};
+> +
+> +static const struct rockchip_pwm_data pwm_data_v2 = {
+> +	.regs.duty = PWM_LRC,
+> +	.regs.period = PWM_HRC,
+> +	.regs.cntr = PWM_CNTR,
+> +	.regs.ctrl = PWM_CTRL,
+> +	.prescaler = PRESCALER-1,
+> +	.set_enable = rockchip_pwm_set_enable_v2,
+> +};
+> +
+> +static const struct rockchip_pwm_data pwm_data_vop = {
+> +	.regs.duty = PWM_LRC,
+> +	.regs.period = PWM_HRC,
+> +	.regs.cntr = PWM_CTRL,
+> +	.regs.ctrl = PWM_CNTR,
+> +	.prescaler = PRESCALER-1,
+> +	.set_enable = rockchip_pwm_set_enable_vop,
+> +};
+> +
+> +static const struct of_device_id rockchip_pwm_dt_ids[] = {
+> +	{ .compatible = "rockchip,rk2928-pwm", .data = &pwm_data_v1},
+> +	{ .compatible = "rockchip,rk3288-pwm", .data = &pwm_data_v2},
+> +	{ .compatible = "rockchip,vop-pwm", .data = &pwm_data_vop},
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);
+> +
+>  static int rockchip_pwm_probe(struct platform_device *pdev)
+>  {
+> +	const struct of_device_id *id;
+>  	struct rockchip_pwm_chip *pc;
+>  	struct resource *r;
+>  	int ret;
+> 
+> +	id = of_match_device(rockchip_pwm_dt_ids, &pdev->dev);
+> +	if (!id)
+> +		return -EINVAL;
+> +
+>  	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+>  	if (!pc)
+>  		return -ENOMEM;
+> @@ -133,6 +241,7 @@ static int rockchip_pwm_probe(struct platform_device
+> *pdev)
+> 
+>  	platform_set_drvdata(pdev, pc);
+> 
+> +	pc->data = id->data;
+>  	pc->chip.dev = &pdev->dev;
+>  	pc->chip.ops = &rockchip_pwm_ops;
+>  	pc->chip.base = -1;
+> @@ -156,12 +265,6 @@ static int rockchip_pwm_remove(struct platform_device
+> *pdev) return pwmchip_remove(&pc->chip);
+>  }
+> 
+> -static const struct of_device_id rockchip_pwm_dt_ids[] = {
+> -	{ .compatible = "rockchip,rk2928-pwm" },
+> -	{ /* sentinel */ }
+> -};
+> -MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);
+> -
+>  static struct platform_driver rockchip_pwm_driver = {
+>  	.driver = {
+>  		.name = "rockchip-pwm",
+
