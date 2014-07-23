@@ -1,81 +1,57 @@
-From: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
-Subject: [PATCH] pwm: imx: don't reprogram PWMSAR if PWM is disabled
-Date: Wed, 23 Jul 2014 12:09:47 +0400
-Message-ID: <1406102987-14797-1-git-send-email-dbaryshkov@gmail.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-lb0-f175.google.com ([209.85.217.175]:33896 "EHLO
-	mail-lb0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751347AbaGWIKI (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 23 Jul 2014 04:10:08 -0400
-Received: by mail-lb0-f175.google.com with SMTP id 10so613224lbg.20
-        for <linux-pwm@vger.kernel.org>; Wed, 23 Jul 2014 01:10:06 -0700 (PDT)
-Sender: linux-pwm-owner@vger.kernel.org
+From: Chen Gang <gang.chen.5i5j@gmail.com>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+Date: Wed, 23 Jul 2014 19:09:22 +0800
+Message-ID: <53CF97E2.9000906@gmail.com>
+References: <53C3994C.1010309@metafoo.de> <53C39B66.4060500@nod.at> <5A40E1FC-CA61-4AFF-B205-4BAC175AA7AC@gmail.com> <53C47725.8000005@gmail.com> <53C47B76.4080306@roeck-us.net> <53C47FB7.6080304@gmail.com> <53C53CE1.4090803@gmail.com> <53C7269E.4010702@gmail.com> <20140717083756.GA19686@ulmo> <53C7905D.9090003@gmail.com> <20140717091601.GF25880@mwanda> <53C7951F.6000906@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-input-owner@vger.kernel.org>
+In-Reply-To: <53C7951F.6000906@gmail.com>
+Sender: linux-input-owner@vger.kernel.org
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-iio@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no, Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>, Liqin Chen <liqin.linux@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>, Richard Weinberger <richard@nod.at>, Geert Uytterhoeven <geert@linux-m68k.org>, msalter@redhat.com, Guenter Roeck <linux@roeck-us.net>, linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org, arnd@arndb.de, linux-input@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, dmitry.torokhov@gmail.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>, Mischa.Jonker@synopsys.com, jic23@kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Sascha Hauer <s.hauer@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
 
-From: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
 
-Writing several values to PWMSAR register with PWM being disabled can
-lead to FIFO (connected to PWMSAR) being overflown. Then after enabling
-PWM, hardware will use stale values. Instead cache the duty cycles and
-write them to the hardware only before enabling PWM.
 
-Signed-off-by: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
----
- drivers/pwm/pwm-imx.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+On 07/17/2014 05:19 PM, Chen Gang wrote:
+> 
+> 
+> On 07/17/2014 05:16 PM, Dan Carpenter wrote:
+>> On Thu, Jul 17, 2014 at 04:59:09PM +0800, Chen Gang wrote:
+>>>>> +	return (__force void __iomem *)ERR_PTR(-ENXIO);
+>>>>
+>>>> There's apparently an IOMEM_ERR_PTR() for this nowadays...
+>>>>
+>>>
+>>> IOMEM_ERR_PTR() is defined within "lib/devres.c", not in "./include".
+>>> But may we move it from "lib/devres.c" to "./include/linux/err.h"?
+>>>
+>>> For me, I am not quite sure, it may need additional discussion, but at
+>>> least, that will be another patch.
+>>
+>> Yes.  Move it there.  That is the right place.
+>>
 
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index c735127..79c2b24 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -46,6 +46,7 @@ struct imx_chip {
- 	struct clk	*clk_ipg;
- 
- 	void __iomem	*mmio_base;
-+	unsigned long	duty_cycles;
- 
- 	struct pwm_chip	chip;
- 
-@@ -105,7 +106,7 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
- {
- 	struct imx_chip *imx = to_imx_chip(chip);
- 	unsigned long long c;
--	unsigned long period_cycles, duty_cycles, prescale;
-+	unsigned long period_cycles, prescale;
- 	u32 cr;
- 
- 	c = clk_get_rate(imx->clk_per);
-@@ -118,7 +119,7 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
- 	period_cycles /= prescale;
- 	c = (unsigned long long)period_cycles * duty_ns;
- 	do_div(c, period_ns);
--	duty_cycles = c;
-+	imx->duty_cycles = c;
- 
- 	/*
- 	 * according to imx pwm RM, the real period value should be
-@@ -134,7 +135,8 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
- 
- 	period_cycles -= 2;
- 
--	writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
-+	if (test_bit(PWMF_ENABLED, &pwm->flags))
-+		writel(imx->duty_cycles, imx->mmio_base + MX3_PWMSAR);
- 	writel(period_cycles, imx->mmio_base + MX3_PWMPR);
- 
- 	cr = readl(imx->mmio_base + MX3_PWMCR);
-@@ -157,6 +159,9 @@ static void imx_pwm_set_enable_v2(struct pwm_chip *chip, bool enable)
- 	struct imx_chip *imx = to_imx_chip(chip);
- 	u32 val;
- 
-+	if (enable)
-+		writel(imx->duty_cycles, imx->mmio_base + MX3_PWMSAR);
-+
- 	val = readl(imx->mmio_base + MX3_PWMCR);
- 
- 	if (enable)
+Sorry for replying late about IOMEM_ERR_PTR().
+
+Although no objections within 2 days, for me, when move something to
+generic header file, it is not only for future using, but also for
+solving current issue, or it has to be suspended for waiting 'trigger'.
+
+So for me, the patch about IOMEM_ERR_PTR() need be suspended, until some
+member find an issue which may be related with IOMEM_ERR_PTR(), more or
+less.
+
+> 
+> OK, thanks, if no another objections within 2 days, I shall send another
+> related patch for it.
+> 
+
+Thanks.
 -- 
-1.9.3
+Chen Gang
 
+Open, share, and attitude like air, water, and life which God blessed
