@@ -1,73 +1,43 @@
-From: Varka Bhadram <varkabhadram@gmail.com>
-Subject: Re: [PATCH v4 04/11] pwm: add DT bindings documentation for atmel-hlcdc-pwm
- driver
-Date: Tue, 22 Jul 2014 20:06:11 +0530
-Message-ID: <53CE76DB.7030902@gmail.com>
-References: <1406034695-15534-1-git-send-email-boris.brezillon@free-electrons.com> <1406034695-15534-5-git-send-email-boris.brezillon@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1406034695-15534-5-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Boris BREZILLON <boris.brezillon@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Clark <robdclark@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Bo Shen <voice.shen@atmel.com>
+From: Caesar Wang <caesar.wang@rock-chips.com>
+Subject: [PATCH v3 1/2] pwm: rockchip: document RK3288 SoC compatible
+Date: Wed, 23 Jul 2014 14:38:40 +0800
+Message-ID: <1406097521-6457-2-git-send-email-caesar.wang@rock-chips.com>
+References: <1406097521-6457-1-git-send-email-caesar.wang@rock-chips.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from regular2.263xmail.com ([211.157.152.4]:47216 "EHLO
+	regular2.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754552AbaGWGjT (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 23 Jul 2014 02:39:19 -0400
+In-Reply-To: <1406097521-6457-1-git-send-email-caesar.wang@rock-chips.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: heiko@sntech.de, thierry.reding@gmail.com, b.galvani@gmail.com
+Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, cf@rock-chips.com, huangtao@rock-chips.com, hj@rock-chips.com, xjq@rock-chips.com, addy.ke@rock-chips.com, Caesar Wang <caesar.wang@rock-chips.com>
 
+Document new compatible for PWM founding on RK3288 SoC
 
-On Tuesday 22 July 2014 06:41 PM, Boris BREZILLON wrote:
-> The HLCDC IP available in some Atmel SoCs (i.e. sam9x5i.e. at91sam9n12,
-> at91sam9x5 family or sama5d3 family) provide a PWM device.
->
-> The DT bindings used for this PWM device is following the default 3 cells
-> bindings described in Documentation/devicetree/bindings/pwm/pwm.txt.
->
-> Signed-off-by: Boris BREZILLON <boris.brezillon@free-electrons.com>
-> ---
->   .../devicetree/bindings/pwm/atmel-hlcdc-pwm.txt    | 55 ++++++++++++++++++++++
->   1 file changed, 55 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
->
-> diff --git a/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
-> new file mode 100644
-> index 0000000..86ad3e2
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
-> @@ -0,0 +1,55 @@
-> +Device-Tree bindings for Atmel's HLCDC (High LCD Controller) PWM driver
-> +
-> +The Atmel HLCDC PWM is subdevice of the HLCDC MFD device.
-> +See ../mfd/atmel-hlcdc.txt for more details.
-> +
-> +Required properties:
-> + - compatible: value should be one of the following:
-> +   "atmel,hlcdc-pwm"
-> + - pinctr-names: the pin control state names. Should contain "default".
-> + - pinctrl-0: should contain the pinctrl states described by pinctrl
-> +   default.
-> + - #pwm-cells: should be set to 3. This PWM chip use the default 3 cells
-> +   bindings defined in Documentation/devicetree/bindings/pwm/pwm.txt.
-> +   The first cell encodes the PWM id (0 is the only acceptable value here,
-> +   because the chip only provide one PWM).
-> +   The second cell encodes the PWM period in nanoseconds.
-> +   The third cell encodes the PWM flags (the only supported flag is
-> +   PWM_POLARITY_INVERTED)
+Signed-off-by: Caesar Wang <caesar.wang@rock-chips.com>
+---
+ Documentation/devicetree/bindings/pwm/pwm-rockchip.txt | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-It will be readable if:
-Required properties:
-  - compatible	: value should be one of the following: "atmel,hlcdc-pwm"
-  - pinctr-names	: the pin control state names. Should contain "default".
-  - pinctrl-0	: should contain the pinctrl states described by pinctrl default.
-  - #pwm-cells	: should be set to 3. This PWM chip use the default 3 cells
-		  bindings defined in Documentation/devicetree/bindings/pwm/pwm.txt.
-		  The first cell encodes the PWM id (0 is the only acceptable value here,
-		  because the chip only provide one PWM).
-		  The second cell encodes the PWM period in nanoseconds.
-		  The third cell encodes the PWM flags (the only supported flag is
-		  PWM_POLARITY_INVERTED)
-....
-
-
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt b/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
+index 3182126..2b7c109 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
+@@ -1,7 +1,10 @@
+ Rockchip PWM controller
+ 
+ Required properties:
+- - compatible: should be "rockchip,rk2928-pwm"
++ - compatible: should be "rockchip,<name>-pwm"
++   "rockchip,rk2928-pwm": found on RK29XX,RK3066 and RK3188 SoCs
++   "rockchip,rk3288-pwm": found on RK3288 SoC
++   "rockchip,vop-pwm": found integrated in VOP on RK3288 SoC
+  - reg: physical base address and length of the controller's registers
+  - clocks: phandle and clock specifier of the PWM reference clock
+  - #pwm-cells: should be 2. See pwm.txt in this directory for a
 -- 
-Regards,
-Varka Bhadram
+1.9.1
+
+
