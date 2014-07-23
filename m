@@ -1,70 +1,80 @@
 From: Chen Gang <gang.chen.5i5j@gmail.com>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-Date: Wed, 23 Jul 2014 19:37:10 +0800
-Message-ID: <53CF9E66.9050101@gmail.com>
-References: <53C47725.8000005@gmail.com> <53C47B76.4080306@roeck-us.net> <53C47FB7.6080304@gmail.com> <53C53CE1.4090803@gmail.com> <53C7269E.4010702@gmail.com> <20140717083756.GA19686@ulmo> <53C7905D.9090003@gmail.com> <20140717091601.GF25880@mwanda> <53C7951F.6000906@gmail.com> <53CF97E2.9000906@gmail.com> <20140723113023.GT25880@mwanda>
+Subject: Re: [PATCH] drivers/pwm/Kconfig: Let PWM_CLPS711X depend on HAS_IOMEM
+Date: Wed, 23 Jul 2014 19:51:48 +0800
+Message-ID: <53CFA1D4.5060603@gmail.com>
+References: <53C27247.2010300@gmail.com> <20140714081843.GK2081@ulmo> <6A7CA9C8-7BC4-44BA-AE71-63BDADFF9023@gmail.com> <20140714093310.GC9755@ulmo> <8FB3DF93-7766-4B0D-9D6B-001861925A9F@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f53.google.com ([209.85.220.53]:41644 "EHLO
-	mail-pa0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751241AbaGWLhY (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 23 Jul 2014 07:37:24 -0400
-In-Reply-To: <20140723113023.GT25880@mwanda>
+Received: from mail-pa0-f52.google.com ([209.85.220.52]:65438 "EHLO
+	mail-pa0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755798AbaGWLvy (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 23 Jul 2014 07:51:54 -0400
+In-Reply-To: <8FB3DF93-7766-4B0D-9D6B-001861925A9F@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: linux-iio@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no, Thierry Reding <thierry.reding@gmail.com>, Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>, Liqin Chen <liqin.linux@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>, Richard Weinberger <richard@nod.at>, Geert Uytterhoeven <geert@linux-m68k.org>, msalter@redhat.com, Guenter Roeck <linux@roeck-us.net>, linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org, arnd@arndb.de, linux-input@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, dmitry.torokhov@gmail.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>, Mischa.Jonker@synopsys.com, jic23@kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Richard Weinberger <richard@nod.at>, Liqin Chen <liqin.linux@gmail.com>, Lennox Wu <lennox.wu@gmail.com>
 
+Oh, sorry, after a long discussion, we have to keep current status no
+touch -- let individual modules depends on HAS_IOMEM if they need it.
 
-
-On 07/23/2014 07:30 PM, Dan Carpenter wrote:
-> On Wed, Jul 23, 2014 at 07:09:22PM +0800, Chen Gang wrote:
->>
->>
->> On 07/17/2014 05:19 PM, Chen Gang wrote:
->>>
->>>
->>> On 07/17/2014 05:16 PM, Dan Carpenter wrote:
->>>> On Thu, Jul 17, 2014 at 04:59:09PM +0800, Chen Gang wrote:
->>>>>>> +	return (__force void __iomem *)ERR_PTR(-ENXIO);
->>>>>>
->>>>>> There's apparently an IOMEM_ERR_PTR() for this nowadays...
->>>>>>
->>>>>
->>>>> IOMEM_ERR_PTR() is defined within "lib/devres.c", not in "./include".
->>>>> But may we move it from "lib/devres.c" to "./include/linux/err.h"?
->>>>>
->>>>> For me, I am not quite sure, it may need additional discussion, but at
->>>>> least, that will be another patch.
->>>>
->>>> Yes.  Move it there.  That is the right place.
->>>>
->>
->> Sorry for replying late about IOMEM_ERR_PTR().
->>
->> Although no objections within 2 days, for me, when move something to
->> generic header file, it is not only for future using, but also for
->> solving current issue, or it has to be suspended for waiting 'trigger'.
->>
->> So for me, the patch about IOMEM_ERR_PTR() need be suspended, until some
->> member find an issue which may be related with IOMEM_ERR_PTR(), more or
->> less.
-> 
-> Matthias Brugger already moved it to include/linux/io.h on Friday.
-> 
-
-OK, thank you for your work.
-
-And for me, this 'long discussion' can be finished now (keeping current
-status no touch). But if any members have additional suggestions and
-ideas, still welcome to reply directly.
-
+So, this patch is still alive, please help check it, when you have time=
+=2E
 
 Thanks.
--- 
+
+On 07/14/2014 06:00 PM, Chen Gang wrote:
+>=20
+> =E5=9C=A8 2014=E5=B9=B47=E6=9C=8814=E6=97=A5=EF=BC=8C=E4=B8=8B=E5=8D=88=
+5:33=EF=BC=8CThierry Reding <thierry.reding@gmail.com> =E5=86=99=E9=81=93=
+=EF=BC=9A
+>=20
+>> On Mon, Jul 14, 2014 at 05:14:05PM +0800, Chen Gang wrote:
+>>>
+>>> =E5=9C=A8 2014=E5=B9=B47=E6=9C=8814=E6=97=A5=EF=BC=8C=E4=B8=8B=E5=8D=
+=884:18=EF=BC=8CThierry Reding <thierry.reding@gmail.com> =E5=86=99=E9=81=
+=93=EF=BC=9A
+>>>
+>>>> On Sun, Jul 13, 2014 at 07:49:27PM +0800, Chen Gang wrote:
+>>>>> PWM_CLPS711X needs HAS_IOMEM, so let it depend on HAS_IOMEM.
+>>>>>
+>>>>> The related error (with allmodconfig under score):
+>>>>>
+>>>>>   MODPOST 1365 modules
+>>>>> ERROR: "devm_ioremap_resource" [drivers/pwm/pwm-clps711x.ko] unde=
+fined!
+>>>>>
+>>>>>
+>>>>> Signed-off-by: Chen Gang <gang.chen.5i5j@gmail.com>
+>>>>> ---
+>>>>> drivers/pwm/Kconfig | 2 +-
+>>>>> 1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> NAK given the discussion in the other thread.
+>>>>
+>>>> Thierry
+>>>
+>>> OK, thanks, and I shall continue focusing the other thread, and sen=
+d related patch after
+>>> get conclusion (hope I can finish within this week).
+>>
+>> Great, thanks for taking care of this.
+>>
+>=20
+> That what I should/will do. I start the related thread, so I have dut=
+y to try
+> to finish it in time. :-)
+>=20
+> Thanks.
+> =E2=80=94
+> Chen Gang
+> Open, share, and attitude like air, water, and life which God blessed=
+=2E
+>=20
+
+--=20
 Chen Gang
 
 Open, share, and attitude like air, water, and life which God blessed
