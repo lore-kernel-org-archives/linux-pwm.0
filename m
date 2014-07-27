@@ -1,6 +1,6 @@
 Return-Path: <caesar.wang@rock-chips.com>
-Message-ID: <53D500E0.5010405@rock-chips.com>
-Date: Sun, 27 Jul 2014 21:38:40 +0800
+Message-ID: <53D50601.1020106@rock-chips.com>
+Date: Sun, 27 Jul 2014 22:00:33 +0800
 From: caesar <caesar.wang@rock-chips.com>
 MIME-Version: 1.0
 Subject: Re: [PATCH v2 2/2] pwm: add this patch to support the new pwm of
@@ -8,13 +8,13 @@ Subject: Re: [PATCH v2 2/2] pwm: add this patch to support the new pwm of
 References: <1405774529-26027-1-git-send-email-caesar.wang@rock-chips.com>	<1405774529-26027-3-git-send-email-caesar.wang@rock-chips.com>	<20140721085001.GG8843@ulmo>	<53CD0E82.6030901@rock-chips.com>	<20140721132723.GH15238@ulmo>	<53D23192.4000908@rock-chips.com> <CAD=FV=XLjYQYmHxp3HBdwVmt6Wa7y-LEnsFKobsgVfFCp2-rRg@mail.gmail.com>
 In-Reply-To: <CAD=FV=XLjYQYmHxp3HBdwVmt6Wa7y-LEnsFKobsgVfFCp2-rRg@mail.gmail.com>
 Content-Type: multipart/alternative;
- boundary="------------060605040607060203090501"
+ boundary="------------020804050009090402090905"
 List-ID: <linux-pwm.vger.kernel.org>
 To: Doug Anderson <dianders@chromium.org>
 Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
 This is a multi-part message in MIME format.
---------------060605040607060203090501
+--------------020804050009090402090905
 Content-Type: text/plain; charset="utf-8"; format="flowed"
 Content-Transfer-Encoding: 8bit
 
@@ -164,6 +164,7 @@ Hi Doug,
 > of_platform_populate() to make the PWM show up.
 >
 >
+>
 Sorry  if  I  got it wrong following  your way.
 
 example: ARM: DTS:
@@ -184,7 +185,7 @@ lcdc@ff930000 {
           };
 
 
-*The LCDC drive*r ,as follws:
+The LCDC driver ,as follws:
 
 static const struct of_device_id vop_pwm_dt_ids[] = {
 
@@ -199,26 +200,32 @@ static int lcdc_probe(struct platform_device *pdev)
                  struct resource *regs;
 		int ret = 0;
 		...
-		
-		/*This step will get resource=[mem 0xff930000-0yff93ffff]*/
+		/*This step will get resource = [mem 0xff930000-0xff93ffff]*/
 
                  regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 
                  ...
 
-                 *lcdc_dev->regs = devm_ioremap_resource(dev, regs);*
+                 lcdc_dev->regs = devm_ioremap_resource(dev, regs);
 	
 		...
 
-		/*This step will make enable vop-pwm in PWM driver?*/
-
+		/**This step will make enable vop-pwm in PWM driver?/
 		ret = of_platform_populate(np, vop_pwm_dt_ids, NULL, &pdev->dev);
 		
 		...
 	 }
 
 
-*The PWM driver:*
+The PWM driver:
+
+struct rockchip_pwm_chip {
+	struct pwm_chip chip;
+	struct clk *clk;
+	const struct rockchip_pwm_data *data;
+	void __iomem *base;
+};
+...
 
 static const struct of_device_id rockchip_pwm_dt_ids[] = {
 
@@ -232,40 +239,38 @@ static const struct of_device_id rockchip_pwm_dt_ids[] = {
 
 };
 
+...
 
 static int rockchip_pwm_probe(struct platform_device *pdev)
          {
                  struct resource *regs;
-		int ret = 0;
+		struct rockchip_pwm_chip *pc;
+  		int ret = 0;
 		...
 		
-		/*This step ,if it's "rockchip,vop-pwm",the resource=[mem 0xff9301a0-0yff9301af]*/
+
+		/*If it'sthe "rockchip,vop-pwm",the resource = [mem 0xff9301a0-0xff9301af]*/
+
 
                  regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 
                  ...
 		
-		/*I think will be show the log:->
-		 * rockchip-pwm ff9301a0.pwm: can't request region for resource [mem 0xff9301a0-0xff9301af] ?
-		*/
 
+		/*I think will be show the faill log:->
 
-                 *lcdc_dev->regs = devm_ioremap_resource(dev, regs);*
+		 * rockchip-pwm ff9301a0.pwm: can't request region for resource [mem 0xff9301a0-0xff93019f]
+		 */
+   *
+		*pc->base = devm_ioremap_resource(dev, regs);
 	
 		...
 
-		
-
-		ret = of_platform_populate(np, vop_pwm_dt_ids, NULL, &pdev->dev);
-		
-		...
+	
 	 }
 
 
-
-
-
---------------060605040607060203090501
+--------------020804050009090402090905
 Content-Type: text/html; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
@@ -458,6 +463,7 @@ Does that avoid the failure?  The lcdc driver would need to call
 of_platform_populate() to make the PWM show up.
 
 
+
 </pre>
     </blockquote>
     Sorry  if  I  got it wrong following  your way. <br>
@@ -478,7 +484,7 @@ of_platform_populate() to make the PWM show up.
                  };
          };</pre>
     <br>
-    <b>The LCDC drive</b>r ,as follws:<br>
+    The LCDC driver ,as follws:<br>
     <br>
     <pre>static const struct of_device_id vop_pwm_dt_ids[] = {</pre>
     <pre>    {.compatible = "rockchip,vop-pwm",},</pre>
@@ -489,70 +495,69 @@ of_platform_populate() to make the PWM show up.
                 struct resource *regs;
 		int ret = 0;
 		...
-		
-		<font color="#ff0000">/*This step will get resource=[mem 0xff930000-0yff93ffff]*</font><font color="#ff0000">/</font>
+		/*This step will get resource = [mem 0xff930000-0xff93ffff]*/
 
                 regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 
-                ...
-
-                <b>lcdc_dev-&gt;regs = devm_ioremap_resource(dev, regs);</b>
+                ...<font color="#ff0000">
+</font>
+                lcdc_dev-&gt;regs = devm_ioremap_resource(dev, regs);
 	
 		...
 
-<font color="#ff0000">		/*This step will make enable vop-pwm in PWM driver?*</font><font color="#ff0000">/</font>
-
+		/**This step will make enable vop-pwm in PWM driver?/
 		ret = of_platform_populate(np, vop_pwm_dt_ids, NULL, &amp;pdev-&gt;dev);
 		
 		...
 	 }</pre>
     <tt><br>
     </tt>
-    <pre><b><tt>The PWM driver:</tt></b></pre>
-    <pre><tt>static const struct of_device_id rockchip_pwm_dt_ids[] = {</tt></pre>
+    <pre><tt>The PWM driver:
+
+struct rockchip_pwm_chip {
+	struct pwm_chip chip;
+	struct clk *clk;
+	const struct rockchip_pwm_data *data;
+	void __iomem *base;
+};
+...
+
+static const struct of_device_id rockchip_pwm_dt_ids[] = {</tt></pre>
     <pre><tt>    { .compatible = "rockchip,rk2928-pwm", .data = &amp;pwm_data_v1},</tt></pre>
     <pre><tt>    { .compatible = "rockchip,rk3288-pwm", .data = &amp;pwm_data_v2},</tt></pre>
     <pre><tt>    { .compatible = "rockchip,vop-pwm", .data = &amp;pwm_data_vop},</tt></pre>
     <pre><tt>    { /* sentinel */ }</tt></pre>
     <pre><tt>};</tt></pre>
-    <br>
+    <pre><tt>...
+</tt></pre>
     <pre wrap="">static int rockchip_pwm_probe(struct platform_device *pdev)
         {
                 struct resource *regs;
-		int ret = 0;
+		struct rockchip_pwm_chip *pc;
+ 		int ret = 0;
 		...
-<font color="#ff0000">		
-		/*This step ,if it's "</font><font color="#ff0000"><tt>rockchip,vop-pwm</tt>",the resource=[mem 0xff9301a0-0yff9301af]*</font><font color="#ff0000">/</font>
+<font color="#ff0000">		</font>
+
+		/*If it's <tt>the "rockchip,vop-pwm"</tt>,the resource = [mem 0xff9301a0-0xff9301af]*/
+
 
                 regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 
                 ...
 		
-		<font color="#ff0000">/*I think will be show the log:-&gt; </font><font color="#ff0000">
-		 * rockchip-pwm ff9301a0.pwm: can't request region for resource [mem 0xff9301a0-0xff9301af] ?
-		*</font><font color="#ff0000">/</font>
 
+		/*I think will be show the faill log:-&gt;
 
-                <b>lcdc_dev-&gt;regs = devm_ioremap_resource(dev, regs);</b>
+		 * rockchip-pwm ff9301a0.pwm: can't request region for resource [mem 0xff9301a0-0xff93019f]
+		 */
+  <b>
+		 </b>pc-&gt;base = devm_ioremap_resource(dev, regs);
 	
 		...
 
-<font color="#ff0000">		</font>
-
-		ret = of_platform_populate(np, vop_pwm_dt_ids, NULL, &amp;pdev-&gt;dev);
-		
-		...
+<font color="#ff0000">	</font>
 	 }</pre>
-    <br>
-       <br>
-    <blockquote
-cite="mid:CAD=FV=XLjYQYmHxp3HBdwVmt6Wa7y-LEnsFKobsgVfFCp2-rRg@mail.gmail.com"
-      type="cite">
-      <pre wrap="">
-</pre>
-    </blockquote>
-    <br>
   </body>
 </html>
 
---------------060605040607060203090501--
+--------------020804050009090402090905--
