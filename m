@@ -1,14 +1,14 @@
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 2/2] pwm: lpss: pci: move to use pcim_enable_device()
-Date: Mon, 28 Jul 2014 17:27:27 +0300
-Message-ID: <1406557647-23891-3-git-send-email-andriy.shevchenko@linux.intel.com>
-References: <1406557647-23891-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 2/2] pwm: lpss: pci: move to use pcim_enable_device()
+Date: Mon, 28 Jul 2014 18:03:12 +0300
+Message-ID: <1406559792-30652-3-git-send-email-andriy.shevchenko@linux.intel.com>
+References: <1406559792-30652-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:46484 "EHLO mga02.intel.com"
+Received: from mga01.intel.com ([192.55.52.88]:47549 "EHLO mga01.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752866AbaG1O1a (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 28 Jul 2014 10:27:30 -0400
-In-Reply-To: <1406557647-23891-1-git-send-email-andriy.shevchenko@linux.intel.com>
+	id S1752696AbaG1PDR (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Mon, 28 Jul 2014 11:03:17 -0400
+In-Reply-To: <1406559792-30652-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
