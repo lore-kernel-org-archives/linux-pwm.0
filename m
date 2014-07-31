@@ -1,97 +1,55 @@
-From: caesar <caesar.wang@rock-chips.com>
-Subject: Re: [PATCH v2 2/2] pwm: add this patch to support the new pwm of
- Rockchip SoCs
-Date: Tue, 29 Jul 2014 22:17:31 +0800
-Message-ID: <53D7ACFB.6050800@rock-chips.com>
-References: <20140721085001.GG8843@ulmo> <53CD0E82.6030901@rock-chips.com> <20140721132723.GH15238@ulmo> <53D23192.4000908@rock-chips.com> <CAD=FV=XLjYQYmHxp3HBdwVmt6Wa7y-LEnsFKobsgVfFCp2-rRg@mail.gmail.com> <53D50601.1020106@rock-chips.com> <CAD=FV=UvF58NiY76FMi-TPVzsaWRJsR-M5HnHc7MRAWjwjY1jw@mail.gmail.com> <53D631B6.1050603@rock-chips.com> <20140729102212.GB21182@ulmo.nvidia.com> <53D780D3.8070603@rock-chips.com> <20140729113808.GC21732@ulmo.nvidia.com>
+From: Chris Metcalf <cmetcalf@tilera.com>
+Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
+ 'devm_ioremap_resource'
+Date: Thu, 31 Jul 2014 16:09:48 -0400
+Message-ID: <53DAA28C.508@tilera.com>
+References: <201407130545.23004.marex@denx.de> <53C7B365.4080000@gmail.com> <53C834EA.5030605@tilera.com> <5190668.jExaFa8pKn@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20140729113808.GC21732@ulmo.nvidia.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Doug Anderson <dianders@chromium.org>, linux-pwm@vger.kernel.org, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from usmamail.tilera.com ([12.216.194.151]:39877 "EHLO
+	USMAMAIL.TILERA.COM" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750945AbaGaUJu (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 31 Jul 2014 16:09:50 -0400
+In-Reply-To: <5190668.jExaFa8pKn@wuerfel>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Chen Gang <gang.chen.5i5j@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>, Guenter Roeck <linux@roeck-us.net>, Richard Weinberger <richard@nod.at>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no, Thierry Reding <thierry.reding@gmail.com>, Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>, Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com, linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>, Mischa.Jonker@synopsys.com, jic23@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
 
-Thierry,
+On 7/17/2014 5:05 PM, Arnd Bergmann wrote:
+> On Thursday 17 July 2014 16:41:14 Chris Metcalf wrote:
+>> On 7/17/2014 7:28 AM, Chen Gang wrote:
+>>> According to current source code, tile still has chance to choose
+>>> NO_IOMEM, for me, welcome the tile's maintainer's ideas or suggestions.
+>> I'm not really sure.  It's true that on tile, if you don't enable PCI
+>> support there's no other I/O memory (or I/O port) space you can use.
+>> We pretty much always enable PCI support in our kernel, though.  I'm
+>> kind of surprised that other architectures don't also have the model
+>> that IOMEM requires PCI, but perhaps most architectures just don't
+>> encode that in the Kconfig file?
+> Only s390 as far as I know. Most architectures have integrated
+> peripherals that use MMIO without PCI.
 
-=E5=9C=A8 2014=E5=B9=B407=E6=9C=8829=E6=97=A5 19:38, Thierry Reding =E5=
-=86=99=E9=81=93:
-> On Tue, Jul 29, 2014 at 07:09:07PM +0800, caesar wrote:
->> Thierry,
->>
->> =E5=9C=A8 2014=E5=B9=B407=E6=9C=8829=E6=97=A5 18:22, Thierry Reding =
-=E5=86=99=E9=81=93:
->>> On Mon, Jul 28, 2014 at 07:19:18PM +0800, caesar wrote:
->>>> Doug,
->>>> =E5=9C=A8 2014=E5=B9=B407=E6=9C=8828=E6=97=A5 12:01, Doug Anderson=
- =E5=86=99=E9=81=93:
->>>>> Caesar,
->>>>>
->>>>> On Sun, Jul 27, 2014 at 7:00 AM, caesar <caesar.wang@rock-chips.c=
-om> wrote:
->>>>>> /*I think will be show the faill log:->
->>>>>>
->>>>>> * rockchip-pwm ff9301a0.pwm: can't request region for resource [=
-mem
->>>>>> 0xff9301a0-0xff93019f]
->>>>>> */
->>>>>>
->>>>>> pc->base =3D devm_ioremap_resource(dev, regs);
->>>>> Did you actually code this up and try it and get this error?
->>>> Yeah.
->>> This should work if you properly set up the PWM subregion as a chil=
-d of
->>> the LCDC region, which is what MFD will do for you.
->>>
->>> Thierry
->> As you say,should this change be occured by lcdc driver and dts?
->>
->> The PWM driver don't need do any changes?
-> No, I don't think the PWM driver needs to be changed for the above to
-> work.
->
-> Thierry
-Ok, as you suggestions, The PWM driver :
+Yes, and tilegx has these too (quite a few of them).  The memory-mapped
+devices are accessed by specifying a shim x,y coordinate in the high bits
+of the physical address, in conjunction with an MMIO type in the TLB entry.
+Various tilegx drivers set up these kinds of mappings in the page table.
 
-static int rockchip_pwm_probe (...)
-{
+The issue with ioremap() is that it takes a generic resource_size_t
+"physical address", and we don't have any general-purpose layer that maps
+particular PAs to shim coordinates, other than for TRIO (our PCI peripheral).
+Right now we just check the PCI root complexes that we have configured in
+the kernel, and if the pseudo physical address requested is in a range that
+we're associating with one of the root complexes, we will use the appropriate
+mapping against the appropriate TRIO shim to set up its x,y coordinate in
+the page table.
 
-	...
+So it makes some kind of sense to condition HAS_IOMEM on PCI, even though
+naively it seems like it shouldn't be strictly related.
 
-         r =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
--       pc->base =3D devm_ioremap_resource(&pdev->dev, r);
-+       if (!strcmp(of_id->compatible, "rockchip,vop-pwm"))
-+               pc->base =3D devm_ioremap(&pdev->dev, r->start,
-resource_size(r));
-+       else
-+               pc->base =3D devm_ioremap_resource(&pdev->dev, r);
-
-	...
-
-}
-
-This will be fixed for following:
-
-static int rockchip_pwm_probe (...)
-{
-
-	...
-
-         r =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	pc->base =3D devm_ioremap_resource(&pdev->dev, r);
-
-	...
-
-}
-
-I will discuss with lcdc of upstream's people tomorrow.
-
-I has sent the PWM in patch v4 the last few days,Hope you can help chec=
-k=20
-and accept it,thanks.:-)
-
--caesar
+-- 
+Chris Metcalf, Tilera Corp.
+http://www.tilera.com
 
