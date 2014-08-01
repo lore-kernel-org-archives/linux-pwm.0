@@ -1,55 +1,90 @@
-From: Chris Metcalf <cmetcalf@tilera.com>
-Subject: Re: [PATCH] drivers: Let several drivers depends on HAS_IOMEM for
- 'devm_ioremap_resource'
-Date: Thu, 31 Jul 2014 16:09:48 -0400
-Message-ID: <53DAA28C.508@tilera.com>
-References: <201407130545.23004.marex@denx.de> <53C7B365.4080000@gmail.com> <53C834EA.5030605@tilera.com> <5190668.jExaFa8pKn@wuerfel>
+From: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
+Subject: Re: [PATCH] pwm: imx: don't reprogram PWMSAR if PWM is disabled
+Date: Fri, 1 Aug 2014 22:02:17 +0400
+Message-ID: <CALT56yON=icaJZa22F30caYOGVLiHqBdXX2sfHqTBArd+PxrFA@mail.gmail.com>
+References: <1406102987-14797-1-git-send-email-dbaryshkov@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from usmamail.tilera.com ([12.216.194.151]:39877 "EHLO
-	USMAMAIL.TILERA.COM" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750945AbaGaUJu (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 31 Jul 2014 16:09:50 -0400
-In-Reply-To: <5190668.jExaFa8pKn@wuerfel>
+Received: from mail-ie0-f171.google.com ([209.85.223.171]:63477 "EHLO
+	mail-ie0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752706AbaHASCS (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 1 Aug 2014 14:02:18 -0400
+Received: by mail-ie0-f171.google.com with SMTP id at1so6422343iec.16
+        for <linux-pwm@vger.kernel.org>; Fri, 01 Aug 2014 11:02:17 -0700 (PDT)
+In-Reply-To: <1406102987-14797-1-git-send-email-dbaryshkov@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Chen Gang <gang.chen.5i5j@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>, Guenter Roeck <linux@roeck-us.net>, Richard Weinberger <richard@nod.at>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, dmitry.torokhov@gmail.com, linux-iio@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, teg@jklm.no, Thierry Reding <thierry.reding@gmail.com>, Lennox Wu <lennox.wu@gmail.com>, Marek Vasut <marex@denx.de>, Liqin Chen <liqin.linux@gmail.com>, msalter@redhat.com, linux-pwm@vger.kernel.org, devel@driverdev.osuosl.org, linux-watchdog@vger.kernel.org, linux-input@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, knaack.h@gmx.de, Martin Schwidefsky <schwidefsky@de.ibm.com>, Mischa.Jonker@synopsys.com, jic23@kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>
+To: Sascha Hauer <s.hauer@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Shawn Guo <shawn.guo@linaro.org>
+Cc: linux-pwm@vger.kernel.org
 
-On 7/17/2014 5:05 PM, Arnd Bergmann wrote:
-> On Thursday 17 July 2014 16:41:14 Chris Metcalf wrote:
->> On 7/17/2014 7:28 AM, Chen Gang wrote:
->>> According to current source code, tile still has chance to choose
->>> NO_IOMEM, for me, welcome the tile's maintainer's ideas or suggestions.
->> I'm not really sure.  It's true that on tile, if you don't enable PCI
->> support there's no other I/O memory (or I/O port) space you can use.
->> We pretty much always enable PCI support in our kernel, though.  I'm
->> kind of surprised that other architectures don't also have the model
->> that IOMEM requires PCI, but perhaps most architectures just don't
->> encode that in the Kconfig file?
-> Only s390 as far as I know. Most architectures have integrated
-> peripherals that use MMIO without PCI.
+On Wed, Jul 23, 2014 at 12:09 PM, Dmitry Eremin-Solenikov
+<dbaryshkov@gmail.com> wrote:
+> From: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
+>
+> Writing several values to PWMSAR register with PWM being disabled can
+> lead to FIFO (connected to PWMSAR) being overflown. Then after enabling
+> PWM, hardware will use stale values. Instead cache the duty cycles and
+> write them to the hardware only before enabling PWM.
 
-Yes, and tilegx has these too (quite a few of them).  The memory-mapped
-devices are accessed by specifying a shim x,y coordinate in the high bits
-of the physical address, in conjunction with an MMIO type in the TLB entry.
-Various tilegx drivers set up these kinds of mappings in the page table.
+What about this patch?
 
-The issue with ioremap() is that it takes a generic resource_size_t
-"physical address", and we don't have any general-purpose layer that maps
-particular PAs to shim coordinates, other than for TRIO (our PCI peripheral).
-Right now we just check the PCI root complexes that we have configured in
-the kernel, and if the pseudo physical address requested is in a range that
-we're associating with one of the root complexes, we will use the appropriate
-mapping against the appropriate TRIO shim to set up its x,y coordinate in
-the page table.
-
-So it makes some kind of sense to condition HAS_IOMEM on PCI, even though
-naively it seems like it shouldn't be strictly related.
-
--- 
-Chris Metcalf, Tilera Corp.
-http://www.tilera.com
-
+>
+> Signed-off-by: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
+> ---
+>  drivers/pwm/pwm-imx.c | 11 ++++++++---
+>  1 file changed, 8 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+> index c735127..79c2b24 100644
+> --- a/drivers/pwm/pwm-imx.c
+> +++ b/drivers/pwm/pwm-imx.c
+> @@ -46,6 +46,7 @@ struct imx_chip {
+>         struct clk      *clk_ipg;
+>
+>         void __iomem    *mmio_base;
+> +       unsigned long   duty_cycles;
+>
+>         struct pwm_chip chip;
+>
+> @@ -105,7 +106,7 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
+>  {
+>         struct imx_chip *imx = to_imx_chip(chip);
+>         unsigned long long c;
+> -       unsigned long period_cycles, duty_cycles, prescale;
+> +       unsigned long period_cycles, prescale;
+>         u32 cr;
+>
+>         c = clk_get_rate(imx->clk_per);
+> @@ -118,7 +119,7 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
+>         period_cycles /= prescale;
+>         c = (unsigned long long)period_cycles * duty_ns;
+>         do_div(c, period_ns);
+> -       duty_cycles = c;
+> +       imx->duty_cycles = c;
+>
+>         /*
+>          * according to imx pwm RM, the real period value should be
+> @@ -134,7 +135,8 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
+>
+>         period_cycles -= 2;
+>
+> -       writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
+> +       if (test_bit(PWMF_ENABLED, &pwm->flags))
+> +               writel(imx->duty_cycles, imx->mmio_base + MX3_PWMSAR);
+>         writel(period_cycles, imx->mmio_base + MX3_PWMPR);
+>
+>         cr = readl(imx->mmio_base + MX3_PWMCR);
+> @@ -157,6 +159,9 @@ static void imx_pwm_set_enable_v2(struct pwm_chip *chip, bool enable)
+>         struct imx_chip *imx = to_imx_chip(chip);
+>         u32 val;
+>
+> +       if (enable)
+> +               writel(imx->duty_cycles, imx->mmio_base + MX3_PWMSAR);
+> +
+>         val = readl(imx->mmio_base + MX3_PWMCR);
+>
+>         if (enable)
+> --
+> 1.9.3
+>
