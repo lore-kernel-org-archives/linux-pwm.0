@@ -1,54 +1,70 @@
-From: Aurelio Colosimo <aurelio.colosimo@gmail.com>
-Subject: [PATCH 1/2] pwm: new field name added to pwm_device
-Date: Tue,  5 Aug 2014 17:12:17 +0200
-Message-ID: <1407251538-17566-2-git-send-email-aurelio@aureliocolosimo.it>
-References: <1407251538-17566-1-git-send-email-aurelio@aureliocolosimo.it>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1407251538-17566-1-git-send-email-aurelio@aureliocolosimo.it>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Randy Dunlap <rdunlap@infradead.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Aurelio Colosimo <aurelio@aureliocolosimo.it>
+From: Doug Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v4 2/2] pwm: rockchip: Added to support for RK3288 SoC
+Date: Wed, 6 Aug 2014 15:46:21 -0700
+Message-ID: <CAD=FV=V4Kp-H3CcAKZPV1jBnYX+Ntwvxx6RB13TLxS5RRPHTWA@mail.gmail.com>
+References: <1406197295-10604-1-git-send-email-caesar.wang@rock-chips.com>
+	<1406197295-10604-3-git-send-email-caesar.wang@rock-chips.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-vc0-f175.google.com ([209.85.220.175]:48587 "EHLO
+	mail-vc0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753927AbaHFWqV (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 6 Aug 2014 18:46:21 -0400
+Received: by mail-vc0-f175.google.com with SMTP id ik5so5047915vcb.6
+        for <linux-pwm@vger.kernel.org>; Wed, 06 Aug 2014 15:46:21 -0700 (PDT)
+In-Reply-To: <1406197295-10604-3-git-send-email-caesar.wang@rock-chips.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Caesar Wang <caesar.wang@rock-chips.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, b.galvani@gmail.com, Rob Herring <robh+dt@kernel.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Randy Dunlap <rdunlap@infradead.org>, Kumar Gala <galak@codeaurora.org>, Eddie Cai <cf@rock-chips.com>, Tao Huang <huangtao@rock-chips.com>, Jianqun Xu <xjq@rock-chips.com>, Addy Ke <addy.ke@rock-chips.com>, =?UTF-8?B?6ZmI5riQ6aOe?= <cjf@rock-chips.com>, han jiang <hj@rock-chips.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-pwm <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
 
-Since label is used dinamically, I added one more optional field,
-which statically defines the name of a pwm output, in a similar way
-as gpio framework does.
+Caesar,
 
-Signed-off-by: Aurelio Colosimo <aurelio@aureliocolosimo.it>
----
- drivers/pwm/sysfs.c | 7 ++++++-
- include/linux/pwm.h | 1 +
- 2 files changed, 7 insertions(+), 1 deletion(-)
+On Thu, Jul 24, 2014 at 3:21 AM, Caesar Wang <caesar.wang@rock-chips.com> wrote:
+> +static const struct rockchip_pwm_data pwm_data_v1 = {
+> +       .regs.duty = PWM_HRC,
+> +       .regs.period = PWM_LRC,
+> +       .regs.cntr = PWM_CNTR,
+> +       .regs.ctrl = PWM_CTRL,
+> +       .prescaler = PRESCALER,
+> +       .set_enable = rockchip_pwm_set_enable_v1,
+> +};
+> +
+> +static const struct rockchip_pwm_data pwm_data_v2 = {
+> +       .regs.duty = PWM_LRC,
+> +       .regs.period = PWM_HRC,
+> +       .regs.cntr = PWM_CNTR,
+> +       .regs.ctrl = PWM_CTRL,
+> +       .prescaler = PRESCALER-1,
+> +       .set_enable = rockchip_pwm_set_enable_v2,
+> +};
+> +
+> +static const struct rockchip_pwm_data pwm_data_vop = {
+> +       .regs.duty = PWM_LRC,
+> +       .regs.period = PWM_HRC,
+> +       .regs.cntr = PWM_CTRL,
+> +       .regs.ctrl = PWM_CNTR,
 
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index 4bd0c63..c1d6064 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -198,7 +198,12 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
- 	export->child.parent = parent;
- 	export->child.devt = MKDEV(0, 0);
- 	export->child.groups = pwm_groups;
--	dev_set_name(&export->child, "pwm%u", pwm->hwpwm);
-+
-+	if (pwm->name)
-+		dev_set_name(&export->child, pwm->name, pwm->hwpwm);
-+	else
-+		dev_set_name(&export->child, "pwm%u", pwm->hwpwm);
-+
- 
- 	ret = device_register(&export->child);
- 	if (ret) {
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index e90628c..9bacf35 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -86,6 +86,7 @@ struct pwm_device {
- 	unsigned int		pwm;
- 	struct pwm_chip		*chip;
- 	void			*chip_data;
-+	const char		*name; /* optional static name for pwm device */
- 
- 	unsigned int		period; 	/* in nanoseconds */
- 	unsigned int		duty_cycle;	/* in nanoseconds */
--- 
-1.9.1
+Did you really mean to flip CTRL and CNTR here?  If so, that's super
+confusing and deserves a comment.  AKA, I think the above should not
+be:
+
+ +       .regs.cntr = PWM_CTRL,
+ +       .regs.ctrl = PWM_CNTR,
+
+...but should be
+
+ +       .regs.cntr = PWM_CNTR,
+ +       .regs.ctrl = PWM_CTRL,
+
+If you didn't mean to flip CTRL and CNTR here, then just get rid of
+pwm_data_vop and refer to pwm_data_v2.  In fact, I'd suggest that you
+totally remove the "rockchip,vop-pwm" since there's nothing different
+between "rockchip,rk3288-pwm" and "rockchip,vop-pwm".
+
+
+Have you validated Thierry's suggestion to allow you to access your
+memory range?
+
+-Doug
