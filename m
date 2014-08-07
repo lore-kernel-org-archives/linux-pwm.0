@@ -1,64 +1,67 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: lpss: remove dependency on clk framework
-Date: Thu, 7 Aug 2014 13:19:19 +0200
-Message-ID: <20140807111917.GB31751@ulmo.nvidia.com>
-References: <1399624521-26175-1-git-send-email-heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH v2] pwm: imx: set can_sleep flag for imx_pwm
+Date: Thu, 7 Aug 2014 14:55:51 +0200
+Message-ID: <20140807125549.GA32027@ulmo.nvidia.com>
+References: <1400834488-2660-1-git-send-email-shawn.guo@freescale.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="E39vaYmALEf/7YXx"
+	protocol="application/pgp-signature"; boundary="huq684BweRXVnRxX"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f49.google.com ([209.85.220.49]:49811 "EHLO
-	mail-pa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753416AbaHGLTZ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Aug 2014 07:19:25 -0400
+Received: from mail-pa0-f50.google.com ([209.85.220.50]:46069 "EHLO
+	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757428AbaHGMz4 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Aug 2014 08:55:56 -0400
+Received: by mail-pa0-f50.google.com with SMTP id et14so5386520pad.37
+        for <linux-pwm@vger.kernel.org>; Thu, 07 Aug 2014 05:55:56 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <1399624521-26175-1-git-send-email-heikki.krogerus@linux.intel.com>
+In-Reply-To: <1400834488-2660-1-git-send-email-shawn.guo@freescale.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Alan Cox <alan@linux.intel.com>, Chew Chiau Ee <chiau.ee.chew@intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Shawn Guo <shawn.guo@freescale.com>
+Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Liu Ying <Ying.Liu@freescale.com>
 
 
---E39vaYmALEf/7YXx
+--huq684BweRXVnRxX
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 09, 2014 at 11:35:21AM +0300, Heikki Krogerus wrote:
-> Unlike other Intel LPSS devices, the PWM does not have the
-> clock dividers or the gate. All we get from the clock is the
-> rate. Since PCI case uses the driver data to get the rate,
-> we can drop the clk and use the same data also in case of
-> ACPI. The frequency is the same.
+On Fri, May 23, 2014 at 04:41:28PM +0800, Shawn Guo wrote:
+> The .config() hook imx_pwm_config() calls clk APIs like clk_prepare()
+> and clk_get_rate(), which might sleep, so we need to set can_sleep flag
+> on pwm_chip.
 >=20
-> Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> Signed-off-by: Shawn Guo <shawn.guo@freescale.com>
 > ---
->  drivers/pwm/pwm-lpss.c | 32 ++++++++++----------------------
->  1 file changed, 10 insertions(+), 22 deletions(-)
+> Changes since v1:
+>  - Set can_sleep flag for both imx_pwm_v1 and imx_pwm_v2
+>=20
+>  drivers/pwm/pwm-imx.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-Sorry for the long delay. Applied now.
+Applied, thanks.
 
 Thierry
 
---E39vaYmALEf/7YXx
+--huq684BweRXVnRxX
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJT42C1AAoJEN0jrNd/PrOhicUP/1VEBEGxfkpfuJgt4a9XCyyI
-oWZ1bdZuRsk59BosAE8jAhYis8d2ZXXIvSC3tdJ0heHHPukby1ycnrno87XCliAM
-Ja18w5Hp3qyBFlMU7oGaFJ69votxsaG4WL1AkUmpRNUaRivVJn4tw5pPyPBCcYsf
-3xQowF6QOkO6Vj7IXOX7IlQvxALUk4Paagj1OeRTTHp62YVE7+Cbd/ojR95wO/n7
-RtT5SV0OycxKX837j/5/qA96rWYsdV6sPXadkS3uIfrbm93+A3D/vXYBtbBzKm9q
-668JDCCzaA49C/mpIwR8pNQ236dV3KLwLm4FVnvNlFLhpj5CHYPd6bXgzUtbPcqS
-GHdRKIkJMWphDrf7R5lObL24oVVpgbxppiXKuxnPqCNuu/ZeR+xo/CM1Fi/86w8a
-GG/FNKh6S+Pogsje6KTjnxQFivd1BN+nTvIGwJqMIfJoqneebKzrTgGHuaHEbxmT
-eaJ0OkOr+voP7xxEyx/8ZQWEzifAZoRW9e3Ma+TyUO1OJACoYaG61kw1sVM63Jlc
-UONv9aumHL+sHDPstfG70Iq/8hvQTx7v+Ka+YVfnRZgdzA9k+65Xr7MsFCz82eHd
-ZbsbnvHDnEMQwdzYJvFiqXDLOzZx0a92g/78PN9KYCqgB15k3y3q9d/DkVjXSxyd
-Pup6DU2sy+AokzKzE5AH
-=LI7F
+iQIcBAEBAgAGBQJT43dVAAoJEN0jrNd/PrOhdfgQAKHbtQgYYJrzetn/4bY1m1WU
+u+6DG9g8x+m8fj55+2zgiipVZrNg7MmWBOsPTLEId3TXkBxe7nXqbhmZzeRMeX4k
+IWeNGgzZ4+fFrhw9dytQuoj0J7jzCtVY4ib6GKZXU1YFSmW2Y8NFK5gbx8rlINjP
+5X7r3kh7fe/XT7B8qmH7sV3l/e81WzXbk3NBg6tX6D7SrU3BSNkIxO8MQR0NafuU
+iVpbgu0SN/CuHSmve9YzgrqbwgT0/T85C3wJIqpx36FfMfxYCzje4U2O1dKpIZf6
+uVjJsFCBd7ANGJwWIkSZQTdNcq/Al971BN8zwgpEc58S7KNivSm9iYaix/uHaNnK
+44TOMiA6EqfGNp6eV0VKTyuZ1AS1crDyqZTApc+8U9o72klQgMZt2GgAjKD/ndIX
+jn0usiZsFwXgUC0uA0J+Asof8nT2IhFdTg5bltsg99UmzzZQ+3ZBr1BLwZai+8fW
+9x0+FcqJUPRUvXT/+sAfzpfO1e6V3o35sstWsE70qsPJvlWSF2O43h+ZYpAAutRP
+hluDijIk9nCxgY/yXNUhTYhGDiEb4jJILDBLG2MHWpwhDY4YIYpZVemRfR0ztXJU
+LxM8Ja2EHcdiEX2QSvgIu0bE9v/G0VQhVV5OJDxK83VlzH/5Et6wzXXF+SOvQgAq
+zwJvZYBg7H5a+7gE/Fyi
+=+j3/
 -----END PGP SIGNATURE-----
 
---E39vaYmALEf/7YXx--
+--huq684BweRXVnRxX--
