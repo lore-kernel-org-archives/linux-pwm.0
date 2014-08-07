@@ -1,104 +1,66 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 2/2] pwm: rockchip: Added to support for RK3288 SoC
-Date: Thu, 7 Aug 2014 15:14:44 +0200
-Message-ID: <20140807131443.GA1540@ulmo.nvidia.com>
-References: <1406197295-10604-1-git-send-email-caesar.wang@rock-chips.com>
- <1406197295-10604-3-git-send-email-caesar.wang@rock-chips.com>
- <20140807061842.GB17340@ulmo>
- <53E3795E.4080607@rock-chips.com>
+Subject: Re: [PATCH v2 00/11] pwm: Introduce ST's PWM driver
+Date: Thu, 7 Aug 2014 15:20:52 +0200
+Message-ID: <20140807132050.GC1540@ulmo.nvidia.com>
+References: <1405348412-7352-1-git-send-email-lee.jones@linaro.org>
+ <20140721123950.GY30888@lee--X1>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Q68bSM7Ycu6FN28Q"
+	protocol="application/pgp-signature"; boundary="da4uJneut+ArUgXk"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pd0-f169.google.com ([209.85.192.169]:57748 "EHLO
-	mail-pd0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754519AbaHGNOx (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Aug 2014 09:14:53 -0400
+Received: from mail-pa0-f44.google.com ([209.85.220.44]:39736 "EHLO
+	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757268AbaHGNU5 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Aug 2014 09:20:57 -0400
 Content-Disposition: inline
-In-Reply-To: <53E3795E.4080607@rock-chips.com>
+In-Reply-To: <20140721123950.GY30888@lee--X1>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: caesar <caesar.wang@rock-chips.com>
-Cc: heiko@sntech.de, b.galvani@gmail.com, robh+dt@kernel.org, ijc+devicetree@hellion.org.uk, rdunlap@infradead.org, galak@codeaurora.org, cf@rock-chips.com, huangtao@rock-chips.com, xjq@rock-chips.com, addy.ke@rock-chips.com, cjf@rock-chips.com, hj@rock-chips.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, ajitpal.singh@st.com
 
 
---Q68bSM7Ycu6FN28Q
+--da4uJneut+ArUgXk
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 07, 2014 at 09:04:30PM +0800, caesar wrote:
-[...]
-> As you say, I will rewrite the about if it's really need  do so it.
-> For example:
+On Mon, Jul 21, 2014 at 01:39:50PM +0100, Lee Jones wrote:
+> Hi Thierry,
 >=20
-> static const struct rockchip_pwm_data pwm_data_v1 =3D {
->     .regs =3D {
->                 .duty =3D 0x04,
->                 .period =3D 0x08,
->                 .cntr =3D 0x00,
->                 .ctrl =3D 0x0c,
->     },
->     .prescaler =3D 2,
->     .set_enable =3D rockchip_pwm_set_enable_v1,
-> };
->=20
-> static const struct rockchip_pwm_data pwm_data_v2 =3D {
->     .regs =3D {
->                 .duty =3D 0x08,
->                 .period =3D 0x04,
->                 .cntr =3D 0x00,
->                 .ctrl =3D 0x0c,
->     },
->     .prescaler =3D 1,
->     .set_enable =3D rockchip_pwm_set_enable_v2,
-> };
->=20
-> static const struct rockchip_pwm_data pwm_data_vop =3D {
->     .regs =3D {
->                 .duty =3D 0x08,
->                 .period =3D 0x04,
->                 .cntr =3D 0x0c,
->                 .ctrl =3D 0x00,
->     },
->     .prescaler =3D 1,
->     .set_enable =3D rockchip_pwm_set_enable_v2,
-> };
->=20
-> Is that right?
+> Did you find some time to look at this set?
 
-Yes.
+Sorry for the long delay. I've applied patches 6-11 to the PWM tree,
+though I've modified patch 6 a little for consistency. The module is
+now named after the Kconfig option (pwm-sti rather than pwm-st). The
+dependencies also seem to be redundant (ARCH_STI already depends on
+OF), though I didn't change that just in case it's required for some
+other reason.
 
-> >>+	.set_enable =3D rockchip_pwm_set_enable_v2,
-> >>+};
-> >No need for the double indirection.
->=20
-> Sorry, I think is need if you mean a double indirection for ".set_enable".
-
-The "double indirection" was regarding the symbolic names for registers,
-not the .set_enable(). Sorry.
+Anyway, scream if there's anything in the PWM for-next branch that
+needs to be fixed up.
 
 Thierry
 
---Q68bSM7Ycu6FN28Q
+--da4uJneut+ArUgXk
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJT43vDAAoJEN0jrNd/PrOhD90P/38+cAEBv27cc1vxPhOCtHs9
-L3ygr0FMsJbcYAbX0KEtkNcudus5e12dpIeXvUHqhWzBGmBD6ABnlqczc9mFBgS0
-3eHvaNtYLh1ngSCXf7wmB5fGhzVaUqzuh2wpzzYQiNr3F9GRBvMX4REDrkvvRX/N
-leT5n9twCEgU3DQmFzqTTwDpx3s5MkNPpo2viaAxrGRapIbT/iFCOEgFr/VqFhPd
-MrbqxRfSgW3ywdVRJRnQcoIyma2rWhoyp87d9HAtMLH+G9B8KHV7if5aUWYyg0n1
-H6FMW4T9a+6yJCJnPoYE2+dsOW3aldAdQVmv0kU0PddcjqC6JngsJTzavRhQESW6
-ldNgtde6my/aX4lnkSXSkeAuGZOg/rhqvl9lXPRBfAwAWpG6KgEpDh8yD0tMEIzs
-iGpI48oNu/MrKQ69Y2oFktPFFYlSZBRx0P8sXxmoupM526C0Eg+/QIRHI6Djd07V
-WPnR+xmLI5UJyGhFN/rPzhS1013yxlZwwWLiRD9TMnX8+Zgbk7v1BV23HXlrB5+Z
-yMvkGEG+D887Kfg2WVC/QQYS7fUUJHmHbvHL+OrHvN9JRXa6oy/CvKVzhQPf7Wgq
-qbzgDXb0EhAFt3rfqNoeOpNOag8bPV1E48Pmbm9D52fURwV81IFsv/yhffmqG+NU
-Bl+imYGPYpio/i/kve1t
-=+pXz
+iQIcBAEBAgAGBQJT430yAAoJEN0jrNd/PrOhjM4P/R1u9hzekLIfuj4Gu+1FfD5j
+kGPXYIUpxmyb+1Vxm/pFpMu3meWw5WZVVmS03A0pbgs5Y/B073ez8/xa4+p1b4mA
+rL+ErG+j81coaEuBOvg5IXyMCJhQcmJLlL9nNY8u7Hdh3DSidbWTflGFohE6k+nU
+QOConR8yochj/Mi0bTGVR4HDbQnGm1eYN4G16FYybfGXsim4wgBR6GDCTlHX2AS+
+C8IUx4Pamcsa7hhMJVjD80A7E6lPLPP7FXO1Na3zZhEAtwzYWr/rZd1VS53SxS2F
+eKEP0AAnmvQXdKmN1X/WJhNY+amNaEETMBFS3m21X+SMXWanmrjGB6j/1AkUf1kN
+TOP1vfJuOEA9e8RuqeW+HrF59ToMqYVd1foNW7X+p3l3ziGP6ZHxxRnJjscPfBOt
+s18WgOB7vIOEAmVOa0ufgNQDE3zJvU06nnGiw8BV2RadZ9mksaqsy2TDmDKke/Ei
+Vwju/RHWkKOgo2HgXukc6Nhzmz6Ei+xCXYLQzLpZf4q4KdGs87sGJ+GpWnO+qTJ+
+C6XcHKv6+2W0as7Voozzv7tSjVQbCgMaU2cPgXUfrWyR1Bp31GBPTxyJqd95CZcw
+belEvIVDEwHXEgoNimQ4PerWMXcQFKruHWxSvbu3vvxkgqIuLet42LE8ufE/YF1z
+QR0A+XyrgRfJsSYOQYfc
+=LvDo
 -----END PGP SIGNATURE-----
 
---Q68bSM7Ycu6FN28Q--
+--da4uJneut+ArUgXk--
