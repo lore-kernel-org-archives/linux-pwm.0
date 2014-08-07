@@ -1,148 +1,284 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH v4 2/2] pwm: rockchip: Added to support for RK3288 SoC
-Date: Thu, 7 Aug 2014 08:12:57 +0200
-Message-ID: <20140807061255.GA17340@ulmo>
+Date: Thu, 7 Aug 2014 08:18:43 +0200
+Message-ID: <20140807061842.GB17340@ulmo>
 References: <1406197295-10604-1-git-send-email-caesar.wang@rock-chips.com>
  <1406197295-10604-3-git-send-email-caesar.wang@rock-chips.com>
- <CAD=FV=V4Kp-H3CcAKZPV1jBnYX+Ntwvxx6RB13TLxS5RRPHTWA@mail.gmail.com>
- <53E2D605.2000704@rock-chips.com>
- <CAD=FV=Xw8tz2keCUtO+qYUmnuv=+DPGZjY9-j_2XmAcP3Luzjg@mail.gmail.com>
- <53E2F11A.1040109@rock-chips.com>
- <CAD=FV=Wuj2_q+iW2EAj7w8TvgS=C2juSu+h_iG24NvPk4UqhKQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="h31gzZEtNLTqOjlF"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-we0-f170.google.com ([74.125.82.170]:47574 "EHLO
-	mail-we0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755109AbaHGGNB (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Aug 2014 02:13:01 -0400
+	protocol="application/pgp-signature"; boundary="24zk1gE8NUlDmwG9"
+Return-path: <linux-doc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAD=FV=Wuj2_q+iW2EAj7w8TvgS=C2juSu+h_iG24NvPk4UqhKQ@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1406197295-10604-3-git-send-email-caesar.wang@rock-chips.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Caesar Wang <caesar.wang@rock-chips.com>
+Cc: heiko@sntech.de, b.galvani@gmail.com, robh+dt@kernel.org, ijc+devicetree@hellion.org.uk, rdunlap@infradead.org, galak@codeaurora.org, cf@rock-chips.com, huangtao@rock-chips.com, xjq@rock-chips.com, addy.ke@rock-chips.com, cjf@rock-chips.com, hj@rock-chips.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Doug Anderson <dianders@chromium.org>
-Cc: caesar <caesar.wang@rock-chips.com>, Heiko =?utf-8?Q?St=C3=BCbner?= <heiko@sntech.de>, Beniamino Galvani <b.galvani@gmail.com>, Rob Herring <robh+dt@kernel.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Randy Dunlap <rdunlap@infradead.org>, Kumar Gala <galak@codeaurora.org>, Eddie Cai <cf@rock-chips.com>, Tao Huang <huangtao@rock-chips.com>, Jianqun Xu <xjq@rock-chips.com>, Addy Ke <addy.ke@rock-chips.com>, =?utf-8?B?6ZmI5riQ6aOe?= <cjf@rock-chips.com>, han jiang <hj@rock-chips.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-pwm <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
 
 
---h31gzZEtNLTqOjlF
-Content-Type: text/plain; charset=utf-8
+--24zk1gE8NUlDmwG9
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 06, 2014 at 08:26:51PM -0700, Doug Anderson wrote:
-> caesar,
+On Thu, Jul 24, 2014 at 06:21:35PM +0800, Caesar Wang wrote:
+> This patch added to support the PWM controller found on
+> RK3288 SoC.
 >=20
-> On Wed, Aug 6, 2014 at 8:23 PM, caesar <caesar.wang@rock-chips.com> wrote:
-> >
-> > =E5=9C=A8 2014=E5=B9=B408=E6=9C=8807=E6=97=A5 10:16, Doug Anderson =E5=
-=86=99=E9=81=93:
-> >
-> >> Caesar,
-> >>
-> >> On Wed, Aug 6, 2014 at 6:27 PM, caesar <caesar.wang@rock-chips.com> wr=
-ote:
-> >>>
-> >>> Doug,
-> >>>
-> >>> =E5=9C=A8 2014=E5=B9=B408=E6=9C=8807=E6=97=A5 06:46, Doug Anderson =
-=E5=86=99=E9=81=93:
-> >>>
-> >>>> Caesar,
-> >>>>
-> >>>> On Thu, Jul 24, 2014 at 3:21 AM, Caesar Wang
-> >>>> <caesar.wang@rock-chips.com>
-> >>>> wrote:
-> >>>>>
-> >>>>> +static const struct rockchip_pwm_data pwm_data_v1 =3D {
-> >>>>> +       .regs.duty =3D PWM_HRC,
-> >>>>> +       .regs.period =3D PWM_LRC,
-> >>>>> +       .regs.cntr =3D PWM_CNTR,
-> >>>>> +       .regs.ctrl =3D PWM_CTRL,
-> >>>>> +       .prescaler =3D PRESCALER,
-> >>>>> +       .set_enable =3D rockchip_pwm_set_enable_v1,
-> >>>>> +};
-> >>>>> +
-> >>>>> +static const struct rockchip_pwm_data pwm_data_v2 =3D {
-> >>>>> +       .regs.duty =3D PWM_LRC,
-> >>>>> +       .regs.period =3D PWM_HRC,
-> >>>>> +       .regs.cntr =3D PWM_CNTR,
-> >>>>> +       .regs.ctrl =3D PWM_CTRL,
-> >>>>> +       .prescaler =3D PRESCALER-1,
-> >>>>> +       .set_enable =3D rockchip_pwm_set_enable_v2,
-> >>>>> +};
-> >>>>> +
-> >>>>> +static const struct rockchip_pwm_data pwm_data_vop =3D {
-> >>>>> +       .regs.duty =3D PWM_LRC,
-> >>>>> +       .regs.period =3D PWM_HRC,
-> >>>>> +       .regs.cntr =3D PWM_CTRL,
-> >>>>> +       .regs.ctrl =3D PWM_CNTR,
-> >>>>
-> >>>> Did you really mean to flip CTRL and CNTR here?  If so, that's super
-> >>>> confusing and deserves a comment.  AKA, I think the above should not
-> >>>> be:
-> >>>>
-> >>>>    +       .regs.cntr =3D PWM_CTRL,
-> >>>>    +       .regs.ctrl =3D PWM_CNTR,
-> >>>>
-> >>>> ...but should be
-> >>>>
-> >>>>    +       .regs.cntr =3D PWM_CNTR,
-> >>>>    +       .regs.ctrl =3D PWM_CTRL,
-> >>>>
-> >>>> If you didn't mean to flip CTRL and CNTR here, then just get rid of
-> >>>> pwm_data_vop and refer to pwm_data_v2.  In fact, I'd suggest that you
-> >>>> totally remove the "rockchip,vop-pwm" since there's nothing different
-> >>>> between "rockchip,rk3288-pwm" and "rockchip,vop-pwm".
-> >>>
-> >>>
-> >>> Sorry,I think it's no problem. the  "rockchip,rk3288-pwm" and
-> >>> "rockchip,vop-pwm" are seperate PWM controllers.
-> >>> They are just different registers address between CNTR and CTRL .
-> >>
-> >> OK, I looked up in the TRM.  Right, the CNTR and CTRL are flipped on
-> >> the vop.  So I think that the only change you need is to add:
-> >>
-> >> #define PWM_VOP_CTRL  0x00
-> >> #define PWM_VOP_CNTR  0x0c
-> >>
-> >> ...then use these new #defines for the vop structure.
-> >>
-> >>
-> >> As you have the code written right now it's very confusing.  The new
-> >> #defines will fix this.
-> >>
-> > yeah, I think they can be used in the same context.
-> >
-> > I will fix it in patch v5 if it is really need.
+> Signed-off-by: Caesar Wang <caesar.wang@rock-chips.com>
+> ---
+>  drivers/pwm/pwm-rockchip.c | 124 ++++++++++++++++++++++++++++++++++++++-=
+------
+>  1 file changed, 105 insertions(+), 19 deletions(-)
 >=20
-> I think you should fix this, but if Thierry doesn't think so then it's
-> really his decision.
+> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+> index eec2145..59c2513 100644
+> --- a/drivers/pwm/pwm-rockchip.c
+> +++ b/drivers/pwm/pwm-rockchip.c
+> @@ -2,6 +2,7 @@
+>   * PWM driver for Rockchip SoCs
+>   *
+>   * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
+> + * Copyright (C) 2014 ROCKCHIP, Inc.
+>   *
+>   * This program is free software; you can redistribute it and/or
+>   * modify it under the terms of the GNU General Public License
+> @@ -12,6 +13,7 @@
+>  #include <linux/io.h>
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+> +#include <linux/of_device.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/pwm.h>
+>  #include <linux/time.h>
+> @@ -25,17 +27,72 @@
+> =20
+>  #define PRESCALER		2
+> =20
+> +#define PWM_ENABLE		(1 << 0)
+> +#define PWM_CONTINUOUS		(1 << 1)
+> +#define PWM_DUTY_POSITIVE	(1 << 3)
+> +#define PWM_INACTIVE_NEGATIVE	(0 << 4)
+> +#define PWM_OUTPUT_LEFT		(0 << 5)
+> +#define PWM_LP_DISABLE		(0 << 8)
+> +
+>  struct rockchip_pwm_chip {
+>  	struct pwm_chip chip;
+>  	struct clk *clk;
+> +	const struct rockchip_pwm_data *data;
+>  	void __iomem *base;
+>  };
+> =20
+> +struct rockchip_pwm_regs {
+> +	unsigned long duty;
+> +	unsigned long period;
+> +	unsigned long cntr;
+> +	unsigned long ctrl;
+> +};
+> +
+> +struct rockchip_pwm_data {
+> +	struct rockchip_pwm_regs regs;
+> +	unsigned int prescaler;
+> +
+> +	void (*set_enable)(struct pwm_chip *chip, bool enable);
+> +};
+> +
+>  static inline struct rockchip_pwm_chip *to_rockchip_pwm_chip(struct pwm_=
+chip *c)
+>  {
+>  	return container_of(c, struct rockchip_pwm_chip, chip);
+>  }
+> =20
+> +static void rockchip_pwm_set_enable_v1(struct pwm_chip *chip, bool enabl=
+e)
+> +{
+> +	struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
+> +	u32 val =3D 0;
+> +	u32 enable_conf =3D PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN;
+> +
+> +	val =3D readl_relaxed(pc->base + pc->data->regs.ctrl);
+> +
+> +	if (enable)
+> +		val |=3D enable_conf;
+> +	else
+> +		val &=3D ~enable_conf;
+> +
+> +	writel_relaxed(val, pc->base + pc->data->regs.ctrl);
+> +}
+> +
+> +static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip, bool enabl=
+e)
+> +{
+> +	struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
+> +	u32 val =3D 0;
+> +	u32 enable_conf =3D PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE |
+> +		PWM_CONTINUOUS | PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE;
+> +
+> +	val =3D readl_relaxed(pc->base + pc->data->regs.ctrl);
+> +
+> +	if (enable)
+> +		val |=3D enable_conf;
+> +	else
+> +		val &=3D ~enable_conf;
+> +
+> +	writel_relaxed(val, pc->base + pc->data->regs.ctrl);
+> +}
+> +
+>  static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device =
+*pwm,
+>  			       int duty_ns, int period_ns)
+>  {
+> @@ -52,20 +109,20 @@ static int rockchip_pwm_config(struct pwm_chip *chip=
+, struct pwm_device *pwm,
+>  	 * default prescaler value for all practical clock rate values.
+>  	 */
+>  	div =3D clk_rate * period_ns;
+> -	do_div(div, PRESCALER * NSEC_PER_SEC);
+> +	do_div(div, pc->data->prescaler * NSEC_PER_SEC);
+>  	period =3D div;
+> =20
+>  	div =3D clk_rate * duty_ns;
+> -	do_div(div, PRESCALER * NSEC_PER_SEC);
+> +	do_div(div, pc->data->prescaler * NSEC_PER_SEC);
+>  	duty =3D div;
+> =20
+>  	ret =3D clk_enable(pc->clk);
+>  	if (ret)
+>  		return ret;
+> =20
+> -	writel(period, pc->base + PWM_LRC);
+> -	writel(duty, pc->base + PWM_HRC);
+> -	writel(0, pc->base + PWM_CNTR);
+> +	writel(period, pc->base + pc->data->regs.period);
+> +	writel(duty, pc->base + pc->data->regs.duty);
+> +	writel(0, pc->base + pc->data->regs.cntr);
+> =20
+>  	clk_disable(pc->clk);
+> =20
+> @@ -76,15 +133,12 @@ static int rockchip_pwm_enable(struct pwm_chip *chip=
+, struct pwm_device *pwm)
+>  {
+>  	struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
+>  	int ret;
+> -	u32 val;
+> =20
+>  	ret =3D clk_enable(pc->clk);
+>  	if (ret)
+>  		return ret;
+> =20
+> -	val =3D readl_relaxed(pc->base + PWM_CTRL);
+> -	val |=3D PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN;
+> -	writel_relaxed(val, pc->base + PWM_CTRL);
+> +	pc->data->set_enable(chip, true);
+> =20
+>  	return 0;
+>  }
+> @@ -92,11 +146,8 @@ static int rockchip_pwm_enable(struct pwm_chip *chip,=
+ struct pwm_device *pwm)
+>  static void rockchip_pwm_disable(struct pwm_chip *chip, struct pwm_devic=
+e *pwm)
+>  {
+>  	struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
+> -	u32 val;
+> =20
+> -	val =3D readl_relaxed(pc->base + PWM_CTRL);
+> -	val &=3D ~(PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN);
+> -	writel_relaxed(val, pc->base + PWM_CTRL);
+> +	pc->data->set_enable(chip, false);
+> =20
+>  	clk_disable(pc->clk);
+>  }
+> @@ -108,12 +159,52 @@ static const struct pwm_ops rockchip_pwm_ops =3D {
+>  	.owner =3D THIS_MODULE,
+>  };
+> =20
+> +static const struct rockchip_pwm_data pwm_data_v1 =3D {
+> +	.regs.duty =3D PWM_HRC,
+> +	.regs.period =3D PWM_LRC,
+> +	.regs.cntr =3D PWM_CNTR,
+> +	.regs.ctrl =3D PWM_CTRL,
 
-Frankly, I'm fine if these don't use symbolic names at all since only
-the structure fields are used to refer to them now.
+Perhaps a slightly more idiomatic way to write this would be:
+
+	static const struct rockchip_pwm_data pwm_data_v1 =3D {
+		.regs =3D {
+			.duty =3D PWM_HRC,
+			.period =3D PWM_LRC,
+			.cntr =3D PWM_CNTR,
+			.ctrl =3D PWM_CTRL,
+		},
+		...
+	};
+
+And similar for the v2 and vop structures. And like I said in another
+reply, since the defines are now only used in this structure it's a
+little redundant to give them symbolic names, so the above could equally
+well be:
+
+	static const struct rockchip_pwm_data pwm_data_v1 =3D {
+		.regs =3D {
+			.duty =3D 0x04,
+			.period =3D 0x08,
+			.cntr =3D 0x00,
+			.ctrl =3D 0x0c,
+		},
+		...
+	};
+
+> +	.prescaler =3D PRESCALER,
+
+Similarly for the prescaler value, it can now simply be 2 here.
+
+> +	.set_enable =3D rockchip_pwm_set_enable_v1,
+> +};
+> +
+> +static const struct rockchip_pwm_data pwm_data_v2 =3D {
+> +	.regs.duty =3D PWM_LRC,
+> +	.regs.period =3D PWM_HRC,
+> +	.regs.cntr =3D PWM_CNTR,
+> +	.regs.ctrl =3D PWM_CTRL,
+> +	.prescaler =3D PRESCALER-1,
+
+And 1 here.
+
+> +	.set_enable =3D rockchip_pwm_set_enable_v2,
+> +};
+> +
+> +static const struct rockchip_pwm_data pwm_data_vop =3D {
+> +	.regs.duty =3D PWM_LRC,
+> +	.regs.period =3D PWM_HRC,
+> +	.regs.cntr =3D PWM_CTRL,
+> +	.regs.ctrl =3D PWM_CNTR,
+> +	.prescaler =3D PRESCALER-1,
+
+And 1 here.
+
+> +	.set_enable =3D rockchip_pwm_set_enable_v2,
+> +};
+
+No need for the double indirection.
 
 Thierry
 
---h31gzZEtNLTqOjlF
+--24zk1gE8NUlDmwG9
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJT4xjnAAoJEN0jrNd/PrOhMo8QAI692uan9J+a5VBVT/jnMqeN
-Pe1A4GbOGHyCQF5iu7i7b531bEEul4Wr4IQz7LdLpEJwweaTS3XuR5hcI/g6+Be+
-bLq36pEvX371axXyAyQjq8JcP9vVchSzMy1gHKkP7XoYFNaXIl2t3qCtadb9HLwo
-kOcgsNBVCmyfbhqHmUfOIv0Cbsz3thpUmGkRn1GCzRGnxBodkCc4g8IIDj5hsDh2
-AJeVIBW4iFS7H5jK4YlPb9Rq1BPw8awW7veArBzkKBky/XV3yromtD/K/D0My49b
-UPx8FNpSoKcnkiyHKTBU/e9KDnoYJ/yxulhc+jjC0FXl2DsczowRY1D/cI8repuq
-QBPhq67mA/OxOC34cRoKZ+9oeLCzsyRvMEFadowp98i/Ddiaqlemn59rgHt3nBkO
-pbNth6ZRAHwHBMblbq4O5Uem1ZnWdje1K1/E4+XQdq1LZCCNPI6sFKxm0QKMBpSA
-747OhBaDfF/lCrAT9bBlheFneWKZ8DEEPJT3XY+ZktL28iPVl6hACJMdB2/RcvU7
-yITlJZsY+IABRVTpHJZEi24nGDUSUKSghx9mbbsMq9n/lbCh+Nx6fjPkUtm8ijW/
-DlD2gm8Yc9Vn7m37rJ7tz9ZlKuVIfmzTLwlNyXXHOIG9hVEvNB++CC3a7DNQsOty
-X3U8xoUo01T9tCJJFoMm
-=wGPw
+iQIcBAEBAgAGBQJT4xpCAAoJEN0jrNd/PrOh1osP/0XeppGhztOMMbHaqkuH87ig
+/vxqdFA6YE7MQ7FaPoJHB9jP8g3/isx+9WtVKldljSgBuIvj7JmRK2wAACWuISWk
+jPrINVDCJlcE2RrPTus49SZq/RNifBYG1SwtJWubbH+S+EoDGvpLR86Hh0+mvkxk
+LrD4T77x2fCaY1PhCiNFzxBZilGVktJYmeRCF1c0t32wn/2GFaCPr5hXasjZH/Kz
+4StNthRqGiYHvUxOdLuJQnJrVWBNt8D7bejD1IDP7jcnF5ftCng44mRHm6BfDMyw
+u/GjbHmlP9XT6BqVqXoS+Qf3R2MGN7G50jl8WL7PqG8WwD27oiqnu2aiR+3ZF08I
+WyPdeIvu8QNFMpr/i7ACPbPmGi0lMJwXP5o5NIZxR+yQxdjGu0+6ZnDgCFM6IWdw
+yBpa1c+j0dx75igrfpDcwkige6EUAXZcQx4PvX/TfhSHzzwyj0Kf6xpjz47c8ckG
+B10r1efmToLSGV2XuywLi0tpbW9hazAzWYShnHBUVKXOyTO7lWUjEL9J5Rt5NEzZ
+tvfilhj4eVS2/ADRzFQ5pKtiLXfvrtwR9OV/Uvv8R10eTHQ3Z6Zic+JF7xhItsFw
+mBJPuVVVvlFUWCsrgXZiw2rTcONiaZADxA/2VFzjuLhe948if7iVcBJf7Z0g7zrW
+aMziaTNnqqBqm93hv60X
+=SH2a
 -----END PGP SIGNATURE-----
 
---h31gzZEtNLTqOjlF--
+--24zk1gE8NUlDmwG9--
