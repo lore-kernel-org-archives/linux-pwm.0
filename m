@@ -1,66 +1,64 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: pwm-tipwmss: remove unnecessary OOM messages
-Date: Thu, 7 Aug 2014 13:15:18 +0200
-Message-ID: <20140807111517.GA31751@ulmo.nvidia.com>
-References: <000001cf8ab9$294b0940$7be11bc0$%han@samsung.com>
+Subject: Re: [PATCH] pwm: lpss: remove dependency on clk framework
+Date: Thu, 7 Aug 2014 13:19:19 +0200
+Message-ID: <20140807111917.GB31751@ulmo.nvidia.com>
+References: <1399624521-26175-1-git-send-email-heikki.krogerus@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="OXfL5xGRrasGEqWY"
+	protocol="application/pgp-signature"; boundary="E39vaYmALEf/7YXx"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f41.google.com ([209.85.220.41]:39822 "EHLO
-	mail-pa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932089AbaHGLP0 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Aug 2014 07:15:26 -0400
-Received: by mail-pa0-f41.google.com with SMTP id rd3so5277513pab.0
-        for <linux-pwm@vger.kernel.org>; Thu, 07 Aug 2014 04:15:25 -0700 (PDT)
+Received: from mail-pa0-f49.google.com ([209.85.220.49]:49811 "EHLO
+	mail-pa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753416AbaHGLTZ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Aug 2014 07:19:25 -0400
 Content-Disposition: inline
-In-Reply-To: <000001cf8ab9$294b0940$7be11bc0$%han@samsung.com>
+In-Reply-To: <1399624521-26175-1-git-send-email-heikki.krogerus@linux.intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jingoo Han <jg1.han@samsung.com>
-Cc: linux-pwm@vger.kernel.org, 'Philip Avinash' <avinashphilip@ti.com>
+To: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Alan Cox <alan@linux.intel.com>, Chew Chiau Ee <chiau.ee.chew@intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---OXfL5xGRrasGEqWY
+--E39vaYmALEf/7YXx
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 18, 2014 at 02:50:08PM +0900, Jingoo Han wrote:
-> The site-specific OOM messages are unnecessary, because they
-> duplicate the MM subsystem generic OOM message. The following
-> checkpatch warning is also removed.
+On Fri, May 09, 2014 at 11:35:21AM +0300, Heikki Krogerus wrote:
+> Unlike other Intel LPSS devices, the PWM does not have the
+> clock dividers or the gate. All we get from the clock is the
+> rate. Since PCI case uses the driver data to get the rate,
+> we can drop the clk and use the same data also in case of
+> ACPI. The frequency is the same.
 >=20
->   WARNING: Possible unnecessary 'out of memory' message
->=20
-> Signed-off-by: Jingoo Han <jg1.han@samsung.com>
+> Signed-off-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 > ---
->  drivers/pwm/pwm-tipwmss.c |    4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
+>  drivers/pwm/pwm-lpss.c | 32 ++++++++++----------------------
+>  1 file changed, 10 insertions(+), 22 deletions(-)
 
-Applied, thanks.
+Sorry for the long delay. Applied now.
 
 Thierry
 
---OXfL5xGRrasGEqWY
+--E39vaYmALEf/7YXx
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJT41/FAAoJEN0jrNd/PrOh9m4QAKw0OXO5KR+taLzI07/QM/Ny
-xdDAWdKiNeJHVy0sFjYoXsZY2VnqZH9d36m/ydM+PyssDtRHQ+G1tqcoInaL8mvK
-2f8qK/GOIrElOGlh1g5izx9T+yAVwXuP4fnFl8tamE9sSZVvlejlPdV5dvRJFVFM
-dV9F3altj+hLMvOmu/7VequMVMa/BPh7U3tFxqkRbLTH8nbtm9jy3MhFs81y5Cez
-ZiWkF2Ox/6ZNFQEFJutPtvbSEEQ2ZfSp/Tyz9TGdWb/6/lqfnwkRTTtmVUvse9Ui
-Xp7+1qlI7vGOFgVoClwuwNpc7eSMW0Vhvz7g8stwXx0p2grsNcR346hEZXwGa+pV
-KOBl438lk7+hYEiPHtNLhZzLH5bb1Cko4T7AzpXXCBgPf6PDyt1mMKi1FgYKRdRm
-EkqsbN9RATG48Wy2saUfL5yJMCVwwnytVL3vMg7enMcIwSQ9JKh79jjxOVxTkTWB
-MT1EZ9J01nhbOUZdYBXA4HElyvnT9F/cHPJ30KPTgQCa/Hn3YkwLPV/ekl1pAl5t
-VXEr4TFH+gxI9sTq54BNq8y0d41ORAYWsk4oYWtGBYEpPKsZZAlK8VOOz397gpA2
-LixaeJjCZHytMdG4UOgQb8eT0cvQ/ftUXbi+hWNnEm7PU5Dridprj0f5jrh++JHB
-2csIkF1+LaTqhb3Stmqh
-=V+0p
+iQIcBAEBAgAGBQJT42C1AAoJEN0jrNd/PrOhicUP/1VEBEGxfkpfuJgt4a9XCyyI
+oWZ1bdZuRsk59BosAE8jAhYis8d2ZXXIvSC3tdJ0heHHPukby1ycnrno87XCliAM
+Ja18w5Hp3qyBFlMU7oGaFJ69votxsaG4WL1AkUmpRNUaRivVJn4tw5pPyPBCcYsf
+3xQowF6QOkO6Vj7IXOX7IlQvxALUk4Paagj1OeRTTHp62YVE7+Cbd/ojR95wO/n7
+RtT5SV0OycxKX837j/5/qA96rWYsdV6sPXadkS3uIfrbm93+A3D/vXYBtbBzKm9q
+668JDCCzaA49C/mpIwR8pNQ236dV3KLwLm4FVnvNlFLhpj5CHYPd6bXgzUtbPcqS
+GHdRKIkJMWphDrf7R5lObL24oVVpgbxppiXKuxnPqCNuu/ZeR+xo/CM1Fi/86w8a
+GG/FNKh6S+Pogsje6KTjnxQFivd1BN+nTvIGwJqMIfJoqneebKzrTgGHuaHEbxmT
+eaJ0OkOr+voP7xxEyx/8ZQWEzifAZoRW9e3Ma+TyUO1OJACoYaG61kw1sVM63Jlc
+UONv9aumHL+sHDPstfG70Iq/8hvQTx7v+Ka+YVfnRZgdzA9k+65Xr7MsFCz82eHd
+ZbsbnvHDnEMQwdzYJvFiqXDLOzZx0a92g/78PN9KYCqgB15k3y3q9d/DkVjXSxyd
+Pup6DU2sy+AokzKzE5AH
+=LI7F
 -----END PGP SIGNATURE-----
 
---OXfL5xGRrasGEqWY--
+--E39vaYmALEf/7YXx--
