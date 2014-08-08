@@ -1,83 +1,76 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH v2 06/11] pwm: sti: Add new driver for ST's PWM IP
-Date: Fri, 8 Aug 2014 08:38:02 +0100
-Message-ID: <20140808073802.GC21618@lee--X1>
+Date: Fri, 8 Aug 2014 11:46:55 +0200
+Message-ID: <20140808094655.GC15852@ulmo>
 References: <1405348412-7352-1-git-send-email-lee.jones@linaro.org>
  <1405348412-7352-7-git-send-email-lee.jones@linaro.org>
  <20140807142344.GA11095@ulmo.nvidia.com>
+ <20140808073802.GC21618@lee--X1>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="KDt/GgjP6HVcx58l"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wg0-f50.google.com ([74.125.82.50]:47854 "EHLO
+	mail-wg0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752939AbaHHJq7 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Aug 2014 05:46:59 -0400
 Content-Disposition: inline
-In-Reply-To: <20140807142344.GA11095-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ajitpal.singh-qxv4g6HH51o@public.gmane.org
+In-Reply-To: <20140808073802.GC21618@lee--X1>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, ajitpal.singh@st.com
 
-On Thu, 07 Aug 2014, Thierry Reding wrote:
-> On Mon, Jul 14, 2014 at 03:33:27PM +0100, Lee Jones wrote:
-> [...]
-> > +static int sti_pwm_probe(struct platform_device *pdev)
-> > +{
-> [...]
-> > +	pc->clk =3D of_clk_get_by_name(np, "pwm");
+
+--KDt/GgjP6HVcx58l
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Aug 08, 2014 at 08:38:02AM +0100, Lee Jones wrote:
+> On Thu, 07 Aug 2014, Thierry Reding wrote:
+> > On Mon, Jul 14, 2014 at 03:33:27PM +0100, Lee Jones wrote:
+> > [...]
+> > > +static int sti_pwm_probe(struct platform_device *pdev)
+> > > +{
+> > [...]
+> > > +	pc->clk =3D of_clk_get_by_name(np, "pwm");
+> >=20
+> > This didn't compile because the np variable isn't declared. It was easy
+> > to fix up, so I did, but please be more careful next time that the
+> > patches you submit at least compile (preferably without sparse warnings
+> > of which I also fixed up a couple).
 >=20
-> This didn't compile because the np variable isn't declared. It was ea=
-sy
-> to fix up, so I did, but please be more careful next time that the
-> patches you submit at least compile (preferably without sparse warnin=
-gs
-> of which I also fixed up a couple).
+> That's annoying, I thought I did build test the final changes.
+> However, there's a mistake in the Makefile meaning that it wasn't
+> building with no warning/error messages - it actually wasn't building
+> at all!  Sorry about that Thierry.
+>=20
+> I guess if you can build the driver, you've already fixed that?
 
-That's annoying, I thought I did build test the final changes.
-However, there's a mistake in the Makefile meaning that it wasn't
-building with no warning/error messages - it actually wasn't building
-at all!  Sorry about that Thierry.
+Yes, it should be all taken care of in the PWM for-next branch.
 
-I guess if you can build the driver, you've already fixed that?
+Thierry
 
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 878333a..79665e3 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -20,7 +20,7 @@ obj-$(CONFIG_PWM_PXA)         +=3D pwm-pxa.o
- obj-$(CONFIG_PWM_RENESAS_TPU)  +=3D pwm-renesas-tpu.o
- obj-$(CONFIG_PWM_SAMSUNG)      +=3D pwm-samsung.o
- obj-$(CONFIG_PWM_SPEAR)                +=3D pwm-spear.o
--obj-$(CONFIG_PWM_STI)          +=3D pwm-st.o
-+obj-$(CONFIG_PWM_STI)          +=3D pwm-sti.o
- obj-$(CONFIG_PWM_TEGRA)                +=3D pwm-tegra.o
- obj-$(CONFIG_PWM_TIECAP)       +=3D pwm-tiecap.o
- obj-$(CONFIG_PWM_TIEHRPWM)     +=3D pwm-tiehrpwm.o
+--KDt/GgjP6HVcx58l
+Content-Type: application/pgp-signature
 
-After that change, I can see that you're absolutely correct:
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-  CC      drivers/pwm/pwm-sti.o
-=2E./drivers/pwm/pwm-sti.c: In function =E2=80=98sti_pwm_config=E2=80=99=
-:
-=2E./drivers/pwm/pwm-sti.c:202:3: warning:
-  format =E2=80=98%lu=E2=80=99 expects argument of type =E2=80=98long u=
-nsigned int=E2=80=99, but
-  argument 5 has type =E2=80=98int=E2=80=99 [-Wformat=3D]
-     dev_dbg(dev, "prescale:%u, period:%lu, duty:%i, pwmvalx:%u\n",
-     ^
-=2E./drivers/pwm/pwm-sti.c: In function =E2=80=98sti_pwm_probe=E2=80=99=
-:
-=2E./drivers/pwm/pwm-sti.c:352:31: error: =E2=80=98np=E2=80=99 undeclar=
-ed=20
-  pc->clk =3D of_clk_get_by_name(np, "pwm");
-                               ^
-Sorry for the fuss.
+iQIcBAEBAgAGBQJT5JyPAAoJEN0jrNd/PrOhiYsQALs5+YuEzMr3gzPXaVvgP5vj
+3Nm7+3jH8UgNUqQMbw3gJjitkn50nP4Uowe6+xKQs16cSkM5aGHY2I5nnzVH9ftT
+hbisisxFb6VaOUWGAfFnuKzIlG/EAPu/Nlh/T5ED2DyDwB3Blkqo+ztfsfhzKOHe
+e04uywaHiEA1MKnBxyxplgjJPm4uK18XsDf0SRxZCait5DCTRTe7OsaRv5a/f7vv
+ui6c1fc5Hmha8yspQFI5nTCEl6gcZMMq10aTso3ShMrufvQ9fT685+GrgA4QfLf0
+V+U6gl5n57OBhS1veXaF5eoneq7OsKIUjyGXtlLN5I0aeOSaQ0ayBe/NYJYP6P5t
+zOuH7dhqPcvOlj2behCAkJLMiecLBpZVLtIZZ0alGIcc1D3DToYDYbZTP3Nzvd7A
+52l1WNcwnXcTWfd2uLULj7qZSMiKzzSuGKJMgEq8JnkDnK9uzPDiIQF/L9wBdT3z
+bLIOEgyGpfUfWSgxXKSTUv/qWtoUWei5CrOq5gmFAPI/gvG5iB/SQ40y0eJ7PnSw
+7bDPLEbZf91hOxHXtUCLhR0RUrSQff7u5s6QAfrSO1tf3ABVFDoTVsTqRbwVLk4f
+TfVSDeyfAydTnM+bOgabER3Wc46ho9E4GPnrugYF1527sLWZMFHousKTS0JYVNCT
+Qx2gqPa6LplU0ViRocgM
+=rVJs
+-----END PGP SIGNATURE-----
 
---=20
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-=46ollow Linaro: Facebook | Twitter | Blog
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" i=
-n
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--KDt/GgjP6HVcx58l--
