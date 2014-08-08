@@ -1,56 +1,114 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v5 0/2] This series adds support for RK3288 SoC
- integrated PWM
-Date: Fri, 8 Aug 2014 13:12:11 +0200
-Message-ID: <20140808111209.GA20064@ulmo.nvidia.com>
-References: <1407482929-13050-1-git-send-email-caesar.wang@rock-chips.com>
+Subject: [GIT PULL] pwm: Changes for v3.17-rc1
+Date: Fri, 8 Aug 2014 13:22:22 +0200
+Message-ID: <20140808112220.GA21202@ulmo.nvidia.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="LQksG6bCIzRHxTLp"
+	protocol="application/pgp-signature"; boundary="pf9I7BMVVzbSWLtt"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f43.google.com ([209.85.220.43]:51139 "EHLO
-	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756187AbaHHLMT (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Aug 2014 07:12:19 -0400
+Received: from mail-pa0-f47.google.com ([209.85.220.47]:46368 "EHLO
+	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755969AbaHHLW1 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Aug 2014 07:22:27 -0400
 Content-Disposition: inline
-In-Reply-To: <1407482929-13050-1-git-send-email-caesar.wang@rock-chips.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Caesar Wang <caesar.wang@rock-chips.com>
-Cc: heiko@sntech.de, b.galvani@gmail.com, robh+dt@kernel.org, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, dianders@chromium.org, cf@rock-chips.com, addy.ke@rock-chips.com, cjf@rock-chips.com, xjq@rock-chips.com, hj@rock-chips.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---LQksG6bCIzRHxTLp
+--pf9I7BMVVzbSWLtt
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Fri, Aug 08, 2014 at 03:28:47PM +0800, Caesar Wang wrote:
-> This patch will make applying on the top of Beniamino's submission,
-> the Beniamino's submission come from [1].
+Hi Linus,
 
-Both patches applied (with last-minute minor stylistic fixups), thanks.
+The following changes since commit 7171511eaec5bf23fb06078f59784a3a0626b38f:
 
+  Linux 3.16-rc1 (2014-06-15 17:45:28 -1000)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-3.17-rc1
+
+for you to fetch changes up to f6306299080bbb1a77ad39494203f5397a5c2630:
+
+  pwm: rockchip: Added to support for RK3288 SoC (2014-08-08 13:12:47 +0200)
+
+Thanks,
 Thierry
 
---LQksG6bCIzRHxTLp
+----------------------------------------------------------------
+pwm: Changes for v3.17-rc1
+
+The set of changes for this merge window contains two new drivers: one
+for Rockchip SoCs and another for STMicroelectronics STiH4xx SoCs. The
+remainder of the changes are the usual small cleanups such as removing
+redundant OOM messages, signalling that a PWM chip's operations can
+sleep and removing an unneeded dependency.
+
+----------------------------------------------------------------
+Ajit Pal Singh (4):
+      pwm: sti: Fix PWM prescaler handling
+      pwm: sti: Ensure same period values for all channels
+      pwm: sti: Sync between enable/disable calls
+      pwm: sti: Remove PWM period table
+
+Beniamino Galvani (2):
+      pwm: add Rockchip SoC PWM support
+      pwm: rockchip: document device tree bindings
+
+Caesar Wang (2):
+      pwm: rockchip: document RK3288 SoC compatible
+      pwm: rockchip: Added to support for RK3288 SoC
+
+Heikki Krogerus (1):
+      pwm: lpss: remove dependency on clk framework
+
+Jingoo Han (1):
+      pwm: pwm-tipwmss: remove unnecessary OOM messages
+
+Lee Jones (2):
+      pwm: sti: Add new driver for ST's PWM IP
+      pwm: sti: Supply Device Tree binding documentation for ST's PWM IP
+
+Shawn Guo (1):
+      pwm: imx: set can_sleep flag for imx_pwm
+
+ .../devicetree/bindings/pwm/pwm-rockchip.txt       |  20 +
+ Documentation/devicetree/bindings/pwm/pwm-st.txt   |  41 ++
+ drivers/pwm/Kconfig                                |  17 +
+ drivers/pwm/Makefile                               |   2 +
+ drivers/pwm/pwm-imx.c                              |   1 +
+ drivers/pwm/pwm-lpss.c                             |  32 +-
+ drivers/pwm/pwm-rockchip.c                         | 264 +++++++++++++
+ drivers/pwm/pwm-sti.c                              | 418 +++++++++++++++++++++
+ drivers/pwm/pwm-tipwmss.c                          |   4 +-
+ 9 files changed, 774 insertions(+), 25 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-st.txt
+ create mode 100644 drivers/pwm/pwm-rockchip.c
+ create mode 100644 drivers/pwm/pwm-sti.c
+
+--pf9I7BMVVzbSWLtt
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJT5LCJAAoJEN0jrNd/PrOhCAIP/2+OdkQPLc980cGNUbpp1wUr
-w1tXuroPmz1ov09h9sgQvvZ6Da3dn2fBI7v1s0NXVZL32zm1nRIopdcbon4wqSvy
-OHi6L9v6ZK7la0PTk/gM/H+8dbvNYm8aF4I0V6kSRkJhFFOP2KZILvNit19pmkVy
-pXTWWlC7fCL9LQV+H68UlK6uidBJKLYCAAP5eUnTlsOGV1CIvBTEkrJRYon1YZCL
-BGMLWoalwZoGogd2r6HcohPP9qbbM2rVc+chya2WGtGpBwpSwW7h3uwWNXUR9lcW
-9fqWgER80iA0ZdCLX6vF/RRVtWuIUjmkfrrE/IH3RacSopEpB7iUUiJR/MyA9JlW
-vcXdYJFKZHhZusvWM/usZZHkQmrp1YBEZ/xAn1rTCucoteSge92wRur1wS4Yi9aY
-OFmeq5mGvB2oCB6mmsoiJv/h0GeIuoqiozqK4eb88tv6ZCI3174Ai213Yi02Lqq/
-zAnbIm2jGqLxh6t55zAn0G7Afs6CW9oBGmdEEEYLSrlCeuqS7o3z3DnVPiqvpZyu
-x8ACFTORtleCeJIFLeGIl9PemaMRmg4pfYl5nGhe7PAT6fZ+9Xzo2YO7KoMRRf8s
-QxDoWzxrPfmXvs/svdPTX6JpEe6A+UkTiY4aricpitEGPHVzwBC62nNOWIlcoUai
-o7wbgTsjQ7/fBCzj9e3o
-=3k42
+iQIcBAEBAgAGBQJT5LLsAAoJEN0jrNd/PrOhnmkP/0TGReO7l2oV8SIoIr0k8v6e
+iw1gYEjRyuP0nZJxCQ6HjDl846xWGMp9IR/6DGUjeOysGkZABpvC1Z0J1xVVr8/m
+c9jSv8AwQoRmLzkiGGYotze25R0PPo/byl/C2kV32YNEIlV2qxxBZYs3gXrMFs/Q
+RvI1o0eGp0sagWpvMnW6udwVu3aSuvK9Zf3iDffUk4Sz6i8Tb5wPid7DDPdtxy4a
+xZVASK0/DGizLklmQeOhldkr5ToxW7Hh83Gg7iMkrZOC8r8DNW2vR4V6gCy31XVQ
+dOOMtwca1p0w9VOhhhSrqlo7NEXAyUDD61RC2tB+EkqZNuMo7/2kotAYlw/E6Qei
+pA6bfmuGipiEEN8m+T6IPVfEobQUAl9UwJorLBeUCy8nVmYFCNzJTlla/JikSYYW
+4U28ldsphbv75B6gjhzI2s5XfXjD7nRhq8Lq5XRmMM4cGJSkHq9NADsmId6noQaJ
+gBJyn4QMRn9PyE61W/p/skLpX573Ky9VY51E1Lwe6lawotqFn8dSbKll5Cmr3fXR
+X7UEHumbtIQGQtL0qkcK8j3aX+xsiH6LsVIaSowBHUEQ/yY8wxdnRDyL5K6Vgh+I
+OucdsPPq78Td/FCdYxGmTRuCSCJkJaj4VWl+c86RCap9YVtgqAa+RCemBdKxuMTA
+J/M+PgV0lBcNXZmDPRZS
+=FUAn
 -----END PGP SIGNATURE-----
 
---LQksG6bCIzRHxTLp--
+--pf9I7BMVVzbSWLtt--
