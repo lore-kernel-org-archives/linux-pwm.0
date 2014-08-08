@@ -1,59 +1,66 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 09/11] pwm: sti: Ensure same period values for all
- channels
-Date: Thu, 7 Aug 2014 16:24:48 +0200
-Message-ID: <20140807142446.GB11095@ulmo.nvidia.com>
-References: <1405348412-7352-1-git-send-email-lee.jones@linaro.org>
- <1405348412-7352-10-git-send-email-lee.jones@linaro.org>
+From: Caesar Wang <caesar.wang@rock-chips.com>
+Subject: [PATCH v5 0/2] This series adds support for RK3288 SoC integrated PWM
+Date: Fri,  8 Aug 2014 15:28:47 +0800
+Message-ID: <1407482929-13050-1-git-send-email-caesar.wang@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="PmA2V3Z32TCmWXqI"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pd0-f170.google.com ([209.85.192.170]:53021 "EHLO
-	mail-pd0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932128AbaHGOYz (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Aug 2014 10:24:55 -0400
-Content-Disposition: inline
-In-Reply-To: <1405348412-7352-10-git-send-email-lee.jones@linaro.org>
+Received: from regular1.263xmail.com ([211.150.99.130]:38067 "EHLO
+	regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751193AbaHHHbu (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Aug 2014 03:31:50 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, ajitpal.singh@st.com
+To: thierry.reding@gmail.com, heiko@sntech.de, b.galvani@gmail.com, robh+dt@kernel.org, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, dianders@chromium.org
+Cc: cf@rock-chips.com, addy.ke@rock-chips.com, cjf@rock-chips.com, xjq@rock-chips.com, hj@rock-chips.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Caesar Wang <caesar.wang@rock-chips.com>
+
+This patch will make applying on the top of Beniamino's submission,
+the Beniamino's submission come from [1].
+
+[1]:
+    https://git.kernel.org/cgit/linux/kernel/git/thierry.reding/linux-p=
+wm.git/log/?h=3Dfor-next
+
+    Beniamino's submission won't be used from genenation Rockchip SoCs.
+    So I have to add the new pwm for next genenation Rockchip SoCs.
+
+    Tested on RK3288 SDK board.
+
+Changes in v5:
+    * address comments from Thierry Reding and Doug Anderson:
+    - fix the symbolic names for registers.=20
+
+Changes in v4:
+    * address comments from Heiko St=C3=BCbner:
+    - fix the copyright for ROCKCHIP, Inc.=20
+    - remove rockchip_pwm_set_enable_vop,then it instead of rockchip_pw=
+m_set_enable_v2.
+
+Changes in v3:
+    * address comments from Thierry Reding:
+    - fix PWM document deccribes.=20
+    - add a description for [PATCH v3 2/2].
+    - renamed the PWM registers
+    - Changed in rockchip_pwm_data struct
+    - remove the devm_ioremap(),fixed in lcdc driver.
+
+Changes in v2:
+    * address comments from Beniamino Galvani:
+    - remove #include <linux/of_address.h>.=20
+    - of_iomap be removed,and devm_ioremap replace it.
+    - remove a line no be used.
+
+Caesar Wang (2):
+  pwm: rockchip: document RK3288 SoC compatible
+  pwm: rockchip: Added to support for RK3288 SoC
+
+ .../devicetree/bindings/pwm/pwm-rockchip.txt       |   5 +-
+ drivers/pwm/pwm-rockchip.c                         | 134 +++++++++++++=
+++++----
+ 2 files changed, 114 insertions(+), 25 deletions(-)
+
+--=20
+1.9.1
 
 
---PmA2V3Z32TCmWXqI
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Mon, Jul 14, 2014 at 03:33:30PM +0100, Lee Jones wrote:
-[...]
-> +/* Calculate the number of PWM devices configured with a period. */
-> +unsigned int sti_pwm_count_configured(struct pwm_chip *chip)
-
-This should've been static, which is what made sparse complain. I've
-fixed it up.
-
-Thierry
-
---PmA2V3Z32TCmWXqI
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJT44wuAAoJEN0jrNd/PrOh0aIP/0HXvRYtb6MKcrdPpJ0UtPrt
-P7uI8KgGT78WzZBAKvkBmn9ljk57U/iFDn579TD9ZAItjF4BwMvjg0fGHOYXP5bD
-W6qHnzavyE492GZSHP1fIENM652siWZCywg8LdYKOPP9If7a4oI+e+xB5gaSWLHd
-hCl3Oq3G/ATbLr7ZIB9M4lvPGOLkYv4l/q7TPxnC2rA9EurQmCI/Ipf6dXv9uF5Q
-4Ggnz6n/uvNQzV2WDJ/GxNt8/gz/RFgOwvDLGpngWHPDpGCjQiZjKuIAzxHRRzfB
-kkZhL86cPnD9j2W0hM6V8zi/yR9Q/SbfVpObkZxrf8lpyt++we3wkPisB+yn1Ua3
-MxO9YEh8NuLzUT4Jkac35rv8uhjHRlHL1uAjl8fkXEBm1CtW7BoO3Yx31Q18IJqu
-R5DP8pH04a1h73P2rMiHFSQyMvGe91TnEeMb7VRziGuMxzLOREqG7cpITaNcj2Ef
-1NW2MPStklLh2fLkj0sapA+oL9kd8FQkQZumY3pQIL0pvsp0bk3pbB6rB1uz+p57
-6rzHjYtljkF7UcM4w3yNUqW6+uXLT86/MRryeTp0L1s4CLnIMri3zJ5Yklnb3dSG
-m18p34/JCw0aVdvD2+fX39lH7EemgM61z5rkOkH+BQdxEa1aEzOTC5VaQue9aPN9
-EmiiDnSpTwVwfu7CjNr3
-=7ixd
------END PGP SIGNATURE-----
-
---PmA2V3Z32TCmWXqI--
