@@ -1,76 +1,56 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 06/11] pwm: sti: Add new driver for ST's PWM IP
-Date: Fri, 8 Aug 2014 11:46:55 +0200
-Message-ID: <20140808094655.GC15852@ulmo>
-References: <1405348412-7352-1-git-send-email-lee.jones@linaro.org>
- <1405348412-7352-7-git-send-email-lee.jones@linaro.org>
- <20140807142344.GA11095@ulmo.nvidia.com>
- <20140808073802.GC21618@lee--X1>
+Subject: Re: [PATCH v5 0/2] This series adds support for RK3288 SoC
+ integrated PWM
+Date: Fri, 8 Aug 2014 13:12:11 +0200
+Message-ID: <20140808111209.GA20064@ulmo.nvidia.com>
+References: <1407482929-13050-1-git-send-email-caesar.wang@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="KDt/GgjP6HVcx58l"
+	protocol="application/pgp-signature"; boundary="LQksG6bCIzRHxTLp"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wg0-f50.google.com ([74.125.82.50]:47854 "EHLO
-	mail-wg0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752939AbaHHJq7 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Aug 2014 05:46:59 -0400
+Received: from mail-pa0-f43.google.com ([209.85.220.43]:51139 "EHLO
+	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756187AbaHHLMT (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Aug 2014 07:12:19 -0400
 Content-Disposition: inline
-In-Reply-To: <20140808073802.GC21618@lee--X1>
+In-Reply-To: <1407482929-13050-1-git-send-email-caesar.wang@rock-chips.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, ajitpal.singh@st.com
+To: Caesar Wang <caesar.wang@rock-chips.com>
+Cc: heiko@sntech.de, b.galvani@gmail.com, robh+dt@kernel.org, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, dianders@chromium.org, cf@rock-chips.com, addy.ke@rock-chips.com, cjf@rock-chips.com, xjq@rock-chips.com, hj@rock-chips.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
 
 
---KDt/GgjP6HVcx58l
+--LQksG6bCIzRHxTLp
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 08, 2014 at 08:38:02AM +0100, Lee Jones wrote:
-> On Thu, 07 Aug 2014, Thierry Reding wrote:
-> > On Mon, Jul 14, 2014 at 03:33:27PM +0100, Lee Jones wrote:
-> > [...]
-> > > +static int sti_pwm_probe(struct platform_device *pdev)
-> > > +{
-> > [...]
-> > > +	pc->clk =3D of_clk_get_by_name(np, "pwm");
-> >=20
-> > This didn't compile because the np variable isn't declared. It was easy
-> > to fix up, so I did, but please be more careful next time that the
-> > patches you submit at least compile (preferably without sparse warnings
-> > of which I also fixed up a couple).
->=20
-> That's annoying, I thought I did build test the final changes.
-> However, there's a mistake in the Makefile meaning that it wasn't
-> building with no warning/error messages - it actually wasn't building
-> at all!  Sorry about that Thierry.
->=20
-> I guess if you can build the driver, you've already fixed that?
+On Fri, Aug 08, 2014 at 03:28:47PM +0800, Caesar Wang wrote:
+> This patch will make applying on the top of Beniamino's submission,
+> the Beniamino's submission come from [1].
 
-Yes, it should be all taken care of in the PWM for-next branch.
+Both patches applied (with last-minute minor stylistic fixups), thanks.
 
 Thierry
 
---KDt/GgjP6HVcx58l
+--LQksG6bCIzRHxTLp
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJT5JyPAAoJEN0jrNd/PrOhiYsQALs5+YuEzMr3gzPXaVvgP5vj
-3Nm7+3jH8UgNUqQMbw3gJjitkn50nP4Uowe6+xKQs16cSkM5aGHY2I5nnzVH9ftT
-hbisisxFb6VaOUWGAfFnuKzIlG/EAPu/Nlh/T5ED2DyDwB3Blkqo+ztfsfhzKOHe
-e04uywaHiEA1MKnBxyxplgjJPm4uK18XsDf0SRxZCait5DCTRTe7OsaRv5a/f7vv
-ui6c1fc5Hmha8yspQFI5nTCEl6gcZMMq10aTso3ShMrufvQ9fT685+GrgA4QfLf0
-V+U6gl5n57OBhS1veXaF5eoneq7OsKIUjyGXtlLN5I0aeOSaQ0ayBe/NYJYP6P5t
-zOuH7dhqPcvOlj2behCAkJLMiecLBpZVLtIZZ0alGIcc1D3DToYDYbZTP3Nzvd7A
-52l1WNcwnXcTWfd2uLULj7qZSMiKzzSuGKJMgEq8JnkDnK9uzPDiIQF/L9wBdT3z
-bLIOEgyGpfUfWSgxXKSTUv/qWtoUWei5CrOq5gmFAPI/gvG5iB/SQ40y0eJ7PnSw
-7bDPLEbZf91hOxHXtUCLhR0RUrSQff7u5s6QAfrSO1tf3ABVFDoTVsTqRbwVLk4f
-TfVSDeyfAydTnM+bOgabER3Wc46ho9E4GPnrugYF1527sLWZMFHousKTS0JYVNCT
-Qx2gqPa6LplU0ViRocgM
-=rVJs
+iQIcBAEBAgAGBQJT5LCJAAoJEN0jrNd/PrOhCAIP/2+OdkQPLc980cGNUbpp1wUr
+w1tXuroPmz1ov09h9sgQvvZ6Da3dn2fBI7v1s0NXVZL32zm1nRIopdcbon4wqSvy
+OHi6L9v6ZK7la0PTk/gM/H+8dbvNYm8aF4I0V6kSRkJhFFOP2KZILvNit19pmkVy
+pXTWWlC7fCL9LQV+H68UlK6uidBJKLYCAAP5eUnTlsOGV1CIvBTEkrJRYon1YZCL
+BGMLWoalwZoGogd2r6HcohPP9qbbM2rVc+chya2WGtGpBwpSwW7h3uwWNXUR9lcW
+9fqWgER80iA0ZdCLX6vF/RRVtWuIUjmkfrrE/IH3RacSopEpB7iUUiJR/MyA9JlW
+vcXdYJFKZHhZusvWM/usZZHkQmrp1YBEZ/xAn1rTCucoteSge92wRur1wS4Yi9aY
+OFmeq5mGvB2oCB6mmsoiJv/h0GeIuoqiozqK4eb88tv6ZCI3174Ai213Yi02Lqq/
+zAnbIm2jGqLxh6t55zAn0G7Afs6CW9oBGmdEEEYLSrlCeuqS7o3z3DnVPiqvpZyu
+x8ACFTORtleCeJIFLeGIl9PemaMRmg4pfYl5nGhe7PAT6fZ+9Xzo2YO7KoMRRf8s
+QxDoWzxrPfmXvs/svdPTX6JpEe6A+UkTiY4aricpitEGPHVzwBC62nNOWIlcoUai
+o7wbgTsjQ7/fBCzj9e3o
+=3k42
 -----END PGP SIGNATURE-----
 
---KDt/GgjP6HVcx58l--
+--LQksG6bCIzRHxTLp--
