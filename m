@@ -1,102 +1,96 @@
-From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
-Subject: RE: [PATCHv3 0/3] ftm-pwm: Convert to direct regmap API usage
-Date: Mon, 18 Aug 2014 08:55:40 +0000
-Message-ID: <3aee225156664fdbaa3642a8a94e7427@BY2PR0301MB0613.namprd03.prod.outlook.com>
-References: <1408332755-35102-1-git-send-email-Li.Xiubo@freescale.com>
- <20140818083134.GB31171@ulmo>
- <d8843f498fa64ea9b45fc04e9bb5589d@BY2PR0301MB0613.namprd03.prod.outlook.com>
- <20140818084911.GD31171@ulmo>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] pwm: Fix period and polarity in pwm_get() for
+ non-perfect matches
+Date: Mon, 18 Aug 2014 10:57:24 +0200
+Message-ID: <20140818085722.GE31171@ulmo>
+References: <1407943133-18170-1-git-send-email-geert+renesas@glider.be>
+ <20140818082039.GA31171@ulmo>
+ <CAMuHMdVLA4xRGKrsyGTokZvRWkNAFyNv+_JycavfpibO8GXkkQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20140818084911.GD31171@ulmo>
-Content-Language: en-US
-Sender: linux-doc-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "rdunlap@infradead.org" <rdunlap@infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="hwvH6HDNit2nSK4j"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdVLA4xRGKrsyGTokZvRWkNAFyNv+_JycavfpibO8GXkkQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, linux-pwm@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, stable <stable@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-> -----Original Message-----
-> From: Thierry Reding [mailto:thierry.reding@gmail.com]
-> Sent: Monday, August 18, 2014 4:49 PM
-> To: Xiubo Li-B47053
-> Cc: linux-pwm@vger.kernel.org; robh+dt@kernel.org; pawel.moll@arm.com;
-> rdunlap@infradead.org; devicetree@vger.kernel.org; linux-doc@vger.kernel.org
-> Subject: Re: [PATCHv3 0/3] ftm-pwm: Convert to direct regmap API usage
-> 
-> On Mon, Aug 18, 2014 at 08:43:56AM +0000, Li.Xiubo@freescale.com wrote:
-> > > -----Original Message-----
-> > > From: Thierry Reding [mailto:thierry.reding@gmail.com]
-> > > Sent: Monday, August 18, 2014 4:32 PM
-> > > To: Xiubo Li-B47053
-> > > Cc: linux-pwm@vger.kernel.org; robh+dt@kernel.org; pawel.moll@arm.com;
-> > > rdunlap@infradead.org; devicetree@vger.kernel.org; linux-
-> doc@vger.kernel.org
-> > > Subject: Re: [PATCHv3 0/3] ftm-pwm: Convert to direct regmap API usage
-> > >
-> > > On Mon, Aug 18, 2014 at 11:32:32AM +0800, Xiubo Li wrote:
-> > > >
-> > > > This is depended on the following patches, which has been applied by
-> > > > Mark into his Regmap-Tree:
-> > > > https://lkml.org/lkml/2014/7/15/6
-> > > > https://lkml.org/lkml/2014/7/15/5
-> > > > https://lkml.org/lkml/2014/7/15/7
-> > >
-> > > This doesn't seem to have any build dependencies on the above patches.
-> >
-> > Yes, you are right.
-> >
-> >
-> > > So with only this applied to the PWM tree at worst the registers will be
-> > > accessed in the wrong endianess and the PWM won't work as expected. Does
-> > > that matter?
-> >
-> > No, I think it's okay, we'll only test our drivers in the Linus's stable
-> branch.
-> >
-> >
-> >
-> > > Or should I request a stable branch from Mark to pull into
-> > > the PWM tree so that this doesn't happen?
-> > >
-> > > In linux-next things should be fine since both branches will be merged.
-> > > I guess there could still be an issue depending on the order in which
-> > > Linus merges the trees for 3.18, in which case there could be a brief
-> > > period where Linus' tree runtime-breaks on platforms requiring this. But
-> > > I'm not sure if that's really an issue.
-> > >
-> >
-> > The depended patches has been merged into the Linux-next tree just now
-> already
-> > today.
-> >
-> > And then could we guarantee that these ftm-pwm patches to be in order after
-> the
-> > depended ones ?
-> 
-> I could merge Mark's regmap tree into the PWM tree to guarantee that.
-> I'm just wondering if it's worth the trouble since there's no compile-
-> time dependency so the issue will only show up when running a kernel
-> built directly from the PWM tree (or some tree that has the PWM tree
-> merged but not regmap). And even then it will only happen if there's a
-> device tree for a device that requires special endianess handling.
-> 
-> But it's really your call. If you think it's safer to merge them in the
-> correct order then I'll ask Mark for a stable regmap branch that I can
-> pull.
-> 
 
-I think it okay, since the LS1 platform driver patches are still in process,
-and only in LS1 SoC will depend this.
+--hwvH6HDNit2nSK4j
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-You can just merge this to PWM tree if everything is okay.
+On Mon, Aug 18, 2014 at 10:38:00AM +0200, Geert Uytterhoeven wrote:
+> Hi Thierry,
+>=20
+> On Mon, Aug 18, 2014 at 10:20 AM, Thierry Reding
+> <thierry.reding@gmail.com> wrote:
+> > Could we achieve the same by storing a pointer to the best match and
+> > then use that instead of p? Perhaps something like this:
+> >
+> >         struct pwm_lookup *entry;
+> >
+> >         ...
+> >
+> >                 if (match > best) {
+> >                         chip =3D pwmchip_find_by_name(p->provider);
+> >                         entry =3D p;
+> >
+> >                         if (match !=3D 3)
+> >                                 best =3D match;
+> >                         else
+> >                                 break;
+> >                 }
+> >
+> >         ...
+> >
+> >         if (chip)
+> >                 pwm =3D pwm_request_from_chip(chip, entry->index,
+> >                                             con_id ?: dev_id);
+> >         if (IS_ERR(pwm))
+> >                 return pwm;
+> >
+> >         pwm_set_period(pwm, entry->period);
+> >         pwm_set_polarity(pwm, entry->polarity);
+> >
+> > ?
+>=20
+> That's possible. But that will add complexity, as you have to move the
+> "mutex_unlock(&pwm_lookup_lock);" after the last user of "entry" again,
+> and add a goto for the IS_ERR(pwm) case.
+> So I'm not sure it's worth the effort.
 
-Thanks,
+Oh, right. It would've been nice to avoid all the temporary variables,
+but we can always refactor if that turns out to become too messy. I'll
+apply this one for now.
 
-BRs
-Xiubo
+I'll shorten the SHA-1 in the Fixes: line to 12 characters if you don't
+mind to match the guidelines in Documentation/SubmittingPatches.
 
+Thierry
 
+--hwvH6HDNit2nSK4j
+Content-Type: application/pgp-signature
 
-> Thierry
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJT8b/yAAoJEN0jrNd/PrOhzz8QAKuW3G6rd528uRZAFG1NFX0i
+VkZBtkbz86Z+f4b4d3ZDYmDDiwLlPNc2bpkCvXOBG1m/7/Ck2VWOrsSdy00/hmc1
+sdmWVjmrq3OoK6BDj4J+76dSjHhbCpe3yUk1E/fs2U1XurcmFuQtmUcZIlBLMfCZ
+Dsgker/tZgiKklKmaOp+HpasZj3PH/sBXw8Qh2pny2JjUeOw6GLpGgBtE8RA+nqn
+78E2PTOZns7EBqTmuYJA6oHFBp2GPs2ONYuaqcGvQPJ+Wp36E4oOMZfP63JtD51j
+eJ3Glhm57cOKcaTQz/jbDxQOwiaSpG+66M1wBzCZQJ78Oh3nAkJLHvoVwyJPon6o
+rPbwbqbtA2Jx/JV5xIif8EmwZNlQ3gYh49sXiUTewMEmesdkn5jJ22QsFDyRi4pF
+ZT11cpFo+qydH81ytjLASEdKTze/0wPK+pCXcI/muHbhWbyyTwtmgjdj7hWnecrm
+yKzDns+0kRHzuQ7KvQIV1jKmx1is08xLlr8jWkEMglJ5qZptH3ZcxvtepUjOSDfl
+OvK45uTx9A10YNczx9zVQZQnhR7V4d8q9+nqksOjcUMFfCLGfi2NVd3hPrscYOoM
+ELlRr7dTChjshGsdNM1wArYLlt1RwZ7Iy/H7fbf9V2dgwVM+1ha/pFor1/kdJuOf
+4jQx2UI6zoN0eeyJ3m+e
+=U2RX
+-----END PGP SIGNATURE-----
+
+--hwvH6HDNit2nSK4j--
