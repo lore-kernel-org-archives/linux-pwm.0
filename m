@@ -1,55 +1,68 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCHv3 2/3] pwm: ftm-pwm: Convert to direct regmap API usage.
-Date: Mon, 18 Aug 2014 10:36:49 +0200
-Message-ID: <20140818083648.GC31171@ulmo>
-References: <1408332755-35102-1-git-send-email-Li.Xiubo@freescale.com>
- <1408332755-35102-3-git-send-email-Li.Xiubo@freescale.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] pwm: Fix period and polarity in pwm_get() for non-perfect matches
+Date: Mon, 18 Aug 2014 10:38:00 +0200
+Message-ID: <CAMuHMdVLA4xRGKrsyGTokZvRWkNAFyNv+_JycavfpibO8GXkkQ@mail.gmail.com>
+References: <1407943133-18170-1-git-send-email-geert+renesas@glider.be>
+	<20140818082039.GA31171@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="TiqCXmo5T1hvSQQg"
-Return-path: <linux-doc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1408332755-35102-3-git-send-email-Li.Xiubo@freescale.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Xiubo Li <Li.Xiubo@freescale.com>
-Cc: linux-pwm@vger.kernel.org, robh+dt@kernel.org, pawel.moll@arm.com, rdunlap@infradead.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-lb0-f172.google.com ([209.85.217.172]:57705 "EHLO
+	mail-lb0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751771AbaHRIiG (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Aug 2014 04:38:06 -0400
+In-Reply-To: <20140818082039.GA31171@ulmo>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, linux-pwm@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, stable <stable@vger.kernel.org>
 
+Hi Thierry,
 
---TiqCXmo5T1hvSQQg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On Mon, Aug 18, 2014 at 10:20 AM, Thierry Reding
+<thierry.reding@gmail.com> wrote:
+> Could we achieve the same by storing a pointer to the best match and
+> then use that instead of p? Perhaps something like this:
+>
+>         struct pwm_lookup *entry;
+>
+>         ...
+>
+>                 if (match > best) {
+>                         chip = pwmchip_find_by_name(p->provider);
+>                         entry = p;
+>
+>                         if (match != 3)
+>                                 best = match;
+>                         else
+>                                 break;
+>                 }
+>
+>         ...
+>
+>         if (chip)
+>                 pwm = pwm_request_from_chip(chip, entry->index,
+>                                             con_id ?: dev_id);
+>         if (IS_ERR(pwm))
+>                 return pwm;
+>
+>         pwm_set_period(pwm, entry->period);
+>         pwm_set_polarity(pwm, entry->polarity);
+>
+> ?
 
-On Mon, Aug 18, 2014 at 11:32:34AM +0800, Xiubo Li wrote:
-[...]
-> diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-[...]
-> +static struct regmap_config fsl_pwm_regmap_config = {
+That's possible. But that will add complexity, as you have to move the
+"mutex_unlock(&pwm_lookup_lock);" after the last user of "entry" again,
+and add a goto for the IS_ERR(pwm) case.
+So I'm not sure it's worth the effort.
 
-This can be static const, but since it's the only comment I can fix that
-up myself when applying.
+Gr{oetje,eeting}s,
 
-Thierry
+                        Geert
 
---TiqCXmo5T1hvSQQg
-Content-Type: application/pgp-signature
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJT8bsgAAoJEN0jrNd/PrOh3acP/1FvHmFjy+wDsMtfsMV1/mN0
-gtpsL1b4y1OFBirYhQVom9BvjIGJ30q/btulGRcbhW/T6MUuBuQIWqe/2tneLrMR
-YI7IiGkYsMva+wdIGaqsXg+vdFHp5m32AI+hzPL4M+ueDqFKq0pr/AwB57DOW5Bm
-6MP46kMNnpA9ZjkLdpEnMAHWZUtaBBOJOOGqUadqsFkX0jckpuRXJH/qbyP9SE5i
-c7D87QY4bNRZkMmqazFoDqB0eBoc+CijX6a5lIRlGW1mrsM1m3K4kB3A8tB8opEH
-fpOtRyfLjjcueWCqo3Xl40HgzVTsfv/Sqprd3+sgQ4q7YLSw/snoud8EDJdujxoe
-SNVi1h+lFeA9YkZYPb8QFIDihIY5gRufn8P49e1jjDChSwVy11Qkp0hVgIAoAZwr
-sNuJwR2eQyqNM8zJAiDE8axki3saxFYO+vGGND+1T8HhM7qjd0/rzmyVTTh6caw5
-4UFVo95916A/km3RzVeRYTxTs9useFD6TDP92xZncZei7gcG8FANJNu9isrtDKQ6
-5dyaq7GhYesBPorVWMLwLFIfKOUWWdis9IHpU01gaGZXzvUHXxDobKdhP7BDaf5I
-FVIs6dwriJkQ3ZYrbOrD7vqOlPqpI0R26RCzPbxbJ5eYO4bXlfaHnO04GmsQq+DB
-7+RVO5vuhdXOhjLCj8q7
-=6iQh
------END PGP SIGNATURE-----
-
---TiqCXmo5T1hvSQQg--
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
