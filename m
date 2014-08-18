@@ -1,76 +1,142 @@
-From: Xiubo Li <Li.Xiubo@freescale.com>
-Subject: [PATCHv3 1/3] pwm: ftm-pwm: Clean up the code.
-Date: Mon, 18 Aug 2014 11:32:33 +0800
-Message-ID: <1408332755-35102-2-git-send-email-Li.Xiubo@freescale.com>
-References: <1408332755-35102-1-git-send-email-Li.Xiubo@freescale.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] pwm: Fix period and polarity in pwm_get() for
+ non-perfect matches
+Date: Mon, 18 Aug 2014 10:20:40 +0200
+Message-ID: <20140818082039.GA31171@ulmo>
+References: <1407943133-18170-1-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="FCuugMFkClbJLl1L"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from [207.46.163.210] ([207.46.163.210]:32822 "EHLO
-	na01-bl2-obe.outbound.protection.outlook.com"
-	rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751716AbaHRDjQ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Sun, 17 Aug 2014 23:39:16 -0400
-In-Reply-To: <1408332755-35102-1-git-send-email-Li.Xiubo@freescale.com>
+Received: from mail-we0-f173.google.com ([74.125.82.173]:49337 "EHLO
+	mail-we0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750765AbaHRIUo (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Aug 2014 04:20:44 -0400
+Content-Disposition: inline
+In-Reply-To: <1407943133-18170-1-git-send-email-geert+renesas@glider.be>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, linux-pwm@vger.kernel.org
-Cc: robh+dt@kernel.org, pawel.moll@arm.com, rdunlap@infradead.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Xiubo Li <Li.Xiubo@freescale.com>
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, linux-pwm@vger.kernel.org, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
 
-This patch intends to prepare for converting to direct regmap
-API usage.
 
-Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
----
- drivers/pwm/pwm-fsl-ftm.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+--FCuugMFkClbJLl1L
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-index a18bc8f..96982da 100644
---- a/drivers/pwm/pwm-fsl-ftm.c
-+++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -21,11 +21,10 @@
- #include <linux/slab.h>
- 
- #define FTM_SC		0x00
--#define FTM_SC_CLK_MASK	0x3
--#define FTM_SC_CLK_SHIFT	3
--#define FTM_SC_CLK(c)	(((c) + 1) << FTM_SC_CLK_SHIFT)
-+#define FTM_SC_CLK_MASK_SHIFT	3
-+#define FTM_SC_CLK_MASK	(3 << FTM_SC_CLK_MASK_SHIFT)
-+#define FTM_SC_CLK(c)	(((c) + 1) << FTM_SC_CLK_MASK_SHIFT)
- #define FTM_SC_PS_MASK	0x7
--#define FTM_SC_PS_SHIFT	0
- 
- #define FTM_CNT		0x04
- #define FTM_MOD		0x08
-@@ -258,7 +257,7 @@ static int fsl_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		}
- 
- 		val = readl(fpc->base + FTM_SC);
--		val &= ~(FTM_SC_PS_MASK << FTM_SC_PS_SHIFT);
-+		val &= ~FTM_SC_PS_MASK;
- 		val |= fpc->clk_ps;
- 		writel(val, fpc->base + FTM_SC);
- 		writel(period - 1, fpc->base + FTM_MOD);
-@@ -305,7 +304,7 @@ static int fsl_counter_clock_enable(struct fsl_pwm_chip *fpc)
- 
- 	/* select counter clock source */
- 	val = readl(fpc->base + FTM_SC);
--	val &= ~(FTM_SC_CLK_MASK << FTM_SC_CLK_SHIFT);
-+	val &= ~FTM_SC_CLK_MASK;
- 	val |= FTM_SC_CLK(fpc->cnt_select);
- 	writel(val, fpc->base + FTM_SC);
- 
-@@ -357,7 +356,7 @@ static void fsl_counter_clock_disable(struct fsl_pwm_chip *fpc)
- 
- 	/* no users left, disable PWM counter clock */
- 	val = readl(fpc->base + FTM_SC);
--	val &= ~(FTM_SC_CLK_MASK << FTM_SC_CLK_SHIFT);
-+	val &= ~FTM_SC_CLK_MASK;
- 	writel(val, fpc->base + FTM_SC);
- 
- 	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
--- 
-1.8.5
+On Wed, Aug 13, 2014 at 05:18:53PM +0200, Geert Uytterhoeven wrote:
+> If pwm_get() finds a look-up entry with a perfect match (both dev_id and
+> con_id match), the loop is aborted, and "p" still points to the correct
+> struct pwm_lookup.
+>=20
+> If only an entry with a matching dev_id or con_id is found, the loop
+> terminates after traversing the whole list, and "p" now points to
+> arbitrary memory, not part of the pwm_lookup list.
+> Then pwm_set_period() and pwm_set_polarity() will set random values for
+> period resp. polarity.
+>=20
+> To fix this, save period and polarity when finding a new best match,
+> just like is done for chip (for the provider) and index.
+>=20
+> This fixes the LCD backlight on r8a7740/armadillo-legacy, which was fed
+> period 0 and polarity -1068821144 instead of 33333 resp. 1.
+>=20
+> Fixes: 3796ce1d4d4b330a75005c5eda105603ce9d4071 ("pwm: add period and pol=
+arity to struct pwm_lookup")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Cc: stable@vger.kernel.org
+> ---
+>  drivers/pwm/core.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
 
+Good catch! One comment below.
+
+> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+> index 4b66bf09ee55..d2c35920ff08 100644
+> --- a/drivers/pwm/core.c
+> +++ b/drivers/pwm/core.c
+> @@ -606,6 +606,8 @@ struct pwm_device *pwm_get(struct device *dev, const =
+char *con_id)
+>  	unsigned int best =3D 0;
+>  	struct pwm_lookup *p;
+>  	unsigned int match;
+> +	unsigned int period;
+> +	enum pwm_polarity polarity;
+> =20
+>  	/* look up via DT first */
+>  	if (IS_ENABLED(CONFIG_OF) && dev && dev->of_node)
+> @@ -653,6 +655,8 @@ struct pwm_device *pwm_get(struct device *dev, const =
+char *con_id)
+>  		if (match > best) {
+>  			chip =3D pwmchip_find_by_name(p->provider);
+>  			index =3D p->index;
+> +			period =3D p->period;
+> +			polarity =3D p->polarity;
+> =20
+>  			if (match !=3D 3)
+>  				best =3D match;
+> @@ -668,8 +672,8 @@ struct pwm_device *pwm_get(struct device *dev, const =
+char *con_id)
+>  	if (IS_ERR(pwm))
+>  		return pwm;
+> =20
+> -	pwm_set_period(pwm, p->period);
+> -	pwm_set_polarity(pwm, p->polarity);
+> +	pwm_set_period(pwm, period);
+> +	pwm_set_polarity(pwm, polarity);
+
+Could we achieve the same by storing a pointer to the best match and
+then use that instead of p? Perhaps something like this:
+
+	struct pwm_lookup *entry;
+
+	...
+
+		if (match > best) {
+			chip =3D pwmchip_find_by_name(p->provider);
+			entry =3D p;
+
+			if (match !=3D 3)
+				best =3D match;
+			else
+				break;
+		}
+
+	...
+
+	if (chip)
+		pwm =3D pwm_request_from_chip(chip, entry->index,
+					    con_id ?: dev_id);
+	if (IS_ERR(pwm))
+		return pwm;
+
+	pwm_set_period(pwm, entry->period);
+	pwm_set_polarity(pwm, entry->polarity);
+
+?
+
+Thierry
+
+--FCuugMFkClbJLl1L
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJT8bdXAAoJEN0jrNd/PrOhqd0P/Rfa61WKYMSxVkX0i7ihg7k5
+fyEphp3FSTGZkCtWy51dcIcY2LW58kX/xHF/ha6Jc/qIYeE21XOWIWyk0HtzWI1M
+6K18zoUywitDgLibcwc+9myQqGUGWwmiaCSfJ04hasOw6KnlzKul+RMZGwgZPNpA
+EfP+InBPlFuiecKZbgArn1YEYiqyusTjILfojB0VGmkVR1cKksWmfooCv6yvGZfI
++vfCpqc1sF3JiIt9KeW1UxgjN0hvL2gW/+1U+QGcsyDUfDMV2+SAXDjqrYsFeBWY
+F+NNlLuIwBJba/WspnCs6K2kpJkyDdHKIcxz5yfmKFj4bCOR0BG5m0UHBy/+tlpZ
+3v8FcZ+l4T/WRhMlVeD0RHaxpiOZRLl2U1O00TNVfaxsTwzTC+MqWCekNrYmn10u
+6OF+eDvMlO/q1OF/OS9qoh/fV/zYZG/aQPW701MuULGj/rDoWFat8slmOAwNguxe
+2u234HeIs6jSQn5ioKOoMRJ/BEU8qDRIJp1w4Tqh2IOq4tPEgXoIXZ8t5S8HX2cx
+w0YQ5WnRNUun30ndxdKKC3O6Mjg46D8GJX8hRj7VsVNmWw55e0WSdizMtGbuMQDk
+2InW8SOi9V72HSTMIVqiXwmOU0CKwWo4psAFntN65OpJo+y/YMZzdpIBAwiSUeVo
+1iakqy0F21jvTkiahVlf
+=VG9t
+-----END PGP SIGNATURE-----
+
+--FCuugMFkClbJLl1L--
