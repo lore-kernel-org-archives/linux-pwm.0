@@ -1,18 +1,23 @@
 From: Doug Anderson <dianders@chromium.org>
-Subject: [PATCH 0/4] PWM changes for rk3288-evb
-Date: Mon, 18 Aug 2014 10:09:05 -0700
-Message-ID: <1408381749-14156-1-git-send-email-dianders@chromium.org>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pd0-f201.google.com ([209.85.192.201]:60491 "EHLO
-	mail-pd0-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752070AbaHRRJP (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Aug 2014 13:09:15 -0400
-Received: by mail-pd0-f201.google.com with SMTP id g10so1398994pdj.2
-        for <linux-pwm@vger.kernel.org>; Mon, 18 Aug 2014 10:09:13 -0700 (PDT)
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Subject: [PATCH v2 0/4] PWM changes for rk3288-evb
+Date: Mon, 18 Aug 2014 10:29:38 -0700
+Message-ID: <1408382982-2077-1-git-send-email-dianders@chromium.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Heiko Stuebner <heiko@sntech.de>, Thierry Reding <thierry.reding@gmail.com>, Caesar Wang <caesar.wang@rock-chips.com>
-Cc: Sonny Rao <sonnyrao@chromium.org>, olof@lixom.net, Eddie Cai <eddie.cai@rock-chips.com>, Doug Anderson <dianders@chromium.org>, mark.rutland@arm.com, linux-pwm@vger.kernel.org, linux@arm.linux.org.uk, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, robh+dt@kernel.org, galak@codeaurora.org, linux-arm-kernel@lists.infradead.org
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, linux@arm.linux.org.uk, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, Doug Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, robh+dt@kernel.org, Eddie Cai <eddie.cai@rock-chips.com>, galak@codeaurora.org, olof@lixom.net, Sonny Rao <sonnyrao@chromium.org>, linux-arm-kernel@lists.infradead.org
+List-Id: linux-pwm@vger.kernel.org
 
 These patches enable the pwm backlight for the rk3288-evb board.
 There were tested by watching the backlight grow from off to max with
@@ -44,6 +49,8 @@ There are no compile time or runtime dependencies between these
 patches except that patch #3 needs to come before patch #4.  ...and of
 course the PWM won't work without all 4 patches.
 
+Changes in v2:
+- Check for failed ioremap()
 
 Doug Anderson (4):
   ARM: rockchip: rk3288: Switch to use the proper PWM IP
@@ -54,10 +61,9 @@ Doug Anderson (4):
  .../devicetree/bindings/pwm/pwm-rockchip.txt       |  4 +-
  arch/arm/boot/dts/rk3288-evb.dtsi                  | 53 +++++++++++++++++
  arch/arm/boot/dts/rk3288.dtsi                      | 68 ++++++++++++++++++++++
- arch/arm/mach-rockchip/rockchip.c                  | 19 ++++++
+ arch/arm/mach-rockchip/rockchip.c                  | 24 ++++++++
  drivers/pwm/pwm-rockchip.c                         | 32 +++++++++-
- 5 files changed, 172 insertions(+), 4 deletions(-)
+ 5 files changed, 177 insertions(+), 4 deletions(-)
 
 -- 
 2.1.0.rc2.206.gedb03e5
-
