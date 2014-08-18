@@ -1,82 +1,23 @@
-From: "Li.Xiubo@freescale.com" <Li.Xiubo@freescale.com>
-Subject: RE: [PATCHv3 3/3] pwm: documentation: Add 'big-endian' property for
- FTM PWM.
-Date: Mon, 18 Aug 2014 12:11:44 +0000
-Message-ID: <63b1d7b52fda42e0b9bf09dac3f918aa@BY2PR0301MB0613.namprd03.prod.outlook.com>
-References: <1408332755-35102-1-git-send-email-Li.Xiubo@freescale.com>
- <1408332755-35102-4-git-send-email-Li.Xiubo@freescale.com>,<20140818095939.GE14559@leverpostej>
+From: "Mrs. Hajar Vaserman." <mrshajarvaserman@gmail.com>
+Subject: Re:
+Date: Mon, 18 Aug 2014 16:38:35 +0100
+Message-ID: <CAEdgVMNH24AhbDz8of0u8oS2So3DbcXjNnjtGFAUpZGcTZoG7A__44348.8761935898$1408378051$gmane$org@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from [207.46.163.237] ([207.46.163.237]:26147 "EHLO
-	na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1750834AbaHRMNq convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Aug 2014 08:13:46 -0400
-In-Reply-To: <20140818095939.GE14559@leverpostej>
-Content-Language: en-US
+Received: from mail-ig0-f194.google.com ([209.85.213.194]:60424 "EHLO
+	mail-ig0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750806AbaHRQHW (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Aug 2014 12:07:22 -0400
+Received: by mail-ig0-f194.google.com with SMTP id r2so2640191igi.1
+        for <linux-pwm@vger.kernel.org>; Mon, 18 Aug 2014 09:07:21 -0700 (PDT)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, "rdunlap@infradead.org" <rdunlap@infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
 
-[...]
->>  Freescale FlexTimer Module (FTM) PWM controller
->>
->> +For the same FTM PWM device, which on different SoCs will in
->> +differrent endian mode, using the same linux device driver need
->> +one boolean properties to distingush this.
->
-> There is absolutely no need to mention Linux if this is truly a HW
-> property.
+I am Mrs. Hajar Vaserman,
+Wife and Heir apparent to Late  Mr. Ilan Vaserman.
+I have a WILL Proposal of 8.100,000.00 Million US Dollar for you.
+Kindly contact my e-mail ( hajaraserman@gmail.com ) for further details.
 
-Okay.
-
-[...]
->> +
->> +For now the FTM PWM is only applied to the ARM SoCs which are all
->> +in LE mode.
->> +
->> +So the DT binding for FTM PWM device endian:
->> +SoC     |  FTM-PWM | 'big-endian' property is needed?
->> +--------|----------|---------------------------------
->> +Vybird  |    LE    |     No
->> +LS1     |    BE    |     Yes
->> +LS2     |    LE    |     No
->> +
->> +Please see "Documentation/devicetree/bindings/regmap/regmap.txt" for more
->> +detail about the endianness.
->
-> Surely all we need is:
->
-> The FTM PWM device can be integrated as little-endian or big-endian.
-> This endianness differs per SoC:
->
-> SoC     | FTM-PWM endianness
-> --------+-------------------
-> Vybrid  | LE
-> LS1     | BE
-> LS2     | LE
-
-I'll follow your advice.
-
-[...]
->> +- big-endian: One boolean property, for all the device registers, the BE mode
->> +  will be in use if it's present, or the LE mode will be in use.
->
->- big-endian: Boolean property, required if all the FTM_PWM registers
->  are big-endian rather than little-endian.
->
-
-See the next version.
-
-Thanks very much for you comment and advice.
-
-BRs
-XIubo
-
-
-
-> Cheers,
-> Mark.
+Regard,
+Mrs. Hajar Vaserman,
