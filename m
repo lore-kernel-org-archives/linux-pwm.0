@@ -1,142 +1,66 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: Fix period and polarity in pwm_get() for
- non-perfect matches
-Date: Mon, 18 Aug 2014 10:20:40 +0200
-Message-ID: <20140818082039.GA31171@ulmo>
-References: <1407943133-18170-1-git-send-email-geert+renesas@glider.be>
+Subject: Re: [PATCHv3 0/3] ftm-pwm: Convert to direct regmap API usage
+Date: Mon, 18 Aug 2014 10:31:35 +0200
+Message-ID: <20140818083134.GB31171@ulmo>
+References: <1408332755-35102-1-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="FCuugMFkClbJLl1L"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-we0-f173.google.com ([74.125.82.173]:49337 "EHLO
-	mail-we0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750765AbaHRIUo (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Aug 2014 04:20:44 -0400
+	protocol="application/pgp-signature"; boundary="7iMSBzlTiPOCCT2k"
+Return-path: <linux-doc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1407943133-18170-1-git-send-email-geert+renesas@glider.be>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1408332755-35102-1-git-send-email-Li.Xiubo@freescale.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Xiubo Li <Li.Xiubo@freescale.com>
+Cc: linux-pwm@vger.kernel.org, robh+dt@kernel.org, pawel.moll@arm.com, rdunlap@infradead.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Haavard Skinnemoen <hskinnemoen@gmail.com>, Hans-Christian Egtvedt <egtvedt@samfundet.no>, linux-pwm@vger.kernel.org, linux-sh@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
 
 
---FCuugMFkClbJLl1L
+--7iMSBzlTiPOCCT2k
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 13, 2014 at 05:18:53PM +0200, Geert Uytterhoeven wrote:
-> If pwm_get() finds a look-up entry with a perfect match (both dev_id and
-> con_id match), the loop is aborted, and "p" still points to the correct
-> struct pwm_lookup.
+On Mon, Aug 18, 2014 at 11:32:32AM +0800, Xiubo Li wrote:
 >=20
-> If only an entry with a matching dev_id or con_id is found, the loop
-> terminates after traversing the whole list, and "p" now points to
-> arbitrary memory, not part of the pwm_lookup list.
-> Then pwm_set_period() and pwm_set_polarity() will set random values for
-> period resp. polarity.
->=20
-> To fix this, save period and polarity when finding a new best match,
-> just like is done for chip (for the provider) and index.
->=20
-> This fixes the LCD backlight on r8a7740/armadillo-legacy, which was fed
-> period 0 and polarity -1068821144 instead of 33333 resp. 1.
->=20
-> Fixes: 3796ce1d4d4b330a75005c5eda105603ce9d4071 ("pwm: add period and pol=
-arity to struct pwm_lookup")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Cc: stable@vger.kernel.org
-> ---
->  drivers/pwm/core.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
+> This is depended on the following patches, which has been applied by
+> Mark into his Regmap-Tree:
+> https://lkml.org/lkml/2014/7/15/6
+> https://lkml.org/lkml/2014/7/15/5
+> https://lkml.org/lkml/2014/7/15/7
 
-Good catch! One comment below.
+This doesn't seem to have any build dependencies on the above patches.
+So with only this applied to the PWM tree at worst the registers will be
+accessed in the wrong endianess and the PWM won't work as expected. Does
+that matter? Or should I request a stable branch from Mark to pull into
+the PWM tree so that this doesn't happen?
 
-> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> index 4b66bf09ee55..d2c35920ff08 100644
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-> @@ -606,6 +606,8 @@ struct pwm_device *pwm_get(struct device *dev, const =
-char *con_id)
->  	unsigned int best =3D 0;
->  	struct pwm_lookup *p;
->  	unsigned int match;
-> +	unsigned int period;
-> +	enum pwm_polarity polarity;
-> =20
->  	/* look up via DT first */
->  	if (IS_ENABLED(CONFIG_OF) && dev && dev->of_node)
-> @@ -653,6 +655,8 @@ struct pwm_device *pwm_get(struct device *dev, const =
-char *con_id)
->  		if (match > best) {
->  			chip =3D pwmchip_find_by_name(p->provider);
->  			index =3D p->index;
-> +			period =3D p->period;
-> +			polarity =3D p->polarity;
-> =20
->  			if (match !=3D 3)
->  				best =3D match;
-> @@ -668,8 +672,8 @@ struct pwm_device *pwm_get(struct device *dev, const =
-char *con_id)
->  	if (IS_ERR(pwm))
->  		return pwm;
-> =20
-> -	pwm_set_period(pwm, p->period);
-> -	pwm_set_polarity(pwm, p->polarity);
-> +	pwm_set_period(pwm, period);
-> +	pwm_set_polarity(pwm, polarity);
-
-Could we achieve the same by storing a pointer to the best match and
-then use that instead of p? Perhaps something like this:
-
-	struct pwm_lookup *entry;
-
-	...
-
-		if (match > best) {
-			chip =3D pwmchip_find_by_name(p->provider);
-			entry =3D p;
-
-			if (match !=3D 3)
-				best =3D match;
-			else
-				break;
-		}
-
-	...
-
-	if (chip)
-		pwm =3D pwm_request_from_chip(chip, entry->index,
-					    con_id ?: dev_id);
-	if (IS_ERR(pwm))
-		return pwm;
-
-	pwm_set_period(pwm, entry->period);
-	pwm_set_polarity(pwm, entry->polarity);
-
-?
+In linux-next things should be fine since both branches will be merged.
+I guess there could still be an issue depending on the order in which
+Linus merges the trees for 3.18, in which case there could be a brief
+period where Linus' tree runtime-breaks on platforms requiring this. But
+I'm not sure if that's really an issue.
 
 Thierry
 
---FCuugMFkClbJLl1L
+--7iMSBzlTiPOCCT2k
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJT8bdXAAoJEN0jrNd/PrOhqd0P/Rfa61WKYMSxVkX0i7ihg7k5
-fyEphp3FSTGZkCtWy51dcIcY2LW58kX/xHF/ha6Jc/qIYeE21XOWIWyk0HtzWI1M
-6K18zoUywitDgLibcwc+9myQqGUGWwmiaCSfJ04hasOw6KnlzKul+RMZGwgZPNpA
-EfP+InBPlFuiecKZbgArn1YEYiqyusTjILfojB0VGmkVR1cKksWmfooCv6yvGZfI
-+vfCpqc1sF3JiIt9KeW1UxgjN0hvL2gW/+1U+QGcsyDUfDMV2+SAXDjqrYsFeBWY
-F+NNlLuIwBJba/WspnCs6K2kpJkyDdHKIcxz5yfmKFj4bCOR0BG5m0UHBy/+tlpZ
-3v8FcZ+l4T/WRhMlVeD0RHaxpiOZRLl2U1O00TNVfaxsTwzTC+MqWCekNrYmn10u
-6OF+eDvMlO/q1OF/OS9qoh/fV/zYZG/aQPW701MuULGj/rDoWFat8slmOAwNguxe
-2u234HeIs6jSQn5ioKOoMRJ/BEU8qDRIJp1w4Tqh2IOq4tPEgXoIXZ8t5S8HX2cx
-w0YQ5WnRNUun30ndxdKKC3O6Mjg46D8GJX8hRj7VsVNmWw55e0WSdizMtGbuMQDk
-2InW8SOi9V72HSTMIVqiXwmOU0CKwWo4psAFntN65OpJo+y/YMZzdpIBAwiSUeVo
-1iakqy0F21jvTkiahVlf
-=VG9t
+iQIcBAEBAgAGBQJT8bnmAAoJEN0jrNd/PrOhztgQAJsTW6cgDo9I4w067RqFr1Cq
+Jk1/jiPbUhQ+ZtGA4/+yQ+eRFknWUxLGAsRkATg8RO8StDUHK5ZwH9UcWdObrays
+JDK9jcCiAfHNOoS4kABzYPx2ZzrrC0SrWC7KaiSXxyUMKP6D2skGavr+82SLlIGh
+RFk+EOjpd7PWKAfhSI3r7pBuOPe0YFeHSnwhBpUR8dikn+d3103XcnqgWCeVl85t
+RTgJmTEBvlpowbIA/6q+3GDBqCOTE/NvxMXveDBIeAUHdXrfbWj2J7OA9F5hPXBe
+BEPyekUIxv/SslmaNkmjElLx6HArxYX2kXFDJyiayG4IwVFyosrfVwtf8Zehy00r
+eisTeEFddxomhi4oxhiKuWlpBz30MNUj7GG+TtDNy1ssv+a23B446aNwa5REDrtQ
+lkyT1/ZRpX+RMd774Tfol569MOrNweFPQEYOk1EllfJUqPAUn7icYNkrPwRjJXN8
+kno77PW7sJVyuhkRZswynBkH3QZFF6jmWqcbRNMaJhTb2lNnGTpJnGPFobWTheuH
+sASK/jq4ll44nqLv0T/uG0uMSvbGQvRWJ0zCMK9JRFQOcitw3Ce5JPiytTfpuqZX
+ri5GVmL5N08FHPky8JmVIiz2ZR5oPz98+X6xKUhXFmy6d4myR1blViaOoOKro0Y7
+8uKdKOzNoeAhrtOZVOZT
+=mQdq
 -----END PGP SIGNATURE-----
 
---FCuugMFkClbJLl1L--
+--7iMSBzlTiPOCCT2k--
