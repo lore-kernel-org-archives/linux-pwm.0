@@ -1,106 +1,65 @@
 From: Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH 2/4] pwm: rockchip: Allow polarity invert on rk3288
-Date: Tue, 19 Aug 2014 09:05:20 -0700
-Message-ID: <CAD=FV=Uvx3PMJRdnm4FKWWx4h3sN0Mn1yG6v245HnKur_3vgqQ@mail.gmail.com>
-References: <1408381749-14156-1-git-send-email-dianders@chromium.org>
-	<1408381749-14156-3-git-send-email-dianders@chromium.org>
-	<20140819071857.GD12859@ulmo>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-vc0-f171.google.com ([209.85.220.171]:58868 "EHLO
-	mail-vc0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752367AbaHSQFV (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 19 Aug 2014 12:05:21 -0400
-Received: by mail-vc0-f171.google.com with SMTP id hq11so7726992vcb.30
-        for <linux-pwm@vger.kernel.org>; Tue, 19 Aug 2014 09:05:20 -0700 (PDT)
-In-Reply-To: <20140819071857.GD12859@ulmo>
-Sender: linux-pwm-owner@vger.kernel.org
+Subject: [PATCH v3 0/4] PWM changes for rk3288-evb
+Date: Tue, 19 Aug 2014 09:07:52 -0700
+Message-ID: <1408464476-28316-1-git-send-email-dianders@chromium.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Heiko Stuebner <heiko@sntech.de>, Thierry Reding <thierry.reding@gmail.com>, Caesar Wang <caesar.wang@rock-chips.com>
+Cc: Sonny Rao <sonnyrao@chromium.org>, olof@lixom.net, Eddie Cai <eddie.cai@rock-chips.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Doug Anderson <dianders@chromium.org>, mark.rutland@arm.com, linux-pwm@vger.kernel.org, linux@arm.linux.org.uk, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, robh+dt@kernel.org, galak@codeaurora.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Heiko Stuebner <heiko@sntech.de>, Caesar Wang <caesar.wang@rock-chips.com>, Sonny Rao <sonnyrao@chromium.org>, Olof Johansson <olof@lixom.net>, Eddie Cai <eddie.cai@rock-chips.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-Thierry
+These patches enable the PWM backlight for the rk3288-evb board.
+There were tested by watching the backlight grow from off to max with
+the following instructions:
 
-On Tue, Aug 19, 2014 at 12:18 AM, Thierry Reding
-<thierry.reding@gmail.com> wrote:
-> On Mon, Aug 18, 2014 at 10:09:07AM -0700, Doug Anderson wrote:
-> [...]
->> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
->>  #define PWM_LP_DISABLE               (0 << 8)
->>
->> @@ -32,6 +34,7 @@ struct rockchip_pwm_chip {
->>       struct pwm_chip chip;
->>       struct clk *clk;
->>       const struct rockchip_pwm_data *data;
->> +     enum pwm_polarity polarity;
->
-> Why do you need this field? struct pwm_device already has a copy of it.
+  cd /sys/class/backlight/backlight*/
+  for i in $(seq 255); do echo $i > brightness; sleep .01; done
 
-OK, good point.
+The first patch enables the proper IP.  I think it could land in
+Heiko's tree.
 
+The second patch switches PWM cells from 2 to 3 on rk3288.  I think it
+could land in Thierry's tree.  With the PWM subsystem as currently
+structured, I believe this will break backward compatibility.  However
+the rk3288 PWM driver was added so recently (and the rk3288 is so new)
+that this seems OK.  In the worst case if someone yells that they are
+broken, I believe we could fix this in Linux by saying that if a PWM
+driver specifies 3 cells and the DTS definition of the PWM says 2
+cells that we'll just pretend that we have no flags.
 
->> @@ -74,10 +78,14 @@ static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip, bool enable)
->>  {
->>       struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
->>       u32 enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE |
->> -                       PWM_CONTINUOUS | PWM_DUTY_POSITIVE |
->> -                       PWM_INACTIVE_NEGATIVE;
->> +                       PWM_CONTINUOUS;
->>       u32 val;
->>
->> +     if (pc->polarity == PWM_POLARITY_INVERSED)
->> +             enable_conf |= PWM_DUTY_NEGATIVE | PWM_INACTIVE_POSITIVE;
->> +     else
->> +             enable_conf |= PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE;
->
-> I have a feeling you're going to answer the above question with: "Because
-> it's needed here". If so, my reply would be: "Then this function should
-> take a struct pwm_device instead of struct pwm_chip."
+The 3rd and 4th patches are DTS ones.  They could land in Heiko's tree
+after the second patch has landed.  They are based atop his current
+WIP 3.18 dts tree.  Note that instantiating the PWM backlight will
+cause the system to hang unless Heiko's (clk: rockchip: protect
+critical clocks from getting disabled)
+<patchwork.kernel.org/patch/4725391> is landed.
 
-OK.  I've chosen to have it take a pwm_device AND a pwm_chip.  It is a
-little redundant because a pwm_device has a pointer to its pwm_chip,
-but it follows the lead of all of the callbacks in "struct pwm_ops".
-If you'd like me to spin it to take only a pwm_device I'm happy to.
+There are no compile time or runtime dependencies between these
+patches except that patch #3 needs to come before patch #4.  ...and of
+course the PWM won't work without all 4 patches.
 
+Changes in v3:
+- Don't store a private copy of polarity.
+- Use true instead of 1.
+- Cleanup init order with "has_invert".
+- Fix space to tab in 2 places in DTS.
+- Make sure PWM is upper case in prose.
 
->
->> @@ -173,6 +195,7 @@ static const struct rockchip_pwm_data pwm_data_v2 = {
->>               .ctrl = 0x0c,
->>       },
->>       .prescaler = 1,
->> +     .has_invert = 1,
->
-> Since has_invert is a boolean, the proper value here would be "true".
+Changes in v2:
+- Check for failed ioremap()
 
-Done.
+Doug Anderson (4):
+  ARM: rockchip: rk3288: Switch to use the proper PWM IP
+  pwm: rockchip: Allow polarity invert on rk3288
+  ARM: dts: Add main PWM info to rk3288
+  ARM: dts: Enable PWM backlight on rk3288-EVB
 
+ .../devicetree/bindings/pwm/pwm-rockchip.txt       |  4 +-
+ arch/arm/boot/dts/rk3288-evb.dtsi                  | 53 +++++++++++++++++
+ arch/arm/boot/dts/rk3288.dtsi                      | 68 ++++++++++++++++++++++
+ arch/arm/mach-rockchip/rockchip.c                  | 24 ++++++++
+ drivers/pwm/pwm-rockchip.c                         | 48 ++++++++++++---
+ 5 files changed, 188 insertions(+), 9 deletions(-)
 
->> @@ -228,6 +252,10 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
->>       pc->data = id->data;
->>       pc->chip.dev = &pdev->dev;
->>       pc->chip.ops = &rockchip_pwm_ops;
->> +     if (pc->data->has_invert) {
->> +             pc->chip.of_xlate = of_pwm_xlate_with_flags;
->> +             pc->chip.of_pwm_n_cells = 3;
->> +     }
->>       pc->chip.base = -1;
->>       pc->chip.npwm = 1;
->
-> I suggest to rewrite the above as follows for readability:
->
->         pc->data = id->data;
->         pc->chip.dev = &pdev->dev;
->         pc->chip.ops = &rockchip_pwm_ops;
->         pc->chip.base = -1;
->         pc->chip.npwm = 1;
-
-Done.
-
-
-> +       if (pc->data->has_invert) {
-> +               pc->chip.of_xlate = of_pwm_xlate_with_flags;
-> +               pc->chip.of_pwm_n_cells = 3;
-> +       }
->
-> Thierry
+-- 
+2.1.0.rc2.206.gedb03e5
