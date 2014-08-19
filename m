@@ -1,84 +1,117 @@
-From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH] This adds a generic PWM framework driver
- for the PWM controller
-Date: Mon, 18 Aug 2014 22:19:29 +0200
-Message-ID: <20140818201929.GL15297@lukather>
-References: <20140818180316.31807.3445.stgit@studio>
- <20140818192318.GJ15297@lukather>
- <CAKON4OwzFDDXqCF4VNkUXXJLp3smrB6Axp_x=D47sjbpoNbe+g@mail.gmail.com>
-Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 2/4] pwm: rockchip: Allow polarity invert on rk3288
+Date: Tue, 19 Aug 2014 09:18:58 +0200
+Message-ID: <20140819071857.GD12859@ulmo>
+References: <1408381749-14156-1-git-send-email-dianders@chromium.org>
+ <1408381749-14156-3-git-send-email-dianders@chromium.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Qx89ETaB+CVBQ6X0"
-Return-path: <linux-sunxi+bncBD2ZNBF5VYJRBAXTZOPQKGQEJUJZRBA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="1sNVjLsmu1MXqwQ/"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wg0-f52.google.com ([74.125.82.52]:61024 "EHLO
+	mail-wg0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752747AbaHSHTD (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 19 Aug 2014 03:19:03 -0400
 Content-Disposition: inline
-In-Reply-To: <CAKON4OwzFDDXqCF4VNkUXXJLp3smrB6Axp_x=D47sjbpoNbe+g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <http://groups.google.com/group/linux-sunxi
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <http://groups.google.com/group/linux-sunxi/subscribe>
-To: "jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi <linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, ARM Linux Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1408381749-14156-3-git-send-email-dianders@chromium.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Doug Anderson <dianders@chromium.org>
+Cc: Heiko Stuebner <heiko@sntech.de>, Caesar Wang <caesar.wang@rock-chips.com>, Sonny Rao <sonnyrao@chromium.org>, olof@lixom.net, Eddie Cai <eddie.cai@rock-chips.com>, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
 
---Qx89ETaB+CVBQ6X0
+--1sNVjLsmu1MXqwQ/
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 18, 2014 at 03:53:08PM -0400, jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
-> On Mon, Aug 18, 2014 at 3:23 PM, Maxime Ripard
-> <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
-> > Hi,
-> >
-> > On Mon, Aug 18, 2014 at 02:03:16PM -0400, Jon Smirl wrote:
-> >> found on Allwinner SoCs.x
-> >>
-> >> Signed-off-by: Jon Smirl <jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> >
-> > Is there any notable difference with Alexandre's driver?
-> > https://lkml.org/lkml/2014/5/19/568
-> >
-> > If so, why didn't you posted incremental patches on top of his driver?
->=20
-> Better A10 support.
+On Mon, Aug 18, 2014 at 10:09:07AM -0700, Doug Anderson wrote:
+[...]
+> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+>  #define PWM_LP_DISABLE		(0 << 8)
+> =20
+> @@ -32,6 +34,7 @@ struct rockchip_pwm_chip {
+>  	struct pwm_chip chip;
+>  	struct clk *clk;
+>  	const struct rockchip_pwm_data *data;
+> +	enum pwm_polarity polarity;
 
-Better how?
+Why do you need this field? struct pwm_device already has a copy of it.
 
-> And I wrote this one without know about his.
+> @@ -74,10 +78,14 @@ static void rockchip_pwm_set_enable_v2(struct pwm_chi=
+p *chip, bool enable)
+>  {
+>  	struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
+>  	u32 enable_conf =3D PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE |
+> -			  PWM_CONTINUOUS | PWM_DUTY_POSITIVE |
+> -			  PWM_INACTIVE_NEGATIVE;
+> +			  PWM_CONTINUOUS;
+>  	u32 val;
+> =20
+> +	if (pc->polarity =3D=3D PWM_POLARITY_INVERSED)
+> +		enable_conf |=3D PWM_DUTY_NEGATIVE | PWM_INACTIVE_POSITIVE;
+> +	else
+> +		enable_conf |=3D PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE;
 
-So you're just require us to trash an already extensively reviewed
-driver and start from scratch again?
+I have a feeling you're going to answer the above question with: "Because
+it's needed here". If so, my reply would be: "Then this function should
+take a struct pwm_device instead of struct pwm_chip."
 
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+> @@ -173,6 +195,7 @@ static const struct rockchip_pwm_data pwm_data_v2 =3D=
+ {
+>  		.ctrl =3D 0x0c,
+>  	},
+>  	.prescaler =3D 1,
+> +	.has_invert =3D 1,
 
---Qx89ETaB+CVBQ6X0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+Since has_invert is a boolean, the proper value here would be "true".
+
+> @@ -228,6 +252,10 @@ static int rockchip_pwm_probe(struct platform_device=
+ *pdev)
+>  	pc->data =3D id->data;
+>  	pc->chip.dev =3D &pdev->dev;
+>  	pc->chip.ops =3D &rockchip_pwm_ops;
+> +	if (pc->data->has_invert) {
+> +		pc->chip.of_xlate =3D of_pwm_xlate_with_flags;
+> +		pc->chip.of_pwm_n_cells =3D 3;
+> +	}
+>  	pc->chip.base =3D -1;
+>  	pc->chip.npwm =3D 1;
+
+I suggest to rewrite the above as follows for readability:
+
+ 	pc->data =3D id->data;
+ 	pc->chip.dev =3D &pdev->dev;
+ 	pc->chip.ops =3D &rockchip_pwm_ops;
+ 	pc->chip.base =3D -1;
+ 	pc->chip.npwm =3D 1;
++
++	if (pc->data->has_invert) {
++		pc->chip.of_xlate =3D of_pwm_xlate_with_flags;
++		pc->chip.of_pwm_n_cells =3D 3;
++	}
+
+Thierry
+
+--1sNVjLsmu1MXqwQ/
+Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Version: GnuPG v2
 
-iQIcBAEBAgAGBQJT8l/RAAoJEBx+YmzsjxAgfN4QALYhBNWndxlf9xemolQBVmM+
-5sozB3by7CHf6/gTEiJu3+VI4QXNAMznID84nYWUKsyRVYyeEvjJoT0kcbAs0il+
-7uvm9tYFBjBM48vvUt2r2J99o9nljmlnrldS4OR/CrxhCQ2EUnJi/san3EfAJ6p5
-/e/8dyICIR2Y0r8aa9YzsUTlyuP7JnYh9vTuGGmCKd/30Tvdf8S1dRhtW28lf35F
-FjW4u2mXwjW/VqGBEcL6N/xw9+0an9evNBl1wEZR0gkaBJJQcFM3p5EMrBtRtWVJ
-ewIqlZ9QnGLmJLa5qglINKb9+eVivd35NyGELj6eAsRvRHDhRuSw3YSvzwZ4Oz1q
-KpKB4t+a+SrxC9ceAZeKMrzLG4trr4FIaXf1LGF6tr1LlyHRccbsexOtS5ZG/gj/
-OVkEX3V5GeQyL6+fzueU+YhcX/8iw7CwZZ9FHyl1ZqBe/Vaqmw+yUMRNOJgCcq7q
-Iv4MU3lzB5pSFIVg19ouRwwgt1hzCcDPJ1N3PnrHsO8lg0AWEEqaMeX/EXRD5qM+
-lDs6wwopk7lG5ROFaMXaN+2gj+MI+pffwXj6NKv/3QiNdkLews+La7/YQibVhHZa
-sOag/Phrbjm/yljtTjNZkTLeSsMQarZ8RmbSEdZ9jiw82LhbAX+qIzNzPxfr+Oug
-394Vr1MFSnYAp8lhuUz7
-=6HEa
+iQIcBAEBAgAGBQJT8vphAAoJEN0jrNd/PrOhNqAQAKjhdIO0mRKBlcuqjV+55gGa
+ZjSeGG/zLHhxCjn9OP9HEqEnPqT8q46beRO7LfpewQLqX7avnirGHHcx4bTV7Myf
+RyvPqtwEIwz7Z4/NCrbqI/EDTDnyue+wEzkIdsvOa4YRjqWHSA5rI1BLjo2lFYAo
+l1ism4Bl3XDnr1PhTWsZztOkivCTUkMkGuLaLoDEIzDD7Dw5ul+U4mQP7POACFfm
+NObvxsFn3yUFexeAIB1pib7hWL2NI8oOPUfnBiLg1hdRR9vVFeDbqQoM5yGBpKJU
+yGipps4fyxsoqpfTsD9k4WNwcfY+34jF6vTfUSHkUv2qSOBp7viWWcXLUKsK7Izx
+VWz6G3cWrpPK9gQO/w1awRVVEhbIb1CsK889YIl9Ak9WQFSvYSxYsqtSLQAJloEW
+j+zxg8Gzsrib2nfqzUsrqjRYqoY1oS89u4/xOYqNvECkEeMCDQhLvGl+R1XdCoYK
+p3aXb16F+GdZpmmlrwP0CJNUr4wRKWqnMjqDjC0b7VbqHdlSWDpH5Xu0OPNv8XSB
+HYiDMx94tTc2KWNLIQbEqnM1Txjj+EPnJbiBuwVDiHO/f2yvqyVZNB5RNbUaEUN9
+ATpZg3jE0j2B9iUmkGew95S8DQmT8lTpd+6J+JgkPpijjKTwfGMMHNxMJvdTq0Zx
+sgyZA5HIusA8oEMXFQ4L
+=FxyI
 -----END PGP SIGNATURE-----
 
---Qx89ETaB+CVBQ6X0--
+--1sNVjLsmu1MXqwQ/--
