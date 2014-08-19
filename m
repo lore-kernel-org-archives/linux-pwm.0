@@ -1,61 +1,106 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH] pwm: lpss: Add ACPI and PCI IDs for Intel Braswell
-Date: Tue, 19 Aug 2014 17:18:29 +0300
-Message-ID: <1408457909-29611-1-git-send-email-mika.westerberg@linux.intel.com>
+From: Doug Anderson <dianders@chromium.org>
+Subject: Re: [PATCH 2/4] pwm: rockchip: Allow polarity invert on rk3288
+Date: Tue, 19 Aug 2014 09:05:20 -0700
+Message-ID: <CAD=FV=Uvx3PMJRdnm4FKWWx4h3sN0Mn1yG6v245HnKur_3vgqQ@mail.gmail.com>
+References: <1408381749-14156-1-git-send-email-dianders@chromium.org>
+	<1408381749-14156-3-git-send-email-dianders@chromium.org>
+	<20140819071857.GD12859@ulmo>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:28680 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752158AbaHSOVs (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Tue, 19 Aug 2014 10:21:48 -0400
+Received: from mail-vc0-f171.google.com ([209.85.220.171]:58868 "EHLO
+	mail-vc0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752367AbaHSQFV (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 19 Aug 2014 12:05:21 -0400
+Received: by mail-vc0-f171.google.com with SMTP id hq11so7726992vcb.30
+        for <linux-pwm@vger.kernel.org>; Tue, 19 Aug 2014 09:05:20 -0700 (PDT)
+In-Reply-To: <20140819071857.GD12859@ulmo>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Alan Cox <alan@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Heiko Stuebner <heiko@sntech.de>, Caesar Wang <caesar.wang@rock-chips.com>, Sonny Rao <sonnyrao@chromium.org>, Olof Johansson <olof@lixom.net>, Eddie Cai <eddie.cai@rock-chips.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-From: Alan Cox <alan@linux.intel.com>
+Thierry
 
-This is pretty much the same as Baytrail PWM. Only difference is that the
-input clock runs on different frequency.
+On Tue, Aug 19, 2014 at 12:18 AM, Thierry Reding
+<thierry.reding@gmail.com> wrote:
+> On Mon, Aug 18, 2014 at 10:09:07AM -0700, Doug Anderson wrote:
+> [...]
+>> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+>>  #define PWM_LP_DISABLE               (0 << 8)
+>>
+>> @@ -32,6 +34,7 @@ struct rockchip_pwm_chip {
+>>       struct pwm_chip chip;
+>>       struct clk *clk;
+>>       const struct rockchip_pwm_data *data;
+>> +     enum pwm_polarity polarity;
+>
+> Why do you need this field? struct pwm_device already has a copy of it.
 
-Signed-off-by: Alan Cox <alan@linux.intel.com>
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
----
- drivers/pwm/pwm-lpss.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+OK, good point.
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 4df994f72d96..d04eee7aa967 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -48,6 +48,11 @@ static const struct pwm_lpss_boardinfo byt_info = {
- 	25000000
- };
- 
-+/* Braswell */
-+static const struct pwm_lpss_boardinfo bsw_info = {
-+	19200000
-+};
-+
- static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
- {
- 	return container_of(chip, struct pwm_lpss_chip, chip);
-@@ -189,6 +194,8 @@ static void pwm_lpss_remove_pci(struct pci_dev *pdev)
- static struct pci_device_id pwm_lpss_pci_ids[] = {
- 	{ PCI_VDEVICE(INTEL, 0x0f08), (unsigned long)&byt_info},
- 	{ PCI_VDEVICE(INTEL, 0x0f09), (unsigned long)&byt_info},
-+	{ PCI_VDEVICE(INTEL, 0x2288), (unsigned long)&bsw_info},
-+	{ PCI_VDEVICE(INTEL, 0x2289), (unsigned long)&bsw_info},
- 	{ },
- };
- MODULE_DEVICE_TABLE(pci, pwm_lpss_pci_ids);
-@@ -231,6 +238,7 @@ static int pwm_lpss_remove_platform(struct platform_device *pdev)
- 
- static const struct acpi_device_id pwm_lpss_acpi_match[] = {
- 	{ "80860F09", (unsigned long)&byt_info },
-+	{ "80862288", (unsigned long)&bsw_info },
- 	{ },
- };
- MODULE_DEVICE_TABLE(acpi, pwm_lpss_acpi_match);
--- 
-2.1.0
 
+>> @@ -74,10 +78,14 @@ static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip, bool enable)
+>>  {
+>>       struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
+>>       u32 enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE |
+>> -                       PWM_CONTINUOUS | PWM_DUTY_POSITIVE |
+>> -                       PWM_INACTIVE_NEGATIVE;
+>> +                       PWM_CONTINUOUS;
+>>       u32 val;
+>>
+>> +     if (pc->polarity == PWM_POLARITY_INVERSED)
+>> +             enable_conf |= PWM_DUTY_NEGATIVE | PWM_INACTIVE_POSITIVE;
+>> +     else
+>> +             enable_conf |= PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE;
+>
+> I have a feeling you're going to answer the above question with: "Because
+> it's needed here". If so, my reply would be: "Then this function should
+> take a struct pwm_device instead of struct pwm_chip."
+
+OK.  I've chosen to have it take a pwm_device AND a pwm_chip.  It is a
+little redundant because a pwm_device has a pointer to its pwm_chip,
+but it follows the lead of all of the callbacks in "struct pwm_ops".
+If you'd like me to spin it to take only a pwm_device I'm happy to.
+
+
+>
+>> @@ -173,6 +195,7 @@ static const struct rockchip_pwm_data pwm_data_v2 = {
+>>               .ctrl = 0x0c,
+>>       },
+>>       .prescaler = 1,
+>> +     .has_invert = 1,
+>
+> Since has_invert is a boolean, the proper value here would be "true".
+
+Done.
+
+
+>> @@ -228,6 +252,10 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+>>       pc->data = id->data;
+>>       pc->chip.dev = &pdev->dev;
+>>       pc->chip.ops = &rockchip_pwm_ops;
+>> +     if (pc->data->has_invert) {
+>> +             pc->chip.of_xlate = of_pwm_xlate_with_flags;
+>> +             pc->chip.of_pwm_n_cells = 3;
+>> +     }
+>>       pc->chip.base = -1;
+>>       pc->chip.npwm = 1;
+>
+> I suggest to rewrite the above as follows for readability:
+>
+>         pc->data = id->data;
+>         pc->chip.dev = &pdev->dev;
+>         pc->chip.ops = &rockchip_pwm_ops;
+>         pc->chip.base = -1;
+>         pc->chip.npwm = 1;
+
+Done.
+
+
+> +       if (pc->data->has_invert) {
+> +               pc->chip.of_xlate = of_pwm_xlate_with_flags;
+> +               pc->chip.of_pwm_n_cells = 3;
+> +       }
+>
+> Thierry
