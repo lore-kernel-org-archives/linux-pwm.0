@@ -1,54 +1,49 @@
-From: "jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] This adds a generic PWM framework driver
- for the PWM controller
-Date: Mon, 18 Aug 2014 15:53:08 -0400
-Message-ID: <CAKON4OwzFDDXqCF4VNkUXXJLp3smrB6Axp_x=D47sjbpoNbe+g@mail.gmail.com>
-References: <20140818180316.31807.3445.stgit@studio>
-	<20140818192318.GJ15297@lukather>
-Reply-To: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+From: Xiubo Li <Li.Xiubo@freescale.com>
+Subject: [PATCHv4 0/3] ftm-pwm: Convert to direct regmap API usage
+Date: Tue, 19 Aug 2014 12:38:00 +0800
+Message-ID: <1408423083-19827-1-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBC55LFUF6ALBBJNTZGPQKGQEHTPOJFY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-In-Reply-To: <20140818192318.GJ15297@lukather>
-List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <http://groups.google.com/group/linux-sunxi
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <http://groups.google.com/group/linux-sunxi/subscribe>
-To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi <linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, ARM Linux Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-by2lp0240.outbound.protection.outlook.com ([207.46.163.240]:24169
+	"EHLO na01-by2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750774AbaHSEmb (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Tue, 19 Aug 2014 00:42:31 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-
-On Mon, Aug 18, 2014 at 3:23 PM, Maxime Ripard
-<maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
-> Hi,
->
-> On Mon, Aug 18, 2014 at 02:03:16PM -0400, Jon Smirl wrote:
->> found on Allwinner SoCs.x
->>
->> Signed-off-by: Jon Smirl <jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->
-> Is there any notable difference with Alexandre's driver?
-> https://lkml.org/lkml/2014/5/19/568
->
-> If so, why didn't you posted incremental patches on top of his driver?
-
-Better A10 support. And I wrote this one without know about his.
+To: thierry.reding@gmail.com, mark.rutland@arm.com, linux-pwm@vger.kernel.org
+Cc: robh+dt@kernel.org, pawel.moll@arm.com, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, rdunlap@infradead.org, galak@codeaurora.org, ijc+devicetree@hellion.org.uk, Xiubo Li <Li.Xiubo@freescale.com>
 
 
->
-> Thanks,
-> Maxime
->
-> --
-> Maxime Ripard, Free Electrons
-> Embedded Linux, Kernel and Android engineering
-> http://free-electrons.com
+This is depended on the following patches, which have already been merged
+into linux-next tree:
+https://lkml.org/lkml/2014/7/15/6
+https://lkml.org/lkml/2014/7/15/5
+https://lkml.org/lkml/2014/7/15/7
 
 
+Changes in V4:
+- Modified the 'static struct regmap_config fsl_pwm_regmap_config = {}'
+  to 'static const struct regmap_config fsl_pwm_regmap_config = {}'
+- Followed the Mark Rutland's advice.
+
+Changes in V3:
+- Use the regmap framework's endianness method instead of its own.
+
+Changes in V2:
+- Adds detail descriptions of these patches.
+
+
+Xiubo Li (3):
+  pwm: ftm-pwm: Clean up the code.
+  pwm: ftm-pwm: Convert to direct regmap API usage.
+  pwm: documentation: Add 'big-endian' property for FTM PWM.
+
+ .../devicetree/bindings/pwm/pwm-fsl-ftm.txt        | 23 +++++-
+ drivers/pwm/pwm-fsl-ftm.c                          | 90 +++++++++++-----------
+ 2 files changed, 69 insertions(+), 44 deletions(-)
 
 -- 
-Jon Smirl
-jonsmirl-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+1.8.5
+
