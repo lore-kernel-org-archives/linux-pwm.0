@@ -1,225 +1,225 @@
-From: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Subject: Re: [PATCH 3/3] ARM: at91/tclib: mask interruptions at shutdown and probe
-Date: Wed, 20 Aug 2014 06:11:17 +0800
-Message-ID: <776D4128-09AC-418C-A710-28A2522D1D63@jcrosoft.com>
-References: <1408486072-19268-1-git-send-email-gael.portay@gmail.com> <1408486072-19268-4-git-send-email-gael.portay@gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 7.3 \(1878.6\))
-Content-Type: text/plain; charset=iso-8859-1
+From: Caesar Wang <caesar.wang@rock-chips.com>
+Subject: Re: [PATCH v3 2/4] pwm: rockchip: Allow polarity invert on rk3288
+Date: Wed, 20 Aug 2014 06:15:13 +0800
+Message-ID: <53F3CC71.8090005@rock-chips.com>
+References: <1408464476-28316-1-git-send-email-dianders@chromium.org> <1408464476-28316-3-git-send-email-dianders@chromium.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=gbk;
+	format=flowed
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1408486072-19268-4-git-send-email-gael.portay@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?iso-8859-1?Q?Ga=EBl_PORTAY?= <gael.portay@gmail.com>
-Cc: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, Arnd Bergmann <arnd@arndb.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas FERRE <nicolas.ferre@atmel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Boris Brezillon <boris.brezillon@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from regular1.263xmail.com ([211.150.99.137]:35116 "EHLO
+	regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751691AbaHSWPR (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 19 Aug 2014 18:15:17 -0400
+In-Reply-To: <1408464476-28316-3-git-send-email-dianders@chromium.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Doug Anderson <dianders@chromium.org>, Heiko Stuebner <heiko@sntech.de>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Sonny Rao <sonnyrao@chromium.org>, olof@lixom.net, Eddie Cai <eddie.cai@rock-chips.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hi,
+Hi Doug,
 
-	This is a bit weird as the clock of the TC should be off and the irq f=
-ree
+I reviewed it, the change is need.
 
-	so this should never happened we need to investigate more why this app=
-end
+Reviewed-on: https://github.com/rkchrome/kernel.git
+Reviewed-by: Caesar Wang <caesar.wang@rock-chips.com>
 
-Best Regards,
-J.
-On Aug 20, 2014, at 6:07 AM, Ga=EBl PORTAY <gael.portay@gmail.com> wrot=
-e:
-
->=20
-> Shutdown properly the timer counter block by masking interruptions. O=
-therwise,
-> a segmentation may happen when kexec-ing a new kernel (see backtrace =
-below).
-> An interruption may happen before the handler is set, leading to a ke=
-rnel
-> segmentation fault.
->=20
-> Furthermore, we make sure the interruptions are masked when the drive=
-r is
-> initialized. This will prevent freshly kexec-ed kernel from crashing =
-when
-> launched from a kernel which does not properly mask interruptions at =
-shutdown.
->=20
-> The backtrace below happened after kexec-ing a new kernel, from a ker=
-nel
-> that did not shut down properly leaving interruptions unmasked.
->=20
-> Unable to handle kernel NULL pointer dereference at virtual address 0=
-0000000
-> pgd =3D c0004000
-> [00000000] *pgd=3D00000000
-> Internal error: Oops: 80000005 [#1] ARM
-> Modules linked in:
-> CPU: 0 PID: 1 Comm: swapper Not tainted 3.16.0+ #144
-> task: c1828aa0 ti: c182a000 task.ti: c182a000
-> PC is at 0x0
-> LR is at ch2_irq+0x28/0x30
-> pc : [<00000000>]    lr : [<c01db904>]    psr: 000000d3
-> sp : c182bd38  ip : c182bd48  fp : c182bd44
-> r10: c0373390  r9 : c1825b00  r8 : 60000053
-> r7 : 00000000  r6 : 00000000  r5 : 00000013  r4 : c036e800
-> r3 : 00000000  r2 : 00002004  r1 : c036e760  r0 : c036e760
-> Flags: nzcv  IRQs off  FIQs off  Mode SVC_32  ISA ARM  Segment kernel
-> Control: 0005317f  Table: 20004000  DAC: 00000017
-> Process swapper (pid: 1, stack limit =3D 0xc182a1c0)
-> Stack: (0xc182bd38 to 0xc182c000)
-> bd20:                                                       c182bd7c =
-c182bd48
-> bd40: c0045430 c01db8ec 00000000 c18c6f40 c182bd74 c1825b00 c035cec4 =
-00000000
-> bd60: c182be2c 60000053 c1825b34 00000000 c182bd94 c182bd80 c0045570 =
-c0045408
-> bd80: 00000000 c1825b00 c182bdac c182bd98 c0047f34 c0045550 00000013 =
-c036619c
-> bda0: c182bdc4 c182bdb0 c0044da4 c0047e98 0000007f 00000013 c182bde4 =
-c182bdc8
-> bdc0: c0009e34 c0044d8c fefff000 c0046728 60000053 ffffffff c182bdf4 =
-c182bde8
-> bde0: c00086a8 c0009ddc c182be74 c182bdf8 c000cb80 c0008674 00000000 =
-00000013
-> be00: 00000000 00014200 c1825b00 c036e800 00000013 c035ed98 60000053 =
-c1825b34
-> be20: 00000000 c182be74 c182be20 c182be40 c0047994 c0046728 60000053 =
-ffffffff
-> be40: 00000013 c036e800 c182be64 c1825b00 00000013 c036e800 c035ed98 =
-c03874bc
-> be60: 00000004 c036e700 c182be94 c182be78 c004689c c0046398 c036e760 =
-c18c6080
-> be80: 00000000 c035ed10 c182bedc c182be98 c0348b08 c004684c 0000000c =
-c034dac8
-> bea0: 004c4b3f c028c338 c036e760 00000013 c014ecc8 c18e67e0 c035b9c0 =
-c0348884
-> bec0: c035b9c0 c182a020 00000000 00000000 c182bf54 c182bee0 c00089fc =
-c0348894
-> bee0: c00da51c c1ffcc78 c182bf0c c182bef8 c002d100 c002d09c c1ffcc78 =
-00000000
-> bf00: c182bf54 c182bf10 c002d308 c0336570 c182bf3c c0334e44 00000003 =
-00000003
-> bf20: 00000030 c0334b44 c0044d74 00000003 00000003 c034dac8 c0350a94 =
-c0373440
-> bf40: c0373440 00000030 c182bf94 c182bf58 c0336d24 c000890c 00000003 =
-00000003
-> bf60: c0336560 c182bf64 c182bf64 6e616e0d 00000000 c0272fc8 00000000 =
-00000000
-> bf80: 00000000 00000000 c182bfac c182bf98 c0272fd8 c0336bd8 c182a000 =
-00000000
-> bfa0: 00000000 c182bfb0 c00095d0 c0272fd8 00000000 00000000 00000000 =
-00000000
-> bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 =
-00000000
-> bfe0: 00000000 00000000 00000000 00000000 00000013 00000000 374d27cd =
-33cc33e4
-> Backtrace:
-> [<c01db8dc>] (ch2_irq) from [<c0045430>] (handle_irq_event_percpu+0x3=
-8/0x148)
-> [<c00453f8>] (handle_irq_event_percpu) from [<c0045570>] (handle_irq_=
-event+0x30/0x40)
-> r10:00000000 r9:c1825b34 r8:60000053 r7:c182be2c r6:00000000 r5:c035c=
-ec4
-> r4:c1825b00
-> [<c0045540>] (handle_irq_event) from [<c0047f34>] (handle_fasteoi_irq=
-+0xac/0x11c)
-> r4:c1825b00 r3:00000000
-> [<c0047e88>] (handle_fasteoi_irq) from [<c0044da4>] (generic_handle_i=
-rq+0x28/0x38)
-> r5:c036619c r4:00000013
-> [<c0044d7c>] (generic_handle_irq) from [<c0009e34>] (handle_IRQ+0x68/=
-0x88)
-> r4:00000013 r3:0000007f
-> [<c0009dcc>] (handle_IRQ) from [<c00086a8>] (at91_aic_handle_irq+0x44=
-/0x4c)
-> r6:ffffffff r5:60000053 r4:c0046728 r3:fefff000
-> [<c0008664>] (at91_aic_handle_irq) from [<c000cb80>] (__irq_svc+0x40/=
-0x4c)
-> Exception stack(0xc182bdf8 to 0xc182be40)
-> bde0:                                                       00000000 =
-00000013
-> be00: 00000000 00014200 c1825b00 c036e800 00000013 c035ed98 60000053 =
-c1825b34
-> be20: 00000000 c182be74 c182be20 c182be40 c0047994 c0046728 60000053 =
-ffffffff
-> [<c0046388>] (__setup_irq) from [<c004689c>] (setup_irq+0x60/0x8c)
-> r10:c036e700 r9:00000004 r8:c03874bc r7:c035ed98 r6:c036e800 r5:00000=
-013
-> r4:c1825b00
-> [<c004683c>] (setup_irq) from [<c0348b08>] (tcb_clksrc_init+0x284/0x3=
-1c)
-> r6:c035ed10 r5:00000000 r4:c18c6080 r3:c036e760
-> [<c0348884>] (tcb_clksrc_init) from [<c00089fc>] (do_one_initcall+0x1=
-00/0x1b4)
-> r10:00000000 r9:00000000 r8:c182a020 r7:c035b9c0 r6:c0348884 r5:c035b=
-9c0
-> r4:c18e67e0
-> [<c00088fc>] (do_one_initcall) from [<c0336d24>] (kernel_init_freeabl=
-e+0x15c/0x224)
-> r9:00000030 r8:c0373440 r7:c0373440 r6:c0350a94 r5:c034dac8 r4:000000=
-03
-> [<c0336bc8>] (kernel_init_freeable) from [<c0272fd8>] (kernel_init+0x=
-10/0xec)
-> r9:00000000 r8:00000000 r7:00000000 r6:00000000 r5:c0272fc8 r4:000000=
-00
-> [<c0272fc8>] (kernel_init) from [<c00095d0>] (ret_from_fork+0x14/0x24=
-)
-> r4:00000000 r3:c182a000
-> Code: bad PC value
-> ---[ end trace 5b30f0017e282e47 ]---
-> Kernel panic - not syncing: Fatal exception in interrupt
->=20
-> Signed-off-by: Ga=EBl PORTAY <gael.portay@gmail.com>
+=D4=DA 2014=C4=EA08=D4=C220=C8=D5 00:07, Doug Anderson =D0=B4=B5=C0:
+> The rk3288 has the ability to invert the polarity of the PWM.  Let's
+> enable that ability.
+>
+> To do this we increase the number of pwm_cells to 3 to allow using th=
+e
+> PWM_POLARITY_INVERTED flag.  Since the PWM driver on rk3288 is very
+> new, I thought this was OK.
+>
+> Signed-off-by: Doug Anderson <dianders@chromium.org>
 > ---
-> drivers/misc/atmel_tclib.c | 16 ++++++++++++++++
-> 1 file changed, 16 insertions(+)
->=20
-> diff --git a/drivers/misc/atmel_tclib.c b/drivers/misc/atmel_tclib.c
-> index d505d1e..a680151 100644
-> --- a/drivers/misc/atmel_tclib.c
-> +++ b/drivers/misc/atmel_tclib.c
-> @@ -109,6 +109,7 @@ static int __init tc_probe(struct platform_device=
- *pdev)
-> 	struct clk	*clk;
-> 	int		irq;
-> 	struct resource	*r;
-> +	unsigned int	i;
->=20
-> 	irq =3D platform_get_irq(pdev, 0);
-> 	if (irq < 0)
-> @@ -157,18 +158,33 @@ static int __init tc_probe(struct platform_devi=
-ce *pdev)
-> 	if (tc->irq[2] < 0)
-> 		tc->irq[2] =3D irq;
->=20
-> +	for (i =3D 0; i < 3; i++)
-> +		__raw_writel(0xff, tc->regs + ATMEL_TC_REG(i, IDR));
+> Changes in v3:
+> - Don't store a private copy of polarity.
+> - Use true instead of 1.
+> - Cleanup init order with "has_invert".
+>
+> Changes in v2: None
+>
+>   .../devicetree/bindings/pwm/pwm-rockchip.txt       |  4 +-
+>   drivers/pwm/pwm-rockchip.c                         | 48 +++++++++++=
++++++++----
+>   2 files changed, 43 insertions(+), 9 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt b=
+/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
+> index d47d15a..b8be3d0 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
+> @@ -7,8 +7,8 @@ Required properties:
+>      "rockchip,vop-pwm": found integrated in VOP on RK3288 SoC
+>    - reg: physical base address and length of the controller's regist=
+ers
+>    - clocks: phandle and clock specifier of the PWM reference clock
+> - - #pwm-cells: should be 2. See pwm.txt in this directory for a
+> -   description of the cell format.
+> + - #pwm-cells: must be 2 (rk2928) or 3 (rk3288). See pwm.txt in this=
+ directory
+> +   for a description of the cell format.
+>  =20
+>   Example:
+>  =20
+> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+> index bdd8644..646aed2 100644
+> --- a/drivers/pwm/pwm-rockchip.c
+> +++ b/drivers/pwm/pwm-rockchip.c
+> @@ -24,7 +24,9 @@
+>   #define PWM_ENABLE		(1 << 0)
+>   #define PWM_CONTINUOUS		(1 << 1)
+>   #define PWM_DUTY_POSITIVE	(1 << 3)
+> +#define PWM_DUTY_NEGATIVE	(0 << 3)
+>   #define PWM_INACTIVE_NEGATIVE	(0 << 4)
+> +#define PWM_INACTIVE_POSITIVE	(1 << 4)
+>   #define PWM_OUTPUT_LEFT		(0 << 5)
+>   #define PWM_LP_DISABLE		(0 << 8)
+>  =20
+> @@ -45,8 +47,10 @@ struct rockchip_pwm_regs {
+>   struct rockchip_pwm_data {
+>   	struct rockchip_pwm_regs regs;
+>   	unsigned int prescaler;
+> +	bool has_invert;
+>  =20
+> -	void (*set_enable)(struct pwm_chip *chip, bool enable);
+> +	void (*set_enable)(struct pwm_chip *chip,
+> +			   struct pwm_device *pwm, bool enable);
+>   };
+>  =20
+>   static inline struct rockchip_pwm_chip *to_rockchip_pwm_chip(struct=
+ pwm_chip *c)
+> @@ -54,7 +58,8 @@ static inline struct rockchip_pwm_chip *to_rockchip=
+_pwm_chip(struct pwm_chip *c)
+>   	return container_of(c, struct rockchip_pwm_chip, chip);
+>   }
+>  =20
+> -static void rockchip_pwm_set_enable_v1(struct pwm_chip *chip, bool e=
+nable)
+> +static void rockchip_pwm_set_enable_v1(struct pwm_chip *chip,
+> +				       struct pwm_device *pwm, bool enable)
+>   {
+>   	struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
+>   	u32 enable_conf =3D PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN;
+> @@ -70,14 +75,19 @@ static void rockchip_pwm_set_enable_v1(struct pwm=
+_chip *chip, bool enable)
+>   	writel_relaxed(val, pc->base + pc->data->regs.ctrl);
+>   }
+>  =20
+> -static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip, bool e=
+nable)
+> +static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip,
+> +				       struct pwm_device *pwm, bool enable)
+>   {
+>   	struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
+>   	u32 enable_conf =3D PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE =
+|
+> -			  PWM_CONTINUOUS | PWM_DUTY_POSITIVE |
+> -			  PWM_INACTIVE_NEGATIVE;
+> +			  PWM_CONTINUOUS;
+>   	u32 val;
+>  =20
+> +	if (pwm->polarity =3D=3D PWM_POLARITY_INVERSED)
+> +		enable_conf |=3D PWM_DUTY_NEGATIVE | PWM_INACTIVE_POSITIVE;
+> +	else
+> +		enable_conf |=3D PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE;
 > +
-> 	spin_lock(&tc_list_lock);
-> 	list_add_tail(&tc->node, &tc_list);
-> 	spin_unlock(&tc_list_lock);
->=20
-> +	platform_set_drvdata(pdev, tc);
-> +
-> 	return 0;
-> }
->=20
-> +static void tc_shutdown (struct platform_device *pdev)
+>   	val =3D readl_relaxed(pc->base + pc->data->regs.ctrl);
+>  =20
+>   	if (enable)
+> @@ -124,6 +134,23 @@ static int rockchip_pwm_config(struct pwm_chip *=
+chip, struct pwm_device *pwm,
+>   	return 0;
+>   }
+>  =20
+> +int rockchip_pwm_set_polarity(struct pwm_chip *chip, struct pwm_devi=
+ce *pwm,
+> +			      enum pwm_polarity polarity)
 > +{
-> +	int i;
-> +	struct atmel_tc *tc =3D platform_get_drvdata(pdev);
+> +	struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
 > +
-> +	for (i =3D 0; i < 3; i++)
-> +		__raw_writel(0xff, tc->regs + ATMEL_TC_REG(i, IDR));
+> +	if (!pc->data->has_invert)
+> +		return -ENOSYS;
+> +
+> +	/*
+> +	 * No action needed here because pwm->polarity will be set by the c=
+ore
+> +	 * and the core will only change polarity when the PWM is not enabl=
+ed.
+> +	 * We'll handle things in set_enable().
+> +	 */
+> +
+> +	return 0;
 > +}
 > +
-> static struct platform_driver tc_driver =3D {
-> 	.driver =3D {
-> 		.name	=3D "atmel_tcb",
-> 		.of_match_table	=3D of_match_ptr(atmel_tcb_dt_ids),
-> 	},
-> +	.shutdown =3D tc_shutdown,
-> };
->=20
-> static int __init tc_init(void)
-> --=20
-> 1.9.3
->=20
+>   static int rockchip_pwm_enable(struct pwm_chip *chip, struct pwm_de=
+vice *pwm)
+>   {
+>   	struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
+> @@ -133,7 +160,7 @@ static int rockchip_pwm_enable(struct pwm_chip *c=
+hip, struct pwm_device *pwm)
+>   	if (ret)
+>   		return ret;
+>  =20
+> -	pc->data->set_enable(chip, true);
+> +	pc->data->set_enable(chip, pwm, true);
+>  =20
+>   	return 0;
+>   }
+> @@ -142,13 +169,14 @@ static void rockchip_pwm_disable(struct pwm_chi=
+p *chip, struct pwm_device *pwm)
+>   {
+>   	struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
+>  =20
+> -	pc->data->set_enable(chip, false);
+> +	pc->data->set_enable(chip, pwm, false);
+>  =20
+>   	clk_disable(pc->clk);
+>   }
+>  =20
+>   static const struct pwm_ops rockchip_pwm_ops =3D {
+>   	.config =3D rockchip_pwm_config,
+> +	.set_polarity =3D rockchip_pwm_set_polarity,
+>   	.enable =3D rockchip_pwm_enable,
+>   	.disable =3D rockchip_pwm_disable,
+>   	.owner =3D THIS_MODULE,
+> @@ -173,6 +201,7 @@ static const struct rockchip_pwm_data pwm_data_v2=
+ =3D {
+>   		.ctrl =3D 0x0c,
+>   	},
+>   	.prescaler =3D 1,
+> +	.has_invert =3D true,
+>   	.set_enable =3D rockchip_pwm_set_enable_v2,
+>   };
+>  =20
+> @@ -184,6 +213,7 @@ static const struct rockchip_pwm_data pwm_data_vo=
+p =3D {
+>   		.ctrl =3D 0x00,
+>   	},
+>   	.prescaler =3D 1,
+> +	.has_invert =3D true,
+>   	.set_enable =3D rockchip_pwm_set_enable_v2,
+>   };
+>  =20
+> @@ -230,6 +260,10 @@ static int rockchip_pwm_probe(struct platform_de=
+vice *pdev)
+>   	pc->chip.ops =3D &rockchip_pwm_ops;
+>   	pc->chip.base =3D -1;
+>   	pc->chip.npwm =3D 1;
+> +	if (pc->data->has_invert) {
+> +		pc->chip.of_xlate =3D of_pwm_xlate_with_flags;
+> +		pc->chip.of_pwm_n_cells =3D 3;
+> +	}
+>  =20
+>   	ret =3D pwmchip_add(&pc->chip);
+>   	if (ret < 0) {
+
+--=20
+Best regards,
+Caesar
+
+
