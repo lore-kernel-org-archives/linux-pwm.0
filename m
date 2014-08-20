@@ -1,287 +1,88 @@
-From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH 3/3] ARM: at91/tclib: mask interruptions at shutdown and
- probe
-Date: Wed, 20 Aug 2014 01:01:30 +0200
-Message-ID: <20140820010130.10974326@bbrezillon>
-References: <1408486072-19268-1-git-send-email-gael.portay@gmail.com>
-	<1408486072-19268-4-git-send-email-gael.portay@gmail.com>
-	<776D4128-09AC-418C-A710-28A2522D1D63@jcrosoft.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 2/4] pwm: rockchip: Allow polarity invert on rk3288
+Date: Wed, 20 Aug 2014 08:09:04 +0200
+Message-ID: <20140820060903.GE13793@ulmo>
+References: <1408381749-14156-1-git-send-email-dianders@chromium.org>
+ <1408381749-14156-3-git-send-email-dianders@chromium.org>
+ <20140819071857.GD12859@ulmo>
+ <CAD=FV=Uvx3PMJRdnm4FKWWx4h3sN0Mn1yG6v245HnKur_3vgqQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Yb+qhiCg54lqZFXW"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:34048 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751186AbaHSXBe convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 19 Aug 2014 19:01:34 -0400
-In-Reply-To: <776D4128-09AC-418C-A710-28A2522D1D63@jcrosoft.com>
+Received: from mail-wi0-f173.google.com ([209.85.212.173]:41366 "EHLO
+	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750870AbaHTGJI (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 20 Aug 2014 02:09:08 -0400
+Content-Disposition: inline
+In-Reply-To: <CAD=FV=Uvx3PMJRdnm4FKWWx4h3sN0Mn1yG6v245HnKur_3vgqQ@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Cc: =?UTF-8?B?R2HDq2w=?= PORTAY <gael.portay@gmail.com>, Arnd Bergmann <arnd@arndb.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas FERRE <nicolas.ferre@atmel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Doug Anderson <dianders@chromium.org>
+Cc: Heiko Stuebner <heiko@sntech.de>, Caesar Wang <caesar.wang@rock-chips.com>, Sonny Rao <sonnyrao@chromium.org>, Olof Johansson <olof@lixom.net>, Eddie Cai <eddie.cai@rock-chips.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-Hi Jean-Christophe,
 
-On Wed, 20 Aug 2014 06:11:17 +0800
-Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com> wrote:
+--Yb+qhiCg54lqZFXW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Hi,
+On Tue, Aug 19, 2014 at 09:05:20AM -0700, Doug Anderson wrote:
+> On Tue, Aug 19, 2014 at 12:18 AM, Thierry Reding <thierry.reding@gmail.co=
+m> wrote:
+> > On Mon, Aug 18, 2014 at 10:09:07AM -0700, Doug Anderson wrote:
+[...]
+> >> @@ -74,10 +78,14 @@ static void rockchip_pwm_set_enable_v2(struct pwm_=
+chip *chip, bool enable)
+> >>  {
+> >>       struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
+> >>       u32 enable_conf =3D PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABL=
+E |
+> >> -                       PWM_CONTINUOUS | PWM_DUTY_POSITIVE |
+> >> -                       PWM_INACTIVE_NEGATIVE;
+> >> +                       PWM_CONTINUOUS;
+> >>       u32 val;
+> >>
+> >> +     if (pc->polarity =3D=3D PWM_POLARITY_INVERSED)
+> >> +             enable_conf |=3D PWM_DUTY_NEGATIVE | PWM_INACTIVE_POSITI=
+VE;
+> >> +     else
+> >> +             enable_conf |=3D PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATI=
+VE;
+> >
+> > I have a feeling you're going to answer the above question with: "Becau=
+se
+> > it's needed here". If so, my reply would be: "Then this function should
+> > take a struct pwm_device instead of struct pwm_chip."
 >=20
-> 	This is a bit weird as the clock of the TC should be off and the irq=
- free
->=20
-> 	so this should never happened we need to investigate more why this a=
-ppend
+> OK.  I've chosen to have it take a pwm_device AND a pwm_chip.  It is a
+> little redundant because a pwm_device has a pointer to its pwm_chip,
+> but it follows the lead of all of the callbacks in "struct pwm_ops".
+> If you'd like me to spin it to take only a pwm_device I'm happy to.
 
-I may have found the source of this bug.
+No, that's fine.
 
-As Gael stated, when you're kexec-ing a new kernel your previous kernel
-could be using the tbc_clksrc driver (and especially the clkevent
-device). Thus the kernel might have planned a timer event and then been
-asked to shutdown the machine (requested by the kexec code).
-In this case the AIC interrupt connected to the TC Block is disabled
-but not the interrupts within the TCB IP (IDR registers), possibly
-leaving a pending interrupt before booting the new kernel.
+Thierry
 
-When the tcb_clksrc driver is loaded by the new kernel it enables the
-interrupt line by calling setup_irq [1] while the clockevent device is
-not registered yet [2]. Thus the event_handler is still NULL when the
-AIC line connected to the TCB is unmasked. Remember that an interrupt
-is still pending on this HW block, which will lead to an immediate call
-to the ch2_irq handler, which tries to call the event_handler, which in
-turns is NULL because clkevent device registration has not taken place
-at this moment =3D> Kernel panic.
-ITOH, we can't register the clkevent device before the irq handler is
-set up, because we should be ready to handle clkevent request at the
-time clockevents_config_and_register is called.
+--Yb+qhiCg54lqZFXW
+Content-Type: application/pgp-signature
 
-This leaves two solution:
- 1) disable the TCB irqs (using TCB IDR registers) before calling
- setup_irq in the tcb_clksrc driver
- 2) disable the TCB irqs at the tclib level (as proposed by Gael)
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-I prefer solution #2 because it fixes the bug for all TCB users (not
-just the tcb_clksrc driver).
+iQIcBAEBAgAGBQJT9Dt/AAoJEN0jrNd/PrOhWtMP/1F8/L5PlM9ONIGPDRuQEE36
+zrTO06BfTklEeFc7PULQGoIkvG+MNEy08qZrY+erWGEMSBIM7SnVKl8UfaZ5F9xe
+s4y0nz7thY9hkF9ltB7n/tjmJlAEzgkwvLH0MoqQUKtPgzOjMP+9gOx4g3//4dA3
+exg+yjTi85+KEjd9JEzTRdN1D0eF+p1jBgFR3Cx+I8GURETZtIHc25Ay0zPcwv3H
+5Z9QnSlXLaJHBFxuCyWhlGSdYn511cOcjb54oisixMAnsT/9lhd5GDjmzkuKFFRZ
+ZKwm/BjgsCQpdcBf8FSUkKd+HqdA0qi7hn1GfbaG8AGRYF6CCiKWky+JDUPKVb6K
+Mc+mD7AvYiyojsZzocmfH/eoMD/mpakPsqwyZSUoc/YaVwyPOdO/z3SjC+NTYhjM
+1plJipdC6oFC2DKZE/A5YCo7MIjtUB94W9kZ2p7tjrP0Rihn6JvWi9xdohZiOUR0
+WxrFAP9zN82w6Q570cH5f8ji1yMj9GLHkrNjdJbvW2qZzteUlI2/v5+pTHpaS1H9
+PbFtL2Ae0zmQVQXptcwtDRdPaMLy0+wcZTw0cZFRFjJedk/e305Q0mHhUFlMbE9O
+ZzQi9uhvtk3XTwSlHdWiWL8os35UqhkjsJd/IFtkm+aAVj83TXAGQSlrmdJRkEal
+Z6X814UYdzk+mWaw3a0d
+=JJEc
+-----END PGP SIGNATURE-----
 
-Best Regards,
-
-Boris
-
-[1]http://lxr.free-electrons.com/source/drivers/clocksource/tcb_clksrc.=
-c#L207
-[2]http://lxr.free-electrons.com/source/drivers/clocksource/tcb_clksrc.=
-c#L211
-
->=20
-> Best Regards,
-> J.
-> On Aug 20, 2014, at 6:07 AM, Ga=C3=ABl PORTAY <gael.portay@gmail.com>=
- wrote:
->=20
-> >=20
-> > Shutdown properly the timer counter block by masking interruptions.=
- Otherwise,
-> > a segmentation may happen when kexec-ing a new kernel (see backtrac=
-e below).
-> > An interruption may happen before the handler is set, leading to a =
-kernel
-> > segmentation fault.
-> >=20
-> > Furthermore, we make sure the interruptions are masked when the dri=
-ver is
-> > initialized. This will prevent freshly kexec-ed kernel from crashin=
-g when
-> > launched from a kernel which does not properly mask interruptions a=
-t shutdown.
-> >=20
-> > The backtrace below happened after kexec-ing a new kernel, from a k=
-ernel
-> > that did not shut down properly leaving interruptions unmasked.
-> >=20
-> > Unable to handle kernel NULL pointer dereference at virtual address=
- 00000000
-> > pgd =3D c0004000
-> > [00000000] *pgd=3D00000000
-> > Internal error: Oops: 80000005 [#1] ARM
-> > Modules linked in:
-> > CPU: 0 PID: 1 Comm: swapper Not tainted 3.16.0+ #144
-> > task: c1828aa0 ti: c182a000 task.ti: c182a000
-> > PC is at 0x0
-> > LR is at ch2_irq+0x28/0x30
-> > pc : [<00000000>]    lr : [<c01db904>]    psr: 000000d3
-> > sp : c182bd38  ip : c182bd48  fp : c182bd44
-> > r10: c0373390  r9 : c1825b00  r8 : 60000053
-> > r7 : 00000000  r6 : 00000000  r5 : 00000013  r4 : c036e800
-> > r3 : 00000000  r2 : 00002004  r1 : c036e760  r0 : c036e760
-> > Flags: nzcv  IRQs off  FIQs off  Mode SVC_32  ISA ARM  Segment kern=
-el
-> > Control: 0005317f  Table: 20004000  DAC: 00000017
-> > Process swapper (pid: 1, stack limit =3D 0xc182a1c0)
-> > Stack: (0xc182bd38 to 0xc182c000)
-> > bd20:                                                       c182bd7=
-c c182bd48
-> > bd40: c0045430 c01db8ec 00000000 c18c6f40 c182bd74 c1825b00 c035cec=
-4 00000000
-> > bd60: c182be2c 60000053 c1825b34 00000000 c182bd94 c182bd80 c004557=
-0 c0045408
-> > bd80: 00000000 c1825b00 c182bdac c182bd98 c0047f34 c0045550 0000001=
-3 c036619c
-> > bda0: c182bdc4 c182bdb0 c0044da4 c0047e98 0000007f 00000013 c182bde=
-4 c182bdc8
-> > bdc0: c0009e34 c0044d8c fefff000 c0046728 60000053 ffffffff c182bdf=
-4 c182bde8
-> > bde0: c00086a8 c0009ddc c182be74 c182bdf8 c000cb80 c0008674 0000000=
-0 00000013
-> > be00: 00000000 00014200 c1825b00 c036e800 00000013 c035ed98 6000005=
-3 c1825b34
-> > be20: 00000000 c182be74 c182be20 c182be40 c0047994 c0046728 6000005=
-3 ffffffff
-> > be40: 00000013 c036e800 c182be64 c1825b00 00000013 c036e800 c035ed9=
-8 c03874bc
-> > be60: 00000004 c036e700 c182be94 c182be78 c004689c c0046398 c036e76=
-0 c18c6080
-> > be80: 00000000 c035ed10 c182bedc c182be98 c0348b08 c004684c 0000000=
-c c034dac8
-> > bea0: 004c4b3f c028c338 c036e760 00000013 c014ecc8 c18e67e0 c035b9c=
-0 c0348884
-> > bec0: c035b9c0 c182a020 00000000 00000000 c182bf54 c182bee0 c00089f=
-c c0348894
-> > bee0: c00da51c c1ffcc78 c182bf0c c182bef8 c002d100 c002d09c c1ffcc7=
-8 00000000
-> > bf00: c182bf54 c182bf10 c002d308 c0336570 c182bf3c c0334e44 0000000=
-3 00000003
-> > bf20: 00000030 c0334b44 c0044d74 00000003 00000003 c034dac8 c0350a9=
-4 c0373440
-> > bf40: c0373440 00000030 c182bf94 c182bf58 c0336d24 c000890c 0000000=
-3 00000003
-> > bf60: c0336560 c182bf64 c182bf64 6e616e0d 00000000 c0272fc8 0000000=
-0 00000000
-> > bf80: 00000000 00000000 c182bfac c182bf98 c0272fd8 c0336bd8 c182a00=
-0 00000000
-> > bfa0: 00000000 c182bfb0 c00095d0 c0272fd8 00000000 00000000 0000000=
-0 00000000
-> > bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 0000000=
-0 00000000
-> > bfe0: 00000000 00000000 00000000 00000000 00000013 00000000 374d27c=
-d 33cc33e4
-> > Backtrace:
-> > [<c01db8dc>] (ch2_irq) from [<c0045430>] (handle_irq_event_percpu+0=
-x38/0x148)
-> > [<c00453f8>] (handle_irq_event_percpu) from [<c0045570>] (handle_ir=
-q_event+0x30/0x40)
-> > r10:00000000 r9:c1825b34 r8:60000053 r7:c182be2c r6:00000000 r5:c03=
-5cec4
-> > r4:c1825b00
-> > [<c0045540>] (handle_irq_event) from [<c0047f34>] (handle_fasteoi_i=
-rq+0xac/0x11c)
-> > r4:c1825b00 r3:00000000
-> > [<c0047e88>] (handle_fasteoi_irq) from [<c0044da4>] (generic_handle=
-_irq+0x28/0x38)
-> > r5:c036619c r4:00000013
-> > [<c0044d7c>] (generic_handle_irq) from [<c0009e34>] (handle_IRQ+0x6=
-8/0x88)
-> > r4:00000013 r3:0000007f
-> > [<c0009dcc>] (handle_IRQ) from [<c00086a8>] (at91_aic_handle_irq+0x=
-44/0x4c)
-> > r6:ffffffff r5:60000053 r4:c0046728 r3:fefff000
-> > [<c0008664>] (at91_aic_handle_irq) from [<c000cb80>] (__irq_svc+0x4=
-0/0x4c)
-> > Exception stack(0xc182bdf8 to 0xc182be40)
-> > bde0:                                                       0000000=
-0 00000013
-> > be00: 00000000 00014200 c1825b00 c036e800 00000013 c035ed98 6000005=
-3 c1825b34
-> > be20: 00000000 c182be74 c182be20 c182be40 c0047994 c0046728 6000005=
-3 ffffffff
-> > [<c0046388>] (__setup_irq) from [<c004689c>] (setup_irq+0x60/0x8c)
-> > r10:c036e700 r9:00000004 r8:c03874bc r7:c035ed98 r6:c036e800 r5:000=
-00013
-> > r4:c1825b00
-> > [<c004683c>] (setup_irq) from [<c0348b08>] (tcb_clksrc_init+0x284/0=
-x31c)
-> > r6:c035ed10 r5:00000000 r4:c18c6080 r3:c036e760
-> > [<c0348884>] (tcb_clksrc_init) from [<c00089fc>] (do_one_initcall+0=
-x100/0x1b4)
-> > r10:00000000 r9:00000000 r8:c182a020 r7:c035b9c0 r6:c0348884 r5:c03=
-5b9c0
-> > r4:c18e67e0
-> > [<c00088fc>] (do_one_initcall) from [<c0336d24>] (kernel_init_freea=
-ble+0x15c/0x224)
-> > r9:00000030 r8:c0373440 r7:c0373440 r6:c0350a94 r5:c034dac8 r4:0000=
-0003
-> > [<c0336bc8>] (kernel_init_freeable) from [<c0272fd8>] (kernel_init+=
-0x10/0xec)
-> > r9:00000000 r8:00000000 r7:00000000 r6:00000000 r5:c0272fc8 r4:0000=
-0000
-> > [<c0272fc8>] (kernel_init) from [<c00095d0>] (ret_from_fork+0x14/0x=
-24)
-> > r4:00000000 r3:c182a000
-> > Code: bad PC value
-> > ---[ end trace 5b30f0017e282e47 ]---
-> > Kernel panic - not syncing: Fatal exception in interrupt
-> >=20
-> > Signed-off-by: Ga=C3=ABl PORTAY <gael.portay@gmail.com>
-> > ---
-> > drivers/misc/atmel_tclib.c | 16 ++++++++++++++++
-> > 1 file changed, 16 insertions(+)
-> >=20
-> > diff --git a/drivers/misc/atmel_tclib.c b/drivers/misc/atmel_tclib.=
-c
-> > index d505d1e..a680151 100644
-> > --- a/drivers/misc/atmel_tclib.c
-> > +++ b/drivers/misc/atmel_tclib.c
-> > @@ -109,6 +109,7 @@ static int __init tc_probe(struct platform_devi=
-ce *pdev)
-> > 	struct clk	*clk;
-> > 	int		irq;
-> > 	struct resource	*r;
-> > +	unsigned int	i;
-> >=20
-> > 	irq =3D platform_get_irq(pdev, 0);
-> > 	if (irq < 0)
-> > @@ -157,18 +158,33 @@ static int __init tc_probe(struct platform_de=
-vice *pdev)
-> > 	if (tc->irq[2] < 0)
-> > 		tc->irq[2] =3D irq;
-> >=20
-> > +	for (i =3D 0; i < 3; i++)
-> > +		__raw_writel(0xff, tc->regs + ATMEL_TC_REG(i, IDR));
-> > +
-> > 	spin_lock(&tc_list_lock);
-> > 	list_add_tail(&tc->node, &tc_list);
-> > 	spin_unlock(&tc_list_lock);
-> >=20
-> > +	platform_set_drvdata(pdev, tc);
-> > +
-> > 	return 0;
-> > }
-> >=20
-> > +static void tc_shutdown (struct platform_device *pdev)
-> > +{
-> > +	int i;
-> > +	struct atmel_tc *tc =3D platform_get_drvdata(pdev);
-> > +
-> > +	for (i =3D 0; i < 3; i++)
-> > +		__raw_writel(0xff, tc->regs + ATMEL_TC_REG(i, IDR));
-> > +}
-> > +
-> > static struct platform_driver tc_driver =3D {
-> > 	.driver =3D {
-> > 		.name	=3D "atmel_tcb",
-> > 		.of_match_table	=3D of_match_ptr(atmel_tcb_dt_ids),
-> > 	},
-> > +	.shutdown =3D tc_shutdown,
-> > };
-> >=20
-> > static int __init tc_init(void)
-> > --=20
-> > 1.9.3
-> >=20
->=20
-
-
-
---=20
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+--Yb+qhiCg54lqZFXW--
