@@ -1,82 +1,76 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm-backlight: fix bogus request for GPIO#0 when
- instantiated from DT
-Date: Wed, 20 Aug 2014 09:32:35 +0200
-Message-ID: <20140820073234.GI13793@ulmo>
-References: <1408516716-28828-1-git-send-email-LW@KARO-electronics.de>
+Subject: Re: [PATCH 2/3] ARM: at91/tclib: move initialization from alloc to
+ probe
+Date: Wed, 20 Aug 2014 09:39:29 +0200
+Message-ID: <20140820073929.GJ13793@ulmo>
+References: <1408486072-19268-1-git-send-email-gael.portay@gmail.com>
+ <1408486072-19268-3-git-send-email-gael.portay@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="IR1Y5IvQhrKgS4e6"
+	protocol="application/pgp-signature"; boundary="Do4IU1xF/9sod/r6"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wg0-f49.google.com ([74.125.82.49]:58828 "EHLO
-	mail-wg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750861AbaHTHck (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 20 Aug 2014 03:32:40 -0400
+Received: from mail-wi0-f175.google.com ([209.85.212.175]:65081 "EHLO
+	mail-wi0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750789AbaHTHjd (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 20 Aug 2014 03:39:33 -0400
 Content-Disposition: inline
-In-Reply-To: <1408516716-28828-1-git-send-email-LW@KARO-electronics.de>
+In-Reply-To: <1408486072-19268-3-git-send-email-gael.portay@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lothar =?utf-8?Q?Wa=C3=9Fmann?= <LW@KARO-electronics.de>
-Cc: Bryan Wu <cooloney@gmail.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jingoo Han <jg1.han@samsung.com>, Lee Jones <lee.jones@linaro.org>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: =?utf-8?B?R2HDq2w=?= PORTAY <gael.portay@gmail.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Thomas Gleixner <tglx@linutronix.de>, Boris Brezillon <boris.brezillon@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
 
 
---IR1Y5IvQhrKgS4e6
+--Do4IU1xF/9sod/r6
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 20, 2014 at 08:38:36AM +0200, Lothar Wa=C3=9Fmann wrote:
-> commit 257462dbf3ed ("pwm-backlight: switch to gpiod interface")
-> introduced a regression leading to acquiring a bogus GPIO-0 when
-> configured from DT without an 'enable-gpios' property.
-> The driver will happily accept the 0 initialized 'enable_gpio' member
-> of the struct platform_pwm_backlight_data as valid gpio number, and
-> request this GPIO as enable pin. In case of multiple driver instances,
-> the second will fail to register with the error message:
-> pwm-backlight backlight1.23: failed to request GPIO#0: -16
+On Wed, Aug 20, 2014 at 12:07:51AM +0200, Ga=C3=ABl PORTAY wrote:
+> Move resource retrieval from atmel_tc_alloc to tc_probe to avoid lately
+> reporting resource related issues when a TC block user request a TC block.
 >=20
-> Fix this by setting enable_gpio in the pdata struct to -EINVAL.
+> Moreover, resources retrieval are usually done in the probe function,
+> thus moving them add some consistency with other drivers.
 >=20
-> Signed-off-by: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
+> Initialization is done once, ie not every time a tc block is requested.
+> If it fails, the device is not appended to the list of tc blocks.
+>=20
+> Furhermore, the device id is retrieved at probe as well, avoiding parsing
+> DT every time the user requests of tc block.
+>=20
+> Signed-off-by: Ga=C3=ABl PORTAY <gael.portay@gmail.com>
 > ---
->  drivers/video/backlight/pwm_bl.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/p=
-wm_bl.c
-> index d7a3d13..e6ef6b4 100644
-> --- a/drivers/video/backlight/pwm_bl.c
-> +++ b/drivers/video/backlight/pwm_bl.c
-> @@ -172,7 +172,7 @@ static int pwm_backlight_parse_dt(struct device *dev,
->  		data->dft_brightness =3D value;
->  		data->max_brightness--;
->  	}
-> -
-> +	data->enable_gpio =3D -EINVAL;
+>  drivers/clocksource/tcb_clksrc.c |  2 +-
+>  drivers/misc/atmel_tclib.c       | 71 +++++++++++++---------------------=
+------
+>  drivers/pwm/pwm-atmel-tcb.c      |  2 +-
+>  include/linux/atmel_tc.h         |  8 +++--
+>  4 files changed, 29 insertions(+), 54 deletions(-)
 
-I'd prefer to keep the blank line for readability. Other than that:
+For the PWM driver part:
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
 
---IR1Y5IvQhrKgS4e6
+--Do4IU1xF/9sod/r6
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJT9E8SAAoJEN0jrNd/PrOhqdoQAI9+wA1wsYSEbkXrg9XDblJq
-YQcwDqEEeV8MhU26Jg5Yp68Dsiz2EH93O1rnwmLS0WKw75ql2jZw3lBvcM2UM5Lb
-qhN3r+MpO+arnXIPGHR//IPjD5V8Ug5fAwzkLpgjp0xzDnr3ecf/8TxzpX4uPDCh
-Xob5+O+RX1XQUkzwB2GEIY/UZ3gLnPHjm1hl03R8eVoK5luZjGwK355uGNJG8sfD
-lWoNw610nsLnxizUE5Nd2gJ1c7n3fwUEEth1rWEgLdRgx8WErmgknbDpsPI21Ra2
-RPchUB614zJ8LkNvaTYvSnDBjEkhgmxVAcNq794qWub8tKvAiDVg8sUsCZWdL0W9
-fu5mcxVksIAAwDcekqEkKInI5qRUzvJSWxi9nsrPF+bGHVdqyNVjWxybvcfwAdQm
-mxiya2hlgeJ8MXMTQWWggKVmpbPwRdsIUYNWrozQI3HogvMCU/bqQriR/wzL8iDg
-5/4YXAm7BbpdovAl8MruhWCIWBkr0xejV5B08TcqShkIPq9GLqXOzYnpzx0W1e4e
-oqSkfriZaWHqrJr1jjUbIRqplU9DIashceuLHzo2kgEiaf6jGpJE1hZHCMdmNETE
-O0rjcfiZ90myvOewTsNwFqJ/lgxkkXdywrrZrBWPIV4Skwe5Bq3HXb3NgKDFya0F
-RDCP4iHvx2YpA+c/w3pF
-=zqaJ
+iQIcBAEBAgAGBQJT9FCxAAoJEN0jrNd/PrOhjIkQAKTNA5QJJFXB674DxzLZRiWH
+61eiFkN2vUjw4KPcC4iDJzCCfE+N14GuvVKol/jW7xk8bcrDfu9TGLiqKVoxJqjf
+4wzqp/xsMaH8gPvhBIq6QQJ8CgyYUXI1xjwNoZAcUB0cOaZqxb6IKrzXmhVongXR
+PFr6wTawXQhRkbfJwYFkpYFwHZThbr55cxoAtJekf4K4iVmpORhQQMb5H9Xg8OJ1
+dPhBZ30FnmaL9AZdSPiNKaOiRLdYDJgV4xNDVtBezNGAlxlk9CRuYEBdJ+833Xwv
+o7dv6HsnBs6ZptdZOe7CFU3sxM/soEeW+rkWe2QDO4qLPQ/qAKtFfvDJC02iwJFd
+4HRdy7AlmqFocLGRn5ynpiJKrkP3GHAgO1eE71XaozIyDKzyyjZOqGpPGnwD1zhQ
+dL9sMLv535SYZs9A5JwVFUr/+tOi9LCXKYl2EBNuwt9pCAV/7/glGZidcqwFrjBi
+gDhZ70sWOC7JIbZbbl9fB0qQ6frrMOHQ+Dsjcc97iGJC4fnchLmHgI7nBDaVSWTw
+YamVWhCxr6g47RawRKkvYdT31+D66Uz9U9YcDpfeG27ELPwPHpkcBTLNi3DGs4HS
+c0qvBvD6Jc1heeKwlnPcrbHORfAI+RrTkVn6r2d8opEz3U9sOpCweZCAj5RwWACR
+H+ufU7vUwbrMaM8Mt1x4
+=QZF3
 -----END PGP SIGNATURE-----
 
---IR1Y5IvQhrKgS4e6--
+--Do4IU1xF/9sod/r6--
