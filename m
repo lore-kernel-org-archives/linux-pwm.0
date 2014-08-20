@@ -1,76 +1,102 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/3] ARM: at91/tclib: move initialization from alloc to
+From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH 3/3] ARM: at91/tclib: mask interruptions at shutdown and
  probe
-Date: Wed, 20 Aug 2014 09:39:29 +0200
-Message-ID: <20140820073929.GJ13793@ulmo>
+Date: Wed, 20 Aug 2014 10:14:22 +0200
+Message-ID: <20140820101422.3e8da816@bbrezillon>
 References: <1408486072-19268-1-git-send-email-gael.portay@gmail.com>
- <1408486072-19268-3-git-send-email-gael.portay@gmail.com>
+	<1408486072-19268-4-git-send-email-gael.portay@gmail.com>
+	<776D4128-09AC-418C-A710-28A2522D1D63@jcrosoft.com>
+	<20140820010130.10974326@bbrezillon>
+	<20140820073111.GH13793@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Do4IU1xF/9sod/r6"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wi0-f175.google.com ([209.85.212.175]:65081 "EHLO
-	mail-wi0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750789AbaHTHjd (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 20 Aug 2014 03:39:33 -0400
-Content-Disposition: inline
-In-Reply-To: <1408486072-19268-3-git-send-email-gael.portay@gmail.com>
+Received: from top.free-electrons.com ([176.31.233.9]:35722 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751170AbaHTIO0 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 20 Aug 2014 04:14:26 -0400
+In-Reply-To: <20140820073111.GH13793@ulmo>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?utf-8?B?R2HDq2w=?= PORTAY <gael.portay@gmail.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Thomas Gleixner <tglx@linutronix.de>, Boris Brezillon <boris.brezillon@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, =?UTF-8?B?R2HDq2w=?= PORTAY <gael.portay@gmail.com>, Arnd Bergmann <arnd@arndb.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas FERRE <nicolas.ferre@atmel.com>, Thomas Gleixner <tglx@linutronix.de>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+
+Hi Thierry,
+
+On Wed, 20 Aug 2014 09:31:13 +0200
+Thierry Reding <thierry.reding@gmail.com> wrote:
+
+> On Wed, Aug 20, 2014 at 01:01:30AM +0200, Boris BREZILLON wrote:
+> > Hi Jean-Christophe,
+> > 
+> > On Wed, 20 Aug 2014 06:11:17 +0800
+> > Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com> wrote:
+> > 
+> > > Hi,
+> > > 
+> > > 	This is a bit weird as the clock of the TC should be off and the irq free
+> > > 
+> > > 	so this should never happened we need to investigate more why this append
+> > 
+> > I may have found the source of this bug.
+> > 
+> > As Gael stated, when you're kexec-ing a new kernel your previous kernel
+> > could be using the tbc_clksrc driver (and especially the clkevent
+> > device). Thus the kernel might have planned a timer event and then been
+> > asked to shutdown the machine (requested by the kexec code).
+> > In this case the AIC interrupt connected to the TC Block is disabled
+> > but not the interrupts within the TCB IP (IDR registers), possibly
+> > leaving a pending interrupt before booting the new kernel.
+> > 
+> > When the tcb_clksrc driver is loaded by the new kernel it enables the
+> > interrupt line by calling setup_irq [1] while the clockevent device is
+> > not registered yet [2]. Thus the event_handler is still NULL when the
+> > AIC line connected to the TCB is unmasked. Remember that an interrupt
+> > is still pending on this HW block, which will lead to an immediate call
+> > to the ch2_irq handler, which tries to call the event_handler, which in
+> > turns is NULL because clkevent device registration has not taken place
+> > at this moment => Kernel panic.
+> > ITOH, we can't register the clkevent device before the irq handler is
+> > set up, because we should be ready to handle clkevent request at the
+> > time clockevents_config_and_register is called.
+> > 
+> > This leaves two solution:
+> >  1) disable the TCB irqs (using TCB IDR registers) before calling
+> >  setup_irq in the tcb_clksrc driver
+> >  2) disable the TCB irqs at the tclib level (as proposed by Gael)
+> > 
+> > I prefer solution #2 because it fixes the bug for all TCB users (not
+> > just the tcb_clksrc driver).
+> 
+> Wouldn't a more proper fix be to only enable the IRQ (setup_irq()) once
+> everything has properly been set up? That's certainly how all other
+> drivers are doing this. Generally I think it's best to assume that an
+> interrupt can fire at any point after it's been enabled, so everything
+> should be set up prior to enabling it.
+
+Sure. And, AFAIK, another common practice is to disable all interrupts
+and acknowledge all pending interrupts before registering a new irq
+handler to avoid inheriting peripheral dirty state from previous usage
+(either the bootloader, or the previous kernel when using kexec).
+
+This being said, I really think we should leave the HW in a clean state
+when shutdown is called. And disabling interrupts at the tclib level
+(in a shutdown callback) ensure that.
+
+> 
+> Also, does anyone know why this driver uses setup_irq() rather than the
+> more idiomatic request_irq()?
+
+Because nobody has sanitized this driver yet ;-).
+
+Best Regards,
+
+Boris
 
 
---Do4IU1xF/9sod/r6
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 20, 2014 at 12:07:51AM +0200, Ga=C3=ABl PORTAY wrote:
-> Move resource retrieval from atmel_tc_alloc to tc_probe to avoid lately
-> reporting resource related issues when a TC block user request a TC block.
->=20
-> Moreover, resources retrieval are usually done in the probe function,
-> thus moving them add some consistency with other drivers.
->=20
-> Initialization is done once, ie not every time a tc block is requested.
-> If it fails, the device is not appended to the list of tc blocks.
->=20
-> Furhermore, the device id is retrieved at probe as well, avoiding parsing
-> DT every time the user requests of tc block.
->=20
-> Signed-off-by: Ga=C3=ABl PORTAY <gael.portay@gmail.com>
-> ---
->  drivers/clocksource/tcb_clksrc.c |  2 +-
->  drivers/misc/atmel_tclib.c       | 71 +++++++++++++---------------------=
-------
->  drivers/pwm/pwm-atmel-tcb.c      |  2 +-
->  include/linux/atmel_tc.h         |  8 +++--
->  4 files changed, 29 insertions(+), 54 deletions(-)
-
-For the PWM driver part:
-
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
-
---Do4IU1xF/9sod/r6
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJT9FCxAAoJEN0jrNd/PrOhjIkQAKTNA5QJJFXB674DxzLZRiWH
-61eiFkN2vUjw4KPcC4iDJzCCfE+N14GuvVKol/jW7xk8bcrDfu9TGLiqKVoxJqjf
-4wzqp/xsMaH8gPvhBIq6QQJ8CgyYUXI1xjwNoZAcUB0cOaZqxb6IKrzXmhVongXR
-PFr6wTawXQhRkbfJwYFkpYFwHZThbr55cxoAtJekf4K4iVmpORhQQMb5H9Xg8OJ1
-dPhBZ30FnmaL9AZdSPiNKaOiRLdYDJgV4xNDVtBezNGAlxlk9CRuYEBdJ+833Xwv
-o7dv6HsnBs6ZptdZOe7CFU3sxM/soEeW+rkWe2QDO4qLPQ/qAKtFfvDJC02iwJFd
-4HRdy7AlmqFocLGRn5ynpiJKrkP3GHAgO1eE71XaozIyDKzyyjZOqGpPGnwD1zhQ
-dL9sMLv535SYZs9A5JwVFUr/+tOi9LCXKYl2EBNuwt9pCAV/7/glGZidcqwFrjBi
-gDhZ70sWOC7JIbZbbl9fB0qQ6frrMOHQ+Dsjcc97iGJC4fnchLmHgI7nBDaVSWTw
-YamVWhCxr6g47RawRKkvYdT31+D66Uz9U9YcDpfeG27ELPwPHpkcBTLNi3DGs4HS
-c0qvBvD6Jc1heeKwlnPcrbHORfAI+RrTkVn6r2d8opEz3U9sOpCweZCAj5RwWACR
-H+ufU7vUwbrMaM8Mt1x4
-=QZF3
------END PGP SIGNATURE-----
-
---Do4IU1xF/9sod/r6--
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
