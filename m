@@ -1,57 +1,108 @@
-From: Alan Cox <alan@linux.intel.com>
-Subject: Re: [PATCH v4 0/2] pwm: lpss: split driver to core and probe drivers
-Date: Wed, 20 Aug 2014 18:57:59 +0100
-Message-ID: <1408557479.3270.8.camel@acox1-desk.ger.corp.intel.com>
-References: <1408465056-8605-1-git-send-email-andriy.shevchenko@linux.intel.com>
-	 <20140820101248.GH15414@ulmo>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:7774 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750851AbaHTR6d (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 20 Aug 2014 13:58:33 -0400
-In-Reply-To: <20140820101248.GH15414@ulmo>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Doug Anderson <dianders@chromium.org>
+Subject: [PATCH v4 2/4] ARM: rockchip: rk3288: Switch to use the proper PWM IP
+Date: Wed, 20 Aug 2014 11:54:00 -0700
+Message-ID: <1408560842-3746-3-git-send-email-dianders@chromium.org>
+References: <1408560842-3746-1-git-send-email-dianders@chromium.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1408560842-3746-1-git-send-email-dianders@chromium.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Heiko Stuebner <heiko@sntech.de>, Thierry Reding <thierry.reding@gmail.com>, Caesar Wang <caesar.wang@rock-chips.com>
+Cc: Sonny Rao <sonnyrao@chromium.org>, olof@lixom.net, Eddie Cai <eddie.cai@rock-chips.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Doug Anderson <dianders@chromium.org>, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-On Wed, 2014-08-20 at 12:12 +0200, Thierry Reding wrote:
-> On Tue, Aug 19, 2014 at 07:17:34PM +0300, Andy Shevchenko wrote:
-> > This small series makes the architecture of pwm-lpss driver cleaner.
-> > 
-> > Since v3:
-> > - rebased on top of recent linux-next
-> > - rebased on top of Alan's patch for Braswell
-> > 
-> > Since v2:
-> > - fix one more typo in Kconfig (tested with one line removed in my config now)
-> > 
-> > Since v1:
-> > - hide struct definition in the core part
-> > - rename pwm-lpss-plat to pwm-lpss-platform
-> > - fix Kconfig dependencies and other typos
-> > - add Mika's Reviewed-by tag
-> > - fix spelling in the commit messages
-> > 
-> > Andy Shevchenko (2):
-> >   pwm: lpss: properly split driver to parts
-> >   pwm: lpss: pci: move to use pcim_enable_device()
-> > 
-> >  drivers/pwm/Kconfig             |  21 ++++++-
-> >  drivers/pwm/Makefile            |   2 +
-> >  drivers/pwm/pwm-lpss-pci.c      |  65 +++++++++++++++++++
-> >  drivers/pwm/pwm-lpss-platform.c |  69 ++++++++++++++++++++
-> >  drivers/pwm/pwm-lpss.c          | 136 +++-------------------------------------
-> >  drivers/pwm/pwm-lpss.h          |  32 ++++++++++
-> >  6 files changed, 198 insertions(+), 127 deletions(-)
-> >  create mode 100644 drivers/pwm/pwm-lpss-pci.c
-> >  create mode 100644 drivers/pwm/pwm-lpss-platform.c
-> >  create mode 100644 drivers/pwm/pwm-lpss.h
-> 
-> Yea or nay, Alan?
+The rk3288 SoC has an option to switch all of the PWMs in the system
+between the old IP block and the new IP block.  The rk3288 PWM driver
+is written for the new block, so make sure that we enable the new
+block in the GRF (general register file) when the PWM driver probes.
 
-Context ?
+We emulate the solution to this problem used in i2c-rk3x.c.  One
+difference for the PWM is that there's a single "enable new IP" that's
+used for all 4 PWMs.  That means we set this bit 4 times if we've got
+all 4 PWMs enabled.  That shouldn't hurt.
 
+Signed-off-by: Doug Anderson <dianders@chromium.org>
+---
+Changes in v4:
+- Totally rewrote to go in the PWM driver.
+- Reordered IP switch to be atop invert patch.
+
+Changes in v3: None
+Changes in v2:
+- Check for failed ioremap()
+
+ .../devicetree/bindings/pwm/pwm-rockchip.txt       |  4 +++
+ drivers/pwm/pwm-rockchip.c                         | 29 ++++++++++++++++++++++
+ 2 files changed, 33 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt b/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
+index b8be3d0..39190ec 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
+@@ -10,6 +10,10 @@ Required properties:
+  - #pwm-cells: must be 2 (rk2928) or 3 (rk3288). See pwm.txt in this directory
+    for a description of the cell format.
+ 
++Required for "rockchip,rk3288-pwm":
++ - rockchip,grf : the phandle of the syscon node for the general register
++		  file (GRF)
++
+ Example:
+ 
+ 	pwm0: pwm@20030000 {
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index 9442df2..08cbde6 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -16,7 +16,12 @@
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/pwm.h>
++#include <linux/regmap.h>
+ #include <linux/time.h>
++#include <linux/mfd/syscon.h>
++
++#define RK3288_GRF_PWM_ENABLE_OFFSET	0x024c
++#define RK3288_GRF_PWM_ENABLE_BIT	0
+ 
+ #define PWM_CTRL_TIMER_EN	(1 << 0)
+ #define PWM_CTRL_OUTPUT_EN	(1 << 3)
+@@ -231,6 +236,7 @@ MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);
+ 
+ static int rockchip_pwm_probe(struct platform_device *pdev)
+ {
++	struct device_node *np = pdev->dev.of_node;
+ 	const struct of_device_id *id;
+ 	struct rockchip_pwm_chip *pc;
+ 	struct resource *r;
+@@ -240,6 +246,29 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 	if (!id)
+ 		return -EINVAL;
+ 
++	/*
++	 * Switch to new interface on rk3288.
++	 * The control bit is located in the GRF register space.
++	 */
++	if (of_device_is_compatible(np, "rockchip,rk3288-pwm")) {
++		struct regmap *grf;
++
++		grf = syscon_regmap_lookup_by_phandle(np, "rockchip,grf");
++		if (IS_ERR(grf)) {
++			dev_err(&pdev->dev, "Missing rockchip,grf property\n");
++			return PTR_ERR(grf);
++		}
++
++		/* Set bit 16 for write mask, 0 for switch to new IP */
++		ret = regmap_write(grf, RK3288_GRF_PWM_ENABLE_OFFSET,
++				   BIT(RK3288_GRF_PWM_ENABLE_BIT + 16) |
++				   BIT(RK3288_GRF_PWM_ENABLE_BIT));
++		if (ret != 0) {
++			dev_err(&pdev->dev, "Could not access GRF: %d\n", ret);
++			return ret;
++		}
++	}
++
+ 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+ 	if (!pc)
+ 		return -ENOMEM;
+-- 
+2.1.0.rc2.206.gedb03e5
