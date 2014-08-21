@@ -1,37 +1,75 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 3/3] ARM: at91/tclib: mask interruptions at shutdown and probe
-Date: Thu, 21 Aug 2014 05:32:59 +0200
-Message-ID: <201408210533.00196.arnd@arndb.de>
-References: <1408486072-19268-1-git-send-email-gael.portay@gmail.com> <1408486072-19268-4-git-send-email-gael.portay@gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v3 2/4] pwm: rockchip: Allow polarity invert on rk3288
+Date: Thu, 21 Aug 2014 08:40:27 +0200
+Message-ID: <20140821064026.GC4486@ulmo>
+References: <1408464476-28316-1-git-send-email-dianders@chromium.org>
+ <1408464476-28316-3-git-send-email-dianders@chromium.org>
+ <20140820100447.GG15414@ulmo>
+ <CAD=FV=U9gOiY=4s7WmAQcm0n9s67nWdqQ3A0L2B7Dg83dNotjQ@mail.gmail.com>
+ <387c82a0-efeb-431d-b8a5-200f24bc47ff@email.android.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="O3RTKUHj+75w1tg5"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.10]:56205 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750995AbaHUDdp (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 20 Aug 2014 23:33:45 -0400
-In-Reply-To: <1408486072-19268-4-git-send-email-gael.portay@gmail.com>
+Received: from mail-we0-f181.google.com ([74.125.82.181]:65053 "EHLO
+	mail-we0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750867AbaHUGkb (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 21 Aug 2014 02:40:31 -0400
+Content-Disposition: inline
+In-Reply-To: <387c82a0-efeb-431d-b8a5-200f24bc47ff@email.android.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?utf-8?q?Ga=C3=ABl_PORTAY?= <gael.portay@gmail.com>
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Boris Brezillon <boris.brezillon@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Doug Anderson <dianders@chromium.org>, Heiko Stuebner <heiko@sntech.de>, Caesar Wang <caesar.wang@rock-chips.com>, Sonny Rao <sonnyrao@chromium.org>, Olof Johansson <olof@lixom.net>, Eddie Cai <eddie.cai@rock-chips.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, hpa@zytor.com
 
-On Wednesday 20 August 2014, Ga=C3=ABl PORTAY wrote:
-> +static void tc_shutdown (struct platform_device *pdev)
-> +{
-> +       int i;
-> +       struct atmel_tc *tc =3D platform_get_drvdata(pdev);
-> +
-> +       for (i =3D 0; i < 3; i++)
-> +               __raw_writel(0xff, tc->regs + ATMEL_TC_REG(i, IDR));
-> +}
 
-In general, __raw_readl/__raw_writel are not meant to be called by devi=
-ce drivers.
+--O3RTKUHj+75w1tg5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Just use readl/writel by default, or readl_relaxed/writel_relaxed if th=
-e code is
-performance critical and you are sure it is safe to use them.
+On Wed, Aug 20, 2014 at 02:29:17PM -0500, Dmitry Torokhov wrote:
+> On August 20, 2014 1:54:11 PM CDT, Doug Anderson <dianders@chromium.org> =
+wrote:
+> >On Wed, Aug 20, 2014 at 3:04 AM, Thierry Reding
+> ><thierry.reding@gmail.com> wrote:
+> >> On Tue, Aug 19, 2014 at 09:07:54AM -0700, Doug Anderson wrote:
+> >>> The rk3288 has the ability to invert=20
+> >>> +     struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
+> >>> +
+> >>> +     if (!pc->data->has_invert)
+> >>> +             return -ENOSYS;
+> >>> +
+>=20
+> At the kernel summit hpa also mentioned that ENOSYS should only be
+> used for missing syscalls. Not sure what error code would suit better
+> here though...
 
-	Arnd
+I'd be interested in the rationale why ENOSYS shouldn't be used within
+the kernel. As long as it doesn't leak to userspace where it could
+possibly confuse applications I don't see any harm in using it.
+
+Thierry
+
+--O3RTKUHj+75w1tg5
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJT9ZRaAAoJEN0jrNd/PrOh/IcP/1CZ4mxFlhF2tnA60jGftEDr
+wvA6pH76QehJcZ78TNPlmXBHTSMnggnfWDk3hPnHWcfaSwQv4ad1s+4zjdslTGcD
+jcJbgjjEIPCxU5O/JkXQeyUQ3Wv8Dqw4m12vNvQ4JUUCRdaG7bM+KbWnyjDTHxTs
+HxojmqdzFXR1pKd2obx6tzladGlLdvJ60Outp3z/01EhRqQvTPnI2KmG8y73eTt7
+dEfJrU0NvUKC3Xy74u+xXHQPlR0zAuSvaG5ur6AYy0LQNinEhvLY63BKgds3tBJx
+KlVThiYgHgooHcmil2Pk7vgIubTjrgb1EB1qk47hDYmdCuZjrzOVoGPZheK4Capj
+HFQ+6/HXSdm9SOL1bNm5bBbwzkNoNwENLBRH6xwaDNe925bKnQWHPGkQn4tYqPNQ
+NO/je2vDMlXXRsKL6KokyzeVP0pVsgcBQPAdkOYhOj9LIQd3UIaziplSsKQnS8dt
+w1fw3RHIGFxXO1vGP6shNgbvf4lJEjmphK8G+j/bpe7Fl5p2WSLDgBXNn7fx0gKa
+y/LS8D92qL6lw4Gda+gik5wkRZl1gLCBmpUTjGJIBCTKzzjOViS59HAI4KeVJkQr
+X3FOrcKREA/a+Gl3TtM6MHvXOr9X+kPprkNx5lX85GqpEnN4LlH7wm4aDW2X0i58
+kranc3xsm5/7TTQYP+1z
+=J8A6
+-----END PGP SIGNATURE-----
+
+--O3RTKUHj+75w1tg5--
