@@ -1,99 +1,176 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 0/2] pwm: lpss: split driver to core and probe drivers
-Date: Thu, 21 Aug 2014 08:43:06 +0200
-Message-ID: <20140821064305.GD4486@ulmo>
-References: <1408465056-8605-1-git-send-email-andriy.shevchenko@linux.intel.com>
- <20140820101248.GH15414@ulmo>
- <1408557479.3270.8.camel@acox1-desk.ger.corp.intel.com>
+From: Ludovic Desroches <ludovic.desroches@atmel.com>
+Subject: Re: [PATCH v4 00/11] drm: add support for Atmel HLCDC Display
+ Controller
+Date: Thu, 21 Aug 2014 10:16:19 +0200
+Message-ID: <20140821081619.GZ2452@ldesroches-Latitude-E6320>
+References: <1406034695-15534-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="u65IjBhB3TIa72Vp"
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wg0-f49.google.com ([74.125.82.49]:61881 "EHLO
-	mail-wg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751207AbaHUGnK (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 21 Aug 2014 02:43:10 -0400
-Received: by mail-wg0-f49.google.com with SMTP id k14so8881937wgh.32
-        for <linux-pwm@vger.kernel.org>; Wed, 20 Aug 2014 23:43:08 -0700 (PDT)
+Received: from eusmtp01.atmel.com ([212.144.249.242]:19662 "EHLO
+	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753792AbaHUIQM (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 21 Aug 2014 04:16:12 -0400
 Content-Disposition: inline
-In-Reply-To: <1408557479.3270.8.camel@acox1-desk.ger.corp.intel.com>
+In-Reply-To: <1406034695-15534-1-git-send-email-boris.brezillon@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Alan Cox <alan@linux.intel.com>
-Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Clark <robdclark@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>, linux-arm-kernel@lists.infradead.org
 
+Hi Boris,
 
---u65IjBhB3TIa72Vp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+You can add
 
-On Wed, Aug 20, 2014 at 06:57:59PM +0100, Alan Cox wrote:
-> On Wed, 2014-08-20 at 12:12 +0200, Thierry Reding wrote:
-> > On Tue, Aug 19, 2014 at 07:17:34PM +0300, Andy Shevchenko wrote:
-> > > This small series makes the architecture of pwm-lpss driver cleaner.
-> > >=20
-> > > Since v3:
-> > > - rebased on top of recent linux-next
-> > > - rebased on top of Alan's patch for Braswell
-> > >=20
-> > > Since v2:
-> > > - fix one more typo in Kconfig (tested with one line removed in my co=
-nfig now)
-> > >=20
-> > > Since v1:
-> > > - hide struct definition in the core part
-> > > - rename pwm-lpss-plat to pwm-lpss-platform
-> > > - fix Kconfig dependencies and other typos
-> > > - add Mika's Reviewed-by tag
-> > > - fix spelling in the commit messages
-> > >=20
-> > > Andy Shevchenko (2):
-> > >   pwm: lpss: properly split driver to parts
-> > >   pwm: lpss: pci: move to use pcim_enable_device()
-> > >=20
-> > >  drivers/pwm/Kconfig             |  21 ++++++-
-> > >  drivers/pwm/Makefile            |   2 +
-> > >  drivers/pwm/pwm-lpss-pci.c      |  65 +++++++++++++++++++
-> > >  drivers/pwm/pwm-lpss-platform.c |  69 ++++++++++++++++++++
-> > >  drivers/pwm/pwm-lpss.c          | 136 +++---------------------------=
-----------
-> > >  drivers/pwm/pwm-lpss.h          |  32 ++++++++++
-> > >  6 files changed, 198 insertions(+), 127 deletions(-)
-> > >  create mode 100644 drivers/pwm/pwm-lpss-pci.c
-> > >  create mode 100644 drivers/pwm/pwm-lpss-platform.c
-> > >  create mode 100644 drivers/pwm/pwm-lpss.h
-> >=20
-> > Yea or nay, Alan?
->=20
-> Context ?
+Tested-by: Ludovic Desroches <ludovic.desroches@atmel.com>
 
-Back when the LPSS PWM driver was first submitted I suggested that it
-could be split up in this way (core + PCI and ACPI/platform drivers).
-You had objections to doing that. Now Andy's doing exactly that, so I
-would like your Acked-by (or NAK) on this change.
+Only one issue but not related to your patches, you can't display
+quickly the bootup logo since the panel detection takes too much
+time.
 
-Thierry
+Regards
 
---u65IjBhB3TIa72Vp
-Content-Type: application/pgp-signature
+Ludovic
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJT9ZT5AAoJEN0jrNd/PrOhUMQP/A/rTDkLughld94/0eIF8kK3
-yU56WdKo/wXIn+KqMkZf47f1KWUQ4ILsIwAtsqKGt5XHQ+HQ8ULp6wJO/jly5Aub
-ZmtReAEmy/PHxjj89C5lhiyBPpU+urjrsEz8yndq0t/j2P97vunIoIh3iHWmmV2L
-KFyD3HQHie7DQy0MMSZOd0aOIL9YGZRX2prB5ObtyCSRLX6SLx4l+2vUH5Iqp8Fh
-zMqu2qIYx4xDvr+gEFEcDLJG5+Ue1eu3WGfTunNjzErfh4B0/jMjNs8QA8Q/GJ2K
-s9lI6/0Y8OQrZ8CaB9vCkAx+B5PanJ2vhY3JXYoPnXaLppU2tiGC+SqQtE/WH+ci
-7eMTTRgiCtUVNYtVAp3dmWmL/jhtDcwvDFZTOWZA3HdheniSL3g07RX/YtqnfqfI
-3KPkuEltv48o814BxkNdDV0Di84izh5PJBEcy0WBdx5ZZLLVDYc8ln7nUE3RLwn5
-97s/VRwKDZrcRp5hpWQsTozNx3s2lyDKtwT1c5rjce8+574nB1Vu98kOzOjeXvvW
-6A0F7Y1bL88VhGNq/MTMEu0hKPnNXwxLkcKtNzWG7BtvV16bU7q6kXB/I6eY+TV2
-uHF7gEVu0uzdrDCK1qjf5OppGmmhrbIVIkG68c8Vr3kiRhdXODlrlPnXnqE4zI2H
-K/ANhlmJEicXZwf+3bH+
-=uePj
------END PGP SIGNATURE-----
-
---u65IjBhB3TIa72Vp--
+On Tue, Jul 22, 2014 at 03:11:24PM +0200, Boris BREZILLON wrote:
+> Hello,
+> 
+> This patch series adds support for Atmel HLCDC (HLCD Controller) available
+> on some Atmel SoCs (i.e. the sama5d3 family).
+> 
+> The HLCDC actually provides a Display Controller and a PWM device, hence I
+> decided to declare an MFD device exposing 2 subdevices: a display
+> controller and a PWM chip.
+> This also solves a circular dependency issue preventing HLCDC driver from
+> unloading.
+> The HLCDC request a drm_panel device, which request a backlight device
+> (a PWM backlight), which depends on a PWM which is provided by the HLCDC
+> driver (hlcdc -> panel -> backlight -> hlcdc (pwm part)).
+> 
+> The current implementation only supports sama5d3 SoCs but other SoCs should
+> be easily ported by defining new compatible strings and adding HLCDC
+> description structures for these SoCs.
+> 
+> The drivers supports basic CRTC functionalities, several overlays and an
+> hardware cursor.
+> 
+> At the moment, it only supports connection to LCD panels through an RGB
+> connector (defined as an LVDS connector in my implementation), though
+> connection to other kind of devices (like DRM bridges) could be added later.
+> 
+> It also supports several RGB formats on all planes and some YUV formats on
+> the HEO overlay plane.
+> 
+> This series depends on 2 other series currently under review: [1] and [2].
+> 
+> Best Regards,
+> 
+> Boris
+> 
+> [1]http://lkml.iu.edu/hypermail/linux/kernel/1407.1/04171.html
+> [2]http://www.spinics.net/lists/kernel/msg1791681.html
+> 
+> Changes since v3:
+> - rework the layer code to simplify several parts (locking and layer
+>   disabling)
+> - make use of the drm_flip_work infrastructure
+> - rely on default HW cursor implementation using on the cursor plane
+> - rework the display controller DT bindings (based on OF graph
+>   representation)
+> - add rotation support
+> - retrive RGB bus format from drm_display_info
+> - drop the dynamic pinctrl state selection
+> - rework HLCDC output handling (previously specialized to interface
+>   with LCD panels)
+> - drop ".module = THIS_MODULE" lines
+> - change display controller compatible string
+> 
+> Changes since v2:
+> - fix coding style issues (macro indentation)
+> - make use of GENMASK in several places
+> - declare regmap config as a static structure
+> - rework hlcdc plane update API
+> - rework cursor handling to make use of the new plane update API
+> - fix backporch config
+> - do not use devm_regmap_init_mmio_clk to avoid extra clk_enable
+>   clk disable calls when accessing registers
+> - explicitely include regmap and clk headers instead of relying on
+>   atmel-hlcdc.h inclusions
+> - make the atmel-hlcdc driver depends on CONFIG_OF
+> - separate DT bindings documentation from driver implementation
+> - support several pin muxing for HLCDC pins on sama5d3 SoCs
+> 
+> Changes since v1:
+> - replace the backlight driver by a PWM driver
+> - make use of drm_panel infrastructure
+> - split driver code in several subsystem: MFD, PWM and DRM
+> - add support for overlays
+> - add support for hardware cursor
+> 
+> 
+> Boris BREZILLON (11):
+>   mfd: add atmel-hlcdc driver
+>   mfd: add documentation for atmel-hlcdc DT bindings
+>   pwm: add support for atmel-hlcdc-pwm device
+>   pwm: add DT bindings documentation for atmel-hlcdc-pwm driver
+>   drm: add Atmel HLCDC Display Controller support
+>   drm: add DT bindings documentation for atmel-hlcdc-dc driver
+>   ARM: AT91/dt: split sama5d3 lcd pin definitions to match RGB mode
+>     configs
+>   ARM: AT91/dt: add alternative pin muxing for sama5d3 lcd pins
+>   ARM: at91/dt: define the HLCDC node available on sama5d3 SoCs
+>   ARM: at91/dt: add LCD panel description to sama5d3xdm.dtsi
+>   ARM: at91/dt: enable the LCD panel on sama5d3xek boards
+> 
+>  .../devicetree/bindings/drm/atmel-hlcdc-dc.txt     |  54 ++
+>  .../devicetree/bindings/mfd/atmel-hlcdc.txt        |  50 ++
+>  .../devicetree/bindings/pwm/atmel-hlcdc-pwm.txt    |  55 ++
+>  arch/arm/boot/dts/sama5d31ek.dts                   |  20 +
+>  arch/arm/boot/dts/sama5d33ek.dts                   |  20 +
+>  arch/arm/boot/dts/sama5d34ek.dts                   |  20 +
+>  arch/arm/boot/dts/sama5d36ek.dts                   |  20 +
+>  arch/arm/boot/dts/sama5d3_lcd.dtsi                 | 205 +++++-
+>  arch/arm/boot/dts/sama5d3xdm.dtsi                  |  58 ++
+>  drivers/gpu/drm/Kconfig                            |   2 +
+>  drivers/gpu/drm/Makefile                           |   1 +
+>  drivers/gpu/drm/atmel-hlcdc/Kconfig                |  11 +
+>  drivers/gpu/drm/atmel-hlcdc/Makefile               |   7 +
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c     | 286 ++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c       | 488 +++++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h       | 224 ++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.c    | 635 ++++++++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.h    | 396 ++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_output.c   | 478 ++++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_plane.c    | 804 +++++++++++++++++++++
+>  drivers/mfd/Kconfig                                |  12 +
+>  drivers/mfd/Makefile                               |   1 +
+>  drivers/mfd/atmel-hlcdc.c                          | 118 +++
+>  drivers/pwm/Kconfig                                |   9 +
+>  drivers/pwm/Makefile                               |   1 +
+>  drivers/pwm/pwm-atmel-hlcdc.c                      | 229 ++++++
+>  include/linux/mfd/atmel-hlcdc.h                    |  78 ++
+>  27 files changed, 4251 insertions(+), 31 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
+>  create mode 100644 Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt
+>  create mode 100644 Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/Kconfig
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/Makefile
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.h
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_output.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_plane.c
+>  create mode 100644 drivers/mfd/atmel-hlcdc.c
+>  create mode 100644 drivers/pwm/pwm-atmel-hlcdc.c
+>  create mode 100644 include/linux/mfd/atmel-hlcdc.h
+> 
+> -- 
+> 1.8.3.2
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
