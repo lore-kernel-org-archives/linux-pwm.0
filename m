@@ -1,154 +1,73 @@
-From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v4 00/11] drm: add support for Atmel HLCDC Display
- Controller
-Date: Thu, 21 Aug 2014 15:30:58 +0200
-Message-ID: <20140821153058.05cbc8b0@bbrezillon>
-References: <1406034695-15534-1-git-send-email-boris.brezillon@free-electrons.com>
-	<20140821081619.GZ2452@ldesroches-Latitude-E6320>
-	<20140821103706.2349915d@bbrezillon>
-	<20140821090406.GA13733@ulmo>
-	<20140821114159.319e741b@bbrezillon>
-	<20140821095202.GA21848@ulmo>
-	<20140821150600.37788d82@bbrezillon>
-	<20140821131552.GA19293@ulmo.nvidia.com>
+From: Alan Cox <alan@linux.intel.com>
+Subject: Re: [PATCH v4 0/2] pwm: lpss: split driver to core and probe drivers
+Date: Thu, 21 Aug 2014 15:20:56 +0100
+Message-ID: <1408630856.3270.33.camel@acox1-desk.ger.corp.intel.com>
+References: <1408465056-8605-1-git-send-email-andriy.shevchenko@linux.intel.com>
+	 <20140820101248.GH15414@ulmo>
+	 <1408557479.3270.8.camel@acox1-desk.ger.corp.intel.com>
+	 <20140821064305.GD4486@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:43493 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754479AbaHUNbC (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 21 Aug 2014 09:31:02 -0400
-In-Reply-To: <20140821131552.GA19293@ulmo.nvidia.com>
+Received: from mga11.intel.com ([192.55.52.93]:47282 "EHLO mga11.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1755018AbaHUOVF (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Thu, 21 Aug 2014 10:21:05 -0400
+In-Reply-To: <20140821064305.GD4486@ulmo>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Ludovic Desroches <ludovic.desroches@atmel.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, linux-pwm@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Clark <robdclark@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>, linux-arm-kernel@lists.infradead.org
+Cc: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-On Thu, 21 Aug 2014 15:16:08 +0200
-Thierry Reding <thierry.reding@gmail.com> wrote:
-
-> On Thu, Aug 21, 2014 at 03:06:00PM +0200, Boris BREZILLON wrote:
-> > On Thu, 21 Aug 2014 11:52:03 +0200
-> > Thierry Reding <thierry.reding@gmail.com> wrote:
-> > 
-> > > On Thu, Aug 21, 2014 at 11:41:59AM +0200, Boris BREZILLON wrote:
-> > > > On Thu, 21 Aug 2014 11:04:07 +0200
-> > > > Thierry Reding <thierry.reding@gmail.com> wrote:
+On Thu, 2014-08-21 at 08:43 +0200, Thierry Reding wrote:
+> On Wed, Aug 20, 2014 at 06:57:59PM +0100, Alan Cox wrote:
+> > On Wed, 2014-08-20 at 12:12 +0200, Thierry Reding wrote:
+> > > On Tue, Aug 19, 2014 at 07:17:34PM +0300, Andy Shevchenko wrote:
+> > > > This small series makes the architecture of pwm-lpss driver cleaner.
 > > > > 
-> > > > > On Thu, Aug 21, 2014 at 10:37:06AM +0200, Boris BREZILLON wrote:
-> > > > > > Hi Ludovic,
-> > > > > > 
-> > > > > > On Thu, 21 Aug 2014 10:16:19 +0200
-> > > > > > Ludovic Desroches <ludovic.desroches@atmel.com> wrote:
-> > > > > > 
-> > > > > > > Hi Boris,
-> > > > > > > 
-> > > > > > > You can add
-> > > > > > > 
-> > > > > > > Tested-by: Ludovic Desroches <ludovic.desroches@atmel.com>
-> > > > > > 
-> > > > > > Thanks for testing this driver.
-> > > > > > 
-> > > > > > > 
-> > > > > > > Only one issue but not related to your patches, you can't display
-> > > > > > > quickly the bootup logo since the panel detection takes too much
-> > > > > > > time.
-> > > > > > 
-> > > > > > Yes, actually this is related to the device probe order: the
-> > > > > > hlcdc-display-controller device is probed before the simple-panel, thus
-> > > > > > nothing is detected on the RGB connector (I use of_drm_find_panel to
-> > > > > > check for panel availability) when the display controller is
-> > > > > > instantiated. I rely on the default polling infrastructure provided by
-> > > > > > the DRM/KMS framework which polls for a new connector every 10s, and
-> > > > > > this is far more than you kernel boot time.
-> > > > > > 
-> > > > > > Do anyone see a solution to reduce this delay (without changing the
-> > > > > > polling interval). I thought we could add a notifier infrastructure to
-> > > > > > the DRM panel framework, but I'm not sure this is how you want things
-> > > > > > done...
-> > > > > 
-> > > > > Other drivers return -EPROBE_DEFER when a panel hasn't been registered
-> > > > > yet. This will automatically take care of ordering things in a way that
-> > > > > DRM/KMS will only be initialized after the panel has been probed.
+> > > > Since v3:
+> > > > - rebased on top of recent linux-next
+> > > > - rebased on top of Alan's patch for Braswell
 > > > > 
-> > > > Actually I'd like to avoid doing this with a deferred probe, because,
-> > > > AFAIU, the remote endpoint is not tightly linked with the display
-> > > > controller driver (I mean the display controller can still be
-> > > > initialized without having a display connected on it).
-> > > > Moreover the atmel dev kit I'm using has an HDMI bridge connected on
-> > > > the same RGB connector and I'd like to use it in a near future.
-> > > > Returning -EPROBE_DEFER in case of several devices connected on the
-> > > > same connector implies that I'll have to wait for all the remote
-> > > > end-points to be available before my display controller could be
-> > > > instantiated.
+> > > > Since v2:
+> > > > - fix one more typo in Kconfig (tested with one line removed in my config now)
 > > > > 
-> > > > While this could be acceptable when all drivers are statically linked
-> > > > in the kernel, it might be problematic when you're using modules,
-> > > > meaning that you won't be able to display anything on your LCD panel
-> > > > until your HDMI bridge module has been loaded.
+> > > > Since v1:
+> > > > - hide struct definition in the core part
+> > > > - rename pwm-lpss-plat to pwm-lpss-platform
+> > > > - fix Kconfig dependencies and other typos
+> > > > - add Mika's Reviewed-by tag
+> > > > - fix spelling in the commit messages
+> > > > 
+> > > > Andy Shevchenko (2):
+> > > >   pwm: lpss: properly split driver to parts
+> > > >   pwm: lpss: pci: move to use pcim_enable_device()
+> > > > 
+> > > >  drivers/pwm/Kconfig             |  21 ++++++-
+> > > >  drivers/pwm/Makefile            |   2 +
+> > > >  drivers/pwm/pwm-lpss-pci.c      |  65 +++++++++++++++++++
+> > > >  drivers/pwm/pwm-lpss-platform.c |  69 ++++++++++++++++++++
+> > > >  drivers/pwm/pwm-lpss.c          | 136 +++-------------------------------------
+> > > >  drivers/pwm/pwm-lpss.h          |  32 ++++++++++
+> > > >  6 files changed, 198 insertions(+), 127 deletions(-)
+> > > >  create mode 100644 drivers/pwm/pwm-lpss-pci.c
+> > > >  create mode 100644 drivers/pwm/pwm-lpss-platform.c
+> > > >  create mode 100644 drivers/pwm/pwm-lpss.h
 > > > 
-> > > No. HDMI should be using proper hotplugging anyway, hence it should be
-> > > always be loaded anyway. You're in for a world of pain if you think you
-> > > can run DRM with a driver that's composed of separate kernel modules.
+> > > Yea or nay, Alan?
 > > 
-> > I was talking about the external RGB to HDMI encoder, should the driver
-> > for this encoder (which is not on On Chip block) be compiled
-> > statically too ?
-> > 
-> > > 
-> > > Also if you don't want to use deferred probe, then you're in for the
-> > > full hotplugging panel dance and that implies that you need to fix a
-> > > bunch of things in DRM (one being the framebuffer console instantiation
-> > > that I referred to in the other thread).
-> > 
-> > For now, I wait until there is a device connected on the RGB connector
-> > (connector status set to connector_status_connected) before creating an
-> > fbdev. It might not be the cleanest way to solve this issue, but it
-> > works :-).
+> > Context ?
 > 
-> Yeah, I guess that's one way to do it. But it's tricky to get right when
-> you have several outputs. Which one should be considered the primary and
-> trigger fbdev creation?
+> Back when the LPSS PWM driver was first submitted I suggested that it
+> could be split up in this way (core + PCI and ACPI/platform drivers).
+> You had objections to doing that. Now Andy's doing exactly that, so I
+> would like your Acked-by (or NAK) on this change.
 
-I take the first valid one :D (which indeed is not really reliable when
-you have several output devices). I guess marking one output as the
-primary output in the DT is not an acceptable solution either because
-it describes a configuration rather than an HW capability.
+I think Andy proved you were right 8)
 
-Still opened to any suggestions regarding this issue ;-).
+Ack from me
 
-> 
-> > > You also can't be using the
-> > > current device tree bindings because they all assume a dependency from
-> > > the display controller/output to the panel. For hotplugging you'd need
-> > > the dependency the other way around (the panel needs to refer to the
-> > > output by phandle).
-> > 
-> > Here [1] is a proposal for notification support in the drm_panel
-> > infrastructure (which is not that complicated), and here [2] is how
-> > I use it in my atmel-hlcdc driver to generate hotplug events.
-> > 
-> > Let me know if you want me to submit a proper patch series...
-> > 
-> > Best Regards,
-> > 
-> > Boris
-> > 
-> > [1]http://code.bulix.org/scq4g3-86804
-> > [2]http://code.bulix.org/7dg501-86805
-> 
-> Those look interesting. Any chance you could look into how to do the
-> same without resorting to notifiers?
-
-Sure, it should be pretty easy too.
-
-I also had a look at the component framework, but I'm not sure it
-applies in this context. AFAIU it is designed to delay a master device
-registration until all it's slaves are ready to act upon.
+Alan
 
 
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
