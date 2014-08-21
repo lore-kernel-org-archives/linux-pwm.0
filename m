@@ -1,38 +1,37 @@
-From: Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v3 2/4] pwm: rockchip: Allow polarity invert on rk3288
-Date: Wed, 20 Aug 2014 12:31:15 -0700
-Message-ID: <CAD=FV=VeGv5xMC3NTBuSZowxUY2h03CyY8my4-sfSzOn5ij7sw@mail.gmail.com>
-References: <1408464476-28316-1-git-send-email-dianders@chromium.org>
-	<1408464476-28316-3-git-send-email-dianders@chromium.org>
-	<20140820100447.GG15414@ulmo>
-	<CAD=FV=U9gOiY=4s7WmAQcm0n9s67nWdqQ3A0L2B7Dg83dNotjQ@mail.gmail.com>
-	<387c82a0-efeb-431d-b8a5-200f24bc47ff@email.android.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 3/3] ARM: at91/tclib: mask interruptions at shutdown and probe
+Date: Thu, 21 Aug 2014 05:32:59 +0200
+Message-ID: <201408210533.00196.arnd@arndb.de>
+References: <1408486072-19268-1-git-send-email-gael.portay@gmail.com> <1408486072-19268-4-git-send-email-gael.portay@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <387c82a0-efeb-431d-b8a5-200f24bc47ff@email.android.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Caesar Wang <caesar.wang@rock-chips.com>, Sonny Rao <sonnyrao@chromium.org>, Olof Johansson <olof@lixom.net>, Eddie Cai <eddie.cai@rock-chips.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, hpa@zytor.com
+Content-Type: Text/Plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.17.10]:56205 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750995AbaHUDdp (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 20 Aug 2014 23:33:45 -0400
+In-Reply-To: <1408486072-19268-4-git-send-email-gael.portay@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: =?utf-8?q?Ga=C3=ABl_PORTAY?= <gael.portay@gmail.com>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Boris Brezillon <boris.brezillon@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
 
-Dmitry,
+On Wednesday 20 August 2014, Ga=C3=ABl PORTAY wrote:
+> +static void tc_shutdown (struct platform_device *pdev)
+> +{
+> +       int i;
+> +       struct atmel_tc *tc =3D platform_get_drvdata(pdev);
+> +
+> +       for (i =3D 0; i < 3; i++)
+> +               __raw_writel(0xff, tc->regs + ATMEL_TC_REG(i, IDR));
+> +}
 
-On Wed, Aug 20, 2014 at 12:29 PM, Dmitry Torokhov
-<dmitry.torokhov@gmail.com> wrote:
-> On August 20, 2014 1:54:11 PM CDT, Doug Anderson <dianders@chromium.org> wrote:
->>On Wed, Aug 20, 2014 at 3:04 AM, Thierry Reding
->><thierry.reding@gmail.com> wrote:
->>> On Tue, Aug 19, 2014 at 09:07:54AM -0700, Doug Anderson wrote:
->>>> The rk3288 has the ability to invert
->>>> +     struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
->>>> +
->>>> +     if (!pc->data->has_invert)
->>>> +             return -ENOSYS;
->>>> +
->
-> At the kernel summit hpa also mentioned that ENOSYS should only be used for missing syscalls. Not sure what error code would suit better here though...
+In general, __raw_readl/__raw_writel are not meant to be called by devi=
+ce drivers.
 
-Luckily this code is gone now.  See v4 of the series.  ;)
+Just use readl/writel by default, or readl_relaxed/writel_relaxed if th=
+e code is
+performance critical and you are sure it is safe to use them.
 
--Doug
+	Arnd
