@@ -1,99 +1,46 @@
-From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v4 00/11] drm: add support for Atmel HLCDC Display
- Controller
-Date: Thu, 21 Aug 2014 19:26:33 +0200
-Message-ID: <20140821192633.69f6b21b@bbrezillon>
-References: <1406034695-15534-1-git-send-email-boris.brezillon@free-electrons.com>
-	<20140821095202.GA21848@ulmo>
-	<20140821150600.37788d82@bbrezillon>
-	<2138720.5GSxsvjVxS@avalon>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH] pwm: Kconfig: Select REGMAP_MMIO for PWM_FSL_FTM
+Date: Thu, 21 Aug 2014 20:49:15 -0300
+Message-ID: <1408664955-23149-1-git-send-email-festevam@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:44927 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751905AbaHUR0j (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 21 Aug 2014 13:26:39 -0400
-In-Reply-To: <2138720.5GSxsvjVxS@avalon>
+Received: from mail-qg0-f44.google.com ([209.85.192.44]:62623 "EHLO
+	mail-qg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750854AbaHUXtc (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 21 Aug 2014 19:49:32 -0400
+Received: by mail-qg0-f44.google.com with SMTP id e89so9698090qgf.31
+        for <linux-pwm@vger.kernel.org>; Thu, 21 Aug 2014 16:49:32 -0700 (PDT)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, linux-pwm@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Clark <robdclark@gmail.com>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>, linux-arm-kernel@lists.infradead.org
+To: thierry.reding@gmail.com
+Cc: Li.Xiubo@freescale.com, linux-pwm@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
 
-Hi Laurent,
+From: Fabio Estevam <fabio.estevam@freescale.com>
 
-On Thu, 21 Aug 2014 19:08:53 +0200
-Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
+Commit 42fa98a9c3609c1 ("pwm: fsl-ftm: Convert to direct regmap API usage")
+introduced the following error when REGMAP_MMIO=n:
 
-[...]
+drivers/built-in.o: In function `fsl_pwm_probe':
+>> pwm-fsl-ftm.c:(.text+0xd7d7): undefined reference to `devm_regmap_init_mmio_clk'
 
-> > >> 
-> > >> While this could be acceptable when all drivers are statically linked
-> > >> in the kernel, it might be problematic when you're using modules,
-> > >> meaning that you won't be able to display anything on your LCD panel
-> > >> until your HDMI bridge module has been loaded.
-> > > 
-> > > No. HDMI should be using proper hotplugging anyway, hence it should be
-> > > always be loaded anyway. You're in for a world of pain if you think you
-> > > can run DRM with a driver that's composed of separate kernel modules.
-> > 
-> > I was talking about the external RGB to HDMI encoder, should the driver
-> > for this encoder (which is not on On Chip block) be compiled
-> > statically too ?
-> 
-> Given the move to multiplatform kernels we need to aim for as few modules 
-> compiled in as possible. I'd say this includes HDMI encoders, panels and 
-> display controllers.
-> 
-> > > Also if you don't want to use deferred probe, then you're in for the
-> > > full hotplugging panel dance and that implies that you need to fix a
-> > > bunch of things in DRM (one being the framebuffer console instantiation
-> > > that I referred to in the other thread).
-> > 
-> > For now, I wait until there is a device connected on the RGB connector
-> > (connector status set to connector_status_connected) before creating an
-> > fbdev. It might not be the cleanest way to solve this issue, but it
-> > works :-).
-> 
-> Do you create a new drm_encoder at runtime for the HDMI encoder when it 
-> appears ? I thought the DRM core and API were not able to correctly cope with 
-> that.
+Select select REGMAP_MMIO in order to fix this error.
 
-I haven't started to work on the HDMI encoder yet, and ATM I only have
-a single connector (which is true from an HW POV), which is then bound
-to an LCD panel (the only type of remote endpoint I currently support).
+Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
+---
+ drivers/pwm/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-BTW, I wonder how my use case should be represented in the DRM
-subsystem. As I said, from an HW POV I only have one RGB (or whatever
-name you choose for it) connector. But on such kind of connectors you
-can connect several output devices (panels, encoders, ...).
-And in my case I have 2 devices on the same RGB connector: a panel and
-an RGB to HDMI converter.
-
-> 
-> > > You also can't be using the current device tree bindings because they all
-> > > assume a dependency from the display controller/output to the panel. For
-> > > hotplugging you'd need the dependency the other way around (the panel
-> > > needs to refer to the output by phandle).
-> > 
-> > Here [1] is a proposal for notification support in the drm_panel
-> > infrastructure (which is not that complicated), and here [2] is how
-> > I use it in my atmel-hlcdc driver to generate hotplug events.
-> 
-> Is there a way we could use the component framework for that ? I know that 
-> partial notification isn't supported at the moment, but Russell agreed it was 
-> a real use case that should be implemented at some point.
-
-I'll give it a try.
-
-Best Regards,
-
-Boris
-
-
-
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index b800783..e56e91e 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -101,6 +101,7 @@ config PWM_EP93XX
+ config PWM_FSL_FTM
+ 	tristate "Freescale FlexTimer Module (FTM) PWM support"
+ 	depends on OF
++	select REGMAP_MMIO
+ 	help
+ 	  Generic FTM PWM framework driver for Freescale VF610 and
+ 	  Layerscape LS-1 SoCs.
 -- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+1.9.1
+
