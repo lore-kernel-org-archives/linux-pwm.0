@@ -1,76 +1,79 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2] pwm: Kconfig: Select REGMAP_MMIO for PWM_FSL_FTM
-Date: Fri, 22 Aug 2014 10:19:09 +0200
-Message-ID: <20140822081908.GA24156@ulmo>
-References: <1408665025-23204-1-git-send-email-festevam@gmail.com>
+Subject: Re: [PATCH v4 1/2] pwm: lpss: properly split driver to parts
+Date: Fri, 22 Aug 2014 13:13:44 +0200
+Message-ID: <20140822111343.GA3825@ulmo>
+References: <1408465056-8605-1-git-send-email-andriy.shevchenko@linux.intel.com>
+ <1408465056-8605-2-git-send-email-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="CE+1k2dSO48ffgeK"
+	protocol="application/pgp-signature"; boundary="8t9RHnE3ZwKMSgU+"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-we0-f178.google.com ([74.125.82.178]:41329 "EHLO
-	mail-we0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754296AbaHVITM (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 22 Aug 2014 04:19:12 -0400
-Received: by mail-we0-f178.google.com with SMTP id w61so10201000wes.23
-        for <linux-pwm@vger.kernel.org>; Fri, 22 Aug 2014 01:19:11 -0700 (PDT)
+Received: from mail-we0-f179.google.com ([74.125.82.179]:43049 "EHLO
+	mail-we0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752737AbaHVLNr (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 22 Aug 2014 07:13:47 -0400
+Received: by mail-we0-f179.google.com with SMTP id u57so10584829wes.10
+        for <linux-pwm@vger.kernel.org>; Fri, 22 Aug 2014 04:13:46 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <1408665025-23204-1-git-send-email-festevam@gmail.com>
+In-Reply-To: <1408465056-8605-2-git-send-email-andriy.shevchenko@linux.intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Li.Xiubo@freescale.com, linux-pwm@vger.kernel.org, Fabio Estevam <fabio.estevam@freescale.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Alan Cox <alan@linux.intel.com>
 
 
---CE+1k2dSO48ffgeK
+--8t9RHnE3ZwKMSgU+
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 21, 2014 at 08:50:25PM -0300, Fabio Estevam wrote:
-> From: Fabio Estevam <fabio.estevam@freescale.com>
->=20
-> Commit 42fa98a9c3609c1 ("pwm: fsl-ftm: Convert to direct regmap API usage=
-")
-> introduced the following error when REGMAP_MMIO=3Dn:
->=20
-> drivers/built-in.o: In function `fsl_pwm_probe':
-> >> pwm-fsl-ftm.c:(.text+0xd7d7): undefined reference to `devm_regmap_init=
-_mmio_clk'
->=20
-> Select select REGMAP_MMIO in order to fix this error.
->=20
-> Reported-by: kbuild test robot <fengguang.wu@intel.com>=20
-> Signed-off-by: Fabio Estevam <fabio.estevam@freescale.com>
-> ---
-> Change since v1:
-> - Added Reported-by tag
->=20
->  drivers/pwm/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
+On Tue, Aug 19, 2014 at 07:17:35PM +0300, Andy Shevchenko wrote:
+[...]
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+[...]
+> +config PWM_LPSS_PCI
+> +	tristate "Intel LPSS PWM PCI driver"
+> +	depends on PCI
+> +	select PWM_LPSS
+[...]
+> +config PWM_LPSS_PLATFORM
+> +	tristate "Intel LPSS PWM platform driver"
+> +	depends on ACPI
+> +	select PWM_LPSS
 
-Applied, thanks.
+I changed both of the above select PWM_LPSS to depends on PWM_LPSS
+because that makes them show up in a more meaningful way in menuconfig
+and otherwise it looks weird if the PWM_LPSS shows up as automatically
+selected without being useful in itself. This way the PWM_LPSS is sort
+of a common core that PWM_LPSS_PLATFORM and PWM_LPSS_PCI use.
+
+An alternative that's commonly used for this would be to hide PWM_LPSS
+=66rom users and keep the select within PWM_LPSS_PLATFORM and
+PWM_LPSS_PCI. That would be okay with me too.
+
+Let me know if you have any objections to this change.
 
 Thierry
 
---CE+1k2dSO48ffgeK
+--8t9RHnE3ZwKMSgU+
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJT9vz8AAoJEN0jrNd/PrOh/FsP+gLm7zKXjTxHqEjHBBcHf5jS
-kKnbS1c2ujVMia7TAqcLCrc8cD7Ip8F9as85S/J8fSxPLSVRZxc5Tw5RlUXjwVm/
-tSNlwE5LQnwi8na/Rp66czZ7rNW3zpbSios68CA4OA9gkRXLpCRyhLHrSo2ygWHf
-ueVXaJRouwpDFmgSRwV30SedY2g54S5j9wT7oRLZK3TpQa0xJLWRqqNgKkb9RgfQ
-DExY4EgzMwkbAdQhTpQqoqZR6rrWyohRd0dBe6h+9eKf7Cylk5c6H6hgniYzB2+f
-MRdLLwI2bK9jSfjmbORDoD0R9LJF6hspltTgFVLoJdznLQRcKbgcB3+u2nWBdAaO
-BOpfzyI0FO4dWQJ84rMlHztLkwWH55KbjMwero3hYgSMUIvOyPysUqvIZ/b11vnc
-yLy7FFLcuouLTr7mcqMSiQleZoc6+HMeT9Fa8ydblntPYZQWIP7jyBA4/zEhHkSH
-kwvXNVv+A3xdlCxq+NcXhOGuK6Z6BaSON3dLiu1C1cmlI1VwQG50yDUf4/Qwk2uG
-340Oo+mLM12cCg7dFL4EB4qOeiGMWkwZgBLqcFW9snFyLsG17dvwDrk9b31EpB0d
-DKEeBUKu/4fFgnY/kYloqiKEMA1AmR9HIWy7YbPTwLKF2TeGr7e2cm926xzxu+nF
-6wdADj6FhghaxK3Aatb8
-=wPmo
+iQIcBAEBAgAGBQJT9yXnAAoJEN0jrNd/PrOhPxcQAK8P1HktqRUlYdlrUpE50Hxq
+0U8nAfk3CdbEnI0bW9wUdwj4U4+jhplYbcY7+PppWxLLd/06tDGjZPWhs/KpD3Wx
+e8rtkQScMJynDRmWw2lGQ5RWdCUZkCOgBj38mXeDYduBhJz/fA+a5VQ0MhWFf7Su
+ZjP5LGZrh7TGcSjAFMvdfVyG4dvGBJybaz+MdhuvCRrWmx/vUnPFTWwiEYc/BO8s
+iOHYitDxGOjwBXZ5qMtTRvsHM45VILPixmiPyLWun4iN2zvBKL12OPqFFqhTdKJN
+UF3oM0uRg47EIVL5sknHgYYp9eOoC1CKQMFe09Dcju3tq87xcyT6cwIGkw+7vgmY
++ZW+J0Xyra3Ue+C5HW1aSRjGjtxyLpOZZvUnHZ3CUAWIeuqEd0cekQEbkirGxWMd
+kewOT7H3tdLP6lJDtL8CKjoVgpF7qdIBknIhgRcJeK9PxA6vqb/JwiXS3ojwpC+9
+08dKsAJ9UwRx2FTBdl/YmB/2mqIN04NXBgQ2DgTZjVU+rLCX5g/JPmmeHGZUru0O
+zFm4Ff9sEUbUhuX3x1MOExnh6vjGpLSbV7rfAvr6Hi3f2cBGMBhZB2GPA99gv06s
+poU9TevQ1P/XPs9NbBewh7MSjMM9s4vWnjan7e56ujOMqaQtBeWYzECrN/4MuEtr
+nZ6IDpwbDnjpOGJRbNId
+=jnVQ
 -----END PGP SIGNATURE-----
 
---CE+1k2dSO48ffgeK--
+--8t9RHnE3ZwKMSgU+--
