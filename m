@@ -1,79 +1,72 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 1/2] pwm: lpss: properly split driver to parts
-Date: Fri, 22 Aug 2014 13:13:44 +0200
-Message-ID: <20140822111343.GA3825@ulmo>
-References: <1408465056-8605-1-git-send-email-andriy.shevchenko@linux.intel.com>
- <1408465056-8605-2-git-send-email-andriy.shevchenko@linux.intel.com>
+Subject: [GIT PULL] pwm: Fixes for v3.17-rc2
+Date: Fri, 22 Aug 2014 21:34:31 +0200
+Message-ID: <20140822193430.GA31506@ulmo>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="8t9RHnE3ZwKMSgU+"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-we0-f179.google.com ([74.125.82.179]:43049 "EHLO
-	mail-we0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752737AbaHVLNr (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 22 Aug 2014 07:13:47 -0400
-Received: by mail-we0-f179.google.com with SMTP id u57so10584829wes.10
-        for <linux-pwm@vger.kernel.org>; Fri, 22 Aug 2014 04:13:46 -0700 (PDT)
+	protocol="application/pgp-signature"; boundary="45Z9DzgjV8m4Oswq"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1408465056-8605-2-git-send-email-andriy.shevchenko@linux.intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>, Alan Cox <alan@linux.intel.com>
 
 
---8t9RHnE3ZwKMSgU+
+--45Z9DzgjV8m4Oswq
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 19, 2014 at 07:17:35PM +0300, Andy Shevchenko wrote:
-[...]
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-[...]
-> +config PWM_LPSS_PCI
-> +	tristate "Intel LPSS PWM PCI driver"
-> +	depends on PCI
-> +	select PWM_LPSS
-[...]
-> +config PWM_LPSS_PLATFORM
-> +	tristate "Intel LPSS PWM platform driver"
-> +	depends on ACPI
-> +	select PWM_LPSS
+Hi Linus,
 
-I changed both of the above select PWM_LPSS to depends on PWM_LPSS
-because that makes them show up in a more meaningful way in menuconfig
-and otherwise it looks weird if the PWM_LPSS shows up as automatically
-selected without being useful in itself. This way the PWM_LPSS is sort
-of a common core that PWM_LPSS_PLATFORM and PWM_LPSS_PCI use.
+The following changes since commit 7d1311b93e58ed55f3a31cc8f94c4b8fe988a2b9:
 
-An alternative that's commonly used for this would be to hide PWM_LPSS
-=66rom users and keep the select within PWM_LPSS_PLATFORM and
-PWM_LPSS_PCI. That would be okay with me too.
+  Linux 3.17-rc1 (2014-08-16 10:40:26 -0600)
 
-Let me know if you have any objections to this change.
+are available in the git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-3.17-rc2
+
+for you to fetch changes up to d717ea73e36dd5659640fae82605ad85c4117f4d:
+
+  pwm: Fix period and polarity in pwm_get() for non-perfect matches (2014-08-18 10:58:43 +0200)
+
+Thanks,
 Thierry
 
---8t9RHnE3ZwKMSgU+
+----------------------------------------------------------------
+pwm: Fixes for v3.17-rc2
+
+Just one bugfix for the PWM lookup table code that would cause a PWM
+channel to be set to the wrong period and polarity for non-perfect
+matches.
+
+----------------------------------------------------------------
+Geert Uytterhoeven (1):
+      pwm: Fix period and polarity in pwm_get() for non-perfect matches
+
+ drivers/pwm/core.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+--45Z9DzgjV8m4Oswq
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJT9yXnAAoJEN0jrNd/PrOhPxcQAK8P1HktqRUlYdlrUpE50Hxq
-0U8nAfk3CdbEnI0bW9wUdwj4U4+jhplYbcY7+PppWxLLd/06tDGjZPWhs/KpD3Wx
-e8rtkQScMJynDRmWw2lGQ5RWdCUZkCOgBj38mXeDYduBhJz/fA+a5VQ0MhWFf7Su
-ZjP5LGZrh7TGcSjAFMvdfVyG4dvGBJybaz+MdhuvCRrWmx/vUnPFTWwiEYc/BO8s
-iOHYitDxGOjwBXZ5qMtTRvsHM45VILPixmiPyLWun4iN2zvBKL12OPqFFqhTdKJN
-UF3oM0uRg47EIVL5sknHgYYp9eOoC1CKQMFe09Dcju3tq87xcyT6cwIGkw+7vgmY
-+ZW+J0Xyra3Ue+C5HW1aSRjGjtxyLpOZZvUnHZ3CUAWIeuqEd0cekQEbkirGxWMd
-kewOT7H3tdLP6lJDtL8CKjoVgpF7qdIBknIhgRcJeK9PxA6vqb/JwiXS3ojwpC+9
-08dKsAJ9UwRx2FTBdl/YmB/2mqIN04NXBgQ2DgTZjVU+rLCX5g/JPmmeHGZUru0O
-zFm4Ff9sEUbUhuX3x1MOExnh6vjGpLSbV7rfAvr6Hi3f2cBGMBhZB2GPA99gv06s
-poU9TevQ1P/XPs9NbBewh7MSjMM9s4vWnjan7e56ujOMqaQtBeWYzECrN/4MuEtr
-nZ6IDpwbDnjpOGJRbNId
-=jnVQ
+iQIcBAEBAgAGBQJT95tGAAoJEN0jrNd/PrOhqI4QALCvfTmbmxa3aoQH22zSgWDv
+VLOOdgUVJdeoasUzDtd6KzzPXD2A0X6BgFvDu8BUYaCjE9TgqaU444PVYTOhryog
+ZhibIw2MhD2bDhh+dsx6XXD0to1kl75jxjkyirOik5dVRADO8KGs+Tum8wf5ysDq
+Yco42tFVhN4zmfmkh60znhQN575Sw9cBGYLVqprxErE6+sWCFZUV0jelPOiD0iyE
+ZLZJUM7EZsIDDTGI5p4Jvi4tcB/TlirvT7xw/fcVQcP+7T5yJS7kbjPLNllcPkwi
+8Nve8pCgrgkdtOaKBBMgb5/jukobrobwaMAGh/wZ+nTA3BkHrd5Q9uZA/dWIk1jh
+3mulcM5xezNZG4Z6CCkYXJI5e6xM7PVuF1to7VBlvnHNRD2KSbI6EM1J2qSmfzrb
+OzFRjLD+CSNyJ+Q3u6aLRRhdLYTLhsODFLESdLpVPI5YbzqAUbemYj6z3GupkTNN
+dRDJFFcnlvzCLSviGw3J4WcTp8EOd4jwlomBSd0ggmlmVuTMWaN4b6QVFoM5BXuB
+Fi1oK0Gie34pRQfyQitp2BJHBttFXZ5C4ylxBQruPvx0SrYXbE7YEdIGyUwL1fuW
+2StBs4MZxdjlWCSF3MmnNhIX4EjbhNhGEgwWOHSXuZR25Mj/mGAdcOgOFbj+7Rtr
+Zv4dSLJh+na2yTH6YEwl
+=pTCz
 -----END PGP SIGNATURE-----
 
---8t9RHnE3ZwKMSgU+--
+--45Z9DzgjV8m4Oswq--
