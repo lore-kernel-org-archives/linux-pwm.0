@@ -1,72 +1,89 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [GIT PULL] pwm: Fixes for v3.17-rc2
-Date: Fri, 22 Aug 2014 21:34:31 +0200
-Message-ID: <20140822193430.GA31506@ulmo>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
+Subject: [PATCH 0/9] use c99 initializers in structures
+Date: Sat, 23 Aug 2014 13:20:22 +0200
+Message-ID: <1408792831-25615-1-git-send-email-Julia.Lawall@lip6.fr>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="45Z9DzgjV8m4Oswq"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: driverdev-devel-bounces@linuxdriverproject.org
+To: dri-devel@lists.freedesktop.org
+Cc: devel@driverdev.osuosl.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, rtc-linux@googlegroups.com, linux-nfc@lists.01.org, kernel-janitors@vger.kernel.org, linux-wireless@vger.kernel.org, josh@joshtriplett.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-media@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
+These patches add labels in the initializations of structure fields (c99
+initializers).  The complete semantic patch thta makes this change is shown
+below.  This rule ignores cases where the initialization is just 0 or NULL,
+where some of the fields already use labels, and where there are nested
+structures.
 
---45Z9DzgjV8m4Oswq
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+// <smpl>
+@ok1@
+identifier i1,i2;
+position p;
+@@
 
-Hi Linus,
+struct i1 i2@p = { \(0\|NULL\) };
 
-The following changes since commit 7d1311b93e58ed55f3a31cc8f94c4b8fe988a2b9:
+@ok2@
+identifier i1,i2,i3;
+position p;
+expression e;
+@@
 
-  Linux 3.17-rc1 (2014-08-16 10:40:26 -0600)
+struct i1 i2@p = { ..., .i3 = e, ... };
 
-are available in the git repository at:
+@ok3@
+identifier i1,i2;
+position p;
+@@
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-3.17-rc2
+struct i1 i2@p = { ..., { ... }, ... };
 
-for you to fetch changes up to d717ea73e36dd5659640fae82605ad85c4117f4d:
+@decl@
+identifier i1,fld;
+type T;
+field list[n] fs;
+@@
 
-  pwm: Fix period and polarity in pwm_get() for non-perfect matches (2014-08-18 10:58:43 +0200)
+struct i1 {
+ fs
+ T fld;
+ ...};
 
-Thanks,
-Thierry
+@bad@
+identifier decl.i1,i2;
+expression e;
+position p != {ok1.p,ok2.p,ok3.p};
+constant nm;
+initializer list[decl.n] is;
+position fix;
+@@
 
-----------------------------------------------------------------
-pwm: Fixes for v3.17-rc2
+struct i1 i2@p = { is,
+(
+ nm(...)
+|
+ e@fix
+)
+ ,...};
 
-Just one bugfix for the PWM lookup table code that would cause a PWM
-channel to be set to the wrong period and polarity for non-perfect
-matches.
+@@
+identifier decl.i1,i2,decl.fld;
+expression e;
+position bad.p, bad.fix;
+@@
 
-----------------------------------------------------------------
-Geert Uytterhoeven (1):
-      pwm: Fix period and polarity in pwm_get() for non-perfect matches
-
- drivers/pwm/core.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
---45Z9DzgjV8m4Oswq
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJT95tGAAoJEN0jrNd/PrOhqI4QALCvfTmbmxa3aoQH22zSgWDv
-VLOOdgUVJdeoasUzDtd6KzzPXD2A0X6BgFvDu8BUYaCjE9TgqaU444PVYTOhryog
-ZhibIw2MhD2bDhh+dsx6XXD0to1kl75jxjkyirOik5dVRADO8KGs+Tum8wf5ysDq
-Yco42tFVhN4zmfmkh60znhQN575Sw9cBGYLVqprxErE6+sWCFZUV0jelPOiD0iyE
-ZLZJUM7EZsIDDTGI5p4Jvi4tcB/TlirvT7xw/fcVQcP+7T5yJS7kbjPLNllcPkwi
-8Nve8pCgrgkdtOaKBBMgb5/jukobrobwaMAGh/wZ+nTA3BkHrd5Q9uZA/dWIk1jh
-3mulcM5xezNZG4Z6CCkYXJI5e6xM7PVuF1to7VBlvnHNRD2KSbI6EM1J2qSmfzrb
-OzFRjLD+CSNyJ+Q3u6aLRRhdLYTLhsODFLESdLpVPI5YbzqAUbemYj6z3GupkTNN
-dRDJFFcnlvzCLSviGw3J4WcTp8EOd4jwlomBSd0ggmlmVuTMWaN4b6QVFoM5BXuB
-Fi1oK0Gie34pRQfyQitp2BJHBttFXZ5C4ylxBQruPvx0SrYXbE7YEdIGyUwL1fuW
-2StBs4MZxdjlWCSF3MmnNhIX4EjbhNhGEgwWOHSXuZR25Mj/mGAdcOgOFbj+7Rtr
-Zv4dSLJh+na2yTH6YEwl
-=pTCz
------END PGP SIGNATURE-----
-
---45Z9DzgjV8m4Oswq--
+struct i1 i2@p = { ...,
++ .fld = e
+- e@fix
+ ,...};
+// </smpl>
