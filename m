@@ -1,88 +1,73 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: imx: don't reprogram PWMSAR if PWM is disabled
-Date: Mon, 25 Aug 2014 15:56:53 +0200
-Message-ID: <20140825135652.GL4163@ulmo.nvidia.com>
-References: <1406102987-14797-1-git-send-email-dbaryshkov@gmail.com>
- <CALT56yON=icaJZa22F30caYOGVLiHqBdXX2sfHqTBArd+PxrFA@mail.gmail.com>
- <20140805013627.GB27051@dragon>
- <53E09A69.5000806@freescale.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ZrCu0B0FMx3UnjE2"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f43.google.com ([209.85.220.43]:62680 "EHLO
-	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755489AbaHYN46 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 25 Aug 2014 09:56:58 -0400
-Received: by mail-pa0-f43.google.com with SMTP id lf10so21213650pab.30
-        for <linux-pwm@vger.kernel.org>; Mon, 25 Aug 2014 06:56:58 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <53E09A69.5000806@freescale.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: [PATCH v5 0/3] PWM changes for rk3288-evb
+Date: Mon, 25 Aug 2014 15:59:24 -0700
+Message-ID: <1409007567-23523-1-git-send-email-dianders@chromium.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Caesar Wang <caesar.wang-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Cc: Sonny Rao <sonnyrao-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org, Eddie Cai <eddie.cai-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
-Cc: Shawn Guo <shawn.guo@linaro.org>, Liu Ying <Ying.Liu@freescale.com>, Sascha Hauer <s.hauer@pengutronix.de>, linux-pwm@vger.kernel.org
 
+These patches enable the PWM backlight for the rk3288-evb board.
+There were tested by watching the backlight grow from off to max with
+the following instructions:
 
---ZrCu0B0FMx3UnjE2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+  cd /sys/class/backlight/backlight*/
+  for i in $(seq 255); do echo $i > brightness; sleep .01; done
 
-On Tue, Aug 05, 2014 at 04:48:41PM +0800, Liu Ying wrote:
-> On 08/05/2014 09:36 AM, Shawn Guo wrote:
-> >On Fri, Aug 01, 2014 at 10:02:17PM +0400, Dmitry Eremin-Solenikov wrote:
-> >>On Wed, Jul 23, 2014 at 12:09 PM, Dmitry Eremin-Solenikov
-> >><dbaryshkov@gmail.com> wrote:
-> >>>From: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
-> >>>
-> >>>Writing several values to PWMSAR register with PWM being disabled can
-> >>>lead to FIFO (connected to PWMSAR) being overflown. Then after enabling
-> >>>PWM, hardware will use stale values. Instead cache the duty cycles and
-> >>>write them to the hardware only before enabling PWM.
-> >>
-> >>What about this patch?
-> >
-> >Copy Liu Ying who seems to have a patch [1] addressing the same problem?
-> >
->=20
-> Yes, my patch may address the same problem. And, my patch may cache the l=
-ast
-> duty cycle as well when the PWM is disabled. The difference is that my pa=
-tch
-> caches it in the register PWMSAR instead of a variable.
+The first patch switches PWM cells from 2 to 3 on rk3288.  I think it
+could land in Thierry's tree.  This patch will break backward
+compatibility for rk3288 until changes land handling PWM cells more
+dynamically, but since there are no rk3288 boards shipping yet it
+seems OK.
 
-Dmitry,
+The 2nd and 3rd patches are DTS ones.  They could land in Heiko's tree
+after the first two patches.  They are based atop his current WIP 3.18
+dts tree.  Note that instantiating the PWM backlight will cause the
+system to hang unless Heiko's (clk: rockchip: protect critical clocks
+from getting disabled) <patchwork.kernel.org/patch/4725391> is landed.
 
-I've just pushed Liu's patch that might fix this problem. Can you give
-it a quick spin to see if it fixes the issue that you're seeing? It's in
-the for-next branch of the PWM tree[0].
+There are no compile time or runtime dependencies between these
+patches except that patch #2 needs to come before patch #3.  ...and of
+course the PWM won't work without all 3 patches.
 
-Thanks,
-Thierry
+There is a missing patch from this series: the patch that enables the
+proper IP in the rk3288 "grf" (general register file).  That patch can
+come later.  For now we'll assume that firmware (or some out of tree
+kernel patch) will set it up.
 
-[0]: git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm=
-=2Egit
+Changes in v5:
+- Back to version 3 (no rockchip,grf).
 
---ZrCu0B0FMx3UnjE2
-Content-Type: application/pgp-signature
+Changes in v4:
+- Updated comment not to add caveats about pwm_cells 3.
+- rockchip_pwm_set_polarity() is now static.
+- Separate pwm_ops for v1 and v2; no set_polarity() in v1.
+- Added a blank line.
+- Add rockchip,grf to pwm nodes.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Changes in v3:
+- Don't store a private copy of polarity.
+- Use true instead of 1.
+- Cleanup init order with "has_invert".
+- Fix space to tab in 2 places in DTS.
+- Make sure PWM is upper case in prose.
 
-iQIcBAEBAgAGBQJT+0CkAAoJEN0jrNd/PrOhiRkP/iDsxzQSD3JNHuu5VZWaLFD6
-OwPGyhifK3qxkpJzgU7imQZ9ZSoZO+hSWqPoV7iVl6yYoil3f6md6hfEjVOsxDDO
-tDN8GmdoqQdVoRbtjG1SN1f2TCIdbk5MjgbbS+487VEOQtjjtmPcPVdCCWUpezJj
-vFegNDPoHiZMKZMN+bB2qtsFQlvK3bsakjPuJ1jBxftA6IFiwyigU5dLoBXEPfC/
-Go1uo48rF+vH9TptVeahTPZn/GY6cSnEPHWX2VWfzcSKiIwc6t8RIt+F/9K98HgW
-VvLLrnMsuFcIi/CrK9Efo9+/KmO7IhP7mqd/ZVWnqKihzLlbWL1CvT9w/6Ol1iTP
-XOfkgL0k+zuDyzKYw0e8nXaCvtFqaRLeWMMM8NLGwjH007lIMq+MfX+Xd9Rw7/nO
-F8xtAwRUx00eeyvQxoL4Kn0YskYXnAW3mCOYj7p7lYjdocNv3Je++I37Ij3mM50E
-pGssXk+/Z7mqcd7Il/kJMPIafyiF3+IX1ie7ZYAr/zckWLmcX/JdF4eAKpim0tJl
-QEaSi4NEvF1gsON4MCzj+hTpL9rxWxqVb1SQfVVYF8iPL8oJEKka6WZ7cfDZzHPE
-vOVy9p6Hs4DMUnYmBkcyY+cCSFzZcNBqp6jrsZmblvTjFtLE5lzIMcN0solKDHWH
-5ago2JFbCOmggvBZVOJw
-=Xkyg
------END PGP SIGNATURE-----
+Doug Anderson (3):
+  pwm: rockchip: Allow polarity invert on rk3288
+  ARM: dts: Add main PWM info to rk3288
+  ARM: dts: Enable PWM backlight on rk3288-evb
 
---ZrCu0B0FMx3UnjE2--
+ .../devicetree/bindings/pwm/pwm-rockchip.txt       |  4 +-
+ arch/arm/boot/dts/rk3288-evb.dtsi                  | 53 +++++++++++++++++
+ arch/arm/boot/dts/rk3288.dtsi                      | 68 ++++++++++++++++++++++
+ drivers/pwm/pwm-rockchip.c                         | 57 +++++++++++++++---
+ 4 files changed, 171 insertions(+), 11 deletions(-)
+
+-- 
+2.1.0.rc2.206.gedb03e5
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
