@@ -1,106 +1,77 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 3/9] pwm: lpss: use c99 initializers in structures
-Date: Mon, 25 Aug 2014 11:44:52 +0200
-Message-ID: <20140825094450.GC2399@ulmo>
-References: <1408792831-25615-1-git-send-email-Julia.Lawall@lip6.fr>
- <1408792831-25615-4-git-send-email-Julia.Lawall@lip6.fr>
+Subject: Re: [PATCH] pwm: lpss: make it buildable only on X86
+Date: Mon, 25 Aug 2014 11:45:09 +0200
+Message-ID: <20140825094508.GD2399@ulmo>
+References: <1408959511-4360-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="2/5bycvrmDh4d1IB"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="WChQLJJJfbwij+9x"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wg0-f49.google.com ([74.125.82.49]:56754 "EHLO
+	mail-wg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754975AbaHYJpM (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 25 Aug 2014 05:45:12 -0400
+Received: by mail-wg0-f49.google.com with SMTP id k14so13077045wgh.32
+        for <linux-pwm@vger.kernel.org>; Mon, 25 Aug 2014 02:45:11 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <1408792831-25615-4-git-send-email-Julia.Lawall@lip6.fr>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Julia Lawall <Julia.Lawall@lip6.fr>
-Cc: josh@joshtriplett.org, kernel-janitors@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <1408959511-4360-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-pwm@vger.kernel.org
 
 
---2/5bycvrmDh4d1IB
+--WChQLJJJfbwij+9x
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sat, Aug 23, 2014 at 01:20:25PM +0200, Julia Lawall wrote:
-> From: Julia Lawall <Julia.Lawall@lip6.fr>
+On Mon, Aug 25, 2014 at 12:38:31PM +0300, Andy Shevchenko wrote:
+> There is no sign of this IP block on non-x86 architectures and rather wil=
+l not
+> be. Thus, make this explicit by applying a direct dependency to X86.
 >=20
-> Use c99 initializers for structures.
->=20
-> A simplified version of the semantic match that finds this problem is as
-> follows: (http://coccinelle.lip6.fr/)
->=20
-> // <smpl>
-> @decl@
-> identifier i1,fld;
-> type T;
-> field list[n] fs;
-> @@
->=20
-> struct i1 {
->  fs
->  T fld;
->  ...};
->=20
-> @bad@
-> identifier decl.i1,i2;
-> expression e;
-> initializer list[decl.n] is;
-> @@
->=20
-> struct i1 i2 =3D { is,
-> + .fld =3D e
-> - e
->  ,...};
-> // </smpl>
->=20
-> Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
->=20
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
-> The patches in this series do not depend on each other.
+>  drivers/pwm/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
 >=20
->  drivers/pwm/pwm-lpss.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-> index 4df994f..441a046 100644
-> --- a/drivers/pwm/pwm-lpss.c
-> +++ b/drivers/pwm/pwm-lpss.c
-> @@ -45,7 +45,7 @@ struct pwm_lpss_boardinfo {
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index 0907416..3865dfb 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -150,6 +150,7 @@ config PWM_LPC32XX
 > =20
->  /* BayTrail */
->  static const struct pwm_lpss_boardinfo byt_info =3D {
-> -	25000000
-> +	.clk_rate =3D 25000000
->  };
-> =20
->  static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
+>  config PWM_LPSS
+>  	tristate "Intel LPSS PWM support"
+> +	depends on X86
+>  	help
+>  	  Generic PWM framework driver for Intel Low Power Subsystem PWM
+>  	  controller.
 
-I've applied this patch to the for-next branch of the PWM tree. There
-was a conflict due to a patch that was recently applied, but it was
-trivial to fix it up, so I did.
+Applied, thanks.
 
-Thanks,
 Thierry
 
---2/5bycvrmDh4d1IB
+--WChQLJJJfbwij+9x
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJT+wWSAAoJEN0jrNd/PrOhZpcP/0Fe4z6FfKJO3zjA0R9If1Ef
-0BaphloBbqfcxWH14dd/YUW20WhtwttXvhUMIcLra9VWdDdrU+/HLL3OcgCmOxO7
-LX56E0XcMBdxZPDqWKgTuaOZMgjbpvMSW1Xi0+LsaG7E0cY+ECBvy8Ga8P5iPXHY
-dH2eDqUqI8i+Z+PSBUyZXRBkFTM+ySHlYl7u8iz7G1CHTkbqJEzWIJE2pg2qLA0m
-edWVTDKuxNoVep4mAA1HazNLMKNZ2/Vq2TTx5DVhjWsNStykctzwB/XTE6phpSPm
-NqDqGqnmj3bYq76dNH60TBH+BwmSztPIDHdFT4X5E9WsM17QlMWqXfxdYh3osjdr
-YMrjLOvFKUozbYUyFn2M/BWT3RsQvbrfOCsNAvbGoYjvfYGMlkr2+eNdD0og48g/
-JX62GAamC0wLPLjPnrn6OU+nF18NIEOPQTDl/41NNwfYJ7LdZjhasKmSpWOH1ojE
-WJFT0XBK8ZTaWSp83MYmIZokevx9qa/q5P3RNPSOGKZVqt6Nz1BZNPDYj56sHfrr
-ZnzrB/3w4dd3D8YjCjkqkRZ082A+Dd18aHXwKicWe/57FK0vvfI1ouEZDk0MrhRB
-0m49Ehil/Oym/dI2O7nS0155QgUmdKHnOY1RsRGkPvNVC0D3JMki+PIWKnxV9Pxf
-ufJdAf/ZQ9WL21bMksuR
-=H9WT
+iQIcBAEBAgAGBQJT+wWkAAoJEN0jrNd/PrOhTuoQAJfAX2bBSmieDM8Sqsvdi1ho
+okHM8T2yFCh5PySdicETzUVaZHT0CFxzyK9xPlhJmMEpoVi0FpTmGJWpJaex4Gy0
+Gj5PIYEGivMyeWiPMGL9Q5lS6Y01Xldk2vvwYwhtmoxT67pnav86GOFG/I6Iyj2t
+rE+1hUfjIojcHHLulGMHycpPnQcnnu0xi8fQnBm+l9yjk67/N/hCgz27bgTePItP
+spfmlbge4qvqmoV2HWb6ej8TnSq0ErXv5tMZf8neYWyo2iE1bSF2Hc95iTIgxBST
+Fr9LTeyfZ8zwLtHWSMWn4ypCCg891DlocIyjJr9Yq8+J9wjCLbaNsROYkEcSl0wC
+9aKtIXlVtdKb//ca4TSLkzvzxkzfQoEyUWaPQb5EHEltPfJqt82W5nYxI+DLvjvc
+0tZdQYF8DQxWCosAHZnkRa6OFcb8qWzNvXnrLxLmtr0a3fAleLr18B5NsEX8MiM8
+y3w5LpojqG9v+d4GYa0BPJwqSDr09vWJ1x/XtSDaRHiJSBKrGmQ55Nsn713Rwu8l
+FlEE6EZBnaEKqSqXNa+qAkSuGZrw5uUNBXYt8QjcGR1fJ7nI2L3059hhm4firSTX
+IYrO2v0ykJVqkNnflF/JLxqkeWsS7i9P0ob6fWI5kw6ftiu+0tFx01LLs0dmLF9d
+LTQK1UV8TE565VB4oFvk
+=WDtF
 -----END PGP SIGNATURE-----
 
---2/5bycvrmDh4d1IB--
+--WChQLJJJfbwij+9x--
