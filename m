@@ -1,107 +1,88 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v5 3/3] pwm: i.MX: Avoid sample FIFO overflow for i.MX
- PWM version2
-Date: Mon, 25 Aug 2014 15:49:29 +0200
-Message-ID: <20140825134927.GK4163@ulmo.nvidia.com>
-References: <1401274213-8954-1-git-send-email-Ying.Liu@freescale.com>
- <1401274213-8954-3-git-send-email-Ying.Liu@freescale.com>
- <20140825115628.GA7008@dragon>
+Subject: Re: [PATCH] pwm: imx: don't reprogram PWMSAR if PWM is disabled
+Date: Mon, 25 Aug 2014 15:56:53 +0200
+Message-ID: <20140825135652.GL4163@ulmo.nvidia.com>
+References: <1406102987-14797-1-git-send-email-dbaryshkov@gmail.com>
+ <CALT56yON=icaJZa22F30caYOGVLiHqBdXX2sfHqTBArd+PxrFA@mail.gmail.com>
+ <20140805013627.GB27051@dragon>
+ <53E09A69.5000806@freescale.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="NqNl6FRZtoRUn5bW"
+	protocol="application/pgp-signature"; boundary="ZrCu0B0FMx3UnjE2"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pd0-f169.google.com ([209.85.192.169]:35294 "EHLO
-	mail-pd0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932274AbaHYNtd (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 25 Aug 2014 09:49:33 -0400
+Received: from mail-pa0-f43.google.com ([209.85.220.43]:62680 "EHLO
+	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755489AbaHYN46 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 25 Aug 2014 09:56:58 -0400
+Received: by mail-pa0-f43.google.com with SMTP id lf10so21213650pab.30
+        for <linux-pwm@vger.kernel.org>; Mon, 25 Aug 2014 06:56:58 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <20140825115628.GA7008@dragon>
+In-Reply-To: <53E09A69.5000806@freescale.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Shawn Guo <shawn.guo@freescale.com>
-Cc: Liu Ying <Ying.Liu@freescale.com>, linux-pwm@vger.kernel.org, s.hauer@pengutronix.de, LW@KARO-electronics.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
+Cc: Shawn Guo <shawn.guo@linaro.org>, Liu Ying <Ying.Liu@freescale.com>, Sascha Hauer <s.hauer@pengutronix.de>, linux-pwm@vger.kernel.org
 
 
---NqNl6FRZtoRUn5bW
-Content-Type: text/plain; charset=utf-8
+--ZrCu0B0FMx3UnjE2
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 25, 2014 at 07:59:01PM +0800, Shawn Guo wrote:
-> On Wed, May 28, 2014 at 06:50:13PM +0800, Liu Ying wrote:
-> > The i.MX PWM version2 is embedded in several i.MX SoCs,
-> > such as i.MX27, i.MX51 and i.MX6SL.  There is a 4-word(16bit)
-> > sample FIFO in this IP.  Each FIFO slot determines the duty
-> > period of a PWM waveform in one full cycle.  The IP spec
-> > mentions that we should not write a fourth sample because
-> > the FIFO will become full and triggers a FIFO write error
-> > (FWE) which will prevent the PWM from starting once it is
-> > enabled.  In order to avoid any sample FIFO overflow issue,
-> > this patch clears all sample FIFO by doing software reset
-> > in the configuration hook when the controller is disabled
-> > or waits for a full PWM cycle to get a relinquished FIFO
-> > slot when the controller is enabled and the FIFO is fully
-> > loaded.
-> >=20
-> > The FIFO overflow issue can be reproduced by the following
-> > commands on the i.MX6SL EVK platform, assuming we use PWM2
-> > for the debug LED which is driven by the pin HSIC_STROBE
-> > and the maximal brightness is 255.
-> > echo 0   > /sys/class/leds/user/brightness
-> > echo 0   > /sys/class/leds/user/brightness
-> > echo 0   > /sys/class/leds/user/brightness
-> > echo 0   > /sys/class/leds/user/brightness
-> > echo 255 > /sys/class/leds/user/brightness
-> > Here, FWE happens(PWMSR register reads 0x58) and the LED
-> > can not be lighten.
-> >=20
-> > Another way to reproduce the FIFO overflow issue is to run
-> > this script:
-> > while true;
-> > 	do echo 255 > /sys/class/leds/user/brightness;
-> > done
-> >=20
-> > Cc: Thierry Reding <thierry.reding@gmail.com>
-> > Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> > Cc: Shawn Guo <shawn.guo@freescale.com>
-> > Cc: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
-> > Cc: linux-pwm@vger.kernel.org
-> > Cc: linux-arm-kernel@lists.infradead.org
-> > Signed-off-by: Liu Ying <Ying.Liu@freescale.com>
+On Tue, Aug 05, 2014 at 04:48:41PM +0800, Liu Ying wrote:
+> On 08/05/2014 09:36 AM, Shawn Guo wrote:
+> >On Fri, Aug 01, 2014 at 10:02:17PM +0400, Dmitry Eremin-Solenikov wrote:
+> >>On Wed, Jul 23, 2014 at 12:09 PM, Dmitry Eremin-Solenikov
+> >><dbaryshkov@gmail.com> wrote:
+> >>>From: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
+> >>>
+> >>>Writing several values to PWMSAR register with PWM being disabled can
+> >>>lead to FIFO (connected to PWMSAR) being overflown. Then after enabling
+> >>>PWM, hardware will use stale values. Instead cache the duty cycles and
+> >>>write them to the hardware only before enabling PWM.
+> >>
+> >>What about this patch?
+> >
+> >Copy Liu Ying who seems to have a patch [1] addressing the same problem?
+> >
 >=20
-> The whole series,
->=20
-> Acked-by: Shawn Guo <shawn.guo@freescale.com>
->=20
-> Thierry,
->=20
-> Can you pick them up if they look good to you?
+> Yes, my patch may address the same problem. And, my patch may cache the l=
+ast
+> duty cycle as well when the PWM is disabled. The difference is that my pa=
+tch
+> caches it in the register PWMSAR instead of a variable.
 
-All three patches applied with your Acked-by (and some minor
-reformatting of the commit message).
+Dmitry,
+
+I've just pushed Liu's patch that might fix this problem. Can you give
+it a quick spin to see if it fixes the issue that you're seeing? It's in
+the for-next branch of the PWM tree[0].
 
 Thanks,
 Thierry
 
---NqNl6FRZtoRUn5bW
+[0]: git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm=
+=2Egit
+
+--ZrCu0B0FMx3UnjE2
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJT+z7nAAoJEN0jrNd/PrOh/fIQALbB9Swl33dg9AASGeV39IpS
-yql8xpluscr7YQMhQwQgfhfNa+CAhYDnT5/sCj3Wgm3sTR2zthc1u1uTZ4VDD0Sm
-9DG9fQJO5Z+/A7k2wY2SdvgAECdx4cIyyacQFMd5Y/H0OwVhsrUMBGVBL4k2A91D
-BjQdKofv/Ae08vfi8Xm508l8WEbKNh0AGAbEGWCflZULbgsAOJsYLBff1wFF+I0Q
-lFuCnDbwwBBxzysbUqEJP6pL60ozckaH1hRPX74XRwSMKhdbvKTA/+wfbuROlE24
-6AcOpkkeJkTBJIqCbeHg8DmNP2hlK+t3L3d3A9O2VTcdmN+9+09cRbOMPBSaoPvi
-ruVuXgtysciXo9Uk0+yWzfA4tCjUPDElAjbWHJLZHvyIUTIEUmKqpodNIxvyExqs
-2V28QXvfShvPHBgvsPuw7L6h8KvXa0zTwwb6Z/Olp9+Ww+IErPmsI67gTXtb0MNm
-qQUn854EP8AeFk+LU3pscP28v66r44s6Yzw3KqO1P6t+0RyzMY0ceahERPopdHL8
-zEfJfwlyeuO5TNWi036GEDnWz0juqjqx4l+Ff15/QTvJaDkFV1CFpg5WCgKUcXST
-OuqhOhYoonajS2zVcCvDPmL/dooFYchmUaKJ/o25ym+Wg0yHR2ficEMMvSQGUvwg
-SgVw+GJbzqrQQCebp+Kv
-=cNKn
+iQIcBAEBAgAGBQJT+0CkAAoJEN0jrNd/PrOhiRkP/iDsxzQSD3JNHuu5VZWaLFD6
+OwPGyhifK3qxkpJzgU7imQZ9ZSoZO+hSWqPoV7iVl6yYoil3f6md6hfEjVOsxDDO
+tDN8GmdoqQdVoRbtjG1SN1f2TCIdbk5MjgbbS+487VEOQtjjtmPcPVdCCWUpezJj
+vFegNDPoHiZMKZMN+bB2qtsFQlvK3bsakjPuJ1jBxftA6IFiwyigU5dLoBXEPfC/
+Go1uo48rF+vH9TptVeahTPZn/GY6cSnEPHWX2VWfzcSKiIwc6t8RIt+F/9K98HgW
+VvLLrnMsuFcIi/CrK9Efo9+/KmO7IhP7mqd/ZVWnqKihzLlbWL1CvT9w/6Ol1iTP
+XOfkgL0k+zuDyzKYw0e8nXaCvtFqaRLeWMMM8NLGwjH007lIMq+MfX+Xd9Rw7/nO
+F8xtAwRUx00eeyvQxoL4Kn0YskYXnAW3mCOYj7p7lYjdocNv3Je++I37Ij3mM50E
+pGssXk+/Z7mqcd7Il/kJMPIafyiF3+IX1ie7ZYAr/zckWLmcX/JdF4eAKpim0tJl
+QEaSi4NEvF1gsON4MCzj+hTpL9rxWxqVb1SQfVVYF8iPL8oJEKka6WZ7cfDZzHPE
+vOVy9p6Hs4DMUnYmBkcyY+cCSFzZcNBqp6jrsZmblvTjFtLE5lzIMcN0solKDHWH
+5ago2JFbCOmggvBZVOJw
+=Xkyg
 -----END PGP SIGNATURE-----
 
---NqNl6FRZtoRUn5bW--
+--ZrCu0B0FMx3UnjE2--
