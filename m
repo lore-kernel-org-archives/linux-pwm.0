@@ -1,73 +1,96 @@
-From: Shawn Guo <shawn.guo@freescale.com>
-Subject: Re: [PATCH v5 3/3] pwm: i.MX: Avoid sample FIFO overflow for i.MX
- PWM version2
-Date: Mon, 25 Aug 2014 19:59:01 +0800
-Message-ID: <20140825115628.GA7008@dragon>
-References: <1401274213-8954-1-git-send-email-Ying.Liu@freescale.com>
- <1401274213-8954-3-git-send-email-Ying.Liu@freescale.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] PWM: atmel: fix incorrect CDTY value after enabling or
+ disabling
+Date: Mon, 25 Aug 2014 14:35:50 +0200
+Message-ID: <20140825123548.GE4163@ulmo.nvidia.com>
+References: <1394823931-2815-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <20140825101522.GA16960@ulmo.nvidia.com>
+ <20140825115454.GA2077@piout.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="TD8GDToEDw0WLGOL"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-by2lp0242.outbound.protection.outlook.com ([207.46.163.242]:11758
-	"EHLO na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1755314AbaHYL7X (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 25 Aug 2014 07:59:23 -0400
+Received: from mail-pd0-f177.google.com ([209.85.192.177]:61132 "EHLO
+	mail-pd0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753596AbaHYMf6 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 25 Aug 2014 08:35:58 -0400
 Content-Disposition: inline
-In-Reply-To: <1401274213-8954-3-git-send-email-Ying.Liu@freescale.com>
+In-Reply-To: <20140825115454.GA2077@piout.net>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Liu Ying <Ying.Liu@freescale.com>
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, s.hauer@pengutronix.de, LW@KARO-electronics.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Bo Shen <voice.shen@atmel.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Wed, May 28, 2014 at 06:50:13PM +0800, Liu Ying wrote:
-> The i.MX PWM version2 is embedded in several i.MX SoCs,
-> such as i.MX27, i.MX51 and i.MX6SL.  There is a 4-word(16bit)
-> sample FIFO in this IP.  Each FIFO slot determines the duty
-> period of a PWM waveform in one full cycle.  The IP spec
-> mentions that we should not write a fourth sample because
-> the FIFO will become full and triggers a FIFO write error
-> (FWE) which will prevent the PWM from starting once it is
-> enabled.  In order to avoid any sample FIFO overflow issue,
-> this patch clears all sample FIFO by doing software reset
-> in the configuration hook when the controller is disabled
-> or waits for a full PWM cycle to get a relinquished FIFO
-> slot when the controller is enabled and the FIFO is fully
-> loaded.
+
+--TD8GDToEDw0WLGOL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Aug 25, 2014 at 01:54:54PM +0200, Alexandre Belloni wrote:
+> Hi,
 >=20
-> The FIFO overflow issue can be reproduced by the following
-> commands on the i.MX6SL EVK platform, assuming we use PWM2
-> for the debug LED which is driven by the pin HSIC_STROBE
-> and the maximal brightness is 255.
-> echo 0   > /sys/class/leds/user/brightness
-> echo 0   > /sys/class/leds/user/brightness
-> echo 0   > /sys/class/leds/user/brightness
-> echo 0   > /sys/class/leds/user/brightness
-> echo 255 > /sys/class/leds/user/brightness
-> Here, FWE happens(PWMSR register reads 0x58) and the LED
-> can not be lighten.
+> On 25/08/2014 at 12:15:23 +0200, Thierry Reding wrote :
+> > On Fri, Mar 14, 2014 at 08:05:31PM +0100, Alexandre Belloni wrote:
+> > > pwm-leds calls .config() and .disable() in a row. This exhibits that =
+it may
+> > > happen that the channel gets disabled before CDTY has been updated wi=
+th CUPD.
+> > > The issue gets quite worse with long periods.
+> > > So, ensure by reading ISR that at least one period has past before di=
+sabling the
+> > > channel.
+> > >=20
+> > > The other issue is that it may happen that CUPD is not flushed before=
+ enabling
+> > > the channel so it will update CDTY/CPRD just after one period. So we =
+always set
+> > > CUPD, even when the channel is not enabled.
+> > >=20
+> > > Tested on at91sam9g45 and sama5d31ek.
+> > >=20
+> > > Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.co=
+m>
+> > > ---
+> > >  drivers/pwm/pwm-atmel.c | 46 +++++++++++++++++++++++++++++----------=
+-------
+> > >  1 file changed, 29 insertions(+), 17 deletions(-)
+> >=20
+> > going through the list of unapplied patches I came across this old
+> > patch. It was never reviewed nor acked by anyone and you didn't ping me,
+> > so I always assumed it must no longer be required. Is that so?
+> >=20
 >=20
-> Another way to reproduce the FIFO overflow issue is to run
-> this script:
-> while true;
-> 	do echo 255 > /sys/class/leds/user/brightness;
-> done
+> It is still required but Nicolas is not happy with the polling on
+> PWM_ISR and he was supposed to discuss that internally with the IP
+> designer to understand if there is a better way.
 >=20
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> Cc: Shawn Guo <shawn.guo@freescale.com>
-> Cc: Lothar Wa=DFmann <LW@KARO-electronics.de>
-> Cc: linux-pwm@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Signed-off-by: Liu Ying <Ying.Liu@freescale.com>
+> I'll either ping on that one or send a new version when I'll know a bit
+> more.
 
-The whole series,
+Okay, thanks.
 
-Acked-by: Shawn Guo <shawn.guo@freescale.com>
+Thierry
 
-Thierry,
+--TD8GDToEDw0WLGOL
+Content-Type: application/pgp-signature
 
-Can you pick them up if they look good to you?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-Shawn
+iQIbBAEBAgAGBQJT+y2kAAoJEN0jrNd/PrOhFNsP93TQj/KOzqpjR0oca2Z8Qltn
+0Nas+y/OuaIdziEU0gfIB4a656Hos/6Cm/GnATAPQye/lu8hzOvnosZQlgHKL4tL
+Q/3fMD/xO7fwatODRwEglOGtgp8ERcXLC8rEx/H++CTzhPvr6EEY4RceGOMwdUSK
+CvEE/4iiZqoML+9QEjJEfDNX2YHDjASZ7W6Rz8udnDwRpY6FahQmwo+K8YJRT9tl
+wRrgMRmScIPgUVxHn0WUg+kLXC2l10PRqdq35/+85YGIZUI3x+cMhNFs5DLRaO/C
+YeP/0fAVBaCywvc6rdzmQMLXrytFwb9aHc72l7o0G6JTF7+HviDCOJuz5af0c1Z6
+mz/7Gbs7mUm10k9Z30VUJRogrpRfhJKSUaSYEdY7sn9L8SI2JNW+ZGaWMQjf2WuD
++xT6gyJlrDXXpnMGQq85dk8bi16rp6ENsgAwMWL3qkJCNZpw3FCTged50Dn8DqsW
+ftD/2ys3UDNU0QwlGnGnygBwT86YyVWQ/HnqNaYPMZ4RTR9Px27zQAlYKkpQ61ig
+Jh//4UfFX9R5UuFgfIh9DuzfknVyPR+I4k5XuswuNMUrKhKD82mcTZnXKZj9uG84
+R8EwScZQKRkxogN6ACL/0rDh2H5Qi8JHEp+tsxTEN1nJSp3Xqnjd+TEs/xSci3gc
+MfTySKMgYkTDtp+mjAM=
+=B1R7
+-----END PGP SIGNATURE-----
+
+--TD8GDToEDw0WLGOL--
