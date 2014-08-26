@@ -1,53 +1,34 @@
-From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
-Subject: Re: [PATCHv4 0/4] pwm: imx: support output polarity inversion
-Date: Tue, 26 Aug 2014 09:24:09 +0200
-Message-ID: <20140826092409.7dea5530@ipc1.ka-ro>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCHv4 4/4] pwm: imx: support output polarity inversion
+Date: Tue, 26 Aug 2014 15:39:13 +0800
+Message-ID: <20140826073911.GB12289@dragon>
 References: <1408517756-9412-1-git-send-email-LW@KARO-electronics.de>
+ <1408517756-9412-2-git-send-email-LW@KARO-electronics.de>
+ <1408517756-9412-3-git-send-email-LW@KARO-electronics.de>
+ <1408517756-9412-4-git-send-email-LW@KARO-electronics.de>
+ <1408517756-9412-5-git-send-email-LW@KARO-electronics.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.karo-electronics.de ([81.173.242.67]:60364 "EHLO
-	mail.karo-electronics.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755391AbaHZHYY convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 26 Aug 2014 03:24:24 -0400
-In-Reply-To: <1408517756-9412-1-git-send-email-LW@KARO-electronics.de>
+Received: from mail-by2lp0241.outbound.protection.outlook.com ([207.46.163.241]:51222
+	"EHLO na01-by2-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1752889AbaHZHjf (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Tue, 26 Aug 2014 03:39:35 -0400
+Content-Disposition: inline
+In-Reply-To: <1408517756-9412-5-git-send-email-LW@KARO-electronics.de>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <kernel@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>, Tony Prisk <linux@prisktech.co.nz>, linux-arm-kernel@lists.infradead.org
+To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>, Tony Prisk <linux@prisktech.co.nz>, linux-arm-kernel@lists.infradead.org
 
-Hi,
-
-Lothar Wa=C3=9Fmann wrote:
-> This patch series adds support for polarity inversion to the pwm-imx
-> driver. The patches have been tested on i.MX6, i.MX53 and with the
-> ti-ehrpwm.c driver.
+On Wed, Aug 20, 2014 at 08:55:56AM +0200, Lothar Wa=DFmann wrote:
+> The i.MX pwm unit on i.MX27 and newer SoCs provides a configurable
+> output polarity. This patch adds support to utilize this feature wher=
+e
+> available.
 >=20
-> Changes wrt. v2:
-> - make the use of '#pwm-cells =3D <3>' optional, so that the change d=
-oes
->   not break existing DT blobs as suggested by Arnd Bergmann and Sasch=
-a
->   Hauer.
->=20
-> Changes wrt. v3:
-> - implemented the approach suggested by Sascha Hauer=20
-> - don't modify struct pwm_ops in the imx_pwm probe function
->=20
->=20
-Any further comments?
-Anyone taking care of these patches?
+> Signed-off-by: Lothar Wa=DFmann <LW@KARO-electronics.de>
 
-
-Lothar Wa=C3=9Fmann
---=20
-___________________________________________________________
-
-Ka-Ro electronics GmbH | Pascalstra=C3=9Fe 22 | D - 52076 Aachen
-Phone: +49 2408 1402-0 | Fax: +49 2408 1402-10
-Gesch=C3=A4ftsf=C3=BChrer: Matthias Kaussen
-Handelsregistereintrag: Amtsgericht Aachen, HRB 4996
-
-www.karo-electronics.de | info@karo-electronics.de
-___________________________________________________________
+Acked-by: Shawn Guo <shawn.guo@linaro.org>
