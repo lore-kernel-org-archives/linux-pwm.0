@@ -1,34 +1,78 @@
-From: Shawn Guo <shawn.guo@linaro.org>
-Subject: Re: [PATCHv4 4/4] pwm: imx: support output polarity inversion
-Date: Tue, 26 Aug 2014 15:39:13 +0800
-Message-ID: <20140826073911.GB12289@dragon>
-References: <1408517756-9412-1-git-send-email-LW@KARO-electronics.de>
- <1408517756-9412-2-git-send-email-LW@KARO-electronics.de>
- <1408517756-9412-3-git-send-email-LW@KARO-electronics.de>
- <1408517756-9412-4-git-send-email-LW@KARO-electronics.de>
- <1408517756-9412-5-git-send-email-LW@KARO-electronics.de>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v5 1/3] pwm: rockchip: Allow polarity invert on rk3288
+Date: Tue, 26 Aug 2014 15:41:39 +0200
+Message-ID: <20140826134138.GA2980@ulmo>
+References: <1409007567-23523-1-git-send-email-dianders@chromium.org>
+ <1409007567-23523-2-git-send-email-dianders@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="oyUTqETQ0mS9luUI"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-by2lp0241.outbound.protection.outlook.com ([207.46.163.241]:51222
-	"EHLO na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1752889AbaHZHjf (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Tue, 26 Aug 2014 03:39:35 -0400
+Received: from mail-we0-f174.google.com ([74.125.82.174]:55428 "EHLO
+	mail-we0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755088AbaHZNlq (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 26 Aug 2014 09:41:46 -0400
 Content-Disposition: inline
-In-Reply-To: <1408517756-9412-5-git-send-email-LW@KARO-electronics.de>
+In-Reply-To: <1409007567-23523-2-git-send-email-dianders@chromium.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>, Tony Prisk <linux@prisktech.co.nz>, linux-arm-kernel@lists.infradead.org
+To: Doug Anderson <dianders@chromium.org>
+Cc: Heiko Stuebner <heiko@sntech.de>, Caesar Wang <caesar.wang@rock-chips.com>, Sonny Rao <sonnyrao@chromium.org>, olof@lixom.net, Eddie Cai <eddie.cai@rock-chips.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Wed, Aug 20, 2014 at 08:55:56AM +0200, Lothar Wa=DFmann wrote:
-> The i.MX pwm unit on i.MX27 and newer SoCs provides a configurable
-> output polarity. This patch adds support to utilize this feature wher=
-e
-> available.
+
+--oyUTqETQ0mS9luUI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Aug 25, 2014 at 03:59:25PM -0700, Doug Anderson wrote:
+> The rk3288 has the ability to invert the polarity of the PWM.  Let's
+> enable that ability.  Note that this increases pwm_cells to 3 for
+> rk3288.
 >=20
-> Signed-off-by: Lothar Wa=DFmann <LW@KARO-electronics.de>
+> Signed-off-by: Doug Anderson <dianders@chromium.org>
+> Reviewed-by: Caesar Wang <caesar.wang@rock-chips.com>
+> ---
+> Changes in v5: None
+> Changes in v4:
+> - Updated comment not to add caveats about pwm_cells 3.
+> - rockchip_pwm_set_polarity() is now static.
+> - Separate pwm_ops for v1 and v2; no set_polarity() in v1.
+> - Added a blank line.
+>=20
+> Changes in v3:
+> - Don't store a private copy of polarity.
+> - Use true instead of 1.
+> - Cleanup init order with "has_invert".
+>=20
+>  .../devicetree/bindings/pwm/pwm-rockchip.txt       |  4 +-
+>  drivers/pwm/pwm-rockchip.c                         | 57 ++++++++++++++++=
+++----
+>  2 files changed, 50 insertions(+), 11 deletions(-)
 
-Acked-by: Shawn Guo <shawn.guo@linaro.org>
+Applied, thanks.
+
+Thierry
+
+--oyUTqETQ0mS9luUI
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJT/I6SAAoJEN0jrNd/PrOhCdUP/inJkzIIKf/NijSTLxngMdfs
+s7jkmXFSHuLIgIW+yfPOXftxY+fC/gOrKQTZBORLPCT0UtNzHMhrAcdyZHQ074KG
+g1LXtkapK+VGSo5hVijOgxXEe5eTzc0EO4YFQpCLBYLd/BhlOuk+h4twJJyZfR27
+uA0w539wbXpy3qBMIS8NEiToT6zqYrXOMUV0ddcMmuzEef5AOJFSkO7s6uGlKGXm
+MUbMU3FjOfgVaTMCwtqr8lwueqvvF739EHbsrhjofWAXi3xMc0KtoeMUNjYvSr7e
+2iPWuM7JthqorDvy7g0q9x6x7vvoxyYfTfHzAk4chdaf/MhE+50J9zwk8FL0JpxX
+nUzIfFE3Uyfh+WFUE/KF+/DScSLTVKCuLuySQue0dKHXZAYcMJFJa7ldj9j+ebru
+pcuv/2hbHC2i4jZ+BMl6ernBTMeAaeIzNaVAKzGeeSQ1BNcLDJGPAjLMfw3HOGVK
+N/90IiUdHqXFWHnEl/qcMWzUPye8bbaC61JYBTqsxo/z5v4y4Ms4rtMGk1njEZIr
+J5rGN0S9rFn4T2urtryhvmAzgk4cYjVVmIk1dZGeHsI3aWOzatf5FFFb3i4CulWN
+fI+nUwE8ZavHUpLwX1pf6pWkqBjSRpErwmk1/3MCU/7nKnjyxx8fAjBcApOPwKt3
+b65e0iCZv45l3dCiVT86
+=E9tI
+-----END PGP SIGNATURE-----
+
+--oyUTqETQ0mS9luUI--
