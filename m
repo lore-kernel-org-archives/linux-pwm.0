@@ -1,563 +1,313 @@
-Return-Path: <caesar.wang@rock-chips.com>
-Message-ID: <53D50601.1020106@rock-chips.com>
-Date: Sun, 27 Jul 2014 22:00:33 +0800
-From: caesar <caesar.wang@rock-chips.com>
+Return-Path: <RYang@hach.com>
+From: "Yang, Robert" <RYang@hach.com>
+Subject: [PATCH] Patch for pwm backlight driver
+Date: Tue, 26 Aug 2014 21:14:07 +0000
+Message-ID: <D68D4F79CA301E4CB7967E4AF0038407253006A8@DHRNASVXM01.danaher.org>
+Content-Language: en-US
+Content-Type: multipart/mixed;
+	boundary="_004_D68D4F79CA301E4CB7967E4AF0038407253006A8DHRNASVXM01dana_"
 MIME-Version: 1.0
-Subject: Re: [PATCH v2 2/2] pwm: add this patch to support the new pwm of
- Rockchip SoCs
-References: <1405774529-26027-1-git-send-email-caesar.wang@rock-chips.com>	<1405774529-26027-3-git-send-email-caesar.wang@rock-chips.com>	<20140721085001.GG8843@ulmo>	<53CD0E82.6030901@rock-chips.com>	<20140721132723.GH15238@ulmo>	<53D23192.4000908@rock-chips.com> <CAD=FV=XLjYQYmHxp3HBdwVmt6Wa7y-LEnsFKobsgVfFCp2-rRg@mail.gmail.com>
-In-Reply-To: <CAD=FV=XLjYQYmHxp3HBdwVmt6Wa7y-LEnsFKobsgVfFCp2-rRg@mail.gmail.com>
-Content-Type: multipart/alternative;
- boundary="------------020804050009090402090905"
+Return-Path: RYang@hach.com
 List-ID: <linux-pwm.vger.kernel.org>
-To: Doug Anderson <dianders@chromium.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>
 
-This is a multi-part message in MIME format.
---------------020804050009090402090905
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+--_004_D68D4F79CA301E4CB7967E4AF0038407253006A8DHRNASVXM01dana_
+Content-Type: multipart/alternative;
+	boundary="_000_D68D4F79CA301E4CB7967E4AF0038407253006A8DHRNASVXM01dana_"
 
-Hi Doug,
+--_000_D68D4F79CA301E4CB7967E4AF0038407253006A8DHRNASVXM01dana_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-在 2014年07月27日 12:59, Doug Anderson 写道:
-> caesar,
+Hi Thierry,
+
+
+
+Attached is a patch which will fix a bug in the video/pwm backlight driver =
+if multiple pwm chips exist. The defect could cause the backlight driver us=
+e the wrong pwm chip and fail finally and also lock up the unattended pwm. =
+The patch will allow a deferral pwm backlight probing if the attended pwm d=
+river is not loaded yet.
+
+
+
+This patch is currently against a linux 3.16 kernel.
+
+The technology in this patch is architecture-independent.
+
+Please let me know any feedback you have on this patch or the approach used=
+.
+
+Thanks,
+
+
+Signed-off-by: Robert Yang <ryang@hach.com>
+
+Robert Yang | Sr. Software Engineer
+P 970.6631377 ext 2626
+Hach Company | www.hach.com<http://www.hach.com/> |ryang@hach.com<mailto:|e=
+mail@hach.com>
+
+Water analysis has to be right. You deserve complete solutions you can be f=
+ully confident in. Hach is your resource for expert answers, outstanding su=
+pport, and reliable, easy-to-use products.
+
+--- linux-linux-3.16/pwm_bl.c.orig              2014-08-26 14:26:02.2105809=
+89 -0600
++++ ./linux-linux-3.16/drivers/video/backlight/pwm_bl.c   2014-08-26 14:26:=
+45.318582726 -0600
+@@ -281,15 +281,9 @@ static int pwm_backlight_probe(struct pl
+               pb->pwm =3D devm_pwm_get(&pdev->dev, NULL);
+              if (IS_ERR(pb->pwm)) {
+-                             dev_err(&pdev->dev, "unable to request PWM, t=
+rying legacy API\n");
++                            dev_err(&pdev->dev, "unable to request PWM, tr=
+ying a deferral binding later\n");
+                             ret =3D PTR_ERR(pb->pwm);
+-
+-                             pb->pwm =3D pwm_request(data->pwm_id, "pwm-ba=
+cklight");
+-                             if (IS_ERR(pb->pwm)) {
+-                                            dev_err(&pdev->dev, "unable to=
+ request legacy PWM\n");
+-                                            ret =3D PTR_ERR(pb->pwm);
+-                                            goto err_alloc;
+-                             }
++                            goto err_alloc;
+              }
+               dev_dbg(&pdev->dev, "got pwm for backlight\n");
+
+Please be advised that this email may contain confidential information. If =
+you are not the intended recipient, please notify us by email by replying t=
+o the sender and delete this message. The sender disclaims that the content=
+ of this email constitutes an offer to enter into, or the acceptance of, an=
+y agreement; provided that the foregoing does not invalidate the binding ef=
+fect of any digital or other electronic reproduction of a manual signature =
+that is included in any attachment.
+
+--_000_D68D4F79CA301E4CB7967E4AF0038407253006A8DHRNASVXM01dana_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
 >
-> On Fri, Jul 25, 2014 at 3:29 AM, caesar <caesar.wang@rock-chips.com> wrote:
->> Hi Thierry,
->>
->>
->>
->>
->> 在 2014年07月21日 21:27, Thierry Reding 写道:
->>> On Mon, Jul 21, 2014 at 08:58:42PM +0800, caesar wrote:
->>>
->>>> 于 2014年07月21日 16:50, Thierry Reding 写道:
->>>>> On Sat, Jul 19, 2014 at 08:55:29PM +0800, Caesar Wang wrote:
->>> [...]
->>>>>>          struct rockchip_pwm_chip *pc;
->>>>>>          struct resource *r;
->>>>>>          int ret;
->>>>>> @@ -119,7 +182,10 @@ static int rockchip_pwm_probe(struct
->>>>>> platform_device *pdev)
->>>>>>                  return -ENOMEM;
->>>>>>          r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>>>>> -       pc->base = devm_ioremap_resource(&pdev->dev, r);
->>>>>> +       if (!strcmp(of_id->compatible, "rockchip,vop-pwm"))
->>>>>> +               pc->base = devm_ioremap(&pdev->dev, r->start,
->>>>>> resource_size(r));
->>>>>> +       else
->>>>>> +               pc->base = devm_ioremap_resource(&pdev->dev, r);
->>>>> Sorry, this still isn't an option. You really shouldn't remap I/O
->>>>> regions that other drivers may be using. You hinted at a shared register
->>>>> space during the review of the initial version. Can you provide more
->>>>> detail about what exactly the memory map looks like of the rk3288? Is
->>>>> there some kind of technical reference manual that I could look at? Or
->>>>> do you have a device tree extract that shows what the memory map looks
->>>>> like?
->>>>>
->>>>> Thierry
->>>> Maybe,you can look at the ARM: dts: rk3288:
->>>>
->>>> https://github.com/rkchrome/kernel/blob/master/arch/arm/boot/dts/rk3288.dtsi
->>>> There is some lcdc and vop-pwm map address for rk3288.
->>>>
->>>> ,and you can look at the vop-introduce.pdf and vop-register.pdf in Annex.
->>>>
->>>> Maybe,I should put the vop-pwm in lcdc driver,but I don't hope do so it.
->>>>
->>>> Could you give a suggestion to solve it? Thanks.
->>> It looks like you could turn the lcdc device into an MFD device so that
->>> it can instantiate two devices, one for the display controller, the
->>> other for the PWM. Or perhaps it would even work with only a single
->>> child device.
->>>
->>> The device tree would become something like this:
->>>
->>>          lcdc@ff930000 {
->>>                  compatible = "rockchip,rk3288-lcdc";
->>>                  ...
->>>
->>>                  pwm@ff9301a0 {
->>>                          compatible = "rockchip,vop-pwm";
->>>                          ...
->>>                  };
->>>          };
->>>
->>> And your driver would do something like:
->>>
->>>          static const struct resource pwm_resources[] = {
->>>                  {
->>>                          .start = 0x1a0,
->>>                          .end = 0x1af,
->>>                          .flags = IORESOURCE_MEM,
->>>                  },
->>>          };
->>>
->>>          static const struct mfd_cell subdevices[] = {
->>>                  {
->>>                          .name = "pwm",
->>>                          .id = 1,
->>>                          .of_compatible = "rockchip,vop-pwm",
->>>                          .num_resources = ARRAY_SIZE(pwm_resources),
->>>                          .resources = pwm_resources,
->>>                  },
->>>          };
->>>
->>>          static int lcdc_probe(struct platform_device *pdev)
->>>          {
->>>                  struct resource *regs;
->>>                  ...
->>>
->>>                  regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>>
->>>                  ...
->>>
->>>                  err = mfd_add_devices(&pdev->dev, 0, subdevices,
->>> ARRAY_SIZE(subdevices),
->>>                                        regs, NULL, NULL);
->>>                  ...
->>>          }
->>>
->>> Thierry
->> Sorry,I might a little trouble for the changes.
->>
->> The driver changes only for lcdc? If that is the case,I suddenly don't know
->> how to do it ?
->>
->> Maybe,I didn't say it clearly.
->>
->> lcdc0: lcdc@ff930000                   |     vop0pwm: pwm@ff9301a0
->> reg = <0xff930000 0x10000>     |      reg = <0xff9301a0 0x10>;
->>
->> The lcdc has to add resource's address  from  0xff930000 to 0xff93ffff.
->>
->> When the  pwm driver is loading vop0pwm. the "devm_ioremap_resource()" will
->> be used in probe();
->>
->> I think it will be occur a fail. because the resource [mem
->> 0xff9301a0-0xff9301af] has be requested by lcdc.
->> =>rockchip-pwm ff9301a0.pwm: can't request region for resource [mem
->> 0xff9301a0-0xff9301af]
->>
->> If I do the changes in pwm driver,do you have a other suggestion for it?
->> thanks.:-)
-> Sorry if this is stupid (and I haven't tried it), but does "ranges"
-> help solve this problem?  AKA:
->
->           lcdc@ff930000 {
->                   compatible = "rockchip,rk3288-lcdc";
->                   reg = <0xff930000 0x10000>;
->                   #address-cells = <2>;
->                   #size-cells = <1>;
->                   ranges = <0 0xff9301a0 0x10>;
->                   ...
->
->                   pwm@0,0 {
->                           compatible = "rockchip,vop-pwm";
->                           reg = <0 0 0x10>;
->                          ...
->                   };
->           };
->
-> Does that avoid the failure?  The lcdc driver would need to call
-> of_platform_populate() to make the PWM show up.
->
->
->
-Sorry  if  I  got it wrong following  your way.
-
-example: ARM: DTS:
-
-lcdc@ff930000 {
-                  compatible = "rockchip,rk3288-lcdc";
-                  reg = <0xff930000 0x10000>;
-                  #address-cells = <2>;
-                  #size-cells = <1>;
-                  ranges = <0 0xff9301a0 0x10>;
-                  ...
-
-                  pwm@0,0 {
-                          compatible = "rockchip,vop-pwm";
-                          reg = <0 0 0x10>;
-                         ...
-                  };
-          };
-
-
-The LCDC driver ,as follws:
-
-static const struct of_device_id vop_pwm_dt_ids[] = {
-
-     {.compatible = "rockchip,vop-pwm",},
-
-     {}
-
-};
-
-static int lcdc_probe(struct platform_device *pdev)
-         {
-                 struct resource *regs;
-		int ret = 0;
-		...
-		/*This step will get resource = [mem 0xff930000-0xff93ffff]*/
-
-                 regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-
-                 ...
-
-                 lcdc_dev->regs = devm_ioremap_resource(dev, regs);
-	
-		...
-
-		/**This step will make enable vop-pwm in PWM driver?/
-		ret = of_platform_populate(np, vop_pwm_dt_ids, NULL, &pdev->dev);
-		
-		...
-	 }
-
-
-The PWM driver:
-
-struct rockchip_pwm_chip {
-	struct pwm_chip chip;
-	struct clk *clk;
-	const struct rockchip_pwm_data *data;
-	void __iomem *base;
-};
-...
-
-static const struct of_device_id rockchip_pwm_dt_ids[] = {
-
-     { .compatible = "rockchip,rk2928-pwm", .data = &pwm_data_v1},
-
-     { .compatible = "rockchip,rk3288-pwm", .data = &pwm_data_v2},
-
-     { .compatible = "rockchip,vop-pwm", .data = &pwm_data_vop},
-
-     { /* sentinel */ }
-
-};
-
-...
-
-static int rockchip_pwm_probe(struct platform_device *pdev)
-         {
-                 struct resource *regs;
-		struct rockchip_pwm_chip *pc;
-  		int ret = 0;
-		...
-		
-
-		/*If it'sthe "rockchip,vop-pwm",the resource = [mem 0xff9301a0-0xff9301af]*/
-
-
-                 regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-
-                 ...
-		
-
-		/*I think will be show the faill log:->
-
-		 * rockchip-pwm ff9301a0.pwm: can't request region for resource [mem 0xff9301a0-0xff93019f]
-		 */
-   *
-		*pc->base = devm_ioremap_resource(dev, regs);
-	
-		...
-
-	
-	 }
-
-
---------------020804050009090402090905
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-
-<html>
-  <head>
-    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-  </head>
-  <body bgcolor="#FFFFFF" text="#000000">
-    Hi Doug,<br>
-    <br>
-    <div class="moz-cite-prefix">在 2014年07月27日 12:59, Doug Anderson 写道:<br>
-    </div>
-    <blockquote
-cite="mid:CAD=FV=XLjYQYmHxp3HBdwVmt6Wa7y-LEnsFKobsgVfFCp2-rRg@mail.gmail.com"
-      type="cite">
-      <pre wrap="">caesar,
-
-On Fri, Jul 25, 2014 at 3:29 AM, caesar <a class="moz-txt-link-rfc2396E" href="mailto:caesar.wang@rock-chips.com">&lt;caesar.wang@rock-chips.com&gt;</a> wrote:
-</pre>
-      <blockquote type="cite">
-        <pre wrap="">Hi Thierry,
-
-
-
-
-在 2014年07月21日 21:27, Thierry Reding 写道:
-</pre>
-        <blockquote type="cite">
-          <pre wrap="">
-On Mon, Jul 21, 2014 at 08:58:42PM +0800, caesar wrote:
-
-</pre>
-          <blockquote type="cite">
-            <pre wrap="">于 2014年07月21日 16:50, Thierry Reding 写道:
-</pre>
-            <blockquote type="cite">
-              <pre wrap="">
-On Sat, Jul 19, 2014 at 08:55:29PM +0800, Caesar Wang wrote:
-</pre>
-            </blockquote>
-          </blockquote>
-          <pre wrap="">
-[...]
-</pre>
-          <blockquote type="cite">
-            <blockquote type="cite">
-              <blockquote type="cite">
-                <pre wrap="">
-        struct rockchip_pwm_chip *pc;
-        struct resource *r;
-        int ret;
-@@ -119,7 +182,10 @@ static int rockchip_pwm_probe(struct
-platform_device *pdev)
-                return -ENOMEM;
-        r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--       pc-&gt;base = devm_ioremap_resource(&amp;pdev-&gt;dev, r);
-+       if (!strcmp(of_id-&gt;compatible, "rockchip,vop-pwm"))
-+               pc-&gt;base = devm_ioremap(&amp;pdev-&gt;dev, r-&gt;start,
-resource_size(r));
-+       else
-+               pc-&gt;base = devm_ioremap_resource(&amp;pdev-&gt;dev, r);
-</pre>
-              </blockquote>
-              <pre wrap="">
-Sorry, this still isn't an option. You really shouldn't remap I/O
-regions that other drivers may be using. You hinted at a shared register
-space during the review of the initial version. Can you provide more
-detail about what exactly the memory map looks like of the rk3288? Is
-there some kind of technical reference manual that I could look at? Or
-do you have a device tree extract that shows what the memory map looks
-like?
-
-Thierry
-</pre>
-            </blockquote>
-            <pre wrap="">
-Maybe,you can look at the ARM: dts: rk3288:
-
-<a class="moz-txt-link-freetext" href="https://github.com/rkchrome/kernel/blob/master/arch/arm/boot/dts/rk3288.dtsi">https://github.com/rkchrome/kernel/blob/master/arch/arm/boot/dts/rk3288.dtsi</a>
-There is some lcdc and vop-pwm map address for rk3288.
-
-,and you can look at the vop-introduce.pdf and vop-register.pdf in Annex.
-
-Maybe,I should put the vop-pwm in lcdc driver,but I don't hope do so it.
-
-Could you give a suggestion to solve it? Thanks.
-</pre>
-          </blockquote>
-          <pre wrap="">
-It looks like you could turn the lcdc device into an MFD device so that
-it can instantiate two devices, one for the display controller, the
-other for the PWM. Or perhaps it would even work with only a single
-child device.
-
-The device tree would become something like this:
-
-        lcdc@ff930000 {
-                compatible = "rockchip,rk3288-lcdc";
-                ...
-
-                pwm@ff9301a0 {
-                        compatible = "rockchip,vop-pwm";
-                        ...
-                };
-        };
-
-And your driver would do something like:
-
-        static const struct resource pwm_resources[] = {
-                {
-                        .start = 0x1a0,
-                        .end = 0x1af,
-                        .flags = IORESOURCE_MEM,
-                },
-        };
-
-        static const struct mfd_cell subdevices[] = {
-                {
-                        .name = "pwm",
-                        .id = 1,
-                        .of_compatible = "rockchip,vop-pwm",
-                        .num_resources = ARRAY_SIZE(pwm_resources),
-                        .resources = pwm_resources,
-                },
-        };
-
-        static int lcdc_probe(struct platform_device *pdev)
-        {
-                struct resource *regs;
-                ...
-
-                regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-
-                ...
-
-                err = mfd_add_devices(&amp;pdev-&gt;dev, 0, subdevices,
-ARRAY_SIZE(subdevices),
-                                      regs, NULL, NULL);
-                ...
-        }
-
-Thierry
-</pre>
-        </blockquote>
-        <pre wrap="">
-Sorry,I might a little trouble for the changes.
-
-The driver changes only for lcdc? If that is the case,I suddenly don't know
-how to do it ?
-
-Maybe,I didn't say it clearly.
-
-lcdc0: lcdc@ff930000                   |     vop0pwm: pwm@ff9301a0
-reg = &lt;0xff930000 0x10000&gt;     |      reg = &lt;0xff9301a0 0x10&gt;;
-
-The lcdc has to add resource's address  from  0xff930000 to 0xff93ffff.
-
-When the  pwm driver is loading vop0pwm. the "devm_ioremap_resource()" will
-be used in probe();
-
-I think it will be occur a fail. because the resource [mem
-0xff9301a0-0xff9301af] has be requested by lcdc.
-=&gt;rockchip-pwm ff9301a0.pwm: can't request region for resource [mem
-0xff9301a0-0xff9301af]
-
-If I do the changes in pwm driver,do you have a other suggestion for it?
-thanks.:-)
-</pre>
-      </blockquote>
-      <pre wrap="">
-Sorry if this is stupid (and I haven't tried it), but does "ranges"
-help solve this problem?  AKA:
-
-         lcdc@ff930000 {
-                 compatible = "rockchip,rk3288-lcdc";
-                 reg = &lt;0xff930000 0x10000&gt;;
-                 #address-cells = &lt;2&gt;;
-                 #size-cells = &lt;1&gt;;
-                 ranges = &lt;0 0xff9301a0 0x10&gt;;
-                 ...
-
-                 pwm@0,0 {
-                         compatible = "rockchip,vop-pwm";
-                         reg = &lt;0 0 0x10&gt;;
-                        ...
-                 };
-         };
-
-Does that avoid the failure?  The lcdc driver would need to call
-of_platform_populate() to make the PWM show up.
-
-
-
-</pre>
-    </blockquote>
-    Sorry  if  I  got it wrong following  your way. <br>
-    <br>
-    example: ARM: DTS:<br>
-    <pre wrap="">lcdc@ff930000 {
-                 compatible = "rockchip,rk3288-lcdc";
-                 reg = &lt;0xff930000 0x10000&gt;;
-                 #address-cells = &lt;2&gt;;
-                 #size-cells = &lt;1&gt;;
-                 ranges = &lt;0 0xff9301a0 0x10&gt;;
-                 ...
-
-                 pwm@0,0 {
-                         compatible = "rockchip,vop-pwm";
-                         reg = &lt;0 0 0x10&gt;;
-                        ...
-                 };
-         };</pre>
-    <br>
-    The LCDC driver ,as follws:<br>
-    <br>
-    <pre>static const struct of_device_id vop_pwm_dt_ids[] = {</pre>
-    <pre>    {.compatible = "rockchip,vop-pwm",},</pre>
-    <pre>    {}</pre>
-    <pre>};</pre>
-    <pre wrap="">static int lcdc_probe(struct platform_device *pdev)
-        {
-                struct resource *regs;
-		int ret = 0;
-		...
-		/*This step will get resource = [mem 0xff930000-0xff93ffff]*/
-
-                regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-
-                ...<font color="#ff0000">
-</font>
-                lcdc_dev-&gt;regs = devm_ioremap_resource(dev, regs);
-	
-		...
-
-		/**This step will make enable vop-pwm in PWM driver?/
-		ret = of_platform_populate(np, vop_pwm_dt_ids, NULL, &amp;pdev-&gt;dev);
-		
-		...
-	 }</pre>
-    <tt><br>
-    </tt>
-    <pre><tt>The PWM driver:
-
-struct rockchip_pwm_chip {
-	struct pwm_chip chip;
-	struct clk *clk;
-	const struct rockchip_pwm_data *data;
-	void __iomem *base;
-};
-...
-
-static const struct of_device_id rockchip_pwm_dt_ids[] = {</tt></pre>
-    <pre><tt>    { .compatible = "rockchip,rk2928-pwm", .data = &amp;pwm_data_v1},</tt></pre>
-    <pre><tt>    { .compatible = "rockchip,rk3288-pwm", .data = &amp;pwm_data_v2},</tt></pre>
-    <pre><tt>    { .compatible = "rockchip,vop-pwm", .data = &amp;pwm_data_vop},</tt></pre>
-    <pre><tt>    { /* sentinel */ }</tt></pre>
-    <pre><tt>};</tt></pre>
-    <pre><tt>...
-</tt></pre>
-    <pre wrap="">static int rockchip_pwm_probe(struct platform_device *pdev)
-        {
-                struct resource *regs;
-		struct rockchip_pwm_chip *pc;
- 		int ret = 0;
-		...
-<font color="#ff0000">		</font>
-
-		/*If it's <tt>the "rockchip,vop-pwm"</tt>,the resource = [mem 0xff9301a0-0xff9301af]*/
-
-
-                regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-
-                ...
-		
-
-		/*I think will be show the faill log:-&gt;
-
-		 * rockchip-pwm ff9301a0.pwm: can't request region for resource [mem 0xff9301a0-0xff93019f]
-		 */
-  <b>
-		 </b>pc-&gt;base = devm_ioremap_resource(dev, regs);
-	
-		...
-
-<font color="#ff0000">	</font>
-	 }</pre>
-  </body>
+<meta name=3D"Generator" content=3D"Microsoft Word 12 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:"\@SimSun";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+pre
+	{mso-style-priority:99;
+	mso-style-link:"HTML Preformatted Char";
+	margin:0in;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Courier New";}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+span.HTMLPreformattedChar
+	{mso-style-name:"HTML Preformatted Char";
+	mso-style-priority:99;
+	mso-style-link:"HTML Preformatted";
+	font-family:"Courier New";}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"blue" vlink=3D"purple">
+<div class=3D"WordSection1">
+<pre>Hi Thierry,<o:p></o:p></pre>
+<pre><o:p>&nbsp;</o:p></pre>
+<pre>Attached is a patch which will fix a bug in the video/pwm backlight dr=
+iver if multiple pwm chips exist. The defect could cause the backlight driv=
+er use the wrong pwm chip and fail finally and also lock up the unattended =
+pwm. The patch will allow a deferral pwm backlight probing if the attended =
+pwm driver is not loaded yet. &nbsp;<o:p></o:p></pre>
+<pre><o:p>&nbsp;</o:p></pre>
+<pre>This patch is currently against a linux 3.16 kernel.<o:p></o:p></pre>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Co=
+urier New&quot;">The technology in this patch is architecture-independent.<=
+o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Co=
+urier New&quot;"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Co=
+urier New&quot;">Please let me know any feedback you have on this patch or =
+the approach used.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Co=
+urier New&quot;"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Co=
+urier New&quot;">Thanks,<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;font-family:&quot;Co=
+urier New&quot;"><o:p>&nbsp;</o:p></span></p>
+<pre>Signed-off-by: Robert Yang &lt;ryang@hach.com&gt;<o:p></o:p></pre>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal"><b><span style=3D"color:#0098DB;text-transform:upper=
+case">Robert Yang</span></b><span style=3D"font-size:10.0pt;color:#0098DB">=
+&nbsp;</span><span style=3D"font-size:9.0pt;color:#4D4D4D">| Sr. Software E=
+ngineer<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><b><span style=3D"font-size:10.0pt;color:#0098DB">P<=
+/span></b><span style=3D"font-size:10.0pt;color:#16ABE0">&nbsp;</span><span=
+ style=3D"font-size:10.0pt;color:#4D4D4D">970.6631377 ext&nbsp;2626</span><=
+span style=3D"color:#333333"><o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:10.0pt;color:#4D4D4D">Hach =
+Company </span>
+<span style=3D"font-size:9.0pt;color:#4D4D4D">| </span><a href=3D"http://ww=
+w.hach.com/"><span style=3D"font-size:10.0pt;color:#4D4D4D">www.hach.com</s=
+pan></a><span style=3D"font-size:10.0pt;color:#4D4D4D">
+</span><a href=3D"mailto:|email@hach.com"><span style=3D"font-size:9.0pt;co=
+lor:blue">|</span><span style=3D"font-size:10.0pt;color:blue">ryang@hach.co=
+m</span></a><span style=3D"font-size:9.0pt;color:#4D4D4D"><o:p></o:p></span=
+></p>
+<p class=3D"MsoNormal"><b><span style=3D"color:#0098DB;text-transform:upper=
+case"><o:p>&nbsp;</o:p></span></b></p>
+<p class=3D"MsoNormal"><b><span style=3D"color:#0098DB;text-transform:upper=
+case">Water analysis has to be right. You deserve complete solutions you ca=
+n be fully confident in. Hach is your resource for expert answers, outstand=
+ing support, and reliable, easy-to-use
+ products.<o:p></o:p></span></b></p>
+<p class=3D"MsoNormal"><b><span style=3D"color:#0098DB;text-transform:upper=
+case"><o:p>&nbsp;</o:p></span></b></p>
+<p class=3D"MsoNormal">--- linux-linux-3.16/pwm_bl.c.orig&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2014-08-26 14:=
+26:02.210580989 -0600<o:p></o:p></p>
+<p class=3D"MsoNormal">&#43;&#43;&#43; ./linux-linux-3.16/drivers/video/bac=
+klight/pwm_bl.c&nbsp;&nbsp; 2014-08-26 14:26:45.318582726 -0600<o:p></o:p><=
+/p>
+<p class=3D"MsoNormal">@@ -281,15 &#43;281,9 @@ static int pwm_backlight_pr=
+obe(struct pl<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pb-&gt;pwm =3D devm_pwm_get(&amp;pdev-&gt;=
+dev, NULL);<o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp; if (IS_ERR(pb-&gt;pwm)) {<o:p></o:p></p>
+<p class=3D"MsoNormal">-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dev_err(&amp;pdev-&gt;dev, &quot=
+;unable to request PWM, trying legacy API\n&quot;);<o:p></o:p></p>
+<p class=3D"MsoNormal">&#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dev_err(&amp;pdev-&gt;dev, &quot;u=
+nable to request PWM, trying a deferral binding later\n&quot;);<o:p></o:p><=
+/p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret =3D PTR_ERR(pb-&gt;pwm);<o:p>=
+</o:p></p>
+<p class=3D"MsoNormal">-<o:p></o:p></p>
+<p class=3D"MsoNormal">-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pb-&gt;pwm =3D pwm_request(data-=
+&gt;pwm_id, &quot;pwm-backlight&quot;);<o:p></o:p></p>
+<p class=3D"MsoNormal">-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (IS_ERR(pb-&gt;pwm)) {<o:p></=
+o:p></p>
+<p class=3D"MsoNormal">-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dev_err(&amp;pdev=
+-&gt;dev, &quot;unable to request legacy PWM\n&quot;);<o:p></o:p></p>
+<p class=3D"MsoNormal">-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ret =3D PTR_ERR(p=
+b-&gt;pwm);<o:p></o:p></p>
+<p class=3D"MsoNormal">-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; goto err_alloc;<o=
+:p></o:p></p>
+<p class=3D"MsoNormal">-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<o:p></o:p></p>
+<p class=3D"MsoNormal">&#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; goto err_alloc;<o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp; }<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dev_dbg(&amp;pdev-&gt;dev, &quot;got pwm f=
+or backlight\n&quot;);<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+</div>
+Please be advised that this email may contain confidential information. If =
+you are not the intended recipient, please notify us by email by replying t=
+o the sender and delete this message. The sender disclaims that the content=
+ of this email constitutes an offer
+ to enter into, or the acceptance of, any agreement; provided that the fore=
+going does not invalidate the binding effect of any digital or other electr=
+onic reproduction of a manual signature that is included in any attachment.
+</body>
 </html>
 
---------------020804050009090402090905--
+--_000_D68D4F79CA301E4CB7967E4AF0038407253006A8DHRNASVXM01dana_--
+
+--_004_D68D4F79CA301E4CB7967E4AF0038407253006A8DHRNASVXM01dana_
+Content-Type: application/octet-stream; name="patch"
+Content-Description: patch
+Content-Disposition: attachment; filename="patch"; size=749;
+	creation-date="Tue, 26 Aug 2014 20:52:24 GMT";
+	modification-date="Tue, 26 Aug 2014 20:38:15 GMT"
+Content-Transfer-Encoding: base64
+
+LS0tIGxpbnV4LWxpbnV4LTMuMTYvcHdtX2JsLmMub3JpZwkyMDE0LTA4LTI2IDE0OjI2OjAyLjIx
+MDU4MDk4OSAtMDYwMAorKysgLi9saW51eC1saW51eC0zLjE2L2RyaXZlcnMvdmlkZW8vYmFja2xp
+Z2h0L3B3bV9ibC5jCTIwMTQtMDgtMjYgMTQ6MjY6NDUuMzE4NTgyNzI2IC0wNjAwCkBAIC0yODEs
+MTUgKzI4MSw5IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9wcm9iZShzdHJ1Y3QgcGwKIAog
+CXBiLT5wd20gPSBkZXZtX3B3bV9nZXQoJnBkZXYtPmRldiwgTlVMTCk7CiAJaWYgKElTX0VSUihw
+Yi0+cHdtKSkgewotCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJ1bmFibGUgdG8gcmVxdWVzdCBQV00s
+IHRyeWluZyBsZWdhY3kgQVBJXG4iKTsKKwkJZGV2X2VycigmcGRldi0+ZGV2LCAidW5hYmxlIHRv
+IHJlcXVlc3QgUFdNLCB0cnlpbmcgYSBkZWZlcnJhbCBiaW5kaW5nIGxhdGVyXG4iKTsKIAkJcmV0
+ID0gUFRSX0VSUihwYi0+cHdtKTsKLQotCQlwYi0+cHdtID0gcHdtX3JlcXVlc3QoZGF0YS0+cHdt
+X2lkLCAicHdtLWJhY2tsaWdodCIpOwotCQlpZiAoSVNfRVJSKHBiLT5wd20pKSB7Ci0JCQlkZXZf
+ZXJyKCZwZGV2LT5kZXYsICJ1bmFibGUgdG8gcmVxdWVzdCBsZWdhY3kgUFdNXG4iKTsKLQkJCXJl
+dCA9IFBUUl9FUlIocGItPnB3bSk7Ci0JCQlnb3RvIGVycl9hbGxvYzsKLQkJfQorCQlnb3RvIGVy
+cl9hbGxvYzsKIAl9CiAKIAlkZXZfZGJnKCZwZGV2LT5kZXYsICJnb3QgcHdtIGZvciBiYWNrbGln
+aHRcbiIpOwo=
+
+--_004_D68D4F79CA301E4CB7967E4AF0038407253006A8DHRNASVXM01dana_--
