@@ -1,197 +1,128 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] Patch for pwm backlight driver
-Date: Wed, 27 Aug 2014 07:44:40 +0200
-Message-ID: <20140827054438.GB15640@ulmo>
-References: <D68D4F79CA301E4CB7967E4AF0038407253006A8@DHRNASVXM01.danaher.org>
+From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH v4 00/11] drm: add support for Atmel HLCDC Display
+ Controller
+Date: Wed, 27 Aug 2014 09:52:35 +0200
+Message-ID: <20140827095235.20334e2d@bbrezillon>
+References: <1406034695-15534-1-git-send-email-boris.brezillon@free-electrons.com>
+	<2138720.5GSxsvjVxS@avalon>
+	<20140821192633.69f6b21b@bbrezillon>
+	<1997793.CWhjU3F32E@avalon>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="eAbsdosE1cNLO4uF"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-we0-f172.google.com ([74.125.82.172]:34159 "EHLO
-	mail-we0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754865AbaH0Foo (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 27 Aug 2014 01:44:44 -0400
-Received: by mail-we0-f172.google.com with SMTP id x48so15762955wes.31
-        for <linux-pwm@vger.kernel.org>; Tue, 26 Aug 2014 22:44:43 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <D68D4F79CA301E4CB7967E4AF0038407253006A8@DHRNASVXM01.danaher.org>
+Received: from top.free-electrons.com ([176.31.233.9]:49736 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751586AbaH0Hwj (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 27 Aug 2014 03:52:39 -0400
+In-Reply-To: <1997793.CWhjU3F32E@avalon>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: "Yang, Robert" <RYang@hach.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, linux-pwm@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Clark <robdclark@gmail.com>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>, linux-arm-kernel@lists.infradead.org
+
+Hi Laurent,
+
+On Tue, 26 Aug 2014 01:39:21 +0200
+Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
+
+> Hi Boris,
+> 
+> On Thursday 21 August 2014 19:26:33 Boris BREZILLON wrote:
+> > On Thu, 21 Aug 2014 19:08:53 +0200
+> > Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
+> > 
+> > [...]
+> > 
+> > >>>> While this could be acceptable when all drivers are statically linked
+> > >>>> in the kernel, it might be problematic when you're using modules,
+> > >>>> meaning that you won't be able to display anything on your LCD panel
+> > >>>> until your HDMI bridge module has been loaded.
+> > >>> 
+> > >>> No. HDMI should be using proper hotplugging anyway, hence it should be
+> > >>> always be loaded anyway. You're in for a world of pain if you think
+> > >>> you can run DRM with a driver that's composed of separate kernel
+> > >>> modules.
+> > >> 
+> > >> I was talking about the external RGB to HDMI encoder, should the driver
+> > >> for this encoder (which is not on On Chip block) be compiled
+> > >> statically too ?
+> > > 
+> > > Given the move to multiplatform kernels we need to aim for as few modules
+> > > compiled in as possible. I'd say this includes HDMI encoders, panels and
+> > > display controllers.
+> > > 
+> > >>> Also if you don't want to use deferred probe, then you're in for the
+> > >>> full hotplugging panel dance and that implies that you need to fix a
+> > >>> bunch of things in DRM (one being the framebuffer console
+> > >>> instantiation
+> > >>> that I referred to in the other thread).
+> > >> 
+> > >> For now, I wait until there is a device connected on the RGB connector
+> > >> (connector status set to connector_status_connected) before creating an
+> > >> fbdev. It might not be the cleanest way to solve this issue, but it
+> > >> works :-).
+> > > 
+> > > Do you create a new drm_encoder at runtime for the HDMI encoder when it
+> > > appears ? I thought the DRM core and API were not able to correctly cope
+> > > with that.
+> > 
+> > I haven't started to work on the HDMI encoder yet, and ATM I only have
+> > a single connector (which is true from an HW POV), which is then bound
+> > to an LCD panel (the only type of remote endpoint I currently support).
+> > 
+> > BTW, I wonder how my use case should be represented in the DRM
+> > subsystem. As I said, from an HW POV I only have one RGB (or whatever
+> > name you choose for it) connector. But on such kind of connectors you
+> > can connect several output devices (panels, encoders, ...).
+> > And in my case I have 2 devices on the same RGB connector: a panel and
+> > an RGB to HDMI converter.
+> 
+> The DRM connector object was initially meant to model a physical user-
+> accessible connector on a board (VGA, DVI, HDMI, ...) and the properties of 
+> the monitor plugged into it. It has then been (ab)used to represent panels, as 
+> they're similar to monitors.
+> 
+> In your case the VGA and HDMI connectors should be modeled as DRM connectors, 
+> the RGB to HDMI encoder as a DRM encoder, and the LCDC as a DRM CRTC.
+
+I don't have any VGA connector (or I'm missing something :-)), but I
+have an LCD panel and an RGB to HDMI encoder connected on the same RGB
+connector.
+
+> 
+> As DRM hardcodes the pipeline model to CRTC -> encoder -> connector, you will 
+> also need a DRM encoder in the VGA path. I suppose your board has a VGA DAC, 
+> that's the component you should expose as a DRM encoder (even if it can't be 
+> controlled and doesn't limit the valid modes).
+
+Actually, my problem is that both devices are connected on the same RGB
+connector, and thus share the same display mode (resolution, HSYNC,
+VSYNC, RGB output mode, ...).
+This means that all remote devices have to agree on a specific mode if
+we want to mirror the display on several output devices, otherwise we
+must disable one of the output devices.
+
+> 
+> > >>> You also can't be using the current device tree bindings because they
+> > >>> all assume a dependency from the display controller/output to the
+> > >>> panel. For hotplugging you'd need the dependency the other way around
+> > >>> (the panel needs to refer to the output by phandle).
+> > >> 
+> > >> Here [1] is a proposal for notification support in the drm_panel
+> > >> infrastructure (which is not that complicated), and here [2] is how
+> > >> I use it in my atmel-hlcdc driver to generate hotplug events.
+> > > 
+> > > Is there a way we could use the component framework for that ? I know that
+> > > partial notification isn't supported at the moment, but Russell agreed it
+> > > was a real use case that should be implemented at some point.
+> > 
+> > I'll give it a try.
+> 
 
 
---eAbsdosE1cNLO4uF
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-Thanks for the patch. A couple of general comments before I get to the
-patch. When sending patches, please follow the process explained in
-Documentation/SubmittingPatches. In addition, I suggest you use git to
-make that process easier. Once you've committed a change and written up
-a proper changelog you can use git format-patch to generate the patch
-and send it out using git send-email. Also before sending it, you should
-run the patch through scripts/checkpatch.pl and make sure there are no
-warnings or errors. Then use scripts/get_maintainer.pl to generate a
-list of people and lists to Cc. I'm on that list and so is the linux-pwm
-mailing list, which is good, but you should additionally Cc the
-backlight maintainers (Lee, Bryan and Jingoo). It's usually not
-necessary to Cc Linus on a patch directly. It'll get reviewed and
-applied to a subsystem tree which will then be sent to Linus during the
-merge window along with any other patches applied to that tree.
-
-The commit message should start with a short subject line that explains
-very roughly what the commit does. It's also common to prefix it with a
-short string that identifies it as belonging to a given subsystem or
-driver. Looking at git log -- path/to/modified/file is often a good way
-to determine the proper prefix. The subject line should be followed by a
-more verbose description of the problem and how it is solved by the
-patch.
-
-Also, please wrap email at around 78 characters to increase readability.
-
-A few more comments inline.
-
-On Tue, Aug 26, 2014 at 09:14:07PM +0000, Yang, Robert wrote:
-> Hi Thierry,
-
-A commit message doesn't need this.
-
-> Attached is a patch which will fix a bug in the video/pwm backlight
-> driver if multiple pwm chips exist. The defect could cause the
-
-Please use PWM in text, since it's an abbreviation.
-
-> backlight driver use the wrong pwm chip and fail finally and also lock
-> up the unattended pwm.
-
-What does "lock up" mean?
-
-> The patch will allow a deferral pwm backlight probing if the attended
-> pwm driver is not loaded yet.
-
-> This patch is currently against a linux 3.16 kernel.
-
-It's often better to base patches off the latest release candidate,
-which in this case is v3.17-rc1, or even the subsystem tree that feeds
-into linux-next or linux-next itself. That avoids possible conflicts
-with other people's patches. In this case I think 3.16 is fine since
-there hasn't been any other work on this driver that I'm aware of.
-
-> The technology in this patch is architecture-independent.
-
-The majority of patches are architecture independent, so there's usually
-no need to say this.
-
-> Please let me know any feedback you have on this patch or the approach us=
-ed.
->=20
-> Thanks,
->=20
->=20
-> Signed-off-by: Robert Yang <ryang@hach.com>
->=20
-> Robert Yang | Sr. Software Engineer
-> P 970.6631377 ext 2626
-> Hach Company | www.hach.com<http://www.hach.com/> |ryang@hach.com<mailto:=
-|email@hach.com>
->=20
-> Water analysis has to be right. You deserve complete solutions you can be=
- fully confident in. Hach is your resource for expert answers, outstanding =
-support, and reliable, easy-to-use products.
-
-The above signature doesn't belong in a patch. Your commit message
-should end after the Signed-off-by: line.
-
-> --- linux-linux-3.16/pwm_bl.c.orig              2014-08-26 14:26:02.21058=
-0989 -0600
-> +++ ./linux-linux-3.16/drivers/video/backlight/pwm_bl.c   2014-08-26 14:2=
-6:45.318582726 -0600
-> @@ -281,15 +281,9 @@ static int pwm_backlight_probe(struct pl
->                pb->pwm =3D devm_pwm_get(&pdev->dev, NULL);
->               if (IS_ERR(pb->pwm)) {
-
-The patch here seems whitespace damaged. This could be due to the email
-system that you're using. Can you find out why that's happening and make
-sure the email infrastructure doesn't do this? As it is, this patch
-cannot be applied automatically and I (or someone else) would have to
-manually make the changes, which is both tedious and error prone.
-
-> -                             dev_err(&pdev->dev, "unable to request PWM,=
- trying legacy API\n");
-> +                            dev_err(&pdev->dev, "unable to request PWM, =
-trying a deferral binding later\n");
->                              ret =3D PTR_ERR(pb->pwm);
-
-There are other errors for which it is legitimate to use the legacy code
-path here. For the case that you're trying to fix there should probably
-be a check here for -EPROBE_DEFER. Somewhat like this:
-
-	pb->pwm =3D devm_pwm_get(&pdev->dev, NULL);
-	if (IS_ERR(pb->pwm)) {
-		if (PTR_ERR(pb->pwm) =3D=3D -EPROBE_DEFER)
-			goto err_alloc;
-
-		...
-	}
-
-Also there's no need for the "... trying deferral binding later" error
-message in this case, since returning -EPROBE_DEFER will cause the
-driver core to print out such a message already.
-
-> -
-> -                             pb->pwm =3D pwm_request(data->pwm_id, "pwm-=
-backlight");
-> -                             if (IS_ERR(pb->pwm)) {
-> -                                            dev_err(&pdev->dev, "unable =
-to request legacy PWM\n");
-> -                                            ret =3D PTR_ERR(pb->pwm);
-> -                                            goto err_alloc;
-> -                             }
-
-Like I said, this code path is still required to support old systems
-that haven't been converted to use PWM lookup tables yet. There are only
-very few of those left, but we cannot remove this code yet.
-
-> +                            goto err_alloc;
->               }
->                dev_dbg(&pdev->dev, "got pwm for backlight\n");
->=20
-> Please be advised that this email may contain confidential information. I=
-f you are not the intended recipient, please notify us by email by replying=
- to the sender and delete this message. The sender disclaims that the conte=
-nt of this email constitutes an offer to enter into, or the acceptance of, =
-any agreement; provided that the foregoing does not invalidate the binding =
-effect of any digital or other electronic reproduction of a manual signatur=
-e that is included in any attachment.
-
-This "disclaimer" is useless in email that goes to a public mailing list
-so it should just be removed.
-
-Thierry
-
---eAbsdosE1cNLO4uF
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJT/XBGAAoJEN0jrNd/PrOhz/YP/AmcJLlATh+tbvNWzUuW3xRV
-nrQ3xT50FghDR+WRcjcg/hfB/4OiRaLGn9GHnUu4BWc3jHYmkCFkDkB2FCRJ2hqI
-Y21e5K6fWBBJEKlbq+e/CDIzDbiHClK95P8SE/groz/bgIDP29RJNEH7pVuiGHbL
-NvDvz17WA+aF5kodqkCTYikbUsgoG269qjjYLg43ia1cQSld6fpiqJd9LgCuGxKz
-Ntb7LKJpxgluaPYPimYKnIcQauTBSyo/w75cphYbT2VQC7K6RVWl1ElvVizbq4pw
-byAmfL36V8rxHkyB4A4iiNPXZoaRda3nX4G9SHYWKfBwxRnlMWAvEFC6C5vhdu6C
-5UQnLlCeXAUkb12gU0o/DcSr6sLAhsDmjSW0ZMiZlIy9iL8keCODtpYy3y13tD1f
-O8XIon9LHuB5+RtbUNzThb44czXRrckTTB04iIwwaXTEYWBNKPJlmqdi1bEJLA8D
-SZsZXGzxmxWlY7mmGuRPztZHpFBxWYQ/n8+30OOqdwyxPIfkRl/L6vVUanPa/4rW
-iwUv5TEAOmPx+C+D4r10uXHGemJIXBgv1RNJ+4YavdL7/uscMzGTrFZYrJ+Pb3BA
-jZygnsB8QKtITKZYggWOVF2B+iN3C/wru1ijdBJjFZlmmtgAcrNa00uTlnp3PRpb
-KcNCuTMnFa5Nn6cm3Jjn
-=8m+k
------END PGP SIGNATURE-----
-
---eAbsdosE1cNLO4uF--
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
