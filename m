@@ -1,128 +1,97 @@
-From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v4 00/11] drm: add support for Atmel HLCDC Display
- Controller
-Date: Wed, 27 Aug 2014 09:52:35 +0200
-Message-ID: <20140827095235.20334e2d@bbrezillon>
-References: <1406034695-15534-1-git-send-email-boris.brezillon@free-electrons.com>
-	<2138720.5GSxsvjVxS@avalon>
-	<20140821192633.69f6b21b@bbrezillon>
-	<1997793.CWhjU3F32E@avalon>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] pwm: Fix uninitialized warnings in pwm_get()
+Date: Thu, 28 Aug 2014 11:03:14 +0200
+Message-ID: <1409216594-31389-1-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:49736 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751586AbaH0Hwj (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 27 Aug 2014 03:52:39 -0400
-In-Reply-To: <1997793.CWhjU3F32E@avalon>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-pwm@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, linux-pwm@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Rob Clark <robdclark@gmail.com>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>, linux-arm-kernel@lists.infradead.org
 
-Hi Laurent,
+With some versions of gcc (e.g. 4.1.2):
 
-On Tue, 26 Aug 2014 01:39:21 +0200
-Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
+drivers/pwm/core.c: In function =E2=80=98pwm_get=E2=80=99:
+drivers/pwm/core.c:610: warning: =E2=80=98polarity=E2=80=99 may be used=
+ uninitialized in this function
+drivers/pwm/core.c:609: warning: =E2=80=98period=E2=80=99 may be used u=
+ninitialized in this function
 
-> Hi Boris,
-> 
-> On Thursday 21 August 2014 19:26:33 Boris BREZILLON wrote:
-> > On Thu, 21 Aug 2014 19:08:53 +0200
-> > Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
-> > 
-> > [...]
-> > 
-> > >>>> While this could be acceptable when all drivers are statically linked
-> > >>>> in the kernel, it might be problematic when you're using modules,
-> > >>>> meaning that you won't be able to display anything on your LCD panel
-> > >>>> until your HDMI bridge module has been loaded.
-> > >>> 
-> > >>> No. HDMI should be using proper hotplugging anyway, hence it should be
-> > >>> always be loaded anyway. You're in for a world of pain if you think
-> > >>> you can run DRM with a driver that's composed of separate kernel
-> > >>> modules.
-> > >> 
-> > >> I was talking about the external RGB to HDMI encoder, should the driver
-> > >> for this encoder (which is not on On Chip block) be compiled
-> > >> statically too ?
-> > > 
-> > > Given the move to multiplatform kernels we need to aim for as few modules
-> > > compiled in as possible. I'd say this includes HDMI encoders, panels and
-> > > display controllers.
-> > > 
-> > >>> Also if you don't want to use deferred probe, then you're in for the
-> > >>> full hotplugging panel dance and that implies that you need to fix a
-> > >>> bunch of things in DRM (one being the framebuffer console
-> > >>> instantiation
-> > >>> that I referred to in the other thread).
-> > >> 
-> > >> For now, I wait until there is a device connected on the RGB connector
-> > >> (connector status set to connector_status_connected) before creating an
-> > >> fbdev. It might not be the cleanest way to solve this issue, but it
-> > >> works :-).
-> > > 
-> > > Do you create a new drm_encoder at runtime for the HDMI encoder when it
-> > > appears ? I thought the DRM core and API were not able to correctly cope
-> > > with that.
-> > 
-> > I haven't started to work on the HDMI encoder yet, and ATM I only have
-> > a single connector (which is true from an HW POV), which is then bound
-> > to an LCD panel (the only type of remote endpoint I currently support).
-> > 
-> > BTW, I wonder how my use case should be represented in the DRM
-> > subsystem. As I said, from an HW POV I only have one RGB (or whatever
-> > name you choose for it) connector. But on such kind of connectors you
-> > can connect several output devices (panels, encoders, ...).
-> > And in my case I have 2 devices on the same RGB connector: a panel and
-> > an RGB to HDMI converter.
-> 
-> The DRM connector object was initially meant to model a physical user-
-> accessible connector on a board (VGA, DVI, HDMI, ...) and the properties of 
-> the monitor plugged into it. It has then been (ab)used to represent panels, as 
-> they're similar to monitors.
-> 
-> In your case the VGA and HDMI connectors should be modeled as DRM connectors, 
-> the RGB to HDMI encoder as a DRM encoder, and the LCDC as a DRM CRTC.
+While these are false positives, we can get rid of them by refactoring
+the code to store a pointer to the best match, as suggested before by
+Thierry Reding. This does require moving the mutex_unlock() down.
 
-I don't have any VGA connector (or I'm missing something :-)), but I
-have an LCD panel and an RGB to HDMI encoder connected on the same RGB
-connector.
+=46ixes: d717ea73e36dd565 ("pwm: Fix period and polarity in pwm_get() f=
+or non-perfect matches")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/pwm/core.c | 29 ++++++++++++++---------------
+ 1 file changed, 14 insertions(+), 15 deletions(-)
 
-> 
-> As DRM hardcodes the pipeline model to CRTC -> encoder -> connector, you will 
-> also need a DRM encoder in the VGA path. I suppose your board has a VGA DAC, 
-> that's the component you should expose as a DRM encoder (even if it can't be 
-> controlled and doesn't limit the valid modes).
-
-Actually, my problem is that both devices are connected on the same RGB
-connector, and thus share the same display mode (resolution, HSYNC,
-VSYNC, RGB output mode, ...).
-This means that all remote devices have to agree on a specific mode if
-we want to mirror the display on several output devices, otherwise we
-must disable one of the output devices.
-
-> 
-> > >>> You also can't be using the current device tree bindings because they
-> > >>> all assume a dependency from the display controller/output to the
-> > >>> panel. For hotplugging you'd need the dependency the other way around
-> > >>> (the panel needs to refer to the output by phandle).
-> > >> 
-> > >> Here [1] is a proposal for notification support in the drm_panel
-> > >> infrastructure (which is not that complicated), and here [2] is how
-> > >> I use it in my atmel-hlcdc driver to generate hotplug events.
-> > > 
-> > > Is there a way we could use the component framework for that ? I know that
-> > > partial notification isn't supported at the moment, but Russell agreed it
-> > > was a real use case that should be implemented at some point.
-> > 
-> > I'll give it a try.
-> 
-
-
-
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 8c748b17f416..966497d10c6e 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -602,12 +602,9 @@ struct pwm_device *pwm_get(struct device *dev, con=
+st char *con_id)
+ 	struct pwm_device *pwm =3D ERR_PTR(-EPROBE_DEFER);
+ 	const char *dev_id =3D dev ? dev_name(dev) : NULL;
+ 	struct pwm_chip *chip =3D NULL;
+-	unsigned int index =3D 0;
+ 	unsigned int best =3D 0;
+-	struct pwm_lookup *p;
++	struct pwm_lookup *p, *chosen =3D NULL;
+ 	unsigned int match;
+-	unsigned int period;
+-	enum pwm_polarity polarity;
+=20
+ 	/* look up via DT first */
+ 	if (IS_ENABLED(CONFIG_OF) && dev && dev->of_node)
+@@ -653,10 +650,7 @@ struct pwm_device *pwm_get(struct device *dev, con=
+st char *con_id)
+ 		}
+=20
+ 		if (match > best) {
+-			chip =3D pwmchip_find_by_name(p->provider);
+-			index =3D p->index;
+-			period =3D p->period;
+-			polarity =3D p->polarity;
++			chosen =3D p;
+=20
+ 			if (match !=3D 3)
+ 				best =3D match;
+@@ -665,17 +659,22 @@ struct pwm_device *pwm_get(struct device *dev, co=
+nst char *con_id)
+ 		}
+ 	}
+=20
+-	mutex_unlock(&pwm_lookup_lock);
++	if (!chosen)
++		goto out;
+=20
+-	if (chip)
+-		pwm =3D pwm_request_from_chip(chip, index, con_id ?: dev_id);
+-	if (IS_ERR(pwm))
+-		return pwm;
++	chip =3D pwmchip_find_by_name(chosen->provider);
++	if (!chip)
++		goto out;
+=20
+-	pwm_set_period(pwm, period);
+-	pwm_set_polarity(pwm, polarity);
++	pwm =3D pwm_request_from_chip(chip, chosen->index, con_id ?: dev_id);
++	if (IS_ERR(pwm))
++		goto out;
+=20
++	pwm_set_period(pwm, chosen->period);
++	pwm_set_polarity(pwm, chosen->polarity);
+=20
++out:
++	mutex_unlock(&pwm_lookup_lock);
+ 	return pwm;
+ }
+ EXPORT_SYMBOL_GPL(pwm_get);
+--=20
+1.9.1
