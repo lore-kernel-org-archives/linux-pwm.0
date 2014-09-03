@@ -1,61 +1,40 @@
-From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCHv2 4/4] clocksource: tcb_clksrc: unprepare clock in case
- of failure
-Date: Wed, 3 Sep 2014 12:10:15 +0200
-Message-ID: <20140903121015.2f756e4d@bbrezillon>
-References: <1409329003-17252-1-git-send-email-g.portay@overkiz.com>
- <1409329003-17252-5-git-send-email-g.portay@overkiz.com>
+From: Husam Al Sayed <oscar55-azLpJcbXd5U@public.gmane.org>
+Subject: FROM: Husam Al Sayed.
+Date: Wed, 3 Sep 2014 20:43:40 +0200 (CEST)
+Message-ID: <1829951288.347196.1409769820371.JavaMail.root@mbox05>
+References: <678469814.347194.1409769794832.JavaMail.root@mbox05>
+Reply-To: "alsayedhusa-PkbjNfxxIARBDgjK7y7TUQ@public.gmane.org" <alsayedhusa-PkbjNfxxIARBDgjK7y7TUQ@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1409329003-17252-5-git-send-email-g.portay@overkiz.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: =?UTF-8?B?R2HDq2w=?= PORTAY <g.portay@overkiz.com>
-Cc: linux-pwm@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thomas Gleixner <tglx@linutronix.de>, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <678469814.347194.1409769794832.JavaMail.root@mbox05>
+Sender: linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, vitalywool-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ppp-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mitch-sbE13kky4R3QT0dZR+AlfA@public.gmane.org, mostrows-ihVZJaRskl1bRRN4PJnoQQ@public.gmane.org, jchapman-Bm0nJX+W7e9BDgjK7y7TUQ@public.gmane.org, giometti-AVVDYK/kqiJWk0Htik3J/w@public.gmane.org, linuxpps-fMOxgv769XvBG6Z5cez8fA@public.gmane.org, xeb-JGs/UdohzUI@public.gmane.org, rml-uHNMWV9qC4FeoWH0uzbU5w@public.gmane.org, kpreempt-tech-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, mcgrof-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mikpelinux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, geoff-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, jim-XrPbb/hENzg@public.gmane.org, ccross-z5hGa2qSFaRBDgjK7y7TUQ@public.gmane.org, keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, richardcochran-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, roland-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, oleg-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, isely-e+AXbWqSrlAAvxtiuMwx3w@public.gmane.org, pvrusb2-2vzrQ03IO+5eoWH0uzbU5w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, eric.y.miao-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, haojian.zhuang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robert.jarzmik-GANU6spQydw@public.gmane.org, infinipath-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, mdr-sJ/iWh9BUns@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gRnJpLCAyOSBBdWcgMjAxNCAxODoxNjo0MyArMDIwMApHYcOrbCBQT1JUQVkgPGcucG9ydGF5
-QG92ZXJraXouY29tPiB3cm90ZToKCj4gVGhlIGNsb2NrIGlzIG5vdCB1bnByZXBhcmVkIGluIGNh
-c2Ugb2YgdGhlIHJlcXVlc3QgSVJRIGZhaWxzLgo+IAo+IEFsc28gdXBkYXRlIHRvIHJlcXVlc3Rf
-aXJxLgoKQXMgeW91J3JlIGRvaW5nIDIgZGlmZmVyZW50IHRoaW5ncyBpbiB0aGlzIGNvbW1pdCAo
-Zmlyc3QgbW92ZSB0bwpyZXF1ZXN0X2lycSBhbmQgdGhlbiBkaXNhYmxlIHRoZSBUQyBjbGsgaWYg
-dGhlIHJlcXVlc3QgZmFpbHMpIEkgd291bGQKaGF2ZSBjaG9zZW4gYW5vdGhlciBjb21taXQgdGl0
-bGUsIGxpa2UKImNsb2Nrc291cmNlOiB0Y2JfY2xrc3JjOiBzYW5pdGl6ZSBJUlEgcmVxdWVzdCIK
-Ck90aGVyd2lzZSwgeW91IGhhdmUgbXkKCkFja2VkLWJ5OiBCb3JpcyBCcmV6aWxsb24gPGJvcmlz
-LmJyZXppbGxvbkBmcmVlLWVsZWN0cm9ucy5jb20+Cgo+IAo+IFNpZ25lZC1vZmYtYnk6IEdhw6ts
-IFBPUlRBWSA8Zy5wb3J0YXlAb3Zlcmtpei5jb20+Cj4gLS0tCj4gIGRyaXZlcnMvY2xvY2tzb3Vy
-Y2UvdGNiX2Nsa3NyYy5jIHwgMTMgKysrKy0tLS0tLS0tLQo+ICAxIGZpbGUgY2hhbmdlZCwgNCBp
-bnNlcnRpb25zKCspLCA5IGRlbGV0aW9ucygtKQo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2Ns
-b2Nrc291cmNlL3RjYl9jbGtzcmMuYyBiL2RyaXZlcnMvY2xvY2tzb3VyY2UvdGNiX2Nsa3NyYy5j
-Cj4gaW5kZXggZjkyMmU4MS4uOGJkYmM0NSAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2Nsb2Nrc291
-cmNlL3RjYl9jbGtzcmMuYwo+ICsrKyBiL2RyaXZlcnMvY2xvY2tzb3VyY2UvdGNiX2Nsa3NyYy5j
-Cj4gQEAgLTE3OCwxMiArMTc4LDYgQEAgc3RhdGljIGlycXJldHVybl90IGNoMl9pcnEoaW50IGly
-cSwgdm9pZCAqaGFuZGxlKQo+ICAJcmV0dXJuIElSUV9OT05FOwo+ICB9Cj4gIAo+IC1zdGF0aWMg
-c3RydWN0IGlycWFjdGlvbiB0Y19pcnFhY3Rpb24gPSB7Cj4gLQkubmFtZQkJPSAidGNfY2xrZXZ0
-IiwKPiAtCS5mbGFncwkJPSBJUlFGX1RJTUVSLAo+IC0JLmhhbmRsZXIJPSBjaDJfaXJxLAo+IC19
-Owo+IC0KPiAgc3RhdGljIGludCBfX2luaXQgc2V0dXBfY2xrZXZlbnRzKHN0cnVjdCBhdG1lbF90
-YyAqdGMsIGludCBjbGszMmtfZGl2aXNvcl9pZHgpCj4gIHsKPiAgCWludCByZXQ7Cj4gQEAgLTE5
-OCwxNSArMTkyLDE2IEBAIHN0YXRpYyBpbnQgX19pbml0IHNldHVwX2Nsa2V2ZW50cyhzdHJ1Y3Qg
-YXRtZWxfdGMgKnRjLCBpbnQgY2xrMzJrX2Rpdmlzb3JfaWR4KQo+ICAKPiAgCWNsa2V2dC5yZWdz
-ID0gdGMtPnJlZ3M7Cj4gIAljbGtldnQuY2xrID0gdDJfY2xrOwo+IC0JdGNfaXJxYWN0aW9uLmRl
-dl9pZCA9ICZjbGtldnQ7Cj4gIAo+ICAJdGltZXJfY2xvY2sgPSBjbGszMmtfZGl2aXNvcl9pZHg7
-Cj4gIAo+ICAJY2xrZXZ0LmNsa2V2dC5jcHVtYXNrID0gY3B1bWFza19vZigwKTsKPiAgCj4gLQly
-ZXQgPSBzZXR1cF9pcnEoaXJxLCAmdGNfaXJxYWN0aW9uKTsKPiAtCWlmIChyZXQpCj4gKwlyZXQg
-PSByZXF1ZXN0X2lycShpcnEsIGNoMl9pcnEsIElSUUZfVElNRVIsICJ0Y19jbGtldnQiLCAmY2xr
-ZXZ0KTsKPiArCWlmIChyZXQpIHsKPiArCQljbGtfZGlzYWJsZV91bnByZXBhcmUodDJfY2xrKTsK
-PiAgCQlyZXR1cm4gcmV0Owo+ICsJfQo+ICAKPiAgCWNsb2NrZXZlbnRzX2NvbmZpZ19hbmRfcmVn
-aXN0ZXIoJmNsa2V2dC5jbGtldnQsIDMyNzY4LCAxLCAweGZmZmYpOwo+ICAKCgoKLS0gCkJvcmlz
-IEJyZXppbGxvbiwgRnJlZSBFbGVjdHJvbnMKRW1iZWRkZWQgTGludXggYW5kIEtlcm5lbCBlbmdp
-bmVlcmluZwpodHRwOi8vZnJlZS1lbGVjdHJvbnMuY29tCgpfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdAps
-aW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVh
-ZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+FROM: Husam Al Sayed.
+
+EMAIL:alsayedhusa-PkbjNfxxIARBDgjK7y7TUQ@public.gmane.org
+ 
+Hello,
+ 
+I decided to write you this proposal in good faith, believing that you will
+not betray me. I am Mr. Husam Al Sayed, a Bank officer here in U.A.E.
+ 
+One Mr. Peter Adams, a citizen of your country and Crude Oil dealer made a fixed deposit with my bank in 2005 for 108 calendar months, valued at US$30,000,000.00 (Thirty Million United State Dollars) the due date for this deposit contract was last 22nd of January 2014. Sadly Peter was among the death victims in the May 27 2006 Earthquake disaster in Java, Indonesia that killed over 5,000 people. He was in Indonesia on a business trip and that was how he met his untimely end. My bank management is yet to know about his death, I knew about it because he was my friend and I am his Account Officer. Peter did not mention any Next of Kin/ Heir when the account was opened, he was not married and no children. Last week my Bank Management requested that Peter should give instructions on what to do 
+ about his funds, if to renew the contract.
+ 
+I know this will happen and that is why I have been looking for a means to handle the situation, because if my Bank Directors happens to know that Peter is dead and do not have any Heir, they will take the funds for their personal use, so I don't want such to happen. That is why I am seeking your co-operation to present you as the Next of Kin/ Heir to the account, since you are a foreigner and my bank head quarters will release the account to you. There is no risk involved; the transaction will be executed under a legitimate arrangement that will protect us from any breach of law. It is better that we claim the money, than allowing the Bank Directors to take it, they are rich already. I am not a greedy person, so I am suggesting we share the funds in this ratio, 50/50%, equal sharing. Let 
+ me know your mind on this and please do treat this information highly confidential. We shall go over the details once I receive your urgent response. Please Urgently get back to me through this email address as soon as possible:
+ 
+ 
+ 
+Have a nice day and God bless. Anticipating your communication.
+ 
+Regards,
+FROM: Husam Al Sayed.
+EMAIL: alsayedhusa-PkbjNfxxIARBDgjK7y7TUQ@public.gmane.org
+_____________________________________________________________________
+
+Hladate spisovny vyraz? http://www.jazykovaporadna.sk
