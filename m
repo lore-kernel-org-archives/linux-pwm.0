@@ -1,90 +1,71 @@
-From: Stephen Warren <swarren@wwwdotorg.org>
-Subject: Re: [resend rfc v3] pwm: add BCM2835 PWM driver
-Date: Thu, 04 Sep 2014 09:06:48 -0600
-Message-ID: <54088008.9080200@wwwdotorg.org>
-References: <1398689686-30317-1-git-send-email-bart.tanghe@thomasmore.be> <20140825131908.GG4163@ulmo.nvidia.com> <5408395E.2030305@thomasmore.be>
+From: "Yang, Robert" <RYang@hach.com>
+Subject: RE: [PATCH 1/1] PWM Backlight: Fix a bug which could cause the PWM
+ backlight driver use the wrong PWM chip and fail the driver probing if
+ multiple PWM chips exist. This defect could also cause the unintended PWM
+ chip  used and unaccessable by other dri...
+Date: Thu, 4 Sep 2014 15:33:14 +0000
+Message-ID: <D68D4F79CA301E4CB7967E4AF003840725306D49@DHRNASVXM01.danaher.org>
+References: <1409774437-39530-1-git-send-email-ryang@hach.com>
+ <20140904083852.GE8257@lee--X1> <20140904083958.GF8257@lee--X1>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from avon.wwwdotorg.org ([70.85.31.133]:50436 "EHLO
-	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750956AbaIDPGn (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 4 Sep 2014 11:06:43 -0400
-In-Reply-To: <5408395E.2030305@thomasmore.be>
+Received: from mail-bn1blp0184.outbound.protection.outlook.com ([207.46.163.184]:26405
+	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1751228AbaIDPd2 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Thu, 4 Sep 2014 11:33:28 -0400
+In-Reply-To: <20140904083958.GF8257@lee--X1>
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Bart Tanghe <bart.tanghe@thomasmore.be>, Thierry Reding <thierry.reding@gmail.com>
-Cc: tim.kryger@linaro.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
+To: Lee Jones <lee.jones@linaro.org>, ryang <hachyang@gmail.com>
+Cc: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "jg1.han@samsung.com" <jg1.han@samsung.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-On 09/04/2014 04:05 AM, Bart Tanghe wrote:
-> No problem. Thanks for the feedback.
-> I've got some question below.
->
-> On 2014-08-25 15:19, Thierry Reding wrote:
->> Sorry for taking so long to reply to this, I had completely forgotten.
->>
->> On Mon, Apr 28, 2014 at 02:54:46PM +0200, Bart Tanghe wrote:
->>> 	Add some better error handling and Device table support
->>> 	Added Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
->>> 	
->>> Signed-off-by: Bart Tanghe <bart.tanghe@thomasmore.be>
-
->>> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->>> index 22f2f28..20341a3 100644
->>> --- a/drivers/pwm/Kconfig
->>> +++ b/drivers/pwm/Kconfig
->>> @@ -62,6 +62,18 @@ config PWM_ATMEL_TCB
->>>   	  To compile this driver as a module, choose M here: the module
->>>   	  will be called pwm-atmel-tcb.
->>>
->>> +config PWM_BCM2835
->>> +	tristate "BCM2835 PWM support"
->>> +	depends on MACH_BCM2835 || MACH_BCM2708
->>> +	help
->>> +	  PWM framework driver for BCM2835 controller (raspberry pi)
->>
->> I think the correct capitalization would be "Raspberry Pi".
->>
->>> +	  Only 1 channel is implemented.
->>
->> How many can it take? Why haven't all been implemented?
->
-> BCM2835 can take 2 pwm channels.
-> I can implement 2 channels but can't physically test the second channel. Is that a problem?
-
-I don't think that's a problem; I would expect the channels to be 
-identical, so testing 1 should be fine.
-
->> I notice that you never prepare or enable the clock here. Perhaps this
->> isn't required because it's always on, but I think you should still call
->> clk_prepare_enable() here (and clk_disable_unprepare() in .remove()) to
->> make sure the driver is more portable.
-> The frequency can be minimized by a clock_divider ( the pwm clock is default disabled). this has to be done by
-> a clock driver, as mentioned in a previous comment by Stephen Warren.
->
-> Any clock programming should be performed by a clock driver. We don't
-> have one of those upstream yet, mainly because it would rely on talking
-> to the firmware (running on the VideoCore) to manipulate the clocks, and
-> we don't have a firmware protocol driver either.
->
-> Nowadays, I'm using a userspace program to change the clock_divider, but would like to implement this in a clock driver.
-> The clock hardware description isn't implemented in the datasheet. I can convert the userspace prog to a clock driver but this is very experimental.
-> If anyone has some suggestions?
-
-Oh dear. It sounds like we need at least some form of clock driver for 
-the platform then. I still don't think there's complete documentation 
-for the HW, even though a lot of register docs were published which 
-presumably cover the clock HW? Equally, given that the VC firmware 
-assumes it owns most of the HW, it seems best to manipulate the clocks 
-through the firmware interface rather than directly touching the HW. 
-Unfortunately, I don't believe there's any ABI guarantee on the firmware 
-interface. Perhaps we can get one?
-
->>> +static const struct of_device_id bcm2835_pwm_of_match[] = {
->>> +	{ .compatible = "bcrm,pwm-bcm2835", },
->>
->> s/bcrm/brcm/
-
-Probably swap the order, so "brcm,bcm2835-pwm". That would be consistent 
-with all the other HW on this SoC.
+SGkgTGVlLA0KSXQgaXMgZ3JlYXQgdG8gZ2V0IHlvdXIgcmVwbHkuIE5vLCB0aGlzIGlzICBhIHNl
+Y29uZCBvbmUsIGFjdHVhbGx5IGl0IGlzIGEgcmVzZW5kLiBUaGlzIHRpbWUgSSBqdXN0IGZvbGxv
+d2VkIFRoaWVycnkncyBpbnN0cnVjdGlvbiB1c2luZyB0aGUgZ2l0IHBhdGNoIGFuZCBzZW5kLW1h
+aWwgY29tbWFuZHMuDQoNClJvYmVydA0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpG
+cm9tOiBMZWUgSm9uZXMgW21haWx0bzpsZWUuam9uZXNAbGluYXJvLm9yZ10NClNlbnQ6IFRodXJz
+ZGF5LCBTZXB0ZW1iZXIgMDQsIDIwMTQgMjo0MCBBTQ0KVG86IHJ5YW5nDQpDYzogdGhpZXJyeS5y
+ZWRpbmdAZ21haWwuY29tOyBqZzEuaGFuQHNhbXN1bmcuY29tOyBsaW51eC1wd21Admdlci5rZXJu
+ZWwub3JnOyBZYW5nLCBSb2JlcnQ7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNClN1Ympl
+Y3Q6IFJlOiBbUEFUQ0ggMS8xXSBQV00gQmFja2xpZ2h0OiBGaXggYSBidWcgd2hpY2ggY291bGQg
+Y2F1c2UgdGhlIFBXTSBiYWNrbGlnaHQgZHJpdmVyIHVzZSB0aGUgd3JvbmcgUFdNIGNoaXAgYW5k
+IGZhaWwgdGhlIGRyaXZlciBwcm9iaW5nIGlmIG11bHRpcGxlIFBXTSBjaGlwcyBleGlzdC4gVGhp
+cyBkZWZlY3QgY291bGQgYWxzbyBjYXVzZSB0aGUgdW5pbnRlbmRlZCBQV00gY2hpcCB1c2VkIGFu
+ZCB1bmFjY2Vzc2FibGUgYnkgb3RoZXIgZHJpLi4uDQoNCj4gSSdtIGd1ZXNzaW5nIHRoaXMgaXMg
+eW91ciBmaXJzdCBwYXRjaC4NCj4NCj4gUGxlYXNlIHJlYWQ6IERvY3VtZW50YXRpb24vU3VibWl0
+dGluZ1BhdGNoZXMNCj4NCj4gQSBmZXcgbm90ZXMgZm9yIHlvdSBzZWFyY2ggZm9yIGFuZCByZWFk
+IGFib3V0IGluIHRoZSBhYm92ZSBkb2N1bWVudC4NCj4NCj4gIC0gU3ViamVjdCBsaW5lIGZvcm1h
+dHRpbmcgKHNob3J0LCBzdWNjaW5jdCkNCj4gIC0gQ29tbWl0IGxvZ3MgKHByZXNlbnQsIGRlc2Ny
+aXB0aXZlIFt3aGF0IGNoYW5nZWQgYW5kIHdoeV0sIHN1Y2NpbmN0KQ0KPiAgLSBBdXRob3JzaGlw
+IChmdWxsL3JlYWwgbmFtZXMgb25seSkNCg0KWW91IGFsc28gbmVlZCB0byBDQyBsaW51eC1rZXJu
+ZWxAdmdlci5rZXJuZWwub3JnIG9uIGFsbCBwYXRjaGVzLg0KDQo+ID4gU2lnbmVkLW9mZi1ieTog
+cnlhbmcgPHJ5YW5nQGhhY2guY29tPg0KPiA+IC0tLQ0KPiA+ICBkcml2ZXJzL3ZpZGVvL2JhY2ts
+aWdodC9wd21fYmwuYyB8IDMgKysrDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMo
+KykNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwu
+Yw0KPiA+IGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMNCj4gPiBpbmRleCBiODU5
+ODNlLi5lMDAxNGE1IDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L3B3
+bV9ibC5jDQo+ID4gKysrIGIvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMNCj4gPiBA
+QCAtMjczLDYgKzI3Myw5IEBAIHN0YXRpYyBpbnQgcHdtX2JhY2tsaWdodF9wcm9iZShzdHJ1Y3QN
+Cj4gPiBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ID4NCj4gPiAgICAgcGItPnB3bSA9IGRldm1f
+cHdtX2dldCgmcGRldi0+ZGV2LCBOVUxMKTsNCj4gPiAgICAgaWYgKElTX0VSUihwYi0+cHdtKSkg
+ew0KPiA+ICsgICAgICAgICAgIHJldCA9IFBUUl9FUlIocGItPnB3bSk7DQo+ID4gKyAgICAgICAg
+ICAgaWYgKHJldCA9PSAtRVBST0JFX0RFRkVSKQ0KPiA+ICsgICAgICAgICAgICAgICAgICAgZ290
+byBlcnJfYWxsb2M7DQo+ID4gICAgICAgICAgICAgZGV2X2VycigmcGRldi0+ZGV2LCAidW5hYmxl
+IHRvIHJlcXVlc3QgUFdNLCB0cnlpbmcgbGVnYWN5DQo+ID4gQVBJXG4iKTsNCj4gPg0KPiA+ICAg
+ICAgICAgICAgIHBiLT5wd20gPSBwd21fcmVxdWVzdChkYXRhLT5wd21faWQsICJwd20tYmFja2xp
+Z2h0Iik7DQo+DQoNCi0tDQpMZWUgSm9uZXMNCkxpbmFybyBTVE1pY3JvZWxlY3Ryb25pY3MgTGFu
+ZGluZyBUZWFtIExlYWQgTGluYXJvLm9yZyDilIIgT3BlbiBzb3VyY2Ugc29mdHdhcmUgZm9yIEFS
+TSBTb0NzIEZvbGxvdyBMaW5hcm86IEZhY2Vib29rIHwgVHdpdHRlciB8IEJsb2cNClBsZWFzZSBi
+ZSBhZHZpc2VkIHRoYXQgdGhpcyBlbWFpbCBtYXkgY29udGFpbiBjb25maWRlbnRpYWwgaW5mb3Jt
+YXRpb24uIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQsIHBsZWFzZSBub3Rp
+ZnkgdXMgYnkgZW1haWwgYnkgcmVwbHlpbmcgdG8gdGhlIHNlbmRlciBhbmQgZGVsZXRlIHRoaXMg
+bWVzc2FnZS4gVGhlIHNlbmRlciBkaXNjbGFpbXMgdGhhdCB0aGUgY29udGVudCBvZiB0aGlzIGVt
+YWlsIGNvbnN0aXR1dGVzIGFuIG9mZmVyIHRvIGVudGVyIGludG8sIG9yIHRoZSBhY2NlcHRhbmNl
+IG9mLCBhbnkgYWdyZWVtZW50OyBwcm92aWRlZCB0aGF0IHRoZSBmb3JlZ29pbmcgZG9lcyBub3Qg
+aW52YWxpZGF0ZSB0aGUgYmluZGluZyBlZmZlY3Qgb2YgYW55IGRpZ2l0YWwgb3Igb3RoZXIgZWxl
+Y3Ryb25pYyByZXByb2R1Y3Rpb24gb2YgYSBtYW51YWwgc2lnbmF0dXJlIHRoYXQgaXMgaW5jbHVk
+ZWQgaW4gYW55IGF0dGFjaG1lbnQuDQo=
