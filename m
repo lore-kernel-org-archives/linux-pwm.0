@@ -1,193 +1,134 @@
-From: Bart Tanghe <bart.tanghe@thomasmore.be>
-Subject: Re: [rfc]pwm: add xilinx pwm driver
-Date: Thu, 04 Sep 2014 12:41:48 +0200
-Message-ID: <540841EC.9010906@thomasmore.be>
-References: <1400066773-14393-1-git-send-email-bart.tanghe@thomasmore.be> <53748D84.5040005@monstr.eu> <5049141.XmehsUeakV@wuerfel> <5374C773.6070402@monstr.eu>
+From: =?UTF-8?q?Ga=C3=ABl=20PORTAY?= <gael.portay@gmail.com>
+Subject: [PATCHv3 0/4] ARM: at91/tclib: fix segmentation fault
+Date: Fri,  5 Sep 2014 16:14:36 +0200
+Message-ID: <1409926480-16367-1-git-send-email-gael.portay@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <5374C773.6070402@monstr.eu>
-Sender: linux-doc-owner@vger.kernel.org
-To: monstr@monstr.eu, Arnd Bergmann <arnd@arndb.de>
-Cc: thierry.reding@gmail.com, michal.simek@xilinx.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, rob@landley.net, grant.likely@linaro.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.orgdevicetree@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Arnd Bergmann <arnd@arndb.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Thomas Gleixner <tglx@linutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
+Cc: =?UTF-8?q?Ga=C3=ABl=20PORTAY?= <gael.portay@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-See below
-
-On 2014-05-15 15:56, Michal Simek wrote:
-> On 05/15/2014 02:20 PM, Arnd Bergmann wrote:
->> On Thursday 15 May 2014 11:48:52 Michal Simek wrote:
->>> On 05/14/2014 01:26 PM, Bart Tanghe wrote:
->>>> 	add Xilinx PWM support - axi timer hardware block 
->>>>
->>>> Signed-off-by: Bart Tanghe <bart.tanghe@thomasmore.be>
->>>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-xlnx.txt b/Documentation/devicetree/bindings/pwm/pwm-xlnx.txt
->>>> new file mode 100644
->>>> index 0000000..cb48926
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/pwm/pwm-xlnx.txt
->>>> @@ -0,0 +1,20 @@
->>>> +Xilinx PWM controller
->>>> +
->>>> +Required properties:
->>>> +- compatible: should be "xlnx,pwm-xlnx"
->>>> +- add a clock source to the description
->>>> +
->>>> +Examples:
->>>> +
->>>> +		axi_timer_0: timer@42800000 {
->>>> +			clock-frequency = <100000000>;
->>>
->>> just remove this from example it is not needed and unused.
->>>
->>>
->>>> +			clocks = <&clkc 15>;
->>>> +			compatible = "xlnx,xlnx-pwm";
->>>> +			reg = <0x42800000 0x10000>;
->>>> +			xlnx,count-width = <0x20>;
->>>> +			xlnx,gen0-assert = <0x1>;
->>>> +			xlnx,gen1-assert = <0x1>;
->>>> +			xlnx,one-timer-only = <0x0>;
->>>> +			xlnx,trig0-assert = <0x1>;
->>>> +			xlnx,trig1-assert = <0x1>;
->>>> +		} ;
->>>
->>> ok. This has to be done completely differently.
->>> I have looked around and found one a little bit older
->>> example but it is in the Linux kernel.
->>> It is pwm-atmel-tcb.c driver and atmel_tclib.c and tcb_clksrc.c.
->>>
->>> Arnd: Isn't there any newer better example how to manage it?
->>
->> Note that we have two atmel pwm drivers: drivers/misc/atmel_pwm.c 
->> and drivers/pwm/pwm-atmel.c. If you want to take that as an example,
->> make sure you use base on the latter.
-> 
-> Yes, I have seen that there are two drivers. atmel_pwm is older one
-> without using that tclib.
-> 
->>
->>> Back to atmel example - they are maintaining
->>> internal list of timers (atmel_tclib.c)
->>> and then clocksource driver (tcb_clksrc.c) is asking with atmel_tc_alloc() for it.
->>> The same is for pwm driver (pwm-atmel-tcb.c).
->>>
->>> They probably have all timers the same which is not
->>> our case because they can be different but this can be solved
->>> with flags.
->>>
->>> From DT point of view I think this is the reasonable description
->>>
->>> axi_timer_0: timer@42800000 {
->>> 	clocks = <&clkc 15>;
->>> 	compatible = "xlnx,xps-timer-1.00.a";
->>> 	interrupt-parent = <&xps_intc_0>;
->>> 	interrupts = < 3 2 >;
->>> 	reg = <0x42800000 0x10000>;
->>> 	xlnx,count-width = <0x20>;
->>> 	xlnx,gen0-assert = <0x1>;
->>> 	xlnx,gen1-assert = <0x1>;
->>> 	xlnx,one-timer-only = <0x0>;
->>> 	xlnx,trig0-assert = <0x1>;
->>> 	xlnx,trig1-assert = <0x1>;
->>> } ;
->>>
->>>
->>> pwm {
->>>         compatible = "xlnx,timer-pwm";
->>>         #pwm-cells = <2>;
->>>         timer = <&axi_timer_0>;
->>> };
->>>
->>>
->>> Allocation function will also require to do a change
->>> in clocksource driver because currently the first
->>> timer in the DTS/system is taken for clocksource/clockevents
->>> (others are just ignored).
->>> That's why will be necessary to add clock-handle property
->>> to cpu node to exactly describe which timer is system timer.
->>> The same as is for interrupt-handle (more intc's can be in design).
->>
->> If there is just one set of registers, I wouldn't object to
->> having just a single node in DT, and just one driver that registers
->> to both the clocksource and the PWM interfaces. That might
->> simplify the code.
-> 
-> IP is configurable as is normal for us.
-> You can select IP with just one timer.
-> It means register locations for specific timer are fixed.
-> http://www.xilinx.com/support/documentation/ip_documentation/xps_timer.pdf
-> 
-> timer0 - offset 0x0
-> timer1 - offset 0x10 (doesn't need to be synthesized)
-> 
-> There is one interrupt for both timers.
-> 
-> Timers can be as timers (up/down count/ reload with or without IRQs)
-> But then one options is to use both timers and generate PWM signal.
-> From full ip description in DT you can see xlnx,gen0-assert = <1>;
-> which can suggest that this IP can output PMW signal.
-> (We can also detect if PWM0 signal is connected just to be sure
-> that PWM can be enabled).
-> 
-> There is also capture trigger mode where external signal start/stop
-> timer counting.
-> 
-> It means there are 3 modes - timer, capture and PWM.
-> Timer (clocksource, clockevent) requires specific handling,
-> PWM has own subsystem and not sure if there is any subsystem for
-> capture mode. Is there any?
-> 
-> Not every timer configuration is suitable for all things
-> but fully configured timer can be used in all 3 modes.
-> 
-> 
-> I think that make sense to register and map all timers in the system
-> and classify them with flags (like can't be used for capture or PMW
-> if there are not outputs connected) and then use the best
-> timer for clocksource and clockevent. The best candidate is IP
-> with the lowest IRQ number in dual timer mode but in general
-> whatever timer can be used that's why we can't probably avoid
-> timer specification in DT.
-> In spite of this smells because you are saying via DT
-> to Linux which timer should be used for what purpose.
-> 
-Can anyone help me with a correct example devicetree description of this block?
-As metioned above, this can be used as timer, pwm and capture device.
-Is a description as below a good starting point?
-
-axi_timer_0: timer@42800000 {
- 	clocks = <&clkc 15>;
- 	compatible = "xlnx,xps-timer-1.00.a";
- 	interrupt-parent = <&xps_intc_0>;
- 	interrupts = < 3 2 >;
- 	reg = <0x42800000 0x10000>;
- 	xlnx,count-width = <0x20>;
- 	xlnx,gen0-assert = <0x1>;
- 	xlnx,gen1-assert = <0x1>;
- 	xlnx,one-timer-only = <0x0>;
- 	xlnx,trig0-assert = <0x1>;
- 	xlnx,trig1-assert = <0x1>;
- } ;
-
- pwm {
-         compatible = "xlnx,timer-pwm";
-         #pwm-cells = <2>;
-         timer = <&axi_timer_0>;
- };
-
-
- clocksource {
-         compatible = "xlnx,timer-clk";
-         timer = <&axi_timer_0>;
- };
-
- IIOcapture {
-         compatible = "xlnx,timer-IIO";
-         timer = <&axi_timer_0>;
- };
-
-> Thanks,
-> Michal
-> 
+SGkgZXZlcnkgb25lLAoKVGhpcyBzZXQgb2YgcGF0Y2hlcyBmaXggYSBzZWdtZW50YXRpb24gZmF1
+bHQgaGFwcGVuaW5nIHdoZW4ga2V4ZWMtaW5nCmtlcm5lbCBvbiBhbiBhdDkxIHBsYXRmb3JtIChz
+ZWUgYmFja3RyYWNlIGJlbG93KS4KCldoaWxlIHRoZSBwcmV2aW91cyBrZXJuZWwgc2h1dHMgZG93
+biwgdGhlIHRjYl9jbGtzcmMgZHJpdmVyIGxlYXZlcyBpdHMKaW50ZXJydXB0aW9ucyB1bm1hc2tl
+ZC4gV2hlbiB0aGUgbmV3IGtlcm5lbCBpbml0aWxpYXplcyBhbnkgdGNsaWIgbWFraW5nIHVzZSBv
+ZgphIFRDIGJsb2NrLCBhbiBpbnRlcnJ1cHRpb24gbWF5IGhhcHBlbiBiZWZvcmUgdGhlIGludGVy
+cnVwdCBoYW5kbGVyIGlzIHNldCwKY2F1c2luZyBhIGtlcm5lbCBzZWdtZW50YXRpb24gZmF1bHQu
+CgpUbyBwcmV2ZW50IGZyb20gc3VjaCBjYXNlcyBmcm9tIGhhcHBlbmluZywgdGhlIGxhc3QgcGF0
+Y2ggc2V0cyB1cCB0aGUgc2h1dGRvd24KY2FsbGJhY2sgd2hpY2ggbWFza3MgaW50ZXJydXB0aW9u
+cyB3aGVuIHRoZSBtYWNoaW5lIGlzIHNodXRkb3duLiBGdXJ0aGVybW9yZSwKaXQgYWxzbyBtYXNr
+cyB0aGUgaW50ZXJydXB0aW9ucyBhdCBwcm9iZSB0byBtYWtlIHN1cmUgbm8gaW50ZXJydXB0aW9u
+IGhhcHBlbnMKYmVmb3JlIHRoZSBoYW5kbGVyIGlzIHNldC4gVGhpcyB3aWxsIHByZXZlbnQgZnJl
+c2hseSBrZXhlYy1lZCBrZXJuZWwgZnJvbQpjcmFzaGluZyB3aGVuIGxhdW5jaGVkIGZyb20gYSBr
+ZXJuZWwgd2hpY2ggZG9lcyBub3QgcHJvcGVybHkgbWFzayBpbnRlcnJ1cHRpb25zCmF0IHNodXRk
+b3duLgoKVW5hYmxlIHRvIGhhbmRsZSBrZXJuZWwgTlVMTCBwb2ludGVyIGRlcmVmZXJlbmNlIGF0
+IHZpcnR1YWwgYWRkcmVzcyAwMDAwMDAwMApwZ2QgPSBjMDAwNDAwMApbMDAwMDAwMDBdICpwZ2Q9
+MDAwMDAwMDAKSW50ZXJuYWwgZXJyb3I6IE9vcHM6IDgwMDAwMDA1IFsjMV0gQVJNCk1vZHVsZXMg
+bGlua2VkIGluOgpDUFU6IDAgUElEOiAxIENvbW06IHN3YXBwZXIgTm90IHRhaW50ZWQgMy4xNi4w
+KyAjMTQ0CnRhc2s6IGMxODI4YWEwIHRpOiBjMTgyYTAwMCB0YXNrLnRpOiBjMTgyYTAwMApQQyBp
+cyBhdCAweDAKTFIgaXMgYXQgY2gyX2lycSsweDI4LzB4MzAKcGMgOiBbPDAwMDAwMDAwPl0gICAg
+bHIgOiBbPGMwMWRiOTA0Pl0gICAgcHNyOiAwMDAwMDBkMwpzcCA6IGMxODJiZDM4ICBpcCA6IGMx
+ODJiZDQ4ICBmcCA6IGMxODJiZDQ0CnIxMDogYzAzNzMzOTAgIHI5IDogYzE4MjViMDAgIHI4IDog
+NjAwMDAwNTMKcjcgOiAwMDAwMDAwMCAgcjYgOiAwMDAwMDAwMCAgcjUgOiAwMDAwMDAxMyAgcjQg
+OiBjMDM2ZTgwMApyMyA6IDAwMDAwMDAwICByMiA6IDAwMDAyMDA0ICByMSA6IGMwMzZlNzYwICBy
+MCA6IGMwMzZlNzYwCkZsYWdzOiBuemN2ICBJUlFzIG9mZiAgRklRcyBvZmYgIE1vZGUgU1ZDXzMy
+ICBJU0EgQVJNICBTZWdtZW50IGtlcm5lbApDb250cm9sOiAwMDA1MzE3ZiAgVGFibGU6IDIwMDA0
+MDAwICBEQUM6IDAwMDAwMDE3ClByb2Nlc3Mgc3dhcHBlciAocGlkOiAxLCBzdGFjayBsaW1pdCA9
+IDB4YzE4MmExYzApClN0YWNrOiAoMHhjMTgyYmQzOCB0byAweGMxODJjMDAwKQpiZDIwOiAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjMTgyYmQ3
+YyBjMTgyYmQ0OApiZDQwOiBjMDA0NTQzMCBjMDFkYjhlYyAwMDAwMDAwMCBjMThjNmY0MCBjMTgy
+YmQ3NCBjMTgyNWIwMCBjMDM1Y2VjNCAwMDAwMDAwMApiZDYwOiBjMTgyYmUyYyA2MDAwMDA1MyBj
+MTgyNWIzNCAwMDAwMDAwMCBjMTgyYmQ5NCBjMTgyYmQ4MCBjMDA0NTU3MCBjMDA0NTQwOApiZDgw
+OiAwMDAwMDAwMCBjMTgyNWIwMCBjMTgyYmRhYyBjMTgyYmQ5OCBjMDA0N2YzNCBjMDA0NTU1MCAw
+MDAwMDAxMyBjMDM2NjE5YwpiZGEwOiBjMTgyYmRjNCBjMTgyYmRiMCBjMDA0NGRhNCBjMDA0N2U5
+OCAwMDAwMDA3ZiAwMDAwMDAxMyBjMTgyYmRlNCBjMTgyYmRjOApiZGMwOiBjMDAwOWUzNCBjMDA0
+NGQ4YyBmZWZmZjAwMCBjMDA0NjcyOCA2MDAwMDA1MyBmZmZmZmZmZiBjMTgyYmRmNCBjMTgyYmRl
+OApiZGUwOiBjMDAwODZhOCBjMDAwOWRkYyBjMTgyYmU3NCBjMTgyYmRmOCBjMDAwY2I4MCBjMDAw
+ODY3NCAwMDAwMDAwMCAwMDAwMDAxMwpiZTAwOiAwMDAwMDAwMCAwMDAxNDIwMCBjMTgyNWIwMCBj
+MDM2ZTgwMCAwMDAwMDAxMyBjMDM1ZWQ5OCA2MDAwMDA1MyBjMTgyNWIzNApiZTIwOiAwMDAwMDAw
+MCBjMTgyYmU3NCBjMTgyYmUyMCBjMTgyYmU0MCBjMDA0Nzk5NCBjMDA0NjcyOCA2MDAwMDA1MyBm
+ZmZmZmZmZgpiZTQwOiAwMDAwMDAxMyBjMDM2ZTgwMCBjMTgyYmU2NCBjMTgyNWIwMCAwMDAwMDAx
+MyBjMDM2ZTgwMCBjMDM1ZWQ5OCBjMDM4NzRiYwpiZTYwOiAwMDAwMDAwNCBjMDM2ZTcwMCBjMTgy
+YmU5NCBjMTgyYmU3OCBjMDA0Njg5YyBjMDA0NjM5OCBjMDM2ZTc2MCBjMThjNjA4MApiZTgwOiAw
+MDAwMDAwMCBjMDM1ZWQxMCBjMTgyYmVkYyBjMTgyYmU5OCBjMDM0OGIwOCBjMDA0Njg0YyAwMDAw
+MDAwYyBjMDM0ZGFjOApiZWEwOiAwMDRjNGIzZiBjMDI4YzMzOCBjMDM2ZTc2MCAwMDAwMDAxMyBj
+MDE0ZWNjOCBjMThlNjdlMCBjMDM1YjljMCBjMDM0ODg4NApiZWMwOiBjMDM1YjljMCBjMTgyYTAy
+MCAwMDAwMDAwMCAwMDAwMDAwMCBjMTgyYmY1NCBjMTgyYmVlMCBjMDAwODlmYyBjMDM0ODg5NApi
+ZWUwOiBjMDBkYTUxYyBjMWZmY2M3OCBjMTgyYmYwYyBjMTgyYmVmOCBjMDAyZDEwMCBjMDAyZDA5
+YyBjMWZmY2M3OCAwMDAwMDAwMApiZjAwOiBjMTgyYmY1NCBjMTgyYmYxMCBjMDAyZDMwOCBjMDMz
+NjU3MCBjMTgyYmYzYyBjMDMzNGU0NCAwMDAwMDAwMyAwMDAwMDAwMwpiZjIwOiAwMDAwMDAzMCBj
+MDMzNGI0NCBjMDA0NGQ3NCAwMDAwMDAwMyAwMDAwMDAwMyBjMDM0ZGFjOCBjMDM1MGE5NCBjMDM3
+MzQ0MApiZjQwOiBjMDM3MzQ0MCAwMDAwMDAzMCBjMTgyYmY5NCBjMTgyYmY1OCBjMDMzNmQyNCBj
+MDAwODkwYyAwMDAwMDAwMyAwMDAwMDAwMwpiZjYwOiBjMDMzNjU2MCBjMTgyYmY2NCBjMTgyYmY2
+NCA2ZTYxNmUwZCAwMDAwMDAwMCBjMDI3MmZjOCAwMDAwMDAwMCAwMDAwMDAwMApiZjgwOiAwMDAw
+MDAwMCAwMDAwMDAwMCBjMTgyYmZhYyBjMTgyYmY5OCBjMDI3MmZkOCBjMDMzNmJkOCBjMTgyYTAw
+MCAwMDAwMDAwMApiZmEwOiAwMDAwMDAwMCBjMTgyYmZiMCBjMDAwOTVkMCBjMDI3MmZkOCAwMDAw
+MDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMApiZmMwOiAwMDAwMDAwMCAwMDAwMDAwMCAw
+MDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMApiZmUw
+OiAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAxMyAwMDAwMDAwMCAz
+NzRkMjdjZCAzM2NjMzNlNApCYWNrdHJhY2U6Cls8YzAxZGI4ZGM+XSAoY2gyX2lycSkgZnJvbSBb
+PGMwMDQ1NDMwPl0gKGhhbmRsZV9pcnFfZXZlbnRfcGVyY3B1KzB4MzgvMHgxNDgpCls8YzAwNDUz
+Zjg+XSAoaGFuZGxlX2lycV9ldmVudF9wZXJjcHUpIGZyb20gWzxjMDA0NTU3MD5dIChoYW5kbGVf
+aXJxX2V2ZW50KzB4MzAvMHg0MCkKIHIxMDowMDAwMDAwMCByOTpjMTgyNWIzNCByODo2MDAwMDA1
+MyByNzpjMTgyYmUyYyByNjowMDAwMDAwMCByNTpjMDM1Y2VjNAogcjQ6YzE4MjViMDAKWzxjMDA0
+NTU0MD5dIChoYW5kbGVfaXJxX2V2ZW50KSBmcm9tIFs8YzAwNDdmMzQ+XSAoaGFuZGxlX2Zhc3Rl
+b2lfaXJxKzB4YWMvMHgxMWMpCiByNDpjMTgyNWIwMCByMzowMDAwMDAwMApbPGMwMDQ3ZTg4Pl0g
+KGhhbmRsZV9mYXN0ZW9pX2lycSkgZnJvbSBbPGMwMDQ0ZGE0Pl0gKGdlbmVyaWNfaGFuZGxlX2ly
+cSsweDI4LzB4MzgpCiByNTpjMDM2NjE5YyByNDowMDAwMDAxMwpbPGMwMDQ0ZDdjPl0gKGdlbmVy
+aWNfaGFuZGxlX2lycSkgZnJvbSBbPGMwMDA5ZTM0Pl0gKGhhbmRsZV9JUlErMHg2OC8weDg4KQog
+cjQ6MDAwMDAwMTMgcjM6MDAwMDAwN2YKWzxjMDAwOWRjYz5dIChoYW5kbGVfSVJRKSBmcm9tIFs8
+YzAwMDg2YTg+XSAoYXQ5MV9haWNfaGFuZGxlX2lycSsweDQ0LzB4NGMpCiByNjpmZmZmZmZmZiBy
+NTo2MDAwMDA1MyByNDpjMDA0NjcyOCByMzpmZWZmZjAwMApbPGMwMDA4NjY0Pl0gKGF0OTFfYWlj
+X2hhbmRsZV9pcnEpIGZyb20gWzxjMDAwY2I4MD5dIChfX2lycV9zdmMrMHg0MC8weDRjKQpFeGNl
+cHRpb24gc3RhY2soMHhjMTgyYmRmOCB0byAweGMxODJiZTQwKQpiZGUwOiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAwMDAwMDAwMCAwMDAwMDAx
+MwpiZTAwOiAwMDAwMDAwMCAwMDAxNDIwMCBjMTgyNWIwMCBjMDM2ZTgwMCAwMDAwMDAxMyBjMDM1
+ZWQ5OCA2MDAwMDA1MyBjMTgyNWIzNApiZTIwOiAwMDAwMDAwMCBjMTgyYmU3NCBjMTgyYmUyMCBj
+MTgyYmU0MCBjMDA0Nzk5NCBjMDA0NjcyOCA2MDAwMDA1MyBmZmZmZmZmZgpbPGMwMDQ2Mzg4Pl0g
+KF9fc2V0dXBfaXJxKSBmcm9tIFs8YzAwNDY4OWM+XSAoc2V0dXBfaXJxKzB4NjAvMHg4YykKIHIx
+MDpjMDM2ZTcwMCByOTowMDAwMDAwNCByODpjMDM4NzRiYyByNzpjMDM1ZWQ5OCByNjpjMDM2ZTgw
+MCByNTowMDAwMDAxMwogcjQ6YzE4MjViMDAKWzxjMDA0NjgzYz5dIChzZXR1cF9pcnEpIGZyb20g
+WzxjMDM0OGIwOD5dICh0Y2JfY2xrc3JjX2luaXQrMHgyODQvMHgzMWMpCiByNjpjMDM1ZWQxMCBy
+NTowMDAwMDAwMCByNDpjMThjNjA4MCByMzpjMDM2ZTc2MApbPGMwMzQ4ODg0Pl0gKHRjYl9jbGtz
+cmNfaW5pdCkgZnJvbSBbPGMwMDA4OWZjPl0gKGRvX29uZV9pbml0Y2FsbCsweDEwMC8weDFiNCkK
+IHIxMDowMDAwMDAwMCByOTowMDAwMDAwMCByODpjMTgyYTAyMCByNzpjMDM1YjljMCByNjpjMDM0
+ODg4NCByNTpjMDM1YjljMAogcjQ6YzE4ZTY3ZTAKWzxjMDAwODhmYz5dIChkb19vbmVfaW5pdGNh
+bGwpIGZyb20gWzxjMDMzNmQyND5dIChrZXJuZWxfaW5pdF9mcmVlYWJsZSsweDE1Yy8weDIyNCkK
+IHI5OjAwMDAwMDMwIHI4OmMwMzczNDQwIHI3OmMwMzczNDQwIHI2OmMwMzUwYTk0IHI1OmMwMzRk
+YWM4IHI0OjAwMDAwMDAzCls8YzAzMzZiYzg+XSAoa2VybmVsX2luaXRfZnJlZWFibGUpIGZyb20g
+WzxjMDI3MmZkOD5dIChrZXJuZWxfaW5pdCsweDEwLzB4ZWMpCiByOTowMDAwMDAwMCByODowMDAw
+MDAwMCByNzowMDAwMDAwMCByNjowMDAwMDAwMCByNTpjMDI3MmZjOCByNDowMDAwMDAwMApbPGMw
+MjcyZmM4Pl0gKGtlcm5lbF9pbml0KSBmcm9tIFs8YzAwMDk1ZDA+XSAocmV0X2Zyb21fZm9yaysw
+eDE0LzB4MjQpCiByNDowMDAwMDAwMCByMzpjMTgyYTAwMApDb2RlOiBiYWQgUEMgdmFsdWUKLS0t
+WyBlbmQgdHJhY2UgNWIzMGYwMDE3ZTI4MmU0NyBdLS0tCktlcm5lbCBwYW5pYyAtIG5vdCBzeW5j
+aW5nOiBGYXRhbCBleGNlcHRpb24gaW4gaW50ZXJydXB0CgpZb3VyIHNpbmNlcmx5LApHYcOrbCBQ
+T1JUQVkKCkNoYW5nZXMgc2luY2UgdjE6CiAtIHVzZSB3cml0ZWwgaW5zdGVhZCBvZiBfX3Jhd193
+cml0ZWwKIC0gbW92ZSB0byByZXF1ZXN0X2lycSBmdW5jdGlvbgogLSBkaXNhYmxlIGNsb2NrIGlm
+IHJlcXVlc3QgaXJxIGZhaWxzCkNoYW5nZXMgc2luY2UgdjI6CiAtIGNyZWF0ZSBkZWRpY2F0ZWQg
+bWFjcm8gdG8gZGVmaW5lIGFsbCBJUlFzCiAtIHVzZSBuZXcgQVRNRUxfVENfQUxMX0lSUSBtYWNy
+byB0byBtYXNrIGFsbCBJUlFzIChpbnN0ZWFkIG9mIDB4ZmYpCiAtIGNoYW5nZSB0aGUgZm91cnRo
+IHBhdGNoIGNvbW1pdCBtZXNzYWdlCgpHYcOrbCBQT1JUQVkgKDQpOgogIEFSTTogYXQ5MS90Y2xp
+YjogcHJlZmVyIHVzaW5nIG9mIGRldm1fKiBmdW5jdGlvbnMKICBBUk06IGF0OTEvdGNsaWI6IG1v
+dmUgaW5pdGlhbGl6YXRpb24gZnJvbSBhbGxvYyB0byBwcm9iZQogIEFSTTogYXQ5MS90Y2xpYjog
+bWFzayBpbnRlcnJ1cHRpb25zIGF0IHNodXRkb3duIGFuZCBwcm9iZQogIGNsb2Nrc291cmNlOiB0
+Y2JfY2xrc3JjOiBzYW5pdGl6ZSBJUlEgcmVxdWVzdAoKIGRyaXZlcnMvY2xvY2tzb3VyY2UvdGNi
+X2Nsa3NyYy5jIHwgIDE1ICsrLS0tLQogZHJpdmVycy9taXNjL2F0bWVsX3RjbGliLmMgICAgICAg
+fCAxMDEgKysrKysrKysrKysrKysrKystLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiBkcml2ZXJzL3B3
+bS9wd20tYXRtZWwtdGNiLmMgICAgICB8ICAgMiArLQogaW5jbHVkZS9saW51eC9hdG1lbF90Yy5o
+ICAgICAgICAgfCAgMTMgKysrLS0KIDQgZmlsZXMgY2hhbmdlZCwgNjAgaW5zZXJ0aW9ucygrKSwg
+NzEgZGVsZXRpb25zKC0pCgotLSAKMS45LjMKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1h
+cm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcv
+bWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
