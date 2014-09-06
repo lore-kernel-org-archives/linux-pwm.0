@@ -1,191 +1,249 @@
 From: =?UTF-8?q?Ga=C3=ABl=20PORTAY?= <gael.portay@gmail.com>
-Subject: [PATCHv4 0/4] ARM: at91/tclib: fix segmentation fault
-Date: Sat,  6 Sep 2014 19:52:33 +0200
-Message-ID: <1410025957-5952-1-git-send-email-gael.portay@gmail.com>
+Subject: [PATCHv4 2/4] ARM: at91/tclib: move initialization from alloc to probe
+Date: Sat,  6 Sep 2014 19:52:35 +0200
+Message-ID: <1410025957-5952-3-git-send-email-gael.portay@gmail.com>
+References: <1410025957-5952-1-git-send-email-gael.portay@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-we0-f177.google.com ([74.125.82.177]:46309 "EHLO
-	mail-we0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751383AbaIFRwt (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sat, 6 Sep 2014 13:52:49 -0400
+Received: from mail-wg0-f50.google.com ([74.125.82.50]:52630 "EHLO
+	mail-wg0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752095AbaIFRw6 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sat, 6 Sep 2014 13:52:58 -0400
+In-Reply-To: <1410025957-5952-1-git-send-email-gael.portay@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Arnd Bergmann <arnd@arndb.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Thomas Gleixner <tglx@linutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
-Cc: =?UTF-8?q?Ga=C3=ABl=20PORTAY?= <gael.portay@gmail.com>
+Cc: =?utf-8?q?Ga=C3=ABl=20PORTAY?= <gael.portay@gmail.com>
 
-Hi every one,
+Move resource retrieval from atmel_tc_alloc to tc_probe to avoid lately
+reporting resource related issues when a TC block user request a TC blo=
+ck.
 
-This set of patches fix a segmentation fault happening when kexec-ing
-kernel on an at91 platform (see backtrace below).
+Moreover, resources retrieval are usually done in the probe function,
+thus moving them add some consistency with other drivers.
 
-While the previous kernel shuts down, the tcb_clksrc driver leaves its
-interruptions unmasked. When the new kernel initiliazes any tclib makin=
-g use of
-a TC block, an interruption may happen before the interrupt handler is =
-set,
-causing a kernel segmentation fault.
+Initialization is done once, ie not every time a tc block is requested.
+If it fails, the device is not appended to the list of tc blocks.
 
-To prevent from such cases from happening, the last patch sets up the s=
-hutdown
-callback which masks interruptions when the machine is shutdown. Furthe=
-rmore,
-it also masks the interruptions at probe to make sure no interruption h=
-appens
-before the handler is set. This will prevent freshly kexec-ed kernel fr=
-om
-crashing when launched from a kernel which does not properly mask inter=
-ruptions
-at shutdown.
+=46urhermore, the device id is retrieved at probe as well, avoiding par=
+sing
+DT every time the user requests of tc block.
 
-Unable to handle kernel NULL pointer dereference at virtual address 000=
-00000
-pgd =3D c0004000
-[00000000] *pgd=3D00000000
-Internal error: Oops: 80000005 [#1] ARM
-Modules linked in:
-CPU: 0 PID: 1 Comm: swapper Not tainted 3.16.0+ #144
-task: c1828aa0 ti: c182a000 task.ti: c182a000
-PC is at 0x0
-LR is at ch2_irq+0x28/0x30
-pc : [<00000000>]    lr : [<c01db904>]    psr: 000000d3
-sp : c182bd38  ip : c182bd48  fp : c182bd44
-r10: c0373390  r9 : c1825b00  r8 : 60000053
-r7 : 00000000  r6 : 00000000  r5 : 00000013  r4 : c036e800
-r3 : 00000000  r2 : 00002004  r1 : c036e760  r0 : c036e760
-=46lags: nzcv  IRQs off  FIQs off  Mode SVC_32  ISA ARM  Segment kernel
-Control: 0005317f  Table: 20004000  DAC: 00000017
-Process swapper (pid: 1, stack limit =3D 0xc182a1c0)
-Stack: (0xc182bd38 to 0xc182c000)
-bd20:                                                       c182bd7c c1=
-82bd48
-bd40: c0045430 c01db8ec 00000000 c18c6f40 c182bd74 c1825b00 c035cec4 00=
-000000
-bd60: c182be2c 60000053 c1825b34 00000000 c182bd94 c182bd80 c0045570 c0=
-045408
-bd80: 00000000 c1825b00 c182bdac c182bd98 c0047f34 c0045550 00000013 c0=
-36619c
-bda0: c182bdc4 c182bdb0 c0044da4 c0047e98 0000007f 00000013 c182bde4 c1=
-82bdc8
-bdc0: c0009e34 c0044d8c fefff000 c0046728 60000053 ffffffff c182bdf4 c1=
-82bde8
-bde0: c00086a8 c0009ddc c182be74 c182bdf8 c000cb80 c0008674 00000000 00=
-000013
-be00: 00000000 00014200 c1825b00 c036e800 00000013 c035ed98 60000053 c1=
-825b34
-be20: 00000000 c182be74 c182be20 c182be40 c0047994 c0046728 60000053 ff=
-ffffff
-be40: 00000013 c036e800 c182be64 c1825b00 00000013 c036e800 c035ed98 c0=
-3874bc
-be60: 00000004 c036e700 c182be94 c182be78 c004689c c0046398 c036e760 c1=
-8c6080
-be80: 00000000 c035ed10 c182bedc c182be98 c0348b08 c004684c 0000000c c0=
-34dac8
-bea0: 004c4b3f c028c338 c036e760 00000013 c014ecc8 c18e67e0 c035b9c0 c0=
-348884
-bec0: c035b9c0 c182a020 00000000 00000000 c182bf54 c182bee0 c00089fc c0=
-348894
-bee0: c00da51c c1ffcc78 c182bf0c c182bef8 c002d100 c002d09c c1ffcc78 00=
-000000
-bf00: c182bf54 c182bf10 c002d308 c0336570 c182bf3c c0334e44 00000003 00=
-000003
-bf20: 00000030 c0334b44 c0044d74 00000003 00000003 c034dac8 c0350a94 c0=
-373440
-bf40: c0373440 00000030 c182bf94 c182bf58 c0336d24 c000890c 00000003 00=
-000003
-bf60: c0336560 c182bf64 c182bf64 6e616e0d 00000000 c0272fc8 00000000 00=
-000000
-bf80: 00000000 00000000 c182bfac c182bf98 c0272fd8 c0336bd8 c182a000 00=
-000000
-bfa0: 00000000 c182bfb0 c00095d0 c0272fd8 00000000 00000000 00000000 00=
-000000
-bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00=
-000000
-bfe0: 00000000 00000000 00000000 00000000 00000013 00000000 374d27cd 33=
-cc33e4
-Backtrace:
-[<c01db8dc>] (ch2_irq) from [<c0045430>] (handle_irq_event_percpu+0x38/=
-0x148)
-[<c00453f8>] (handle_irq_event_percpu) from [<c0045570>] (handle_irq_ev=
-ent+0x30/0x40)
- r10:00000000 r9:c1825b34 r8:60000053 r7:c182be2c r6:00000000 r5:c035ce=
-c4
- r4:c1825b00
-[<c0045540>] (handle_irq_event) from [<c0047f34>] (handle_fasteoi_irq+0=
-xac/0x11c)
- r4:c1825b00 r3:00000000
-[<c0047e88>] (handle_fasteoi_irq) from [<c0044da4>] (generic_handle_irq=
-+0x28/0x38)
- r5:c036619c r4:00000013
-[<c0044d7c>] (generic_handle_irq) from [<c0009e34>] (handle_IRQ+0x68/0x=
-88)
- r4:00000013 r3:0000007f
-[<c0009dcc>] (handle_IRQ) from [<c00086a8>] (at91_aic_handle_irq+0x44/0=
-x4c)
- r6:ffffffff r5:60000053 r4:c0046728 r3:fefff000
-[<c0008664>] (at91_aic_handle_irq) from [<c000cb80>] (__irq_svc+0x40/0x=
-4c)
-Exception stack(0xc182bdf8 to 0xc182be40)
-bde0:                                                       00000000 00=
-000013
-be00: 00000000 00014200 c1825b00 c036e800 00000013 c035ed98 60000053 c1=
-825b34
-be20: 00000000 c182be74 c182be20 c182be40 c0047994 c0046728 60000053 ff=
-ffffff
-[<c0046388>] (__setup_irq) from [<c004689c>] (setup_irq+0x60/0x8c)
- r10:c036e700 r9:00000004 r8:c03874bc r7:c035ed98 r6:c036e800 r5:000000=
-13
- r4:c1825b00
-[<c004683c>] (setup_irq) from [<c0348b08>] (tcb_clksrc_init+0x284/0x31c=
-)
- r6:c035ed10 r5:00000000 r4:c18c6080 r3:c036e760
-[<c0348884>] (tcb_clksrc_init) from [<c00089fc>] (do_one_initcall+0x100=
-/0x1b4)
- r10:00000000 r9:00000000 r8:c182a020 r7:c035b9c0 r6:c0348884 r5:c035b9=
-c0
- r4:c18e67e0
-[<c00088fc>] (do_one_initcall) from [<c0336d24>] (kernel_init_freeable+=
-0x15c/0x224)
- r9:00000030 r8:c0373440 r7:c0373440 r6:c0350a94 r5:c034dac8 r4:0000000=
-3
-[<c0336bc8>] (kernel_init_freeable) from [<c0272fd8>] (kernel_init+0x10=
-/0xec)
- r9:00000000 r8:00000000 r7:00000000 r6:00000000 r5:c0272fc8 r4:0000000=
-0
-[<c0272fc8>] (kernel_init) from [<c00095d0>] (ret_from_fork+0x14/0x24)
- r4:00000000 r3:c182a000
-Code: bad PC value
----[ end trace 5b30f0017e282e47 ]---
-Kernel panic - not syncing: Fatal exception in interrupt
-
-Your sincerly,
-Ga=C3=ABl PORTAY
-
-Changes since v1:
- - use writel instead of __raw_writel
- - move to request_irq function
- - disable clock if request irq fails
-Changes since v2:
- - create dedicated macro to define all IRQs
- - use new ATMEL_TC_ALL_IRQ macro to mask all IRQs (instead of 0xff)
- - change the fourth patch commit message
-Changes since v3:
- - fix typo extra space between function name and the parenthesis
-
-Ga=C3=ABl PORTAY (4):
-  ARM: at91/tclib: prefer using of devm_* functions
-  ARM: at91/tclib: move initialization from alloc to probe
-  ARM: at91/tclib: mask interruptions at shutdown and probe
-  clocksource: tcb_clksrc: sanitize IRQ request
-
- drivers/clocksource/tcb_clksrc.c |  15 ++----
- drivers/misc/atmel_tclib.c       | 101 +++++++++++++++++--------------=
+Signed-off-by: Ga=C3=ABl PORTAY <gael.portay@gmail.com>
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
+Acked-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+---
+ drivers/clocksource/tcb_clksrc.c |  2 +-
+ drivers/misc/atmel_tclib.c       | 71 +++++++++++++-------------------=
 --------
- drivers/pwm/pwm-atmel-tcb.c      |   2 +-
- include/linux/atmel_tc.h         |  13 +++--
- 4 files changed, 60 insertions(+), 71 deletions(-)
+ drivers/pwm/pwm-atmel-tcb.c      |  2 +-
+ include/linux/atmel_tc.h         |  8 +++--
+ 4 files changed, 29 insertions(+), 54 deletions(-)
 
+diff --git a/drivers/clocksource/tcb_clksrc.c b/drivers/clocksource/tcb=
+_clksrc.c
+index a8d7ea1..f922e81 100644
+--- a/drivers/clocksource/tcb_clksrc.c
++++ b/drivers/clocksource/tcb_clksrc.c
+@@ -279,7 +279,7 @@ static int __init tcb_clksrc_init(void)
+ 	int i;
+ 	int ret;
+=20
+-	tc =3D atmel_tc_alloc(CONFIG_ATMEL_TCB_CLKSRC_BLOCK, clksrc.name);
++	tc =3D atmel_tc_alloc(CONFIG_ATMEL_TCB_CLKSRC_BLOCK);
+ 	if (!tc) {
+ 		pr_debug("can't alloc TC for clocksource\n");
+ 		return -ENODEV;
+diff --git a/drivers/misc/atmel_tclib.c b/drivers/misc/atmel_tclib.c
+index b514a2d..d505d1e 100644
+--- a/drivers/misc/atmel_tclib.c
++++ b/drivers/misc/atmel_tclib.c
+@@ -35,60 +35,31 @@ static LIST_HEAD(tc_list);
+ /**
+  * atmel_tc_alloc - allocate a specified TC block
+  * @block: which block to allocate
+- * @name: name to be associated with the iomem resource
+  *
+  * Caller allocates a block.  If it is available, a pointer to a
+  * pre-initialized struct atmel_tc is returned. The caller can access
+  * the registers directly through the "regs" field.
+  */
+-struct atmel_tc *atmel_tc_alloc(unsigned block, const char *name)
++struct atmel_tc *atmel_tc_alloc(unsigned block)
+ {
+ 	struct atmel_tc		*tc;
+ 	struct platform_device	*pdev =3D NULL;
+-	struct resource		*r;
+-	size_t			size;
+=20
+ 	spin_lock(&tc_list_lock);
+ 	list_for_each_entry(tc, &tc_list, node) {
+-		if (tc->pdev->dev.of_node) {
+-			if (of_alias_get_id(tc->pdev->dev.of_node, "tcb")
+-					=3D=3D block) {
+-				pdev =3D tc->pdev;
+-				break;
+-			}
+-		} else if (tc->pdev->id =3D=3D block) {
++		if (tc->allocated)
++			continue;
++
++		if ((tc->pdev->dev.of_node && tc->id =3D=3D block) ||
++		    (tc->pdev->id =3D=3D block)) {
+ 			pdev =3D tc->pdev;
++			tc->allocated =3D true;
+ 			break;
+ 		}
+ 	}
+-
+-	if (!pdev || tc->iomem)
+-		goto fail;
+-
+-	r =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	if (!r)
+-		goto fail;
+-
+-	size =3D resource_size(r);
+-	r =3D request_mem_region(r->start, size, name);
+-	if (!r)
+-		goto fail;
+-
+-	tc->regs =3D ioremap(r->start, size);
+-	if (!tc->regs)
+-		goto fail_ioremap;
+-
+-	tc->iomem =3D r;
+-
+-out:
+ 	spin_unlock(&tc_list_lock);
+-	return tc;
+=20
+-fail_ioremap:
+-	release_mem_region(r->start, size);
+-fail:
+-	tc =3D NULL;
+-	goto out;
++	return pdev ? tc : NULL;
+ }
+ EXPORT_SYMBOL_GPL(atmel_tc_alloc);
+=20
+@@ -96,19 +67,14 @@ EXPORT_SYMBOL_GPL(atmel_tc_alloc);
+  * atmel_tc_free - release a specified TC block
+  * @tc: Timer/counter block that was returned by atmel_tc_alloc()
+  *
+- * This reverses the effect of atmel_tc_alloc(), unmapping the I/O
+- * registers, invalidating the resource returned by that routine and
+- * making the TC available to other drivers.
++ * This reverses the effect of atmel_tc_alloc(), invalidating the reso=
+urce
++ * returned by that routine and making the TC available to other drive=
+rs.
+  */
+ void atmel_tc_free(struct atmel_tc *tc)
+ {
+ 	spin_lock(&tc_list_lock);
+-	if (tc->regs) {
+-		iounmap(tc->regs);
+-		release_mem_region(tc->iomem->start, resource_size(tc->iomem));
+-		tc->regs =3D NULL;
+-		tc->iomem =3D NULL;
+-	}
++	if (tc->allocated)
++		tc->allocated =3D false;
+ 	spin_unlock(&tc_list_lock);
+ }
+ EXPORT_SYMBOL_GPL(atmel_tc_free);
+@@ -142,9 +108,7 @@ static int __init tc_probe(struct platform_device *=
+pdev)
+ 	struct atmel_tc *tc;
+ 	struct clk	*clk;
+ 	int		irq;
+-
+-	if (!platform_get_resource(pdev, IORESOURCE_MEM, 0))
+-		return -EINVAL;
++	struct resource	*r;
+=20
+ 	irq =3D platform_get_irq(pdev, 0);
+ 	if (irq < 0)
+@@ -160,12 +124,21 @@ static int __init tc_probe(struct platform_device=
+ *pdev)
+ 	if (IS_ERR(clk))
+ 		return PTR_ERR(clk);
+=20
++	r =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	tc->regs =3D devm_ioremap_resource(&pdev->dev, r);
++	if (IS_ERR(tc->regs))
++		return PTR_ERR(tc->regs);
++
+ 	/* Now take SoC information if available */
+ 	if (pdev->dev.of_node) {
+ 		const struct of_device_id *match;
+ 		match =3D of_match_node(atmel_tcb_dt_ids, pdev->dev.of_node);
+ 		if (match)
+ 			tc->tcb_config =3D match->data;
++
++		tc->id =3D of_alias_get_id(tc->pdev->dev.of_node, "tcb");
++	} else {
++		tc->id =3D pdev->id;
+ 	}
+=20
+ 	tc->clk[0] =3D clk;
+diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
+index f3dcd02..d56e5b7 100644
+--- a/drivers/pwm/pwm-atmel-tcb.c
++++ b/drivers/pwm/pwm-atmel-tcb.c
+@@ -379,7 +379,7 @@ static int atmel_tcb_pwm_probe(struct platform_devi=
+ce *pdev)
+ 		return err;
+ 	}
+=20
+-	tc =3D atmel_tc_alloc(tcblock, "tcb-pwm");
++	tc =3D atmel_tc_alloc(tcblock);
+ 	if (tc =3D=3D NULL) {
+ 		dev_err(&pdev->dev, "failed to allocate Timer Counter Block\n");
+ 		return -ENOMEM;
+diff --git a/include/linux/atmel_tc.h b/include/linux/atmel_tc.h
+index 89a931b..d8aa884 100644
+--- a/include/linux/atmel_tc.h
++++ b/include/linux/atmel_tc.h
+@@ -44,12 +44,13 @@ struct atmel_tcb_config {
+ /**
+  * struct atmel_tc - information about a Timer/Counter Block
+  * @pdev: physical device
+- * @iomem: resource associated with the I/O register
+  * @regs: mapping through which the I/O registers can be accessed
++ * @id: block id
+  * @tcb_config: configuration data from SoC
+  * @irq: irq for each of the three channels
+  * @clk: internal clock source for each of the three channels
+  * @node: list node, for tclib internal use
++ * @allocated: if already used, for tclib internal use
+  *
+  * On some platforms, each TC channel has its own clocks and IRQs,
+  * while on others, all TC channels share the same clock and IRQ.
+@@ -61,15 +62,16 @@ struct atmel_tcb_config {
+  */
+ struct atmel_tc {
+ 	struct platform_device	*pdev;
+-	struct resource		*iomem;
+ 	void __iomem		*regs;
++	int                     id;
+ 	const struct atmel_tcb_config *tcb_config;
+ 	int			irq[3];
+ 	struct clk		*clk[3];
+ 	struct list_head	node;
++	bool			allocated;
+ };
+=20
+-extern struct atmel_tc *atmel_tc_alloc(unsigned block, const char *nam=
+e);
++extern struct atmel_tc *atmel_tc_alloc(unsigned block);
+ extern void atmel_tc_free(struct atmel_tc *tc);
+=20
+ /* platform-specific ATMEL_TC_TIMER_CLOCKx divisors (0 means 32KiHz) *=
+/
 --=20
 1.9.3
 
