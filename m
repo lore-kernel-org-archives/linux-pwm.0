@@ -1,73 +1,206 @@
-From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: [PATCH v5 09/11] ARM: at91/dt: define the HLCDC node available on
- sama5d3 SoCs
-Date: Mon,  8 Sep 2014 10:43:40 +0200
-Message-ID: <1410165822-16868-10-git-send-email-boris.brezillon@free-electrons.com>
-References: <1410165822-16868-1-git-send-email-boris.brezillon@free-electrons.com>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [PATCHv4 0/4] ARM: at91/tclib: fix segmentation fault
+Date: Mon, 8 Sep 2014 12:43:41 +0200
+Message-ID: <540D885D.4030006@atmel.com>
+References: <1410025957-5952-1-git-send-email-gael.portay@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1410165822-16868-1-git-send-email-boris.brezillon@free-electrons.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from eusmtp01.atmel.com ([212.144.249.242]:32790 "EHLO
+	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752973AbaIHKnn (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 8 Sep 2014 06:43:43 -0400
+In-Reply-To: <1410025957-5952-1-git-send-email-gael.portay@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: =?UTF-8?B?R2HDq2wgUE9SVEFZ?= <gael.portay@gmail.com>, Arnd Bergmann <arnd@arndb.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Jean-Christophe PLAGNIOL-VILLARD <plagnioj@jcrosoft.com>
 
-Define the HLCDC (HLCD Controller) IP available on some sama5d3 SoCs
-(i.e. sama5d31, sama5d33, sama5d34 and sama5d36) in sama5d3 dtsi file.
+On 06/09/2014 19:52, Ga=C3=ABl PORTAY :
+> Hi every one,
+>=20
+> This set of patches fix a segmentation fault happening when kexec-ing
+> kernel on an at91 platform (see backtrace below).
+>=20
+> While the previous kernel shuts down, the tcb_clksrc driver leaves it=
+s
+> interruptions unmasked. When the new kernel initiliazes any tclib mak=
+ing use of
+> a TC block, an interruption may happen before the interrupt handler i=
+s set,
+> causing a kernel segmentation fault.
+>=20
+> To prevent from such cases from happening, the last patch sets up the=
+ shutdown
+> callback which masks interruptions when the machine is shutdown. Furt=
+hermore,
+> it also masks the interruptions at probe to make sure no interruption=
+ happens
+> before the handler is set. This will prevent freshly kexec-ed kernel =
+from
+> crashing when launched from a kernel which does not properly mask int=
+erruptions
+> at shutdown.
+>=20
+> Unable to handle kernel NULL pointer dereference at virtual address 0=
+0000000
+> pgd =3D c0004000
+> [00000000] *pgd=3D00000000
+> Internal error: Oops: 80000005 [#1] ARM
+> Modules linked in:
+> CPU: 0 PID: 1 Comm: swapper Not tainted 3.16.0+ #144
+> task: c1828aa0 ti: c182a000 task.ti: c182a000
+> PC is at 0x0
+> LR is at ch2_irq+0x28/0x30
+> pc : [<00000000>]    lr : [<c01db904>]    psr: 000000d3
+> sp : c182bd38  ip : c182bd48  fp : c182bd44
+> r10: c0373390  r9 : c1825b00  r8 : 60000053
+> r7 : 00000000  r6 : 00000000  r5 : 00000013  r4 : c036e800
+> r3 : 00000000  r2 : 00002004  r1 : c036e760  r0 : c036e760
+> Flags: nzcv  IRQs off  FIQs off  Mode SVC_32  ISA ARM  Segment kernel
+> Control: 0005317f  Table: 20004000  DAC: 00000017
+> Process swapper (pid: 1, stack limit =3D 0xc182a1c0)
+> Stack: (0xc182bd38 to 0xc182c000)
+> bd20:                                                       c182bd7c =
+c182bd48
+> bd40: c0045430 c01db8ec 00000000 c18c6f40 c182bd74 c1825b00 c035cec4 =
+00000000
+> bd60: c182be2c 60000053 c1825b34 00000000 c182bd94 c182bd80 c0045570 =
+c0045408
+> bd80: 00000000 c1825b00 c182bdac c182bd98 c0047f34 c0045550 00000013 =
+c036619c
+> bda0: c182bdc4 c182bdb0 c0044da4 c0047e98 0000007f 00000013 c182bde4 =
+c182bdc8
+> bdc0: c0009e34 c0044d8c fefff000 c0046728 60000053 ffffffff c182bdf4 =
+c182bde8
+> bde0: c00086a8 c0009ddc c182be74 c182bdf8 c000cb80 c0008674 00000000 =
+00000013
+> be00: 00000000 00014200 c1825b00 c036e800 00000013 c035ed98 60000053 =
+c1825b34
+> be20: 00000000 c182be74 c182be20 c182be40 c0047994 c0046728 60000053 =
+ffffffff
+> be40: 00000013 c036e800 c182be64 c1825b00 00000013 c036e800 c035ed98 =
+c03874bc
+> be60: 00000004 c036e700 c182be94 c182be78 c004689c c0046398 c036e760 =
+c18c6080
+> be80: 00000000 c035ed10 c182bedc c182be98 c0348b08 c004684c 0000000c =
+c034dac8
+> bea0: 004c4b3f c028c338 c036e760 00000013 c014ecc8 c18e67e0 c035b9c0 =
+c0348884
+> bec0: c035b9c0 c182a020 00000000 00000000 c182bf54 c182bee0 c00089fc =
+c0348894
+> bee0: c00da51c c1ffcc78 c182bf0c c182bef8 c002d100 c002d09c c1ffcc78 =
+00000000
+> bf00: c182bf54 c182bf10 c002d308 c0336570 c182bf3c c0334e44 00000003 =
+00000003
+> bf20: 00000030 c0334b44 c0044d74 00000003 00000003 c034dac8 c0350a94 =
+c0373440
+> bf40: c0373440 00000030 c182bf94 c182bf58 c0336d24 c000890c 00000003 =
+00000003
+> bf60: c0336560 c182bf64 c182bf64 6e616e0d 00000000 c0272fc8 00000000 =
+00000000
+> bf80: 00000000 00000000 c182bfac c182bf98 c0272fd8 c0336bd8 c182a000 =
+00000000
+> bfa0: 00000000 c182bfb0 c00095d0 c0272fd8 00000000 00000000 00000000 =
+00000000
+> bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 =
+00000000
+> bfe0: 00000000 00000000 00000000 00000000 00000013 00000000 374d27cd =
+33cc33e4
+> Backtrace:
+> [<c01db8dc>] (ch2_irq) from [<c0045430>] (handle_irq_event_percpu+0x3=
+8/0x148)
+> [<c00453f8>] (handle_irq_event_percpu) from [<c0045570>] (handle_irq_=
+event+0x30/0x40)
+>  r10:00000000 r9:c1825b34 r8:60000053 r7:c182be2c r6:00000000 r5:c035=
+cec4
+>  r4:c1825b00
+> [<c0045540>] (handle_irq_event) from [<c0047f34>] (handle_fasteoi_irq=
++0xac/0x11c)
+>  r4:c1825b00 r3:00000000
+> [<c0047e88>] (handle_fasteoi_irq) from [<c0044da4>] (generic_handle_i=
+rq+0x28/0x38)
+>  r5:c036619c r4:00000013
+> [<c0044d7c>] (generic_handle_irq) from [<c0009e34>] (handle_IRQ+0x68/=
+0x88)
+>  r4:00000013 r3:0000007f
+> [<c0009dcc>] (handle_IRQ) from [<c00086a8>] (at91_aic_handle_irq+0x44=
+/0x4c)
+>  r6:ffffffff r5:60000053 r4:c0046728 r3:fefff000
+> [<c0008664>] (at91_aic_handle_irq) from [<c000cb80>] (__irq_svc+0x40/=
+0x4c)
+> Exception stack(0xc182bdf8 to 0xc182be40)
+> bde0:                                                       00000000 =
+00000013
+> be00: 00000000 00014200 c1825b00 c036e800 00000013 c035ed98 60000053 =
+c1825b34
+> be20: 00000000 c182be74 c182be20 c182be40 c0047994 c0046728 60000053 =
+ffffffff
+> [<c0046388>] (__setup_irq) from [<c004689c>] (setup_irq+0x60/0x8c)
+>  r10:c036e700 r9:00000004 r8:c03874bc r7:c035ed98 r6:c036e800 r5:0000=
+0013
+>  r4:c1825b00
+> [<c004683c>] (setup_irq) from [<c0348b08>] (tcb_clksrc_init+0x284/0x3=
+1c)
+>  r6:c035ed10 r5:00000000 r4:c18c6080 r3:c036e760
+> [<c0348884>] (tcb_clksrc_init) from [<c00089fc>] (do_one_initcall+0x1=
+00/0x1b4)
+>  r10:00000000 r9:00000000 r8:c182a020 r7:c035b9c0 r6:c0348884 r5:c035=
+b9c0
+>  r4:c18e67e0
+> [<c00088fc>] (do_one_initcall) from [<c0336d24>] (kernel_init_freeabl=
+e+0x15c/0x224)
+>  r9:00000030 r8:c0373440 r7:c0373440 r6:c0350a94 r5:c034dac8 r4:00000=
+003
+> [<c0336bc8>] (kernel_init_freeable) from [<c0272fd8>] (kernel_init+0x=
+10/0xec)
+>  r9:00000000 r8:00000000 r7:00000000 r6:00000000 r5:c0272fc8 r4:00000=
+000
+> [<c0272fc8>] (kernel_init) from [<c00095d0>] (ret_from_fork+0x14/0x24=
+)
+>  r4:00000000 r3:c182a000
+> Code: bad PC value
+> ---[ end trace 5b30f0017e282e47 ]---
+> Kernel panic - not syncing: Fatal exception in interrupt
+>=20
+> Your sincerly,
+> Ga=C3=ABl PORTAY
+>=20
+> Changes since v1:
+>  - use writel instead of __raw_writel
+>  - move to request_irq function
+>  - disable clock if request irq fails
+> Changes since v2:
+>  - create dedicated macro to define all IRQs
+>  - use new ATMEL_TC_ALL_IRQ macro to mask all IRQs (instead of 0xff)
+>  - change the fourth patch commit message
+> Changes since v3:
+>  - fix typo extra space between function name and the parenthesis
+>=20
+> Ga=C3=ABl PORTAY (4):
+>   ARM: at91/tclib: prefer using of devm_* functions
+>   ARM: at91/tclib: move initialization from alloc to probe
+>   ARM: at91/tclib: mask interruptions at shutdown and probe
+>   clocksource: tcb_clksrc: sanitize IRQ request
 
-Signed-off-by: Boris BREZILLON <boris.brezillon@free-electrons.com>
----
- arch/arm/boot/dts/sama5d3_lcd.dtsi | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+Thanks a lot Ga=C3=ABl for this bug fix and cleanup!
 
-diff --git a/arch/arm/boot/dts/sama5d3_lcd.dtsi b/arch/arm/boot/dts/sama5d3_lcd.dtsi
-index e7581f6..1874cf7 100644
---- a/arch/arm/boot/dts/sama5d3_lcd.dtsi
-+++ b/arch/arm/boot/dts/sama5d3_lcd.dtsi
-@@ -166,6 +166,34 @@
- 				};
- 			};
- 
-+			hlcdc: hlcdc@f0030000 {
-+				compatible = "atmel,sama5d3-hlcdc";
-+				reg = <0xf0030000 0x2000>;
-+				clocks = <&lcdc_clk>, <&lcdck>, <&clk32k>;
-+				clock-names = "periph_clk","sys_clk", "slow_clk";
-+				status = "disabled";
-+
-+				hlcdc-display-controller {
-+					compatible = "atmel,hlcdc-display-controller";
-+					interrupts = <36 IRQ_TYPE_LEVEL_HIGH 0>;
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+
-+					port@0 {
-+						#address-cells = <1>;
-+						#size-cells = <0>;
-+						reg = <0>;
-+					};
-+				};
-+
-+				hlcdc_pwm: hlcdc-pwm {
-+					compatible = "atmel,hlcdc-pwm";
-+					pinctrl-names = "default";
-+					pinctrl-0 = <&pinctrl_lcd_pwm>;
-+					#pwm-cells = <3>;
-+				};
-+			};
-+
- 			pmc: pmc@fffffc00 {
- 				periphck {
- 					lcdc_clk: lcdc_clk {
--- 
-1.9.1
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+
+The series is ready for inclusion in our next kernel release and I
+integrate it on top of at91-3.18-cleanup2 branch.
+
+Best regards,
+
+
+>  drivers/clocksource/tcb_clksrc.c |  15 ++----
+>  drivers/misc/atmel_tclib.c       | 101 +++++++++++++++++------------=
+----------
+>  drivers/pwm/pwm-atmel-tcb.c      |   2 +-
+>  include/linux/atmel_tc.h         |  13 +++--
+>  4 files changed, 60 insertions(+), 71 deletions(-)
+>=20
+
+
+--=20
+Nicolas Ferre
