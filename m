@@ -1,51 +1,63 @@
 From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: [PATCH v5 02/11] mfd: add documentation for atmel-hlcdc DT bindings
-Date: Mon,  8 Sep 2014 10:43:33 +0200
-Message-ID: <1410165822-16868-3-git-send-email-boris.brezillon@free-electrons.com>
+Subject: [PATCH v5 04/11] pwm: add DT bindings documentation for
+ atmel-hlcdc-pwm driver
+Date: Mon,  8 Sep 2014 10:43:35 +0200
+Message-ID: <1410165822-16868-5-git-send-email-boris.brezillon@free-electrons.com>
 References: <1410165822-16868-1-git-send-email-boris.brezillon@free-electrons.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:41606 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753613AbaIHIns (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 8 Sep 2014 04:43:48 -0400
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 In-Reply-To: <1410165822-16868-1-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>
+List-Id: linux-pwm@vger.kernel.org
 
-The HLCDC IP available on some Atmel SoCs (i.e. at91sam9n12, at91sam9x5
-family or sama5d3 family) exposes 2 subdevices:
-- a display controller (controlled by a DRM driver)
-- a PWM chip
+The HLCDC IP available in some Atmel SoCs (i.e. sam9x5i.e. at91sam9n12,
+at91sam9x5 family or sama5d3 family) provide a PWM device.
 
-This patch adds documentation for atmel-hlcdc DT bindings.
+The DT bindings used for this PWM device is following the default 3 cells
+bindings described in Documentation/devicetree/bindings/pwm/pwm.txt.
 
 Signed-off-by: Boris BREZILLON <boris.brezillon@free-electrons.com>
 ---
- .../devicetree/bindings/mfd/atmel-hlcdc.txt        | 50 ++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt
+ .../devicetree/bindings/pwm/atmel-hlcdc-pwm.txt    | 55 ++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
 
-diff --git a/Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt b/Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt
+diff --git a/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
 new file mode 100644
-index 0000000..e9cc1b2
+index 0000000..86ad3e2
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/atmel-hlcdc.txt
-@@ -0,0 +1,50 @@
-+Device-Tree bindings for Atmel's HLCDC (High LCD Controller) MFD driver
++++ b/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
+@@ -0,0 +1,55 @@
++Device-Tree bindings for Atmel's HLCDC (High LCD Controller) PWM driver
++
++The Atmel HLCDC PWM is subdevice of the HLCDC MFD device.
++See ../mfd/atmel-hlcdc.txt for more details.
 +
 +Required properties:
 + - compatible: value should be one of the following:
-+   "atmel,sama5d3-hlcdc"
-+ - reg: base address and size of the HLCDC device registers.
-+ - clock-names: the name of the 3 clocks requested by the HLCDC device.
-+   Should contain "periph_clk", "sys_clk" and "slow_clk".
-+ - clocks: should contain the 3 clocks requested by the HLCDC device.
-+
-+The HLCDC IP exposes two subdevices:
-+ - a PWM chip: see ../pwm/atmel-hlcdc-pwm.txt
-+ - a Display Controller: see ../drm/atmel-hlcdc-dc.txt
++   "atmel,hlcdc-pwm"
++ - pinctr-names: the pin control state names. Should contain "default".
++ - pinctrl-0: should contain the pinctrl states described by pinctrl
++   default.
++ - #pwm-cells: should be set to 3. This PWM chip use the default 3 cells
++   bindings defined in Documentation/devicetree/bindings/pwm/pwm.txt.
++   The first cell encodes the PWM id (0 is the only acceptable value here,
++   because the chip only provide one PWM).
++   The second cell encodes the PWM period in nanoseconds.
++   The third cell encodes the PWM flags (the only supported flag is
++   PWM_POLARITY_INVERTED)
 +
 +Example:
 +
@@ -85,4 +97,3 @@ index 0000000..e9cc1b2
 +	};
 -- 
 1.9.1
-
