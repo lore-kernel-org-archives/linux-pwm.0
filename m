@@ -1,34 +1,39 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V4] pwm: lpc32xx - Add a driver for the motor PWM
-Date: Wed, 10 Sep 2014 18:28:39 +0200
-Message-ID: <3043402.gA1yIrlkCZ@wuerfel>
-References: <1410363822-22151-1-git-send-email-alban.bedel@avionic-design.de> <12709842.iga6ki5KTS@wuerfel> <20140910175941.5c44837f@avionic-0020>
+From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
+Subject: Re: [PATCH] clk: Add PWM clock driver
+Date: Wed, 10 Sep 2014 22:05:17 +0200
+Message-ID: <5410AEFD.5030302@elproma.com.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140910175941.5c44837f@avionic-0020>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alban Bedel <alban.bedel@avionic-design.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Kumar Gala <galak@codeaurora.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Mark Rutland <mark.rutland@arm.com>, Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, Roland Stigge <stigge@antcom.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from v032797.home.net.pl ([89.161.177.31]:64353 "HELO
+	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with SMTP id S1752438AbaIJUFN (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 10 Sep 2014 16:05:13 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Mike Turquette <mturquette@linaro.org>
+Cc: Philipp Zabel <p.zabel@pengutronix.de>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org
 
-On Wednesday 10 September 2014 17:59:41 Alban Bedel wrote:
-> On Wed, 10 Sep 2014 17:51:36 +0200
-> Arnd Bergmann <arnd@arndb.de> wrote:
-> 
-> > On Wednesday 10 September 2014 17:43:42 Alban Bedel wrote:
-> > > +- #pwm-cells: should be 3. See pwm.txt in this directory for a description of
-> > > +  the cells format. The only third cell flag supported by this binding is
-> > > +  PWM_POLARITY_INVERTED.
-> > 
-> > If you don't have multiple pwm outputs or programmable period, I would say it
-> > should use #pwm-cells=<1> and only pass the polarity.
-> 
-> There is 3 channel, so 3 PWM from the API POV, and the period is
-> independently programmable for each one.
+Hi,
 
-Then you should put the channel number into the first cell and the period
-length into the second cell, as the pwm.txt document says.
+http://patchwork.ozlabs.org/patch/359069/
+https://lkml.org/lkml/2014/6/12/186
 
-	Arnd
+Will the patch ever included to linux-next?
+
+pwm_config()  API could be extended to support
+not only period [ns] and duty [ns] time
+but also frequency [Hz] and duty cycle fraction [1/1000?]
+(instead of time in ns) as parameters.
+Then  ns (rounded by pwm) to freq. conversion problem
+inclk_pwm_recalc_rate() usingpwm_get_period()
+could be avoided.
+To extend the API pwm_config() can support
+new flags forduty_ns and period_ns,
+eg. PWM_DUTY_PERCENT and PWM_PERIOD_HZ.
+
+
+best regards
+Janusz
+
