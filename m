@@ -1,39 +1,38 @@
-From: =?UTF-8?B?SmFudXN6IFXFvHlja2k=?= <j.uzycki@elproma.com.pl>
-Subject: Re: [PATCH] clk: Add PWM clock driver
-Date: Wed, 10 Sep 2014 22:05:17 +0200
-Message-ID: <5410AEFD.5030302@elproma.com.pl>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: hachyang@gmail.com
+Subject: [PATCH 1/1] PWM-atmel: Fixed a bug which set the pwm clock prescaler incorrectly. In the defect code the prescaler was always one more than expected value, which resulted in the pwm output with wrong frequency and duty cycle.
+Date: Wed, 10 Sep 2014 15:35:19 -0600
+Message-ID: <1410384919-41303-1-git-send-email-ryang@hach.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from v032797.home.net.pl ([89.161.177.31]:64353 "HELO
-	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S1752438AbaIJUFN (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 10 Sep 2014 16:05:13 -0400
+Received: from mail-yk0-f176.google.com ([209.85.160.176]:48031 "EHLO
+	mail-yk0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753705AbaIJVgh (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 10 Sep 2014 17:36:37 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Mike Turquette <mturquette@linaro.org>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com, linux-pwm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, ryang <ryang@hach.com>
 
-Hi,
+From: ryang <ryang@hach.com>
 
-http://patchwork.ozlabs.org/patch/359069/
-https://lkml.org/lkml/2014/6/12/186
+Signed-off-by: ryang <ryang@hach.com>
+---
+ drivers/pwm/pwm-atmel.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Will the patch ever included to linux-next?
-
-pwm_config()  API could be extended to support
-not only period [ns] and duty [ns] time
-but also frequency [Hz] and duty cycle fraction [1/1000?]
-(instead of time in ns) as parameters.
-Then  ns (rounded by pwm) to freq. conversion problem
-inclk_pwm_recalc_rate() usingpwm_get_period()
-could be avoided.
-To extend the API pwm_config() can support
-new flags forduty_ns and period_ns,
-eg. PWM_DUTY_PERCENT and PWM_PERIOD_HZ.
-
-
-best regards
-Janusz
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index 6e700a5..2dca0bf 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -128,7 +128,8 @@ static int atmel_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			return -EINVAL;
+ 		}
+ 	}
+-
++	/* Need to reduce the prescaler by 1 */
++	pres--;
+ 	/* Calculate the duty cycles */
+ 	prd = div;
+ 	div *= duty_ns;
+-- 
+1.9.1
 
