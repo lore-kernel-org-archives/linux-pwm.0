@@ -1,49 +1,78 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V4] pwm: lpc32xx - Add a driver for the motor PWM
-Date: Thu, 11 Sep 2014 11:39:44 +0200
-Message-ID: <2979792.Ts9vlPSuLr@wuerfel>
-References: <1410363822-22151-1-git-send-email-alban.bedel@avionic-design.de> <3043402.gA1yIrlkCZ@wuerfel> <20140911103621.198f7ef6@avionic-0020>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: Re: [PATCH] This adds a generic PWM framework driver for the PWM
+ controller
+Date: Sun, 14 Sep 2014 13:19:01 +0200
+Message-ID: <20140914111901.GF26281@piout.net>
+References: <20140818180316.31807.3445.stgit@studio>
+ <20140818192318.GJ15297@lukather>
+ <CAKON4OwzFDDXqCF4VNkUXXJLp3smrB6Axp_x=D47sjbpoNbe+g@mail.gmail.com>
+ <20140818201929.GL15297@lukather>
+ <CAKON4OwDWqnu9Nn6rBFtUJX2f0eFVzBFhRMcvPAp=K6N1KpE0w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.24]:57971 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752752AbaIKJjz (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 11 Sep 2014 05:39:55 -0400
-In-Reply-To: <20140911103621.198f7ef6@avionic-0020>
+Received: from top.free-electrons.com ([176.31.233.9]:33633 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752514AbaINLTI (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sun, 14 Sep 2014 07:19:08 -0400
+Content-Disposition: inline
+In-Reply-To: <CAKON4OwDWqnu9Nn6rBFtUJX2f0eFVzBFhRMcvPAp=K6N1KpE0w@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Alban Bedel <alban.bedel@avionic-design.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Grant Likely <grant.likely@linaro.org>, Kumar Gala <galak@codeaurora.org>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Mark Rutland <mark.rutland@arm.com>, Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, Roland Stigge <stigge@antcom.de>
+To: "jonsmirl@gmail.com" <jonsmirl@gmail.com>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, linux-pwm@vger.kernel.org, linux-sunxi <linux-sunxi@googlegroups.com>, ARM Linux Mailing List <linux-arm-kernel@lists.infradead.org>
 
-On Thursday 11 September 2014 10:36:21 Alban Bedel wrote:
-> On Wed, 10 Sep 2014 18:28:39 +0200
-> Arnd Bergmann <arnd@arndb.de> wrote:
+On 19/08/2014 at 08:11:40 -0400, jonsmirl@gmail.com wrote :
+> On Mon, Aug 18, 2014 at 4:19 PM, Maxime Ripard
+> <maxime.ripard@free-electrons.com> wrote:
+> > On Mon, Aug 18, 2014 at 03:53:08PM -0400, jonsmirl@gmail.com wrote:
+> >> On Mon, Aug 18, 2014 at 3:23 PM, Maxime Ripard
+> >> <maxime.ripard@free-electrons.com> wrote:
+> >> > Hi,
+> >> >
+> >> > On Mon, Aug 18, 2014 at 02:03:16PM -0400, Jon Smirl wrote:
+> >> >> found on Allwinner SoCs.x
+> >> >>
+> >> >> Signed-off-by: Jon Smirl <jonsmirl@gmail.com>
+> >> >
+> >> > Is there any notable difference with Alexandre's driver?
+> >> > https://lkml.org/lkml/2014/5/19/568
+> >> >
+> >> > If so, why didn't you posted incremental patches on top of his driver?
+> >>
+> >> Better A10 support.
+> >
+> > Better how?
+> >
+> >> And I wrote this one without know about his.
+> >
+> > So you're just require us to trash an already extensively reviewed
+> > driver and start from scratch again?
 > 
-> > On Wednesday 10 September 2014 17:59:41 Alban Bedel wrote:
-> > > On Wed, 10 Sep 2014 17:51:36 +0200
-> > > Arnd Bergmann <arnd@arndb.de> wrote:
-> > > 
-> > > > On Wednesday 10 September 2014 17:43:42 Alban Bedel wrote:
-> > > > > +- #pwm-cells: should be 3. See pwm.txt in this directory for a description of
-> > > > > +  the cells format. The only third cell flag supported by this binding is
-> > > > > +  PWM_POLARITY_INVERTED.
-> > > > 
-> > > > If you don't have multiple pwm outputs or programmable period, I would say it
-> > > > should use #pwm-cells=<1> and only pass the polarity.
-> > > 
-> > > There is 3 channel, so 3 PWM from the API POV, and the period is
-> > > independently programmable for each one.
-> > 
-> > Then you should put the channel number into the first cell and the period
-> > length into the second cell, as the pwm.txt document says.
+> Forget mine then.
 > 
-> That's what is implemented in this patch, by using
-> of_pwm_xlate_with_flags() for the .of_xlate callback.
+> Problems in the other one....
+> 1) The math is not right in either patch. Selsinork has been checking
+> mine with a scope and just found another math error in mine. The
+> internal math needs to be done in picoseconds or round off errors mess
+> up the high frequency outputs (24Mhz, 12Mhz, 8Mhz, ...).
+
+I don't have an oscilloscope so I can't check the exact output but I4ll
+try to think about it.
+
+> 3) By-pass mode on the A20 is not implemented.
+
+I'm not sure there is a real use case here, using the bypass only allows
+for one duty cycle of 50% with a period of 41.6ns so I think it is
+preferable to get an error instead of a bogus output.
+
+> 2) A10 is not correctly handled. Specifically the prescaler is
+> different on the A10 vs A20.
 > 
 
-Ah, my mistake. I misread the sentence in the binding for meaning that
-you only support the third cell. It's all good then.
+I'll change that.
 
-	Arnd
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
