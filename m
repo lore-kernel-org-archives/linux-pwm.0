@@ -1,38 +1,62 @@
-From: Daniel Drake <drake@endlessm.com>
-Subject: pwm-samsung: incorrect register values for 100% duty cycle
-Date: Wed, 17 Sep 2014 17:42:09 -0600
-Message-ID: <CAD8Lp46rh80KD=jXoGTLt2SzH+zfnuyd=QHrKZncx+YYCp-8dA@mail.gmail.com>
+From: David Herrmann <dh.herrmann@gmail.com>
+Subject: Re: [PATCH v5 05/11] drm: add Atmel HLCDC Display Controller support
+Date: Fri, 19 Sep 2014 15:10:02 +0200
+Message-ID: <CANq1E4TYv-ZCgZHbocVvqM54=hrYYSf3B-VY4FR8+WEp6EMMjg@mail.gmail.com>
+References: <1410165822-16868-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: linux-pwm@vger.kernel.org, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, Ian Campbell <ijc+devicetree@hellion.org.uk>, Samuel Ortiz <sameo@linux.intel.com>, Pawel Moll <pawel.moll@arm.com>, devicetree@vger.kernel.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Rob Herring <robh+dt@kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Andrew Victor <linux@maxim.org.za>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+Hi
 
-I'm using pwm-samsung on Exynos4412 for a variable-brightness LED.
+On Mon, Sep 8, 2014 at 10:43 AM, Boris BREZILLON
+<boris.brezillon@free-electrons.com> wrote:
+[snip]
+> +static int atmel_hlcdc_dc_drm_probe(struct platform_device *pdev)
+> +{
+> +       int ret;
+> +
+> +       ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+> +       if (ret)
+> +               return ret;
+> +
+> +       ret = drm_platform_init(&atmel_hlcdc_dc_driver, pdev);
+> +       if (ret)
+> +               return ret;
 
-When the LED is set to maximum brightness via the pwm-leds driver, we
-arrive at pwm_samsung_config with duty_ns = period_ns, i.e. 100% duty
-cycle.
+Please avoid any use of drm_platform_*(). Use drm_dev_alloc(),
+drm_dev_register() directly. See my response on
+  "[PATCH v3 1/5] drm/rockchip: Add basic drm driver":
+for details. Also have a look at the tegra driver how to do it.
 
-This function does:
+> +
+> +       return 0;
+> +}
+> +
+> +static int atmel_hlcdc_dc_drm_remove(struct platform_device *pdev)
+> +{
+> +       drm_put_dev(platform_get_drvdata(pdev));
 
-    /* -1UL will give 100% duty. */
-    --tcmp;
-    writel(tcmp, our_chip->base + REG_TCMPB(pwm->hwpwm));
+Same here: please use dev_dev_*() directly:
 
-I think that comment is incorrect. If tcmp is written as -1UL then the
-LED totally turns off. And there is nothing in the Exynos4412 manual
-to suggest that -1UL should be set in the TCMP register for 100% duty.
+drm_dev_unregister(ddev);
+drm_dev_unref(ddev);
 
-If I remove that --tcmp line, so that 100% duty cycle is handled as
-tcmp=0, the problem is solved: the LED turns on at max brightness when
-the leds subsystem requests so.
-
-Any ideas? Is this -1UL thing a quirk from older chip versions not
-applicable to Exynos4?
 
 Thanks
-Daniel
+David
