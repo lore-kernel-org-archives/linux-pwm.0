@@ -1,62 +1,43 @@
-From: David Herrmann <dh.herrmann@gmail.com>
-Subject: Re: [PATCH v5 05/11] drm: add Atmel HLCDC Display Controller support
-Date: Fri, 19 Sep 2014 15:10:02 +0200
-Message-ID: <CANq1E4TYv-ZCgZHbocVvqM54=hrYYSf3B-VY4FR8+WEp6EMMjg@mail.gmail.com>
-References: <1410165822-16868-1-git-send-email-boris.brezillon@free-electrons.com>
- <1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com>
+From: Naidu Tellapati <naidu.tellapati@gmail.com>
+Subject: quck help on PDM DAC driver
+Date: Sun, 21 Sep 2014 16:15:42 +0530
+Message-ID: <CAC3mp02joXnMME8WWq0jrT5fm5SUMkJ15H_DC3Oaz=y9C_DyCw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, Ian Campbell <ijc+devicetree@hellion.org.uk>, Samuel Ortiz <sameo@linux.intel.com>, Pawel Moll <pawel.moll@arm.com>, devicetree@vger.kernel.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Rob Herring <robh+dt@kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Andrew Victor <linux@maxim.org.za>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-oa0-f51.google.com ([209.85.219.51]:42335 "EHLO
+	mail-oa0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750761AbaIUKpn (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sun, 21 Sep 2014 06:45:43 -0400
+Received: by mail-oa0-f51.google.com with SMTP id o6so818279oag.24
+        for <linux-pwm@vger.kernel.org>; Sun, 21 Sep 2014 03:45:42 -0700 (PDT)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-pwm@vger.kernel.org, thierry.reding@gmail.com
 
-Hi
+Hi Thierry and all,
 
-On Mon, Sep 8, 2014 at 10:43 AM, Boris BREZILLON
-<boris.brezillon@free-electrons.com> wrote:
-[snip]
-> +static int atmel_hlcdc_dc_drm_probe(struct platform_device *pdev)
-> +{
-> +       int ret;
-> +
-> +       ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = drm_platform_init(&atmel_hlcdc_dc_driver, pdev);
-> +       if (ret)
-> +               return ret;
+Many thanks in advance. My name is Naidu Tellapati. I am from India.
 
-Please avoid any use of drm_platform_*(). Use drm_dev_alloc(),
-drm_dev_register() directly. See my response on
-  "[PATCH v3 1/5] drm/rockchip: Add basic drm driver":
-for details. Also have a look at the tegra driver how to do it.
+The Pulse Density Modulation DAC which we have on our SOC produces a
+form of analogue output according to the relative density of output
+pulses to the intended analogue signal amplitude. The 4 PDM outputs
+are provided that can be used to control targets such as an LCD
+backlight. After going through Linux PWM documentation, I understand
+that our PDM DAC driver does not exactly fit into the Linux PWM
+framework.
 
-> +
-> +       return 0;
-> +}
-> +
-> +static int atmel_hlcdc_dc_drm_remove(struct platform_device *pdev)
-> +{
-> +       drm_put_dev(platform_get_drvdata(pdev));
+The PDM DAC block takes only input clock and a 12 bit value (as input
+pulse) configured in one of the SOC configuration registers as an
+input and based on some simple internal logic, the block produces a
+form of analogue output according to the relative density of output
+pulses to the intended analogue signal amplitude. The PDM DAC block
+won't take duty_cycle as input configuration parameters. Instead it
+takes 12 bit value (input pulse) as a configuration parameter.
 
-Same here: please use dev_dev_*() directly:
+The plan is to develop a driver which could be upstream-able to Linux
+Kernel. Now could you please suggest me under which linux driver
+subsytem I can place my PDM Driver.
 
-drm_dev_unregister(ddev);
-drm_dev_unref(ddev);
-
-
-Thanks
-David
+Thanks and regards,
+Naidu.
