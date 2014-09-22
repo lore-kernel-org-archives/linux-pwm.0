@@ -1,138 +1,121 @@
-From: Naidu Tellapati <naidu.tellapati@gmail.com>
-Subject: Re: quick help on PDM DAC driver
-Date: Mon, 22 Sep 2014 19:28:43 +0530
-Message-ID: <CAC3mp01gADb-SPJhd9dYwKg2fQgmmeGDQ+xt8qYahRovNSpXMA@mail.gmail.com>
-References: <CAC3mp01MC3SaR8WmcDOXmGaB60eYfifx+YMT8xvxE2L=gZ093A@mail.gmail.com>
-	<20140922112707.GR1470@ulmo>
+From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH v5 05/11] drm: add Atmel HLCDC Display Controller support
+Date: Mon, 22 Sep 2014 21:18:11 +0200
+Message-ID: <20140922211811.11279ff0@bbrezillon>
+References: <1410165822-16868-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi0-f42.google.com ([209.85.218.42]:57737 "EHLO
-	mail-oi0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751070AbaIVN6n convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 22 Sep 2014 09:58:43 -0400
-Received: by mail-oi0-f42.google.com with SMTP id u20so3824415oif.1
-        for <linux-pwm@vger.kernel.org>; Mon, 22 Sep 2014 06:58:43 -0700 (PDT)
-In-Reply-To: <20140922112707.GR1470@ulmo>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Pawel Moll <pawel.moll@arm.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Nicolas Ferre <nicolas.ferre@atmel.com>, dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Andrew Victor <linux@maxim.org.za>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org
 
-Hi Thierry,
+On Mon,  8 Sep 2014 10:43:36 +0200
+Boris BREZILLON <boris.brezillon@free-electrons.com> wrote:
 
-Many thanks for your continued help in this regard.
+> The Atmel HLCDC (HLCD Controller) IP available on some Atmel SoCs (i.e.
+> at91sam9n12, at91sam9x5 family or sama5d3 family) provides a display
+> controller device.
+> 
+> This display controller supports at least one primary plane and might
+> provide several overlays and an hardware cursor depending on the IP
+> version.
+> 
+> At the moment, this driver only implements an RGB connector to interface
+> with LCD panels, but support for other kind of external devices might be
+> added later.
+> 
+> Signed-off-by: Boris BREZILLON <boris.brezillon@free-electrons.com>
+> Tested-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+> ---
+>  drivers/gpu/drm/Kconfig                          |   2 +
+>  drivers/gpu/drm/Makefile                         |   1 +
+>  drivers/gpu/drm/atmel-hlcdc/Kconfig              |  13 +
+>  drivers/gpu/drm/atmel-hlcdc/Makefile             |   7 +
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c   | 286 ++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c     | 488 +++++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h     | 224 ++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.c  | 656 ++++++++++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.h  | 403 +++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_output.c | 476 +++++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_plane.c  | 836 +++++++++++++++++++++++
+>  11 files changed, 3392 insertions(+)
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/Kconfig
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/Makefile
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.h
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_output.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_plane.c
+> 
+> diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
+> index f512004..9183a78 100644
+> --- a/drivers/gpu/drm/Kconfig
+> +++ b/drivers/gpu/drm/Kconfig
+> @@ -184,6 +184,8 @@ source "drivers/gpu/drm/cirrus/Kconfig"
+>  
+>  source "drivers/gpu/drm/armada/Kconfig"
+>  
+> +source "drivers/gpu/drm/atmel-hlcdc/Kconfig"
+> +
+>  source "drivers/gpu/drm/rcar-du/Kconfig"
+>  
+>  source "drivers/gpu/drm/shmobile/Kconfig"
+> diff --git a/drivers/gpu/drm/Makefile b/drivers/gpu/drm/Makefile
+> index af9a609..07d388c 100644
+> --- a/drivers/gpu/drm/Makefile
+> +++ b/drivers/gpu/drm/Makefile
+> @@ -55,6 +55,7 @@ obj-$(CONFIG_DRM_GMA500) += gma500/
+>  obj-$(CONFIG_DRM_UDL) += udl/
+>  obj-$(CONFIG_DRM_AST) += ast/
+>  obj-$(CONFIG_DRM_ARMADA) += armada/
+> +obj-$(CONFIG_DRM_ATMEL_HLCDC)	+= atmel-hlcdc/
+>  obj-$(CONFIG_DRM_RCAR_DU) += rcar-du/
+>  obj-$(CONFIG_DRM_SHMOBILE) +=shmobile/
+>  obj-$(CONFIG_DRM_OMAP)	+= omapdrm/
+> diff --git a/drivers/gpu/drm/atmel-hlcdc/Kconfig b/drivers/gpu/drm/atmel-hlcdc/Kconfig
+> new file mode 100644
+> index 0000000..6d0d785
+> --- /dev/null
+> +++ b/drivers/gpu/drm/atmel-hlcdc/Kconfig
+> @@ -0,0 +1,13 @@
+> +config DRM_ATMEL_HLCDC
+> +	tristate "DRM Support for ATMEL HLCDC Display Controller"
+> +	depends on DRM && OF && MFD_ATMEL_HLCDC && COMMON_CLK
 
-Each bit in my 12-bit input value to the PDM block does not in anyway
-corresponds to fixed interval. My hardware PDM block works with the
-following simple logic
-
-counter [12:0] =3D counter [11:0] + pluse_in [11:0]     /* pulse_in is =
-a
-12-bit input value to PDM block */
-pdm_out =3D counter [12]
-
-The above logic runs for every pdm_clk cycle.
-
-And hence I am of the opinion that I need to have a Linux PDM
-=46ramework which is similar to PWM Framework and which provides
-pulse_in as device attribute to the Linux User Space.
-
-Please correct me if my understand is wrong. Please also suggest me if
-there is a better approach. The plan is to write an upstream-ble PDM
-driver.
-
-Thanks in advance,
-
-Regards,
-Naidu.
+I forgot to remove MFD_ATMEL_HLCDC dependency which is now selected...
 
 
+> +	select DRM_GEM_CMA_HELPER
+> +	select DRM_KMS_HELPER
+> +	select DRM_KMS_FB_HELPER
+> +	select DRM_KMS_CMA_HELPER
+> +	select DRM_PANEL
+> +	select MFD_ATMEL_HLCDC
 
+here.
 
+I'll fix that for the next version.
 
+Best Regards,
 
+Boris
 
-
-
-
-
-
-
-
-
-
-
-
-
-On Mon, Sep 22, 2014 at 4:57 PM, Thierry Reding
-<thierry.reding@gmail.com> wrote:
-> On Mon, Sep 22, 2014 at 04:37:11PM +0530, Naidu Tellapati wrote:
->> Hi Thierry,
->>
->> Many thanks for your quick response.
->>
->> There are total 4 blocks available on our SOC, those could be used
->> either as PWM DAC (or) PDM DAC blocks. If one of them is used as a P=
-WM
->> DAC block, it can=E2=80=99t be used as a PDM block. As an example if=
- the user
->> wants, based on the configuration from the device tree, he could use
->> all the 4 blocks as PWM DAC blocks (or) all 4 as PDM DAC blocks (or)=
- 2
->> PDM DAC blocks & 2 PDM blocks (or) any combination of these two type=
-s.
->> Since there are 4 blocks available, total 16 combinations of these t=
-wo
->> types (PDM & PWM) are possible.
->>
->> For example based on sort of channel mask defined in the device tree=
-,
->> If the user wishes to use the blocks as PWM DAC blocks, my driver
->> exactly fits into linux PWM frame work. As usual, the PWM blocks
->> expect the user to configure all the required configuration attribut=
-es
->> (frequency, duty-cycle etc) as defined by the Linux PWM Framework.
->>
->> Bu if the user wishes to use the blocks as PDM DAC blocks, my driver
->> does not exactly fit into PWM framework. In this case the PDM DAC
->> block takes only a 12 bit value (as input) program in one of the SOC
->> configuration registers as an
->> input and based on some simple internal logic, the block produces a
->> form of analogue output according to the relative density of output
->> pulses to the intended analogue signal amplitude. The width of the
->> output pulse varies with the 12-bit value we program in one of the S=
-OC
->> configuration registers.
->>
->> If the user wants to change the width of the output pulse, he has to
->> program different values for 12-bit value. For example different
->> 12-bit input values 0xFFF, 0x800, 0x0800, 0x0080, 0x0008, 0x001 will
->> produce output pulses of totally different widths.
->
-> What's the relation of the 12-bit value to the resulting signal? Does
-> each bit in the value correspond to a fixed interval so that a one is
-> high and 0 low? That is, does:
->
->         0x800 produce -___________
->         0x080 produce ____-_______
->         0x008 produce ________-___
->         0x444 produce _-___-___-__
->         0x555 produce _-_-_-_-_-_-
->         0x00f produce ________----
->         ...
->
-> ? If so you can probably still mimic PWM behaviour by subdividing the
-> duty-cycle into 12 intervals.
->
->> The idea is to implement a driver which could be upstream-able. I am
->> trying to understand how I could use the existing PWM Framework to
->> achieve this. If you think this does not fit into existing PWM
->> Framework, I request you to please suggest me some better approach.
->
-> Even if you can't mimic PWM using PDM it's still possible to use a PW=
-M
-> driver only if all channels are configured in PWM mode.
->
-> Thierry
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
