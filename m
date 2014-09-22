@@ -1,73 +1,85 @@
-From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v5 05/11] drm: add Atmel HLCDC Display Controller
- support
-Date: Mon, 22 Sep 2014 11:15:12 +0200
-Message-ID: <20140922111512.52cb6d1b@bbrezillon>
-References: <1410165822-16868-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com>
-	<CANq1E4TYv-ZCgZHbocVvqM54=hrYYSf3B-VY4FR8+WEp6EMMjg@mail.gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: quck help on PDM DAC driver
+Date: Mon, 22 Sep 2014 11:48:16 +0200
+Message-ID: <20140922094814.GL1470@ulmo>
+References: <CAC3mp02joXnMME8WWq0jrT5fm5SUMkJ15H_DC3Oaz=y9C_DyCw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="yaPAUYI/0vT2YKpA"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:47107 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751960AbaIVJPQ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 22 Sep 2014 05:15:16 -0400
-In-Reply-To: <CANq1E4TYv-ZCgZHbocVvqM54=hrYYSf3B-VY4FR8+WEp6EMMjg@mail.gmail.com>
+Received: from mail-we0-f173.google.com ([74.125.82.173]:41276 "EHLO
+	mail-we0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753664AbaIVJsS (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 22 Sep 2014 05:48:18 -0400
+Received: by mail-we0-f173.google.com with SMTP id x48so1143421wes.32
+        for <linux-pwm@vger.kernel.org>; Mon, 22 Sep 2014 02:48:17 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <CAC3mp02joXnMME8WWq0jrT5fm5SUMkJ15H_DC3Oaz=y9C_DyCw@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: David Herrmann <dh.herrmann@gmail.com>
-Cc: David Airlie <airlied@linux.ie>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>
-
-Hi David,
-
-On Fri, 19 Sep 2014 15:10:02 +0200
-David Herrmann <dh.herrmann@gmail.com> wrote:
-
-> Hi
-> 
-> On Mon, Sep 8, 2014 at 10:43 AM, Boris BREZILLON
-> <boris.brezillon@free-electrons.com> wrote:
-> [snip]
-> > +static int atmel_hlcdc_dc_drm_probe(struct platform_device *pdev)
-> > +{
-> > +       int ret;
-> > +
-> > +       ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
-> > +       if (ret)
-> > +               return ret;
-> > +
-> > +       ret = drm_platform_init(&atmel_hlcdc_dc_driver, pdev);
-> > +       if (ret)
-> > +               return ret;
-> 
-> Please avoid any use of drm_platform_*(). Use drm_dev_alloc(),
-> drm_dev_register() directly. See my response on
->   "[PATCH v3 1/5] drm/rockchip: Add basic drm driver":
-> for details. Also have a look at the tegra driver how to do it.
-> 
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static int atmel_hlcdc_dc_drm_remove(struct platform_device *pdev)
-> > +{
-> > +       drm_put_dev(platform_get_drvdata(pdev));
-> 
-> Same here: please use dev_dev_*() directly:
-> 
-> drm_dev_unregister(ddev);
-> drm_dev_unref(ddev);
+To: Naidu Tellapati <naidu.tellapati@gmail.com>
+Cc: linux-pwm@vger.kernel.org
 
 
-Sure, I'll change that.
+--yaPAUYI/0vT2YKpA
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
+On Sun, Sep 21, 2014 at 04:15:42PM +0530, Naidu Tellapati wrote:
+> Hi Thierry and all,
+>=20
+> Many thanks in advance. My name is Naidu Tellapati. I am from India.
+>=20
+> The Pulse Density Modulation DAC which we have on our SOC produces a
+> form of analogue output according to the relative density of output
+> pulses to the intended analogue signal amplitude. The 4 PDM outputs
+> are provided that can be used to control targets such as an LCD
+> backlight. After going through Linux PWM documentation, I understand
+> that our PDM DAC driver does not exactly fit into the Linux PWM
+> framework.
+>=20
+> The PDM DAC block takes only input clock and a 12 bit value (as input
+> pulse) configured in one of the SOC configuration registers as an
+> input and based on some simple internal logic, the block produces a
+> form of analogue output according to the relative density of output
+> pulses to the intended analogue signal amplitude. The PDM DAC block
+> won't take duty_cycle as input configuration parameters. Instead it
+> takes 12 bit value (input pulse) as a configuration parameter.
 
-Boris
+What does this 12-bit value represent? It sounds to me like it's exactly
+what the duty-cycle is for other devices. And if it's the only parameter
+then it seems to me like the device simply has a fixed period.
 
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Both of the above should be possible to do in the current PWM framework.
+For example, you could compute the period (in ns) of the PDM based on
+the input clock frequency and inter/extrapolate the 12-bit parameter to
+range [0..period].
+
+You can also add checks to refuse setting a period in pwm_config() that
+doesn't correspond to the fixed period derived from the input clock.
+
+Thierry
+
+--yaPAUYI/0vT2YKpA
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJUH/BeAAoJEN0jrNd/PrOhjPoP/Re0EdKd05XDKWdCWQXHXdB0
+4TuIukARHnASdd8HXXAfNP6SOWFixKeIM/kBwuGVubt5mlV4b2LG29x1Em+RJ7NH
+aPItqVA7G6gPKvC9Dx1QLCNgrvrlZOZdg3JWUee93L9qQezTY8lF6w7TBuOButL+
+t6N3+3HWF0m0vHP76e9vsapkbx0M3zaf0E1xNFtoux9V7CCgc2uTi5Imgo591J8y
+WTV92sht5Qs8va0E3/I2SNS3l5+hQvXwxNaaTmZGYozG/wk/OLMwly/GY9nn9x/B
+eppu1d+CVZDsYnbvhoHzYueLvBMa05AFegMWHMqH6exndunCOlJnHlFc+g3h2PDr
+HUMez3awVjs7YKEyJHhJYHS59OmyR7OyK1vAqdMhlCyCLYWN4w0rZm7uakIajX0A
+VcHSb9xXdcUElmb+6ut/kZvRJj3rPkt0O6Ty3m3SeSaUjXxlVeXXtaO6e/ePKXK9
+TOtzWY6qAaiyP1lfLaPgg8KvZLfwXF8LJGHqI71Jrl9rCgaRuCL+QMjSpgT11Ac1
+KeDb1Lh7+xKmv0DPcoovNHlpxXKVOyHUEP5SNMTcAgUv+WsiEtbmBDgGWVPKjlK+
+uylGSKoQsTnttVdC2riEbXyZIJtD3Bmt7Pm/+ePqdPUOgyUtBoG4IE3UZTf2kEYi
+IOC4PlJR3EcVlwih+6W8
+=rwPo
+-----END PGP SIGNATURE-----
+
+--yaPAUYI/0vT2YKpA--
