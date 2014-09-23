@@ -1,107 +1,81 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v5 05/11] drm: add Atmel HLCDC Display Controller support
-Date: Tue, 23 Sep 2014 08:32:33 +0200
-Message-ID: <20140923063232.GG30514@ulmo>
+From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH v5 05/11] drm: add Atmel HLCDC Display Controller
+ support
+Date: Tue, 23 Sep 2014 09:24:36 +0200
+Message-ID: <20140923092436.12b1f2c4@bbrezillon>
 References: <1410165822-16868-1-git-send-email-boris.brezillon@free-electrons.com>
- <1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com>
- <20140922211811.11279ff0@bbrezillon>
+	<1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com>
+	<20140922211811.11279ff0@bbrezillon>
+	<20140923063232.GG30514@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0456871902=="
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20140922211811.11279ff0@bbrezillon>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org, Ludovic Desroches <ludovic.desroches@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Andrew Victor <linux@maxim.org.za>
-List-Id: linux-pwm@vger.kernel.org
-
-
---===============0456871902==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="tvOENZuN7d6HfOWU"
-Content-Disposition: inline
-
-
---tvOENZuN7d6HfOWU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, Sep 22, 2014 at 09:18:11PM +0200, Boris BREZILLON wrote:
-> On Mon,  8 Sep 2014 10:43:36 +0200 Boris BREZILLON <boris.brezillon@free-=
-electrons.com> wrote:
-[...]
-> > diff --git a/drivers/gpu/drm/atmel-hlcdc/Kconfig b/drivers/gpu/drm/atme=
-l-hlcdc/Kconfig
-> > new file mode 100644
-> > index 0000000..6d0d785
-> > --- /dev/null
-> > +++ b/drivers/gpu/drm/atmel-hlcdc/Kconfig
-> > @@ -0,0 +1,13 @@
-> > +config DRM_ATMEL_HLCDC
-> > +	tristate "DRM Support for ATMEL HLCDC Display Controller"
-> > +	depends on DRM && OF && MFD_ATMEL_HLCDC && COMMON_CLK
->=20
-> I forgot to remove MFD_ATMEL_HLCDC dependency which is now selected...
->=20
->=20
-> > +	select DRM_GEM_CMA_HELPER
-> > +	select DRM_KMS_HELPER
-> > +	select DRM_KMS_FB_HELPER
-> > +	select DRM_KMS_CMA_HELPER
-> > +	select DRM_PANEL
-> > +	select MFD_ATMEL_HLCDC
->=20
-> here.
-
-Maybe this was discussed earlier, but can you remind me why this was
-done? The changelog says it was to "simplify", but there's been some
-recent discussion that select should never be used for symbols that
-are user-visible because that can lead to issues.
-
-What were the problems having this as "depends on"?
-
-Thierry
-
---tvOENZuN7d6HfOWU
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJUIRQAAAoJEN0jrNd/PrOhft8QAL+ZOYjJyOpgiicjU90X4lOr
-mIGldZckMCQX2bIw8vQHMvgCPImCamKVu2PZDEy+ncpfg2rEpAqiAX8oanizHVj9
-QaUxulaxYeGmE96W5LZAaadZMLqM7GcaN7CldXdzIIsxRnVe03wZi7u+h99dz4JI
-EBRPnZ5KeyAwL4DfUyVAvPbmyV72GJu34SLYzHPAIHT847q5WjxckrCD5PxBlxuq
-8o8Zi/G8LdeenklJndc+/Myf5MTOvy0mxX0+5iXMsxSKMLNMPwgd2lKCUWh4id+x
-kw5by4SR7yQiNX4nwe6oRFpzYO0jUoU62rggb2vrRwB29h0W3obM34MwMMfSj2uF
-JXTN7EjlU0ChdiAvqlUk4Fl0dBgJjKl8JrLV+PLrKinTjU6RRUXh9YN/OrKJz8rP
-VPfhY1R9EArPOje//V9kmWh0mtcyY+kjLnZAwqfb1pd+0mFkPeaXOuYWlsYuy5rS
-mtX8E2rtoFQsJUTXlTS9nADig5L+NtvMS4tIiBFui7586rRqgUchjER/jTMWDJDy
-hyKxwcHRCMNq+YEIhzXBnf1HfiHqlfNwRvPr+HbYlvwzNSfAb3QOYrP2h4CHJy22
-Bx2nv1QcA7vqfVjI1SARkMtTL8KeaoOfnn8mQyWsJHY4bAKm7ZpqcDEm8T8M+CDC
-2SWwtqYnxYEhQA8FAT/v
-=OQV9
------END PGP SIGNATURE-----
-
---tvOENZuN7d6HfOWU--
-
---===============0456871902==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:54083 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753534AbaIWHYk (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 23 Sep 2014 03:24:40 -0400
+In-Reply-To: <20140923063232.GG30514@ulmo>
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org
 
-_______________________________________________
-dri-devel mailing list
-dri-devel@lists.freedesktop.org
-http://lists.freedesktop.org/mailman/listinfo/dri-devel
+Hi Thierry,
 
---===============0456871902==--
+On Tue, 23 Sep 2014 08:32:33 +0200
+Thierry Reding <thierry.reding@gmail.com> wrote:
+
+> On Mon, Sep 22, 2014 at 09:18:11PM +0200, Boris BREZILLON wrote:
+> > On Mon,  8 Sep 2014 10:43:36 +0200 Boris BREZILLON <boris.brezillon@free-electrons.com> wrote:
+> [...]
+> > > diff --git a/drivers/gpu/drm/atmel-hlcdc/Kconfig b/drivers/gpu/drm/atmel-hlcdc/Kconfig
+> > > new file mode 100644
+> > > index 0000000..6d0d785
+> > > --- /dev/null
+> > > +++ b/drivers/gpu/drm/atmel-hlcdc/Kconfig
+> > > @@ -0,0 +1,13 @@
+> > > +config DRM_ATMEL_HLCDC
+> > > +	tristate "DRM Support for ATMEL HLCDC Display Controller"
+> > > +	depends on DRM && OF && MFD_ATMEL_HLCDC && COMMON_CLK
+> > 
+> > I forgot to remove MFD_ATMEL_HLCDC dependency which is now selected...
+> > 
+> > 
+> > > +	select DRM_GEM_CMA_HELPER
+> > > +	select DRM_KMS_HELPER
+> > > +	select DRM_KMS_FB_HELPER
+> > > +	select DRM_KMS_CMA_HELPER
+> > > +	select DRM_PANEL
+> > > +	select MFD_ATMEL_HLCDC
+> > 
+> > here.
+> 
+> Maybe this was discussed earlier, but can you remind me why this was
+> done? The changelog says it was to "simplify", but there's been some
+> recent discussion that select should never be used for symbols that
+> are user-visible because that can lead to issues.
+> 
+> What were the problems having this as "depends on"?
+
+I had several people complaining about the complexity introduced by
+this dependency scheme: if one wants to select the HLCDC KMS driver, he
+has to select the HLCDC MFD driver first, which is kind of tricky.
+
+The MFD_ATMEL_HLCDC symbol is now hidden (see patch 1) which should
+solve part of the issue.
+
+Now that I have your attention :-), could you review this series [1] ?
+The HLCDC KMS depends on those changes (which you and Laurent
+suggested).
+
+Best Regards,
+
+Boris
+
+[1]https://lkml.org/lkml/2014/7/22/300
+
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
