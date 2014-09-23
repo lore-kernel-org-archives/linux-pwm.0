@@ -1,95 +1,127 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH v5 05/11] drm: add Atmel HLCDC Display Controller support
-Date: Tue, 23 Sep 2014 11:55:42 +0200
-Message-ID: <5421439E.80501@atmel.com>
-References: <1410165822-16868-1-git-send-email-boris.brezillon@free-electrons.com> <1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com> <20140922211811.11279ff0@bbrezillon> <20140923063232.GG30514@ulmo> <20140923092436.12b1f2c4@bbrezillon> <20140923084228.GN30514@ulmo>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+From: Doug Anderson <dianders@chromium.org>
+Subject: [RFC PATCH] pwm: Add the concept of an "active" pinctrl
+Date: Tue, 23 Sep 2014 16:17:26 -0700
+Message-ID: <1411514246-6163-1-git-send-email-dianders@chromium.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.242]:40416 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754215AbaIWJzr (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 23 Sep 2014 05:55:47 -0400
-In-Reply-To: <20140923084228.GN30514@ulmo>
+Received: from mail-pd0-f173.google.com ([209.85.192.173]:55692 "EHLO
+	mail-pd0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755339AbaIWXRe (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 23 Sep 2014 19:17:34 -0400
+Received: by mail-pd0-f173.google.com with SMTP id y10so7369888pdj.18
+        for <linux-pwm@vger.kernel.org>; Tue, 23 Sep 2014 16:17:33 -0700 (PDT)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>
-Cc: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org
+To: thierry.reding@gmail.com, Linus Walleij <linus.walleij@linaro.org>, Mark Brown <broonie@kernel.org>, Lee Jones <lee.jones@linaro.org>
+Cc: Chris Zhong <zyw@rock-chips.com>, Heiko Stuebner <heiko@sntech.de>, Sonny Rao <sonnyrao@chromium.org>, Doug Anderson <dianders@chromium.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi Thierry,
+There are cases where you really don't want a PWM's pinctrl to take
+effect until you know that the PWM is driving at the proper rate.  A
+good example of this is a PWM-controlled regulator, where the boot
+state of the pin (maybe a pulled down input) could cause a vastly
+different voltage to take effect than having the pin setup as a PWM
+but not having the PWM enabled yet.
 
-On 23/09/2014 10:42, Thierry Reding :
-> On Tue, Sep 23, 2014 at 09:24:36AM +0200, Boris BREZILLON wrote:
->> Hi Thierry,
->>
->> On Tue, 23 Sep 2014 08:32:33 +0200
->> Thierry Reding <thierry.reding@gmail.com> wrote:
->>
->>> On Mon, Sep 22, 2014 at 09:18:11PM +0200, Boris BREZILLON wrote:
->>>> On Mon,  8 Sep 2014 10:43:36 +0200 Boris BREZILLON <boris.brezillon@free-electrons.com> wrote:
->>> [...]
->>>>> diff --git a/drivers/gpu/drm/atmel-hlcdc/Kconfig b/drivers/gpu/drm/atmel-hlcdc/Kconfig
->>>>> new file mode 100644
->>>>> index 0000000..6d0d785
->>>>> --- /dev/null
->>>>> +++ b/drivers/gpu/drm/atmel-hlcdc/Kconfig
->>>>> @@ -0,0 +1,13 @@
->>>>> +config DRM_ATMEL_HLCDC
->>>>> +	tristate "DRM Support for ATMEL HLCDC Display Controller"
->>>>> +	depends on DRM && OF && MFD_ATMEL_HLCDC && COMMON_CLK
->>>>
->>>> I forgot to remove MFD_ATMEL_HLCDC dependency which is now selected...
->>>>
->>>>
->>>>> +	select DRM_GEM_CMA_HELPER
->>>>> +	select DRM_KMS_HELPER
->>>>> +	select DRM_KMS_FB_HELPER
->>>>> +	select DRM_KMS_CMA_HELPER
->>>>> +	select DRM_PANEL
->>>>> +	select MFD_ATMEL_HLCDC
->>>>
->>>> here.
->>>
->>> Maybe this was discussed earlier, but can you remind me why this was
->>> done? The changelog says it was to "simplify", but there's been some
->>> recent discussion that select should never be used for symbols that
->>> are user-visible because that can lead to issues.
->>>
->>> What were the problems having this as "depends on"?
->>
->> I had several people complaining about the complexity introduced by
->> this dependency scheme: if one wants to select the HLCDC KMS driver, he
->> has to select the HLCDC MFD driver first, which is kind of tricky.
-> 
-> That's not at all tricky in my opinion. The MFD provides an LCDC as one
-> of the devices, so requiring it to be selected before you can enable any
-> of the subdrivers is very natural. It's also how the majority of MFD
-> devices work.
+Let's add a feature where you can define an "active" pinctrl state.
+This state (if it exists) will be applied after the PWM has actually
+been enabled.  If the PWM is ever disabled we'll go back to "default"
+state.
 
-Well, that's me that suggested to Boris to change this: I had very hard
-time to enable the LCD driver when first moving to this new HLCD driver.
-Usually, when I want to enable a LCD driver, I go to the "Graphics
-support" menu.
+Signed-off-by: Doug Anderson <dianders@chromium.org>
+---
+I'm sure Linus W or Thierry or Mark will tell me this is an idiotic
+idea (or totally the wrong way to do it), but I figured I'd float it
+out there and maybe someone can tell me something better to do.  ;)
 
->> The MFD_ATMEL_HLCDC symbol is now hidden (see patch 1) which should
->> solve part of the issue.
-> 
-> I think that's wrong but I don't care enough to object.
+ drivers/pwm/core.c  | 34 +++++++++++++++++++++++++++++++---
+ include/linux/pwm.h |  8 ++++++++
+ 2 files changed, 39 insertions(+), 3 deletions(-)
 
-Ok, me, I kind of like it: the MFD is something convenient to aggregate
-two drivers using the same register set (LCD and Backlight) but has no
-real "feature" interest in my opinion: it ease things.
-
->> Now that I have your attention :-), could you review this series [1] ?
->> The HLCDC KMS depends on those changes (which you and Laurent
->> suggested).
-> 
-> My attention span tends to be very short these days. No promises. =)
-> 
-> Thierry
-> 
-
-Thanks, bye,
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 966497d..12f86e0 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -245,6 +245,14 @@ int pwmchip_add(struct pwm_chip *chip)
+ 	if (ret < 0)
+ 		goto out;
+ 
++	chip->pinctrl = devm_pinctrl_get(chip->dev);
++	if (!IS_ERR_OR_NULL(chip->pinctrl)) {
++		chip->state_default = pinctrl_lookup_state(chip->pinctrl,
++							   "default");
++		chip->state_active = pinctrl_lookup_state(chip->pinctrl,
++							  "active");
++	}
++
+ 	chip->pwms = kzalloc(chip->npwm * sizeof(*pwm), GFP_KERNEL);
+ 	if (!chip->pwms) {
+ 		ret = -ENOMEM;
+@@ -457,8 +465,17 @@ EXPORT_SYMBOL_GPL(pwm_set_polarity);
+  */
+ int pwm_enable(struct pwm_device *pwm)
+ {
+-	if (pwm && !test_and_set_bit(PWMF_ENABLED, &pwm->flags))
+-		return pwm->chip->ops->enable(pwm->chip, pwm);
++	int ret;
++
++	if (pwm && !test_and_set_bit(PWMF_ENABLED, &pwm->flags)) {
++		ret = pwm->chip->ops->enable(pwm->chip, pwm);
++
++		if (!ret && !IS_ERR_OR_NULL(pwm->chip->state_active))
++			ret = pinctrl_select_state(pwm->chip->pinctrl,
++						   pwm->chip->state_active);
++
++		return ret;
++	}
+ 
+ 	return pwm ? 0 : -EINVAL;
+ }
+@@ -470,8 +487,19 @@ EXPORT_SYMBOL_GPL(pwm_enable);
+  */
+ void pwm_disable(struct pwm_device *pwm)
+ {
+-	if (pwm && test_and_clear_bit(PWMF_ENABLED, &pwm->flags))
++	int ret;
++
++	if (pwm && test_and_clear_bit(PWMF_ENABLED, &pwm->flags)) {
++		if (!IS_ERR_OR_NULL(pwm->chip->state_default)) {
++			ret = pinctrl_select_state(pwm->chip->pinctrl,
++						   pwm->chip->state_default);
++			if (ret)
++				dev_warn(pwm->chip->dev,
++					 "Couldn't set def state: %d\n", ret);
++		}
++
+ 		pwm->chip->ops->disable(pwm->chip, pwm);
++	}
+ }
+ EXPORT_SYMBOL_GPL(pwm_disable);
+ 
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index e90628c..039c898 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -162,6 +162,10 @@ struct pwm_ops {
+  * @pwms: array of PWM devices allocated by the framework
+  * @can_sleep: must be true if the .config(), .enable() or .disable()
+  *             operations may sleep
++ *
++ * @pinctrl: Pointer to the a pinctrl for the dev
++ * @state_default: We'll apply this when a PWM is disabled
++ * @state_active: We'll apply this when a PWM is enabled
+  */
+ struct pwm_chip {
+ 	struct device		*dev;
+@@ -176,6 +180,10 @@ struct pwm_chip {
+ 					    const struct of_phandle_args *args);
+ 	unsigned int		of_pwm_n_cells;
+ 	bool			can_sleep;
++
++	struct pinctrl *pinctrl;
++	struct pinctrl_state *state_default;
++	struct pinctrl_state *state_active;
+ };
+ 
+ #if IS_ENABLED(CONFIG_PWM)
 -- 
-Nicolas Ferre
+2.1.0.rc2.206.gedb03e5
+
