@@ -1,81 +1,80 @@
-From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v5 05/11] drm: add Atmel HLCDC Display Controller
- support
-Date: Tue, 23 Sep 2014 09:24:36 +0200
-Message-ID: <20140923092436.12b1f2c4@bbrezillon>
-References: <1410165822-16868-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com>
-	<20140922211811.11279ff0@bbrezillon>
-	<20140923063232.GG30514@ulmo>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: quick help on PDM DAC driver
+Date: Tue, 23 Sep 2014 09:27:53 +0200
+Message-ID: <20140923072752.GK30514@ulmo>
+References: <CAC3mp01MC3SaR8WmcDOXmGaB60eYfifx+YMT8xvxE2L=gZ093A@mail.gmail.com>
+ <20140922112707.GR1470@ulmo>
+ <CAC3mp01gADb-SPJhd9dYwKg2fQgmmeGDQ+xt8qYahRovNSpXMA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="k18oBAwMkTg3OUap"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:54083 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753534AbaIWHYk (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 23 Sep 2014 03:24:40 -0400
-In-Reply-To: <20140923063232.GG30514@ulmo>
+Received: from mail-wi0-f172.google.com ([209.85.212.172]:43832 "EHLO
+	mail-wi0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753337AbaIWH1z (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 23 Sep 2014 03:27:55 -0400
+Received: by mail-wi0-f172.google.com with SMTP id em10so4252220wid.5
+        for <linux-pwm@vger.kernel.org>; Tue, 23 Sep 2014 00:27:54 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <CAC3mp01gADb-SPJhd9dYwKg2fQgmmeGDQ+xt8qYahRovNSpXMA@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org
+To: Naidu Tellapati <naidu.tellapati@gmail.com>
+Cc: linux-pwm@vger.kernel.org
 
-Hi Thierry,
 
-On Tue, 23 Sep 2014 08:32:33 +0200
-Thierry Reding <thierry.reding@gmail.com> wrote:
+--k18oBAwMkTg3OUap
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> On Mon, Sep 22, 2014 at 09:18:11PM +0200, Boris BREZILLON wrote:
-> > On Mon,  8 Sep 2014 10:43:36 +0200 Boris BREZILLON <boris.brezillon@free-electrons.com> wrote:
-> [...]
-> > > diff --git a/drivers/gpu/drm/atmel-hlcdc/Kconfig b/drivers/gpu/drm/atmel-hlcdc/Kconfig
-> > > new file mode 100644
-> > > index 0000000..6d0d785
-> > > --- /dev/null
-> > > +++ b/drivers/gpu/drm/atmel-hlcdc/Kconfig
-> > > @@ -0,0 +1,13 @@
-> > > +config DRM_ATMEL_HLCDC
-> > > +	tristate "DRM Support for ATMEL HLCDC Display Controller"
-> > > +	depends on DRM && OF && MFD_ATMEL_HLCDC && COMMON_CLK
-> > 
-> > I forgot to remove MFD_ATMEL_HLCDC dependency which is now selected...
-> > 
-> > 
-> > > +	select DRM_GEM_CMA_HELPER
-> > > +	select DRM_KMS_HELPER
-> > > +	select DRM_KMS_FB_HELPER
-> > > +	select DRM_KMS_CMA_HELPER
-> > > +	select DRM_PANEL
-> > > +	select MFD_ATMEL_HLCDC
-> > 
-> > here.
-> 
-> Maybe this was discussed earlier, but can you remind me why this was
-> done? The changelog says it was to "simplify", but there's been some
-> recent discussion that select should never be used for symbols that
-> are user-visible because that can lead to issues.
-> 
-> What were the problems having this as "depends on"?
+On Mon, Sep 22, 2014 at 07:28:43PM +0530, Naidu Tellapati wrote:
+> Hi Thierry,
+>=20
+> Many thanks for your continued help in this regard.
+>=20
+> Each bit in my 12-bit input value to the PDM block does not in anyway
+> corresponds to fixed interval. My hardware PDM block works with the
+> following simple logic
+>=20
+> counter [12:0] =3D counter [11:0] + pluse_in [11:0]     /* pulse_in is a
+> 12-bit input value to PDM block */
+> pdm_out =3D counter [12]
+>=20
+> The above logic runs for every pdm_clk cycle.
 
-I had several people complaining about the complexity introduced by
-this dependency scheme: if one wants to select the HLCDC KMS driver, he
-has to select the HLCDC MFD driver first, which is kind of tricky.
+I don't see how this could reasonably fake a PWM. The best you can
+probably get is a 0%, 50% and 100% duty-cycles.
 
-The MFD_ATMEL_HLCDC symbol is now hidden (see patch 1) which should
-solve part of the issue.
+> And hence I am of the opinion that I need to have a Linux PDM
+> Framework which is similar to PWM Framework and which provides
+> pulse_in as device attribute to the Linux User Space.
 
-Now that I have your attention :-), could you review this series [1] ?
-The HLCDC KMS depends on those changes (which you and Laurent
-suggested).
+Given the peculiarity of the device I don't think adding a framework is
+necessary. But you could perhaps add a driver to drivers/misc that
+exposes the pulse_in parameter in sysfs.
 
-Best Regards,
+Thierry
 
-Boris
+--k18oBAwMkTg3OUap
+Content-Type: application/pgp-signature
 
-[1]https://lkml.org/lkml/2014/7/22/300
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+iQIcBAEBAgAGBQJUISD4AAoJEN0jrNd/PrOh/wYQALQQ8dUu4iBylYxDWSMGfeqc
+7D5SFTnwGpGPJOlaPwEXoqejwwbltDVOdvAaY4pshAWgKvWmpCv3qJUY2s7nj42m
+pkMg/GBr6JRiRoEVR1k/Ealx7ogRG1cXbH+L9FyntiNPlTxDQnDSrCxoU+wn/B6a
+awMMxTMSblv8nbWUu/CijOMGjqtFCP+mJKpQEUOLC8CCehBq+2oLqliSY+vr5Bql
+KNYneY/1KAAw5INpSIfYqFdKbHhFoX5yfzk/NMjiMPS+2UVNvjX5qqbNS6w6tx8j
+rvUAmKRLeNz7H9tdhlp5ZDW0TAYyXR72XAxHJaqtY8SOabL+stu27vc69fh5YOLp
+itEjDf6tysO82ZF1aj8b3C3qqwu3sHW/eEwE6Lwl3hK4zBIRede41pJbDXkRYDAf
++B281139+45MleJ/EGkBwyn8Oj0dmOJUnoWLyxwbsKGrP3lR77qGV/uzUIhTi0GH
+TG+6hIA4K9c0PLAPU+zmgOpBopq8r78ulmkD5wBzGkNvg1XpX1duCdZH+V7V31Tz
+3iSXHO1gXG+JO6HEiIDBFc5ADDbwZC4gydUa/zpXm6Mhq6TQkxYkWj9VXszq3DlZ
+UMCsjvZtRczurx2TEmLqqYt4pknEtMd+J/uR1YKqheRNyiBJJMc+hPiFy9U851Nn
+qfb2px8qS/ozUfc3q1zg
+=GFYS
+-----END PGP SIGNATURE-----
+
+--k18oBAwMkTg3OUap--
