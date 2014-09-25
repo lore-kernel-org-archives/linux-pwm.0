@@ -1,86 +1,81 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [RFC PATCH] pwm: Add the concept of an "active" pinctrl
-Date: Thu, 25 Sep 2014 09:31:55 +0200
-Message-ID: <CACRpkdbQ_21BcaK9T8aTHoDdXQpb-6KKZwcJzJJdBK0ztcG=ww@mail.gmail.com>
-References: <1411514246-6163-1-git-send-email-dianders@chromium.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/1] PWM-atmel: Fixed a bug which set the pwm clock
+ prescaler incorrectly. In the defect code the prescaler was always one more
+ than expected value, which resulted in the pwm output with wrong frequency
+ and duty cycle.
+Date: Thu, 25 Sep 2014 09:55:09 +0200
+Message-ID: <20140925075508.GB11843@ulmo>
+References: <1410384919-41303-1-git-send-email-ryang@hach.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="WYTEVAkct0FjGQmd"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1411514246-6163-1-git-send-email-dianders@chromium.org>
+Content-Disposition: inline
+In-Reply-To: <1410384919-41303-1-git-send-email-ryang@hach.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Doug Anderson <dianders@chromium.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Brown <broonie@kernel.org>, Lee Jones <lee.jones@linaro.org>, Chris Zhong <zyw@rock-chips.com>, Heiko Stuebner <heiko@sntech.de>, Sonny Rao <sonnyrao@chromium.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: hachyang@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, ryang <ryang@hach.com>, Nikolaus Voss <n.voss@weinmann-emt.de>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Sep 24, 2014 at 1:17 AM, Doug Anderson <dianders@chromium.org> wrote:
 
-> There are cases where you really don't want a PWM's pinctrl to take
-> effect until you know that the PWM is driving at the proper rate.  A
-> good example of this is a PWM-controlled regulator, where the boot
-> state of the pin (maybe a pulled down input) could cause a vastly
-> different voltage to take effect than having the pin setup as a PWM
-> but not having the PWM enabled yet.
->
-> Let's add a feature where you can define an "active" pinctrl state.
-> This state (if it exists) will be applied after the PWM has actually
-> been enabled.  If the PWM is ever disabled we'll go back to "default"
-> state.
->
-> Signed-off-by: Doug Anderson <dianders@chromium.org>
+--WYTEVAkct0FjGQmd
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Sep 10, 2014 at 03:35:19PM -0600, hachyang@gmail.com wrote:
+> From: ryang <ryang@hach.com>
+>=20
+> Signed-off-by: ryang <ryang@hach.com>
 > ---
-> I'm sure Linus W or Thierry or Mark will tell me this is an idiotic
-> idea (or totally the wrong way to do it), but I figured I'd float it
-> out there and maybe someone can tell me something better to do.  ;)
+>  drivers/pwm/pwm-atmel.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+> index 6e700a5..2dca0bf 100644
+> --- a/drivers/pwm/pwm-atmel.c
+> +++ b/drivers/pwm/pwm-atmel.c
+> @@ -128,7 +128,8 @@ static int atmel_pwm_config(struct pwm_chip *chip, st=
+ruct pwm_device *pwm,
+>  			return -EINVAL;
+>  		}
+>  	}
+> -
+> +	/* Need to reduce the prescaler by 1 */
+> +	pres--;
+>  	/* Calculate the duty cycles */
+>  	prd =3D div;
+>  	div *=3D duty_ns;
+> --=20
+> 1.9.1
 
-Hey it's not like this is obvious or anything....
+I think this was fixed by a different patch by Nikolaus in a more direct
+way, see: https://lkml.org/lkml/2014/9/24/28
 
-The device core will handle three states for you: "default", "sleep", "idle".
+I've pushed that patch to the for-next branch of the PWM tree. Can you
+verify that the issue you were seeing is gone?
 
-What I worry about in this patch is that you redefine the meaning
-of "default" from what it used to be into "sleep", basically, that
-you want the device to come up in a relaxed mode, whereas
-the "default" state is usually defined as "ready to go", i.e. what
-you refer to as "active".
+Thierry
 
-If you choose this approach, it is better to not define the "default"
-state *at all*, just define "active" and "sleep" and/or "idle".
-(The difference between the two latter is basically the same
-semantic as suspend vs runtime suspend.)
+--WYTEVAkct0FjGQmd
+Content-Type: application/pgp-signature
 
-We have some helpers in the device core to help getting
-things right.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-Inspecting the helper code in drivers/base/pinctrl.c you will find
-that if the "default" state is defined it will be retrieved and
-activated on boot, so you don't have to do this yourself. Then
-if "sleep" and "idle" exist, these will be grabbed and made
-accessible using special helper functions.
+iQIcBAEBAgAGBQJUI8pcAAoJEN0jrNd/PrOh+OwQALGSQB07KaYP/0qgVVHzAFbg
+wX++lMeo+XVW4Jp2PEixLLsLK2C3/65btup+nTRDvtOno85xCnrKnyNvs30bUSyW
+xUZggPU9HVG9C1g+ON/Sj9YZbody3AgALlwxi3n/PbFPPWpUsciD1MMVVaCbMgdL
+MAXsAOXvWbXWx/DYpA70QXle63oaffewBV9bdgvJYwgEnjh9bB23yI+ekMHFtnrh
+rVXVzzbH/8/sF8btx+s+sXhGRrXVW8cKS7JulgqdeV9pIAZjn5bPGHXezRgJ9nl8
+E/TnDbjk/kG6w73C/LwflTOoSTy8CBy3tUOErXAHTjPV1vPtnQ4O1w/HFcJRBs/p
+aG+RMWetKrLY2WgJYChRUCD9UcMQ1GHXAjQ/0XShW0GjTBU67J0i1e7jSExkQPp7
+VR79+EqnIKs3x+S1VxvPREUNDpS7uv+S5CS+2rk3HwznEuZL0XBZo4+zHggw/4f8
+k8mkiYnc9s/2mTjygqrep3Z0cl4YCMPr8DZ/6TqEBaCqWqVuUA5V5BHJAaa0W30c
+nPKuLn/1LgeCeOpuy13wX3E01nLjsQZjUK4KLLj6QWmlbiUjCwL6+panHd81an2q
+XD9l0MiZZu1Ik7KouFOSnCy3koOBir9T52bSG4YpNxOZbarenUCKxGmhoUDfAy6s
+L5O4PE5XHn3qeB2tmzP2
+=KDV+
+-----END PGP SIGNATURE-----
 
-I would actually prefer, if it is not causing any trouble, to have
-the same semantics as the core expects, then have the driver
-do something like this in probe():
-
-probe():
-   pinctrl_pm_select_sleep_state(dev);
-
-This means the device will be pushed to "default" before
-it's probed, then set to sleep quickly after that. It requires that
-CONFIG_PM is enabled for the platform, too. (As you can see
-in drivers/base/pinctrl.c)
-
-Then when you want it back into "active", i.e. "default" mode
-use the pinctrl_pm_select_default_state(dev);
-
-I realize that this means that you will end up with a transient
-state where the pins are in "default" mode before probe
-commence. If this is a big problem, yeah, then you have to
-go for custom states. But then the "default" state should not
-be defined at all, instead call them something unique like
-"active" and "relaxed" or so, so you don't overrun states already
-used by the pinctrl core. Then all confusion is gone.
-
-The "default" state was added with the assumption that most
-drivers want their pins to be in "ready to go" mode by default.
-
-Yours,
-Linus Walleij
+--WYTEVAkct0FjGQmd--
