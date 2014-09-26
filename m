@@ -1,99 +1,131 @@
-From: Stephen Warren <swarren@wwwdotorg.org>
-Subject: Re: [resend rfc v3] pwm: add BCM2835 PWM driver
-Date: Fri, 26 Sep 2014 08:45:57 -0600
-Message-ID: <54257C25.2000308@wwwdotorg.org>
-References: <1398689686-30317-1-git-send-email-bart.tanghe@thomasmore.be> <20140825131908.GG4163@ulmo.nvidia.com> <5408395E.2030305@thomasmore.be> <54088008.9080200@wwwdotorg.org> <20140926071109.GA31106@ulmo>
+From: Rob Clark <robdclark@gmail.com>
+Subject: Re: [PATCH v5 05/11] drm: add Atmel HLCDC Display Controller support
+Date: Fri, 26 Sep 2014 17:10:49 -0400
+Message-ID: <CAF6AEGup9qvivbcovHBrf6me-sStrK_jaBTd5ofohCS9DfRV4g@mail.gmail.com>
+References: <1410165822-16868-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from avon.wwwdotorg.org ([70.85.31.133]:45111 "EHLO
-	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754676AbaIZOpc (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 26 Sep 2014 10:45:32 -0400
-In-Reply-To: <20140926071109.GA31106@ulmo>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, Ian Campbell <ijc+devicetree@hellion.org.uk>, Samuel Ortiz <sameo@linux.intel.com>, Pawel Moll <pawel.moll@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Rob Herring <robh+dt@kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Andrew Victor <linux@maxim.org.za>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Bart Tanghe <bart.tanghe@thomasmore.be>, tim.kryger@linaro.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
 
-On 09/26/2014 01:11 AM, Thierry Reding wrote:
-> On Thu, Sep 04, 2014 at 09:06:48AM -0600, Stephen Warren wrote:
->> On 09/04/2014 04:05 AM, Bart Tanghe wrote:
->>> No problem. Thanks for the feedback.
->>> I've got some question below.
->>>
->>> On 2014-08-25 15:19, Thierry Reding wrote:
->>>> Sorry for taking so long to reply to this, I had completely forgotten.
->>>>
->>>> On Mon, Apr 28, 2014 at 02:54:46PM +0200, Bart Tanghe wrote:
->>>>> 	Add some better error handling and Device table support
->>>>> 	Added Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
->>>>> 	
->>>>> Signed-off-by: Bart Tanghe <bart.tanghe@thomasmore.be>
->>
->>>>> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->>>>> index 22f2f28..20341a3 100644
->>>>> --- a/drivers/pwm/Kconfig
->>>>> +++ b/drivers/pwm/Kconfig
->>>>> @@ -62,6 +62,18 @@ config PWM_ATMEL_TCB
->>>>>   	  To compile this driver as a module, choose M here: the module
->>>>>   	  will be called pwm-atmel-tcb.
->>>>>
->>>>> +config PWM_BCM2835
->>>>> +	tristate "BCM2835 PWM support"
->>>>> +	depends on MACH_BCM2835 || MACH_BCM2708
->>>>> +	help
->>>>> +	  PWM framework driver for BCM2835 controller (raspberry pi)
->>>>
->>>> I think the correct capitalization would be "Raspberry Pi".
->>>>
->>>>> +	  Only 1 channel is implemented.
->>>>
->>>> How many can it take? Why haven't all been implemented?
->>>
->>> BCM2835 can take 2 pwm channels.
->>> I can implement 2 channels but can't physically test the second channel. Is that a problem?
->>
->> I don't think that's a problem; I would expect the channels to be identical,
->> so testing 1 should be fine.
+On Mon, Sep 8, 2014 at 4:43 AM, Boris BREZILLON
+<boris.brezillon@free-electrons.com> wrote:
+> The Atmel HLCDC (HLCD Controller) IP available on some Atmel SoCs (i.e.
+> at91sam9n12, at91sam9x5 family or sama5d3 family) provides a display
+> controller device.
 >
-> Agreed. If it turns out not to work it can always be fixed.
+> This display controller supports at least one primary plane and might
+> provide several overlays and an hardware cursor depending on the IP
+> version.
 >
->>>> I notice that you never prepare or enable the clock here. Perhaps this
->>>> isn't required because it's always on, but I think you should still call
->>>> clk_prepare_enable() here (and clk_disable_unprepare() in .remove()) to
->>>> make sure the driver is more portable.
->>> The frequency can be minimized by a clock_divider ( the pwm clock is default disabled). this has to be done by
->>> a clock driver, as mentioned in a previous comment by Stephen Warren.
->>>
->>> Any clock programming should be performed by a clock driver. We don't
->>> have one of those upstream yet, mainly because it would rely on talking
->>> to the firmware (running on the VideoCore) to manipulate the clocks, and
->>> we don't have a firmware protocol driver either.
->>>
->>> Nowadays, I'm using a userspace program to change the clock_divider, but would like to implement this in a clock driver.
->>> The clock hardware description isn't implemented in the datasheet. I can convert the userspace prog to a clock driver but this is very experimental.
->>> If anyone has some suggestions?
->>
->> Oh dear. It sounds like we need at least some form of clock driver for the
->> platform then. I still don't think there's complete documentation for the
->> HW, even though a lot of register docs were published which presumably cover
->> the clock HW? Equally, given that the VC firmware assumes it owns most of
->> the HW, it seems best to manipulate the clocks through the firmware
->> interface rather than directly touching the HW. Unfortunately, I don't
->> believe there's any ABI guarantee on the firmware interface. Perhaps we can
->> get one?
+> At the moment, this driver only implements an RGB connector to interface
+> with LCD panels, but support for other kind of external devices might be
+> added later.
 >
-> Urgs... this VC firmware seems to be more of a headache that I thought
-> it was. How is this handled in other drivers? Surely PWM isn't the first
-> one that needs clocks?
+> Signed-off-by: Boris BREZILLON <boris.brezillon@free-electrons.com>
+> Tested-by: Ludovic Desroches <ludovic.desroches@atmel.com>
 
-For the other clocks, I've set up dummy fixed-rate clocks in the DT 
-and/or "clock driver" code to satisfy references by phandle or clock 
-name respectively. Since the other drivers don't actually manipulate the 
-clock rates etc., this is enough for the drivers.
+A few small comments below, but with those addressed it has my
 
-I always hoped that enough HW information would either be reverse 
-engineered or released to somehow disable the VC firmware, and implement 
-all the drivers within Linux talking to HW directly.
+Reviewed-by: Rob Clark <robdclark@gmail.com>
+
+
+> ---
+>  drivers/gpu/drm/Kconfig                          |   2 +
+>  drivers/gpu/drm/Makefile                         |   1 +
+>  drivers/gpu/drm/atmel-hlcdc/Kconfig              |  13 +
+>  drivers/gpu/drm/atmel-hlcdc/Makefile             |   7 +
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c   | 286 ++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c     | 488 +++++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h     | 224 ++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.c  | 656 ++++++++++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.h  | 403 +++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_output.c | 476 +++++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_plane.c  | 836 +++++++++++++++++++++++
+>  11 files changed, 3392 insertions(+)
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/Kconfig
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/Makefile
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.h
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_output.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_plane.c
+>
+
+[snip]
+
+> +
+> +/**
+> + * Atmel HLCDC plane rotation enum
+> + *
+> + * TODO: export DRM_ROTATE_XX macros defined by omap driver and use them
+> + * instead of defining this enum.
+> + */
+> +enum atmel_hlcdc_plane_rotation {
+> +       ATMEL_HLCDC_PLANE_NO_ROTATION,
+> +       ATMEL_HLCDC_PLANE_90DEG_ROTATION,
+> +       ATMEL_HLCDC_PLANE_180DEG_ROTATION,
+> +       ATMEL_HLCDC_PLANE_270DEG_ROTATION,
+> +};
+
+DRM_ROTATE_* are already in drm_crtc.h
+
+[snip]
+
+> +static int atmel_hlcdc_rgb_mode_valid(struct drm_connector *connector,
+> +                                     struct drm_display_mode *mode)
+> +{
+> +       return MODE_OK;
+> +}
+
+your _mode_valid() should perhaps somehow check the constraints in
+atmel_hlcdc_crtc_mode_set()?  This way invalid modes get filtered out
+earlier..
+
+[snip]
+
+> +static struct atmel_hlcdc_plane_properties *
+> +atmel_hlcdc_plane_create_properties(struct drm_device *dev)
+> +{
+> +       struct atmel_hlcdc_plane_properties *props;
+> +       const struct drm_prop_enum_list rotations[] = {
+> +               { ATMEL_HLCDC_PLANE_NO_ROTATION,   "rotate-0" },
+> +               { ATMEL_HLCDC_PLANE_90DEG_ROTATION,  "rotate-90" },
+> +               { ATMEL_HLCDC_PLANE_180DEG_ROTATION, "rotate-180" },
+> +               { ATMEL_HLCDC_PLANE_270DEG_ROTATION, "rotate-270" },
+> +       };
+> +
+
+you could just use drm_mode_create_rotation_property() now
+
+
+> +       props = devm_kzalloc(dev->dev, sizeof(*props), GFP_KERNEL);
+> +       if (!props)
+> +               return ERR_PTR(-ENOMEM);
+> +
+> +       props->alpha = drm_property_create_range(dev, 0, "alpha", 0, 255);
+> +       if (!props->alpha)
+> +               return ERR_PTR(-ENOMEM);
+> +
+> +       props->rotation = drm_property_create_enum(dev, 0, "rotation",
+> +                                               rotations,
+> +                                               ARRAY_SIZE(rotations));
+> +       return props;
+> +}
+> +
