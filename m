@@ -1,21 +1,23 @@
-From: Bart Tanghe <bart.tanghe@thomasmore.be>
+From: Stephen Warren <swarren@wwwdotorg.org>
 Subject: Re: [resend rfc v3] pwm: add BCM2835 PWM driver
-Date: Fri, 26 Sep 2014 12:06:52 +0200
-Message-ID: <54253ABC.40802@thomasmore.be>
+Date: Fri, 26 Sep 2014 08:45:57 -0600
+Message-ID: <54257C25.2000308@wwwdotorg.org>
 References: <1398689686-30317-1-git-send-email-bart.tanghe@thomasmore.be> <20140825131908.GG4163@ulmo.nvidia.com> <5408395E.2030305@thomasmore.be> <54088008.9080200@wwwdotorg.org> <20140926071109.GA31106@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from avon.wwwdotorg.org ([70.85.31.133]:45111 "EHLO
+	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754676AbaIZOpc (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 26 Sep 2014 10:45:32 -0400
 In-Reply-To: <20140926071109.GA31106@ulmo>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Stephen Warren <swarren@wwwdotorg.org>
-Cc: tim.kryger@linaro.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Bart Tanghe <bart.tanghe@thomasmore.be>, tim.kryger@linaro.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
 
-
-
-On 2014-09-26 09:11, Thierry Reding wrote:
+On 09/26/2014 01:11 AM, Thierry Reding wrote:
 > On Thu, Sep 04, 2014 at 09:06:48AM -0600, Stephen Warren wrote:
 >> On 09/04/2014 04:05 AM, Bart Tanghe wrote:
 >>> No problem. Thanks for the feedback.
@@ -35,8 +37,8 @@ On 2014-09-26 09:11, Thierry Reding wrote:
 >>>>> --- a/drivers/pwm/Kconfig
 >>>>> +++ b/drivers/pwm/Kconfig
 >>>>> @@ -62,6 +62,18 @@ config PWM_ATMEL_TCB
->>>>>  	  To compile this driver as a module, choose M here: the module
->>>>>  	  will be called pwm-atmel-tcb.
+>>>>>   	  To compile this driver as a module, choose M here: the module
+>>>>>   	  will be called pwm-atmel-tcb.
 >>>>>
 >>>>> +config PWM_BCM2835
 >>>>> +	tristate "BCM2835 PWM support"
@@ -55,9 +57,9 @@ On 2014-09-26 09:11, Thierry Reding wrote:
 >>
 >> I don't think that's a problem; I would expect the channels to be identical,
 >> so testing 1 should be fine.
-> 
+>
 > Agreed. If it turns out not to work it can always be fixed.
-> 
+>
 >>>> I notice that you never prepare or enable the clock here. Perhaps this
 >>>> isn't required because it's always on, but I think you should still call
 >>>> clk_prepare_enable() here (and clk_disable_unprepare() in .remove()) to
@@ -82,23 +84,16 @@ On 2014-09-26 09:11, Thierry Reding wrote:
 >> interface rather than directly touching the HW. Unfortunately, I don't
 >> believe there's any ABI guarantee on the firmware interface. Perhaps we can
 >> get one?
-> 
+>
 > Urgs... this VC firmware seems to be more of a headache that I thought
 > it was. How is this handled in other drivers? Surely PWM isn't the first
 > one that needs clocks?
-> 
-I've looked at the i2c, spi and uart clocks. They seems default enabled, or enabled at boot by the firmware.
-The clock dividers are accessible in the address range of the block in contrast to the pwm clock.
-In the firmware documentation, I can't find any reference to the pwm clock.
->>>>> +static const struct of_device_id bcm2835_pwm_of_match[] = {
->>>>> +	{ .compatible = "bcrm,pwm-bcm2835", },
->>>>
->>>> s/bcrm/brcm/
->>
->> Probably swap the order, so "brcm,bcm2835-pwm". That would be consistent
->> with all the other HW on this SoC.
-> 
-> Yes, please.
-> 
-> Thierry
-> 
+
+For the other clocks, I've set up dummy fixed-rate clocks in the DT 
+and/or "clock driver" code to satisfy references by phandle or clock 
+name respectively. Since the other drivers don't actually manipulate the 
+clock rates etc., this is enough for the drivers.
+
+I always hoped that enough HW information would either be reverse 
+engineered or released to somehow disable the VC firmware, and implement 
+all the drivers within Linux talking to HW directly.
