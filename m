@@ -1,104 +1,133 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH v6 08/11] ARM: AT91/dt: add alternative pin muxing for sama5d3
- lcd pins
-Date: Mon, 29 Sep 2014 16:44:21 +0200
-Message-ID: <1412001864-3251-9-git-send-email-boris.brezillon@free-electrons.com>
-References: <1412001864-3251-1-git-send-email-boris.brezillon@free-electrons.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: Re: [resend rfc v4]pwm: add BCM2835 PWM driver
+Date: Mon, 29 Sep 2014 17:21:27 +0200
+Message-ID: <542978F7.5030405@pengutronix.de>
+References: <1412001619-30001-1-git-send-email-bart.tanghe@thomasmore.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1412001864-3251-1-git-send-email-boris.brezillon@free-electrons.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Rob Clark <robdclark@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Kumar Gala <galak@codeaurora.org>, linux-arm-kernel@lists.infradead.org, Mark Yao <mark.yao@rock-chips.com>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="iF6iCCHuSwDQrkSjUVBaut6ROGfWMCiOg"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:57791 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754054AbaI2PWB (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 29 Sep 2014 11:22:01 -0400
+In-Reply-To: <1412001619-30001-1-git-send-email-bart.tanghe@thomasmore.be>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Bart Tanghe <bart.tanghe@thomasmore.be>, thierry.reding@gmail.com
+Cc: matt.porter@linaro.org, linux-rpi-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--iF6iCCHuSwDQrkSjUVBaut6ROGfWMCiOg
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Define alternative pin muxing for the LCDC pins.
+On 09/29/2014 04:40 PM, Bart Tanghe wrote:
+> +static int bcm2835_pwm_probe(struct platform_device *pdev)
+> +{
+> +	struct bcm2835_pwm *pwm;
+> +	int ret;
+> +	struct resource *r;
+> +	struct clk *clk;
+> +
+> +	pwm =3D devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
+> +	if (!pwm)
+> +		return -ENOMEM;
+> +
+> +	pwm->dev =3D &pdev->dev;
+> +
+> +	clk =3D clk_get(&pdev->dev, NULL);
 
-Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-Tested-by: Anthony Harivel <anthony.harivel@emtrion.de>
----
- arch/arm/boot/dts/sama5d3_lcd.dtsi | 50 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+Better use devm_, as you don't free the clock in case of an error and
+during remove()
 
-diff --git a/arch/arm/boot/dts/sama5d3_lcd.dtsi b/arch/arm/boot/dts/sama5d3_lcd.dtsi
-index 2186b89..e7581f6 100644
---- a/arch/arm/boot/dts/sama5d3_lcd.dtsi
-+++ b/arch/arm/boot/dts/sama5d3_lcd.dtsi
-@@ -82,6 +82,28 @@
- 							 AT91_PIOA 13 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD13 pin */
- 							 AT91_PIOA 14 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD14 pin */
- 							 AT91_PIOA 15 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD15 pin */
-+							 AT91_PIOA 16 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD16 pin */
-+							 AT91_PIOA 17 AT91_PERIPH_A AT91_PINCTRL_NONE>;	/* LCDD17 pin */
-+					};
-+
-+					pinctrl_lcd_rgb666_alt: lcd-rgb-2-alt {
-+						atmel,pins =
-+							<AT91_PIOA 0 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD0 pin */
-+							 AT91_PIOA 1 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD1 pin */
-+							 AT91_PIOA 2 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD2 pin */
-+							 AT91_PIOA 3 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD3 pin */
-+							 AT91_PIOA 4 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD4 pin */
-+							 AT91_PIOA 5 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD5 pin */
-+							 AT91_PIOA 6 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD6 pin */
-+							 AT91_PIOA 7 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD7 pin */
-+							 AT91_PIOA 8 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD8 pin */
-+							 AT91_PIOA 9 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD9 pin */
-+							 AT91_PIOA 10 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD10 pin */
-+							 AT91_PIOA 11 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD11 pin */
-+							 AT91_PIOA 12 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD12 pin */
-+							 AT91_PIOA 13 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD13 pin */
-+							 AT91_PIOA 14 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD14 pin */
-+							 AT91_PIOA 15 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD15 pin */
- 							 AT91_PIOC 14 AT91_PERIPH_C AT91_PINCTRL_NONE	/* LCDD16 pin */
- 							 AT91_PIOC 13 AT91_PERIPH_C AT91_PINCTRL_NONE>;	/* LCDD17 pin */
- 					};
-@@ -104,6 +126,34 @@
- 							 AT91_PIOA 13 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD13 pin */
- 							 AT91_PIOA 14 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD14 pin */
- 							 AT91_PIOA 15 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD15 pin */
-+							 AT91_PIOA 16 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD16 pin */
-+							 AT91_PIOA 17 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD17 pin */
-+							 AT91_PIOA 18 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD18 pin */
-+							 AT91_PIOA 19 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD19 pin */
-+							 AT91_PIOA 20 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD20 pin */
-+							 AT91_PIOA 21 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD21 pin */
-+							 AT91_PIOA 22 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD22 pin */
-+							 AT91_PIOA 23 AT91_PERIPH_A AT91_PINCTRL_NONE>;	/* LCDD23 pin */
-+					};
-+
-+					pinctrl_lcd_rgb888_alt: lcd-rgb-3-alt {
-+						atmel,pins =
-+							<AT91_PIOA 0 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD0 pin */
-+							 AT91_PIOA 1 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD1 pin */
-+							 AT91_PIOA 2 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD2 pin */
-+							 AT91_PIOA 3 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD3 pin */
-+							 AT91_PIOA 4 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD4 pin */
-+							 AT91_PIOA 5 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD5 pin */
-+							 AT91_PIOA 6 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD6 pin */
-+							 AT91_PIOA 7 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD7 pin */
-+							 AT91_PIOA 8 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD8 pin */
-+							 AT91_PIOA 9 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD9 pin */
-+							 AT91_PIOA 10 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD10 pin */
-+							 AT91_PIOA 11 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD11 pin */
-+							 AT91_PIOA 12 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD12 pin */
-+							 AT91_PIOA 13 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD13 pin */
-+							 AT91_PIOA 14 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD14 pin */
-+							 AT91_PIOA 15 AT91_PERIPH_A AT91_PINCTRL_NONE	/* LCDD15 pin */
- 							 AT91_PIOC 14 AT91_PERIPH_C AT91_PINCTRL_NONE	/* LCDD16 pin */
- 							 AT91_PIOC 13 AT91_PERIPH_C AT91_PINCTRL_NONE	/* LCDD17 pin */
- 							 AT91_PIOC 12 AT91_PERIPH_C AT91_PINCTRL_NONE	/* LCDD18 pin */
--- 
-1.9.1
+> +	if (IS_ERR(clk)) {
+> +		dev_err(&pdev->dev, "no clock found: %ld\n", PTR_ERR(clk));
+> +		return PTR_ERR(clk);
+> +	}
+> +
+> +	pwm->clk =3D clk;
+> +	clk_prepare_enable(pwm->clk);
+
+Please check the return value of clk_prepare_enable()
+
+> +	pwm->scaler =3D NSEC_PER_SEC / clk_get_rate(clk);
+> +
+> +	r =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	pwm->base =3D devm_ioremap_resource(&pdev->dev, r);
+> +	if (IS_ERR(pwm->base))
+> +		return PTR_ERR(pwm->base);
+> +
+> +	pwm->chip.dev =3D &pdev->dev;
+> +	pwm->chip.ops =3D &bcm2835_pwm_ops;
+> +	pwm->chip.npwm =3D 2;
+> +
+> +	ret =3D pwmchip_add(&pwm->chip);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+> +		return -1;
+
+Please propagate the error vlaue:
+
+    return ret;
+
+> +	}
+> +	platform_set_drvdata(pdev, pwm);
+
+Better do this before pwmchip_add()
+
+> +	return 0;
+> +}
+> +
+> +static int bcm2835_pwm_remove(struct platform_device *pdev)
+> +{
+> +	struct bcm2835_pwm *pc =3D platform_get_drvdata(pdev);
+> +	clk_disable_unprepare(pc->clk);
+> +	return pwmchip_remove(&pc->chip);
+> +}
+> +
+> +static const struct of_device_id bcm2835_pwm_of_match[] =3D {
+> +	{ .compatible =3D "brcm,bcm2835-pwm", },
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, bcm2835_pwm_of_match);
+> +
+> +static struct platform_driver bcm2835_pwm_driver =3D {
+> +	.driver =3D {
+> +		.name =3D "bcm2835-pwm",
+> +		.of_match_table =3D bcm2835_pwm_of_match,
+> +	},
+> +	.probe =3D bcm2835_pwm_probe,
+> +	.remove =3D bcm2835_pwm_remove,
+> +};
+> +module_platform_driver(bcm2835_pwm_driver);
+> +
+> +MODULE_AUTHOR("Bart Tanghe <bart.tanghe@thomasmore.be");
+> +MODULE_DESCRIPTION("Broadcom BCM2835 PWM driver");
+> +MODULE_LICENSE("GPL v2");
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+
+
+--iF6iCCHuSwDQrkSjUVBaut6ROGfWMCiOg
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlQpePcACgkQjTAFq1RaXHNQnwCfQEUOMCnhCfn0IolMHzvmoCBw
+EKIAniPg3OwYZnTyKgZ8FhA2JA9QYAho
+=HeOA
+-----END PGP SIGNATURE-----
+
+--iF6iCCHuSwDQrkSjUVBaut6ROGfWMCiOg--
