@@ -1,53 +1,92 @@
-From: Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH v5 05/11] drm: add Atmel HLCDC Display Controller support
-Date: Sat, 27 Sep 2014 23:52:44 -0400
-Message-ID: <CAF6AEGsa37H8B6YpQZ2ZBNhF1kJ-TX=jbcrd1VqXCrX1ZNADFw@mail.gmail.com>
-References: <1410165822-16868-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1410165822-16868-6-git-send-email-boris.brezillon@free-electrons.com>
-	<CAF6AEGup9qvivbcovHBrf6me-sStrK_jaBTd5ofohCS9DfRV4g@mail.gmail.com>
-	<20140927221255.58f4d14d@bbrezillon>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [resend rfc v3] pwm: add BCM2835 PWM driver
+Date: Mon, 29 Sep 2014 07:33:13 +0200
+Message-ID: <20140929053311.GA12506@ulmo>
+References: <1398689686-30317-1-git-send-email-bart.tanghe@thomasmore.be>
+ <20140825131908.GG4163@ulmo.nvidia.com>
+ <5408395E.2030305@thomasmore.be>
+ <54088008.9080200@wwwdotorg.org>
+ <20140926071109.GA31106@ulmo>
+ <54257C25.2000308@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="9jxsPFA5p3P2qPhR"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ie0-f179.google.com ([209.85.223.179]:52950 "EHLO
-	mail-ie0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752180AbaI1Dwp (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sat, 27 Sep 2014 23:52:45 -0400
-In-Reply-To: <20140927221255.58f4d14d@bbrezillon>
+Received: from mail-wi0-f176.google.com ([209.85.212.176]:57242 "EHLO
+	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750768AbaI2FdR (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 29 Sep 2014 01:33:17 -0400
+Content-Disposition: inline
+In-Reply-To: <54257C25.2000308@wwwdotorg.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Cc: David Airlie <airlied@linux.ie>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Pawel Moll <pawel.moll@arm.com>, Ludovic Desroches <ludovic.desroches@atmel.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Rob Herring <robh+dt@kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Bo Shen <voice.shen@atmel.com>, Kumar Gala <galak@codeaurora.org>
-
-On Sat, Sep 27, 2014 at 4:12 PM, Boris BREZILLON
-<boris.brezillon@free-electrons.com> wrote:
->> > +static int atmel_hlcdc_rgb_mode_valid(struct drm_connector *connector,
->> > +                                     struct drm_display_mode *mode)
->> > +{
->> > +       return MODE_OK;
->> > +}
->>
->> your _mode_valid() should perhaps somehow check the constraints in
->> atmel_hlcdc_crtc_mode_set()?  This way invalid modes get filtered out
->> earlier..
->
-> I'm not sure, the test done in atmel_hlcdc_crtc_mode_set are not
-> connector related, but rather imposed by the display controller
-> limitations.
-> Anyway, let me know if you still think I should move those tests in the
-> connector mode_valid implementation.
+To: Stephen Warren <swarren@wwwdotorg.org>
+Cc: Bart Tanghe <bart.tanghe@thomasmore.be>, tim.kryger@linaro.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
 
 
-it gets a bit tricky if you have multiple crtc with different
-constants which can be hooked to any connector (which I'm not sure if
-that is the case here).. but for sure if you can eliminate modes that
-cannot possibly work regardless of the crtc chosen, that is a good
-thing.
+--9jxsPFA5p3P2qPhR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-So you may have to preserve the checks in the crtc.. but if you can
-filter anything that is completely impossible in the connector, you
-should.
+On Fri, Sep 26, 2014 at 08:45:57AM -0600, Stephen Warren wrote:
+> On 09/26/2014 01:11 AM, Thierry Reding wrote:
+> >On Thu, Sep 04, 2014 at 09:06:48AM -0600, Stephen Warren wrote:
+[...]
+> >>Oh dear. It sounds like we need at least some form of clock driver for =
+the
+> >>platform then. I still don't think there's complete documentation for t=
+he
+> >>HW, even though a lot of register docs were published which presumably =
+cover
+> >>the clock HW? Equally, given that the VC firmware assumes it owns most =
+of
+> >>the HW, it seems best to manipulate the clocks through the firmware
+> >>interface rather than directly touching the HW. Unfortunately, I don't
+> >>believe there's any ABI guarantee on the firmware interface. Perhaps we=
+ can
+> >>get one?
+> >
+> >Urgs... this VC firmware seems to be more of a headache that I thought
+> >it was. How is this handled in other drivers? Surely PWM isn't the first
+> >one that needs clocks?
+>=20
+> For the other clocks, I've set up dummy fixed-rate clocks in the DT and/or
+> "clock driver" code to satisfy references by phandle or clock name
+> respectively. Since the other drivers don't actually manipulate the clock
+> rates etc., this is enough for the drivers.
 
+Given that this driver only queries the clock frequency adding a fixed-
+rate clock to the device tree should work as well. Then the calls to
+clk_prepare_enable() and clk_disable_unprepare() can still be added as
+appropriate so that the driver doesn't need to change if a proper clock
+driver ever gets added.
 
-BR,
--R
+Or am I missing anything? Perhaps the issue is that the default clock
+rate for the PWM clock isn't usable? That would still not prevent the
+driver from being merged.
+
+Thierry
+
+--9jxsPFA5p3P2qPhR
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJUKO8XAAoJEN0jrNd/PrOh5r0QALGyUv9fqekpXBnZNdhd5dM8
+YPUMhcZHWQljsd7sPldFzN735SEM40+wm6akUSmFQsfWmdcavI80duw7p1g0D2r5
+/PdkBdJf70c7SQFseSIq9s6nkNvZgJ2nFEaqTw60q/z9MZPhknBOnVsu6L1nZFWR
+VWLM84wv8Ux53yACZIyeEBHvZaWG23jkDzr+G3Xp4IcwsbTC6b7KcFktmzQDcYit
+ICmDx+499q+PHcBYBFZC/ag8RG/EZagzC6N66geutJ75f+74e6mLech3n31Iv+S0
+jTYqRCw6GJeVMMB/e4b24JwjsGLsqqnjqquGA0PZzz5d6/KHAgkvSJYOOoLMwgY7
+XlhnmiPRFyIU94aYoj59bWO17KablHKHETD70nFJdUNoQp0k2ISR766wRdiUGgfu
+CunGIh0MlcbfIMML4LBA5HFECS8IuV2byTvLnecv1fEh0joLrNsAdHF8DWh4g/lS
+WOoXmvR+vooAsdRURALJ6ywTWX31CHvFdgKHPIrZr+LqAEc0twdq8hztRMiKdSQ7
+moRfWlUwxsPBq6DMnCjlCe4yREPiX+F0M2Z9ZuwDUp/9EYayzOKjE4rhyrZzPNu/
++B4JxM0F+K/PnMSSmeVTCIljoTW2YZ7quvrtdktyMV3ymkx1tJHQtbyTU4o/oxSs
+6Wxq/C39glL5Qwfa8lmm
+=27Dv
+-----END PGP SIGNATURE-----
+
+--9jxsPFA5p3P2qPhR--
