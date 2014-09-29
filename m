@@ -1,59 +1,56 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCHv4 0/4] pwm: imx: support output polarity inversion
-Date: Mon, 29 Sep 2014 12:58:42 +0200
-Message-ID: <20140929105842.GG4958@pengutronix.de>
-References: <1408517756-9412-1-git-send-email-LW@KARO-electronics.de>
- <20140826092409.7dea5530@ipc1.ka-ro>
+From: Bart Tanghe <bart.tanghe@thomasmore.be>
+Subject: Re: [resend rfc v3] pwm: add BCM2835 PWM driver
+Date: Mon, 29 Sep 2014 15:37:50 +0200
+Message-ID: <542960AE.1040200@thomasmore.be>
+References: <1398689686-30317-1-git-send-email-bart.tanghe@thomasmore.be> <20140825131908.GG4163@ulmo.nvidia.com> <5408395E.2030305@thomasmore.be> <54088008.9080200@wwwdotorg.org> <20140926071109.GA31106@ulmo> <54257C25.2000308@wwwdotorg.org> <20140929053311.GA12506@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:53023 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751857AbaI2K6u (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 29 Sep 2014 06:58:50 -0400
-Content-Disposition: inline
-In-Reply-To: <20140826092409.7dea5530@ipc1.ka-ro>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20140929053311.GA12506@ulmo>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Stephen Warren <swarren@wwwdotorg.org>
+Cc: matt.porter@linaro.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lothar =?iso-8859-15?Q?Wa=DFmann?= <LW@KARO-electronics.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>, Sascha Hauer <kernel@pengutronix.de>, Arnd Bergmann <arnd@arndb.de>, Tony Prisk <linux@prisktech.co.nz>, linux-arm-kernel@lists.infradead.org
 
-On Tue, Aug 26, 2014 at 09:24:09AM +0200, Lothar Wa=DFmann wrote:
-> Hi,
->=20
-> Lothar Wa=DFmann wrote:
-> > This patch series adds support for polarity inversion to the pwm-im=
-x
-> > driver. The patches have been tested on i.MX6, i.MX53 and with the
-> > ti-ehrpwm.c driver.
-> >=20
-> > Changes wrt. v2:
-> > - make the use of '#pwm-cells =3D <3>' optional, so that the change=
- does
-> >   not break existing DT blobs as suggested by Arnd Bergmann and Sas=
-cha
-> >   Hauer.
-> >=20
-> > Changes wrt. v3:
-> > - implemented the approach suggested by Sascha Hauer=20
-> > - don't modify struct pwm_ops in the imx_pwm probe function
-> >=20
-> >=20
-> Any further comments?
+On 2014-09-29 07:33, Thierry Reding wrote:
+> On Fri, Sep 26, 2014 at 08:45:57AM -0600, Stephen Warren wrote:
+>> On 09/26/2014 01:11 AM, Thierry Reding wrote:
+>>> On Thu, Sep 04, 2014 at 09:06:48AM -0600, Stephen Warren wrote:
+> [...]
+>>>> Oh dear. It sounds like we need at least some form of clock driver for the
+>>>> platform then. I still don't think there's complete documentation for the
+>>>> HW, even though a lot of register docs were published which presumably cover
+>>>> the clock HW? Equally, given that the VC firmware assumes it owns most of
+>>>> the HW, it seems best to manipulate the clocks through the firmware
+>>>> interface rather than directly touching the HW. Unfortunately, I don't
+>>>> believe there's any ABI guarantee on the firmware interface. Perhaps we can
+>>>> get one?
+>>>
+>>> Urgs... this VC firmware seems to be more of a headache that I thought
+>>> it was. How is this handled in other drivers? Surely PWM isn't the first
+>>> one that needs clocks?
+>>
+>> For the other clocks, I've set up dummy fixed-rate clocks in the DT and/or
+>> "clock driver" code to satisfy references by phandle or clock name
+>> respectively. Since the other drivers don't actually manipulate the clock
+>> rates etc., this is enough for the drivers.
+> 
+> Given that this driver only queries the clock frequency adding a fixed-
+> rate clock to the device tree should work as well. Then the calls to
+> clk_prepare_enable() and clk_disable_unprepare() can still be added as
+> appropriate so that the driver doesn't need to change if a proper clock
+> driver ever gets added.
+> 
+> Or am I missing anything? Perhaps the issue is that the default clock
+> rate for the PWM clock isn't usable? That would still not prevent the
+> driver from being merged.
+> 
+> Thierry
+> 
+The pwm clock is default unusable. To let the pwm clock run, It's necessary to change some 
+clock registers. I've added the clk_prepare_enable and the clk_disable_unprepare functions. So the 
+driver is able to work with a proper clock driver in the future.
 
-No, except this one:
-
-Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-
-Sascha
-
---=20
-Pengutronix e.K.                           |                           =
-  |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0  =
-  |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-555=
-5 |
+Bart
+  
