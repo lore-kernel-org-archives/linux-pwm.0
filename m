@@ -1,8 +1,8 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH v6 06/11] drm: add DT bindings documentation for
- atmel-hlcdc-dc driver
-Date: Mon, 29 Sep 2014 16:44:19 +0200
-Message-ID: <1412001864-3251-7-git-send-email-boris.brezillon@free-electrons.com>
+Subject: [PATCH v6 09/11] ARM: at91/dt: define the HLCDC node available on
+ sama5d3 SoCs
+Date: Mon, 29 Sep 2014 16:44:22 +0200
+Message-ID: <1412001864-3251-10-git-send-email-boris.brezillon@free-electrons.com>
 References: <1412001864-3251-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,85 +24,53 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Boris BREZILLON <boris.brezillon@free-electrons.com>
 
-The Atmel HLCDC (HLCD Controller) IP available on some Atmel SoCs (i.e.
-at91sam9n12, at91sam9x5 family or sama5d3 family) provides a display
-controller device.
-
-The HLCDC block provides a single RGB output port, and only supports LCD
-panels connection to LCD panels for now.
-
-The atmel,panel property link the HLCDC RGB output with the LCD panel
-connected on this port (note that the HLCDC RGB connector implementation
-makes use of the DRM panel framework).
-
-Connection to other external devices (DRM bridges) might be added later by
-mean of a new atmel,xxx (atmel,bridge) property.
+Define the HLCDC (HLCD Controller) IP available on some sama5d3 SoCs
+(i.e. sama5d31, sama5d33, sama5d34 and sama5d36) in sama5d3 dtsi file.
 
 Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+Tested-by: Anthony Harivel <anthony.harivel@emtrion.de>
 ---
- .../devicetree/bindings/drm/atmel-hlcdc-dc.txt     | 54 ++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
+ arch/arm/boot/dts/sama5d3_lcd.dtsi | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
-new file mode 100644
-index 0000000..73b9860
---- /dev/null
-+++ b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
-@@ -0,0 +1,54 @@
-+Device-Tree bindings for Atmel's HLCDC (High LCD Controller) DRM driver
+diff --git a/arch/arm/boot/dts/sama5d3_lcd.dtsi b/arch/arm/boot/dts/sama5d3_lcd.dtsi
+index e7581f6..1874cf7 100644
+--- a/arch/arm/boot/dts/sama5d3_lcd.dtsi
++++ b/arch/arm/boot/dts/sama5d3_lcd.dtsi
+@@ -166,6 +166,34 @@
+ 				};
+ 			};
+ 
++			hlcdc: hlcdc@f0030000 {
++				compatible = "atmel,sama5d3-hlcdc";
++				reg = <0xf0030000 0x2000>;
++				clocks = <&lcdc_clk>, <&lcdck>, <&clk32k>;
++				clock-names = "periph_clk","sys_clk", "slow_clk";
++				status = "disabled";
 +
-+The Atmel HLCDC Display Controller is subdevice of the HLCDC MFD device.
-+See ../mfd/atmel-hlcdc.txt for more details.
++				hlcdc-display-controller {
++					compatible = "atmel,hlcdc-display-controller";
++					interrupts = <36 IRQ_TYPE_LEVEL_HIGH 0>;
++					#address-cells = <1>;
++					#size-cells = <0>;
 +
-+Required properties:
-+ - compatible: value should be "atmel,hlcdc-display-controller"
-+ - interrupts: the HLCDC interrupt definition
-+ - pinctrl-names: the pin control state names. Should contain "default".
-+ - pinctrl-0: should contain the default pinctrl states.
-+ - #address-cells: should be set to 1.
-+ - #size-cells: should be set to 0.
++					port@0 {
++						#address-cells = <1>;
++						#size-cells = <0>;
++						reg = <0>;
++					};
++				};
 +
-+Required children nodes:
-+ Children nodes are encoding available output ports and their connections
-+ to external devices using the OF graph reprensentation (see ../graph.txt).
-+ At least one port node is required.
-+
-+Example:
-+
-+	hlcdc: hlcdc@f0030000 {
-+		compatible = "atmel,sama5d3-hlcdc";
-+		reg = <0xf0030000 0x2000>;
-+		clocks = <&lcdc_clk>, <&lcdck>, <&clk32k>;
-+		clock-names = "periph_clk","sys_clk", "slow_clk";
-+		status = "disabled";
-+
-+		hlcdc-display-controller {
-+			compatible = "atmel,hlcdc-display-controller";
-+			interrupts = <36 IRQ_TYPE_LEVEL_HIGH 0>;
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&pinctrl_lcd_base &pinctrl_lcd_rgb888>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@0 {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				reg = <0>;
-+
-+				hlcdc_panel_output: endpoint@0 {
-+					reg = <0>;
-+					remote-endpoint = <&panel_input>;
++				hlcdc_pwm: hlcdc-pwm {
++					compatible = "atmel,hlcdc-pwm";
++					pinctrl-names = "default";
++					pinctrl-0 = <&pinctrl_lcd_pwm>;
++					#pwm-cells = <3>;
 +				};
 +			};
-+		};
 +
-+		hlcdc_pwm: hlcdc-pwm {
-+			compatible = "atmel,hlcdc-pwm";
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&pinctrl_lcd_pwm>;
-+			#pwm-cells = <3>;
-+		};
-+	};
+ 			pmc: pmc@fffffc00 {
+ 				periphck {
+ 					lcdc_clk: lcdc_clk {
 -- 
 1.9.1
