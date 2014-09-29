@@ -1,133 +1,115 @@
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: Re: [resend rfc v4]pwm: add BCM2835 PWM driver
-Date: Mon, 29 Sep 2014 17:21:27 +0200
-Message-ID: <542978F7.5030405@pengutronix.de>
-References: <1412001619-30001-1-git-send-email-bart.tanghe@thomasmore.be>
+From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH v6 05/11] drm: add Atmel HLCDC Display Controller
+ support
+Date: Mon, 29 Sep 2014 19:20:57 +0200
+Message-ID: <20140929192057.1ede0346@bbrezillon>
+References: <1412001864-3251-1-git-send-email-boris.brezillon@free-electrons.com>
+	<1412001864-3251-6-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="iF6iCCHuSwDQrkSjUVBaut6ROGfWMCiOg"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:57791 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754054AbaI2PWB (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 29 Sep 2014 11:22:01 -0400
-In-Reply-To: <1412001619-30001-1-git-send-email-bart.tanghe@thomasmore.be>
+Received: from top.free-electrons.com ([176.31.233.9]:49178 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752602AbaI2RVE (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 29 Sep 2014 13:21:04 -0400
+In-Reply-To: <1412001864-3251-6-git-send-email-boris.brezillon@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Bart Tanghe <bart.tanghe@thomasmore.be>, thierry.reding@gmail.com
-Cc: matt.porter@linaro.org, linux-rpi-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Rob Clark <robdclark@gmail.com>, linux-arm-kernel@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Yao <mark.yao@rock-chips.com>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---iF6iCCHuSwDQrkSjUVBaut6ROGfWMCiOg
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On Mon, 29 Sep 2014 16:44:18 +0200
+Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
 
-On 09/29/2014 04:40 PM, Bart Tanghe wrote:
-> +static int bcm2835_pwm_probe(struct platform_device *pdev)
+> From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+> 
+> The Atmel HLCDC (HLCD Controller) IP available on some Atmel SoCs (i.e.
+> at91sam9n12, at91sam9x5 family or sama5d3 family) provides a display
+> controller device.
+> 
+> This display controller supports at least one primary plane and might
+> provide several overlays and an hardware cursor depending on the IP
+> version.
+> 
+> At the moment, this driver only implements an RGB connector to interface
+> with LCD panels, but support for other kind of external devices might be
+> added later.
+> 
+> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> Reviewed-by: Rob Clark <robdclark@gmail.com>
+> Tested-by: Anthony Harivel <anthony.harivel@emtrion.de>
+> Tested-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+> ---
+>  drivers/gpu/drm/Kconfig                          |   2 +
+>  drivers/gpu/drm/Makefile                         |   1 +
+>  drivers/gpu/drm/atmel-hlcdc/Kconfig              |  13 +
+>  drivers/gpu/drm/atmel-hlcdc/Makefile             |   7 +
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c   | 392 +++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c     | 527 ++++++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h     | 216 ++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.c  | 659 ++++++++++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.h  | 403 +++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_output.c | 443 ++++++++++++
+>  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_plane.c  | 833 +++++++++++++++++++++++
+>  11 files changed, 3496 insertions(+)
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/Kconfig
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/Makefile
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.h
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_output.c
+>  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_plane.c
+> 
+> diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
+> index b066bb3..2d97f7e 100644
+> --- a/drivers/gpu/drm/Kconfig
+> +++ b/drivers/gpu/drm/Kconfig
+> @@ -185,6 +185,8 @@ source "drivers/gpu/drm/cirrus/Kconfig"
+>  
+
+[...]
+
+> +
+> +int atmel_hlcdc_crtc_mode_valid(struct drm_crtc *c,
+> +				struct drm_display_mode *mode)
 > +{
-> +	struct bcm2835_pwm *pwm;
-> +	int ret;
-> +	struct resource *r;
-> +	struct clk *clk;
+> +	struct videomode vm;
 > +
-> +	pwm =3D devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
-> +	if (!pwm)
-> +		return -ENOMEM;
+> +	vm.vfront_porch = mode->vsync_start - mode->vdisplay;
+> +	vm.vback_porch = mode->vtotal - mode->vsync_end;
+> +	vm.vsync_len = mode->vsync_end - mode->vsync_start;
+> +	vm.hfront_porch = mode->hsync_start - mode->hdisplay;
+> +	vm.hback_porch = mode->htotal - mode->hsync_end;
+> +	vm.hsync_len = mode->hsync_end - mode->hsync_start;
 > +
-> +	pwm->dev =3D &pdev->dev;
+> +	if (vm.hsync_len > 0x40 || vm.hsync_len < 1)
+> +		return MODE_HSYNC;
 > +
-> +	clk =3D clk_get(&pdev->dev, NULL);
-
-Better use devm_, as you don't free the clock in case of an error and
-during remove()
-
-> +	if (IS_ERR(clk)) {
-> +		dev_err(&pdev->dev, "no clock found: %ld\n", PTR_ERR(clk));
-> +		return PTR_ERR(clk);
-> +	}
+> +	if (vm.vsync_len > 0x40 || vm.vsync_len < 1)
+> +		return MODE_VSYNC;
 > +
-> +	pwm->clk =3D clk;
-> +	clk_prepare_enable(pwm->clk);
-
-Please check the return value of clk_prepare_enable()
-
-> +	pwm->scaler =3D NSEC_PER_SEC / clk_get_rate(clk);
+> +	if (vm.vfront_porch > 0x40 || vm.hfront_porch < 1 ||
+> +	    vm.vback_porch > 0x40 || vm.vback_porch < 0 ||
+> +	    mode->hdisplay > 2048 || mode->hdisplay < 1)
+> +		return MODE_H_ILLEGAL;
 > +
-> +	r =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	pwm->base =3D devm_ioremap_resource(&pdev->dev, r);
-> +	if (IS_ERR(pwm->base))
-> +		return PTR_ERR(pwm->base);
+> +	if (vm.hfront_porch > 0x200 || vm.hfront_porch < 1 ||
+> +	    vm.hback_porch > 0x200 || vm.hback_porch < 1 ||
+> +	    mode->hdisplay > 2048 || mode->hdisplay < 1)
+> +		return MODE_V_ILLEGAL;
 > +
-> +	pwm->chip.dev =3D &pdev->dev;
-> +	pwm->chip.ops =3D &bcm2835_pwm_ops;
-> +	pwm->chip.npwm =3D 2;
-> +
-> +	ret =3D pwmchip_add(&pwm->chip);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
-> +		return -1;
-
-Please propagate the error vlaue:
-
-    return ret;
-
-> +	}
-> +	platform_set_drvdata(pdev, pwm);
-
-Better do this before pwmchip_add()
-
-> +	return 0;
+> +	return MODE_OK;
 > +}
 > +
-> +static int bcm2835_pwm_remove(struct platform_device *pdev)
-> +{
-> +	struct bcm2835_pwm *pc =3D platform_get_drvdata(pdev);
-> +	clk_disable_unprepare(pc->clk);
-> +	return pwmchip_remove(&pc->chip);
-> +}
-> +
-> +static const struct of_device_id bcm2835_pwm_of_match[] =3D {
-> +	{ .compatible =3D "brcm,bcm2835-pwm", },
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(of, bcm2835_pwm_of_match);
-> +
-> +static struct platform_driver bcm2835_pwm_driver =3D {
-> +	.driver =3D {
-> +		.name =3D "bcm2835-pwm",
-> +		.of_match_table =3D bcm2835_pwm_of_match,
-> +	},
-> +	.probe =3D bcm2835_pwm_probe,
-> +	.remove =3D bcm2835_pwm_remove,
-> +};
-> +module_platform_driver(bcm2835_pwm_driver);
-> +
-> +MODULE_AUTHOR("Bart Tanghe <bart.tanghe@thomasmore.be");
-> +MODULE_DESCRIPTION("Broadcom BCM2835 PWM driver");
-> +MODULE_LICENSE("GPL v2");
 
-regards,
-Marc
+I forgot to squash the commit removing this function which a vestige
+from one of my attempt to provide a common mode_valid function that can
+be called from the connector mode_valid function.
 
---=20
-Pengutronix e.K.                  | Marc Kleine-Budde           |
-Industrial Linux Solutions        | Phone: +49-231-2826-924     |
-Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
-Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
-
-
---iF6iCCHuSwDQrkSjUVBaut6ROGfWMCiOg
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlQpePcACgkQjTAFq1RaXHNQnwCfQEUOMCnhCfn0IolMHzvmoCBw
-EKIAniPg3OwYZnTyKgZ8FhA2JA9QYAho
-=HeOA
------END PGP SIGNATURE-----
-
---iF6iCCHuSwDQrkSjUVBaut6ROGfWMCiOg--
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
