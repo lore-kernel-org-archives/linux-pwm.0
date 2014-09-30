@@ -1,115 +1,113 @@
-From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v6 05/11] drm: add Atmel HLCDC Display Controller
- support
-Date: Mon, 29 Sep 2014 19:20:57 +0200
-Message-ID: <20140929192057.1ede0346@bbrezillon>
-References: <1412001864-3251-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1412001864-3251-6-git-send-email-boris.brezillon@free-electrons.com>
+From: Stephen Warren <swarren@wwwdotorg.org>
+Subject: Re: [resend rfc v4]pwm: add BCM2835 PWM driver
+Date: Mon, 29 Sep 2014 22:34:41 -0600
+Message-ID: <542A32E1.8040003@wwwdotorg.org>
+References: <1412001619-30001-1-git-send-email-bart.tanghe@thomasmore.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from top.free-electrons.com ([176.31.233.9]:49178 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752602AbaI2RVE (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 29 Sep 2014 13:21:04 -0400
-In-Reply-To: <1412001864-3251-6-git-send-email-boris.brezillon@free-electrons.com>
+Received: from avon.wwwdotorg.org ([70.85.31.133]:33873 "EHLO
+	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751283AbaI3Een (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 30 Sep 2014 00:34:43 -0400
+In-Reply-To: <1412001619-30001-1-git-send-email-bart.tanghe@thomasmore.be>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Rob Clark <robdclark@gmail.com>, linux-arm-kernel@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Yao <mark.yao@rock-chips.com>
+To: Bart Tanghe <bart.tanghe@thomasmore.be>, thierry.reding@gmail.com
+Cc: matt.porter@linaro.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
 
-On Mon, 29 Sep 2014 16:44:18 +0200
-Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
+On 09/29/2014 08:40 AM, Bart Tanghe wrote:
+> Add pwm driver for Broadcom BCM2835 processor (Raspberry Pi) 
+> Signed-off-by: Bart Tanghe <bart.tanghe@thomasmore.be>
 
-> From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-> 
-> The Atmel HLCDC (HLCD Controller) IP available on some Atmel SoCs (i.e.
-> at91sam9n12, at91sam9x5 family or sama5d3 family) provides a display
-> controller device.
-> 
-> This display controller supports at least one primary plane and might
-> provide several overlays and an hardware cursor depending on the IP
-> version.
-> 
-> At the moment, this driver only implements an RGB connector to interface
-> with LCD panels, but support for other kind of external devices might be
-> added later.
-> 
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> Reviewed-by: Rob Clark <robdclark@gmail.com>
-> Tested-by: Anthony Harivel <anthony.harivel@emtrion.de>
-> Tested-by: Ludovic Desroches <ludovic.desroches@atmel.com>
-> ---
->  drivers/gpu/drm/Kconfig                          |   2 +
->  drivers/gpu/drm/Makefile                         |   1 +
->  drivers/gpu/drm/atmel-hlcdc/Kconfig              |  13 +
->  drivers/gpu/drm/atmel-hlcdc/Makefile             |   7 +
->  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c   | 392 +++++++++++
->  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c     | 527 ++++++++++++++
->  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h     | 216 ++++++
->  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.c  | 659 ++++++++++++++++++
->  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.h  | 403 +++++++++++
->  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_output.c | 443 ++++++++++++
->  drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_plane.c  | 833 +++++++++++++++++++++++
->  11 files changed, 3496 insertions(+)
->  create mode 100644 drivers/gpu/drm/atmel-hlcdc/Kconfig
->  create mode 100644 drivers/gpu/drm/atmel-hlcdc/Makefile
->  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_crtc.c
->  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.c
->  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_dc.h
->  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.c
->  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_layer.h
->  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_output.c
->  create mode 100644 drivers/gpu/drm/atmel-hlcdc/atmel_hlcdc_plane.c
-> 
-> diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
-> index b066bb3..2d97f7e 100644
-> --- a/drivers/gpu/drm/Kconfig
-> +++ b/drivers/gpu/drm/Kconfig
-> @@ -185,6 +185,8 @@ source "drivers/gpu/drm/cirrus/Kconfig"
->  
+There needs to be a blank line between the description and the tags.
 
-[...]
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
 
-> +
-> +int atmel_hlcdc_crtc_mode_valid(struct drm_crtc *c,
-> +				struct drm_display_mode *mode)
+> +Required properties:
+> +- compatible: should be "brcm,bcm2835-pwm"
+> +- reg: physical base address and length of the controller's registers
+
+This needs to document the clock property too.
+
+It'd be nice to require clock-names rather than doing clock lookup by
+index, but I suppose it's not too much of a problem with this device.
+
+> diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
+
+> +/*
+> + * Copyright (C) 2014 Thomas more
+
+But the git commit doesn't have "Thomas More" as the author, nor Thomas'
+Signed-off-by line. Can you explain the history of this code?
+
+> +static int bcm2835_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
 > +{
-> +	struct videomode vm;
+> +	struct bcm2835_pwm *pc = to_bcm2835_pwm(chip);
+> +	u32 value;
 > +
-> +	vm.vfront_porch = mode->vsync_start - mode->vdisplay;
-> +	vm.vback_porch = mode->vtotal - mode->vsync_end;
-> +	vm.vsync_len = mode->vsync_end - mode->vsync_start;
-> +	vm.hfront_porch = mode->hsync_start - mode->hdisplay;
-> +	vm.hback_porch = mode->htotal - mode->hsync_end;
-> +	vm.hsync_len = mode->hsync_end - mode->hsync_start;
-> +
-> +	if (vm.hsync_len > 0x40 || vm.hsync_len < 1)
-> +		return MODE_HSYNC;
-> +
-> +	if (vm.vsync_len > 0x40 || vm.vsync_len < 1)
-> +		return MODE_VSYNC;
-> +
-> +	if (vm.vfront_porch > 0x40 || vm.hfront_porch < 1 ||
-> +	    vm.vback_porch > 0x40 || vm.vback_porch < 0 ||
-> +	    mode->hdisplay > 2048 || mode->hdisplay < 1)
-> +		return MODE_H_ILLEGAL;
-> +
-> +	if (vm.hfront_porch > 0x200 || vm.hfront_porch < 1 ||
-> +	    vm.hback_porch > 0x200 || vm.hback_porch < 1 ||
-> +	    mode->hdisplay > 2048 || mode->hdisplay < 1)
-> +		return MODE_V_ILLEGAL;
-> +
-> +	return MODE_OK;
-> +}
-> +
+> +	value = readl(pc->base) & ~(PWM_CONTROL_MASK << 8 * pwm->pwm);
+> +	value |= (PWM_CONTROL_ENABLE << (8 * pwm->pwm));
 
-I forgot to squash the commit removing this function which a vestige
-from one of my attempt to provide a common mode_valid function that can
-be called from the connector mode_valid function.
+It'd be nice to use a #define rather than hard-coded "8" here. Perhaps:
 
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+#define PWM_CONTROL_STRIDE 8
+
+Why does _request() enable the PWM output; shouldn't that be deferred
+until _enable()? _free() might not want to disable the output, if the
+PWM core guarantees that _disable() is always called.
+
+> +static int bcm2835_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> +			      int duty_ns, int period_ns)
+> +{
+> +	struct bcm2835_pwm *pc = to_bcm2835_pwm(chip);
+> +
+> +	if (period_ns > MIN_PERIOD) {
+> +		writel(duty_ns / pc->scaler,
+> +			 pc->base + DUTY + pwm->pwm * CHANNEL);
+> +		writel(period_ns / pc->scaler,
+> +			pc->base + PERIOD + pwm->pwm * CHANNEL);
+> +	} else {
+> +		dev_err(pc->dev, "Period not supported\n");
+> +	}
+
+The "else" case should propagate the error. It'd be better to do the
+error-checking first to remove an indent level from the rest of the code:
+
+	if (period_ns <= MIN_PERIOD) {
+		dev_err(...);
+		return -EINVAL;
+	}
+	writel(...);
+
+> +static int bcm2835_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+> +				enum pwm_polarity polarity)
+> +{
+> +	struct bcm2835_pwm *pc = to_bcm2835_pwm(chip);
+> +	u32 value;
+> +
+> +	if (polarity == PWM_POLARITY_NORMAL) {
+> +		value = readl(pc->base);
+> +		value &= ~(PWM_POLARITY << 8 * pwm->pwm);
+> +		writel(value, pc->base);
+> +	} else if (polarity == PWM_POLARITY_INVERSED) {
+> +		value = readl(pc->base);
+> +		value |= PWM_POLARITY << (8 * pwm->pwm);
+> +		writel(value, pc->base);
+> +	}
+
+If you move the readl/writel outside the if statement, you remove the
+duplication of code.
+
+> +static const struct pwm_ops bcm2835_pwm_ops = {
+...
+> +	.owner = THIS_MODULE,
+> +};
+
+Doesn't something in the driver core automatically set .owner now?
+Perhaps that's only for certain subsystems though?
+
+> +MODULE_AUTHOR("Bart Tanghe <bart.tanghe@thomasmore.be");
+
+That doesn't match the (c) message at the start of the file.
