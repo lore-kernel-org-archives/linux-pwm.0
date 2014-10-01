@@ -1,178 +1,311 @@
-From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v7 11/11] ARM: at91/dt: enable the LCD panel on sama5d3xek boards
-Date: Wed,  1 Oct 2014 16:53:08 +0200
-Message-ID: <1412175188-28278-12-git-send-email-boris.brezillon@free-electrons.com>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: [PATCH v7 03/11] pwm: add support for atmel-hlcdc-pwm device
+Date: Wed,  1 Oct 2014 16:53:00 +0200
+Message-ID: <1412175188-28278-4-git-send-email-boris.brezillon@free-electrons.com>
 References: <1412175188-28278-1-git-send-email-boris.brezillon@free-electrons.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1412175188-28278-1-git-send-email-boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Andrew Victor <linux-PelNFVqkFnVyf+4FbqDuWQ@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Yao <mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1412175188-28278-1-git-send-email-boris.brezillon@free-electrons.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Rob Clark <robdclark@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Boris BREZILLON <boris.brezillon@free-electrons.com>, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Kumar Gala <galak@codeaurora.org>, linux-arm-kernel@lists.infradead.org, Mark Yao <mark.yao@rock-chips.com>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Boris BREZILLON <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+From: Boris BREZILLON <boris.brezillon@free-electrons.com>
 
-Enable LCD related nodes.
+The HLCDC IP available in some Atmel SoCs (i.e. sam9x5i.e. at91sam9n12,
+at91sam9x5 family or sama5d3 family) provide a PWM device.
 
-Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+This driver add support for a PWM chip exposing a single PWM device (which
+will most likely be used to drive a backlight device).
+
+Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+Tested-by: Anthony Harivel <anthony.harivel@emtrion.de>
+Tested-by: Ludovic Desroches <ludovic.desroches@atmel.com>
 ---
- arch/arm/boot/dts/sama5d31ek.dts | 20 ++++++++++++++++++++
- arch/arm/boot/dts/sama5d33ek.dts | 20 ++++++++++++++++++++
- arch/arm/boot/dts/sama5d34ek.dts | 20 ++++++++++++++++++++
- arch/arm/boot/dts/sama5d36ek.dts | 20 ++++++++++++++++++++
- 4 files changed, 80 insertions(+)
+ drivers/pwm/Kconfig           |  10 ++
+ drivers/pwm/Makefile          |   1 +
+ drivers/pwm/pwm-atmel-hlcdc.c | 229 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 240 insertions(+)
+ create mode 100644 drivers/pwm/pwm-atmel-hlcdc.c
 
-diff --git a/arch/arm/boot/dts/sama5d31ek.dts b/arch/arm/boot/dts/sama5d31ek.dts
-index 04eec0d..6e605fe 100644
---- a/arch/arm/boot/dts/sama5d31ek.dts
-+++ b/arch/arm/boot/dts/sama5d31ek.dts
-@@ -33,6 +33,10 @@
- 				status = "okay";
- 			};
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index b800783..afb896b 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -50,6 +50,16 @@ config PWM_ATMEL
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-atmel.
  
-+			hlcdc: hlcdc@f0030000 {
-+				status = "okay";
-+			};
++config PWM_ATMEL_HLCDC_PWM
++	tristate "Atmel HLCDC PWM support"
++	select MFD_ATMEL_HLCDC
++	depends on OF
++	help
++	  Generic PWM framework driver for Atmel HLCDC PWM.
 +
- 			macb1: ethernet@f802c000 {
- 				status = "okay";
- 			};
-@@ -46,6 +50,22 @@
- 		};
- 	};
- 
-+	bl_reg: backlight_regulator {
-+		status = "okay";
-+	};
++	  To compile this driver as a module, choose M here: the module
++	  will be called pwm-atmel.
 +
-+	panel_reg: panel_regulator {
-+		status = "okay";
-+	};
+ config PWM_ATMEL_TCB
+ 	tristate "Atmel TC Block PWM support"
+ 	depends on ATMEL_TCLIB && OF
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index f8c577d..eb0aae5 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -2,6 +2,7 @@ obj-$(CONFIG_PWM)		+= core.o
+ obj-$(CONFIG_PWM_SYSFS)		+= sysfs.o
+ obj-$(CONFIG_PWM_AB8500)	+= pwm-ab8500.o
+ obj-$(CONFIG_PWM_ATMEL)		+= pwm-atmel.o
++obj-$(CONFIG_PWM_ATMEL_HLCDC_PWM)	+= pwm-atmel-hlcdc.o
+ obj-$(CONFIG_PWM_ATMEL_TCB)	+= pwm-atmel-tcb.o
+ obj-$(CONFIG_PWM_BCM_KONA)	+= pwm-bcm-kona.o
+ obj-$(CONFIG_PWM_BFIN)		+= pwm-bfin.o
+diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
+new file mode 100644
+index 0000000..0238f7a
+--- /dev/null
++++ b/drivers/pwm/pwm-atmel-hlcdc.c
+@@ -0,0 +1,229 @@
++/*
++ * Copyright (C) 2014 Free Electrons
++ * Copyright (C) 2014 Atmel
++ *
++ * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
++ * more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
 +
-+	backlight: backlight {
-+		status = "okay";
-+	};
++#include <linux/clk.h>
++#include <linux/mfd/atmel-hlcdc.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/pwm.h>
++#include <linux/regmap.h>
 +
-+	panel: panel {
-+		status = "okay";
-+	};
++#define ATMEL_HLCDC_PWMCVAL_MASK	GENMASK(15, 8)
++#define ATMEL_HLCDC_PWMCVAL(x)		((x << 8) & ATMEL_HLCDC_PWMCVAL_MASK)
++#define ATMEL_HLCDC_PWMPOL		BIT(4)
++#define ATMEL_HLCDC_PWMPS_MASK		GENMASK(2, 0)
++#define ATMEL_HLCDC_PWMPS_MAX		0x6
++#define ATMEL_HLCDC_PWMPS(x)		((x) & ATMEL_HLCDC_PWMPS_MASK)
 +
- 	sound {
- 		status = "okay";
- 	};
-diff --git a/arch/arm/boot/dts/sama5d33ek.dts b/arch/arm/boot/dts/sama5d33ek.dts
-index cbd6a3f..0400641 100644
---- a/arch/arm/boot/dts/sama5d33ek.dts
-+++ b/arch/arm/boot/dts/sama5d33ek.dts
-@@ -36,9 +36,29 @@
- 			macb0: ethernet@f0028000 {
- 				status = "okay";
- 			};
++struct atmel_hlcdc_pwm_chip {
++	struct pwm_chip chip;
++	struct atmel_hlcdc *hlcdc;
++	struct clk *cur_clk;
++};
 +
-+			hlcdc: hlcdc@f0030000 {
-+				status = "okay";
-+			};
- 		};
- 	};
- 
-+	bl_reg: backlight_regulator {
-+		status = "okay";
-+	};
++static inline struct atmel_hlcdc_pwm_chip *
++pwm_chip_to_atmel_hlcdc_pwm_chip(struct pwm_chip *chip)
++{
++	return container_of(chip, struct atmel_hlcdc_pwm_chip, chip);
++}
 +
-+	panel_reg: panel_regulator {
-+		status = "okay";
-+	};
++static int atmel_hlcdc_pwm_config(struct pwm_chip *c,
++				  struct pwm_device *pwm,
++				  int duty_ns, int period_ns)
++{
++	struct atmel_hlcdc_pwm_chip *chip =
++				pwm_chip_to_atmel_hlcdc_pwm_chip(c);
++	struct atmel_hlcdc *hlcdc = chip->hlcdc;
++	struct clk *new_clk = hlcdc->slow_clk;
++	u64 pwmcval = duty_ns * 256;
++	unsigned long clk_freq;
++	u64 clk_period_ns;
++	u32 pwmcfg;
++	int pres;
 +
-+	backlight: backlight {
-+		status = "okay";
-+	};
++	clk_freq = clk_get_rate(new_clk);
++	clk_period_ns = 1000000000;
++	clk_period_ns *= 256;
++	do_div(clk_period_ns, clk_freq);
 +
-+	panel: panel {
-+		status = "okay";
-+	};
++	if (clk_period_ns > period_ns) {
++		new_clk = hlcdc->sys_clk;
++		clk_freq = clk_get_rate(new_clk);
++		clk_period_ns = 1000000000;
++		clk_period_ns *= 256;
++		do_div(clk_period_ns, clk_freq);
++	}
 +
- 	sound {
- 		status = "okay";
- 	};
-diff --git a/arch/arm/boot/dts/sama5d34ek.dts b/arch/arm/boot/dts/sama5d34ek.dts
-index 878aa16..9cf473e 100644
---- a/arch/arm/boot/dts/sama5d34ek.dts
-+++ b/arch/arm/boot/dts/sama5d34ek.dts
-@@ -46,6 +46,10 @@
- 			macb0: ethernet@f0028000 {
- 				status = "okay";
- 			};
++	for (pres = 0; pres <= ATMEL_HLCDC_PWMPS_MAX; pres++) {
++		if ((clk_period_ns << pres) >= period_ns)
++			break;
++	}
 +
-+			hlcdc: hlcdc@f0030000 {
-+				status = "okay";
-+			};
- 		};
- 	};
- 
-@@ -56,6 +60,22 @@
- 		};
- 	};
- 
-+	bl_reg: backlight_regulator {
-+		status = "okay";
-+	};
++	if (pres > ATMEL_HLCDC_PWMPS_MAX)
++		return -EINVAL;
 +
-+	panel_reg: panel_regulator {
-+		status = "okay";
-+	};
++	pwmcfg = ATMEL_HLCDC_PWMPS(pres);
 +
-+	backlight: backlight {
-+		status = "okay";
-+	};
++	if (new_clk != chip->cur_clk) {
++		u32 gencfg = 0;
 +
-+	panel: panel {
-+		status = "okay";
-+	};
++		clk_prepare_enable(new_clk);
++		clk_disable_unprepare(chip->cur_clk);
++		chip->cur_clk = new_clk;
 +
- 	sound {
- 		status = "okay";
- 	};
-diff --git a/arch/arm/boot/dts/sama5d36ek.dts b/arch/arm/boot/dts/sama5d36ek.dts
-index 59576c6..1c65741 100644
---- a/arch/arm/boot/dts/sama5d36ek.dts
-+++ b/arch/arm/boot/dts/sama5d36ek.dts
-@@ -41,12 +41,32 @@
- 				status = "okay";
- 			};
- 
-+			hlcdc: hlcdc@f0030000 {
-+				status = "okay";
-+			};
++		if (new_clk != hlcdc->slow_clk)
++			gencfg = ATMEL_HLCDC_CLKPWMSEL;
++		regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(0),
++				   ATMEL_HLCDC_CLKPWMSEL, gencfg);
++	}
 +
- 			macb1: ethernet@f802c000 {
- 				status = "okay";
- 			};
- 		};
- 	};
- 
-+	bl_reg: backlight_regulator {
-+		status = "okay";
-+	};
++	do_div(pwmcval, period_ns);
++	if (pwmcval > 255)
++		pwmcval = 255;
 +
-+	panel_reg: panel_regulator {
-+		status = "okay";
-+	};
++	pwmcfg |= ATMEL_HLCDC_PWMCVAL(pwmcval);
 +
-+	backlight: backlight {
-+		status = "okay";
-+	};
++	regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(6),
++			   ATMEL_HLCDC_PWMCVAL_MASK | ATMEL_HLCDC_PWMPS_MASK,
++			   pwmcfg);
 +
-+	panel: panel {
-+		status = "okay";
-+	};
++	return 0;
++}
 +
- 	sound {
- 		status = "okay";
- 	};
++static int atmel_hlcdc_pwm_set_polarity(struct pwm_chip *c,
++					struct pwm_device *pwm,
++					enum pwm_polarity polarity)
++{
++	struct atmel_hlcdc_pwm_chip *chip =
++				pwm_chip_to_atmel_hlcdc_pwm_chip(c);
++	struct atmel_hlcdc *hlcdc = chip->hlcdc;
++	u32 cfg = 0;
++
++	if (polarity == PWM_POLARITY_NORMAL)
++		cfg = ATMEL_HLCDC_PWMPOL;
++
++	regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(6),
++			   ATMEL_HLCDC_PWMPOL, cfg);
++
++	return 0;
++}
++
++static int atmel_hlcdc_pwm_enable(struct pwm_chip *c,
++				  struct pwm_device *pwm)
++{
++	struct atmel_hlcdc_pwm_chip *chip =
++				pwm_chip_to_atmel_hlcdc_pwm_chip(c);
++	struct atmel_hlcdc *hlcdc = chip->hlcdc;
++	u32 status;
++
++	regmap_write(hlcdc->regmap, ATMEL_HLCDC_EN, ATMEL_HLCDC_PWM);
++	while (!regmap_read(hlcdc->regmap, ATMEL_HLCDC_SR, &status) &&
++	       !(status & ATMEL_HLCDC_PWM))
++		;
++
++	return 0;
++}
++
++static void atmel_hlcdc_pwm_disable(struct pwm_chip *c,
++				    struct pwm_device *pwm)
++{
++	struct atmel_hlcdc_pwm_chip *chip =
++				pwm_chip_to_atmel_hlcdc_pwm_chip(c);
++	struct atmel_hlcdc *hlcdc = chip->hlcdc;
++	u32 status;
++
++	regmap_write(hlcdc->regmap, ATMEL_HLCDC_DIS, ATMEL_HLCDC_PWM);
++	while (!regmap_read(hlcdc->regmap, ATMEL_HLCDC_SR, &status) &&
++	       (status & ATMEL_HLCDC_PWM))
++		;
++}
++
++static const struct pwm_ops atmel_hlcdc_pwm_ops = {
++	.config = atmel_hlcdc_pwm_config,
++	.set_polarity = atmel_hlcdc_pwm_set_polarity,
++	.enable = atmel_hlcdc_pwm_enable,
++	.disable = atmel_hlcdc_pwm_disable,
++	.owner = THIS_MODULE,
++};
++
++static int atmel_hlcdc_pwm_probe(struct platform_device *pdev)
++{
++	struct atmel_hlcdc_pwm_chip *chip;
++	struct device *dev = &pdev->dev;
++	struct atmel_hlcdc *hlcdc;
++	int ret;
++
++	hlcdc = dev_get_drvdata(dev->parent);
++	if (!hlcdc)
++		return -EINVAL;
++
++	ret = clk_prepare_enable(hlcdc->periph_clk);
++	if (ret)
++		return ret;
++
++	chip = devm_kzalloc(dev, sizeof(*chip), GFP_KERNEL);
++	if (!chip)
++		return -ENOMEM;
++
++	chip->hlcdc = hlcdc;
++	chip->chip.ops = &atmel_hlcdc_pwm_ops;
++	chip->chip.dev = dev;
++	chip->chip.base = -1;
++	chip->chip.npwm = 1;
++	chip->chip.of_xlate = of_pwm_xlate_with_flags;
++	chip->chip.of_pwm_n_cells = 3;
++	chip->chip.can_sleep = 1;
++
++	ret = pwmchip_add(&chip->chip);
++	if (ret)
++		return ret;
++
++	platform_set_drvdata(pdev, chip);
++
++	return 0;
++}
++
++static int atmel_hlcdc_pwm_remove(struct platform_device *pdev)
++{
++	struct atmel_hlcdc_pwm_chip *chip = platform_get_drvdata(pdev);
++
++	clk_disable_unprepare(chip->hlcdc->periph_clk);
++
++	return pwmchip_remove(&chip->chip);
++}
++
++static const struct of_device_id atmel_hlcdc_pwm_dt_ids[] = {
++	{ .compatible = "atmel,hlcdc-pwm" },
++	{ /* sentinel */ },
++};
++
++static struct platform_driver atmel_hlcdc_pwm_driver = {
++	.driver = {
++		.name = "atmel-hlcdc-pwm",
++		.of_match_table = atmel_hlcdc_pwm_dt_ids,
++	},
++	.probe = atmel_hlcdc_pwm_probe,
++	.remove = atmel_hlcdc_pwm_remove,
++};
++module_platform_driver(atmel_hlcdc_pwm_driver);
++
++MODULE_ALIAS("platform:atmel-hlcdc-pwm");
++MODULE_AUTHOR("Boris Brezillon <boris.brezillon@free-electrons.com>");
++MODULE_DESCRIPTION("Atmel HLCDC PWM driver");
++MODULE_LICENSE("GPL");
 -- 
 1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
