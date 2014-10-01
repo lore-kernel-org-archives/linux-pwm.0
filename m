@@ -1,55 +1,52 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v7 00/11] drm: add support for Atmel HLCDC Display
- Controller
-Date: Wed, 1 Oct 2014 16:59:27 +0200
-Message-ID: <20141001165927.4fc3ab63@bbrezillon>
-References: <1412175188-28278-1-git-send-email-boris.brezillon@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1412175188-28278-1-git-send-email-boris.brezillon@free-electrons.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Lee Jones <lee.jones@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Kumar Gala <galak@codeaurora.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, Mark Yao <mark.yao@rock-chips.com>
+From: robert yang <hachyang@gmail.com>
+Subject: [PATCH 1/1] Atmel-PWM: Fixed the PWM channel enable/disable issue which will cause the PWM output stop working after reenable. THe PWM channel status register is read to ensure  the PWM channel is really enabled or disabled.
+Date: Wed,  1 Oct 2014 15:08:30 -0600
+Message-ID: <1412197710-17731-1-git-send-email-ryang@hach.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ob0-f178.google.com ([209.85.214.178]:57129 "EHLO
+	mail-ob0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751208AbaJAVJI (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 1 Oct 2014 17:09:08 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, ryang <ryang@hach.com>
 
-On Wed,  1 Oct 2014 16:52:57 +0200
-Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
+From: ryang <ryang@hach.com>
 
-> Hello,
-> 
-> This series is being sent for several weeks now and I wonder if I shouldn't
-> split it in several pieces:
-> 1) the MFD driver + its DT doc
-> 2) the PWM driver + its DT doc
-> 3) the DRM/KMS driver + its DT doc
-> 4) support for sama5d3 SoCs/boards
-> 
-> The first reason for doing this is that Lee already accepted the MFD part,
-> and I'm pretty sure he'd like me to stop sending him each new version of this
-> series.
-> The second reason being that smaller series are more likely to be reviewed by
-> subsystem maintainers :-).
-> 
-> Lee, if you still agree with this version, could you take the MTD part (other
+Signed-off-by: ryang <ryang@hach.com>
+---
+ drivers/pwm/pwm-atmel.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-                                                     I meant MFD ^
-
-> drivers in this series depend on it).
-
-
-
-
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index 6e700a5..bab933a 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -237,7 +237,10 @@ static int atmel_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	}
+ 
+ 	atmel_pwm_writel(atmel_pwm, PWM_ENA, 1 << pwm->hwpwm);
+-
++	while (!(atmel_pwm_readl(atmel_pwm, PWM_SR) & (1 << pwm->hwpwm))) {
++		atmel_pwm_writel(atmel_pwm, PWM_ENA, 1 << pwm->hwpwm);
++		cpu_relax();
++	}
+ 	return 0;
+ }
+ 
+@@ -246,7 +249,10 @@ static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
+ 
+ 	atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
+-
++	while (atmel_pwm_readl(atmel_pwm, PWM_SR) & (1 << pwm->hwpwm)) {
++		atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
++		cpu_relax();
++	}
+ 	clk_disable(atmel_pwm->clk);
+ }
+ 
 -- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+1.9.1
+
