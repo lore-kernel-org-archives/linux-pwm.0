@@ -1,113 +1,65 @@
-From: Stephen Warren <swarren@wwwdotorg.org>
-Subject: Re: [resend rfc v4]pwm: add BCM2835 PWM driver
-Date: Mon, 29 Sep 2014 22:34:41 -0600
-Message-ID: <542A32E1.8040003@wwwdotorg.org>
-References: <1412001619-30001-1-git-send-email-bart.tanghe@thomasmore.be>
+From: Tomasz Figa <tomasz.figa@gmail.com>
+Subject: Re: pwm-samsung: incorrect register values for 100% duty cycle
+Date: Wed, 01 Oct 2014 12:55:57 +0200
+Message-ID: <542BDDBD.1070708@gmail.com>
+References: <CAD8Lp46rh80KD=jXoGTLt2SzH+zfnuyd=QHrKZncx+YYCp-8dA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from avon.wwwdotorg.org ([70.85.31.133]:33873 "EHLO
-	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751283AbaI3Een (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 30 Sep 2014 00:34:43 -0400
-In-Reply-To: <1412001619-30001-1-git-send-email-bart.tanghe@thomasmore.be>
+Received: from mail-wg0-f41.google.com ([74.125.82.41]:41685 "EHLO
+	mail-wg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750992AbaJAK4B (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 1 Oct 2014 06:56:01 -0400
+In-Reply-To: <CAD8Lp46rh80KD=jXoGTLt2SzH+zfnuyd=QHrKZncx+YYCp-8dA@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Bart Tanghe <bart.tanghe@thomasmore.be>, thierry.reding@gmail.com
-Cc: matt.porter@linaro.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
+To: Daniel Drake <drake@endlessm.com>, linux-pwm@vger.kernel.org, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>
 
-On 09/29/2014 08:40 AM, Bart Tanghe wrote:
-> Add pwm driver for Broadcom BCM2835 processor (Raspberry Pi) 
-> Signed-off-by: Bart Tanghe <bart.tanghe@thomasmore.be>
+Hi Daniel,
 
-There needs to be a blank line between the description and the tags.
+On 18.09.2014 01:42, Daniel Drake wrote:
+> Hi,
+> 
+> I'm using pwm-samsung on Exynos4412 for a variable-brightness LED.
+> 
+> When the LED is set to maximum brightness via the pwm-leds driver, we
+> arrive at pwm_samsung_config with duty_ns = period_ns, i.e. 100% duty
+> cycle.
+> 
+> This function does:
+> 
+>     /* -1UL will give 100% duty. */
+>     --tcmp;
+>     writel(tcmp, our_chip->base + REG_TCMPB(pwm->hwpwm));
+> 
+> I think that comment is incorrect. If tcmp is written as -1UL then the
+> LED totally turns off. And there is nothing in the Exynos4412 manual
+> to suggest that -1UL should be set in the TCMP register for 100% duty.
 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
+Looking at Figure 11-3 in 11.3.2 Basic Timer Operation chapter of Exynos
+4412 public datasheet [1] (page 659), the calculation above seems
+correct. The default state of timer output is high and if TCMP is set to
+a value higher than TCNT, then it will never toggle to low.
 
-> +Required properties:
-> +- compatible: should be "brcm,bcm2835-pwm"
-> +- reg: physical base address and length of the controller's registers
+[1]
+http://www.samsung.com/global/business/semiconductor/file/product/Exynos_4_Quad_User_Manaul_Public_REV1.00-0.pdf
 
-This needs to document the clock property too.
+> 
+> If I remove that --tcmp line, so that 100% duty cycle is handled as
+> tcmp=0, the problem is solved: the LED turns on at max brightness when
+> the leds subsystem requests so.
 
-It'd be nice to require clock-names rather than doing clock lookup by
-index, but I suppose it's not too much of a problem with this device.
+According to my computations, with tcmp=0 you should get exactly the
+minimum supported duty cycle (1 / N, where N is the number of ticks of
+period), not full brightness. Are you sure that you have the right
+output polarity configured?
 
-> diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
+> 
+> Any ideas? Is this -1UL thing a quirk from older chip versions not
+> applicable to Exynos4?
 
-> +/*
-> + * Copyright (C) 2014 Thomas more
+Comparing few datasheets, the timers seem identical in this aspect.
 
-But the git commit doesn't have "Thomas More" as the author, nor Thomas'
-Signed-off-by line. Can you explain the history of this code?
-
-> +static int bcm2835_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
-> +{
-> +	struct bcm2835_pwm *pc = to_bcm2835_pwm(chip);
-> +	u32 value;
-> +
-> +	value = readl(pc->base) & ~(PWM_CONTROL_MASK << 8 * pwm->pwm);
-> +	value |= (PWM_CONTROL_ENABLE << (8 * pwm->pwm));
-
-It'd be nice to use a #define rather than hard-coded "8" here. Perhaps:
-
-#define PWM_CONTROL_STRIDE 8
-
-Why does _request() enable the PWM output; shouldn't that be deferred
-until _enable()? _free() might not want to disable the output, if the
-PWM core guarantees that _disable() is always called.
-
-> +static int bcm2835_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> +			      int duty_ns, int period_ns)
-> +{
-> +	struct bcm2835_pwm *pc = to_bcm2835_pwm(chip);
-> +
-> +	if (period_ns > MIN_PERIOD) {
-> +		writel(duty_ns / pc->scaler,
-> +			 pc->base + DUTY + pwm->pwm * CHANNEL);
-> +		writel(period_ns / pc->scaler,
-> +			pc->base + PERIOD + pwm->pwm * CHANNEL);
-> +	} else {
-> +		dev_err(pc->dev, "Period not supported\n");
-> +	}
-
-The "else" case should propagate the error. It'd be better to do the
-error-checking first to remove an indent level from the rest of the code:
-
-	if (period_ns <= MIN_PERIOD) {
-		dev_err(...);
-		return -EINVAL;
-	}
-	writel(...);
-
-> +static int bcm2835_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
-> +				enum pwm_polarity polarity)
-> +{
-> +	struct bcm2835_pwm *pc = to_bcm2835_pwm(chip);
-> +	u32 value;
-> +
-> +	if (polarity == PWM_POLARITY_NORMAL) {
-> +		value = readl(pc->base);
-> +		value &= ~(PWM_POLARITY << 8 * pwm->pwm);
-> +		writel(value, pc->base);
-> +	} else if (polarity == PWM_POLARITY_INVERSED) {
-> +		value = readl(pc->base);
-> +		value |= PWM_POLARITY << (8 * pwm->pwm);
-> +		writel(value, pc->base);
-> +	}
-
-If you move the readl/writel outside the if statement, you remove the
-duplication of code.
-
-> +static const struct pwm_ops bcm2835_pwm_ops = {
-...
-> +	.owner = THIS_MODULE,
-> +};
-
-Doesn't something in the driver core automatically set .owner now?
-Perhaps that's only for certain subsystems though?
-
-> +MODULE_AUTHOR("Bart Tanghe <bart.tanghe@thomasmore.be");
-
-That doesn't match the (c) message at the start of the file.
+Best regards,
+Tomasz
