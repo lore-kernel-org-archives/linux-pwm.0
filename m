@@ -1,157 +1,95 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v7 03/11] pwm: add support for atmel-hlcdc-pwm device
-Date: Mon, 6 Oct 2014 13:50:09 +0200
-Message-ID: <20141006135009.6cd980a1@bbrezillon>
+Subject: Re: [PATCH v7 06/11] drm: add DT bindings documentation for
+ atmel-hlcdc-dc driver
+Date: Mon, 6 Oct 2014 14:14:40 +0200
+Message-ID: <20141006141440.32fae2ef@bbrezillon>
 References: <1412175188-28278-1-git-send-email-boris.brezillon@free-electrons.com>
- <1412175188-28278-4-git-send-email-boris.brezillon@free-electrons.com>
- <20141006104634.GE25202@ulmo>
+	<1412175188-28278-7-git-send-email-boris.brezillon@free-electrons.com>
+	<20141006105433.GG25202@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20141006104634.GE25202@ulmo>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Lee Jones <lee.jones@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Kumar Gala <galak@codeaurora.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, Mark Yao <mark.yao@rock-chips.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:55310 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751895AbaJFMOp (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Oct 2014 08:14:45 -0400
+In-Reply-To: <20141006105433.GG25202@ulmo>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, Rob Clark <robdclark@gmail.com>, linux-arm-kernel@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Yao <mark.yao@rock-chips.com>
 
-T24gTW9uLCA2IE9jdCAyMDE0IDEyOjQ2OjM1ICswMjAwClRoaWVycnkgUmVkaW5nIDx0aGllcnJ5
-LnJlZGluZ0BnbWFpbC5jb20+IHdyb3RlOgoKPiBPbiBXZWQsIE9jdCAwMSwgMjAxNCBhdCAwNDo1
-MzowMFBNICswMjAwLCBCb3JpcyBCcmV6aWxsb24gd3JvdGU6Cj4gWy4uLl0KPiA+IGRpZmYgLS1n
-aXQgYS9kcml2ZXJzL3B3bS9LY29uZmlnIGIvZHJpdmVycy9wd20vS2NvbmZpZwo+ID4gaW5kZXgg
-YjgwMDc4My4uYWZiODk2YiAxMDA2NDQKPiA+IC0tLSBhL2RyaXZlcnMvcHdtL0tjb25maWcKPiA+
-ICsrKyBiL2RyaXZlcnMvcHdtL0tjb25maWcKPiA+IEBAIC01MCw2ICs1MCwxNiBAQCBjb25maWcg
-UFdNX0FUTUVMCj4gPiAgCSAgVG8gY29tcGlsZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hv
-b3NlIE0gaGVyZTogdGhlIG1vZHVsZQo+ID4gIAkgIHdpbGwgYmUgY2FsbGVkIHB3bS1hdG1lbC4K
-PiA+ICAKPiA+ICtjb25maWcgUFdNX0FUTUVMX0hMQ0RDX1BXTQo+ID4gKwl0cmlzdGF0ZSAiQXRt
-ZWwgSExDREMgUFdNIHN1cHBvcnQiCj4gPiArCXNlbGVjdCBNRkRfQVRNRUxfSExDREMKPiA+ICsJ
-ZGVwZW5kcyBvbiBPRgo+IAo+IFRoaXMgaXNuJ3QgcmVhbGx5IG5lY2Vzc2FyeSBzaW5jZSBNRkRf
-QVRNRUxfSExDREMgYWxyZWFkeSBkZXBlbmRzIG9uIE9GLgo+IAo+ID4gZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvcHdtL3B3bS1hdG1lbC1obGNkYy5jIGIvZHJpdmVycy9wd20vcHdtLWF0bWVsLWhsY2Rj
-LmMKPiBbLi4uXQo+ID4gbmV3IGZpbGUgbW9kZSAxMDA2NDQKPiA+IGluZGV4IDAwMDAwMDAuLjAy
-MzhmN2EKPiA+IC0tLSAvZGV2L251bGwKPiA+ICsrKyBiL2RyaXZlcnMvcHdtL3B3bS1hdG1lbC1o
-bGNkYy5jCj4gPiBAQCAtMCwwICsxLDIyOSBAQAo+ID4gKy8qCj4gPiArICogQ29weXJpZ2h0IChD
-KSAyMDE0IEZyZWUgRWxlY3Ryb25zCj4gPiArICogQ29weXJpZ2h0IChDKSAyMDE0IEF0bWVsCj4g
-PiArICoKPiA+ICsgKiBBdXRob3I6IEJvcmlzIEJSRVpJTExPTiA8Ym9yaXMuYnJlemlsbG9uQGZy
-ZWUtZWxlY3Ryb25zLmNvbT4KPiA+ICsgKgo+ID4gKyAqIFRoaXMgcHJvZ3JhbSBpcyBmcmVlIHNv
-ZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5IGl0Cj4gPiArICog
-dW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSB2ZXJzaW9u
-IDIgYXMgcHVibGlzaGVkIGJ5Cj4gPiArICogdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbi4K
-PiA+ICsgKgo+ID4gKyAqIFRoaXMgcHJvZ3JhbSBpcyBkaXN0cmlidXRlZCBpbiB0aGUgaG9wZSB0
-aGF0IGl0IHdpbGwgYmUgdXNlZnVsLCBidXQgV0lUSE9VVAo+ID4gKyAqIEFOWSBXQVJSQU5UWTsg
-d2l0aG91dCBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mIE1FUkNIQU5UQUJJTElUWSBvcgo+
-ID4gKyAqIEZJVE5FU1MgRk9SIEEgUEFSVElDVUxBUiBQVVJQT1NFLiAgU2VlIHRoZSBHTlUgR2Vu
-ZXJhbCBQdWJsaWMgTGljZW5zZSBmb3IKPiA+ICsgKiBtb3JlIGRldGFpbHMuCj4gPiArICoKPiA+
-ICsgKiBZb3Ugc2hvdWxkIGhhdmUgcmVjZWl2ZWQgYSBjb3B5IG9mIHRoZSBHTlUgR2VuZXJhbCBQ
-dWJsaWMgTGljZW5zZSBhbG9uZyB3aXRoCj4gPiArICogdGhpcyBwcm9ncmFtLiAgSWYgbm90LCBz
-ZWUgPGh0dHA6Ly93d3cuZ251Lm9yZy9saWNlbnNlcy8+Lgo+ID4gKyAqLwo+ID4gKwo+ID4gKyNp
-bmNsdWRlIDxsaW51eC9jbGsuaD4KPiA+ICsjaW5jbHVkZSA8bGludXgvbWZkL2F0bWVsLWhsY2Rj
-Lmg+Cj4gPiArI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPgo+ID4gKyNpbmNsdWRlIDxsaW51eC9w
-bGF0Zm9ybV9kZXZpY2UuaD4KPiA+ICsjaW5jbHVkZSA8bGludXgvcHdtLmg+Cj4gPiArI2luY2x1
-ZGUgPGxpbnV4L3JlZ21hcC5oPgo+ID4gKwo+ID4gKyNkZWZpbmUgQVRNRUxfSExDRENfUFdNQ1ZB
-TF9NQVNLCUdFTk1BU0soMTUsIDgpCj4gPiArI2RlZmluZSBBVE1FTF9ITENEQ19QV01DVkFMKHgp
-CQkoKHggPDwgOCkgJiBBVE1FTF9ITENEQ19QV01DVkFMX01BU0spCj4gCj4gWW91IG1pZ2h0IHdh
-bnQgdG8gdXNlIGFuIGV4dHJhIHBhaXIgb2YgcGFyZW50aGVzZXMgYXJvdW5kIHRoZSAieCIgYWJv
-dmUuCj4gCj4gPiArc3RydWN0IGF0bWVsX2hsY2RjX3B3bV9jaGlwIHsKPiAKPiBDYW4gd2UgbWFr
-ZSB0aGlzLi4uCj4gCj4gPiArCXN0cnVjdCBwd21fY2hpcCBjaGlwOwo+ID4gKwlzdHJ1Y3QgYXRt
-ZWxfaGxjZGMgKmhsY2RjOwo+ID4gKwlzdHJ1Y3QgY2xrICpjdXJfY2xrOwo+ID4gK307Cj4gPiAr
-Cj4gPiArc3RhdGljIGlubGluZSBzdHJ1Y3QgYXRtZWxfaGxjZGNfcHdtX2NoaXAgKgo+ID4gK3B3
-bV9jaGlwX3RvX2F0bWVsX2hsY2RjX3B3bV9jaGlwKHN0cnVjdCBwd21fY2hpcCAqY2hpcCkKPiAK
-PiAuLi4gYW5kIHRoaXMgYSBsaXR0bGUgc2hvcnRlcj8gVGhlcmUgaXMgYSBsb3Qgb2YgbGluZS13
-cmFwcGluZyBiZWxvdwo+IG9ubHkgYmVjYXVzZSB0aGlzIGlzIHZlcnkgbG9uZy4gSXQgc2VlbXMg
-bGlrZSBqdXN0IGRyb3BwaW5nIHRoZQo+IHB3bV9jaGlwXyBwcmVmaXggb24gdGhpcyBmdW5jdGlv
-biB3b3VsZCBiZSBlbm91Z2ggdG8gbm90IGV4Y2VlZCB0aGUKPiA3OC84MCBjaGFyYWN0ZXIgbGlt
-aXQuCj4gCj4gPiArewo+ID4gKwlyZXR1cm4gY29udGFpbmVyX29mKGNoaXAsIHN0cnVjdCBhdG1l
-bF9obGNkY19wd21fY2hpcCwgY2hpcCk7Cj4gPiArfQo+ID4gKwo+ID4gK3N0YXRpYyBpbnQgYXRt
-ZWxfaGxjZGNfcHdtX2NvbmZpZyhzdHJ1Y3QgcHdtX2NoaXAgKmMsCj4gPiArCQkJCSAgc3RydWN0
-IHB3bV9kZXZpY2UgKnB3bSwKPiA+ICsJCQkJICBpbnQgZHV0eV9ucywgaW50IHBlcmlvZF9ucykK
-PiA+ICt7Cj4gPiArCXN0cnVjdCBhdG1lbF9obGNkY19wd21fY2hpcCAqY2hpcCA9Cj4gPiArCQkJ
-CXB3bV9jaGlwX3RvX2F0bWVsX2hsY2RjX3B3bV9jaGlwKGMpOwo+ID4gKwlzdHJ1Y3QgYXRtZWxf
-aGxjZGMgKmhsY2RjID0gY2hpcC0+aGxjZGM7Cj4gPiArCXN0cnVjdCBjbGsgKm5ld19jbGsgPSBo
-bGNkYy0+c2xvd19jbGs7Cj4gPiArCXU2NCBwd21jdmFsID0gZHV0eV9ucyAqIDI1NjsKPiA+ICsJ
-dW5zaWduZWQgbG9uZyBjbGtfZnJlcTsKPiA+ICsJdTY0IGNsa19wZXJpb2RfbnM7Cj4gPiArCXUz
-MiBwd21jZmc7Cj4gPiArCWludCBwcmVzOwo+ID4gKwo+ID4gKwljbGtfZnJlcSA9IGNsa19nZXRf
-cmF0ZShuZXdfY2xrKTsKPiA+ICsJY2xrX3BlcmlvZF9ucyA9IDEwMDAwMDAwMDA7Cj4gCj4gTlNF
-Q19QRVJfU0VDPwo+IAo+ID4gKwljbGtfcGVyaW9kX25zICo9IDI1NjsKPiAKPiBQZXJoYXBzIGNv
-bGxhcHNlIHRoZSBhYm92ZSB0d28gaW4gYSBzaW5nbGUgbGluZToKPiAKPiAJY2xrX3BlcmlvZF9u
-cyA9IE5TRUNfUEVSX1NFQyAqIDI1NjsKPiAKPiA/Cj4gCj4gPiArCWRvX2RpdihjbGtfcGVyaW9k
-X25zLCBjbGtfZnJlcSk7Cj4gPiArCj4gPiArCWlmIChjbGtfcGVyaW9kX25zID4gcGVyaW9kX25z
-KSB7Cj4gPiArCQluZXdfY2xrID0gaGxjZGMtPnN5c19jbGs7Cj4gPiArCQljbGtfZnJlcSA9IGNs
-a19nZXRfcmF0ZShuZXdfY2xrKTsKPiA+ICsJCWNsa19wZXJpb2RfbnMgPSAxMDAwMDAwMDAwOwo+
-ID4gKwkJY2xrX3BlcmlvZF9ucyAqPSAyNTY7Cj4gCj4gTWF5YmU6Cj4gCj4gCWNsa19wZXJpb2Rf
-bnMgPSBOU0VDX1BFUl9TRUMgKiAyNTY7Cj4gCj4gPwo+IAo+ID4gKwkJZG9fZGl2KGNsa19wZXJp
-b2RfbnMsIGNsa19mcmVxKTsKPiA+ICsJfQo+ID4gKwo+ID4gKwlmb3IgKHByZXMgPSAwOyBwcmVz
-IDw9IEFUTUVMX0hMQ0RDX1BXTVBTX01BWDsgcHJlcysrKSB7Cj4gPiArCQlpZiAoKGNsa19wZXJp
-b2RfbnMgPDwgcHJlcykgPj0gcGVyaW9kX25zKQo+ID4gKwkJCWJyZWFrOwo+ID4gKwl9Cj4gCj4g
-VGVjaG5pY2FsbHkgdGhlcmUncyBubyBuZWVkIGZvciB0aGUgY3VybHkgYnJhY2VzLgo+IAo+ID4g
-Kwo+ID4gKwlpZiAocHJlcyA+IEFUTUVMX0hMQ0RDX1BXTVBTX01BWCkKPiA+ICsJCXJldHVybiAt
-RUlOVkFMOwo+IAo+IEkgdGhpbmsgdGhlIGNvbmRpdGlvbiBhYm92ZSBuZWVkcyB0byBiZSAicHJl
-cyA9PSBBVE1FTF9ITENEQ19QV01QU19NQVgiLAo+IG90aGVyd2lzZSB0aGlzIHdpbGwgbmV2ZXIg
-YmUgdHJ1ZS4KCkFjdHVhbGx5IHRoZSBwcmV2aW91cyBsb29wIGlzOgoKCWZvciAocHJlcyA9IDA7
-IHByZXMgKjw9KiBBVE1FTF9ITENEQ19QV01QU19NQVg7IHByZXMrKykKCnRodXMgcHJlcyB3aWxs
-IGJlIGVxdWFsIHRvIEFUTUVMX0hMQ0RDX1BXTVBTX01BWCArIDEgd2hlbiBubwphcHByb3ByaWF0
-ZSBwcmVzY2FsZXIgaXMgZm91bmQuCgo+IAo+ID4gKwo+ID4gKwlwd21jZmcgPSBBVE1FTF9ITENE
-Q19QV01QUyhwcmVzKTsKPiA+ICsKPiA+ICsJaWYgKG5ld19jbGsgIT0gY2hpcC0+Y3VyX2Nsaykg
-ewo+ID4gKwkJdTMyIGdlbmNmZyA9IDA7Cj4gPiArCj4gPiArCQljbGtfcHJlcGFyZV9lbmFibGUo
-bmV3X2Nsayk7Cj4gCj4gVGhpcyBjYW4gZmFpbCBzbyBpdCBuZWVkcyBlcnJvci1jaGVja2luZy4K
-PiAKPiA+ICsJCWNsa19kaXNhYmxlX3VucHJlcGFyZShjaGlwLT5jdXJfY2xrKTsKPiA+ICsJCWNo
-aXAtPmN1cl9jbGsgPSBuZXdfY2xrOwo+ID4gKwo+ID4gKwkJaWYgKG5ld19jbGsgIT0gaGxjZGMt
-PnNsb3dfY2xrKQo+ID4gKwkJCWdlbmNmZyA9IEFUTUVMX0hMQ0RDX0NMS1BXTVNFTDsKPiAKPiBU
-aGVyZSBhcmUgbG90cyBvZiBuZWdhdGlvbnMgaGVyZSwgd2hpY2ggY2F1c2VkIG1lIHRvIHRoaW5r
-IHRoYXQgdGhlcmUKPiB3YXMgYSB0aGlyZCBjbG9jayBpbnZvbHZlZCBoZXJlLCBidXQgaXQgc2Vl
-bXMgbGlrZSBuZXdfY2xrIGNhbiBlaXRoZXIgYmUKPiBzbG93X2NsayBvciBzeXNfY2xrLgo+IAo+
-IFBlcmhhcHMgbWFraW5nIHRoaXMgY29uZGl0aW9uICJuZXdfY2xrID09IGhsY2RjLT5zeXNfY2xr
-IiB3b3VsZCBpbXByb3ZlCj4gY2xhcml0eSBoZXJlLiBNYXliZSBhIGNvbW1lbnQgc29tZXdoZXJl
-IHdvdWxkIGhlbHA/Cj4gCj4gPiArCQlyZWdtYXBfdXBkYXRlX2JpdHMoaGxjZGMtPnJlZ21hcCwg
-QVRNRUxfSExDRENfQ0ZHKDApLAo+ID4gKwkJCQkgICBBVE1FTF9ITENEQ19DTEtQV01TRUwsIGdl
-bmNmZyk7Cj4gPiArCX0KPiA+ICsKPiA+ICsJZG9fZGl2KHB3bWN2YWwsIHBlcmlvZF9ucyk7Cj4g
-PiArCWlmIChwd21jdmFsID4gMjU1KQo+IAo+IFRoZSBQV00gY29yZSBhbHJlYWR5IG1ha2VzIHN1
-cmUgdGhhdCBkdXR5X25zIDw9IHBlcmlvZF9ucywgc28gcHdtY3ZhbAo+IGNvdWxkIGJlIGFueXdo
-ZXJlIGJldHdlZW4gMCBhbmQgMjU2IGhlcmUuIFdoZXJlIGRvZXMgdGhlIGRpc2Nvbm5lY3QgY29t
-ZQo+IGZyb20/IFdoeSBub3QgbWFrZSBwd21jdmFsID0gZHV0eV9ucyAqIDI1NSBpZiB0aGF0J3Mg
-dGhlIG1heGltdW0/CgpIZXJlIGlzIHdoYXQgdGhlIGRhdGFzaGVldCBzYXlzOgoKIkR1ZSB0byB0
-aGUgY29tcGFyaXNvbiBtZWNoYW5pc20sIHRoZSBvdXRwdXQgcHVsc2UgaGFzIGEgd2lkdGggYmV0
-d2Vlbgp6ZXJvIGFuZCAyNTUgUFdNIGNvdW50ZXIgY3ljbGVzLiBUaHVzIGJ5IGFkZGluZyBhIHNp
-bXBsZSBwYXNzaXZlIGZpbHRlcgpvdXRzaWRlIHRoZSBjaGlwLCBhbiBhbmFsb2cgdm9sdGFnZSBi
-ZXR3ZWVuIDAgYW5kICgyNTUvMjU2KSDDlyBWREQgY2FuCmJlIG9idGFpbmVkIChmb3IgdGhlIHBv
-c2l0aXZlIHBvbGFyaXR5IGNhc2UsIG9yIGJldHdlZW4gKDEvMjU2KSDDlyBWREQKYW5kIFZERCBm
-b3IgdGhlIG5lZ2F0aXZlIHBvbGFyaXR5IGNhc2UpLiBPdGhlciB2b2x0YWdlIHZhbHVlcyBjYW4g
-YmUKb2J0YWluZWQgYnkgYWRkaW5nIGFjdGl2ZSBleHRlcm5hbCBjaXJjdWl0cnkuIgoKR2l2ZW4g
-dGhpcyBleHBsYW5hdGlvbiB3ZSBzaG91bGQgZGl2aWRlIGJ5IDI1NiwgYnV0IDI1Ni8yNTYgaXMg
-YQpmb3JiaWRkZW4gdmFsdWUsIGhlbmNlIEkganVzdCB1c2UgdGhlIG1heGltdW0gYXZhaWxhYmxl
-IG9uZSAoMjU1KSB3aGVuCkknbSBhc2tlZCB0byBjb25maWd1cmUgYSBkdXR5IGN5Y2xlIG9jY3Vw
-eWluZyB0aGUgd2hvbGUgcGVyaW9kLgoKPiAKPiA+ICsJCXB3bWN2YWwgPSAyNTU7Cj4gPiArCj4g
-PiArCXB3bWNmZyB8PSBBVE1FTF9ITENEQ19QV01DVkFMKHB3bWN2YWwpOwo+ID4gKwo+ID4gKwly
-ZWdtYXBfdXBkYXRlX2JpdHMoaGxjZGMtPnJlZ21hcCwgQVRNRUxfSExDRENfQ0ZHKDYpLAo+ID4g
-KwkJCSAgIEFUTUVMX0hMQ0RDX1BXTUNWQUxfTUFTSyB8IEFUTUVMX0hMQ0RDX1BXTVBTX01BU0ss
-Cj4gPiArCQkJICAgcHdtY2ZnKTsKPiA+ICsKPiA+ICsJcmV0dXJuIDA7Cj4gPiArfQo+ID4gKwo+
-ID4gK3N0YXRpYyBpbnQgYXRtZWxfaGxjZGNfcHdtX3NldF9wb2xhcml0eShzdHJ1Y3QgcHdtX2No
-aXAgKmMsCj4gPiArCQkJCQlzdHJ1Y3QgcHdtX2RldmljZSAqcHdtLAo+ID4gKwkJCQkJZW51bSBw
-d21fcG9sYXJpdHkgcG9sYXJpdHkpCj4gPiArewo+ID4gKwlzdHJ1Y3QgYXRtZWxfaGxjZGNfcHdt
-X2NoaXAgKmNoaXAgPQo+ID4gKwkJCQlwd21fY2hpcF90b19hdG1lbF9obGNkY19wd21fY2hpcChj
-KTsKPiA+ICsJc3RydWN0IGF0bWVsX2hsY2RjICpobGNkYyA9IGNoaXAtPmhsY2RjOwo+ID4gKwl1
-MzIgY2ZnID0gMDsKPiA+ICsKPiA+ICsJaWYgKHBvbGFyaXR5ID09IFBXTV9QT0xBUklUWV9OT1JN
-QUwpCj4gPiArCQljZmcgPSBBVE1FTF9ITENEQ19QV01QT0w7Cj4gCj4gVGhhdCdzIHN0cmFuZ2Uu
-IEludmVyc2UgcG9sYXJpdHkgaXMgdGhlIGRlZmF1bHQgb24gdGhpcyBoYXJkd2FyZT8KClF1b3Rl
-IGZyb20gdGhlIGRhdGFzaGVldDoKCiIK4oCiIFBXTVBPTDogTENEIENvbnRyb2xsZXIgUFdNIFNp
-Z25hbCBQb2xhcml0eQpUaGlzIGJpdCBkZWZpbmVzIHRoZSBwb2xhcml0eSBvZiB0aGUgUFdNIG91
-dHB1dCBzaWduYWwuIElmIHNldCB0byBvbmUsCnRoZSBvdXRwdXQgcHVsc2VzIGFyZSBoaWdoIGxl
-dmVsICh0aGUgb3V0cHV0IHdpbGwgYmUgaGlnaCB3aGVuLSBldmVyCnRoZSB2YWx1ZSBpbiB0aGUg
-Y291bnRlciBpcyBsZXNzIHRoYW4gdGhlIHZhbHVlIENWQUwpIElmIHNldCB0byB6ZXJvLAp0aGUg
-b3V0cHV0IHB1bHNlcyBhcmUgbG93IGxldmVsLgoiCgpNeSB1bmRlcnN0YW5kaW5nIGlzIHRoYXQg
-QVRNRUxfSExDRENfUFdNUE9MIHNob3VsZCBiZSBzZXQgd2hlbiB1c2luZwpub3JtYWwgcG9sYXJp
-dHkgKGFuZCBteSB0ZXN0cyBjb25maXJtIHRoYXQgaXQgd29ya3MgYXMgZXhwZWN0ZWQgOy0pKS4K
-CgpJJ2xsIGFkZHJlc3MgYWxsIG90aGVyIGNvbW1lbnRzIHlvdSBtYWRlIGluIHRoaXMgcmV2aWV3
-LgoKVGhhbmtzLAoKQm9yaXMKCgotLSAKQm9yaXMgQnJlemlsbG9uLCBGcmVlIEVsZWN0cm9ucwpF
-bWJlZGRlZCBMaW51eCBhbmQgS2VybmVsIGVuZ2luZWVyaW5nCmh0dHA6Ly9mcmVlLWVsZWN0cm9u
-cy5jb20KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJp
-LWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6
-Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+On Mon, 6 Oct 2014 12:54:34 +0200
+Thierry Reding <thierry.reding@gmail.com> wrote:
+
+> On Wed, Oct 01, 2014 at 04:53:03PM +0200, Boris Brezillon wrote:
+> > From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+> > 
+> > The Atmel HLCDC (HLCD Controller) IP available on some Atmel SoCs (i.e.
+> > at91sam9n12, at91sam9x5 family or sama5d3 family) provides a display
+> > controller device.
+> > 
+> > The HLCDC block provides a single RGB output port, and only supports LCD
+> > panels connection to LCD panels for now.
+> > 
+> > The atmel,panel property link the HLCDC RGB output with the LCD panel
+> > connected on this port (note that the HLCDC RGB connector implementation
+> > makes use of the DRM panel framework).
+> > 
+> > Connection to other external devices (DRM bridges) might be added later by
+> > mean of a new atmel,xxx (atmel,bridge) property.
+> > 
+> > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> > ---
+> >  .../devicetree/bindings/drm/atmel-hlcdc-dc.txt     | 53 ++++++++++++++++++++++
+> >  1 file changed, 53 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
+> > 
+> > diff --git a/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
+> > new file mode 100644
+> > index 0000000..ebc1a91
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
+> > @@ -0,0 +1,53 @@
+> > +Device-Tree bindings for Atmel's HLCDC (High LCD Controller) DRM driver
+> > +
+> > +The Atmel HLCDC Display Controller is subdevice of the HLCDC MFD device.
+> > +See ../mfd/atmel-hlcdc.txt for more details.
+> > +
+> > +Required properties:
+> > + - compatible: value should be "atmel,hlcdc-display-controller"
+> > + - pinctrl-names: the pin control state names. Should contain "default".
+> > + - pinctrl-0: should contain the default pinctrl states.
+> > + - #address-cells: should be set to 1.
+> > + - #size-cells: should be set to 0.
+> > +
+> > +Required children nodes:
+> > + Children nodes are encoding available output ports and their connections
+> > + to external devices using the OF graph reprensentation (see ../graph.txt).
+> > + At least one port node is required.
+> 
+> Are the connections configurable at runtime? Does the SoC have IP blocks
+> for HDMI or other types of outputs or does it provide only RGB output to
+> external blocks?
+
+No, there's only one RGB output port, but you can connect more than one
+device on the RGB port (should we call it DPI port ?).
+Actually Atmel connected an HDMI encoder and an LCD panel connected on
+the same port on their dev kit.
+
+> 
+> When you say "at least one port", how are multiple ports going to work
+> if you have only a single display controller?
+
+No there's only one port for now, I'll rework the last statement.
+
+> 
+> Thierry
+
+
+
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
