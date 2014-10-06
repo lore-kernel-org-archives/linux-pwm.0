@@ -1,14 +1,14 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v7 10/11] ARM: at91/dt: add LCD panel description to
- sama5d3xdm.dtsi
-Date: Mon, 6 Oct 2014 13:01:16 +0200
-Message-ID: <20141006110115.GH25202@ulmo>
+Subject: Re: [PATCH v7 11/11] ARM: at91/dt: enable the LCD panel on
+ sama5d3xek boards
+Date: Mon, 6 Oct 2014 13:01:43 +0200
+Message-ID: <20141006110142.GI25202@ulmo>
 References: <1412175188-28278-1-git-send-email-boris.brezillon@free-electrons.com>
- <1412175188-28278-11-git-send-email-boris.brezillon@free-electrons.com>
+ <1412175188-28278-12-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0233613264=="
+Content-Type: multipart/mixed; boundary="===============1609784641=="
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1412175188-28278-11-git-send-email-boris.brezillon@free-electrons.com>
+In-Reply-To: <1412175188-28278-12-git-send-email-boris.brezillon@free-electrons.com>
 List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
@@ -23,99 +23,80 @@ Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@v
 List-Id: linux-pwm@vger.kernel.org
 
 
---===============0233613264==
+--===============1609784641==
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Dx9iWuMxHO1cCoFc"
+	protocol="application/pgp-signature"; boundary="uJWb33pM2TcUAXIl"
 Content-Disposition: inline
 
 
---Dx9iWuMxHO1cCoFc
+--uJWb33pM2TcUAXIl
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 01, 2014 at 04:53:07PM +0200, Boris Brezillon wrote:
-[...]
-> diff --git a/arch/arm/boot/dts/sama5d3xdm.dtsi b/arch/arm/boot/dts/sama5d3xdm.dtsi
-[...]
-> +	bl_reg: backlight_regulator {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "backlight-power-supply";
-> +		regulator-min-microvolt = <5000000>;
-> +		regulator-max-microvolt = <5000000>;
-> +		status = "disabled";
-> +	};
-> +
-> +	panel_reg: panel_regulator {
-> +		compatible = "regulator-fixed";
-> +		regulator-name = "panel-power-supply";
-> +		regulator-min-microvolt = <3300000>;
-> +		regulator-max-microvolt = <3300000>;
-> +		status = "disabled";
-> +	};
-> +
-> +	backlight: backlight {
-> +		compatible = "pwm-backlight";
-> +		pwms = <&hlcdc_pwm 0 50000 0>;
-> +		brightness-levels = <0 4 8 16 32 64 128 255>;
-> +		default-brightness-level = <6>;
-> +		power-supply = <&bl_reg>;
-> +		status = "disabled";
-> +	};
-
-Why are these all disabled? Patch 11/11 now needs to enable all of them
-explicitly for each board that uses this display module.
-
-> +	panel: panel {
-> +		compatible = "foxlink,fl500wvr00-a0t", "simple-panel";
-
-"simple-panel" shouldn't be in this list. There's nothing useful a
-driver can do by matching on it.
-
-> +		backlight = <&backlight>;
-> +		power-supply = <&panel_reg>;
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +		status = "disabled";
-> +
-> +		port@0 {
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +
-> +			panel_input: endpoint@0 {
-> +				reg = <0>;
-> +				remote-endpoint = <&hlcdc_panel_output>;
+On Wed, Oct 01, 2014 at 04:53:08PM +0200, Boris Brezillon wrote:
+> From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+>=20
+> Enable LCD related nodes.
+>=20
+> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> ---
+>  arch/arm/boot/dts/sama5d31ek.dts | 20 ++++++++++++++++++++
+>  arch/arm/boot/dts/sama5d33ek.dts | 20 ++++++++++++++++++++
+>  arch/arm/boot/dts/sama5d34ek.dts | 20 ++++++++++++++++++++
+>  arch/arm/boot/dts/sama5d36ek.dts | 20 ++++++++++++++++++++
+>  4 files changed, 80 insertions(+)
+>=20
+> diff --git a/arch/arm/boot/dts/sama5d31ek.dts b/arch/arm/boot/dts/sama5d3=
+1ek.dts
+> index 04eec0d..6e605fe 100644
+> --- a/arch/arm/boot/dts/sama5d31ek.dts
+> +++ b/arch/arm/boot/dts/sama5d31ek.dts
+> @@ -33,6 +33,10 @@
+>  				status =3D "okay";
+>  			};
+> =20
+> +			hlcdc: hlcdc@f0030000 {
+> +				status =3D "okay";
 > +			};
+> +
+>  			macb1: ethernet@f802c000 {
+>  				status =3D "okay";
+>  			};
+> @@ -46,6 +50,22 @@
 >  		};
+>  	};
+> =20
+> +	bl_reg: backlight_regulator {
 
-There's no support for OF graphs in simple-panel, so this is unused,
-isn't it?
+No need to repeat the labels if they're already in the .dtsi file.
 
 Thierry
 
---Dx9iWuMxHO1cCoFc
+--uJWb33pM2TcUAXIl
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJUMnZ7AAoJEN0jrNd/PrOh7dQQALTxam4ysRj94M0DSSCpPK8u
-xAzUFOMBRrJscYVHkyeSUY4RVsvSGnmjR/IY4QcBY1LX2+UnByOWCeMCw2hrhXi9
-1OeJMuuGOnubNxN6KOwv1rIZyLeoNZPLuKsUGcL6E/+N4ZYFGuNpklvLdRkCvakn
-XMR/TV/+8kVw+/s06IqxAZkYsWU0uKo+N+aonOMzRkiGd0+CaBlQAhzeMJqnnUWX
-eOt+W9Ao3g6zbiYTY8mI4oR/HjFYS9JBH0c9SKMVcXVqysEVjQDFqR+JjAorY6BK
-r6iTJEf6sNvCFr2QyhRFWCQrtS/RJytkyry5h0+spZw61Q4smzsTIcNl8fP14eo0
-6v92i3/oLqwWFa5oFb3JHjGHYcyF4uESZVBcQbn2+M3DipwaoHOdpTK74Xbep/vC
-Tv+U1f8GOuey0TwZh/BEWcuz3jqR9VzAIDqRdGPK18n3TrdOkFHXb2A2ZHXGwNvC
-pUOBAZaLcJw2ulbF82KiKBxALED5ozZ6wj63fLLKYDvcb30lSpnSylqIZX4iW9jL
-qoK8SLiMPvTIx0IVAB/yz4+2/m9byatTqwGjnU1hI5+baxOvQ6/K9gfYYdFV6NYb
-UQSvcxRWdCsE3xWHlXYWn+CrQNjI2+lvfA+2WsazCvdAbUSlvx0KQyifIdu4YjfT
-YA8CyY24JMyy2f7R0LXh
-=7CgZ
+iQIcBAEBAgAGBQJUMnaWAAoJEN0jrNd/PrOhqLQQAJ67GFu6Rg1ip1QQ1ZQ26b7C
+QoQBfj0fTqI2Oxnfk88131BlNdAu6RkJV2rG4nYUKo/tOnf/+RSp3NF1XMNQelAC
+NBnpYdq00/13HMPHepx6jKweJVLceT1q9WZu649Wiii8RKSnefefUq2VlfGCeLFW
+ttKBQRXXqm90VmApN69AvyRb6hLAWCabZBYWerHKnUJ6hvIUcOMvVXBTNfWGX4O+
+dkwYMXkVrOZAeB1DLwZx1ZSRin3hoInWH/7LqiOyBk2fKKl4Id056GYT2wgC1fIw
+kIHxI548GqJstHEMipWl4sSWTUfeV9hn5pObPL8BsDGVo5Ax9XOg4cMpXMAbfqHm
+/UOC1fhC9wIUfuZkrdlLzWKUAG73ar0qRDa1HK/pyNzL9FpG7SoucfW7oCNeGI0h
+TJh+Hy4xSlcazN767f7ng5ViGOat2FfNgmBV00/DIYe502uv2Z2YquWqw45j5QfE
+7Q2Izqnv1jJKNfxJq4vhA9czYOPgGUG9i4bS1kP3p3wFB1aLyu6MjzkRRjjHyjMq
+vztfZiFZIeDSRg3BZ5wBbURLxayaNizcCMfcB19DjVLVMwUG/7BU+PNVA+BVS/59
+m6iPjs+BqB/B8HoC+roZR41TaIOTPfR9hUeK6MzdsAry+eop/MlPwvvHyGDRgYmL
+fKJF1ERoDy14oev9a6I2
+=CONy
 -----END PGP SIGNATURE-----
 
---Dx9iWuMxHO1cCoFc--
+--uJWb33pM2TcUAXIl--
 
---===============0233613264==
+--===============1609784641==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -126,4 +107,4 @@ dri-devel mailing list
 dri-devel@lists.freedesktop.org
 http://lists.freedesktop.org/mailman/listinfo/dri-devel
 
---===============0233613264==--
+--===============1609784641==--
