@@ -1,110 +1,76 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v7 11/11] ARM: at91/dt: enable the LCD panel on
- sama5d3xek boards
-Date: Mon, 6 Oct 2014 13:01:43 +0200
-Message-ID: <20141006110142.GI25202@ulmo>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH v7 04/11] pwm: add DT bindings documentation for
+ atmel-hlcdc-pwm driver
+Date: Mon, 6 Oct 2014 12:33:26 +0100
+Message-ID: <20141006113326.GG24686@leverpostej>
 References: <1412175188-28278-1-git-send-email-boris.brezillon@free-electrons.com>
- <1412175188-28278-12-git-send-email-boris.brezillon@free-electrons.com>
+ <1412175188-28278-5-git-send-email-boris.brezillon@free-electrons.com>
+ <20141006101350.GD25202@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1609784641=="
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1412175188-28278-12-git-send-email-boris.brezillon@free-electrons.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Lee Jones <lee.jones@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Kumar Gala <galak@codeaurora.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, Mark Yao <mark.yao@rock-chips.com>
-List-Id: linux-pwm@vger.kernel.org
-
-
---===============1609784641==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="uJWb33pM2TcUAXIl"
-Content-Disposition: inline
-
-
---uJWb33pM2TcUAXIl
 Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:35400 "EHLO
+	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751316AbaJFLdd (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Oct 2014 07:33:33 -0400
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20141006101350.GD25202@ulmo>
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, David Airlie <airlied@linux.ie>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Rob Clark <robdclark@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Mark Yao <mark.y>
 
-On Wed, Oct 01, 2014 at 04:53:08PM +0200, Boris Brezillon wrote:
-> From: Boris BREZILLON <boris.brezillon@free-electrons.com>
->=20
-> Enable LCD related nodes.
->=20
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> ---
->  arch/arm/boot/dts/sama5d31ek.dts | 20 ++++++++++++++++++++
->  arch/arm/boot/dts/sama5d33ek.dts | 20 ++++++++++++++++++++
->  arch/arm/boot/dts/sama5d34ek.dts | 20 ++++++++++++++++++++
->  arch/arm/boot/dts/sama5d36ek.dts | 20 ++++++++++++++++++++
->  4 files changed, 80 insertions(+)
->=20
-> diff --git a/arch/arm/boot/dts/sama5d31ek.dts b/arch/arm/boot/dts/sama5d3=
-1ek.dts
-> index 04eec0d..6e605fe 100644
-> --- a/arch/arm/boot/dts/sama5d31ek.dts
-> +++ b/arch/arm/boot/dts/sama5d31ek.dts
-> @@ -33,6 +33,10 @@
->  				status =3D "okay";
->  			};
-> =20
-> +			hlcdc: hlcdc@f0030000 {
-> +				status =3D "okay";
-> +			};
-> +
->  			macb1: ethernet@f802c000 {
->  				status =3D "okay";
->  			};
-> @@ -46,6 +50,22 @@
->  		};
->  	};
-> =20
-> +	bl_reg: backlight_regulator {
+On Mon, Oct 06, 2014 at 11:13:51AM +0100, Thierry Reding wrote:
+> On Wed, Oct 01, 2014 at 04:53:01PM +0200, Boris Brezillon wrote:
+> > From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+> > 
+> > The HLCDC IP available in some Atmel SoCs (i.e. sam9x5i.e. at91sam9n12,
+> > at91sam9x5 family or sama5d3 family) provide a PWM device.
+> > 
+> > The DT bindings used for this PWM device is following the default 3 cells
+> > bindings described in Documentation/devicetree/bindings/pwm/pwm.txt.
+> > 
+> > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> > ---
+> >  .../devicetree/bindings/pwm/atmel-hlcdc-pwm.txt    | 55 ++++++++++++++++++++++
+> >  1 file changed, 55 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
+> > 
+> > diff --git a/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
+> > new file mode 100644
+> > index 0000000..86ad3e2
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
+> > @@ -0,0 +1,55 @@
+> > +Device-Tree bindings for Atmel's HLCDC (High LCD Controller) PWM driver
+> > +
+> > +The Atmel HLCDC PWM is subdevice of the HLCDC MFD device.
+> > +See ../mfd/atmel-hlcdc.txt for more details.
+> > +
+> > +Required properties:
+> > + - compatible: value should be one of the following:
+> > +   "atmel,hlcdc-pwm"
+> > + - pinctr-names: the pin control state names. Should contain "default".
+> > + - pinctrl-0: should contain the pinctrl states described by pinctrl
+> > +   default.
+> > + - #pwm-cells: should be set to 3. This PWM chip use the default 3 cells
+> > +   bindings defined in Documentation/devicetree/bindings/pwm/pwm.txt.
+> > +   The first cell encodes the PWM id (0 is the only acceptable value here,
+> > +   because the chip only provide one PWM).
+> > +   The second cell encodes the PWM period in nanoseconds.
+> > +   The third cell encodes the PWM flags (the only supported flag is
+> > +   PWM_POLARITY_INVERTED)
+> 
+> Given that this already refers to the default 3 cells binding it doesn't
+> need to repeat part of the contents of pwm.txt.
 
-No need to repeat the labels if they're already in the .dtsi file.
+Given that pwm.txt states:
 
-Thierry
+pwm-specifier : array of #pwm-cells specifying the given PWM 
+                (controller specific)
 
---uJWb33pM2TcUAXIl
-Content-Type: application/pgp-signature
+I'd leave it here. Just because pwm.txt gives an example of a controller
+specific meaning for the pwm cells, I don't think we should rely on it
+everywhere.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJUMnaWAAoJEN0jrNd/PrOhqLQQAJ67GFu6Rg1ip1QQ1ZQ26b7C
-QoQBfj0fTqI2Oxnfk88131BlNdAu6RkJV2rG4nYUKo/tOnf/+RSp3NF1XMNQelAC
-NBnpYdq00/13HMPHepx6jKweJVLceT1q9WZu649Wiii8RKSnefefUq2VlfGCeLFW
-ttKBQRXXqm90VmApN69AvyRb6hLAWCabZBYWerHKnUJ6hvIUcOMvVXBTNfWGX4O+
-dkwYMXkVrOZAeB1DLwZx1ZSRin3hoInWH/7LqiOyBk2fKKl4Id056GYT2wgC1fIw
-kIHxI548GqJstHEMipWl4sSWTUfeV9hn5pObPL8BsDGVo5Ax9XOg4cMpXMAbfqHm
-/UOC1fhC9wIUfuZkrdlLzWKUAG73ar0qRDa1HK/pyNzL9FpG7SoucfW7oCNeGI0h
-TJh+Hy4xSlcazN767f7ng5ViGOat2FfNgmBV00/DIYe502uv2Z2YquWqw45j5QfE
-7Q2Izqnv1jJKNfxJq4vhA9czYOPgGUG9i4bS1kP3p3wFB1aLyu6MjzkRRjjHyjMq
-vztfZiFZIeDSRg3BZ5wBbURLxayaNizcCMfcB19DjVLVMwUG/7BU+PNVA+BVS/59
-m6iPjs+BqB/B8HoC+roZR41TaIOTPfR9hUeK6MzdsAry+eop/MlPwvvHyGDRgYmL
-fKJF1ERoDy14oev9a6I2
-=CONy
------END PGP SIGNATURE-----
-
---uJWb33pM2TcUAXIl--
-
---===============1609784641==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-dri-devel mailing list
-dri-devel@lists.freedesktop.org
-http://lists.freedesktop.org/mailman/listinfo/dri-devel
-
---===============1609784641==--
+Mark.
