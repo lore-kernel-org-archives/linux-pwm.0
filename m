@@ -1,76 +1,54 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH v7 04/11] pwm: add DT bindings documentation for
- atmel-hlcdc-pwm driver
-Date: Mon, 6 Oct 2014 12:33:26 +0100
-Message-ID: <20141006113326.GG24686@leverpostej>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH v7 01/11] mfd: add atmel-hlcdc driver
+Date: Mon, 6 Oct 2014 13:38:20 +0200
+Message-ID: <20141006133820.4905847a@bbrezillon>
 References: <1412175188-28278-1-git-send-email-boris.brezillon@free-electrons.com>
- <1412175188-28278-5-git-send-email-boris.brezillon@free-electrons.com>
- <20141006101350.GD25202@ulmo>
+	<1412175188-28278-2-git-send-email-boris.brezillon@free-electrons.com>
+	<20141006104917.GF25202@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from cam-admin0.cambridge.arm.com ([217.140.96.50]:35400 "EHLO
-	cam-admin0.cambridge.arm.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751316AbaJFLdd (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Oct 2014 07:33:33 -0400
-Content-Disposition: inline
-In-Reply-To: <20141006101350.GD25202@ulmo>
+Received: from top.free-electrons.com ([176.31.233.9]:55071 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751407AbaJFLiY (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Oct 2014 07:38:24 -0400
+In-Reply-To: <20141006104917.GF25202@ulmo>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, David Airlie <airlied@linux.ie>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Rob Clark <robdclark@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <Pawel.Moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Mark Yao <mark.y>
+Cc: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, Rob Clark <robdclark@gmail.com>, linux-arm-kernel@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Yao <mark.yao@rock-chips.com>
 
-On Mon, Oct 06, 2014 at 11:13:51AM +0100, Thierry Reding wrote:
-> On Wed, Oct 01, 2014 at 04:53:01PM +0200, Boris Brezillon wrote:
-> > From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-> > 
-> > The HLCDC IP available in some Atmel SoCs (i.e. sam9x5i.e. at91sam9n12,
-> > at91sam9x5 family or sama5d3 family) provide a PWM device.
-> > 
-> > The DT bindings used for this PWM device is following the default 3 cells
-> > bindings described in Documentation/devicetree/bindings/pwm/pwm.txt.
-> > 
-> > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> > ---
-> >  .../devicetree/bindings/pwm/atmel-hlcdc-pwm.txt    | 55 ++++++++++++++++++++++
-> >  1 file changed, 55 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
-> > 
-> > diff --git a/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
-> > new file mode 100644
-> > index 0000000..86ad3e2
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
-> > @@ -0,0 +1,55 @@
-> > +Device-Tree bindings for Atmel's HLCDC (High LCD Controller) PWM driver
-> > +
-> > +The Atmel HLCDC PWM is subdevice of the HLCDC MFD device.
-> > +See ../mfd/atmel-hlcdc.txt for more details.
-> > +
-> > +Required properties:
-> > + - compatible: value should be one of the following:
-> > +   "atmel,hlcdc-pwm"
-> > + - pinctr-names: the pin control state names. Should contain "default".
-> > + - pinctrl-0: should contain the pinctrl states described by pinctrl
-> > +   default.
-> > + - #pwm-cells: should be set to 3. This PWM chip use the default 3 cells
-> > +   bindings defined in Documentation/devicetree/bindings/pwm/pwm.txt.
-> > +   The first cell encodes the PWM id (0 is the only acceptable value here,
-> > +   because the chip only provide one PWM).
-> > +   The second cell encodes the PWM period in nanoseconds.
-> > +   The third cell encodes the PWM flags (the only supported flag is
-> > +   PWM_POLARITY_INVERTED)
+On Mon, 6 Oct 2014 12:49:17 +0200
+Thierry Reding <thierry.reding@gmail.com> wrote:
+
+> On Wed, Oct 01, 2014 at 04:52:58PM +0200, Boris Brezillon wrote:
+> [...]
+> > diff --git a/drivers/mfd/atmel-hlcdc.c b/drivers/mfd/atmel-hlcdc.c
+> [...]
+> > @@ -0,0 +1,122 @@
+> > +/*
+> > + * Copyright (C) 2014 Free Electrons
+> > + * Copyright (C) 2014 Atmel
+> > + *
+> > + * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
+> > + *
+> > + * This program is free software; you can redistribute it and/or modify it
+> > + * under the terms of the GNU General Public License version 2 as published by
+> > + * the Free Software Foundation.
+> [...]
+> > +MODULE_LICENSE("GPL");
 > 
-> Given that this already refers to the default 3 cells binding it doesn't
-> need to repeat part of the contents of pwm.txt.
+> Should be "GPL v2" according to the header comment.
 
-Given that pwm.txt states:
+I'll fix that.
 
-pwm-specifier : array of #pwm-cells specifying the given PWM 
-                (controller specific)
+> 
+> Thierry
 
-I'd leave it here. Just because pwm.txt gives an example of a controller
-specific meaning for the pwm cells, I don't think we should rely on it
-everywhere.
 
-Mark.
+
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
