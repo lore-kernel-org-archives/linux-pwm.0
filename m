@@ -1,16 +1,14 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v7 10/11] ARM: at91/dt: add LCD panel description to
- sama5d3xdm.dtsi
-Date: Mon, 6 Oct 2014 14:25:38 +0200
-Message-ID: <20141006142538.76d2df29@bbrezillon>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v7 03/11] pwm: add support for atmel-hlcdc-pwm device
+Date: Mon, 6 Oct 2014 14:28:57 +0200
+Message-ID: <20141006122856.GB26833@ulmo>
 References: <1412175188-28278-1-git-send-email-boris.brezillon@free-electrons.com>
- <1412175188-28278-11-git-send-email-boris.brezillon@free-electrons.com>
- <20141006110115.GH25202@ulmo>
+ <1412175188-28278-4-git-send-email-boris.brezillon@free-electrons.com>
+ <20141006104634.GE25202@ulmo> <20141006135009.6cd980a1@bbrezillon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============1718947158=="
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20141006110115.GH25202@ulmo>
+In-Reply-To: <20141006135009.6cd980a1@bbrezillon>
 List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
@@ -20,84 +18,144 @@ List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
 Errors-To: dri-devel-bounces@lists.freedesktop.org
 Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
 Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Lee Jones <lee.jones@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Kumar Gala <galak@codeaurora.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, Mark Yao <mark.yao@rock-chips.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, 6 Oct 2014 13:01:16 +0200
-Thierry Reding <thierry.reding@gmail.com> wrote:
 
-> On Wed, Oct 01, 2014 at 04:53:07PM +0200, Boris Brezillon wrote:
-> [...]
-> > diff --git a/arch/arm/boot/dts/sama5d3xdm.dtsi b/arch/arm/boot/dts/sama5d3xdm.dtsi
-> [...]
-> > +	bl_reg: backlight_regulator {
-> > +		compatible = "regulator-fixed";
-> > +		regulator-name = "backlight-power-supply";
-> > +		regulator-min-microvolt = <5000000>;
-> > +		regulator-max-microvolt = <5000000>;
-> > +		status = "disabled";
-> > +	};
-> > +
-> > +	panel_reg: panel_regulator {
-> > +		compatible = "regulator-fixed";
-> > +		regulator-name = "panel-power-supply";
-> > +		regulator-min-microvolt = <3300000>;
-> > +		regulator-max-microvolt = <3300000>;
-> > +		status = "disabled";
-> > +	};
-> > +
-> > +	backlight: backlight {
-> > +		compatible = "pwm-backlight";
-> > +		pwms = <&hlcdc_pwm 0 50000 0>;
-> > +		brightness-levels = <0 4 8 16 32 64 128 255>;
-> > +		default-brightness-level = <6>;
-> > +		power-supply = <&bl_reg>;
-> > +		status = "disabled";
-> > +	};
-> 
-> Why are these all disabled? Patch 11/11 now needs to enable all of them
-> explicitly for each board that uses this display module.
-
-Yes, these nodes should be enabled. I just thought we could include the
-xdm dtsi and enable what we really need in the board file, but it
-doesn't make any sense...
-
-> 
-> > +	panel: panel {
-> > +		compatible = "foxlink,fl500wvr00-a0t", "simple-panel";
-> 
-> "simple-panel" shouldn't be in this list. There's nothing useful a
-> driver can do by matching on it.
-
-Sure, I'll remove the "simple-panel" compatible string.
-
-> 
-> > +		backlight = <&backlight>;
-> > +		power-supply = <&panel_reg>;
-> > +		#address-cells = <1>;
-> > +		#size-cells = <0>;
-> > +		status = "disabled";
-> > +
-> > +		port@0 {
-> > +			#address-cells = <1>;
-> > +			#size-cells = <0>;
-> > +
-> > +			panel_input: endpoint@0 {
-> > +				reg = <0>;
-> > +				remote-endpoint = <&hlcdc_panel_output>;
-> > +			};
-> >  		};
-> 
-> There's no support for OF graphs in simple-panel, so this is unused,
-> isn't it?
-
-Actually I use it in my atmel_hlcdc_ouput implementation to figure out
-the link between a panel and a device connected on the RGB/DPI bus. 
+--===============1718947158==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="XOIedfhf+7KOe/yw"
+Content-Disposition: inline
 
 
+--XOIedfhf+7KOe/yw
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+On Mon, Oct 06, 2014 at 01:50:09PM +0200, Boris Brezillon wrote:
+> On Mon, 6 Oct 2014 12:46:35 +0200 Thierry Reding <thierry.reding@gmail.co=
+m> wrote:
+> > On Wed, Oct 01, 2014 at 04:53:00PM +0200, Boris Brezillon wrote:
+[...]
+> > > +	if (pres > ATMEL_HLCDC_PWMPS_MAX)
+> > > +		return -EINVAL;
+> >=20
+> > I think the condition above needs to be "pres =3D=3D ATMEL_HLCDC_PWMPS_=
+MAX",
+> > otherwise this will never be true.
+>=20
+> Actually the previous loop is:
+>=20
+> 	for (pres =3D 0; pres *<=3D* ATMEL_HLCDC_PWMPS_MAX; pres++)
+>=20
+> thus pres will be equal to ATMEL_HLCDC_PWMPS_MAX + 1 when no
+> appropriate prescaler is found.
+
+Indeed so.
+
+> > > +		regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(0),
+> > > +				   ATMEL_HLCDC_CLKPWMSEL, gencfg);
+> > > +	}
+> > > +
+> > > +	do_div(pwmcval, period_ns);
+> > > +	if (pwmcval > 255)
+> >=20
+> > The PWM core already makes sure that duty_ns <=3D period_ns, so pwmcval
+> > could be anywhere between 0 and 256 here. Where does the disconnect come
+> > from? Why not make pwmcval =3D duty_ns * 255 if that's the maximum?
+>=20
+> Here is what the datasheet says:
+>=20
+> "Due to the comparison mechanism, the output pulse has a width between
+> zero and 255 PWM counter cycles. Thus by adding a simple passive filter
+> outside the chip, an analog voltage between 0 and (255/256) =C3=97 VDD can
+> be obtained (for the positive polarity case, or between (1/256) =C3=97 VDD
+> and VDD for the negative polarity case). Other voltage values can be
+> obtained by adding active external circuitry."
+>=20
+> Given this explanation we should divide by 256, but 256/256 is a
+> forbidden value, hence I just use the maximum available one (255) when
+> I'm asked to configure a duty cycle occupying the whole period.
+
+Okay, perhaps you can summarize the above explanation from the datasheet
+in a comment to clarify.
+
+> > > +		pwmcval =3D 255;
+> > > +
+> > > +	pwmcfg |=3D ATMEL_HLCDC_PWMCVAL(pwmcval);
+> > > +
+> > > +	regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(6),
+> > > +			   ATMEL_HLCDC_PWMCVAL_MASK | ATMEL_HLCDC_PWMPS_MASK,
+> > > +			   pwmcfg);
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static int atmel_hlcdc_pwm_set_polarity(struct pwm_chip *c,
+> > > +					struct pwm_device *pwm,
+> > > +					enum pwm_polarity polarity)
+> > > +{
+> > > +	struct atmel_hlcdc_pwm_chip *chip =3D
+> > > +				pwm_chip_to_atmel_hlcdc_pwm_chip(c);
+> > > +	struct atmel_hlcdc *hlcdc =3D chip->hlcdc;
+> > > +	u32 cfg =3D 0;
+> > > +
+> > > +	if (polarity =3D=3D PWM_POLARITY_NORMAL)
+> > > +		cfg =3D ATMEL_HLCDC_PWMPOL;
+> >=20
+> > That's strange. Inverse polarity is the default on this hardware?
+>=20
+> Quote from the datasheet:
+>=20
+> "
+> =E2=80=A2 PWMPOL: LCD Controller PWM Signal Polarity
+> This bit defines the polarity of the PWM output signal. If set to one,
+> the output pulses are high level (the output will be high when- ever
+> the value in the counter is less than the value CVAL) If set to zero,
+> the output pulses are low level.
+> "
+>=20
+> My understanding is that ATMEL_HLCDC_PWMPOL should be set when using
+> normal polarity (and my tests confirm that it works as expected ;-)).
+
+Yes, sounds good then.
+
+Thierry
+
+--XOIedfhf+7KOe/yw
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJUMosIAAoJEN0jrNd/PrOhipMQALRQNSCSyeBPiLC0t4MxuVqd
+QCZFte0SHv0+ubzwx9NgF4VIG/3TmMB5zfqITh+38j/mIzaP/iLrEG6A++nwLUja
+qfEGWmHpQJWYLZV/XTkhpFY2R7xiyVtKEJ5X2/ijneBnqPvRgTYH7dixBpgnk0iy
+aHTXAFwKTxvSpz+hgk2HfQU+XKy92qwYJAdwq/xpoM1K4D0D4Q+mJqzzrhyMpk3u
+8j7aLNfnRlM7vDclxRPuIWqczcIpRsxFlBMMNPtB2X1heoAE+yHhysMHrgYDAaLq
+QLjKdWDpC3EOms9s5he6j0r0Yhr7lmG0W+qUPeurs5F1I1TyApBl9hVGZFDBrMkm
+mkG/bambm3JVoQCFZ8gQ4dbPxUepvSTDpq94pELNkX5BAsaYJE7Qsl2nUXf3sSrF
+dVKYDEOIYMHBumDCG0NjqC7pRYvB2XAD0KwcaSsaGOMZrGmR7rG+ataA+7zkASmN
+vuRmP8IMq2Gw//Ty+tFeIiTlDylEqX6LpwliAoGJxSFZ0FJloVK1ObuXJ+9DoqkH
+JCh5MP8UkbiYE/aa0Q/u/ce900YUHN5UPOh/gaENFsbZPmnC+Qcwtv5BQqfGCQOQ
+eOVLFH+eFVXN2eu69sGETaVPu0M63DJrWeP7ilM8v+rKz337bLHVPrOH5WMdpjGz
+xnwlNW8O+FZBWlYYSpL4
+=fOLP
+-----END PGP SIGNATURE-----
+
+--XOIedfhf+7KOe/yw--
+
+--===============1718947158==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+dri-devel mailing list
+dri-devel@lists.freedesktop.org
+http://lists.freedesktop.org/mailman/listinfo/dri-devel
+
+--===============1718947158==--
