@@ -1,14 +1,15 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v7 03/11] pwm: add support for atmel-hlcdc-pwm device
-Date: Mon, 6 Oct 2014 14:28:57 +0200
-Message-ID: <20141006122856.GB26833@ulmo>
+Subject: Re: [PATCH v7 06/11] drm: add DT bindings documentation for
+ atmel-hlcdc-dc driver
+Date: Mon, 6 Oct 2014 14:35:06 +0200
+Message-ID: <20141006123506.GC26833@ulmo>
 References: <1412175188-28278-1-git-send-email-boris.brezillon@free-electrons.com>
- <1412175188-28278-4-git-send-email-boris.brezillon@free-electrons.com>
- <20141006104634.GE25202@ulmo> <20141006135009.6cd980a1@bbrezillon>
+ <1412175188-28278-7-git-send-email-boris.brezillon@free-electrons.com>
+ <20141006105433.GG25202@ulmo> <20141006141440.32fae2ef@bbrezillon>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1718947158=="
+Content-Type: multipart/mixed; boundary="===============0231112824=="
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20141006135009.6cd980a1@bbrezillon>
+In-Reply-To: <20141006141440.32fae2ef@bbrezillon>
 List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
@@ -23,131 +24,127 @@ Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@v
 List-Id: linux-pwm@vger.kernel.org
 
 
---===============1718947158==
+--===============0231112824==
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="XOIedfhf+7KOe/yw"
+	protocol="application/pgp-signature"; boundary="vOmOzSkFvhd7u8Ms"
 Content-Disposition: inline
 
 
---XOIedfhf+7KOe/yw
-Content-Type: text/plain; charset=utf-8
+--vOmOzSkFvhd7u8Ms
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 06, 2014 at 01:50:09PM +0200, Boris Brezillon wrote:
-> On Mon, 6 Oct 2014 12:46:35 +0200 Thierry Reding <thierry.reding@gmail.co=
-m> wrote:
-> > On Wed, Oct 01, 2014 at 04:53:00PM +0200, Boris Brezillon wrote:
-[...]
-> > > +	if (pres > ATMEL_HLCDC_PWMPS_MAX)
-> > > +		return -EINVAL;
+On Mon, Oct 06, 2014 at 02:14:40PM +0200, Boris Brezillon wrote:
+> On Mon, 6 Oct 2014 12:54:34 +0200
+> Thierry Reding <thierry.reding@gmail.com> wrote:
+>=20
+> > On Wed, Oct 01, 2014 at 04:53:03PM +0200, Boris Brezillon wrote:
+> > > From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+> > >=20
+> > > The Atmel HLCDC (HLCD Controller) IP available on some Atmel SoCs (i.=
+e.
+> > > at91sam9n12, at91sam9x5 family or sama5d3 family) provides a display
+> > > controller device.
+> > >=20
+> > > The HLCDC block provides a single RGB output port, and only supports =
+LCD
+> > > panels connection to LCD panels for now.
+> > >=20
+> > > The atmel,panel property link the HLCDC RGB output with the LCD panel
+> > > connected on this port (note that the HLCDC RGB connector implementat=
+ion
+> > > makes use of the DRM panel framework).
+> > >=20
+> > > Connection to other external devices (DRM bridges) might be added lat=
+er by
+> > > mean of a new atmel,xxx (atmel,bridge) property.
+> > >=20
+> > > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> > > ---
+> > >  .../devicetree/bindings/drm/atmel-hlcdc-dc.txt     | 53 ++++++++++++=
+++++++++++
+> > >  1 file changed, 53 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/drm/atmel-hlcdc=
+-dc.txt
+> > >=20
+> > > diff --git a/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt=
+ b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
+> > > new file mode 100644
+> > > index 0000000..ebc1a91
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
+> > > @@ -0,0 +1,53 @@
+> > > +Device-Tree bindings for Atmel's HLCDC (High LCD Controller) DRM dri=
+ver
+> > > +
+> > > +The Atmel HLCDC Display Controller is subdevice of the HLCDC MFD dev=
+ice.
+> > > +See ../mfd/atmel-hlcdc.txt for more details.
+> > > +
+> > > +Required properties:
+> > > + - compatible: value should be "atmel,hlcdc-display-controller"
+> > > + - pinctrl-names: the pin control state names. Should contain "defau=
+lt".
+> > > + - pinctrl-0: should contain the default pinctrl states.
+> > > + - #address-cells: should be set to 1.
+> > > + - #size-cells: should be set to 0.
+> > > +
+> > > +Required children nodes:
+> > > + Children nodes are encoding available output ports and their connec=
+tions
+> > > + to external devices using the OF graph reprensentation (see ../grap=
+h.txt).
+> > > + At least one port node is required.
 > >=20
-> > I think the condition above needs to be "pres =3D=3D ATMEL_HLCDC_PWMPS_=
-MAX",
-> > otherwise this will never be true.
+> > Are the connections configurable at runtime? Does the SoC have IP blocks
+> > for HDMI or other types of outputs or does it provide only RGB output to
+> > external blocks?
 >=20
-> Actually the previous loop is:
->=20
-> 	for (pres =3D 0; pres *<=3D* ATMEL_HLCDC_PWMPS_MAX; pres++)
->=20
-> thus pres will be equal to ATMEL_HLCDC_PWMPS_MAX + 1 when no
-> appropriate prescaler is found.
+> No, there's only one RGB output port, but you can connect more than one
+> device on the RGB port (should we call it DPI port ?).
+> Actually Atmel connected an HDMI encoder and an LCD panel connected on
+> the same port on their dev kit.
 
-Indeed so.
+This was discussed in some other thread if I remember correctly. I still
+think that the HLCDC node should only contain a single output, no matter
+how many encoders or panels get connected.
 
-> > > +		regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(0),
-> > > +				   ATMEL_HLCDC_CLKPWMSEL, gencfg);
-> > > +	}
-> > > +
-> > > +	do_div(pwmcval, period_ns);
-> > > +	if (pwmcval > 255)
-> >=20
-> > The PWM core already makes sure that duty_ns <=3D period_ns, so pwmcval
-> > could be anywhere between 0 and 256 here. Where does the disconnect come
-> > from? Why not make pwmcval =3D duty_ns * 255 if that's the maximum?
->=20
-> Here is what the datasheet says:
->=20
-> "Due to the comparison mechanism, the output pulse has a width between
-> zero and 255 PWM counter cycles. Thus by adding a simple passive filter
-> outside the chip, an analog voltage between 0 and (255/256) =C3=97 VDD can
-> be obtained (for the positive polarity case, or between (1/256) =C3=97 VDD
-> and VDD for the negative polarity case). Other voltage values can be
-> obtained by adding active external circuitry."
->=20
-> Given this explanation we should divide by 256, but 256/256 is a
-> forbidden value, hence I just use the maximum available one (255) when
-> I'm asked to configure a duty cycle occupying the whole period.
+So the output represents the set of signals that exit the IP block, but
+what's connected to them on the board is a board-level detail and
+therefore should go into the board DTS.
 
-Okay, perhaps you can summarize the above explanation from the datasheet
-in a comment to clarify.
-
-> > > +		pwmcval =3D 255;
-> > > +
-> > > +	pwmcfg |=3D ATMEL_HLCDC_PWMCVAL(pwmcval);
-> > > +
-> > > +	regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(6),
-> > > +			   ATMEL_HLCDC_PWMCVAL_MASK | ATMEL_HLCDC_PWMPS_MASK,
-> > > +			   pwmcfg);
-> > > +
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +static int atmel_hlcdc_pwm_set_polarity(struct pwm_chip *c,
-> > > +					struct pwm_device *pwm,
-> > > +					enum pwm_polarity polarity)
-> > > +{
-> > > +	struct atmel_hlcdc_pwm_chip *chip =3D
-> > > +				pwm_chip_to_atmel_hlcdc_pwm_chip(c);
-> > > +	struct atmel_hlcdc *hlcdc =3D chip->hlcdc;
-> > > +	u32 cfg =3D 0;
-> > > +
-> > > +	if (polarity =3D=3D PWM_POLARITY_NORMAL)
-> > > +		cfg =3D ATMEL_HLCDC_PWMPOL;
-> >=20
-> > That's strange. Inverse polarity is the default on this hardware?
->=20
-> Quote from the datasheet:
->=20
-> "
-> =E2=80=A2 PWMPOL: LCD Controller PWM Signal Polarity
-> This bit defines the polarity of the PWM output signal. If set to one,
-> the output pulses are high level (the output will be high when- ever
-> the value in the counter is less than the value CVAL) If set to zero,
-> the output pulses are low level.
-> "
->=20
-> My understanding is that ATMEL_HLCDC_PWMPOL should be set when using
-> normal polarity (and my tests confirm that it works as expected ;-)).
-
-Yes, sounds good then.
+In the above case of the Atmel devkit, is there any way to control where
+the signal goes or does it just go to both the panel and HDMI encoder at
+the same time and it's up to the user to properly configure the output
+in order to get either HDMI or panel to display anything?
 
 Thierry
 
---XOIedfhf+7KOe/yw
+--vOmOzSkFvhd7u8Ms
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJUMosIAAoJEN0jrNd/PrOhipMQALRQNSCSyeBPiLC0t4MxuVqd
-QCZFte0SHv0+ubzwx9NgF4VIG/3TmMB5zfqITh+38j/mIzaP/iLrEG6A++nwLUja
-qfEGWmHpQJWYLZV/XTkhpFY2R7xiyVtKEJ5X2/ijneBnqPvRgTYH7dixBpgnk0iy
-aHTXAFwKTxvSpz+hgk2HfQU+XKy92qwYJAdwq/xpoM1K4D0D4Q+mJqzzrhyMpk3u
-8j7aLNfnRlM7vDclxRPuIWqczcIpRsxFlBMMNPtB2X1heoAE+yHhysMHrgYDAaLq
-QLjKdWDpC3EOms9s5he6j0r0Yhr7lmG0W+qUPeurs5F1I1TyApBl9hVGZFDBrMkm
-mkG/bambm3JVoQCFZ8gQ4dbPxUepvSTDpq94pELNkX5BAsaYJE7Qsl2nUXf3sSrF
-dVKYDEOIYMHBumDCG0NjqC7pRYvB2XAD0KwcaSsaGOMZrGmR7rG+ataA+7zkASmN
-vuRmP8IMq2Gw//Ty+tFeIiTlDylEqX6LpwliAoGJxSFZ0FJloVK1ObuXJ+9DoqkH
-JCh5MP8UkbiYE/aa0Q/u/ce900YUHN5UPOh/gaENFsbZPmnC+Qcwtv5BQqfGCQOQ
-eOVLFH+eFVXN2eu69sGETaVPu0M63DJrWeP7ilM8v+rKz337bLHVPrOH5WMdpjGz
-xnwlNW8O+FZBWlYYSpL4
-=fOLP
+iQIcBAEBAgAGBQJUMox6AAoJEN0jrNd/PrOhKH8P/3P04XFmMXi7at8NXB1wwVvq
+p0GRQYb73x2CPlZq85Glp//cWV02BVMkk3Edwlww8P8G7sHVe8M/jt4SbciZ/Nk+
+k40ZHYaiLq3jdEJcZWLV1bQxnTQa5744cEYe561Ocer3Hs9ZY4Cf0Q4HUa/KPV70
+9LlvJMqBK9jA+DoGUI7N97PfFCL+b9r0+an+7g1txlo6T3gCUpUpm/6BfGRujATe
+2V543TtzWa+arTGs0lLU+93IEhSV5gKCYxSqXrV29qfcxejXoR2cBYancKPy9Iqn
+i3WmBfOPihc8Uxvil6fpy9sHV11ajk2PAEHHTQYgJlokq5FPHiA3+tGw3Ix0TFrH
+tU7vWDUJac9ERDdiW2b159HDDck68fvYpkOk11vS/4eRVzchHtut3QtwkwwosZhP
+shEM3LlEQRgDdZcVh8zmVUhmxNyJPQ0W25jARqQHt4eMfcvLIkHZ+VQFhe+gJKrS
+vwSk4WTNZvHIRh327U4Yu3qi+vUNG/LsrKFqex1ruPHaxd5DK/pIxiCISJMk/TQ/
+r8nvM6hlobxf9Qc8fULsS3zLmPe1kcFpFqlGHRIrJF3TwkwGLb+NKMS4s9dp224g
+Z24ZBE8BemUyp4yAmQxZhgFcN3/xlH0LiVMskU52Ciywra5kivNyQmHwUeKzyB9h
+aLJaFYqhevNcfJj0dohi
+=O2bm
 -----END PGP SIGNATURE-----
 
---XOIedfhf+7KOe/yw--
+--vOmOzSkFvhd7u8Ms--
 
---===============1718947158==
+--===============0231112824==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -158,4 +155,4 @@ dri-devel mailing list
 dri-devel@lists.freedesktop.org
 http://lists.freedesktop.org/mailman/listinfo/dri-devel
 
---===============1718947158==--
+--===============0231112824==--
