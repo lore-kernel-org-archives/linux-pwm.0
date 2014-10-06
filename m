@@ -1,15 +1,15 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v7 06/11] drm: add DT bindings documentation for
- atmel-hlcdc-dc driver
-Date: Mon, 6 Oct 2014 14:35:06 +0200
-Message-ID: <20141006123506.GC26833@ulmo>
+Subject: Re: [PATCH v7 10/11] ARM: at91/dt: add LCD panel description to
+ sama5d3xdm.dtsi
+Date: Mon, 6 Oct 2014 14:40:15 +0200
+Message-ID: <20141006124014.GD26833@ulmo>
 References: <1412175188-28278-1-git-send-email-boris.brezillon@free-electrons.com>
- <1412175188-28278-7-git-send-email-boris.brezillon@free-electrons.com>
- <20141006105433.GG25202@ulmo> <20141006141440.32fae2ef@bbrezillon>
+ <1412175188-28278-11-git-send-email-boris.brezillon@free-electrons.com>
+ <20141006110115.GH25202@ulmo> <20141006142538.76d2df29@bbrezillon>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0231112824=="
+Content-Type: multipart/mixed; boundary="===============1665842424=="
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20141006141440.32fae2ef@bbrezillon>
+In-Reply-To: <20141006142538.76d2df29@bbrezillon>
 List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
@@ -24,127 +24,80 @@ Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@v
 List-Id: linux-pwm@vger.kernel.org
 
 
---===============0231112824==
+--===============1665842424==
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="vOmOzSkFvhd7u8Ms"
+	protocol="application/pgp-signature"; boundary="uxuisgdDHaNETlh8"
 Content-Disposition: inline
 
 
---vOmOzSkFvhd7u8Ms
+--uxuisgdDHaNETlh8
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 06, 2014 at 02:14:40PM +0200, Boris Brezillon wrote:
-> On Mon, 6 Oct 2014 12:54:34 +0200
-> Thierry Reding <thierry.reding@gmail.com> wrote:
->=20
-> > On Wed, Oct 01, 2014 at 04:53:03PM +0200, Boris Brezillon wrote:
-> > > From: Boris BREZILLON <boris.brezillon@free-electrons.com>
-> > >=20
-> > > The Atmel HLCDC (HLCD Controller) IP available on some Atmel SoCs (i.=
-e.
-> > > at91sam9n12, at91sam9x5 family or sama5d3 family) provides a display
-> > > controller device.
-> > >=20
-> > > The HLCDC block provides a single RGB output port, and only supports =
-LCD
-> > > panels connection to LCD panels for now.
-> > >=20
-> > > The atmel,panel property link the HLCDC RGB output with the LCD panel
-> > > connected on this port (note that the HLCDC RGB connector implementat=
-ion
-> > > makes use of the DRM panel framework).
-> > >=20
-> > > Connection to other external devices (DRM bridges) might be added lat=
-er by
-> > > mean of a new atmel,xxx (atmel,bridge) property.
-> > >=20
-> > > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> > > ---
-> > >  .../devicetree/bindings/drm/atmel-hlcdc-dc.txt     | 53 ++++++++++++=
-++++++++++
-> > >  1 file changed, 53 insertions(+)
-> > >  create mode 100644 Documentation/devicetree/bindings/drm/atmel-hlcdc=
--dc.txt
-> > >=20
-> > > diff --git a/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt=
- b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
-> > > new file mode 100644
-> > > index 0000000..ebc1a91
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
-> > > @@ -0,0 +1,53 @@
-> > > +Device-Tree bindings for Atmel's HLCDC (High LCD Controller) DRM dri=
-ver
+On Mon, Oct 06, 2014 at 02:25:38PM +0200, Boris Brezillon wrote:
+> On Mon, 6 Oct 2014 13:01:16 +0200 Thierry Reding <thierry.reding@gmail.co=
+m> wrote:
+> > On Wed, Oct 01, 2014 at 04:53:07PM +0200, Boris Brezillon wrote:
+> > [...]
+> > > diff --git a/arch/arm/boot/dts/sama5d3xdm.dtsi b/arch/arm/boot/dts/sa=
+ma5d3xdm.dtsi
+[...]
+> > > +		backlight =3D <&backlight>;
+> > > +		power-supply =3D <&panel_reg>;
+> > > +		#address-cells =3D <1>;
+> > > +		#size-cells =3D <0>;
+> > > +		status =3D "disabled";
 > > > +
-> > > +The Atmel HLCDC Display Controller is subdevice of the HLCDC MFD dev=
-ice.
-> > > +See ../mfd/atmel-hlcdc.txt for more details.
+> > > +		port@0 {
+> > > +			#address-cells =3D <1>;
+> > > +			#size-cells =3D <0>;
 > > > +
-> > > +Required properties:
-> > > + - compatible: value should be "atmel,hlcdc-display-controller"
-> > > + - pinctrl-names: the pin control state names. Should contain "defau=
-lt".
-> > > + - pinctrl-0: should contain the default pinctrl states.
-> > > + - #address-cells: should be set to 1.
-> > > + - #size-cells: should be set to 0.
-> > > +
-> > > +Required children nodes:
-> > > + Children nodes are encoding available output ports and their connec=
-tions
-> > > + to external devices using the OF graph reprensentation (see ../grap=
-h.txt).
-> > > + At least one port node is required.
+> > > +			panel_input: endpoint@0 {
+> > > +				reg =3D <0>;
+> > > +				remote-endpoint =3D <&hlcdc_panel_output>;
+> > > +			};
+> > >  		};
 > >=20
-> > Are the connections configurable at runtime? Does the SoC have IP blocks
-> > for HDMI or other types of outputs or does it provide only RGB output to
-> > external blocks?
+> > There's no support for OF graphs in simple-panel, so this is unused,
+> > isn't it?
 >=20
-> No, there's only one RGB output port, but you can connect more than one
-> device on the RGB port (should we call it DPI port ?).
-> Actually Atmel connected an HDMI encoder and an LCD panel connected on
-> the same port on their dev kit.
+> Actually I use it in my atmel_hlcdc_ouput implementation to figure out
+> the link between a panel and a device connected on the RGB/DPI bus.=20
 
-This was discussed in some other thread if I remember correctly. I still
-think that the HLCDC node should only contain a single output, no matter
-how many encoders or panels get connected.
-
-So the output represents the set of signals that exit the IP block, but
-what's connected to them on the board is a board-level detail and
-therefore should go into the board DTS.
-
-In the above case of the Atmel devkit, is there any way to control where
-the signal goes or does it just go to both the panel and HDMI encoder at
-the same time and it's up to the user to properly configure the output
-in order to get either HDMI or panel to display anything?
+That's kind of weird and one of the reasons why I can't make myself like
+the OF graph bindings. It requires drivers for one device to reach into
+the device tree node of some other device and look for content. Or put
+another way, a DT node for a panel that works on one platform doesn't
+work on another because the display controller needs additional DT
+content that isn't required by the original binding for the panel.
 
 Thierry
 
---vOmOzSkFvhd7u8Ms
+--uxuisgdDHaNETlh8
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJUMox6AAoJEN0jrNd/PrOhKH8P/3P04XFmMXi7at8NXB1wwVvq
-p0GRQYb73x2CPlZq85Glp//cWV02BVMkk3Edwlww8P8G7sHVe8M/jt4SbciZ/Nk+
-k40ZHYaiLq3jdEJcZWLV1bQxnTQa5744cEYe561Ocer3Hs9ZY4Cf0Q4HUa/KPV70
-9LlvJMqBK9jA+DoGUI7N97PfFCL+b9r0+an+7g1txlo6T3gCUpUpm/6BfGRujATe
-2V543TtzWa+arTGs0lLU+93IEhSV5gKCYxSqXrV29qfcxejXoR2cBYancKPy9Iqn
-i3WmBfOPihc8Uxvil6fpy9sHV11ajk2PAEHHTQYgJlokq5FPHiA3+tGw3Ix0TFrH
-tU7vWDUJac9ERDdiW2b159HDDck68fvYpkOk11vS/4eRVzchHtut3QtwkwwosZhP
-shEM3LlEQRgDdZcVh8zmVUhmxNyJPQ0W25jARqQHt4eMfcvLIkHZ+VQFhe+gJKrS
-vwSk4WTNZvHIRh327U4Yu3qi+vUNG/LsrKFqex1ruPHaxd5DK/pIxiCISJMk/TQ/
-r8nvM6hlobxf9Qc8fULsS3zLmPe1kcFpFqlGHRIrJF3TwkwGLb+NKMS4s9dp224g
-Z24ZBE8BemUyp4yAmQxZhgFcN3/xlH0LiVMskU52Ciywra5kivNyQmHwUeKzyB9h
-aLJaFYqhevNcfJj0dohi
-=O2bm
+iQIcBAEBAgAGBQJUMo2uAAoJEN0jrNd/PrOhev0QAIy54IWOvWGVgP6gPbnSqfNd
+ERgjVfwptdHhpAK+IV3zBgK2lk/M9E3GMAgcqU33ThNgnKxfCDHngJndQpOf0g8w
+GZFs1AqMvMOdF84Qf/phJ8i4ZuG2DdS8wdP6QG1ru13iwYcU3NsWfgU1ByVs92rG
+hlo6OBXZ2HCXPlY+uC1nee56A2NHzxVumg2nr2QWwxItSTm15KNVRCobu3RqIQrg
+s1w3dvoFGlSC+pSyuz3pkrIwL/7o3yQ+OA47mUadVWa6N7FX4RolPKEzaV1sMm+E
+Y6LlDCxPl00hSxMek5WSf4zD/EhrkRIntfwUvUH7QzIUsB32Zd0xnGbCAqfUAPFd
+PU1UC2XXi3wOdGo//fXwlFWL1xTlyzY/EpqANaApLFiAm17NNV7syjsn/i33oo1M
+YXy9S9WIWhLX5vq4/5N1483x6ZQxAKrSML3aeHJUIiNlWXeHsJjsxT8R8r0EjXhU
+j1eoIpXtC6sF9o71PhmMfLonGX3PZRaw0fhWF8hyuvrqZqzwm578cNlNKj3wME+L
+aUpCcZvWgStmLm1S8gNsM3obiqpjnPnHQd2oe1n3utxjvv7rvsm/f/uvtpAj3Gtj
+aIlKPK+5qB8DoU7rS4BNbcRy5JQ5HMcFsOEpimlSOLVwPhmPXybLc6gW0QMXsQV2
+jL/jZlBd6Grnod1n/uog
+=hwdk
 -----END PGP SIGNATURE-----
 
---vOmOzSkFvhd7u8Ms--
+--uxuisgdDHaNETlh8--
 
---===============0231112824==
+--===============1665842424==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -155,4 +108,4 @@ dri-devel mailing list
 dri-devel@lists.freedesktop.org
 http://lists.freedesktop.org/mailman/listinfo/dri-devel
 
---===============0231112824==--
+--===============1665842424==--
