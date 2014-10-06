@@ -1,117 +1,93 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v7 06/11] drm: add DT bindings documentation for
- atmel-hlcdc-dc driver
-Date: Mon, 6 Oct 2014 15:53:58 +0200
-Message-ID: <20141006155358.61a2a30c@bbrezillon>
+Subject: Re: [PATCH v7 10/11] ARM: at91/dt: add LCD panel description to
+ sama5d3xdm.dtsi
+Date: Mon, 6 Oct 2014 15:58:18 +0200
+Message-ID: <20141006155818.0bc36b3d@bbrezillon>
 References: <1412175188-28278-1-git-send-email-boris.brezillon@free-electrons.com>
- <1412175188-28278-7-git-send-email-boris.brezillon@free-electrons.com>
- <20141006105433.GG25202@ulmo> <20141006141440.32fae2ef@bbrezillon>
- <20141006123506.GC26833@ulmo>
+	<1412175188-28278-11-git-send-email-boris.brezillon@free-electrons.com>
+	<20141006110115.GH25202@ulmo>
+	<20141006142538.76d2df29@bbrezillon>
+	<20141006124014.GD26833@ulmo>
+	<20141006151111.446ed7d6@bbrezillon>
+	<20141006133048.GE26921@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20141006123506.GC26833@ulmo>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Lee Jones <lee.jones@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Kumar Gala <galak@codeaurora.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, Mark Yao <mark.yao@rock-chips.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from top.free-electrons.com ([176.31.233.9]:56042 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750995AbaJFN6W (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Oct 2014 09:58:22 -0400
+In-Reply-To: <20141006133048.GE26921@ulmo>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, Rob Clark <robdclark@gmail.com>, linux-arm-kernel@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Mark Yao <mark.yao@rock-chips.com>
 
-On Mon, 6 Oct 2014 14:35:06 +0200
+On Mon, 6 Oct 2014 15:30:59 +0200
 Thierry Reding <thierry.reding@gmail.com> wrote:
 
-> On Mon, Oct 06, 2014 at 02:14:40PM +0200, Boris Brezillon wrote:
-> > On Mon, 6 Oct 2014 12:54:34 +0200
+> On Mon, Oct 06, 2014 at 03:11:11PM +0200, Boris Brezillon wrote:
+> > On Mon, 6 Oct 2014 14:40:15 +0200
 > > Thierry Reding <thierry.reding@gmail.com> wrote:
 > > 
-> > > On Wed, Oct 01, 2014 at 04:53:03PM +0200, Boris Brezillon wrote:
-> > > > From: Boris BREZILLON <boris.brezillon@free-electrons.com>
+> > > On Mon, Oct 06, 2014 at 02:25:38PM +0200, Boris Brezillon wrote:
+> > > > On Mon, 6 Oct 2014 13:01:16 +0200 Thierry Reding <thierry.reding@gmail.com> wrote:
+> > > > > On Wed, Oct 01, 2014 at 04:53:07PM +0200, Boris Brezillon wrote:
+> > > > > [...]
+> > > > > > diff --git a/arch/arm/boot/dts/sama5d3xdm.dtsi b/arch/arm/boot/dts/sama5d3xdm.dtsi
+> > > [...]
+> > > > > > +		backlight = <&backlight>;
+> > > > > > +		power-supply = <&panel_reg>;
+> > > > > > +		#address-cells = <1>;
+> > > > > > +		#size-cells = <0>;
+> > > > > > +		status = "disabled";
+> > > > > > +
+> > > > > > +		port@0 {
+> > > > > > +			#address-cells = <1>;
+> > > > > > +			#size-cells = <0>;
+> > > > > > +
+> > > > > > +			panel_input: endpoint@0 {
+> > > > > > +				reg = <0>;
+> > > > > > +				remote-endpoint = <&hlcdc_panel_output>;
+> > > > > > +			};
+> > > > > >  		};
+> > > > > 
+> > > > > There's no support for OF graphs in simple-panel, so this is unused,
+> > > > > isn't it?
 > > > > 
-> > > > The Atmel HLCDC (HLCD Controller) IP available on some Atmel SoCs (i.e.
-> > > > at91sam9n12, at91sam9x5 family or sama5d3 family) provides a display
-> > > > controller device.
-> > > > 
-> > > > The HLCDC block provides a single RGB output port, and only supports LCD
-> > > > panels connection to LCD panels for now.
-> > > > 
-> > > > The atmel,panel property link the HLCDC RGB output with the LCD panel
-> > > > connected on this port (note that the HLCDC RGB connector implementation
-> > > > makes use of the DRM panel framework).
-> > > > 
-> > > > Connection to other external devices (DRM bridges) might be added later by
-> > > > mean of a new atmel,xxx (atmel,bridge) property.
-> > > > 
-> > > > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> > > > ---
-> > > >  .../devicetree/bindings/drm/atmel-hlcdc-dc.txt     | 53 ++++++++++++++++++++++
-> > > >  1 file changed, 53 insertions(+)
-> > > >  create mode 100644 Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
-> > > > 
-> > > > diff --git a/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
-> > > > new file mode 100644
-> > > > index 0000000..ebc1a91
-> > > > --- /dev/null
-> > > > +++ b/Documentation/devicetree/bindings/drm/atmel-hlcdc-dc.txt
-> > > > @@ -0,0 +1,53 @@
-> > > > +Device-Tree bindings for Atmel's HLCDC (High LCD Controller) DRM driver
-> > > > +
-> > > > +The Atmel HLCDC Display Controller is subdevice of the HLCDC MFD device.
-> > > > +See ../mfd/atmel-hlcdc.txt for more details.
-> > > > +
-> > > > +Required properties:
-> > > > + - compatible: value should be "atmel,hlcdc-display-controller"
-> > > > + - pinctrl-names: the pin control state names. Should contain "default".
-> > > > + - pinctrl-0: should contain the default pinctrl states.
-> > > > + - #address-cells: should be set to 1.
-> > > > + - #size-cells: should be set to 0.
-> > > > +
-> > > > +Required children nodes:
-> > > > + Children nodes are encoding available output ports and their connections
-> > > > + to external devices using the OF graph reprensentation (see ../graph.txt).
-> > > > + At least one port node is required.
+> > > > Actually I use it in my atmel_hlcdc_ouput implementation to figure out
+> > > > the link between a panel and a device connected on the RGB/DPI bus. 
 > > > 
-> > > Are the connections configurable at runtime? Does the SoC have IP blocks
-> > > for HDMI or other types of outputs or does it provide only RGB output to
-> > > external blocks?
+> > > That's kind of weird and one of the reasons why I can't make myself like
+> > > the OF graph bindings. It requires drivers for one device to reach into
+> > > the device tree node of some other device and look for content. Or put
+> > > another way, a DT node for a panel that works on one platform doesn't
+> > > work on another because the display controller needs additional DT
+> > > content that isn't required by the original binding for the panel.
 > > 
-> > No, there's only one RGB output port, but you can connect more than one
-> > device on the RGB port (should we call it DPI port ?).
-> > Actually Atmel connected an HDMI encoder and an LCD panel connected on
-> > the same port on their dev kit.
+> > I also have a working POC of a DPI bus implementation (with DPI support
+> > in panel-simple driver).
+> > 
+> > This is a solution I developed to provide a generic DPI implementation
+> > in my HLCDC driver and rely on generic external implementations for
+> > slave devices (panels, encoders, ...).
+> > 
+> > But, IIRC, Laurent was not in favor of a bus approach because the DPI
+> > bus is just a data bus and not a control bus.
+> > 
+> > Anyway, I'll clean it up and post an RFC.
 > 
-> This was discussed in some other thread if I remember correctly. I still
-> think that the HLCDC node should only contain a single output, no matter
-> how many encoders or panels get connected.
-> 
-> So the output represents the set of signals that exit the IP block, but
-> what's connected to them on the board is a board-level detail and
-> therefore should go into the board DTS.
-> 
-> In the above case of the Atmel devkit, is there any way to control where
-> the signal goes or does it just go to both the panel and HDMI encoder at
-> the same time and it's up to the user to properly configure the output
-> in order to get either HDMI or panel to display anything?
+> According to the MIPI website there are also control signals and a
+> command set to control display behaviour. Does your implementation
+> handle any of that?
 
-No there's no way to control where the signal goes.
-What you can control though, is the activation of the associated
-encoder/connectors connected on this bus (using dpms).
+No it doesn't, and I'm pretty sure what I call DPI does not exactly
+respect the MIPI DPI standard (and as such should not be called DPI,
+but this is another problem).
 
-And yes it's up to the user to choose the appropriate mode:
-- display on only one slave device: in this case you're free to choose
-  any of the mode supported by the slave device
-- display on all slave devices: in this case you'll have to find a mode
-  (drm_display_mode) and an bus format (video_bus_format) that suits all
-  slave devices
-
-
+This infrastructure provides a way for devices connected on a DPI bus
+to agree on a video_bus_format (in my case RGB888, RGB666, ...).
 
 -- 
 Boris Brezillon, Free Electrons
