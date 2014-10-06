@@ -1,81 +1,129 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v7 10/11] ARM: at91/dt: add LCD panel description to
- sama5d3xdm.dtsi
-Date: Mon, 6 Oct 2014 15:11:11 +0200
-Message-ID: <20141006151111.446ed7d6@bbrezillon>
-References: <1412175188-28278-1-git-send-email-boris.brezillon@free-electrons.com>
- <1412175188-28278-11-git-send-email-boris.brezillon@free-electrons.com>
- <20141006110115.GH25202@ulmo> <20141006142538.76d2df29@bbrezillon>
- <20141006124014.GD26833@ulmo>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCHv7 1/2] pwm: Add Allwinner SoC support
+Date: Mon, 6 Oct 2014 15:24:05 +0200
+Message-ID: <20141006132404.GC26921@ulmo>
+References: <1410983638-24915-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <1410983638-24915-2-git-send-email-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20141006124014.GD26833@ulmo>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Lee Jones <lee.jones@linaro.org>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Kumar Gala <galak@codeaurora.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org, Mark Yao <mark.yao@rock-chips.com>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="lCAWRPmW1mITcIfM"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wg0-f52.google.com ([74.125.82.52]:50238 "EHLO
+	mail-wg0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752428AbaJFNYI (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Oct 2014 09:24:08 -0400
+Content-Disposition: inline
+In-Reply-To: <1410983638-24915-2-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, jonsmirl@gmail.com, Simon <longsleep@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
-On Mon, 6 Oct 2014 14:40:15 +0200
-Thierry Reding <thierry.reding@gmail.com> wrote:
 
-> On Mon, Oct 06, 2014 at 02:25:38PM +0200, Boris Brezillon wrote:
-> > On Mon, 6 Oct 2014 13:01:16 +0200 Thierry Reding <thierry.reding@gmail.com> wrote:
-> > > On Wed, Oct 01, 2014 at 04:53:07PM +0200, Boris Brezillon wrote:
-> > > [...]
-> > > > diff --git a/arch/arm/boot/dts/sama5d3xdm.dtsi b/arch/arm/boot/dts/sama5d3xdm.dtsi
-> [...]
-> > > > +		backlight = <&backlight>;
-> > > > +		power-supply = <&panel_reg>;
-> > > > +		#address-cells = <1>;
-> > > > +		#size-cells = <0>;
-> > > > +		status = "disabled";
-> > > > +
-> > > > +		port@0 {
-> > > > +			#address-cells = <1>;
-> > > > +			#size-cells = <0>;
-> > > > +
-> > > > +			panel_input: endpoint@0 {
-> > > > +				reg = <0>;
-> > > > +				remote-endpoint = <&hlcdc_panel_output>;
-> > > > +			};
-> > > >  		};
-> > > 
-> > > There's no support for OF graphs in simple-panel, so this is unused,
-> > > isn't it?
-> > 
-> > Actually I use it in my atmel_hlcdc_ouput implementation to figure out
-> > the link between a panel and a device connected on the RGB/DPI bus. 
-> 
-> That's kind of weird and one of the reasons why I can't make myself like
-> the OF graph bindings. It requires drivers for one device to reach into
-> the device tree node of some other device and look for content. Or put
-> another way, a DT node for a panel that works on one platform doesn't
-> work on another because the display controller needs additional DT
-> content that isn't required by the original binding for the panel.
+--lCAWRPmW1mITcIfM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I also have a working POC of a DPI bus implementation (with DPI support
-in panel-simple driver).
+On Wed, Sep 17, 2014 at 09:53:57PM +0200, Alexandre Belloni wrote:
+[...]
+> diff --git a/drivers/pwm/pwm-sunxi.c b/drivers/pwm/pwm-sunxi.c
+> new file mode 100644
+> index 000000000000..643f84ea013e
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-sunxi.c
+> @@ -0,0 +1,371 @@
+> +/*
+> + * Driver for Allwinner Pulse Width Modulation Controller
+> + *
+> + * Copyright (C) 2014 Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-This is a solution I developed to provide a generic DPI implementation
-in my HLCDC driver and rely on generic external implementations for
-slave devices (panels, encoders, ...).
+This is somewhat weird. So you are the copyright holder, not your
+employer? The email address is somewhat misleading.
 
-But, IIRC, Laurent was not in favor of a bus approach because the DPI
-bus is just a data bus and not a control bus.
+> +#define BIT_CH(bit, chan)	(bit << (chan * PWMCH_OFFSET))
 
-Anyway, I'll clean it up and post an RFC.
+bit and chan could use additional parentheses here for extra safety.
 
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+> +static const u32 prescaler_table[] = {
+> +	120,
+> +	180,
+> +	240,
+> +	360,
+> +	480,
+> +	0,
+> +	0,
+> +	0,
+> +	12000,
+> +	24000,
+> +	36000,
+> +	48000,
+> +	72000,
+> +	0,
+> +	0,
+> +	0, /* Actually 1 but tested separately */
+> +};
+
+Did I already mention that this was really weird?
+
+> +static inline u32 sunxi_pwm_readl(struct sunxi_pwm_chip *chip,
+> +				  unsigned long offset)
+> +{
+> +	return readl(chip->base + offset);
+> +}
+> +
+> +
+
+There's a gratuitous blank line here.
+
+> +static int sunxi_pwm_probe(struct platform_device *pdev)
+> +{
+[...]
+> +
+> +	ret = pwmchip_add(&pwm->chip);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed to add PWM chip %d\n", ret);
+
+"chip: %d" to make it clear that it's not some kind of chip ID.
+
+> +		goto error;
+> +	}
+> +
+> +	ret = clk_prepare_enable(pwm->clk);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "failed to enable PWM clock\n");
+> +		goto error;
+
+Don't you want to remove the stale PWM chip here? Why not do this at the
+very end, after everything's been set up properly?
+
+> +MODULE_ALIAS("platform:sunxi-pwm");
+> +MODULE_AUTHOR("Alexandre Belloni <alexandre.belloni@free-electrons.com>");
+> +MODULE_DESCRIPTION("Allwinner PWM driver");
+
+Perhaps "Allwinner sunxi PWM driver"? Presumably Allwinner could at some
+point release a different family of SoCs.
+
+Thierry
+
+--lCAWRPmW1mITcIfM
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJUMpf0AAoJEN0jrNd/PrOhmLkQAJUZdn4jVkzcKc8HBqn9yT1j
+vMMcP8dbNFupi+tFAgL2iQM0CNCDU/k0SAMG3sScsUJ/VU/+HA6tRyp6uQ62ZZOV
+485JYaCtknZRvvVIZyCQ7NfgU+mBbYwNHNlqtovOlFHeLMDv4TZsSgRMdk0noUQj
+NZZrQGbM6auzvQklob2zXfujXKV8+g11eNtOAeI6sF/HKvGNZ0mBnGuUr9YZQvZ1
+r2a9l3o5Ln0wvaZojbObxyJxdn/OOj677QorDYyLL+ZY0iowViRqQe6sjGt4HE9m
+8ZIwLOqNjhWyISPQw3KbAz8Q0kzRiaxtpnJO9n6xK/HUMTaYlLw6PeRiu7XoHtWM
+19P8KXo+kHi5dtxjmIzOLWDdEf9F+34/8cgonU8hfXlYzsUrX1vSQUIJVUo4ZISe
+lmeFrjuJeZstg6BwmJHQ7Z6mKCDqjEbJq9auL42jG3+rEveo2AB49NUF+FdZd17x
+opZ88trJmP9OJ1IE5msVmQZG0C6jZxGLF4D7dxe+rfIDVMJUaOPGaLDL4yhbxw3T
+49BxtljtXTaTRwbJLiJqaZdPzh8m/gIneNbWH1e4Jhrc5BDxy/B0Ko8hkEg1fW3Q
+AXSrSucwIQuMCgMER136H7yIF3EXCa42SXbd3B9r7DVmKaLZLxZYXby5q2Xq808F
+C9fRR/kRf9yGPh2xNW29
+=QAiK
+-----END PGP SIGNATURE-----
+
+--lCAWRPmW1mITcIfM--
