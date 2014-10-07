@@ -1,114 +1,140 @@
-From: Markus Pargmann <mpa@pengutronix.de>
-Subject: Re: [PATCH] pwm-backlight: Turn off pwm backlight in probe
-Date: Tue, 7 Oct 2014 11:07:18 +0200
-Message-ID: <20141007090718.GC5042@pengutronix.de>
-References: <1412623364-14583-1-git-send-email-mpa@pengutronix.de>
- <20141007083548.GD24254@ulmo>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH v8 1/2] pwm: add support for atmel-hlcdc-pwm device
+Date: Tue, 7 Oct 2014 11:14:11 +0200
+Message-ID: <20141007111411.57448c57@bbrezillon>
+References: <1412604423-19329-1-git-send-email-boris.brezillon@free-electrons.com>
+	<1412604423-19329-2-git-send-email-boris.brezillon@free-electrons.com>
+	<20141007084514.GE24254@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="gatW/ieO32f1wygP"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:51224 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752992AbaJGJHc (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Oct 2014 05:07:32 -0400
-Content-Disposition: inline
-In-Reply-To: <20141007083548.GD24254@ulmo>
+Received: from top.free-electrons.com ([176.31.233.9]:60614 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753194AbaJGJOO (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Oct 2014 05:14:14 -0400
+In-Reply-To: <20141007084514.GE24254@ulmo>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Lee Jones <lee.jones@linaro.org>, Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
+Cc: linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org
 
+On Tue, 7 Oct 2014 10:45:16 +0200
+Thierry Reding <thierry.reding@gmail.com> wrote:
 
---gatW/ieO32f1wygP
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-On Tue, Oct 07, 2014 at 10:35:49AM +0200, Thierry Reding wrote:
-> On Mon, Oct 06, 2014 at 09:22:44PM +0200, Markus Pargmann wrote:
-> > The backlight will be enabled by the panel again if it is used. So we
-> > can save the default brightness and disable the pwm backlight when
-> > probing.
-> >=20
-> > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
+> On Mon, Oct 06, 2014 at 04:07:02PM +0200, Boris Brezillon wrote:
+> > The HLCDC IP available in some Atmel SoCs (i.e. sam9x5i.e. at91sam9n12,
+> > at91sam9x5 family or sama5d3 family) provide a PWM device.
+> > 
+> > This driver add support for a PWM chip exposing a single PWM device (which
+> > will most likely be used to drive a backlight device).
+> > 
+> > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> > Tested-by: Anthony Harivel <anthony.harivel@emtrion.de>
+> > Tested-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+> > Acked-by: Thierry Reding <thierry.reding@gmail.com>
 > > ---
-> >  drivers/video/backlight/pwm_bl.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight=
-/pwm_bl.c
-> > index 336b83be7e2d..b4f433a6f106 100644
-> > --- a/drivers/video/backlight/pwm_bl.c
-> > +++ b/drivers/video/backlight/pwm_bl.c
-> > @@ -317,9 +317,11 @@ static int pwm_backlight_probe(struct platform_dev=
-ice *pdev)
-> >  		data->dft_brightness =3D data->max_brightness;
-> >  	}
-> > =20
-> > -	bl->props.brightness =3D data->dft_brightness;
-> > +	bl->props.brightness =3D 0;
-> >  	backlight_update_status(bl);
-> > =20
-> > +	bl->props.brightness =3D data->dft_brightness;
+> >  drivers/pwm/Kconfig           |   9 ++
+> >  drivers/pwm/Makefile          |   1 +
+> >  drivers/pwm/pwm-atmel-hlcdc.c | 248 ++++++++++++++++++++++++++++++++++++++++++
+> >  3 files changed, 258 insertions(+)
+> >  create mode 100644 drivers/pwm/pwm-atmel-hlcdc.c
+> 
+> Just noticed a couple more things.
+> 
+> > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> > index b800783..9bb331b 100644
+> > --- a/drivers/pwm/Kconfig
+> > +++ b/drivers/pwm/Kconfig
+> > @@ -50,6 +50,15 @@ config PWM_ATMEL
+> >  	  To compile this driver as a module, choose M here: the module
+> >  	  will be called pwm-atmel.
+> >  
+> > +config PWM_ATMEL_HLCDC_PWM
+> > +	tristate "Atmel HLCDC PWM support"
+> > +	select MFD_ATMEL_HLCDC
+> > +	help
+> > +	  Generic PWM framework driver for Atmel HLCDC PWM.
 > > +
-> >  	platform_set_drvdata(pdev, bl);
-> >  	return 0;
-> > =20
->=20
-> It would be nice if it was that easy. But we can't do this, because it
-> will regress for users of this driver that don't use a panel or DRM. If
-> the PWM backlight driver is used for example in conjunction with a plain
-> fbdev driver it isn't necessarily hooked up with anything and won't be
-> enabled automatically. That's really bad if fbdev is the only output you
-> have since you'd have to blindly type the commands to enable the
-> backlight. Furthermore disabling backlight isn't always what you want to
-> do. For example if the bootloader already turned it on and you hand over
-> from bootloader to kernel in a seamless way, then you absolutely want to
-> keep backlight on all the time.
->=20
-> See also[0] for a different proposal to solve the same problem. Back at
-> the time that received only a very few replies, but it would be nice if
-> Lee and Bryan could look at it again and see if we can come up with some
-> way to deal with this situation.
+> > +	  To compile this driver as a module, choose M here: the module
+> > +	  will be called pwm-atmel.
+> 
+> This should be "pwm-atmel-hlcdc".
 
-Yes your proposal looks a lot better to handle the different use cases.
-The DT-binding is not a hardware description but I don't see any better
-way of passing that information. So it would be good to get your
-solution mainline.
+Absolutely, I'll fix that.
 
-Best regards,
+> 
+> > diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
+> [...]
+> > +static int atmel_hlcdc_pwm_enable(struct pwm_chip *c, struct pwm_device *pwm)
+> > +{
+> > +	struct atmel_hlcdc_pwm *chip = to_atmel_hlcdc_pwm(c);
+> > +	struct atmel_hlcdc *hlcdc = chip->hlcdc;
+> > +	u32 status;
+> > +	int ret;
+> > +
+> > +	regmap_write(hlcdc->regmap, ATMEL_HLCDC_EN, ATMEL_HLCDC_PWM);
+> 
+> I just noticed that regmap_write() can also fail. But perhaps that's
+> only for I2C or the like backends and you can indeed ignore it for MMIO
+> backends.
 
-Markus
+Checking for errors is always a good thing (even if in this case,
+there's no reason it should fail).
 
---=20
-Pengutronix e.K.                           |                             |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+> 
+> > +	do {
+> > +		usleep_range(1, 10);
+> > +		ret = regmap_read(hlcdc->regmap, ATMEL_HLCDC_SR, &status);
+> > +		if (ret)
+> > +			return ret;
+> > +	} while ((status & ATMEL_HLCDC_PWM) == 0);
+> 
+> A slightly better loop might be to do the sleep only after you've
+> determined that the status bit isn't set. That way you avoid a needless
+> sleep if the status bit is immediately set or an error occurs during
+> read.
+> 
+> 	while (true) {
+> 		ret = regmap_read(...);
+> 		if (ret)
+> 			return ret;
+> 
+> 		if (status & ATMEL_HLCDC_PWM)
+> 			break;
+> 
+> 		usleep_range(1, 10);
+> 	}
 
---gatW/ieO32f1wygP
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+Absolutely, I'll use this code chunk in place of the previous one.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.12 (GNU/Linux)
+> 
+> > +static int atmel_hlcdc_pwm_remove(struct platform_device *pdev)
+> > +{
+> > +	struct atmel_hlcdc_pwm *chip = platform_get_drvdata(pdev);
+> > +	int ret;
+> > +
+> > +	ret = pwmchip_remove(&chip->chip);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	clk_disable_unprepare(chip->hlcdc->periph_clk);
+> 
+> You might want to call clk_disable_unprepare() regardless of whether or
+> not pwmchip_remove() failed. You could simply leave out the above check
+> for ret and instead...
 
-iQIcBAEBAgAGBQJUM61GAAoJEEpcgKtcEGQQsZYP/0dzt4YcC1HPXUm3lzWO5LrA
-kqjOVFcNTFzk/SSiDWQq0NPCj3Ete82S9UgYPv1mBpLJ1lCmh3N8EmajLAe+8N9e
-iDLCA1XR7/OIpQpnKKIbMfVxwUxqLnd9sAQW6lBuU0lN8zeX5air7FzaOYPhzKw1
-jsu/i0bpNURLU7zyBiRiHcenMl9rDbXqc84QmKxw3g7NSe5GMenXR9dM3gCnPF5O
-ESz/OMnZIs7Cl1iw0CvZGPm2mEHFlAparQzl1VLCursQeOSsCCPNshCdQN1XELZ1
-jhhmkan2IrvmqDFUcRS/dUYf7INJZY2QW5mmLkeKDYXzDLA6XTztoIyWGd0fmTgg
-kwu+BsN81ww/0q78sbMN5aBmWXMbV0HcLMbNQVhqnKACoRsEN2Uk4glnk0xhSe0u
-DH5EnCbJ0Y8lEKVaiDqBq8yTQw+ha0AZV9jyoDyU/Co0RsSwmv6HCpBsSIuSlKnh
-TqvoP41OEmGKDZB/NfuqdoELMEAfG3az14EhLELUDyDdZCD7vxW+ETg01IIxx1Vw
-5ewar84952bhae2JNEUhQ2xIXaDiyE2UEr97SSPCsU2Xkj9tOCQGxp7wOA/dUd2P
-p9P4BgMawKQUnhZ44uvgUXCmfgywnmMTECzGbZGwEENJvJIduobAW9ON/gB3RLfU
-GdeSUkpKzxJqdwAqehWN
-=/rIG
------END PGP SIGNATURE-----
+Are you sure of this one, if pwmchip_remove fails, then the PWM chip
+might still be used. And if we disable the clock the PWM chip won't work
+anymore.
 
---gatW/ieO32f1wygP--
+Best Regards,
+
+Boris
+
+
+
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
