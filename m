@@ -1,126 +1,123 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [RFC PATCH] pwm: Add the concept of an "active" pinctrl
-Date: Tue, 7 Oct 2014 15:15:23 +0200
-Message-ID: <CACRpkdbi4iDwAF674vm+yogv0ocXV+Pv6tq06i5YSgsJMv_PAg@mail.gmail.com>
-References: <1411514246-6163-1-git-send-email-dianders@chromium.org>
-	<CACRpkdbQ_21BcaK9T8aTHoDdXQpb-6KKZwcJzJJdBK0ztcG=ww@mail.gmail.com>
-	<CAD=FV=Xq5XtskHW8B2QcpSSh3apK9a+eBCg07cfPL3tFqXntWA@mail.gmail.com>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [PATCH v8 1/2] mfd: add atmel-hlcdc driver
+Date: Tue, 7 Oct 2014 15:16:24 +0200
+Message-ID: <5433E7A8.60001@atmel.com>
+References: <1412603324-18789-2-git-send-email-boris.brezillon@free-electrons.com> <20141007094427.GW25331@lee--X1> <20141007094727.GA12631@ulmo> <20141007095932.GY25331@lee--X1> <20141007100632.GA31575@ulmo> <20141007101743.GA25331@lee--X1> <20141007111304.GA1539@ulmo> <20141007113814.GA3693@lee--X1> <20141007134112.40179e8a@bbrezillon> <20141007115529.GA17434@ulmo> <20141007122224.GD3693@lee--X1>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ie0-f169.google.com ([209.85.223.169]:34077 "EHLO
-	mail-ie0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752028AbaJGNPY (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Oct 2014 09:15:24 -0400
-Received: by mail-ie0-f169.google.com with SMTP id tp5so5346104ieb.0
-        for <linux-pwm@vger.kernel.org>; Tue, 07 Oct 2014 06:15:23 -0700 (PDT)
-In-Reply-To: <CAD=FV=Xq5XtskHW8B2QcpSSh3apK9a+eBCg07cfPL3tFqXntWA@mail.gmail.com>
+Received: from eusmtp01.atmel.com ([212.144.249.242]:35186 "EHLO
+	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753073AbaJGNQ3 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Oct 2014 09:16:29 -0400
+In-Reply-To: <20141007122224.GD3693@lee--X1>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Doug Anderson <dianders@chromium.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Brown <broonie@kernel.org>, Lee Jones <lee.jones@linaro.org>, Chris Zhong <zyw@rock-chips.com>, Heiko Stuebner <heiko@sntech.de>, Sonny Rao <sonnyrao@chromium.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: Samuel Ortiz <sameo@linux.intel.com>, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org
 
-On Thu, Sep 25, 2014 at 10:26 PM, Doug Anderson <dianders@chromium.org> wrote:
-> On Thu, Sep 25, 2014 at 12:31 AM, Linus Walleij
-> <linus.walleij@linaro.org> wrote:
->> On Wed, Sep 24, 2014 at 1:17 AM, Doug Anderson <dianders@chromium.org> wrote:
+Hi Lee,
 
->> The device core will handle three states for you: "default", "sleep", "idle".
->
-> Except it will handle only one state unless "CONFIG_PM" is defined,
-> right?  In other words "sleep" and "idle" totally don't exist in the
-> "!CONFIG_PM" case.
+On 07/10/2014 14:22, Lee Jones :
+> On Tue, 07 Oct 2014, Thierry Reding wrote:
+>> On Tue, Oct 07, 2014 at 01:41:12PM +0200, Boris Brezillon wrote:
+>>> On Tue, 7 Oct 2014 12:38:14 +0100
+>>> Lee Jones <lee.jones@linaro.org> wrote:
+>>>
+>>>> On Tue, 07 Oct 2014, Thierry Reding wrote:
+>>>>
+>>>>> On Tue, Oct 07, 2014 at 11:17:43AM +0100, Lee Jones wrote:
+>>>>>> On Tue, 07 Oct 2014, Thierry Reding wrote:
+>>>>>>
+>>>>>>> On Tue, Oct 07, 2014 at 10:59:32AM +0100, Lee Jones wrote:
+>>>>>>>> On Tue, 07 Oct 2014, Thierry Reding wrote:
+>>>>>>>>
+>>>>>>>>> On Tue, Oct 07, 2014 at 10:44:27AM +0100, Lee Jones wrote:
+>>>>>>>>>> On Mon, 06 Oct 2014, Boris Brezillon wrote:
+>>>>>>>>>>
+>>>>>>>>>>> The HLCDC IP available on some Atmel SoCs (i.e. at91sam9n12, at91sam9x5
+>>>>>>>>>>> family or sama5d3 family) exposes 2 subdevices:
+>>>>>>>>>>> - a display controller (controlled by a DRM driver)
+>>>>>>>>>>> - a PWM chip
+>>>>>>>>>>>
+>>>>>>>>>>> The MFD device provides a regmap and several clocks (those connected
+>>>>>>>>>>> to this hardware block) to its subdevices.
+>>>>>>>>>>>
+>>>>>>>>>>> This way concurrent accesses to the iomem range are handled by the regmap
+>>>>>>>>>>> framework, and each subdevice can safely access HLCDC registers.
+>>>>>>>>>>>
+>>>>>>>>>>> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+>>>>>>>>>>> Acked-by: Lee Jones <lee.jones@linaro.org>
+>>>>>>>>>>> Tested-by: Anthony Harivel <anthony.harivel@emtrion.de>
+>>>>>>>>>>> Tested-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+>>>>>>>>>>> ---
+>>>>>>>>>>>  drivers/mfd/Kconfig             |   6 ++
+>>>>>>>>>>>  drivers/mfd/Makefile            |   1 +
+>>>>>>>>>>>  drivers/mfd/atmel-hlcdc.c       | 122 ++++++++++++++++++++++++++++++++++++++++
+>>>>>>>>>>>  include/linux/mfd/atmel-hlcdc.h |  85 ++++++++++++++++++++++++++++
+>>>>>>>>>>>  4 files changed, 214 insertions(+)
+>>>>>>>>>>>  create mode 100644 drivers/mfd/atmel-hlcdc.c
+>>>>>>>>>>>  create mode 100644 include/linux/mfd/atmel-hlcdc.h
+>>>>>>>>>>
+>>>>>>>>>> Applied for v3.19.
+>>>>>>>>>
+>>>>>>>>> Will you provide a stable branch that I can pull into the PWM tree?
+>>>>>>>>
+>>>>>>>> I hadn't planned on it.  What do you need that for?
+>>>>>>>
+>>>>>>> Because the PWM driver depends on this series. But if you prefer you
+>>>>>>> could also take the PWM driver through your tree.
+>>>>>>
+>>>>>> Probably better to deal with that via Kconfig.
+>>>>>
+>>>>> Do you have any suggestions? The PWM driver currently selects the
+>>>>> MFD_ATMEL_HLCDC symbol, which as I understand will cause a Kconfig error
+>>>>> if the latter isn't defined.
+>>>>
+>>>> s/select/depends on/ for the desired effect.
+>>>>
+>>>
+>>> Don't forget the atmel-hlcdc.h header file which is referenced by both
+>>> the DRM and the PWM drivers.
+>>
+>> The depends on will prevent the PWM driver from being built until MFD
+>> becomes available, so the missing header file shouldn't be a problem.
+>>
+>> That said, Nicolas Ferre (Cc'ing) at some point requested this to become
+>> a select (or at least for the DRM driver, but I guess the same applies
+>> to PWM) on the grounds that a depends on will make it more difficult to
+>> enable the driver.
+> 
+> It's not that much more difficult.  It just entails enabling 3 instead
+> of 2 config options.
 
-Yes. Because the intent of these settings is usually to save power.
-So by disabling the PM config, you can test if the system works
-without PM. Even hairy stuff like power-related pin control. It has
-this nice orthogonal debug feature to it...
+Yes it is more difficult. Believe me, it's a mess, but...
 
-> Normally it should be considered "safe" (though high power)
-> to disable CONFIG_PM, right?
+> Once all of the required components are merged,
+> feel free to drop back to 'select'.  This is easier than sharing round
+> immutable branches all over the place.
 
-Yeah. If your usecase makes it unsafe to have just "default",
-you should not rely on these state names but invent new ones.
+.. I agree with this option of moving to an easier-to-merge solution and
+then dealing with the ease of use.
 
->> What I worry about in this patch is that you redefine the meaning
->> of "default" from what it used to be into "sleep", basically, that
->> you want the device to come up in a relaxed mode, whereas
->> the "default" state is usually defined as "ready to go", i.e. what
->> you refer to as "active".
->
-> Yeah, I didn't like that either.  That's mostly why I put the RFC and
-> "I'm gonna get yelled at" comment.  ;)
->
-> Hrm, I wonder if another reasonable option is to add a boolean
-> property somewhere saying that "pinctrl starts idle" would fix things
-> for me.
+>> So we have two options here: 1) turn the select into a depends on here
+>> and allow the dependency to be resolved that way, or 2) solve the
+>> dependency by making sure the MFD part is merged first (either by
+>> pulling the MFD tree into the PWM and DRM trees or waiting for a full
+>> cycle for the MFD changes to land).
+>>
+>> I don't mind either way.
+> 
+> I'll go with either of the two suggestions above.
 
-That's a pretty good idea actually.
+So, Lee and Thierry, you can both take your part in your respective
+trees with the change (1) described above and with my:
 
-It has to be part of the state defintion and also the device tree
-bindings then I guess?
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 
-Something in <linux/pinctrl/machine.h> needs patching.
+(if you feel it is needed).
 
->> Inspecting the helper code in drivers/base/pinctrl.c you will find
->> that if the "default" state is defined it will be retrieved and
->> activated on boot, so you don't have to do this yourself. Then
->> if "sleep" and "idle" exist, these will be grabbed and made
->> accessible using special helper functions.
->
-> How I deal with this would depend on whether I require CONFIG_PM.
-> What do you think?
-
-No I don't have everything in my head, it depends on whether
-you can live with the device being in the "default" state if
-CONFIG_PM is disabled.
-
-You could always have the driver do this in Kconfig:
-
-depends on PM
-
-but I don't know if that is desireable.
-
->> I realize that this means that you will end up with a transient
->> state where the pins are in "default" mode before probe
->> commence. If this is a big problem, yeah, then you have to
->> go for custom states.
->
-> In this case I think it could be a big problem.  When you're just
-> talking about a PWM backlight then it doesn't matter much, but I don't
-> like the idea of letting a regulator glitch to a random voltage during
-> probe.
-
-OK something like tagging the device to go to "sleep"
-when probing would work.
-
-> What do you think about the "default to idle" boolean, then (and
-> corresponding device tree property)?  It would be a pretty small patch
-> to pinctrl_bind_pins(), I think.  I could make sure that "idle" is
-> defined even if no CONFIG_PM...
-
-Yeah I sort of like this idea.
-
-Like you could override what is the actual preferred
-probe state.
-
-I would like something like that:
-
-        /* For a client device requiring named states */
-        device {
-                pinctrl-names = "default", "sleep";
-                pinctrl-0 = <&state_0_node_a>;
-                pinctrl-1 = <&state_1_node_a &state_1_node_b>;
-                pinctrl-probe-state = "sleep";
-        };
-
-
-
-Then patch the code in drivers/base/pinctrl.c to respect
-this if DT is used and this is present, else just use "default".
-
-Note that since it's just a string, you can specify any state
-here.
-
-Yours,
-Linus Walleij
+Thanks, bye,
+-- 
+Nicolas Ferre
