@@ -1,96 +1,71 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v8 1/2] pwm: add support for atmel-hlcdc-pwm device
-Date: Tue, 7 Oct 2014 11:55:56 +0200
-Message-ID: <20141007095556.GB12631@ulmo>
-References: <1412604423-19329-1-git-send-email-boris.brezillon@free-electrons.com>
- <1412604423-19329-2-git-send-email-boris.brezillon@free-electrons.com>
- <20141007084514.GE24254@ulmo>
- <20141007111411.57448c57@bbrezillon>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v8 1/2] mfd: add atmel-hlcdc driver
+Date: Tue, 7 Oct 2014 10:59:32 +0100
+Message-ID: <20141007095932.GY25331@lee--X1>
+References: <1412603324-18789-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1412603324-18789-2-git-send-email-boris.brezillon@free-electrons.com>
+ <20141007094427.GW25331@lee--X1>
+ <20141007094727.GA12631@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ZoaI/ZTpAVc4A5k6"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wg0-f52.google.com ([74.125.82.52]:50567 "EHLO
-	mail-wg0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752825AbaJGJz7 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Oct 2014 05:55:59 -0400
+Received: from mail-ig0-f178.google.com ([209.85.213.178]:35239 "EHLO
+	mail-ig0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753035AbaJGJ7j (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Oct 2014 05:59:39 -0400
+Received: by mail-ig0-f178.google.com with SMTP id l13so4376416iga.11
+        for <linux-pwm@vger.kernel.org>; Tue, 07 Oct 2014 02:59:38 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <20141007111411.57448c57@bbrezillon>
+In-Reply-To: <20141007094727.GA12631@ulmo>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Samuel Ortiz <sameo@linux.intel.com>, David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org, linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org
 
+On Tue, 07 Oct 2014, Thierry Reding wrote:
 
---ZoaI/ZTpAVc4A5k6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Oct 07, 2014 at 11:14:11AM +0200, Boris Brezillon wrote:
-> On Tue, 7 Oct 2014 10:45:16 +0200 Thierry Reding <thierry.reding@gmail.co=
-m> wrote:
-> > On Mon, Oct 06, 2014 at 04:07:02PM +0200, Boris Brezillon wrote:
-[...]
-> > > +static int atmel_hlcdc_pwm_remove(struct platform_device *pdev)
-> > > +{
-> > > +	struct atmel_hlcdc_pwm *chip =3D platform_get_drvdata(pdev);
-> > > +	int ret;
-> > > +
-> > > +	ret =3D pwmchip_remove(&chip->chip);
-> > > +	if (ret)
-> > > +		return ret;
-> > > +
-> > > +	clk_disable_unprepare(chip->hlcdc->periph_clk);
+> On Tue, Oct 07, 2014 at 10:44:27AM +0100, Lee Jones wrote:
+> > On Mon, 06 Oct 2014, Boris Brezillon wrote:
 > >=20
-> > You might want to call clk_disable_unprepare() regardless of whether or
-> > not pwmchip_remove() failed. You could simply leave out the above check
-> > for ret and instead...
+> > > The HLCDC IP available on some Atmel SoCs (i.e. at91sam9n12, at91=
+sam9x5
+> > > family or sama5d3 family) exposes 2 subdevices:
+> > > - a display controller (controlled by a DRM driver)
+> > > - a PWM chip
+> > >=20
+> > > The MFD device provides a regmap and several clocks (those connec=
+ted
+> > > to this hardware block) to its subdevices.
+> > >=20
+> > > This way concurrent accesses to the iomem range are handled by th=
+e regmap
+> > > framework, and each subdevice can safely access HLCDC registers.
+> > >=20
+> > > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.co=
+m>
+> > > Acked-by: Lee Jones <lee.jones@linaro.org>
+> > > Tested-by: Anthony Harivel <anthony.harivel@emtrion.de>
+> > > Tested-by: Ludovic Desroches <ludovic.desroches@atmel.com>
+> > > ---
+> > >  drivers/mfd/Kconfig             |   6 ++
+> > >  drivers/mfd/Makefile            |   1 +
+> > >  drivers/mfd/atmel-hlcdc.c       | 122 ++++++++++++++++++++++++++=
+++++++++++++++
+> > >  include/linux/mfd/atmel-hlcdc.h |  85 ++++++++++++++++++++++++++=
+++
+> > >  4 files changed, 214 insertions(+)
+> > >  create mode 100644 drivers/mfd/atmel-hlcdc.c
+> > >  create mode 100644 include/linux/mfd/atmel-hlcdc.h
+> >=20
+> > Applied for v3.19.
 >=20
-> Are you sure of this one, if pwmchip_remove fails, then the PWM chip
-> might still be used. And if we disable the clock the PWM chip won't work
-> anymore.
+> Will you provide a stable branch that I can pull into the PWM tree?
 
-The return value of .remove() isn't really used, so if built as a module
-the PWM chip will disappear anyway. Even if not built as a module the
-managed resources are going to go away anyway, so for all intents and
-purposes the PWM chip will be defunct.
+I hadn't planned on it.  What do you need that for?
 
-A long time ago there were some discussions about adding reference
-counting to the PWM chip and PWM devices to better handle this situation
-but it has never really proven to be an issue thus far.
-
-Perhaps a better way to solve this would be to make pwmchip_remove() not
-return an error and instead WARN in the single case where it can fail
-(if one of the PWM devices it exposes is still in use). That way users
-will still get an appropriate warning that something's awry and it would
-play more nicely with an advanced mechanism to keep PWM devices alive
-beyond the lifetime of a driver to cope with removal.
-
-Irrespective of the above it's probably fine either way, since if
-pwmchip_remove() fails you're in a pretty bad place anyway.
-
-Thierry
-
---ZoaI/ZTpAVc4A5k6
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJUM7isAAoJEN0jrNd/PrOhDsEP/13UL68OGeiQW61vnHESk7/D
-MNXcg5iJsNeujQTG/WpzSa3K8rxCLb7+sYcWxmI20BvqYPogYz0J7a1L2rwFaDyF
-HKRpdc4uXnnCP5DJOvs4z3qTbXMwW8vXE16uwl2OrrLwlSrovl53L3XcPiy8jjsS
-c7qsjBTopqPJe1wkINHO5evKTIrwTwHzB3FXLY865qIQzRSx8qRlpFRhiTEnMYlP
-u/bcp2U+QYmf8eBJ2vLflYZDHBtYCBCRBBLqiTdLZcBeVISk8+roNPRX7SRNcnkH
-D1WpR6JYIllw7QuRMd39jiqmy/+jubunIbuD/NtRJm+ERet9H3gmPSJ9SZKK7Gxz
-7ELIn1JYS5LxmXwl/q/847UifB5kWuWA1egld4xgg5TWeVgK9RiC2BAH7zc7SMEo
-aNMGFo20tUC1W4XJBx4BPj49asz3g5YWV0Z74PwscwzJHIfiO69c/jpBrIQ7GkHX
-uA2QPeWw00o3HJbqMOmRcc8DoSjKUP5KEoYhKPy5dQT6bFUeJsshvGXUnDIPgbZa
-RbClZ0Uqjyv1aG5n+r0ciJghyx5y1I7KadPdxE225ofkw/w9vaTkalncblOYyiHu
-xzAIz9niS6rtYn4O1VlwNxX8ORnu7r1R9Ka3mn4HUSfvo3262Ih06CntN+g63ML3
-Rk0RM4gcA9x6TaOPtK9c
-=yaPz
------END PGP SIGNATURE-----
-
---ZoaI/ZTpAVc4A5k6--
+--=20
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
