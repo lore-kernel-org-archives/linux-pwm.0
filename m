@@ -1,150 +1,125 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v8 1/2] pwm: add support for atmel-hlcdc-pwm device
-Date: Tue, 7 Oct 2014 10:45:16 +0200
-Message-ID: <20141007084514.GE24254@ulmo>
+Subject: Re: [PATCH v8 2/2] pwm: add DT bindings documentation for
+ atmel-hlcdc-pwm driver
+Date: Tue, 7 Oct 2014 10:47:05 +0200
+Message-ID: <20141007084705.GF24254@ulmo>
 References: <1412604423-19329-1-git-send-email-boris.brezillon@free-electrons.com>
- <1412604423-19329-2-git-send-email-boris.brezillon@free-electrons.com>
+ <1412604423-19329-3-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="X3gaHHMYHkYqP6yf"
+	protocol="application/pgp-signature"; boundary="aPdhxNJGSeOG9wFI"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wi0-f169.google.com ([209.85.212.169]:48189 "EHLO
-	mail-wi0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753395AbaJGIpT (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Oct 2014 04:45:19 -0400
+Received: from mail-wg0-f52.google.com ([74.125.82.52]:53069 "EHLO
+	mail-wg0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753285AbaJGIrI (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Oct 2014 04:47:08 -0400
 Content-Disposition: inline
-In-Reply-To: <1412604423-19329-2-git-send-email-boris.brezillon@free-electrons.com>
+In-Reply-To: <1412604423-19329-3-git-send-email-boris.brezillon@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Boris Brezillon <boris.brezillon@free-electrons.com>
 Cc: linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org
 
 
---X3gaHHMYHkYqP6yf
+--aPdhxNJGSeOG9wFI
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 06, 2014 at 04:07:02PM +0200, Boris Brezillon wrote:
+On Mon, Oct 06, 2014 at 04:07:03PM +0200, Boris Brezillon wrote:
 > The HLCDC IP available in some Atmel SoCs (i.e. sam9x5i.e. at91sam9n12,
 > at91sam9x5 family or sama5d3 family) provide a PWM device.
 >=20
-> This driver add support for a PWM chip exposing a single PWM device (which
-> will most likely be used to drive a backlight device).
+> The DT bindings used for this PWM device is following the default 3 cells
+> bindings described in Documentation/devicetree/bindings/pwm/pwm.txt.
 >=20
 > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> Tested-by: Anthony Harivel <anthony.harivel@emtrion.de>
-> Tested-by: Ludovic Desroches <ludovic.desroches@atmel.com>
-> Acked-by: Thierry Reding <thierry.reding@gmail.com>
 > ---
->  drivers/pwm/Kconfig           |   9 ++
->  drivers/pwm/Makefile          |   1 +
->  drivers/pwm/pwm-atmel-hlcdc.c | 248 ++++++++++++++++++++++++++++++++++++=
+>  .../devicetree/bindings/pwm/atmel-hlcdc-pwm.txt    | 50 ++++++++++++++++=
 ++++++
->  3 files changed, 258 insertions(+)
->  create mode 100644 drivers/pwm/pwm-atmel-hlcdc.c
-
-Just noticed a couple more things.
-
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index b800783..9bb331b 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -50,6 +50,15 @@ config PWM_ATMEL
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-atmel.
-> =20
-> +config PWM_ATMEL_HLCDC_PWM
-> +	tristate "Atmel HLCDC PWM support"
-> +	select MFD_ATMEL_HLCDC
-> +	help
-> +	  Generic PWM framework driver for Atmel HLCDC PWM.
+>  1 file changed, 50 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm=
+=2Etxt
+>=20
+> diff --git a/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt b/=
+Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
+> new file mode 100644
+> index 0000000..9f4f83a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
+> @@ -0,0 +1,50 @@
+> +Device-Tree bindings for Atmel's HLCDC (High LCD Controller) PWM driver
 > +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called pwm-atmel.
-
-This should be "pwm-atmel-hlcdc".
-
-> diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
-[...]
-> +static int atmel_hlcdc_pwm_enable(struct pwm_chip *c, struct pwm_device =
-*pwm)
-> +{
-> +	struct atmel_hlcdc_pwm *chip =3D to_atmel_hlcdc_pwm(c);
-> +	struct atmel_hlcdc *hlcdc =3D chip->hlcdc;
-> +	u32 status;
-> +	int ret;
+> +The Atmel HLCDC PWM is subdevice of the HLCDC MFD device.
+> +See ../mfd/atmel-hlcdc.txt for more details.
 > +
-> +	regmap_write(hlcdc->regmap, ATMEL_HLCDC_EN, ATMEL_HLCDC_PWM);
+> +Required properties:
+> + - compatible: value should be one of the following:
+> +   "atmel,hlcdc-pwm"
+> + - pinctr-names: the pin control state names. Should contain "default".
+> + - pinctrl-0: should contain the pinctrl states described by pinctrl
+> +   default.
+> + - #pwm-cells: should be set to 3. This PWM chip use the default 3 cells
+> +   bindings defined in Documentation/devicetree/bindings/pwm/pwm.txt.
 
-I just noticed that regmap_write() can also fail. But perhaps that's
-only for I2C or the like backends and you can indeed ignore it for MMIO
-backends.
-
-> +	do {
-> +		usleep_range(1, 10);
-> +		ret =3D regmap_read(hlcdc->regmap, ATMEL_HLCDC_SR, &status);
-> +		if (ret)
-> +			return ret;
-> +	} while ((status & ATMEL_HLCDC_PWM) =3D=3D 0);
-
-A slightly better loop might be to do the sleep only after you've
-determined that the status bit isn't set. That way you avoid a needless
-sleep if the status bit is immediately set or an error occurs during
-read.
-
-	while (true) {
-		ret =3D regmap_read(...);
-		if (ret)
-			return ret;
-
-		if (status & ATMEL_HLCDC_PWM)
-			break;
-
-		usleep_range(1, 10);
-	}
-
-> +static int atmel_hlcdc_pwm_remove(struct platform_device *pdev)
-> +{
-> +	struct atmel_hlcdc_pwm *chip =3D platform_get_drvdata(pdev);
-> +	int ret;
-> +
-> +	ret =3D pwmchip_remove(&chip->chip);
-> +	if (ret)
-> +		return ret;
-> +
-> +	clk_disable_unprepare(chip->hlcdc->periph_clk);
-
-You might want to call clk_disable_unprepare() regardless of whether or
-not pwmchip_remove() failed. You could simply leave out the above check
-for ret and instead...
+Maybe "... defined in pwm.txt in this directory."?
 
 > +
-> +	return 0;
+> +Example:
+> +
+> +	hlcdc: hlcdc@f0030000 {
+> +		compatible =3D "atmel,sama5d3-hlcdc";
+> +		reg =3D <0xf0030000 0x2000>;
+> +		clocks =3D <&lcdc_clk>, <&lcdck>, <&clk32k>;
+> +		clock-names =3D "periph_clk","sys_clk", "slow_clk";
+> +		status =3D "disabled";
+> +
+> +		hlcdc-display-controller {
+> +			compatible =3D "atmel,hlcdc-display-controller";
+> +			interrupts =3D <36 IRQ_TYPE_LEVEL_HIGH 0>;
+> +			pinctrl-names =3D "default";
+> +			pinctrl-0 =3D <&pinctrl_lcd_base &pinctrl_lcd_rgb888>;
+> +			#address-cells =3D <1>;
+> +			#size-cells =3D <0>;
+> +
+> +			port@0 {
+> +				#address-cells =3D <1>;
+> +				#size-cells =3D <0>;
+> +				reg =3D <0>;
+> +
+> +				hlcdc_panel_output: endpoint@0 {
+> +					reg =3D <0>;
+> +					remote-endpoint =3D <&panel_input>;
+> +				};
+> +			};
+> +		};
 
-"return ret;" here.
+Perhaps leave out the display controller node in this example since it
+isn't relevant and could be confusing.
 
-Thierry
+Both of the above are really only minor issues, so either way:
 
---X3gaHHMYHkYqP6yf
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
+
+--aPdhxNJGSeOG9wFI
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJUM6gZAAoJEN0jrNd/PrOhFk0P/RSq9bk+Z3vlzFK0nGYWdYAE
-uRbIZOk6qd5r+bLdy1t7E/kAKy5NmgVt63v0XqnNv+wf5mLUXq4FM/AQ96qekqaF
-KzikLMj+5ZXkpZkbc7gPWUu3nyOmKs6t4akIQfcULj921bxArVajT3x8gY13Kap8
-3LZGDT+joDktzISvmZMrvi/BpMcLb+Fbn1bIYJASiOQif6uYAAFmtOy57qay8CIt
-2HhZyXK2TyDic7ZBU2OnqB8Jbe/wcnQUm+i4P9t2ZmwHO6z9jDTTdmw3Agac46B6
-V+BeJMx7xb92ZJ9ttGcGDXTyvTXEzYBsA7AiH96A5QOOI1QT6p7QVAbbRFD1sqrN
-NkHcMv8HpN1mmTdiNt8Vd/43y7sU5FWIPmQbsg9bD19lp2V1n93cXIbfOlI88woS
-o6zxOxJd+LWWXhV+3TGUVGmQbLWyuOV7Wm+dPKdgRLueZPqSWLPeWs/GDBuLO2jC
-9VScFYuc/hMqcVcTlj9lkvj/Wi9FTGK88S+NAyi2VgQR/Yveophv2WnTsktF5/fT
-9UWaphTjazWbqrCyotfSQFLBASBXphMcCFgLLbni5pAW/48uKeI1az94MUl0I9wP
-Angbb4dk5iPVNDfao4TfbyyPq+E6I7C7EOL+GRf1rMm7cNQCTY2WYNVlw9MSzAX/
-mc85pTmzBopuxxIrRFhy
-=CWz2
+iQIcBAEBAgAGBQJUM6iJAAoJEN0jrNd/PrOhxnsP/jG43h/NP0aIh2r9Rfq6CQjw
+aJWRDPomfDIk6IyvZ2AUO/zsEJDqzkgv2edlB/fSdirFnrm47ZJxWxZQreEMgQ4g
+Gmvd6Cj3UizD45jUKhBDL4fK4+f2y7KO+jikz4Og1tTKvxjTlhExdkFYmBzr/wyK
+/yENzxawSr2DloVYM3DPee2YhrXAsNMThhWJP/iDb/9CHAOiU7aeBf9fDSypG2bO
+dboXmYSlmABV5Nc30CugbaZhIXzxCepDNj5tdIfiSUadjI1hKK/sff1ow5BgPnNg
+qJhw+SANGkXk1NXgE4n/Lb5FsA4g/B26qDPpPJ2mhcNo+CQ2oyga9fWP3jKkNMAj
+twYb4xHoYMehjGEu/Jf70Od8NgIb7hXdXBV6FCkDS/EHk/qrg22cbTn/73WPifaf
+RU38bmKrF3/UFpQ5Umw2wEMBk+abwySDmJgUPGAeGOT5hjcMk01r2qZfGv+Hkjz7
+TBUwe65bCQVOBxEOjI9VkKXREFv2BQFhV1O7o40VpGENjryOa1zEl2WKWkiBWq6a
+G961VliSAndCEersYpbsomcPC4sQY+85EPMY5nY/GNLA0/0m3igt8szsJaed5hYu
+1jIA60Bx4PCpEjK6SKLba/dR1XTPk+Evej6CQwj5PkO2wbH3WEEeYh/e90Hp2pDA
+UQeZJzgB9/PHhkG36i6q
+=ZuYK
 -----END PGP SIGNATURE-----
 
---X3gaHHMYHkYqP6yf--
+--aPdhxNJGSeOG9wFI--
