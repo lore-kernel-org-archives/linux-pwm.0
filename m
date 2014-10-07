@@ -1,82 +1,126 @@
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Subject: Re: [PATCH v9 2/2] pwm: add DT bindings documentation for atmel-hlcdc-pwm
- driver
-Date: Tue, 7 Oct 2014 14:55:26 +0200
-Message-ID: <5433E2BE.6020704@atmel.com>
-References: <1412676860-12120-1-git-send-email-boris.brezillon@free-electrons.com> <1412676860-12120-3-git-send-email-boris.brezillon@free-electrons.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [RFC PATCH] pwm: Add the concept of an "active" pinctrl
+Date: Tue, 7 Oct 2014 15:15:23 +0200
+Message-ID: <CACRpkdbi4iDwAF674vm+yogv0ocXV+Pv6tq06i5YSgsJMv_PAg@mail.gmail.com>
+References: <1411514246-6163-1-git-send-email-dianders@chromium.org>
+	<CACRpkdbQ_21BcaK9T8aTHoDdXQpb-6KKZwcJzJJdBK0ztcG=ww@mail.gmail.com>
+	<CAD=FV=Xq5XtskHW8B2QcpSSh3apK9a+eBCg07cfPL3tFqXntWA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from eusmtp01.atmel.com ([212.144.249.242]:29313 "EHLO
-	eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751094AbaJGMz2 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Oct 2014 08:55:28 -0400
-In-Reply-To: <1412676860-12120-3-git-send-email-boris.brezillon@free-electrons.com>
+Received: from mail-ie0-f169.google.com ([209.85.223.169]:34077 "EHLO
+	mail-ie0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752028AbaJGNPY (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Oct 2014 09:15:24 -0400
+Received: by mail-ie0-f169.google.com with SMTP id tp5so5346104ieb.0
+        for <linux-pwm@vger.kernel.org>; Tue, 07 Oct 2014 06:15:23 -0700 (PDT)
+In-Reply-To: <CAD=FV=Xq5XtskHW8B2QcpSSh3apK9a+eBCg07cfPL3tFqXntWA@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org
+To: Doug Anderson <dianders@chromium.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Brown <broonie@kernel.org>, Lee Jones <lee.jones@linaro.org>, Chris Zhong <zyw@rock-chips.com>, Heiko Stuebner <heiko@sntech.de>, Sonny Rao <sonnyrao@chromium.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-On 07/10/2014 12:14, Boris Brezillon :
-> The HLCDC IP available in some Atmel SoCs (i.e. sam9x5i.e. at91sam9n12,
+On Thu, Sep 25, 2014 at 10:26 PM, Doug Anderson <dianders@chromium.org> wrote:
+> On Thu, Sep 25, 2014 at 12:31 AM, Linus Walleij
+> <linus.walleij@linaro.org> wrote:
+>> On Wed, Sep 24, 2014 at 1:17 AM, Doug Anderson <dianders@chromium.org> wrote:
 
-Ditto: sam9x5 doesn't exist.
+>> The device core will handle three states for you: "default", "sleep", "idle".
+>
+> Except it will handle only one state unless "CONFIG_PM" is defined,
+> right?  In other words "sleep" and "idle" totally don't exist in the
+> "!CONFIG_PM" case.
 
-> at91sam9x5 family or sama5d3 family) provide a PWM device.
-> 
-> The DT bindings used for this PWM device is following the default 3 cells
-> bindings described in Documentation/devicetree/bindings/pwm/pwm.txt.
-> 
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> ---
->  .../devicetree/bindings/pwm/atmel-hlcdc-pwm.txt    | 29 ++++++++++++++++++++++
->  1 file changed, 29 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
-> new file mode 100644
-> index 0000000..8a85244
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm.txt
-> @@ -0,0 +1,29 @@
-> +Device-Tree bindings for Atmel's HLCDC (High LCD Controller) PWM driver
+Yes. Because the intent of these settings is usually to save power.
+So by disabling the PM config, you can test if the system works
+without PM. Even hairy stuff like power-related pin control. It has
+this nice orthogonal debug feature to it...
 
-s/High/High-end/
+> Normally it should be considered "safe" (though high power)
+> to disable CONFIG_PM, right?
 
-> +
-> +The Atmel HLCDC PWM is subdevice of the HLCDC MFD device.
-> +See ../mfd/atmel-hlcdc.txt for more details.
-> +
-> +Required properties:
-> + - compatible: value should be one of the following:
-> +   "atmel,hlcdc-pwm"
-> + - pinctr-names: the pin control state names. Should contain "default".
-> + - pinctrl-0: should contain the pinctrl states described by pinctrl
-> +   default.
-> + - #pwm-cells: should be set to 3. This PWM chip use the default 3 cells
-> +   bindings defined in pwm.txt in this directory.
-> +
-> +Example:
-> +
-> +	hlcdc: hlcdc@f0030000 {
-> +		compatible = "atmel,sama5d3-hlcdc";
-> +		reg = <0xf0030000 0x2000>;
-> +		clocks = <&lcdc_clk>, <&lcdck>, <&clk32k>;
-> +		clock-names = "periph_clk","sys_clk", "slow_clk";
-> +
-> +		hlcdc_pwm: hlcdc-pwm {
-> +				
-> +			pinctrl-names = "default";
-> +			pinctrl-0 = <&pinctrl_lcd_pwm>;
-> +			#pwm-cells = <3>;
-> +		};
-> +	};
-> 
+Yeah. If your usecase makes it unsafe to have just "default",
+you should not rely on these state names but invent new ones.
 
-otherwise,
-Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+>> What I worry about in this patch is that you redefine the meaning
+>> of "default" from what it used to be into "sleep", basically, that
+>> you want the device to come up in a relaxed mode, whereas
+>> the "default" state is usually defined as "ready to go", i.e. what
+>> you refer to as "active".
+>
+> Yeah, I didn't like that either.  That's mostly why I put the RFC and
+> "I'm gonna get yelled at" comment.  ;)
+>
+> Hrm, I wonder if another reasonable option is to add a boolean
+> property somewhere saying that "pinctrl starts idle" would fix things
+> for me.
 
-Thanks.
--- 
-Nicolas Ferre
+That's a pretty good idea actually.
+
+It has to be part of the state defintion and also the device tree
+bindings then I guess?
+
+Something in <linux/pinctrl/machine.h> needs patching.
+
+>> Inspecting the helper code in drivers/base/pinctrl.c you will find
+>> that if the "default" state is defined it will be retrieved and
+>> activated on boot, so you don't have to do this yourself. Then
+>> if "sleep" and "idle" exist, these will be grabbed and made
+>> accessible using special helper functions.
+>
+> How I deal with this would depend on whether I require CONFIG_PM.
+> What do you think?
+
+No I don't have everything in my head, it depends on whether
+you can live with the device being in the "default" state if
+CONFIG_PM is disabled.
+
+You could always have the driver do this in Kconfig:
+
+depends on PM
+
+but I don't know if that is desireable.
+
+>> I realize that this means that you will end up with a transient
+>> state where the pins are in "default" mode before probe
+>> commence. If this is a big problem, yeah, then you have to
+>> go for custom states.
+>
+> In this case I think it could be a big problem.  When you're just
+> talking about a PWM backlight then it doesn't matter much, but I don't
+> like the idea of letting a regulator glitch to a random voltage during
+> probe.
+
+OK something like tagging the device to go to "sleep"
+when probing would work.
+
+> What do you think about the "default to idle" boolean, then (and
+> corresponding device tree property)?  It would be a pretty small patch
+> to pinctrl_bind_pins(), I think.  I could make sure that "idle" is
+> defined even if no CONFIG_PM...
+
+Yeah I sort of like this idea.
+
+Like you could override what is the actual preferred
+probe state.
+
+I would like something like that:
+
+        /* For a client device requiring named states */
+        device {
+                pinctrl-names = "default", "sleep";
+                pinctrl-0 = <&state_0_node_a>;
+                pinctrl-1 = <&state_1_node_a &state_1_node_b>;
+                pinctrl-probe-state = "sleep";
+        };
+
+
+
+Then patch the code in drivers/base/pinctrl.c to respect
+this if DT is used and this is present, else just use "default".
+
+Note that since it's just a string, you can specify any state
+here.
+
+Yours,
+Linus Walleij
