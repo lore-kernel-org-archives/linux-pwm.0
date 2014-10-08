@@ -1,54 +1,23 @@
-From: Bart Tanghe <bart.tanghe@thomasmore.be>
+From: Stephen Warren <swarren@wwwdotorg.org>
 Subject: Re: [PATCH v7]pwm: add BCM2835 PWM driver
-Date: Wed, 08 Oct 2014 16:02:49 +0200
-Message-ID: <54354409.7090105@thomasmore.be>
-References: <1412763272-24269-1-git-send-email-bart.tanghe@thomasmore.be> <20141008121935.GB7357@ulmo.nvidia.com>
+Date: Wed, 08 Oct 2014 09:30:58 -0700
+Message-ID: <543566C2.2020000@wwwdotorg.org>
+References: <1412763272-24269-1-git-send-email-bart.tanghe@thomasmore.be>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from rhcavuit02.kulnet.kuleuven.be ([134.58.240.130]:54888 "EHLO
-	cavuit02.kulnet.kuleuven.be" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753800AbaJHODH (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 8 Oct 2014 10:03:07 -0400
-In-Reply-To: <20141008121935.GB7357@ulmo.nvidia.com>
+Received: from avon.wwwdotorg.org ([70.85.31.133]:53600 "EHLO
+	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754805AbaJHQbC (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 8 Oct 2014 12:31:02 -0400
+In-Reply-To: <1412763272-24269-1-git-send-email-bart.tanghe@thomasmore.be>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
+To: Bart Tanghe <bart.tanghe@thomasmore.be>, thierry.reding@gmail.com
 Cc: matt.porter@linaro.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
 
-On 2014-10-08 14:19, Thierry Reding wrote:
-> On Wed, Oct 08, 2014 at 12:14:32PM +0200, Bart Tanghe wrote:
->> Add pwm driver for Broadcom BCM2835 processor (Raspberry Pi)
->>
->> Signed-off-by: Bart Tanghe <bart.tanghe@thomasmore.be>
->> ---
->> Changed in v7:
->>  - clean up the shameful clk_enable error handling introduced in v6
->>  - clean up the code nits
->>
->> diff --git a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
->> new file mode 100644
->> index 0000000..d5162db
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
->> @@ -0,0 +1,27 @@
->> +BCM2835 PWM controller (Raspberry Pi controller)
->> +
->> +Required properties:
->> +- compatible: should be "brcm,bcm2835-pwm"
->> +- reg: physical base address and length of the controller's registers
->> +- clock: this clock defines the base clock frequency of the pwm
->> +hardware system, the period and the duty_cycle of the pwm signal is a
->> +multiple of the base period
-> 
-> This needs to document the #pwm-cells property. I can fix that up when
-> applying, though.
-> 
-> Let's give Stephen and others a chance to give this another look.
-> 
-> Thierry
-> 
-Perfect, thanks.
+On 10/08/2014 03:14 AM, Bart Tanghe wrote:
+> Add pwm driver for Broadcom BCM2835 processor (Raspberry Pi)
 
-Bart
+Acked-by: Stephen Warren <swarren@wwwdotorg.org>
