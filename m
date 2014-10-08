@@ -1,119 +1,80 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm-backlight: Turn off pwm backlight in probe
-Date: Wed, 8 Oct 2014 14:13:37 +0200
-Message-ID: <20141008121334.GA7357@ulmo.nvidia.com>
-References: <1412623364-14583-1-git-send-email-mpa@pengutronix.de>
- <20141007083548.GD24254@ulmo>
- <001601cfe2dc$6e964ca0$4bc2e5e0$%han@samsung.com>
+Subject: Re: [PATCH v7]pwm: add BCM2835 PWM driver
+Date: Wed, 8 Oct 2014 14:19:37 +0200
+Message-ID: <20141008121935.GB7357@ulmo.nvidia.com>
+References: <1412763272-24269-1-git-send-email-bart.tanghe@thomasmore.be>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ew6BAiZeqk4r7MaW"
+	protocol="application/pgp-signature"; boundary="zx4FCpZtqtKETZ7O"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f42.google.com ([209.85.220.42]:61508 "EHLO
-	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754192AbaJHMNn (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 8 Oct 2014 08:13:43 -0400
+Received: from mail-pd0-f179.google.com ([209.85.192.179]:61145 "EHLO
+	mail-pd0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756112AbaJHMTn (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 8 Oct 2014 08:19:43 -0400
 Content-Disposition: inline
-In-Reply-To: <001601cfe2dc$6e964ca0$4bc2e5e0$%han@samsung.com>
+In-Reply-To: <1412763272-24269-1-git-send-email-bart.tanghe@thomasmore.be>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jingoo Han <jg1.han@samsung.com>
-Cc: 'Markus Pargmann' <mpa@pengutronix.de>, 'Lee Jones' <lee.jones@linaro.org>, 'Bryan Wu' <cooloney@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, 'Ajay kumar' <ajaynumb@gmail.com>
+To: Bart Tanghe <bart.tanghe@thomasmore.be>
+Cc: matt.porter@linaro.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
 
 
---ew6BAiZeqk4r7MaW
+--zx4FCpZtqtKETZ7O
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 08, 2014 at 06:44:19PM +0900, Jingoo Han wrote:
-> On Tuesday, October 07, 2014 5:36 PM, Thierry Reding wrote:
-> > On Mon, Oct 06, 2014 at 09:22:44PM +0200, Markus Pargmann wrote:
-> > > The backlight will be enabled by the panel again if it is used. So we
-> > > can save the default brightness and disable the pwm backlight when
-> > > probing.
-> > >
-> > > Signed-off-by: Markus Pargmann <mpa@pengutronix.de>
-> > > ---
-> > >  drivers/video/backlight/pwm_bl.c | 4 +++-
-> > >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlig=
-ht/pwm_bl.c
-> > > index 336b83be7e2d..b4f433a6f106 100644
-> > > --- a/drivers/video/backlight/pwm_bl.c
-> > > +++ b/drivers/video/backlight/pwm_bl.c
-> > > @@ -317,9 +317,11 @@ static int pwm_backlight_probe(struct platform_d=
-evice *pdev)
-> > >  		data->dft_brightness =3D data->max_brightness;
-> > >  	}
-> > >
-> > > -	bl->props.brightness =3D data->dft_brightness;
-> > > +	bl->props.brightness =3D 0;
-> > >  	backlight_update_status(bl);
-> > >
-> > > +	bl->props.brightness =3D data->dft_brightness;
-> > > +
-> > >  	platform_set_drvdata(pdev, bl);
-> > >  	return 0;
-> > >
-> >=20
-> > It would be nice if it was that easy. But we can't do this, because it
-> > will regress for users of this driver that don't use a panel or DRM. If
-> > the PWM backlight driver is used for example in conjunction with a plain
-> > fbdev driver it isn't necessarily hooked up with anything and won't be
-> > enabled automatically. That's really bad if fbdev is the only output you
-> > have since you'd have to blindly type the commands to enable the
-> > backlight. Furthermore disabling backlight isn't always what you want to
-> > do. For example if the bootloader already turned it on and you hand over
-> > from bootloader to kernel in a seamless way, then you absolutely want to
-> > keep backlight on all the time.
-> >=20
-> > See also[0] for a different proposal to solve the same problem. Back at
-> > the time that received only a very few replies, but it would be nice if
-> > Lee and Bryan could look at it again and see if we can come up with some
-> > way to deal with this situation.
+On Wed, Oct 08, 2014 at 12:14:32PM +0200, Bart Tanghe wrote:
+> Add pwm driver for Broadcom BCM2835 processor (Raspberry Pi)
 >=20
-> (+cc Ajay Kumar)
+> Signed-off-by: Bart Tanghe <bart.tanghe@thomasmore.be>
+> ---
+> Changed in v7:
+>  - clean up the shameful clk_enable error handling introduced in v6
+>  - clean up the code nits
 >=20
-> As I said earlier, I agree with this proposal.
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt b/Docu=
+mentation/devicetree/bindings/pwm/pwm-bcm2835.txt
+> new file mode 100644
+> index 0000000..d5162db
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
+> @@ -0,0 +1,27 @@
+> +BCM2835 PWM controller (Raspberry Pi controller)
+> +
+> +Required properties:
+> +- compatible: should be "brcm,bcm2835-pwm"
+> +- reg: physical base address and length of the controller's registers
+> +- clock: this clock defines the base clock frequency of the pwm
+> +hardware system, the period and the duty_cycle of the pwm signal is a
+> +multiple of the base period
 
-I'm not sure which proposal exactly. I originally proposed adding a
-backlight-boot-off property, but that received some pushback from DT
-people because it isn't strictly hardware information but configuration
-data.
+This needs to document the #pwm-cells property. I can fix that up when
+applying, though.
 
-Perhaps a better solution would be to default to not touching the
-backlight status on probe at all. But we can't do that for non-DT
-because of backwards-compatibility. For DT it seems like all users have
-some form of DRM/KMS driver too, so I'd expect them to turn it off when
-appropriate.
-
-Should we just go and make that change (no changing backlight state for
-DT) and see if anybody complains? If so, I'll gladly prepare a patch to
-do just that.
+Let's give Stephen and others a chance to give this another look.
 
 Thierry
 
---ew6BAiZeqk4r7MaW
+--zx4FCpZtqtKETZ7O
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJUNSpuAAoJEN0jrNd/PrOhF3MP/3I1wJF3YUTIJe+8YMoLMVYJ
-CdE9w0c5jar6AARLwOpIWQgKJ9PJiiIklmfyQ4WVO+nVCGb2Y9+zMzUXRQxl6uyn
-ojIQLO7NHmexHfN7w5BnMdfFLZxfOoqrvivwyiUERniQ39ZD9RAeFklArj7TzOhx
-Q89xuIy7J9VJBVAbc8osZ5ItvNZUvCKrbRyOAFvyqQ6LmtqyqKlaojjIkGeVDTXw
-+WcKZJTI7zv7U8XQDX4K7ESy0RrWLhHTJKo3EML4CWm8EFmMD1zdfnHXZEFqFs9n
-lZ58z5OxGZzJHHtzzHiZI+7Ppe3TaOz99oHyCt3Kq5t/tqxkd2EvJ5BNk2OSalbt
-MfgkuZLAEIXF26h9+sYXf0x3acB8O9O1dSVxAiy+olxDEcJJBsjpG1yK5+FKsR09
-TG0aB01n63pCR2v5MO3+IpDbEsoKwLuxJQgZOPYt3CI1rjc/wXqi31V7i0LDfJgi
-wRm6SCp88jQ8ebj70/eGuA2AO2Dw6Mlol3BmvCwpHKYTJZ7mbS28gJ7Olpuqtzay
-CYdzXKelHUoRPwzXN688xT/Soeyp3n7EkJHg4hUsBv5o3iiG10MKWoeIMBnvaPil
-hMX9tjmQz5LkPKNoSMZLf2BMViavP81z3aqWSHfm4gEuuuTyBihIF2+EcJAdogED
-BqhRx70HsauPixD5ikiM
-=zcuU
+iQIcBAEBAgAGBQJUNSvXAAoJEN0jrNd/PrOhIKwQAJOKirjXjQqBxSzQ1FTDuJt7
+hX3Pe/rnvUyl5ZE3yQBUBp9sMrhCAaiKl5FPmMkncnDRibqgf0SDPDifA7gbSBIk
+bEAKvCsK694nj7y5HKcZIHrpnRMAD6ORF5yKbnCRHCCR5DvjRWN8YAkstQd+0DRO
+miI6MI4rvVzE5M6BckfFdEeM/ptr3qZPlroN3CZhjwZQhLms9rXJqSBzaVGDfcQ+
+RIqcM+jsu6jMtTUci8FJgfQ4FTox2Fbd+0MK712yi87LM1LPK/67yiDiDZsH7t16
+ennB9MJzK+mJMYMwZtE/Y6UBUxX0LGKn4NjY6Aaop+Qvniwa823I+Crx0k55cR8+
+TzDCI7V6sxEAMqs7zG083T0GtNKnZFSP3wsY1EbrNu4hosZ8AxZV6GZ4Ai4obeZY
+uj+aTus2YEK5ss1NZgcdUN90L6l63Nw8RAlND1+cYar5LYNDMD6gkE4Qrx15NyYx
+Zwxg1RsP5d27yglGwavc74HqrKxHl7AsEGW15iz7DmijzSwbGFQOvI+wECnk4Sjr
+C+EowDgo09zTUzaMh7YbPzjC9rYGOcUlFM986Y7MNDCqLsVQhuU/36kTGNOXGhKZ
+9Aspn+A3LC4+2fr5EZkhnhMPUtXWbocHgVd79I8jwbigej57sLDZiQPxMoRSCA+d
+KQG7qnjplUm4avnlbM/w
+=slUT
 -----END PGP SIGNATURE-----
 
---ew6BAiZeqk4r7MaW--
+--zx4FCpZtqtKETZ7O--
