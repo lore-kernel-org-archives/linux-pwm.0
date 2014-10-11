@@ -1,56 +1,39 @@
 From: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-Subject: =?UTF-8?q?=5BPATCH=203/3=5D=20pwm=3A=20set=20the=20actual=20number=20of=20pwms=20arguments=20defined=20in=20board=20dts?=
-Date: Fri, 10 Oct 2014 18:50:07 +0300
-Message-ID: <1412956207-24008-4-git-send-email-vladimir_zapolskiy@mentor.com>
-References: <1412956207-24008-1-git-send-email-vladimir_zapolskiy@mentor.com>
+Subject: [PATCH 0/2] backlight: pwm: fix oops on accessing removed legacy pwm device
+Date: Sat, 11 Oct 2014 16:46:24 +0300
+Message-ID: <1413035186-11771-1-git-send-email-vladimir_zapolskiy@mentor.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relay1.mentorg.com ([192.94.38.131]:62709 "EHLO
+Received: from relay1.mentorg.com ([192.94.38.131]:61161 "EHLO
 	relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751501AbaJJPvI (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Oct 2014 11:51:08 -0400
-In-Reply-To: <1412956207-24008-1-git-send-email-vladimir_zapolskiy@mentor.com>
+	with ESMTP id S1751592AbaJKNqh (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sat, 11 Oct 2014 09:46:37 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>, Sascha Hauer <s.hauer@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Shawn Guo <shawn.guo@linaro.org>
+To: linux-fbdev@vger.kernel.org, linux-pwm@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, Lee Jones <lee.jones@linaro.org>, stable@vger.kernel.org
 
-=46or backward compatibility board device tree has to define only a
-minimal amount of mandatory pwms arguments, additional arguments shall
-be considered as optional, update pc->of_pwm_n_cells according to the
-actual data taken from device tree file.
+The changeset fixes an oops, if pwm device was allocated by calling
+legacy API and not deregistered appropriately on removal:
 
-Signed-off-by: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-Cc: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Shawn Guo <shawn.guo@linaro.org>
----
- drivers/pwm/core.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+  % dmesg | grep -i pwm
+  pwm-backlight backlight.19: unable to request PWM, trying legacy API
+  % rmmod pwm_bl
+  % cat /sys/kernel/debug/pwm
+  Unable to handle kernel paging request at virtual address 7f0c18cc
+  pgd = ace18000
+  [7f0c18cc] *pgd=3c5eb811, *pte=00000000, *ppte=00000000
+  Internal error: Oops: 7 [#1] PREEMPT SMP ARM
+  ......
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index ccf1be7..2b77322 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -543,12 +543,13 @@ struct pwm_device *of_pwm_get(struct device_node =
-*np, const char *con_id)
- 		goto put;
- 	}
-=20
--	if (args.args_count !=3D pc->of_pwm_n_cells) {
-+	if (args.args_count < pc->of_pwm_n_cells) {
- 		pr_warn("%s: wrong #pwm-cells for %s\n", np->full_name,
- 			 args.np->full_name);
- 		pwm =3D ERR_PTR(-EINVAL);
- 		goto put;
- 	}
-+	pc->of_pwm_n_cells =3D args.args_count;
-=20
- 	pwm =3D pc->of_xlate(pc, &args);
- 	if (IS_ERR(pwm))
---=20
+Vladimir Zapolskiy (2):
+  backlight: pwm: don't call legacy pwm request for device defined in dt
+  backlight: pwm: clean up pwm requested using legacy API
+
+ drivers/video/backlight/pwm_bl.c |   18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
+
+-- 
 1.7.10.4
 
