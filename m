@@ -1,18 +1,17 @@
 From: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
 Subject: [PATCHv2 2/3] pwm: push up dynamic printk level on errors in of_pwm_get()
-Date: Mon, 13 Oct 2014 17:21:38 +0300
-Message-ID: <1413210099-7862-4-git-send-email-vladimir_zapolskiy@mentor.com>
+Date: Mon, 13 Oct 2014 17:21:35 +0300
+Message-ID: <1413210099-7862-1-git-send-email-vladimir_zapolskiy@mentor.com>
 References: <1412956207-24008-1-git-send-email-vladimir_zapolskiy@mentor.com>
- <1413210099-7862-1-git-send-email-vladimir_zapolskiy@mentor.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relay1.mentorg.com ([192.94.38.131]:58144 "EHLO
+Received: from relay1.mentorg.com ([192.94.38.131]:58121 "EHLO
 	relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753141AbaJMOWW (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 13 Oct 2014 10:22:22 -0400
-In-Reply-To: <1413210099-7862-1-git-send-email-vladimir_zapolskiy@mentor.com>
+	with ESMTP id S1753227AbaJMOWV (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 13 Oct 2014 10:22:21 -0400
+In-Reply-To: <1412956207-24008-1-git-send-email-vladimir_zapolskiy@mentor.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: linux-pwm@vger.kernel.org
