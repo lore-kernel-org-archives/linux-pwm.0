@@ -1,61 +1,79 @@
-From: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-Subject: [PATCHv2 3/3] pwm: set the actual number of pwms arguments defined in board dts
-Date: Mon, 13 Oct 2014 17:21:39 +0300
-Message-ID: <1413210099-7862-5-git-send-email-vladimir_zapolskiy@mentor.com>
-References: <1412956207-24008-1-git-send-email-vladimir_zapolskiy@mentor.com>
- <1413210099-7862-1-git-send-email-vladimir_zapolskiy@mentor.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v7]pwm: add BCM2835 PWM driver
+Date: Tue, 14 Oct 2014 15:54:47 +0200
+Message-ID: <20141014135445.GA26015@ulmo>
+References: <1412763272-24269-1-git-send-email-bart.tanghe@thomasmore.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="3MwIy2ne0vdjdPXF"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relay1.mentorg.com ([192.94.38.131]:58151 "EHLO
-	relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753141AbaJMOWY (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 13 Oct 2014 10:22:24 -0400
-In-Reply-To: <1413210099-7862-1-git-send-email-vladimir_zapolskiy@mentor.com>
+Received: from mail-wi0-f173.google.com ([209.85.212.173]:33764 "EHLO
+	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755244AbaJNNyu (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Oct 2014 09:54:50 -0400
+Content-Disposition: inline
+In-Reply-To: <1412763272-24269-1-git-send-email-bart.tanghe@thomasmore.be>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>, Sascha Hauer <s.hauer@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Shawn Guo <shawn.guo@linaro.org>
+To: Bart Tanghe <bart.tanghe@thomasmore.be>
+Cc: matt.porter@linaro.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org
 
-=46or backward compatibility board device tree has to define only a
-minimal amount of mandatory pwms arguments, which is specified by a
-driver. Additional arguments shall be considered as optional, update
-pc->of_pwm_n_cells according to the actual data taken from device tree
-file.
 
-Signed-off-by: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-Cc: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Shawn Guo <shawn.guo@linaro.org>
----
-Changes from v1 to v2:
-- rebased on top of modified patch v2 2/3
+--3MwIy2ne0vdjdPXF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
- drivers/pwm/core.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On Wed, Oct 08, 2014 at 12:14:32PM +0200, Bart Tanghe wrote:
+[...]
+> diff --git a/drivers/pwm/pwm-bcm2835.c b/drivers/pwm/pwm-bcm2835.c
+[...]
+> +static void bcm2835_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
+> +{
+> +	struct bcm2835_pwm *pc = to_bcm2835_pwm(chip);
+> +	u32 value;
+> +
+> +	value = readl(pc->base);
+> +	value &= (~DEFAULT_PWM_MODE << (PWM_CONTROL_STRIDE * pwm->hwpwm));
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index f6231c6..4d9fc7f 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -543,12 +543,13 @@ struct pwm_device *of_pwm_get(struct device_node =
-*np, const char *con_id)
- 		goto put;
- 	}
-=20
--	if (args.args_count !=3D pc->of_pwm_n_cells) {
-+	if (args.args_count < pc->of_pwm_n_cells) {
- 		pr_err("%s: wrong #pwm-cells for %s\n", np->full_name,
- 			 args.np->full_name);
- 		pwm =3D ERR_PTR(-EINVAL);
- 		goto put;
- 	}
-+	pc->of_pwm_n_cells =3D args.args_count;
-=20
- 	pwm =3D pc->of_xlate(pc, &args);
- 	if (IS_ERR(pwm))
---=20
-1.7.10.4
+While applying I noticed this oddity. Is this meant to be:
 
+	value &= ~(DEFAULT_PWM_MODE << (PWM_CONTROL_STRIDE * pwm->hwpwm));
+
+? That would match what's in bcm2835_pwm_request(). If so, what's the
+difference between DEFAULT_PWM_MODE and PWM_CONTROL_MASK? Is the value
+of a channel's field 0xff or 0x00 in the default mode?
+
+The above indicates that it would be 0x00, in which case it might be
+better to just do...
+
+	value &= ~(PWM_CONTROL_MASK << (PWM_CONTROL_STRIDE * pwm->hwpwm));
+
+... and get rid of DEFAULT_PWM_MODE.
+
+No need to respin, I can fix this up when applying. Just let me know if
+that's actually the right thing to do.
+
+Thierry
+
+--3MwIy2ne0vdjdPXF
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJUPSslAAoJEN0jrNd/PrOhoUsP/0wYidvmLWNAtO1GwOQpdVaE
+aR5EvCTeH+9tX8gf8g8X+7KkHihav4z1XSWct/ar07RccmVXGl33GVEAMZ31t4/X
+k+LgwwGHLWsOg+MLwM+ivSnQip3yeOv+/Dk1NLB416yZmRTB3OFRG7L0w1m+yONZ
+d7P796lhj0LfaxsPefaD0AcIh/kjnXLjIbJJ08A9uO93NnWj6YoQuGUTTXZe3Ksg
+svx65Kh8/xPO31As3JtIz0HeHjc8DXHnLSSLYw8C8ooR3ZP9/HJVrm2WlApMrTcw
+wjAtJfma8HvWJqQRXgdZWzLatFgu1p+i4ZxALGKr9XQZMs2QP/7+OHfaBOBDYeSV
+PVTp0dw94uoS6GwPnGdfPBz6JM626K5AGNsYsO0+HLAGqa3SqieN1Pm4nBtSuJSA
+cNlOl8E0ylizkj6iO7KQRpa5c17pm2L70iuRsmjdN+gkaYeZc6QxJw6SjjZYrXW4
+7P2jakrfJF8P5PiWLuMZb+ytJwxKpLE1hfyumxwfRnh4sbYKdKl1WFbG7J9Ej8Rs
+HYR3lVEamiT/tD0YKR7lIzMY3+wsCs/NoCTeo7vvOJcUBpB1SAKbmalkxnMdKInB
+ofOogQf0A+q41Gqa5Rz/k0Q7FM5OqYH1igsGkEiYfHnmmchAgvNrl0aXzGfA+mgr
+twG7/Pb25zIU6wGx5D8y
+=E/wR
+-----END PGP SIGNATURE-----
+
+--3MwIy2ne0vdjdPXF--
