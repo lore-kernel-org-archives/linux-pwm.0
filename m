@@ -1,52 +1,53 @@
 From: Xiubo Li <Li.Xiubo@freescale.com>
-Subject: [PATCH v2 1/3] pwm: ftm: fix one bug of wrong counting the use counter.
-Date: Wed, 15 Oct 2014 13:21:33 +0800
-Message-ID: <1413350495-40980-2-git-send-email-Li.Xiubo@freescale.com>
+Subject: [PATCH v2 2/3] pwm: ftm: add regmap rbtree type cache support.
+Date: Wed, 15 Oct 2014 13:21:34 +0800
+Message-ID: <1413350495-40980-3-git-send-email-Li.Xiubo@freescale.com>
 References: <1413350495-40980-1-git-send-email-Li.Xiubo@freescale.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-by2on0107.outbound.protection.outlook.com ([207.46.100.107]:60269
-	"EHLO na01-by2-obe.outbound.protection.outlook.com"
-	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1751073AbaJOFW0 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 15 Oct 2014 01:22:26 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1413350495-40980-1-git-send-email-Li.Xiubo@freescale.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: thierry.reding@gmail.com, linux-pwm@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org, Xiubo Li <Li.Xiubo@freescale.com>
+List-Id: linux-pwm@vger.kernel.org
 
-No matter what times the FTM pwm is enabled, the use_count will
-always be one.
+This patch is to prepare for adding PM support for FTM pwm driver
+using callback function suspend and resume in .driver.pm of
+platform_driver.
 
 Signed-off-by: Xiubo Li <Li.Xiubo@freescale.com>
 ---
- drivers/pwm/pwm-fsl-ftm.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/pwm/pwm-fsl-ftm.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-index 0f2cc7e..1150598 100644
+index 1150598..9bfbea5 100644
 --- a/drivers/pwm/pwm-fsl-ftm.c
 +++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -299,7 +299,7 @@ static int fsl_counter_clock_enable(struct fsl_pwm_chip *fpc)
- {
- 	int ret;
- 
--	if (fpc->use_count != 0)
-+	if (fpc->use_count++ != 0)
- 		return 0;
- 
- 	/* select counter clock source */
-@@ -316,8 +316,6 @@ static int fsl_counter_clock_enable(struct fsl_pwm_chip *fpc)
- 		return ret;
- 	}
- 
--	fpc->use_count++;
--
+@@ -397,12 +397,23 @@ static int fsl_pwm_init(struct fsl_pwm_chip *fpc)
  	return 0;
  }
  
++static bool fsl_pwm_volatile_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case FTM_CNT:
++		return true;
++	}
++	return false;
++}
++
+ static const struct regmap_config fsl_pwm_regmap_config = {
+ 	.reg_bits = 32,
+ 	.reg_stride = 4,
+ 	.val_bits = 32,
+ 
+ 	.max_register = FTM_PWMLOAD,
++	.volatile_reg = fsl_pwm_volatile_reg,
++	.cache_type = REGCACHE_RBTREE,
+ };
+ 
+ static int fsl_pwm_probe(struct platform_device *pdev)
 -- 
 2.1.0.27.g96db324
-
