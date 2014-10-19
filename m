@@ -1,42 +1,41 @@
-From: David Cohen <david.a.cohen@linux.intel.com>
-Subject: [PATCH] pwm: clps711x: add CONFIG_HAS_IOMEM dependence
-Date: Wed, 15 Oct 2014 14:36:10 -0700
-Message-ID: <1413408970-13648-1-git-send-email-david.a.cohen@linux.intel.com>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCHv8 0/2] Add Allwinner SoCs PWM support
+Date: Sun, 19 Oct 2014 20:28:23 +0200
+Message-ID: <1413743305-1979-1-git-send-email-alexandre.belloni@free-electrons.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:41618 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751033AbaJOVfe (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 15 Oct 2014 17:35:34 -0400
+Received: from top.free-electrons.com ([176.31.233.9]:53365 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751583AbaJSS2f (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sun, 19 Oct 2014 14:28:35 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, trivial@kernel.org, David Cohen <david.a.cohen@linux.intel.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, jonsmirl@gmail.com, Simon <longsleep@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-clps711x uses io memory which makes it not compilable on architectures
-without HAS_IOMEM such as UML:
+Hi,
 
-drivers/built-in.o: In function `clps711x_pwm_probe':
-pwm-clps711x.c:(.text+0x2848): undefined reference to
-`devm_ioremap_resource'
+This patch series adds support for the PWM controller found on the Allwinner
+SoCs.
 
-Signed-off-by: David Cohen <david.a.cohen@linux.intel.com>
----
- drivers/pwm/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The first patch adds the driver itself.
+The second patch adds the DT binding documentation
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 3865dfb9ed08..bc5bdce00059 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -82,7 +82,7 @@ config PWM_BFIN
- 
- config PWM_CLPS711X
- 	tristate "CLPS711X PWM support"
--	depends on ARCH_CLPS711X || COMPILE_TEST
-+	depends on HAS_IOMEM && (ARCH_CLPS711X || COMPILE_TEST)
- 	help
- 	  Generic PWM framework driver for Cirrus Logic CLPS711X.
- 
+Changes in v8:
+ - renamed the driver sun4i as the PWM IP is different in the next sunxi SoCs
+ - Took into account comments from Thierry
+
+Alexandre Belloni (2):
+  pwm: Add Allwinner SoC support
+  pwm: sunxi: document OF bindings
+
+ .../devicetree/bindings/pwm/pwm-sun4i.txt          |  20 ++
+ drivers/pwm/Kconfig                                |   9 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sun4i.c                            | 371 +++++++++++++++++++++
+ 4 files changed, 401 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+ create mode 100644 drivers/pwm/pwm-sun4i.c
+
 -- 
-2.1.0
+1.9.1
 
