@@ -1,44 +1,39 @@
-From: Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH] clk: Add PWM clock driver
-Date: Tue, 04 Nov 2014 12:55:52 +0100
-Message-ID: <1415102152.3701.13.camel@pengutronix.de>
-References: <5410AEFD.5030302@elproma.com.pl> <20140923085130.GO30514@ulmo>
-	 <20140927200122.19023.40310@quantum>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCHv9 0/2] Add Allwinner SoCs PWM support
+Date: Wed,  5 Nov 2014 16:15:43 +0100
+Message-ID: <1415200545-26238-1-git-send-email-alexandre.belloni@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20140927200122.19023.40310@quantum>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mike Turquette <mturquette@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Janusz =?UTF-8?Q?U=C5=BCycki?= <j.uzycki@elproma.com.pl>, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, Simon <longsleep@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Am Samstag, den 27.09.2014, 13:01 -0700 schrieb Mike Turquette:
-> Quoting Thierry Reding (2014-09-23 01:51:31)
-> > On Wed, Sep 10, 2014 at 10:05:17PM +0200, Janusz U=C5=BCycki wrote:
-> > > Hi,
-> > >=20
-> > > http://patchwork.ozlabs.org/patch/359069/
-> > > https://lkml.org/lkml/2014/6/12/186
-> > >=20
-> > > Will the patch ever included to linux-next?
-> >=20
-> > I've never seen this patch before. From a quick look it doesn't see=
-m
-> > like it would work as is, but the idea is certainly interesting. If
-> > somebody decides to continue work on it, please Cc me and the linux=
--pwm
-> > mailing list.
->=20
-> I just merged a gpio-controlled clock gate and I'm fine with a PWM cl=
-ock
-> output.
->=20
-> Janusz, how are you testing the clock driver?
+Hi,
 
-On the BoundaryDevices Nitrogen6X board, the master clock to the OV5640
-MIPI CSI-2 sensor module has to be provided by a PWM.
+This patch series adds support for the PWM controller found on the Allwinner
+SoCs.
 
-regards
-Philipp
+The first patch adds the driver itself.
+The second patch adds the DT binding documentation
+
+Changes in v8:
+ - renamed the driver sun4i as the PWM IP is different in the next sunxi SoCs
+ - Took into account comments from Thierry
+
+Changes in v9:
+ - moved from using a mutex to a spinlock
+
+Alexandre Belloni (2):
+  pwm: Add Allwinner SoC support
+  pwm: sunxi: document OF bindings
+
+ .../devicetree/bindings/pwm/pwm-sun4i.txt          |  20 ++
+ drivers/pwm/Kconfig                                |   9 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sun4i.c                            | 366 +++++++++++++++++++++
+ 4 files changed, 396 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+ create mode 100644 drivers/pwm/pwm-sun4i.c
+
+-- 
+2.1.0
