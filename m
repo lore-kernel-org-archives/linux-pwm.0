@@ -1,49 +1,49 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCHv9 2/2] pwm: sunxi: document OF bindings
-Date: Wed,  5 Nov 2014 16:15:45 +0100
-Message-ID: <1415200545-26238-3-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1415200545-26238-1-git-send-email-alexandre.belloni@free-electrons.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1415200545-26238-1-git-send-email-alexandre.belloni@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, Simon <longsleep@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+From: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+Subject: Re: [PATCH 2/2] backlight: pwm: clean up pwm requested using legacy
+ API
+Date: Fri, 7 Nov 2014 00:10:25 +0200
+Message-ID: <545BF1D1.30304@mentor.com>
+References: <1413035186-11771-1-git-send-email-vladimir_zapolskiy@mentor.com> <1413035186-11771-3-git-send-email-vladimir_zapolskiy@mentor.com> <20141011142156.GC11456@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from relay1.mentorg.com ([192.94.38.131]:62345 "EHLO
+	relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751268AbaKFWKf (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Nov 2014 17:10:35 -0500
+In-Reply-To: <20141011142156.GC11456@kroah.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-fbdev@vger.kernel.org, linux-pwm@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, Lee Jones <lee.jones@linaro.org>, Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
 
-This is the documentation for the Allwinner SoCs PWM bindings.
+Hello Greg, Thierry,
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
----
- Documentation/devicetree/bindings/pwm/pwm-sun4i.txt | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+On 11.10.2014 17:21, Greg KH wrote:
+> On Sat, Oct 11, 2014 at 04:46:26PM +0300, Vladimir Zapolskiy wrote:
+>> If PWM device is requested by means of legacy API pwm_request(), its
+>> resources are not freed on module unbind, which may cause an oops on
+>> access, e.g. by reading /sys/kernel/debug/pwm.
+>>
+>> Reported-by: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
+>> Signed-off-by: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+>> ---
+>>  drivers/video/backlight/pwm_bl.c |    4 ++++
+>>  1 file changed, 4 insertions(+)
+> 
+> <formletter>
+> 
+> This is not the correct way to submit patches for inclusion in the
+> stable kernel tree.  Please read Documentation/stable_kernel_rules.txt
+> for how to do this properly.
+> 
+> </formletter>
+> --
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
-new file mode 100644
-index 000000000000..ae0273e19506
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
-@@ -0,0 +1,20 @@
-+Allwinner sun4i and sun7i SoC PWM controller
-+
-+Required properties:
-+  - compatible: should be one of:
-+    - "allwinner,sun4i-a10-pwm"
-+    - "allwinner,sun7i-a20-pwm"
-+  - reg: physical base address and length of the controller's registers
-+  - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
-+    the cells format.
-+  - clocks: From common clock binding, handle to the parent clock.
-+
-+Example:
-+
-+	pwm: pwm@01c20e00 {
-+		compatible = "allwinner,sun7i-a20-pwm";
-+		reg = <0x01c20e00 0xc>;
-+		clocks = <&osc24M>;
-+		#pwm-cells = <3>;
-+		status = "disabled";
-+	};
--- 
-2.1.0
+could you please review the change? I believe it would be nice to have
+oops fix in v3.18.
+
+--
+With best wishes,
+Vladimir
