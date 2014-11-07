@@ -1,73 +1,66 @@
-From: Lee Jones <lee.jones@linaro.org>
+From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH 2/2] backlight: pwm: clean up pwm requested using legacy
  API
-Date: Fri, 7 Nov 2014 11:50:09 +0000
-Message-ID: <20141107115009.GA3745@x1>
+Date: Fri, 7 Nov 2014 14:47:36 +0100
+Message-ID: <20141107134735.GA31950@ulmo>
 References: <1413035186-11771-1-git-send-email-vladimir_zapolskiy@mentor.com>
  <1413035186-11771-3-git-send-email-vladimir_zapolskiy@mentor.com>
- <20141011142156.GC11456@kroah.com>
- <545BF1D1.30304@mentor.com>
- <20141106225420.GA2770@kroah.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="n8g4imXOkfNTN/H1"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ig0-f172.google.com ([209.85.213.172]:38699 "EHLO
-	mail-ig0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751281AbaKGLuQ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 7 Nov 2014 06:50:16 -0500
-Received: by mail-ig0-f172.google.com with SMTP id a13so12561116igq.17
-        for <linux-pwm@vger.kernel.org>; Fri, 07 Nov 2014 03:50:15 -0800 (PST)
+Received: from mail-wg0-f52.google.com ([74.125.82.52]:59407 "EHLO
+	mail-wg0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752015AbaKGNrl (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 7 Nov 2014 08:47:41 -0500
 Content-Disposition: inline
-In-Reply-To: <20141106225420.GA2770@kroah.com>
+In-Reply-To: <1413035186-11771-3-git-send-email-vladimir_zapolskiy@mentor.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, Thierry Reding <thierry.reding@gmail.com>, linux-fbdev@vger.kernel.org, linux-pwm@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
+To: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+Cc: linux-fbdev@vger.kernel.org, linux-pwm@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, Lee Jones <lee.jones@linaro.org>, stable@vger.kernel.org
 
-On Thu, 06 Nov 2014, Greg KH wrote:
 
-> On Fri, Nov 07, 2014 at 12:10:25AM +0200, Vladimir Zapolskiy wrote:
-> > Hello Greg, Thierry,
-> >=20
-> > On 11.10.2014 17:21, Greg KH wrote:
-> > > On Sat, Oct 11, 2014 at 04:46:26PM +0300, Vladimir Zapolskiy wrot=
-e:
-> > >> If PWM device is requested by means of legacy API pwm_request(),=
- its
-> > >> resources are not freed on module unbind, which may cause an oop=
-s on
-> > >> access, e.g. by reading /sys/kernel/debug/pwm.
-> > >>
-> > >> Reported-by: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
-> > >> Signed-off-by: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com=
->
-> > >> ---
-> > >>  drivers/video/backlight/pwm_bl.c |    4 ++++
-> > >>  1 file changed, 4 insertions(+)
-> > >=20
-> > > <formletter>
-> > >=20
-> > > This is not the correct way to submit patches for inclusion in th=
-e
-> > > stable kernel tree.  Please read Documentation/stable_kernel_rule=
-s.txt
-> > > for how to do this properly.
-> > >=20
-> > > </formletter>
-> > > --
-> >=20
-> > could you please review the change? I believe it would be nice to h=
-ave
-> > oops fix in v3.18.
+--n8g4imXOkfNTN/H1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sat, Oct 11, 2014 at 04:46:26PM +0300, Vladimir Zapolskiy wrote:
+> If PWM device is requested by means of legacy API pwm_request(), its
+> resources are not freed on module unbind, which may cause an oops on
+> access, e.g. by reading /sys/kernel/debug/pwm.
 >=20
-> drivers/video/ is not under my control, so there's nothing I can do
-> here, sorry...
+> Reported-by: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
+> Signed-off-by: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+> ---
+>  drivers/video/backlight/pwm_bl.c |    4 ++++
+>  1 file changed, 4 insertions(+)
 
-I can apply this with Thierry's Ack.
+Hopefully this can soon go away when all users of the legacy API have
+been converted. Until then:
 
---=20
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-=46ollow Linaro: Facebook | Twitter | Blog
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
+
+--n8g4imXOkfNTN/H1
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJUXM13AAoJEN0jrNd/PrOhPV0P/Ro6JoXbveNYGPOmHjVLRG9A
+5sUV5KSU4dkszYcMhQElvarLMvAEnp5CTuRLGdf5Oev0XNZZHTsmdOPc0KqnP5cn
+DBT1FrCjbO1TVn/czFDBMk8K5vOzyyXXv7EnQrBhxjg0Nq6SqjaVwWKdis4icizT
+mFPEUNWBzDRI93iu2eh3/CbSClzFZ1bkb0AMQb1it/1LoBELRRSd/ywWU67V0yZz
+NNVcnnUUwI0quWbKg1g99Z2cuQXNLJylA59rXqBcSeja34ED6awOPObnSoYRln29
+lEQ3oMjCiCvC1YhwwAgFxpeX3P5AYcYUtc72OUcqsKa4AKjPla3ZJQCle3sKLD4v
+HH3q6t40sZxedh6SRXGF32FcwMnrxd1anpt0fKgxG3FG+ei6VxZ7fGlobfwuSW0c
+Ao+cjO5p6NH/bWkl2ED36cbHI4alXET05WEPOgZ3F4g82BO07R5GLtb2m1kZtGps
+18BebmBmXLH+lMABPitXKmeTnccv2igmmXHxadwblMvJrna+8KwRvejmoudeF0eS
+j+oZTBjUrZDMSlgZckUR2TmfsrRN3549pMXbPv2aebyJJXGIFwZwNzjJGB8JG9dD
+W291vTefiH27DYWTKM/KgbaHZHLffW2vNCZ1YnJLa2PwiybJaEMLzIW9Lcoxv/gs
+MccTLZKZp+uy5NYjcB+z
+=ZXiE
+-----END PGP SIGNATURE-----
+
+--n8g4imXOkfNTN/H1--
