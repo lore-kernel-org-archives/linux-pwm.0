@@ -1,74 +1,70 @@
-From: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-Subject: Re: [PATCH 1/2] backlight: pwm: don't call legacy pwm request for
- device defined in dt
-Date: Fri, 7 Nov 2014 16:57:57 +0200
-Message-ID: <545CDDF5.70905@mentor.com>
-References: <1413035186-11771-1-git-send-email-vladimir_zapolskiy@mentor.com> <1413035186-11771-2-git-send-email-vladimir_zapolskiy@mentor.com> <20141107134848.GB31950@ulmo> <545CD4DC.4030409@mentor.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH 2/2] backlight: pwm: clean up pwm requested using legacy
+ API
+Date: Mon, 10 Nov 2014 10:01:29 +0000
+Message-ID: <20141110100129.GK21424@x1>
+References: <1413035186-11771-1-git-send-email-vladimir_zapolskiy@mentor.com>
+ <1413035186-11771-3-git-send-email-vladimir_zapolskiy@mentor.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relay1.mentorg.com ([192.94.38.131]:50947 "EHLO
-	relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750919AbaKGO6B (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 7 Nov 2014 09:58:01 -0500
-In-Reply-To: <545CD4DC.4030409@mentor.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <stable-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1413035186-11771-3-git-send-email-vladimir_zapolskiy@mentor.com>
+Sender: stable-owner@vger.kernel.org
+To: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+Cc: linux-fbdev@vger.kernel.org, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, stable@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-fbdev@vger.kernel.org, linux-pwm@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, Lee Jones <lee.jones@linaro.org>
 
-Thierry,
+On Sat, 11 Oct 2014, Vladimir Zapolskiy wrote:
 
-On 07.11.2014 16:19, Vladimir Zapolskiy wrote:
-> Hi Thierry,
-> 
-> On 07.11.2014 15:48, Thierry Reding wrote:
->> On Sat, Oct 11, 2014 at 04:46:25PM +0300, Vladimir Zapolskiy wrote:
->>> Platform PWM backlight data provided by board's device tree should be
->>> complete enough to successfully request a pwm device using pwm_get() API.
->>>
->>> Based on initial implementation done by Dmitry Eremin-Solenikov.
->>>
->>> Reported-by: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
->>> Signed-off-by: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
->>> Cc: Thierry Reding <thierry.reding@gmail.com>
->>> Cc: Jingoo Han <jg1.han@samsung.com>
->>> Cc: Bryan Wu <cooloney@gmail.com>
->>> Cc: Lee Jones <lee.jones@linaro.org>
->>> ---
->>>  drivers/video/backlight/pwm_bl.c |   14 +++++++-------
->>>  1 file changed, 7 insertions(+), 7 deletions(-)
->>
->> I don't really understand what this is supposed to do. The commit
->> message doesn't make a very good job of explaining it either.
->>
->> Can you describe in more detail what problem this fixes and why it
->> should be merged?
-> 
-> thank you for review.
-> 
-> As it is shown by the code this particular change rejects fallback to
-> legacy PWM device request (which itself in turn is fixed in the next
-> commit) for boards with supplied DTS, "pwm-backlight" compatible node
-> and unregistered corresponding PWM device in that node.
-> 
-> I don't know if there is a good enough reason to register PWM backlight
-> device connected to some quite arbitrary PWM device, if no PWM device
-> information is given in the "pwm-backlight" compatible node, so I think
-> it makes sense to change the default policy.
-> 
+> If PWM device is requested by means of legacy API pwm_request(), its
+> resources are not freed on module unbind, which may cause an oops on
+> access, e.g. by reading /sys/kernel/debug/pwm.
+>=20
+> Reported-by: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
+> Signed-off-by: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+> ---
+>  drivers/video/backlight/pwm_bl.c |    4 ++++
+>  1 file changed, 4 insertions(+)
 
-also please note that
-Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
-quite fairly describes "pwms" as a required property, but right now this
-statement from the documentation is wrong, it is possible to register
-pwm-backlight device driver (using notorious pwm_request() legacy API)
-connected to some unspecified pwm device.
+Applied with Thierry's Ack.
 
-I don't think that the current registration policy is correct, that's
-why I propose to fix the logic instead of making a documentation update.
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlig=
+ht/pwm_bl.c
+> index dd7aaf7..40770dd 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -34,6 +34,7 @@ struct pwm_bl_data {
+>  	struct regulator	*power_supply;
+>  	struct gpio_desc	*enable_gpio;
+>  	unsigned int		scale;
+> +	bool			legacy;
+>  	int			(*notify)(struct device *,
+>  					  int brightness);
+>  	void			(*notify_after)(struct device *,
+> @@ -274,6 +275,7 @@ static int pwm_backlight_probe(struct platform_de=
+vice *pdev)
+>  	pb->pwm =3D devm_pwm_get(&pdev->dev, NULL);
+>  	if (IS_ERR(pb->pwm) && !pdev->dev.of_node) {
+>  		dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
+> +		pb->legacy =3D true;
+>  		pb->pwm =3D pwm_request(data->pwm_id, "pwm-backlight");
+>  	}
+> =20
+> @@ -339,6 +341,8 @@ static int pwm_backlight_remove(struct platform_d=
+evice *pdev)
+> =20
+>  	if (pb->exit)
+>  		pb->exit(&pdev->dev);
+> +	if (pb->legacy)
+> +		pwm_free(pb->pwm);
+> =20
+>  	return 0;
+>  }
 
---
-With best wishes,
-Vladimir
+--=20
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
