@@ -1,55 +1,60 @@
-From: Sai Masarapu <Sai.Masarapu@imgtec.com>
-Subject: RE: [PATCH 2/4] DT: pwm: Add binding document for IMG PWM DAC
-Date: Thu, 13 Nov 2014 13:56:04 +0000
-Message-ID: <1F66364AC115084B902937EE750BD69B3F145993@hbmail01.hb.imgtec.org>
+From: Andrew Bresticker <abrestic@chromium.org>
+Subject: Re: [PATCH 1/4] pwm: Imagination Technologies PWM DAC driver
+Date: Thu, 13 Nov 2014 11:03:08 -0800
+Message-ID: <CAL1qeaF2Dz0W4qAW=A_GYVBNur4mhjeM61X66cduf5VX9t5HbQ@mail.gmail.com>
 References: <1415795873-4816-1-git-send-email-Naidu.Tellapati@imgtec.com>
-	<1415795873-4816-3-git-send-email-Naidu.Tellapati@imgtec.com>
- <CAL1qeaHd0j273HnQ+EXhfJoKh0nVM_==K4DvzkvcS2y4_kv+wg@mail.gmail.com>
- <1F66364AC115084B902937EE750BD69B3F14595B@hbmail01.hb.imgtec.org>
+	<1415795873-4816-2-git-send-email-Naidu.Tellapati@imgtec.com>
+	<CAL1qeaFuKccak4fJFOK1YSW1uoyLA_a=GFWJ1PTS00Ab9vZB9A@mail.gmail.com>
+	<1F66364AC115084B902937EE750BD69B3F145947@hbmail01.hb.imgtec.org>
+	<1F66364AC115084B902937EE750BD69B3F14598A@hbmail01.hb.imgtec.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailapp01.imgtec.com ([195.59.15.196]:20154 "EHLO
-	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932868AbaKMN4K (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 13 Nov 2014 08:56:10 -0500
-In-Reply-To: <1F66364AC115084B902937EE750BD69B3F14595B@hbmail01.hb.imgtec.org>
-Content-Language: en-US
+Received: from mail-vc0-f174.google.com ([209.85.220.174]:61549 "EHLO
+	mail-vc0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933146AbaKMTDJ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 13 Nov 2014 14:03:09 -0500
+Received: by mail-vc0-f174.google.com with SMTP id la4so4099538vcb.19
+        for <linux-pwm@vger.kernel.org>; Thu, 13 Nov 2014 11:03:08 -0800 (PST)
+In-Reply-To: <1F66364AC115084B902937EE750BD69B3F14598A@hbmail01.hb.imgtec.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Andrew Bresticker <abrestic@chromium.org>, Naidu Tellapati <Naidu.Tellapati@imgtec.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, James Hartley <James.Hartley@imgtec.com>, Ezequiel Garcia <Ezequiel.Garcia@imgtec.com>, Arul Ramasamy <Arul.Ramasamy@imgtec.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+To: Sai Masarapu <Sai.Masarapu@imgtec.com>
+Cc: Naidu Tellapati <Naidu.Tellapati@imgtec.com>, Thierry Reding <thierry.reding@gmail.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, James Hartley <James.Hartley@imgtec.com>, Ezequiel Garcia <Ezequiel.Garcia@imgtec.com>, Arul Ramasamy <Arul.Ramasamy@imgtec.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 
-SGkgQW5kcmV3LA0KDQpNYW55IHRoYW5rcyBmb3IgcmV2aWV3aW5nLiBQbGVhc2Ugc2VlIG15IGlu
-bGluZSBjb21tZW50cyBiZWxvdy4NCg0KDQpPbiBXZWQsIE5vdiAxMiwgMjAxNCBhdCA0OjM3IEFN
-LCAgPE5haWR1LlRlbGxhcGF0aUBpbWd0ZWMuY29tPiB3cm90ZToNCj4gPkZyb206IE5haWR1IFRl
-bGxhcGF0aSA8TmFpZHUuVGVsbGFwYXRpQGltZ3RlYy5jb20+DQo+Pg0KPiA+QWRkIGJpbmRpbmcg
-ZG9jdW1lbnQgZm9yIElNRyBQdWxzZSBXaWR0aCBNb2R1bGF0b3IgKFBXTSkgREFDIHByZXNlbnQg
-DQo+ID5vbiB0aGUgUGlzdGFjaGlvIFNPQy4gVGhlIFBXTSBEQUMgaGFzIGZvdXIgY2hhbm5lbHMu
-DQo+Pg0KPiA+U2lnbmVkLW9mZi1ieTogTmFpZHUgVGVsbGFwYXRpIDxOYWlkdS5UZWxsYXBhdGlA
-aW1ndGVjLmNvbT4NCj4gPlNpZ25lZC1vZmYtYnk6IFNhaSBNYXNhcmFwdSA8U2FpLk1hc2FyYXB1
-QGltZ3RlYy5jb20+DQoNCj4gPmRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUv
-YmluZGluZ3MvcHdtL2ltZy1wd20udHh0DQo+ID5iL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
-aW5kaW5ncy9wd20vaW1nLXB3bS50eHQNCj4gPm5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+ID5pbmRl
-eCAwMDAwMDAwLi40ZjdmNjBjDQo+ID4tLS0gL2Rldi9udWxsDQo+PiArKysgYi9Eb2N1bWVudGF0
-aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHdtL2ltZy1wd20udHh0DQo+PiBAQCAtMCwwICsxLDIy
-IEBADQo+PiArKkltYWdpbmF0aW9uIFRlY2hub2xvZ2llcyBQV00gREFDIGRyaXZlcg0KPiA+Kw0K
-PiA+K1JlcXVpcmVkIHByb3BlcnRpZXM6DQo+ID4rICAtIGNvbXBhdGlibGU6IFNob3VsZCBiZSAi
-aW1nLHBpc3RhY2hpby1wd20iDQo+ID4rICAtIHJlZzogU2hvdWxkIGNvbnRhaW4gcGh5c2ljYWwg
-YmFzZSBhZGRyZXNzIGFuZCBsZW5ndGggb2YgcHdtIHJlZ2lzdGVycy4NCj4gPisgIC0gY2xvY2tz
-OiBwaGFuZGxlIHRvIGlucHV0IFBXTSBjbG9jay4NCj4gPisgIC0gY2xvY2stbmFtZXM6IGlucHV0
-IGNsb2NrIG5hbWVzLg0KPiA+KyAgICAgICBSZXF1aXJlZCBlbGVtZW50czogInB3bSIuDQo+ID4r
-ICAtICNwd20tY2VsbHM6IFNob3VsZCBiZSAyLiBTZWUgcHdtLnR4dCBpbiB0aGlzIGRpcmVjdG9y
-eSBmb3IgdGhlDQo+ID4rICAgICAgIGRlc2NyaXB0aW9uIG9mIHRoZSBjZWxscyBmb3JtYXQuDQo+
-ID4rICAtIGltZyxjci1wZXJpcGg6IE11c3QgY29udGFpbiBhIHBoYW5kbGUgdG8gdGhlIHBlcmlw
-aGVyYWwgY29udHJvbA0KPiA+KyAgICAgICBzeXNjb24gbm9kZSB3aGljaCBjb250YWlucyBQV00g
-Y29udHJvbCByZWdpc3RlcnMuDQo+ID4rDQo+ID4rRXhhbXBsZToNCj4gPisgICAgICAgcHdtOiBw
-d21AMTgxMDEzMDAgew0KPiA+KyAgICAgICAgICAgICAgIGNvbXBhdGlibGUgPSAiaW1nLHBpc3Rh
-Y2hpby1wd20iOw0KPiA+ICsgICAgICAgICAgICAgICByZWcgPSA8MHgxODEwMTMwMCAweDE0PjsN
-Cg0KID4gTWlnaHQgYXMgd2VsbCBjbGFpbSB0aGUgZnVsbCAyNTYgYnl0ZXMuDQoNCk9rLCBXZSB3
-aWxsIGNvcnJlY3QgaXQuDQoNCj4gPisgICAgICAgICAgICAgICBjbG9ja3MgPSA8JnB3bV9jbGtf
-aGFuZGxlPjsNCj4gPisgICAgICAgICAgICAgICBjbGstbmFtZXMgPSAicHdtIjsNCg0KPiAgcy9j
-bGsvY2xvY2svDQoNCk9rLCBXZSB3aWxsIGNvcnJlY3QgaXQuDQoNCj4gPisgICAgICAgICAgICAg
-ICAjcHdtLWNlbGxzID0gPDI+Ow0KPj4gKyAgICAgICAgICAgICAgIGltZyxjci1wZXJpcGggPSA8
-JmNyX3BlcmlwaD47DQo+ID4rICAgICAgIH07DQo+PiAtLQ0KPiA+MS43LjAuNA0KPj4NCg==
+On Thu, Nov 13, 2014 at 5:55 AM, Sai Masarapu <Sai.Masarapu@imgtec.com> wrote:
+> On Wed, Nov 12, 2014 at 4:37 AM,  <Naidu.Tellapati@imgtec.com> wrote:
+>>> From: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+>>>
+>>> The Pistachio SOC from Imagination Technologies includes a Pulse
+>>> Width Modulation DAC which produces 1 to 4 digital bit-outputs which
+>>> represent digital waveforms. These PWM outputs are primarily in
+>>> charge of controlling backlight LED devices.
+>>>
+>>> Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+>>> Signed-off-by: Sai Masarapu <Sai.Masarapu@imgtec.com>
+
+>>> diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c new file
+>>> mode 100755 index 0000000..9361dbf
+
+>>> +#define CR_PERIP_PWM_PDM_CONTROL       0x0140 /* PWM and PDM ctrl register */
+>>> +#define PWM_PDM_CH_CTRL_SHIFT(ch)      (ch * 4)
+>>> +
+>>> +#define NUM_PWM                                4
+>>> +#define SUB_DIV0                       1
+>>> +#define SUB_DIV1                       2
+>>> +#define NO_SUB_DIV                     0
+>>> +#define SUB_DIV0_DIV1                  3
+>>> +#define MIN_TMBASE_STEPS               1
+>>> +#define MAX_TMBASE_STEPS               65536
+>>> +#define MIN_DUTY_STEPS                 0
+>>> +#define MAX_DUTY_STEPS                 65535
+>
+>> Please place these #defines next to their corresponding register or register field #define.
+>
+>    Defined Macros are not related to register fields.
+
+Really?  The SUB_DIV #defines are possible values for the DIVIDER
+field in CR_PWM_CTRL_CFG, are they not?  And I believe the TMBASE and
+DUTY #defines specify the range of values for the DUTYCYCLE and
+TIMEBASE fields of the CR_PWM*_CFG registers.
