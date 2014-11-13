@@ -1,382 +1,255 @@
-From: Andrew Bresticker <abrestic@chromium.org>
-Subject: Re: [PATCH 1/4] pwm: Imagination Technologies PWM DAC driver
-Date: Wed, 12 Nov 2014 21:43:49 -0800
-Message-ID: <CAL1qeaFuKccak4fJFOK1YSW1uoyLA_a=GFWJ1PTS00Ab9vZB9A@mail.gmail.com>
+From: Sai Masarapu <Sai.Masarapu@imgtec.com>
+Subject: RE: [PATCH 1/4] pwm: Imagination Technologies PWM DAC driver
+Date: Thu, 13 Nov 2014 13:55:50 +0000
+Message-ID: <1F66364AC115084B902937EE750BD69B3F14598A@hbmail01.hb.imgtec.org>
 References: <1415795873-4816-1-git-send-email-Naidu.Tellapati@imgtec.com>
 	<1415795873-4816-2-git-send-email-Naidu.Tellapati@imgtec.com>
+ <CAL1qeaFuKccak4fJFOK1YSW1uoyLA_a=GFWJ1PTS00Ab9vZB9A@mail.gmail.com>
+ <1F66364AC115084B902937EE750BD69B3F145947@hbmail01.hb.imgtec.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-vc0-f182.google.com ([209.85.220.182]:40920 "EHLO
-	mail-vc0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751057AbaKMFnu (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 13 Nov 2014 00:43:50 -0500
-Received: by mail-vc0-f182.google.com with SMTP id im17so3078918vcb.41
-        for <linux-pwm@vger.kernel.org>; Wed, 12 Nov 2014 21:43:49 -0800 (PST)
-In-Reply-To: <1415795873-4816-2-git-send-email-Naidu.Tellapati@imgtec.com>
+Received: from mailapp01.imgtec.com ([195.59.15.196]:2341 "EHLO
+	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933040AbaKMNz6 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 13 Nov 2014 08:55:58 -0500
+In-Reply-To: <1F66364AC115084B902937EE750BD69B3F145947@hbmail01.hb.imgtec.org>
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, James Hartley <James.Hartley@imgtec.com>, Ezequiel Garcia <Ezequiel.Garcia@imgtec.com>, Arul.Ramasamy@imgtec.com, Sai.Masarapu@imgtec.com, linux-pwm@vger.kernel.org, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+To: Andrew Bresticker <abrestic@chromium.org>, Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, James Hartley <James.Hartley@imgtec.com>, Ezequiel Garcia <Ezequiel.Garcia@imgtec.com>, Arul Ramasamy <Arul.Ramasamy@imgtec.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 
-On Wed, Nov 12, 2014 at 4:37 AM,  <Naidu.Tellapati@imgtec.com> wrote:
-> From: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
->
-> The Pistachio SOC from Imagination Technologies includes a Pulse Width
-> Modulation DAC which produces 1 to 4 digital bit-outputs which represent
-> digital waveforms. These PWM outputs are primarily in charge of controlling
-> backlight LED devices.
->
-> Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
-> Signed-off-by: Sai Masarapu <Sai.Masarapu@imgtec.com>
-
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index ef2dd2e..de1c922 100644
-
-> @@ -110,6 +110,16 @@ config PWM_FSL_FTM
->           To compile this driver as a module, choose M here: the module
->           will be called pwm-fsl-ftm.
->
-> +config PWM_IMG
-> +       tristate "Imagination Technologies PWM driver"
-> +       depends on MFD_SYSCON
-
-It also at least depends on HAS_IOMEM.  Is this IP present on non-MIPS
-SoCs?  If not, then maybe add depends on MIPS || COMPILE_TEST.
-
-> diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
-> new file mode 100755
-> index 0000000..9361dbf
-
-> @@ -0,0 +1,294 @@
-> +/*
-> + * Imagination Technologies Pulse Width Modulator driver
-> + *
-> + * Copyright (c) 2014, Imagination Technologies
-> + *
-> + * Based on drivers/pwm/pwm-tegra.c, Copyright (c) 2010, NVIDIA Corporation
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-
-I don't think this paragraph is necessary.
-
-> + *
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/err.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pwm.h>
-> +#include <linux/regmap.h>
-> +#include <linux/slab.h>
-> +#include <linux/mfd/syscon.h>
-> +
-> +/* PWM registers */
-> +#define CR_PWM_CTRL_CFG                        0x0000 /* Control and config register */
-> +#define PWM_CH_DIV_MASK(ch)            (BIT(ch * 2 + 4) | BIT(ch * 2 + 5))
-
-This is a strange way to define a mask.  Like I mentioned in the
-watchdog driver, I prefer to use unshifted masks - not sure if Thierry
-has a preference though.
-
-Also, be sure to parenthesize macro parameters when they are used in
-the expression.
-
-> +#define PWM_CH_DIV_SHIFT(ch)           (ch * 2 + 4)
-> +
-> +#define CR_PWM_CH_CFG(ch)              (0x4 + (ch) * 4) /* Config register */
-> +#define TMBASE_SHIFT                   0
-> +#define DUTY_SHIFT                     16
-
-Maybe prefix these tow CR_PWM_CH_CFG to make it clear as to which
-register these fields belong?  Same goes for the other field #defines
-below.
-
-> +#define CR_PERIP_PWM_PDM_CONTROL       0x0140 /* PWM and PDM ctrl register */
-> +#define PWM_PDM_CH_CTRL_SHIFT(ch)      (ch * 4)
-> +
-> +#define NUM_PWM                                4
-> +#define SUB_DIV0                       1
-> +#define SUB_DIV1                       2
-> +#define NO_SUB_DIV                     0
-> +#define SUB_DIV0_DIV1                  3
-> +#define MIN_TMBASE_STEPS               1
-> +#define MAX_TMBASE_STEPS               65536
-> +#define MIN_DUTY_STEPS                 0
-> +#define MAX_DUTY_STEPS                 65535
-
-Please place these #defines next to their corresponding register or
-register field #define.
-
-> +struct img_pwm_chip {
-> +       struct device   *dev;
-> +       struct clk      *clk;
-> +       struct pwm_chip chip;
-> +       void __iomem    *base;
-> +       struct regmap *periph_regs;
-> +};
-> +
-> +static inline struct img_pwm_chip *to_img_pwm_chip(struct pwm_chip *chip)
-> +{
-> +       return container_of(chip, struct img_pwm_chip, chip);
-> +}
-> +
-> +static inline void img_pwm_writel(struct img_pwm_chip *chip,
-> +                               unsigned int reg, unsigned long val)
-> +{
-> +       writel(val, chip->base + reg);
-> +}
-> +
-> +static inline unsigned int img_pwm_readl(struct img_pwm_chip *chip,
-> +                                       unsigned int reg)
-> +{
-> +       return readl(chip->base + reg);
-> +}
-> +
-> +static int img_pwm_get_div_and_tmbase(struct pwm_chip *chip,
-> +               unsigned long in_freq, unsigned long out_freq,
-> +               unsigned int *divider, unsigned int *tmbase)
-> +{
-> +       unsigned long mul;
-> +
-> +       mul = DIV_ROUND_UP(in_freq, out_freq);
-> +       if (mul > MAX_TMBASE_STEPS * 512)
-> +               return -EINVAL;
-> +
-> +       if (mul <= MAX_TMBASE_STEPS) {
-> +               *divider = 1;
-> +               *tmbase = mul;
-> +       } else if (mul <= MAX_TMBASE_STEPS * 8) {
-> +               *divider = 8;
-> +               *tmbase = mul / 8;
-> +               *tmbase += mul % 8;
-> +       } else if (mul <= MAX_TMBASE_STEPS * 64) {
-> +               *divider = 64;
-> +               *tmbase = mul / 64;
-> +               *tmbase += mul % 64;
-> +       } else if (mul <= MAX_TMBASE_STEPS * 512) {
-> +               *divider = 512;
-> +               *tmbase = mul / 512;
-> +               *tmbase += mul % 512;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static void img_pwm_ch_config(struct img_pwm_chip *chip,
-> +               unsigned int ch_num, unsigned int divider,
-> +               unsigned int tmbase_steps, unsigned int duty_steps)
-> +{
-> +       unsigned int div;
-> +       unsigned long val;
-> +
-> +       switch (divider) {
-> +       case 1:
-> +               div = NO_SUB_DIV;
-> +               break;
-> +       case 8:
-> +               div = SUB_DIV0;
-> +               break;
-> +       case 64:
-> +               div = SUB_DIV1;
-> +               break;
-> +       case 512:
-> +               div = SUB_DIV0_DIV1;
-> +               break;
-> +       }
-> +
-> +       val = img_pwm_readl(chip, CR_PWM_CTRL_CFG);
-> +       val &= ~PWM_CH_DIV_MASK(ch_num);
-> +       val |= (div << PWM_CH_DIV_SHIFT(ch_num)) & PWM_CH_DIV_MASK(ch_num);
-> +       img_pwm_writel(chip, CR_PWM_CTRL_CFG, val);
-> +
-> +       duty_steps = duty_steps << DUTY_SHIFT;
-> +       tmbase_steps = tmbase_steps << TMBASE_SHIFT;
-> +       val = (duty_steps | tmbase_steps);
-
-Why not do:
-
-val = (duty_steps << DUTY_SHIFT) | (tmbase_steps << TMBASE_SHIFT):
-
-I don't see any need for the intermediate assignments.
-
-> +       img_pwm_writel(chip, CR_PWM_CH_CFG(ch_num), val);
-> +}
-> +
-> +static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> +                       int duty_ns, int period_ns)
-> +{
-> +       unsigned int divider;
-> +       unsigned int duty_steps;
-> +       unsigned int tmbase_steps;
-> +       unsigned long output_clk_hz;
-> +       unsigned long input_clk_hz;
-> +       struct img_pwm_chip *pwm_chip;
-> +
-> +       pwm_chip = to_img_pwm_chip(chip);
-> +
-> +       input_clk_hz = clk_get_rate(pwm_chip->clk);
-> +       output_clk_hz = DIV_ROUND_UP(NSEC_PER_SEC, period_ns);
-> +       if (img_pwm_get_div_and_tmbase(chip, input_clk_hz,
-> +                               output_clk_hz, &divider, &tmbase_steps) < 0) {
-> +               dev_err(chip->dev,
-> +                       "failed to configure timebase steps/divider value.\n");
-> +               return -EINVAL;
-> +       }
-> +
-> +       duty_steps = (tmbase_steps * duty_ns) / (period_ns);
-
-Unnecessary parenthesis.
-
-> +       img_pwm_ch_config(pwm_chip, pwm->hwpwm, divider,
-> +                       tmbase_steps, duty_steps);
-> +
-> +       return 0;
-> +}
-> +
-> +static int img_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-> +{
-> +       unsigned int val = 0;
-
-No need to initialize val (there are other places where this is done as well).
-
-> +       struct img_pwm_chip *pwm_chip;
-> +
-> +       pwm_chip = to_img_pwm_chip(chip);
-> +
-> +       val = img_pwm_readl(pwm_chip, CR_PWM_CTRL_CFG);
-> +       val |= BIT(pwm->hwpwm);
-> +       img_pwm_writel(pwm_chip, CR_PWM_CTRL_CFG, val);
-> +       regmap_read(pwm_chip->periph_regs, CR_PERIP_PWM_PDM_CONTROL, &val);
-> +       val &= ~BIT(PWM_PDM_CH_CTRL_SHIFT(pwm->hwpwm));
-> +       regmap_write(pwm_chip->periph_regs, CR_PERIP_PWM_PDM_CONTROL, val);
-> +
-> +       return 0;
-> +}
-> +
-> +static void img_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-> +{
-> +       unsigned int val = 0;
-> +       struct img_pwm_chip *pwm_chip;
-> +
-> +       pwm_chip = to_img_pwm_chip(chip);
-> +
-> +       val = img_pwm_readl(pwm_chip, CR_PWM_CTRL_CFG);
-> +       val &= ~BIT(pwm->hwpwm);
-> +       img_pwm_writel(pwm_chip, CR_PWM_CTRL_CFG, val);
-> +       regmap_read(pwm_chip->periph_regs, CR_PERIP_PWM_PDM_CONTROL, &val);
-> +       val |= BIT(PWM_PDM_CH_CTRL_SHIFT(pwm->hwpwm));
-> +       regmap_write(pwm_chip->periph_regs, CR_PERIP_PWM_PDM_CONTROL, val);
-
-FYI there's regmap_update_bits() which will do the read-modify-write sequence.
-
-> +}
-> +
-> +static const struct pwm_ops img_pwm_ops = {
-> +       .config = img_pwm_config,
-> +       .enable = img_pwm_enable,
-> +       .disable = img_pwm_disable,
-> +       .owner = THIS_MODULE,
-> +};
-> +
-> +static int img_pwm_probe(struct platform_device *pdev)
-> +{
-> +       int ret;
-> +       struct resource *res;
-> +       struct img_pwm_chip *pwm;
-> +
-> +       pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
-> +       if (!pwm)
-> +               return -ENOMEM;
-> +
-> +       pwm->dev = &pdev->dev;
-> +
-> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +       pwm->base = devm_ioremap_resource(&pdev->dev, res);
-> +       if (IS_ERR(pwm->base))
-> +               return PTR_ERR(pwm->base);
-> +
-> +       pwm->periph_regs = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
-> +                                                       "img,cr-periph");
-> +       if (IS_ERR(pwm->periph_regs))
-> +               return PTR_ERR(pwm->periph_regs);
-> +
-> +       pwm->clk = devm_clk_get(&pdev->dev, "pwm");
-> +       if (IS_ERR(pwm->clk)) {
-> +               dev_err(&pdev->dev, "failed to get the clock.\n");
-> +               return PTR_ERR(pwm->clk);
-> +       }
-> +
-> +       ret = clk_prepare_enable(pwm->clk);
-> +       if (ret < 0) {
-> +               dev_err(&pdev->dev, "could not prepare or enable pwm clock.\n");
-> +               return ret;
-> +       }
-> +
-> +       pwm->chip.dev = &pdev->dev;
-> +       pwm->chip.ops = &img_pwm_ops;
-> +       pwm->chip.base = -1;
-> +       pwm->chip.npwm = NUM_PWM;
-> +
-> +       ret = pwmchip_add(&pwm->chip);
-> +       if (ret < 0) {
-> +               dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
-> +               clk_disable_unprepare(pwm->clk);
-> +               return ret;
-> +       }
-> +
-> +       platform_set_drvdata(pdev, pwm);
-> +
-> +       return 0;
-> +}
-> +
-> +static int img_pwm_remove(struct platform_device *pdev)
-> +{
-> +       int i;
-> +       unsigned int val = 0;
-> +       struct img_pwm_chip *pwm_chip = platform_get_drvdata(pdev);
-> +
-> +       for (i = 0; i < NUM_PWM; i++) {
-> +               val = img_pwm_readl(pwm_chip, CR_PWM_CTRL_CFG);
-> +               val &= ~BIT(i);
-> +               img_pwm_writel(pwm_chip, CR_PWM_CTRL_CFG, val);
-> +       }
-> +
-> +       clk_disable_unprepare(pwm_chip->clk);
-> +
-> +       return pwmchip_remove(&pwm_chip->chip);
-> +}
-> +
-> +static const struct of_device_id img_pwm_of_match[] = {
-> +       { .compatible = "img,pistachio-pwm", },
-> +       { }
-> +};
-> +MODULE_DEVICE_TABLE(of, img_pwm_of_match);
-> +
-> +static struct platform_driver img_pwm_driver = {
-> +       .driver = {
-> +               .name = "img-pwm",
-> +               .of_match_table = of_match_ptr(img_pwm_of_match),
-> +       },
-> +       .probe = img_pwm_probe,
-> +       .remove = img_pwm_remove,
-> +};
-> +module_platform_driver(img_pwm_driver);
-> +
-> +MODULE_AUTHOR("Sai Masarapu <Sai.Masarapu@imgtec.com>");
-> +MODULE_DESCRIPTION("Imagination Technologies PWM DAC driver");
-> +MODULE_LICENSE("GPL v2");
-> --
-> 1.7.0.4
->
+SGkgQW5kcmV3LA0KDQpNYW55IHRoYW5rcyBmb3IgcmV2aWV3aW5nLiBQbGVhc2Ugc2VlIG15IGlu
+bGluZSBjb21tZW50cyBiZWxvdy4NCg0KT24gV2VkLCBOb3YgMTIsIDIwMTQgYXQgNDozNyBBTSwg
+IDxOYWlkdS5UZWxsYXBhdGlAaW1ndGVjLmNvbT4gd3JvdGU6DQo+PiBGcm9tOiBOYWlkdSBUZWxs
+YXBhdGkgPE5haWR1LlRlbGxhcGF0aUBpbWd0ZWMuY29tPg0KPj4NCj4+IFRoZSBQaXN0YWNoaW8g
+U09DIGZyb20gSW1hZ2luYXRpb24gVGVjaG5vbG9naWVzIGluY2x1ZGVzIGEgUHVsc2UgDQo+PiBX
+aWR0aCBNb2R1bGF0aW9uIERBQyB3aGljaCBwcm9kdWNlcyAxIHRvIDQgZGlnaXRhbCBiaXQtb3V0
+cHV0cyB3aGljaCANCj4+IHJlcHJlc2VudCBkaWdpdGFsIHdhdmVmb3Jtcy4gVGhlc2UgUFdNIG91
+dHB1dHMgYXJlIHByaW1hcmlseSBpbiANCj4+IGNoYXJnZSBvZiBjb250cm9sbGluZyBiYWNrbGln
+aHQgTEVEIGRldmljZXMuDQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogTmFpZHUgVGVsbGFwYXRpIDxO
+YWlkdS5UZWxsYXBhdGlAaW1ndGVjLmNvbT4NCj4+IFNpZ25lZC1vZmYtYnk6IFNhaSBNYXNhcmFw
+dSA8U2FpLk1hc2FyYXB1QGltZ3RlYy5jb20+DQo+DQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9w
+d20vS2NvbmZpZyBiL2RyaXZlcnMvcHdtL0tjb25maWcgaW5kZXgNCj4+IGVmMmRkMmUuLmRlMWM5
+MjIgMTAwNjQ0DQo+DQo+PiBAQCAtMTEwLDYgKzExMCwxNiBAQCBjb25maWcgUFdNX0ZTTF9GVE0N
+Cj4+ICAgICAgICAgICBUbyBjb21waWxlIHRoaXMgZHJpdmVyIGFzIGEgbW9kdWxlLCBjaG9vc2Ug
+TSBoZXJlOiB0aGUgbW9kdWxlDQo+PiAgICAgICAgICAgd2lsbCBiZSBjYWxsZWQgcHdtLWZzbC1m
+dG0uDQo+Pg0KPj4gK2NvbmZpZyBQV01fSU1HDQo+PiArICAgICAgIHRyaXN0YXRlICJJbWFnaW5h
+dGlvbiBUZWNobm9sb2dpZXMgUFdNIGRyaXZlciINCj4+ICsgICAgICAgZGVwZW5kcyBvbiBNRkRf
+U1lTQ09ODQoNCj4gSXQgYWxzbyBhdCBsZWFzdCBkZXBlbmRzIG9uIEhBU19JT01FTS4gIElzIHRo
+aXMgSVAgcHJlc2VudCBvbiBub24tTUlQUyBTb0NzPyANCj4gIElmIG5vdCwgdGhlbiBtYXliZSBh
+ZGQgZGVwZW5kcyBvbiBNSVBTIHx8IENPTVBJTEVfVEVTVC4NCg0KT2ssICBXZSB3aWxsIGRvIGl0
+Lg0KDQo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLWltZy5jIGIvZHJpdmVycy9wd20v
+cHdtLWltZy5jIG5ldyBmaWxlIA0KPj4gbW9kZSAxMDA3NTUgaW5kZXggMDAwMDAwMC4uOTM2MWRi
+Zg0KDQo+PiBAQCAtMCwwICsxLDI5NCBAQA0KPj4gKy8qDQo+PiArICogSW1hZ2luYXRpb24gVGVj
+aG5vbG9naWVzIFB1bHNlIFdpZHRoIE1vZHVsYXRvciBkcml2ZXINCj4+ICsgKg0KPj4gKyAqIENv
+cHlyaWdodCAoYykgMjAxNCwgSW1hZ2luYXRpb24gVGVjaG5vbG9naWVzDQo+PiArICoNCj4+ICsg
+KiBCYXNlZCBvbiBkcml2ZXJzL3B3bS9wd20tdGVncmEuYywgQ29weXJpZ2h0IChjKSAyMDEwLCBO
+VklESUEgDQo+PiArQ29ycG9yYXRpb24NCj4+ICsgKg0KPj4gKyAqIFRoaXMgcHJvZ3JhbSBpcyBm
+cmVlIHNvZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgDQo+PiArbW9kaWZ5
+DQo+PiArICogaXQgdW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgR2VuZXJhbCBQdWJsaWMgTGlj
+ZW5zZSBhcyBwdWJsaXNoZWQgDQo+PiArYnkNCj4+ICsgKiB0aGUgRnJlZSBTb2Z0d2FyZSBGb3Vu
+ZGF0aW9uOyBlaXRoZXIgdmVyc2lvbiAyIG9mIHRoZSBMaWNlbnNlLCBvcg0KPj4gKyAqIChhdCB5
+b3VyIG9wdGlvbikgYW55IGxhdGVyIHZlcnNpb24uDQo+PiArICoNCj4+ICsgKiBUaGlzIHByb2dy
+YW0gaXMgZGlzdHJpYnV0ZWQgaW4gdGhlIGhvcGUgdGhhdCBpdCB3aWxsIGJlIHVzZWZ1bCwgDQo+
+PiArYnV0IFdJVEhPVVQNCj4+ICsgKiBBTlkgV0FSUkFOVFk7IHdpdGhvdXQgZXZlbiB0aGUgaW1w
+bGllZCB3YXJyYW50eSBvZiANCj4+ICtNRVJDSEFOVEFCSUxJVFkgb3INCj4+ICsgKiBGSVRORVNT
+IEZPUiBBIFBBUlRJQ1VMQVIgUFVSUE9TRS4gIFNlZSB0aGUgR05VIEdlbmVyYWwgUHVibGljIA0K
+Pj4gK0xpY2Vuc2UgZm9yDQo+PiArICogbW9yZSBkZXRhaWxzLg0KDQo+IEkgZG9uJ3QgdGhpbmsg
+dGhpcyBwYXJhZ3JhcGggaXMgbmVjZXNzYXJ5Lg0KDQogICBPaywgIFdlIHdpbGwgcmVtb3ZlIGl0
+Lg0KDQo+PiArICoNCj4+ICsgKi8NCj4+ICsNCj4+ICsjaW5jbHVkZSA8bGludXgvY2xrLmg+DQo+
+PiArI2luY2x1ZGUgPGxpbnV4L2Vyci5oPg0KPj4gKyNpbmNsdWRlIDxsaW51eC9pby5oPg0KPj4g
+KyNpbmNsdWRlIDxsaW51eC9tb2R1bGUuaD4NCj4+ICsjaW5jbHVkZSA8bGludXgvb2YuaD4NCj4+
+ICsjaW5jbHVkZSA8bGludXgvcGxhdGZvcm1fZGV2aWNlLmg+DQo+PiArI2luY2x1ZGUgPGxpbnV4
+L3B3bS5oPg0KPj4gKyNpbmNsdWRlIDxsaW51eC9yZWdtYXAuaD4NCj4+ICsjaW5jbHVkZSA8bGlu
+dXgvc2xhYi5oPg0KPj4gKyNpbmNsdWRlIDxsaW51eC9tZmQvc3lzY29uLmg+DQo+PiArDQo+PiAr
+LyogUFdNIHJlZ2lzdGVycyAqLw0KPj4gKyNkZWZpbmUgQ1JfUFdNX0NUUkxfQ0ZHICAgICAgICAg
+ICAgICAgICAgICAgICAgMHgwMDAwIC8qIENvbnRyb2wgYW5kIGNvbmZpZyByZWdpc3RlciAqLw0K
+Pj4gKyNkZWZpbmUgUFdNX0NIX0RJVl9NQVNLKGNoKSAgICAgICAgICAgIChCSVQoY2ggKiAyICsg
+NCkgfCBCSVQoY2ggKiAyICsgNSkpDQoNCj4gVGhpcyBpcyBhIHN0cmFuZ2Ugd2F5IHRvIGRlZmlu
+ZSBhIG1hc2suICBMaWtlIEkgbWVudGlvbmVkIGluIHRoZSANCj4gd2F0Y2hkb2cgZHJpdmVyLCAg
+SSBwcmVmZXIgdG8gdXNlIHVuc2hpZnRlZCBtYXNrcyAtIG5vdCBzdXJlIGlmIFRoaWVycnkgaGFz
+IGEgcHJlZmVyZW5jZSB0aG91Z2guDQo+DQo+IEFsc28sIGJlIHN1cmUgdG8gcGFyZW50aGVzaXpl
+IG1hY3JvIHBhcmFtZXRlcnMgd2hlbiB0aGV5IGFyZSB1c2VkIGluIHRoZSBleHByZXNzaW9uLg0K
+DQogIFdlIHdpbGwgd2FpdCBmb3IgIFRoaWVycnkncyBjb21tZW50cyBiZWZvcmUgYWRkcmVzc2lu
+ZyB0aGlzLg0KDQo+PiArI2RlZmluZSBQV01fQ0hfRElWX1NISUZUKGNoKSAgICAgICAgICAgKGNo
+ICogMiArIDQpDQo+PiArDQo+PiArI2RlZmluZSBDUl9QV01fQ0hfQ0ZHKGNoKSAgICAgICAgICAg
+ICAgKDB4NCArIChjaCkgKiA0KSAvKiBDb25maWcgcmVnaXN0ZXIgKi8NCj4+ICsjZGVmaW5lIFRN
+QkFTRV9TSElGVCAgICAgICAgICAgICAgICAgICAwDQo+PiArI2RlZmluZSBEVVRZX1NISUZUICAg
+ICAgICAgICAgICAgICAgICAgMTYNCg0KPiBNYXliZSBwcmVmaXggdGhlc2UgdG93IENSX1BXTV9D
+SF9DRkcgdG8gbWFrZSBpdCBjbGVhciBhcyB0byB3aGljaCByZWdpc3RlciB0aGVzZSBmaWVsZHMg
+YmVsb25nPyAgU2FtZSBnb2VzIGZvciB0aGUgb3RoZXIgZmllbGQgI2RlZmluZXMgYmVsb3cuDQoN
+CiAgIE9rLCBXZSB3aWxsIGNvcnJlY3QgaXQuDQoNCj4+ICsjZGVmaW5lIENSX1BFUklQX1BXTV9Q
+RE1fQ09OVFJPTCAgICAgICAweDAxNDAgLyogUFdNIGFuZCBQRE0gY3RybCByZWdpc3RlciAqLw0K
+Pj4gKyNkZWZpbmUgUFdNX1BETV9DSF9DVFJMX1NISUZUKGNoKSAgICAgIChjaCAqIDQpDQo+PiAr
+DQo+PiArI2RlZmluZSBOVU1fUFdNICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA0DQo+
+PiArI2RlZmluZSBTVUJfRElWMCAgICAgICAgICAgICAgICAgICAgICAgMQ0KPj4gKyNkZWZpbmUg
+U1VCX0RJVjEgICAgICAgICAgICAgICAgICAgICAgIDINCj4+ICsjZGVmaW5lIE5PX1NVQl9ESVYg
+ICAgICAgICAgICAgICAgICAgICAwDQo+PiArI2RlZmluZSBTVUJfRElWMF9ESVYxICAgICAgICAg
+ICAgICAgICAgMw0KPj4gKyNkZWZpbmUgTUlOX1RNQkFTRV9TVEVQUyAgICAgICAgICAgICAgIDEN
+Cj4+ICsjZGVmaW5lIE1BWF9UTUJBU0VfU1RFUFMgICAgICAgICAgICAgICA2NTUzNg0KPj4gKyNk
+ZWZpbmUgTUlOX0RVVFlfU1RFUFMgICAgICAgICAgICAgICAgIDANCj4+ICsjZGVmaW5lIE1BWF9E
+VVRZX1NURVBTICAgICAgICAgICAgICAgICA2NTUzNQ0KDQo+IFBsZWFzZSBwbGFjZSB0aGVzZSAj
+ZGVmaW5lcyBuZXh0IHRvIHRoZWlyIGNvcnJlc3BvbmRpbmcgcmVnaXN0ZXIgb3IgcmVnaXN0ZXIg
+ZmllbGQgI2RlZmluZS4NCg0KICAgRGVmaW5lZCBNYWNyb3MgYXJlIG5vdCByZWxhdGVkIHRvIHJl
+Z2lzdGVyIGZpZWxkcy4NCg0KPj4gK3N0cnVjdCBpbWdfcHdtX2NoaXAgew0KPj4gKyAgICAgICBz
+dHJ1Y3QgZGV2aWNlICAgKmRldjsNCj4+ICsgICAgICAgc3RydWN0IGNsayAgICAgICpjbGs7DQo+
+PiArICAgICAgIHN0cnVjdCBwd21fY2hpcCBjaGlwOw0KPj4gKyAgICAgICB2b2lkIF9faW9tZW0g
+ICAgKmJhc2U7DQo+PiArICAgICAgIHN0cnVjdCByZWdtYXAgKnBlcmlwaF9yZWdzOw0KPj4gK307
+DQo+PiArDQo+PiArc3RhdGljIGlubGluZSBzdHJ1Y3QgaW1nX3B3bV9jaGlwICp0b19pbWdfcHdt
+X2NoaXAoc3RydWN0IHB3bV9jaGlwDQo+PiArKmNoaXApIHsNCj4+ICsgICAgICAgcmV0dXJuIGNv
+bnRhaW5lcl9vZihjaGlwLCBzdHJ1Y3QgaW1nX3B3bV9jaGlwLCBjaGlwKTsgfQ0KPj4gKw0KPj4g
+K3N0YXRpYyBpbmxpbmUgdm9pZCBpbWdfcHdtX3dyaXRlbChzdHJ1Y3QgaW1nX3B3bV9jaGlwICpj
+aGlwLA0KPj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB1bnNpZ25lZCBpbnQgcmVn
+LCB1bnNpZ25lZCBsb25nIHZhbCkgew0KPj4gKyAgICAgICB3cml0ZWwodmFsLCBjaGlwLT5iYXNl
+ICsgcmVnKTsgfQ0KPj4gKw0KPj4gK3N0YXRpYyBpbmxpbmUgdW5zaWduZWQgaW50IGltZ19wd21f
+cmVhZGwoc3RydWN0IGltZ19wd21fY2hpcCAqY2hpcCwNCj4+ICsgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICB1bnNpZ25lZCBpbnQgcmVnKSB7DQo+PiArICAgICAgIHJldHVy
+biByZWFkbChjaGlwLT5iYXNlICsgcmVnKTsgfQ0KPj4gKw0KPj4gK3N0YXRpYyBpbnQgaW1nX3B3
+bV9nZXRfZGl2X2FuZF90bWJhc2Uoc3RydWN0IHB3bV9jaGlwICpjaGlwLA0KPj4gKyAgICAgICAg
+ICAgICAgIHVuc2lnbmVkIGxvbmcgaW5fZnJlcSwgdW5zaWduZWQgbG9uZyBvdXRfZnJlcSwNCj4+
+ICsgICAgICAgICAgICAgICB1bnNpZ25lZCBpbnQgKmRpdmlkZXIsIHVuc2lnbmVkIGludCAqdG1i
+YXNlKSB7DQo+PiArICAgICAgIHVuc2lnbmVkIGxvbmcgbXVsOw0KPj4gKw0KPj4gKyAgICAgICBt
+dWwgPSBESVZfUk9VTkRfVVAoaW5fZnJlcSwgb3V0X2ZyZXEpOw0KPj4gKyAgICAgICBpZiAobXVs
+ID4gTUFYX1RNQkFTRV9TVEVQUyAqIDUxMikNCj4+ICsgICAgICAgICAgICAgICByZXR1cm4gLUVJ
+TlZBTDsNCj4+ICsNCj4+ICsgICAgICAgaWYgKG11bCA8PSBNQVhfVE1CQVNFX1NURVBTKSB7DQo+
+PiArICAgICAgICAgICAgICAgKmRpdmlkZXIgPSAxOw0KPj4gKyAgICAgICAgICAgICAgICp0bWJh
+c2UgPSBtdWw7DQo+PiArICAgICAgIH0gZWxzZSBpZiAobXVsIDw9IE1BWF9UTUJBU0VfU1RFUFMg
+KiA4KSB7DQo+PiArICAgICAgICAgICAgICAgKmRpdmlkZXIgPSA4Ow0KPj4gKyAgICAgICAgICAg
+ICAgICp0bWJhc2UgPSBtdWwgLyA4Ow0KPj4gKyAgICAgICAgICAgICAgICp0bWJhc2UgKz0gbXVs
+ICUgODsNCj4+ICsgICAgICAgfSBlbHNlIGlmIChtdWwgPD0gTUFYX1RNQkFTRV9TVEVQUyAqIDY0
+KSB7DQo+PiArICAgICAgICAgICAgICAgKmRpdmlkZXIgPSA2NDsNCj4+ICsgICAgICAgICAgICAg
+ICAqdG1iYXNlID0gbXVsIC8gNjQ7DQo+PiArICAgICAgICAgICAgICAgKnRtYmFzZSArPSBtdWwg
+JSA2NDsNCj4+ICsgICAgICAgfSBlbHNlIGlmIChtdWwgPD0gTUFYX1RNQkFTRV9TVEVQUyAqIDUx
+Mikgew0KPj4gKyAgICAgICAgICAgICAgICpkaXZpZGVyID0gNTEyOw0KPj4gKyAgICAgICAgICAg
+ICAgICp0bWJhc2UgPSBtdWwgLyA1MTI7DQo+PiArICAgICAgICAgICAgICAgKnRtYmFzZSArPSBt
+dWwgJSA1MTI7DQo+PiArICAgICAgIH0NCj4+ICsNCj4+ICsgICAgICAgcmV0dXJuIDA7DQo+PiAr
+fQ0KPj4gKw0KPj4gK3N0YXRpYyB2b2lkIGltZ19wd21fY2hfY29uZmlnKHN0cnVjdCBpbWdfcHdt
+X2NoaXAgKmNoaXAsDQo+PiArICAgICAgICAgICAgICAgdW5zaWduZWQgaW50IGNoX251bSwgdW5z
+aWduZWQgaW50IGRpdmlkZXIsDQo+PiArICAgICAgICAgICAgICAgdW5zaWduZWQgaW50IHRtYmFz
+ZV9zdGVwcywgdW5zaWduZWQgaW50IGR1dHlfc3RlcHMpIHsNCj4+ICsgICAgICAgdW5zaWduZWQg
+aW50IGRpdjsNCj4+ICsgICAgICAgdW5zaWduZWQgbG9uZyB2YWw7DQo+PiArDQo+PiArICAgICAg
+IHN3aXRjaCAoZGl2aWRlcikgew0KPj4gKyAgICAgICBjYXNlIDE6DQo+PiArICAgICAgICAgICAg
+ICAgZGl2ID0gTk9fU1VCX0RJVjsNCj4+ICsgICAgICAgICAgICAgICBicmVhazsNCj4+ICsgICAg
+ICAgY2FzZSA4Og0KPj4gKyAgICAgICAgICAgICAgIGRpdiA9IFNVQl9ESVYwOw0KPj4gKyAgICAg
+ICAgICAgICAgIGJyZWFrOw0KPj4gKyAgICAgICBjYXNlIDY0Og0KPj4gKyAgICAgICAgICAgICAg
+IGRpdiA9IFNVQl9ESVYxOw0KPj4gKyAgICAgICAgICAgICAgIGJyZWFrOw0KPj4gKyAgICAgICBj
+YXNlIDUxMjoNCj4+ICsgICAgICAgICAgICAgICBkaXYgPSBTVUJfRElWMF9ESVYxOw0KPj4gKyAg
+ICAgICAgICAgICAgIGJyZWFrOw0KPj4gKyAgICAgICB9DQo+PiArDQo+PiArICAgICAgIHZhbCA9
+IGltZ19wd21fcmVhZGwoY2hpcCwgQ1JfUFdNX0NUUkxfQ0ZHKTsNCj4+ICsgICAgICAgdmFsICY9
+IH5QV01fQ0hfRElWX01BU0soY2hfbnVtKTsNCj4+ICsgICAgICAgdmFsIHw9IChkaXYgPDwgUFdN
+X0NIX0RJVl9TSElGVChjaF9udW0pKSAmIFBXTV9DSF9ESVZfTUFTSyhjaF9udW0pOw0KPj4gKyAg
+ICAgICBpbWdfcHdtX3dyaXRlbChjaGlwLCBDUl9QV01fQ1RSTF9DRkcsIHZhbCk7DQo+PiArDQo+
+PiArICAgICAgIGR1dHlfc3RlcHMgPSBkdXR5X3N0ZXBzIDw8IERVVFlfU0hJRlQ7DQo+PiArICAg
+ICAgIHRtYmFzZV9zdGVwcyA9IHRtYmFzZV9zdGVwcyA8PCBUTUJBU0VfU0hJRlQ7DQo+PiArICAg
+ICAgIHZhbCA9IChkdXR5X3N0ZXBzIHwgdG1iYXNlX3N0ZXBzKTsNCg0KPiBXaHkgbm90IGRvOg0K
+DQo+IHZhbCA9IChkdXR5X3N0ZXBzIDw8IERVVFlfU0hJRlQpIHwgKHRtYmFzZV9zdGVwcyA8PCBU
+TUJBU0VfU0hJRlQpOg0KDQo+IEkgZG9uJ3Qgc2VlIGFueSBuZWVkIGZvciB0aGUgaW50ZXJtZWRp
+YXRlIGFzc2lnbm1lbnRzLg0KDQogICAgT2ssICBXZSB3aWxsIGNvcnJlY3QgaXQuDQoNCj4+ICsg
+ICAgICAgaW1nX3B3bV93cml0ZWwoY2hpcCwgQ1JfUFdNX0NIX0NGRyhjaF9udW0pLCB2YWwpOyB9
+DQo+PiArDQo+PiArc3RhdGljIGludCBpbWdfcHdtX2NvbmZpZyhzdHJ1Y3QgcHdtX2NoaXAgKmNo
+aXAsIHN0cnVjdCBwd21fZGV2aWNlICpwd20sDQo+PiArICAgICAgICAgICAgICAgICAgICAgICBp
+bnQgZHV0eV9ucywgaW50IHBlcmlvZF9ucykgew0KPj4gKyAgICAgICB1bnNpZ25lZCBpbnQgZGl2
+aWRlcjsNCj4+ICsgICAgICAgdW5zaWduZWQgaW50IGR1dHlfc3RlcHM7DQo+PiArICAgICAgIHVu
+c2lnbmVkIGludCB0bWJhc2Vfc3RlcHM7DQo+PiArICAgICAgIHVuc2lnbmVkIGxvbmcgb3V0cHV0
+X2Nsa19oejsNCj4+ICsgICAgICAgdW5zaWduZWQgbG9uZyBpbnB1dF9jbGtfaHo7DQo+PiArICAg
+ICAgIHN0cnVjdCBpbWdfcHdtX2NoaXAgKnB3bV9jaGlwOw0KPj4gKw0KPj4gKyAgICAgICBwd21f
+Y2hpcCA9IHRvX2ltZ19wd21fY2hpcChjaGlwKTsNCj4+ICsNCj4+ICsgICAgICAgaW5wdXRfY2xr
+X2h6ID0gY2xrX2dldF9yYXRlKHB3bV9jaGlwLT5jbGspOw0KPj4gKyAgICAgICBvdXRwdXRfY2xr
+X2h6ID0gRElWX1JPVU5EX1VQKE5TRUNfUEVSX1NFQywgcGVyaW9kX25zKTsNCj4+ICsgICAgICAg
+aWYgKGltZ19wd21fZ2V0X2Rpdl9hbmRfdG1iYXNlKGNoaXAsIGlucHV0X2Nsa19oeiwNCj4+ICsg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgb3V0cHV0X2Nsa19oeiwgJmRpdmlkZXIsICZ0
+bWJhc2Vfc3RlcHMpIDwgMCkgew0KPj4gKyAgICAgICAgICAgICAgIGRldl9lcnIoY2hpcC0+ZGV2
+LA0KPj4gKyAgICAgICAgICAgICAgICAgICAgICAgImZhaWxlZCB0byBjb25maWd1cmUgdGltZWJh
+c2Ugc3RlcHMvZGl2aWRlciB2YWx1ZS5cbiIpOw0KPj4gKyAgICAgICAgICAgICAgIHJldHVybiAt
+RUlOVkFMOw0KPj4gKyAgICAgICB9DQo+PiArDQo+PiArICAgICAgIGR1dHlfc3RlcHMgPSAodG1i
+YXNlX3N0ZXBzICogZHV0eV9ucykgLyAocGVyaW9kX25zKTsNCg0KPiBVbm5lY2Vzc2FyeSBwYXJl
+bnRoZXNpcy4NCg0KICAgT2ssIFdlIHdpbGwgY29ycmVjdCBpdC4NCg0KPj4gKyAgICAgICBpbWdf
+cHdtX2NoX2NvbmZpZyhwd21fY2hpcCwgcHdtLT5od3B3bSwgZGl2aWRlciwNCj4+ICsgICAgICAg
+ICAgICAgICAgICAgICAgIHRtYmFzZV9zdGVwcywgZHV0eV9zdGVwcyk7DQo+PiArDQo+PiArICAg
+ICAgIHJldHVybiAwOw0KPj4gK30NCj4+ICsNCj4+ICtzdGF0aWMgaW50IGltZ19wd21fZW5hYmxl
+KHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UNCj4+ICsqcHdtKSB7DQo+
+PiArICAgICAgIHVuc2lnbmVkIGludCB2YWwgPSAwOw0KDQo+IE5vIG5lZWQgdG8gaW5pdGlhbGl6
+ZSB2YWwgKHRoZXJlIGFyZSBvdGhlciBwbGFjZXMgd2hlcmUgdGhpcyBpcyBkb25lIGFzIHdlbGwp
+Lg0KDQogICBPaywgV2Ugd2lsbCBjb3JyZWN0IGl0Lg0KDQo+PiArICAgICAgIHN0cnVjdCBpbWdf
+cHdtX2NoaXAgKnB3bV9jaGlwOw0KPj4gKw0KPj4gKyAgICAgICBwd21fY2hpcCA9IHRvX2ltZ19w
+d21fY2hpcChjaGlwKTsNCj4+ICsNCj4+ICsgICAgICAgdmFsID0gaW1nX3B3bV9yZWFkbChwd21f
+Y2hpcCwgQ1JfUFdNX0NUUkxfQ0ZHKTsNCj4+ICsgICAgICAgdmFsIHw9IEJJVChwd20tPmh3cHdt
+KTsNCj4+ICsgICAgICAgaW1nX3B3bV93cml0ZWwocHdtX2NoaXAsIENSX1BXTV9DVFJMX0NGRywg
+dmFsKTsNCj4+ICsgICAgICAgcmVnbWFwX3JlYWQocHdtX2NoaXAtPnBlcmlwaF9yZWdzLCBDUl9Q
+RVJJUF9QV01fUERNX0NPTlRST0wsICZ2YWwpOw0KPj4gKyAgICAgICB2YWwgJj0gfkJJVChQV01f
+UERNX0NIX0NUUkxfU0hJRlQocHdtLT5od3B3bSkpOw0KPj4gKyAgICAgICByZWdtYXBfd3JpdGUo
+cHdtX2NoaXAtPnBlcmlwaF9yZWdzLCBDUl9QRVJJUF9QV01fUERNX0NPTlRST0wsIA0KPj4gKyB2
+YWwpOw0KPj4gKw0KPj4gKyAgICAgICByZXR1cm4gMDsNCj4+ICt9DQo+PiArDQo+PiArc3RhdGlj
+IHZvaWQgaW1nX3B3bV9kaXNhYmxlKHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9k
+ZXZpY2UNCj4+ICsqcHdtKSB7DQo+PiArICAgICAgIHVuc2lnbmVkIGludCB2YWwgPSAwOw0KPj4g
+KyAgICAgICBzdHJ1Y3QgaW1nX3B3bV9jaGlwICpwd21fY2hpcDsNCj4+ICsNCj4+ICsgICAgICAg
+cHdtX2NoaXAgPSB0b19pbWdfcHdtX2NoaXAoY2hpcCk7DQo+PiArDQo+PiArICAgICAgIHZhbCA9
+IGltZ19wd21fcmVhZGwocHdtX2NoaXAsIENSX1BXTV9DVFJMX0NGRyk7DQo+PiArICAgICAgIHZh
+bCAmPSB+QklUKHB3bS0+aHdwd20pOw0KPj4gKyAgICAgICBpbWdfcHdtX3dyaXRlbChwd21fY2hp
+cCwgQ1JfUFdNX0NUUkxfQ0ZHLCB2YWwpOw0KPj4gKyAgICAgICByZWdtYXBfcmVhZChwd21fY2hp
+cC0+cGVyaXBoX3JlZ3MsIENSX1BFUklQX1BXTV9QRE1fQ09OVFJPTCwgJnZhbCk7DQo+PiArICAg
+ICAgIHZhbCB8PSBCSVQoUFdNX1BETV9DSF9DVFJMX1NISUZUKHB3bS0+aHdwd20pKTsNCj4+ICsg
+ICAgICAgcmVnbWFwX3dyaXRlKHB3bV9jaGlwLT5wZXJpcGhfcmVncywgQ1JfUEVSSVBfUFdNX1BE
+TV9DT05UUk9MLCANCj4+ICsgdmFsKTsNCg0KPiBGWUkgdGhlcmUncyByZWdtYXBfdXBkYXRlX2Jp
+dHMoKSB3aGljaCB3aWxsIGRvIHRoZSByZWFkLW1vZGlmeS13cml0ZSBzZXF1ZW5jZS4NCiAgDQog
+ICAgT2suICBXZSB3aWxsIGRvIGl0Lg0KDQo+PiArfQ0KPj4gKw0KPj4gK3N0YXRpYyBjb25zdCBz
+dHJ1Y3QgcHdtX29wcyBpbWdfcHdtX29wcyA9IHsNCj4+ICsgICAgICAgLmNvbmZpZyA9IGltZ19w
+d21fY29uZmlnLA0KPj4gKyAgICAgICAuZW5hYmxlID0gaW1nX3B3bV9lbmFibGUsDQo+PiArICAg
+ICAgIC5kaXNhYmxlID0gaW1nX3B3bV9kaXNhYmxlLA0KPj4gKyAgICAgICAub3duZXIgPSBUSElT
+X01PRFVMRSwNCj4+ICt9Ow0KPj4gKw0KPj4gK3N0YXRpYyBpbnQgaW1nX3B3bV9wcm9iZShzdHJ1
+Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KSB7DQo+PiArICAgICAgIGludCByZXQ7DQo+PiArICAg
+ICAgIHN0cnVjdCByZXNvdXJjZSAqcmVzOw0KPj4gKyAgICAgICBzdHJ1Y3QgaW1nX3B3bV9jaGlw
+ICpwd207DQo+PiArDQo+PiArICAgICAgIHB3bSA9IGRldm1fa3phbGxvYygmcGRldi0+ZGV2LCBz
+aXplb2YoKnB3bSksIEdGUF9LRVJORUwpOw0KPj4gKyAgICAgICBpZiAoIXB3bSkNCj4+ICsgICAg
+ICAgICAgICAgICByZXR1cm4gLUVOT01FTTsNCj4+ICsNCj4+ICsgICAgICAgcHdtLT5kZXYgPSAm
+cGRldi0+ZGV2Ow0KPj4gKw0KPj4gKyAgICAgICByZXMgPSBwbGF0Zm9ybV9nZXRfcmVzb3VyY2Uo
+cGRldiwgSU9SRVNPVVJDRV9NRU0sIDApOw0KPj4gKyAgICAgICBwd20tPmJhc2UgPSBkZXZtX2lv
+cmVtYXBfcmVzb3VyY2UoJnBkZXYtPmRldiwgcmVzKTsNCj4+ICsgICAgICAgaWYgKElTX0VSUihw
+d20tPmJhc2UpKQ0KPj4gKyAgICAgICAgICAgICAgIHJldHVybiBQVFJfRVJSKHB3bS0+YmFzZSk7
+DQo+PiArDQo+PiArICAgICAgIHB3bS0+cGVyaXBoX3JlZ3MgPSBzeXNjb25fcmVnbWFwX2xvb2t1
+cF9ieV9waGFuZGxlKHBkZXYtPmRldi5vZl9ub2RlLA0KPj4gKyAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiaW1nLGNyLXBlcmlwaCIpOw0KPj4g
+KyAgICAgICBpZiAoSVNfRVJSKHB3bS0+cGVyaXBoX3JlZ3MpKQ0KPj4gKyAgICAgICAgICAgICAg
+IHJldHVybiBQVFJfRVJSKHB3bS0+cGVyaXBoX3JlZ3MpOw0KPj4gKw0KPj4gKyAgICAgICBwd20t
+PmNsayA9IGRldm1fY2xrX2dldCgmcGRldi0+ZGV2LCAicHdtIik7DQo+PiArICAgICAgIGlmIChJ
+U19FUlIocHdtLT5jbGspKSB7DQo+PiArICAgICAgICAgICAgICAgZGV2X2VycigmcGRldi0+ZGV2
+LCAiZmFpbGVkIHRvIGdldCB0aGUgY2xvY2suXG4iKTsNCj4+ICsgICAgICAgICAgICAgICByZXR1
+cm4gUFRSX0VSUihwd20tPmNsayk7DQo+PiArICAgICAgIH0NCj4+ICsNCj4+ICsgICAgICAgcmV0
+ID0gY2xrX3ByZXBhcmVfZW5hYmxlKHB3bS0+Y2xrKTsNCj4+ICsgICAgICAgaWYgKHJldCA8IDAp
+IHsNCj4+ICsgICAgICAgICAgICAgICBkZXZfZXJyKCZwZGV2LT5kZXYsICJjb3VsZCBub3QgcHJl
+cGFyZSBvciBlbmFibGUgcHdtIGNsb2NrLlxuIik7DQo+PiArICAgICAgICAgICAgICAgcmV0dXJu
+IHJldDsNCj4+ICsgICAgICAgfQ0KPj4gKw0KPj4gKyAgICAgICBwd20tPmNoaXAuZGV2ID0gJnBk
+ZXYtPmRldjsNCj4+ICsgICAgICAgcHdtLT5jaGlwLm9wcyA9ICZpbWdfcHdtX29wczsNCj4+ICsg
+ICAgICAgcHdtLT5jaGlwLmJhc2UgPSAtMTsNCj4+ICsgICAgICAgcHdtLT5jaGlwLm5wd20gPSBO
+VU1fUFdNOw0KPj4gKw0KPj4gKyAgICAgICByZXQgPSBwd21jaGlwX2FkZCgmcHdtLT5jaGlwKTsN
+Cj4+ICsgICAgICAgaWYgKHJldCA8IDApIHsNCj4+ICsgICAgICAgICAgICAgICBkZXZfZXJyKCZw
+ZGV2LT5kZXYsICJwd21jaGlwX2FkZCBmYWlsZWQ6ICVkXG4iLCByZXQpOw0KPj4gKyAgICAgICAg
+ICAgICAgIGNsa19kaXNhYmxlX3VucHJlcGFyZShwd20tPmNsayk7DQo+PiArICAgICAgICAgICAg
+ICAgcmV0dXJuIHJldDsNCj4+ICsgICAgICAgfQ0KPj4gKw0KPj4gKyAgICAgICBwbGF0Zm9ybV9z
+ZXRfZHJ2ZGF0YShwZGV2LCBwd20pOw0KPj4gKw0KPj4gKyAgICAgICByZXR1cm4gMDsNCj4+ICt9
+DQo+PiArDQo+PiArc3RhdGljIGludCBpbWdfcHdtX3JlbW92ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2
+aWNlICpwZGV2KSB7DQo+PiArICAgICAgIGludCBpOw0KPj4gKyAgICAgICB1bnNpZ25lZCBpbnQg
+dmFsID0gMDsNCj4+ICsgICAgICAgc3RydWN0IGltZ19wd21fY2hpcCAqcHdtX2NoaXAgPSBwbGF0
+Zm9ybV9nZXRfZHJ2ZGF0YShwZGV2KTsNCj4+ICsNCj4+ICsgICAgICAgZm9yIChpID0gMDsgaSA8
+IE5VTV9QV007IGkrKykgew0KPj4gKyAgICAgICAgICAgICAgIHZhbCA9IGltZ19wd21fcmVhZGwo
+cHdtX2NoaXAsIENSX1BXTV9DVFJMX0NGRyk7DQo+PiArICAgICAgICAgICAgICAgdmFsICY9IH5C
+SVQoaSk7DQo+PiArICAgICAgICAgICAgICAgaW1nX3B3bV93cml0ZWwocHdtX2NoaXAsIENSX1BX
+TV9DVFJMX0NGRywgdmFsKTsNCj4+ICsgICAgICAgfQ0KPj4gKw0KPj4gKyAgICAgICBjbGtfZGlz
+YWJsZV91bnByZXBhcmUocHdtX2NoaXAtPmNsayk7DQo+PiArDQo+PiArICAgICAgIHJldHVybiBw
+d21jaGlwX3JlbW92ZSgmcHdtX2NoaXAtPmNoaXApOyB9DQo+PiArDQo+PiArc3RhdGljIGNvbnN0
+IHN0cnVjdCBvZl9kZXZpY2VfaWQgaW1nX3B3bV9vZl9tYXRjaFtdID0gew0KPj4gKyAgICAgICB7
+IC5jb21wYXRpYmxlID0gImltZyxwaXN0YWNoaW8tcHdtIiwgfSwNCj4+ICsgICAgICAgeyB9DQo+
+PiArfTsNCj4+ICtNT0RVTEVfREVWSUNFX1RBQkxFKG9mLCBpbWdfcHdtX29mX21hdGNoKTsNCj4+
+ICsNCj4+ICtzdGF0aWMgc3RydWN0IHBsYXRmb3JtX2RyaXZlciBpbWdfcHdtX2RyaXZlciA9IHsN
+Cj4+ICsgICAgICAgLmRyaXZlciA9IHsNCj4+ICsgICAgICAgICAgICAgICAubmFtZSA9ICJpbWct
+cHdtIiwNCj4+ICsgICAgICAgICAgICAgICAub2ZfbWF0Y2hfdGFibGUgPSBvZl9tYXRjaF9wdHIo
+aW1nX3B3bV9vZl9tYXRjaCksDQo+PiArICAgICAgIH0sDQo+PiArICAgICAgIC5wcm9iZSA9IGlt
+Z19wd21fcHJvYmUsDQo+PiArICAgICAgIC5yZW1vdmUgPSBpbWdfcHdtX3JlbW92ZSwNCj4+ICt9
+Ow0KPj4gK21vZHVsZV9wbGF0Zm9ybV9kcml2ZXIoaW1nX3B3bV9kcml2ZXIpOw0KPj4gKw0KPj4g
+K01PRFVMRV9BVVRIT1IoIlNhaSBNYXNhcmFwdSA8U2FpLk1hc2FyYXB1QGltZ3RlYy5jb20+Iik7
+IA0KPj4gK01PRFVMRV9ERVNDUklQVElPTigiSW1hZ2luYXRpb24gVGVjaG5vbG9naWVzIFBXTSBE
+QUMgZHJpdmVyIik7IA0KPj4gK01PRFVMRV9MSUNFTlNFKCJHUEwgdjIiKTsNCj4+IC0tDQo+PiAx
+LjcuMC40DQo+Pg0KDQoNClJlZ2FyZHMsDQpTYWlraXJhbiBNLg0K
