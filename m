@@ -1,46 +1,53 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v10 0/2] pwm: add support for atmel-hlcdc-pwm device
-Date: Fri, 14 Nov 2014 12:05:29 +0100
-Message-ID: <20141114120529.41bf908d@bbrezillon>
-References: <1412689095-14259-1-git-send-email-boris.brezillon@free-electrons.com>
-	<20141103095427.3f385b9d@bbrezillon>
+From: Abhilash Kesavan <kesavan.abhilash@gmail.com>
+Subject: Re: [PATCH] pwm: samsung: Allow samsung pwm driver to be enabled on Exynos7
+Date: Fri, 14 Nov 2014 19:38:52 +0530
+Message-ID: <CAM4voakoTjoeX=mShK7JeQK=as63o4WUvMx2sj35f+1qkJkeEA@mail.gmail.com>
+References: <1414759126-4608-1-git-send-email-a.kesavan@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:33891 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S964781AbaKNLFc (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Nov 2014 06:05:32 -0500
-In-Reply-To: <20141103095427.3f385b9d@bbrezillon>
+Received: from mail-qc0-f173.google.com ([209.85.216.173]:36561 "EHLO
+	mail-qc0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965136AbaKNOIx (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Nov 2014 09:08:53 -0500
+Received: by mail-qc0-f173.google.com with SMTP id x3so12831612qcv.18
+        for <linux-pwm@vger.kernel.org>; Fri, 14 Nov 2014 06:08:53 -0800 (PST)
+In-Reply-To: <1414759126-4608-1-git-send-email-a.kesavan@samsung.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org
+To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
+Cc: Me2 <kesavan.abhilash@gmail.com>
 
-On Mon, 3 Nov 2014 09:54:27 +0100
-Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
+Hi Thierry,
 
-> Hi Thierry,
-> 
-> On Tue,  7 Oct 2014 15:38:13 +0200
-> Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
-> 
-> > Hi Thierry,
-> > 
-> > This patch series adds support for the atmel-hlcdc-pwm device provided
-> > by the atmel-hlcdc MFD driver.
-> 
-> You seemed to be happy with this version but never told that you would
-> take it into your tree.
-> 
-> Is there anything missing (I'd really like to have the atmel-hlcdc
-> drivers in 3.19...) ?
+On Fri, Oct 31, 2014 at 6:08 PM, Abhilash Kesavan <a.kesavan@samsung.com> wrote:
+> To re-use the existing PWM driver for arm64 based exynos7 SoC,
+> make the driver depend on ARCH_EXYNOS along with PLAT_SAMSUNG.
+>
+> Signed-off-by: Abhilash Kesavan <a.kesavan@samsung.com>
+> ---
+>  drivers/pwm/Kconfig |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index ef2dd2e..e82ab69 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -235,7 +235,7 @@ config PWM_ROCKCHIP
+>
+>  config PWM_SAMSUNG
+>         tristate "Samsung PWM support"
+> -       depends on PLAT_SAMSUNG
+> +       depends on PLAT_SAMSUNG || ARCH_EXYNOS
+>         help
+>           Generic PWM framework driver for Samsung.
 
-Ping.
+This is a minor change that makes it possible to re-use the samsung
+pwm driver on the new 64-bit exynos7 soc. Can you please review ?
 
-
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Regards,
+Abhilash
+>
+> --
+> 1.7.9.5
+>
