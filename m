@@ -1,53 +1,33 @@
-From: Abhilash Kesavan <kesavan.abhilash@gmail.com>
-Subject: Re: [PATCH] pwm: samsung: Allow samsung pwm driver to be enabled on Exynos7
-Date: Fri, 14 Nov 2014 19:38:52 +0530
-Message-ID: <CAM4voakoTjoeX=mShK7JeQK=as63o4WUvMx2sj35f+1qkJkeEA@mail.gmail.com>
-References: <1414759126-4608-1-git-send-email-a.kesavan@samsung.com>
+From: Scott Branden <sbranden@broadcom.com>
+Subject: [PATCH 0/4] pwm: kona: Drivers fixes
+Date: Fri, 14 Nov 2014 10:29:56 -0800
+Message-ID: <1415989800-7515-1-git-send-email-sbranden@broadcom.com>
+References: <Scott Branden <sbranden@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qc0-f173.google.com ([209.85.216.173]:36561 "EHLO
-	mail-qc0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965136AbaKNOIx (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Nov 2014 09:08:53 -0500
-Received: by mail-qc0-f173.google.com with SMTP id x3so12831612qcv.18
-        for <linux-pwm@vger.kernel.org>; Fri, 14 Nov 2014 06:08:53 -0800 (PST)
-In-Reply-To: <1414759126-4608-1-git-send-email-a.kesavan@samsung.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <Scott Branden <sbranden@broadcom.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Scott Branden <sbranden@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Ray Jui <rjui@broadcom.com>, Arun Ramamurthy <arunrama@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
-Cc: Me2 <kesavan.abhilash@gmail.com>
 
-Hi Thierry,
+This patchset contains fixes for Broadcom's Kona PWM driver.
 
-On Fri, Oct 31, 2014 at 6:08 PM, Abhilash Kesavan <a.kesavan@samsung.com> wrote:
-> To re-use the existing PWM driver for arm64 based exynos7 SoC,
-> make the driver depend on ARCH_EXYNOS along with PLAT_SAMSUNG.
->
-> Signed-off-by: Abhilash Kesavan <a.kesavan@samsung.com>
-> ---
->  drivers/pwm/Kconfig |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index ef2dd2e..e82ab69 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -235,7 +235,7 @@ config PWM_ROCKCHIP
->
->  config PWM_SAMSUNG
->         tristate "Samsung PWM support"
-> -       depends on PLAT_SAMSUNG
-> +       depends on PLAT_SAMSUNG || ARCH_EXYNOS
->         help
->           Generic PWM framework driver for Samsung.
+These changes fix glitch issues when changing settings on different channels.
+Kconfig change made to allow the driver to work on any Broadcom SoC rather
+than just mobile devices.
 
-This is a minor change that makes it possible to re-use the samsung
-pwm driver on the new 64-bit exynos7 soc. Can you please review ?
+Arun Ramamurthy (4):
+  pwm: kona: Remove setting default smooth type and polarity for all
+    channels
+  pwm: kona: Fix incorrect enable after channel polarity change
+  pwm: kona: Fix enable, disable and config procedures
+  pwm: kona: Update dependency to ARCH_BCM
 
-Regards,
-Abhilash
->
-> --
-> 1.7.9.5
->
+ drivers/pwm/Kconfig        |   2 +-
+ drivers/pwm/pwm-bcm-kona.c | 112 ++++++++++++++++++++++++++++++++-------------
+ 2 files changed, 81 insertions(+), 33 deletions(-)
+
+-- 
+2.1.3
