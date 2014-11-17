@@ -1,92 +1,64 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v10 0/2] pwm: add support for atmel-hlcdc-pwm device
-Date: Mon, 17 Nov 2014 12:01:23 +0100
-Message-ID: <20141117110122.GA25699@ulmo>
-References: <1412689095-14259-1-git-send-email-boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH] pwm: samsung: Allow samsung pwm driver to be enabled on
+ Exynos7
+Date: Mon, 17 Nov 2014 12:25:39 +0100
+Message-ID: <20141117112537.GC25699@ulmo>
+References: <1414759126-4608-1-git-send-email-a.kesavan@samsung.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="2oS5YaxWCcQjTEyO"
+	protocol="application/pgp-signature"; boundary="DIOMP1UsTsWJauNi"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wg0-f47.google.com ([74.125.82.47]:60086 "EHLO
-	mail-wg0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752769AbaKQLBa (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 17 Nov 2014 06:01:30 -0500
-Received: by mail-wg0-f47.google.com with SMTP id n12so2284574wgh.6
-        for <linux-pwm@vger.kernel.org>; Mon, 17 Nov 2014 03:01:26 -0800 (PST)
+Received: from mail-wi0-f176.google.com ([209.85.212.176]:61581 "EHLO
+	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751297AbaKQLZn (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 17 Nov 2014 06:25:43 -0500
+Received: by mail-wi0-f176.google.com with SMTP id ex7so5358258wid.9
+        for <linux-pwm@vger.kernel.org>; Mon, 17 Nov 2014 03:25:42 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <1412689095-14259-1-git-send-email-boris.brezillon@free-electrons.com>
+In-Reply-To: <1414759126-4608-1-git-send-email-a.kesavan@samsung.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, linux-arm-kernel@lists.infradead.org
+To: Abhilash Kesavan <a.kesavan@samsung.com>
+Cc: linux-pwm@vger.kernel.org, kesavan.abhilash@gmail.com
 
 
---2oS5YaxWCcQjTEyO
+--DIOMP1UsTsWJauNi
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 07, 2014 at 03:38:13PM +0200, Boris Brezillon wrote:
-> Hi Thierry,
+On Fri, Oct 31, 2014 at 06:08:46PM +0530, Abhilash Kesavan wrote:
+> To re-use the existing PWM driver for arm64 based exynos7 SoC,
+> make the driver depend on ARCH_EXYNOS along with PLAT_SAMSUNG.
 >=20
-> This patch series adds support for the atmel-hlcdc-pwm device provided
-> by the atmel-hlcdc MFD driver.
->=20
-> Best Regards,
->=20
-> Boris
->=20
-> Changes since v9:
->  - replace select by depends on
->  - rework commit messages
->  - rework Kconfig description
->=20
-> Changes since v8:
->  - rework the enable/disable waiting loop
->  - check return code of regmap functions
->  - fix DT binding doc
->=20
-> Changes since v7:
->  - addressed several coding style issues
->=20
->=20
-> Boris Brezillon (2):
->   pwm: add support for atmel-hlcdc-pwm device
->   pwm: add DT bindings documentation for atmel-hlcdc-pwm driver
->=20
->  .../devicetree/bindings/pwm/atmel-hlcdc-pwm.txt    |  29 +++
->  drivers/pwm/Kconfig                                |  11 +
->  drivers/pwm/Makefile                               |   1 +
->  drivers/pwm/pwm-atmel-hlcdc.c                      | 259 +++++++++++++++=
-++++++
->  4 files changed, 300 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/atmel-hlcdc-pwm=
-=2Etxt
->  create mode 100644 drivers/pwm/pwm-atmel-hlcdc.c
+> Signed-off-by: Abhilash Kesavan <a.kesavan@samsung.com>
+> ---
+>  drivers/pwm/Kconfig |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Applied, thanks.
+Applied (with minor spelling fixups), thanks.
 
 Thierry
 
---2oS5YaxWCcQjTEyO
+--DIOMP1UsTsWJauNi
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJUadWCAAoJEN0jrNd/PrOhOz4P/3VLS3t+JIgJ0Zs0ZjvMwwGE
-QO6iesWXhDMl8BhqmRgL0V4kGDfgm3Gi4Uz/R29I/epUMrY5w2waL6UKp5xFwYKy
-y+0iDeN4TC9R3tMm36x00JKuzCJ3kfN00tPGiQJwBqs9EiWepBpJkffBjRWBZzmk
-eTKMk7fk6SHmBx5NfwqKux1UAHsZLdd6KVFc9k5FgRr0oY0aDTURuAbme6tcd8pq
-XZ505Im/eO8AcSWbA5MHGLWoGu7hU5awXCKycPR5B4q6CIxSutKYmihwO/mkIpz2
-kXq0AC6r9Ur0q+ArPyxtxIMFFEH/IszlZfvQHJC3nXZ+b3Hp6CR5YHwWtwIlO3W2
-+scJPr2SclS+Rv3MP4yjO/CqWIHrQ+fhwuQTa5jhgL5GBh8Ka6RlN0CnbGhUqS9Z
-Np+Ci+x6QxKL5pm+2aRW1UysiFVFwkuaKYO0fe/vDM4vh7/dL8vSyw7L31/zSJnQ
-AXi2D1NwRl+WGoj2tmBLF47cSeVJv2VUdWSYvh2T7JxAlHV1UJ+QUieJTAnKocWf
-ge5Umi9/5XulF/nnZllSUCtmdsQh7ES0C84EYM5FCNarUAghJMaqVnsPkS3Cw67q
-BjgHFo9bzsHETtHeFTCohC+y64WIGCO+wA+WARKDKB4DNR/YWx55kG+nouHwv7dq
-Jzs3vd+gMme+7wB3KMSy
-=53uv
+iQIcBAEBAgAGBQJUadsxAAoJEN0jrNd/PrOhyM4QAIh0wi6pplwgkSLe+XppJifY
+O8nKIdrsS7tjLvLJR1PT/2RbQaZ/Rgq84zlFdNHQi1I5n6NV6TvQJL5WYlJNGWmq
+B+K3YW3VnYfwXxUvsgwwSsJfkWBSuY5LS0L/IGQcd9F+P5/C7SeXpUunusC9lzFB
+dncjokQ9yRKM+9G2t0rBI4bBb6OrbUcPuQn8S9xgZu59i9VZnRJ5Rqd6eJJdAG2V
+U7RwI1GTRlMnSx6cO9UZegeJbX2xl6GRs+xouyEoPmJcHi1b9LewusJrNO04n1ji
+IjBe2EGI5Y1B6+MXWEMff6NgUk0vIRP0+QKULZbZidhWpQhQ7ESSd98mZkQlj10W
+elAo7Io9yg+skhSmN3Pe/zax1Jp13FDp+HJRvAgwpW+fekERLRfvTVv8OV1MmshV
+UjmEntJvmCo6rb7XDNPLIUyFKnNQUYQj3J47BUNxAyqdBbgiF8t8rJlD1Qz5Ww+M
+wXKde9lVgSG1EgJ+PS+rWIIia1aPDH6d+xA88vsbMPuOKZuDddiMlLJi02Y7PkQz
+BqrxMN4QDkcqPiueu7vpjGPTY2SEKAit/AuwDLhIrulZQV3u6TCYkPlZd0hu5U2D
+9xAYXy2p/tTOtgeqrSWm2K3//Man2oTOoAGt2qa/1OG25YXKANqQeD73inTpQ9hg
+xY/go1oreJp1h1rTqSqV
+=OVOy
 -----END PGP SIGNATURE-----
 
---2oS5YaxWCcQjTEyO--
+--DIOMP1UsTsWJauNi--
