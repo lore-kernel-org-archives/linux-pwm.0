@@ -1,31 +1,89 @@
-From: Scott Branden <sbranden@broadcom.com>
-Subject: Re: [PATCH 4/4] pwm: kona: Update dependency to ARCH_BCM
-Date: Mon, 17 Nov 2014 09:33:28 -0800
-Message-ID: <546A3168.5090505@broadcom.com>
-References: <sbranden@broadcom.com> <1415989800-7515-1-git-send-email-sbranden@broadcom.com> <1415989800-7515-5-git-send-email-sbranden@broadcom.com> <20141117125205.GA18767@ulmo>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: [PATCH] pwm: atmel-hlcdc: add at91sam9x5 and sama5d3 errata handling
+Date: Tue, 18 Nov 2014 13:40:53 +0100
+Message-ID: <1416314453-28597-1-git-send-email-boris.brezillon@free-electrons.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-gw3-out.broadcom.com ([216.31.210.64]:65125 "EHLO
-	mail-gw3-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751146AbaKQRdd (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 17 Nov 2014 12:33:33 -0500
-In-Reply-To: <20141117125205.GA18767@ulmo>
+Received: from down.free-electrons.com ([37.187.137.238]:57844 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753660AbaKRMk5 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 18 Nov 2014 07:40:57 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Ray Jui <rjui@broadcom.com>, Arun Ramamurthy <arunrama@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Boris Brezillon <boris.brezillon@free-electrons.com>
 
-On 14-11-17 04:52 AM, Thierry Reding wrote:
-> On Fri, Nov 14, 2014 at 10:30:00AM -0800, Scott Branden wrote:
->> From: Arun Ramamurthy <arunrama@broadcom.com>
->>
->
-> There's no patch description here. You should describe why you make this
-> change.
-Updated - sent v2 of patchset with Tim Kryger on cc list.
->
-> Thierry
->
+at91sam9x5 has an errata forbidding the use of slow clk as a clk source and
+sama5d3 SoCs has another errata forbidding the use of div1 prescaler.
+
+Take both of these erratas into account.
+
+Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+---
+ drivers/pwm/pwm-atmel-hlcdc.c | 28 +++++++++++++++++++++++-----
+ 1 file changed, 23 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
+index eaf8b12..405f8a5 100644
+--- a/drivers/pwm/pwm-atmel-hlcdc.c
++++ b/drivers/pwm/pwm-atmel-hlcdc.c
+@@ -36,6 +36,8 @@ struct atmel_hlcdc_pwm {
+ 	struct pwm_chip chip;
+ 	struct atmel_hlcdc *hlcdc;
+ 	struct clk *cur_clk;
++	bool slow_clk_errata;
++	bool div1_clk_errata;
+ };
+ 
+ static inline struct atmel_hlcdc_pwm *to_atmel_hlcdc_pwm(struct pwm_chip *chip)
+@@ -56,20 +58,28 @@ static int atmel_hlcdc_pwm_config(struct pwm_chip *c,
+ 	u32 pwmcfg;
+ 	int pres;
+ 
+-	clk_freq = clk_get_rate(new_clk);
+-	clk_period_ns = (u64)NSEC_PER_SEC * 256;
+-	do_div(clk_period_ns, clk_freq);
++	if (!chip->slow_clk_errata) {
++		clk_freq = clk_get_rate(new_clk);
++		clk_period_ns = (u64)NSEC_PER_SEC * 256;
++		do_div(clk_period_ns, clk_freq);
++	}
+ 
+-	if (clk_period_ns > period_ns) {
++	/* Errata: cannot use slow clk on some IP revisions */
++	if (chip->slow_clk_errata || clk_period_ns > period_ns) {
+ 		new_clk = hlcdc->sys_clk;
+ 		clk_freq = clk_get_rate(new_clk);
+ 		clk_period_ns = (u64)NSEC_PER_SEC * 256;
+ 		do_div(clk_period_ns, clk_freq);
+ 	}
+ 
+-	for (pres = 0; pres <= ATMEL_HLCDC_PWMPS_MAX; pres++)
++	for (pres = 0; pres <= ATMEL_HLCDC_PWMPS_MAX; pres++) {
++		/* Errata: cannot divide by 1 on some IP revisions */
++		if (!pres && chip->div1_clk_errata)
++			continue;
++
+ 		if ((clk_period_ns << pres) >= period_ns)
+ 			break;
++	}
+ 
+ 	if (pres > ATMEL_HLCDC_PWMPS_MAX)
+ 		return -EINVAL;
+@@ -204,6 +214,14 @@ static int atmel_hlcdc_pwm_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	if (of_device_is_compatible(dev->parent->of_node,
++				    "atmel,sama5d3-hlcdc"))
++		chip->div1_clk_errata = true;
++
++	if (of_device_is_compatible(dev->parent->of_node,
++				    "atmel,at91sam9x5-hlcdc"))
++		chip->slow_clk_errata = true;
++
+ 	chip->hlcdc = hlcdc;
+ 	chip->chip.ops = &atmel_hlcdc_pwm_ops;
+ 	chip->chip.dev = dev;
+-- 
+1.9.1
 
