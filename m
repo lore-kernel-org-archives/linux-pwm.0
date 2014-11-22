@@ -1,47 +1,94 @@
-From: Andrew Bresticker <abrestic@chromium.org>
-Subject: Re: [PATCH RESEND v4 1/4] pwm: Imagination Technologies PWM DAC driver
-Date: Fri, 21 Nov 2014 13:23:58 -0800
-Message-ID: <CAL1qeaGt9K3eM-qDKo2qLrNEZK5EaStQEWJQH04_Kv6Sa3r04g@mail.gmail.com>
-References: <1416600795-10965-1-git-send-email-Naidu.Tellapati@gmail.com>
-	<1416600795-10965-2-git-send-email-Naidu.Tellapati@gmail.com>
+From: naidu.tellapati@gmail.com
+Subject: [PATCH RESEND v4 0/4] Initial support for ImgTec PWM DAC and PDM DAC
+Date: Sat, 22 Nov 2014 07:23:28 +0530
+Message-ID: <1416621212-11701-1-git-send-email-Naidu.Tellapati@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: TEXT/PLAIN; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-vc0-f180.google.com ([209.85.220.180]:42751 "EHLO
-	mail-vc0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751277AbaKUVX7 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 21 Nov 2014 16:23:59 -0500
-Received: by mail-vc0-f180.google.com with SMTP id im6so2762459vcb.39
-        for <linux-pwm@vger.kernel.org>; Fri, 21 Nov 2014 13:23:58 -0800 (PST)
-In-Reply-To: <1416600795-10965-2-git-send-email-Naidu.Tellapati@gmail.com>
+Received: from mail-wg0-f41.google.com ([74.125.82.41]:57687 "EHLO
+	mail-wg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752691AbaKVBx5 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 21 Nov 2014 20:53:57 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Naidu.Tellapati@gmail.com
-Cc: Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>, James Hartley <James.Hartley@imgtec.com>, Ezequiel Garcia <Ezequiel.Garcia@imgtec.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Arul Ramasamy <Arul.Ramasamy@imgtec.com>, Sai Masarapu <Sai.Masarapu@imgtec.com>, Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+To: thierry.reding@gmail.com, abrestic@chromium.org, gregkh@linuxfoundation.org, arnd@arndb.de, James.Hartley@imgtec.com, Ezequiel.Garcia@imgtec.com
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Arul.Ramasamy@imgtec.com, Sai.Masarapu@imgtec.com, Naidu Tellapati <Naidu.Tellapati@imgtec.com>
 
-Naidu,
+=46rom: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
 
-On Fri, Nov 21, 2014 at 12:13 PM,  <Naidu.Tellapati@gmail.com> wrote:
-> From: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
->
-> The Pistachio SOC from Imagination Technologies includes a Pulse Width
-> Modulation DAC which produces 1 to 4 digital bit-outputs which represent
-> digital waveforms. These PWM outputs are primarily in charge of controlling
-> backlight LED devices.
->
-> Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
-> Signed-off-by: Sai Masarapu <Sai.Masarapu@imgtec.com>
+The Pistachio SOC from Imagination Technologies includes =E2=80=93 4x P=
+DM blocks
+and 1x =E2=80=9Cbasic PWM=E2=80=9D block with four output channels. The=
+se share 4 MFIO pins,
+each PWM channel being muxed with each PDM block output (0-3 muxed with=
+ 0-3)
+using the CR_PERIP_PWM_PDM_CONTROL register in the peripheral wrapper
+register bank (offset 0x140). The PDM and PWM outputs are used to contr=
+ol
+targets such as LCD backlight.
 
-One tiny comment below, otherwise:
+The PWM driver uses Linux PWM framework. Since the PDM does not fit int=
+o PWM
+framework we have implemented it as a MISC driver.
 
-Reviewed-by: Andrew Bresticker <abrestic@chromium.org>
+The series is based on v3.18-rc5.
 
-> +static int img_pwm_remove(struct platform_device *pdev)
-> +{
-> +       unsigned int i;
-> +       unsigned int val;
-> +
+I am re-sending the series with gmail SMTP as we had some problems with
+the mail server we used in the previous rounds.
 
-No need for this newline.
+Please review and provide your comments.
 
-> +       struct img_pwm_chip *pwm_chip = platform_get_drvdata(pdev);
+Changes from v3:
+
+ * Addressed couple of comments given in v3.
+
+Changes from v2:
+
+ * Added depends on MIPS || COMPILE_TEST.
+
+ * Corrected the logic while calculating time base steps.
+
+ * Addressed few other minor comments given in v2.
+
+Changes from v1:
+
+ * Used regmap_update_bits at some places in the driver.
+
+ * Placed some #defines next to their register.
+
+ * Added depends on HAS_IOMEM in Kconfig.
+
+ * Removed unnecessary paragraph from file header.
+
+ * Defined register masks in a readable way.
+
+ * Renamed clk-names with clock-names.
+
+ * Added system interface clock in DT binding document.
+
+ * Addressed few other minor review comments given in v1.
+
+Naidu Tellapati (4):
+  pwm: Imagination Technologies PWM DAC driver
+  DT: pwm: Add binding document for IMG PWM DAC
+  pdm: Imagination Technologies PDM DAC driver
+  DT: pdm: Add binding document for IMG PDM DAC
+
+ Documentation/devicetree/bindings/misc/img-pdm.txt |   54 ++
+ Documentation/devicetree/bindings/pwm/img-pwm.txt  |   23 +
+ drivers/misc/Kconfig                               |   12 +
+ drivers/misc/Makefile                              |    1 +
+ drivers/misc/img-pdm.c                             |  676 ++++++++++++=
+++++++++
+ drivers/pwm/Kconfig                                |   12 +
+ drivers/pwm/Makefile                               |    1 +
+ drivers/pwm/pwm-img.c                              |  270 ++++++++
+ include/linux/img_pdm.h                            |   35 +
+ 9 files changed, 1084 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/misc/img-pdm.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/img-pwm.txt
+ create mode 100644 drivers/misc/img-pdm.c
+ create mode 100644 drivers/pwm/pwm-img.c
+ create mode 100644 include/linux/img_pdm.h
+
