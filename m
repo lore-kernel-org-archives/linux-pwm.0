@@ -1,79 +1,55 @@
-From: Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH v2] clk: Add PWM clock driver
-Date: Tue, 25 Nov 2014 08:56:35 +0100
-Message-ID: <1416902195.3166.1.camel@pengutronix.de>
-References: <1415007078-7947-1-git-send-email-p.zabel@pengutronix.de>
-	 <20141125070720.12298.46343@quantum>
+From: Scott Branden <sbranden@broadcom.com>
+Subject: [PATCH v2 1/4] pwm: kona: Remove setting default smooth type and polarity for all channels
+Date: Tue, 25 Nov 2014 11:40:38 -0800
+Message-ID: <1416944441-12066-2-git-send-email-sbranden@broadcom.com>
+References: <Scott Branden <sbranden@broadcom.com>
+ <1416944441-12066-1-git-send-email-sbranden@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:40200 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752789AbaKYH4q (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Nov 2014 02:56:46 -0500
-In-Reply-To: <20141125070720.12298.46343@quantum>
+Received: from mail-gw3-out.broadcom.com ([216.31.210.64]:28865 "EHLO
+	mail-gw3-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750888AbaKYTlJ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Nov 2014 14:41:09 -0500
+In-Reply-To: <1416944441-12066-1-git-send-email-sbranden@broadcom.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Mike Turquette <mturquette@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Janusz =?UTF-8?Q?U=C5=BCycki?= <j.uzycki@elproma.com.pl>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Scott Branden <sbranden@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Ray Jui <rjui@broadcom.com>, Arun Ramamurthy <arunrama@broadcom.com>, Tim Kryger <tim.kryger@gmail.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi Mike,
+From: Arun Ramamurthy <arunrama@broadcom.com>
 
-Am Montag, den 24.11.2014, 23:07 -0800 schrieb Mike Turquette:
-> Quoting Philipp Zabel (2014-11-03 01:31:18)
-> > Some board designers, when running out of clock output pads, decide to
-> > (mis)use PWM output pads to provide a clock to external components.
-> > This driver supports this practice by providing an adapter between the
-> > PWM and clock bindings in the device tree. As the PWM bindings specify
-> > the period in the device tree, this is a fixed clock.
-> > 
-> > Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-> > ---
-> > I'm resending this because last time the linux-pwm list was not in Cc:
-> > So far I have not received any comments on the patch itself. I have used
-> > it on a BoundaryDevices Nitrogen6X board to produce a master clock for
-> > the OV5640 MIPI CSI-2 camera module.
-> > 
-> > Changes since v1:
-> >  - none (rebased onto v3.18-rc3)
-> 
-> Hi Philipp,
-> 
-> Thanks for testing this. Is the Nitrogen6X board merged upstream? I'm OK
-> with the patch but prefer to merge things when a consumer is ready to
-> use it. I guess you are missing a patch to add the pwm-clock bits to the
-> Nitrogen6X dts?
+The probe routine unnecessarily sets the smooth type and polarity for
+all channels. This causes the channel for the speaker to click at the same
+time the backlight turns on. The smooth type and polarity should be set individually
+for each channel as required and no defaults need to be set.
 
-The Nitrogen6X board is merged upstream already, I used this dts patch
-to register the clock:
+Signed-off-by: Arun Ramamurthy <arunrama@broadcom.com>
+Reviewed-by: Ray Jui <rjui@broadcom.com>
+Signed-off-by: Scott Branden <sbranden@broadcom.com>
+---
+ drivers/pwm/pwm-bcm-kona.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi b/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
-index 7628049..e2e7a22 100644
---- a/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
-@@ -130,6 +130,18 @@
- 		power-supply = <&reg_3p3v>;
- 		status = "okay";
- 	};
-+
-+	mipi_mclk: mipi-mclk {
-+		compatible = "pwm-clock";
-+		clock-output-names = "mipi-mclk";
-+		/* Note: since the PWM reference clock is 66 MHz, the highest
-+		 * possible frequency with 50% duty cycle smaller than 27 MHz
-+		 * is 16.5 MHz: <&pwm3 0 61>;
-+		 * But we can also do 22 MHz with 33% duty cycle:
-+		 */
-+		pwms = <&pwm3 0 46>; /* 22 MHz */
-+		#clock-cells = <0>;
-+	};
- };
+diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+index 02bc048..29eef9e 100644
+--- a/drivers/pwm/pwm-bcm-kona.c
++++ b/drivers/pwm/pwm-bcm-kona.c
+@@ -266,12 +266,9 @@ static int kona_pwmc_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
  
- &audmux {
+-	/* Set smooth mode, push/pull, and normal polarity for all channels */
+-	for (chan = 0; chan < kp->chip.npwm; chan++) {
+-		value |= (1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
++	/* Set push/pull for all channels */
++	for (chan = 0; chan < kp->chip.npwm; chan++)
+ 		value |= (1 << PWM_CONTROL_TYPE_SHIFT(chan));
+-		value |= (1 << PWM_CONTROL_POLARITY_SHIFT(chan));
+-	}
+ 
+ 	writel(value, kp->base + PWM_CONTROL_OFFSET);
+ 
 -- 
-2.1.1
-
-regards
-Philipp
+2.1.3
 
