@@ -1,100 +1,314 @@
 From: Naidu Tellapati <naidu.tellapati@gmail.com>
-Subject: [PATCH v5 0/4] Initial support for ImgTec PWM DAC and PDM DAC
-Date: Wed, 26 Nov 2014 20:54:16 +0530
-Message-ID: <1417015460-11908-1-git-send-email-Naidu.Tellapati@gmail.com>
-Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=ISO-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Subject: [PATCH v5 1/4] pwm: Imagination Technologies PWM DAC driver
+Date: Wed, 26 Nov 2014 20:54:17 +0530
+Message-ID: <1417015460-11908-2-git-send-email-Naidu.Tellapati@gmail.com>
+References: <1417015460-11908-1-git-send-email-Naidu.Tellapati@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wi0-f173.google.com ([209.85.212.173]:63375 "EHLO
+Received: from mail-wi0-f173.google.com ([209.85.212.173]:55264 "EHLO
 	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753663AbaKZPYq (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Nov 2014 10:24:46 -0500
+	with ESMTP id S1753560AbaKZPYx (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 26 Nov 2014 10:24:53 -0500
+In-Reply-To: <1417015460-11908-1-git-send-email-Naidu.Tellapati@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: thierry.reding@gmail.com, abrestic@chromium.org, gregkh@linuxfoundation.org, arnd@arndb.de, James.Hartley@imgtec.com, Ezequiel.Garcia@imgtec.com
-Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Arul.Ramasamy@imgtec.com, Sai.Masarapu@imgtec.com, Naidu Tellapati <Naidu.Tellapati@gmail.com>
+Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Arul.Ramasamy@imgtec.com, Sai.Masarapu@imgtec.com, Naidu Tellapati <Naidu.Tellapati@gmail.com>, Naidu Tellapati <Naidu.Tellapati@imgtec.com>
 
-The Pistachio SOC from Imagination Technologies includes =E2=80=93 4x P=
-DM blocks
-and 1x =E2=80=9Cbasic PWM=E2=80=9D block with four output channels. The=
-se share 4 MFIO pins,
-each PWM channel being muxed with each PDM block output (0-3 muxed with=
- 0-3)
-using the CR_PERIP_PWM_PDM_CONTROL register in the peripheral wrapper
-register bank (offset 0x140). The PDM and PWM outputs are used to contr=
-ol
-targets such as LCD backlight.
+The Pistachio SOC from Imagination Technologies includes a Pulse Width
+Modulation DAC which produces 1 to 4 digital bit-outputs which represent
+digital waveforms. These PWM outputs are primarily in charge of controlling
+backlight LED devices
 
-The PWM driver uses Linux PWM framework. Since the PDM does not fit int=
-o PWM
-framework we have implemented it as a MISC driver.
-
-The series is based on v3.18-rc5.
-
-Changes from v4:
-
- * Removed CR_prefix from the defined macros.
-
- * Folded same data type varibles in one line.
-=20
- * Removed cr-periph property from PWM DT binding document.
-
- * Removed regmap_update_bits from img_pwm_enable and img_pwm_disable f=
-unctions.
-
- * Addressed few more comments given in v4.
-
-Changes from v3:
-
- * Addressed couple of comments given in v3.
-
-Changes from v2:
-
- * Added depends on MIPS || COMPILE_TEST.
-
- * Corrected the logic while calculating time base steps.
-
- * Addressed few other minor comments given in v2.
-
-Changes from v1:
-
- * Used regmap_update_bits at some places in the driver.
-
- * Placed some #defines next to their register.
-
- * Added depends on HAS_IOMEM in Kconfig.
-
- * Removed unnecessary paragraph from file header.
-
- * Defined register masks in a readable way.
-
- * Renamed clk-names with clock-names.
-
- * Added system interface clock in DT binding document.
-
- * Addressed few other minor review comments given in v1.
-
-Naidu Tellapati (4):
-  pwm: Imagination Technologies PWM DAC driver
-  DT: pwm: Add binding document for IMG PWM DAC
-  pdm: Imagination Technologies PDM DAC driver
-  DT: pdm: Add binding document for IMG PDM DAC
-
- Documentation/devicetree/bindings/misc/img-pdm.txt |   54 ++
- Documentation/devicetree/bindings/pwm/img-pwm.txt  |   21 +
- drivers/misc/Kconfig                               |   16 +
- drivers/misc/Makefile                              |    1 +
- drivers/misc/img-pdm.c                             |  653 ++++++++++++=
-++++++++
- drivers/pwm/Kconfig                                |   12 +
- drivers/pwm/Makefile                               |    1 +
- drivers/pwm/pwm-img.c                              |  240 +++++++
- include/linux/img_pdm.h                            |   52 ++
- 9 files changed, 1050 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/misc/img-pdm.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/img-pwm.txt
- create mode 100644 drivers/misc/img-pdm.c
+Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+Signed-off-by: Sai Masarapu <Sai.Masarapu@imgtec.com>
+---
+ drivers/pwm/Kconfig   |   12 +++
+ drivers/pwm/Makefile  |    1 +
+ drivers/pwm/pwm-img.c |  240 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 253 insertions(+), 0 deletions(-)
  create mode 100644 drivers/pwm/pwm-img.c
- create mode 100644 include/linux/img_pdm.h
+
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index ef2dd2e..db4ccfd 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -110,6 +110,18 @@ config PWM_FSL_FTM
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-fsl-ftm.
+ 
++config PWM_IMG
++	tristate "Imagination Technologies PWM driver"
++	depends on HAS_IOMEM
++	depends on COMMON_CLK
++	depends on MIPS || COMPILE_TEST
++	help
++	  Generic PWM framework driver for Imagination Technologies
++	  PWM block which supports 4 channels.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called pwm-img.
++
+ config PWM_IMX
+ 	tristate "i.MX PWM support"
+ 	depends on ARCH_MXC
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index c458606..29655fd 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -8,6 +8,7 @@ obj-$(CONFIG_PWM_BFIN)		+= pwm-bfin.o
+ obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
+ obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
+ obj-$(CONFIG_PWM_FSL_FTM)	+= pwm-fsl-ftm.o
++obj-$(CONFIG_PWM_IMG)		+= pwm-img.o
+ obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
+ obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
+ obj-$(CONFIG_PWM_LP3943)	+= pwm-lp3943.o
+diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
+new file mode 100644
+index 0000000..a837372
+--- /dev/null
++++ b/drivers/pwm/pwm-img.c
+@@ -0,0 +1,240 @@
++/*
++ * Imagination Technologies Pulse Width Modulator driver
++ *
++ * Copyright (c) 2014, Imagination Technologies
++ *
++ * Based on drivers/pwm/pwm-tegra.c, Copyright (c) 2010, NVIDIA Corporation
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++
++#include <linux/clk.h>
++#include <linux/err.h>
++#include <linux/io.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/pwm.h>
++#include <linux/slab.h>
++
++/* PWM registers */
++#define PWM_CTRL_CFG				0x0000
++#define PWM_CTRL_CFG_NO_SUB_DIV			0
++#define PWM_CTRL_CFG_SUB_DIV0			1
++#define PWM_CTRL_CFG_SUB_DIV1			2
++#define PWM_CTRL_CFG_SUB_DIV0_DIV1		3
++#define PWM_CTRL_CFG_DIV_SHIFT(ch)		((ch) * 2 + 4)
++#define PWM_CTRL_CFG_DIV_MASK			0x3
++
++#define PWM_CH_CFG(ch)				(0x4 + (ch) * 4)
++#define PWM_CH_CFG_TMBASE_SHIFT			0
++#define PWM_CH_CFG_DUTY_SHIFT			16
++
++#define PERIP_PWM_PDM_CONTROL			0x0140
++#define PERIP_PWM_PDM_CONTROL_CH_MASK		0x1
++#define PERIP_PWM_PDM_CONTROL_CH_SHIFT(ch)	((ch) * 4)
++
++#define MAX_TMBASE_STEPS			65536
++
++struct img_pwm_chip {
++	struct device	*dev;
++	struct pwm_chip	chip;
++	struct clk	*pwm_clk;
++	struct clk	*sys_clk;
++	void __iomem	*base;
++};
++
++static inline struct img_pwm_chip *to_img_pwm_chip(struct pwm_chip *chip)
++{
++	return container_of(chip, struct img_pwm_chip, chip);
++}
++
++static inline void img_pwm_writel(struct img_pwm_chip *chip,
++				  u32 reg, u32 val)
++{
++	writel(val, chip->base + reg);
++}
++
++static inline u32 img_pwm_readl(struct img_pwm_chip *chip,
++					 u32 reg)
++{
++	return readl(chip->base + reg);
++}
++
++static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
++			  int duty_ns, int period_ns)
++{
++	u32 val, div, duty, timebase;
++	unsigned long mul, output_clk_hz, input_clk_hz;
++	struct img_pwm_chip *pwm_chip;
++
++	pwm_chip = to_img_pwm_chip(chip);
++
++	input_clk_hz = clk_get_rate(pwm_chip->pwm_clk);
++	output_clk_hz = DIV_ROUND_UP(NSEC_PER_SEC, period_ns);
++
++	mul = DIV_ROUND_UP(input_clk_hz, output_clk_hz);
++	if (mul <= MAX_TMBASE_STEPS) {
++		div = PWM_CTRL_CFG_NO_SUB_DIV;
++		timebase = DIV_ROUND_UP(mul, 1);
++	} else if (mul <= MAX_TMBASE_STEPS * 8) {
++		div = PWM_CTRL_CFG_SUB_DIV0;
++		timebase = DIV_ROUND_UP(mul, 8);
++	} else if (mul <= MAX_TMBASE_STEPS * 64) {
++		div = PWM_CTRL_CFG_SUB_DIV1;
++		timebase = DIV_ROUND_UP(mul, 64);
++	} else if (mul <= MAX_TMBASE_STEPS * 512) {
++		div = PWM_CTRL_CFG_SUB_DIV0_DIV1;
++		timebase = DIV_ROUND_UP(mul, 512);
++	} else if (mul > MAX_TMBASE_STEPS * 512) {
++		dev_err(chip->dev,
++			"failed to configure timebase steps/divider value.\n");
++		return -EINVAL;
++	}
++
++	duty = DIV_ROUND_UP(timebase * duty_ns, period_ns);
++
++	val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
++	val &= ~(PWM_CTRL_CFG_DIV_MASK << PWM_CTRL_CFG_DIV_SHIFT(pwm->hwpwm));
++	val |= (div & PWM_CTRL_CFG_DIV_MASK) <<
++	       PWM_CTRL_CFG_DIV_SHIFT(pwm->hwpwm);
++	img_pwm_writel(pwm_chip, PWM_CTRL_CFG, val);
++
++	val = (duty << PWM_CH_CFG_DUTY_SHIFT) |
++	      (timebase << PWM_CH_CFG_TMBASE_SHIFT);
++	img_pwm_writel(pwm_chip, PWM_CH_CFG(pwm->hwpwm), val);
++
++	return 0;
++}
++
++static int img_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	u32 val;
++	struct img_pwm_chip *pwm_chip = to_img_pwm_chip(chip);
++
++	val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
++	val |= BIT(pwm->hwpwm);
++	img_pwm_writel(pwm_chip, PWM_CTRL_CFG, val);
++
++	return 0;
++}
++
++static void img_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	u32 val;
++	struct img_pwm_chip *pwm_chip = to_img_pwm_chip(chip);
++
++	val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
++	val &= ~BIT(pwm->hwpwm);
++	img_pwm_writel(pwm_chip, PWM_CTRL_CFG, val);
++}
++
++static const struct pwm_ops img_pwm_ops = {
++	.config = img_pwm_config,
++	.enable = img_pwm_enable,
++	.disable = img_pwm_disable,
++	.owner = THIS_MODULE,
++};
++
++static int img_pwm_probe(struct platform_device *pdev)
++{
++	int ret;
++	struct resource *res;
++	struct img_pwm_chip *pwm;
++
++	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
++	if (!pwm)
++		return -ENOMEM;
++
++	pwm->dev = &pdev->dev;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	pwm->base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(pwm->base))
++		return PTR_ERR(pwm->base);
++
++	pwm->sys_clk = devm_clk_get(&pdev->dev, "sys");
++	if (IS_ERR(pwm->sys_clk)) {
++		dev_err(&pdev->dev, "failed to get system clock.\n");
++		return PTR_ERR(pwm->sys_clk);
++	}
++
++	pwm->pwm_clk = devm_clk_get(&pdev->dev, "pwm");
++	if (IS_ERR(pwm->pwm_clk)) {
++		dev_err(&pdev->dev, "failed to get pwm clock.\n");
++		return PTR_ERR(pwm->pwm_clk);
++	}
++
++	ret = clk_prepare_enable(pwm->sys_clk);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "could not prepare or enable sys clock.\n");
++		return ret;
++	}
++
++	ret = clk_prepare_enable(pwm->pwm_clk);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "could not prepare or enable pwm clock.\n");
++		goto disable_sysclk;
++	}
++
++	pwm->chip.dev = &pdev->dev;
++	pwm->chip.ops = &img_pwm_ops;
++	pwm->chip.base = -1;
++	pwm->chip.npwm = 4;
++
++	ret = pwmchip_add(&pwm->chip);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
++		goto disable_pwmclk;
++	}
++
++	platform_set_drvdata(pdev, pwm);
++
++disable_pwmclk:
++	clk_disable_unprepare(pwm->pwm_clk);
++disable_sysclk:
++	clk_disable_unprepare(pwm->sys_clk);
++
++	return 0;
++}
++
++static int img_pwm_remove(struct platform_device *pdev)
++{
++	struct img_pwm_chip *pwm_chip = platform_get_drvdata(pdev);
++	u32 val;
++	unsigned int i;
++
++	for (i = 0; i < pwm_chip->chip.npwm; i++) {
++		val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
++		val &= ~BIT(i);
++		img_pwm_writel(pwm_chip, PWM_CTRL_CFG, val);
++	}
++
++	clk_disable_unprepare(pwm_chip->pwm_clk);
++	clk_disable_unprepare(pwm_chip->sys_clk);
++
++	return pwmchip_remove(&pwm_chip->chip);
++}
++
++static const struct of_device_id img_pwm_of_match[] = {
++	{ .compatible = "img,pistachio-pwm", },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, img_pwm_of_match);
++
++static struct platform_driver img_pwm_driver = {
++	.driver = {
++		.name = "img-pwm",
++		.of_match_table = of_match_ptr(img_pwm_of_match),
++	},
++	.probe = img_pwm_probe,
++	.remove = img_pwm_remove,
++};
++module_platform_driver(img_pwm_driver);
++
++MODULE_AUTHOR("Sai Masarapu <Sai.Masarapu@imgtec.com>");
++MODULE_DESCRIPTION("Imagination Technologies PWM DAC driver");
++MODULE_LICENSE("GPL v2");
+-- 
+1.7.0.4
 
