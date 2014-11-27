@@ -1,88 +1,223 @@
-From: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
-Subject: RE: [PATCH RESEND v4 1/4] pwm: Imagination Technologies PWM DAC
- driver
-Date: Thu, 27 Nov 2014 16:03:57 +0000
-Message-ID: <27E62D98F903554192E3C13AFCC91C3C2F53597A@hbmail01.hb.imgtec.org>
-References: <1416621212-11701-1-git-send-email-Naidu.Tellapati@gmail.com>
-	<1416621212-11701-2-git-send-email-Naidu.Tellapati@gmail.com>
-	<20141124101325.GB25912@ulmo.nvidia.com>
-	<27E62D98F903554192E3C13AFCC91C3C2F52EE89@hbmail01.hb.imgtec.org>
-	<20141124122807.GA4061@ulmo.nvidia.com>,<CAL1qeaH31ku6LTBV0HCDxzq+_gKWKeJR-4Gu+6dXkPU+FWvEaQ@mail.gmail.com>,<1C907929-56BF-4FF7-9F64-866AA834090F@imgtec.com>
+From: Scott Branden <sbranden@broadcom.com>
+Subject: Re: [PATCH v2 3/4] pwm: kona: Fix enable, disable and config procedures
+Date: Thu, 27 Nov 2014 15:30:27 -0800
+Message-ID: <5477B413.80207@broadcom.com>
+References: <sbranden@broadcom.com>	<1416944441-12066-1-git-send-email-sbranden@broadcom.com>	<1416944441-12066-4-git-send-email-sbranden@broadcom.com> <CAD7vxx+FJzgXfik2XgJbw966Fsk-1m1znofuHEtvsDpm6cZY_g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailapp01.imgtec.com ([195.59.15.196]:31643 "EHLO
-	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750784AbaK0QEE convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Nov 2014 11:04:04 -0500
-In-Reply-To: <1C907929-56BF-4FF7-9F64-866AA834090F@imgtec.com>
-Content-Language: en-US
+Received: from mail-gw1-out.broadcom.com ([216.31.210.62]:40018 "EHLO
+	mail-gw1-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750866AbaK0Xal (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Nov 2014 18:30:41 -0500
+In-Reply-To: <CAD7vxx+FJzgXfik2XgJbw966Fsk-1m1znofuHEtvsDpm6cZY_g@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: James Hartley <James.Hartley@imgtec.com>, Andrew Bresticker <abrestic@chromium.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, "naidu.tellapati@gmail.com" <naidu.tellapati@gmail.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "arnd@arndb.de" <arnd@arndb.de>, Ezequiel Garcia <Ezequiel.Garcia@imgtec.com>, James Hogan <James.Hogan@imgtec.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Arul Ramasamy <Arul.Ramasamy@imgtec.com>, Sai Masarapu <Sai.Masarapu@imgtec.com>
+To: Tim Kryger <tim.kryger@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Ray Jui <rjui@broadcom.com>, Arun Ramamurthy <arunrama@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-Hi James, Andrew, Thierry and all,
+Hi Tim,
 
+Thanks for all your comments on the patchset.  We are in the process of 
+reviewing and will provide feedback when that is completed.
 
-> On 24 Nov 2014, at 18:19, Andrew Bresticker <abrestic@chromium.org> wrote:
+Scott
 
->>>>>> +     val = img_pwm_readl(pwm_chip, CR_PWM_CTRL_CFG);
->>>>>> +     val |= BIT(pwm->hwpwm);
->>>>>> +     img_pwm_writel(pwm_chip, CR_PWM_CTRL_CFG, val);
->>>>>> +
->>>>>> +     regmap_update_bits(pwm_chip->periph_regs, CR_PERIP_PWM_PDM_CONTROL,
->>>>>> +                        CR_PERIP_PWM_PDM_CONTROL_CH_MASK <<
->>>>>> +                        CR_PERIP_PWM_PDM_CONTROL_CH_SHIFT(pwm->hwpwm), 0);
->>>>
->>>>> This smells like pinmux and should probably be a separate driver.
->>>>
->>>> Hope you are suggesting us to have a separate driver for pin muxing (might already have one for Pistachio)
->>>> and call the pin muxing driver APIs from here.
->>>>
->>>> Please correct me if my understanding is wrong?
->>>
->>> I don't think you need to call the pinmux API from here. Rather I'll
->>> assume that the muxing is fixed on a given board, so this configuration
->>> would be part of the static board-level pinmux so it will automatically
->>> be applied at boot time.
+On 14-11-25 11:29 PM, Tim Kryger wrote:
+> On Tue, Nov 25, 2014 at 11:40 AM, Scott Branden <sbranden@broadcom.com> wrote:
+>> From: Arun Ramamurthy <arunrama@broadcom.com>
 >>
->> The issue here is that this register does not belong to the
->> pinmux/pinctrl block on this SoC and instead is part of the
->> "peripheral control" block which primarily provides system interface
->> gate clocks and resets (for which I was planning to write a clock
->> provider driver), but also has a bunch of control registers for
->> various IP blocks thrown together (like this one) which we're using
->> syscon to access.  I'm not sure it makes sense to create a pinmux
->> driver for these 4 bits, but I'll defer to others on that...
+>> - Added helper functions to set and clear smooth and trigger bits
+>> - Added 400ns delays when clearing and setting trigger bit as requied
+>>    by spec
+>> - Added helper function to write prescale and other settings
+>> - Updated config procedure to match spec
+>> - Added code to handle pwn config when channel is disabled
+>> - Updated disable procedure to match spec
 >>
->> Another option would be to have the main pinctrl driver for Pistachio
->> control these bits, but that doesn't seem quite right since these bits
->> are completely separate from the pinctrl block.
-
-> I would think the pinctrl driver should deal with this - yes it's a separate set of registers,
-> but the config is expected to be static and can be represented in the DT.
-
-> James.
-
-I have discussed with the hardware team one more time today and discovered that
-the value we configure to CR_PERIP_PWM_PDM_CONTROL not only configures PWM/PDM
-output mux, but also enables control signal for PDM blocks.
-
-As an example, if the PDM user wants to enable PDM block 2, he needs to set bit 8 to 1 in the
-register CR_PERIP_PWM_PDM_CONTROL. Please also note that setting bit 8  to 1 not only
-configures the output PWM/PDM mux, but also enables control signal for PDM block 2.
-He needs access to this register from the PDM driver at least to configure (enable/disable)
-PDM control signal.
-
-And also because of the reasons explained by Andrew above, I think it is better to use syscon
-(instead of handling it in Pinctrl driver) to access this register both in PWM and PDM drivers.
-
-Please let us know comments and suggestions.
-
-Thanks and regards,
-Naidu.
-
-
+>> Signed-off-by: Arun Ramamurthy <arunrama@broadcom.com>
+>> Reviewed-by: Ray Jui <rjui@broadcom.com>
+>> Signed-off-by: Scott Branden <sbranden@broadcom.com>
+>> ---
+>>   drivers/pwm/pwm-bcm-kona.c | 100 +++++++++++++++++++++++++++++++++++----------
+>>   1 file changed, 78 insertions(+), 22 deletions(-)
+>
+> The driver is fairly small and this change rewrites a considerable amount of it.
+>
+> Is there a actually specific deficiency that this change is intended to address?
+>
+> I'm not sure all the extra helper functions improve readability.
+>
+>>
+>> diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+>> index fa0b5bf..06fa983 100644
+>> --- a/drivers/pwm/pwm-bcm-kona.c
+>> +++ b/drivers/pwm/pwm-bcm-kona.c
+>> @@ -65,6 +65,10 @@
+>>   #define DUTY_CYCLE_HIGH_MIN                    (0x00000000)
+>>   #define DUTY_CYCLE_HIGH_MAX                    (0x00ffffff)
+>>
+>> +/* The delay required after clearing or setting
+>> +   PWMOUT_ENABLE*/
+>> +#define PWMOUT_ENABLE_HOLD_DELAY 400
+>> +
+>>   struct kona_pwmc {
+>>          struct pwm_chip chip;
+>>          void __iomem *base;
+>> @@ -76,28 +80,70 @@ static inline struct kona_pwmc *to_kona_pwmc(struct pwm_chip *_chip)
+>>          return container_of(_chip, struct kona_pwmc, chip);
+>>   }
+>>
+>> -static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
+>> +static inline void kona_pwmc_set_trigger(struct kona_pwmc *kp,
+>> +                                        unsigned int chan)
+>>   {
+>>          unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
+>>
+>> -       /* Clear trigger bit but set smooth bit to maintain old output */
+>> -       value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
+>> +       /* set trigger bit to enable channel */
+>> +       value |= 1 << PWM_CONTROL_TRIGGER_SHIFT(chan);
+>> +       writel(value, kp->base + PWM_CONTROL_OFFSET);
+>> +       ndelay(PWMOUT_ENABLE_HOLD_DELAY);
+>> +}
+>> +static inline void kona_pwmc_clear_trigger(struct kona_pwmc *kp,
+>> +                                          unsigned int chan)
+>> +{
+>> +       unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
+>> +
+>> +       /* Clear trigger bit */
+>>          value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
+>>          writel(value, kp->base + PWM_CONTROL_OFFSET);
+>> +       ndelay(PWMOUT_ENABLE_HOLD_DELAY);
+>> +}
+>>
+>> -       /* Set trigger bit and clear smooth bit to apply new settings */
+>> +static inline void kona_pwmc_clear_smooth(struct kona_pwmc *kp,
+>> +                                         unsigned int chan)
+>> +{
+>> +       unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
+>> +
+>> +       /* Clear smooth bit */
+>>          value &= ~(1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
+>> -       value |= 1 << PWM_CONTROL_TRIGGER_SHIFT(chan);
+>>          writel(value, kp->base + PWM_CONTROL_OFFSET);
+>>   }
+>>
+>> +static inline void kona_pwmc_set_smooth(struct kona_pwmc *kp, unsigned int chan)
+>> +{
+>> +       unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
+>> +
+>> +       /*  set smooth bit to maintain old output */
+>> +       value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
+>> +       writel(value, kp->base + PWM_CONTROL_OFFSET);
+>> +}
+>> +
+>> +static void kona_pwmc_write_settings(struct kona_pwmc *kp, unsigned int chan,
+>> +                                    unsigned long prescale, unsigned long pc,
+>> +                                    unsigned long dc)
+>> +{
+>> +       unsigned int value;
+>> +
+>> +       value = readl(kp->base + PRESCALE_OFFSET);
+>> +       value &= ~PRESCALE_MASK(chan);
+>> +       value |= prescale << PRESCALE_SHIFT(chan);
+>> +       writel(value, kp->base + PRESCALE_OFFSET);
+>> +
+>> +       writel(pc, kp->base + PERIOD_COUNT_OFFSET(chan));
+>> +
+>> +       writel(dc, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
+>> +
+>> +}
+>> +
+>>   static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>>                              int duty_ns, int period_ns)
+>>   {
+>>          struct kona_pwmc *kp = to_kona_pwmc(chip);
+>>          u64 val, div, rate;
+>>          unsigned long prescale = PRESCALE_MIN, pc, dc;
+>> -       unsigned int value, chan = pwm->hwpwm;
+>> +       unsigned int ret, chan = pwm->hwpwm;
+>>
+>>          /*
+>>           * Find period count, duty count and prescale to suit duty_ns and
+>> @@ -133,19 +179,30 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>>                          return -EINVAL;
+>>          }
+>>
+>> -       /* If the PWM channel is enabled, write the settings to the HW */
+>> -       if (test_bit(PWMF_ENABLED, &pwm->flags)) {
+>> -               value = readl(kp->base + PRESCALE_OFFSET);
+>> -               value &= ~PRESCALE_MASK(chan);
+>> -               value |= prescale << PRESCALE_SHIFT(chan);
+>> -               writel(value, kp->base + PRESCALE_OFFSET);
+>>
+>> -               writel(pc, kp->base + PERIOD_COUNT_OFFSET(chan));
+>> +       /* If the PWM channel is not enabled, enable the clock */
+>> +       if (!test_bit(PWMF_ENABLED, &pwm->flags)) {
+>> +               ret = clk_prepare_enable(kp->clk);
+>> +               if (ret < 0) {
+>> +                       dev_err(chip->dev, "failed to enable clock: %d\n", ret);
+>> +                       return ret;
+>> +               }
+>> +       }
+>>
+>> -               writel(dc, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
+>> +       /* Set smooth bit to maintain old output */
+>> +       kona_pwmc_set_smooth(kp, chan);
+>> +       kona_pwmc_clear_trigger(kp, chan);
+>> +
+>> +       /* apply new settings */
+>> +       kona_pwmc_write_settings(kp, chan, prescale, pc, dc);
+>> +
+>> +       /*If the PWM is enabled, enable the channel with the new settings
+>> +        and if not  disable the clock*/
+>> +       if (test_bit(PWMF_ENABLED, &pwm->flags))
+>> +               kona_pwmc_set_trigger(kp, chan);
+>> +       else
+>> +               clk_disable_unprepare(kp->clk);
+>>
+>> -               kona_pwmc_apply_settings(kp, chan);
+>> -       }
+>>
+>>          return 0;
+>>   }
+>> @@ -188,7 +245,6 @@ static int kona_pwmc_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+>>                  dev_err(chip->dev, "failed to enable clock: %d\n", ret);
+>>                  return ret;
+>>          }
+>> -
+>>          ret = kona_pwmc_config(chip, pwm, pwm->duty_cycle, pwm->period);
+>>          if (ret < 0) {
+>>                  clk_disable_unprepare(kp->clk);
+>> @@ -203,12 +259,12 @@ static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+>>          struct kona_pwmc *kp = to_kona_pwmc(chip);
+>>          unsigned int chan = pwm->hwpwm;
+>>
+>> +       kona_pwmc_clear_smooth(kp, chan);
+>> +       kona_pwmc_clear_trigger(kp, chan);
+>
+> I believe the output will spike high here.  Likely not what you want...
+>
+>>          /* Simulate a disable by configuring for zero duty */
+>> -       writel(0, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
+>> -       kona_pwmc_apply_settings(kp, chan);
+>> -
+>> -       /* Wait for waveform to settle before gating off the clock */
+>> -       ndelay(400);
+>> +       kona_pwmc_write_settings(kp, chan, 0, 0, 0);
+>> +       kona_pwmc_set_polarity(chip, pwm, PWM_POLARITY_NORMAL);
+>
+> This is wrong.  You shouldn't change the polarity when the PWM is disabled.
+>
+> The original polarity isn't even restored when it is re-enabled...
+>
+>> +       kona_pwmc_set_trigger(kp, chan);
+>>
+>>          clk_disable_unprepare(kp->clk);
+>>   }
+>> --
+>> 2.1.3
+>>
 
