@@ -1,112 +1,88 @@
-From: Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: Again about leds-pwm and pwm-mxs
-Date: Thu, 27 Nov 2014 09:50:04 +0100
-Message-ID: <20141127085004.GO30369@pengutronix.de>
-References: <20141126171242.GO4431@pengutronix.de>
+From: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+Subject: RE: [PATCH RESEND v4 1/4] pwm: Imagination Technologies PWM DAC
+ driver
+Date: Thu, 27 Nov 2014 16:03:57 +0000
+Message-ID: <27E62D98F903554192E3C13AFCC91C3C2F53597A@hbmail01.hb.imgtec.org>
+References: <1416621212-11701-1-git-send-email-Naidu.Tellapati@gmail.com>
+	<1416621212-11701-2-git-send-email-Naidu.Tellapati@gmail.com>
+	<20141124101325.GB25912@ulmo.nvidia.com>
+	<27E62D98F903554192E3C13AFCC91C3C2F52EE89@hbmail01.hb.imgtec.org>
+	<20141124122807.GA4061@ulmo.nvidia.com>,<CAL1qeaH31ku6LTBV0HCDxzq+_gKWKeJR-4Gu+6dXkPU+FWvEaQ@mail.gmail.com>,<1C907929-56BF-4FF7-9F64-866AA834090F@imgtec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:38228 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932200AbaK0IuI (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Nov 2014 03:50:08 -0500
-Content-Disposition: inline
-In-Reply-To: <20141126171242.GO4431@pengutronix.de>
+Received: from mailapp01.imgtec.com ([195.59.15.196]:31643 "EHLO
+	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750784AbaK0QEE convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Nov 2014 11:04:04 -0500
+In-Reply-To: <1C907929-56BF-4FF7-9F64-866AA834090F@imgtec.com>
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Uwe =?iso-8859-15?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-leds@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Shawn Guo <shawn.guo@linaro.org>, kernel@pengutronix.de
+To: James Hartley <James.Hartley@imgtec.com>, Andrew Bresticker <abrestic@chromium.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, "naidu.tellapati@gmail.com" <naidu.tellapati@gmail.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "arnd@arndb.de" <arnd@arndb.de>, Ezequiel Garcia <Ezequiel.Garcia@imgtec.com>, James Hogan <James.Hogan@imgtec.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Arul Ramasamy <Arul.Ramasamy@imgtec.com>, Sai Masarapu <Sai.Masarapu@imgtec.com>
 
-On Wed, Nov 26, 2014 at 06:12:42PM +0100, Uwe Kleine-K=F6nig wrote:
-> Hello,
->=20
-> two years ago I addressed the issue that on i.MX28 a led connected to=
- a
-> pwm-mxs device doesn't go off when brightness is set to 0. I tried ag=
-ain
-> later to find an acceptable solution.
-> (Links to respective threads:
-> http://thread.gmane.org/gmane.linux.ports.arm.kernel/282593/focus=3D2=
-82596)
-> http://thread.gmane.org/gmane.linux.kernel/1381289
-> )
->=20
-> The technical side is well understood: The problem is that leds-pwm d=
-oes
-> the following:
->=20
-> 	pwm_config(led_dat->pwm, new_duty, led_dat->period);
->=20
-> 	if (new_duty =3D=3D 0)
-> 		pwm_disable(led_dat->pwm);
-> 	else
-> 		pwm_enable(led_dat->pwm);
->=20
-> On i.MX28 reconfiguring the duty cycle only takes effect after the
-> current period is over. That means that if the previous configuration
-> was duty=3Dperiod (i.e. "on") the likely outcome of the above sequenc=
-e
-> with new_duty=3D0 is that setting the duty cycle to 0 is scheduled bu=
-t the
-> current period never ends because the clock is stopped. So the led ke=
-eps
-> being on.
->=20
-> Now we need a settlement in which way this should be fixed.
-> There are several possibilities, roughly in order of my preference:
->  a) Declare the pin state after pwm_disable as undefined
->     In this case the leds-pwm driver must not call pwm_disable when
->     expecting a certain brightness (here: off).
->     A nice follow-up is then to patch the drivers that work the way t=
-he
->     leds-pwm author expected to call their equivalent of pwm_disable
->     themselves on new_duty=3D0.
->  b) Let pwm_config return at once, implement the waiting in a new cal=
-l
->     pwm_sync() that either busy-loops or sleeps until the configurati=
-on
->     is=20
->  c) Make the call to pwm_config for pwm-mxs block until the new perio=
-d
->     started.
->  d) Make the call to pwm_config for pwm-mxs sleep until the new perio=
-d
->     started.
->     (Not sure this works nicely because IIRC there is no irq availabl=
-e
->     that triggers accordingly.)
->  e) In pwm_disable detect that there is a reconfiguration pending and
->     block accordingly.
->  f) Extend the PWM-API to differentiate the two variants of pwm_confi=
-g
->     E.g. make pwm_config sleep/busy-looping until the requested confi=
-g is
->     active plus a new function pwm_config_schedule.
->=20
-> Back then Sascha and Matt also prefered a). The obvious downside of a=
-)
-> is that most people expect pwm_disable implying a constant 0. The
-> obvious advantage of a) is that it's the simplest alternative and als=
-o
-> works best when there are board specific inverters involved or the pw=
-m
-> supports built-in inversion.
+Hi James, Andrew, Thierry and all,
 
-I'm still in favor for a). IMO it's the only sane way to solve problems
-with inverted PWMs. A PWM in disabled state has an undefined output on
-some hardwares and we don't even axactly know which value a disabled
-PWM should have. Using a duty cycle of 0% or 100% makes the desired
-output very clear.
 
-Sascha
+> On 24 Nov 2014, at 18:19, Andrew Bresticker <abrestic@chromium.org> wrote:
 
---=20
-Pengutronix e.K.                           |                           =
-  |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
-Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0  =
-  |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-555=
-5 |
+>>>>>> +     val = img_pwm_readl(pwm_chip, CR_PWM_CTRL_CFG);
+>>>>>> +     val |= BIT(pwm->hwpwm);
+>>>>>> +     img_pwm_writel(pwm_chip, CR_PWM_CTRL_CFG, val);
+>>>>>> +
+>>>>>> +     regmap_update_bits(pwm_chip->periph_regs, CR_PERIP_PWM_PDM_CONTROL,
+>>>>>> +                        CR_PERIP_PWM_PDM_CONTROL_CH_MASK <<
+>>>>>> +                        CR_PERIP_PWM_PDM_CONTROL_CH_SHIFT(pwm->hwpwm), 0);
+>>>>
+>>>>> This smells like pinmux and should probably be a separate driver.
+>>>>
+>>>> Hope you are suggesting us to have a separate driver for pin muxing (might already have one for Pistachio)
+>>>> and call the pin muxing driver APIs from here.
+>>>>
+>>>> Please correct me if my understanding is wrong?
+>>>
+>>> I don't think you need to call the pinmux API from here. Rather I'll
+>>> assume that the muxing is fixed on a given board, so this configuration
+>>> would be part of the static board-level pinmux so it will automatically
+>>> be applied at boot time.
+>>
+>> The issue here is that this register does not belong to the
+>> pinmux/pinctrl block on this SoC and instead is part of the
+>> "peripheral control" block which primarily provides system interface
+>> gate clocks and resets (for which I was planning to write a clock
+>> provider driver), but also has a bunch of control registers for
+>> various IP blocks thrown together (like this one) which we're using
+>> syscon to access.  I'm not sure it makes sense to create a pinmux
+>> driver for these 4 bits, but I'll defer to others on that...
+>>
+>> Another option would be to have the main pinctrl driver for Pistachio
+>> control these bits, but that doesn't seem quite right since these bits
+>> are completely separate from the pinctrl block.
+
+> I would think the pinctrl driver should deal with this - yes it's a separate set of registers,
+> but the config is expected to be static and can be represented in the DT.
+
+> James.
+
+I have discussed with the hardware team one more time today and discovered that
+the value we configure to CR_PERIP_PWM_PDM_CONTROL not only configures PWM/PDM
+output mux, but also enables control signal for PDM blocks.
+
+As an example, if the PDM user wants to enable PDM block 2, he needs to set bit 8 to 1 in the
+register CR_PERIP_PWM_PDM_CONTROL. Please also note that setting bit 8  to 1 not only
+configures the output PWM/PDM mux, but also enables control signal for PDM block 2.
+He needs access to this register from the PDM driver at least to configure (enable/disable)
+PDM control signal.
+
+And also because of the reasons explained by Andrew above, I think it is better to use syscon
+(instead of handling it in Pinctrl driver) to access this register both in PWM and PDM drivers.
+
+Please let us know comments and suggestions.
+
+Thanks and regards,
+Naidu.
+
+
+
