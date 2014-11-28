@@ -1,223 +1,104 @@
-From: Scott Branden <sbranden@broadcom.com>
-Subject: Re: [PATCH v2 3/4] pwm: kona: Fix enable, disable and config procedures
-Date: Thu, 27 Nov 2014 15:30:27 -0800
-Message-ID: <5477B413.80207@broadcom.com>
-References: <sbranden@broadcom.com>	<1416944441-12066-1-git-send-email-sbranden@broadcom.com>	<1416944441-12066-4-git-send-email-sbranden@broadcom.com> <CAD7vxx+FJzgXfik2XgJbw966Fsk-1m1znofuHEtvsDpm6cZY_g@mail.gmail.com>
+From: Naidu Tellapati <naidu.tellapati@gmail.com>
+Subject: [PATCH v6 0/4] Initial support for ImgTec PWM DAC and PDM DAC
+Date: Fri, 28 Nov 2014 23:42:21 +0530
+Message-ID: <1417198345-19633-1-git-send-email-Naidu.Tellapati@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=ISO-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-gw1-out.broadcom.com ([216.31.210.62]:40018 "EHLO
-	mail-gw1-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750866AbaK0Xal (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Nov 2014 18:30:41 -0500
-In-Reply-To: <CAD7vxx+FJzgXfik2XgJbw966Fsk-1m1znofuHEtvsDpm6cZY_g@mail.gmail.com>
+Received: from mail-wi0-f182.google.com ([209.85.212.182]:49324 "EHLO
+	mail-wi0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750960AbaK1SMt (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Nov 2014 13:12:49 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Tim Kryger <tim.kryger@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Ray Jui <rjui@broadcom.com>, Arun Ramamurthy <arunrama@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: thierry.reding@gmail.com, abrestic@chromium.org, gregkh@linuxfoundation.org, arnd@arndb.de, James.Hartley@imgtec.com, Ezequiel.Garcia@imgtec.com
+Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Arul.Ramasamy@imgtec.com, Sai.Masarapu@imgtec.com, Naidu Tellapati <Naidu.Tellapati@gmail.com>
 
-Hi Tim,
+The Pistachio SOC from Imagination Technologies includes =E2=80=93 4x P=
+DM blocks
+and 1x =E2=80=9Cbasic PWM=E2=80=9D block with four output channels. The=
+se share 4 MFIO pins,
+each PWM channel being muxed with each PDM block output (0-3 muxed with=
+ 0-3)
+using the CR_PERIP_PWM_PDM_CONTROL register in the peripheral wrapper
+register bank (offset 0x140). The PDM and PWM outputs are used to contr=
+ol
+targets such as LCD backlight.
 
-Thanks for all your comments on the patchset.  We are in the process of 
-reviewing and will provide feedback when that is completed.
+The PWM driver uses Linux PWM framework. Since the PDM does not fit int=
+o PWM
+framework we have implemented it as a MISC driver.
 
-Scott
+The series is based on v3.18-rc5.
 
-On 14-11-25 11:29 PM, Tim Kryger wrote:
-> On Tue, Nov 25, 2014 at 11:40 AM, Scott Branden <sbranden@broadcom.com> wrote:
->> From: Arun Ramamurthy <arunrama@broadcom.com>
->>
->> - Added helper functions to set and clear smooth and trigger bits
->> - Added 400ns delays when clearing and setting trigger bit as requied
->>    by spec
->> - Added helper function to write prescale and other settings
->> - Updated config procedure to match spec
->> - Added code to handle pwn config when channel is disabled
->> - Updated disable procedure to match spec
->>
->> Signed-off-by: Arun Ramamurthy <arunrama@broadcom.com>
->> Reviewed-by: Ray Jui <rjui@broadcom.com>
->> Signed-off-by: Scott Branden <sbranden@broadcom.com>
->> ---
->>   drivers/pwm/pwm-bcm-kona.c | 100 +++++++++++++++++++++++++++++++++++----------
->>   1 file changed, 78 insertions(+), 22 deletions(-)
->
-> The driver is fairly small and this change rewrites a considerable amount of it.
->
-> Is there a actually specific deficiency that this change is intended to address?
->
-> I'm not sure all the extra helper functions improve readability.
->
->>
->> diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
->> index fa0b5bf..06fa983 100644
->> --- a/drivers/pwm/pwm-bcm-kona.c
->> +++ b/drivers/pwm/pwm-bcm-kona.c
->> @@ -65,6 +65,10 @@
->>   #define DUTY_CYCLE_HIGH_MIN                    (0x00000000)
->>   #define DUTY_CYCLE_HIGH_MAX                    (0x00ffffff)
->>
->> +/* The delay required after clearing or setting
->> +   PWMOUT_ENABLE*/
->> +#define PWMOUT_ENABLE_HOLD_DELAY 400
->> +
->>   struct kona_pwmc {
->>          struct pwm_chip chip;
->>          void __iomem *base;
->> @@ -76,28 +80,70 @@ static inline struct kona_pwmc *to_kona_pwmc(struct pwm_chip *_chip)
->>          return container_of(_chip, struct kona_pwmc, chip);
->>   }
->>
->> -static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
->> +static inline void kona_pwmc_set_trigger(struct kona_pwmc *kp,
->> +                                        unsigned int chan)
->>   {
->>          unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
->>
->> -       /* Clear trigger bit but set smooth bit to maintain old output */
->> -       value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
->> +       /* set trigger bit to enable channel */
->> +       value |= 1 << PWM_CONTROL_TRIGGER_SHIFT(chan);
->> +       writel(value, kp->base + PWM_CONTROL_OFFSET);
->> +       ndelay(PWMOUT_ENABLE_HOLD_DELAY);
->> +}
->> +static inline void kona_pwmc_clear_trigger(struct kona_pwmc *kp,
->> +                                          unsigned int chan)
->> +{
->> +       unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
->> +
->> +       /* Clear trigger bit */
->>          value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
->>          writel(value, kp->base + PWM_CONTROL_OFFSET);
->> +       ndelay(PWMOUT_ENABLE_HOLD_DELAY);
->> +}
->>
->> -       /* Set trigger bit and clear smooth bit to apply new settings */
->> +static inline void kona_pwmc_clear_smooth(struct kona_pwmc *kp,
->> +                                         unsigned int chan)
->> +{
->> +       unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
->> +
->> +       /* Clear smooth bit */
->>          value &= ~(1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
->> -       value |= 1 << PWM_CONTROL_TRIGGER_SHIFT(chan);
->>          writel(value, kp->base + PWM_CONTROL_OFFSET);
->>   }
->>
->> +static inline void kona_pwmc_set_smooth(struct kona_pwmc *kp, unsigned int chan)
->> +{
->> +       unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
->> +
->> +       /*  set smooth bit to maintain old output */
->> +       value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
->> +       writel(value, kp->base + PWM_CONTROL_OFFSET);
->> +}
->> +
->> +static void kona_pwmc_write_settings(struct kona_pwmc *kp, unsigned int chan,
->> +                                    unsigned long prescale, unsigned long pc,
->> +                                    unsigned long dc)
->> +{
->> +       unsigned int value;
->> +
->> +       value = readl(kp->base + PRESCALE_OFFSET);
->> +       value &= ~PRESCALE_MASK(chan);
->> +       value |= prescale << PRESCALE_SHIFT(chan);
->> +       writel(value, kp->base + PRESCALE_OFFSET);
->> +
->> +       writel(pc, kp->base + PERIOD_COUNT_OFFSET(chan));
->> +
->> +       writel(dc, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
->> +
->> +}
->> +
->>   static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
->>                              int duty_ns, int period_ns)
->>   {
->>          struct kona_pwmc *kp = to_kona_pwmc(chip);
->>          u64 val, div, rate;
->>          unsigned long prescale = PRESCALE_MIN, pc, dc;
->> -       unsigned int value, chan = pwm->hwpwm;
->> +       unsigned int ret, chan = pwm->hwpwm;
->>
->>          /*
->>           * Find period count, duty count and prescale to suit duty_ns and
->> @@ -133,19 +179,30 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
->>                          return -EINVAL;
->>          }
->>
->> -       /* If the PWM channel is enabled, write the settings to the HW */
->> -       if (test_bit(PWMF_ENABLED, &pwm->flags)) {
->> -               value = readl(kp->base + PRESCALE_OFFSET);
->> -               value &= ~PRESCALE_MASK(chan);
->> -               value |= prescale << PRESCALE_SHIFT(chan);
->> -               writel(value, kp->base + PRESCALE_OFFSET);
->>
->> -               writel(pc, kp->base + PERIOD_COUNT_OFFSET(chan));
->> +       /* If the PWM channel is not enabled, enable the clock */
->> +       if (!test_bit(PWMF_ENABLED, &pwm->flags)) {
->> +               ret = clk_prepare_enable(kp->clk);
->> +               if (ret < 0) {
->> +                       dev_err(chip->dev, "failed to enable clock: %d\n", ret);
->> +                       return ret;
->> +               }
->> +       }
->>
->> -               writel(dc, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
->> +       /* Set smooth bit to maintain old output */
->> +       kona_pwmc_set_smooth(kp, chan);
->> +       kona_pwmc_clear_trigger(kp, chan);
->> +
->> +       /* apply new settings */
->> +       kona_pwmc_write_settings(kp, chan, prescale, pc, dc);
->> +
->> +       /*If the PWM is enabled, enable the channel with the new settings
->> +        and if not  disable the clock*/
->> +       if (test_bit(PWMF_ENABLED, &pwm->flags))
->> +               kona_pwmc_set_trigger(kp, chan);
->> +       else
->> +               clk_disable_unprepare(kp->clk);
->>
->> -               kona_pwmc_apply_settings(kp, chan);
->> -       }
->>
->>          return 0;
->>   }
->> @@ -188,7 +245,6 @@ static int kona_pwmc_enable(struct pwm_chip *chip, struct pwm_device *pwm)
->>                  dev_err(chip->dev, "failed to enable clock: %d\n", ret);
->>                  return ret;
->>          }
->> -
->>          ret = kona_pwmc_config(chip, pwm, pwm->duty_cycle, pwm->period);
->>          if (ret < 0) {
->>                  clk_disable_unprepare(kp->clk);
->> @@ -203,12 +259,12 @@ static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->>          struct kona_pwmc *kp = to_kona_pwmc(chip);
->>          unsigned int chan = pwm->hwpwm;
->>
->> +       kona_pwmc_clear_smooth(kp, chan);
->> +       kona_pwmc_clear_trigger(kp, chan);
->
-> I believe the output will spike high here.  Likely not what you want...
->
->>          /* Simulate a disable by configuring for zero duty */
->> -       writel(0, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
->> -       kona_pwmc_apply_settings(kp, chan);
->> -
->> -       /* Wait for waveform to settle before gating off the clock */
->> -       ndelay(400);
->> +       kona_pwmc_write_settings(kp, chan, 0, 0, 0);
->> +       kona_pwmc_set_polarity(chip, pwm, PWM_POLARITY_NORMAL);
->
-> This is wrong.  You shouldn't change the polarity when the PWM is disabled.
->
-> The original polarity isn't even restored when it is re-enabled...
->
->> +       kona_pwmc_set_trigger(kp, chan);
->>
->>          clk_disable_unprepare(kp->clk);
->>   }
->> --
->> 2.1.3
->>
+Changes from v5:
+
+ * Used syscon for accessing PWM & PDM control register.
+
+Changes from v4:
+
+ * Removed CR_prefix from the defined macros.
+
+ * Folded same data type varibles in one line.
+
+ * Removed cr-periph property from PWM DT binding document.
+
+ * Removed regmap_update_bits from img_pwm_enable and img_pwm_disable f=
+unctions.
+
+ * Addressed few more comments given in v4.
+
+Changes from v3:
+
+ * Addressed couple of comments given in v3.
+
+Changes from v2:
+
+ * Added depends on MIPS || COMPILE_TEST.
+
+ * Corrected the logic while calculating time base steps.
+
+ * Addressed few other minor comments given in v2.
+
+Changes from v1:
+
+ * Used regmap_update_bits at some places in the driver.
+
+ * Placed some #defines next to their register.
+
+ * Added depends on HAS_IOMEM in Kconfig.
+
+ * Removed unnecessary paragraph from file header.
+
+ * Defined register masks in a readable way.
+
+ * Renamed clk-names with clock-names.
+
+ * Added system interface clock in DT binding document.
+
+ * Addressed few other minor review comments given in v1.
+
+Naidu Tellapati (4):
+  pwm: Imagination Technologies PWM DAC driver
+  DT: pwm: Add binding document for IMG PWM DAC
+  pdm: Imagination Technologies PDM DAC driver
+  DT: pdm: Add binding document for IMG PDM DAC
+
+ Documentation/devicetree/bindings/misc/img-pdm.txt |   54 ++
+ Documentation/devicetree/bindings/pwm/img-pwm.txt  |   24 +
+ drivers/misc/Kconfig                               |   13 +
+ drivers/misc/Makefile                              |    1 +
+ drivers/misc/img-pdm.c                             |  672 ++++++++++++=
+++++++++
+ drivers/pwm/Kconfig                                |   13 +
+ drivers/pwm/Makefile                               |    1 +
+ drivers/pwm/pwm-img.c                              |  250 ++++++++
+ include/linux/img_pdm.h                            |   35 +
+ 9 files changed, 1063 insertions(+), 0 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/misc/img-pdm.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/img-pwm.txt
+ create mode 100644 drivers/misc/img-pdm.c
+ create mode 100644 drivers/pwm/pwm-img.c
+ create mode 100644 include/linux/img_pdm.h
 
