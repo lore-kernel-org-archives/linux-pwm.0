@@ -1,89 +1,91 @@
-From: Naidu Tellapati <naidu.tellapati@gmail.com>
-Subject: [PATCH v6 4/4] DT: pdm: Add binding document for IMG PDM DAC
-Date: Fri, 28 Nov 2014 23:42:25 +0530
-Message-ID: <1417198345-19633-5-git-send-email-Naidu.Tellapati@gmail.com>
-References: <1417198345-19633-1-git-send-email-Naidu.Tellapati@gmail.com>
+From: Arun Ramamurthy <arun.ramamurthy@broadcom.com>
+Subject: Re: [PATCH v2 1/4] pwm: kona: Remove setting default smooth type
+ and polarity for all channels
+Date: Fri, 28 Nov 2014 15:47:07 -0800
+Message-ID: <5479097B.6020108@broadcom.com>
+References: <sbranden@broadcom.com>	<1416944441-12066-1-git-send-email-sbranden@broadcom.com>	<1416944441-12066-2-git-send-email-sbranden@broadcom.com> <CAD7vxxJFD8Xgsd1Jrf=vA5-duqG21UWXMr4oRM6MEmMxQ9V49A@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wi0-f174.google.com ([209.85.212.174]:51780 "EHLO
-	mail-wi0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751033AbaK1SNP (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Nov 2014 13:13:15 -0500
-In-Reply-To: <1417198345-19633-1-git-send-email-Naidu.Tellapati@gmail.com>
+Received: from mail-gw3-out.broadcom.com ([216.31.210.64]:34685 "EHLO
+	mail-gw3-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751293AbaK1XrF (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Nov 2014 18:47:05 -0500
+In-Reply-To: <CAD7vxxJFD8Xgsd1Jrf=vA5-duqG21UWXMr4oRM6MEmMxQ9V49A@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, abrestic@chromium.org, gregkh@linuxfoundation.org, arnd@arndb.de, James.Hartley@imgtec.com, Ezequiel.Garcia@imgtec.com
-Cc: devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Arul.Ramasamy@imgtec.com, Sai.Masarapu@imgtec.com, Naidu Tellapati <Naidu.Tellapati@gmail.com>, Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+To: Tim Kryger <tim.kryger@gmail.com>, Scott Branden <sbranden@broadcom.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Ray Jui <rjui@broadcom.com>, Arun Ramamurthy <arunrama@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-Add binding document for the Pulse Density Modulator (PDM) DAC present on the
-Pistachio SOC.
 
-Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
-Signed-off-by: Arul Ramasamy <Arul.Ramasamy@imgtec.com>
----
- Documentation/devicetree/bindings/misc/img-pdm.txt |   54 ++++++++++++++++++++
- 1 files changed, 54 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/misc/img-pdm.txt
 
-diff --git a/Documentation/devicetree/bindings/misc/img-pdm.txt b/Documentation/devicetree/bindings/misc/img-pdm.txt
-new file mode 100644
-index 0000000..a530f4b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/misc/img-pdm.txt
-@@ -0,0 +1,54 @@
-+*Imagination Technologies Pulse Density Modulator (PDM) DAC.
-+
-+Required properties:
-+- compatible: Must be "img,pistachio-pdm"
-+- clocks: phandle to input PDM clock
-+- clock-names: Must include the following entry:
-+  - pdm: input clock to pdm block.
-+- img,cr-periph: Must contain a phandle to the peripheral control
-+  syscon node which contains PDM control registers.
-+- #pdm-cells: Must be 2.
-+- The first cell is the PDM channel number (valid values: 0, 1, 2, 3)
-+- The second cell is 12-bit pulse-in value
-+
-+Specifying PDM information for devices
-+======================================
-+
-+1. PDM User nodes
-+
-+PDM properties should be named "pdms". The exact meaning of each pdms property
-+is described above.
-+
-+	pdm-specifier : array of #pdm-cells specifying the given PDM
-+						(controller specific)
-+
-+The following example could be used to describe a PDM-based backlight device:
-+
-+	pdm: pdm {
-+		#pdm-cells = <2>;
-+	};
-+
-+	[...]
-+
-+	bl: backlight {
-+		pdms = <&pdm 2 0>;
-+	};
-+
-+pdm-specifier typically encodes the chip-relative PDM channel number and the
-+12-bit pulse-in value.
-+
-+2. PDM Controller nodes
-+
-+PDM controller nodes must specify the number of cells used for the specifier
-+using the '#pdm-cells' property.
-+
-+An example PDM controller might look like this:
-+
-+Example:
-+	pdm: pdm@18148000 {
-+		compatible = "img,pistachio-pdm";
-+		clocks = <&pdm_clk>;
-+		clk-names = "pdm";
-+		img,cr-periph = <&cr_periph>;
-+		#pdm-cells = <2>;
-+	};
--- 
-1.7.0.4
+On 14-11-25 09:51 PM, Tim Kryger wrote:
+> On Tue, Nov 25, 2014 at 11:40 AM, Scott Branden <sbranden@broadcom.com> wrote:
+>> From: Arun Ramamurthy <arunrama@broadcom.com>
+>>
+>> The probe routine unnecessarily sets the smooth type and polarity for
+>> all channels. This causes the channel for the speaker to click at the same
+>> time the backlight turns on. The smooth type and polarity should be set individually
+>> for each channel as required and no defaults need to be set.
+>
+> I am guessing you are talking about a PWM controlled beeper/buzzer.
+>
+This change is more so to remove setting smooth type and polarity for 
+all channels during probe and to leave them as their default values. 
+Infact, setting the PWM_CONTROL_TYPE_SHIT is also redundant cause the 
+default value is already 1 for all channels. We can remove that loop 
+entirely and this will be done in the next patch set. The smooth type 
+and polarity are only changed when the particular pwm channel is enabled 
+or polarity is changed.
 
+> Can you mention what board you are observing this issue on?
+>
+> Also please explain why setting these bits result in an audible click.
+>
+We observe this on the bcm958300K board where one of the
+PWM channels is connected to the buzzer and changing the
+smooth type and polarity from its default values causes a click
+
+>>
+>> Signed-off-by: Arun Ramamurthy <arunrama@broadcom.com>
+>> Reviewed-by: Ray Jui <rjui@broadcom.com>
+>> Signed-off-by: Scott Branden <sbranden@broadcom.com>
+>> ---
+>>   drivers/pwm/pwm-bcm-kona.c | 7 ++-----
+>>   1 file changed, 2 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+>> index 02bc048..29eef9e 100644
+>> --- a/drivers/pwm/pwm-bcm-kona.c
+>> +++ b/drivers/pwm/pwm-bcm-kona.c
+>> @@ -266,12 +266,9 @@ static int kona_pwmc_probe(struct platform_device *pdev)
+>>                  return ret;
+>>          }
+>>
+>> -       /* Set smooth mode, push/pull, and normal polarity for all channels */
+>> -       for (chan = 0; chan < kp->chip.npwm; chan++) {
+>> -               value |= (1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
+>> +       /* Set push/pull for all channels */
+>> +       for (chan = 0; chan < kp->chip.npwm; chan++)
+>>                  value |= (1 << PWM_CONTROL_TYPE_SHIFT(chan));
+>> -               value |= (1 << PWM_CONTROL_POLARITY_SHIFT(chan));
+>> -       }
+>>
+>>          writel(value, kp->base + PWM_CONTROL_OFFSET);
+>
+> While the smooth bit need not be set here, it is important that the
+> polarity bit be set.
+>
+The default value for polarity is 0 which is normal polarity, so setting 
+it to 1 here in the probe function without a sysfs call is
+when the software will report the polarity as normal when it is actually 
+inversed.
+> Otherwise software will report the polarity as normal when it it is
+> actually inversed.
+>
+> Consider the case where a userspace process is controlling the PWM via sysfs.
+>
+I agree with you about the sysfs case Tim, but since this is the probe 
+function and not a sysfs callback, should we not leave it as the default 
+value?
