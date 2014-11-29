@@ -1,138 +1,157 @@
-From: Arun Ramamurthy <arun.ramamurthy@broadcom.com>
-Subject: Re: [PATCH v2 1/4] pwm: kona: Remove setting default smooth type
- and polarity for all channels
-Date: Fri, 28 Nov 2014 17:19:44 -0800
-Message-ID: <54791F30.3050306@broadcom.com>
-References: <sbranden@broadcom.com>	<1416944441-12066-1-git-send-email-sbranden@broadcom.com>	<1416944441-12066-2-git-send-email-sbranden@broadcom.com>	<CAD7vxxJFD8Xgsd1Jrf=vA5-duqG21UWXMr4oRM6MEmMxQ9V49A@mail.gmail.com>	<5479097B.6020108@broadcom.com> <CAD7vxxJr48p_1=obXkX5kvk96B18A8=F98ikqnzTKsz6nYZJbQ@mail.gmail.com>
+From: Tim Kryger <tim.kryger@gmail.com>
+Subject: Re: [PATCH v2 2/4] pwm: kona: Fix incorrect enable after channel
+ polarity change
+Date: Fri, 28 Nov 2014 18:02:39 -0800
+Message-ID: <CAD7vxxLv+uh5DxjNYy9X8iY7Egu_9u-JzUg7Xk2UiNsoJwb1tw@mail.gmail.com>
+References: <sbranden@broadcom.com>
+	<1416944441-12066-1-git-send-email-sbranden@broadcom.com>
+	<1416944441-12066-3-git-send-email-sbranden@broadcom.com>
+	<CAD7vxxKgcu9QLY8qH8WR0b_5WBu+MNxcemmZ8syYa__JaC6tsQ@mail.gmail.com>
+	<547909B0.2090408@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-gw1-out.broadcom.com ([216.31.210.62]:27366 "EHLO
-	mail-gw1-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751366AbaK2BTq (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Nov 2014 20:19:46 -0500
-In-Reply-To: <CAD7vxxJr48p_1=obXkX5kvk96B18A8=F98ikqnzTKsz6nYZJbQ@mail.gmail.com>
+Received: from mail-ob0-f170.google.com ([209.85.214.170]:60928 "EHLO
+	mail-ob0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751446AbaK2CCk convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Nov 2014 21:02:40 -0500
+In-Reply-To: <547909B0.2090408@broadcom.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Tim Kryger <tim.kryger@gmail.com>
+To: Arun Ramamurthy <arun.ramamurthy@broadcom.com>
 Cc: Scott Branden <sbranden@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Ray Jui <rjui@broadcom.com>, Arun Ramamurthy <arunrama@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-
-
-On 14-11-28 05:08 PM, Tim Kryger wrote:
-> On Fri, Nov 28, 2014 at 3:47 PM, Arun Ramamurthy
-> <arun.ramamurthy@broadcom.com> wrote:
+On Fri, Nov 28, 2014 at 3:48 PM, Arun Ramamurthy
+<arun.ramamurthy@broadcom.com> wrote:
+>
+>
+> On 14-11-25 10:22 PM, Tim Kryger wrote:
+>>
+>> On Tue, Nov 25, 2014 at 11:40 AM, Scott Branden <sbranden@broadcom.c=
+om>
+>> wrote:
+>>>
+>>> From: Arun Ramamurthy <arunrama@broadcom.com>
+>>>
+>>> The pwm core code requires a separate call for enabling the channel
+>>> and hence the driver does not need to set pwm_trigger after a
+>>> polarity change
 >>
 >>
->> On 14-11-25 09:51 PM, Tim Kryger wrote:
->>>
->>> On Tue, Nov 25, 2014 at 11:40 AM, Scott Branden <sbranden@broadcom.com>
->>> wrote:
->>>>
->>>> From: Arun Ramamurthy <arunrama@broadcom.com>
->>>>
->>>> The probe routine unnecessarily sets the smooth type and polarity for
->>>> all channels. This causes the channel for the speaker to click at the
->>>> same
->>>> time the backlight turns on. The smooth type and polarity should be set
->>>> individually
->>>> for each channel as required and no defaults need to be set.
->>>
->>>
->>> I am guessing you are talking about a PWM controlled beeper/buzzer.
->>>
->> This change is more so to remove setting smooth type and polarity for all
->> channels during probe and to leave them as their default values. Infact,
->> setting the PWM_CONTROL_TYPE_SHIT is also redundant cause the default value
->> is already 1 for all channels. We can remove that loop entirely and this
->> will be done in the next patch set. The smooth type and polarity are only
->> changed when the particular pwm channel is enabled or polarity is changed.
+>> The framework does restrict when polarity changes can occur but it
+>> isn't clear to me that there is any reason to delay applying the
+>> polarity change.
+>
+> I examined several other drivers such as pwm-atmel-tcb.c, pwm-ep93xx.=
+c,
+> pwm-renesas-tpu.c, pwm-samsung.c in the 3.17 kernel tree and none of =
+them
+> enable the channel after changing polarity. We would be the first dri=
+ver to
+> do so.
+
+We are not "enabling" the channel as much as we are "triggering an
+application of settings" by hardware.
+
+Both pwm-ep93xx and pwm-samsung write polarity settings to the
+hardware immediately, presumably resulting in an immediate change in
+output.
+
+Alternatively, the pwm-atmel-tcb and pwm-renesas-tpu drivers save the
+polarity and write it to hardware later.
+
+There may be advantages to deferring the application of the polarity
+till a subsequent enable but both approaches appear to be acceptable.
+
+>
+>> Keep in mind that polarity matters even when a PWM
+>> is disabled.  While disabled, the output should be equivalent to an
+>> enabled configuration with zero duty.  Thus for normal polarity the
+>> output is constant low and for inversed polarity the output is
+>> constant high.
+>
+> The driver does set the duty cycle to zero when disabling the pwm
+> channel.However since the frame work prevents polarity change when th=
+e pwm
+> is enabled, I don=E2=80=99t see how one could expect the polarity cha=
+nge to be
+> reflected immediately without a separate call to pwm enable.
+>
+>
+>> I believe there is an expectation that the output is
+>> updated to reflect the requested polarity change prior to returning =
+to
+>> the caller.
+>
+>
+> Once again I disagree with this based on other pwm drivers which only=
+ change
+> the polarity and do not enable the channel when their set polarity fu=
+nctions
+> are called.
+
+I don't know why you keep calling this an enable.  Its not an enable,
+it is only a trigger.
+
+Perhaps this would be best explained with an example:
+
+# Export PWM for access by userspace
+cd /sys/class/pwm/pwmchip0
+echo 0 > export
+cd pwm0
+
+# Request 50% duty output when PWM is enabled
+echo 50000 > duty_cycle
+echo 100000 > period
+
+# Command Inversed Polarity
+echo inversed > polarity
+
+# Command Normal Polarity
+echo normal > polarity
+
+# Enable PWM
+echo 1 > enable
+
+The polarity changes trigger immediate output updates but the PWM is
+not enabled until the end.
+
+Prior to the last step the output is either a constant high or low
+signal, not the 50% duty waveform.
+
+>
+>
 >>
->>> Can you mention what board you are observing this issue on?
 >>>
->>> Also please explain why setting these bits result in an audible click.
+>>> Signed-off-by: Arun Ramamurthy <arunrama@broadcom.com>
+>>> Reviewed-by: Ray Jui <rjui@broadcom.com>
+>>> Signed-off-by: Scott Branden <sbranden@broadcom.com>
+>>> ---
+>>>   drivers/pwm/pwm-bcm-kona.c | 5 -----
+>>>   1 file changed, 5 deletions(-)
 >>>
->> We observe this on the bcm958300K board where one of the
->> PWM channels is connected to the buzzer and changing the
->> smooth type and polarity from its default values causes a click
->>
->
-> Which of these two bits is causing the click?
->
-> I've already said that I'm open to removing the smooth bit here if that helps.
->
-Thank you for your quick reply Tim. It is setting the polarity bit that 
-causes the click. I am planning on removing this entire loop in the next 
-patch set, are you okay with that?
->>>>
->>>> Signed-off-by: Arun Ramamurthy <arunrama@broadcom.com>
->>>> Reviewed-by: Ray Jui <rjui@broadcom.com>
->>>> Signed-off-by: Scott Branden <sbranden@broadcom.com>
->>>> ---
->>>>    drivers/pwm/pwm-bcm-kona.c | 7 ++-----
->>>>    1 file changed, 2 insertions(+), 5 deletions(-)
->>>>
->>>> diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
->>>> index 02bc048..29eef9e 100644
->>>> --- a/drivers/pwm/pwm-bcm-kona.c
->>>> +++ b/drivers/pwm/pwm-bcm-kona.c
->>>> @@ -266,12 +266,9 @@ static int kona_pwmc_probe(struct platform_device
->>>> *pdev)
->>>>                   return ret;
->>>>           }
->>>>
->>>> -       /* Set smooth mode, push/pull, and normal polarity for all
->>>> channels */
->>>> -       for (chan = 0; chan < kp->chip.npwm; chan++) {
->>>> -               value |= (1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
->>>> +       /* Set push/pull for all channels */
->>>> +       for (chan = 0; chan < kp->chip.npwm; chan++)
->>>>                   value |= (1 << PWM_CONTROL_TYPE_SHIFT(chan));
->>>> -               value |= (1 << PWM_CONTROL_POLARITY_SHIFT(chan));
->>>> -       }
->>>>
->>>>           writel(value, kp->base + PWM_CONTROL_OFFSET);
+>>> diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.=
+c
+>>> index 29eef9e..fa0b5bf 100644
+>>> --- a/drivers/pwm/pwm-bcm-kona.c
+>>> +++ b/drivers/pwm/pwm-bcm-kona.c
+>>> @@ -173,11 +173,6 @@ static int kona_pwmc_set_polarity(struct pwm_c=
+hip
+>>> *chip, struct pwm_device *pwm,
 >>>
+>>>          writel(value, kp->base + PWM_CONTROL_OFFSET);
 >>>
->>> While the smooth bit need not be set here, it is important that the
->>> polarity bit be set.
+>>> -       kona_pwmc_apply_settings(kp, chan);
+>>> -
+>>> -       /* Wait for waveform to settle before gating off the clock =
+*/
+>>> -       ndelay(400);
+>>> -
+>>>          clk_disable_unprepare(kp->clk);
 >>>
->> The default value for polarity is 0 which is normal polarity, so setting it
->> to 1 here in the probe function without a sysfs call is
->> when the software will report the polarity as normal when it is actually
->> inversed.
->
-> Please double check the meaning of the polarity bits for the revision
-> of PWM IP in your chip.  I suspect you are mistaken here.
->
-> This driver is for PWM blocks compatible those found in bcm28145,
-> bcm28155, bcm21664, and other mobile chips of that generation.
->
-> Apparently in contrast to the chip you are using, a set polarity bit
-> in the control register means normal polarity for the chips I
-> mentioned.
->
-> A default of zero for these bits means they must be set to meet the
-> PWM framework's expectation that channels begin with normal polarity.
->
-Tim, this is from the RDB of our new chip which is supposed to have the 
-same IP as the mobile chip sets you mentioned:
-
-When set to 1 the output polarity for the PWM Output signal will be 
-active hight; When set to 0, the output polarity for the PWM Output 
-signal will be active low. Default State is 0.
-
-My understanding is that the frameworks normal polarity means active 
-low, am I mistaken in that?
-
+>>>          return 0;
+>>> --
+>>> 2.1.3
 >>>
->>> Otherwise software will report the polarity as normal when it it is
->>> actually inversed.
->>>
->>> Consider the case where a userspace process is controlling the PWM via
->>> sysfs.
->>>
->> I agree with you about the sysfs case Tim, but since this is the probe
->> function and not a sysfs callback, should we not leave it as the default
->> value?
+>
