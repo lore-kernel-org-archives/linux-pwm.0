@@ -1,117 +1,221 @@
-From: =?ISO-8859-2?Q?Janusz_U=BFycki?= <j.uzycki@elproma.com.pl>
-Subject: Re: [PATCH v2] clk: Add PWM clock driver
-Date: Thu, 04 Dec 2014 19:00:18 +0100
-Message-ID: <5480A132.2010103@elproma.com.pl>
-References: <1415007078-7947-1-git-send-email-p.zabel@pengutronix.de>
+From: Jonathan Richardson <jonathar@broadcom.com>
+Subject: Re: [PATCH v2 1/4] pwm: kona: Remove setting default smooth type
+ and polarity for all channels
+Date: Thu, 4 Dec 2014 12:22:30 -0800
+Message-ID: <5480C286.6000405@broadcom.com>
+References: <sbranden@broadcom.com> <1416944441-12066-1-git-send-email-sbranden@broadcom.com> <1416944441-12066-2-git-send-email-sbranden@broadcom.com> <CAD7vxxJFD8Xgsd1Jrf=vA5-duqG21UWXMr4oRM6MEmMxQ9V49A@mail.gmail.com> <5479097B.6020108@broadcom.com> <CAD7vxxJr48p_1=obXkX5kvk96B18A8=F98ikqnzTKsz6nYZJbQ@mail.gmail.com> <54791F30.3050306@broadcom.com> <CAD7vxxJFuA8V0TiPLQo1LOnRQPbM-QOYDTLkg7Ty0N=Nr7frGQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from v032797.home.net.pl ([89.161.177.31]:50555 "HELO
-	v032797.home.net.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with SMTP id S932455AbaLDSAc (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 4 Dec 2014 13:00:32 -0500
-In-Reply-To: <1415007078-7947-1-git-send-email-p.zabel@pengutronix.de>
+Received: from mail-gw3-out.broadcom.com ([216.31.210.64]:30366 "EHLO
+	mail-gw3-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750934AbaLDUWh (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 4 Dec 2014 15:22:37 -0500
+In-Reply-To: <CAD7vxxJFuA8V0TiPLQo1LOnRQPbM-QOYDTLkg7Ty0N=Nr7frGQ@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Philipp Zabel <p.zabel@pengutronix.de>, Mike Turquette <mturquette@linaro.org>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Tim Kryger <tim.kryger@gmail.com>
+Cc: Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Ray Jui <rjui@broadcom.com>, Arun Ramamurthy <arunrama@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-pwm@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-Hi,
+Hi Tim,
 
-W dniu 2014-11-03 o 10:31, Philipp Zabel pisze:
-> Some board designers, when running out of clock output pads, decide to
-> (mis)use PWM output pads to provide a clock to external components.
-> This driver supports this practice by providing an adapter between the
-> PWM and clock bindings in the device tree. As the PWM bindings specify
-> the period in the device tree, this is a fixed clock.
->
-> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-> ---
-> I'm resending this because last time the linux-pwm list was not in Cc:
-> So far I have not received any comments on the patch itself. I have used
-> it on a BoundaryDevices Nitrogen6X board to produce a master clock for
-> the OV5640 MIPI CSI-2 camera module.
->
-> Changes since v1:
->   - none (rebased onto v3.18-rc3)
-> ---
->   .../devicetree/bindings/clock/pwm-clock.txt        |  23 +++++
->   drivers/clk/Kconfig                                |   7 ++
->   drivers/clk/Makefile                               |   1 +
->   drivers/clk/clk-pwm.c                              | 110 +++++++++++++++++++++
->   4 files changed, 141 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/clock/pwm-clock.txt
->   create mode 100644 drivers/clk/clk-pwm.c
->
-> diff --git a/Documentation/devicetree/bindings/clock/pwm-clock.txt b/Documentation/devicetree/bindings/clock/pwm-clock.txt
-> new file mode 100644
-> index 0000000..d127d17
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/clock/pwm-clock.txt
-> @@ -0,0 +1,23 @@
-> +Binding for an external clock signal driven by a PWM pin.
-> +
-> +This binding uses the common clock binding[1] and the common PWM binding[2].
-> +
-> +[1] Documentation/devicetree/bindings/clock/clock-bindings.txt
-> +[2] Documentation/devicetree/bindings/pwm/pwm.txt
-> +
-> +Required properties:
-> +- compatible : shall be "pwm-clock".
-> +- #clock-cells : from common clock binding; shall be set to 0.
-> +- pwms : from common PWM binding; this determines the clock frequency
-> +  via the PWM period given in the pwm-specifier.
-> +
-> +Optional properties:
-> +- clock-output-names : From common clock binding.
-> +
-> +Example:
-> +	clock {
-> +		compatible = "pwm-clock";
-> +		#clock-cells = <0>;
-> +		clock-output-names = "mipi_mclk";
-> +		pwms = <&pwm2 0 40>; /* 1 / 40 ns = 25 MHz */
+I'm going to take over this submission because I made the changes to the
+driver. Arun was filling in for me while I was on leave. Now I'm back
+and I think I can help clarify why these changes were made. A summary
+for all the changes should help.
 
-Before I asked about [MHz/kHz] <-> [ns] conversion problem but I didn't 
-noticed
-you've just used [ns] in dt. As Thierry wrote:
-"Also the PWM chips will most likely use the concept of period and 
-duty-cycle
-internally anyway, so it will convert back from Hz/percentage to nanoseconds
-and fall victim to similar rounding effects."
+There were two problems. First was a problem caused by setting the
+polarity in probe. It caused the speaker to click when the polarity was
+set so we took that out as it didn't seem to serve any useful purpose
+that I could see. The polarity changes should be made in the polarity
+callback.
 
-Unfortunately I discovered that many pwm drivers are buggy around upper 
-freqs limit.
-The example is pwm-mxs.c. PWM has 24MHz clock. There is no problem to set
-registers directly for 12MHz 50% output (period_cycles=2-1=1, 
-inactive_c=1, active_c=0).
+The second and bigger problem was the smooth type sequence. If it isn't
+done according to the spec then one in ten or twenty times you won't
+even get a signal when it's enabled. Following the correct sequence with
+the 400 ns delays solves this problem.
 
-When I set pwm-mxs period to 83ns / duty to 42ns the output is low because
-it sets inactive_c=0!
-For 125ns/63ns I got about 6MHz instead of 8MHz, and +width=42ns.
-When I set 42ns/42ns I got 12MHz 50%.
-It means new patches for pwms...
+Additionally, by not following the sequence you won't get a smooth
+transition. You'll get a change in the settings (duty cycle, period) but
+may get a non smooth transition. So it's important to follow the spec
+here. We don't want non-smooth transitions.
 
-I will test the patch backported to 3.14 using the mxs platform.
-However as I wrote I  need to patch pwm-mxs first.
+More comments below.
 
-> [...]
->
-> +static struct platform_driver clk_pwm_driver = {
-> +	.probe = clk_pwm_probe,
-> +	.driver = {
-> +		.name = "pwm-clock",
-> +		.owner = THIS_MODULE,
+On 14-11-28 07:19 PM, Tim Kryger wrote:
+> On Fri, Nov 28, 2014 at 5:19 PM, Arun Ramamurthy
+> <arun.ramamurthy@broadcom.com> wrote:
+>>
+>>
+>> On 14-11-28 05:08 PM, Tim Kryger wrote:
+>>>
+>>> On Fri, Nov 28, 2014 at 3:47 PM, Arun Ramamurthy
+>>> <arun.ramamurthy@broadcom.com> wrote:
+>>>>
+>>>>
+>>>>
+>>>> On 14-11-25 09:51 PM, Tim Kryger wrote:
+>>>>>
+>>>>>
+>>>>> On Tue, Nov 25, 2014 at 11:40 AM, Scott Branden <sbranden@broadcom.com>
+>>>>> wrote:
+>>>>>>
+>>>>>>
+>>>>>> From: Arun Ramamurthy <arunrama@broadcom.com>
+>>>>>>
+>>>>>> The probe routine unnecessarily sets the smooth type and polarity for
+>>>>>> all channels. This causes the channel for the speaker to click at the
+>>>>>> same
+>>>>>> time the backlight turns on. The smooth type and polarity should be set
+>>>>>> individually
+>>>>>> for each channel as required and no defaults need to be set.
+>>>>>
+>>>>>
+>>>>>
+>>>>> I am guessing you are talking about a PWM controlled beeper/buzzer.
+>>>>>
+>>>> This change is more so to remove setting smooth type and polarity for all
+>>>> channels during probe and to leave them as their default values. Infact,
+>>>> setting the PWM_CONTROL_TYPE_SHIT is also redundant cause the default
+>>>> value
+>>>> is already 1 for all channels. We can remove that loop entirely and this
+>>>> will be done in the next patch set. The smooth type and polarity are only
+>>>> changed when the particular pwm channel is enabled or polarity is
+>>>> changed.
+>>>>
+>>>>> Can you mention what board you are observing this issue on?
+>>>>>
+>>>>> Also please explain why setting these bits result in an audible click.
+>>>>>
+>>>> We observe this on the bcm958300K board where one of the
+>>>> PWM channels is connected to the buzzer and changing the
+>>>> smooth type and polarity from its default values causes a click
+>>>>
+>>>
+>>> Which of these two bits is causing the click?
+>>>
+>>> I've already said that I'm open to removing the smooth bit here if that
+>>> helps.
+>>>
+>> Thank you for your quick reply Tim. It is setting the polarity bit that
+>> causes the click. I am planning on removing this entire loop in the next
+>> patch set, are you okay with that?
+> 
+> Does it cause a click at this moment or at a later point in time?
+> 
+> Is the click your sole motivation for this series?  If so, can you
+> propose a more targeted fix?
+> 
+> I would be amenable to deferring polarity changes until subsequent
+> enable operations:
+> 
+> - kona_pwmc_probe doesn't do any hardware writes
+> - kona_pwmc_set_polarity only updates a polarity variable
+> - kona_pwmc_enable sets hardware polarity according to the variable
+> 
+> Would this be sufficient to satisfy your needs?
+> 
+> I am still worried that deferring polarity changes may negatively
+> impact some PWM users who set polarity but don't immediately enable
+> the PWM.
+> 
+>>>>>>
+>>>>>> Signed-off-by: Arun Ramamurthy <arunrama@broadcom.com>
+>>>>>> Reviewed-by: Ray Jui <rjui@broadcom.com>
+>>>>>> Signed-off-by: Scott Branden <sbranden@broadcom.com>
+>>>>>> ---
+>>>>>>    drivers/pwm/pwm-bcm-kona.c | 7 ++-----
+>>>>>>    1 file changed, 2 insertions(+), 5 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+>>>>>> index 02bc048..29eef9e 100644
+>>>>>> --- a/drivers/pwm/pwm-bcm-kona.c
+>>>>>> +++ b/drivers/pwm/pwm-bcm-kona.c
+>>>>>> @@ -266,12 +266,9 @@ static int kona_pwmc_probe(struct platform_device
+>>>>>> *pdev)
+>>>>>>                   return ret;
+>>>>>>           }
+>>>>>>
+>>>>>> -       /* Set smooth mode, push/pull, and normal polarity for all
+>>>>>> channels */
+>>>>>> -       for (chan = 0; chan < kp->chip.npwm; chan++) {
+>>>>>> -               value |= (1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
+>>>>>> +       /* Set push/pull for all channels */
+>>>>>> +       for (chan = 0; chan < kp->chip.npwm; chan++)
+>>>>>>                   value |= (1 << PWM_CONTROL_TYPE_SHIFT(chan));
+>>>>>> -               value |= (1 << PWM_CONTROL_POLARITY_SHIFT(chan));
+>>>>>> -       }
+>>>>>>
+>>>>>>           writel(value, kp->base + PWM_CONTROL_OFFSET);
+>>>>>
+>>>>>
+>>>>>
+>>>>> While the smooth bit need not be set here, it is important that the
+>>>>> polarity bit be set.
+>>>>>
+>>>> The default value for polarity is 0 which is normal polarity, so setting
+>>>> it
+>>>> to 1 here in the probe function without a sysfs call is
+>>>> when the software will report the polarity as normal when it is actually
+>>>> inversed.
+>>>
+>>>
+>>> Please double check the meaning of the polarity bits for the revision
+>>> of PWM IP in your chip.  I suspect you are mistaken here.
+>>>
+>>> This driver is for PWM blocks compatible those found in bcm28145,
+>>> bcm28155, bcm21664, and other mobile chips of that generation.
+>>>
+>>> Apparently in contrast to the chip you are using, a set polarity bit
+>>> in the control register means normal polarity for the chips I
+>>> mentioned.
+>>>
+>>> A default of zero for these bits means they must be set to meet the
+>>> PWM framework's expectation that channels begin with normal polarity.
+>>>
+>> Tim, this is from the RDB of our new chip which is supposed to have the same
+>> IP as the mobile chip sets you mentioned:
+>>
+>> When set to 1 the output polarity for the PWM Output signal will be active
+>> hight; When set to 0, the output polarity for the PWM Output signal will be
+>> active low. Default State is 0.
+>>
+>> My understanding is that the frameworks normal polarity means active low, am
+>> I mistaken in that?
+> 
+> That is not how I would interpret things.
+> 
+> Perhaps this paragraph from Documentation/pwm.txt will help you:
+> 
+> When implementing polarity support in a PWM driver, make sure to respect the
+> signal conventions in the PWM framework. By definition, normal polarity
+> characterizes a signal starts high for the duration of the duty cycle and
+> goes low for the remainder of the period. Conversely, a signal with inversed
+> polarity starts low for the duration of the duty cycle and goes high for the
+> remainder of the period.
+> 
 
-AFAIR new drivers don't need to set .owner.
+Agreed. When using DT, the polarity will be set properly. When using
+sysfs there is a discrepancy and this needs to be addressed. Because the
+hw default is active low, the polarity will be inversed when the sysfs
+says polarity is "normal". I'll have to account for this in the driver.
 
-thanks
-Janusz
-
-> +		.of_match_table = of_match_ptr(clk_pwm_dt_ids),
-> +	},
-> +};
-> +
-> +module_platform_driver(clk_pwm_driver);
+>>
+>>>>>
+>>>>> Otherwise software will report the polarity as normal when it it is
+>>>>> actually inversed.
+>>>>>
+>>>>> Consider the case where a userspace process is controlling the PWM via
+>>>>> sysfs.
+>>>>>
+>>>> I agree with you about the sysfs case Tim, but since this is the probe
+>>>> function and not a sysfs callback, should we not leave it as the default
+>>>> value?
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+> 
 
