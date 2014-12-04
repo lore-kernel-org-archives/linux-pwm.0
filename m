@@ -1,127 +1,108 @@
-From: Ajit Pal SINGH <ajitpal.singh@st.com>
-Subject: RE: [PATCH] pwm: sti: Maintain a bitmap of configured devices
-Date: Wed, 3 Dec 2014 17:18:42 +0800
-Message-ID: <7C5AEAE2DCC6B24D92612A29E172F04A59034539BD@EAPEX1MAIL2.st.com>
-References: <ajitpal.singh@st.com>
- <1415702267-3471-1-git-send-email-ajitpal.singh@st.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2] pwm: atmel-hlcdc: add at91sam9x5 and sama5d3 errata
+ handling
+Date: Thu, 4 Dec 2014 14:12:31 +0100
+Message-ID: <20141204131229.GA7262@ulmo.nvidia.com>
+References: <1416407589-8157-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gBBFr7Ir9EOA20Yy"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:44493 "EHLO
-	mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751948AbaLCJSx convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 3 Dec 2014 04:18:53 -0500
-In-Reply-To: <1415702267-3471-1-git-send-email-ajitpal.singh@st.com>
-Content-Language: en-US
+Received: from mail-pd0-f182.google.com ([209.85.192.182]:64048 "EHLO
+	mail-pd0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751370AbaLDNMg (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 4 Dec 2014 08:12:36 -0500
+Content-Disposition: inline
+In-Reply-To: <1416407589-8157-1-git-send-email-boris.brezillon@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Maxime COQUELIN <maxime.coquelin@st.com>
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Andrew Victor <linux@maxim.org.za>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hi Thierry,
 
-Can you please have a look at this patch.
+--gBBFr7Ir9EOA20Yy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Regards
-Ajitpal Singh
-
-> -----Original Message-----
-> From: Ajit Pal SINGH
-> Sent: Tuesday, November 11, 2014 4:08 PM
-> To: thierry.reding@gmail.com; linux-pwm@vger.kernel.org; linux-
-> kernel@vger.kernel.org; Maxime COQUELIN
-> Cc: Ajit Pal SINGH
-> Subject: [PATCH] pwm: sti: Maintain a bitmap of configured devices
-> 
-> This patch introduces a bitmap which is used to keep track of the pwm channels
-> which have been configured in a pwm chip.
-> 
-> The method used earlier to find the number of configured channels, was to count
-> the pwmdevices with PWMF_REQUESTED field set and period value configured.
-> This was not correct and failed when of_pwm_get()/pwm_get() and then
-> pwm_config() was used.
-> 
-> Signed-off-by: Ajit Pal Singh <ajitpal.singh@st.com>
+On Wed, Nov 19, 2014 at 03:33:09PM +0100, Boris Brezillon wrote:
+> at91sam9x5 has an errata forbidding the use of slow clk as a clk source a=
+nd
+> sama5d3 SoCs has another errata forbidding the use of div1 prescaler.
+>=20
+> Take both of these erratas into account.
+>=20
+> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 > ---
->  drivers/pwm/pwm-sti.c |   30 +++++++++++-------------------
->  1 files changed, 11 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c index
-> b95115c..92abbd5 100644
-> --- a/drivers/pwm/pwm-sti.c
-> +++ b/drivers/pwm/pwm-sti.c
-> @@ -57,6 +57,7 @@ struct sti_pwm_chip {
->  	struct regmap_field *pwm_int_en;
->  	struct pwm_chip chip;
->  	struct pwm_device *cur;
-> +	unsigned long configured;
->  	unsigned int en_count;
->  	struct mutex sti_pwm_lock; /* To sync between enable/disable calls */
->  	void __iomem *mmio;
-> @@ -102,24 +103,6 @@ static int sti_pwm_get_prescale(struct sti_pwm_chip *pc,
-> unsigned long period,
->  	return 0;
->  }
-> 
-> -/* Calculate the number of PWM devices configured with a period. */ -static
-> unsigned int sti_pwm_count_configured(struct pwm_chip *chip) -{
-> -	struct pwm_device *pwm;
-> -	unsigned int ncfg = 0;
-> -	unsigned int i;
-> -
-> -	for (i = 0; i < chip->npwm; i++) {
-> -		pwm = &chip->pwms[i];
-> -		if (test_bit(PWMF_REQUESTED, &pwm->flags)) {
-> -			if (pwm_get_period(pwm))
-> -				ncfg++;
-> -		}
-> -	}
-> -
-> -	return ncfg;
-> -}
-> -
->  /*
->   * For STiH4xx PWM IP, the PWM period is fixed to 256 local clock cycles.
->   * The only way to change the period (apart from changing the PWM input clock)
-> @@ -141,7 +124,7 @@ static int sti_pwm_config(struct pwm_chip *chip, struct
-> pwm_device *pwm,
->  	unsigned int ncfg;
->  	bool period_same = false;
-> 
-> -	ncfg = sti_pwm_count_configured(chip);
-> +	ncfg = hweight_long(pc->configured);
->  	if (ncfg)
->  		period_same = (period_ns == pwm_get_period(cur));
-> 
-> @@ -197,6 +180,7 @@ static int sti_pwm_config(struct pwm_chip *chip, struct
-> pwm_device *pwm,
-> 
->  		ret = regmap_field_write(pc->pwm_int_en, 0);
-> 
-> +		set_bit(pwm->hwpwm, &pc->configured);
->  		pc->cur = pwm;
-> 
->  		dev_dbg(dev, "prescale:%u, period:%i, duty:%i, pwmvalx:%u\n",
-> @@ -254,10 +238,18 @@ static void sti_pwm_disable(struct pwm_chip *chip, struct
-> pwm_device *pwm)
->  	mutex_unlock(&pc->sti_pwm_lock);
->  }
-> 
-> +static void sti_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
-> +{
-> +	struct sti_pwm_chip *pc = to_sti_pwmchip(chip);
-> +
-> +	clear_bit(pwm->hwpwm, &pc->configured); }
-> +
->  static const struct pwm_ops sti_pwm_ops = {
->  	.config = sti_pwm_config,
->  	.enable = sti_pwm_enable,
->  	.disable = sti_pwm_disable,
-> +	.free = sti_pwm_free,
->  	.owner = THIS_MODULE,
->  };
-> 
-> --
-> 1.7.5.4
+> Hi Thierry,
+>=20
+> I've addressed the "erratas stored in of_device_id data" part, but still
+> haven't modified the compatible strings of the HLCDC subdevices.
+>=20
+> Please let me know if you really want to handle erratas through pwm
+> compatibles instead of parent device compatibles.
+>=20
+> Regards,
+>=20
+> Boris
+>=20
+> Changes since v1:
+> - use data field in of_device_id to attach erratas to an IP revision
+>=20
+>  drivers/pwm/pwm-atmel-hlcdc.c | 50 +++++++++++++++++++++++++++++++++++++=
++-----
+>  1 file changed, 45 insertions(+), 5 deletions(-)
 
+I applied this, but this was really much more difficult than I would've
+wanted. Since the MFD driver hasn't been merged into Linus' tree yet I
+wasn't able to actually build test this driver at all without manually
+pulling in the patches that add the MFD support. I went through this
+trouble this time because it's what we had agreed upon, but for the
+record, next time I'll request a stable branch that I can pull into the
+PWM tree to resolve this kind of dependency. Or patches will have to
+wait until the next merge window. I don't want to have to jump through
+hoops just to make sure the code in my tree actually compiles.
+
+Oh, and it's good that I do compile tests because...
+
+> diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
+[...]
+> +const struct atmel_hlcdc_pwm_erratas atmel_hlcdc_pwm_at91sam9x5_erratas =
+=3D {
+> +	.slow_clk_errata =3D true,
+> +};
+> +
+> +const struct atmel_hlcdc_pwm_erratas atmel_hlcdc_pwm_sama5d3_erratas =3D=
+ {
+> +	.div1_clk_errata =3D true,
+> +};
+
+=2E.. these actually should be static.
+
+Also I took the liberty of substituting "erratum" for "errata" and
+"errata" for "erratas".
+
+Thierry
+
+--gBBFr7Ir9EOA20Yy
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJUgF29AAoJEN0jrNd/PrOhKcgP/0dgcHqwqqQd4EqDZ/CaljKw
+5528yQ3XmcxrUR7FILzFzv7KyZjSc5F06B1ZGPd9WxNRJsfcW/nBIaazlH+6K3dq
+DbtB+5GAVUekuLvNfpEYKpVMjhLECl+qKjRQKASt3TkZVpWR6dfsf+kwl/0Em6nX
+fS+yFgMhaRrh7gbpzUXa6m7bL0Ct92sfbZ5XT0E91fpkd16rZGrBdVgXKvK8w+/h
+bsYgIHqw7AjA11Oy0Sbm6F0AfuEjre3/yzT7xZRw987rDBVpNQ7hc/AyeS94VnRk
+2R0vbe/bk3TypGB4Ob8zBwCOEfkSRmyKeX+MMc97a47GBQr+0ns3HOXzdlrm774y
+sFeTqFdl0XYyKSXPdr7Qt8qHyg1Zv6bbVFcJYAYyb6c0eBE8F9azcjI4UZEgxwu/
+HaAjNbeD41HSBMeylt/iBKkiRwV/4Ia/6I9Ud/I1siiHlNT3NkH+WMfQnSYqmZnx
+hLmD51+vShzXnyg7NwHS72jR/RMlGd3ND3V+6UfzdodAkDqkS0TbjK9p0wj5YjUO
+YiFEG7xdYDvcrwN82fS/0zXXkAnO6NuwBIzaAtNwYRMk4T2XWlmfgtyHk2Akm8qj
+ao4LtoPwA7+9UHbwHSAuGr5TgbGGNGUnJVLUN69sHVHc49u/oYEtRNKRPx92EzdW
+78PySElGxxVAJ5PEDXOg
+=gjQD
+-----END PGP SIGNATURE-----
+
+--gBBFr7Ir9EOA20Yy--
