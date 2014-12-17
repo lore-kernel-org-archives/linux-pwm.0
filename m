@@ -1,103 +1,69 @@
-From: Jonathan Richardson <jonathar@broadcom.com>
-Subject: [PATCH v3 2/2] pwm: kona: Remove setting default smooth type and polarity for all channels
-Date: Wed, 17 Dec 2014 10:46:22 -0800
-Message-ID: <1418841982-29793-2-git-send-email-jonathar@broadcom.com>
-References: <Jonathan Richardson <jonathar@broadcom.com>
- <1418841982-29793-1-git-send-email-jonathar@broadcom.com>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: Re: [PATCHv9 0/2] Add Allwinner SoCs PWM support
+Date: Wed, 17 Dec 2014 20:58:36 +0100
+Message-ID: <20141217195836.GD4885@piout.net>
+References: <1415200545-26238-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <546B4DF5.9020100@schinagl.nl>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-gw3-out.broadcom.com ([216.31.210.64]:61788 "EHLO
-	mail-gw3-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751033AbaLQSqz (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 17 Dec 2014 13:46:55 -0500
-In-Reply-To: <1418841982-29793-1-git-send-email-jonathar@broadcom.com>
+Received: from down.free-electrons.com ([37.187.137.238]:43018 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751030AbaLQT6i (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 17 Dec 2014 14:58:38 -0500
+Content-Disposition: inline
+In-Reply-To: <546B4DF5.9020100@schinagl.nl>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Tim Kryger <tim.kryger@gmail.com>
-Cc: Scott Branden <sbranden@broadcom.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Ray Jui <rjui@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Jonathan Richardson <jonathar@broadcom.com>
+To: Olliver Schinagl <oliver@schinagl.nl>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Simon <longsleep@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
-Setting the default polarity in probe to normal for all channels caused
-the speaker pwm channel to click. The polarity does need to be set to
-normal because the hw default is inversed whereas the pwm framework
-defaults to normal. If a channel is enabled without setting the polarity
-then the signal would be inversed while linux reports normal. A check
-is now done prior to enabling the channel to ensure that the hw polarity
-matches the desired polarity and is changed if there is a discrepency. This
-prevents unnecessary settings being applied to unused channels but still
-ensures the correct polarity to be set.
+Hi,
 
-Reviewed-by: Scott Branden <sbranden@broadcom.com>
-Tested-by: Scott Branden <sbranden@broadcom.com>
-Signed-off-by: Jonathan Richardson <jonathar@broadcom.com>
----
- drivers/pwm/pwm-bcm-kona.c |   38 ++++++++++++++++++++++++++++++++++----
- 1 file changed, 34 insertions(+), 4 deletions(-)
+I finally got some time to work on that again.
 
-diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
-index a831bb2..101137d 100644
---- a/drivers/pwm/pwm-bcm-kona.c
-+++ b/drivers/pwm/pwm-bcm-kona.c
-@@ -95,6 +95,32 @@ static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
- 	ndelay(400);
- }
- 
-+static void kona_pwmc_check_set_polarity(struct pwm_chip *chip,
-+	struct pwm_device *pwm)
-+{
-+	struct kona_pwmc *kp = to_kona_pwmc(chip);
-+	unsigned int chan = pwm->hwpwm;
-+	enum pwm_polarity polarity = pwm->polarity;
-+	unsigned int hw_pol;
-+	unsigned int value = 0;
-+
-+	value = hw_pol = readl(kp->base + PWM_CONTROL_OFFSET);
-+	hw_pol = (hw_pol >> PWM_CONTROL_POLARITY_SHIFT(chan)) & 0x1;
-+
-+	/*
-+	 * If current polarity not the same as h/w then set polarity so that
-+	 * they match.
-+	 */
-+	if (!hw_pol != polarity) {
-+		if (polarity == PWM_POLARITY_NORMAL)
-+			value |= 1 << PWM_CONTROL_POLARITY_SHIFT(chan);
-+		else
-+			value &= ~(1 << PWM_CONTROL_POLARITY_SHIFT(chan));
-+
-+		writel(value, kp->base + PWM_CONTROL_OFFSET);
-+	}
-+}
-+
- static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 			    int duty_ns, int period_ns)
- {
-@@ -162,6 +188,13 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	dev_dbg(chip->dev, "pwm[%d]: period=%lu, duty_high=%lu, prescale=%lu\n",
- 		chan, pc, dc, prescale);
- 
-+	/*
-+	 * Ensure polarity is set properly. The default value for h/w and the
-+	 * PWM framework are different. If a channel is enabled without setting
-+	 * the polarity, the default value would be inconsistent to the signal.
-+	 */
-+	kona_pwmc_check_set_polarity(chip, pwm);
-+
- 	value = readl(kp->base + PWM_CONTROL_OFFSET);
- 
- 	/*
-@@ -310,11 +343,8 @@ static int kona_pwmc_probe(struct platform_device *pdev)
- 	}
- 
- 	/* Set smooth mode, push/pull, and normal polarity for all channels */
--	for (chan = 0; chan < kp->chip.npwm; chan++) {
--		value |= (1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
-+	for (chan = 0; chan < kp->chip.npwm; chan++)
- 		value |= (1 << PWM_CONTROL_TYPE_SHIFT(chan));
--		value |= (1 << PWM_CONTROL_POLARITY_SHIFT(chan));
--	}
- 
- 	writel(value, kp->base + PWM_CONTROL_OFFSET);
- 
+On 18/11/2014 at 14:47:33 +0100, Olliver Schinagl wrote :
+> What I get from the datasheet is, that sun4i and sun5i are exactly the same,
+> with the exception that sun5i only has 1 PWM (~exposed~). I belive that is
+> easily solved with the bindings by having allwinner-sun4i and allwinner
+> sun5i bindings if I'm not mistaken.
+> 
+> As for sun7i compared to the other ones, according to disp_lcd.c sun5i and
+> sun7i should behave exactly the same. This is contradicting to the
+> datasheet, where sun4i and sun5i are the same.
+> 
+> So what are the major differences that I can see between the 3? sun4i
+> defines the PWM prescaler register value 0b1111 as being undefined, and
+> sun5i and sun7i as /1? Did you verify this (I haven't I admit, i bumped into
+> this while looking for your patch ;-) )? I wouldn't be supprised if it where
+> a typo on allwinners end in the datasheet ... disp_lcd.c stops at 72000 for
+> the last entry. We should just check sun4i, sun5i and sun7i hardware to see
+> if it behaves the same with a prescaler of 0b1111, which I would not be
+> totally surprised if it did.
+> 
+> The other difference I notice is that sun7i and sun5i use 16bit period
+> register where sun4i uses a 8bit register. This is probably the only reason
+> why they put a #ifdef in disp_lcd.c, calculations turn out differently. I
+> don't recognize this behavior at all in your driver however. I do think they
+> that there is a difference here, since they did split up the original driver
+> here because of this difference.
+> 
+
+That is something I overlooked and I can't test at all, I only have a
+cubietruck. Did you have some time to test on a sun4i?
+
+But, from the only datasheet I have access to [1], page 56:
+Each channel has a dedicated internal 16-bit up counter. If the counter
+reaches the value stored in the channel period register, it resets. At
+the beginning of a count period cycle, the PWMOUT is set to active state
+and count from 0x0000
+
+So I would say that they all have a 16bits period.
+
+
+[1] http://dl.linux-sunxi.org/A10/A10%20Datasheet%20-%20v1.21%20%282012-04-06%29.pdf
+
 -- 
-1.7.9.5
-
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
