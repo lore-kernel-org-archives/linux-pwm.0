@@ -1,124 +1,97 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: randconfig build error with next-20141204, in drivers/pwm
-Date: Thu, 18 Dec 2014 10:44:44 +0100
-Message-ID: <20141218094442.GA24383@ulmo>
+Date: Thu, 18 Dec 2014 10:54:06 +0100
+Message-ID: <20141218095406.GB24383@ulmo>
 References: <CA+r1Zhj2ugeO7yqfmnbmkF4xqmZiiSbvq0zVXDMXdfOYGiHcRg@mail.gmail.com>
+ <20141218094442.GA24383@ulmo>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="dc+cDN39EJAMEtIO"
+	protocol="application/pgp-signature"; boundary="1ccMZA6j1vT5UqiK"
 Return-path: <linux-next-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CA+r1Zhj2ugeO7yqfmnbmkF4xqmZiiSbvq0zVXDMXdfOYGiHcRg@mail.gmail.com>
+In-Reply-To: <20141218094442.GA24383@ulmo>
 Sender: linux-next-owner@vger.kernel.org
 To: Jim Davis <jim.epost@gmail.com>
 Cc: Stephen Rothwell <sfr@canb.auug.org.au>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-next <linux-next@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---dc+cDN39EJAMEtIO
-Content-Type: multipart/mixed; boundary="n8g4imXOkfNTN/H1"
-Content-Disposition: inline
-
-
---n8g4imXOkfNTN/H1
+--1ccMZA6j1vT5UqiK
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Dec 04, 2014 at 09:10:55AM -0700, Jim Davis wrote:
-> Building with the attached random configuration file,
+On Thu, Dec 18, 2014 at 10:44:44AM +0100, Thierry Reding wrote:
+> On Thu, Dec 04, 2014 at 09:10:55AM -0700, Jim Davis wrote:
+> > Building with the attached random configuration file,
+> >=20
+> > ERROR: "____ilog2_NaN" [drivers/pwm/pwm-atmel-hlcdc.ko] undefined!
 >=20
-> ERROR: "____ilog2_NaN" [drivers/pwm/pwm-atmel-hlcdc.ko] undefined!
+> This took a while to figure out. The attached patch fixes this build
+> failure, though the driver should probably be fixed to avoid division by
+> zero, just in case. Adding Boris for visibility.
+>=20
+> Thierry
 
-This took a while to figure out. The attached patch fixes this build
-failure, though the driver should probably be fixed to avoid division by
-zero, just in case. Adding Boris for visibility.
+> From 7933af1d2e5f3941d934eec88f32f5547ee218c3 Mon Sep 17 00:00:00 2001
+> From: Thierry Reding <thierry.reding@gmail.com>
+> Date: Thu, 18 Dec 2014 10:09:42 +0100
+> Subject: [PATCH] pwm: atmel-hlcdc: Depend on HAVE_CLK
+>=20
+> The include/linux/clk.h header defines dummy implementations for the
+> various clk_*() functions if HAVE_CLK is not selected to improve build
+> coverage in randconfig builds.
+>=20
+> The dummy implementation of clk_get_rate() returns 0, which causes the
+> Atmel HLCDC PWM driver's atmel_hlcdc_pwm_config() implementation to end
+> up calling:
+>=20
+> 	do_div(clk_period_ns, 0)
+>=20
+> On x86, do_div(n, base) will end up evaluating to this:
+>=20
+> 	n >>=3D ilog2(base)
+>=20
+> with base =3D 0, the implementation of ilog2() will call ____ilog2_NaN(),
+> which is purposely undefined and results in a linker failure:
+>=20
+> 	ERROR: "____ilog2_NaN" [drivers/pwm/pwm-atmel-hlcdc.ko] undefined!
+>=20
+> The implementation of do_div() checks that base is a power of 2 before
+> calling ilog2(). The compiler doesn't optimize this away, presumably
+> because is_power_of_2() is an inline function and the compiler doesn't
+> or can't inspect it closely enough. ilog2() being a macro it still ends
+> up generating the ____ilog2_NaN() because of the constant 0.
+
+If I turn is_power_of_2() into a macro, then this build failure also
+goes away. I suppose the reason is that now the do_div() evaluates such
+that the branch that would reference the undefined symbol can be
+discarded.
+
+Still I think allowing that branch to remain will cause the linker
+failure on division by (constant) zero, which has some value, too.
 
 Thierry
 
---n8g4imXOkfNTN/H1
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: inline; filename="0001-pwm-atmel-hlcdc-Depend-on-HAVE_CLK.patch"
-Content-Transfer-Encoding: quoted-printable
-
-=46rom 7933af1d2e5f3941d934eec88f32f5547ee218c3 Mon Sep 17 00:00:00 2001
-=46rom: Thierry Reding <thierry.reding@gmail.com>
-Date: Thu, 18 Dec 2014 10:09:42 +0100
-Subject: [PATCH] pwm: atmel-hlcdc: Depend on HAVE_CLK
-
-The include/linux/clk.h header defines dummy implementations for the
-various clk_*() functions if HAVE_CLK is not selected to improve build
-coverage in randconfig builds.
-
-The dummy implementation of clk_get_rate() returns 0, which causes the
-Atmel HLCDC PWM driver's atmel_hlcdc_pwm_config() implementation to end
-up calling:
-
-	do_div(clk_period_ns, 0)
-
-On x86, do_div(n, base) will end up evaluating to this:
-
-	n >>=3D ilog2(base)
-
-with base =3D 0, the implementation of ilog2() will call ____ilog2_NaN(),
-which is purposely undefined and results in a linker failure:
-
-	ERROR: "____ilog2_NaN" [drivers/pwm/pwm-atmel-hlcdc.ko] undefined!
-
-The implementation of do_div() checks that base is a power of 2 before
-calling ilog2(). The compiler doesn't optimize this away, presumably
-because is_power_of_2() is an inline function and the compiler doesn't
-or can't inspect it closely enough. ilog2() being a macro it still ends
-up generating the ____ilog2_NaN() because of the constant 0.
-
-The root of the problem is that the driver really should be checking
-before possibly dividing by zero. That should eventually be fixed, but
-for now just assume that the clock runs at a sensible frequency when
-available.
-
-Reported-by: Jim Davis <jim.epost@gmail.com>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
----
- drivers/pwm/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index a3ecf5809634..468af1b4ca30 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -53,6 +53,7 @@ config PWM_ATMEL
- config PWM_ATMEL_HLCDC_PWM
- 	tristate "Atmel HLCDC PWM support"
- 	depends on MFD_ATMEL_HLCDC
-+	depends on HAVE_CLK
- 	help
- 	  Generic PWM framework driver for the PWM output of the HLCDC
- 	  (Atmel High-end LCD Controller). This PWM output is mainly used
---=20
-2.1.3
-
-
---n8g4imXOkfNTN/H1--
-
---dc+cDN39EJAMEtIO
+--1ccMZA6j1vT5UqiK
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAEBAgAGBQJUkqIKAAoJEN0jrNd/PrOhbysQAJR7BIVOgonYo43vuEkCa8p4
-m9WvLK8GBbgOboM3W5ysN9n8rUH3cKvn/hk23fwSp/owdAVQqEYL4RTXjbT3VVc4
-W2fyFbf91kOlzKryHZq0zIOqv/XX9w7HRUuk6TJtIH3GwxhMcmC0uJFUcViEUiFe
-mKPnvnx85Mdu0DznJtyxnqGIvkIrWX5yj350WPAC+YpKH2nQi4/6qiNvq/byzA5E
-hjDYu+e3V21n0RdpwUK+4CGoEhT2Pj7nr09t8xPoI9/Rxdry6MEcvOyWAaANAJ2j
-o72P19g4nYcmfloPIejWtAk0yfRtSDwK9jCANU7E0c5k+JMuhDOC7q9HwdxVKqam
-WOIKc/So6otjOTYGrIf2SXjaRYR4d8yhZZ1m8L/9wXhf4VlrhGLKTT//x9ivtOg+
-shvNb5hCK19SKx2xIzHYDP8XA2QSc5pHFnAD7G8b5CR3jUvjLtZIhtsL3T0cIqSv
-ncKhKWgJUhynB1LGP1dh1WuYCAQo+YQEFLbTISEAMiRbct6hGydSIjgEVQ2NcSgf
-oTl6pa58VykAKlWnV9qTXONvCYf4ah0LBIR6tsK2HmptyeeN0V7OLqW9TyjC6tWb
-cZ1E1OB8MWGgorjHsapYEV57dMzDfdXAKr6LKjPot07d+qYgPMQXP99Mi38U+m0F
-43EgOCelqOByO0Glfzpn
-=iN5h
+iQIcBAEBAgAGBQJUkqQ+AAoJEN0jrNd/PrOhQUwP/iXNoh/5gRAYB57lvDrG7I7a
+kxGGx2HqbnuWW/+z0Qj4FxelW1PQNt91ZNYDwScTOvQGn2e+XeULV1wZ7MESjtUs
+VJN7LWUTJNfpApL8lAdtMW3bF8tfy4xO0SXxKeq1nYvVA94SFT/iZEKHgkGYUC60
+NWvxOTwDtdnMGKxAzXb98iNd8S49IxyawfUFHU6eGyDL8iR4/QgN5y5uCZ9M12di
+4KQ5UCI8IILVOPWB99dc05h44Pq5QmnK3LdoNnz/6zDGuY1KQBLTBee3QJJtLdrc
+CEDduf9GFQeUq/tFV29UaW6J7SepWF5db7lUe+yIo29IS4Suj4VowYmGgMUQfoQE
+fI/c9tnjkm5SKTYYfNWEQUDg9aMCkfIyXoULMaPvBSV/GrP/kIlXn2vJptr9m8qN
+fca4bvfzDUfgxIgB80u8NtNPuPKyvV8AwOtw9CTmfNiLZNL88ks1vPVdPIdmtoFc
+N/GObJ6+fGJtAX+LTiCcX4H3xKFRolUy08yKyTBoo1spMXc8bEHQNmAHqqo79r8s
+3q0A9P04k9w1WMXj1PJF0xtElvTMdriSCpnW3230iVcgY8RlojXtDAQAQdtRe6fk
+/80VG+ajqdY73WtS/FkoNzFXvrwfJv54066sCFteiTuJWYp4Olw8am4kOjiv8IvW
+xUUH64GxJGEqOLLxWY6u
+=n1CI
 -----END PGP SIGNATURE-----
 
---dc+cDN39EJAMEtIO--
+--1ccMZA6j1vT5UqiK--
