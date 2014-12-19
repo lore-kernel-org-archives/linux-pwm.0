@@ -1,65 +1,80 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: atmel-hlcdc: Prevent div by zero
-Date: Fri, 19 Dec 2014 09:50:43 +0100
-Message-ID: <20141219085041.GB7352@ulmo>
-References: <20141218094442.GA24383@ulmo>
- <1418933131-12270-1-git-send-email-boris.brezillon@free-electrons.com>
+From: Olliver Schinagl <oliver@schinagl.nl>
+Subject: Re: [PATCHv9 0/2] Add Allwinner SoCs PWM support
+Date: Fri, 19 Dec 2014 10:04:03 +0100
+Message-ID: <5493EA03.10004@schinagl.nl>
+References: <1415200545-26238-1-git-send-email-alexandre.belloni@free-electrons.com> <546B4DF5.9020100@schinagl.nl> <20141217195836.GD4885@piout.net>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Pd0ReVV5GZGQvF3a"
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wg0-f52.google.com ([74.125.82.52]:36352 "EHLO
-	mail-wg0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751866AbaLSIur (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 19 Dec 2014 03:50:47 -0500
-Content-Disposition: inline
-In-Reply-To: <1418933131-12270-1-git-send-email-boris.brezillon@free-electrons.com>
+Received: from 7of9.schinagl.nl ([88.159.158.68]:59103 "EHLO 7of9.schinagl.nl"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751243AbaLSJEG (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Fri, 19 Dec 2014 04:04:06 -0500
+In-Reply-To: <20141217195836.GD4885@piout.net>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, Jim Davis <jim.epost@gmail.com>, Stephen Rothwell <sfr@canb.auug.org.au>, linux-next@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Simon <longsleep@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
+Hey Alexandre!
 
---Pd0ReVV5GZGQvF3a
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 17-12-14 20:58, Alexandre Belloni wrote:
+> Hi,
+>
+> I finally got some time to work on that again.
+awesome :D
+>
+> On 18/11/2014 at 14:47:33 +0100, Olliver Schinagl wrote :
+>> What I get from the datasheet is, that sun4i and sun5i are exactly the same,
+>> with the exception that sun5i only has 1 PWM (~exposed~). I belive that is
+>> easily solved with the bindings by having allwinner-sun4i and allwinner
+>> sun5i bindings if I'm not mistaken.
+>>
+>> As for sun7i compared to the other ones, according to disp_lcd.c sun5i and
+>> sun7i should behave exactly the same. This is contradicting to the
+>> datasheet, where sun4i and sun5i are the same.
+>>
+>> So what are the major differences that I can see between the 3? sun4i
+>> defines the PWM prescaler register value 0b1111 as being undefined, and
+>> sun5i and sun7i as /1? Did you verify this (I haven't I admit, i bumped into
+>> this while looking for your patch ;-) )? I wouldn't be supprised if it where
+>> a typo on allwinners end in the datasheet ... disp_lcd.c stops at 72000 for
+>> the last entry. We should just check sun4i, sun5i and sun7i hardware to see
+>> if it behaves the same with a prescaler of 0b1111, which I would not be
+>> totally surprised if it did.
+>>
+>> The other difference I notice is that sun7i and sun5i use 16bit period
+>> register where sun4i uses a 8bit register. This is probably the only reason
+>> why they put a #ifdef in disp_lcd.c, calculations turn out differently. I
+>> don't recognize this behavior at all in your driver however. I do think they
+>> that there is a difference here, since they did split up the original driver
+>> here because of this difference.
+>>
+> That is something I overlooked and I can't test at all, I only have a
+> cubietruck. Did you have some time to test on a sun4i?
+I have sun4i, sun5i and sun7i to test this on; though my sun5i is a 
+tablet so needs some work to setup as a dev environment (solder uart 
+etc). On sun7i the pwm worked perfectly; I will find some time to test 
+in on sun4i and sun5i in the next few weeks with your v10 patches
+>
+> But, from the only datasheet I have access to [1], page 56:
+> Each channel has a dedicated internal 16-bit up counter. If the counter
+> reaches the value stored in the channel period register, it resets. At
+> the beginning of a count period cycle, the PWMOUT is set to active state
+> and count from 0x0000
+>
+> So I would say that they all have a 16bits period.
+>
+>
+> [1] http://dl.linux-sunxi.org/A10/A10%20Datasheet%20-%20v1.21%20%282012-04-06%29.pdf
+yeah we only have the datasheets available on dl.linux-sunxi.org; but 
+don't only rely on the datasheets, it's a horrid copy/paste mess that 
+may be very wrong due to lazy editing of the pastes :(
 
-On Thu, Dec 18, 2014 at 09:05:30PM +0100, Boris Brezillon wrote:
-> The slow and system clock should never return a rate of zero, but this
-> might happen if the clocks property defined in the DT is referencing the
-> wrong clocks.
-> Prevent any division by zero from happening by testing the clk_freq value
-> before calling do_div.
->=20
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> ---
->  drivers/pwm/pwm-atmel-hlcdc.c | 6 ++++++
->  1 file changed, 6 insertions(+)
+The sorucecode helps a bit in this, as pwm0 is always used as a 
+background light driver, so should atleast be somewhat verified to work.
 
-Applied, thanks.
+Olliver
+>
 
-Thierry
-
---Pd0ReVV5GZGQvF3a
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJUk+bhAAoJEN0jrNd/PrOhyagQALm8xHE/lu+H9Wy4bqirQSyQ
-kbVI6bZ5fmgz66XqOmvmL65cBIgp5914SZcgmiduHtBbIHP1dJpLP7RfTb0bsKQ2
-ID1XxhiBaW+SBfpKDuElg2gYluE4OY33xxDcrYaRKI9prL3o/ufAQHxXpImwJgUA
-jUBYdKLJgxXm1NE82p9WDVhRKP/U8VRsUbWYIAKacabB0J/EkTpjZ0PfO375LzXK
-zZJLj4OLja3V5FDMv6Zwung3Rt5G/W2it5uJJvlmMkAAnc3keZdzai3EqZLz+XbS
-nOZwoHQXR9AKHcwz1/mpYB3/Z/G/vJWH8iiI2sqiq4M/VVhBkffXIyThgZ5J6Dve
-pQ3HFd6IaEnasZiX6Y1+O9cYwyqRvecriZH5PTP7czShaky/jLXc8mZbt/Uap5VD
-5pyvw/IarYrWvtVnkoUxQWF9slAlbPudCTFQaIADuZgGKr/nmer+CPjRwBuzBiJC
-r4poO4u4XPcZlyWV0oJbdFUjUjLDHhEiDUEE21cTlGhVo2gaYzNOU3kl2bLkw3xR
-o04ZjUk1BzrkR1YMSOR/LFdVUGySCM10Sc7mWJcctDJofTE8Nz8p+3gDJiYGOQaZ
-/Rd7AXkZvwK34MJS4Vw9RvviS504bjAqERTfSSiIWZf4ymKp2SCI0lzk8JhIprgI
-xzetzLL3WHLTCiCxB6ca
-=aQqC
------END PGP SIGNATURE-----
-
---Pd0ReVV5GZGQvF3a--
