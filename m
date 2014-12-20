@@ -1,80 +1,265 @@
-From: Olliver Schinagl <oliver@schinagl.nl>
-Subject: Re: [PATCHv9 0/2] Add Allwinner SoCs PWM support
-Date: Fri, 19 Dec 2014 10:04:03 +0100
-Message-ID: <5493EA03.10004@schinagl.nl>
-References: <1415200545-26238-1-git-send-email-alexandre.belloni@free-electrons.com> <546B4DF5.9020100@schinagl.nl> <20141217195836.GD4885@piout.net>
+From: Tim Kryger <tim.kryger@gmail.com>
+Subject: Re: [PATCH v3 1/2] pwm: kona: Fix incorrect enable, config, and
+ disable procedures
+Date: Sat, 20 Dec 2014 14:38:25 -0800
+Message-ID: <CAD7vxxJvSzJtBcuy9wsHn-AT2LyetRrKUy5CnKjPdwr1HVqCgg@mail.gmail.com>
+References: <jonathar@broadcom.com>
+	<1418841982-29793-1-git-send-email-jonathar@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from 7of9.schinagl.nl ([88.159.158.68]:59103 "EHLO 7of9.schinagl.nl"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751243AbaLSJEG (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Fri, 19 Dec 2014 04:04:06 -0500
-In-Reply-To: <20141217195836.GD4885@piout.net>
+Received: from mail-oi0-f53.google.com ([209.85.218.53]:41342 "EHLO
+	mail-oi0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751187AbaLTWi0 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sat, 20 Dec 2014 17:38:26 -0500
+In-Reply-To: <1418841982-29793-1-git-send-email-jonathar@broadcom.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Simon <longsleep@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Jonathan Richardson <jonathar@broadcom.com>
+Cc: Scott Branden <sbranden@broadcom.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Ray Jui <rjui@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-pwm@vger.kernel.org
 
-Hey Alexandre!
+On Wed, Dec 17, 2014 at 10:46 AM, Jonathan Richardson
+<jonathar@broadcom.com> wrote:
+>     The config procedure doesn't follow the spec which periodically results
+>     in failing to enable the output signal. This happens one in ten or
+>     twenty attempts. Following the spec and adding a 400ns delay in the
+>     appropriate locations resolves this problem. It also ensures that the
+>     signal transition is smooth.
 
-On 17-12-14 20:58, Alexandre Belloni wrote:
-> Hi,
->
-> I finally got some time to work on that again.
-awesome :D
->
-> On 18/11/2014 at 14:47:33 +0100, Olliver Schinagl wrote :
->> What I get from the datasheet is, that sun4i and sun5i are exactly the same,
->> with the exception that sun5i only has 1 PWM (~exposed~). I belive that is
->> easily solved with the bindings by having allwinner-sun4i and allwinner
->> sun5i bindings if I'm not mistaken.
->>
->> As for sun7i compared to the other ones, according to disp_lcd.c sun5i and
->> sun7i should behave exactly the same. This is contradicting to the
->> datasheet, where sun4i and sun5i are the same.
->>
->> So what are the major differences that I can see between the 3? sun4i
->> defines the PWM prescaler register value 0b1111 as being undefined, and
->> sun5i and sun7i as /1? Did you verify this (I haven't I admit, i bumped into
->> this while looking for your patch ;-) )? I wouldn't be supprised if it where
->> a typo on allwinners end in the datasheet ... disp_lcd.c stops at 72000 for
->> the last entry. We should just check sun4i, sun5i and sun7i hardware to see
->> if it behaves the same with a prescaler of 0b1111, which I would not be
->> totally surprised if it did.
->>
->> The other difference I notice is that sun7i and sun5i use 16bit period
->> register where sun4i uses a 8bit register. This is probably the only reason
->> why they put a #ifdef in disp_lcd.c, calculations turn out differently. I
->> don't recognize this behavior at all in your driver however. I do think they
->> that there is a difference here, since they did split up the original driver
->> here because of this difference.
->>
-> That is something I overlooked and I can't test at all, I only have a
-> cubietruck. Did you have some time to test on a sun4i?
-I have sun4i, sun5i and sun7i to test this on; though my sun5i is a 
-tablet so needs some work to setup as a dev environment (solder uart 
-etc). On sun7i the pwm worked perfectly; I will find some time to test 
-in on sun4i and sun5i in the next few weeks with your v10 patches
->
-> But, from the only datasheet I have access to [1], page 56:
-> Each channel has a dedicated internal 16-bit up counter. If the counter
-> reaches the value stored in the channel period register, it resets. At
-> the beginning of a count period cycle, the PWMOUT is set to active state
-> and count from 0x0000
->
-> So I would say that they all have a 16bits period.
->
->
-> [1] http://dl.linux-sunxi.org/A10/A10%20Datasheet%20-%20v1.21%20%282012-04-06%29.pdf
-yeah we only have the datasheets available on dl.linux-sunxi.org; but 
-don't only rely on the datasheets, it's a horrid copy/paste mess that 
-may be very wrong due to lazy editing of the pastes :(
+This patch does not result in smooth transitions.
 
-The sorucecode helps a bit in this, as pwm0 is always used as a 
-background light driver, so should atleast be somewhat verified to work.
+Please ensure that your commit message reflects the code.
 
-Olliver
+>
+>     If config is called when the pwm is disabled and there is nothing to do,
+>     the while loop to calculate duty cycle and period doesn't need to be
+>     done. The function now just returns if the pwm state is disabled.
+>
+>     The disable procedure now also follows the spec to ensure a smooth
+>     transition. Not following the spec can cause non-smooth transitions.
+>
+>     The enable procedure now clears the enabled bit if enabling failed.
+>     Enabling can fail if an invalid duty cycle and period is set. This
+>     prevents the sysfs interface from reporting the pwm is enabled after a
+>     failed call to enable.
+>
+> Reviewed-by: Arun Ramamurthy <arunrama@broadcom.com>
+> Reviewed-by: Scott Branden <sbranden@broadcom.com>
+> Tested-by: Scott Branden <sbranden@broadcom.com>
+> Signed-off-by: Jonathan Richardson <jonathar@broadcom.com>
+
+Normally when people send a multi-part patch series they include a
+cover letter that describes the overall purpose of the changes with a
+description of changes introduced in each revision of the series.
+
+Please follow this convention.
+
+> ---
+>  drivers/pwm/pwm-bcm-kona.c |   91 ++++++++++++++++++++++++++++++++------------
+>  1 file changed, 67 insertions(+), 24 deletions(-)
+>
+> diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+> index 02bc048..a831bb2 100644
+> --- a/drivers/pwm/pwm-bcm-kona.c
+> +++ b/drivers/pwm/pwm-bcm-kona.c
+> @@ -80,15 +80,19 @@ static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
+>  {
+>         unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
+>
+> -       /* Clear trigger bit but set smooth bit to maintain old output */
+> -       value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
+> -       value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
+> -       writel(value, kp->base + PWM_CONTROL_OFFSET);
+> +       /*
+> +        * There must be a min 400ns delay between clearing enable and setting
+> +        * it. Failing to do this may result in no PWM signal.
+> +        */
+> +       ndelay(400);
+>
+>         /* Set trigger bit and clear smooth bit to apply new settings */
+>         value &= ~(1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
+>         value |= 1 << PWM_CONTROL_TRIGGER_SHIFT(chan);
+>         writel(value, kp->base + PWM_CONTROL_OFFSET);
+> +
+> +       /* PWMOUT_ENABLE must be held high for at least 400 ns. */
+> +       ndelay(400);
+>  }
 >
 
+Can you try to get a better understanding of what these timing
+requirements actually are?
+
+When I wrote this driver, the documentation simply stated that if the
+trigger bit didn't stay high for 400 ns then the new settings would
+not get applied.
+
+It wasn't essential that we wait 400 ns here because the only time
+when the trigger bit would be lowered is when we were about to load
+even newer settings which meant we didn't care if the previous
+settings were lost.
+
+>  static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> @@ -99,6 +103,9 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>         unsigned long prescale = PRESCALE_MIN, pc, dc;
+>         unsigned int value, chan = pwm->hwpwm;
+>
+> +       if (!test_bit(PWMF_ENABLED, &pwm->flags))
+> +               return 0;
+> +
+>         /*
+>          * Find period count, duty count and prescale to suit duty_ns and
+>          * period_ns. This is done according to formulas described below:
+
+Like I said last time, this is wrong.  You need to sanity check the
+requested period and duty cycle here.
+
+You can't just return success immediately when the channel isn't enabled.
+
+> @@ -121,31 +128,60 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>                 dc = div64_u64(val, div);
+>
+>                 /* If duty_ns or period_ns are not achievable then return */
+> -               if (pc < PERIOD_COUNT_MIN || dc < DUTY_CYCLE_HIGH_MIN)
+> +               if (pc < PERIOD_COUNT_MIN) {
+> +                       dev_warn(chip->dev,
+> +                               "%s: pwm[%d]: period=%d is not achievable, pc=%lu, prescale=%lu\n",
+> +                               __func__, chan, period_ns, pc, prescale);
+>                         return -EINVAL;
+> +               }
+> +
+> +               /* If duty_ns is not achievable then return */
+> +               if (dc < DUTY_CYCLE_HIGH_MIN) {
+> +                       if (0 != duty_ns) {
+> +                               dev_warn(chip->dev,
+> +                                       "%s: pwm[%d]: duty cycle=%d is not achievable, dc=%lu, prescale=%lu\n",
+> +                                       __func__, chan, duty_ns, dc, prescale);
+> +                       }
+> +                       return -EINVAL;
+> +               }
+>
+>                 /* If pc and dc are in bounds, the calculation is done */
+>                 if (pc <= PERIOD_COUNT_MAX && dc <= DUTY_CYCLE_HIGH_MAX)
+>                         break;
+>
+>                 /* Otherwise, increase prescale and recalculate pc and dc */
+> -               if (++prescale > PRESCALE_MAX)
+> +               if (++prescale > PRESCALE_MAX) {
+> +                       dev_warn(chip->dev,
+> +                               "%s: pwm[%d]: Prescale (=%lu) within max (=%d) for period=%d and duty cycle=%d is not achievable\n",
+> +                               __func__, chan, prescale, PRESCALE_MAX,
+> +                               period_ns, duty_ns);
+>                         return -EINVAL;
+> +               }
+>         }
+>
+> -       /* If the PWM channel is enabled, write the settings to the HW */
+> -       if (test_bit(PWMF_ENABLED, &pwm->flags)) {
+> -               value = readl(kp->base + PRESCALE_OFFSET);
+> -               value &= ~PRESCALE_MASK(chan);
+> -               value |= prescale << PRESCALE_SHIFT(chan);
+> -               writel(value, kp->base + PRESCALE_OFFSET);
+> +       dev_dbg(chip->dev, "pwm[%d]: period=%lu, duty_high=%lu, prescale=%lu\n",
+> +               chan, pc, dc, prescale);
+>
+> -               writel(pc, kp->base + PERIOD_COUNT_OFFSET(chan));
+> +       value = readl(kp->base + PWM_CONTROL_OFFSET);
+>
+> -               writel(dc, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
+> +       /*
+> +        * Clear trigger bit but set smooth bit to maintain old
+> +        * output.
+> +        */
+> +       value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
+> +       value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
+> +       writel(value, kp->base + PWM_CONTROL_OFFSET);
+>
+> -               kona_pwmc_apply_settings(kp, chan);
+> -       }
+> +       value = readl(kp->base + PRESCALE_OFFSET);
+> +       value &= ~PRESCALE_MASK(chan);
+> +       value |= prescale << PRESCALE_SHIFT(chan);
+> +       writel(value, kp->base + PRESCALE_OFFSET);
+> +
+> +       writel(pc, kp->base + PERIOD_COUNT_OFFSET(chan));
+> +
+> +       writel(dc, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
+> +
+> +       kona_pwmc_apply_settings(kp, chan);
+>
+>         return 0;
+>  }
+
+There is no requirement to lower the trigger bit prior to writing the
+period and duty registers.
+
+This change is unnecessary.  The old sequence was fine.
+
+> @@ -173,11 +209,6 @@ static int kona_pwmc_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+>
+>         writel(value, kp->base + PWM_CONTROL_OFFSET);
+>
+> -       kona_pwmc_apply_settings(kp, chan);
+> -
+> -       /* Wait for waveform to settle before gating off the clock */
+> -       ndelay(400);
+> -
+>         clk_disable_unprepare(kp->clk);
+>
+>         return 0;
+
+I'm not completely convinced that changing the polarity behavior is beneficial.
+
+Please mention this change in your commit description and provide
+appropriate justification.
+
+> @@ -190,12 +221,14 @@ static int kona_pwmc_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+>
+>         ret = clk_prepare_enable(kp->clk);
+>         if (ret < 0) {
+> +               clear_bit(PWMF_ENABLED, &pwm->flags);
+>                 dev_err(chip->dev, "failed to enable clock: %d\n", ret);
+>                 return ret;
+>         }
+>
+>         ret = kona_pwmc_config(chip, pwm, pwm->duty_cycle, pwm->period);
+>         if (ret < 0) {
+> +               clear_bit(PWMF_ENABLED, &pwm->flags);
+>                 clk_disable_unprepare(kp->clk);
+>                 return ret;
+>         }
+
+Don't try to fix this in the Kona PWM driver, fix it in the PWM core.
+
+> @@ -207,13 +240,23 @@ static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+>  {
+>         struct kona_pwmc *kp = to_kona_pwmc(chip);
+>         unsigned int chan = pwm->hwpwm;
+> +       unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
+> +
+> +       /* Set smooth type to 1 and disable */
+> +       value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
+> +       value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
+> +       writel(value, kp->base + PWM_CONTROL_OFFSET);
+>
+>         /* Simulate a disable by configuring for zero duty */
+>         writel(0, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
+> -       kona_pwmc_apply_settings(kp, chan);
+> +       writel(0, kp->base + PERIOD_COUNT_OFFSET(chan));
+>
+> -       /* Wait for waveform to settle before gating off the clock */
+> -       ndelay(400);
+> +       /* Set prescale to 0 for this channel */
+> +       value = readl(kp->base + PRESCALE_OFFSET);
+> +       value &= ~PRESCALE_MASK(chan);
+> +       writel(value, kp->base + PRESCALE_OFFSET);
+
+Can you explain why it is necessary to change the prescale here?
+
+> +
+> +       kona_pwmc_apply_settings(kp, chan);
+>
+>         clk_disable_unprepare(kp->clk);
+>  }
+> --
+> 1.7.9.5
+>
