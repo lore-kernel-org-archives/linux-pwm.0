@@ -1,43 +1,38 @@
-From: Tim Kryger <tim.kryger@gmail.com>
-Subject: Re: [PATCH v4 2/3] pwm: kona: Remove setting default smooth type and
- polarity for all channels
-Date: Sun, 4 Jan 2015 17:33:06 -0800
-Message-ID: <CAD7vxxL6ZkuODKgZbGq9osURnA3DC7zjHbWr8owG93SVY1h5Bw@mail.gmail.com>
-References: <jonathar@broadcom.com>
-	<1419979410-7589-1-git-send-email-jonathar@broadcom.com>
-	<1419979410-7589-3-git-send-email-jonathar@broadcom.com>
-	<CAD7vxxKb-JvBMzEoJ3m8xsrHJ4KhDqViWhtH-7sBpA-jJgic1w@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: [PATCH] pwm: pca9685: Constify struct regmap_config
+Date: Mon, 05 Jan 2015 10:03:44 +0100
+Message-ID: <1420448624-9567-1-git-send-email-k.kozlowski@samsung.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wg0-f43.google.com ([74.125.82.43]:45881 "EHLO
-	mail-wg0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752963AbbAEBkV (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sun, 4 Jan 2015 20:40:21 -0500
-In-Reply-To: <CAD7vxxKb-JvBMzEoJ3m8xsrHJ4KhDqViWhtH-7sBpA-jJgic1w@mail.gmail.com>
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:39707 "EHLO
+	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753394AbbAEJDw (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 5 Jan 2015 04:03:52 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jonathan Richardson <jonathar@broadcom.com>
-Cc: Scott Branden <sbranden@broadcom.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Ray Jui <rjui@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Krzysztof Kozlowski <k.kozlowski@samsung.com>
 
-On Sun, Jan 4, 2015 at 5:12 PM, Tim Kryger <tim.kryger@gmail.com> wrote:
-> On Tue, Dec 30, 2014 at 2:43 PM, Jonathan Richardson
-> <jonathar@broadcom.com> wrote:
->> Setting the default polarity in probe to normal for all channels caused
->> the speaker pwm channel to click. The polarity does need to be set to
->> normal because the hw default is inversed whereas the pwm framework
->> defaults to normal. If a channel is enabled without setting the polarity
->> then the signal would be inversed while linux reports normal. A check
->> is now done prior to enabling the channel to ensure that the hw polarity
->> matches the desired polarity and is changed if there is a discrepency. This
->> prevents unnecessary settings being applied to unused channels but still
->> ensures the correct polarity to be set.
->
-> A more direct solution that avoids the potentially undesirable
-> consequences of delaying when polarity changes are written to hardware
-> would be to update the PWM framework to allow for the registration of
-> chips with inversed default polarity.
->
-> I will post a patch for your review.
+The regmap_config struct may be const because it is not modified by the
+driver and regmap_init() accepts pointer to const.
 
-Please see:  https://lkml.org/lkml/2015/1/4/199
+Signed-off-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+---
+ drivers/pwm/pwm-pca9685.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+index 3fb775ded0df..34b5c275a92a 100644
+--- a/drivers/pwm/pwm-pca9685.c
++++ b/drivers/pwm/pwm-pca9685.c
+@@ -202,7 +202,7 @@ static const struct pwm_ops pca9685_pwm_ops = {
+ 	.owner = THIS_MODULE,
+ };
+ 
+-static struct regmap_config pca9685_regmap_i2c_config = {
++static const struct regmap_config pca9685_regmap_i2c_config = {
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
+ 	.max_register = PCA9685_NUMREGS,
+-- 
+1.9.1
+
