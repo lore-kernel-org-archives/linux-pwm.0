@@ -1,120 +1,85 @@
-From: Jonathan Richardson <jonathar@broadcom.com>
-Subject: Re: [PATCH 1/2] drivers: pwm: core: Add pwmchip_add_inversed
-Date: Tue, 6 Jan 2015 13:16:40 -0800
-Message-ID: <54AC50B8.7050702@broadcom.com>
-References: <1420420376-13087-1-git-send-email-tim.kryger@gmail.com> <1420420376-13087-2-git-send-email-tim.kryger@gmail.com>
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Subject: [PATCH v7 0/4] Imagination Technologies PWM and PDM DACs support
+Date: Wed, 7 Jan 2015 14:20:11 -0300
+Message-ID: <1420651215-3836-1-git-send-email-ezequiel.garcia@imgtec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1420420376-13087-2-git-send-email-tim.kryger@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tim Kryger <tim.kryger@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Scott Branden <sbranden@broadcom.com>, Arun Ramamurthy <arunrama@broadcom.com>, Ray Jui <rjui@broadcom.com>, Linux PWM <linux-pwm@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, Broadcom Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>
+To: Andrew Bresticker <abrestic@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, James Hartley <james.hartley@imgtec.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Ezequiel Garcia <ezequiel.garcia@imgtec.com>
 List-Id: linux-pwm@vger.kernel.org
 
-I'm fine with the changes. I'll remove patch 2 (polarity) from my
-patches and send them out again based on these. Hopefully we can move
-forward with this.
+This patchset is the seventh round for the IMG PWM and PDM DAC drivers.
 
-On 15-01-04 05:12 PM, Tim Kryger wrote:
-> Add a new function to register a PWM chip with channels that have their
-> initial polarity as inversed.  This benefits drivers of controllers that
-> by default operate with inversed polarity by removing the need to modify
-> the polarity during initialization.
-> 
-> Signed-off-by: Tim Kryger <tim.kryger@gmail.com>
-> ---
->  drivers/pwm/core.c  | 36 ++++++++++++++++++++++++++++--------
->  include/linux/pwm.h |  6 ++++++
->  2 files changed, 34 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> index 966497d..f28c4ce 100644
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-> @@ -222,14 +222,8 @@ void *pwm_get_chip_data(struct pwm_device *pwm)
->  }
->  EXPORT_SYMBOL_GPL(pwm_get_chip_data);
->  
-> -/**
-> - * pwmchip_add() - register a new PWM chip
-> - * @chip: the PWM chip to add
-> - *
-> - * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
-> - * will be used.
-> - */
-> -int pwmchip_add(struct pwm_chip *chip)
-> +static int pwmchip_add_with_polarity(struct pwm_chip *chip,
-> +				     enum pwm_polarity polarity)
->  {
->  	struct pwm_device *pwm;
->  	unsigned int i;
-> @@ -259,6 +253,7 @@ int pwmchip_add(struct pwm_chip *chip)
->  		pwm->chip = chip;
->  		pwm->pwm = chip->base + i;
->  		pwm->hwpwm = i;
-> +		pwm->polarity = polarity;
->  
->  		radix_tree_insert(&pwm_tree, pwm->pwm, pwm);
->  	}
-> @@ -279,9 +274,34 @@ out:
->  	mutex_unlock(&pwm_lock);
->  	return ret;
->  }
-> +
-> +/**
-> + * pwmchip_add() - register a new PWM chip
-> + * @chip: the PWM chip to add
-> + *
-> + * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
-> + * will be used.  The initial polarity for all channels is normal.
-> + */
-> +int pwmchip_add(struct pwm_chip *chip)
-> +{
-> +	return pwmchip_add_with_polarity(chip, PWM_POLARITY_NORMAL);
-> +}
->  EXPORT_SYMBOL_GPL(pwmchip_add);
->  
->  /**
-> + * pwmchip_add_inversed() - register a new PWM chip
-> + * @chip: the PWM chip to add
-> + *
-> + * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
-> + * will be used.  The initial polarity for all channels is inversed.
-> + */
-> +int pwmchip_add_inversed(struct pwm_chip *chip)
-> +{
-> +	return pwmchip_add_with_polarity(chip, PWM_POLARITY_INVERSED);
-> +}
-> +EXPORT_SYMBOL_GPL(pwmchip_add_inversed);
-> +
-> +/**
->   * pwmchip_remove() - remove a PWM chip
->   * @chip: the PWM chip to remove
->   *
-> diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-> index e90628c..358547f 100644
-> --- a/include/linux/pwm.h
-> +++ b/include/linux/pwm.h
-> @@ -183,6 +183,7 @@ int pwm_set_chip_data(struct pwm_device *pwm, void *data);
->  void *pwm_get_chip_data(struct pwm_device *pwm);
->  
->  int pwmchip_add(struct pwm_chip *chip);
-> +int pwmchip_add_inversed(struct pwm_chip *chip);
->  int pwmchip_remove(struct pwm_chip *chip);
->  struct pwm_device *pwm_request_from_chip(struct pwm_chip *chip,
->  					 unsigned int index,
-> @@ -217,6 +218,11 @@ static inline int pwmchip_add(struct pwm_chip *chip)
->  	return -EINVAL;
->  }
->  
-> +static inline int pwmchip_add_inversed(struct pwm_chip *chip)
-> +{
-> +	return -EINVAL;
-> +}
-> +
->  static inline int pwmchip_remove(struct pwm_chip *chip)
->  {
->  	return -EINVAL;
-> 
+The PWM driver is a typical PWM, and I don't think there's anything
+controversial there.
+
+The PDM driver -on the other side- is a bit ackward. At first, we tried
+to support it as a PWM, but after some lengthy discussions, we came to the
+conclusion the controller couldn't be configured with duty and period,
+so it was agreed [1] to write a misc driver for it.
+
+Given there won't be any framework (the controller is too rare to justify
+a new framework), an internal API is needed. We've tried to keep this API
+as simple as possible. Also, we've tried to follow a devicetree binding
+similar to the PWM one.
+
+Users of the PDM can call a couple functions to request a channel and
+release the resource:
+
+  struct img_pdm_channel *img_pdm_channel_get(struct device *dev);
+  void img_pdm_channel_put(struct device *dev);
+
+After requesting a PDM channel, users can enable or configure it:
+
+  int img_pdm_channel_enable(struct img_pdm_channel *chan, bool state);
+  int img_pdm_channel_config(struct img_pdm_channel *chan, unsigned int val);
+
+Where 'val' is a hardware-specific quantity, namely, a 12-bit value
+that is added to the PDM counter:
+
+  counter [12:0] = counter [11:0] + value [11:0]
+  PDM output = counter [12]
+
+Hence, by changing the 'value' it's possible to control the pulse density
+(lower values, correspond to lower densities).
+
+Given this looks like very platform-specific, I feel the misc driver is a good
+solution, but I'm open to discussion about it.
+
+The reason why these two drivers are being sent together is because of the
+peripheral register that is used to enable an output, and mux it as PWM or PDM.
+Because this register is not part of the pin controller block, but rather
+PWM/PDM specific, and because the register is also used to set the PDM value,
+it is simpler to use a regmap-based syscon to deal with it.
+
+The series is based on v3.19-rc3. My goal is to merge at least the PWM driver
+for v3.20, if we fail to agree on the PDM driver.
+
+[1] http://www.spinics.net/lists/linux-pwm/msg01990.html
+
+Naidu Tellapati (4):
+  pwm: Imagination Technologies PWM DAC driver
+  DT: pwm: Add binding document for IMG PWM DAC
+  pdm: Imagination Technologies PDM DAC driver
+  DT: pdm: Add binding document for IMG PDM DAC
+
+ Documentation/devicetree/bindings/misc/img-pdm.txt |  54 ++
+ Documentation/devicetree/bindings/pwm/img-pwm.txt  |  24 +
+ drivers/misc/Kconfig                               |  13 +
+ drivers/misc/Makefile                              |   1 +
+ drivers/misc/img-pdm.c                             | 608 +++++++++++++++++++++
+ drivers/pwm/Kconfig                                |  13 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-img.c                              | 250 +++++++++
+ include/linux/img_pdm.h                            |  27 +
+ 9 files changed, 991 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/misc/img-pdm.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/img-pwm.txt
+ create mode 100644 drivers/misc/img-pdm.c
+ create mode 100644 drivers/pwm/pwm-img.c
+ create mode 100644 include/linux/img_pdm.h
+
+-- 
+2.2.1
