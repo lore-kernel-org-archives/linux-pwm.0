@@ -1,168 +1,77 @@
-From: Jonathan Richardson <jonathar@broadcom.com>
-Subject: [PATCH v5 1/2] pwm: kona: Fix incorrect config, disable, and polarity procedures
-Date: Wed, 7 Jan 2015 11:42:50 -0800
-Message-ID: <1420659771-31401-2-git-send-email-jonathar@broadcom.com>
-References: <Jonathan Richardson <jonathar@broadcom.com>
- <1420659771-31401-1-git-send-email-jonathar@broadcom.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1420659771-31401-1-git-send-email-jonathar@broadcom.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tim Kryger <tim.kryger@gmail.com>
-Cc: Scott Branden <sbranden@broadcom.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Ray Jui <rjui@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Jonathan Richardson <jonathar@broadcom.com>
+From: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+Subject: [PATCH RESEND] pwm: samsung: Fix output race on disabling
+Date: Wed,  7 Jan 2015 23:58:17 +0100
+Message-ID: <1420671497-25270-1-git-send-email-sjoerd.simons@collabora.co.uk>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from bhuna.collabora.co.uk ([93.93.135.160]:39679 "EHLO
+	bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750942AbbAGW6V (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jan 2015 17:58:21 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Ajay Kumar <ajaykumar.rs@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Javier Martinez Canillas <javier.martinez@collabora.co.uk>, linux-samsung-soc@vger.kernel.org
 
-The config procedure didn't follow the spec which periodically resulted
-in failing to enable the output signal. This happened one in ten or
-twenty attempts. Following the spec and adding a 400ns delay in the
-appropriate locations resolves this problem.
+When disabling the samsung PWM the output state remains at the level it
+was in the end of a pwm cycle. In other words, calling pwm_disable when
+at 100% duty will keep the output active, while at all other setting the
+output will go/stay inactive. On top of that the samsung PWM settings are
+double-buffered, which means the new settings only get applied at the
+start of a new PWM cycle.
 
-The disable procedure now also follows the spec. The old disable
-procedure would result in no change in signal when called.
+This results in a race if the PWM is at 100% duty and a driver calls:
+  pwm_config (pwm, 0, period);
+  pwm_disable (pwm);
 
-The polarity procedure no longer applies the settings to change the
-output signal because it can't be called when the pwm is enabled anyway.
-The polarity is only updated in the control register. The correct
-polarity will be applied on enable. The old method of applying changes
-would result in no signal when the polarity was changed. The new
-apply_settings function would fix this problem but it isn't required
-anyway.
+In this case the PWMs output will unexpectedly stay active, unless a new
+PWM cycle happened to start between the register writes in _config and
+_disable. As far as i can tell this is a regression introduced by 3bdf878,
+before that a call to pwm_config would call pwm_samsung_enable which,
+while heavy-handed, made sure the expected settings were live.
 
-Reviewed-by: Arun Ramamurthy <arunrama@broadcom.com>
-Reviewed-by: Scott Branden <sbranden@broadcom.com>
-Tested-by: Scott Branden <sbranden@broadcom.com>
-Signed-off-by: Jonathan Richardson <jonathar@broadcom.com>
+To resolve this, while not re-introducing the issues 3bdf878 (flickering
+as the PWM got reset while in a PWM cycle). Only force an update of the
+settings when at 100% duty, which shouldn't have a noticeable effect on
+the output but is enough to ensure the behaviour is as expected on
+disable.
+
+Signed-off-by: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
 ---
- drivers/pwm/pwm-bcm-kona.c |   75 +++++++++++++++++++++++++++++++++++---------
- 1 file changed, 60 insertions(+), 15 deletions(-)
+ drivers/pwm/pwm-samsung.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
-index 32b3ec6..8a1dfba 100644
---- a/drivers/pwm/pwm-bcm-kona.c
-+++ b/drivers/pwm/pwm-bcm-kona.c
-@@ -80,15 +80,19 @@ static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
- {
- 	unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
+diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
+index 3e9b583..3e252dc 100644
+--- a/drivers/pwm/pwm-samsung.c
++++ b/drivers/pwm/pwm-samsung.c
+@@ -335,6 +335,27 @@ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	writel(tcnt, our_chip->base + REG_TCNTB(pwm->hwpwm));
+ 	writel(tcmp, our_chip->base + REG_TCMPB(pwm->hwpwm));
  
--	/* Clear trigger bit but set smooth bit to maintain old output */
--	value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
--	value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
--	writel(value, kp->base + PWM_CONTROL_OFFSET);
-+	/*
-+	 * There must be a min 400ns delay between clearing enable and setting
-+	 * it. Failing to do this may result in no PWM signal.
-+	 */
-+	ndelay(400);
- 
- 	/* Set trigger bit and clear smooth bit to apply new settings */
- 	value &= ~(1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
- 	value |= 1 << PWM_CONTROL_TRIGGER_SHIFT(chan);
- 	writel(value, kp->base + PWM_CONTROL_OFFSET);
++	/* In case the PWM is currently at 100% duty, trigger a manual update to
++	 * prevent unexpected results when disabling the pwm */
++	if (chan->period_ns/chan->tin_ns == chan->duty_ns/chan->tin_ns) {
++		unsigned int tcon_chan = to_tcon_channel(pwm->hwpwm);
++		u32 tcon;
++		unsigned long flags;
 +
-+	/* PWMOUT_ENABLE must be held high for at least 400 ns. */
-+	ndelay(400);
- }
- 
- static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -121,20 +125,56 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		dc = div64_u64(val, div);
- 
- 		/* If duty_ns or period_ns are not achievable then return */
--		if (pc < PERIOD_COUNT_MIN || dc < DUTY_CYCLE_HIGH_MIN)
-+		if (pc < PERIOD_COUNT_MIN) {
-+			dev_warn(chip->dev,
-+				"%s: pwm[%d]: period=%d is not achievable, pc=%lu, prescale=%lu\n",
-+				__func__, chan, period_ns, pc, prescale);
-+			return -EINVAL;
-+		}
++		dev_dbg(our_chip->chip.dev, "Forcing manual update");
 +
-+		/* If duty_ns is not achievable then return */
-+		if (dc < DUTY_CYCLE_HIGH_MIN) {
-+			if (0 != duty_ns) {
-+				dev_warn(chip->dev,
-+					"%s: pwm[%d]: duty cycle=%d is not achievable, dc=%lu, prescale=%lu\n",
-+					__func__, chan, duty_ns, dc, prescale);
-+			}
- 			return -EINVAL;
-+		}
- 
- 		/* If pc and dc are in bounds, the calculation is done */
- 		if (pc <= PERIOD_COUNT_MAX && dc <= DUTY_CYCLE_HIGH_MAX)
- 			break;
- 
- 		/* Otherwise, increase prescale and recalculate pc and dc */
--		if (++prescale > PRESCALE_MAX)
-+		if (++prescale > PRESCALE_MAX) {
-+			dev_warn(chip->dev,
-+				"%s: pwm[%d]: Prescale (=%lu) within max (=%d) for period=%d and duty cycle=%d is not achievable\n",
-+				__func__, chan, prescale, PRESCALE_MAX,
-+				period_ns, duty_ns);
- 			return -EINVAL;
-+		}
- 	}
- 
--	/* If the PWM channel is enabled, write the settings to the HW */
-+	dev_dbg(chip->dev, "pwm[%d]: period=%lu, duty_high=%lu, prescale=%lu\n",
-+		chan, pc, dc, prescale);
++		spin_lock_irqsave(&samsung_pwm_lock, flags);
 +
-+	/*
-+	 * Don't apply settings if disabled. The period and duty cycle are
-+	 * always calculated above to ensure the new values are
-+	 * validated immediately instead of on enable.
-+	 */
- 	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
-+		value = readl(kp->base + PWM_CONTROL_OFFSET);
++		tcon = readl(our_chip->base + REG_TCON);
++		tcon |= TCON_MANUALUPDATE(tcon_chan);
++		writel(tcon, our_chip->base + REG_TCON);
 +
-+		/*
-+		 * Clear trigger bit but set smooth bit to maintain old
-+		 * output.
-+		 */
-+		value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
-+		value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
-+		writel(value, kp->base + PWM_CONTROL_OFFSET);
++		tcon &= ~TCON_MANUALUPDATE(tcon_chan);
++		writel(tcon, our_chip->base + REG_TCON);
 +
- 		value = readl(kp->base + PRESCALE_OFFSET);
- 		value &= ~PRESCALE_MASK(chan);
- 		value |= prescale << PRESCALE_SHIFT(chan);
-@@ -173,11 +213,6 @@ static int kona_pwmc_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	writel(value, kp->base + PWM_CONTROL_OFFSET);
- 
--	kona_pwmc_apply_settings(kp, chan);
--
--	/* Wait for waveform to settle before gating off the clock */
--	ndelay(400);
--
- 	clk_disable_unprepare(kp->clk);
- 
- 	return 0;
-@@ -207,13 +242,23 @@ static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct kona_pwmc *kp = to_kona_pwmc(chip);
- 	unsigned int chan = pwm->hwpwm;
-+	unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
++		spin_unlock_irqrestore(&samsung_pwm_lock, flags);
++	}
 +
-+	/* Set smooth type to 1 and disable */
-+	value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
-+	value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
-+	writel(value, kp->base + PWM_CONTROL_OFFSET);
- 
- 	/* Simulate a disable by configuring for zero duty */
- 	writel(0, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
--	kona_pwmc_apply_settings(kp, chan);
-+	writel(0, kp->base + PERIOD_COUNT_OFFSET(chan));
- 
--	/* Wait for waveform to settle before gating off the clock */
--	ndelay(400);
-+	/* Set prescale to 0 for this channel */
-+	value = readl(kp->base + PRESCALE_OFFSET);
-+	value &= ~PRESCALE_MASK(chan);
-+	writel(value, kp->base + PRESCALE_OFFSET);
-+
-+	kona_pwmc_apply_settings(kp, chan);
- 
- 	clk_disable_unprepare(kp->clk);
- }
+ 	chan->period_ns = period_ns;
+ 	chan->tin_ns = tin_ns;
+ 	chan->duty_ns = duty_ns;
 -- 
-1.7.9.5
+2.1.4
+
