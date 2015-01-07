@@ -1,721 +1,326 @@
-From: Ezequiel Garcia <ezequiel.garcia-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v7 3/4] pdm: Imagination Technologies PDM DAC driver
-Date: Wed, 7 Jan 2015 14:20:14 -0300
-Message-ID: <1420651215-3836-4-git-send-email-ezequiel.garcia@imgtec.com>
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Subject: [PATCH v7 1/4] pwm: Imagination Technologies PWM DAC driver
+Date: Wed, 7 Jan 2015 14:20:12 -0300
+Message-ID: <1420651215-3836-2-git-send-email-ezequiel.garcia@imgtec.com>
 References: <1420651215-3836-1-git-send-email-ezequiel.garcia@imgtec.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1420651215-3836-1-git-send-email-ezequiel.garcia-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andrew Bresticker <abrestic-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, James Hartley <james.hartley-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Naidu Tellapati <Naidu.Tellapati-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Arul Ramasamy <Arul.Ramasamy-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Ezequiel Garcia <ezequiel.garcia-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1420651215-3836-1-git-send-email-ezequiel.garcia@imgtec.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andrew Bresticker <abrestic@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, James Hartley <james.hartley@imgtec.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Naidu Tellapati <Naidu.Tellapati@imgtec.com>, Sai Masarapu <Sai.Masarapu@imgtec.com>, Ezequiel Garcia <ezequiel.garcia@imgtec.com>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Naidu Tellapati <Naidu.Tellapati-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+From: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
 
-The Pistachio SOC from Imagination Technologies includes a Pulse Density
-Modulation DAC which produces a form of analogue output according to the
-relative density of output pulses to the intended analogue signal amplitude.
-Four PDM outputs are provided that can be used to control targets such as LCD
-backlight.
+The Pistachio SOC from Imagination Technologies includes a Pulse Width
+Modulation DAC which produces 1 to 4 digital bit-outputs which represent
+digital waveforms. These PWM outputs are primarily in charge of controlling
+backlight LED devices.
 
-Signed-off-by: Naidu Tellapati <Naidu.Tellapati-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Arul Ramasamy <Arul.Ramasamy-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Ezequiel Garcia <ezequiel.garcia-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+Reviewed-by: Andrew Bresticker <abrestic@chromium.org>
+Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+Signed-off-by: Sai Masarapu <Sai.Masarapu@imgtec.com>
+Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
 ---
- drivers/misc/Kconfig    |  13 ++
- drivers/misc/Makefile   |   1 +
- drivers/misc/img-pdm.c  | 608 ++++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/img_pdm.h |  27 +++
- 4 files changed, 649 insertions(+)
- create mode 100644 drivers/misc/img-pdm.c
- create mode 100644 include/linux/img_pdm.h
+ drivers/pwm/Kconfig   |  13 +++
+ drivers/pwm/Makefile  |   1 +
+ drivers/pwm/pwm-img.c | 250 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 264 insertions(+)
+ create mode 100644 drivers/pwm/pwm-img.c
 
-diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index 006242c..5ec7263 100644
---- a/drivers/misc/Kconfig
-+++ b/drivers/misc/Kconfig
-@@ -515,6 +515,19 @@ config VEXPRESS_SYSCFG
- 	  bus. System Configuration interface is one of the possible means
- 	  of generating transactions on this bus.
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index a3ecf58..1681cd0 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -130,6 +130,19 @@ config PWM_FSL_FTM
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-fsl-ftm.
  
-+config IMG_PDM
-+	tristate "Imagination Technologies PDM driver"
++config PWM_IMG
++	tristate "Imagination Technologies PWM driver"
 +	depends on HAS_IOMEM
 +	depends on MFD_SYSCON
 +	depends on COMMON_CLK
 +	depends on MIPS || COMPILE_TEST
 +	help
-+	  PDM driver for Imagination Technologies PDM block which supports 4
-+	  channels.
++	  Generic PWM framework driver for Imagination Technologies
++	  PWM block which supports 4 channels.
 +
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called img-pdm.
++	  To compile this driver as a module, choose M here: the module
++	  will be called pwm-img
 +
- source "drivers/misc/c2port/Kconfig"
- source "drivers/misc/eeprom/Kconfig"
- source "drivers/misc/cb710/Kconfig"
-diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index 7d5c4cd..d8c7d55 100644
---- a/drivers/misc/Makefile
-+++ b/drivers/misc/Makefile
-@@ -56,3 +56,4 @@ obj-$(CONFIG_GENWQE)		+= genwqe/
- obj-$(CONFIG_ECHO)		+= echo/
- obj-$(CONFIG_VEXPRESS_SYSCFG)	+= vexpress-syscfg.o
- obj-$(CONFIG_CXL_BASE)		+= cxl/
-+obj-$(CONFIG_IMG_PDM)		+= img-pdm.o
-diff --git a/drivers/misc/img-pdm.c b/drivers/misc/img-pdm.c
+ config PWM_IMX
+ 	tristate "i.MX PWM support"
+ 	depends on ARCH_MXC
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index 65259ac..85381e4 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -10,6 +10,7 @@ obj-$(CONFIG_PWM_BFIN)		+= pwm-bfin.o
+ obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
+ obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
+ obj-$(CONFIG_PWM_FSL_FTM)	+= pwm-fsl-ftm.o
++obj-$(CONFIG_PWM_IMG)		+= pwm-img.o
+ obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
+ obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
+ obj-$(CONFIG_PWM_LP3943)	+= pwm-lp3943.o
+diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
 new file mode 100644
-index 0000000..6cdde51
+index 0000000..ad32539
 --- /dev/null
-+++ b/drivers/misc/img-pdm.c
-@@ -0,0 +1,608 @@
-+/**
-+ * Imagination Technologies Pulse Density Modulator driver
++++ b/drivers/pwm/pwm-img.c
+@@ -0,0 +1,250 @@
++/*
++ * Imagination Technologies Pulse Width Modulator driver
 + *
-+ * Copyright (C) 2014-2015 Imagination Technologies Ltd.
++ * Copyright (c) 2014-2015, Imagination Technologies
++ *
++ * Based on drivers/pwm/pwm-tegra.c, Copyright (c) 2010, NVIDIA Corporation
 + *
 + * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
 + */
 +
-+#include <linux/capability.h>
 +#include <linux/clk.h>
-+#include <linux/ctype.h>
-+#include <linux/device.h>
-+#include <linux/errno.h>
-+#include <linux/img_pdm.h>
-+#include <linux/init.h>
-+#include <linux/kernel.h>
-+#include <linux/kobject.h>
-+#include <linux/list.h>
++#include <linux/err.h>
++#include <linux/io.h>
 +#include <linux/mfd/syscon.h>
 +#include <linux/module.h>
 +#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/of_platform.h>
 +#include <linux/platform_device.h>
++#include <linux/pwm.h>
 +#include <linux/regmap.h>
-+#include <linux/string.h>
-+#include <linux/sysfs.h>
++#include <linux/slab.h>
 +
-+/* Registers */
++/* PWM registers */
++#define PWM_CTRL_CFG				0x0000
++#define PWM_CTRL_CFG_NO_SUB_DIV			0
++#define PWM_CTRL_CFG_SUB_DIV0			1
++#define PWM_CTRL_CFG_SUB_DIV1			2
++#define PWM_CTRL_CFG_SUB_DIV0_DIV1		3
++#define PWM_CTRL_CFG_DIV_SHIFT(ch)		((ch) * 2 + 4)
++#define PWM_CTRL_CFG_DIV_MASK			0x3
++
++#define PWM_CH_CFG(ch)				(0x4 + (ch) * 4)
++#define PWM_CH_CFG_TMBASE_SHIFT			0
++#define PWM_CH_CFG_DUTY_SHIFT			16
++
 +#define PERIP_PWM_PDM_CONTROL			0x0140
 +#define PERIP_PWM_PDM_CONTROL_CH_MASK		0x1
 +#define PERIP_PWM_PDM_CONTROL_CH_SHIFT(ch)	((ch) * 4)
 +
-+#define PERIP_PDM0_VAL				0x0144
-+#define PERIP_PDM_CH_ADDR_SHIFT(ch)		((ch) * 4)
-+#define PERIP_PDM_SRC_DATA_MASK			0xfff
++#define MAX_TMBASE_STEPS			65536
 +
-+#define IMG_NUM_PDM				4
-+#define PDM_CHANNEL_REQUESTED			1
-+#define PDM_CHANNEL_ENABLED			2
-+
-+struct img_pdm_device {
-+	struct clk *clk;
-+	struct kobject **pdm_kobj;
-+	struct regmap *periph_regs;
-+	struct platform_device *pdev;
++struct img_pwm_chip {
++	struct device	*dev;
++	struct pwm_chip	chip;
++	struct clk	*pwm_clk;
++	struct clk	*sys_clk;
++	void __iomem	*base;
++	struct regmap	*periph_regs;
 +};
 +
-+static struct img_pdm_channel *pdm_channels;
-+static DEFINE_MUTEX(pdm_lock);
-+
-+int img_pdm_channel_config(struct img_pdm_channel *chan, unsigned int val)
++static inline struct img_pwm_chip *to_img_pwm_chip(struct pwm_chip *chip)
 +{
-+	struct img_pdm_device *pdm_dev;
-+
-+	if (!chan)
-+		return -EINVAL;
-+
-+	pdm_dev = chan->pdm_dev;
-+	if (!test_bit(PDM_CHANNEL_REQUESTED, &chan->flags)) {
-+		dev_err(&pdm_dev->pdev->dev, "channel not requested\n");
-+		return -EINVAL;
-+	}
-+
-+	val &= PERIP_PDM_SRC_DATA_MASK;
-+	regmap_write(pdm_dev->periph_regs,
-+		     PERIP_PDM0_VAL + PERIP_PDM_CH_ADDR_SHIFT(chan->pdm_id),
-+		     val);
-+	return 0;
++	return container_of(chip, struct img_pwm_chip, chip);
 +}
-+EXPORT_SYMBOL_GPL(img_pdm_channel_config);
 +
-+static int img_pdm_channel_free(struct img_pdm_channel *chan)
++static inline void img_pwm_writel(struct img_pwm_chip *chip,
++				  u32 reg, u32 val)
 +{
-+	unsigned int i;
-+	struct img_pdm_device *pdm_dev;
++	writel(val, chip->base + reg);
++}
 +
-+	mutex_lock(&pdm_lock);
++static inline u32 img_pwm_readl(struct img_pwm_chip *chip,
++					 u32 reg)
++{
++	return readl(chip->base + reg);
++}
 +
-+	if (!pdm_channels || !chan) {
-+		mutex_unlock(&pdm_lock);
++static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
++			  int duty_ns, int period_ns)
++{
++	u32 val, div, duty, timebase;
++	unsigned long mul, output_clk_hz, input_clk_hz;
++	struct img_pwm_chip *pwm_chip = to_img_pwm_chip(chip);
++
++	input_clk_hz = clk_get_rate(pwm_chip->pwm_clk);
++	output_clk_hz = DIV_ROUND_UP(NSEC_PER_SEC, period_ns);
++
++	mul = DIV_ROUND_UP(input_clk_hz, output_clk_hz);
++	if (mul <= MAX_TMBASE_STEPS) {
++		div = PWM_CTRL_CFG_NO_SUB_DIV;
++		timebase = DIV_ROUND_UP(mul, 1);
++	} else if (mul <= MAX_TMBASE_STEPS * 8) {
++		div = PWM_CTRL_CFG_SUB_DIV0;
++		timebase = DIV_ROUND_UP(mul, 8);
++	} else if (mul <= MAX_TMBASE_STEPS * 64) {
++		div = PWM_CTRL_CFG_SUB_DIV1;
++		timebase = DIV_ROUND_UP(mul, 64);
++	} else if (mul <= MAX_TMBASE_STEPS * 512) {
++		div = PWM_CTRL_CFG_SUB_DIV0_DIV1;
++		timebase = DIV_ROUND_UP(mul, 512);
++	} else if (mul > MAX_TMBASE_STEPS * 512) {
++		dev_err(chip->dev,
++			"failed to configure timebase steps/divider value\n");
 +		return -EINVAL;
 +	}
 +
-+	pdm_dev = pdm_channels[0].pdm_dev;
-+	if (!pdm_dev) {
-+		mutex_unlock(&pdm_lock);
-+		return -EINVAL;
-+	}
++	duty = DIV_ROUND_UP(timebase * duty_ns, period_ns);
 +
-+	for (i = 0; i < IMG_NUM_PDM; i++) {
-+		if (&pdm_channels[i] && (&pdm_channels[i] == chan))
-+			break;
-+	}
++	val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
++	val &= ~(PWM_CTRL_CFG_DIV_MASK << PWM_CTRL_CFG_DIV_SHIFT(pwm->hwpwm));
++	val |= (div & PWM_CTRL_CFG_DIV_MASK) <<
++		PWM_CTRL_CFG_DIV_SHIFT(pwm->hwpwm);
++	img_pwm_writel(pwm_chip, PWM_CTRL_CFG, val);
 +
-+	if (i == IMG_NUM_PDM) {
-+		mutex_unlock(&pdm_lock);
-+		return -EINVAL;
-+	}
-+
-+	if (test_bit(PDM_CHANNEL_ENABLED, &chan->flags)) {
-+		dev_err(&pdm_dev->pdev->dev,
-+			"can't free the channel while it is enabled\n");
-+		mutex_unlock(&pdm_lock);
-+		return -EBUSY;
-+	}
-+
-+	if (!test_bit(PDM_CHANNEL_REQUESTED, &chan->flags)) {
-+		dev_err(&pdm_dev->pdev->dev,
-+			"trying to free channel which is not requested\n");
-+		mutex_unlock(&pdm_lock);
-+		return -EINVAL;
-+	}
-+
-+	clear_bit(PDM_CHANNEL_REQUESTED, &chan->flags);
-+	mutex_unlock(&pdm_lock);
++	val = (duty << PWM_CH_CFG_DUTY_SHIFT) |
++	      (timebase << PWM_CH_CFG_TMBASE_SHIFT);
++	img_pwm_writel(pwm_chip, PWM_CH_CFG(pwm->hwpwm), val);
 +
 +	return 0;
 +}
 +
-+static struct img_pdm_channel *img_pdm_channel_request(unsigned int pdm_id)
++static int img_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
 +{
-+	unsigned int i;
-+	struct img_pdm_device *pdm_dev;
-+	struct img_pdm_channel *chan = NULL;
++	u32 val;
++	struct img_pwm_chip *pwm_chip = to_img_pwm_chip(chip);
 +
-+	mutex_lock(&pdm_lock);
++	val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
++	val |= BIT(pwm->hwpwm);
++	img_pwm_writel(pwm_chip, PWM_CTRL_CFG, val);
 +
-+	if (pdm_id < 0 || pdm_id >= IMG_NUM_PDM || !pdm_channels)
-+		return NULL;
-+
-+	pdm_dev = pdm_channels[0].pdm_dev;
-+	if (!pdm_dev)
-+		return NULL;
-+
-+	for (i = 0; i < IMG_NUM_PDM; i++) {
-+		if (&pdm_channels[i] && (pdm_channels[i].pdm_id == pdm_id)) {
-+			chan = &pdm_channels[i];
-+			break;
-+		}
-+	}
-+
-+	if (!chan) {
-+		mutex_unlock(&pdm_lock);
-+		return NULL;
-+	}
-+
-+	/* Check if channel is already requested */
-+	if (test_bit(PDM_CHANNEL_REQUESTED, &chan->flags)) {
-+		dev_err(&pdm_dev->pdev->dev,
-+			"pdm channel %d already requested\n", chan->pdm_id);
-+		mutex_unlock(&pdm_lock);
-+		return NULL;
-+	}
-+
-+	set_bit(PDM_CHANNEL_REQUESTED, &chan->flags);
-+	mutex_unlock(&pdm_lock);
-+
-+	return chan;
-+}
-+
-+static struct img_pdm_channel *of_img_pdm_channel_get(struct device_node *np)
-+{
-+	int err;
-+	struct of_phandle_args args;
-+	struct img_pdm_channel *chan;
-+
-+	err = of_parse_phandle_with_args(np, "pdms", "#pdm-cells", 0, &args);
-+	if (err) {
-+		pr_debug("%s: can't parse \"pdms\" property\n", __func__);
-+		return ERR_PTR(err);
-+	}
-+
-+	if (args.args_count != 2) {
-+		pr_debug("%s: wrong #pwm-cells\n", __func__);
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	chan = img_pdm_channel_request(args.args[0]);
-+	if (chan)
-+		img_pdm_channel_config(chan, args.args[1]);
-+
-+	return chan;
-+}
-+
-+static void of_img_pdm_channel_put(struct device_node *np)
-+{
-+	int err;
-+	struct of_phandle_args args;
-+	struct img_pdm_channel *chan;
-+
-+	err = of_parse_phandle_with_args(np, "pdms", "#pdm-cells", 0, &args);
-+	if (err) {
-+		pr_debug("%s: can't parse \"pdms\" property\n", __func__);
-+		return;
-+	}
-+
-+	if (args.args_count != 2) {
-+		pr_debug("%s: wrong #pwm-cells\n", __func__);
-+		return;
-+	}
-+
-+	if (args.args[0] < 0 || args.args[0] >= IMG_NUM_PDM || !pdm_channels)
-+		return;
-+
-+	chan = &pdm_channels[args.args[0]];
-+	img_pdm_channel_free(chan);
-+}
-+
-+struct img_pdm_channel *img_pdm_channel_get(struct device *dev)
-+{
-+	if (IS_ENABLED(CONFIG_OF) && dev && dev->of_node)
-+		return of_img_pdm_channel_get(dev->of_node);
-+
-+	return NULL;
-+}
-+EXPORT_SYMBOL_GPL(img_pdm_channel_get);
-+
-+void img_pdm_channel_put(struct device *dev)
-+{
-+	if (IS_ENABLED(CONFIG_OF) && dev && dev->of_node)
-+		of_img_pdm_channel_put(dev->of_node);
-+}
-+EXPORT_SYMBOL_GPL(img_pdm_channel_put);
-+
-+int img_pdm_channel_enable(struct img_pdm_channel *chan, bool state)
-+{
-+	struct img_pdm_device *pdm_dev;
-+
-+	if (!chan)
-+		return -EINVAL;
-+
-+	pdm_dev = chan->pdm_dev;
-+
-+	if (!test_bit(PDM_CHANNEL_REQUESTED, &chan->flags)) {
-+		dev_err(&pdm_dev->pdev->dev, "channel not requested\n");
-+		return -EINVAL;
-+	}
-+
-+	if (state) {
-+		regmap_update_bits(pdm_dev->periph_regs,
-+				   PERIP_PWM_PDM_CONTROL,
-+				   PERIP_PWM_PDM_CONTROL_CH_MASK <<
-+				   PERIP_PWM_PDM_CONTROL_CH_SHIFT(chan->pdm_id),
-+				   1);
-+		set_bit(PDM_CHANNEL_ENABLED, &chan->flags);
-+	} else {
-+		regmap_write(pdm_dev->periph_regs,
-+			     PERIP_PDM0_VAL +
-+			     PERIP_PDM_CH_ADDR_SHIFT(chan->pdm_id), 0);
-+		regmap_update_bits(pdm_dev->periph_regs,
-+				   PERIP_PWM_PDM_CONTROL,
-+				   PERIP_PWM_PDM_CONTROL_CH_MASK <<
-+				   PERIP_PWM_PDM_CONTROL_CH_SHIFT(chan->pdm_id),
-+				   0);
-+		clear_bit(PDM_CHANNEL_ENABLED, &chan->flags);
-+	}
++	regmap_update_bits(pwm_chip->periph_regs, PERIP_PWM_PDM_CONTROL,
++			   PERIP_PWM_PDM_CONTROL_CH_MASK <<
++			   PERIP_PWM_PDM_CONTROL_CH_SHIFT(pwm->hwpwm), 0);
 +
 +	return 0;
 +}
-+EXPORT_SYMBOL_GPL(img_pdm_channel_enable);
 +
-+static ssize_t img_pdm_enable_read(struct kobject *kobj,
-+				   struct kobj_attribute *attr, char *buf)
++static void img_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
 +{
-+	int ret;
-+	unsigned int ch_num;
-+	unsigned char kobj_name[2];
-+	struct platform_device *pdev;
-+	struct img_pdm_device *pdm_dev;
-+	struct img_pdm_channel *chan;
++	u32 val;
++	struct img_pwm_chip *pwm_chip = to_img_pwm_chip(chip);
 +
-+	pdev = to_platform_device(kobj_to_dev(kobj->parent));
-+	pdm_dev = platform_get_drvdata(pdev);
-+	kobj_name[0] = *(kobj->name+3);
-+	kobj_name[1] = '\0';
-+
-+	ret = kstrtou32(kobj_name, 10, &ch_num);
-+	if (ret) {
-+		dev_err(&pdev->dev, "could not parse channel number string\n");
-+		return ret;
-+	}
-+
-+	chan = &pdm_channels[ch_num];
-+	return sprintf(buf, "%d\n",
-+		       test_bit(PDM_CHANNEL_ENABLED, &chan->flags) ? 1 : 0);
++	val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
++	val &= ~BIT(pwm->hwpwm);
++	img_pwm_writel(pwm_chip, PWM_CTRL_CFG, val);
 +}
 +
-+static ssize_t img_pdm_pulse_in_read(struct kobject *kobj,
-+				     struct kobj_attribute *attr, char *buf)
-+{
-+	int ret;
-+	unsigned int ch_num, val;
-+	unsigned char kobj_name[2];
-+	struct platform_device *pdev;
-+	struct img_pdm_device *pdm_dev;
-+	struct img_pdm_channel *chan;
-+
-+	pdev = to_platform_device(kobj_to_dev(kobj->parent));
-+	pdm_dev = platform_get_drvdata(pdev);
-+	kobj_name[0] = *(kobj->name+3);
-+	kobj_name[1] = '\0';
-+	ret = kstrtou32(kobj_name, 10, &ch_num);
-+	if (ret) {
-+		dev_err(&pdev->dev, "could not parse channel number string\n");
-+		return ret;
-+	}
-+
-+	chan = &pdm_channels[ch_num];
-+	regmap_read(pdm_dev->periph_regs,
-+		    PERIP_PDM0_VAL +
-+		    PERIP_PDM_CH_ADDR_SHIFT(chan->pdm_id), &val);
-+	val &= PERIP_PDM_SRC_DATA_MASK;
-+
-+	return sprintf(buf, "%d\n", val);
-+}
-+
-+static ssize_t img_pdm_enable_write(struct kobject *kobj,
-+				    struct kobj_attribute *attr,
-+				    const char *buf, size_t size)
-+{
-+	int ret;
-+	unsigned int ch_num, enable;
-+	unsigned char kobj_name[2];
-+	struct platform_device *pdev;
-+	struct img_pdm_device *pdm_dev;
-+
-+	pdev = to_platform_device(kobj_to_dev(kobj->parent));
-+	pdm_dev = platform_get_drvdata(pdev);
-+
-+	kobj_name[0] = *(kobj->name+3);
-+	kobj_name[1] = '\0';
-+	ret = kstrtou32(kobj_name, 10, &ch_num);
-+	if (ret) {
-+		dev_err(&pdev->dev, "could not parse channel number string\n");
-+		return ret;
-+	}
-+
-+	ret = kstrtou32(buf, 10, &enable);
-+	if (ret) {
-+		dev_err(&pdev->dev, "could not parse enable attr value\n");
-+		return ret;
-+	}
-+
-+	ret = img_pdm_channel_enable(&pdm_channels[ch_num], !!enable);
-+	if (ret < 0)
-+		return ret;
-+
-+	return size;
-+}
-+
-+static ssize_t img_pdm_pulse_in_write(struct kobject *kobj,
-+				      struct kobj_attribute *attr,
-+				      const char *buf, size_t size)
-+{
-+	int ret;
-+	unsigned int pulse_in, ch_num;
-+	unsigned char kobj_name[2];
-+	struct platform_device *pdev;
-+	struct img_pdm_device *pdm_dev;
-+
-+	pdev = to_platform_device(kobj_to_dev(kobj->parent));
-+	pdm_dev = platform_get_drvdata(pdev);
-+
-+	kobj_name[0] = *(kobj->name+3);
-+	kobj_name[1] = '\0';
-+	ret = kstrtou32(kobj_name, 10, &ch_num);
-+	if (ret) {
-+		dev_err(&pdev->dev, "could not parse channel number string\n");
-+		return ret;
-+	}
-+
-+	ret = kstrtouint(buf, 16, &pulse_in);
-+	if (ret) {
-+		dev_err(&pdev->dev,
-+			"could not parse pulse_in attr value\n");
-+		return ret;
-+	}
-+
-+	if (pulse_in > PERIP_PDM_SRC_DATA_MASK) {
-+		dev_err(&pdev->dev,
-+			"invalid attr value for pulse_in string\n");
-+		return -EINVAL;
-+	}
-+
-+	ret = img_pdm_channel_config(&pdm_channels[ch_num], pulse_in);
-+	if (ret < 0)
-+		return ret;
-+
-+	return size;
-+}
-+
-+#define PDM_ATTR(_name, _mode, _show, _store) \
-+struct kobj_attribute pdm_attr_##_name = { \
-+	.attr = {.name = __stringify(_name), .mode = _mode}, \
-+	.show = _show, \
-+	.store = _store, \
-+}
-+
-+static PDM_ATTR(enable, S_IRUGO | S_IWUSR, img_pdm_enable_read,
-+					   img_pdm_enable_write);
-+
-+static PDM_ATTR(pulse_in, S_IRUGO | S_IWUSR, img_pdm_pulse_in_read,
-+					     img_pdm_pulse_in_write);
-+
-+static struct attribute *pdm_sysfs_attrs[] = {
-+	&pdm_attr_enable.attr,
-+	&pdm_attr_pulse_in.attr,
-+	NULL,
++static const struct pwm_ops img_pwm_ops = {
++	.config = img_pwm_config,
++	.enable = img_pwm_enable,
++	.disable = img_pwm_disable,
++	.owner = THIS_MODULE,
 +};
 +
-+static const struct attribute_group pdm_attr_group = {
-+	.attrs = pdm_sysfs_attrs,
-+};
-+
-+static ssize_t img_pdm_export(struct device *dev,
-+			      struct device_attribute *attr,
-+			      const char *buf, size_t size)
++static int img_pwm_probe(struct platform_device *pdev)
 +{
 +	int ret;
-+	unsigned int ch_num;
-+	unsigned char kobj_name[5];
-+	struct platform_device *pdev;
-+	struct img_pdm_device *pdm_dev;
-+	struct img_pdm_channel *pdm_chan;
++	struct resource *res;
++	struct img_pwm_chip *pwm;
 +
-+	pdev = to_platform_device(dev);
-+	pdm_dev = platform_get_drvdata(pdev);
-+
-+	ret = kstrtou32(buf, 10, &ch_num);
-+	if (ret) {
-+		dev_err(&pdev->dev, "could not parse channel number string\n");
-+		return ret;
-+	}
-+
-+	pdm_chan = img_pdm_channel_request(ch_num);
-+	if (!pdm_chan)
-+		return -EINVAL;
-+
-+	memset(kobj_name, 0, sizeof(kobj_name));
-+	sprintf(kobj_name, "pdm%d", ch_num);
-+	pdm_dev->pdm_kobj[ch_num] = kobject_create_and_add(kobj_name,
-+							   &pdev->dev.kobj);
-+	if (!pdm_dev->pdm_kobj[ch_num]) {
-+		img_pdm_channel_free(pdm_chan);
-+		return -ENOMEM;
-+	}
-+
-+	ret = sysfs_create_group(pdm_dev->pdm_kobj[ch_num], &pdm_attr_group);
-+	if (ret) {
-+		kobject_put(pdm_dev->pdm_kobj[ch_num]);
-+		img_pdm_channel_free(pdm_chan);
-+		dev_err(&pdev->dev, "unable to register device attributes\n");
-+		return ret;
-+	}
-+
-+	return size;
-+}
-+
-+static ssize_t img_pdm_unexport(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf, size_t size)
-+{
-+	int ret;
-+	unsigned int ch_num;
-+	struct img_pdm_channel *channel;
-+	struct platform_device *pdev;
-+	struct img_pdm_device *pdm_dev;
-+
-+	pdev = to_platform_device(dev);
-+	pdm_dev = platform_get_drvdata(pdev);
-+
-+	ret = kstrtou32(buf, 10, &ch_num);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ch_num < 0 || ch_num >= IMG_NUM_PDM) {
-+		dev_err(&pdev->dev, "invalid channel number %d\n", ch_num);
-+		return -EINVAL;
-+	}
-+
-+	channel = &pdm_channels[ch_num];
-+	if (img_pdm_channel_free(channel) < 0)
-+		return -EINVAL;
-+
-+	if (pdm_dev->pdm_kobj[ch_num]) {
-+		sysfs_remove_group(pdm_dev->pdm_kobj[ch_num], &pdm_attr_group);
-+		kobject_put(pdm_dev->pdm_kobj[ch_num]);
-+	}
-+
-+	return size;
-+}
-+
-+static DEVICE_ATTR(export, S_IRUGO | S_IWUSR, NULL, img_pdm_export);
-+static DEVICE_ATTR(unexport, S_IRUGO | S_IWUSR, NULL, img_pdm_unexport);
-+
-+static struct attribute *img_pdm_sysfs_attrs[] = {
-+	&dev_attr_export.attr,
-+	&dev_attr_unexport.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group img_pdm_attr_group = {
-+	.attrs = img_pdm_sysfs_attrs,
-+};
-+
-+static int img_pdm_probe(struct platform_device *pdev)
-+{
-+	int ret;
-+	unsigned int i;
-+	struct img_pdm_device *pdm_dev;
-+
-+	pdm_dev = devm_kzalloc(&pdev->dev, sizeof(*pdm_dev), GFP_KERNEL);
-+	if (!pdm_dev)
++	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
++	if (!pwm)
 +		return -ENOMEM;
 +
-+	pdm_dev->pdm_kobj = devm_kcalloc(&pdev->dev, IMG_NUM_PDM,
-+					 sizeof(struct kobject), GFP_KERNEL);
-+	if (!pdm_dev->pdm_kobj)
-+		return -ENOMEM;
++	pwm->dev = &pdev->dev;
 +
-+	pdm_channels = devm_kcalloc(&pdev->dev, IMG_NUM_PDM,
-+				    sizeof(struct img_pdm_channel), GFP_KERNEL);
-+	if (!pdm_channels)
-+		return -ENOMEM;
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	pwm->base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(pwm->base))
++		return PTR_ERR(pwm->base);
 +
-+	pdm_dev->periph_regs = syscon_regmap_lookup_by_phandle(
-+					pdev->dev.of_node, "img,cr-periph");
-+	if (IS_ERR(pdm_dev->periph_regs))
-+		return PTR_ERR(pdm_dev->periph_regs);
++	pwm->periph_regs = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
++							   "img,cr-periph");
++	if (IS_ERR(pwm->periph_regs))
++		return PTR_ERR(pwm->periph_regs);
 +
-+	pdm_dev->clk = devm_clk_get(&pdev->dev, "pdm");
-+	if (IS_ERR(pdm_dev->clk)) {
-+		dev_err(&pdev->dev, "failed to get pdm clock\n");
-+		return PTR_ERR(pdm_dev->clk);
++	pwm->sys_clk = devm_clk_get(&pdev->dev, "sys");
++	if (IS_ERR(pwm->sys_clk)) {
++		dev_err(&pdev->dev, "failed to get system clock\n");
++		return PTR_ERR(pwm->sys_clk);
 +	}
 +
-+	ret = clk_prepare_enable(pdm_dev->clk);
++	pwm->pwm_clk = devm_clk_get(&pdev->dev, "pwm");
++	if (IS_ERR(pwm->pwm_clk)) {
++		dev_err(&pdev->dev, "failed to get pwm clock\n");
++		return PTR_ERR(pwm->pwm_clk);
++	}
++
++	ret = clk_prepare_enable(pwm->sys_clk);
 +	if (ret < 0) {
-+		dev_err(&pdev->dev, "could not prepare or enable pdm clock\n");
++		dev_err(&pdev->dev, "could not prepare or enable sys clock\n");
 +		return ret;
 +	}
 +
-+	for (i = 0; i < IMG_NUM_PDM; i++) {
-+		pdm_channels[i].pdm_id = i;
-+		pdm_channels[i].pdm_dev = pdm_dev;
++	ret = clk_prepare_enable(pwm->pwm_clk);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "could not prepare or enable pwm clock\n");
++		goto disable_sysclk;
 +	}
 +
-+	ret = sysfs_create_group(&pdev->dev.kobj, &img_pdm_attr_group);
-+	if (ret) {
-+		dev_err(&pdev->dev, "unable to register device attributes\n");
-+		clk_disable_unprepare(pdm_dev->clk);
-+		return ret;
++	pwm->chip.dev = &pdev->dev;
++	pwm->chip.ops = &img_pwm_ops;
++	pwm->chip.base = -1;
++	pwm->chip.npwm = 4;
++
++	ret = pwmchip_add(&pwm->chip);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
++		goto disable_pwmclk;
 +	}
 +
-+	pdm_dev->pdev = pdev;
-+	platform_set_drvdata(pdev, pdm_dev);
++	platform_set_drvdata(pdev, pwm);
++
++disable_pwmclk:
++	clk_disable_unprepare(pwm->pwm_clk);
++disable_sysclk:
++	clk_disable_unprepare(pwm->sys_clk);
 +
 +	return 0;
 +}
 +
-+static int img_pdm_remove(struct platform_device *pdev)
++static int img_pwm_remove(struct platform_device *pdev)
 +{
++	struct img_pwm_chip *pwm_chip = platform_get_drvdata(pdev);
++	u32 val;
 +	unsigned int i;
-+	struct img_pdm_channel *chan;
-+	struct img_pdm_device *pdm_dev;
 +
-+	pdm_dev = platform_get_drvdata(pdev);
-+
-+	for (i = 0; i < IMG_NUM_PDM; i++) {
-+		chan = &pdm_channels[i];
-+		if (test_bit(PDM_CHANNEL_REQUESTED, &chan->flags)) {
-+			img_pdm_channel_enable(chan, false);
-+			img_pdm_channel_config(chan, 0);
-+			if (pdm_dev->pdm_kobj[i]) {
-+				sysfs_remove_group(pdm_dev->pdm_kobj[i],
-+						   &pdm_attr_group);
-+				kobject_del(pdm_dev->pdm_kobj[i]);
-+			}
-+		}
++	for (i = 0; i < pwm_chip->chip.npwm; i++) {
++		val = img_pwm_readl(pwm_chip, PWM_CTRL_CFG);
++		val &= ~BIT(i);
++		img_pwm_writel(pwm_chip, PWM_CTRL_CFG, val);
 +	}
 +
-+	clk_disable_unprepare(pdm_dev->clk);
++	clk_disable_unprepare(pwm_chip->pwm_clk);
++	clk_disable_unprepare(pwm_chip->sys_clk);
 +
-+	return 0;
++	return pwmchip_remove(&pwm_chip->chip);
 +}
 +
-+static const struct of_device_id img_pdm_of_match[] = {
-+	{ .compatible = "img,pistachio-pdm", },
++static const struct of_device_id img_pwm_of_match[] = {
++	{ .compatible = "img,pistachio-pwm", },
 +	{ }
 +};
-+MODULE_DEVICE_TABLE(of, img_pdm_of_match);
++MODULE_DEVICE_TABLE(of, img_pwm_of_match);
 +
-+static struct platform_driver img_pdm_driver = {
++static struct platform_driver img_pwm_driver = {
 +	.driver = {
-+		.name = "img-pdm",
-+		.of_match_table = img_pdm_of_match,
++		.name = "img-pwm",
++		.of_match_table = img_pwm_of_match,
 +	},
-+	.probe = img_pdm_probe,
-+	.remove = img_pdm_remove,
++	.probe = img_pwm_probe,
++	.remove = img_pwm_remove,
 +};
-+module_platform_driver(img_pdm_driver);
++module_platform_driver(img_pwm_driver);
 +
-+MODULE_AUTHOR("Arul Ramasamy <Arul.Ramasamy-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>");
-+MODULE_DESCRIPTION("Imagination Technologies PDM driver");
++MODULE_AUTHOR("Sai Masarapu <Sai.Masarapu@imgtec.com>");
++MODULE_DESCRIPTION("Imagination Technologies PWM DAC driver");
 +MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/img_pdm.h b/include/linux/img_pdm.h
-new file mode 100644
-index 0000000..b699030
---- /dev/null
-+++ b/include/linux/img_pdm.h
-@@ -0,0 +1,27 @@
-+/**
-+ * Imagination Technologies Pulse Density Modulator driver
-+ *
-+ * Copyright (C) 2014 Imagination Technologies Ltd.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#ifndef __IMG_PDM_H
-+#define __IMG_PDM_H
-+
-+struct img_pdm_device;
-+
-+struct img_pdm_channel {
-+	unsigned int pdm_id;
-+	unsigned long flags;
-+	struct img_pdm_device *pdm_dev;
-+};
-+
-+void img_pdm_channel_put(struct device *dev);
-+struct img_pdm_channel *img_pdm_channel_get(struct device *dev);
-+int img_pdm_channel_enable(struct img_pdm_channel *chan, bool state);
-+int img_pdm_channel_config(struct img_pdm_channel *chan, unsigned int val);
-+
-+#endif /* ifndef _IMG_PDM_H */
 -- 
 2.2.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
