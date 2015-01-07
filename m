@@ -1,85 +1,94 @@
 From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-Subject: [PATCH v7 0/4] Imagination Technologies PWM and PDM DACs support
-Date: Wed, 7 Jan 2015 14:20:11 -0300
-Message-ID: <1420651215-3836-1-git-send-email-ezequiel.garcia@imgtec.com>
+Subject: [PATCH v7 4/4] DT: pdm: Add binding document for IMG PDM DAC
+Date: Wed, 7 Jan 2015 14:20:15 -0300
+Message-ID: <1420651215-3836-5-git-send-email-ezequiel.garcia@imgtec.com>
+References: <1420651215-3836-1-git-send-email-ezequiel.garcia@imgtec.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andrew Bresticker <abrestic@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, James Hartley <james.hartley@imgtec.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mailapp01.imgtec.com ([195.59.15.196]:32726 "EHLO
+	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753655AbbAGRWw (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jan 2015 12:22:52 -0500
+In-Reply-To: <1420651215-3836-1-git-send-email-ezequiel.garcia@imgtec.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Andrew Bresticker <abrestic@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, James Hartley <james.hartley@imgtec.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Naidu Tellapati <Naidu.Tellapati@imgtec.com>, Arul Ramasamy <Arul.Ramasamy@imgtec.com>, Ezequiel Garcia <ezequiel.garcia@imgtec.com>
 
-This patchset is the seventh round for the IMG PWM and PDM DAC drivers.
+From: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
 
-The PWM driver is a typical PWM, and I don't think there's anything
-controversial there.
+Add binding document for the Pulse Density Modulator (PDM) DAC present on the
+Pistachio SOC.
 
-The PDM driver -on the other side- is a bit ackward. At first, we tried
-to support it as a PWM, but after some lengthy discussions, we came to the
-conclusion the controller couldn't be configured with duty and period,
-so it was agreed [1] to write a misc driver for it.
-
-Given there won't be any framework (the controller is too rare to justify
-a new framework), an internal API is needed. We've tried to keep this API
-as simple as possible. Also, we've tried to follow a devicetree binding
-similar to the PWM one.
-
-Users of the PDM can call a couple functions to request a channel and
-release the resource:
-
-  struct img_pdm_channel *img_pdm_channel_get(struct device *dev);
-  void img_pdm_channel_put(struct device *dev);
-
-After requesting a PDM channel, users can enable or configure it:
-
-  int img_pdm_channel_enable(struct img_pdm_channel *chan, bool state);
-  int img_pdm_channel_config(struct img_pdm_channel *chan, unsigned int val);
-
-Where 'val' is a hardware-specific quantity, namely, a 12-bit value
-that is added to the PDM counter:
-
-  counter [12:0] = counter [11:0] + value [11:0]
-  PDM output = counter [12]
-
-Hence, by changing the 'value' it's possible to control the pulse density
-(lower values, correspond to lower densities).
-
-Given this looks like very platform-specific, I feel the misc driver is a good
-solution, but I'm open to discussion about it.
-
-The reason why these two drivers are being sent together is because of the
-peripheral register that is used to enable an output, and mux it as PWM or PDM.
-Because this register is not part of the pin controller block, but rather
-PWM/PDM specific, and because the register is also used to set the PDM value,
-it is simpler to use a regmap-based syscon to deal with it.
-
-The series is based on v3.19-rc3. My goal is to merge at least the PWM driver
-for v3.20, if we fail to agree on the PDM driver.
-
-[1] http://www.spinics.net/lists/linux-pwm/msg01990.html
-
-Naidu Tellapati (4):
-  pwm: Imagination Technologies PWM DAC driver
-  DT: pwm: Add binding document for IMG PWM DAC
-  pdm: Imagination Technologies PDM DAC driver
-  DT: pdm: Add binding document for IMG PDM DAC
-
- Documentation/devicetree/bindings/misc/img-pdm.txt |  54 ++
- Documentation/devicetree/bindings/pwm/img-pwm.txt  |  24 +
- drivers/misc/Kconfig                               |  13 +
- drivers/misc/Makefile                              |   1 +
- drivers/misc/img-pdm.c                             | 608 +++++++++++++++++++++
- drivers/pwm/Kconfig                                |  13 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-img.c                              | 250 +++++++++
- include/linux/img_pdm.h                            |  27 +
- 9 files changed, 991 insertions(+)
+Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+Signed-off-by: Arul Ramasamy <Arul.Ramasamy@imgtec.com>
+Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+---
+ Documentation/devicetree/bindings/misc/img-pdm.txt | 54 ++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/misc/img-pdm.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/img-pwm.txt
- create mode 100644 drivers/misc/img-pdm.c
- create mode 100644 drivers/pwm/pwm-img.c
- create mode 100644 include/linux/img_pdm.h
 
+diff --git a/Documentation/devicetree/bindings/misc/img-pdm.txt b/Documentation/devicetree/bindings/misc/img-pdm.txt
+new file mode 100644
+index 0000000..96fde23
+--- /dev/null
++++ b/Documentation/devicetree/bindings/misc/img-pdm.txt
+@@ -0,0 +1,54 @@
++Imagination Technologies Pulse Density Modulator (PDM) DAC.
++
++Required properties:
++- compatible: Must be "img,pistachio-pdm"
++- clocks: phandle to input PDM clock
++- clock-names: Must include the following entry:
++  - pdm: input clock to pdm block.
++- img,cr-periph: Must contain a phandle to the peripheral control
++  syscon node which contains PDM control registers.
++- #pdm-cells: Must be 2.
++- The first cell is the PDM channel number (valid values: 0, 1, 2, 3)
++- The second cell is 12-bit pulse-in value
++
++Specifying PDM information for devices
++======================================
++
++1. PDM User nodes
++
++PDM properties should be named "pdms". The exact meaning of each pdms property
++is described above.
++
++	pdm-specifier : array of #pdm-cells specifying the given PDM
++						(controller specific)
++
++The following example could be used to describe a PDM-based backlight device:
++
++	pdm: pdm {
++		#pdm-cells = <2>;
++	};
++
++	[...]
++
++	bl: backlight {
++		pdms = <&pdm 2 0>;
++	};
++
++pdm-specifier typically encodes the chip-relative PDM channel number and the
++12-bit pulse-in value.
++
++2. PDM Controller nodes
++
++PDM controller nodes must specify the number of cells used for the specifier
++using the '#pdm-cells' property.
++
++An example PDM controller might look like this:
++
++Example:
++	pdm: pdm@18148000 {
++		compatible = "img,pistachio-pdm";
++		clocks = <&pdm_clk>;
++		clk-names = "pdm";
++		img,cr-periph = <&cr_periph>;
++		#pdm-cells = <2>;
++	};
 -- 
 2.2.1
+
