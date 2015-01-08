@@ -1,77 +1,200 @@
-From: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
-Subject: [PATCH RESEND] pwm: samsung: Fix output race on disabling
-Date: Wed,  7 Jan 2015 23:58:17 +0100
-Message-ID: <1420671497-25270-1-git-send-email-sjoerd.simons@collabora.co.uk>
+From: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Subject: Re: [PATCH v7 3/4] pdm: Imagination Technologies PDM DAC driver
+Date: Thu, 8 Jan 2015 14:21:36 +0000
+Message-ID: <20150108142136.757eaeef@lxorguk.ukuu.org.uk>
+References: <1420651215-3836-1-git-send-email-ezequiel.garcia@imgtec.com>
+	<1420651215-3836-4-git-send-email-ezequiel.garcia@imgtec.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([93.93.135.160]:39679 "EHLO
-	bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750942AbbAGW6V (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jan 2015 17:58:21 -0500
+Received: from 251.110.2.81.in-addr.arpa ([81.2.110.251]:36657 "EHLO
+	lxorguk.ukuu.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750869AbbAHOVy (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 8 Jan 2015 09:21:54 -0500
+In-Reply-To: <1420651215-3836-4-git-send-email-ezequiel.garcia@imgtec.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Ajay Kumar <ajaykumar.rs@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>, Javier Martinez Canillas <javier.martinez@collabora.co.uk>, linux-samsung-soc@vger.kernel.org
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Cc: Andrew Bresticker <abrestic@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, James Hartley <james.hartley@imgtec.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Naidu Tellapati <Naidu.Tellapati@imgtec.com>, Arul Ramasamy <Arul.Ramasamy@imgtec.com>
 
-When disabling the samsung PWM the output state remains at the level it
-was in the end of a pwm cycle. In other words, calling pwm_disable when
-at 100% duty will keep the output active, while at all other setting the
-output will go/stay inactive. On top of that the samsung PWM settings are
-double-buffered, which means the new settings only get applied at the
-start of a new PWM cycle.
+On Wed, 7 Jan 2015 14:20:14 -0300
+Ezequiel Garcia <ezequiel.garcia@imgtec.com> wrote:
 
-This results in a race if the PWM is at 100% duty and a driver calls:
-  pwm_config (pwm, 0, period);
-  pwm_disable (pwm);
+> From: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+> 
+> The Pistachio SOC from Imagination Technologies includes a Pulse Density
+> Modulation DAC which produces a form of analogue output according to the
+> relative density of output pulses to the intended analogue signal amplitude.
+> Four PDM outputs are provided that can be used to control targets such as LCD
+> backlight.
 
-In this case the PWMs output will unexpectedly stay active, unless a new
-PWM cycle happened to start between the register writes in _config and
-_disable. As far as i can tell this is a regression introduced by 3bdf878,
-before that a call to pwm_config would call pwm_samsung_enable which,
-while heavy-handed, made sure the expected settings were live.
 
-To resolve this, while not re-introducing the issues 3bdf878 (flickering
-as the PWM got reset while in a PWM cycle). Only force an update of the
-settings when at 100% duty, which shouldn't have a noticeable effect on
-the output but is enough to ensure the behaviour is as expected on
-disable.
+> +int img_pdm_channel_config(struct img_pdm_channel *chan, unsigned int val)
+> +{
+> +	struct img_pdm_device *pdm_dev;
+> +
+> +	if (!chan)
+> +		return -EINVAL;
 
-Signed-off-by: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
----
- drivers/pwm/pwm-samsung.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+If this is a can't happen case then either let it crash or WARN_ON it so
+that it doesn't get ignored and lead to nastier failures elsewhere
 
-diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-index 3e9b583..3e252dc 100644
---- a/drivers/pwm/pwm-samsung.c
-+++ b/drivers/pwm/pwm-samsung.c
-@@ -335,6 +335,27 @@ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	writel(tcnt, our_chip->base + REG_TCNTB(pwm->hwpwm));
- 	writel(tcmp, our_chip->base + REG_TCMPB(pwm->hwpwm));
- 
-+	/* In case the PWM is currently at 100% duty, trigger a manual update to
-+	 * prevent unexpected results when disabling the pwm */
-+	if (chan->period_ns/chan->tin_ns == chan->duty_ns/chan->tin_ns) {
-+		unsigned int tcon_chan = to_tcon_channel(pwm->hwpwm);
-+		u32 tcon;
-+		unsigned long flags;
-+
-+		dev_dbg(our_chip->chip.dev, "Forcing manual update");
-+
-+		spin_lock_irqsave(&samsung_pwm_lock, flags);
-+
-+		tcon = readl(our_chip->base + REG_TCON);
-+		tcon |= TCON_MANUALUPDATE(tcon_chan);
-+		writel(tcon, our_chip->base + REG_TCON);
-+
-+		tcon &= ~TCON_MANUALUPDATE(tcon_chan);
-+		writel(tcon, our_chip->base + REG_TCON);
-+
-+		spin_unlock_irqrestore(&samsung_pwm_lock, flags);
-+	}
-+
- 	chan->period_ns = period_ns;
- 	chan->tin_ns = tin_ns;
- 	chan->duty_ns = duty_ns;
--- 
-2.1.4
+> +
+> +static struct img_pdm_channel *img_pdm_channel_request(unsigned int pdm_id)
+> +{
+> +	unsigned int i;
+> +	struct img_pdm_device *pdm_dev;
+> +	struct img_pdm_channel *chan = NULL;
+> +
+> +	mutex_lock(&pdm_lock);
+> +
+> +	if (pdm_id < 0 || pdm_id >= IMG_NUM_PDM || !pdm_channels)
+> +		return NULL;
+
+You return with the mutex held in this case.
+
+
+
+> +int img_pdm_channel_enable(struct img_pdm_channel *chan, bool state)
+> +{
+> +	struct img_pdm_device *pdm_dev;
+> +
+> +	if (!chan)
+> +		return -EINVAL;
+
+Same comment about hiding errors being bad
+
+> +	pdm_dev = chan->pdm_dev;
+> +
+> +	if (!test_bit(PDM_CHANNEL_REQUESTED, &chan->flags)) {
+> +		dev_err(&pdm_dev->pdev->dev, "channel not requested\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (state) {
+> +		regmap_update_bits(pdm_dev->periph_regs,
+> +				   PERIP_PWM_PDM_CONTROL,
+> +				   PERIP_PWM_PDM_CONTROL_CH_MASK <<
+> +				   PERIP_PWM_PDM_CONTROL_CH_SHIFT(chan->pdm_id),
+> +				   1);
+> +		set_bit(PDM_CHANNEL_ENABLED, &chan->flags);
+> +	} else {
+> +		regmap_write(pdm_dev->periph_regs,
+> +			     PERIP_PDM0_VAL +
+> +			     PERIP_PDM_CH_ADDR_SHIFT(chan->pdm_id), 0);
+> +		regmap_update_bits(pdm_dev->periph_regs,
+> +				   PERIP_PWM_PDM_CONTROL,
+> +				   PERIP_PWM_PDM_CONTROL_CH_MASK <<
+> +				   PERIP_PWM_PDM_CONTROL_CH_SHIFT(chan->pdm_id),
+> +				   0);
+> +		clear_bit(PDM_CHANNEL_ENABLED, &chan->flags);
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(img_pdm_channel_enable);
+
+You export these functions but they don't appear to do any internal
+locking in them, so how is the caller expected to use them ?
+
+If there is a reason no locking is needed in this case document why and
+the assumptions.
+
+> +
+> +static ssize_t img_pdm_enable_read(struct kobject *kobj,
+> +				   struct kobj_attribute *attr, char *buf)
+> +{
+> +	int ret;
+> +	unsigned int ch_num;
+> +	unsigned char kobj_name[2];
+> +	struct platform_device *pdev;
+> +	struct img_pdm_device *pdm_dev;
+> +	struct img_pdm_channel *chan;
+> +
+> +	pdev = to_platform_device(kobj_to_dev(kobj->parent));
+> +	pdm_dev = platform_get_drvdata(pdev);
+> +	kobj_name[0] = *(kobj->name+3);
+> +	kobj_name[1] = '\0';
+> +
+> +	ret = kstrtou32(kobj_name, 10, &ch_num);
+
+This is C not java. 
+
+	ch_num = kobj->name[3] - '0';
+
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "could not parse channel number string\n");
+> +		return ret;
+> +	}
+> +
+> +	chan = &pdm_channels[ch_num];
+> +	return sprintf(buf, "%d\n",
+> +		       test_bit(PDM_CHANNEL_ENABLED, &chan->flags) ? 1 : 0);
+> +}
+> +
+> +static ssize_t img_pdm_pulse_in_read(struct kobject *kobj,
+> +				     struct kobj_attribute *attr, char *buf)
+> +{
+> +	int ret;
+> +	unsigned int ch_num, val;
+> +	unsigned char kobj_name[2];
+> +	struct platform_device *pdev;
+> +	struct img_pdm_device *pdm_dev;
+> +	struct img_pdm_channel *chan;
+> +
+> +	pdev = to_platform_device(kobj_to_dev(kobj->parent));
+> +	pdm_dev = platform_get_drvdata(pdev);
+> +	kobj_name[0] = *(kobj->name+3);
+> +	kobj_name[1] = '\0';
+> +	ret = kstrtou32(kobj_name, 10, &ch_num);
+
+Ditto (in fact why not just have a helper to range check and print the
+error and share the string)
+
+> +static ssize_t img_pdm_enable_write(struct kobject *kobj,
+> +				    struct kobj_attribute *attr,
+> +				    const char *buf, size_t size)
+> +{
+> +	int ret;
+> +	unsigned int ch_num, enable;
+> +	unsigned char kobj_name[2];
+> +	struct platform_device *pdev;
+> +	struct img_pdm_device *pdm_dev;
+> +
+> +	pdev = to_platform_device(kobj_to_dev(kobj->parent));
+> +	pdm_dev = platform_get_drvdata(pdev);
+> +
+> +	kobj_name[0] = *(kobj->name+3);
+> +	kobj_name[1] = '\0';
+> +	ret = kstrtou32(kobj_name, 10, &ch_num);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "could not parse channel number string\n");
+> +		return ret;
+> +	}
+
+And again
+
+> +static ssize_t img_pdm_pulse_in_write(struct kobject *kobj,
+> +				      struct kobj_attribute *attr,
+> +				      const char *buf, size_t size)
+> +{
+> +	int ret;
+> +	unsigned int pulse_in, ch_num;
+> +	unsigned char kobj_name[2];
+> +	struct platform_device *pdev;
+> +	struct img_pdm_device *pdm_dev;
+> +
+> +	pdev = to_platform_device(kobj_to_dev(kobj->parent));
+> +	pdm_dev = platform_get_drvdata(pdev);
+> +
+> +	kobj_name[0] = *(kobj->name+3);
+> +	kobj_name[1] = '\0';
+> +	ret = kstrtou32(kobj_name, 10, &ch_num);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "could not parse channel number string\n");
+> +		return ret;
+> +	}
+
+and - you get the idea 8)
 
