@@ -1,35 +1,116 @@
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-Subject: Re: [PATCH v7 3/4] pdm: Imagination Technologies PDM DAC driver
-Date: Thu, 8 Jan 2015 11:25:37 -0300
-Message-ID: <54AE9361.80004@imgtec.com>
-References: <1420651215-3836-1-git-send-email-ezequiel.garcia@imgtec.com>	<1420651215-3836-4-git-send-email-ezequiel.garcia@imgtec.com> <20150108142136.757eaeef@lxorguk.ukuu.org.uk>
+From: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+Subject: Re: [PATCH v7 1/4] pwm: Imagination Technologies PWM DAC driver
+Date: Thu, 8 Jan 2015 17:49:59 +0200
+Message-ID: <54AEA727.40100@mentor.com>
+References: <1420651215-3836-1-git-send-email-ezequiel.garcia@imgtec.com> <1420651215-3836-2-git-send-email-ezequiel.garcia@imgtec.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150108142136.757eaeef@lxorguk.ukuu.org.uk>
+In-Reply-To: <1420651215-3836-2-git-send-email-ezequiel.garcia@imgtec.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
-Cc: Andrew Bresticker <abrestic@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, James Hartley <james.hartley@imgtec.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Naidu Tellapati <Naidu.Tellapati@imgtec.com>, Arul Ramasamy <Arul.Ramasamy@imgtec.com>
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>, Andrew Bresticker <abrestic@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, James Hartley <james.hartley@imgtec.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Naidu Tellapati <Naidu.Tellapati@imgtec.com>, Sai Masarapu <Sai.Masarapu@imgtec.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+Hi Ezequiel,
 
-On 01/08/2015 11:21 AM, One Thousand Gnomes wrote:
-[..]
+On 07.01.2015 19:20, Ezequiel Garcia wrote:
+> From: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
 > 
-> and - you get the idea 8)
+> The Pistachio SOC from Imagination Technologies includes a Pulse Width
+> Modulation DAC which produces 1 to 4 digital bit-outputs which represent
+> digital waveforms. These PWM outputs are primarily in charge of controlling
+> backlight LED devices.
+> 
+> Reviewed-by: Andrew Bresticker <abrestic@chromium.org>
+> Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+> Signed-off-by: Sai Masarapu <Sai.Masarapu@imgtec.com>
+> Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+> ---
+>  drivers/pwm/Kconfig   |  13 +++
+>  drivers/pwm/Makefile  |   1 +
+>  drivers/pwm/pwm-img.c | 250 ++++++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 264 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-img.c
 > 
 
-Thanks for all the comments. Before preparing a new patchset fixing
-them, I'd like to check with the maintainers (Thierry on PWM, and Greg
-on misc) about the validity of the general approach.
+[snip]
 
-Thierry had concerns about the syscon usage, and I'd like to make sure
-we settle that.
+> +static int img_pwm_probe(struct platform_device *pdev)
+> +{
+> +	int ret;
+> +	struct resource *res;
+> +	struct img_pwm_chip *pwm;
+> +
+> +	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
+> +	if (!pwm)
+> +		return -ENOMEM;
+> +
+> +	pwm->dev = &pdev->dev;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	pwm->base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(pwm->base))
+> +		return PTR_ERR(pwm->base);
+> +
+> +	pwm->periph_regs = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
+> +							   "img,cr-periph");
+> +	if (IS_ERR(pwm->periph_regs))
+> +		return PTR_ERR(pwm->periph_regs);
+> +
+> +	pwm->sys_clk = devm_clk_get(&pdev->dev, "sys");
+> +	if (IS_ERR(pwm->sys_clk)) {
+> +		dev_err(&pdev->dev, "failed to get system clock\n");
+> +		return PTR_ERR(pwm->sys_clk);
+> +	}
+> +
+> +	pwm->pwm_clk = devm_clk_get(&pdev->dev, "pwm");
+> +	if (IS_ERR(pwm->pwm_clk)) {
+> +		dev_err(&pdev->dev, "failed to get pwm clock\n");
+> +		return PTR_ERR(pwm->pwm_clk);
+> +	}
+> +
+> +	ret = clk_prepare_enable(pwm->sys_clk);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "could not prepare or enable sys clock\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = clk_prepare_enable(pwm->pwm_clk);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "could not prepare or enable pwm clock\n");
+> +		goto disable_sysclk;
+> +	}
+> +
+> +	pwm->chip.dev = &pdev->dev;
+> +	pwm->chip.ops = &img_pwm_ops;
+> +	pwm->chip.base = -1;
+> +	pwm->chip.npwm = 4;
+> +
+> +	ret = pwmchip_add(&pwm->chip);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "pwmchip_add failed: %d\n", ret);
+> +		goto disable_pwmclk;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, pwm);
+> +
+> +disable_pwmclk:
+> +	clk_disable_unprepare(pwm->pwm_clk);
+> +disable_sysclk:
+> +	clk_disable_unprepare(pwm->sys_clk);
+> +
+> +	return 0;
 
-Guys, any feedback?
+return ret on error paths?
 
-Thanks a lot!
--- 
-Ezequiel
+Also should you reenable sys and pwm clocks after successful driver
+registration?
+
+> +}
+> +
+
+--
+With best wishes,
+Vladimir
