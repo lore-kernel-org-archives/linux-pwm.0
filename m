@@ -1,240 +1,48 @@
 From: Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH 1/7] gpio: mvebu: checkpatch fixes
-Date: Sat, 10 Jan 2015 00:34:47 +0100
-Message-ID: <1420846493-31647-2-git-send-email-andrew@lunn.ch>
+Subject: [PATCH 7/7] mvebu: wrt1900ac: Use pwm-fan rather than gpio-fan
+Date: Sat, 10 Jan 2015 00:34:53 +0100
+Message-ID: <1420846493-31647-8-git-send-email-andrew@lunn.ch>
 References: <1420846493-31647-1-git-send-email-andrew@lunn.ch>
-Return-path: <linux-gpio-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from vps0.lunn.ch ([178.209.37.122]:49499 "EHLO vps0.lunn.ch"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753737AbbAIXhE (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Fri, 9 Jan 2015 18:37:04 -0500
 In-Reply-To: <1420846493-31647-1-git-send-email-andrew@lunn.ch>
-Sender: linux-gpio-owner@vger.kernel.org
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 To: linus.walleij@linaro.org
 Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, kaloz@openwrt.org, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@googlemail.com>, linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
-List-Id: linux-pwm@vger.kernel.org
 
-Wrap some long lines.
-Prefer seq_puts() over seq_printf().
-space to tab conversions.
-Spelling error fix.
+The mvebu gpio driver can also perform PWM on some pins. Us the
+pwm-fan driver to control the fan of the WRT1900AC, giving us fine
+grain control over its speed and hence noise.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/gpio/gpio-mvebu.c | 77 ++++++++++++++++++++++++++---------------------
- 1 file changed, 42 insertions(+), 35 deletions(-)
+ arch/arm/boot/dts/armada-xp-wrt1900ac.dts | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-index 7bc3e9b288f3..7533d446b820 100644
---- a/drivers/gpio/gpio-mvebu.c
-+++ b/drivers/gpio/gpio-mvebu.c
-@@ -59,7 +59,7 @@
- #define GPIO_LEVEL_MASK_OFF	0x001c
+diff --git a/arch/arm/boot/dts/armada-xp-wrt1900ac.dts b/arch/arm/boot/dts/armada-xp-wrt1900ac.dts
+index d53643ca2c0d..14a4d7cd4ff2 100644
+--- a/arch/arm/boot/dts/armada-xp-wrt1900ac.dts
++++ b/arch/arm/boot/dts/armada-xp-wrt1900ac.dts
+@@ -276,12 +276,10 @@
+ 		};
+ 	};
  
- /* The MV78200 has per-CPU registers for edge mask and level mask */
--#define GPIO_EDGE_MASK_MV78200_OFF(cpu)   ((cpu) ? 0x30 : 0x18)
-+#define GPIO_EDGE_MASK_MV78200_OFF(cpu)	  ((cpu) ? 0x30 : 0x18)
- #define GPIO_LEVEL_MASK_MV78200_OFF(cpu)  ((cpu) ? 0x34 : 0x1C)
+-	gpio_fan {
++	pwm_fan {
+ 		/* SUNON HA4010V4-0000-C99 */
+-		compatible = "gpio-fan";
+-		gpios = <&gpio0 24 0>;
+-		gpio-fan,speed-map = <0	   0
+-				      4500 1>;
++		compatible = "pwm-fan";
++		pwms = <&gpio0 24 4000 0>;
+ 	};
  
- /* The Armada XP has per-CPU registers for interrupt cause, interrupt
-@@ -69,11 +69,11 @@
- #define GPIO_EDGE_MASK_ARMADAXP_OFF(cpu)  (0x10 + (cpu) * 0x4)
- #define GPIO_LEVEL_MASK_ARMADAXP_OFF(cpu) (0x20 + (cpu) * 0x4)
- 
--#define MVEBU_GPIO_SOC_VARIANT_ORION    0x1
--#define MVEBU_GPIO_SOC_VARIANT_MV78200  0x2
-+#define MVEBU_GPIO_SOC_VARIANT_ORION	0x1
-+#define MVEBU_GPIO_SOC_VARIANT_MV78200	0x2
- #define MVEBU_GPIO_SOC_VARIANT_ARMADAXP 0x3
- 
--#define MVEBU_MAX_GPIO_PER_BANK         32
-+#define MVEBU_MAX_GPIO_PER_BANK		32
- 
- struct mvebu_gpio_chip {
- 	struct gpio_chip   chip;
-@@ -82,9 +82,9 @@ struct mvebu_gpio_chip {
- 	void __iomem	  *percpu_membase;
- 	int		   irqbase;
- 	struct irq_domain *domain;
--	int                soc_variant;
-+	int		   soc_variant;
- 
--	/* Used to preserve GPIO registers accross suspend/resume */
-+	/* Used to preserve GPIO registers across suspend/resume */
- 	u32                out_reg;
- 	u32                io_conf_reg;
- 	u32                blink_en_reg;
-@@ -107,7 +107,8 @@ static inline void __iomem *mvebu_gpioreg_blink(struct mvebu_gpio_chip *mvchip)
- 	return mvchip->membase + GPIO_BLINK_EN_OFF;
- }
- 
--static inline void __iomem *mvebu_gpioreg_io_conf(struct mvebu_gpio_chip *mvchip)
-+static inline void __iomem *
-+mvebu_gpioreg_io_conf(struct mvebu_gpio_chip *mvchip)
- {
- 	return mvchip->membase + GPIO_IO_CONF_OFF;
- }
-@@ -117,12 +118,14 @@ static inline void __iomem *mvebu_gpioreg_in_pol(struct mvebu_gpio_chip *mvchip)
- 	return mvchip->membase + GPIO_IN_POL_OFF;
- }
- 
--static inline void __iomem *mvebu_gpioreg_data_in(struct mvebu_gpio_chip *mvchip)
-+static inline void __iomem *
-+mvebu_gpioreg_data_in(struct mvebu_gpio_chip *mvchip)
- {
- 	return mvchip->membase + GPIO_DATA_IN_OFF;
- }
- 
--static inline void __iomem *mvebu_gpioreg_edge_cause(struct mvebu_gpio_chip *mvchip)
-+static inline void __iomem *
-+mvebu_gpioreg_edge_cause(struct mvebu_gpio_chip *mvchip)
- {
- 	int cpu;
- 
-@@ -132,13 +135,15 @@ static inline void __iomem *mvebu_gpioreg_edge_cause(struct mvebu_gpio_chip *mvc
- 		return mvchip->membase + GPIO_EDGE_CAUSE_OFF;
- 	case MVEBU_GPIO_SOC_VARIANT_ARMADAXP:
- 		cpu = smp_processor_id();
--		return mvchip->percpu_membase + GPIO_EDGE_CAUSE_ARMADAXP_OFF(cpu);
-+		return mvchip->percpu_membase +
-+			GPIO_EDGE_CAUSE_ARMADAXP_OFF(cpu);
- 	default:
- 		BUG();
- 	}
- }
- 
--static inline void __iomem *mvebu_gpioreg_edge_mask(struct mvebu_gpio_chip *mvchip)
-+static inline void __iomem *
-+mvebu_gpioreg_edge_mask(struct mvebu_gpio_chip *mvchip)
- {
- 	int cpu;
- 
-@@ -150,7 +155,8 @@ static inline void __iomem *mvebu_gpioreg_edge_mask(struct mvebu_gpio_chip *mvch
- 		return mvchip->membase + GPIO_EDGE_MASK_MV78200_OFF(cpu);
- 	case MVEBU_GPIO_SOC_VARIANT_ARMADAXP:
- 		cpu = smp_processor_id();
--		return mvchip->percpu_membase + GPIO_EDGE_MASK_ARMADAXP_OFF(cpu);
-+		return mvchip->percpu_membase +
-+			GPIO_EDGE_MASK_ARMADAXP_OFF(cpu);
- 	default:
- 		BUG();
- 	}
-@@ -168,7 +174,8 @@ static void __iomem *mvebu_gpioreg_level_mask(struct mvebu_gpio_chip *mvchip)
- 		return mvchip->membase + GPIO_LEVEL_MASK_MV78200_OFF(cpu);
- 	case MVEBU_GPIO_SOC_VARIANT_ARMADAXP:
- 		cpu = smp_processor_id();
--		return mvchip->percpu_membase + GPIO_LEVEL_MASK_ARMADAXP_OFF(cpu);
-+		return mvchip->percpu_membase +
-+			GPIO_LEVEL_MASK_ARMADAXP_OFF(cpu);
- 	default:
- 		BUG();
- 	}
-@@ -364,22 +371,22 @@ static void mvebu_gpio_level_irq_unmask(struct irq_data *d)
-  * value of the line or the opposite value.
-  *
-  * Level IRQ handlers: DATA_IN is used directly as cause register.
-- *                     Interrupt are masked by LEVEL_MASK registers.
-+ *		       Interrupt are masked by LEVEL_MASK registers.
-  * Edge IRQ handlers:  Change in DATA_IN are latched in EDGE_CAUSE.
-- *                     Interrupt are masked by EDGE_MASK registers.
-+ *		       Interrupt are masked by EDGE_MASK registers.
-  * Both-edge handlers: Similar to regular Edge handlers, but also swaps
-- *                     the polarity to catch the next line transaction.
-- *                     This is a race condition that might not perfectly
-- *                     work on some use cases.
-+ *		       the polarity to catch the next line transaction.
-+ *		       This is a race condition that might not perfectly
-+ *		       work on some use cases.
-  *
-  * Every eight GPIO lines are grouped (OR'ed) before going up to main
-  * cause register.
-  *
-- *                    EDGE  cause    mask
-- *        data-in   /--------| |-----| |----\
-- *     -----| |-----                         ---- to main cause reg
-- *           X      \----------------| |----/
-- *        polarity    LEVEL          mask
-+ *		      EDGE  cause    mask
-+ *	  data-in   /--------| |-----| |----\
-+ *     -----| |-----			     ---- to main cause reg
-+ *	     X	    \----------------| |----/
-+ *	  polarity    LEVEL	     mask
-  *
-  ****************************************************************************/
- 
-@@ -394,9 +401,8 @@ static int mvebu_gpio_irq_set_type(struct irq_data *d, unsigned int type)
- 	pin = d->hwirq;
- 
- 	u = readl_relaxed(mvebu_gpioreg_io_conf(mvchip)) & (1 << pin);
--	if (!u) {
-+	if (!u)
- 		return -EINVAL;
--	}
- 
- 	type &= IRQ_TYPE_SENSE_MASK;
- 	if (type == IRQ_TYPE_NONE)
-@@ -529,13 +535,13 @@ static void mvebu_gpio_dbg_show(struct seq_file *s, struct gpio_chip *chip)
- 			   (data_in ^ in_pol) & msk  ? "hi" : "lo",
- 			   in_pol & msk ? "lo" : "hi");
- 		if (!((edg_msk | lvl_msk) & msk)) {
--			seq_printf(s, " disabled\n");
-+			seq_puts(s, " disabled\n");
- 			continue;
- 		}
- 		if (edg_msk & msk)
--			seq_printf(s, " edge ");
-+			seq_puts(s, " edge ");
- 		if (lvl_msk & msk)
--			seq_printf(s, " level");
-+			seq_puts(s, " level");
- 		seq_printf(s, " (%s)\n", cause & msk ? "pending" : "clear  ");
- 	}
- }
-@@ -546,15 +552,15 @@ static void mvebu_gpio_dbg_show(struct seq_file *s, struct gpio_chip *chip)
- static const struct of_device_id mvebu_gpio_of_match[] = {
- 	{
- 		.compatible = "marvell,orion-gpio",
--		.data       = (void *) MVEBU_GPIO_SOC_VARIANT_ORION,
-+		.data	    = (void *) MVEBU_GPIO_SOC_VARIANT_ORION,
- 	},
- 	{
- 		.compatible = "marvell,mv78200-gpio",
--		.data       = (void *) MVEBU_GPIO_SOC_VARIANT_MV78200,
-+		.data	    = (void *) MVEBU_GPIO_SOC_VARIANT_MV78200,
- 	},
- 	{
- 		.compatible = "marvell,armadaxp-gpio",
--		.data       = (void *) MVEBU_GPIO_SOC_VARIANT_ARMADAXP,
-+		.data	    = (void *) MVEBU_GPIO_SOC_VARIANT_ARMADAXP,
- 	},
- 	{
- 		/* sentinel */
-@@ -668,7 +674,8 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
- 	else
- 		soc_variant = MVEBU_GPIO_SOC_VARIANT_ORION;
- 
--	mvchip = devm_kzalloc(&pdev->dev, sizeof(struct mvebu_gpio_chip), GFP_KERNEL);
-+	mvchip = devm_kzalloc(&pdev->dev, sizeof(struct mvebu_gpio_chip),
-+			      GFP_KERNEL);
- 	if (!mvchip)
- 		return -ENOMEM;
- 
-@@ -767,8 +774,8 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
- 	 * interrupt handlers, with each handler dealing with 8 GPIO
- 	 * pins. */
- 	for (i = 0; i < 4; i++) {
--		int irq;
--		irq = platform_get_irq(pdev, i);
-+		int irq = platform_get_irq(pdev, i);
-+
- 		if (irq < 0)
- 			continue;
- 		irq_set_handler_data(irq, mvchip);
-@@ -827,7 +834,7 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
- 
- static struct platform_driver mvebu_gpio_driver = {
- 	.driver		= {
--		.name	        = "mvebu-gpio",
-+		.name		= "mvebu-gpio",
- 		.of_match_table = mvebu_gpio_of_match,
- 	},
- 	.probe		= mvebu_gpio_probe,
+ 	dsa@0 {
 -- 
 2.1.3
 
