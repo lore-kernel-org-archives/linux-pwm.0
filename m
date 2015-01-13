@@ -1,128 +1,120 @@
-From: Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH 3/7] gpio: mvebu: Add limited PWM support
-Date: Tue, 13 Jan 2015 03:42:56 +0100
-Message-ID: <20150113024256.GH19533@lunn.ch>
-References: <1420846493-31647-1-git-send-email-andrew@lunn.ch>
- <1420846493-31647-4-git-send-email-andrew@lunn.ch>
- <CACRpkdZe2BMtTPU6wkd+gk5mttz3GdL_zYCTPQOaubwRAHbDgg@mail.gmail.com>
+From: Scott Branden <sbranden@broadcom.com>
+Subject: Re: [PATCH 1/2] drivers: pwm: core: Add pwmchip_add_inversed
+Date: Tue, 13 Jan 2015 12:44:13 -0800
+Message-ID: <54B5839D.90901@broadcom.com>
+References: <1420420376-13087-1-git-send-email-tim.kryger@gmail.com> <1420420376-13087-2-git-send-email-tim.kryger@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-gpio-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CACRpkdZe2BMtTPU6wkd+gk5mttz3GdL_zYCTPQOaubwRAHbDgg@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lee Jones <lee.jones@linaro.org>, Samuel Ortiz <sameo@linux.intel.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Imre Kaloz <kaloz@openwrt.org>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@googlemail.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1420420376-13087-2-git-send-email-tim.kryger@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tim Kryger <tim.kryger@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Jonathan Richardson <jonathar@broadcom.com>
+Cc: Ray Jui <rjui@broadcom.com>, Linux PWM <linux-pwm@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>
 List-Id: linux-pwm@vger.kernel.org
 
-> - Why is this not modeled as an MFD spawning a GPIO and a PWM cell,
->   as is custom? (Bringing MFD maintainers into the picture.)
-> 
-> So I am aware that this takes the problem from "quick fix extension to the GPIO
-> driver" to "really nasty hairy re-engineering of the whole shebang" but there is
-> a lot of precedents in the kernel for splitting up this type of hardware in
-> separate drivers under an MFD hub.
+Patchset looks good.
 
-Hi Linus
+On 15-01-04 05:12 PM, Tim Kryger wrote:
+> Add a new function to register a PWM chip with channels that have their
+> initial polarity as inversed.  This benefits drivers of controllers that
+> by default operate with inversed polarity by removing the need to modify
+> the polarity during initialization.
+>
+> Signed-off-by: Tim Kryger <tim.kryger@gmail.com>
+Acked-by: Scott Branden <sbranden@broadcom.com>
 
-So i thought about this some more. What would an MFD based solution
-look like?
-
-First issue is backwards compatibility. There are currently around 90
-.dts files using this gpio driver. I could imagine a few of these
-being changed to make use of an MFD based driver to make us of the new
-features, but the rest expect backwards compatibility.
-
-I think the only sensible way to achieve this is that the gpio driver
-keeps its existing binding.
-
-We then need to add a new MFD binding, with sub sections for the gpio
-driver and the PWM driver. At a first stab, it would look something
-like:
-
-armada-gpio {
-	compatible = "marvell,armada-gpio";
-        reg = <0xd0018100 0x40>,
-              <0xd00181c0 0x08>;
-
-	gpio: gpio {
-		compatible = "marvell,armada-gpio-gpio";
-		ngpios = <32>;
-		gio-controller;
-		#gpio-cells = <2>;
-		interrupt-controller;
-		#interrupt-cells = <2>;
-		interrupts = <16>, <17>, <18>, <19>;
-		clocks = <&coreclk 0>;
-	};
-
-	pwm: pwm {
-		compatible = "marvell,armada-gpio-pwm";
-		#pwm-cells = <2>;
-		clocks = <&coreclk 0>;
-	};
-};
-
-This does not really describe the hardware. The hardware is more like:
-
-	gpio: gpio {
-		compatible = "marvell,orion-gpio";
-        	reg = <0xd0018100 0x40>;
-		ngpios = <32>;
-		gio-controller;
-		#gpio-cells = <2>;
-		interrupt-controller;
-		#interrupt-cells = <2>;
-		interrupts = <16>, <17>, <18>, <19>;
-		clocks = <&coreclk 0>;
-
-		pwm: pwm {
-			compatible = "marvell,armada-pwm";
-			reg = <0xd00181c0 0x08>;
-			#pwm-cells = <2>;
-			clocks = <&coreclk 0>;
-		};
-	};
-
-but i don't think MFD supports that sort of structure?
-
-So assuming we go with the first binding above, this means the gpio
-driver gains a second binding, probe function, etc for when it is
-probed as part of an MFD.
-
-Now it starts getting nasty hairy. The MFD core driver should offer a
-set of functions to access the hardware, which are shared by the
-gpio-gpio driver and the gpio-pwm driver. However when the gpio driver
-is probed using its current binding, not the MFD binding, it also
-needs access functions.  So we need a library of access functions,
-which can be used directly or via the MFD code. Where do we place
-these? In the gpio driver would make sense, since gpio driver always
-needs them, the MFD is optional. But they could be in the MFD
-driver. The gpio driver is currently built in, meaning the MFD driver
-would be built in, so even if the MFD driver is never probed, it can
-still export functions.
-
-Memory management then becomes fun. If the MFD is probed, it needs to
-allocated the shared memory, used by the access functions etc. If the
-standalone gpio driver is probed, it needs to allocated the memory
-used by the access functions etc.
-
-I'm also worried about race conditions during probe. The pwm driver is
-not independent of the gpio driver. It is a child of the gpio
-driver. It needs to know the gpiochip base and ngpio during its own
-probe function. In effect, we need to ensure that the MFD gpio probe
-has completed successfully before the MFD pwm probe is called.
-
-Nothing completely unsolvable, it just seems ugly and complex.
-
-Humm, that second binding just gave me an idea. The pwm driver is a
-child of the gpio driver. That is the same relationship between an MFD
-driver and its children. So maybe we should move mvebu-gpio.c into
-drives/mfd and add some mfd functionality so it can mfd_add_device()
-the pwm driver when it has completed its own probe? That nicely solves
-the probe race issue, and the library of access functions etc. The
-gpio binding is also backwards compatible since it is being extended
-with an optional MFD child device.
-
-    Andrew
-
+> ---
+>   drivers/pwm/core.c  | 36 ++++++++++++++++++++++++++++--------
+>   include/linux/pwm.h |  6 ++++++
+>   2 files changed, 34 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+> index 966497d..f28c4ce 100644
+> --- a/drivers/pwm/core.c
+> +++ b/drivers/pwm/core.c
+> @@ -222,14 +222,8 @@ void *pwm_get_chip_data(struct pwm_device *pwm)
+>   }
+>   EXPORT_SYMBOL_GPL(pwm_get_chip_data);
+>
+> -/**
+> - * pwmchip_add() - register a new PWM chip
+> - * @chip: the PWM chip to add
+> - *
+> - * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
+> - * will be used.
+> - */
+> -int pwmchip_add(struct pwm_chip *chip)
+> +static int pwmchip_add_with_polarity(struct pwm_chip *chip,
+> +				     enum pwm_polarity polarity)
+>   {
+>   	struct pwm_device *pwm;
+>   	unsigned int i;
+> @@ -259,6 +253,7 @@ int pwmchip_add(struct pwm_chip *chip)
+>   		pwm->chip = chip;
+>   		pwm->pwm = chip->base + i;
+>   		pwm->hwpwm = i;
+> +		pwm->polarity = polarity;
+>
+>   		radix_tree_insert(&pwm_tree, pwm->pwm, pwm);
+>   	}
+> @@ -279,9 +274,34 @@ out:
+>   	mutex_unlock(&pwm_lock);
+>   	return ret;
+>   }
+> +
+> +/**
+> + * pwmchip_add() - register a new PWM chip
+> + * @chip: the PWM chip to add
+> + *
+> + * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
+> + * will be used.  The initial polarity for all channels is normal.
+> + */
+> +int pwmchip_add(struct pwm_chip *chip)
+> +{
+> +	return pwmchip_add_with_polarity(chip, PWM_POLARITY_NORMAL);
+> +}
+>   EXPORT_SYMBOL_GPL(pwmchip_add);
+>
+>   /**
+> + * pwmchip_add_inversed() - register a new PWM chip
+> + * @chip: the PWM chip to add
+> + *
+> + * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
+> + * will be used.  The initial polarity for all channels is inversed.
+> + */
+> +int pwmchip_add_inversed(struct pwm_chip *chip)
+> +{
+> +	return pwmchip_add_with_polarity(chip, PWM_POLARITY_INVERSED);
+> +}
+> +EXPORT_SYMBOL_GPL(pwmchip_add_inversed);
+> +
+> +/**
+>    * pwmchip_remove() - remove a PWM chip
+>    * @chip: the PWM chip to remove
+>    *
+> diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+> index e90628c..358547f 100644
+> --- a/include/linux/pwm.h
+> +++ b/include/linux/pwm.h
+> @@ -183,6 +183,7 @@ int pwm_set_chip_data(struct pwm_device *pwm, void *data);
+>   void *pwm_get_chip_data(struct pwm_device *pwm);
+>
+>   int pwmchip_add(struct pwm_chip *chip);
+> +int pwmchip_add_inversed(struct pwm_chip *chip);
+>   int pwmchip_remove(struct pwm_chip *chip);
+>   struct pwm_device *pwm_request_from_chip(struct pwm_chip *chip,
+>   					 unsigned int index,
+> @@ -217,6 +218,11 @@ static inline int pwmchip_add(struct pwm_chip *chip)
+>   	return -EINVAL;
+>   }
+>
+> +static inline int pwmchip_add_inversed(struct pwm_chip *chip)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+>   static inline int pwmchip_remove(struct pwm_chip *chip)
+>   {
+>   	return -EINVAL;
+>
