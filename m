@@ -1,42 +1,173 @@
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-Subject: Re: [PATCH v8 0/2] Imagination Technologies PWM support
-Date: Tue, 20 Jan 2015 07:52:25 -0300
-Message-ID: <54BE3369.9000802@imgtec.com>
-References: <1420826088-13113-1-git-send-email-ezequiel.garcia@imgtec.com>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH] ARM: dts: imx6qdl: Adjust the brightness setting for
+ LVDS panel
+Date: Tue, 20 Jan 2015 19:38:39 +0800
+Message-ID: <20150120113837.GC2766@dragon>
+References: <1421749355-23050-1-git-send-email-r63905@freescale.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1420826088-13113-1-git-send-email-ezequiel.garcia@imgtec.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andrew Bresticker <abrestic@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, James Hartley <james.hartley@imgtec.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, vladimir_zapolskiy@mentor.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pa0-f43.google.com ([209.85.220.43]:55641 "EHLO
+	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752526AbbATLj3 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 20 Jan 2015 06:39:29 -0500
+Received: by mail-pa0-f43.google.com with SMTP id eu11so7860486pac.2
+        for <linux-pwm@vger.kernel.org>; Tue, 20 Jan 2015 03:39:28 -0800 (PST)
+Content-Disposition: inline
+In-Reply-To: <1421749355-23050-1-git-send-email-r63905@freescale.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Robby Cai <r63905@freescale.com>
+Cc: linux-pwm@vger.kernel.org, jg1.han@samsung.com, lee.jones@linaro.org, thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org, Tim Harvey <tharvey@gateworks.com>, Eric Nelson <eric.nelson@boundarydevices.com>, Troy Kisky <troy.kisky@boundarydevices.com>, kernel@pengutronix.de
 
+Add LAKML and a few interested people.
 
+Shawn
 
-On 01/09/2015 02:54 PM, Ezequiel Garcia wrote:
-> A new round for the IMG PWM driver.
+On Tue, Jan 20, 2015 at 06:22:35PM +0800, Robby Cai wrote:
+> Hannstar XGA panel is used by default on i.MX6QDL Sabre Auto/Lite/SD
+> or derived board.
 > 
-> The IMG PWM controller is muxed with a PDM controller, through a shared
-> so-called periph register bit, which sets the output as PWM or PDM.
-> Because this register is not part of the pin controller block, but rather
-> PWM/PDM specific, and because the register is also used to set the PDM value,
-> it is simpler to use a regmap-based syscon to deal with it.
+> According to its data sheet [1],
+> a) the dimming duty cycle is 20% - 100%.
+> This patch changes the brightness-level from 20 to 100 with step 10 to
+> make it straight-forward.
+> b) the typical dimming frequency is 20KHz.
+> The previous setting is 200Hz. This patch corrects it.
 > 
-> This time, I'm removing the PDM driver from the submission and submitting the PWM
-> alone. The PDM was written as a misc driver, but had some design issues, so for
-> now I'm proposing to merge the PWM only.
+> [1]
+> http://boundarydevices.com/wp-content/uploads/2013/06/HSD100PXN1-A00-C11-1.0.pdf
 > 
-> The series is based on v3.19-rc3. If at all possible I'd like to see this merged
-> for v3.20.
+> Signed-off-by: Robby Cai <r63905@freescale.com>
+> ---
+>  arch/arm/boot/dts/imx6qdl-gw52xx.dtsi     | 6 +++---
+>  arch/arm/boot/dts/imx6qdl-gw53xx.dtsi     | 6 +++---
+>  arch/arm/boot/dts/imx6qdl-gw54xx.dtsi     | 6 +++---
+>  arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi | 6 +++---
+>  arch/arm/boot/dts/imx6qdl-sabreauto.dtsi  | 6 +++---
+>  arch/arm/boot/dts/imx6qdl-sabrelite.dtsi  | 6 +++---
+>  arch/arm/boot/dts/imx6qdl-sabresd.dtsi    | 6 +++---
+>  7 files changed, 21 insertions(+), 21 deletions(-)
 > 
-
-Thierry,
-
-Any comments on this? Any chance we merge it in time for v3.20?
-It's -rc5 already and I've started to worry.
-
-Thanks!
--- 
-Ezequiel
+> diff --git a/arch/arm/boot/dts/imx6qdl-gw52xx.dtsi b/arch/arm/boot/dts/imx6qdl-gw52xx.dtsi
+> index b5756c2..33484d8 100644
+> --- a/arch/arm/boot/dts/imx6qdl-gw52xx.dtsi
+> +++ b/arch/arm/boot/dts/imx6qdl-gw52xx.dtsi
+> @@ -29,9 +29,9 @@
+>  
+>  	backlight {
+>  		compatible = "pwm-backlight";
+> -		pwms = <&pwm4 0 5000000>;
+> -		brightness-levels = <0 4 8 16 32 64 128 255>;
+> -		default-brightness-level = <7>;
+> +		pwms = <&pwm4 0 50000>;
+> +		brightness-levels = <0 20 30 40 50 60 70 80 90 100>;
+> +		default-brightness-level = <9>;
+>  	};
+>  
+>  	leds {
+> diff --git a/arch/arm/boot/dts/imx6qdl-gw53xx.dtsi b/arch/arm/boot/dts/imx6qdl-gw53xx.dtsi
+> index 86f03c1..0d01751 100644
+> --- a/arch/arm/boot/dts/imx6qdl-gw53xx.dtsi
+> +++ b/arch/arm/boot/dts/imx6qdl-gw53xx.dtsi
+> @@ -30,9 +30,9 @@
+>  
+>  	backlight {
+>  		compatible = "pwm-backlight";
+> -		pwms = <&pwm4 0 5000000>;
+> -		brightness-levels = <0 4 8 16 32 64 128 255>;
+> -		default-brightness-level = <7>;
+> +		pwms = <&pwm4 0 50000>;
+> +		brightness-levels = <0 20 30 40 50 60 70 80 90 100>;
+> +		default-brightness-level = <9>;
+>  	};
+>  
+>  	leds {
+> diff --git a/arch/arm/boot/dts/imx6qdl-gw54xx.dtsi b/arch/arm/boot/dts/imx6qdl-gw54xx.dtsi
+> index 4a8d97f..8973bf2 100644
+> --- a/arch/arm/boot/dts/imx6qdl-gw54xx.dtsi
+> +++ b/arch/arm/boot/dts/imx6qdl-gw54xx.dtsi
+> @@ -30,9 +30,9 @@
+>  
+>  	backlight {
+>  		compatible = "pwm-backlight";
+> -		pwms = <&pwm4 0 5000000>;
+> -		brightness-levels = <0 4 8 16 32 64 128 255>;
+> -		default-brightness-level = <7>;
+> +		pwms = <&pwm4 0 50000>;
+> +		brightness-levels = <0 20 30 40 50 60 70 80 90 100>;
+> +		default-brightness-level = <9>;
+>  	};
+>  
+>  	leds {
+> diff --git a/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi b/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
+> index 0821812..5453cf0 100644
+> --- a/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
+> +++ b/arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi
+> @@ -124,9 +124,9 @@
+>  
+>  	backlight_lvds {
+>  		compatible = "pwm-backlight";
+> -		pwms = <&pwm4 0 5000000>;
+> -		brightness-levels = <0 4 8 16 32 64 128 255>;
+> -		default-brightness-level = <7>;
+> +		pwms = <&pwm4 0 50000>;
+> +		brightness-levels = <0 20 30 40 50 60 70 80 90 100>;
+> +		default-brightness-level = <9>;
+>  		power-supply = <&reg_3p3v>;
+>  		status = "okay";
+>  	};
+> diff --git a/arch/arm/boot/dts/imx6qdl-sabreauto.dtsi b/arch/arm/boot/dts/imx6qdl-sabreauto.dtsi
+> index 009abd6..2bfcf5a 100644
+> --- a/arch/arm/boot/dts/imx6qdl-sabreauto.dtsi
+> +++ b/arch/arm/boot/dts/imx6qdl-sabreauto.dtsi
+> @@ -38,9 +38,9 @@
+>  
+>  	backlight {
+>  		compatible = "pwm-backlight";
+> -		pwms = <&pwm3 0 5000000>;
+> -		brightness-levels = <0 4 8 16 32 64 128 255>;
+> -		default-brightness-level = <7>;
+> +		pwms = <&pwm3 0 50000>;
+> +		brightness-levels = <0 20 30 40 50 60 70 80 90 100>;
+> +		default-brightness-level = <9>;
+>  		status = "okay";
+>  	};
+>  };
+> diff --git a/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi b/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
+> index 0b28a9d..d1409c0 100644
+> --- a/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
+> +++ b/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
+> @@ -123,9 +123,9 @@
+>  
+>  	backlight_lvds {
+>  		compatible = "pwm-backlight";
+> -		pwms = <&pwm4 0 5000000>;
+> -		brightness-levels = <0 4 8 16 32 64 128 255>;
+> -		default-brightness-level = <7>;
+> +		pwms = <&pwm4 0 50000>;
+> +		brightness-levels = <0 20 30 40 50 60 70 80 90 100>;
+> +		default-brightness-level = <9>;
+>  		power-supply = <&reg_3p3v>;
+>  		status = "okay";
+>  	};
+> diff --git a/arch/arm/boot/dts/imx6qdl-sabresd.dtsi b/arch/arm/boot/dts/imx6qdl-sabresd.dtsi
+> index f1cd214..3efc363 100644
+> --- a/arch/arm/boot/dts/imx6qdl-sabresd.dtsi
+> +++ b/arch/arm/boot/dts/imx6qdl-sabresd.dtsi
+> @@ -115,9 +115,9 @@
+>  
+>  	backlight {
+>  		compatible = "pwm-backlight";
+> -		pwms = <&pwm1 0 5000000>;
+> -		brightness-levels = <0 4 8 16 32 64 128 255>;
+> -		default-brightness-level = <7>;
+> +		pwms = <&pwm1 0 50000>;
+> +		brightness-levels = <0 20 30 40 50 60 70 80 90 100>;
+> +		default-brightness-level = <9>;
+>  		status = "okay";
+>  	};
+>  
+> -- 
+> 1.9.1
+> 
