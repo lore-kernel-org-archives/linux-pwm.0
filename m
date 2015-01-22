@@ -1,75 +1,110 @@
-From: Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH] ARM: dts: imx6qdl: Adjust the brightness setting for
- LVDS panel
-Date: Thu, 22 Jan 2015 16:38:04 +0100
-Message-ID: <1421941084.3084.45.camel@pengutronix.de>
-References: <1421749355-23050-1-git-send-email-r63905@freescale.com>
-	 <20150120113837.GC2766@dragon>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:38500 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750754AbbAVPiK (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 22 Jan 2015 10:38:10 -0500
-In-Reply-To: <20150120113837.GC2766@dragon>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+Subject: [PATCH v2] pwm: samsung: Fix output race on disabling
+Date: Thu, 22 Jan 2015 22:41:33 +0100
+Message-ID: <1421962893-23078-1-git-send-email-sjoerd.simons@collabora.co.uk>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Tomasz Figa <tomasz.figa@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-samsung-soc@vger.kernel.org, Javier Martinez Canillas <javier.martinez@collabora.co.uk>
 List-Id: linux-pwm@vger.kernel.org
-To: Shawn Guo <shawn.guo@linaro.org>
-Cc: Robby Cai <r63905@freescale.com>, linux-pwm@vger.kernel.org, Eric Nelson <eric.nelson@boundarydevices.com>, Tim Harvey <tharvey@gateworks.com>, jg1.han@samsung.com, Troy Kisky <troy.kisky@boundarydevices.com>, thierry.reding@gmail.com, kernel@pengutronix.de, lee.jones@linaro.org, linux-arm-kernel@lists.infradead.org
 
-Am Dienstag, den 20.01.2015, 19:38 +0800 schrieb Shawn Guo:
-> Add LAKML and a few interested people.
-> 
-> Shawn
-> 
-> On Tue, Jan 20, 2015 at 06:22:35PM +0800, Robby Cai wrote:
-> > Hannstar XGA panel is used by default on i.MX6QDL Sabre Auto/Lite/SD
-> > or derived board.
-> > 
-> > According to its data sheet [1],
-> > a) the dimming duty cycle is 20% - 100%.
-> > This patch changes the brightness-level from 20 to 100 with step 10 to
-> > make it straight-forward.
-> > b) the typical dimming frequency is 20KHz.
-> > The previous setting is 200Hz. This patch corrects it.
-> > 
-> > [1]
-> > http://boundarydevices.com/wp-content/uploads/2013/06/HSD100PXN1-A00-C11-1.0.pdf
-> > 
-> > Signed-off-by: Robby Cai <r63905@freescale.com>
-> > ---
-> >  arch/arm/boot/dts/imx6qdl-gw52xx.dtsi     | 6 +++---
-> >  arch/arm/boot/dts/imx6qdl-gw53xx.dtsi     | 6 +++---
-> >  arch/arm/boot/dts/imx6qdl-gw54xx.dtsi     | 6 +++---
-> >  arch/arm/boot/dts/imx6qdl-nitrogen6x.dtsi | 6 +++---
-> >  arch/arm/boot/dts/imx6qdl-sabreauto.dtsi  | 6 +++---
-> >  arch/arm/boot/dts/imx6qdl-sabrelite.dtsi  | 6 +++---
-> >  arch/arm/boot/dts/imx6qdl-sabresd.dtsi    | 6 +++---
-> >  7 files changed, 21 insertions(+), 21 deletions(-)
-> > 
-> > diff --git a/arch/arm/boot/dts/imx6qdl-gw52xx.dtsi b/arch/arm/boot/dts/imx6qdl-gw52xx.dtsi
-> > index b5756c2..33484d8 100644
-> > --- a/arch/arm/boot/dts/imx6qdl-gw52xx.dtsi
-> > +++ b/arch/arm/boot/dts/imx6qdl-gw52xx.dtsi
-> > @@ -29,9 +29,9 @@
-> >  
-> >  	backlight {
-> >  		compatible = "pwm-backlight";
-> > -		pwms = <&pwm4 0 5000000>;
-> > -		brightness-levels = <0 4 8 16 32 64 128 255>;
-> > -		default-brightness-level = <7>;
-> > +		pwms = <&pwm4 0 50000>;
-> > +		brightness-levels = <0 20 30 40 50 60 70 80 90 100>;
-> > +		default-brightness-level = <9>;
+When disabling the samsung PWM the output state remains at the level it
+was in the end of a pwm cycle. In other words, calling pwm_disable when
+at 100% duty will keep the output active, while at all other setting the
+output will go/stay inactive. On top of that the samsung PWM settings are
+double-buffered, which means the new settings only get applied at the
+start of a new PWM cycle.
 
-I notice that the intervals are changed from exponential to linear.
-Is this really wanted here?
-I expect that the new settings result in huge steps in perceived
-brightness at low levels and a nearly imperceptible change at the
-last step.
+This results in a race if the PWM is at 100% duty and a driver calls:
+  pwm_config (pwm, 0, period);
+  pwm_disable (pwm);
 
-regards
-Philipp
+In this case the PWMs output will unexpectedly stay active, unless a new
+PWM cycle happened to start between the register writes in _config and
+_disable. As far as i can tell this is a regression introduced by 3bdf878,
+before that a call to pwm_config would call pwm_samsung_enable which,
+while heavy-handed, made sure the expected settings were live.
 
+To resolve this, while not re-introducing the issues 3bdf878 (flickering
+as the PWM got reset while in a PWM cycle). Only force an update of the
+settings when at 100% duty, which shouldn't have a noticeable effect on
+the output but is enough to ensure the behaviour is as expected on
+disable.
+
+Signed-off-by: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+---
+Changes since v1:
+  Fix small issues pointed out by Tomasz Figa
+  - Correct various coding style issues
+  - Read the current value of the tcmp register for comparison rather then
+    using a non-trivial comparison to decide whether the current state was
+    100% duty
+  - Move the code to force manual update out into its own function
+  - Clarify the comment indicating why a manual update is sometimes required
+
+ drivers/pwm/pwm-samsung.c | 31 ++++++++++++++++++++++++++++++-
+ 1 file changed, 30 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
+index 3e9b583..649f6c4 100644
+--- a/drivers/pwm/pwm-samsung.c
++++ b/drivers/pwm/pwm-samsung.c
+@@ -269,12 +269,31 @@ static void pwm_samsung_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
+ }
+ 
++static void pwm_samsung_manual_update(struct samsung_pwm_chip *chip,
++				      struct pwm_device *pwm)
++{
++	unsigned int tcon_chan = to_tcon_channel(pwm->hwpwm);
++	u32 tcon;
++	unsigned long flags;
++
++	spin_lock_irqsave(&samsung_pwm_lock, flags);
++
++	tcon = readl(chip->base + REG_TCON);
++	tcon |= TCON_MANUALUPDATE(tcon_chan);
++	writel(tcon, chip->base + REG_TCON);
++
++	tcon &= ~TCON_MANUALUPDATE(tcon_chan);
++	writel(tcon, chip->base + REG_TCON);
++
++	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
++}
++
+ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			      int duty_ns, int period_ns)
+ {
+ 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
+ 	struct samsung_pwm_channel *chan = pwm_get_chip_data(pwm);
+-	u32 tin_ns = chan->tin_ns, tcnt, tcmp;
++	u32 tin_ns = chan->tin_ns, tcnt, tcmp, oldtcmp;
+ 
+ 	/*
+ 	 * We currently avoid using 64bit arithmetic by using the
+@@ -288,6 +307,7 @@ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		return 0;
+ 
+ 	tcnt = readl(our_chip->base + REG_TCNTB(pwm->hwpwm));
++	oldtcmp = readl(our_chip->base + REG_TCMPB(pwm->hwpwm));
+ 
+ 	/* We need tick count for calculation, not last tick. */
+ 	++tcnt;
+@@ -335,6 +355,15 @@ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	writel(tcnt, our_chip->base + REG_TCNTB(pwm->hwpwm));
+ 	writel(tcmp, our_chip->base + REG_TCMPB(pwm->hwpwm));
+ 
++	/* In case the PWM is currently at 100% duty, force a manual update
++	 * to prevent the signal staying high in the pwm is disabled shortly
++	 * afer this update (before it autoreloaded the new values) .
++	 */
++	if (oldtcmp == (u32) -1) {
++		dev_dbg(our_chip->chip.dev, "Forcing manual update");
++		pwm_samsung_manual_update(our_chip, pwm);
++	}
++
+ 	chan->period_ns = period_ns;
+ 	chan->tin_ns = tin_ns;
+ 	chan->duty_ns = duty_ns;
+-- 
+2.1.4
