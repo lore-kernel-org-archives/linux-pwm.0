@@ -1,75 +1,71 @@
-From: "Robby.Cai@freescale.com" <Robby.Cai@freescale.com>
-Subject: RE: [PATCH] ARM: dts: imx6qdl: Adjust the brightness setting for LVDS
- panel
-Date: Mon, 26 Jan 2015 14:44:57 +0000
-Message-ID: <BLUPR03MB4059C6493E55DB26E8308E9F8350@BLUPR03MB405.namprd03.prod.outlook.com>
-References: <1421749355-23050-1-git-send-email-r63905@freescale.com>
-	 <20150120113837.GC2766@dragon> <1421941084.3084.45.camel@pengutronix.de>
+From: Gaetan Hug <ghug@induct.be>
+Subject: Found bug in pwm-mxs.c
+Date: Tue, 27 Jan 2015 14:37:42 +0100
+Message-ID: <54C794A6.3040805@induct.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-bn1bn0108.outbound.protection.outlook.com ([157.56.110.108]:5824
-	"EHLO na01-bn1-obe.outbound.protection.outlook.com"
+Received: from mail-am1on0145.outbound.protection.outlook.com ([157.56.112.145]:51552
+	"EHLO emea01-am1-obe.outbound.protection.outlook.com"
 	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-	id S1754067AbbAZOpB (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 26 Jan 2015 09:45:01 -0500
-In-Reply-To: <1421941084.3084.45.camel@pengutronix.de>
-Content-Language: en-US
+	id S1752056AbbA0OJU (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Tue, 27 Jan 2015 09:09:20 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Philipp Zabel <p.zabel@pengutronix.de>, Shawn Guo <shawn.guo@linaro.org>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Eric Nelson <eric.nelson@boundarydevices.com>, Tim Harvey <tharvey@gateworks.com>, "jg1.han@samsung.com" <jg1.han@samsung.com>, Troy Kisky <troy.kisky@boundarydevices.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "lee.jones@linaro.org" <lee.jones@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Armadeus Forum ML <armadeus-forum@lists.sourceforge.net>, linux-pwm@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUGhpbGlwcCBaYWJlbCBb
-bWFpbHRvOnAuemFiZWxAcGVuZ3V0cm9uaXguZGVdDQo+IFNlbnQ6IFRodXJzZGF5LCBKYW51YXJ5
-IDIyLCAyMDE1IDExOjM4IFBNDQo+IFRvOiBTaGF3biBHdW8NCj4gQ2M6IENhaSBSb2JieS1SNjM5
-MDU7IGxpbnV4LXB3bUB2Z2VyLmtlcm5lbC5vcmc7IEVyaWMgTmVsc29uOyBUaW0gSGFydmV5Ow0K
-PiBqZzEuaGFuQHNhbXN1bmcuY29tOyBUcm95IEtpc2t5OyB0aGllcnJ5LnJlZGluZ0BnbWFpbC5j
-b207DQo+IGtlcm5lbEBwZW5ndXRyb25peC5kZTsgbGVlLmpvbmVzQGxpbmFyby5vcmc7IGxpbnV4
-LWFybS0NCj4ga2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcNCj4gU3ViamVjdDogUmU6IFtQQVRD
-SF0gQVJNOiBkdHM6IGlteDZxZGw6IEFkanVzdCB0aGUgYnJpZ2h0bmVzcyBzZXR0aW5nIGZvcg0K
-PiBMVkRTIHBhbmVsDQo+IA0KPiBBbSBEaWVuc3RhZywgZGVuIDIwLjAxLjIwMTUsIDE5OjM4ICsw
-ODAwIHNjaHJpZWIgU2hhd24gR3VvOg0KPiA+IEFkZCBMQUtNTCBhbmQgYSBmZXcgaW50ZXJlc3Rl
-ZCBwZW9wbGUuDQo+ID4NCj4gPiBTaGF3bg0KPiA+DQo+ID4gT24gVHVlLCBKYW4gMjAsIDIwMTUg
-YXQgMDY6MjI6MzVQTSArMDgwMCwgUm9iYnkgQ2FpIHdyb3RlOg0KPiA+ID4gSGFubnN0YXIgWEdB
-IHBhbmVsIGlzIHVzZWQgYnkgZGVmYXVsdCBvbiBpLk1YNlFETCBTYWJyZSBBdXRvL0xpdGUvU0QN
-Cj4gPiA+IG9yIGRlcml2ZWQgYm9hcmQuDQo+ID4gPg0KPiA+ID4gQWNjb3JkaW5nIHRvIGl0cyBk
-YXRhIHNoZWV0IFsxXSwNCj4gPiA+IGEpIHRoZSBkaW1taW5nIGR1dHkgY3ljbGUgaXMgMjAlIC0g
-MTAwJS4NCj4gPiA+IFRoaXMgcGF0Y2ggY2hhbmdlcyB0aGUgYnJpZ2h0bmVzcy1sZXZlbCBmcm9t
-IDIwIHRvIDEwMCB3aXRoIHN0ZXAgMTANCj4gPiA+IHRvIG1ha2UgaXQgc3RyYWlnaHQtZm9yd2Fy
-ZC4NCj4gPiA+IGIpIHRoZSB0eXBpY2FsIGRpbW1pbmcgZnJlcXVlbmN5IGlzIDIwS0h6Lg0KPiA+
-ID4gVGhlIHByZXZpb3VzIHNldHRpbmcgaXMgMjAwSHouIFRoaXMgcGF0Y2ggY29ycmVjdHMgaXQu
-DQo+ID4gPg0KPiA+ID4gWzFdDQo+ID4gPiBodHRwOi8vYm91bmRhcnlkZXZpY2VzLmNvbS93cC1j
-b250ZW50L3VwbG9hZHMvMjAxMy8wNi9IU0QxMDBQWE4xLUEwMA0KPiA+ID4gLUMxMS0xLjAucGRm
-DQo+ID4gPg0KPiA+ID4gU2lnbmVkLW9mZi1ieTogUm9iYnkgQ2FpIDxyNjM5MDVAZnJlZXNjYWxl
-LmNvbT4NCj4gPiA+IC0tLQ0KPiA+ID4gIGFyY2gvYXJtL2Jvb3QvZHRzL2lteDZxZGwtZ3c1Mnh4
-LmR0c2kgICAgIHwgNiArKystLS0NCj4gPiA+ICBhcmNoL2FybS9ib290L2R0cy9pbXg2cWRsLWd3
-NTN4eC5kdHNpICAgICB8IDYgKysrLS0tDQo+ID4gPiAgYXJjaC9hcm0vYm9vdC9kdHMvaW14NnFk
-bC1ndzU0eHguZHRzaSAgICAgfCA2ICsrKy0tLQ0KPiA+ID4gIGFyY2gvYXJtL2Jvb3QvZHRzL2lt
-eDZxZGwtbml0cm9nZW42eC5kdHNpIHwgNiArKystLS0NCj4gPiA+IGFyY2gvYXJtL2Jvb3QvZHRz
-L2lteDZxZGwtc2FicmVhdXRvLmR0c2kgIHwgNiArKystLS0NCj4gPiA+IGFyY2gvYXJtL2Jvb3Qv
-ZHRzL2lteDZxZGwtc2FicmVsaXRlLmR0c2kgIHwgNiArKystLS0NCj4gPiA+ICBhcmNoL2FybS9i
-b290L2R0cy9pbXg2cWRsLXNhYnJlc2QuZHRzaSAgICB8IDYgKysrLS0tDQo+ID4gPiAgNyBmaWxl
-cyBjaGFuZ2VkLCAyMSBpbnNlcnRpb25zKCspLCAyMSBkZWxldGlvbnMoLSkNCj4gPiA+DQo+ID4g
-PiBkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vYm9vdC9kdHMvaW14NnFkbC1ndzUyeHguZHRzaQ0KPiA+
-ID4gYi9hcmNoL2FybS9ib290L2R0cy9pbXg2cWRsLWd3NTJ4eC5kdHNpDQo+ID4gPiBpbmRleCBi
-NTc1NmMyLi4zMzQ4NGQ4IDEwMDY0NA0KPiA+ID4gLS0tIGEvYXJjaC9hcm0vYm9vdC9kdHMvaW14
-NnFkbC1ndzUyeHguZHRzaQ0KPiA+ID4gKysrIGIvYXJjaC9hcm0vYm9vdC9kdHMvaW14NnFkbC1n
-dzUyeHguZHRzaQ0KPiA+ID4gQEAgLTI5LDkgKzI5LDkgQEANCj4gPiA+DQo+ID4gPiAgCWJhY2ts
-aWdodCB7DQo+ID4gPiAgCQljb21wYXRpYmxlID0gInB3bS1iYWNrbGlnaHQiOw0KPiA+ID4gLQkJ
-cHdtcyA9IDwmcHdtNCAwIDUwMDAwMDA+Ow0KPiA+ID4gLQkJYnJpZ2h0bmVzcy1sZXZlbHMgPSA8
-MCA0IDggMTYgMzIgNjQgMTI4IDI1NT47DQo+ID4gPiAtCQlkZWZhdWx0LWJyaWdodG5lc3MtbGV2
-ZWwgPSA8Nz47DQo+ID4gPiArCQlwd21zID0gPCZwd200IDAgNTAwMDA+Ow0KPiA+ID4gKwkJYnJp
-Z2h0bmVzcy1sZXZlbHMgPSA8MCAyMCAzMCA0MCA1MCA2MCA3MCA4MCA5MCAxMDA+Ow0KPiA+ID4g
-KwkJZGVmYXVsdC1icmlnaHRuZXNzLWxldmVsID0gPDk+Ow0KPiANCj4gSSBub3RpY2UgdGhhdCB0
-aGUgaW50ZXJ2YWxzIGFyZSBjaGFuZ2VkIGZyb20gZXhwb25lbnRpYWwgdG8gbGluZWFyLg0KPiBJ
-cyB0aGlzIHJlYWxseSB3YW50ZWQgaGVyZT8NCj4gSSBleHBlY3QgdGhhdCB0aGUgbmV3IHNldHRp
-bmdzIHJlc3VsdCBpbiBodWdlIHN0ZXBzIGluIHBlcmNlaXZlZA0KPiBicmlnaHRuZXNzIGF0IGxv
-dyBsZXZlbHMgYW5kIGEgbmVhcmx5IGltcGVyY2VwdGlibGUgY2hhbmdlIGF0IHRoZSBsYXN0DQo+
-IHN0ZXAuDQo+IA0KPiByZWdhcmRzDQo+IFBoaWxpcHANCg0KDQpObyBwYXJ0aWN1bGFyIHJlYXNv
-biBoZXJlLiBJIHVuZGVyc3RhbmQgeW91ciBjb25jZXJuIGJ1dCBzZWVtcyB0aGVyZSdzIG5vIG9i
-dmlvdXMgcnVsZS4NCkhvdyBhYm91dCBhZGQgc29tZSBpbnRlcnBvbGF0aW9uLCBzdWNoIGFzIDww
-IDUyIDY0IDk2IDEyOCAxNjAgMTkyIDIyNCAyNTU+DQpvciBldmVuIG1vcmUsIDwwIDUyIDY0IDgw
-IDk2IDExMiAxMjggMTQ0IDE2MCAxNzYgMTkyIDIwOCAyMjQgMjQwIDI1NT4NCg0KUmVnYXJkcywN
-ClJvYmJ5DQo=
+Hello folks,
+
+   I found a bug in the pwm-mxs.c driver for the i.MX28 platform.
+
+   The driver computes from the desired period which clock divider it 
+should be using. This computation assumes that the link between the 
+register value and the actual divider value is raising 2 to the power of 
+the registry value.
+
+    div = 1 << regvalue
+
+   This is true only for the first 5 values out of 8. Next values are 
+64, 256 and, 1024.
+   This affects only the user only if he requests a period > 0.04369s.
+   I solved this by replacing the computation of the divider value with 
+a lookup table.
+
+   If I should provide it in a different manner for it to be included in 
+the kernel, please let me know.
+
+Best regards
+
+Gaetan Hug
+
+------
+
+diff --git i/drivers/pwm/pwm-mxs.c w/drivers/pwm/pwm-mxs.c
+index c2c5a4f..cb89f7e 100644
+--- i/drivers/pwm/pwm-mxs.c
++++ w/drivers/pwm/pwm-mxs.c
+@@ -51,16 +51,17 @@ static int mxs_pwm_config(struct pwm_chip *chip, 
+struct pwm_device *pwm,
+         unsigned int period_cycles, duty_cycles;
+         unsigned long rate;
+         unsigned long long c;
++       unsigned const int cdiv[PERIOD_CDIV_MAX] = {1, 2, 4, 8, 16, 64, 
+256, 1024};
+
+         rate = clk_get_rate(mxs->clk);
+         while (1) {
+-               c = rate / (1 << div);
++               c = rate / cdiv[div];
+                 c = c * period_ns;
+                 do_div(c, 1000000000);
+                 if (c < PERIOD_PERIOD_MAX)
+                         break;
+                 div++;
+-               if (div > PERIOD_CDIV_MAX)
++               if (div >= PERIOD_CDIV_MAX)
+                         return -EINVAL;
+         }
+
+
+
