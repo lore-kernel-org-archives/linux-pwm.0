@@ -1,44 +1,54 @@
-From: Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH] ARM: dts: imx6qdl: Adjust the brightness setting for
- LVDS panel
-Date: Tue, 27 Jan 2015 16:21:57 +0100
-Message-ID: <1422372117.3751.58.camel@pengutronix.de>
-References: <1421749355-23050-1-git-send-email-r63905@freescale.com>
-	 <20150120113837.GC2766@dragon> <1421941084.3084.45.camel@pengutronix.de>
-	 <BLUPR03MB4059C6493E55DB26E8308E9F8350@BLUPR03MB405.namprd03.prod.outlook.com>
+From: Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 09/24] Documentation: DT bindings: add more chip compatible
+ strings for Tegra PWM
+Date: Wed, 28 Jan 2015 16:49:37 -0700
+Message-ID: <20150128234937.20644.4804.stgit@dusk.lan>
+References: <20150128234935.20644.89300.stgit@dusk.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:48343 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751888AbbA0PWD (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 27 Jan 2015 10:22:03 -0500
-In-Reply-To: <BLUPR03MB4059C6493E55DB26E8308E9F8350@BLUPR03MB405.namprd03.prod.outlook.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20150128234935.20644.89300.stgit-orwA252wQtA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: "Robby.Cai@freescale.com" <Robby.Cai@freescale.com>
-Cc: Shawn Guo <shawn.guo@linaro.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Eric Nelson <eric.nelson@boundarydevices.com>, Tim Harvey <tharvey@gateworks.com>, "jg1.han@samsung.com" <jg1.han@samsung.com>, Troy Kisky <troy.kisky@boundarydevices.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "lee.jones@linaro.org" <lee.jones@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-Am Montag, den 26.01.2015, 14:44 +0000 schrieb Robby.Cai@freescale.com:
-> > I notice that the intervals are changed from exponential to linear.
-> > Is this really wanted here?
-> > I expect that the new settings result in huge steps in perceived
-> > brightness at low levels and a nearly imperceptible change at the last
-> > step.
-> > 
-> > regards
-> > Philipp
-> 
-> 
-> No particular reason here. I understand your concern but seems there's no obvious rule.
-> How about add some interpolation, such as <0 52 64 96 128 160 192 224 255>
-> or even more, <0 52 64 80 96 112 128 144 160 176 192 208 224 240 255>
 
-I just wanted to point out the possible issue. Maybe somebody with the
-actual panel could sit down and experiment and come up with some
-visually pleasing steps.
+Add compatible strings for the PWM IP blocks present on several Tegra
+chips.  The primary objective here is to avoid checkpatch warnings,
+per:
 
-regards
-Philipp
+http://marc.info/?l=linux-tegra&m=142201349727836&w=2
 
+Signed-off-by: Paul Walmsley <paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>
+Cc: Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+---
+ .../devicetree/bindings/pwm/nvidia,tegra20-pwm.txt |    4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
+index c7ea9d4a988b..f3390f602378 100644
+--- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
+@@ -4,6 +4,10 @@ Required properties:
+ - compatible: should be one of:
+   - "nvidia,tegra20-pwm"
+   - "nvidia,tegra30-pwm"
++  - "nvidia,tegra114-pwm" (not yet matched by the driver)
++  - "nvidia,tegra124-pwm" (not yet matched by the driver)
++  - "nvidia,tegra132-pwm" (not yet matched by the driver)
++  - "nvidia,tegra210-pwm" (not yet matched by the driver)
+ - reg: physical base address and length of the controller's registers
+ - #pwm-cells: should be 2. See pwm.txt in this directory for a description of
+   the cells format.
