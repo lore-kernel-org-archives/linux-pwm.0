@@ -1,100 +1,52 @@
-From: Ajit Pal Singh <ajitpal.singh@st.com>
-Subject: [PATCH RESEND] pwm: sti: Maintain a bitmap of configured devices
-Date: Thu, 29 Jan 2015 14:34:43 +0530
-Message-ID: <1422522283-29757-1-git-send-email-ajitpal.singh@st.com>
+From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+Subject: Re: [PATCH v8 0/2] Imagination Technologies PWM support
+Date: Thu, 29 Jan 2015 13:32:09 -0300
+Message-ID: <54CA6089.50505@imgtec.com>
+References: <1420826088-13113-1-git-send-email-ezequiel.garcia@imgtec.com> <54BE3369.9000802@imgtec.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <54BE3369.9000802@imgtec.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: maxime.coquelin@st.com, lee.jones@linaro.org, Ajit Pal Singh <ajitpal.singh@st.com>
+To: Ezequiel Garcia <ezequiel.garcia@imgtec.com>, Andrew Bresticker <abrestic@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, James Hartley <james.hartley@imgtec.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, vladimir_zapolskiy@mentor.com
 List-Id: linux-pwm@vger.kernel.org
 
-This patch introduces a bitmap which is used to keep track of the
-pwm channels which have been configured in a pwm chip.
+On 01/20/2015 07:52 AM, Ezequiel Garcia wrote:
+> 
+> 
+> On 01/09/2015 02:54 PM, Ezequiel Garcia wrote:
+>> A new round for the IMG PWM driver.
+>>
+>> The IMG PWM controller is muxed with a PDM controller, through a shared
+>> so-called periph register bit, which sets the output as PWM or PDM.
+>> Because this register is not part of the pin controller block, but rather
+>> PWM/PDM specific, and because the register is also used to set the PDM value,
+>> it is simpler to use a regmap-based syscon to deal with it.
+>>
+>> This time, I'm removing the PDM driver from the submission and submitting the PWM
+>> alone. The PDM was written as a misc driver, but had some design issues, so for
+>> now I'm proposing to merge the PWM only.
+>>
+>> The series is based on v3.19-rc3. If at all possible I'd like to see this merged
+>> for v3.20.
+>>
+> 
+> Thierry,
+> 
+> Any comments on this? Any chance we merge it in time for v3.20?
+> It's -rc5 already and I've started to worry.
+> 
 
-The method used earlier to find the number of configured channels,
-was to count the pwmdevices with PWMF_REQUESTED field set
-and period value configured. This was not correct and failed
-when of_pwm_get()/pwm_get() and then pwm_config() was used.
+Thierry,
 
-Signed-off-by: Ajit Pal Singh <ajitpal.singh@st.com>
----
- drivers/pwm/pwm-sti.c |   30 +++++++++++-------------------
- 1 files changed, 11 insertions(+), 19 deletions(-)
+I'm very sorry to be so bothering, but I got no news from you and it's
+-rc6 already. I'd say I'll resend this series to Andrew Morton, hoping
+we can merge this for v3.20.
 
-diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index b95115c..92abbd5 100644
---- a/drivers/pwm/pwm-sti.c
-+++ b/drivers/pwm/pwm-sti.c
-@@ -57,6 +57,7 @@ struct sti_pwm_chip {
- 	struct regmap_field *pwm_int_en;
- 	struct pwm_chip chip;
- 	struct pwm_device *cur;
-+	unsigned long configured;
- 	unsigned int en_count;
- 	struct mutex sti_pwm_lock; /* To sync between enable/disable calls */
- 	void __iomem *mmio;
-@@ -102,24 +103,6 @@ static int sti_pwm_get_prescale(struct sti_pwm_chip *pc, unsigned long period,
- 	return 0;
- }
- 
--/* Calculate the number of PWM devices configured with a period. */
--static unsigned int sti_pwm_count_configured(struct pwm_chip *chip)
--{
--	struct pwm_device *pwm;
--	unsigned int ncfg = 0;
--	unsigned int i;
--
--	for (i = 0; i < chip->npwm; i++) {
--		pwm = &chip->pwms[i];
--		if (test_bit(PWMF_REQUESTED, &pwm->flags)) {
--			if (pwm_get_period(pwm))
--				ncfg++;
--		}
--	}
--
--	return ncfg;
--}
--
- /*
-  * For STiH4xx PWM IP, the PWM period is fixed to 256 local clock cycles.
-  * The only way to change the period (apart from changing the PWM input clock)
-@@ -141,7 +124,7 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	unsigned int ncfg;
- 	bool period_same = false;
- 
--	ncfg = sti_pwm_count_configured(chip);
-+	ncfg = hweight_long(pc->configured);
- 	if (ncfg)
- 		period_same = (period_ns == pwm_get_period(cur));
- 
-@@ -197,6 +180,7 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 		ret = regmap_field_write(pc->pwm_int_en, 0);
- 
-+		set_bit(pwm->hwpwm, &pc->configured);
- 		pc->cur = pwm;
- 
- 		dev_dbg(dev, "prescale:%u, period:%i, duty:%i, pwmvalx:%u\n",
-@@ -254,10 +238,18 @@ static void sti_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	mutex_unlock(&pc->sti_pwm_lock);
- }
- 
-+static void sti_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct sti_pwm_chip *pc = to_sti_pwmchip(chip);
-+
-+	clear_bit(pwm->hwpwm, &pc->configured);
-+}
-+
- static const struct pwm_ops sti_pwm_ops = {
- 	.config = sti_pwm_config,
- 	.enable = sti_pwm_enable,
- 	.disable = sti_pwm_disable,
-+	.free = sti_pwm_free,
- 	.owner = THIS_MODULE,
- };
- 
+Please let me know if you'll be able to pick this.
+
+Thanks,
 -- 
-1.7.5.4
+Ezequiel
