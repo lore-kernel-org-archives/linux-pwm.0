@@ -1,106 +1,64 @@
-From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
+From: Andrew Bresticker <abrestic-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 Subject: Re: [PATCH v8 0/2] Imagination Technologies PWM support
-Date: Fri, 30 Jan 2015 08:01:00 -0300
-Message-ID: <54CB646C.7040705@imgtec.com>
-References: <1420826088-13113-1-git-send-email-ezequiel.garcia@imgtec.com> <54BE3369.9000802@imgtec.com> <54CA6089.50505@imgtec.com> <20150130091832.GA16744@ulmo>
+Date: Fri, 30 Jan 2015 11:08:46 +0000
+Message-ID: <CAL1qeaEen_RM8da+KU-+O26M9Z7VksWG+C=C-Oa6cAhyjiXfug@mail.gmail.com>
+References: <1420826088-13113-1-git-send-email-ezequiel.garcia@imgtec.com>
+	<54BE3369.9000802@imgtec.com>
+	<54CA6089.50505@imgtec.com>
+	<20150130091832.GA16744@ulmo>
+	<CAL1qeaH77fJuh8fM1tKJz0bizni1sErCy=EwZTzV=EY10dX9iA@mail.gmail.com>
+	<20150130102612.GE16744@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150130091832.GA16744@ulmo>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Andrew Bresticker <abrestic@chromium.org>, James Hartley <james.hartley@imgtec.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, vladimir_zapolskiy@mentor.com
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20150130102612.GE16744@ulmo>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Ezequiel Garcia <ezequiel.garcia-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, James Hartley <james.hartley-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, vladimir_zapolskiy-nmGgyN9QBj3QT0dZR+AlfA@public.gmane.org, Linux-MIPS <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
++linux-mips
 
-Hi Thierry,
+On Fri, Jan 30, 2015 at 10:26 AM, Thierry Reding
+<thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> On Fri, Jan 30, 2015 at 09:50:46AM +0000, Andrew Bresticker wrote:
+>> > Also you're making it especially difficult to build-test by not
+>> > providing even the basic bits of your SoC support first. All even
+>> > linux-next seems to have for the Pistachio SoC is the addition of a
+>> > compatible string to the dw-mmc driver.
+>> >
+>> > I'll take the PWM driver, but I'll assume that you'll eventually have
+>> > more pieces available, in which case I'd appreciate a note so I can
+>> > update my build scripts.
+>>
+>> FYI, I'm hoping to post Pistachio platform support for 3.21.
+>
+> That'd be great. I can switch over to a proper defconfig then and not
+> jump through extra hoops to build test patches.
+>
+> Also, I'm seeing a bunch of weird errors from building MIPS, mostly
+> things like this:
+>
+>           CC      net/ipv4/netfilter/arp_tables.mod.o
+>         {standard input}: Assembler messages:
+>         {standard input}: Warning: .gnu_attribute 4,3 requires `softfloat'
+>
+> or this later on:
+>
+>         mips-linux-gnu-ld: Warning: vmlinuz uses -mhard-float (set by arch/mips/boot/compressed/head.o), arch/mips/boot/compressed/decompress.o uses -msoft-float
+>
+> This is essentially a gpr_defconfig (because it select MIPS_ALCHEMY,
+> which in turns pulls in COMMON_CLK that PWM_IMG depends on) and then
+> enabling MFD_SYSCON on top so that all dependencies are met.
+>
+> What am I doing wrong?
 
-On 01/30/2015 06:18 AM, Thierry Reding wrote:
-> On Thu, Jan 29, 2015 at 01:32:09PM -0300, Ezequiel Garcia wrote:
->> On 01/20/2015 07:52 AM, Ezequiel Garcia wrote:
->>> 
->>> 
->>> On 01/09/2015 02:54 PM, Ezequiel Garcia wrote:
->>>> A new round for the IMG PWM driver.
->>>> 
->>>> The IMG PWM controller is muxed with a PDM controller,
->>>> through a shared so-called periph register bit, which sets
->>>> the output as PWM or PDM. Because this register is not part
->>>> of the pin controller block, but rather PWM/PDM specific, and
->>>> because the register is also used to set the PDM value, it is
->>>> simpler to use a regmap-based syscon to deal with it.
->>>> 
->>>> This time, I'm removing the PDM driver from the submission
->>>> and submitting the PWM alone. The PDM was written as a misc
->>>> driver, but had some design issues, so for now I'm proposing
->>>> to merge the PWM only.
->>>> 
->>>> The series is based on v3.19-rc3. If at all possible I'd like
->>>> to see this merged for v3.20.
->>>> 
->>> 
->>> Thierry,
->>> 
->>> Any comments on this? Any chance we merge it in time for
->>> v3.20? It's -rc5 already and I've started to worry.
->>> 
->> 
->> Thierry,
->> 
->> I'm very sorry to be so bothering, but I got no news from you and
->> it's -rc6 already. I'd say I'll resend this series to Andrew
->> Morton, hoping we can merge this for v3.20.
->> 
->> Please let me know if you'll be able to pick this.
-> 
-> I can pick it up if you make up your mind about the license. The
-> header comment says GPL v2 or later, but MODULE_LICENSE has "GPL
-> v2", which does not include the "or later" part.
-> 
-
-License should be GPL v2, sorry about that. Need me to fix it and
-resend or can you amend it before pushing this?
-
-> Also you're making it especially difficult to build-test by not 
-> providing even the basic bits of your SoC support first. All even 
-> linux-next seems to have for the Pistachio SoC is the addition of
-> a compatible string to the dw-mmc driver.
-> 
-
-Well, we've added COMPILE_TEST for precisely this reason, so you only
-need to select COMPILE_TEST on any arch and you'll be able to build
-test the driver.
-
-> I'll take the PWM driver, but I'll assume that you'll eventually
-> have more pieces available, in which case I'd appreciate a note so
-> I can update my build scripts.
-> 
-
-If you can pick it, it would be great. I understand it's hard to
-accept patches for drivers, when there's little testing possibilities.
-But on the other side, isn't it a positive thing that a vendor is
-pushing drivers this early?
-
-Thanks a lot,
-- -- 
-Ezequiel
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBCAAGBQJUy2RhAAoJEIOKbhOEIHKiWB0QAKc4h+YLjxLLa7y0/NfoEiqV
-gwipBbrfO4leAB6RUiDOGil53Ir0Pxg87IbCHV5A0Gzxahv47GG41DYPVzbU3lHm
-DGkGqyXDf0BNQqJkCXmDWV9/8pnjFfUMDlSrs15pxXTaRjZ7m6CrxCoZof5UVt91
-4cmeDYHg4lr+YzT3oXuyiKFlrIRrT5heD3gfyL5IB9qQypR2KPnpDrCwMcmT6+ag
-zI6sg6OAi8de7ZvSWEZSK7WkymhgduR9Rt0WRQBC3EKF2dCsUxhmZt14RJsDcpEK
-LWn5z1FxImtJq8vWOq/E2F9AWtQ/o9gUeII2myNDaL2SIrVoggUP+yKV51J8bidl
-G2HXU8NEIHCaqcKl5sdbeEbB4diXVqGJu+d9SOM2lrW2PlwWN63jgnGfyYc2RadH
-60adajBgNjs9Ujfo5nFy+aYXJtJZk+4b1M0UMI+2qKV4G9PBfDrrpUMBRCRt8il4
-A15lUoHTwTeLQp8m7YmNuoKLhLmeVrBgbzBagFLUZgpJs7TEYIWefrh/jos37n2s
-aNlVW55c5CXDMDX9Bef4ar6Ch95TOxPqiED70e2/lNM0ckRzd7viQandUxquvc9q
-mSWhSxYuT62/B6innSbuWLdifKtCsqX+QQIo2NBC3AB+NVybEmC89gB8jx+Py7pX
-YS0wpCGXivYm3AIWhhyT
-=qi1N
------END PGP SIGNATURE-----
+What version of binutils are you using?  I believe the latter error
+should be fixed by commit 842dfc11ea9a ("MIPS: Fix build with binutils
+2.24.51+"), but perhaps the decompressor Makefile requires a fix as
+well?  Unfortunately I'm traveling for the next couple of days, but I
+may be able to take a look at it on Monday.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
