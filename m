@@ -1,45 +1,77 @@
-From: Gaetan Hug <ghug@induct.be>
-Subject: [PATCH 1/1] fixing pwm-mxs period divider computation
-Date: Wed, 18 Feb 2015 09:18:56 +0100
-Message-ID: <1424247536-16476-2-git-send-email-ghug@induct.be>
-References: <1424247536-16476-1-git-send-email-ghug@induct.be>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1424247536-16476-1-git-send-email-ghug@induct.be>
-Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Gaetan Hug <ghug@induct.be>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [GIT PULL] pwm: Changes for v3.20-rc1
+Date: Wed, 18 Feb 2015 09:43:50 +0100
+Message-ID: <1424249030-9911-1-git-send-email-thierry.reding@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wi0-f177.google.com ([209.85.212.177]:49049 "EHLO
+	mail-wi0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751522AbbBRInx (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Feb 2015 03:43:53 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
----
- drivers/pwm/pwm-mxs.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Hi Linus,
 
-diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
-index f75ecb0..bbb2f8a 100644
---- a/drivers/pwm/pwm-mxs.c
-+++ b/drivers/pwm/pwm-mxs.c
-@@ -52,15 +52,18 @@ static int mxs_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	unsigned long rate;
- 	unsigned long long c;
- 
-+    unsigned const int cdiv[PERIOD_CDIV_MAX] = {1, 2, 4, 8, 16, 64, 256, 1024};
-+
- 	rate = clk_get_rate(mxs->clk);
-+
- 	while (1) {
--		c = rate / (1 << div);
-+		c = rate / cdiv[div];
- 		c = c * period_ns;
- 		do_div(c, 1000000000);
- 		if (c < PERIOD_PERIOD_MAX)
- 			break;
- 		div++;
--		if (div > PERIOD_CDIV_MAX)
-+		if (div >= PERIOD_CDIV_MAX)
- 			return -EINVAL;
- 	}
- 
--- 
-1.7.10.4
+The following changes since commit 97bf6af1f928216fd6c5a66e8a57bfa95a659672:
+
+  Linux 3.19-rc1 (2014-12-20 17:08:50 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-3.20-rc1
+
+for you to fetch changes up to b65af27ad89de60ca55721f9368b18d49ba1f269:
+
+  pwm: tegra: Use NSEC_PER_SEC (2015-02-18 08:40:29 +0100)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Changes for v3.20-rc1
+
+This contains two new drivers, one for Allwinner SoCs and the other for
+Imagination Technologies' Pistachio SoC.
+
+Complementing this are a couple of fixes to the Atmel HLCDC PWM and STi
+PWM drivers as well as minor cleanups to the core and the Tegra driver.
+
+----------------------------------------------------------------
+Ajit Pal Singh (1):
+      pwm: sti: Maintain a bitmap of configured devices
+
+Alexandre Belloni (2):
+      pwm: Add Allwinner SoC support
+      pwm: sunxi: document OF bindings
+
+Boris BREZILLON (1):
+      pwm: atmel-hlcdc: Prevent division by zero
+
+Markus Elfring (1):
+      pwm: Remove unnecessary check before of_node_put()
+
+Naidu Tellapati (2):
+      pwm: Imagination Technologies PWM DAC driver
+      pwm: Add device tree binding document for IMG PWM DAC
+
+Thierry Reding (2):
+      pwm: atmel-hlcdc: Depend on HAVE_CLK
+      pwm: tegra: Use NSEC_PER_SEC
+
+ Documentation/devicetree/bindings/pwm/img-pwm.txt  |  24 ++
+ .../devicetree/bindings/pwm/pwm-sun4i.txt          |  20 ++
+ drivers/pwm/Kconfig                                |  24 ++
+ drivers/pwm/Makefile                               |   2 +
+ drivers/pwm/core.c                                 |   2 +-
+ drivers/pwm/pwm-atmel-hlcdc.c                      |   6 +
+ drivers/pwm/pwm-img.c                              | 249 ++++++++++++++
+ drivers/pwm/pwm-sti.c                              |  30 +-
+ drivers/pwm/pwm-sun4i.c                            | 366 +++++++++++++++++++++
+ drivers/pwm/pwm-tegra.c                            |   2 +-
+ 10 files changed, 704 insertions(+), 21 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/img-pwm.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+ create mode 100644 drivers/pwm/pwm-img.c
+ create mode 100644 drivers/pwm/pwm-sun4i.c
