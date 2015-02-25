@@ -1,53 +1,50 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 2/2] leds/pwm: Don't disable pwm when setting brightness
- to 0
-Date: Wed, 25 Feb 2015 09:42:54 +0100
-Message-ID: <20150225084254.GI7789@pengutronix.de>
-References: <1423734290-19750-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <1423734290-19750-3-git-send-email-u.kleine-koenig@pengutronix.de>
- <1151818200.134325.1424804213026.JavaMail.open-xchange@oxbsltgw03.schlund.de>
- <20150224190636.GG7789@pengutronix.de>
- <54ED8426.6090401@i2se.com>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: [PATCH 0/8] Fix struct clk pointer comparing
+Date: Wed, 25 Feb 2015 22:53:30 +0800
+Message-ID: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-leds-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <54ED8426.6090401@i2se.com>
-Sender: linux-leds-owner@vger.kernel.org
-To: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: linux-pwm@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, Bryan Wu <cooloney@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, linux-leds@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Mike Turquette <mturquette@linaro.org>
+Cc: linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, Russell King <linux@arm.linux.org.uk>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, dri-devel@lists.freedesktop.org, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Stefan,
-
-On Wed, Feb 25, 2015 at 09:13:26AM +0100, Stefan Wahren wrote:
-> Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-Thanks.
-
-> >> This is the functional part of this issue, since the warning has b=
-een fixed [1]
-> > Can I interpret this as an Tested-by: for this patch and an Ack for
-> > patch 1?
->=20
-> Sorry, but i don't think i'm the right person for acking patch 1.
-IMHO it doesn't matter who you are for an ack. You can consider it righ=
-t
-and tell it. How much this ack is useful to convince a maintainer to
-take this patch is a different story.
-
-But given that I try to fix the problem at hand for >2 years and I'm
-stuck because Thierry isn't convinced that it's a correct way to go
-forward but also doesn't come up with an alternative I'm happy about
-everyone who gives his/her opinion. Still more if the opinion matches
-mine.
-
-Thanks
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
-    |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
+T24gdGhlIGZpcnN0IGRheSBiYWNrIGZyb20gQ2hpbmVzZSBuZXcgeWVhciBob2xpZGF5LCBJIGdv
+dCBhIHJlZ3Jlc3Npb24KcmVwb3J0IGZyb20gcm1rLCBzYXlpbmcgRXRoZXJuZXQgc3RvcHMgd29y
+a2luZyBvbiBIaW1taW5nQm9hcmQgd2l0aAp2NC4wLXJjMS4KCkkgcmVhZCB0aHJvdWdoIHRoZSB0
+aHJlYWQgWzFdIGFuZCBmb3VuZCBhIGNvdXBsZSBvZiBpLk1YIGF1ZGlvIGRyaXZlcnMKYXJlIGFs
+c28gYWZmZWN0ZWQgcGVyIFN0ZXBoZW4ncyBDb2NjaW5lbGxlIHJlcG9ydC4gIFRoYXQncyB3aHkg
+SSBjYW1lIHVwCndpdGggdGhpcyBzZXJpZXMgYmFzZWQgb24gUXVlbnRpbidzIHN0cnVjdGNsay5j
+b2NjaSwgU3RlcGhlbidzIHJlc3VsdAphbmQgTWlrZSdzIGlucHV0ICh0aGFua3MgYWxsKS4KClRo
+ZSBmaXJzdCB0d28gcGF0Y2hlcyBhcmUgcnVuLXRpbWUgdGVzdGVkIGFuZCBhbGwgb3RoZXJzIGFy
+ZQpjb21waWxlLXRlc3RlZCBvbmx5LgoKWzFdIGh0dHA6Ly90aHJlYWQuZ21hbmUub3JnL2dtYW5l
+LmxpbnV4Lmtlcm5lbC8xODcyNjA0L2ZvY3VzPTE4ODA4NjIKClNoYXduIEd1byAoOCk6CiAgY2xr
+OiBhZGQgaGVscGVyIGZ1bmN0aW9uIGNsa19pc19tYXRjaCgpCiAgQVJNOiBpbXg6IGZpeCBzdHJ1
+Y3QgY2xrIHBvaW50ZXIgY29tcGFyaW5nCiAgZHJtOiBhcm1hZGE6IGZpeCBzdHJ1Y3QgY2xrIHBv
+aW50ZXIgY29tcGFyaW5nCiAgcHdtOiBhdG1lbC1obGNkYzogZml4IHN0cnVjdCBjbGsgcG9pbnRl
+ciBjb21wYXJpbmcKICBzZXJpYWw6IHNhbXN1bmc6IGZpeCBzdHJ1Y3QgY2xrIHBvaW50ZXIgY29t
+cGFyaW5nCiAgQVNvQzogZnNsX2VzYWk6IGZpeCBzdHJ1Y3QgY2xrIHBvaW50ZXIgY29tcGFyaW5n
+CiAgQVNvQzogZnNsX3NwZGlmOiBmaXggc3RydWN0IGNsayBwb2ludGVyIGNvbXBhcmluZwogIEFT
+b0M6IGtpcmt3b29kOiBmaXggc3RydWN0IGNsayBwb2ludGVyIGNvbXBhcmluZwoKIGFyY2gvYXJt
+L21hY2gtaW14L21hY2gtaW14NnEuYyAgICAgIHwgIDUgKysrLS0KIGRyaXZlcnMvY2xrL2Nsay5j
+ICAgICAgICAgICAgICAgICAgIHwgIDYgKysrKysrCiBkcml2ZXJzL2dwdS9kcm0vYXJtYWRhL2Fy
+bWFkYV81MTAuYyB8ICAyICstCiBkcml2ZXJzL3B3bS9wd20tYXRtZWwtaGxjZGMuYyAgICAgICB8
+ICAyICstCiBkcml2ZXJzL3R0eS9zZXJpYWwvc2Ftc3VuZy5jICAgICAgICB8ICAyICstCiBpbmNs
+dWRlL2xpbnV4L2Nsay5oICAgICAgICAgICAgICAgICB8IDE2ICsrKysrKysrKysrKysrKysKIHNv
+dW5kL3NvYy9mc2wvZnNsX2VzYWkuYyAgICAgICAgICAgIHwgIDIgKy0KIHNvdW5kL3NvYy9mc2wv
+ZnNsX3NwZGlmLmMgICAgICAgICAgIHwgIDQgKystLQogc291bmQvc29jL2tpcmt3b29kL2tpcmt3
+b29kLWkycy5jICAgfCAgMiArLQogOSBmaWxlcyBjaGFuZ2VkLCAzMiBpbnNlcnRpb25zKCspLCA5
+IGRlbGV0aW9ucygtKQoKLS0gCjEuOS4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5m
+cmVlZGVza3RvcC5vcmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3Rp
+bmZvL2RyaS1kZXZlbAo=
