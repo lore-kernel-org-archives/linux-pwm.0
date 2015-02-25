@@ -1,88 +1,43 @@
-From: Mike Turquette <mturquette@linaro.org>
+From: Stephen Boyd <sboyd@codeaurora.org>
 Subject: Re: [PATCH 0/8] Fix struct clk pointer comparing
-Date: Wed, 25 Feb 2015 09:55:33 -0800
-Message-ID: <20150225175533.421.41831@quantum>
-References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
- <20150225150349.GB8656@n2100.arm.linux.org.uk>
+Date: Wed, 25 Feb 2015 12:42:45 -0800
+Message-ID: <54EE33C5.5010701@codeaurora.org>
+References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org> <20150225150349.GB8656@n2100.arm.linux.org.uk> <20150225175533.421.41831@quantum>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi0-f47.google.com ([209.85.218.47]:40251 "EHLO
-	mail-oi0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751479AbbBYRzt convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 25 Feb 2015 12:55:49 -0500
-Received: by mail-oi0-f47.google.com with SMTP id i138so4691157oig.6
-        for <linux-pwm@vger.kernel.org>; Wed, 25 Feb 2015 09:55:49 -0800 (PST)
-In-Reply-To: <20150225150349.GB8656@n2100.arm.linux.org.uk>
+Received: from smtp.codeaurora.org ([198.145.29.96]:47246 "EHLO
+	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752545AbbBYUms (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 25 Feb 2015 15:42:48 -0500
+In-Reply-To: <20150225175533.421.41831@quantum>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>, Shawn Guo <shawn.guo@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
+To: Mike Turquette <mturquette@linaro.org>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Shawn Guo <shawn.guo@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
 
-Quoting Russell King - ARM Linux (2015-02-25 07:03:49)
-> On Wed, Feb 25, 2015 at 10:53:30PM +0800, Shawn Guo wrote:
-> > On the first day back from Chinese new year holiday, I got a regression
-> > report from rmk, saying Ethernet stops working on HimmingBoard with
-> > v4.0-rc1.
-> > 
-> > I read through the thread [1] and found a couple of i.MX audio drivers
-> > are also affected per Stephen's Coccinelle report.  That's why I came up
-> > with this series based on Quentin's structclk.cocci, Stephen's result
-> > and Mike's input (thanks all).
-> 
-> Not all places need to be fixed in this way.
-> 
-> There are two broad cases:
-> 
-> 1. Where we are trying to determine if two clocks obtained from clk_get()
->    are the same clock.  IOW:
-> 
->         probe()
->         {
->                 clk1 = clk_get(dev, ...);
->                 clk2 = clk_get(dev, ...);
-> 
->                 if (clk1 == clk2)
->                         do_something();
->         }
-> 
-> 2. Where we are trying to determine if a clock selected from a set of
->    previously obtained clk_get()'d clocks is the same as a one of those
->    clocks.  IOW:
-> 
->         probe()
->         {
->                 clk1 = clk_get(dev, ...);
->                 clk2 = clk_get(dev, ...);
->         }
-> ...
->         some_fn()
->         {
->                 clk = select_best_clock(clk1, clk2);
->                 if (clk == previously_selected_clk) {
->                         previously_selected_clk = clk;
->                         do_something();
->                 }
->         }
-> 
-> Case 1 applies in places like the Kirkwood I2S driver, and the iMX6
-> ethernet code, and it's these cases which need to be fixed.
-> 
-> Case 2 applies in the Armada DRM driver, and these cases need not be
-> "fixed".
-> 
-> To put it a different way: case 1 is when you're testing to see whether
-> two clocks refer to the same clock.  case 2 is when you're testing
-> whether the cached clk cookie is the same.
+On 02/25/15 09:55, Mike Turquette wrote:
+> Quoting Russell King - ARM Linux (2015-02-25 07:03:49)
+>> Case 1 applies in places like the Kirkwood I2S driver, and the iMX6
+>> ethernet code, and it's these cases which need to be fixed.
+>>
+>> Case 2 applies in the Armada DRM driver, and these cases need not be
+>> "fixed".
+>>
+>> To put it a different way: case 1 is when you're testing to see whether
+>> two clocks refer to the same clock.  case 2 is when you're testing
+>> whether the cached clk cookie is the same.
+> It looks like patches 2, 7 and 8 are correct in this series. I'll apply
+> them towards -rc2 if nobody objects.
+>
+>
 
-It looks like patches 2, 7 and 8 are correct in this series. I'll apply
-them towards -rc2 if nobody objects.
+For patch 8 can't we use the alternative patch that I came up with
+before? I have a patch for sound/soc/fsl/fsl_esai.c and
+drivers/pwm/pwm-atmel-hlcdc.c which I can send shortly.
 
-Regards,
-Mike
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
-> 
-> -- 
-> FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
-> according to speedtest.net.
