@@ -1,146 +1,79 @@
-From: Ajay kumar <ajaynumb@gmail.com>
-Subject: Re: [PATCH 2/2] backlight: pwm: Add backlight-boot-off property
-Date: Thu, 26 Feb 2015 13:43:27 +0530
-Message-ID: <CAEC9eQMJoKLaJgniOjG8XEeXcJmu71nZH7W0SXrpL4y6AocPLQ@mail.gmail.com>
-References: <1424920366-7626-1-git-send-email-hl@rock-chips.com>
-	<1424921954-8621-1-git-send-email-hl@rock-chips.com>
-	<CAEC9eQP-jFJpneinkjD_VDKi83+SiBE2rcwf2vm2ZmbHV-vdOQ@mail.gmail.com>
-	<54EED3F9.7030009@rock-chips.com>
+From: Ben Dooks <ben-linux@fluff.org>
+Subject: Re: [PATCH 1/8] clk: add helper function clk_is_match()
+Date: Thu, 26 Feb 2015 09:02:56 +0000
+Message-ID: <20150226090256.GQ30445@trinity.fluff.org>
+References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
+ <1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
+ <20150225172757.421.43718@quantum>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ie0-f169.google.com ([209.85.223.169]:40850 "EHLO
-	mail-ie0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751216AbbBZIN2 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 26 Feb 2015 03:13:28 -0500
-In-Reply-To: <54EED3F9.7030009@rock-chips.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
+Content-Disposition: inline
+In-Reply-To: <20150225172757.421.43718@quantum>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: alsa-devel-bounces@alsa-project.org
+To: Mike Turquette <mturquette@linaro.org>
+Cc: linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, Russell King <linux@arm.linux.org.uk>, kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-serial@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: hl <hl@rock-chips.com>
-Cc: Daniel Kurtz <djkurtz@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, linux-rockchip@lists.infradead.org
 
-On Thu, Feb 26, 2015 at 1:36 PM, hl <hl@rock-chips.com> wrote:
->
-> On 2015=E5=B9=B402=E6=9C=8826=E6=97=A5 13:47, Ajay kumar wrote:
->>
->> Hi Huang,
->>
->> On Thu, Feb 26, 2015 at 9:09 AM, huang lin <hl@rock-chips.com> wrote=
-:
->>>
->>> Add backlight-boot-off property, so we can keeping the
->>> backlight disabled at boot until it is enabled implicitly
->>> by a panel driver, or explicitly by userspace
->>>
->>> Signed-off-by: huang lin <hl@rock-chips.com>
->>>
->>> ---
->>>
->>>   drivers/video/backlight/pwm_bl.c | 4 ++++
->>>   1 file changed, 4 insertions(+)
->>>
->>> diff --git a/drivers/video/backlight/pwm_bl.c
->>> b/drivers/video/backlight/pwm_bl.c
->>> index 3a145a6..dece351 100644
->>> --- a/drivers/video/backlight/pwm_bl.c
->>> +++ b/drivers/video/backlight/pwm_bl.c
->>> @@ -319,6 +319,10 @@ static int pwm_backlight_probe(struct
->>> platform_device *pdev)
->>>          }
->>>
->>>          bl->props.brightness =3D data->dft_brightness;
->>> +
->>> +       if (of_find_property(pdev->dev.of_node, "backlight-boot-off=
-",
->>> NULL))
->>> +               bl->props.power =3D FB_BLANK_POWERDOWN;
->>> +
->>
->> You need to check this. Originally, Thierry proposed it.
->> http://permalink.gmane.org/gmane.linux.drivers.devicetree/84604
->
-> I have applied Thierry patch , and it can work. I think it should be =
-merged,
-> since i use three type of edp panels,
-> they have same issue: when the backlight probe, the panel will visual
-> glitches.
-Right, the same problem exists on Exynos5800-peach-pi display!
-I had tested this long back, and I think its not merged since the DT pr=
-operty
-has an issue that "it doesn't really represent h/w property of the devi=
-ce".
+On Wed, Feb 25, 2015 at 09:27:57AM -0800, Mike Turquette wrote:
+> Quoting Shawn Guo (2015-02-25 06:53:31)
+> > Since commit 035a61c314eb ("clk: Make clk API return per-user struct clk
+> > instances"), clk API users can no longer check if two struct clk
+> > pointers are pointing to the same hardware clock, i.e. struct clk_hw, by
+> > simply comparing two pointers.  That's because with the per-user clk
+> > change, a brand new struct clk is created whenever clients try to look
+> > up the clock by calling clk_get() or sister functions like clk_get_sys()
+> > and of_clk_get().  This changes the original behavior where the struct
+> > clk is only created for once when clock driver registers the clock to
+> > CCF in the first place.  The net change here is before commit
+> > 035a61c314eb the struct clk pointer is unique for given hardware
+> > clock, while after the commit the pointers returned by clk lookup calls
+> > become different for the same hardware clock.
+> > 
+> > A number of client drivers detecting if two struct clk pointers point to
+> > the same one hardware clock by comparing the pointers are broken now.
+> > As a stop-gap solution, this patch adds a helper function clk_is_match()
+> > to test if two struct clk pointers point to the same hardware clock, so
+> > that these client drivers can use to fix the regression.
+> > 
+> > Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+> 
+> Hi Shawn,
+> 
+> Thanks for the patch. I wrote a similar one last night but did not
+> finish fixing up the drivers (and thus did not post it). I prefer my
+> implementation below, and I'm happy to merge your driver fixes with it.
+> 
+> Regards,
+> Mike
+> 
+> 
+> 
+> From: Michael Turquette <mturquette@linaro.org>
+> Date: Wed, 25 Feb 2015 09:11:01 -0800
+> Subject: [PATCH] clk: introduce clk_is_match
+> 
+> Some drivers compare struct clk pointers as a means of knowing
+> if the two pointers reference the same clock hardware. This behavior is
+> dubious (drivers must not dereference struct clk), but did not cause any
+> regressions until the per-user struct clk patch was merged. Now the test
+> for matching clk's will always fail with per-user struct clk's.
+> 
+> clk_is_match is introduced to fix the regression and prevent drivers
+> from comparing the pointers manually.
 
->>
->>>          backlight_update_status(bl);
->>>
->>>          platform_set_drvdata(pdev, bl);
->>> --
->>> 1.9.1
->>>
->>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-fbd=
-ev" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->>
->>
->
-> --
-> =E9=BB=84=E6=9E=97
-> =E7=A6=8F=E5=B7=9E=E7=91=9E=E8=8A=AF=E5=BE=AE=E7=94=B5=E5=AD=90=E6=9C=
-=89=E9=99=90=E5=85=AC=E5=8F=B8
-> Fuzhou Rockchip Electronics Co.Ltd
-> =E7=A6=8F=E5=BB=BA=E7=9C=81=E7=A6=8F=E5=B7=9E=E5=B8=82=E9=93=9C=E7=9B=
-=98=E8=B7=AF=E8=BD=AF=E4=BB=B6=E5=A4=A7=E9=81=9389=E5=8F=B7=E8=BD=AF=E4=
-=BB=B6=E5=9B=ADA=E5=8C=BA21=E5=8F=B7=E6=A5=BC(350003)
-> Addr:No.21 Building, A District, No.89, software Boulevard Fuzhou,
-> Fujian,PRC
-> Email:hl@rock-chips.com
-> Tel:+86-591-83991906/07
->
-> *********************************************************************=
-*******************
-> =E4=BF=9D=E5=AF=86=E6=8F=90=E7=A4=BA=EF=BC=9A=E6=9C=AC=E9=82=AE=E4=BB=
-=B6=E5=8F=8A=E5=85=B6=E9=99=84=E4=BB=B6=E5=90=AB=E6=9C=89=E6=9C=BA=E5=AF=
-=86=E4=BF=A1=E6=81=AF=EF=BC=8C=E4=BB=85=E5=8F=91=E9=80=81=E7=BB=99=E6=9C=
-=AC=E9=82=AE=E4=BB=B6=E6=89=80=E6=8C=87=E7=89=B9=E5=AE=9A=E6=94=B6=E4=BB=
-=B6=E4=BA=BA=E3=80=82=E8=8B=A5=E9=9D=9E=E8=AF=A5=E7=89=B9=E5=AE=9A=E6=94=
-=B6=E4=BB=B6=E4=BA=BA=EF=BC=8C=E8=AF=B7
-> =E5=8B=BF=E5=A4=8D=E5=88=B6=E3=80=81 =E4=BD=BF=E7=94=A8=E6=88=96=E6=8A=
-=AB=E9=9C=B2=E6=9C=AC=E9=82=AE=E4=BB=B6=E7=9A=84=E4=BB=BB=E4=BD=95=E5=86=
-=85=E5=AE=B9=E3=80=82=E8=8B=A5=E8=AF=AF=E6=94=B6=E6=9C=AC=E9=82=AE=E4=BB=
-=B6=EF=BC=8C=E8=AF=B7=E4=BB=8E=E7=B3=BB=E7=BB=9F=E4=B8=AD=E6=B0=B8=E4=B9=
-=85=E6=80=A7=E5=88=A0=E9=99=A4=E6=9C=AC=E9=82=AE=E4=BB=B6=E5=8F=8A=E6=89=
-=80=E6=9C=89=E9=99=84=E4=BB=B6=EF=BC=8C
-> =E5=B9=B6=E4=BB=A5=E5=9B=9E=E5=A4=8D=E9=82=AE=E4=BB=B6=E6=88=96=E5=85=
-=B6=E4=BB=96=E6=96=B9=E5=BC=8F=E5=8D=B3=E5=88=BB=E5=91=8A=E7=9F=A5=E5=8F=
-=91=E4=BB=B6=E4=BA=BA=E3=80=82=E7=A6=8F=E5=B7=9E=E7=91=9E=E8=8A=AF=E5=BE=
-=AE=E7=94=B5=E5=AD=90=E6=9C=89=E9=99=90=E5=85=AC=E5=8F=B8=E6=8B=A5=E6=9C=
-=89=E6=9C=AC=E9=82=AE=E4=BB=B6=E4=BF=A1=E6=81=AF=E7=9A=84=E8=91=97=E4=BD=
-=9C=E6=9D=83=E5=8F=8A=E8=A7=A3=E9=87=8A
-> =E6=9D=83=EF=BC=8C=E7=A6=81=E6=AD=A2=E4=BB=BB=E4=BD=95=E6=9C=AA=E7=BB=
-=8F=E6=8E=88=E6=9D=83=E8=AE=B8=E5=8F=AF=E7=9A=84=E4=BE=B5=E6=9D=83=E8=A1=
-=8C=E4=B8=BA=E3=80=82
->  IMPORTANT NOTICE: This email is from Fuzhou Rockchip Electronics Co.=
-, Ltd
-> .The contents
-> of this email and any attachments may contain information that is
-> privileged, confidential
-> and/or exempt from disclosure under applicable law and relevant NDA. =
-If you
-> are not the
-> intended recipient, you are hereby notified that any disclosure, copy=
-ing,
-> distribution,
-> or use of the information is STRICTLY PROHIBITED. Please immediately =
-contact
-> the sender
-> as soon as possible and destroy the material in its entirety in any f=
-ormat.
-> Thank you.
-> *********************************************************************=
-***********
->
+small observaton, clk_is_same() is linguistically nicer.
+
+-- 
+Ben Dooks, ben@fluff.org, http://www.fluff.org/ben/
+
+Large Hadron Colada: A large Pina Colada that makes the universe disappear.
