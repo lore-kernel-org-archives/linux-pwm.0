@@ -1,40 +1,78 @@
-From: Ricard Wanderlof <ricard.wanderlof@axis.com>
-Subject: Re: [alsa-devel] [PATCH 1/8] clk: add helper function
- clk_is_match()
-Date: Thu, 26 Feb 2015 12:59:31 +0100
-Message-ID: <alpine.DEB.2.02.1502261259060.17631@lnxricardw1.se.axis.com>
-References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org> <1424876018-17852-2-git-send-email-shawn.guo@linaro.org> <20150225172757.421.43718@quantum> <20150226090256.GQ30445@trinity.fluff.org> <1424944618.3073.6.camel@pengutronix.de>
- <20150226112509.GR30445@trinity.fluff.org>
+From: Shawn Guo <shawn.guo@linaro.org>
+Subject: Re: [PATCH] pwm: mxs: fix period divider computation
+Date: Mon, 2 Mar 2015 20:32:09 +0800
+Message-ID: <20150302123206.GD3040@dragon>
+References: <1424264794-12167-1-git-send-email-ghug@induct.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bastet.se.axis.com ([195.60.68.11]:58291 "EHLO
-	bastet.se.axis.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753035AbbBZL7f (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 26 Feb 2015 06:59:35 -0500
-In-Reply-To: <20150226112509.GR30445@trinity.fluff.org>
+Received: from mail-pa0-f41.google.com ([209.85.220.41]:34487 "EHLO
+	mail-pa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751526AbbCBMcY (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 2 Mar 2015 07:32:24 -0500
+Received: by paceu11 with SMTP id eu11so3664pac.1
+        for <linux-pwm@vger.kernel.org>; Mon, 02 Mar 2015 04:32:24 -0800 (PST)
+Content-Disposition: inline
+In-Reply-To: <1424264794-12167-1-git-send-email-ghug@induct.be>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Ben Dooks <ben@trinity.fluff.org>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>, Mike Turquette <mturquette@linaro.org>, Ben Dooks <ben-linux@fluff.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Shawn Guo <shawn.guo@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Gaetan Hug <ghug@induct.be>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, fabio.estevam@freescale.com
 
+On Wed, Feb 18, 2015 at 02:06:34PM +0100, Gaetan Hug wrote:
+> The driver computes which clock divider it sould be using from the
+> requested period. This computation assumes that the link between the
+> register value and the actual divider value is raising 2 to the power of
+> the registry value.
+> 
+>     div = 1 << regvalue
+> 
+> This is true only for the first 5 values out of 8. Next values are 64,
+> 256 and, 1024 - instead of 32, 64, 128.
 
-On Thu, 26 Feb 2015, Ben Dooks wrote:
+Just checked i.MX28 Reference Manual, and yes, this is the case.
 
-> > > small observaton, clk_is_same() is linguistically nicer.
-> >=20
-> > How about clk_equal() ?
->=20
-> That's good, the only issue that's not clear in any of these names is
-> that does this mean "the same clock", a "clock of the same rate" or a
-> "clock that is equivalent to in the rate and phase but not subject to
-> the same gate".
+> This affects only the users requesting a period > 0.04369s.
+> 
+> Replace the computation with a look-up table.
 
-clk_identical() ?
+Your SoB is missing here.  Otherwise,
 
-/Ricard
---=20
-Ricard Wolf Wanderl=F6f                           ricardw(at)axis.com
-Axis Communications AB, Lund, Sweden            www.axis.com
-Phone +46 46 272 2016                           Fax +46 46 13 61 30
+Acked-by: Shawn Guo <shawn.guo@linaro.org>
+
+> ---
+>  drivers/pwm/pwm-mxs.c |    6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
+> index f75ecb0..c65e183 100644
+> --- a/drivers/pwm/pwm-mxs.c
+> +++ b/drivers/pwm/pwm-mxs.c
+> @@ -35,6 +35,8 @@
+>  #define  PERIOD_CDIV(div)	(((div) & 0x7) << 20)
+>  #define  PERIOD_CDIV_MAX	8
+>  
+> +static unsigned const int cdiv[PERIOD_CDIV_MAX] = {1, 2, 4, 8, 16, 64, 256, 1024};
+> +
+>  struct mxs_pwm_chip {
+>  	struct pwm_chip chip;
+>  	struct clk *clk;
+> @@ -54,13 +56,13 @@ static int mxs_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  
+>  	rate = clk_get_rate(mxs->clk);
+>  	while (1) {
+> -		c = rate / (1 << div);
+> +		c = rate / cdiv[div];
+>  		c = c * period_ns;
+>  		do_div(c, 1000000000);
+>  		if (c < PERIOD_PERIOD_MAX)
+>  			break;
+>  		div++;
+> -		if (div > PERIOD_CDIV_MAX)
+> +		if (div >= PERIOD_CDIV_MAX)
+>  			return -EINVAL;
+>  	}
+>  
+> -- 
+> 1.7.10.4
+> 
