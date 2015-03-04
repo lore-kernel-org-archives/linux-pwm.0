@@ -1,78 +1,113 @@
-From: Shawn Guo <shawn.guo@linaro.org>
-Subject: Re: [PATCH] pwm: mxs: fix period divider computation
-Date: Mon, 2 Mar 2015 20:32:09 +0800
-Message-ID: <20150302123206.GD3040@dragon>
-References: <1424264794-12167-1-git-send-email-ghug@induct.be>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 1/8] clk: add helper function clk_is_match()
+Date: Wed, 4 Mar 2015 09:55:37 +0100
+Message-ID: <CAMuHMdX_co60Aez4_8iA4+41CMSD=Ky7af8mVJruQL-2v9m=0g@mail.gmail.com>
+References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
+	<1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
+	<20150225172757.421.43718@quantum>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f41.google.com ([209.85.220.41]:34487 "EHLO
-	mail-pa0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751526AbbCBMcY (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 2 Mar 2015 07:32:24 -0500
-Received: by paceu11 with SMTP id eu11so3664pac.1
-        for <linux-pwm@vger.kernel.org>; Mon, 02 Mar 2015 04:32:24 -0800 (PST)
-Content-Disposition: inline
-In-Reply-To: <1424264794-12167-1-git-send-email-ghug@induct.be>
+Received: from mail-ob0-f179.google.com ([209.85.214.179]:43739 "EHLO
+	mail-ob0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754040AbbCDIzi (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Mar 2015 03:55:38 -0500
+In-Reply-To: <20150225172757.421.43718@quantum>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Gaetan Hug <ghug@induct.be>
-Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, fabio.estevam@freescale.com
+To: Mike Turquette <mturquette@linaro.org>
+Cc: Shawn Guo <shawn.guo@linaro.org>, linux-pwm@vger.kernel.org, ALSA Development Mailing List <alsa-devel@alsa-project.org>, Russell King <linux@arm.linux.org.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, DRI Development <dri-devel@lists.freedesktop.org>, Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <kernel@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On Wed, Feb 18, 2015 at 02:06:34PM +0100, Gaetan Hug wrote:
-> The driver computes which clock divider it sould be using from the
-> requested period. This computation assumes that the link between the
-> register value and the actual divider value is raising 2 to the power of
-> the registry value.
-> 
->     div = 1 << regvalue
-> 
-> This is true only for the first 5 values out of 8. Next values are 64,
-> 256 and, 1024 - instead of 32, 64, 128.
-
-Just checked i.MX28 Reference Manual, and yes, this is the case.
-
-> This affects only the users requesting a period > 0.04369s.
-> 
-> Replace the computation with a look-up table.
-
-Your SoB is missing here.  Otherwise,
-
-Acked-by: Shawn Guo <shawn.guo@linaro.org>
-
+On Wed, Feb 25, 2015 at 6:27 PM, Mike Turquette <mturquette@linaro.org> wrote:
+> From: Michael Turquette <mturquette@linaro.org>
+> Date: Wed, 25 Feb 2015 09:11:01 -0800
+> Subject: [PATCH] clk: introduce clk_is_match
+>
+> Some drivers compare struct clk pointers as a means of knowing
+> if the two pointers reference the same clock hardware. This behavior is
+> dubious (drivers must not dereference struct clk), but did not cause any
+> regressions until the per-user struct clk patch was merged. Now the test
+> for matching clk's will always fail with per-user struct clk's.
+>
+> clk_is_match is introduced to fix the regression and prevent drivers
+> from comparing the pointers manually.
+>
+> Fixes: 035a61c314eb ("clk: Make clk API return per-user struct clk instances")
+> Cc: Russell King <linux@arm.linux.org.uk>
+> Cc: Stephen Boyd <sboyd@codeaurora.org>
+> Cc: Shawn Guo <shawn.guo@linaro.org>
+> Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+> Signed-off-by: Michael Turquette <mturquette@linaro.org>
 > ---
->  drivers/pwm/pwm-mxs.c |    6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
-> index f75ecb0..c65e183 100644
-> --- a/drivers/pwm/pwm-mxs.c
-> +++ b/drivers/pwm/pwm-mxs.c
-> @@ -35,6 +35,8 @@
->  #define  PERIOD_CDIV(div)	(((div) & 0x7) << 20)
->  #define  PERIOD_CDIV_MAX	8
->  
-> +static unsigned const int cdiv[PERIOD_CDIV_MAX] = {1, 2, 4, 8, 16, 64, 256, 1024};
+>  drivers/clk/clk.c   | 26 ++++++++++++++++++++++++++
+>  include/linux/clk.h | 18 ++++++++++++++++++
+>  2 files changed, 44 insertions(+)
+>
+> diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+> index eb01529..09670de 100644
+> --- a/drivers/clk/clk.c
+> +++ b/drivers/clk/clk.c
+> @@ -2171,6 +2171,32 @@ int clk_get_phase(struct clk *clk)
+>  }
+>
+>  /**
+> + * clk_is_match - check if two clk's point to the same hardware clock
+> + * @p: clk compared against q
+> + * @q: clk compared against p
+> + *
+> + * Returns true if the two struct clk pointers both point to the same hardware
+> + * clock node. Put differently, returns true if struct clk *p and struct clk *q
+> + * share the same struct clk_core object.
+> + *
+> + * Returns false otherwise. Note that two NULL clks are treated as matching.
+> + */
+> +bool clk_is_match(struct clk *p, struct clk *q)
+
+const struct clk *p, const struct clk *q
+
+> --- a/include/linux/clk.h
+> +++ b/include/linux/clk.h
+> @@ -376,6 +376,19 @@ struct clk *clk_get_parent(struct clk *clk);
+>   */
+>  struct clk *clk_get_sys(const char *dev_id, const char *con_id);
+>
+> +/**
+> + * clk_is_match - check if two clk's point to the same hardware clock
+> + * @p: clk compared against q
+> + * @q: clk compared against p
+> + *
+> + * Returns true if the two struct clk pointers both point to the same hardware
+> + * clock node. Put differently, returns true if struct clk *p and struct clk *q
+> + * share the same struct clk_core object.
+> + *
+> + * Returns false otherwise. Note that two NULL clks are treated as matching.
+> + */
+> +bool clk_is_match(struct clk *p, struct clk *q);
+
+const struct clk *p, const struct clk *q
+
 > +
->  struct mxs_pwm_chip {
->  	struct pwm_chip chip;
->  	struct clk *clk;
-> @@ -54,13 +56,13 @@ static int mxs_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->  
->  	rate = clk_get_rate(mxs->clk);
->  	while (1) {
-> -		c = rate / (1 << div);
-> +		c = rate / cdiv[div];
->  		c = c * period_ns;
->  		do_div(c, 1000000000);
->  		if (c < PERIOD_PERIOD_MAX)
->  			break;
->  		div++;
-> -		if (div > PERIOD_CDIV_MAX)
-> +		if (div >= PERIOD_CDIV_MAX)
->  			return -EINVAL;
->  	}
->  
-> -- 
-> 1.7.10.4
-> 
+>  #else /* !CONFIG_HAVE_CLK */
+>
+>  static inline struct clk *clk_get(struct device *dev, const char *id)
+> @@ -429,6 +442,11 @@ static inline struct clk *clk_get_parent(struct clk *clk)
+>         return NULL;
+>  }
+>
+> +static inline bool clk_is_match(struct clk *p, struct clk *q)
+
+const struct clk *p, const struct clk *q
+
+> +{
+> +       return p == q ? true : false;
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
