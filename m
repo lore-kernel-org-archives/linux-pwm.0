@@ -1,113 +1,32 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
 Subject: Re: [PATCH 1/8] clk: add helper function clk_is_match()
-Date: Wed, 4 Mar 2015 09:55:37 +0100
-Message-ID: <CAMuHMdX_co60Aez4_8iA4+41CMSD=Ky7af8mVJruQL-2v9m=0g@mail.gmail.com>
+Date: Wed, 4 Mar 2015 09:51:55 +0000
+Message-ID: <20150304095155.GB8656@n2100.arm.linux.org.uk>
 References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
-	<1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
-	<20150225172757.421.43718@quantum>
+ <1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
+ <20150225172757.421.43718@quantum>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ob0-f179.google.com ([209.85.214.179]:43739 "EHLO
-	mail-ob0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754040AbbCDIzi (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Mar 2015 03:55:38 -0500
+Received: from pandora.arm.linux.org.uk ([78.32.30.218]:49534 "EHLO
+	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932408AbbCDJwP (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Mar 2015 04:52:15 -0500
+Content-Disposition: inline
 In-Reply-To: <20150225172757.421.43718@quantum>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Mike Turquette <mturquette@linaro.org>
-Cc: Shawn Guo <shawn.guo@linaro.org>, linux-pwm@vger.kernel.org, ALSA Development Mailing List <alsa-devel@alsa-project.org>, Russell King <linux@arm.linux.org.uk>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, DRI Development <dri-devel@lists.freedesktop.org>, Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <kernel@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-serial@vger.kernel.org
 
-On Wed, Feb 25, 2015 at 6:27 PM, Mike Turquette <mturquette@linaro.org> wrote:
-> From: Michael Turquette <mturquette@linaro.org>
-> Date: Wed, 25 Feb 2015 09:11:01 -0800
-> Subject: [PATCH] clk: introduce clk_is_match
->
-> Some drivers compare struct clk pointers as a means of knowing
-> if the two pointers reference the same clock hardware. This behavior is
-> dubious (drivers must not dereference struct clk), but did not cause any
-> regressions until the per-user struct clk patch was merged. Now the test
-> for matching clk's will always fail with per-user struct clk's.
->
-> clk_is_match is introduced to fix the regression and prevent drivers
-> from comparing the pointers manually.
->
-> Fixes: 035a61c314eb ("clk: Make clk API return per-user struct clk instances")
-> Cc: Russell King <linux@arm.linux.org.uk>
-> Cc: Stephen Boyd <sboyd@codeaurora.org>
-> Cc: Shawn Guo <shawn.guo@linaro.org>
-> Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-> Signed-off-by: Michael Turquette <mturquette@linaro.org>
-> ---
->  drivers/clk/clk.c   | 26 ++++++++++++++++++++++++++
->  include/linux/clk.h | 18 ++++++++++++++++++
->  2 files changed, 44 insertions(+)
->
-> diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-> index eb01529..09670de 100644
-> --- a/drivers/clk/clk.c
-> +++ b/drivers/clk/clk.c
-> @@ -2171,6 +2171,32 @@ int clk_get_phase(struct clk *clk)
->  }
->
->  /**
-> + * clk_is_match - check if two clk's point to the same hardware clock
-> + * @p: clk compared against q
-> + * @q: clk compared against p
-> + *
-> + * Returns true if the two struct clk pointers both point to the same hardware
-> + * clock node. Put differently, returns true if struct clk *p and struct clk *q
-> + * share the same struct clk_core object.
-> + *
-> + * Returns false otherwise. Note that two NULL clks are treated as matching.
-> + */
-> +bool clk_is_match(struct clk *p, struct clk *q)
-
-const struct clk *p, const struct clk *q
-
-> --- a/include/linux/clk.h
-> +++ b/include/linux/clk.h
-> @@ -376,6 +376,19 @@ struct clk *clk_get_parent(struct clk *clk);
->   */
->  struct clk *clk_get_sys(const char *dev_id, const char *con_id);
->
-> +/**
-> + * clk_is_match - check if two clk's point to the same hardware clock
-> + * @p: clk compared against q
-> + * @q: clk compared against p
-> + *
-> + * Returns true if the two struct clk pointers both point to the same hardware
-> + * clock node. Put differently, returns true if struct clk *p and struct clk *q
-> + * share the same struct clk_core object.
-> + *
-> + * Returns false otherwise. Note that two NULL clks are treated as matching.
-> + */
-> +bool clk_is_match(struct clk *p, struct clk *q);
-
-const struct clk *p, const struct clk *q
-
-> +
->  #else /* !CONFIG_HAVE_CLK */
->
->  static inline struct clk *clk_get(struct device *dev, const char *id)
-> @@ -429,6 +442,11 @@ static inline struct clk *clk_get_parent(struct clk *clk)
->         return NULL;
->  }
->
+On Wed, Feb 25, 2015 at 09:27:57AM -0800, Mike Turquette wrote:
 > +static inline bool clk_is_match(struct clk *p, struct clk *q)
-
-const struct clk *p, const struct clk *q
-
 > +{
-> +       return p == q ? true : false;
+> +	return p == q ? true : false;
 
-Gr{oetje,eeting}s,
+When they created the C standard, they already taught the compiler that
+p == q returns a true / false boolean value; there's no need for ?: here.
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+according to speedtest.net.
