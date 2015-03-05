@@ -1,98 +1,115 @@
-From: "Zha, Qipeng" <qipeng.zha@intel.com>
-Subject: git tree
-Date: Thu, 5 Mar 2015 07:53:16 +0000
-Message-ID: <C6287702A945AC47BE5DB5DFD4B5C6DD01844B9A@SHSMSX104.ccr.corp.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+From: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+Subject: [PATCH v2 Resend] pwm: samsung: Fix output race on disabling
+Date: Thu,  5 Mar 2015 09:14:03 +0100
+Message-ID: <1425543243-6587-1-git-send-email-sjoerd.simons@collabora.co.uk>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:31478 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752609AbbCEHxz convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Mar 2015 02:53:55 -0500
-Content-Language: en-US
+Received: from bhuna.collabora.co.uk ([93.93.135.160]:37138 "EHLO
+	bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753547AbbCEIOI (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Mar 2015 03:14:08 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+To: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>
+Cc: linux-pwm@vger.kernel.org, linux-samsung-soc@vger.kernel.org, Javier Martinez Canillas <javier.martinez@collabora.co.uk>, Lukasz Majewski <l.majewski@samsung.com>
 
-Hi 
+When disabling the samsung PWM the output state remains at the level it
+was in the end of a pwm cycle. In other words, calling pwm_disable when
+at 100% duty will keep the output active, while at all other setting the
+output will go/stay inactive. On top of that the samsung PWM settings are
+double-buffered, which means the new settings only get applied at the
+start of a new PWM cycle.
 
-I got pwm subsystem git tree info as below from v3.19-rc6 MAINTAINER And I clone it, found the version is v3.12 Is the tree current maintain tree ? or there is a new one, thanks.
+This results in a race if the PWM is at 100% duty and a driver calls:
+  pwm_config (pwm, 0, period);
+  pwm_disable (pwm);
 
-git git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git
+In this case the PWMs output will unexpectedly stay active, unless a new
+PWM cycle happened to start between the register writes in _config and
+_disable. As far as i can tell this is a regression introduced by 3bdf878,
+before that a call to pwm_config would call pwm_samsung_enable which,
+while heavy-handed, made sure the expected settings were live.
+
+To resolve this, while not re-introducing the issues 3bdf878 (flickering
+as the PWM got reset while in a PWM cycle). Only force an update of the
+settings when at 100% duty, which shouldn't have a noticeable effect on
+the output but is enough to ensure the behaviour is as expected on
+disable.
+
+Signed-off-by: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+---
+Changes since v1:
+  Fix small issues pointed out by Tomasz Figa
+  - Correct various coding style issues
+  - Read the current value of the tcmp register for comparison rather then
+    using a non-trivial comparison to decide whether the current state was
+    100% duty
+  - Move the code to force manual update out into its own function
+  - Clarify the comment indicating why a manual update is sometimes required
+
+ drivers/pwm/pwm-samsung.c | 31 ++++++++++++++++++++++++++++++-
+ 1 file changed, 30 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
+index 3e9b583..649f6c4 100644
+--- a/drivers/pwm/pwm-samsung.c
++++ b/drivers/pwm/pwm-samsung.c
+@@ -269,12 +269,31 @@ static void pwm_samsung_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
+ }
  
++static void pwm_samsung_manual_update(struct samsung_pwm_chip *chip,
++				      struct pwm_device *pwm)
++{
++	unsigned int tcon_chan = to_tcon_channel(pwm->hwpwm);
++	u32 tcon;
++	unsigned long flags;
++
++	spin_lock_irqsave(&samsung_pwm_lock, flags);
++
++	tcon = readl(chip->base + REG_TCON);
++	tcon |= TCON_MANUALUPDATE(tcon_chan);
++	writel(tcon, chip->base + REG_TCON);
++
++	tcon &= ~TCON_MANUALUPDATE(tcon_chan);
++	writel(tcon, chip->base + REG_TCON);
++
++	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
++}
++
+ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			      int duty_ns, int period_ns)
+ {
+ 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
+ 	struct samsung_pwm_channel *chan = pwm_get_chip_data(pwm);
+-	u32 tin_ns = chan->tin_ns, tcnt, tcmp;
++	u32 tin_ns = chan->tin_ns, tcnt, tcmp, oldtcmp;
+ 
+ 	/*
+ 	 * We currently avoid using 64bit arithmetic by using the
+@@ -288,6 +307,7 @@ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		return 0;
+ 
+ 	tcnt = readl(our_chip->base + REG_TCNTB(pwm->hwpwm));
++	oldtcmp = readl(our_chip->base + REG_TCMPB(pwm->hwpwm));
+ 
+ 	/* We need tick count for calculation, not last tick. */
+ 	++tcnt;
+@@ -335,6 +355,15 @@ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	writel(tcnt, our_chip->base + REG_TCNTB(pwm->hwpwm));
+ 	writel(tcmp, our_chip->base + REG_TCMPB(pwm->hwpwm));
+ 
++	/* In case the PWM is currently at 100% duty, force a manual update
++	 * to prevent the signal staying high in the pwm is disabled shortly
++	 * afer this update (before it autoreloaded the new values) .
++	 */
++	if (oldtcmp == (u32) -1) {
++		dev_dbg(our_chip->chip.dev, "Forcing manual update");
++		pwm_samsung_manual_update(our_chip, pwm);
++	}
++
+ 	chan->period_ns = period_ns;
+ 	chan->tin_ns = tin_ns;
+ 	chan->duty_ns = duty_ns;
+-- 
+2.1.4
 
-Best wishes
-Qipeng
-
------Original Message-----
-From: linux-pwm-owner@vger.kernel.org [mailto:linux-pwm-owner@vger.kernel.org] On Behalf Of Shawn Guo
-Sent: Monday, March 02, 2015 8:32 PM
-To: Gaetan Hug
-Cc: thierry.reding@gmail.com; linux-pwm@vger.kernel.org; linux-kernel@vger.kernel.org; fabio.estevam@freescale.com
-Subject: Re: [PATCH] pwm: mxs: fix period divider computation
-
-On Wed, Feb 18, 2015 at 02:06:34PM +0100, Gaetan Hug wrote:
-> The driver computes which clock divider it sould be using from the 
-> requested period. This computation assumes that the link between the 
-> register value and the actual divider value is raising 2 to the power 
-> of the registry value.
-> 
->     div = 1 << regvalue
-> 
-> This is true only for the first 5 values out of 8. Next values are 64,
-> 256 and, 1024 - instead of 32, 64, 128.
-
-Just checked i.MX28 Reference Manual, and yes, this is the case.
-
-> This affects only the users requesting a period > 0.04369s.
-> 
-> Replace the computation with a look-up table.
-
-Your SoB is missing here.  Otherwise,
-
-Acked-by: Shawn Guo <shawn.guo@linaro.org>
-
-> ---
->  drivers/pwm/pwm-mxs.c |    6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c index
-> f75ecb0..c65e183 100644
-> --- a/drivers/pwm/pwm-mxs.c
-> +++ b/drivers/pwm/pwm-mxs.c
-> @@ -35,6 +35,8 @@
->  #define  PERIOD_CDIV(div)	(((div) & 0x7) << 20)
->  #define  PERIOD_CDIV_MAX	8
->  
-> +static unsigned const int cdiv[PERIOD_CDIV_MAX] = {1, 2, 4, 8, 16, 
-> +64, 256, 1024};
-> +
->  struct mxs_pwm_chip {
->  	struct pwm_chip chip;
->  	struct clk *clk;
-> @@ -54,13 +56,13 @@ static int mxs_pwm_config(struct pwm_chip *chip, 
-> struct pwm_device *pwm,
->  
->  	rate = clk_get_rate(mxs->clk);
->  	while (1) {
-> -		c = rate / (1 << div);
-> +		c = rate / cdiv[div];
->  		c = c * period_ns;
->  		do_div(c, 1000000000);
->  		if (c < PERIOD_PERIOD_MAX)
->  			break;
->  		div++;
-> -		if (div > PERIOD_CDIV_MAX)
-> +		if (div >= PERIOD_CDIV_MAX)
->  			return -EINVAL;
->  	}
->  
-> --
-> 1.7.10.4
-> 
---
-To unsubscribe from this list: send the line "unsubscribe linux-pwm" in the body of a message to majordomo@vger.kernel.org More majordomo info at  http://vger.kernel.org/majordomo-info.html
---
-To unsubscribe from this list: send the line "unsubscribe linux-pwm" in the body of a message to majordomo@vger.kernel.org More majordomo info at  http://vger.kernel.org/majordomo-info.html
