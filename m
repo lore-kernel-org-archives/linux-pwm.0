@@ -1,18 +1,15 @@
 From: "Zha, Qipeng" <qipeng.zha@intel.com>
-Subject: RE: [PATCH] pwm: mxs: fix period divider computation
-Date: Thu, 5 Mar 2015 01:16:37 +0000
-Message-ID: <C6287702A945AC47BE5DB5DFD4B5C6DD0184478B@SHSMSX104.ccr.corp.intel.com>
-References: <1424264794-12167-1-git-send-email-ghug@induct.be>
- <20150302123206.GD3040@dragon>
+Subject: git tree
+Date: Thu, 5 Mar 2015 07:53:16 +0000
+Message-ID: <C6287702A945AC47BE5DB5DFD4B5C6DD01844B9A@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:30592 "EHLO mga14.intel.com"
+Received: from mga02.intel.com ([134.134.136.20]:31478 "EHLO mga02.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751258AbbCEBQr convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Mar 2015 20:16:47 -0500
-In-Reply-To: <20150302123206.GD3040@dragon>
+	id S1752609AbbCEHxz convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Mar 2015 02:53:55 -0500
 Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
@@ -21,9 +18,7 @@ Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
 Hi 
 
-I got pwm subsystem git tree info as below from v3.19-rc6 MAINTAINER
-And I clone it, found the version is v3.12
-Is the tree current maintain tree ? or there is a new one, thanks.
+I got pwm subsystem git tree info as below from v3.19-rc6 MAINTAINER And I clone it, found the version is v3.12 Is the tree current maintain tree ? or there is a new one, thanks.
 
 git git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git
  
@@ -63,7 +58,7 @@ Acked-by: Shawn Guo <shawn.guo@linaro.org>
 >  drivers/pwm/pwm-mxs.c |    6 ++++--
 >  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c index 
+> diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c index
 > f75ecb0..c65e183 100644
 > --- a/drivers/pwm/pwm-mxs.c
 > +++ b/drivers/pwm/pwm-mxs.c
@@ -97,5 +92,7 @@ Acked-by: Shawn Guo <shawn.guo@linaro.org>
 > --
 > 1.7.10.4
 > 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-pwm" in the body of a message to majordomo@vger.kernel.org More majordomo info at  http://vger.kernel.org/majordomo-info.html
 --
 To unsubscribe from this list: send the line "unsubscribe linux-pwm" in the body of a message to majordomo@vger.kernel.org More majordomo info at  http://vger.kernel.org/majordomo-info.html
