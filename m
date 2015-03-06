@@ -1,115 +1,65 @@
-From: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
-Subject: [PATCH v2 Resend] pwm: samsung: Fix output race on disabling
-Date: Thu,  5 Mar 2015 09:14:03 +0100
-Message-ID: <1425543243-6587-1-git-send-email-sjoerd.simons@collabora.co.uk>
+From: Matt Porter <mporter@konsulko.com>
+Subject: [PATCH] pwm: imx-pwm: add explicit compatible strings and required clock properties
+Date: Fri,  6 Mar 2015 10:09:14 -0500
+Message-ID: <1425654554-7849-1-git-send-email-mporter@konsulko.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([93.93.135.160]:37138 "EHLO
-	bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753547AbbCEIOI (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Mar 2015 03:14:08 -0500
+Received: from mail-ig0-f178.google.com ([209.85.213.178]:43234 "EHLO
+	mail-ig0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753717AbbCFPJU (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 6 Mar 2015 10:09:20 -0500
+Received: by igbhn18 with SMTP id hn18so4423612igb.2
+        for <linux-pwm@vger.kernel.org>; Fri, 06 Mar 2015 07:09:19 -0800 (PST)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>
-Cc: linux-pwm@vger.kernel.org, linux-samsung-soc@vger.kernel.org, Javier Martinez Canillas <javier.martinez@collabora.co.uk>, Lukasz Majewski <l.majewski@samsung.com>
+To: Devicetree List <devicetree@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Pantelis Antoniou <pantelis.antoniou@konsulko.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-When disabling the samsung PWM the output state remains at the level it
-was in the end of a pwm cycle. In other words, calling pwm_disable when
-at 100% duty will keep the output active, while at all other setting the
-output will go/stay inactive. On top of that the samsung PWM settings are
-double-buffered, which means the new settings only get applied at the
-start of a new PWM cycle.
+The imx-pwm binding contains language indicating compatible
+strings to be used that is not valid for all supported parts
+e.g. Should be "fsl,<soc>-pwm". Fix this by enumerating the
+valid compatible strings that represent the two versions of
+this peripheral in use.
 
-This results in a race if the PWM is at 100% duty and a driver calls:
-  pwm_config (pwm, 0, period);
-  pwm_disable (pwm);
+The binding is also missing the clocks/clock-names properties
+so document these,the two required ipg and per clocks, and add
+add these properties to the example.
 
-In this case the PWMs output will unexpectedly stay active, unless a new
-PWM cycle happened to start between the register writes in _config and
-_disable. As far as i can tell this is a regression introduced by 3bdf878,
-before that a call to pwm_config would call pwm_samsung_enable which,
-while heavy-handed, made sure the expected settings were live.
-
-To resolve this, while not re-introducing the issues 3bdf878 (flickering
-as the PWM got reset while in a PWM cycle). Only force an update of the
-settings when at 100% duty, which shouldn't have a noticeable effect on
-the output but is enough to ensure the behaviour is as expected on
-disable.
-
-Signed-off-by: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
+Signed-off-by: Matt Porter <mporter@konsulko.com>
 ---
-Changes since v1:
-  Fix small issues pointed out by Tomasz Figa
-  - Correct various coding style issues
-  - Read the current value of the tcmp register for comparison rather then
-    using a non-trivial comparison to decide whether the current state was
-    100% duty
-  - Move the code to force manual update out into its own function
-  - Clarify the comment indicating why a manual update is sometimes required
+ Documentation/devicetree/bindings/pwm/imx-pwm.txt | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
- drivers/pwm/pwm-samsung.c | 31 ++++++++++++++++++++++++++++++-
- 1 file changed, 30 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-index 3e9b583..649f6c4 100644
---- a/drivers/pwm/pwm-samsung.c
-+++ b/drivers/pwm/pwm-samsung.c
-@@ -269,12 +269,31 @@ static void pwm_samsung_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
- }
+diff --git a/Documentation/devicetree/bindings/pwm/imx-pwm.txt b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
+index b50d7a6d..30d2b82 100644
+--- a/Documentation/devicetree/bindings/pwm/imx-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
+@@ -1,10 +1,16 @@
+ Freescale i.MX PWM controller
  
-+static void pwm_samsung_manual_update(struct samsung_pwm_chip *chip,
-+				      struct pwm_device *pwm)
-+{
-+	unsigned int tcon_chan = to_tcon_channel(pwm->hwpwm);
-+	u32 tcon;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&samsung_pwm_lock, flags);
-+
-+	tcon = readl(chip->base + REG_TCON);
-+	tcon |= TCON_MANUALUPDATE(tcon_chan);
-+	writel(tcon, chip->base + REG_TCON);
-+
-+	tcon &= ~TCON_MANUALUPDATE(tcon_chan);
-+	writel(tcon, chip->base + REG_TCON);
-+
-+	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
-+}
-+
- static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 			      int duty_ns, int period_ns)
- {
- 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
- 	struct samsung_pwm_channel *chan = pwm_get_chip_data(pwm);
--	u32 tin_ns = chan->tin_ns, tcnt, tcmp;
-+	u32 tin_ns = chan->tin_ns, tcnt, tcmp, oldtcmp;
+ Required properties:
+-- compatible: should be "fsl,<soc>-pwm"
++- compatible :
++  - "fsl,imx1-pwm" for PWM compatible with the one integrated on i.MX1
++  - "fsl,imx27-pwm" for PWM compatible with the one integrated on i.MX27
+ - reg: physical base address and length of the controller's registers
+ - #pwm-cells: should be 2. See pwm.txt in this directory for a description of
+   the cells format.
++- clocks : Clock specifiers for both ipg and per clocks.
++- clock-names : Clock names should include both "ipg" and "per"
++See the clock consumer binding,
++	Documentation/devicetree/bindings/clock/clock-bindings.txt
+ - interrupts: The interrupt for the pwm controller
  
- 	/*
- 	 * We currently avoid using 64bit arithmetic by using the
-@@ -288,6 +307,7 @@ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		return 0;
- 
- 	tcnt = readl(our_chip->base + REG_TCNTB(pwm->hwpwm));
-+	oldtcmp = readl(our_chip->base + REG_TCMPB(pwm->hwpwm));
- 
- 	/* We need tick count for calculation, not last tick. */
- 	++tcnt;
-@@ -335,6 +355,15 @@ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	writel(tcnt, our_chip->base + REG_TCNTB(pwm->hwpwm));
- 	writel(tcmp, our_chip->base + REG_TCMPB(pwm->hwpwm));
- 
-+	/* In case the PWM is currently at 100% duty, force a manual update
-+	 * to prevent the signal staying high in the pwm is disabled shortly
-+	 * afer this update (before it autoreloaded the new values) .
-+	 */
-+	if (oldtcmp == (u32) -1) {
-+		dev_dbg(our_chip->chip.dev, "Forcing manual update");
-+		pwm_samsung_manual_update(our_chip, pwm);
-+	}
-+
- 	chan->period_ns = period_ns;
- 	chan->tin_ns = tin_ns;
- 	chan->duty_ns = duty_ns;
+ Example:
+@@ -13,5 +19,8 @@ pwm1: pwm@53fb4000 {
+ 	#pwm-cells = <2>;
+ 	compatible = "fsl,imx53-pwm", "fsl,imx27-pwm";
+ 	reg = <0x53fb4000 0x4000>;
++	clocks = <&clks IMX5_CLK_PWM1_IPG_GATE>,
++		 <&clks IMX5_CLK_PWM1_HF_GATE>;
++	clock-names = "ipg", "per";
+ 	interrupts = <61>;
+ };
 -- 
-2.1.4
+1.8.4
 
