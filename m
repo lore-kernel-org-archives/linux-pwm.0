@@ -1,103 +1,65 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH] clk: provide clk_is_match() dummy for non-common clk
-Date: Sun, 08 Mar 2015 22:05:29 +0100
-Message-ID: <8682755.oK0Ae34OOP@wuerfel>
-References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org> <1424876018-17852-2-git-send-email-shawn.guo@linaro.org> <20150225172757.421.43718@quantum>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH] pwm: imx-pwm: add explicit compatible strings and
+ required clock properties
+Date: Sun, 8 Mar 2015 17:09:16 -0500
+Message-ID: <CAL_JsqLWjJN7ar99DZAVLHVfUxek8GyApTSGhmRjGrEDzdtCHQ@mail.gmail.com>
+References: <1425654554-7849-1-git-send-email-mporter@konsulko.com>
+ <CAL_JsqJ+NL+0Hfu-La=NwzvOEHf0xE-D6EakJv6gnYYOS1oYrA@mail.gmail.com> <20150306163721.GL19577@beef>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.13]:61929 "EHLO
-	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752649AbbCHVFl (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sun, 8 Mar 2015 17:05:41 -0400
-In-Reply-To: <20150225172757.421.43718@quantum>
+Received: from mail-wi0-f177.google.com ([209.85.212.177]:35150 "EHLO
+	mail-wi0-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752623AbbCHWJi (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sun, 8 Mar 2015 18:09:38 -0400
+In-Reply-To: <20150306163721.GL19577@beef>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Mike Turquette <mturquette@linaro.org>, Shawn Guo <shawn.guo@linaro.org>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, Russell King <linux@arm.linux.org.uk>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Brown <broonie@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, dri-devel@lists.freedesktop.org, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de
+To: Matt Porter <mporter@konsulko.com>
+Cc: Devicetree List <devicetree@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Pantelis Antoniou <pantelis.antoniou@konsulko.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-ARM randconfig build tests found a new error for configurations
-with COMMON_CLK disabled but HAS_CLK selected by the platform:
+On Fri, Mar 6, 2015 at 10:37 AM, Matt Porter <mporter@konsulko.com> wrote:
+> On Fri, Mar 06, 2015 at 09:16:44AM -0600, Rob Herring wrote:
+>> On Fri, Mar 6, 2015 at 9:09 AM, Matt Porter <mporter@konsulko.com> wrote:
+>> > The imx-pwm binding contains language indicating compatible
+>> > strings to be used that is not valid for all supported parts
+>> > e.g. Should be "fsl,<soc>-pwm". Fix this by enumerating the
+>> > valid compatible strings that represent the two versions of
+>> > this peripheral in use.
+>> >
+>> > The binding is also missing the clocks/clock-names properties
+>> > so document these,the two required ipg and per clocks, and add
+>> > add these properties to the example.
+>> >
+>> > Signed-off-by: Matt Porter <mporter@konsulko.com>
+>> > ---
+>> >  Documentation/devicetree/bindings/pwm/imx-pwm.txt | 11 ++++++++++-
+>> >  1 file changed, 10 insertions(+), 1 deletion(-)
+>> >
+>> > diff --git a/Documentation/devicetree/bindings/pwm/imx-pwm.txt b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
+>> > index b50d7a6d..30d2b82 100644
+>> > --- a/Documentation/devicetree/bindings/pwm/imx-pwm.txt
+>> > +++ b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
+>> > @@ -1,10 +1,16 @@
+>> >  Freescale i.MX PWM controller
+>> >
+>> >  Required properties:
+>> > -- compatible: should be "fsl,<soc>-pwm"
+>> > +- compatible :
+>> > +  - "fsl,imx1-pwm" for PWM compatible with the one integrated on i.MX1
+>> > +  - "fsl,imx27-pwm" for PWM compatible with the one integrated on i.MX27
+>>
+>> This should be one of these and a more specific value as the example
+>> below shows.
+>
+> Ok, yes, I wasn't sure if that was expected to be explicit in the bindings
+> or not as others don't seem to represent that properly. What about this?
+>
+> - compatible: should be "fsl,<soc>-pwm" and one of the following
+>               compatible strings:
+>                 "fsl,imx1-pwm" for an iMX1 compatible PWM
+>                 "fsl,imx27-pwm" for an iMX27 compatible PWM
 
-ERROR: "clk_is_match" [sound/soc/fsl/snd-soc-fsl-spdif.ko] undefined!
+Looks fine.
 
-This moves the declaration around, so this case is covered
-by the existing static inline helper function.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Fixes: c69e182e51d89 ("clk: introduce clk_is_match")
-----
-BTW, we have a preexisting problem in clk_get_parent,
-clk_round_rate and clk_set_parent, which I've worked around in
-my randconfig builds so far. Should we do that the same way?
-
-diff --git a/include/linux/clk.h b/include/linux/clk.h
-index 5c076e4d90f9..a9b91595d106 100644
---- a/include/linux/clk.h
-+++ b/include/linux/clk.h
-@@ -125,6 +125,19 @@ int clk_set_phase(struct clk *clk, int degrees);
-  */
- int clk_get_phase(struct clk *clk);
- 
-+/**
-+ * clk_is_match - check if two clk's point to the same hardware clock
-+ * @p: clk compared against q
-+ * @q: clk compared against p
-+ *
-+ * Returns true if the two struct clk pointers both point to the same hardware
-+ * clock node. Put differently, returns true if struct clk *p and struct clk *q
-+ * share the same struct clk_core object.
-+ *
-+ * Returns false otherwise. Note that two NULL clks are treated as matching.
-+ */
-+bool clk_is_match(struct clk *p, struct clk *q);
-+
- #else
- 
- static inline long clk_get_accuracy(struct clk *clk)
-@@ -142,6 +155,11 @@ static inline long clk_get_phase(struct clk *clk)
- 	return -ENOTSUPP;
- }
- 
-+static inline bool clk_is_match(struct clk *p, struct clk *q)
-+{
-+	return p == q ? true : false;
-+}
-+
- #endif
- 
- /**
-@@ -376,19 +394,6 @@ struct clk *clk_get_parent(struct clk *clk);
-  */
- struct clk *clk_get_sys(const char *dev_id, const char *con_id);
- 
--/**
-- * clk_is_match - check if two clk's point to the same hardware clock
-- * @p: clk compared against q
-- * @q: clk compared against p
-- *
-- * Returns true if the two struct clk pointers both point to the same hardware
-- * clock node. Put differently, returns true if struct clk *p and struct clk *q
-- * share the same struct clk_core object.
-- *
-- * Returns false otherwise. Note that two NULL clks are treated as matching.
-- */
--bool clk_is_match(struct clk *p, struct clk *q);
--
- #else /* !CONFIG_HAVE_CLK */
- 
- static inline struct clk *clk_get(struct device *dev, const char *id)
-@@ -442,11 +447,6 @@ static inline struct clk *clk_get_parent(struct clk *clk)
- 	return NULL;
- }
- 
--static inline bool clk_is_match(struct clk *p, struct clk *q)
--{
--	return p == q ? true : false;
--}
--
- #endif
- 
- /* clk_prepare_enable helps cases using clk_enable in non-atomic context. */
-
+Rob
