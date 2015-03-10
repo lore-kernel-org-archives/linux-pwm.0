@@ -1,77 +1,45 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH v2] pwm: imx-pwm: add explicit compatible strings and
- required clock properties
-Date: Mon, 9 Mar 2015 08:49:05 -0500
-Message-ID: <CAL_JsqLxfVaT26unQKyDu5=oZ7ZZP7-biNmarPm6=2aVHVUX8A@mail.gmail.com>
-References: <1425907461-13538-1-git-send-email-mporter@konsulko.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] clk: provide clk_is_match() dummy for non-common clk
+Date: Tue, 10 Mar 2015 22:42:54 +0100
+Message-ID: <CAMuHMdWvaO-qEohYX=DNybR1=1d4me=FHO8Rj-eEn2OgAKaPgg@mail.gmail.com>
+References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
+ <1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
+ <20150225172757.421.43718@quantum> <8682755.oK0Ae34OOP@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-we0-f178.google.com ([74.125.82.178]:36919 "EHLO
-	mail-we0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752807AbbCINt1 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 9 Mar 2015 09:49:27 -0400
-In-Reply-To: <1425907461-13538-1-git-send-email-mporter@konsulko.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <8682755.oK0Ae34OOP@wuerfel>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-pwm@vger.kernel.org, ALSA Development Mailing List <alsa-devel@alsa-project.org>, Mike Turquette <mturquette@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, DRI Development <dri-devel@lists.freedesktop.org>, Mark Brown <broonie@kernel.org>, Sascha Hauer <kernel@pengutronix.de>, Russell King <linux@arm.linux.org.uk>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Matt Porter <mporter@konsulko.com>
-Cc: Devicetree List <devicetree@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Pantelis Antoniou <pantelis.antoniou@konsulko.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 
-On Mon, Mar 9, 2015 at 8:24 AM, Matt Porter <mporter@konsulko.com> wrote:
-> The imx-pwm binding contains language indicating compatible
-> strings to be used that is not valid for all supported parts
-> e.g. Should be "fsl,<soc>-pwm". Fix this by enumerating the
-> valid compatible strings that represent the two versions of
-> this peripheral in use.
->
-> The binding is also missing the clocks/clock-names properties
-> so document these,the two required ipg and per clocks, and add
-> add these properties to the example.
->
-> Signed-off-by: Matt Porter <mporter@konsulko.com>
-
-Acked-by: Rob Herring <robh@kernel.org>
-
-> ---
-> Changes since v1:
-> - compatible strings include the actual soc and one of the two specific
->   compatible parts.
->
->  Documentation/devicetree/bindings/pwm/imx-pwm.txt | 12 +++++++++++-
->  1 file changed, 11 insertions(+), 1 deletion(-)
->
-> diff --git a/Documentation/devicetree/bindings/pwm/imx-pwm.txt b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
-> index b50d7a6d..e00c2e9 100644
-> --- a/Documentation/devicetree/bindings/pwm/imx-pwm.txt
-> +++ b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
-> @@ -1,10 +1,17 @@
->  Freescale i.MX PWM controller
->
->  Required properties:
-> -- compatible: should be "fsl,<soc>-pwm"
-> +- compatible : should be "fsl,<soc>-pwm" and one of the following
-> +   compatible strings:
-> +  - "fsl,imx1-pwm" for PWM compatible with the one integrated on i.MX1
-> +  - "fsl,imx27-pwm" for PWM compatible with the one integrated on i.MX27
->  - reg: physical base address and length of the controller's registers
->  - #pwm-cells: should be 2. See pwm.txt in this directory for a description of
->    the cells format.
-> +- clocks : Clock specifiers for both ipg and per clocks.
-> +- clock-names : Clock names should include both "ipg" and "per"
-> +See the clock consumer binding,
-> +       Documentation/devicetree/bindings/clock/clock-bindings.txt
->  - interrupts: The interrupt for the pwm controller
->
->  Example:
-> @@ -13,5 +20,8 @@ pwm1: pwm@53fb4000 {
->         #pwm-cells = <2>;
->         compatible = "fsl,imx53-pwm", "fsl,imx27-pwm";
->         reg = <0x53fb4000 0x4000>;
-> +       clocks = <&clks IMX5_CLK_PWM1_IPG_GATE>,
-> +                <&clks IMX5_CLK_PWM1_HF_GATE>;
-> +       clock-names = "ipg", "per";
->         interrupts = <61>;
->  };
-> --
-> 1.8.4
->
+T24gU3VuLCBNYXIgOCwgMjAxNSBhdCAxMDowNSBQTSwgQXJuZCBCZXJnbWFubiA8YXJuZEBhcm5k
+Yi5kZT4gd3JvdGU6Cj4gQVJNIHJhbmRjb25maWcgYnVpbGQgdGVzdHMgZm91bmQgYSBuZXcgZXJy
+b3IgZm9yIGNvbmZpZ3VyYXRpb25zCj4gd2l0aCBDT01NT05fQ0xLIGRpc2FibGVkIGJ1dCBIQVNf
+Q0xLIHNlbGVjdGVkIGJ5IHRoZSBwbGF0Zm9ybToKPgo+IEVSUk9SOiAiY2xrX2lzX21hdGNoIiBb
+c291bmQvc29jL2ZzbC9zbmQtc29jLWZzbC1zcGRpZi5rb10gdW5kZWZpbmVkIQo+Cj4gVGhpcyBt
+b3ZlcyB0aGUgZGVjbGFyYXRpb24gYXJvdW5kLCBzbyB0aGlzIGNhc2UgaXMgY292ZXJlZAo+IGJ5
+IHRoZSBleGlzdGluZyBzdGF0aWMgaW5saW5lIGhlbHBlciBmdW5jdGlvbi4KPgo+IFNpZ25lZC1v
+ZmYtYnk6IEFybmQgQmVyZ21hbm4gPGFybmRAYXJuZGIuZGU+Cj4gRml4ZXM6IGM2OWUxODJlNTFk
+ODkgKCJjbGs6IGludHJvZHVjZSBjbGtfaXNfbWF0Y2giKQoKRllJLCB0aGlzIGFsc28gaGFwcGVu
+cyBmb3Igc2gvYWxsbW9kY29uZmlnCmh0dHA6Ly9raXNza2IuZWxsZXJtYW4uaWQuYXUva2lzc2ti
+L2J1aWxkcmVzdWx0LzEyMzc5ODg0LwoKR3J7b2V0amUsZWV0aW5nfXMsCgogICAgICAgICAgICAg
+ICAgICAgICAgICBHZWVydAoKLS0KR2VlcnQgVXl0dGVyaG9ldmVuIC0tIFRoZXJlJ3MgbG90cyBv
+ZiBMaW51eCBiZXlvbmQgaWEzMiAtLSBnZWVydEBsaW51eC1tNjhrLm9yZwoKSW4gcGVyc29uYWwg
+Y29udmVyc2F0aW9ucyB3aXRoIHRlY2huaWNhbCBwZW9wbGUsIEkgY2FsbCBteXNlbGYgYSBoYWNr
+ZXIuIEJ1dAp3aGVuIEknbSB0YWxraW5nIHRvIGpvdXJuYWxpc3RzIEkganVzdCBzYXkgInByb2dy
+YW1tZXIiIG9yIHNvbWV0aGluZyBsaWtlIHRoYXQuCiAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgLS0gTGludXMgVG9ydmFsZHMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJl
+ZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5m
+by9kcmktZGV2ZWwK
