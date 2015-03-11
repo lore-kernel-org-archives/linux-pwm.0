@@ -1,7 +1,7 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCH] clk: provide clk_is_match() dummy for non-common clk
-Date: Tue, 10 Mar 2015 22:42:54 +0100
-Message-ID: <CAMuHMdWvaO-qEohYX=DNybR1=1d4me=FHO8Rj-eEn2OgAKaPgg@mail.gmail.com>
+Date: Wed, 11 Mar 2015 08:09:49 +0100
+Message-ID: <20150311070949.GH952@pengutronix.de>
 References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
  <1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
  <20150225172757.421.43718@quantum> <8682755.oK0Ae34OOP@wuerfel>
@@ -9,6 +9,7 @@ Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
 In-Reply-To: <8682755.oK0Ae34OOP@wuerfel>
 List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
@@ -20,26 +21,18 @@ List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
 Errors-To: dri-devel-bounces@lists.freedesktop.org
 Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: Arnd Bergmann <arnd@arndb.de>
-Cc: linux-pwm@vger.kernel.org, ALSA Development Mailing List <alsa-devel@alsa-project.org>, Mike Turquette <mturquette@linaro.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, DRI Development <dri-devel@lists.freedesktop.org>, Mark Brown <broonie@kernel.org>, Sascha Hauer <kernel@pengutronix.de>, Russell King <linux@arm.linux.org.uk>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, Mike Turquette <mturquette@linaro.org>, linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>, kernel@pengutronix.de, Russell King <linux@arm.linux.org.uk>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gU3VuLCBNYXIgOCwgMjAxNSBhdCAxMDowNSBQTSwgQXJuZCBCZXJnbWFubiA8YXJuZEBhcm5k
-Yi5kZT4gd3JvdGU6Cj4gQVJNIHJhbmRjb25maWcgYnVpbGQgdGVzdHMgZm91bmQgYSBuZXcgZXJy
-b3IgZm9yIGNvbmZpZ3VyYXRpb25zCj4gd2l0aCBDT01NT05fQ0xLIGRpc2FibGVkIGJ1dCBIQVNf
-Q0xLIHNlbGVjdGVkIGJ5IHRoZSBwbGF0Zm9ybToKPgo+IEVSUk9SOiAiY2xrX2lzX21hdGNoIiBb
-c291bmQvc29jL2ZzbC9zbmQtc29jLWZzbC1zcGRpZi5rb10gdW5kZWZpbmVkIQo+Cj4gVGhpcyBt
-b3ZlcyB0aGUgZGVjbGFyYXRpb24gYXJvdW5kLCBzbyB0aGlzIGNhc2UgaXMgY292ZXJlZAo+IGJ5
-IHRoZSBleGlzdGluZyBzdGF0aWMgaW5saW5lIGhlbHBlciBmdW5jdGlvbi4KPgo+IFNpZ25lZC1v
-ZmYtYnk6IEFybmQgQmVyZ21hbm4gPGFybmRAYXJuZGIuZGU+Cj4gRml4ZXM6IGM2OWUxODJlNTFk
-ODkgKCJjbGs6IGludHJvZHVjZSBjbGtfaXNfbWF0Y2giKQoKRllJLCB0aGlzIGFsc28gaGFwcGVu
-cyBmb3Igc2gvYWxsbW9kY29uZmlnCmh0dHA6Ly9raXNza2IuZWxsZXJtYW4uaWQuYXUva2lzc2ti
-L2J1aWxkcmVzdWx0LzEyMzc5ODg0LwoKR3J7b2V0amUsZWV0aW5nfXMsCgogICAgICAgICAgICAg
-ICAgICAgICAgICBHZWVydAoKLS0KR2VlcnQgVXl0dGVyaG9ldmVuIC0tIFRoZXJlJ3MgbG90cyBv
-ZiBMaW51eCBiZXlvbmQgaWEzMiAtLSBnZWVydEBsaW51eC1tNjhrLm9yZwoKSW4gcGVyc29uYWwg
-Y29udmVyc2F0aW9ucyB3aXRoIHRlY2huaWNhbCBwZW9wbGUsIEkgY2FsbCBteXNlbGYgYSBoYWNr
-ZXIuIEJ1dAp3aGVuIEknbSB0YWxraW5nIHRvIGpvdXJuYWxpc3RzIEkganVzdCBzYXkgInByb2dy
-YW1tZXIiIG9yIHNvbWV0aGluZyBsaWtlIHRoYXQuCiAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgLS0gTGludXMgVG9ydmFsZHMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJl
-ZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5m
-by9kcmktZGV2ZWwK
+SGVsbG8sIAoKT24gU3VuLCBNYXIgMDgsIDIwMTUgYXQgMTA6MDU6MjlQTSArMDEwMCwgQXJuZCBC
+ZXJnbWFubiB3cm90ZToKPiArc3RhdGljIGlubGluZSBib29sIGNsa19pc19tYXRjaChzdHJ1Y3Qg
+Y2xrICpwLCBzdHJ1Y3QgY2xrICpxKQo+ICt7Cj4gKwlyZXR1cm4gcCA9PSBxID8gdHJ1ZSA6IGZh
+bHNlOwpPSywgdGhpcyBpcyBvbmx5IGEgbW92ZSwgYnV0IEkgd29uZGVyIHdoeSBSdXNzZWxsJ3Mg
+Y29tbWVudCB0aGF0IHRoaXMgaXMKZXF1aXZhbGVudCB0byB0aGUgZWFzaWVyCgoJcmV0dXJuIHAg
+PT0gcTsKCndhc24ndCBhZGRyZXNzZWQ/IQoKQmVzdCByZWdhcmRzClV3ZQoKLS0gClBlbmd1dHJv
+bml4IGUuSy4gICAgICAgICAgICAgICAgICAgICAgICAgICB8IFV3ZSBLbGVpbmUtS8O2bmlnICAg
+ICAgICAgICAgfApJbmR1c3RyaWFsIExpbnV4IFNvbHV0aW9ucyAgICAgICAgICAgICAgICAgfCBo
+dHRwOi8vd3d3LnBlbmd1dHJvbml4LmRlLyAgfApfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0
+cy5mcmVlZGVza3RvcC5vcmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xp
+c3RpbmZvL2RyaS1kZXZlbAo=
