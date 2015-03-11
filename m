@@ -1,78 +1,74 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: mxs: fix period divider computation
-Date: Wed, 11 Mar 2015 11:57:30 +0100
-Message-ID: <20150311105729.GD22149@ulmo.nvidia.com>
-References: <1424264794-12167-1-git-send-email-ghug@induct.be>
- <20150302123206.GD3040@dragon>
+Subject: Re: [PATCH] pwm: atmel-hlcdc: add errata handling for sama5d4
+Date: Wed, 11 Mar 2015 12:00:56 +0100
+Message-ID: <20150311110055.GE22149@ulmo.nvidia.com>
+References: <1424447898-2791-1-git-send-email-nicolas.ferre@atmel.com>
+ <20150220170613.424edbb5@bbrezillon>
+ <54E7603A.5010309@atmel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="DrWhICOqskFTAXiy"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f49.google.com ([209.85.220.49]:33901 "EHLO
-	mail-pa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750975AbbCKK5f (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 11 Mar 2015 06:57:35 -0400
+	protocol="application/pgp-signature"; boundary="y2zxS2PfCDLh6JVG"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20150302123206.GD3040@dragon>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <54E7603A.5010309@atmel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Shawn Guo <shawn.guo@linaro.org>
-Cc: Gaetan Hug <ghug@induct.be>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, fabio.estevam@freescale.com
 
 
---DrWhICOqskFTAXiy
-Content-Type: text/plain; charset=us-ascii
+--y2zxS2PfCDLh6JVG
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 02, 2015 at 08:32:09PM +0800, Shawn Guo wrote:
-> On Wed, Feb 18, 2015 at 02:06:34PM +0100, Gaetan Hug wrote:
-> > The driver computes which clock divider it sould be using from the
-> > requested period. This computation assumes that the link between the
-> > register value and the actual divider value is raising 2 to the power of
-> > the registry value.
+On Fri, Feb 20, 2015 at 05:26:34PM +0100, Nicolas Ferre wrote:
+> Le 20/02/2015 17:06, Boris Brezillon a =C3=A9crit :
+> > Hi Nicolas,
 > >=20
-> >     div =3D 1 << regvalue
+> > On Fri, 20 Feb 2015 16:58:18 +0100
+> > Nicolas Ferre <nicolas.ferre@atmel.com> wrote:
 > >=20
-> > This is true only for the first 5 values out of 8. Next values are 64,
-> > 256 and, 1024 - instead of 32, 64, 128.
->=20
-> Just checked i.MX28 Reference Manual, and yes, this is the case.
->=20
-> > This affects only the users requesting a period > 0.04369s.
+> >> sama5d4 SoC also has an errata on the HLCDC PWM. It is the same as the=
+ sama5d3
+> >> that is forbidding the use of div1 prescaler.
+> >>
+> >> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 > >=20
-> > Replace the computation with a look-up table.
+> > The "atmel,sama5d4-hlcdc" compatible string is not yet documented in
+> > the atmel-hlcdc MFD driver binding, but this shouldn't hurt, so
 >=20
-> Your SoB is missing here.  Otherwise,
+> Yes, I'll document it when I'm submitting your patches that add the
+> compatibility strings to the drivers/mfd/atmel-hlcdc.c. (with
+> atmel,at91sam9x5-hlcdc as well).
 >=20
-> Acked-by: Shawn Guo <shawn.guo@linaro.org>
+> > Acked-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 
-Gaetan,
+I'll take your word on it that this will be documented, so I've applied
+this.
 
-can you resend with your Signed-off-by added? Or at least provide it
-here? I can't really apply this without one.
-
+Thanks,
 Thierry
 
---DrWhICOqskFTAXiy
+--y2zxS2PfCDLh6JVG
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJVAB+ZAAoJEN0jrNd/PrOhWDIP/RDOn5SRwvT9wtmUezZqX2d0
-bo+Mgcoz3gsj6hLmSLYY3OH0fyYIxkEvi1h9nH+kFB5/uYj+1e6IMIGIWMhj9xBk
-PY7AWPIf/ieXdc7nsq27lKhKXnTd5V5SvkSxD5uRYi6lWi4ThN/yfGCApwYdbhd9
-M/QTzgOYhb45ERtoh+m0PnLW8/u4IXxf0Mmga89p6ovTcr2p6RpbK2vv1mm1egQ/
-xyI2OiZMQv/FZsOY6+5/uqzn+2wwOjdQP5Gchl8GISFG0s0DLe99nBej0aM0Y7JS
-oibitiWXVXbytkmoGImXzWNxJ0nVli5CpBxE1JAHlZVGDjvZiSddOpI4BvJYSIop
-zaT1BwjDHS4mBIbbRQ7ap13Ifq7rcOlB675mMjBcXJ3IXHf6MmuQxC/B2N80GR0X
-GiRoeZ0UfWPQmE8dGxsf/D5tnwrkdmsxyjQzBoU6v/3z3YBN+804dWYh4cBMAXVe
-ztNMNYUc9eGrTW0iSZVCSCQfZNpa5hLA4HxiLtmNtFpFMpBU1hXGtSb+adM1CgLE
-qe36M4i/QQJj2tQAYzWzFyswKwdtfUZV9DD6FUK9pIF0DvLG2ynduf+0j2G5O5K5
-gbIdYt/oSwqpla0QqoEoFyl2V5QQxgxFJpuIe8pWUYsSnh29hqsRf96MPIxo+rcY
-kAJtB+yhM3LNbR0DZFQB
-=zGgz
+iQIcBAABCAAGBQJVACBmAAoJEN0jrNd/PrOhvNsP/AphKx3yD1lNj9s3cHEpP1Jp
+niZYstQe+70qb7KJrZMhq2xim2MysHRisfHpo7URegExDQQNZuTiaZVJQRwhtEIQ
+g1ySaMkl46g0ByYhqyAMKnwbyqbl5LRx9zqM5PMff2GsG8mBC1S8XjRejuqnOi4j
+MrcKDZfhAtbpbHH8Eu9Q/Y2T0joiWlsVDGnSAk93fcySGdJYBxt0hFt2g0RnoPo6
+avQ026qVxj/3GbOgfwtwtrZrrDg5M69MgqO7RGcQytyORRP03t/6+g6pyKO/KKQl
++jmxj3Jn8bZ8peZ3S+aj92hvImjQjPNH0ZFHsKeARZFiZrdK5JSjIFzJ5pLhXQwY
++O5o/ctaYai5jhTd+2pvdJGTxPM7x92nNOIV8/2klB7Zjp8/7NnLgyJEBTRMdYfc
+e5vIvDmSPoL549UxspgSH56jThfrbBo1P+IK/YQjA57aJdIQay7fazOSaryqr6R8
+kJEb0G7czTv1JyQyt0Oos/WA6nIZwtD82l87FPqGLngj2JqOt5Qbw52Jq7CeIw2W
+JbGUXh2CWq8mnshUZg3OiInTc2DNRXtWl4qKoJWOFNHTJ7K60CJo47Got8okBWaJ
+skLN33yt6DL1/M9H67AuPjkwYMPfkGGIyrvKKlACaBw96xQfGiL4/6iC++vgzLzv
+WNHjxxrgRvcqorF6eXR4
+=o1Bo
 -----END PGP SIGNATURE-----
 
---DrWhICOqskFTAXiy--
+--y2zxS2PfCDLh6JVG--
