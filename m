@@ -1,50 +1,68 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH] clk: provide clk_is_match() dummy for non-common clk
-Date: Wed, 11 Mar 2015 12:17:55 +0100
-Message-ID: <20150311111755.GI952@pengutronix.de>
-References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
- <1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
- <20150225172757.421.43718@quantum> <8682755.oK0Ae34OOP@wuerfel>
- <20150311102208.GX8656@n2100.arm.linux.org.uk>
+From: Gaetan Hug <ghug@induct.be>
+Subject: [PATCH RESEND] pwm: mxs: fix period divider computation
+Date: Wed, 11 Mar 2015 13:08:12 +0100
+Message-ID: <1426075692-19340-1-git-send-email-ghug@induct.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20150311102208.GX8656@n2100.arm.linux.org.uk>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, Mike Turquette <mturquette@linaro.org>, linux-serial@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-db3on0117.outbound.protection.outlook.com ([157.55.234.117]:51072
+	"EHLO emea01-db3-obe.outbound.protection.outlook.com"
+	rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+	id S1750960AbbCKMIe (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Wed, 11 Mar 2015 08:08:34 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, shawn.guo@linaro.org, fabio.estevam@freescale.com, Gaetan Hug <ghug@induct.be>
 
-SGV5IFJ1c3NlbGwsCgpPbiBXZWQsIE1hciAxMSwgMjAxNSBhdCAxMDoyMjowOUFNICswMDAwLCBS
-dXNzZWxsIEtpbmcgLSBBUk0gTGludXggd3JvdGU6Cj4gT24gU3VuLCBNYXIgMDgsIDIwMTUgYXQg
-MTA6MDU6MjlQTSArMDEwMCwgQXJuZCBCZXJnbWFubiB3cm90ZToKPiA+IEFSTSByYW5kY29uZmln
-IGJ1aWxkIHRlc3RzIGZvdW5kIGEgbmV3IGVycm9yIGZvciBjb25maWd1cmF0aW9ucwo+ID4gd2l0
-aCBDT01NT05fQ0xLIGRpc2FibGVkIGJ1dCBIQVNfQ0xLIHNlbGVjdGVkIGJ5IHRoZSBwbGF0Zm9y
-bToKPiA+IAo+ID4gRVJST1I6ICJjbGtfaXNfbWF0Y2giIFtzb3VuZC9zb2MvZnNsL3NuZC1zb2Mt
-ZnNsLXNwZGlmLmtvXSB1bmRlZmluZWQhCj4gPiAKPiA+IFRoaXMgbW92ZXMgdGhlIGRlY2xhcmF0
-aW9uIGFyb3VuZCwgc28gdGhpcyBjYXNlIGlzIGNvdmVyZWQKPiA+IGJ5IHRoZSBleGlzdGluZyBz
-dGF0aWMgaW5saW5lIGhlbHBlciBmdW5jdGlvbi4KPiA+IAo+ID4gU2lnbmVkLW9mZi1ieTogQXJu
-ZCBCZXJnbWFubiA8YXJuZEBhcm5kYi5kZT4KPiA+IEZpeGVzOiBjNjllMTgyZTUxZDg5ICgiY2xr
-OiBpbnRyb2R1Y2UgY2xrX2lzX21hdGNoIikKPiA+IC0tLS0KPiA+IEJUVywgd2UgaGF2ZSBhIHBy
-ZWV4aXN0aW5nIHByb2JsZW0gaW4gY2xrX2dldF9wYXJlbnQsCj4gPiBjbGtfcm91bmRfcmF0ZSBh
-bmQgY2xrX3NldF9wYXJlbnQsIHdoaWNoIEkndmUgd29ya2VkIGFyb3VuZCBpbgo+ID4gbXkgcmFu
-ZGNvbmZpZyBidWlsZHMgc28gZmFyLiBTaG91bGQgd2UgZG8gdGhhdCB0aGUgc2FtZSB3YXk/Cj4g
-Cj4gTkFLLCBhcyBVd2UgcG9pbnRzIG91dCwgeW91IGRpZG4ndCBhZGRyZXNzIG15IGNvbW1lbnQu
-CllvdSBjb21tZW50ZWQgb24gdGhlIHBhdGNoIHRoYXQgaXMgYzY5ZTE4MmU1MWQ4ICgiY2xrOiBp
-bnRyb2R1Y2UKY2xrX2lzX21hdGNoIikgbm93IGluIG5leHQuIEFybmQganVzdCBtb3ZlZCB0aGlz
-IGFyb3VuZC4KCkJlc3QgcmVnYXJkcwpVd2UKCi0tIApQZW5ndXRyb25peCBlLksuICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgfCBVd2UgS2xlaW5lLUvDtm5pZyAgICAgICAgICAgIHwKSW5kdXN0
-cmlhbCBMaW51eCBTb2x1dGlvbnMgICAgICAgICAgICAgICAgIHwgaHR0cDovL3d3dy5wZW5ndXRy
-b25peC5kZS8gIHwKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
-Cmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+The driver computes which clock divider it sould be using from the
+requested period. This computation assumes that the link between the
+register value and the actual divider value is raising 2 to the power of
+the registry value.
+
+    div = 1 << regvalue
+
+This is true only for the first 5 values out of 8. Next values are 64,
+256 and, 1024 - instead of 32, 64, 128.
+This affects only the users requesting a period > 0.04369s.
+
+Replace the computation with a look-up table.
+
+Signed-off-by: Gaetan Hug <ghug@induct.be>
+Acked-by: Shawn Guo <shawn.guo@linaro.org>
+---
+ drivers/pwm/pwm-mxs.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
+index f75ecb0..c65e183 100644
+--- a/drivers/pwm/pwm-mxs.c
++++ b/drivers/pwm/pwm-mxs.c
+@@ -35,6 +35,8 @@
+ #define  PERIOD_CDIV(div)	(((div) & 0x7) << 20)
+ #define  PERIOD_CDIV_MAX	8
+ 
++static unsigned const int cdiv[PERIOD_CDIV_MAX] = {1, 2, 4, 8, 16, 64, 256, 1024};
++
+ struct mxs_pwm_chip {
+ 	struct pwm_chip chip;
+ 	struct clk *clk;
+@@ -54,13 +56,13 @@ static int mxs_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	rate = clk_get_rate(mxs->clk);
+ 	while (1) {
+-		c = rate / (1 << div);
++		c = rate / cdiv[div];
+ 		c = c * period_ns;
+ 		do_div(c, 1000000000);
+ 		if (c < PERIOD_PERIOD_MAX)
+ 			break;
+ 		div++;
+-		if (div > PERIOD_CDIV_MAX)
++		if (div >= PERIOD_CDIV_MAX)
+ 			return -EINVAL;
+ 	}
+ 
+-- 
+1.7.10.4
+
