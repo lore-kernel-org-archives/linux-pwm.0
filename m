@@ -1,82 +1,48 @@
-From: Mika Westerberg <mika.westerberg@intel.com>
-Subject: Re: [PATCH] pwm: update lpss pwm driver to support Broxton platform
-Date: Wed, 11 Mar 2015 12:00:45 +0200
-Message-ID: <20150311100045.GK1563@lahna.fi.intel.com>
-References: <1426094251-126816-1-git-send-email-qipeng.zha@intel.com>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] clk: provide clk_is_match() dummy for
+	non-common clk
+Date: Wed, 11 Mar 2015 10:22:09 +0000
+Message-ID: <20150311102208.GX8656@n2100.arm.linux.org.uk>
+References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
+ <1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
+ <20150225172757.421.43718@quantum> <8682755.oK0Ae34OOP@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:50303 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751488AbbCKKC4 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 11 Mar 2015 06:02:56 -0400
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
 Content-Disposition: inline
-In-Reply-To: <1426094251-126816-1-git-send-email-qipeng.zha@intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <8682755.oK0Ae34OOP@wuerfel>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: alsa-devel-bounces@alsa-project.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, Mike Turquette <mturquette@linaro.org>, kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-serial@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: "qipeng.zha" <qipeng.zha@intel.com>
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, jason.cj.chen@intel.com
 
-On Thu, Mar 12, 2015 at 01:17:31AM +0800, qipeng.zha wrote:
-> From: "qipeng.zha" <qipeng.zha@intel.com>
+On Sun, Mar 08, 2015 at 10:05:29PM +0100, Arnd Bergmann wrote:
+> ARM randconfig build tests found a new error for configurations
+> with COMMON_CLK disabled but HAS_CLK selected by the platform:
 > 
-> Add pci device id for Broxton platform.
+> ERROR: "clk_is_match" [sound/soc/fsl/snd-soc-fsl-spdif.ko] undefined!
 > 
-> Signed-off-by: qipeng.zha <qipeng.zha@intel.com>
-> ---
->  drivers/pwm/pwm-lpss-pci.c | 2 ++
->  drivers/pwm/pwm-lpss.c     | 6 ++++++
->  drivers/pwm/pwm-lpss.h     | 1 +
->  3 files changed, 9 insertions(+)
+> This moves the declaration around, so this case is covered
+> by the existing static inline helper function.
 > 
-> diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
-> index cf20d2b..ab6c84e 100644
-> --- a/drivers/pwm/pwm-lpss-pci.c
-> +++ b/drivers/pwm/pwm-lpss-pci.c
-> @@ -48,6 +48,8 @@ static const struct pci_device_id pwm_lpss_pci_ids[] = {
->  	{ PCI_VDEVICE(INTEL, 0x0f09), (unsigned long)&pwm_lpss_byt_info},
->  	{ PCI_VDEVICE(INTEL, 0x2288), (unsigned long)&pwm_lpss_bsw_info},
->  	{ PCI_VDEVICE(INTEL, 0x2289), (unsigned long)&pwm_lpss_bsw_info},
-> +	{ PCI_VDEVICE(INTEL, 0x0AC8), (unsigned long)&pwm_lpss_bxt_info},
-> +	{ PCI_VDEVICE(INTEL, 0x1AC8), (unsigned long)&pwm_lpss_bxt_info},
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Fixes: c69e182e51d89 ("clk: introduce clk_is_match")
+> ----
+> BTW, we have a preexisting problem in clk_get_parent,
+> clk_round_rate and clk_set_parent, which I've worked around in
+> my randconfig builds so far. Should we do that the same way?
 
-Please keep these sorted by device id.
+NAK, as Uwe points out, you didn't address my comment.
 
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(pci, pwm_lpss_pci_ids);
-> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-> index e979825..0d37592 100644
-> --- a/drivers/pwm/pwm-lpss.c
-> +++ b/drivers/pwm/pwm-lpss.c
-> @@ -47,6 +47,12 @@ const struct pwm_lpss_boardinfo pwm_lpss_bsw_info = {
->  };
->  EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
->  
-> +/* Broxton */
-> +const struct pwm_lpss_boardinfo pwm_lpss_bxt_info = {
-> +	.clk_rate = 19200000
-> +};
-> +EXPORT_SYMBOL_GPL(pwm_lpss_bxt_info);
-
-I wonder if we can just reuse pwm_lpss_bsw_info for now as the clock
-rate is the same, no?
-
-> +
->  static inline struct pwm_lpss_chip *to_lpwm(struct pwm_chip *chip)
->  {
->  	return container_of(chip, struct pwm_lpss_chip, chip);
-> diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-> index aa041bb..af78137 100644
-> --- a/drivers/pwm/pwm-lpss.h
-> +++ b/drivers/pwm/pwm-lpss.h
-> @@ -24,6 +24,7 @@ struct pwm_lpss_boardinfo {
->  
->  extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
->  extern const struct pwm_lpss_boardinfo pwm_lpss_bsw_info;
-> +extern const struct pwm_lpss_boardinfo pwm_lpss_bxt_info;
->  
->  struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
->  				     const struct pwm_lpss_boardinfo *info);
-> -- 
-> 1.8.3.2
+-- 
+FTTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps up
+according to speedtest.net.
