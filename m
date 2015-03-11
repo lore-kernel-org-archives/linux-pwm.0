@@ -1,88 +1,66 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH RESEND] pwm: mxs: fix period divider computation
-Date: Wed, 11 Mar 2015 13:13:03 +0100
-Message-ID: <20150311121302.GA23668@ulmo.nvidia.com>
-References: <1426075692-19340-1-git-send-email-ghug@induct.be>
+From: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Subject: Re: [PATCH] clk: provide clk_is_match() dummy for non-common clk
+Date: Wed, 11 Mar 2015 12:29:05 +0000
+Message-ID: <20150311122905.GY8656@n2100.arm.linux.org.uk>
+References: <1424876018-17852-1-git-send-email-shawn.guo@linaro.org>
+ <1424876018-17852-2-git-send-email-shawn.guo@linaro.org>
+ <20150225172757.421.43718@quantum>
+ <8682755.oK0Ae34OOP@wuerfel>
+ <20150311102208.GX8656@n2100.arm.linux.org.uk>
+ <20150311111755.GI952@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="IS0zKkzwUGydFO0o"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f44.google.com ([209.85.220.44]:44510 "EHLO
-	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751390AbbCKMNI (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 11 Mar 2015 08:13:08 -0400
+Received: from pandora.arm.linux.org.uk ([78.32.30.218]:37636 "EHLO
+	pandora.arm.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750707AbbCKM30 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 11 Mar 2015 08:29:26 -0400
 Content-Disposition: inline
-In-Reply-To: <1426075692-19340-1-git-send-email-ghug@induct.be>
+In-Reply-To: <20150311111755.GI952@pengutronix.de>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Gaetan Hug <ghug@induct.be>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, shawn.guo@linaro.org, fabio.estevam@freescale.com
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Mike Turquette <mturquette@linaro.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, linux-pwm@vger.kernel.org, alsa-devel@alsa-project.org, kernel@pengutronix.de, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Stephen Boyd <sboyd@codeaurora.org>, dri-devel@lists.freedesktop.org, Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-serial@vger.kernel.org, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
 
-
---IS0zKkzwUGydFO0o
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Mar 11, 2015 at 01:08:12PM +0100, Gaetan Hug wrote:
-> The driver computes which clock divider it sould be using from the
-> requested period. This computation assumes that the link between the
-> register value and the actual divider value is raising 2 to the power of
-> the registry value.
+On Wed, Mar 11, 2015 at 12:17:55PM +0100, Uwe Kleine-K=F6nig wrote:
+> Hey Russell,
 >=20
->     div =3D 1 << regvalue
->=20
-> This is true only for the first 5 values out of 8. Next values are 64,
-> 256 and, 1024 - instead of 32, 64, 128.
-> This affects only the users requesting a period > 0.04369s.
->=20
-> Replace the computation with a look-up table.
->=20
-> Signed-off-by: Gaetan Hug <ghug@induct.be>
-> Acked-by: Shawn Guo <shawn.guo@linaro.org>
-> ---
->  drivers/pwm/pwm-mxs.c |    6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+> On Wed, Mar 11, 2015 at 10:22:09AM +0000, Russell King - ARM Linux wr=
+ote:
+> > On Sun, Mar 08, 2015 at 10:05:29PM +0100, Arnd Bergmann wrote:
+> > > ARM randconfig build tests found a new error for configurations
+> > > with COMMON_CLK disabled but HAS_CLK selected by the platform:
+> > >=20
+> > > ERROR: "clk_is_match" [sound/soc/fsl/snd-soc-fsl-spdif.ko] undefi=
+ned!
+> > >=20
+> > > This moves the declaration around, so this case is covered
+> > > by the existing static inline helper function.
+> > >=20
+> > > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> > > Fixes: c69e182e51d89 ("clk: introduce clk_is_match")
+> > > ----
+> > > BTW, we have a preexisting problem in clk_get_parent,
+> > > clk_round_rate and clk_set_parent, which I've worked around in
+> > > my randconfig builds so far. Should we do that the same way?
+> >=20
+> > NAK, as Uwe points out, you didn't address my comment.
+> You commented on the patch that is c69e182e51d8 ("clk: introduce
+> clk_is_match") now in next. Arnd just moved this around.
 
-Applied, though I made some last-minute changes, see below.
+*Sigh*
 
-> diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
-> index f75ecb0..c65e183 100644
-> --- a/drivers/pwm/pwm-mxs.c
-> +++ b/drivers/pwm/pwm-mxs.c
-> @@ -35,6 +35,8 @@
->  #define  PERIOD_CDIV(div)	(((div) & 0x7) << 20)
->  #define  PERIOD_CDIV_MAX	8
-> =20
-> +static unsigned const int cdiv[PERIOD_CDIV_MAX] =3D {1, 2, 4, 8, 16, 64,=
- 256, 1024};
+Mike - please remove this commit until proper kernel patch process is
+honoured.  We'll have some order here, and mutual respect of fellow
+kernel developers, rather than people selectively ignoring people.
+Yes, I realise that it fixes a bug, but it's utterly disgusting that
+comments on a patch are ignored and it's just picked up irrespective
+of comments being addressed.
 
-I turned this into static const unsigned int, which is the more
-canonical form and wrapped this over multiple lines so as not to exceed
-the 80-character limit.
+If you don't like that, bloody well do a better job.
 
-Thanks,
-Thierry
-
---IS0zKkzwUGydFO0o
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJVADFLAAoJEN0jrNd/PrOh7icP/A9sZtwNKrA4UeAtaba3e84X
-V06TuD6QPheNcBEq2wnn+iTLf/v8rU8jn8oOcboFjvYdFWpx6/WqNBVCzzhD8+87
-qnYApghNzGfLz5BtjZA+zQEvc2oc02xr+X/tB8CKA4HTsCl3LXzLOZE84aPHvnFh
-9pkyk5mRFbcBpjSfY64l7hWkIDsfCiehPSOxeSo+zSHvNCoPSAOmGUxaW66mIJKF
-H3ogXURmgtKs60X3f2Ba14hjuu3kOk2pGnzFKftBecGezh1YxcxfDarNKCOHAo0M
-Z/GyVIrDs5+d6d4QgYTK/uomWF2AY/qThWlul3heWnqd4jLWT+RoHOG9jgFsti60
-npvlg2p3405WOrdb5RETrxPd3/AInTVe+9Mm7aaorg+eXBUXzxwL40qc2pU9BimZ
-EJ999qDnXM272LrWyxg2QUhqqSRhzSVzLwpgIbwL6lZXWraVjeiJias3AiHTHj+A
-WnvubSQKHAZY8XlxjqnI+xkxMxbH9emOWQnbonNn6PRvPZZf/fl5LEVHSpj78W8X
-sdTtZKHghRp6afJofAXsv+CaLAUo7zYKWYdxPWM43rHlM/eqDtI6vFARP0GgkWWz
-+Iz9/SAuasrOKlSRTL8R6LOHvFxCXm3Z1UWKr8LZurDXEloa9Wn208X62+t+SJD0
-xp9SvTaYvegLKj7exDJT
-=WE1a
------END PGP SIGNATURE-----
-
---IS0zKkzwUGydFO0o--
+--=20
+=46TTC broadband for 0.8mile line: currently at 10.5Mbps down 400kbps u=
+p
+according to speedtest.net.
