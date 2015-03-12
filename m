@@ -1,62 +1,84 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] backlight: pwm: handle EPROBE_DEFER while requesting the
- PWM
-Date: Thu, 12 Mar 2015 08:49:02 +0100
-Message-ID: <20150312074859.GA30344@ulmo.nvidia.com>
-References: <1424338214-24236-1-git-send-email-nicolas.ferre@atmel.com>
+Subject: Re: [PATCH] pwm: update lpss pwm driver to support Broxton platform
+Date: Thu, 12 Mar 2015 08:58:36 +0100
+Message-ID: <20150312075835.GC30344@ulmo.nvidia.com>
+References: <1426170508-8273-1-git-send-email-qipeng.zha@intel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="TB36FDmn/VVEgNH/"
+	protocol="application/pgp-signature"; boundary="ghzN8eJ9Qlbqn3iT"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pd0-f172.google.com ([209.85.192.172]:39421 "EHLO
-	mail-pd0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753955AbbCLHtH (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Mar 2015 03:49:07 -0400
+Received: from mail-pd0-f176.google.com ([209.85.192.176]:46676 "EHLO
+	mail-pd0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751470AbbCLH6l (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Mar 2015 03:58:41 -0400
+Received: by pdev10 with SMTP id v10so18042638pde.13
+        for <linux-pwm@vger.kernel.org>; Thu, 12 Mar 2015 00:58:41 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <1424338214-24236-1-git-send-email-nicolas.ferre@atmel.com>
+In-Reply-To: <1426170508-8273-1-git-send-email-qipeng.zha@intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, lee.jones@linaro.org, jg1.han@samsung.com, linux-kernel@vger.kernel.org, Boris BREZILLON <boris.brezillon@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: "qipeng.zha" <qipeng.zha@intel.com>
+Cc: linux-pwm@vger.kernel.org, mika.westerberg@intel.com
 
 
---TB36FDmn/VVEgNH/
+--ghzN8eJ9Qlbqn3iT
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 19, 2015 at 10:30:14AM +0100, Nicolas Ferre wrote:
-> When trying to request the PWM device with devm_pwm_get(), the EPROBE_DEF=
-ER
-> flag is not handled properly. It can lead to the PWM not being found.
+On Thu, Mar 12, 2015 at 10:28:28PM +0800, qipeng.zha wrote:
+> From: "qipeng.zha" <qipeng.zha@intel.com>
 >=20
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-> ---
->  drivers/video/backlight/pwm_bl.c | 4 ++++
->  1 file changed, 4 insertions(+)
+> Add pci device id for Broxton platform.
 
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
+For reference, this should be "PCI" and "ID", but I can fix those up
+while applying.
 
---TB36FDmn/VVEgNH/
+Also, it's customary to include a changelog in subsequent versions of a
+patch, as well as change the subject prefix to include the patch version
+number. That makes it easier for other people to track things.
+
+You can do so using:
+
+	$ git format-patch --subject-prefix=3D'PATCH v2' ...
+
+The changelog typically goes below the --- marker (the one below the
+Signed-off-by line) and would look something like this:
+
+---
+Changes in v2:
+- keep board information table sorted by device ID
+- reuse Braswell board information
+
+Again, no need to resend this time, but something to keep in mind for
+future patches.
+
+> Signed-off-by: qipeng.zha <qipeng.zha@intel.com>
+
+I'd prefer a proper spelling of your name. Would "Qipeng Zha" be
+correct?
+
+Thierry
+
+--ghzN8eJ9Qlbqn3iT
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJVAUTnAAoJEN0jrNd/PrOhNqUQALu+6/C/KKFeliOomDZz+M4V
-x8CuUp8fLmZoKtrlExD/aCse7NFPREVaXZ1kG6Vz+lC4Ly6AJ2zXKadiVrUw63dA
-KGvsTgI5x6XI3VVfsa5jmkvYGhVi9RkHwCuDutTjm+EYTY2v0Zb86JnGKKrCpVYd
-RWEqUPuRroZWptk9TJRW6qHDs9+zTl+2B5rukoKRLwIskwmvyCCTRWLDO/n1tgbr
-WeWFQgDepEKLj7Ck2TfIpbN+NCNnHSS8nNz1bfXWc3zJy12yJFxFmFhclv78OhX8
-MrkWatL8O2a+O/NcWQiNAojxuXaL5FE/eHUyXL3IME15JluUvp2pQhgTy+cvp1hp
-eg47wV7BSxFbp49ut3E/9ZqG07hnqz+09VcWKcK7wFwL7fXCydBszkg1c8rW/oe4
-UHzTrrbXdCz4dKhyPzP1l4ADdaSsP1IJX8ZkcHT2Ja7THyIQI1w0RxWZVyiWy1td
-VkvOw9cpuEBLOYv5+EFzDQeS00sxxATQz/6FJSsdc1VDc6k+XkYoDzJ0BVghtXUV
-C+6hrRg5kSbktu1W46WaBH8i40/NDDm2gBVUPo+z1A1kzxXUCslkCw61Uhb3s/Nv
-/TdAtnOFJRlwihMGIRKc3cVuHgsOja7y3mVewcTssJsxwWgmmel2Emzuywd/ZNRS
-6Hm0EPvPrqiCltS+DoZb
-=Ifl7
+iQIcBAABCAAGBQJVAUcrAAoJEN0jrNd/PrOhA1kP/iZWMngjPl2aLRdmV8o+7GZX
+ZzQYvM0nY/FmAP2KpHYsE6E8Fqth8HvdlRO4HJrKOk2Jlo5Bsgx3v0+FrHjZRseo
+gZbk/8FRYCBuAtcbK17HT6KKXYQXiSDxeKHZCIO1lXF6ALiREe20fUT73wofUOj0
+w0Xrl7wptkgILmMEgVZjjLIMHFVxsrVM7y7eFrbLe8UdnoM0aWHZzXVTjZu5I02V
+zcgd7KU8iiqq689VbF1pFR4y1B0CP70zqdX1HTHwV7Gsk7QpNAN6dkzey7IBxLFd
++uTNLDJmI/ZjuGWnqIT8HH8e04jPQ7fk3cvTN8fM5FoYK4JIXi26i9n21jhaPqgV
+WrkI2owJvOJLt8evl+/EF+z8qtBxS9a6VVgAu4XK4Sfo5a+VPLvqWwn9ynTOLC8U
+EIqqtl0ECkWekRhr8+b77p0GfS2kPgLl6Wixf0ODInCMW5aAslKKmWmCgHv0qGAT
+39c5nluIgULfkbuERjDnY14egjclaFJNzJRwlnxH0x+N68eEnbXouBrKfvflo3WA
+iqv8Hd7Akhbpj085L3HCnReIoeeM1i2AMsEi5Up2ILt+85C8ocY0YUyMMuJsO0L/
+yY1+7/stN53BxmpixeBfgXHkLHPq5XKmtSFNjAeSKofYAyu3A0U8qNjG7ujCg3RO
+l/MFNxGHRfSVMSFBw/j5
+=otx1
 -----END PGP SIGNATURE-----
 
---TB36FDmn/VVEgNH/--
+--ghzN8eJ9Qlbqn3iT--
