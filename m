@@ -1,40 +1,63 @@
-From: Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH v5] clk: Add PWM clock driver
-Date: Thu, 12 Mar 2015 11:04:17 +0100
-Message-ID: <1426154657.14455.13.camel@pengutronix.de>
-References: <1423855132-20939-1-git-send-email-p.zabel@pengutronix.de>
+From: "Zha, Qipeng" <qipeng.zha@intel.com>
+Subject: RE: [PATCH] pwm: update lpss pwm driver to support Broxton platform
+Date: Fri, 13 Mar 2015 00:51:35 +0000
+Message-ID: <C6287702A945AC47BE5DB5DFD4B5C6DD0185D774@SHSMSX104.ccr.corp.intel.com>
+References: <1426170508-8273-1-git-send-email-qipeng.zha@intel.com>
+ <20150312075835.GC30344@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1423855132-20939-1-git-send-email-p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Mike Turquette <mturquette-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Janusz =?UTF-8?Q?U=C5=BCycki?= <j.uzycki-9tnw74Q4ehaHKKo6LODCOg@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga03.intel.com ([134.134.136.65]:16097 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751391AbbCMAvl convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Mar 2015 20:51:41 -0400
+In-Reply-To: <20150312075835.GC30344@ulmo.nvidia.com>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "Westerberg, Mika" <mika.westerberg@intel.com>
 
-Am Freitag, den 13.02.2015, 20:18 +0100 schrieb Philipp Zabel:
-> Some board designers, when running out of clock output pads, decide to
-> (mis)use PWM output pads to provide a clock to external components.
-> This driver supports this practice by providing an adapter between the
-> PWM and clock bindings in the device tree. As the PWM bindings specify
-> the period in the device tree, this is a fixed clock.
+Thierry
+
+Thank you very much:)
+
+
+Best wishes
+Qipeng
+
+-----Original Message-----
+From: linux-pwm-owner@vger.kernel.org [mailto:linux-pwm-owner@vger.kernel.org] On Behalf Of Thierry Reding
+Sent: Thursday, March 12, 2015 3:59 PM
+To: Zha, Qipeng
+Cc: linux-pwm@vger.kernel.org; Westerberg, Mika
+Subject: Re: [PATCH] pwm: update lpss pwm driver to support Broxton platform
+
+On Thu, Mar 12, 2015 at 10:28:28PM +0800, qipeng.zha wrote:
+> From: "qipeng.zha" <qipeng.zha@intel.com>
 > 
-> Tested-by: Janusz Uzycki <j.uzycki-9tnw74Q4ehaHKKo6LODCOg@public.gmane.org>
-> Signed-off-by: Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-> ---
-> Changes since v4:
-> - Added missing static keywords, as pointed out by Stephen Boyd
-> - Turned to_clk_pwm into an inline function,
-> - added MODULE_AUTHOR/DESCRIPTION/LICENSE,
-> - and fixed PWM spelling issues, as pointed out by Thierry Reding
+> Add pci device id for Broxton platform.
 
-Are there any further changes you'd like me to make to this patch?
+For reference, this should be "PCI" and "ID", but I can fix those up while applying.
 
-regards
-Philipp
+Also, it's customary to include a changelog in subsequent versions of a patch, as well as change the subject prefix to include the patch version number. That makes it easier for other people to track things.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+You can do so using:
+
+	$ git format-patch --subject-prefix='PATCH v2' ...
+
+The changelog typically goes below the --- marker (the one below the Signed-off-by line) and would look something like this:
+
+---
+Changes in v2:
+- keep board information table sorted by device ID
+- reuse Braswell board information
+
+Again, no need to resend this time, but something to keep in mind for future patches.
+
+> Signed-off-by: qipeng.zha <qipeng.zha@intel.com>
+
+I'd prefer a proper spelling of your name. Would "Qipeng Zha" be correct?
+
+Thierry
