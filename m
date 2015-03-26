@@ -1,82 +1,239 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 0/2] leds/pwm: don't call pwm_disable when setting
- brightness
-Date: Wed, 25 Mar 2015 13:00:40 +0100
-Message-ID: <20150325120039.GA16310@ulmo.nvidia.com>
-References: <1423734290-19750-1-git-send-email-u.kleine-koenig@pengutronix.de>
- <20150325101428.GB32677@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="OgqxwSJOaUobr8KG"
-Return-path: <linux-leds-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150325101428.GB32677@pengutronix.de>
-Sender: linux-leds-owner@vger.kernel.org
-To: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, linux-leds@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Andrew Morton <akpm@linux-foundation.org>
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Subject: [RESEND PATCH v5] clk: Add PWM clock driver
+Date: Thu, 26 Mar 2015 09:41:51 +0100
+Message-ID: <1427359311-10183-1-git-send-email-p.zabel@pengutronix.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Mike Turquette <mturquette@linaro.org>, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>
+Cc: =?UTF-8?q?Janusz=20U=C5=BCycki?= <j.uzycki@elproma.com.pl>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
+Some board designers, when running out of clock output pads, decide to
+(mis)use PWM output pads to provide a clock to external components.
+This driver supports this practice by providing an adapter between the
+PWM and clock bindings in the device tree. As the PWM bindings specify
+the period in the device tree, this is a fixed clock.
 
---OgqxwSJOaUobr8KG
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Tested-by: Janusz Uzycki <j.uzycki@elproma.com.pl>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+---
+Changes since v4:
+- Added missing static keywords, as pointed out by Stephen Boyd
+- Turned to_clk_pwm into an inline function,
+- added MODULE_AUTHOR/DESCRIPTION/LICENSE,
+- and fixed PWM spelling issues, as pointed out by Thierry Reding
+---
+ .../devicetree/bindings/clock/pwm-clock.txt        |  26 ++++
+ drivers/clk/Kconfig                                |   7 ++
+ drivers/clk/Makefile                               |   1 +
+ drivers/clk/clk-pwm.c                              | 136 +++++++++++++++++++++
+ 4 files changed, 170 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/pwm-clock.txt
+ create mode 100644 drivers/clk/clk-pwm.c
 
-On Wed, Mar 25, 2015 at 11:14:28AM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> [Cc: +=3D akpm]
->=20
-> On Thu, Feb 12, 2015 at 10:44:48AM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> > on arm/i.MX28 the leds connected to a pwm are still broken and it's more
-> > than three years ago that I came up with these patches. I still consider
-> > them to do the right thing and they fix a real bug.
-> I'm really frustrated here. I want to fix a real bug, made several
-> suggestions (with patches) how to fix it and still have to include my
-> local patches in each project that uses leds on i.MX28's pwm output.
->=20
-> Thierry, how can we get this resolved?
-
-We have a couple of other drivers already solving similar issues. Look
-for example at the pwm-bcm-kona driver. It explicitly sets the duty
-cycle to 0 on ->disable() and then waits for some time before actually
-disabling the clock (specifically to avoid a similar than you seem to
-have on i.MX). See also the notes near the top of the driver source
-file.
-
-Another example is pwm-samsung. It also has code specifically aimed at
-making sure the signal doesn't unexpectedly stay high after calling
-pwm_disable(). See also the commit message of:
-
-	6da89312a39b pwm: samsung: Fix output race on disabling
-
-Both of these examples sound very similar to what you're describing, so
-I think it'd be best to follow these examples and fix the i.MX driver to
-behave as expected.
-
-Irrespective of the behaviour of current drivers, the assumptions are
-already codified in the user drivers and they all assume that calling
-pwm_disable() means the PWM is off.
-
-Thierry
-
---OgqxwSJOaUobr8KG
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJVEqNkAAoJEN0jrNd/PrOhjPsP/0jGIFWZ2X9VIlpFW57ek8Tg
-+AjizHxiTg8AaKyRACl4UMPnu8rmMKRsdZCuThEZsQKKtIEOD5D05WLckdlh1Xxc
-MpU3cpILtlyjUUPjvPUu230foXvLo7LsJIDKT0ropcgy67tvzqC438V/NDpElQ5F
-kHMQGkQAfT728e30uupMdpEL5IdzbXWr9ePpaio3c20uzj2uqny+T3coadByYh7A
-STVw4fBOHu/Dr/N78YPr2tc6zMNMovtl6M2zNbeox8xnqnVbnfl2xvC3h+b0qWNI
-7TnJZQOHpP2lqjFydNE9WuFqPs84wriqDEklSNOUanPM2OEXLg6Mnw53Ackb6L6j
-r5uoyMvRMhekSckkLdYSudWp0O9nNdrGHudJI3/XL1v5102/VGsZeqQnM/5XIK2N
-4RHwSa7twZxrobhwzTcoXjYaRPnqAy+aMbxsxQn372yomF85koxOHCtECA4lfigG
-4YoP6ikdzp1stWCUadspWUePV+6UoAA0gGCcV4Nt7QC3LeMxbzyUt/B4VaGPhH7Q
-QVSl7w8nKV7L7oG4l6SlpxFiGMGdOMdX+OcyKOF6xTyWFY89nKVNs+YmNNjrCswL
-3U1vd/8wBgLifaamdjsavgCefF89E2w4nQr6yD0Rr+BUr/93BRz6oh7SH31U3JCV
-IeqIffsIEfGB3Qx493nC
-=SfMn
------END PGP SIGNATURE-----
-
---OgqxwSJOaUobr8KG--
+diff --git a/Documentation/devicetree/bindings/clock/pwm-clock.txt b/Documentation/devicetree/bindings/clock/pwm-clock.txt
+new file mode 100644
+index 0000000..83db876
+--- /dev/null
++++ b/Documentation/devicetree/bindings/clock/pwm-clock.txt
+@@ -0,0 +1,26 @@
++Binding for an external clock signal driven by a PWM pin.
++
++This binding uses the common clock binding[1] and the common PWM binding[2].
++
++[1] Documentation/devicetree/bindings/clock/clock-bindings.txt
++[2] Documentation/devicetree/bindings/pwm/pwm.txt
++
++Required properties:
++- compatible : shall be "pwm-clock".
++- #clock-cells : from common clock binding; shall be set to 0.
++- pwms : from common PWM binding; this determines the clock frequency
++  via the period given in the PWM specifier.
++
++Optional properties:
++- clock-output-names : From common clock binding.
++- clock-frequency : Exact output frequency, in case the PWM period
++  is not exact but was rounded to nanoseconds.
++
++Example:
++	clock {
++		compatible = "pwm-clock";
++		#clock-cells = <0>;
++		clock-frequency = <25000000>;
++		clock-output-names = "mipi_mclk";
++		pwms = <&pwm2 0 40>; /* 1 / 40 ns = 25 MHz */
++	};
+diff --git a/drivers/clk/Kconfig b/drivers/clk/Kconfig
+index 3f44f292..772d45e 100644
+--- a/drivers/clk/Kconfig
++++ b/drivers/clk/Kconfig
+@@ -129,6 +129,13 @@ config COMMON_CLK_PALMAS
+ 	  This driver supports TI Palmas devices 32KHz output KG and KG_AUDIO
+ 	  using common clock framework.
+ 
++config COMMON_CLK_PWM
++	tristate "Clock driver for PWMs used as clock outputs"
++	depends on PWM
++	---help---
++	  Adapter driver so that any PWM output can be (mis)used as clock signal
++	  at 50% duty cycle.
++
+ config COMMON_CLK_PXA
+ 	def_bool COMMON_CLK && ARCH_PXA
+ 	---help---
+diff --git a/drivers/clk/Makefile b/drivers/clk/Makefile
+index d5fba5b..6a0c5cf 100644
+--- a/drivers/clk/Makefile
++++ b/drivers/clk/Makefile
+@@ -40,6 +40,7 @@ obj-$(CONFIG_ARCH_U300)			+= clk-u300.o
+ obj-$(CONFIG_ARCH_VT8500)		+= clk-vt8500.o
+ obj-$(CONFIG_COMMON_CLK_WM831X)		+= clk-wm831x.o
+ obj-$(CONFIG_COMMON_CLK_XGENE)		+= clk-xgene.o
++obj-$(CONFIG_COMMON_CLK_PWM)		+= clk-pwm.o
+ obj-$(CONFIG_COMMON_CLK_AT91)		+= at91/
+ obj-$(CONFIG_ARCH_BCM_MOBILE)		+= bcm/
+ obj-$(CONFIG_ARCH_BERLIN)		+= berlin/
+diff --git a/drivers/clk/clk-pwm.c b/drivers/clk/clk-pwm.c
+new file mode 100644
+index 0000000..328fcfc
+--- /dev/null
++++ b/drivers/clk/clk-pwm.c
+@@ -0,0 +1,136 @@
++/*
++ * Copyright (C) 2014 Philipp Zabel, Pengutronix
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * PWM (mis)used as clock output
++ */
++#include <linux/clk-provider.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/pwm.h>
++
++struct clk_pwm {
++	struct clk_hw hw;
++	struct pwm_device *pwm;
++	u32 fixed_rate;
++};
++
++static inline struct clk_pwm *to_clk_pwm(struct clk_hw *hw)
++{
++	return container_of(hw, struct clk_pwm, hw);
++}
++
++static int clk_pwm_prepare(struct clk_hw *hw)
++{
++	struct clk_pwm *clk_pwm = to_clk_pwm(hw);
++
++	return pwm_enable(clk_pwm->pwm);
++}
++
++static void clk_pwm_unprepare(struct clk_hw *hw)
++{
++	struct clk_pwm *clk_pwm = to_clk_pwm(hw);
++
++	pwm_disable(clk_pwm->pwm);
++}
++
++static unsigned long clk_pwm_recalc_rate(struct clk_hw *hw,
++					 unsigned long parent_rate)
++{
++	struct clk_pwm *clk_pwm = to_clk_pwm(hw);
++
++	return clk_pwm->fixed_rate;
++}
++
++static const struct clk_ops clk_pwm_ops = {
++	.prepare = clk_pwm_prepare,
++	.unprepare = clk_pwm_unprepare,
++	.recalc_rate = clk_pwm_recalc_rate,
++};
++
++static int clk_pwm_probe(struct platform_device *pdev)
++{
++	struct device_node *node = pdev->dev.of_node;
++	struct clk_init_data init;
++	struct clk_pwm *clk_pwm;
++	struct pwm_device *pwm;
++	const char *clk_name;
++	struct clk *clk;
++	int ret;
++
++	clk_pwm = devm_kzalloc(&pdev->dev, sizeof(*clk_pwm), GFP_KERNEL);
++	if (!clk_pwm)
++		return -ENOMEM;
++
++	pwm = devm_pwm_get(&pdev->dev, NULL);
++	if (IS_ERR(pwm))
++		return PTR_ERR(pwm);
++
++	if (!pwm->period) {
++		dev_err(&pdev->dev, "invalid PWM period\n");
++		return -EINVAL;
++	}
++
++	if (of_property_read_u32(node, "clock-frequency", &clk_pwm->fixed_rate))
++		clk_pwm->fixed_rate = NSEC_PER_SEC / pwm->period;
++
++	if (pwm->period != NSEC_PER_SEC / clk_pwm->fixed_rate &&
++	    pwm->period != DIV_ROUND_UP(NSEC_PER_SEC, clk_pwm->fixed_rate)) {
++		dev_err(&pdev->dev,
++			"clock-frequency does not match PWM period\n");
++		return -EINVAL;
++	}
++
++	ret = pwm_config(pwm, (pwm->period + 1) >> 1, pwm->period);
++	if (ret < 0)
++		return ret;
++
++	clk_name = node->name;
++	of_property_read_string(node, "clock-output-names", &clk_name);
++
++	init.name = clk_name;
++	init.ops = &clk_pwm_ops;
++	init.flags = CLK_IS_BASIC | CLK_IS_ROOT;
++	init.num_parents = 0;
++
++	clk_pwm->pwm = pwm;
++	clk_pwm->hw.init = &init;
++	clk = devm_clk_register(&pdev->dev, &clk_pwm->hw);
++	if (IS_ERR(clk))
++		return PTR_ERR(clk);
++
++	return of_clk_add_provider(node, of_clk_src_simple_get, clk);
++}
++
++static int clk_pwm_remove(struct platform_device *pdev)
++{
++	of_clk_del_provider(pdev->dev.of_node);
++
++	return 0;
++}
++
++static const struct of_device_id clk_pwm_dt_ids[] = {
++	{ .compatible = "pwm-clock" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, clk_pwm_dt_ids);
++
++static struct platform_driver clk_pwm_driver = {
++	.probe = clk_pwm_probe,
++	.remove = clk_pwm_remove,
++	.driver = {
++		.name = "pwm-clock",
++		.of_match_table = of_match_ptr(clk_pwm_dt_ids),
++	},
++};
++
++module_platform_driver(clk_pwm_driver);
++
++MODULE_AUTHOR("Philipp Zabel <p.zabel@pengutronix.de>");
++MODULE_DESCRIPTION("PWM clock driver");
++MODULE_LICENSE("GPL");
+-- 
+2.1.4
