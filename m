@@ -1,62 +1,45 @@
 From: Anand Moon <linux.amoon@gmail.com>
-Subject: [PATCH 6/6] hwmon: pwm-fan: Update the duty cycle inorder to control the pwm-fan
-Date: Fri, 27 Mar 2015 03:09:15 +1030
-Message-ID: <1427387955-5129-7-git-send-email-linux.amoon@gmail.com>
+Subject: [PATCH 2/6] ARM: dts exynos5420 update the cooling cells for core cpu0
+Date: Fri, 27 Mar 2015 03:09:11 +1030
+Message-ID: <1427387955-5129-3-git-send-email-linux.amoon@gmail.com>
 References: <1427387955-5129-1-git-send-email-linux.amoon@gmail.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pa0-f68.google.com ([209.85.220.68]:34946 "EHLO
+	mail-pa0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752310AbbCZQkZ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 26 Mar 2015 12:40:25 -0400
 In-Reply-To: <1427387955-5129-1-git-send-email-linux.amoon@gmail.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 To: Lukasz Majewski <l.majewski@samsung.com>, Eduardo Valentin <edubezval@gmail.com>, Sjoerd Simons <sjoerd.simons@collabora.co.uk>, Russell King <linux@arm.linux.org.uk>, Kukjin Kim <kgene@kernel.org>
 Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Anand Moon <linux.amoon@gmail.com>
-List-Id: linux-pwm@vger.kernel.org
 
-Below changes depend on following patch.
-https://patchwork.kernel.org/patch/5944061/
+update the cooling level for cpu0 to avoid following message.
 
-Update the pwm_config with duty then update the pwm_disable
-to poweroff the cpu fan.
-
-Tested on OdroidXU3 board.
+root@odroidxu3:~# dmesg | grep ther
+[    0.241511] /thermal-zones/cpu-thermal/cooling-maps/map0:
+			 could not get #cooling-cells for /cpus/cpu@0
 
 Signed-off-by: Anand Moon <linux.amoon@gmail.com>
 ---
- drivers/hwmon/pwm-fan.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ arch/arm/boot/dts/exynos5420.dtsi | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
-index 7c83dc4..f25c841 100644
---- a/drivers/hwmon/pwm-fan.c
-+++ b/drivers/hwmon/pwm-fan.c
-@@ -44,26 +44,24 @@ static int  __set_pwm(struct pwm_fan_ctx *ctx, unsigned long pwm)
- 	int ret = 0;
- 
- 	mutex_lock(&ctx->lock);
+diff --git a/arch/arm/boot/dts/exynos5420.dtsi b/arch/arm/boot/dts/exynos5420.dtsi
+index c0e98cf..6b49f3c 100644
+--- a/arch/arm/boot/dts/exynos5420.dtsi
++++ b/arch/arm/boot/dts/exynos5420.dtsi
+@@ -61,6 +61,10 @@
+ 			reg = <0x0>;
+ 			clock-frequency = <1800000000>;
+ 			cci-control-port = <&cci_control1>;
 +
- 	if (ctx->pwm_value == pwm)
- 		goto exit_set_pwm_err;
++			cooling-min-level = <10>;
++			cooling-max-level = <7>;
++			#cooling-cells = <2>; /* min followed by max */
+ 		};
  
--	if (pwm == 0) {
--		pwm_disable(ctx->pwm);
--		goto exit_set_pwm;
--	}
--
- 	duty = DIV_ROUND_UP(pwm * (ctx->pwm->period - 1), MAX_PWM);
- 	ret = pwm_config(ctx->pwm, duty, ctx->pwm->period);
- 	if (ret)
- 		goto exit_set_pwm_err;
- 
-+	if (pwm == 0)
-+		pwm_disable(ctx->pwm);
-+
- 	if (ctx->pwm_value == 0) {
- 		ret = pwm_enable(ctx->pwm);
- 		if (ret)
- 			goto exit_set_pwm_err;
- 	}
- 
--exit_set_pwm:
- 	ctx->pwm_value = pwm;
- exit_set_pwm_err:
- 	mutex_unlock(&ctx->lock);
+ 		cpu1: cpu@1 {
 -- 
 1.9.1
+
