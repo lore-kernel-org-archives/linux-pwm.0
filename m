@@ -1,129 +1,119 @@
-From: Lukasz Majewski <l.majewski@samsung.com>
-Subject: Re: [PATCH v2 Resend] pwm: samsung: Fix output race on disabling
-Date: Fri, 27 Mar 2015 08:41:58 +0100
-Message-ID: <20150327084158.642813f4@amdc2363>
-References: <1425543243-6587-1-git-send-email-sjoerd.simons@collabora.co.uk>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 0/2] leds/pwm: don't call pwm_disable when setting
+ brightness
+Date: Fri, 27 Mar 2015 09:59:43 +0100
+Message-ID: <20150327085942.GA10906@pengutronix.de>
+References: <1423734290-19750-1-git-send-email-u.kleine-koenig@pengutronix.de>
+ <20150325101428.GB32677@pengutronix.de>
+ <20150325120039.GA16310@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1425543243-6587-1-git-send-email-sjoerd.simons@collabora.co.uk>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, Kukjin Kim <kgene.kim@samsung.com>, linux-pwm@vger.kernel.org, linux-samsung-soc@vger.kernel.org, Javier Martinez Canillas <javier.martinez@collabora.co.uk>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:58246 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753740AbbC0JC6 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 27 Mar 2015 05:02:58 -0400
+Content-Disposition: inline
+In-Reply-To: <20150325120039.GA16310@ulmo.nvidia.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, linux-leds@vger.kernel.org, kernel@pengutronix.de, Andrew Morton <akpm@linux-foundation.org>, linux-arm-kernel@lists.infradead.org
 
-Hi Sjoerd,
+Hello Thierry,
 
-> When disabling the samsung PWM the output state remains at the level
-> it was in the end of a pwm cycle. In other words, calling pwm_disable
-> when at 100% duty will keep the output active, while at all other
-> setting the output will go/stay inactive. On top of that the samsung
-> PWM settings are double-buffered, which means the new settings only
-> get applied at the start of a new PWM cycle.
-> 
-> This results in a race if the PWM is at 100% duty and a driver calls:
->   pwm_config (pwm, 0, period);
->   pwm_disable (pwm);
-> 
-> In this case the PWMs output will unexpectedly stay active, unless a
-> new PWM cycle happened to start between the register writes in
-> _config and _disable. As far as i can tell this is a regression
-> introduced by 3bdf878, before that a call to pwm_config would call
-> pwm_samsung_enable which, while heavy-handed, made sure the expected
-> settings were live.
-> 
-> To resolve this, while not re-introducing the issues 3bdf878
-> (flickering as the PWM got reset while in a PWM cycle). Only force an
-> update of the settings when at 100% duty, which shouldn't have a
-> noticeable effect on the output but is enough to ensure the behaviour
-> is as expected on disable.
-> 
-> Signed-off-by: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
-> ---
-> Changes since v1:
->   Fix small issues pointed out by Tomasz Figa
->   - Correct various coding style issues
->   - Read the current value of the tcmp register for comparison rather
-> then using a non-trivial comparison to decide whether the current
-> state was 100% duty
->   - Move the code to force manual update out into its own function
->   - Clarify the comment indicating why a manual update is sometimes
-> required
-> 
->  drivers/pwm/pwm-samsung.c | 31 ++++++++++++++++++++++++++++++-
->  1 file changed, 30 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-> index 3e9b583..649f6c4 100644
-> --- a/drivers/pwm/pwm-samsung.c
-> +++ b/drivers/pwm/pwm-samsung.c
-> @@ -269,12 +269,31 @@ static void pwm_samsung_disable(struct pwm_chip
-> *chip, struct pwm_device *pwm)
-> spin_unlock_irqrestore(&samsung_pwm_lock, flags); }
->  
-> +static void pwm_samsung_manual_update(struct samsung_pwm_chip *chip,
-> +				      struct pwm_device *pwm)
-> +{
-> +	unsigned int tcon_chan = to_tcon_channel(pwm->hwpwm);
-> +	u32 tcon;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&samsung_pwm_lock, flags);
-> +
-> +	tcon = readl(chip->base + REG_TCON);
-> +	tcon |= TCON_MANUALUPDATE(tcon_chan);
-> +	writel(tcon, chip->base + REG_TCON);
-> +
-> +	tcon &= ~TCON_MANUALUPDATE(tcon_chan);
-> +	writel(tcon, chip->base + REG_TCON);
-> +
-> +	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
-> +}
-> +
->  static int pwm_samsung_config(struct pwm_chip *chip, struct
-> pwm_device *pwm, int duty_ns, int period_ns)
->  {
->  	struct samsung_pwm_chip *our_chip =
-> to_samsung_pwm_chip(chip); struct samsung_pwm_channel *chan =
-> pwm_get_chip_data(pwm);
-> -	u32 tin_ns = chan->tin_ns, tcnt, tcmp;
-> +	u32 tin_ns = chan->tin_ns, tcnt, tcmp, oldtcmp;
->  
->  	/*
->  	 * We currently avoid using 64bit arithmetic by using the
-> @@ -288,6 +307,7 @@ static int pwm_samsung_config(struct pwm_chip
-> *chip, struct pwm_device *pwm, return 0;
->  
->  	tcnt = readl(our_chip->base + REG_TCNTB(pwm->hwpwm));
-> +	oldtcmp = readl(our_chip->base + REG_TCMPB(pwm->hwpwm));
->  
->  	/* We need tick count for calculation, not last tick. */
->  	++tcnt;
-> @@ -335,6 +355,15 @@ static int pwm_samsung_config(struct pwm_chip
-> *chip, struct pwm_device *pwm, writel(tcnt, our_chip->base +
-> REG_TCNTB(pwm->hwpwm)); writel(tcmp, our_chip->base +
-> REG_TCMPB(pwm->hwpwm)); 
-> +	/* In case the PWM is currently at 100% duty, force a manual
-> update
-> +	 * to prevent the signal staying high in the pwm is disabled
-> shortly
-> +	 * afer this update (before it autoreloaded the new values) .
-> +	 */
-> +	if (oldtcmp == (u32) -1) {
-> +		dev_dbg(our_chip->chip.dev, "Forcing manual update");
-> +		pwm_samsung_manual_update(our_chip, pwm);
-> +	}
-> +
->  	chan->period_ns = period_ns;
->  	chan->tin_ns = tin_ns;
->  	chan->duty_ns = duty_ns;
+On Wed, Mar 25, 2015 at 01:00:40PM +0100, Thierry Reding wrote:
+> On Wed, Mar 25, 2015 at 11:14:28AM +0100, Uwe Kleine-K=F6nig wrote:
+> > On Thu, Feb 12, 2015 at 10:44:48AM +0100, Uwe Kleine-K=F6nig wrote:
+> > > on arm/i.MX28 the leds connected to a pwm are still broken and it=
+'s more
+> > > than three years ago that I came up with these patches. I still c=
+onsider
+> > > them to do the right thing and they fix a real bug.
+> > I'm really frustrated here. I want to fix a real bug, made several
+> > suggestions (with patches) how to fix it and still have to include =
+my
+> > local patches in each project that uses leds on i.MX28's pwm output=
+=2E
+> >=20
+> > Thierry, how can we get this resolved?
+>=20
+> We have a couple of other drivers already solving similar issues. Loo=
+k
+> for example at the pwm-bcm-kona driver. It explicitly sets the duty
+> cycle to 0 on ->disable() and then waits for some time before actuall=
+y
+> disabling the clock (specifically to avoid a similar than you seem to
+> have on i.MX). See also the notes near the top of the driver source
+> file.
+>=20
+> Another example is pwm-samsung. It also has code specifically aimed a=
+t
+> making sure the signal doesn't unexpectedly stay high after calling
+> pwm_disable(). See also the commit message of:
+>=20
+> 	6da89312a39b pwm: samsung: Fix output race on disabling
+>=20
+> Both of these examples sound very similar to what you're describing, =
+so
+> I think it'd be best to follow these examples and fix the i.MX driver=
+ to
+> behave as expected.
+Seeing that more hardware behaves like the mxs pwm makes me still more
+convinced that the pwm core should be aware of things like double
+buffering and different behaviour for disabling. Adding code to fulfil
+the API/user expectation to all three (and maybe more?) drivers seems
+wrong, don't you think?
 
-Acked-by: Lukasz Majewski <l.majewski@samsung.com>
+There are IMHO two possibilities to define the outcome of
+pwm_config(duty=3D0) + pwm_disable():
 
--- 
-Best regards,
+ a) the output must be 0
+ b) the output is undefined
 
-Lukasz Majewski
+=46or a) there are two further cases:
 
-Samsung R&D Institute Poland (SRPOL) | Linux Platform Group
+ a1) each driver has to assert a) on its own
+ a2) the pwm framework knows about a few common behaviours and can
+     handle them.
+
+Currently we are at a1) (which is undocumented in Documentation/pwm.txt
+btw). IMHO a1) is the worst of the three alternatives!
+
+BTW, what is the (expected but also undocumented) outcome of
+
+	pwm_set_polarity(polarity=3DPWM_POLARITY_INVERSED);
+	pwm_config(duty=3D0)
+	pwm_disable()
+
+?
+
+> Irrespective of the behaviour of current drivers, the assumptions are
+> already codified in the user drivers and they all assume that calling
+> pwm_disable() means the PWM is off.
+Well, if you call pwm_disable for the mxs pwm, it is disabled
+instantly. Disabling just doesn't imply that the output goes to 0.
+
+The problem at hand is updating the configuration doesn't end the
+current period. And then stopping the clock lets the output keep the
+last driven value.
+
+Considering
+
+	$ git grep \\\<pwm_disable | wc -l
+	34
+
+going through all callers and fixing them up for changed semantics
+doesn't seem too hard. Still more as there are several false hits
+(approx 50%).
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
