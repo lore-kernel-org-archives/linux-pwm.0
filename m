@@ -1,36 +1,35 @@
-From: Markus Reichl <reichl@t-online.de>
+From: Markus Reichl <m.reichl@fivetechno.de>
 Subject: Re: Exynos5422 odroidxu3 pwm-fan control using thermal sensors
-Date: Thu, 02 Apr 2015 12:02:34 +0200
-Message-ID: <3119927.e7HXx7br8Y@dell2.five-lan.de>
+Date: Thu, 02 Apr 2015 12:06:06 +0200
+Message-ID: <6834479.9LX5eoYIRd@dell2.five-lan.de>
 References: <1427387955-5129-1-git-send-email-linux.amoon@gmail.com>
+Reply-To: m.reichl@fivetechno.de
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-Reply-To: <1427387955-5129-1-git-send-email-linux.amoon@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-samsung-soc-owner@vger.kernel.org
 To: Anand Moon <linux.amoon@gmail.com>
-Cc: devicetree@vger.kernel.org, Lukasz Majewski <l.majewski@samsung.com>, linux-samsung-soc@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Eduardo Valentin <edubezval@gmail.com>, Sjoerd Simons <sjoerd.simons@collabora.co.uk>, Kukjin Kim <kgene@kernel.org>, linux-arm-kernel@lists.infradead.org
+Cc: Lukasz Majewski <l.majewski@samsung.com>, Eduardo Valentin <edubezval@gmail.com>, Sjoerd Simons <sjoerd.simons@collabora.co.uk>, Russell King <linux@arm.linux.org.uk>, Kukjin Kim <kgene@kernel.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-QW0gRnJlaXRhZywgMjcuIE3DpHJ6IDIwMTUsIDAzOjA5OjA5IHNjaHJpZWIgQW5hbmQgTW9vbjoK
-PiBUaGlzIHdvcmsgZGVwZWRzIHVwb24gd29yayBkb25lIGJ5IEx1a2FzeiBNYWpld3NraSA8bC5t
-YWpld3NraUBzYW1zdW5nLmNvbT4KPiAgYW5kIFNqb2VyZCBTaW1vbnMgPHNqb2VyZC5zaW1vbnNA
-Y29sbGFib3JhLmNvLnVrPiByZWdhcmRpbmcgdGhlIHB3bS1mYW4uCj4gCj4gLUFuYW5kIE1vb24K
-PiAtLQo+IFRvIHVuc3Vic2NyaWJlIGZyb20gdGhpcyBsaXN0OiBzZW5kIHRoZSBsaW5lICJ1bnN1
-YnNjcmliZSBsaW51eC1zYW1zdW5nLXNvYyIgaW4KPiB0aGUgYm9keSBvZiBhIG1lc3NhZ2UgdG8g
-bWFqb3Jkb21vQHZnZXIua2VybmVsLm9yZwo+IE1vcmUgbWFqb3Jkb21vIGluZm8gYXQgIGh0dHA6
-Ly92Z2VyLmtlcm5lbC5vcmcvbWFqb3Jkb21vLWluZm8uaHRtbAo+IAoKVGVzdGVkLWJ5OiBNYXJr
-dXMgUmVpY2hsIDxtLnJlaWNobEBmaXZldGVjaG5vLmRlPgoKQmVzdCBSZWdhcmRzLAotLS0KTWFy
-a3VzIFJlaWNobAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5p
-bmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8v
-bGludXgtYXJtLWtlcm5lbAo=
+Am Freitag, 27. M=C3=A4rz 2015, 03:09:09 schrieb Anand Moon:
+> This work depeds upon work done by Lukasz Majewski <l.majewski@samsun=
+g.com>
+>  and Sjoerd Simons <sjoerd.simons@collabora.co.uk> regarding the pwm-=
+fan.
+>=20
+> -Anand Moon
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-samsu=
+ng-soc" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>=20
+
+MarkusTested-by:  Markus Reichl <m.reichl@fivetechno.de>
+
+Best Regards,
+---
+Markus Reichl
