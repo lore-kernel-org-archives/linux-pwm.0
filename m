@@ -1,64 +1,50 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 6/6] hwmon: pwm-fan: Update the duty cycle inorder to
- control the pwm-fan
-Date: Fri, 10 Apr 2015 10:58:01 -0700
-Message-ID: <20150410175801.GA31499@roeck-us.net>
-References: <CANAwSgSD52sDpP7NH2hhiZX-=LZF6Qo-X3enqsqM+5XAMfyP=Q@mail.gmail.com>
- <20150408165351.GA22846@roeck-us.net>
- <CANAwSgQbNV9QZ2bFGk6g+RyWW6f5iW4e8ii_5rJ4srv02L=L_Q@mail.gmail.com>
- <CANAwSgRSxj9frUHRXh3JwD+bpnFrj8WkpDMKHZn-OPmuCEgP7w@mail.gmail.com>
- <1428667201.22057.20.camel@collabora.co.uk>
- <CANAwSgQHi2-i8xHn+X+KTGg8HFpe6SPgkuSvuApJP3342N8+zQ@mail.gmail.com>
- <5527CB78.4040002@roeck-us.net>
- <1428672601.22057.25.camel@collabora.co.uk>
- <20150410135844.GA20147@ulmo.nvidia.com>
- <87h9snvqsf.fsf@gmail.com>
+From: Jonathan Richardson <jonathar@broadcom.com>
+Subject: [PATCH v6 0/4] Fix bugs in kona pwm driver and pwm core
+Date: Fri, 10 Apr 2015 11:58:49 -0700
+Message-ID: <1428692333-14400-1-git-send-email-jonathar@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:36800 "EHLO
-	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751723AbbDJR6g (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Apr 2015 13:58:36 -0400
-Received: from mailnull by bh-25.webhostbox.net with sa-checked (Exim 4.82)
-	(envelope-from <linux@roeck-us.net>)
-	id 1YgdCO-000goL-G5
-	for linux-pwm@vger.kernel.org; Fri, 10 Apr 2015 17:58:36 +0000
-Content-Disposition: inline
-In-Reply-To: <87h9snvqsf.fsf@gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tim Kryger <tim.kryger@gmail.com>, Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Scott Branden <sbranden@broadcom.com>, Jonathan Richardson <jonathar@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Ben Gamari <ben@smart-cactus.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Sjoerd Simons <sjoerd.simons@collabora.co.uk>, Anand Moon <linux.amoon@gmail.com>, Lukasz Majewski <l.majewski@samsung.com>, Eduardo Valentin <edubezval@gmail.com>, Russell King <linux@arm.linux.org.uk>, Kukjin Kim <kgene@kernel.org>, devicetree@vger.kernel.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Markus Reichl <m.reichl@fivetechno.de>
 
-On Fri, Apr 10, 2015 at 01:25:52PM -0400, Ben Gamari wrote:
-> Thierry Reding <thierry.reding@gmail.com> writes:
-> 
-> > On Fri, Apr 10, 2015 at 03:30:01PM +0200, Sjoerd Simons wrote:
-> >> 
-> >> Yes/no/maybe :). Imho this is something to clarify in the pwm API
-> >> documentation. As currently all it says is: 
-> >>   "pwm_disable - stop a PWM output toggling", 
-> >> 
-> >> Which is what the exynos driver does. 
-> >> 
-> >> Thierry, could you clearify what the intention is here? I'm happy to
-> >> prepare a pwm driver patch if needed to solve this?
-> >
-> > I think the safest thing to do is for users to do both. You call
-> > pwm_config() with a zero duty cycle to make it clear what the status is
-> > that you want. Then you call pwm_disable() to state that you don't need
-> > the output signal anymore, so that any clocks needed by the PWM can be
-> > stopped. Doing so gives the driver the most information and should make
-> > the user more resilient against any possible quirks in drivers.
-> >
-> It would be great if the documentation were more clear on this matter
-> regardless. This is something I can imagine having to spend substantial
-> amounts of time Googling whereas a simple note in the documentation would
-> have removed all ambiguity.
-> 
-Especially since, in this case, the output signal _is_ still needed.
-It appears that pwm_disable() is only expected to stop the clock, not
-the signal itself.
+This patchset fixes a number of bugs in the Broadcom Kona pwm driver. It also
+fixes a bug in the pwm core where the enabled state was incorrect on failed
+calls to enable. Also, a new function was added to the pwm core to add pwm chips
+with inversed polarity for chips that have a different default polarity than the
+core. The prevents incorrect polarity being reported.
 
-Guenter
+These changes are required for the Kona pwm driver to work on Cygnus and the
+same pwm IP is being used.
+
+Changes from v5:
+  - Address Dmitry's comment on code cleanup of pwm_enable() in pwm core.
+  - Including all patches from different contributors in this patchset. Some
+	were left out in v4.
+
+Changes from v4:
+  - Rebased to Tim Kryger's patch that adds support in pwm core to add driver
+    with inversed polarity.
+  - Removed patch 2 that resolved difference between hardware default polarity
+    and pwm framework default polarity. The default polarity is set properly now
+    when the pwm driver is registered with the pwm framework.
+
+Arun Ramamurthy (1):
+  drivers: pwm: bcm-kona: Dont set polarity in probe
+
+Jonathan Richardson (2):
+  pwm: kona: Fix incorrect config, disable, and polarity procedures
+  pwm: core: Set enable state properly on failed call to enable
+
+Tim Kryger (1):
+  drivers: pwm: core: Add pwmchip_add_inversed
+
+ drivers/pwm/core.c         |   52 +++++++++++++++++++++------
+ drivers/pwm/pwm-bcm-kona.c |   84 +++++++++++++++++++++++++++++++++-----------
+ include/linux/pwm.h        |    6 ++++
+ 3 files changed, 110 insertions(+), 32 deletions(-)
+
+-- 
+1.7.9.5
