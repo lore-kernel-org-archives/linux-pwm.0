@@ -1,7 +1,7 @@
 From: Jonathan Richardson <jonathar@broadcom.com>
-Subject: [PATCH v6 1/4] drivers: pwm: core: Add pwmchip_add_inversed
-Date: Fri, 10 Apr 2015 11:58:50 -0700
-Message-ID: <1428692333-14400-2-git-send-email-jonathar@broadcom.com>
+Subject: [PATCH v6 3/4] pwm: kona: Fix incorrect config, disable, and polarity procedures
+Date: Fri, 10 Apr 2015 11:58:52 -0700
+Message-ID: <1428692333-14400-4-git-send-email-jonathar@broadcom.com>
 References: <1428692333-14400-1-git-send-email-jonathar@broadcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,107 +12,156 @@ To: Tim Kryger <tim.kryger@gmail.com>, Dmitry Torokhov <dtor@google.com>, Anatol
 Cc: Scott Branden <sbranden@broadcom.com>, Jonathan Richardson <jonathar@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-From: Tim Kryger <tim.kryger@gmail.com>
+The config procedure didn't follow the spec which periodically resulted
+in failing to enable the output signal. This happened one in ten or
+twenty attempts. Following the spec and adding a 400ns delay in the
+appropriate locations resolves this problem.
 
-Add a new function to register a PWM chip with channels that have their
-initial polarity as inversed.  This benefits drivers of controllers that
-by default operate with inversed polarity by removing the need to modify
-the polarity during initialization.
+The disable procedure now also follows the spec. The old disable
+procedure would result in no change in signal when called.
 
-Signed-off-by: Tim Kryger <tim.kryger@gmail.com>
+The polarity procedure no longer applies the settings to change the
+output signal because it can't be called when the pwm is enabled anyway.
+The polarity is only updated in the control register. The correct
+polarity will be applied on enable. The old method of applying changes
+would result in no signal when the polarity was changed. The new
+apply_settings function would fix this problem but it isn't required
+anyway.
+
+Reviewed-by: Arun Ramamurthy <arunrama@broadcom.com>
+Reviewed-by: Scott Branden <sbranden@broadcom.com>
+Tested-by: Scott Branden <sbranden@broadcom.com>
 Signed-off-by: Jonathan Richardson <jonathar@broadcom.com>
 ---
- drivers/pwm/core.c  |   36 ++++++++++++++++++++++++++++--------
- include/linux/pwm.h |    6 ++++++
- 2 files changed, 34 insertions(+), 8 deletions(-)
+ drivers/pwm/pwm-bcm-kona.c |   75 +++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 60 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 810aef3..c0a550b 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -222,14 +222,8 @@ void *pwm_get_chip_data(struct pwm_device *pwm)
- }
- EXPORT_SYMBOL_GPL(pwm_get_chip_data);
- 
--/**
-- * pwmchip_add() - register a new PWM chip
-- * @chip: the PWM chip to add
-- *
-- * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
-- * will be used.
-- */
--int pwmchip_add(struct pwm_chip *chip)
-+static int pwmchip_add_with_polarity(struct pwm_chip *chip,
-+				     enum pwm_polarity polarity)
+diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+index 32b3ec6..8a1dfba 100644
+--- a/drivers/pwm/pwm-bcm-kona.c
++++ b/drivers/pwm/pwm-bcm-kona.c
+@@ -80,15 +80,19 @@ static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
  {
- 	struct pwm_device *pwm;
- 	unsigned int i;
-@@ -259,6 +253,7 @@ int pwmchip_add(struct pwm_chip *chip)
- 		pwm->chip = chip;
- 		pwm->pwm = chip->base + i;
- 		pwm->hwpwm = i;
-+		pwm->polarity = polarity;
+ 	unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
  
- 		radix_tree_insert(&pwm_tree, pwm->pwm, pwm);
+-	/* Clear trigger bit but set smooth bit to maintain old output */
+-	value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
+-	value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
+-	writel(value, kp->base + PWM_CONTROL_OFFSET);
++	/*
++	 * There must be a min 400ns delay between clearing enable and setting
++	 * it. Failing to do this may result in no PWM signal.
++	 */
++	ndelay(400);
+ 
+ 	/* Set trigger bit and clear smooth bit to apply new settings */
+ 	value &= ~(1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
+ 	value |= 1 << PWM_CONTROL_TRIGGER_SHIFT(chan);
+ 	writel(value, kp->base + PWM_CONTROL_OFFSET);
++
++	/* PWMOUT_ENABLE must be held high for at least 400 ns. */
++	ndelay(400);
+ }
+ 
+ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -121,20 +125,56 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		dc = div64_u64(val, div);
+ 
+ 		/* If duty_ns or period_ns are not achievable then return */
+-		if (pc < PERIOD_COUNT_MIN || dc < DUTY_CYCLE_HIGH_MIN)
++		if (pc < PERIOD_COUNT_MIN) {
++			dev_warn(chip->dev,
++				"%s: pwm[%d]: period=%d is not achievable, pc=%lu, prescale=%lu\n",
++				__func__, chan, period_ns, pc, prescale);
++			return -EINVAL;
++		}
++
++		/* If duty_ns is not achievable then return */
++		if (dc < DUTY_CYCLE_HIGH_MIN) {
++			if (0 != duty_ns) {
++				dev_warn(chip->dev,
++					"%s: pwm[%d]: duty cycle=%d is not achievable, dc=%lu, prescale=%lu\n",
++					__func__, chan, duty_ns, dc, prescale);
++			}
+ 			return -EINVAL;
++		}
+ 
+ 		/* If pc and dc are in bounds, the calculation is done */
+ 		if (pc <= PERIOD_COUNT_MAX && dc <= DUTY_CYCLE_HIGH_MAX)
+ 			break;
+ 
+ 		/* Otherwise, increase prescale and recalculate pc and dc */
+-		if (++prescale > PRESCALE_MAX)
++		if (++prescale > PRESCALE_MAX) {
++			dev_warn(chip->dev,
++				"%s: pwm[%d]: Prescale (=%lu) within max (=%d) for period=%d and duty cycle=%d is not achievable\n",
++				__func__, chan, prescale, PRESCALE_MAX,
++				period_ns, duty_ns);
+ 			return -EINVAL;
++		}
  	}
-@@ -279,9 +274,34 @@ out:
- 	mutex_unlock(&pwm_lock);
- 	return ret;
- }
-+
-+/**
-+ * pwmchip_add() - register a new PWM chip
-+ * @chip: the PWM chip to add
-+ *
-+ * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
-+ * will be used.  The initial polarity for all channels is normal.
-+ */
-+int pwmchip_add(struct pwm_chip *chip)
-+{
-+	return pwmchip_add_with_polarity(chip, PWM_POLARITY_NORMAL);
-+}
- EXPORT_SYMBOL_GPL(pwmchip_add);
  
- /**
-+ * pwmchip_add_inversed() - register a new PWM chip
-+ * @chip: the PWM chip to add
-+ *
-+ * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
-+ * will be used.  The initial polarity for all channels is inversed.
-+ */
-+int pwmchip_add_inversed(struct pwm_chip *chip)
-+{
-+	return pwmchip_add_with_polarity(chip, PWM_POLARITY_INVERSED);
-+}
-+EXPORT_SYMBOL_GPL(pwmchip_add_inversed);
+-	/* If the PWM channel is enabled, write the settings to the HW */
++	dev_dbg(chip->dev, "pwm[%d]: period=%lu, duty_high=%lu, prescale=%lu\n",
++		chan, pc, dc, prescale);
 +
-+/**
-  * pwmchip_remove() - remove a PWM chip
-  * @chip: the PWM chip to remove
-  *
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index e90628c..358547f 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -183,6 +183,7 @@ int pwm_set_chip_data(struct pwm_device *pwm, void *data);
- void *pwm_get_chip_data(struct pwm_device *pwm);
- 
- int pwmchip_add(struct pwm_chip *chip);
-+int pwmchip_add_inversed(struct pwm_chip *chip);
- int pwmchip_remove(struct pwm_chip *chip);
- struct pwm_device *pwm_request_from_chip(struct pwm_chip *chip,
- 					 unsigned int index,
-@@ -217,6 +218,11 @@ static inline int pwmchip_add(struct pwm_chip *chip)
- 	return -EINVAL;
- }
- 
-+static inline int pwmchip_add_inversed(struct pwm_chip *chip)
-+{
-+	return -EINVAL;
-+}
++	/*
++	 * Don't apply settings if disabled. The period and duty cycle are
++	 * always calculated above to ensure the new values are
++	 * validated immediately instead of on enable.
++	 */
+ 	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
++		value = readl(kp->base + PWM_CONTROL_OFFSET);
 +
- static inline int pwmchip_remove(struct pwm_chip *chip)
++		/*
++		 * Clear trigger bit but set smooth bit to maintain old
++		 * output.
++		 */
++		value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
++		value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
++		writel(value, kp->base + PWM_CONTROL_OFFSET);
++
+ 		value = readl(kp->base + PRESCALE_OFFSET);
+ 		value &= ~PRESCALE_MASK(chan);
+ 		value |= prescale << PRESCALE_SHIFT(chan);
+@@ -173,11 +213,6 @@ static int kona_pwmc_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	writel(value, kp->base + PWM_CONTROL_OFFSET);
+ 
+-	kona_pwmc_apply_settings(kp, chan);
+-
+-	/* Wait for waveform to settle before gating off the clock */
+-	ndelay(400);
+-
+ 	clk_disable_unprepare(kp->clk);
+ 
+ 	return 0;
+@@ -207,13 +242,23 @@ static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
  {
- 	return -EINVAL;
+ 	struct kona_pwmc *kp = to_kona_pwmc(chip);
+ 	unsigned int chan = pwm->hwpwm;
++	unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
++
++	/* Set smooth type to 1 and disable */
++	value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
++	value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
++	writel(value, kp->base + PWM_CONTROL_OFFSET);
+ 
+ 	/* Simulate a disable by configuring for zero duty */
+ 	writel(0, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
+-	kona_pwmc_apply_settings(kp, chan);
++	writel(0, kp->base + PERIOD_COUNT_OFFSET(chan));
+ 
+-	/* Wait for waveform to settle before gating off the clock */
+-	ndelay(400);
++	/* Set prescale to 0 for this channel */
++	value = readl(kp->base + PRESCALE_OFFSET);
++	value &= ~PRESCALE_MASK(chan);
++	writel(value, kp->base + PRESCALE_OFFSET);
++
++	kona_pwmc_apply_settings(kp, chan);
+ 
+ 	clk_disable_unprepare(kp->clk);
+ }
 -- 
 1.7.9.5
