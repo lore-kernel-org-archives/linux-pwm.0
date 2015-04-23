@@ -1,66 +1,60 @@
-From: Anand Moon <linux.amoon@gmail.com>
-Subject: Re: [PATCH] pwm: Add clk enable/disable for pwm_samsung_enable/pwm_samsung_disable
-Date: Wed, 15 Apr 2015 15:47:43 +0530
-Message-ID: <CANAwSgSP2R66DY000SAqh-yG=y=5_zOktt8dHFjbogdmDm3Hmw@mail.gmail.com>
-References: <1429034708-4537-1-git-send-email-linux.amoon@gmail.com>
-	<1429086847.22057.159.camel@collabora.co.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <1429086847.22057.159.camel@collabora.co.uk>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Sjoerd Simons <sjoerd.simons@collabora.co.uk>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [GIT PULL] pwm: Changes for v4.1-rc1
+Date: Thu, 23 Apr 2015 14:58:48 +0200
+Message-ID: <1429793928-31818-1-git-send-email-thierry.reding@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-hi Sjoerd,
+Hi Linus,
 
-Are you referring to handle of polarity
-(PWM_POLARITY_NORMAL/PWM_POLARITY_INVERSED) during enable and disable.
+The following changes since commit c517d838eb7d07bbe9507871fab3931deccff539:
 
-How can I analyses if the clock is high and low.
+  Linux 4.0-rc1 (2015-02-22 18:21:14 -0800)
 
--Anand Moon
+are available in the git repository at:
 
-On 15 April 2015 at 14:04, Sjoerd Simons <sjoerd.simons@collabora.co.uk> wrote:
-> On Wed, 2015-04-15 at 03:35 +0930, Anand Moon wrote:
->> diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
->> index 3e9b583..b579753 100644
->> --- a/drivers/pwm/pwm-samsung.c
->> +++ b/drivers/pwm/pwm-samsung.c
->> @@ -247,6 +247,7 @@ static int pwm_samsung_enable(struct pwm_chip *chip, struct pwm_device *pwm)
->>       tcon &= ~TCON_MANUALUPDATE(tcon_chan);
->>       tcon |= TCON_START(tcon_chan) | TCON_AUTORELOAD(tcon_chan);
->>       writel(tcon, our_chip->base + REG_TCON);
->> +     clk_prepare_enable(our_chip->base_clk);
->>
->>       spin_unlock_irqrestore(&samsung_pwm_lock, flags);
->>
->> @@ -265,6 +266,7 @@ static void pwm_samsung_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->>       tcon = readl(our_chip->base + REG_TCON);
->>       tcon &= ~TCON_AUTORELOAD(tcon_chan);
->>       writel(tcon, our_chip->base + REG_TCON);
->> +     clk_disable_unprepare(our_chip->base_clk);
->>
->>       spin_unlock_irqrestore(&samsung_pwm_lock, flags);
->>  }
->
-> As far as i can tell this code doesn't have any effect.
->
-> clk_enable is refcounted, so the clock will stay enabled for as long as
-> the driver is loaded (as it's enabled in _probe). Your code above just
-> raises and lowers the clocks enabled refcount, but won't actually ever
-> cause it to be disabled.
->
-> With respect to trying to disabling the clocks on pwm_disable, that will
-> need some more work to ensure the output signal has the expected level
-> when you turn of the clock. Specifically, when disabling from a non-100%
-> duty state the driver relies on the PWM turning the output signal low at
-> the end of a duty cycle. However if you turn off the clock at the start
-> of a duty cycle while the output signal is still high it will
-> unexpectedly remain high.
->
->
-> --
-> Sjoerd Simons <sjoerd.simons@collabora.co.uk>
-> Collabora Ltd.
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.1-rc1
+
+for you to fetch changes up to c264f1110d27185f8531602f5fce400a6bbce946:
+
+  pwm: Remove __init initializer for pwm_add_table() (2015-04-23 14:50:52 +0200)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Changes for v4.1-rc1
+
+Not much has been happening in PWM land lately, so this contains mostly
+minor fixes that didn't seem urgent enough for a late pull-request last
+cycle.
+
+----------------------------------------------------------------
+Gaetan Hug (1):
+      pwm: mxs: Fix period divider computation
+
+Krzysztof Kozlowski (1):
+      pwm: pca9685: Constify struct regmap_config
+
+Matt Porter (1):
+      pwm: imx-pwm: add explicit compatible strings and required clock properties
+
+Nicolas Ferre (1):
+      pwm: atmel-hlcdc: Add errata handling for sama5d4
+
+Shobhit Kumar (1):
+      pwm: Remove __init initializer for pwm_add_table()
+
+Sjoerd Simons (1):
+      pwm: samsung: Fix output race on disabling
+
+ Documentation/devicetree/bindings/pwm/imx-pwm.txt | 12 ++++++++-
+ drivers/pwm/core.c                                |  2 +-
+ drivers/pwm/pwm-atmel-hlcdc.c                     |  4 +++
+ drivers/pwm/pwm-mxs.c                             |  8 ++++--
+ drivers/pwm/pwm-pca9685.c                         |  2 +-
+ drivers/pwm/pwm-samsung.c                         | 32 ++++++++++++++++++++++-
+ 6 files changed, 54 insertions(+), 6 deletions(-)
