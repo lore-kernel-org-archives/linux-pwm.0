@@ -1,60 +1,68 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [GIT PULL] pwm: Changes for v4.1-rc1
-Date: Thu, 23 Apr 2015 14:58:48 +0200
-Message-ID: <1429793928-31818-1-git-send-email-thierry.reding@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Jonathan Richardson <jonathar@broadcom.com>
+Subject: Re: [PATCH v6 0/4] Fix bugs in kona pwm driver and pwm core
+Date: Tue, 28 Apr 2015 14:05:54 -0700
+Message-ID: <553FF632.7050706@broadcom.com>
+References: <1428692333-14400-1-git-send-email-jonathar@broadcom.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-gw3-out.broadcom.com ([216.31.210.64]:24390 "EHLO
+	mail-gw3-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1030851AbbD1VGN (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 28 Apr 2015 17:06:13 -0400
+In-Reply-To: <1428692333-14400-1-git-send-email-jonathar@broadcom.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Jonathan Richardson <jonathar@broadcom.com>
+Cc: Tim Kryger <tim.kryger@gmail.com>, Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-Hi Linus,
+Pinging maintainer and others. Could you please let me know when you can
+provide feedback on this patchset.
 
-The following changes since commit c517d838eb7d07bbe9507871fab3931deccff539:
+Tim, were you ok with these changes now or do you still have concerns
+about changing the driver? I didn't hear back from after our last
+conversation. If there are still concerns we could possibly make a new
+cygnus pwm driver, though it would be mostly the same as the existing
+kona driver. Or add a DT version to the existing driver that has the new
+modified behaviour - though I think this would be messy.
 
-  Linux 4.0-rc1 (2015-02-22 18:21:14 -0800)
+Thanks.
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.1-rc1
-
-for you to fetch changes up to c264f1110d27185f8531602f5fce400a6bbce946:
-
-  pwm: Remove __init initializer for pwm_add_table() (2015-04-23 14:50:52 +0200)
-
-Thanks,
-Thierry
-
-----------------------------------------------------------------
-pwm: Changes for v4.1-rc1
-
-Not much has been happening in PWM land lately, so this contains mostly
-minor fixes that didn't seem urgent enough for a late pull-request last
-cycle.
-
-----------------------------------------------------------------
-Gaetan Hug (1):
-      pwm: mxs: Fix period divider computation
-
-Krzysztof Kozlowski (1):
-      pwm: pca9685: Constify struct regmap_config
-
-Matt Porter (1):
-      pwm: imx-pwm: add explicit compatible strings and required clock properties
-
-Nicolas Ferre (1):
-      pwm: atmel-hlcdc: Add errata handling for sama5d4
-
-Shobhit Kumar (1):
-      pwm: Remove __init initializer for pwm_add_table()
-
-Sjoerd Simons (1):
-      pwm: samsung: Fix output race on disabling
-
- Documentation/devicetree/bindings/pwm/imx-pwm.txt | 12 ++++++++-
- drivers/pwm/core.c                                |  2 +-
- drivers/pwm/pwm-atmel-hlcdc.c                     |  4 +++
- drivers/pwm/pwm-mxs.c                             |  8 ++++--
- drivers/pwm/pwm-pca9685.c                         |  2 +-
- drivers/pwm/pwm-samsung.c                         | 32 ++++++++++++++++++++++-
- 6 files changed, 54 insertions(+), 6 deletions(-)
+On 15-04-10 11:58 AM, Jonathan Richardson wrote:
+> This patchset fixes a number of bugs in the Broadcom Kona pwm driver. It also
+> fixes a bug in the pwm core where the enabled state was incorrect on failed
+> calls to enable. Also, a new function was added to the pwm core to add pwm chips
+> with inversed polarity for chips that have a different default polarity than the
+> core. The prevents incorrect polarity being reported.
+> 
+> These changes are required for the Kona pwm driver to work on Cygnus and the
+> same pwm IP is being used.
+> 
+> Changes from v5:
+>   - Address Dmitry's comment on code cleanup of pwm_enable() in pwm core.
+>   - Including all patches from different contributors in this patchset. Some
+> 	were left out in v4.
+> 
+> Changes from v4:
+>   - Rebased to Tim Kryger's patch that adds support in pwm core to add driver
+>     with inversed polarity.
+>   - Removed patch 2 that resolved difference between hardware default polarity
+>     and pwm framework default polarity. The default polarity is set properly now
+>     when the pwm driver is registered with the pwm framework.
+> 
+> Arun Ramamurthy (1):
+>   drivers: pwm: bcm-kona: Dont set polarity in probe
+> 
+> Jonathan Richardson (2):
+>   pwm: kona: Fix incorrect config, disable, and polarity procedures
+>   pwm: core: Set enable state properly on failed call to enable
+> 
+> Tim Kryger (1):
+>   drivers: pwm: core: Add pwmchip_add_inversed
+> 
+>  drivers/pwm/core.c         |   52 +++++++++++++++++++++------
+>  drivers/pwm/pwm-bcm-kona.c |   84 +++++++++++++++++++++++++++++++++-----------
+>  include/linux/pwm.h        |    6 ++++
+>  3 files changed, 110 insertions(+), 32 deletions(-)
+> 
