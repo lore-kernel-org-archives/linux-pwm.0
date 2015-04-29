@@ -1,22 +1,26 @@
 From: Lee Jones <lee.jones@linaro.org>
 Subject: Re: [PATCH 3/8] drivers/mfd: Add lookup table for Panel Control as
  GPIO signal
-Date: Wed, 29 Apr 2015 15:27:43 +0100
-Message-ID: <20150429142743.GU9169@x1>
+Date: Wed, 29 Apr 2015 15:29:18 +0100
+Message-ID: <20150429142918.GV9169@x1>
 References: <1430316005-16480-1-git-send-email-shobhit.kumar@intel.com>
  <1430316005-16480-4-git-send-email-shobhit.kumar@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-gpio-owner@vger.kernel.org>
 Content-Disposition: inline
 In-Reply-To: <1430316005-16480-4-git-send-email-shobhit.kumar@intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-gpio-owner@vger.kernel.org
 To: Shobhit Kumar <shobhit.kumar@intel.com>
 Cc: intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-gpio <linux-gpio@vger.kernel.org>, linux-pwm <linux-pwm@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, David Airlie <airlied@linux.ie>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Povilas Staniulis <wdmonster@gmail.com>, Chih-Wei Huang <cwhuang@android-x86.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, 29 Apr 2015, Shobhit Kumar wrote:
+By the way, your subject lines are messed up.
+
+They should adhere to the conventions laid down by the Maintainers.
+
+`git log --oneline -- drivers/<subsystem>`
 
 > On some Intel SoC platforms, the panel enable/disable signals are
 > controlled by CRC PMIC. Add those control as a new GPIO in a lookup
@@ -33,12 +37,7 @@ On Wed, 29 Apr 2015, Shobhit Kumar wrote:
 > ---
 >  drivers/mfd/intel_soc_pmic_core.c | 17 +++++++++++++++++
 >  1 file changed, 17 insertions(+)
-
-I have no idea what this stuff is, but it looks plausible.
-
-=46or my own reference:
-  Acked-by: Lee Jones <lee.jones@linaro.org>
-
+>=20
 > diff --git a/drivers/mfd/intel_soc_pmic_core.c b/drivers/mfd/intel_so=
 c_pmic_core.c
 > index 7b50b6b..f3d918e 100644
@@ -92,3 +91,8 @@ Lee Jones
 Linaro STMicroelectronics Landing Team Lead
 Linaro.org =E2=94=82 Open source software for ARM SoCs
 =46ollow Linaro: Facebook | Twitter | Blog
+--
+To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
