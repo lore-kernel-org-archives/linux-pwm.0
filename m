@@ -1,163 +1,100 @@
-From: Shobhit Kumar <shobhit.kumar@intel.com>
-Subject: [PATCH 8/8] drm/i915: Backlight control using CRC PMIC
-	based PWM driver
-Date: Wed, 29 Apr 2015 19:30:05 +0530
-Message-ID: <1430316005-16480-9-git-send-email-shobhit.kumar@intel.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH 5/8] drivers/mfd: ADD PWM lookup table for CRC PMIC based
+ PWM
+Date: Wed, 29 Apr 2015 15:24:51 +0100
+Message-ID: <20150429142451.GS9169@x1>
 References: <1430316005-16480-1-git-send-email-shobhit.kumar@intel.com>
+ <1430316005-16480-6-git-send-email-shobhit.kumar@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <1430316005-16480-1-git-send-email-shobhit.kumar@intel.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-gpio <linux-gpio@vger.kernel.org>, linux-pwm <linux-pwm@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Samuel Ortiz <sameo@linux.intel.com>, Povilas Staniulis <wdmonster@gmail.com>, David Airlie <airlied@linux.ie>, Shobhit Kumar <shobhit.kumar@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Jani Nikula <jani.nikula@intel.com>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wi0-f180.google.com ([209.85.212.180]:33194 "EHLO
+	mail-wi0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S966088AbbD2OY4 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 29 Apr 2015 10:24:56 -0400
+Received: by wief7 with SMTP id f7so41552326wie.0
+        for <linux-pwm@vger.kernel.org>; Wed, 29 Apr 2015 07:24:55 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1430316005-16480-6-git-send-email-shobhit.kumar@intel.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Shobhit Kumar <shobhit.kumar@intel.com>
+Cc: intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-gpio <linux-gpio@vger.kernel.org>, linux-pwm <linux-pwm@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, David Airlie <airlied@linux.ie>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Povilas Staniulis <wdmonster@gmail.com>, Chih-Wei Huang <cwhuang@android-x86.org>
 
-VXNlIHRoZSBDUkMgUFdNIGRldmljZSBpbiBpbnRlbF9wYW5lbC5jIGFuZCBhZGQgbmV3IE1JUEkg
-YmFja2xpZ2h0CnNwZWNpZmlmYyBjYWxsYmFja3MKCnYyOiBNb2RpZnkgdG8gdXNlIHB3bV9jb25m
-aWcgY2FsbGJhY2sKCkNDOiBTYW11ZWwgT3J0aXogPHNhbWVvQGxpbnV4LmludGVsLmNvbT4KQ2M6
-IExpbnVzIFdhbGxlaWogPGxpbnVzLndhbGxlaWpAbGluYXJvLm9yZz4KQ2M6IEFsZXhhbmRyZSBD
-b3VyYm90IDxnbnVyb3VAZ21haWwuY29tPgpDYzogVGhpZXJyeSBSZWRpbmcgPHRoaWVycnkucmVk
-aW5nQGdtYWlsLmNvbT4KU2lnbmVkLW9mZi1ieTogU2hvYmhpdCBLdW1hciA8c2hvYmhpdC5rdW1h
-ckBpbnRlbC5jb20+Ci0tLQogZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfZHJ2LmggICB8ICA1
-ICsrKwogZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfZHNpLmMgICB8ICA2ICsrKwogZHJpdmVy
-cy9ncHUvZHJtL2k5MTUvaW50ZWxfcGFuZWwuYyB8IDkyICsrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrLS0tCiAzIGZpbGVzIGNoYW5nZWQsIDk4IGluc2VydGlvbnMoKyksIDUgZGVs
-ZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfZHJ2Lmgg
-Yi9kcml2ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9kcnYuaAppbmRleCA4OTdmMTdkLi5iNGViZTNi
-IDEwMDY0NAotLS0gYS9kcml2ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9kcnYuaAorKysgYi9kcml2
-ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9kcnYuaApAQCAtMTgyLDcgKzE4MiwxMiBAQCBzdHJ1Y3Qg
-aW50ZWxfcGFuZWwgewogCQlib29sIGVuYWJsZWQ7CiAJCWJvb2wgY29tYmluYXRpb25fbW9kZTsJ
-LyogZ2VuIDIvNCBvbmx5ICovCiAJCWJvb2wgYWN0aXZlX2xvd19wd207CisKKwkJLyogUFdNIGNo
-aXAgKi8KKwkJc3RydWN0IHB3bV9kZXZpY2UgKnB3bTsKKwogCQlzdHJ1Y3QgYmFja2xpZ2h0X2Rl
-dmljZSAqZGV2aWNlOworCiAJfSBiYWNrbGlnaHQ7CiAKIAl2b2lkICgqYmFja2xpZ2h0X3Bvd2Vy
-KShzdHJ1Y3QgaW50ZWxfY29ubmVjdG9yICosIGJvb2wgZW5hYmxlKTsKZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvZ3B1L2RybS9pOTE1L2ludGVsX2RzaS5jIGIvZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50
-ZWxfZHNpLmMKaW5kZXggYmU1NWZmYS4uODNjNDU0MCAxMDA2NDQKLS0tIGEvZHJpdmVycy9ncHUv
-ZHJtL2k5MTUvaW50ZWxfZHNpLmMKKysrIGIvZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfZHNp
-LmMKQEAgLTQwMiw2ICs0MDIsOCBAQCBzdGF0aWMgdm9pZCBpbnRlbF9kc2lfZW5hYmxlKHN0cnVj
-dCBpbnRlbF9lbmNvZGVyICplbmNvZGVyKQogCiAJCWludGVsX2RzaV9wb3J0X2VuYWJsZShlbmNv
-ZGVyKTsKIAl9CisKKwlpbnRlbF9wYW5lbF9lbmFibGVfYmFja2xpZ2h0KGludGVsX2RzaS0+YXR0
-YWNoZWRfY29ubmVjdG9yKTsKIH0KIAogc3RhdGljIHZvaWQgaW50ZWxfZHNpX3ByZV9lbmFibGUo
-c3RydWN0IGludGVsX2VuY29kZXIgKmVuY29kZXIpCkBAIC00NjYsNiArNDY4LDggQEAgc3RhdGlj
-IHZvaWQgaW50ZWxfZHNpX3ByZV9kaXNhYmxlKHN0cnVjdCBpbnRlbF9lbmNvZGVyICplbmNvZGVy
-KQogCiAJRFJNX0RFQlVHX0tNUygiXG4iKTsKIAorCWludGVsX3BhbmVsX2Rpc2FibGVfYmFja2xp
-Z2h0KGludGVsX2RzaS0+YXR0YWNoZWRfY29ubmVjdG9yKTsKKwogCWlmIChpc192aWRfbW9kZShp
-bnRlbF9kc2kpKSB7CiAJCS8qIFNlbmQgU2h1dGRvd24gY29tbWFuZCB0byB0aGUgcGFuZWwgaW4g
-TFAgbW9kZSAqLwogCQlmb3JfZWFjaF9kc2lfcG9ydChwb3J0LCBpbnRlbF9kc2ktPnBvcnRzKQpA
-QCAtMTEzMiw2ICsxMTM2LDggQEAgdm9pZCBpbnRlbF9kc2lfaW5pdChzdHJ1Y3QgZHJtX2Rldmlj
-ZSAqZGV2KQogCX0KIAogCWludGVsX3BhbmVsX2luaXQoJmludGVsX2Nvbm5lY3Rvci0+cGFuZWws
-IGZpeGVkX21vZGUsIE5VTEwpOworCWludGVsX3BhbmVsX3NldHVwX2JhY2tsaWdodChjb25uZWN0
-b3IsCisJCShpbnRlbF9lbmNvZGVyLT5jcnRjX21hc2sgPSAoMSA8PCBQSVBFX0EpKSA/IFBJUEVf
-QTogUElQRV9CKTsKIAogCXJldHVybjsKIApkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2k5
-MTUvaW50ZWxfcGFuZWwuYyBiL2RyaXZlcnMvZ3B1L2RybS9pOTE1L2ludGVsX3BhbmVsLmMKaW5k
-ZXggMDg1MzJkNC4uNTcwMGY2ZiAxMDA2NDQKLS0tIGEvZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50
-ZWxfcGFuZWwuYworKysgYi9kcml2ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9wYW5lbC5jCkBAIC0z
-Miw4ICszMiwxMiBAQAogCiAjaW5jbHVkZSA8bGludXgva2VybmVsLmg+CiAjaW5jbHVkZSA8bGlu
-dXgvbW9kdWxlcGFyYW0uaD4KKyNpbmNsdWRlIDxsaW51eC9wd20uaD4KICNpbmNsdWRlICJpbnRl
-bF9kcnYuaCIKIAorI2RlZmluZSBDUkNfUE1JQ19QV01fUEVSSU9EX05TCTIxMzMzCisjZGVmaW5l
-IENSQ19QTUlDX1BXTV9TVEVQUwkyNTUKKwogdm9pZAogaW50ZWxfZml4ZWRfcGFuZWxfbW9kZShj
-b25zdCBzdHJ1Y3QgZHJtX2Rpc3BsYXlfbW9kZSAqZml4ZWRfbW9kZSwKIAkJICAgICAgIHN0cnVj
-dCBkcm1fZGlzcGxheV9tb2RlICphZGp1c3RlZF9tb2RlKQpAQCAtNTM2LDYgKzU0MCwxNSBAQCBz
-dGF0aWMgdTMyIHZsdl9nZXRfYmFja2xpZ2h0KHN0cnVjdCBpbnRlbF9jb25uZWN0b3IgKmNvbm5l
-Y3RvcikKIAlyZXR1cm4gX3Zsdl9nZXRfYmFja2xpZ2h0KGRldiwgcGlwZSk7CiB9CiAKK3N0YXRp
-YyB1MzIgdmx2X2dldF9taXBpX2JhY2tsaWdodChzdHJ1Y3QgaW50ZWxfY29ubmVjdG9yICpjb25u
-ZWN0b3IpCit7CisJc3RydWN0IGludGVsX3BhbmVsICpwYW5lbCA9ICZjb25uZWN0b3ItPnBhbmVs
-OworCWludCBkdXR5X25zOworCisJZHV0eV9ucyA9IHB3bV9nZXRfZHV0eV9jeWNsZShwYW5lbC0+
-YmFja2xpZ2h0LnB3bSk7CisJcmV0dXJuIERJVl9ST1VORF9VUChkdXR5X25zICogMTAwLCBDUkNf
-UE1JQ19QV01fUEVSSU9EX05TKTsKK30KKwogc3RhdGljIHUzMiBpbnRlbF9wYW5lbF9nZXRfYmFj
-a2xpZ2h0KHN0cnVjdCBpbnRlbF9jb25uZWN0b3IgKmNvbm5lY3RvcikKIHsKIAlzdHJ1Y3QgZHJt
-X2RldmljZSAqZGV2ID0gY29ubmVjdG9yLT5iYXNlLmRldjsKQEAgLTYxNiw2ICs2MjksMTQgQEAg
-c3RhdGljIHZvaWQgdmx2X3NldF9iYWNrbGlnaHQoc3RydWN0IGludGVsX2Nvbm5lY3RvciAqY29u
-bmVjdG9yLCB1MzIgbGV2ZWwpCiAJSTkxNV9XUklURShWTFZfQkxDX1BXTV9DVEwocGlwZSksIHRt
-cCB8IGxldmVsKTsKIH0KIAorc3RhdGljIHZvaWQgdmx2X3NldF9taXBpX2JhY2tsaWdodChzdHJ1
-Y3QgaW50ZWxfY29ubmVjdG9yICpjb25uZWN0b3IsIHUzMiBsZXZlbCkKK3sKKwlzdHJ1Y3QgaW50
-ZWxfcGFuZWwgKnBhbmVsID0gJmNvbm5lY3Rvci0+cGFuZWw7CisJaW50IGR1dHlfbnMgPSBESVZf
-Uk9VTkRfVVAobGV2ZWwgKiBDUkNfUE1JQ19QV01fUEVSSU9EX05TLCAxMDApOworCisJcHdtX2Nv
-bmZpZyhwYW5lbC0+YmFja2xpZ2h0LnB3bSwgZHV0eV9ucywgQ1JDX1BNSUNfUFdNX1BFUklPRF9O
-Uyk7Cit9CisKIHN0YXRpYyB2b2lkCiBpbnRlbF9wYW5lbF9hY3R1YWxseV9zZXRfYmFja2xpZ2h0
-KHN0cnVjdCBpbnRlbF9jb25uZWN0b3IgKmNvbm5lY3RvciwgdTMyIGxldmVsKQogewpAQCAtNzQx
-LDYgKzc2MiwxNiBAQCBzdGF0aWMgdm9pZCB2bHZfZGlzYWJsZV9iYWNrbGlnaHQoc3RydWN0IGlu
-dGVsX2Nvbm5lY3RvciAqY29ubmVjdG9yKQogCUk5MTVfV1JJVEUoVkxWX0JMQ19QV01fQ1RMMihw
-aXBlKSwgdG1wICYgfkJMTV9QV01fRU5BQkxFKTsKIH0KIAorc3RhdGljIHZvaWQgdmx2X2Rpc2Fi
-bGVfbWlwaV9iYWNrbGlnaHQoc3RydWN0IGludGVsX2Nvbm5lY3RvciAqY29ubmVjdG9yKQorewor
-CXN0cnVjdCBpbnRlbF9wYW5lbCAqcGFuZWwgPSAmY29ubmVjdG9yLT5wYW5lbDsKKworCS8qIERp
-c2FibGUgdGhlIGJhY2tsaWdodCAqLworCXB3bV9jb25maWcocGFuZWwtPmJhY2tsaWdodC5wd20s
-IDAsIENSQ19QTUlDX1BXTV9QRVJJT0RfTlMpOworCXVzbGVlcF9yYW5nZSgyMDAwLCAzMDAwKTsK
-Kwlwd21fZGlzYWJsZShwYW5lbC0+YmFja2xpZ2h0LnB3bSk7Cit9CisKIHZvaWQgaW50ZWxfcGFu
-ZWxfZGlzYWJsZV9iYWNrbGlnaHQoc3RydWN0IGludGVsX2Nvbm5lY3RvciAqY29ubmVjdG9yKQog
-ewogCXN0cnVjdCBkcm1fZGV2aWNlICpkZXYgPSBjb25uZWN0b3ItPmJhc2UuZGV2OwpAQCAtOTQ3
-LDYgKzk3OCwxNiBAQCBzdGF0aWMgdm9pZCB2bHZfZW5hYmxlX2JhY2tsaWdodChzdHJ1Y3QgaW50
-ZWxfY29ubmVjdG9yICpjb25uZWN0b3IpCiAJSTkxNV9XUklURShWTFZfQkxDX1BXTV9DVEwyKHBp
-cGUpLCBjdGwyIHwgQkxNX1BXTV9FTkFCTEUpOwogfQogCitzdGF0aWMgdm9pZCB2bHZfZW5hYmxl
-X21pcGlfYmFja2xpZ2h0KHN0cnVjdCBpbnRlbF9jb25uZWN0b3IgKmNvbm5lY3RvcikKK3sKKwlz
-dHJ1Y3QgaW50ZWxfcGFuZWwgKnBhbmVsID0gJmNvbm5lY3Rvci0+cGFuZWw7CisJaW50IGR1dHlf
-bnMgPSBESVZfUk9VTkRfVVAoCisJCQlwYW5lbC0+YmFja2xpZ2h0LmxldmVsICogQ1JDX1BNSUNf
-UFdNX1BFUklPRF9OUywgMTAwKTsKKworCXB3bV9lbmFibGUocGFuZWwtPmJhY2tsaWdodC5wd20p
-OworCXB3bV9jb25maWcocGFuZWwtPmJhY2tsaWdodC5wd20sIGR1dHlfbnMsIENSQ19QTUlDX1BX
-TV9QRVJJT0RfTlMpOworfQorCiB2b2lkIGludGVsX3BhbmVsX2VuYWJsZV9iYWNrbGlnaHQoc3Ry
-dWN0IGludGVsX2Nvbm5lY3RvciAqY29ubmVjdG9yKQogewogCXN0cnVjdCBkcm1fZGV2aWNlICpk
-ZXYgPSBjb25uZWN0b3ItPmJhc2UuZGV2OwpAQCAtMTI5OSw2ICsxMzQwLDM0IEBAIHN0YXRpYyBp
-bnQgdmx2X3NldHVwX2JhY2tsaWdodChzdHJ1Y3QgaW50ZWxfY29ubmVjdG9yICpjb25uZWN0b3Is
-IGVudW0gcGlwZSBwaXBlCiAJcmV0dXJuIDA7CiB9CiAKK3N0YXRpYyBpbnQgdmx2X3NldHVwX21p
-cGlfYmFja2xpZ2h0KHN0cnVjdCBpbnRlbF9jb25uZWN0b3IgKmNvbm5lY3RvciwgZW51bSBwaXBl
-IHBpcGUpCit7CisJc3RydWN0IGRybV9kZXZpY2UgKmRldiA9IGNvbm5lY3Rvci0+YmFzZS5kZXY7
-CisJc3RydWN0IGludGVsX3BhbmVsICpwYW5lbCA9ICZjb25uZWN0b3ItPnBhbmVsOworCisJLyog
-R2V0IHRoZSBQV00gY2hpcCBmb3IgYmFja2xpZ2h0IGNvbnRyb2wgKi8KKwlwYW5lbC0+YmFja2xp
-Z2h0LnB3bSA9IHB3bV9nZXQoZGV2LT5kZXYsICJwd21fYmFja2xpZ2h0Iik7CisJaWYgKElTX0VS
-UihwYW5lbC0+YmFja2xpZ2h0LnB3bSkpIHsKKwkJRFJNX0VSUk9SKCJGYWlsZCB0byBvd24gdGhl
-IHB3bSBjaGlwXG4iKTsKKwkJcGFuZWwtPmJhY2tsaWdodC5wd20gPSBOVUxMOworCX0gZWxzZSBp
-ZiAocHdtX2NvbmZpZyhwYW5lbC0+YmFja2xpZ2h0LnB3bSwgQ1JDX1BNSUNfUFdNX1BFUklPRF9O
-UywKKwkJCQkJCUNSQ19QTUlDX1BXTV9QRVJJT0RfTlMpIDwgMCkgeworCQlEUk1fRVJST1IoIkZh
-aWxlZCB0byBjb25maWd1cmUgdGhlIHB3bSBjaGlwXG4iKTsKKwkJcHdtX3B1dChwYW5lbC0+YmFj
-a2xpZ2h0LnB3bSk7CisJCXBhbmVsLT5iYWNrbGlnaHQucHdtID0gTlVMTDsKKwkJcmV0dXJuIC0x
-OworCX0KKworCXBhbmVsLT5iYWNrbGlnaHQubWluID0gMDsgLyogMCUgKi8KKwlwYW5lbC0+YmFj
-a2xpZ2h0Lm1heCA9IDEwMDsgLyogMTAwJSAqLworCXBhbmVsLT5iYWNrbGlnaHQubGV2ZWwgPSBE
-SVZfUk9VTkRfVVAoCisJCQkJIHB3bV9nZXRfZHV0eV9jeWNsZShwYW5lbC0+YmFja2xpZ2h0LnB3
-bSkgKiAxMDAsCisJCQkJIENSQ19QTUlDX1BXTV9QRVJJT0RfTlMpOworCXBhbmVsLT5iYWNrbGln
-aHQuZW5hYmxlZCA9IHBhbmVsLT5iYWNrbGlnaHQubGV2ZWwgPyB0cnVlIDogZmFsc2U7CisKKwly
-ZXR1cm4gMDsKK30KKwogaW50IGludGVsX3BhbmVsX3NldHVwX2JhY2tsaWdodChzdHJ1Y3QgZHJt
-X2Nvbm5lY3RvciAqY29ubmVjdG9yLCBlbnVtIHBpcGUgcGlwZSkKIHsKIAlzdHJ1Y3QgZHJtX2Rl
-dmljZSAqZGV2ID0gY29ubmVjdG9yLT5kZXY7CkBAIC0xMzYzLDExICsxNDMyLDE5IEBAIHZvaWQg
-aW50ZWxfcGFuZWxfaW5pdF9iYWNrbGlnaHRfZnVuY3Moc3RydWN0IGRybV9kZXZpY2UgKmRldikK
-IAkJZGV2X3ByaXYtPmRpc3BsYXkuc2V0X2JhY2tsaWdodCA9IHBjaF9zZXRfYmFja2xpZ2h0Owog
-CQlkZXZfcHJpdi0+ZGlzcGxheS5nZXRfYmFja2xpZ2h0ID0gcGNoX2dldF9iYWNrbGlnaHQ7CiAJ
-fSBlbHNlIGlmIChJU19WQUxMRVlWSUVXKGRldikpIHsKLQkJZGV2X3ByaXYtPmRpc3BsYXkuc2V0
-dXBfYmFja2xpZ2h0ID0gdmx2X3NldHVwX2JhY2tsaWdodDsKLQkJZGV2X3ByaXYtPmRpc3BsYXku
-ZW5hYmxlX2JhY2tsaWdodCA9IHZsdl9lbmFibGVfYmFja2xpZ2h0OwotCQlkZXZfcHJpdi0+ZGlz
-cGxheS5kaXNhYmxlX2JhY2tsaWdodCA9IHZsdl9kaXNhYmxlX2JhY2tsaWdodDsKLQkJZGV2X3By
-aXYtPmRpc3BsYXkuc2V0X2JhY2tsaWdodCA9IHZsdl9zZXRfYmFja2xpZ2h0OwotCQlkZXZfcHJp
-di0+ZGlzcGxheS5nZXRfYmFja2xpZ2h0ID0gdmx2X2dldF9iYWNrbGlnaHQ7CisJCWlmIChkZXZf
-cHJpdi0+dmJ0Lmhhc19taXBpKSB7CisJCQlkZXZfcHJpdi0+ZGlzcGxheS5zZXR1cF9iYWNrbGln
-aHQgPSB2bHZfc2V0dXBfbWlwaV9iYWNrbGlnaHQ7CisJCQlkZXZfcHJpdi0+ZGlzcGxheS5lbmFi
-bGVfYmFja2xpZ2h0ID0gdmx2X2VuYWJsZV9taXBpX2JhY2tsaWdodDsKKwkJCWRldl9wcml2LT5k
-aXNwbGF5LmRpc2FibGVfYmFja2xpZ2h0ID0gdmx2X2Rpc2FibGVfbWlwaV9iYWNrbGlnaHQ7CisJ
-CQlkZXZfcHJpdi0+ZGlzcGxheS5zZXRfYmFja2xpZ2h0ID0gdmx2X3NldF9taXBpX2JhY2tsaWdo
-dDsKKwkJCWRldl9wcml2LT5kaXNwbGF5LmdldF9iYWNrbGlnaHQgPSB2bHZfZ2V0X21pcGlfYmFj
-a2xpZ2h0OworCQl9IGVsc2UgeworCQkJZGV2X3ByaXYtPmRpc3BsYXkuc2V0dXBfYmFja2xpZ2h0
-ID0gdmx2X3NldHVwX2JhY2tsaWdodDsKKwkJCWRldl9wcml2LT5kaXNwbGF5LmVuYWJsZV9iYWNr
-bGlnaHQgPSB2bHZfZW5hYmxlX2JhY2tsaWdodDsKKwkJCWRldl9wcml2LT5kaXNwbGF5LmRpc2Fi
-bGVfYmFja2xpZ2h0ID0gdmx2X2Rpc2FibGVfYmFja2xpZ2h0OworCQkJZGV2X3ByaXYtPmRpc3Bs
-YXkuc2V0X2JhY2tsaWdodCA9IHZsdl9zZXRfYmFja2xpZ2h0OworCQkJZGV2X3ByaXYtPmRpc3Bs
-YXkuZ2V0X2JhY2tsaWdodCA9IHZsdl9nZXRfYmFja2xpZ2h0OworCQl9CiAJfSBlbHNlIGlmIChJ
-U19HRU40KGRldikpIHsKIAkJZGV2X3ByaXYtPmRpc3BsYXkuc2V0dXBfYmFja2xpZ2h0ID0gaTk2
-NV9zZXR1cF9iYWNrbGlnaHQ7CiAJCWRldl9wcml2LT5kaXNwbGF5LmVuYWJsZV9iYWNrbGlnaHQg
-PSBpOTY1X2VuYWJsZV9iYWNrbGlnaHQ7CkBAIC0xNDA0LDYgKzE0ODEsMTEgQEAgdm9pZCBpbnRl
-bF9wYW5lbF9maW5pKHN0cnVjdCBpbnRlbF9wYW5lbCAqcGFuZWwpCiAJaWYgKHBhbmVsLT5kb3du
-Y2xvY2tfbW9kZSkKIAkJZHJtX21vZGVfZGVzdHJveShpbnRlbF9jb25uZWN0b3ItPmJhc2UuZGV2
-LAogCQkJCXBhbmVsLT5kb3duY2xvY2tfbW9kZSk7CisKKwkvKiBkaXNwb3NlIG9mIHRoZSBwd20g
-Ki8KKwlpZiAocGFuZWwtPmJhY2tsaWdodC5wd20pCisJCXB3bV9wdXQocGFuZWwtPmJhY2tsaWdo
-dC5wd20pOworCiB9CiAKIHZvaWQgaW50ZWxfYmFja2xpZ2h0X3JlZ2lzdGVyKHN0cnVjdCBkcm1f
-ZGV2aWNlICpkZXYpCi0tIAoyLjEuMAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KSW50ZWwtZ2Z4IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJl
-ZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5m
-by9pbnRlbC1nZngK
+On Wed, 29 Apr 2015, Shobhit Kumar wrote:
+
+> On some BYT PLatform the PWM is controlled using CRC PMIC. Add a look=
+up
+> entry for the same to be used by the consumer (Intel GFX)
+>=20
+> v2: Remove the lookup table on driver unload (Thierry)
+>=20
+> CC: Samuel Ortiz <sameo@linux.intel.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Alexandre Courbot <gnurou@gmail.com>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Signed-off-by: Shobhit Kumar <shobhit.kumar@intel.com>
+> ---
+>  drivers/mfd/intel_soc_pmic_core.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+
+How do you expect this set to be managed?
+
+Acked-by: Lee Jones <lee.jones@linaro.org>
+
+> diff --git a/drivers/mfd/intel_soc_pmic_core.c b/drivers/mfd/intel_so=
+c_pmic_core.c
+> index f3d918e..a00ddd9 100644
+> --- a/drivers/mfd/intel_soc_pmic_core.c
+> +++ b/drivers/mfd/intel_soc_pmic_core.c
+> @@ -25,6 +25,7 @@
+>  #include <linux/regmap.h>
+>  #include <linux/mfd/intel_soc_pmic.h>
+>  #include <linux/gpio/machine.h>
+> +#include <linux/pwm.h>
+>  #include "intel_soc_pmic_core.h"
+> =20
+>  /* Lookup table for the Panel Enable/Disable line as GPIO signals */
+> @@ -37,6 +38,11 @@ static struct gpiod_lookup_table panel_gpio_table =
+=3D {
+>  	},
+>  };
+> =20
+> +/* PWM consumed by the Intel GFX */
+> +static struct pwm_lookup crc_pwm_lookup[] =3D {
+> +	PWM_LOOKUP("crystal_cove_pwm", 0, "0000:00:02.0", "pwm_backlight", =
+0, PWM_POLARITY_NORMAL),
+> +};
+> +
+>  static int intel_soc_pmic_find_gpio_irq(struct device *dev)
+>  {
+>  	struct gpio_desc *desc;
+> @@ -99,6 +105,9 @@ static int intel_soc_pmic_i2c_probe(struct i2c_cli=
+ent *i2c,
+>  	/* Add lookup table binding for Panel Control to the GPIO Chip */
+>  	gpiod_add_lookup_table(&panel_gpio_table);
+> =20
+> +	/* Add lookup table for crc-pwm */
+> +	pwm_add_table(crc_pwm_lookup, ARRAY_SIZE(crc_pwm_lookup));
+> +
+>  	ret =3D mfd_add_devices(dev, -1, config->cell_dev,
+>  			      config->n_cell_devs, NULL, 0,
+>  			      regmap_irq_get_domain(pmic->irq_chip_data));
+> @@ -121,6 +130,9 @@ static int intel_soc_pmic_i2c_remove(struct i2c_c=
+lient *i2c)
+>  	/* Remove lookup table for Panel Control from the GPIO Chip */
+>  	gpiod_remove_lookup_table(&panel_gpio_table);
+> =20
+> +	/* remove crc-pwm lookup table */
+> +	pwm_remove_table(crc_pwm_lookup, ARRAY_SIZE(crc_pwm_lookup));
+> +
+>  	mfd_remove_devices(&i2c->dev);
+> =20
+>  	return 0;
+
+--=20
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
