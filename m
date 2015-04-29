@@ -1,68 +1,68 @@
-From: Jonathan Richardson <jonathar@broadcom.com>
-Subject: Re: [PATCH v6 0/4] Fix bugs in kona pwm driver and pwm core
-Date: Tue, 28 Apr 2015 14:05:54 -0700
-Message-ID: <553FF632.7050706@broadcom.com>
-References: <1428692333-14400-1-git-send-email-jonathar@broadcom.com>
+From: Shobhit Kumar <shobhit.kumar@intel.com>
+Subject: [PATCH 0/8] Crystalcove (CRC) PMIC based panel and pwm
+	control
+Date: Wed, 29 Apr 2015 19:29:57 +0530
+Message-ID: <1430316005-16480-1-git-send-email-shobhit.kumar@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-gw3-out.broadcom.com ([216.31.210.64]:24390 "EHLO
-	mail-gw3-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1030851AbbD1VGN (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 28 Apr 2015 17:06:13 -0400
-In-Reply-To: <1428692333-14400-1-git-send-email-jonathar@broadcom.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-gpio <linux-gpio@vger.kernel.org>, linux-pwm <linux-pwm@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Samuel Ortiz <sameo@linux.intel.com>, Povilas Staniulis <wdmonster@gmail.com>, David Airlie <airlied@linux.ie>, Shobhit Kumar <shobhit.kumar@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Jani Nikula <jani.nikula@intel.com>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Jonathan Richardson <jonathar@broadcom.com>
-Cc: Tim Kryger <tim.kryger@gmail.com>, Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-Pinging maintainer and others. Could you please let me know when you can
-provide feedback on this patchset.
-
-Tim, were you ok with these changes now or do you still have concerns
-about changing the driver? I didn't hear back from after our last
-conversation. If there are still concerns we could possibly make a new
-cygnus pwm driver, though it would be mostly the same as the existing
-kona driver. Or add a DT version to the existing driver that has the new
-modified behaviour - though I think this would be messy.
-
-Thanks.
-
-On 15-04-10 11:58 AM, Jonathan Richardson wrote:
-> This patchset fixes a number of bugs in the Broadcom Kona pwm driver. It also
-> fixes a bug in the pwm core where the enabled state was incorrect on failed
-> calls to enable. Also, a new function was added to the pwm core to add pwm chips
-> with inversed polarity for chips that have a different default polarity than the
-> core. The prevents incorrect polarity being reported.
-> 
-> These changes are required for the Kona pwm driver to work on Cygnus and the
-> same pwm IP is being used.
-> 
-> Changes from v5:
->   - Address Dmitry's comment on code cleanup of pwm_enable() in pwm core.
->   - Including all patches from different contributors in this patchset. Some
-> 	were left out in v4.
-> 
-> Changes from v4:
->   - Rebased to Tim Kryger's patch that adds support in pwm core to add driver
->     with inversed polarity.
->   - Removed patch 2 that resolved difference between hardware default polarity
->     and pwm framework default polarity. The default polarity is set properly now
->     when the pwm driver is registered with the pwm framework.
-> 
-> Arun Ramamurthy (1):
->   drivers: pwm: bcm-kona: Dont set polarity in probe
-> 
-> Jonathan Richardson (2):
->   pwm: kona: Fix incorrect config, disable, and polarity procedures
->   pwm: core: Set enable state properly on failed call to enable
-> 
-> Tim Kryger (1):
->   drivers: pwm: core: Add pwmchip_add_inversed
-> 
->  drivers/pwm/core.c         |   52 +++++++++++++++++++++------
->  drivers/pwm/pwm-bcm-kona.c |   84 +++++++++++++++++++++++++++++++++-----------
->  include/linux/pwm.h        |    6 ++++
->  3 files changed, 110 insertions(+), 32 deletions(-)
-> 
+SGkgQWxsLApPbiBzb21lIG9mIHRoZSBCWVQgZGV2aWNlcywgZm9yIERTSSBwYW5lbHMsIHRoZSBw
+YW5lbCBlbmFibGUvZGlzYWJsZSBzaWduYWxzCmFuZCBiYWNrbGlnaHQgY29udHJvbCBhcmUgZG9u
+ZSB1c2luZyB0aGUgQ3J5c3RhbGNvdmUgUE1JQy4gVGhpcyBzZXJpZXMgcHJvdmlkZXMKc3VwcG9y
+dCBmb3IgdGhlIHNhbWUgYW5kIGhhcyBiZWVuIHJldmlld2VkIGVhcmxpZXIgb24gLSAKaHR0cDov
+L2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9hcmNoaXZlcy9pbnRlbC1nZngvMjAxNS1NYXJjaC8wNjE5
+MDguaHRtbAoKVGhpcyBzZXJpZXMgYWRkcmVzc2VzIHRoZSByZXZpZXcgY29tbWVudHMgd2l0aCB0
+d28gb2YgdGhlIHBhdGNoZXMgYWxyZWFkeSBtZXJnZWQKaW4gbGludXgtbmV4dCBhcyAtIAoKaHR0
+cDovL2dpdC5rZXJuZWwub3JnL2NnaXQvbGludXgva2VybmVsL2dpdC9uZXh0L2xpbnV4LW5leHQu
+Z2l0L2NvbW1pdC8/aWQ9ZTE4OWNhNTZkOTFiYmYxZDNmZTJmODhhYjY4NThiZjkxOWQ0MmFkZgpo
+dHRwOi8vZ2l0Lmtlcm5lbC5vcmcvY2dpdC9saW51eC9rZXJuZWwvZ2l0L25leHQvbGludXgtbmV4
+dC5naXQvY29tbWl0Lz9pZD1jMjY0ZjExMTBkMjcxODVmODUzMTYwMmY1ZmNlNDAwYTZiYmNlOTQ2
+CgpCYXNpY2FsbHkgZm9sbG93aW5nIGFyZSBpbXBsZW1lbnRlZCAtIAoKMS4gR1BJTyBjb250cm9s
+IGZvciBwYW5lbCBlbmFibGUvZGlzYWJsZSB3aXRoIEdGWCBkZXZpY2UgYXMgY29uc3VtZXIKMi4g
+TmV3IFBXTSBjaGlwIGRyaXZlciBhZGRlZCBmb3IgQ1JDIFBNSUMgYmFzZWQgYmFja2xpZ2h0IGNv
+bnRyb2wKMy4gaTkxNSBpcyBtb2RpZmllZCB0byB1c2UgdGhlIENSQyBncGlvIGNoaXAgYW5kIHRo
+ZSBDUkMgUFdNIGNoaXAgdG8gZG8gCiAgIGJhY2tsaWdodCBjb250cm9sLiBUaGlzIGlzIG5vdyBh
+ZGRlZCBpbiB0aGUgZ2VuZXJpYyBwYW5lbCBiYWNrbGlnaHQKICAgY29udHJvbCBpbmZyYXN0cnVj
+dHVyZQoKQWxsIHRoZXNlIHBhdGNoZXMgaGF2ZSBiZWVuIHRlc3RlZCBvbiBBc3VzVDEwMCBhbmQg
+d29ya2luZyBmaW5lIHVzaW5nIAovc3lzL2NsYXNzL2JhY2tsaWdodC9pbnRlbF9iYWNrbGlnaHQg
+aW50ZXJmYWNlLgoKUGF0Y2hlcyBhcmUgYWxzbyB2ZXJpZmllZCBvbiBhbmRyb2lkLXg4NiB0cmVl
+IGZvciBBc3VzVDEwMC4KClJlZ2FyZHMKU2hvYmhpdAoKU2hvYmhpdCBLdW1hciAoOCk6CiAgZHJp
+dmVycy9ncGlvL2dwaW9saWI6IEFkZCBzdXBwb3J0IGZvciByZW1vdmluZyByZWdpc3RlcmVkIGNv
+bnN1bWVyCiAgICBsb29rdXAgdGFibGUKICBkcml2ZXJzL3B3bS9jb3JlOiBBZGQgc3VwcG9ydCB0
+byByZW1vdmUgcmVnaXN0ZXJlZCBjb25zdW1lciBsb29rdXAKICAgIHRhYmxlcwogIGRyaXZlcnMv
+bWZkOiBBZGQgbG9va3VwIHRhYmxlIGZvciBQYW5lbCBDb250cm9sIGFzIEdQSU8gc2lnbmFsCiAg
+ZHJpdmVycy9tZmQ6IEFkZCBQV00gY2VsbCBkZXZpY2UgZm9yIENyeXN0YWxjb3ZlIFBNSUMKICBk
+cml2ZXJzL21mZDogQUREIFBXTSBsb29rdXAgdGFibGUgZm9yIENSQyBQTUlDIGJhc2VkIFBXTQog
+IGRyaXZlcnMvcHdtOiBBZGQgQ3J5c3RhbGNvdmUgKENSQykgUFdNIGRyaXZlcgogIGRybS9pOTE1
+OiBVc2UgdGhlIENSQyBncGlvIGZvciBwYW5lbCBlbmFibGUvZGlzYWJsZQogIGRybS9pOTE1OiBC
+YWNrbGlnaHQgY29udHJvbCB1c2luZyBDUkMgUE1JQyBiYXNlZCBQV00gZHJpdmVyCgogZHJpdmVy
+cy9ncGlvL2dwaW9saWIuYyAgICAgICAgICAgICB8ICAxMyArKysKIGRyaXZlcnMvZ3B1L2RybS9p
+OTE1L2ludGVsX2Rydi5oICAgfCAgIDUgKysKIGRyaXZlcnMvZ3B1L2RybS9pOTE1L2ludGVsX2Rz
+aS5jICAgfCAgMzggKysrKysrKystCiBkcml2ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9kc2kuaCAg
+IHwgICA2ICsrCiBkcml2ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9wYW5lbC5jIHwgIDkyICsrKysr
+KysrKysrKysrKysrKy0tCiBkcml2ZXJzL21mZC9pbnRlbF9zb2NfcG1pY19jb3JlLmMgIHwgIDI5
+ICsrKysrKysKIGRyaXZlcnMvbWZkL2ludGVsX3NvY19wbWljX2NyYy5jICAgfCAgIDMgKwogZHJp
+dmVycy9wd20vS2NvbmZpZyAgICAgICAgICAgICAgICB8ICAgNyArKwogZHJpdmVycy9wd20vTWFr
+ZWZpbGUgICAgICAgICAgICAgICB8ICAgMSArCiBkcml2ZXJzL3B3bS9jb3JlLmMgICAgICAgICAg
+ICAgICAgIHwgIDE3ICsrKysKIGRyaXZlcnMvcHdtL3B3bS1jcmMuYyAgICAgICAgICAgICAgfCAx
+NzEgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKwogaW5jbHVkZS9saW51eC9n
+cGlvL21hY2hpbmUuaCAgICAgICB8ICAgMSArCiBpbmNsdWRlL2xpbnV4L3B3bS5oICAgICAgICAg
+ICAgICAgIHwgICA1ICsrCiAxMyBmaWxlcyBjaGFuZ2VkLCAzODEgaW5zZXJ0aW9ucygrKSwgNyBk
+ZWxldGlvbnMoLSkKIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3B3bS9wd20tY3JjLmMKCi0t
+IAoyLjEuMAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+SW50ZWwtZ2Z4IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0
+dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
