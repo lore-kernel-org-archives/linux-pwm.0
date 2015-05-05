@@ -1,84 +1,59 @@
-From: Paul Bolle <pebolle@tiscali.nl>
-Subject: Re: [PATCH 6/8] drivers/pwm: Add Crystalcove (CRC) PWM driver
-Date: Thu, 30 Apr 2015 23:12:02 +0200
-Message-ID: <1430428322.2187.24.camel@x220>
-References: <1430316005-16480-1-git-send-email-shobhit.kumar@intel.com>
-	 <1430316005-16480-7-git-send-email-shobhit.kumar@intel.com>
+From: Shobhit Kumar <shobhit.kumar@intel.com>
+Subject: [PATCH 1/8] gpiolib: Add support for removing
+	registered consumer lookup table
+Date: Tue,  5 May 2015 15:02:48 +0530
+Message-ID: <1430818368-26790-1-git-send-email-shobhit.kumar@intel.com>
+References: <1430316005-16480-2-git-send-email-shobhit.kumar@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lb2-smtp-cloud2.xs4all.net ([194.109.24.25]:35653 "EHLO
-	lb2-smtp-cloud2.xs4all.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1750717AbbD3VMK (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 30 Apr 2015 17:12:10 -0400
-In-Reply-To: <1430316005-16480-7-git-send-email-shobhit.kumar@intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <1430316005-16480-2-git-send-email-shobhit.kumar@intel.com>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-gpio <linux-gpio@vger.kernel.org>, linux-pwm <linux-pwm@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Samuel Ortiz <sameo@linux.intel.com>, Povilas Staniulis <wdmonster@gmail.com>, David Airlie <airlied@linux.ie>, Shobhit Kumar <shobhit.kumar@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Jani Nikula <jani.nikula@intel.com>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Shobhit Kumar <shobhit.kumar@intel.com>
-Cc: intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-gpio <linux-gpio@vger.kernel.org>, linux-pwm <linux-pwm@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, David Airlie <airlied@linux.ie>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Lee Jones <lee.jones@linaro.org>, Povilas Staniulis <wdmonster@gmail.com>, Chih-Wei Huang <cwhuang@android-x86.org>
 
-On Wed, 2015-04-29 at 19:30 +0530, Shobhit Kumar wrote:
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
- 
-> +config PWM_CRC
-> +	bool "Intel Crystalcove (CRC) PWM support"
-> +	depends on X86 && INTEL_SOC_PMIC
-> +	help
-> +	  Generic PWM framework driver for Crystalcove (CRC) PMIC based PWM
-> +	  control.
-
-> --- a/drivers/pwm/Makefile
-> +++ b/drivers/pwm/Makefile
-
-> +obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
-
-PWM_CRC is a bool symbol. So pwm-crc.o can never be part of a module.
-
-(If I'm wrong, and that object file can actually be part of a module,
-you can stop reading here.)
-
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-crc.c
-
-> +#include <linux/module.h>
-
-Perhaps this include is not needed.
-
-> +static const struct pwm_ops crc_pwm_ops = {
-> +	.config = crc_pwm_config,
-> +	.enable = crc_pwm_enable,
-> +	.disable = crc_pwm_disable,
-> +	.owner = THIS_MODULE,
-
-For built-in only code THIS_MODULE is basically equivalent to NULL (see
-include/linux/export.h). So I guess this line can be dropped.
-
-> +};
-
-> +static struct platform_driver crystalcove_pwm_driver = {
-> +	.probe = crystalcove_pwm_probe,
-> +	.remove = crystalcove_pwm_remove,
-> +	.driver = {
-> +		.name = "crystal_cove_pwm",
-> +	},
-> +};
-> +
-> +module_platform_driver(crystalcove_pwm_driver);
-
-Speaking from memory: for built-in only code this is equivalent to
-calling 
-    platform_driver_register(&crystalcove_pwm_driver);
-
-from a wrapper, and marking that wrapper with device_initcall().
-
-> +MODULE_AUTHOR("Shobhit Kumar <shobhit.kumar@intel.com>");
-> +MODULE_DESCRIPTION("Intel Crystal Cove PWM Driver");
-> +MODULE_LICENSE("GPL v2");
-
-These macros will be effectively preprocessed away for built-in only
-code.
-
-
-Paul Bolle
+SW4gY2FzZSB3ZSB1bmxvYWQgYW5kIGxvYWQgYSBkcml2ZXIgbW9kdWxlIGFnYWluIHRoYXQgaXMg
+cmVnaXN0ZXJpbmcgYQpsb29rdXAgdGFibGUsIHdpdGhvdXQgdGhpcyBpdCB3aWxsIHJlc3VsdCBp
+biBtdWx0aXBsZSBlbnRyaWVzLiBQcm92aWRlCmFuIG9wdGlvbiB0byByZW1vdmUgdGhlIGxvb2t1
+cCB0YWJsZSBvbiBkcml2ZXIgdW5sb2FkCgp2MjogQ2NpbmcgbWFpbnRhaW5lcnMKdjM6IENvcnJl
+Y3QgdGhlIHN1YmplY3QgbGluZSAoTGVlIGpvbmVzKQoKQ2M6IFNhbXVlbCBPcnRpeiA8c2FtZW9A
+bGludXguaW50ZWwuY29tPgpDYzogTGludXMgV2FsbGVpaiA8bGludXMud2FsbGVpakBsaW5hcm8u
+b3JnPgpDYzogQWxleGFuZHJlIENvdXJib3QgPGdudXJvdUBnbWFpbC5jb20+CkNjOiBUaGllcnJ5
+IFJlZGluZyA8dGhpZXJyeS5yZWRpbmdAZ21haWwuY29tPgpSZXZpZXdlZC1ieTogQWxleGFuZHJl
+IENvdXJib3QgPGFjb3VyYm90QG52aWRpYS5jb20+ClNpZ25lZC1vZmYtYnk6IFNob2JoaXQgS3Vt
+YXIgPHNob2JoaXQua3VtYXJAaW50ZWwuY29tPgotLS0KIGRyaXZlcnMvZ3Bpby9ncGlvbGliLmMg
+ICAgICAgfCAxMyArKysrKysrKysrKysrCiBpbmNsdWRlL2xpbnV4L2dwaW8vbWFjaGluZS5oIHwg
+IDEgKwogMiBmaWxlcyBjaGFuZ2VkLCAxNCBpbnNlcnRpb25zKCspCgpkaWZmIC0tZ2l0IGEvZHJp
+dmVycy9ncGlvL2dwaW9saWIuYyBiL2RyaXZlcnMvZ3Bpby9ncGlvbGliLmMKaW5kZXggNTllYWEy
+My4uMjQyMGFmOSAxMDA2NDQKLS0tIGEvZHJpdmVycy9ncGlvL2dwaW9saWIuYworKysgYi9kcml2
+ZXJzL2dwaW8vZ3Bpb2xpYi5jCkBAIC0xNjU4LDYgKzE2NTgsMTkgQEAgdm9pZCBncGlvZF9hZGRf
+bG9va3VwX3RhYmxlKHN0cnVjdCBncGlvZF9sb29rdXBfdGFibGUgKnRhYmxlKQogCW11dGV4X3Vu
+bG9jaygmZ3Bpb19sb29rdXBfbG9jayk7CiB9CiAKKy8qKgorICogZ3Bpb2RfcmVtb3ZlX2xvb2t1
+cF90YWJsZSgpIC0gdW5yZWdpc3RlciBHUElPIGRldmljZSBjb25zdW1lcnMKKyAqIEB0YWJsZTog
+dGFibGUgb2YgY29uc3VtZXJzIHRvIHVucmVnaXN0ZXIKKyAqLwordm9pZCBncGlvZF9yZW1vdmVf
+bG9va3VwX3RhYmxlKHN0cnVjdCBncGlvZF9sb29rdXBfdGFibGUgKnRhYmxlKQoreworCW11dGV4
+X2xvY2soJmdwaW9fbG9va3VwX2xvY2spOworCisJbGlzdF9kZWwoJnRhYmxlLT5saXN0KTsKKwor
+CW11dGV4X3VubG9jaygmZ3Bpb19sb29rdXBfbG9jayk7Cit9CisKIHN0YXRpYyBzdHJ1Y3QgZ3Bp
+b19kZXNjICpvZl9maW5kX2dwaW8oc3RydWN0IGRldmljZSAqZGV2LCBjb25zdCBjaGFyICpjb25f
+aWQsCiAJCQkJICAgICAgdW5zaWduZWQgaW50IGlkeCwKIAkJCQkgICAgICBlbnVtIGdwaW9fbG9v
+a3VwX2ZsYWdzICpmbGFncykKZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvZ3Bpby9tYWNoaW5l
+LmggYi9pbmNsdWRlL2xpbnV4L2dwaW8vbWFjaGluZS5oCmluZGV4IGUyNzA2MTQuLmMwZDcxMmQg
+MTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgvZ3Bpby9tYWNoaW5lLmgKKysrIGIvaW5jbHVkZS9s
+aW51eC9ncGlvL21hY2hpbmUuaApAQCAtNTcsNSArNTcsNiBAQCBzdHJ1Y3QgZ3Bpb2RfbG9va3Vw
+X3RhYmxlIHsKIH0KIAogdm9pZCBncGlvZF9hZGRfbG9va3VwX3RhYmxlKHN0cnVjdCBncGlvZF9s
+b29rdXBfdGFibGUgKnRhYmxlKTsKK3ZvaWQgZ3Bpb2RfcmVtb3ZlX2xvb2t1cF90YWJsZShzdHJ1
+Y3QgZ3Bpb2RfbG9va3VwX3RhYmxlICp0YWJsZSk7CiAKICNlbmRpZiAvKiBfX0xJTlVYX0dQSU9f
+TUFDSElORV9IICovCi0tIAoyLjEuMAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX18KSW50ZWwtZ2Z4IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJl
+ZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5m
+by9pbnRlbC1nZngK
