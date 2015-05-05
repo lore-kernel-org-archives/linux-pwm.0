@@ -1,90 +1,85 @@
-From: Shobhit Kumar <shobhit.kumar@linux.intel.com>
-Subject: Re: [PATCH 5/8] drivers/mfd: ADD PWM lookup table for CRC PMIC based
- PWM
-Date: Tue, 05 May 2015 15:18:26 +0530
-Message-ID: <554891EA.7050906@linux.intel.com>
-References: <1430316005-16480-1-git-send-email-shobhit.kumar@intel.com> <1430316005-16480-6-git-send-email-shobhit.kumar@intel.com> <20150429142451.GS9169@x1>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH 5/8] drivers/mfd: ADD PWM lookup table for
+ CRC PMIC based PWM
+Date: Tue, 5 May 2015 11:42:17 +0100
+Message-ID: <20150505104217.GY4047@x1>
+References: <1430316005-16480-1-git-send-email-shobhit.kumar@intel.com>
+ <1430316005-16480-6-git-send-email-shobhit.kumar@intel.com>
+ <20150429142451.GS9169@x1> <554891EA.7050906@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20150429142451.GS9169@x1>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>, Shobhit Kumar <shobhit.kumar@intel.com>
-Cc: linux-pwm <linux-pwm@vger.kernel.org>, Jani Nikula <jani.nikula@intel.com>, Samuel Ortiz <sameo@linux.intel.com>, Alexandre Courbot <gnurou@gmail.com>, Povilas Staniulis <wdmonster@gmail.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>, Daniel Vetter <daniel.vetter@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <554891EA.7050906@linux.intel.com>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Shobhit Kumar <shobhit.kumar@linux.intel.com>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Samuel Ortiz <sameo@linux.intel.com>, linux-pwm <linux-pwm@vger.kernel.org>, Jani Nikula <jani.nikula@intel.com>, Shobhit Kumar <shobhit.kumar@intel.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Povilas Staniulis <wdmonster@gmail.com>, linux-gpio <linux-gpio@vger.kernel.org>, Daniel Vetter <daniel.vetter@intel.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On 04/29/2015 07:54 PM, Lee Jones wrote:
-> On Wed, 29 Apr 2015, Shobhit Kumar wrote:
-> 
->> On some BYT PLatform the PWM is controlled using CRC PMIC. Add a lookup
->> entry for the same to be used by the consumer (Intel GFX)
->>
->> v2: Remove the lookup table on driver unload (Thierry)
->>
->> CC: Samuel Ortiz <sameo@linux.intel.com>
->> Cc: Linus Walleij <linus.walleij@linaro.org>
->> Cc: Alexandre Courbot <gnurou@gmail.com>
->> Cc: Thierry Reding <thierry.reding@gmail.com>
->> Signed-off-by: Shobhit Kumar <shobhit.kumar@intel.com>
->> ---
->>  drivers/mfd/intel_soc_pmic_core.c | 12 ++++++++++++
->>  1 file changed, 12 insertions(+)
-> 
-> How do you expect this set to be managed?
-
-There are some dependencies on the look up table remove functionality in
-earlier patches, so I think 3/8 can go in only after 1/8. Similarly 5/8
-can go only after 2/8. Rest all can be independent.	
-
-Regards
-Shobhit
-
-> 
-> Acked-by: Lee Jones <lee.jones@linaro.org>
-> 
->> diff --git a/drivers/mfd/intel_soc_pmic_core.c b/drivers/mfd/intel_soc_pmic_core.c
->> index f3d918e..a00ddd9 100644
->> --- a/drivers/mfd/intel_soc_pmic_core.c
->> +++ b/drivers/mfd/intel_soc_pmic_core.c
->> @@ -25,6 +25,7 @@
->>  #include <linux/regmap.h>
->>  #include <linux/mfd/intel_soc_pmic.h>
->>  #include <linux/gpio/machine.h>
->> +#include <linux/pwm.h>
->>  #include "intel_soc_pmic_core.h"
->>  
->>  /* Lookup table for the Panel Enable/Disable line as GPIO signals */
->> @@ -37,6 +38,11 @@ static struct gpiod_lookup_table panel_gpio_table = {
->>  	},
->>  };
->>  
->> +/* PWM consumed by the Intel GFX */
->> +static struct pwm_lookup crc_pwm_lookup[] = {
->> +	PWM_LOOKUP("crystal_cove_pwm", 0, "0000:00:02.0", "pwm_backlight", 0, PWM_POLARITY_NORMAL),
->> +};
->> +
->>  static int intel_soc_pmic_find_gpio_irq(struct device *dev)
->>  {
->>  	struct gpio_desc *desc;
->> @@ -99,6 +105,9 @@ static int intel_soc_pmic_i2c_probe(struct i2c_client *i2c,
->>  	/* Add lookup table binding for Panel Control to the GPIO Chip */
->>  	gpiod_add_lookup_table(&panel_gpio_table);
->>  
->> +	/* Add lookup table for crc-pwm */
->> +	pwm_add_table(crc_pwm_lookup, ARRAY_SIZE(crc_pwm_lookup));
->> +
->>  	ret = mfd_add_devices(dev, -1, config->cell_dev,
->>  			      config->n_cell_devs, NULL, 0,
->>  			      regmap_irq_get_domain(pmic->irq_chip_data));
->> @@ -121,6 +130,9 @@ static int intel_soc_pmic_i2c_remove(struct i2c_client *i2c)
->>  	/* Remove lookup table for Panel Control from the GPIO Chip */
->>  	gpiod_remove_lookup_table(&panel_gpio_table);
->>  
->> +	/* remove crc-pwm lookup table */
->> +	pwm_remove_table(crc_pwm_lookup, ARRAY_SIZE(crc_pwm_lookup));
->> +
->>  	mfd_remove_devices(&i2c->dev);
->>  
->>  	return 0;
-> 
+T24gVHVlLCAwNSBNYXkgMjAxNSwgU2hvYmhpdCBLdW1hciB3cm90ZToKCj4gT24gMDQvMjkvMjAx
+NSAwNzo1NCBQTSwgTGVlIEpvbmVzIHdyb3RlOgo+ID4gT24gV2VkLCAyOSBBcHIgMjAxNSwgU2hv
+YmhpdCBLdW1hciB3cm90ZToKPiA+IAo+ID4+IE9uIHNvbWUgQllUIFBMYXRmb3JtIHRoZSBQV00g
+aXMgY29udHJvbGxlZCB1c2luZyBDUkMgUE1JQy4gQWRkIGEgbG9va3VwCj4gPj4gZW50cnkgZm9y
+IHRoZSBzYW1lIHRvIGJlIHVzZWQgYnkgdGhlIGNvbnN1bWVyIChJbnRlbCBHRlgpCj4gPj4KPiA+
+PiB2MjogUmVtb3ZlIHRoZSBsb29rdXAgdGFibGUgb24gZHJpdmVyIHVubG9hZCAoVGhpZXJyeSkK
+PiA+Pgo+ID4+IENDOiBTYW11ZWwgT3J0aXogPHNhbWVvQGxpbnV4LmludGVsLmNvbT4KPiA+PiBD
+YzogTGludXMgV2FsbGVpaiA8bGludXMud2FsbGVpakBsaW5hcm8ub3JnPgo+ID4+IENjOiBBbGV4
+YW5kcmUgQ291cmJvdCA8Z251cm91QGdtYWlsLmNvbT4KPiA+PiBDYzogVGhpZXJyeSBSZWRpbmcg
+PHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT4KPiA+PiBTaWduZWQtb2ZmLWJ5OiBTaG9iaGl0IEt1
+bWFyIDxzaG9iaGl0Lmt1bWFyQGludGVsLmNvbT4KPiA+PiAtLS0KPiA+PiAgZHJpdmVycy9tZmQv
+aW50ZWxfc29jX3BtaWNfY29yZS5jIHwgMTIgKysrKysrKysrKysrCj4gPj4gIDEgZmlsZSBjaGFu
+Z2VkLCAxMiBpbnNlcnRpb25zKCspCj4gPiAKPiA+IEhvdyBkbyB5b3UgZXhwZWN0IHRoaXMgc2V0
+IHRvIGJlIG1hbmFnZWQ/Cj4gCj4gVGhlcmUgYXJlIHNvbWUgZGVwZW5kZW5jaWVzIG9uIHRoZSBs
+b29rIHVwIHRhYmxlIHJlbW92ZSBmdW5jdGlvbmFsaXR5IGluCj4gZWFybGllciBwYXRjaGVzLCBz
+byBJIHRoaW5rIDMvOCBjYW4gZ28gaW4gb25seSBhZnRlciAxLzguIFNpbWlsYXJseSA1LzgKPiBj
+YW4gZ28gb25seSBhZnRlciAyLzguIFJlc3QgYWxsIGNhbiBiZSBpbmRlcGVuZGVudC4JCgpUYWtp
+bmcgcGF0Y2hlcyAnaW4gb3JkZXInIGlzIHRvdWdoIHRvIGNvb3JkaW5hdGUgYW5kIHRha2VzIGEg
+dmVyeSBsb25nCnRpbWUuICBUaGUgYmVzdCB0aGluZyB0byBkbyBpcyBoYXZlIGFsbCBvZiB0aGUg
+cGF0Y2hlcyB0YWtlbiBpbiB2aWEgYQpzaW5nbGUgdHJlZSBhdCB0aGUgc2FtZSB0aW1lLgoKPiA+
+IEFja2VkLWJ5OiBMZWUgSm9uZXMgPGxlZS5qb25lc0BsaW5hcm8ub3JnPgo+ID4gCj4gPj4gZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvbWZkL2ludGVsX3NvY19wbWljX2NvcmUuYyBiL2RyaXZlcnMvbWZk
+L2ludGVsX3NvY19wbWljX2NvcmUuYwo+ID4+IGluZGV4IGYzZDkxOGUuLmEwMGRkZDkgMTAwNjQ0
+Cj4gPj4gLS0tIGEvZHJpdmVycy9tZmQvaW50ZWxfc29jX3BtaWNfY29yZS5jCj4gPj4gKysrIGIv
+ZHJpdmVycy9tZmQvaW50ZWxfc29jX3BtaWNfY29yZS5jCj4gPj4gQEAgLTI1LDYgKzI1LDcgQEAK
+PiA+PiAgI2luY2x1ZGUgPGxpbnV4L3JlZ21hcC5oPgo+ID4+ICAjaW5jbHVkZSA8bGludXgvbWZk
+L2ludGVsX3NvY19wbWljLmg+Cj4gPj4gICNpbmNsdWRlIDxsaW51eC9ncGlvL21hY2hpbmUuaD4K
+PiA+PiArI2luY2x1ZGUgPGxpbnV4L3B3bS5oPgo+ID4+ICAjaW5jbHVkZSAiaW50ZWxfc29jX3Bt
+aWNfY29yZS5oIgo+ID4+ICAKPiA+PiAgLyogTG9va3VwIHRhYmxlIGZvciB0aGUgUGFuZWwgRW5h
+YmxlL0Rpc2FibGUgbGluZSBhcyBHUElPIHNpZ25hbHMgKi8KPiA+PiBAQCAtMzcsNiArMzgsMTEg
+QEAgc3RhdGljIHN0cnVjdCBncGlvZF9sb29rdXBfdGFibGUgcGFuZWxfZ3Bpb190YWJsZSA9IHsK
+PiA+PiAgCX0sCj4gPj4gIH07Cj4gPj4gIAo+ID4+ICsvKiBQV00gY29uc3VtZWQgYnkgdGhlIElu
+dGVsIEdGWCAqLwo+ID4+ICtzdGF0aWMgc3RydWN0IHB3bV9sb29rdXAgY3JjX3B3bV9sb29rdXBb
+XSA9IHsKPiA+PiArCVBXTV9MT09LVVAoImNyeXN0YWxfY292ZV9wd20iLCAwLCAiMDAwMDowMDow
+Mi4wIiwgInB3bV9iYWNrbGlnaHQiLCAwLCBQV01fUE9MQVJJVFlfTk9STUFMKSwKPiA+PiArfTsK
+PiA+PiArCj4gPj4gIHN0YXRpYyBpbnQgaW50ZWxfc29jX3BtaWNfZmluZF9ncGlvX2lycShzdHJ1
+Y3QgZGV2aWNlICpkZXYpCj4gPj4gIHsKPiA+PiAgCXN0cnVjdCBncGlvX2Rlc2MgKmRlc2M7Cj4g
+Pj4gQEAgLTk5LDYgKzEwNSw5IEBAIHN0YXRpYyBpbnQgaW50ZWxfc29jX3BtaWNfaTJjX3Byb2Jl
+KHN0cnVjdCBpMmNfY2xpZW50ICppMmMsCj4gPj4gIAkvKiBBZGQgbG9va3VwIHRhYmxlIGJpbmRp
+bmcgZm9yIFBhbmVsIENvbnRyb2wgdG8gdGhlIEdQSU8gQ2hpcCAqLwo+ID4+ICAJZ3Bpb2RfYWRk
+X2xvb2t1cF90YWJsZSgmcGFuZWxfZ3Bpb190YWJsZSk7Cj4gPj4gIAo+ID4+ICsJLyogQWRkIGxv
+b2t1cCB0YWJsZSBmb3IgY3JjLXB3bSAqLwo+ID4+ICsJcHdtX2FkZF90YWJsZShjcmNfcHdtX2xv
+b2t1cCwgQVJSQVlfU0laRShjcmNfcHdtX2xvb2t1cCkpOwo+ID4+ICsKPiA+PiAgCXJldCA9IG1m
+ZF9hZGRfZGV2aWNlcyhkZXYsIC0xLCBjb25maWctPmNlbGxfZGV2LAo+ID4+ICAJCQkgICAgICBj
+b25maWctPm5fY2VsbF9kZXZzLCBOVUxMLCAwLAo+ID4+ICAJCQkgICAgICByZWdtYXBfaXJxX2dl
+dF9kb21haW4ocG1pYy0+aXJxX2NoaXBfZGF0YSkpOwo+ID4+IEBAIC0xMjEsNiArMTMwLDkgQEAg
+c3RhdGljIGludCBpbnRlbF9zb2NfcG1pY19pMmNfcmVtb3ZlKHN0cnVjdCBpMmNfY2xpZW50ICpp
+MmMpCj4gPj4gIAkvKiBSZW1vdmUgbG9va3VwIHRhYmxlIGZvciBQYW5lbCBDb250cm9sIGZyb20g
+dGhlIEdQSU8gQ2hpcCAqLwo+ID4+ICAJZ3Bpb2RfcmVtb3ZlX2xvb2t1cF90YWJsZSgmcGFuZWxf
+Z3Bpb190YWJsZSk7Cj4gPj4gIAo+ID4+ICsJLyogcmVtb3ZlIGNyYy1wd20gbG9va3VwIHRhYmxl
+ICovCj4gPj4gKwlwd21fcmVtb3ZlX3RhYmxlKGNyY19wd21fbG9va3VwLCBBUlJBWV9TSVpFKGNy
+Y19wd21fbG9va3VwKSk7Cj4gPj4gKwo+ID4+ICAJbWZkX3JlbW92ZV9kZXZpY2VzKCZpMmMtPmRl
+dik7Cj4gPj4gIAo+ID4+ICAJcmV0dXJuIDA7Cj4gPiAKCi0tIApMZWUgSm9uZXMKTGluYXJvIFNU
+TWljcm9lbGVjdHJvbmljcyBMYW5kaW5nIFRlYW0gTGVhZApMaW5hcm8ub3JnIOKUgiBPcGVuIHNv
+dXJjZSBzb2Z0d2FyZSBmb3IgQVJNIFNvQ3MKRm9sbG93IExpbmFybzogRmFjZWJvb2sgfCBUd2l0
+dGVyIHwgQmxvZwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+XwpJbnRlbC1nZnggbWFpbGluZyBsaXN0CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcK
+aHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdmeAo=
