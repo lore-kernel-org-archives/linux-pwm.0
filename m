@@ -1,59 +1,78 @@
 From: Shobhit Kumar <shobhit.kumar@intel.com>
-Subject: [PATCH 2/8] pwm: core: Add support to remove registered
-	consumer lookup tables
-Date: Tue,  5 May 2015 15:04:18 +0530
-Message-ID: <1430818458-26922-1-git-send-email-shobhit.kumar@intel.com>
-References: <1430316005-16480-3-git-send-email-shobhit.kumar@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <1430316005-16480-3-git-send-email-shobhit.kumar@intel.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+Subject: [PATCH 3/8] mfd: intel_soc_pmic_core: Add lookup table for Panel Control as GPIO signal
+Date: Tue,  5 May 2015 15:06:05 +0530
+Message-ID: <1430818565-27025-1-git-send-email-shobhit.kumar@intel.com>
+References: <1430316005-16480-4-git-send-email-shobhit.kumar@intel.com>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <1430316005-16480-4-git-send-email-shobhit.kumar@intel.com>
+Sender: linux-gpio-owner@vger.kernel.org
 To: intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-gpio <linux-gpio@vger.kernel.org>, linux-pwm <linux-pwm@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Samuel Ortiz <sameo@linux.intel.com>, Povilas Staniulis <wdmonster@gmail.com>, David Airlie <airlied@linux.ie>, Shobhit Kumar <shobhit.kumar@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Jani Nikula <jani.nikula@intel.com>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, David Airlie <airlied@linux.ie>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Lee Jones <lee.jones@linaro.org>, Povilas Staniulis <wdmonster@gmail.com>, Chih-Wei Huang <cwhuang@android-x86.org>, Shobhit Kumar <shobhit.kumar@intel.com>
 List-Id: linux-pwm@vger.kernel.org
 
-SW4gY2FzZSBzb21lIGRyaXZlcnMgYXJlIHVubG9hZGluZywgdGhleSBjYW4gcmVtb3ZlIGxvb2t1
-cCB0YWJsZXMgd2hpY2gKdGhleSB3b3VsZCBoYXZlIHJlZ2lzdGVyZWQgZHVyaW5nIHRoZWlyIGxv
-YWQgdGltZSB0byBhdm9pZCByZWR1bmRhbnQKZW50cmllcyBpZiBsb2FkZWQgYWdhaW4KCnYyOiBD
-Y2luZyBtYWludGFpbmVycwp2MzogQ29ycmVjdCB0aGUgc3ViamVjdCBsaW5lIChMZWUgam9uZXMp
-CgpDQzogU2FtdWVsIE9ydGl6IDxzYW1lb0BsaW51eC5pbnRlbC5jb20+CkNjOiBMaW51cyBXYWxs
-ZWlqIDxsaW51cy53YWxsZWlqQGxpbmFyby5vcmc+CkNjOiBBbGV4YW5kcmUgQ291cmJvdCA8Z251
-cm91QGdtYWlsLmNvbT4KQ2M6IFRoaWVycnkgUmVkaW5nIDx0aGllcnJ5LnJlZGluZ0BnbWFpbC5j
-b20+ClNpZ25lZC1vZmYtYnk6IFNob2JoaXQgS3VtYXIgPHNob2JoaXQua3VtYXJAaW50ZWwuY29t
-PgotLS0KIGRyaXZlcnMvcHdtL2NvcmUuYyAgfCAxNyArKysrKysrKysrKysrKysrKwogaW5jbHVk
-ZS9saW51eC9wd20uaCB8ICA1ICsrKysrCiAyIGZpbGVzIGNoYW5nZWQsIDIyIGluc2VydGlvbnMo
-KykKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9jb3JlLmMgYi9kcml2ZXJzL3B3bS9jb3JlLmMK
-aW5kZXggYmEzNGM3ZC4uZDJmZTdjOGQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvcHdtL2NvcmUuYwor
-KysgYi9kcml2ZXJzL3B3bS9jb3JlLmMKQEAgLTU4Niw2ICs1ODYsMjMgQEAgdm9pZCBwd21fYWRk
-X3RhYmxlKHN0cnVjdCBwd21fbG9va3VwICp0YWJsZSwgc2l6ZV90IG51bSkKIH0KIAogLyoqCisg
-KiBwd21fcmVtb3ZlX3RhYmxlKCkgLSB1bi1yZWdpc3RlciBQV00gZGV2aWNlIGNvbnN1bWVycwor
-ICogQHRhYmxlOiBhcnJheSBvZiBjb25zdW1lcnMgdG8gdW4tcmVnaXN0ZXIKKyAqIEBudW06IG51
-bWJlciBvZiBjb25zdW1lcnMgaW4gdGFibGUKKyAqLwordm9pZCBwd21fcmVtb3ZlX3RhYmxlKHN0
-cnVjdCBwd21fbG9va3VwICp0YWJsZSwgc2l6ZV90IG51bSkKK3sKKwltdXRleF9sb2NrKCZwd21f
-bG9va3VwX2xvY2spOworCisJd2hpbGUgKG51bS0tKSB7CisJCWxpc3RfZGVsKCZ0YWJsZS0+bGlz
-dCk7CisJCXRhYmxlKys7CisJfQorCisJbXV0ZXhfdW5sb2NrKCZwd21fbG9va3VwX2xvY2spOwor
-fQorCisvKioKICAqIHB3bV9nZXQoKSAtIGxvb2sgdXAgYW5kIHJlcXVlc3QgYSBQV00gZGV2aWNl
-CiAgKiBAZGV2OiBkZXZpY2UgZm9yIFBXTSBjb25zdW1lcgogICogQGNvbl9pZDogY29uc3VtZXIg
-bmFtZQpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9wd20uaCBiL2luY2x1ZGUvbGludXgvcHdt
-LmgKaW5kZXggZTkwNjI4Yy4uY2ZlMmQ4ZCAxMDA2NDQKLS0tIGEvaW5jbHVkZS9saW51eC9wd20u
-aAorKysgYi9pbmNsdWRlL2xpbnV4L3B3bS5oCkBAIC0yOTAsMTAgKzI5MCwxNSBAQCBzdHJ1Y3Qg
-cHdtX2xvb2t1cCB7CiAKICNpZiBJU19FTkFCTEVEKENPTkZJR19QV00pCiB2b2lkIHB3bV9hZGRf
-dGFibGUoc3RydWN0IHB3bV9sb29rdXAgKnRhYmxlLCBzaXplX3QgbnVtKTsKK3ZvaWQgcHdtX3Jl
-bW92ZV90YWJsZShzdHJ1Y3QgcHdtX2xvb2t1cCAqdGFibGUsIHNpemVfdCBudW0pOwogI2Vsc2UK
-IHN0YXRpYyBpbmxpbmUgdm9pZCBwd21fYWRkX3RhYmxlKHN0cnVjdCBwd21fbG9va3VwICp0YWJs
-ZSwgc2l6ZV90IG51bSkKIHsKIH0KKworc3RhdGljIGlubGluZSB2b2lkIHB3bV9yZW1vdmVfdGFi
-bGUoc3RydWN0IHB3bV9sb29rdXAgKnRhYmxlLCBzaXplX3QgbnVtKQoreworfQogI2VuZGlmCiAK
-ICNpZmRlZiBDT05GSUdfUFdNX1NZU0ZTCi0tIAoyLjEuMAoKX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4IG1haWxpbmcgbGlzdApJbnRlbC1n
-ZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFp
-bG1hbi9saXN0aW5mby9pbnRlbC1nZngK
+On some Intel SoC platforms, the panel enable/disable signals are
+controlled by CRC PMIC. Add those control as a new GPIO in a lookup
+table for gpio-crystalcove chip during CRC driver load
+
+v2: Make the lookup table static (Thierry)
+    Remove the lookup table during driver remove (Thierry)
+
+v3: Correct the subject line (Lee jones)
+
+CC: Samuel Ortiz <sameo@linux.intel.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Alexandre Courbot <gnurou@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Shobhit Kumar <shobhit.kumar@intel.com>
+---
+ drivers/mfd/intel_soc_pmic_core.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/drivers/mfd/intel_soc_pmic_core.c b/drivers/mfd/intel_soc_pmic_core.c
+index 7b50b6b..f3d918e 100644
+--- a/drivers/mfd/intel_soc_pmic_core.c
++++ b/drivers/mfd/intel_soc_pmic_core.c
+@@ -24,8 +24,19 @@
+ #include <linux/acpi.h>
+ #include <linux/regmap.h>
+ #include <linux/mfd/intel_soc_pmic.h>
++#include <linux/gpio/machine.h>
+ #include "intel_soc_pmic_core.h"
+ 
++/* Lookup table for the Panel Enable/Disable line as GPIO signals */
++static struct gpiod_lookup_table panel_gpio_table = {
++	/* Intel GFX is consumer */
++	.dev_id = "0000:00:02.0",
++	.table = {
++		/* Panel EN/DISABLE */
++		GPIO_LOOKUP("gpio_crystalcove", 94, "panel", GPIO_ACTIVE_HIGH),
++	},
++};
++
+ static int intel_soc_pmic_find_gpio_irq(struct device *dev)
+ {
+ 	struct gpio_desc *desc;
+@@ -85,6 +96,9 @@ static int intel_soc_pmic_i2c_probe(struct i2c_client *i2c,
+ 	if (ret)
+ 		dev_warn(dev, "Can't enable IRQ as wake source: %d\n", ret);
+ 
++	/* Add lookup table binding for Panel Control to the GPIO Chip */
++	gpiod_add_lookup_table(&panel_gpio_table);
++
+ 	ret = mfd_add_devices(dev, -1, config->cell_dev,
+ 			      config->n_cell_devs, NULL, 0,
+ 			      regmap_irq_get_domain(pmic->irq_chip_data));
+@@ -104,6 +118,9 @@ static int intel_soc_pmic_i2c_remove(struct i2c_client *i2c)
+ 
+ 	regmap_del_irq_chip(pmic->irq, pmic->irq_chip_data);
+ 
++	/* Remove lookup table for Panel Control from the GPIO Chip */
++	gpiod_remove_lookup_table(&panel_gpio_table);
++
+ 	mfd_remove_devices(&i2c->dev);
+ 
+ 	return 0;
+-- 
+2.1.0
+
