@@ -1,44 +1,309 @@
-From: Paul Bolle <pebolle@tiscali.nl>
+From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH 6/8] pwm: crc: Add Crystalcove (CRC) PWM driver
-Date: Wed, 06 May 2015 09:40:58 +0200
-Message-ID: <1430898058.3843.30.camel@x220>
+Date: Wed, 6 May 2015 14:14:56 +0200
+Message-ID: <20150506121455.GB9421@ulmo>
 References: <1430316005-16480-7-git-send-email-shobhit.kumar@intel.com>
  <1430818716-27287-1-git-send-email-shobhit.kumar@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="24zk1gE8NUlDmwG9"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <1430818716-27287-1-git-send-email-shobhit.kumar@intel.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+Sender: linux-gpio-owner@vger.kernel.org
 To: Shobhit Kumar <shobhit.kumar@intel.com>
-Cc: linux-pwm <linux-pwm@vger.kernel.org>, Jani Nikula <jani.nikula@intel.com>, Samuel Ortiz <sameo@linux.intel.com>, Alexandre Courbot <gnurou@gmail.com>, Povilas Staniulis <wdmonster@gmail.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>
+Cc: intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-gpio <linux-gpio@vger.kernel.org>, linux-pwm <linux-pwm@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, David Airlie <airlied@linux.ie>, Samuel Ortiz <sameo@linux.intel.com>, Jani Nikula <jani.nikula@intel.com>, Lee Jones <lee.jones@linaro.org>, Povilas Staniulis <wdmonster@gmail.com>, Chih-Wei Huang <cwhuang@android-x86.org>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVHVlLCAyMDE1LTA1LTA1IGF0IDE1OjA4ICswNTMwLCBTaG9iaGl0IEt1bWFyIHdyb3RlOgo+
-IFRoZSBDcnlzdGFsY292ZSBQTUlDIGNvbnRyb2xzIFBXTSBzaWduYWxzIGFuZCB0aGlzIGRyaXZl
-ciBleHBvcnRzIHRoYXQKPiBjYXBhYmlsaXR5IGFzIGEgUFdNIGNoaXAgZHJpdmVyLiBUaGlzIGlz
-IHBsYXRmb3JtIGRldmljZSBpbXBsZW1lbnR0YWlvbgo+IG9mIHRoZSBkcml2ZXJzL21mZCBjZWxs
-IGRldmljZSBmb3IgQ1JDIFBNSUMKPiAKPiB2MjogVXNlIHRoZSBleGlzdGluZyBjb25maWcgY2Fs
-bGJhY2sgd2l0aCBkdXR5X25zIGFuZCBwZXJpb2RfbnMoVGhpZXJyeSkKPiAKPiB2MzogQ29ycmVj
-dCB0aGUgc3ViamVjdCBsaW5lIChMZWUgam9uZXMpCj4gCj4gQ0M6IFNhbXVlbCBPcnRpeiA8c2Ft
-ZW9AbGludXguaW50ZWwuY29tPgo+IENjOiBMaW51cyBXYWxsZWlqIDxsaW51cy53YWxsZWlqQGxp
-bmFyby5vcmc+Cj4gQ2M6IEFsZXhhbmRyZSBDb3VyYm90IDxnbnVyb3VAZ21haWwuY29tPgo+IENj
-OiBUaGllcnJ5IFJlZGluZyA8dGhpZXJyeS5yZWRpbmdAZ21haWwuY29tPgo+IFNpZ25lZC1vZmYt
-Ynk6IFNob2JoaXQgS3VtYXIgPHNob2JoaXQua3VtYXJAaW50ZWwuY29tPgoKVGhlIHNhbWUgY29t
-bWVudHMgY2FuIGJlIG1hZGUgYXMgZm9yIHYyLCBzZWUKaHR0cDovL2xrbWwua2VybmVsLm9yZy9y
-LzE0MzA0MjgzMjIuMjE4Ny4yNC5jYW1lbEB4MjIwIC4gTWF5YmUgeW91CmRpZG4ndCByZWNlaXZl
-IHRoYXQgbWVzc2FnZS4KCkl0IGNvdWxkIGFsc28gYmUgdGhhdCB5b3UgdGhpbmsgbXkgY29tbWVu
-dHMgd2VyZSBpbnZhbGlkLCBvciB0b28gdmFndWUsCm9yIHdoYXRldmVyLiBQbGVhc2Ugc2F5IHNv
-LCBiZWNhdXNlIHRoZW4gSSBkb24ndCBoYXZlIHRvIGJvdGhlciB5b3UKYWdhaW4gd2hlbiB5b3Ug
-c2VuZCBvdXQgdjQuCgpUaGFua3MsCgoKUGF1bCBCb2xsZQoKX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2
-ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFp
-bG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+
+--24zk1gE8NUlDmwG9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, May 05, 2015 at 03:08:36PM +0530, Shobhit Kumar wrote:
+> The Crystalcove PMIC controls PWM signals and this driver exports that
+
+You say signal_s_ here, but you only expose a single PWM device. Does
+the PMIC really control more than one? If it isn't, this should probably
+become: "controls a PWM output and this driver...".
+
+> capability as a PWM chip driver. This is platform device implementtaion
+
+"implementation"
+
+> of the drivers/mfd cell device for CRC PMIC
+
+Sentences should end with a full stop.
+
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index b1541f4..954da3e 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -183,6 +183,13 @@ config PWM_LPC32XX
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-lpc32xx.
+> =20
+> +config PWM_CRC
+> +	bool "Intel Crystalcove (CRC) PWM support"
+> +	depends on X86 && INTEL_SOC_PMIC
+> +	help
+> +	  Generic PWM framework driver for Crystalcove (CRC) PMIC based PWM
+> +	  control.
+> +
+
+This is badly sorted. Please keep the list sorted alphabetically.
+
+>  config PWM_LPSS
+>  	tristate "Intel LPSS PWM support"
+>  	depends on X86
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index ec50eb5..3d38fed 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -35,3 +35,4 @@ obj-$(CONFIG_PWM_TIPWMSS)	+=3D pwm-tipwmss.o
+>  obj-$(CONFIG_PWM_TWL)		+=3D pwm-twl.o
+>  obj-$(CONFIG_PWM_TWL_LED)	+=3D pwm-twl-led.o
+>  obj-$(CONFIG_PWM_VT8500)	+=3D pwm-vt8500.o
+> +obj-$(CONFIG_PWM_CRC)		+=3D pwm-crc.o
+
+This too.
+
+> diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
+> new file mode 100644
+> index 0000000..987f3b4
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-crc.c
+> @@ -0,0 +1,171 @@
+> +/*
+> + * pwm-crc.c - Intel Crystal Cove PWM Driver
+
+I think you can safely remove this line. You already know what file it
+is when you open it in your editor, and the description is in the
+MODULE_DESCRIPTION string already.
+
+> + *
+> + * Copyright (C) 2015 Intel Corporation. All rights reserved.
+> + *
+> + * This program is free software; you can redistribute it and/or
+> + * modify it under the terms of the GNU General Public License version
+> + * 2 as published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + * Author: Shobhit Kumar <shobhit.kumar@intel.com>
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+> +#include <linux/mfd/intel_soc_pmic.h>
+> +#include <linux/pwm.h>
+> +
+> +#define PWM0_CLK_DIV		0x4B
+> +#define  PWM_OUTPUT_ENABLE	(1<<7)
+
+Should have spaces around <<.
+
+> +#define  PWM_DIV_CLK_0		0x00 /* DIVIDECLK =3D BASECLK */
+> +#define  PWM_DIV_CLK_100	0x63 /* DIVIDECLK =3D BASECLK/100 */
+> +#define  PWM_DIV_CLK_128	0x7F /* DIVIDECLK =3D BASECLK/128 */
+> +
+> +#define PWM0_DUTY_CYCLE		0x4E
+> +#define BACKLIGHT_EN		0x51
+> +
+> +#define PWM_MAX_LEVEL		0xFF
+> +
+> +#define PWM_BASE_CLK		6000	/* 6 MHz */
+
+This number is actually 6 KHz. I think it'd be better if you stuck with
+one unit here. Or perhaps there's some other reason why you can't use
+6000000 here instead?
+
+> +#define PWM_MAX_PERIOD_NS	21333 /* 46.875KHz */
+> +
+> +/**
+> + * struct crystalcove_pwm - Crystal Cove PWM controller
+> + * @chip: the abstract pwm_chip structure.
+> + * @regmap: the regmap from the parent device.
+> + */
+> +struct crystalcove_pwm {
+> +	struct pwm_chip chip;
+> +	struct platform_device *pdev;
+
+I think I had at some point requested that you get rid of this and use
+the chip.dev member instead. There's no kerneldoc for it and it isn't
+(well, almost, see below) used anywhere else, so perhaps you forgot to
+remove it here?
+
+> +	struct regmap *regmap;
+> +};
+> +
+> +static inline struct crystalcove_pwm *to_crc_pwm(struct pwm_chip *pc)
+> +{
+> +	return container_of(pc, struct crystalcove_pwm, chip);
+> +}
+> +
+> +static int crc_pwm_enable(struct pwm_chip *c, struct pwm_device *pwm)
+> +{
+> +	struct crystalcove_pwm *crc_pwm =3D to_crc_pwm(c);
+> +
+> +	regmap_write(crc_pwm->regmap, BACKLIGHT_EN, 1);
+> +
+> +	return 0;
+> +}
+> +
+> +static void crc_pwm_disable(struct pwm_chip *c, struct pwm_device *pwm)
+> +{
+> +	struct crystalcove_pwm *crc_pwm =3D to_crc_pwm(c);
+> +
+> +	regmap_write(crc_pwm->regmap, BACKLIGHT_EN, 0);
+> +}
+> +
+> +static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
+> +				  int duty_ns, int period_ns)
+
+Please align arguments on subsequent lines with the first argument of
+the first line.
+
+> +{
+> +	struct crystalcove_pwm *crc_pwm =3D to_crc_pwm(c);
+> +	struct device *dev =3D &crc_pwm->pdev->dev;
+
+Did you test reconfiguring the PWM? I don't see crc_pwm->pdev getting
+initialized anywhere, so this should crash trying to dereference a NULL
+pointer.
+
+Of course if you get rid of the pdev field as I suggested you can simply
+get the struct device * from c->dev.
+
+> +	int level, percent;
+> +
+> +	if (period_ns > PWM_MAX_PERIOD_NS) {
+> +		dev_err(dev, "un-supported period_ns\n");
+> +		return -1;
+
+You should return -EINVAL here. Besides being a literal and therefore a
+bad idea, -1 =3D=3D -EPERM and doesn't match the error condition.
+
+> +	}
+> +
+> +	if (pwm->period !=3D period_ns) {
+> +		int clk_div;
+> +
+> +		/* changing the clk divisor, need to disable fisrt */
+> +		crc_pwm_disable(c, pwm);
+> +		clk_div =3D PWM_BASE_CLK * period_ns / 1000000;
+
+Similar to the above, this is confusing because you're mixing up
+different scales here. period_ns is in nanoseconds, so it'd be natural
+to divide by 1000000000 (though you should really be using NSEC_PER_SEC
+instead). If you counterweight that by expressing PWM_BASE_CLK in Hz
+(6000000) you get much nicer symmetry and make the code a lot easier to
+understand.
+
+> +
+> +		regmap_write(crc_pwm->regmap, PWM0_CLK_DIV,
+> +					clk_div | PWM_OUTPUT_ENABLE);
+> +
+> +		/* enable back */
+> +		crc_pwm_enable(c, pwm);
+> +	}
+> +
+> +	if (duty_ns > period_ns) {
+> +		dev_err(dev, "duty cycle cannot be greater than cycle period\n");
+> +		return -1;
+> +	}
+
+The PWM core already performs this check, so you'll never get here in
+case this condition is true.
+
+> +
+> +	/* change the pwm duty cycle */
+> +	percent =3D duty_ns * 100 / period_ns;
+> +	level =3D percent * PWM_MAX_LEVEL / 100;
+
+Why do you need to apply the rule of three twice here? Doesn't
+
+	level =3D duty_ns * PWM_MAX_LEVEL / period_ns;
+
+give you what you want?
+
+> +	regmap_write(crc_pwm->regmap, PWM0_DUTY_CYCLE, level);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct pwm_ops crc_pwm_ops =3D {
+> +	.config =3D crc_pwm_config,
+> +	.enable =3D crc_pwm_enable,
+> +	.disable =3D crc_pwm_disable,
+> +	.owner =3D THIS_MODULE,
+> +};
+> +
+> +static int crystalcove_pwm_probe(struct platform_device *pdev)
+> +{
+> +	struct crystalcove_pwm *pwm;
+> +	int retval;
+> +	struct device *dev =3D pdev->dev.parent;
+> +	struct intel_soc_pmic *pmic =3D dev_get_drvdata(dev);
+> +
+> +	pwm =3D devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
+> +	if (!pwm)
+> +		return -ENOMEM;
+> +
+> +	pwm->chip.dev =3D &pdev->dev;
+> +	pwm->chip.ops =3D &crc_pwm_ops;
+> +	pwm->chip.base =3D -1;
+> +	pwm->chip.npwm =3D 1;
+> +
+> +	/* get the PMIC regmap */
+> +	pwm->regmap =3D pmic->regmap;
+> +
+> +	retval =3D pwmchip_add(&pwm->chip);
+> +	if (retval < 0)
+> +		return retval;
+> +
+> +	dev_dbg(&pdev->dev, "crc-pwm probe successful\n");
+
+Do you really want this? The driver core will complain in any of the
+above failures, so what use is there to be chatty when probing
+succeeds?
+
+> +static struct platform_driver crystalcove_pwm_driver =3D {
+> +	.probe =3D crystalcove_pwm_probe,
+> +	.remove =3D crystalcove_pwm_remove,
+> +	.driver =3D {
+> +		.name =3D "crystal_cove_pwm",
+
+I'd prefer this to be "crystal-cove-pwm" for consistency with other
+drivers, but since the MFD part already uses underscores in names it'd
+introduce an inconsistency there. So I'm fine with this one as-is.
+
+Thierry
+
+--24zk1gE8NUlDmwG9
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJVSgW9AAoJEN0jrNd/PrOhFVQP/j0a6yqb7RtV1HnJzCbk9QfJ
+NkBinOWTN3by4ACZI0G/KnlsJKIswxlBpwvj6y2uGS2ngn4qt1AI04P8QZBZ0b8Z
+2yzJt5QsIGCkAvNQ8rS3nlUFBfnfHWRUpC9s9fw+7XvzcJ10HgYLVsdQhX4YEAl0
+ZUb7PHzIC+V4MWuxh1qNO+rvs1z1cm/pT35VrwXudu9GJbPIM/I9/ghke5FOeSCA
+ZRP1f0BLPyyvrZ2Xb/O8/2epH01Jui/VD9/l1qqZgr1otS2uFsBjtd/ib+BnujaJ
+GSnlrt9oAjBeCqGZw3vsSUz5a177zr2YV8akFra4vEFjdpcYh6WZ33kB381klGZf
+Okdhp6sF7ac1AdI9MVFMG+7WGVkGXas4AUYvfI8/DcoErM0QXgeG02h+Nu28Gqwg
+VkCjTG+pDr3hl/teeA7NL/ivfpYnd0bztSeHzgTTOW4y6iO8BSD4GLiili7TBIre
+77J/C9fNC0zWBiDm52rE422VXYR/amwSBK24THMFSpWdW5MQr0uLxXrFTopnLtvF
+3rlOn1sQ53bncpsl8lkhVw5aA3VJrjA6Dm2s3CPrYo+/fIs0ccF1pY4VW+9pFdVf
+yuufujchNhOpxzcROSvC8/Fl1lGLmYm7M/ls+9m3Lrx+GyiBXnqO2oVwm+Fwtmij
+0OWmebERI9OkCKJ+ujG/
+=mTyc
+-----END PGP SIGNATURE-----
+
+--24zk1gE8NUlDmwG9--
