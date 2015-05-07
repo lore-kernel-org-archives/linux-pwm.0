@@ -1,172 +1,53 @@
-From: Tim Kryger <tim.kryger@gmail.com>
-Subject: Re: [PATCH v6 3/4] pwm: kona: Fix incorrect config, disable, and
- polarity procedures
-Date: Wed, 6 May 2015 21:26:00 -0700
-Message-ID: <CAD7vxxKB25h03Z+oM9EKNUv4mkTRW=necT32i3LW1Chf4dMaJQ@mail.gmail.com>
-References: <1428692333-14400-1-git-send-email-jonathar@broadcom.com>
-	<1428692333-14400-4-git-send-email-jonathar@broadcom.com>
+From: Shobhit Kumar <kumar@shobhit.info>
+Subject: Re: [Intel-gfx] [PATCH 6/8] pwm: crc: Add Crystalcove (CRC) PWM driver
+Date: Thu, 7 May 2015 12:43:44 +0530
+Message-ID: <CAAbrOmcLynLOfphBbCHYBwc7uK=OKhXxRCYHNAx3X=Pi8S1_9Q@mail.gmail.com>
+References: <1430316005-16480-7-git-send-email-shobhit.kumar@intel.com>
+	<1430818716-27287-1-git-send-email-shobhit.kumar@intel.com>
+	<1430898058.3843.30.camel@x220>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wg0-f48.google.com ([74.125.82.48]:36398 "EHLO
-	mail-wg0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750755AbbEGE0D (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 7 May 2015 00:26:03 -0400
-In-Reply-To: <1428692333-14400-4-git-send-email-jonathar@broadcom.com>
+Received: from mail-qg0-f53.google.com ([209.85.192.53]:36348 "EHLO
+	mail-qg0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750886AbbEGHNp (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 7 May 2015 03:13:45 -0400
+Received: by qgeb100 with SMTP id b100so16660569qge.3
+        for <linux-pwm@vger.kernel.org>; Thu, 07 May 2015 00:13:44 -0700 (PDT)
+In-Reply-To: <1430898058.3843.30.camel@x220>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jonathan Richardson <jonathar@broadcom.com>
-Cc: Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux PWM <linux-pwm@vger.kernel.org>
+To: Paul Bolle <pebolle@tiscali.nl>
+Cc: Shobhit Kumar <shobhit.kumar@intel.com>, linux-pwm <linux-pwm@vger.kernel.org>, Jani Nikula <jani.nikula@intel.com>, Samuel Ortiz <sameo@linux.intel.com>, Alexandre Courbot <gnurou@gmail.com>, David Airlie <airlied@linux.ie>, Povilas Staniulis <wdmonster@gmail.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>
 
-On Fri, Apr 10, 2015 at 11:58 AM, Jonathan Richardson
-<jonathar@broadcom.com> wrote:
-
-> The polarity procedure no longer applies the settings to change the
-> output signal because it can't be called when the pwm is enabled anyway.
-> The polarity is only updated in the control register. The correct
-> polarity will be applied on enable. The old method of applying changes
-> would result in no signal when the polarity was changed. The new
-> apply_settings function would fix this problem but it isn't required
-> anyway.
-
-Why does this bug fix need to alter when polarity changes take effect?
-
-That is an an unrelated change and I don't really agree with it.
-
->                 /* If duty_ns or period_ns are not achievable then return */
-> -               if (pc < PERIOD_COUNT_MIN || dc < DUTY_CYCLE_HIGH_MIN)
-> +               if (pc < PERIOD_COUNT_MIN) {
-> +                       dev_warn(chip->dev,
-> +                               "%s: pwm[%d]: period=%d is not achievable, pc=%lu, prescale=%lu\n",
-> +                               __func__, chan, period_ns, pc, prescale);
-> +                       return -EINVAL;
-> +               }
-> +
-> +               /* If duty_ns is not achievable then return */
-> +               if (dc < DUTY_CYCLE_HIGH_MIN) {
-> +                       if (0 != duty_ns) {
-> +                               dev_warn(chip->dev,
-> +                                       "%s: pwm[%d]: duty cycle=%d is not achievable, dc=%lu, prescale=%lu\n",
-> +                                       __func__, chan, duty_ns, dc, prescale);
-> +                       }
->                         return -EINVAL;
-> +               }
+On Wed, May 6, 2015 at 1:10 PM, Paul Bolle <pebolle@tiscali.nl> wrote:
+> On Tue, 2015-05-05 at 15:08 +0530, Shobhit Kumar wrote:
+>> The Crystalcove PMIC controls PWM signals and this driver exports that
+>> capability as a PWM chip driver. This is platform device implementtaion
+>> of the drivers/mfd cell device for CRC PMIC
+>>
+>> v2: Use the existing config callback with duty_ns and period_ns(Thierry)
+>>
+>> v3: Correct the subject line (Lee jones)
+>>
+>> CC: Samuel Ortiz <sameo@linux.intel.com>
+>> Cc: Linus Walleij <linus.walleij@linaro.org>
+>> Cc: Alexandre Courbot <gnurou@gmail.com>
+>> Cc: Thierry Reding <thierry.reding@gmail.com>
+>> Signed-off-by: Shobhit Kumar <shobhit.kumar@intel.com>
 >
->                 /* If pc and dc are in bounds, the calculation is done */
->                 if (pc <= PERIOD_COUNT_MAX && dc <= DUTY_CYCLE_HIGH_MAX)
->                         break;
+> The same comments can be made as for v2, see
+> http://lkml.kernel.org/r/1430428322.2187.24.camel@x220 . Maybe you
+> didn't receive that message.
 >
->                 /* Otherwise, increase prescale and recalculate pc and dc */
-> -               if (++prescale > PRESCALE_MAX)
-> +               if (++prescale > PRESCALE_MAX) {
-> +                       dev_warn(chip->dev,
-> +                               "%s: pwm[%d]: Prescale (=%lu) within max (=%d) for period=%d and duty cycle=%d is not achievable\n",
-> +                               __func__, chan, prescale, PRESCALE_MAX,
-> +                               period_ns, duty_ns);
->                         return -EINVAL;
-> +               }
->         }
+> It could also be that you think my comments were invalid, or too vague,
+> or whatever. Please say so, because then I don't have to bother you
+> again when you send out v4.
+>
 
-This extra debug output seems helpful but could you put it in its own
-commit and keep this focused on fixing the instability you observed?
+Not at all, I just missed your comments and realise my mistake later
+after sending next update. Somehow the mailing list filters that I
+have setup are not working correctly. I will look into your comments.
 
-> +               /*
-> +                * Clear trigger bit but set smooth bit to maintain old
-> +                * output.
-> +                */
-> +               value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
-> +               value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
-> +               writel(value, kp->base + PWM_CONTROL_OFFSET);
-> +
-
-The above lines are duplicated below.  Perhaps a function is in order?
-
-> +       /* Set smooth type to 1 and disable */
-> +       value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
-> +       value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
-> +       writel(value, kp->base + PWM_CONTROL_OFFSET);
-
-It seems like the important parts of the fix could be distilled down
-to something like this:
-
-diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
-index 02bc048..4ff500c 100644
---- a/drivers/pwm/pwm-bcm-kona.c
-+++ b/drivers/pwm/pwm-bcm-kona.c
-@@ -76,7 +76,8 @@ static inline struct kona_pwmc *to_kona_pwmc(struct
-pwm_chip *_chip)
-       return container_of(_chip, struct kona_pwmc, chip);
- }
-
--static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
-+static void kona_pwmc_prepare_for_settings(struct kona_pwmc *kp,
-+                                 unsigned int chan)
- {
-       unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
-
-@@ -85,10 +86,19 @@ static void kona_pwmc_apply_settings(struct
-kona_pwmc *kp, unsigned int chan)
-       value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
-       writel(value, kp->base + PWM_CONTROL_OFFSET);
-
-+      ndelay(400);
-+}
-+
-+static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
-+{
-+      unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
-+
-       /* Set trigger bit and clear smooth bit to apply new settings */
-       value &= ~(1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
-       value |= 1 << PWM_CONTROL_TRIGGER_SHIFT(chan);
-       writel(value, kp->base + PWM_CONTROL_OFFSET);
-+
-+      ndelay(400);
- }
-
- static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -135,6 +145,8 @@ static int kona_pwmc_config(struct pwm_chip *chip,
-struct pwm_device *pwm,
-
-       /* If the PWM channel is enabled, write the settings to the HW */
-       if (test_bit(PWMF_ENABLED, &pwm->flags)) {
-+            kona_pwmc_prepare_for_settings(kp, chan);
-+
-             value = readl(kp->base + PRESCALE_OFFSET);
-             value &= ~PRESCALE_MASK(chan);
-             value |= prescale << PRESCALE_SHIFT(chan);
-@@ -164,6 +176,8 @@ static int kona_pwmc_set_polarity(struct pwm_chip
-*chip, struct pwm_device *pwm,
-             return ret;
-       }
-
-+      kona_pwmc_prepare_for_settings(kp, chan);
-+
-       value = readl(kp->base + PWM_CONTROL_OFFSET);
-
-       if (polarity == PWM_POLARITY_NORMAL)
-@@ -175,9 +189,6 @@ static int kona_pwmc_set_polarity(struct pwm_chip
-*chip, struct pwm_device *pwm,
-
-       kona_pwmc_apply_settings(kp, chan);
-
--      /* Wait for waveform to settle before gating off the clock */
--      ndelay(400);
--
-       clk_disable_unprepare(kp->clk);
-
-       return 0;
-@@ -209,12 +220,10 @@ static void kona_pwmc_disable(struct pwm_chip
-*chip, struct pwm_device *pwm)
-       unsigned int chan = pwm->hwpwm;
-
-       /* Simulate a disable by configuring for zero duty */
-+      kona_pwmc_prepare_for_settings(kp, chan);
-       writel(0, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
-       kona_pwmc_apply_settings(kp, chan);
-
--      /* Wait for waveform to settle before gating off the clock */
--      ndelay(400);
--
-       clk_disable_unprepare(kp->clk);
- }
+Regards
+Shobhit
