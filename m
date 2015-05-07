@@ -1,301 +1,112 @@
-From: Shobhit Kumar <kumar@shobhit.info>
-Subject: Re: [Intel-gfx] [PATCH 6/8] pwm: crc: Add Crystalcove (CRC) PWM driver
-Date: Thu, 7 May 2015 12:49:26 +0530
-Message-ID: <CAAbrOmcnToTPOaa-w+L=nYHuwkKYsrMm_kXXrucnFocKQ2KGfg@mail.gmail.com>
-References: <1430316005-16480-7-git-send-email-shobhit.kumar@intel.com>
-	<1430818716-27287-1-git-send-email-shobhit.kumar@intel.com>
-	<20150506121455.GB9421@ulmo>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH 1/8] gpiolib: Add support for removing
+ registered consumer lookup table
+Date: Thu, 7 May 2015 08:25:03 +0100
+Message-ID: <20150507072503.GC3400@x1>
+References: <1430316005-16480-2-git-send-email-shobhit.kumar@intel.com>
+ <1430818368-26790-1-git-send-email-shobhit.kumar@intel.com>
+ <20150505104505.GZ4047@x1>
+ <20150505154459.GC30184@phenom.ffwll.local>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qk0-f182.google.com ([209.85.220.182]:36027 "EHLO
-	mail-qk0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752781AbbEGHT1 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 7 May 2015 03:19:27 -0400
-Received: by qku63 with SMTP id 63so22000714qku.3
-        for <linux-pwm@vger.kernel.org>; Thu, 07 May 2015 00:19:27 -0700 (PDT)
-In-Reply-To: <20150506121455.GB9421@ulmo>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20150505154459.GC30184@phenom.ffwll.local>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Shobhit Kumar <shobhit.kumar@intel.com>, linux-pwm <linux-pwm@vger.kernel.org>, Jani Nikula <jani.nikula@intel.com>, Samuel Ortiz <sameo@linux.intel.com>, Alexandre Courbot <gnurou@gmail.com>, David Airlie <airlied@linux.ie>, Povilas Staniulis <wdmonster@gmail.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Shobhit Kumar <shobhit.kumar@intel.com>, linux-pwm <linux-pwm@vger.kernel.org>, Jani Nikula <jani.nikula@intel.com>, Samuel Ortiz <sameo@linux.intel.com>, Alexandre Courbot <gnurou@gmail.com>, David Airlie <airlied@linux.ie>, Povilas Staniulis <wdmonster@gmail.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>, Chih-Wei Huang <cwhuang@android-x86.org>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>
 
-On Wed, May 6, 2015 at 5:44 PM, Thierry Reding <thierry.reding@gmail.com> wrote:
-> On Tue, May 05, 2015 at 03:08:36PM +0530, Shobhit Kumar wrote:
->> The Crystalcove PMIC controls PWM signals and this driver exports that
->
-> You say signal_s_ here, but you only expose a single PWM device. Does
-> the PMIC really control more than one? If it isn't, this should probably
-> become: "controls a PWM output and this driver...".
-
-Actually it does support 3 of them but on the platform only one is
-being used and I exported only that as of now. Probably I should
-expand a little in the commit message indicating this. will re-post
-after fixing based on your other comments.
-
-Regards
-Shobhit
-
->
->> capability as a PWM chip driver. This is platform device implementtaion
->
-> "implementation"
->
->> of the drivers/mfd cell device for CRC PMIC
->
-> Sentences should end with a full stop.
->
->> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->> index b1541f4..954da3e 100644
->> --- a/drivers/pwm/Kconfig
->> +++ b/drivers/pwm/Kconfig
->> @@ -183,6 +183,13 @@ config PWM_LPC32XX
->>         To compile this driver as a module, choose M here: the module
->>         will be called pwm-lpc32xx.
->>
->> +config PWM_CRC
->> +     bool "Intel Crystalcove (CRC) PWM support"
->> +     depends on X86 && INTEL_SOC_PMIC
->> +     help
->> +       Generic PWM framework driver for Crystalcove (CRC) PMIC based PWM
->> +       control.
->> +
->
-> This is badly sorted. Please keep the list sorted alphabetically.
->
->>  config PWM_LPSS
->>       tristate "Intel LPSS PWM support"
->>       depends on X86
->> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
->> index ec50eb5..3d38fed 100644
->> --- a/drivers/pwm/Makefile
->> +++ b/drivers/pwm/Makefile
->> @@ -35,3 +35,4 @@ obj-$(CONFIG_PWM_TIPWMSS)   += pwm-tipwmss.o
->>  obj-$(CONFIG_PWM_TWL)                += pwm-twl.o
->>  obj-$(CONFIG_PWM_TWL_LED)    += pwm-twl-led.o
->>  obj-$(CONFIG_PWM_VT8500)     += pwm-vt8500.o
->> +obj-$(CONFIG_PWM_CRC)                += pwm-crc.o
->
-> This too.
->
->> diff --git a/drivers/pwm/pwm-crc.c b/drivers/pwm/pwm-crc.c
->> new file mode 100644
->> index 0000000..987f3b4
->> --- /dev/null
->> +++ b/drivers/pwm/pwm-crc.c
->> @@ -0,0 +1,171 @@
->> +/*
->> + * pwm-crc.c - Intel Crystal Cove PWM Driver
->
-> I think you can safely remove this line. You already know what file it
-> is when you open it in your editor, and the description is in the
-> MODULE_DESCRIPTION string already.
->
->> + *
->> + * Copyright (C) 2015 Intel Corporation. All rights reserved.
->> + *
->> + * This program is free software; you can redistribute it and/or
->> + * modify it under the terms of the GNU General Public License version
->> + * 2 as published by the Free Software Foundation.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + *
->> + * Author: Shobhit Kumar <shobhit.kumar@intel.com>
->> + */
->> +
->> +#include <linux/module.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/regmap.h>
->> +#include <linux/mfd/intel_soc_pmic.h>
->> +#include <linux/pwm.h>
->> +
->> +#define PWM0_CLK_DIV         0x4B
->> +#define  PWM_OUTPUT_ENABLE   (1<<7)
->
-> Should have spaces around <<.
->
->> +#define  PWM_DIV_CLK_0               0x00 /* DIVIDECLK = BASECLK */
->> +#define  PWM_DIV_CLK_100     0x63 /* DIVIDECLK = BASECLK/100 */
->> +#define  PWM_DIV_CLK_128     0x7F /* DIVIDECLK = BASECLK/128 */
->> +
->> +#define PWM0_DUTY_CYCLE              0x4E
->> +#define BACKLIGHT_EN         0x51
->> +
->> +#define PWM_MAX_LEVEL                0xFF
->> +
->> +#define PWM_BASE_CLK         6000    /* 6 MHz */
->
-> This number is actually 6 KHz. I think it'd be better if you stuck with
-> one unit here. Or perhaps there's some other reason why you can't use
-> 6000000 here instead?
->
->> +#define PWM_MAX_PERIOD_NS    21333 /* 46.875KHz */
->> +
->> +/**
->> + * struct crystalcove_pwm - Crystal Cove PWM controller
->> + * @chip: the abstract pwm_chip structure.
->> + * @regmap: the regmap from the parent device.
->> + */
->> +struct crystalcove_pwm {
->> +     struct pwm_chip chip;
->> +     struct platform_device *pdev;
->
-> I think I had at some point requested that you get rid of this and use
-> the chip.dev member instead. There's no kerneldoc for it and it isn't
-> (well, almost, see below) used anywhere else, so perhaps you forgot to
-> remove it here?
->
->> +     struct regmap *regmap;
->> +};
->> +
->> +static inline struct crystalcove_pwm *to_crc_pwm(struct pwm_chip *pc)
->> +{
->> +     return container_of(pc, struct crystalcove_pwm, chip);
->> +}
->> +
->> +static int crc_pwm_enable(struct pwm_chip *c, struct pwm_device *pwm)
->> +{
->> +     struct crystalcove_pwm *crc_pwm = to_crc_pwm(c);
->> +
->> +     regmap_write(crc_pwm->regmap, BACKLIGHT_EN, 1);
->> +
->> +     return 0;
->> +}
->> +
->> +static void crc_pwm_disable(struct pwm_chip *c, struct pwm_device *pwm)
->> +{
->> +     struct crystalcove_pwm *crc_pwm = to_crc_pwm(c);
->> +
->> +     regmap_write(crc_pwm->regmap, BACKLIGHT_EN, 0);
->> +}
->> +
->> +static int crc_pwm_config(struct pwm_chip *c, struct pwm_device *pwm,
->> +                               int duty_ns, int period_ns)
->
-> Please align arguments on subsequent lines with the first argument of
-> the first line.
->
->> +{
->> +     struct crystalcove_pwm *crc_pwm = to_crc_pwm(c);
->> +     struct device *dev = &crc_pwm->pdev->dev;
->
-> Did you test reconfiguring the PWM? I don't see crc_pwm->pdev getting
-> initialized anywhere, so this should crash trying to dereference a NULL
-> pointer.
->
-> Of course if you get rid of the pdev field as I suggested you can simply
-> get the struct device * from c->dev.
->
->> +     int level, percent;
->> +
->> +     if (period_ns > PWM_MAX_PERIOD_NS) {
->> +             dev_err(dev, "un-supported period_ns\n");
->> +             return -1;
->
-> You should return -EINVAL here. Besides being a literal and therefore a
-> bad idea, -1 == -EPERM and doesn't match the error condition.
->
->> +     }
->> +
->> +     if (pwm->period != period_ns) {
->> +             int clk_div;
->> +
->> +             /* changing the clk divisor, need to disable fisrt */
->> +             crc_pwm_disable(c, pwm);
->> +             clk_div = PWM_BASE_CLK * period_ns / 1000000;
->
-> Similar to the above, this is confusing because you're mixing up
-> different scales here. period_ns is in nanoseconds, so it'd be natural
-> to divide by 1000000000 (though you should really be using NSEC_PER_SEC
-> instead). If you counterweight that by expressing PWM_BASE_CLK in Hz
-> (6000000) you get much nicer symmetry and make the code a lot easier to
-> understand.
->
->> +
->> +             regmap_write(crc_pwm->regmap, PWM0_CLK_DIV,
->> +                                     clk_div | PWM_OUTPUT_ENABLE);
->> +
->> +             /* enable back */
->> +             crc_pwm_enable(c, pwm);
->> +     }
->> +
->> +     if (duty_ns > period_ns) {
->> +             dev_err(dev, "duty cycle cannot be greater than cycle period\n");
->> +             return -1;
->> +     }
->
-> The PWM core already performs this check, so you'll never get here in
-> case this condition is true.
->
->> +
->> +     /* change the pwm duty cycle */
->> +     percent = duty_ns * 100 / period_ns;
->> +     level = percent * PWM_MAX_LEVEL / 100;
->
-> Why do you need to apply the rule of three twice here? Doesn't
->
->         level = duty_ns * PWM_MAX_LEVEL / period_ns;
->
-> give you what you want?
->
->> +     regmap_write(crc_pwm->regmap, PWM0_DUTY_CYCLE, level);
->> +
->> +     return 0;
->> +}
->> +
->> +static const struct pwm_ops crc_pwm_ops = {
->> +     .config = crc_pwm_config,
->> +     .enable = crc_pwm_enable,
->> +     .disable = crc_pwm_disable,
->> +     .owner = THIS_MODULE,
->> +};
->> +
->> +static int crystalcove_pwm_probe(struct platform_device *pdev)
->> +{
->> +     struct crystalcove_pwm *pwm;
->> +     int retval;
->> +     struct device *dev = pdev->dev.parent;
->> +     struct intel_soc_pmic *pmic = dev_get_drvdata(dev);
->> +
->> +     pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
->> +     if (!pwm)
->> +             return -ENOMEM;
->> +
->> +     pwm->chip.dev = &pdev->dev;
->> +     pwm->chip.ops = &crc_pwm_ops;
->> +     pwm->chip.base = -1;
->> +     pwm->chip.npwm = 1;
->> +
->> +     /* get the PMIC regmap */
->> +     pwm->regmap = pmic->regmap;
->> +
->> +     retval = pwmchip_add(&pwm->chip);
->> +     if (retval < 0)
->> +             return retval;
->> +
->> +     dev_dbg(&pdev->dev, "crc-pwm probe successful\n");
->
-> Do you really want this? The driver core will complain in any of the
-> above failures, so what use is there to be chatty when probing
-> succeeds?
->
->> +static struct platform_driver crystalcove_pwm_driver = {
->> +     .probe = crystalcove_pwm_probe,
->> +     .remove = crystalcove_pwm_remove,
->> +     .driver = {
->> +             .name = "crystal_cove_pwm",
->
-> I'd prefer this to be "crystal-cove-pwm" for consistency with other
-> drivers, but since the MFD part already uses underscores in names it'd
-> introduce an inconsistency there. So I'm fine with this one as-is.
->
-> Thierry
->
-> _______________________________________________
-> Intel-gfx mailing list
-> Intel-gfx@lists.freedesktop.org
-> http://lists.freedesktop.org/mailman/listinfo/intel-gfx
->
+T24gVHVlLCAwNSBNYXkgMjAxNSwgRGFuaWVsIFZldHRlciB3cm90ZToKCj4gT24gVHVlLCBNYXkg
+MDUsIDIwMTUgYXQgMTE6NDU6MDVBTSArMDEwMCwgTGVlIEpvbmVzIHdyb3RlOgo+ID4gVGhpcyBp
+cyBub3QgaG93IHdlIHN1Ym1pdCBzdWJzZXF1ZW50IHBhdGNoLXNldHMuCj4gCj4gSXQgaXMgdW5m
+b3J0dW5hdGVseSBob3cgd2UgaGFuZGxlIHBhdGNoZXMgb24gZHJpLWRldmVsJmludGVsLWdmeCB0
+byBiZQo+IGFibGUgdG8gY29wZSB3aXRoIG1hc3NpdmUgbWFpbCBsb2FkLiBJZiBldmVyeW9uZSB3
+aG8gc3VibWl0cyB0byBpbnRlbC1nZngKPiB3b3VsZCBhbHdheXMgcmVzZW5kIHRoZSBlbnRpcmUg
+c2VyaWVzIGZvciBtaW5vciB1cGRhdGVzIG9mIHNvbSBwYXRjaGVzCj4gd2UnZCBjb21wbGV0ZWx5
+IGRyb3duIGluIHRoZSByZXN1bHRpbmcgZmxvb2QuCgpGb3Igb25lIG9yIHR3byBzaW1wbGUgZml4
+LXVwcyBpbiB0aGUgc2V0IHBlcmhhcHMsIGJ1dCB3aGVuIHN1Ym1pdHRpbmcKdGhlIGVudGlyZSBz
+ZXQgaXQgbmVlZHMgdG8gYmUgdGhyZWFkZWQgYXMgYSBzZXBhcmF0ZSBibG9jaywgcmF0aGVyCnRo
+YW4gc2VlaW5nIGN1cnJlbnQgYW5kIHN1cGVyc2VkZWQgcGF0Y2hlcyBpbnRlci13b3Zlbi4gIFRo
+aXMKc3VibWlzc2lvbiBpcyBhbHJlYWR5IGEgcmF0J3MgbmVzdCBhbmQgSSdtIHN0cnVnZ2xpbmcg
+dG8gc2VlIHdoaWNoCnBhdGNoZXMgYXJlIHdoaWNoLiAgSSdtIHJlYWxseSBub3QgbG9va2luZyBm
+b3J3YXJkIHRvIHYzIGFuZCB2NCEKQXR0YWNoaW5nIG9uZSB2ZXJzaW9uIHRvIGFub3RoZXIgaXMg
+YSBnb29kIHdheSB0byBrZWVwIGNvbnRyb2wgaWYgeW91CnJlYWxseSBhcmUgb3Zlci13aGVsbWVk
+LiAgRm9yIHlvdXIgdXNlLWNhc2UgSSB3b3VsZCBleHBlY3QgdG8gc2VlIHRoZQpmb2xsb3dpbmcs
+IHdoaWNoIGlzIGFjaGlldmVkIHVzaW5nIC0taW4tcmVwbHktdG86CgpbUEFUQ0ggMC8yXSBIZXJl
+IGlzIHdoYXQgSSBkaWQuLi4KICBbUEFUQ0ggMS8yXSBDbGVhbiB1cCBhbmQgdGVzdHMKICBbUEFU
+Q0ggMi8yXSBJbXBsZW1lbnRhdGlvbgogICAgW1BBVENIIHYyIDAvM10gSGVyZSBpcyBhIHJlcm9s
+bAogICAgICBbUEFUQ0ggdjIgMS8zXSBDbGVhbiB1cAogICAgICBbUEFUQ0ggdjIgMi8zXSBOZXcg
+dGVzdHMKICAgICAgW1BBVENIIHYyIDMvM10gSW1wbGVtZW50YXRpb24KClRoZSB2ZXJzaW9uIG51
+bWJlcnMgYWxzbyBuZWVkIHRvIGJlIHByZXNlbnQgYW5kIGFyZW4ndCBpbiB0aGlzCnJlLXN1Ym1p
+c3Npb24uCgo+ID4gUGxlYXNlIHN1Ym1pdCB0aGVtIGFzIGEgd2hvbGUsIHNlcGVyYXRlbHkgZnJv
+bSB0aGUgZmlyc3Qgc3VibWlzc2lvbgo+ID4gYW5kIHdpdGggdmVyc2lvbmluZyBpbmZvcm1hdGlv
+biBpLmUuIFtQQVRDSCB2MiBYL1ldIFN0dWZmIC4uLgo+ID4gCj4gPiA+IEluIGNhc2Ugd2UgdW5s
+b2FkIGFuZCBsb2FkIGEgZHJpdmVyIG1vZHVsZSBhZ2FpbiB0aGF0IGlzIHJlZ2lzdGVyaW5nIGEK
+PiA+ID4gbG9va3VwIHRhYmxlLCB3aXRob3V0IHRoaXMgaXQgd2lsbCByZXN1bHQgaW4gbXVsdGlw
+bGUgZW50cmllcy4gUHJvdmlkZQo+ID4gPiBhbiBvcHRpb24gdG8gcmVtb3ZlIHRoZSBsb29rdXAg
+dGFibGUgb24gZHJpdmVyIHVubG9hZAo+ID4gPiAKPiA+ID4gdjI6IENjaW5nIG1haW50YWluZXJz
+Cj4gPiA+IHYzOiBDb3JyZWN0IHRoZSBzdWJqZWN0IGxpbmUgKExlZSBqb25lcykKPiA+IAo+ID4g
+Q2hhbmdlIGxvZ3Mgc2hvdWxkIGdvIHVuZGVybmV0aCB0aGUgJy0tLScgYW5kIGFib3ZlIHRoZSBk
+aWZmc3RhdCBmb3VuZAo+ID4gYmVsb3cuCj4gCj4gQWdhaW4ganVzdCBzdHlsZSBkaWZmZXJlbmNl
+cyBiZXR3ZWVuIHN1YnN5c3RlbXMsIEkgZ2VuZXJhbGx5IHdhbnQgdG8gaGF2ZQo+IHRob3NlIGFi
+b3ZlIHRoZSAtLS0uCgpGb3IgYWxsIGNvbW1pdHM/ICBUaGVuIEknbSBndWVzc2luZyB5b3VyIEdp
+dCBoaXN0b3J5IGlzIGFsbCBidXQKdW5yZWFkYWJsZS4gIEluIHRoZSBrZXJuZWwsIHVubGVzcyB0
+aGUgY2hhbmdlbG9nIGhvbGRzIHZhbHVhYmxlCmhpc3RvcmljIGluZm9ybWF0aW9uIHdoaWNoIGlu
+Zmx1YW5jZSBrZXkgZGVzaWduIGRlY2lzaW9ucywgd2UgcHV0IHRoZQpwYXRjaCBjaGFuZ2Vsb2cg
+KmJlbG93KiB0aGUgJy0tLScuCgpQbGVhc2UgcmVhZCBEb2N1bWVudGF0aW9uL1N1Ym1pdHRpbmdQ
+YXRjaGVzOgoKICAgICAgICIxNCkgVGhlIGNhbm9uaWNhbCBwYXRjaCBmb3JtYXQKCiAgICAgICBb
+Li4uXQoKICAgICAgIFRoZSAiLS0tIiBtYXJrZXIgbGluZSBzZXJ2ZXMgdGhlIGVzc2VudGlhbCBw
+dXJwb3NlIG9mIG1hcmtpbmcKICAgICAgIGZvciBwYXRjaCBoYW5kbGluZyB0b29scyB3aGVyZSB0
+aGUgY2hhbmdlbG9nIG1lc3NhZ2UgZW5kcy4KCiAgICAgICBbLi4uXQoKICAgICAgIE90aGVyIGNv
+bW1lbnRzIHJlbGV2YW50IG9ubHkgdG8gdGhlIG1vbWVudCBvciB0aGUgbWFpbnRhaW5lciwKICAg
+ICAgIG5vdCBzdWl0YWJsZSBmb3IgdGhlIHBlcm1hbmVudCBjaGFuZ2Vsb2csIHNob3VsZCBhbHNv
+IGdvIGhlcmUuCiAgICAgICBBIGdvb2QgZXhhbXBsZSBvZiBzdWNoIGNvbW1lbnRzIG1pZ2h0IGJl
+ICoicGF0Y2ggY2hhbmdlbG9ncyIqCiAgICAgICB3aGljaCBkZXNjcmliZSB3aGF0IGhhcyBjaGFu
+Z2VkIGJldHdlZW4gdGhlIHYxIGFuZCB2MiB2ZXJzaW9uCiAgICAgICBvZiB0aGUgcGF0Y2guIgoK
+PiA+ID4gQ2M6IFNhbXVlbCBPcnRpeiA8c2FtZW9AbGludXguaW50ZWwuY29tPgo+ID4gPiBDYzog
+TGludXMgV2FsbGVpaiA8bGludXMud2FsbGVpakBsaW5hcm8ub3JnPgo+ID4gPiBDYzogQWxleGFu
+ZHJlIENvdXJib3QgPGdudXJvdUBnbWFpbC5jb20+Cj4gPiA+IENjOiBUaGllcnJ5IFJlZGluZyA8
+dGhpZXJyeS5yZWRpbmdAZ21haWwuY29tPgo+ID4gPiBSZXZpZXdlZC1ieTogQWxleGFuZHJlIENv
+dXJib3QgPGFjb3VyYm90QG52aWRpYS5jb20+Cj4gPiA+IFNpZ25lZC1vZmYtYnk6IFNob2JoaXQg
+S3VtYXIgPHNob2JoaXQua3VtYXJAaW50ZWwuY29tPgo+ID4gPiAtLS0KPiA+ID4gIGRyaXZlcnMv
+Z3Bpby9ncGlvbGliLmMgICAgICAgfCAxMyArKysrKysrKysrKysrCj4gPiA+ICBpbmNsdWRlL2xp
+bnV4L2dwaW8vbWFjaGluZS5oIHwgIDEgKwo+ID4gPiAgMiBmaWxlcyBjaGFuZ2VkLCAxNCBpbnNl
+cnRpb25zKCspCj4gPiA+IAo+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncGlvL2dwaW9saWIu
+YyBiL2RyaXZlcnMvZ3Bpby9ncGlvbGliLmMKPiA+ID4gaW5kZXggNTllYWEyMy4uMjQyMGFmOSAx
+MDA2NDQKPiA+ID4gLS0tIGEvZHJpdmVycy9ncGlvL2dwaW9saWIuYwo+ID4gPiArKysgYi9kcml2
+ZXJzL2dwaW8vZ3Bpb2xpYi5jCj4gPiA+IEBAIC0xNjU4LDYgKzE2NTgsMTkgQEAgdm9pZCBncGlv
+ZF9hZGRfbG9va3VwX3RhYmxlKHN0cnVjdCBncGlvZF9sb29rdXBfdGFibGUgKnRhYmxlKQo+ID4g
+PiAgCW11dGV4X3VubG9jaygmZ3Bpb19sb29rdXBfbG9jayk7Cj4gPiA+ICB9Cj4gPiA+ICAKPiA+
+ID4gKy8qKgo+ID4gPiArICogZ3Bpb2RfcmVtb3ZlX2xvb2t1cF90YWJsZSgpIC0gdW5yZWdpc3Rl
+ciBHUElPIGRldmljZSBjb25zdW1lcnMKPiA+ID4gKyAqIEB0YWJsZTogdGFibGUgb2YgY29uc3Vt
+ZXJzIHRvIHVucmVnaXN0ZXIKPiA+ID4gKyAqLwo+ID4gPiArdm9pZCBncGlvZF9yZW1vdmVfbG9v
+a3VwX3RhYmxlKHN0cnVjdCBncGlvZF9sb29rdXBfdGFibGUgKnRhYmxlKQo+ID4gPiArewo+ID4g
+PiArCW11dGV4X2xvY2soJmdwaW9fbG9va3VwX2xvY2spOwo+ID4gPiArCj4gPiA+ICsJbGlzdF9k
+ZWwoJnRhYmxlLT5saXN0KTsKPiA+ID4gKwo+ID4gPiArCW11dGV4X3VubG9jaygmZ3Bpb19sb29r
+dXBfbG9jayk7Cj4gPiA+ICt9Cj4gPiA+ICsKPiA+ID4gIHN0YXRpYyBzdHJ1Y3QgZ3Bpb19kZXNj
+ICpvZl9maW5kX2dwaW8oc3RydWN0IGRldmljZSAqZGV2LCBjb25zdCBjaGFyICpjb25faWQsCj4g
+PiA+ICAJCQkJICAgICAgdW5zaWduZWQgaW50IGlkeCwKPiA+ID4gIAkJCQkgICAgICBlbnVtIGdw
+aW9fbG9va3VwX2ZsYWdzICpmbGFncykKPiA+ID4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgv
+Z3Bpby9tYWNoaW5lLmggYi9pbmNsdWRlL2xpbnV4L2dwaW8vbWFjaGluZS5oCj4gPiA+IGluZGV4
+IGUyNzA2MTQuLmMwZDcxMmQgMTAwNjQ0Cj4gPiA+IC0tLSBhL2luY2x1ZGUvbGludXgvZ3Bpby9t
+YWNoaW5lLmgKPiA+ID4gKysrIGIvaW5jbHVkZS9saW51eC9ncGlvL21hY2hpbmUuaAo+ID4gPiBA
+QCAtNTcsNSArNTcsNiBAQCBzdHJ1Y3QgZ3Bpb2RfbG9va3VwX3RhYmxlIHsKPiA+ID4gIH0KPiA+
+ID4gIAo+ID4gPiAgdm9pZCBncGlvZF9hZGRfbG9va3VwX3RhYmxlKHN0cnVjdCBncGlvZF9sb29r
+dXBfdGFibGUgKnRhYmxlKTsKPiA+ID4gK3ZvaWQgZ3Bpb2RfcmVtb3ZlX2xvb2t1cF90YWJsZShz
+dHJ1Y3QgZ3Bpb2RfbG9va3VwX3RhYmxlICp0YWJsZSk7Cj4gPiA+ICAKPiA+ID4gICNlbmRpZiAv
+KiBfX0xJTlVYX0dQSU9fTUFDSElORV9IICovCj4gPiAKPiAKCi0tIApMZWUgSm9uZXMKTGluYXJv
+IFNUTWljcm9lbGVjdHJvbmljcyBMYW5kaW5nIFRlYW0gTGVhZApMaW5hcm8ub3JnIOKUgiBPcGVu
+IHNvdXJjZSBzb2Z0d2FyZSBmb3IgQVJNIFNvQ3MKRm9sbG93IExpbmFybzogRmFjZWJvb2sgfCBU
+d2l0dGVyIHwgQmxvZwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fXwpJbnRlbC1nZnggbWFpbGluZyBsaXN0CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5v
+cmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdm
+eAo=
