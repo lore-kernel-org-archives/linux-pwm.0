@@ -1,14 +1,16 @@
 From: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
-Subject: [PATCH] pwm: img: Change min and max timebase steps value
-Date: Thu, 7 May 2015 18:59:21 -0300
-Message-ID: <1431035961-2008-1-git-send-email-ezequiel.garcia@imgtec.com>
+Subject: [PATCH v2] pwm: img: Impose upper and lower timebase steps value
+Date: Fri, 8 May 2015 18:47:31 -0300
+Message-ID: <1431121651-6787-1-git-send-email-ezequiel.garcia@imgtec.com>
+References: <1431035961-2008-1-git-send-email-ezequiel.garcia@imgtec.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailapp01.imgtec.com ([195.59.15.196]:10098 "EHLO
+Received: from mailapp01.imgtec.com ([195.59.15.196]:12022 "EHLO
 	mailapp01.imgtec.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751021AbbEGWCj (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 7 May 2015 18:02:39 -0400
+	with ESMTP id S1753017AbbEHV7z (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 8 May 2015 17:59:55 -0400
+In-Reply-To: <1431035961-2008-1-git-send-email-ezequiel.garcia@imgtec.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
@@ -21,8 +23,8 @@ value to 255. To fix it, let's introduce a compatible-specific
 data structure to contain the SoC-specific details and use it to
 specify a maximum timebase.
 
-Also, the design team, suggested to use a minimum timebase steps
-value of 16.
+Also, let's limit the minimum timebase to 16 steps, to allow a sane
+range of duty cycle steps.
 
 Fixes: 277bb6a29e00 ("pwm: Imagination Technologies PWM DAC driver")
 Signed-off-by: Naidu Tellapati <naidu.tellapati@imgtec.com>
@@ -31,11 +33,20 @@ Signed-off-by: Ezequiel Garcia <ezequiel.garcia@imgtec.com>
 This patch is needed for the pwm-img to work properly, so it should be
 pushed as a v4.1-rc fix.
 
- drivers/pwm/pwm-img.c | 64 +++++++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 52 insertions(+), 12 deletions(-)
+Changes from v1:
+
+ * After some investigation, we found the hardware has no lower limit
+   for the timebase. However, it still makes sense to have limit it,
+   to allow a sane duty cycle resolution. Updated the commit log and added
+   some comments to the driver explaining this.
+
+ * Minor style fixes.
+
+ drivers/pwm/pwm-img.c | 76 +++++++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 64 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/pwm/pwm-img.c b/drivers/pwm/pwm-img.c
-index 476171a..25b6555 100644
+index 476171a..8a029f9 100644
 --- a/drivers/pwm/pwm-img.c
 +++ b/drivers/pwm/pwm-img.c
 @@ -16,6 +16,7 @@
@@ -46,11 +57,22 @@ index 476171a..25b6555 100644
  #include <linux/platform_device.h>
  #include <linux/pwm.h>
  #include <linux/regmap.h>
-@@ -38,15 +39,22 @@
+@@ -38,7 +39,22 @@
  #define PERIP_PWM_PDM_CONTROL_CH_MASK		0x1
  #define PERIP_PWM_PDM_CONTROL_CH_SHIFT(ch)	((ch) * 4)
  
 -#define MAX_TMBASE_STEPS			65536
++/*
++ * PWM period is specified with a timebase register,
++ * in number of step periods. The PWM duty cycle is also
++ * specified in step periods, in the [0, $timebase] range.
++ * In other words, the timebase imposes the duty cycle
++ * resolution. Therefore, let's constraint the timebase to
++ * a minimum value to allow a sane range of duty cycle values.
++ * Imposing a minimum timebase, will impose a maximum PWM frequency.
++ *
++ * The value chosen is completely arbitrary.
++ */
 +#define MIN_TMBASE_STEPS			16
 +
 +struct img_pwm_soc_data {
@@ -58,31 +80,31 @@ index 476171a..25b6555 100644
 +};
  
  struct img_pwm_chip {
-+	u32		max_period_ns;
-+	u32		min_period_ns;
  	struct device	*dev;
- 	struct pwm_chip	chip;
- 	struct clk	*pwm_clk;
+@@ -47,6 +63,9 @@ struct img_pwm_chip {
  	struct clk	*sys_clk;
  	void __iomem	*base;
  	struct regmap	*periph_regs;
++	int		max_period_ns;
++	int		min_period_ns;
 +	const struct img_pwm_soc_data   *data;
  };
  
  static inline struct img_pwm_chip *to_img_pwm_chip(struct pwm_chip *chip)
-@@ -72,24 +80,30 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -72,24 +91,31 @@ static int img_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
  	u32 val, div, duty, timebase;
  	unsigned long mul, output_clk_hz, input_clk_hz;
  	struct img_pwm_chip *pwm_chip = to_img_pwm_chip(chip);
 +	unsigned int max_timebase = pwm_chip->data->max_timebase;
- 
- 	input_clk_hz = clk_get_rate(pwm_chip->pwm_clk);
- 	output_clk_hz = DIV_ROUND_UP(NSEC_PER_SEC, period_ns);
++
 +	if (period_ns < pwm_chip->min_period_ns ||
 +	    period_ns > pwm_chip->max_period_ns) {
 +		dev_err(chip->dev, "configured period not in range\n");
 +		return -ERANGE;
 +	}
+ 
+ 	input_clk_hz = clk_get_rate(pwm_chip->pwm_clk);
+ 	output_clk_hz = DIV_ROUND_UP(NSEC_PER_SEC, period_ns);
  
  	mul = DIV_ROUND_UP(input_clk_hz, output_clk_hz);
 -	if (mul <= MAX_TMBASE_STEPS) {
@@ -106,7 +128,7 @@ index 476171a..25b6555 100644
  		dev_err(chip->dev,
  			"failed to configure timebase steps/divider value\n");
  		return -EINVAL;
-@@ -143,11 +157,27 @@ static const struct pwm_ops img_pwm_ops = {
+@@ -143,11 +169,27 @@ static const struct pwm_ops img_pwm_ops = {
  	.owner = THIS_MODULE,
  };
  
@@ -127,14 +149,14 @@ index 476171a..25b6555 100644
  {
  	int ret;
 +	u64 val;
-+	u32 input_rate;
++	unsigned long clk_rate;
  	struct resource *res;
  	struct img_pwm_chip *pwm;
 +	const struct of_device_id *of_dev_id;
  
  	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
  	if (!pwm)
-@@ -160,6 +190,11 @@ static int img_pwm_probe(struct platform_device *pdev)
+@@ -160,6 +202,11 @@ static int img_pwm_probe(struct platform_device *pdev)
  	if (IS_ERR(pwm->base))
  		return PTR_ERR(pwm->base);
  
@@ -146,25 +168,25 @@ index 476171a..25b6555 100644
  	pwm->periph_regs = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
  							   "img,cr-periph");
  	if (IS_ERR(pwm->periph_regs))
-@@ -189,6 +224,17 @@ static int img_pwm_probe(struct platform_device *pdev)
+@@ -189,6 +236,17 @@ static int img_pwm_probe(struct platform_device *pdev)
  		goto disable_sysclk;
  	}
  
-+	input_rate = clk_get_rate(pwm->pwm_clk);
++	clk_rate = clk_get_rate(pwm->pwm_clk);
 +
 +	/* The maximum input clock divider is 512 */
 +	val = (u64)NSEC_PER_SEC * 512 * pwm->data->max_timebase;
-+	do_div(val, input_rate);
++	do_div(val, clk_rate);
 +	pwm->max_period_ns = val;
 +
 +	val = (u64)NSEC_PER_SEC * MIN_TMBASE_STEPS;
-+	do_div(val, input_rate);
++	do_div(val, clk_rate);
 +	pwm->min_period_ns = val;
 +
  	pwm->chip.dev = &pdev->dev;
  	pwm->chip.ops = &img_pwm_ops;
  	pwm->chip.base = -1;
-@@ -228,12 +274,6 @@ static int img_pwm_remove(struct platform_device *pdev)
+@@ -228,12 +286,6 @@ static int img_pwm_remove(struct platform_device *pdev)
  	return pwmchip_remove(&pwm_chip->chip);
  }
  
