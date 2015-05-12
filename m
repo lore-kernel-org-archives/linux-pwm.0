@@ -1,7 +1,7 @@
 From: Jonathan Richardson <jonathar@broadcom.com>
-Subject: [PATCH v7 4/5] pwm: kona: Add debug info to config function
-Date: Tue, 12 May 2015 16:28:15 -0700
-Message-ID: <1431473296-13683-5-git-send-email-jonathar@broadcom.com>
+Subject: [PATCH v7 5/5] pwm: core: Set enable state properly on failed call to enable
+Date: Tue, 12 May 2015 16:28:16 -0700
+Message-ID: <1431473296-13683-6-git-send-email-jonathar@broadcom.com>
 References: <1431473296-13683-1-git-send-email-jonathar@broadcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,59 +12,45 @@ To: Tim Kryger <tim.kryger@gmail.com>, Dmitry Torokhov <dtor@google.com>, Anatol
 Cc: Scott Branden <sbranden@broadcom.com>, Jonathan Richardson <jonathar@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Adds debugging info to config function where duty cycle and period
-are calculated and verified.
+The pwm_enable function didn't clear the enabled bit if a call to a
+clients enable function returned an error. The result was that the state
+of the pwm core was wrong. Clearing the bit when enable returns an error
+ensures the state is properly set.
 
+Tested-by: Jonathan Richardson <jonathar@broadcom.com>
+Reviewed-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Signed-off-by: Jonathan Richardson <jonathar@broadcom.com>
 ---
- drivers/pwm/pwm-bcm-kona.c |   25 +++++++++++++++++++++++--
- 1 file changed, 23 insertions(+), 2 deletions(-)
+ drivers/pwm/core.c |   16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
-index 0654981..c6069c7 100644
---- a/drivers/pwm/pwm-bcm-kona.c
-+++ b/drivers/pwm/pwm-bcm-kona.c
-@@ -138,18 +138,39 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		dc = div64_u64(val, div);
- 
- 		/* If duty_ns or period_ns are not achievable then return */
--		if (pc < PERIOD_COUNT_MIN || dc < DUTY_CYCLE_HIGH_MIN)
-+		if (pc < PERIOD_COUNT_MIN) {
-+			dev_warn(chip->dev,
-+				"%s: pwm[%d]: period=%d is not achievable, pc=%lu, prescale=%lu\n",
-+				__func__, chan, period_ns, pc, prescale);
- 			return -EINVAL;
-+		}
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 224645f..18f5ac4 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -477,10 +477,20 @@ EXPORT_SYMBOL_GPL(pwm_set_polarity);
+  */
+ int pwm_enable(struct pwm_device *pwm)
+ {
+-	if (pwm && !test_and_set_bit(PWMF_ENABLED, &pwm->flags))
+-		return pwm->chip->ops->enable(pwm->chip, pwm);
++	int err;
 +
-+		if (dc < DUTY_CYCLE_HIGH_MIN) {
-+			if (0 != duty_ns) {
-+				dev_warn(chip->dev,
-+					"%s: pwm[%d]: duty cycle=%d is not achievable, dc=%lu, prescale=%lu\n",
-+					__func__, chan, duty_ns, dc, prescale);
-+			}
-+			return -EINVAL;
-+		}
- 
- 		/* If pc and dc are in bounds, the calculation is done */
- 		if (pc <= PERIOD_COUNT_MAX && dc <= DUTY_CYCLE_HIGH_MAX)
- 			break;
- 
- 		/* Otherwise, increase prescale and recalculate pc and dc */
--		if (++prescale > PRESCALE_MAX)
-+		if (++prescale > PRESCALE_MAX) {
-+			dev_warn(chip->dev,
-+				"%s: pwm[%d]: Prescale (=%lu) within max (=%d) for period=%d and duty cycle=%d is not achievable\n",
-+				__func__, chan, prescale, PRESCALE_MAX,
-+				period_ns, duty_ns);
- 			return -EINVAL;
-+		}
- 	}
- 
-+	dev_dbg(chip->dev, "pwm[%d]: period=%lu, duty_high=%lu, prescale=%lu\n",
-+		chan, pc, dc, prescale);
++	if (!pwm)
++		return -EINVAL;
 +
- 	/*
- 	 * Don't apply settings if disabled. The period and duty cycle are
- 	 * always calculated above to ensure the new values are
++	if (!test_and_set_bit(PWMF_ENABLED, &pwm->flags)) {
++		err = pwm->chip->ops->enable(pwm->chip, pwm);
++		if (err) {
++			clear_bit(PWMF_ENABLED, &pwm->flags);
++			return err;
++		}
++	}
+ 
+-	return pwm ? 0 : -EINVAL;
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(pwm_enable);
+ 
 -- 
 1.7.9.5
