@@ -1,75 +1,122 @@
-From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 2/2] pwm: add Mediatek display PWM driver support
-Date: Tue, 12 May 2015 16:34:16 +0200
-Message-ID: <CABuKBe+e2pjFmQ9Ne7XAeVwJzS8KOXa09CUUZPbYG=oVmP3ikA@mail.gmail.com>
-References: <1431336382-13167-1-git-send-email-yh.huang@mediatek.com>
-	<1431336382-13167-3-git-send-email-yh.huang@mediatek.com>
-	<20150512133202.GA24684@ulmo.nvidia.com>
+From: Jonathan Richardson <jonathar@broadcom.com>
+Subject: [PATCH v7 1/5] drivers: pwm: core: Add pwmchip_add_inversed
+Date: Tue, 12 May 2015 16:28:12 -0700
+Message-ID: <1431473296-13683-2-git-send-email-jonathar@broadcom.com>
+References: <1431473296-13683-1-git-send-email-jonathar@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20150512133202.GA24684-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-gw2-out.broadcom.com ([216.31.210.63]:59505 "EHLO
+	mail-gw2-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933883AbbELXZZ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 12 May 2015 19:25:25 -0400
+In-Reply-To: <1431473296-13683-1-git-send-email-jonathar@broadcom.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Tim Kryger <tim.kryger@gmail.com>, Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Scott Branden <sbranden@broadcom.com>, Jonathan Richardson <jonathar@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-2015-05-12 15:32 GMT+02:00 Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>:
-> On Mon, May 11, 2015 at 05:26:22PM +0800, YH Huang wrote:
->> Add display PWM driver support to modify backlight for MT8173/MT6595.
->>
->> Signed-off-by: YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
->> ---
->>  drivers/pwm/Kconfig             |   9 ++
->>  drivers/pwm/Makefile            |   1 +
->>  drivers/pwm/pwm-disp-mediatek.c | 225 ++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 235 insertions(+)
->>  create mode 100644 drivers/pwm/pwm-disp-mediatek.c
->>
->> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->> index b1541f4..9edbb5a 100644
->> --- a/drivers/pwm/Kconfig
->> +++ b/drivers/pwm/Kconfig
->> @@ -111,6 +111,15 @@ config PWM_CLPS711X
->>         To compile this driver as a module, choose M here: the module
->>         will be called pwm-clps711x.
->>
->> +config PWM_DISP_MEDIATEK
->
-> Please make this "PWM_MEDIATEK_DISP" so we can keep everything sorted by
-> vendor.
->
->> +     tristate "MEDIATEK display PWM driver"
->
-> "MediaTek"?
->
->> +     depends on OF
->
-> Technically I think you need depends on HAS_IOMEM here to avoid breakage
-> on randconfig builds.
->
->> +     help
->> +       Generic PWM framework driver for mediatek disp-pwm device.
->
-> "MediaTek"? Also perhaps this should describe what this PWM is instead
-> of just the "disp-pwm" which leaves everyone guessing what it is. From
-> the name I'd expect it to be the PWM that is used to control the
-> backlight brightness for display, but I think this description should
-> say that explicitly.
->
->> +
->> +       To compile this driver as a module, choose M here: the module
->> +       will be called pwm-disp-mediatek.
->
-> pwm-mediatek-disp
+From: Tim Kryger <tim.kryger@gmail.com>
 
-I would prefert pwm-mtk-disp which is in line with the other drivers.
-Also I have to admit that unfortunately the naming is not uniformly
-throughout the kernel.
+Add a new function to register a PWM chip with channels that have their
+initial polarity as inversed.  This benefits drivers of controllers that
+by default operate with inversed polarity by removing the need to modify
+the polarity during initialization.
 
-Thanks,
-Matthias
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Signed-off-by: Tim Kryger <tim.kryger@gmail.com>
+Signed-off-by: Jonathan Richardson <jonathar@broadcom.com>
+---
+ drivers/pwm/core.c  |   36 ++++++++++++++++++++++++++++--------
+ include/linux/pwm.h |    6 ++++++
+ 2 files changed, 34 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index ba34c7d..224645f 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -222,14 +222,8 @@ void *pwm_get_chip_data(struct pwm_device *pwm)
+ }
+ EXPORT_SYMBOL_GPL(pwm_get_chip_data);
+ 
+-/**
+- * pwmchip_add() - register a new PWM chip
+- * @chip: the PWM chip to add
+- *
+- * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
+- * will be used.
+- */
+-int pwmchip_add(struct pwm_chip *chip)
++static int pwmchip_add_with_polarity(struct pwm_chip *chip,
++				     enum pwm_polarity polarity)
+ {
+ 	struct pwm_device *pwm;
+ 	unsigned int i;
+@@ -259,6 +253,7 @@ int pwmchip_add(struct pwm_chip *chip)
+ 		pwm->chip = chip;
+ 		pwm->pwm = chip->base + i;
+ 		pwm->hwpwm = i;
++		pwm->polarity = polarity;
+ 
+ 		radix_tree_insert(&pwm_tree, pwm->pwm, pwm);
+ 	}
+@@ -279,9 +274,34 @@ out:
+ 	mutex_unlock(&pwm_lock);
+ 	return ret;
+ }
++
++/**
++ * pwmchip_add() - register a new PWM chip
++ * @chip: the PWM chip to add
++ *
++ * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
++ * will be used.  The initial polarity for all channels is normal.
++ */
++int pwmchip_add(struct pwm_chip *chip)
++{
++	return pwmchip_add_with_polarity(chip, PWM_POLARITY_NORMAL);
++}
+ EXPORT_SYMBOL_GPL(pwmchip_add);
+ 
+ /**
++ * pwmchip_add_inversed() - register a new PWM chip
++ * @chip: the PWM chip to add
++ *
++ * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
++ * will be used.  The initial polarity for all channels is inversed.
++ */
++int pwmchip_add_inversed(struct pwm_chip *chip)
++{
++	return pwmchip_add_with_polarity(chip, PWM_POLARITY_INVERSED);
++}
++EXPORT_SYMBOL_GPL(pwmchip_add_inversed);
++
++/**
+  * pwmchip_remove() - remove a PWM chip
+  * @chip: the PWM chip to remove
+  *
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index e90628c..358547f 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -183,6 +183,7 @@ int pwm_set_chip_data(struct pwm_device *pwm, void *data);
+ void *pwm_get_chip_data(struct pwm_device *pwm);
+ 
+ int pwmchip_add(struct pwm_chip *chip);
++int pwmchip_add_inversed(struct pwm_chip *chip);
+ int pwmchip_remove(struct pwm_chip *chip);
+ struct pwm_device *pwm_request_from_chip(struct pwm_chip *chip,
+ 					 unsigned int index,
+@@ -217,6 +218,11 @@ static inline int pwmchip_add(struct pwm_chip *chip)
+ 	return -EINVAL;
+ }
+ 
++static inline int pwmchip_add_inversed(struct pwm_chip *chip)
++{
++	return -EINVAL;
++}
++
+ static inline int pwmchip_remove(struct pwm_chip *chip)
+ {
+ 	return -EINVAL;
+-- 
+1.7.9.5
