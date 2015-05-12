@@ -1,42 +1,40 @@
 From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 3/8] mfd: intel_soc_pmic_core: Add lookup
- table for Panel Control as GPIO signal
-Date: Tue, 12 May 2015 11:14:07 +0200
-Message-ID: <CACRpkda4FEWekLfR6w6ewmXP6-5X9DDq==BDxP9hGz6-RS8Bhg@mail.gmail.com>
-References: <1430316005-16480-4-git-send-email-shobhit.kumar@intel.com>
- <1430818565-27025-1-git-send-email-shobhit.kumar@intel.com>
+Subject: Re: [PATCH 7/8] drm/i915: Use the CRC gpio for panel enable/disable
+Date: Tue, 12 May 2015 13:10:30 +0200
+Message-ID: <CACRpkdYkZay7XbxzkvAmU7Bt0YT23rS-EyXJMtt05UMLF8MKEA@mail.gmail.com>
+References: <1430316005-16480-1-git-send-email-shobhit.kumar@intel.com>
+	<1430316005-16480-8-git-send-email-shobhit.kumar@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <1430818565-27025-1-git-send-email-shobhit.kumar@intel.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Shobhit Kumar <shobhit.kumar@intel.com>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Samuel Ortiz <sameo@linux.intel.com>, linux-pwm <linux-pwm@vger.kernel.org>, David Airlie <airlied@linux.ie>, Povilas Staniulis <wdmonster@gmail.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ob0-f169.google.com ([209.85.214.169]:36199 "EHLO
+	mail-ob0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752932AbbELLKb (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 12 May 2015 07:10:31 -0400
+Received: by obbkp3 with SMTP id kp3so2529799obb.3
+        for <linux-pwm@vger.kernel.org>; Tue, 12 May 2015 04:10:30 -0700 (PDT)
+In-Reply-To: <1430316005-16480-8-git-send-email-shobhit.kumar@intel.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Shobhit Kumar <shobhit.kumar@intel.com>
+Cc: intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-gpio <linux-gpio@vger.kernel.org>, linux-pwm <linux-pwm@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Alexandre Courbot <gnurou@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, David Airlie <airlied@linux.ie>, Samuel Ortiz <sameo@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Lee Jones <lee.jones@linaro.org>, Povilas Staniulis <wdmonster@gmail.com>, Chih-Wei Huang <cwhuang@android-x86.org>
 
-T24gVHVlLCBNYXkgNSwgMjAxNSBhdCAxMTozNiBBTSwgU2hvYmhpdCBLdW1hciA8c2hvYmhpdC5r
-dW1hckBpbnRlbC5jb20+IHdyb3RlOgoKPiBPbiBzb21lIEludGVsIFNvQyBwbGF0Zm9ybXMsIHRo
-ZSBwYW5lbCBlbmFibGUvZGlzYWJsZSBzaWduYWxzIGFyZQo+IGNvbnRyb2xsZWQgYnkgQ1JDIFBN
-SUMuIEFkZCB0aG9zZSBjb250cm9sIGFzIGEgbmV3IEdQSU8gaW4gYSBsb29rdXAKPiB0YWJsZSBm
-b3IgZ3Bpby1jcnlzdGFsY292ZSBjaGlwIGR1cmluZyBDUkMgZHJpdmVyIGxvYWQKPgo+IHYyOiBN
-YWtlIHRoZSBsb29rdXAgdGFibGUgc3RhdGljIChUaGllcnJ5KQo+ICAgICBSZW1vdmUgdGhlIGxv
-b2t1cCB0YWJsZSBkdXJpbmcgZHJpdmVyIHJlbW92ZSAoVGhpZXJyeSkKPgo+IHYzOiBDb3JyZWN0
-IHRoZSBzdWJqZWN0IGxpbmUgKExlZSBqb25lcykKPgo+IENDOiBTYW11ZWwgT3J0aXogPHNhbWVv
-QGxpbnV4LmludGVsLmNvbT4KPiBDYzogTGludXMgV2FsbGVpaiA8bGludXMud2FsbGVpakBsaW5h
-cm8ub3JnPgo+IENjOiBBbGV4YW5kcmUgQ291cmJvdCA8Z251cm91QGdtYWlsLmNvbT4KPiBDYzog
-VGhpZXJyeSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT4KPiBBY2tlZC1ieTogTGVl
-IEpvbmVzIDxsZWUuam9uZXNAbGluYXJvLm9yZz4KPiBTaWduZWQtb2ZmLWJ5OiBTaG9iaGl0IEt1
-bWFyIDxzaG9iaGl0Lmt1bWFyQGludGVsLmNvbT4KCkFja2VkLWJ5OiBMaW51cyBXYWxsZWlqIDxs
-aW51cy53YWxsZWlqQGxpbmFyby5vcmc+CgpZb3VycywKTGludXMgV2FsbGVpagpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBs
-aXN0CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cDovL2xpc3RzLmZyZWVkZXNr
-dG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdmeAo=
+On Wed, Apr 29, 2015 at 4:00 PM, Shobhit Kumar <shobhit.kumar@intel.com> wrote:
+
+> The CRC (Crystal Cove) PMIC, controls the panel enable and disable
+> signals for BYT for dsi panels. This is indicated in the VBT fields. Use
+> that to initialize and use GPIO based control for these signals.
+>
+> v2: Use the newer gpiod interface(Alexandre)
+> v3: Remove the redundant checks and unused code (Ville)
+>
+> CC: Samuel Ortiz <sameo@linux.intel.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Alexandre Courbot <gnurou@gmail.com>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Signed-off-by: Shobhit Kumar <shobhit.kumar@intel.com>
+
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+
+Yours,
+Linus Walleij
