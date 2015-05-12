@@ -1,122 +1,70 @@
 From: Jonathan Richardson <jonathar@broadcom.com>
-Subject: [PATCH v7 1/5] drivers: pwm: core: Add pwmchip_add_inversed
-Date: Tue, 12 May 2015 16:28:12 -0700
-Message-ID: <1431473296-13683-2-git-send-email-jonathar@broadcom.com>
+Subject: [PATCH v7 4/5] pwm: kona: Add debug info to config function
+Date: Tue, 12 May 2015 16:28:15 -0700
+Message-ID: <1431473296-13683-5-git-send-email-jonathar@broadcom.com>
 References: <1431473296-13683-1-git-send-email-jonathar@broadcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-gw2-out.broadcom.com ([216.31.210.63]:59505 "EHLO
-	mail-gw2-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933883AbbELXZZ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 12 May 2015 19:25:25 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1431473296-13683-1-git-send-email-jonathar@broadcom.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Tim Kryger <tim.kryger@gmail.com>, Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>
 Cc: Scott Branden <sbranden@broadcom.com>, Jonathan Richardson <jonathar@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 
-From: Tim Kryger <tim.kryger@gmail.com>
+Adds debugging info to config function where duty cycle and period
+are calculated and verified.
 
-Add a new function to register a PWM chip with channels that have their
-initial polarity as inversed.  This benefits drivers of controllers that
-by default operate with inversed polarity by removing the need to modify
-the polarity during initialization.
-
-Signed-off-by: Tim Kryger <tim.kryger@gmail.com>
 Signed-off-by: Jonathan Richardson <jonathar@broadcom.com>
 ---
- drivers/pwm/core.c  |   36 ++++++++++++++++++++++++++++--------
- include/linux/pwm.h |    6 ++++++
- 2 files changed, 34 insertions(+), 8 deletions(-)
+ drivers/pwm/pwm-bcm-kona.c |   25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index ba34c7d..224645f 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -222,14 +222,8 @@ void *pwm_get_chip_data(struct pwm_device *pwm)
- }
- EXPORT_SYMBOL_GPL(pwm_get_chip_data);
+diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+index 0654981..c6069c7 100644
+--- a/drivers/pwm/pwm-bcm-kona.c
++++ b/drivers/pwm/pwm-bcm-kona.c
+@@ -138,18 +138,39 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		dc = div64_u64(val, div);
  
--/**
-- * pwmchip_add() - register a new PWM chip
-- * @chip: the PWM chip to add
-- *
-- * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
-- * will be used.
-- */
--int pwmchip_add(struct pwm_chip *chip)
-+static int pwmchip_add_with_polarity(struct pwm_chip *chip,
-+				     enum pwm_polarity polarity)
- {
- 	struct pwm_device *pwm;
- 	unsigned int i;
-@@ -259,6 +253,7 @@ int pwmchip_add(struct pwm_chip *chip)
- 		pwm->chip = chip;
- 		pwm->pwm = chip->base + i;
- 		pwm->hwpwm = i;
-+		pwm->polarity = polarity;
+ 		/* If duty_ns or period_ns are not achievable then return */
+-		if (pc < PERIOD_COUNT_MIN || dc < DUTY_CYCLE_HIGH_MIN)
++		if (pc < PERIOD_COUNT_MIN) {
++			dev_warn(chip->dev,
++				"%s: pwm[%d]: period=%d is not achievable, pc=%lu, prescale=%lu\n",
++				__func__, chan, period_ns, pc, prescale);
+ 			return -EINVAL;
++		}
++
++		if (dc < DUTY_CYCLE_HIGH_MIN) {
++			if (0 != duty_ns) {
++				dev_warn(chip->dev,
++					"%s: pwm[%d]: duty cycle=%d is not achievable, dc=%lu, prescale=%lu\n",
++					__func__, chan, duty_ns, dc, prescale);
++			}
++			return -EINVAL;
++		}
  
- 		radix_tree_insert(&pwm_tree, pwm->pwm, pwm);
+ 		/* If pc and dc are in bounds, the calculation is done */
+ 		if (pc <= PERIOD_COUNT_MAX && dc <= DUTY_CYCLE_HIGH_MAX)
+ 			break;
+ 
+ 		/* Otherwise, increase prescale and recalculate pc and dc */
+-		if (++prescale > PRESCALE_MAX)
++		if (++prescale > PRESCALE_MAX) {
++			dev_warn(chip->dev,
++				"%s: pwm[%d]: Prescale (=%lu) within max (=%d) for period=%d and duty cycle=%d is not achievable\n",
++				__func__, chan, prescale, PRESCALE_MAX,
++				period_ns, duty_ns);
+ 			return -EINVAL;
++		}
  	}
-@@ -279,9 +274,34 @@ out:
- 	mutex_unlock(&pwm_lock);
- 	return ret;
- }
-+
-+/**
-+ * pwmchip_add() - register a new PWM chip
-+ * @chip: the PWM chip to add
-+ *
-+ * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
-+ * will be used.  The initial polarity for all channels is normal.
-+ */
-+int pwmchip_add(struct pwm_chip *chip)
-+{
-+	return pwmchip_add_with_polarity(chip, PWM_POLARITY_NORMAL);
-+}
- EXPORT_SYMBOL_GPL(pwmchip_add);
  
- /**
-+ * pwmchip_add_inversed() - register a new PWM chip
-+ * @chip: the PWM chip to add
-+ *
-+ * Register a new PWM chip. If chip->base < 0 then a dynamically assigned base
-+ * will be used.  The initial polarity for all channels is inversed.
-+ */
-+int pwmchip_add_inversed(struct pwm_chip *chip)
-+{
-+	return pwmchip_add_with_polarity(chip, PWM_POLARITY_INVERSED);
-+}
-+EXPORT_SYMBOL_GPL(pwmchip_add_inversed);
++	dev_dbg(chip->dev, "pwm[%d]: period=%lu, duty_high=%lu, prescale=%lu\n",
++		chan, pc, dc, prescale);
 +
-+/**
-  * pwmchip_remove() - remove a PWM chip
-  * @chip: the PWM chip to remove
-  *
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index e90628c..358547f 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -183,6 +183,7 @@ int pwm_set_chip_data(struct pwm_device *pwm, void *data);
- void *pwm_get_chip_data(struct pwm_device *pwm);
- 
- int pwmchip_add(struct pwm_chip *chip);
-+int pwmchip_add_inversed(struct pwm_chip *chip);
- int pwmchip_remove(struct pwm_chip *chip);
- struct pwm_device *pwm_request_from_chip(struct pwm_chip *chip,
- 					 unsigned int index,
-@@ -217,6 +218,11 @@ static inline int pwmchip_add(struct pwm_chip *chip)
- 	return -EINVAL;
- }
- 
-+static inline int pwmchip_add_inversed(struct pwm_chip *chip)
-+{
-+	return -EINVAL;
-+}
-+
- static inline int pwmchip_remove(struct pwm_chip *chip)
- {
- 	return -EINVAL;
+ 	/*
+ 	 * Don't apply settings if disabled. The period and duty cycle are
+ 	 * always calculated above to ensure the new values are
 -- 
 1.7.9.5
