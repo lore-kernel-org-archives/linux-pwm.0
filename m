@@ -1,82 +1,85 @@
-From: YH Huang <yh.huang@mediatek.com>
-Subject: Re: [PATCH 2/2] pwm: add Mediatek display PWM driver support
-Date: Thu, 14 May 2015 23:39:57 +0800
-Message-ID: <1431617997.15140.57.camel@mtksdaap41>
-References: <1431336382-13167-1-git-send-email-yh.huang@mediatek.com>
-	 <1431336382-13167-3-git-send-email-yh.huang@mediatek.com>
-	 <20150512133202.GA24684@ulmo.nvidia.com>
-	 <CABuKBe+e2pjFmQ9Ne7XAeVwJzS8KOXa09CUUZPbYG=oVmP3ikA@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 1/2] pwm: Add device tree binding document for R-Car PWM Timer
+Date: Thu, 14 May 2015 17:48:28 +0200
+Message-ID: <CAMuHMdWzQYbn3f5zL2bhx1+RP4buLH8XGweyjWimydgwLyLNYw@mail.gmail.com>
+References: <1431509238-7648-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+	<1431509238-7648-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CABuKBe+e2pjFmQ9Ne7XAeVwJzS8KOXa09CUUZPbYG=oVmP3ikA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, linux-pwm@vger.kernel.org, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, srv_heupstream <srv_heupstream@mediatek.com>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, yh.huang@mediatek.com
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <1431509238-7648-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, 2015-05-12 at 16:34 +0200, Matthias Brugger wrote:
-> 2015-05-12 15:32 GMT+02:00 Thierry Reding <thierry.reding@gmail.com>:
-> > On Mon, May 11, 2015 at 05:26:22PM +0800, YH Huang wrote:
-> >> Add display PWM driver support to modify backlight for MT8173/MT6595.
-> >>
-> >> Signed-off-by: YH Huang <yh.huang@mediatek.com>
-> >> ---
-> >>  drivers/pwm/Kconfig             |   9 ++
-> >>  drivers/pwm/Makefile            |   1 +
-> >>  drivers/pwm/pwm-disp-mediatek.c | 225 ++++++++++++++++++++++++++++++++++++++++
-> >>  3 files changed, 235 insertions(+)
-> >>  create mode 100644 drivers/pwm/pwm-disp-mediatek.c
-> >>
-> >> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> >> index b1541f4..9edbb5a 100644
-> >> --- a/drivers/pwm/Kconfig
-> >> +++ b/drivers/pwm/Kconfig
-> >> @@ -111,6 +111,15 @@ config PWM_CLPS711X
-> >>         To compile this driver as a module, choose M here: the module
-> >>         will be called pwm-clps711x.
-> >>
-> >> +config PWM_DISP_MEDIATEK
-> >
-> > Please make this "PWM_MEDIATEK_DISP" so we can keep everything sorted by
-> > vendor.
-> >
-> >> +     tristate "MEDIATEK display PWM driver"
-> >
-> > "MediaTek"?
-> >
-> >> +     depends on OF
-> >
-> > Technically I think you need depends on HAS_IOMEM here to avoid breakage
-> > on randconfig builds.
-> >
-> >> +     help
-> >> +       Generic PWM framework driver for mediatek disp-pwm device.
-> >
-> > "MediaTek"? Also perhaps this should describe what this PWM is instead
-> > of just the "disp-pwm" which leaves everyone guessing what it is. From
-> > the name I'd expect it to be the PWM that is used to control the
-> > backlight brightness for display, but I think this description should
-> > say that explicitly.
-> >
-> >> +
-> >> +       To compile this driver as a module, choose M here: the module
-> >> +       will be called pwm-disp-mediatek.
-> >
-> > pwm-mediatek-disp
-> 
-> I would prefert pwm-mtk-disp which is in line with the other drivers.
-> Also I have to admit that unfortunately the naming is not uniformly
-> throughout the kernel.
-> 
+Hi Shimoda-san,
 
-OK. I will take it.
+On Wed, May 13, 2015 at 11:27 AM, Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> Add binding document for Renesas PWM Timer on R-Car SoCs.
 
-> Thanks,
-> Matthias
+Thanks for your patch!
 
-Thank for your suggestion.
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> ---
+>  .../devicetree/bindings/pwm/renesas,pwm-rcar.txt    | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+>
+> diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+> new file mode 100644
+> index 0000000..38123f9
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+> @@ -0,0 +1,21 @@
+> +* Renesas R-Car PWM Timer Controller
+> +
+> +Required Properties:
+> +- compatible: must contain "renesas,pwm-rcar"
 
-Regards,
-YH Huang
+Can you please add SoC-specific compatible values, too? That way we can handle
+ SoC-specific differences if we ever encounter them.
+If I'm not mistaken, this PWM IP core is present on both R-Car Gen1 and Gen2
+SoCs?
+
+> +- reg: base address and length of the registers block for the PWM
+> +- #pwm-cells: should be 7. See pwm.txt in this directory for a description of
+> +  the cells format.
+
+Why 7? This is not the number of channels, cfr. pwm.txt you reference above:
+
+    "pwm-specifier typically encodes the chip-relative PWM number and the PWM
+     period in nanoseconds.
+
+     Optionally, the pwm-specifier can encode a number of flags (defined in
+     <dt-bindings/pwm/pwm.h>) in a third cell:
+     - PWM_POLARITY_INVERTED: invert the PWM signal polarity"
+
+So 2 or 3 makes more sense to me.
+
+> +- clocks: clock phandle and specifier pair.
+> +- pinctrl-0: phandle, referring to a default pin configuration node.
+> +- pinctrl-names: Set to "default"
+> +
+> +Example: R8A7790 (R-Car H2) PWM Timer node
+> +
+> +       pwm: pwm@e6e30000 {
+> +               compatible = "renesas,pwm-rcar";
+> +               reg = <0 0xe6e30000 0 0x7000>;
+> +               #pwm-cells = <7>;
+> +               clocks = <&mstp5_clks R8A7790_CLK_PWM>;
+> +               pinctrl-0 = <&pwm3_pins>;
+> +               pinctrl-names = "default";
+> +       };
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
