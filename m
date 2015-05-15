@@ -1,130 +1,62 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 2/2] pwm: Add support for R-Car PWM Timer
-Date: Thu, 14 May 2015 18:06:50 +0200
-Message-ID: <CAMuHMdV872yQ7crviCjzn7eEV7FaZPLpA08KnUkaGAUUX-UdCg@mail.gmail.com>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH 1/2] pwm: Add device tree binding document for R-Car PWM
+ Timer
+Date: Fri, 15 May 2015 00:41:31 +0000
+Message-ID: <SG2PR06MB0919A398AD921D514BA454F3D8C70@SG2PR06MB0919.apcprd06.prod.outlook.com>
 References: <1431509238-7648-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<1431509238-7648-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+	<1431509238-7648-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <CAMuHMdWzQYbn3f5zL2bhx1+RP4buLH8XGweyjWimydgwLyLNYw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1431509238-7648-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <CAMuHMdWzQYbn3f5zL2bhx1+RP4buLH8XGweyjWimydgwLyLNYw@mail.gmail.com>
+Content-Language: ja-JP
 Sender: linux-sh-owner@vger.kernel.org
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Shimoda-san,
-
-On Wed, May 13, 2015 at 11:27 AM, Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> R-Car SoCs have a seven-channel pulse width modulation (PWM) timer.
-> This driver adds support for the PWM Timer as a single PWM chip and
-> seven PWM devices.
-
-Thanks for your patch!
-
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index b1541f4..7e98175 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -249,6 +249,17 @@ config PWM_PXA
->           To compile this driver as a module, choose M here: the module
->           will be called pwm-pxa.
->
-> +config PWM_RCAR
-> +       tristate "Renesas R-Car PWM support"
-> +       depends on ARCH_SHMOBILE || COMPILE_TEST
-
-Could be instead
-
-depends on ARCH_RCAR_GEN1 ||  ARCH_RCAR_GEN2 || COMPILE_TEST
-
-> +       depends on HAS_IOMEM
-> +       help
-> +         This driver exposes the PWM Timer controller found in Renesas
-> +         chips through the PWM API.
-
-"Renesas R-Car chips" (e.g. R-Mobile uses pwm-renesas-tpu).
-
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-rcar.c
-> @@ -0,0 +1,276 @@
-> +/*
-> + * R-Car PWM Timer driver
-> + *
-> + * Copyright (C) 2015 Renesas Electronics Corporation
-> + *
-> + * This is free software; you can redistribute it and/or modify
-> + * it under the terms of version 2 of the GNU General Public License as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/err.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/pwm.h>
-> +#include <linux/slab.h>
-> +
-> +#define NUM_RCAR_PWM_CHANNELS  7
-
-I'm wondering whether this should be a DT property, to prepare for
-future expansion.
-Alternatively, as these are really 7 individual channels, with 7 individual
-register blocks spaced 0x1000 apart, you could have 7 individual device nodes,
-each driving one pwm output. That would probably incur more overhead, as
-there would be 7 individual pwm controllers. But it does allow for future
-expansion, and allows to cope when the individual register blocks are moved
-in the SoC address space (I can imagine that on old SoCs e.g. all SCIF
-blocks were nicely lay out in the address space, while now they have arbitrary
-base addresses).
-
-What do other people think?
-
-> +static int rcar_pwn_get_clock_division(struct rcar_pwm_chip *rp,
-> +                                      int period_ns)
-> +{
-> +       int div;
-> +       unsigned long clk_rate = clk_get_rate(rp->clk);
-> +       unsigned long long max; /* max cycle / nanoseconds */
-> +
-> +       for (div = 0; div <= RCAR_PWM_MAX_DIVISION; div++) {
-> +               max = (unsigned long long)NSEC_PER_SEC * RCAR_PWM_MAX_CYCLE;
-> +               do_div(max, clk_rate / (1 << div));
-
-Dividing clk_rate by "1 << div" reduces accuracy a lot for large values of div.
-"NSEC_PER_SEC * RCAR_PWM_MAX_CYCLE * (1 << div)" just fits in 64-bit,
-so you can use
-
-        max = (unsigned long long)NSEC_PER_SEC * RCAR_PWM_MAX_CYCLE *
-              (1 << div);
-        do_div(max, clk_rate);
-
-> +static void rcar_pwm_set_counter(struct rcar_pwm_chip *rp, int channel,
-> +                                int div, int duty_ns, int period_ns)
-> +{
-> +       unsigned long long one_cycle, tmp;      /* 0.01 nanoseconds */
-> +       unsigned long clk_rate = clk_get_rate(rp->clk);
-> +       u32 cyc, ph;
-> +
-> +       one_cycle = (unsigned long long)NSEC_PER_SEC * 100;
-> +       do_div(one_cycle, clk_rate / (1 << div));
-
-Same here:
-
-        one_cycle = (unsigned long long)NSEC_PER_SEC * 100 * (1 << div)
-        do_div(one_cycle, clk_rate);
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+SGkgR2VlcnQtc2FuLA0KDQpUaGFuayB5b3UgZm9yIHRoZSByZXZpZXchDQoNCj4gU2VudDogRnJp
+ZGF5LCBNYXkgMTUsIDIwMTUgMTI6NDggQU0NCj4gDQo+IEhpIFNoaW1vZGEtc2FuLA0KPiANCj4g
+T24gV2VkLCBNYXkgMTMsIDIwMTUgYXQgMTE6MjcgQU0sIFlvc2hpaGlybyBTaGltb2RhDQo+IDx5
+b3NoaWhpcm8uc2hpbW9kYS51aEByZW5lc2FzLmNvbT4gd3JvdGU6DQo+ID4gQWRkIGJpbmRpbmcg
+ZG9jdW1lbnQgZm9yIFJlbmVzYXMgUFdNIFRpbWVyIG9uIFItQ2FyIFNvQ3MuDQo+IA0KPiBUaGFu
+a3MgZm9yIHlvdXIgcGF0Y2ghDQo+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IFlvc2hpaGlybyBTaGlt
+b2RhIDx5b3NoaWhpcm8uc2hpbW9kYS51aEByZW5lc2FzLmNvbT4NCj4gPiAtLS0NCj4gPiAgLi4u
+L2RldmljZXRyZWUvYmluZGluZ3MvcHdtL3JlbmVzYXMscHdtLXJjYXIudHh0ICAgIHwgMjEgKysr
+KysrKysrKysrKysrKysrKysrDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAyMSBpbnNlcnRpb25zKCsp
+DQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGlu
+Z3MvcHdtL3JlbmVzYXMscHdtLXJjYXIudHh0DQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvRG9jdW1l
+bnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9yZW5lc2FzLHB3bS1yY2FyLnR4dA0KPiBi
+L0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vcmVuZXNhcyxwd20tcmNhci50
+eHQNCj4gPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAuLjM4MTIzZjkN
+Cj4gPiAtLS0gL2Rldi9udWxsDQo+ID4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2Jp
+bmRpbmdzL3B3bS9yZW5lc2FzLHB3bS1yY2FyLnR4dA0KPiA+IEBAIC0wLDAgKzEsMjEgQEANCj4g
+PiArKiBSZW5lc2FzIFItQ2FyIFBXTSBUaW1lciBDb250cm9sbGVyDQo+ID4gKw0KPiA+ICtSZXF1
+aXJlZCBQcm9wZXJ0aWVzOg0KPiA+ICstIGNvbXBhdGlibGU6IG11c3QgY29udGFpbiAicmVuZXNh
+cyxwd20tcmNhciINCj4gDQo+IENhbiB5b3UgcGxlYXNlIGFkZCBTb0Mtc3BlY2lmaWMgY29tcGF0
+aWJsZSB2YWx1ZXMsIHRvbz8gVGhhdCB3YXkgd2UgY2FuIGhhbmRsZQ0KPiAgU29DLXNwZWNpZmlj
+IGRpZmZlcmVuY2VzIGlmIHdlIGV2ZXIgZW5jb3VudGVyIHRoZW0uDQo+IElmIEknbSBub3QgbWlz
+dGFrZW4sIHRoaXMgUFdNIElQIGNvcmUgaXMgcHJlc2VudCBvbiBib3RoIFItQ2FyIEdlbjEgYW5k
+IEdlbjINCj4gU29Dcz8NCg0KQWNjb3JkaW5nIHRvIHRoZSBtYW51YWxzIG9mIGJvdGggUi1DYXIg
+R2VuMSAoSDEsIE0xLCBFMSkgYW5kIEdlbjIsDQp0aGlzIFBXTSBJUCBjb3JlIGlzIHByZXNlbnQg
+b24gdGhlbS4gQWxzbyB0aGlzIElQIGlzIHByZXNlbnQgb24gUi1DYXIgbmV4dCBnZW5lcmF0aW9u
+Lg0KDQpPZiBjb3Vyc2UsIEkgY2FuIGFkZCBTb0Mtc3BlY2lmaWMgY29tcGF0aWJsZSB2YWx1ZXMs
+IGxpa2UgInJlbmVzYXMscHdtLXI3YTc3OTAiIG9yDQpzb21ldGhpbmcuIFNvLCBJIHdpbGwgY2hh
+bmdlIHRoZSBjb21wYXRpYmxlIHZhbHVlcyBpbiB2MiBwYXRjaC4NCg0KPiA+ICstIHJlZzogYmFz
+ZSBhZGRyZXNzIGFuZCBsZW5ndGggb2YgdGhlIHJlZ2lzdGVycyBibG9jayBmb3IgdGhlIFBXTQ0K
+PiA+ICstICNwd20tY2VsbHM6IHNob3VsZCBiZSA3LiBTZWUgcHdtLnR4dCBpbiB0aGlzIGRpcmVj
+dG9yeSBmb3IgYSBkZXNjcmlwdGlvbiBvZg0KPiA+ICsgIHRoZSBjZWxscyBmb3JtYXQuDQo+IA0K
+PiBXaHkgNz8gVGhpcyBpcyBub3QgdGhlIG51bWJlciBvZiBjaGFubmVscywgY2ZyLiBwd20udHh0
+IHlvdSByZWZlcmVuY2UgYWJvdmU6DQo+IA0KPiAgICAgInB3bS1zcGVjaWZpZXIgdHlwaWNhbGx5
+IGVuY29kZXMgdGhlIGNoaXAtcmVsYXRpdmUgUFdNIG51bWJlciBhbmQgdGhlIFBXTQ0KPiAgICAg
+IHBlcmlvZCBpbiBuYW5vc2Vjb25kcy4NCj4gDQo+ICAgICAgT3B0aW9uYWxseSwgdGhlIHB3bS1z
+cGVjaWZpZXIgY2FuIGVuY29kZSBhIG51bWJlciBvZiBmbGFncyAoZGVmaW5lZCBpbg0KPiAgICAg
+IDxkdC1iaW5kaW5ncy9wd20vcHdtLmg+KSBpbiBhIHRoaXJkIGNlbGw6DQo+ICAgICAgLSBQV01f
+UE9MQVJJVFlfSU5WRVJURUQ6IGludmVydCB0aGUgUFdNIHNpZ25hbCBwb2xhcml0eSINCj4gDQo+
+IFNvIDIgb3IgMyBtYWtlcyBtb3JlIHNlbnNlIHRvIG1lLg0KDQpUaGFuayB5b3UgdmVyeSBtdWNo
+IGZvciB0aGUgcG9pbnQuIEkgY29tcGxldGVseSBtaXN1bmRlcnN0b29kIHRoaXMgc3BlY2lmaWNh
+dGlvbi4NClNpbmNlIHRoaXMgUFdNIElQIGNhbm5vdCBjb250cm9sIHBvbGFyaXR5LCB0aGlzIHZh
+bHVlIHNob3VsZCBiZSAyLg0KU28sIEkgd2lsbCBmaXggdGhpcyBpbiB2MiBwYXRjaC4NCg0KQmVz
+dCByZWdhcmRzLA0KWW9zaGloaXJvIFNoaW1vZGENCg0K
