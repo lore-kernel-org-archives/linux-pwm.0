@@ -1,61 +1,71 @@
-From: Tim Kryger <tim.kryger@gmail.com>
-Subject: Re: [PATCH v7 3/5] pwm: kona: Fix incorrect config, disable, and
- polarity procedures
-Date: Sun, 17 May 2015 21:53:30 -0700
-Message-ID: <CAD7vxxLJzjE_yYOV+OtFgq34+Ryhu63YJvpY6Ryi8_=B5z5pLw@mail.gmail.com>
-References: <1431473296-13683-1-git-send-email-jonathar@broadcom.com>
-	<1431473296-13683-4-git-send-email-jonathar@broadcom.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH] backlight: pwm_bl: Simplify usage of
+ devm_gpiod_get_optional
+Date: Mon, 18 May 2015 09:47:16 +0100
+Message-ID: <20150518084716.GM22418@x1>
+References: <1431785290.6638.1.camel@ingics.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wg0-f46.google.com ([74.125.82.46]:35510 "EHLO
-	mail-wg0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751000AbbERExf (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 18 May 2015 00:53:35 -0400
-In-Reply-To: <1431473296-13683-4-git-send-email-jonathar@broadcom.com>
+Received: from mail-wi0-f171.google.com ([209.85.212.171]:35751 "EHLO
+	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753167AbbERIrV (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 18 May 2015 04:47:21 -0400
+Received: by wicmx19 with SMTP id mx19so69667160wic.0
+        for <linux-pwm@vger.kernel.org>; Mon, 18 May 2015 01:47:19 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1431785290.6638.1.camel@ingics.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jonathan Richardson <jonathar@broadcom.com>
-Cc: Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux PWM <linux-pwm@vger.kernel.org>
+To: Axel Lin <axel.lin@ingics.com>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <acourbot@nvidia.com>, Jingoo Han <jingoohan1@gmail.com>
 
-On Tue, May 12, 2015 at 4:28 PM, Jonathan Richardson
-<jonathar@broadcom.com> wrote:
+On Sat, 16 May 2015, Axel Lin wrote:
 
-> The polarity procedure no longer applies the settings to change the
-> output signal because it can't be called when the pwm is enabled anyway.
-> The polarity is only updated in the control register. The correct
-> polarity will be applied on enable. The old method of applying changes
-> would result in no signal when the polarity was changed. The new
-> apply_settings function would fix this problem but it isn't required
-> anyway.
+> Since 39b2bbe3d715 (gpio: add flags argument to gpiod_get*() function=
+s),
+> the gpiod_get* functions take an additional parameter that allows to
+> specify direction and initial value for output.
+> Simplify the usage of devm_gpiod_get_optional accordingly.
+>=20
+> Signed-off-by: Axel Lin <axel.lin@ingics.com>
+> ---
+>  drivers/video/backlight/pwm_bl.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
 
-Thanks for incorporating some of my suggestions in your latest version.
+Applied, thanks.
 
-I'm still concerned about delaying when polarity changes take effect.
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlig=
+ht/pwm_bl.c
+> index 3a145a6..57cb9ec 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -241,7 +241,8 @@ static int pwm_backlight_probe(struct platform_de=
+vice *pdev)
+>  	pb->dev =3D &pdev->dev;
+>  	pb->enabled =3D false;
+> =20
+> -	pb->enable_gpio =3D devm_gpiod_get_optional(&pdev->dev, "enable");
+> +	pb->enable_gpio =3D devm_gpiod_get_optional(&pdev->dev, "enable",
+> +						  GPIOD_OUT_HIGH);
+>  	if (IS_ERR(pb->enable_gpio)) {
+>  		ret =3D PTR_ERR(pb->enable_gpio);
+>  		goto err_alloc;
+> @@ -263,9 +264,6 @@ static int pwm_backlight_probe(struct platform_de=
+vice *pdev)
+>  		pb->enable_gpio =3D gpio_to_desc(data->enable_gpio);
+>  	}
+> =20
+> -	if (pb->enable_gpio)
+> -		gpiod_direction_output(pb->enable_gpio, 1);
+> -
+>  	pb->power_supply =3D devm_regulator_get(&pdev->dev, "power");
+>  	if (IS_ERR(pb->power_supply)) {
+>  		ret =3D PTR_ERR(pb->power_supply);
 
-Since backlight is a common use of PWM, consider the following situation.
-
-backlight {
-        compatible = "pwm-backlight";
-        pwms = <&pwm 0 5000000 PWM_POLARITY_NORMAL>;
-        brightness-levels = <0 4 8 16 32 64 128 255>;
-        default-brightness-level = <0>;
-};
-
-The Kona PWM hardware starts in inversed mode so it will drive output high
-once its clock is enabled during the probe.
-
-Polarity is not adjusted during probe so it stays high and it registers with
-the PWM core using the new pwmchip_add_inversed() function.
-
-Next, the pwm-backlight driver probe executes and it calls devm_pwm_get()
-which then calls pwm_set_period() and most importantly pwm_set_polarity().
-
-The output would change to constant low at this point in the original driver
-but with your proposed change it will remain high.
-
-The driver sets bl->props.brightness and calls backlight_update_status() but,
-since in this case the default brightness is zero, it assumes it doesn't need
-to enable the PWM.
-
-The backlight driver probe then returns and the PWM output is incorrect.
+--=20
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
