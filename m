@@ -1,56 +1,55 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v3 1/2] pwm: Add device tree binding document for R-Car
- PWM Timer
-Date: Thu, 21 May 2015 10:31:30 +0200
-Message-ID: <CAMuHMdXgB9MTUfZxUXuES8JF42G9Ld2VTeOe2J9MjuZCeONOeg@mail.gmail.com>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH v3 2/2] pwm: Add support for R-Car PWM Timer
+Date: Thu, 21 May 2015 09:25:44 +0000
+Message-ID: <SG2PR06MB09191A5315EF4FE8E6F4CFECD8C10@SG2PR06MB0919.apcprd06.prod.outlook.com>
 References: <1432176653-4452-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<1432176653-4452-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+	<1432176653-4452-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <CAMuHMdXeNaHWbJ1hsVymUAa3gWW3-UkTwqQCpUBSG28UCy9vbw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sh-owner@vger.kernel.org>
-In-Reply-To: <1432176653-4452-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, linux-pwm@vger.kernel.org, Linux-sh list <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from relmlor4.renesas.com ([210.160.252.174]:19029 "EHLO
+	relmlie3.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752457AbbEUJZu (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 21 May 2015 05:25:50 -0400
+In-Reply-To: <CAMuHMdXeNaHWbJ1hsVymUAa3gWW3-UkTwqQCpUBSG28UCy9vbw@mail.gmail.com>
+Content-Language: ja-JP
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 
-Hi Shimoda-san,
-
-On Thu, May 21, 2015 at 4:50 AM, Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> Add binding document for Renesas PWM Timer on R-Car SoCs.
-
-Thanks for your patch!
-
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
-with one minor nit below.
-
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-
-> +Example: R8A7790 (R-Car H2) PWM Timer node
-> +
-> +       pwm0: pwm@e6e30000 {
-> +               compatible = "renesas,pwm-r8a7790", "renesas,pwm-rcar";
-> +               reg = <0 0xe6e30000 0 0x10>;
-
-Length 8 is sufficient, as there are only 2 32-bit registers.
-
-> +               #pwm-cells = <2>;
-> +               clocks = <&mstp5_clks R8A7790_CLK_PWM>;
-> +               pinctrl-0 = <&pwm0_pins>;
-> +               pinctrl-names = "default";
-> +       };
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+SGkgR2VlcnQtc2FuLA0KDQpUaGFuayB5b3UgZm9yIHRoZSByZXZpZXchDQoNCj4gU2VudDogVGh1
+cnNkYXksIE1heSAyMSwgMjAxNSA1OjMwIFBNDQo8IHNuaXAgPg0KPiA+IC0tLSAvZGV2L251bGwN
+Cj4gPiArKysgYi9kcml2ZXJzL3B3bS9wd20tcmNhci5jDQo+IA0KPiA+ICsjZGVmaW5lIFJDQVJf
+UFdNX0NIX09GRlNFVCAgICAgMHgxMDAwDQo+IA0KPiBUaGlzIGlzIG5vIGxvbmdlciB1c2VkLCBu
+b3cgZWFjaCBwd20gaW5zdGFuY2UgaGFzIGl0cyBvd24gZGV2aWNlIG5vZGUuDQoNCk9vcHMuIEkg
+d2lsbCByZW1vdmUgaXQuDQoNCj4gPiArc3RhdGljIHZvaWQgcmNhcl9wd21fc2V0X2NvdW50ZXIo
+c3RydWN0IHJjYXJfcHdtX2NoaXAgKnJwLCBpbnQgZGl2LA0KPiA+ICsgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIGludCBkdXR5X25zLCBpbnQgcGVyaW9kX25zKQ0KPiA+ICt7DQo+ID4g
+KyAgICAgICB1bnNpZ25lZCBsb25nIGxvbmcgb25lX2N5Y2xlLCB0bXA7ICAgICAgLyogMC4wMSBu
+YW5vc2Vjb25kcyAqLw0KPiA+ICsgICAgICAgdW5zaWduZWQgbG9uZyBjbGtfcmF0ZSA9IGNsa19n
+ZXRfcmF0ZShycC0+Y2xrKTsNCj4gPiArICAgICAgIHUzMiBjeWMsIHBoOw0KPiA+ICsNCj4gPiAr
+ICAgICAgIG9uZV9jeWNsZSA9ICh1bnNpZ25lZCBsb25nIGxvbmcpTlNFQ19QRVJfU0VDICogMTAw
+ICogKDEgPDwgZGl2KTsNCj4gPiArICAgICAgIGRvX2RpdihvbmVfY3ljbGUsIGNsa19yYXRlKTsN
+Cj4gPiArDQo+ID4gKyAgICAgICB0bXAgPSBwZXJpb2RfbnMgKiAxMDA7DQo+IA0KPiBwZXJpb2Rf
+bnMgYW5kIHRoZSBjb25zdGFudCAxMDAgYXJlIGJvdGggaW50LCBoZW5jZSB0aGUgbXVsdGlwbGlj
+YXRpb24gbWF5DQo+IHN0aWxsIG92ZXJmbG93Lg0KPiBQbGVhc2UgdXNlIGUuZy4gInRtcCA9IHBl
+cmlvZF9ucyAqIDEwMFVMTCIgaW5zdGVhZC4NCg0KVGhhbmsgeW91IGZvciB0aGUgcG9pbnQuIEkg
+d2lsbCB1c2UgaXQuDQoNCj4gPiArICAgICAgIGRvX2Rpdih0bXAsIG9uZV9jeWNsZSk7DQo+ID4g
+KyAgICAgICBjeWMgPSAoKHUzMil0bXAgPDwgUkNBUl9QV01DTlRfQ1lDMF9TSElGVCkgJiBSQ0FS
+X1BXTUNOVF9DWUMwX01BU0s7DQo+IA0KPiBJIHRoaW5rIHRoZSBjYXN0IGlzIG5vdCBuZWVkZWQu
+DQoNClRoYW5rIHlvdSBmb3IgdGhlIHBvaW50LiBJIHdpbGwgcmVtb3ZlIGl0Lg0KDQo+ID4gKw0K
+PiA+ICsgICAgICAgdG1wID0gZHV0eV9ucyAqIDEwMDsNCj4gDQo+IFNhbWUgaGVyZTogInRtcCA9
+IGR1dHlfbnMgKiAxMDBVTEw7Ii4NCg0KVGhhbmsgeW91IGFnYWluLg0KDQo+ID4gKyAgICAgICBk
+b19kaXYodG1wLCBvbmVfY3ljbGUpOw0KPiA+ICsgICAgICAgcGggPSAodTMyKXRtcCAmIFJDQVJf
+UFdNQ05UX1BIMF9NQVNLOw0KPiANCj4gSSB0aGluayB0aGUgY2FzdCBpcyBub3QgbmVlZGVkLg0K
+DQpUaGFuayB5b3UgYWdhaW4uDQoNCkJlc3QgcmVnYXJkcywNCllvc2hpaGlybyBTaGltb2RhDQoN
+Cj4gR3J7b2V0amUsZWV0aW5nfXMsDQo+IA0KPiAgICAgICAgICAgICAgICAgICAgICAgICBHZWVy
+dA0KPiANCj4gLS0NCj4gR2VlcnQgVXl0dGVyaG9ldmVuIC0tIFRoZXJlJ3MgbG90cyBvZiBMaW51
+eCBiZXlvbmQgaWEzMiAtLSBnZWVydEBsaW51eC1tNjhrLm9yZw0KPiANCj4gSW4gcGVyc29uYWwg
+Y29udmVyc2F0aW9ucyB3aXRoIHRlY2huaWNhbCBwZW9wbGUsIEkgY2FsbCBteXNlbGYgYSBoYWNr
+ZXIuIEJ1dA0KPiB3aGVuIEknbSB0YWxraW5nIHRvIGpvdXJuYWxpc3RzIEkganVzdCBzYXkgInBy
+b2dyYW1tZXIiIG9yIHNvbWV0aGluZyBsaWtlIHRoYXQuDQo+ICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgLS0gTGludXMgVG9ydmFsZHMNCg==
