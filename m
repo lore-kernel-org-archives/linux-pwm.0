@@ -1,54 +1,54 @@
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: RE: [PATCH v3 1/2] pwm: Add device tree binding document for R-Car
- PWM Timer
-Date: Thu, 21 May 2015 09:27:17 +0000
-Message-ID: <SG2PR06MB0919E1212DDC8B5E1875EF9CD8C10@SG2PR06MB0919.apcprd06.prod.outlook.com>
-References: <1432176653-4452-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<1432176653-4452-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <CAMuHMdXgB9MTUfZxUXuES8JF42G9Ld2VTeOe2J9MjuZCeONOeg@mail.gmail.com>
+Subject: [PATCH v4 0/2] pwm: Add support for R-Car PWM Timer
+Date: Thu, 21 May 2015 19:57:24 +0900
+Message-ID: <1432205846-4312-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relmlor2.renesas.com ([210.160.252.172]:9850 "EHLO
-	relmlie1.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751962AbbEUJ1X (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 21 May 2015 05:27:23 -0400
-In-Reply-To: <CAMuHMdXgB9MTUfZxUXuES8JF42G9Ld2VTeOe2J9MjuZCeONOeg@mail.gmail.com>
-Content-Language: ja-JP
+Received: from relmlor4.renesas.com ([210.160.252.174]:62777 "EHLO
+	relmlie3.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751722AbbEUK5f (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 21 May 2015 06:57:35 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+To: thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org
+Cc: linux-pwm@vger.kernel.org, linux-sh@vger.kernel.org, devicetree@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-SGkgR2VlcnQtc2FuLA0KDQpUaGFuayB5b3UgZm9yIHRoZSByZXZpZXchDQoNCj4gU2VudDogVGh1
-cnNkYXksIE1heSAyMSwgMjAxNSA1OjMyIFBNDQo+IA0KPiBIaSBTaGltb2RhLXNhbiwNCj4gDQo+
-IE9uIFRodSwgTWF5IDIxLCAyMDE1IGF0IDQ6NTAgQU0sIFlvc2hpaGlybyBTaGltb2RhDQo+IDx5
-b3NoaWhpcm8uc2hpbW9kYS51aEByZW5lc2FzLmNvbT4gd3JvdGU6DQo+ID4gQWRkIGJpbmRpbmcg
-ZG9jdW1lbnQgZm9yIFJlbmVzYXMgUFdNIFRpbWVyIG9uIFItQ2FyIFNvQ3MuDQo+IA0KPiBUaGFu
-a3MgZm9yIHlvdXIgcGF0Y2ghDQo+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IFlvc2hpaGlybyBTaGlt
-b2RhIDx5b3NoaWhpcm8uc2hpbW9kYS51aEByZW5lc2FzLmNvbT4NCj4gDQo+IEFja2VkLWJ5OiBH
-ZWVydCBVeXR0ZXJob2V2ZW4gPGdlZXJ0K3JlbmVzYXNAZ2xpZGVyLmJlPg0KPiB3aXRoIG9uZSBt
-aW5vciBuaXQgYmVsb3cuDQoNClRoYW5rIHlvdSBmb3IgdGhlIEFja2VkLWJ5Lg0KDQo+ID4gLS0t
-IC9kZXYvbnVsbA0KPiA+ICsrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9w
-d20vcmVuZXNhcyxwd20tcmNhci50eHQNCj4gDQo+ID4gK0V4YW1wbGU6IFI4QTc3OTAgKFItQ2Fy
-IEgyKSBQV00gVGltZXIgbm9kZQ0KPiA+ICsNCj4gPiArICAgICAgIHB3bTA6IHB3bUBlNmUzMDAw
-MCB7DQo+ID4gKyAgICAgICAgICAgICAgIGNvbXBhdGlibGUgPSAicmVuZXNhcyxwd20tcjhhNzc5
-MCIsICJyZW5lc2FzLHB3bS1yY2FyIjsNCj4gPiArICAgICAgICAgICAgICAgcmVnID0gPDAgMHhl
-NmUzMDAwMCAwIDB4MTA+Ow0KPiANCj4gTGVuZ3RoIDggaXMgc3VmZmljaWVudCwgYXMgdGhlcmUg
-YXJlIG9ubHkgMiAzMi1iaXQgcmVnaXN0ZXJzLg0KDQpUaGFuayB5b3UgZm9yIHRoZSBwb2ludC4g
-SSB3aWxsIGZpeCBpdC4NCg0KQmVzdCByZWdhcmRzLA0KWW9zaGloaXJvIFNoaW1vZGENCg0KPiA+
-ICsgICAgICAgICAgICAgICAjcHdtLWNlbGxzID0gPDI+Ow0KPiA+ICsgICAgICAgICAgICAgICBj
-bG9ja3MgPSA8Jm1zdHA1X2Nsa3MgUjhBNzc5MF9DTEtfUFdNPjsNCj4gPiArICAgICAgICAgICAg
-ICAgcGluY3RybC0wID0gPCZwd20wX3BpbnM+Ow0KPiA+ICsgICAgICAgICAgICAgICBwaW5jdHJs
-LW5hbWVzID0gImRlZmF1bHQiOw0KPiA+ICsgICAgICAgfTsNCj4gDQo+IEdye29ldGplLGVldGlu
-Z31zLA0KPiANCj4gICAgICAgICAgICAgICAgICAgICAgICAgR2VlcnQNCj4gDQo+IC0tDQo+IEdl
-ZXJ0IFV5dHRlcmhvZXZlbiAtLSBUaGVyZSdzIGxvdHMgb2YgTGludXggYmV5b25kIGlhMzIgLS0g
-Z2VlcnRAbGludXgtbTY4ay5vcmcNCj4gDQo+IEluIHBlcnNvbmFsIGNvbnZlcnNhdGlvbnMgd2l0
-aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNhbGwgbXlzZWxmIGEgaGFja2VyLiBCdXQNCj4gd2hlbiBJ
-J20gdGFsa2luZyB0byBqb3VybmFsaXN0cyBJIGp1c3Qgc2F5ICJwcm9ncmFtbWVyIiBvciBzb21l
-dGhpbmcgbGlrZSB0aGF0Lg0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC0tIExp
-bnVzIFRvcnZhbGRzDQo+IC0tDQo+IFRvIHVuc3Vic2NyaWJlIGZyb20gdGhpcyBsaXN0OiBzZW5k
-IHRoZSBsaW5lICJ1bnN1YnNjcmliZSBkZXZpY2V0cmVlIiBpbg0KPiB0aGUgYm9keSBvZiBhIG1l
-c3NhZ2UgdG8gbWFqb3Jkb21vQHZnZXIua2VybmVsLm9yZw0KPiBNb3JlIG1ham9yZG9tbyBpbmZv
-IGF0ICBodHRwOi8vdmdlci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZvLmh0bWwNCg==
+This patch set is based on the linux-pwm.git / for-next branch.
+(commit id = efb0de55b6a2ec15fc424e660601f22ae2fa487a)
+
+Changes from v3:
+ - Fix register size in patch 1.
+ - Add "Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>" in patch 1
+ - Remove an unnecessary definition in patch 2.
+ - Use "ULL" to avoid overflow in patch 2.
+ - Remove unnecessary casts in patch 2.
+
+Changes from v2:
+ - Add compatible string "renesas,pwm-rcar".
+ - Remove compatible strings "renesas,pwm-r8a77xx" in rcar_pwm_of_table.
+ - Fix build error.
+
+Changes from v1:
+ - Change compatible string to SoC-specific compatible values.
+ - Fix #pwm-call value to 2 in the device tree document.
+ - Fix "depends on" value in Kconfig.
+ - Fix help explanation in Kconfig.
+ - Remove an unnecessary member in rcar_pwm_chip.
+ - Remove hardcoded number of channels and change chip.npwm value to 1.
+ - Fix formulas for clock calculation to improve accuracy.
+
+Yoshihiro Shimoda (2):
+  pwm: Add device tree binding document for R-Car PWM Timer
+  pwm: Add support for R-Car PWM Timer
+
+ .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   |  27 +++
+ drivers/pwm/Kconfig                                |  11 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-rcar.c                             | 261 +++++++++++++++++++++
+ 4 files changed, 300 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+ create mode 100644 drivers/pwm/pwm-rcar.c
+
+-- 
+1.9.1
