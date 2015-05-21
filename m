@@ -1,63 +1,315 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: samsung: Use MODULE_DEVICE_TABLE() to include OF
- modalias
-Date: Thu, 21 May 2015 10:20:01 +0200
-Message-ID: <20150521082000.GA25406@ulmo.nvidia.com>
-References: <1431563551-9461-1-git-send-email-javier.martinez@collabora.co.uk>
+From: YH Huang <yh.huang@mediatek.com>
+Subject: Re: [PATCH 2/2] pwm: add Mediatek display PWM driver support
+Date: Thu, 21 May 2015 16:22:31 +0800
+Message-ID: <1432196551.15653.2.camel@mtksdaap41>
+References: <1431336382-13167-1-git-send-email-yh.huang@mediatek.com>
+	 <1431336382-13167-3-git-send-email-yh.huang@mediatek.com>
+	 <CAGS+omBX1fMBHa-4GLTjQUq5VPR2JRvhJRJ4qBX8hvDF9ihbLA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="GvXjxJ+pjyke8COw"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pd0-f170.google.com ([209.85.192.170]:33750 "EHLO
-	mail-pd0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751856AbbEUIUG (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 21 May 2015 04:20:06 -0400
-Content-Disposition: inline
-In-Reply-To: <1431563551-9461-1-git-send-email-javier.martinez@collabora.co.uk>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAGS+omBX1fMBHa-4GLTjQUq5VPR2JRvhJRJ4qBX8hvDF9ihbLA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Daniel Kurtz <djkurtz@chromium.org>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, yh.huang@mediatek.com
 List-Id: linux-pwm@vger.kernel.org
-To: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
-Cc: Krzysztof Kozlowski <k.kozlowski@samsung.com>, Olof Johansson <olof@lixom.net>, Doug Anderson <dianders@chromium.org>, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
+On Mon, 2015-05-18 at 11:42 +0800, Daniel Kurtz wrote:
+> On Mon, May 11, 2015 at 5:26 PM, YH Huang <yh.huang@mediatek.com> wrote:
+> > Add display PWM driver support to modify backlight for MT8173/MT6595.
+> >
+> > Signed-off-by: YH Huang <yh.huang@mediatek.com>
+> > ---
+> >  drivers/pwm/Kconfig             |   9 ++
+> >  drivers/pwm/Makefile            |   1 +
+> >  drivers/pwm/pwm-disp-mediatek.c | 225 ++++++++++++++++++++++++++++++++++++++++
+> >  3 files changed, 235 insertions(+)
+> >  create mode 100644 drivers/pwm/pwm-disp-mediatek.c
+> >
+> > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> > index b1541f4..9edbb5a 100644
+> > --- a/drivers/pwm/Kconfig
+> > +++ b/drivers/pwm/Kconfig
+> > @@ -111,6 +111,15 @@ config PWM_CLPS711X
+> >           To compile this driver as a module, choose M here: the module
+> >           will be called pwm-clps711x.
+> >
+> > +config PWM_DISP_MEDIATEK
+> > +       tristate "MEDIATEK display PWM driver"
+> > +       depends on OF
+> > +       help
+> > +         Generic PWM framework driver for mediatek disp-pwm device.
+> > +
+> > +         To compile this driver as a module, choose M here: the module
+> > +         will be called pwm-disp-mediatek.
+> > +
+> >  config PWM_EP93XX
+> >         tristate "Cirrus Logic EP93xx PWM support"
+> >         depends on ARCH_EP93XX
+> > diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> > index ec50eb5..c5ff72a 100644
+> > --- a/drivers/pwm/Makefile
+> > +++ b/drivers/pwm/Makefile
+> > @@ -8,6 +8,7 @@ obj-$(CONFIG_PWM_BCM_KONA)      += pwm-bcm-kona.o
+> >  obj-$(CONFIG_PWM_BCM2835)      += pwm-bcm2835.o
+> >  obj-$(CONFIG_PWM_BFIN)         += pwm-bfin.o
+> >  obj-$(CONFIG_PWM_CLPS711X)     += pwm-clps711x.o
+> > +obj-$(CONFIG_PWM_DISP_MEDIATEK)        += pwm-disp-mediatek.o
+> >  obj-$(CONFIG_PWM_EP93XX)       += pwm-ep93xx.o
+> >  obj-$(CONFIG_PWM_FSL_FTM)      += pwm-fsl-ftm.o
+> >  obj-$(CONFIG_PWM_IMG)          += pwm-img.o
+> > diff --git a/drivers/pwm/pwm-disp-mediatek.c b/drivers/pwm/pwm-disp-mediatek.c
+> > new file mode 100644
+> > index 0000000..38293af
+> > --- /dev/null
+> > +++ b/drivers/pwm/pwm-disp-mediatek.c
+> > @@ -0,0 +1,225 @@
+> > +/*
+> > + * Mediatek display pulse-width-modulation controller driver.
+> > + * Copyright (c) 2015 MediaTek Inc.
+> > + * Author: YH Huang <yh.huang@mediatek.com>
+> > + *
+> > + * This program is free software; you can redistribute it and/or modify
+> > + * it under the terms of the GNU General Public License version 2 as
+> > + * published by the Free Software Foundation.
+> > + *
+> > + * This program is distributed in the hope that it will be useful,
+> > + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> > + * GNU General Public License for more details.
+> > + */
+> > +
+> > +#include <linux/clk.h>
+> > +#include <linux/err.h>
+> > +#include <linux/io.h>
+> > +#include <linux/module.h>
+> > +#include <linux/of.h>
+> > +#include <linux/pwm.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/slab.h>
+> > +
+> > +#define DISP_PWM_EN_OFF                        (0x0)
+> > +#define PWM_ENABLE_SHIFT               (0x0)
+> > +#define PWM_ENABLE_MASK                        (0x1 << PWM_ENABLE_SHIFT)
+> > +
+> > +#define DISP_PWM_COMMIT_OFF            (0x08)
+> > +#define PWM_COMMIT_SHIFT               (0x0)
+> > +#define PWM_COMMIT_MASK                        (0x1 << PWM_COMMIT_SHIFT)
+> > +
+> > +#define DISP_PWM_CON_0_OFF             (0x10)
+> > +#define PWM_CLKDIV_SHIFT               (0x10)
+> > +#define PWM_CLKDIV_MASK                        (0x3ff << PWM_CLKDIV_SHIFT)
+> > +#define PWM_CLKDIV_MAX                 (0x000003ff)
+> > +
+> > +#define DISP_PWM_CON_1_OFF             (0x14)
+> > +#define PWM_PERIOD_SHIFT               (0x0)
+> > +#define PWM_PERIOD_MASK                        (0xfff << PWM_PERIOD_SHIFT)
+> > +#define PWM_PERIOD_MAX                 (0x00000fff)
+> > +/* Shift log2(PWM_PERIOD_MAX + 1) as divisor */
+> > +#define PWM_PERIOD_BIT_SHIFT           12
+> > +
+> > +#define PWM_HIGH_WIDTH_SHIFT           (0x10)
+> > +#define PWM_HIGH_WIDTH_MASK            (0x1fff << PWM_HIGH_WIDTH_SHIFT)
+> > +
+> > +#define NUM_PWM 1
+> > +
+> > +struct mtk_disp_pwm_chip {
+> > +       struct pwm_chip chip;
+> > +       struct device   *dev;
+> > +       struct clk      *clk_main;
+> > +       struct clk      *clk_mm;
+> > +       void __iomem    *mmio_base;
+> > +};
+> > +
+> > +static void mtk_disp_pwm_setting(void __iomem *address, u32 value, u32 mask)
+> > +{
+> > +       u32 val;
+> > +
+> > +       val = readl(address);
+> > +       val &= ~mask;
+> > +       val |= value;
+> > +       writel(val, address);
+> > +}
+> > +
+> > +static int mtk_disp_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> > +                              int duty_ns, int period_ns)
+> > +{
+> > +       struct mtk_disp_pwm_chip *mpc;
+> > +       u64 div, rate;
+> > +       u32 clk_div, period, high_width, rem;
+> > +
+> > +       /*
+> > +        * Find period, high_width and clk_div to suit duty_ns and period_ns.
+> > +        * Calculate proper div value to keep period value in the bound.
+> > +        *
+> > +        * period_ns = 10^9 * (clk_div + 1) * (period +1) / PWM_CLK_RATE
+> > +        * duty_ns = 10^9 * (clk_div + 1) * (high_width + 1) / PWM_CLK_RATE
+> > +        *
+> > +        * period = (PWM_CLK_RATE * period_ns) / (10^9 * (clk_div + 1)) - 1
+> > +        * high_width = (PWM_CLK_RATE * duty_ns) / (10^9 * (clk_div + 1)) - 1
+> > +        */
+> > +       mpc = container_of(chip, struct mtk_disp_pwm_chip, chip);
+> > +       rate = clk_get_rate(mpc->clk_main);
+> > +       clk_div = div_u64_rem(rate * period_ns, NSEC_PER_SEC, &rem) >>
+> > +                               PWM_PERIOD_BIT_SHIFT;
+> > +       if (clk_div > PWM_CLKDIV_MAX)
+> > +               return -EINVAL;
+> > +
+> > +       div = clk_div + 1;
+> > +       period = div64_u64(rate * period_ns, NSEC_PER_SEC * div);
+> > +       if (period > 0)
+> > +               period--;
+> > +       high_width = div64_u64(rate * duty_ns, NSEC_PER_SEC * div);
+> > +       if (high_width > 0)
+> > +               high_width--;
+> > +
+> > +       mtk_disp_pwm_setting(mpc->mmio_base + DISP_PWM_CON_0_OFF,
+> > +                            clk_div << PWM_CLKDIV_SHIFT, PWM_CLKDIV_MASK);
+> > +       mtk_disp_pwm_setting(mpc->mmio_base + DISP_PWM_CON_1_OFF,
+> > +                            (period << PWM_PERIOD_SHIFT) |
+> > +                       (high_width << PWM_HIGH_WIDTH_SHIFT),
+> > +                       PWM_PERIOD_MASK | PWM_HIGH_WIDTH_MASK);
+> > +
+> > +       mtk_disp_pwm_setting(mpc->mmio_base + DISP_PWM_COMMIT_OFF,
+> > +                            1 << PWM_COMMIT_SHIFT, PWM_COMMIT_MASK);
+> > +       mtk_disp_pwm_setting(mpc->mmio_base + DISP_PWM_COMMIT_OFF,
+> > +                            0 << PWM_COMMIT_SHIFT, PWM_COMMIT_MASK);
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +static int mtk_disp_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+> > +{
+> > +       struct mtk_disp_pwm_chip *mpc;
+> > +
+> > +       mpc = container_of(chip, struct mtk_disp_pwm_chip, chip);
+> > +       mtk_disp_pwm_setting(mpc->mmio_base + DISP_PWM_EN_OFF,
+> > +                            1 << PWM_ENABLE_SHIFT, PWM_ENABLE_MASK);
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +static void mtk_disp_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+> > +{
+> > +       struct mtk_disp_pwm_chip *mpc;
+> > +
+> > +       mpc = container_of(chip, struct mtk_disp_pwm_chip, chip);
+> > +       mtk_disp_pwm_setting(mpc->mmio_base + DISP_PWM_EN_OFF,
+> > +                            0 << PWM_ENABLE_SHIFT, PWM_ENABLE_MASK);
+> > +}
+> > +
+> > +static const struct pwm_ops mtk_disp_pwm_ops = {
+> > +       .config = mtk_disp_pwm_config,
+> > +       .enable = mtk_disp_pwm_enable,
+> > +       .disable = mtk_disp_pwm_disable,
+> > +       .owner = THIS_MODULE,
+> > +};
+> > +
+> > +static int mtk_disp_pwm_probe(struct platform_device *pdev)
+> > +{
+> > +       struct mtk_disp_pwm_chip *pwm;
+> > +       struct resource *r;
+> > +       int ret;
+> > +
+> > +       pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
+> > +       if (!pwm)
+> > +               return -ENOMEM;
+> > +
+> > +       pwm->dev = &pdev->dev;
+> > +
+> > +       r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > +       pwm->mmio_base = devm_ioremap_resource(&pdev->dev, r);
+> > +       if (IS_ERR(pwm->mmio_base))
+> > +               return PTR_ERR(pwm->mmio_base);
+> > +
+> > +       pwm->clk_main = devm_clk_get(&pdev->dev, "main");
+> > +       if (IS_ERR(pwm->clk_main))
+> > +               return PTR_ERR(pwm->clk_main);
+> > +       pwm->clk_mm = devm_clk_get(&pdev->dev, "mm");
+> > +       if (IS_ERR(pwm->clk_mm))
+> > +               return PTR_ERR(pwm->clk_mm);
+> > +
+> > +       ret = clk_prepare_enable(pwm->clk_main);
+> > +       if (ret < 0)
+> > +               return ret;
+> > +       ret = clk_prepare_enable(pwm->clk_mm);
+> > +       if (ret < 0) {
+> > +               clk_disable_unprepare(pwm->clk_main);
+> > +               return ret;
+> > +       }
+> > +
+> > +       platform_set_drvdata(pdev, pwm);
+> > +
+> > +       pwm->chip.dev = &pdev->dev;
+> > +       pwm->chip.ops = &mtk_disp_pwm_ops;
+> > +       pwm->chip.base = -1;
+> > +       pwm->chip.npwm = NUM_PWM;
+> > +
+> > +       ret = pwmchip_add(&pwm->chip);
+> > +       if (ret < 0) {
+> > +               dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+> > +               return ret;
+> > +       }
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +static int mtk_disp_pwm_remove(struct platform_device *pdev)
+> > +{
+> > +       struct mtk_disp_pwm_chip *pc = platform_get_drvdata(pdev);
+> > +
+> > +       if (WARN_ON(!pc))
+> > +               return -ENODEV;
+> > +
+> > +       clk_disable_unprepare(pc->clk_main);
+> > +       clk_disable_unprepare(pc->clk_mm);
+> > +
+> > +       return pwmchip_remove(&pc->chip);
+> > +}
+> > +
+> > +static const struct of_device_id mtk_disp_pwm_of_match[] = {
+> > +       { .compatible = "mediatek,mt6595-disp-pwm" },
+> 
+> Does this driver support the PWM in mt8173?
+> If so, don't you need this, too:
+> 
+>   { .compatible = "mediatek,mt8173-disp-pwm" },
 
---GvXjxJ+pjyke8COw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Yes, it supports mt8173.
+I will add it.
 
-On Thu, May 14, 2015 at 02:32:31AM +0200, Javier Martinez Canillas wrote:
-> If the pwm-samsung driver is built as a module, modalias information is
-> not filled so the module is not autoloaded. Use the MODULE_DEVICE_TABLE()
-> macro to export the OF device ID so the module contains that information.
->=20
-> Signed-off-by: Javier Martinez Canillas <javier.martinez@collabora.co.uk>
-> ---
->  drivers/pwm/pwm-samsung.c | 1 +
->  1 file changed, 1 insertion(+)
+> 
+> > +       { }
+> > +};
+> > +
+> > +MODULE_DEVICE_TABLE(of, mtk_disp_pwm_of_match);
+> > +
+> > +static struct platform_driver mtk_disp_pwm_driver = {
+> > +       .driver = {
+> > +               .name = "mediatek-disp-pwm",
+> > +               .owner = THIS_MODULE,
+> > +               .of_match_table = mtk_disp_pwm_of_match,
+> > +       },
+> > +       .probe = mtk_disp_pwm_probe,
+> > +       .remove = mtk_disp_pwm_remove,
+> > +};
+> > +
+> > +module_platform_driver(mtk_disp_pwm_driver);
+> > +
+> > +MODULE_AUTHOR("YH Huang <yh.huang@mediatek.com>");
+> > +MODULE_DESCRIPTION("MediaTek SoC display PWM driver");
+> > +MODULE_LICENSE("GPL v2");
+> > --
+> > 1.8.1.1.dirty
+> >
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> > Please read the FAQ at  http://www.tux.org/lkml/
 
-Applied, thanks.
+Thank for your suggestion.
 
-Thierry
-
---GvXjxJ+pjyke8COw
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJVXZUuAAoJEN0jrNd/PrOhLvAP+wcW2owumMJnPb+XhyGf0ejj
-Hxym55K1RQRPWx7hBSiQ9FUWykVWqJL4hTeqONl13FRBhAb9+IWqbs87PKv9Zdrh
-a7bvJUwfuvY5lqvQpljH/n+QJVo9/Uvpjwc/ZPuhXxkhyq4cPDa8JTi+UOx9WI4D
-oaXKWJOEs3BCslCu0ldj6SRJEH6UAYbm+UBw5leADGMEik/s9Y6gkmTI75bnBvD+
-Oa2xuUcWd3X3u6JHQIcx5tYzhhJRFgBcM1UyAaTPmyOeoqRJS3AZoizsUp9v8PjT
-lvsATDXlJkjwnxzk+69vTSdAtWfzSAxHgZS36IfbwhM5fhGYapFiwHl271t42Nys
-1j6J19/VEDj1NBv20egFeUnjzUcZ+TOShBZReuHEwOyOu6sUewuB5Tkd0PDYVuM7
-O/V3vM6jhaSXSS8CaiWf9BzOtdrozcYi7+QeqnJdblWFNiWuAHMpJJ/WPYT7jrjs
-Htmom7arNGR7YhWyfvSmvqxtEPoTBsIVk7jPIleyBpDBHuEAVNqv2fm8ajPsrHLY
-pAehs4kDpFbDyfEcycWVwmXOOB/7b6bwbauU3DBhUlGtLkJXIFpiNiLVsqvF1X60
-hhKgZQNqe607Q+rczUBHgWSwayL1SwTGbPzTWUcZbTx+uHqe8TykriVNtbmzqcfo
-cJM9j4o6Kl8CuvmpHijM
-=QQcT
------END PGP SIGNATURE-----
-
---GvXjxJ+pjyke8COw--
+Regards,
+YH Huang
