@@ -1,40 +1,55 @@
-From: Yingjoe Chen <yingjoe.chen@mediatek.com>
-Subject: Re: [PATCH v2 0/2] Add MediaTek display PWM driver
-Date: Mon, 25 May 2015 10:14:51 +0800
-Message-ID: <1432520091.23308.5.camel@mtksdaap41>
-References: <1432214964-40644-1-git-send-email-yh.huang@mediatek.com>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH] backlight: pwm: handle EPROBE_DEFER while requesting
+ the PWM
+Date: Mon, 25 May 2015 11:27:18 +0200
+Message-ID: <20150525112718.5f7e2d7d@bbrezillon>
+References: <1424338214-24236-1-git-send-email-nicolas.ferre@atmel.com>
+	<20150312090224.GC3314@x1>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailgw01.mediatek.com ([210.61.82.183]:43092 "EHLO
-	mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751588AbbEYCO4 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sun, 24 May 2015 22:14:56 -0400
-In-Reply-To: <1432214964-40644-1-git-send-email-yh.huang@mediatek.com>
+Received: from down.free-electrons.com ([37.187.137.238]:56100 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750852AbbEYJ1W (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 25 May 2015 05:27:22 -0400
+In-Reply-To: <20150312090224.GC3314@x1>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: YH Huang <yh.huang@mediatek.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, srv_heupstream@mediatek.com, Pawel Moll <pawel.moll@arm.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, linux-arm-kernel@lists.infradead.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, jg1.han@samsung.com, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-On Thu, 2015-05-21 at 21:29 +0800, YH Huang wrote:
-> YH Huang (2):
->   dt-bindings: pwm: add MediaTek display PWM bindings
->   pwm: add MediaTek display PWM driver support
+Hi Lee,
+
+On Thu, 12 Mar 2015 09:02:24 +0000
+Lee Jones <lee.jones@linaro.org> wrote:
+
+> On Thu, 19 Feb 2015, Nicolas Ferre wrote:
 > 
->  .../devicetree/bindings/pwm/pwm-mtk-disp.txt       |  25 +++
->  drivers/pwm/Kconfig                                |  10 +
->  drivers/pwm/Makefile                               |   1 +
->  drivers/pwm/pwm-mtk-disp.c                         | 228 +++++++++++++++++++++
->  4 files changed, 264 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
->  create mode 100644 drivers/pwm/pwm-mtk-disp.c
+> > When trying to request the PWM device with devm_pwm_get(), the EPROBE_DEFER
+> > flag is not handled properly. It can lead to the PWM not being found.
+> > 
+> > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> > Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+> > ---
+> >  drivers/video/backlight/pwm_bl.c | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> 
+> Applied, thanks.
 
-Hi YH,
+I don't see this patch in Linus' tree (actually, it's not even in
+linux-next).
+I don't know where it's stuck, but could you make sure it reaches
+mainline for 4.2 (or 4.1 if it's not to late) ?
 
-It would be easier for reviewer if you have a summary here on what you
-have changed compare to last version.
-Also, please add patch series summary even for v2, it remind reviewer
-what this series is about.
+Best Regards,
 
-Joe.C
+Boris
+
+
+
+
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
