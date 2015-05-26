@@ -1,55 +1,100 @@
-From: Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH 2/2] pwm: add Mediatek display PWM driver support
-Date: Tue, 26 May 2015 16:29:03 +0800
-Message-ID: <1432628943.11070.2.camel@mtksdaap41>
-References: <1431336382-13167-1-git-send-email-yh.huang@mediatek.com>
- <1431336382-13167-3-git-send-email-yh.huang@mediatek.com>
- <CAGS+omBX1fMBHa-4GLTjQUq5VPR2JRvhJRJ4qBX8hvDF9ihbLA@mail.gmail.com>
- <1432196551.15653.2.camel@mtksdaap41>
- <20150526060533.GW6325@pengutronix.de>
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Subject: Re: [PATCH 1/2] PWM: atmel: fix incorrect CDTY value after enabling
+Date: Tue, 26 May 2015 11:01:33 +0200
+Message-ID: <5564366D.9090707@atmel.com>
+References: <1432559996-4415-1-git-send-email-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20150526060533.GW6325-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
-List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
- <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND..." <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1432559996-4415-1-git-send-email-alexandre.belloni@free-electrons.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, 2015-05-26 at 08:05 +0200, Sascha Hauer wrote:
-> On Thu, May 21, 2015 at 04:22:31PM +0800, YH Huang wrote:
-> > On Mon, 2015-05-18 at 11:42 +0800, Daniel Kurtz wrote:
-<...>
-> > > On Mon, May 11, 2015 at 5:26 PM, YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
-> > > > +
-> > > > +static const struct of_device_id mtk_disp_pwm_of_match[] = {
-> > > > +       { .compatible = "mediatek,mt6595-disp-pwm" },
-> > > 
-> > > Does this driver support the PWM in mt8173?
-> > > If so, don't you need this, too:
-> > > 
-> > >   { .compatible = "mediatek,mt8173-disp-pwm" },
-> > 
-> > Yes, it supports mt8173.
-> > I will add it.
-> 
-> If both yre compatible you don't need to add it since you have a
-> "mediatek,mt6595-disp-pwm" in the mt8173 device tree.
+Le 25/05/2015 15:19, Alexandre Belloni a =E9crit :
+> CUPD is not flushed before enabling the channel so it will update CDTY/CP=
+RD just
+> after one period. So we always set CUPD, even when the channel is not ena=
+bled.
+> =
 
-Hi Sascha,
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-We got a similar discussion about this with Mark Brown for spi driver,
-please see:
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
 
-http://lists.infradead.org/pipermail/linux-mediatek/2015-May/000673.html
+BTW, is a "stable tag" needed for this one?
 
-Joe.C
+> ---
+>  drivers/pwm/pwm-atmel.c | 35 ++++++++++++++++++-----------------
+>  1 file changed, 18 insertions(+), 17 deletions(-)
+> =
+
+> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+> index d3c22de9ee47..89f9ca41d9af 100644
+> --- a/drivers/pwm/pwm-atmel.c
+> +++ b/drivers/pwm/pwm-atmel.c
+> @@ -155,24 +155,25 @@ static void atmel_pwm_config_v1(struct pwm_chip *ch=
+ip, struct pwm_device *pwm,
+>  	struct atmel_pwm_chip *atmel_pwm =3D to_atmel_pwm_chip(chip);
+>  	unsigned int val;
+>  =
+
+> -	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
+> -		/*
+> -		 * If the PWM channel is enabled, using the update register,
+> -		 * it needs to set bit 10 of CMR to 0
+> -		 */
+> -		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CUPD, dty);
+>  =
+
+> -		val =3D atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
+> -		val &=3D ~PWM_CMR_UPD_CDTY;
+> -		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
+> -	} else {
+> -		/*
+> -		 * If the PWM channel is disabled, write value to duty and
+> -		 * period registers directly.
+> -		 */
+> -		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CDTY, dty);
+> -		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CPRD, prd);
+> -	}
+> +	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CUPD, dty);
+> +
+> +	val =3D atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
+> +	val &=3D ~PWM_CMR_UPD_CDTY;
+> +	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
+> +
+> +	/*
+> +	 * If the PWM channel is enabled, only update CDTY by using the update
+> +	 * register, it needs to set bit 10 of CMR to 0
+> +	 */
+> +	if (test_bit(PWMF_ENABLED, &pwm->flags))
+> +		return;
+> +	/*
+> +	 * If the PWM channel is disabled, write value to duty and period
+> +	 * registers directly.
+> +	 */
+> +	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CDTY, dty);
+> +	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CPRD, prd);
+>  }
+>  =
+
+>  static void atmel_pwm_config_v2(struct pwm_chip *chip, struct pwm_device=
+ *pwm,
+> =
+
+
+
+-- =
+
+Nicolas Ferre
