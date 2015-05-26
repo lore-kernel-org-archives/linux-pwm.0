@@ -1,53 +1,55 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: [NEXT REQUEST][PATCH] backlight: pwm: handle EPROBE_DEFER while
- requesting the PWM
-Date: Tue, 26 May 2015 08:36:48 +0100
-Message-ID: <20150526073648.GB11677@x1>
-References: <1424338214-24236-1-git-send-email-nicolas.ferre@atmel.com>
- <20150312090224.GC3314@x1>
- <20150525112718.5f7e2d7d@bbrezillon>
+From: Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH 2/2] pwm: add Mediatek display PWM driver support
+Date: Tue, 26 May 2015 16:29:03 +0800
+Message-ID: <1432628943.11070.2.camel@mtksdaap41>
+References: <1431336382-13167-1-git-send-email-yh.huang@mediatek.com>
+ <1431336382-13167-3-git-send-email-yh.huang@mediatek.com>
+ <CAGS+omBX1fMBHa-4GLTjQUq5VPR2JRvhJRJ4qBX8hvDF9ihbLA@mail.gmail.com>
+ <1432196551.15653.2.camel@mtksdaap41>
+ <20150526060533.GW6325@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-next-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20150525112718.5f7e2d7d@bbrezillon>
-Sender: linux-next-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>, sfr@canb.auug.org.au, linux-next@vger.kernel.org
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, jg1.han@samsung.com, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <20150526060533.GW6325-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Sascha Hauer <s.hauer-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND..." <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Stephen, Boris,
+On Tue, 2015-05-26 at 08:05 +0200, Sascha Hauer wrote:
+> On Thu, May 21, 2015 at 04:22:31PM +0800, YH Huang wrote:
+> > On Mon, 2015-05-18 at 11:42 +0800, Daniel Kurtz wrote:
+<...>
+> > > On Mon, May 11, 2015 at 5:26 PM, YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
+> > > > +
+> > > > +static const struct of_device_id mtk_disp_pwm_of_match[] = {
+> > > > +       { .compatible = "mediatek,mt6595-disp-pwm" },
+> > > 
+> > > Does this driver support the PWM in mt8173?
+> > > If so, don't you need this, too:
+> > > 
+> > >   { .compatible = "mediatek,mt8173-disp-pwm" },
+> > 
+> > Yes, it supports mt8173.
+> > I will add it.
+> 
+> If both yre compatible you don't need to add it since you have a
+> "mediatek,mt6595-disp-pwm" in the mt8173 device tree.
 
-> > > When trying to request the PWM device with devm_pwm_get(), the EP=
-ROBE_DEFER
-> > > flag is not handled properly. It can lead to the PWM not being fo=
-und.
-> > >=20
-> > > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.co=
-m>
-> > > Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-> > > ---
-> > >  drivers/video/backlight/pwm_bl.c | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> >=20
-> > Applied, thanks.
->=20
-> I don't see this patch in Linus' tree (actually, it's not even in
-> linux-next).
-> I don't know where it's stuck, but could you make sure it reaches
-> mainline for 4.2 (or 4.1 if it's not to late) ?
+Hi Sascha,
 
-Sorry for the confusion.
+We got a similar discussion about this with Mark Brown for spi driver,
+please see:
 
-It looks like my for-backlight-fixes branch isn't in -next.
+http://lists.infradead.org/pipermail/linux-mediatek/2015-May/000673.html
 
-Stephen, could you rectify that please?
-
-M: git://git.kernel.org/pub/scm/linux/kernel/git/lee/backlight.git
-
---=20
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-=46ollow Linaro: Facebook | Twitter | Blog
+Joe.C
