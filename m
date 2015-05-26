@@ -1,85 +1,86 @@
-Return-Path: <root@danube-imgworks.hb.imgtec.org>
-From: Naidu.Tellapati@gmail.com
-Subject: [PATCH RESEND v4 4/4] DT: pdm: Add binding document for IMG PDM DAC
-Date: Sat, 22 Nov 2014 01:43:15 +0530
-Message-Id: <1416600795-10965-5-git-send-email-Naidu.Tellapati@gmail.com>
-In-Reply-To: <1416600795-10965-1-git-send-email-Naidu.Tellapati@gmail.com>
-References: <1416600795-10965-1-git-send-email-Naidu.Tellapati@gmail.com>
+Return-Path: <gael.portay@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <1432570309-17819-1-git-send-email-alexandre.belloni@free-electrons.com>
+References: <1432559996-4415-2-git-send-email-alexandre.belloni@free-electrons.com>
+	<1432570309-17819-1-git-send-email-alexandre.belloni@free-electrons.com>
+Date: Tue, 26 May 2015 12:03:41 +0200
+Message-ID: <CAHs7_BZ=gpb9QvfcYxFo+xCrks-XcdSGa-zi_HOxmp=OOX+Y7Q@mail.gmail.com>
+Subject: Re: [PATCHv2 2/2] PWM: atmel: fix incorrect CDTY value after disabling
+From: =?UTF-8?B?R2HDq2wgUE9SVEFZ?= <gael.portay@gmail.com>
+Content-Type: multipart/alternative; boundary=047d7b4724d8b8f0960516f93db3
 List-ID: <linux-pwm.vger.kernel.org>
-To: thierry.reding@gmail.com, abrestic@chromium.org, gregkh@linuxfoundation.org, arnd@arndb.de, James.Hartley@imgtec.com, Ezequiel.Garcia@imgtec.com
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Arul.Ramasamy@imgtec.com, Sai.Masarapu@imgtec.com, Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
-From: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
+--047d7b4724d8b8f0960516f93db3
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Add binding document for the Pulse Density Modulator (PDM) DAC present on the
-Pistachio SOC.
+On 25 May 2015 at 18:11, Alexandre Belloni <
+alexandre.belloni@free-electrons.com> wrote:
 
-Signed-off-by: Naidu Tellapati <Naidu.Tellapati@imgtec.com>
-Signed-off-by: Arul Ramasamy <Arul.Ramasamy@imgtec.com>
----
- Documentation/devicetree/bindings/misc/img-pdm.txt |   54 ++++++++++++++++++++
- 1 files changed, 54 insertions(+), 0 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/misc/img-pdm.txt
+> I had the previous patch tested on a multicolor LED and unfortunately, th=
+e
+> delay
+> is not nice in that case. I wanted to avoid a mutex.
+> This version uses a variable to store the state of the update of the pwm.
+> This
+> is reset everytime is gets a new configuration and updated when it is
+> disabled
+> or another pwm is configured.
+>
 
-diff --git a/Documentation/devicetree/bindings/misc/img-pdm.txt b/Documentation/devicetree/bindings/misc/img-pdm.txt
-new file mode 100644
-index 0000000..730d38a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/misc/img-pdm.txt
-@@ -0,0 +1,54 @@
-+*Imagination Technologies Pulse Density Modulator (PDM) DAC.
-+
-+Required properties:
-+  - compatible: Must be "img,pistachio-pdm"
-+  - clocks: Must contain an entry for each entry in clock-names.
-+  - clock-names: Must include the following entry:
-+	Required elements: "pdm"
-+  - img,cr-periph: Must contain a phandle to the peripheral control
-+	syscon node which contains PDM control registers.
-+  - #pdm-cells: Must be 2.
-+  - The first cell is the PDM channel number (valid values: 0, 1, 2, 3)
-+  - The second cell is 12-bit pulse-in value
-+
-+Specifying PDM information for devices
-+======================================
-+
-+1. PDM User nodes
-+
-+PDM properties should be named "pdms". The exact meaning of each pdms property
-+is described above.
-+
-+	pdm-specifier : array of #pdm-cells specifying the given PDM
-+						(controller specific)
-+
-+The following example could be used to describe a PDM-based backlight device:
-+
-+	pdm: pdm {
-+		#pdm-cells = <2>;
-+	};
-+
-+	[...]
-+
-+	bl: backlight {
-+		pdms = <&pdm 2 0>;
-+	};
-+
-+pdm-specifier typically encodes the chip-relative PDM channel number and the
-+12-bit pulse-in value.
-+
-+2. PDM Controller nodes
-+
-+PDM controller nodes must specify the number of cells used for the specifier
-+using the '#pdm-cells' property.
-+
-+An example PDM controller might look like this:
-+
-+Example:
-+	pdm: pdm@18148000 {
-+		compatible = "img,pistachio-pdm";
-+		clocks = <&pdm_clk>;
-+		clk-names = "pdm";
-+		img,cr-periph = <&cr_periph>;
-+		#pdm-cells = <2>;
-+	};
--- 
-1.7.0.4
+This version (including a mutex) works fine on at91-kizbox2.
+
+All tree PWM LEDs now shut down.
+
+
+> When disabling a multicolor LED, we only wait for the first pwm to update
+> then
+> we remember that we already seen the other one having their period expire
+> and it
+> looks much better.
+>
+
+Indeed, without mutex (and with a long period), I noticed a kind of
+"glitch" when I switch off all 3 LEDs: White ->
+Red|Blue|Green|Yellow|Cyan|Magenta -> Off.
+
+With the mutex, all 3 LEDs shut down at the same time.
+
+Tested-by: Ga=C3=ABl PORTAY <gael.portay@gmail.com>
+
+--047d7b4724d8b8f0960516f93db3
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><br><div><div><div><div><div><div class=3D"gmail_extra"><d=
+iv class=3D"gmail_quote">On 25 May 2015 at 18:11, Alexandre Belloni <span d=
+ir=3D"ltr">&lt;<a href=3D"mailto:alexandre.belloni@free-electrons.com" targ=
+et=3D"_blank">alexandre.belloni@free-electrons.com</a>&gt;</span> wrote:<br=
+><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border=
+-left:1px solid rgb(204,204,204);padding-left:1ex">I had the previous patch=
+ tested on a multicolor LED and unfortunately, the delay<br>
+is not nice in that case. I wanted to avoid a mutex.<br>
+This version uses a variable to store the state of the update of the pwm. T=
+his<br>
+is reset everytime is gets a new configuration and updated when it is disab=
+led<br>
+or another pwm is configured.<br></blockquote><div><br>This version (includ=
+ing a mutex) works fine on at91-kizbox2.<br><br>All tree PWM LEDs now shut =
+down.<br>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px =
+0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+When disabling a multicolor LED, we only wait for the first pwm to update t=
+hen<br>
+we remember that we already seen the other one having their period expire a=
+nd it<br>
+looks much better.<br></blockquote><div><br><div>Indeed, without mutex (and=
+ with a long period), I noticed a kind of &quot;glitch&quot; when I switch =
+off all 3 LEDs: White -&gt; Red|Blue|Green|Yellow|Cyan|Magenta -&gt; Off.<b=
+r><br></div><div>With the mutex, all 3 LEDs shut down at the same time.<br>=
+</div><div><br></div><span class=3D"">Tested</span>-<span class=3D"">by</sp=
+an>: <span class=3D"">Ga</span>=C3=ABl PORTAY &lt;<a href=3D"mailto:gael.po=
+rtay@gmail.com" target=3D"_blank">gael.portay@gmail.com</a>&gt;<br></div></=
+div><br></div></div></div></div></div></div></div>
+
+--047d7b4724d8b8f0960516f93db3--
