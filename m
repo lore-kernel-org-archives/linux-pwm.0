@@ -1,139 +1,71 @@
-From: Rob Herring <robherring2@gmail.com>
-Subject: Re: [PATCH 00/21] On-demand device registration
-Date: Wed, 27 May 2015 23:33:34 -0500
-Message-ID: <CAL_Jsq+EWLEJhRudTGAwYsOg4tX2-pGhygeQGHae9RL8rBpMiA@mail.gmail.com>
-References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH v4 0/2] pwm: Add support for R-Car PWM Timer
+Date: Thu, 28 May 2015 10:11:43 +0000
+Message-ID: <SG2PR06MB09199F8E4E836FE928B3A266D8CA0@SG2PR06MB0919.apcprd06.prod.outlook.com>
+References: <1432205846-4312-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <stephane.marchesin@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Alexander Holler <holler@ahsoftware.de>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Dan Williams <dan.j.williams@intel.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, dmaengine@vger.kernel.org, dri-devel <dri-devel@lists.freedesktop.org>, linux-clk@vger.kernel.org, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.or>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from relmlor2.renesas.com ([210.160.252.172]:9086 "EHLO
+	relmlie1.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1752769AbbE1KLt convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Thu, 28 May 2015 06:11:49 -0400
+In-Reply-To: <1432205846-4312-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Content-Language: ja-JP
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "galak@codeaurora.org" <galak@codeaurora.org>
 
-On Mon, May 25, 2015 at 9:53 AM, Tomeu Vizoso
-<tomeu.vizoso@collabora.com> wrote:
-> Hello,
->
-> I have a problem with the panel on my Tegra Chromebook taking longer =
-than
-> expected to be ready during boot (St=C3=A9phane Marchesin reported wh=
-at is
-> basically the same issue in [0]), and have looked into ordered probin=
-g as a
-> better way of solving this than moving nodes around in the DT or play=
-ing with
-> initcall levels.
->
-> While reading the thread [1] that Alexander Holler started with his s=
-eries to
-> make probing order deterministic, it occurred to me that it should be=
- possible
-> to achieve the same by registering devices as they are referenced by =
-other
-> devices.
+Hi Thierry,
 
-I like the concept and novel approach.
+Would you apply this patch set to your repository?
+I checked that I could apply this patch set correctly
+on the latest linux-pwm.git / for-next branch.
+(commit id = cccb94543c8299e0bc7564cc6f8b26e0f15bafde)
 
-> This basically reuses the information that is already implicit in the=
- probe()
-> implementations, saving us from refactoring existing drivers or addin=
-g
-> information to DTBs.
->
-> Something I'm not completely happy with is that I have had to move th=
-e call to
-> of_platform_populate after all platform drivers have been registered.
-> Otherwise I don't see how I could register drivers on demand as we do=
-n't have
-> yet each driver's compatible strings.
+Best regards,
+Yoshihiro Shimoda
 
-Yeah, this is the opposite of what we'd really like. Ideally, we would
-have a solution that works for modules too. However, we're no worse
-off. We pretty much build-in dependencies to avoid module ordering
-problems.
-
-Perhaps we need to make the probing on-demand rather than simply on
-device<->driver match occurring.
-
-> For machs that don't move of_platform_populate() to a later point, th=
-ese
-> patches shouldn't cause any problems but it's not guaranteed that we'=
-ll avoid
-> all the deferred probes as some drivers may not be registered yet.
-
-Ideally, of_platform_populate is not explicitly called by each
-platform. So I think we need to make this work for the default case.
-
-> I have tested this on boards with Tegra, iMX.6 and Exynos SoCs, and t=
-hese
-> patches were enough to eliminate all the deferred probes.
->
-> With this series I get the kernel to output to the panel in 0.5s, ins=
-tead of 2.8s.
-
-That's certainly compelling.
-
-Rob
-
->
-> Regards,
->
-> Tomeu
->
-> [0] http://lists.freedesktop.org/archives/dri-devel/2014-August/06652=
-7.html
->
-> [1] https://lkml.org/lkml/2014/5/12/452
->
-> Tomeu Vizoso (21):
->   regulator: core: Reduce critical area in _regulator_get
->   ARM: tegra: Add gpio-ranges property
->   ARM: tegra: Register drivers before devices
->   ARM: EXYNOS: Register drivers before devices
->   ARM i.MX6q: Register drivers before devices
->   of/platform: Add of_platform_device_ensure()
->   of/platform: Ensure device registration on lookup
->   gpio: Probe GPIO drivers on demand
->   gpio: Probe pinctrl devices on demand
->   regulator: core: Probe regulators on demand
->   drm: Probe panels on demand
->   drm/tegra: Probe dpaux devices on demand
->   i2c: core: Probe i2c master devices on demand
->   pwm: Probe PWM chip devices on demand
->   backlight: Probe backlight devices on demand
->   usb: phy: Probe phy devices on demand
->   clk: Probe clk providers on demand
->   pinctrl: Probe pinctrl devices on demand
->   phy: core: Probe phy providers on demand
->   dma: of: Probe DMA controllers on demand
->   power-supply: Probe power supplies on demand
->
->  arch/arm/boot/dts/tegra124.dtsi     |  1 +
->  arch/arm/mach-exynos/exynos.c       |  4 +--
->  arch/arm/mach-imx/mach-imx6q.c      | 12 ++++-----
->  arch/arm/mach-tegra/tegra.c         | 21 ++++++---------
->  drivers/clk/clk.c                   |  3 +++
->  drivers/dma/of-dma.c                |  3 +++
->  drivers/gpio/gpiolib-of.c           |  5 ++++
->  drivers/gpu/drm/drm_panel.c         |  3 +++
->  drivers/gpu/drm/tegra/dpaux.c       |  3 +++
->  drivers/i2c/i2c-core.c              |  3 +++
->  drivers/of/platform.c               | 53 +++++++++++++++++++++++++++=
-++++++++++
->  drivers/phy/phy-core.c              |  3 +++
->  drivers/pinctrl/devicetree.c        |  2 ++
->  drivers/power/power_supply_core.c   |  3 +++
->  drivers/pwm/core.c                  |  3 +++
->  drivers/regulator/core.c            | 45 +++++++++++++++------------=
-----
->  drivers/usb/phy/phy.c               |  3 +++
->  drivers/video/backlight/backlight.c |  3 +++
->  include/linux/of_platform.h         |  2 ++
->  19 files changed, 130 insertions(+), 45 deletions(-)
->
+> Sent: Thursday, May 21, 2015 7:57 PM
+> 
+> This patch set is based on the linux-pwm.git / for-next branch.
+> (commit id = efb0de55b6a2ec15fc424e660601f22ae2fa487a)
+> 
+> Changes from v3:
+>  - Fix register size in patch 1.
+>  - Add "Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>" in patch 1
+>  - Remove an unnecessary definition in patch 2.
+>  - Use "ULL" to avoid overflow in patch 2.
+>  - Remove unnecessary casts in patch 2.
+> 
+> Changes from v2:
+>  - Add compatible string "renesas,pwm-rcar".
+>  - Remove compatible strings "renesas,pwm-r8a77xx" in rcar_pwm_of_table.
+>  - Fix build error.
+> 
+> Changes from v1:
+>  - Change compatible string to SoC-specific compatible values.
+>  - Fix #pwm-call value to 2 in the device tree document.
+>  - Fix "depends on" value in Kconfig.
+>  - Fix help explanation in Kconfig.
+>  - Remove an unnecessary member in rcar_pwm_chip.
+>  - Remove hardcoded number of channels and change chip.npwm value to 1.
+>  - Fix formulas for clock calculation to improve accuracy.
+> 
+> Yoshihiro Shimoda (2):
+>   pwm: Add device tree binding document for R-Car PWM Timer
+>   pwm: Add support for R-Car PWM Timer
+> 
+>  .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   |  27 +++
+>  drivers/pwm/Kconfig                                |  11 +
+>  drivers/pwm/Makefile                               |   1 +
+>  drivers/pwm/pwm-rcar.c                             | 261 +++++++++++++++++++++
+>  4 files changed, 300 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+>  create mode 100644 drivers/pwm/pwm-rcar.c
+> 
 > --
-> 2.4.1
->
+> 1.9.1
