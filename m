@@ -1,80 +1,139 @@
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [NEXT REQUEST][PATCH] backlight: pwm: handle EPROBE_DEFER while
- requesting the PWM
-Date: Wed, 27 May 2015 07:20:39 +1000
-Message-ID: <20150527072039.07aeea30@canb.auug.org.au>
-References: <1424338214-24236-1-git-send-email-nicolas.ferre@atmel.com>
-	<20150312090224.GC3314@x1>
-	<20150525112718.5f7e2d7d@bbrezillon>
-	<20150526073648.GB11677@x1>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH 00/21] On-demand device registration
+Date: Wed, 27 May 2015 23:33:34 -0500
+Message-ID: <CAL_Jsq+EWLEJhRudTGAwYsOg4tX2-pGhygeQGHae9RL8rBpMiA@mail.gmail.com>
+References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/SytJC+n7YiazyBba3WIZ23P"; protocol="application/pgp-signature"
-Return-path: <linux-next-owner@vger.kernel.org>
-In-Reply-To: <20150526073648.GB11677@x1>
-Sender: linux-next-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, linux-next@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, jg1.han@samsung.com, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <stephane.marchesin@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Alexander Holler <holler@ahsoftware.de>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Dan Williams <dan.j.williams@intel.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, dmaengine@vger.kernel.org, dri-devel <dri-devel@lists.freedesktop.org>, linux-clk@vger.kernel.org, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.or>
 List-Id: linux-pwm@vger.kernel.org
 
---Sig_/SytJC+n7YiazyBba3WIZ23P
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi Lee,
-
-On Tue, 26 May 2015 08:36:48 +0100 Lee Jones <lee.jones@linaro.org> wrote:
+On Mon, May 25, 2015 at 9:53 AM, Tomeu Vizoso
+<tomeu.vizoso@collabora.com> wrote:
+> Hello,
 >
-> It looks like my for-backlight-fixes branch isn't in -next.
->=20
-> Stephen, could you rectify that please?
->=20
-> M: git://git.kernel.org/pub/scm/linux/kernel/git/lee/backlight.git
+> I have a problem with the panel on my Tegra Chromebook taking longer =
+than
+> expected to be ready during boot (St=C3=A9phane Marchesin reported wh=
+at is
+> basically the same issue in [0]), and have looked into ordered probin=
+g as a
+> better way of solving this than moving nodes around in the DT or play=
+ing with
+> initcall levels.
+>
+> While reading the thread [1] that Alexander Holler started with his s=
+eries to
+> make probing order deterministic, it occurred to me that it should be=
+ possible
+> to achieve the same by registering devices as they are referenced by =
+other
+> devices.
 
-Added from today.
+I like the concept and novel approach.
 
-Thanks for adding your subsystem tree as a participant of linux-next.  As
-you may know, this is not a judgment of your code.  The purpose of
-linux-next is for integration testing and to lower the impact of
-conflicts between subsystems in the next merge window.=20
+> This basically reuses the information that is already implicit in the=
+ probe()
+> implementations, saving us from refactoring existing drivers or addin=
+g
+> information to DTBs.
+>
+> Something I'm not completely happy with is that I have had to move th=
+e call to
+> of_platform_populate after all platform drivers have been registered.
+> Otherwise I don't see how I could register drivers on demand as we do=
+n't have
+> yet each driver's compatible strings.
 
-You will need to ensure that the patches/commits in your tree/series have
-been:
-     * submitted under GPL v2 (or later) and include the Contributor's
-        Signed-off-by,
-     * posted to the relevant mailing list,
-     * reviewed by you (or another maintainer of your subsystem tree),
-     * successfully unit tested, and=20
-     * destined for the current or next Linux merge window.
+Yeah, this is the opposite of what we'd really like. Ideally, we would
+have a solution that works for modules too. However, we're no worse
+off. We pretty much build-in dependencies to avoid module ordering
+problems.
 
-Basically, this should be just what you would send to Linus (or ask him
-to fetch).  It is allowed to be rebased if you deem it necessary.
+Perhaps we need to make the probing on-demand rather than simply on
+device<->driver match occurring.
 
---=20
-Cheers,
-Stephen Rothwell=20
-sfr@canb.auug.org.au
+> For machs that don't move of_platform_populate() to a later point, th=
+ese
+> patches shouldn't cause any problems but it's not guaranteed that we'=
+ll avoid
+> all the deferred probes as some drivers may not be registered yet.
 
---Sig_/SytJC+n7YiazyBba3WIZ23P
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Ideally, of_platform_populate is not explicitly called by each
+platform. So I think we need to make this work for the default case.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+> I have tested this on boards with Tegra, iMX.6 and Exynos SoCs, and t=
+hese
+> patches were enough to eliminate all the deferred probes.
+>
+> With this series I get the kernel to output to the panel in 0.5s, ins=
+tead of 2.8s.
 
-iQIcBAEBCAAGBQJVZOOtAAoJEMDTa8Ir7ZwVw58P/id7SKH8e37r5MvfsWfEC7TC
-6eZXKjb94dc9Y+7+j7pHQDzEiyENJvqe9orWRFnGLJqZmFgmkDwLnWkpNq7mlnVo
-iLKtBhihI9b8fpgieN/VnVA7aGpBFyxPhLL/zYLMXr2bIslTGxP7O6dAHQ5z2nFu
-bCbVccenMZPywZIm2tXNLjrENJEmawr8TUq7vHvFJkKYV0Re0buAoDWJ0wZRLWQ6
-tGAEVRjyp5UlsQQvB2RLVtvd58kSXdi6Xi85+NZ+fnlD9OlPOlV91/0Tq97Fu2GJ
-muaBbvrJRCNXUxqHbiZzv04r9+pHzDlACd0R+XphWvrT0NxW8nKmFXhXZL2Stz9/
-MzxypHII8CyJWnDkgmA0K82XvUpzNPXIJSmXTwRo7qZjlqgyYG5UfIc4PAWVQWct
-NdVQi2kWCgicoG/XKv6JTNGTWPW0yONbbhWj5sCoGkdc8BIS/qjtTltyxfOTXFiI
-giGKJ1BlY6JJMHT24/melolHRwxiKl5KHudf+EvcFMWVCTjjxclzdnF7245Pwz3t
-chW0e6pFKL8g0pVo+5eu52pcQXG92BhfhlYoW/hScdlL7Oc3AreL16ao/J5hcynr
-2/LaDV79+cnVKDL0k1OwdZMgCJAxO/YEyQUQ2ep0IwTEI1HgDwmWlPtGBD0UrlM0
-+iO+Ze6XtFzvJ7CWYq8T
-=A7QE
------END PGP SIGNATURE-----
+That's certainly compelling.
 
---Sig_/SytJC+n7YiazyBba3WIZ23P--
+Rob
+
+>
+> Regards,
+>
+> Tomeu
+>
+> [0] http://lists.freedesktop.org/archives/dri-devel/2014-August/06652=
+7.html
+>
+> [1] https://lkml.org/lkml/2014/5/12/452
+>
+> Tomeu Vizoso (21):
+>   regulator: core: Reduce critical area in _regulator_get
+>   ARM: tegra: Add gpio-ranges property
+>   ARM: tegra: Register drivers before devices
+>   ARM: EXYNOS: Register drivers before devices
+>   ARM i.MX6q: Register drivers before devices
+>   of/platform: Add of_platform_device_ensure()
+>   of/platform: Ensure device registration on lookup
+>   gpio: Probe GPIO drivers on demand
+>   gpio: Probe pinctrl devices on demand
+>   regulator: core: Probe regulators on demand
+>   drm: Probe panels on demand
+>   drm/tegra: Probe dpaux devices on demand
+>   i2c: core: Probe i2c master devices on demand
+>   pwm: Probe PWM chip devices on demand
+>   backlight: Probe backlight devices on demand
+>   usb: phy: Probe phy devices on demand
+>   clk: Probe clk providers on demand
+>   pinctrl: Probe pinctrl devices on demand
+>   phy: core: Probe phy providers on demand
+>   dma: of: Probe DMA controllers on demand
+>   power-supply: Probe power supplies on demand
+>
+>  arch/arm/boot/dts/tegra124.dtsi     |  1 +
+>  arch/arm/mach-exynos/exynos.c       |  4 +--
+>  arch/arm/mach-imx/mach-imx6q.c      | 12 ++++-----
+>  arch/arm/mach-tegra/tegra.c         | 21 ++++++---------
+>  drivers/clk/clk.c                   |  3 +++
+>  drivers/dma/of-dma.c                |  3 +++
+>  drivers/gpio/gpiolib-of.c           |  5 ++++
+>  drivers/gpu/drm/drm_panel.c         |  3 +++
+>  drivers/gpu/drm/tegra/dpaux.c       |  3 +++
+>  drivers/i2c/i2c-core.c              |  3 +++
+>  drivers/of/platform.c               | 53 +++++++++++++++++++++++++++=
+++++++++++
+>  drivers/phy/phy-core.c              |  3 +++
+>  drivers/pinctrl/devicetree.c        |  2 ++
+>  drivers/power/power_supply_core.c   |  3 +++
+>  drivers/pwm/core.c                  |  3 +++
+>  drivers/regulator/core.c            | 45 +++++++++++++++------------=
+----
+>  drivers/usb/phy/phy.c               |  3 +++
+>  drivers/video/backlight/backlight.c |  3 +++
+>  include/linux/of_platform.h         |  2 ++
+>  19 files changed, 130 insertions(+), 45 deletions(-)
+>
+> --
+> 2.4.1
+>
