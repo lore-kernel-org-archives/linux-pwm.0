@@ -1,71 +1,163 @@
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: RE: [PATCH v4 0/2] pwm: Add support for R-Car PWM Timer
-Date: Thu, 28 May 2015 10:11:43 +0000
-Message-ID: <SG2PR06MB09199F8E4E836FE928B3A266D8CA0@SG2PR06MB0919.apcprd06.prod.outlook.com>
-References: <1432205846-4312-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+From: Stefan Agner <stefan@agner.ch>
+Subject: [PATCH] pwm: ftm: fix clock enable/disable when using PM
+Date: Fri, 29 May 2015 22:48:39 +0200
+Message-ID: <1432932519-13295-1-git-send-email-stefan@agner.ch>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relmlor2.renesas.com ([210.160.252.172]:9086 "EHLO
-	relmlie1.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1752769AbbE1KLt convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Thu, 28 May 2015 06:11:49 -0400
-In-Reply-To: <1432205846-4312-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-Content-Language: ja-JP
+Received: from mail.kmu-office.ch ([178.209.48.109]:39752 "EHLO
+	mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756266AbbE2Usp (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 29 May 2015 16:48:45 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "galak@codeaurora.org" <galak@codeaurora.org>
+To: thierry.reding@gmail.com
+Cc: Li.Xiubo@freescale.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Stefan Agner <stefan@agner.ch>
 
-Hi Thierry,
+The driver has multiple issues when enabling/disabling clocks. A given
+instance enables/disables three clocks: the bus clock, the counter
+clock and the PWM clock. The bus clock gets enabled on pwm_request,
+whereas the counter and PWM clocks will be enabled upon pwm_enable.
 
-Would you apply this patch set to your repository?
-I checked that I could apply this patch set correctly
-on the latest linux-pwm.git / for-next branch.
-(commit id = cccb94543c8299e0bc7564cc6f8b26e0f15bafde)
+When entering suspend, the current behavior relies on the FTM_OUTMASK
+register: If a PWM output is unmasked, the driver assumes the clocks
+are enabled. However, some PWM instances, e.g. Vybrid's FTM1, only
+have 2 channels connected. In that case, the FTM_OUTMASK reads only
+0x3, even when it was initialized with 0xff. Hence for those PWM
+instances, the current approach does not work at all.
 
-Best regards,
-Yoshihiro Shimoda
+A second issue is that the three clocks are not treated differently
+regarding PWM's enabled/requested state. This can lead to clocks
+getting disabled which have not been enabled in the first place (a PWM
+channel which only has been requested).
 
-> Sent: Thursday, May 21, 2015 7:57 PM
-> 
-> This patch set is based on the linux-pwm.git / for-next branch.
-> (commit id = efb0de55b6a2ec15fc424e660601f22ae2fa487a)
-> 
-> Changes from v3:
->  - Fix register size in patch 1.
->  - Add "Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>" in patch 1
->  - Remove an unnecessary definition in patch 2.
->  - Use "ULL" to avoid overflow in patch 2.
->  - Remove unnecessary casts in patch 2.
-> 
-> Changes from v2:
->  - Add compatible string "renesas,pwm-rcar".
->  - Remove compatible strings "renesas,pwm-r8a77xx" in rcar_pwm_of_table.
->  - Fix build error.
-> 
-> Changes from v1:
->  - Change compatible string to SoC-specific compatible values.
->  - Fix #pwm-call value to 2 in the device tree document.
->  - Fix "depends on" value in Kconfig.
->  - Fix help explanation in Kconfig.
->  - Remove an unnecessary member in rcar_pwm_chip.
->  - Remove hardcoded number of channels and change chip.npwm value to 1.
->  - Fix formulas for clock calculation to improve accuracy.
-> 
-> Yoshihiro Shimoda (2):
->   pwm: Add device tree binding document for R-Car PWM Timer
->   pwm: Add support for R-Car PWM Timer
-> 
->  .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   |  27 +++
->  drivers/pwm/Kconfig                                |  11 +
->  drivers/pwm/Makefile                               |   1 +
->  drivers/pwm/pwm-rcar.c                             | 261 +++++++++++++++++++++
->  4 files changed, 300 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
->  create mode 100644 drivers/pwm/pwm-rcar.c
-> 
-> --
-> 1.9.1
+A third issue applies to the bus clock only, which can get enabled
+multiple times (once for each PWM channel of a PWM chip). This is
+fine, however when entering suspend mode, the clock only gets disabled
+once.
+
+To fix the issues this change introduces a different approach by
+relying on the enable/prepared counters of the clock framework. Clocks
+get disabled during suspend and back enabled on resume regarding to
+the PWM channels individual state. However, since we do not count the
+clocks locally, this change no longer clears the Status and Control
+registers Clock Source Selection (FTM_SC[CLKS]). There have not
+observed issues with that approach so far.
+
+Signed-off-by: Stefan Agner <stefan@agner.ch>
+---
+ drivers/pwm/pwm-fsl-ftm.c | 58 ++++++++++++++++++++---------------------------
+ 1 file changed, 25 insertions(+), 33 deletions(-)
+
+diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
+index f9dfc8b..5e1dd96 100644
+--- a/drivers/pwm/pwm-fsl-ftm.c
++++ b/drivers/pwm/pwm-fsl-ftm.c
+@@ -80,7 +80,6 @@ struct fsl_pwm_chip {
+ 
+ 	struct mutex lock;
+ 
+-	unsigned int use_count;
+ 	unsigned int cnt_select;
+ 	unsigned int clk_ps;
+ 
+@@ -300,9 +299,6 @@ static int fsl_counter_clock_enable(struct fsl_pwm_chip *fpc)
+ {
+ 	int ret;
+ 
+-	if (fpc->use_count++ != 0)
+-		return 0;
+-
+ 	/* select counter clock source */
+ 	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK,
+ 			   FTM_SC_CLK(fpc->cnt_select));
+@@ -334,25 +330,6 @@ static int fsl_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	return ret;
+ }
+ 
+-static void fsl_counter_clock_disable(struct fsl_pwm_chip *fpc)
+-{
+-	/*
+-	 * already disabled, do nothing
+-	 */
+-	if (fpc->use_count == 0)
+-		return;
+-
+-	/* there are still users, so can't disable yet */
+-	if (--fpc->use_count > 0)
+-		return;
+-
+-	/* no users left, disable PWM counter clock */
+-	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK, 0);
+-
+-	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
+-	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
+-}
+-
+ static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
+@@ -362,7 +339,8 @@ static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	regmap_update_bits(fpc->regmap, FTM_OUTMASK, BIT(pwm->hwpwm),
+ 			   BIT(pwm->hwpwm));
+ 
+-	fsl_counter_clock_disable(fpc);
++	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
++	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
+ 
+ 	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
+ 	if ((val & 0xFF) == 0xFF)
+@@ -492,17 +470,24 @@ static int fsl_pwm_remove(struct platform_device *pdev)
+ static int fsl_pwm_suspend(struct device *dev)
+ {
+ 	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
+-	u32 val;
++	int i;
+ 
+ 	regcache_cache_only(fpc->regmap, true);
+ 	regcache_mark_dirty(fpc->regmap);
+ 
+-	/* read from cache */
+-	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
+-	if ((val & 0xFF) != 0xFF) {
++	for (i = 0; i < fpc->chip.npwm; i++) {
++		struct pwm_device *pwm = &fpc->chip.pwms[i];
++
++		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
++			continue;
++
++		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
++
++		if (!test_bit(PWMF_ENABLED, &pwm->flags))
++			continue;
++
+ 		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
+ 		clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
+-		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
+ 	}
+ 
+ 	return 0;
+@@ -511,12 +496,19 @@ static int fsl_pwm_suspend(struct device *dev)
+ static int fsl_pwm_resume(struct device *dev)
+ {
+ 	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
+-	u32 val;
++	int i;
++
++	for (i = 0; i < fpc->chip.npwm; i++) {
++		struct pwm_device *pwm = &fpc->chip.pwms[i];
++
++		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
++			continue;
+ 
+-	/* read from cache */
+-	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
+-	if ((val & 0xFF) != 0xFF) {
+ 		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
++
++		if (!test_bit(PWMF_ENABLED, &pwm->flags))
++			continue;
++
+ 		clk_prepare_enable(fpc->clk[fpc->cnt_select]);
+ 		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
+ 	}
+-- 
+2.4.2
