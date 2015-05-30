@@ -1,163 +1,165 @@
-From: Stefan Agner <stefan@agner.ch>
-Subject: [PATCH] pwm: ftm: fix clock enable/disable when using PM
-Date: Fri, 29 May 2015 22:48:39 +0200
-Message-ID: <1432932519-13295-1-git-send-email-stefan@agner.ch>
+From: Tim Kryger <tim.kryger@gmail.com>
+Subject: Re: [PATCH v8 3/5] pwm: kona: Fix incorrect config, disable, and
+ polarity procedures
+Date: Sat, 30 May 2015 09:41:31 -0700
+Message-ID: <CAD7vxx+t=t84hGqVHz3Y3y+eKii5E3J2=oxMaDgtQgbD=WU+ow@mail.gmail.com>
+References: <1432670900-27687-1-git-send-email-jonathar@broadcom.com>
+	<1432670900-27687-4-git-send-email-jonathar@broadcom.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kmu-office.ch ([178.209.48.109]:39752 "EHLO
-	mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756266AbbE2Usp (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 29 May 2015 16:48:45 -0400
+Received: from mail-wi0-f175.google.com ([209.85.212.175]:34382 "EHLO
+	mail-wi0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753929AbbE3Qld (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sat, 30 May 2015 12:41:33 -0400
+In-Reply-To: <1432670900-27687-4-git-send-email-jonathar@broadcom.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: Li.Xiubo@freescale.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Stefan Agner <stefan@agner.ch>
+To: Jonathan Richardson <jonathar@broadcom.com>
+Cc: Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux PWM <linux-pwm@vger.kernel.org>
 
-The driver has multiple issues when enabling/disabling clocks. A given
-instance enables/disables three clocks: the bus clock, the counter
-clock and the PWM clock. The bus clock gets enabled on pwm_request,
-whereas the counter and PWM clocks will be enabled upon pwm_enable.
+On Tue, May 26, 2015 at 1:08 PM, Jonathan Richardson
+<jonathar@broadcom.com> wrote:
+> The config procedure didn't follow the spec which periodically resulted
+> in failing to enable the output signal. This happened one in ten or
+> twenty attempts. Following the spec and adding a 400ns delay in the
+> appropriate locations resolves this problem.
+>
+> The disable and polarity procedures now also follow the spec. The old
+> procedures would result in no change in signal when called.
 
-When entering suspend, the current behavior relies on the FTM_OUTMASK
-register: If a PWM output is unmasked, the driver assumes the clocks
-are enabled. However, some PWM instances, e.g. Vybrid's FTM1, only
-have 2 channels connected. In that case, the FTM_OUTMASK reads only
-0x3, even when it was initialized with 0xff. Hence for those PWM
-instances, the current approach does not work at all.
+I think you may want to adjust your commit title and message to more
+clearly describe what this change is doing. Perhaps something like:
 
-A second issue is that the three clocks are not treated differently
-regarding PWM's enabled/requested state. This can lead to clocks
-getting disabled which have not been enabled in the first place (a PWM
-channel which only has been requested).
+pwm: kona: Modify settings application sequence
 
-A third issue applies to the bus clock only, which can get enabled
-multiple times (once for each PWM channel of a PWM chip). This is
-fine, however when entering suspend mode, the clock only gets disabled
-once.
+Update the driver so that settings are applied in accordance with the
+most recent version of the hardware spec.  The revised sequence clears
+the trigger bit, waits 400ns, writes settings, sets the trigger bit,
+and waits another 400ns.  This corrects an issue where occasionally a
+requested change was not properly reflected in the PWM output.
 
-To fix the issues this change introduces a different approach by
-relying on the enable/prepared counters of the clock framework. Clocks
-get disabled during suspend and back enabled on resume regarding to
-the PWM channels individual state. However, since we do not count the
-clocks locally, this change no longer clears the Status and Control
-registers Clock Source Selection (FTM_SC[CLKS]). There have not
-observed issues with that approach so far.
+Otherwise, this patch looks reasonable so
 
-Signed-off-by: Stefan Agner <stefan@agner.ch>
----
- drivers/pwm/pwm-fsl-ftm.c | 58 ++++++++++++++++++++---------------------------
- 1 file changed, 25 insertions(+), 33 deletions(-)
+Reviewed-by: Tim Kryger <tim.kryger@gmail.com>
 
-diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-index f9dfc8b..5e1dd96 100644
---- a/drivers/pwm/pwm-fsl-ftm.c
-+++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -80,7 +80,6 @@ struct fsl_pwm_chip {
- 
- 	struct mutex lock;
- 
--	unsigned int use_count;
- 	unsigned int cnt_select;
- 	unsigned int clk_ps;
- 
-@@ -300,9 +299,6 @@ static int fsl_counter_clock_enable(struct fsl_pwm_chip *fpc)
- {
- 	int ret;
- 
--	if (fpc->use_count++ != 0)
--		return 0;
--
- 	/* select counter clock source */
- 	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK,
- 			   FTM_SC_CLK(fpc->cnt_select));
-@@ -334,25 +330,6 @@ static int fsl_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	return ret;
- }
- 
--static void fsl_counter_clock_disable(struct fsl_pwm_chip *fpc)
--{
--	/*
--	 * already disabled, do nothing
--	 */
--	if (fpc->use_count == 0)
--		return;
--
--	/* there are still users, so can't disable yet */
--	if (--fpc->use_count > 0)
--		return;
--
--	/* no users left, disable PWM counter clock */
--	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK, 0);
--
--	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
--	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
--}
--
- static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
-@@ -362,7 +339,8 @@ static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	regmap_update_bits(fpc->regmap, FTM_OUTMASK, BIT(pwm->hwpwm),
- 			   BIT(pwm->hwpwm));
- 
--	fsl_counter_clock_disable(fpc);
-+	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
-+	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
- 
- 	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
- 	if ((val & 0xFF) == 0xFF)
-@@ -492,17 +470,24 @@ static int fsl_pwm_remove(struct platform_device *pdev)
- static int fsl_pwm_suspend(struct device *dev)
- {
- 	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
--	u32 val;
-+	int i;
- 
- 	regcache_cache_only(fpc->regmap, true);
- 	regcache_mark_dirty(fpc->regmap);
- 
--	/* read from cache */
--	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
--	if ((val & 0xFF) != 0xFF) {
-+	for (i = 0; i < fpc->chip.npwm; i++) {
-+		struct pwm_device *pwm = &fpc->chip.pwms[i];
-+
-+		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
-+			continue;
-+
-+		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-+
-+		if (!test_bit(PWMF_ENABLED, &pwm->flags))
-+			continue;
-+
- 		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
- 		clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
--		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
- 	}
- 
- 	return 0;
-@@ -511,12 +496,19 @@ static int fsl_pwm_suspend(struct device *dev)
- static int fsl_pwm_resume(struct device *dev)
- {
- 	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
--	u32 val;
-+	int i;
-+
-+	for (i = 0; i < fpc->chip.npwm; i++) {
-+		struct pwm_device *pwm = &fpc->chip.pwms[i];
-+
-+		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
-+			continue;
- 
--	/* read from cache */
--	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
--	if ((val & 0xFF) != 0xFF) {
- 		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-+
-+		if (!test_bit(PWMF_ENABLED, &pwm->flags))
-+			continue;
-+
- 		clk_prepare_enable(fpc->clk[fpc->cnt_select]);
- 		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
- 	}
--- 
-2.4.2
+>
+> Reviewed-by: Arun Ramamurthy <arunrama@broadcom.com>
+> Reviewed-by: Scott Branden <sbranden@broadcom.com>
+> Tested-by: Scott Branden <sbranden@broadcom.com>
+> Signed-off-by: Jonathan Richardson <jonathar@broadcom.com>
+> ---
+>  drivers/pwm/pwm-bcm-kona.c |   47 +++++++++++++++++++++++++++++++++++---------
+>  1 file changed, 38 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+> index 32b3ec6..c87621f 100644
+> --- a/drivers/pwm/pwm-bcm-kona.c
+> +++ b/drivers/pwm/pwm-bcm-kona.c
+> @@ -76,19 +76,36 @@ static inline struct kona_pwmc *to_kona_pwmc(struct pwm_chip *_chip)
+>         return container_of(_chip, struct kona_pwmc, chip);
+>  }
+>
+> -static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
+> +/*
+> + * Clear trigger bit but set smooth bit to maintain old output.
+> + */
+> +static void kona_pwmc_prepare_for_settings(struct kona_pwmc *kp,
+> +       unsigned int chan)
+>  {
+>         unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
+>
+> -       /* Clear trigger bit but set smooth bit to maintain old output */
+>         value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
+>         value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
+>         writel(value, kp->base + PWM_CONTROL_OFFSET);
+>
+> +       /*
+> +        * There must be a min 400ns delay between clearing enable and setting
+> +        * it. Failing to do this may result in no PWM signal.
+> +        */
+> +       ndelay(400);
+> +}
+
+Since it doesn't function as an enable, please call it the trigger bit.
+
+> +
+> +static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
+> +{
+> +       unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
+> +
+>         /* Set trigger bit and clear smooth bit to apply new settings */
+>         value &= ~(1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
+>         value |= 1 << PWM_CONTROL_TRIGGER_SHIFT(chan);
+>         writel(value, kp->base + PWM_CONTROL_OFFSET);
+> +
+> +       /* PWMOUT_ENABLE must be held high for at least 400 ns. */
+> +       ndelay(400);
+>  }
+
+Same here.
+
+>
+>  static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> @@ -133,8 +150,14 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>                         return -EINVAL;
+>         }
+>
+> -       /* If the PWM channel is enabled, write the settings to the HW */
+> +       /*
+> +        * Don't apply settings if disabled. The period and duty cycle are
+> +        * always calculated above to ensure the new values are
+> +        * validated immediately instead of on enable.
+> +        */
+>         if (test_bit(PWMF_ENABLED, &pwm->flags)) {
+> +               kona_pwmc_prepare_for_settings(kp, chan);
+> +
+>                 value = readl(kp->base + PRESCALE_OFFSET);
+>                 value &= ~PRESCALE_MASK(chan);
+>                 value |= prescale << PRESCALE_SHIFT(chan);
+> @@ -164,6 +187,8 @@ static int kona_pwmc_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+>                 return ret;
+>         }
+>
+> +       kona_pwmc_prepare_for_settings(kp, chan);
+> +
+>         value = readl(kp->base + PWM_CONTROL_OFFSET);
+>
+>         if (polarity == PWM_POLARITY_NORMAL)
+> @@ -175,9 +200,6 @@ static int kona_pwmc_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+>
+>         kona_pwmc_apply_settings(kp, chan);
+>
+> -       /* Wait for waveform to settle before gating off the clock */
+> -       ndelay(400);
+> -
+>         clk_disable_unprepare(kp->clk);
+>
+>         return 0;
+> @@ -207,13 +229,20 @@ static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+>  {
+>         struct kona_pwmc *kp = to_kona_pwmc(chip);
+>         unsigned int chan = pwm->hwpwm;
+> +       unsigned int value;
+> +
+> +       kona_pwmc_prepare_for_settings(kp, chan);
+>
+>         /* Simulate a disable by configuring for zero duty */
+>         writel(0, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
+> -       kona_pwmc_apply_settings(kp, chan);
+> +       writel(0, kp->base + PERIOD_COUNT_OFFSET(chan));
+>
+> -       /* Wait for waveform to settle before gating off the clock */
+> -       ndelay(400);
+> +       /* Set prescale to 0 for this channel */
+> +       value = readl(kp->base + PRESCALE_OFFSET);
+> +       value &= ~PRESCALE_MASK(chan);
+> +       writel(value, kp->base + PRESCALE_OFFSET);
+> +
+> +       kona_pwmc_apply_settings(kp, chan);
+>
+>         clk_disable_unprepare(kp->clk);
+>  }
+> --
+> 1.7.9.5
+>
