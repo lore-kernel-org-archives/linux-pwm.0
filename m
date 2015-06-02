@@ -1,41 +1,67 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: Re: [PATCH 2/5] ARM: OMAP2+: DRA7: Add hwmod entries for PWMSS
-Date: Tue, 2 Jun 2015 16:54:10 +0530
-Message-ID: <556D925A.9070708@ti.com>
-References: <1433159614-437-1-git-send-email-vigneshr@ti.com> <1433159614-437-3-git-send-email-vigneshr@ti.com> <556D6781.2090405@ti.com>
+From: Alexander Holler <holler@ahsoftware.de>
+Subject: Re: [PATCH 00/21] On-demand device registration
+Date: Wed, 03 Jun 2015 00:54:31 +0200
+Message-ID: <556E3427.6000704@ahsoftware.de>
+References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>
+ <CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <556D6781.2090405@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Tero Kristo <t-kristo@ti.com>, Paul Walmsley <paul@pwsan.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Benoit Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Russell King <linux@arm.linux.org.uk>, Mike Turquette <mturquette@linaro.org>, Stephen Boyd <sboyd@codeaurora.org>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Linus Walleij <linus.walleij@linaro.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Grant Likely <grant.likely@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, DRM PANEL DRIVERS <dri-devel@lists.freedesktop.org>, list@wandq.ahsoftware, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, linux-clk@vger.kernel.org, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, open@wandq.ahsoftware, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Tero,
-
-On Tuesday 02 June 2015 01:51 PM, Tero Kristo wrote:
-> On 06/01/2015 02:53 PM, Vignesh R wrote:
->> Add hwmod entries for the PWMSS on DRA7.
-> 
-> Can you provide some documentation references for this data?
-> 
-> I was looking at the TRM and at least the main_clk selection is somewhat
-> unclear to me.
-
-As per AM57x TRM SPRUHZ6, October 2014, Section 29.1.3 Table 29-4.
-source signal as L4PER2_L3_GICLK but it is actually equal to
-L4PER2_L3_GICLK/2. l4_root_clock_div is fixed-factored clock equal to
-L4PER2_L3_GICLK/2 (l3_iclk_div/2 in Linux clock dt). The TRM does'nt
-show factor of by 2. I will forward you an internal documentation that
-talks about this.
-
-I also measured the frequencies of PWM waveforms using oscilloscope and
-it matches above observation.
-
-I will update the patch description in v2.
-
-Regards
-Vignesh
-
+QW0gMDIuMDYuMjAxNSB1bSAxMDo0OCBzY2hyaWViIExpbnVzIFdhbGxlaWo6Cj4gT24gTW9uLCBN
+YXkgMjUsIDIwMTUgYXQgNDo1MyBQTSwgVG9tZXUgVml6b3NvCj4gPHRvbWV1LnZpem9zb0Bjb2xs
+YWJvcmEuY29tPiB3cm90ZToKPiAKPj4gaGF2ZSBsb29rZWQgaW50byBvcmRlcmVkIHByb2Jpbmcg
+YXMgYQo+PiBiZXR0ZXIgd2F5IG9mIHNvbHZpbmcgdGhpcyB0aGFuIG1vdmluZyBub2RlcyBhcm91
+bmQgaW4gdGhlIERUIG9yIHBsYXlpbmcgd2l0aAo+PiBpbml0Y2FsbCBsZXZlbHMuCj4+Cj4+IFdo
+aWxlIHJlYWRpbmcgdGhlIHRocmVhZCBbMV0gdGhhdCBBbGV4YW5kZXIgSG9sbGVyIHN0YXJ0ZWQg
+d2l0aCBoaXMgc2VyaWVzIHRvCj4+IG1ha2UgcHJvYmluZyBvcmRlciBkZXRlcm1pbmlzdGljLCBp
+dCBvY2N1cnJlZCB0byBtZSB0aGF0IGl0IHNob3VsZCBiZSBwb3NzaWJsZQo+PiB0byBhY2hpZXZl
+IHRoZSBzYW1lIGJ5IHJlZ2lzdGVyaW5nIGRldmljZXMgYXMgdGhleSBhcmUgcmVmZXJlbmNlZCBi
+eSBvdGhlcgo+PiBkZXZpY2VzLgo+IAo+IFRoaXMgaXMgcHJldHR5IGNvb2wsIGJ1dCBhIHRvbyBs
+b2NhbCBzb2x1dGlvbiB0byBhIGdsb2JhbCBwcm9ibGVtLgo+IAo+IERlZmVycmVkIHByb2JlIGFu
+ZCBpbml0Y2FsbCByZW9yZGVyaW5nLCBzaWxseSBhcyB0aGV5IG1heSBzZWVtLAo+IGRvZXMgbm90
+IHJlcXVpcmUgeW91IHRvIHVzZSBkZXZpY2UgdHJlZS4KPiAKPiBUaGUgcmVhbCBzb2x1dGlvbiwg
+d2hpY2ggSSB0aGluayBJIHBvaW50ZWQgb3V0IGFscmVhZHkgd2hlbiB3ZQo+IGFkZGVkIGRlZmVy
+cmVkIHByb2JlLCBpcyB0byBwdXQgZGVwZW5kZW5jeSBncmFwaHMgaW4gdGhlIGRyaXZlcnMKPiBh
+bmQgaGF2ZSB0aGUga2VybmVsIGRldmljZSBkcml2ZXIgY29yZSBwZXJjb2xhdGUgZGVwZW5kZWNp
+ZXMgYnkKPiB3YWxraW5nIHRoZSBncmFwaCBvbiBwcm9iaW5nIGRyaXZlciwgcmVtb3ZpbmcgZHJp
+dmVyICh1c3VhbGx5IHRoZQo+IGludmVyc2UgdXNlIGNhc2UpLCBbcnVudGltZV0gc3VzcGVuZCBh
+bmQgW3J1bnRpbWVdIHJlc3VtZWluZwo+IGEgZHJpdmVyLiBQb3NzaWJseSB0aGUgZGVwZW5kZW5j
+aWVzIHdpbGwgZXZlbiBiZSBkaWZmZXJlbnQKPiBkZXBlbmRpbmcgb24gdXNlIGNhc2UuCj4gCj4g
+VGhpcyBpcyB3aGF0IHN5c3RlbWQgaXMgZG9pbmcgaW4gdXNlcnNwYWNlIGZvciBzdGFydGluZyBz
+ZXJ2aWNlczoKPiBhc2sgZm9yIHlvdXIgZGVwZW5kZW5jaWVzIGFuZCB3YWl0IGZvciB0aGVtIGlm
+IHRoZXkgYXJlIG5vdAo+IHRoZXJlLiBTbyBkcml2ZXJzIGFzayBmb3IgcmVzb3VyY2VzIGFuZCB3
+YWl0IGZvciB0aGVtLiBJdCBhbHNvCj4gbmVlZHMgdG8gYmUgYWJzdHJhY3QsIHNvIGZvciBleGFt
+cGxlIHdlIG5lZWQgdG8gYmUgYWJsZSB0bwo+IGhhbmcgb24gcmVndWxhdG9yX2dldCgpIHVudGls
+IHRoZSBkcml2ZXIgaXMgdXAgYW5kIHByb3ZpZGluZyB0aGF0Cj4gcmVndWxhdG9yLCBhbmQgYXMg
+bG9uZyBhcyBldmVyeXRoaW5nIGlzIGluIHNsb3dwYXRoIGl0IHNob3VsZAo+IGJlIE9LLiAoQW5k
+IHZpY2UgdmVyc2EgbXV0YXRpcyBtdXRhbmRpcyBmb3IgY2xrLCBncGlvLCBwaW4KPiBjb250cm9s
+LCBpbnRlcnJ1cHRzICghKSBhbmQgRE1BIGNoYW5uZWxzIGZvciBleGFtcGxlLikKPiAKPiAKPiBT
+byBpZiB0aGlzIHNob3VsZCBiZSBzb2x2ZWQgaXQgc2hvdWxkIGJlIHNvbHZlZCBpbiBhbiBhYnN0
+cmFjdCB3YXkKPiBpbiB0aGUgZGV2aWNlIGRyaXZlciBjb3JlIGF2YWlsYWJsZSBmb3IgYWxsLCB0
+aGVuIGhhdmUgY2FsbHMgY2FsbGluZwo+IG91dCB0byBEVCwgQUNQSSwgcG9zc2libHkgZXZlbiBQ
+Q0kgb3IgVVNCIChhcyB0aGVzZQo+IGVudW1lcmF0ZSBkZXZpY2VzIHRoZW1zZWx2ZXMpIHRvIG9i
+dGFpbiBhIGNlcnRhaW4KPiBkZXBlbmRlbmN5LgoKSSBzdWdnZXN0IHRvIHN0YXJ0IHdpdGggbWFr
+aW5nIGl0IHBvc3NpYmxlIHRvIGlkZW50aWZ5IChhdCBsZWFzdCBtb3N0KQpkcml2ZXJzLiBJJ3Zl
+IGFscmVhZHkgcG9zdGVkIGEgcGF0Y2ggZm9yIHRoYXQgYXJvdW5kIGEgeWVhciBhZ28gYW5kIG5v
+dwpUb21ldSBkaWQgYWxtb3N0IHRoZSBzYW1lLgoKSG93ZXZlciBvbmUgd2FudHMgdG8gbWFrZSBh
+IGRldGVybWluaXN0aWMgb3JkZXIgdG8gbG9hZCBkcml2ZXJzLCB0aGVyZQp3aWxsIGJlIGFsd2F5
+cyB0aGUgbmVlZCB0byBrbm93IHdoaWNoIGRyaXZlcnMgb25lIGhhcyB0byBzb3J0LgoKUmVnYXJk
+cywKCkFsZXhhbmRlciBIb2xsZXIKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRl
+c2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9k
+cmktZGV2ZWwK
