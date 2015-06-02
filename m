@@ -1,79 +1,95 @@
-From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Subject: Re: [PATCH 00/21] On-demand device registration
-Date: Tue, 2 Jun 2015 12:14:06 +0200
-Message-ID: <CAAObsKCP-C+TY8Wkk6bQzxZeGYL9X01trtjxfaYp--ZnH07C+w@mail.gmail.com>
-References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com> <CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>
+From: Vignesh R <vigneshr@ti.com>
+Subject: Re: [PATCH 3/5] ARM: dts: DRA7: Add TBCLK for PWMSS
+Date: Tue, 2 Jun 2015 16:53:12 +0530
+Message-ID: <556D9220.8050205@ti.com>
+References: <1433159614-437-1-git-send-email-vigneshr@ti.com> <1433159614-437-4-git-send-email-vigneshr@ti.com> <556D67CB.8090309@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Grant Likely <grant.likely@linaro.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>, dmaengine@vger.kernel.org, Alexander Holler <holler@ahsoftware.de>, Dan Williams <dan.j.williams@intel.com>, "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>, linux-clk@vger.kernel.o
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-omap-owner@vger.kernel.org>
+In-Reply-To: <556D67CB.8090309@ti.com>
+Sender: linux-omap-owner@vger.kernel.org
+To: Tero Kristo <t-kristo@ti.com>, Paul Walmsley <paul@pwsan.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Benoit Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Russell King <linux@arm.linux.org.uk>, Mike Turquette <mturquette@linaro.org>, Stephen Boyd <sboyd@codeaurora.org>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On 2 June 2015 at 10:48, Linus Walleij <linus.walleij@linaro.org> wrote:
-> On Mon, May 25, 2015 at 4:53 PM, Tomeu Vizoso
-> <tomeu.vizoso@collabora.com> wrote:
->
->> have looked into ordered probing as a
->> better way of solving this than moving nodes around in the DT or playing with
->> initcall levels.
+
+
+On Tuesday 02 June 2015 01:52 PM, Tero Kristo wrote:
+> On 06/01/2015 02:53 PM, Vignesh R wrote:
+>> tbclk is used by ehrpwm to generate PWM waveform on DRA7 SoC. Add Linux
+>> clock to control ehrpwm tbclk.
+> 
+> Care to add TRM reference here?
+
+Ok, I will add the following reference.
+
+tbclk is derived from SYSCLKOUT. The system clock - SYSCLKOUT is the
+ePWM functional clock derived from the gateable interface and functional
+clock of PWMSS.
+See AM57x TRM SPRUHZ6, October 2014, Section 29.2.2.1, Table 29-19 and
+the NOTE at the end of the table.
+
+> 
+> -Tero
+> 
 >>
->> While reading the thread [1] that Alexander Holler started with his series to
->> make probing order deterministic, it occurred to me that it should be possible
->> to achieve the same by registering devices as they are referenced by other
->> devices.
->
-> This is pretty cool, but a too local solution to a global problem.
->
-> Deferred probe and initcall reordering, silly as they may seem,
-> does not require you to use device tree.
->
-> The real solution, which I think I pointed out already when we
-> added deferred probe, is to put dependency graphs in the drivers
-
-By this you mean something like what Thierry suggested here?
-
-http://article.gmane.org/gmane.linux.kernel/1774623
-
-> and have the kernel device driver core percolate dependecies by
-> walking the graph on probing driver, removing driver (usually the
-> inverse use case), [runtime] suspend and [runtime] resumeing
-> a driver. Possibly the dependencies will even be different
-> depending on use case.
->
-> This is what systemd is doing in userspace for starting services:
-> ask for your dependencies and wait for them if they are not
-> there. So drivers ask for resources and wait for them. It also
-> needs to be abstract, so for example we need to be able to
-> hang on regulator_get() until the driver is up and providing that
-> regulator, and as long as everything is in slowpath it should
-> be OK. (And vice versa mutatis mutandis for clk, gpio, pin
-> control, interrupts (!) and DMA channels for example.)
-
-I understood above that you propose probing devices in order, but now
-you mention that resource getters would block until the dependency is
-fulfilled which confuses me because if we are probing in order then
-all dependencies would be fulfilled before the device in question gets
-probed.
-
-> So if this should be solved it should be solved in an abstract way
-> in the device driver core available for all, then have calls calling
-> out to DT, ACPI, possibly even PCI or USB (as these
-> enumerate devices themselves) to obtain a certain
-> dependency.
-
-Yeah, I was planning looking into this now that I got it working with
-async probing.
-
-Thanks,
-
-Tomeu
-
-> Yours,
-> Linus Walleij
-> _______________________________________________
-> dri-devel mailing list
-> dri-devel@lists.freedesktop.org
-> http://lists.freedesktop.org/mailman/listinfo/dri-devel
+>> Signed-off-by: Vignesh R <vigneshr@ti.com>
+>> ---
+>>   arch/arm/boot/dts/dra7.dtsi          |  5 +++++
+>>   arch/arm/boot/dts/dra7xx-clocks.dtsi | 26 ++++++++++++++++++++++++++
+>>   2 files changed, 31 insertions(+)
+>>
+>> diff --git a/arch/arm/boot/dts/dra7.dtsi b/arch/arm/boot/dts/dra7.dtsi
+>> index f03a091cd076..387c76ca41f9 100644
+>> --- a/arch/arm/boot/dts/dra7.dtsi
+>> +++ b/arch/arm/boot/dts/dra7.dtsi
+>> @@ -131,6 +131,11 @@
+>>                               regulator-max-microvolt = <3000000>;
+>>                           };
+>>                       };
+>> +
+>> +                    scm_conf_clocks: clocks {
+>> +                        #address-cells = <1>;
+>> +                        #size-cells = <0>;
+>> +                    };
+>>                   };
+>>
+>>                   dra7_pmx_core: pinmux@1400 {
+>> diff --git a/arch/arm/boot/dts/dra7xx-clocks.dtsi
+>> b/arch/arm/boot/dts/dra7xx-clocks.dtsi
+>> index 3b933f74d000..92452d61cf58 100644
+>> --- a/arch/arm/boot/dts/dra7xx-clocks.dtsi
+>> +++ b/arch/arm/boot/dts/dra7xx-clocks.dtsi
+>> @@ -2136,3 +2136,29 @@
+>>           clocks = <&dpll_usb_ck>;
+>>       };
+>>   };
+>> +
+>> +&scm_conf_clocks {
+>> +       ehrpwm0_tbclk: ehrpwm0_tbclk {
+>> +        #clock-cells = <0>;
+>> +        compatible = "ti,gate-clock";
+>> +        clocks = <&l4_root_clk_div>;
+>> +        ti,bit-shift = <20>;
+>> +        reg = <0x0558>;
+>> +    };
+>> +
+>> +    ehrpwm1_tbclk: ehrpwm1_tbclk {
+>> +        #clock-cells = <0>;
+>> +        compatible = "ti,gate-clock";
+>> +        clocks = <&l4_root_clk_div>;
+>> +        ti,bit-shift = <21>;
+>> +        reg = <0x0558>;
+>> +    };
+>> +
+>> +    ehrpwm2_tbclk: ehrpwm2_tbclk {
+>> +        #clock-cells = <0>;
+>> +        compatible = "ti,gate-clock";
+>> +        clocks = <&l4_root_clk_div>;
+>> +        ti,bit-shift = <22>;
+>> +        reg = <0x0558>;
+>> +    };
+>> +};
+>>
+> 
