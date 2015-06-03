@@ -1,300 +1,174 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: [PATCH v2 2/5] ARM: OMAP2+: DRA7: Add hwmod entries for PWMSS
-Date: Wed, 3 Jun 2015 17:21:21 +0530
-Message-ID: <1433332284-10766-3-git-send-email-vigneshr@ti.com>
-References: <1433332284-10766-1-git-send-email-vigneshr@ti.com>
+From: "Grygorii.Strashko-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <grygorii.strashko-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 00/21] On-demand device registration
+Date: Wed, 03 Jun 2015 22:57:24 +0300
+Message-ID: <556F5C24.1030101@linaro.org>
+References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com> <CAL_Jsq+EWLEJhRudTGAwYsOg4tX2-pGhygeQGHae9RL8rBpMiA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1433332284-10766-1-git-send-email-vigneshr@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>, Tero Kristo <t-kristo@ti.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Benoit Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Russell King <linux@arm.linux.org.uk>, Mike Turquette <mturquette@linaro.org>, Stephen Boyd <sboyd@codeaurora.org>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, Vignesh R <vigneshr@ti.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAL_Jsq+EWLEJhRudTGAwYsOg4tX2-pGhygeQGHae9RL8rBpMiA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+Cc: Rob Herring <robherring2-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, =?UTF-8?B?U3TDqXBoYW5lIE1hcmNoZXNpbg==?= <stephane.marchesin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexander Holler <holler-SXC+2es9fhnfWeYVQQPykw@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>linux
 List-Id: linux-pwm@vger.kernel.org
 
-Add hwmod entries for the PWMSS on DRA7.
+Hi Tomeu,
 
-Set l4_root_clk_div as the main_clk of PWMSS. It is fixed-factored clock
-equal to L4PER2_L3_GICLK/2(l3_iclk_div/2).
-As per AM57x TRM SPRUHZ6[1], October 2014, Section 29.1.3 Table 29-4,
-clock source to PWMSS is L4PER2_L3_GICLK. But it is actually
-L4PER2_L3_GICLK/2. The TRM does not show the division by 2.
+On 05/28/2015 07:33 AM, Rob Herring wrote:
+> On Mon, May 25, 2015 at 9:53 AM, Tomeu Vizoso <tomeu.vizoso@collabora=
+=2Ecom> wrote:
+>> I have a problem with the panel on my Tegra Chromebook taking longer=
+ than
+>> expected to be ready during boot (St=C3=A9phane Marchesin reported w=
+hat is
+>> basically the same issue in [0]), and have looked into ordered probi=
+ng as a
+>> better way of solving this than moving nodes around in the DT or pla=
+ying with
+>> initcall levels.
+>>
+>> While reading the thread [1] that Alexander Holler started with his =
+series to
+>> make probing order deterministic, it occurred to me that it should b=
+e possible
+>> to achieve the same by registering devices as they are referenced by=
+ other
+>> devices.
+>=20
+> I like the concept and novel approach.
+>=20
+>> This basically reuses the information that is already implicit in th=
+e probe()
+>> implementations, saving us from refactoring existing drivers or addi=
+ng
+>> information to DTBs.
+>>
+>> Something I'm not completely happy with is that I have had to move t=
+he call to
+>> of_platform_populate after all platform drivers have been registered=
+=2E
+>> Otherwise I don't see how I could register drivers on demand as we d=
+on't have
+>> yet each driver's compatible strings.
+>=20
+> Yeah, this is the opposite of what we'd really like. Ideally, we woul=
+d
+> have a solution that works for modules too. However, we're no worse
+> off. We pretty much build-in dependencies to avoid module ordering
+> problems.
+>=20
+> Perhaps we need to make the probing on-demand rather than simply on
+> device<->driver match occurring.
+>=20
+>> For machs that don't move of_platform_populate() to a later point, t=
+hese
+>> patches shouldn't cause any problems but it's not guaranteed that we=
+'ll avoid
+>> all the deferred probes as some drivers may not be registered yet.
+>=20
+> Ideally, of_platform_populate is not explicitly called by each
+> platform. So I think we need to make this work for the default case.
+>=20
+>> I have tested this on boards with Tegra, iMX.6 and Exynos SoCs, and =
+these
+>> patches were enough to eliminate all the deferred probes.
+>>
+>> With this series I get the kernel to output to the panel in 0.5s, in=
+stead of 2.8s.
+>=20
+> That's certainly compelling.
 
-[1] www.ti.com/lit/ug/spruhz6/spruhz6.pdf
+I've found your idea about moving device registration later during Syst=
+em boot
+very interesting so I've decided to try it on dra7-evem (TI) :).
+It's good to know time during Kernel boot when we can assume that all d=
+rivers are
+ready for probing, so there are more ways to control probing order.
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
----
+Pls, Note here that TI OMAP2+ mach is not pure DT mach - it's combinati=
+on of
+DT and not DT devices/drivers.
 
-v2:
- * add TRM references.
+Ok. So What was done...
 
- arch/arm/mach-omap2/omap_hwmod_7xx_data.c | 239 ++++++++++++++++++++++++++++++
- 1 file changed, 239 insertions(+)
+LKML Linux 4.1-rc3 (a simple case)
+1) use your patches 3/4 as reference (only these two patches :)
+2) move of_platform_populate later at device_initcall_sync time
+Boot time reduction ~0.4 sec
 
-diff --git a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
-index 0e64c2fac0b5..86a7ac9a3138 100644
---- a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
-+++ b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
-@@ -362,6 +362,149 @@ static struct omap_hwmod dra7xx_dcan2_hwmod = {
- 	},
- };
- 
-+/* pwmss  */
-+static struct omap_hwmod_class_sysconfig dra7xx_epwmss_sysc = {
-+	.rev_offs	= 0x0,
-+	.sysc_offs	= 0x4,
-+	.sysc_flags	= SYSC_HAS_SIDLEMODE | SYSC_HAS_RESET_STATUS,
-+	.idlemodes	= (SIDLE_FORCE | SIDLE_NO | SIDLE_SMART),
-+	.sysc_fields	= &omap_hwmod_sysc_type2,
-+};
-+
-+struct omap_hwmod_class dra7xx_epwmss_hwmod_class = {
-+	.name		= "epwmss",
-+	.sysc		= &dra7xx_epwmss_sysc,
-+};
-+
-+static struct omap_hwmod_class dra7xx_ecap_hwmod_class = {
-+	.name		= "ecap",
-+};
-+
-+static struct omap_hwmod_class dra7xx_eqep_hwmod_class = {
-+	.name		= "eqep",
-+};
-+
-+struct omap_hwmod_class dra7xx_ehrpwm_hwmod_class = {
-+	.name		= "ehrpwm",
-+};
-+
-+/* epwmss0 */
-+struct omap_hwmod dra7xx_epwmss0_hwmod = {
-+	.name		= "epwmss0",
-+	.class		= &dra7xx_epwmss_hwmod_class,
-+	.clkdm_name	= "l4per2_clkdm",
-+	.main_clk	= "l4_root_clk_div",
-+	.prcm		= {
-+		.omap4	= {
-+			.modulemode	= MODULEMODE_SWCTRL,
-+			.clkctrl_offs	= DRA7XX_CM_L4PER2_PWMSS1_CLKCTRL_OFFSET,
-+			.context_offs	= DRA7XX_RM_L4PER2_PWMSS1_CONTEXT_OFFSET,
-+		},
-+	},
-+};
-+
-+/* ecap0 */
-+struct omap_hwmod dra7xx_ecap0_hwmod = {
-+	.name		= "ecap0",
-+	.class		= &dra7xx_ecap_hwmod_class,
-+	.clkdm_name	= "l4per2_clkdm",
-+	.main_clk	= "l4_root_clk_div",
-+};
-+
-+/* eqep0 */
-+struct omap_hwmod dra7xx_eqep0_hwmod = {
-+	.name		= "eqep0",
-+	.class		= &dra7xx_eqep_hwmod_class,
-+	.clkdm_name	= "l4per2_clkdm",
-+	.main_clk	= "l4_root_clk_div",
-+};
-+
-+/* ehrpwm0 */
-+struct omap_hwmod dra7xx_ehrpwm0_hwmod = {
-+	.name		= "ehrpwm0",
-+	.class		= &dra7xx_ehrpwm_hwmod_class,
-+	.clkdm_name	= "l4per2_clkdm",
-+	.main_clk	= "l4_root_clk_div",
-+};
-+
-+/* epwmss1 */
-+struct omap_hwmod dra7xx_epwmss1_hwmod = {
-+	.name		= "epwmss1",
-+	.class		= &dra7xx_epwmss_hwmod_class,
-+	.clkdm_name	= "l4per2_clkdm",
-+	.main_clk	= "l4_root_clk_div",
-+	.prcm		= {
-+		.omap4	= {
-+			.modulemode	= MODULEMODE_SWCTRL,
-+			.clkctrl_offs	= DRA7XX_CM_L4PER2_PWMSS2_CLKCTRL_OFFSET,
-+			.context_offs	= DRA7XX_RM_L4PER2_PWMSS2_CONTEXT_OFFSET,
-+		},
-+	},
-+};
-+
-+/* ecap1 */
-+struct omap_hwmod dra7xx_ecap1_hwmod = {
-+	.name		= "ecap1",
-+	.class		= &dra7xx_ecap_hwmod_class,
-+	.clkdm_name	= "l4per2_clkdm",
-+	.main_clk	= "l4_root_clk_div",
-+};
-+
-+/* eqep1 */
-+struct omap_hwmod dra7xx_eqep1_hwmod = {
-+	.name		= "eqep1",
-+	.class		= &dra7xx_eqep_hwmod_class,
-+	.clkdm_name	= "l4per2_clkdm",
-+	.main_clk	= "l4_root_clk_div",
-+};
-+
-+/* ehrpwm1 */
-+struct omap_hwmod dra7xx_ehrpwm1_hwmod = {
-+	.name		= "ehrpwm1",
-+	.class		= &dra7xx_ehrpwm_hwmod_class,
-+	.clkdm_name	= "l4per2_clkdm",
-+	.main_clk	= "l4_root_clk_div",
-+};
-+
-+/* epwmss2 */
-+struct omap_hwmod dra7xx_epwmss2_hwmod = {
-+	.name		= "epwmss2",
-+	.class		= &dra7xx_epwmss_hwmod_class,
-+	.clkdm_name	= "l4per2_clkdm",
-+	.main_clk	= "l4_root_clk_div",
-+	.prcm		= {
-+		.omap4	= {
-+			.modulemode	= MODULEMODE_SWCTRL,
-+			.clkctrl_offs	= DRA7XX_CM_L4PER2_PWMSS3_CLKCTRL_OFFSET,
-+			.context_offs	= DRA7XX_RM_L4PER2_PWMSS3_CONTEXT_OFFSET,
-+		},
-+	},
-+};
-+
-+/* ecap2 */
-+struct omap_hwmod dra7xx_ecap2_hwmod = {
-+	.name		= "ecap2",
-+	.class		= &dra7xx_ecap_hwmod_class,
-+	.clkdm_name	= "l4per2_clkdm",
-+	.main_clk	= "l4_root_clk_div",
-+};
-+
-+/* eqep2 */
-+struct omap_hwmod dra7xx_eqep2_hwmod = {
-+	.name		= "eqep2",
-+	.class		= &dra7xx_eqep_hwmod_class,
-+	.clkdm_name	= "l4per2_clkdm",
-+	.main_clk	= "l4_root_clk_div",
-+};
-+
-+/* ehrpwm2 */
-+struct omap_hwmod dra7xx_ehrpwm2_hwmod = {
-+	.name		= "ehrpwm2",
-+	.class		= &dra7xx_ehrpwm_hwmod_class,
-+	.clkdm_name	= "l4per2_clkdm",
-+	.main_clk	= "l4_root_clk_div",
-+};
-+
- /*
-  * 'dma' class
-  *
-@@ -2601,6 +2744,90 @@ static struct omap_hwmod_ocp_if dra7xx_l4_per1__gpio6 = {
- 	.user		= OCP_USER_MPU | OCP_USER_SDMA,
- };
- 
-+struct omap_hwmod_ocp_if dra7xx_l4_per2__epwmss0 = {
-+	.master		= &dra7xx_l4_per2_hwmod,
-+	.slave		= &dra7xx_epwmss0_hwmod,
-+	.clk		= "l4_root_clk_div",
-+	.user		= OCP_USER_MPU,
-+};
-+
-+struct omap_hwmod_ocp_if dra7xx_epwmss0__ecap0 = {
-+	.master		= &dra7xx_epwmss0_hwmod,
-+	.slave		= &dra7xx_ecap0_hwmod,
-+	.clk		= "l4_root_clk_div",
-+	.user		= OCP_USER_MPU,
-+};
-+
-+struct omap_hwmod_ocp_if dra7xx_epwmss0__eqep0 = {
-+	.master		= &dra7xx_epwmss0_hwmod,
-+	.slave		= &dra7xx_eqep0_hwmod,
-+	.clk		= "l4_root_clk_div",
-+	.user		= OCP_USER_MPU,
-+};
-+
-+struct omap_hwmod_ocp_if dra7xx_epwmss0__ehrpwm0 = {
-+	.master		= &dra7xx_epwmss0_hwmod,
-+	.slave		= &dra7xx_ehrpwm0_hwmod,
-+	.clk		= "l4_root_clk_div",
-+	.user		= OCP_USER_MPU,
-+};
-+
-+struct omap_hwmod_ocp_if dra7xx_l4_per2__epwmss1 = {
-+	.master		= &dra7xx_l4_per2_hwmod,
-+	.slave		= &dra7xx_epwmss1_hwmod,
-+	.clk		= "l4_root_clk_div",
-+	.user		= OCP_USER_MPU,
-+};
-+
-+struct omap_hwmod_ocp_if dra7xx_epwmss1__ecap1 = {
-+	.master		= &dra7xx_epwmss1_hwmod,
-+	.slave		= &dra7xx_ecap1_hwmod,
-+	.clk		= "l4_root_clk_div",
-+	.user		= OCP_USER_MPU,
-+};
-+
-+struct omap_hwmod_ocp_if dra7xx_epwmss1__eqep1 = {
-+	.master		= &dra7xx_epwmss1_hwmod,
-+	.slave		= &dra7xx_eqep1_hwmod,
-+	.clk		= "l4_root_clk_div",
-+	.user		= OCP_USER_MPU,
-+};
-+
-+struct omap_hwmod_ocp_if dra7xx_epwmss1__ehrpwm1 = {
-+	.master		= &dra7xx_epwmss1_hwmod,
-+	.slave		= &dra7xx_ehrpwm1_hwmod,
-+	.clk		= "l4_root_clk_div",
-+	.user		= OCP_USER_MPU,
-+};
-+
-+struct omap_hwmod_ocp_if dra7xx_l4_per2__epwmss2 = {
-+	.master		= &dra7xx_l4_per2_hwmod,
-+	.slave		= &dra7xx_epwmss2_hwmod,
-+	.clk		= "l4_root_clk_div",
-+	.user		= OCP_USER_MPU,
-+};
-+
-+struct omap_hwmod_ocp_if dra7xx_epwmss2__ecap2 = {
-+	.master		= &dra7xx_epwmss2_hwmod,
-+	.slave		= &dra7xx_ecap2_hwmod,
-+	.clk		= "l4_root_clk_div",
-+	.user		= OCP_USER_MPU,
-+};
-+
-+struct omap_hwmod_ocp_if dra7xx_epwmss2__eqep2 = {
-+	.master		= &dra7xx_epwmss2_hwmod,
-+	.slave		= &dra7xx_eqep2_hwmod,
-+	.clk		= "l4_root_clk_div",
-+	.user		= OCP_USER_MPU,
-+};
-+
-+struct omap_hwmod_ocp_if dra7xx_epwmss2__ehrpwm2 = {
-+	.master		= &dra7xx_epwmss2_hwmod,
-+	.slave		= &dra7xx_ehrpwm2_hwmod,
-+	.clk		= "l4_root_clk_div",
-+	.user		= OCP_USER_MPU,
-+};
-+
- /* l4_per1 -> gpio7 */
- static struct omap_hwmod_ocp_if dra7xx_l4_per1__gpio7 = {
- 	.master		= &dra7xx_l4_per1_hwmod,
-@@ -3394,6 +3621,18 @@ static struct omap_hwmod_ocp_if *dra7xx_hwmod_ocp_ifs[] __initdata = {
- 	&dra7xx_l3_main_1__vcp2,
- 	&dra7xx_l4_per2__vcp2,
- 	&dra7xx_l4_wkup__wd_timer2,
-+	&dra7xx_l4_per2__epwmss0,
-+	&dra7xx_epwmss0__ecap0,
-+	&dra7xx_epwmss0__eqep0,
-+	&dra7xx_epwmss0__ehrpwm0,
-+	&dra7xx_l4_per2__epwmss1,
-+	&dra7xx_epwmss1__ecap1,
-+	&dra7xx_epwmss1__eqep1,
-+	&dra7xx_epwmss1__ehrpwm1,
-+	&dra7xx_l4_per2__epwmss2,
-+	&dra7xx_epwmss2__ecap2,
-+	&dra7xx_epwmss2__eqep2,
-+	&dra7xx_epwmss2__ehrpwm2,
- 	NULL,
- };
- 
--- 
-2.4.1
 
+TI Android Kernel 3.14 (NOT a simple case)
+1) use your patches 3/4 as reference (only these two patches :)
+2) move of_platform_populate later at device_initcall_sync time
+3) make it to boot (not sure I've fixed all issues, but those which
+   break the System boot):
+ - split non-DT and DT devices registration in platform code;
+ - keep non-DT devices registration from .init_machine() [arch_initcall=
+]
+ - move DT-devices registration at device_initcall_sync time
+ - fix drivers which use platform_driver_probe().
+   Note. Now there are at about ~190 occurrences of this macro in Kerne=
+l.
+ - re-order few devices in DT (4 devices)
+ - fix one driver which uses of_find_device_by_node() wrongly
+   Note. This API is used some times with assumption that
+   requested dev has been probed already.
+Boot time reduction ~0.3 sec. Probing of some devices are still deferre=
+d.
+
+TI Android Kernel 3.14 + of_platform_device_ensure
+1) backport of_platform_device_ensure() (also need patches=20
+   "of: Introduce device tree node flag helpers" and=20
+   "of: Keep track of populated platform devices")
+2) back-port all your patches which uses of_platform_device_ensure()
+3) make it to boot:
+   - drop patch dma: of: Probe DMA controllers on demand
+   - fix deadlock in regulator core:
+   regulator_dev_lookup() called from regulator_register() in K3.14
+4) get rid of deferred probes - add of_platform_device_ensure() calls i=
+n:
+   - drivers/video/fbdev/omap2/dss/output.c
+   - drivers/extcon/extcon-class.c
+
+ Boot time reduction: NONE !?
+
+
+So few comments from above:
+- registering devices later during the System boot may improve boot tim=
+e.
+  But resolving of all deferred probes may NOT improve boot time ;)=20
+  Have you seen smth like this?
+
+- usage of of_platform_device_ensure() will require continuous fixing o=
+f Kernel :(
+
+- late_initcall is not (as for me not safe) a good time to register dev=
+ices. A lot
+  of platforms/subsystems/frameworks perform their final initialization=
+ or clean-up
+  steps, with assumption that System mostly ready to work. For example,=
+ CPUIdle/CPUFreq
+  are allowed and other PM staff. CPUIdle and driver's probing are not =
+friends.
+
+What would be nice to have for now in my opinion:
+- some useful place to move device population code.
+  May be machine_desc->init_device_sync() callback.
+- some optional feature in DTC which will allow to re-arrange DT nodes =
+for levels 0(root)
+  and 1(simple-bus) using standard or widely used bindings (gpio, regul=
+ators, clocks, dma,
+  pinctrl, irqs).
+
+Additional note:
+- Changing device's registration order will change devices's order in
+ dpm_list (drivers/base/power/main.c) and devices_kset list
+ (drivers/base/core.c). This might potentially affect on suspend [1] an=
+d shutdown.=20
+[1] https://lkml.org/lkml/2014/12/12/324
+
+
+--=20
+regards,
+-grygorii
