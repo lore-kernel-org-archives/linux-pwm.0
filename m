@@ -1,90 +1,53 @@
-From: Alexander Holler <holler@ahsoftware.de>
-Subject: Re: [PATCH 00/21] On-demand device registration
-Date: Thu, 04 Jun 2015 23:03:46 +0200
-Message-ID: <5570BD32.9020705@ahsoftware.de>
-References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com> <CAF6AEGuOP-3sxDQcNOjVmfP4ue6LmY7KFrj9W75aHKuvZpTFMw@mail.gmail.com>
+From: YH Huang <yh.huang@mediatek.com>
+Subject: Re: [PATCH v2 0/2] Add MediaTek display PWM driver
+Date: Fri, 5 Jun 2015 14:15:29 +0800
+Message-ID: <1433484929.17376.17.camel@mtksdaap41>
+References: <1432214964-40644-1-git-send-email-yh.huang@mediatek.com>
+	 <1432520091.23308.5.camel@mtksdaap41>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from h1446028.stratoserver.net ([85.214.92.142]:60625 "EHLO
-	mail.ahsoftware.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752508AbbFDVEB (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 4 Jun 2015 17:04:01 -0400
-In-Reply-To: <CAF6AEGuOP-3sxDQcNOjVmfP4ue6LmY7KFrj9W75aHKuvZpTFMw@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1432520091.23308.5.camel@mtksdaap41>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yingjoe Chen <yingjoe.chen@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, srv_heupstream <srv_heupstream@mediatek.com>, Pawel Moll <pawel.moll@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, Sascha Hauer <kernel@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Rob Clark <robdclark@gmail.com>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Mark Rutland <mark.rutland@arm.com>, Linux Fbdev development list <linux-fbdev@vger.kernel.org>, linux-usb@vger.kernel.org, linux-pwm@vger.kernel.org, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Thierry Reding <thierry.reding@gmail.com>, linux-i2c@vger.kernel.org, linux-clk@vger.kernel.org, "moderated list:ARM/S5P EXYNOS AR..." <linux-samsung-soc@vger.kernel.org>, Grant Likely <grant.likely@linaro.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-pm@vger.kernel.org, linux-gpio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, =?UTF-8?B?U3TDqXBoYW5lIE1hcmNoZXNpbg==?= <stephane.marchesin@gmail.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-Am 03.06.2015 um 23:12 schrieb Rob Clark:
-> On Mon, May 25, 2015 at 10:53 AM, Tomeu Vizoso
-> <tomeu.vizoso@collabora.com> wrote:
->> Hello,
->>
->> I have a problem with the panel on my Tegra Chromebook taking longer=
- than
->> expected to be ready during boot (St=C3=A9phane Marchesin reported w=
-hat is
->> basically the same issue in [0]), and have looked into ordered probi=
-ng as a
->> better way of solving this than moving nodes around in the DT or pla=
-ying with
->> initcall levels.
->>
->> While reading the thread [1] that Alexander Holler started with his =
-series to
->> make probing order deterministic, it occurred to me that it should b=
-e possible
->> to achieve the same by registering devices as they are referenced by=
- other
->> devices.
->>
->> This basically reuses the information that is already implicit in th=
-e probe()
->> implementations, saving us from refactoring existing drivers or addi=
-ng
->> information to DTBs.
->>
->> Something I'm not completely happy with is that I have had to move t=
-he call to
->> of_platform_populate after all platform drivers have been registered=
-=2E
->> Otherwise I don't see how I could register drivers on demand as we d=
-on't have
->> yet each driver's compatible strings.
->>
->> For machs that don't move of_platform_populate() to a later point, t=
-hese
->> patches shouldn't cause any problems but it's not guaranteed that we=
-'ll avoid
->> all the deferred probes as some drivers may not be registered yet.
->>
->> I have tested this on boards with Tegra, iMX.6 and Exynos SoCs, and =
-these
->> patches were enough to eliminate all the deferred probes.
->>
->> With this series I get the kernel to output to the panel in 0.5s, in=
-stead of 2.8s.
->=20
-> So, complete drive-by comment (and I won't claim to be a DT expert,
-> etc, etc, so take this with a few grains of salt), but why not push
-> the problem to the DT compiler (or a pre-process step that could be
-> run on existing DT blobs), which generates an optional DT node that i=
-s
-> the recommended probe order?  That seems like it avoids adding
-> complexity into the early boot code (which seems like a good thing)..
+On Mon, 2015-05-25 at 10:14 +0800, Yingjoe Chen wrote:
+> On Thu, 2015-05-21 at 21:29 +0800, YH Huang wrote:
 
-I've played with that approach too (as my patches for dtc do contain th=
-e
-same code I've put into the kernel, but decided that it doesn't make
-much sense. The sort algorithm is really small (some dozen lines), very
-fast (around 3-5ms on a omap) and might be later used to sort necessary
-module loading too. So there would be no advantage to put a sorted list
-into the DT. And having the sort algorithm in the kernel, would make it
-possible to use it for acpi or something else too, if they manage it to
-provide the necessary dependencies.
+This patch series add the use of display PWM driver and documentation 
+for Mediatek SoCs. The driver is used to support the backlight of 
+the panel. This is based on v4.1-rc1. 
+
+> > YH Huang (2):
+> >   dt-bindings: pwm: add MediaTek display PWM bindings
+> >   pwm: add MediaTek display PWM driver support
+> > 
+> >  .../devicetree/bindings/pwm/pwm-mtk-disp.txt       |  25 +++
+> >  drivers/pwm/Kconfig                                |  10 +
+> >  drivers/pwm/Makefile                               |   1 +
+> >  drivers/pwm/pwm-mtk-disp.c                         | 228 +++++++++++++++++++++
+> >  4 files changed, 264 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> >  create mode 100644 drivers/pwm/pwm-mtk-disp.c
+> 
+> Hi YH,
+> 
+> It would be easier for reviewer if you have a summary here on what you
+> have changed compare to last version.
+> Also, please add patch series summary even for v2, it remind reviewer
+> what this series is about.
+> 
+> Joe.C
+> 
+
+The patch v2 is refined with everybody's suggestions.
+It is much readable and consistent.
+
+If anyone has any suggestions, please just let me know.
+Thank you.
 
 Regards,
-
-Alexander Holler
+YH Huang
