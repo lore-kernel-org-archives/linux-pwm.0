@@ -1,79 +1,54 @@
-From: YH Huang <yh.huang@mediatek.com>
-Subject: Re: [PATCH v2 0/2] Add MediaTek display PWM driver
-Date: Fri, 5 Jun 2015 18:45:34 +0800
-Message-ID: <1433501134.17376.23.camel@mtksdaap41>
-References: <1432214964-40644-1-git-send-email-yh.huang@mediatek.com>
-	 <1432520091.23308.5.camel@mtksdaap41>
-	 <1433484929.17376.17.camel@mtksdaap41>
-	 <CABuKBeLaVXxqBgy7AMoZ73+GoUknC6Zq=fJdcyZZjP5VYRZSkg@mail.gmail.com>
+From: "Enrico Weigelt, metux IT consult" <weigelt@melag.de>
+Subject: Re: [PATCH 00/21] On-demand device registration
+Date: Mon, 8 Jun 2015 14:26:01 +0200
+Message-ID: <557589D9.1050008@melag.de>
+References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com> <CAL_Jsq+EWLEJhRudTGAwYsOg4tX2-pGhygeQGHae9RL8rBpMiA@mail.gmail.com> <556F5C24.1030101@linaro.org> <5570B783.1050808@ahsoftware.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CABuKBeLaVXxqBgy7AMoZ73+GoUknC6Zq=fJdcyZZjP5VYRZSkg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Yingjoe Chen <yingjoe.chen@mediatek.com>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, srv_heupstream <srv_heupstream@mediatek.com>, Pawel Moll <pawel.moll@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, Sascha Hauer <kernel@pengutronix.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <5570B783.1050808@ahsoftware.de>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Alexander Holler <holler@ahsoftware.de>, "Grygorii.Strashko@linaro.org" <grygorii.strashko@linaro.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Cc: Rob Herring <robherring2@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, =?UTF-8?B?U3TDqXBoYW5lIE1hcmNoZXNpbg==?= <stephane.marchesin@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Dan Williams <dan.j.williams@intel.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, dmaengine@vger.kernel.org, dri-devel <dri-devel@lists.freedesktop.org>, linux-clk@vger.kernel.org, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.ke>
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, 2015-06-05 at 10:39 +0200, Matthias Brugger wrote:
-> Hi YH,
-> 
-> 2015-06-05 8:15 GMT+02:00 YH Huang <yh.huang@mediatek.com>:
-> > On Mon, 2015-05-25 at 10:14 +0800, Yingjoe Chen wrote:
-> >> On Thu, 2015-05-21 at 21:29 +0800, YH Huang wrote:
-> >
-> > This patch series add the use of display PWM driver and documentation
-> > for Mediatek SoCs. The driver is used to support the backlight of
-> > the panel. This is based on v4.1-rc1.
+Am 04.06.2015 um 22:39 schrieb Alexander Holler:
 
-Change in v2:
-1. Rewrite descriptions for driver in kconfig to make it much clear.
-2. Rename the driver from "pwm-mediatek-disp" to "pwm-mtk-disp".
-3. Disable clocks in the error path.
-4. Change the shift values in decimal instead of hex.
-5. Rename and add some variables or function name for consistency and
-readability.
-6. Drop unnecessary parentheses, spaces, variables and add newlines to
-make the code easiler to read.
+ > As it seems to have been forgotten or overread, I've mentioned in my
+> series of patches last year that, with a few changes, it's possible t=
+o
+> let the algorithm I've used (dfs) to spit out all drivers which can b=
+e
+> initialized in parallel.
 
-> >
-> >> > YH Huang (2):
-> >> >   dt-bindings: pwm: add MediaTek display PWM bindings
-> >> >   pwm: add MediaTek display PWM driver support
-> >> >
-> >> >  .../devicetree/bindings/pwm/pwm-mtk-disp.txt       |  25 +++
-> >> >  drivers/pwm/Kconfig                                |  10 +
-> >> >  drivers/pwm/Makefile                               |   1 +
-> >> >  drivers/pwm/pwm-mtk-disp.c                         | 228 +++++++++++++++++++++
-> >> >  4 files changed, 264 insertions(+)
-> >> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
-> >> >  create mode 100644 drivers/pwm/pwm-mtk-disp.c
-> >>
-> >> Hi YH,
-> >>
-> >> It would be easier for reviewer if you have a summary here on what you
-> >> have changed compare to last version.
-> >> Also, please add patch series summary even for v2, it remind reviewer
-> >> what this series is about.
-> >>
-> >> Joe.C
-> >>
-> >
-> > The patch v2 is refined with everybody's suggestions.
-> > It is much readable and consistent.
-> 
-> I suppose that Yingjoe wanted to emphasis that for the reviewer it is
-> much easier if you describe the changes you made from v1 to v2.
-> You can find an example (random pick from the mailing list) here:
-> http://lists.infradead.org/pipermail/linux-mediatek/2015-May/000572.html
-> 
-> Thanks,
-> Matthias
-> 
+Unfortunately, I've missed that ... could you please resend you patches=
+?
+Boot time reduction is one of the topics on my 2do in several weeks.
 
-I have added the change lists.
-Thank you.
 
-Regards,
-YH Huang
+cu
+--
+Enrico Weigelt, metux IT consult
++49-151-27565287
+MELAG Medizintechnik oHG Sitz Berlin Registergericht AG Charlottenburg =
+HRA 21333 B
+
+Wichtiger Hinweis: Diese Nachricht kann vertrauliche oder nur f=C3=BCr =
+einen begrenzten Personenkreis bestimmte Informationen enthalten. Sie i=
+st ausschlie=C3=9Flich f=C3=BCr denjenigen bestimmt, an den sie gericht=
+et worden ist. Wenn Sie nicht der Adressat dieser E-Mail sind, d=C3=BCr=
+fen Sie diese nicht kopieren, weiterleiten, weitergeben oder sie ganz o=
+der teilweise in irgendeiner Weise nutzen. Sollten Sie diese E-Mail irr=
+t=C3=BCmlich erhalten haben, so benachrichtigen Sie bitte den Absender,=
+ indem Sie auf diese Nachricht antworten. Bitte l=C3=B6schen Sie in die=
+sem Fall diese Nachricht und alle Anh=C3=A4nge, ohne eine Kopie zu beha=
+lten.
+Important Notice: This message may contain confidential or privileged i=
+nformation. It is intended only for the person it was addressed to. If =
+you are not the intended recipient of this email you may not copy, forw=
+ard, disclose or otherwise use it or any part of it in any form whatsoe=
+ver. If you received this email in error please notify the sender by re=
+plying and delete this message and any attachments without retaining a =
+copy.
