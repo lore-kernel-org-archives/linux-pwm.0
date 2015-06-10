@@ -1,35 +1,67 @@
-From: Alexander Holler <holler@ahsoftware.de>
+From: Linus Walleij <linus.walleij@linaro.org>
 Subject: Re: [PATCH 00/21] On-demand device registration
-Date: Mon, 08 Jun 2015 20:18:40 +0200
-Message-ID: <5575DC80.4040608@ahsoftware.de>
-References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com> <CAL_Jsq+EWLEJhRudTGAwYsOg4tX2-pGhygeQGHae9RL8rBpMiA@mail.gmail.com> <556F5C24.1030101@linaro.org> <5570B783.1050808@ahsoftware.de> <557589D9.1050008@melag.de> <5575DB8D.50000@ahsoftware.de>
+Date: Wed, 10 Jun 2015 09:30:32 +0200
+Message-ID: <CACRpkdZuSj+S2x1yz6n5PgcRK=3ZCcq_To124b2Y+Oj54aydpg@mail.gmail.com>
+References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>
+ <CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>
+ <CAAObsKCP-C+TY8Wkk6bQzxZeGYL9X01trtjxfaYp--ZnH07C+w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <5575DB8D.50000@ahsoftware.de>
-Sender: linux-gpio-owner@vger.kernel.org
-To: "Enrico Weigelt, metux IT consult" <weigelt@melag.de>, "Grygorii.Strashko@linaro.org" <grygorii.strashko@linaro.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Cc: Rob Herring <robherring2@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, =?UTF-8?B?U3TDqXBoYW5lIE1hcmNoZXNpbg==?= <stephane.marchesin@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Dan Williams <dan.j.williams@intel.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, dmaengine@vger.kernel.org, dri-devel <dri-devel@lists.freedesktop.org>, linux-clk@vger.kernel.org, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <CAAObsKCP-C+TY8Wkk6bQzxZeGYL9X01trtjxfaYp--ZnH07C+w@mail.gmail.com>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, dmaengine@vger.kernel.org, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, linux-clk@vger.kernel.org, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>, Grant Likely <grant.likely@linaro.org>, Alexander Holler <holler@ahsoftware.de>, Dan Williams <dan.j.williams@intel.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.o>
 List-Id: linux-pwm@vger.kernel.org
 
-Am 08.06.2015 um 20:14 schrieb Alexander Holler:
-> Am 08.06.2015 um 14:26 schrieb Enrico Weigelt, metux IT consult:
->> Am 04.06.2015 um 22:39 schrieb Alexander Holler:
->>
->>  > As it seems to have been forgotten or overread, I've mentioned in my
->>> series of patches last year that, with a few changes, it's possible to
->>> let the algorithm I've used (dfs) to spit out all drivers which can be
->>> initialized in parallel.
->>
->> Unfortunately, I've missed that ... could you please resend you patches?
->> Boot time reduction is one of the topics on my 2do in several weeks.
->
-> https://lkml.org/lkml/2014/5/12/452
->
-
-And don't forget patch 10/9 which fixed a bug in my previous patch 
-series and which alos was the reason for the large difference in boot 
-times with and without deps:
-
-https://lkml.org/lkml/2014/5/13/567
+T24gVHVlLCBKdW4gMiwgMjAxNSBhdCAxMjoxNCBQTSwgVG9tZXUgVml6b3NvCjx0b21ldS52aXpv
+c29AY29sbGFib3JhLmNvbT4gd3JvdGU6Cj4gT24gMiBKdW5lIDIwMTUgYXQgMTA6NDgsIExpbnVz
+IFdhbGxlaWogPGxpbnVzLndhbGxlaWpAbGluYXJvLm9yZz4gd3JvdGU6Cgo+PiBUaGlzIGlzIHdo
+YXQgc3lzdGVtZCBpcyBkb2luZyBpbiB1c2Vyc3BhY2UgZm9yIHN0YXJ0aW5nIHNlcnZpY2VzOgo+
+PiBhc2sgZm9yIHlvdXIgZGVwZW5kZW5jaWVzIGFuZCB3YWl0IGZvciB0aGVtIGlmIHRoZXkgYXJl
+IG5vdAo+PiB0aGVyZS4gU28gZHJpdmVycyBhc2sgZm9yIHJlc291cmNlcyBhbmQgd2FpdCBmb3Ig
+dGhlbS4gSXQgYWxzbwo+PiBuZWVkcyB0byBiZSBhYnN0cmFjdCwgc28gZm9yIGV4YW1wbGUgd2Ug
+bmVlZCB0byBiZSBhYmxlIHRvCj4+IGhhbmcgb24gcmVndWxhdG9yX2dldCgpIHVudGlsIHRoZSBk
+cml2ZXIgaXMgdXAgYW5kIHByb3ZpZGluZyB0aGF0Cj4+IHJlZ3VsYXRvciwgYW5kIGFzIGxvbmcg
+YXMgZXZlcnl0aGluZyBpcyBpbiBzbG93cGF0aCBpdCBzaG91bGQKPj4gYmUgT0suIChBbmQgdmlj
+ZSB2ZXJzYSBtdXRhdGlzIG11dGFuZGlzIGZvciBjbGssIGdwaW8sIHBpbgo+PiBjb250cm9sLCBp
+bnRlcnJ1cHRzICghKSBhbmQgRE1BIGNoYW5uZWxzIGZvciBleGFtcGxlLikKPgo+IEkgdW5kZXJz
+dG9vZCBhYm92ZSB0aGF0IHlvdSBwcm9wb3NlIHByb2JpbmcgZGV2aWNlcyBpbiBvcmRlciwgYnV0
+IG5vdwo+IHlvdSBtZW50aW9uIHRoYXQgcmVzb3VyY2UgZ2V0dGVycyB3b3VsZCBibG9jayB1bnRp
+bCB0aGUgZGVwZW5kZW5jeSBpcwo+IGZ1bGZpbGxlZCB3aGljaCBjb25mdXNlcyBtZSBiZWNhdXNl
+IGlmIHdlIGFyZSBwcm9iaW5nIGluIG9yZGVyIHRoZW4KPiBhbGwgZGVwZW5kZW5jaWVzIHdvdWxk
+IGJlIGZ1bGZpbGxlZCBiZWZvcmUgdGhlIGRldmljZSBpbiBxdWVzdGlvbiBnZXRzCj4gcHJvYmVk
+LgoKU29ycnksIHRoZSBwcm9ibGVtIHNwYWNlIGlzIGEgYml0IGNvbnZvbHV0ZWQgc28gdGhlIGFu
+c3dlcnMKZ2V0IGEgYml0IGNvbnZvbHV0ZWQuIE1heWJlIEknbSB0aGlua2luZyBhbG91ZCBhbmQg
+YWx0ZXJpbmcgdGhlIGNvdXJzZQpvZiBteSB0aG91Z2h0cyBhcyBJIHR5cGUuLi4KCkkgZ3Vlc3Mg
+dGhlcmUgY2FuIGJlIGV4cGxpY2l0IGRlcGVuZGVuY2llcyBmb3IgcmVzb3VyY2VzIGxpa2UgdGhp
+cwpwYXRjaCBkb2VzLCBidXQgYW5vdGhlciB3YXkgd291bGQgYmUgZm9yIGFsbCByZXNvdXJjZSBm
+ZXRjaCBmdW5jdGlvbnMKdG8gYmUgaW5zdHJ1bWVudGVkLCBzbyB0aGF0IHlvdSBkbyBub3QgYmxv
+Y2sgdW50aWwgeW91IHRyeSB0byB0YWtlCmEgcmVzb3VyY2UgdGhhdCBpcyBub3QgeWV0IHRoZXJl
+LCBlLmcuOgoKcmVndWxhdG9yX2dldCguLi4pIC0+IG5vdCBhdmFpbGFibGUsIHNvOgotIGlkZW50
+aWZ5IHRhcmdldCByZWd1bGF0b3IgcHJvdmlkZXIgLSB0aGlzIHdpbGwgbmVlZCBpbnN0cnVtZW50
+YXRpb24KLSBwcm9iZSBpdAoKSXQgdGhlbiB0dXJucyBvdXQgdGhlIHJlZ3VsYXRvciBkcml2ZXIg
+aXMgb24gdGhlIGkyYyBidXMsIHNvIHdlCm5lZWQgdG8gcHJvYmUgdGhlIGkyYyBkcml2ZXI6Ci0g
+aWRlbnRpZnkgdGFyZ2V0IGkyYyBob3N0IGZvciB0aGUgcmVndWxhdG9yIGRyaXZlciAtIHRoaXMg
+d2lsbCBuZWVkCiAgaW5zdHJ1bWVudGF0aW9uCi0gcHJvYmUgdGhlIGkyYyBob3N0IGRyaXZlcgoK
+aTJjIGhvc3QgY29tZXMgb3V0LCBwcm9iZXMgdGhlIHJlZ3VsYXRvciBkcml2ZXIsIHJlZ3VsYXRv
+ciBkcml2ZXIKcHJvYmVzIGFuZCB0aGVuIHRoZSByZWd1bGF0b3JfZ2V0KCkgY2FsbCByZXR1cm5z
+LgoKVGhpcyByZXF1aXJlcyBpbnN0cnVtZW50YXRpb24gb24gYW55dGhpbmcgcHJvdmlkaW5nIGEg
+cmVzb3VyY2UKdG8gYW5vdGhlciBkcml2ZXIgbGlrZSB0aG9zZSBJIG1lbnRpb25lZCBhbmQgYSBs
+b3Qgb2Ygb3ZlcmhlYWQKaW5mcmFzdHJ1Y3R1cmUsIGJ1dCBJIHRoaW5rIGl0J3MgdGhlIHJpZ2h0
+IGFwcHJvYWNoLiBIb3dldmVyIEkgZG9uJ3QKa25vdyBpZiBJIHdvdWxkIGV2ZXIgYmUgYWJsZSB0
+byBwdWxsIHRoYXQgb2ZmIG15c2VsZiwgSSBrbm93IHRhbGsKaXMgY2hlYXAgYW5kIEkgc2hvdWxk
+IHNob3cgdGhlIGNvZGUgaW5zdGVhZC4KCkRlZXBlc3QgcmVzcGVjdCBmb3IgeW91ciBlZmZvcnRz
+IQoKWW91cnMsCkxpbnVzIFdhbGxlaWoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJl
+ZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5m
+by9kcmktZGV2ZWwK
