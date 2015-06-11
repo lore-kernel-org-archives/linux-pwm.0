@@ -1,91 +1,40 @@
-From: Alexander Holler <holler@ahsoftware.de>
+From: Linus Walleij <linus.walleij@linaro.org>
 Subject: Re: [PATCH 00/21] On-demand device registration
-Date: Wed, 10 Jun 2015 20:38:40 +0200
-Message-ID: <55788430.3070600@ahsoftware.de>
+Date: Thu, 11 Jun 2015 10:12:03 +0200
+Message-ID: <CACRpkdYF5K7ckGbgvZc6qRzGFJTQ4WqXdu_7Tcqczn2LkFbn3A@mail.gmail.com>
 References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>
- <CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>
- <CAAObsKCP-C+TY8Wkk6bQzxZeGYL9X01trtjxfaYp--ZnH07C+w@mail.gmail.com>
- <CACRpkdZuSj+S2x1yz6n5PgcRK=3ZCcq_To124b2Y+Oj54aydpg@mail.gmail.com>
- <CAAObsKD97nEARO5eZYA2g8+z_MrazBy-m8PV_kSyj19ya72mAw@mail.gmail.com>
- <55782C3D.5000606@samsung.com>
+	<CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>
+	<CAAObsKCP-C+TY8Wkk6bQzxZeGYL9X01trtjxfaYp--ZnH07C+w@mail.gmail.com>
+	<CACRpkdZuSj+S2x1yz6n5PgcRK=3ZCcq_To124b2Y+Oj54aydpg@mail.gmail.com>
+	<5577F533.1060007@ahsoftware.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <55782C3D.5000606@samsung.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Andrzej Hajda <a.hajda@samsung.com>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Linus Walleij <linus.walleij@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, open@wandq.ahsoftware, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, list@wandq.ahsoftware, Rob Herring <robh+dt@kernel.org>, DRM PANEL DRIVERS <dri-devel@lists.freedesktop.org>, dmaengine@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>, linux-usb@vger.kernel.org, linux-clk@vger.kernel.org, Grant Likely <grant.likely@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pm-owner@vger.kernel.org>
+In-Reply-To: <5577F533.1060007@ahsoftware.de>
+Sender: linux-pm-owner@vger.kernel.org
+To: Alexander Holler <holler@ahsoftware.de>
+Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>, Grant Likely <grant.likely@linaro.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, open@wandq.ahsoftware, "list@wandq.ahsoftware:DRM PANEL DRIVERS
+	<dri-devel@lists.freedesktop.org>, dmaengine@vger.kernel.org, Dan
+	Williams <dan.j.williams@intel.com>, linux-usb@vger.kernel.org" <linux-i2c@vger>
 List-Id: linux-pwm@vger.kernel.org
 
-QW0gMTAuMDYuMjAxNSB1bSAxNDoyMyBzY2hyaWViIEFuZHJ6ZWogSGFqZGE6Cj4gT24gMDYvMTAv
-MjAxNSAxMjoxOSBQTSwgVG9tZXUgVml6b3NvIHdyb3RlOgo+PiBPbiAxMCBKdW5lIDIwMTUgYXQg
-MDk6MzAsIExpbnVzIFdhbGxlaWogPGxpbnVzLndhbGxlaWpAbGluYXJvLm9yZz4gd3JvdGU6Cj4+
-PiBPbiBUdWUsIEp1biAyLCAyMDE1IGF0IDEyOjE0IFBNLCBUb21ldSBWaXpvc28KPj4+IDx0b21l
-dS52aXpvc29AY29sbGFib3JhLmNvbT4gd3JvdGU6Cj4+Pj4gT24gMiBKdW5lIDIwMTUgYXQgMTA6
-NDgsIExpbnVzIFdhbGxlaWogPGxpbnVzLndhbGxlaWpAbGluYXJvLm9yZz4gd3JvdGU6Cj4+Pgo+
-Pj4+PiBUaGlzIGlzIHdoYXQgc3lzdGVtZCBpcyBkb2luZyBpbiB1c2Vyc3BhY2UgZm9yIHN0YXJ0
-aW5nIHNlcnZpY2VzOgo+Pj4+PiBhc2sgZm9yIHlvdXIgZGVwZW5kZW5jaWVzIGFuZCB3YWl0IGZv
-ciB0aGVtIGlmIHRoZXkgYXJlIG5vdAo+Pj4+PiB0aGVyZS4gU28gZHJpdmVycyBhc2sgZm9yIHJl
-c291cmNlcyBhbmQgd2FpdCBmb3IgdGhlbS4gSXQgYWxzbwo+Pj4+PiBuZWVkcyB0byBiZSBhYnN0
-cmFjdCwgc28gZm9yIGV4YW1wbGUgd2UgbmVlZCB0byBiZSBhYmxlIHRvCj4+Pj4+IGhhbmcgb24g
-cmVndWxhdG9yX2dldCgpIHVudGlsIHRoZSBkcml2ZXIgaXMgdXAgYW5kIHByb3ZpZGluZyB0aGF0
-Cj4+Pj4+IHJlZ3VsYXRvciwgYW5kIGFzIGxvbmcgYXMgZXZlcnl0aGluZyBpcyBpbiBzbG93cGF0
-aCBpdCBzaG91bGQKPj4+Pj4gYmUgT0suIChBbmQgdmljZSB2ZXJzYSBtdXRhdGlzIG11dGFuZGlz
-IGZvciBjbGssIGdwaW8sIHBpbgo+Pj4+PiBjb250cm9sLCBpbnRlcnJ1cHRzICghKSBhbmQgRE1B
-IGNoYW5uZWxzIGZvciBleGFtcGxlLikKPj4+Pgo+Pj4+IEkgdW5kZXJzdG9vZCBhYm92ZSB0aGF0
-IHlvdSBwcm9wb3NlIHByb2JpbmcgZGV2aWNlcyBpbiBvcmRlciwgYnV0IG5vdwo+Pj4+IHlvdSBt
-ZW50aW9uIHRoYXQgcmVzb3VyY2UgZ2V0dGVycyB3b3VsZCBibG9jayB1bnRpbCB0aGUgZGVwZW5k
-ZW5jeSBpcwo+Pj4+IGZ1bGZpbGxlZCB3aGljaCBjb25mdXNlcyBtZSBiZWNhdXNlIGlmIHdlIGFy
-ZSBwcm9iaW5nIGluIG9yZGVyIHRoZW4KPj4+PiBhbGwgZGVwZW5kZW5jaWVzIHdvdWxkIGJlIGZ1
-bGZpbGxlZCBiZWZvcmUgdGhlIGRldmljZSBpbiBxdWVzdGlvbiBnZXRzCj4+Pj4gcHJvYmVkLgo+
-Pj4KPj4+IFNvcnJ5LCB0aGUgcHJvYmxlbSBzcGFjZSBpcyBhIGJpdCBjb252b2x1dGVkIHNvIHRo
-ZSBhbnN3ZXJzCj4+PiBnZXQgYSBiaXQgY29udm9sdXRlZC4gTWF5YmUgSSdtIHRoaW5raW5nIGFs
-b3VkIGFuZCBhbHRlcmluZyB0aGUgY291cnNlCj4+PiBvZiBteSB0aG91Z2h0cyBhcyBJIHR5cGUu
-Li4KPj4+Cj4+PiBJIGd1ZXNzIHRoZXJlIGNhbiBiZSBleHBsaWNpdCBkZXBlbmRlbmNpZXMgZm9y
-IHJlc291cmNlcyBsaWtlIHRoaXMKPj4+IHBhdGNoIGRvZXMsIGJ1dCBhbm90aGVyIHdheSB3b3Vs
-ZCBiZSBmb3IgYWxsIHJlc291cmNlIGZldGNoIGZ1bmN0aW9ucwo+Pj4gdG8gYmUgaW5zdHJ1bWVu
-dGVkLCBzbyB0aGF0IHlvdSBkbyBub3QgYmxvY2sgdW50aWwgeW91IHRyeSB0byB0YWtlCj4+PiBh
-IHJlc291cmNlIHRoYXQgaXMgbm90IHlldCB0aGVyZSwgZS5nLjoKPj4+Cj4+PiByZWd1bGF0b3Jf
-Z2V0KC4uLikgLT4gbm90IGF2YWlsYWJsZSwgc286Cj4+PiAtIGlkZW50aWZ5IHRhcmdldCByZWd1
-bGF0b3IgcHJvdmlkZXIgLSB0aGlzIHdpbGwgbmVlZCBpbnN0cnVtZW50YXRpb24KPj4+IC0gcHJv
-YmUgaXQKPj4+Cj4+PiBJdCB0aGVuIHR1cm5zIG91dCB0aGUgcmVndWxhdG9yIGRyaXZlciBpcyBv
-biB0aGUgaTJjIGJ1cywgc28gd2UKPj4+IG5lZWQgdG8gcHJvYmUgdGhlIGkyYyBkcml2ZXI6Cj4+
-PiAtIGlkZW50aWZ5IHRhcmdldCBpMmMgaG9zdCBmb3IgdGhlIHJlZ3VsYXRvciBkcml2ZXIgLSB0
-aGlzIHdpbGwgbmVlZAo+Pj4gICBpbnN0cnVtZW50YXRpb24KPj4+IC0gcHJvYmUgdGhlIGkyYyBo
-b3N0IGRyaXZlcgo+Pj4KPj4+IGkyYyBob3N0IGNvbWVzIG91dCwgcHJvYmVzIHRoZSByZWd1bGF0
-b3IgZHJpdmVyLCByZWd1bGF0b3IgZHJpdmVyCj4+PiBwcm9iZXMgYW5kIHRoZW4gdGhlIHJlZ3Vs
-YXRvcl9nZXQoKSBjYWxsIHJldHVybnMuCj4+Cj4+IEhtbSwgaWYgSSB1bmRlcnN0YW5kIGNvcnJl
-Y3RseSB3aGF0IHlvdSBzYXksIHRoaXMgaXMgZXhhY3RseSB3aGF0IHRoaXMKPj4gcGFydGljdWxh
-ciBzZXJpZXMgZG9lczoKPj4KPj4gcmVndWxhdG9yX2dldCAtPiBvZl9wbGF0Zm9ybV9kZXZpY2Vf
-ZW5zdXJlIC0+IHByb2JlKCkgb24gdGhlIHBsYXRmb3JtCj4+IGRldmljZSB0aGF0IGVuY2xvc2Vz
-IHRoZSByZXF1ZXN0ZWQgZGV2aWNlIG5vZGUgKGkyYyBob3N0KSAtPiBpMmMgc2xhdmUKPj4gZ2V0
-cyBwcm9iZWQgYW5kIHRoZSByZWd1bGF0b3IgcmVnaXN0ZXJlZCAtPiByZWd1bGF0b3JfZ2V0IHJl
-dHVybnMgdGhlCj4+IHJlcXVlc3RlZCByZXNvdXJjZQo+IAo+IFRoZSBkb3duc2lkZSBvZiB0aGlz
-IHNvbHV0aW9uIGlzIHRoYXQgaXQgd2lsbCBub3Qgd29yayB3aXRob3V0IGRldmljZQo+IHRyZWUg
-b3IgZXZlbiB3aXRob3V0IGRldmljZSBkZXBlbmRlbmNpZXMgbm90IGV4cGxpY2l0bHkgc3BlY2lm
-aWVkIGluCj4gZGV2aWNlIHRyZWUuCgpTb2x1dGlvbiBmb3Igd2hhdD8gVGhlIGdvYWwgaXNuJ3Qg
-dG8gc2VhcmNoIGFub3RoZXIgZmFuY3kKcmVnaXN0cmF0aW9uL2luaXRpYWxpemF0aW9uIGFsZ29y
-aXRobS4KClNvIEkgd29uZGVyIHdoaWNoIHByb2JsZW0gdGhhdCB3b3VsZCBzb2x2ZSBhdCBhbGwu
-IEl0IGRvZXNuJ3QgZ2l2ZSB5b3UKc29tZSBkZXRlcm1pbmlzdGljIGluaXRpYWxpemF0aW9uIG9y
-ZGVyIG5vciBkb2VzIGl0IChyZSlzb2x2ZQpkZXBlbmRlbmNpZXMgKGJlc2lkZXMgZGlyZWN0bHkg
-ZnJvbSBvbmUgZHJpdmVyIHRvIGFub3RoZXIsIGJ1dCB0aGF0Cmlzbid0IGVub3VnaCksIG5vciBk
-b2VzIGl0IHNvbHZlIHRoZSBwcm9ibGVtIG9mIGlkZW50aWZ5aW5nIGRyaXZlcnMgKHRoZQpvdGhl
-ciBlbmQgb2Ygc3VjaCBhbiBpbnN0cnVtZW50ZWQgb24tZGVtYW5kLWluaXRpYWxpemF0aW9uLWNh
-bGwpLiBTbyBhbGwKaXQgd291bGQgYmUgaXMgc29tZSBmYW5jeSBvbi1kZW1hbmQgaW5pdGlhbGl6
-YXRpb24gd2l0aG91dCBoYXZpbmcgc29sdmVkCmFueSBwcm9ibGVtLgoKU29ycnkgaWYgdGhhdCBz
-b3VuZHMgaGFyZC4gTWF5YmUgSSBtaXNzIHNvbWV0aGluZy4gQnV0IEkgZG9uJ3Qgc2VlICBhbnkK
-Y3VycmVudGx5IGV4aXN0aW5nIHByb2JsZW0gdGhlIGFib3ZlIGRlc2NyaWJlZCBzb2x1dGlvbiB3
-b3VsZCBzb2x2ZSwKYmVzaWRlcyBiZWVpbmcgc29tZXRoaW5nIGRpZmZlcmVudCAod2hpY2ggc2hv
-dWxkbid0IGJlIHRoZSBnb2FsKS4KCkFsZXhhbmRlciBIb2xsZXIKX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmkt
-ZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcv
-bWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+On Wed, Jun 10, 2015 at 10:28 AM, Alexander Holler <holler@ahsoftware.de> wrote:
+> Am 10.06.2015 um 09:30 schrieb Linus Walleij:
+
+>> i2c host comes out, probes the regulator driver, regulator driver
+>> probes and then the regulator_get() call returns.
+>>
+>> This requires instrumentation on anything providing a resource
+>> to another driver like those I mentioned and a lot of overhead
+>> infrastructure, but I think it's the right approach. However I don't
+>> know if I would ever be able to pull that off myself, I know talk
+>> is cheap and I should show the code instead.
+>
+> You would end up with the same problem of deadlocks as currently, and you
+> would still need something ugly like the defered probe brutforce to avoid
+> them.
+
+Sorry I don't get that. Care to elaborate on why?
+
+Yours,
+Linus Walleij
