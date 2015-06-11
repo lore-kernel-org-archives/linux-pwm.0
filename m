@@ -1,76 +1,60 @@
-From: Alexander Holler <holler-SXC+2es9fhnfWeYVQQPykw@public.gmane.org>
+From: Linus Walleij <linus.walleij@linaro.org>
 Subject: Re: [PATCH 00/21] On-demand device registration
-Date: Thu, 11 Jun 2015 13:49:22 +0200
-Message-ID: <557975C2.4090905@ahsoftware.de>
-References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>	<CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>	<CAAObsKCP-C+TY8Wkk6bQzxZeGYL9X01trtjxfaYp--ZnH07C+w@mail.gmail.com>	<CACRpkdZuSj+S2x1yz6n5PgcRK=3ZCcq_To124b2Y+Oj54aydpg@mail.gmail.com>	<5577F533.1060007@ahsoftware.de> <CACRpkdYF5K7ckGbgvZc6qRzGFJTQ4WqXdu_7Tcqczn2LkFbn3A@mail.gmail.com> <5579602F.1070801@ahsoftware.de> <55796FDE.7080701@ahsoftware.de>
+Date: Thu, 11 Jun 2015 14:30:05 +0200
+Message-ID: <CACRpkdaZgBR5rHwrEYqcm5K4w3y8MXG8a0k=Y+oQY+jukHfuyw@mail.gmail.com>
+References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>
+ <CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>
+ <CAAObsKCP-C+TY8Wkk6bQzxZeGYL9X01trtjxfaYp--ZnH07C+w@mail.gmail.com>
+ <CACRpkdZuSj+S2x1yz6n5PgcRK=3ZCcq_To124b2Y+Oj54aydpg@mail.gmail.com>
+ <5577F533.1060007@ahsoftware.de>
+ <CACRpkdYF5K7ckGbgvZc6qRzGFJTQ4WqXdu_7Tcqczn2LkFbn3A@mail.gmail.com>
+ <5579602F.1070801@ahsoftware.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <55796FDE.7080701-SXC+2es9fhnfWeYVQQPykw@public.gmane.org>
-Sender: linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-samsung-soc <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-7NY9aMYB+ISttCpgsWEBFg@public.gmane.org:DRM PANEL DRIVERS" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <5579602F.1070801@ahsoftware.de>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Alexander Holler <holler@ahsoftware.de>
+Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, open@wandq.ahsoftware, dmaengine@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "list@wandq.ahsoftware:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>, Grant Likely <grant.likely@linaro.org>, Dan Williams <dan.j.williams@intel.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "linux-usb@vger.kernel.org" <linux-i2c@vger.>
 List-Id: linux-pwm@vger.kernel.org
 
-Am 11.06.2015 um 13:24 schrieb Alexander Holler:
-> Am 11.06.2015 um 12:17 schrieb Alexander Holler:
->> Am 11.06.2015 um 10:12 schrieb Linus Walleij:
->>> On Wed, Jun 10, 2015 at 10:28 AM, Alexander Holler
->>> <holler-SXC+2es9fhnfWeYVQQPykw@public.gmane.org> wrote:
->>>> Am 10.06.2015 um 09:30 schrieb Linus Walleij:
->>>
->>>>> i2c host comes out, probes the regulator driver, regulator driver
->>>>> probes and then the regulator_get() call returns.
->>>>>
->>>>> This requires instrumentation on anything providing a resource
->>>>> to another driver like those I mentioned and a lot of overhead
->>>>> infrastructure, but I think it's the right approach. However I don't
->>>>> know if I would ever be able to pull that off myself, I know talk
->>>>> is cheap and I should show the code instead.
->>>>
->>>> You would end up with the same problem of deadlocks as currently, and
->>>> you
->>>> would still need something ugly like the defered probe brutforce to
->>>> avoid
->>>> them.
->>>
->>> Sorry I don't get that. Care to elaborate on why?
->>
->> Because loading/initializing on demand doesn't give you any solved order
->> of drivers to initialize. And it can't because it has no idea about the
->> requirements of other drivers. The reason why it might work better in
->> the case of the tegra is that it might give you another initialization
->> order than the one which is currently choosen, which, by luck, might be
->> a better one.
->>
->> But maybe I missed something, I haven't looked at the patches at all.
->> But just loading on demand, can't magically give you a working order of
->> drivers to initialize. E.g. how do you choose the first driver to
->> initialize?
-> 
-> Other problems you will run into are time constraints and multithreaded
-> drivers.
-> 
-> E.g. we all should know how tricky it sometimes is to avoid deadlocks.
-> And with loading on demand, you are extending this problem over the
-> initialization of maybe a whole bunch of other drivers which might be
-> started by calling one function of another driver. And a function call
-> might need a very long time to finish during which an unpredictable
-> amount of things may happen.
-> 
-> It would make me wonder if that will end up with a good, usable and as
-> simple as possible solution.
-
-Besides that instrumenting every call to another driver in order to fix
-a onetime operation (the initialization) sounds like an enormous
-overhead. Initialization is done pnly once, regardless how long a system
-runs, but the instrumentation to fix this onetime operation would slow
-down the operation during the whole runtime of a system.
-
-I don't think this is what should be done.
-
-> 
-> Regards,
-> 
-> Alexander Holler
+T24gVGh1LCBKdW4gMTEsIDIwMTUgYXQgMTI6MTcgUE0sIEFsZXhhbmRlciBIb2xsZXIgPGhvbGxl
+ckBhaHNvZnR3YXJlLmRlPiB3cm90ZToKPiBBbSAxMS4wNi4yMDE1IHVtIDEwOjEyIHNjaHJpZWIg
+TGludXMgV2FsbGVpajoKPj4gT24gV2VkLCBKdW4gMTAsIDIwMTUgYXQgMTA6MjggQU0sIEFsZXhh
+bmRlciBIb2xsZXIgPGhvbGxlckBhaHNvZnR3YXJlLmRlPgo+PiB3cm90ZToKCj4+PiBZb3Ugd291
+bGQgZW5kIHVwIHdpdGggdGhlIHNhbWUgcHJvYmxlbSBvZiBkZWFkbG9ja3MgYXMgY3VycmVudGx5
+LCBhbmQgeW91Cj4+PiB3b3VsZCBzdGlsbCBuZWVkIHNvbWV0aGluZyB1Z2x5IGxpa2UgdGhlIGRl
+ZmVyZWQgcHJvYmUgYnJ1dGZvcmNlIHRvIGF2b2lkCj4+PiB0aGVtLgo+Pgo+Pgo+PiBTb3JyeSBJ
+IGRvbid0IGdldCB0aGF0LiBDYXJlIHRvIGVsYWJvcmF0ZSBvbiB3aHk/Cj4KPgo+IEJlY2F1c2Ug
+bG9hZGluZy9pbml0aWFsaXppbmcgb24gZGVtYW5kIGRvZXNuJ3QgZ2l2ZSB5b3UgYW55IHNvbHZl
+ZCBvcmRlciBvZgo+IGRyaXZlcnMgdG8gaW5pdGlhbGl6ZS4gQW5kIGl0IGNhbid0IGJlY2F1c2Ug
+aXQgaGFzIG5vIGlkZWEgYWJvdXQgdGhlCj4gcmVxdWlyZW1lbnRzIG9mIG90aGVyIGRyaXZlcnMu
+IFRoZSByZWFzb24gd2h5IGl0IG1pZ2h0IHdvcmsgYmV0dGVyIGluIHRoZQo+IGNhc2Ugb2YgdGhl
+IHRlZ3JhIGlzIHRoYXQgaXQgbWlnaHQgZ2l2ZSB5b3UgYW5vdGhlciBpbml0aWFsaXphdGlvbiBv
+cmRlcgo+IHRoYW4gdGhlIG9uZSB3aGljaCBpcyBjdXJyZW50bHkgY2hvb3Nlbiwgd2hpY2gsIGJ5
+IGx1Y2ssIG1pZ2h0IGJlIGEgYmV0dGVyCj4gb25lLgo+Cj4gQnV0IG1heWJlIEkgbWlzc2VkIHNv
+bWV0aGluZywgSSBoYXZlbid0IGxvb2tlZCBhdCB0aGUgcGF0Y2hlcyBhdCBhbGwuIEJ1dAo+IGp1
+c3QgbG9hZGluZyBvbiBkZW1hbmQsIGNhbid0IG1hZ2ljYWxseSBnaXZlIHlvdSBhIHdvcmtpbmcg
+b3JkZXIgb2YgZHJpdmVycwo+IHRvIGluaXRpYWxpemUuIEUuZy4gaG93IGRvIHlvdSBjaG9vc2Ug
+dGhlIGZpcnN0IGRyaXZlciB0byBpbml0aWFsaXplPwoKU28gdGhlIGN1cnJlbnQgcGF0Y2ggc2V0
+IGludHJvZHVjZXMgZGVwZW5kZW5jaWVzIChqdXN0IGZvciBkZXZpY2UgdHJlZSkKYW5kIFRvbWV1
+IGlzIHdvcmtpbmcgb24gYSBtb3JlIGdlbmVyaWMgZGVwZW5kZW5jeSBhcHByb2FjaCBmb3IKYW55
+IEhXIGRlc2NyaXB0aW9uLgoKVGhlIGZpcnN0IGRyaXZlciB0byBpbml0aWFsaXplIHdpbGwgYmUg
+YXMgdXN1YWwgdGhlIGZpcnN0IG9uZSBpbiB0aGUgbGlzdCBmb3IKdGhhdCBpbml0bGV2ZWwsIHRo
+ZW4gd2Fsa2luZyB1cCB0aGUgaW5pdGlsZXZlbHMuCgpIb3dldmVyIGlmIGFueSBkcml2ZXIgcnVu
+cyBpbnRvIGEgcmVzb3VyY2Ugcm9hZGJsb2NrIGl0IHdpbGwgcG9zdHBvbmUKYW5kIHdhaXQgZm9y
+IGRlcGVuZGVuY2llcyB0byBwcm9iZSBmaXJzdC4KCkNlcnRhaW5seSBpdCBpcyBwb3NzaWJsZSB0
+byBjcmVhdGUgZGVhZGxvY2tzIGluIHRoaXMgc2NlbmFyaW8sIGJ1dCB0aGUKc2NvcGUgaXMgbm90
+IHRvIGNyZWF0ZSBhbiB1YnJlYWthYmxlIHN5c3RlbS4KCllvdXJzLApMaW51cyBXYWxsZWlqCl9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBt
+YWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwOi8vbGlzdHMu
+ZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
