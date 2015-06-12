@@ -1,70 +1,78 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [GIT PULL] pwm: Changes for v4.2-rc1
-Date: Fri, 12 Jun 2015 16:56:14 +0200
-Message-ID: <1434120974-4057-1-git-send-email-thierry.reding@gmail.com>
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Subject: [PATCH] pwm-backlight: Avoid backlight flicker when probed from DT
+Date: Fri, 12 Jun 2015 18:26:17 +0200
+Message-ID: <1434126377-22545-1-git-send-email-p.zabel@pengutronix.de>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qc0-f182.google.com ([209.85.216.182]:35197 "EHLO
-	mail-qc0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753665AbbFLO4x (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2015 10:56:53 -0400
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:60345 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750980AbbFLQ00 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2015 12:26:26 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Ajay Kumar <ajaykumar.rs@samsung.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de, Philipp Zabel <p.zabel@pengutronix.de>
 
-Hi Linus,
+If the driver is probed from the device tree, and there is a phandle
+property set on it, and the enable GPIO is already configured as output,
+and the backlight is currently disabled, keep it disabled.
+If all these conditions are met, assume there will be some other driver
+that can enable the backlight at the appropriate time.
 
-The following changes since commit b787f68c36d49bb1d9236f403813641efa74a031:
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+---
+I have seen the thread at https://lkml.org/lkml/2014/7/31/259, but I'm not
+sure if it has come to a resolution. This is what I think could be useful
+to keep the current default behaviour of enabling the backlight while at the
+same time allowing to keep it disabled if we are absolutely certain that the
+backlight is currently off, and we think there is some other driver that will
+control it:
+---
+ drivers/video/backlight/pwm_bl.c | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
-  Linux 4.1-rc1 (2015-04-26 17:59:10 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.2-rc1
-
-for you to fetch changes up to 361c1066c939a88e3bb59364f47055b2a5fb3fd4:
-
-  pwm: lpss: pci: Add support for Broxton platform (2015-06-12 12:46:50 +0200)
-
-I'm sending this before the merge window opens because I'll be on
-vacation for the better part of it. The set of changes below is rather
-small and I don't expect any surprises. I should be back from vacation
-shortly before the merge window closes, so in the unlikely event that
-something comes up I should still have the time to fix it up.
-
-Thanks,
-Thierry
-
-----------------------------------------------------------------
-pwm: Changes for v4.2-rc1
-
-This has a couple of fixes for Atmel, Samsung and Broadcom drivers. Some
-preparatory patches for more upcoming Intel work is included as well.
-
-----------------------------------------------------------------
-Alexandre Belloni (2):
-      pwm: atmel: Fix incorrect CDTY value after enabling
-      pwm: atmel: Fix incorrect CDTY value after disabling
-
-Arun Ramamurthy (1):
-      pwm: bcm-kona: Don't set polarity in probe
-
-Javier Martinez Canillas (1):
-      pwm: samsung: Use MODULE_DEVICE_TABLE() to include OF modalias
-
-Qipeng Zha (1):
-      pwm: lpss: pci: Add support for Broxton platform
-
-Shobhit Kumar (1):
-      pwm: Add support to remove registered consumer lookup tables
-
-Tim Kryger (1):
-      pwm: Add pwmchip_add_with_polarity() API
-
- drivers/pwm/core.c         | 40 ++++++++++++++++++++++++++---
- drivers/pwm/pwm-atmel.c    | 63 +++++++++++++++++++++++++++++++++-------------
- drivers/pwm/pwm-bcm-kona.c |  9 +++----
- drivers/pwm/pwm-lpss-pci.c |  2 ++
- drivers/pwm/pwm-samsung.c  |  1 +
- include/linux/pwm.h        | 12 +++++++++
- 6 files changed, 101 insertions(+), 26 deletions(-)
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 6897f1c..dcb6bfb 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -199,6 +199,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	struct backlight_properties props;
+ 	struct backlight_device *bl;
+ 	struct pwm_bl_data *pb;
++	int initial_blank = FB_BLANK_UNBLANK;
+ 	int ret;
+ 
+ 	if (!data) {
+@@ -263,8 +264,21 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
+ 	}
+ 
+-	if (pb->enable_gpio)
+-		gpiod_direction_output(pb->enable_gpio, 1);
++	if (pb->enable_gpio) {
++		/*
++		 * If the driver is probed from the device tree and there is a
++		 * phandle link pointing to the backlight node, it is safe to
++		 * assume that another driver will enable the backlight at the
++		 * appropriate time. Therefore, if it is disabled, keep it so.
++		 */
++		if (of_find_property(pdev->dev.of_node, "phandle", NULL) &&
++		    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
++		    gpiod_get_value(pb->enable_gpio) == 0) {
++			initial_blank = FB_BLANK_POWERDOWN;
++		} else {
++			gpiod_direction_output(pb->enable_gpio, 1);
++		}
++	}
+ 
+ 	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
+ 	if (IS_ERR(pb->power_supply)) {
+@@ -323,6 +337,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	bl->props.brightness = data->dft_brightness;
++	bl->props.power = initial_blank;
+ 	backlight_update_status(bl);
+ 
+ 	platform_set_drvdata(pdev, bl);
+-- 
+2.1.4
