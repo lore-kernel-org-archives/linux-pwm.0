@@ -1,78 +1,67 @@
-From: Philipp Zabel <p.zabel@pengutronix.de>
-Subject: [PATCH] pwm-backlight: Avoid backlight flicker when probed from DT
-Date: Fri, 12 Jun 2015 18:26:17 +0200
-Message-ID: <1434126377-22545-1-git-send-email-p.zabel@pengutronix.de>
+From: Jonathan Richardson <jonathar@broadcom.com>
+Subject: Re: [PATCH v8 5/5] pwm: core: Set enable state properly on failed
+ call to enable
+Date: Fri, 12 Jun 2015 12:22:29 -0700
+Message-ID: <557B3175.4020600@broadcom.com>
+References: <1432670900-27687-1-git-send-email-jonathar@broadcom.com> <1432670900-27687-6-git-send-email-jonathar@broadcom.com> <20150612094937.GE19400@ulmo.nvidia.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:60345 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750980AbbFLQ00 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2015 12:26:26 -0400
+Received: from mail-gw1-out.broadcom.com ([216.31.210.62]:52351 "EHLO
+	mail-gw1-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750814AbbFLTWt (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2015 15:22:49 -0400
+In-Reply-To: <20150612094937.GE19400@ulmo.nvidia.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Ajay Kumar <ajaykumar.rs@samsung.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de, Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Tim Kryger <tim.kryger@gmail.com>, Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-If the driver is probed from the device tree, and there is a phandle
-property set on it, and the enable GPIO is already configured as output,
-and the backlight is currently disabled, keep it disabled.
-If all these conditions are met, assume there will be some other driver
-that can enable the backlight at the appropriate time.
+On 15-06-12 02:49 AM, Thierry Reding wrote:
+> On Tue, May 26, 2015 at 01:08:20PM -0700, Jonathan Richardson wrote:
+>> The pwm_enable function didn't clear the enabled bit if a call to a
+>> clients enable function returned an error. The result was that the state
+>> of the pwm core was wrong. Clearing the bit when enable returns an error
+>> ensures the state is properly set.
+>>
+>> Tested-by: Jonathan Richardson <jonathar@broadcom.com>
+>> Reviewed-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+>> Signed-off-by: Jonathan Richardson <jonathar@broadcom.com>
+>> ---
+>>  drivers/pwm/core.c |   16 +++++++++++++---
+>>  1 file changed, 13 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+>> index 224645f..18f5ac4 100644
+>> --- a/drivers/pwm/core.c
+>> +++ b/drivers/pwm/core.c
+>> @@ -477,10 +477,20 @@ EXPORT_SYMBOL_GPL(pwm_set_polarity);
+>>   */
+>>  int pwm_enable(struct pwm_device *pwm)
+>>  {
+>> -	if (pwm && !test_and_set_bit(PWMF_ENABLED, &pwm->flags))
+>> -		return pwm->chip->ops->enable(pwm->chip, pwm);
+>> +	int err;
+>> +
+>> +	if (!pwm)
+>> +		return -EINVAL;
+>> +
+>> +	if (!test_and_set_bit(PWMF_ENABLED, &pwm->flags)) {
+>> +		err = pwm->chip->ops->enable(pwm->chip, pwm);
+>> +		if (err) {
+>> +			clear_bit(PWMF_ENABLED, &pwm->flags);
+>> +			return err;
+>> +		}
+>> +	}
+> 
+> I think with this new pattern we're now actually going to need a lock to
+> make sure pwm->flags doesn't change between the test_and_set_bit() and
+> clear_bit() calls.
+> 
+> Thierry
+> 
 
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
----
-I have seen the thread at https://lkml.org/lkml/2014/7/31/259, but I'm not
-sure if it has come to a resolution. This is what I think could be useful
-to keep the current default behaviour of enabling the backlight while at the
-same time allowing to keep it disabled if we are absolutely certain that the
-backlight is currently off, and we think there is some other driver that will
-control it:
----
- drivers/video/backlight/pwm_bl.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+Ok. I'll add a lock per pwm_device and re-send the patch.
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 6897f1c..dcb6bfb 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -199,6 +199,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	struct backlight_properties props;
- 	struct backlight_device *bl;
- 	struct pwm_bl_data *pb;
-+	int initial_blank = FB_BLANK_UNBLANK;
- 	int ret;
- 
- 	if (!data) {
-@@ -263,8 +264,21 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
- 	}
- 
--	if (pb->enable_gpio)
--		gpiod_direction_output(pb->enable_gpio, 1);
-+	if (pb->enable_gpio) {
-+		/*
-+		 * If the driver is probed from the device tree and there is a
-+		 * phandle link pointing to the backlight node, it is safe to
-+		 * assume that another driver will enable the backlight at the
-+		 * appropriate time. Therefore, if it is disabled, keep it so.
-+		 */
-+		if (of_find_property(pdev->dev.of_node, "phandle", NULL) &&
-+		    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
-+		    gpiod_get_value(pb->enable_gpio) == 0) {
-+			initial_blank = FB_BLANK_POWERDOWN;
-+		} else {
-+			gpiod_direction_output(pb->enable_gpio, 1);
-+		}
-+	}
- 
- 	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
- 	if (IS_ERR(pb->power_supply)) {
-@@ -323,6 +337,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	}
- 
- 	bl->props.brightness = data->dft_brightness;
-+	bl->props.power = initial_blank;
- 	backlight_update_status(bl);
- 
- 	platform_set_drvdata(pdev, bl);
--- 
-2.1.4
+Jon
