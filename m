@@ -1,107 +1,51 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: update lpss pwm driver to support Broxton platform
-Date: Fri, 12 Jun 2015 12:47:23 +0200
-Message-ID: <20150612104722.GJ19400@ulmo.nvidia.com>
-References: <1426170508-8273-1-git-send-email-qipeng.zha@intel.com>
- <20150312075835.GC30344@ulmo.nvidia.com>
- <C6287702A945AC47BE5DB5DFD4B5C6DD0185D774@SHSMSX104.ccr.corp.intel.com>
+From: Alexander Holler <holler-SXC+2es9fhnfWeYVQQPykw@public.gmane.org>
+Subject: Re: [PATCH 00/21] On-demand device registration
+Date: Fri, 12 Jun 2015 13:19:28 +0200
+Message-ID: <557AC040.40803@ahsoftware.de>
+References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>	<CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>	<CAAObsKCP-C+TY8Wkk6bQzxZeGYL9X01trtjxfaYp--ZnH07C+w@mail.gmail.com>	<CACRpkdZuSj+S2x1yz6n5PgcRK=3ZCcq_To124b2Y+Oj54aydpg@mail.gmail.com>	<5577F533.1060007@ahsoftware.de>	<CACRpkdYF5K7ckGbgvZc6qRzGFJTQ4WqXdu_7Tcqczn2LkFbn3A@mail.gmail.com>	<5579602F.1070801@ahsoftware.de>	<CACRpkdaZgBR5rHwrEYqcm5K4w3y8MXG8a0k=Y+oQY+jukHfuyw@mail.gmail.com>	<5579B9E8.9040609@ahsoftware.de> <CACRpkdbDSS0yw=q_cR17Bvg+kgTfU3Vcd2gSjx1p4V-CzOZ_SA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="TA4f0niHM6tHt3xR"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qk0-f170.google.com ([209.85.220.170]:34348 "EHLO
-	mail-qk0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750963AbbFLKsC (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2015 06:48:02 -0400
-Received: by qkhp85 with SMTP id p85so8056401qkh.1
-        for <linux-pwm@vger.kernel.org>; Fri, 12 Jun 2015 03:48:02 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <C6287702A945AC47BE5DB5DFD4B5C6DD0185D774@SHSMSX104.ccr.corp.intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CACRpkdbDSS0yw=q_cR17Bvg+kgTfU3Vcd2gSjx1p4V-CzOZ_SA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-samsung-soc <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, DRM PANEL DRIVERS <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: "Zha, Qipeng" <qipeng.zha@intel.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "Westerberg, Mika" <mika.westerberg@intel.com>
 
+Am 12.06.2015 um 09:25 schrieb Linus Walleij:
+> On Thu, Jun 11, 2015 at 6:40 PM, Alexander Holler <holler-SXC+2es9fhnfWeYVQQPykw@public.gmane.org> wrote:
+>> Am 11.06.2015 um 14:30 schrieb Linus Walleij:
+>
+>>> Certainly it is possible to create deadlocks in this scenario, but the
+>>> scope is not to create an ubreakable system.
+>>
+>> IAnd what happens if you run into a deadlock? Do you print "you've lost, try
+>> changing your kernel config" in some output hidden by a splash-screen? ;)
+>
+> Sorry it sounds like a blanket argument, the fact that there are
+> mutexes in the kernel makes it possible to deadlock, it doesn't
+> mean we don't use mutexes. Some programming problems are
+> just like such.
 
---TA4f0niHM6tHt3xR
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I'm not talking about specific deadlocks through mutexes. I'm talking 
+about what happens when driver A needs driver B which needs driver A. 
+How do you recognise and handle that with your instrumented on-demand 
+device initialization? Such a circular dependency might happen by just 
+adding a new fucntion call or by changing the kernel configuration. And 
+with the on-demand stuff, the possibility that the developer introducing 
+this new (maybe optional) call will never hit such a circular dependency 
+is high. So you will end up with a never ending stream of problem 
+reports whenever someone introduced such a circular dependecy without 
+having noticed it.
 
-Looks like I never got around to applying this. Done now.
+And to come back to specific deadlocks, if you are extending function 
+calls from something former simple to something which might initialize a 
+whole bunch of drivers, needing maybe seconds, I wouldn't say this is a 
+blanket argument, but a real thread.
 
-Thierry
-
-On Fri, Mar 13, 2015 at 12:51:35AM +0000, Zha, Qipeng wrote:
-> Thierry
->=20
-> Thank you very much:)
->=20
->=20
-> Best wishes
-> Qipeng
->=20
-> -----Original Message-----
-> From: linux-pwm-owner@vger.kernel.org [mailto:linux-pwm-owner@vger.kernel=
-=2Eorg] On Behalf Of Thierry Reding
-> Sent: Thursday, March 12, 2015 3:59 PM
-> To: Zha, Qipeng
-> Cc: linux-pwm@vger.kernel.org; Westerberg, Mika
-> Subject: Re: [PATCH] pwm: update lpss pwm driver to support Broxton platf=
-orm
->=20
-> On Thu, Mar 12, 2015 at 10:28:28PM +0800, qipeng.zha wrote:
-> > From: "qipeng.zha" <qipeng.zha@intel.com>
-> >=20
-> > Add pci device id for Broxton platform.
->=20
-> For reference, this should be "PCI" and "ID", but I can fix those up whil=
-e applying.
->=20
-> Also, it's customary to include a changelog in subsequent versions of a p=
-atch, as well as change the subject prefix to include the patch version num=
-ber. That makes it easier for other people to track things.
->=20
-> You can do so using:
->=20
-> 	$ git format-patch --subject-prefix=3D'PATCH v2' ...
->=20
-> The changelog typically goes below the --- marker (the one below the Sign=
-ed-off-by line) and would look something like this:
->=20
-> ---
-> Changes in v2:
-> - keep board information table sorted by device ID
-> - reuse Braswell board information
->=20
-> Again, no need to resend this time, but something to keep in mind for fut=
-ure patches.
->=20
-> > Signed-off-by: qipeng.zha <qipeng.zha@intel.com>
->=20
-> I'd prefer a proper spelling of your name. Would "Qipeng Zha" be correct?
->=20
-> Thierry
-
---TA4f0niHM6tHt3xR
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJVeri6AAoJEN0jrNd/PrOhrn8P/1N5dy0TyQfNi47x5XRYaV6L
-16iyHgCem8QGVaI2000Ib9aw8gzsjIwzrJh/Sbz6b8MMzWVImP8uM13QeeqU8Seh
-cY3xWP67cfPovFc5k3R0wV9LdpbREKP6FDRgxxx/EPFokKZ7UyYcKEh1dgzfpNk6
-Bzss/JG9FHoMwKGLOOyvlCgrZPIErZL+AdR/LbJH9EVUsNXj8ddmSXzRw04HXttC
-7bFeyxXrkrtEnOWZD8UZzyKPCuzekuIqiOAFmklzDapz9X+evRIidT1QpEf26AVo
-/U9WYx+KpLHBrY4Ew/qz4SZX66Tu53Nzc8sgHvHHQWJC3V/fJaz9RXIHvIq/cbD0
-wVu+ntF6Dn4SUjGILUjaVBSh3BcL9JHggiRzCmFs9HXZwlXXKcgxFedECuzOCbPZ
-lF8iw3LtWZ6+D3IcNlG5jTNfiW/UlIhSRcH5r5JIBwko2oLLY+ikgcDW0GYsUMnu
-4fTGeDsL8xj1BySGmFxLl1Gd0EP30xjxzcbvZ1br5fg1HeVMBSzowE28ap2BsHs/
-vmCW3dnH/JKMovyCk+LA1wj5yCeYE3Fcd7rEQt4Pc2457QuuRRErUn3QWVpEXvW7
-t7ITTbhDMmnxDrlymCiZ7Q0WG8wFau9FmhP4veB1xz38dTad1HVETC/vsX4NwA7b
-NaVlvpp5AG2HKjfAg5Sy
-=wDhe
------END PGP SIGNATURE-----
-
---TA4f0niHM6tHt3xR--
+Alexander Holler
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
