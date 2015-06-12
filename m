@@ -1,67 +1,66 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v8 1/5] drivers: pwm: core: Add pwmchip_add_inversed
-Date: Fri, 12 Jun 2015 11:45:10 +0200
-Message-ID: <20150612094509.GC19400@ulmo.nvidia.com>
+Subject: Re: [PATCH v8 2/5] drivers: pwm: bcm-kona: Dont set polarity in probe
+Date: Fri, 12 Jun 2015 11:46:21 +0200
+Message-ID: <20150612094605.GD19400@ulmo.nvidia.com>
 References: <1432670900-27687-1-git-send-email-jonathar@broadcom.com>
- <1432670900-27687-2-git-send-email-jonathar@broadcom.com>
+ <1432670900-27687-3-git-send-email-jonathar@broadcom.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="98e8jtXdkpgskNou"
+	protocol="application/pgp-signature"; boundary="V88s5gaDVPzZ0KCq"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1432670900-27687-2-git-send-email-jonathar@broadcom.com>
+In-Reply-To: <1432670900-27687-3-git-send-email-jonathar@broadcom.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Jonathan Richardson <jonathar@broadcom.com>
-Cc: Tim Kryger <tim.kryger@gmail.com>, Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Cc: Tim Kryger <tim.kryger@gmail.com>, Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Arun Ramamurthy <arunrama@broadcom.com>
 List-Id: linux-pwm@vger.kernel.org
 
 
---98e8jtXdkpgskNou
+--V88s5gaDVPzZ0KCq
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 26, 2015 at 01:08:16PM -0700, Jonathan Richardson wrote:
-> From: Tim Kryger <tim.kryger@gmail.com>
+On Tue, May 26, 2015 at 01:08:17PM -0700, Jonathan Richardson wrote:
+> From: Arun Ramamurthy <arunrama@broadcom.com>
 >=20
-> Add a new function to register a PWM chip with channels that have their
-> initial polarity as inversed.  This benefits drivers of controllers that
-> by default operate with inversed polarity by removing the need to modify
-> the polarity during initialization.
+> Omit setting the polarity to normal during probe and instead use the
+> new pwmchip_add_inversed function to register a PWM chip with default
+> polarity of inversed for all channels as this is the actual hardware
+> default.
 >=20
+> Signed-off-by: Arun Ramamurthy <arunrama@broadcom.com>
+> Reviewed-by: Ray Jui <rjui@broadcom.com>
+> Signed-off-by: Scott Branden <sbranden@broadcom.com>
 > Signed-off-by: Tim Kryger <tim.kryger@gmail.com>
 > Signed-off-by: Jonathan Richardson <jonathar@broadcom.com>
 > ---
->  drivers/pwm/core.c  |   36 ++++++++++++++++++++++++++++--------
->  include/linux/pwm.h |    6 ++++++
->  2 files changed, 34 insertions(+), 8 deletions(-)
+>  drivers/pwm/pwm-bcm-kona.c |    9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
 
-I had to bikeshed this a little, so I ended up applying a variant that
-exports pwmchip_add_with_polarity() instead of having the additional
-wrapper. The rationale here is that pwmchip_add_with_polarity() is more
-explicit than pwmchip_add_inversed().
+Applied, after adapting to the pwmchip_add_with_polarity() API, thanks.
 
 Thierry
 
---98e8jtXdkpgskNou
+--V88s5gaDVPzZ0KCq
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJVeqohAAoJEN0jrNd/PrOh0V4P/iVaT9XH+43I/9kCp2WjLY2d
-jnGDBE/h4AluDtXfpv/kvUI5zJaBPdopq2FbgK2vVGckPOSbvR//PvOmov0869wc
-+LsfgxZGw2O1Hc1+CF+rpefD93q7C47iKnOpJKq8fdwNmpR4c2QYlb+WO+NkC4Nk
-hpmyw6FMOzbQdmvzRQkum3VLh67Q4JFjRq99+56KfGo7m4MrCId9eFgYJ00gilxt
-dDw+96QlIAHYNGC+Ci+farsY9zau91WFFjC9guAcNpTdIM5ROhxTQcAnZ/ly0e7+
-SDtniA+Gz1p32L4S0VZQzE2WMzJ7zZHjG+lEB9Phu4IPsxmHZgDWRiGbmJcQ7Yig
-Uox7ae6iBTwbp5FHgKFWfoHrIFmon+6YKjGKeuMiffR/LbApwJmgpJLUuuJACqyj
-JtuozhvPu0njLojlV3YIC9wV7duR/56S5lxfQId0VKeOj8vjwaLfH25/PYRHDn6h
-fpT/S3hHRSxKnaOsraC6RvDGHzx16yWDYTLpe4tv6o4jE+pPv3O1xoFg0b7HdIKU
-mZBbSLqC0crTqrJqoFwn33neNx3SMU82DvoqyGCPr3xxGQD/7EYRn1ta/+R9zJPp
-RG1/BzIYLe0zeBbPXHUJ5JvZaODFoqdTm/ZqOPrcP779GY8l9430BJdf1bCQAEOh
-ZzFLAxtM+onmsHOtPXiw
-=3sYg
+iQIcBAABCAAGBQJVeqpdAAoJEN0jrNd/PrOhBscP/19o74KuB9Tvc7VlIwOnJPBj
+sgZp36d9HDCiq/WHam7icUo7ceoZhjG62Q+Ntcwo+VhwvqIcoqNMhTKQoX/kF0cE
+rFvi2/wMm9QW2HVwEeylQQme+KbWxZUAmrUZ79D1LMNPjQ/Ujt6WLfN44xD9gYTp
+MNcSLbR1sp4vJQmxswSMFzIRgsBcBDxrIsYlfrVbEj+sll/LD9NgLvJXEEsgs2iX
+bQFL1niJ9M6tDOpNatoe+eUYQFg27hFWcrreIEUYfhygdkwz2yPUB87gA2KZu5jp
+4oj3+j0nFIu6ZC8VlNDUUeOass9WG8tss1xbZvo+kSq1ZgmPLLh3ov6QSSDX7Htc
+PkB9SgyJb21NTCABRJgTc3HD3LuYQyjwcwLMWxGb1AgvGDnzvSOLpF/i/BBNAMy6
+pOzcvFAAPg4WM422fpge5CTHx0VmXX6w/lqxuNB7hwKbA3L8YrJjksEPWtrBwyXU
+uxHYNoO4zRzLfRNHG8N24CmqpzNpVhTlbEYYtYDsKNsv8i8RoGvcnevxQ1q6ZcKT
+d5IAXXdDfG+DBWHxPqkfZ5/BDg+1gRzH6mYCDuTVIv2iJbx6k67oOvirf7Auluo+
+egwf7vEU1Hg8yIIYo/M06R2GQQOtwkHFfi23rSc93e7gGD+oMokr7EACagduHjlp
+ESfS0y/eSilUPc+oZjKg
+=e78+
 -----END PGP SIGNATURE-----
 
---98e8jtXdkpgskNou--
+--V88s5gaDVPzZ0KCq--
