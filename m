@@ -1,96 +1,70 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/2] backlight: pwm: don't call legacy pwm request for
- device defined in dt
-Date: Fri, 12 Jun 2015 15:19:50 +0200
-Message-ID: <20150612131948.GA2392@ulmo.nvidia.com>
-References: <1413035186-11771-1-git-send-email-vladimir_zapolskiy@mentor.com>
- <1413035186-11771-2-git-send-email-vladimir_zapolskiy@mentor.com>
- <20150612113114.GK19400@ulmo.nvidia.com>
- <557AD755.5050409@mentor.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="dDRMvlgZJXvWKvBx"
+Subject: [GIT PULL] pwm: Changes for v4.2-rc1
+Date: Fri, 12 Jun 2015 16:56:14 +0200
+Message-ID: <1434120974-4057-1-git-send-email-thierry.reding@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qc0-f175.google.com ([209.85.216.175]:33424 "EHLO
-	mail-qc0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752968AbbFLNU3 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2015 09:20:29 -0400
-Content-Disposition: inline
-In-Reply-To: <557AD755.5050409@mentor.com>
+Received: from mail-qc0-f182.google.com ([209.85.216.182]:35197 "EHLO
+	mail-qc0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753665AbbFLO4x (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2015 10:56:53 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-Cc: linux-fbdev@vger.kernel.org, linux-pwm@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, Lee Jones <lee.jones@linaro.org>, stable@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
+Hi Linus,
 
---dDRMvlgZJXvWKvBx
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The following changes since commit b787f68c36d49bb1d9236f403813641efa74a031:
 
-On Fri, Jun 12, 2015 at 03:57:57PM +0300, Vladimir Zapolskiy wrote:
-> Hi Thierry,
->=20
-> On 12.06.2015 14:31, Thierry Reding wrote:
-> > On Sat, Oct 11, 2014 at 04:46:25PM +0300, Vladimir Zapolskiy wrote:
-> >> Platform PWM backlight data provided by board's device tree should be
-> >> complete enough to successfully request a pwm device using pwm_get() A=
-PI.
-> >>
-> >> Based on initial implementation done by Dmitry Eremin-Solenikov.
-> >>
-> >> Reported-by: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
-> >> Signed-off-by: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-> >> Cc: Thierry Reding <thierry.reding@gmail.com>
-> >> Cc: Jingoo Han <jg1.han@samsung.com>
-> >> Cc: Bryan Wu <cooloney@gmail.com>
-> >> Cc: Lee Jones <lee.jones@linaro.org>
-> >> ---
-> >>  drivers/video/backlight/pwm_bl.c |   14 +++++++-------
-> >>  1 file changed, 7 insertions(+), 7 deletions(-)
-> >=20
-> > This fell off my radar, but I think it's good. I used to have a local
-> > patch somewhere that solved the same problem by initializing the pwm_id
-> > field of platform_pwm_backlight_data to -1 in pwm_backlight_parse_dt(),
-> > but I like this variant better because it's more explicit and doesn't
-> > even attempt to request using the legacy API (which will inevitably fail
-> > in the DT case anyway).
-> >=20
-> > Vladimir, do you think you'd have the time to rebase this patch on top
-> > of something recent and perhaps extend the commit message with some of
-> > the arguments that you brought forth in this thread? Specifically it'd
-> > be useful to mention that this enforces the DT binding and fixes a real
-> > bug where the legacy path would try to request a PWM that's not
-> > necessarily the right one.
->=20
-> sure, no problem, I'll find time to rebase on top of Lee's
-> backlight/for-backlight-next and resend the change this weekend.
->=20
-> Thank you for reviewing :)
+  Linux 4.1-rc1 (2015-04-26 17:59:10 -0700)
 
-I'll be away for two weeks, but feel free to add my:
+are available in the git repository at:
 
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.2-rc1
 
---dDRMvlgZJXvWKvBx
-Content-Type: application/pgp-signature
+for you to fetch changes up to 361c1066c939a88e3bb59364f47055b2a5fb3fd4:
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+  pwm: lpss: pci: Add support for Broxton platform (2015-06-12 12:46:50 +0200)
 
-iQIcBAABCAAGBQJVetxxAAoJEN0jrNd/PrOhZvUP/RncY+Lre8RowOLMiYzKbOpE
-/4YSZ0Xn/WxK8Gyzumdu7K/1L9r8qSLJkqycV0/e59a+wF971cj5zyltEysH02vU
-QvwbRIVd/nWJgWFj5EV+EC41ROe+9uwU0X0nFMKBYAZl0UeWIf/wHLwXWL/BUIbG
-gjYfbcYIbTzKubiZoLps43WuKbHDxP9h9Q/LATiQLP1DGgpVpyVsamDoIeSfBteQ
-5DcKlCNA6TVCmjXxH0rgeXZY6euUbQt9vJyt3mfgZXFKbete7IyAnZyVFs+7+Mbo
-y+W5C9d5Yx5YAIPfLCyLFbm8JRt8WmyH4zSoD3nmgmDGP+r8/odsGNiSqWNG217R
-2h+WVvsiL8W1LYknfd/+3aSbEfJJc9r3uW42QinuHkSr/ABzGwLKF3oljM5/jF9g
-RoetvACT0t23MqLOnC2yjSnm7ILAX59K6mfsdJYpiudZ5WBZjACBq1NcmAXN13Qt
-MqrOYtnlhvrcJzrXnbT6/9pisNmVh0B0U8qRx25WObcz+ICBQs37VFF2rHNj9eqk
-GYAyoWn3soahltQhMvslEX61/4MlzT0tXWwLxa3OngfZ52Rvvf/UqNUa5yZ0GBAg
-C4J9qPkUbwbYa10VuS94hLkk9aTA8EZb42adpCTlqPD3a35OdpU23Jcu9QqcQVWW
-te80UcUu7mChowR7L2Br
-=V57g
------END PGP SIGNATURE-----
+I'm sending this before the merge window opens because I'll be on
+vacation for the better part of it. The set of changes below is rather
+small and I don't expect any surprises. I should be back from vacation
+shortly before the merge window closes, so in the unlikely event that
+something comes up I should still have the time to fix it up.
 
---dDRMvlgZJXvWKvBx--
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Changes for v4.2-rc1
+
+This has a couple of fixes for Atmel, Samsung and Broadcom drivers. Some
+preparatory patches for more upcoming Intel work is included as well.
+
+----------------------------------------------------------------
+Alexandre Belloni (2):
+      pwm: atmel: Fix incorrect CDTY value after enabling
+      pwm: atmel: Fix incorrect CDTY value after disabling
+
+Arun Ramamurthy (1):
+      pwm: bcm-kona: Don't set polarity in probe
+
+Javier Martinez Canillas (1):
+      pwm: samsung: Use MODULE_DEVICE_TABLE() to include OF modalias
+
+Qipeng Zha (1):
+      pwm: lpss: pci: Add support for Broxton platform
+
+Shobhit Kumar (1):
+      pwm: Add support to remove registered consumer lookup tables
+
+Tim Kryger (1):
+      pwm: Add pwmchip_add_with_polarity() API
+
+ drivers/pwm/core.c         | 40 ++++++++++++++++++++++++++---
+ drivers/pwm/pwm-atmel.c    | 63 +++++++++++++++++++++++++++++++++-------------
+ drivers/pwm/pwm-bcm-kona.c |  9 +++----
+ drivers/pwm/pwm-lpss-pci.c |  2 ++
+ drivers/pwm/pwm-samsung.c  |  1 +
+ include/linux/pwm.h        | 12 +++++++++
+ 6 files changed, 101 insertions(+), 26 deletions(-)
