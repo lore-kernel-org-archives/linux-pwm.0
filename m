@@ -1,115 +1,68 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/2] backlight: pwm: don't call legacy pwm request for
- device defined in dt
-Date: Fri, 12 Jun 2015 13:31:16 +0200
-Message-ID: <20150612113114.GK19400@ulmo.nvidia.com>
-References: <1413035186-11771-1-git-send-email-vladimir_zapolskiy@mentor.com>
- <1413035186-11771-2-git-send-email-vladimir_zapolskiy@mentor.com>
+From: Alexander Holler <holler@ahsoftware.de>
+Subject: Re: [PATCH 00/21] On-demand device registration
+Date: Fri, 12 Jun 2015 13:36:23 +0200
+Message-ID: <557AC437.9000607@ahsoftware.de>
+References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>	<CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>	<CAAObsKCP-C+TY8Wkk6bQzxZeGYL9X01trtjxfaYp--ZnH07C+w@mail.gmail.com>	<CACRpkdZuSj+S2x1yz6n5PgcRK=3ZCcq_To124b2Y+Oj54aydpg@mail.gmail.com>	<5577F533.1060007@ahsoftware.de>	<CACRpkdYF5K7ckGbgvZc6qRzGFJTQ4WqXdu_7Tcqczn2LkFbn3A@mail.gmail.com>	<5579602F.1070801@ahsoftware.de>	<CACRpkdaZgBR5rHwrEYqcm5K4w3y8MXG8a0k=Y+oQY+jukHfuyw@mail.gmail.com>	<5579B9E8.9040609@ahsoftware.de> <CACRpkdbDSS0yw=q_cR17Bvg+kgTfU3Vcd2gSjx1p4V-CzOZ_SA@mail.gmail.com> <557AC040.40803@ahsoftware.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="OX7PPUk8qMPP4++R"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qk0-f178.google.com ([209.85.220.178]:34954 "EHLO
-	mail-qk0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752136AbbFLLbz (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2015 07:31:55 -0400
-Content-Disposition: inline
-In-Reply-To: <1413035186-11771-2-git-send-email-vladimir_zapolskiy@mentor.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <557AC040.40803@ahsoftware.de>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>, Grant Likely <grant.likely@linaro.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, DRM PANEL DRIVERS <dri-devel@lists.freedesktop.org>, dmaengine@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>, linux-usb@vger.kernel.org, linux-i2c@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-Cc: linux-fbdev@vger.kernel.org, linux-pwm@vger.kernel.org, Jingoo Han <jg1.han@samsung.com>, Bryan Wu <cooloney@gmail.com>, Lee Jones <lee.jones@linaro.org>, stable@vger.kernel.org
 
+Am 12.06.2015 um 13:19 schrieb Alexander Holler:
+> Am 12.06.2015 um 09:25 schrieb Linus Walleij:
+>> On Thu, Jun 11, 2015 at 6:40 PM, Alexander Holler
+>> <holler@ahsoftware.de> wrote:
+>>> Am 11.06.2015 um 14:30 schrieb Linus Walleij:
+>>
+>>>> Certainly it is possible to create deadlocks in this scenario, but the
+>>>> scope is not to create an ubreakable system.
+>>>
+>>> IAnd what happens if you run into a deadlock? Do you print "you've
+>>> lost, try
+>>> changing your kernel config" in some output hidden by a
+>>> splash-screen? ;)
+>>
+>> Sorry it sounds like a blanket argument, the fact that there are
+>> mutexes in the kernel makes it possible to deadlock, it doesn't
+>> mean we don't use mutexes. Some programming problems are
+>> just like such.
+>
+> I'm not talking about specific deadlocks through mutexes. I'm talking
+> about what happens when driver A needs driver B which needs driver A.
+> How do you recognise and handle that with your instrumented on-demand
+> device initialization? Such a circular dependency might happen by just
+> adding a new fucntion call or by changing the kernel configuration. And
+> with the on-demand stuff, the possibility that the developer introducing
+> this new (maybe optional) call will never hit such a circular dependency
+> is high. So you will end up with a never ending stream of problem
+> reports whenever someone introduced such a circular dependecy without
+> having noticed it.
+>
+> And to come back to specific deadlocks, if you are extending function
+> calls from something former simple to something which might initialize a
+> whole bunch of drivers, needing maybe seconds, I wouldn't say this is a
+> blanket argument, but a real thread.
 
---OX7PPUk8qMPP4++R
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Keep in mind, that the possibility that a function call ends up with 
+initializing a whole bunch of other drivers, is not determined 
+statically, but depends on the configuration and runtime behaviour of 
+the actual system the on-demand stuff actually happens.
 
-On Sat, Oct 11, 2014 at 04:46:25PM +0300, Vladimir Zapolskiy wrote:
-> Platform PWM backlight data provided by board's device tree should be
-> complete enough to successfully request a pwm device using pwm_get() API.
->=20
-> Based on initial implementation done by Dmitry Eremin-Solenikov.
->=20
-> Reported-by: Dmitry Eremin-Solenikov <dmitry_eremin@mentor.com>
-> Signed-off-by: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Jingoo Han <jg1.han@samsung.com>
-> Cc: Bryan Wu <cooloney@gmail.com>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> ---
->  drivers/video/backlight/pwm_bl.c |   14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
+E.g. if driver A is faster one system that driver B, the whole bunch of 
+drivers might become initialized by a call in driver A. But if driver B 
+was faster on the developers system (or the system is configured to 
+first init driver B), than the whole bunch of drivers might have become 
+initialized by driver B on the developers system. Thus he never might 
+have hit a possible problem when the whole bunch of drivers got 
+initialized in driver A.
 
-This fell off my radar, but I think it's good. I used to have a local
-patch somewhere that solved the same problem by initializing the pwm_id
-field of platform_pwm_backlight_data to -1 in pwm_backlight_parse_dt(),
-but I like this variant better because it's more explicit and doesn't
-even attempt to request using the legacy API (which will inevitably fail
-in the DT case anyway).
+That means it isn't always a good idea to create dynamic systems (like 
+on-demand device initialization), because it's very hard to foresee and 
+correctly handle their runtime behaviour.
 
-Vladimir, do you think you'd have the time to rebase this patch on top
-of something recent and perhaps extend the commit message with some of
-the arguments that you brought forth in this thread? Specifically it'd
-be useful to mention that this enforces the DT binding and fixes a real
-bug where the legacy path would try to request a PWM that's not
-necessarily the right one.
-
-Thierry
-
-> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/p=
-wm_bl.c
-> index cb5ae4c..dd7aaf7 100644
-> --- a/drivers/video/backlight/pwm_bl.c
-> +++ b/drivers/video/backlight/pwm_bl.c
-> @@ -272,15 +272,15 @@ static int pwm_backlight_probe(struct platform_devi=
-ce *pdev)
->  	}
-> =20
->  	pb->pwm =3D devm_pwm_get(&pdev->dev, NULL);
-> -	if (IS_ERR(pb->pwm)) {
-> +	if (IS_ERR(pb->pwm) && !pdev->dev.of_node) {
->  		dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
-> -
->  		pb->pwm =3D pwm_request(data->pwm_id, "pwm-backlight");
-> -		if (IS_ERR(pb->pwm)) {
-> -			dev_err(&pdev->dev, "unable to request legacy PWM\n");
-> -			ret =3D PTR_ERR(pb->pwm);
-> -			goto err_alloc;
-> -		}
-> +	}
-> +
-> +	if (IS_ERR(pb->pwm)) {
-> +		dev_err(&pdev->dev, "unable to request PWM\n");
-> +		ret =3D PTR_ERR(pb->pwm);
-> +		goto err_alloc;
->  	}
-> =20
->  	dev_dbg(&pdev->dev, "got pwm for backlight\n");
-> --=20
-> 1.7.10.4
->=20
-
---OX7PPUk8qMPP4++R
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJVesL/AAoJEN0jrNd/PrOh9HMP/0AY6udiX4D+pQ5axNgQwoGq
-RoR/PxfU8cDU+S4nW4byJ29oEXdcimzdHK8eflvOE8HuDj3MOHx+aSIQSDr0TpXu
-PYJ2xQq3k7rr7qoc4TVUZtcK9fADT/xPVxWXyGROq6as9zQUaOPQXz1UHr2R9QS7
-eQZO7B7IH0buRleDRw/cJOZ9QASRPs7BBcL0ajeMMWz6M8vorKO99BAVFZRED1fw
-xW1rOZ3x92h6RO385fyib3Dv0+N93nF21lEyu6QGlGtn4oagB5VFz/cEECcpwZ7d
-qvEEkN7T4zg3LV1l4d9OrET01IxjqK3kw5BLKYLkUgdCPWU7Bw8jXcwTmcAZjZyq
-FHWkTtSQlX2vR5TuKUVsGudfFwNNX8J5pv3K4bDlrrEnK8b0nkb29JMQPfu0AVr4
-CjW2ey0HhByRWq1TAQvIIgC4i85YeQOAcvug0eV5SoWpsXlIgiv5U9aBx/YklNgM
-3AFaOnasApo9By4VaGRb5yr0h89PNBDod+mTr4GLSlnj816qdcCo0pNOB83kdgI7
-ol5e65NbtL1SSczWkYHRpKebOo4uQgTDZLr20l8LvzknRLEU210bBSjF6Gjoa46w
-3u/sfzJIVY4KOObHEaMJ3EYwNeU3ISL1iN/LO/ynGFqRAOdYe+NrndjAASxEihK3
-cRKVlKufOTvQfpPO6wp/
-=6mUO
------END PGP SIGNATURE-----
-
---OX7PPUk8qMPP4++R--
+> Alexander Holler
