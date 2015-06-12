@@ -1,38 +1,113 @@
-From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 00/21] On-demand device registration
-Date: Fri, 12 Jun 2015 09:25:53 +0200
-Message-ID: <CACRpkdbDSS0yw=q_cR17Bvg+kgTfU3Vcd2gSjx1p4V-CzOZ_SA@mail.gmail.com>
-References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>
-	<CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>
-	<CAAObsKCP-C+TY8Wkk6bQzxZeGYL9X01trtjxfaYp--ZnH07C+w@mail.gmail.com>
-	<CACRpkdZuSj+S2x1yz6n5PgcRK=3ZCcq_To124b2Y+Oj54aydpg@mail.gmail.com>
-	<5577F533.1060007@ahsoftware.de>
-	<CACRpkdYF5K7ckGbgvZc6qRzGFJTQ4WqXdu_7Tcqczn2LkFbn3A@mail.gmail.com>
-	<5579602F.1070801@ahsoftware.de>
-	<CACRpkdaZgBR5rHwrEYqcm5K4w3y8MXG8a0k=Y+oQY+jukHfuyw@mail.gmail.com>
-	<5579B9E8.9040609@ahsoftware.de>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/2] PWM: atmel: fix incorrect CDTY value after enabling
+Date: Fri, 12 Jun 2015 11:14:37 +0200
+Message-ID: <20150612091434.GA19400@ulmo.nvidia.com>
+References: <1432559996-4415-1-git-send-email-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <5579B9E8.9040609-SXC+2es9fhnfWeYVQQPykw@public.gmane.org>
-Sender: linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Alexander Holler <holler-SXC+2es9fhnfWeYVQQPykw@public.gmane.org>
-Cc: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-samsung-soc <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-7NY9aMYB+ISttCpgsWEBFg@public.gmane.org:DRM PANEL DRIVERS" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="HcAYCG3uE/tztfnV"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-qk0-f169.google.com ([209.85.220.169]:33075 "EHLO
+	mail-qk0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751166AbbFLJPQ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2015 05:15:16 -0400
+Content-Disposition: inline
+In-Reply-To: <1432559996-4415-1-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
-On Thu, Jun 11, 2015 at 6:40 PM, Alexander Holler <holler-SXC+2es9fhnfWeYVQQPykw@public.gmane.org> wrote:
-> Am 11.06.2015 um 14:30 schrieb Linus Walleij:
 
->> Certainly it is possible to create deadlocks in this scenario, but the
->> scope is not to create an ubreakable system.
->
-> IAnd what happens if you run into a deadlock? Do you print "you've lost, try
-> changing your kernel config" in some output hidden by a splash-screen? ;)
+--HcAYCG3uE/tztfnV
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Sorry it sounds like a blanket argument, the fact that there are
-mutexes in the kernel makes it possible to deadlock, it doesn't
-mean we don't use mutexes. Some programming problems are
-just like such.
+On Mon, May 25, 2015 at 03:19:55PM +0200, Alexandre Belloni wrote:
+> CUPD is not flushed before enabling the channel so it will update CDTY/CP=
+RD just
+> after one period. So we always set CUPD, even when the channel is not ena=
+bled.
+>=20
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> ---
+>  drivers/pwm/pwm-atmel.c | 35 ++++++++++++++++++-----------------
+>  1 file changed, 18 insertions(+), 17 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+> index d3c22de9ee47..89f9ca41d9af 100644
+> --- a/drivers/pwm/pwm-atmel.c
+> +++ b/drivers/pwm/pwm-atmel.c
+> @@ -155,24 +155,25 @@ static void atmel_pwm_config_v1(struct pwm_chip *ch=
+ip, struct pwm_device *pwm,
+>  	struct atmel_pwm_chip *atmel_pwm =3D to_atmel_pwm_chip(chip);
+>  	unsigned int val;
+> =20
+> -	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
+> -		/*
+> -		 * If the PWM channel is enabled, using the update register,
+> -		 * it needs to set bit 10 of CMR to 0
+> -		 */
+> -		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CUPD, dty);
+> =20
+> -		val =3D atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
+> -		val &=3D ~PWM_CMR_UPD_CDTY;
+> -		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
+> -	} else {
+> -		/*
+> -		 * If the PWM channel is disabled, write value to duty and
+> -		 * period registers directly.
+> -		 */
+> -		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CDTY, dty);
+> -		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CPRD, prd);
+> -	}
+> +	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CUPD, dty);
+> +
+> +	val =3D atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
+> +	val &=3D ~PWM_CMR_UPD_CDTY;
+> +	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
+> +
+> +	/*
+> +	 * If the PWM channel is enabled, only update CDTY by using the update
+> +	 * register, it needs to set bit 10 of CMR to 0
+> +	 */
+> +	if (test_bit(PWMF_ENABLED, &pwm->flags))
+> +		return;
+> +	/*
+> +	 * If the PWM channel is disabled, write value to duty and period
+> +	 * registers directly.
+> +	 */
+> +	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CDTY, dty);
+> +	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV1_CPRD, prd);
+>  }
+> =20
+>  static void atmel_pwm_config_v2(struct pwm_chip *chip, struct pwm_device=
+ *pwm,
 
-Yours,
-Linus Walleij
+Applied, thanks.
+
+Thierry
+
+--HcAYCG3uE/tztfnV
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJVeqL3AAoJEN0jrNd/PrOhdeYQAKgcAtDoOElcC5E1Bc57fA76
+b2qtpHLVRPS/V7Sp2oupO1uASdkry/ijXF0QOpACz4s1orIIb/6PD0CKXR2CS3Zl
+0Ah5dDnEv5ACcCmGEKCniSXFoEFjAG6nUwc1sBEmjBtc2wQIbF9ExG5HoIP5A5Qt
+lgFB8AmwvZjw5oBLNsHecahlOEBaorx/w97iKJzv4L6J4G2kowddTogcmPS64MPf
+0O00mbnTMaE3P+aN58ifKMCVfrmT5CCMWkrKxrGZeL+7BrNN6qu6FRpmiFQNE+1l
+QmYVw40OCk+c9j04rWfhGCwSaIB1006JyaI7WSSAsGUF7GRVAL8KTAESNlpri5fr
+4uJ3e0nWlTF6YgR6x5/85BDwFz81du4OxfRPwbRSNoIFAVjIJF/Dph2QPTcPkdfx
+X9y4R6fuhOeB8oPYbo13DBB85nQB+FLfAvxwZ5WJh9PQUMw4d2P7w5Ubw3vM8gFh
+FHOSEoZb2K2nf/li0Xp15swCxjkW7xIJePywVUnXpVrEL28RJDnDWqpDKryL0T0w
+RmH9T3ifOpTaIXaNRucvEht9RpylSFSGQ73fmymdjv5CWiP6U5zuZMncAMlFTD/7
+cPbhaR4kCscU6GVizH9P0qJpvVVNjbEAILk0un+8xj/ayXbTQcncrMwcUA8dpxW2
+wcVob2t4LoX2lkEDc0Qr
+=EoxL
+-----END PGP SIGNATURE-----
+
+--HcAYCG3uE/tztfnV--
