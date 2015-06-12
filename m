@@ -1,68 +1,119 @@
-From: Alexander Holler <holler@ahsoftware.de>
-Subject: Re: [PATCH 00/21] On-demand device registration
-Date: Fri, 12 Jun 2015 13:36:23 +0200
-Message-ID: <557AC437.9000607@ahsoftware.de>
-References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>	<CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>	<CAAObsKCP-C+TY8Wkk6bQzxZeGYL9X01trtjxfaYp--ZnH07C+w@mail.gmail.com>	<CACRpkdZuSj+S2x1yz6n5PgcRK=3ZCcq_To124b2Y+Oj54aydpg@mail.gmail.com>	<5577F533.1060007@ahsoftware.de>	<CACRpkdYF5K7ckGbgvZc6qRzGFJTQ4WqXdu_7Tcqczn2LkFbn3A@mail.gmail.com>	<5579602F.1070801@ahsoftware.de>	<CACRpkdaZgBR5rHwrEYqcm5K4w3y8MXG8a0k=Y+oQY+jukHfuyw@mail.gmail.com>	<5579B9E8.9040609@ahsoftware.de> <CACRpkdbDSS0yw=q_cR17Bvg+kgTfU3Vcd2gSjx1p4V-CzOZ_SA@mail.gmail.com> <557AC040.40803@ahsoftware.de>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/1] Atmel-PWM: Fixed the PWM channel enable/disable
+ issue which will cause the PWM output stop working after reenable. THe PWM
+ channel status register is read to ensure  the PWM channel is really enabled
+ or disabled.
+Date: Fri, 12 Jun 2015 13:45:56 +0200
+Message-ID: <20150612114555.GL19400@ulmo.nvidia.com>
+References: <1412197710-17731-1-git-send-email-ryang@hach.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <557AC040.40803@ahsoftware.de>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>, Grant Likely <grant.likely@linaro.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, DRM PANEL DRIVERS <dri-devel@lists.freedesktop.org>, dmaengine@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>, linux-usb@vger.kernel.org, linux-i2c@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="dxRQSzdsN/lOP445"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-qg0-f45.google.com ([209.85.192.45]:34835 "EHLO
+	mail-qg0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750893AbbFLLqf (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 12 Jun 2015 07:46:35 -0400
+Content-Disposition: inline
+In-Reply-To: <1412197710-17731-1-git-send-email-ryang@hach.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: robert yang <hachyang@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, ryang <ryang@hach.com>
 
-Am 12.06.2015 um 13:19 schrieb Alexander Holler:
-> Am 12.06.2015 um 09:25 schrieb Linus Walleij:
->> On Thu, Jun 11, 2015 at 6:40 PM, Alexander Holler
->> <holler@ahsoftware.de> wrote:
->>> Am 11.06.2015 um 14:30 schrieb Linus Walleij:
->>
->>>> Certainly it is possible to create deadlocks in this scenario, but the
->>>> scope is not to create an ubreakable system.
->>>
->>> IAnd what happens if you run into a deadlock? Do you print "you've
->>> lost, try
->>> changing your kernel config" in some output hidden by a
->>> splash-screen? ;)
->>
->> Sorry it sounds like a blanket argument, the fact that there are
->> mutexes in the kernel makes it possible to deadlock, it doesn't
->> mean we don't use mutexes. Some programming problems are
->> just like such.
->
-> I'm not talking about specific deadlocks through mutexes. I'm talking
-> about what happens when driver A needs driver B which needs driver A.
-> How do you recognise and handle that with your instrumented on-demand
-> device initialization? Such a circular dependency might happen by just
-> adding a new fucntion call or by changing the kernel configuration. And
-> with the on-demand stuff, the possibility that the developer introducing
-> this new (maybe optional) call will never hit such a circular dependency
-> is high. So you will end up with a never ending stream of problem
-> reports whenever someone introduced such a circular dependecy without
-> having noticed it.
->
-> And to come back to specific deadlocks, if you are extending function
-> calls from something former simple to something which might initialize a
-> whole bunch of drivers, needing maybe seconds, I wouldn't say this is a
-> blanket argument, but a real thread.
 
-Keep in mind, that the possibility that a function call ends up with 
-initializing a whole bunch of other drivers, is not determined 
-statically, but depends on the configuration and runtime behaviour of 
-the actual system the on-demand stuff actually happens.
+--dxRQSzdsN/lOP445
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-E.g. if driver A is faster one system that driver B, the whole bunch of 
-drivers might become initialized by a call in driver A. But if driver B 
-was faster on the developers system (or the system is configured to 
-first init driver B), than the whole bunch of drivers might have become 
-initialized by driver B on the developers system. Thus he never might 
-have hit a possible problem when the whole bunch of drivers got 
-initialized in driver A.
+On Wed, Oct 01, 2014 at 03:08:30PM -0600, robert yang wrote:
+> From: ryang <ryang@hach.com>
+>=20
+> Signed-off-by: ryang <ryang@hach.com>
+> ---
+>  drivers/pwm/pwm-atmel.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
 
-That means it isn't always a good idea to create dynamic systems (like 
-on-demand device initialization), because it's very hard to foresee and 
-correctly handle their runtime behaviour.
+Seems like I never got around to review this. Sorry for that.
 
-> Alexander Holler
+First, you need to change the commit subject and message. The first line
+should be a short description of what the patch does, something like
+this:
+
+	pwm: atmel: Ensure channel is enabled or disabled
+
+Followed by a more verbose description of the change. What I don't
+understand here is under what circumstances it can happen that the
+channel isn't getting enabled. Is this because some error happened and
+therefore the register needs to be written again? Or is it just that we
+need to wait for some time for the PWM to become enabled and we use the
+PWM enable register for that?
+
+> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+> index 6e700a5..bab933a 100644
+> --- a/drivers/pwm/pwm-atmel.c
+> +++ b/drivers/pwm/pwm-atmel.c
+> @@ -237,7 +237,10 @@ static int atmel_pwm_enable(struct pwm_chip *chip, s=
+truct pwm_device *pwm)
+>  	}
+> =20
+>  	atmel_pwm_writel(atmel_pwm, PWM_ENA, 1 << pwm->hwpwm);
+> -
+> +	while (!(atmel_pwm_readl(atmel_pwm, PWM_SR) & (1 << pwm->hwpwm))) {
+> +		atmel_pwm_writel(atmel_pwm, PWM_ENA, 1 << pwm->hwpwm);
+> +		cpu_relax();
+> +	}
+
+So this indicates that the PWM_ENA register is used to enable multiple
+PWM channels. Given that there is a PWM_DIS register too, I suspect that
+this is a write-only register, so writing zeroes to an enable bit
+doesn't actually cause the corresponding PWM to be disabled. That would
+have been a nice explanation for why the original code could break.
+
+>  	return 0;
+>  }
+> =20
+> @@ -246,7 +249,10 @@ static void atmel_pwm_disable(struct pwm_chip *chip,=
+ struct pwm_device *pwm)
+>  	struct atmel_pwm_chip *atmel_pwm =3D to_atmel_pwm_chip(chip);
+> =20
+>  	atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
+> -
+> +	while (atmel_pwm_readl(atmel_pwm, PWM_SR) & (1 << pwm->hwpwm)) {
+> +		atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
+> +		cpu_relax();
+> +	}
+>  	clk_disable(atmel_pwm->clk);
+>  }
+> =20
+
+Same here. I don't really understand why this change is necessary. Maybe
+you can provide a more detailed description of the error you're seeing.
+Also adding Nicolas to Cc, perhaps he can help find out what the issue
+is with the current code.
+
+Thierry
+
+--dxRQSzdsN/lOP445
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJVesZxAAoJEN0jrNd/PrOhrcUP/jrMOn51en5HGP0DrW84rn6k
+ySEf5oTPhXRasGrTasEQPt45nM/ynQ1IEdc2S+1SRTwGMBFnWrWnzzIwvVeyrdYs
+PQWtPv71L8Bbz9/6mB4kYwlmF2acweK0T5auopGtGA40T978yATNi+a9UTwkVycP
+G50FluhMG9GvV6JqkDRyxyLkGTpcNNVlnQiLWgPiVvQQunxZWshmILnY/5+FudSr
+DuJK4VPiMKYvpTn0Jl4QiavyRCoT+Lhhtp3J65eckkvosQLdRo4KejrfYT8GtRjV
+WXxdn0FS50iRAxIOQxhNMb1NAcngkddNGmOM4DGs2nSlNDdtYxbJxOS2rJrzNVnZ
+aIDnqWXzH37T6Ry0jC6lW30ACcECrOaGzJujhTQ6jGvrBPa6qIZX0HEJEb4goQNN
+8t7xue3FKQ2wI5fshS7iWbbE9MZJxkqlbW7ITE17cmcEVtv92c9+4yRolEZRXA1z
+zeUC2Vzs1arzuDw14GD2UU/s3E4M8IsMJPPj8SbfaVP+dFzIYNu/p2iDLIRR7cf+
+VHSGsWRyYfl/HJNYBL44NXP+JwHYj89BMUZHcS8vmLy9ews4dVoYxbmKevOOX/Yt
+lO/mLgyyLxwT+U/unUiao9I1f3MtvgnQiyqhh6uGP44mzp7rTi3/L7YSwTwKepzA
+5fKZ7xRZC+UEC2PK+MwQ
+=+OzN
+-----END PGP SIGNATURE-----
+
+--dxRQSzdsN/lOP445--
