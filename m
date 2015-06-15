@@ -1,333 +1,78 @@
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH v5 2/2] pwm: Add support for R-Car PWM Timer
-Date: Mon, 15 Jun 2015 18:08:44 +0900
-Message-ID: <1434359324-2964-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-References: <1434359324-2964-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Alexander Holler <holler-SXC+2es9fhnfWeYVQQPykw@public.gmane.org>
+Subject: Re: [PATCH 00/21] On-demand device registration
+Date: Mon, 15 Jun 2015 11:42:50 +0200
+Message-ID: <557E9E1A.7060000@ahsoftware.de>
+References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>	<CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>	<CAAObsKCP-C+TY8Wkk6bQzxZeGYL9X01trtjxfaYp--ZnH07C+w@mail.gmail.com>	<CACRpkdZuSj+S2x1yz6n5PgcRK=3ZCcq_To124b2Y+Oj54aydpg@mail.gmail.com>	<5577F533.1060007@ahsoftware.de>	<CACRpkdYF5K7ckGbgvZc6qRzGFJTQ4WqXdu_7Tcqczn2LkFbn3A@mail.gmail.com>	<5579602F.1070801@ahsoftware.de>	<CACRpkdaZgBR5rHwrEYqcm5K4w3y8MXG8a0k=Y+oQY+jukHfuyw@mail.gmail.com>	<5579B9E8.9040609@ahsoftware.de>	<CACRpkdbDSS0yw=q_cR17Bvg+kgTfU3Vcd2gSjx1p4V-CzOZ_SA@mail.gmail.com>	<557AC040.40803@ahsoftware.de>	<557AC437.9000607@ahsoftware.de>	<557C7609.30400@ahsoftware.de> <CACRpkdaVZmq_w_qgEgTP5oqfH3K1+80O7z7o7CJx-dhivUGhDQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relmlor2.renesas.com ([210.160.252.172]:45187 "EHLO
-	relmlie1.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1754045AbbFOJJI (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 15 Jun 2015 05:09:08 -0400
-In-Reply-To: <1434359324-2964-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CACRpkdaVZmq_w_qgEgTP5oqfH3K1+80O7z7o7CJx-dhivUGhDQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-samsung-soc <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, DRM PANEL DRIVERS <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>"linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linu>
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org
-Cc: linux-pwm@vger.kernel.org, linux-sh@vger.kernel.org, devicetree@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-This patch adds support for R-Car SoCs PWM Timer.
+Am 15.06.2015 um 10:58 schrieb Linus Walleij:
+> On Sat, Jun 13, 2015 at 8:27 PM, Alexander Holler <holler-SXC+2es9fhnfWeYVQQPykw@public.gmane.org> wrote:
+>
+>> And because you've said that "problem space is a bit convoluted" and I
+>> disagree, here's a summary from my point of view:
+>>
+>> 1. All the necessary information (dependencies between drivers) already
+>> exists at compile time. The set of dependencies between drivers might become
+>> smaller by configuration, but will not become larger. So there should be NO
+>> need to collect them at runtime, e.g. by instrumenting function calls.
+>
+> I think you arrived at the core of the crux here.
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
----
- drivers/pwm/Kconfig    |  11 +++
- drivers/pwm/Makefile   |   1 +
- drivers/pwm/pwm-rcar.c | 263 +++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 275 insertions(+)
- create mode 100644 drivers/pwm/pwm-rcar.c
+I've hoped so, that's why I've written it.
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index b1541f4..3e58a68 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -249,6 +249,17 @@ config PWM_PXA
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-pxa.
- 
-+config PWM_RCAR
-+	tristate "Renesas R-Car PWM support"
-+	depends on ARCH_RCAR_GEN1 || ARCH_RCAR_GEN2 || COMPILE_TEST
-+	depends on HAS_IOMEM
-+	help
-+	  This driver exposes the PWM Timer controller found in Renesas
-+	  R-Car chips through the PWM API.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-rcar.
-+
- config PWM_RENESAS_TPU
- 	tristate "Renesas TPU PWM support"
- 	depends on ARCH_SHMOBILE || COMPILE_TEST
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index ec50eb5..79d3dc3 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -22,6 +22,7 @@ obj-$(CONFIG_PWM_MXS)		+= pwm-mxs.o
- obj-$(CONFIG_PWM_PCA9685)	+= pwm-pca9685.o
- obj-$(CONFIG_PWM_PUV3)		+= pwm-puv3.o
- obj-$(CONFIG_PWM_PXA)		+= pwm-pxa.o
-+obj-$(CONFIG_PWM_RCAR)		+= pwm-rcar.o
- obj-$(CONFIG_PWM_RENESAS_TPU)	+= pwm-renesas-tpu.o
- obj-$(CONFIG_PWM_ROCKCHIP)	+= pwm-rockchip.o
- obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
-diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-new file mode 100644
-index 0000000..ab6609a
---- /dev/null
-+++ b/drivers/pwm/pwm-rcar.c
-@@ -0,0 +1,263 @@
-+/*
-+ * R-Car PWM Timer driver
-+ *
-+ * Copyright (C) 2015 Renesas Electronics Corporation
-+ *
-+ * This is free software; you can redistribute it and/or modify
-+ * it under the terms of version 2 of the GNU General Public License as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/pwm.h>
-+#include <linux/slab.h>
-+
-+#define RCAR_PWM_MAX_DIVISION	24
-+#define RCAR_PWM_MAX_CYCLE	1023
-+
-+#define RCAR_PWMCR		0x00
-+#define RCAR_PWMCNT		0x04
-+
-+#define RCAR_PWMCR_CC0_MASK	0x000f0000
-+#define RCAR_PWMCR_CC0_SHIFT	16
-+#define RCAR_PWMCR_CCMD		BIT(15)
-+#define RCAR_PWMCR_SYNC		BIT(11)
-+#define RCAR_PWMCR_SS0		BIT(4)
-+#define RCAR_PWMCR_EN0		BIT(0)
-+
-+#define RCAR_PWMCNT_CYC0_MASK	0x03ff0000
-+#define RCAR_PWMCNT_CYC0_SHIFT	16
-+#define RCAR_PWMCNT_PH0_MASK	0x000003ff
-+#define RCAR_PWMCNT_PH0_SHIFT	0
-+
-+struct rcar_pwm_chip {
-+	struct pwm_chip chip;
-+	void __iomem *base;
-+	struct clk *clk;
-+};
-+
-+static inline struct rcar_pwm_chip *to_rcar_pwm_chip(struct pwm_chip *chip)
-+{
-+	return container_of(chip, struct rcar_pwm_chip, chip);
-+}
-+
-+static void rcar_pwm_write(struct rcar_pwm_chip *rp, u32 data, u32 reg)
-+{
-+	writel(data, rp->base + reg);
-+}
-+
-+static u32 rcar_pwm_read(struct rcar_pwm_chip *rp, u32 reg)
-+{
-+	return readl(rp->base + reg);
-+}
-+
-+static void rcar_pwm_bit_modify(struct rcar_pwm_chip *rp, u32 mask, u32 data,
-+				u32 reg)
-+{
-+	u32 val = rcar_pwm_read(rp, reg);
-+
-+	val &= ~mask;
-+	val |= data & mask;
-+	rcar_pwm_write(rp, val, reg);
-+}
-+
-+static int rcar_pwm_get_clock_division(struct rcar_pwm_chip *rp, int period_ns)
-+{
-+	int div;
-+	unsigned long clk_rate = clk_get_rate(rp->clk);
-+	unsigned long long max;	/* max cycle / nanoseconds */
-+
-+	if (!clk_rate)
-+		return -EINVAL;
-+
-+	for (div = 0; div <= RCAR_PWM_MAX_DIVISION; div++) {
-+		max = (unsigned long long)NSEC_PER_SEC * RCAR_PWM_MAX_CYCLE *
-+			(1 << div);
-+		do_div(max, clk_rate);
-+		if (period_ns < max)
-+			break;
-+	}
-+
-+	return (div <= RCAR_PWM_MAX_DIVISION) ? div : -ERANGE;
-+}
-+
-+static void rcar_pwm_set_clock_control(struct rcar_pwm_chip *rp, int div)
-+{
-+	u32 val = rcar_pwm_read(rp, RCAR_PWMCR);
-+
-+	val &= ~(RCAR_PWMCR_CCMD | RCAR_PWMCR_CC0_MASK);
-+	if (div & 1)
-+		val |= RCAR_PWMCR_CCMD;
-+	div >>= 1;
-+	val |= div << RCAR_PWMCR_CC0_SHIFT;
-+	rcar_pwm_write(rp, val, RCAR_PWMCR);
-+}
-+
-+static int rcar_pwm_set_counter(struct rcar_pwm_chip *rp, int div, int duty_ns,
-+				int period_ns)
-+{
-+	unsigned long long one_cycle, tmp;	/* 0.01 nanoseconds */
-+	unsigned long clk_rate = clk_get_rate(rp->clk);
-+	u32 cyc, ph;
-+
-+	one_cycle = (unsigned long long)NSEC_PER_SEC * 100ULL * (1 << div);
-+	do_div(one_cycle, clk_rate);
-+
-+	tmp = period_ns * 100ULL;
-+	do_div(tmp, one_cycle);
-+	cyc = (tmp << RCAR_PWMCNT_CYC0_SHIFT) & RCAR_PWMCNT_CYC0_MASK;
-+
-+	tmp = duty_ns * 100ULL;
-+	do_div(tmp, one_cycle);
-+	ph = tmp & RCAR_PWMCNT_PH0_MASK;
-+
-+	/* Avoid prohibited setting */
-+	if (cyc && ph)
-+		rcar_pwm_write(rp, cyc | ph, RCAR_PWMCNT);
-+
-+	return (cyc && ph) ? 0 : -EINVAL;
-+}
-+
-+static int rcar_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
-+
-+	return clk_prepare_enable(rp->clk);
-+}
-+
-+static void rcar_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
-+
-+	clk_disable_unprepare(rp->clk);
-+}
-+
-+static int rcar_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-+			   int duty_ns, int period_ns)
-+{
-+	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
-+	int div = rcar_pwm_get_clock_division(rp, period_ns);
-+	int ret;
-+
-+	if (div < 0)
-+		return div;
-+
-+	/* Let the core driver set pwm->period if disabled and duty_ns == 0 */
-+	if (!test_bit(PWMF_ENABLED, &pwm->flags) && !duty_ns)
-+		return 0;
-+
-+	rcar_pwm_bit_modify(rp, RCAR_PWMCR_SYNC, RCAR_PWMCR_SYNC, RCAR_PWMCR);
-+	ret = rcar_pwm_set_counter(rp, div, duty_ns, period_ns);
-+	rcar_pwm_set_clock_control(rp, div);
-+	rcar_pwm_bit_modify(rp, RCAR_PWMCR_SYNC, 0, RCAR_PWMCR);
-+
-+	return ret;
-+}
-+
-+static int rcar_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
-+	u32 pwmcnt;
-+
-+	/* Don't enable the PWM device if CYC0 or PH0 is 0 */
-+	pwmcnt = rcar_pwm_read(rp, RCAR_PWMCNT);
-+	if (!(pwmcnt & RCAR_PWMCNT_CYC0_MASK) ||
-+	    !(pwmcnt & RCAR_PWMCNT_PH0_MASK))
-+		return -EINVAL;
-+
-+	rcar_pwm_bit_modify(rp, RCAR_PWMCR_EN0, RCAR_PWMCR_EN0, RCAR_PWMCR);
-+
-+	return 0;
-+}
-+
-+static void rcar_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
-+
-+	rcar_pwm_bit_modify(rp, RCAR_PWMCR_EN0, 0, RCAR_PWMCR);
-+}
-+
-+static const struct pwm_ops rcar_pwm_ops = {
-+	.request = rcar_pwm_request,
-+	.free = rcar_pwm_free,
-+	.config = rcar_pwm_config,
-+	.enable = rcar_pwm_enable,
-+	.disable = rcar_pwm_disable,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int rcar_pwm_probe(struct platform_device *pdev)
-+{
-+	struct rcar_pwm_chip *rcar_pwm;
-+	struct resource *res;
-+	int ret;
-+
-+	rcar_pwm = devm_kzalloc(&pdev->dev, sizeof(*rcar_pwm), GFP_KERNEL);
-+	if (rcar_pwm == NULL)
-+		return -ENOMEM;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	rcar_pwm->base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(rcar_pwm->base))
-+		return PTR_ERR(rcar_pwm->base);
-+
-+	rcar_pwm->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(rcar_pwm->clk)) {
-+		dev_err(&pdev->dev, "cannot get clock\n");
-+		return PTR_ERR(rcar_pwm->clk);
-+	}
-+
-+	platform_set_drvdata(pdev, rcar_pwm);
-+
-+	rcar_pwm->chip.dev = &pdev->dev;
-+	rcar_pwm->chip.ops = &rcar_pwm_ops;
-+	rcar_pwm->chip.of_xlate = of_pwm_xlate_with_flags;
-+	rcar_pwm->chip.base = -1;
-+	rcar_pwm->chip.npwm = 1;
-+
-+	ret = pwmchip_add(&rcar_pwm->chip);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "failed to register PWM chip\n");
-+		return ret;
-+	}
-+
-+	pm_runtime_enable(&pdev->dev);
-+
-+	return 0;
-+}
-+
-+static int rcar_pwm_remove(struct platform_device *pdev)
-+{
-+	struct rcar_pwm_chip *rcar_pwm = platform_get_drvdata(pdev);
-+
-+	pm_runtime_disable(&pdev->dev);
-+
-+	return pwmchip_remove(&rcar_pwm->chip);
-+}
-+
-+static const struct of_device_id rcar_pwm_of_table[] = {
-+	{ .compatible = "renesas,pwm-rcar", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, rcar_pwm_of_table);
-+
-+static struct platform_driver rcar_pwm_driver = {
-+	.probe		= rcar_pwm_probe,
-+	.remove		= rcar_pwm_remove,
-+	.driver		= {
-+		.name	= "pwm-rcar",
-+		.of_match_table = of_match_ptr(rcar_pwm_of_table),
-+	}
-+};
-+module_platform_driver(rcar_pwm_driver);
-+
-+MODULE_AUTHOR("Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>");
-+MODULE_DESCRIPTION("Renesas PWM Timer Driver");
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:pwm-rcar");
--- 
-1.9.1
+> I guess your suggested approach then need to introduce a special
+> build tool to order the initcalls accordingly.
+>
+> Again this will fall short if you don't know at compile time exactly
+> *which* board file will be executed.
+
+I've just tried to describe the facts in order to make the problem space 
+more clear, because, as said, I don't think it's convoluted.
+
+Besides that, I didn't want to suggest anything else other than what 
+I've already posted working patches for. What I've mentioned as possible 
+other solutions above is stuff which might be possible too in order to 
+give some starting points for people which are searching another 
+solution. But I wouldn't have written my patches as they are, if I would 
+think there is another more easier solution.
+
+And of course, there is still a bit to resolve at runtime, even in the 
+DT case (look at the "compatible" attribute). But there is already a 
+runtime solution to find the right driver (in case of DT) and I haven't 
+mentioned it in order to no confuse people again. Mentioning every 
+little detail doesn't make sense if you want to describe something 
+understandable (which is what I've tried).
+
+> So the only practical way to solve this at compile time is to predict
+> an initcall ordering sequence for all possible boot paths, compile in
+> all of them, and choose the right one at boot. But the number of boot
+> paths is equal to the number of device trees / ACPI tables or
+> board files supported, and that space is uncontrolled and ordered
+> infinite.
+
+You just need one working ordered sequence which includes all options. 
+This one will work for all others too.
+
+> Basically I think the root problem with your approach is that you
+> assume we know what hardware we will boot on at compile time. We
+
+Totally wrong. If you assume that I assume this, than either I was 
+totally unable to describe something clearly, or you were unable or 
+unwilling to understand what I've written. And as the result is the 
+same, we don't need to find out which was reason.
+
+Anyway, have fun. I'm quitting the discussion here as I don't have any 
+business with the kernel and already decided some time again to not post 
+patches anymore as it seems to be a waste of my (and maybe others) time.
+
+Regards,
+
+Alexander Holler
