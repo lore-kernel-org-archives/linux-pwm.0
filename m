@@ -1,317 +1,111 @@
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: RE: [PATCH v4 2/2] pwm: Add support for R-Car PWM Timer
-Date: Mon, 15 Jun 2015 05:48:00 +0000
-Message-ID: <SG2PR06MB09195A961FECE276F001493AD8B80@SG2PR06MB0919.apcprd06.prod.outlook.com>
-References: <1432205846-4312-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <1432205846-4312-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <20150612120600.GM19400@ulmo.nvidia.com>
+From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 00/21] On-demand device registration
+Date: Mon, 15 Jun 2015 10:58:05 +0200
+Message-ID: <CACRpkdaVZmq_w_qgEgTP5oqfH3K1+80O7z7o7CJx-dhivUGhDQ@mail.gmail.com>
+References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>
+	<CACRpkdasLwMfEHGMRd1X3K_DU7NMPreE8TMwqqDTg8k9wj=wJQ@mail.gmail.com>
+	<CAAObsKCP-C+TY8Wkk6bQzxZeGYL9X01trtjxfaYp--ZnH07C+w@mail.gmail.com>
+	<CACRpkdZuSj+S2x1yz6n5PgcRK=3ZCcq_To124b2Y+Oj54aydpg@mail.gmail.com>
+	<5577F533.1060007@ahsoftware.de>
+	<CACRpkdYF5K7ckGbgvZc6qRzGFJTQ4WqXdu_7Tcqczn2LkFbn3A@mail.gmail.com>
+	<5579602F.1070801@ahsoftware.de>
+	<CACRpkdaZgBR5rHwrEYqcm5K4w3y8MXG8a0k=Y+oQY+jukHfuyw@mail.gmail.com>
+	<5579B9E8.9040609@ahsoftware.de>
+	<CACRpkdbDSS0yw=q_cR17Bvg+kgTfU3Vcd2gSjx1p4V-CzOZ_SA@mail.gmail.com>
+	<557AC040.40803@ahsoftware.de>
+	<557AC437.9000607@ahsoftware.de>
+	<557C7609.30400@ahsoftware.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relmlor2.renesas.com ([210.160.252.172]:5324 "EHLO
-	relmlie1.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1750751AbbFOFsG convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 15 Jun 2015 01:48:06 -0400
-In-Reply-To: <20150612120600.GM19400@ulmo.nvidia.com>
-Content-Language: ja-JP
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <557C7609.30400-SXC+2es9fhnfWeYVQQPykw@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alexander Holler <holler-SXC+2es9fhnfWeYVQQPykw@public.gmane.org>
+Cc: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-samsung-soc <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, DRM PANEL DRIVERS <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>"linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linu>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: "robh+dt@kernel.org" <robh+dt@kernel.org>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "galak@codeaurora.org" <galak@codeaurora.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 
-Hi Thierry,
+On Sat, Jun 13, 2015 at 8:27 PM, Alexander Holler <holler-SXC+2es9fhnfWeYVQQPykw@public.gmane.org> wrote:
 
-Thank you for the review!
+> And because you've said that "problem space is a bit convoluted" and I
+> disagree, here's a summary from my point of view:
+>
+> 1. All the necessary information (dependencies between drivers) already
+> exists at compile time. The set of dependencies between drivers might become
+> smaller by configuration, but will not become larger. So there should be NO
+> need to collect them at runtime, e.g. by instrumenting function calls.
 
-> Sent: Friday, June 12, 2015 9:06 PM
-> 
-> On Thu, May 21, 2015 at 07:57:26PM +0900, Yoshihiro Shimoda wrote:
-> [...]
-> > diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-> [...]
-> > +#define to_rcar_pwm_chip(chip)	container_of(chip, struct rcar_pwm_chip, chip)
-> 
-> For consistency with other drivers I'd like this to be a static inline
-> function.
+I think you arrived at the core of the crux here.
 
-I got it. I will modify this.
+When we look up a resource provided from another driver, e.g. from
+regulator_get(), clk_get(), pinctrl_get(), gpiod_get() etc - the dependency
+is resolved by looking in a cross-reference table for either a struct device*
+pointer or a string, an index, or both or all three. Examples:
 
-> > +
-> > +static void rcar_pwm_write(struct rcar_pwm_chip *rp, u32 data, u32 reg)
-> > +{
-> > +	iowrite32(data, rp->base + reg);
-> > +}
-> > +
-> > +static u32 rcar_pwm_read(struct rcar_pwm_chip *rp, u32 reg)
-> > +{
-> > +	return ioread32(rp->base + reg);
-> > +}
-> 
-> ioread*() and iowrite*() are to be used for devices that can be on a
-> memory-mapped bus or an I/O mapped bus. I suspect that this particular
-> IP block doesn't fall into that category, so it should be using the
-> regular readl()/writel() instead.
+struct regulator *regulator_get(struct device *dev, const char *id);
+struct clk *clk_get(struct device *dev, const char *id);
+struct gpio_desc *__must_check __gpiod_get(struct device *dev,
+                                         const char *con_id,
+                                         enum gpiod_flags flags);
+(...)
 
-I will use readl()/writel().
+(*_index() variants exist on some of the resource retrieveal
+functions.)
 
-> > +static void rcar_pwm_bit_modify(struct rcar_pwm_chip *rp,
-> > +				u32 mask, u32 data, u32 reg)
-> 
-> You should try to fill up lines as much as you can: mask and data should
-> still fit on the first line.
+struct device * is the device requesting the resource, con_id
+is the string name of the resource on the provider side. This is all
+solved by looking in cross reference tables. ONE way of resolving
+that cross reference is to look into the device tree or the ACPI table.
+But for the board file case, this is resolved at runtime by the cross
+reference table, registered with calls such as gpiod_add_lookup_table().
 
-I will fix it.
+It is true that in the theoretical sense, all of this exist at compile time
+especially if you can parse something like a device tree and
+figure out what struct device * nodes will correspond to the struct
+device_node:s in it. For ACPI I guess a similar procedure is viable.
 
-> > +{
-> > +	u32 val = rcar_pwm_read(rp, reg);
-> > +
-> > +	val &= ~mask;
-> > +	val |= data & mask;
-> > +	rcar_pwm_write(rp, val, reg);
-> > +}
-> > +
-> > +static int rcar_pwn_get_clock_division(struct rcar_pwm_chip *rp,
-> 
-> Typo: "pwn" -> "pwm"
+Problem: this requires the kernel compile to know exactly *which* device tree
+or ACPI table it is going to boot on. The expressed goal of device tree
+and ACPI is to have *ONE* kernel booting several device trees.
+Here your approach stops short: you are suggesting instrumenting
+the kernel at compile time to one single device tree or ACPI table.
+But we never know really what device tree or ACPI table will be used.
+This just cannot be done at compile time for that reason alone.
 
-Oops, I will fix it.
+Example: in boot case (A) the regulator may be provided by regulator
+"foo" driver on an i2c bus. But in boot case (B) the very same regulator
+may be provided by regulator "bar" on an SPI bus. These are very
+real usecases, for example for drivers/net/ethernet/smsc/smsc911x.c,
+will get regulators from the most diverse places depending on what
+device tree is used.
 
-> > +				       int period_ns)
-> > +{
-> > +	int div;
-> 
-> Perhaps make this unsigned int?
+For board files, it is neither possible in theory: you need to compile the
+code to figure out the struct device * provider, and/or the string name
+of the providing device (.name field in struct device for the provider)
+to resolve dependencies at compile time.
 
-I will use unsigned int.
+For the board file case, resolving dependencies at compile time will
+require a quite complex two-stage rocket: compile the code to
+get resources out, then recompile with known resources.
 
-> > +	unsigned long clk_rate = clk_get_rate(rp->clk);
-> > +	unsigned long long max;	/* max cycle / nanoseconds */
-> 
-> I think you want to check for clk_rate == 0 here and return an error.
-> Otherwise the do_div() call below may try to divide by 0.
+I guess your suggested approach then need to introduce a special
+build tool to order the initcalls accordingly.
 
-I will add a code to aboid dividing by 0.
+Again this will fall short if you don't know at compile time exactly
+*which* board file will be executed.
 
-> > +	for (div = 0; div <= RCAR_PWM_MAX_DIVISION; div++) {
-> > +		max = (unsigned long long)NSEC_PER_SEC * RCAR_PWM_MAX_CYCLE *
-> > +			(1 << div);
-> > +		do_div(max, clk_rate);
-> > +		if (period_ns < max)
-> > +			break;
-> > +	}
-> > +
-> > +	return div;
-> > +}
-> > +
-> > +static void rcar_pwm_set_clock_control(struct rcar_pwm_chip *rp, int div)
-> > +{
-> > +	u32 val = rcar_pwm_read(rp, RCAR_PWMCR);
-> > +
-> > +	if (div > RCAR_PWM_MAX_DIVISION)
-> > +		return;
-> 
-> Shouldn't you return an error here (and propagate it later on) if an
-> invalid value is passed in? Or perhaps even avoid calling this function
-> with an invalid value in the first place? As it is, you're silently
-> ignoring cases where an invalid value is being passed in. That'll leave
-> anybody working with this driver completely puzzled when it doesn't
-> behave the way they expect it too. And it gives users no indication
-> about what went wrong.
+So the only practical way to solve this at compile time is to predict
+an initcall ordering sequence for all possible boot paths, compile in
+all of them, and choose the right one at boot. But the number of boot
+paths is equal to the number of device trees / ACPI tables or
+board files supported, and that space is uncontrolled and ordered
+infinite.
 
-I will add a code to return an error here.
+Basically I think the root problem with your approach is that you
+assume we know what hardware we will boot on at compile time. We
+discarded that development path years ago. We have no clue, this
+is resolved at runtime. Alas, people still create super-optimized
+systems using exactly this knowledge, but it is not our main target
+here, it is a special optimization case.
 
-> > +
-> > +	val &= ~(RCAR_PWMCR_CCMD | RCAR_PWMCR_CC0_MASK);
-> > +	if (div & 1)
-> > +		val |= RCAR_PWMCR_CCMD;
-> > +	div >>= 1;
-> > +	val |= div << RCAR_PWMCR_CC0_SHIFT;
-> > +	rcar_pwm_write(rp, val, RCAR_PWMCR);
-> > +}
-> > +
-> > +static void rcar_pwm_set_counter(struct rcar_pwm_chip *rp, int div,
-> > +				 int duty_ns, int period_ns)
-> > +{
-> > +	unsigned long long one_cycle, tmp;	/* 0.01 nanoseconds */
-> > +	unsigned long clk_rate = clk_get_rate(rp->clk);
-> > +	u32 cyc, ph;
-> > +
-> > +	one_cycle = (unsigned long long)NSEC_PER_SEC * 100ULL * (1 << div);
-> > +	do_div(one_cycle, clk_rate);
-> > +
-> > +	tmp = period_ns * 100ULL;
-> > +	do_div(tmp, one_cycle);
-> > +	cyc = (tmp << RCAR_PWMCNT_CYC0_SHIFT) & RCAR_PWMCNT_CYC0_MASK;
-> > +
-> > +	tmp = duty_ns * 100ULL;
-> > +	do_div(tmp, one_cycle);
-> > +	ph = tmp & RCAR_PWMCNT_PH0_MASK;
-> > +
-> > +	/* Avoid prohibited setting */
-> > +	if (cyc && ph)
-> > +		rcar_pwm_write(rp, cyc | ph, RCAR_PWMCNT);
-> 
-> So if a period and duty-cycle are passed in that yield the prohibited
-> setting the operation will simply be silently ignored?
-
-Yes, to update values of pwm->duty_cycle and ->period by pwm_config(),
-this code will be silently ignored.
-
-> > +}
-> > +
-> > +static int rcar_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
-> > +{
-> > +	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
-> > +
-> > +	return clk_prepare_enable(rp->clk);
-> > +}
-> > +
-> > +static void rcar_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
-> > +{
-> > +	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
-> > +
-> > +	clk_disable_unprepare(rp->clk);
-> > +}
-> > +
-> > +static int rcar_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> > +			   int duty_ns, int period_ns)
-> > +{
-> > +	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
-> > +	int div;
-> > +
-> > +	div = rcar_pwn_get_clock_division(rp, period_ns);
-> 
-> The above three lines can be collapsed into a single one.
-
-I will fix this.
-
-> > +
-> > +	rcar_pwm_bit_modify(rp, RCAR_PWMCR_SYNC, RCAR_PWMCR_SYNC, RCAR_PWMCR);
-> > +	rcar_pwm_set_counter(rp, div, duty_ns, period_ns);
-> > +	rcar_pwm_set_clock_control(rp, div);
-> > +	rcar_pwm_bit_modify(rp, RCAR_PWMCR_SYNC, 0, RCAR_PWMCR);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int rcar_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-> > +{
-> > +	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
-> > +	u32 pwmcnt;
-> > +
-> > +	/* Don't enable the PWM device if CYC0 or PH0 is 0 */
-> > +	pwmcnt = rcar_pwm_read(rp, RCAR_PWMCNT);
-> > +	if (!(pwmcnt & RCAR_PWMCNT_CYC0_MASK) ||
-> > +	    !(pwmcnt & RCAR_PWMCNT_PH0_MASK))
-> > +		return -EINVAL;
-> > +
-> > +	rcar_pwm_bit_modify(rp, RCAR_PWMCR_EN0, RCAR_PWMCR_EN0, RCAR_PWMCR);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static void rcar_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-> > +{
-> > +	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
-> > +
-> > +	rcar_pwm_bit_modify(rp, RCAR_PWMCR_EN0, 0, RCAR_PWMCR);
-> > +}
-> > +
-> > +static const struct pwm_ops rcar_pwm_ops = {
-> > +	.request	= rcar_pwm_request,
-> > +	.free		= rcar_pwm_free,
-> > +	.config		= rcar_pwm_config,
-> > +	.enable		= rcar_pwm_enable,
-> > +	.disable	= rcar_pwm_disable,
-> > +	.owner		= THIS_MODULE,
-> > +};
-> 
-> No need for this padding. Single spaces around = are good enough.
-
-I got it. I will fix it.
-
-> > +
-> > +static int rcar_pwm_probe(struct platform_device *pdev)
-> > +{
-> > +	struct rcar_pwm_chip *rcar_pwm;
-> > +	struct resource *res;
-> > +	int ret;
-> > +
-> > +	rcar_pwm = devm_kzalloc(&pdev->dev, sizeof(*rcar_pwm), GFP_KERNEL);
-> > +	if (rcar_pwm == NULL)
-> > +		return -ENOMEM;
-> > +
-> > +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > +	rcar_pwm->base = devm_ioremap_resource(&pdev->dev, res);
-> > +	if (IS_ERR(rcar_pwm->base))
-> > +		return PTR_ERR(rcar_pwm->base);
-> > +
-> > +	rcar_pwm->clk = devm_clk_get(&pdev->dev, NULL);
-> > +	if (IS_ERR(rcar_pwm->clk)) {
-> > +		dev_err(&pdev->dev, "cannot get clock\n");
-> > +		return PTR_ERR(rcar_pwm->clk);
-> > +	}
-> > +
-> > +	platform_set_drvdata(pdev, rcar_pwm);
-> > +
-> > +	rcar_pwm->chip.dev = &pdev->dev;
-> > +	rcar_pwm->chip.ops = &rcar_pwm_ops;
-> > +	rcar_pwm->chip.of_xlate = of_pwm_xlate_with_flags;
-> > +	rcar_pwm->chip.base = -1;
-> > +	rcar_pwm->chip.npwm = 1;
-> > +
-> > +	ret = pwmchip_add(&rcar_pwm->chip);
-> > +	if (ret < 0) {
-> > +		dev_err(&pdev->dev, "failed to register PWM chip\n");
-> > +		return ret;
-> > +	}
-> > +
-> > +	dev_info(&pdev->dev, "R-Car PWM Timer registered\n");
-> 
-> No need to brag about success. Expect that things will go well and let
-> users know when they don't. Output error messages, not success messages.
-
-I got it. I will remove this message.
-
-> > +	pm_runtime_enable(&pdev->dev);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int rcar_pwm_remove(struct platform_device *pdev)
-> > +{
-> > +	struct rcar_pwm_chip *rcar_pwm = platform_get_drvdata(pdev);
-> > +	int ret;
-> > +
-> > +	ret = pwmchip_remove(&rcar_pwm->chip);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	pm_runtime_disable(&pdev->dev);
-> 
-> Perhaps you'd still like to disable runtime PM even if the chip can't be
-> removed?
-
-Thank you for the point. I will fix this.
-
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct of_device_id rcar_pwm_of_table[] = {
-> > +	{ .compatible = "renesas,pwm-rcar", },
-> > +	{ },
-> > +};
-> > +
-> > +MODULE_DEVICE_TABLE(of, rcar_pwm_of_table);
-> 
-> No blank line between the above two.
-
-I will remove the blank line.
-
-Best regards,
-Yoshihiro Shimoda
-
-> Thierry
+Yours,
+Linus Walleij
