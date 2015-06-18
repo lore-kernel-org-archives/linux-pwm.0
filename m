@@ -1,55 +1,100 @@
-From: Yingjoe Chen <yingjoe.chen@mediatek.com>
-Subject: Re: [PATCH v2 2/2] pwm: add MediaTek display PWM driver support
-Date: Thu, 18 Jun 2015 21:58:59 +0800
-Message-ID: <1434635939.22029.7.camel@mtksdaap41>
-References: <1432214964-40644-1-git-send-email-yh.huang@mediatek.com>
-	 <1432214964-40644-3-git-send-email-yh.huang@mediatek.com>
-	 <20150612102046.GF19400@ulmo.nvidia.com>
-	 <1434622784.18278.39.camel@mtksdaap41>
+From: Shobhit Kumar <kumar@shobhit.info>
+Subject: Re: [Intel-gfx] [PATCH 6/8] drivers/pwm: Add Crystalcove (CRC) PWM driver
+Date: Thu, 18 Jun 2015 23:24:35 +0530
+Message-ID: <CAAbrOmc-71MO2N9sezbOONPAf8_XSCOtHBSGD9AS9hOk0vsE=A@mail.gmail.com>
+References: <1430316005-16480-1-git-send-email-shobhit.kumar@intel.com>
+	<1430316005-16480-7-git-send-email-shobhit.kumar@intel.com>
+	<1430428322.2187.24.camel@x220>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailgw02.mediatek.com ([210.61.82.184]:60440 "EHLO
-	mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S932091AbbFRN7F (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 18 Jun 2015 09:59:05 -0400
-In-Reply-To: <1434622784.18278.39.camel@mtksdaap41>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <1430428322.2187.24.camel@x220>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Paul Bolle <pebolle@tiscali.nl>
+Cc: Shobhit Kumar <shobhit.kumar@intel.com>, linux-pwm <linux-pwm@vger.kernel.org>, Jani Nikula <jani.nikula@intel.com>, Samuel Ortiz <sameo@linux.intel.com>, Alexandre Courbot <gnurou@gmail.com>, David Airlie <airlied@linux.ie>, Povilas Staniulis <wdmonster@gmail.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
-To: YH Huang <yh.huang@mediatek.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>
 
-On Thu, 2015-06-18 at 18:19 +0800, YH Huang wrote:
-> On Fri, 2015-06-12 at 12:20 +0200, Thierry Reding wrote:
-> > > +/* Shift log2(PWM_PERIOD_MAX + 1) as divisor */
-> > > +#define PWM_PERIOD_BIT_SHIFT	12
-> > 
-> > I wasn't very clear about this in my earlier review, so let me try to
-> > explain why I think this is confusing. You use this as a divisor, but
-> > you encode it as a shift. It's also PWM_PERIOD_MAX + 1, so I think it
-> > would make more sense to drop this, keep PWM_PERIOD_MAX as above and
-> > then replace the
-> > 
-> > 	>> PWM_PERIOD_BIT_SHIFT
-> > 	
-> > below by
-> > 
-> > 	/ (PWM_PERIOD_MAX + 1)
-> > 
-> 
-> Maybe I can change in this way:
-> Remove this: #define PWM_PERIOD_MAX		0x00000fff
-> Using ">> PWM_PERIOD_BIT_SHIFT" is faster than "/ (PWM_PERIOD_MAX + 1)"
-> Is this right?
+On Fri, May 1, 2015 at 2:42 AM, Paul Bolle <pebolle@tiscali.nl> wrote:
+> On Wed, 2015-04-29 at 19:30 +0530, Shobhit Kumar wrote:
+>> --- a/drivers/pwm/Kconfig
+>> +++ b/drivers/pwm/Kconfig
+>
+>> +config PWM_CRC
+>> +     bool "Intel Crystalcove (CRC) PWM support"
+>> +     depends on X86 && INTEL_SOC_PMIC
+>> +     help
+>> +       Generic PWM framework driver for Crystalcove (CRC) PMIC based PWM
+>> +       control.
+>
+>> --- a/drivers/pwm/Makefile
+>> +++ b/drivers/pwm/Makefile
+>
+>> +obj-$(CONFIG_PWM_CRC)                += pwm-crc.o
+>
+> PWM_CRC is a bool symbol. So pwm-crc.o can never be part of a module.
 
+I actually started this as a module but later decided to make it as
+bool because INTEL_SOC_PMIC on which this depends is itself a bool as
+well. Still it is good to keep the module based initialization.
+Firstly because it causes no harm and even though some of the macros
+are pre-processed out, gives info about the driver. Secondly there
+were discussion on why INTEL_SOC_PMIC is bool (note this driver also
+has module based initialization even when bool). I am guessing because
+of some tricky module load order dependencies. If ever that becomes a
+module, this can mostly be unchanged to be loaded as a module.
 
-The place which use this shift is:
+Regards
+Shobhit
 
-	clk_div = div_u64(rate * period_ns, NSEC_PER_SEC) >> 
-			  PWM_PERIOD_BIT_SHIFT;
-
-div_u64 return u64. If we change >> to /, and somehow compiler didn't
-optimize that div into shift, it will cause build error.
-
-Joe.C
+>
+> (If I'm wrong, and that object file can actually be part of a module,
+> you can stop reading here.)
+>
+>> --- /dev/null
+>> +++ b/drivers/pwm/pwm-crc.c
+>
+>> +#include <linux/module.h>
+>
+> Perhaps this include is not needed.
+>
+>> +static const struct pwm_ops crc_pwm_ops = {
+>> +     .config = crc_pwm_config,
+>> +     .enable = crc_pwm_enable,
+>> +     .disable = crc_pwm_disable,
+>> +     .owner = THIS_MODULE,
+>
+> For built-in only code THIS_MODULE is basically equivalent to NULL (see
+> include/linux/export.h). So I guess this line can be dropped.
+>
+>> +};
+>
+>> +static struct platform_driver crystalcove_pwm_driver = {
+>> +     .probe = crystalcove_pwm_probe,
+>> +     .remove = crystalcove_pwm_remove,
+>> +     .driver = {
+>> +             .name = "crystal_cove_pwm",
+>> +     },
+>> +};
+>> +
+>> +module_platform_driver(crystalcove_pwm_driver);
+>
+> Speaking from memory: for built-in only code this is equivalent to
+> calling
+>     platform_driver_register(&crystalcove_pwm_driver);
+>
+> from a wrapper, and marking that wrapper with device_initcall().
+>
+>> +MODULE_AUTHOR("Shobhit Kumar <shobhit.kumar@intel.com>");
+>> +MODULE_DESCRIPTION("Intel Crystal Cove PWM Driver");
+>> +MODULE_LICENSE("GPL v2");
+>
+> These macros will be effectively preprocessed away for built-in only
+> code.
+>
+>
+> Paul Bolle
+>
+> _______________________________________________
+> Intel-gfx mailing list
+> Intel-gfx@lists.freedesktop.org
+> http://lists.freedesktop.org/mailman/listinfo/intel-gfx
