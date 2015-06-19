@@ -1,50 +1,79 @@
-From: Michael Turquette <mturquette@linaro.org>
-Subject: Re: [PATCH v2 4/5] clk: ti: DRA7: Add tbclk data for ehrpwm
-Date: Thu, 18 Jun 2015 15:39:39 -0700
-Message-ID: <20150618223939.9112.75016@quantum>
-References: <1433332284-10766-1-git-send-email-vigneshr@ti.com>
- <1433332284-10766-5-git-send-email-vigneshr@ti.com>
+From: Shobhit Kumar <kumar@shobhit.info>
+Subject: Re: [PATCH 6/8] drivers/pwm: Add Crystalcove (CRC) PWM
+	driver
+Date: Fri, 19 Jun 2015 12:16:47 +0530
+Message-ID: <CAAbrOmdGesnA+-1gz8mAWFgpSwP-R-=CZ0WjBwLamMT0f_X6bw@mail.gmail.com>
+References: <1430316005-16480-1-git-send-email-shobhit.kumar@intel.com>
+ <1430316005-16480-7-git-send-email-shobhit.kumar@intel.com>
+ <1430428322.2187.24.camel@x220>
+ <CAAbrOmc-71MO2N9sezbOONPAf8_XSCOtHBSGD9AS9hOk0vsE=A@mail.gmail.com>
+ <1434652916.2385.124.camel@x220>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-omap-owner@vger.kernel.org>
-In-Reply-To: <1433332284-10766-5-git-send-email-vigneshr@ti.com>
-Sender: linux-omap-owner@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>, Tero Kristo <t-kristo@ti.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Benoit Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, Vignesh R <vigneshr@ti.com>
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <1434652916.2385.124.camel@x220>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Paul Bolle <pebolle@tiscali.nl>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Samuel Ortiz <sameo@linux.intel.com>, linux-pwm <linux-pwm@vger.kernel.org>, Jani Nikula <jani.nikula@intel.com>, Shobhit Kumar <shobhit.kumar@intel.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, Povilas Staniulis <wdmonster@gmail.com>, David Airlie <airlied@linux.ie>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Quoting Vignesh R (2015-06-03 04:51:23)
-> tbclk is needed by ehrpwm to generate pwm waveforms. Hence, register
-> the required clock information.
-> 
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
-
-Looks good to me. Please feel free to add:
-
-Acked-by: Michael Turquette <mturquette@baylibre.com>
-
-Regards,
-Mike
-
-> ---
->  drivers/clk/ti/clk-7xx.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/clk/ti/clk-7xx.c b/drivers/clk/ti/clk-7xx.c
-> index 5d2217ae4478..366be43d15fe 100644
-> --- a/drivers/clk/ti/clk-7xx.c
-> +++ b/drivers/clk/ti/clk-7xx.c
-> @@ -304,6 +304,9 @@ static struct ti_dt_clk dra7xx_clks[] = {
->         DT_CLK("4882a000.timer", "timer_sys_ck", "timer_sys_clk_div"),
->         DT_CLK("4882c000.timer", "timer_sys_ck", "timer_sys_clk_div"),
->         DT_CLK("4882e000.timer", "timer_sys_ck", "timer_sys_clk_div"),
-> +       DT_CLK("4843e200.ehrpwm", "tbclk", "ehrpwm0_tbclk"),
-> +       DT_CLK("48440200.ehrpwm", "tbclk", "ehrpwm1_tbclk"),
-> +       DT_CLK("48442200.ehrpwm", "tbclk", "ehrpwm2_tbclk"),
->         DT_CLK(NULL, "sys_clkin", "sys_clkin1"),
->         { .node_name = NULL },
->  };
-> -- 
-> 2.4.1
-> 
+SGkgUGF1bCwKCk9uIEZyaSwgSnVuIDE5LCAyMDE1IGF0IDEyOjExIEFNLCBQYXVsIEJvbGxlIDxw
+ZWJvbGxlQHRpc2NhbGkubmw+IHdyb3RlOgo+IEhpIFNob2JoaXQsCj4KPiBPbiBUaHUsIDIwMTUt
+MDYtMTggYXQgMjM6MjQgKzA1MzAsIFNob2JoaXQgS3VtYXIgd3JvdGU6Cj4+IE9uIEZyaSwgTWF5
+IDEsIDIwMTUgYXQgMjo0MiBBTSwgUGF1bCBCb2xsZSA8cGVib2xsZUB0aXNjYWxpLm5sPiB3cm90
+ZToKPj4gPiBPbiBXZWQsIDIwMTUtMDQtMjkgYXQgMTk6MzAgKzA1MzAsIFNob2JoaXQgS3VtYXIg
+d3JvdGU6Cj4+ID4+IC0tLSBhL2RyaXZlcnMvcHdtL0tjb25maWcKPj4gPj4gKysrIGIvZHJpdmVy
+cy9wd20vS2NvbmZpZwo+PiA+Cj4+ID4+ICtjb25maWcgUFdNX0NSQwo+PiA+PiArICAgICBib29s
+ICJJbnRlbCBDcnlzdGFsY292ZSAoQ1JDKSBQV00gc3VwcG9ydCIKPj4gPj4gKyAgICAgZGVwZW5k
+cyBvbiBYODYgJiYgSU5URUxfU09DX1BNSUMKPj4gPj4gKyAgICAgaGVscAo+PiA+PiArICAgICAg
+IEdlbmVyaWMgUFdNIGZyYW1ld29yayBkcml2ZXIgZm9yIENyeXN0YWxjb3ZlIChDUkMpIFBNSUMg
+YmFzZWQgUFdNCj4+ID4+ICsgICAgICAgY29udHJvbC4KPj4gPgo+PiA+PiAtLS0gYS9kcml2ZXJz
+L3B3bS9NYWtlZmlsZQo+PiA+PiArKysgYi9kcml2ZXJzL3B3bS9NYWtlZmlsZQo+PiA+Cj4+ID4+
+ICtvYmotJChDT05GSUdfUFdNX0NSQykgICAgICAgICAgICAgICAgKz0gcHdtLWNyYy5vCj4+ID4K
+Pj4gPiBQV01fQ1JDIGlzIGEgYm9vbCBzeW1ib2wuIFNvIHB3bS1jcmMubyBjYW4gbmV2ZXIgYmUg
+cGFydCBvZiBhIG1vZHVsZS4KPj4KPj4gSSBhY3R1YWxseSBzdGFydGVkIHRoaXMgYXMgYSBtb2R1
+bGUgYnV0IGxhdGVyIGRlY2lkZWQgdG8gbWFrZSBpdCBhcwo+PiBib29sIGJlY2F1c2UgSU5URUxf
+U09DX1BNSUMgb24gd2hpY2ggdGhpcyBkZXBlbmRzIGlzIGl0c2VsZiBhIGJvb2wgYXMKPj4gd2Vs
+bC4KPgo+IEFzIGRvZXMgR1BJT19DUllTVEFMX0NPVkUgYW5kIHRoYXQncyBhIHRyaXN0YXRlLiBT
+bz8KPgo+PiBTdGlsbCBpdCBpcyBnb29kIHRvIGtlZXAgdGhlIG1vZHVsZSBiYXNlZCBpbml0aWFs
+aXphdGlvbi4KPj4gRmlyc3RseSBiZWNhdXNlIGl0IGNhdXNlcyBubyBoYXJtCj4KPiBJZiBJIGdv
+dCBhIGRpbWUgZm9yIGV2ZXJ5IHRpbWUgcGVvcGxlIHVzZWQgYW4gYXJndW1lbnQgbGlrZSB0aGF0
+IEkgLi4uIEkKPiBjb3VsZCB0cmVhdCBteXNlbGYgdG8gYW4gaWNlIGNyZWFtLiBBIHJlYWxseSBi
+aWcgaWNlIGNyZWFtLiBIbW0sIHRoYXQKPiBkb2Vzbid0IHNvdW5kIHRvbyBpbXByZXNzaXZlLiBC
+dXQgc3RpbGwsICJjYXVzZXMgbm8gaGFybSIgaXMgYmVsb3cgdGhlCj4gYmFyIGZvciBrZXJuZWwg
+Y29kZS4gS2VybmVsIGNvZGUgbmVlZHMgdG8gYWRkIHZhbHVlLgo+Cj4+IGFuZCBldmVuIHRob3Vn
+aCBzb21lIG9mIHRoZSBtYWNyb3MKPj4gYXJlIHByZS1wcm9jZXNzZWQgb3V0LCBnaXZlcyBpbmZv
+IGFib3V0IHRoZSBkcml2ZXIuCj4KPiBOb25lIG9mIHdoaWNoIGNhbid0IGJlIGdvdHRlbiBlbHNl
+d2hlcmUgKGllLCB0aGUgY29tbWl0IG1lc3NhZ2UsIG9yIHRoZQo+IGZpbGUgdGhlc2UgbWFjcm8g
+cmVzaWRlIGluKS4KPgoKQ2F1c2VzIG5vIGhhcm0gY29tbWVudCBoYWQgdG8gYmUgcmVhZCB0b2dl
+dGhlciB3aXRoIG1vcmUgaW5mbyBhYm91dAp0aGUgZHJpdmVyLiBJdCBjYXVzZXMgbm8gaGFybSB3
+aGlsZSBwcm92aWRpbmcgbW9yZSBpbmZvLiBBbmQgYXMgeW91Cm9ubHkgc2FpZCB0aG9zZSBtYWNy
+b3MgYXJlIHByZS1wcm9jZXNzZWQgb3V0IHRvIHJlYWxseSB0aGUgZGVmYXVsdHMKZm9yIGJ1aWx0
+LWluIGRyaXZlcnMuIFNvIHdoYXQgaXMgdGhlIGV4YWN0IGJpZyBwcm9ibGVtIHdpdGggdGhpcyA/
+IEkKY2FuIGFueXdheSBzaG92ZSBvdXQgdGhlc2UgbWFjcm9zIHRvIGVuZCB0aGUgZGlzY3Vzc2lv
+bi4KCkJUVyB3aGV0aGVyIHlvdSAgYnV5IHRoZSBhcmd1bWVudCBvciBub3QsIHBsZWFzZSBkbyB0
+cmVhdCB5b3Vyc2VsZgp3aXRoIGljZSBjcmVhbSBmb3IgYmVpbmcgYWJsZSB0byBtYWtlIHN1Y2gg
+YSBjb21tZW50LgoKPj4gU2Vjb25kbHkgdGhlcmUKPj4gd2VyZSBkaXNjdXNzaW9uIG9uIHdoeSBJ
+TlRFTF9TT0NfUE1JQyBpcyBib29sIChub3RlIHRoaXMgZHJpdmVyIGFsc28KPj4gaGFzIG1vZHVs
+ZSBiYXNlZCBpbml0aWFsaXphdGlvbiBldmVuIHdoZW4gYm9vbCkuCj4KPiBZZXMsIHRoZXJlJ3Mg
+Y29weSBhbmQgcGFzdGUgZ29pbmcgb24gZXZlbiBpbiBrZXJuZWwgZGV2ZWxvcG1lbnQuCj4KClRo
+ZXJlIGFyZSBvdGhlciBleGFtcGxlcyBpbiB0aGUga2VybmVsLiBJIGp1c3QgZ2F2ZSB0aGUgb25l
+IHdoaWNoIGlzCnJlbGF0ZWQgYXMgd2VsbC4KClJlZ2FyZHMKU2hvYmhpdAoKPj4gSSBhbSBndWVz
+c2luZyBiZWNhdXNlCj4+IG9mIHNvbWUgdHJpY2t5IG1vZHVsZSBsb2FkIG9yZGVyIGRlcGVuZGVu
+Y2llcy4gSWYgZXZlciB0aGF0IGJlY29tZXMgYQo+PiBtb2R1bGUsIHRoaXMgY2FuIG1vc3RseSBi
+ZSB1bmNoYW5nZWQgdG8gYmUgbG9hZGVkIGFzIGEgbW9kdWxlLgo+Cj4gWW91IHB1dCBpbiBhIG1h
+Y3JvLCBvciBhbnkgb3RoZXIgYml0IG9mIGNvZGUsIHdoZW4gaXQncyBuZWVkZWQsIG5vdAo+IGJl
+Zm9yZWhhbmQsICJqdXN0IGluIGNhc2UiLiBUaGF0J3Mgc2lsbHkuCj4KPiBUaGFua3MsCj4KPgo+
+IFBhdWwgQm9sbGUKPgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fXwpJbnRlbC1nZnggbWFpbGluZyBsaXN0CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5v
+cmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdm
+eAo=
