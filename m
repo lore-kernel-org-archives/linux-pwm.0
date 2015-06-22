@@ -1,66 +1,45 @@
 From: Shobhit Kumar <shobhit.kumar@intel.com>
-Subject: [v2 4/7] mfd: intel_soc_pmic_core: ADD PWM lookup table
-	for CRC PMIC based PWM
-Date: Mon, 22 Jun 2015 16:24:22 +0530
-Message-ID: <1434970465-12687-5-git-send-email-shobhit.kumar@intel.com>
+Subject: [v2 3/7] mfd: intel_soc_pmic_crc: Add PWM cell device for Crystalcove PMIC
+Date: Mon, 22 Jun 2015 16:24:21 +0530
+Message-ID: <1434970465-12687-4-git-send-email-shobhit.kumar@intel.com>
 References: <1434970465-12687-1-git-send-email-shobhit.kumar@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+Return-path: <linux-gpio-owner@vger.kernel.org>
 In-Reply-To: <1434970465-12687-1-git-send-email-shobhit.kumar@intel.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+Sender: linux-gpio-owner@vger.kernel.org
 To: linux-pwm <linux-pwm@vger.kernel.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Paul Bolle <pebolle@tiscali.nl>, Samuel Ortiz <sameo@linux.intel.com>, Povilas Staniulis <wdmonster@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Shobhit Kumar <shobhit.kumar@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, bloften80@gmail.com, David Airlie <airlied@linux.ie>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>
+Cc: Paul Bolle <pebolle@tiscali.nl>, Jani Nikula <jani.nikula@intel.com>, Samuel Ortiz <sameo@linux.intel.com>, Alexandre Courbot <gnurou@gmail.com>, David Airlie <airlied@linux.ie>, Povilas Staniulis <wdmonster@gmail.com>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, bloften80@gmail.com, Shobhit Kumar <shobhit.kumar@intel.com>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gc29tZSBCWVQgUExhdGZvcm0gdGhlIFBXTSBpcyBjb250cm9sbGVkIHVzaW5nIENSQyBQTUlD
-LiBBZGQgYSBsb29rdXAKZW50cnkgZm9yIHRoZSBzYW1lIHRvIGJlIHVzZWQgYnkgdGhlIGNvbnN1
-bWVyIChJbnRlbCBHRlgpCgp2MjogUmVtb3ZlIHRoZSBsb29rdXAgdGFibGUgb24gZHJpdmVyIHVu
-bG9hZCAoVGhpZXJyeSkKCnYzOiBDb3JyZWN0IHRoZSBzdWJqZWN0IGxpbmUgKExlZSBqb25lcykK
-CkNDOiBTYW11ZWwgT3J0aXogPHNhbWVvQGxpbnV4LmludGVsLmNvbT4KQ2M6IExpbnVzIFdhbGxl
-aWogPGxpbnVzLndhbGxlaWpAbGluYXJvLm9yZz4KQ2M6IEFsZXhhbmRyZSBDb3VyYm90IDxnbnVy
-b3VAZ21haWwuY29tPgpDYzogVGhpZXJyeSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNv
-bT4KQWNrZWQtYnk6IExlZSBKb25lcyA8bGVlLmpvbmVzQGxpbmFyby5vcmc+ClNpZ25lZC1vZmYt
-Ynk6IFNob2JoaXQgS3VtYXIgPHNob2JoaXQua3VtYXJAaW50ZWwuY29tPgotLS0KIGRyaXZlcnMv
-bWZkL2ludGVsX3NvY19wbWljX2NvcmUuYyB8IDEyICsrKysrKysrKysrKwogMSBmaWxlIGNoYW5n
-ZWQsIDEyIGluc2VydGlvbnMoKykKCmRpZmYgLS1naXQgYS9kcml2ZXJzL21mZC9pbnRlbF9zb2Nf
-cG1pY19jb3JlLmMgYi9kcml2ZXJzL21mZC9pbnRlbF9zb2NfcG1pY19jb3JlLmMKaW5kZXggZjNk
-OTE4ZS4uYTAwZGRkOSAxMDA2NDQKLS0tIGEvZHJpdmVycy9tZmQvaW50ZWxfc29jX3BtaWNfY29y
-ZS5jCisrKyBiL2RyaXZlcnMvbWZkL2ludGVsX3NvY19wbWljX2NvcmUuYwpAQCAtMjUsNiArMjUs
-NyBAQAogI2luY2x1ZGUgPGxpbnV4L3JlZ21hcC5oPgogI2luY2x1ZGUgPGxpbnV4L21mZC9pbnRl
-bF9zb2NfcG1pYy5oPgogI2luY2x1ZGUgPGxpbnV4L2dwaW8vbWFjaGluZS5oPgorI2luY2x1ZGUg
-PGxpbnV4L3B3bS5oPgogI2luY2x1ZGUgImludGVsX3NvY19wbWljX2NvcmUuaCIKIAogLyogTG9v
-a3VwIHRhYmxlIGZvciB0aGUgUGFuZWwgRW5hYmxlL0Rpc2FibGUgbGluZSBhcyBHUElPIHNpZ25h
-bHMgKi8KQEAgLTM3LDYgKzM4LDExIEBAIHN0YXRpYyBzdHJ1Y3QgZ3Bpb2RfbG9va3VwX3RhYmxl
-IHBhbmVsX2dwaW9fdGFibGUgPSB7CiAJfSwKIH07CiAKKy8qIFBXTSBjb25zdW1lZCBieSB0aGUg
-SW50ZWwgR0ZYICovCitzdGF0aWMgc3RydWN0IHB3bV9sb29rdXAgY3JjX3B3bV9sb29rdXBbXSA9
-IHsKKwlQV01fTE9PS1VQKCJjcnlzdGFsX2NvdmVfcHdtIiwgMCwgIjAwMDA6MDA6MDIuMCIsICJw
-d21fYmFja2xpZ2h0IiwgMCwgUFdNX1BPTEFSSVRZX05PUk1BTCksCit9OworCiBzdGF0aWMgaW50
-IGludGVsX3NvY19wbWljX2ZpbmRfZ3Bpb19pcnEoc3RydWN0IGRldmljZSAqZGV2KQogewogCXN0
-cnVjdCBncGlvX2Rlc2MgKmRlc2M7CkBAIC05OSw2ICsxMDUsOSBAQCBzdGF0aWMgaW50IGludGVs
-X3NvY19wbWljX2kyY19wcm9iZShzdHJ1Y3QgaTJjX2NsaWVudCAqaTJjLAogCS8qIEFkZCBsb29r
-dXAgdGFibGUgYmluZGluZyBmb3IgUGFuZWwgQ29udHJvbCB0byB0aGUgR1BJTyBDaGlwICovCiAJ
-Z3Bpb2RfYWRkX2xvb2t1cF90YWJsZSgmcGFuZWxfZ3Bpb190YWJsZSk7CiAKKwkvKiBBZGQgbG9v
-a3VwIHRhYmxlIGZvciBjcmMtcHdtICovCisJcHdtX2FkZF90YWJsZShjcmNfcHdtX2xvb2t1cCwg
-QVJSQVlfU0laRShjcmNfcHdtX2xvb2t1cCkpOworCiAJcmV0ID0gbWZkX2FkZF9kZXZpY2VzKGRl
-diwgLTEsIGNvbmZpZy0+Y2VsbF9kZXYsCiAJCQkgICAgICBjb25maWctPm5fY2VsbF9kZXZzLCBO
-VUxMLCAwLAogCQkJICAgICAgcmVnbWFwX2lycV9nZXRfZG9tYWluKHBtaWMtPmlycV9jaGlwX2Rh
-dGEpKTsKQEAgLTEyMSw2ICsxMzAsOSBAQCBzdGF0aWMgaW50IGludGVsX3NvY19wbWljX2kyY19y
-ZW1vdmUoc3RydWN0IGkyY19jbGllbnQgKmkyYykKIAkvKiBSZW1vdmUgbG9va3VwIHRhYmxlIGZv
-ciBQYW5lbCBDb250cm9sIGZyb20gdGhlIEdQSU8gQ2hpcCAqLwogCWdwaW9kX3JlbW92ZV9sb29r
-dXBfdGFibGUoJnBhbmVsX2dwaW9fdGFibGUpOwogCisJLyogcmVtb3ZlIGNyYy1wd20gbG9va3Vw
-IHRhYmxlICovCisJcHdtX3JlbW92ZV90YWJsZShjcmNfcHdtX2xvb2t1cCwgQVJSQVlfU0laRShj
-cmNfcHdtX2xvb2t1cCkpOworCiAJbWZkX3JlbW92ZV9kZXZpY2VzKCZpMmMtPmRldik7CiAKIAly
-ZXR1cm4gMDsKLS0gCjEuOS4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBsaXN0CkludGVsLWdmeEBsaXN0cy5mcmVlZGVz
-a3RvcC5vcmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lu
-dGVsLWdmeAo=
+Needed for PWM control suuported by the PMIC
+
+v2: Correct the subject line (Lee jones)
+
+CC: Samuel Ortiz <sameo@linux.intel.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Alexandre Courbot <gnurou@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Shobhit Kumar <shobhit.kumar@intel.com>
+---
+ drivers/mfd/intel_soc_pmic_crc.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/mfd/intel_soc_pmic_crc.c b/drivers/mfd/intel_soc_pmic_crc.c
+index 7436075..4a74948 100644
+--- a/drivers/mfd/intel_soc_pmic_crc.c
++++ b/drivers/mfd/intel_soc_pmic_crc.c
+@@ -109,6 +109,9 @@ static struct mfd_cell crystal_cove_dev[] = {
+ 	{
+ 		.name = "crystal_cove_pmic",
+ 	},
++	{
++		.name = "crystal_cove_pwm",
++	},
+ };
+ 
+ static const struct regmap_config crystal_cove_regmap_config = {
+-- 
+1.9.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-gpio" in
