@@ -1,103 +1,55 @@
-From: Shobhit Kumar <shobhit.kumar@intel.com>
-Subject: [v2 6/7] drm/i915: Use the CRC gpio for panel
-	enable/disable
-Date: Mon, 22 Jun 2015 16:24:24 +0530
-Message-ID: <1434970465-12687-7-git-send-email-shobhit.kumar@intel.com>
-References: <1434970465-12687-1-git-send-email-shobhit.kumar@intel.com>
+From: Varka Bhadram <varkabhadram@gmail.com>
+Subject: Re: [v2 4/7] mfd: intel_soc_pmic_core: ADD PWM lookup table for CRC
+ PMIC based PWM
+Date: Mon, 22 Jun 2015 16:33:22 +0530
+Message-ID: <5587EB7A.5090402@gmail.com>
+References: <1434970465-12687-1-git-send-email-shobhit.kumar@intel.com> <1434970465-12687-5-git-send-email-shobhit.kumar@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <1434970465-12687-1-git-send-email-shobhit.kumar@intel.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: linux-pwm <linux-pwm@vger.kernel.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Paul Bolle <pebolle@tiscali.nl>, Samuel Ortiz <sameo@linux.intel.com>, Povilas Staniulis <wdmonster@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Shobhit Kumar <shobhit.kumar@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, bloften80@gmail.com, David Airlie <airlied@linux.ie>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <1434970465-12687-5-git-send-email-shobhit.kumar@intel.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Shobhit Kumar <shobhit.kumar@intel.com>, linux-pwm <linux-pwm@vger.kernel.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>
+Cc: Paul Bolle <pebolle@tiscali.nl>, Jani Nikula <jani.nikula@intel.com>, Samuel Ortiz <sameo@linux.intel.com>, Alexandre Courbot <gnurou@gmail.com>, David Airlie <airlied@linux.ie>, Povilas Staniulis <wdmonster@gmail.com>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, bloften80@gmail.com
 List-Id: linux-pwm@vger.kernel.org
 
-VGhlIENSQyAoQ3J5c3RhbCBDb3ZlKSBQTUlDLCBjb250cm9scyB0aGUgcGFuZWwgZW5hYmxlIGFu
-ZCBkaXNhYmxlCnNpZ25hbHMgZm9yIEJZVCBmb3IgZHNpIHBhbmVscy4gVGhpcyBpcyBpbmRpY2F0
-ZWQgaW4gdGhlIFZCVCBmaWVsZHMuIFVzZQp0aGF0IHRvIGluaXRpYWxpemUgYW5kIHVzZSBHUElP
-IGJhc2VkIGNvbnRyb2wgZm9yIHRoZXNlIHNpZ25hbHMuCgp2MjogVXNlIHRoZSBuZXdlciBncGlv
-ZCBpbnRlcmZhY2UoQWxleGFuZHJlKQp2MzogUmVtb3ZlIHRoZSByZWR1bmRhbnQgY2hlY2tzIGFu
-ZCB1bnVzZWQgY29kZSAoVmlsbGUpCnY0OiBNb3ZlZCBQV00gdnMgU29DIGJhY2tsaWdodCAjZGVm
-aW5lcyB0byBpbnRlbF9iaW9zLmggKEphbmkpCgpDQzogU2FtdWVsIE9ydGl6IDxzYW1lb0BsaW51
-eC5pbnRlbC5jb20+CkNjOiBMaW51cyBXYWxsZWlqIDxsaW51cy53YWxsZWlqQGxpbmFyby5vcmc+
-CkNjOiBBbGV4YW5kcmUgQ291cmJvdCA8Z251cm91QGdtYWlsLmNvbT4KQ2M6IFRoaWVycnkgUmVk
-aW5nIDx0aGllcnJ5LnJlZGluZ0BnbWFpbC5jb20+CkFja2VkLWJ5OiBMaW51cyBXYWxsZWlqIDxs
-aW51cy53YWxsZWlqQGxpbmFyby5vcmc+ClJldmlld2VkLWJ5OiBKYW5pIE5pa3VsYSA8amFuaS5u
-aWt1bGFAaW50ZWwuY29tPgpTaWduZWQtb2ZmLWJ5OiBTaG9iaGl0IEt1bWFyIDxzaG9iaGl0Lmt1
-bWFyQGludGVsLmNvbT4KLS0tCiBkcml2ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9iaW9zLmggfCAg
-NyArKysrKysrCiBkcml2ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9kc2kuYyAgfCAzMiArKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKystLQogZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfZHNp
-LmggIHwgIDMgKysrCiAzIGZpbGVzIGNoYW5nZWQsIDQwIGluc2VydGlvbnMoKyksIDIgZGVsZXRp
-b25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfYmlvcy5oIGIv
-ZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfYmlvcy5oCmluZGV4IGFmMGI0NzYuLmY3YWQ2YTUg
-MTAwNjQ0Ci0tLSBhL2RyaXZlcnMvZ3B1L2RybS9pOTE1L2ludGVsX2Jpb3MuaAorKysgYi9kcml2
-ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9iaW9zLmgKQEAgLTc3OCw2ICs3NzgsMTMgQEAgaW50IGlu
-dGVsX3BhcnNlX2Jpb3Moc3RydWN0IGRybV9kZXZpY2UgKmRldik7CiAjZGVmaW5lIE1JUElfRFNJ
-X1VOREVGSU5FRF9QQU5FTF9JRAkwCiAjZGVmaW5lIE1JUElfRFNJX0dFTkVSSUNfUEFORUxfSUQJ
-MQogCisvKgorICogUE1JQyB2cyBTb0MgQmFja2xpZ2h0IHN1cHBvcnQgc3BlY2lmaWVkIGluIHB3
-bV9ibGMKKyAqIGZpZWxkIGluIG1pcGlfY29uZmlnIGJsb2NrIGJlbG93LgorKi8KKyNkZWZpbmUg
-UFBTX0JMQ19QTUlDICAgMAorI2RlZmluZSBQUFNfQkxDX1NPQyAgICAxCisKIHN0cnVjdCBtaXBp
-X2NvbmZpZyB7CiAJdTE2IHBhbmVsX2lkOwogCmRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0v
-aTkxNS9pbnRlbF9kc2kuYyBiL2RyaXZlcnMvZ3B1L2RybS9pOTE1L2ludGVsX2RzaS5jCmluZGV4
-IGI1YTU1NTguLmM0ZGI3NGEgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvZ3B1L2RybS9pOTE1L2ludGVs
-X2RzaS5jCisrKyBiL2RyaXZlcnMvZ3B1L2RybS9pOTE1L2ludGVsX2RzaS5jCkBAIC0zMSw2ICsz
-MSw3IEBACiAjaW5jbHVkZSA8ZHJtL2RybV9wYW5lbC5oPgogI2luY2x1ZGUgPGRybS9kcm1fbWlw
-aV9kc2kuaD4KICNpbmNsdWRlIDxsaW51eC9zbGFiLmg+CisjaW5jbHVkZSA8bGludXgvZ3Bpby9j
-b25zdW1lci5oPgogI2luY2x1ZGUgImk5MTVfZHJ2LmgiCiAjaW5jbHVkZSAiaW50ZWxfZHJ2Lmgi
-CiAjaW5jbHVkZSAiaW50ZWxfZHNpLmgiCkBAIC00MTUsNiArNDE2LDEyIEBAIHN0YXRpYyB2b2lk
-IGludGVsX2RzaV9wcmVfZW5hYmxlKHN0cnVjdCBpbnRlbF9lbmNvZGVyICplbmNvZGVyKQogCiAJ
-RFJNX0RFQlVHX0tNUygiXG4iKTsKIAorCS8qIFBhbmVsIEVuYWJsZSBvdmVyIENSQyBQTUlDICov
-CisJaWYgKGludGVsX2RzaS0+Z3Bpb19wYW5lbCkKKwkJZ3Bpb2Rfc2V0X3ZhbHVlX2NhbnNsZWVw
-KGludGVsX2RzaS0+Z3Bpb19wYW5lbCwgMSk7CisKKwltc2xlZXAoaW50ZWxfZHNpLT5wYW5lbF9v
-bl9kZWxheSk7CisKIAkvKiBEaXNhYmxlIERQT3VuaXQgY2xvY2sgZ2F0aW5nLCBjYW4gc3RhbGwg
-cGlwZQogCSAqIGFuZCB3ZSBuZWVkIERQTEwgUkVGQSBhbHdheXMgZW5hYmxlZCAqLwogCXRtcCA9
-IEk5MTVfUkVBRChEUExMKHBpcGUpKTsKQEAgLTQzMiw4ICs0MzksNiBAQCBzdGF0aWMgdm9pZCBp
-bnRlbF9kc2lfcHJlX2VuYWJsZShzdHJ1Y3QgaW50ZWxfZW5jb2RlciAqZW5jb2RlcikKIAkvKiBw
-dXQgZGV2aWNlIGluIHJlYWR5IHN0YXRlICovCiAJaW50ZWxfZHNpX2RldmljZV9yZWFkeShlbmNv
-ZGVyKTsKIAotCW1zbGVlcChpbnRlbF9kc2ktPnBhbmVsX29uX2RlbGF5KTsKLQogCWRybV9wYW5l
-bF9wcmVwYXJlKGludGVsX2RzaS0+cGFuZWwpOwogCiAJZm9yX2VhY2hfZHNpX3BvcnQocG9ydCwg
-aW50ZWxfZHNpLT5wb3J0cykKQEAgLTU3Niw2ICs1ODEsMTAgQEAgc3RhdGljIHZvaWQgaW50ZWxf
-ZHNpX3Bvc3RfZGlzYWJsZShzdHJ1Y3QgaW50ZWxfZW5jb2RlciAqZW5jb2RlcikKIAogCW1zbGVl
-cChpbnRlbF9kc2ktPnBhbmVsX29mZl9kZWxheSk7CiAJbXNsZWVwKGludGVsX2RzaS0+cGFuZWxf
-cHdyX2N5Y2xlX2RlbGF5KTsKKworCS8qIFBhbmVsIERpc2FibGUgb3ZlciBDUkMgUE1JQyAqLwor
-CWlmIChpbnRlbF9kc2ktPmdwaW9fcGFuZWwpCisJCWdwaW9kX3NldF92YWx1ZV9jYW5zbGVlcChp
-bnRlbF9kc2ktPmdwaW9fcGFuZWwsIDApOwogfQogCiBzdGF0aWMgYm9vbCBpbnRlbF9kc2lfZ2V0
-X2h3X3N0YXRlKHN0cnVjdCBpbnRlbF9lbmNvZGVyICplbmNvZGVyLApAQCAtOTU1LDYgKzk2NCwx
-MSBAQCBzdGF0aWMgdm9pZCBpbnRlbF9kc2lfZW5jb2Rlcl9kZXN0cm95KHN0cnVjdCBkcm1fZW5j
-b2RlciAqZW5jb2RlcikKIAkJLyogWFhYOiBMb2dpY2FsbHkgdGhpcyBjYWxsIGJlbG9uZ3MgaW4g
-dGhlIHBhbmVsIGRyaXZlci4gKi8KIAkJZHJtX3BhbmVsX3JlbW92ZShpbnRlbF9kc2ktPnBhbmVs
-KTsKIAl9CisKKwkvKiBkaXNwb3NlIG9mIHRoZSBncGlvcyAqLworCWlmIChpbnRlbF9kc2ktPmdw
-aW9fcGFuZWwpCisJCWdwaW9kX3B1dChpbnRlbF9kc2ktPmdwaW9fcGFuZWwpOworCiAJaW50ZWxf
-ZW5jb2Rlcl9kZXN0cm95KGVuY29kZXIpOwogfQogCkBAIC0xMDcxLDYgKzEwODUsMjAgQEAgdm9p
-ZCBpbnRlbF9kc2lfaW5pdChzdHJ1Y3QgZHJtX2RldmljZSAqZGV2KQogCQlnb3RvIGVycjsKIAl9
-CiAKKwkvKgorCSAqIEluIGNhc2Ugb2YgQllUIHdpdGggQ1JDIFBNSUMsIHdlIG5lZWQgdG8gdXNl
-IEdQSU8gZm9yCisJICogUGFuZWwgY29udHJvbC4KKwkgKi8KKwlpZiAoZGV2X3ByaXYtPnZidC5k
-c2kuY29uZmlnLT5wd21fYmxjID09IFBQU19CTENfUE1JQykgeworCQlpbnRlbF9kc2ktPmdwaW9f
-cGFuZWwgPQorCQkJZ3Bpb2RfZ2V0KGRldi0+ZGV2LCAicGFuZWwiLCBHUElPRF9PVVRfSElHSCk7
-CisKKwkJaWYgKElTX0VSUihpbnRlbF9kc2ktPmdwaW9fcGFuZWwpKSB7CisJCQlEUk1fRVJST1Io
-IkZhaWxlZCB0byBvd24gZ3BpbyBmb3IgcGFuZWwgY29udHJvbFxuIik7CisJCQlpbnRlbF9kc2kt
-PmdwaW9fcGFuZWwgPSBOVUxMOworCQl9CisJfQorCiAJaW50ZWxfZW5jb2Rlci0+dHlwZSA9IElO
-VEVMX09VVFBVVF9EU0k7CiAJaW50ZWxfZW5jb2Rlci0+Y2xvbmVhYmxlID0gMDsKIAlkcm1fY29u
-bmVjdG9yX2luaXQoZGV2LCBjb25uZWN0b3IsICZpbnRlbF9kc2lfY29ubmVjdG9yX2Z1bmNzLApk
-aWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfZHNpLmggYi9kcml2ZXJzL2dw
-dS9kcm0vaTkxNS9pbnRlbF9kc2kuaAppbmRleCAyNzg0YWM0Li40MmE2ODU5IDEwMDY0NAotLS0g
-YS9kcml2ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9kc2kuaAorKysgYi9kcml2ZXJzL2dwdS9kcm0v
-aTkxNS9pbnRlbF9kc2kuaApAQCAtNDIsNiArNDIsOSBAQCBzdHJ1Y3QgaW50ZWxfZHNpIHsKIAlz
-dHJ1Y3QgZHJtX3BhbmVsICpwYW5lbDsKIAlzdHJ1Y3QgaW50ZWxfZHNpX2hvc3QgKmRzaV9ob3N0
-c1tJOTE1X01BWF9QT1JUU107CiAKKwkvKiBHUElPIERlc2MgZm9yIENSQyBiYXNlZCBQYW5lbCBj
-b250cm9sICovCisJc3RydWN0IGdwaW9fZGVzYyAqZ3Bpb19wYW5lbDsKKwogCXN0cnVjdCBpbnRl
-bF9jb25uZWN0b3IgKmF0dGFjaGVkX2Nvbm5lY3RvcjsKIAogCS8qIGJpdCBtYXNrIG9mIHBvcnRz
-IGJlaW5nIGRyaXZlbiAqLwotLSAKMS45LjEKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fCkludGVsLWdmeCBtYWlsaW5nIGxpc3QKSW50ZWwtZ2Z4QGxpc3Rz
-LmZyZWVkZXNrdG9wLm9yZwpodHRwOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlz
-dGluZm8vaW50ZWwtZ2Z4Cg==
+Hi Shobhit Kumar,
+
+On 06/22/2015 04:24 PM, Shobhit Kumar wrote:
+
+> On some BYT PLatform the PWM is controlled using CRC PMIC. Add a lookup
+> entry for the same to be used by the consumer (Intel GFX)
+>
+> v2: Remove the lookup table on driver unload (Thierry)
+>
+> v3: Correct the subject line (Lee jones)
+
+This part should only describe what this is about..
+
+Don't put this patch change history over here.
+Include this change history after
+...
+Signed-off-by: Author <email>
+---
+
+> CC: Samuel Ortiz <sameo@linux.intel.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Alexandre Courbot <gnurou@gmail.com>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Acked-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Shobhit Kumar <shobhit.kumar@intel.com>
+> ---
+
+Here you add this change history so that after applying this
+will not be the part of your commit description.
+
+This comment is applicable for all of your patches.
+
+
+-- 
+Best regards,
+Varka Bhadram.
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-gpio" in
