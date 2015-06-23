@@ -1,141 +1,143 @@
-From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+From: Rob Herring <robherring2@gmail.com>
 Subject: Re: [PATCH 00/21] On-demand device registration
-Date: Mon, 22 Jun 2015 17:23:53 +0200
-Message-ID: <CAAObsKCdv_X+YPFacO7NjbRMnvuDisAmiQOWE-Xb3xFFrn6Qog@mail.gmail.com>
+Date: Mon, 22 Jun 2015 19:01:32 -0500
+Message-ID: <CAL_JsqKAWs2McpAP-47UwDMtuBoR+0xkJYvu8+-7yOQwiUfvpw@mail.gmail.com>
 References: <1432565608-26036-1-git-send-email-tomeu.vizoso@collabora.com>
- <CAL_Jsq+EWLEJhRudTGAwYsOg4tX2-pGhygeQGHae9RL8rBpMiA@mail.gmail.com>
+ <CAL_Jsq+EWLEJhRudTGAwYsOg4tX2-pGhygeQGHae9RL8rBpMiA@mail.gmail.com> <CAAObsKCdv_X+YPFacO7NjbRMnvuDisAmiQOWE-Xb3xFFrn6Qog@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <CAL_Jsq+EWLEJhRudTGAwYsOg4tX2-pGhygeQGHae9RL8rBpMiA@mail.gmail.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Rob Herring <robherring2@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, Linux USB List <linux-usb@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, Alexander Holler <holler@ahsoftware.de>, linux-clk@vger.kernel.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Grant Likely <grant.likely@linaro.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Dan Williams <dan.j.williams@intel.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Dmitry Torokhov <dmitry>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <CAAObsKCdv_X+YPFacO7NjbRMnvuDisAmiQOWE-Xb3xFFrn6Qog@mail.gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, =?UTF-8?Q?St=C3=A9phane_Marchesin?= <stephane.marchesin@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Alexander Holler <holler@ahsoftware.de>, Grant Likely <grant.likely@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Dan Williams <dan.j.williams@intel.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, dmaengine@vger.kernel.org, dri-devel <dri-devel@lists.freedesktop.org>, linux-clk@vger.kernel.org, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.or>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMjggTWF5IDIwMTUgYXQgMDY6MzMsIFJvYiBIZXJyaW5nIDxyb2JoZXJyaW5nMkBnbWFpbC5j
-b20+IHdyb3RlOgo+IE9uIE1vbiwgTWF5IDI1LCAyMDE1IGF0IDk6NTMgQU0sIFRvbWV1IFZpem9z
-bwo+IDx0b21ldS52aXpvc29AY29sbGFib3JhLmNvbT4gd3JvdGU6Cj4+IEhlbGxvLAo+Pgo+PiBJ
-IGhhdmUgYSBwcm9ibGVtIHdpdGggdGhlIHBhbmVsIG9uIG15IFRlZ3JhIENocm9tZWJvb2sgdGFr
-aW5nIGxvbmdlciB0aGFuCj4+IGV4cGVjdGVkIHRvIGJlIHJlYWR5IGR1cmluZyBib290IChTdMOp
-cGhhbmUgTWFyY2hlc2luIHJlcG9ydGVkIHdoYXQgaXMKPj4gYmFzaWNhbGx5IHRoZSBzYW1lIGlz
-c3VlIGluIFswXSksIGFuZCBoYXZlIGxvb2tlZCBpbnRvIG9yZGVyZWQgcHJvYmluZyBhcyBhCj4+
-IGJldHRlciB3YXkgb2Ygc29sdmluZyB0aGlzIHRoYW4gbW92aW5nIG5vZGVzIGFyb3VuZCBpbiB0
-aGUgRFQgb3IgcGxheWluZyB3aXRoCj4+IGluaXRjYWxsIGxldmVscy4KPj4KPj4gV2hpbGUgcmVh
-ZGluZyB0aGUgdGhyZWFkIFsxXSB0aGF0IEFsZXhhbmRlciBIb2xsZXIgc3RhcnRlZCB3aXRoIGhp
-cyBzZXJpZXMgdG8KPj4gbWFrZSBwcm9iaW5nIG9yZGVyIGRldGVybWluaXN0aWMsIGl0IG9jY3Vy
-cmVkIHRvIG1lIHRoYXQgaXQgc2hvdWxkIGJlIHBvc3NpYmxlCj4+IHRvIGFjaGlldmUgdGhlIHNh
-bWUgYnkgcmVnaXN0ZXJpbmcgZGV2aWNlcyBhcyB0aGV5IGFyZSByZWZlcmVuY2VkIGJ5IG90aGVy
-Cj4+IGRldmljZXMuCj4KPiBJIGxpa2UgdGhlIGNvbmNlcHQgYW5kIG5vdmVsIGFwcHJvYWNoLgo+
-Cj4+IFRoaXMgYmFzaWNhbGx5IHJldXNlcyB0aGUgaW5mb3JtYXRpb24gdGhhdCBpcyBhbHJlYWR5
-IGltcGxpY2l0IGluIHRoZSBwcm9iZSgpCj4+IGltcGxlbWVudGF0aW9ucywgc2F2aW5nIHVzIGZy
-b20gcmVmYWN0b3JpbmcgZXhpc3RpbmcgZHJpdmVycyBvciBhZGRpbmcKPj4gaW5mb3JtYXRpb24g
-dG8gRFRCcy4KPj4KPj4gU29tZXRoaW5nIEknbSBub3QgY29tcGxldGVseSBoYXBweSB3aXRoIGlz
-IHRoYXQgSSBoYXZlIGhhZCB0byBtb3ZlIHRoZSBjYWxsIHRvCj4+IG9mX3BsYXRmb3JtX3BvcHVs
-YXRlIGFmdGVyIGFsbCBwbGF0Zm9ybSBkcml2ZXJzIGhhdmUgYmVlbiByZWdpc3RlcmVkLgo+PiBP
-dGhlcndpc2UgSSBkb24ndCBzZWUgaG93IEkgY291bGQgcmVnaXN0ZXIgZHJpdmVycyBvbiBkZW1h
-bmQgYXMgd2UgZG9uJ3QgaGF2ZQo+PiB5ZXQgZWFjaCBkcml2ZXIncyBjb21wYXRpYmxlIHN0cmlu
-Z3MuCj4KPiBZZWFoLCB0aGlzIGlzIHRoZSBvcHBvc2l0ZSBvZiB3aGF0IHdlJ2QgcmVhbGx5IGxp
-a2UuCgpDYW4geW91IGVsYWJvcmF0ZSBvbiB0aGUgcmVhc29ucyB3aHkgd2Ugd291bGQgbGlrZSB0
-byBoYXZlIGRldmljZXMKcmVnaXN0ZXJlZCBiZWZvcmUgYnVpbHQtaW4gZHJpdmVycyBmaW5pc2gg
-cmVnaXN0ZXJpbmcsIGV2ZW4gaWYgd2UKZG9uJ3QgcHJvYmUgdGhlbSB5ZXQ/Cgo+IElkZWFsbHks
-IHdlIHdvdWxkCj4gaGF2ZSBhIHNvbHV0aW9uIHRoYXQgd29ya3MgZm9yIG1vZHVsZXMgdG9vLiBI
-b3dldmVyLCB3ZSdyZSBubyB3b3JzZQo+IG9mZi4gV2UgcHJldHR5IG11Y2ggYnVpbGQtaW4gZGVw
-ZW5kZW5jaWVzIHRvIGF2b2lkIG1vZHVsZSBvcmRlcmluZwo+IHByb2JsZW1zLgoKTm9kLCBJIGhh
-dmVuJ3QgbG9va2VkIHlldCBhdCByZXF1ZXN0aW5nIG1vZHVsZXMgb24tZGVtYW5kLCBidXQgSSBn
-dWVzcwppdCBzaG91bGQgYmUgZG9hYmxlLiBNb2R1bGVzIHRoYXQgaGF2ZSBkZXBlbmRlbmNpZXMg
-ZGVzY3JpYmVkIGluIHRoZQpmaXJtd2FyZSBzaG91bGQgZ2V0IHRoZW0gcHJvYmVkIGF1dG9tYXRp
-Y2FsbHkgYWxyZWFkeSB0aG91Z2guCgo+IFBlcmhhcHMgd2UgbmVlZCB0byBtYWtlIHRoZSBwcm9i
-aW5nIG9uLWRlbWFuZCByYXRoZXIgdGhhbiBzaW1wbHkgb24KPiBkZXZpY2U8LT5kcml2ZXIgbWF0
-Y2ggb2NjdXJyaW5nLgoKSSdtIGFmcmFpZCB0aGF0IHRvbyBtdWNoIG9sZCBjb2RlIGRlcGVuZHMg
-b24gdGhhdC4gRm9yIGV4YW1wbGUsIFJhZmFlbApwb2ludGVkIG91dCB0byB0aGUgUE5QIHN1YnN5
-c3RlbSwgd2hpY2ggcmVnaXN0ZXJzIGEgZHJpdmVyIHRoYXQgd2lsbApwcm9iZSBkZXZpY2VzIHdp
-dGggdGhlIEVJU0EgSUQgUE5QMGMwMiB0byByZXNlcnZlIG1lbW9yeSByZWdpb25zIGZvcgpkZXZp
-Y2VzIHRoYXQgd2lsbCBiZSBwcm9iZWQgbGF0ZXIuCgpodHRwOi8vbHhyLmZyZWUtZWxlY3Ryb25z
-LmNvbS9zb3VyY2UvZHJpdmVycy9wbnAvc3lzdGVtLmMKCk15IHVuZGVyc3RhbmRpbmcgaXMgdGhh
-dCBwcm9iaW5nIG9mIFBOUDBjMDIgZGV2aWNlcyBtdXN0IGhhcHBlbiBiZWZvcmUKdGhlIGFjdHVh
-bCBkZXZpY2VzIHRoYXQgZGVwZW5kIG9uIHRob3NlIHJlZ2lvbnMgYXJlIHByb2JlZCwgc28gaWYg
-d2UKZGVjb3VwbGVkIHRoZSBwcm9iaW5nIGZyb20gdGhlIGRyaXZlci9kZXZpY2UgcmVnaXN0cmF0
-aW9uLCB3ZSB3b3VsZCBiZQpicmVha2luZyB0aGF0IGFzc3VtcHRpb24uCgo+PiBGb3IgbWFjaHMg
-dGhhdCBkb24ndCBtb3ZlIG9mX3BsYXRmb3JtX3BvcHVsYXRlKCkgdG8gYSBsYXRlciBwb2ludCwg
-dGhlc2UKPj4gcGF0Y2hlcyBzaG91bGRuJ3QgY2F1c2UgYW55IHByb2JsZW1zIGJ1dCBpdCdzIG5v
-dCBndWFyYW50ZWVkIHRoYXQgd2UnbGwgYXZvaWQKPj4gYWxsIHRoZSBkZWZlcnJlZCBwcm9iZXMg
-YXMgc29tZSBkcml2ZXJzIG1heSBub3QgYmUgcmVnaXN0ZXJlZCB5ZXQuCj4KPiBJZGVhbGx5LCBv
-Zl9wbGF0Zm9ybV9wb3B1bGF0ZSBpcyBub3QgZXhwbGljaXRseSBjYWxsZWQgYnkgZWFjaAo+IHBs
-YXRmb3JtLiBTbyBJIHRoaW5rIHdlIG5lZWQgdG8gbWFrZSB0aGlzIHdvcmsgZm9yIHRoZSBkZWZh
-dWx0IGNhc2UuCgpUaGUgcHJvYmxlbSBpcyB0aGF0IHNvbWUgcGxhdGZvcm1zIHdpbGwgbmVlZCBm
-aXhpbmcgYmVjYXVzZSBzb21lCmluaXRjYWxscyBhc3N1bWUgdGhhdCBzb21lIGRldmljZXMgd2ls
-bCBoYXZlIGJlZW4gcmVnaXN0ZXJlZCBhbHJlYWR5LApvciBldmVuIHByb2JlZC4gSSB0aGluayBy
-ZW1vdmluZyB0aG9zZSBhc3N1bXB0aW9ucyBzaG91bGRuJ3QgYmUKcHJvYmxlbWF0aWMgYmVjYXVz
-ZSBJIGhhdmVuJ3QgaGFkIG11Y2ggdHJvdWJsZSB3aXRoIHRoaXMgb24gdGhlIGZvdXIKcGxhdGZv
-cm1zIEkgaGF2ZSB0ZXN0ZWQgd2l0aCwgYnV0IEkgY2Fubm90IHRlc3QgZXZlcnkgYm9hcmQgdGhh
-dCBpcwpzdXBwb3J0ZWQgdXBzdHJlYW0uCgpJIGNhbiBhc2sgdGhvdWdoIHRoZSBLZXJuZWxDSSBm
-b2xrcyB0byBib290IG15IGJyYW5jaCBpbiBhbGwgdGhlaXIKYm9hcmRzIGFuZCBtYWtlIHN1cmUg
-dGhhdCB0aG9zZSB3b3JrIHdoZW4gb2ZfcGxhdGZvcm1fcG9wdWxhdGUgaXMKY2FsbGVkIGluIGxh
-dGVfaW5pdGNhbGwuCgpodHRwOi8va2VybmVsY2kub3JnL2Jvb3QvYWxsL2pvYi9uZXh0L2tlcm5l
-bC9uZXh0LTIwMTUwNjE5LwoKPj4gSSBoYXZlIHRlc3RlZCB0aGlzIG9uIGJvYXJkcyB3aXRoIFRl
-Z3JhLCBpTVguNiBhbmQgRXh5bm9zIFNvQ3MsIGFuZCB0aGVzZQo+PiBwYXRjaGVzIHdlcmUgZW5v
-dWdoIHRvIGVsaW1pbmF0ZSBhbGwgdGhlIGRlZmVycmVkIHByb2Jlcy4KPj4KPj4gV2l0aCB0aGlz
-IHNlcmllcyBJIGdldCB0aGUga2VybmVsIHRvIG91dHB1dCB0byB0aGUgcGFuZWwgaW4gMC41cywg
-aW5zdGVhZCBvZiAyLjhzLgo+Cj4gVGhhdCdzIGNlcnRhaW5seSBjb21wZWxsaW5nLgoKSGF2ZSB0
-byBzYXkgdGhhdCB0aG9zZSBudW1iZXJzIGFyZSB3aXRoIHRoZSBzZXJpYWwgY29uc29sZSBlbmFi
-bGVkCih3aXRob3V0LCBpdCdzIDAuNXMgdnMgMS41cyksIGJ1dCBvbiBtYWNoaW5lcyB0aGF0IHRh
-a2UgbG9uZ2VyIHRvIGJvb3QKd2Ugc2hvdWxkIHNlZSBiaWdnZXIgZ2FpbnMgYmVjYXVzZSB3ZSB3
-b24ndCBiZSBzZW5kaW5nIGRldmljZXMgdG8gdGhlCmVuZCBvZiB0aGUgcXVldWUgd2hlbiB0aGVp
-ciBwcm9iZSBpcyBkZWZlcnJlZC4KClJlZ2FyZHMsCgpUb21ldQoKPiBSb2IKPgo+Pgo+PiBSZWdh
-cmRzLAo+Pgo+PiBUb21ldQo+Pgo+PiBbMF0gaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9h
-cmNoaXZlcy9kcmktZGV2ZWwvMjAxNC1BdWd1c3QvMDY2NTI3Lmh0bWwKPj4KPj4gWzFdIGh0dHBz
-Oi8vbGttbC5vcmcvbGttbC8yMDE0LzUvMTIvNDUyCj4+Cj4+IFRvbWV1IFZpem9zbyAoMjEpOgo+
-PiAgIHJlZ3VsYXRvcjogY29yZTogUmVkdWNlIGNyaXRpY2FsIGFyZWEgaW4gX3JlZ3VsYXRvcl9n
-ZXQKPj4gICBBUk06IHRlZ3JhOiBBZGQgZ3Bpby1yYW5nZXMgcHJvcGVydHkKPj4gICBBUk06IHRl
-Z3JhOiBSZWdpc3RlciBkcml2ZXJzIGJlZm9yZSBkZXZpY2VzCj4+ICAgQVJNOiBFWFlOT1M6IFJl
-Z2lzdGVyIGRyaXZlcnMgYmVmb3JlIGRldmljZXMKPj4gICBBUk0gaS5NWDZxOiBSZWdpc3RlciBk
-cml2ZXJzIGJlZm9yZSBkZXZpY2VzCj4+ICAgb2YvcGxhdGZvcm06IEFkZCBvZl9wbGF0Zm9ybV9k
-ZXZpY2VfZW5zdXJlKCkKPj4gICBvZi9wbGF0Zm9ybTogRW5zdXJlIGRldmljZSByZWdpc3RyYXRp
-b24gb24gbG9va3VwCj4+ICAgZ3BpbzogUHJvYmUgR1BJTyBkcml2ZXJzIG9uIGRlbWFuZAo+PiAg
-IGdwaW86IFByb2JlIHBpbmN0cmwgZGV2aWNlcyBvbiBkZW1hbmQKPj4gICByZWd1bGF0b3I6IGNv
-cmU6IFByb2JlIHJlZ3VsYXRvcnMgb24gZGVtYW5kCj4+ICAgZHJtOiBQcm9iZSBwYW5lbHMgb24g
-ZGVtYW5kCj4+ICAgZHJtL3RlZ3JhOiBQcm9iZSBkcGF1eCBkZXZpY2VzIG9uIGRlbWFuZAo+PiAg
-IGkyYzogY29yZTogUHJvYmUgaTJjIG1hc3RlciBkZXZpY2VzIG9uIGRlbWFuZAo+PiAgIHB3bTog
-UHJvYmUgUFdNIGNoaXAgZGV2aWNlcyBvbiBkZW1hbmQKPj4gICBiYWNrbGlnaHQ6IFByb2JlIGJh
-Y2tsaWdodCBkZXZpY2VzIG9uIGRlbWFuZAo+PiAgIHVzYjogcGh5OiBQcm9iZSBwaHkgZGV2aWNl
-cyBvbiBkZW1hbmQKPj4gICBjbGs6IFByb2JlIGNsayBwcm92aWRlcnMgb24gZGVtYW5kCj4+ICAg
-cGluY3RybDogUHJvYmUgcGluY3RybCBkZXZpY2VzIG9uIGRlbWFuZAo+PiAgIHBoeTogY29yZTog
-UHJvYmUgcGh5IHByb3ZpZGVycyBvbiBkZW1hbmQKPj4gICBkbWE6IG9mOiBQcm9iZSBETUEgY29u
-dHJvbGxlcnMgb24gZGVtYW5kCj4+ICAgcG93ZXItc3VwcGx5OiBQcm9iZSBwb3dlciBzdXBwbGll
-cyBvbiBkZW1hbmQKPj4KPj4gIGFyY2gvYXJtL2Jvb3QvZHRzL3RlZ3JhMTI0LmR0c2kgICAgIHwg
-IDEgKwo+PiAgYXJjaC9hcm0vbWFjaC1leHlub3MvZXh5bm9zLmMgICAgICAgfCAgNCArLS0KPj4g
-IGFyY2gvYXJtL21hY2gtaW14L21hY2gtaW14NnEuYyAgICAgIHwgMTIgKysrKy0tLS0tCj4+ICBh
-cmNoL2FybS9tYWNoLXRlZ3JhL3RlZ3JhLmMgICAgICAgICB8IDIxICsrKysrKy0tLS0tLS0tLQo+
-PiAgZHJpdmVycy9jbGsvY2xrLmMgICAgICAgICAgICAgICAgICAgfCAgMyArKysKPj4gIGRyaXZl
-cnMvZG1hL29mLWRtYS5jICAgICAgICAgICAgICAgIHwgIDMgKysrCj4+ICBkcml2ZXJzL2dwaW8v
-Z3Bpb2xpYi1vZi5jICAgICAgICAgICB8ICA1ICsrKysKPj4gIGRyaXZlcnMvZ3B1L2RybS9kcm1f
-cGFuZWwuYyAgICAgICAgIHwgIDMgKysrCj4+ICBkcml2ZXJzL2dwdS9kcm0vdGVncmEvZHBhdXgu
-YyAgICAgICB8ICAzICsrKwo+PiAgZHJpdmVycy9pMmMvaTJjLWNvcmUuYyAgICAgICAgICAgICAg
-fCAgMyArKysKPj4gIGRyaXZlcnMvb2YvcGxhdGZvcm0uYyAgICAgICAgICAgICAgIHwgNTMgKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKwo+PiAgZHJpdmVycy9waHkvcGh5LWNv
-cmUuYyAgICAgICAgICAgICAgfCAgMyArKysKPj4gIGRyaXZlcnMvcGluY3RybC9kZXZpY2V0cmVl
-LmMgICAgICAgIHwgIDIgKysKPj4gIGRyaXZlcnMvcG93ZXIvcG93ZXJfc3VwcGx5X2NvcmUuYyAg
-IHwgIDMgKysrCj4+ICBkcml2ZXJzL3B3bS9jb3JlLmMgICAgICAgICAgICAgICAgICB8ICAzICsr
-Kwo+PiAgZHJpdmVycy9yZWd1bGF0b3IvY29yZS5jICAgICAgICAgICAgfCA0NSArKysrKysrKysr
-KysrKystLS0tLS0tLS0tLS0tLS0tCj4+ICBkcml2ZXJzL3VzYi9waHkvcGh5LmMgICAgICAgICAg
-ICAgICB8ICAzICsrKwo+PiAgZHJpdmVycy92aWRlby9iYWNrbGlnaHQvYmFja2xpZ2h0LmMgfCAg
-MyArKysKPj4gIGluY2x1ZGUvbGludXgvb2ZfcGxhdGZvcm0uaCAgICAgICAgIHwgIDIgKysKPj4g
-IDE5IGZpbGVzIGNoYW5nZWQsIDEzMCBpbnNlcnRpb25zKCspLCA0NSBkZWxldGlvbnMoLSkKPj4K
-Pj4gLS0KPj4gMi40LjEKPj4KPiAtLQo+IFRvIHVuc3Vic2NyaWJlIGZyb20gdGhpcyBsaXN0OiBz
-ZW5kIHRoZSBsaW5lICJ1bnN1YnNjcmliZSBsaW51eC1rZXJuZWwiIGluCj4gdGhlIGJvZHkgb2Yg
-YSBtZXNzYWdlIHRvIG1ham9yZG9tb0B2Z2VyLmtlcm5lbC5vcmcKPiBNb3JlIG1ham9yZG9tbyBp
-bmZvIGF0ICBodHRwOi8vdmdlci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZvLmh0bWwKPiBQbGVh
-c2UgcmVhZCB0aGUgRkFRIGF0ICBodHRwOi8vd3d3LnR1eC5vcmcvbGttbC8KX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlz
-dApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3Rv
-cC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+On Mon, Jun 22, 2015 at 10:23 AM, Tomeu Vizoso
+<tomeu.vizoso@collabora.com> wrote:
+> On 28 May 2015 at 06:33, Rob Herring <robherring2@gmail.com> wrote:
+>> On Mon, May 25, 2015 at 9:53 AM, Tomeu Vizoso
+>> <tomeu.vizoso@collabora.com> wrote:
+>>> Hello,
+>>>
+>>> I have a problem with the panel on my Tegra Chromebook taking longe=
+r than
+>>> expected to be ready during boot (St=C3=A9phane Marchesin reported =
+what is
+>>> basically the same issue in [0]), and have looked into ordered prob=
+ing as a
+>>> better way of solving this than moving nodes around in the DT or pl=
+aying with
+>>> initcall levels.
+>>>
+>>> While reading the thread [1] that Alexander Holler started with his=
+ series to
+>>> make probing order deterministic, it occurred to me that it should =
+be possible
+>>> to achieve the same by registering devices as they are referenced b=
+y other
+>>> devices.
+>>
+>> I like the concept and novel approach.
+>>
+>>> This basically reuses the information that is already implicit in t=
+he probe()
+>>> implementations, saving us from refactoring existing drivers or add=
+ing
+>>> information to DTBs.
+>>>
+>>> Something I'm not completely happy with is that I have had to move =
+the call to
+>>> of_platform_populate after all platform drivers have been registere=
+d.
+>>> Otherwise I don't see how I could register drivers on demand as we =
+don't have
+>>> yet each driver's compatible strings.
+>>
+>> Yeah, this is the opposite of what we'd really like.
+>
+> Can you elaborate on the reasons why we would like to have devices
+> registered before built-in drivers finish registering, even if we
+> don't probe them yet?
+
+My main thought was for modules we will almost always have devices
+appearing first. More generally, we can have devices and drivers
+coming or going at any point in time and should not put restrictions
+on ordering.
+
+Also, I think all the probe ordering and dependency tracking should be
+done within the driver core (i.e. dependencies are a list of struct
+devices). At some level it has to become firmware specific, but we
+want to minimize that part. I could be convinced otherwise and you
+have put more thought into this problem than I have.
+
+>> Ideally, we would
+>> have a solution that works for modules too. However, we're no worse
+>> off. We pretty much build-in dependencies to avoid module ordering
+>> problems.
+>
+> Nod, I haven't looked yet at requesting modules on-demand, but I gues=
+s
+> it should be doable. Modules that have dependencies described in the
+> firmware should get them probed automatically already though.
+>
+>> Perhaps we need to make the probing on-demand rather than simply on
+>> device<->driver match occurring.
+>
+> I'm afraid that too much old code depends on that. For example, Rafae=
+l
+> pointed out to the PNP subsystem, which registers a driver that will
+> probe devices with the EISA ID PNP0c02 to reserve memory regions for
+> devices that will be probed later.
+>
+> http://lxr.free-electrons.com/source/drivers/pnp/system.c
+>
+> My understanding is that probing of PNP0c02 devices must happen befor=
+e
+> the actual devices that depend on those regions are probed, so if we
+> decoupled the probing from the driver/device registration, we would b=
+e
+> breaking that assumption.
+
+That shouldn't matter as PNP matching is PNP specific. We already have
+different ways of matching with device/driver name or of_match_table
+for example. Changing how and when OF matching occurs would not affect
+PNP matching. We do matching on device and driver add currently. For
+the "when" part, we would need to add what I'll call async matching or
+deferred matching which in addition to matching on the of_match_table
+also matches on the dependency list having probed. Your last series
+essentially does this, but the difference is yours is not OF specific
+and I think it needs to be. I mean it is OF specific only in the
+aspect that matching already is. From a driver and subsystem
+standpoint, it should not be OF specific much like deferred probe is
+not OF specific, but in reality only occurs (currently) on OF probed
+drivers.
+
+>>> For machs that don't move of_platform_populate() to a later point, =
+these
+>>> patches shouldn't cause any problems but it's not guaranteed that w=
+e'll avoid
+>>> all the deferred probes as some drivers may not be registered yet.
+>>
+>> Ideally, of_platform_populate is not explicitly called by each
+>> platform. So I think we need to make this work for the default case.
+>
+> The problem is that some platforms will need fixing because some
+> initcalls assume that some devices will have been registered already,
+> or even probed. I think removing those assumptions shouldn't be
+> problematic because I haven't had much trouble with this on the four
+> platforms I have tested with, but I cannot test every board that is
+> supported upstream.
+>
+> I can ask though the KernelCI folks to boot my branch in all their
+> boards and make sure that those work when of_platform_populate is
+> called in late_initcall.
+
+I'd imagine Kevin would be happy to. That is still a subset of h/w, so
+we'd need a way to disable any solution.
+
+Rob
+--
+To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
+n
