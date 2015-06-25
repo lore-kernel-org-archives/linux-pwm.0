@@ -1,97 +1,130 @@
-From: Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
+From: Shobhit Kumar <kumar@shobhit.info>
 Subject: Re: [Intel-gfx] [v2 7/7] drm/i915: Backlight control using CRC PMIC
  based PWM driver
-Date: Thu, 25 Jun 2015 15:47:32 +0300
-Message-ID: <20150625124732.GB5176@intel.com>
+Date: Thu, 25 Jun 2015 18:54:09 +0530
+Message-ID: <CAAbrOmfyyNGMOi9XE-u_Wc9zc0jeOEond=YpMuf73kQcVLaSqg@mail.gmail.com>
 References: <1434970465-12687-1-git-send-email-shobhit.kumar@intel.com>
- <1434970465-12687-8-git-send-email-shobhit.kumar@intel.com>
- <20150625084841.GZ5176@intel.com>
- <CAAbrOmeFcQGRa4_rv82vqgNx2rUXQOAxAfnTm7N=hjcfwNkbJA@mail.gmail.com>
+	<1434970465-12687-8-git-send-email-shobhit.kumar@intel.com>
+	<20150625084841.GZ5176@intel.com>
+	<CAAbrOmeFcQGRa4_rv82vqgNx2rUXQOAxAfnTm7N=hjcfwNkbJA@mail.gmail.com>
+	<20150625124732.GB5176@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <CAAbrOmeFcQGRa4_rv82vqgNx2rUXQOAxAfnTm7N=hjcfwNkbJA@mail.gmail.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Shobhit Kumar <kumar@shobhit.info>
-Cc: linux-pwm <linux-pwm@vger.kernel.org>, Paul Bolle <pebolle@tiscali.nl>, Samuel Ortiz <sameo@linux.intel.com>, Alexandre Courbot <gnurou@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Shobhit Kumar <shobhit.kumar@intel.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Povilas Staniulis <wdmonster@gmail.com>, Brain WrecK <bloften80@gmail.com>, linux-gpio <linux-gpio@vger.kernel.org>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20150625124732.GB5176@intel.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>
+Cc: Shobhit Kumar <shobhit.kumar@intel.com>, Alexandre Courbot <gnurou@gmail.com>, Paul Bolle <pebolle@tiscali.nl>, Samuel Ortiz <sameo@linux.intel.com>, linux-pwm <linux-pwm@vger.kernel.org>, Jani Nikula <jani.nikula@intel.com>, Povilas Staniulis <wdmonster@gmail.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>, Brain WrecK <bloften80@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Chih-Wei Huang <cwhuang@android-x86.org>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gVGh1LCBKdW4gMjUsIDIwMTUgYXQgMDU6Mzg6NTBQTSArMDUzMCwgU2hvYmhpdCBLdW1hciB3
-cm90ZToKPiBPbiBUaHUsIEp1biAyNSwgMjAxNSBhdCAyOjE4IFBNLCBWaWxsZSBTeXJqw6Rsw6QK
-PiA8dmlsbGUuc3lyamFsYUBsaW51eC5pbnRlbC5jb20+IHdyb3RlOgo+ID4gT24gTW9uLCBKdW4g
-MjIsIDIwMTUgYXQgMDQ6MjQ6MjVQTSArMDUzMCwgU2hvYmhpdCBLdW1hciB3cm90ZToKPiA+PiBV
-c2UgdGhlIENSQyBQV00gZGV2aWNlIGluIGludGVsX3BhbmVsLmMgYW5kIGFkZCBuZXcgTUlQSSBi
-YWNrbGlnaHQKPiA+PiBzcGVjaWZpZmMgY2FsbGJhY2tzCj4gPj4KPiA+PiB2MjogTW9kaWZ5IHRv
-IHVzZSBwd21fY29uZmlnIGNhbGxiYWNrCj4gPj4gdjM6IEFkZHJlc3NlZCBKYW5pJ3MgY29tbWVu
-dHMKPiA+PiAgICAgLSBSZW5hbWVkIGFsbCBmdW5jdGlvbiBhcyBwd21fKiBpbnN0ZWFkIG9mIHZs
-dl8qCj4gPj4gICAgIC0gQ2FsbCBpbnRlbF9wYW5lbF9hY3R1YWxseV9zZXRfYmFja2xpZ2h0IGlu
-IGVuYWJsZSBmdW5jdGlvbgo+ID4+ICAgICAtIFJldHVybiAtRU5PREVWIGluIGNhc2UgcHdtX2dl
-dCBmYWlscwo+ID4+ICAgICAtIGluIGNhc2UgcHdtX2NvbmZpZyBlcnJvciByZXR1cm4gZXJyb3Ig
-Y2RvZSBmcm9tIHB3bV9jb25maWcKPiA+PiAgICAgLSBDbGVhbnVwIHB3bSBpbiBpbnRlbF9wYW5l
-bF9kZXN0cm95X2JhY2tsaWdodAo+ID4+Cj4gPj4gQ0M6IFNhbXVlbCBPcnRpeiA8c2FtZW9AbGlu
-dXguaW50ZWwuY29tPgo+ID4+IENjOiBMaW51cyBXYWxsZWlqIDxsaW51cy53YWxsZWlqQGxpbmFy
-by5vcmc+Cj4gPj4gQ2M6IEFsZXhhbmRyZSBDb3VyYm90IDxnbnVyb3VAZ21haWwuY29tPgo+ID4+
-IENjOiBUaGllcnJ5IFJlZGluZyA8dGhpZXJyeS5yZWRpbmdAZ21haWwuY29tPgo+ID4+IFNpZ25l
-ZC1vZmYtYnk6IFNob2JoaXQgS3VtYXIgPHNob2JoaXQua3VtYXJAaW50ZWwuY29tPgo+ID4+IC0t
-LQo+ID4+ICBkcml2ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9kcnYuaCAgIHwgIDQgKysKPiA+PiAg
-ZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfZHNpLmMgICB8ICA2ICsrKwo+ID4+ICBkcml2ZXJz
-L2dwdS9kcm0vaTkxNS9pbnRlbF9wYW5lbC5jIHwgOTUgKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrLS0KPiA+PiAgMyBmaWxlcyBjaGFuZ2VkLCAxMDAgaW5zZXJ0aW9ucygrKSwg
-NSBkZWxldGlvbnMoLSkKPiA+Pgo+ID4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vaTkx
-NS9pbnRlbF9kcnYuaCBiL2RyaXZlcnMvZ3B1L2RybS9pOTE1L2ludGVsX2Rydi5oCj4gPj4gaW5k
-ZXggMmFmYjMxYS4uNTYxYzE3ZiAxMDA2NDQKPiA+PiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vaTkx
-NS9pbnRlbF9kcnYuaAo+ID4+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9pOTE1L2ludGVsX2Rydi5o
-Cj4gPj4gQEAgLTE4Miw2ICsxODIsMTAgQEAgc3RydWN0IGludGVsX3BhbmVsIHsKPiA+PiAgICAg
-ICAgICAgICAgIGJvb2wgZW5hYmxlZDsKPiA+PiAgICAgICAgICAgICAgIGJvb2wgY29tYmluYXRp
-b25fbW9kZTsgIC8qIGdlbiAyLzQgb25seSAqLwo+ID4+ICAgICAgICAgICAgICAgYm9vbCBhY3Rp
-dmVfbG93X3B3bTsKPiA+PiArCj4gPj4gKyAgICAgICAgICAgICAvKiBQV00gY2hpcCAqLwo+ID4+
-ICsgICAgICAgICAgICAgc3RydWN0IHB3bV9kZXZpY2UgKnB3bTsKPiA+PiArCj4gPj4gICAgICAg
-ICAgICAgICBzdHJ1Y3QgYmFja2xpZ2h0X2RldmljZSAqZGV2aWNlOwo+ID4+ICAgICAgIH0gYmFj
-a2xpZ2h0Owo+ID4+Cj4gPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9pOTE1L2ludGVs
-X2RzaS5jIGIvZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfZHNpLmMKPiA+PiBpbmRleCBjNGRi
-NzRhLi5iZTg3MjJjIDEwMDY0NAo+ID4+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9pOTE1L2ludGVs
-X2RzaS5jCj4gPj4gKysrIGIvZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfZHNpLmMKPiA+PiBA
-QCAtNDAyLDYgKzQwMiw4IEBAIHN0YXRpYyB2b2lkIGludGVsX2RzaV9lbmFibGUoc3RydWN0IGlu
-dGVsX2VuY29kZXIgKmVuY29kZXIpCj4gPj4KPiA+PiAgICAgICAgICAgICAgIGludGVsX2RzaV9w
-b3J0X2VuYWJsZShlbmNvZGVyKTsKPiA+PiAgICAgICB9Cj4gPj4gKwo+ID4+ICsgICAgIGludGVs
-X3BhbmVsX2VuYWJsZV9iYWNrbGlnaHQoaW50ZWxfZHNpLT5hdHRhY2hlZF9jb25uZWN0b3IpOwo+
-ID4+ICB9Cj4gPj4KPiA+PiAgc3RhdGljIHZvaWQgaW50ZWxfZHNpX3ByZV9lbmFibGUoc3RydWN0
-IGludGVsX2VuY29kZXIgKmVuY29kZXIpCj4gPj4gQEAgLTQ2Niw2ICs0NjgsOCBAQCBzdGF0aWMg
-dm9pZCBpbnRlbF9kc2lfcHJlX2Rpc2FibGUoc3RydWN0IGludGVsX2VuY29kZXIgKmVuY29kZXIp
-Cj4gPj4KPiA+PiAgICAgICBEUk1fREVCVUdfS01TKCJcbiIpOwo+ID4+Cj4gPj4gKyAgICAgaW50
-ZWxfcGFuZWxfZGlzYWJsZV9iYWNrbGlnaHQoaW50ZWxfZHNpLT5hdHRhY2hlZF9jb25uZWN0b3Ip
-Owo+ID4+ICsKPiA+PiAgICAgICBpZiAoaXNfdmlkX21vZGUoaW50ZWxfZHNpKSkgewo+ID4+ICAg
-ICAgICAgICAgICAgLyogU2VuZCBTaHV0ZG93biBjb21tYW5kIHRvIHRoZSBwYW5lbCBpbiBMUCBt
-b2RlICovCj4gPj4gICAgICAgICAgICAgICBmb3JfZWFjaF9kc2lfcG9ydChwb3J0LCBpbnRlbF9k
-c2ktPnBvcnRzKQo+ID4+IEBAIC0xMTMyLDYgKzExMzYsOCBAQCB2b2lkIGludGVsX2RzaV9pbml0
-KHN0cnVjdCBkcm1fZGV2aWNlICpkZXYpCj4gPj4gICAgICAgfQo+ID4+Cj4gPj4gICAgICAgaW50
-ZWxfcGFuZWxfaW5pdCgmaW50ZWxfY29ubmVjdG9yLT5wYW5lbCwgZml4ZWRfbW9kZSwgTlVMTCk7
-Cj4gPj4gKyAgICAgaW50ZWxfcGFuZWxfc2V0dXBfYmFja2xpZ2h0KGNvbm5lY3RvciwKPiA+PiAr
-ICAgICAgICAgICAgIChpbnRlbF9lbmNvZGVyLT5jcnRjX21hc2sgPSAoMSA8PCBQSVBFX0EpKSA/
-IFBJUEVfQSA6IFBJUEVfQik7Cj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICBeCj4gPgo+ID4gV2hvb3BzLiBCdXQgc2luY2UgdGhlIFBXTSBiYWNrbGlnaHQgZG9l
-c24ndCBuZWVkIHRoZSBpbml0aWFsIHBpcGUgZm9yCj4gPiBhbnl0aGluZyB5b3UgY2FuIGFjdHVh
-bGx5IGp1c3QgcGFzcyBJTlZBTElEX1BJUEUgaGVyZS4KPiA+Cj4gCj4gWW91IGFyZSByaWdodCwg
-aXRzIHVudXNlZCwgYnV0IEkgdGhvdWdodCBwYXNzaW5nIHJpZ2h0IHZhbHVlIHN0aWxsCj4gbWFk
-ZSBzZW5zZS4gT3RoZXJ3aXNlIGl0IG1ha2VzIGl0IGxvb2sgbGlrZSBJIGFtIHNldHRpbmcgdXAg
-YmFjay1saWdodAo+IGZvciBpbnZhbGlkIHBpcGUsIHdoZW4gdGhlIHJlYWwgbWVhbmluZyBpcyBz
-b21ldGhpbmcgbGlrZQo+IERPTlRDQVJFX1BJUEUKCldlbGwgaXQncyBub3QgcmVhbGx5IGFib3V0
-IHRoZSBwaXBlLiBJdCdzIGFib3V0IHdoaWNoIHNldCBvZiBCTEMKcmVnaXN0ZXJzIHdlJ3JlIHN1
-cG9vc2VkIHRvIHVzZSB3aGVuIHVzaW5nIHRoZSBCTEMgYnVpbHQgaW50byB0aGUKZGlzcGxheSBl
-bmdpbmUuIEFuZCB0aGF0J3Mgb25seSBkb25lIHNvIHRoYXQgd2UgdGFrZSBvdmVyIHRoZQpoYXJk
-d2FyZSBzdGF0ZSBjb3JyZWN0bHkuIFNvIElOVkFMSURfUElQRSBpcyBqdXN0IGZpbmUgaW4gdGhp
-cyBjYXNlCnNpbmNlIHRoZSBiYWNrbGlnaHQgY29udHJvbCBoYXMgbm90aGluZyB0byBkbyB3aXRo
-IHRoZSBwaXBlLgoKLS0gClZpbGxlIFN5cmrDpGzDpApJbnRlbCBPVEMKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApk
-cmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5v
-cmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+On Thu, Jun 25, 2015 at 6:17 PM, Ville Syrj=C3=A4l=C3=A4
+<ville.syrjala@linux.intel.com> wrote:
+> On Thu, Jun 25, 2015 at 05:38:50PM +0530, Shobhit Kumar wrote:
+>> On Thu, Jun 25, 2015 at 2:18 PM, Ville Syrj=C3=A4l=C3=A4
+>> <ville.syrjala@linux.intel.com> wrote:
+>> > On Mon, Jun 22, 2015 at 04:24:25PM +0530, Shobhit Kumar wrote:
+>> >> Use the CRC PWM device in intel_panel.c and add new MIPI backligh=
+t
+>> >> specififc callbacks
+>> >>
+>> >> v2: Modify to use pwm_config callback
+>> >> v3: Addressed Jani's comments
+>> >>     - Renamed all function as pwm_* instead of vlv_*
+>> >>     - Call intel_panel_actually_set_backlight in enable function
+>> >>     - Return -ENODEV in case pwm_get fails
+>> >>     - in case pwm_config error return error cdoe from pwm_config
+>> >>     - Cleanup pwm in intel_panel_destroy_backlight
+>> >>
+>> >> CC: Samuel Ortiz <sameo@linux.intel.com>
+>> >> Cc: Linus Walleij <linus.walleij@linaro.org>
+>> >> Cc: Alexandre Courbot <gnurou@gmail.com>
+>> >> Cc: Thierry Reding <thierry.reding@gmail.com>
+>> >> Signed-off-by: Shobhit Kumar <shobhit.kumar@intel.com>
+>> >> ---
+>> >>  drivers/gpu/drm/i915/intel_drv.h   |  4 ++
+>> >>  drivers/gpu/drm/i915/intel_dsi.c   |  6 +++
+>> >>  drivers/gpu/drm/i915/intel_panel.c | 95 ++++++++++++++++++++++++=
+++++++++++++--
+>> >>  3 files changed, 100 insertions(+), 5 deletions(-)
+>> >>
+>> >> diff --git a/drivers/gpu/drm/i915/intel_drv.h b/drivers/gpu/drm/i=
+915/intel_drv.h
+>> >> index 2afb31a..561c17f 100644
+>> >> --- a/drivers/gpu/drm/i915/intel_drv.h
+>> >> +++ b/drivers/gpu/drm/i915/intel_drv.h
+>> >> @@ -182,6 +182,10 @@ struct intel_panel {
+>> >>               bool enabled;
+>> >>               bool combination_mode;  /* gen 2/4 only */
+>> >>               bool active_low_pwm;
+>> >> +
+>> >> +             /* PWM chip */
+>> >> +             struct pwm_device *pwm;
+>> >> +
+>> >>               struct backlight_device *device;
+>> >>       } backlight;
+>> >>
+>> >> diff --git a/drivers/gpu/drm/i915/intel_dsi.c b/drivers/gpu/drm/i=
+915/intel_dsi.c
+>> >> index c4db74a..be8722c 100644
+>> >> --- a/drivers/gpu/drm/i915/intel_dsi.c
+>> >> +++ b/drivers/gpu/drm/i915/intel_dsi.c
+>> >> @@ -402,6 +402,8 @@ static void intel_dsi_enable(struct intel_enc=
+oder *encoder)
+>> >>
+>> >>               intel_dsi_port_enable(encoder);
+>> >>       }
+>> >> +
+>> >> +     intel_panel_enable_backlight(intel_dsi->attached_connector)=
+;
+>> >>  }
+>> >>
+>> >>  static void intel_dsi_pre_enable(struct intel_encoder *encoder)
+>> >> @@ -466,6 +468,8 @@ static void intel_dsi_pre_disable(struct inte=
+l_encoder *encoder)
+>> >>
+>> >>       DRM_DEBUG_KMS("\n");
+>> >>
+>> >> +     intel_panel_disable_backlight(intel_dsi->attached_connector=
+);
+>> >> +
+>> >>       if (is_vid_mode(intel_dsi)) {
+>> >>               /* Send Shutdown command to the panel in LP mode */
+>> >>               for_each_dsi_port(port, intel_dsi->ports)
+>> >> @@ -1132,6 +1136,8 @@ void intel_dsi_init(struct drm_device *dev)
+>> >>       }
+>> >>
+>> >>       intel_panel_init(&intel_connector->panel, fixed_mode, NULL)=
+;
+>> >> +     intel_panel_setup_backlight(connector,
+>> >> +             (intel_encoder->crtc_mask =3D (1 << PIPE_A)) ? PIPE=
+_A : PIPE_B);
+>> >                                           ^
+>> >
+>> > Whoops. But since the PWM backlight doesn't need the initial pipe =
+for
+>> > anything you can actually just pass INVALID_PIPE here.
+>> >
+>>
+>> You are right, its unused, but I thought passing right value still
+>> made sense. Otherwise it makes it look like I am setting up back-lig=
+ht
+>> for invalid pipe, when the real meaning is something like
+>> DONTCARE_PIPE
+>
+> Well it's not really about the pipe. It's about which set of BLC
+> registers we're supoosed to use when using the BLC built into the
+> display engine. And that's only done so that we take over the
+> hardware state correctly. So INVALID_PIPE is just fine in this case
+> since the backlight control has nothing to do with the pipe.
+>
+
+Ok, will update.
+
+Regards
+Shobhit
+--
+To unsubscribe from this list: send the line "unsubscribe linux-gpio" i=
+n
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
