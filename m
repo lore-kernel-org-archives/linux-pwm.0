@@ -1,68 +1,51 @@
 From: Shobhit Kumar <shobhit.kumar@intel.com>
-Subject: [v3 2/7] mfd: intel_soc_pmic_core: Add lookup table for
-	Panel Control as GPIO signal
-Date: Fri, 26 Jun 2015 14:32:05 +0530
-Message-ID: <1435309330-50725-3-git-send-email-shobhit.kumar@intel.com>
+Subject: [v3 3/7] mfd: intel_soc_pmic_crc: Add PWM cell device for Crystalcove PMIC
+Date: Fri, 26 Jun 2015 14:32:06 +0530
+Message-ID: <1435309330-50725-4-git-send-email-shobhit.kumar@intel.com>
 References: <1435309330-50725-1-git-send-email-shobhit.kumar@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga14.intel.com ([192.55.52.115]:10257 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752263AbbFZJCl (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Fri, 26 Jun 2015 05:02:41 -0400
 In-Reply-To: <1435309330-50725-1-git-send-email-shobhit.kumar@intel.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: linux-pwm <linux-pwm@vger.kernel.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Paul Bolle <pebolle@tiscali.nl>, Samuel Ortiz <sameo@linux.intel.com>, Povilas Staniulis <wdmonster@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Shobhit Kumar <shobhit.kumar@intel.com>, Linus Walleij <linus.walleij@linaro.org>, varkabhadram@gmail.com, Paul Gortmaker <paul.gortmaker@windriver.com>, bloften80@gmail.com, David Airlie <airlied@linux.ie>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-pwm <linux-pwm@vger.kernel.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>
+Cc: Paul Bolle <pebolle@tiscali.nl>, Jani Nikula <jani.nikula@intel.com>, Samuel Ortiz <sameo@linux.intel.com>, Alexandre Courbot <gnurou@gmail.com>, David Airlie <airlied@linux.ie>, Povilas Staniulis <wdmonster@gmail.com>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, bloften80@gmail.com, varkabhadram@gmail.com, Shobhit Kumar <shobhit.kumar@intel.com>
 
-T24gc29tZSBJbnRlbCBTb0MgcGxhdGZvcm1zLCB0aGUgcGFuZWwgZW5hYmxlL2Rpc2FibGUgc2ln
-bmFscyBhcmUKY29udHJvbGxlZCBieSBDUkMgUE1JQy4gQWRkIHRob3NlIGNvbnRyb2wgYXMgYSBu
-ZXcgR1BJTyBpbiBhIGxvb2t1cAp0YWJsZSBmb3IgZ3Bpby1jcnlzdGFsY292ZSBjaGlwIGR1cmlu
-ZyBDUkMgZHJpdmVyIGxvYWQKCkNDOiBTYW11ZWwgT3J0aXogPHNhbWVvQGxpbnV4LmludGVsLmNv
-bT4KQ2M6IExpbnVzIFdhbGxlaWogPGxpbnVzLndhbGxlaWpAbGluYXJvLm9yZz4KQ2M6IEFsZXhh
-bmRyZSBDb3VyYm90IDxnbnVyb3VAZ21haWwuY29tPgpDYzogVGhpZXJyeSBSZWRpbmcgPHRoaWVy
-cnkucmVkaW5nQGdtYWlsLmNvbT4KQWNrZWQtYnk6IExlZSBKb25lcyA8bGVlLmpvbmVzQGxpbmFy
-by5vcmc+CkFja2VkLWJ5OiBMaW51cyBXYWxsZWlqIDxsaW51cy53YWxsZWlqQGxpbmFyby5vcmc+
-ClRlc3RlZC1ieTogVmlsbGUgU3lyasOkbMOkIDx2aWxsZS5zeXJqYWxhQGxpbnV4LmludGVsLmNv
-bT4KU2lnbmVkLW9mZi1ieTogU2hvYmhpdCBLdW1hciA8c2hvYmhpdC5rdW1hckBpbnRlbC5jb20+
-Ci0tLQp2MjogTWFrZSB0aGUgbG9va3VwIHRhYmxlIHN0YXRpYyAoVGhpZXJyeSkKICAgIFJlbW92
-ZSB0aGUgbG9va3VwIHRhYmxlIGR1cmluZyBkcml2ZXIgcmVtb3ZlIChUaGllcnJ5KQoKdjM6IENv
-cnJlY3QgdGhlIHN1YmplY3QgbGluZSAoTGVlIGpvbmVzKQoKIGRyaXZlcnMvbWZkL2ludGVsX3Nv
-Y19wbWljX2NvcmUuYyB8IDE3ICsrKysrKysrKysrKysrKysrCiAxIGZpbGUgY2hhbmdlZCwgMTcg
-aW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbWZkL2ludGVsX3NvY19wbWljX2Nv
-cmUuYyBiL2RyaXZlcnMvbWZkL2ludGVsX3NvY19wbWljX2NvcmUuYwppbmRleCA3YjUwYjZiLi5m
-M2Q5MThlIDEwMDY0NAotLS0gYS9kcml2ZXJzL21mZC9pbnRlbF9zb2NfcG1pY19jb3JlLmMKKysr
-IGIvZHJpdmVycy9tZmQvaW50ZWxfc29jX3BtaWNfY29yZS5jCkBAIC0yNCw4ICsyNCwxOSBAQAog
-I2luY2x1ZGUgPGxpbnV4L2FjcGkuaD4KICNpbmNsdWRlIDxsaW51eC9yZWdtYXAuaD4KICNpbmNs
-dWRlIDxsaW51eC9tZmQvaW50ZWxfc29jX3BtaWMuaD4KKyNpbmNsdWRlIDxsaW51eC9ncGlvL21h
-Y2hpbmUuaD4KICNpbmNsdWRlICJpbnRlbF9zb2NfcG1pY19jb3JlLmgiCiAKKy8qIExvb2t1cCB0
-YWJsZSBmb3IgdGhlIFBhbmVsIEVuYWJsZS9EaXNhYmxlIGxpbmUgYXMgR1BJTyBzaWduYWxzICov
-CitzdGF0aWMgc3RydWN0IGdwaW9kX2xvb2t1cF90YWJsZSBwYW5lbF9ncGlvX3RhYmxlID0gewor
-CS8qIEludGVsIEdGWCBpcyBjb25zdW1lciAqLworCS5kZXZfaWQgPSAiMDAwMDowMDowMi4wIiwK
-KwkudGFibGUgPSB7CisJCS8qIFBhbmVsIEVOL0RJU0FCTEUgKi8KKwkJR1BJT19MT09LVVAoImdw
-aW9fY3J5c3RhbGNvdmUiLCA5NCwgInBhbmVsIiwgR1BJT19BQ1RJVkVfSElHSCksCisJfSwKK307
-CisKIHN0YXRpYyBpbnQgaW50ZWxfc29jX3BtaWNfZmluZF9ncGlvX2lycShzdHJ1Y3QgZGV2aWNl
-ICpkZXYpCiB7CiAJc3RydWN0IGdwaW9fZGVzYyAqZGVzYzsKQEAgLTg1LDYgKzk2LDkgQEAgc3Rh
-dGljIGludCBpbnRlbF9zb2NfcG1pY19pMmNfcHJvYmUoc3RydWN0IGkyY19jbGllbnQgKmkyYywK
-IAlpZiAocmV0KQogCQlkZXZfd2FybihkZXYsICJDYW4ndCBlbmFibGUgSVJRIGFzIHdha2Ugc291
-cmNlOiAlZFxuIiwgcmV0KTsKIAorCS8qIEFkZCBsb29rdXAgdGFibGUgYmluZGluZyBmb3IgUGFu
-ZWwgQ29udHJvbCB0byB0aGUgR1BJTyBDaGlwICovCisJZ3Bpb2RfYWRkX2xvb2t1cF90YWJsZSgm
-cGFuZWxfZ3Bpb190YWJsZSk7CisKIAlyZXQgPSBtZmRfYWRkX2RldmljZXMoZGV2LCAtMSwgY29u
-ZmlnLT5jZWxsX2RldiwKIAkJCSAgICAgIGNvbmZpZy0+bl9jZWxsX2RldnMsIE5VTEwsIDAsCiAJ
-CQkgICAgICByZWdtYXBfaXJxX2dldF9kb21haW4ocG1pYy0+aXJxX2NoaXBfZGF0YSkpOwpAQCAt
-MTA0LDYgKzExOCw5IEBAIHN0YXRpYyBpbnQgaW50ZWxfc29jX3BtaWNfaTJjX3JlbW92ZShzdHJ1
-Y3QgaTJjX2NsaWVudCAqaTJjKQogCiAJcmVnbWFwX2RlbF9pcnFfY2hpcChwbWljLT5pcnEsIHBt
-aWMtPmlycV9jaGlwX2RhdGEpOwogCisJLyogUmVtb3ZlIGxvb2t1cCB0YWJsZSBmb3IgUGFuZWwg
-Q29udHJvbCBmcm9tIHRoZSBHUElPIENoaXAgKi8KKwlncGlvZF9yZW1vdmVfbG9va3VwX3RhYmxl
-KCZwYW5lbF9ncGlvX3RhYmxlKTsKKwogCW1mZF9yZW1vdmVfZGV2aWNlcygmaTJjLT5kZXYpOwog
-CiAJcmV0dXJuIDA7Ci0tIAoxLjkuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KSW50ZWwtZ2Z4IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJl
-ZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5m
-by9pbnRlbC1nZngK
+Needed for PWM control suuported by the PMIC
+
+CC: Samuel Ortiz <sameo@linux.intel.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Alexandre Courbot <gnurou@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+Tested-by: Ville Syrj=C3=A4l=C3=A4 <ville.syrjala@linux.intel.com>
+Signed-off-by: Shobhit Kumar <shobhit.kumar@intel.com>
+---
+v2: Correct the subject line (Lee jones)
+
+ drivers/mfd/intel_soc_pmic_crc.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/mfd/intel_soc_pmic_crc.c b/drivers/mfd/intel_soc_p=
+mic_crc.c
+index 7436075..4a74948 100644
+--- a/drivers/mfd/intel_soc_pmic_crc.c
++++ b/drivers/mfd/intel_soc_pmic_crc.c
+@@ -109,6 +109,9 @@ static struct mfd_cell crystal_cove_dev[] =3D {
+ 	{
+ 		.name =3D "crystal_cove_pmic",
+ 	},
++	{
++		.name =3D "crystal_cove_pwm",
++	},
+ };
+=20
+ static const struct regmap_config crystal_cove_regmap_config =3D {
+--=20
+1.9.1
