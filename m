@@ -1,57 +1,75 @@
-From: Varka Bhadram <varkabhadram@gmail.com>
-Subject: Re: [v3 5/7] pwm: crc: Add Crystalcove (CRC) PWM driver
-Date: Fri, 26 Jun 2015 18:01:53 +0530
-Message-ID: <558D4639.8000102@gmail.com>
+From: Daniel Vetter <daniel@ffwll.ch>
+Subject: Re: [Intel-gfx] [v3 0/7] Crystalcove (CRC) PMIC based panel and pwm
+ control
+Date: Fri, 26 Jun 2015 18:31:37 +0200
+Message-ID: <20150626163137.GB30960@phenom.ffwll.local>
 References: <1435309330-50725-1-git-send-email-shobhit.kumar@intel.com>
- <1435309330-50725-6-git-send-email-shobhit.kumar@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <1435309330-50725-6-git-send-email-shobhit.kumar@intel.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Shobhit Kumar <shobhit.kumar@intel.com>, linux-pwm <linux-pwm@vger.kernel.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Paul Bolle <pebolle@tiscali.nl>, Samuel Ortiz <sameo@linux.intel.com>, Povilas Staniulis <wdmonster@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, bloften80@gmail.com, David Airlie <airlied@linux.ie>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1435309330-50725-1-git-send-email-shobhit.kumar@intel.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Shobhit Kumar <shobhit.kumar@intel.com>
+Cc: linux-pwm <linux-pwm@vger.kernel.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>, Alexandre Courbot <gnurou@gmail.com>, Paul Bolle <pebolle@tiscali.nl>, Samuel Ortiz <sameo@linux.intel.com>, Povilas Staniulis <wdmonster@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Linus Walleij <linus.walleij@linaro.org>, varkabhadram@gmail.com, Paul Gortmaker <paul.gortmaker@windriver.com>, bloften80@gmail.com, David Airlie <airlied@linux.ie>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMDYvMjYvMjAxNSAwMjozMiBQTSwgU2hvYmhpdCBLdW1hciB3cm90ZToKPiBUaGUgQ3J5c3Rh
-bGNvdmUgUE1JQyBwcm92aWRlcyB0aHJlZSBQV00gc2lnbmFscyBhbmQgdGhpcyBkcml2ZXIgZXhw
-b3J0cwo+IG9uZSBvZiB0aGVtIG9uIHRoZSBCWVQgcGxhdGZvcm0gd2hpY2ggaXMgdXNlZCB0byBj
-b250cm9sIGJhY2tsaWdodCBmb3IKPiBEU0kgcGFuZWwuIFRoaXMgaXMgcGxhdGZvcm0gZGV2aWNl
-IGltcGxlbWVudGF0aW9uIG9mIHRoZSBkcml2ZXJzL21mZAo+IGNlbGwgZGV2aWNlIGZvciBDUkMg
-UE1JQy4KPgo+IENDOiBTYW11ZWwgT3J0aXogPHNhbWVvQGxpbnV4LmludGVsLmNvbT4KPiBDYzog
-TGludXMgV2FsbGVpaiA8bGludXMud2FsbGVpakBsaW5hcm8ub3JnPgo+IENjOiBBbGV4YW5kcmUg
-Q291cmJvdCA8Z251cm91QGdtYWlsLmNvbT4KPiBDYzogVGhpZXJyeSBSZWRpbmcgPHRoaWVycnku
-cmVkaW5nQGdtYWlsLmNvbT4KPiBDYzogUGF1bCBCb2xsZSA8cGVib2xsZUB0aXNjYWxpLm5sPgo+
-IENjOiBQYXVsIEdvcnRtYWtlciA8cGF1bC5nb3J0bWFrZXJAd2luZHJpdmVyLmNvbT4KPiBUZXN0
-ZWQtYnk6IFZpbGxlIFN5cmrDpGzDpCA8dmlsbGUuc3lyamFsYUBsaW51eC5pbnRlbC5jb20+Cj4g
-U2lnbmVkLW9mZi1ieTogU2hvYmhpdCBLdW1hciA8c2hvYmhpdC5rdW1hckBpbnRlbC5jb20+Cj4g
-LS0tCj4gdjI6IFVzZSB0aGUgZXhpc3RpbmcgY29uZmlnIGNhbGxiYWNrIHdpdGggZHV0eV9ucyBh
-bmQgcGVyaW9kX25zKFRoaWVycnkpCj4KPiB2MzogQ29ycmVjdCB0aGUgc3ViamVjdCBsaW5lIChM
-ZWUgam9uZXMpCj4KPiB2NDogQWRkcmVzcyBjb21tZW50IGJ5IFRoaWVycnkgJiBQYXVsCj4gICAg
-ICAtIENvbW1pdCBtZXNzYWdlIHVwZGF0ZSBhbmQgZml4ZXMgZm9yIGZldyBzeW50YXggZXJyb3Jz
-Cj4gICAgICAtIEFkZCBQV01fQ1JDIGluIEtjb25maWcgYW5kIE1ha2VmaWxlIHNvcnRlZCBhbHBo
-YWJldGljYWxseQo+ICAgICAgLSBVc2UgdGhlIFBXTV9CQVNFX0NMSyBhcyA2MDAwMDAwIGZvciBi
-ZXR0ZXIgY29kZSByZWFkYWJpbGl0eQo+ICAgICAgLSBSZW1vdmUgdGhlIHJlZHVuZGFudCBydWxl
-IG9mIHRocmVlIHdoaWxlIGNhbGN1bGF0aW5nIHB3bSBsZXZlbAo+ICAgICAgLSBVc2UgdGhlIHBs
-YXRmb3JtX2RldmljZSBpbiBwd21fY2hpcAo+ICAgICAgLSBVc2UgYnVpbGluX3BsYXRmb3JtX2Ry
-aXZlcgo+Cj4gdjU6IEFkZHJlc3MgY29tbWVudHMgYnkgVmFya2EKPiAgICAgIC0gTWFrZSB0aGUg
-Yml0IGRlZmluaXRpb24gdXNpbmcgQklUIG1hY3JvCj4gICAgICAtIHJlb3JkZXIgcHJvYmUgYW5k
-IHJlbW92ZSBjb2RlIHRvIGRpcmVjdGx5IHJldHVybiBmcm9tIHB3bWNoaXBfYWRkL3JlbW92ZQo+
-Cj4gICBkcml2ZXJzL3B3bS9LY29uZmlnICAgfCAgIDcgKysrCj4gICBkcml2ZXJzL3B3bS9NYWtl
-ZmlsZSAgfCAgIDEgKwo+ICAgZHJpdmVycy9wd20vcHdtLWNyYy5jIHwgMTQzICsrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCj4gICAzIGZpbGVzIGNoYW5n
-ZWQsIDE1MSBpbnNlcnRpb25zKCspCj4gICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9wd20v
-cHdtLWNyYy5jCgpSZXZpZXdlZC1ieTogVmFya2EgQmhhZHJhbSA8dmFya2FiaGFkcmFtQGdtYWls
-LmNvbT4KCi0tIApCZXN0IHJlZ2FyZHMsClZhcmthIEJoYWRyYW0uCgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBsaXN0Cklu
-dGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdmeAo=
+On Fri, Jun 26, 2015 at 02:32:03PM +0530, Shobhit Kumar wrote:
+> Hi,
+> Next update of the series reviewed at 
+> https://lkml.org/lkml/2015/6/22/155
+> 
+> Major changes are few review comments from Varka and Ville being addressed. Also except
+> for intel-gfx patches, all patches reviesion history is moved out of commit message.
+> 
+> Hope this series finally finds its mark.
+> 
+> Regards
+> Shobhit
+> 
+> Shobhit Kumar (7):
+>   gpiolib: Add support for removing registered consumer lookup table
+>   mfd: intel_soc_pmic_core: Add lookup table for Panel Control as GPIO
+>     signal
+>   mfd: intel_soc_pmic_crc: Add PWM cell device for Crystalcove PMIC
+>   mfd: intel_soc_pmic_core: ADD PWM lookup table for CRC PMIC based PWM
+>   pwm: crc: Add Crystalcove (CRC) PWM driver
+>   drm/i915: Use the CRC gpio for panel enable/disable
+>   drm/i915: Backlight control using CRC PMIC based PWM driver
+
+I think we have r-b/acks on all the patches now. Ok if I pull this in
+through drm-intel.git for 4.3? Or should I make a topic branch with tag
+and then send out pull requests to everyone? Or will each maintainer merge
+on their own since it's all only coupled at runtime anyway? Any of these
+would suit me.
+
+Thanks, Daniel
+
+> 
+>  drivers/gpio/gpiolib.c             |  13 ++++
+>  drivers/gpu/drm/i915/intel_bios.h  |   7 ++
+>  drivers/gpu/drm/i915/intel_drv.h   |   4 ++
+>  drivers/gpu/drm/i915/intel_dsi.c   |  37 +++++++++-
+>  drivers/gpu/drm/i915/intel_dsi.h   |   3 +
+>  drivers/gpu/drm/i915/intel_panel.c |  94 ++++++++++++++++++++++--
+>  drivers/mfd/intel_soc_pmic_core.c  |  29 ++++++++
+>  drivers/mfd/intel_soc_pmic_crc.c   |   3 +
+>  drivers/pwm/Kconfig                |   7 ++
+>  drivers/pwm/Makefile               |   1 +
+>  drivers/pwm/pwm-crc.c              | 143 +++++++++++++++++++++++++++++++++++++
+>  include/linux/gpio/machine.h       |   1 +
+>  12 files changed, 335 insertions(+), 7 deletions(-)
+>  create mode 100644 drivers/pwm/pwm-crc.c
+> 
+> -- 
+> 1.9.1
+> 
+> _______________________________________________
+> Intel-gfx mailing list
+> Intel-gfx@lists.freedesktop.org
+> http://lists.freedesktop.org/mailman/listinfo/intel-gfx
+
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
