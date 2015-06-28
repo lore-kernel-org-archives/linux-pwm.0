@@ -1,16 +1,16 @@
-From: Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
+From: Shobhit Kumar <kumar@shobhit.info>
 Subject: Re: [v3 0/7] Crystalcove (CRC) PMIC based panel and pwm
- control
-Date: Fri, 26 Jun 2015 20:47:56 +0300
-Message-ID: <20150626174756.GC5176@intel.com>
+	control
+Date: Sun, 28 Jun 2015 07:58:33 +0530
+Message-ID: <CAAbrOmdLK+OOkcNH69MLGkvLLJmur14=hwokq0R0dWaNWYKvvw@mail.gmail.com>
 References: <1435309330-50725-1-git-send-email-shobhit.kumar@intel.com>
  <20150626163137.GB30960@phenom.ffwll.local>
+ <20150626174756.GC5176@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20150626163137.GB30960@phenom.ffwll.local>
+In-Reply-To: <20150626174756.GC5176@intel.com>
 List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/intel-gfx>,
  <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <http://lists.freedesktop.org/archives/intel-gfx>
@@ -20,37 +20,41 @@ List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
  <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
 Errors-To: intel-gfx-bounces@lists.freedesktop.org
 Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Shobhit Kumar <shobhit.kumar@intel.com>, linux-pwm <linux-pwm@vger.kernel.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>, Alexandre Courbot <gnurou@gmail.com>, Paul Bolle <pebolle@tiscali.nl>, Samuel Ortiz <sameo@linux.intel.com>, Povilas Staniulis <wdmonster@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Linus Walleij <linus.walleij@linaro.org>, varkabhadram@gmail.com, Paul Gortmaker <paul.gortmaker@windriver.com>, bloften80@gmail.com, David Airlie <airlied@linux.ie>, Chih-Wei Huang <cwhuang@android-x86.org>, Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>
+To: =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>
+Cc: linux-pwm <linux-pwm@vger.kernel.org>, Paul Bolle <pebolle@tiscali.nl>, Samuel Ortiz <sameo@linux.intel.com>, Alexandre Courbot <gnurou@gmail.com>, Jani Nikula <jani.nikula@intel.com>, Shobhit Kumar <shobhit.kumar@intel.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, Varka Bhadram <varkabhadram@gmail.com>, Paul Gortmaker <paul.gortmaker@windriver.com>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-gpio <linux-gpio@vger.kernel.org>, Brain WrecK <bloften80@gmail.com>, Povilas Staniulis <wdmonster@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, Chih-Wei Huang <cwhuang@android-x86.org>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gRnJpLCBKdW4gMjYsIDIwMTUgYXQgMDY6MzE6MzdQTSArMDIwMCwgRGFuaWVsIFZldHRlciB3
-cm90ZToKPiBPbiBGcmksIEp1biAyNiwgMjAxNSBhdCAwMjozMjowM1BNICswNTMwLCBTaG9iaGl0
-IEt1bWFyIHdyb3RlOgo+ID4gSGksCj4gPiBOZXh0IHVwZGF0ZSBvZiB0aGUgc2VyaWVzIHJldmll
-d2VkIGF0IAo+ID4gaHR0cHM6Ly9sa21sLm9yZy9sa21sLzIwMTUvNi8yMi8xNTUKPiA+IAo+ID4g
-TWFqb3IgY2hhbmdlcyBhcmUgZmV3IHJldmlldyBjb21tZW50cyBmcm9tIFZhcmthIGFuZCBWaWxs
-ZSBiZWluZyBhZGRyZXNzZWQuIEFsc28gZXhjZXB0Cj4gPiBmb3IgaW50ZWwtZ2Z4IHBhdGNoZXMs
-IGFsbCBwYXRjaGVzIHJldmllc2lvbiBoaXN0b3J5IGlzIG1vdmVkIG91dCBvZiBjb21taXQgbWVz
-c2FnZS4KPiA+IAo+ID4gSG9wZSB0aGlzIHNlcmllcyBmaW5hbGx5IGZpbmRzIGl0cyBtYXJrLgo+
-ID4gCj4gPiBSZWdhcmRzCj4gPiBTaG9iaGl0Cj4gPiAKPiA+IFNob2JoaXQgS3VtYXIgKDcpOgo+
-ID4gICBncGlvbGliOiBBZGQgc3VwcG9ydCBmb3IgcmVtb3ZpbmcgcmVnaXN0ZXJlZCBjb25zdW1l
-ciBsb29rdXAgdGFibGUKPiA+ICAgbWZkOiBpbnRlbF9zb2NfcG1pY19jb3JlOiBBZGQgbG9va3Vw
-IHRhYmxlIGZvciBQYW5lbCBDb250cm9sIGFzIEdQSU8KPiA+ICAgICBzaWduYWwKPiA+ICAgbWZk
-OiBpbnRlbF9zb2NfcG1pY19jcmM6IEFkZCBQV00gY2VsbCBkZXZpY2UgZm9yIENyeXN0YWxjb3Zl
-IFBNSUMKPiA+ICAgbWZkOiBpbnRlbF9zb2NfcG1pY19jb3JlOiBBREQgUFdNIGxvb2t1cCB0YWJs
-ZSBmb3IgQ1JDIFBNSUMgYmFzZWQgUFdNCj4gPiAgIHB3bTogY3JjOiBBZGQgQ3J5c3RhbGNvdmUg
-KENSQykgUFdNIGRyaXZlcgo+ID4gICBkcm0vaTkxNTogVXNlIHRoZSBDUkMgZ3BpbyBmb3IgcGFu
-ZWwgZW5hYmxlL2Rpc2FibGUKPiA+ICAgZHJtL2k5MTU6IEJhY2tsaWdodCBjb250cm9sIHVzaW5n
-IENSQyBQTUlDIGJhc2VkIFBXTSBkcml2ZXIKPiAKPiBJIHRoaW5rIHdlIGhhdmUgci1iL2Fja3Mg
-b24gYWxsIHRoZSBwYXRjaGVzIG5vdy4gT2sgaWYgSSBwdWxsIHRoaXMgaW4KPiB0aHJvdWdoIGRy
-bS1pbnRlbC5naXQgZm9yIDQuMz8gT3Igc2hvdWxkIEkgbWFrZSBhIHRvcGljIGJyYW5jaCB3aXRo
-IHRhZwo+IGFuZCB0aGVuIHNlbmQgb3V0IHB1bGwgcmVxdWVzdHMgdG8gZXZlcnlvbmU/IE9yIHdp
-bGwgZWFjaCBtYWludGFpbmVyIG1lcmdlCj4gb24gdGhlaXIgb3duIHNpbmNlIGl0J3MgYWxsIG9u
-bHkgY291cGxlZCBhdCBydW50aW1lIGFueXdheT8gQW55IG9mIHRoZXNlCj4gd291bGQgc3VpdCBt
-ZS4KCkkgZm9yZ290IHRvIG1lbnRpb24gdGhhdCBJIGhhZCBhIGJ1aWxkIGZhaWx1cmUgZHVlIHRv
-CmJ1aWx0aW5fcGxhdGZvcm1fZHJpdmVyKCkgd2hlbiBJIHRyaWVkIHRoaXMgKGp1c3QgY2hhbmdl
-ZCBpdCB0bwptb2R1bGVfcGxhdGZvcm1fZHJpdmVyKCkgdG8gZ2V0IHBhc3QgaXQpLiBTbyBJJ20g
-bm90IHN1cmUgaWYgdGhpcwpub3cgZGVwZW5kcyBvbiBzb21lIHRyZWUgd2hpY2ggaXNuJ3QgaW5j
-bHVkZWQgaW4gLW5pZ2h0bHkuLi4KCi0tIApWaWxsZSBTeXJqw6Rsw6QKSW50ZWwgT1RDCl9fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkludGVsLWdmeCBtYWls
-aW5nIGxpc3QKSW50ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwOi8vbGlzdHMuZnJl
-ZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
+T24gRnJpLCBKdW4gMjYsIDIwMTUgYXQgMTE6MTcgUE0sIFZpbGxlIFN5cmrDpGzDpAo8dmlsbGUu
+c3lyamFsYUBsaW51eC5pbnRlbC5jb20+IHdyb3RlOgo+IE9uIEZyaSwgSnVuIDI2LCAyMDE1IGF0
+IDA2OjMxOjM3UE0gKzAyMDAsIERhbmllbCBWZXR0ZXIgd3JvdGU6Cj4+IE9uIEZyaSwgSnVuIDI2
+LCAyMDE1IGF0IDAyOjMyOjAzUE0gKzA1MzAsIFNob2JoaXQgS3VtYXIgd3JvdGU6Cj4+ID4gSGks
+Cj4+ID4gTmV4dCB1cGRhdGUgb2YgdGhlIHNlcmllcyByZXZpZXdlZCBhdAo+PiA+IGh0dHBzOi8v
+bGttbC5vcmcvbGttbC8yMDE1LzYvMjIvMTU1Cj4+ID4KPj4gPiBNYWpvciBjaGFuZ2VzIGFyZSBm
+ZXcgcmV2aWV3IGNvbW1lbnRzIGZyb20gVmFya2EgYW5kIFZpbGxlIGJlaW5nIGFkZHJlc3NlZC4g
+QWxzbyBleGNlcHQKPj4gPiBmb3IgaW50ZWwtZ2Z4IHBhdGNoZXMsIGFsbCBwYXRjaGVzIHJldmll
+c2lvbiBoaXN0b3J5IGlzIG1vdmVkIG91dCBvZiBjb21taXQgbWVzc2FnZS4KPj4gPgo+PiA+IEhv
+cGUgdGhpcyBzZXJpZXMgZmluYWxseSBmaW5kcyBpdHMgbWFyay4KPj4gPgo+PiA+IFJlZ2FyZHMK
+Pj4gPiBTaG9iaGl0Cj4+ID4KPj4gPiBTaG9iaGl0IEt1bWFyICg3KToKPj4gPiAgIGdwaW9saWI6
+IEFkZCBzdXBwb3J0IGZvciByZW1vdmluZyByZWdpc3RlcmVkIGNvbnN1bWVyIGxvb2t1cCB0YWJs
+ZQo+PiA+ICAgbWZkOiBpbnRlbF9zb2NfcG1pY19jb3JlOiBBZGQgbG9va3VwIHRhYmxlIGZvciBQ
+YW5lbCBDb250cm9sIGFzIEdQSU8KPj4gPiAgICAgc2lnbmFsCj4+ID4gICBtZmQ6IGludGVsX3Nv
+Y19wbWljX2NyYzogQWRkIFBXTSBjZWxsIGRldmljZSBmb3IgQ3J5c3RhbGNvdmUgUE1JQwo+PiA+
+ICAgbWZkOiBpbnRlbF9zb2NfcG1pY19jb3JlOiBBREQgUFdNIGxvb2t1cCB0YWJsZSBmb3IgQ1JD
+IFBNSUMgYmFzZWQgUFdNCj4+ID4gICBwd206IGNyYzogQWRkIENyeXN0YWxjb3ZlIChDUkMpIFBX
+TSBkcml2ZXIKPj4gPiAgIGRybS9pOTE1OiBVc2UgdGhlIENSQyBncGlvIGZvciBwYW5lbCBlbmFi
+bGUvZGlzYWJsZQo+PiA+ICAgZHJtL2k5MTU6IEJhY2tsaWdodCBjb250cm9sIHVzaW5nIENSQyBQ
+TUlDIGJhc2VkIFBXTSBkcml2ZXIKPj4KPj4gSSB0aGluayB3ZSBoYXZlIHItYi9hY2tzIG9uIGFs
+bCB0aGUgcGF0Y2hlcyBub3cuIE9rIGlmIEkgcHVsbCB0aGlzIGluCj4+IHRocm91Z2ggZHJtLWlu
+dGVsLmdpdCBmb3IgNC4zPyBPciBzaG91bGQgSSBtYWtlIGEgdG9waWMgYnJhbmNoIHdpdGggdGFn
+Cj4+IGFuZCB0aGVuIHNlbmQgb3V0IHB1bGwgcmVxdWVzdHMgdG8gZXZlcnlvbmU/IE9yIHdpbGwg
+ZWFjaCBtYWludGFpbmVyIG1lcmdlCj4+IG9uIHRoZWlyIG93biBzaW5jZSBpdCdzIGFsbCBvbmx5
+IGNvdXBsZWQgYXQgcnVudGltZSBhbnl3YXk/IEFueSBvZiB0aGVzZQo+PiB3b3VsZCBzdWl0IG1l
+Lgo+Cj4gSSBmb3Jnb3QgdG8gbWVudGlvbiB0aGF0IEkgaGFkIGEgYnVpbGQgZmFpbHVyZSBkdWUg
+dG8KPiBidWlsdGluX3BsYXRmb3JtX2RyaXZlcigpIHdoZW4gSSB0cmllZCB0aGlzIChqdXN0IGNo
+YW5nZWQgaXQgdG8KPiBtb2R1bGVfcGxhdGZvcm1fZHJpdmVyKCkgdG8gZ2V0IHBhc3QgaXQpLiBT
+byBJJ20gbm90IHN1cmUgaWYgdGhpcwo+IG5vdyBkZXBlbmRzIG9uIHNvbWUgdHJlZSB3aGljaCBp
+c24ndCBpbmNsdWRlZCBpbiAtbmlnaHRseS4uLgoKVGhlc2UgcGF0Y2hlcyBhcmUgYmFzZWQgb24g
+bGludXgtbmV4dC9tYXN0ZXIKClJlZ2FyZHMKU2hvYmhpdApfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBsaXN0CkludGVsLWdm
+eEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWls
+bWFuL2xpc3RpbmZvL2ludGVsLWdmeAo=
