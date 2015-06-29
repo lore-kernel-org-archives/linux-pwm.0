@@ -1,87 +1,84 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 2/2] pwm: add MediaTek display PWM driver support
-Date: Mon, 29 Jun 2015 11:27:27 +0200
-Message-ID: <20150629092726.GG5431@ulmo>
-References: <1432214964-40644-1-git-send-email-yh.huang@mediatek.com>
- <1432214964-40644-3-git-send-email-yh.huang@mediatek.com>
- <20150612102046.GF19400@ulmo.nvidia.com>
- <1434622784.18278.39.camel@mtksdaap41>
- <1434635939.22029.7.camel@mtksdaap41>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH v4 2/2] pwm: Add support for R-Car PWM Timer
+Date: Mon, 29 Jun 2015 09:49:47 +0000
+Message-ID: <SG2PR06MB0919623D7D1E90DE9D3E811BD8AA0@SG2PR06MB0919.apcprd06.prod.outlook.com>
+References: <1432205846-4312-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <1432205846-4312-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <20150612120600.GM19400@ulmo.nvidia.com>
+ <SG2PR06MB09195A961FECE276F001493AD8B80@SG2PR06MB0919.apcprd06.prod.outlook.com>
+ <20150629091215.GE5431@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="p7qwJlK53pWzbayA"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1434635939.22029.7.camel@mtksdaap41>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yingjoe Chen <yingjoe.chen@mediatek.com>
-Cc: YH Huang <yh.huang@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-sh-owner@vger.kernel.org>
+In-Reply-To: <20150629091215.GE5431@ulmo>
+Content-Language: ja-JP
+Sender: linux-sh-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: "robh+dt@kernel.org" <robh+dt@kernel.org>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "galak@codeaurora.org" <galak@codeaurora.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
+Hi Thierry,
 
---p7qwJlK53pWzbayA
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Sent: Monday, June 29, 2015 6:12 PM
+> 
+> On Mon, Jun 15, 2015 at 05:48:00AM +0000, Yoshihiro Shimoda wrote:
+> [...]
+> > > > +static void rcar_pwm_set_counter(struct rcar_pwm_chip *rp, int div,
+> > > > +				 int duty_ns, int period_ns)
+> > > > +{
+> > > > +	unsigned long long one_cycle, tmp;	/* 0.01 nanoseconds */
+> > > > +	unsigned long clk_rate = clk_get_rate(rp->clk);
+> > > > +	u32 cyc, ph;
+> > > > +
+> > > > +	one_cycle = (unsigned long long)NSEC_PER_SEC * 100ULL * (1 << div);
+> > > > +	do_div(one_cycle, clk_rate);
+> > > > +
+> > > > +	tmp = period_ns * 100ULL;
+> > > > +	do_div(tmp, one_cycle);
+> > > > +	cyc = (tmp << RCAR_PWMCNT_CYC0_SHIFT) & RCAR_PWMCNT_CYC0_MASK;
+> > > > +
+> > > > +	tmp = duty_ns * 100ULL;
+> > > > +	do_div(tmp, one_cycle);
+> > > > +	ph = tmp & RCAR_PWMCNT_PH0_MASK;
+> > > > +
+> > > > +	/* Avoid prohibited setting */
+> > > > +	if (cyc && ph)
+> > > > +		rcar_pwm_write(rp, cyc | ph, RCAR_PWMCNT);
+> > >
+> > > So if a period and duty-cycle are passed in that yield the prohibited
+> > > setting the operation will simply be silently ignored?
+> >
+> > Yes, to update values of pwm->duty_cycle and ->period by pwm_config(),
+> > this code will be silently ignored.
+> 
+> That's not right. If someone passes in invalid values you should report
+> an error.
 
-On Thu, Jun 18, 2015 at 09:58:59PM +0800, Yingjoe Chen wrote:
-> On Thu, 2015-06-18 at 18:19 +0800, YH Huang wrote:
-> > On Fri, 2015-06-12 at 12:20 +0200, Thierry Reding wrote:
-> > > > +/* Shift log2(PWM_PERIOD_MAX + 1) as divisor */
-> > > > +#define PWM_PERIOD_BIT_SHIFT	12
-> > >=20
-> > > I wasn't very clear about this in my earlier review, so let me try to
-> > > explain why I think this is confusing. You use this as a divisor, but
-> > > you encode it as a shift. It's also PWM_PERIOD_MAX + 1, so I think it
-> > > would make more sense to drop this, keep PWM_PERIOD_MAX as above and
-> > > then replace the
-> > >=20
-> > > 	>> PWM_PERIOD_BIT_SHIFT
-> > > =09
-> > > below by
-> > >=20
-> > > 	/ (PWM_PERIOD_MAX + 1)
-> > >=20
-> >=20
-> > Maybe I can change in this way:
-> > Remove this: #define PWM_PERIOD_MAX		0x00000fff
-> > Using ">> PWM_PERIOD_BIT_SHIFT" is faster than "/ (PWM_PERIOD_MAX + 1)"
-> > Is this right?
->=20
->=20
-> The place which use this shift is:
->=20
-> 	clk_div =3D div_u64(rate * period_ns, NSEC_PER_SEC) >>=20
-> 			  PWM_PERIOD_BIT_SHIFT;
->=20
-> div_u64 return u64. If we change >> to /, and somehow compiler didn't
-> optimize that div into shift, it will cause build error.
+Thank you for the comment.
+After I sent the previous email, I was also confusing this behavior.
+So, I fixed it in v5 patch.
+(In other words, if the PWM is enabled and a user input invalid values,
+ this driver will report an error.)
 
-Good point. I think every compiler should be able to optimize this, but
-the shift isn't any worse than a divide and if we can proactively avoid
-portability issues, let's go with the shift.
+I'm sorry, I should have explained that in this email thread.
 
-Thierry
+> Also, are you sure the check is correct? The current check:
+> 
+> 	if (cyc && ph)
+> 
+> is the same as
+> 
+> 	if (cyc != 0 && ph != 0)
+> 
+> which means that you will never be able to set a zero duty cycle. Is
+> that really what you want here?
 
---p7qwJlK53pWzbayA
-Content-Type: application/pgp-signature
+Yes, I really want to avoid to set a zero duty cycle because
+the PWM doesn't accept it.
+(According to the datasheet, it said "Setting H'000 is prohibited.")
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Best regards,
+Yoshihiro Shimoda
 
-iQIcBAABCAAGBQJVkQ9+AAoJEN0jrNd/PrOh+iIQAIhgolN7CJuG/ZbsVU3yt1c3
-hluX+91cPqiXA2Djlp+4iDIyqR+Ozszdz35F6Akg3bhIiYBgddg/yIl8/a0rE1Fg
-MgPyWUEBR3rtANDrhDt89Qz6zawTnkvn8nIq6i7ureHQgQ+C378QNSxz5LAbjHTt
-Xe5Ob9sai39iHy62FmLTRDYjVQ+0A+xSL4oZkSLM/+GOUqjmqzfAf4BOdgn5iiJA
-8YnnwrnsTbQKSGSYu+IyhhLUyqbgKfUDI5BzDHR3exuNzs9XDXOH7jGrvV7DtH9X
-D88tNtDaZIxeEVY/1ICQss3mfhyfzrgaU5X2CLl+XaZgBLvnGdyI640Y03Z3GrLB
-grM8HdeGqxmb/ulGCvtZW8dHL5sKLPWfXLcAfGMSKGON1m04f6jng1QT8CO4axDf
-uDHtOjvkNoFKHss1ZPt8/Aaoy/Om5WVBVCLrA0XDKl4HiGqUbnc/se5HC0J3VAwu
-ieVytw796++H+zyLiEnbzYi79vpLsEqE+iyI1RyegDfK1Ug4whtbHLZ6/Zmn/zBi
-zzrut7D0GuwDNWlrpBG6PsIOr/m2IrMxHyk6urA2tMXOiq+4o+0jjhJbUekyezl0
-pSACPptjxj0Ujw9+QZbiRS4In6wAiejqQab0pHVpjVrNL0ZVBY2NORGdYi/qHcu3
-xffZQulegpUN9G+3DSJy
-=nfFS
------END PGP SIGNATURE-----
-
---p7qwJlK53pWzbayA--
+> Thierry
