@@ -1,94 +1,89 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 2/2] pwm: Add support for R-Car PWM Timer
-Date: Mon, 29 Jun 2015 11:12:16 +0200
-Message-ID: <20150629091215.GE5431@ulmo>
-References: <1432205846-4312-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <1432205846-4312-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <20150612120600.GM19400@ulmo.nvidia.com>
- <SG2PR06MB09195A961FECE276F001493AD8B80@SG2PR06MB0919.apcprd06.prod.outlook.com>
+Subject: Re: [PATCH v2 2/2] pwm: add MediaTek display PWM driver support
+Date: Mon, 29 Jun 2015 11:21:47 +0200
+Message-ID: <20150629092145.GF5431@ulmo>
+References: <1432214964-40644-1-git-send-email-yh.huang@mediatek.com>
+ <1432214964-40644-3-git-send-email-yh.huang@mediatek.com>
+ <20150612102046.GF19400@ulmo.nvidia.com>
+ <1434622784.18278.39.camel@mtksdaap41>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="maH1Gajj2nflutpK"
-Return-path: <linux-sh-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="pyE8wggRBhVBcj8z"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wg0-f41.google.com ([74.125.82.41]:34987 "EHLO
+	mail-wg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753378AbbF2JW7 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 29 Jun 2015 05:22:59 -0400
 Content-Disposition: inline
-In-Reply-To: <SG2PR06MB09195A961FECE276F001493AD8B80@SG2PR06MB0919.apcprd06.prod.outlook.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: "robh+dt@kernel.org" <robh+dt@kernel.org>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "galak@codeaurora.org" <galak@codeaurora.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+In-Reply-To: <1434622784.18278.39.camel@mtksdaap41>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: YH Huang <yh.huang@mediatek.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com
 
 
---maH1Gajj2nflutpK
+--pyE8wggRBhVBcj8z
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 15, 2015 at 05:48:00AM +0000, Yoshihiro Shimoda wrote:
+On Thu, Jun 18, 2015 at 06:19:44PM +0800, YH Huang wrote:
+> On Fri, 2015-06-12 at 12:20 +0200, Thierry Reding wrote:
+> > On Thu, May 21, 2015 at 09:29:24PM +0800, YH Huang wrote:
 [...]
-> > > +static void rcar_pwm_set_counter(struct rcar_pwm_chip *rp, int div,
-> > > +				 int duty_ns, int period_ns)
-> > > +{
-> > > +	unsigned long long one_cycle, tmp;	/* 0.01 nanoseconds */
-> > > +	unsigned long clk_rate =3D clk_get_rate(rp->clk);
-> > > +	u32 cyc, ph;
-> > > +
-> > > +	one_cycle =3D (unsigned long long)NSEC_PER_SEC * 100ULL * (1 << div=
-);
-> > > +	do_div(one_cycle, clk_rate);
-> > > +
-> > > +	tmp =3D period_ns * 100ULL;
-> > > +	do_div(tmp, one_cycle);
-> > > +	cyc =3D (tmp << RCAR_PWMCNT_CYC0_SHIFT) & RCAR_PWMCNT_CYC0_MASK;
-> > > +
-> > > +	tmp =3D duty_ns * 100ULL;
-> > > +	do_div(tmp, one_cycle);
-> > > +	ph =3D tmp & RCAR_PWMCNT_PH0_MASK;
-> > > +
-> > > +	/* Avoid prohibited setting */
-> > > +	if (cyc && ph)
-> > > +		rcar_pwm_write(rp, cyc | ph, RCAR_PWMCNT);
+> > > +#define DISP_PWM_CON_1		0x14
+> > > +#define PWM_PERIOD_MASK		0xfff
+> > > +#define PWM_PERIOD_MAX		0x00000fff
 > >=20
-> > So if a period and duty-cycle are passed in that yield the prohibited
-> > setting the operation will simply be silently ignored?
+> > Same here. PWM_PERIOD_MAX isn't actually used anywhere, so perhaps just
+> > drop it altogether. But see also below...
+> >=20
+> > > +/* Shift log2(PWM_PERIOD_MAX + 1) as divisor */
+> > > +#define PWM_PERIOD_BIT_SHIFT	12
+> >=20
+> > I wasn't very clear about this in my earlier review, so let me try to
+> > explain why I think this is confusing. You use this as a divisor, but
+> > you encode it as a shift. It's also PWM_PERIOD_MAX + 1, so I think it
+> > would make more sense to drop this, keep PWM_PERIOD_MAX as above and
+> > then replace the
+> >=20
+> > 	>> PWM_PERIOD_BIT_SHIFT
+> > =09
+> > below by
+> >=20
+> > 	/ (PWM_PERIOD_MAX + 1)
+> >=20
 >=20
-> Yes, to update values of pwm->duty_cycle and ->period by pwm_config(),
-> this code will be silently ignored.
+> Maybe I can change in this way:
+> Remove this: #define PWM_PERIOD_MAX		0x00000fff
+> Using ">> PWM_PERIOD_BIT_SHIFT" is faster than "/ (PWM_PERIOD_MAX + 1)"
+> Is this right?
 
-That's not right. If someone passes in invalid values you should report
-an error.
-
-Also, are you sure the check is correct? The current check:
-
-	if (cyc && ph)
-
-is the same as
-
-	if (cyc !=3D 0 && ph !=3D 0)
-
-which means that you will never be able to set a zero duty cycle. Is
-that really what you want here?
+The compiler should be able to optimize the division to a shift, so both
+will likely result in the same code. But I don't mind much either way as
+long as we don't define two symbols for essentially the same value.
 
 Thierry
 
---maH1Gajj2nflutpK
+--pyE8wggRBhVBcj8z
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJVkQvsAAoJEN0jrNd/PrOhpQwP/RMu1TPTDhRN301ey5/lSLnX
-sJfl4txBUkbZxhuOr7JZagitPMbMot8HabKqbjjDOF+CZvH7osJHitUrTUHch6v8
-NoE4jQGMcytsT8pwpbJGyLttneS01WOJaW0cIhpUdhgclA5cp1HhN1pHs24oA8b3
-KUzwwvOd1zL8OqGgmr9f6pjHGkvvI4eZj8K7kFc2bYJ7lTIBQ9FhsvNOZwXmK9VI
-VkJ7pQ0r7aLYEyaubUDW7IciWDwYV+0+fcTrUsQdRMCG7jxhxkbWc9CBNxmzIcdM
-86i/gbJ4/IhPOpyJAGQVIkWySk17Q3Z7RhQa/8WMmBjiNzmZoPj9WPz505w4Maqs
-43W5x1hNtcdUrCMVuN3IP2Q7TSsEwS1F7VQS9/YE8MsZULgS0/u1G5u2hcjDB2OQ
-hb1qEnt2DFuFFWIQ90egu7oD2htJwL1k86tTA848saqxw4Mv4JkfkwongLnM1aKM
-89fgvS2gia9TWpE1BsZ0bGssmGoLTtLi717BD/oQhM1IyDgqy1q1CqzV2ZL1yiLw
-Wq63ldbrpCxNzwawNxgr/tihkkEK/ocpaSg3Ob2dBPg/zaRYmz5Ce5URgf4AWY5b
-PktPdfOY3j7rVhfrvZ+mgfl9d7J9A9i9vy/WguxLbpXG5rowohodGkC8oqNf1g7L
-6YfovRNfna3vRxJ/D+ru
-=Gq/Z
+iQIcBAABCAAGBQJVkQ4pAAoJEN0jrNd/PrOhjSwP/RS1ryK0VhT9VEZShzxu0nS7
+tOMIoRRVrNW82+eXR8ibapKtrpAzBJzaEiJBnBdV3Ht5KEA5EQ5Oc9SNbvgaRYcF
++3Zn2mB2HHGDMAf3QwVubPk2Yit5lcC4Z4IXXDBQgr5JOJLY5XuF5jdGpCakg/qD
+rjf2+c76PC27VTE9MaSp0gewHjVIlB71tuTeU3aNbo5DLYJffvzCRzrOA/jTvwiA
+jFwOrF1JvJ7WPjHI4sJUOteGuJBk+ZxOUx4zx+MrT4kQie95okbLidkSxYOhH/jb
+9DhzbWf3nlJS2eJZCb5eEGh6OS9n1ZPdPEh/msm6PYqCgoozhrLsM0Y6JVpWJLqF
+xv0L/HLhyW2BG2SHkqzkDGJTcGRjfWk2dZxTp/RirfVPG08Cgx8oeZdmX0yUr0hE
+TTITHzHOZtg+c2rDlodCQ99yv7PXeIRaU4GORzUm0EgFd9VwuXOG3zmFX6VzxduF
+J6Kua+jROEvNkZ2x7ULhyIcuAnUGKwi6L8b1dzZEXKA6XSBpHv9zWV6/dGPsX8jz
+o0+3C3p5EEKOzH+ssh487+pFICDDZe8EuqJinTcWgnUyM6+SQ0pfj/yQnNACC6Fc
+AR7bMyiF+EbWI6lpDEgiOCjG63jk3Jt1TTk07YASpTBPwlYlpAdpQWjn6ji+YWKb
+HXYmoN2GQvgONLO1fAso
+=PyV4
 -----END PGP SIGNATURE-----
 
---maH1Gajj2nflutpK--
+--pyE8wggRBhVBcj8z--
