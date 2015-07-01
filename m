@@ -1,70 +1,69 @@
 From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Subject: [PATCH v2 01/12] device: property: delay device-driver matches
-Date: Wed,  1 Jul 2015 11:40:56 +0200
-Message-ID: <1435743667-11987-2-git-send-email-tomeu.vizoso@collabora.com>
-References: <1435743667-11987-1-git-send-email-tomeu.vizoso@collabora.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1435743667-11987-1-git-send-email-tomeu.vizoso@collabora.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+Subject: [PATCH v2 0/12] Discover and probe dependencies
+Date: Wed,  1 Jul 2015 11:40:55 +0200
+Message-ID: <1435743667-11987-1-git-send-email-tomeu.vizoso@collabora.com>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Sender: linux-gpio-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
-Cc: devicetree@vger.kernel.org, linux-fbdev@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>, linux-gpio@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-acpi@vger.kernel.org, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org
+Cc: Mark Brown <broonie@kernel.org>, linux-acpi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, alsa-devel@alsa-project.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Alan Stern <stern@rowland.harvard.edu>, Linus Walleij <linus.walleij@linaro.org>, Kumar Gala <galak@codeaurora.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jingoo Han <jingoohan1@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Pawel Moll <pawel.moll@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Liam Girdwood <lgirdwood@gmail.com>, =?UTF-8?q?Terje=20Bergstr=C3=B6m?= <tbergstrom@nvidia.com>, Le
 List-Id: linux-pwm@vger.kernel.org
 
-RGVsYXkgbWF0Y2hlcyBvZiBwbGF0Zm9ybSBkZXZpY2VzIHVudGlsIGxhdGVfaW5pdGNhbGwsIHdo
-ZW4gd2UgYXJlIHN1cmUKdGhhdCBhbGwgYnVpbHQtaW4gZHJpdmVycyBoYXZlIGJlZW4gcmVnaXN0
-ZXJlZCBhbHJlYWR5LiBUaGlzIGlzIG5lZWRlZAp0byBwcmV2ZW50IGRlZmVycmVkIHByb2JlcyBi
-ZWNhdXNlIG9mIHNvbWUgZGVwZW5kZW5jaWVzJyBkcml2ZXJzIG5vdApoYXZpbmcgcmVnaXN0ZXJl
-ZCB5ZXQuCgpUaGlzIHJlZHVjZXMgdGhlIHRvdGFsIGFtb3VudCBvZiB3b3JrIHRoYXQgdGhlIGtl
-cm5lbCBkb2VzIGR1cmluZyBib290CmJlY2F1c2UgaXQgd29uJ3QgdHJ5IHRvIG1hdGNoIGRldmlj
-ZXMgdG8gZHJpdmVycyB3aGVuIGJ1aWx0LWluIGRyaXZlcnMKYXJlIHN0aWxsIHJlZ2lzdGVyaW5n
-IGJ1dCBhbHNvIHJlZHVjZXMgc29tZSBwYXJhbGxlbGlzbSwgc28gdG90YWwgYm9vdAp0aW1lIG1p
-Z2h0IHNsaWdodGx5IGluY3JlYXNlIG9yIGRlY3JlYXNlIGRlcGVuZGluZyBvbiB0aGUgcGxhdGZv
-cm0gYW5kCmtlcm5lbCBjb25maWd1cmF0aW9uLgoKVGhpcyBjaGFuZ2Ugd2lsbCBtYWtlIG1ha2Ug
-cG9zc2libGUgdG8gcHJldmVudCBhbnkgZGVmZXJyZWQgcHJvYmVzIG9uY2UKZGV2aWNlcyBhcmUg
-cHJvYmVkIGluIGRlcGVuZGVuY3kgb3JkZXIuCgpTaWduZWQtb2ZmLWJ5OiBUb21ldSBWaXpvc28g
-PHRvbWV1LnZpem9zb0Bjb2xsYWJvcmEuY29tPgotLS0KCkNoYW5nZXMgaW4gdjI6Ci0gSW5zdGVh
-ZCBvZiBkZWxheWluZyBhbGwgcHJvYmVzIHVudGlsIGxhdGVfaW5pdGNhbGwsIG9ubHkgZGVsYXkg
-bWF0Y2hlcwogIG9mIHBsYXRmb3JtIGRldmljZXMgdGhhdCBoYXZlIGEgZmlybXdhcmUgbm9kZSBh
-dHRhY2hlZC4KCiBkcml2ZXJzL2Jhc2UvcHJvcGVydHkuYyB8IDI5ICsrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrCiAxIGZpbGUgY2hhbmdlZCwgMjkgaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdp
-dCBhL2RyaXZlcnMvYmFzZS9wcm9wZXJ0eS5jIGIvZHJpdmVycy9iYXNlL3Byb3BlcnR5LmMKaW5k
-ZXggODUyOGViOS4uOGVhZDFiYSAxMDA2NDQKLS0tIGEvZHJpdmVycy9iYXNlL3Byb3BlcnR5LmMK
-KysrIGIvZHJpdmVycy9iYXNlL3Byb3BlcnR5LmMKQEAgLTE2LDggKzE2LDExIEBACiAjaW5jbHVk
-ZSA8bGludXgvb2YuaD4KICNpbmNsdWRlIDxsaW51eC9vZl9hZGRyZXNzLmg+CiAjaW5jbHVkZSA8
-bGludXgvb2ZfZGV2aWNlLmg+CisjaW5jbHVkZSA8bGludXgvcGxhdGZvcm1fZGV2aWNlLmg+CiAj
-aW5jbHVkZSA8bGludXgvcHJvcGVydHkuaD4KIAorc3RhdGljIGJvb2wgZndub2RlX21hdGNoX2Vu
-YWJsZSA9IGZhbHNlOworCiAvKioKICAqIGRldmljZV9hZGRfcHJvcGVydHlfc2V0IC0gQWRkIGEg
-Y29sbGVjdGlvbiBvZiBwcm9wZXJ0aWVzIHRvIGEgZGV2aWNlIG9iamVjdC4KICAqIEBkZXY6IERl
-dmljZSB0byBhZGQgcHJvcGVydGllcyB0by4KQEAgLTYwNCw2ICs2MDcsMTUgQEAgRVhQT1JUX1NZ
-TUJPTF9HUEwoZndub2RlX2lzX2NvbXBhdGlibGUpOwogYm9vbCBmd25vZGVfZHJpdmVyX21hdGNo
-X2RldmljZShzdHJ1Y3QgZGV2aWNlICpkZXYsCiAJCQkJY29uc3Qgc3RydWN0IGRldmljZV9kcml2
-ZXIgKmRydikKIHsKKwkvKgorCSAqIERlbGF5IG1hdGNoZXMgb2YgcGxhdGZvcm0gZGV2aWNlcyB1
-bnRpbCBsYXRlX2luaXRjYWxsLCB3aGVuIHdlIGFyZQorCSAqIHN1cmUgdGhhdCBhbGwgYnVpbHQt
-aW4gZHJpdmVycyBoYXZlIGJlZW4gcmVnaXN0ZXJlZCBhbHJlYWR5LiBUaGlzCisJICogaXMgbmVl
-ZGVkIHRvIHByZXZlbnQgZGVmZXJyZWQgcHJvYmVzIGJlY2F1c2Ugb2Ygc29tZSBkcml2ZXJzCisJ
-ICogbm90IGhhdmluZyByZWdpc3RlcmVkIHlldC4KKwkgKi8KKwlpZihkZXYtPmJ1cyA9PSAmcGxh
-dGZvcm1fYnVzX3R5cGUgJiYgIWZ3bm9kZV9tYXRjaF9lbmFibGUpCisJCXJldHVybiBmYWxzZTsK
-KwogCWlmIChpc19vZl9ub2RlKGRldi0+Zndub2RlKSkKIAkJcmV0dXJuIG9mX2RyaXZlcl9tYXRj
-aF9kZXZpY2UoZGV2LCBkcnYpOwogCWVsc2UgaWYgKGlzX2FjcGlfbm9kZShkZXYtPmZ3bm9kZSkp
-CkBAIC02MTIsMyArNjI0LDIwIEBAIGJvb2wgZndub2RlX2RyaXZlcl9tYXRjaF9kZXZpY2Uoc3Ry
-dWN0IGRldmljZSAqZGV2LAogCXJldHVybiBmYWxzZTsKIH0KIEVYUE9SVF9TWU1CT0xfR1BMKGZ3
-bm9kZV9kcml2ZXJfbWF0Y2hfZGV2aWNlKTsKKworc3RhdGljIGludCBfX2RldmljZV9hdHRhY2go
-c3RydWN0IGRldmljZSAqZGV2LCB2b2lkICpkYXRhKQoreworCWRldmljZV9pbml0aWFsX3Byb2Jl
-KGRldik7CisKKwlyZXR1cm4gMDsKK30KKworc3RhdGljIGludCBmd25vZGVfbWF0Y2hfaW5pdGNh
-bGwodm9pZCkKK3sKKwlmd25vZGVfbWF0Y2hfZW5hYmxlID0gdHJ1ZTsKKworCWJ1c19mb3JfZWFj
-aF9kZXYoJnBsYXRmb3JtX2J1c190eXBlLCBOVUxMLCBOVUxMLCBfX2RldmljZV9hdHRhY2gpOwor
-CisJcmV0dXJuIDA7Cit9CitsYXRlX2luaXRjYWxsKGZ3bm9kZV9tYXRjaF9pbml0Y2FsbCk7Ci0t
-IAoyLjQuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-ZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0
-dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+Hi,
+
+this is version 2 of a series that probes devices in dependency order so
+as to avoid deferred probes. While deferred probing is a powerful
+solution that makes sure that you eventually get a working system at the
+end of the boot, can make it very time consuming to find out why a
+device didn't probe and can also introduce big delays in when a device
+actually probes by sending it to the end of the deferred queue.
+
+So far I have only tested on a Tegra124 Chromebook.
+
+Thanks,
+
+Tomeu
+
+Changes in v2:
+- Instead of delaying all probes until late_initcall, only delay matches
+  of platform devices that have a firmware node attached.
+- Allow bindings implementations register a function instead of using
+  class callbacks, as not only subsystems implement firmware bindings.
+- Move strends to string.h
+- Document that consumers of backlight devices can use the 'backlight'
+  property to hold a phandle to the backlight device.
+- Allocate the list of dependencies and pass it to the function that
+  fills it.
+
+Tomeu Vizoso (12):
+  device: property: delay device-driver matches
+  device: property: find dependencies of a firmware node
+  string: Introduce strends()
+  gpio: register dependency parser for firmware nodes
+  gpu: host1x: register dependency parser for firmware nodes
+  backlight: Document consumers of backlight nodes
+  backlight: register dependency parser for firmware nodes
+  USB: EHCI: register dependency parser for firmware nodes
+  regulator: register dependency parser for firmware nodes
+  pwm: register dependency parser for firmware nodes
+  ASoC: tegra: register dependency parser for firmware nodes
+  driver-core: probe dependencies before probing
+
+ .../bindings/video/backlight/backlight.txt         |  22 ++++
+ drivers/base/dd.c                                  | 139 +++++++++++++++++++++
+ drivers/base/property.c                            | 120 ++++++++++++++++++
+ drivers/gpio/gpiolib.c                             |  54 ++++++++
+ drivers/gpu/host1x/dev.c                           |  26 ++++
+ drivers/pwm/core.c                                 |  28 +++++
+ drivers/regulator/core.c                           |  27 ++++
+ drivers/usb/host/ehci-tegra.c                      |  16 +++
+ drivers/video/backlight/backlight.c                |  16 +++
+ include/linux/fwnode.h                             |   5 +
+ include/linux/property.h                           |  12 ++
+ include/linux/string.h                             |  13 ++
+ sound/soc/tegra/tegra_max98090.c                   |  42 ++++++-
+ 13 files changed, 519 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/video/backlight/backlight.txt
+
+-- 
+2.4.1
+
