@@ -1,43 +1,50 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [RFC PATCH 08/15] backlight: pwm_bl: remove useless call to pwm_set_period
-Date: Wed,  1 Jul 2015 10:21:54 +0200
-Message-ID: <1435738921-25027-9-git-send-email-boris.brezillon@free-electrons.com>
+Subject: [RFC PATCH 10/15] pwm: add the PWM initial state retrieval infra
+Date: Wed,  1 Jul 2015 10:21:56 +0200
+Message-ID: <1435738921-25027-11-git-send-email-boris.brezillon@free-electrons.com>
 References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:34331 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753282AbbGAIWW (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 1 Jul 2015 04:22:22 -0400
+Return-path: <linux-leds-owner@vger.kernel.org>
 In-Reply-To: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-leds-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 Cc: Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, Stephen Warren <swarren@wwwdotorg.org>, Alexandre Courbot <gnurou@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Doug Anderson <dianders@google.com>, Boris Brezillon <boris.brezillon@free-electrons.com>
+List-Id: linux-pwm@vger.kernel.org
 
-The PWM period will be set when calling pwm_config. Remove this useless
-call to pwm_set_period, which might mess up with the initial PWM state
-once we have added proper support for PWM init state retrieval.
+Add a ->init_state() function to the pwm_ops struct to let PWM drivers
+initialize the PWM state attached to a PWM device.
 
 Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 ---
- drivers/video/backlight/pwm_bl.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/pwm/core.c  | 3 +++
+ include/linux/pwm.h | 2 ++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index ae498c1..fe5597c 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -295,10 +295,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	 * via the PWM lookup table.
- 	 */
- 	pb->period = pwm_get_default_period(pb->pwm);
--	if (!pb->period && (data->pwm_period_ns > 0)) {
-+	if (!pb->period && (data->pwm_period_ns > 0))
- 		pb->period = data->pwm_period_ns;
--		pwm_set_period(pb->pwm, data->pwm_period_ns);
--	}
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 3e830ce..30631f5 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -264,6 +264,9 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
+ 		pwm->hwpwm = i;
+ 		pwm_set_default_polarity(pwm, polarity);
  
- 	pb->lth_brightness = data->lth_brightness * (pb->period / pb->scale);
++		if (chip->ops->init_state)
++			chip->ops->init_state(chip, pwm);
++
+ 		radix_tree_insert(&pwm_tree, pwm->pwm, pwm);
+ 	}
  
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 0f36a06..b47244a 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -177,6 +177,8 @@ struct pwm_ops {
+ 					  struct pwm_device *pwm);
+ 	void			(*disable)(struct pwm_chip *chip,
+ 					   struct pwm_device *pwm);
++	void			(*init_state)(struct pwm_chip *chip,
++					      struct pwm_device *pwm);
+ #ifdef CONFIG_DEBUG_FS
+ 	void			(*dbg_show)(struct pwm_chip *chip,
+ 					    struct seq_file *s);
 -- 
 1.9.1
