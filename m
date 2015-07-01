@@ -1,78 +1,101 @@
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-Subject: Re: [RFC PATCH 14/15] regulator: pwm: implement ->enable(), ->disable() and ->is_enabled methods
-Date: Wed, 01 Jul 2015 13:58:09 +0200
-Message-ID: <3495901.qMzLCVWCDl@diego>
-References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com> <1435738921-25027-15-git-send-email-boris.brezillon@free-electrons.com>
+From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [RFC PATCH 14/15] regulator: pwm: implement ->enable(),
+ ->disable() and ->is_enabled methods
+Date: Wed, 1 Jul 2015 14:05:31 +0200
+Message-ID: <20150701140531.2041b05c@bbrezillon>
+References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
+	<1435738921-25027-15-git-send-email-boris.brezillon@free-electrons.com>
+	<3495901.qMzLCVWCDl@diego>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:40407 "EHLO gloria.sntech.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753249AbbGAL6d (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 1 Jul 2015 07:58:33 -0400
-In-Reply-To: <1435738921-25027-15-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <3495901.qMzLCVWCDl@diego>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Alexandre Courbot <gnurou@gmail.com>, linux-fbdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Stephen Warren <swarren@wwwdotorg.org>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Bryan Wu <cooloney@gmail.com>, Liam Girdwood <lgirdwood@gmail.com>, Doug Anderson <dianders@google.com>, Mark Brown <broonie@kernel.org>, Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jingoohan1@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org
 
-Am Mittwoch, 1. Juli 2015, 10:22:00 schrieb Boris Brezillon:
-> Implement the ->enable(), ->disable() and ->is_enabled methods and remove
-> the PWM call in ->set_voltage_sel().
-> This is particularly important for critical regulators tagged as always-on,
-> because not claiming the PWM (and its dependencies) might lead to
-> unpredictable behavior (like a system hang because the PWM clk is only
-> claimed when the PWM device is enabled).
-> 
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> ---
->  drivers/regulator/pwm-regulator.c | 32 ++++++++++++++++++++++++++------
->  1 file changed, 26 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/regulator/pwm-regulator.c
-> b/drivers/regulator/pwm-regulator.c index 12b4d9d..8159518 100644
-> --- a/drivers/regulator/pwm-regulator.c
-> +++ b/drivers/regulator/pwm-regulator.c
-> @@ -59,12 +59,6 @@ static int pwm_regulator_set_voltage_sel(struct
-> regulator_dev *rdev,
-> 
->  	drvdata->state = selector;
-> 
-> -	ret = pwm_enable(drvdata->pwm);
-> -	if (ret) {
-> -		dev_err(&rdev->dev, "Failed to enable PWM\n");
-> -		return ret;
-> -	}
-> -
->  	return 0;
->  }
-> 
-> @@ -79,11 +73,37 @@ static int pwm_regulator_list_voltage(struct
-> regulator_dev *rdev, return drvdata->duty_cycle_table[selector].uV;
->  }
-> 
-> +static int pwm_regulator_enable(struct regulator_dev *dev)
-> +{
-> +	struct pwm_regulator_data *drvdata = rdev_get_drvdata(dev);
-> +
-> +	return pwm_enable(drvdata->pwm);
-> +}
-> +
-> +static int pwm_regulator_disable(struct regulator_dev *dev)
-> +{
-> +	struct pwm_regulator_data *drvdata = rdev_get_drvdata(dev);
-> +
-> +	pwm_disable(drvdata->pwm);
-> +
-> +	return 0;
-> +}
-> +
-> +static int pwm_regulator_is_enabled(struct regulator_dev *dev)
-> +{
-> +       struct pwm_regulator_data *drvdata = rdev_get_drvdata(dev);
-> +
-> +       return pwm_is_enabled(drvdata->pwm);
-> +}
+Hi Heiko,
 
-nit: indentation is wrong in pwm_regulator_is_enabled (spaces instead of tabs)
+On Wed, 01 Jul 2015 13:58:09 +0200
+Heiko St=C3=BCbner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org> wrote:
+
+> Am Mittwoch, 1. Juli 2015, 10:22:00 schrieb Boris Brezillon:
+> > Implement the ->enable(), ->disable() and ->is_enabled methods and =
+remove
+> > the PWM call in ->set_voltage_sel().
+> > This is particularly important for critical regulators tagged as al=
+ways-on,
+> > because not claiming the PWM (and its dependencies) might lead to
+> > unpredictable behavior (like a system hang because the PWM clk is o=
+nly
+> > claimed when the PWM device is enabled).
+> >=20
+> > Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+> > ---
+> >  drivers/regulator/pwm-regulator.c | 32 ++++++++++++++++++++++++++-=
+-----
+> >  1 file changed, 26 insertions(+), 6 deletions(-)
+> >=20
+> > diff --git a/drivers/regulator/pwm-regulator.c
+> > b/drivers/regulator/pwm-regulator.c index 12b4d9d..8159518 100644
+> > --- a/drivers/regulator/pwm-regulator.c
+> > +++ b/drivers/regulator/pwm-regulator.c
+> > @@ -59,12 +59,6 @@ static int pwm_regulator_set_voltage_sel(struct
+> > regulator_dev *rdev,
+> >=20
+> >  	drvdata->state =3D selector;
+> >=20
+> > -	ret =3D pwm_enable(drvdata->pwm);
+> > -	if (ret) {
+> > -		dev_err(&rdev->dev, "Failed to enable PWM\n");
+> > -		return ret;
+> > -	}
+> > -
+> >  	return 0;
+> >  }
+> >=20
+> > @@ -79,11 +73,37 @@ static int pwm_regulator_list_voltage(struct
+> > regulator_dev *rdev, return drvdata->duty_cycle_table[selector].uV;
+> >  }
+> >=20
+> > +static int pwm_regulator_enable(struct regulator_dev *dev)
+> > +{
+> > +	struct pwm_regulator_data *drvdata =3D rdev_get_drvdata(dev);
+> > +
+> > +	return pwm_enable(drvdata->pwm);
+> > +}
+> > +
+> > +static int pwm_regulator_disable(struct regulator_dev *dev)
+> > +{
+> > +	struct pwm_regulator_data *drvdata =3D rdev_get_drvdata(dev);
+> > +
+> > +	pwm_disable(drvdata->pwm);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int pwm_regulator_is_enabled(struct regulator_dev *dev)
+> > +{
+> > +       struct pwm_regulator_data *drvdata =3D rdev_get_drvdata(dev=
+);
+> > +
+> > +       return pwm_is_enabled(drvdata->pwm);
+> > +}
+>=20
+> nit: indentation is wrong in pwm_regulator_is_enabled (spaces instead=
+ of tabs)
+
+Yep, I noticed checkpatch warnings/errors before sending the patch, but
+since this is just an RFC I decided to fix them for the next version ;-=
+)
+
+Best Regards,
+
+Boris
+
+--=20
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
