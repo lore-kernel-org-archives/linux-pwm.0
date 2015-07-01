@@ -1,49 +1,78 @@
-From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Subject: [PATCH v2 10/12] pwm: register dependency parser for firmware nodes
-Date: Wed,  1 Jul 2015 11:41:05 +0200
-Message-ID: <1435743667-11987-11-git-send-email-tomeu.vizoso@collabora.com>
-References: <1435743667-11987-1-git-send-email-tomeu.vizoso@collabora.com>
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+Subject: Re: [RFC PATCH 14/15] regulator: pwm: implement ->enable(), ->disable() and ->is_enabled methods
+Date: Wed, 01 Jul 2015 13:58:09 +0200
+Message-ID: <3495901.qMzLCVWCDl@diego>
+References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com> <1435738921-25027-15-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1435743667-11987-1-git-send-email-tomeu.vizoso@collabora.com>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: linux-kernel@vger.kernel.org
-Cc: devicetree@vger.kernel.org, linux-fbdev@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>, linux-gpio@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-acpi@vger.kernel.org, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from gloria.sntech.de ([95.129.55.99]:40407 "EHLO gloria.sntech.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753249AbbGAL6d (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Wed, 1 Jul 2015 07:58:33 -0400
+In-Reply-To: <1435738921-25027-15-git-send-email-boris.brezillon@free-electrons.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Alexandre Courbot <gnurou@gmail.com>, linux-fbdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Stephen Warren <swarren@wwwdotorg.org>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Bryan Wu <cooloney@gmail.com>, Liam Girdwood <lgirdwood@gmail.com>, Doug Anderson <dianders@google.com>, Mark Brown <broonie@kernel.org>, Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jingoohan1@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org
 
-U28gb3RoZXJzIGNhbiBmaW5kIG91dCB3aGF0IGRlcGVuZHMgb24gcHdtIGNvbnRyb2xsZXJzLCBh
-cyBzcGVjaWZpZWQKaW4gYmluZGluZ3MvcHdtL3B3bS50eHQuCgpTaWduZWQtb2ZmLWJ5OiBUb21l
-dSBWaXpvc28gPHRvbWV1LnZpem9zb0Bjb2xsYWJvcmEuY29tPgotLS0KCkNoYW5nZXMgaW4gdjI6
-IE5vbmUKCiBkcml2ZXJzL3B3bS9jb3JlLmMgfCAyOCArKysrKysrKysrKysrKysrKysrKysrKysr
-KysrCiAxIGZpbGUgY2hhbmdlZCwgMjggaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvcHdtL2NvcmUuYyBiL2RyaXZlcnMvcHdtL2NvcmUuYwppbmRleCAzYTc3NjlmLi44MWI0ZmMw
-IDEwMDY0NAotLS0gYS9kcml2ZXJzL3B3bS9jb3JlLmMKKysrIGIvZHJpdmVycy9wd20vY29yZS5j
-CkBAIC05MTcsMTEgKzkxNywzOSBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IGZpbGVfb3BlcmF0aW9u
-cyBwd21fZGVidWdmc19vcHMgPSB7CiAJLnJlbGVhc2UgPSBzZXFfcmVsZWFzZSwKIH07CiAKK3N0
-YXRpYyB2b2lkIHB3bV9nZXRfZGVwZW5kZW5jaWVzKHN0cnVjdCBmd25vZGVfaGFuZGxlICpmd25v
-ZGUsCisJCQkJIHN0cnVjdCBsaXN0X2hlYWQgKmRlcHMpCit7CisJc3RydWN0IGRldmljZV9ub2Rl
-ICpucDsKKwlzdHJ1Y3Qgb2ZfcGhhbmRsZV9hcmdzIHBzcGVjOworCWludCBjb3VudCwgaSwgcmV0
-OworCisJbnAgPSB0b19vZl9ub2RlKGZ3bm9kZSk7CisJaWYgKCFucCkKKwkJcmV0dXJuOworCisJ
-Y291bnQgPSBvZl9jb3VudF9waGFuZGxlX3dpdGhfYXJncyhucCwgInB3bXMiLAorCQkJCQkgICAi
-I3B3bS1jZWxscyIpOworCWZvciAoaSA9IDA7IGkgPCBjb3VudDsgaSsrKSB7CisJCXJldCA9IG9m
-X3BhcnNlX3BoYW5kbGVfd2l0aF9hcmdzKG5wLCAicHdtcyIsCisJCQkJCQkgIiNwd20tY2VsbHMi
-LCBpLAorCQkJCQkJICZwc3BlYyk7CisJCWlmIChyZXQgfHwgIXBzcGVjLm5wKQorCQkJY29udGlu
-dWU7CisKKwkJZndub2RlX2FkZF9kZXBlbmRlbmN5KCZwc3BlYy5ucC0+Zndub2RlLCBkZXBzKTsK
-KworCQlvZl9ub2RlX3B1dChwc3BlYy5ucCk7CisJfQorfQorCiBzdGF0aWMgaW50IF9faW5pdCBw
-d21fZGVidWdmc19pbml0KHZvaWQpCiB7CiAJZGVidWdmc19jcmVhdGVfZmlsZSgicHdtIiwgU19J
-RlJFRyB8IFNfSVJVR08sIE5VTEwsIE5VTEwsCiAJCQkgICAgJnB3bV9kZWJ1Z2ZzX29wcyk7CiAK
-Kwlmd25vZGVfYWRkX2RlcGVuZGVuY3lfcGFyc2VyKHB3bV9nZXRfZGVwZW5kZW5jaWVzKTsKKwog
-CXJldHVybiAwOwogfQogCi0tIAoyLjQuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMu
-ZnJlZWRlc2t0b3Aub3JnCmh0dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0
-aW5mby9kcmktZGV2ZWwK
+Am Mittwoch, 1. Juli 2015, 10:22:00 schrieb Boris Brezillon:
+> Implement the ->enable(), ->disable() and ->is_enabled methods and remove
+> the PWM call in ->set_voltage_sel().
+> This is particularly important for critical regulators tagged as always-on,
+> because not claiming the PWM (and its dependencies) might lead to
+> unpredictable behavior (like a system hang because the PWM clk is only
+> claimed when the PWM device is enabled).
+> 
+> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> ---
+>  drivers/regulator/pwm-regulator.c | 32 ++++++++++++++++++++++++++------
+>  1 file changed, 26 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/regulator/pwm-regulator.c
+> b/drivers/regulator/pwm-regulator.c index 12b4d9d..8159518 100644
+> --- a/drivers/regulator/pwm-regulator.c
+> +++ b/drivers/regulator/pwm-regulator.c
+> @@ -59,12 +59,6 @@ static int pwm_regulator_set_voltage_sel(struct
+> regulator_dev *rdev,
+> 
+>  	drvdata->state = selector;
+> 
+> -	ret = pwm_enable(drvdata->pwm);
+> -	if (ret) {
+> -		dev_err(&rdev->dev, "Failed to enable PWM\n");
+> -		return ret;
+> -	}
+> -
+>  	return 0;
+>  }
+> 
+> @@ -79,11 +73,37 @@ static int pwm_regulator_list_voltage(struct
+> regulator_dev *rdev, return drvdata->duty_cycle_table[selector].uV;
+>  }
+> 
+> +static int pwm_regulator_enable(struct regulator_dev *dev)
+> +{
+> +	struct pwm_regulator_data *drvdata = rdev_get_drvdata(dev);
+> +
+> +	return pwm_enable(drvdata->pwm);
+> +}
+> +
+> +static int pwm_regulator_disable(struct regulator_dev *dev)
+> +{
+> +	struct pwm_regulator_data *drvdata = rdev_get_drvdata(dev);
+> +
+> +	pwm_disable(drvdata->pwm);
+> +
+> +	return 0;
+> +}
+> +
+> +static int pwm_regulator_is_enabled(struct regulator_dev *dev)
+> +{
+> +       struct pwm_regulator_data *drvdata = rdev_get_drvdata(dev);
+> +
+> +       return pwm_is_enabled(drvdata->pwm);
+> +}
+
+nit: indentation is wrong in pwm_regulator_is_enabled (spaces instead of tabs)
