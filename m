@@ -1,85 +1,70 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [RFC PATCH 14/15] regulator: pwm: implement ->enable(), ->disable() and ->is_enabled methods
-Date: Wed,  1 Jul 2015 10:22:00 +0200
-Message-ID: <1435738921-25027-15-git-send-email-boris.brezillon@free-electrons.com>
-References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:34437 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753481AbbGAIWe (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 1 Jul 2015 04:22:34 -0400
-In-Reply-To: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Subject: [PATCH v2 01/12] device: property: delay device-driver matches
+Date: Wed,  1 Jul 2015 11:40:56 +0200
+Message-ID: <1435743667-11987-2-git-send-email-tomeu.vizoso@collabora.com>
+References: <1435743667-11987-1-git-send-email-tomeu.vizoso@collabora.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1435743667-11987-1-git-send-email-tomeu.vizoso@collabora.com>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: linux-kernel@vger.kernel.org
+Cc: devicetree@vger.kernel.org, linux-fbdev@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>, linux-gpio@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org, linux-acpi@vger.kernel.org, Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
-Cc: Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, Stephen Warren <swarren@wwwdotorg.org>, Alexandre Courbot <gnurou@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Doug Anderson <dianders@google.com>, Boris Brezillon <boris.brezillon@free-electrons.com>
 
-Implement the ->enable(), ->disable() and ->is_enabled methods and remove
-the PWM call in ->set_voltage_sel().
-This is particularly important for critical regulators tagged as always-on,
-because not claiming the PWM (and its dependencies) might lead to
-unpredictable behavior (like a system hang because the PWM clk is only
-claimed when the PWM device is enabled).
-
-Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
----
- drivers/regulator/pwm-regulator.c | 32 ++++++++++++++++++++++++++------
- 1 file changed, 26 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/regulator/pwm-regulator.c b/drivers/regulator/pwm-regulator.c
-index 12b4d9d..8159518 100644
---- a/drivers/regulator/pwm-regulator.c
-+++ b/drivers/regulator/pwm-regulator.c
-@@ -59,12 +59,6 @@ static int pwm_regulator_set_voltage_sel(struct regulator_dev *rdev,
- 
- 	drvdata->state = selector;
- 
--	ret = pwm_enable(drvdata->pwm);
--	if (ret) {
--		dev_err(&rdev->dev, "Failed to enable PWM\n");
--		return ret;
--	}
--
- 	return 0;
- }
- 
-@@ -79,11 +73,37 @@ static int pwm_regulator_list_voltage(struct regulator_dev *rdev,
- 	return drvdata->duty_cycle_table[selector].uV;
- }
- 
-+static int pwm_regulator_enable(struct regulator_dev *dev)
-+{
-+	struct pwm_regulator_data *drvdata = rdev_get_drvdata(dev);
-+
-+	return pwm_enable(drvdata->pwm);
-+}
-+
-+static int pwm_regulator_disable(struct regulator_dev *dev)
-+{
-+	struct pwm_regulator_data *drvdata = rdev_get_drvdata(dev);
-+
-+	pwm_disable(drvdata->pwm);
-+
-+	return 0;
-+}
-+
-+static int pwm_regulator_is_enabled(struct regulator_dev *dev)
-+{
-+       struct pwm_regulator_data *drvdata = rdev_get_drvdata(dev);
-+
-+       return pwm_is_enabled(drvdata->pwm);
-+}
-+
- static struct regulator_ops pwm_regulator_voltage_ops = {
- 	.set_voltage_sel = pwm_regulator_set_voltage_sel,
- 	.get_voltage_sel = pwm_regulator_get_voltage_sel,
- 	.list_voltage    = pwm_regulator_list_voltage,
- 	.map_voltage     = regulator_map_voltage_iterate,
-+	.enable          = pwm_regulator_enable,
-+	.disable         = pwm_regulator_disable,
-+	.is_enabled      = pwm_regulator_is_enabled,
- };
- 
- static struct regulator_desc pwm_regulator_desc = {
--- 
-1.9.1
+RGVsYXkgbWF0Y2hlcyBvZiBwbGF0Zm9ybSBkZXZpY2VzIHVudGlsIGxhdGVfaW5pdGNhbGwsIHdo
+ZW4gd2UgYXJlIHN1cmUKdGhhdCBhbGwgYnVpbHQtaW4gZHJpdmVycyBoYXZlIGJlZW4gcmVnaXN0
+ZXJlZCBhbHJlYWR5LiBUaGlzIGlzIG5lZWRlZAp0byBwcmV2ZW50IGRlZmVycmVkIHByb2JlcyBi
+ZWNhdXNlIG9mIHNvbWUgZGVwZW5kZW5jaWVzJyBkcml2ZXJzIG5vdApoYXZpbmcgcmVnaXN0ZXJl
+ZCB5ZXQuCgpUaGlzIHJlZHVjZXMgdGhlIHRvdGFsIGFtb3VudCBvZiB3b3JrIHRoYXQgdGhlIGtl
+cm5lbCBkb2VzIGR1cmluZyBib290CmJlY2F1c2UgaXQgd29uJ3QgdHJ5IHRvIG1hdGNoIGRldmlj
+ZXMgdG8gZHJpdmVycyB3aGVuIGJ1aWx0LWluIGRyaXZlcnMKYXJlIHN0aWxsIHJlZ2lzdGVyaW5n
+IGJ1dCBhbHNvIHJlZHVjZXMgc29tZSBwYXJhbGxlbGlzbSwgc28gdG90YWwgYm9vdAp0aW1lIG1p
+Z2h0IHNsaWdodGx5IGluY3JlYXNlIG9yIGRlY3JlYXNlIGRlcGVuZGluZyBvbiB0aGUgcGxhdGZv
+cm0gYW5kCmtlcm5lbCBjb25maWd1cmF0aW9uLgoKVGhpcyBjaGFuZ2Ugd2lsbCBtYWtlIG1ha2Ug
+cG9zc2libGUgdG8gcHJldmVudCBhbnkgZGVmZXJyZWQgcHJvYmVzIG9uY2UKZGV2aWNlcyBhcmUg
+cHJvYmVkIGluIGRlcGVuZGVuY3kgb3JkZXIuCgpTaWduZWQtb2ZmLWJ5OiBUb21ldSBWaXpvc28g
+PHRvbWV1LnZpem9zb0Bjb2xsYWJvcmEuY29tPgotLS0KCkNoYW5nZXMgaW4gdjI6Ci0gSW5zdGVh
+ZCBvZiBkZWxheWluZyBhbGwgcHJvYmVzIHVudGlsIGxhdGVfaW5pdGNhbGwsIG9ubHkgZGVsYXkg
+bWF0Y2hlcwogIG9mIHBsYXRmb3JtIGRldmljZXMgdGhhdCBoYXZlIGEgZmlybXdhcmUgbm9kZSBh
+dHRhY2hlZC4KCiBkcml2ZXJzL2Jhc2UvcHJvcGVydHkuYyB8IDI5ICsrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrCiAxIGZpbGUgY2hhbmdlZCwgMjkgaW5zZXJ0aW9ucygrKQoKZGlmZiAtLWdp
+dCBhL2RyaXZlcnMvYmFzZS9wcm9wZXJ0eS5jIGIvZHJpdmVycy9iYXNlL3Byb3BlcnR5LmMKaW5k
+ZXggODUyOGViOS4uOGVhZDFiYSAxMDA2NDQKLS0tIGEvZHJpdmVycy9iYXNlL3Byb3BlcnR5LmMK
+KysrIGIvZHJpdmVycy9iYXNlL3Byb3BlcnR5LmMKQEAgLTE2LDggKzE2LDExIEBACiAjaW5jbHVk
+ZSA8bGludXgvb2YuaD4KICNpbmNsdWRlIDxsaW51eC9vZl9hZGRyZXNzLmg+CiAjaW5jbHVkZSA8
+bGludXgvb2ZfZGV2aWNlLmg+CisjaW5jbHVkZSA8bGludXgvcGxhdGZvcm1fZGV2aWNlLmg+CiAj
+aW5jbHVkZSA8bGludXgvcHJvcGVydHkuaD4KIAorc3RhdGljIGJvb2wgZndub2RlX21hdGNoX2Vu
+YWJsZSA9IGZhbHNlOworCiAvKioKICAqIGRldmljZV9hZGRfcHJvcGVydHlfc2V0IC0gQWRkIGEg
+Y29sbGVjdGlvbiBvZiBwcm9wZXJ0aWVzIHRvIGEgZGV2aWNlIG9iamVjdC4KICAqIEBkZXY6IERl
+dmljZSB0byBhZGQgcHJvcGVydGllcyB0by4KQEAgLTYwNCw2ICs2MDcsMTUgQEAgRVhQT1JUX1NZ
+TUJPTF9HUEwoZndub2RlX2lzX2NvbXBhdGlibGUpOwogYm9vbCBmd25vZGVfZHJpdmVyX21hdGNo
+X2RldmljZShzdHJ1Y3QgZGV2aWNlICpkZXYsCiAJCQkJY29uc3Qgc3RydWN0IGRldmljZV9kcml2
+ZXIgKmRydikKIHsKKwkvKgorCSAqIERlbGF5IG1hdGNoZXMgb2YgcGxhdGZvcm0gZGV2aWNlcyB1
+bnRpbCBsYXRlX2luaXRjYWxsLCB3aGVuIHdlIGFyZQorCSAqIHN1cmUgdGhhdCBhbGwgYnVpbHQt
+aW4gZHJpdmVycyBoYXZlIGJlZW4gcmVnaXN0ZXJlZCBhbHJlYWR5LiBUaGlzCisJICogaXMgbmVl
+ZGVkIHRvIHByZXZlbnQgZGVmZXJyZWQgcHJvYmVzIGJlY2F1c2Ugb2Ygc29tZSBkcml2ZXJzCisJ
+ICogbm90IGhhdmluZyByZWdpc3RlcmVkIHlldC4KKwkgKi8KKwlpZihkZXYtPmJ1cyA9PSAmcGxh
+dGZvcm1fYnVzX3R5cGUgJiYgIWZ3bm9kZV9tYXRjaF9lbmFibGUpCisJCXJldHVybiBmYWxzZTsK
+KwogCWlmIChpc19vZl9ub2RlKGRldi0+Zndub2RlKSkKIAkJcmV0dXJuIG9mX2RyaXZlcl9tYXRj
+aF9kZXZpY2UoZGV2LCBkcnYpOwogCWVsc2UgaWYgKGlzX2FjcGlfbm9kZShkZXYtPmZ3bm9kZSkp
+CkBAIC02MTIsMyArNjI0LDIwIEBAIGJvb2wgZndub2RlX2RyaXZlcl9tYXRjaF9kZXZpY2Uoc3Ry
+dWN0IGRldmljZSAqZGV2LAogCXJldHVybiBmYWxzZTsKIH0KIEVYUE9SVF9TWU1CT0xfR1BMKGZ3
+bm9kZV9kcml2ZXJfbWF0Y2hfZGV2aWNlKTsKKworc3RhdGljIGludCBfX2RldmljZV9hdHRhY2go
+c3RydWN0IGRldmljZSAqZGV2LCB2b2lkICpkYXRhKQoreworCWRldmljZV9pbml0aWFsX3Byb2Jl
+KGRldik7CisKKwlyZXR1cm4gMDsKK30KKworc3RhdGljIGludCBmd25vZGVfbWF0Y2hfaW5pdGNh
+bGwodm9pZCkKK3sKKwlmd25vZGVfbWF0Y2hfZW5hYmxlID0gdHJ1ZTsKKworCWJ1c19mb3JfZWFj
+aF9kZXYoJnBsYXRmb3JtX2J1c190eXBlLCBOVUxMLCBOVUxMLCBfX2RldmljZV9hdHRhY2gpOwor
+CisJcmV0dXJuIDA7Cit9CitsYXRlX2luaXRjYWxsKGZ3bm9kZV9tYXRjaF9pbml0Y2FsbCk7Ci0t
+IAoyLjQuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+ZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0
+dHA6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
