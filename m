@@ -1,68 +1,135 @@
-From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: [RFC PATCH 09/15] pwm: declare a default PWM state
-Date: Wed,  1 Jul 2015 10:21:55 +0200
-Message-ID: <1435738921-25027-10-git-send-email-boris.brezillon@free-electrons.com>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: [RFC PATCH 04/15] pwm: make use of pwm_get_xxx helpers where appropriate
+Date: Wed,  1 Jul 2015 10:21:50 +0200
+Message-ID: <1435738921-25027-5-git-send-email-boris.brezillon@free-electrons.com>
 References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1435738921-25027-1-git-send-email-boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from down.free-electrons.com ([37.187.137.238]:34285 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752950AbbGAIWP (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 1 Jul 2015 04:22:15 -0400
+In-Reply-To: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Cc: Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, Stephen Warren <swarren@wwwdotorg.org>, Alexandre Courbot <gnurou@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Doug Anderson <dianders@google.com>, Boris Brezillon <boris.brezillon@free-electrons.com>
 
-Prepare the addition of the PWM initial state retrieval by adding a default
-state where all the parameters retrieved from DT, platform data or
-statically forced by the hardware will be stored.
-Once done we will be able to store the initial state in the ->state field
-without risking to loose the default parameters.
+Use the pwm_get_xxx helpers instead of directly accessing the fields in
+pwm_device. This will allow us to smoothly move to the atomic update
+approach.
 
-Update the pwm_set/get_default_xxx helpers accordingly.
-
-Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 ---
- include/linux/pwm.h | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/pwm/pwm-atmel.c    |  2 +-
+ drivers/pwm/pwm-bcm-kona.c |  3 ++-
+ drivers/pwm/pwm-imx.c      |  3 ++-
+ drivers/pwm/pwm-rockchip.c |  2 +-
+ drivers/pwm/sysfs.c        | 11 ++++++-----
+ 5 files changed, 12 insertions(+), 9 deletions(-)
 
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index fd3e0f0..0f36a06 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -94,6 +94,7 @@ struct pwm_device {
- 	void			*chip_data;
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index b3b294d..0e4bd4e 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -114,7 +114,7 @@ static int atmel_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	u32 val;
+ 	int ret;
  
- 	struct pwm_state	state;
-+	struct pwm_state	default_state;
- };
+-	if (pwm_is_enabled(pwm) && (period_ns != pwm->period)) {
++	if (pwm_is_enabled(pwm) && (period_ns != pwm_get_period(pwm))) {
+ 		dev_err(chip->dev, "cannot change PWM period while enabled\n");
+ 		return -EBUSY;
+ 	}
+diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+index dfdcf88..920cd1b 100644
+--- a/drivers/pwm/pwm-bcm-kona.c
++++ b/drivers/pwm/pwm-bcm-kona.c
+@@ -194,7 +194,8 @@ static int kona_pwmc_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 		return ret;
+ 	}
  
- static inline bool pwm_is_enabled(const struct pwm_device *pwm)
-@@ -109,7 +110,8 @@ static inline void pwm_set_period(struct pwm_device *pwm, unsigned int period)
+-	ret = kona_pwmc_config(chip, pwm, pwm->duty_cycle, pwm->period);
++	ret = kona_pwmc_config(chip, pwm, pwm_get_duty_cycle(pwm),
++			       pwm_get_period(pwm));
+ 	if (ret < 0) {
+ 		clk_disable_unprepare(kp->clk);
+ 		return ret;
+diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+index 008dc64..d600fd5 100644
+--- a/drivers/pwm/pwm-imx.c
++++ b/drivers/pwm/pwm-imx.c
+@@ -129,7 +129,8 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
+ 		sr = readl(imx->mmio_base + MX3_PWMSR);
+ 		fifoav = sr & MX3_PWMSR_FIFOAV_MASK;
+ 		if (fifoav == MX3_PWMSR_FIFOAV_4WORDS) {
+-			period_ms = DIV_ROUND_UP(pwm->period, NSEC_PER_MSEC);
++			period_ms = DIV_ROUND_UP(pwm_get_period(pwm),
++						 NSEC_PER_MSEC);
+ 			msleep(period_ms);
  
- static inline void pwm_set_default_period(struct pwm_device *pwm, unsigned int period)
+ 			sr = readl(imx->mmio_base + MX3_PWMSR);
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index 9442df2..7d9cc90 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -83,7 +83,7 @@ static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip,
+ 			  PWM_CONTINUOUS;
+ 	u32 val;
+ 
+-	if (pwm->polarity == PWM_POLARITY_INVERSED)
++	if (pwm_get_polarity(pwm) == PWM_POLARITY_INVERSED)
+ 		enable_conf |= PWM_DUTY_NEGATIVE | PWM_INACTIVE_POSITIVE;
+ 	else
+ 		enable_conf |= PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE;
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index eecf21d..ac0abec 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -46,7 +46,7 @@ static ssize_t pwm_period_show(struct device *child,
  {
--	pwm_set_period(pwm, period);
-+	if (pwm)
-+		pwm->default_state.period = period;
+ 	const struct pwm_device *pwm = child_to_pwm_device(child);
+ 
+-	return sprintf(buf, "%u\n", pwm->period);
++	return sprintf(buf, "%u\n", pwm_get_period(pwm));
  }
  
- static inline unsigned int pwm_get_period(const struct pwm_device *pwm)
-@@ -119,7 +121,7 @@ static inline unsigned int pwm_get_period(const struct pwm_device *pwm)
+ static ssize_t pwm_period_store(struct device *child,
+@@ -61,7 +61,7 @@ static ssize_t pwm_period_store(struct device *child,
+ 	if (ret)
+ 		return ret;
  
- static inline unsigned int pwm_get_default_period(const struct pwm_device *pwm)
+-	ret = pwm_config(pwm, pwm->duty_cycle, val);
++	ret = pwm_config(pwm, pwm_get_duty_cycle(pwm), val);
+ 
+ 	return ret ? : size;
+ }
+@@ -72,7 +72,7 @@ static ssize_t pwm_duty_cycle_show(struct device *child,
  {
--	return pwm_get_period(pwm);
-+	return pwm ? pwm->default_state.period : 0;
+ 	const struct pwm_device *pwm = child_to_pwm_device(child);
+ 
+-	return sprintf(buf, "%u\n", pwm->duty_cycle);
++	return sprintf(buf, "%u\n", pwm_get_duty_cycle(pwm));
  }
  
- static inline void pwm_set_duty_cycle(struct pwm_device *pwm, unsigned int duty)
-@@ -140,7 +142,8 @@ int pwm_set_polarity(struct pwm_device *pwm, enum pwm_polarity polarity);
+ static ssize_t pwm_duty_cycle_store(struct device *child,
+@@ -87,7 +87,7 @@ static ssize_t pwm_duty_cycle_store(struct device *child,
+ 	if (ret)
+ 		return ret;
  
- static inline void pwm_set_default_polarity(struct pwm_device *pwm, enum pwm_polarity polarity)
+-	ret = pwm_config(pwm, val, pwm->period);
++	ret = pwm_config(pwm, val, pwm_get_period(pwm));
+ 
+ 	return ret ? : size;
+ }
+@@ -134,7 +134,8 @@ static ssize_t pwm_polarity_show(struct device *child,
  {
--	pwm_set_polarity(pwm, polarity);
-+	if (pwm)
-+		pwm->default_state.polarity = polarity;
+ 	const struct pwm_device *pwm = child_to_pwm_device(child);
+ 
+-	return sprintf(buf, "%s\n", pwm->polarity ? "inversed" : "normal");
++	return sprintf(buf, "%s\n",
++		       pwm_get_polarity(pwm) ? "inversed" : "normal");
  }
  
- static inline enum pwm_polarity pwm_get_polarity(const struct pwm_device *pwm)
+ static ssize_t pwm_polarity_store(struct device *child,
 -- 
 1.9.1
