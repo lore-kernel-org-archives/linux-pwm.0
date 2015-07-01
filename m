@@ -1,135 +1,54 @@
-From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [RFC PATCH 14/15] regulator: pwm: implement ->enable(),
- ->disable() and ->is_enabled methods
-Date: Wed, 1 Jul 2015 14:19:12 +0200
-Message-ID: <20150701141912.52f995a5@bbrezillon>
-References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
-	<3495901.qMzLCVWCDl@diego>
-	<20150701140531.2041b05c@bbrezillon>
-	<3530235.H11CYEfk28@diego>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v2 11/12] ASoC: tegra: register dependency parser for
+ firmware nodes
+Date: Wed, 1 Jul 2015 18:38:02 +0100
+Message-ID: <20150701173802.GW11162@sirena.org.uk>
+References: <1435743667-11987-1-git-send-email-tomeu.vizoso@collabora.com>
+ <1435743667-11987-12-git-send-email-tomeu.vizoso@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <3530235.H11CYEfk28@diego>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="TcuvTDpCAASXpu1W"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1435743667-11987-12-git-send-email-tomeu.vizoso@collabora.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Cc: linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, alsa-devel@alsa-project.org, Jaroslav Kysela <perex@perex.cz>, Thierry Reding <thierry.reding@gmail.com>, Takashi Iwai <tiwai@suse.de>, Stephen Warren <swarren@wwwdotorg.org>, Liam Girdwood <lgirdwood@gmail.com>, linux-tegra@vger.kernel.org, Alexandre Courbot <gnurou@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, 01 Jul 2015 14:08:18 +0200
-Heiko St=C3=BCbner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org> wrote:
 
-> Am Mittwoch, 1. Juli 2015, 14:05:31 schrieb Boris Brezillon:
-> > Hi Heiko,
-> >=20
-> > On Wed, 01 Jul 2015 13:58:09 +0200
-> >=20
-> > Heiko St=C3=BCbner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org> wrote:
-> > > Am Mittwoch, 1. Juli 2015, 10:22:00 schrieb Boris Brezillon:
-> > > > Implement the ->enable(), ->disable() and ->is_enabled methods =
-and
-> > > > remove
-> > > > the PWM call in ->set_voltage_sel().
-> > > > This is particularly important for critical regulators tagged a=
-s
-> > > > always-on,
-> > > > because not claiming the PWM (and its dependencies) might lead =
-to
-> > > > unpredictable behavior (like a system hang because the PWM clk =
-is only
-> > > > claimed when the PWM device is enabled).
-> > > >=20
-> > > > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.=
-com>
-> > > > ---
-> > > >=20
-> > > >  drivers/regulator/pwm-regulator.c | 32 +++++++++++++++++++++++=
-+++------
-> > > >  1 file changed, 26 insertions(+), 6 deletions(-)
-> > > >=20
-> > > > diff --git a/drivers/regulator/pwm-regulator.c
-> > > > b/drivers/regulator/pwm-regulator.c index 12b4d9d..8159518 1006=
-44
-> > > > --- a/drivers/regulator/pwm-regulator.c
-> > > > +++ b/drivers/regulator/pwm-regulator.c
-> > > > @@ -59,12 +59,6 @@ static int pwm_regulator_set_voltage_sel(str=
-uct
-> > > > regulator_dev *rdev,
-> > > >=20
-> > > >  	drvdata->state =3D selector;
-> > > >=20
-> > > > -	ret =3D pwm_enable(drvdata->pwm);
-> > > > -	if (ret) {
-> > > > -		dev_err(&rdev->dev, "Failed to enable PWM\n");
-> > > > -		return ret;
-> > > > -	}
-> > > > -
-> > > >=20
-> > > >  	return 0;
-> > > > =20
-> > > >  }
-> > > >=20
-> > > > @@ -79,11 +73,37 @@ static int pwm_regulator_list_voltage(struc=
-t
-> > > > regulator_dev *rdev, return drvdata->duty_cycle_table[selector]=
-=2EuV;
-> > > >=20
-> > > >  }
-> > > >=20
-> > > > +static int pwm_regulator_enable(struct regulator_dev *dev)
-> > > > +{
-> > > > +	struct pwm_regulator_data *drvdata =3D rdev_get_drvdata(dev);
-> > > > +
-> > > > +	return pwm_enable(drvdata->pwm);
-> > > > +}
-> > > > +
-> > > > +static int pwm_regulator_disable(struct regulator_dev *dev)
-> > > > +{
-> > > > +	struct pwm_regulator_data *drvdata =3D rdev_get_drvdata(dev);
-> > > > +
-> > > > +	pwm_disable(drvdata->pwm);
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > > +
-> > > > +static int pwm_regulator_is_enabled(struct regulator_dev *dev)
-> > > > +{
-> > > > +       struct pwm_regulator_data *drvdata =3D rdev_get_drvdata=
-(dev);
-> > > > +
-> > > > +       return pwm_is_enabled(drvdata->pwm);
-> > > > +}
-> > >=20
-> > > nit: indentation is wrong in pwm_regulator_is_enabled (spaces ins=
-tead of
-> > > tabs)
-> > Yep, I noticed checkpatch warnings/errors before sending the patch,=
- but
-> > since this is just an RFC I decided to fix them for the next versio=
-n ;-)
->=20
-> ok, so I'll just skip over any more style issues for now. Making my w=
-ay=20
-> through your series and trying it on my veyron right now :-)
+--TcuvTDpCAASXpu1W
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Also note that I haven't tested the series on a real board (just compil=
-e
-tested) because I don't have the board with me right now, but I wanted
-to post the RFC early so that we can discuss the concepts.
+On Wed, Jul 01, 2015 at 11:41:06AM +0200, Tomeu Vizoso wrote:
 
-Anyway, any feedback on the implementation (including bug reports) is
-welcome.
+> +static void tegra_max98090_get_dependencies(struct fwnode_handle *fwnode,
+> +					    struct list_head *deps)
+> +{
+> +	add_dependency(fwnode, "nvidia,i2s-controller", deps);
+> +	add_dependency(fwnode, "nvidia,audio-codec", deps);
+> +}
 
-This is the version I actually tested on the veyron board:
+Why is this all being open coded in an individual driver (we already
+know about and manage all these dependencies in the core...)?  If we're
+going to do this I'd expect the interface for specifying DT nodes to the
+core to be changed to support this.
 
-https://github.com/bbrezillon/linux-rk/tree/rk-3.14
+--TcuvTDpCAASXpu1W
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
 
-Best Regards,
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-Boris
+iQEcBAEBCAAGBQJVlCV6AAoJECTWi3JdVIfQ9sQH/07qCQICx8rYy7I6jC+6lWam
+k0oQM1iJtoGIzxrnjZ3kPkumKA1N/p1bXAx3NVcmrD7KcOhALqe50qpheQ+CmVOZ
+LYAhUrbBYuPUBBqd9hsT7ZfLnAM9/jHCI04ch/Z8qo2khMwXmPPcm4tQeijJLLki
+dpvepRs8pRozlpKkQroJJQ1zleI/D64IxnqRbKauI+3MPBxyZeUe9ozjZI8VjxWq
+7N/AUIKachCgud0DNxjtdmsNMh6teCXQeV5YOGqcOsFHXQodpiRozw+2/As5N/Te
+fllk/BbgQInsWyI9MG0D69+KvSgNkBB+k4YODNzV7AKYE3IqKxJdDP+C+HKeubg=
+=TvF/
+-----END PGP SIGNATURE-----
 
---=20
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+--TcuvTDpCAASXpu1W--
