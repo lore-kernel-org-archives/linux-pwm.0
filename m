@@ -1,68 +1,88 @@
-From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
-	<u.kleine-koenig@pengutronix.de>
-Subject: Re: [RFC PATCH 00/15] pwm: add support for atomic update
-Date: Thu, 2 Jul 2015 09:42:43 +0200
-Message-ID: <20150702074243.GE11824@pengutronix.de>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: Re: [RFC PATCH 13/15] pwm: rockchip: add support for atomic update
+Date: Thu, 2 Jul 2015 09:43:19 +0200
+Message-ID: <20150702094319.11794da8@bbrezillon>
 References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
- <20150702070343.GD11824@pengutronix.de>
- <5594E56C.3010908@ti.com>
+	<1435738921-25027-14-git-send-email-boris.brezillon@free-electrons.com>
+	<1709826.dVqTms8REP@diego>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.pengutronix.de ([92.198.50.35]:56021 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751042AbbGBHnM (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Jul 2015 03:43:12 -0400
-Content-Disposition: inline
-In-Reply-To: <5594E56C.3010908@ti.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-leds-owner@vger.kernel.org>
+In-Reply-To: <1709826.dVqTms8REP@diego>
+Sender: linux-leds-owner@vger.kernel.org
+To: Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko@sntech.de>
+Cc: linux-arm-kernel@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Alexandre Courbot <gnurou@gmail.com>, linux-fbdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Stephen Warren <swarren@wwwdotorg.org>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Bryan Wu <cooloney@gmail.com>, Liam Girdwood <lgirdwood@gmail.com>, Doug Anderson <dianders@google.com>, Mark Brown <broonie@kernel.org>, Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jingoohan1@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Alexandre Courbot <gnurou@gmail.com>, linux-fbdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Stephen Warren <swarren@wwwdotorg.org>, Bryan Wu <cooloney@gmail.com>, Liam Girdwood <lgirdwood@gmail.com>, Doug Anderson <dianders@google.com>, Mark Brown <broonie@kernel.org>, Richard Purdie <rpurdie@rpsys.net>, linux-arm-kernel@lists.infradead.org, Jingoo Han <jingoohan1@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org
 
-On Thu, Jul 02, 2015 at 10:17:00AM +0300, Tomi Valkeinen wrote:
+Hi Heiko,
+
+On Wed, 01 Jul 2015 23:48:31 +0200
+Heiko St=C3=BCbner <heiko@sntech.de> wrote:
+
+> Hi Boris,
 >=20
 >=20
-> On 02/07/15 10:03, Uwe Kleine-K=F6nig wrote:
-> > Hello Boris,
+> Am Mittwoch, 1. Juli 2015, 10:21:59 schrieb Boris Brezillon:
+> > Implement the ->apply() function to add support for atomic update.
 > >=20
-> > On Wed, Jul 01, 2015 at 10:21:46AM +0200, Boris Brezillon wrote:
-> >> This series adds support for atomic PWM update, or ITO, the capabi=
-lity
-> >> to update all the parameters of a PWM device (enabled/disabled, pe=
-riod,
-> >> duty and polarity) in one go.
-> > on first reading the subject of your series I thought it was about
-> > asserting that the newly set config is active before the call to
-> > pwm_config (et al) returns. That's a problem I addressed a few time=
-s in
-> > the past. I wonder if it's only me or if a different wording should=
- be
-> > used for "update all parameters with a single function call".
+> > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> > ---
+> > @@ -110,6 +113,26 @@ static void rockchip_pwm_set_enable_v2(struct =
+pwm_chip
+> > *chip, writel_relaxed(val, pc->base + pc->data->regs.ctrl);
+> >  }
+> >=20
+> > +static void rockchip_pwm_init_v2(struct pwm_chip *chip, struct pwm=
+_device
+> > *pwm) +{
+> > +	struct rockchip_pwm_chip *pc =3D to_rockchip_pwm_chip(chip);
+> > +	u32 enable_conf =3D PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE=
+ |
+> > +			  PWM_CONTINUOUS;
+> > +	u32 val;
+> > +
+> > +	val =3D readl(pc->base + pc->data->regs.ctrl);
+> > +
+> > +	if ((val & enable_conf) !=3D enable_conf)
+> > +		return;
+> > +
+> > +	pwm->state.enabled =3D true;
+> > +
+> > +	enable_conf =3D PWM_DUTY_NEGATIVE | PWM_INACTIVE_POSITIVE;
+> > +
+> > +	if ((val & enable_conf) =3D=3D enable_conf)
+> > +		pwm->state.polarity =3D PWM_POLARITY_INVERSED;
 >=20
-> In my vocabulary "blocking" means that the work is done before the
-> function returns, and "atomic" means the work is done in one step.
-blocking is IMHO something slightly different, maybe "synchronous" is a
-good term for "done when the call returns".
+> the inactive setting does not affect the polarity of the running pwm,=
+ only what=20
+> to do when it gets turned off. Also PWM_DUTY_NEGATIVE is the "0" valu=
+e for the=20
+> bit so also is bad to compare against (and results in wrong readings)=
+=2E So I=20
+> would suggest changing this like
 
-=46or write(2) I'd say
- - blocking means to only return when the write request has reached the
-   kernel, but not necessarily the medium. I.e. the caller doesn't need
-   to care further; and
- - atomic means that the contents of two concurrent writers don't mix i=
-n
-   the resulting file content; and
- - synchronous means that once write() returns the data is on the
-   medium.
+Indeed
 
-So atomic seems to be fine to use here.
+>=20
+> -       enable_conf =3D PWM_DUTY_NEGATIVE | PWM_INACTIVE_POSITIVE;
+> +       enable_conf =3D PWM_DUTY_POSITIVE;
+> =20
+> -       if ((val & enable_conf) =3D=3D enable_conf)
+> +       if ((val & enable_conf) !=3D enable_conf)
 
-Best regards
-Uwe
+Or just:
+
+	if(val & PWM_DUTY_POSITIVE)
+
+
+Thanks for the fix.
+
+Best Regards,
+
+Boris
 
 --=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
-    |
-Industrial Linux Solutions                 | http://www.pengutronix.de/=
-  |
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
