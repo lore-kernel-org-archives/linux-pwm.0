@@ -1,107 +1,88 @@
-From: Daniel Kurtz <djkurtz@chromium.org>
-Subject: Re: [PATCH v3 2/2] pwm: add MediaTek display PWM driver support
-Date: Thu, 2 Jul 2015 16:14:28 +0800
-Message-ID: <CAGS+omBYZ8LJrCwV=21_z33yjWfh9dqU5uve7SqMc9yB033wqg@mail.gmail.com>
-References: <1435590211-38854-1-git-send-email-yh.huang@mediatek.com> <1435590211-38854-3-git-send-email-yh.huang@mediatek.com>
+From: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v3 1/2] dt-bindings: pwm: add MediaTek display PWM bindings
+Date: Thu, 2 Jul 2015 16:15:07 +0800
+Message-ID: <CAGS+omAhnFzgqBrdCGjD8f83oL3GaigCVRvh_vVW07Vs302HHA@mail.gmail.com>
+References: <1435590211-38854-1-git-send-email-yh.huang@mediatek.com>
+ <1435590211-38854-2-git-send-email-yh.huang@mediatek.com>
+ <1435591483.21804.2.camel@mtksdaap41>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-yk0-f180.google.com ([209.85.160.180]:35144 "EHLO
-	mail-yk0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752876AbbGBIOs (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Jul 2015 04:14:48 -0400
-Received: by ykdy1 with SMTP id y1so61715511ykd.2
-        for <linux-pwm@vger.kernel.org>; Thu, 02 Jul 2015 01:14:48 -0700 (PDT)
-In-Reply-To: <1435590211-38854-3-git-send-email-yh.huang@mediatek.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1435591483.21804.2.camel@mtksdaap41>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND..." <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: YH Huang <yh.huang@mediatek.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, srv_heupstream <srv_heupstream@mediatek.com>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, Yingjoe Chen <yingjoe.chen@mediatek.com>
 
-On Mon, Jun 29, 2015 at 11:03 PM, YH Huang <yh.huang@mediatek.com> wrote:
-> Add display PWM driver support to modify backlight for MT8173 and MT6595.
-> The PWM has one channel to control the brightness of the display.
-> When the (high_width / period) is closer to 1, the screen is brighter; otherwise, it is darker.
+On Mon, Jun 29, 2015 at 11:24 PM, YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
+> I am sorry for forgetting to remove Change-Id in [PATCH v3 1/2] and
+> [PATCH v3 1/2].
 >
-> Change-Id: Ie85b295e2dddd90b4163af1c906df977f79b59d6
-> Signed-off-by: YH Huang <yh.huang@mediatek.com>
-> ---
->  drivers/pwm/Kconfig        |  10 ++
->  drivers/pwm/Makefile       |   1 +
->  drivers/pwm/pwm-mtk-disp.c | 256 +++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 267 insertions(+)
->  create mode 100644 drivers/pwm/pwm-mtk-disp.c
+> Regards,
+> YH Huang
 >
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index b1541f4..90e3c079 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -211,6 +211,16 @@ config PWM_LPSS_PLATFORM
->           To compile this driver as a module, choose M here: the module
->           will be called pwm-lpss-platform.
->
-> +config PWM_MTK_DISP
-> +       tristate "MediaTek display PWM driver"
-> +       depends on HAS_IOMEM
+> On Mon, 2015-06-29 at 23:03 +0800, YH Huang wrote:
+>> Document the device-tree binding of MediatTek display PWM.
+>> The clock "main" and "mm" are used to generate PWM signals.
+>> The PWM has one channel to control the backlight brightness for display.
+>> It supports MT8173 and MT6595.
+>>
+>> Change-Id: I194ca88b4e4cd01a28b8701e07e86ea6941e5292
+>> Signed-off-by: YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+>> ---
+>>  .../devicetree/bindings/pwm/pwm-mtk-disp.txt       | 24 ++++++++++++++++++++++
+>>  1 file changed, 24 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+>> new file mode 100644
+>> index 0000000..355b755
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+>> @@ -0,0 +1,24 @@
+>> +MediaTek display PWM controller
+>> +
+>> +Required properties:
+>> + - compatible: should be "mediatek,<name>-disp-pwm"
+>> +   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC
+>> +   - "mediatek,mt6595-disp-pwm": found on mt6595 SoC
+>> + - reg: physical base address and length of the controller's registers
+>> + - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
+>> +   the cell format
+>> + - clocks: phandle and clock specifier of the PWM reference clock
+>> + - clock-names: must contain the following
+>> +   - "main": clock used to generate PWM signals
+>> +   - "mm": sync signals from the modules of mmsys
+>> +
+>> +Example:
+>> +     pwm0: pwm@1401e000 {
+>> +             compatible = "mediatek,mt8173-disp-pwm",
+>> +                          "mediatek,mt6595-disp-pwm";
+>> +             reg = <0 0x1401e000 0 0x1000>;
+>> +             #pwm-cells = <2>;
+>> +             clocks = <&mmsys MM_DISP_PWM026M>,
+>> +                      <&mmsys MM_DISP_PWM0MM>;
 
-depends on ARCH_MEDIATEK || COMPILE_TEST
-
-> +       help
-> +         Generic PWM framework driver for MediaTek disp-pwm device.
-> +         The PWM is used to control the backlight brightness for display.
-> +
-> +         To compile this driver as a module, choose M here: the module
-> +         will be called pwm-mtk-disp.
-> +
->  config PWM_MXS
->         tristate "Freescale MXS PWM support"
->         depends on ARCH_MXS && OF
-> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> index ec50eb5..99c9e75 100644
-> --- a/drivers/pwm/Makefile
-> +++ b/drivers/pwm/Makefile
-> @@ -18,6 +18,7 @@ obj-$(CONFIG_PWM_LPC32XX)     += pwm-lpc32xx.o
->  obj-$(CONFIG_PWM_LPSS)         += pwm-lpss.o
->  obj-$(CONFIG_PWM_LPSS_PCI)     += pwm-lpss-pci.o
->  obj-$(CONFIG_PWM_LPSS_PLATFORM)        += pwm-lpss-platform.o
-> +obj-$(CONFIG_PWM_MTK_DISP)     += pwm-mtk-disp.o
->  obj-$(CONFIG_PWM_MXS)          += pwm-mxs.o
->  obj-$(CONFIG_PWM_PCA9685)      += pwm-pca9685.o
->  obj-$(CONFIG_PWM_PUV3)         += pwm-puv3.o
-> diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
-> new file mode 100644
-> index 0000000..fb3a42e
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-mtk-disp.c
-> @@ -0,0 +1,256 @@
-> +/*
-> + * MediaTek display pulse-width-modulation controller driver.
-> + * Copyright (c) 2015 MediaTek Inc.
-> + * Author: YH Huang <yh.huang@mediatek.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/err.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/pwm.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/slab.h>
-> +
-> +#define DISP_PWM_EN            0x0
-> +#define PWM_ENABLE_MASK                0x1
-
-For one bit fields like this, it is nicer to use: BIT()
+These should be CLK_MM_DISP...
 
 Thanks!
 -Dan
+
+>> +             clock-names = "main", "mm";
+>> +     };
+>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
