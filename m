@@ -1,87 +1,107 @@
-From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [RFC PATCH 00/15] pwm: add support for atomic update
-Date: Thu, 2 Jul 2015 09:55:20 +0200
-Message-ID: <20150702095520.3088852f@bbrezillon>
-References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
-	<3250976.mr9RMtjrdC@diego>
+From: Daniel Kurtz <djkurtz@chromium.org>
+Subject: Re: [PATCH v3 2/2] pwm: add MediaTek display PWM driver support
+Date: Thu, 2 Jul 2015 16:14:28 +0800
+Message-ID: <CAGS+omBYZ8LJrCwV=21_z33yjWfh9dqU5uve7SqMc9yB033wqg@mail.gmail.com>
+References: <1435590211-38854-1-git-send-email-yh.huang@mediatek.com> <1435590211-38854-3-git-send-email-yh.huang@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <3250976.mr9RMtjrdC@diego>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-yk0-f180.google.com ([209.85.160.180]:35144 "EHLO
+	mail-yk0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752876AbbGBIOs (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Jul 2015 04:14:48 -0400
+Received: by ykdy1 with SMTP id y1so61715511ykd.2
+        for <linux-pwm@vger.kernel.org>; Thu, 02 Jul 2015 01:14:48 -0700 (PDT)
+In-Reply-To: <1435590211-38854-3-git-send-email-yh.huang@mediatek.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: YH Huang <yh.huang@mediatek.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, srv_heupstream <srv_heupstream@mediatek.com>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, Yingjoe Chen <yingjoe.chen@mediatek.com>
 
-On Wed, 01 Jul 2015 23:57:57 +0200
-Heiko St=C3=BCbner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org> wrote:
+On Mon, Jun 29, 2015 at 11:03 PM, YH Huang <yh.huang@mediatek.com> wrote:
+> Add display PWM driver support to modify backlight for MT8173 and MT6595.
+> The PWM has one channel to control the brightness of the display.
+> When the (high_width / period) is closer to 1, the screen is brighter; otherwise, it is darker.
+>
+> Change-Id: Ie85b295e2dddd90b4163af1c906df977f79b59d6
+> Signed-off-by: YH Huang <yh.huang@mediatek.com>
+> ---
+>  drivers/pwm/Kconfig        |  10 ++
+>  drivers/pwm/Makefile       |   1 +
+>  drivers/pwm/pwm-mtk-disp.c | 256 +++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 267 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-mtk-disp.c
+>
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index b1541f4..90e3c079 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -211,6 +211,16 @@ config PWM_LPSS_PLATFORM
+>           To compile this driver as a module, choose M here: the module
+>           will be called pwm-lpss-platform.
+>
+> +config PWM_MTK_DISP
+> +       tristate "MediaTek display PWM driver"
+> +       depends on HAS_IOMEM
 
-> Hi Boris,
->=20
-> Am Mittwoch, 1. Juli 2015, 10:21:46 schrieb Boris Brezillon:
-> > Hello Thierry,
-> >=20
-> > This series adds support for atomic PWM update, or ITO, the capabil=
-ity
-> > to update all the parameters of a PWM device (enabled/disabled, per=
-iod,
-> > duty and polarity) in one go.
-> >=20
-> > This implementation is still experimental, and I may have missed so=
-me key
-> > aspect, so any feedback are welcome.
-> >=20
-> > Also note that I haven't protected the state update with any lockin=
-g.
-> > That's because the existing config does not protect against concurr=
-ent
-> > access to a requested PWM device (see the pwm_config implementation=
-).
-> > I guess the PWM framework assume the user will implement the proper=
- locking
-> > scheme if it has to concurrently access the device.
-> >=20
-> > The 5 first patches prepare the addition of the pwm_state concept, =
-which
-> > will be used to allow atomic updates.
-> > The following patches introduce the pwm_state struct, initial state
-> > retrieval and atomic update concepts.
-> >=20
-> > Patches 12 and 13 are showing how one can implement the initial sta=
-te
-> > retrieval and atomic update features in a PWM driver (in this speci=
-fic
-> > case I implemented it in the rockchip driver).
-> >=20
-> > The last 2 patches are making use of those changes to improve the
-> > pwm-regulator driver (initializing the regulator state based on the
-> > initial PWM state).
->=20
-> at first I got very strange readings (very wrong values and wrong pol=
-arity),=20
-> which resulted from the issues I pointed out in the replies to indivi=
-dual=20
-> patches. After fixing these, the pwm read-back now returns exactly th=
-e expected=20
-> values :-) .
+depends on ARCH_MEDIATEK || COMPILE_TEST
 
-Sorry about that, as I said I only compile tested the series :-/.
-Anyway, thanks for providing fixes for these bugs, they'll be applied
-in the next version.
+> +       help
+> +         Generic PWM framework driver for MediaTek disp-pwm device.
+> +         The PWM is used to control the backlight brightness for display.
+> +
+> +         To compile this driver as a module, choose M here: the module
+> +         will be called pwm-mtk-disp.
+> +
+>  config PWM_MXS
+>         tristate "Freescale MXS PWM support"
+>         depends on ARCH_MXS && OF
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index ec50eb5..99c9e75 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -18,6 +18,7 @@ obj-$(CONFIG_PWM_LPC32XX)     += pwm-lpc32xx.o
+>  obj-$(CONFIG_PWM_LPSS)         += pwm-lpss.o
+>  obj-$(CONFIG_PWM_LPSS_PCI)     += pwm-lpss-pci.o
+>  obj-$(CONFIG_PWM_LPSS_PLATFORM)        += pwm-lpss-platform.o
+> +obj-$(CONFIG_PWM_MTK_DISP)     += pwm-mtk-disp.o
+>  obj-$(CONFIG_PWM_MXS)          += pwm-mxs.o
+>  obj-$(CONFIG_PWM_PCA9685)      += pwm-pca9685.o
+>  obj-$(CONFIG_PWM_PUV3)         += pwm-puv3.o
+> diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
+> new file mode 100644
+> index 0000000..fb3a42e
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-mtk-disp.c
+> @@ -0,0 +1,256 @@
+> +/*
+> + * MediaTek display pulse-width-modulation controller driver.
+> + * Copyright (c) 2015 MediaTek Inc.
+> + * Author: YH Huang <yh.huang@mediatek.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/pwm.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +
+> +#define DISP_PWM_EN            0x0
+> +#define PWM_ENABLE_MASK                0x1
 
->=20
-> And with the original voltage table from the Chromeos-devicetrees, th=
-e pwm-
-> regulator also returns the expected 1.2V that coreboot initially set.
+For one bit fields like this, it is nicer to use: BIT()
 
-Great! And thanks for testing the patches.
-
-Best Regards,
-
-Boris
-
---=20
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Thanks!
+-Dan
