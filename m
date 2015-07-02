@@ -1,70 +1,145 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [RFC PATCH 16/15] pwm: add informations about polarity, duty
- cycle and period to debugfs
-Date: Thu, 2 Jul 2015 15:01:41 +0200
-Message-ID: <20150702150141.5018a791@bbrezillon>
-References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
-	<3365087.n2eEES60JK@diego>
+From: Jonathan Richardson <jonathar@broadcom.com>
+Subject: Re: [PATCH v9 1/2] pwm: kona: Modify settings application sequence
+Date: Thu, 2 Jul 2015 16:36:38 -0700
+Message-ID: <5595CB06.6060005@broadcom.com>
+References: <1434403262-24198-1-git-send-email-jonathar@broadcom.com> <1434403262-24198-2-git-send-email-jonathar@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:38980 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751051AbbGBNBp convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Jul 2015 09:01:45 -0400
-In-Reply-To: <3365087.n2eEES60JK@diego>
+Received: from mail-gw1-out.broadcom.com ([216.31.210.62]:39384 "EHLO
+	mail-gw1-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752614AbbGBXgk (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Jul 2015 19:36:40 -0400
+In-Reply-To: <1434403262-24198-2-git-send-email-jonathar@broadcom.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko@sntech.de>
-Cc: linux-arm-kernel@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Alexandre Courbot <gnurou@gmail.com>, linux-fbdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Stephen Warren <swarren@wwwdotorg.org>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Bryan Wu <cooloney@gmail.com>, Liam Girdwood <lgirdwood@gmail.com>, Doug Anderson <dianders@google.com>, Mark Brown <broonie@kernel.org>, Richard Purdie <rpurdie@rpsys.net>, Jingoo Han <jingoohan1@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org
+To: Jonathan Richardson <jonathar@broadcom.com>
+Cc: Tim Kryger <tim.kryger@gmail.com>, Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-On Wed, 01 Jul 2015 23:50:46 +0200
-Heiko St=C3=BCbner <heiko@sntech.de> wrote:
+Hi Theirry,
 
-> The pwm-states make it possible to also output the polarity, duty cyc=
-le
-> and period information in the debugfs pwm summary-outout.
-> This makes it easier to gather overview information about pwms withou=
-t
-> needing to walk through the sysfs attributes of every pwm.
->=20
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+If there are no more comments can this patch be applied?
+
+Thanks,
+Jon
+
+On 15-06-15 02:21 PM, Jonathan Richardson wrote:
+> Update the driver so that settings are applied in accordance with the
+> most recent version of the hardware spec.  The revised sequence clears
+> the trigger bit, waits 400ns, writes settings, sets the trigger bit,
+> and waits another 400ns.  This corrects an issue where occasionally a
+> requested change was not properly reflected in the PWM output.
+> 
+> Reviewed-by: Arun Ramamurthy <arunrama@broadcom.com>
+> Reviewed-by: Scott Branden <sbranden@broadcom.com>
+> Tested-by: Scott Branden <sbranden@broadcom.com>
+> Reviewed-by: Tim Kryger <tim.kryger@gmail.com>
+> Signed-off-by: Jonathan Richardson <jonathar@broadcom.com>
 > ---
-> might be nice to have too ;-)
-
-Yes.
-
->=20
->  drivers/pwm/core.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> index 6dafd8e..79037a2 100644
-> --- a/drivers/pwm/core.c
-> +++ b/drivers/pwm/core.c
-> @@ -951,9 +951,18 @@ static void pwm_dbg_show(struct pwm_chip *chip, =
-struct seq_file *s)
->  		if (test_bit(PWMF_REQUESTED, &pwm->flags))
->  			seq_puts(s, " requested");
-> =20
-> -		if (pwm_is_enabled(pwm))
-> +		if (pwm_is_enabled(pwm)) {
->  			seq_puts(s, " enabled");
-> =20
-> +			seq_printf(s, " period:%uns",
-> +				   pwm_get_period(pwm));
-> +			seq_printf(s, " duty:%uns",
-> +				   pwm_get_duty_cycle(pwm));
-> +			seq_printf(s, " polarity:%s",
-> +				   pwm_get_polarity(pwm) ? "inverse"
-> +							 : "normal");
-
-I would print those values even if the PWM is not enabled.
-
-
-
---=20
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+>  drivers/pwm/pwm-bcm-kona.c |   47 +++++++++++++++++++++++++++++++++++---------
+>  1 file changed, 38 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+> index 7af8fea..9b1d397 100644
+> --- a/drivers/pwm/pwm-bcm-kona.c
+> +++ b/drivers/pwm/pwm-bcm-kona.c
+> @@ -76,19 +76,36 @@ static inline struct kona_pwmc *to_kona_pwmc(struct pwm_chip *_chip)
+>  	return container_of(_chip, struct kona_pwmc, chip);
+>  }
+>  
+> -static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
+> +/*
+> + * Clear trigger bit but set smooth bit to maintain old output.
+> + */
+> +static void kona_pwmc_prepare_for_settings(struct kona_pwmc *kp,
+> +	unsigned int chan)
+>  {
+>  	unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
+>  
+> -	/* Clear trigger bit but set smooth bit to maintain old output */
+>  	value |= 1 << PWM_CONTROL_SMOOTH_SHIFT(chan);
+>  	value &= ~(1 << PWM_CONTROL_TRIGGER_SHIFT(chan));
+>  	writel(value, kp->base + PWM_CONTROL_OFFSET);
+>  
+> +	/*
+> +	 * There must be a min 400ns delay between clearing trigger and setting
+> +	 * it. Failing to do this may result in no PWM signal.
+> +	 */
+> +	ndelay(400);
+> +}
+> +
+> +static void kona_pwmc_apply_settings(struct kona_pwmc *kp, unsigned int chan)
+> +{
+> +	unsigned int value = readl(kp->base + PWM_CONTROL_OFFSET);
+> +
+>  	/* Set trigger bit and clear smooth bit to apply new settings */
+>  	value &= ~(1 << PWM_CONTROL_SMOOTH_SHIFT(chan));
+>  	value |= 1 << PWM_CONTROL_TRIGGER_SHIFT(chan);
+>  	writel(value, kp->base + PWM_CONTROL_OFFSET);
+> +
+> +	/* Trigger bit must be held high for at least 400 ns. */
+> +	ndelay(400);
+>  }
+>  
+>  static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> @@ -133,8 +150,14 @@ static int kona_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  			return -EINVAL;
+>  	}
+>  
+> -	/* If the PWM channel is enabled, write the settings to the HW */
+> +	/*
+> +	 * Don't apply settings if disabled. The period and duty cycle are
+> +	 * always calculated above to ensure the new values are
+> +	 * validated immediately instead of on enable.
+> +	 */
+>  	if (test_bit(PWMF_ENABLED, &pwm->flags)) {
+> +		kona_pwmc_prepare_for_settings(kp, chan);
+> +
+>  		value = readl(kp->base + PRESCALE_OFFSET);
+>  		value &= ~PRESCALE_MASK(chan);
+>  		value |= prescale << PRESCALE_SHIFT(chan);
+> @@ -164,6 +187,8 @@ static int kona_pwmc_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+>  		return ret;
+>  	}
+>  
+> +	kona_pwmc_prepare_for_settings(kp, chan);
+> +
+>  	value = readl(kp->base + PWM_CONTROL_OFFSET);
+>  
+>  	if (polarity == PWM_POLARITY_NORMAL)
+> @@ -175,9 +200,6 @@ static int kona_pwmc_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+>  
+>  	kona_pwmc_apply_settings(kp, chan);
+>  
+> -	/* Wait for waveform to settle before gating off the clock */
+> -	ndelay(400);
+> -
+>  	clk_disable_unprepare(kp->clk);
+>  
+>  	return 0;
+> @@ -207,13 +229,20 @@ static void kona_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+>  {
+>  	struct kona_pwmc *kp = to_kona_pwmc(chip);
+>  	unsigned int chan = pwm->hwpwm;
+> +	unsigned int value;
+> +
+> +	kona_pwmc_prepare_for_settings(kp, chan);
+>  
+>  	/* Simulate a disable by configuring for zero duty */
+>  	writel(0, kp->base + DUTY_CYCLE_HIGH_OFFSET(chan));
+> -	kona_pwmc_apply_settings(kp, chan);
+> +	writel(0, kp->base + PERIOD_COUNT_OFFSET(chan));
+>  
+> -	/* Wait for waveform to settle before gating off the clock */
+> -	ndelay(400);
+> +	/* Set prescale to 0 for this channel */
+> +	value = readl(kp->base + PRESCALE_OFFSET);
+> +	value &= ~PRESCALE_MASK(chan);
+> +	writel(value, kp->base + PRESCALE_OFFSET);
+> +
+> +	kona_pwmc_apply_settings(kp, chan);
+>  
+>  	clk_disable_unprepare(kp->clk);
+>  }
+> 
