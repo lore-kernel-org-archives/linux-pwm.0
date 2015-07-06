@@ -1,179 +1,64 @@
-From: Stefan Agner <stefan@agner.ch>
-Subject: Re: [PATCH] pwm: ftm: fix clock enable/disable when using PM
-Date: Mon, 06 Jul 2015 08:42:46 +0200
-Message-ID: <f0ae399196d0d009bb58b7166ec80add@agner.ch>
-References: <1432932519-13295-1-git-send-email-stefan@agner.ch>
+From: YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v3 0/2] Add MediaTek display PWM driver
+Date: Mon, 6 Jul 2015 20:43:31 +0800
+Message-ID: <1436186611.32512.3.camel@mtksdaap41>
+References: <1435590211-38854-1-git-send-email-yh.huang@mediatek.com>
+	 <CAGS+omANeUxcRdY-qQzxjtBY5Yhx56mSneuuXh+bGjbahKhDeA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kmu-office.ch ([178.209.48.109]:47374 "EHLO
-	mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750752AbbGFGpa (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Jul 2015 02:45:30 -0400
-In-Reply-To: <1432932519-13295-1-git-send-email-stefan@agner.ch>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAGS+omANeUxcRdY-qQzxjtBY5Yhx56mSneuuXh+bGjbahKhDeA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "open list:OPEN FIRMWARE AND..." <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: Li.Xiubo@freescale.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
-Hi Thierry,
+Hi Daniel,
 
-On 2015-05-29 22:48, Stefan Agner wrote:
-> The driver has multiple issues when enabling/disabling clocks. A given
-> instance enables/disables three clocks: the bus clock, the counter
-> clock and the PWM clock. The bus clock gets enabled on pwm_request,
-> whereas the counter and PWM clocks will be enabled upon pwm_enable.
-> 
-> When entering suspend, the current behavior relies on the FTM_OUTMASK
-> register: If a PWM output is unmasked, the driver assumes the clocks
-> are enabled. However, some PWM instances, e.g. Vybrid's FTM1, only
-> have 2 channels connected. In that case, the FTM_OUTMASK reads only
-> 0x3, even when it was initialized with 0xff. Hence for those PWM
-> instances, the current approach does not work at all.
-> 
-> A second issue is that the three clocks are not treated differently
-> regarding PWM's enabled/requested state. This can lead to clocks
-> getting disabled which have not been enabled in the first place (a PWM
-> channel which only has been requested).
-> 
-> A third issue applies to the bus clock only, which can get enabled
-> multiple times (once for each PWM channel of a PWM chip). This is
-> fine, however when entering suspend mode, the clock only gets disabled
-> once.
-> 
-> To fix the issues this change introduces a different approach by
-> relying on the enable/prepared counters of the clock framework. Clocks
-> get disabled during suspend and back enabled on resume regarding to
-> the PWM channels individual state. However, since we do not count the
-> clocks locally, this change no longer clears the Status and Control
-> registers Clock Source Selection (FTM_SC[CLKS]). There have not
-> observed issues with that approach so far.
+I will add PWM dtsi in the next patch and also fix the code with your
+suggestions in other mails.
 
+Regards,
+YH Huang
 
-Any comment on that?
+On Tue, 2015-06-30 at 14:35 +0800, Daniel Kurtz wrote:
+> Hi YH,
+> 
+> Please also include a patch that adds PWM bindings to mt8173.dtsi.
+> The clock definitions (CLK_MM_DISP_PWM*) are added by James LIao's patch:
+>   clk: mediatek: Add subsystem clocks of MT8173
+> 
+> I think it is ok to mention in the cover-letter that the PWM .dtsi
+> change depends on that other patch.
+> 
+> Also, cover-letters usually contain a "shortlog" and diffstatm that
+> gives summary of patches and changed files, generated along with the
+> patches using:
+>  git format-patch --cover-letter
+> 
+> Thanks,
+> -Daniel
+> 
+> On Mon, Jun 29, 2015 at 11:03 PM, YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
+> > This patch series add the use of display PWM driver and documentation
+> > for Mediatek SoCs. The driver is used to support the backlight of
+> > the panel. This is based on v4.1-rc1.
+> >
+> > Change in v3:
+> > 1. Add suspend/resume function
+> > 2. Fix the formula for high_width calculation
+> > 3. Rewrite some code to make it easier to read
+> > 4. Add more information in the commit message
+> >
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> > the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> > Please read the FAQ at  http://www.tux.org/lkml/
+
 
 --
-Stefan
-
-> 
-> Signed-off-by: Stefan Agner <stefan@agner.ch>
-> ---
->  drivers/pwm/pwm-fsl-ftm.c | 58 ++++++++++++++++++++---------------------------
->  1 file changed, 25 insertions(+), 33 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-> index f9dfc8b..5e1dd96 100644
-> --- a/drivers/pwm/pwm-fsl-ftm.c
-> +++ b/drivers/pwm/pwm-fsl-ftm.c
-> @@ -80,7 +80,6 @@ struct fsl_pwm_chip {
->  
->  	struct mutex lock;
->  
-> -	unsigned int use_count;
->  	unsigned int cnt_select;
->  	unsigned int clk_ps;
->  
-> @@ -300,9 +299,6 @@ static int fsl_counter_clock_enable(struct
-> fsl_pwm_chip *fpc)
->  {
->  	int ret;
->  
-> -	if (fpc->use_count++ != 0)
-> -		return 0;
-> -
->  	/* select counter clock source */
->  	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK,
->  			   FTM_SC_CLK(fpc->cnt_select));
-> @@ -334,25 +330,6 @@ static int fsl_pwm_enable(struct pwm_chip *chip,
-> struct pwm_device *pwm)
->  	return ret;
->  }
->  
-> -static void fsl_counter_clock_disable(struct fsl_pwm_chip *fpc)
-> -{
-> -	/*
-> -	 * already disabled, do nothing
-> -	 */
-> -	if (fpc->use_count == 0)
-> -		return;
-> -
-> -	/* there are still users, so can't disable yet */
-> -	if (--fpc->use_count > 0)
-> -		return;
-> -
-> -	/* no users left, disable PWM counter clock */
-> -	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK, 0);
-> -
-> -	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
-> -	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
-> -}
-> -
->  static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->  {
->  	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
-> @@ -362,7 +339,8 @@ static void fsl_pwm_disable(struct pwm_chip *chip,
-> struct pwm_device *pwm)
->  	regmap_update_bits(fpc->regmap, FTM_OUTMASK, BIT(pwm->hwpwm),
->  			   BIT(pwm->hwpwm));
->  
-> -	fsl_counter_clock_disable(fpc);
-> +	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
-> +	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
->  
->  	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
->  	if ((val & 0xFF) == 0xFF)
-> @@ -492,17 +470,24 @@ static int fsl_pwm_remove(struct platform_device *pdev)
->  static int fsl_pwm_suspend(struct device *dev)
->  {
->  	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
-> -	u32 val;
-> +	int i;
->  
->  	regcache_cache_only(fpc->regmap, true);
->  	regcache_mark_dirty(fpc->regmap);
->  
-> -	/* read from cache */
-> -	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
-> -	if ((val & 0xFF) != 0xFF) {
-> +	for (i = 0; i < fpc->chip.npwm; i++) {
-> +		struct pwm_device *pwm = &fpc->chip.pwms[i];
-> +
-> +		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
-> +			continue;
-> +
-> +		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-> +
-> +		if (!test_bit(PWMF_ENABLED, &pwm->flags))
-> +			continue;
-> +
->  		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
->  		clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
-> -		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
->  	}
->  
->  	return 0;
-> @@ -511,12 +496,19 @@ static int fsl_pwm_suspend(struct device *dev)
->  static int fsl_pwm_resume(struct device *dev)
->  {
->  	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
-> -	u32 val;
-> +	int i;
-> +
-> +	for (i = 0; i < fpc->chip.npwm; i++) {
-> +		struct pwm_device *pwm = &fpc->chip.pwms[i];
-> +
-> +		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
-> +			continue;
->  
-> -	/* read from cache */
-> -	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
-> -	if ((val & 0xFF) != 0xFF) {
->  		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-> +
-> +		if (!test_bit(PWMF_ENABLED, &pwm->flags))
-> +			continue;
-> +
->  		clk_prepare_enable(fpc->clk[fpc->cnt_select]);
->  		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
->  	}
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
