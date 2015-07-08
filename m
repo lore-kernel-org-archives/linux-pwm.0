@@ -1,47 +1,66 @@
-From: Tero Kristo <t-kristo@ti.com>
-Subject: Re: [PATCH v2 0/5] Add support for PWMSS on DRA7
-Date: Tue, 7 Jul 2015 15:49:31 +0300
-Message-ID: <559BCADB.4070606@ti.com>
-References: <1433332284-10766-1-git-send-email-vigneshr@ti.com> <559A1C1F.7000309@ti.com>
+From: Daniel Kurtz <djkurtz@chromium.org>
+Subject: Re: [PATCH v4 1/3] dt-bindings: pwm: add MediaTek display PWM bindings
+Date: Wed, 8 Jul 2015 20:11:09 +0800
+Message-ID: <CAGS+omAWNwk_PRy-eeC4bgHQ-ZC2Kvh0sqpF47VD1sfJOhHWUw@mail.gmail.com>
+References: <1436189368-1826-1-git-send-email-yh.huang@mediatek.com> <1436189368-1826-2-git-send-email-yh.huang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:48161 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751215AbbGGMuK (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Tue, 7 Jul 2015 08:50:10 -0400
-In-Reply-To: <559A1C1F.7000309@ti.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1436189368-1826-2-git-send-email-yh.huang@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: YH Huang <yh.huang@mediatek.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, srv_heupstream <srv_heupstream@mediatek.com>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, Yingjoe Chen <yingjoe.chen@mediatek.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Vignesh R <vigneshr@ti.com>, Paul Walmsley <paul@pwsan.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Benoit Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Russell King <linux@arm.linux.org.uk>, Mike Turquette <mturquette@linaro.org>, Stephen Boyd <sboyd@codeaurora.org>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
 
-On 07/06/2015 09:11 AM, Vignesh R wrote:
+On Mon, Jul 6, 2015 at 9:29 PM, YH Huang <yh.huang@mediatek.com> wrote:
+> Document the device-tree binding of MediatTek display PWM.
+> The PWM has one channel to control the backlight brightness for display.
+> It supports MT8173 and MT6595.
 >
+> Signed-off-by: YH Huang <yh.huang@mediatek.com>
+> ---
+>  .../devicetree/bindings/pwm/pwm-mtk-disp.txt       | 24 ++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
 >
-> On Wednesday 03 June 2015 05:21 PM, Vignesh R wrote:
->>
->> Hi,
->>
->> This patch series adds support for PWMSS on DRA7. The IP is same as that
->> present in AM33XX and AM43XX.
->> The first patch changes clock domain in which PWMSS is present
->> (l4per2_7xx_clkdm) to SW_WKUP. This is because legacy IPs like PWM
->> does'nt support HW_AUTO prorperly. Hence, switch clock domain to
->> SW_WKUP. This is based on the input from the hardware team.
->> The rest of the patches add hwmod and dt entries and enable PWMSS on
->> DRA7 based SoCs.
->
-> Gentle ping...
->
->
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> new file mode 100644
+> index 0000000..757b974
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> @@ -0,0 +1,24 @@
+> +MediaTek display PWM controller
+> +
+> +Required properties:
+> + - compatible: should be "mediatek,<name>-disp-pwm"
+> +   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC
+> +   - "mediatek,mt6595-disp-pwm": found on mt6595 SoC
+> + - reg: physical base address and length of the controller's registers
+> + - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
+> +   the cell format
+> + - clocks: phandle and clock specifier of the PWM reference clock
+> + - clock-names: must contain the following
+> +   - "main": clock used to generate PWM signals
+> +   - "mm": sync signals from the modules of mmsys
+> +
+> +Example:
+> +       pwm0: pwm@1401e000 {
+> +               compatible = "mediatek,mt8173-disp-pwm",
+> +                            "mediatek,mt6595-disp-pwm";
+> +               reg = <0 0x1401e000 0 0x1000>;
+> +               #pwm-cells = <2>;
+> +               clocks = <&mmsys CLK_MM_DISP_PWM026M>,
+> +                        <&mmsys CLK_MM_DISP_PWM0MM>;
+> +               clock-names = "main", "mm";
 
-Patches 1-4 look good to me, not going to try to review patch 5 as I 
-have no clue about PWM driver itself. So, for 1-4:
+Should we include the pinctrl settings here to enable the PWM output?
 
-    Acked-by: Tero Kristo <t-kristo@ti.com>
-
-Some of the patches cause trivial merge conflicts with 4.2-rc1 though.
-
--Tero
+> +       };
+> --
+> 1.8.1.1.dirty
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
