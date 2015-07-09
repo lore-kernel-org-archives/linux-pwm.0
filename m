@@ -1,128 +1,36 @@
-From: YH Huang <yh.huang@mediatek.com>
-Subject: Re: [PATCH v4 1/3] dt-bindings: pwm: add MediaTek display PWM
- bindings
-Date: Thu, 9 Jul 2015 14:36:16 +0800
-Message-ID: <1436423776.32314.9.camel@mtksdaap41>
-References: <1436189368-1826-1-git-send-email-yh.huang@mediatek.com>
-	 <1436189368-1826-2-git-send-email-yh.huang@mediatek.com>
-	 <CAGS+omAWNwk_PRy-eeC4bgHQ-ZC2Kvh0sqpF47VD1sfJOhHWUw@mail.gmail.com>
-	 <1436409944.4915.6.camel@mtksdaap41>
-	 <CAGS+omAZismuEYXsUkHEAec4xF+KRWm62AuCUmrmso6p+DKQ4Q@mail.gmail.com>
+From: Clemens Gruber <clemens.gruber@pqgruber.com>
+Subject: Re: [PATCH 0/2] pwm-pca9685: Bugfixes and prescaler support
+Date: Thu, 9 Jul 2015 15:48:28 +0200
+Message-ID: <20150709134828.GA2108@pqgruber.com>
+References: <1434582947-11211-1-git-send-email-clemens.gruber@pqgruber.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailgw01.mediatek.com ([210.61.82.183]:43540 "EHLO
-	mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751266AbbGIGgV (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 9 Jul 2015 02:36:21 -0400
-In-Reply-To: <CAGS+omAZismuEYXsUkHEAec4xF+KRWm62AuCUmrmso6p+DKQ4Q@mail.gmail.com>
+Received: from mail.pqgruber.com ([178.189.19.235]:55778 "EHLO
+	mail.pqgruber.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752375AbbGINsc (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 9 Jul 2015 09:48:32 -0400
+Content-Disposition: inline
+In-Reply-To: <1434582947-11211-1-git-send-email-clemens.gruber@pqgruber.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Daniel Kurtz <djkurtz@chromium.org>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, srv_heupstream <srv_heupstream@mediatek.com>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, Yingjoe Chen <yingjoe.chen@mediatek.com>, yh.huang@mediatek.com
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org
 
-On Thu, 2015-07-09 at 12:47 +0800, Daniel Kurtz wrote:
-> On Thu, Jul 9, 2015 at 10:45 AM, YH Huang <yh.huang@mediatek.com> wrote:
-> >
-> > On Wed, 2015-07-08 at 20:11 +0800, Daniel Kurtz wrote:
-> > > On Mon, Jul 6, 2015 at 9:29 PM, YH Huang <yh.huang@mediatek.com> wrote:
-> > > > Document the device-tree binding of MediatTek display PWM.
-> > > > The PWM has one channel to control the backlight brightness for display.
-> > > > It supports MT8173 and MT6595.
-> > > >
-> > > > Signed-off-by: YH Huang <yh.huang@mediatek.com>
-> > > > ---
-> > > >  .../devicetree/bindings/pwm/pwm-mtk-disp.txt       | 24 ++++++++++++++++++++++
-> > > >  1 file changed, 24 insertions(+)
-> > > >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
-> > > >
-> > > > diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
-> > > > new file mode 100644
-> > > > index 0000000..757b974
-> > > > --- /dev/null
-> > > > +++ b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
-> > > > @@ -0,0 +1,24 @@
-> > > > +MediaTek display PWM controller
-> > > > +
-> > > > +Required properties:
-> > > > + - compatible: should be "mediatek,<name>-disp-pwm"
-> > > > +   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC
-> > > > +   - "mediatek,mt6595-disp-pwm": found on mt6595 SoC
-> > > > + - reg: physical base address and length of the controller's registers
-> > > > + - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
-> > > > +   the cell format
-> > > > + - clocks: phandle and clock specifier of the PWM reference clock
-> > > > + - clock-names: must contain the following
-> > > > +   - "main": clock used to generate PWM signals
-> > > > +   - "mm": sync signals from the modules of mmsys
-
-- pinctrl-names: Must contain a "default" entry.
-- pinctrl-0: One property must exist for each entry in pinctrl-names.
-  See pinctrl/pinctrl-bindings.txt for details of the property values.
-
-> > > > +
-> > > > +Example:
-> > > > +       pwm0: pwm@1401e000 {
-> > > > +               compatible = "mediatek,mt8173-disp-pwm",
-> > > > +                            "mediatek,mt6595-disp-pwm";
-> > > > +               reg = <0 0x1401e000 0 0x1000>;
-> > > > +               #pwm-cells = <2>;
-> > > > +               clocks = <&mmsys CLK_MM_DISP_PWM026M>,
-> > > > +                        <&mmsys CLK_MM_DISP_PWM0MM>;
-> > > > +               clock-names = "main", "mm";
-
-pio: pinctrl@10005000 {
-...
-
-   disp_pwm0_pins: disp_pwm0_pins {
-	pins1 {
-		pinmux = <MT8173_PIN_87_DISP_PWM0__FUNC_DISP_PWM0>;
-        	bias-pull-up;
-        };
-   };
-
-...
-}
-
-pwm0: pwm@1401e000 {
-	compatible = "mediatek,mt8173-disp-pwm";
-	reg = <0 0x1401e000 0 0x1000>;
-	#pwm-cells = <2>;
-	clocks = <&mmsys CLK_MM_DISP_PWM0MM>,
-		 <&mmsys CLK_MM_DISP_PWM026M>;
-	clock-names = "mm", "main";
-	pinctrl-names = "default";
-	pinctrl-0 = <&disp_pwm0_pins>;
-	status = "disabled";
-};
-
-So should I change dtsi like this?
-
-Regards,
-YH Huang
-
-> > >
-> > > Should we include the pinctrl settings here to enable the PWM output?
-> > >
-> >
-> > Since we use pwm-backlight driver to control backlight, we should enable
-> > PWM output in the backlight node.
-> >
-> > Ref:
-> > https://www.kernel.org/doc/Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
-> >
+On Thu, Jun 18, 2015 at 01:15:45AM +0200, Clemens Gruber wrote:
+> Hi,
 > 
-> The pwm-backlight binding specifies which pwm the backlight driver
-> should use, and how to use it.
+> the first patch from this series contains bugfixes and the second patch
+> adds support for changing the PWM output frequency of the PCA9685.
 > 
-> I believe actually configuring the output pin for the pwm via pinctl
-> belongs to the pwm binding.
+> Clemens Gruber (2):
+>   pwm-pca9685: Fix several driver bugs
+>   pwm-pca9685: Support changing the output frequency
 > 
-> Regards,
-> 0Dan
+>  drivers/pwm/pwm-pca9685.c | 68 ++++++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 67 insertions(+), 1 deletion(-)
 > 
-> >
-> > Regards,
-> > YH Huang
-> >
+> -- 
+> 2.4.3
+
+Gentle ping.
