@@ -1,171 +1,200 @@
-From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Subject: Re: [alsa-devel] [PATCH v2 02/12] device: property: find dependencies
- of a firmware node
-Date: Fri, 10 Jul 2015 15:14:38 +0200
-Message-ID: <CAAObsKC-71GsBWZdNjm5Cxek07=9dwzTp8mYezVXkt_k3mzKVw@mail.gmail.com>
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [PATCH v2 02/12] device: property: find
+	dependencies of a firmware node
+Date: Sat, 11 Jul 2015 04:52:29 +0200
+Message-ID: <4693466.kRRNMahPuB@vostro.rjw.lan>
 References: <1435743667-11987-1-git-send-email-tomeu.vizoso@collabora.com>
- <1435743667-11987-3-git-send-email-tomeu.vizoso@collabora.com>
  <2589152.el9mWEWqDg@vostro.rjw.lan>
+ <CAAObsKC-71GsBWZdNjm5Cxek07=9dwzTp8mYezVXkt_k3mzKVw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <2589152.el9mWEWqDg@vostro.rjw.lan>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <alsa-devel-bounces@alsa-project.org>
+In-Reply-To: <CAAObsKC-71GsBWZdNjm5Cxek07=9dwzTp8mYezVXkt_k3mzKVw@mail.gmail.com>
+List-Unsubscribe: <http://mailman.alsa-project.org/mailman/options/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=unsubscribe>
+List-Archive: <http://mailman.alsa-project.org/pipermail/alsa-devel/>
+List-Post: <mailto:alsa-devel@alsa-project.org>
+List-Help: <mailto:alsa-devel-request@alsa-project.org?subject=help>
+List-Subscribe: <http://mailman.alsa-project.org/mailman/listinfo/alsa-devel>,
+ <mailto:alsa-devel-request@alsa-project.org?subject=subscribe>
+Errors-To: alsa-devel-bounces@alsa-project.org
+Sender: alsa-devel-bounces@alsa-project.org
+To: Tomeu Vizoso <tomeu.vizoso@collabora.com>
 Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-fbdev@vger.kernel.org, linux-acpi@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, alsa-devel@alsa-project.org, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-gpio@vger.kernel.org, Mark Brown <broonie@kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMiBKdWx5IDIwMTUgYXQgMDI6MDIsIFJhZmFlbCBKLiBXeXNvY2tpIDxyandAcmp3eXNvY2tp
-Lm5ldD4gd3JvdGU6Cj4gT24gV2VkbmVzZGF5LCBKdWx5IDAxLCAyMDE1IDExOjQwOjU3IEFNIFRv
-bWV1IFZpem9zbyB3cm90ZToKPj4gQWRkcyBBUEkgdGhhdCBhbGxvd3MgY2FsbGVycyB0byBmaW5k
-IG91dCB3aGF0IG90aGVyIGZpcm13YXJlIG5vZGVzIGEKPj4gbm9kZSBkZXBlbmRzIG9uLgo+Pgo+
-PiBJbXBsZW1lbnRvcnMgb2YgYmluZGluZ3MgZG9jdW1lbnRhdGlvbiBjYW4gcmVnaXN0ZXIgY2Fs
-bGJhY2tzIHRoYXQKPj4gcmV0dXJuIHRoZSBkZXBlbmRlbmNpZXMgb2YgYSBub2RlLgo+Pgo+PiBE
-ZXBlbmRlbmN5IGluZm9ybWF0aW9uIGNhbiBiZSB1c2VkIHRvIGNoYW5nZSB0aGUgb3JkZXIgaW4g
-d2hpY2ggZGV2aWNlcwo+PiBhcmUgcHJvYmVkLCBvciB0byBwcmludCBhIHdhcm5pbmcgd2hlbiBh
-IGRldmljZSBub2RlIGlzIGdvaW5nIHRvIGJlCj4+IHByb2JlZCB3aXRob3V0IGFsbCBpdHMgZGVw
-ZW5kZW5jaWVzIGZ1bGZpbGxlZC4KPj4KPj4gU2lnbmVkLW9mZi1ieTogVG9tZXUgVml6b3NvIDx0
-b21ldS52aXpvc29AY29sbGFib3JhLmNvbT4KPgo+IEknZCBsaWtlIHRvIHNlZSBhIGRlc2NyaXB0
-aW9uIG9mIHRoZSBuZXcgQVBJIGluIEVuZ2xpc2ggaW4gdGhlIGNoYW5nZWxvZy4KCkFncmVlZC4K
-Cj4+IC0tLQo+Pgo+PiBDaGFuZ2VzIGluIHYyOgo+PiAtIEFsbG93IGJpbmRpbmdzIGltcGxlbWVu
-dGF0aW9ucyByZWdpc3RlciBhIGZ1bmN0aW9uIGluc3RlYWQgb2YgdXNpbmcKPj4gICBjbGFzcyBj
-YWxsYmFja3MsIGFzIG5vdCBvbmx5IHN1YnN5c3RlbXMgaW1wbGVtZW50IGZpcm13YXJlIGJpbmRp
-bmdzLgo+Pgo+PiAgZHJpdmVycy9iYXNlL3Byb3BlcnR5LmMgIHwgOTEgKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCj4+ICBpbmNsdWRlL2xpbnV4L2Z3bm9k
-ZS5oICAgfCAgNSArKysKPj4gIGluY2x1ZGUvbGludXgvcHJvcGVydHkuaCB8IDEyICsrKysrKysK
-Pj4gIDMgZmlsZXMgY2hhbmdlZCwgMTA4IGluc2VydGlvbnMoKykKPj4KPj4gZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvYmFzZS9wcm9wZXJ0eS5jIGIvZHJpdmVycy9iYXNlL3Byb3BlcnR5LmMKPj4gaW5k
-ZXggOGVhZDFiYS4uOWQzOGVkZSAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9iYXNlL3Byb3BlcnR5
-LmMKPj4gKysrIGIvZHJpdmVycy9iYXNlL3Byb3BlcnR5LmMKPj4gQEAgLTE5LDcgKzE5LDEzIEBA
-Cj4+ICAjaW5jbHVkZSA8bGludXgvcGxhdGZvcm1fZGV2aWNlLmg+Cj4+ICAjaW5jbHVkZSA8bGlu
-dXgvcHJvcGVydHkuaD4KPj4KPgo+IFBsZWFzZSBhZGQgYSBjb21tZW50IGRlc2NyaWJpbmcgdGhp
-cyBzdHJ1Y3R1cmUuICBJbiBwYXJ0aWN1bGFyLCB3aGF0IGl0IGlzCj4gc3VwcG9zZWQgdG8gYmUg
-dXNlZCBmb3IgYW5kIGhvdyBpdCBpcyBzdXBwb3NlZCB0byBiZSB1c2VkLgoKT2suCgo+PiArc3Ry
-dWN0IGRlcGVuZGVuY3lfcGFyc2VyIHsKPj4gKyAgICAgc3RydWN0IGxpc3RfaGVhZCBwYXJzZXI7
-Cj4KPiBJJ2QgcmF0aGVyIGNhbGwgdGhpcyAibGlzdF9ub2RlIiBvciBzb21ldGhpbmcgbGlrZSB0
-aGF0LgoKT2suCgo+PiArICAgICB2b2lkICgqZnVuYykoc3RydWN0IGZ3bm9kZV9oYW5kbGUgKmZ3
-bm9kZSwgc3RydWN0IGxpc3RfaGVhZCAqZGVwcyk7Cj4+ICt9Owo+PiArCj4+ICBzdGF0aWMgYm9v
-bCBmd25vZGVfbWF0Y2hfZW5hYmxlID0gZmFsc2U7Cj4+ICtzdGF0aWMgTElTVF9IRUFEKGRlcGVu
-ZGVuY3lfcGFyc2Vycyk7Cj4+Cj4+ICAvKioKPj4gICAqIGRldmljZV9hZGRfcHJvcGVydHlfc2V0
-IC0gQWRkIGEgY29sbGVjdGlvbiBvZiBwcm9wZXJ0aWVzIHRvIGEgZGV2aWNlIG9iamVjdC4KPj4g
-QEAgLTU1Myw2ICs1NTksMjcgQEAgYm9vbCBkZXZpY2VfZG1hX2lzX2NvaGVyZW50KHN0cnVjdCBk
-ZXZpY2UgKmRldikKPj4gIEVYUE9SVF9TWU1CT0xfR1BMKGRldmljZV9kbWFfaXNfY29oZXJlbnQp
-Owo+Pgo+PiAgLyoqCj4+ICsgKiBmd25vZGVfYWRkX2RlcGVuZGVuY3kgLSBhZGQgZmlybXdhcmUg
-bm9kZSB0byB0aGUgcGFzc2VkIGRlcGVuZGVuY3kgbGlzdAo+PiArICogQGZ3bm9kZTogRmlybXdh
-cmUgbm9kZSB0byBhZGQgdG8gZGVwZW5kZW5jeSBsaXN0Cj4+ICsgKiBAbGlzdDogRGVwZW5kZW5j
-eSBsaXN0IHRvIGFkZCB0aGUgZndub2RlIHRvCj4+ICsgKi8KPj4gK3ZvaWQgZndub2RlX2FkZF9k
-ZXBlbmRlbmN5KHN0cnVjdCBmd25vZGVfaGFuZGxlICpmd25vZGUsCj4+ICsgICAgICAgICAgICAg
-ICAgICAgICAgICBzdHJ1Y3QgbGlzdF9oZWFkICpsaXN0KQo+PiArewo+PiArICAgICBzdHJ1Y3Qg
-Zndub2RlX2RlcGVuZGVuY3kgKmRlcDsKPj4gKwo+PiArICAgICBkZXAgPSBremFsbG9jKHNpemVv
-ZigqZGVwKSwgR0ZQX0tFUk5FTCk7Cj4+ICsgICAgIGlmICghZGVwKQo+PiArICAgICAgICAgICAg
-IHJldHVybjsKPj4gKwo+PiArICAgICBJTklUX0xJU1RfSEVBRCgmZGVwLT5kZXBlbmRlbmN5KTsK
-Pj4gKyAgICAgZGVwLT5md25vZGUgPSBmd25vZGU7Cj4+ICsKPj4gKyAgICAgbGlzdF9hZGRfdGFp
-bCgmZGVwLT5kZXBlbmRlbmN5LCBsaXN0KTsKPj4gK30KPj4gK0VYUE9SVF9TWU1CT0xfR1BMKGZ3
-bm9kZV9hZGRfZGVwZW5kZW5jeSk7Cj4+ICsKPj4gKy8qKgo+PiAgICogZndub2RlX2dldF9wYXJl
-bnQgLSByZXR1cm4gdGhlIHBhcmVudCBub2RlIG9mIGEgZGV2aWNlIG5vZGUKPj4gICAqIEBmd25v
-ZGU6IERldmljZSBub2RlIHRvIGZpbmQgdGhlIHBhcmVudCBub2RlIG9mCj4+ICAgKi8KPj4gQEAg
-LTYwMCw2ICs2MjcsNzAgQEAgYm9vbCBmd25vZGVfaXNfY29tcGF0aWJsZShzdHJ1Y3QgZndub2Rl
-X2hhbmRsZSAqZndub2RlLCBjb25zdCBjaGFyICpjb21wYXRpYmxlKQo+PiAgRVhQT1JUX1NZTUJP
-TF9HUEwoZndub2RlX2lzX2NvbXBhdGlibGUpOwo+Pgo+PiAgLyoqCj4+ICsgKiBmd25vZGVfYWRk
-X2RlcGVuZGVuY3lfcGFyc2VyIC0gcmVnaXN0ZXIgZGVwZW5kZW5jeSBwYXJzZXIKPj4gKyAqIEBm
-dW5jOiBGdW5jdGlvbiB0aGF0IHdpbGwgYmUgY2FsbGVkIHRvIGZpbmQgb3V0IGRlcGVuZGVuY2ll
-cyBvZiBhIG5vZGUKPj4gKyAqCj4+ICsgKiBSZWdpc3RlcnMgYSBjYWxsYmFjayB0aGF0IHdpbGwg
-YmUgY2FsbGVkIHdoZW4gY29sbGVjdGluZyB0aGUgZGVwZW5kZW5jaWVzCj4+ICsgKiBvZiBhIGZp
-cm13YXJlIG5vZGUuIFRoZSBjYWxsYmFjayBzaG91bGQgaW5zcGVjdCB0aGUgcHJvcGVydGllcyBv
-ZiB0aGUgbm9kZQo+PiArICogYW5kIGNhbGwgZndub2RlX2FkZF9kZXBlbmRlbmN5KCkgZm9yIGVh
-Y2ggZGVwZW5kZW5jeSBpdCByZWNvZ25pemVzLCBmcm9tCj4+ICsgKiB0aGUgYmluZGluZ3MgZG9j
-dW1lbnRhdGlvbi4KPj4gKyAqLwo+PiArdm9pZCBmd25vZGVfYWRkX2RlcGVuZGVuY3lfcGFyc2Vy
-KAo+PiArICAgICB2b2lkICgqZnVuYykoc3RydWN0IGZ3bm9kZV9oYW5kbGUgKmZ3bm9kZSwgc3Ry
-dWN0IGxpc3RfaGVhZCAqZGVwcykpCj4+ICt7Cj4+ICsgICAgIHN0cnVjdCBkZXBlbmRlbmN5X3Bh
-cnNlciAqcGFyc2VyOwo+PiArCj4+ICsgICAgIHBhcnNlciA9IGt6YWxsb2Moc2l6ZW9mKCpwYXJz
-ZXIpLCBHRlBfS0VSTkVMKTsKPj4gKyAgICAgaWYgKCFwYXJzZXIpCj4+ICsgICAgICAgICAgICAg
-cmV0dXJuOwo+PiArCj4+ICsgICAgIElOSVRfTElTVF9IRUFEKCZwYXJzZXItPnBhcnNlcik7Cj4+
-ICsgICAgIHBhcnNlci0+ZnVuYyA9IGZ1bmM7Cj4+ICsKPj4gKyAgICAgbGlzdF9hZGRfdGFpbCgm
-cGFyc2VyLT5wYXJzZXIsICZkZXBlbmRlbmN5X3BhcnNlcnMpOwo+Cj4gV2UncmUgbW9kaWZ5aW5n
-IGEgZ2xvYmFsIGxpc3QgaGVyZS4gIEFueSBsb2NraW5nIG5lZWRlZD8gIFJDVT8gIFdoYXRldmVy
-PwoKT29wcy4KCj4+ICt9Cj4+ICtFWFBPUlRfU1lNQk9MX0dQTChmd25vZGVfYWRkX2RlcGVuZGVu
-Y3lfcGFyc2VyKTsKPj4gKwo+PiArLyoqCj4+ICsgKiBmd25vZGVfcmVtb3ZlX2RlcGVuZGVuY3lf
-cGFyc2VyIC0gdW5yZWdpc3RlciBkZXBlbmRlbmN5IHBhcnNlcgo+PiArICogQGZ1bmM6IEZ1bmN0
-aW9uIHRoYXQgd2FzIHRvIGJlIGNhbGxlZCB0byBmaW5kIG91dCBkZXBlbmRlbmNpZXMgb2YgYSBu
-b2RlCj4+ICsgKi8KPj4gK3ZvaWQgZndub2RlX3JlbW92ZV9kZXBlbmRlbmN5X3BhcnNlcigKPj4g
-KyAgICAgdm9pZCAoKmZ1bmMpKHN0cnVjdCBmd25vZGVfaGFuZGxlICpmd25vZGUsIHN0cnVjdCBs
-aXN0X2hlYWQgKmRlcHMpKQo+PiArewo+PiArICAgICBzdHJ1Y3QgZGVwZW5kZW5jeV9wYXJzZXIg
-KnBhcnNlciwgKnRtcDsKPj4gKwo+PiArICAgICBsaXN0X2Zvcl9lYWNoX2VudHJ5X3NhZmUocGFy
-c2VyLCB0bXAsICZkZXBlbmRlbmN5X3BhcnNlcnMsIHBhcnNlcikgewo+PiArICAgICAgICAgICAg
-IGlmIChwYXJzZXItPmZ1bmMgPT0gZnVuYykgewo+PiArICAgICAgICAgICAgICAgICAgICAgbGlz
-dF9kZWwoJnBhcnNlci0+cGFyc2VyKTsKPj4gKyAgICAgICAgICAgICAgICAgICAgIGtmcmVlKHBh
-cnNlcik7Cj4+ICsgICAgICAgICAgICAgICAgICAgICByZXR1cm47Cj4+ICsgICAgICAgICAgICAg
-fQo+PiArICAgICB9Cj4+ICt9Cj4+ICtFWFBPUlRfU1lNQk9MX0dQTChmd25vZGVfcmVtb3ZlX2Rl
-cGVuZGVuY3lfcGFyc2VyKTsKPj4gKwo+PiArLyoqCj4+ICsgKiBmd25vZGVfZ2V0X2RlcGVuZGVu
-Y2llcyAtIGZpbmQgb3V0IHdoYXQgZGVwZW5kZW5jaWVzIGEgZmlybXdhcmUgbm9kZSBoYXMKPj4g
-KyAqIEBmd25vZGU6IGZpcm13YXJlIG5vZGUgdG8gZmluZCBpdHMgZGVwZW5kZW5jaWVzCj4+ICsg
-KiBAZGVwczogbGlzdCBvZiBzdHJ1Y3QgZndub2RlX2RlcGVuZGVuY3kgaW4gd2hpY2ggZGVwZW5k
-ZW5jaWVzIHdpbGwgYmUgcGxhY2VkCj4+ICsgKi8KPj4gK3ZvaWQgZndub2RlX2dldF9kZXBlbmRl
-bmNpZXMoc3RydWN0IGZ3bm9kZV9oYW5kbGUgKmZ3bm9kZSwKPj4gKyAgICAgICAgICAgICAgICAg
-ICAgICAgICAgc3RydWN0IGxpc3RfaGVhZCAqZGVwcykKPj4gK3sKPj4gKyAgICAgc3RydWN0IGRl
-cGVuZGVuY3lfcGFyc2VyICpwYXJzZXI7Cj4+ICsgICAgIHN0cnVjdCBmd25vZGVfaGFuZGxlICpj
-aGlsZDsKPj4gKwo+PiArICAgICBsaXN0X2Zvcl9lYWNoX2VudHJ5KHBhcnNlciwgJmRlcGVuZGVu
-Y3lfcGFyc2VycywgcGFyc2VyKQo+PiArICAgICAgICAgICAgIHBhcnNlci0+ZnVuYyhmd25vZGUs
-IGRlcHMpOwo+PiArCj4+ICsgICAgIC8qIFNvbWUgZGV2aWNlIG5vZGVzIHdpbGwgaGF2ZSBkZXBl
-bmRlbmNpZXMgaW4gbm9uLWRldmljZSBzdWItbm9kZXMgKi8KPj4gKyAgICAgZndub2RlX2Zvcl9l
-YWNoX2NoaWxkX25vZGUoZndub2RlLCBjaGlsZCkKPj4gKyAgICAgICAgICAgICBpZiAoIWZ3bm9k
-ZV9wcm9wZXJ0eV9wcmVzZW50KGNoaWxkLCAiY29tcGF0aWJsZSIpKQo+Cj4gVGhpcyBpcyBhIGJs
-YXRhbnQgT0YtaXNtLiAgV2UgbmVlZCB0byB0aGluayBhYm91dCBhIGdlbmVyaWMgd2F5IHRvIGV4
-cHJlc3MgdGhhdC4KCk15IGltcHJlc3Npb24gZnJvbSByZWFkaW5nIHRoZSBleGlzdGluZyB1c2Fn
-ZSBvZiBmd25vZGUgaW4gZ3Bpb2xpYiBhbmQKdGhlIGV4YW1wbGVzIGluIHRoZSBsaW5rIGJlbG93
-IHdhcyB0aGF0IHdlIHdlcmUgZ29pbmcgdG8gc2hhcmUgdGhlCmJpbmRpbmdzIGJldHdlZW4gRFQg
-YW5kIEFDUEkuIERvZXNuJ3QgdGhhdCBleHRlbmQgdG8gdGhlIG1lYW5pbmcgb2YKdGhlIGNvbXBh
-dGlibGUgcHJvcGVydHk/CgpodHRwOi8vd3d3LnVlZmkub3JnL3NpdGVzL2RlZmF1bHQvZmlsZXMv
-cmVzb3VyY2VzL19EU0QtZGV2aWNlLXByb3BlcnRpZXMtVVVJRC5wZGYKCj4+ICsgICAgICAgICAg
-ICAgICAgICAgICBmd25vZGVfZ2V0X2RlcGVuZGVuY2llcyhjaGlsZCwgZGVwcyk7Cj4+ICt9Cj4+
-ICsKPj4gKy8qKgo+PiAgICogZndub2RlX2RyaXZlcl9tYXRjaF9kZXZpY2UgLSBUZWxsIGlmIGEg
-ZHJpdmVyIG1hdGNoZXMgYSBkZXZpY2UuCj4+ICAgKiBAZHJ2OiB0aGUgZGV2aWNlX2RyaXZlciBz
-dHJ1Y3R1cmUgdG8gdGVzdAo+PiAgICogQGRldjogdGhlIGRldmljZSBzdHJ1Y3R1cmUgdG8gbWF0
-Y2ggYWdhaW5zdAo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9md25vZGUuaCBiL2luY2x1
-ZGUvbGludXgvZndub2RlLmgKPj4gaW5kZXggMDQwODU0NS4uNjhhYjU1OCAxMDA2NDQKPj4gLS0t
-IGEvaW5jbHVkZS9saW51eC9md25vZGUuaAo+PiArKysgYi9pbmNsdWRlL2xpbnV4L2Z3bm9kZS5o
-Cj4+IEBAIC0yNCw0ICsyNCw5IEBAIHN0cnVjdCBmd25vZGVfaGFuZGxlIHsKPj4gICAgICAgc3Ry
-dWN0IGZ3bm9kZV9oYW5kbGUgKnNlY29uZGFyeTsKPj4gIH07Cj4+Cj4+ICtzdHJ1Y3QgZndub2Rl
-X2RlcGVuZGVuY3kgewo+PiArICAgICBzdHJ1Y3QgZndub2RlX2hhbmRsZSAqZndub2RlOwo+PiAr
-ICAgICBzdHJ1Y3QgbGlzdF9oZWFkIGRlcGVuZGVuY3k7Cj4KPiBTbyB0aGlzIGlzIGEgbm9kZSBp
-biB0aGUgbGlzdCBvZiBkZXBlbmRlbmNpZXMsIHJpZ2h0Pwo+Cj4gSSdkIGNhbGwgdGhhdCBmaWVs
-ZCAibGlzdF9ub2RlIiwgdGhlbi4KClJpZ2h0LCBmd25vZGVfZGVwZW5kZW5jeSBpcyBqdXN0IHRo
-ZXJlIHNvIHdlIGNhbiBoYXZlIGEgbGlzdCBvZiBmd25vZGVzLgoKPj4gK307Cj4KPiBBbmQgZndu
-b2RlIGlzIGEgZmlybXdhcmUgbm9kZSB0aGF0IHRoZSBvd25lciBvZiB0aGUgbGlzdCBkZXBlbmRz
-IG9uLCByaWdodD8KClllcywgd2lsbCBtYWtlIGl0IGNsZWFyZXIgaW4gdGhlIG5leHQgcmV2aXNp
-b24uCgpUaGFua3MsCgpUb21ldQoKPj4gKwo+PiAgI2VuZGlmCj4+IGRpZmYgLS1naXQgYS9pbmNs
-dWRlL2xpbnV4L3Byb3BlcnR5LmggYi9pbmNsdWRlL2xpbnV4L3Byb3BlcnR5LmgKPj4gaW5kZXgg
-NGU0NTNjNC4uYjhiODZlYSAxMDA2NDQKPj4gLS0tIGEvaW5jbHVkZS9saW51eC9wcm9wZXJ0eS5o
-Cj4+ICsrKyBiL2luY2x1ZGUvbGludXgvcHJvcGVydHkuaAo+PiBAQCAtODYsNiArODYsMTggQEAg
-Ym9vbCBmd25vZGVfaXNfY29tcGF0aWJsZShzdHJ1Y3QgZndub2RlX2hhbmRsZSAqZndub2RlLCBj
-b25zdCBjaGFyICpjb21wYXRpYmxlKTsKPj4gIGJvb2wgZndub2RlX2RyaXZlcl9tYXRjaF9kZXZp
-Y2Uoc3RydWN0IGRldmljZSAqZGV2LAo+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBj
-b25zdCBzdHJ1Y3QgZGV2aWNlX2RyaXZlciAqZHJ2KTsKPj4KPj4gK3ZvaWQgZndub2RlX2FkZF9k
-ZXBlbmRlbmN5KHN0cnVjdCBmd25vZGVfaGFuZGxlICpmd25vZGUsCj4+ICsgICAgICAgICAgICAg
-ICAgICAgICAgICBzdHJ1Y3QgbGlzdF9oZWFkICpsaXN0KTsKPj4gKwo+PiArdm9pZCBmd25vZGVf
-YWRkX2RlcGVuZGVuY3lfcGFyc2VyKAo+PiArICAgICB2b2lkICgqZnVuYykoc3RydWN0IGZ3bm9k
-ZV9oYW5kbGUgKmZ3bm9kZSwgc3RydWN0IGxpc3RfaGVhZCAqZGVwcykpOwo+PiArCj4+ICt2b2lk
-IGZ3bm9kZV9yZW1vdmVfZGVwZW5kZW5jeV9wYXJzZXIoCj4+ICsgICAgIHZvaWQgKCpmdW5jKShz
-dHJ1Y3QgZndub2RlX2hhbmRsZSAqZndub2RlLCBzdHJ1Y3QgbGlzdF9oZWFkICpkZXBzKSk7Cj4+
-ICsKPj4gK3ZvaWQgZndub2RlX2dldF9kZXBlbmRlbmNpZXMoc3RydWN0IGZ3bm9kZV9oYW5kbGUg
-KmZ3bm9kZSwKPj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IGxpc3RfaGVhZCAq
-bGlzdCk7Cj4+ICsKPj4gIHVuc2lnbmVkIGludCBkZXZpY2VfZ2V0X2NoaWxkX25vZGVfY291bnQo
-c3RydWN0IGRldmljZSAqZGV2KTsKPj4KPj4gIHN0YXRpYyBpbmxpbmUgYm9vbCBkZXZpY2VfcHJv
-cGVydHlfcmVhZF9ib29sKHN0cnVjdCBkZXZpY2UgKmRldiwKPj4KPgo+IC0tCj4gSSBzcGVhayBv
-bmx5IGZvciBteXNlbGYuCj4gUmFmYWVsIEouIFd5c29ja2ksIEludGVsIE9wZW4gU291cmNlIFRl
-Y2hub2xvZ3kgQ2VudGVyLgo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCj4gQWxzYS1kZXZlbCBtYWlsaW5nIGxpc3QKPiBBbHNhLWRldmVsQGFsc2EtcHJv
-amVjdC5vcmcKPiBodHRwOi8vbWFpbG1hbi5hbHNhLXByb2plY3Qub3JnL21haWxtYW4vbGlzdGlu
-Zm8vYWxzYS1kZXZlbApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5v
-cmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZl
-bAo=
+On Friday, July 10, 2015 03:14:38 PM Tomeu Vizoso wrote:
+> On 2 July 2015 at 02:02, Rafael J. Wysocki <rjw@rjwysocki.net> wrote:
+> > On Wednesday, July 01, 2015 11:40:57 AM Tomeu Vizoso wrote:
+> >> Adds API that allows callers to find out what other firmware nodes a
+> >> node depends on.
+> >>
+> >> Implementors of bindings documentation can register callbacks that
+> >> return the dependencies of a node.
+> >>
+> >> Dependency information can be used to change the order in which devices
+> >> are probed, or to print a warning when a device node is going to be
+> >> probed without all its dependencies fulfilled.
+> >>
+> >> Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+> >
+> > I'd like to see a description of the new API in English in the changelog.
+> 
+> Agreed.
+> 
+> >> ---
+> >>
+> >> Changes in v2:
+> >> - Allow bindings implementations register a function instead of using
+> >>   class callbacks, as not only subsystems implement firmware bindings.
+> >>
+> >>  drivers/base/property.c  | 91 ++++++++++++++++++++++++++++++++++++++++++++++++
+> >>  include/linux/fwnode.h   |  5 +++
+> >>  include/linux/property.h | 12 +++++++
+> >>  3 files changed, 108 insertions(+)
+> >>
+> >> diff --git a/drivers/base/property.c b/drivers/base/property.c
+> >> index 8ead1ba..9d38ede 100644
+> >> --- a/drivers/base/property.c
+> >> +++ b/drivers/base/property.c
+> >> @@ -19,7 +19,13 @@
+> >>  #include <linux/platform_device.h>
+> >>  #include <linux/property.h>
+> >>
+> >
+> > Please add a comment describing this structure.  In particular, what it is
+> > supposed to be used for and how it is supposed to be used.
+> 
+> Ok.
+> 
+> >> +struct dependency_parser {
+> >> +     struct list_head parser;
+> >
+> > I'd rather call this "list_node" or something like that.
+> 
+> Ok.
+> 
+> >> +     void (*func)(struct fwnode_handle *fwnode, struct list_head *deps);
+> >> +};
+> >> +
+> >>  static bool fwnode_match_enable = false;
+> >> +static LIST_HEAD(dependency_parsers);
+> >>
+> >>  /**
+> >>   * device_add_property_set - Add a collection of properties to a device object.
+> >> @@ -553,6 +559,27 @@ bool device_dma_is_coherent(struct device *dev)
+> >>  EXPORT_SYMBOL_GPL(device_dma_is_coherent);
+> >>
+> >>  /**
+> >> + * fwnode_add_dependency - add firmware node to the passed dependency list
+> >> + * @fwnode: Firmware node to add to dependency list
+> >> + * @list: Dependency list to add the fwnode to
+> >> + */
+> >> +void fwnode_add_dependency(struct fwnode_handle *fwnode,
+> >> +                        struct list_head *list)
+> >> +{
+> >> +     struct fwnode_dependency *dep;
+> >> +
+> >> +     dep = kzalloc(sizeof(*dep), GFP_KERNEL);
+> >> +     if (!dep)
+> >> +             return;
+> >> +
+> >> +     INIT_LIST_HEAD(&dep->dependency);
+> >> +     dep->fwnode = fwnode;
+> >> +
+> >> +     list_add_tail(&dep->dependency, list);
+> >> +}
+> >> +EXPORT_SYMBOL_GPL(fwnode_add_dependency);
+> >> +
+> >> +/**
+> >>   * fwnode_get_parent - return the parent node of a device node
+> >>   * @fwnode: Device node to find the parent node of
+> >>   */
+> >> @@ -600,6 +627,70 @@ bool fwnode_is_compatible(struct fwnode_handle *fwnode, const char *compatible)
+> >>  EXPORT_SYMBOL_GPL(fwnode_is_compatible);
+> >>
+> >>  /**
+> >> + * fwnode_add_dependency_parser - register dependency parser
+> >> + * @func: Function that will be called to find out dependencies of a node
+> >> + *
+> >> + * Registers a callback that will be called when collecting the dependencies
+> >> + * of a firmware node. The callback should inspect the properties of the node
+> >> + * and call fwnode_add_dependency() for each dependency it recognizes, from
+> >> + * the bindings documentation.
+> >> + */
+> >> +void fwnode_add_dependency_parser(
+> >> +     void (*func)(struct fwnode_handle *fwnode, struct list_head *deps))
+> >> +{
+> >> +     struct dependency_parser *parser;
+> >> +
+> >> +     parser = kzalloc(sizeof(*parser), GFP_KERNEL);
+> >> +     if (!parser)
+> >> +             return;
+> >> +
+> >> +     INIT_LIST_HEAD(&parser->parser);
+> >> +     parser->func = func;
+> >> +
+> >> +     list_add_tail(&parser->parser, &dependency_parsers);
+> >
+> > We're modifying a global list here.  Any locking needed?  RCU?  Whatever?
+> 
+> Oops.
+> 
+> >> +}
+> >> +EXPORT_SYMBOL_GPL(fwnode_add_dependency_parser);
+> >> +
+> >> +/**
+> >> + * fwnode_remove_dependency_parser - unregister dependency parser
+> >> + * @func: Function that was to be called to find out dependencies of a node
+> >> + */
+> >> +void fwnode_remove_dependency_parser(
+> >> +     void (*func)(struct fwnode_handle *fwnode, struct list_head *deps))
+> >> +{
+> >> +     struct dependency_parser *parser, *tmp;
+> >> +
+> >> +     list_for_each_entry_safe(parser, tmp, &dependency_parsers, parser) {
+> >> +             if (parser->func == func) {
+> >> +                     list_del(&parser->parser);
+> >> +                     kfree(parser);
+> >> +                     return;
+> >> +             }
+> >> +     }
+> >> +}
+> >> +EXPORT_SYMBOL_GPL(fwnode_remove_dependency_parser);
+> >> +
+> >> +/**
+> >> + * fwnode_get_dependencies - find out what dependencies a firmware node has
+> >> + * @fwnode: firmware node to find its dependencies
+> >> + * @deps: list of struct fwnode_dependency in which dependencies will be placed
+> >> + */
+> >> +void fwnode_get_dependencies(struct fwnode_handle *fwnode,
+> >> +                          struct list_head *deps)
+> >> +{
+> >> +     struct dependency_parser *parser;
+> >> +     struct fwnode_handle *child;
+> >> +
+> >> +     list_for_each_entry(parser, &dependency_parsers, parser)
+> >> +             parser->func(fwnode, deps);
+> >> +
+> >> +     /* Some device nodes will have dependencies in non-device sub-nodes */
+> >> +     fwnode_for_each_child_node(fwnode, child)
+> >> +             if (!fwnode_property_present(child, "compatible"))
+> >
+> > This is a blatant OF-ism.  We need to think about a generic way to express that.
+> 
+> My impression from reading the existing usage of fwnode in gpiolib and
+> the examples in the link below was that we were going to share the
+> bindings between DT and ACPI. Doesn't that extend to the meaning of
+> the compatible property?
+> 
+> http://www.uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
+
+Not entirely.
+
+An ACPI device object without the "compatible" property may still represent a valid
+device (and usually does), so it is not enough to check whether or not the "compatible"
+property is present for that in general.
+
+Thanks,
+Rafael
