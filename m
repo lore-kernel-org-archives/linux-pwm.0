@@ -1,83 +1,92 @@
-From: YH Huang <yh.huang@mediatek.com>
-Subject: [PATCH v5 3/3] arm64: dts: mt8173: add MT8173 display PWM driver support node
-Date: Mon, 13 Jul 2015 17:04:54 +0800
-Message-ID: <1436778294-47635-4-git-send-email-yh.huang@mediatek.com>
-References: <1436778294-47635-1-git-send-email-yh.huang@mediatek.com>
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH] pwm-backlight: Avoid backlight flicker when probed from
+ DT
+Date: Mon, 13 Jul 2015 11:40:04 +0200
+Message-ID: <1436780404.3540.15.camel@pengutronix.de>
+References: <1434126377-22545-1-git-send-email-p.zabel@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1436778294-47635-1-git-send-email-yh.huang@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com, YH Huang <yh.huang@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from metis.ext.pengutronix.de ([92.198.50.35]:59536 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750970AbbGMJkL (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 13 Jul 2015 05:40:11 -0400
+In-Reply-To: <1434126377-22545-1-git-send-email-p.zabel@pengutronix.de>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Ajay Kumar <ajaykumar.rs@samsung.com>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, kernel@pengutronix.de
 
-Add display PWM node in mt8173-evb.dts and mt8173.dtsi.
+Hi,
 
-Signed-off-by: YH Huang <yh.huang@mediatek.com>
----
- arch/arm64/boot/dts/mediatek/mt8173-evb.dts | 15 +++++++++++++++
- arch/arm64/boot/dts/mediatek/mt8173.dtsi    | 22 ++++++++++++++++++++++
- 2 files changed, 37 insertions(+)
+Am Freitag, den 12.06.2015, 18:26 +0200 schrieb Philipp Zabel:
+> If the driver is probed from the device tree, and there is a phandle
+> property set on it, and the enable GPIO is already configured as output,
+> and the backlight is currently disabled, keep it disabled.
+> If all these conditions are met, assume there will be some other driver
+> that can enable the backlight at the appropriate time.
+> 
+> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+> ---
+> I have seen the thread at https://lkml.org/lkml/2014/7/31/259, but I'm not
+> sure if it has come to a resolution. This is what I think could be useful
+> to keep the current default behaviour of enabling the backlight while at the
+> same time allowing to keep it disabled if we are absolutely certain that the
+> backlight is currently off, and we think there is some other driver that will
+> control it:
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173-evb.dts b/arch/arm64/boot/dts/mediatek/mt8173-evb.dts
-index f433c21..b7c1d9f 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173-evb.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8173-evb.dts
-@@ -34,6 +34,21 @@
- 	chosen { };
- };
- 
-+&pio {
-+	disp_pwm0_pins: disp_pwm0_pins {
-+		pins1 {
-+			pinmux = <MT8173_PIN_87_DISP_PWM0__FUNC_DISP_PWM0>;
-+			bias-pull-up;
-+		};
-+	};
-+};
-+
-+&pwm0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&disp_pwm0_pins>;
-+	status = "okay";
-+};
-+
- &pwrap {
- 	pmic: mt6397 {
- 		compatible = "mediatek,mt6397";
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-index 0696f8f..44cab19 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-@@ -393,6 +393,28 @@
- 			#size-cells = <0>;
- 			status = "disabled";
- 		};
-+
-+		pwm0: pwm@1401e000 {
-+			compatible = "mediatek,mt8173-disp-pwm",
-+				     "mediatek,mt6595-disp-pwm";
-+			reg = <0 0x1401e000 0 0x1000>;
-+			#pwm-cells = <2>;
-+			clocks = <&mmsys CLK_MM_DISP_PWM026M>,
-+				 <&mmsys CLK_MM_DISP_PWM0MM>;
-+			clock-names = "main", "mm";
-+			status = "disabled";
-+		};
-+
-+		pwm1: pwm@1401f000 {
-+			compatible = "mediatek,mt8173-disp-pwm",
-+				     "mediatek,mt6595-disp-pwm";
-+			reg = <0 0x1401f000 0 0x1000>;
-+			#pwm-cells = <2>;
-+			clocks = <&mmsys CLK_MM_DISP_PWM126M>,
-+				 <&mmsys CLK_MM_DISP_PWM1MM>;
-+			clock-names = "main", "mm";
-+			status = "disabled";
-+		};
- 	};
- };
- 
--- 
-1.8.1.1.dirty
+do you have any comments on this? Would the conditions mentioned above
+be sufficient for your use cases?
+
+best regards
+Philipp
+
+> ---
+>  drivers/video/backlight/pwm_bl.c | 19 +++++++++++++++++--
+>  1 file changed, 17 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+> index 6897f1c..dcb6bfb 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -199,6 +199,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>  	struct backlight_properties props;
+>  	struct backlight_device *bl;
+>  	struct pwm_bl_data *pb;
+> +	int initial_blank = FB_BLANK_UNBLANK;
+>  	int ret;
+>  
+>  	if (!data) {
+> @@ -263,8 +264,21 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>  		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
+>  	}
+>  
+> -	if (pb->enable_gpio)
+> -		gpiod_direction_output(pb->enable_gpio, 1);
+> +	if (pb->enable_gpio) {
+> +		/*
+> +		 * If the driver is probed from the device tree and there is a
+> +		 * phandle link pointing to the backlight node, it is safe to
+> +		 * assume that another driver will enable the backlight at the
+> +		 * appropriate time. Therefore, if it is disabled, keep it so.
+> +		 */
+> +		if (of_find_property(pdev->dev.of_node, "phandle", NULL) &&
+> +		    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
+> +		    gpiod_get_value(pb->enable_gpio) == 0) {
+> +			initial_blank = FB_BLANK_POWERDOWN;
+> +		} else {
+> +			gpiod_direction_output(pb->enable_gpio, 1);
+> +		}
+> +	}
+>  
+>  	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
+>  	if (IS_ERR(pb->power_supply)) {
+> @@ -323,6 +337,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	bl->props.brightness = data->dft_brightness;
+> +	bl->props.power = initial_blank;
+>  	backlight_update_status(bl);
+>  
+>  	platform_set_drvdata(pdev, bl);
