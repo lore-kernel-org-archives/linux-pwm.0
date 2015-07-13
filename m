@@ -1,49 +1,71 @@
-From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Subject: Re: [alsa-devel] [PATCH v2 11/12] ASoC: tegra: register dependency
  parser for firmware nodes
-Date: Mon, 13 Jul 2015 14:10:45 +0200
-Message-ID: <CAAObsKDsEuDS46rW9CMuviDEDV-OVXe5q-kiWmw0D_n2D3Tf5A@mail.gmail.com>
+Date: Mon, 13 Jul 2015 16:42:55 +0100
+Message-ID: <20150713154254.GH11162@sirena.org.uk>
 References: <1435743667-11987-1-git-send-email-tomeu.vizoso@collabora.com>
  <1435743667-11987-12-git-send-email-tomeu.vizoso@collabora.com>
  <20150701173802.GW11162@sirena.org.uk>
+ <CAAObsKDsEuDS46rW9CMuviDEDV-OVXe5q-kiWmw0D_n2D3Tf5A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20150701173802.GW11162@sirena.org.uk>
-List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Mark Brown <broonie@kernel.org>
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-fbdev@vger.kernel.org, linux-acpi@vger.kernel.org, alsa-devel@alsa-project.org, Stephen Warren <swarren@wwwdotorg.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Liam Girdwood <lgirdwood@gmail.com>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-gpio@vger.kernel.org, Linux PWM List <linux-pwm@vger.kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Alexandre Courbot <gnurou@gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="xZKIQynyWHxCFrdv"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAAObsKDsEuDS46rW9CMuviDEDV-OVXe5q-kiWmw0D_n2D3Tf5A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Takashi Iwai <tiwai-l3A5Bk7waGM@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linux PWM List <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMSBKdWx5IDIwMTUgYXQgMTk6MzgsIE1hcmsgQnJvd24gPGJyb29uaWVAa2VybmVsLm9yZz4g
-d3JvdGU6Cj4gT24gV2VkLCBKdWwgMDEsIDIwMTUgYXQgMTE6NDE6MDZBTSArMDIwMCwgVG9tZXUg
-Vml6b3NvIHdyb3RlOgo+Cj4+ICtzdGF0aWMgdm9pZCB0ZWdyYV9tYXg5ODA5MF9nZXRfZGVwZW5k
-ZW5jaWVzKHN0cnVjdCBmd25vZGVfaGFuZGxlICpmd25vZGUsCj4+ICsgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCBsaXN0X2hlYWQgKmRlcHMpCj4+ICt7Cj4+
-ICsgICAgIGFkZF9kZXBlbmRlbmN5KGZ3bm9kZSwgIm52aWRpYSxpMnMtY29udHJvbGxlciIsIGRl
-cHMpOwo+PiArICAgICBhZGRfZGVwZW5kZW5jeShmd25vZGUsICJudmlkaWEsYXVkaW8tY29kZWMi
-LCBkZXBzKTsKPj4gK30KPgo+IFdoeSBpcyB0aGlzIGFsbCBiZWluZyBvcGVuIGNvZGVkIGluIGFu
-IGluZGl2aWR1YWwgZHJpdmVyICh3ZSBhbHJlYWR5Cj4ga25vdyBhYm91dCBhbmQgbWFuYWdlIGFs
-bCB0aGVzZSBkZXBlbmRlbmNpZXMgaW4gdGhlIGNvcmUuLi4pPyAgSWYgd2UncmUKPiBnb2luZyB0
-byBkbyB0aGlzIEknZCBleHBlY3QgdGhlIGludGVyZmFjZSBmb3Igc3BlY2lmeWluZyBEVCBub2Rl
-cyB0byB0aGUKPiBjb3JlIHRvIGJlIGNoYW5nZWQgdG8gc3VwcG9ydCB0aGlzLgoKQXJlIHlvdSB0
-aGlua2luZyBvZiBjaGFuZ2luZyBkcml2ZXJzIHRvIGFjcXVpcmUgdGhlaXIgcmVzb3VyY2VzCnRo
-cm91Z2ggQXJuZCdzIGRldm1fcHJvYmUgKG9ubHkgdGhhdCB0aGUgcmVzb3VyY2UgdGFibGUgd291
-bGQgaGF2ZSB0bwpiZSBpbiBzdHJ1Y3QgZGV2aWNlX2RyaXZlcik/CgpodHRwczovL2xrbWwua2Vy
-bmVsLm9yZy9nLzQ3NDIyNTguVEJpdEMzaFZ1T0B3dWVyZmVsCgpTb3VuZHMgbGlrZSBsb3RzIG9m
-IGZ1biwgYnV0IHRoYXQgbWVhbnMgdGhhdCBhbnkgZ2l2ZW4gbWFjaGluZSB3aWxsCmdldCBvcmRl
-cmVkIHByb2JlIG9ubHkgYWZ0ZXIgYWxsIHRoZSBkcml2ZXJzIGl0IHVzZXMgaGF2ZSBiZWVuIG1v
-dmVkCnRvIHRoZSBuZXcgZGVjbGFyYXRpdmUgQVBJLgoKVEJILCB0aGF0IHNlZW1zIHJlYWxseSBm
-YXIgYXdheS4KClJlZ2FyZHMsCgpUb21ldQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5m
-cmVlZGVza3RvcC5vcmcKaHR0cDovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2RyaS1kZXZlbAo=
+
+--xZKIQynyWHxCFrdv
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Mon, Jul 13, 2015 at 02:10:45PM +0200, Tomeu Vizoso wrote:
+> On 1 July 2015 at 19:38, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+> > On Wed, Jul 01, 2015 at 11:41:06AM +0200, Tomeu Vizoso wrote:
+
+> >> +static void tegra_max98090_get_dependencies(struct fwnode_handle *fwnode,
+> >> +                                         struct list_head *deps)
+> >> +{
+> >> +     add_dependency(fwnode, "nvidia,i2s-controller", deps);
+> >> +     add_dependency(fwnode, "nvidia,audio-codec", deps);
+> >> +}
+
+> > Why is this all being open coded in an individual driver (we already
+> > know about and manage all these dependencies in the core...)?  If we're
+> > going to do this I'd expect the interface for specifying DT nodes to the
+> > core to be changed to support this.
+
+> Are you thinking of changing drivers to acquire their resources
+> through Arnd's devm_probe (only that the resource table would have to
+> be in struct device_driver)?
+
+> https://lkml.kernel.org/g/4742258.TBitC3hVuO@wuerfel
+
+No, I'm looking at how we already have all the "did all my dependencies
+appear" logic in the core based on data provided by the drivers.
+
+--xZKIQynyWHxCFrdv
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJVo9x+AAoJECTWi3JdVIfQCtwH/iR0OWw9MmX0rTpPvdi+DKPm
+GHa0Sy8ieGKrBj60HzGLfLWerctXgSsB/dFWytfnpg4ebqe3Yc4TIcvADmbcA84L
+4nq+I73X1bB9XrAd6+DEAAZ3pWdInbgw+P+VBdZJAmFHaY7pg7SeQmZr4xs3vaPh
+6awa7eHWto27IT7zrOLHy12bBcFwmWZTQ/qh4XMWUPMc30/mfUoGBFzw+YokJGnw
+sFv3JkWM7bXEDdv2y1Vd39730mDC3K8dCMadzDBIcgfECKUR2/Gmh0vxttkhyy6d
+jTa4et1Urk1BsEoVSTT70QFvrvMveGGfFO7tXOD9qWE96pV7B6yIYEhjEne0Eg4=
+=Q8CS
+-----END PGP SIGNATURE-----
+
+--xZKIQynyWHxCFrdv--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
