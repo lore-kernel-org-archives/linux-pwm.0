@@ -1,97 +1,60 @@
 From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [alsa-devel] [PATCH v2 11/12] ASoC: tegra: register dependency
- parser for firmware nodes
-Date: Tue, 14 Jul 2015 12:07:13 +0100
-Message-ID: <20150714110713.GT11162@sirena.org.uk>
-References: <1435743667-11987-1-git-send-email-tomeu.vizoso@collabora.com>
- <1435743667-11987-12-git-send-email-tomeu.vizoso@collabora.com>
- <20150701173802.GW11162@sirena.org.uk>
- <CAAObsKDsEuDS46rW9CMuviDEDV-OVXe5q-kiWmw0D_n2D3Tf5A@mail.gmail.com>
- <20150713154254.GH11162@sirena.org.uk>
- <CAAObsKAVY7-QpcRyT4juc2RyB+vqibvzKO7wFCT2VsL9R8bzPw@mail.gmail.com>
+Subject: Re: [RFC PATCH 14/15] regulator: pwm: implement ->enable(),
+ ->disable() and ->is_enabled methods
+Date: Tue, 14 Jul 2015 12:08:19 +0100
+Message-ID: <20150714110819.GU11162@sirena.org.uk>
+References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1435738921-25027-15-git-send-email-boris.brezillon@free-electrons.com>
+ <20150714105019.GR11162@sirena.org.uk>
+ <20150714130222.1bdfedc5@bbrezillon>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="W8iFDApEu++Vn+WX"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="fFZg0b+WaoCdn4Fq"
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAAObsKAVY7-QpcRyT4juc2RyB+vqibvzKO7wFCT2VsL9R8bzPw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Takashi Iwai <tiwai-l3A5Bk7waGM@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linux PWM List <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20150714130222.1bdfedc5@bbrezillon>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
 
---W8iFDApEu++Vn+WX
+--fFZg0b+WaoCdn4Fq
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Tue, Jul 14, 2015 at 09:34:22AM +0200, Tomeu Vizoso wrote:
-> On 13 July 2015 at 17:42, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+On Tue, Jul 14, 2015 at 01:02:22PM +0200, Boris Brezillon wrote:
+> Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
 
-> > No, I'm looking at how we already have all the "did all my dependencies
-> > appear" logic in the core based on data provided by the drivers.
+> > On Wed, Jul 01, 2015 at 10:22:00AM +0200, Boris Brezillon wrote:
+> > > Implement the ->enable(), ->disable() and ->is_enabled methods and remove
+> > > the PWM call in ->set_voltage_sel().
 
-> Sorry, but I still don't get what you mean.
+> > This doesn't apply, please check and resend.
 
-I'm not sure how I can be clearer here...  you're replacing something
-that is currently pure data with open coding in each device.  That seems
-like a step back in terms of ease of use.
+> This series was made on top of Linus' tree (4.2-rc1 IIRC) and patch 14
+> and 15 were not meant to be applied without Thierry's approval (they
+> depend on other changes in the PWM framework).
+> I can rebase them on top of linux-next (or just on top of Linus'
+> 4.2-rc2) if Thierry is okay with that, but I don't think rebasing them
+> on your regulator's for-next branch is a good idea.
 
-> Information about dependencies is currently available only after
-> probe() starts executing, and used to decide whether we want to defer
-> the probe.
+What is the dependency for the enable patch?
 
-> The goal of this series is to eliminate most or all of the deferred
-> probes by checking that all dependencies are available before probe()
-> is called.
-
-Right, but the way it does this is by moving code out of the core into
-the drivers - currently drivers just tell the core what resources to
-look up and the core then makes sure that they're all present.
-
-> I thought you were pointing out that the property names would be
-> duplicated, once in the probe() implementation and also in the
-> implementation of the get_dependencies callback.
-
-Yes, that is another part of issue with this approach - drivers now have
-to specify things twice, once for this new interface and once for
-actually looking things up.  That doesn't seem awesome and adding the
-code into the individual drivers and then having to pull it out again
-when the redundancy is removed is going to be an enormous amount of
-churn.
-
-> A way to consolidate the code and remove that duplication would be
-> having a declarative API for expressing dependencies, which could be
-> used for both fetching dependencies and for preventing deferred
-> probes. That's why I mentioned devm_probe.
-
-Part of what I'm saying here is that in ASoC we already have (at least
-as far as the individual drivers are concerned) a declarative way of
-specifying dependencies.  This new code should be able to make use of
-that, if it can't and especially if none of the code can be shared
-between drivers then that seems like the interface needs another spin.
-
-I've not seen this devm_probe() code but the name sounds worryingly like
-it might be fixing the wrong problem :/
-
---W8iFDApEu++Vn+WX
+--fFZg0b+WaoCdn4Fq
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJVpO1gAAoJECTWi3JdVIfQnSAH+wT+w5R81fdOFtEt0wy01yaj
-GshHYfsA3FUBcLolXKBfwdFn3xRd0MjjOaTZ3pcrPGoKZDNNUF+X41SNSxoeyFoc
-biuYRxw7xpCeT1u7g7aAu/IHyFSXLH/UmW21mckH6JtmLh1wLNKDTNQTI2OFwFLY
-tJKsMXHhAzJ1+nLWxXHpuVN7U+dtNstl+BjGMfXbJqaz8OmvEPkzusI+w5bVlUhL
-+q0+AKvuqOYo2gDVlWL1ou2NTJfoubdWrmgquEG351VimQopSAR6feYiORUkwhVp
-176VGZHUTgwpzQo4L2Y1nQkX8D47pHng85WnMEHUnMAYq87XhASkmmuaLaKQfg0=
-=tRqQ
+iQEcBAEBCAAGBQJVpO2jAAoJECTWi3JdVIfQCzAH/jtVAxZM4A2VDq6+8+KcbB4Q
+FHI8enaYP9PYo645nK+Os5OdcAD3mEaVOWgscWVOZC77jJc2EfVhEbOGXFkPVBEY
+UQiNm2Ho/bAxflmKYO3ejouir17ApUIrOJHE5ED04WqBWWyoUD5EartUF3puL7CV
+VCUl34VE2tdJ/juFH8RsNUf2r3UJv2mF6Bm+iem5RO46briQFve8PCoFmXqfCyM+
+3b7gHVQdwj3XNPh4MnU7VhB9NpkIT0tEbCHtQoyIOa8uc/aQwfyvrERfhiNHNUMk
+b1KHUXMH3xjT/TMd8K+glb45vISmS9BY47/h5FYvayAGUnRBI8IcFiSr7U+todI=
+=CduC
 -----END PGP SIGNATURE-----
 
---W8iFDApEu++Vn+WX--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--fFZg0b+WaoCdn4Fq--
