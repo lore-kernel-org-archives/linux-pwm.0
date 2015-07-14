@@ -1,48 +1,40 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [RFC PATCH 14/15] regulator: pwm: implement ->enable(),
- ->disable() and ->is_enabled methods
-Date: Tue, 14 Jul 2015 13:02:22 +0200
-Message-ID: <20150714130222.1bdfedc5@bbrezillon>
+Subject: Re: [RFC PATCH 15/15] regulator: pwm: properly initialize the
+ ->state field
+Date: Tue, 14 Jul 2015 13:03:53 +0200
+Message-ID: <20150714130353.5f5d9d69@bbrezillon>
 References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1435738921-25027-15-git-send-email-boris.brezillon@free-electrons.com>
-	<20150714105019.GR11162@sirena.org.uk>
+	<1435738921-25027-16-git-send-email-boris.brezillon@free-electrons.com>
+	<20150714105155.GS11162@sirena.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:39929 "EHLO
+Received: from down.free-electrons.com ([37.187.137.238]:40000 "EHLO
 	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751751AbbGNLC3 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Jul 2015 07:02:29 -0400
-In-Reply-To: <20150714105019.GR11162@sirena.org.uk>
+	with ESMTP id S1752084AbbGNLD5 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Jul 2015 07:03:57 -0400
+In-Reply-To: <20150714105155.GS11162@sirena.org.uk>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, Stephen Warren <swarren@wwwdotorg.org>, Alexandre Courbot <gnurou@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Doug Anderson <dianders@google.com>
+To: Mark Brown <broonie@kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, Stephen Warren <swarren@wwwdotorg.org>, Alexandre Courbot <gnurou@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Doug Anderson <dianders@google.com>
 
-Hi Mark,
-
-On Tue, 14 Jul 2015 11:50:19 +0100
+On Tue, 14 Jul 2015 11:51:55 +0100
 Mark Brown <broonie@kernel.org> wrote:
 
-> On Wed, Jul 01, 2015 at 10:22:00AM +0200, Boris Brezillon wrote:
-> > Implement the ->enable(), ->disable() and ->is_enabled methods and remove
-> > the PWM call in ->set_voltage_sel().
+> On Wed, Jul 01, 2015 at 10:22:01AM +0200, Boris Brezillon wrote:
+> > The ->state field is currently initialized to 0, thus referencing the
+> > voltage selector at index 0, which might not reflect the current voltage
+> > value.
 > 
-> This doesn't apply, please check and resend.
+> This looks like it'll need reworking on top of Lee's recent changes to
+> implement continuous voltage support for PWM regulators - we may be
+> calculating the values to set dynamically at runtime.
 
-This series was made on top of Linus' tree (4.2-rc1 IIRC) and patch 14
-and 15 were not meant to be applied without Thierry's approval (they
-depend on other changes in the PWM framework).
-I can rebase them on top of linux-next (or just on top of Linus'
-4.2-rc2) if Thierry is okay with that, but I don't think rebasing them
-on your regulator's for-next branch is a good idea.
+Yep, I was planning on doing that in the next iteration, but I'd like
+to have Thierry's feedback before sending a new version.
 
-Thierry, Mark, let me know what you prefer.
-
-Thanks,
-
-Boris
 
 -- 
 Boris Brezillon, Free Electrons
