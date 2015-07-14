@@ -1,52 +1,105 @@
-From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [RFC PATCH 14/15] regulator: pwm: implement ->enable(),
- ->disable() and ->is_enabled methods
-Date: Tue, 14 Jul 2015 13:16:28 +0200
-Message-ID: <20150714131628.0c87f0a4@bbrezillon>
-References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1435738921-25027-15-git-send-email-boris.brezillon@free-electrons.com>
-	<20150714105019.GR11162@sirena.org.uk>
-	<20150714130222.1bdfedc5@bbrezillon>
-	<20150714110819.GU11162@sirena.org.uk>
+From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Subject: Re: [alsa-devel] [PATCH v2 11/12] ASoC: tegra: register dependency
+ parser for firmware nodes
+Date: Tue, 14 Jul 2015 14:47:04 +0200
+Message-ID: <CAAObsKAHviKKTrEBhuge-KQ115p-kOf69miNnmpR+7knOeg+qg@mail.gmail.com>
+References: <1435743667-11987-1-git-send-email-tomeu.vizoso@collabora.com>
+ <1435743667-11987-12-git-send-email-tomeu.vizoso@collabora.com>
+ <20150701173802.GW11162@sirena.org.uk>
+ <CAAObsKDsEuDS46rW9CMuviDEDV-OVXe5q-kiWmw0D_n2D3Tf5A@mail.gmail.com>
+ <20150713154254.GH11162@sirena.org.uk>
+ <CAAObsKAVY7-QpcRyT4juc2RyB+vqibvzKO7wFCT2VsL9R8bzPw@mail.gmail.com>
+ <20150714110713.GT11162@sirena.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20150714110819.GU11162-GFdadSzt00ze9xe1eoZjHA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20150714110713.GT11162@sirena.org.uk>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Mark Brown <broonie@kernel.org>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-fbdev@vger.kernel.org, Stephen Warren <swarren@wwwdotorg.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-gpio@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, alsa-devel@alsa-project.org, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Liam Girdwood <lgirdwood@gmail.com>, linux-acpi@vger.kernel.org, Linux PWM List <linux-pwm@vger.kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Alexandre Courbot <gnurou@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, 14 Jul 2015 12:08:19 +0100
-Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-
-> On Tue, Jul 14, 2015 at 01:02:22PM +0200, Boris Brezillon wrote:
-> > Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-> 
-> > > On Wed, Jul 01, 2015 at 10:22:00AM +0200, Boris Brezillon wrote:
-> > > > Implement the ->enable(), ->disable() and ->is_enabled methods and remove
-> > > > the PWM call in ->set_voltage_sel().
-> 
-> > > This doesn't apply, please check and resend.
-> 
-> > This series was made on top of Linus' tree (4.2-rc1 IIRC) and patch 14
-> > and 15 were not meant to be applied without Thierry's approval (they
-> > depend on other changes in the PWM framework).
-> > I can rebase them on top of linux-next (or just on top of Linus'
-> > 4.2-rc2) if Thierry is okay with that, but I don't think rebasing them
-> > on your regulator's for-next branch is a good idea.
-> 
-> What is the dependency for the enable patch?
-
-Oh, indeed. This patch has no dependency on the PWM changes. I'll send
-it on its own then.
-
-Thanks,
-
-Boris
-
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+T24gMTQgSnVseSAyMDE1IGF0IDEzOjA3LCBNYXJrIEJyb3duIDxicm9vbmllQGtlcm5lbC5vcmc+
+IHdyb3RlOgo+IE9uIFR1ZSwgSnVsIDE0LCAyMDE1IGF0IDA5OjM0OjIyQU0gKzAyMDAsIFRvbWV1
+IFZpem9zbyB3cm90ZToKPj4gT24gMTMgSnVseSAyMDE1IGF0IDE3OjQyLCBNYXJrIEJyb3duIDxi
+cm9vbmllQGtlcm5lbC5vcmc+IHdyb3RlOgo+Cj4+ID4gTm8sIEknbSBsb29raW5nIGF0IGhvdyB3
+ZSBhbHJlYWR5IGhhdmUgYWxsIHRoZSAiZGlkIGFsbCBteSBkZXBlbmRlbmNpZXMKPj4gPiBhcHBl
+YXIiIGxvZ2ljIGluIHRoZSBjb3JlIGJhc2VkIG9uIGRhdGEgcHJvdmlkZWQgYnkgdGhlIGRyaXZl
+cnMuCj4KPj4gU29ycnksIGJ1dCBJIHN0aWxsIGRvbid0IGdldCB3aGF0IHlvdSBtZWFuLgo+Cj4g
+SSdtIG5vdCBzdXJlIGhvdyBJIGNhbiBiZSBjbGVhcmVyIGhlcmUuLi4gIHlvdSdyZSByZXBsYWNp
+bmcgc29tZXRoaW5nCj4gdGhhdCBpcyBjdXJyZW50bHkgcHVyZSBkYXRhIHdpdGggb3BlbiBjb2Rp
+bmcgaW4gZWFjaCBkZXZpY2UuICBUaGF0IHNlZW1zCj4gbGlrZSBhIHN0ZXAgYmFjayBpbiB0ZXJt
+cyBvZiBlYXNlIG9mIHVzZS4KCkkgY291bGQgdW5kZXJzdGFuZCB0aGF0IGlmIHNuZF9zb2NfZGFp
+X2xpbmsgaGFkIGEgZmllbGQgd2l0aCB0aGUKcHJvcGVydHkgbmFtZSwgYW5kIHRoZSBjb3JlIGNh
+bGxlZCBvZl9wYXJzZV9waGFuZGxlIG9uIGl0LCBidXQKY3VycmVudGx5IHdoYXQgSSdtIGR1cGxp
+Y2F0aW5nIGlzOgoKICAgIHRlZ3JhX21heDk4MDkwX2RhaS5jcHVfb2Zfbm9kZSA9IG9mX3BhcnNl
+X3BoYW5kbGUobnAsCiAgICAgICAgICAgICJudmlkaWEsaTJzLWNvbnRyb2xsZXIiLCAwKTsKCndp
+dGg6CgogICAgYWRkX2RlcGVuZGVuY3koZndub2RlLCAibnZpZGlhLGkycy1jb250cm9sbGVyIiwg
+ZGVwcyk7CgpBZG1pdHRlZGx5LCB3ZSBjb3VsZCBhZGQgYSBjcHVfZndfcHJvcGVydHkgZmllbGQg
+dG8gc25kX3NvY19kYWlfbGluawphbmQgaGF2ZSB0aGUgY29yZSBjYWxsIG9mX3BhcnNlX3BoYW5k
+bGUgaXRzZWxmLgoKQnV0IGV2ZW4gdGhlbiwgdGhlIGNvcmUgZG9lc24ndCBrbm93IGFib3V0IGEg
+ZGV2aWNlJ3Mgc25kX3NvY19kYWlfbGluawp1bnRpbCBwcm9iZSgpIGlzIGNhbGxlZCBhbmQgdGhl
+biBpdCdzIHRvbyBsYXRlIGZvciB0aGUgcHVycG9zZXMgb2YKdGhpcyBzZXJpZXMuCgpUaGF0J3Mg
+d2h5IEkgbWVudGlvbmVkIGRldm1fcHJvYmUsIGFzIGl0IHdvdWxkIGFkZCBhIGNvbW1vbiB3YXkg
+dG8Kc3BlY2lmeSB0aGUgZGF0YSBuZWVkZWQgdG8gYWNxdWlyZSByZXNvdXJjZXMgaW4gZWFjaCBk
+cml2ZXIsIHdoaWNoCmNvdWxkIGJlIG1hZGUgYXZhaWxhYmxlIGJlZm9yZSBwcm9iZSgpIGlzIGNh
+bGxlZC4KCkZyb20gdGhlIHByb29mIG9mIGNvbmNlcHQgdGhhdCBBcm5kIHNlbnQgaW4KaHR0cHM6
+Ly9sa21sLmtlcm5lbC5vcmcvZy80NzQyMjU4LlRCaXRDM2hWdU9Ad3VlcmZlbCA6CgpzdHJ1Y3Qg
+Zm9vX3ByaXYgewogICAgICAgIHNwaW5sb2NrX3QgbG9jazsKICAgICAgICB2b2lkIF9faW9tZW0g
+KnJlZ3M7CiAgICAgICAgaW50IGlycTsKICAgICAgICBzdHJ1Y3QgZ3Bpb19kZXNjICpncGlvOwog
+ICAgICAgIHN0cnVjdCBkbWFfY2hhbiAqcnhkbWE7CiAgICAgICAgc3RydWN0IGRtYV9jaGFuICp0
+eGRtYTsKICAgICAgICBib29sIG9sZHN0eWxlX2RtYTsKfTsKCi8qCiAqIHRoaXMgbGlzdHMgYWxs
+IHByb3BlcnRpZXMgd2UgYWNjZXNzIGZyb20gdGhlIGRyaXZlci4gVGhlIGxpc3QKICogaXMgaW50
+ZXJwcmV0ZWQgYnkgZGV2bV9wcm9iZSgpIGFuZCBjYW4gYmUgcHJvZ3JhbW1hdGljYWxseQogKiB2
+ZXJpZmllZCB0byBtYXRjaCB0aGUgYmluZGluZy4KICovCnN0YXRpYyBjb25zdCBzdHJ1Y3QgZGV2
+bV9wcm9iZSBmb29fcHJvYmVfbGlzdFtdID0gewogICAgICAgIERFVk1fQUxMT0MoZm9vX3ByaXYp
+LAogICAgICAgIERFVk1fSU9NQVAoZm9vX3ByaXYsIHJlZ3MsIDAsIDApLAogICAgICAgIERFVk1f
+UFJPUF9CT09MKGZvb19wcml2LCBvbGRzdHlsZV9kbWEsICJmb28sb2xkc3R5bGUtZG1hIiksCiAg
+ICAgICAgREVWTV9ETUFfU0xBVkUoZm9vX3ByaXYsIHJ4ZG1hLCAicngiKTsKICAgICAgICBERVZN
+X0RNQV9TTEFWRShmb29fcHJpdiwgdHhkbWEsICJ0eCIpOwogICAgICAgIERFVk1fR1BJTyhmb29f
+cHJpdiwgZ3BpbywgMCk7CiAgICAgICAgREVWTV9JUlFfTkFNRUQoZm9vX3ByaXYsIGlycSwgZm9v
+X2lycV9oYW5kbGVyLCAiZmlmbyIsIElSUUZfU0hBUkVEKSwKICAgICAgICB7fSwKfTsKClRoYW5r
+cywKClRvbWV1Cgo+PiBJbmZvcm1hdGlvbiBhYm91dCBkZXBlbmRlbmNpZXMgaXMgY3VycmVudGx5
+IGF2YWlsYWJsZSBvbmx5IGFmdGVyCj4+IHByb2JlKCkgc3RhcnRzIGV4ZWN1dGluZywgYW5kIHVz
+ZWQgdG8gZGVjaWRlIHdoZXRoZXIgd2Ugd2FudCB0byBkZWZlcgo+PiB0aGUgcHJvYmUuCj4KPj4g
+VGhlIGdvYWwgb2YgdGhpcyBzZXJpZXMgaXMgdG8gZWxpbWluYXRlIG1vc3Qgb3IgYWxsIG9mIHRo
+ZSBkZWZlcnJlZAo+PiBwcm9iZXMgYnkgY2hlY2tpbmcgdGhhdCBhbGwgZGVwZW5kZW5jaWVzIGFy
+ZSBhdmFpbGFibGUgYmVmb3JlIHByb2JlKCkKPj4gaXMgY2FsbGVkLgo+Cj4gUmlnaHQsIGJ1dCB0
+aGUgd2F5IGl0IGRvZXMgdGhpcyBpcyBieSBtb3ZpbmcgY29kZSBvdXQgb2YgdGhlIGNvcmUgaW50
+bwo+IHRoZSBkcml2ZXJzIC0gY3VycmVudGx5IGRyaXZlcnMganVzdCB0ZWxsIHRoZSBjb3JlIHdo
+YXQgcmVzb3VyY2VzIHRvCj4gbG9vayB1cCBhbmQgdGhlIGNvcmUgdGhlbiBtYWtlcyBzdXJlIHRo
+YXQgdGhleSdyZSBhbGwgcHJlc2VudC4KPgo+PiBJIHRob3VnaHQgeW91IHdlcmUgcG9pbnRpbmcg
+b3V0IHRoYXQgdGhlIHByb3BlcnR5IG5hbWVzIHdvdWxkIGJlCj4+IGR1cGxpY2F0ZWQsIG9uY2Ug
+aW4gdGhlIHByb2JlKCkgaW1wbGVtZW50YXRpb24gYW5kIGFsc28gaW4gdGhlCj4+IGltcGxlbWVu
+dGF0aW9uIG9mIHRoZSBnZXRfZGVwZW5kZW5jaWVzIGNhbGxiYWNrLgo+Cj4gWWVzLCB0aGF0IGlz
+IGFub3RoZXIgcGFydCBvZiBpc3N1ZSB3aXRoIHRoaXMgYXBwcm9hY2ggLSBkcml2ZXJzIG5vdyBo
+YXZlCj4gdG8gc3BlY2lmeSB0aGluZ3MgdHdpY2UsIG9uY2UgZm9yIHRoaXMgbmV3IGludGVyZmFj
+ZSBhbmQgb25jZSBmb3IKPiBhY3R1YWxseSBsb29raW5nIHRoaW5ncyB1cC4gIFRoYXQgZG9lc24n
+dCBzZWVtIGF3ZXNvbWUgYW5kIGFkZGluZyB0aGUKPiBjb2RlIGludG8gdGhlIGluZGl2aWR1YWwg
+ZHJpdmVycyBhbmQgdGhlbiBoYXZpbmcgdG8gcHVsbCBpdCBvdXQgYWdhaW4KPiB3aGVuIHRoZSBy
+ZWR1bmRhbmN5IGlzIHJlbW92ZWQgaXMgZ29pbmcgdG8gYmUgYW4gZW5vcm1vdXMgYW1vdW50IG9m
+Cj4gY2h1cm4uCj4KPj4gQSB3YXkgdG8gY29uc29saWRhdGUgdGhlIGNvZGUgYW5kIHJlbW92ZSB0
+aGF0IGR1cGxpY2F0aW9uIHdvdWxkIGJlCj4+IGhhdmluZyBhIGRlY2xhcmF0aXZlIEFQSSBmb3Ig
+ZXhwcmVzc2luZyBkZXBlbmRlbmNpZXMsIHdoaWNoIGNvdWxkIGJlCj4+IHVzZWQgZm9yIGJvdGgg
+ZmV0Y2hpbmcgZGVwZW5kZW5jaWVzIGFuZCBmb3IgcHJldmVudGluZyBkZWZlcnJlZAo+PiBwcm9i
+ZXMuIFRoYXQncyB3aHkgSSBtZW50aW9uZWQgZGV2bV9wcm9iZS4KPgo+IFBhcnQgb2Ygd2hhdCBJ
+J20gc2F5aW5nIGhlcmUgaXMgdGhhdCBpbiBBU29DIHdlIGFscmVhZHkgaGF2ZSAoYXQgbGVhc3QK
+PiBhcyBmYXIgYXMgdGhlIGluZGl2aWR1YWwgZHJpdmVycyBhcmUgY29uY2VybmVkKSBhIGRlY2xh
+cmF0aXZlIHdheSBvZgo+IHNwZWNpZnlpbmcgZGVwZW5kZW5jaWVzLiAgVGhpcyBuZXcgY29kZSBz
+aG91bGQgYmUgYWJsZSB0byBtYWtlIHVzZSBvZgo+IHRoYXQsIGlmIGl0IGNhbid0IGFuZCBlc3Bl
+Y2lhbGx5IGlmIG5vbmUgb2YgdGhlIGNvZGUgY2FuIGJlIHNoYXJlZAo+IGJldHdlZW4gZHJpdmVy
+cyB0aGVuIHRoYXQgc2VlbXMgbGlrZSB0aGUgaW50ZXJmYWNlIG5lZWRzIGFub3RoZXIgc3Bpbi4K
+Pgo+IEkndmUgbm90IHNlZW4gdGhpcyBkZXZtX3Byb2JlKCkgY29kZSBidXQgdGhlIG5hbWUgc291
+bmRzIHdvcnJ5aW5nbHkgbGlrZQo+IGl0IG1pZ2h0IGJlIGZpeGluZyB0aGUgd3JvbmcgcHJvYmxl
+bSA6LwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmkt
+ZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cDov
+L2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
