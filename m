@@ -1,52 +1,53 @@
 From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v2 01/12] device: property: delay device-driver matches
-Date: Thu, 16 Jul 2015 21:23:12 +0100
-Message-ID: <20150716202312.GD11162@sirena.org.uk>
+Subject: Re: [PATCH v2 09/12] regulator: register dependency parser for
+ firmware nodes
+Date: Thu, 16 Jul 2015 22:38:23 +0100
+Message-ID: <20150716213823.GF1602@sirena.org.uk>
 References: <1435743667-11987-1-git-send-email-tomeu.vizoso@collabora.com>
- <1435743667-11987-2-git-send-email-tomeu.vizoso@collabora.com>
+ <1435743667-11987-10-git-send-email-tomeu.vizoso@collabora.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="ec3vSN46Jxtc8xEl"
-Return-path: <linux-acpi-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="AH+kv8CCoFf6qPuz"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mezzanine.sirena.org.uk ([106.187.55.193]:54771 "EHLO
+	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751380AbbGPVic (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 16 Jul 2015 17:38:32 -0400
 Content-Disposition: inline
-In-Reply-To: <1435743667-11987-2-git-send-email-tomeu.vizoso@collabora.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Cc: linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, alsa-devel@alsa-project.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+In-Reply-To: <1435743667-11987-10-git-send-email-tomeu.vizoso@collabora.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Cc: linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, alsa-devel@alsa-project.org, Liam Girdwood <lgirdwood@gmail.com>
 
 
---ec3vSN46Jxtc8xEl
+--AH+kv8CCoFf6qPuz
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 01, 2015 at 11:40:56AM +0200, Tomeu Vizoso wrote:
+On Wed, Jul 01, 2015 at 11:41:04AM +0200, Tomeu Vizoso wrote:
+> So others can find out what depends on regulators, as specified
+> in bindings/regulator/regulator.txt.
 
-> Delay matches of platform devices until late_initcall, when we are sure
-> that all built-in drivers have been registered already. This is needed
-> to prevent deferred probes because of some dependencies' drivers not
-> having registered yet.
+Reviewed-by: Mark Brown <broonie@kernel.org>
 
-I have to say I'm still not 100% clear that special casing platform
-devices makes sense here - I can see that platform devices are usually
-the first devices to instantiate but there are other kinds of devices
-and it's not obvious what the benefit of specifically picking out
-platform devices as opposed to just deferring all devices is.
+=66rom a regulator point of view.
 
---ec3vSN46Jxtc8xEl
+--AH+kv8CCoFf6qPuz
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJVqBKvAAoJECTWi3JdVIfQlTsH/RXV9XfaZAGK0pNr9p/kND/R
-uXvreuA2aWGY2yegWXN1tE6pZoLjM18lOibs3dQes0xY7JmZ3QgWwDq46ZdT8wCD
-mXlcO6E5d5QFKWa2bRcaXn02uROZmSH7X/XDk4hPVw1mh/sSxvYrj6Y0Ro0n/7Q6
-RRbg1kCfVPmuBJl10kMhwC9XalK5q2g4U2xC76edvSu2kRe2TXB/J89iq9LKg+Li
-LqQr20pwmwu6oIhI5YQPNa+bXNDEq5gdbq/j3hK5RRF9iXUbsuSdRDAQxTM8+5ri
-/qHqGpBhW3umrDgLMBfp36F+aWy+gk1rwUFBwOB5VyG426LWzgdc7AIGPwT7i+I=
-=OTlG
+iQEcBAEBCAAGBQJVqCROAAoJECTWi3JdVIfQ+AwH/04Bu5SZtx2282qv6iBescZI
+U/Yb79sUSK+1iDsmHnzCBj1PzWhv+HA2OO7bDXFxr16NrQWy2f8Dth/O+UszLXR6
+b8ij8CKmEF+H4AVYO0rRl2w5bdZl6G9L5Q3gmUI/xlB8GDzZ4h4qeftkXHUhZBi0
+8EROjAqfZbyfHycme3lPO0+lJ+iNCihGEHYGEqEuNruCjNSCmNrZnCDL3LclEjId
+ppJtILExl9QYqIiprBxWvtT2DYUXXDsNA9ADOq80kpuSsShPXgNwmhDjYG4sofLs
+nDRRUWDhL4eOOsS68mLjHLN0MfParQccjJOu1KRp2+7I1Jgg4tAC+ddRCJq35BA=
+=8p4T
 -----END PGP SIGNATURE-----
 
---ec3vSN46Jxtc8xEl--
+--AH+kv8CCoFf6qPuz--
