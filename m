@@ -1,392 +1,405 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: [PATCH v2 2/5] ARM: OMAP2+: DRA7: Add hwmod entries for PWMSS
-Date: Wed, 15 Jul 2015 21:54:22 +0000 (UTC)
-Message-ID: <alpine.DEB.2.02.1507152029460.32764@utopia.booyaka.com>
-References: <1433332284-10766-1-git-send-email-vigneshr@ti.com> <1433332284-10766-3-git-send-email-vigneshr@ti.com>
+From: YH Huang <yh.huang@mediatek.com>
+Subject: Re: [PATCH v5 2/3] pwm: add MediaTek display PWM driver support
+Date: Thu, 16 Jul 2015 13:38:28 +0800
+Message-ID: <1437025108.18175.13.camel@mtksdaap41>
+References: <1436778294-47635-1-git-send-email-yh.huang@mediatek.com>
+	 <1436778294-47635-3-git-send-email-yh.huang@mediatek.com>
+	 <CAGS+omCx4mDAN+F315x+8FeCABcKDoMn1gm_nHzF6VXnF_xm8Q@mail.gmail.com>
+	 <1436975995.15774.27.camel@mtksdaap41>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1433332284-10766-3-git-send-email-vigneshr@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vignesh R <vigneshr@ti.com>
-Cc: Tero Kristo <t-kristo@ti.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Benoit Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Russell King <linux@arm.linux.org.uk>, Mike Turquette <mturquette@linaro.org>, Stephen Boyd <sboyd@codeaurora.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mailgw02.mediatek.com ([210.61.82.184]:60298 "EHLO
+	mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751055AbbGPFid (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 16 Jul 2015 01:38:33 -0400
+In-Reply-To: <1436975995.15774.27.camel@mtksdaap41>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Daniel Kurtz <djkurtz@chromium.org>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, linux-pwm@vger.kernel.org, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, srv_heupstream <srv_heupstream@mediatek.com>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, Yingjoe Chen <yingjoe.chen@mediatek.com>, yh.huang@mediatek.com
 
-Hi,
-
-some comments.
-
-On Wed, 3 Jun 2015, Vignesh R wrote:
-
-> Add hwmod entries for the PWMSS on DRA7.
+On Wed, 2015-07-15 at 23:59 +0800, YH Huang wrote:
+> On Mon, 2015-07-13 at 18:19 +0800, Daniel Kurtz wrote:
+> > On Mon, Jul 13, 2015 at 5:04 PM, YH Huang <yh.huang@mediatek.com> wrote:
+> > > Add display PWM driver support to modify backlight for MT8173 and MT6595.
+> > > The PWM has one channel to control the brightness of the display.
+> > > When the (high_width / period) is closer to 1, the screen is brighter;
+> > > otherwise, it is darker.
+> > >
+> > > Signed-off-by: YH Huang <yh.huang@mediatek.com>
+> > > ---
+> > >  drivers/pwm/Kconfig        |  10 ++
+> > >  drivers/pwm/Makefile       |   1 +
+> > >  drivers/pwm/pwm-mtk-disp.c | 256 +++++++++++++++++++++++++++++++++++++++++++++
+> > >  3 files changed, 267 insertions(+)
+> > >  create mode 100644 drivers/pwm/pwm-mtk-disp.c
+> > >
+> > > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> > > index b1541f4..f5b03a4 100644
+> > > --- a/drivers/pwm/Kconfig
+> > > +++ b/drivers/pwm/Kconfig
+> > > @@ -211,6 +211,16 @@ config PWM_LPSS_PLATFORM
+> > >           To compile this driver as a module, choose M here: the module
+> > >           will be called pwm-lpss-platform.
+> > >
+> > > +config PWM_MTK_DISP
+> > > +       tristate "MediaTek display PWM driver"
+> > > +       depends on ARCH_MEDIATEK || COMPILE_TEST
+> > > +       help
+> > > +         Generic PWM framework driver for MediaTek disp-pwm device.
+> > > +         The PWM is used to control the backlight brightness for display.
+> > > +
+> > > +         To compile this driver as a module, choose M here: the module
+> > > +         will be called pwm-mtk-disp.
+> > > +
+> > >  config PWM_MXS
+> > >         tristate "Freescale MXS PWM support"
+> > >         depends on ARCH_MXS && OF
+> > > diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> > > index ec50eb5..99c9e75 100644
+> > > --- a/drivers/pwm/Makefile
+> > > +++ b/drivers/pwm/Makefile
+> > > @@ -18,6 +18,7 @@ obj-$(CONFIG_PWM_LPC32XX)     += pwm-lpc32xx.o
+> > >  obj-$(CONFIG_PWM_LPSS)         += pwm-lpss.o
+> > >  obj-$(CONFIG_PWM_LPSS_PCI)     += pwm-lpss-pci.o
+> > >  obj-$(CONFIG_PWM_LPSS_PLATFORM)        += pwm-lpss-platform.o
+> > > +obj-$(CONFIG_PWM_MTK_DISP)     += pwm-mtk-disp.o
+> > >  obj-$(CONFIG_PWM_MXS)          += pwm-mxs.o
+> > >  obj-$(CONFIG_PWM_PCA9685)      += pwm-pca9685.o
+> > >  obj-$(CONFIG_PWM_PUV3)         += pwm-puv3.o
+> > > diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
+> > > new file mode 100644
+> > > index 0000000..1f17cee
+> > > --- /dev/null
+> > > +++ b/drivers/pwm/pwm-mtk-disp.c
+> > > @@ -0,0 +1,256 @@
+> > > +/*
+> > > + * MediaTek display pulse-width-modulation controller driver.
+> > > + * Copyright (c) 2015 MediaTek Inc.
+> > > + * Author: YH Huang <yh.huang@mediatek.com>
+> > > + *
+> > > + * This program is free software; you can redistribute it and/or modify
+> > > + * it under the terms of the GNU General Public License version 2 as
+> > > + * published by the Free Software Foundation.
+> > > + *
+> > > + * This program is distributed in the hope that it will be useful,
+> > > + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> > > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> > > + * GNU General Public License for more details.
+> > > + */
+> > > +
+> > > +#include <linux/clk.h>
+> > > +#include <linux/err.h>
+> > > +#include <linux/io.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/of.h>
+> > > +#include <linux/pwm.h>
+> > > +#include <linux/platform_device.h>
+> > > +#include <linux/slab.h>
+> > > +
+> > > +#define DISP_PWM_EN            0
+> > 
+> > The "DISP_PWM_*" are register offsets, so use a hex value, like this:
+> > 
+> > #define DISP_PWM_EN                      0x00
+> > 
+> > Use BIT() for register *fields*, that is, the individual bits of a register.
+> > 
 > 
-> Set l4_root_clk_div as the main_clk of PWMSS. It is fixed-factored clock
-> equal to L4PER2_L3_GICLK/2(l3_iclk_div/2).
-> As per AM57x TRM SPRUHZ6[1], October 2014, Section 29.1.3 Table 29-4,
-> clock source to PWMSS is L4PER2_L3_GICLK. But it is actually
-> L4PER2_L3_GICLK/2. The TRM does not show the division by 2.
-
-Is the divide-by-two coming from PWMSS_EPWM.EPWM_TBCTL[HSPCLKDIV]?  Or is 
-HSPCLKDIV a separate divider after the divide-by-2 you mention above?
-
-> [1] www.ti.com/lit/ug/spruhz6/spruhz6.pdf
+> Got it!
 > 
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> ---
+> > > +#define PWM_ENABLE_MASK                BIT(0)
+> > > +
+> > > +#define DISP_PWM_COMMIT                BIT(3)
+> > 
+> > #define DISP_PWM_COMMIT            0x08
+> > 
+> > > +#define PWM_COMMIT_MASK                BIT(0)
+> > > +
+> > > +#define DISP_PWM_CON_0         BIT(4)
+> > 
+> > #define DISP_PWM_COMMIT            0x10
+> > 
+> > > +#define PWM_CLKDIV_SHIFT       16
+> > > +#define PWM_CLKDIV_MAX         0x3ff
+> > > +#define PWM_CLKDIV_MASK                (PWM_CLKDIV_MAX << PWM_CLKDIV_SHIFT)
+> > > +
+> > > +#define DISP_PWM_CON_1         0x14
+> > > +#define PWM_PERIOD_MASK                0xfff
+> > > +/* Shift log2(PWM_PERIOD_MASK + 1) as divisor */
+> > > +#define PWM_PERIOD_BIT_SHIFT   12
+> > > +
+> > > +#define PWM_HIGH_WIDTH_SHIFT   16
+> > > +#define PWM_HIGH_WIDTH_MASK    (0x1fff << PWM_HIGH_WIDTH_SHIFT)
+> > > +
+> > > +struct mtk_disp_pwm {
+> > > +       struct pwm_chip chip;
+> > > +       struct device *dev;
+> > 
+> > I don't think "dev" is actually used.  And, if needed, it can be
+> > extracted from "chip".
+> > 
 > 
-> v2:
->  * add TRM references.
+> I will drop it.
 > 
->  arch/arm/mach-omap2/omap_hwmod_7xx_data.c | 239 ++++++++++++++++++++++++++++++
->  1 file changed, 239 insertions(+)
+> > > +       struct clk *clk_main;
+> > > +       struct clk *clk_mm;
+> > > +       void __iomem *base;
+> > > +};
+> > > +
+> > > +static inline struct mtk_disp_pwm *to_mtk_disp_pwm(struct pwm_chip *chip)
+> > > +{
+> > > +       return container_of(chip, struct mtk_disp_pwm, chip);
+> > > +}
+> > > +
+> > > +static void mtk_disp_pwm_update_bits(void __iomem *address, u32 mask, u32 value)
+> > 
+> > Take "struct mtk_disp_pwm *mdp" as a param and extract mdp->base,
+> > rather than pass the raw iomem address.
+> > 
 > 
-> diff --git a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
-> index 0e64c2fac0b5..86a7ac9a3138 100644
-> --- a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
-> +++ b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
-> @@ -362,6 +362,149 @@ static struct omap_hwmod dra7xx_dcan2_hwmod = {
->  	},
->  };
->  
-> +/* pwmss  */
-> +static struct omap_hwmod_class_sysconfig dra7xx_epwmss_sysc = {
-> +	.rev_offs	= 0x0,
-> +	.sysc_offs	= 0x4,
-> +	.sysc_flags	= SYSC_HAS_SIDLEMODE | SYSC_HAS_RESET_STATUS,
-
-This doesn't match SPRUHZ6 Table 29-13 "PWMSS_SYSCONFIG".  There's no 
-RESETSTATUS bit.  There is a SOFTRESET bit. 
-
-Could you please confirm whether this is intentional?
-
-> +	.idlemodes	= (SIDLE_FORCE | SIDLE_NO | SIDLE_SMART),
-> +	.sysc_fields	= &omap_hwmod_sysc_type2,
-> +};
-> +
-> +struct omap_hwmod_class dra7xx_epwmss_hwmod_class = {
-> +	.name		= "epwmss",
-> +	.sysc		= &dra7xx_epwmss_sysc,
-> +};
-> +
-> +static struct omap_hwmod_class dra7xx_ecap_hwmod_class = {
-> +	.name		= "ecap",
-> +};
-> +
-> +static struct omap_hwmod_class dra7xx_eqep_hwmod_class = {
-> +	.name		= "eqep",
-> +};
-> +
-> +struct omap_hwmod_class dra7xx_ehrpwm_hwmod_class = {
-> +	.name		= "ehrpwm",
-> +};
-> +
-> +/* epwmss0 */
-> +struct omap_hwmod dra7xx_epwmss0_hwmod = {
-> +	.name		= "epwmss0",
-> +	.class		= &dra7xx_epwmss_hwmod_class,
-> +	.clkdm_name	= "l4per2_clkdm",
-> +	.main_clk	= "l4_root_clk_div",
-> +	.prcm		= {
-> +		.omap4	= {
-> +			.modulemode	= MODULEMODE_SWCTRL,
-> +			.clkctrl_offs	= DRA7XX_CM_L4PER2_PWMSS1_CLKCTRL_OFFSET,
-> +			.context_offs	= DRA7XX_RM_L4PER2_PWMSS1_CONTEXT_OFFSET,
-> +		},
-> +	},
-
-Per my comment on the previous patch, sounds like it might be better to 
-mark this as HWMOD_SWSUP_SIDLE?  Then again, see the next comment below 
-re: main_clk.
-
-> +};
-> +
-> +/* ecap0 */
-> +struct omap_hwmod dra7xx_ecap0_hwmod = {
-> +	.name		= "ecap0",
-> +	.class		= &dra7xx_ecap_hwmod_class,
-> +	.clkdm_name	= "l4per2_clkdm",
-> +	.main_clk	= "l4_root_clk_div",
-
-Looking at SPRUHZ6 Section 29.1.4.2 "PWMSS Modules Local Clock Gating", 
-there appears to be a local "mini-PRCM" for the PWMSS which implements 
-clock gating and reports back on the status of what I'd guess is the local 
-clock gating FSM.
-
-So from that point of view, you should probably create a clock driver that 
-manages both the clock gate request bit and the FSM status bit.  It should 
-be something that can be reused for the other PWMSS IP blocks.  Then 
-you'd create per-IP block clock nodes and set the main_clk to point to 
-that node.
-
-> +};
-> +
-> +/* eqep0 */
-> +struct omap_hwmod dra7xx_eqep0_hwmod = {
-> +	.name		= "eqep0",
-> +	.class		= &dra7xx_eqep_hwmod_class,
-> +	.clkdm_name	= "l4per2_clkdm",
-> +	.main_clk	= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +};
-> +
-> +/* ehrpwm0 */
-> +struct omap_hwmod dra7xx_ehrpwm0_hwmod = {
-> +	.name		= "ehrpwm0",
-> +	.class		= &dra7xx_ehrpwm_hwmod_class,
-> +	.clkdm_name	= "l4per2_clkdm",
-> +	.main_clk	= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +};
-> +
-> +/* epwmss1 */
-> +struct omap_hwmod dra7xx_epwmss1_hwmod = {
-> +	.name		= "epwmss1",
-> +	.class		= &dra7xx_epwmss_hwmod_class,
-> +	.clkdm_name	= "l4per2_clkdm",
-> +	.main_clk	= "l4_root_clk_div",
-> +	.prcm		= {
-> +		.omap4	= {
-> +			.modulemode	= MODULEMODE_SWCTRL,
-> +			.clkctrl_offs	= DRA7XX_CM_L4PER2_PWMSS2_CLKCTRL_OFFSET,
-> +			.context_offs	= DRA7XX_RM_L4PER2_PWMSS2_CONTEXT_OFFSET,
-> +		},
-> +	},
-
-Same flags comment as for epwmss0.
-
-> +};
-> +
-> +/* ecap1 */
-> +struct omap_hwmod dra7xx_ecap1_hwmod = {
-> +	.name		= "ecap1",
-> +	.class		= &dra7xx_ecap_hwmod_class,
-> +	.clkdm_name	= "l4per2_clkdm",
-> +	.main_clk	= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +};
-> +
-> +/* eqep1 */
-> +struct omap_hwmod dra7xx_eqep1_hwmod = {
-> +	.name		= "eqep1",
-> +	.class		= &dra7xx_eqep_hwmod_class,
-> +	.clkdm_name	= "l4per2_clkdm",
-> +	.main_clk	= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +};
-> +
-> +/* ehrpwm1 */
-> +struct omap_hwmod dra7xx_ehrpwm1_hwmod = {
-> +	.name		= "ehrpwm1",
-> +	.class		= &dra7xx_ehrpwm_hwmod_class,
-> +	.clkdm_name	= "l4per2_clkdm",
-> +	.main_clk	= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +};
-> +
-> +/* epwmss2 */
-> +struct omap_hwmod dra7xx_epwmss2_hwmod = {
-> +	.name		= "epwmss2",
-> +	.class		= &dra7xx_epwmss_hwmod_class,
-> +	.clkdm_name	= "l4per2_clkdm",
-> +	.main_clk	= "l4_root_clk_div",
-> +	.prcm		= {
-> +		.omap4	= {
-> +			.modulemode	= MODULEMODE_SWCTRL,
-> +			.clkctrl_offs	= DRA7XX_CM_L4PER2_PWMSS3_CLKCTRL_OFFSET,
-> +			.context_offs	= DRA7XX_RM_L4PER2_PWMSS3_CONTEXT_OFFSET,
-> +		},
-> +	},
-
-Same flags comment as for epwmss0.
-
-> +};
-> +
-> +/* ecap2 */
-> +struct omap_hwmod dra7xx_ecap2_hwmod = {
-> +	.name		= "ecap2",
-> +	.class		= &dra7xx_ecap_hwmod_class,
-> +	.clkdm_name	= "l4per2_clkdm",
-> +	.main_clk	= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +};
-> +
-> +/* eqep2 */
-> +struct omap_hwmod dra7xx_eqep2_hwmod = {
-> +	.name		= "eqep2",
-> +	.class		= &dra7xx_eqep_hwmod_class,
-> +	.clkdm_name	= "l4per2_clkdm",
-> +	.main_clk	= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +};
-> +
-> +/* ehrpwm2 */
-> +struct omap_hwmod dra7xx_ehrpwm2_hwmod = {
-> +	.name		= "ehrpwm2",
-> +	.class		= &dra7xx_ehrpwm_hwmod_class,
-> +	.clkdm_name	= "l4per2_clkdm",
-> +	.main_clk	= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +};
-> +
->  /*
->   * 'dma' class
->   *
-> @@ -2601,6 +2744,90 @@ static struct omap_hwmod_ocp_if dra7xx_l4_per1__gpio6 = {
->  	.user		= OCP_USER_MPU | OCP_USER_SDMA,
->  };
->  
-> +struct omap_hwmod_ocp_if dra7xx_l4_per2__epwmss0 = {
-> +	.master		= &dra7xx_l4_per2_hwmod,
-> +	.slave		= &dra7xx_epwmss0_hwmod,
-> +	.clk		= "l4_root_clk_div",
-> +	.user		= OCP_USER_MPU,
-> +};
-> +
-> +struct omap_hwmod_ocp_if dra7xx_epwmss0__ecap0 = {
-> +	.master		= &dra7xx_epwmss0_hwmod,
-> +	.slave		= &dra7xx_ecap0_hwmod,
-> +	.clk		= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +	.user		= OCP_USER_MPU,
-> +};
-> +
-> +struct omap_hwmod_ocp_if dra7xx_epwmss0__eqep0 = {
-> +	.master		= &dra7xx_epwmss0_hwmod,
-> +	.slave		= &dra7xx_eqep0_hwmod,
-> +	.clk		= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +	.user		= OCP_USER_MPU,
-> +};
-> +
-> +struct omap_hwmod_ocp_if dra7xx_epwmss0__ehrpwm0 = {
-> +	.master		= &dra7xx_epwmss0_hwmod,
-> +	.slave		= &dra7xx_ehrpwm0_hwmod,
-> +	.clk		= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +	.user		= OCP_USER_MPU,
-> +};
-> +
-> +struct omap_hwmod_ocp_if dra7xx_l4_per2__epwmss1 = {
-> +	.master		= &dra7xx_l4_per2_hwmod,
-> +	.slave		= &dra7xx_epwmss1_hwmod,
-> +	.clk		= "l4_root_clk_div",
-> +	.user		= OCP_USER_MPU,
-> +};
-> +
-> +struct omap_hwmod_ocp_if dra7xx_epwmss1__ecap1 = {
-> +	.master		= &dra7xx_epwmss1_hwmod,
-> +	.slave		= &dra7xx_ecap1_hwmod,
-> +	.clk		= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +	.user		= OCP_USER_MPU,
-> +};
-> +
-> +struct omap_hwmod_ocp_if dra7xx_epwmss1__eqep1 = {
-> +	.master		= &dra7xx_epwmss1_hwmod,
-> +	.slave		= &dra7xx_eqep1_hwmod,
-> +	.clk		= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +	.user		= OCP_USER_MPU,
-> +};
-> +
-> +struct omap_hwmod_ocp_if dra7xx_epwmss1__ehrpwm1 = {
-> +	.master		= &dra7xx_epwmss1_hwmod,
-> +	.slave		= &dra7xx_ehrpwm1_hwmod,
-> +	.clk		= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +	.user		= OCP_USER_MPU,
-> +};
-> +
-> +struct omap_hwmod_ocp_if dra7xx_l4_per2__epwmss2 = {
-> +	.master		= &dra7xx_l4_per2_hwmod,
-> +	.slave		= &dra7xx_epwmss2_hwmod,
-> +	.clk		= "l4_root_clk_div",
-> +	.user		= OCP_USER_MPU,
-> +};
-> +
-> +struct omap_hwmod_ocp_if dra7xx_epwmss2__ecap2 = {
-> +	.master		= &dra7xx_epwmss2_hwmod,
-> +	.slave		= &dra7xx_ecap2_hwmod,
-> +	.clk		= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +	.user		= OCP_USER_MPU,
-> +};
-> +
-> +struct omap_hwmod_ocp_if dra7xx_epwmss2__eqep2 = {
-> +	.master		= &dra7xx_epwmss2_hwmod,
-> +	.slave		= &dra7xx_eqep2_hwmod,
-> +	.clk		= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +	.user		= OCP_USER_MPU,
-> +};
-> +
-> +struct omap_hwmod_ocp_if dra7xx_epwmss2__ehrpwm2 = {
-> +	.master		= &dra7xx_epwmss2_hwmod,
-> +	.slave		= &dra7xx_ehrpwm2_hwmod,
-> +	.clk		= "l4_root_clk_div",
-
-Same main_clk comments as for ecap0.
-
-> +	.user		= OCP_USER_MPU,
-> +};
-> +
->  /* l4_per1 -> gpio7 */
->  static struct omap_hwmod_ocp_if dra7xx_l4_per1__gpio7 = {
->  	.master		= &dra7xx_l4_per1_hwmod,
-> @@ -3394,6 +3621,18 @@ static struct omap_hwmod_ocp_if *dra7xx_hwmod_ocp_ifs[] __initdata = {
->  	&dra7xx_l3_main_1__vcp2,
->  	&dra7xx_l4_per2__vcp2,
->  	&dra7xx_l4_wkup__wd_timer2,
-> +	&dra7xx_l4_per2__epwmss0,
-> +	&dra7xx_epwmss0__ecap0,
-> +	&dra7xx_epwmss0__eqep0,
-> +	&dra7xx_epwmss0__ehrpwm0,
-> +	&dra7xx_l4_per2__epwmss1,
-> +	&dra7xx_epwmss1__ecap1,
-> +	&dra7xx_epwmss1__eqep1,
-> +	&dra7xx_epwmss1__ehrpwm1,
-> +	&dra7xx_l4_per2__epwmss2,
-> +	&dra7xx_epwmss2__ecap2,
-> +	&dra7xx_epwmss2__eqep2,
-> +	&dra7xx_epwmss2__ehrpwm2,
->  	NULL,
->  };
->  
-> -- 
-> 2.4.1
+> I will revise it like this.
 > 
+> static void mtk_disp_pwm_update_bits(struct mtk_disp_pwm *mdp,
+> 			       u32 reg, u32 mask, u32 value)
+> {
+> 	void __iomem *address;
+> 	u32 val;
+> 
+> 	address = mdp->base + reg;
+> 	val = readl(address);
+> 	val &= ~mask;
+> 	val |= value;
+> 	writel(val, address);
+> }
+> 
+> > > +{
+> > > +       u32 val;
+> > > +
+> > > +       val = readl(address);
+> > > +       val &= ~mask;
+> > > +       val |= value;
+> > > +       writel(val, address);
+> > > +}
+> > > +
+> > > +static int mtk_disp_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> > > +                              int duty_ns, int period_ns)
+> > > +{
+> > > +       struct mtk_disp_pwm *mdp = to_mtk_disp_pwm(chip);
+> > > +       u64 div, rate;
+> > > +       u32 clk_div, period, high_width, value;
+> > > +
+> > > +       /*
+> > > +        * Find period, high_width and clk_div to suit duty_ns and period_ns.
+> > > +        * Calculate proper div value to keep period value in the bound.
+> > > +        *
+> > > +        * period_ns = 10^9 * (clk_div + 1) * (period + 1) / PWM_CLK_RATE
+> > > +        * duty_ns = 10^9 * (clk_div + 1) * high_width / PWM_CLK_RATE
+> > > +        *
+> > > +        * period = (PWM_CLK_RATE * period_ns) / (10^9 * (clk_div + 1)) - 1
+> > > +        * high_width = (PWM_CLK_RATE * duty_ns) / (10^9 * (clk_div + 1))
+> > > +        */
+> > > +       rate = clk_get_rate(mdp->clk_main);
+> > > +       clk_div = div_u64(rate * period_ns, NSEC_PER_SEC) >>
+> > > +                         PWM_PERIOD_BIT_SHIFT;
+> > > +       if (clk_div > PWM_CLKDIV_MAX)
+> > > +               return -EINVAL;
+> > > +
+> > > +       div = NSEC_PER_SEC * (clk_div + 1);
+> > > +       period = div64_u64(rate * period_ns, div);
+> > > +       if (period > 0)
+> > > +               period--;
+> > > +
+> > > +       high_width = div64_u64(rate * duty_ns, div);
+> > > +
+> > > +       mtk_disp_pwm_update_bits(mdp->base + DISP_PWM_CON_0,
+> > > +                                PWM_CLKDIV_MASK, clk_div << PWM_CLKDIV_SHIFT);
+> > > +
+> > > +       value = period | (high_width << PWM_HIGH_WIDTH_SHIFT);
+> > > +       mtk_disp_pwm_update_bits(mdp->base + DISP_PWM_CON_1,
+> > > +                                PWM_PERIOD_MASK | PWM_HIGH_WIDTH_MASK, value);
+> > > +
+> > > +       mtk_disp_pwm_update_bits(mdp->base + DISP_PWM_COMMIT,
+> > > +                                PWM_COMMIT_MASK, 1);
+> > > +       mtk_disp_pwm_update_bits(mdp->base + DISP_PWM_COMMIT,
+> > > +                                PWM_COMMIT_MASK, 0);
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static int mtk_disp_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+> > > +{
+> > > +       struct mtk_disp_pwm *mdp = to_mtk_disp_pwm(chip);
+> > > +
+> > > +       mtk_disp_pwm_update_bits(mdp->base + DISP_PWM_EN,
+> > > +                                PWM_ENABLE_MASK, 1);
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static void mtk_disp_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+> > > +{
+> > > +       struct mtk_disp_pwm *mdp = to_mtk_disp_pwm(chip);
+> > > +
+> > > +       mtk_disp_pwm_update_bits(mdp->base + DISP_PWM_EN,
+> > > +                                PWM_ENABLE_MASK, 0);
+> > > +}
+> > > +
+> > > +static const struct pwm_ops mtk_disp_pwm_ops = {
+> > > +       .config = mtk_disp_pwm_config,
+> > > +       .enable = mtk_disp_pwm_enable,
+> > > +       .disable = mtk_disp_pwm_disable,
+> > > +       .owner = THIS_MODULE,
+> > > +};
+> > > +
+> > > +static int mtk_disp_pwm_probe(struct platform_device *pdev)
+> > > +{
+> > > +       struct mtk_disp_pwm *mdp;
+> > > +       struct resource *r;
+> > > +       int ret;
+> > > +
+> > > +       mdp = devm_kzalloc(&pdev->dev, sizeof(*mdp), GFP_KERNEL);
+> > > +       if (!mdp)
+> > > +               return -ENOMEM;
+> > > +
+> > > +       mdp->dev = &pdev->dev;
+> > > +
+> > > +       r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> > > +       mdp->base = devm_ioremap_resource(&pdev->dev, r);
+> > > +       if (IS_ERR(mdp->base))
+> > > +               return PTR_ERR(mdp->base);
+> > > +
+> > > +       mdp->clk_main = devm_clk_get(&pdev->dev, "main");
+> > > +       if (IS_ERR(mdp->clk_main))
+> > > +               return PTR_ERR(mdp->clk_main);
+> > > +
+> > > +       mdp->clk_mm = devm_clk_get(&pdev->dev, "mm");
+> > > +       if (IS_ERR(mdp->clk_mm))
+> > > +               return PTR_ERR(mdp->clk_mm);
+> > > +
+> > > +       ret = clk_prepare_enable(mdp->clk_main);
+> > 
+> > Delay turning on the PWM clock until it is actually needed (pwm_enable)...
+> > Just be careful to ensure that the "main" clock is enabled when
+> > writing registers during mtk_disp_pwm_config.
 
+Since pwm-backlight driver configures PWM before enable PWM, I enable
+clocks at the probe function.
+Turning on the PWM clock in pwm_enable will lose the first configuration
+of PWM. It won't affect a lot since the system configures PWM many times
+at boot time.
+So should I delay or keep the original way?
 
-- Paul
+> > By the way, is the pwm in a power domain that must also be enabled
+> > when enabling the pwm?
+> 
+> It is in the display power domain which must also be enabled.
+> 
+> > 
+> > > +       if (ret < 0)
+> > > +               return ret;
+> > > +
+> > > +       ret = clk_prepare_enable(mdp->clk_mm);
+> > > +       if (ret < 0)
+> > > +               goto disable_clk_main;
+> > > +
+> > > +       platform_set_drvdata(pdev, mdp);
+> > 
+> > Set this only after pwmchip_add() succeeds.
+> 
+> OK.
+> 
+> > 
+> > > +
+> > > +       mdp->chip.dev = &pdev->dev;
+> > > +       mdp->chip.ops = &mtk_disp_pwm_ops;
+> > > +       mdp->chip.base = -1;
+> > > +       mdp->chip.npwm = 1;
+> > > +
+> > > +       ret = pwmchip_add(&mdp->chip);
+> > > +       if (ret < 0) {
+> > > +               dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+> > > +               goto disable_clk_mm;
+> > > +       }
+> > > +
+> > > +       return 0;
+> > > +
+> > > +disable_clk_mm:
+> > > +       clk_disable_unprepare(mdp->clk_mm);
+> > > +disable_clk_main:
+> > > +       clk_disable_unprepare(mdp->clk_main);
+> > > +       return ret;
+> > > +}
+> > > +
+> > > +static int mtk_disp_pwm_remove(struct platform_device *pdev)
+> > > +{
+> > > +       struct mtk_disp_pwm *mdp = platform_get_drvdata(pdev);
+> > > +       int ret = pwmchip_remove(&mdp->chip);
+> > > +
+> > > +       clk_disable_unprepare(mdp->clk_main);
+> > > +       clk_disable_unprepare(mdp->clk_mm);
+> > 
+> > Nit: it is more traditional to disable clocks in the opposite order to
+> > which they are enabled, so:
+> > 
+> >        clk_disable_unprepare(mdp->clk_mm);
+> >        clk_disable_unprepare(mdp->clk_main);
+> > 
+> 
+> OK.
+> 
+> > > +
+> > > +       return ret;
+> > > +}
+> > > +
+> > > +static const struct of_device_id mtk_disp_pwm_of_match[] = {
+> > > +       { .compatible = "mediatek,mt8173-disp-pwm" },
+> > > +       { .compatible = "mediatek,mt6595-disp-pwm" },
+> > > +       { }
+> > > +};
+> > > +MODULE_DEVICE_TABLE(of, mtk_disp_pwm_of_match);
+> > > +
+> > > +#ifdef CONFIG_PM_SLEEP
+> > > +static int mtk_disp_pwm_suspend(struct device *dev)
+> > > +{
+> > > +       struct mtk_disp_pwm *mdp = dev_get_drvdata(dev);
+> > > +
+> > > +       clk_disable_unprepare(mdp->clk_main);
+> > > +       clk_disable_unprepare(mdp->clk_mm);
+> > > +
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static int mtk_disp_pwm_resume(struct device *dev)
+> > > +{
+> > > +       struct mtk_disp_pwm *mdp = dev_get_drvdata(dev);
+> > > +       int ret;
+> > > +
+> > > +       ret = clk_prepare_enable(mdp->clk_main);
+> > > +       if (ret < 0)
+> > > +               return ret;
+> > > +
+> > > +       ret = clk_prepare_enable(mdp->clk_mm);
+> > > +       if (ret < 0) {
+> > > +               clk_disable_unprepare(mdp->clk_main);
+> > > +               return ret;
+> > > +       }
+> > > +
+> > 
+> > Don't you also have to restore the PWM rate and frequency?
+> > 
+> > Is it possible to save power at runtime by leaving mdp->clk_mm enabled
+> > (to generate the PWM signal), but disable mdp->clk_main (clock
+> > required to access PWM registers)?
+> 
+> The pwm-backlight driver will restore the data.
+> 
+> After I try to disable anyone of the two clocks at runtime, the
+> backlight doesn't work well(no immediate update or losing backlight).
+> So we need to keep both clock enabled.
+> 
+> Regards,
+> YH Huang
+> 
