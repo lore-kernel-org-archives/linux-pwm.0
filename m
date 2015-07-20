@@ -1,39 +1,95 @@
-From: Clemens Gruber <clemens.gruber@pqgruber.com>
-Subject: Re: [PATCH v3 2/2] pwm-pca9685: Support changing the output frequency
-Date: Mon, 20 Jul 2015 14:31:18 +0200
-Message-ID: <20150720123118.GA28687@pqgruber.com>
-References: <1437381369-8502-1-git-send-email-clemens.gruber@pqgruber.com>
- <1437381369-8502-3-git-send-email-clemens.gruber@pqgruber.com>
- <20150720093011.GQ29614@ulmo>
- <20150720094612.GA20084@pqgruber.com>
- <20150720095054.GB20084@pqgruber.com>
- <20150720095813.GU29614@ulmo>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.pqgruber.com ([178.189.19.235]:55243 "EHLO
-	mail.pqgruber.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752193AbbGTMbV (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jul 2015 08:31:21 -0400
-Content-Disposition: inline
-In-Reply-To: <20150720095813.GU29614@ulmo>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: [PATCH v2 03/10] pwm: move the enabled/disabled info to pwm_state struct
+Date: Mon, 20 Jul 2015 17:32:00 +0200
+Message-ID: <1437406327-6207-4-git-send-email-boris.brezillon@free-electrons.com>
+References: <1437406327-6207-1-git-send-email-boris.brezillon@free-electrons.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1437406327-6207-1-git-send-email-boris.brezillon@free-electrons.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-fbdev@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Doug Anderson <dianders@google.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Maxime Ripard <maxime.ripard@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org
 
-On Mon, Jul 20, 2015 at 11:58:14AM +0200, Thierry Reding wrote:
-> I guess it depends a bit on what the typical use-cases are for this
-> chip. Is it usually used only for LEDs (the register names suggest it)?
-> If so, how likely is it that people will want to drive them at different
-> periods? If it's reasonable to require the same period for all of them,
-> maybe it would be worth adding some sort of WARN_ON() or dev_warn() or
-> something to notify integrators of this fact.
+Prepare the transition to PWM atomic update by moving the enabled/disabled
+state into the pwm_state struct. This way we can easily update the whole
+PWM state by copying the new state in the ->state field.
 
-Not likely. If they read the datasheet of the PCA9685, they should know that
-this is not even possible with that chip.
+Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+---
+ drivers/pwm/core.c  | 15 ++++++++++++---
+ include/linux/pwm.h |  7 ++++---
+ 2 files changed, 16 insertions(+), 6 deletions(-)
 
-On what condition would you WARN / dev_warn in this case? If the user tries to
-set different prescaler values to different channels?
-
-Clemens
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index a6bc8e6..3e830ce 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -474,8 +474,15 @@ EXPORT_SYMBOL_GPL(pwm_set_polarity);
+  */
+ int pwm_enable(struct pwm_device *pwm)
+ {
+-	if (pwm && !test_and_set_bit(PWMF_ENABLED, &pwm->flags))
+-		return pwm->chip->ops->enable(pwm->chip, pwm);
++	if (pwm && !pwm_is_enabled(pwm)) {
++		int err;
++
++		err = pwm->chip->ops->enable(pwm->chip, pwm);
++		if (!err)
++			pwm->state.enabled = true;
++
++		return err;
++	}
+ 
+ 	return pwm ? 0 : -EINVAL;
+ }
+@@ -487,8 +494,10 @@ EXPORT_SYMBOL_GPL(pwm_enable);
+  */
+ void pwm_disable(struct pwm_device *pwm)
+ {
+-	if (pwm && test_and_clear_bit(PWMF_ENABLED, &pwm->flags))
++	if (pwm && pwm_is_enabled(pwm)) {
+ 		pwm->chip->ops->disable(pwm->chip, pwm);
++		pwm->state.enabled = false;
++	}
+ }
+ EXPORT_SYMBOL_GPL(pwm_disable);
+ 
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index fafed26..f4bc034 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -75,8 +75,7 @@ enum pwm_polarity {
+ 
+ enum {
+ 	PWMF_REQUESTED = 1 << 0,
+-	PWMF_ENABLED = 1 << 1,
+-	PWMF_EXPORTED = 1 << 2,
++	PWMF_EXPORTED = 1 << 1,
+ };
+ 
+ /**
+@@ -84,11 +83,13 @@ enum {
+  * @period: PWM period (in nanoseconds)
+  * @duty_cycle: PWM duty cycle (in nanoseconds)
+  * @polarity: PWM polarity
++ * @enabled: PWM enabled status
+  */
+ struct pwm_state {
+ 	unsigned int period;
+ 	unsigned int duty_cycle;
+ 	enum pwm_polarity polarity;
++	bool enabled;
+ };
+ 
+ struct pwm_device {
+@@ -104,7 +105,7 @@ struct pwm_device {
+ 
+ static inline bool pwm_is_enabled(const struct pwm_device *pwm)
+ {
+-	return test_bit(PWMF_ENABLED, &pwm->flags);
++	return pwm->state.enabled;
+ }
+ 
+ static inline void pwm_set_period(struct pwm_device *pwm, unsigned int period)
+-- 
+1.9.1
