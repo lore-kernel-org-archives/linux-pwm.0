@@ -1,129 +1,151 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 2/2] pwm-pca9685: Support changing the output frequency
-Date: Mon, 20 Jul 2015 11:58:14 +0200
-Message-ID: <20150720095813.GU29614@ulmo>
-References: <1437381369-8502-1-git-send-email-clemens.gruber@pqgruber.com>
- <1437381369-8502-3-git-send-email-clemens.gruber@pqgruber.com>
- <20150720093011.GQ29614@ulmo>
- <20150720094612.GA20084@pqgruber.com>
- <20150720095054.GB20084@pqgruber.com>
+Subject: Re: [RFC PATCH 08/15] backlight: pwm_bl: remove useless call to
+ pwm_set_period
+Date: Mon, 20 Jul 2015 12:01:05 +0200
+Message-ID: <20150720100104.GV29614@ulmo>
+References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1435738921-25027-9-git-send-email-boris.brezillon@free-electrons.com>
+ <20150720081559.GI29614@ulmo>
+ <20150720102143.05949ca2@bbrezillon>
+ <20150720083648.GK29614@ulmo>
+ <20150720105003.29b5813a@bbrezillon>
+ <20150720091003.GN29614@ulmo>
+ <20150720115704.0c64d070@bbrezillon>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="XSEVMyPRvc8xgDhM"
+	protocol="application/pgp-signature"; boundary="D2rVImvqWGvKULsk"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wg0-f47.google.com ([74.125.82.47]:36575 "EHLO
-	mail-wg0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752058AbbGTJ62 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jul 2015 05:58:28 -0400
-Received: by wgbcc4 with SMTP id cc4so33209417wgb.3
-        for <linux-pwm@vger.kernel.org>; Mon, 20 Jul 2015 02:58:26 -0700 (PDT)
+Received: from mail-wg0-f41.google.com ([74.125.82.41]:36828 "EHLO
+	mail-wg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752245AbbGTKBT (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jul 2015 06:01:19 -0400
 Content-Disposition: inline
-In-Reply-To: <20150720095054.GB20084@pqgruber.com>
+In-Reply-To: <20150720115704.0c64d070@bbrezillon>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Clemens Gruber <clemens.gruber@pqgruber.com>
-Cc: linux-pwm@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, Stephen Warren <swarren@wwwdotorg.org>, Alexandre Courbot <gnurou@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Doug Anderson <dianders@google.com>
 
 
---XSEVMyPRvc8xgDhM
+--D2rVImvqWGvKULsk
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 20, 2015 at 11:50:55AM +0200, Clemens Gruber wrote:
-> On Mon, Jul 20, 2015 at 11:46:12AM +0200, Clemens Gruber wrote:
-> > On Mon, Jul 20, 2015 at 11:30:22AM +0200, Thierry Reding wrote:
-> > > On Mon, Jul 20, 2015 at 10:36:09AM +0200, Clemens Gruber wrote:
-> > > > Previously, period_ns and duty_ns were only used to determine the
-> > > > ratio of ON and OFF time, the default frequency of 200 Hz was never
-> > > > changed.
-> > > > The PCA9685 however is capable of changing the PWM output frequency,
-> > > > which is expected when changing the period.
-> > > >=20
-> > > > This patch configures the prescaler accordingly, using the formula
-> > > > and notes provided in the PCA9685 datasheet.
-> > > > Bounds checking for the minimum and maximum frequencies, last updat=
-ed
-> > > > in revision v.4 of said datasheet, is also added.
-> > > >=20
-> > > > The prescaler is only touched if the period changed, because we hav=
-e to
-> > > > put the chip into sleep mode to unlock the prescale register.
-> > > > If it is changed, the PWM output frequency changes for all outputs,
-> > > > because there is one prescaler per chip. This is documented in the
-> > > > PCA9685 datasheet and in the comments.
-> > >=20
-> > > I think the reason why the driver doesn't support changing the freque=
-ncy
-> > > is precisely because it has a per-chip prescaler. So you'd be changing
-> > > the frequency from other all other users if one of the channels reque=
-sts
-> > > to do so. If I remember correctly there had been some discussion back=
- at
-> > > the time that this wasn't safe to do.
-> > >=20
-> > > If you have to do this, I'd think you'd need to at least update the d=
-uty
-> > > cycle of all other users according to the new period.
-> >=20
-> > Hi, thanks for your feedback.
-> >=20
-> > Yes, that's true. You'd have to set the prescaler first and then manual=
-ly set
-> > all duty cycle values. Although this is a hardware feature, I can under=
-stand
-> > that this might be confusing.
-> >=20
-> > I will send a v4 to update the duty cycle of all other users after the =
-chip
-> > woke up again!
-> > (Using the ratio from duty cycle to old period to set the new duty cycl=
-e)
-> >=20
-> > Clemens
+On Mon, Jul 20, 2015 at 11:57:04AM +0200, Boris Brezillon wrote:
+> On Mon, 20 Jul 2015 11:10:04 +0200
+> Thierry Reding <thierry.reding@gmail.com> wrote:
 >=20
-> Do you think it would be a good idea to print something to the kernel log=
- when
-> changing the prescaler frequency? At the moment I only print an error whe=
-n it is
-> out of bounds.
-> To notify the users that the frequency of all channels changed and the du=
-ty
-> cycle values have been adjusted?
+> > On Mon, Jul 20, 2015 at 10:50:03AM +0200, Boris Brezillon wrote:
+> > > On Mon, 20 Jul 2015 10:36:50 +0200
+> > > Thierry Reding <thierry.reding@gmail.com> wrote:
+> > >=20
+> > > > On Mon, Jul 20, 2015 at 10:21:43AM +0200, Boris Brezillon wrote:
+> > > > > On Mon, 20 Jul 2015 10:16:00 +0200
+> > > > > Thierry Reding <thierry.reding@gmail.com> wrote:
+> > > > >=20
+> > > > > > On Wed, Jul 01, 2015 at 10:21:54AM +0200, Boris Brezillon wrote:
+> > > > > > > The PWM period will be set when calling pwm_config. Remove th=
+is useless
+> > > > > > > call to pwm_set_period, which might mess up with the initial =
+PWM state
+> > > > > > > once we have added proper support for PWM init state retrieva=
+l.
+> > > > > > >=20
+> > > > > > > Signed-off-by: Boris Brezillon <boris.brezillon@free-electron=
+s.com>
+> > > > > > > ---
+> > > > > > >  drivers/video/backlight/pwm_bl.c | 4 +---
+> > > > > > >  1 file changed, 1 insertion(+), 3 deletions(-)
+> > > > > > >=20
+> > > > > > > diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video=
+/backlight/pwm_bl.c
+> > > > > > > index ae498c1..fe5597c 100644
+> > > > > > > --- a/drivers/video/backlight/pwm_bl.c
+> > > > > > > +++ b/drivers/video/backlight/pwm_bl.c
+> > > > > > > @@ -295,10 +295,8 @@ static int pwm_backlight_probe(struct pl=
+atform_device *pdev)
+> > > > > > >  	 * via the PWM lookup table.
+> > > > > > >  	 */
+> > > > > > >  	pb->period =3D pwm_get_default_period(pb->pwm);
+> > > > > > > -	if (!pb->period && (data->pwm_period_ns > 0)) {
+> > > > > > > +	if (!pb->period && (data->pwm_period_ns > 0))
+> > > > > > >  		pb->period =3D data->pwm_period_ns;
+> > > > > > > -		pwm_set_period(pb->pwm, data->pwm_period_ns);
+> > > > > > > -	}
+> > > > > > > =20
+> > > > > > >  	pb->lth_brightness =3D data->lth_brightness * (pb->period /=
+ pb->scale);
+> > > > > >=20
+> > > > > > As far as I remember this line is there in order to pass in a p=
+eriod if
+> > > > > > the backlight driver is initialized from board setup files. In =
+such a
+> > > > > > case there won't be an period associated with the PWM channel i=
+n the
+> > > > > > first place.
+> > > > > >=20
+> > > > > > I think even with the introduction of a default period, we'd be=
+ missing
+> > > > > > out on the board setup case because there is no standard place =
+where it
+> > > > > > is being set, so it must come from the platform data.
+> > > > >=20
+> > > > > AFAICT, we don't need to explicitly set the period when probing t=
+he
+> > > > > backlight device, because it will be set next time we call
+> > > > > pwm_config(), and since we're passing pb->period when calling
+> > > > > pwm_config() everything should be fine.
+> > > >=20
+> > > > Calling pwm_set_period() is still good for consistency. Consider for
+> > > > example what happens if after the driver were to call pwm_get_perio=
+d().
+> > > > It would return some more or less random value (likely 0 or whateve=
+r it
+> > > > had been set to by an earlier user).
+> > >=20
+> > > Yes, that's true in general, but in this specific driver
+> > > pwm_get_period() is never called, and the driver only relies on the
+> > > pb->period value.
+> >=20
+> > Perhaps that's something that should change. If the PWM core has all
+> > this infrastructure there should be no need for the backlight driver to
+> > keep it's own copy of that variable.
+>=20
+> Yes, probably. In any case, I don't think we want PWM users to be able
+> to mess up with the current or default PWM state, that's why I was
+> planning on making the pwm_set_default_xxx helpers private to PWM
+> drivers and core infrastructure.
+>=20
+> Also note that if we keep this assignment it should at least be changed
+> to a pwm_set_default_period() so that it does not override the current
+> PWM state.
 
-None of the users would actually notice the kernel log entry, so I don't
-think it makes much sense. One problem I see with this is that we might
-start to see some sort of ping-pong happening between various users of
-the PWMs of the same chip.
-
-I guess it depends a bit on what the typical use-cases are for this
-chip. Is it usually used only for LEDs (the register names suggest it)?
-If so, how likely is it that people will want to drive them at different
-periods? If it's reasonable to require the same period for all of them,
-maybe it would be worth adding some sort of WARN_ON() or dev_warn() or
-something to notify integrators of this fact.
+I think we should be able to live without the assignment. Perhaps when
+replacing it, add a comment saying that this is for very legacy cases
+only and that PWM lookup tables are the right way to fix this.
 
 Thierry
 
---XSEVMyPRvc8xgDhM
+--D2rVImvqWGvKULsk
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJVrMYyAAoJEN0jrNd/PrOhEPcP/RL28+W+eT4ytbZbauug4X5O
-7C+5v1SKvy06cTvyTcw0VEBeYYvDuteJxJn6Ks1JtRYqOyQ6hVK67smCxOl1i2Qf
-naUh2q1nGw9gdHGBl26IRDkgJFD8MmMQUuIKTwp7hf4TJkszjJjWe6Q3p6BOs/Mo
-tan7LS86Y03TdRF0nJMw5eDPH4/m1QUndgoGKPDNVsBDBK1ZcQ5SFAjWinYB2AvF
-axQbtmFATDhDytKLsNw4Zm0cRDws2y4ehunNaL+Bhc3TWsFcC+wz2gtQZWzOXzjx
-2Oa2G/Cyl+rNhG1NGsYZW+SjDjqqbwGU4W8f0WK74rK5TzXSzhIN9lr/Kis+0Dt3
-ygYxfGKkQpDo0uqVXGUop/kXPkF1VIiYnZ6i7MYV5QszS0VLUDKfxPiHk/pkARVK
-TkeNSU0957eZAA8Wzl6xPIfiiCWXrvivvW+a1RKq03RjrzdN9GFLNlYpB8G9F4Ia
-49I7lTNLikQhegZeC9unMo8c3ESYtYiGDpSdZt2MsfreJlxvJ45xObf1eBD9j+3d
-TLjwT0/UEjpvni8hx6tiWysTggr89jCaXwXQXftcK7rhjiVprZTKoGNLZaftyUqM
-9DxrUk8QKkwe5ftkBBk0fquuGG4qxbbvq90ubdps9qa78dDmHD4ChhMP2Za7j07/
-24w9jxlSSgeY3T6OhZ3n
-=Ic8V
+iQIcBAABCAAGBQJVrMbgAAoJEN0jrNd/PrOhjjAP/0gTVNmlxd/yjMQxjxIro6o8
+li6sl878OgUFC4F0tXOxq+oBwIN8clXa9lvCr4xtuiSW0WMOGBLKFNXTjTyYMYUw
+AM7e7RhJfHhNVur/5jk/C8y5xIEAQwa5/a8eh2hMJlmJvaNYBnpNzYx709LGKt03
+1v1jAR0YyDTDTtbKlaPYSPmqnuPi+y64qYSMxcZEYRkrMGRLKiaCqjjfVaWq3ES3
+jcnUQB6MW/aPcEuLt6v2hLNie6AipSdLrm8D4VIvVWX0Rj9ZTXPYznDQnOxwQc0w
+TeiVheHQTye1baviSk+epx3Uyi/6ZbSlH1kkO7lzYGL2/VomaBwYeLOVx/ZITVR9
+aOyfMSTcsnml8NNS6H+S7hZ20FAFO/sncRo3Xad+5c3n72jsoqyjMdwz2fHezqFY
+Cs5ugfMfdAX50WiIHmSJ8GAbSQjAV9e7OfKY37c/Sveep+NPH9tegpsEu8MWTmfh
+NpGapzwlBaY9C139pjrDlBwnXj2gI3qTpCRIf1zhYHgAb5j6n+4qku4N99HHUWd8
+ODJtAdPK6ahqllGGgGHWbJkSAsNT0l/v08/rOYrclvnMMiGK15qPYNz/CH32VHsr
+n/qWgDTT8RNoQJAbZkrJkZ2qihVyjloDuCzL0YjW3yEBM7CLI2GUyTxhPrSrzGsG
+HtKcDulDxwQv3UdHG2rY
+=4wcV
 -----END PGP SIGNATURE-----
 
---XSEVMyPRvc8xgDhM--
+--D2rVImvqWGvKULsk--
