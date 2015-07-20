@@ -1,7 +1,7 @@
 From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v2 02/10] pwm: define a new pwm_state struct
-Date: Mon, 20 Jul 2015 17:31:59 +0200
-Message-ID: <1437406327-6207-3-git-send-email-boris.brezillon@free-electrons.com>
+Subject: [PATCH v2 01/10] pwm: introduce default period and polarity concepts
+Date: Mon, 20 Jul 2015 17:31:58 +0200
+Message-ID: <1437406327-6207-2-git-send-email-boris.brezillon@free-electrons.com>
 References: <1437406327-6207-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,116 +21,226 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, lin
 Cc: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-The PWM state, represented by its period, duty_cycle and polarity,
-is currently directly stored in the PWM device.
-Declare a pwm_state structure embedding those field so that we can later
-use this struct to atomically update all the PWM parameters at once.
+When requested by a user, the PWM is assigned a default period and polarity
+extracted from the DT, the platform data or statically set by the driver.
+Those default values are currently stored in the period and polarity
+fields of the pwm_device struct, but they will be stored somewhere else
+once we have introduced the architecture allowing for hardware state
+retrieval.
+
+The pwm_set_default_polarity and pwm_set_default_period should only be
+used by PWM drivers or the PWM core infrastructure to specify the
+default period and polarity values.
+
+PWM users might call the pwm_get_default_period to query the default
+period value. There is currently no helper to query the default
+polarity, but it might be added later on if there is a need for it.
+
+This patch also modifies all the places where the default helpers should
+be used in place of the standard ones.
 
 Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 ---
- drivers/pwm/core.c  |  6 +++---
- include/linux/pwm.h | 26 ++++++++++++++++++--------
- 2 files changed, 21 insertions(+), 11 deletions(-)
+ drivers/leds/leds-pwm.c              |  2 +-
+ drivers/pwm/core.c                   | 14 +++++++-------
+ drivers/pwm/pwm-pxa.c                |  2 +-
+ drivers/pwm/pwm-sun4i.c              |  3 ++-
+ drivers/regulator/pwm-regulator.c    |  2 +-
+ drivers/video/backlight/lm3630a_bl.c |  4 ++--
+ drivers/video/backlight/pwm_bl.c     |  2 +-
+ drivers/video/fbdev/ssd1307fb.c      |  2 +-
+ include/linux/pwm.h                  | 17 +++++++++++++++++
+ 9 files changed, 33 insertions(+), 15 deletions(-)
 
+diff --git a/drivers/leds/leds-pwm.c b/drivers/leds/leds-pwm.c
+index 1d07e3e..2c564d1 100644
+--- a/drivers/leds/leds-pwm.c
++++ b/drivers/leds/leds-pwm.c
+@@ -125,7 +125,7 @@ static int led_pwm_add(struct device *dev, struct led_pwm_priv *priv,
+ 	if (led_data->can_sleep)
+ 		INIT_WORK(&led_data->work, led_pwm_work);
+ 
+-	led_data->period = pwm_get_period(led_data->pwm);
++	led_data->period = pwm_get_default_period(led_data->pwm);
+ 	if (!led_data->period && (led->pwm_period_ns > 0))
+ 		led_data->period = led->pwm_period_ns;
+ 
 diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 7ffad2b..a6bc8e6 100644
+index f7c11d2..7ffad2b 100644
 --- a/drivers/pwm/core.c
 +++ b/drivers/pwm/core.c
-@@ -431,8 +431,8 @@ int pwm_config(struct pwm_device *pwm, int duty_ns, int period_ns)
- 	if (err)
- 		return err;
+@@ -146,12 +146,12 @@ of_pwm_xlate_with_flags(struct pwm_chip *pc, const struct of_phandle_args *args)
+ 	if (IS_ERR(pwm))
+ 		return pwm;
  
--	pwm->duty_cycle = duty_ns;
--	pwm->period = period_ns;
-+	pwm->state.duty_cycle = duty_ns;
-+	pwm->state.period = period_ns;
+-	pwm_set_period(pwm, args->args[1]);
++	pwm_set_default_period(pwm, args->args[1]);
+ 
+ 	if (args->args[2] & PWM_POLARITY_INVERTED)
+-		pwm_set_polarity(pwm, PWM_POLARITY_INVERSED);
++		pwm_set_default_polarity(pwm, PWM_POLARITY_INVERSED);
+ 	else
+-		pwm_set_polarity(pwm, PWM_POLARITY_NORMAL);
++		pwm_set_default_polarity(pwm, PWM_POLARITY_NORMAL);
+ 
+ 	return pwm;
+ }
+@@ -172,7 +172,7 @@ of_pwm_simple_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
+ 	if (IS_ERR(pwm))
+ 		return pwm;
+ 
+-	pwm_set_period(pwm, args->args[1]);
++	pwm_set_default_period(pwm, args->args[1]);
+ 
+ 	return pwm;
+ }
+@@ -262,7 +262,7 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
+ 		pwm->chip = chip;
+ 		pwm->pwm = chip->base + i;
+ 		pwm->hwpwm = i;
+-		pwm->polarity = polarity;
++		pwm_set_default_polarity(pwm, polarity);
+ 
+ 		radix_tree_insert(&pwm_tree, pwm->pwm, pwm);
+ 	}
+@@ -704,8 +704,8 @@ struct pwm_device *pwm_get(struct device *dev, const char *con_id)
+ 	if (IS_ERR(pwm))
+ 		goto out;
+ 
+-	pwm_set_period(pwm, chosen->period);
+-	pwm_set_polarity(pwm, chosen->polarity);
++	pwm_set_default_period(pwm, chosen->period);
++	pwm_set_default_polarity(pwm, chosen->polarity);
+ 
+ out:
+ 	mutex_unlock(&pwm_lookup_lock);
+diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
+index cb2f702..65b80aa 100644
+--- a/drivers/pwm/pwm-pxa.c
++++ b/drivers/pwm/pwm-pxa.c
+@@ -160,7 +160,7 @@ pxa_pwm_of_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
+ 	if (IS_ERR(pwm))
+ 		return pwm;
+ 
+-	pwm_set_period(pwm, args->args[0]);
++	pwm_set_default_period(pwm, args->args[0]);
+ 
+ 	return pwm;
+ }
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index cd9dde5..a364fb7 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -333,7 +333,8 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 	val = sun4i_pwm_readl(pwm, PWM_CTRL_REG);
+ 	for (i = 0; i < pwm->chip.npwm; i++)
+ 		if (!(val & BIT_CH(PWM_ACT_STATE, i)))
+-			pwm->chip.pwms[i].polarity = PWM_POLARITY_INVERSED;
++			pwm_set_default_polarity(&pwm->chip.pwms[i],
++						 PWM_POLARITY_INVERSED);
+ 	clk_disable_unprepare(pwm->clk);
  
  	return 0;
- }
-@@ -462,7 +462,7 @@ int pwm_set_polarity(struct pwm_device *pwm, enum pwm_polarity polarity)
- 	if (err)
- 		return err;
+diff --git a/drivers/regulator/pwm-regulator.c b/drivers/regulator/pwm-regulator.c
+index ffa9612..12b4d9d 100644
+--- a/drivers/regulator/pwm-regulator.c
++++ b/drivers/regulator/pwm-regulator.c
+@@ -46,7 +46,7 @@ static int pwm_regulator_set_voltage_sel(struct regulator_dev *rdev,
+ 	int dutycycle;
+ 	int ret;
  
--	pwm->polarity = polarity;
-+	pwm->state.polarity = polarity;
+-	pwm_reg_period = pwm_get_period(drvdata->pwm);
++	pwm_reg_period = pwm_get_default_period(drvdata->pwm);
  
- 	return 0;
- }
+ 	dutycycle = (pwm_reg_period *
+ 		    drvdata->duty_cycle_table[selector].dutycycle) / 100;
+diff --git a/drivers/video/backlight/lm3630a_bl.c b/drivers/video/backlight/lm3630a_bl.c
+index 35fe482..449ebc3 100644
+--- a/drivers/video/backlight/lm3630a_bl.c
++++ b/drivers/video/backlight/lm3630a_bl.c
+@@ -162,7 +162,7 @@ static int lm3630a_intr_config(struct lm3630a_chip *pchip)
+ 
+ static void lm3630a_pwm_ctrl(struct lm3630a_chip *pchip, int br, int br_max)
+ {
+-	unsigned int period = pwm_get_period(pchip->pwmd);
++	unsigned int period = pwm_get_default_period(pchip->pwmd);
+ 	unsigned int duty = br * period / br_max;
+ 
+ 	pwm_config(pchip->pwmd, duty, period);
+@@ -425,7 +425,7 @@ static int lm3630a_probe(struct i2c_client *client,
+ 			return PTR_ERR(pchip->pwmd);
+ 		}
+ 	}
+-	pchip->pwmd->period = pdata->pwm_period;
++	pwm_set_default_period(pchip->pwmd, pdata->pwm_period);
+ 
+ 	/* interrupt enable  : irq 0 is not allowed */
+ 	pchip->irq = client->irq;
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index eff379b..ae498c1 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -294,7 +294,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	 * set the period from platform data if it has not already been set
+ 	 * via the PWM lookup table.
+ 	 */
+-	pb->period = pwm_get_period(pb->pwm);
++	pb->period = pwm_get_default_period(pb->pwm);
+ 	if (!pb->period && (data->pwm_period_ns > 0)) {
+ 		pb->period = data->pwm_period_ns;
+ 		pwm_set_period(pb->pwm, data->pwm_period_ns);
+diff --git a/drivers/video/fbdev/ssd1307fb.c b/drivers/video/fbdev/ssd1307fb.c
+index 3e153c0..6949626 100644
+--- a/drivers/video/fbdev/ssd1307fb.c
++++ b/drivers/video/fbdev/ssd1307fb.c
+@@ -294,7 +294,7 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
+ 			return PTR_ERR(par->pwm);
+ 		}
+ 
+-		par->pwm_period = pwm_get_period(par->pwm);
++		par->pwm_period = pwm_get_default_period(par->pwm);
+ 		/* Enable the PWM */
+ 		pwm_config(par->pwm, par->pwm_period / 2, par->pwm_period);
+ 		pwm_enable(par->pwm);
 diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index ba4b7ed..fafed26 100644
+index 6f286df..ba4b7ed 100644
 --- a/include/linux/pwm.h
 +++ b/include/linux/pwm.h
-@@ -79,6 +79,18 @@ enum {
- 	PWMF_EXPORTED = 1 << 2,
- };
- 
-+/**
-+ * struct pwm_state - state of a PWM channel
-+ * @period: PWM period (in nanoseconds)
-+ * @duty_cycle: PWM duty cycle (in nanoseconds)
-+ * @polarity: PWM polarity
-+ */
-+struct pwm_state {
-+	unsigned int period;
-+	unsigned int duty_cycle;
-+	enum pwm_polarity polarity;
-+};
-+
- struct pwm_device {
- 	const char		*label;
- 	unsigned long		flags;
-@@ -87,9 +99,7 @@ struct pwm_device {
- 	struct pwm_chip		*chip;
- 	void			*chip_data;
- 
--	unsigned int		period; 	/* in nanoseconds */
--	unsigned int		duty_cycle;	/* in nanoseconds */
--	enum pwm_polarity	polarity;
-+	struct pwm_state	state;
- };
- 
- static inline bool pwm_is_enabled(const struct pwm_device *pwm)
-@@ -100,7 +110,7 @@ static inline bool pwm_is_enabled(const struct pwm_device *pwm)
- static inline void pwm_set_period(struct pwm_device *pwm, unsigned int period)
- {
- 	if (pwm)
--		pwm->period = period;
-+		pwm->state.period = period;
+@@ -103,11 +103,22 @@ static inline void pwm_set_period(struct pwm_device *pwm, unsigned int period)
+ 		pwm->period = period;
  }
  
- static inline void pwm_set_default_period(struct pwm_device *pwm,
-@@ -111,7 +121,7 @@ static inline void pwm_set_default_period(struct pwm_device *pwm,
- 
++static inline void pwm_set_default_period(struct pwm_device *pwm,
++					  unsigned int period)
++{
++	pwm_set_period(pwm, period);
++}
++
  static inline unsigned int pwm_get_period(const struct pwm_device *pwm)
  {
--	return pwm ? pwm->period : 0;
-+	return pwm ? pwm->state.period : 0;
+ 	return pwm ? pwm->period : 0;
  }
  
- static inline unsigned int pwm_get_default_period(const struct pwm_device *pwm)
-@@ -122,12 +132,12 @@ static inline unsigned int pwm_get_default_period(const struct pwm_device *pwm)
++static inline unsigned int pwm_get_default_period(const struct pwm_device *pwm)
++{
++	return pwm_get_period(pwm);
++}
++
  static inline void pwm_set_duty_cycle(struct pwm_device *pwm, unsigned int duty)
  {
  	if (pwm)
--		pwm->duty_cycle = duty;
-+		pwm->state.duty_cycle = duty;
- }
+@@ -124,6 +135,12 @@ static inline unsigned int pwm_get_duty_cycle(const struct pwm_device *pwm)
+  */
+ int pwm_set_polarity(struct pwm_device *pwm, enum pwm_polarity polarity);
  
- static inline unsigned int pwm_get_duty_cycle(const struct pwm_device *pwm)
- {
--	return pwm ? pwm->duty_cycle : 0;
-+	return pwm ? pwm->state.duty_cycle : 0;
- }
- 
- /*
-@@ -143,7 +153,7 @@ static inline void pwm_set_default_polarity(struct pwm_device *pwm,
- 
++static inline void pwm_set_default_polarity(struct pwm_device *pwm,
++					    enum pwm_polarity polarity)
++{
++	pwm_set_polarity(pwm, polarity);
++}
++
  static inline enum pwm_polarity pwm_get_polarity(const struct pwm_device *pwm)
  {
--	return pwm ? pwm->polarity : PWM_POLARITY_NORMAL;
-+	return pwm ? pwm->state.polarity : PWM_POLARITY_NORMAL;
- }
- 
- /**
+ 	return pwm ? pwm->polarity : PWM_POLARITY_NORMAL;
 -- 
 1.9.1
