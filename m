@@ -1,70 +1,104 @@
-From: Clemens Gruber <clemens.gruber@pqgruber.com>
-Subject: Re: [PATCH v3 2/2] pwm-pca9685: Support changing the output frequency
-Date: Mon, 20 Jul 2015 11:50:55 +0200
-Message-ID: <20150720095054.GB20084@pqgruber.com>
-References: <1437381369-8502-1-git-send-email-clemens.gruber@pqgruber.com>
- <1437381369-8502-3-git-send-email-clemens.gruber@pqgruber.com>
- <20150720093011.GQ29614@ulmo>
- <20150720094612.GA20084@pqgruber.com>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: Re: [RFC PATCH 08/15] backlight: pwm_bl: remove useless call to
+ pwm_set_period
+Date: Mon, 20 Jul 2015 11:57:04 +0200
+Message-ID: <20150720115704.0c64d070@bbrezillon>
+References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
+	<1435738921-25027-9-git-send-email-boris.brezillon@free-electrons.com>
+	<20150720081559.GI29614@ulmo>
+	<20150720102143.05949ca2@bbrezillon>
+	<20150720083648.GK29614@ulmo>
+	<20150720105003.29b5813a@bbrezillon>
+	<20150720091003.GN29614@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.pqgruber.com ([178.189.19.235]:42915 "EHLO
-	mail.pqgruber.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750853AbbGTJu5 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jul 2015 05:50:57 -0400
-Content-Disposition: inline
-In-Reply-To: <20150720094612.GA20084@pqgruber.com>
+Received: from down.free-electrons.com ([37.187.137.238]:46398 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752598AbbGTJ5I (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jul 2015 05:57:08 -0400
+In-Reply-To: <20150720091003.GN29614@ulmo>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org
+Cc: linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, Stephen Warren <swarren@wwwdotorg.org>, Alexandre Courbot <gnurou@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Doug Anderson <dianders@google.com>
 
-On Mon, Jul 20, 2015 at 11:46:12AM +0200, Clemens Gruber wrote:
-> On Mon, Jul 20, 2015 at 11:30:22AM +0200, Thierry Reding wrote:
-> > On Mon, Jul 20, 2015 at 10:36:09AM +0200, Clemens Gruber wrote:
-> > > Previously, period_ns and duty_ns were only used to determine the
-> > > ratio of ON and OFF time, the default frequency of 200 Hz was never
-> > > changed.
-> > > The PCA9685 however is capable of changing the PWM output frequency,
-> > > which is expected when changing the period.
-> > > 
-> > > This patch configures the prescaler accordingly, using the formula
-> > > and notes provided in the PCA9685 datasheet.
-> > > Bounds checking for the minimum and maximum frequencies, last updated
-> > > in revision v.4 of said datasheet, is also added.
-> > > 
-> > > The prescaler is only touched if the period changed, because we have to
-> > > put the chip into sleep mode to unlock the prescale register.
-> > > If it is changed, the PWM output frequency changes for all outputs,
-> > > because there is one prescaler per chip. This is documented in the
-> > > PCA9685 datasheet and in the comments.
+On Mon, 20 Jul 2015 11:10:04 +0200
+Thierry Reding <thierry.reding@gmail.com> wrote:
+
+> On Mon, Jul 20, 2015 at 10:50:03AM +0200, Boris Brezillon wrote:
+> > On Mon, 20 Jul 2015 10:36:50 +0200
+> > Thierry Reding <thierry.reding@gmail.com> wrote:
 > > 
-> > I think the reason why the driver doesn't support changing the frequency
-> > is precisely because it has a per-chip prescaler. So you'd be changing
-> > the frequency from other all other users if one of the channels requests
-> > to do so. If I remember correctly there had been some discussion back at
-> > the time that this wasn't safe to do.
+> > > On Mon, Jul 20, 2015 at 10:21:43AM +0200, Boris Brezillon wrote:
+> > > > On Mon, 20 Jul 2015 10:16:00 +0200
+> > > > Thierry Reding <thierry.reding@gmail.com> wrote:
+> > > > 
+> > > > > On Wed, Jul 01, 2015 at 10:21:54AM +0200, Boris Brezillon wrote:
+> > > > > > The PWM period will be set when calling pwm_config. Remove this useless
+> > > > > > call to pwm_set_period, which might mess up with the initial PWM state
+> > > > > > once we have added proper support for PWM init state retrieval.
+> > > > > > 
+> > > > > > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> > > > > > ---
+> > > > > >  drivers/video/backlight/pwm_bl.c | 4 +---
+> > > > > >  1 file changed, 1 insertion(+), 3 deletions(-)
+> > > > > > 
+> > > > > > diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+> > > > > > index ae498c1..fe5597c 100644
+> > > > > > --- a/drivers/video/backlight/pwm_bl.c
+> > > > > > +++ b/drivers/video/backlight/pwm_bl.c
+> > > > > > @@ -295,10 +295,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+> > > > > >  	 * via the PWM lookup table.
+> > > > > >  	 */
+> > > > > >  	pb->period = pwm_get_default_period(pb->pwm);
+> > > > > > -	if (!pb->period && (data->pwm_period_ns > 0)) {
+> > > > > > +	if (!pb->period && (data->pwm_period_ns > 0))
+> > > > > >  		pb->period = data->pwm_period_ns;
+> > > > > > -		pwm_set_period(pb->pwm, data->pwm_period_ns);
+> > > > > > -	}
+> > > > > >  
+> > > > > >  	pb->lth_brightness = data->lth_brightness * (pb->period / pb->scale);
+> > > > > 
+> > > > > As far as I remember this line is there in order to pass in a period if
+> > > > > the backlight driver is initialized from board setup files. In such a
+> > > > > case there won't be an period associated with the PWM channel in the
+> > > > > first place.
+> > > > > 
+> > > > > I think even with the introduction of a default period, we'd be missing
+> > > > > out on the board setup case because there is no standard place where it
+> > > > > is being set, so it must come from the platform data.
+> > > > 
+> > > > AFAICT, we don't need to explicitly set the period when probing the
+> > > > backlight device, because it will be set next time we call
+> > > > pwm_config(), and since we're passing pb->period when calling
+> > > > pwm_config() everything should be fine.
+> > > 
+> > > Calling pwm_set_period() is still good for consistency. Consider for
+> > > example what happens if after the driver were to call pwm_get_period().
+> > > It would return some more or less random value (likely 0 or whatever it
+> > > had been set to by an earlier user).
 > > 
-> > If you have to do this, I'd think you'd need to at least update the duty
-> > cycle of all other users according to the new period.
+> > Yes, that's true in general, but in this specific driver
+> > pwm_get_period() is never called, and the driver only relies on the
+> > pb->period value.
 > 
-> Hi, thanks for your feedback.
-> 
-> Yes, that's true. You'd have to set the prescaler first and then manually set
-> all duty cycle values. Although this is a hardware feature, I can understand
-> that this might be confusing.
-> 
-> I will send a v4 to update the duty cycle of all other users after the chip
-> woke up again!
-> (Using the ratio from duty cycle to old period to set the new duty cycle)
-> 
-> Clemens
+> Perhaps that's something that should change. If the PWM core has all
+> this infrastructure there should be no need for the backlight driver to
+> keep it's own copy of that variable.
 
-Do you think it would be a good idea to print something to the kernel log when
-changing the prescaler frequency? At the moment I only print an error when it is
-out of bounds.
-To notify the users that the frequency of all channels changed and the duty
-cycle values have been adjusted?
+Yes, probably. In any case, I don't think we want PWM users to be able
+to mess up with the current or default PWM state, that's why I was
+planning on making the pwm_set_default_xxx helpers private to PWM
+drivers and core infrastructure.
 
-Clemens
+Also note that if we keep this assignment it should at least be changed
+to a pwm_set_default_period() so that it does not override the current
+PWM state.
+
+
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
