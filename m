@@ -1,79 +1,45 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH v2 05/10] pwm: declare a default PWM state
-Date: Mon, 20 Jul 2015 17:32:02 +0200
-Message-ID: <1437406327-6207-6-git-send-email-boris.brezillon@free-electrons.com>
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v2 00/10] pwm: add support for atomic update
+Date: Mon, 20 Jul 2015 18:19:50 +0100
+Message-ID: <20150720171950.GE11162@sirena.org.uk>
 References: <1437406327-6207-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="OwxNnBplxDBmy6FV"
+Return-path: <linux-leds-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <1437406327-6207-1-git-send-email-boris.brezillon@free-electrons.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, linux-fbdev@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, Jingoo Han <jingoohan1@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Bryan Wu <cooloney@gmail.com>, linux-kernel@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>, linux-rockchip@lists.infradead.org, Mark Brown <broonie@kernel.org>, Richard Purdie <rpurdie@rpsys.net>, linux-arm-kernel@lists.infradead.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Doug Anderson <dianders@google.com>, Lee Jones <lee.jones@linaro.org>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org
+Sender: linux-leds-owner@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-fbdev@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Doug Anderson <dianders@google.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Maxime Ripard <maxime.ripard@free-electrons.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Prepare the addition of the PWM initial state retrieval by adding a default
-state where all the parameters retrieved from DT, platform data or
-statically forced by the hardware will be stored.
-Once done we will be able to store the initial state in the ->state field
-without risking to loose the default parameters.
 
-Update the pwm_set/get_default_xxx helpers accordingly.
+--OwxNnBplxDBmy6FV
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
----
- include/linux/pwm.h | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+On Mon, Jul 20, 2015 at 05:31:57PM +0200, Boris Brezillon wrote:
 
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index f4bc034..1e6e9d1 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -101,6 +101,7 @@ struct pwm_device {
- 	void			*chip_data;
- 
- 	struct pwm_state	state;
-+	struct pwm_state	default_state;
- };
- 
- static inline bool pwm_is_enabled(const struct pwm_device *pwm)
-@@ -117,7 +118,8 @@ static inline void pwm_set_period(struct pwm_device *pwm, unsigned int period)
- static inline void pwm_set_default_period(struct pwm_device *pwm,
- 					  unsigned int period)
- {
--	pwm_set_period(pwm, period);
-+	if (pwm)
-+		pwm->default_state.period = period;
- }
- 
- static inline unsigned int pwm_get_period(const struct pwm_device *pwm)
-@@ -127,7 +129,7 @@ static inline unsigned int pwm_get_period(const struct pwm_device *pwm)
- 
- static inline unsigned int pwm_get_default_period(const struct pwm_device *pwm)
- {
--	return pwm_get_period(pwm);
-+	return pwm ? pwm->default_state.period : 0;
- }
- 
- static inline void pwm_set_duty_cycle(struct pwm_device *pwm, unsigned int duty)
-@@ -149,7 +151,8 @@ int pwm_set_polarity(struct pwm_device *pwm, enum pwm_polarity polarity);
- static inline void pwm_set_default_polarity(struct pwm_device *pwm,
- 					    enum pwm_polarity polarity)
- {
--	pwm_set_polarity(pwm, polarity);
-+	if (pwm)
-+		pwm->default_state.polarity = polarity;
- }
- 
- static inline enum pwm_polarity pwm_get_polarity(const struct pwm_device *pwm)
--- 
-1.9.1
+> - dropped pwm-regulator patches (should be submitted separately)
+
+I think the second patch needs to go in with this series doesn't it?  It
+was just the enable one that was good to go immediately IIRC.
+
+--OwxNnBplxDBmy6FV
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJVrS22AAoJECTWi3JdVIfQ3u4H/1DaEVJrIoD2zH3HSOGhfiRF
+bonfEXpacF+zm5pnN91kk06bGts2+xrKBPErT72C4awUlxb+wP4KilkJpBUKjdro
+/BKsfcs/OnNuxB1Yv1XL0ZH49fFDIMdauDnNR4L/wCA047dYKlrKTCAghkPQLEbY
+9VTLq6uIoCEMk5LRdGzX6rX31/638uqLH409BTAMUgsDKDk2Wg1HRgm3PHtvLDwS
+BYxO/eiAhTAvz+UirukwM3SzJ7BCVS0eSi6t9ftNeMB+rP6tS8xdYXiHhfueEGJE
+jfiI9A9hDfv405HOImy/uP9gnqQ1udwaZPU+/GBN6+wQweyvObDWEO3IkahJDcc=
+=S7l4
+-----END PGP SIGNATURE-----
+
+--OwxNnBplxDBmy6FV--
