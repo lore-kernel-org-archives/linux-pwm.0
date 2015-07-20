@@ -1,98 +1,85 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [RFC PATCH 05/15] pwm: introduce default period and polarity
- concepts
-Date: Mon, 20 Jul 2015 10:14:43 +0200
-Message-ID: <20150720101443.180ebddb@bbrezillon>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [RFC PATCH 08/15] backlight: pwm_bl: remove useless call to
+ pwm_set_period
+Date: Mon, 20 Jul 2015 10:16:00 +0200
+Message-ID: <20150720081559.GI29614@ulmo>
 References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1435738921-25027-6-git-send-email-boris.brezillon@free-electrons.com>
-	<20150702064445.GC11824@pengutronix.de>
-	<20150702094955.4b1c9254@bbrezillon>
-	<20150720080313.GF29614@ulmo>
+ <1435738921-25027-9-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:42222 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S932208AbbGTIOr convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jul 2015 04:14:47 -0400
-In-Reply-To: <20150720080313.GF29614@ulmo>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="J+eNKFoVC4T1DV3f"
+Return-path: <linux-leds-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1435738921-25027-9-git-send-email-boris.brezillon@free-electrons.com>
+Sender: linux-leds-owner@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, Stephen Warren <swarren@wwwdotorg.org>, Alexandre Courbot <gnurou@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Doug Anderson <dianders@google.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org, Alexandre Courbot <gnurou@gmail.com>, linux-fbdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, Stephen Warren <swarren@wwwdotorg.org>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Bryan Wu <cooloney@gmail.com>, Liam Girdwood <lgirdwood@gmail.com>, Doug Anderson <dianders@google.com>, Mark Brown <broonie@kernel.org>, Richard Purdie <rpurdie@rpsys.net>, linux-arm-kernel@lists.infradead.org, Jingoo Han <jingoohan1@gmail.com>, linux-tegra@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org
 
-Hi Thierry,
 
-On Mon, 20 Jul 2015 10:03:14 +0200
-Thierry Reding <thierry.reding@gmail.com> wrote:
+--J+eNKFoVC4T1DV3f
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> On Thu, Jul 02, 2015 at 09:49:55AM +0200, Boris Brezillon wrote:
-> > On Thu, 2 Jul 2015 08:44:45 +0200
-> > Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> wrote:
-> >=20
-> > > On Wed, Jul 01, 2015 at 10:21:51AM +0200, Boris Brezillon wrote:
-> > > > When requested by a user, the PWM is assigned a default period =
-and polarity
-> > > > extracted from the DT, the platform data or statically set by t=
-he driver.
-> > > > Those default values are currently stored in the period and pol=
-arity
-> > > > fields of the pwm_device struct, but they will be stored somewh=
-ere else
-> > > > once we have introduced the architecture allowing for hardware =
-state
-> > > > retrieval.
-> > > >=20
-> > > > The pwm_set_default_polarity and pwm_set_default_period should =
-only be
-> > > > used by PWM drivers or the PWM core infrastructure to specify t=
-he
-> > > > default period and polarity values.
-> > > Would it make sense to put the prototypes of
-> > > pwm_set_default_p{olarity,eriod} into (say) drivers/pwm/pwm-priva=
-te.h
-> > > then?
-> > >=20
-> >=20
-> > Yes, definitely. I was thinking about moving those functions/protot=
-ypes
-> > into include/linux/pwm-provider.h, but I'm fine with
-> > drivers/pwm/pwm-private.h too.
-> >=20
-> > Thierry, any opinion ?
+On Wed, Jul 01, 2015 at 10:21:54AM +0200, Boris Brezillon wrote:
+> The PWM period will be set when calling pwm_config. Remove this useless
+> call to pwm_set_period, which might mess up with the initial PWM state
+> once we have added proper support for PWM init state retrieval.
 >=20
-> I'm not sure I see the need for this. If they are the default values =
-and
-> drivers have no need to change them, then storing them in the regular
-> period and polarity fields seems just fine (they'll be propagated int=
-o
-> new state objects as they get created).
+> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> ---
+>  drivers/video/backlight/pwm_bl.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 >=20
-> And if the driver has a need to change them, then why would it ever c=
-are
-> about the default values?
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/p=
+wm_bl.c
+> index ae498c1..fe5597c 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -295,10 +295,8 @@ static int pwm_backlight_probe(struct platform_devic=
+e *pdev)
+>  	 * via the PWM lookup table.
+>  	 */
+>  	pb->period =3D pwm_get_default_period(pb->pwm);
+> -	if (!pb->period && (data->pwm_period_ns > 0)) {
+> +	if (!pb->period && (data->pwm_period_ns > 0))
+>  		pb->period =3D data->pwm_period_ns;
+> -		pwm_set_period(pb->pwm, data->pwm_period_ns);
+> -	}
+> =20
+>  	pb->lth_brightness =3D data->lth_brightness * (pb->period / pb->scale);
 
-Because the period is often directly extracted from the DT, and this
-extracted period may not match the one configured by the bootloader.
+As far as I remember this line is there in order to pass in a period if
+the backlight driver is initialized from board setup files. In such a
+case there won't be an period associated with the PWM channel in the
+first place.
 
-If the driver wants to display the current status without changing the
-PWM state, then the driver will use the current state. ITOH, if it
-has to apply a new config, the driver will use the default period
-value (extracted from the DT) and change the duty-cycle depending on it=
-s
-needs.
-This is the case we have with the pwm-regulator driver: we want to
-display the initial voltage value without changing the PWM config, and
-when someone decides to change the voltage, we want to use the default
-period instead of keeping the one configured by the bootloader.
+I think even with the introduction of a default period, we'd be missing
+out on the board setup case because there is no standard place where it
+is being set, so it must come from the platform data.
 
-Best Regards,
+Thierry
 
-Boris
+--J+eNKFoVC4T1DV3f
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
---=20
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+iQIcBAABCAAGBQJVrK4+AAoJEN0jrNd/PrOhhz4QALQMop9/W4KBetWzP02Z/0pO
+5bPdEEUE52967zON+58OBQSN3r0hate0J9aRO20ML9FA+fnM9BaWK43uth+d+OyH
+Kq7oWtIG3ojQJoFyYq5kCo9rV42sbT0kQhoUTHlZmtt3WK6F5D0GVGgT37N+GD+r
+J0kwHvR9C5VnBpQkABteRnRL5gUBgChIsyr2XOXLpCc8epWDserXzsoblRaizt/X
+2Q5uGeB2azYn4kWdAQQWo83jUyr6xhgiXefviH5pRgorBIoov3kizqA1t7l6YqCd
+i7R94GUtoJcPwyxA/lA44XC9+FJ8v1B0si4CEE9s7Mi2gQjSxxTe58oVzl1SiImd
+uvh58bA45lPHZwsbcyYnXB5ziV/uEH2na4FskxD1c4t8GgGorbzSJfbhSofh18e5
+Yz+mqsO98+ppId8FSUV4g77he5Wbr+Kv6u/ybpt999XyBiXzLCz7mBcXZ++Lu2Mq
+6Y3tmHBFaudRxzaFlSH1pPZo29l8fPjRpJ1LFqyT/Lu3c4Z/otp3KVn+Lc99LzRO
+nhuhzXFQ9sgG+HOhODY3U4CsBzUFwPLGfrIaoITWjXGj0BIt0VK/qD1ZhannmUbF
+o4tutCS28omRs7o1G1EqSBtPdJ16XPtRTwKKhYEMUScqgrm69evzQNiYENveJCCS
+bJR4OXsOc0pNiTqV2lFD
+=+fm1
+-----END PGP SIGNATURE-----
+
+--J+eNKFoVC4T1DV3f--
