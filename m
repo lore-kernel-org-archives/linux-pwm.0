@@ -1,64 +1,136 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH v2 06/10] pwm: add the PWM initial state retrieval infra
-Date: Mon, 20 Jul 2015 17:32:03 +0200
-Message-ID: <1437406327-6207-7-git-send-email-boris.brezillon@free-electrons.com>
+From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH v2 02/10] pwm: define a new pwm_state struct
+Date: Mon, 20 Jul 2015 17:31:59 +0200
+Message-ID: <1437406327-6207-3-git-send-email-boris.brezillon@free-electrons.com>
 References: <1437406327-6207-1-git-send-email-boris.brezillon@free-electrons.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:56259 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S932202AbbGTPcQ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jul 2015 11:32:16 -0400
-In-Reply-To: <1437406327-6207-1-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1437406327-6207-1-git-send-email-boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-fbdev@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Doug Anderson <dianders@google.com>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Maxime Ripard <maxime.ripard@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>
 
-Add a ->reset_state() function to the pwm_ops struct to let PWM drivers
-initialize the PWM state attached to a PWM device.
+The PWM state, represented by its period, duty_cycle and polarity,
+is currently directly stored in the PWM device.
+Declare a pwm_state structure embedding those field so that we can later
+use this struct to atomically update all the PWM parameters at once.
 
-Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 ---
- drivers/pwm/core.c  | 3 +++
- include/linux/pwm.h | 5 +++++
- 2 files changed, 8 insertions(+)
+ drivers/pwm/core.c  |  6 +++---
+ include/linux/pwm.h | 26 ++++++++++++++++++--------
+ 2 files changed, 21 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 3e830ce..236a8cf 100644
+index 7ffad2b..a6bc8e6 100644
 --- a/drivers/pwm/core.c
 +++ b/drivers/pwm/core.c
-@@ -264,6 +264,9 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
- 		pwm->hwpwm = i;
- 		pwm_set_default_polarity(pwm, polarity);
+@@ -431,8 +431,8 @@ int pwm_config(struct pwm_device *pwm, int duty_ns, int period_ns)
+ 	if (err)
+ 		return err;
  
-+		if (chip->ops->reset_state)
-+			chip->ops->reset_state(chip, pwm);
-+
- 		radix_tree_insert(&pwm_tree, pwm->pwm, pwm);
- 	}
+-	pwm->duty_cycle = duty_ns;
+-	pwm->period = period_ns;
++	pwm->state.duty_cycle = duty_ns;
++	pwm->state.period = period_ns;
  
+ 	return 0;
+ }
+@@ -462,7 +462,7 @@ int pwm_set_polarity(struct pwm_device *pwm, enum pwm_polarity polarity)
+ 	if (err)
+ 		return err;
+ 
+-	pwm->polarity = polarity;
++	pwm->state.polarity = polarity;
+ 
+ 	return 0;
+ }
 diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index 1e6e9d1..df78211 100644
+index ba4b7ed..fafed26 100644
 --- a/include/linux/pwm.h
 +++ b/include/linux/pwm.h
-@@ -168,6 +168,9 @@ static inline enum pwm_polarity pwm_get_polarity(const struct pwm_device *pwm)
-  * @set_polarity: configure the polarity of this PWM
-  * @enable: enable PWM output toggling
-  * @disable: disable PWM output toggling
-+ * @reset_state: reset the current PWM state (pwm->state) to the actual
-+ *		 hardware state. This function is only called once per
-+ *		 PWM device when the PWM chip is registered.
-  * @dbg_show: optional routine to show contents in debugfs
-  * @owner: helps prevent removal of modules exporting active PWMs
-  */
-@@ -186,6 +189,8 @@ struct pwm_ops {
- 					  struct pwm_device *pwm);
- 	void			(*disable)(struct pwm_chip *chip,
- 					   struct pwm_device *pwm);
-+	void			(*reset_state)(struct pwm_chip *chip,
-+					       struct pwm_device *pwm);
- #ifdef CONFIG_DEBUG_FS
- 	void			(*dbg_show)(struct pwm_chip *chip,
- 					    struct seq_file *s);
+@@ -79,6 +79,18 @@ enum {
+ 	PWMF_EXPORTED = 1 << 2,
+ };
+ 
++/**
++ * struct pwm_state - state of a PWM channel
++ * @period: PWM period (in nanoseconds)
++ * @duty_cycle: PWM duty cycle (in nanoseconds)
++ * @polarity: PWM polarity
++ */
++struct pwm_state {
++	unsigned int period;
++	unsigned int duty_cycle;
++	enum pwm_polarity polarity;
++};
++
+ struct pwm_device {
+ 	const char		*label;
+ 	unsigned long		flags;
+@@ -87,9 +99,7 @@ struct pwm_device {
+ 	struct pwm_chip		*chip;
+ 	void			*chip_data;
+ 
+-	unsigned int		period; 	/* in nanoseconds */
+-	unsigned int		duty_cycle;	/* in nanoseconds */
+-	enum pwm_polarity	polarity;
++	struct pwm_state	state;
+ };
+ 
+ static inline bool pwm_is_enabled(const struct pwm_device *pwm)
+@@ -100,7 +110,7 @@ static inline bool pwm_is_enabled(const struct pwm_device *pwm)
+ static inline void pwm_set_period(struct pwm_device *pwm, unsigned int period)
+ {
+ 	if (pwm)
+-		pwm->period = period;
++		pwm->state.period = period;
+ }
+ 
+ static inline void pwm_set_default_period(struct pwm_device *pwm,
+@@ -111,7 +121,7 @@ static inline void pwm_set_default_period(struct pwm_device *pwm,
+ 
+ static inline unsigned int pwm_get_period(const struct pwm_device *pwm)
+ {
+-	return pwm ? pwm->period : 0;
++	return pwm ? pwm->state.period : 0;
+ }
+ 
+ static inline unsigned int pwm_get_default_period(const struct pwm_device *pwm)
+@@ -122,12 +132,12 @@ static inline unsigned int pwm_get_default_period(const struct pwm_device *pwm)
+ static inline void pwm_set_duty_cycle(struct pwm_device *pwm, unsigned int duty)
+ {
+ 	if (pwm)
+-		pwm->duty_cycle = duty;
++		pwm->state.duty_cycle = duty;
+ }
+ 
+ static inline unsigned int pwm_get_duty_cycle(const struct pwm_device *pwm)
+ {
+-	return pwm ? pwm->duty_cycle : 0;
++	return pwm ? pwm->state.duty_cycle : 0;
+ }
+ 
+ /*
+@@ -143,7 +153,7 @@ static inline void pwm_set_default_polarity(struct pwm_device *pwm,
+ 
+ static inline enum pwm_polarity pwm_get_polarity(const struct pwm_device *pwm)
+ {
+-	return pwm ? pwm->polarity : PWM_POLARITY_NORMAL;
++	return pwm ? pwm->state.polarity : PWM_POLARITY_NORMAL;
+ }
+ 
+ /**
 -- 
 1.9.1
