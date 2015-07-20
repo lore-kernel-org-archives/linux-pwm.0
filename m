@@ -1,114 +1,74 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 1/2] pwm-pca9685: Fix several driver bugs
-Date: Mon, 20 Jul 2015 11:27:24 +0200
-Message-ID: <20150720092723.GP29614@ulmo>
+Subject: Re: [PATCH v3 2/2] pwm-pca9685: Support changing the output frequency
+Date: Mon, 20 Jul 2015 11:30:22 +0200
+Message-ID: <20150720093011.GQ29614@ulmo>
 References: <1437381369-8502-1-git-send-email-clemens.gruber@pqgruber.com>
- <1437381369-8502-2-git-send-email-clemens.gruber@pqgruber.com>
+ <1437381369-8502-3-git-send-email-clemens.gruber@pqgruber.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="tZCmRiovzb4sxAVa"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wi0-f173.google.com ([209.85.212.173]:36889 "EHLO
-	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751104AbbGTJ1h (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jul 2015 05:27:37 -0400
+	protocol="application/pgp-signature"; boundary="oDto3OTLsk6uOlQH"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1437381369-8502-2-git-send-email-clemens.gruber@pqgruber.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+In-Reply-To: <1437381369-8502-3-git-send-email-clemens.gruber@pqgruber.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Clemens Gruber <clemens.gruber@pqgruber.com>
 Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Steffen Trumtrar <s.trumtrar@pengutronix.de>
+List-Id: linux-pwm@vger.kernel.org
 
 
---tZCmRiovzb4sxAVa
+--oDto3OTLsk6uOlQH
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 20, 2015 at 10:36:08AM +0200, Clemens Gruber wrote:
-> Problems:
-> - When duty_ns =3D=3D period_ns, the full OFF bit was not cleared and the
->   PWM output of the PCA9685 stayed off.
-> - When duty_ns =3D=3D period_ns and the catch-all channel was used, the
->   ALL_LED_OFF_L register was not cleared.
-> - The full ON bit was not cleared when setting the OFF time, therefore
->   the exact OFF time was ignored when setting a duty_ns < period_ns
+On Mon, Jul 20, 2015 at 10:36:09AM +0200, Clemens Gruber wrote:
+> Previously, period_ns and duty_ns were only used to determine the
+> ratio of ON and OFF time, the default frequency of 200 Hz was never
+> changed.
+> The PCA9685 however is capable of changing the PWM output frequency,
+> which is expected when changing the period.
 >=20
-> Solution: Clear both OFF registers when setting full ON and clear the
-> full ON bit when changing the OFF registers.
+> This patch configures the prescaler accordingly, using the formula
+> and notes provided in the PCA9685 datasheet.
+> Bounds checking for the minimum and maximum frequencies, last updated
+> in revision v.4 of said datasheet, is also added.
 >=20
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>
-> Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
-> ---
->  drivers/pwm/pwm-pca9685.c | 24 ++++++++++++++++++++++++
->  1 file changed, 24 insertions(+)
->=20
-> diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-> index 34b5c27..f4a9c4a 100644
-> --- a/drivers/pwm/pwm-pca9685.c
-> +++ b/drivers/pwm/pwm-pca9685.c
-> @@ -85,6 +85,22 @@ static int pca9685_pwm_config(struct pwm_chip *chip, s=
-truct pwm_device *pwm,
->  	}
-> =20
->  	if (duty_ns =3D=3D period_ns) {
-> +		/* Clear both OFF registers */
-> +		if (pwm->hwpwm >=3D PCA9685_MAXCHAN)
-> +			reg =3D PCA9685_ALL_LED_OFF_L;
-> +		else
-> +			reg =3D LED_N_OFF_L(pwm->hwpwm);
-> +
-> +		regmap_write(pca->regmap, reg, 0x0);
-> +
-> +		if (pwm->hwpwm >=3D PCA9685_MAXCHAN)
-> +			reg =3D PCA9685_ALL_LED_OFF_H;
-> +		else
-> +			reg =3D LED_N_OFF_H(pwm->hwpwm);
-> +
-> +		regmap_write(pca->regmap, reg, 0x0);
-> +
-> +		/* Set the full ON bit */
->  		if (pwm->hwpwm >=3D PCA9685_MAXCHAN)
->  			reg =3D PCA9685_ALL_LED_ON_H;
->  		else
-> @@ -112,6 +128,14 @@ static int pca9685_pwm_config(struct pwm_chip *chip,=
- struct pwm_device *pwm,
-> =20
->  	regmap_write(pca->regmap, reg, ((int)duty >> 8) & 0xf);
-> =20
-> +	/* Clear the full ON bit, otherwise the set OFF time has no effect */
-> +	if (pwm->hwpwm >=3D PCA9685_MAXCHAN)
-> +		reg =3D PCA9685_ALL_LED_ON_H;
-> +	else
-> +		reg =3D LED_N_ON_H(pwm->hwpwm);
-> +
-> +	regmap_write(pca->regmap, reg, 0);
+> The prescaler is only touched if the period changed, because we have to
+> put the chip into sleep mode to unlock the prescale register.
+> If it is changed, the PWM output frequency changes for all outputs,
+> because there is one prescaler per chip. This is documented in the
+> PCA9685 datasheet and in the comments.
 
-Doesn't this undo the setting of this register back up in the duty_ns =3D=3D
-period_ns conditional block?
+I think the reason why the driver doesn't support changing the frequency
+is precisely because it has a per-chip prescaler. So you'd be changing
+the frequency from other all other users if one of the channels requests
+to do so. If I remember correctly there had been some discussion back at
+the time that this wasn't safe to do.
+
+If you have to do this, I'd think you'd need to at least update the duty
+cycle of all other users according to the new period.
 
 Thierry
 
---tZCmRiovzb4sxAVa
+--oDto3OTLsk6uOlQH
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJVrL77AAoJEN0jrNd/PrOh6wQQAKE7Gz1Nu7m4mx2fifITnW7i
-HHX+aOmfgA9Gvr28VbqkPGE/tawTWcgSsquWGWCOtlifFj1hq8kGIVYxfM34rviE
-LRbUf3QKLOryEwli4gVxpS3/MJYV9HOKc2DfrKprbV91uTL8Y3aQZDf/LXRvkgLW
-3q4+bRamJXKiQ8KkI6IHI/33hARJa/PeDCaCpVtPSJNiadVElhlBIRL0U+UVFZA7
-zriho9VfosLzu/Pu6MehONQubVXcgNmJqjxFW7OwKqcYtePTtuXwHpVZb0D6jqaJ
-R8zNMtOKgiWUPg2soUqj55dIhALITqNbp4X9QeoZmzvXHUTaZjNyo+2Pr94LirL7
-gQext8RCF324hlS6wGC8jxagiVsq7H/AqtMyW9KSrAV+V5KKXEsnhb5T6Wwssu1N
-lzeF++U8ZCVbg4NW5zxoXh1V7wn6eTjh+Gc7QzB52LUqa1mCZEtkJlZeEYr24Z5F
-Vrlf8vNu36DP31LVtemy04Qq8VPn0BgIK9MqAmE1LrDH57a8rGbikjBrPWHj9bF+
-3NzV6jQNiRrNm4SFxSN7dPwASgN9Gfk9mBVzH9gcscRWEkwN4W2I7juikhou4YaL
-50lR1XgIBSfnEHdrk3/C3Dhvwy3kdDyh+l+kk4IATAWxc1XnYGtNc5X2K3+ZG/St
-TQBlUyTRLHmdcBVQ9GGi
-=3AGM
+iQIcBAABCAAGBQJVrL+jAAoJEN0jrNd/PrOhdKQQAKqVFXFzbx4UTZ0eqiqlp1s8
+BVJFM09mfyTdtVsnZF5ylmtc52r6mkRS579MoRMmlF4kWWEin4hnLPL9EEs5LLHI
+eczWEDhgqldKVePS4phLbsuwIiX17h04ZD/p3XR+hz7VxhqzMBEhkE37C0yc2jMP
+bd4argl1rfPp4i2D5LiX0bGqNY4Vlk9hW1sDRckNVxrd3hJht/0Ffsv61xleNafY
+qk5H6D+/Pb3s73ro3n1fflpXN4CpEV+00lxJEsQNJpz+sbKgNc50Sc3bd0gVJygm
+Slvj0X0aFTVgPcOWkaUD0gRa/0WQkqp76HB0iIWU+YZE/a1swalZQDHVueB9S9f/
+oq+OaufqCdg2KHXisR4HLSvkIAp0hlEmKgowshS0BK9amxn2aRnJun0S/EX+Ygtc
+9B8x/k+q1zWtUy2VeaxvJBk0MKnK8SItVbTSI8ytl7bb8JjvlTkzvdC/JxcWv3sz
+VLbExk7m752oJIh4ooS9B9/eJX2QfpiGvVmLAlggmtVc6UW+GmgTb8RnwGeZl+JT
+SY/vZP+O4/wSzAIslDZ/R/m6R8F+1Q2/6rffASfR1Pe68ujQw5DlAVRY+N+kIGct
+S7YjT/u3H1dxpRz+rCt+fSnmYCf+/LS4hBx3kjYpu5vWnyNkd9O5Pgo9thnWD941
+x2p8qpevEIODqpQ3iYwb
+=KAaN
 -----END PGP SIGNATURE-----
 
---tZCmRiovzb4sxAVa--
+--oDto3OTLsk6uOlQH--
