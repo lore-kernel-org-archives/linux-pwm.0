@@ -1,66 +1,60 @@
-From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [RFC PATCH 10/15] pwm: add the PWM initial state retrieval
- infra
-Date: Mon, 20 Jul 2015 11:42:11 +0200
-Message-ID: <20150720114211.155c3579@bbrezillon>
-References: <1435738921-25027-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1435738921-25027-11-git-send-email-boris.brezillon@free-electrons.com>
-	<20150720090123.GM29614@ulmo>
+From: Clemens Gruber <clemens.gruber@pqgruber.com>
+Subject: Re: [PATCH v3 2/2] pwm-pca9685: Support changing the output frequency
+Date: Mon, 20 Jul 2015 11:46:12 +0200
+Message-ID: <20150720094612.GA20084@pqgruber.com>
+References: <1437381369-8502-1-git-send-email-clemens.gruber@pqgruber.com>
+ <1437381369-8502-3-git-send-email-clemens.gruber@pqgruber.com>
+ <20150720093011.GQ29614@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20150720090123.GM29614@ulmo>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.pqgruber.com ([178.189.19.235]:56141 "EHLO
+	mail.pqgruber.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752058AbbGTJqP (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jul 2015 05:46:15 -0400
+Content-Disposition: inline
+In-Reply-To: <20150720093011.GQ29614@ulmo>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org
 
-On Mon, 20 Jul 2015 11:01:24 +0200
-Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-
-> On Wed, Jul 01, 2015 at 10:21:56AM +0200, Boris Brezillon wrote:
-> > Add a ->init_state() function to the pwm_ops struct to let PWM drivers
-> > initialize the PWM state attached to a PWM device.
+On Mon, Jul 20, 2015 at 11:30:22AM +0200, Thierry Reding wrote:
+> On Mon, Jul 20, 2015 at 10:36:09AM +0200, Clemens Gruber wrote:
+> > Previously, period_ns and duty_ns were only used to determine the
+> > ratio of ON and OFF time, the default frequency of 200 Hz was never
+> > changed.
+> > The PCA9685 however is capable of changing the PWM output frequency,
+> > which is expected when changing the period.
 > > 
-> > Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-> > ---
-> >  drivers/pwm/core.c  | 3 +++
-> >  include/linux/pwm.h | 2 ++
-> >  2 files changed, 5 insertions(+)
+> > This patch configures the prescaler accordingly, using the formula
+> > and notes provided in the PCA9685 datasheet.
+> > Bounds checking for the minimum and maximum frequencies, last updated
+> > in revision v.4 of said datasheet, is also added.
 > > 
-> > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> > index 3e830ce..30631f5 100644
-> > --- a/drivers/pwm/core.c
-> > +++ b/drivers/pwm/core.c
-> > @@ -264,6 +264,9 @@ int pwmchip_add_with_polarity(struct pwm_chip *chip,
-> >  		pwm->hwpwm = i;
-> >  		pwm_set_default_polarity(pwm, polarity);
-> >  
-> > +		if (chip->ops->init_state)
-> > +			chip->ops->init_state(chip, pwm);
-> > +
-> >  		radix_tree_insert(&pwm_tree, pwm->pwm, pwm);
-> >  	}
-> >  
-> > diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-> > index 0f36a06..b47244a 100644
-> > --- a/include/linux/pwm.h
-> > +++ b/include/linux/pwm.h
-> > @@ -177,6 +177,8 @@ struct pwm_ops {
-> >  					  struct pwm_device *pwm);
-> >  	void			(*disable)(struct pwm_chip *chip,
-> >  					   struct pwm_device *pwm);
-> > +	void			(*init_state)(struct pwm_chip *chip,
-> > +					      struct pwm_device *pwm);
+> > The prescaler is only touched if the period changed, because we have to
+> > put the chip into sleep mode to unlock the prescale register.
+> > If it is changed, the PWM output frequency changes for all outputs,
+> > because there is one prescaler per chip. This is documented in the
+> > PCA9685 datasheet and in the comments.
 > 
-> I think I'd call this reset_state. init has this connotation of setting
-> a set of default values. For reset it's clearer in my opinion that it's
-> resetting to the hardware state.
+> I think the reason why the driver doesn't support changing the frequency
+> is precisely because it has a per-chip prescaler. So you'd be changing
+> the frequency from other all other users if one of the channels requests
+> to do so. If I remember correctly there had been some discussion back at
+> the time that this wasn't safe to do.
+> 
+> If you have to do this, I'd think you'd need to at least update the duty
+> cycle of all other users according to the new period.
 
-I'm fine with the reset_state name, I'll change that in my v2.
+Hi, thanks for your feedback.
 
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Yes, that's true. You'd have to set the prescaler first and then manually set
+all duty cycle values. Although this is a hardware feature, I can understand
+that this might be confusing.
+
+I will send a v4 to update the duty cycle of all other users after the chip
+woke up again!
+(Using the ratio from duty cycle to old period to set the new duty cycle)
+
+Clemens
