@@ -1,27 +1,46 @@
-From: Petr Cvek <petr.cvek@tul.cz>
-Subject: [RFC] backlight: pwm: Handle EPROBE_DEFER while requesting the PWM
-Date: Thu, 23 Jul 2015 02:15:54 +0200
-Message-ID: <55B0323A.8060202@tul.cz>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+From: Clemens Gruber <clemens.gruber@pqgruber.com>
+Subject: [PATCH v4 0/2] pwm-pca9685: Bugfixes and prescaler support
+Date: Thu, 23 Jul 2015 17:19:00 +0200
+Message-ID: <1437664742-23121-1-git-send-email-clemens.gruber@pqgruber.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bubo.tul.cz ([147.230.16.1]:45808 "EHLO bubo.tul.cz"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753275AbbGWAW2 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 22 Jul 2015 20:22:28 -0400
+Received: from mail.pqgruber.com ([178.189.19.235]:34651 "EHLO
+	mail.pqgruber.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752280AbbGWPUd (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Jul 2015 11:20:33 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: nicolas.ferre@atmel.com, lee.jones@linaro.org, boris.brezillon@free-electrons.com, thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: linux-pwm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Clemens Gruber <clemens.gruber@pqgruber.com>, Thierry Reding <thierry.reding@gmail.com>, Steffen Trumtrar <s.trumtrar@pengutronix.de>
 
-Hello,
-It seems, that commit
+Hi,
 
-	68feaca0b13e453aa14ee064c1736202b48b342f
+the first patch from this series contains bugfixes and the second patch
+adds support for changing the PWM output frequency of the PCA9685.
 
-blocks the "legacy" call to request a PWM chip from PXA27x architecture (pwm_pxa). Checking for EPROBE_DEFER (default return from devm_pwm_get if pwm is not found) causes jump over it. Older versions of kernel (tested on 3.13-rc7) and modified 4.2.0-rc1 (commented goto) works. 
+Regards,
+Clemens
 
-My question is: Should I write patch modifying error checking path or rather migrate legacy PXA driver to new API (I can only test pwm_pxa and only on one specific device)? 
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>
 
-Petr Cvek
+Changes in v2:
+- Only put chip into sleep mode if the bounds checking succeeds
+
+Changes in v3:
+- Fix checkpatch style warnings introduced in v2
+
+Changes in v4:
+- Set RESTART bit. Now the duty cycle to period ratio stays the same
+  after only changing the period.
+- Added a comment at the start of the file pointing out that the chip
+  has only one prescaler and changing the period affects all outputs.
+
+Clemens Gruber (2):
+  pwm-pca9685: Fix several driver bugs
+  pwm-pca9685: Support changing the output frequency
+
+ drivers/pwm/pwm-pca9685.c | 89 ++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 88 insertions(+), 1 deletion(-)
+
+-- 
+2.4.6
