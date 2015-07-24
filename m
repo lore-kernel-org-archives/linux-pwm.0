@@ -1,158 +1,59 @@
-From: "R, Vignesh" <vigneshr@ti.com>
-Subject: Re: [PATCH v2 2/5] ARM: OMAP2+: DRA7: Add hwmod entries for PWMSS
-Date: Thu, 23 Jul 2015 21:05:29 +0530
-Message-ID: <55B109C1.80901@ti.com>
-References: <1433332284-10766-1-git-send-email-vigneshr@ti.com>
- <1433332284-10766-3-git-send-email-vigneshr@ti.com>
- <alpine.DEB.2.02.1507152029460.32764@utopia.booyaka.com>
- <55A7CE59.6010600@ti.com>
+From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v6 1/3] dt-bindings: pwm: add MediaTek display PWM bindings
+Date: Fri, 24 Jul 2015 10:40:31 +0200
+Message-ID: <8769951.Y5Edyg2WDJ@ubix>
+References: <1437380237-28961-1-git-send-email-yh.huang@mediatek.com> <1437380237-28961-2-git-send-email-yh.huang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:46078 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751025AbbGWPg0 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Thu, 23 Jul 2015 11:36:26 -0400
-In-Reply-To: <55A7CE59.6010600@ti.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1437380237-28961-2-git-send-email-yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Paul Walmsley <paul@pwsan.com>
-Cc: Tero Kristo <t-kristo@ti.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Benoit Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Russell King <linux@arm.linux.org.uk>, Mike Turquette <mturquette@linaro.org>, Stephen Boyd <sboyd@codeaurora.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
 
+On Monday, July 20, 2015 04:17:15 PM YH Huang wrote:
+> Document the device-tree binding of MediatTek display PWM.
+> The PWM has one channel to control the backlight brightness for display.
+> It supports MT8173 and MT6595.
+> 
+> Signed-off-by: YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> ---
+>  .../devicetree/bindings/pwm/pwm-mtk-disp.txt       | 42
+> ++++++++++++++++++++++ 1 file changed, 42 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt new file mode
+> 100644
+> index 0000000..f8f59ba
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> @@ -0,0 +1,42 @@
+> +MediaTek display PWM controller
+> +
+> +Required properties:
+> + - compatible: should be "mediatek,<name>-disp-pwm":
+> +   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
+> +   - "mediatek,mt6595-disp-pwm": found on mt6595 SoC.
 
+I had another look on the mt6589 datasheet and for me it doesn't look like as 
+if this drivers is compatible to mt6589.
 
-On 7/16/2015 9:01 PM, R, Vignesh wrote:
-> Hi,
-> 
-> On 07/16/2015 03:24 AM, Paul Walmsley wrote:
->> Hi,
->>
->> some comments.
->>
->> On Wed, 3 Jun 2015, Vignesh R wrote:
->>
->>> Add hwmod entries for the PWMSS on DRA7.
->>>
->>> Set l4_root_clk_div as the main_clk of PWMSS. It is fixed-factored clock
->>> equal to L4PER2_L3_GICLK/2(l3_iclk_div/2).
->>> As per AM57x TRM SPRUHZ6[1], October 2014, Section 29.1.3 Table 29-4,
->>> clock source to PWMSS is L4PER2_L3_GICLK. But it is actually
->>> L4PER2_L3_GICLK/2. The TRM does not show the division by 2.
->>
->> Is the divide-by-two coming from PWMSS_EPWM.EPWM_TBCTL[HSPCLKDIV]?  Or is 
->> HSPCLKDIV a separate divider after the divide-by-2 you mention above?
-> 
-> No, it not related to HSPCLKDIV. The TRM wrongly states L4PER2_L3_GICLK
-> as clock input for PWMSS. But actually  L4PER2_L4_GICLK(=L3_GICLK/2) is
-> the clock input for PWMSS. This will be updated in TRM soon.
-> 
->>
->>> [1] www.ti.com/lit/ug/spruhz6/spruhz6.pdf
->>>
->>> Signed-off-by: Vignesh R <vigneshr@ti.com>
->>> ---
->>>
->>> v2:
->>>  * add TRM references.
->>>
->>>  arch/arm/mach-omap2/omap_hwmod_7xx_data.c | 239 ++++++++++++++++++++++++++++++
->>>  1 file changed, 239 insertions(+)
->>>
->>> diff --git a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
->>> index 0e64c2fac0b5..86a7ac9a3138 100644
->>> --- a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
->>> +++ b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
->>> @@ -362,6 +362,149 @@ static struct omap_hwmod dra7xx_dcan2_hwmod = {
->>>  	},
->>>  };
->>>  
->>> +/* pwmss  */
->>> +static struct omap_hwmod_class_sysconfig dra7xx_epwmss_sysc = {
->>> +	.rev_offs	= 0x0,
->>> +	.sysc_offs	= 0x4,
->>> +	.sysc_flags	= SYSC_HAS_SIDLEMODE | SYSC_HAS_RESET_STATUS,
->>
->> This doesn't match SPRUHZ6 Table 29-13 "PWMSS_SYSCONFIG".  There's no 
->> RESETSTATUS bit.  There is a SOFTRESET bit. 
->>
->> Could you please confirm whether this is intentional?
-> 
-> sorry my bad... I will change this in v3.
-> 
->>
->>> +	.idlemodes	= (SIDLE_FORCE | SIDLE_NO | SIDLE_SMART),
->>> +	.sysc_fields	= &omap_hwmod_sysc_type2,
->>> +};
->>> +
->>> +struct omap_hwmod_class dra7xx_epwmss_hwmod_class = {
->>> +	.name		= "epwmss",
->>> +	.sysc		= &dra7xx_epwmss_sysc,
->>> +};
->>> +
->>> +static struct omap_hwmod_class dra7xx_ecap_hwmod_class = {
->>> +	.name		= "ecap",
->>> +};
->>> +
->>> +static struct omap_hwmod_class dra7xx_eqep_hwmod_class = {
->>> +	.name		= "eqep",
->>> +};
->>> +
->>> +struct omap_hwmod_class dra7xx_ehrpwm_hwmod_class = {
->>> +	.name		= "ehrpwm",
->>> +};
->>> +
->>> +/* epwmss0 */
->>> +struct omap_hwmod dra7xx_epwmss0_hwmod = {
->>> +	.name		= "epwmss0",
->>> +	.class		= &dra7xx_epwmss_hwmod_class,
->>> +	.clkdm_name	= "l4per2_clkdm",
->>> +	.main_clk	= "l4_root_clk_div",
->>> +	.prcm		= {
->>> +		.omap4	= {
->>> +			.modulemode	= MODULEMODE_SWCTRL,
->>> +			.clkctrl_offs	= DRA7XX_CM_L4PER2_PWMSS1_CLKCTRL_OFFSET,
->>> +			.context_offs	= DRA7XX_RM_L4PER2_PWMSS1_CONTEXT_OFFSET,
->>> +		},
->>> +	},
->>
->> Per my comment on the previous patch, sounds like it might be better to 
->> mark this as HWMOD_SWSUP_SIDLE?  Then again, see the next comment below 
->> re: main_clk.
->>
->>> +};
->>> +
->>> +/* ecap0 */
->>> +struct omap_hwmod dra7xx_ecap0_hwmod = {
->>> +	.name		= "ecap0",
->>> +	.class		= &dra7xx_ecap_hwmod_class,
->>> +	.clkdm_name	= "l4per2_clkdm",
->>> +	.main_clk	= "l4_root_clk_div",
->>
->> Looking at SPRUHZ6 Section 29.1.4.2 "PWMSS Modules Local Clock Gating", 
->> there appears to be a local "mini-PRCM" for the PWMSS which implements 
->> clock gating and reports back on the status of what I'd guess is the local 
->> clock gating FSM.
->>
->> So from that point of view, you should probably create a clock driver that 
->> manages both the clock gate request bit and the FSM status bit.  It should 
->> be something that can be reused for the other PWMSS IP blocks.  Then 
->> you'd create per-IP block clock nodes and set the main_clk to point to 
->> that node.
->>
-> 
-> Since, this register is within the config space of PWMSS, the individual
-> gating and reporting for the modules within PWMSS
-> (PWMSS_CLKCONFIG) is currently being taken care by pwm-tipwmss.c(almost
-> the sole function this driver is doing). It has been the same since
-> am335x. Adding new clock nodes will result in driver changes and also
-> changes to am335x, am437x (and other platforms) hwmod files. It also
-> involves adding new nodes to clocks.dtsi and it will be difficult to
-> maintain backward compatibility for older platforms. Is it not better to
-> keep this as is, in order to maintain consistency (with am335x, am437x
-> etc) and also that these clock bits are within IP's config space?
-> 
-ping...
+DISP_PWM_CON_0 offset 0x10 maps to interrupt enable register and 
+DISP_PWM_CON_1 offset 0x14 maps to interrupt status register.
 
-Regards
-Vignesh
+This looks wrong to me, as you use both registers to write clock divider and 
+clock period.
+
+Regarding that this is v6 of the patch set, I would propose that you just drop 
+the compatible string for mt6589 or you implement the register offset on basis 
+of the compatible string so that mt6589 can you the driver as well.
+
+Best regards,
+Matthias
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
