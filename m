@@ -1,42 +1,43 @@
-From: Antoine Tenart <antoine.tenart@free-electrons.com>
-Subject: Re: [PATCH 1/5] pwm: add the Berlin pwm controller driver
-Date: Mon, 27 Jul 2015 08:10:22 +0200
-Message-ID: <20150727061022.GN8283@kwain>
-References: <1437860378-9556-1-git-send-email-antoine.tenart@free-electrons.com>
- <1437860378-9556-2-git-send-email-antoine.tenart@free-electrons.com>
- <CAAEAJfA9ZH7xcKLY-qVvEbOeozxg_Vb9MjgoMBk3ceZCr00ciw@mail.gmail.com>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH v5 0/2] pwm: Add support for R-Car PWM Timer
+Date: Mon, 27 Jul 2015 10:38:51 +0000
+Message-ID: <SG2PR06MB09195F31646F04302A0FD239D88E0@SG2PR06MB0919.apcprd06.prod.outlook.com>
+References: <1434359324-2964-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <20150707010636.GH13326@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:39510 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1750842AbbG0GKY (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 27 Jul 2015 02:10:24 -0400
-Content-Disposition: inline
-In-Reply-To: <CAAEAJfA9ZH7xcKLY-qVvEbOeozxg_Vb9MjgoMBk3ceZCr00ciw@mail.gmail.com>
+Received: from relmlor4.renesas.com ([210.160.252.174]:19628 "EHLO
+	relmlie3.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751085AbbG0Ki4 convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Mon, 27 Jul 2015 06:38:56 -0400
+In-Reply-To: <20150707010636.GH13326@verge.net.au>
+Content-Language: ja-JP
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Cc: Antoine Tenart <antoine.tenart@free-electrons.com>, zmxu@marvell.com, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, jszhang@marvell.com, thierry.reding@gmail.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+Cc: "robh+dt@kernel.org" <robh+dt@kernel.org>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "galak@codeaurora.org" <galak@codeaurora.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 
-Hi,
+Hi Thierry,
 
-On Sun, Jul 26, 2015 at 07:56:55PM -0300, Ezequiel Garcia wrote:
-> El jul. 25, 2015 6:40 PM, "Antoine Tenart" <antoine.tenart@free-elect=
-rons.com>
-> escribi=F3:
-> > +
-> > +static const struct of_device_id berlin_pwm_match[] =3D {
-> > +=A0 =A0 =A0 =A0{ .compatible =3D "marvell,berlin-pwm" },
->=20
-> Don't we need a sentinel here?
+Would you apply the patches? Or, should I modify them more?
 
-Oops. I'll fix that.
 
-Antoine
+Hi Simon,
 
---=20
-Antoine T=E9nart, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+> Sent: Tuesday, July 07, 2015 10:07 AM
+> 
+> On Mon, Jun 15, 2015 at 06:08:42PM +0900, Yoshihiro Shimoda wrote:
+> > This patch set is based on the linux-pwm.git / for-next branch.
+> > (commit id = 361c1066c939a88e3bb59364f47055b2a5fb3fd4)
+> 
+> Both patches:
+> 
+> Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+
+Thank you very much for your review!
+
+Best regards,
+Yoshihiro Shimoda
