@@ -1,79 +1,78 @@
-From: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-Subject: Re: [PATCH v2 0/22] On-demand device probing
-Date: Wed, 29 Jul 2015 02:36:33 +0200
-Message-ID: <2554489.GlTphZsHuX@vostro.rjw.lan>
-References: <1438089593-7696-1-git-send-email-tomeu.vizoso@collabora.com>
+From: YH Huang <yh.huang@mediatek.com>
+Subject: Re: [PATCH v6 0/3] Add MediaTek display PWM driver
+Date: Wed, 29 Jul 2015 11:01:21 +0800
+Message-ID: <1438138881.16608.6.camel@mtksdaap41>
+References: <1437380237-28961-1-git-send-email-yh.huang@mediatek.com>
+	 <2181696.fQcvS98Cqx@ubix> <1437729058.11386.4.camel@mtksdaap41>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1438089593-7696-1-git-send-email-tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Sender: linux-i2c-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Javier Martinez Canillas <javier-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, Terje =?ISO-8859-1?Q?Bergstr=F6m?= <tbergstrom-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Len Brown <lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Michael Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Sebastian
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mailgw01.mediatek.com ([210.61.82.183]:50393 "EHLO
+	mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751785AbbG2DB0 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 28 Jul 2015 23:01:26 -0400
+In-Reply-To: <1437729058.11386.4.camel@mtksdaap41>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com, yh.huang@mediatek.com
 
-On Tuesday, July 28, 2015 03:19:31 PM Tomeu Vizoso wrote:
-> Hello,
->=20
-> I have a problem with the panel on my Tegra Chromebook taking longer
-> than expected to be ready during boot (St=C3=A9phane Marchesin report=
-ed what
-> is basically the same issue in [0]), and have looked into ordered
-> probing as a better way of solving this than moving nodes around in t=
-he
-> DT or playing with initcall levels and linking order.
->=20
-> While reading the thread [1] that Alexander Holler started with his
-> series to make probing order deterministic, it occurred to me that it
-> should be possible to achieve the same by probing devices as they are
-> referenced by other devices.
->=20
-> This basically reuses the information that is already implicit in the
-> probe() implementations, saving us from refactoring existing drivers =
-or
-> adding information to DTBs.
->=20
-> During review of v1 of this series Linus Walleij suggested that it
-> should be the device driver core to make sure that dependencies are
-> ready before probing a device. I gave this idea a try [2] but Mark Br=
-own
-> pointed out to the logic duplication between the resource acquisition
-> and dependency discovery code paths (though I think it's fairly minor=
-).
->=20
-> To address that code duplication I experimented with Arnd's devm_prob=
-e
-> [3] concept of having drivers declare their dependencies instead of
-> acquiring them during probe, and while it worked [4], I don't think w=
-e
-> end up winning anything when compared to just probing devices on-dema=
-nd
-> from resource getters.
->=20
-> One remaining objection is to the "sprinkling" of calls to
-> fwnode_ensure_device() in the resource getters of each subsystem, but=
- I
-> think it's the right thing to do given that the storage of resources =
-is
-> currently subsystem-specific.
->=20
-> We could avoid the above by moving resource storage into the core, bu=
-t I
-> don't think there's a compelling case for that.
->=20
-> I have tested this on boards with Tegra, iMX.6, Exynos and OMAP SoCs,
-> and these patches were enough to eliminate all the deferred probes
-> (except one in PandaBoard because omap_dma_system doesn't have a
-> firmware node as of yet).
->=20
-> With this series I get the kernel to output to the panel in 0.5s,
-> instead of 2.8s.
+On Fri, 2015-07-24 at 17:10 +0800, YH Huang wrote:
+> On Fri, 2015-07-24 at 10:42 +0200, Matthias Brugger wrote:
+> > On Monday, July 20, 2015 04:17:14 PM YH Huang wrote:
+> > > This patch series add the use of display PWM driver, documentation
+> > > and device tree for Mediatek SoCs. The driver is used to support
+> > > the backlight of the panel. This is based on v4.2-rc1.
+> > > 
+> > > The clock definitions (CLK_MM_DISP_PWM*) are added by James Liao's patch:
+> > > clk: mediatek: Add subsystem clocks of MT8173
+> > > 
+> > > Change in v6:
+> > > 1. Enable clocks in the pwm_enable function
+> > > 2. Remove suspend/resume code since pwm-backlight driver has done the same
+> > > things 3. Revise some code to make it easier to read
+> > > 
+> > 
+> > Can you please provide the whole change log for all versions the next time.
+> > It's easier this way to understand the evolution of the series.
+> 
+> Change in v6:
+> 1. Enable clocks in the pwm_enable function.
+> 2. Remove suspend/resume code since pwm-backlight driver has done the
+> same things.
+> 3. Revise some code to make it easier to read.
+> 
+> Change in v5:
+> 1. Configure PWM output via pinctrl.
+> 2. Fix the parameter name in dtsi.
+> 
+> Change in v4:
+> 1. Codebase is on v4.2-rc1.
+> 2. Add the PWM node in dtsi.
+> 3. Change the dependency in Kconfig.
+> 4. Rewrite some code for readability.
+> 
+> Change in v3:
+> 1. Add suspend/resume function.
+> 2. Fix the formula for high_width calculation.
+> 3. Rewrite some code to make it easier to read.
+> 4. Add more information in the commit message.
+> 
+> Change in v2:
+> 1. Rewrite descriptions for driver in kconfig to make it much clear.
+> 2. Rename the driver from "pwm-mediatek-disp" to "pwm-mtk-disp".
+> 3. Disable clocks in the error path.
+> 4. Change the shift values in decimal instead of hex.
+> 5. Rename and add some variables or function name for consistency and
+> readability.
+> 6. Drop unnecessary parentheses, spaces, variables and add newlines to
+> make the code easiler to read.
 
-Can you trim your CC list somewhat, please?
+Hi all,
 
-I'm definitely going to look at this, but not before then next week.
-Sorry about that.
+If you have any suggestions, please let me know.
+Perhaps we can apply the patch?
 
-Thanks,
-Rafael
+Regards,
+YH Huang
