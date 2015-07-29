@@ -1,78 +1,166 @@
-From: YH Huang <yh.huang@mediatek.com>
-Subject: Re: [PATCH v6 0/3] Add MediaTek display PWM driver
-Date: Wed, 29 Jul 2015 11:01:21 +0800
-Message-ID: <1438138881.16608.6.camel@mtksdaap41>
-References: <1437380237-28961-1-git-send-email-yh.huang@mediatek.com>
-	 <2181696.fQcvS98Cqx@ubix> <1437729058.11386.4.camel@mtksdaap41>
+From: Vignesh R <vigneshr@ti.com>
+Subject: Re: [PATCH v2 2/5] ARM: OMAP2+: DRA7: Add hwmod entries for PWMSS
+Date: Wed, 29 Jul 2015 12:02:48 +0530
+Message-ID: <55B87390.5010809@ti.com>
+References: <1433332284-10766-1-git-send-email-vigneshr@ti.com> <1433332284-10766-3-git-send-email-vigneshr@ti.com> <alpine.DEB.2.02.1507152029460.32764@utopia.booyaka.com> <55A7CE59.6010600@ti.com> <55B109C1.80901@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailgw01.mediatek.com ([210.61.82.183]:50393 "EHLO
-	mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751785AbbG2DB0 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 28 Jul 2015 23:01:26 -0400
-In-Reply-To: <1437729058.11386.4.camel@mtksdaap41>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <55B109C1.80901@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Walmsley <paul@pwsan.com>
+Cc: Tero Kristo <t-kristo@ti.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Benoit Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Russell King <linux@arm.linux.org.uk>, Mike Turquette <mturquette@linaro.org>, Stephen Boyd <sboyd@codeaurora.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com, yh.huang@mediatek.com
 
-On Fri, 2015-07-24 at 17:10 +0800, YH Huang wrote:
-> On Fri, 2015-07-24 at 10:42 +0200, Matthias Brugger wrote:
-> > On Monday, July 20, 2015 04:17:14 PM YH Huang wrote:
-> > > This patch series add the use of display PWM driver, documentation
-> > > and device tree for Mediatek SoCs. The driver is used to support
-> > > the backlight of the panel. This is based on v4.2-rc1.
-> > > 
-> > > The clock definitions (CLK_MM_DISP_PWM*) are added by James Liao's patch:
-> > > clk: mediatek: Add subsystem clocks of MT8173
-> > > 
-> > > Change in v6:
-> > > 1. Enable clocks in the pwm_enable function
-> > > 2. Remove suspend/resume code since pwm-backlight driver has done the same
-> > > things 3. Revise some code to make it easier to read
-> > > 
-> > 
-> > Can you please provide the whole change log for all versions the next time.
-> > It's easier this way to understand the evolution of the series.
-> 
-> Change in v6:
-> 1. Enable clocks in the pwm_enable function.
-> 2. Remove suspend/resume code since pwm-backlight driver has done the
-> same things.
-> 3. Revise some code to make it easier to read.
-> 
-> Change in v5:
-> 1. Configure PWM output via pinctrl.
-> 2. Fix the parameter name in dtsi.
-> 
-> Change in v4:
-> 1. Codebase is on v4.2-rc1.
-> 2. Add the PWM node in dtsi.
-> 3. Change the dependency in Kconfig.
-> 4. Rewrite some code for readability.
-> 
-> Change in v3:
-> 1. Add suspend/resume function.
-> 2. Fix the formula for high_width calculation.
-> 3. Rewrite some code to make it easier to read.
-> 4. Add more information in the commit message.
-> 
-> Change in v2:
-> 1. Rewrite descriptions for driver in kconfig to make it much clear.
-> 2. Rename the driver from "pwm-mediatek-disp" to "pwm-mtk-disp".
-> 3. Disable clocks in the error path.
-> 4. Change the shift values in decimal instead of hex.
-> 5. Rename and add some variables or function name for consistency and
-> readability.
-> 6. Drop unnecessary parentheses, spaces, variables and add newlines to
-> make the code easiler to read.
 
-Hi all,
 
-If you have any suggestions, please let me know.
-Perhaps we can apply the patch?
+On 07/23/2015 09:05 PM, R, Vignesh wrote:
+> 
+> 
+> On 7/16/2015 9:01 PM, R, Vignesh wrote:
+>> Hi,
+>>
+>> On 07/16/2015 03:24 AM, Paul Walmsley wrote:
+>>> Hi,
+>>>
+>>> some comments.
+>>>
+>>> On Wed, 3 Jun 2015, Vignesh R wrote:
+>>>
+>>>> Add hwmod entries for the PWMSS on DRA7.
+>>>>
+>>>> Set l4_root_clk_div as the main_clk of PWMSS. It is fixed-factored clock
+>>>> equal to L4PER2_L3_GICLK/2(l3_iclk_div/2).
+>>>> As per AM57x TRM SPRUHZ6[1], October 2014, Section 29.1.3 Table 29-4,
+>>>> clock source to PWMSS is L4PER2_L3_GICLK. But it is actually
+>>>> L4PER2_L3_GICLK/2. The TRM does not show the division by 2.
+>>>
+>>> Is the divide-by-two coming from PWMSS_EPWM.EPWM_TBCTL[HSPCLKDIV]?  Or is 
+>>> HSPCLKDIV a separate divider after the divide-by-2 you mention above?
+>>
+>> No, it not related to HSPCLKDIV. The TRM wrongly states L4PER2_L3_GICLK
+>> as clock input for PWMSS. But actually  L4PER2_L4_GICLK(=L3_GICLK/2) is
+>> the clock input for PWMSS. This will be updated in TRM soon.
+>>
+>>>
+>>>> [1] www.ti.com/lit/ug/spruhz6/spruhz6.pdf
+>>>>
+>>>> Signed-off-by: Vignesh R <vigneshr@ti.com>
+>>>> ---
+>>>>
+>>>> v2:
+>>>>  * add TRM references.
+>>>>
+>>>>  arch/arm/mach-omap2/omap_hwmod_7xx_data.c | 239 ++++++++++++++++++++++++++++++
+>>>>  1 file changed, 239 insertions(+)
+>>>>
+>>>> diff --git a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
+>>>> index 0e64c2fac0b5..86a7ac9a3138 100644
+>>>> --- a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
+>>>> +++ b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
+>>>> @@ -362,6 +362,149 @@ static struct omap_hwmod dra7xx_dcan2_hwmod = {
+>>>>  	},
+>>>>  };
+>>>>  
+>>>> +/* pwmss  */
+>>>> +static struct omap_hwmod_class_sysconfig dra7xx_epwmss_sysc = {
+>>>> +	.rev_offs	= 0x0,
+>>>> +	.sysc_offs	= 0x4,
+>>>> +	.sysc_flags	= SYSC_HAS_SIDLEMODE | SYSC_HAS_RESET_STATUS,
+>>>
+>>> This doesn't match SPRUHZ6 Table 29-13 "PWMSS_SYSCONFIG".  There's no 
+>>> RESETSTATUS bit.  There is a SOFTRESET bit. 
+>>>
+>>> Could you please confirm whether this is intentional?
+>>
+>> sorry my bad... I will change this in v3.
+>>
+>>>
+>>>> +	.idlemodes	= (SIDLE_FORCE | SIDLE_NO | SIDLE_SMART),
+>>>> +	.sysc_fields	= &omap_hwmod_sysc_type2,
+>>>> +};
+>>>> +
+>>>> +struct omap_hwmod_class dra7xx_epwmss_hwmod_class = {
+>>>> +	.name		= "epwmss",
+>>>> +	.sysc		= &dra7xx_epwmss_sysc,
+>>>> +};
+>>>> +
+>>>> +static struct omap_hwmod_class dra7xx_ecap_hwmod_class = {
+>>>> +	.name		= "ecap",
+>>>> +};
+>>>> +
+>>>> +static struct omap_hwmod_class dra7xx_eqep_hwmod_class = {
+>>>> +	.name		= "eqep",
+>>>> +};
+>>>> +
+>>>> +struct omap_hwmod_class dra7xx_ehrpwm_hwmod_class = {
+>>>> +	.name		= "ehrpwm",
+>>>> +};
+>>>> +
+>>>> +/* epwmss0 */
+>>>> +struct omap_hwmod dra7xx_epwmss0_hwmod = {
+>>>> +	.name		= "epwmss0",
+>>>> +	.class		= &dra7xx_epwmss_hwmod_class,
+>>>> +	.clkdm_name	= "l4per2_clkdm",
+>>>> +	.main_clk	= "l4_root_clk_div",
+>>>> +	.prcm		= {
+>>>> +		.omap4	= {
+>>>> +			.modulemode	= MODULEMODE_SWCTRL,
+>>>> +			.clkctrl_offs	= DRA7XX_CM_L4PER2_PWMSS1_CLKCTRL_OFFSET,
+>>>> +			.context_offs	= DRA7XX_RM_L4PER2_PWMSS1_CONTEXT_OFFSET,
+>>>> +		},
+>>>> +	},
+>>>
+>>> Per my comment on the previous patch, sounds like it might be better to 
+>>> mark this as HWMOD_SWSUP_SIDLE?  Then again, see the next comment below 
+>>> re: main_clk.
+>>>
+>>>> +};
+>>>> +
+>>>> +/* ecap0 */
+>>>> +struct omap_hwmod dra7xx_ecap0_hwmod = {
+>>>> +	.name		= "ecap0",
+>>>> +	.class		= &dra7xx_ecap_hwmod_class,
+>>>> +	.clkdm_name	= "l4per2_clkdm",
+>>>> +	.main_clk	= "l4_root_clk_div",
+>>>
+>>> Looking at SPRUHZ6 Section 29.1.4.2 "PWMSS Modules Local Clock Gating", 
+>>> there appears to be a local "mini-PRCM" for the PWMSS which implements 
+>>> clock gating and reports back on the status of what I'd guess is the local 
+>>> clock gating FSM.
+>>>
+>>> So from that point of view, you should probably create a clock driver that 
+>>> manages both the clock gate request bit and the FSM status bit.  It should 
+>>> be something that can be reused for the other PWMSS IP blocks.  Then 
+>>> you'd create per-IP block clock nodes and set the main_clk to point to 
+>>> that node.
+>>>
+>>
+>> Since, this register is within the config space of PWMSS, the individual
+>> gating and reporting for the modules within PWMSS
+>> (PWMSS_CLKCONFIG) is currently being taken care by pwm-tipwmss.c(almost
+>> the sole function this driver is doing). It has been the same since
+>> am335x. Adding new clock nodes will result in driver changes and also
+>> changes to am335x, am437x (and other platforms) hwmod files. It also
+>> involves adding new nodes to clocks.dtsi and it will be difficult to
+>> maintain backward compatibility for older platforms. Is it not better to
+>> keep this as is, in order to maintain consistency (with am335x, am437x
+>> etc) and also that these clock bits are within IP's config space?
+>>
+> ping...
+> 
 
-Regards,
-YH Huang
+I really want PWMSS support to go into v4.3... I see two options:
+
+1. Drop pwm-tipwmss.c that is currently managing "PWMSS Modules Local
+Clock Gating" and change am335x, am437x and dra7 to use new main_clk and
+update clocks.dtsi (Breaks DT backward compatibility for am335x, am437x)
+2. Or stick with $subject approach to maintain consistency.
+
+I prefer second option, Shall I send a v3 fixing other comments for this
+patch?
+
+-- 
+Regards
+Vignesh
