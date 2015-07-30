@@ -1,112 +1,77 @@
-From: Ezequiel Garcia <ezequiel-30ULvvUtt6G51wMPkGsGjgyUoB5FGQPZ@public.gmane.org>
-Subject: Re: [PATCH 2/2] DT: pwm: Add NXP LPC18xx PWM/SCT binding documentation
-Date: Wed, 29 Jul 2015 10:47:58 -0300
-Message-ID: <CAAEAJfA22JA0AWB1FCiDVYEy5BqasDror_Ejpd=b3s14BWpORw@mail.gmail.com>
-References: <1437972345-16444-1-git-send-email-ariel@vanguardiasur.com.ar>
-	<1437972345-16444-3-git-send-email-ariel@vanguardiasur.com.ar>
-	<CAGhQ9Vyy+oUAWm0q2+NV0D9RVf5qyED8Tn54-cGzbDc-EZR4yw@mail.gmail.com>
-	<CAAEAJfApE8=cAue-bc5xPD_XAtV8qzur12C4okF-uLJ-__reBA@mail.gmail.com>
-	<CAGhQ9VwudkK=bo5Qk79O7fmdEEm1KEWxUhLO14ucCJ+FbhqQqw@mail.gmail.com>
+From: Rob Herring <robherring2@gmail.com>
+Subject: Re: [PATCH v2 0/22] On-demand device probing
+Date: Wed, 29 Jul 2015 22:06:02 -0500
+Message-ID: <CAL_Jsq+2q=c6JbER8EMOGFtR=a6gvHermb8DRo9dKyj6fvdnXg@mail.gmail.com>
+References: <1438089593-7696-1-git-send-email-tomeu.vizoso@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAGhQ9VwudkK=bo5Qk79O7fmdEEm1KEWxUhLO14ucCJ+FbhqQqw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Ariel D'Alessandro <ariel-30ULvvUtt6G51wMPkGsGjgyUoB5FGQPZ@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1438089593-7696-1-git-send-email-tomeu.vizoso@collabora.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Cc: "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, David Airlie <airlied@linux.ie>, Stephen Boyd <sboyd@codeaurora.org>, Linus Walleij <linus.walleij@linaro.org>, Linux-ALSA <alsa-devel@alsa-project.org>, dri-devel <dri-devel@lists.freedesktop.org>, Sebastian Reichel <sre@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, Lee Jones <lee.jones@linaro.org>, linux-clk@vger.kernel.org, Alexandre Courbot <gnurou@gmail.com>, =?UTF-8?Q?Terje_Bergstr=C3=B6m?= <tbergstrom@nvidia.com>, Javier Martinez Canillas <javier@osg.samsung.com>, Vinod Koul <vinod.koul@intel.com>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Kishon Vijay Abraham I <kishon@ti.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-+devicetree guys
-
-On 28 July 2015 at 20:22, Joachim  Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> On 29 July 2015 at 00:45, Ezequiel Garcia <ezequiel-30ULvvUtt6G51wMPkGsGjgC/G2K4zDHf@public.gmane.org=
-=2Ear> wrote:
->> On 28 July 2015 at 19:37, Joachim  Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wro=
-te:
->>> On 27 July 2015 at 06:45, Ariel D'Alessandro <ariel@vanguardiasur.c=
-om.ar> wrote:
->>>> Add the devicetree binding document for NXP LPC18xx PWM/SCT.
->>>>
->>>> Signed-off-by: Ariel D'Alessandro <ariel-30ULvvUtt6G51wMPkGsGjgyUoB5FGQPZ@public.gmane.org>
->>>> ---
->>>>  .../devicetree/bindings/pwm/lpc1850-pwm.txt          | 20 +++++++=
-+++++++++++++
->>>>  1 file changed, 20 insertions(+)
->>>>  create mode 100644 Documentation/devicetree/bindings/pwm/lpc1850-=
-pwm.txt
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/pwm/lpc1850-pwm.txt=
- b/Documentation/devicetree/bindings/pwm/lpc1850-pwm.txt
->>>> new file mode 100644
->>>> index 0000000..3055429
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/pwm/lpc1850-pwm.txt
->>>> @@ -0,0 +1,20 @@
->>>> +* NXP LPC18xx Pulse Width Modulator driver
->>>> +
->>>> +Required properties:
->>>> +  - compatible: Should be "nxp,lpc1850-pwm"
->>>> +  - reg: Should contain physical base address and length of pwm r=
-egisters.
->>>> +  - clocks: Must contain an entry for each entry in clock-names.
->>>> +    See ../clock/clock-bindings.txt for details.
->>>> +  - clock-names: Must include the following entries.
->>>> +    - pwm: PWM operating clock.
->>>> +  - #pwm-cells: Should be 3. See pwm.txt in this directory for th=
-e description
->>>> +    of the cells format.
->>>> +
->>>> +Example:
->>>> +  pwm: pwm@40000000 {
->>>> +    compatible =3D "nxp,lpc1850-pwm";
->>>
->>> I would prefer "nxp,lpc1850-sct" for a couple of reasons. SCT is th=
-e
->>> name of hardware block as described in the user manual and while PW=
-M
->>> is the most obvious usage for this block on Linux, the hardware is =
-not
->>> limited to just doing that. So as a bit of future proofing if someo=
-ne
->>> wants to use this block for more than PWM I would prefer SCT.
->>>
->>
->> Shouldn't we use something like "nxp,lpc1850-sct-pwm"?
->>
->> Sounds like the word PWM should be in the compatible as it describes
->> not only the device, but the device used in a certain way.
->>
->> Otherwise, how would we use "nxp,lpc1850-sct" to distinguish a PWM f=
-rom
->> e.g. a clocksource/clockevents (we can also use SCT for that)?
->
-> I not sure how to best handle dt bindings with such flexible hardware=
- blocks.
->
-> But are you suggestion to have multiple drivers for the same hw block=
-?
-> ie.: "nxp,lpc1850-sct-pwm" for PWM and for example
-> "nxp,lpc1850-sct-clocksource" for clocksource and then use/enable one
-> or the other.
->
-
-Yup, I'm suggesting just that. If the hardware is capable, I can't see
-why we can't have different drivers for it.
-
-> So I am not sure how to best handle this, but I think we should at
-> least consider more than just PWM usage for this hw block. Note that
-> not against calling it "lpc1850-sct-pwm", I like that better than jus=
-t
-> "lpc1850-pwm".
->
-
-
---=20
-Ezequiel Garc=C3=ADa, VanguardiaSur
-www.vanguardiasur.com.ar
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" i=
-n
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+T24gVHVlLCBKdWwgMjgsIDIwMTUgYXQgODoxOSBBTSwgVG9tZXUgVml6b3NvCjx0b21ldS52aXpv
+c29AY29sbGFib3JhLmNvbT4gd3JvdGU6Cj4gSGVsbG8sCj4KPiBJIGhhdmUgYSBwcm9ibGVtIHdp
+dGggdGhlIHBhbmVsIG9uIG15IFRlZ3JhIENocm9tZWJvb2sgdGFraW5nIGxvbmdlcgo+IHRoYW4g
+ZXhwZWN0ZWQgdG8gYmUgcmVhZHkgZHVyaW5nIGJvb3QgKFN0w6lwaGFuZSBNYXJjaGVzaW4gcmVw
+b3J0ZWQgd2hhdAo+IGlzIGJhc2ljYWxseSB0aGUgc2FtZSBpc3N1ZSBpbiBbMF0pLCBhbmQgaGF2
+ZSBsb29rZWQgaW50byBvcmRlcmVkCj4gcHJvYmluZyBhcyBhIGJldHRlciB3YXkgb2Ygc29sdmlu
+ZyB0aGlzIHRoYW4gbW92aW5nIG5vZGVzIGFyb3VuZCBpbiB0aGUKPiBEVCBvciBwbGF5aW5nIHdp
+dGggaW5pdGNhbGwgbGV2ZWxzIGFuZCBsaW5raW5nIG9yZGVyLgo+Cj4gV2hpbGUgcmVhZGluZyB0
+aGUgdGhyZWFkIFsxXSB0aGF0IEFsZXhhbmRlciBIb2xsZXIgc3RhcnRlZCB3aXRoIGhpcwo+IHNl
+cmllcyB0byBtYWtlIHByb2Jpbmcgb3JkZXIgZGV0ZXJtaW5pc3RpYywgaXQgb2NjdXJyZWQgdG8g
+bWUgdGhhdCBpdAo+IHNob3VsZCBiZSBwb3NzaWJsZSB0byBhY2hpZXZlIHRoZSBzYW1lIGJ5IHBy
+b2JpbmcgZGV2aWNlcyBhcyB0aGV5IGFyZQo+IHJlZmVyZW5jZWQgYnkgb3RoZXIgZGV2aWNlcy4K
+Pgo+IFRoaXMgYmFzaWNhbGx5IHJldXNlcyB0aGUgaW5mb3JtYXRpb24gdGhhdCBpcyBhbHJlYWR5
+IGltcGxpY2l0IGluIHRoZQo+IHByb2JlKCkgaW1wbGVtZW50YXRpb25zLCBzYXZpbmcgdXMgZnJv
+bSByZWZhY3RvcmluZyBleGlzdGluZyBkcml2ZXJzIG9yCj4gYWRkaW5nIGluZm9ybWF0aW9uIHRv
+IERUQnMuCj4KPiBEdXJpbmcgcmV2aWV3IG9mIHYxIG9mIHRoaXMgc2VyaWVzIExpbnVzIFdhbGxl
+aWogc3VnZ2VzdGVkIHRoYXQgaXQKPiBzaG91bGQgYmUgdGhlIGRldmljZSBkcml2ZXIgY29yZSB0
+byBtYWtlIHN1cmUgdGhhdCBkZXBlbmRlbmNpZXMgYXJlCj4gcmVhZHkgYmVmb3JlIHByb2Jpbmcg
+YSBkZXZpY2UuIEkgZ2F2ZSB0aGlzIGlkZWEgYSB0cnkgWzJdIGJ1dCBNYXJrIEJyb3duCj4gcG9p
+bnRlZCBvdXQgdG8gdGhlIGxvZ2ljIGR1cGxpY2F0aW9uIGJldHdlZW4gdGhlIHJlc291cmNlIGFj
+cXVpc2l0aW9uCj4gYW5kIGRlcGVuZGVuY3kgZGlzY292ZXJ5IGNvZGUgcGF0aHMgKHRob3VnaCBJ
+IHRoaW5rIGl0J3MgZmFpcmx5IG1pbm9yKS4KPgo+IFRvIGFkZHJlc3MgdGhhdCBjb2RlIGR1cGxp
+Y2F0aW9uIEkgZXhwZXJpbWVudGVkIHdpdGggQXJuZCdzIGRldm1fcHJvYmUKPiBbM10gY29uY2Vw
+dCBvZiBoYXZpbmcgZHJpdmVycyBkZWNsYXJlIHRoZWlyIGRlcGVuZGVuY2llcyBpbnN0ZWFkIG9m
+Cj4gYWNxdWlyaW5nIHRoZW0gZHVyaW5nIHByb2JlLCBhbmQgd2hpbGUgaXQgd29ya2VkIFs0XSwg
+SSBkb24ndCB0aGluayB3ZQo+IGVuZCB1cCB3aW5uaW5nIGFueXRoaW5nIHdoZW4gY29tcGFyZWQg
+dG8ganVzdCBwcm9iaW5nIGRldmljZXMgb24tZGVtYW5kCj4gZnJvbSByZXNvdXJjZSBnZXR0ZXJz
+Lgo+Cj4gT25lIHJlbWFpbmluZyBvYmplY3Rpb24gaXMgdG8gdGhlICJzcHJpbmtsaW5nIiBvZiBj
+YWxscyB0bwo+IGZ3bm9kZV9lbnN1cmVfZGV2aWNlKCkgaW4gdGhlIHJlc291cmNlIGdldHRlcnMg
+b2YgZWFjaCBzdWJzeXN0ZW0sIGJ1dCBJCj4gdGhpbmsgaXQncyB0aGUgcmlnaHQgdGhpbmcgdG8g
+ZG8gZ2l2ZW4gdGhhdCB0aGUgc3RvcmFnZSBvZiByZXNvdXJjZXMgaXMKPiBjdXJyZW50bHkgc3Vi
+c3lzdGVtLXNwZWNpZmljLgoKU2VlbXMgbGlrZSBhIG1pbm9yIGNoYW5nZSB0byBtZS4KCj4gV2Ug
+Y291bGQgYXZvaWQgdGhlIGFib3ZlIGJ5IG1vdmluZyByZXNvdXJjZSBzdG9yYWdlIGludG8gdGhl
+IGNvcmUsIGJ1dCBJCj4gZG9uJ3QgdGhpbmsgdGhlcmUncyBhIGNvbXBlbGxpbmcgY2FzZSBmb3Ig
+dGhhdC4KPgo+IEkgaGF2ZSB0ZXN0ZWQgdGhpcyBvbiBib2FyZHMgd2l0aCBUZWdyYSwgaU1YLjYs
+IEV4eW5vcyBhbmQgT01BUCBTb0NzLAo+IGFuZCB0aGVzZSBwYXRjaGVzIHdlcmUgZW5vdWdoIHRv
+IGVsaW1pbmF0ZSBhbGwgdGhlIGRlZmVycmVkIHByb2Jlcwo+IChleGNlcHQgb25lIGluIFBhbmRh
+Qm9hcmQgYmVjYXVzZSBvbWFwX2RtYV9zeXN0ZW0gZG9lc24ndCBoYXZlIGEKPiBmaXJtd2FyZSBu
+b2RlIGFzIG9mIHlldCkuCj4KPiBXaXRoIHRoaXMgc2VyaWVzIEkgZ2V0IHRoZSBrZXJuZWwgdG8g
+b3V0cHV0IHRvIHRoZSBwYW5lbCBpbiAwLjVzLAo+IGluc3RlYWQgb2YgMi44cy4KCkdlbmVyYWxs
+eSwgSSB0aGluayB0aGlzIGxvb2tzIHByZXR0eSBnb29kLiBJdCBpcyBzaW1wbGUgYW5kIHRoZSBl
+cnJvcgpwYXRoIGlzIHNpbXBseSBmYWxsaW5nIGJhY2sgdG8gZGVmZXJyZWQgcHJvYmUuCgpPbmUg
+b3ZlcmFsbCBjb21tZW50IGlzIEknbSBub3Qgc28gc3VyZSBpZiBmd25vZGVfZW5zdXJlX2Rldmlj
+ZQpzaG91bGRuJ3QganVzdCBiZSBvZl9lbnN1cmVfZGV2aWNlLiBBdCBsZWFzdCBjdXJyZW50bHks
+IGl0IGxvb2tzIGxpa2UKYWxsIHRoZSBjYWxsaW5nIGxvY2F0aW9ucyBhcmUgRFQgc3BlY2lmaWMg
+ZnVuY3Rpb25zIGFueXdheS4gVGhlcmUncwp2ZXJ5IGxpdHRsZSBsb2dpYyB3aXRoaW4gdGhlIGZ1
+bmN0aW9uIHRvIHJlYWxseSBiZW5lZml0IHNoYXJpbmcgd2l0aApBQ1BJLiBJdCBpcyBiYXNpY2Fs
+bHkganVzdCBhIGNhbGwgdG8gb2ZfcGxhdGZvcm1fZGV2aWNlX2ZpbmQgYW5kIHRoZW4KYnVzX3By
+b2JlX2RldmljZS4gSSBleHBlY3QgdGhlIGdldCBmdW5jdGlvbnMgd2lsbCBhbHdheXMgY2FsbCBp
+bnRvCkRUL0FDUEkgc3BlY2lmaWMgZnVuY3Rpb25zIHdoaWNoIGNhbiB0aGVuIGNhbGwgdGhlIGZp
+cm13YXJlIHNwZWNpZmljCmRldmljZSBmaW5kIGZ1bmN0aW9uLgoKUm9iCgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxp
+bmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3Rz
+LmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
