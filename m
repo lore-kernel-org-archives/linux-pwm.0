@@ -1,153 +1,111 @@
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH 22/23] misc: atmel_tclib: get and use slow clock
-Date: Fri, 31 Jul 2015 11:39:58 +0200
-Message-ID: <1438335599-3301-23-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1438335599-3301-1-git-send-email-alexandre.belloni@free-electrons.com>
+Subject: [PATCH 00/23] ARM: at91: Properly handle slow clock
+Date: Fri, 31 Jul 2015 11:39:36 +0200
+Message-ID: <1438335599-3301-1-git-send-email-alexandre.belloni@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1438335599-3301-1-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Alessandro Zummo <a.zummo@towertech.it>, Arnd Bergmann <arnd@arndb.de>, Daniel Lezcano <daniel.lezcano@linaro.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-clk@vger.kernel.org, linux-pm@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, Michael Turquette <mturquette@baylibre.com>, rtc-linux@googlegroups.com, Sebastian Reichel <sre@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@iguana.be>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Hi,
 
-Commit dca1a4b5ff6e ("clk: at91: keep slow clk enabled to prevent system
-hang") added a workaround for the slow clock as it is not properly handled
-by its users.
+It was discovered that all the slow clock user were not properly claiming it.
+This can end up in a system hang because the last registered user is releasing
+it, and it gets disabled.
 
-Get and use the slow clock as it is necessary for the timer counters.
+commit dca1a4b5ff6e ("clk: at91: keep slow clk enabled to prevent system hang")
+was a workaround. This series is adding the slow clock to the necessary drivers
+to avoid the issue and then removes that workaround.
 
-Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
+The Documentation updates and DT patches should probably go through the AT91
+tree this cycle to avoid breakage.
+
+Then the other patches can go through each subsystem tree. They are trivial
+enough to also go in this cycle.
+
+The final clk patch depends on the other ones and may be taken for the next
+cycle to avoid synchronization issues.
+
+I've thrown in a cleanup for at91-reset as it avoids adding support for that
+clock to the platform data initialization
+
+Changes in v2:
+ - statisticize the global in the atmel-st change
+ - merge at91_reset_of_probe() in at91_reset_probe()
+ - added patches from Boris for the TCB
+ - added the slow clock to the TCB
+
+Cc: Alessandro Zummo <a.zummo@towertech.it>
 Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-clk@vger.kernel.org
+Cc: linux-pm@vger.kernel.org
 Cc: linux-pwm@vger.kernel.org
- drivers/clocksource/tcb_clksrc.c |  8 ++++++++
- drivers/misc/atmel_tclib.c       |  4 ++++
- drivers/pwm/pwm-atmel-tcb.c      | 23 ++++++++++++++++-------
- include/linux/atmel_tc.h         |  1 +
- 4 files changed, 29 insertions(+), 7 deletions(-)
+Cc: linux-watchdog@vger.kernel.org
+Cc: Michael Turquette <mturquette@baylibre.com>
+Cc: rtc-linux@googlegroups.com
+Cc: Sebastian Reichel <sre@kernel.org>
+Cc: Stephen Boyd <sboyd@codeaurora.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Wim Van Sebroeck <wim@iguana.be>
 
-diff --git a/drivers/clocksource/tcb_clksrc.c b/drivers/clocksource/tcb_clksrc.c
-index b9b7277173c2..969ba03633b0 100644
---- a/drivers/clocksource/tcb_clksrc.c
-+++ b/drivers/clocksource/tcb_clksrc.c
-@@ -188,6 +188,13 @@ static int __init setup_clkevents(struct atmel_tc *tc, int clk32k_divisor_idx)
- 	ret = clk_prepare_enable(t2_clk);
- 	if (ret)
- 		return ret;
-+
-+	ret = clk_prepare_enable(tc->slow_clk);
-+	if (ret) {
-+		clk_disable_unprepare(t2_clk);
-+		return ret;
-+	}
-+
- 	clk_disable(t2_clk);
- 
- 	clkevt.regs = tc->regs;
-@@ -200,6 +207,7 @@ static int __init setup_clkevents(struct atmel_tc *tc, int clk32k_divisor_idx)
- 	ret = request_irq(irq, ch2_irq, IRQF_TIMER, "tc_clkevt", &clkevt);
- 	if (ret) {
- 		clk_unprepare(t2_clk);
-+		clk_disable_unprepare(tc->slow_clk);
- 		return ret;
- 	}
- 
-diff --git a/drivers/misc/atmel_tclib.c b/drivers/misc/atmel_tclib.c
-index 0ca05c3ec8d6..ac24a4bd63f7 100644
---- a/drivers/misc/atmel_tclib.c
-+++ b/drivers/misc/atmel_tclib.c
-@@ -125,6 +125,10 @@ static int __init tc_probe(struct platform_device *pdev)
- 	if (IS_ERR(clk))
- 		return PTR_ERR(clk);
- 
-+	tc->slow_clk = devm_clk_get(&pdev->dev, "slow_clk");
-+	if (IS_ERR(tc->slow_clk))
-+		return PTR_ERR(tc->slow_clk);
-+
- 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	tc->regs = devm_ioremap_resource(&pdev->dev, r);
- 	if (IS_ERR(tc->regs))
-diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
-index d14e0677c92d..070a32a35295 100644
---- a/drivers/pwm/pwm-atmel-tcb.c
-+++ b/drivers/pwm/pwm-atmel-tcb.c
-@@ -305,7 +305,7 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 */
- 	if (i == 5) {
- 		i = slowclk;
--		rate = 32768;
-+		rate = clk_get_rate(tc->slow_clk);
- 		min = div_u64(NSEC_PER_SEC, rate);
- 		max = min << tc->tcb_config->counter_width;
- 
-@@ -387,9 +387,9 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- 
- 	tcbpwm = devm_kzalloc(&pdev->dev, sizeof(*tcbpwm), GFP_KERNEL);
- 	if (tcbpwm == NULL) {
--		atmel_tc_free(tc);
-+		err = -ENOMEM;
- 		dev_err(&pdev->dev, "failed to allocate memory\n");
--		return -ENOMEM;
-+		goto err_free_tc;
- 	}
- 
- 	tcbpwm->chip.dev = &pdev->dev;
-@@ -400,17 +400,24 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- 	tcbpwm->chip.npwm = NPWM;
- 	tcbpwm->tc = tc;
- 
-+	err = clk_prepare_enable(tc->slow_clk);
-+	if (err)
-+		goto err_free_tc;
-+
- 	spin_lock_init(&tcbpwm->lock);
- 
- 	err = pwmchip_add(&tcbpwm->chip);
--	if (err < 0) {
--		atmel_tc_free(tc);
--		return err;
--	}
-+	if (err < 0)
-+		goto err_free_tc;
- 
- 	platform_set_drvdata(pdev, tcbpwm);
- 
- 	return 0;
-+
-+err_free_tc:
-+	atmel_tc_free(tc);
-+
-+	return err;
- }
- 
- static int atmel_tcb_pwm_remove(struct platform_device *pdev)
-@@ -418,6 +425,8 @@ static int atmel_tcb_pwm_remove(struct platform_device *pdev)
- 	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
- 	int err;
- 
-+	clk_disable_unprepare(tcbpwm->tc->slow_clk);
-+
- 	err = pwmchip_remove(&tcbpwm->chip);
- 	if (err < 0)
- 		return err;
-diff --git a/include/linux/atmel_tc.h b/include/linux/atmel_tc.h
-index b87c1c7c242a..468fdfa643f0 100644
---- a/include/linux/atmel_tc.h
-+++ b/include/linux/atmel_tc.h
-@@ -67,6 +67,7 @@ struct atmel_tc {
- 	const struct atmel_tcb_config *tcb_config;
- 	int			irq[3];
- 	struct clk		*clk[3];
-+	struct clk		*slow_clk;
- 	struct list_head	node;
- 	bool			allocated;
- };
+Alexandre Belloni (20):
+  Documentation: dt: atmel-at91: add clocks to system timer, rstc and
+    shdwc
+  Documentation: watchdog: at91sam9_wdt: add clocks property
+  Documentation: dt: rtc: at91rm9200: add clocks property
+  ARM: at91/dt: at91rm9200: use slow clock where necessary
+  ARM: at91/dt: at91sam9260: use slow clock where necessary
+  ARM: at91/dt: at91sam9261: use slow clock where necessary
+  ARM: at91/dt: at91sam9263: use slow clock where necessary
+  ARM: at91/dt: at91sam9g45: use slow clock where necessary
+  ARM: at91/dt: at91sam9n12: use slow clock where necessary
+  ARM: at91/dt: at91sam9rl: use slow clock where necessary
+  ARM: at91/dt: at91sam9x5: use slow clock where necessary
+  ARM: at91/dt: sama5d3: use slow clock where necessary
+  ARM: at91/dt: sama5d4: use slow clock where necessary
+  rtc: at91rm9200: get and use slow clock
+  watchdog: at91sam9: get and use slow clock
+  power/reset: at91-reset: remove useless at91_reset_platform_probe()
+  power/reset: at91-reset: get and use slow clock
+  power/reset: at91-poweroff: get and use slow clock
+  clocksource: atmel-st: get and use slow clock
+  clk: at91: Revert "keep slow clk enabled to prevent system hang"
+
+Boris Brezillon (3):
+  Documentation: dt: atmel-at91: add slow clock to tcb
+  clocksource: tcb_clksrc: fix setup_clkevents error path
+  misc: atmel_tclib: get and use slow clock
+
+ .../devicetree/bindings/arm/atmel-at91.txt         | 13 +++--
+ .../bindings/rtc/atmel,at91rm9200-rtc.txt          |  2 +
+ .../devicetree/bindings/watchdog/atmel-wdt.txt     |  2 +
+ arch/arm/boot/dts/at91rm9200.dtsi                  | 10 ++--
+ arch/arm/boot/dts/at91sam9260.dtsi                 | 11 +++--
+ arch/arm/boot/dts/at91sam9261.dtsi                 |  7 ++-
+ arch/arm/boot/dts/at91sam9263.dtsi                 |  7 ++-
+ arch/arm/boot/dts/at91sam9g45.dtsi                 | 12 +++--
+ arch/arm/boot/dts/at91sam9n12.dtsi                 | 12 +++--
+ arch/arm/boot/dts/at91sam9rl.dtsi                  |  8 ++-
+ arch/arm/boot/dts/at91sam9x5.dtsi                  | 12 +++--
+ arch/arm/boot/dts/sama5d3.dtsi                     |  8 ++-
+ arch/arm/boot/dts/sama5d3_tcb1.dtsi                |  4 +-
+ arch/arm/boot/dts/sama5d4.dtsi                     | 12 +++--
+ drivers/clk/at91/clk-slow.c                        | 27 ----------
+ drivers/clocksource/tcb_clksrc.c                   | 10 +++-
+ drivers/clocksource/timer-atmel-st.c               | 31 ++++++++----
+ drivers/misc/atmel_tclib.c                         |  4 ++
+ drivers/power/reset/at91-poweroff.c                | 13 +++++
+ drivers/power/reset/at91-reset.c                   | 57 ++++++----------------
+ drivers/pwm/pwm-atmel-tcb.c                        | 23 ++++++---
+ drivers/rtc/rtc-at91rm9200.c                       | 27 ++++++++--
+ drivers/watchdog/at91sam9_wdt.c                    | 22 ++++++++-
+ include/linux/atmel_tc.h                           |  1 +
+ 24 files changed, 206 insertions(+), 129 deletions(-)
+
 -- 
 2.1.4
