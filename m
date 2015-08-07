@@ -1,54 +1,39 @@
-From: Ariel D'Alessandro <ariel@vanguardiasur.com.ar>
-Subject: [PATCH v2 2/2] DT: pwm: Add NXP LPC18xx PWM/SCT binding documentation
-Date: Wed,  5 Aug 2015 23:31:47 -0300
-Message-ID: <1438828307-14641-3-git-send-email-ariel@vanguardiasur.com.ar>
-References: <1438828307-14641-1-git-send-email-ariel@vanguardiasur.com.ar>
+From: Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH 0/2] pwm: Broadcom BCM7xxx PWM support
+Date: Thu,  6 Aug 2015 17:55:56 -0700
+Message-ID: <1438908959-1578-1-git-send-email-f.fainelli@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qg0-f41.google.com ([209.85.192.41]:32934 "EHLO
-	mail-qg0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754185AbbHFCcG (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 5 Aug 2015 22:32:06 -0400
-Received: by qged69 with SMTP id d69so44245258qge.0
-        for <linux-pwm@vger.kernel.org>; Wed, 05 Aug 2015 19:32:05 -0700 (PDT)
-In-Reply-To: <1438828307-14641-1-git-send-email-ariel@vanguardiasur.com.ar>
+Received: from mail-pa0-f44.google.com ([209.85.220.44]:33417 "EHLO
+	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753057AbbHGA6W (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Aug 2015 20:58:22 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, manabian@gmail.com, ezequiel@vanguardiasur.com.ar, thierry.reding@gmail.com, Ariel D'Alessandro <ariel@vanguardiasur.com.ar>
+To: linux-kernel@vger.kernel.org
+Cc: bcm-kernel-feedback-list@broadcom.com, Florian Fainelli <f.fainelli@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
 
-Add the devicetree binding document for NXP LPC18xx PWM/SCT.
+Hi,
 
-Signed-off-by: Ariel D'Alessandro <ariel@vanguardiasur.com.ar>
----
- .../devicetree/bindings/pwm/lpc1850-sct-pwm.txt      | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/lpc1850-sct-pwm.txt
+This patch series add PWM support for the Broadcom BCM7xxx
+chips which feature one or more PWM controllers capable of
+output periods from 148ns to ~622ms using a combination of
+variable and fixed frequency settings.
 
-diff --git a/Documentation/devicetree/bindings/pwm/lpc1850-sct-pwm.txt b/Documentation/devicetree/bindings/pwm/lpc1850-sct-pwm.txt
-new file mode 100644
-index 0000000..36e49d4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/lpc1850-sct-pwm.txt
-@@ -0,0 +1,20 @@
-+* NXP LPC18xx State Configurable Timer - Pulse Width Modulator driver
-+
-+Required properties:
-+  - compatible: Should be "nxp,lpc1850-sct-pwm"
-+  - reg: Should contain physical base address and length of pwm registers.
-+  - clocks: Must contain an entry for each entry in clock-names.
-+    See ../clock/clock-bindings.txt for details.
-+  - clock-names: Must include the following entries.
-+    - pwm: PWM operating clock.
-+  - #pwm-cells: Should be 3. See pwm.txt in this directory for the description
-+    of the cells format.
-+
-+Example:
-+  pwm: pwm@40000000 {
-+    compatible = "nxp,lpc1850-sct-pwm";
-+    reg = <0x40000000 0x1000>;
-+    clocks =<&ccu1 CLK_CPU_SCT>;
-+    clock-names = "pwm";
-+    #pwm-cells = <3>;
-+  };
+The controller does not support setting a polarity.
+
+This is based on Thierry's pwm/next branch.
+
+Florian Fainelli (2):
+  Documentation: dt: add Broadcom BCM7038 PWM controller binding
+  pwm: Add Broadcom BCM7038 PWM controller support
+
+ .../devicetree/bindings/pwm/brcm,bcm7038-pwm.txt   |  22 ++
+ drivers/pwm/Kconfig                                |  10 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-brcmstb.c                          | 323 +++++++++++++++++++++
+ 4 files changed, 356 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/brcm,bcm7038-pwm.txt
+ create mode 100644 drivers/pwm/pwm-brcmstb.c
+
 -- 
-1.9.1
+2.1.0
