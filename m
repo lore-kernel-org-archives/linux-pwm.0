@@ -1,82 +1,55 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH v3 4/4] misc: atmel_tclib: get and use slow clock
-Date: Tue, 11 Aug 2015 17:27:24 +0200
-Message-ID: <20150811152724.GR3411@piout.net>
-References: <1439285884-16051-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1439285884-16051-5-git-send-email-alexandre.belloni@free-electrons.com>
- <55C9FB5D.7030607@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Antoine Tenart <antoine.tenart@free-electrons.com>
+Subject: [PATCH v3 0/5] ARM: berlin: PWM support
+Date: Wed, 12 Aug 2015 15:51:32 +0200
+Message-ID: <1439387497-6863-1-git-send-email-antoine.tenart@free-electrons.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:36432 "EHLO
+Received: from down.free-electrons.com ([37.187.137.238]:35591 "EHLO
 	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S965062AbbHKP10 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 11 Aug 2015 11:27:26 -0400
-Content-Disposition: inline
-In-Reply-To: <55C9FB5D.7030607@linaro.org>
+	with ESMTP id S1751161AbbHLNvk (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Aug 2015 09:51:40 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+To: sebastian.hesselbarth@gmail.com, thierry.reding@gmail.com
+Cc: Antoine Tenart <antoine.tenart@free-electrons.com>, zmxu@marvell.com, jszhang@marvell.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 11/08/2015 at 15:40:45 +0200, Daniel Lezcano wrote :
-> On 08/11/2015 11:38 AM, Alexandre Belloni wrote:
-> >From: Boris Brezillon <boris.brezillon@free-electrons.com>
-> >
-> >Commit dca1a4b5ff6e ("clk: at91: keep slow clk enabled to prevent system
-> >hang") added a workaround for the slow clock as it is not properly handled
-> >by its users.
-> >
-> >Get and use the slow clock as it is necessary for the timer counters.
-> >
-> >Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> >Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> >Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> >---
-> >Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> >Cc: Thomas Gleixner <tglx@linutronix.de>
-> >Cc: Thierry Reding <thierry.reding@gmail.com>
-> >Cc: linux-pwm@vger.kernel.org
-> >
-> >  drivers/clocksource/tcb_clksrc.c |  8 ++++++++
-> >  drivers/misc/atmel_tclib.c       |  4 ++++
-> >  drivers/pwm/pwm-atmel-tcb.c      | 23 ++++++++++++++++-------
-> >  include/linux/atmel_tc.h         |  1 +
-> >  4 files changed, 29 insertions(+), 7 deletions(-)
-> >
-> >diff --git a/drivers/clocksource/tcb_clksrc.c b/drivers/clocksource/tcb_clksrc.c
-> >index b9b7277173c2..969ba03633b0 100644
-> >--- a/drivers/clocksource/tcb_clksrc.c
-> >+++ b/drivers/clocksource/tcb_clksrc.c
-> >@@ -188,6 +188,13 @@ static int __init setup_clkevents(struct atmel_tc *tc, int clk32k_divisor_idx)
-> >  	ret = clk_prepare_enable(t2_clk);
-> >  	if (ret)
-> >  		return ret;
-> >+
-> >+	ret = clk_prepare_enable(tc->slow_clk);
-> >+	if (ret) {
-> >+		clk_disable_unprepare(t2_clk);
-> >+		return ret;
-> >+	}
-> >+
-> >  	clk_disable(t2_clk);
-> 
-> Do you need t2_clk to be enabled in order to enable tc->slow_clk ?
+Hi all,
 
-No, I'll move clk_prepare_enable for tc->slow_clk before t2_clk.
+This series adds a driver for the Marvell Berlin PWM controller, which
+has 4 channels.
 
-> >+
-> >+err_free_tc:
-> >+	atmel_tc_free(tc);
-> >+
-> >+	return err;
-> 
-> What about clk_unprepare_disable(tc->slow_clk) ?
-> 
+This has been tested on a BG2Q DMP.
 
-Indeed, I trusted Boris a bit too much ;)
+Thanks,
+
+Antoine
+
+Changes since v2:
+	- Reworked the prescaler/tcnt calculation
+	- Added an input clock
+	- Updated the documentation
+	- Reordered the pwm node
+	- Added some definition for BIT()
+
+Changes since v1:
+        - Added a sentinel in berlin_pwm_match[]
+
+Antoine Tenart (5):
+  pwm: add the Berlin pwm controller driver
+  Documentation: bindings: document the Berlin PWM driver
+  ARM: berlin: add a PWM node on the BG2Q
+  ARM: berlin: add a PWM node on the BG2
+  ARM: berlin: add a PWM node on the BG2CD
+
+ .../devicetree/bindings/pwm/pwm-berlin.txt         |  19 ++
+ arch/arm/boot/dts/berlin2.dtsi                     |   7 +
+ arch/arm/boot/dts/berlin2cd.dtsi                   |   7 +
+ arch/arm/boot/dts/berlin2q.dtsi                    |   7 +
+ drivers/pwm/Kconfig                                |   9 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-berlin.c                           | 227 +++++++++++++++++++++
+ 7 files changed, 277 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-berlin.txt
+ create mode 100644 drivers/pwm/pwm-berlin.c
 
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+2.5.0
