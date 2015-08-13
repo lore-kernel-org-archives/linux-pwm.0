@@ -1,43 +1,134 @@
-From: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+From: Jisheng Zhang <jszhang@marvell.com>
 Subject: Re: [PATCH v3 1/5] pwm: add the Berlin pwm controller driver
-Date: Wed, 12 Aug 2015 16:21:16 +0200
-Message-ID: <55CB565C.8050906@gmail.com>
-References: <1439387497-6863-1-git-send-email-antoine.tenart@free-electrons.com> <1439387497-6863-2-git-send-email-antoine.tenart@free-electrons.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Date: Thu, 13 Aug 2015 11:19:25 +0800
+Message-ID: <20150813111925.217c0b14@xhacker>
+References: <1439387497-6863-1-git-send-email-antoine.tenart@free-electrons.com>
+	<1439387497-6863-2-git-send-email-antoine.tenart@free-electrons.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:4805 "EHLO
+	mx0a-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751442AbbHMDXK (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Aug 2015 23:23:10 -0400
 In-Reply-To: <1439387497-6863-2-git-send-email-antoine.tenart@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Antoine Tenart <antoine.tenart@free-electrons.com>, thierry.reding@gmail.com
-Cc: zmxu@marvell.com, jszhang@marvell.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Antoine Tenart <antoine.tenart@free-electrons.com>
+Cc: sebastian.hesselbarth@gmail.com, thierry.reding@gmail.com, zmxu@marvell.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On 08/12/2015 03:51 PM, Antoine Tenart wrote:
+Dear Antoine,
+
+On Wed, 12 Aug 2015 15:51:33 +0200
+Antoine Tenart <antoine.tenart@free-electrons.com> wrote:
+
 > Add a PWM controller driver for the Marvell Berlin SoCs. This PWM
 > controller has 4 channels.
->
+> 
 > Signed-off-by: Antoine Tenart <antoine.tenart@free-electrons.com>
-
-Antoine,
-
-nice rework, but...
-
-[...]
+> ---
+>  drivers/pwm/Kconfig      |   9 ++
+>  drivers/pwm/Makefile     |   1 +
+>  drivers/pwm/pwm-berlin.c | 227 +++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 237 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-berlin.c
+> 
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index b1541f40fd8d..1773da8145b8 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -92,6 +92,15 @@ config PWM_BCM2835
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-bcm2835.
+>  
+> +config PWM_BERLIN
+> +	tristate "Berlin PWM support"
+> +	depends on ARCH_BERLIN
+> +	help
+> +	  PWM framework driver for Berlin.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called pwm-berlin.
+> +
+>  config PWM_BFIN
+>  	tristate "Blackfin PWM support"
+>  	depends on BFIN_GPTIMERS
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index ec50eb5b5a8f..670c5fce8bbb 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -6,6 +6,7 @@ obj-$(CONFIG_PWM_ATMEL_HLCDC_PWM)	+= pwm-atmel-hlcdc.o
+>  obj-$(CONFIG_PWM_ATMEL_TCB)	+= pwm-atmel-tcb.o
+>  obj-$(CONFIG_PWM_BCM_KONA)	+= pwm-bcm-kona.o
+>  obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
+> +obj-$(CONFIG_PWM_BERLIN)	+= pwm-berlin.o
+>  obj-$(CONFIG_PWM_BFIN)		+= pwm-bfin.o
+>  obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
+>  obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
 > diff --git a/drivers/pwm/pwm-berlin.c b/drivers/pwm/pwm-berlin.c
 > new file mode 100644
 > index 000000000000..f89e25ea5c6d
 > --- /dev/null
 > +++ b/drivers/pwm/pwm-berlin.c
 > @@ -0,0 +1,227 @@
-[...]
+> +/*
+> + * Marvell Berlin PWM driver
+> + *
+> + * Copyright (C) 2015 Marvell Technology Group Ltd.
+> + *
+> + * Antoine Tenart <antoine.tenart@free-electrons.com>
+> + *
+> + * This file is licensed under the terms of the GNU General Public
+> + * License version 2. This program is licensed "as is" without any
+> + * warranty of any kind, whether express or implied.
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/io.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+> +#include <linux/spinlock.h>
+> +
+> +#define BERLIN_PWM_EN			0x0
+> +#define BERLIN_PWM_CONTROL		0x4
+> +#define BERLIN_PWM_DUTY			0x8
+> +#define BERLIN_PWM_TCNT			0xc
+> +
 > +#define BERLIN_PWM_ENABLE		BIT(0)
 > +#define BERLIN_PWM_DISABLE		0x0
+> +#define BERLIN_PWM_INVERT_POLARITY	BIT(3)
+> +#define BERLIN_PWM_PRESCALE_MASK	0x7
+> +#define BERLIN_PWM_PRESCALE_MAX		4096
+> +#define BERLIN_PWM_MAX_TCNT		65535
+> +
+> +struct berlin_pwm_chip {
+> +	struct pwm_chip chip;
+> +	struct clk *clk;
+> +	void __iomem *base;
+> +	spinlock_t lock;
+> +};
+> +
+> +#define to_berlin_pwm_chip(chip)	\
+> +	container_of((chip), struct berlin_pwm_chip, chip)
+> +
+> +#define berlin_pwm_readl(chip, channel, offset)		\
+> +	readl((chip)->base + (channel) * 0x10 + offset)
+> +#define berlin_pwm_writel(val, chip, channel, offset)	\
+> +	writel(val, (chip)->base + (channel) * 0x10 + offset)
 
-I'd drop BERLIN_PWM_DISABLE and use reg & ~BERLIN_PWM_ENABLE below.
-Even if there are no more writable bits in that register, IMHO it
-is good practice to affect as little bits as possible.
+It's better to use relaxed version. In some platforms with PL310 such as
+BG2Q, the writel/readl will cost much time on spinning the lock if there's
+heavy L2 cache maintenance ongoing, this time cost is not necessary.
 
-[...]
+And IIRC, in patch V2 review, Sebastian doesn't object to relaxed version.
+
+Thanks,
+Jisheng
+
+> +
 > +/* prescaler table: {1, 4, 8, 16, 64, 256, 1024, 4096} */
 > +static const u32 prescaler_diff_table[] = {
 > +	1, 4, 2, 2, 4, 4, 4, 4,
@@ -60,10 +151,7 @@ is good practice to affect as little bits as possible.
 > +
 > +	if (cycles > BERLIN_PWM_MAX_TCNT)
 > +		return -EINVAL;
-
-Does my idea actually work? Did you test it with some different
-pwm frequencies?
-
+> +
 > +	period = cycles;
 > +	cycles *= duty_ns;
 > +	do_div(cycles, period_ns);
@@ -72,10 +160,6 @@ pwm frequencies?
 > +	ret = clk_prepare_enable(berlin_chip->clk);
 > +	if (ret)
 > +		return ret;
-
-Hmm. I understand that this may be required as the pwm framework
-calls .pwm_config before .pwm_enable, but...
-
 > +
 > +	spin_lock(&berlin_chip->lock);
 > +
@@ -90,18 +174,7 @@ calls .pwm_config before .pwm_enable, but...
 > +	spin_unlock(&berlin_chip->lock);
 > +
 > +	clk_disable_unprepare(berlin_chip->clk);
-
-Are you sure that register contents are retained after disabling the
-clock? I understand that cfg_clk is the _ip_ input clock and pwm gets
-derived from it.
-
-Actually, since cfg_clk seems to be an important, internal SoC clock
-I'd say to clk_prepare_enable() in _probe() before reading any
-registers and clk_disable_unprepare() on _remove() (see below).
-
-Internal low-frequency clocks don't consume that much power that it
-is worth the pain ;)
-
+> +
 > +	return 0;
 > +}
 > +
@@ -116,9 +189,7 @@ is worth the pain ;)
 > +	ret = clk_prepare_enable(berlin_chip->clk);
 > +	if (ret)
 > +		return ret;
-
-These would become unnecessary then.
-
+> +
 > +	spin_lock(&berlin_chip->lock);
 > +
 > +	val = berlin_pwm_readl(berlin_chip, pwm->hwpwm, BERLIN_PWM_CONTROL);
@@ -133,9 +204,7 @@ These would become unnecessary then.
 > +	spin_unlock(&berlin_chip->lock);
 > +
 > +	clk_disable_unprepare(berlin_chip->clk);
-
-ditto.
-
+> +
 > +	return 0;
 > +}
 > +
@@ -147,9 +216,7 @@ ditto.
 > +	ret = clk_prepare_enable(berlin_chip->clk);
 > +	if (ret)
 > +		return ret;
-
-ditto.
-
+> +
 > +	spin_lock(&berlin_chip->lock);
 > +	berlin_pwm_writel(BERLIN_PWM_ENABLE, berlin_chip, pwm->hwpwm, BERLIN_PWM_EN);
 > +	spin_unlock(&berlin_chip->lock);
@@ -166,9 +233,6 @@ ditto.
 > +	spin_unlock(&berlin_chip->lock);
 > +
 > +	clk_disable_unprepare(berlin_chip->clk);
-
-ditto.
-
 > +}
 > +
 > +static const struct pwm_ops berlin_pwm_ops = {
@@ -213,9 +277,7 @@ ditto.
 > +	pwm->chip.of_pwm_n_cells = 3;
 > +
 > +	spin_lock_init(&pwm->lock);
-
-add clk_prepare_enable() before adding the pwmchip...
-
+> +
 > +	ret = pwmchip_add(&pwm->chip);
 > +	if (ret < 0) {
 > +		dev_err(&pdev->dev, "Failed to add PWM chip: %d\n", ret);
@@ -232,15 +294,6 @@ add clk_prepare_enable() before adding the pwmchip...
 > +	struct berlin_pwm_chip *pwm = platform_get_drvdata(pdev);
 > +
 > +	return pwmchip_remove(&pwm->chip);
-
-... and clk_disable_unprepare after removing it.
-
-Besides the comments, for Berlin you get my
-
-Acked-by: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-
-Thanks!
-
 > +}
 > +
 > +static struct platform_driver berlin_pwm_driver = {
@@ -256,4 +309,3 @@ Thanks!
 > +MODULE_AUTHOR("Antoine Tenart <antoine.tenart@free-electrons.com>");
 > +MODULE_DESCRIPTION("Marvell Berlin PWM driver");
 > +MODULE_LICENSE("GPL v2");
->
