@@ -1,311 +1,70 @@
-From: Jisheng Zhang <jszhang@marvell.com>
-Subject: Re: [PATCH v3 1/5] pwm: add the Berlin pwm controller driver
-Date: Thu, 13 Aug 2015 11:19:25 +0800
-Message-ID: <20150813111925.217c0b14@xhacker>
-References: <1439387497-6863-1-git-send-email-antoine.tenart@free-electrons.com>
-	<1439387497-6863-2-git-send-email-antoine.tenart@free-electrons.com>
+From: Clemens Gruber <clemens.gruber@pqgruber.com>
+Subject: Re: [PATCH v4 0/2] pwm-pca9685: Bugfixes and prescaler support
+Date: Fri, 14 Aug 2015 22:09:50 +0200
+Message-ID: <20150814200949.GA1440@pqgruber.com>
+References: <1437664742-23121-1-git-send-email-clemens.gruber@pqgruber.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:4805 "EHLO
-	mx0a-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751442AbbHMDXK (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Aug 2015 23:23:10 -0400
-In-Reply-To: <1439387497-6863-2-git-send-email-antoine.tenart@free-electrons.com>
+Received: from mail.pqgruber.com ([178.189.19.235]:59082 "EHLO
+	mail.pqgruber.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751830AbbHNWJy (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Aug 2015 18:09:54 -0400
+Content-Disposition: inline
+In-Reply-To: <1437664742-23121-1-git-send-email-clemens.gruber@pqgruber.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Antoine Tenart <antoine.tenart@free-electrons.com>
-Cc: sebastian.hesselbarth@gmail.com, thierry.reding@gmail.com, zmxu@marvell.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Dear Antoine,
-
-On Wed, 12 Aug 2015 15:51:33 +0200
-Antoine Tenart <antoine.tenart@free-electrons.com> wrote:
-
-> Add a PWM controller driver for the Marvell Berlin SoCs. This PWM
-> controller has 4 channels.
+On Thu, Jul 23, 2015 at 05:19:00PM +0200, Clemens Gruber wrote:
+> Hi,
 > 
-> Signed-off-by: Antoine Tenart <antoine.tenart@free-electrons.com>
-> ---
->  drivers/pwm/Kconfig      |   9 ++
->  drivers/pwm/Makefile     |   1 +
->  drivers/pwm/pwm-berlin.c | 227 +++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 237 insertions(+)
->  create mode 100644 drivers/pwm/pwm-berlin.c
+> the first patch from this series contains bugfixes and the second patch
+> adds support for changing the PWM output frequency of the PCA9685.
 > 
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index b1541f40fd8d..1773da8145b8 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -92,6 +92,15 @@ config PWM_BCM2835
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-bcm2835.
->  
-> +config PWM_BERLIN
-> +	tristate "Berlin PWM support"
-> +	depends on ARCH_BERLIN
-> +	help
-> +	  PWM framework driver for Berlin.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called pwm-berlin.
-> +
->  config PWM_BFIN
->  	tristate "Blackfin PWM support"
->  	depends on BFIN_GPTIMERS
-> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> index ec50eb5b5a8f..670c5fce8bbb 100644
-> --- a/drivers/pwm/Makefile
-> +++ b/drivers/pwm/Makefile
-> @@ -6,6 +6,7 @@ obj-$(CONFIG_PWM_ATMEL_HLCDC_PWM)	+= pwm-atmel-hlcdc.o
->  obj-$(CONFIG_PWM_ATMEL_TCB)	+= pwm-atmel-tcb.o
->  obj-$(CONFIG_PWM_BCM_KONA)	+= pwm-bcm-kona.o
->  obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
-> +obj-$(CONFIG_PWM_BERLIN)	+= pwm-berlin.o
->  obj-$(CONFIG_PWM_BFIN)		+= pwm-bfin.o
->  obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
->  obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
-> diff --git a/drivers/pwm/pwm-berlin.c b/drivers/pwm/pwm-berlin.c
-> new file mode 100644
-> index 000000000000..f89e25ea5c6d
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-berlin.c
-> @@ -0,0 +1,227 @@
-> +/*
-> + * Marvell Berlin PWM driver
-> + *
-> + * Copyright (C) 2015 Marvell Technology Group Ltd.
-> + *
-> + * Antoine Tenart <antoine.tenart@free-electrons.com>
-> + *
-> + * This file is licensed under the terms of the GNU General Public
-> + * License version 2. This program is licensed "as is" without any
-> + * warranty of any kind, whether express or implied.
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/io.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pwm.h>
-> +#include <linux/spinlock.h>
-> +
-> +#define BERLIN_PWM_EN			0x0
-> +#define BERLIN_PWM_CONTROL		0x4
-> +#define BERLIN_PWM_DUTY			0x8
-> +#define BERLIN_PWM_TCNT			0xc
-> +
-> +#define BERLIN_PWM_ENABLE		BIT(0)
-> +#define BERLIN_PWM_DISABLE		0x0
-> +#define BERLIN_PWM_INVERT_POLARITY	BIT(3)
-> +#define BERLIN_PWM_PRESCALE_MASK	0x7
-> +#define BERLIN_PWM_PRESCALE_MAX		4096
-> +#define BERLIN_PWM_MAX_TCNT		65535
-> +
-> +struct berlin_pwm_chip {
-> +	struct pwm_chip chip;
-> +	struct clk *clk;
-> +	void __iomem *base;
-> +	spinlock_t lock;
-> +};
-> +
-> +#define to_berlin_pwm_chip(chip)	\
-> +	container_of((chip), struct berlin_pwm_chip, chip)
-> +
-> +#define berlin_pwm_readl(chip, channel, offset)		\
-> +	readl((chip)->base + (channel) * 0x10 + offset)
-> +#define berlin_pwm_writel(val, chip, channel, offset)	\
-> +	writel(val, (chip)->base + (channel) * 0x10 + offset)
+> Regards,
+> Clemens
+> 
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+> 
+> Changes in v2:
+> - Only put chip into sleep mode if the bounds checking succeeds
+> 
+> Changes in v3:
+> - Fix checkpatch style warnings introduced in v2
+> 
+> Changes in v4:
+> - Set RESTART bit. Now the duty cycle to period ratio stays the same
+>   after only changing the period.
+> - Added a comment at the start of the file pointing out that the chip
+>   has only one prescaler and changing the period affects all outputs.
+> 
+> Clemens Gruber (2):
+>   pwm-pca9685: Fix several driver bugs
+>   pwm-pca9685: Support changing the output frequency
+> 
+>  drivers/pwm/pwm-pca9685.c | 89 ++++++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 88 insertions(+), 1 deletion(-)
+> 
+> -- 
+> 2.4.6
+> 
 
-It's better to use relaxed version. In some platforms with PL310 such as
-BG2Q, the writel/readl will cost much time on spinning the lock if there's
-heavy L2 cache maintenance ongoing, this time cost is not necessary.
+Hi Thierry,
 
-And IIRC, in patch V2 review, Sebastian doesn't object to relaxed version.
+I addressed the issue you raised about keeping the duty cycle to period ratio
+when changing the period. This is achieved in v4 by setting the RESTART bit,
+which resumes the PWM output with the same duty_cycle to period ratio as before
+but with the new period / prescaler value. I also added a comment at the
+beginning of the file to remind implementers, that this driver has a chip-wide
+prescaler.
+
+Without those two patches, the driver is really broken. See my description in
+patch 1/2 for a list of its bugs.
+
+Could we please get those two patches into 4.3?
 
 Thanks,
-Jisheng
-
-> +
-> +/* prescaler table: {1, 4, 8, 16, 64, 256, 1024, 4096} */
-> +static const u32 prescaler_diff_table[] = {
-> +	1, 4, 2, 2, 4, 4, 4, 4,
-> +};
-> +
-> +static int berlin_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> +			     int duty_ns, int period_ns)
-> +{
-> +	struct berlin_pwm_chip *berlin_chip = to_berlin_pwm_chip(chip);
-> +	int ret, prescale = 0;
-> +	u32 val, duty, period;
-> +	u64 cycles;
-> +
-> +	cycles = clk_get_rate(berlin_chip->clk);
-> +	cycles *= period_ns;
-> +	do_div(cycles, NSEC_PER_SEC);
-> +
-> +	while (cycles > BERLIN_PWM_MAX_TCNT)
-> +		do_div(cycles, prescaler_diff_table[++prescale]);
-> +
-> +	if (cycles > BERLIN_PWM_MAX_TCNT)
-> +		return -EINVAL;
-> +
-> +	period = cycles;
-> +	cycles *= duty_ns;
-> +	do_div(cycles, period_ns);
-> +	duty = cycles;
-> +
-> +	ret = clk_prepare_enable(berlin_chip->clk);
-> +	if (ret)
-> +		return ret;
-> +
-> +	spin_lock(&berlin_chip->lock);
-> +
-> +	val = berlin_pwm_readl(berlin_chip, pwm->hwpwm, BERLIN_PWM_CONTROL);
-> +	val &= ~BERLIN_PWM_PRESCALE_MASK;
-> +	val |= prescale;
-> +	berlin_pwm_writel(val, berlin_chip, pwm->hwpwm, BERLIN_PWM_CONTROL);
-> +
-> +	berlin_pwm_writel(duty, berlin_chip, pwm->hwpwm, BERLIN_PWM_DUTY);
-> +	berlin_pwm_writel(period, berlin_chip, pwm->hwpwm, BERLIN_PWM_TCNT);
-> +
-> +	spin_unlock(&berlin_chip->lock);
-> +
-> +	clk_disable_unprepare(berlin_chip->clk);
-> +
-> +	return 0;
-> +}
-> +
-> +static int berlin_pwm_set_polarity(struct pwm_chip *chip,
-> +				   struct pwm_device *pwm,
-> +				   enum pwm_polarity polarity)
-> +{
-> +	struct berlin_pwm_chip *berlin_chip = to_berlin_pwm_chip(chip);
-> +	int ret;
-> +	u32 val;
-> +
-> +	ret = clk_prepare_enable(berlin_chip->clk);
-> +	if (ret)
-> +		return ret;
-> +
-> +	spin_lock(&berlin_chip->lock);
-> +
-> +	val = berlin_pwm_readl(berlin_chip, pwm->hwpwm, BERLIN_PWM_CONTROL);
-> +
-> +	if (polarity == PWM_POLARITY_NORMAL)
-> +		val &= ~BERLIN_PWM_INVERT_POLARITY;
-> +	else
-> +		val |= BERLIN_PWM_INVERT_POLARITY;
-> +
-> +	berlin_pwm_writel(val, berlin_chip, pwm->hwpwm, BERLIN_PWM_CONTROL);
-> +
-> +	spin_unlock(&berlin_chip->lock);
-> +
-> +	clk_disable_unprepare(berlin_chip->clk);
-> +
-> +	return 0;
-> +}
-> +
-> +static int berlin_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-> +{
-> +	struct berlin_pwm_chip *berlin_chip = to_berlin_pwm_chip(chip);
-> +	int ret;
-> +
-> +	ret = clk_prepare_enable(berlin_chip->clk);
-> +	if (ret)
-> +		return ret;
-> +
-> +	spin_lock(&berlin_chip->lock);
-> +	berlin_pwm_writel(BERLIN_PWM_ENABLE, berlin_chip, pwm->hwpwm, BERLIN_PWM_EN);
-> +	spin_unlock(&berlin_chip->lock);
-> +
-> +	return 0;
-> +}
-> +
-> +static void berlin_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-> +{
-> +	struct berlin_pwm_chip *berlin_chip = to_berlin_pwm_chip(chip);
-> +
-> +	spin_lock(&berlin_chip->lock);
-> +	berlin_pwm_writel(BERLIN_PWM_DISABLE, berlin_chip, pwm->hwpwm, BERLIN_PWM_EN);
-> +	spin_unlock(&berlin_chip->lock);
-> +
-> +	clk_disable_unprepare(berlin_chip->clk);
-> +}
-> +
-> +static const struct pwm_ops berlin_pwm_ops = {
-> +	.config = berlin_pwm_config,
-> +	.set_polarity = berlin_pwm_set_polarity,
-> +	.enable = berlin_pwm_enable,
-> +	.disable = berlin_pwm_disable,
-> +	.owner = THIS_MODULE,
-> +};
-> +
-> +static const struct of_device_id berlin_pwm_match[] = {
-> +	{ .compatible = "marvell,berlin-pwm" },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, berlin_pwm_match);
-> +
-> +static int berlin_pwm_probe(struct platform_device *pdev)
-> +{
-> +	struct berlin_pwm_chip *pwm;
-> +	struct resource *res;
-> +	int ret;
-> +
-> +	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
-> +	if (!pwm)
-> +		return -ENOMEM;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	pwm->base = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(pwm->base))
-> +		return PTR_ERR(pwm->base);
-> +
-> +	pwm->clk = devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(pwm->clk))
-> +		return PTR_ERR(pwm->clk);
-> +
-> +	pwm->chip.dev = &pdev->dev;
-> +	pwm->chip.ops = &berlin_pwm_ops;
-> +	pwm->chip.base = -1;
-> +	pwm->chip.npwm = 4;
-> +	pwm->chip.can_sleep = true;
-> +	pwm->chip.of_xlate = of_pwm_xlate_with_flags;
-> +	pwm->chip.of_pwm_n_cells = 3;
-> +
-> +	spin_lock_init(&pwm->lock);
-> +
-> +	ret = pwmchip_add(&pwm->chip);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "Failed to add PWM chip: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	platform_set_drvdata(pdev, pwm);
-> +
-> +	return 0;
-> +}
-> +
-> +static int berlin_pwm_remove(struct platform_device *pdev)
-> +{
-> +	struct berlin_pwm_chip *pwm = platform_get_drvdata(pdev);
-> +
-> +	return pwmchip_remove(&pwm->chip);
-> +}
-> +
-> +static struct platform_driver berlin_pwm_driver = {
-> +	.probe	= berlin_pwm_probe,
-> +	.remove	= berlin_pwm_remove,
-> +	.driver	= {
-> +		.name	= "berlin-pwm",
-> +		.of_match_table = berlin_pwm_match,
-> +	},
-> +};
-> +module_platform_driver(berlin_pwm_driver);
-> +
-> +MODULE_AUTHOR("Antoine Tenart <antoine.tenart@free-electrons.com>");
-> +MODULE_DESCRIPTION("Marvell Berlin PWM driver");
-> +MODULE_LICENSE("GPL v2");
+Clemens
