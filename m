@@ -1,70 +1,50 @@
-From: Clemens Gruber <clemens.gruber@pqgruber.com>
-Subject: Re: [PATCH v4 0/2] pwm-pca9685: Bugfixes and prescaler support
-Date: Fri, 14 Aug 2015 22:09:50 +0200
-Message-ID: <20150814200949.GA1440@pqgruber.com>
-References: <1437664742-23121-1-git-send-email-clemens.gruber@pqgruber.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.pqgruber.com ([178.189.19.235]:59082 "EHLO
-	mail.pqgruber.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751830AbbHNWJy (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 14 Aug 2015 18:09:54 -0400
-Content-Disposition: inline
-In-Reply-To: <1437664742-23121-1-git-send-email-clemens.gruber@pqgruber.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH v4 0/4] ARM: at91: Properly handle slow clock
+Date: Sun, 16 Aug 2015 11:23:42 +0200
+Message-ID: <1439717026-30634-1-git-send-email-alexandre.belloni@free-electrons.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Wim Van Sebroeck <wim@iguana.be>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Thu, Jul 23, 2015 at 05:19:00PM +0200, Clemens Gruber wrote:
-> Hi,
-> 
-> the first patch from this series contains bugfixes and the second patch
-> adds support for changing the PWM output frequency of the PCA9685.
-> 
-> Regards,
-> Clemens
-> 
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>
-> 
-> Changes in v2:
-> - Only put chip into sleep mode if the bounds checking succeeds
-> 
-> Changes in v3:
-> - Fix checkpatch style warnings introduced in v2
-> 
-> Changes in v4:
-> - Set RESTART bit. Now the duty cycle to period ratio stays the same
->   after only changing the period.
-> - Added a comment at the start of the file pointing out that the chip
->   has only one prescaler and changing the period affects all outputs.
-> 
-> Clemens Gruber (2):
->   pwm-pca9685: Fix several driver bugs
->   pwm-pca9685: Support changing the output frequency
-> 
->  drivers/pwm/pwm-pca9685.c | 89 ++++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 88 insertions(+), 1 deletion(-)
-> 
-> -- 
-> 2.4.6
-> 
+Hi,
 
-Hi Thierry,
+It was discovered that all the slow clock user were not properly claiming it.
+This can end up in a system hang because the last registered user is releasing
+it, and it gets disabled.
 
-I addressed the issue you raised about keeping the duty cycle to period ratio
-when changing the period. This is achieved in v4 by setting the RESTART bit,
-which resumes the PWM output with the same duty_cycle to period ratio as before
-but with the new period / prescaler value. I also added a comment at the
-beginning of the file to remind implementers, that this driver has a chip-wide
-prescaler.
+commit dca1a4b5ff6e ("clk: at91: keep slow clk enabled to prevent system hang")
+was a workaround. This series is adding the slow clock to the necessary drivers
+to avoid the issue and then removes that workaround.
 
-Without those two patches, the driver is really broken. See my description in
-patch 1/2 for a list of its bugs.
+Changes in v4:
+ - enable slow_clk before t2_clk in tcb_clksrc.c
+ - properly disable slow_clk in the error path of atmel_tcb_pwm_probe()
+ - added Daniel's acks
 
-Could we please get those two patches into 4.3?
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: linux-pwm@vger.kernel.org
+Cc: linux-watchdog@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Wim Van Sebroeck <wim@iguana.be>
 
-Thanks,
-Clemens
+Alexandre Belloni (2):
+  watchdog: at91sam9: get and use slow clock
+  clocksource: atmel-st: get and use slow clock
+
+Boris Brezillon (2):
+  clocksource: tcb_clksrc: fix setup_clkevents error path
+  misc: atmel_tclib: get and use slow clock
+
+ drivers/clocksource/tcb_clksrc.c     | 12 ++++++++++--
+ drivers/clocksource/timer-atmel-st.c | 31 ++++++++++++++++++++++---------
+ drivers/misc/atmel_tclib.c           |  4 ++++
+ drivers/pwm/pwm-atmel-tcb.c          | 26 +++++++++++++++++++-------
+ drivers/watchdog/at91sam9_wdt.c      | 22 ++++++++++++++++++++--
+ include/linux/atmel_tc.h             |  1 +
+ 6 files changed, 76 insertions(+), 20 deletions(-)
+
+-- 
+2.1.4
