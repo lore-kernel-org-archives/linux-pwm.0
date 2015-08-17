@@ -1,84 +1,91 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 0/2] pwm-pca9685: Bugfixes and prescaler support
-Date: Mon, 17 Aug 2015 16:37:43 +0200
-Message-ID: <20150817143742.GF6891@ulmo.nvidia.com>
-References: <1437664742-23121-1-git-send-email-clemens.gruber@pqgruber.com>
+Subject: Re: [PATCH 1/2] Documentation: dt: add Broadcom BCM7038 PWM
+ controller binding
+Date: Mon, 17 Aug 2015 16:49:49 +0200
+Message-ID: <20150817144947.GG6891@ulmo.nvidia.com>
+References: <1438908959-1578-1-git-send-email-f.fainelli@gmail.com>
+ <1438908959-1578-2-git-send-email-f.fainelli@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="cz6wLo+OExbGG7q/"
+	protocol="application/pgp-signature"; boundary="8bBEDOJVaa9YlTAt"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pd0-f169.google.com ([209.85.192.169]:34287 "EHLO
-	mail-pd0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750961AbbHQOiw (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 17 Aug 2015 10:38:52 -0400
+Received: from mail-pa0-f54.google.com ([209.85.220.54]:33929 "EHLO
+	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751317AbbHQOuz (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 17 Aug 2015 10:50:55 -0400
 Content-Disposition: inline
-In-Reply-To: <1437664742-23121-1-git-send-email-clemens.gruber@pqgruber.com>
+In-Reply-To: <1438908959-1578-2-git-send-email-f.fainelli@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Clemens Gruber <clemens.gruber@pqgruber.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Steffen Trumtrar <s.trumtrar@pengutronix.de>
+To: Florian Fainelli <f.fainelli@gmail.com>
+Cc: linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
 
 
---cz6wLo+OExbGG7q/
+--8bBEDOJVaa9YlTAt
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 23, 2015 at 05:19:00PM +0200, Clemens Gruber wrote:
-> Hi,
+On Thu, Aug 06, 2015 at 05:55:57PM -0700, Florian Fainelli wrote:
+> Add a binding documentation for the Broadcom BCM7038 PWM controller found=
+ in
+> BCM7xxx chips.
 >=20
-> the first patch from this series contains bugfixes and the second patch
-> adds support for changing the PWM output frequency of the PCA9685.
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  .../devicetree/bindings/pwm/brcm,bcm7038-pwm.txt   | 22 ++++++++++++++++=
+++++++
+>  1 file changed, 22 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/brcm,bcm7038-pw=
+m.txt
 >=20
-> Regards,
-> Clemens
->=20
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Steffen Trumtrar <s.trumtrar@pengutronix.de>
->=20
-> Changes in v2:
-> - Only put chip into sleep mode if the bounds checking succeeds
->=20
-> Changes in v3:
-> - Fix checkpatch style warnings introduced in v2
->=20
-> Changes in v4:
-> - Set RESTART bit. Now the duty cycle to period ratio stays the same
->   after only changing the period.
-> - Added a comment at the start of the file pointing out that the chip
->   has only one prescaler and changing the period affects all outputs.
->=20
-> Clemens Gruber (2):
->   pwm-pca9685: Fix several driver bugs
->   pwm-pca9685: Support changing the output frequency
->=20
->  drivers/pwm/pwm-pca9685.c | 89 +++++++++++++++++++++++++++++++++++++++++=
-+++++-
->  1 file changed, 88 insertions(+), 1 deletion(-)
+> diff --git a/Documentation/devicetree/bindings/pwm/brcm,bcm7038-pwm.txt b=
+/Documentation/devicetree/bindings/pwm/brcm,bcm7038-pwm.txt
+> new file mode 100644
+> index 000000000000..8b9bc43b561e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/brcm,bcm7038-pwm.txt
+> @@ -0,0 +1,22 @@
+> +Broadcom BCM7038 PWM controller (BCM7xxx Set Top Box PWM controller)
+> +
+> +Required properties:
+> +
+> +- compatible: must be "brcm,bcm7038-pwm"
+> +- reg: physical base address and length for this controller
+> +- #pwm-cells: should be 2. See pwm.txt in this directory for a descripti=
+on
+> +  of the cells format.
+> +
+> +Optional properties:
+> +
+> +- clocks: a phandle to the reference clock for this block which is fed t=
+hrough
+> +  its internal variable clock frequency generator
 
-Applied, thanks.
+Why is this optional? I would assume that the hardware always needs some
+sort of reference clock to properly function.
 
 Thierry
 
---cz6wLo+OExbGG7q/
+--8bBEDOJVaa9YlTAt
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJV0fG2AAoJEN0jrNd/PrOhWWgP/RVEp7IVsJCayaxjn8jRXBqb
-tdYfOVl/qkM7tFGIgIOqekCSx9ZqVqS9YGSftAur7hTvwkQAVF6DLvOSZhoICXfW
-p59fBf+WdGk9+EVeog8/dWs/gqVn521NabT9PxfF5Say/Z0rFCJOSPhQPE3yZmih
-lmlUg0Iy9CMI3lHJq27TUxvQsv05hj9cg+wJ0B2h/X/DdDydY3TLFmQCcGBZTNFi
-S/2Fb3kG2frSXo+cTW54dJS2jJypD61HHDtSOYfLPLhot0Ac0FhOtoAYG6Axma5R
-8sPfnhqFIlIMebUFIPdAfBi9AseyxlFIOqLXsz27xx33eHEVfTpKzTGq7Xm/gh09
-IprEMMrkqZ+9Wy7z8qqb+Brdrvomh/9YqZoeYXm/0ia+NsfgB7O0Zmee+e8Stw9a
-YOKVGGNKDjvfUSBSUS9fZUd0LKuuVHKA0yqa+GJ5aKdCx2ioad+qWwHm1jG9LCv8
-5dZ10dG9jpu9nG91car6gVDYC0u86zBtoyRmiQIs4gFpwQxD/R+II0EMfuqAmAcR
-Chh62f8DMKEvzSltz9+sGmllRXzq/4tRcqmWUZ8369IN2lFRqu5ZWh/5QXqZIeSz
-7OpohKITapC8gf4/hNHitNO0l+EhfO8MNZy7gfSfN8/+YCPdO85cDGsPz21/SQTA
-PJ4/3jbW24Pxo4/5/RO4
-=MNlh
+iQIcBAABCAAGBQJV0fSGAAoJEN0jrNd/PrOhE88P/R7tgeI4Uslv5HwlllHllmCt
+Z4lrsTi6ERW0sQ/S2VJy7rDB6fjEzEALcuH5TAPPeZGrxeCOkKQNqu1q53nYodS2
+A8+f0l2gnHbkuONM8awZSaYOpR9shEgkHgOYAZaDn8YVTNUOFDUlWnHgOmsYVqLt
+UXJ5vLrfT92/dHlE4Rvj8LlpAC0wcgM8vnHQvMuToVfCKRN+s3Vy6Ua4KK4cJ7pV
+Ax81GlS1a0AHiTWjb3f0cZ4EQJKHtfp1drCzztlgRnkOQ5rRSkVCBIwdCAYwbIQl
+/kh5PNTWopx0ScutdtUASgA7GKru0xcAXRgxz7gEWXLHe9t/ui2l+cCm7leMRXwQ
+8soKQjLkwbCpPukfttSird5iI1JZGG9GHkaDx1+VtFfhCEAf+aAnjUgQuRC68OXg
+I4WSapXv55Z2xvqeSlIkqinbCw7MzR8KDW365cs2jRjo4iOWwh58yIX2TttXPnbm
+61v56+gl5U15YmXoLnNf6Cpw9qHKW3ECUCM0cdZPJsCQ1ZCgHSckY10LoJHmYbDL
+KfdisZHLJbNbCUdhZ1dlBXM23Hy14RpOGl6i6eXg/+0avRuwFdnNapPsA+ClJt/E
+L27zdUzYVAj9uWs48K5nQJWIY1YcSkjY8DOsgGksH5GPPJVo0vdMLgTUxl7cctkw
+7TPwx2O3dvFOQDHy7PBQ
+=UMzi
 -----END PGP SIGNATURE-----
 
---cz6wLo+OExbGG7q/--
+--8bBEDOJVaa9YlTAt--
