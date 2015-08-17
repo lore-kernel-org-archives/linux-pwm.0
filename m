@@ -1,126 +1,70 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v5 2/2] pwm: Add support for R-Car PWM Timer
-Date: Mon, 17 Aug 2015 16:15:35 +0200
-Message-ID: <20150817141533.GB6891@ulmo.nvidia.com>
-References: <1434359324-2964-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <1434359324-2964-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Subject: Re: [PATCH v9 1/2] pwm: kona: Modify settings application sequence
+Date: Mon, 17 Aug 2015 16:25:43 +0200
+Message-ID: <20150817142542.GC6891@ulmo.nvidia.com>
+References: <1434403262-24198-1-git-send-email-jonathar@broadcom.com>
+ <1434403262-24198-2-git-send-email-jonathar@broadcom.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="St7VIuEGZ6dlpu13"
+	protocol="application/pgp-signature"; boundary="qtZFehHsKgwS5rPz"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pd0-f171.google.com ([209.85.192.171]:36098 "EHLO
-	mail-pd0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751308AbbHQOQl (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 17 Aug 2015 10:16:41 -0400
+Received: from mail-pd0-f174.google.com ([209.85.192.174]:34186 "EHLO
+	mail-pd0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751308AbbHQO0w (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 17 Aug 2015 10:26:52 -0400
 Content-Disposition: inline
-In-Reply-To: <1434359324-2964-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <1434403262-24198-2-git-send-email-jonathar@broadcom.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, linux-pwm@vger.kernel.org, linux-sh@vger.kernel.org, devicetree@vger.kernel.org
+To: Jonathan Richardson <jonathar@broadcom.com>
+Cc: Tim Kryger <tim.kryger@gmail.com>, Dmitry Torokhov <dtor@google.com>, Anatol Pomazau <anatol@google.com>, Arun Ramamurthy <arun.ramamurthy@broadcom.com>, Scott Branden <sbranden@broadcom.com>, bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
 
---St7VIuEGZ6dlpu13
+--qtZFehHsKgwS5rPz
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Sorry for taking an awful long time to get around to this. The driver
-looks generally okay, but I have a few minor comments...
+On Mon, Jun 15, 2015 at 02:21:01PM -0700, Jonathan Richardson wrote:
+> Update the driver so that settings are applied in accordance with the
+> most recent version of the hardware spec.  The revised sequence clears
+> the trigger bit, waits 400ns, writes settings, sets the trigger bit,
+> and waits another 400ns.  This corrects an issue where occasionally a
+> requested change was not properly reflected in the PWM output.
+>=20
+> Reviewed-by: Arun Ramamurthy <arunrama@broadcom.com>
+> Reviewed-by: Scott Branden <sbranden@broadcom.com>
+> Tested-by: Scott Branden <sbranden@broadcom.com>
+> Reviewed-by: Tim Kryger <tim.kryger@gmail.com>
+> Signed-off-by: Jonathan Richardson <jonathar@broadcom.com>
+> ---
+>  drivers/pwm/pwm-bcm-kona.c |   47 +++++++++++++++++++++++++++++++++++---=
+------
+>  1 file changed, 38 insertions(+), 9 deletions(-)
 
-On Mon, Jun 15, 2015 at 06:08:44PM +0900, Yoshihiro Shimoda wrote:
-> This patch adds support for R-Car SoCs PWM Timer.
-
-This could be a little more verbose. You could say for example how many
-channels the driver exposes, or mention typical use-cases (if any).
-
-> diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-[...]
-> +static int rcar_pwm_get_clock_division(struct rcar_pwm_chip *rp, int period_ns)
-> +{
-> +	int div;
-
-Can be unsigned int.
-
-> +	unsigned long clk_rate = clk_get_rate(rp->clk);
-> +	unsigned long long max;	/* max cycle / nanoseconds */
-> +
-> +	if (!clk_rate)
-
-I prefer it when these are explicit: clk_rate == 0. This goes for
-numerical comparisons. For booleans, or NULL pointer comparisons the
-!expression is fine.
-
-> +static int rcar_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> +			   int duty_ns, int period_ns)
-> +{
-> +	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
-> +	int div = rcar_pwm_get_clock_division(rp, period_ns);
-> +	int ret;
-> +
-> +	if (div < 0)
-> +		return div;
-> +
-> +	/* Let the core driver set pwm->period if disabled and duty_ns == 0 */
-> +	if (!test_bit(PWMF_ENABLED, &pwm->flags) && !duty_ns)
-> +		return 0;
-> +
-> +	rcar_pwm_bit_modify(rp, RCAR_PWMCR_SYNC, RCAR_PWMCR_SYNC, RCAR_PWMCR);
-> +	ret = rcar_pwm_set_counter(rp, div, duty_ns, period_ns);
-> +	rcar_pwm_set_clock_control(rp, div);
-> +	rcar_pwm_bit_modify(rp, RCAR_PWMCR_SYNC, 0, RCAR_PWMCR);
-> +
-> +	return ret;
-> +}
-> +
-> +static int rcar_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-> +{
-> +	struct rcar_pwm_chip *rp = to_rcar_pwm_chip(chip);
-> +	u32 pwmcnt;
-> +
-> +	/* Don't enable the PWM device if CYC0 or PH0 is 0 */
-> +	pwmcnt = rcar_pwm_read(rp, RCAR_PWMCNT);
-> +	if (!(pwmcnt & RCAR_PWMCNT_CYC0_MASK) ||
-> +	    !(pwmcnt & RCAR_PWMCNT_PH0_MASK))
-> +		return -EINVAL;
-
-This looks wrong. Any errors in configuration should've been caught by
-the ->config() implementation. Why can't you return -EINVAL on this
-condition in ->config()? ->enable() failing should only be the case if
-truly the PWM can't be enabled, not if it's badly configured.
-
-> +static struct platform_driver rcar_pwm_driver = {
-> +	.probe		= rcar_pwm_probe,
-> +	.remove		= rcar_pwm_remove,
-> +	.driver		= {
-> +		.name	= "pwm-rcar",
-> +		.of_match_table = of_match_ptr(rcar_pwm_of_table),
-> +	}
-> +};
-
-This doesn't need the artificial padding. A single space around = is
-enough.
+Applied, thanks.
 
 Thierry
 
---St7VIuEGZ6dlpu13
+--qtZFehHsKgwS5rPz
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJV0eyDAAoJEN0jrNd/PrOhu9kQAKeVWAhzWKmp/ZwizHZAVa+b
-8AbjrzTU4RQHA9DdahmSQN9ozcPD2J6oTPmums7zDZtV0+YFrSEmpd0uZODgnbER
-+z9N0KsAKrotXGynW8s7cM21ZGMsnLvuP5WAXrRHA+6pmyt9W2O7JkJqBEb1JKtk
-dSkuNQ2o+d+/i+paHnnZ5MfWn92bbbFOtUBii317a5h7Kdipx+2Yfd7E3LXBHYOk
-09SqLM7N2lCB+vTEeTFkaRER1jTmzWAb09L9MA2KZ9jQraO9oOaCWQ2BQ3jmiaOW
-BZOodbVGXo233zB4HnQqEAlchvKyvfZtVGN/cS/zCrYfa7t5fFlHVzZMxvn3OTQU
-8reg8s39z3pXi2ZBwKeNyr5Lsu/DGBMeahp3twjSedcKh4JWpJd75ioujqhBdAKw
-C+FYbVtTZj66kKMxyfTMtB5BBh39jAQN00NuR7qbwKTjtldXQ+UO2LyF9gpJqzFB
-7VkxiHhL4vOVQ6vFT91dHE+AxhSpLPLq3WrS5aLtKuWCquaV6+kD0wefIwEYlBOi
-fJ7E0IDRXhLKv2fsrWsg9fFFoKoTp8e4Zfo7A6f2z8cdANqWRflqRqTz8x5TIIbG
-7rB8RUQuG2oAPowHxE1h0xd6oWV1PGqZlM8DjN/eSxFGHGr0xP/MJrZ99jHrfg+4
-LbQmIrtaLJxNKfhkOLTn
-=PMw+
+iQIcBAABCAAGBQJV0e7jAAoJEN0jrNd/PrOhdqQQAMI4EK5b5YKCcuNlbZsNMY+C
+D7HBRYalUFT5wPcCMFYdJwnOkYO8s72KrHFGLK507nRe7I+HFBwKz1FFVVkKSVC9
+gBCAKScsP6FpNMnweOPozk8iBdi0sUJaDZef8v40YmDefGv+7DsdmorzvIjlun6I
+pvfGbQS9ZYEHMnkGjlpIDA50zwo+4VA3MZHnpEr5/lTww1bbJaAFi1GNnolR+Vjr
+ecee+XGwo8zX2+Kd/bJ5Cg4J2F3HmdeFKDpPjGJFjmfsyECqyJq5MJyGVGvG7oh4
+xCPqFIvvzhXIl/L2biig/sjxPp0avNrG4v7CwYJxSle/QrxdVhmwZKXrdrxHBvcK
+mwuA6M48TdwewStgDFZkSNHJHmc6mQ0/21mt1VjXvXIlj00FTM+yn33sOXRn32Nw
+ve8E05zaEDdGGMFE4YcdJi5UHDP52VpA/cZ+hSgerm1qW6jEJbdrq8QSj0qt0AUd
+KXUNfxsUMjuhc9yW7yoPjDlWdrAOvIx0IQkXoMkraaordn9Lkn743K34wducoqY+
+5kxxoVfp+Lchn6VC6yyOLlJyFsUUvmrkEmaD/NYgLitpF8WQ0/hor1+vYgfxKMvZ
+Lk4TMNH8y4OITfkMIhASp6NwwhrA1fFw7ihJDBUpJe2R7m0K8VD/RDdWvWAERgxa
+wic5MsOT/D4Fhh93TYg6
+=jJd/
 -----END PGP SIGNATURE-----
 
---St7VIuEGZ6dlpu13--
+--qtZFehHsKgwS5rPz--
