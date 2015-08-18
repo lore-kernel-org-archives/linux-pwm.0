@@ -1,161 +1,75 @@
 From: YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v6 2/3] pwm: add MediaTek display PWM driver support
-Date: Tue, 18 Aug 2015 10:47:48 +0800
-Message-ID: <1439866068.26145.12.camel@mtksdaap41>
-References: <1437380237-28961-1-git-send-email-yh.huang@mediatek.com>
-	 <1437380237-28961-3-git-send-email-yh.huang@mediatek.com>
-	 <20150817132259.GM8453@ulmo.nvidia.com>
+Subject: [PATCH v7 0/3] Add MediaTek display PWM driver
+Date: Tue, 18 Aug 2015 15:27:52 +0800
+Message-ID: <1439882875-19596-1-git-send-email-yh.huang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20150817132259.GM8453-AwZRO8vwLAwmlAP/+Wk3EA@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sascha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, 2015-08-17 at 15:23 +0200, Thierry Reding wrote:
-> On Mon, Jul 20, 2015 at 04:17:16PM +0800, YH Huang wrote:
-> > Add display PWM driver support to modify backlight for MT8173 and MT6595.
-> > The PWM has one channel to control the brightness of the display.
-> > When the (high_width / period) is closer to 1, the screen is brighter;
-> > otherwise, it is darker.
-> > 
-> > Signed-off-by: YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > ---
-> >  drivers/pwm/Kconfig        |  10 ++
-> >  drivers/pwm/Makefile       |   1 +
-> >  drivers/pwm/pwm-mtk-disp.c | 232 +++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 243 insertions(+)
-> >  create mode 100644 drivers/pwm/pwm-mtk-disp.c
-> > 
-> > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> > index b1541f4..f5b03a4 100644
-> > --- a/drivers/pwm/Kconfig
-> > +++ b/drivers/pwm/Kconfig
-> > @@ -211,6 +211,16 @@ config PWM_LPSS_PLATFORM
-> >  	  To compile this driver as a module, choose M here: the module
-> >  	  will be called pwm-lpss-platform.
-> >  
-> > +config PWM_MTK_DISP
-> > +	tristate "MediaTek display PWM driver"
-> > +	depends on ARCH_MEDIATEK || COMPILE_TEST
-> 
-> This is going to break randconfig builds. From a quick look your driver
-> will fail to build at least on architectures that don't set HAVE_IOMEM.
-> I know that's quite exotic, but I've had to deal with fallout from
-> things like this in the past. If you want || COMPILE_TEST you should at
-> least add a "depends on HAVE_IOMEM".
-> 
-> linux/clk.h seems to have stubs for all of the functions that you use,
-> so those shouldn't be a problem.
-> 
+This patch series add the use of display PWM driver, documentation 
+and device tree for Mediatek SoCs. The driver is used to support 
+the backlight of the panel. This is based on v4.2-rc1.
 
-I will add it and this will be like:
+The clock definitions (CLK_MM_DISP_PWM*) are added by James Liao's patch: 
+clk: mediatek: Add subsystem clocks of MT8173
 
-depends on ARCH_MEDIATEK || COMPILE_TEST
-depends on HAS_IOMEM
+Change in v7:
+1. Add the dependency HAS_IOMEM in Kconfig.
+2. Revise misprints and coding style for readability.
 
-> > +	help
-> > +	  Generic PWM framework driver for MediaTek disp-pwm device.
-> > +	  The PWM is used to control the backlight brightness for display.
-> > +
-> > +	  To compile this driver as a module, choose M here: the module
-> > +	  will be called pwm-mtk-disp.
-> > +
-> >  config PWM_MXS
-> >  	tristate "Freescale MXS PWM support"
-> >  	depends on ARCH_MXS && OF
-> [...]
-> > diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
-> > new file mode 100644
-> > index 0000000..69682a0
-> > --- /dev/null
-> > +++ b/drivers/pwm/pwm-mtk-disp.c
-> > @@ -0,0 +1,232 @@
-> > +/*
-> > + * MediaTek display pulse-width-modulation controller driver.
-> > + * Copyright (c) 2015 MediaTek Inc.
-> > + * Author: YH Huang <yh.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > + *
-> > + * This program is free software; you can redistribute it and/or modify
-> > + * it under the terms of the GNU General Public License version 2 as
-> > + * published by the Free Software Foundation.
-> > + *
-> > + * This program is distributed in the hope that it will be useful,
-> > + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> > + * GNU General Public License for more details.
-> > + */
-> > +
-> > +#include <linux/clk.h>
-> > +#include <linux/err.h>
-> > +#include <linux/io.h>
-> > +#include <linux/module.h>
-> > +#include <linux/of.h>
-> > +#include <linux/pwm.h>
-> > +#include <linux/platform_device.h>
-> 
-> The above two aren't correctly sorted.
-> 
+Change in v6:
+1. Enable clocks in the pwm_enable function.
+2. Remove suspend/resume code since pwm-backlight driver has done the
+same things.
+3. Revise some code to make it easier to read.
 
-Arrange like this:
+Change in v5:
+1. Configure PWM output via pinctrl.
+2. Fix the parameter name in dtsi.
 
-#include <linux/platform_device.h>
-#include <linux/pwm.h>
+Change in v4:
+1. Codebase is on v4.2-rc1.
+2. Add the PWM node in dtsi.
+3. Change the dependency in Kconfig.
+4. Rewrite some code for readability.
 
-> > +#include <linux/slab.h>
-> > +
-> > +#define DISP_PWM_EN		0x00
-> > +#define PWM_ENABLE_MASK		BIT(0)
-> > +
-> > +#define DISP_PWM_COMMIT		0x08
-> > +#define PWM_COMMIT_MASK		BIT(0)
-> > +
-> > +#define DISP_PWM_CON_0		0x10
-> > +#define PWM_CLKDIV_SHIFT	16
-> > +#define PWM_CLKDIV_MAX		0x3ff
-> > +#define PWM_CLKDIV_MASK		(PWM_CLKDIV_MAX << PWM_CLKDIV_SHIFT)
-> > +
-> > +#define DISP_PWM_CON_1		0x14
-> > +#define PWM_PERIOD_MASK		0xfff
-> > +/* Shift log2(PWM_PERIOD_MASK + 1) as divisor */
-> > +#define PWM_PERIOD_BIT_SHIFT	12
-> 
-> There are still two names for the same value here. I thought we had
-> agreed on this becoming something like the below?
-> 
-> 	#define PWM_PERIOD_BIT_SHIFT 12
-> 	#define PWM_PERIOD_MASK ((1 << PWM_PERIOD_BIT_SHIFT) - 1)
-> 
-> Although PWM_PERIOD_BIT_WIDTH would probably be a better name. Or
-> PWM_PERIOD_BITS or similar.
-> 
+Change in v3:
+1. Add suspend/resume function.
+2. Fix the formula for high_width calculation.
+3. Rewrite some code to make it easier to read.
+4. Add more information in the commit message.
 
-I will revise to 
+Change in v2:
+1. Rewrite descriptions for driver in kconfig to make it much clear.
+2. Rename the driver from "pwm-mediatek-disp" to "pwm-mtk-disp".
+3. Disable clocks in the error path.
+4. Change the shift values in decimal instead of hex.
+5. Rename and add some variables or function name for consistency and
+readability.
+6. Drop unnecessary parentheses, spaces, variables and add newlines to
+make the code easiler to read.
 
-#define PWM_PERIOD_BIT_WIDTH 12
-#define PWM_PERIOD_MASK ((1 << PWM_PERIOD_BIT_WIDTH) - 1)
+YH Huang (3):
+  dt-bindings: pwm: add MediaTek display PWM bindings
+  pwm: add MediaTek display PWM driver support
+  arm64: dts: mt8173: add MT8173 display PWM driver support node
 
-> > +static int mtk_disp_pwm_remove(struct platform_device *pdev)
-> > +{
-> > +	struct mtk_disp_pwm *mdp = platform_get_drvdata(pdev);
-> > +	int ret = pwmchip_remove(&mdp->chip);
-> 
-> I'd prefer this to be separate lines:
-> 
-> 	int ret;
-> 
-> 	ret = pwmchip_remove(&mdp->chip);
+ .../devicetree/bindings/pwm/pwm-mtk-disp.txt       |   42 ++++
+ arch/arm64/boot/dts/mediatek/mt8173-evb.dts        |   13 ++
+ arch/arm64/boot/dts/mediatek/mt8173.dtsi           |   22 ++
+ drivers/pwm/Kconfig                                |   11 +
+ drivers/pwm/Makefile                               |    1 +
+ drivers/pwm/pwm-mtk-disp.c                         |  232 ++++++++++++++++++++
+ 6 files changed, 321 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+ create mode 100644 drivers/pwm/pwm-mtk-disp.c
 
-OK.
-
-Thanks for your suggestions.
-
-Regards,
-YH Huang
-
+--
+1.7.9.5
 
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
