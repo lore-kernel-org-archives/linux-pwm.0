@@ -1,104 +1,59 @@
-From: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Subject: Re: [RFC PATCH] pwm: add TLC59108/TLC59116 PWM driver
-Date: Tue, 18 Aug 2015 17:58:15 +0300
-Message-ID: <55D34807.2020609@ti.com>
-References: <1439905927-27861-1-git-send-email-tomi.valkeinen@ti.com> <1439905927-27861-2-git-send-email-tomi.valkeinen@ti.com> <20150818141959.GF4381@lunn.ch>
+From: Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [RFC PATCH] pwm: TLC591xx PWM driver
+Date: Tue, 18 Aug 2015 17:09:16 +0200
+Message-ID: <20150818150916.GG4381@lunn.ch>
+References: <1439905927-27861-1-git-send-email-tomi.valkeinen@ti.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="4QKMbfPI5ct9978I02dwKcqFsF0trCV7l"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:49808 "EHLO arroyo.ext.ti.com"
+Received: from vps0.lunn.ch ([178.209.37.122]:33041 "EHLO vps0.lunn.ch"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752588AbbHRO6a (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Tue, 18 Aug 2015 10:58:30 -0400
-In-Reply-To: <20150818141959.GF4381@lunn.ch>
+	id S1751212AbbHRPQe (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Tue, 18 Aug 2015 11:16:34 -0400
+Content-Disposition: inline
+In-Reply-To: <1439905927-27861-1-git-send-email-tomi.valkeinen@ti.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Andrew Lunn <andrew@lunn.ch>
+To: Tomi Valkeinen <tomi.valkeinen@ti.com>
 Cc: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-leds@vger.kernel.org, Jacek Anaszewski <j.anaszewski@samsung.com>, Bryan Wu <cooloney@gmail.com>
 
---4QKMbfPI5ct9978I02dwKcqFsF0trCV7l
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
+> On the other hand, there's pwm_bl.c which give us backlight device
+> with PWM,
 
+Lets look at this. A backlight device seems to do most of its work in
+the update_status callback. It is given a brightness in
+bl->props.brightness, which takes a value between 0 and
+props.max_brightness.
 
+What pwm_bl.c does it then turn this brightness value into an
+artificial PWM configuration. Your proposed PWM driver then turns this
+back into a brightness, since you don't actually implement the period
+part of the PWM interface.
 
-On 18/08/15 17:19, Andrew Lunn wrote:
+From an architecture point of view, doesn't an LED class device, which
+takes a brightness value, seem much more naturally?
 
->> +Required properties:
->> +  - compatible: "ti,tlc59108-pwm" or "ti,tlc59116-pwm"
->> +  - #pwm-cells: should be 2. See pwm.txt in this directory for a desc=
-ription of
->> +    the cells format.
->> +  - reg: physical base address and size of the registers map.
->=20
-> Cut and paste error. Reg is the i2c address.
+It seems like implementing a generic led_bl.c driver would make sense.
+It would also allow some of the code in drivers/video/backlight/ to be
+eliminated. There seems to be both an LED class driver for lp55xx and
+a blacklight driver lp855x_bl.c. There are duplicate lp8788, 88pm860x,
+adp5520, da903x, da9052, hp6xx, and lm3533 drivers which might all be
+removed if a led_bl.c generic driver existed.
 
-Oh, right. Thanks.
+> and a GPIO over PWM sounds more sane to me than GPIO over LED.
 
->> +static int tlc591xx_pwm_config(struct pwm_chip *chip, struct pwm_devi=
-ce *pwm,
->> +			       int duty_ns, int period_ns)
->> +{
->> +	struct tlc591xx_priv *priv =3D to_tlc591xx_priv(chip);
->> +	unsigned val;
->> +	int r;
->> +
->> +	if (period_ns !=3D TLC591XX_CLK_PERIOD) {
->> +		dev_err(chip->dev, "only period of 10309 ns is supported\n");
->> +		return -EINVAL;
->> +	}
->=20
-> The hardware does allow you to change the period, but there is only
-> one clock generator for all the channels. If you are going to make the
+Currently two LED class drivers are calling gpiochip_add:
 
-Hmm... How does that work?
+~/linux/drivers/leds$ grep gpiochip_add *.c
+leds-pca9532.c:	      	   err = gpiochip_add(&data->gpio);
+leds-tca6507.c:		   err = gpiochip_add(&tca->gpio);
 
-The per-led output is fixed 97-kHz. Then there's the group dimming
-signal, which can be superimposed on all the individual outputs, with
-fixed 190-Hz. Neither frequency can be tuned. And when using group
-dimming, the output isn't exactly PWM anymore, but two PWM signals combin=
-ed.
+The pca9532 has full GPIO capabilities, in as well as out. But it
+seems like tca6507 is output only. The TLC59108/TLC59116 is also
+output only. So a generic GPO driver on top of LED would make sense
+for these two, and save some code/bugs.
 
-Is there some other setting I'm missing?
+From a stand back, lets take a look at the architecture point of view,
+generic led_bl and gpio-led drivers seem to make sense.
 
-These group dimming features don't quite fit into PWM model, I guess.
-Then again, I don't think LED framework offers any ways to utilize them
-either.
-
-> effort to try to model the hardware as a PWM, you should try to
-> actually implement the PWM API. Let the first channel which calls
-> config set the period, and return an error for any other channel which
-> picks a different period.
-
-If there is a way to set the period, I think it may be better to define
-it in the TLC's DT data than by "whoever gets there first".
-
- Tomi
-
-
---4QKMbfPI5ct9978I02dwKcqFsF0trCV7l
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBCAAGBQJV00gHAAoJEPo9qoy8lh71ijkQAIkUrST02f6aw8OdFk/UsWhe
-v0a9y7LuFQkYgFBtOAr2ze8pda79dIdHS3tX+3FZNlrlD1dMokKv6SrWMe6ilJVM
-UA+PYcOQRDPfMYa8cS6rMNO4yiXSoWE1x3L/55YpvCT281GqnEjfRNQuh7urjfkR
-pksxdZThYvxXn4+lXkqnJg6nqVJ/QOLIE3IAbMy2e9Hcb9TZSmGAWfmFAD1Ozw5E
-alPmHOeVZ/fIbECv0V7bwPSsR1Elu/BMlBBCCQ/VGElT9C8PaMP3uJc2Vbp3M87U
-ynPx466B6ulkkaVFtufdyESaX4oV97GNxmajRiZWJo4WevkP3cFwAdEiuK7wTDba
-WWX7XF1M/U1t6EDxf5B7sOOzL/hq9hnm4rCiWp1rlhDSRhb1tl9Z7fa9iYaMqECU
-KGrDEv2ENtmGYEwXZcNOOcYd9E0o1t6eGfSlo76CVAKhvh0Xip984JsXj0gua1AL
-TnWaXGPxqJVgiDoYaEZ3HA4ZhesCDl/IcZ1P1QPvw6RPCX+wmQoU5TlMoxD/uPS/
-NJvFxjiKF/WYRfQU2RedirRvqRXX+63/ljMM5kzY9kJiEQlP5PyRp55ZTEbDSqiW
-O7UV8uNpH1XLi5hteINq3INnG0UZFptflCI62u9lSjSAVp0LiLiMrfa2oXd3/I7n
-YnjjUag10cDD3ZISO6Cm
-=zPIE
------END PGP SIGNATURE-----
-
---4QKMbfPI5ct9978I02dwKcqFsF0trCV7l--
+       Andrew
