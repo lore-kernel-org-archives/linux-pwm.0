@@ -1,66 +1,63 @@
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH v6 0/2] pwm: Add support for R-Car PWM Timer
-Date: Wed, 19 Aug 2015 13:13:57 +0900
-Message-ID: <1439957639-4816-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v6 1/2] pwm: Add device tree binding document for R-Car PWM Timer
+Date: Wed, 19 Aug 2015 13:13:58 +0900
+Message-ID: <1439957639-4816-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+References: <1439957639-4816-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relmlor2.renesas.com ([210.160.252.172]:31926 "EHLO
-	relmlie1.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1750833AbbHSEOJ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 19 Aug 2015 00:14:09 -0400
+Received: from relmlor4.renesas.com ([210.160.252.174]:28628 "EHLO
+	relmlie3.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1750888AbbHSEOO (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 19 Aug 2015 00:14:14 -0400
+In-Reply-To: <1439957639-4816-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org
 Cc: linux-pwm@vger.kernel.org, linux-sh@vger.kernel.org, devicetree@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-This patch set is based on the latest linux-pwm.git / for-next branch.
-(commit id = 6e146f5c41da7e9601fe92fb4d06b45431dbf95b)
+Add binding document for Renesas PWM Timer on R-Car SoCs.
 
-Changes from v5:
- - Fix coding style and unreadable code in patch 2.
- - Add "Reviewed-by: Simon Horman <horms+renesas@verge.net.au>".
-
-Changes from v4:
- - Clean up coding style and typo in patch 2.
- - Change to_rcar_pwm_chip() macro to static inline function in patch 2.
- - Use writel()/readl() instead of iowrite32()/ioread32() in patch 2.
- - Add an error handling in rcar_pwm_config() to avoid silent in patch 2.
- - Remove success message in rcar_pwm_probe() in patch 2.
- - Change rcar_pwm_remove() to always call pm_runtime_disable() in patch 2.
-
-Changes from v3:
- - Fix register size in patch 1.
- - Add "Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>" in patch 1
- - Remove an unnecessary definition in patch 2.
- - Use "ULL" to avoid overflow in patch 2.
- - Remove unnecessary casts in patch 2.
-
-Changes from v2:
- - Add compatible string "renesas,pwm-rcar".
- - Remove compatible strings "renesas,pwm-r8a77xx" in rcar_pwm_of_table.
- - Fix build error.
-
-Changes from v1:
- - Change compatible string to SoC-specific compatible values.
- - Fix #pwm-call value to 2 in the device tree document.
- - Fix "depends on" value in Kconfig.
- - Fix help explanation in Kconfig.
- - Remove an unnecessary member in rcar_pwm_chip.
- - Remove hardcoded number of channels and change chip.npwm value to 1.
- - Fix formulas for clock calculation to improve accuracy.
-
-Yoshihiro Shimoda (2):
-  pwm: Add device tree binding document for R-Car PWM Timer
-  pwm: Add support for R-Car PWM Timer
-
- .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   |  27 +++
- drivers/pwm/Kconfig                                |  11 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-rcar.c                             | 265 +++++++++++++++++++++
- 4 files changed, 304 insertions(+)
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+---
+ .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   | 27 ++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
- create mode 100644 drivers/pwm/pwm-rcar.c
 
+diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+new file mode 100644
+index 0000000..ea0a27b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+@@ -0,0 +1,27 @@
++* Renesas R-Car PWM Timer Controller
++
++Required Properties:
++- compatible: should be one of the following.
++ - "renesas,pwm-rcar": for generic R-Car compatible PWM Timer
++ - "renesas,pwm-r8a7778": for R-Car M1A
++ - "renesas,pwm-r8a7779": for R-Car H1
++ - "renesas,pwm-r8a7790": for R-Car H2
++ - "renesas,pwm-r8a7791": for R-Car M2-W
++ - "renesas,pwm-r8a7794": for R-Car E2
++- reg: base address and length of the registers block for the PWM.
++- #pwm-cells: should be 2. See pwm.txt in this directory for a description of
++  the cells format.
++- clocks: clock phandle and specifier pair.
++- pinctrl-0: phandle, referring to a default pin configuration node.
++- pinctrl-names: Set to "default".
++
++Example: R8A7790 (R-Car H2) PWM Timer node
++
++	pwm0: pwm@e6e30000 {
++		compatible = "renesas,pwm-r8a7790", "renesas,pwm-rcar";
++		reg = <0 0xe6e30000 0 0x8>;
++		#pwm-cells = <2>;
++		clocks = <&mstp5_clks R8A7790_CLK_PWM>;
++		pinctrl-0 = <&pwm0_pins>;
++		pinctrl-names = "default";
++	};
 -- 
 1.9.1
