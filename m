@@ -1,7 +1,7 @@
 From: Antoine Tenart <antoine.tenart@free-electrons.com>
-Subject: [PATCH v5 3/5] ARM: berlin: add a PWM node on the BG2Q
-Date: Wed, 26 Aug 2015 10:07:28 +0200
-Message-ID: <1440576450-17420-4-git-send-email-antoine.tenart@free-electrons.com>
+Subject: [PATCH v5 4/5] ARM: berlin: add a PWM node on the BG2
+Date: Wed, 26 Aug 2015 10:07:29 +0200
+Message-ID: <1440576450-17420-5-git-send-email-antoine.tenart@free-electrons.com>
 References: <1440576450-17420-1-git-send-email-antoine.tenart@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,20 +21,20 @@ To: sebastian.hesselbarth@gmail.com, thierry.reding@gmail.com
 Cc: zmxu@marvell.com, jszhang@marvell.com, linux-pwm@vger.kernel.org, Antoine Tenart <antoine.tenart@free-electrons.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-This patch adds a PWM node in the Berlin BG2Q device tree, using the
+This patch adds a PWM node in the Berlin BG2 device tree, using the
 newly added Berlin PWM driver.
 
 Signed-off-by: Antoine Tenart <antoine.tenart@free-electrons.com>
 ---
- arch/arm/boot/dts/berlin2q.dtsi | 7 +++++++
+ arch/arm/boot/dts/berlin2.dtsi | 7 +++++++
  1 file changed, 7 insertions(+)
 
-diff --git a/arch/arm/boot/dts/berlin2q.dtsi b/arch/arm/boot/dts/berlin2q.dtsi
-index 63a48490e2f9..5bfa71a87617 100644
---- a/arch/arm/boot/dts/berlin2q.dtsi
-+++ b/arch/arm/boot/dts/berlin2q.dtsi
-@@ -477,6 +477,13 @@
- 			status = "disabled";
+diff --git a/arch/arm/boot/dts/berlin2.dtsi b/arch/arm/boot/dts/berlin2.dtsi
+index ef811de09908..f094b06d16aa 100644
+--- a/arch/arm/boot/dts/berlin2.dtsi
++++ b/arch/arm/boot/dts/berlin2.dtsi
+@@ -404,6 +404,13 @@
+ 			};
  		};
  
 +		pwm: pwm@f20000 {
