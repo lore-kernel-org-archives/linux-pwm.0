@@ -1,68 +1,39 @@
-From: Florian Fainelli <fainelli-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v2 1/2] Documentation: dt: add Broadcom BCM7038 PWM controller
- binding
-Date: Thu, 27 Aug 2015 17:47:54 -0700
-Message-ID: <55DFAFBA.1090804@broadcom.com>
-References: <1440440877-10644-1-git-send-email-f.fainelli@gmail.com> <1440440877-10644-2-git-send-email-f.fainelli@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1440440877-10644-2-git-send-email-f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH v3 0/2] pwm: Broadcom BCM7038 PWM controller (v3)
+Date: Fri, 28 Aug 2015 18:21:47 -0700
+Message-ID: <1440811309-1289-1-git-send-email-f.fainelli@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pa0-f42.google.com ([209.85.220.42]:32787 "EHLO
+	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751648AbbH2BY3 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Aug 2015 21:24:29 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: bcm-kernel-feedback-list@broadcom.com, thierry.reding@gmail.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>
 
-On 24/08/15 11:27, Florian Fainelli wrote:
-> Add a binding documentation for the Broadcom BCM7038 PWM controller found in
-> BCM7xxx chips.
+Hi,
 
-Got to think about this some more, I will just remove the optional
-"clocks" phandle, since the PWM block really needs a input clock to
-operate, will respin a v3 with these changes shortly.
+This patch series add PWM support for the Broadcom BCM7xxx
+chips which feature one or more PWM controllers capable of
+output periods from 148ns to ~622ms using a combination of
+variable and fixed frequency settings.
 
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  .../devicetree/bindings/pwm/brcm,bcm7038-pwm.txt   | 22 ++++++++++++++++++++++
->  1 file changed, 22 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/brcm,bcm7038-pwm.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/brcm,bcm7038-pwm.txt b/Documentation/devicetree/bindings/pwm/brcm,bcm7038-pwm.txt
-> new file mode 100644
-> index 000000000000..8b9bc43b561e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/brcm,bcm7038-pwm.txt
-> @@ -0,0 +1,22 @@
-> +Broadcom BCM7038 PWM controller (BCM7xxx Set Top Box PWM controller)
-> +
-> +Required properties:
-> +
-> +- compatible: must be "brcm,bcm7038-pwm"
-> +- reg: physical base address and length for this controller
-> +- #pwm-cells: should be 2. See pwm.txt in this directory for a description
-> +  of the cells format.
-> +
-> +Optional properties:
-> +
-> +- clocks: a phandle to the reference clock for this block which is fed through
-> +  its internal variable clock frequency generator
-> +
-> +Example:
-> +
-> +	pwm: pwm@f0408000 {
-> +		compatible = "brcm,bcm7038-pwm";
-> +		reg = <0xf0408000 0x28>;
-> +		#pwm-cells = <2>;
-> +		clocks = <&upg_fixed>;
-> +	};
-> 
+The controller does not support setting a polarity.
 
+This is based on Thierry's pwm/next branch.
+
+Florian Fainelli (2):
+  Documentation: dt: add Broadcom BCM7038 PWM controller binding
+  pwm: Add Broadcom BCM7038 PWM controller support
+
+ .../devicetree/bindings/pwm/brcm,bcm7038-pwm.txt   |  20 ++
+ drivers/pwm/Kconfig                                |  10 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-brcmstb.c                          | 324 +++++++++++++++++++++
+ 4 files changed, 355 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/brcm,bcm7038-pwm.txt
+ create mode 100644 drivers/pwm/pwm-brcmstb.c
 
 -- 
-Florian
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2.1.0
