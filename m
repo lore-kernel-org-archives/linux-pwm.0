@@ -1,65 +1,92 @@
-From: Ariel D'Alessandro <ariel@vanguardiasur.com.ar>
-Subject: Re: [PATCH v2 0/2] Add support for NXP LPC18xx PWM/SCT
-Date: Tue, 1 Sep 2015 10:02:11 -0300
-Message-ID: <55E5A1D3.4050507@vanguardiasur.com.ar>
-References: <1438828307-14641-1-git-send-email-ariel@vanguardiasur.com.ar>
- <CAAEAJfCyZUNadthZ_3-scqv0f8Rjf4dd=fg8Rhqt0xfdoDF9XQ@mail.gmail.com>
+From: YH Huang <yh.huang@mediatek.com>
+Subject: The default value of enable_gpio in pwm-backlight driver?
+Date: Thu, 3 Sep 2015 21:08:24 +0800
+Message-ID: <1441285704.27600.26.camel@mtksdaap41>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qg0-f53.google.com ([209.85.192.53]:33746 "EHLO
-	mail-qg0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752877AbbIANCR (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 1 Sep 2015 09:02:17 -0400
-Received: by qgp105 with SMTP id 105so39940482qgp.0
-        for <linux-pwm@vger.kernel.org>; Tue, 01 Sep 2015 06:02:16 -0700 (PDT)
-In-Reply-To: <CAAEAJfCyZUNadthZ_3-scqv0f8Rjf4dd=fg8Rhqt0xfdoDF9XQ@mail.gmail.com>
+Received: from mailgw01.mediatek.com ([210.61.82.183]:44656 "EHLO
+	mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753160AbbICNI2 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 3 Sep 2015 09:08:28 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Joachim Eastwood <manabian@gmail.com>
+To: Alexandre Courbot <acourbot@nvidia.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-mediatek@lists.infradead.org, djkurtz@chromium.org, yingjoe.chen@mediatek.com, yh.huang@mediatek.com
+
+Hi all,
+
+I have a problem while using the pwm-backlight driver.
+I want to match the panel power sequence timing but fail in the probe
+function. I think it is right to set the gpio "inactive" at
+initialization. For now, the probe function always pulls high
+enable_gpio although I set it as GPIO_ACTIVE_HIGH in dts.
+I find the change and excerpt part of it. I am not sure if it is right.
+If I misunderstanding something, please let me know.
+
+Regards,
+YH Huang
 
 
-El 20/08/15 a las 16:51, Ezequiel Garcia escribi=C3=B3:
-> Thierry,
->=20
-> On 5 August 2015 at 23:31, Ariel D'Alessandro
-> <ariel@vanguardiasur.com.ar> wrote:
->> This patch series adds support for NXP LPC18xx PWM/SCT.
->>
->> NXP LPC SoCs family, which includes LPC18xx/LPC43xx, provides a Stat=
-e
->> Configurable Timer (SCT) which can be configured as a Pulse Width Mo=
-dulator.
->> Other SoCs in that family may share the same hardware.
->>
->> Patchset is based on tag next-20150723 of the linux-next repository.
->> It has been successfully tested on a Hitex LPC4350 Evaluation Board.
->>
->> Changes since v1:
->> * Added "sct" in DT compatible string and driver's name.
->> * Allowed period changes when there's only one channel requested.
->>
->> Ariel D'Alessandro (2):
->>   pwm: NXP LPC18xx PWM/SCT driver
->>   DT: pwm: Add NXP LPC18xx PWM/SCT binding documentation
->>
->>  .../devicetree/bindings/pwm/lpc1850-sct-pwm.txt    |  20 +
->>  drivers/pwm/Kconfig                                |  12 +
->>  drivers/pwm/Makefile                               |   1 +
->>  drivers/pwm/pwm-lpc18xx-sct.c                      | 465 ++++++++++=
-+++++++++++
->>  4 files changed, 498 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/pwm/lpc1850-sc=
-t-pwm.txt
->>  create mode 100644 drivers/pwm/pwm-lpc18xx-sct.c
->>
->> --
->> 1.9.1
->>
->=20
-> Any news about this driver?
->=20
+From	Alexandre Courbot <>
+Subject	[PATCH 2/2] pwm-backlight: switch to gpiod interface
+Date	Thu, 27 Feb 2014 14:53:34 +0900
 
-Ping on this.
+Switch to the new gpiod interface, which allows to handle GPIO
+properties such as active low transparently and removes a whole bunch of
+code.
+
+There are still a couple of users of this driver that rely on passing
+the enable GPIO number through platform data, so a fallback mechanism
+using a GPIO number is still available to avoid breaking them. It will
+be removed once current users have switched to the GPIO lookup tables
+provided by the gpiod interface.
+
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+
+@@ -265,26 +245,39 @@ static int pwm_backlight_probe(struct
+platform_device *pdev)
+ 	pb->dev = &pdev->dev;
+ 	pb->enabled = false;
+ 
+-	if (gpio_is_valid(pb->enable_gpio)) {
+-		unsigned long flags;
+-
+-		if (pb->enable_gpio_flags & PWM_BACKLIGHT_GPIO_ACTIVE_LOW)
+-			flags = GPIOF_OUT_INIT_HIGH;
+-		else
+-			flags = GPIOF_OUT_INIT_LOW;
++	pb->enable_gpio = devm_gpiod_get(&pdev->dev, "enable");
++	if (IS_ERR(pb->enable_gpio)) {
++		ret = PTR_ERR(pb->enable_gpio);
++		if (ret == -ENOENT) {
++			pb->enable_gpio = NULL;
++			ret = 0;
++		} else {
++			goto err_alloc;
++		}
++	}
+ 
+-		ret = gpio_request_one(pb->enable_gpio, flags, "enable");
++	/*
++	 * Compatibility fallback for drivers still using the integer GPIO
++	 * platform data. Must go away soon.
++	 */
++	if (pb->enable_gpio == NULL && gpio_is_valid(data->enable_gpio)) {
++		ret = devm_gpio_request_one(&pdev->dev, data->enable_gpio,
++					    GPIOF_OUT_INIT_HIGH, "enable");
+ 		if (ret < 0) {
+ 			dev_err(&pdev->dev, "failed to request GPIO#%d: %d\n",
+-				pb->enable_gpio, ret);
++				data->enable_gpio, ret);
+ 			goto err_alloc;
+ 		}
++		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
+ 	}
+ 
++	if (pb->enable_gpio)
++		gpiod_direction_output(pb->enable_gpio, 1);
+	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	Is here right?
