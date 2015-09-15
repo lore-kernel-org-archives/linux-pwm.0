@@ -1,214 +1,94 @@
-From: Qipeng Zha <qipeng.zha@intel.com>
-Subject: [PATCH] pwm: lpss: add PM support for LPSS PWM
-Date: Tue, 15 Sep 2015 18:40:26 +0800
-Message-ID: <1442313626-63022-1-git-send-email-qipeng.zha@intel.com>
+From: YH Huang <yh.huang@mediatek.com>
+Subject: Re: [PATCH v7 0/3] Add MediaTek display PWM driver
+Date: Tue, 15 Sep 2015 11:52:53 +0800
+Message-ID: <1442289173.11445.5.camel@mtksdaap41>
+References: <1439882875-19596-1-git-send-email-yh.huang@mediatek.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:23793 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751625AbbIOCgc (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 14 Sep 2015 22:36:32 -0400
+Received: from mailgw01.mediatek.com ([210.61.82.183]:41966 "EHLO
+	mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751633AbbIODw7 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 14 Sep 2015 23:52:59 -0400
+In-Reply-To: <1439882875-19596-1-git-send-email-yh.huang@mediatek.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: thierry.reding@gmail.com, mika.westerberg@intel.com, Huiquan Zhong <huiquan.zhong@intel.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, Mark Rutland <mark.rutland@arm.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, srv_heupstream <srv_heupstream@mediatek.com>, Pawel Moll <pawel.moll@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, Sascha Hauer <kernel@pengutronix.de>, Yingjoe Chen =?UTF-8?Q?=28=E9=99=B3=E8=8B=B1=E6=B4=B2=29?= <Yingjoe.Chen@mediatek.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-Signed-off-by: Huiquan Zhong <huiquan.zhong@intel.com>
-Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
----
- drivers/pwm/pwm-lpss-pci.c      | 11 +++++++++++
- drivers/pwm/pwm-lpss-platform.c | 11 +++++++++++
- drivers/pwm/pwm-lpss.c          | 41 +++++++++++++++++++++++++++++++++++++++++
- drivers/pwm/pwm-lpss.h          |  1 +
- 4 files changed, 64 insertions(+)
+On Tue, 2015-08-18 at 15:27 +0800, YH Huang wrote:
+> This patch series add the use of display PWM driver, documentation
+> and device tree for Mediatek SoCs. The driver is used to support
+> the backlight of the panel. This is based on v4.2-rc1.
+> 
+> The clock definitions (CLK_MM_DISP_PWM*) are added by James Liao's patch:
+> clk: mediatek: Add subsystem clocks of MT8173
+> 
+> Change in v7:
+> 1. Add the dependency HAS_IOMEM in Kconfig.
+> 2. Revise misprints and coding style for readability.
+> 
+> Change in v6:
+> 1. Enable clocks in the pwm_enable function.
+> 2. Remove suspend/resume code since pwm-backlight driver has done the
+> same things.
+> 3. Revise some code to make it easier to read.
+> 
+> Change in v5:
+> 1. Configure PWM output via pinctrl.
+> 2. Fix the parameter name in dtsi.
+> 
+> Change in v4:
+> 1. Codebase is on v4.2-rc1.
+> 2. Add the PWM node in dtsi.
+> 3. Change the dependency in Kconfig.
+> 4. Rewrite some code for readability.
+> 
+> Change in v3:
+> 1. Add suspend/resume function.
+> 2. Fix the formula for high_width calculation.
+> 3. Rewrite some code to make it easier to read.
+> 4. Add more information in the commit message.
+> 
+> Change in v2:
+> 1. Rewrite descriptions for driver in kconfig to make it much clear.
+> 2. Rename the driver from "pwm-mediatek-disp" to "pwm-mtk-disp".
+> 3. Disable clocks in the error path.
+> 4. Change the shift values in decimal instead of hex.
+> 5. Rename and add some variables or function name for consistency and
+> readability.
+> 6. Drop unnecessary parentheses, spaces, variables and add newlines to
+> make the code easiler to read.
+> 
+> YH Huang (3):
+>   dt-bindings: pwm: add MediaTek display PWM bindings
+>   pwm: add MediaTek display PWM driver support
+>   arm64: dts: mt8173: add MT8173 display PWM driver support node
+> 
+>  .../devicetree/bindings/pwm/pwm-mtk-disp.txt       |   42 ++++
+>  arch/arm64/boot/dts/mediatek/mt8173-evb.dts        |   13 ++
+>  arch/arm64/boot/dts/mediatek/mt8173.dtsi           |   22 ++
+>  drivers/pwm/Kconfig                                |   11 +
+>  drivers/pwm/Makefile                               |    1 +
+>  drivers/pwm/pwm-mtk-disp.c                         |  232 ++++++++++++++++++++
+>  6 files changed, 321 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+>  create mode 100644 drivers/pwm/pwm-mtk-disp.c
+> 
+> --
+> 1.7.9.5
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 
-diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
-index 45042c1..e8c31d6 100644
---- a/drivers/pwm/pwm-lpss-pci.c
-+++ b/drivers/pwm/pwm-lpss-pci.c
-@@ -13,6 +13,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/pci.h>
-+#include <linux/pm_runtime.h>
- 
- #include "pwm-lpss.h"
- 
-@@ -33,6 +34,12 @@ static int pwm_lpss_probe_pci(struct pci_dev *pdev,
- 		return PTR_ERR(lpwm);
- 
- 	pci_set_drvdata(pdev, lpwm);
-+
-+	pm_runtime_set_autosuspend_delay(&pdev->dev, 5);
-+	pm_runtime_use_autosuspend(&pdev->dev);
-+	pm_runtime_put_noidle(&pdev->dev);
-+	pm_runtime_allow(&pdev->dev);
-+
- 	return 0;
- }
- 
-@@ -40,6 +47,7 @@ static void pwm_lpss_remove_pci(struct pci_dev *pdev)
- {
- 	struct pwm_lpss_chip *lpwm = pci_get_drvdata(pdev);
- 
-+	pm_runtime_forbid(&pdev->dev);
- 	pwm_lpss_remove(lpwm);
- }
- 
-@@ -59,6 +67,9 @@ static struct pci_driver pwm_lpss_driver_pci = {
- 	.id_table = pwm_lpss_pci_ids,
- 	.probe = pwm_lpss_probe_pci,
- 	.remove = pwm_lpss_remove_pci,
-+	.driver = {
-+		.pm = &pwm_lpss_pm,
-+	},
- };
- module_pci_driver(pwm_lpss_driver_pci);
- 
-diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
-index 18a9c88..09a7d99 100644
---- a/drivers/pwm/pwm-lpss-platform.c
-+++ b/drivers/pwm/pwm-lpss-platform.c
-@@ -14,6 +14,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
- 
- #include "pwm-lpss.h"
- 
-@@ -36,6 +37,12 @@ static int pwm_lpss_probe_platform(struct platform_device *pdev)
- 		return PTR_ERR(lpwm);
- 
- 	platform_set_drvdata(pdev, lpwm);
-+
-+	pm_runtime_set_autosuspend_delay(&pdev->dev, 5);
-+	pm_runtime_use_autosuspend(&pdev->dev);
-+	pm_runtime_put_noidle(&pdev->dev);
-+	pm_runtime_allow(&pdev->dev);
-+
- 	return 0;
- }
- 
-@@ -43,6 +50,7 @@ static int pwm_lpss_remove_platform(struct platform_device *pdev)
- {
- 	struct pwm_lpss_chip *lpwm = platform_get_drvdata(pdev);
- 
-+	pm_runtime_forbid(&pdev->dev);
- 	return pwm_lpss_remove(lpwm);
- }
- 
-@@ -60,6 +68,9 @@ static struct platform_driver pwm_lpss_driver_platform = {
- 	},
- 	.probe = pwm_lpss_probe_platform,
- 	.remove = pwm_lpss_remove_platform,
-+	.driver = {
-+		.pm = &pwm_lpss_pm,
-+	},
- };
- module_platform_driver(pwm_lpss_driver_platform);
- 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index e979825..fed95cc 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -16,6 +16,7 @@
- #include <linux/io.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/pm_runtime.h>
- 
- #include "pwm-lpss.h"
- 
-@@ -75,6 +76,8 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (base_unit > PWM_LIMIT)
- 		return -EINVAL;
- 
-+	pm_runtime_get_sync(lpwm->chip.dev);
-+
- 	if (duty_ns <= 0)
- 		duty_ns = 1;
- 	on_time_div = 255 - (255 * duty_ns / period_ns);
-@@ -87,6 +90,9 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	ctrl |= PWM_SW_UPDATE;
- 	writel(ctrl, lpwm->regs + PWM);
- 
-+	pm_runtime_mark_last_busy(lpwm->chip.dev);
-+	pm_runtime_put_autosuspend(lpwm->chip.dev);
-+
- 	return 0;
- }
- 
-@@ -95,9 +101,14 @@ static int pwm_lpss_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
- 	u32 ctrl;
- 
-+	pm_runtime_get_sync(lpwm->chip.dev);
-+
- 	ctrl = readl(lpwm->regs + PWM);
- 	writel(ctrl | PWM_ENABLE, lpwm->regs + PWM);
- 
-+	pm_runtime_mark_last_busy(lpwm->chip.dev);
-+	pm_runtime_put_autosuspend(lpwm->chip.dev);
-+
- 	return 0;
- }
- 
-@@ -106,8 +117,13 @@ static void pwm_lpss_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
- 	u32 ctrl;
- 
-+	pm_runtime_get_sync(lpwm->chip.dev);
-+
- 	ctrl = readl(lpwm->regs + PWM);
- 	writel(ctrl & ~PWM_ENABLE, lpwm->regs + PWM);
-+
-+	pm_runtime_mark_last_busy(lpwm->chip.dev);
-+	pm_runtime_put_autosuspend(lpwm->chip.dev);
- }
- 
- static const struct pwm_ops pwm_lpss_ops = {
-@@ -158,6 +174,31 @@ int pwm_lpss_remove(struct pwm_lpss_chip *lpwm)
- }
- EXPORT_SYMBOL_GPL(pwm_lpss_remove);
- 
-+static int pwm_lpss_suspend(struct device *dev)
-+{
-+	struct pwm_lpss_chip *lpwm = dev_get_drvdata(dev);
-+	u32 ctrl;
-+	int ret;
-+
-+	ctrl = readl(lpwm->regs + PWM);
-+	ret = (ctrl & PWM_ENABLE) ? -EAGAIN : 0;
-+
-+	return ret;
-+}
-+
-+static int pwm_lpss_resume(struct device *dev)
-+{
-+	return 0;
-+}
-+
-+const struct dev_pm_ops pwm_lpss_pm = {
-+	.suspend_late = pwm_lpss_suspend,
-+	.resume_early = pwm_lpss_resume,
-+	SET_RUNTIME_PM_OPS(pwm_lpss_suspend,
-+			pwm_lpss_resume, NULL)
-+};
-+EXPORT_SYMBOL(pwm_lpss_pm);
-+
- MODULE_DESCRIPTION("PWM driver for Intel LPSS");
- MODULE_AUTHOR("Mika Westerberg <mika.westerberg@linux.intel.com>");
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-index aa041bb..0b42983 100644
---- a/drivers/pwm/pwm-lpss.h
-+++ b/drivers/pwm/pwm-lpss.h
-@@ -28,5 +28,6 @@ extern const struct pwm_lpss_boardinfo pwm_lpss_bsw_info;
- struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
- 				     const struct pwm_lpss_boardinfo *info);
- int pwm_lpss_remove(struct pwm_lpss_chip *lpwm);
-+extern const struct dev_pm_ops pwm_lpss_pm;
- 
- #endif	/* __PWM_LPSS_H */
--- 
-1.8.3.2
+Hi Thierry,
+
+Will you please pick up these patches in your pwm tree?
+Should I rebase to 4.3-rc1?
+
+Regards,
+YH Huang
