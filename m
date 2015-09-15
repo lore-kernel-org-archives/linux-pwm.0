@@ -1,28 +1,51 @@
-From: Mika Westerberg <mika.westerberg@intel.com>
-Subject: Re: [PATCH] pwm: lpss: add PM support for LPSS PWM
-Date: Tue, 15 Sep 2015 11:15:23 +0300
-Message-ID: <20150915081523.GG1525@lahna.fi.intel.com>
-References: <1442313626-63022-1-git-send-email-qipeng.zha@intel.com>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH v6 2/2] pwm: Add support for R-Car PWM Timer
+Date: Tue, 15 Sep 2015 10:00:34 +0000
+Message-ID: <SG2PR06MB0919E0F37382CC1C39586520D85C0@SG2PR06MB0919.apcprd06.prod.outlook.com>
+References: <1439957639-4816-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <1439957639-4816-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <20150819100732.GC26627@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:20084 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752406AbbIOIPa (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Tue, 15 Sep 2015 04:15:30 -0400
-Content-Disposition: inline
-In-Reply-To: <1442313626-63022-1-git-send-email-qipeng.zha@intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-sh-owner@vger.kernel.org>
+Content-Language: ja-JP
+Sender: linux-sh-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: "robh+dt@kernel.org" <robh+dt@kernel.org>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "galak@codeaurora.org" <galak@codeaurora.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Qipeng Zha <qipeng.zha@intel.com>
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, Huiquan Zhong <huiquan.zhong@intel.com>
 
-On Tue, Sep 15, 2015 at 06:40:26PM +0800, Qipeng Zha wrote:
-> Signed-off-by: Huiquan Zhong <huiquan.zhong@intel.com>
-> Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
+Hi Thierry,
 
-Can you please write a proper changelog explaining *why* this change is
-needed, thanks.
+> Sent: Wednesday, August 19, 2015 8:01 PM
+> 
+> Hi Thierry,
+> 
+> > Sent: Wednesday, August 19, 2015 7:08 PM
+> >
+> > On Wed, Aug 19, 2015 at 01:13:59PM +0900, Yoshihiro Shimoda wrote:
+> > > This patch adds support for R-Car SoCs PWM Timer. The PWM timer of
+> > > R-Car H2 has 7 channels. So, we can use the channels if we describe
+> > > device tree nodes.
+> > >
+> > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> > > Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+> > > ---
+> > >  drivers/pwm/Kconfig    |  11 ++
+> > >  drivers/pwm/Makefile   |   1 +
+> > >  drivers/pwm/pwm-rcar.c | 265 +++++++++++++++++++++++++++++++++++++++++++++++++
+> > >  3 files changed, 277 insertions(+)
+> > >  create mode 100644 drivers/pwm/pwm-rcar.c
+> >
+> > Found a couple more things. No need to respin for any of these, I can
+> > make the changes when applying, but I'd like confirmation on a couple
+> > of things below.
+> 
+> Thank you!
 
-For devices as simple as LPSS PWM I have hard time understanding why it
-needs to implement runtime PM.
+I could not find this driver in the latest your linux-pwm.git / for-next branch.
+Should I send v7 patch?
+
+Best regards,
+Yoshihiro Shimoda
+
