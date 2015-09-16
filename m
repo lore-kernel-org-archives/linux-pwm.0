@@ -1,51 +1,76 @@
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: RE: [PATCH v6 2/2] pwm: Add support for R-Car PWM Timer
-Date: Tue, 15 Sep 2015 10:00:34 +0000
-Message-ID: <SG2PR06MB0919E0F37382CC1C39586520D85C0@SG2PR06MB0919.apcprd06.prod.outlook.com>
-References: <1439957639-4816-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <1439957639-4816-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <20150819100732.GC26627@ulmo>
+From: YH Huang <yh.huang@mediatek.com>
+Subject: [PATCH] pwm-backlight: fix the panel power sequence
+Date: Wed, 16 Sep 2015 22:42:36 +0800
+Message-ID: <1442414556-32381-1-git-send-email-yh.huang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-sh-owner@vger.kernel.org>
-Content-Language: ja-JP
-Sender: linux-sh-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: "robh+dt@kernel.org" <robh+dt@kernel.org>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "galak@codeaurora.org" <galak@codeaurora.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com, YH Huang <yh.huang@mediatek.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Thierry,
+In order to match the panel power sequence, disable the enable_gpio
+in the probe function. Also, reorder the code in the power_on and
+power_off function to match the timing.
 
-> Sent: Wednesday, August 19, 2015 8:01 PM
-> 
-> Hi Thierry,
-> 
-> > Sent: Wednesday, August 19, 2015 7:08 PM
-> >
-> > On Wed, Aug 19, 2015 at 01:13:59PM +0900, Yoshihiro Shimoda wrote:
-> > > This patch adds support for R-Car SoCs PWM Timer. The PWM timer of
-> > > R-Car H2 has 7 channels. So, we can use the channels if we describe
-> > > device tree nodes.
-> > >
-> > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > > Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
-> > > ---
-> > >  drivers/pwm/Kconfig    |  11 ++
-> > >  drivers/pwm/Makefile   |   1 +
-> > >  drivers/pwm/pwm-rcar.c | 265 +++++++++++++++++++++++++++++++++++++++++++++++++
-> > >  3 files changed, 277 insertions(+)
-> > >  create mode 100644 drivers/pwm/pwm-rcar.c
-> >
-> > Found a couple more things. No need to respin for any of these, I can
-> > make the changes when applying, but I'd like confirmation on a couple
-> > of things below.
-> 
-> Thank you!
+Signed-off-by: YH Huang <yh.huang@mediatek.com>
+---
+ drivers/video/backlight/pwm_bl.c |   15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-I could not find this driver in the latest your linux-pwm.git / for-next branch.
-Should I send v7 patch?
-
-Best regards,
-Yoshihiro Shimoda
-
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index eff379b..99eca1e 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -54,10 +54,11 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
+ 	if (err < 0)
+ 		dev_err(pb->dev, "failed to enable power supply\n");
+ 
++	pwm_enable(pb->pwm);
++
+ 	if (pb->enable_gpio)
+ 		gpiod_set_value(pb->enable_gpio, 1);
+ 
+-	pwm_enable(pb->pwm);
+ 	pb->enabled = true;
+ }
+ 
+@@ -66,12 +67,12 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
+ 	if (!pb->enabled)
+ 		return;
+ 
+-	pwm_config(pb->pwm, 0, pb->period);
+-	pwm_disable(pb->pwm);
+-
+ 	if (pb->enable_gpio)
+ 		gpiod_set_value(pb->enable_gpio, 0);
+ 
++	pwm_config(pb->pwm, 0, pb->period);
++	pwm_disable(pb->pwm);
++
+ 	regulator_disable(pb->power_supply);
+ 	pb->enabled = false;
+ }
+@@ -241,8 +242,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	pb->dev = &pdev->dev;
+ 	pb->enabled = false;
+ 
+-	pb->enable_gpio = devm_gpiod_get_optional(&pdev->dev, "enable",
+-						  GPIOD_OUT_HIGH);
++	pb->enable_gpio = devm_gpiod_get_optional(&pdev->dev, "enable");
+ 	if (IS_ERR(pb->enable_gpio)) {
+ 		ret = PTR_ERR(pb->enable_gpio);
+ 		goto err_alloc;
+@@ -264,6 +264,9 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
+ 	}
+ 
++	if (pb->enable_gpio)
++		gpiod_direction_output(pb->enable_gpio, 0);
++
+ 	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
+ 	if (IS_ERR(pb->power_supply)) {
+ 		ret = PTR_ERR(pb->power_supply);
+-- 
+1.7.9.5
