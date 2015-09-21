@@ -1,40 +1,49 @@
-From: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-Subject: Re: [PATCH v6 1/5] pwm: add the Berlin pwm controller driver
-Date: Mon, 21 Sep 2015 23:05:06 +0200
-Message-ID: <56007102.4030204@gmail.com>
-References: <1442484788-15482-1-git-send-email-antoine.tenart@free-electrons.com> <1442484788-15482-2-git-send-email-antoine.tenart@free-electrons.com> <55FEF75C.4090802@gmail.com> <20150921080952.GC19865@ulmo.nvidia.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20150921080952.GC19865@ulmo.nvidia.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Antoine Tenart <antoine.tenart@free-electrons.com>, zmxu@marvell.com, jszhang@marvell.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [PATCH v3 12/12] regulator: pwm: properly initialize the ->state
+ field
+Date: Mon, 21 Sep 2015 14:10:53 -0700
+Message-ID: <20150921211053.GF30445@sirena.org.uk>
+References: <1442828009-6241-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1442828009-6241-13-git-send-email-boris.brezillon@free-electrons.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="GVmdUcABewnKtUm9"
+Return-path: <linux-leds-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1442828009-6241-13-git-send-email-boris.brezillon@free-electrons.com>
+Sender: linux-leds-owner@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-fbdev@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, linux-sunxi@googlegroups.com, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Doug Anderson <dianders@google.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutro>
 List-Id: linux-pwm@vger.kernel.org
 
-On 21.09.2015 10:09, Thierry Reding wrote:
-> On Sun, Sep 20, 2015 at 08:13:48PM +0200, Sebastian Hesselbarth wrote:
->> On 17.09.2015 12:13, Antoine Tenart wrote:
->>> Add a PWM controller driver for the Marvell Berlin SoCs. This PWM
->>> controller has 4 channels.
->>>
->>> Signed-off-by: Antoine Tenart <antoine.tenart@free-electrons.com>
->>> Acked-by: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
->>
->> Thierry,
->>
->> if you are also fine with the driver, please let me know if you want
->> me to take the driver through berlin-tree or if you are taking it.
->>
->> I am taking the binding docs and dts changes anyway.
->
-> Sorry but no. The binding documentation needs to go into the same tree
-> as the driver because they need to be kept in sync. We can't have DT
-> binding documentation go into platform trees if the driver implementing
-> the binding hasn't been merged.
 
-Ok, sometimes sub-maintainers do not want to care about the DT stuff,
-so I offered to take them. I am very fine with keeping binding and
-driver together.
+--GVmdUcABewnKtUm9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Sebastian
+On Mon, Sep 21, 2015 at 11:33:29AM +0200, Boris Brezillon wrote:
+> The ->state field is currently initialized to 0, thus referencing the
+> voltage selector at index 0, which might not reflect the current voltage
+> value.
+> If possible, retrieve the current voltage selector from the PWM state, else
+> return -EINVAL.
+
+Acked-by: Mark Brown <broonie@kernel.org>
+
+--GVmdUcABewnKtUm9
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJWAHJYAAoJECTWi3JdVIfQxPsH/0ivENz0SB+aLAU4UrJXE0ky
+Q1xie9LI6dab8dc6e7rmAOSDhkMJ1DvCyAEqSDqcFvsdxh2gdu2cz9cQ7divIjjP
+XFJwuyHftuGzRWH3a1J9gp8VT/PyEvUUMWXnq2NrKGOZBTetd8WncixWV0ArxkZf
+5BEOf1pkq4FHYD9pwRrhk3qJWPPUjjhCzziUC6o3Q1Mge29gIBAj8KE4VPRI4MCJ
+M6Se8MJy1VcBml1eNoYcsDgwBA+j74sDCLuAb2YrX0naLxHqn1VUVY4V4HwwH4cx
+XrXTdGmq9ke/jjBaKKRc8mXi6H4s3taKy2HNj6clxBH7bQsdoMD1GWgalYYdErE=
+=8m4a
+-----END PGP SIGNATURE-----
+
+--GVmdUcABewnKtUm9--
