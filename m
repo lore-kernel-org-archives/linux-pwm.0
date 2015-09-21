@@ -1,44 +1,72 @@
 From: Robert Jarzmik <robert.jarzmik@free.fr>
-Subject: Re: [PATCH v3 01/12] pwm: introduce default period and polarity concepts
-Date: Mon, 21 Sep 2015 20:20:29 +0200
-Message-ID: <877fnjr5w2.fsf@belgarion.home>
-References: <1442828009-6241-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1442828009-6241-2-git-send-email-boris.brezillon@free-electrons.com>
+Subject: pwm-bl: regression on all pxa platforms
+Date: Mon, 21 Sep 2015 22:41:23 +0200
+Message-ID: <87vbb3pkss.fsf@belgarion.home>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-leds-owner@vger.kernel.org>
-In-Reply-To: <1442828009-6241-2-git-send-email-boris.brezillon@free-electrons.com>
-	(Boris Brezillon's message of "Mon, 21 Sep 2015 11:33:18 +0200")
-Sender: linux-leds-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-fbdev@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, linux-sunxi@googlegroups.com, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Doug Anderson <dianders@google.com>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Boris Brezillon <boris.brezillon@free-electrons.com> writes:
+Hi Thierry,
 
-> When requested by a user, the PWM is assigned a default period and polarity
-> extracted from the DT, the platform data or statically set by the driver.
-> Those default values are currently stored in the period and polarity
-> fields of the pwm_device struct, but they will be stored somewhere else
-> once we have introduced the architecture allowing for hardware state
-> retrieval.
->
-> The pwm_set_default_polarity and pwm_set_default_period should only be
-> used by PWM drivers or the PWM core infrastructure to specify the
-> default period and polarity values.
->
-> PWM users might call the pwm_get_default_period to query the default
-> period value. There is currently no helper to query the default
-> polarity, but it might be added later on if there is a need for it.
->
-> This patch also modifies all the places where the default helpers should
-> be used in place of the standard ones.
->
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-For pwm-pxa.c :
-Acked-by: Robert Jarzmik <robert.jarzmik@free.fr>
+Since a bit of time, the PWM backlight based pxa platforms are broken.
+All of these platforms rely on a registering such as the one in [1].
+
+At least I think the commit 68feaca0b13e ("backlight: pwm: Handle EPROBE_DEFER
+while requesting the PWM") breaks my platforms because :
+ (a) no pwm table is added (legacy platforms)
+ (b) in this case, in pwm_get(), pmw_lookup_list is empty, and therefore chosen
+      == NULL, and therefore pwm_get() returns NULL, and pwm_get() return
+      -EPROBE_DEFER
+ (c) as a consequence, this code is unreachable in pwm_bl.c :
+	if (IS_ERR(pb->pwm)) {
+		ret = PTR_ERR(pb->pwm);
+		dev_info(&pdev->dev, "%s:%d(): %d\n", __func__, __LINE__, ret);
+		if (ret == -EPROBE_DEFER)
+			goto err_alloc;
+
+		dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
+		pb->legacy = true;
+		pb->pwm = pwm_request(data->pwm_id, "pwm-backlight");
+
+Could you either revert 68feaca0b13e or find a better solution to repair the
+legacy platorms please ?
 
 Cheers.
 
---
+-- 
 Robert
+
+[1] Backlight registration
+static struct platform_pwm_backlight_data cm_x300_backlight_data = {
+	.pwm_id		= 2,
+	.max_brightness	= 100,
+	.dft_brightness	= 100,
+	.pwm_period_ns	= 10000,
+	.enable_gpio	= -1,
+};
+
+static struct platform_device cm_x300_backlight_device = {
+	.name		= "pwm-backlight",
+	.dev		= {
+		.parent = &pxa27x_device_pwm0.dev,
+		.platform_data	= &cm_x300_backlight_data,
+	},
+};
+
+static void cm_x300_init_bl(void)
+{
+	platform_device_register(&cm_x300_backlight_device);
+}
