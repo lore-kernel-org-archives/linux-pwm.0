@@ -1,13 +1,12 @@
 From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v3 12/12] regulator: pwm: properly initialize
- the ->state field
-Date: Mon, 21 Sep 2015 11:33:29 +0200
-Message-ID: <1442828009-6241-13-git-send-email-boris.brezillon@free-electrons.com>
+Subject: [PATCH v3 10/12] pwm: rockchip: add support for atomic update
+Date: Mon, 21 Sep 2015 11:33:27 +0200
+Message-ID: <1442828009-6241-11-git-send-email-boris.brezillon@free-electrons.com>
 References: <1442828009-6241-1-git-send-email-boris.brezillon@free-electrons.com>
 Reply-To: boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBCIPJ6FA2QLBBK4676XQKGQEJH43HHQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCIPJ6FA2QLBBKU676XQKGQEZ77UZXI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 In-Reply-To: <1442828009-6241-1-git-send-email-boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -20,64 +19,144 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, lin
 Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-The ->state field is currently initialized to 0, thus referencing the
-voltage selector at index 0, which might not reflect the current voltage
-value.
-If possible, retrieve the current voltage selector from the PWM state, else
-return -EINVAL.
+Implement the ->apply() function to add support for atomic update.
 
 Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 ---
- drivers/regulator/pwm-regulator.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ drivers/pwm/pwm-rockchip.c | 53 +++++++++++++++++++++++++---------------------
+ 1 file changed, 29 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/regulator/pwm-regulator.c b/drivers/regulator/pwm-regulator.c
-index 9ffdbd6..449e3b3 100644
---- a/drivers/regulator/pwm-regulator.c
-+++ b/drivers/regulator/pwm-regulator.c
-@@ -41,10 +41,35 @@ struct pwm_voltages {
- /**
-  * Voltage table call-backs
-  */
-+static void pwm_regulator_init_state(struct regulator_dev *rdev)
-+{
-+	struct pwm_regulator_data *drvdata = rdev_get_drvdata(rdev);
-+	struct pwm_state pwm_state;
-+	unsigned int dutycycle;
-+	int i;
-+
-+	pwm_get_state(drvdata->pwm, &pwm_state);
-+
-+	if (!pwm_state.period)
-+		return;
-+
-+	dutycycle = (pwm_state.duty_cycle * 100) / pwm_state.period;
-+
-+	for (i = 0; i < rdev->desc->n_voltages; i++) {
-+		if (dutycycle == drvdata->duty_cycle_table[i].dutycycle) {
-+			drvdata->state = i;
-+			return;
-+		}
-+	}
-+}
-+
- static int pwm_regulator_get_voltage_sel(struct regulator_dev *rdev)
- {
- 	struct pwm_regulator_data *drvdata = rdev_get_drvdata(rdev);
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index 6eab25c..48b814d 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -50,7 +50,8 @@ struct rockchip_pwm_data {
+ 	const struct pwm_ops *ops;
  
-+	if (drvdata->state < 0)
-+		pwm_regulator_init_state(rdev);
-+
- 	return drvdata->state;
+ 	void (*set_enable)(struct pwm_chip *chip,
+-			   struct pwm_device *pwm, bool enable);
++			   struct pwm_device *pwm, bool enable,
++			   enum pwm_polarity polarity);
+ 	void (*reset_state)(struct pwm_chip *chip, struct pwm_device *pwm);
+ };
+ 
+@@ -60,7 +61,8 @@ static inline struct rockchip_pwm_chip *to_rockchip_pwm_chip(struct pwm_chip *c)
  }
  
-@@ -211,6 +236,7 @@ static int pwm_regulator_init_table(struct platform_device *pdev,
- 		return ret;
- 	}
+ static void rockchip_pwm_set_enable_v1(struct pwm_chip *chip,
+-				       struct pwm_device *pwm, bool enable)
++				       struct pwm_device *pwm, bool enable,
++				       enum pwm_polarity polarity)
+ {
+ 	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
+ 	u32 enable_conf = PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN;
+@@ -89,14 +91,15 @@ static void rockchip_pwm_reset_state_v1(struct pwm_chip *chip,
+ }
  
-+	drvdata->state			= -EINVAL;
- 	drvdata->duty_cycle_table	= duty_cycle_table;
- 	pwm_regulator_desc.ops		= &pwm_regulator_voltage_table_ops;
- 	pwm_regulator_desc.n_voltages	= length / sizeof(*duty_cycle_table);
+ static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip,
+-				       struct pwm_device *pwm, bool enable)
++				       struct pwm_device *pwm, bool enable,
++				       enum pwm_polarity polarity)
+ {
+ 	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
+ 	u32 enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE |
+ 			  PWM_CONTINUOUS;
+ 	u32 val;
+ 
+-	if (pwm_get_polarity(pwm) == PWM_POLARITY_INVERSED)
++	if (polarity == PWM_POLARITY_INVERSED)
+ 		enable_conf |= PWM_DUTY_NEGATIVE | PWM_INACTIVE_POSITIVE;
+ 	else
+ 		enable_conf |= PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE;
+@@ -165,7 +168,6 @@ static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
+ 	unsigned long period, duty;
+ 	u64 clk_rate, div;
+-	int ret;
+ 
+ 	clk_rate = clk_get_rate(pc->clk);
+ 
+@@ -182,15 +184,8 @@ static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	do_div(div, pc->data->prescaler * NSEC_PER_SEC);
+ 	duty = div;
+ 
+-	ret = clk_enable(pc->clk);
+-	if (ret)
+-		return ret;
+-
+ 	writel(period, pc->base + pc->data->regs.period);
+ 	writel(duty, pc->base + pc->data->regs.duty);
+-	writel(0, pc->base + pc->data->regs.cntr);
+-
+-	clk_disable(pc->clk);
+ 
+ 	return 0;
+ }
+@@ -208,43 +203,53 @@ static int rockchip_pwm_set_polarity(struct pwm_chip *chip,
+ 	return 0;
+ }
+ 
+-static int rockchip_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
++static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
++			      const struct pwm_state *state)
+ {
+ 	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++	bool enabled = pwm_is_enabled(pwm);
+ 	int ret;
+ 
+ 	ret = clk_enable(pc->clk);
+ 	if (ret)
+ 		return ret;
+ 
+-	pc->data->set_enable(chip, pwm, true);
++	if (state->polarity != pwm_get_polarity(pwm) && enabled) {
++		pc->data->set_enable(chip, pwm, false, state->polarity);
++		enabled = false;
++	}
+ 
+-	return 0;
+-}
++	ret = rockchip_pwm_config(chip, pwm, state->duty_cycle, state->period);
++	if (ret) {
++		if (enabled != pwm_is_enabled(pwm))
++			pc->data->set_enable(chip, pwm, !enabled,
++					     state->polarity);
+ 
+-static void rockchip_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+-{
+-	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++		goto out;
++	}
+ 
+-	pc->data->set_enable(chip, pwm, false);
++	if (state->enabled != enabled)
++		pc->data->set_enable(chip, pwm, state->enabled,
++				     state->polarity);
+ 
++out:
+ 	clk_disable(pc->clk);
++
++	return ret;
+ }
+ 
+ static const struct pwm_ops rockchip_pwm_ops_v1 = {
+ 	.reset_state = rockchip_pwm_reset_state,
+ 	.config = rockchip_pwm_config,
+-	.enable = rockchip_pwm_enable,
+-	.disable = rockchip_pwm_disable,
++	.apply = rockchip_pwm_apply,
+ 	.owner = THIS_MODULE,
+ };
+ 
+ static const struct pwm_ops rockchip_pwm_ops_v2 = {
+ 	.reset_state = rockchip_pwm_reset_state,
+ 	.config = rockchip_pwm_config,
++	.apply = rockchip_pwm_apply,
+ 	.set_polarity = rockchip_pwm_set_polarity,
+-	.enable = rockchip_pwm_enable,
+-	.disable = rockchip_pwm_disable,
+ 	.owner = THIS_MODULE,
+ };
+ 
 -- 
 1.9.1
