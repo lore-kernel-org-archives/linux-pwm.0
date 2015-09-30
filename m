@@ -1,61 +1,46 @@
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: RE: [PATCH v6 2/2] pwm: Add support for R-Car PWM Timer
-Date: Wed, 30 Sep 2015 08:49:45 +0000
-Message-ID: <SG2PR06MB091904CF251C9CF1A999C768D84D0@SG2PR06MB0919.apcprd06.prod.outlook.com>
-References: <1439957639-4816-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <1439957639-4816-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <20150819100732.GC26627@ulmo>
+From: Robert Jarzmik <robert.jarzmik@free.fr>
+Subject: Re: [PATCH] Revert "backlight: pwm: Handle EPROBE_DEFER while requesting the PWM"
+Date: Wed, 30 Sep 2015 21:29:59 +0200
+Message-ID: <87bncjemdk.fsf@belgarion.home>
+References: <1443295482-18687-1-git-send-email-robert.jarzmik@free.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relmlor3.renesas.com ([210.160.252.173]:64771 "EHLO
-	relmlie2.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1750927AbbI3Itu convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 30 Sep 2015 04:49:50 -0400
-Content-Language: ja-JP
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1443295482-18687-1-git-send-email-robert.jarzmik@free.fr>
+	(Robert Jarzmik's message of "Sat, 26 Sep 2015 21:24:42 +0200")
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: "robh+dt@kernel.org" <robh+dt@kernel.org>, "pawel.moll@arm.com" <pawel.moll@arm.com>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, "galak@codeaurora.org" <galak@codeaurora.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 
-Hi Thierry,
+Robert Jarzmik <robert.jarzmik@free.fr> writes:
 
-> Sent: Tuesday, September 15, 2015 7:01 PM
-> 
-> Hi Thierry,
-> 
-> > Sent: Wednesday, August 19, 2015 8:01 PM
-> >
-> > Hi Thierry,
-> >
-> > > Sent: Wednesday, August 19, 2015 7:08 PM
-> > >
-> > > On Wed, Aug 19, 2015 at 01:13:59PM +0900, Yoshihiro Shimoda wrote:
-> > > > This patch adds support for R-Car SoCs PWM Timer. The PWM timer of
-> > > > R-Car H2 has 7 channels. So, we can use the channels if we describe
-> > > > device tree nodes.
-> > > >
-> > > > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > > > Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
-> > > > ---
-> > > >  drivers/pwm/Kconfig    |  11 ++
-> > > >  drivers/pwm/Makefile   |   1 +
-> > > >  drivers/pwm/pwm-rcar.c | 265 +++++++++++++++++++++++++++++++++++++++++++++++++
-> > > >  3 files changed, 277 insertions(+)
-> > > >  create mode 100644 drivers/pwm/pwm-rcar.c
-> > >
-> > > Found a couple more things. No need to respin for any of these, I can
-> > > make the changes when applying, but I'd like confirmation on a couple
-> > > of things below.
-> >
-> > Thank you!
-> 
-> I could not find this driver in the latest your linux-pwm.git / for-next branch.
-> Should I send v7 patch?
+> This reverts commit 68feaca0b13e453aa14ee064c1736202b48b342f.
+> This commit breaks legacy platforms, for which :
+>  (a) no pwm table is added (legacy platforms)
+>  (b) in this case, in pwm_get(), pmw_lookup_list is empty, and therefore
+>      chosen == NULL, and therefore pwm_get() returns NULL, and pwm_get()
+>      returns -EPROBE_DEFER
+>  (c) as a consequence, this code is unreachable in pwm_bl.c :
+>      if (IS_ERR(pb->pwm)) {
+> 	ret = PTR_ERR(pb->pwm);
+>  	dev_info(&pdev->dev, "%s:%d(): %d\n", __func__, __LINE__, ret);
+>  	if (ret == -EPROBE_DEFER)
+>  		goto err_alloc;
+>
+>  	dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
+>  	pb->legacy = true;
+>  	pb->pwm = pwm_request(data->pwm_id, "pwm-backlight");
+>
+> As this code is unreachable, all legacy platforms relying on pwm_id are
+> broken, amongst which pxa have been tested as broken.
+>
+> Signed-off-by: Robert Jarzmik <robert.jarzmik@free.fr>
+Thierry, would you have a look please ?
+As I said before, all legacy platform relying on pwm_id are broken. I'd like to
+be sure this lands in the next -rc series.
 
-I submitted v7 patch now. So, would you review it?
+Cheers.
 
-Best regards,
-Yoshihiro Shimoda
+--
+Robert
