@@ -1,100 +1,85 @@
-From: Robert Jarzmik <robert.jarzmik@free.fr>
-Subject: Re: [PATCH] Revert "backlight: pwm: Handle EPROBE_DEFER while requesting the PWM"
-Date: Thu, 01 Oct 2015 19:39:46 +0200
-Message-ID: <8737xuebdp.fsf@belgarion.home>
-References: <1443295482-18687-1-git-send-email-robert.jarzmik@free.fr>
-	<87bncjemdk.fsf@belgarion.home> <560CE816.1060307@atmel.com>
+From: Olliver Schinagl <oliver+list@schinagl.nl>
+Subject: Re: [RFC] pwm: core: unsigned or signed ints for pwm_config
+Date: Thu, 01 Oct 2015 20:46:43 +0200
+Message-ID: <560D7F93.1030609@schinagl.nl>
+References: <560A3B7F.30803@schinagl.nl> <20150929074552.GA3648@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:17772 "EHLO
-	smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753515AbbJARo7 convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 1 Oct 2015 13:44:59 -0400
-In-Reply-To: <560CE816.1060307@atmel.com> (Nicolas Ferre's message of "Thu, 1
-	Oct 2015 10:00:22 +0200")
+Received: from 7of9.schinagl.nl ([88.159.158.68]:58003 "EHLO 7of9.schinagl.nl"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750923AbbJASqu (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Thu, 1 Oct 2015 14:46:50 -0400
+In-Reply-To: <20150929074552.GA3648@ulmo>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>, Boris BREZILLON <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
-Nicolas Ferre <nicolas.ferre@atmel.com> writes:
+Hey Thierry,
 
-> Le 30/09/2015 21:29, Robert Jarzmik a =C3=A9crit :
->> Robert Jarzmik <robert.jarzmik@free.fr> writes:
->>=20
->>> This reverts commit 68feaca0b13e453aa14ee064c1736202b48b342f.
->>> This commit breaks legacy platforms, for which :
->>>  (a) no pwm table is added (legacy platforms)
->>>  (b) in this case, in pwm_get(), pmw_lookup_list is empty, and ther=
-efore
->>>      chosen =3D=3D NULL, and therefore pwm_get() returns NULL, and =
-pwm_get()
->>>      returns -EPROBE_DEFER
->>>  (c) as a consequence, this code is unreachable in pwm_bl.c :
->>>      if (IS_ERR(pb->pwm)) {
->>> 	ret =3D PTR_ERR(pb->pwm);
->>>  	dev_info(&pdev->dev, "%s:%d(): %d\n", __func__, __LINE__, ret);
->>>  	if (ret =3D=3D -EPROBE_DEFER)
->>>  		goto err_alloc;
->>>
->>>  	dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n")=
-;
->>>  	pb->legacy =3D true;
->>>  	pb->pwm =3D pwm_request(data->pwm_id, "pwm-backlight");
->>>
->>> As this code is unreachable, all legacy platforms relying on pwm_id=
- are
->>> broken, amongst which pxa have been tested as broken.
->>>
->>> Signed-off-by: Robert Jarzmik <robert.jarzmik@free.fr>
->> Thierry, would you have a look please ?
->> As I said before, all legacy platform relying on pwm_id are broken. =
-I'd like to
->> be sure this lands in the next -rc series.
+On 29-09-15 09:45, Thierry Reding wrote:
+> On Tue, Sep 29, 2015 at 09:19:27AM +0200, Olliver Schinagl wrote:
+>> Hey Thierry, list
+>>
+>> I'm going over the pwm core and notice that in the pwm header, duty_ns and
+>> period_ns is internally stored as an unsigned int.
+>>
+>> struct pwm_device {
+>>      const char *label;
+>>      unsigned long flags;
+>>      unsigned int hwpwm;
+>>      unsigned int pwm;
+>>      struct pwm_chip *chip;
+>>      void *chip_data;
+>>
+>>      unsigned int period;
+>>      unsigned int duty_cycle;
+>>      enum pwm_polarity polarity;
+>> };
+>>
+>> However, pwm_config takes signed ints
+>> int pwm_config(struct pwm_device *pwm, int duty_ns, int period_ns);
+>>
+>> So digging a little deeper in the PWM core, I see that pwm_config dissallows
+>> negative ints, so having them unsigned has no benefit (and technically is
+>> illegal)
+>>      if (!pwm  || duty_ns < 0|| period_ns= 0 || duty_ns > period_ns)
+>>          return -EINVAL;
+>>
+>> and because (after the check) we cram the signed int into an unsigned one:
+>>
+>>      pwm->duty_cycle = duty_ns;
+>>      pwm->period = period_ns;
+>>
+>> This could end up badly when using any unsigned int larger then INT_MAX and
+>> thus ending up with a negative duty/period.
+> I don't think this is problematic because we're rejecting negative input
+> values and store the non-negative ones in an unsigned int, so we can
+> never store anything that would overflow the internal representation.
 >
-> Otherwise, Boris proposed this fix:
-> 8<-----------------------------------------------------------
-> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlig=
-ht/pwm_bl.c
-> index eff379b..00483d4 100644
-> --- a/drivers/video/backlight/pwm_bl.c
-> +++ b/drivers/video/backlight/pwm_bl.c
-> @@ -273,15 +273,15 @@ static int pwm_backlight_probe(struct platform_=
-device *pdev)
->  	pb->pwm =3D devm_pwm_get(&pdev->dev, NULL);
->  	if (IS_ERR(pb->pwm)) {
->  		ret =3D PTR_ERR(pb->pwm);
-> -		if (ret =3D=3D -EPROBE_DEFER)
-> -			goto err_alloc;
-> =20
->  		dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
->  		pb->legacy =3D true;
->  		pb->pwm =3D pwm_request(data->pwm_id, "pwm-backlight");
->  		if (IS_ERR(pb->pwm)) {
->  			dev_err(&pdev->dev, "unable to request legacy PWM\n");
-> -			ret =3D PTR_ERR(pb->pwm);
-> +			if (ret !=3D -EPROBE_DEFER)
-> +				ret =3D PTR_ERR(pb->pwm);
-> +
->  			goto err_alloc;
->  		}
->  	}
+>> I haven't checked deeper if this
+>> is accounted for later, but would it be worth my time to convert all ints to
+>> unsigned ints? Since negative period and duty cycles are really not possible
+>> anyway?
+> The reason for storing them as unsigned internally is precisely because
+> they can never be negative. The reason why pwm_config() has plain ints
+> is historic. It's always been on my TODO list to convert them over to a
+> unsigned variant, but never high priority enough. It's also problematic
+> because doing so needs to modify a public API and hence requires
+> auditing all consumers and providers to make sure nothing breaks.
 >
-> which is not tested and may add an extra non-valid error log.
-Now it is tested, and it works correctly AFAICS.
+> I'm not sure if it's worth spending this effort now. Boris Brezillon
+> posted patches a few weeks ago to introduce an "atomic" API and that's
+> going to require updating all users anyway. The new API also uses the
+> correct types, so any effort should probably go into testing and
+> migrating to the new API.
+Thanks for saving me from doing  alot of work herin ;)
 
-So could you or Borris post this patch, with :
-=46ixes: 68feaca0b13e ("backlight: pwm: Handle EPROBE_DEFER while reque=
-sting the PWM")
-Tested-by: Robert Jarzmik <robert.jarzmik@free.fr>
+Are Boris his patches merged in some dev tree of yours? I'm working on 
+some pwm stuff too and would love to work 'with'.
 
-That would be a good replacement for the revert. Maybe stable tree shou=
-ld be
-joined too ...
-
-Cheers.
-
---=20
-Robert
+Olliver
+>
+> Thierry
