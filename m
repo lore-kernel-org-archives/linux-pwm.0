@@ -1,67 +1,67 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v7 2/5] pwm: add the Berlin pwm controller driver
-Date: Mon, 5 Oct 2015 16:30:15 +0200
-Message-ID: <20151005143015.GB27759@ulmo>
-References: <1443797990-10809-1-git-send-email-antoine.tenart@free-electrons.com>
- <1443797990-10809-3-git-send-email-antoine.tenart@free-electrons.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v7 1/2] pwm: Add device tree binding document for R-Car
+ PWM Timer
+Date: Mon, 5 Oct 2015 16:42:13 +0200
+Message-ID: <20151005144213.GC27759@ulmo>
+References: <1443602873-4316-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <1443602873-4316-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="ftEhullJWpWg/VHq"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wi0-f176.google.com ([209.85.212.176]:38175 "EHLO
-	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751125AbbJEOaS (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 5 Oct 2015 10:30:18 -0400
+	protocol="application/pgp-signature"; boundary="XMCwj5IQnwKtuyBG"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1443797990-10809-3-git-send-email-antoine.tenart@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1443602873-4316-2-git-send-email-yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Antoine Tenart <antoine.tenart@free-electrons.com>
-Cc: sebastian.hesselbarth@gmail.com, zmxu@marvell.com, jszhang@marvell.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---ftEhullJWpWg/VHq
+--XMCwj5IQnwKtuyBG
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Oct 02, 2015 at 04:59:47PM +0200, Antoine Tenart wrote:
-> Add a PWM controller driver for the Marvell Berlin SoCs. This PWM
-> controller has 4 channels.
+On Wed, Sep 30, 2015 at 05:47:52PM +0900, Yoshihiro Shimoda wrote:
+> Add binding document for Renesas PWM Timer on R-Car SoCs.
 >=20
-> Signed-off-by: Antoine Tenart <antoine.tenart@free-electrons.com>
-> Acked-by: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+> Acked-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> Reviewed-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 > ---
->  drivers/pwm/Kconfig      |   9 ++
->  drivers/pwm/Makefile     |   1 +
->  drivers/pwm/pwm-berlin.c | 221 +++++++++++++++++++++++++++++++++++++++++=
+>  .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   | 27 ++++++++++++++++=
 ++++++
->  3 files changed, 231 insertions(+)
->  create mode 100644 drivers/pwm/pwm-berlin.c
+>  1 file changed, 27 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/renesas,pwm-rca=
+r.txt
 
-Applied, with minor tweaks, thanks.
+Applied, thanks.
 
 Thierry
 
---ftEhullJWpWg/VHq
+--XMCwj5IQnwKtuyBG
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJWEol3AAoJEN0jrNd/PrOhXKUP/0/QRluk11XPgF5GojwX8yM2
-IKUlTJG54b0973A6Ee0UGlL9cVPAv9Jd6cxFPfMCf86TeZUTppOt/PKcJ7ylIfIT
-DHZR6GXJCEFSbCounrleRhbIa3qoNRIJMCoO+IpLdna4TCYB7sqq9CZMhXxyWAi0
-2Tnn3JId8QR3Atb708kmpWhRzoK/w+SJ/FS8t1Zn6J1bzio2ewr7iXj/U+4npqnh
-h1vW1B+WhpEl80GVMIrGeGN5UPteXhse+31J67c3y+2BUQl+kvVCAAOh1q1z9LGQ
-btEXCCyjHe0FNf6yc40YqfklKS2UVVZyJx07lHU+u3c/ofVIcc7feBcP/yxIOV3U
-pcIL/pJCMLUAgr2e6s2pIvo7BV+16G/BazIJ/Y29FQx4T7IMLQ9o/Bq/cc8gA9Sg
-DrNOsGWfjwEKRX2sPyv/lYJVb2cjqStBUUfai8ibGrkwdR1IMcxKETQlwb/bgkya
-2L9JKEldc5R8+j4S9WBjpZwWBwi+VKtlN4iMoqeYl8xHC62gwBbmSCeWIzt0HG/m
-B3x55i3erejeQkjzaPYYD8G0SJSOGNE6/C+8nTa2O9+Vdnpgm9Jv9qav3amQ21Kq
-+rkGbACUudRqPhbBDwmOw6a1s8rSvoBhdNAoZtW33hZhFPlII3u1DhIgY+15L4I/
-rhQbbulQ5iCRO8frzNeZ
-=7Se3
+iQIcBAABCAAGBQJWEoxCAAoJEN0jrNd/PrOhiFcQAIUV92snHh/05oXVCGap1Bn1
+VgXgyyC+wIWXvgZTBMjG7pkkM67OLB7w0aME6S1CABptYXPx9FiNzeah3f/LVG6J
+WOB2dCs+2uopZDZ9OCHPg8AdfP2/UKSodGvPkFa/3542PcKQf+N7bPkRoq23vc+V
+146b2nsP9GDh5BxLw9h14LxRRAtBWfMYm2FUgX0wHO/EfTGO+BiEjWnOlgUB1Qmz
+bUNOc5s/evRi3r9VsV1CmjLTOTA+s1ZB83ioZ7lUe7sZ3aWFTaBTGCTgN5gn8C/1
+d6o+6u11/d4MBU7qrBeSvg1Si2ItmrodslXMwOsXhSncjIV01/B6X62dW0LIRU0J
+XjhEvvyAJEvTHJuWJNfu3XU4vRcawqgKS2g3UJ47AlqJqZ0YJgRSx7a3lxcfCeu6
+7Ymol3s+YxwqWsxgM4+ThuRRF6GDvE7/y8eFZPSzsUy/NwtQTBv4oFUFU13oo+6k
+rUtP4BwvCk90w2rfBe39uRoMulqoPDvyLx9/JU5V27+Jo2iKbLs1HX3IBs6Wi3oG
+wkjY3qDMayfigd69+BNIgY+JiEdwjPXHAXNGBQxWNJTq2cjHSlUOvgHwrRGVI+vx
+9uqq4MhVXO61Yn3ScoUPZ/p3NwcCtob0VjWqso3SMOSr/k5QFJ/g5KolKn+M1dAU
+XdGWepFDjOcszur7vBfb
+=jMuN
 -----END PGP SIGNATURE-----
 
---ftEhullJWpWg/VHq--
+--XMCwj5IQnwKtuyBG--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
