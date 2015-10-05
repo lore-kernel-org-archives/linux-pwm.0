@@ -1,296 +1,62 @@
-From: Antoine Tenart <antoine.tenart@free-electrons.com>
-Subject: [PATCH v7 2/5] pwm: add the Berlin pwm controller driver
-Date: Fri,  2 Oct 2015 16:59:47 +0200
-Message-ID: <1443797990-10809-3-git-send-email-antoine.tenart@free-electrons.com>
-References: <1443797990-10809-1-git-send-email-antoine.tenart@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1443797990-10809-1-git-send-email-antoine.tenart@free-electrons.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: sebastian.hesselbarth@gmail.com, thierry.reding@gmail.com
-Cc: zmxu@marvell.com, jszhang@marvell.com, linux-pwm@vger.kernel.org, Antoine Tenart <antoine.tenart@free-electrons.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [PATCH] unicore32: nb0916: Use PWM lookup table
+Date: Mon,  5 Oct 2015 08:08:43 +0200
+Message-ID: <1444025323-23904-1-git-send-email-thierry.reding@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wi0-f176.google.com ([209.85.212.176]:34203 "EHLO
+	mail-wi0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751083AbbJEGIq (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 5 Oct 2015 02:08:46 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Guan Xuetao <gxt@mprc.pku.edu.cn>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
 
-Add a PWM controller driver for the Marvell Berlin SoCs. This PWM
-controller has 4 channels.
+Use a PWM lookup table to provide the PWM to the pwm-backlight device.
+The driver has a legacy code path that is required only because boards
+still use the legacy method of requesting PWMs by global ID. Replacing
+these usages allows that legacy fallback to be removed.
 
-Signed-off-by: Antoine Tenart <antoine.tenart@free-electrons.com>
-Acked-by: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+Cc: Guan Xuetao <gxt@mprc.pku.edu.cn>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 ---
- drivers/pwm/Kconfig      |   9 ++
- drivers/pwm/Makefile     |   1 +
- drivers/pwm/pwm-berlin.c | 221 +++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 231 insertions(+)
- create mode 100644 drivers/pwm/pwm-berlin.c
+ arch/unicore32/kernel/puv3-nb0916.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 062630ab7424..f3e8b7566ce5 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -92,6 +92,15 @@ config PWM_BCM2835
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-bcm2835.
- 
-+config PWM_BERLIN
-+	tristate "Berlin PWM support"
-+	depends on ARCH_BERLIN
-+	help
-+	  PWM framework driver for Berlin.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-berlin.
-+
- config PWM_BFIN
- 	tristate "Blackfin PWM support"
- 	depends on BFIN_GPTIMERS
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index a0e00c09ead3..601833d82da5 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -6,6 +6,7 @@ obj-$(CONFIG_PWM_ATMEL_HLCDC_PWM)	+= pwm-atmel-hlcdc.o
- obj-$(CONFIG_PWM_ATMEL_TCB)	+= pwm-atmel-tcb.o
- obj-$(CONFIG_PWM_BCM_KONA)	+= pwm-bcm-kona.o
- obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
-+obj-$(CONFIG_PWM_BERLIN)	+= pwm-berlin.o
- obj-$(CONFIG_PWM_BFIN)		+= pwm-bfin.o
- obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
- obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
-diff --git a/drivers/pwm/pwm-berlin.c b/drivers/pwm/pwm-berlin.c
-new file mode 100644
-index 000000000000..981038740577
---- /dev/null
-+++ b/drivers/pwm/pwm-berlin.c
-@@ -0,0 +1,221 @@
-+/*
-+ * Marvell Berlin PWM driver
-+ *
-+ * Copyright (C) 2015 Marvell Technology Group Ltd.
-+ *
-+ * Author: Antoine Tenart <antoine.tenart@free-electrons.com>
-+ *
-+ * This file is licensed under the terms of the GNU General Public
-+ * License version 2. This program is licensed "as is" without any
-+ * warranty of any kind, whether express or implied.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/io.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
+diff --git a/arch/unicore32/kernel/puv3-nb0916.c b/arch/unicore32/kernel/puv3-nb0916.c
+index 46ebfdccbc31..af3962d90def 100644
+--- a/arch/unicore32/kernel/puv3-nb0916.c
++++ b/arch/unicore32/kernel/puv3-nb0916.c
+@@ -19,6 +19,7 @@
+ #include <linux/reboot.h>
+ #include <linux/interrupt.h>
+ #include <linux/i2c.h>
 +#include <linux/pwm.h>
-+
-+#define BERLIN_PWM_EN			0x0
-+#define  BERLIN_PWM_ENABLE		BIT(0)
-+#define BERLIN_PWM_CONTROL		0x4
-+#define  BERLIN_PWM_PRESCALE_MASK	0x7
-+#define  BERLIN_PWM_PRESCALE_MAX	4096
-+#define  BERLIN_PWM_INVERT_POLARITY	BIT(3)
-+#define BERLIN_PWM_DUTY			0x8
-+#define BERLIN_PWM_TCNT			0xc
-+#define  BERLIN_PWM_MAX_TCNT		65535
-+
-+struct berlin_pwm_chip {
-+	struct pwm_chip chip;
-+	struct clk *clk;
-+	void __iomem *base;
+ #include <linux/pwm_backlight.h>
+ #include <linux/gpio.h>
+ #include <linux/gpio_keys.h>
+@@ -49,8 +50,12 @@ static struct resource puv3_i2c_resources[] = {
+ 	}
+ };
+ 
++static struct pwm_lookup nb0916_pwm_lookup[] = {
++	PWM_LOOKUP("PKUnity-v3-PWM", 0, "pwm-backlight", NULL, 0,
++		   PWM_POLARITY_NORMAL),
 +};
 +
-+#define to_berlin_pwm_chip(chip)	\
-+	container_of((chip), struct berlin_pwm_chip, chip)
+ static struct platform_pwm_backlight_data nb0916_backlight_data = {
+-	.pwm_id		= 0,
+ 	.max_brightness	= 100,
+ 	.dft_brightness	= 100,
+ 	.pwm_period_ns	= 70 * 1024,
+@@ -112,6 +117,8 @@ int __init mach_nb0916_init(void)
+ 	platform_device_register_simple("PKUnity-v3-I2C", -1,
+ 			puv3_i2c_resources, ARRAY_SIZE(puv3_i2c_resources));
+ 
++	pwm_add_table(nb0916_pwm_lookup, ARRAY_SIZE(nb0916_pwm_lookup));
 +
-+static const u32 prescaler_table[] = {
-+	1, 4, 8, 16, 64, 256, 1024, 4096
-+};
-+
-+static inline u32 berlin_pwm_readl(struct berlin_pwm_chip *chip,
-+				   unsigned int channel, unsigned long offset)
-+{
-+	return readl_relaxed(chip->base + channel * 0x10 + offset);
-+}
-+
-+static inline void berlin_pwm_writel(struct berlin_pwm_chip *chip,
-+				     unsigned int channel, u32 val,
-+				     unsigned long offset)
-+{
-+	writel_relaxed(val, chip->base + channel * 0x10 + offset);
-+}
-+
-+static int berlin_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm_dev,
-+			     int duty_ns, int period_ns)
-+{
-+	struct berlin_pwm_chip *pwm = to_berlin_pwm_chip(chip);
-+	unsigned int prescale;
-+	u32 val, duty, period;
-+	u64 cycles, tmp;
-+
-+	cycles = clk_get_rate(pwm->clk);
-+	cycles *= period_ns;
-+	do_div(cycles, NSEC_PER_SEC);
-+
-+	for (prescale = 0; prescale < ARRAY_SIZE(prescaler_table); prescale++) {
-+		tmp = cycles;
-+		do_div(tmp, prescaler_table[prescale]);
-+
-+		if (tmp <= BERLIN_PWM_MAX_TCNT)
-+			break;
-+	}
-+
-+	if (tmp > BERLIN_PWM_MAX_TCNT)
-+		goto err_range;
-+
-+	period = tmp;
-+	cycles = tmp * duty_ns;
-+	do_div(cycles, period_ns);
-+	duty = cycles;
-+
-+	val = berlin_pwm_readl(pwm, pwm_dev->hwpwm, BERLIN_PWM_CONTROL);
-+	val &= ~BERLIN_PWM_PRESCALE_MASK;
-+	val |= prescale;
-+	berlin_pwm_writel(pwm, pwm_dev->hwpwm, val, BERLIN_PWM_CONTROL);
-+
-+	berlin_pwm_writel(pwm, pwm_dev->hwpwm, duty, BERLIN_PWM_DUTY);
-+	berlin_pwm_writel(pwm, pwm_dev->hwpwm, period, BERLIN_PWM_TCNT);
-+
-+	return 0;
-+
-+err_range:
-+	return -ERANGE;
-+}
-+
-+static int berlin_pwm_set_polarity(struct pwm_chip *chip,
-+				   struct pwm_device *pwm_dev,
-+				   enum pwm_polarity polarity)
-+{
-+	struct berlin_pwm_chip *pwm = to_berlin_pwm_chip(chip);
-+	u32 val;
-+
-+	val = berlin_pwm_readl(pwm, pwm_dev->hwpwm, BERLIN_PWM_CONTROL);
-+
-+	if (polarity == PWM_POLARITY_NORMAL)
-+		val &= ~BERLIN_PWM_INVERT_POLARITY;
-+	else
-+		val |= BERLIN_PWM_INVERT_POLARITY;
-+
-+	berlin_pwm_writel(pwm, pwm_dev->hwpwm, val, BERLIN_PWM_CONTROL);
-+
-+	return 0;
-+}
-+
-+static int berlin_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm_dev)
-+{
-+	struct berlin_pwm_chip *pwm = to_berlin_pwm_chip(chip);
-+	u32 val;
-+
-+	val = berlin_pwm_readl(pwm, pwm_dev->hwpwm, BERLIN_PWM_EN);
-+	val |= BERLIN_PWM_ENABLE;
-+	berlin_pwm_writel(pwm, pwm_dev->hwpwm, val, BERLIN_PWM_EN);
-+
-+	return 0;
-+}
-+
-+static void berlin_pwm_disable(struct pwm_chip *chip,
-+			       struct pwm_device *pwm_dev)
-+{
-+	struct berlin_pwm_chip *pwm = to_berlin_pwm_chip(chip);
-+	u32 val;
-+
-+	val = berlin_pwm_readl(pwm, pwm_dev->hwpwm, BERLIN_PWM_EN);
-+	val &= ~BERLIN_PWM_ENABLE;
-+	berlin_pwm_writel(pwm, pwm_dev->hwpwm, val, BERLIN_PWM_EN);
-+}
-+
-+static const struct pwm_ops berlin_pwm_ops = {
-+	.config = berlin_pwm_config,
-+	.set_polarity = berlin_pwm_set_polarity,
-+	.enable = berlin_pwm_enable,
-+	.disable = berlin_pwm_disable,
-+	.owner = THIS_MODULE,
-+};
-+
-+static const struct of_device_id berlin_pwm_match[] = {
-+	{ .compatible = "marvell,berlin-pwm" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, berlin_pwm_match);
-+
-+static int berlin_pwm_probe(struct platform_device *pdev)
-+{
-+	struct berlin_pwm_chip *pwm;
-+	struct resource *res;
-+	int ret;
-+
-+	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
-+	if (!pwm)
-+		return -ENOMEM;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	pwm->base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(pwm->base))
-+		return PTR_ERR(pwm->base);
-+
-+	pwm->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(pwm->clk))
-+		return PTR_ERR(pwm->clk);
-+
-+	ret = clk_prepare_enable(pwm->clk);
-+	if (ret)
-+		return ret;
-+
-+	pwm->chip.dev = &pdev->dev;
-+	pwm->chip.ops = &berlin_pwm_ops;
-+	pwm->chip.base = -1;
-+	pwm->chip.npwm = 4;
-+	pwm->chip.can_sleep = true;
-+	pwm->chip.of_xlate = of_pwm_xlate_with_flags;
-+	pwm->chip.of_pwm_n_cells = 3;
-+
-+	ret = pwmchip_add(&pwm->chip);
-+	if (ret < 0) {
-+		clk_disable_unprepare(pwm->clk);
-+
-+		dev_err(&pdev->dev, "Failed to add PWM chip: %d\n", ret);
-+		return ret;
-+	}
-+
-+	platform_set_drvdata(pdev, pwm);
-+
-+	return 0;
-+}
-+
-+static int berlin_pwm_remove(struct platform_device *pdev)
-+{
-+	struct berlin_pwm_chip *pwm = platform_get_drvdata(pdev);
-+	int ret;
-+
-+	ret = pwmchip_remove(&pwm->chip);
-+	clk_disable_unprepare(pwm->clk);
-+
-+	return ret;
-+}
-+
-+static struct platform_driver berlin_pwm_driver = {
-+	.probe	= berlin_pwm_probe,
-+	.remove	= berlin_pwm_remove,
-+	.driver	= {
-+		.name = "berlin-pwm",
-+		.of_match_table = berlin_pwm_match,
-+	},
-+};
-+module_platform_driver(berlin_pwm_driver);
-+
-+MODULE_AUTHOR("Antoine Tenart <antoine.tenart@free-electrons.com>");
-+MODULE_DESCRIPTION("Marvell Berlin PWM driver");
-+MODULE_LICENSE("GPL v2");
+ 	platform_device_register_data(NULL, "pwm-backlight", -1,
+ 			&nb0916_backlight_data, sizeof(nb0916_backlight_data));
+ 
 -- 
-2.6.0
+2.5.0
