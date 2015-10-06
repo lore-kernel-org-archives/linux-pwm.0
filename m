@@ -1,97 +1,43 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RFC] pwm: chip_data vs device_data
-Date: Tue, 6 Oct 2015 11:14:34 +0200
-Message-ID: <20151006091434.GC22087@ulmo.nvidia.com>
-References: <56137655.40804@schinagl.nl>
- <20151006073856.GB18633@ulmo>
- <5613848E.2060800@schinagl.nl>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: Re: [PATCH v2 01/10] pwm: introduce default period and polarity
+ concepts
+Date: Tue, 6 Oct 2015 12:09:35 +0200
+Message-ID: <20151006100935.GK2694@piout.net>
+References: <1437406327-6207-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1437406327-6207-2-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="vOmOzSkFvhd7u8Ms"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wi0-f171.google.com ([209.85.212.171]:34187 "EHLO
-	mail-wi0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750897AbbJFJOg (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Oct 2015 05:14:36 -0400
-Content-Disposition: inline
-In-Reply-To: <5613848E.2060800@schinagl.nl>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
-To: Olliver Schinagl <oliver+list@schinagl.nl>
-Cc: linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Olliver Schinagl <oliver@schinagl.nl>
-
-
---vOmOzSkFvhd7u8Ms
 Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-leds-owner@vger.kernel.org>
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1437406327-6207-2-git-send-email-boris.brezillon@free-electrons.com>
+Sender: linux-leds-owner@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-fbdev@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Doug Anderson <dianders@google.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Maxime Ripard <maxime.ripard@free-electrons.com>
+List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Oct 06, 2015 at 10:21:34AM +0200, Olliver Schinagl wrote:
-> Hey Thierry,
->=20
-> thans for your quick reply :)
->=20
-> On 06-10-15 09:38, Thierry Reding wrote:
-> >On Tue, Oct 06, 2015 at 09:20:53AM +0200, Olliver Schinagl wrote:
-> >>Hey Thierry, list,
-> >>
-> >>While working on something in the pwm framework, I noticed that the void
-> >>*data in the pwm_device struct is called chip_data. Why is it not called
-> >>device_data, since it is the data associated with a PWM device, rather =
-then
-> >>the chip, and on that note, if it really is chip related data (thus cov=
-ering
-> >>the whole chip, not just the single pwm device) why is there no chip_da=
-ta in
-> >>pwm_chip?
-> >The reason for the name is that it's chip-specific data associated with
-> >a struct pwm_device. That is, a PWM chip implementation (i.e. driver)
-> >can use it to keep per-PWM data that's not in struct pwm_device itself.
-> Then I have to wrap my head around what is a chip and what is a device :)
->=20
-> To me, it seems that a chip can hold X number of pwm devices, and each
-> pwm_device has a unique set of properties, duty, plarity, period. So it
-> seems that some device specific data could go here as well, where i'm bad=
- at
-> examples now
+On 20/07/2015 at 17:31:58 +0200, Boris Brezillon wrote :
+> When requested by a user, the PWM is assigned a default period and polarity
+> extracted from the DT, the platform data or statically set by the driver.
+> Those default values are currently stored in the period and polarity
+> fields of the pwm_device struct, but they will be stored somewhere else
+> once we have introduced the architecture allowing for hardware state
+> retrieval.
+> 
+> The pwm_set_default_polarity and pwm_set_default_period should only be
+> used by PWM drivers or the PWM core infrastructure to specify the
+> default period and polarity values.
+> 
+> PWM users might call the pwm_get_default_period to query the default
+> period value. There is currently no helper to query the default
+> polarity, but it might be added later on if there is a need for it.
+> 
+> This patch also modifies all the places where the default helpers should
+> be used in place of the standard ones.
+> 
+> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-I think we're really talking about the same thing here. This is used for
-device-specific data. The chip_ prefix merely means that the chip driver
-"owns" the data.
-
-> >>Again, is this something worth my time to add a device_data and rename
-> >>chip_data?
-> >device_data would be redundant because it's already part of struct
-> >pwm_device. Plain data might be okay, but I like the chip_ prefix
-> >because it marks the data as being chip-specific data rather than
-> >generic.
-> well here i'd imagine the chip specific data (not allready in the struct).
-
-Data specific to a chip is what you're supposed to embed in your driver-
-specific data structure (which embeds struct pwm_chip). Like you said it
-is data that pertains to the whole chip, so doesn't need to be per-PWM.
-
-Thierry
-
---vOmOzSkFvhd7u8Ms
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJWE5D6AAoJEN0jrNd/PrOhj7gQAITodvTzVtds4bbysrjmByrN
-0EcFIqJXa9pbvlsQuC7XseCXOLzOI85LvkuZBMRYpgT8ozhLSXFPjObzzp/gw5M2
-lhr/+5HndpR05W3lZJVeL8JVxXpP11eH5kSZd2GptAKdvkYwGQ9UWrJjvhF2bMw5
-5Tk/XpRLmSAuXdWlaPUHIbUZYNNxgNFlPprv1RuPqpruDujN8LRmMlt7pezCrv/s
-TpkAh2sIeFeecBgL5fUbanQxVcuXQNqxWTSH4DVlzO1cnxeJVq2jPcNiu7Tcx4Gx
-/wlr4AuUMOX/C6mR1ND5iR2aA/lR4kOw11KOvWvH7UHIRPxfiKv0Jh5XPcXYJII1
-OPPrGPDcSYSelxAKn5g+augCnU/A8fajOC5uk4mFfUBxjvogrwoZXzyc9HEjfpYh
-R0HOPJVbFroLAeNWLkBX4I57ft5Y6kCQK5WOPXOh+WNLnVIdCuF8hxJm9XmVVUjC
-zst10OI6UdAlNXJF9lBNrYJ8UUOQ094Ow5vMRZE24Lrq1w0ypUw+jZkFyaMysmHL
-n94MVWPd8y0hesI3u1gONoGqb5OCf03vKZ1bpiRieHSaHPCXx17FT7A33/qthXG9
-pu8tFpqbTBWRd6KeZzZcGi1kncT8CnLmwPfPtfCCYX+DR1YGqJ8Ka+lxe8F4CKgV
-tAWGs7XsshwniV0blNSK
-=1u0k
------END PGP SIGNATURE-----
-
---vOmOzSkFvhd7u8Ms--
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
