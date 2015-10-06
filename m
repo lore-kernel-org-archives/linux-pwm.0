@@ -1,43 +1,53 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH v2 01/10] pwm: introduce default period and polarity
- concepts
-Date: Tue, 6 Oct 2015 12:09:35 +0200
-Message-ID: <20151006100935.GK2694@piout.net>
-References: <1437406327-6207-1-git-send-email-boris.brezillon@free-electrons.com>
- <1437406327-6207-2-git-send-email-boris.brezillon@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-leds-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1437406327-6207-2-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-leds-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-fbdev@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Doug Anderson <dianders@google.com>, Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, Maxime Ripard <maxime.ripard@free-electrons.com>
+From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH] pwm: bcm7038: fix build failure
+Date: Tue,  6 Oct 2015 16:50:54 +0530
+Message-ID: <1444130454-17769-1-git-send-email-sudipm.mukherjee@gmail.com>
+References: <20151006182522.09d2d3f5@canb.auug.org.au>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pa0-f65.google.com ([209.85.220.65]:36609 "EHLO
+	mail-pa0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750915AbbJFLVF (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Oct 2015 07:21:05 -0400
+In-Reply-To: <20151006182522.09d2d3f5@canb.auug.org.au>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Brian Norris <computersforpeace@gmail.com>, Gregory Fong <gregory.0xf0@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Stephen Rothwell <sfr@canb.auug.org.au>, linux-next@vger.kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 
-On 20/07/2015 at 17:31:58 +0200, Boris Brezillon wrote :
-> When requested by a user, the PWM is assigned a default period and polarity
-> extracted from the DT, the platform data or statically set by the driver.
-> Those default values are currently stored in the period and polarity
-> fields of the pwm_device struct, but they will be stored somewhere else
-> once we have introduced the architecture allowing for hardware state
-> retrieval.
-> 
-> The pwm_set_default_polarity and pwm_set_default_period should only be
-> used by PWM drivers or the PWM core infrastructure to specify the
-> default period and polarity values.
-> 
-> PWM users might call the pwm_get_default_period to query the default
-> period value. There is currently no helper to query the default
-> polarity, but it might be added later on if there is a need for it.
-> 
-> This patch also modifies all the places where the default helpers should
-> be used in place of the standard ones.
-> 
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+While building arm allmodconfig, the build fails with:
+In function 'brcmstb_pwm_suspend': error: 'dev' undeclared (first use in this function)
+In function 'brcmstb_pwm_resume': error: 'dev' undeclared (first use in this function)
 
+The function was using dev but the argument that it received was named
+as "d". Declare dev and fix the build fail.
+
+Fixes: 9a47354fe63a ("pwm: Add Broadcom BCM7038 PWM controller support")
+Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
+---
+ drivers/pwm/pwm-brcmstb.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pwm/pwm-brcmstb.c b/drivers/pwm/pwm-brcmstb.c
+index 083e3ef..423ce08 100644
+--- a/drivers/pwm/pwm-brcmstb.c
++++ b/drivers/pwm/pwm-brcmstb.c
+@@ -304,7 +304,7 @@ static int brcmstb_pwm_remove(struct platform_device *pdev)
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+-static int brcmstb_pwm_suspend(struct device *d)
++static int brcmstb_pwm_suspend(struct device *dev)
+ {
+ 	struct brcmstb_pwm *p = dev_get_drvdata(dev);
+ 
+@@ -313,7 +313,7 @@ static int brcmstb_pwm_suspend(struct device *d)
+ 	return 0;
+ }
+ 
+-static int brcmstb_pwm_resume(struct device *d)
++static int brcmstb_pwm_resume(struct device *dev)
+ {
+ 	struct brcmstb_pwm *p = dev_get_drvdata(dev);
+ 
 -- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+1.9.1
