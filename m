@@ -1,44 +1,66 @@
-From: Sekhar Nori <nsekhar@ti.com>
-Subject: Re: [PATCH] pwm: tipwmss: enable on TI DRA7x and AM437x
-Date: Tue, 6 Oct 2015 11:32:23 +0530
-Message-ID: <561363EF.7040207@ti.com>
-References: <637af4e1754204dd81677a1290517202eec7f011.1441725097.git.nsekhar@ti.com>
- <20151005152038.GB17612@ulmo>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: RE: [PATCH v7 1/2] pwm: Add device tree binding document for R-Car
+ PWM Timer
+Date: Tue, 6 Oct 2015 06:31:34 +0000
+Message-ID: <TY1PR06MB0928B636CB65D8A647CB1314D8370@TY1PR06MB0928.apcprd06.prod.outlook.com>
+References: <1443602873-4316-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <1443602873-4316-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <CAL_JsqJqwk6W5psXY9BZXwm4GwhG1Dr44Xq-7tf-MmSAtqpnzA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:56255 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750812AbbJFGC1 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Oct 2015 02:02:27 -0400
-In-Reply-To: <20151005152038.GB17612@ulmo>
+Received: from relmlor3.renesas.com ([210.160.252.173]:23542 "EHLO
+	relmlie2.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751205AbbJFGbj (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Oct 2015 02:31:39 -0400
+In-Reply-To: <CAL_JsqJqwk6W5psXY9BZXwm4GwhG1Dr44Xq-7tf-MmSAtqpnzA@mail.gmail.com>
+Content-Language: ja-JP
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Vignesh R <vigneshr@ti.com>
+To: Rob Herring <robherring2@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Linux PWM List <linux-pwm@vger.kernel.org>, SH-Linux <linux-sh@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 
-On Monday 05 October 2015 08:50 PM, Thierry Reding wrote:
-> On Tue, Sep 08, 2015 at 08:44:05PM +0530, Sekhar Nori wrote:
->> From: Vignesh R <vigneshr@ti.com>
->>
->> TIPWMSS is present on TI's DRA7x and
->> AM437x SoCs. Enable its usage.
->>
->> Instead of adding each SoC individually,
->> use the more generic ARCH_OMAP2PLUS
->> instead.
->>
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
->> Signed-off-by: Sekhar Nori <nsekhar@ti.com>
->> ---
->>  drivers/pwm/Kconfig | 6 +++---
->>  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> Applied, thanks. In the future, try to make use of the 78 columns. There
-> is no need to make lines as short as you did.
-
-Alright.
-
-Thanks,
-Sekhar
+SGkgUm9iLA0KDQo+IFNlbnQ6IFR1ZXNkYXksIE9jdG9iZXIgMDYsIDIwMTUgMTI6MzkgQU0NCj4g
+DQo+IE9uIFdlZCwgU2VwIDMwLCAyMDE1IGF0IDM6NDcgQU0sIFlvc2hpaGlybyBTaGltb2RhDQo+
+IDx5b3NoaWhpcm8uc2hpbW9kYS51aEByZW5lc2FzLmNvbT4gd3JvdGU6DQo+ID4gQWRkIGJpbmRp
+bmcgZG9jdW1lbnQgZm9yIFJlbmVzYXMgUFdNIFRpbWVyIG9uIFItQ2FyIFNvQ3MuDQo+ID4NCj4g
+PiBTaWduZWQtb2ZmLWJ5OiBZb3NoaWhpcm8gU2hpbW9kYSA8eW9zaGloaXJvLnNoaW1vZGEudWhA
+cmVuZXNhcy5jb20+DQo+ID4gQWNrZWQtYnk6IEdlZXJ0IFV5dHRlcmhvZXZlbiA8Z2VlcnQrcmVu
+ZXNhc0BnbGlkZXIuYmU+DQo+ID4gUmV2aWV3ZWQtYnk6IFNpbW9uIEhvcm1hbiA8aG9ybXMrcmVu
+ZXNhc0B2ZXJnZS5uZXQuYXU+DQo+ID4gLS0tDQo+ID4gIC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdz
+L3B3bS9yZW5lc2FzLHB3bS1yY2FyLnR4dCAgIHwgMjcgKysrKysrKysrKysrKysrKysrKysrKw0K
+PiA+ICAxIGZpbGUgY2hhbmdlZCwgMjcgaW5zZXJ0aW9ucygrKQ0KPiA+ICBjcmVhdGUgbW9kZSAx
+MDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9yZW5lc2FzLHB3bS1y
+Y2FyLnR4dA0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
+aW5kaW5ncy9wd20vcmVuZXNhcyxwd20tcmNhci50eHQNCj4gYi9Eb2N1bWVudGF0aW9uL2Rldmlj
+ZXRyZWUvYmluZGluZ3MvcHdtL3JlbmVzYXMscHdtLXJjYXIudHh0DQo+ID4gbmV3IGZpbGUgbW9k
+ZSAxMDA2NDQNCj4gPiBpbmRleCAwMDAwMDAwLi5lYTBhMjdiDQo+ID4gLS0tIC9kZXYvbnVsbA0K
+PiA+ICsrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vcmVuZXNhcyxw
+d20tcmNhci50eHQNCj4gPiBAQCAtMCwwICsxLDI3IEBADQo+ID4gKyogUmVuZXNhcyBSLUNhciBQ
+V00gVGltZXIgQ29udHJvbGxlcg0KPiA+ICsNCj4gPiArUmVxdWlyZWQgUHJvcGVydGllczoNCj4g
+PiArLSBjb21wYXRpYmxlOiBzaG91bGQgYmUgb25lIG9mIHRoZSBmb2xsb3dpbmcuDQo+ID4gKyAt
+ICJyZW5lc2FzLHB3bS1yY2FyIjogZm9yIGdlbmVyaWMgUi1DYXIgY29tcGF0aWJsZSBQV00gVGlt
+ZXINCj4gDQo+IFNob3VsZCBiZSB0aGlzIG9uZSBhbmQgb25lIG9mIHRoZSBmb2xsb3dpbmc/IFRo
+YXQgaXMgd2hhdCB0aGUgZXhhbXBsZSBzaG93cy4NCg0KVGhhbmsgeW91IGZvciB0aGUgcG9pbnQu
+DQpTaW5jZSB0aGlzIHBhdGNoIGlzIGFscmVhZHkgbWVyZ2VkIGluIGxpbnV4LXB3bSByZXBvc2l0
+b3J5LCBJIHdpbGwgc3VibWl0DQphIG5ldyBwYXRjaCB0byByZXZpc2UgaXQuDQoNCkJlc3QgcmVn
+YXJkcywNCllvc2hpaGlybyBTaGltb2RhDQoNCj4gPiArIC0gInJlbmVzYXMscHdtLXI4YTc3Nzgi
+OiBmb3IgUi1DYXIgTTFBDQo+ID4gKyAtICJyZW5lc2FzLHB3bS1yOGE3Nzc5IjogZm9yIFItQ2Fy
+IEgxDQo+ID4gKyAtICJyZW5lc2FzLHB3bS1yOGE3NzkwIjogZm9yIFItQ2FyIEgyDQo+ID4gKyAt
+ICJyZW5lc2FzLHB3bS1yOGE3NzkxIjogZm9yIFItQ2FyIE0yLVcNCj4gPiArIC0gInJlbmVzYXMs
+cHdtLXI4YTc3OTQiOiBmb3IgUi1DYXIgRTINCj4gPiArLSByZWc6IGJhc2UgYWRkcmVzcyBhbmQg
+bGVuZ3RoIG9mIHRoZSByZWdpc3RlcnMgYmxvY2sgZm9yIHRoZSBQV00uDQo+ID4gKy0gI3B3bS1j
+ZWxsczogc2hvdWxkIGJlIDIuIFNlZSBwd20udHh0IGluIHRoaXMgZGlyZWN0b3J5IGZvciBhIGRl
+c2NyaXB0aW9uIG9mDQo+ID4gKyAgdGhlIGNlbGxzIGZvcm1hdC4NCj4gPiArLSBjbG9ja3M6IGNs
+b2NrIHBoYW5kbGUgYW5kIHNwZWNpZmllciBwYWlyLg0KPiA+ICstIHBpbmN0cmwtMDogcGhhbmRs
+ZSwgcmVmZXJyaW5nIHRvIGEgZGVmYXVsdCBwaW4gY29uZmlndXJhdGlvbiBub2RlLg0KPiA+ICst
+IHBpbmN0cmwtbmFtZXM6IFNldCB0byAiZGVmYXVsdCIuDQo+ID4gKw0KPiA+ICtFeGFtcGxlOiBS
+OEE3NzkwIChSLUNhciBIMikgUFdNIFRpbWVyIG5vZGUNCj4gPiArDQo+ID4gKyAgICAgICBwd20w
+OiBwd21AZTZlMzAwMDAgew0KPiA+ICsgICAgICAgICAgICAgICBjb21wYXRpYmxlID0gInJlbmVz
+YXMscHdtLXI4YTc3OTAiLCAicmVuZXNhcyxwd20tcmNhciI7DQo+ID4gKyAgICAgICAgICAgICAg
+IHJlZyA9IDwwIDB4ZTZlMzAwMDAgMCAweDg+Ow0KPiA+ICsgICAgICAgICAgICAgICAjcHdtLWNl
+bGxzID0gPDI+Ow0KPiA+ICsgICAgICAgICAgICAgICBjbG9ja3MgPSA8Jm1zdHA1X2Nsa3MgUjhB
+Nzc5MF9DTEtfUFdNPjsNCj4gPiArICAgICAgICAgICAgICAgcGluY3RybC0wID0gPCZwd20wX3Bp
+bnM+Ow0KPiA+ICsgICAgICAgICAgICAgICBwaW5jdHJsLW5hbWVzID0gImRlZmF1bHQiOw0KPiA+
+ICsgICAgICAgfTsNCj4gPiAtLQ0KPiA+IDEuOS4xDQo+ID4NCg==
