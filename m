@@ -1,53 +1,38 @@
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH] pwm: bcm7038: fix build failure
-Date: Tue,  6 Oct 2015 16:50:54 +0530
-Message-ID: <1444130454-17769-1-git-send-email-sudipm.mukherjee@gmail.com>
-References: <20151006182522.09d2d3f5@canb.auug.org.au>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f65.google.com ([209.85.220.65]:36609 "EHLO
-	mail-pa0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750915AbbJFLVF (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Oct 2015 07:21:05 -0400
-In-Reply-To: <20151006182522.09d2d3f5@canb.auug.org.au>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH] pwm: pwm-rcar: Revise the device tree binding document about compatible
+Date: Tue, 6 Oct 2015 20:28:28 +0900
+Message-ID: <1444130908-8180-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org
+Cc: linux-pwm@vger.kernel.org, linux-sh@vger.kernel.org, devicetree@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Brian Norris <computersforpeace@gmail.com>, Gregory Fong <gregory.0xf0@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Stephen Rothwell <sfr@canb.auug.org.au>, linux-next@vger.kernel.org, Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 
-While building arm allmodconfig, the build fails with:
-In function 'brcmstb_pwm_suspend': error: 'dev' undeclared (first use in this function)
-In function 'brcmstb_pwm_resume': error: 'dev' undeclared (first use in this function)
+The compatible should be "renesas,pwm-rcar", and one the the SoC
+specific string. So, this patch revises the documentation.
 
-The function was using dev but the argument that it received was named
-as "d". Declare dev and fix the build fail.
-
-Fixes: 9a47354fe63a ("pwm: Add Broadcom BCM7038 PWM controller support")
-Signed-off-by: Sudip Mukherjee <sudip@vectorindia.org>
+Reported-by: Rob Herring <robh+dt@kernel.org>
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 ---
- drivers/pwm/pwm-brcmstb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/pwm-brcmstb.c b/drivers/pwm/pwm-brcmstb.c
-index 083e3ef..423ce08 100644
---- a/drivers/pwm/pwm-brcmstb.c
-+++ b/drivers/pwm/pwm-brcmstb.c
-@@ -304,7 +304,7 @@ static int brcmstb_pwm_remove(struct platform_device *pdev)
- }
+diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+index ea0a27b..0822a08 100644
+--- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
++++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+@@ -1,8 +1,7 @@
+ * Renesas R-Car PWM Timer Controller
  
- #ifdef CONFIG_PM_SLEEP
--static int brcmstb_pwm_suspend(struct device *d)
-+static int brcmstb_pwm_suspend(struct device *dev)
- {
- 	struct brcmstb_pwm *p = dev_get_drvdata(dev);
- 
-@@ -313,7 +313,7 @@ static int brcmstb_pwm_suspend(struct device *d)
- 	return 0;
- }
- 
--static int brcmstb_pwm_resume(struct device *d)
-+static int brcmstb_pwm_resume(struct device *dev)
- {
- 	struct brcmstb_pwm *p = dev_get_drvdata(dev);
- 
+ Required Properties:
+-- compatible: should be one of the following.
+- - "renesas,pwm-rcar": for generic R-Car compatible PWM Timer
++- compatible: should be "renesas,pwm-rcar" and one of the following.
+  - "renesas,pwm-r8a7778": for R-Car M1A
+  - "renesas,pwm-r8a7779": for R-Car H1
+  - "renesas,pwm-r8a7790": for R-Car H2
 -- 
 1.9.1
+
