@@ -1,48 +1,44 @@
-From: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-Subject: Re: [PATCH v7 3/5] ARM: berlin: add a PWM node on the BG2Q
-Date: Mon, 05 Oct 2015 20:19:53 +0200
-Message-ID: <5612BF49.6020607@gmail.com>
-References: <1443797990-10809-1-git-send-email-antoine.tenart@free-electrons.com> <1443797990-10809-4-git-send-email-antoine.tenart@free-electrons.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+From: Sekhar Nori <nsekhar@ti.com>
+Subject: Re: [PATCH] pwm: tipwmss: enable on TI DRA7x and AM437x
+Date: Tue, 6 Oct 2015 11:32:23 +0530
+Message-ID: <561363EF.7040207@ti.com>
+References: <637af4e1754204dd81677a1290517202eec7f011.1441725097.git.nsekhar@ti.com>
+ <20151005152038.GB17612@ulmo>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1443797990-10809-4-git-send-email-antoine.tenart@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Antoine Tenart <antoine.tenart@free-electrons.com>, thierry.reding@gmail.com
-Cc: zmxu@marvell.com, jszhang@marvell.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from devils.ext.ti.com ([198.47.26.153]:56255 "EHLO
+	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750812AbbJFGC1 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Oct 2015 02:02:27 -0400
+In-Reply-To: <20151005152038.GB17612@ulmo>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Linux OMAP Mailing List <linux-omap@vger.kernel.org>, Vignesh R <vigneshr@ti.com>
 
-On 02.10.2015 16:59, Antoine Tenart wrote:
-> This patch adds a PWM node in the Berlin BG2Q device tree, using the
-> newly added Berlin PWM driver.
->
-> Signed-off-by: Antoine Tenart <antoine.tenart@free-electrons.com>
-> ---
->   arch/arm/boot/dts/berlin2q.dtsi | 7 +++++++
->   1 file changed, 7 insertions(+)
+On Monday 05 October 2015 08:50 PM, Thierry Reding wrote:
+> On Tue, Sep 08, 2015 at 08:44:05PM +0530, Sekhar Nori wrote:
+>> From: Vignesh R <vigneshr@ti.com>
+>>
+>> TIPWMSS is present on TI's DRA7x and
+>> AM437x SoCs. Enable its usage.
+>>
+>> Instead of adding each SoC individually,
+>> use the more generic ARCH_OMAP2PLUS
+>> instead.
+>>
+>> Signed-off-by: Vignesh R <vigneshr@ti.com>
+>> Signed-off-by: Sekhar Nori <nsekhar@ti.com>
+>> ---
+>>  drivers/pwm/Kconfig | 6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> Applied, thanks. In the future, try to make use of the 78 columns. There
+> is no need to make lines as short as you did.
 
-Applied this and the next two for BG2 and BG2CD
-to berlin/dt.
+Alright.
 
 Thanks,
-   Sebastian
-
-> diff --git a/arch/arm/boot/dts/berlin2q.dtsi b/arch/arm/boot/dts/berlin2q.dtsi
-> index 63a48490e2f9..5bfa71a87617 100644
-> --- a/arch/arm/boot/dts/berlin2q.dtsi
-> +++ b/arch/arm/boot/dts/berlin2q.dtsi
-> @@ -477,6 +477,13 @@
->   			status = "disabled";
->   		};
->
-> +		pwm: pwm@f20000 {
-> +			compatible = "marvell,berlin-pwm";
-> +			reg = <0xf20000 0x40>;
-> +			clocks = <&chip_clk CLKID_CFG>;
-> +			#pwm-cells = <3>;
-> +		};
-> +
->   		apb@fc0000 {
->   			compatible = "simple-bus";
->   			#address-cells = <1>;
->
+Sekhar
