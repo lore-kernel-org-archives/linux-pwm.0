@@ -1,12 +1,12 @@
 From: Qipeng Zha <qipeng.zha@intel.com>
 Subject: [PATCH v2] pwm: lpss: add PM support for LPSS PWM
-Date: Fri,  9 Oct 2015 16:59:15 +0800
-Message-ID: <1444381155-17514-1-git-send-email-qipeng.zha@intel.com>
+Date: Fri,  9 Oct 2015 17:02:53 +0800
+Message-ID: <1444381373-17791-1-git-send-email-qipeng.zha@intel.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:57243 "EHLO mga01.intel.com"
+Received: from mga11.intel.com ([192.55.52.93]:62594 "EHLO mga11.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751104AbbJIAzL (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Thu, 8 Oct 2015 20:55:11 -0400
+	id S1752721AbbJIA6t (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Thu, 8 Oct 2015 20:58:49 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: linux-pwm@vger.kernel.org
@@ -21,7 +21,7 @@ Signed-off-by: Huiquan Zhong <huiquan.zhong@intel.com>
 Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
 
 ---
-chnage in v2
+change in v2
  Change runtime get/put flow for pwm, get in enable and put in disable;
  For platform device driver, call runtime_pm_enable when init;
  Remove _resume stub function.
