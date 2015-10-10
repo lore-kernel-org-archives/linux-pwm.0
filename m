@@ -1,12 +1,14 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
 Subject: [PATCH v3 pre-03/12] pwm: rcar: make use of pwm_is_enabled()
-Date: Sat, 10 Oct 2015 17:10:38 +0200
-Message-ID: <1444489838-13953-1-git-send-email-boris.brezillon@free-electrons.com>
+Date: Sat, 10 Oct 2015 17:11:34 +0200
+Message-ID: <1444489894-14035-1-git-send-email-boris.brezillon@free-electrons.com>
+References: <1442828009-6241-1-git-send-email-boris.brezillon@free-electrons.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:46669 "EHLO
+Received: from down.free-electrons.com ([37.187.137.238]:46692 "EHLO
 	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752127AbbJJPKr (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sat, 10 Oct 2015 11:10:47 -0400
+	with ESMTP id S1752202AbbJJPLi (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sat, 10 Oct 2015 11:11:38 -0400
+In-Reply-To: <1442828009-6241-1-git-send-email-boris.brezillon@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
