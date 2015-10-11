@@ -1,47 +1,56 @@
-From: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v3 3/4] ARM: dts: sunxi: Enable PWM controller on Q8 format tablets
-Date: Sun, 11 Oct 2015 11:55:07 +0200
-Message-ID: <1444557308-10892-3-git-send-email-hdegoede@redhat.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH v3 4/4] ARM: dts: sun5i: Add backlight node to sun5i-q8-common.dtsi
+Date: Sun, 11 Oct 2015 11:55:08 +0200
+Message-ID: <1444557308-10892-4-git-send-email-hdegoede@redhat.com>
 References: <1444557308-10892-1-git-send-email-hdegoede@redhat.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1444557308-10892-1-git-send-email-hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mx1.redhat.com ([209.132.183.28]:52470 "EHLO mx1.redhat.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751635AbbJKJzZ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Sun, 11 Oct 2015 05:55:25 -0400
+In-Reply-To: <1444557308-10892-1-git-send-email-hdegoede@redhat.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree <devicetree@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>
 
-From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+All A13 based q8 formfactor tablets use the same backlight setup, add
+a backlight devicetree node for controlling the backlight on these devices.
 
-Q8 format tablets use channel 0 of the PWM controller for backlight dimming.
-
-Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Signed-off-by: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
 Changes in v2:
--Enable the pwm controller in sunxi-q8-common.dtsi rather then in
- sun8i-q8-common.dtsi
+-Drop the comment about DCDC1SW, the axp209 used on A13 boards does not
+ have a DCDC1SW
 ---
- arch/arm/boot/dts/sunxi-q8-common.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm/boot/dts/sun5i-q8-common.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sunxi-q8-common.dtsi b/arch/arm/boot/dts/sunxi-q8-common.dtsi
-index 17b26ff..b824146 100644
---- a/arch/arm/boot/dts/sunxi-q8-common.dtsi
-+++ b/arch/arm/boot/dts/sunxi-q8-common.dtsi
-@@ -75,3 +75,9 @@
- 		voltage = <400000>;
- 	};
- };
+diff --git a/arch/arm/boot/dts/sun5i-q8-common.dtsi b/arch/arm/boot/dts/sun5i-q8-common.dtsi
+index 0641d68..a78e189 100644
+--- a/arch/arm/boot/dts/sun5i-q8-common.dtsi
++++ b/arch/arm/boot/dts/sun5i-q8-common.dtsi
+@@ -41,11 +41,21 @@
+  */
+ #include "sunxi-q8-common.dtsi"
+ 
++#include <dt-bindings/pwm/pwm.h>
 +
-+&pwm {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pwm0_pins>;
-+	status = "okay";
-+};
+ / {
+ 	aliases {
+ 		serial0 = &uart1;
+ 	};
+ 
++	backlight: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&pwm 0 50000 PWM_POLARITY_INVERTED>;
++		brightness-levels = <0 10 20 30 40 50 60 70 80 90 100>;
++		default-brightness-level = <8>;
++		/* TODO: backlight uses axp gpio1 as enable pin */
++	};
++
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
 -- 
 2.5.0
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
