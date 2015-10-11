@@ -1,67 +1,47 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v3 1/4] ARM: dts: sun5i: Add PWM controller node for A13 / A10s
-Date: Sun, 11 Oct 2015 11:55:05 +0200
-Message-ID: <1444557308-10892-1-git-send-email-hdegoede@redhat.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:40338 "EHLO mx1.redhat.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751491AbbJKJzO (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Sun, 11 Oct 2015 05:55:14 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+From: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v3 3/4] ARM: dts: sunxi: Enable PWM controller on Q8 format tablets
+Date: Sun, 11 Oct 2015 11:55:07 +0200
+Message-ID: <1444557308-10892-3-git-send-email-hdegoede@redhat.com>
+References: <1444557308-10892-1-git-send-email-hdegoede@redhat.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1444557308-10892-1-git-send-email-hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree <devicetree@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>
 
-Add dts nodes for the PWM controller on the A13 / A10s.
+From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Q8 format tablets use channel 0 of the PWM controller for backlight dimming.
+
+Signed-off-by: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+Signed-off-by: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
-Changes in v3:
--Use a separate compatible string for a10s and a13
+Changes in v2:
+-Enable the pwm controller in sunxi-q8-common.dtsi rather then in
+ sun8i-q8-common.dtsi
 ---
- arch/arm/boot/dts/sun5i-a10s.dtsi |  8 ++++++++
- arch/arm/boot/dts/sun5i-a13.dtsi  | 10 ++++++++++
- 2 files changed, 18 insertions(+)
+ arch/arm/boot/dts/sunxi-q8-common.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sun5i-a10s.dtsi b/arch/arm/boot/dts/sun5i-a10s.dtsi
-index 0fdabe8..f7dcf4e 100644
---- a/arch/arm/boot/dts/sun5i-a10s.dtsi
-+++ b/arch/arm/boot/dts/sun5i-a10s.dtsi
-@@ -165,6 +165,14 @@
- 			#size-cells = <0>;
- 		};
- 
-+		pwm: pwm@01c20e00 {
-+			compatible = "allwinner,sun5i-a10s-pwm";
-+			reg = <0x01c20e00 0xc>;
-+			clocks = <&osc24M>;
-+			#pwm-cells = <3>;
-+			status = "disabled";
-+		};
-+
- 		uart0: serial@01c28000 {
- 			compatible = "snps,dw-apb-uart";
- 			reg = <0x01c28000 0x400>;
-diff --git a/arch/arm/boot/dts/sun5i-a13.dtsi b/arch/arm/boot/dts/sun5i-a13.dtsi
-index f3631c9..d910d3a 100644
---- a/arch/arm/boot/dts/sun5i-a13.dtsi
-+++ b/arch/arm/boot/dts/sun5i-a13.dtsi
-@@ -150,6 +150,16 @@
- 					     "apb1_uart3";
- 		};
+diff --git a/arch/arm/boot/dts/sunxi-q8-common.dtsi b/arch/arm/boot/dts/sunxi-q8-common.dtsi
+index 17b26ff..b824146 100644
+--- a/arch/arm/boot/dts/sunxi-q8-common.dtsi
++++ b/arch/arm/boot/dts/sunxi-q8-common.dtsi
+@@ -75,3 +75,9 @@
+ 		voltage = <400000>;
  	};
-+
-+	soc@01c00000 {
-+		pwm: pwm@01c20e00 {
-+			compatible = "allwinner,sun5i-a13-pwm";
-+			reg = <0x01c20e00 0xc>;
-+			clocks = <&osc24M>;
-+			#pwm-cells = <3>;
-+			status = "disabled";
-+		};
-+	};
  };
- 
- &cpu0 {
++
++&pwm {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwm0_pins>;
++	status = "okay";
++};
 -- 
 2.5.0
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
