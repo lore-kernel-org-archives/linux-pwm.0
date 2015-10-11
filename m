@@ -1,74 +1,108 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v3 pre-03/12] pwm: rcar: make use of pwm_is_enabled()
-Date: Sat, 10 Oct 2015 17:14:20 +0200
-Message-ID: <20151010171420.6c41f2b5@bbrezillon>
-References: <1444489838-13953-1-git-send-email-boris.brezillon@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:46740 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751604AbbJJPOX (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sat, 10 Oct 2015 11:14:23 -0400
-In-Reply-To: <1444489838-13953-1-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] pwm: sun4i: Add support for pwm controller on sun5i SoCs
+Date: Sun, 11 Oct 2015 11:49:57 +0200
+Message-ID: <1444556997-28885-1-git-send-email-hdegoede@redhat.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
-Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, Doug Anderson <dianders@google.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <u.kleine-koenig@pengutronix.de>
 
-On Sat, 10 Oct 2015 17:10:38 +0200
-Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
+The pwm controller on sun5i SoCs is identical to the one found on sun7i
+SoCs. On the A13 package only one of the 2 pins is routed to the outside,
+so only advertise one pwm there.
 
-> Commit 5c31252c4a86 ("pwm: Add the pwm_is_enabled() helper") introduced a
-> new function to test whether a PWM device is enabled or not without
-> manipulating PWM internal fields.
-> Hiding this is necessary if we want to smoothly move to the atomic PWM
-> config approach without impacting PWM drivers.
-> Fix this driver to use pwm_is_enabled() instead of directly accessing the
-> ->flags field.
-> 
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> ---
-> Hi Thierry,
+Signed-off-by: Hans de Goede <hdegoede-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+ .../devicetree/bindings/pwm/pwm-sun4i.txt          |  2 ++
+ drivers/pwm/pwm-sun4i.c                            | 25 ++++++++++++++++++++--
+ 2 files changed, 25 insertions(+), 2 deletions(-)
 
-Please ignore this patch: it was meant to be sent in reply to the
-pwm-atomic series.
-
-> 
-> I noticed you applied a few patches adding new PWM drivers in your
-> pwm-next tree, and one of them is directly testing the PWMF_ENABLED
-> flag which is removed by patch 3 of this series, which means you have to
-> apply this patch before patch 3.
-> 
-> I can resend the whole series if you want, but, unless you have a strong
-> reason to refuse it, I'd really like to get those changes in, so that I
-> don't have to rebase and fix the series each time a new driver is added.
-> 
-> Best Regards,
-> 
-> Boris
-> 
->  drivers/pwm/pwm-rcar.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-> index 6e99a63..70899c9 100644
-> --- a/drivers/pwm/pwm-rcar.c
-> +++ b/drivers/pwm/pwm-rcar.c
-> @@ -157,7 +157,7 @@ static int rcar_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->  		return div;
->  
->  	/* Let the core driver set pwm->period if disabled and duty_ns == 0 */
-> -	if (!test_bit(PWMF_ENABLED, &pwm->flags) && !duty_ns)
-> +	if (!pwm_is_enabled(pwm) && !duty_ns)
->  		return 0;
->  
->  	rcar_pwm_update(rp, RCAR_PWMCR_SYNC, RCAR_PWMCR_SYNC, RCAR_PWMCR);
-
-
-
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+index ae0273e..cf6068b 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+@@ -3,6 +3,8 @@ Allwinner sun4i and sun7i SoC PWM controller
+ Required properties:
+   - compatible: should be one of:
+     - "allwinner,sun4i-a10-pwm"
++    - "allwinner,sun5i-a10s-pwm"
++    - "allwinner,sun5i-a13-pwm"
+     - "allwinner,sun7i-a20-pwm"
+   - reg: physical base address and length of the controller's registers
+   - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index cd9dde5..b093cc5 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -68,6 +68,7 @@ static const u32 prescaler_table[] = {
+ struct sun4i_pwm_data {
+ 	bool has_prescaler_bypass;
+ 	bool has_rdy;
++	unsigned int npwm;
+ };
+ 
+ struct sun4i_pwm_chip {
+@@ -262,11 +263,25 @@ static const struct pwm_ops sun4i_pwm_ops = {
+ static const struct sun4i_pwm_data sun4i_pwm_data_a10 = {
+ 	.has_prescaler_bypass = false,
+ 	.has_rdy = false,
++	.npwm = 2,
++};
++
++static const struct sun4i_pwm_data sun4i_pwm_data_a10s = {
++	.has_prescaler_bypass = true,
++	.has_rdy = true,
++	.npwm = 2,
++};
++
++static const struct sun4i_pwm_data sun4i_pwm_data_a13 = {
++	.has_prescaler_bypass = true,
++	.has_rdy = true,
++	.npwm = 1,
+ };
+ 
+ static const struct sun4i_pwm_data sun4i_pwm_data_a20 = {
+ 	.has_prescaler_bypass = true,
+ 	.has_rdy = true,
++	.npwm = 2,
+ };
+ 
+ static const struct of_device_id sun4i_pwm_dt_ids[] = {
+@@ -274,6 +289,12 @@ static const struct of_device_id sun4i_pwm_dt_ids[] = {
+ 		.compatible = "allwinner,sun4i-a10-pwm",
+ 		.data = &sun4i_pwm_data_a10,
+ 	}, {
++		.compatible = "allwinner,sun5i-a10s-pwm",
++		.data = &sun4i_pwm_data_a10s,
++	}, {
++		.compatible = "allwinner,sun5i-a13-pwm",
++		.data = &sun4i_pwm_data_a13,
++	}, {
+ 		.compatible = "allwinner,sun7i-a20-pwm",
+ 		.data = &sun4i_pwm_data_a20,
+ 	}, {
+@@ -305,14 +326,14 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(pwm->clk))
+ 		return PTR_ERR(pwm->clk);
+ 
++	pwm->data = match->data;
+ 	pwm->chip.dev = &pdev->dev;
+ 	pwm->chip.ops = &sun4i_pwm_ops;
+ 	pwm->chip.base = -1;
+-	pwm->chip.npwm = 2;
++	pwm->chip.npwm = pwm->data->npwm;
+ 	pwm->chip.can_sleep = true;
+ 	pwm->chip.of_xlate = of_pwm_xlate_with_flags;
+ 	pwm->chip.of_pwm_n_cells = 3;
+-	pwm->data = match->data;
+ 
+ 	spin_lock_init(&pwm->ctrl_lock);
+ 
 -- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+2.5.0
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
