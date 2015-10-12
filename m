@@ -1,56 +1,82 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v3 4/4] ARM: dts: sun5i: Add backlight node to sun5i-q8-common.dtsi
-Date: Sun, 11 Oct 2015 11:55:08 +0200
-Message-ID: <1444557308-10892-4-git-send-email-hdegoede@redhat.com>
-References: <1444557308-10892-1-git-send-email-hdegoede@redhat.com>
+From: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+Subject: [PATCH v2] backlight: pwm: reject legacy pwm request for device defined in dt
+Date: Mon, 12 Oct 2015 15:29:03 +0300
+Message-ID: <1444652943-19712-1-git-send-email-vladimir_zapolskiy@mentor.com>
+Mime-Version: 1.0
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:52470 "EHLO mx1.redhat.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751635AbbJKJzZ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Sun, 11 Oct 2015 05:55:25 -0400
-In-Reply-To: <1444557308-10892-1-git-send-email-hdegoede@redhat.com>
+Received: from relay1.mentorg.com ([192.94.38.131]:40822 "EHLO
+	relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751134AbbJLMab (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 12 Oct 2015 08:30:31 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree <devicetree@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>
+To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jg1.han@samsung.com>
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
 
-All A13 based q8 formfactor tablets use the same backlight setup, add
-a backlight devicetree node for controlling the backlight on these devices.
+Platform PWM backlight data provided by board's device tree should be
+complete enough to successfully request a pwm device using pwm_get()
+API. This change fixes a bug, when an arbitrary (first found) PWM is
+connected to a "pwm-backlight" compatible device, when explicit PWM
+device reference is not given.
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Documentation/devicetree/bindings/video/backlight/pwm-backlight.txt
+already describes "pwms" as a required property, instead of blind
+selection of a potentially wrong PWM reject legacy PWM device
+registration request, leave legacy API only for non-dt cases.
+
+Based on initial implementation done by Dmitry Eremin-Solenikov.
+
+Reported-by: Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
+Signed-off-by: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
+Acked-by: Lee Jones <lee.jones@linaro.org>
 ---
-Changes in v2:
--Drop the comment about DCDC1SW, the axp209 used on A13 boards does not
- have a DCDC1SW
----
- arch/arm/boot/dts/sun5i-q8-common.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+The change is based on lee-backlight/for-backlight-next
 
-diff --git a/arch/arm/boot/dts/sun5i-q8-common.dtsi b/arch/arm/boot/dts/sun5i-q8-common.dtsi
-index 0641d68..a78e189 100644
---- a/arch/arm/boot/dts/sun5i-q8-common.dtsi
-+++ b/arch/arm/boot/dts/sun5i-q8-common.dtsi
-@@ -41,11 +41,21 @@
-  */
- #include "sunxi-q8-common.dtsi"
+Changes from v1 to v2:
+* rebased on top of Nicolas' commit
+    68feaca0b13 ("backlight: pwm: Handle EPROBE_DEFER while requesting the PWM")
+
+Links to previous discussions of the change:
+* https://patchwork.ozlabs.org/patch/483993/
+* https://patchwork.ozlabs.org/patch/398849/
+
+ drivers/video/backlight/pwm_bl.c | 19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index eff379b..ae3c6b6 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -271,19 +271,18 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	}
  
-+#include <dt-bindings/pwm/pwm.h>
+ 	pb->pwm = devm_pwm_get(&pdev->dev, NULL);
+-	if (IS_ERR(pb->pwm)) {
+-		ret = PTR_ERR(pb->pwm);
+-		if (ret == -EPROBE_DEFER)
+-			goto err_alloc;
+-
++	if (IS_ERR(pb->pwm) && PTR_ERR(pb->pwm) != -EPROBE_DEFER
++	    && !pdev->dev.of_node) {
+ 		dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
+ 		pb->legacy = true;
+ 		pb->pwm = pwm_request(data->pwm_id, "pwm-backlight");
+-		if (IS_ERR(pb->pwm)) {
+-			dev_err(&pdev->dev, "unable to request legacy PWM\n");
+-			ret = PTR_ERR(pb->pwm);
+-			goto err_alloc;
+-		}
++	}
 +
- / {
- 	aliases {
- 		serial0 = &uart1;
- 	};
++	if (IS_ERR(pb->pwm)) {
++		ret = PTR_ERR(pb->pwm);
++		if (ret != -EPROBE_DEFER)
++			dev_err(&pdev->dev, "unable to request PWM\n");
++		goto err_alloc;
+ 	}
  
-+	backlight: backlight {
-+		compatible = "pwm-backlight";
-+		pwms = <&pwm 0 50000 PWM_POLARITY_INVERTED>;
-+		brightness-levels = <0 10 20 30 40 50 60 70 80 90 100>;
-+		default-brightness-level = <8>;
-+		/* TODO: backlight uses axp gpio1 as enable pin */
-+	};
-+
- 	chosen {
- 		stdout-path = "serial0:115200n8";
- 	};
+ 	dev_dbg(&pdev->dev, "got pwm for backlight\n");
 -- 
 2.5.0
