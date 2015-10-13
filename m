@@ -1,49 +1,32 @@
-From: Robert Jarzmik <robert.jarzmik@free.fr>
-Subject: Re: [PATCH v2] backlight: pwm: reject legacy pwm request for device defined in dt
-Date: Mon, 12 Oct 2015 19:11:54 +0200
-Message-ID: <87zizo57vp.fsf@belgarion.home>
-References: <1444652943-19712-1-git-send-email-vladimir_zapolskiy@mentor.com>
-	<561BB2BC.9090907@atmel.com> <20151012153029.62f948d2@bbrezillon>
-	<561BBB9F.6060808@mentor.com> <20151012160608.41f04553@bbrezillon>
-	<561BC177.2050000@mentor.com> <20151012171931.3fb922d2@bbrezillon>
-	<561BD282.70305@mentor.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Vladimir Zapolskiy <vz@mleia.com>
+Subject: [PATCH 0/4] pwm: lpc32xx: fixes in the LPC32xx PWM driver
+Date: Tue, 13 Oct 2015 03:20:49 +0300
+Message-ID: <1444695653-23491-1-git-send-email-vz@mleia.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:54632 "EHLO
-	smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751337AbbJLRRZ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 12 Oct 2015 13:17:25 -0400
-In-Reply-To: <561BD282.70305@mentor.com> (Vladimir Zapolskiy's message of
-	"Mon, 12 Oct 2015 18:32:18 +0300")
+Received: from li271-223.members.linode.com ([178.79.152.223]:39537 "EHLO
+	mail.mleia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752009AbbJMAVB (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Mon, 12 Oct 2015 20:21:01 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jg1.han@samsung.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Alexandre Pereira da Silva <aletes.xgr@gmail.com>
+Cc: linux-pwm@vger.kernel.org
 
-Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com> writes:
+The changeset fixes a number of issues within current implementation
+of LPC32xx PWM controller driver, namely
+- the SoC has two independent PWM controllers with one channel each,
+- runtime warnings from common clock framework,
+- overflow in duty cycle calculation may result in disabled PWM,
+- unsupported period values are silently accepted.
 
-> Sounds good, thank you for review.
->
->
-> Robert,
->
-> because you found a regression in the related area of code on a
-> platform, which uses legacy PWM API, could you please confirm that three
-> patches applied in a row don't break anything for you, the changes are:
->
-> * Nicolas' 68feaca0b1 ("backlight: pwm: Handle EPROBE_DEFER while
-> requesting the PWM")
-> * Thierry' https://lkml.org/lkml/2015/10/5/319
-> * and this one is the last in the series:
-> http://thread.gmane.org/gmane.linux.pwm/2813
->
-> --
-> With best wishes,
-> Vladimir
-Of course, on my way.
+Vladimir Zapolskiy (4):
+  pwm: lpc32xx: correct number of PWM channels from 2 to 1
+  pwm: lpc32xx: fix warnings from common clock framework
+  pwm: lpc32xx: fix and simplify duty cycle and period calculations
+  pwm: lpc32xx: return ERANGE, if requested period is not supported
 
-Cheers.
+ drivers/pwm/pwm-lpc32xx.c | 59 ++++++++++++++++++-----------------------------
+ 1 file changed, 22 insertions(+), 37 deletions(-)
 
 -- 
-Robert
+2.1.4
