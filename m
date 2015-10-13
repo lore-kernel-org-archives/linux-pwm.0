@@ -1,76 +1,80 @@
-From: Vladimir Zapolskiy <vz@mleia.com>
-Subject: [PATCH 2/4] pwm: lpc32xx: fix warnings from common clock framework
-Date: Tue, 13 Oct 2015 03:20:51 +0300
-Message-ID: <1444695653-23491-3-git-send-email-vz@mleia.com>
-References: <1444695653-23491-1-git-send-email-vz@mleia.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v2] backlight: pwm: reject legacy pwm request for device
+ defined in dt
+Date: Tue, 13 Oct 2015 08:29:41 +0100
+Message-ID: <20151013072941.GR17172@x1>
+References: <1444652943-19712-1-git-send-email-vladimir_zapolskiy@mentor.com>
+ <561BB2BC.9090907@atmel.com>
+ <20151012153029.62f948d2@bbrezillon>
+ <561BBB9F.6060808@mentor.com>
+ <20151012160608.41f04553@bbrezillon>
+ <561BC177.2050000@mentor.com>
+ <20151012171931.3fb922d2@bbrezillon>
+ <561BD282.70305@mentor.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from li271-223.members.linode.com ([178.79.152.223]:39545 "EHLO
-	mail.mleia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752812AbbJMAVC (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 12 Oct 2015 20:21:02 -0400
-In-Reply-To: <1444695653-23491-1-git-send-email-vz@mleia.com>
+Received: from mail-wi0-f173.google.com ([209.85.212.173]:37048 "EHLO
+	mail-wi0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751914AbbJMH3p (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 13 Oct 2015 03:29:45 -0400
+Received: by wijq8 with SMTP id q8so17543656wij.0
+        for <linux-pwm@vger.kernel.org>; Tue, 13 Oct 2015 00:29:44 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <561BD282.70305@mentor.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Alexandre Pereira da Silva <aletes.xgr@gmail.com>
-Cc: linux-pwm@vger.kernel.org
+To: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Nicolas Ferre <nicolas.ferre@atmel.com>, Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jg1.han@samsung.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
 
-As a preparatory change for switching LPC32xx mach support to common
-clock framework fix clk_enable/clk_disable calls without matching
-clk_prepare/clk_unprepare.
+On Mon, 12 Oct 2015, Vladimir Zapolskiy wrote:
 
-If the driver is used on a machine with common clock framework,
-the following warning is generated and it is fixed by this change:
+> On 12.10.2015 18:19, Boris Brezillon wrote:
+> > On Mon, 12 Oct 2015 17:19:35 +0300
+> > Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com> wrote:
+> >>
+> >>> Thierry's patch makes sure that EPROBE_DEFER is not returned when=
+ the
+> >>> PWM device definition is not found using in the PWM lookup tables=
+ or
+> >>> the DT definition,
+> >>
+> >> This is okay, but I'm interested in proper handling of cases other=
+ than
+> >> EPROBE_DEFER. EPROBE_DEFER and the related issues are on your bala=
+nce
+> >> and I'm attempting to avoid interfering with it here :)
+> >=20
+> > I keep thinking we should fix all platforms using the ->pwm_id pdat=
+a
+> > field to attach a PWM device to a PWM backlight instead of trying t=
+o
+> > guess when falling back to the legacy API is acceptable...
+> >=20
+> >>
+> >>> and in this case the pwm_bl code will fallback to
+> >>> the legacy PWM API, which AFAICT is what you're trying to solve.
+> >>
+> >> Fallback must happen exclusively under (IS_ERR(pb->pwm) &&
+> >> PTR_ERR(pb->pwm) !=3D -EPROBE_DEFER && !pdev->dev.of_node) conditi=
+on IMHO.
+> >>
+> >> Before EPROBE_DEFER appeared on the scene the condition was
+> >> (IS_ERR(pb->pwm) && !pdev->dev.of_node).
+> >>
+> >> So, the question is if my change requires any updates or not from =
+your
+> >> point of view.
+> >=20
+> > ... but from a functional point of view your patch seems correct.
+>=20
+> Sounds good, thank you for review.
 
-    # echo 1 > /sys/bus/platform/drivers/lpc32xx-pwm/4005c000.pwm/pwm/pwmchip0/pwm0/enable
-    ------------[ cut here ]------------
-    WARNING: CPU: 0 PID: 701 at drivers/clk/clk.c:727 clk_core_enable+0x2c/0xa4()
-    Modules linked in: sc16is7xx
-    CPU: 0 PID: 701 Comm: sh Tainted: G        W       4.3.0-rc2+ #171
-    Hardware name: LPC32XX SoC (Flattened Device Tree)
-    Backtrace:
-    [<>] (dump_backtrace) from [<>] (show_stack+0x18/0x1c)
-    [<>] (show_stack) from [<>] (dump_stack+0x20/0x28)
-    [<>] (dump_stack) from [<>] (warn_slowpath_common+0x90/0xb8)
-    [<>] (warn_slowpath_common) from [<>] (warn_slowpath_null+0x24/0x2c)
-    [<>] (warn_slowpath_null) from [<>] (clk_core_enable+0x2c/0xa4)
-    [<>] (clk_core_enable) from [<>] (clk_enable+0x24/0x38)
-    [<>] (clk_enable) from [<>] (lpc32xx_pwm_enable+0x1c/0x40)
-    [<>] (lpc32xx_pwm_enable) from [<>] (pwm_enable+0x48/0x5c)
-    [<>] (pwm_enable) from [<>] (pwm_enable_store+0x5c/0x78)
-    [<>] (pwm_enable_store) from [<>] (dev_attr_store+0x20/0x2c)
-    [<>] (dev_attr_store) from [<>] (sysfs_kf_write+0x44/0x50)
-    [<>] (sysfs_kf_write) from [<>] (kernfs_fop_write+0x134/0x194)
-    [<>] (kernfs_fop_write) from [<>] (__vfs_write+0x34/0xdc)
-    [<>] (__vfs_write) from [<>] (vfs_write+0xb8/0x140)
-    [<>] (vfs_write) from [<>] (SyS_write+0x50/0x90)
-    [<>] (SyS_write) from [<>] (ret_fast_syscall+0x0/0x38)
+So should I take this patch, or not?
 
-Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
----
- drivers/pwm/pwm-lpc32xx.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/pwm/pwm-lpc32xx.c b/drivers/pwm/pwm-lpc32xx.c
-index ce8ab20..63468a8 100644
---- a/drivers/pwm/pwm-lpc32xx.c
-+++ b/drivers/pwm/pwm-lpc32xx.c
-@@ -83,7 +83,7 @@ static int lpc32xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	u32 val;
- 	int ret;
- 
--	ret = clk_enable(lpc32xx->clk);
-+	ret = clk_prepare_enable(lpc32xx->clk);
- 	if (ret)
- 		return ret;
- 
-@@ -103,7 +103,7 @@ static void lpc32xx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	val &= ~PWM_ENABLE;
- 	writel(val, lpc32xx->base + (pwm->hwpwm << 2));
- 
--	clk_disable(lpc32xx->clk);
-+	clk_disable_unprepare(lpc32xx->clk);
- }
- 
- static const struct pwm_ops lpc32xx_pwm_ops = {
--- 
-2.1.4
+--=20
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
