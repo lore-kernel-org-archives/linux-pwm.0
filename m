@@ -1,112 +1,85 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH] pwm-backlight: fix the panel power sequence
-Date: Wed, 14 Oct 2015 13:27:14 +0100
-Message-ID: <20151014122714.GI32409@x1>
-References: <1442414556-32381-1-git-send-email-yh.huang@mediatek.com>
- <1444816875.31675.2.camel@mtksdaap41>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Subject: [RESEND PATCH v2] pwm-backlight: Avoid backlight flicker when probed from DT
+Date: Wed, 14 Oct 2015 15:25:19 +0200
+Message-ID: <1444829119-4266-1-git-send-email-p.zabel@pengutronix.de>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wi0-f179.google.com ([209.85.212.179]:38505 "EHLO
-	mail-wi0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751731AbbJNM1S (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 14 Oct 2015 08:27:18 -0400
-Received: by wieq12 with SMTP id q12so80612855wie.1
-        for <linux-pwm@vger.kernel.org>; Wed, 14 Oct 2015 05:27:17 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1444816875.31675.2.camel@mtksdaap41>
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:44331 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753364AbbJNNZ3 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 14 Oct 2015 09:25:29 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: YH Huang <yh.huang@mediatek.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Ajay Kumar <ajaykumar.rs@samsung.com>, YH Huang <yh.huang@mediatek.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Philipp Zabel <p.zabel@pengutronix.de>
 
-On Wed, 14 Oct 2015, YH Huang wrote:
+If the driver is probed from the device tree, and there is a phandle
+property set on it, and the enable GPIO is already configured as output,
+and the backlight is currently disabled, keep it disabled.
+If all these conditions are met, assume there will be some other driver
+that can enable the backlight at the appropriate time.
 
-> Hi all,
->=20
-> If you have any suggestion, please let me know.
-> Thanks.
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+---
+Changes since v1:
+ - Also check if the regulator is enabled. If the power supply is disabled,
+   and a phandle points to it, the backlight should stay powered down.
+---
+ drivers/video/backlight/pwm_bl.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-Please don't do that.
-
-If you think the patch has fallen through the gaps, please just RESEND
-it, like [RESEND vX] $subject.
-
-> On Wed, 2015-09-16 at 22:42 +0800, YH Huang wrote:
-> > In order to match the panel power sequence, disable the enable_gpio
-> > in the probe function. Also, reorder the code in the power_on and
-> > power_off function to match the timing.
-> >=20
-> > Signed-off-by: YH Huang <yh.huang@mediatek.com>
-> > ---
-> >  drivers/video/backlight/pwm_bl.c |   15 +++++++++------
-> >  1 file changed, 9 insertions(+), 6 deletions(-)
-> >=20
-> > diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backl=
-ight/pwm_bl.c
-> > index eff379b..99eca1e 100644
-> > --- a/drivers/video/backlight/pwm_bl.c
-> > +++ b/drivers/video/backlight/pwm_bl.c
-> > @@ -54,10 +54,11 @@ static void pwm_backlight_power_on(struct pwm_b=
-l_data *pb, int brightness)
-> >  	if (err < 0)
-> >  		dev_err(pb->dev, "failed to enable power supply\n");
-> > =20
-> > +	pwm_enable(pb->pwm);
-> > +
-> >  	if (pb->enable_gpio)
-> >  		gpiod_set_value(pb->enable_gpio, 1);
-> > =20
-> > -	pwm_enable(pb->pwm);
-> >  	pb->enabled =3D true;
-> >  }
-> > =20
-> > @@ -66,12 +67,12 @@ static void pwm_backlight_power_off(struct pwm_=
-bl_data *pb)
-> >  	if (!pb->enabled)
-> >  		return;
-> > =20
-> > -	pwm_config(pb->pwm, 0, pb->period);
-> > -	pwm_disable(pb->pwm);
-> > -
-> >  	if (pb->enable_gpio)
-> >  		gpiod_set_value(pb->enable_gpio, 0);
-> > =20
-> > +	pwm_config(pb->pwm, 0, pb->period);
-> > +	pwm_disable(pb->pwm);
-> > +
-> >  	regulator_disable(pb->power_supply);
-> >  	pb->enabled =3D false;
-> >  }
-> > @@ -241,8 +242,7 @@ static int pwm_backlight_probe(struct platform_=
-device *pdev)
-> >  	pb->dev =3D &pdev->dev;
-> >  	pb->enabled =3D false;
-> > =20
-> > -	pb->enable_gpio =3D devm_gpiod_get_optional(&pdev->dev, "enable",
-> > -						  GPIOD_OUT_HIGH);
-> > +	pb->enable_gpio =3D devm_gpiod_get_optional(&pdev->dev, "enable")=
-;
-> >  	if (IS_ERR(pb->enable_gpio)) {
-> >  		ret =3D PTR_ERR(pb->enable_gpio);
-> >  		goto err_alloc;
-> > @@ -264,6 +264,9 @@ static int pwm_backlight_probe(struct platform_=
-device *pdev)
-> >  		pb->enable_gpio =3D gpio_to_desc(data->enable_gpio);
-> >  	}
-> > =20
-> > +	if (pb->enable_gpio)
-> > +		gpiod_direction_output(pb->enable_gpio, 0);
-> > +
-> >  	pb->power_supply =3D devm_regulator_get(&pdev->dev, "power");
-> >  	if (IS_ERR(pb->power_supply)) {
-> >  		ret =3D PTR_ERR(pb->power_supply);
->=20
->=20
-
---=20
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-=46ollow Linaro: Facebook | Twitter | Blog
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index eff379b..31afd6d 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -199,6 +199,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	struct backlight_properties props;
+ 	struct backlight_device *bl;
+ 	struct pwm_bl_data *pb;
++	int initial_blank = FB_BLANK_UNBLANK;
++	bool phandle;
+ 	int ret;
+ 
+ 	if (!data) {
+@@ -264,12 +266,32 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
+ 	}
+ 
++	phandle = of_find_property(pdev->dev.of_node, "phandle", NULL) != NULL;
++
++	if (pb->enable_gpio) {
++		/*
++		 * If the driver is probed from the device tree and there is a
++		 * phandle link pointing to the backlight node, it is safe to
++		 * assume that another driver will enable the backlight at the
++		 * appropriate time. Therefore, if it is disabled, keep it so.
++		 */
++		if (phandle &&
++		    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
++		    gpiod_get_value(pb->enable_gpio) == 0)
++			initial_blank = FB_BLANK_POWERDOWN;
++		else
++			gpiod_direction_output(pb->enable_gpio, 1);
++	}
++
+ 	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
+ 	if (IS_ERR(pb->power_supply)) {
+ 		ret = PTR_ERR(pb->power_supply);
+ 		goto err_alloc;
+ 	}
+ 
++	if (phandle && !regulator_is_enabled(pb->power_supply))
++		initial_blank = FB_BLANK_POWERDOWN;
++
+ 	pb->pwm = devm_pwm_get(&pdev->dev, NULL);
+ 	if (IS_ERR(pb->pwm)) {
+ 		ret = PTR_ERR(pb->pwm);
+@@ -321,6 +343,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	bl->props.brightness = data->dft_brightness;
++	bl->props.power = initial_blank;
+ 	backlight_update_status(bl);
+ 
+ 	platform_set_drvdata(pdev, bl);
+-- 
+2.6.1
