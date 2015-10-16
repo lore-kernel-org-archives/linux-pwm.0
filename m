@@ -1,31 +1,53 @@
-From: Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH v2] pwm-backlight: fix the panel power sequence
-Date: Fri, 16 Oct 2015 11:36:59 +0200
-Message-ID: <1444988219.3541.3.camel@pengutronix.de>
-References: <1444987060-48202-1-git-send-email-yh.huang@mediatek.com>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: [RFC PATCH 0/3] pwm: omap: Add PWM support using dual-mode timers
+Date: Fri, 16 Oct 2015 14:27:24 +0200
+Message-ID: <5620ED2C.1090107@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:55972 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752817AbbJPJhF (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 16 Oct 2015 05:37:05 -0400
-In-Reply-To: <1444987060-48202-1-git-send-email-yh.huang@mediatek.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Tony Lindgren <tony@atomide.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
-To: YH Huang <yh.huang@mediatek.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org
 
-Am Freitag, den 16.10.2015, 17:17 +0800 schrieb YH Huang:
-> In order to match the panel power sequence, disable the enable_gpio
-> in the probe function. Also, reorder the code in the power_on and
-> power_off function to match the timing.
+This patch is based on an earlier patch by NeilBrown which is based on
+a older patch from Grant Erickson which provided PWM devices using
+the 'legacy' interface.
 
-Could you also have a look at the "pwm-backlight: Avoid backlight
-flicker when probed from DT" patch?
-I think in case of a panel left enabled by the bootloader, your patch
-will disable the backlight for a short time.
+The pwm driver was renamed to not be confused with the OMAP4 PWM dedicated
+hardware and was cleaned with the review from Thierry Reding.
 
-best regards
-Philipp
+The first patch introduces a way to select to dmtimer clock source via a
+clocks binding and a dedicated function wit the legacy fallback.
+
+In order to prepare for the future form of the dmtimer (clksource or whatever)
+the first patch introduces the PWM driver with all the dmtimer calls into a
+platform data structure.
+
+The structure is then filled in plat-omap and added as auxdata for the
+ti,pwm-dmtimer-omap compatible nodes.
+
+Cc: Grant Erickson <marathon96@gmail.com>
+Cc: NeilBrown <neilb@suse.de>
+Cc: Joachim Eastwood <manabian@gmail.com>
+Suggested-by: Tony Lindgren <tony@atomide.com>
+
+Neil Armstrong (3):
+  arm: plat-omap: dmtimer: Add clock source from DT
+  pwm: Add PWM driver for OMAP using dual-mode timers
+  arm: plat-omap: Add PWM dmtimer platforma data quirks
+
+ .../devicetree/bindings/pwm/pwm-omap-dmtimer.txt   |  18 ++
+ arch/arm/mach-omap2/pdata-quirks.c                 |  23 ++
+ arch/arm/plat-omap/dmtimer.c                       |  32 +-
+ drivers/pwm/Kconfig                                |   9 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-omap-dmtimer.c                     | 322 +++++++++++++++++++++
+ include/linux/platform_data/pwm_omap_dmtimer.h     |  69 +++++
+ 7 files changed, 472 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-omap-dmtimer.txt
+ create mode 100644 drivers/pwm/pwm-omap-dmtimer.c
+ create mode 100644 include/linux/platform_data/pwm_omap_dmtimer.h
+
+-- 
+1.9.1
