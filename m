@@ -1,163 +1,76 @@
-From: Stefan Agner <stefan@agner.ch>
-Subject: [PATCH RESEND] pwm: ftm: fix clock enable/disable when using PM
-Date: Sat, 17 Oct 2015 21:29:12 -0700
-Message-ID: <1445142552-3530-1-git-send-email-stefan@agner.ch>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kmu-office.ch ([178.209.48.109]:53309 "EHLO
-	mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754131AbbJRE2w (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sun, 18 Oct 2015 00:28:52 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+From: Mark Brown <broonie@kernel.org>
+Subject: Re: [GIT PULL] On-demand device probing
+Date: Sun, 18 Oct 2015 20:29:31 +0100
+Message-ID: <20151018192931.GY14956@sirena.org.uk>
+References: <561E1378.6000906@collabora.com>
+ <20151017065750.GA18607@kroah.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="UNRiu6AvOPumrTuJ"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20151017065750.GA18607@kroah.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, Terje =?iso-8859-1?Q?Bergstr=F6m?= <tbergstrom@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Wolfram Sang <wsa@the-dreams.de>, Frank Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, David Woodhouse <dwmw2@infradead.org>, Liam Girdwood <lgirdwood@gmail.com>, Felipe Balbi <balbi@ti.com>, Jin
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Stefan Agner <stefan@agner.ch>
 
-The driver has multiple issues when enabling/disabling clocks. A given
-instance enables/disables three clocks: the bus clock, the counter
-clock and the PWM clock. The bus clock gets enabled on pwm_request,
-whereas the counter and PWM clocks will be enabled upon pwm_enable.
 
-When entering suspend, the current behavior relies on the FTM_OUTMASK
-register: If a PWM output is unmasked, the driver assumes the clocks
-are enabled. However, some PWM instances, e.g. Vybrid's FTM1, only
-have 2 channels connected. In that case, the FTM_OUTMASK reads only
-0x3, even when it was initialized with 0xff. Hence for those PWM
-instances, the current approach does not work at all.
+--UNRiu6AvOPumrTuJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-A second issue is that the three clocks are not treated differently
-regarding PWM's enabled/requested state. This can lead to clocks
-getting disabled which have not been enabled in the first place (a PWM
-channel which only has been requested).
+On Fri, Oct 16, 2015 at 11:57:50PM -0700, Greg Kroah-Hartman wrote:
 
-A third issue applies to the bus clock only, which can get enabled
-multiple times (once for each PWM channel of a PWM chip). This is
-fine, however when entering suspend mode, the clock only gets disabled
-once.
+> I can't see adding calls like this all over the tree just to solve a
+> bus-specific problem, you are adding of_* calls where they aren't
+> needed, or wanted, at all.
 
-To fix the issues this change introduces a different approach by
-relying on the enable/prepared counters of the clock framework. Clocks
-get disabled during suspend and back enabled on resume regarding to
-the PWM channels individual state. However, since we do not count the
-clocks locally, this change no longer clears the Status and Control
-registers Clock Source Selection (FTM_SC[CLKS]). There have not
-observed issues with that approach so far.
+This isn't bus specific, I'm not sure what makes you say that?
 
-Signed-off-by: Stefan Agner <stefan@agner.ch>
----
- drivers/pwm/pwm-fsl-ftm.c | 58 ++++++++++++++++++++---------------------------
- 1 file changed, 25 insertions(+), 33 deletions(-)
+> What is the root-problem of your delay in device probing?  I read your
+> last patch series and I can't seem to figure out what the issue is that
+> this is solving in any "better" way from the existing deferred probing.
 
-diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-index f9dfc8b..5e1dd96 100644
---- a/drivers/pwm/pwm-fsl-ftm.c
-+++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -80,7 +80,6 @@ struct fsl_pwm_chip {
- 
- 	struct mutex lock;
- 
--	unsigned int use_count;
- 	unsigned int cnt_select;
- 	unsigned int clk_ps;
- 
-@@ -300,9 +299,6 @@ static int fsl_counter_clock_enable(struct fsl_pwm_chip *fpc)
- {
- 	int ret;
- 
--	if (fpc->use_count++ != 0)
--		return 0;
--
- 	/* select counter clock source */
- 	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK,
- 			   FTM_SC_CLK(fpc->cnt_select));
-@@ -334,25 +330,6 @@ static int fsl_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	return ret;
- }
- 
--static void fsl_counter_clock_disable(struct fsl_pwm_chip *fpc)
--{
--	/*
--	 * already disabled, do nothing
--	 */
--	if (fpc->use_count == 0)
--		return;
--
--	/* there are still users, so can't disable yet */
--	if (--fpc->use_count > 0)
--		return;
--
--	/* no users left, disable PWM counter clock */
--	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK, 0);
--
--	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
--	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
--}
--
- static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
-@@ -362,7 +339,8 @@ static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	regmap_update_bits(fpc->regmap, FTM_OUTMASK, BIT(pwm->hwpwm),
- 			   BIT(pwm->hwpwm));
- 
--	fsl_counter_clock_disable(fpc);
-+	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
-+	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
- 
- 	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
- 	if ((val & 0xFF) == 0xFF)
-@@ -492,17 +470,24 @@ static int fsl_pwm_remove(struct platform_device *pdev)
- static int fsl_pwm_suspend(struct device *dev)
- {
- 	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
--	u32 val;
-+	int i;
- 
- 	regcache_cache_only(fpc->regmap, true);
- 	regcache_mark_dirty(fpc->regmap);
- 
--	/* read from cache */
--	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
--	if ((val & 0xFF) != 0xFF) {
-+	for (i = 0; i < fpc->chip.npwm; i++) {
-+		struct pwm_device *pwm = &fpc->chip.pwms[i];
-+
-+		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
-+			continue;
-+
-+		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-+
-+		if (!test_bit(PWMF_ENABLED, &pwm->flags))
-+			continue;
-+
- 		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
- 		clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
--		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
- 	}
- 
- 	return 0;
-@@ -511,12 +496,19 @@ static int fsl_pwm_suspend(struct device *dev)
- static int fsl_pwm_resume(struct device *dev)
- {
- 	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
--	u32 val;
-+	int i;
-+
-+	for (i = 0; i < fpc->chip.npwm; i++) {
-+		struct pwm_device *pwm = &fpc->chip.pwms[i];
-+
-+		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
-+			continue;
- 
--	/* read from cache */
--	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
--	if ((val & 0xFF) != 0xFF) {
- 		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-+
-+		if (!test_bit(PWMF_ENABLED, &pwm->flags))
-+			continue;
-+
- 		clk_prepare_enable(fpc->clk[fpc->cnt_select]);
- 		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
- 	}
--- 
-2.4.2
+So, I don't actually have any platforms that are especially bothered by
+this (at least not for my use cases) so there's a bit of educated
+guessing going on here but there's two broad things I'm aware of. =20
+
+One is that regardless of the actual performance of the system when
+deferred probe goes off it splats errors all over the console which
+makes it look like something is going wrong even if everything is fine
+in the end.  If lots of deferred probing happens then the volume gets
+big too.  People find this distracting, noisy and ugly - it obscures
+actual issues and trains people to ignore errors.  I do think this is a
+reasonable concern and that it's worth trying to mitigate against
+deferral for this reason alone.  We don't want to just ignore the errors
+and not print anything either since if the resource doesn't appear the
+user needs to know what is preventing the driver from instantiating so
+they can try to fix it.
+
+The other is that if you're printing to a serial console then that's not
+an especially fast operation so if you're getting lots of messages being
+printed simply physically outputting them takes measurable time.  I'm
+not aware of any performance concerns outside of that, but like I say
+I'm not affected by this myself in any great way.  Obviously this can be
+configured but not having actual errors on the console isn't super
+awesome either for systems that make use of the logging there and we
+don't have a good way of telling what's from deferral and what's not.
+
+--UNRiu6AvOPumrTuJ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJWI/MaAAoJECTWi3JdVIfQmtEH/i0fhCiTHqE0Nz3IsEG38cvR
+kYDtb3pOGWST5b/UDQjf1OQqiV4KnXG4/yudegM8Dwl3nxqNEpusHjQU2oew9a1l
+VpkzeB9eHfcvCnoT+h6YgIfjIzIFcfEwbNcDC8PXOQTYoTaOTLH/0zVHvJRFN1Rs
+ufcwAI28sT1bHWRWBnzh3TStrN/z6ivL7Yg9qLVTyGBLTXbWUMFXmDW2WNK11Hn0
+HWJTqVAuodvvKj+FPWK/+dJSJyhwRklDN5IV5TQY3MH2BmraO/H/IqMOqPiNkp1H
+IIV2+WRRW+gxa4RYD0zzKfx+rr8ipcdD/3iqx9DWwz8yC3Gs64q9qwXI4ha7NPs=
+=jM4R
+-----END PGP SIGNATURE-----
+
+--UNRiu6AvOPumrTuJ--
