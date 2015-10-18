@@ -1,106 +1,163 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [GIT PULL] On-demand device probing
-Date: Sat, 17 Oct 2015 13:22:23 -0700
-Message-ID: <20151017202223.GB6602@kroah.com>
-References: <20151017065750.GA18607@kroah.com>
- <CAL_Jsq+Due3CgV0Z_m4vYQsa+X30DSxgmqz_r=26OrBV7v+H2g@mail.gmail.com>
- <20151017154709.GE4059@kroah.com>
- <CAL_JsqJvtKt6FpZgnYcsEm_opr9gK_a013BVpZGvnB=51oSUXg@mail.gmail.com>
- <20151017165617.GC25156@kroah.com>
- <CAF6AEGvbYYeZx=YVCv9r5K0xjtLf3gN69gX5DyQ3j0S1qT0Yog@mail.gmail.com>
- <20151017182755.GA28072@kroah.com>
- <CAF6AEGuvr6XMMufY0iDCSkp2BNcWa2=xUxjN66+FtQ6ygS-nyQ@mail.gmail.com>
- <20151017185915.GA28826@kroah.com>
- <CAF6AEGtqiMv6WSk_NVZqu8tMmVvyZQMK=Ta2dr0c=11ebmPJVw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAF6AEGtqiMv6WSk_NVZqu8tMmVvyZQMK=Ta2dr0c=11ebmPJVw@mail.gmail.com>
-Sender: linux-pm-owner@vger.kernel.org
-To: Rob Clark <robdclark@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Russell King <linux@arm.linux.org.uk>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, Terje =?iso-8859-1?Q?Bergstr=F6m?= <tbergstrom@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Wolfram Sang <wsa@the-dreams.de>, Frank Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, David Woodhouse <dwmw2@infradead.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>
+From: Stefan Agner <stefan@agner.ch>
+Subject: [PATCH RESEND] pwm: ftm: fix clock enable/disable when using PM
+Date: Sat, 17 Oct 2015 21:29:12 -0700
+Message-ID: <1445142552-3530-1-git-send-email-stefan@agner.ch>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.kmu-office.ch ([178.209.48.109]:53309 "EHLO
+	mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754131AbbJRE2w (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sun, 18 Oct 2015 00:28:52 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Stefan Agner <stefan@agner.ch>
 
-On Sat, Oct 17, 2015 at 03:39:20PM -0400, Rob Clark wrote:
-> On Sat, Oct 17, 2015 at 2:59 PM, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> > On Sat, Oct 17, 2015 at 02:45:34PM -0400, Rob Clark wrote:
-> >> On Sat, Oct 17, 2015 at 2:27 PM, Greg Kroah-Hartman
-> >> <gregkh@linuxfoundation.org> wrote:
-> >> > On Sat, Oct 17, 2015 at 01:54:43PM -0400, Rob Clark wrote:
-> >> >> On Sat, Oct 17, 2015 at 12:56 PM, Greg Kroah-Hartman
-> >> >> <gregkh@linuxfoundation.org> wrote:
-> >> >> >> I'm guessing the time is a matter of probing and undoing the probes
-> >> >> >> rather than slow h/w. We could maybe improve things by making sure
-> >> >> >> drivers move what they defer on to the beginning of probe, but that
-> >> >> >> seems like a horrible, fragile hack.
-> >> >> >
-> >> >> > How can calling probe and failing cause 2 seconds?  How many different
-> >> >> > probe calls are failing here?  Again, a boot log graph would be great to
-> >> >> > see as it will show the root cause, not just guessing at this.
-> >> >>
-> >> >>
-> >> >> just fwiw, but when you have a driver that depends on several other
-> >> >> drivers (which in turn depend on other drivers and so on), the amount
-> >> >> of probe-defer we end up seeing is pretty comical.  Yeah, there
-> >> >> probably is some room to optimize by juggling around order drivers do
-> >> >> things in probe.  But that doesn't solve the fundamental problem with
-> >> >> the current state, about probe order having no clue about
-> >> >> dependencies..
-> >> >
-> >> > I can imagine it is a lot of iterations, but how long does it really
-> >> > take?  How many different devices are involved that it takes multiple
-> >> > loops in order to finally work out the correct order?  Where is the time
-> >> > delays here, just calling probe() and having it instantly return
-> >> > shouldn't take all that long.
-> >>
-> >> offhand, I think the dependencies go at *least* three levels deep..
-> >> I'd say, from memory, I see drm/msm taking at least 5 or 6 tries to
-> >> get all the way through requesting it's various different
-> >> regulators/clks/gpios.
-> >
-> > And how long does that really take?  Numbers please :)
-> >
-> >> I hadn't really paid attention to how many
-> >> tries the drivers I depend on go through.  (Of those, I take clks from
-> >> two different clk drivers (which have dependency on a 3rd clk driver),
-> >> and regulators and gpio's come from at least two places, which in turn
-> >> have dependencies on clks, etc.)  I don't have really good hard
-> >> numbers handy (since my observations of this are w/ console over uart
-> >> which effects timings, and so I see it taking much longer than 2sec)..
-> >> but the 2sec figure that Tomeu mentioned seemed pretty plausible to
-> >> me.
-> >>
-> >> I can try to get better #'s... I should have my kernel hat on at least
-> >> some of the time next week.. but the 2sec figure didn't seem
-> >> unrealistic to me.
-> >
-> > Based on the time it takes a modern laptop to boot, 2 seconds is
-> > forever, there has to be something else going on here other than just
-> > calling probe() a bunch of times.  Please use the tools we have to
-> > determine this before trying to change the driver core.
-> 
-> yes, I am aware of the tools.. although so far I spend most of my time
-> just trying to get things working in the first place ;-)
+The driver has multiple issues when enabling/disabling clocks. A given
+instance enables/disables three clocks: the bus clock, the counter
+clock and the PWM clock. The bus clock gets enabled on pwm_request,
+whereas the counter and PWM clocks will be enabled upon pwm_enable.
 
-And that's where most people stop, if you want to make it fast, you have
-to put in more effort, sorry.  Don't expect the driver core to work
-around driver bugs for you.
+When entering suspend, the current behavior relies on the FTM_OUTMASK
+register: If a PWM output is unmasked, the driver assumes the clocks
+are enabled. However, some PWM instances, e.g. Vybrid's FTM1, only
+have 2 channels connected. In that case, the FTM_OUTMASK reads only
+0x3, even when it was initialized with 0xff. Hence for those PWM
+instances, the current approach does not work at all.
 
-> All I was trying to point out was that Tomeu's figures didn't really
-> seem unrealistic.  I mean, given that the average SoC driver probably
-> depends on at least one clock and at least one regulator, having to
-> probe each driver at least twice seems plausible.  And that having a
-> noticeable effect on boot time doesn't seem surprising.  I'm not sure
-> that saying 'modern laptop can boot in 2sec' adds much to the
-> discussion since I don't think you have quite so much interdependency
-> between devices vs random probe order.  I have seen arm devices boot
-> to UI in similar times, but that was pre-devicetree days.
+A second issue is that the three clocks are not treated differently
+regarding PWM's enabled/requested state. This can lead to clocks
+getting disabled which have not been enabled in the first place (a PWM
+channel which only has been requested).
 
-2 extra probes add a second to the boot time?  Those sound like really
-broken drivers to me :)
+A third issue applies to the bus clock only, which can get enabled
+multiple times (once for each PWM channel of a PWM chip). This is
+fine, however when entering suspend mode, the clock only gets disabled
+once.
 
-thanks,
+To fix the issues this change introduces a different approach by
+relying on the enable/prepared counters of the clock framework. Clocks
+get disabled during suspend and back enabled on resume regarding to
+the PWM channels individual state. However, since we do not count the
+clocks locally, this change no longer clears the Status and Control
+registers Clock Source Selection (FTM_SC[CLKS]). There have not
+observed issues with that approach so far.
 
-greg k-h
+Signed-off-by: Stefan Agner <stefan@agner.ch>
+---
+ drivers/pwm/pwm-fsl-ftm.c | 58 ++++++++++++++++++++---------------------------
+ 1 file changed, 25 insertions(+), 33 deletions(-)
+
+diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
+index f9dfc8b..5e1dd96 100644
+--- a/drivers/pwm/pwm-fsl-ftm.c
++++ b/drivers/pwm/pwm-fsl-ftm.c
+@@ -80,7 +80,6 @@ struct fsl_pwm_chip {
+ 
+ 	struct mutex lock;
+ 
+-	unsigned int use_count;
+ 	unsigned int cnt_select;
+ 	unsigned int clk_ps;
+ 
+@@ -300,9 +299,6 @@ static int fsl_counter_clock_enable(struct fsl_pwm_chip *fpc)
+ {
+ 	int ret;
+ 
+-	if (fpc->use_count++ != 0)
+-		return 0;
+-
+ 	/* select counter clock source */
+ 	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK,
+ 			   FTM_SC_CLK(fpc->cnt_select));
+@@ -334,25 +330,6 @@ static int fsl_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	return ret;
+ }
+ 
+-static void fsl_counter_clock_disable(struct fsl_pwm_chip *fpc)
+-{
+-	/*
+-	 * already disabled, do nothing
+-	 */
+-	if (fpc->use_count == 0)
+-		return;
+-
+-	/* there are still users, so can't disable yet */
+-	if (--fpc->use_count > 0)
+-		return;
+-
+-	/* no users left, disable PWM counter clock */
+-	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK, 0);
+-
+-	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
+-	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
+-}
+-
+ static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
+@@ -362,7 +339,8 @@ static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	regmap_update_bits(fpc->regmap, FTM_OUTMASK, BIT(pwm->hwpwm),
+ 			   BIT(pwm->hwpwm));
+ 
+-	fsl_counter_clock_disable(fpc);
++	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
++	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
+ 
+ 	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
+ 	if ((val & 0xFF) == 0xFF)
+@@ -492,17 +470,24 @@ static int fsl_pwm_remove(struct platform_device *pdev)
+ static int fsl_pwm_suspend(struct device *dev)
+ {
+ 	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
+-	u32 val;
++	int i;
+ 
+ 	regcache_cache_only(fpc->regmap, true);
+ 	regcache_mark_dirty(fpc->regmap);
+ 
+-	/* read from cache */
+-	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
+-	if ((val & 0xFF) != 0xFF) {
++	for (i = 0; i < fpc->chip.npwm; i++) {
++		struct pwm_device *pwm = &fpc->chip.pwms[i];
++
++		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
++			continue;
++
++		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
++
++		if (!test_bit(PWMF_ENABLED, &pwm->flags))
++			continue;
++
+ 		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
+ 		clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
+-		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
+ 	}
+ 
+ 	return 0;
+@@ -511,12 +496,19 @@ static int fsl_pwm_suspend(struct device *dev)
+ static int fsl_pwm_resume(struct device *dev)
+ {
+ 	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
+-	u32 val;
++	int i;
++
++	for (i = 0; i < fpc->chip.npwm; i++) {
++		struct pwm_device *pwm = &fpc->chip.pwms[i];
++
++		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
++			continue;
+ 
+-	/* read from cache */
+-	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
+-	if ((val & 0xFF) != 0xFF) {
+ 		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
++
++		if (!test_bit(PWMF_ENABLED, &pwm->flags))
++			continue;
++
+ 		clk_prepare_enable(fpc->clk[fpc->cnt_select]);
+ 		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
+ 	}
+-- 
+2.4.2
