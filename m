@@ -1,61 +1,46 @@
-From: Olof Johansson <olof@lixom.net>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+	<u.kleine-koenig@pengutronix.de>
 Subject: Re: [GIT PULL] On-demand device probing
-Date: Mon, 19 Oct 2015 09:52:44 -0700
-Message-ID: <CAOesGMjzeJYVuNzrtahNxiMk-3Huq76=DVhKixMNC=3vebUc_Q@mail.gmail.com>
-References: <20151014092644.GO14956@sirena.org.uk>
-	<1444909328-24761-1-git-send-email-tomeu.vizoso@collabora.com>
-	<CAOesGMj44N3Xfv_D_iLEzXBrkN6LXBa-uh6m3fi_F2xDenDhMg@mail.gmail.com>
-	<CAL_Jsq+34sRXe0HWCKNceQfLj=WfDV4-soynumvdnH_nwuj+9g@mail.gmail.com>
+Date: Mon, 19 Oct 2015 20:27:44 +0200
+Message-ID: <20151019182744.GD4931@pengutronix.de>
+References: <20151017065750.GA18607@kroah.com>
+ <20151018192931.GY14956@sirena.org.uk>
+ <20151018193757.GA9147@kroah.com>
+ <20151018195330.GB14956@sirena.org.uk>
+ <1445247881.53393.146.camel@infradead.org>
+ <CAL_JsqKehmSobpbdeXGo=-1pAbtrhCHovyyCWya_MNOhGCi8CQ@mail.gmail.com>
+ <1445258870.53393.173.camel@infradead.org>
+ <20151019145048.GI14956@sirena.org.uk>
+ <1445268580.53393.183.camel@infradead.org>
+ <20151019154324.GN32532@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-yk0-f178.google.com ([209.85.160.178]:33187 "EHLO
-	mail-yk0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753849AbbJSQwq (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 19 Oct 2015 12:52:46 -0400
-Received: by yknn9 with SMTP id n9so97486379ykn.0
-        for <linux-pwm@vger.kernel.org>; Mon, 19 Oct 2015 09:52:45 -0700 (PDT)
-In-Reply-To: <CAL_Jsq+34sRXe0HWCKNceQfLj=WfDV4-soynumvdnH_nwuj+9g@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-clk-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20151019154324.GN32532@n2100.arm.linux.org.uk>
+Sender: linux-clk-owner@vger.kernel.org
+To: Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: David Woodhouse <dwmw2@infradead.org>, Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, Terje =?iso-8859-1?Q?Bergstr=F6m?= <tbergstrom@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Wolfram Sang <wsa@the-dreams.de>, Frank Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, Liam Girdwood <lgirdwood@g>
 List-Id: linux-pwm@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>
-Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>, Russell King <linux@arm.linux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, =?UTF-8?Q?Terje_Bergstr=C3=B6m?= <tbergstrom@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Wolfram Sang <wsa@the-dreams.de>, Frank Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, David Woodhouse <dwmw2@infradead.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie>
 
-On Sat, Oct 17, 2015 at 8:19 AM, Rob Herring <robh+dt@kernel.org> wrote:
-> On Fri, Oct 16, 2015 at 4:23 PM, Olof Johansson <olof@lixom.net> wrote:
->> Hi,
->>
->> I've bisected boot failures in next-20151016 down to patches in this branch:
->>
->> On Thu, Oct 15, 2015 at 4:42 AM, Tomeu Vizoso
->> <tomeu.vizoso@collabora.com> wrote:
->>> Tomeu Vizoso (20):
->>>       driver core: handle -EPROBE_DEFER from bus_type.match()
->>
->> The machine it happened on was OMAP5UEVM:
->>
->> http://arm-soc.lixom.net/bootlogs/next/next-20151016/omap5uevm-arm-omap2plus_defconfig.html
->
-> So this one is because the MMC node numbering changed. I don't know
-> how to fix that other than with aliases, but that doesn't solve
-> backwards compatibility.
+Hello,
 
-Yep, aliases will take care of it in this case. This is where -next
-fills a great purpose, we can make sure we get those aliases added in
-before the patches go in.
+On Mon, Oct 19, 2015 at 04:43:24PM +0100, Russell King - ARM Linux wrot=
+e:
+> It's a bit ironic that you've chosen GPIO as an example there.  The
+> "new" GPIO API (the gpiod_* stuff) only has a fwnode way to get the
+> gpio descriptor.  There's no of_* method.
 
->> But I've also seen it on tegra2, that one bisected down to:
->>
->>>      regulator: core: Probe regulators on demand
->>
->> http://arm-soc.lixom.net/bootlogs/next/next-20151016/seaboard-arm-multi_v7_defconfig.html
->
-> This one you need a rootwait I think. The MMC scanning is not
-> guaranteed to be done before the rootfs mounting AFAIK. There may be
-> other problems, but we can't see them since it panics.
+Without following all that fwnode discussion:
+gpiod_get et al. should work for you here, doesn't it? It just takes a
+struct device * and I'm happy with it.
 
-Embarrassing, I almost always do this and I'm surprised this machine
-has been this stable without it.
+Best regards
+Uwe
 
-
--Olof
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig        =
+    |
+Industrial Linux Solutions                 | http://www.pengutronix.de/=
+  |
