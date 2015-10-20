@@ -1,36 +1,57 @@
-From: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
+From: Mark Brown <broonie@kernel.org>
 Subject: Re: [GIT PULL] On-demand device probing
-Date: Tue, 20 Oct 2015 10:40:03 -0400 (EDT)
-Message-ID: <Pine.LNX.4.44L0.1510201036290.1855-100000@iolanthe.rowland.org>
+Date: Tue, 20 Oct 2015 16:36:12 +0100
+Message-ID: <20151020153612.GB32054@sirena.org.uk>
 References: <CAL_JsqJuu5_Osqi+X6M6UeRDZFQB+_8riYDF1gvsGayk5-4SFw@mail.gmail.com>
+ <Pine.LNX.4.44L0.1510201036290.1855-100000@iolanthe.rowland.org>
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAL_JsqJuu5_Osqi+X6M6UeRDZFQB+_8riYDF1gvsGayk5-4SFw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Michael Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, =?UTF-8?Q?Terje_Bergstr=C3=B6m?= <tbergstrom-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Kishon Vijay Abraham I <kishon-l0cyMroinI0@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Dmitry Eremin-Solenikov <dbary>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="yda//aIZIMrd7mir"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <Pine.LNX.4.44L0.1510201036290.1855-100000@iolanthe.rowland.org>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Alan Stern <stern@rowland.harvard.edu>
+Cc: Rob Herring <robh@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Russell King <linux@arm.linux.org.uk>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, Terje =?iso-8859-1?Q?Bergstr=F6m?= <tbergstrom@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Wolfram Sang <wsa@the-dreams.de>, Frank Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbary>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, 20 Oct 2015, Rob Herring wrote:
 
-> > The probe ordering is not the entire picture, though.
-> >
-> > Even if you get the probe ordering right, the problem is going to show up in
-> > multiple other places: system suspend/resume, runtime PM, system shutdown,
-> > unbinding of drivers.  In all of those cases it is necessary to handle things
-> > in a specific order if there is a dependency.
-> 
-> My understanding was with deferred probe that it also solves suspend
-> ordering problems because things are suspended in reverse order of
-> probing.
+--yda//aIZIMrd7mir
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Devices are suspended in reverse order of _registration_.  Not of 
-probing.
+On Tue, Oct 20, 2015 at 10:40:03AM -0400, Alan Stern wrote:
 
-Furthermore, that applies only to devices that use synchronous suspend.  
-Async suspend is becoming common, and there the only restrictions are 
-parent-child relations plus whatever explicit requirements that drivers 
-impose by calling device_pm_wait_for_dev().
+> Furthermore, that applies only to devices that use synchronous suspend. =
+=20
+> Async suspend is becoming common, and there the only restrictions are=20
+> parent-child relations plus whatever explicit requirements that drivers=
+=20
+> impose by calling device_pm_wait_for_dev().
 
-Alan Stern
+Hrm, this is the first I'd noticed that feature though I see the initial
+commit dates from January.  It looks like most of the users are PCs at
+the minute but we should be using it more widely for embedded things,
+there's definitely some cases I'm aware of where it will allow us to
+remove some open coding.
+
+It does seem like we want to be feeding dependency information we
+discover for probing way into the suspend dependencies...
+
+--yda//aIZIMrd7mir
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJWJl9rAAoJECTWi3JdVIfQnkIH/2GzqyZNrVrsXXUVXs+4Shdt
+ktptYpVn9emNkSaj6aqYpyoVmHnvFpXnM5NLdQOURsDRCpkq5+b/yesGl7rqAqH/
+THvORSPwBV0dFdb9TpLYI6dfuOxDl8ufyiMUjxM5l17G636RfipKStJBK5UGHKBK
+8uGvTrUdX+9TpG5tNeC7BOjp/bGjrtKHaiyHbcBjrtUwO4kixDnVvD1qomuwIiIt
+RAHlPGdo4sO6IW0I5HurTI44EWxDxASqNYD4crMFdWgbo5J86QRgzkWJ7yh2d2wm
+P7eRo9qYZkqhKhMc2pKJdiZ7dTnM77cqd17uzOiNDfCRWsvCUP7+2QE2rcyDeZk=
+=XKiJ
+-----END PGP SIGNATURE-----
+
+--yda//aIZIMrd7mir--
