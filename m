@@ -1,69 +1,116 @@
-From: Frank Rowand <frowand.list@gmail.com>
-Subject: Re: Alternative approach to solve the deferred probe
-Date: Wed, 21 Oct 2015 08:36:23 -0700
-Message-ID: <5627B0F7.7010600@gmail.com>
-References: <20151018195330.GB14956@sirena.org.uk> <CAAObsKB2BUZ-smid45wOdAQw6h2yNqCydk+azAFNk69ewHJtZQ@mail.gmail.com> <20151019131821.GA32532@n2100.arm.linux.org.uk> <CAAObsKDS_+AZ26P_fHc6pvAYrQotsuoO0DEGQUWC514t3DD_jQ@mail.gmail.com> <20151019143045.GE32532@n2100.arm.linux.org.uk> <CAAObsKDWM6A98tdKHqi4fe5DBf0BmB0JeghcZDWan_PYbyshag@mail.gmail.com> <20151019153548.GM32532@n2100.arm.linux.org.uk> <CAMuHMdVv=ieYM-Nehp0qV8CEggHEeJ22j-6i_N09rRA_U=2ePw@mail.gmail.com> <20151020154656.GY32532@n2100.arm.linux.org.uk> <56270D5B.5010902@gmail.com> <20151021081847.GB32532@n2100.arm.linux.org.uk>
-Reply-To: frowand.list@gmail.com
+From: Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [GIT PULL] On-demand device probing
+Date: Wed, 21 Oct 2015 08:59:51 -0700
+Message-ID: <5627B677.5090109@gmail.com>
+References: <561E1378.6000906@collabora.com> <20151017065750.GA18607@kroah.com> <20151018192931.GY14956@sirena.org.uk> <20151018193757.GA9147@kroah.com> <20151018195330.GB14956@sirena.org.uk> <CAAObsKB2BUZ-smid45wOdAQw6h2yNqCydk+azAFNk69ewHJtZQ@mail.gmail.com>
+Reply-To: frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f68.google.com ([209.85.220.68]:35055 "EHLO
-	mail-pa0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755708AbbJUPgZ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 21 Oct 2015 11:36:25 -0400
-In-Reply-To: <20151021081847.GB32532@n2100.arm.linux.org.uk>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAAObsKB2BUZ-smid45wOdAQw6h2yNqCydk+azAFNk69ewHJtZQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+Cc: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Michael Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, =?UTF-8?B?VGVyamUgQmVyZ3N0csO2bQ==?= <tbergstrom-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Kishon Vijay Abraham I <kishon-l0cyMroinI0@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Dmitry Eremin-Solenikov <dbaryshkov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>J
 List-Id: linux-pwm@vger.kernel.org
-To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, =?ISO-8859-1?Q?Terje_Bergstr=F6m?= <tbergstrom@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Wolfram Sang <wsa@the-dreams.de>, Grant Likely <grant.likely@linaro.org>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, David Woodhouse <dwmw2@infradead.org>, Liam Girdwood <lgirdwo>
 
-On 10/21/2015 1:18 AM, Russell King - ARM Linux wrote:
-> On Tue, Oct 20, 2015 at 08:58:19PM -0700, Frank Rowand wrote:
->> On 10/20/2015 8:46 AM, Russell King - ARM Linux wrote:
+On 10/19/2015 5:34 AM, Tomeu Vizoso wrote:
+> On 18 October 2015 at 21:53, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+>> On Sun, Oct 18, 2015 at 12:37:57PM -0700, Greg Kroah-Hartman wrote:
+>>> On Sun, Oct 18, 2015 at 08:29:31PM +0100, Mark Brown wrote:
+>>>> On Fri, Oct 16, 2015 at 11:57:50PM -0700, Greg Kroah-Hartman wrote=
+:
 
 < snip >
 
->>> +
->>>  static bool driver_deferred_probe_enable = false;
->>> +
->>>  /**
->>>   * driver_deferred_probe_trigger() - Kick off re-probing deferred devices
->>>   *
->>> @@ -188,6 +210,13 @@ static int deferred_probe_initcall(void)
->>>  	driver_deferred_probe_trigger();
->>
->> Couldn't you put the "driver_deferred_probe_report = true" here?  And then
->> not add another round of probes.
-> 
-> The idea is not to report anything for drivers that were deferred
-> during the normal bootup.  The above is part of the normal bootup,
-> and the deferred activity should not be warned about.
+> hope you don't mind I summarize the points taken instead of replying
+> to the individual emails. I tried to address all the concerns that
+> have been raised again in the cover letter, but I guess I did a bad
+> job at explaining myself, so here's another (more in-depth) go at it.
 
-The above is currently the last point for probe to succeed or defer
-(until possibly, as you mentioned, module loading resolves the defer).
-If a probe defers above, it will defer again below.  The set of defers
-should be exactly the same above and below.
+< snip >
 
-> 
-> If we have any devices still deferring after _this_ round, that must
-> indicate that some resource they want is not available, and that
-> should be warned about.
-> 
-> Of course, modules can defer too - and I made some suggestions in my
-> waffle above the patch about that.
-> 
+> 3) Regarding total boot time, I don't expect this series to make much
+> of a difference because though we would save a lot of matching and
+> querying for resources, that's little time compared with how long we
+> wait for hardware to react during probing. Async probing is more
+> likely to help with drivers that take a long time to probe.
 
-< adding back trimmed, for fuller context >
+And then in your reply to Russell's reply to your email you say:
 
->>>  	/* Sort as many dependencies as possible before exiting initcalls */
->>>  	flush_workqueue(deferred_wq);
->>> +
->>> +	/* Now one final round, reporting any devices that remain deferred */
->>> +	driver_deferred_probe_report = true;
->>> +	driver_deferred_probe_trigger();
->>> +	/* Sort as many dependencies as possible before exiting initcalls */
->>> +	flush_workqueue(deferred_wq);
->>> +
->>>  	return 0;
->>>  }
+> To be clear, I was saying that this series should NOT affect total
+> boot times much.
+
+I'm confused.  If I understood correctly, improving boot time was
+the key justification for accepting this patch set.  For example,
+from "[PATCH v7 0/20] On-demand device probing":
+
+   I have a problem with the panel on my Tegra Chromebook taking longer
+   than expected to be ready during boot (St=C3=A9phane Marchesin repor=
+ted what
+   is basically the same issue in [0]), and have looked into ordered
+   probing as a better way of solving this than moving nodes around in =
+the
+   DT or playing with initcall levels and linking order.
+
+   ...
+
+   With this series I get the kernel to output to the panel in 0.5s,
+   instead of 2.8s.
+
+Alexander Holler reported improved boot times for his patch set
+in August, which is another approach to ordering probes
+(http://article.gmane.org/gmane.linux.drivers.devicetree/133010).
+His results for 5 boards was four booted faster, one slightly
+slower:
+
+   Some numbers (5 boots on each board, without and with ordering drive=
+rs),
+   all times are seconds.
+
+   Kirkwood (dockstar, armv5):
+
+   Boot to "Freeing unused kernel memory" (includes mounting the rootfs=
+),
+   unordered:
+   4.456016 3.937801 4.114788 4.114526 3.949480 (average 4.1145222)
+   ordered:
+   3.173054 3.164045 3.141418 3.480679 3.459298 (3.2836988)
+   Time needed to sort (of_init_build_order()):
+   0.003024
+   Time needed to match drivers to the order (without calling them):
+   0.002884
+
+   Beagleboard (rev C4, armv7):
+
+   unordered:
+   6.706024 6.821746 6.696014 6.673675 6.769866 (6.733465)
+   ordered:
+   5.544860 5.514160 5.505859 5.527374 5.496795 (5.5178096)
+   sorting: 0.021209
+   matching: 0.006165
+
+   Beaglebone Black (rev A5, armv7):
+
+   unordered:
+   3.826531 3.825662 3.826648 3.825434 3.825263 (3.8259076)
+   ordered:
+   2.838554 2.838322 2.839459 2.838467 2.838421 (2.8386446)
+   sorting: 0.004769
+   matching: 0.004860
+
+   imx6q (armv7):
+
+   unordered:
+   3.451998 3.418864 3.446952 3.429974 3.440996 (3.4377568)
+   ordered:
+   3.538312 3.549019 3.538105 3.515916 3.555715 (3.5394134)
+   sorting: 0.004622
+   matching: 0.003868
+
+While not as dramatic as your results, they are somewhat supportive.
+What has changed your assessment that the on-demand device probing
+patches will give a big boot performance increase?  Do you have
+new data or analysis?
+
+-Frank
