@@ -1,80 +1,95 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [GIT PULL] On-demand device probing
-Date: Wed, 21 Oct 2015 17:27:58 +0100
-Message-ID: <20151021162758.GP32054@sirena.org.uk>
-References: <561E1378.6000906@collabora.com>
- <20151017065750.GA18607@kroah.com>
- <20151018192931.GY14956@sirena.org.uk>
- <20151018193757.GA9147@kroah.com>
- <20151018195330.GB14956@sirena.org.uk>
+From: Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: Re: Alternative approach to solve the deferred probe
+Date: Wed, 21 Oct 2015 19:55:29 +0300
+Message-ID: <5627C381.60602@ti.com>
+References: <20151018195330.GB14956@sirena.org.uk>
  <CAAObsKB2BUZ-smid45wOdAQw6h2yNqCydk+azAFNk69ewHJtZQ@mail.gmail.com>
- <5627B677.5090109@gmail.com>
+ <20151019131821.GA32532@n2100.arm.linux.org.uk>
+ <CAAObsKDS_+AZ26P_fHc6pvAYrQotsuoO0DEGQUWC514t3DD_jQ@mail.gmail.com>
+ <20151019143045.GE32532@n2100.arm.linux.org.uk>
+ <CAAObsKDWM6A98tdKHqi4fe5DBf0BmB0JeghcZDWan_PYbyshag@mail.gmail.com>
+ <20151019153548.GM32532@n2100.arm.linux.org.uk>
+ <CAMuHMdVv=ieYM-Nehp0qV8CEggHEeJ22j-6i_N09rRA_U=2ePw@mail.gmail.com>
+ <20151020154656.GY32532@n2100.arm.linux.org.uk> <56270D5B.5010902@gmail.com>
+ <20151021081847.GB32532@n2100.arm.linux.org.uk> <5627B0F7.7010600@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="wrbiW19WTymQQzps"
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-gpio-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5627B677.5090109@gmail.com>
+In-Reply-To: <5627B0F7.7010600@gmail.com>
 Sender: linux-gpio-owner@vger.kernel.org
-To: Frank Rowand <frowand.list@gmail.com>
-Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, Terje =?iso-8859-1?Q?Bergstr=F6m?= <tbergstrom@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Wolfram Sang <wsa@the-dreams.de>, Grant Likely <grant.likely@linaro.org>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, David Woodhouse <dwmw2@infradead.org>, Liam Girdwood <lgirdwood@gmail.com>, Felipe Balbi <balbi@ti>
+To: frowand.list@gmail.com, Russell King - ARM Linux <linux@arm.linux.org.uk>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, =?UTF-8?Q?Terje_Bergstr=c3=b6m?= <tbergstrom@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Wolfram Sang <wsa@the-dreams.de>, Grant Likely <grant.likely@linaro.org>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, David Woodhouse <dwmw2@infradead.org>, Liam Girdwood <lgirdwood>
 List-Id: linux-pwm@vger.kernel.org
 
+On 10/21/2015 06:36 PM, Frank Rowand wrote:
+> On 10/21/2015 1:18 AM, Russell King - ARM Linux wrote:
+>> On Tue, Oct 20, 2015 at 08:58:19PM -0700, Frank Rowand wrote:
+>>> On 10/20/2015 8:46 AM, Russell King - ARM Linux wrote:
+> 
+> < snip >
+> 
+>>>> +
+>>>>   static bool driver_deferred_probe_enable = false;
+>>>> +
+>>>>   /**
+>>>>    * driver_deferred_probe_trigger() - Kick off re-probing deferred devices
+>>>>    *
+>>>> @@ -188,6 +210,13 @@ static int deferred_probe_initcall(void)
+>>>>   	driver_deferred_probe_trigger();
+>>>
+>>> Couldn't you put the "driver_deferred_probe_report = true" here?  And then
+>>> not add another round of probes.
+>>
+>> The idea is not to report anything for drivers that were deferred
+>> during the normal bootup.  The above is part of the normal bootup,
+>> and the deferred activity should not be warned about.
+> 
+> The above is currently the last point for probe to succeed or defer
+> (until possibly, as you mentioned, module loading resolves the defer).
+> If a probe defers above, it will defer again below.  The set of defers
+> should be exactly the same above and below.
+> 
 
---wrbiW19WTymQQzps
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Unfortunately this is not "the last point for probe to succeed or defer".
+There are still a bunch of drivers in Kernel which will be probed at late_initcall() level.
+(like ./drivers/net/ethernet/ti/cpsw.c => late_initcall(cpsw_init);
+Yes - they probably need to be updated to use module_init(), but that's what
+we have now). Those drivers will re-trigger deferred device probing if their
+probe succeeded.
 
-On Wed, Oct 21, 2015 at 08:59:51AM -0700, Frank Rowand wrote:
-> On 10/19/2015 5:34 AM, Tomeu Vizoso wrote:
+As result, it is impossible to say when will it happen the 
+"final round of deferred device probing" :( and final list of drivers which
+was "deferred forever" will be know only when kernel exits to User space 
+("deferred forever" - before loading modules).
 
-> > To be clear, I was saying that this series should NOT affect total
-> > boot times much.
+May be, we also can consider adding debug_fs entry which can be used to display
+actual state of deferred_probe_pending_list? 
 
-> I'm confused.  If I understood correctly, improving boot time was
-> the key justification for accepting this patch set.  For example,
-> from "[PATCH v7 0/20] On-demand device probing":
->=20
->    I have a problem with the panel on my Tegra Chromebook taking longer
->    than expected to be ready during boot (St=E9phane Marchesin reported w=
-hat
->    is basically the same issue in [0]), and have looked into ordered
->    probing as a better way of solving this than moving nodes around in the
->    DT or playing with initcall levels and linking order.
->=20
->    ...
->=20
->    With this series I get the kernel to output to the panel in 0.5s,
->    instead of 2.8s.
+>>
+>> If we have any devices still deferring after _this_ round, that must
+>> indicate that some resource they want is not available, and that
+>> should be warned about.
+>>
+>> Of course, modules can defer too - and I made some suggestions in my
+>> waffle above the patch about that.
+>>
+> 
+> < adding back trimmed, for fuller context >
+> 
+>>>>   	/* Sort as many dependencies as possible before exiting initcalls */
+>>>>   	flush_workqueue(deferred_wq);
+>>>> +
+>>>> +	/* Now one final round, reporting any devices that remain deferred */
+>>>> +	driver_deferred_probe_report = true;
+>>>> +	driver_deferred_probe_trigger();
+>>>> +	/* Sort as many dependencies as possible before exiting initcalls */
+>>>> +	flush_workqueue(deferred_wq);
+>>>> +
+>>>>   	return 0;
+>>>>   }
 
-Overall boot time and time to get some individual built in component up
-and running aren't the same thing - what this'll do is get things up
-more in the link order of the leaf consumers rather than deferring those
-leaf consumers when their dependencies aren't ready yet.
 
-> While not as dramatic as your results, they are somewhat supportive.
-> What has changed your assessment that the on-demand device probing
-> patches will give a big boot performance increase?  Do you have
-> new data or analysis?
-
-See above, my understanding was that the performance improvements were
-more around improved control/predictability/handwave of the boot
-ordering rather than total time.
-
---wrbiW19WTymQQzps
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCAAGBQJWJ70OAAoJECTWi3JdVIfQeWcH/j2uOXOzgx7pnrlm7I69Kibp
-atBDWslC2PLIFyM8NQMCCyylED2dqSr72HHG++eDyB9kHbaaba+ZNu8DDqcbQYSF
-MaVOWhUulhhEnyRhj3I+aYT+GVZ9QQwTzRau/cUD0Mrqf/lUvGZKUeU+gq34v4DK
-JfBU6MLZJNjAskQSSLPwzllg2hSb0VP5zy2ScbiawsUyRRNDn5tHUQ+r0K/rlWHJ
-9Zjr/q9QxHcDVhdX+bORqc7QCSlQhsrIATItLhLksSaX99iuhTltgGWjE/UonSId
-LHxDyw9zGss8voGsVVfmBf2FaD1/lEDyVMzGq0+GizxNNwaYXZ/fpGHvSbT2/Sw=
-=D7aZ
------END PGP SIGNATURE-----
-
---wrbiW19WTymQQzps--
+-- 
+regards,
+-grygorii
