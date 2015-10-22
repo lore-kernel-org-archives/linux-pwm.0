@@ -1,64 +1,47 @@
-From: Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
-Subject: Re: [GIT PULL] On-demand device probing
-Date: Thu, 22 Oct 2015 16:02:13 +0100
-Message-ID: <20151022150213.GT32532@n2100.arm.linux.org.uk>
-References: <20151018193757.GA9147@kroah.com>
- <20151018195330.GB14956@sirena.org.uk>
- <CAAObsKB2BUZ-smid45wOdAQw6h2yNqCydk+azAFNk69ewHJtZQ@mail.gmail.com>
- <5627B677.5090109@gmail.com>
- <20151021162758.GP32054@sirena.org.uk>
- <5627D6E0.5020708@gmail.com>
- <CAL_Jsq+FPtCuBnte2HTgbdpNYM=v_kLaCRcOC1kMaCQwVC=5Kw@mail.gmail.com>
- <562808AF.7090406@gmail.com>
- <CAAObsKAkyjdvNOS3+nuT0N9sudUFLsZXFtcm6Y038p+HSdsZsg@mail.gmail.com>
- <20151022144405.GC21861@kroah.com>
+From: YH Huang <yh.huang@mediatek.com>
+Subject: Re: [PATCH v2] pwm-backlight: fix the panel power sequence
+Date: Thu, 22 Oct 2015 23:12:30 +0800
+Message-ID: <1445526750.27586.8.camel@mtksdaap41>
+References: <1444987060-48202-1-git-send-email-yh.huang@mediatek.com>
+	 <1444988219.3541.3.camel@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20151022144405.GC21861-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Michael Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Terje =?iso-8859-1?Q?Bergstr=F6m?= <tbergstrom-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Kishon Vijay Abraham I <kishon-l0cyMroinI0@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Dmitry Eremin-Solenikov <dbaryshkov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Felipe Balbi <balbi-l0cyMroinI0@public.gmane.org>, Jingoo
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mailgw02.mediatek.com ([210.61.82.184]:39970 "EHLO
+	mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1756693AbbJVPMe (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 22 Oct 2015 11:12:34 -0400
+In-Reply-To: <1444988219.3541.3.camel@pengutronix.de>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org
 
-On Thu, Oct 22, 2015 at 07:44:05AM -0700, Greg Kroah-Hartman wrote:
-> <oops, sent too early...>
+On Fri, 2015-10-16 at 11:36 +0200, Philipp Zabel wrote:
+> Am Freitag, den 16.10.2015, 17:17 +0800 schrieb YH Huang:
+> > In order to match the panel power sequence, disable the enable_gpio
+> > in the probe function. Also, reorder the code in the power_on and
+> > power_off function to match the timing.
 > 
-> On Thu, Oct 22, 2015 at 11:05:11AM +0200, Tomeu Vizoso wrote:
-> > Given that downstreams are already carrying as many hacks as they
-> > could think of to speed total boot up, I think this is effectively
-> > telling them to go away.
+> Could you also have a look at the "pwm-backlight: Avoid backlight
+> flicker when probed from DT" patch?
+> I think in case of a panel left enabled by the bootloader, your patch
+> will disable the backlight for a short time.
 > 
-> No I'm not, I'm asking for real data, not hand-wavy-this-is-going-to
-> solve-the-random-issue-i'm-having type patch by putting random calls in
-> semi-random subsystems all over the kernel.
+> best regards
+> Philipp
+> 
+In the case of the panel disabled by the bootloader,
+your patch still has the following code and always enables the backlight
+in the probe function.
+pb->enable_gpio = devm_gpiod_get_optional(&pdev->dev, "enable",
+-						  GPIOD_OUT_HIGH);
 
-+100000000000, fully agree.
+What do you think if I remove these two lines in my patch?
+if (pb->enable_gpio)
+	gpiod_direction_output(pb->enable_gpio, 0);
 
-There's too much verbal diarrhoea going on in this thread and no facts.
-I've been waiting for real data too, and there's not one shred of it, or
-even a hint that it might appear.  So, the conclusion I'm coming to is
-that there isn't any data to back up the claims made in this thread.
 
-If it was such a problem, then in the _eight_ days that this has been
-discussed so far, _someone_ would have sent some data showing the
-problem.  I think the fact is, there is no data.
-
-Someone prove me wrong.  Someone post the verifiable data showing that
-there is a problem to be solved here.
-
-Someone show what the specific failure cases are that are hampering
-vendors moving forwards.  Someone show the long boot times by way of
-kernel message log.  Someone show some evidence of the problems that
-have been alluded to.
-
-If no one can show some evidence, there isn't a problem here. :)
-
--- 
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Regards,
+YH Huang
