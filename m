@@ -1,67 +1,92 @@
 From: Mark Brown <broonie@kernel.org>
-Subject: Re: [GIT PULL] On-demand device probing
-Date: Fri, 23 Oct 2015 08:33:10 +0900
-Message-ID: <20151022233310.GD29919@sirena.org.uk>
-References: <20151018195330.GB14956@sirena.org.uk>
+Subject: Re: Alternative approach to solve the deferred probe (was: [GIT
+ PULL] On-demand device probing)
+Date: Thu, 22 Oct 2015 14:20:21 +0100
+Message-ID: <20151022132021.GO8232@sirena.org.uk>
+References: <20151018193757.GA9147@kroah.com>
+ <20151018195330.GB14956@sirena.org.uk>
  <CAAObsKB2BUZ-smid45wOdAQw6h2yNqCydk+azAFNk69ewHJtZQ@mail.gmail.com>
- <5627B677.5090109@gmail.com>
- <20151021162758.GP32054@sirena.org.uk>
- <5627D6E0.5020708@gmail.com>
- <CAL_Jsq+FPtCuBnte2HTgbdpNYM=v_kLaCRcOC1kMaCQwVC=5Kw@mail.gmail.com>
- <562808AF.7090406@gmail.com>
- <CAAObsKAkyjdvNOS3+nuT0N9sudUFLsZXFtcm6Y038p+HSdsZsg@mail.gmail.com>
- <20151022144405.GC21861@kroah.com>
- <20151022150213.GT32532@n2100.arm.linux.org.uk>
+ <20151019131821.GA32532@n2100.arm.linux.org.uk>
+ <CAAObsKDS_+AZ26P_fHc6pvAYrQotsuoO0DEGQUWC514t3DD_jQ@mail.gmail.com>
+ <20151019143045.GE32532@n2100.arm.linux.org.uk>
+ <CAAObsKDWM6A98tdKHqi4fe5DBf0BmB0JeghcZDWan_PYbyshag@mail.gmail.com>
+ <20151019153548.GM32532@n2100.arm.linux.org.uk>
+ <CAMuHMdVv=ieYM-Nehp0qV8CEggHEeJ22j-6i_N09rRA_U=2ePw@mail.gmail.com>
+ <20151020154656.GY32532@n2100.arm.linux.org.uk>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="J5MfuwkIyy7RmF4Q"
-Return-path: <linux-clk-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="MmQIYbZiCoQ2kDro"
+Return-path: <linux-i2c-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20151022150213.GT32532@n2100.arm.linux.org.uk>
-Sender: linux-clk-owner@vger.kernel.org
+In-Reply-To: <20151020154656.GY32532@n2100.arm.linux.org.uk>
+Sender: linux-i2c-owner@vger.kernel.org
 To: Russell King - ARM Linux <linux@arm.linux.org.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Frank Rowand <frowand.list@gmail.com>, Rob Herring <robh+dt@kernel.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, Terje =?iso-8859-1?Q?Bergstr=F6m?= <tbergstrom@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Wolfram Sang <wsa@the-dreams.de>, Grant Likely <grant.likely@linaro.org>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, David Woodhouse <dwmw2@infradead.org>, Liam Girdwood <lgirdwood@gmail.com>, Felipe Balbi <balbi@ti>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Rob Herring <robh+dt@kernel.org>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, Terje =?iso-8859-1?Q?Bergstr=F6m?= <tbergstrom@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Wolfram Sang <wsa@the-dreams.de>, Frank Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>, David Woodhouse <dwmw2@infradead.org>Liam Girdwood <l>
 List-Id: linux-pwm@vger.kernel.org
 
 
---J5MfuwkIyy7RmF4Q
+--MmQIYbZiCoQ2kDro
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Thu, Oct 22, 2015 at 04:02:13PM +0100, Russell King - ARM Linux wrote:
+On Tue, Oct 20, 2015 at 04:46:56PM +0100, Russell King - ARM Linux wrote:
 
-> If it was such a problem, then in the _eight_ days that this has been
-> discussed so far, _someone_ would have sent some data showing the
-> problem.  I think the fact is, there is no data.
+> Something like this.  I haven't put a lot of effort into it to change all
+> the places which return an -EPROBE_DEFER, and it also looks like we need
+> some helpers to report when we have only an device_node (or should that
+> be fwnode?)  See the commented out of_warn_deferred() in
+> drivers/gpio/gpiolib-of.c.  Adding this stuff in the subsystems searching
+> for resources should make debugging why things are getting deferred easier.
 
-> Someone prove me wrong.  Someone post the verifiable data showing that
-> there is a problem to be solved here.
+Yeah, plus I'd expect it to also result in better error reporting
+overall if the subsystems are able to report when they fail to get
+something rather than just returning an error to the driver.
 
-> Someone show what the specific failure cases are that are hampering
-> vendors moving forwards.  Someone show the long boot times by way of
-> kernel message log.  Someone show some evidence of the problems that
-> have been alluded to.
+> +/**
+> + * dev_warn_deferred() - report why a probe has been deferred
+> + */
+> +void dev_warn_deferred(struct device *dev, const char *fmt, ...)
+> +{
+> +	if (driver_deferred_probe_report) {
+> +		struct va_format vaf;
+> +		va_list ap;
+> +
+> +		va_start(ap, fmt);
+> +		vaf.fmt = fmt;
+> +		vaf.va = &ap;
+> +
+> +		dev_warn(dev, "deferring probe: %pV", &vaf);
+> +		va_end(ap);
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(dev_warn_deferred);
 
-> If no one can show some evidence, there isn't a problem here. :)
+I'm not currently able to think of a nice way of writing this but I think
+what I'd really like to see from a driver point of view is something
+which decays into dev_err() if it's a non-deferral error.  That way
+drivers can have minimal log and return error handling code and we will
+still get the output sensibly.  The best I can think of is something
+like
 
-Yeah, I'm not convinced the timing is *such* a big deal either - I do
-think that the log spam is a real problem but I think something much
-less invasive like the interface you proposed is good for addressing
-that.
+   void dev_warn_deferred(struct device *dev, int err, const char *fmt, ...)
 
---J5MfuwkIyy7RmF4Q
+which requires the caller to pass in err twice to get it logged.  That's
+not a thing of beauty but it gets the job done...  but perhaps your
+original interface is better, it's a bit cleaner.
+
+--MmQIYbZiCoQ2kDro
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJWKXI1AAoJECTWi3JdVIfQz30H/RIVYugSpt5G4di2CHITc0BQ
-yoflpyMikyLfYkdFzjloKeyEodeVohF661x1e/XN7zhOOoZQD712sSW2D8yBDUT6
-yrEoEHZsxe6SlCqBTUpuev2KOXoQm11HOxNsYjop+0ZDBPfYrG6xIQfu2rRlQDXM
-bSYvTXMmgOb2rTVHhORTbtwgZMAXj3K9BdybHilOAyenxrbCx1uX28RgHYJQ+QDc
-bJvszKCOLJSBYYdn3QFCazwYtS3RtZ4PZtR+ZTfNmliT6dzi5rWcm14n+bIInG6+
-XROzzllUhwfN/h4TKFS5+6PJGCE5lu8AobnBVyoSzSqBHk4uMij6zH7YWdHyHOs=
-=HDzZ
+iQEcBAEBCAAGBQJWKOKUAAoJECTWi3JdVIfQFcwH/2Bsw1x5Qw+VgkL/0LyC6iV4
+8QUyxsL3BhSrQ1Oy5EVszY51yxiqW1bWOKCZKGe8uMuLcHdfpkSypeMNtqeEUKvp
+qfqnzd1DRT2mIy3wIDab7BFEWW+yRDXc+B9cbfkLUX3R3ysMSMNtb8ilZJUk+TLK
+KHxIGcjk7tFpWEtSAlJ+v9im8+HWMsdAioAOKc+lUgWlm9wftuARlM3MacsGfjuA
+33SGbUwuvKMyqsSbflUlZGZQUoGFhxUFSzTqfqBeV3jIWgSyEJCEYxeBTIAlHpTQ
+k9bgJeCmEQlpd8bkv2L85XtQ9D4dMFHhG7KIO+i8gTzPfiLLDl/bo96X9dEK/tE=
+=wdzj
 -----END PGP SIGNATURE-----
 
---J5MfuwkIyy7RmF4Q--
+--MmQIYbZiCoQ2kDro--
