@@ -1,71 +1,86 @@
-From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Subject: Re: [GIT PULL] On-demand device probing
-Date: Mon, 26 Oct 2015 13:55:29 +0100
-Message-ID: <CAAObsKAFJ+OKiLR2aMOjf15bd7k89EKsKLpd3ubsPMKeGLkRZw@mail.gmail.com>
-References: <20151018192931.GY14956@sirena.org.uk> <562A5602.7000208@sonymobile.com>
- <CAL_JsqLNSM=+j2r9HPcbSzsZrgnGEY3=kv21EXxisKwP5+57ag@mail.gmail.com>
- <24100858.2KIS8Y2npV@vostro.rjw.lan> <20151024220648.GR29919@sirena.org.uk>
- <CAJZ5v0hPVu7AL8zBdU4Kb7+MVfYv0mTa43RhnCyyPR+RKDbhLA@mail.gmail.com> <20151026105138.20687.13546@quantum>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20151026105138.20687.13546@quantum>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Michael Turquette <mturquette@baylibre.com>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>, Mark Brown <broonie@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tim Bird <tim.bird@sonymobile.com>, "frowand.list@gmail.com" <frowand.list@gmail.com>, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, =?UTF-8?Q?Terje_Bergstr=C3=B6m?= <tbergstrom@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Wolfram Sang <wsa@the-dreams.de>, Grant Likely <grant.likely@linaro.org>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshko>
+From: Olliver Schinagl <o.schinagl@ultimaker.com>
+Subject: [PATCH 01/10] pwm: lpc18xx_pwm: use pwm_set_chip_data
+Date: Mon, 26 Oct 2015 22:32:32 +0100
+Message-ID: <1445895161-2317-2-git-send-email-o.schinagl@ultimaker.com>
+References: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from 7of9.schinagl.nl ([88.159.158.68]:33273 "EHLO 7of9.schinagl.nl"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752671AbbJZVcz (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Mon, 26 Oct 2015 17:32:55 -0400
+In-Reply-To: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Olliver Schinagl <oliver@schinagl.nl>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Joachim Eastwood <manabian@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Olliver Schinagl <oliver+list@schinagl.nl>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On 26 October 2015 at 11:51, Michael Turquette <mturquette@baylibre.com> wrote:
-> Quoting Rafael J. Wysocki (2015-10-25 06:54:39)
->> On Sun, Oct 25, 2015 at 12:06 AM, Mark Brown <broonie@kernel.org> wrote:
->> > On Sat, Oct 24, 2015 at 04:17:12PM +0200, Rafael J. Wysocki wrote:
->> >
->> >> Well, I'm not quite sure why exactly everyone is so focused on probing here.
->> >
->> > Probe deferral is really noisy even if it's working fine on a given
->> > system so it's constantly being highlighted to people in a way that
->> > other issues aren't if you're not directly having problems.
->> >
->> > There's also the understanding people had that the order things get
->> > bound changes the ordering for some of the other cases (perhaps it's a
->> > good idea to do that, it seems likely to be sensible?).
->>
->> But it really doesn't do that.  Also making it do so doesn't help much
->> in the cases where things can happen asynchronously (system
->> suspend/resume, runtime PM).
->>
->> If, instead, there was a way to specify a functional dependency at the
->> device registration time, it might be used to change the order of
->> everything relevant, including probe.  That should help to reduce the
->> noise you're referring to.
->
-> Taking it a step further, if functional dependencies were understood at
-> link-time then we could optimize link order as well. There are probably
-> lots of optimizations if we only made the effort to understand these
-> dependencies earlier.
->
-> Constructing the device/resource dependency graph before the device ever
-> boots sounds interesting to me.
+From: Olliver Schinagl <oliver@schinagl.nl>
 
-Alexander Holler has been looking at that for some time already.
+The lpc18xx driver currently manipulates the pwm_device struct directly
+rather then using the pwm_set_chip_data. While the current method may
+save a clock cycle or two, it is more obvious that data is set to the
+chip pointer (especially since it is only a single int holding struct.
 
-Regards,
+Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
+---
+ drivers/pwm/pwm-lpc18xx-sct.c | 11 +++++++----
+ drivers/pwm/pwm-sun4i.c       | 11 +++++++++++
+ 2 files changed, 18 insertions(+), 4 deletions(-)
 
-Tomeu
-
-> Regards,
-> Mike
->
->>
->> If the dependency could only be discovered at the probe time, the
->> order of things might be changed in response to letting the driver
->> core know about it rather than "just in case", which should be more
->> efficient.
->>
->> Thanks,
->> Rafael
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> Please read the FAQ at  http://www.tux.org/lkml/
+diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
+index 9163085..0ab59f1 100644
+--- a/drivers/pwm/pwm-lpc18xx-sct.c
++++ b/drivers/pwm/pwm-lpc18xx-sct.c
+@@ -408,14 +408,17 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	for (i = 0; i < lpc18xx_pwm->chip.npwm; i++) {
++		struct lpc18xx_pwm_data *lpc18xx_data;
++
+ 		pwm = &lpc18xx_pwm->chip.pwms[i];
+-		pwm->chip_data = devm_kzalloc(lpc18xx_pwm->dev,
+-					      sizeof(struct lpc18xx_pwm_data),
+-					      GFP_KERNEL);
+-		if (!pwm->chip_data) {
++		lpc18xx_data = devm_kzalloc(lpc18xx_pwm->dev,
++					    sizeof(struct lpc18xx_pwm_data),
++					    GFP_KERNEL);
++		if (!lpc18xx_data) {
+ 			ret = -ENOMEM;
+ 			goto remove_pwmchip;
+ 		}
++		pwm_set_chip_data(pwm, lpc18xx_data);
+ 	}
+ 
+ 	platform_set_drvdata(pdev, lpc18xx_pwm);
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index cd9dde5..5ec4e8e 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -8,6 +8,7 @@
+ 
+ #include <linux/bitops.h>
+ #include <linux/clk.h>
++#include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/io.h>
+ #include <linux/module.h>
+@@ -244,6 +245,16 @@ static void sun4i_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	spin_lock(&sun4i_pwm->ctrl_lock);
+ 	val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+ 	val &= ~BIT_CH(PWM_EN, pwm->hwpwm);
++	sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
++	spin_unlock(&sun4i_pwm->ctrl_lock);
++
++	/* Allow for the PWM hardware to finish its last toggle. The pulse
++	 * may have just started and thus we should wait a full period.
++	 */
++	ndelay(pwm_get_period(pwm));
++
++	spin_lock(&sun4i_pwm->ctrl_lock);
++	val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+ 	val &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
+ 	sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
+ 	spin_unlock(&sun4i_pwm->ctrl_lock);
+-- 
+2.6.1
