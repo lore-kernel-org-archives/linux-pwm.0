@@ -1,7 +1,7 @@
 From: Olliver Schinagl <o.schinagl@ultimaker.com>
-Subject: [PATCH 04/10] pwm: core: use bitops
-Date: Mon, 26 Oct 2015 22:32:35 +0100
-Message-ID: <1445895161-2317-5-git-send-email-o.schinagl@ultimaker.com>
+Subject: [PATCH 02/10] pwm: sunxi: fix whitespace issue
+Date: Mon, 26 Oct 2015 22:32:33 +0100
+Message-ID: <1445895161-2317-3-git-send-email-o.schinagl@ultimaker.com>
 References: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
@@ -12,38 +12,25 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Olliver Schinagl <oliver@schinagl.nl>
 
-The pwm header defines bits manually while there is a nice bitops.h with
-a BIT() macro. Use the BIT() macro to set bits in pwm.h
+This patch changes no code, it just fixes the whitespacing
 
 Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
 ---
- include/linux/pwm.h | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/pwm/pwm-sun4i.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index d681f68..29315ad 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -1,6 +1,7 @@
- #ifndef __LINUX_PWM_H
- #define __LINUX_PWM_H
- 
-+#include <linux/bitops.h>
- #include <linux/err.h>
- #include <linux/of.h>
- 
-@@ -74,9 +75,9 @@ enum pwm_polarity {
- };
- 
- enum {
--	PWMF_REQUESTED = 1 << 0,
--	PWMF_ENABLED = 1 << 1,
--	PWMF_EXPORTED = 1 << 2,
-+	PWMF_REQUESTED = BIT(0),
-+	PWMF_ENABLED = BIT(1),
-+	PWMF_EXPORTED = BIT(2),
- };
- 
- /**
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index 5ec4e8e..58ff424 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -115,7 +115,7 @@ static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		 * is not an integer so round it half up instead of
+ 		 * truncating to get less surprising values.
+ 		 */
+-		div = clk_rate * period_ns + NSEC_PER_SEC/2;
++		div = clk_rate * period_ns + NSEC_PER_SEC / 2;
+ 		do_div(div, NSEC_PER_SEC);
+ 		if (div - 1 > PWM_PRD_MASK)
+ 			prescaler = 0;
 -- 
 2.6.1
