@@ -1,86 +1,79 @@
 From: Olliver Schinagl <o.schinagl@ultimaker.com>
-Subject: [PATCH 01/10] pwm: lpc18xx_pwm: use pwm_set_chip_data
-Date: Mon, 26 Oct 2015 22:32:32 +0100
-Message-ID: <1445895161-2317-2-git-send-email-o.schinagl@ultimaker.com>
-References: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from 7of9.schinagl.nl ([88.159.158.68]:33273 "EHLO 7of9.schinagl.nl"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752671AbbJZVcz (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 26 Oct 2015 17:32:55 -0400
-In-Reply-To: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Subject: [PATCH 00/10]
+Date: Mon, 26 Oct 2015 22:32:31 +0100
+Message-ID: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Olliver Schinagl <oliver@schinagl.nl>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Joachim Eastwood <manabian@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Olliver Schinagl <oliver+list@schinagl.nl>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Olliver Schinagl <oliver+list@schinagl.nl>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Olliver Schinagl <o.schinagl@ultimaker.com>, Olliver Schinagl <oliver@schinagl.nL>
+List-Id: linux-pwm@vger.kernel.org
 
-From: Olliver Schinagl <oliver@schinagl.nl>
+Hey Thierry,
 
-The lpc18xx driver currently manipulates the pwm_device struct directly
-rather then using the pwm_set_chip_data. While the current method may
-save a clock cycle or two, it is more obvious that data is set to the
-chip pointer (especially since it is only a single int holding struct.
+With this patch set I wanted to add some new features to the PWM framework,
+while doing so, I ran into 2 minor things with the lpc18xx and sunxi driver.
 
-Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
----
- drivers/pwm/pwm-lpc18xx-sct.c | 11 +++++++----
- drivers/pwm/pwm-sun4i.c       | 11 +++++++++++
- 2 files changed, 18 insertions(+), 4 deletions(-)
+The lpc18xx I bumped into because I was trying to learn from existing drivers.
+Here I only added the setter to set the chip_data, since I think it is bad
+practice to set data directly in the struct, I'll be happy to stand corrected
+however and that patch not applied.
 
-diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
-index 9163085..0ab59f1 100644
---- a/drivers/pwm/pwm-lpc18xx-sct.c
-+++ b/drivers/pwm/pwm-lpc18xx-sct.c
-@@ -408,14 +408,17 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
- 	}
- 
- 	for (i = 0; i < lpc18xx_pwm->chip.npwm; i++) {
-+		struct lpc18xx_pwm_data *lpc18xx_data;
-+
- 		pwm = &lpc18xx_pwm->chip.pwms[i];
--		pwm->chip_data = devm_kzalloc(lpc18xx_pwm->dev,
--					      sizeof(struct lpc18xx_pwm_data),
--					      GFP_KERNEL);
--		if (!pwm->chip_data) {
-+		lpc18xx_data = devm_kzalloc(lpc18xx_pwm->dev,
-+					    sizeof(struct lpc18xx_pwm_data),
-+					    GFP_KERNEL);
-+		if (!lpc18xx_data) {
- 			ret = -ENOMEM;
- 			goto remove_pwmchip;
- 		}
-+		pwm_set_chip_data(pwm, lpc18xx_data);
- 	}
- 
- 	platform_set_drvdata(pdev, lpc18xx_pwm);
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index cd9dde5..5ec4e8e 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -8,6 +8,7 @@
- 
- #include <linux/bitops.h>
- #include <linux/clk.h>
-+#include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/io.h>
- #include <linux/module.h>
-@@ -244,6 +245,16 @@ static void sun4i_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	spin_lock(&sun4i_pwm->ctrl_lock);
- 	val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
- 	val &= ~BIT_CH(PWM_EN, pwm->hwpwm);
-+	sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
-+	spin_unlock(&sun4i_pwm->ctrl_lock);
-+
-+	/* Allow for the PWM hardware to finish its last toggle. The pulse
-+	 * may have just started and thus we should wait a full period.
-+	 */
-+	ndelay(pwm_get_period(pwm));
-+
-+	spin_lock(&sun4i_pwm->ctrl_lock);
-+	val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
- 	val &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
- 	sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
- 	spin_unlock(&sun4i_pwm->ctrl_lock);
+Since I use the sunxi platform a lot, I used this platform to test things with
+and to also ran into some issues with the hardware PWM as can be seen in its
+commit log.
+
+The major feature of this patch-set however is the introduction of the Generic
+GPIO based PWM driver based on the high-resolution timers. On an Olimex Lime2
+featuring an Allwinner A20 SoC, I can toggle quite reliably at 100 kHz. At 150
+kHz the SoC started to show signs of being to slow and the scope traces started
+to become inconsistent.
+Naturally of course, a GPIO based PWM is heavily dependent on system load and
+on the SoC. For some use cases a bit-banged PWM might not be ideal, audio for
+example does not sound 'pitch-perfect' but does work pretty alright. It really
+is up to the users what one might one to use a bit-banged GPIO driver for.
+
+Finally, I've started to add a 'pulse' option to the PWM framework and
+added it to the sunxi and gpio variants. It currently does not work and I
+did not wanted to submit it until Boris's PWM patches where in, but I also
+felt an early review on the intention would be a good idea.
+The idea is using this new feature, we can start emitting a fixed number of
+pulses, using the PWM 'hardware' guaranteeing properly timed output.
+Not all hardware may support this at all (might be emulated however) and the
+sunxi hardware for example is limited to 1 pulse max (but may emulate more with
+timers for example). The GPIO driver is able to produce a lot of timed pulses
+however.
+
+Thanks,
+
+Olliver
+
+Signed-off-by: Olliver Schinagl <oliver@schinagl.nL>
+
+Olliver Schinagl (10):
+  pwm: lpc18xx_pwm: use pwm_set_chip_data
+  pwm: sunxi: fix whitespace issue
+  pwm: sunxi: Yield some time to the pwm-block to become ready
+  pwm: core: use bitops
+  pwm: sysfs: do not unnecessarily store result in var
+  pwm: sysfs: make use of the DEVICE_ATTR_[RW][WO] macro's
+  pwm: gpio: Add a generic gpio based PWM driver
+  pwm: core: add pulse feature to the PWM framework
+  pwm: pwm_gpio: add pulse option
+  pwm: sunxi: Add possibility to pulse the sunxi pwm output
+
+ Documentation/devicetree/bindings/pwm/pwm-gpio.txt |  18 ++
+ MAINTAINERS                                        |   5 +
+ drivers/pwm/Kconfig                                |  15 ++
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/core.c                                 |  30 ++-
+ drivers/pwm/pwm-gpio.c                             | 276 +++++++++++++++++++++
+ drivers/pwm/pwm-lpc18xx-sct.c                      |  11 +-
+ drivers/pwm/pwm-sun4i.c                            |  73 ++++--
+ drivers/pwm/sysfs.c                                | 133 +++++++---
+ include/linux/pwm.h                                |  71 +++++-
+ 10 files changed, 556 insertions(+), 77 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-gpio.txt
+ create mode 100644 drivers/pwm/pwm-gpio.c
+
 -- 
 2.6.1
