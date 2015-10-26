@@ -1,7 +1,7 @@
 From: Olliver Schinagl <o.schinagl@ultimaker.com>
-Subject: [PATCH 08/10] pwm: core: add pulse feature to the PWM framework
-Date: Mon, 26 Oct 2015 22:32:39 +0100
-Message-ID: <1445895161-2317-9-git-send-email-o.schinagl@ultimaker.com>
+Subject: [PATCH 07/10] pwm: gpio: Add a generic gpio based PWM driver
+Date: Mon, 26 Oct 2015 22:32:38 +0100
+Message-ID: <1445895161-2317-8-git-send-email-o.schinagl@ultimaker.com>
 References: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
@@ -12,374 +12,360 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Olliver Schinagl <oliver@schinagl.nl>
 
-Some hardware PWM's have the possibility to only send out one (or more)
-pulses. This can be quite a useful feature in case one wants or needs
-only a single pulse, but at the exact width.
+This patch adds a bit-banging gpio PWM driver. It makes use of hrtimers,
+to allow nano-second resolution, though it obviously strongly depends on
+the switching speed of the gpio pins, hrtimer and system load.
 
-Additionally, if multiple pulses are possible, outputting a fixed amount
-of pulses can be useful for various timing specific purposes.
-
-A few new functions have been expanded or added for this new behavior.
-
-* pwm_config()	now takes an additional parameter to setup the number of
-		pulses to output. The driver may force this to 0 or 1
-		for if example if this feature is not or only partially
-		supported
-* pwm_[sg]et_pulse_count()	get or set the number of pulses the pwm
-				framework is configured for
-* pwm_get_pulse_count_max()	get the maximum number of pulses the pwm
-				driver supports
-* pwm_pulse()		Tell the PWM to emit a pre-configured number of pulses
-* pwm_pulse_done()	an internal function for drivers to call when
-			they have completed their pre-configured number
-			of pulses
-* pwm_is_pulsing()	tells the callers if the pwm is busy pulsing,
-			yielding a little more information than just
-			pwm_is_enabled()
+Each pwm node can have 1 or more "pwm-gpio" entries, which will be
+treated as pwm's as part of a pwm chip.
 
 Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
 ---
- drivers/pwm/core.c      | 30 +++++++++++++++++++----
- drivers/pwm/pwm-gpio.c  |  3 ++-
- drivers/pwm/pwm-sun4i.c |  3 ++-
- drivers/pwm/sysfs.c     | 58 ++++++++++++++++++++++++++++++++++++++++++--
- include/linux/pwm.h     | 64 ++++++++++++++++++++++++++++++++++++++++++++++---
- 5 files changed, 147 insertions(+), 11 deletions(-)
+ Documentation/devicetree/bindings/pwm/pwm-gpio.txt |  18 ++
+ MAINTAINERS                                        |   5 +
+ drivers/pwm/Kconfig                                |  15 ++
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-gpio.c                             | 253 +++++++++++++++++++++
+ 5 files changed, 292 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-gpio.txt
+ create mode 100644 drivers/pwm/pwm-gpio.c
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 3f9df3e..e2c1c0a 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -432,22 +432,29 @@ EXPORT_SYMBOL_GPL(pwm_free);
-  * @pwm: PWM device
-  * @duty_ns: "on" time (in nanoseconds)
-  * @period_ns: duration (in nanoseconds) of one cycle
-+ * @pulse_count: number of pulses (periods) to output on pwm_pulse
-  *
-  * Returns: 0 on success or a negative error code on failure.
-  */
--int pwm_config(struct pwm_device *pwm, int duty_ns, int period_ns)
-+int pwm_config(struct pwm_device *pwm, int duty_ns, int period_ns,
-+	       unsigned int pulse_count)
- {
- 	int err;
- 
- 	if (!pwm || duty_ns < 0 || period_ns <= 0 || duty_ns > period_ns)
- 		return -EINVAL;
- 
--	err = pwm->chip->ops->config(pwm->chip, pwm, duty_ns, period_ns);
-+	if (pulse_count > pwm->pulse_count_max)
-+		return -EINVAL;
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-gpio.txt b/Documentation/devicetree/bindings/pwm/pwm-gpio.txt
+new file mode 100644
+index 0000000..336f61f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/pwm-gpio.txt
+@@ -0,0 +1,18 @@
++Generic GPIO bit-banged PWM driver
 +
-+	err = pwm->chip->ops->config(pwm->chip, pwm, duty_ns,
-+				     period_ns, pulse_count);
- 	if (err)
- 		return err;
- 
- 	pwm->duty_cycle = duty_ns;
- 	pwm->period = period_ns;
-+	pwm->pulse_count = pulse_count;
- 
- 	return 0;
- }
-@@ -487,6 +494,18 @@ int pwm_set_polarity(struct pwm_device *pwm, enum pwm_polarity polarity)
- EXPORT_SYMBOL_GPL(pwm_set_polarity);
- 
- /**
-+ * pwm_pulse_done() - notify the PWM framework that pulse_count pulses are done
-+ * @pwm: PWM device
-+ */
-+void pwm_pulse_done(struct pwm_device *pwm)
-+{
-+	if (pwm && !test_and_clear_bit(PWMF_ENABLED | PWMF_PULSING,
-+				       &pwm->flags))
-+		return pwm->chip->ops->disable(pwm->chip, pwm);
-+}
-+EXPORT_SYMBOL_GPL(pwm_pulse_done);
++Required properties:
++  - compatible: should be "pwm-gpio"
++  - #pwm-cells: should be 3, see pwm.txt in this directory for a general
++    description of the cells format.
++  - pwm-gpios: one or more gpios describing the used gpio, see the gpio
++    bindings for the used gpio driver.
 +
-+/**
-  * pwm_enable() - start a PWM output toggling
-  * @pwm: PWM device
-  *
-@@ -494,7 +513,9 @@ EXPORT_SYMBOL_GPL(pwm_set_polarity);
-  */
- int pwm_enable(struct pwm_device *pwm)
- {
--	if (pwm && !test_and_set_bit(PWMF_ENABLED, &pwm->flags))
-+	if (pwm && !test_and_set_bit(
-+			PWMF_ENABLED | !pwm->pulse_count ? : PWMF_PULSING,
-+			&pwm->flags))
- 		return pwm->chip->ops->enable(pwm->chip, pwm);
++Example:
++#include <dt-bindings/gpio/gpio.h>
++
++	pwm: pwm@0 {
++		compatible = "pwm-gpio";
++		#pwm-cells = 3;
++		pwm-gpios = <&pio 7 1 GPIO_ACTIVE_LOW>;
++		pwm-gpios = <&pio 7 2 GPIO_ACTIVE_LOW>;
++	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7ba7ab7..0ae7fbf 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4555,6 +4555,11 @@ F:	drivers/i2c/muxes/i2c-mux-gpio.c
+ F:	include/linux/i2c-mux-gpio.h
+ F:	Documentation/i2c/muxes/i2c-mux-gpio
  
- 	return pwm ? 0 : -EINVAL;
-@@ -507,7 +528,8 @@ EXPORT_SYMBOL_GPL(pwm_enable);
-  */
- void pwm_disable(struct pwm_device *pwm)
- {
--	if (pwm && test_and_clear_bit(PWMF_ENABLED, &pwm->flags))
-+	if (pwm && test_and_clear_bit(PWMF_ENABLED | PWMF_PULSING,
-+				      &pwm->flags))
- 		pwm->chip->ops->disable(pwm->chip, pwm);
- }
- EXPORT_SYMBOL_GPL(pwm_disable);
++GENERIC GPIO PWM DRIVER
++M:	Olliver Schinagl <oliver@schinagl.nl>
++S:	Maintained
++F:	drivers/pwm/pwm-gpio.c
++
+ GENERIC HDLC (WAN) DRIVERS
+ M:	Krzysztof Halasa <khc@pm.waw.pl>
+ W:	http://www.kernel.org/pub/linux/utils/net/hdlc/
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 0cfaf6b..c0bc296 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -170,6 +170,21 @@ config PWM_IMG
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-img
+ 
++config PWM_GPIO
++	tristate "Generic GPIO bit-banged PWM driver"
++	depends on OF
++	depends on GPIOLIB
++	help
++	  Some platforms do not offer any hardware PWM capabilities but do have
++	  General Purpose Input Output (GPIO) pins available. Using the kernels
++	  High-Resolution Timer API this driver tries to toggle GPIO using the
++	  generic kernel PWM framework. The maximum frequency and/or accuracy
++	  is dependent on several factors such as system load and the maximum
++	  speed a pin can be toggled at the hardware.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called pwm-gpio.
++
+ config PWM_IMX
+ 	tristate "i.MX PWM support"
+ 	depends on ARCH_MXC
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index 69b8275..96aa9aa 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -13,6 +13,7 @@ obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
+ obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
+ obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
+ obj-$(CONFIG_PWM_FSL_FTM)	+= pwm-fsl-ftm.o
++obj-$(CONFIG_PWM_GPIO)		+= pwm-gpio.o
+ obj-$(CONFIG_PWM_IMG)		+= pwm-img.o
+ obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
+ obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
 diff --git a/drivers/pwm/pwm-gpio.c b/drivers/pwm/pwm-gpio.c
-index 8b588fb..cf4b170 100644
---- a/drivers/pwm/pwm-gpio.c
+new file mode 100644
+index 0000000..8b588fb
+--- /dev/null
 +++ b/drivers/pwm/pwm-gpio.c
-@@ -84,7 +84,7 @@ enum hrtimer_restart gpio_pwm_timer(struct hrtimer *timer)
- }
- 
- static int gpio_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
--			    int duty_ns, int period_ns)
-+			    int duty_ns, int period_ns, unsigned int count)
- {
- 	struct gpio_pwm_data *gpio_data = pwm_get_chip_data(pwm);
- 
-@@ -202,6 +202,7 @@ static int gpio_pwm_probe(struct platform_device *pdev)
- 			hrtimer++;
- 
- 		pwm_set_chip_data(&gpio_chip->chip.pwms[i], gpio_data);
-+		pwm_set_pulse_count_max(&gpio_chip->chip.pwms[i], UINT_MAX);
- 	}
- 	if (!hrtimer)
- 		dev_warn(&pdev->dev, "unable to use High-Resolution timer,");
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 4d84d9d..6347ca8 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -97,7 +97,8 @@ static inline void sun4i_pwm_writel(struct sun4i_pwm_chip *chip,
- }
- 
- static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
--			    int duty_ns, int period_ns)
-+			    int duty_ns, int period_ns,
-+			    unsigned int pulse_count)
- {
- 	struct sun4i_pwm_chip *sun4i_pwm = to_sun4i_pwm_chip(chip);
- 	u32 prd, dty, val, clk_gate;
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index 9c90886..9b7413c 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -61,7 +61,8 @@ static ssize_t period_store(struct device *child,
- 	if (ret)
- 		return ret;
- 
--	ret = pwm_config(pwm, pwm_get_duty_cycle(pwm), val);
-+	ret = pwm_config(pwm, pwm_get_duty_cycle(pwm),
-+			 val, pwm_get_pulse_count(pwm));
- 
- 	return ret ? : size;
- }
-@@ -87,7 +88,8 @@ static ssize_t duty_cycle_store(struct device *child,
- 	if (ret)
- 		return ret;
- 
--	ret = pwm_config(pwm, val, pwm_get_period(pwm));
-+	ret = pwm_config(pwm, val, pwm_get_period(pwm),
-+			 pwm_get_pulse_count(pwm));
- 
- 	return ret ? : size;
- }
-@@ -167,16 +169,68 @@ static ssize_t polarity_store(struct device *child,
- 	return ret ? : size;
- }
- 
-+static ssize_t pulse_count_show(struct device *child,
-+				struct device_attribute *attr,
-+				char *buf)
-+{
-+	const struct pwm_device *pwm = child_to_pwm_device(child);
+@@ -0,0 +1,253 @@
++/*
++ * Copyright (c) 2015 Olliver Schinagl <oliver@schinagl.nl>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * This driver adds a high-resolution timer based PWM driver. Since this is a
++ * bit-banged driver, accuracy will always depend on a lot of factors, such as
++ * GPIO toggle speed and system load.
++ */
 +
-+	return sprintf(buf, "%u\n", pwm_get_pulse_count(pwm));
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/gpio/consumer.h>
++#include <linux/of.h>
++#include <linux/of_gpio.h>
++#include <linux/property.h>
++#include <linux/pwm.h>
++#include <linux/errno.h>
++#include <linux/err.h>
++#include <linux/device.h>
++#include <linux/hrtimer.h>
++#include <linux/ktime.h>
++#include <linux/kernel.h>
++#include <linux/platform_device.h>
++
++#define DRV_NAME "pwm-gpio"
++
++struct gpio_pwm_data {
++	struct hrtimer timer;
++	struct gpio_desc *gpiod;
++	bool polarity;
++	bool pin_on;
++	int on_time;
++	int off_time;
++	bool run;
++};
++
++struct gpio_pwm_chip {
++	struct pwm_chip chip;
++};
++
++static void gpio_pwm_off(struct gpio_pwm_data *gpio_data)
++{
++	gpiod_set_value_cansleep(gpio_data->gpiod, gpio_data->polarity ? 0 : 1);
 +}
 +
-+static ssize_t pulse_count_store(struct device *child,
-+				 struct device_attribute *attr,
-+				 const char *buf, size_t size)
++static void gpio_pwm_on(struct gpio_pwm_data *gpio_data)
 +{
-+	struct pwm_device *pwm = child_to_pwm_device(child);
-+	unsigned int val;
++	gpiod_set_value_cansleep(gpio_data->gpiod, gpio_data->polarity ? 1 : 0);
++}
++
++enum hrtimer_restart gpio_pwm_timer(struct hrtimer *timer)
++{
++	struct gpio_pwm_data *gpio_data = container_of(timer,
++						      struct gpio_pwm_data,
++						      timer);
++	if (!gpio_data->run) {
++		gpio_pwm_off(gpio_data);
++		gpio_data->pin_on = false;
++		return HRTIMER_NORESTART;
++	}
++
++	if (!gpio_data->pin_on) {
++		hrtimer_forward_now(&gpio_data->timer,
++				    ns_to_ktime(gpio_data->on_time));
++		gpio_pwm_on(gpio_data);
++		gpio_data->pin_on = true;
++	} else {
++		hrtimer_forward_now(&gpio_data->timer,
++				    ns_to_ktime(gpio_data->off_time));
++		gpio_pwm_off(gpio_data);
++		gpio_data->pin_on = false;
++	}
++
++	return HRTIMER_RESTART;
++}
++
++static int gpio_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
++			    int duty_ns, int period_ns)
++{
++	struct gpio_pwm_data *gpio_data = pwm_get_chip_data(pwm);
++
++	gpio_data->on_time = duty_ns;
++	gpio_data->off_time = period_ns - duty_ns;
++
++	return 0;
++}
++
++static int gpio_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
++				 enum pwm_polarity polarity)
++{
++	struct gpio_pwm_data *gpio_data = pwm_get_chip_data(pwm);
++
++	gpio_data->polarity = (polarity != PWM_POLARITY_NORMAL) ? true : false;
++
++	return 0;
++}
++
++static int gpio_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct gpio_pwm_data *gpio_data = pwm_get_chip_data(pwm);
++
++	if (gpio_data->run)
++		return -EBUSY;
++
++	gpio_data->run = true;
++	if (gpio_data->off_time) {
++		hrtimer_start(&gpio_data->timer, ktime_set(0, 0),
++			      HRTIMER_MODE_REL);
++	} else {
++		if (gpio_data->on_time)
++			gpio_pwm_on(gpio_data);
++		else
++			gpio_pwm_off(gpio_data);
++	}
++
++	return 0;
++}
++
++static void gpio_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct gpio_pwm_data *gpio_data = pwm_get_chip_data(pwm);
++
++	gpio_data->run = false;
++	if (!gpio_data->off_time)
++		gpio_pwm_off(gpio_data);
++}
++
++static const struct pwm_ops gpio_pwm_ops = {
++	.config = gpio_pwm_config,
++	.set_polarity = gpio_pwm_set_polarity,
++	.enable = gpio_pwm_enable,
++	.disable = gpio_pwm_disable,
++	.owner = THIS_MODULE,
++};
++
++static int gpio_pwm_probe(struct platform_device *pdev)
++{
 +	int ret;
++	struct gpio_pwm_chip *gpio_chip;
++	int npwm, i;
++	int hrtimer = 0;
 +
-+	ret = kstrtouint(buf, 0, &val);
-+	if (ret)
++	npwm = of_gpio_named_count(pdev->dev.of_node, "pwm-gpios");
++	if (npwm < 1)
++		return -ENODEV;
++
++	gpio_chip = devm_kzalloc(&pdev->dev, sizeof(*gpio_chip), GFP_KERNEL);
++	if (!gpio_chip)
++		return -ENOMEM;
++
++	gpio_chip->chip.dev = &pdev->dev;
++	gpio_chip->chip.ops = &gpio_pwm_ops;
++	gpio_chip->chip.base = -1;
++	gpio_chip->chip.npwm = npwm;
++	gpio_chip->chip.of_xlate = of_pwm_xlate_with_flags;
++	gpio_chip->chip.of_pwm_n_cells = 3;
++	gpio_chip->chip.can_sleep = true;
++
++	ret = pwmchip_add(&gpio_chip->chip);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
 +		return ret;
++	}
 +
-+	ret = pwm_config(pwm, pwm_get_duty_cycle(pwm),
-+			 pwm_get_period(pwm), val);
++	for (i = 0; i < npwm; i++) {
++		struct gpio_desc *gpiod;
++		struct gpio_pwm_data *gpio_data;
 +
-+	return ret ? : size;
++		gpiod = devm_gpiod_get_index(&pdev->dev, "pwm", i,
++					     GPIOD_OUT_LOW);
++		if (IS_ERR(gpiod)) {
++			int error;
 +
++			error = PTR_ERR(gpiod);
++			if (error != -EPROBE_DEFER)
++				dev_err(&pdev->dev,
++					"failed to get gpio flags, error: %d\n",
++					error);
++			return error;
++		}
++
++		gpio_data = devm_kzalloc(&pdev->dev, sizeof(*gpio_data),
++					 GFP_KERNEL);
++
++		hrtimer_init(&gpio_data->timer,
++			     CLOCK_MONOTONIC, HRTIMER_MODE_REL);
++		gpio_data->timer.function = &gpio_pwm_timer;
++		gpio_data->gpiod = gpiod;
++		gpio_data->pin_on = false;
++		gpio_data->run = false;
++
++		if (hrtimer_is_hres_active(&gpio_data->timer))
++			hrtimer++;
++
++		pwm_set_chip_data(&gpio_chip->chip.pwms[i], gpio_data);
++	}
++	if (!hrtimer)
++		dev_warn(&pdev->dev, "unable to use High-Resolution timer,");
++		dev_warn(&pdev->dev, "%s is restricted to low resolution.",
++			 DRV_NAME);
++
++	platform_set_drvdata(pdev, gpio_chip);
++
++	dev_info(&pdev->dev, "%d gpio pwms loaded\n", npwm);
++
++	return 0;
 +}
 +
-+static ssize_t pulse_count_max_show(struct device *child,
-+				    struct device_attribute *attr,
-+				    char *buf)
++static int gpio_pwm_remove(struct platform_device *pdev)
 +{
-+	const struct pwm_device *pwm = child_to_pwm_device(child);
++	struct gpio_pwm_chip *gpio_chip;
++	int i;
 +
-+	return sprintf(buf, "%u\n", pwm_get_pulse_count_max(pwm));
++	gpio_chip = platform_get_drvdata(pdev);
++	for (i = 0; i < gpio_chip->chip.npwm; i++) {
++		struct gpio_pwm_data *gpio_data;
++
++		gpio_data = pwm_get_chip_data(&gpio_chip->chip.pwms[i]);
++
++		hrtimer_cancel(&gpio_data->timer);
++	}
++
++	return pwmchip_remove(&gpio_chip->chip);
 +}
 +
-+static ssize_t pulsing_show(struct device *child,
-+			    struct device_attribute *attr,
-+			    char *buf)
-+{
-+	const struct pwm_device *pwm = child_to_pwm_device(child);
++static const struct of_device_id gpio_pwm_of_match[] = {
++	{ .compatible = DRV_NAME, },
++	{/* sentinel */},
++};
++MODULE_DEVICE_TABLE(of, gpio_pwm_of_match);
 +
-+	return sprintf(buf, "%d\n", pwm_is_pulsing(pwm));
-+}
++static struct platform_driver gpio_pwm_driver = {
++	.probe = gpio_pwm_probe,
++	.remove = gpio_pwm_remove,
++	.driver = {
++		.name = DRV_NAME,
++		.of_match_table = of_match_ptr(gpio_pwm_of_match),
++	},
++};
++module_platform_driver(gpio_pwm_driver);
 +
- static DEVICE_ATTR_RW(period);
- static DEVICE_ATTR_RW(duty_cycle);
- static DEVICE_ATTR_RW(enable);
- static DEVICE_ATTR_RW(polarity);
-+static DEVICE_ATTR_RW(pulse_count);
-+static DEVICE_ATTR_RO(pulse_count_max);
-+static DEVICE_ATTR_RO(pulsing);
- 
- static struct attribute *pwm_attrs[] = {
- 	&dev_attr_period.attr,
- 	&dev_attr_duty_cycle.attr,
- 	&dev_attr_enable.attr,
- 	&dev_attr_polarity.attr,
-+	&dev_attr_pulse_count.attr,
-+	&dev_attr_pulse_count_max.attr,
-+	&dev_attr_pulsing.attr,
- 	NULL
- };
- ATTRIBUTE_GROUPS(pwm);
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index 29315ad..c6042cf 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -22,7 +22,13 @@ void pwm_free(struct pwm_device *pwm);
- /*
-  * pwm_config - change a PWM device configuration
-  */
--int pwm_config(struct pwm_device *pwm, int duty_ns, int period_ns);
-+int pwm_config(struct pwm_device *pwm, int duty_ns,
-+	       int period_ns, unsigned int pulse_count);
-+
-+/*
-+ * pwm_pulse_done - notify the PWM framework that pulse_count pulses are done
-+ */
-+void pwm_pulse_done(struct pwm_device *pwm);
- 
- /*
-  * pwm_enable - start a PWM output toggling
-@@ -43,7 +49,8 @@ static inline void pwm_free(struct pwm_device *pwm)
- {
- }
- 
--static inline int pwm_config(struct pwm_device *pwm, int duty_ns, int period_ns)
-+static inline int pwm_config(struct pwm_device *pwm, int duty_ns,
-+			     int period_ns, unsigned int pulse_count)
- {
- 	return -EINVAL;
- }
-@@ -53,6 +60,11 @@ static inline int pwm_enable(struct pwm_device *pwm)
- 	return -EINVAL;
- }
- 
-+static inline int pwm_pulse_done(struct pwm_device *pwm)
-+{
-+	return -EINVAL;
-+}
-+
- static inline void pwm_disable(struct pwm_device *pwm)
- {
- }
-@@ -78,6 +90,7 @@ enum {
- 	PWMF_REQUESTED = BIT(0),
- 	PWMF_ENABLED = BIT(1),
- 	PWMF_EXPORTED = BIT(2),
-+	PWMF_PULSING = BIT(3),
- };
- 
- /**
-@@ -91,6 +104,8 @@ enum {
-  * @period: period of the PWM signal (in nanoseconds)
-  * @duty_cycle: duty cycle of the PWM signal (in nanoseconds)
-  * @polarity: polarity of the PWM signal
-+ * @pulse_count: number of PWM pulses to toggle
-+ * @pulse_count_max: maximum number of pulses that can be set to pulse
-  */
- struct pwm_device {
- 	const char *label;
-@@ -103,6 +118,8 @@ struct pwm_device {
- 	unsigned int period;
- 	unsigned int duty_cycle;
- 	enum pwm_polarity polarity;
-+	unsigned int pulse_count;
-+	unsigned int pulse_count_max;
- };
- 
- static inline bool pwm_is_enabled(const struct pwm_device *pwm)
-@@ -110,6 +127,11 @@ static inline bool pwm_is_enabled(const struct pwm_device *pwm)
- 	return test_bit(PWMF_ENABLED, &pwm->flags);
- }
- 
-+static inline bool pwm_is_pulsing(const struct pwm_device *pwm)
-+{
-+	return test_bit(PWMF_ENABLED | PWMF_PULSING, &pwm->flags);
-+}
-+
- static inline void pwm_set_period(struct pwm_device *pwm, unsigned int period)
- {
- 	if (pwm)
-@@ -142,6 +164,42 @@ static inline enum pwm_polarity pwm_get_polarity(const struct pwm_device *pwm)
- 	return pwm ? pwm->polarity : PWM_POLARITY_NORMAL;
- }
- 
-+/*
-+ * pwm_set_pulse_count - configure the number of pulses of a pwm_pulse
-+ */
-+static inline void pwm_set_pulse_count(struct pwm_device *pwm,
-+				       unsigned int pulse_count)
-+{
-+	if (pwm)
-+		pwm->pulse_count = 0;
-+}
-+
-+/*
-+ * pwm_get_pulse_count - retrieve the number of pules to pulse of a pwm_pulse
-+ */
-+static inline unsigned int pwm_get_pulse_count(const struct pwm_device *pwm)
-+{
-+	return pwm ? pwm->pulse_count : 0;
-+}
-+
-+/*
-+ * pwm_get_pulse_count_max - retrieve the maximum number of pulses
-+ */
-+static inline unsigned int pwm_get_pulse_count_max(const struct pwm_device *pwm)
-+{
-+	return pwm ? pwm->pulse_count_max : 0;
-+}
-+
-+/*
-+ * pwm_set_pulse_count_max - set the maximum number of pulses
-+ */
-+static inline void pwm_set_pulse_count_max(struct pwm_device *pwm,
-+					   unsigned int pulse_count_max)
-+{
-+	if (pwm)
-+		pwm->pulse_count_max = pulse_count_max;
-+}
-+
- /**
-  * struct pwm_ops - PWM controller operations
-  * @request: optional hook for requesting a PWM
-@@ -157,7 +215,7 @@ struct pwm_ops {
- 	int (*request)(struct pwm_chip *chip, struct pwm_device *pwm);
- 	void (*free)(struct pwm_chip *chip, struct pwm_device *pwm);
- 	int (*config)(struct pwm_chip *chip, struct pwm_device *pwm,
--		      int duty_ns, int period_ns);
-+		      int duty_ns, int period_ns, unsigned int pulse_count);
- 	int (*set_polarity)(struct pwm_chip *chip, struct pwm_device *pwm,
- 			    enum pwm_polarity polarity);
- 	int (*enable)(struct pwm_chip *chip, struct pwm_device *pwm);
++MODULE_AUTHOR("Olliver Schinagl <oliver@schinagl.nl>");
++MODULE_DESCRIPTION("Generic GPIO bit-banged PWM driver");
++MODULE_LICENSE("GPL");
 -- 
 2.6.1
