@@ -1,79 +1,187 @@
 From: Olliver Schinagl <o.schinagl@ultimaker.com>
-Subject: [PATCH 00/10]
-Date: Mon, 26 Oct 2015 22:32:31 +0100
-Message-ID: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
+Subject: [PATCH 06/10] pwm: sysfs: make use of the DEVICE_ATTR_[RW][WO] macro's
+Date: Mon, 26 Oct 2015 22:32:37 +0100
+Message-ID: <1445895161-2317-7-git-send-email-o.schinagl@ultimaker.com>
+References: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Olliver Schinagl <oliver@schinagl.nl>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Joachim Eastwood <manabian@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Olliver Schinagl <oliver+list@schinagl.nl>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Olliver Schinagl <o.schinagl@ultimaker.com>, Olliver Schinagl <oliver@schinagl.nL>
+Cc: Olliver Schinagl <oliver+list@schinagl.nl>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hey Thierry,
+From: Olliver Schinagl <oliver@schinagl.nl>
 
-With this patch set I wanted to add some new features to the PWM framework,
-while doing so, I ran into 2 minor things with the lpc18xx and sunxi driver.
+For the npwm property the pwm sysfs interface already made use of the
+DEVICE_ATTR_RO macro. This patch expands this to the other sysfs
+properties so that the code base is concise and makes use of this
+helpful macro.
 
-The lpc18xx I bumped into because I was trying to learn from existing drivers.
-Here I only added the setter to set the chip_data, since I think it is bad
-practice to set data directly in the struct, I'll be happy to stand corrected
-however and that patch not applied.
+This has the advantage of slightly reducing the code size, improving
+readability and no longer using magic values for permissions.
 
-Since I use the sunxi platform a lot, I used this platform to test things with
-and to also ran into some issues with the hardware PWM as can be seen in its
-commit log.
+Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
+---
+ drivers/pwm/sysfs.c | 72 ++++++++++++++++++++++++++---------------------------
+ 1 file changed, 36 insertions(+), 36 deletions(-)
 
-The major feature of this patch-set however is the introduction of the Generic
-GPIO based PWM driver based on the high-resolution timers. On an Olimex Lime2
-featuring an Allwinner A20 SoC, I can toggle quite reliably at 100 kHz. At 150
-kHz the SoC started to show signs of being to slow and the scope traces started
-to become inconsistent.
-Naturally of course, a GPIO based PWM is heavily dependent on system load and
-on the SoC. For some use cases a bit-banged PWM might not be ideal, audio for
-example does not sound 'pitch-perfect' but does work pretty alright. It really
-is up to the users what one might one to use a bit-banged GPIO driver for.
-
-Finally, I've started to add a 'pulse' option to the PWM framework and
-added it to the sunxi and gpio variants. It currently does not work and I
-did not wanted to submit it until Boris's PWM patches where in, but I also
-felt an early review on the intention would be a good idea.
-The idea is using this new feature, we can start emitting a fixed number of
-pulses, using the PWM 'hardware' guaranteeing properly timed output.
-Not all hardware may support this at all (might be emulated however) and the
-sunxi hardware for example is limited to 1 pulse max (but may emulate more with
-timers for example). The GPIO driver is able to produce a lot of timed pulses
-however.
-
-Thanks,
-
-Olliver
-
-Signed-off-by: Olliver Schinagl <oliver@schinagl.nL>
-
-Olliver Schinagl (10):
-  pwm: lpc18xx_pwm: use pwm_set_chip_data
-  pwm: sunxi: fix whitespace issue
-  pwm: sunxi: Yield some time to the pwm-block to become ready
-  pwm: core: use bitops
-  pwm: sysfs: do not unnecessarily store result in var
-  pwm: sysfs: make use of the DEVICE_ATTR_[RW][WO] macro's
-  pwm: gpio: Add a generic gpio based PWM driver
-  pwm: core: add pulse feature to the PWM framework
-  pwm: pwm_gpio: add pulse option
-  pwm: sunxi: Add possibility to pulse the sunxi pwm output
-
- Documentation/devicetree/bindings/pwm/pwm-gpio.txt |  18 ++
- MAINTAINERS                                        |   5 +
- drivers/pwm/Kconfig                                |  15 ++
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/core.c                                 |  30 ++-
- drivers/pwm/pwm-gpio.c                             | 276 +++++++++++++++++++++
- drivers/pwm/pwm-lpc18xx-sct.c                      |  11 +-
- drivers/pwm/pwm-sun4i.c                            |  73 ++++--
- drivers/pwm/sysfs.c                                | 133 +++++++---
- include/linux/pwm.h                                |  71 +++++-
- 10 files changed, 556 insertions(+), 77 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-gpio.txt
- create mode 100644 drivers/pwm/pwm-gpio.c
-
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index ba67845..9c90886 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -40,18 +40,18 @@ static struct pwm_device *child_to_pwm_device(struct device *child)
+ 	return export->pwm;
+ }
+ 
+-static ssize_t pwm_period_show(struct device *child,
+-			       struct device_attribute *attr,
+-			       char *buf)
++static ssize_t period_show(struct device *child,
++			   struct device_attribute *attr,
++			   char *buf)
+ {
+ 	const struct pwm_device *pwm = child_to_pwm_device(child);
+ 
+ 	return sprintf(buf, "%u\n", pwm_get_period(pwm));
+ }
+ 
+-static ssize_t pwm_period_store(struct device *child,
+-				struct device_attribute *attr,
+-				const char *buf, size_t size)
++static ssize_t period_store(struct device *child,
++			    struct device_attribute *attr,
++			    const char *buf, size_t size)
+ {
+ 	struct pwm_device *pwm = child_to_pwm_device(child);
+ 	unsigned int val;
+@@ -66,18 +66,18 @@ static ssize_t pwm_period_store(struct device *child,
+ 	return ret ? : size;
+ }
+ 
+-static ssize_t pwm_duty_cycle_show(struct device *child,
+-				   struct device_attribute *attr,
+-				   char *buf)
++static ssize_t duty_cycle_show(struct device *child,
++			       struct device_attribute *attr,
++			       char *buf)
+ {
+ 	const struct pwm_device *pwm = child_to_pwm_device(child);
+ 
+ 	return sprintf(buf, "%u\n", pwm_get_duty_cycle(pwm));
+ }
+ 
+-static ssize_t pwm_duty_cycle_store(struct device *child,
+-				    struct device_attribute *attr,
+-				    const char *buf, size_t size)
++static ssize_t duty_cycle_store(struct device *child,
++				struct device_attribute *attr,
++				const char *buf, size_t size)
+ {
+ 	struct pwm_device *pwm = child_to_pwm_device(child);
+ 	unsigned int val;
+@@ -92,18 +92,18 @@ static ssize_t pwm_duty_cycle_store(struct device *child,
+ 	return ret ? : size;
+ }
+ 
+-static ssize_t pwm_enable_show(struct device *child,
+-			       struct device_attribute *attr,
+-			       char *buf)
++static ssize_t enable_show(struct device *child,
++			   struct device_attribute *attr,
++			   char *buf)
+ {
+ 	const struct pwm_device *pwm = child_to_pwm_device(child);
+ 
+ 	return sprintf(buf, "%d\n", pwm_is_enabled(pwm));
+ }
+ 
+-static ssize_t pwm_enable_store(struct device *child,
+-				struct device_attribute *attr,
+-				const char *buf, size_t size)
++static ssize_t enable_store(struct device *child,
++			    struct device_attribute *attr,
++			    const char *buf, size_t size)
+ {
+ 	struct pwm_device *pwm = child_to_pwm_device(child);
+ 	int val, ret;
+@@ -127,9 +127,9 @@ static ssize_t pwm_enable_store(struct device *child,
+ 	return ret ? : size;
+ }
+ 
+-static ssize_t pwm_polarity_show(struct device *child,
+-				 struct device_attribute *attr,
+-				 char *buf)
++static ssize_t polarity_show(struct device *child,
++			     struct device_attribute *attr,
++			     char *buf)
+ {
+ 	const struct pwm_device *pwm = child_to_pwm_device(child);
+ 	const char *polarity = "unknown";
+@@ -147,9 +147,9 @@ static ssize_t pwm_polarity_show(struct device *child,
+ 	return sprintf(buf, "%s\n", polarity);
+ }
+ 
+-static ssize_t pwm_polarity_store(struct device *child,
+-				  struct device_attribute *attr,
+-				  const char *buf, size_t size)
++static ssize_t polarity_store(struct device *child,
++			      struct device_attribute *attr,
++			      const char *buf, size_t size)
+ {
+ 	struct pwm_device *pwm = child_to_pwm_device(child);
+ 	enum pwm_polarity polarity;
+@@ -167,10 +167,10 @@ static ssize_t pwm_polarity_store(struct device *child,
+ 	return ret ? : size;
+ }
+ 
+-static DEVICE_ATTR(period, 0644, pwm_period_show, pwm_period_store);
+-static DEVICE_ATTR(duty_cycle, 0644, pwm_duty_cycle_show, pwm_duty_cycle_store);
+-static DEVICE_ATTR(enable, 0644, pwm_enable_show, pwm_enable_store);
+-static DEVICE_ATTR(polarity, 0644, pwm_polarity_show, pwm_polarity_store);
++static DEVICE_ATTR_RW(period);
++static DEVICE_ATTR_RW(duty_cycle);
++static DEVICE_ATTR_RW(enable);
++static DEVICE_ATTR_RW(polarity);
+ 
+ static struct attribute *pwm_attrs[] = {
+ 	&dev_attr_period.attr,
+@@ -244,9 +244,9 @@ static int pwm_unexport_child(struct device *parent, struct pwm_device *pwm)
+ 	return 0;
+ }
+ 
+-static ssize_t pwm_export_store(struct device *parent,
+-				struct device_attribute *attr,
+-				const char *buf, size_t len)
++static ssize_t export_store(struct device *parent,
++			    struct device_attribute *attr,
++			    const char *buf, size_t len)
+ {
+ 	struct pwm_chip *chip = dev_get_drvdata(parent);
+ 	struct pwm_device *pwm;
+@@ -270,11 +270,11 @@ static ssize_t pwm_export_store(struct device *parent,
+ 
+ 	return ret ? : len;
+ }
+-static DEVICE_ATTR(export, 0200, NULL, pwm_export_store);
++static DEVICE_ATTR_WO(export);
+ 
+-static ssize_t pwm_unexport_store(struct device *parent,
+-				  struct device_attribute *attr,
+-				  const char *buf, size_t len)
++static ssize_t unexport_store(struct device *parent,
++			      struct device_attribute *attr,
++			      const char *buf, size_t len)
+ {
+ 	struct pwm_chip *chip = dev_get_drvdata(parent);
+ 	unsigned int hwpwm;
+@@ -291,7 +291,7 @@ static ssize_t pwm_unexport_store(struct device *parent,
+ 
+ 	return ret ? : len;
+ }
+-static DEVICE_ATTR(unexport, 0200, NULL, pwm_unexport_store);
++static DEVICE_ATTR_WO(unexport);
+ 
+ static ssize_t npwm_show(struct device *parent, struct device_attribute *attr,
+ 			 char *buf)
 -- 
 2.6.1
