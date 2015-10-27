@@ -1,65 +1,51 @@
-From: "Rafael J. Wysocki" <rafael@kernel.org>
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
 Subject: Re: [GIT PULL] On-demand device probing
-Date: Tue, 27 Oct 2015 00:37:28 +0100
-Message-ID: <CAJZ5v0imLPyq8nxZrqvjXopzD=aBUCp+weBPuJ7Emk9=EQBEnw@mail.gmail.com>
-References: <20151018192931.GY14956@sirena.org.uk>
-	<562A5602.7000208@sonymobile.com>
-	<CAL_JsqLNSM=+j2r9HPcbSzsZrgnGEY3=kv21EXxisKwP5+57ag@mail.gmail.com>
-	<24100858.2KIS8Y2npV@vostro.rjw.lan>
-	<20151024220648.GR29919@sirena.org.uk>
-	<CAJZ5v0hPVu7AL8zBdU4Kb7+MVfYv0mTa43RhnCyyPR+RKDbhLA@mail.gmail.com>
-	<20151026105138.20687.13546@quantum>
+Date: Tue, 27 Oct 2015 06:03:43 +0100
+Message-ID: <10275162.nPuKaJCcTU@vostro.rjw.lan>
+References: <Pine.LNX.4.44L0.1510201159400.1855-100000@iolanthe.rowland.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20151026105138.20687.13546@quantum>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Michael Turquette <mturquette@baylibre.com>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>, Mark Brown <broonie@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Rob Herring <robh+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tim Bird <tim.bird@sonymobile.com>, "frowand.list@gmail.com" <frowand.list@gmail.com>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Russell King <linux@arm.linux.org.uk>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, =?UTF-8?Q?Terje_Bergstr=C3=B6m?= <tbergstrom@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Wolfram Sang <wsa@the-dreams.de>, Grant Likely <grant.likely@linaro.org>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kern>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <Pine.LNX.4.44L0.1510201159400.1855-100000@iolanthe.rowland.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alan Stern <stern@rowland.harvard.edu>
+Cc: Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Russell King <linux@arm.linux.org.uk>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, David Airlie <airlied@linux.ie>, Terje =?ISO-8859-1?Q?Bergstr=F6m?= <tbergstrom@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Wolfram Sang <wsa@the-dreams.de>, Frank Rowand <frowand.list@gmail.com>, Grant Likely <grant.likely@linaro.org>, Kishon Vijay Abraham I <kishon@ti.com>, Sebastian Reichel <sre@kernel.org>, Dmitry Eremin-Solenikov <dbaryshkov@gma>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Oct 26, 2015 at 11:51 AM, Michael Turquette
-<mturquette@baylibre.com> wrote:
-> Quoting Rafael J. Wysocki (2015-10-25 06:54:39)
->> On Sun, Oct 25, 2015 at 12:06 AM, Mark Brown <broonie@kernel.org> wrote:
->> > On Sat, Oct 24, 2015 at 04:17:12PM +0200, Rafael J. Wysocki wrote:
->> >
->> >> Well, I'm not quite sure why exactly everyone is so focused on probing here.
->> >
->> > Probe deferral is really noisy even if it's working fine on a given
->> > system so it's constantly being highlighted to people in a way that
->> > other issues aren't if you're not directly having problems.
->> >
->> > There's also the understanding people had that the order things get
->> > bound changes the ordering for some of the other cases (perhaps it's a
->> > good idea to do that, it seems likely to be sensible?).
->>
->> But it really doesn't do that.  Also making it do so doesn't help much
->> in the cases where things can happen asynchronously (system
->> suspend/resume, runtime PM).
->>
->> If, instead, there was a way to specify a functional dependency at the
->> device registration time, it might be used to change the order of
->> everything relevant, including probe.  That should help to reduce the
->> noise you're referring to.
->
-> Taking it a step further, if functional dependencies were understood at
-> link-time then we could optimize link order as well. There are probably
-> lots of optimizations if we only made the effort to understand these
-> dependencies earlier.
+On Tuesday, October 20, 2015 12:04:05 PM Alan Stern wrote:
+> On Tue, 20 Oct 2015, Mark Brown wrote:
+> 
+> > On Tue, Oct 20, 2015 at 10:40:03AM -0400, Alan Stern wrote:
+> > 
+> > > Furthermore, that applies only to devices that use synchronous suspend.  
+> > > Async suspend is becoming common, and there the only restrictions are 
+> > > parent-child relations plus whatever explicit requirements that drivers 
+> > > impose by calling device_pm_wait_for_dev().
+> > 
+> > Hrm, this is the first I'd noticed that feature though I see the initial
+> > commit dates from January.
+> 
+> Async suspend and device_pm_wait_for_dev() were added in January 2010, 
+> not 2015!
+> 
+> >  It looks like most of the users are PCs at
+> > the minute but we should be using it more widely for embedded things,
+> > there's definitely some cases I'm aware of where it will allow us to
+> > remove some open coding.
+> > 
+> > It does seem like we want to be feeding dependency information we
+> > discover for probing way into the suspend dependencies...
+> 
+> Rafael has been thinking about a way to do this systematically.  
+> Nothing concrete has emerged yet.
 
-Do you mean the kernel link time or something else?
+Well, good point. :-)
 
-At least in some cases the dependency information won't be known at
-that time, so we need a way to record a dependency at the time it
-becomes visible to us anyway.
-
-> Constructing the device/resource dependency graph before the device ever
-> boots sounds interesting to me.
-
-That's only practical if you build the kernel for a specific device.
-If you want a generic binary that can work with multiple different
-devices, that graph may very well be different for each of them.
+I've been kind of struggling with finding time to work on the patches lately
+and some aspects of the design are still not finalized.  It seems, though, that
+it can be beneficial to discuss the approach in general, so let me start a new
+thread for that.
 
 Thanks,
 Rafael
