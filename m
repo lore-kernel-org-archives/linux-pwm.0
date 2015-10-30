@@ -1,95 +1,69 @@
-From: Philipp Zabel <p.zabel@pengutronix.de>
-Subject: [PATCH] pwm-backlight: Avoid backlight flicker when probed from DT
-Date: Thu, 29 Oct 2015 16:51:46 +0100
-Message-ID: <1446133906-3076-1-git-send-email-p.zabel@pengutronix.de>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:58418 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750967AbbJ2Pvy (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 29 Oct 2015 11:51:54 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+From: YH Huang <yh.huang@mediatek.com>
+Subject: Re: [PATCH v2] pwm-backlight: fix the panel power sequence
+Date: Fri, 30 Oct 2015 15:41:40 +0800
+Message-ID: <1446190900.17558.16.camel@mtksdaap41>
+References: <1444987060-48202-1-git-send-email-yh.huang@mediatek.com>
+ <1444988219.3541.3.camel@pengutronix.de>
+ <1445526750.27586.8.camel@mtksdaap41>
+ <1446133259.3274.52.camel@pengutronix.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1446133259.3274.52.camel@pengutronix.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Jingoo Han <jingoohan1@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, Matthias Brugger <matthias.bgg@gmail.com>, yingjoe.chen@mediatek.com, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Ajay Kumar <ajaykumar.rs@samsung.com>, YH Huang <yh.huang@mediatek.com>, Christian Gmeiner <christian.gmeiner@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Philipp Zabel <p.zabel@pengutronix.de>
 
-If the driver is probed from the device tree, and there is a phandle
-property set on it, and the enable GPIO is already configured as output,
-and the backlight is currently disabled, keep it disabled.
-If all these conditions are met, assume there will be some other driver
-that can enable the backlight at the appropriate time.
+Hi Hpilipp,
 
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
----
-Changes since v2:
- - Leave GPIO configuration as is (GPIOD_ASIS) when requesting,
-   so we can actually check the initial state.
----
- drivers/video/backlight/pwm_bl.c | 25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
+On Thu, 2015-10-29 at 16:40 +0100, Philipp Zabel wrote:
+> Hi YH,
+> 
+> Am Donnerstag, den 22.10.2015, 23:12 +0800 schrieb YH Huang:
+> > In the case of the panel disabled by the bootloader,
+> > your patch still has the following code and always enables the backlight
+> > in the probe function.
+> > pb->enable_gpio = devm_gpiod_get_optional(&pdev->dev, "enable",
+> > -						  GPIOD_OUT_HIGH);
+> 
+> You are right.
+> 
+> > What do you think if I remove these two lines in my patch?
+> > if (pb->enable_gpio)
+> > 	gpiod_direction_output(pb->enable_gpio, 0);
+> 
+> That won't work if the gpio is still configured as input. How about I
+> add the GPIOD_ASIS change to my patch you remove that and the above from
+> yours?
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index ae3c6b6..8e9c261 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -199,6 +199,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	struct backlight_properties props;
- 	struct backlight_device *bl;
- 	struct pwm_bl_data *pb;
-+	int initial_blank = FB_BLANK_UNBLANK;
-+	bool phandle;
- 	int ret;
- 
- 	if (!data) {
-@@ -242,7 +244,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	pb->enabled = false;
- 
- 	pb->enable_gpio = devm_gpiod_get_optional(&pdev->dev, "enable",
--						  GPIOD_OUT_HIGH);
-+						  GPIOD_ASIS);
- 	if (IS_ERR(pb->enable_gpio)) {
- 		ret = PTR_ERR(pb->enable_gpio);
- 		goto err_alloc;
-@@ -264,12 +266,32 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
- 	}
- 
-+	phandle = of_find_property(pdev->dev.of_node, "phandle", NULL) != NULL;
-+
-+	if (pb->enable_gpio) {
-+		/*
-+		 * If the driver is probed from the device tree and there is a
-+		 * phandle link pointing to the backlight node, it is safe to
-+		 * assume that another driver will enable the backlight at the
-+		 * appropriate time. Therefore, if it is disabled, keep it so.
-+		 */
-+		if (phandle &&
-+		    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
-+		    gpiod_get_value(pb->enable_gpio) == 0)
-+			initial_blank = FB_BLANK_POWERDOWN;
-+		else
-+			gpiod_direction_output(pb->enable_gpio, 1);
-+	}
-+
- 	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
- 	if (IS_ERR(pb->power_supply)) {
- 		ret = PTR_ERR(pb->power_supply);
- 		goto err_alloc;
- 	}
- 
-+	if (phandle && !regulator_is_enabled(pb->power_supply))
-+		initial_blank = FB_BLANK_POWERDOWN;
-+
- 	pb->pwm = devm_pwm_get(&pdev->dev, NULL);
- 	if (IS_ERR(pb->pwm) && PTR_ERR(pb->pwm) != -EPROBE_DEFER
- 	    && !pdev->dev.of_node) {
-@@ -320,6 +342,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	}
- 
- 	bl->props.brightness = data->dft_brightness;
-+	bl->props.power = initial_blank;
- 	backlight_update_status(bl);
- 
- 	platform_set_drvdata(pdev, bl);
--- 
-2.6.1
+I revise these two lines 
+if (pb->enable_gpio)
+	gpiod_direction_output(pb->enable_gpio, 0);
+into
+if (pb->enable_gpio) {
+	if(gpiod_get_value(pb->enable_gpio) == 0)
+		gpiod_direction_output(pb->enable_gpio, 0);
+	else
+		gpiod_direction_output(pb->enable_gpio, 1);
+}
+
+I am not sure what "phandle" is working for.
+My change is like your patch but remove the "phandle related" and
+"gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT".
+Do we really need these?
+
+Also, do you think it is right that I do the "pwm_enable(pb->pwm);"
+before "gpiod_set_value(pb->enable_gpio, 1);" in power on function?
+
+Regards,
+YH Huang
