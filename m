@@ -1,75 +1,124 @@
-From: Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH v2] pwm-backlight: fix the panel power sequence
-Date: Fri, 30 Oct 2015 11:34:31 +0100
-Message-ID: <1446201271.3334.22.camel@pengutronix.de>
-References: <1444987060-48202-1-git-send-email-yh.huang@mediatek.com>
-	 <1444988219.3541.3.camel@pengutronix.de>
-	 <1445526750.27586.8.camel@mtksdaap41>
-	 <1446133259.3274.52.camel@pengutronix.de>
-	 <1446190900.17558.16.camel@mtksdaap41>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH] pwm-backlight: Avoid backlight flicker when probed from
+ DT
+Date: Fri, 30 Oct 2015 18:21:13 +0000
+Message-ID: <20151030182113.GH4058@x1>
+References: <1446133906-3076-1-git-send-email-p.zabel@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:46894 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758792AbbJ3Kee (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 30 Oct 2015 06:34:34 -0400
-In-Reply-To: <1446190900.17558.16.camel@mtksdaap41>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1446133906-3076-1-git-send-email-p.zabel@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, YH Huang <yh.huang@mediatek.com>, Christian Gmeiner <christian.gmeiner@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
-To: YH Huang <yh.huang@mediatek.com>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Jingoo Han <jingoohan1@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, Matthias Brugger <matthias.bgg@gmail.com>, yingjoe.chen@mediatek.com, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
 
-Am Freitag, den 30.10.2015, 15:41 +0800 schrieb YH Huang:
-> > That won't work if the gpio is still configured as input. How about I
-> > add the GPIOD_ASIS change to my patch you remove that and the above from
-> > yours?
-> 
-> I revise these two lines 
-> if (pb->enable_gpio)
-> 	gpiod_direction_output(pb->enable_gpio, 0);
-> into
-> if (pb->enable_gpio) {
-> 	if(gpiod_get_value(pb->enable_gpio) == 0)
-> 		gpiod_direction_output(pb->enable_gpio, 0);
-> 	else
-> 		gpiod_direction_output(pb->enable_gpio, 1);
-> }
+On Thu, 29 Oct 2015, Philipp Zabel wrote:
 
-If the GPIO is still configured as an input, the return value of
-gpiod_get_value could be random.
+> If the driver is probed from the device tree, and there is a phandle
+> property set on it, and the enable GPIO is already configured as outp=
+ut,
+> and the backlight is currently disabled, keep it disabled.
+> If all these conditions are met, assume there will be some other driv=
+er
+> that can enable the backlight at the appropriate time.
+>=20
+> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+> Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
+> ---
+> Changes since v2:
+>  - Leave GPIO configuration as is (GPIOD_ASIS) when requesting,
+>    so we can actually check the initial state.
+> ---
+>  drivers/video/backlight/pwm_bl.c | 25 ++++++++++++++++++++++++-
+>  1 file changed, 24 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlig=
+ht/pwm_bl.c
+> index ae3c6b6..8e9c261 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -199,6 +199,8 @@ static int pwm_backlight_probe(struct platform_de=
+vice *pdev)
+>  	struct backlight_properties props;
+>  	struct backlight_device *bl;
+>  	struct pwm_bl_data *pb;
+> +	int initial_blank =3D FB_BLANK_UNBLANK;
+> +	bool phandle;
+>  	int ret;
+> =20
+>  	if (!data) {
+> @@ -242,7 +244,7 @@ static int pwm_backlight_probe(struct platform_de=
+vice *pdev)
+>  	pb->enabled =3D false;
+> =20
+>  	pb->enable_gpio =3D devm_gpiod_get_optional(&pdev->dev, "enable",
+> -						  GPIOD_OUT_HIGH);
+> +						  GPIOD_ASIS);
+>  	if (IS_ERR(pb->enable_gpio)) {
+>  		ret =3D PTR_ERR(pb->enable_gpio);
+>  		goto err_alloc;
+> @@ -264,12 +266,32 @@ static int pwm_backlight_probe(struct platform_=
+device *pdev)
+>  		pb->enable_gpio =3D gpio_to_desc(data->enable_gpio);
+>  	}
+> =20
+> +	phandle =3D of_find_property(pdev->dev.of_node, "phandle", NULL) !=3D=
+ NULL;
 
-> I am not sure what "phandle" is working for.
+This is a little ugly.
 
-The reasoning is that devices where there is no phandle link pointing to
-the backlight (for example from a simple-panel node), we should keep the
-current default behaviour (enable during probe).
+If this is the only way to identify the probedness of a device then
+you probably want to neaten it up a little.  I suggest something along
+the lines of:
 
-> My change is like your patch but remove the "phandle related" and
-> "gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT".
-> Do we really need these?
+if (of_find_property(pdev->dev.of_node, "phandle", NULL))
+	already_probed =3D true;
 
-See above, I wanted to be careful not to change existing behavior in
-unexpected ways.
+Also, do you also want to check for "linux,phandle", as this is always
+catered for in drivers/of/*
 
-> Also, do you think it is right that I do the "pwm_enable(pb->pwm);"
-> before "gpiod_set_value(pb->enable_gpio, 1);" in power on function?
+> +	if (pb->enable_gpio) {
+> +		/*
+> +		 * If the driver is probed from the device tree and there is a
+> +		 * phandle link pointing to the backlight node, it is safe to
+> +		 * assume that another driver will enable the backlight at the
+> +		 * appropriate time. Therefore, if it is disabled, keep it so.
+> +		 */
+> +		if (phandle &&
+> +		    gpiod_get_direction(pb->enable_gpio) =3D=3D GPIOF_DIR_OUT &&
+> +		    gpiod_get_value(pb->enable_gpio) =3D=3D 0)
+> +			initial_blank =3D FB_BLANK_POWERDOWN;
+> +		else
+> +			gpiod_direction_output(pb->enable_gpio, 1);
+> +	}
+> +
+>  	pb->power_supply =3D devm_regulator_get(&pdev->dev, "power");
+>  	if (IS_ERR(pb->power_supply)) {
+>  		ret =3D PTR_ERR(pb->power_supply);
+>  		goto err_alloc;
+>  	}
+> =20
+> +	if (phandle && !regulator_is_enabled(pb->power_supply))
+> +		initial_blank =3D FB_BLANK_POWERDOWN;
+> +
+>  	pb->pwm =3D devm_pwm_get(&pdev->dev, NULL);
+>  	if (IS_ERR(pb->pwm) && PTR_ERR(pb->pwm) !=3D -EPROBE_DEFER
+>  	    && !pdev->dev.of_node) {
+> @@ -320,6 +342,7 @@ static int pwm_backlight_probe(struct platform_de=
+vice *pdev)
+>  	}
+> =20
+>  	bl->props.brightness =3D data->dft_brightness;
+> +	bl->props.power =3D initial_blank;
+>  	backlight_update_status(bl);
+> =20
+>  	platform_set_drvdata(pdev, bl);
 
-That is unclear to me, because I'm sure that depends on the actual
-constant current LED driver used.
-I suspect EN and PWM pins are completely independent on a lot of them,
-so enabling EN last should be ok to work around the problem that the PWM
-pin state might not be well defined when the PWM is disabled.
-
-For example, the STCS1A datasheet doesn't mention any order for enabling
-EN and PWM. In the LP8545 datasheet, the modes of operation state
-diagram suggests that enabling EN first is the proper way, on the other
-hand the PWM interface characteristics table also lists a startup delay
-for a rising EN edge while PWM is already active.
-
-But I'm not sure that there aren't any LED drivers that somehow have a
-problem with this order.
-
-regards
-Philipp
+--=20
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
