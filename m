@@ -1,33 +1,48 @@
-From: Gottfried Haider <gottfried.haider@gmail.com>
-Subject: Sysfs: no udev notification on export
-Date: Mon, 2 Nov 2015 13:31:11 +0100
-Message-ID: <CAPoCmYKObYAu456sos2a4gpB4QH7sSo9wo8=FQZGkhRUgyu6zQ@mail.gmail.com>
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH] pwm-backlight: Avoid backlight flicker when probed from
+ DT
+Date: Mon, 02 Nov 2015 17:30:47 +0100
+Message-ID: <1446481847.3442.61.camel@pengutronix.de>
+References: <1446133906-3076-1-git-send-email-p.zabel@pengutronix.de>
+	 <20151030182113.GH4058@x1>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ob0-f180.google.com ([209.85.214.180]:33270 "EHLO
-	mail-ob0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751394AbbKBMbb (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 2 Nov 2015 07:31:31 -0500
-Received: by obbwb3 with SMTP id wb3so93543891obb.0
-        for <linux-pwm@vger.kernel.org>; Mon, 02 Nov 2015 04:31:30 -0800 (PST)
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:59010 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751923AbbKBQa6 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 2 Nov 2015 11:30:58 -0500
+In-Reply-To: <20151030182113.GH4058@x1>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: hsweeten@visionengravers.com
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Ajay Kumar <ajaykumar.rs@samsung.com>, YH Huang <yh.huang@mediatek.com>, Christian Gmeiner <christian.gmeiner@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de
 
-I noticed that pwm/sysfs.c doesn't seem to notify user space after a
-channel has been exported through the sysfs interface. This does e.g.
-happen with gpio/gpiolib-sysfs.c, and allows udev to jump in and
-change permissions of newly exported PWM channels. (This seems racy,
-but I believe this is the best way to do it right now..)
+Hi Lee,
 
-Before I start familiarizing myself with the linux driver model: would
-you be open to changing the current behavior?
+Am Freitag, den 30.10.2015, 18:21 +0000 schrieb Lee Jones:
+> > @@ -264,12 +266,32 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+> >  		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
+> >  	}
+> >  
+> > +	phandle = of_find_property(pdev->dev.of_node, "phandle", NULL) != NULL;
+> 
+> This is a little ugly.
+> 
+> If this is the only way to identify the probedness of a device then
+> you probably want to neaten it up a little.  I suggest something along
+> the lines of:
+>
+> if (of_find_property(pdev->dev.of_node, "phandle", NULL))
+> 	already_probed = true;
+> 
+> Also, do you also want to check for "linux,phandle", as this is always
+> catered for in drivers/of/*
 
-(I believe device_create_with_groups() vs device_create() &
-device_register() is what's causing this, but I don't yet know the
-implications of using one over the other.)
+Thanks for pointing this out. I suppose I should just check
+pdev->dev.of_node->phandle != 0 instead. That will already be
+initialized by unflatten_dt_node if either property was found.
 
-Thanks
-Gottfried
+regards
+Philipp
