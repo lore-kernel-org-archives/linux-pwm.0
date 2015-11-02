@@ -1,72 +1,33 @@
-From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: [PATCH 3/3] arm: plat-omap: Add PWM dmtimer platform data quirks
-Date: Mon, 2 Nov 2015 12:14:26 +0100
-Message-ID: <56374592.4060201@baylibre.com>
+From: Gottfried Haider <gottfried.haider@gmail.com>
+Subject: Sysfs: no udev notification on export
+Date: Mon, 2 Nov 2015 13:31:11 +0100
+Message-ID: <CAPoCmYKObYAu456sos2a4gpB4QH7sSo9wo8=FQZGkhRUgyu6zQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Tony Lindgren <tony@atomide.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-ob0-f180.google.com ([209.85.214.180]:33270 "EHLO
+	mail-ob0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751394AbbKBMbb (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 2 Nov 2015 07:31:31 -0500
+Received: by obbwb3 with SMTP id wb3so93543891obb.0
+        for <linux-pwm@vger.kernel.org>; Mon, 02 Nov 2015 04:31:30 -0800 (PST)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: hsweeten@visionengravers.com
+Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com
 
-In order to set the currently platform dependent dmtimer
-functions pointers as platform data for the pwm-omap-dmtimer
-platform driver, add it to plat-omap auxdata_lookup table.
+I noticed that pwm/sysfs.c doesn't seem to notify user space after a
+channel has been exported through the sysfs interface. This does e.g.
+happen with gpio/gpiolib-sysfs.c, and allows udev to jump in and
+change permissions of newly exported PWM channels. (This seems racy,
+but I believe this is the best way to do it right now..)
 
-Suggested-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
----
- arch/arm/mach-omap2/pdata-quirks.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+Before I start familiarizing myself with the linux driver model: would
+you be open to changing the current behavior?
 
-diff --git a/arch/arm/mach-omap2/pdata-quirks.c b/arch/arm/mach-omap2/pdata-quirks.c
-index ea56397..647dec5 100644
---- a/arch/arm/mach-omap2/pdata-quirks.c
-+++ b/arch/arm/mach-omap2/pdata-quirks.c
-@@ -23,6 +23,8 @@
- #include <linux/platform_data/pinctrl-single.h>
- #include <linux/platform_data/iommu-omap.h>
- #include <linux/platform_data/wkup_m3.h>
-+#include <linux/platform_data/pwm_omap_dmtimer.h>
-+#include <plat/dmtimer.h>
+(I believe device_create_with_groups() vs device_create() &
+device_register() is what's causing this, but I don't yet know the
+implications of using one over the other.)
 
- #include <asm/siginfo.h>
- #include <asm/signal.h>
-@@ -453,6 +455,24 @@ void omap_auxdata_legacy_init(struct device *dev)
- 	dev->platform_data = &twl_gpio_auxdata;
- }
-
-+/* Dual mode timer PWM callbacks platdata */
-+#if IS_ENABLED(CONFIG_OMAP_DM_TIMER)
-+struct pwm_omap_dmtimer_pdata pwm_dmtimer_pdata = {
-+	.request_by_node = omap_dm_timer_request_by_node,
-+	.free = omap_dm_timer_free,
-+	.enable = omap_dm_timer_enable,
-+	.disable = omap_dm_timer_disable,
-+	.get_fclk = omap_dm_timer_get_fclk,
-+	.start = omap_dm_timer_start,
-+	.stop = omap_dm_timer_stop,
-+	.set_load = omap_dm_timer_set_load,
-+	.set_match = omap_dm_timer_set_match,
-+	.set_pwm = omap_dm_timer_set_pwm,
-+	.set_prescaler = omap_dm_timer_set_prescaler,
-+	.write_counter = omap_dm_timer_write_counter,
-+};
-+#endif
-+
- /*
-  * Few boards still need auxdata populated before we populate
-  * the dev entries in of_platform_populate().
-@@ -506,6 +526,9 @@ static struct of_dev_auxdata omap_auxdata_lookup[] __initdata = {
- 	OF_DEV_AUXDATA("ti,am4372-wkup-m3", 0x44d00000, "44d00000.wkup_m3",
- 		       &wkup_m3_data),
- #endif
-+#if IS_ENABLED(CONFIG_OMAP_DM_TIMER)
-+	OF_DEV_AUXDATA("ti,omap-dmtimer-pwm", 0, NULL, &pwm_dmtimer_pdata),
-+#endif
- #if defined(CONFIG_ARCH_OMAP4) || defined(CONFIG_SOC_OMAP5)
- 	OF_DEV_AUXDATA("ti,omap4-iommu", 0x4a066000, "4a066000.mmu",
- 		       &omap4_iommu_pdata),
--- 
-1.9.1
+Thanks
+Gottfried
