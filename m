@@ -1,64 +1,42 @@
-From: YH Huang <yh.huang@mediatek.com>
-Subject: Re: [PATCH v2] pwm-backlight: fix the panel power sequence
-Date: Tue, 3 Nov 2015 16:11:39 +0800
-Message-ID: <1446538299.2449.8.camel@mtksdaap41>
-References: <1444987060-48202-1-git-send-email-yh.huang@mediatek.com>
- <1444988219.3541.3.camel@pengutronix.de>
- <1445526750.27586.8.camel@mtksdaap41>
- <1446133259.3274.52.camel@pengutronix.de>
- <1446190900.17558.16.camel@mtksdaap41>
- <1446201271.3334.22.camel@pengutronix.de>
+From: Axel Lin <axel.lin@ingics.com>
+Subject: [PATCH] pwm: brcmstb: Don't set can_sleep flag
+Date: Tue, 03 Nov 2015 18:08:40 +0800
+Message-ID: <1446545320.6627.0.camel@ingics.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1446201271.3334.22.camel@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Philipp Zabel <p.zabel@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Jingoo Han <jingoohan1@gmail.com>, linux-kernel@vger.kernel.org, Tomi Valkeinen <tomi.valkeinen@ti.com>, Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <kernel@pengutronix.de>, yingjoe.chen@mediatek.com, Matthias Brugger <matthias.bgg@gmail.com>, linux-mediatek@lists.infradead.org, Lee Jones <lee.jones@linaro.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pa0-f42.google.com ([209.85.220.42]:34114 "EHLO
+	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752405AbbKCKIp (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 3 Nov 2015 05:08:45 -0500
+Received: by padhx2 with SMTP id hx2so6797595pad.1
+        for <linux-pwm@vger.kernel.org>; Tue, 03 Nov 2015 02:08:44 -0800 (PST)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Brian Norris <computersforpeace@gmail.com>, Gregory Fong <gregory.0xf0@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, linux-pwm@vger.kernel.org
 
-On Fri, 2015-10-30 at 11:34 +0100, Philipp Zabel wrote:
-> Am Freitag, den 30.10.2015, 15:41 +0800 schrieb YH Huang:
-> > > That won't work if the gpio is still configured as input. How about I
-> > > add the GPIOD_ASIS change to my patch you remove that and the above from
-> > > yours?
-> > 
-> > I revise these two lines 
-> > if (pb->enable_gpio)
-> > 	gpiod_direction_output(pb->enable_gpio, 0);
-> > into
-> > if (pb->enable_gpio) {
-> > 	if(gpiod_get_value(pb->enable_gpio) == 0)
-> > 		gpiod_direction_output(pb->enable_gpio, 0);
-> > 	else
-> > 		gpiod_direction_output(pb->enable_gpio, 1);
-> > }
-> 
-> If the GPIO is still configured as an input, the return value of
-> gpiod_get_value could be random.
-> 
-> > I am not sure what "phandle" is working for.
-> 
-> The reasoning is that devices where there is no phandle link pointing to
-> the backlight (for example from a simple-panel node), we should keep the
-> current default behaviour (enable during probe).
+The .can_sleep flag is used for some PWM controllers that can't be used
+in atomic context. Not such case for this driver, so don't set the
+can_sleep flag.
 
-I have a little problem for the current default behaviour.
-Should we enable during probe?
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+---
+ drivers/pwm/pwm-brcmstb.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Before this patch ( http://patchwork.ozlabs.org/patch/324690/ ),
-we disable "enable-gpio" in the probe function.
-
-Do you have any idea of this?
-
-Regards,
-YH Huang
+diff --git a/drivers/pwm/pwm-brcmstb.c b/drivers/pwm/pwm-brcmstb.c
+index 423ce08..f58039b 100644
+--- a/drivers/pwm/pwm-brcmstb.c
++++ b/drivers/pwm/pwm-brcmstb.c
+@@ -270,7 +270,6 @@ static int brcmstb_pwm_probe(struct platform_device *pdev)
+ 	p->chip.ops = &brcmstb_pwm_ops;
+ 	p->chip.base = -1;
+ 	p->chip.npwm = 2;
+-	p->chip.can_sleep = true;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	p->base = devm_ioremap_resource(&pdev->dev, res);
+-- 
+2.1.4
