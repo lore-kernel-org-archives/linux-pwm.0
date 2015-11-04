@@ -1,47 +1,53 @@
-From: Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH v2] pwm-backlight: fix the panel power sequence
-Date: Tue, 03 Nov 2015 12:08:44 +0100
-Message-ID: <1446548924.3373.3.camel@pengutronix.de>
-References: <1444987060-48202-1-git-send-email-yh.huang@mediatek.com>
-	 <1444988219.3541.3.camel@pengutronix.de>
-	 <1445526750.27586.8.camel@mtksdaap41>
-	 <1446133259.3274.52.camel@pengutronix.de>
-	 <1446190900.17558.16.camel@mtksdaap41>
-	 <1446201271.3334.22.camel@pengutronix.de>
-	 <1446538299.2449.8.camel@mtksdaap41>
+From: Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH] pwm: brcmstb: Don't set can_sleep flag
+Date: Tue, 03 Nov 2015 16:18:09 -0800
+Message-ID: <56394EC1.4020304@gmail.com>
+References: <1446545320.6627.0.camel@ingics.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:53626 "EHLO
-	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751201AbbKCLIt (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 3 Nov 2015 06:08:49 -0500
-In-Reply-To: <1446538299.2449.8.camel@mtksdaap41>
+Received: from mail-pa0-f44.google.com ([209.85.220.44]:33243 "EHLO
+	mail-pa0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756149AbbKDAS6 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 3 Nov 2015 19:18:58 -0500
+Received: by pabfh17 with SMTP id fh17so33300227pab.0
+        for <linux-pwm@vger.kernel.org>; Tue, 03 Nov 2015 16:18:57 -0800 (PST)
+In-Reply-To: <1446545320.6627.0.camel@ingics.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: YH Huang <yh.huang@mediatek.com>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Jingoo Han <jingoohan1@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, Matthias Brugger <matthias.bgg@gmail.com>, yingjoe.chen@mediatek.com, Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org
+To: Axel Lin <axel.lin@ingics.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: Brian Norris <computersforpeace@gmail.com>, Gregory Fong <gregory.0xf0@gmail.com>, linux-pwm@vger.kernel.org
 
-Hi YH,
-
-Am Dienstag, den 03.11.2015, 16:11 +0800 schrieb YH Huang:
-> > The reasoning is that devices where there is no phandle link pointing to
-> > the backlight (for example from a simple-panel node), we should keep the
-> > current default behaviour (enable during probe).
+On 03/11/15 02:08, Axel Lin wrote:
+> The .can_sleep flag is used for some PWM controllers that can't be used
+> in atomic context. Not such case for this driver, so don't set the
+> can_sleep flag.
 > 
-> I have a little problem for the current default behaviour.
-> Should we enable during probe?
+> Signed-off-by: Axel Lin <axel.lin@ingics.com>
 
-Here I mean enabling the backlight (at the end of the probe function),
-not enabling the GPIO already when requesting it.
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 
-> Before this patch ( http://patchwork.ozlabs.org/patch/324690/ ),
-> we disable "enable-gpio" in the probe function.
+Thanks!
 
-While before this patch the GPIO would be initialized in the disabled
-state, the call to backlight_update_status at the end of the probe
-function would still enable the backlight afterwards.
+> ---
+>  drivers/pwm/pwm-brcmstb.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/pwm/pwm-brcmstb.c b/drivers/pwm/pwm-brcmstb.c
+> index 423ce08..f58039b 100644
+> --- a/drivers/pwm/pwm-brcmstb.c
+> +++ b/drivers/pwm/pwm-brcmstb.c
+> @@ -270,7 +270,6 @@ static int brcmstb_pwm_probe(struct platform_device *pdev)
+>  	p->chip.ops = &brcmstb_pwm_ops;
+>  	p->chip.base = -1;
+>  	p->chip.npwm = 2;
+> -	p->chip.can_sleep = true;
+>  
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	p->base = devm_ioremap_resource(&pdev->dev, res);
+> 
 
-regards
-Philipp
+
+-- 
+Florian
