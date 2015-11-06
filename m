@@ -1,59 +1,66 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: pwm-rcar: Revise the device tree binding document
- about compatible
-Date: Fri, 6 Nov 2015 15:18:18 +0100
-Message-ID: <20151106141818.GA4988@ulmo>
-References: <1444130908-8180-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Subject: Re: [PATCH] unicore32: nb0916: Use PWM lookup table
+Date: Fri, 6 Nov 2015 15:35:12 +0100
+Message-ID: <20151106143512.GA11511@ulmo>
+References: <1444025323-23904-1-git-send-email-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="bp/iNruPH9dso1Pn"
-Return-path: <linux-sh-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="3MwIy2ne0vdjdPXF"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wi0-f174.google.com ([209.85.212.174]:35284 "EHLO
+	mail-wi0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1161403AbbKFOfP (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 6 Nov 2015 09:35:15 -0500
 Content-Disposition: inline
-In-Reply-To: <1444130908-8180-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-Sender: linux-sh-owner@vger.kernel.org
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, linux-pwm@vger.kernel.org, linux-sh@vger.kernel.org, devicetree@vger.kernel.org
+In-Reply-To: <1444025323-23904-1-git-send-email-thierry.reding@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Guan Xuetao <gxt@mprc.pku.edu.cn>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---bp/iNruPH9dso1Pn
+--3MwIy2ne0vdjdPXF
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 06, 2015 at 08:28:28PM +0900, Yoshihiro Shimoda wrote:
-> The compatible should be "renesas,pwm-rcar", and one the the SoC
-> specific string. So, this patch revises the documentation.
+On Mon, Oct 05, 2015 at 08:08:43AM +0200, Thierry Reding wrote:
+> Use a PWM lookup table to provide the PWM to the pwm-backlight device.
+> The driver has a legacy code path that is required only because boards
+> still use the legacy method of requesting PWMs by global ID. Replacing
+> these usages allows that legacy fallback to be removed.
 >=20
-> Reported-by: Rob Herring <robh+dt@kernel.org>
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> Cc: Guan Xuetao <gxt@mprc.pku.edu.cn>
+> Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 > ---
->  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+>  arch/unicore32/kernel/puv3-nb0916.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
 
-Applied, thanks.
+Guan, I've applied this to my PWM tree since you haven't responded to
+this. The change is low-risk and badly needed to clean up PWM consumer
+drivers.
 
 Thierry
 
---bp/iNruPH9dso1Pn
+--3MwIy2ne0vdjdPXF
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJWPLaoAAoJEN0jrNd/PrOhRl0QAKwhgNrFcoxkgzj28F9fMUO0
-wmq30941HLS33kPxky9D/6u8D4pbBJmk58OM3meQ6XdkTFhhlIGE/BzlizsP/EjU
-8TWzvy7ViOnYp3J/jyK9FuGpaGsL8wRqBCTdG92ElaW4gpvdrmivCZze41XQ1PAD
-nQC+/fr/TK7dA55NNiIwMfwvhkVEXCYPuRWXNNyre3Fbly88lV7LaekpQccTsglO
-fL4z4CEnmW3IhUFm3/hXwncRSjs9YaPT3ZPNOAMWCnGLIc5O8HdEvg1hc7TK83YA
-yJoRERTN+dHr6ZDxgO6Uzdk6VnzKYCzpY4rAMjZTdIQOQO2pDWSBBJjJkCKefFAB
-ZJm5vbrzWe0UdBFzhlIcN95VXypLoR8nuz4aX86w+yH6pvrb6chkeKfX7aUhZyWd
-8Pc91edQaKNmp53JJEL16rPKAhoW4mOHth9LJCYpCHyUHjIdHw61hCYzegMGritn
-JcF/cCkuK7fBfZmFow7UeYGTxSbbZiAZB1p5UJGSJN1QW+gToutlB2N7sE5Ws1r8
-drJmJDcq1ThRRj8RhXVZFcJCZWH8lhBWXpueefcuLNLYObkw/0HIendBn0qFnDUk
-ijA6OlSlGQ516xJhjRPsom2PcR6JdxMH5g71BsORCewmVnC9BSxXQESmvY+ZEQBO
-hVvmd9QIFBTa6gdbcaZb
-=PAHa
+iQIcBAABCAAGBQJWPLqeAAoJEN0jrNd/PrOhOncP/0Vv3po4vFvuGOv2NucEPVVo
+sHHTFsTmkFK5nA3f+JLVQbf0HpePjbuO3LfWKExtBJL7amo3E+yGnNUYKYhD79lx
++GoNbJdL/ISCJqvOQ04ZwYCpPtOaZaRxSlLTxSvtvq7MSWI4T9MXrnHFnhHpLz4a
+5Y8ntLroVlTcrU//GjMpL+E/AITIc9cnlUsZkIDghFZkw1WMKNOu8UXyXno+S3J2
+kCn9LC8kNIg+b2qJdP1cm08BjDdoGLdM24Stpd5x4+F1Dk1KX40Hduad+gBr7gSA
+lq0QpMuKfV4p7HQv59WoRyzFwDPybDkpoCj7kUp+TVG9HR1K/rI6picale8fFVQJ
+xfJBeXweLKaDlTVBrzJO8vlP2GMu5+I0axepwzj+P3yc1wdvbBmFQDqAoaiSAG72
+QTLlti/R/aHQBMaMTjYVgY7xf334D3tTOVcGNkX0dca+3AsEs6Ubuml2tVTQ7L7u
+22XTyRJ5RcvdCmxPzq8wm2VtBAx74XIChfp7O4/ouZDIIInNvOikmCJnUvL2vUAw
+7dZx86ArU1rL24jrK7KdHLg/2nItkBhN1cVP8ftBGra/qXnnYl5b3K2jmzqtNbt4
+NJ2sqPaaHZ7yF7sUkGSQRcqKuA0qLxC44UOOOA30pk3IJGKy/cGQNcsegiqbr0qM
+v0eV98f5vqifzy4qo5bm
+=MREH
 -----END PGP SIGNATURE-----
 
---bp/iNruPH9dso1Pn--
+--3MwIy2ne0vdjdPXF--
