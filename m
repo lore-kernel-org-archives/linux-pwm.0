@@ -1,64 +1,59 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: sun4i: Add support for pwm controller on sun5i SoCs
-Date: Fri, 6 Nov 2015 14:53:04 +0100
-Message-ID: <20151106135304.GD31835@ulmo>
-References: <1444556997-28885-1-git-send-email-hdegoede@redhat.com>
+Subject: Re: [PATCH] pwm: pwm-rcar: Revise the device tree binding document
+ about compatible
+Date: Fri, 6 Nov 2015 15:18:18 +0100
+Message-ID: <20151106141818.GA4988@ulmo>
+References: <1444130908-8180-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="zbGR4y+acU1DwHSi"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f42.google.com ([74.125.82.42]:35034 "EHLO
-	mail-wm0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932918AbbKFNxG (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 6 Nov 2015 08:53:06 -0500
+	protocol="application/pgp-signature"; boundary="bp/iNruPH9dso1Pn"
+Return-path: <linux-sh-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1444556997-28885-1-git-send-email-hdegoede@redhat.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1444130908-8180-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Sender: linux-sh-owner@vger.kernel.org
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, linux-pwm@vger.kernel.org, linux-sh@vger.kernel.org, devicetree@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree <devicetree@vger.kernel.org>
 
 
---zbGR4y+acU1DwHSi
+--bp/iNruPH9dso1Pn
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Oct 11, 2015 at 11:49:57AM +0200, Hans de Goede wrote:
-> The pwm controller on sun5i SoCs is identical to the one found on sun7i
-> SoCs. On the A13 package only one of the 2 pins is routed to the outside,
-> so only advertise one pwm there.
+On Tue, Oct 06, 2015 at 08:28:28PM +0900, Yoshihiro Shimoda wrote:
+> The compatible should be "renesas,pwm-rcar", and one the the SoC
+> specific string. So, this patch revises the documentation.
 >=20
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> Reported-by: Rob Herring <robh+dt@kernel.org>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 > ---
->  .../devicetree/bindings/pwm/pwm-sun4i.txt          |  2 ++
->  drivers/pwm/pwm-sun4i.c                            | 25 ++++++++++++++++=
-++++--
->  2 files changed, 25 insertions(+), 2 deletions(-)
+>  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 
-Applied, thanks (with s/pwm/PWM/).
+Applied, thanks.
 
 Thierry
 
---zbGR4y+acU1DwHSi
+--bp/iNruPH9dso1Pn
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJWPLDAAAoJEN0jrNd/PrOhb3oQALRtz7zqLhEfszaypB0pV87y
-rsOn5y20puJA+V2OPEYtQpAYKFnH+LiXA0tesAFpt7q+eKNZVTWxW1oOgg1oPp6p
-hgiR44mzwtVqfPL8XqQdd70aYRIRpM2Efo8ogj7w1K4VVTJrYyBDsYoTg/FVuLoB
-XUifk6fe0HQzZA5u5mhAGwEb6x5E1P8rELu4CBVtqKc+5T7Co9nH1pNKCGom5lAl
-XebALqQ6OQwG6stEdXsQzByfVlI75fNsqBXNOxN5+tDg2imJBNiroVvcGEUxnbcu
-QVkVSGXCI7VC4BhVtRQWWjbLLjB2EuIduOr6RsD8PvCl12JhoDBt6aX+Sax+hfIP
-X2l9mKrjY6qisY/zvYj9C9gBs8DfdmiBMBwtd3Q5lHC8He8JYmemeyPl2E7mWxdp
-rfomRxgdzF7Z+Q6Dd2FhmFhf4IpDoFyuS0AKWMBOXkKjIdkjA0vqao7spRhexLTA
-x3ojX+W1SdousacMrYCHHWNbWbID4AUTRgNQXIhmucpimImgFcjwoXPB7a2OPzsH
-GABiH7hfyy4U+9EMoodlYfSnMOqxVc6bWWw0nROKL9GVZKTXXX374tV20cq2WPHV
-QPjBYGm9a2JNTPT6jjXCUDSGmVy1yyjIZXJiWkITtUqXpF/uFrWjeUkpGj39Y0Th
-bPPogyHcf6+49Eo4ds3Q
-=3puj
+iQIcBAABCAAGBQJWPLaoAAoJEN0jrNd/PrOhRl0QAKwhgNrFcoxkgzj28F9fMUO0
+wmq30941HLS33kPxky9D/6u8D4pbBJmk58OM3meQ6XdkTFhhlIGE/BzlizsP/EjU
+8TWzvy7ViOnYp3J/jyK9FuGpaGsL8wRqBCTdG92ElaW4gpvdrmivCZze41XQ1PAD
+nQC+/fr/TK7dA55NNiIwMfwvhkVEXCYPuRWXNNyre3Fbly88lV7LaekpQccTsglO
+fL4z4CEnmW3IhUFm3/hXwncRSjs9YaPT3ZPNOAMWCnGLIc5O8HdEvg1hc7TK83YA
+yJoRERTN+dHr6ZDxgO6Uzdk6VnzKYCzpY4rAMjZTdIQOQO2pDWSBBJjJkCKefFAB
+ZJm5vbrzWe0UdBFzhlIcN95VXypLoR8nuz4aX86w+yH6pvrb6chkeKfX7aUhZyWd
+8Pc91edQaKNmp53JJEL16rPKAhoW4mOHth9LJCYpCHyUHjIdHw61hCYzegMGritn
+JcF/cCkuK7fBfZmFow7UeYGTxSbbZiAZB1p5UJGSJN1QW+gToutlB2N7sE5Ws1r8
+drJmJDcq1ThRRj8RhXVZFcJCZWH8lhBWXpueefcuLNLYObkw/0HIendBn0qFnDUk
+ijA6OlSlGQ516xJhjRPsom2PcR6JdxMH5g71BsORCewmVnC9BSxXQESmvY+ZEQBO
+hVvmd9QIFBTa6gdbcaZb
+=PAHa
 -----END PGP SIGNATURE-----
 
---zbGR4y+acU1DwHSi--
+--bp/iNruPH9dso1Pn--
