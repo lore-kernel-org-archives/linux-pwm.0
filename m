@@ -1,141 +1,89 @@
-From: Chen-Yu Tsai <wens@csie.org>
-Subject: Re: [PATCH 03/10] pwm: sunxi: Yield some time to the pwm-block to
- become ready
-Date: Sat, 7 Nov 2015 00:34:29 +0800
-Message-ID: <CAGb2v67tfOH-+6=Q=s44K8iGwKomQ3i86bVRwWFqJRKDp-JZzg@mail.gmail.com>
-References: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com> <1445895161-2317-4-git-send-email-o.schinagl@ultimaker.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 04/10] pwm: core: use bitops
+Date: Fri, 6 Nov 2015 23:36:44 +0200
+Message-ID: <CAHp75VdCoM5ZtMhwt8emC8GtFEuguEXYWZCJgT4hTBcMA7yQ-A@mail.gmail.com>
+References: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
+	<1445895161-2317-5-git-send-email-o.schinagl@ultimaker.com>
+	<20151106144635.GA8418@ulmo>
+	<563CBDF5.50904@ultimaker.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from smtp.csie.ntu.edu.tw ([140.112.30.61]:44219 "EHLO
-	smtp.csie.ntu.edu.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751320AbbKFQey (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 6 Nov 2015 11:34:54 -0500
-In-Reply-To: <1445895161-2317-4-git-send-email-o.schinagl@ultimaker.com>
+Received: from mail-yk0-f173.google.com ([209.85.160.173]:36819 "EHLO
+	mail-yk0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965993AbbKFVgp convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 6 Nov 2015 16:36:45 -0500
+In-Reply-To: <563CBDF5.50904@ultimaker.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Olliver Schinagl <o.schinagl@ultimaker.com>
-Cc: Olliver Schinagl <oliver@schinagl.nl>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Joachim Eastwood <manabian@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Olliver Schinagl <oliver+list@schinagl.nl>, linux-pwm@vger.kernel.org, devicetree <devicetree@vger.kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Olliver Schinagl <oliver@schinagl.nl>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Joachim Eastwood <manabian@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Olliver Schinagl <oliver+list@schinagl.nl>, linux-pwm@vger.kernel.org, devicetree <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
 
-On Tue, Oct 27, 2015 at 5:32 AM, Olliver Schinagl
+On Fri, Nov 6, 2015 at 4:49 PM, Olliver Schinagl
 <o.schinagl@ultimaker.com> wrote:
-> The pwm-block of some of the sunxi chips feature a 'ready' flag to
-> indicate the software that it is ready for new commands.
+> Hey Thierry,
 >
-> Right now, when we call pwm_config and set the period, we write the
-> values to the registers, and turn off the clock to the IP. Because of
-> this, the hardware does not have time to configure the hardware and set
-> the 'ready' flag.
->
-> By running the clock just before making new changes and before checking
-> if the hardware is ready, the hardware has time to reconfigure itself
-> and set the clear the flag appropriately.
->
-> Signed-off-by: Olliver Schinagl <o.schinagl@ultimaker.com>
-> ---
->  drivers/pwm/pwm-sun4i.c | 43 +++++++++++++++++++++++++------------------
->  1 file changed, 25 insertions(+), 18 deletions(-)
->
-> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-> index 58ff424..4d84d9d 100644
-> --- a/drivers/pwm/pwm-sun4i.c
-> +++ b/drivers/pwm/pwm-sun4i.c
-> @@ -104,6 +104,22 @@ static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->         u64 clk_rate, div = 0;
->         unsigned int prescaler = 0;
->         int err;
-> +       int ret = 0;
-> +
-> +       /* Let the PWM hardware run before making any changes. We do this to
-> +        * allow the hardware to have some time to clear the 'ready' flag.
-> +        */
-> +       err = clk_prepare_enable(sun4i_pwm->clk);
-> +       if (err) {
-> +               dev_err(chip->dev, "failed to enable PWM clock\n");
-> +               return err;
-> +       }
-> +       spin_lock(&sun4i_pwm->ctrl_lock);
-> +       val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
-> +       clk_gate = val & BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
-> +       val |= BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
-> +       sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
-> +       spin_unlock(&sun4i_pwm->ctrl_lock);
->
->         clk_rate = clk_get_rate(sun4i_pwm->clk);
->
-> @@ -136,7 +152,9 @@ static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->
->                 if (div - 1 > PWM_PRD_MASK) {
->                         dev_err(chip->dev, "period exceeds the maximum value\n");
-> -                       return -EINVAL;
-> +                       ret = -EINVAL;
-> +                       spin_lock(&sun4i_pwm->ctrl_lock);
-> +                       goto out;
->                 }
->         }
->
-> @@ -145,26 +163,14 @@ static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->         do_div(div, period_ns);
->         dty = div;
->
-> -       err = clk_prepare_enable(sun4i_pwm->clk);
-> -       if (err) {
-> -               dev_err(chip->dev, "failed to enable PWM clock\n");
-> -               return err;
-> -       }
-> -
->         spin_lock(&sun4i_pwm->ctrl_lock);
->         val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
-> -
->         if (sun4i_pwm->data->has_rdy && (val & PWM_RDY(pwm->hwpwm))) {
+> but why have the bit macro at all then :)
 
-Instead of moving the code around to try to give the hardware some unspecified
-time to run, could we use a tight busy loop with a timeout to read the register
-and check if it's been cleared? I think that works better with cpufreq as well.
+=46or my opinion, it's good to use in new code, or when you have this
+change as a continuation of bigger series.
+Though, others might have a different one :-)
 
-Thanks.
-
-ChenYu
-
-> -               spin_unlock(&sun4i_pwm->ctrl_lock);
-> -               clk_disable_unprepare(sun4i_pwm->clk);
-> -               return -EBUSY;
-> -       }
-> -
-> -       clk_gate = val & BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
-> -       if (clk_gate) {
-> -               val &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
-> -               sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
-> +               ret = -EBUSY;
-> +               goto out;
->         }
-> +       val &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
-> +       sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
 >
->         val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
->         val &= ~BIT_CH(PWM_PRESCAL_MASK, pwm->hwpwm);
-> @@ -174,6 +180,7 @@ static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->         val = (dty & PWM_DTY_MASK) | PWM_PRD(prd);
->         sun4i_pwm_writel(sun4i_pwm, val, PWM_CH_PRD(pwm->hwpwm));
+> But that choice I guess I leave to you, as it's your section, I know =
+some
+> submaintainers prefer it and want it to be used, so I guess it's some=
+thing
+> in general kernel wide that should be desided on, BIT() macro preferr=
+ed or
+> not.
 >
-> +out:
->         if (clk_gate) {
->                 val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
->                 val |= clk_gate;
-> @@ -183,7 +190,7 @@ static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->         spin_unlock(&sun4i_pwm->ctrl_lock);
->         clk_disable_unprepare(sun4i_pwm->clk);
+> Olliver
 >
-> -       return 0;
-> +       return ret;
->  }
 >
->  static int sun4i_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+> On 06-11-15 15:46, Thierry Reding wrote:
+>>
+>> On Mon, Oct 26, 2015 at 10:32:35PM +0100, Olliver Schinagl wrote:
+>>>
+>>> From: Olliver Schinagl <oliver@schinagl.nl>
+>>>
+>>> The pwm header defines bits manually while there is a nice bitops.h=
+ with
+>>> a BIT() macro. Use the BIT() macro to set bits in pwm.h
+>>>
+>>> Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
+>>> ---
+>>>   include/linux/pwm.h | 7 ++++---
+>>>   1 file changed, 4 insertions(+), 3 deletions(-)
+>>
+>> I don't think this is a useful change. The BIT() macro needs the sam=
+e
+>> number of characters to type at the expense of requiring an addition=
+al
+>> include.
+>>
+>> Thierry
+>
+>
 > --
-> 2.6.1
+> Met vriendelijke groeten, Kind regards, =E4=B8=8E=E4=BA=B2=E5=88=87=E7=
+=9A=84=E9=97=AE=E5=80=99
 >
+> Olliver Schinagl
+> Software Engineer
+> Research & Development
+> Ultimaker B.V.
 >
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-kerne=
+l" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Please read the FAQ at  http://www.tux.org/lkml/
+
+
+
+--=20
+With Best Regards,
+Andy Shevchenko
