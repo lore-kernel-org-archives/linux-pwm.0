@@ -1,87 +1,113 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 03/10] pwm: sunxi: Yield some time to the pwm-block to
- become ready
-Date: Fri, 6 Nov 2015 17:12:53 +0100
-Message-ID: <20151106161253.GH8418@ulmo>
-References: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com>
- <1445895161-2317-4-git-send-email-o.schinagl@ultimaker.com>
+From: Olliver Schinagl <o.schinagl@ultimaker.com>
+Subject: Re: [PATCH 08/10] pwm: core: add pulse feature to the PWM framework
+Date: Fri, 06 Nov 2015 17:18:32 +0100
+Message-ID: <563CD2D8.8060805@ultimaker.com>
+References: <1445895161-2317-1-git-send-email-o.schinagl@ultimaker.com> <1445895161-2317-9-git-send-email-o.schinagl@ultimaker.com> <20151106151816.GD8418@ulmo> <563CCB6E.2090206@ultimaker.com> <20151106160547.GF8418@ulmo>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="OgApRN/oydYDdnYz"
+Content-Type: text/plain; charset=UTF-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f50.google.com ([74.125.82.50]:36602 "EHLO
-	mail-wm0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751502AbbKFQM4 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 6 Nov 2015 11:12:56 -0500
-Content-Disposition: inline
-In-Reply-To: <1445895161-2317-4-git-send-email-o.schinagl@ultimaker.com>
+Received: from mail-wm0-f45.google.com ([74.125.82.45]:37140 "EHLO
+	mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751644AbbKFQSf (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 6 Nov 2015 11:18:35 -0500
+Received: by wmll128 with SMTP id l128so45074132wml.0
+        for <linux-pwm@vger.kernel.org>; Fri, 06 Nov 2015 08:18:33 -0800 (PST)
+In-Reply-To: <20151106160547.GF8418@ulmo>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Olliver Schinagl <o.schinagl@ultimaker.com>, Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Olliver Schinagl <oliver@schinagl.nl>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Joachim Eastwood <manabian@gmail.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Olliver Schinagl <oliver+list@schinagl.nl>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Olliver Schinagl <oliver@schinagl.nl>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Joachim Eastwood <manabian@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Olliver Schinagl <oliver+list@schinagl.nl>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
+Hey Thierry,
 
---OgApRN/oydYDdnYz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 06-11-15 17:05, Thierry Reding wrote:
+> On Fri, Nov 06, 2015 at 04:46:54PM +0100, Olliver Schinagl wrote:
+>> Hey Thierry,
+>>
+>> On 06-11-15 16:18, Thierry Reding wrote:
+>>> On Mon, Oct 26, 2015 at 10:32:39PM +0100, Olliver Schinagl wrote:
+>>>> From: Olliver Schinagl <oliver@schinagl.nl>
+>>>>
+>>>> Some hardware PWM's have the possibility to only send out one (or =
+more)
+>>>> pulses. This can be quite a useful feature in case one wants or ne=
+eds
+>>>> only a single pulse, but at the exact width.
+>>>>
+>>>> Additionally, if multiple pulses are possible, outputting a fixed =
+amount
+>>>> of pulses can be useful for various timing specific purposes.
+>>> I see how theoretically this would be nice to have. But I'm relucta=
+nt to
+>>> merge this feature if there aren't any users. What drivers in the k=
+ernel
+>>> would want to use this feature? Are there new drivers being worked =
+on
+>>> that will need this?
+>> I should have brought this up as to why I added this, I'm working on=
+ a
+>> stepper driver framework (inspired by the pwm framework actually) an=
+d
+>> rotating moters by x degree's you do by sending pulses, using contro=
+lled
+>> pulses (timing wise) you can precisely move stepper motors. Yes we c=
+an do
+>> this reasonably accurate in software, but doing it in hardware is so=
+ much
+>> nicer.
+> So is this going to be a kernel framework for stepper motors? If you =
+say
+> you rotate the motors by sending pulses, doesn't that mean that the P=
+WM
+> framework with pulse support would be enough? Or are there dedicated
+> stepper chips that you plan to support, with PWM + pulses being the
+> fallback for when you don't have one of those chips?
+Well I'll have to investigate more into what other chips do, but=20
+generally speaking from what I know so far, that often you supply a=20
+stepper driver chip a variable voltage (via a regular pwm) to setup the=
+=20
+current control, you have gpio's for direction, enable etc, and you=20
+'pulse' for each step you want the motor to take. There are of course=20
+some chips that have more logic, that work via i2c and spi interfaces.
+>
+>>>> * pwm_pulse_done()	an internal function for drivers to call when
+>>>> 			they have completed their pre-configured number
+>>>> 			of pulses
+>>>> * pwm_is_pulsing()	tells the callers if the pwm is busy pulsing,
+>>>> 			yielding a little more information than just
+>>>> 			pwm_is_enabled()
+>>> Similarily, I'd think that once the PWM is done executing the serie=
+s of
+>>> pulses that it was configured for it would be automatically disable=
+d. A
+>>> consumer could then simply use pwm_is_enabled() and drivers could c=
+all
+>>> pwm_disable() on their PWM to mark them as disabled when they're do=
+ne
+>>> pulsing.
+>> I agree, pulseating can be dropped too as we know that a) the pulse =
+flag is
+>> set, b) we are enabled. But I'm not sure now if the flag is exported=
+ to
+>> sysfs, in any case, sysfs should just check the pulseating flag?
+> Can't you derive that information simply by looking at the enable and
+> pulses attributes? If enable =3D=3D 1 and pulses > 0 you know the PWM=
+ is
+> pulsing. If enable =3D=3D 1 and pulses =3D=3D 0 you know it's in regu=
+lar mode.
+oh right, yes you can :)
 
-On Mon, Oct 26, 2015 at 10:32:34PM +0100, Olliver Schinagl wrote:
-> The pwm-block of some of the sunxi chips feature a 'ready' flag to
-> indicate the software that it is ready for new commands.
->=20
-> Right now, when we call pwm_config and set the period, we write the
-> values to the registers, and turn off the clock to the IP. Because of
-> this, the hardware does not have time to configure the hardware and set
-> the 'ready' flag.
->=20
-> By running the clock just before making new changes and before checking
-> if the hardware is ready, the hardware has time to reconfigure itself
-> and set the clear the flag appropriately.
->=20
-> Signed-off-by: Olliver Schinagl <o.schinagl@ultimaker.com>
-> ---
->  drivers/pwm/pwm-sun4i.c | 43 +++++++++++++++++++++++++------------------
->  1 file changed, 25 insertions(+), 18 deletions(-)
+olliver
+>
+> Thierry
 
-This looks okay to me (except for one minor thing I noticed, see below),
-but I'd like an Acked-by from one of the sunxi people. Maxime, any
-comments on this?
+--=20
+Met vriendelijke groeten, Kind regards, =E4=B8=8E=E4=BA=B2=E5=88=87=E7=9A=
+=84=E9=97=AE=E5=80=99
 
-> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-> index 58ff424..4d84d9d 100644
-> --- a/drivers/pwm/pwm-sun4i.c
-> +++ b/drivers/pwm/pwm-sun4i.c
-> @@ -104,6 +104,22 @@ static int sun4i_pwm_config(struct pwm_chip *chip, s=
-truct pwm_device *pwm,
->  	u64 clk_rate, div =3D 0;
->  	unsigned int prescaler =3D 0;
->  	int err;
-> +	int ret =3D 0;
-
-Why not reuse err?
-
-Thierry
-
---OgApRN/oydYDdnYz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJWPNGFAAoJEN0jrNd/PrOhcqUP/A5PtWBqEDEazT77qFlANp1b
-/F3Yf7B8BK8nntILKSqFYsYR0F4+gElroIqsmVWn8dQdsORvLWzD4TyrLq9fU5Fg
-sQNLGF4WaSJXboPbjQ0erjin/89SraEHWvmgmVAIMGvpImSK84WC2WvkPLlVB/zU
-oBqyXShFNgtFVM0CG/P6pF3IAkL7AnHTEefTmOnfRCFxyFpTtmcEIAgYP/Up7d6X
-pjwIlcH1LX5Jf/2+GOsclYMFAXlnqwbYRZpseblgUhErBOku97o/1znS3iTsC4Cb
-j19clRSW3XyoVrlVuWMYualWppDgFuqPNaN/1TG/Zmxj2aN4qL+mJEC2JJbBy9p4
-HyzO3D7PGsm12hYhX7t4xj1vDOfUQnsNbmBTHFDPEfo+XSbUMYoUfdM2wSDK01Gf
-mXfFpKQkJpTpvK3p6Gdo5VNTWSR4hsLxqZPJhBhmbFPSom5AwnyklH6y5e4AMxQi
-VCg5MGZtmS817HSOm0jJVow4iq435aGQ0AVD0F7sx0hzMCnMKhvQ2FBPmIM2kmZ/
-q9UpFnpUhWlcRsNvliU4U9HE53+SWVshfsaukZuNayUmMiIJuAmlW+ZSz0lZJ1Jk
-hImGmSxoRUrlLOV2VUSAIL8bUrXZ8b6EXVk+RPM4MF2/vygO0J0Fnr/0OdQlvPLj
-GvCl8OMC0YkiXcW9ST69
-=bXu/
------END PGP SIGNATURE-----
-
---OgApRN/oydYDdnYz--
+Olliver Schinagl
+Software Engineer
+Research & Development
+Ultimaker B.V.
