@@ -1,45 +1,42 @@
-From: Vladimir Zapolskiy <vz@mleia.com>
-Subject: Re: [PATCH 0/4] pwm: lpc32xx: fixes in the LPC32xx PWM driver
-Date: Sun, 08 Nov 2015 08:48:51 +0200
-Message-ID: <563EF053.8060305@mleia.com>
-References: <1444695653-23491-1-git-send-email-vz@mleia.com>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH] pwm: rcar: Improve accuracy of frequency division setting
+Date: Mon, 9 Nov 2015 09:42:25 +0900
+Message-ID: <1447029745-3648-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mleia.com ([178.79.152.223]:43294 "EHLO mail.mleia.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751219AbbKHGs4 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Sun, 8 Nov 2015 01:48:56 -0500
-In-Reply-To: <1444695653-23491-1-git-send-email-vz@mleia.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-sh-owner@vger.kernel.org>
+Sender: linux-sh-owner@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: ryo.kodama.vz@renesas.com, linux-pwm@vger.kernel.org, linux-sh@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Alexandre Pereira da Silva <aletes.xgr@gmail.com>, linux-pwm@vger.kernel.org
 
-On 13.10.2015 03:20, Vladimir Zapolskiy wrote:
-> The changeset fixes a number of issues within current implementation
-> of LPC32xx PWM controller driver, namely
-> - the SoC has two independent PWM controllers with one channel each,
-> - runtime warnings from common clock framework,
-> - overflow in duty cycle calculation may result in disabled PWM,
-> - unsupported period values are silently accepted.
-> 
-> Vladimir Zapolskiy (4):
->   pwm: lpc32xx: correct number of PWM channels from 2 to 1
->   pwm: lpc32xx: fix warnings from common clock framework
->   pwm: lpc32xx: fix and simplify duty cycle and period calculations
->   pwm: lpc32xx: return ERANGE, if requested period is not supported
-> 
->  drivers/pwm/pwm-lpc32xx.c | 59 ++++++++++++++++++-----------------------------
->  1 file changed, 22 insertions(+), 37 deletions(-)
-> 
+From: Ryo Kodama <ryo.kodama.vz@renesas.com>
 
-Hi Thierry,
+From: Ryo Kodama <ryo.kodama.vz@renesas.com>
 
-are you going to pick these changes up to PWM branch?
+When period_ns is set to the same value of RCAR_PWM_MAX_CYCLE in
+rcar_pwm_get_clock_division(), this function should allow such value
+for improving accuracy of frequency division setting.
 
-Thanks in advance.
+Signed-off-by: Ryo Kodama <ryo.kodama.vz@renesas.com>
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+ drivers/pwm/pwm-rcar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---
-Vladimir
+diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+index 6e99a63..7b8ac06 100644
+--- a/drivers/pwm/pwm-rcar.c
++++ b/drivers/pwm/pwm-rcar.c
+@@ -81,7 +81,7 @@ static int rcar_pwm_get_clock_division(struct rcar_pwm_chip *rp, int period_ns)
+ 		max = (unsigned long long)NSEC_PER_SEC * RCAR_PWM_MAX_CYCLE *
+ 			(1 << div);
+ 		do_div(max, clk_rate);
+-		if (period_ns < max)
++		if (period_ns <= max)
+ 			break;
+ 	}
+ 
+-- 
+1.9.1
+
