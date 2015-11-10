@@ -1,77 +1,84 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4] pwm-backlight: Avoid backlight flicker when probed
- from DT
-Date: Tue, 10 Nov 2015 18:32:57 +0100
-Message-ID: <20151110173257.GA21727@ulmo>
-References: <1446483356-14338-1-git-send-email-p.zabel@pengutronix.de>
- <3447562.c3gSANEMio@phil>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 00/12] pwm: add support for atomic update
+Date: Tue, 10 Nov 2015 18:34:16 +0100
+Message-ID: <20151110173416.GB21727@ulmo>
+References: <1442828009-6241-1-git-send-email-boris.brezillon@free-electrons.com>
+ <2341981.a79ioYM9Es@diego>
+Reply-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="sdtB3X0nJg68CQEu"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="i9LlY+UWpKt15+FH"
+Return-path: <linux-sunxi+bncBDTKFPPJUEHRBGWVRCZAKGQEYS2TU3A-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <3447562.c3gSANEMio@phil>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Heiko Stuebner <heiko@sntech.de>
-Cc: linux-arm-kernel@lists.infradead.org, Philipp Zabel <p.zabel@pengutronix.de>, linux-pwm@vger.kernel.org, YH Huang <yh.huang@mediatek.com>, Jingoo Han <jingoohan1@gmail.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Christian Gmeiner <christian.gmeiner@gmail.com>, kernel@pengutronix.de, Lee Jones <lee.jones@linaro.org>, Ajay Kumar <ajaykumar.rs@samsung.com>
+In-Reply-To: <2341981.a79ioYM9Es@diego>
+List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <http://groups.google.com/group/linux-sunxi
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <http://groups.google.com/group/linux-sunxi/subscribe>
+To: Heiko =?utf-8?Q?St=C3=BCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Cc: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, Daniel Mack <daniel-cYrQPVfZoowdnm+yROfE0A@public.gmane.org>, Haojian Zhuang <haojian.zhuang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robert Jarzmik <robert.jarzmik-GANU6spQydw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pen>
 List-Id: linux-pwm@vger.kernel.org
 
-
---sdtB3X0nJg68CQEu
-Content-Type: text/plain; charset=us-ascii
+--i9LlY+UWpKt15+FH
+Content-Type: text/plain; charset=UTF-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 10, 2015 at 03:18:10PM +0100, Heiko Stuebner wrote:
-> Hi Philipp,
+On Mon, Oct 19, 2015 at 12:12:12PM +0200, Heiko St=C3=BCbner wrote:
+> Hi Thierry,
 >=20
-> Am Montag, 2. November 2015, 17:55:56 schrieb Philipp Zabel:
-> > If the driver is probed from the device tree, and there is a phandle
-> > property set on it, and the enable GPIO is already configured as output,
-> > and the backlight is currently disabled, keep it disabled.
-> > If all these conditions are met, assume there will be some other driver
-> > that can enable the backlight at the appropriate time.
+> Am Montag, 21. September 2015, 11:33:17 schrieb Boris Brezillon:
+> > Hello,
 > >=20
-> > Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-> > Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
+> > This series adds support for atomic PWM update, or IOW, the capability
+> > to update all the parameters of a PWM device (enabled/disabled, period,
+> > duty and polarity) in one go.
 >=20
-> this patch improves the white screen when booting a veyron chromebook
-> a lot. I still see a small white flash, but that can probably come from
-> the WIP edp driver.
+> is anything more blocking this series? It's now sitting on the lists for=
+=20
+> nearly a month and everybody seems happy with it, so it would be really n=
+ice=20
+> to have in mainline :-) .
+>=20
+> Especially as this also makes it possible for Rockchip Chromebooks to act=
+ually=20
+> control the logic-regulator that is implemented as pwm-regulator there.
 
-Some panels require a couple of frames before they actually enable. You
-may want to look at the datasheet of your panel to see if it has some
-specific requirement and update the panel driver with that.
-
-=46rom a high-level view the way that this is supposed to work is that
-your encoder driver (e.g. eDP) "prepares" the panel, then starts sending
-frames and finally "enables" the panel. With something like the simple
-panel driver you can influence this by setting the delay.enable field in
-the panel descriptor.
-
-See struct panel_desc in drivers/gpu/drm/panel/panel-simple.c
+Last time I tried to put this into linux-next I got immediately
+bombarded by a number of build failures, so I backed things out. The
+current plan is to give this another try after v4.4-rc1.
 
 Thierry
 
---sdtB3X0nJg68CQEu
+--=20
+You received this message because you are subscribed to the Google Groups "=
+linux-sunxi" group.
+To unsubscribe from this group and stop receiving emails from it, send an e=
+mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+For more options, visit https://groups.google.com/d/optout.
+
+--i9LlY+UWpKt15+FH
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJWQipHAAoJEN0jrNd/PrOhUdMP+wSo2k1dy4iq+yX1ZPzYNn+U
-brGXKxrub2AQSmn3FW5KuptPEQ8ZCoqMZDIfhaXBLMyy+6gOEu4CQ7iNI0TL2yU8
-OUQZXb0xk2v1pPAPHMBwcxaG04CRcEuXoilq/snbzNSy4MzIWsoLaL6uXnu7lHN/
-WJtN+leipSBslMhvJOXmgor74m1VEy+F+06oNb2gEKBcJF/0oQuaLIGKCCeZB8KH
-f9lY5jm9M2evaqMCoTHAJ2R7/LDwyw3QJmYowwUnR8Ip8aZEBV0mrrHVnedgDDDu
-b22ZGurbzpdumSeOPsnMRhkW2TfhHC0dCUnMM67d/v0gJuXqKCleBWVnpmkaYzfX
-rQKenESYhjXtcoej9vm321zOXfCO4vqQ7LFko/SO2+jphAjb4y7WS+RruZ7/ABV8
-c79lOXH8hRl7qreVAFuJoGQSrcx8F9NqRVEfwFGtESns5FiE1Do+cUewt4EZt5V4
-TKm4iP8KXiOqG3a11XLhFTEpj7ATwLqx6k/ijByqdbOGZyQIn0Azd9IYnfEqaiKw
-n9VgJULMlb5tc1HD5caoyrrh2Rc6pKMNzAcjMo106kYTYRKMDr5K25MPQ23nXk7/
-Ofn5VixeOnaRfCIayncHlq+gEjLibwggM1FhWytmakITLkSPfaagSkv1l3h/0W8i
-ajEY70SNxCDuhrVti8UN
-=tCx/
+iQIcBAABCAAGBQJWQiqYAAoJEN0jrNd/PrOhXB8QAKiDQLBn34IqmLnCArNIwIs7
+bSYy8AS8Zk60nIIf3a08UGJ0wY45T7zKpfkbKHvMIr7yKO3PfrbwRnaF7oCcYS4I
+oVPrXQjIFN4sge7YV8sNIhr0yDKpcR/dTMlpu+oQmEgRIWyZv5qDtgYcyeiEMmtV
+MQB8Tro7kMCju3YMRs7gLQ1n7Rv5WA2u5WP2I1bDw/wLA4WX1d7HRbL1MmCrFSXf
+qvEL8s+Oj2NUjNNal95KqIMmwv1VlT821mOu/qv3xDJ2hoHk30wmnv/W9Dz0K8Xi
+JOOcj0JJCzXGOSAbEWVbNLY0t4NcL+y5fC5O1uAUp9y1yhNoN0NcVA7invPMEZNz
+EqFB/KnnKnDTWTo8wjrLgZQ9ZCpocVXE4QIKu98MhpXkNycaDXi2HPFGVbaNrWGn
+cnZlNv3eXFK0J886l9ceEMVqTl9EtZRCstC1WMZWOBJ6vMaTnLt2X5ogoruu22oT
+TW31cMIY88vLgF8PRwBo8tKjLGoym73loLwsYOaLs1kJruaf/w/J2NV3CYlG4Xq8
+rbCMiGgEblSksxBhYCTjDTKB9NBPnDAezNul4GCZ/Ry1XVRngZdWpjzleokwpp9U
+S7yVSosarAi487rWfG1Mc1nuvJtvZOwH8XQQbmru/oz3UrC9WX9PTdZUY8lF3ITy
+Ghu9X0RQlSMJpsx5mlof
+=77fz
 -----END PGP SIGNATURE-----
 
---sdtB3X0nJg68CQEu--
+--i9LlY+UWpKt15+FH--
