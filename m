@@ -1,42 +1,36 @@
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH] pwm: rcar: Improve accuracy of frequency division setting
-Date: Mon, 9 Nov 2015 09:42:25 +0900
-Message-ID: <1447029745-3648-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH v4] pwm-backlight: Avoid backlight flicker when probed from DT
+Date: Tue, 10 Nov 2015 15:18:10 +0100
+Message-ID: <3447562.c3gSANEMio@phil>
+References: <1446483356-14338-1-git-send-email-p.zabel@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-sh-owner@vger.kernel.org>
-Sender: linux-sh-owner@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: ryo.kodama.vz@renesas.com, linux-pwm@vger.kernel.org, linux-sh@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from gloria.sntech.de ([95.129.55.99]:38645 "EHLO gloria.sntech.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752100AbbKJOSb (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Tue, 10 Nov 2015 09:18:31 -0500
+In-Reply-To: <1446483356-14338-1-git-send-email-p.zabel@pengutronix.de>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org
+Cc: Philipp Zabel <p.zabel@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, YH Huang <yh.huang@mediatek.com>, Jingoo Han <jingoohan1@gmail.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Christian Gmeiner <christian.gmeiner@gmail.com>, kernel@pengutronix.de, Lee Jones <lee.jones@linaro.org>, Ajay Kumar <ajaykumar.rs@samsung.com>
 
-From: Ryo Kodama <ryo.kodama.vz@renesas.com>
+Hi Philipp,
 
-From: Ryo Kodama <ryo.kodama.vz@renesas.com>
+Am Montag, 2. November 2015, 17:55:56 schrieb Philipp Zabel:
+> If the driver is probed from the device tree, and there is a phandle
+> property set on it, and the enable GPIO is already configured as output,
+> and the backlight is currently disabled, keep it disabled.
+> If all these conditions are met, assume there will be some other driver
+> that can enable the backlight at the appropriate time.
+> 
+> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+> Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
 
-When period_ns is set to the same value of RCAR_PWM_MAX_CYCLE in
-rcar_pwm_get_clock_division(), this function should allow such value
-for improving accuracy of frequency division setting.
+this patch improves the white screen when booting a veyron chromebook
+a lot. I still see a small white flash, but that can probably come from
+the WIP edp driver.
 
-Signed-off-by: Ryo Kodama <ryo.kodama.vz@renesas.com>
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
----
- drivers/pwm/pwm-rcar.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-index 6e99a63..7b8ac06 100644
---- a/drivers/pwm/pwm-rcar.c
-+++ b/drivers/pwm/pwm-rcar.c
-@@ -81,7 +81,7 @@ static int rcar_pwm_get_clock_division(struct rcar_pwm_chip *rp, int period_ns)
- 		max = (unsigned long long)NSEC_PER_SEC * RCAR_PWM_MAX_CYCLE *
- 			(1 << div);
- 		do_div(max, clk_rate);
--		if (period_ns < max)
-+		if (period_ns <= max)
- 			break;
- 	}
- 
--- 
-1.9.1
-
+Tested-by: Heiko Stuebner <heiko@sntech.de>
