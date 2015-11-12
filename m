@@ -1,140 +1,78 @@
-From: Qipeng Zha <qipeng.zha@intel.com>
-Subject: [PATCH] pwm:lpss: update pwm setting for Broxton
-Date: Fri, 13 Nov 2015 00:28:04 +0800
-Message-ID: <1447345684-108039-1-git-send-email-qipeng.zha@intel.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] pwm: sun4i: fix a possible NULL dereference
+Date: Thu, 12 Nov 2015 13:38:28 +0100
+Message-ID: <20151112123828.GB31671@ulmo>
+References: <1447314132-29458-1-git-send-email-clabbe.montjoie@gmail.com>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="rJwd6BRFiFCcLxzm"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:2626 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750963AbbKLIXq (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Thu, 12 Nov 2015 03:23:46 -0500
+Received: from mail-wm0-f42.google.com ([74.125.82.42]:38839 "EHLO
+	mail-wm0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751680AbbKLMib (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Nov 2015 07:38:31 -0500
+Content-Disposition: inline
+In-Reply-To: <1447314132-29458-1-git-send-email-clabbe.montjoie@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: thierry.reding@gmail.com, mika.westerberg@intel.com, qipeng.zha@intel.com
+To: LABBE Corentin <clabbe.montjoie@gmail.com>
+Cc: linux-arm-kernel@lists.infradead.org, maxime.ripard@free-electrons.com, wens@csie.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-For Broxton PWM controller, base unit is defined as 8bit integer
-and 14bit fraction, so need to update base unit setting to output
-wave with right frequency.
-a) add scaler for each board setting;
-b) remove validity check of base unit for special board, let pwm
-user to handle this;
 
-Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
----
- drivers/pwm/pwm-lpss.c | 20 +++++++++++---------
- drivers/pwm/pwm-lpss.h |  1 +
- 2 files changed, 12 insertions(+), 9 deletions(-)
+--rJwd6BRFiFCcLxzm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 2504410..5a907db 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -14,6 +14,7 @@
-  */
- 
- #include <linux/io.h>
-+#include <linux/time.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/pm_runtime.h>
-@@ -24,11 +25,9 @@
- #define PWM_ENABLE			BIT(31)
- #define PWM_SW_UPDATE			BIT(30)
- #define PWM_BASE_UNIT_SHIFT		8
--#define PWM_BASE_UNIT_MASK		0x00ffff00
-+#define PWM_BASE_UNIT_MASK		0x3fffff00
- #define PWM_ON_TIME_DIV_MASK		0x000000ff
- #define PWM_DIVISION_CORRECTION		0x2
--#define PWM_LIMIT			(0x8000 + PWM_DIVISION_CORRECTION)
--#define NSECS_PER_SEC			1000000000UL
- 
- /* Size of each PWM register space if multiple */
- #define PWM_SIZE			0x400
-@@ -37,12 +36,14 @@ struct pwm_lpss_chip {
- 	struct pwm_chip chip;
- 	void __iomem *regs;
- 	unsigned long clk_rate;
-+	unsigned long scaler;
- };
- 
- /* BayTrail */
- const struct pwm_lpss_boardinfo pwm_lpss_byt_info = {
- 	.clk_rate = 25000000,
- 	.npwm = 1,
-+	.scaler = 65536
- };
- EXPORT_SYMBOL_GPL(pwm_lpss_byt_info);
- 
-@@ -50,6 +51,7 @@ EXPORT_SYMBOL_GPL(pwm_lpss_byt_info);
- const struct pwm_lpss_boardinfo pwm_lpss_bsw_info = {
- 	.clk_rate = 19200000,
- 	.npwm = 1,
-+	.scaler = 65536
- };
- EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
- 
-@@ -57,6 +59,7 @@ EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
- const struct pwm_lpss_boardinfo pwm_lpss_bxt_info = {
- 	.clk_rate = 19200000,
- 	.npwm = 4,
-+	.scaler = 4194304
- };
- EXPORT_SYMBOL_GPL(pwm_lpss_bxt_info);
- 
-@@ -85,13 +88,13 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
- 	u8 on_time_div;
- 	unsigned long c;
--	unsigned long long base_unit, freq = NSECS_PER_SEC;
-+	unsigned long long base_unit, freq = NSEC_PER_SEC;
- 	u32 ctrl;
- 
- 	do_div(freq, period_ns);
- 
--	/* The equation is: base_unit = ((freq / c) * 65536) + correction */
--	base_unit = freq * 65536;
-+	/* The equation is: base_unit = ((freq / c) * scaler) + correction */
-+	base_unit = freq * lpwm->scaler;
- 
- 	c = lpwm->clk_rate;
- 	if (!c)
-@@ -99,8 +102,6 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	do_div(base_unit, c);
- 	base_unit += PWM_DIVISION_CORRECTION;
--	if (base_unit > PWM_LIMIT)
--		return -EINVAL;
- 
- 	if (duty_ns <= 0)
- 		duty_ns = 1;
-@@ -110,7 +111,7 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	ctrl = pwm_lpss_read(pwm);
- 	ctrl &= ~(PWM_BASE_UNIT_MASK | PWM_ON_TIME_DIV_MASK);
--	ctrl |= (u16) base_unit << PWM_BASE_UNIT_SHIFT;
-+	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
- 	ctrl |= on_time_div;
- 	/* request PWM to update on next cycle */
- 	ctrl |= PWM_SW_UPDATE;
-@@ -157,6 +158,7 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
- 		return ERR_CAST(lpwm->regs);
- 
- 	lpwm->clk_rate = info->clk_rate;
-+	lpwm->scaler = info->scaler;
- 	lpwm->chip.dev = dev;
- 	lpwm->chip.ops = &pwm_lpss_ops;
- 	lpwm->chip.base = -1;
-diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-index e8cf337..834be4c 100644
---- a/drivers/pwm/pwm-lpss.h
-+++ b/drivers/pwm/pwm-lpss.h
-@@ -21,6 +21,7 @@ struct pwm_lpss_chip;
- struct pwm_lpss_boardinfo {
- 	unsigned long clk_rate;
- 	unsigned int npwm;
-+	unsigned long scaler;
- };
- 
- extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
--- 
-1.8.3.2
+On Thu, Nov 12, 2015 at 08:42:12AM +0100, LABBE Corentin wrote:
+> of_match_device could return NULL, and so cause a NULL pointer
+> dereference later.
+>=20
+> Reported-by: coverity (CID 1324139)
+> Signed-off-by: LABBE Corentin <clabbe.montjoie@gmail.com>
+> ---
+>  drivers/pwm/pwm-sun4i.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>=20
+> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+> index cd9dde5..3011fcc 100644
+> --- a/drivers/pwm/pwm-sun4i.c
+> +++ b/drivers/pwm/pwm-sun4i.c
+> @@ -291,6 +291,8 @@ static int sun4i_pwm_probe(struct platform_device *pd=
+ev)
+>  	const struct of_device_id *match;
+> =20
+>  	match =3D of_match_device(sun4i_pwm_dt_ids, &pdev->dev);
+> +	if (!match)
+> +		return -ENODEV;
+
+I explained this in a reply to another similar patch, but that was a
+different audience, so here goes again: the driver core will use the
+same device ID table to match on the driver, so the case where NULL
+would be returned is the same case in which sun4i_pwm_probe() would
+never have been called in the first place.
+
+Thierry
+
+--rJwd6BRFiFCcLxzm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJWRIhEAAoJEN0jrNd/PrOhVE0QAKp699mR8PO35skAsoEcKUjh
+ZywX5DYeW6BEG3mwzM7afd83iDHP5yXYKjwLGPMjsGMt63D8EK2hqxoboZSqrfLe
+bzmdRjEgltMyGNjAC7C/M6aBFUFhd+vyukYCTR+icL+KOdeJv28bh2T8rGYpRNm1
+dXFZjiuTQxzybhGsMaFjNWaNNBxFbshZiSUaDDKUsR0dQ9l6MzjfcXpmwJr4HtKO
+GlGCWop8OShizDBNMTMqgsZBE3KJ1h8mfiqkv9ZbAefsKsT9RWXNI7GDgIukzTl/
+gkxTfieenkXiztDndvwg4Gb6S1pAeLstGIIQKsR3VW+EPwSlGHR5kX9oL3sQtkQj
+edv/v0HQWb7NiwZ907JOEqhizFI/cVMCsivqByvRNgoMrBsG/TWUwSL0DVU0Keg2
+rQLTX6ddDJ8qeRUfk939XRy1lZvcuUJZw7VJe9+l6bLHEhmdUkIy2v5kO/UvCpUt
+7TgSzXLGKyu8oZp6pd/TuFe4SdqnzmqLpF07OdsUrlybhB/xVPQ1a7KwocO0qXeq
+GqS5Mbt4dvA+nSY+AjN1w8aQY7Cei7cYodx/er7hzpERwavpPhTmQBlHO6otBSij
+75s0KmmiPQrmFggVptVOCr8VhADEiopcfGBIs9SQvoinQw4sHtTVSJE3LA9ju7Lq
+L0lOYHYHXevec1qVFiNV
+=KVT4
+-----END PGP SIGNATURE-----
+
+--rJwd6BRFiFCcLxzm--
