@@ -1,145 +1,161 @@
-From: Qipeng Zha <qipeng.zha@intel.com>
-Subject: [PATCH v2] pwm:lpss: update pwm setting for Broxton
-Date: Fri, 13 Nov 2015 18:34:10 +0800
-Message-ID: <1447410851-28546-1-git-send-email-qipeng.zha@intel.com>
+From: Mika Westerberg <mika.westerberg@intel.com>
+Subject: Re: [PATCH v2] pwm:lpss: update pwm setting for Broxton
+Date: Fri, 13 Nov 2015 12:00:29 +0200
+Message-ID: <20151113100029.GT1509@lahna.fi.intel.com>
+References: <1447410851-28546-1-git-send-email-qipeng.zha@intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:15178 "EHLO mga01.intel.com"
+Received: from mga11.intel.com ([192.55.52.93]:22447 "EHLO mga11.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932345AbbKMC3w (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Thu, 12 Nov 2015 21:29:52 -0500
+	id S1753158AbbKMKCk (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Fri, 13 Nov 2015 05:02:40 -0500
+Content-Disposition: inline
+In-Reply-To: <1447410851-28546-1-git-send-email-qipeng.zha@intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: thierry.reding@gmail.com, mika.westerberg@intel.com, qipeng.zha@intel.com
+To: Qipeng Zha <qipeng.zha@intel.com>
+Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com
 
-For Broxton PWM controller, base unit is defined as 8bit integer
-and 14bit fraction, so need to update base unit setting to output
-wave with right frequency.
+On Fri, Nov 13, 2015 at 06:34:10PM +0800, Qipeng Zha wrote:
+> For Broxton PWM controller, base unit is defined as 8bit integer
+> and 14bit fraction, so need to update base unit setting to output
+> wave with right frequency.
+> 
+> Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
 
-Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
----
- drivers/pwm/pwm-lpss.c | 29 +++++++++++++++--------------
- drivers/pwm/pwm-lpss.h |  1 +
- 2 files changed, 16 insertions(+), 14 deletions(-)
+Looking good. Few minor comments, see below.
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 2504410..f4f8ee5 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -14,6 +14,7 @@
-  */
- 
- #include <linux/io.h>
-+#include <linux/time.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/pm_runtime.h>
-@@ -24,11 +25,8 @@
- #define PWM_ENABLE			BIT(31)
- #define PWM_SW_UPDATE			BIT(30)
- #define PWM_BASE_UNIT_SHIFT		8
--#define PWM_BASE_UNIT_MASK		0x00ffff00
- #define PWM_ON_TIME_DIV_MASK		0x000000ff
- #define PWM_DIVISION_CORRECTION		0x2
--#define PWM_LIMIT			(0x8000 + PWM_DIVISION_CORRECTION)
--#define NSECS_PER_SEC			1000000000UL
- 
- /* Size of each PWM register space if multiple */
- #define PWM_SIZE			0x400
-@@ -36,13 +34,14 @@
- struct pwm_lpss_chip {
- 	struct pwm_chip chip;
- 	void __iomem *regs;
--	unsigned long clk_rate;
-+	const struct pwm_lpss_boardinfo *info;
- };
- 
- /* BayTrail */
- const struct pwm_lpss_boardinfo pwm_lpss_byt_info = {
- 	.clk_rate = 25000000,
- 	.npwm = 1,
-+	.base_unit_bits = 16,
- };
- EXPORT_SYMBOL_GPL(pwm_lpss_byt_info);
- 
-@@ -50,6 +49,7 @@ EXPORT_SYMBOL_GPL(pwm_lpss_byt_info);
- const struct pwm_lpss_boardinfo pwm_lpss_bsw_info = {
- 	.clk_rate = 19200000,
- 	.npwm = 1,
-+	.base_unit_bits = 16,
- };
- EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
- 
-@@ -57,6 +57,7 @@ EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
- const struct pwm_lpss_boardinfo pwm_lpss_bxt_info = {
- 	.clk_rate = 19200000,
- 	.npwm = 4,
-+	.base_unit_bits = 22,
- };
- EXPORT_SYMBOL_GPL(pwm_lpss_bxt_info);
- 
-@@ -84,23 +85,22 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
- 	u8 on_time_div;
--	unsigned long c;
--	unsigned long long base_unit, freq = NSECS_PER_SEC;
-+	unsigned long c, base_unit_range;
-+	unsigned long long base_unit, freq = NSEC_PER_SEC;
- 	u32 ctrl;
- 
- 	do_div(freq, period_ns);
- 
--	/* The equation is: base_unit = ((freq / c) * 65536) + correction */
--	base_unit = freq * 65536;
-+	/* The equation is: base_unit = ((freq / c) * base_unit_range) + correction */
-+	base_unit_range = 1 << lpwm->info->base_unit_bits;
-+	base_unit = freq * base_unit_range;
- 
--	c = lpwm->clk_rate;
-+	c = lpwm->info->clk_rate;
- 	if (!c)
- 		return -EINVAL;
- 
- 	do_div(base_unit, c);
- 	base_unit += PWM_DIVISION_CORRECTION;
--	if (base_unit > PWM_LIMIT)
--		return -EINVAL;
- 
- 	if (duty_ns <= 0)
- 		duty_ns = 1;
-@@ -109,8 +109,9 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	pm_runtime_get_sync(chip->dev);
- 
- 	ctrl = pwm_lpss_read(pwm);
--	ctrl &= ~(PWM_BASE_UNIT_MASK | PWM_ON_TIME_DIV_MASK);
--	ctrl |= (u16) base_unit << PWM_BASE_UNIT_SHIFT;
-+	ctrl &= ~PWM_ON_TIME_DIV_MASK;
-+	ctrl &= ~((base_unit_range - 1) << PWM_BASE_UNIT_SHIFT);
-+	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
- 	ctrl |= on_time_div;
- 	/* request PWM to update on next cycle */
- 	ctrl |= PWM_SW_UPDATE;
-@@ -156,7 +157,7 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
- 	if (IS_ERR(lpwm->regs))
- 		return ERR_CAST(lpwm->regs);
- 
--	lpwm->clk_rate = info->clk_rate;
-+	lpwm->info = info;
- 	lpwm->chip.dev = dev;
- 	lpwm->chip.ops = &pwm_lpss_ops;
- 	lpwm->chip.base = -1;
-diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-index e8cf337..04766e0 100644
---- a/drivers/pwm/pwm-lpss.h
-+++ b/drivers/pwm/pwm-lpss.h
-@@ -21,6 +21,7 @@ struct pwm_lpss_chip;
- struct pwm_lpss_boardinfo {
- 	unsigned long clk_rate;
- 	unsigned int npwm;
-+	unsigned long base_unit_bits;
- };
- 
- extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
--- 
-1.8.3.2
+> ---
+>  drivers/pwm/pwm-lpss.c | 29 +++++++++++++++--------------
+>  drivers/pwm/pwm-lpss.h |  1 +
+>  2 files changed, 16 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+> index 2504410..f4f8ee5 100644
+> --- a/drivers/pwm/pwm-lpss.c
+> +++ b/drivers/pwm/pwm-lpss.c
+> @@ -14,6 +14,7 @@
+>   */
+>  
+>  #include <linux/io.h>
+> +#include <linux/time.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+>  #include <linux/pm_runtime.h>
+> @@ -24,11 +25,8 @@
+>  #define PWM_ENABLE			BIT(31)
+>  #define PWM_SW_UPDATE			BIT(30)
+>  #define PWM_BASE_UNIT_SHIFT		8
+> -#define PWM_BASE_UNIT_MASK		0x00ffff00
+>  #define PWM_ON_TIME_DIV_MASK		0x000000ff
+>  #define PWM_DIVISION_CORRECTION		0x2
+> -#define PWM_LIMIT			(0x8000 + PWM_DIVISION_CORRECTION)
+> -#define NSECS_PER_SEC			1000000000UL
+>  
+>  /* Size of each PWM register space if multiple */
+>  #define PWM_SIZE			0x400
+> @@ -36,13 +34,14 @@
+>  struct pwm_lpss_chip {
+>  	struct pwm_chip chip;
+>  	void __iomem *regs;
+> -	unsigned long clk_rate;
+> +	const struct pwm_lpss_boardinfo *info;
+>  };
+>  
+>  /* BayTrail */
+>  const struct pwm_lpss_boardinfo pwm_lpss_byt_info = {
+>  	.clk_rate = 25000000,
+>  	.npwm = 1,
+> +	.base_unit_bits = 16,
+>  };
+>  EXPORT_SYMBOL_GPL(pwm_lpss_byt_info);
+>  
+> @@ -50,6 +49,7 @@ EXPORT_SYMBOL_GPL(pwm_lpss_byt_info);
+>  const struct pwm_lpss_boardinfo pwm_lpss_bsw_info = {
+>  	.clk_rate = 19200000,
+>  	.npwm = 1,
+> +	.base_unit_bits = 16,
+>  };
+>  EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
+>  
+> @@ -57,6 +57,7 @@ EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
+>  const struct pwm_lpss_boardinfo pwm_lpss_bxt_info = {
+>  	.clk_rate = 19200000,
+>  	.npwm = 4,
+> +	.base_unit_bits = 22,
+>  };
+>  EXPORT_SYMBOL_GPL(pwm_lpss_bxt_info);
+>  
+> @@ -84,23 +85,22 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  {
+>  	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
+>  	u8 on_time_div;
+> -	unsigned long c;
+> -	unsigned long long base_unit, freq = NSECS_PER_SEC;
+> +	unsigned long c, base_unit_range;
+> +	unsigned long long base_unit, freq = NSEC_PER_SEC;
+>  	u32 ctrl;
+>  
+>  	do_div(freq, period_ns);
+>  
+> -	/* The equation is: base_unit = ((freq / c) * 65536) + correction */
+> -	base_unit = freq * 65536;
+> +	/* The equation is: base_unit = ((freq / c) * base_unit_range) + correction */
+> +	base_unit_range = 1 << lpwm->info->base_unit_bits;
+
+BIT()?
+
+> +	base_unit = freq * base_unit_range;
+>  
+> -	c = lpwm->clk_rate;
+> +	c = lpwm->info->clk_rate;
+>  	if (!c)
+>  		return -EINVAL;
+>  
+>  	do_div(base_unit, c);
+>  	base_unit += PWM_DIVISION_CORRECTION;
+> -	if (base_unit > PWM_LIMIT)
+> -		return -EINVAL;
+>  
+>  	if (duty_ns <= 0)
+>  		duty_ns = 1;
+> @@ -109,8 +109,9 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  	pm_runtime_get_sync(chip->dev);
+>  
+>  	ctrl = pwm_lpss_read(pwm);
+> -	ctrl &= ~(PWM_BASE_UNIT_MASK | PWM_ON_TIME_DIV_MASK);
+> -	ctrl |= (u16) base_unit << PWM_BASE_UNIT_SHIFT;
+> +	ctrl &= ~PWM_ON_TIME_DIV_MASK;
+> +	ctrl &= ~((base_unit_range - 1) << PWM_BASE_UNIT_SHIFT);
+> +	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
+
+I think you should first mask base_unit (with base_unit_range - 1) so that it
+will not accidentally overwrite the upper bits.
+
+>  	ctrl |= on_time_div;
+>  	/* request PWM to update on next cycle */
+>  	ctrl |= PWM_SW_UPDATE;
+> @@ -156,7 +157,7 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
+>  	if (IS_ERR(lpwm->regs))
+>  		return ERR_CAST(lpwm->regs);
+>  
+> -	lpwm->clk_rate = info->clk_rate;
+> +	lpwm->info = info;
+>  	lpwm->chip.dev = dev;
+>  	lpwm->chip.ops = &pwm_lpss_ops;
+>  	lpwm->chip.base = -1;
+> diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
+> index e8cf337..04766e0 100644
+> --- a/drivers/pwm/pwm-lpss.h
+> +++ b/drivers/pwm/pwm-lpss.h
+> @@ -21,6 +21,7 @@ struct pwm_lpss_chip;
+>  struct pwm_lpss_boardinfo {
+>  	unsigned long clk_rate;
+>  	unsigned int npwm;
+> +	unsigned long base_unit_bits;
+>  };
+>  
+>  extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
+> -- 
+> 1.8.3.2
