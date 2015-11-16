@@ -1,12 +1,12 @@
 From: Qipeng Zha <qipeng.zha@intel.com>
-Subject: [PATCH v3] pwm:lpss: update pwm setting for Broxton
-Date: Mon, 16 Nov 2015 19:07:15 +0800
-Message-ID: <1447672035-14247-1-git-send-email-qipeng.zha@intel.com>
+Subject: [PATCH v4] pwm:lpss: update pwm setting for Broxton
+Date: Mon, 16 Nov 2015 19:14:04 +0800
+Message-ID: <1447672444-81184-1-git-send-email-qipeng.zha@intel.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:32696 "EHLO mga09.intel.com"
+Received: from mga01.intel.com ([192.55.52.88]:16107 "EHLO mga01.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752597AbbKPDDH (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Sun, 15 Nov 2015 22:03:07 -0500
+	id S1752513AbbKPDJo (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Sun, 15 Nov 2015 22:09:44 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: linux-pwm@vger.kernel.org
@@ -19,16 +19,19 @@ wave with right frequency.
 Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
 
 ---
+change in v4
+ fix one code style issue, exceed 80 characters.
+
 change in v3
  use BIT macro to calculate base_unit_range;
  mask base_unit with "base_unit_range - 1".
 ---
- drivers/pwm/pwm-lpss.c | 30 ++++++++++++++++--------------
+ drivers/pwm/pwm-lpss.c | 32 ++++++++++++++++++--------------
  drivers/pwm/pwm-lpss.h |  1 +
- 2 files changed, 17 insertions(+), 14 deletions(-)
+ 2 files changed, 19 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 2504410..4530c48 100644
+index 2504410..c5471fe 100644
 --- a/drivers/pwm/pwm-lpss.c
 +++ b/drivers/pwm/pwm-lpss.c
 @@ -14,6 +14,7 @@
@@ -83,7 +86,7 @@ index 2504410..4530c48 100644
  };
  EXPORT_SYMBOL_GPL(pwm_lpss_bxt_info);
  
-@@ -84,23 +85,22 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -84,23 +85,24 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
  {
  	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
  	u8 on_time_div;
@@ -97,7 +100,9 @@ index 2504410..4530c48 100644
  
 -	/* The equation is: base_unit = ((freq / c) * 65536) + correction */
 -	base_unit = freq * 65536;
-+	/* The equation is: base_unit = ((freq / c) * base_unit_range) + correction */
++	/* The equation is:
++	 * base_unit = ((freq / c) * base_unit_range) + correction
++	 */
 +	base_unit_range = BIT(lpwm->info->base_unit_bits);
 +	base_unit = freq * base_unit_range;
  
@@ -113,7 +118,7 @@ index 2504410..4530c48 100644
  
  	if (duty_ns <= 0)
  		duty_ns = 1;
-@@ -109,8 +109,10 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -109,8 +111,10 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
  	pm_runtime_get_sync(chip->dev);
  
  	ctrl = pwm_lpss_read(pwm);
@@ -126,7 +131,7 @@ index 2504410..4530c48 100644
  	ctrl |= on_time_div;
  	/* request PWM to update on next cycle */
  	ctrl |= PWM_SW_UPDATE;
-@@ -156,7 +158,7 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
+@@ -156,7 +160,7 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
  	if (IS_ERR(lpwm->regs))
  		return ERR_CAST(lpwm->regs);
  
