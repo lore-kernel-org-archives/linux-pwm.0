@@ -1,12 +1,12 @@
 From: Qipeng Zha <qipeng.zha@intel.com>
 Subject: [PATCH v3] pwm:lpss: update pwm setting for Broxton
-Date: Mon, 16 Nov 2015 19:06:03 +0800
-Message-ID: <1447671963-14195-1-git-send-email-qipeng.zha@intel.com>
+Date: Mon, 16 Nov 2015 19:07:15 +0800
+Message-ID: <1447672035-14247-1-git-send-email-qipeng.zha@intel.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:53627 "EHLO mga01.intel.com"
+Received: from mga09.intel.com ([134.134.136.24]:32696 "EHLO mga09.intel.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751781AbbKPDBn (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Sun, 15 Nov 2015 22:01:43 -0500
+	id S1752597AbbKPDDH (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Sun, 15 Nov 2015 22:03:07 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: linux-pwm@vger.kernel.org
@@ -16,12 +16,12 @@ For Broxton PWM controller, base unit is defined as 8bit integer
 and 14bit fraction, so need to update base unit setting to output
 wave with right frequency.
 
+Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
+
 ---
 change in v3
  use BIT macro to calculate base_unit_range;
  mask base_unit with "base_unit_range - 1".
-
-Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
 ---
  drivers/pwm/pwm-lpss.c | 30 ++++++++++++++++--------------
  drivers/pwm/pwm-lpss.h |  1 +
