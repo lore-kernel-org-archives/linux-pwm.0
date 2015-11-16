@@ -1,156 +1,40 @@
-From: Qipeng Zha <qipeng.zha@intel.com>
-Subject: [PATCH v4] pwm:lpss: update pwm setting for Broxton
-Date: Mon, 16 Nov 2015 19:14:04 +0800
-Message-ID: <1447672444-81184-1-git-send-email-qipeng.zha@intel.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:16107 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752513AbbKPDJo (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Sun, 15 Nov 2015 22:09:44 -0500
-Sender: linux-pwm-owner@vger.kernel.org
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: [PATCH v4 01/24] pwm: rcar: make use of pwm_is_enabled()
+Date: Mon, 16 Nov 2015 09:56:24 +0100
+Message-ID: <1447664207-24370-2-git-send-email-boris.brezillon@free-electrons.com>
+References: <1447664207-24370-1-git-send-email-boris.brezillon@free-electrons.com>
+Return-path: <linux-leds-owner@vger.kernel.org>
+In-Reply-To: <1447664207-24370-1-git-send-email-boris.brezillon@free-electrons.com>
+Sender: linux-leds-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Cc: Mike Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, linux-clk@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Kamil Debski <k.debski@samsung.com>, lm-sensors@lm-sensors.org, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, linux-input@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, linux-sunxi@googlegroups.com, Joachim Eastwood <manabian@gmail.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-fbd
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: thierry.reding@gmail.com, mika.westerberg@intel.com, qipeng.zha@intel.com
 
-For Broxton PWM controller, base unit is defined as 8bit integer
-and 14bit fraction, so need to update base unit setting to output
-wave with right frequency.
+Commit 5c31252c4a86 ("pwm: Add the pwm_is_enabled() helper") introduced a
+new function to test whether a PWM device is enabled or not without
+manipulating PWM internal fields.
+Hiding this is necessary if we want to smoothly move to the atomic PWM
+config approach without impacting PWM drivers.
+Fix this driver to use pwm_is_enabled() instead of directly accessing the
+->flags field.
 
-Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
-
+Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 ---
-change in v4
- fix one code style issue, exceed 80 characters.
+ drivers/pwm/pwm-rcar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-change in v3
- use BIT macro to calculate base_unit_range;
- mask base_unit with "base_unit_range - 1".
----
- drivers/pwm/pwm-lpss.c | 32 ++++++++++++++++++--------------
- drivers/pwm/pwm-lpss.h |  1 +
- 2 files changed, 19 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 2504410..c5471fe 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -14,6 +14,7 @@
-  */
+diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
+index 6e99a63..70899c9 100644
+--- a/drivers/pwm/pwm-rcar.c
++++ b/drivers/pwm/pwm-rcar.c
+@@ -157,7 +157,7 @@ static int rcar_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		return div;
  
- #include <linux/io.h>
-+#include <linux/time.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/pm_runtime.h>
-@@ -24,11 +25,8 @@
- #define PWM_ENABLE			BIT(31)
- #define PWM_SW_UPDATE			BIT(30)
- #define PWM_BASE_UNIT_SHIFT		8
--#define PWM_BASE_UNIT_MASK		0x00ffff00
- #define PWM_ON_TIME_DIV_MASK		0x000000ff
- #define PWM_DIVISION_CORRECTION		0x2
--#define PWM_LIMIT			(0x8000 + PWM_DIVISION_CORRECTION)
--#define NSECS_PER_SEC			1000000000UL
+ 	/* Let the core driver set pwm->period if disabled and duty_ns == 0 */
+-	if (!test_bit(PWMF_ENABLED, &pwm->flags) && !duty_ns)
++	if (!pwm_is_enabled(pwm) && !duty_ns)
+ 		return 0;
  
- /* Size of each PWM register space if multiple */
- #define PWM_SIZE			0x400
-@@ -36,13 +34,14 @@
- struct pwm_lpss_chip {
- 	struct pwm_chip chip;
- 	void __iomem *regs;
--	unsigned long clk_rate;
-+	const struct pwm_lpss_boardinfo *info;
- };
- 
- /* BayTrail */
- const struct pwm_lpss_boardinfo pwm_lpss_byt_info = {
- 	.clk_rate = 25000000,
- 	.npwm = 1,
-+	.base_unit_bits = 16,
- };
- EXPORT_SYMBOL_GPL(pwm_lpss_byt_info);
- 
-@@ -50,6 +49,7 @@ EXPORT_SYMBOL_GPL(pwm_lpss_byt_info);
- const struct pwm_lpss_boardinfo pwm_lpss_bsw_info = {
- 	.clk_rate = 19200000,
- 	.npwm = 1,
-+	.base_unit_bits = 16,
- };
- EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
- 
-@@ -57,6 +57,7 @@ EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
- const struct pwm_lpss_boardinfo pwm_lpss_bxt_info = {
- 	.clk_rate = 19200000,
- 	.npwm = 4,
-+	.base_unit_bits = 22,
- };
- EXPORT_SYMBOL_GPL(pwm_lpss_bxt_info);
- 
-@@ -84,23 +85,24 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
- 	u8 on_time_div;
--	unsigned long c;
--	unsigned long long base_unit, freq = NSECS_PER_SEC;
-+	unsigned long c, base_unit_range;
-+	unsigned long long base_unit, freq = NSEC_PER_SEC;
- 	u32 ctrl;
- 
- 	do_div(freq, period_ns);
- 
--	/* The equation is: base_unit = ((freq / c) * 65536) + correction */
--	base_unit = freq * 65536;
-+	/* The equation is:
-+	 * base_unit = ((freq / c) * base_unit_range) + correction
-+	 */
-+	base_unit_range = BIT(lpwm->info->base_unit_bits);
-+	base_unit = freq * base_unit_range;
- 
--	c = lpwm->clk_rate;
-+	c = lpwm->info->clk_rate;
- 	if (!c)
- 		return -EINVAL;
- 
- 	do_div(base_unit, c);
- 	base_unit += PWM_DIVISION_CORRECTION;
--	if (base_unit > PWM_LIMIT)
--		return -EINVAL;
- 
- 	if (duty_ns <= 0)
- 		duty_ns = 1;
-@@ -109,8 +111,10 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	pm_runtime_get_sync(chip->dev);
- 
- 	ctrl = pwm_lpss_read(pwm);
--	ctrl &= ~(PWM_BASE_UNIT_MASK | PWM_ON_TIME_DIV_MASK);
--	ctrl |= (u16) base_unit << PWM_BASE_UNIT_SHIFT;
-+	ctrl &= ~PWM_ON_TIME_DIV_MASK;
-+	ctrl &= ~((base_unit_range - 1) << PWM_BASE_UNIT_SHIFT);
-+	base_unit &= (base_unit_range - 1);
-+	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
- 	ctrl |= on_time_div;
- 	/* request PWM to update on next cycle */
- 	ctrl |= PWM_SW_UPDATE;
-@@ -156,7 +160,7 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
- 	if (IS_ERR(lpwm->regs))
- 		return ERR_CAST(lpwm->regs);
- 
--	lpwm->clk_rate = info->clk_rate;
-+	lpwm->info = info;
- 	lpwm->chip.dev = dev;
- 	lpwm->chip.ops = &pwm_lpss_ops;
- 	lpwm->chip.base = -1;
-diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
-index e8cf337..04766e0 100644
---- a/drivers/pwm/pwm-lpss.h
-+++ b/drivers/pwm/pwm-lpss.h
-@@ -21,6 +21,7 @@ struct pwm_lpss_chip;
- struct pwm_lpss_boardinfo {
- 	unsigned long clk_rate;
- 	unsigned int npwm;
-+	unsigned long base_unit_bits;
- };
- 
- extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
+ 	rcar_pwm_update(rp, RCAR_PWMCR_SYNC, RCAR_PWMCR_SYNC, RCAR_PWMCR);
 -- 
-1.8.3.2
+2.1.4
