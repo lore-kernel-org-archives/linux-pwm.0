@@ -1,103 +1,160 @@
-From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v4 09/24] regulator: pwm: use
- pwm_get/set_default_xxx() helpers where appropriate
-Date: Mon, 16 Nov 2015 20:28:13 +0100
-Message-ID: <20151116202813.5a2114b9@bbrezillon>
-References: <1447664207-24370-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1447664207-24370-10-git-send-email-boris.brezillon@free-electrons.com>
-	<20151116105558.GB31303@sirena.org.uk>
-	<20151116132359.39d84279@bbrezillon>
-	<20151116184238.GJ31303@sirena.org.uk>
-Reply-To: boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBCIPJ6FA2QLBBVG4VCZAKGQERZOVJIY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-In-Reply-To: <20151116184238.GJ31303-GFdadSzt00ze9xe1eoZjHA@public.gmane.org>
-List-Post: <http://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <http://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <http://groups.google.com/group/linux-sunxi
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-List-Subscribe: <http://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <http://groups.google.com/group/linux-sunxi/subscribe>
-To: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kamil Debski <k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, lm-sensors-GZX6beZjE8VD60Wz+7aTrA@public.gmane.org, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>Lee Jones <l>
+From: Qipeng Zha <qipeng.zha@intel.com>
+Subject: [PATCH v5] pwm:lpss: update pwm setting for Broxton
+Date: Tue, 17 Nov 2015 17:20:15 +0800
+Message-ID: <1447752015-55339-1-git-send-email-qipeng.zha@intel.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga14.intel.com ([192.55.52.115]:43805 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751786AbbKQBPz (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Mon, 16 Nov 2015 20:15:55 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-pwm@vger.kernel.org
+Cc: thierry.reding@gmail.com, mika.westerberg@intel.com, qipeng.zha@intel.com
 
-On Mon, 16 Nov 2015 18:42:38 +0000
-Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+For Broxton PWM controller, base unit is defined as 8bit integer
+and 14bit fraction, so need to update base unit setting to output
+wave with right frequency.
 
-> On Mon, Nov 16, 2015 at 01:23:59PM +0100, Boris Brezillon wrote:
-> > Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-> > > On Mon, Nov 16, 2015 at 09:56:32AM +0100, Boris Brezillon wrote:
-> 
-> > > > -	pwm_reg_period = pwm_get_period(drvdata->pwm);
-> > > > +	pwm_reg_period = pwm_get_default_period(drvdata->pwm);
-> 
-> > > It's not clear to me that we're not looking for the current period here
-> > > or in the other use.  Won't configuring based on a period other than the
-> > > one that has been set give the wrong answer?
-> 
-> > Hm, maybe that's naming problem. What I call the 'default' period here
-> > is actually the period configured in your board file (using a PWM lookup
-> > table) or your DT. This value represent the period requested by the PWM
-> > user not a default value specified by the PWM chip driver.
-> 
-> > The reason we're not using the 'current' period value is because it may
-> > have been set by the bootloader, and may be inappropriate for our use
-> > case (ie. the period may be to small to represent the different
-> > voltages).
-> 
-> > ITOH, we're using the current period value when calculating the current
-> > voltage, because we want to get the correct voltage value, and the PWM
-> > device may still use the configuration set by the bootloader (not the
-> > default one specified in your board or DT files).
-> 
-> > I hope this clarifies the differences between the current and default
-> > period, and why we should use the default value here.
-> 
-> To be honest I'm still a bit confused here.  When do we actually apply
-> the default setting and why do we keep on having to constantly override
-> it rather than doing this once at boot?
+Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
 
-That's why I said the 'default' name may be inappropriate. The
-default values are actually never directly applied by the PWM framework.
-It's the default value for a specific PWM user, so it can be applied by
-the PWM user when he wants. It's more here as a reference, nothing
-forces the PWM user to use this specific value.
+---
+change in v5
+ fix one code style issue in block comments.
 
-> It feels wrong to be using it
-> every time we set anything.  I'd expect it to be something we only need
-> to do at probe time or which would automatically be handled by the PWM
-> framework (but that'd have issues changing the state and potentially
-> breaking things if done in an uncoordiated fashion).
+change in v4
+ fix one code style issue, exceed 80 characters.
 
-The whole point of this series is to smoothly take over the bootloader
-config. This is why we are keeping the PWM untouched until someone
-really wants to change the regulator output. We should be able to apply
-the 'default' PWM period when probing the device, but this means first
-extracting the current voltage from the PWM state and then applying a
-new dutycycle and the default period in a single operation. Not sure
-it's worth the trouble.
+change in v3
+ use BIT macro to calculate base_unit_range;
+ mask base_unit with "base_unit_range - 1".
+---
+ drivers/pwm/pwm-lpss.c | 33 +++++++++++++++++++--------------
+ drivers/pwm/pwm-lpss.h |  1 +
+ 2 files changed, 20 insertions(+), 14 deletions(-)
 
-Doing it in the PWM framework is not really possible, because the PWM
-lookup table and DT definitions are only defining the 'default' period
-value not the 'default' dutycycle, and applying that automatically when
-requesting the PWM means generating a glitch on the PWM signal
-(dutycycle will be set to 0 until the user changes it using
-pwm_config() or pwm_apply_state()) which is exactly what we're trying to
-solve here.
-
-Also, note that you have to pass the period anyway when configuring the
-PWM, so passing the default one or the current one should be pretty
-much the same in term of performances (unless the PWM driver is able
-to optimize its setting if the period does not change).
-
-Best Regards,
-
-Boris
-
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 2504410..320dbf2 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include <linux/io.h>
++#include <linux/time.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/pm_runtime.h>
+@@ -24,11 +25,8 @@
+ #define PWM_ENABLE			BIT(31)
+ #define PWM_SW_UPDATE			BIT(30)
+ #define PWM_BASE_UNIT_SHIFT		8
+-#define PWM_BASE_UNIT_MASK		0x00ffff00
+ #define PWM_ON_TIME_DIV_MASK		0x000000ff
+ #define PWM_DIVISION_CORRECTION		0x2
+-#define PWM_LIMIT			(0x8000 + PWM_DIVISION_CORRECTION)
+-#define NSECS_PER_SEC			1000000000UL
+ 
+ /* Size of each PWM register space if multiple */
+ #define PWM_SIZE			0x400
+@@ -36,13 +34,14 @@
+ struct pwm_lpss_chip {
+ 	struct pwm_chip chip;
+ 	void __iomem *regs;
+-	unsigned long clk_rate;
++	const struct pwm_lpss_boardinfo *info;
+ };
+ 
+ /* BayTrail */
+ const struct pwm_lpss_boardinfo pwm_lpss_byt_info = {
+ 	.clk_rate = 25000000,
+ 	.npwm = 1,
++	.base_unit_bits = 16,
+ };
+ EXPORT_SYMBOL_GPL(pwm_lpss_byt_info);
+ 
+@@ -50,6 +49,7 @@ EXPORT_SYMBOL_GPL(pwm_lpss_byt_info);
+ const struct pwm_lpss_boardinfo pwm_lpss_bsw_info = {
+ 	.clk_rate = 19200000,
+ 	.npwm = 1,
++	.base_unit_bits = 16,
+ };
+ EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
+ 
+@@ -57,6 +57,7 @@ EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
+ const struct pwm_lpss_boardinfo pwm_lpss_bxt_info = {
+ 	.clk_rate = 19200000,
+ 	.npwm = 4,
++	.base_unit_bits = 22,
+ };
+ EXPORT_SYMBOL_GPL(pwm_lpss_bxt_info);
+ 
+@@ -84,23 +85,25 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ {
+ 	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
+ 	u8 on_time_div;
+-	unsigned long c;
+-	unsigned long long base_unit, freq = NSECS_PER_SEC;
++	unsigned long c, base_unit_range;
++	unsigned long long base_unit, freq = NSEC_PER_SEC;
+ 	u32 ctrl;
+ 
+ 	do_div(freq, period_ns);
+ 
+-	/* The equation is: base_unit = ((freq / c) * 65536) + correction */
+-	base_unit = freq * 65536;
++	/*
++	 * The equation is:
++	 * base_unit = ((freq / c) * base_unit_range) + correction
++	 */
++	base_unit_range = BIT(lpwm->info->base_unit_bits);
++	base_unit = freq * base_unit_range;
+ 
+-	c = lpwm->clk_rate;
++	c = lpwm->info->clk_rate;
+ 	if (!c)
+ 		return -EINVAL;
+ 
+ 	do_div(base_unit, c);
+ 	base_unit += PWM_DIVISION_CORRECTION;
+-	if (base_unit > PWM_LIMIT)
+-		return -EINVAL;
+ 
+ 	if (duty_ns <= 0)
+ 		duty_ns = 1;
+@@ -109,8 +112,10 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	pm_runtime_get_sync(chip->dev);
+ 
+ 	ctrl = pwm_lpss_read(pwm);
+-	ctrl &= ~(PWM_BASE_UNIT_MASK | PWM_ON_TIME_DIV_MASK);
+-	ctrl |= (u16) base_unit << PWM_BASE_UNIT_SHIFT;
++	ctrl &= ~PWM_ON_TIME_DIV_MASK;
++	ctrl &= ~((base_unit_range - 1) << PWM_BASE_UNIT_SHIFT);
++	base_unit &= (base_unit_range - 1);
++	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
+ 	ctrl |= on_time_div;
+ 	/* request PWM to update on next cycle */
+ 	ctrl |= PWM_SW_UPDATE;
+@@ -156,7 +161,7 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
+ 	if (IS_ERR(lpwm->regs))
+ 		return ERR_CAST(lpwm->regs);
+ 
+-	lpwm->clk_rate = info->clk_rate;
++	lpwm->info = info;
+ 	lpwm->chip.dev = dev;
+ 	lpwm->chip.ops = &pwm_lpss_ops;
+ 	lpwm->chip.base = -1;
+diff --git a/drivers/pwm/pwm-lpss.h b/drivers/pwm/pwm-lpss.h
+index e8cf337..04766e0 100644
+--- a/drivers/pwm/pwm-lpss.h
++++ b/drivers/pwm/pwm-lpss.h
+@@ -21,6 +21,7 @@ struct pwm_lpss_chip;
+ struct pwm_lpss_boardinfo {
+ 	unsigned long clk_rate;
+ 	unsigned int npwm;
++	unsigned long base_unit_bits;
+ };
+ 
+ extern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;
 -- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+1.8.3.2
