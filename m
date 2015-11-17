@@ -1,27 +1,31 @@
-From: Mika Westerberg <mika.westerberg@intel.com>
-Subject: Re: [PATCH v5] pwm:lpss: update pwm setting for Broxton
-Date: Tue, 17 Nov 2015 09:52:14 +0200
-Message-ID: <20151117075214.GD1604@lahna.fi.intel.com>
-References: <1447752015-55339-1-git-send-email-qipeng.zha@intel.com>
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: Re: [PATCH v4 05/24] misc: max77693-haptic: use pwm_get_xxx()
+ helpers where appropriate
+Date: Tue, 17 Nov 2015 09:32:26 -0800
+Message-ID: <20151117173226.GA29423@dtor-ws>
+References: <1447664207-24370-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1447664207-24370-6-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:37591 "EHLO mga11.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752151AbbKQHwX (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Tue, 17 Nov 2015 02:52:23 -0500
+Return-path: <linux-clk-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1447752015-55339-1-git-send-email-qipeng.zha@intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1447664207-24370-6-git-send-email-boris.brezillon@free-electrons.com>
+Sender: linux-clk-owner@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mike Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, linux-clk@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Kamil Debski <k.debski@samsung.com>, lm-sensors@lm-sensors.org, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, linux-input@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, linux-sunxi@googlegroups.com, Joachim Eastwood <manabian@gmail.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jo>
 List-Id: linux-pwm@vger.kernel.org
-To: Qipeng Zha <qipeng.zha@intel.com>
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com
 
-On Tue, Nov 17, 2015 at 05:20:15PM +0800, Qipeng Zha wrote:
-> For Broxton PWM controller, base unit is defined as 8bit integer
-> and 14bit fraction, so need to update base unit setting to output
-> wave with right frequency.
+On Mon, Nov 16, 2015 at 09:56:28AM +0100, Boris Brezillon wrote:
+> Use pwm_get_xxx() helpers instead of directly accessing the pwm->xxx field.
+> Doing that will ease adaptation of the PWM framework to support atomic
+> update.
 > 
-> Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
+> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 
-My ack still applies to this patch.
+Could you please tag input-related bits with "Input: driver - ... "
+instead of "misc: ... "?
+
+Thanks!
+
+-- 
+Dmitry
