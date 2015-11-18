@@ -1,31 +1,63 @@
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: Re: [PATCH v4 05/24] misc: max77693-haptic: use pwm_get_xxx()
- helpers where appropriate
-Date: Tue, 17 Nov 2015 09:32:26 -0800
-Message-ID: <20151117173226.GA29423@dtor-ws>
-References: <1447664207-24370-1-git-send-email-boris.brezillon@free-electrons.com>
- <1447664207-24370-6-git-send-email-boris.brezillon@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-clk-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1447664207-24370-6-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-clk-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mike Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, linux-clk@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Kamil Debski <k.debski@samsung.com>, lm-sensors@lm-sensors.org, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, linux-input@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, linux-sunxi@googlegroups.com, Joachim Eastwood <manabian@gmail.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jo>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: [PATCH 1/2] pwm: lpss: select core part automatically
+Date: Wed, 18 Nov 2015 13:25:17 +0200
+Message-ID: <1447845918-66691-1-git-send-email-mika.westerberg@linux.intel.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:50428 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752327AbbKRLZ0 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Wed, 18 Nov 2015 06:25:26 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Qipeng Zha <qipeng.zha@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-pwm@vger.kernel.org
 
-On Mon, Nov 16, 2015 at 09:56:28AM +0100, Boris Brezillon wrote:
-> Use pwm_get_xxx() helpers instead of directly accessing the pwm->xxx field.
-> Doing that will ease adaptation of the PWM framework to support atomic
-> update.
-> 
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Could you please tag input-related bits with "Input: driver - ... "
-instead of "misc: ... "?
+We have two users of core part right now. Let them to select core part
+automatically.
 
-Thanks!
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+---
+ drivers/pwm/Kconfig | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
 
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 2f4641a0e88b..aef635b7e2d1 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -222,18 +222,12 @@ config PWM_LPC32XX
+ 	  will be called pwm-lpc32xx.
+ 
+ config PWM_LPSS
+-	tristate "Intel LPSS PWM support"
+-	depends on X86
+-	help
+-	  Generic PWM framework driver for Intel Low Power Subsystem PWM
+-	  controller.
+-
+-	  To compile this driver as a module, choose M here: the module
+-	  will be called pwm-lpss.
++	tristate
+ 
+ config PWM_LPSS_PCI
+ 	tristate "Intel LPSS PWM PCI driver"
+-	depends on PWM_LPSS && PCI
++	depends on X86 && PCI
++	select PWM_LPSS
+ 	help
+ 	  The PCI driver for Intel Low Power Subsystem PWM controller.
+ 
+@@ -242,7 +236,8 @@ config PWM_LPSS_PCI
+ 
+ config PWM_LPSS_PLATFORM
+ 	tristate "Intel LPSS PWM platform driver"
+-	depends on PWM_LPSS && ACPI
++	depends on X86 && ACPI
++	select PWM_LPSS
+ 	help
+ 	  The platform driver for Intel Low Power Subsystem PWM controller.
+ 
 -- 
-Dmitry
+2.6.2
