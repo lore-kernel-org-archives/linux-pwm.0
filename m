@@ -1,100 +1,93 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH 2/2] pwm: lpss: Rework the sequence of programming PWM_SW_UPDATE
-Date: Wed, 18 Nov 2015 13:25:18 +0200
-Message-ID: <1447845918-66691-2-git-send-email-mika.westerberg@linux.intel.com>
-References: <1447845918-66691-1-git-send-email-mika.westerberg@linux.intel.com>
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Subject: [PATCH v5] pwm-backlight: Avoid backlight flicker when probed from DT
+Date: Wed, 18 Nov 2015 18:12:25 +0100
+Message-ID: <1447866745-21567-1-git-send-email-p.zabel@pengutronix.de>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:20400 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754864AbbKRLZY (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 18 Nov 2015 06:25:24 -0500
-In-Reply-To: <1447845918-66691-1-git-send-email-mika.westerberg@linux.intel.com>
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:42007 "EHLO
+	metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756487AbbKRRMi (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Nov 2015 12:12:38 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Qipeng Zha <qipeng.zha@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>
+Cc: Ajay Kumar <ajaykumar.rs@samsung.com>, YH Huang <yh.huang@mediatek.com>, Christian Gmeiner <christian.gmeiner@gmail.com>, Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kernel@pengutronix.de, Philipp Zabel <p.zabel@pengutronix.de>
 
-Setting of PWM_SW_UPDATE is bit different in Intel Broxton compared to the
-previous generation SoCs. Previously it was OK to set the bit many times
-(from userspace via sysfs for example) before the PWM is actually enabled.
+If the driver is probed from the device tree, and there is a phandle
+property set on it, and the enable GPIO is already configured as output,
+and the backlight is currently disabled, keep it disabled.
+If all these conditions are met, assume there will be some other driver
+that can enable the backlight at the appropriate time.
 
-Starting from Intel Broxton it seems that we must set PWM_SW_UPDATE only
-once before the PWM is enabled. Otherwise it is possible that the PWM does
-not start properly.
-
-Change the sequence of how PWM_SW_UPDATE is programmed so that we only set
-it in pwm_lpss_config() when the PWM is already enabled. The initial
-setting of PWM_SW_UPDATE will be done when PWM gets enabled. This should
-make the driver work with the previous generation Intel SoCs and Broxton.
-
-Add also small delay after the bit is set to let the hardware propagate it
-properly.
-
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
+Tested-by: Heiko Stuebner <heiko@sntech.de>
 ---
-Applies on top of Qipeng's patch here:
+ - Rebased onto v4.4-rc1
+ - Added Heiko's Tested-by
+---
+ drivers/video/backlight/pwm_bl.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
-https://patchwork.ozlabs.org/patch/545313/
-
- drivers/pwm/pwm-lpss.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 320dbf250cc5..6063c3dcbd46 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -13,6 +13,7 @@
-  * published by the Free Software Foundation.
-  */
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index ae3c6b6..3daf9cc 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -199,6 +199,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	struct backlight_properties props;
+ 	struct backlight_device *bl;
+ 	struct pwm_bl_data *pb;
++	phandle phandle = pdev->dev.of_node->phandle;
++	int initial_blank = FB_BLANK_UNBLANK;
+ 	int ret;
  
-+#include <linux/delay.h>
- #include <linux/io.h>
- #include <linux/time.h>
- #include <linux/kernel.h>
-@@ -80,6 +81,13 @@ static inline void pwm_lpss_write(const struct pwm_device *pwm, u32 value)
- 	writel(value, lpwm->regs + pwm->hwpwm * PWM_SIZE + PWM);
- }
+ 	if (!data) {
+@@ -242,7 +244,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	pb->enabled = false;
  
-+static void pwm_lpss_update(struct pwm_device *pwm)
-+{
-+	pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_SW_UPDATE);
-+	/* Give it some time to propagate */
-+	usleep_range(10, 50);
-+}
+ 	pb->enable_gpio = devm_gpiod_get_optional(&pdev->dev, "enable",
+-						  GPIOD_OUT_HIGH);
++						  GPIOD_ASIS);
+ 	if (IS_ERR(pb->enable_gpio)) {
+ 		ret = PTR_ERR(pb->enable_gpio);
+ 		goto err_alloc;
+@@ -264,12 +266,30 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
+ 	}
+ 
++	if (pb->enable_gpio) {
++		/*
++		 * If the driver is probed from the device tree and there is a
++		 * phandle link pointing to the backlight node, it is safe to
++		 * assume that another driver will enable the backlight at the
++		 * appropriate time. Therefore, if it is disabled, keep it so.
++		 */
++		if (phandle &&
++		    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
++		    gpiod_get_value(pb->enable_gpio) == 0)
++			initial_blank = FB_BLANK_POWERDOWN;
++		else
++			gpiod_direction_output(pb->enable_gpio, 1);
++	}
 +
- static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 			   int duty_ns, int period_ns)
- {
-@@ -117,10 +125,15 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	base_unit &= (base_unit_range - 1);
- 	ctrl |= (u32) base_unit << PWM_BASE_UNIT_SHIFT;
- 	ctrl |= on_time_div;
--	/* request PWM to update on next cycle */
--	ctrl |= PWM_SW_UPDATE;
- 	pwm_lpss_write(pwm, ctrl);
+ 	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
+ 	if (IS_ERR(pb->power_supply)) {
+ 		ret = PTR_ERR(pb->power_supply);
+ 		goto err_alloc;
+ 	}
  
-+	/*
-+	 * If the PWM is already enabled we need to notify the hardware
-+	 * about the change by setting PWM_SW_UPDATE.
-+	 */
-+	if (pwm_is_enabled(pwm))
-+		pwm_lpss_update(pwm);
++	if (phandle && !regulator_is_enabled(pb->power_supply))
++		initial_blank = FB_BLANK_POWERDOWN;
 +
- 	pm_runtime_put(chip->dev);
+ 	pb->pwm = devm_pwm_get(&pdev->dev, NULL);
+ 	if (IS_ERR(pb->pwm) && PTR_ERR(pb->pwm) != -EPROBE_DEFER
+ 	    && !pdev->dev.of_node) {
+@@ -320,6 +340,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	}
  
- 	return 0;
-@@ -129,6 +142,12 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- static int pwm_lpss_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	pm_runtime_get_sync(chip->dev);
-+
-+	/*
-+	 * Hardware must first see PWM_SW_UPDATE before the PWM can be
-+	 * enabled.
-+	 */
-+	pwm_lpss_update(pwm);
- 	pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_ENABLE);
- 	return 0;
- }
+ 	bl->props.brightness = data->dft_brightness;
++	bl->props.power = initial_blank;
+ 	backlight_update_status(bl);
+ 
+ 	platform_set_drvdata(pdev, bl);
 -- 
 2.6.2
