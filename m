@@ -1,19 +1,23 @@
 From: Anand Moon <linux.amoon@gmail.com>
 Subject: Re: [PATCH] pwm: Avoid double mutex lock on pwm_enable
-Date: Sat, 21 Nov 2015 19:52:35 +0530
-Message-ID: <CANAwSgSFN3onjsMY6ThYUG3_NPUo7-Cr715QVupVZLTv2mcmRg@mail.gmail.com>
+Date: Sat, 21 Nov 2015 23:44:11 +0530
+Message-ID: <CANAwSgQeQy4=V7fociFJ36KibyAvbBbqTOHty3bodaajKpOBNw@mail.gmail.com>
 References: <1448038740-2811-1-git-send-email-linux.amoon@gmail.com>
  <564FF287.8000201@samsung.com> <CANAwSgSRT8KYr1gAYUvspzMaqT3-3W_c7taMq5YdMo4nB3oB2Q@mail.gmail.com>
  <CAJKOXPdejej2eo4M3fuV9jn7sMMwi7zADsvmvP0n60hW9ER_oQ@mail.gmail.com>
  <CANAwSgQZnUxRR_2077Hmj=qLzAz_UNUqVWmaiy5MxSCNrk=nJg@mail.gmail.com> <CAJKOXPc=607yqBRThcRm+342-pBq2PozEqiE9zyHcKztDXDeBA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f48.google.com ([74.125.82.48]:37183 "EHLO
+	mail-wm0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1758547AbbKUSOd (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sat, 21 Nov 2015 13:14:33 -0500
 In-Reply-To: <CAJKOXPc=607yqBRThcRm+342-pBq2PozEqiE9zyHcKztDXDeBA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 To: Krzysztof Kozlowski <k.kozlowski@samsung.com>
 Cc: Guenter Roeck <linux@roeck-us.net>, Thierry Reding <thierry.reding@gmail.com>, Javier Martinez Canillas <javier@osg.samsung.com>, linux-pwm@vger.kernel.org, Linux Kernel <linux-kernel@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Jonathan Richardson <jonathar@broadcom.com>
-List-Id: linux-pwm@vger.kernel.org
 
 Hi Krzysztof,
 
@@ -237,9 +241,27 @@ On 21 November 2015 at 18:37, Krzysztof Kozlowski
 > Best regards,
 > Krzysztof
 
-Opps Another type, sorry for this silly mistake.
+Earlier my assumption of double mutex lock up totally rubbish.
 
-It think so I am wrong on this patch.
-Sorry for the noise.
+After reverting my changes and building image with CONFIG_DEBUG_ATOMIC_SLEEP.
+
+[  390.415370] BUG: sleeping function called from invalid context at
+kernel/locking/mutex.c:97
+[  390.422274] in_atomic(): 1, irqs_disabled(): 0, pid: 0, name: swapper/1
+[  390.428831] Preemption disabled at:[<  (null)>]   (null)
+[  391.970352] BUG: sleeping function called from invalid context at
+kernel/locking/mutex.c:97
+[  391.977251] in_atomic(): 1, irqs_disabled(): 0, pid: 0, name: swapper/1
+[  391.983814] Preemption disabled at:[<  (null)>]   (null)
+[  393.520376] BUG: sleeping function called from invalid context at
+kernel/locking/mutex.c:97
+[  393.527312] in_atomic(): 1, irqs_disabled(): 0, pid: 0, name: swapper/1
+[  393.533925] Preemption disabled at:[<  (null)>]   (null)
+
+I don't understand why their is requirement for mutex lock in
+pwm_enable function.
+mutexes are sleeping locks which behave similarly to binary semaphores.
+
+Please correct me if I am wrong.
 
 -Anand Moon
