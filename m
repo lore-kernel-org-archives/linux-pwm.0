@@ -1,179 +1,117 @@
-From: Stefan Agner <stefan@agner.ch>
-Subject: [PATCH v2] pwm: ftm: fix clock enable/disable when using PM
-Date: Mon, 23 Nov 2015 14:45:07 -0800
-Message-ID: <1448318707-18011-1-git-send-email-stefan@agner.ch>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, Xiubo.Lee@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Stefan Agner <stefan@agner.ch>
+From: Jisheng Zhang <jszhang@marvell.com>
+Subject: [PATCH] pwm: berlin: Add PM support
+Date: Tue, 24 Nov 2015 13:43:05 +0800
+Message-ID: <1448343785-1540-1-git-send-email-jszhang@marvell.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:32389 "EHLO
+	mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1751714AbbKXFrO (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 24 Nov 2015 00:47:14 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com, sebastian.hesselbarth@gmail.com, antoine.tenart@free-electrons.com
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jisheng Zhang <jszhang@marvell.com>
 
-A FTM PWM instance enables/disables three clocks: The bus clock, the
-counter clock and the PWM clock. The bus clock gets enabled on
-pwm_request, whereas the counter and PWM clocks will be enabled upon
-pwm_enable.
+This patch adds S2R support for berlin pwm driver.
 
-The driver has three closesly related issues when enabling/disabling
-clocks during suspend/resume:
-- The three clocks are not treated differently in regards to the
-  individual PWM state enabled/requested. This can lead to clocks
-  getting disabled which have not been enabled in the first place
-  (a PWM channel which only has been requested going through
-  suspend/resume).
-
-- When entering suspend, the current behavior relies on the
-  FTM_OUTMASK register: If a PWM output is unmasked, the driver
-  assumes the clocks are enabled. However, some PWM instances
-  have only 2 channels connected (e.g. Vybrid's FTM1). In that case,
-  the FTM_OUTMASK reads 0x3 if all channels are disabled, even if
-  the code wrote 0xff to it before. For those PWM instances, the
-  current approach to detect enabled PWM signals does not work.
-
-- A third issue applies to the bus clock only, which can get enabled
-  multiple times (once for each PWM channel of a PWM chip). This is
-  fine, however when entering suspend mode, the clock only gets
-  disabled once.
-
-This change introduces a different approach by relying on the enable
-and prepared counters of the clock framework and using the frameworks
-PWM signal states to address all three issues.
-
-Clocks get disabled during suspend and back enabled on resume
-regarding to the PWM channels individual state (requested/enabled).
-
-Since we do not count the clock enables in the driver, this change no
-longer clears the Status and Control registers Clock Source Selection
-(FTM_SC[CLKS]). However, since we disable the selected clock anyway,
-and we explicitly select the clock source on reenabling a PWM channel
-this approach should not make a difference in practice.
-
-Signed-off-by: Stefan Agner <stefan@agner.ch>
+Signed-off-by: Jisheng Zhang <jszhang@marvell.com>
 ---
-Hi Lee,
+ drivers/pwm/pwm-berlin.c | 57 +++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 56 insertions(+), 1 deletion(-)
 
-I just found your new email address. Thierry and I already had some
-discussion about the patch here:
-http://thread.gmane.org/gmane.linux.pwm/2878
-
-Could you have a look at that patch?
-
-Changes since v1:
-- Use the pwm_is_enabled helper
-
- drivers/pwm/pwm-fsl-ftm.c | 58 ++++++++++++++++++++---------------------------
- 1 file changed, 25 insertions(+), 33 deletions(-)
-
-diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-index f9dfc8b..7225ac6 100644
---- a/drivers/pwm/pwm-fsl-ftm.c
-+++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -80,7 +80,6 @@ struct fsl_pwm_chip {
+diff --git a/drivers/pwm/pwm-berlin.c b/drivers/pwm/pwm-berlin.c
+index 6510812..2afdb40 100644
+--- a/drivers/pwm/pwm-berlin.c
++++ b/drivers/pwm/pwm-berlin.c
+@@ -27,10 +27,20 @@
+ #define BERLIN_PWM_TCNT			0xc
+ #define  BERLIN_PWM_MAX_TCNT		65535
  
- 	struct mutex lock;
++#define NUM_PWM_CHANNEL			4	/* berlin PWM channels */
++
++struct berlin_pwm_context {
++	u32	enable;
++	u32	ctrl;
++	u32	duty;
++	u32	tcnt;
++};
++
+ struct berlin_pwm_chip {
+ 	struct pwm_chip chip;
+ 	struct clk *clk;
+ 	void __iomem *base;
++	struct berlin_pwm_context ctx[NUM_PWM_CHANNEL];
+ };
  
--	unsigned int use_count;
- 	unsigned int cnt_select;
- 	unsigned int clk_ps;
- 
-@@ -300,9 +299,6 @@ static int fsl_counter_clock_enable(struct fsl_pwm_chip *fpc)
- {
- 	int ret;
- 
--	if (fpc->use_count++ != 0)
--		return 0;
--
- 	/* select counter clock source */
- 	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK,
- 			   FTM_SC_CLK(fpc->cnt_select));
-@@ -334,25 +330,6 @@ static int fsl_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ static inline struct berlin_pwm_chip *to_berlin_pwm_chip(struct pwm_chip *chip)
+@@ -176,7 +186,7 @@ static int berlin_pwm_probe(struct platform_device *pdev)
+ 	pwm->chip.dev = &pdev->dev;
+ 	pwm->chip.ops = &berlin_pwm_ops;
+ 	pwm->chip.base = -1;
+-	pwm->chip.npwm = 4;
++	pwm->chip.npwm = NUM_PWM_CHANNEL;
+ 	pwm->chip.can_sleep = true;
+ 	pwm->chip.of_xlate = of_pwm_xlate_with_flags;
+ 	pwm->chip.of_pwm_n_cells = 3;
+@@ -204,12 +214,57 @@ static int berlin_pwm_remove(struct platform_device *pdev)
  	return ret;
  }
  
--static void fsl_counter_clock_disable(struct fsl_pwm_chip *fpc)
--{
--	/*
--	 * already disabled, do nothing
--	 */
--	if (fpc->use_count == 0)
--		return;
--
--	/* there are still users, so can't disable yet */
--	if (--fpc->use_count > 0)
--		return;
--
--	/* no users left, disable PWM counter clock */
--	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK, 0);
--
--	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
--	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
--}
--
- static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
-@@ -362,7 +339,8 @@ static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	regmap_update_bits(fpc->regmap, FTM_OUTMASK, BIT(pwm->hwpwm),
- 			   BIT(pwm->hwpwm));
- 
--	fsl_counter_clock_disable(fpc);
-+	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
-+	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
- 
- 	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
- 	if ((val & 0xFF) == 0xFF)
-@@ -492,17 +470,24 @@ static int fsl_pwm_remove(struct platform_device *pdev)
- static int fsl_pwm_suspend(struct device *dev)
- {
- 	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
--	u32 val;
++#ifdef CONFIG_PM_SLEEP
++static int berlin_pwm_suspend(struct device *dev)
++{
 +	int i;
- 
- 	regcache_cache_only(fpc->regmap, true);
- 	regcache_mark_dirty(fpc->regmap);
- 
--	/* read from cache */
--	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
--	if ((val & 0xFF) != 0xFF) {
-+	for (i = 0; i < fpc->chip.npwm; i++) {
-+		struct pwm_device *pwm = &fpc->chip.pwms[i];
++	struct berlin_pwm_chip *pwm = dev_get_drvdata(dev);
 +
-+		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
-+			continue;
++	for (i = 0; i < pwm->chip.npwm; i++) {
++		struct berlin_pwm_context *ctx = &pwm->ctx[i];
 +
-+		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
++		ctx->enable = berlin_pwm_readl(pwm, i, BERLIN_PWM_ENABLE);
++		ctx->ctrl = berlin_pwm_readl(pwm, i, BERLIN_PWM_CONTROL);
++		ctx->duty = berlin_pwm_readl(pwm, i, BERLIN_PWM_DUTY);
++		ctx->tcnt = berlin_pwm_readl(pwm, i, BERLIN_PWM_TCNT);
++	}
++	clk_disable_unprepare(pwm->clk);
 +
-+		if (!pwm_is_enabled(pwm))
-+			continue;
++	return 0;
++}
 +
- 		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
- 		clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
--		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
- 	}
- 
- 	return 0;
-@@ -511,12 +496,19 @@ static int fsl_pwm_suspend(struct device *dev)
- static int fsl_pwm_resume(struct device *dev)
- {
- 	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
--	u32 val;
++static int berlin_pwm_resume(struct device *dev)
++{
 +	int i;
++	struct berlin_pwm_chip *pwm = dev_get_drvdata(dev);
 +
-+	for (i = 0; i < fpc->chip.npwm; i++) {
-+		struct pwm_device *pwm = &fpc->chip.pwms[i];
++	clk_prepare_enable(pwm->clk);
++	for (i = 0; i < pwm->chip.npwm; i++) {
++		struct berlin_pwm_context *ctx = &pwm->ctx[i];
 +
-+		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
-+			continue;
- 
--	/* read from cache */
--	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
--	if ((val & 0xFF) != 0xFF) {
- 		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
++		berlin_pwm_writel(pwm, i, ctx->ctrl, BERLIN_PWM_CONTROL);
++		berlin_pwm_writel(pwm, i, ctx->duty, BERLIN_PWM_DUTY);
++		berlin_pwm_writel(pwm, i, ctx->tcnt, BERLIN_PWM_TCNT);
++		berlin_pwm_writel(pwm, i, ctx->enable, BERLIN_PWM_ENABLE);
++	}
 +
-+		if (!pwm_is_enabled(pwm))
-+			continue;
++	return 0;
++}
 +
- 		clk_prepare_enable(fpc->clk[fpc->cnt_select]);
- 		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
- 	}
++static SIMPLE_DEV_PM_OPS(berlin_pwm_pm_ops, berlin_pwm_suspend,
++			 berlin_pwm_resume);
++#define BERLIN_PWM_PM_OPS	(&berlin_pwm_pm_ops)
++#else
++#define BERLIN_PWM_PM_OPS	NULL
++#endif
++
+ static struct platform_driver berlin_pwm_driver = {
+ 	.probe = berlin_pwm_probe,
+ 	.remove = berlin_pwm_remove,
+ 	.driver = {
+ 		.name = "berlin-pwm",
+ 		.of_match_table = berlin_pwm_match,
++		.pm = BERLIN_PWM_PM_OPS,
+ 	},
+ };
+ module_platform_driver(berlin_pwm_driver);
 -- 
 2.6.2
