@@ -1,117 +1,46 @@
-From: Jisheng Zhang <jszhang@marvell.com>
-Subject: [PATCH] pwm: berlin: Add PM support
-Date: Tue, 24 Nov 2015 13:43:05 +0800
-Message-ID: <1448343785-1540-1-git-send-email-jszhang@marvell.com>
+From: Axel Lin <axel.lin@ingics.com>
+Subject: [PATCH RESEND] pwm: brcmstb: Don't set can_sleep flag
+Date: Tue, 24 Nov 2015 14:43:12 +0800
+Message-ID: <1448347392.17722.1.camel@ingics.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:32389 "EHLO
-	mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751714AbbKXFrO (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 24 Nov 2015 00:47:14 -0500
+Received: from mail-pa0-f54.google.com ([209.85.220.54]:35633 "EHLO
+	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752593AbbKXGnR (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 24 Nov 2015 01:43:17 -0500
+Received: by pacej9 with SMTP id ej9so12016232pac.2
+        for <linux-pwm@vger.kernel.org>; Mon, 23 Nov 2015 22:43:16 -0800 (PST)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, sebastian.hesselbarth@gmail.com, antoine.tenart@free-electrons.com
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jisheng Zhang <jszhang@marvell.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Brian Norris <computersforpeace@gmail.com>, Gregory Fong <gregory.0xf0@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, linux-pwm@vger.kernel.org
 
-This patch adds S2R support for berlin pwm driver.
+The .can_sleep flag is used for some PWM controllers that can't be used
+in atomic context. Not such case for this driver, so don't set the
+can_sleep flag.
 
-Signed-off-by: Jisheng Zhang <jszhang@marvell.com>
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Brian Norris <computersforpeace@gmail.com>
 ---
- drivers/pwm/pwm-berlin.c | 57 +++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 56 insertions(+), 1 deletion(-)
+This patch was sent on http://www.spinics.net/lists/linux-pwm/msg03506.html
 
-diff --git a/drivers/pwm/pwm-berlin.c b/drivers/pwm/pwm-berlin.c
-index 6510812..2afdb40 100644
---- a/drivers/pwm/pwm-berlin.c
-+++ b/drivers/pwm/pwm-berlin.c
-@@ -27,10 +27,20 @@
- #define BERLIN_PWM_TCNT			0xc
- #define  BERLIN_PWM_MAX_TCNT		65535
+ drivers/pwm/pwm-brcmstb.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/pwm/pwm-brcmstb.c b/drivers/pwm/pwm-brcmstb.c
+index 423ce08..f58039b 100644
+--- a/drivers/pwm/pwm-brcmstb.c
++++ b/drivers/pwm/pwm-brcmstb.c
+@@ -270,7 +270,6 @@ static int brcmstb_pwm_probe(struct platform_device *pdev)
+ 	p->chip.ops = &brcmstb_pwm_ops;
+ 	p->chip.base = -1;
+ 	p->chip.npwm = 2;
+-	p->chip.can_sleep = true;
  
-+#define NUM_PWM_CHANNEL			4	/* berlin PWM channels */
-+
-+struct berlin_pwm_context {
-+	u32	enable;
-+	u32	ctrl;
-+	u32	duty;
-+	u32	tcnt;
-+};
-+
- struct berlin_pwm_chip {
- 	struct pwm_chip chip;
- 	struct clk *clk;
- 	void __iomem *base;
-+	struct berlin_pwm_context ctx[NUM_PWM_CHANNEL];
- };
- 
- static inline struct berlin_pwm_chip *to_berlin_pwm_chip(struct pwm_chip *chip)
-@@ -176,7 +186,7 @@ static int berlin_pwm_probe(struct platform_device *pdev)
- 	pwm->chip.dev = &pdev->dev;
- 	pwm->chip.ops = &berlin_pwm_ops;
- 	pwm->chip.base = -1;
--	pwm->chip.npwm = 4;
-+	pwm->chip.npwm = NUM_PWM_CHANNEL;
- 	pwm->chip.can_sleep = true;
- 	pwm->chip.of_xlate = of_pwm_xlate_with_flags;
- 	pwm->chip.of_pwm_n_cells = 3;
-@@ -204,12 +214,57 @@ static int berlin_pwm_remove(struct platform_device *pdev)
- 	return ret;
- }
- 
-+#ifdef CONFIG_PM_SLEEP
-+static int berlin_pwm_suspend(struct device *dev)
-+{
-+	int i;
-+	struct berlin_pwm_chip *pwm = dev_get_drvdata(dev);
-+
-+	for (i = 0; i < pwm->chip.npwm; i++) {
-+		struct berlin_pwm_context *ctx = &pwm->ctx[i];
-+
-+		ctx->enable = berlin_pwm_readl(pwm, i, BERLIN_PWM_ENABLE);
-+		ctx->ctrl = berlin_pwm_readl(pwm, i, BERLIN_PWM_CONTROL);
-+		ctx->duty = berlin_pwm_readl(pwm, i, BERLIN_PWM_DUTY);
-+		ctx->tcnt = berlin_pwm_readl(pwm, i, BERLIN_PWM_TCNT);
-+	}
-+	clk_disable_unprepare(pwm->clk);
-+
-+	return 0;
-+}
-+
-+static int berlin_pwm_resume(struct device *dev)
-+{
-+	int i;
-+	struct berlin_pwm_chip *pwm = dev_get_drvdata(dev);
-+
-+	clk_prepare_enable(pwm->clk);
-+	for (i = 0; i < pwm->chip.npwm; i++) {
-+		struct berlin_pwm_context *ctx = &pwm->ctx[i];
-+
-+		berlin_pwm_writel(pwm, i, ctx->ctrl, BERLIN_PWM_CONTROL);
-+		berlin_pwm_writel(pwm, i, ctx->duty, BERLIN_PWM_DUTY);
-+		berlin_pwm_writel(pwm, i, ctx->tcnt, BERLIN_PWM_TCNT);
-+		berlin_pwm_writel(pwm, i, ctx->enable, BERLIN_PWM_ENABLE);
-+	}
-+
-+	return 0;
-+}
-+
-+static SIMPLE_DEV_PM_OPS(berlin_pwm_pm_ops, berlin_pwm_suspend,
-+			 berlin_pwm_resume);
-+#define BERLIN_PWM_PM_OPS	(&berlin_pwm_pm_ops)
-+#else
-+#define BERLIN_PWM_PM_OPS	NULL
-+#endif
-+
- static struct platform_driver berlin_pwm_driver = {
- 	.probe = berlin_pwm_probe,
- 	.remove = berlin_pwm_remove,
- 	.driver = {
- 		.name = "berlin-pwm",
- 		.of_match_table = berlin_pwm_match,
-+		.pm = BERLIN_PWM_PM_OPS,
- 	},
- };
- module_platform_driver(berlin_pwm_driver);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	p->base = devm_ioremap_resource(&pdev->dev, res);
 -- 
-2.6.2
+2.1.4
