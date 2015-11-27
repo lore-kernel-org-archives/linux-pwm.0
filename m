@@ -1,81 +1,92 @@
-From: Jisheng Zhang <jszhang@marvell.com>
-Subject: Re: [PATCH] pwm: berlin: Add PM support
-Date: Thu, 26 Nov 2015 15:41:09 +0800
-Message-ID: <20151126154109.6257b0bd@xhacker>
-References: <1448343785-1540-1-git-send-email-jszhang@marvell.com>
-	<20151124162306.GC32623@ulmo.nvidia.com>	<20151125163019.64e80799@xhacker>
-	<20151125151627.GB31492@ulmo.nvidia.com>
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+Subject: Re: [PATCH v4] pwm-backlight: Avoid backlight flicker when probed from DT
+Date: Fri, 27 Nov 2015 11:18:04 +0100
+Message-ID: <5498492.8XSal22i1Y@diego>
+References: <1446483356-14338-1-git-send-email-p.zabel@pengutronix.de> <3447562.c3gSANEMio@phil> <20151110173257.GA21727@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="nextPart1597955.2rRO27RILh"; micalg="pgp-sha256"; protocol="application/pgp-signature"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:37694 "EHLO
-	mx0a-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751438AbbKZHpR (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 26 Nov 2015 02:45:17 -0500
-In-Reply-To: <20151125151627.GB31492@ulmo.nvidia.com>
+Received: from gloria.sntech.de ([95.129.55.99]:49773 "EHLO gloria.sntech.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751248AbbK0KSZ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Fri, 27 Nov 2015 05:18:25 -0500
+In-Reply-To: <20151110173257.GA21727@ulmo>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
-Cc: sebastian.hesselbarth@gmail.com, antoine.tenart@free-electrons.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: linux-arm-kernel@lists.infradead.org, Philipp Zabel <p.zabel@pengutronix.de>, linux-pwm@vger.kernel.org, YH Huang <yh.huang@mediatek.com>, Jingoo Han <jingoohan1@gmail.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Christian Gmeiner <christian.gmeiner@gmail.com>, kernel@pengutronix.de, Lee Jones <lee.jones@linaro.org>, Ajay Kumar <ajaykumar.rs@samsung.com>
 
-On Wed, 25 Nov 2015 16:16:27 +0100
-Thierry Reding wrote:
+--nextPart1597955.2rRO27RILh
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
 
-> On Wed, Nov 25, 2015 at 04:30:19PM +0800, Jisheng Zhang wrote:
-> > On Tue, 24 Nov 2015 17:23:06 +0100 Thierry Reding wrote:  
-> > > On Tue, Nov 24, 2015 at 01:43:05PM +0800, Jisheng Zhang wrote:  
-> > > > This patch adds S2R support for berlin pwm driver.
-> > > > 
-> > > > Signed-off-by: Jisheng Zhang <jszhang@marvell.com>
-> > > > ---
-> > > >  drivers/pwm/pwm-berlin.c | 57 +++++++++++++++++++++++++++++++++++++++++++++++-
-> > > >  1 file changed, 56 insertions(+), 1 deletion(-)  
-> [...]
-> > > > +	for (i = 0; i < pwm->chip.npwm; i++) {
-> > > > +		struct berlin_pwm_context *ctx = &pwm->ctx[i];
-> > > > +
-> > > > +		berlin_pwm_writel(pwm, i, ctx->ctrl, BERLIN_PWM_CONTROL);
-> > > > +		berlin_pwm_writel(pwm, i, ctx->duty, BERLIN_PWM_DUTY);
-> > > > +		berlin_pwm_writel(pwm, i, ctx->tcnt, BERLIN_PWM_TCNT);
-> > > > +		berlin_pwm_writel(pwm, i, ctx->enable, BERLIN_PWM_ENABLE);
-> > > > +	}
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > > +
-> > > > +static SIMPLE_DEV_PM_OPS(berlin_pwm_pm_ops, berlin_pwm_suspend,
-> > > > +			 berlin_pwm_resume);
-> > > > +#define BERLIN_PWM_PM_OPS	(&berlin_pwm_pm_ops)
-> > > > +#else
-> > > > +#define BERLIN_PWM_PM_OPS	NULL
-> > > > +#endif    
-> > > 
-> > > This is a weird way of writing this. I think a more typical way would be
-> > > to have the #ifdef contain only the implementation and then define the
-> > > dev_pm_ops variable unconditonally, so you don't need a separate macro
-> > > for it.
-> > >   
-> > 
-> > The reason why I introduced one more macro is: struct dev_pm_ops contains
-> > 23 pointers now, if there's no BERLIN_PWM_PM_OPS macro, there will be always a
-> > dev_pm_ops even if PM_SLEEP isn't enabled. I dunno whether there's any
-> > elegant solution for this case.  
-> 
-> I wouldn't bother. PM_SLEEP is in almost all cases going to be enabled.
-> If it isn't enabled it's likely going to be in test builds, at which
-> point nobody will care about the extra 23 pointers.
-> 
-> > How about define SIMPLE_DEV_PM_OPS as NULL if PM_SLEEP isn't enabled?  
-> 
-> That won't work, "static NULL;" wouldn't be valid syntax. Like I said,
-> if you go through the trouble of implementing suspend/resume, you're
-> almost certainly going to want to enable it, so just define it
-> unconditionally.
-> 
+Hi Thierry,
 
-Thanks for detailed explanation. In yesterday's v2, the BERLIN_PWM_PM_OPS
-was removed.
+Am Dienstag, 10. November 2015, 18:32:57 schrieb Thierry Reding:
+> On Tue, Nov 10, 2015 at 03:18:10PM +0100, Heiko Stuebner wrote:
+> > Hi Philipp,
+> >=20
+> > Am Montag, 2. November 2015, 17:55:56 schrieb Philipp Zabel:
+> > > If the driver is probed from the device tree, and there is a phan=
+dle
+> > > property set on it, and the enable GPIO is already configured as =
+output,
+> > > and the backlight is currently disabled, keep it disabled.
+> > > If all these conditions are met, assume there will be some other =
+driver
+> > > that can enable the backlight at the appropriate time.
+> > >=20
+> > > Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+> > > Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
+> >=20
+> > this patch improves the white screen when booting a veyron chromebo=
+ok
+> > a lot. I still see a small white flash, but that can probably come =
+from
+> > the WIP edp driver.
+>=20
+> Some panels require a couple of frames before they actually enable. Y=
+ou
+> may want to look at the datasheet of your panel to see if it has some=
 
-Thanks for review,
-Jisheng
+> specific requirement and update the panel driver with that.
+>=20
+> From a high-level view the way that this is supposed to work is that
+> your encoder driver (e.g. eDP) "prepares" the panel, then starts send=
+ing
+> frames and finally "enables" the panel. With something like the simpl=
+e
+> panel driver you can influence this by setting the delay.enable field=
+ in
+> the panel descriptor.
+>=20
+> See struct panel_desc in drivers/gpu/drm/panel/panel-simple.c
+
+Thanks for the pointers :-)
+
+Just to follow up a little bit, after moving to Yakir's Analogix-dp dri=
+ver=20
+from=20the chromeos-one I was using till now, that actually works nicely =
+for me=20
+and even the short flash is gone.
+
+
+Heiko
+--nextPart1597955.2rRO27RILh
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAABCAAGBQJWWC3cAAoJEPOmecmc0R2BLT4IAI9UxE2jpis8B5IIq0UKUYGs
+/v1fTkUZp5qmFLB8ZRXHG9MQJP/Vld9MTX04sM8S7pqi21T8tZrma8bnRchI59eE
+KcLFcqdKAijrLmRfCXh2BV8HGyejE4JlEeSeaE+95i2mmA3Hvu1rkMOmUWeEe6FT
+ffSBT/rOYnhNT60hAzy3aAdoz0940udwBanASy3PKVlbW4mUiV/byOF9QXHDizTi
+weJkRUvNg3WzYeJfLSnKEp7pT5YOqIHQFIIbfocO+6cUWyla83WXPKhuEQZRjDjz
+bkTP5zeEO72QrrjQO+PyjOVVn3wsFklbEQ1NsRoVShdSpagw8/2veiHJs4vWvUk=
+=0gm6
+-----END PGP SIGNATURE-----
+
+--nextPart1597955.2rRO27RILh--
