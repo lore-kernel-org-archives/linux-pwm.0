@@ -1,43 +1,44 @@
-From: Alban Bedel <albeu@free.fr>
-Subject: [PATCH] pwm: Fix of_pwm_get() for consistent return values
-Date: Sun, 29 Nov 2015 14:17:37 +0100
-Message-ID: <1448803057-8572-1-git-send-email-albeu@free.fr>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 2/3] pwm: Add PWM driver for OMAP using dual-mode timers
+Date: Mon, 30 Nov 2015 09:59:04 -0800
+Message-ID: <20151130175903.GG2517@atomide.com>
+References: <5637458D.60106@baylibre.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from smtp2-g21.free.fr ([212.27.42.2]:4654 "EHLO smtp2-g21.free.fr"
+Received: from muru.com ([72.249.23.125]:49392 "EHLO muru.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753046AbbK2NRz (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Sun, 29 Nov 2015 08:17:55 -0500
+	id S1751995AbbK3R7J (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Mon, 30 Nov 2015 12:59:09 -0500
+Content-Disposition: inline
+In-Reply-To: <5637458D.60106@baylibre.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
-Cc: Alban Bedel <albeu@free.fr>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org
+To: Neil Armstrong <narmstrong@baylibre.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
 
-When of_pwm_get() is called without connection ID it returns
--ENOENT when the 'pwms' property doesn't exists or is an empty entry.
-However when a connection ID is given and the 'pwm-names' property
-doesn't exists or doesn't contains the requested name it returns
--ENODATA or -EINVAL.
+* Neil Armstrong <narmstrong@baylibre.com> [151102 03:14]:
+> Adds support for using a OMAP dual-mode timer with PWM capability
+> as a Linux PWM device. The driver controls the timer by using the
+> dmtimer API.
+> 
+> Add a platform_data structure for each pwm-omap-dmtimer nodes containing
+> the dmtimers functions in order to get driver not rely on platform
+> specific functions.
+> 
+> Cc: Grant Erickson <marathon96@gmail.com>
+> Cc: NeilBrown <neilb@suse.de>
+> Cc: Joachim Eastwood <manabian@gmail.com>
+> Suggested-by: Tony Lindgren <tony@atomide.com>
+> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
 
-To get a consistent return value with both code paths we must return
--ENOENT when of_property_match_string() fails.
+This looks good to me:
 
-Signed-off-by: Alban Bedel <albeu@free.fr>
----
- drivers/pwm/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Acked-by: Tony Lindgren <tony@atomide.com>
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index d24ca5f..3b4dcb6 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -578,7 +578,7 @@ struct pwm_device *of_pwm_get(struct device_node *np, const char *con_id)
- 	if (con_id) {
- 		index = of_property_match_string(np, "pwm-names", con_id);
- 		if (index < 0)
--			return ERR_PTR(index);
-+			return ERR_PTR(-ENOENT);
- 	}
- 
- 	err = of_parse_phandle_with_args(np, "pwms", "#pwm-cells", index,
--- 
-2.0.0
+Thierry, seems you can pick this driver patch separately if no more
+comments, I'll pick up the other two patches in this series.
+
+Regards,
+
+Tony
