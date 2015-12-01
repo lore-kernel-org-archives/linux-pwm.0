@@ -1,90 +1,28 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 3/3] arm: plat-omap: Add PWM dmtimer platform data quirks
-Date: Mon, 30 Nov 2015 10:37:07 -0800
-Message-ID: <20151130183707.GK2517@atomide.com>
-References: <56374592.4060201@baylibre.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: [PATCH 0/3] pwm: bcm2835: improve clock handling
+Date: Tue,  1 Dec 2015 22:55:38 +0000
+Message-ID: <1449010541-3767-1-git-send-email-stefan.wahren@i2se.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from muru.com ([72.249.23.125]:49418 "EHLO muru.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754104AbbK3ShO (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 30 Nov 2015 13:37:14 -0500
-Content-Disposition: inline
-In-Reply-To: <56374592.4060201@baylibre.com>
+Received: from mout.kundenserver.de ([217.72.192.73]:54564 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757286AbbLAW4o (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 1 Dec 2015 17:56:44 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Neil Armstrong <narmstrong@baylibre.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>, Stephen Warren <swarren@wwwdotorg.org>, Lee Jones <lee@kernel.org>, Eric Anholt <eric@anholt.net>
+Cc: Remi Pommarel <repk@triplefau.lt>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org, Stefan Wahren <stefan.wahren@i2se.com>
 
-* Neil Armstrong <narmstrong@baylibre.com> [151102 03:14]:
-> In order to set the currently platform dependent dmtimer
-> functions pointers as platform data for the pwm-omap-dmtimer
-> platform driver, add it to plat-omap auxdata_lookup table.
-> 
-> Suggested-by: Tony Lindgren <tony@atomide.com>
-> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+With the upcoming PWM clock support the pwm-bcm2835 should take
+more care about the clock handling. But this patch series doesn't
+depend on these clock driver changes.
 
-Actually this one will need to wait for Thierry to merge the driver
-first because of the dependency to the platform_data. Please resend
-this one separately once the driver hits the mainline tree.
+Stefan Wahren (3):
+  pwm: bcm2835: calculate scaler in pwm_config
+  pwm: bcm2835: prevent division by zero
+  pwm: bcm2835: fix email address specifiction
 
-Regards,
+ drivers/pwm/pwm-bcm2835.c |   18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-Tony
-
-> ---
->  arch/arm/mach-omap2/pdata-quirks.c | 23 +++++++++++++++++++++++
->  1 file changed, 23 insertions(+)
-> 
-> diff --git a/arch/arm/mach-omap2/pdata-quirks.c b/arch/arm/mach-omap2/pdata-quirks.c
-> index ea56397..647dec5 100644
-> --- a/arch/arm/mach-omap2/pdata-quirks.c
-> +++ b/arch/arm/mach-omap2/pdata-quirks.c
-> @@ -23,6 +23,8 @@
->  #include <linux/platform_data/pinctrl-single.h>
->  #include <linux/platform_data/iommu-omap.h>
->  #include <linux/platform_data/wkup_m3.h>
-> +#include <linux/platform_data/pwm_omap_dmtimer.h>
-> +#include <plat/dmtimer.h>
-> 
->  #include <asm/siginfo.h>
->  #include <asm/signal.h>
-> @@ -453,6 +455,24 @@ void omap_auxdata_legacy_init(struct device *dev)
->  	dev->platform_data = &twl_gpio_auxdata;
->  }
-> 
-> +/* Dual mode timer PWM callbacks platdata */
-> +#if IS_ENABLED(CONFIG_OMAP_DM_TIMER)
-> +struct pwm_omap_dmtimer_pdata pwm_dmtimer_pdata = {
-> +	.request_by_node = omap_dm_timer_request_by_node,
-> +	.free = omap_dm_timer_free,
-> +	.enable = omap_dm_timer_enable,
-> +	.disable = omap_dm_timer_disable,
-> +	.get_fclk = omap_dm_timer_get_fclk,
-> +	.start = omap_dm_timer_start,
-> +	.stop = omap_dm_timer_stop,
-> +	.set_load = omap_dm_timer_set_load,
-> +	.set_match = omap_dm_timer_set_match,
-> +	.set_pwm = omap_dm_timer_set_pwm,
-> +	.set_prescaler = omap_dm_timer_set_prescaler,
-> +	.write_counter = omap_dm_timer_write_counter,
-> +};
-> +#endif
-> +
->  /*
->   * Few boards still need auxdata populated before we populate
->   * the dev entries in of_platform_populate().
-> @@ -506,6 +526,9 @@ static struct of_dev_auxdata omap_auxdata_lookup[] __initdata = {
->  	OF_DEV_AUXDATA("ti,am4372-wkup-m3", 0x44d00000, "44d00000.wkup_m3",
->  		       &wkup_m3_data),
->  #endif
-> +#if IS_ENABLED(CONFIG_OMAP_DM_TIMER)
-> +	OF_DEV_AUXDATA("ti,omap-dmtimer-pwm", 0, NULL, &pwm_dmtimer_pdata),
-> +#endif
->  #if defined(CONFIG_ARCH_OMAP4) || defined(CONFIG_SOC_OMAP5)
->  	OF_DEV_AUXDATA("ti,omap4-iommu", 0x4a066000, "4a066000.mmu",
->  		       &omap4_iommu_pdata),
-> -- 
-> 1.9.1
-> 
+-- 
+1.7.9.5
