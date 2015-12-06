@@ -1,64 +1,80 @@
-From: Vladimir Zapolskiy <vz-ChpfBGZJDbMAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 6/6] pwm: lpc32xx: return ERANGE, if requested period is not supported
-Date: Sun,  6 Dec 2015 13:32:02 +0200
-Message-ID: <1449401522-22590-7-git-send-email-vz@mleia.com>
+From: Vladimir Zapolskiy <vz@mleia.com>
+Subject: [PATCH v2 4/6] pwm: lpc32xx: make device usable with common clock framework
+Date: Sun,  6 Dec 2015 13:32:00 +0200
+Message-ID: <1449401522-22590-5-git-send-email-vz@mleia.com>
 References: <1449401522-22590-1-git-send-email-vz@mleia.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1449401522-22590-1-git-send-email-vz-ChpfBGZJDbMAvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Roland Stigge <stigge-uj/7R2tJ6VmzQB+pC5nmwQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mleia.com ([178.79.152.223]:51884 "EHLO mail.mleia.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754090AbbLFLcK (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Sun, 6 Dec 2015 06:32:10 -0500
+In-Reply-To: <1449401522-22590-1-git-send-email-vz@mleia.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Cc: Roland Stigge <stigge@antcom.de>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org
 
-Instead of silent acceptance of unsupported requested configuration
-for PWM period and setting the boundary supported value, return
--ERANGE to a caller.
+As a preparatory change for switching LPC32xx mach support to common
+clock framework fix clk_enable/clk_disable calls without matching
+clk_prepare/clk_unprepare.
 
-Duty period value equal to 0 or period is still accepted to allow
-configuration by PWM sysfs interface, when it is set to 0 by default.
+The driver can not be used on a platform with common clock framework
+until clk_prepare/clk_unprepare calls are added, otherwise clk_enable
+calls will fail and a WARN is generated:
 
-For reference this is a list of restrictions on period_ns == 1/freq:
+    # echo 1 > /sys/bus/platform/drivers/lpc32xx-pwm/4005c000.pwm/pwm/pwmchip0/pwm0/enable
+    ------------[ cut here ]------------
+    WARNING: CPU: 0 PID: 701 at drivers/clk/clk.c:727 clk_core_enable+0x2c/0xa4()
+    Modules linked in: sc16is7xx
+    CPU: 0 PID: 701 Comm: sh Tainted: G        W       4.3.0-rc2+ #171
+    Hardware name: LPC32XX SoC (Flattened Device Tree)
+    Backtrace:
+    [<>] (dump_backtrace) from [<>] (show_stack+0x18/0x1c)
+    [<>] (show_stack) from [<>] (dump_stack+0x20/0x28)
+    [<>] (dump_stack) from [<>] (warn_slowpath_common+0x90/0xb8)
+    [<>] (warn_slowpath_common) from [<>] (warn_slowpath_null+0x24/0x2c)
+    [<>] (warn_slowpath_null) from [<>] (clk_core_enable+0x2c/0xa4)
+    [<>] (clk_core_enable) from [<>] (clk_enable+0x24/0x38)
+    [<>] (clk_enable) from [<>] (lpc32xx_pwm_enable+0x1c/0x40)
+    [<>] (lpc32xx_pwm_enable) from [<>] (pwm_enable+0x48/0x5c)
+    [<>] (pwm_enable) from [<>] (pwm_enable_store+0x5c/0x78)
+    [<>] (pwm_enable_store) from [<>] (dev_attr_store+0x20/0x2c)
+    [<>] (dev_attr_store) from [<>] (sysfs_kf_write+0x44/0x50)
+    [<>] (sysfs_kf_write) from [<>] (kernfs_fop_write+0x134/0x194)
+    [<>] (kernfs_fop_write) from [<>] (__vfs_write+0x34/0xdc)
+    [<>] (__vfs_write) from [<>] (vfs_write+0xb8/0x140)
+    [<>] (vfs_write) from [<>] (SyS_write+0x50/0x90)
+    [<>] (SyS_write) from [<>] (ret_fast_syscall+0x0/0x38)
 
-  | PWM parent clock | parent clock divisor | max freq | min freq |
-  +------------------+----------------------+----------+----------+
-  |   HCLK == 13 MHz |      1 (min)         | 50.7 KHz | 198.3 Hz |
-  |   HCLK == 13 MHz |     15 (max)         | 3.38 KHz | 13.22 Hz |
-  |  RTC == 32.7 KHz |      1 (min)         |   128 Hz |   0.5 Hz |
-  |  RTC == 32.7 KHz |     15 (max)         | 8.533 Hz | 0.033 Hz |
-
-Note that PWM sysfs interface does not support setting of period more
-than NSEC_PER_SEC / MAX_INT32 ~ 2 seconds, however this PWM controller
-supports a period up to 30 seconds.
-
-Signed-off-by: Vladimir Zapolskiy <vz-ChpfBGZJDbMAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
 ---
 Changes from v1 to v2:
-- none
+- improved commit message
 
- drivers/pwm/pwm-lpc32xx.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pwm/pwm-lpc32xx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/pwm/pwm-lpc32xx.c b/drivers/pwm/pwm-lpc32xx.c
-index 294a68f..4d470c1 100644
+index ce8ab20..63468a8 100644
 --- a/drivers/pwm/pwm-lpc32xx.c
 +++ b/drivers/pwm/pwm-lpc32xx.c
-@@ -41,9 +41,9 @@ static int lpc32xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	/* The highest acceptable divisor is 256, which is represented by 0 */
- 	period_cycles = div64_u64(c * period_ns,
- 			       (unsigned long long)NSEC_PER_SEC * 256);
--	if (!period_cycles)
--		period_cycles = 1;
--	if (period_cycles > 255)
-+	if (!period_cycles || period_cycles > 256)
-+		return -ERANGE;
-+	if (period_cycles == 256)
- 		period_cycles = 0;
+@@ -83,7 +83,7 @@ static int lpc32xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	u32 val;
+ 	int ret;
  
- 	/* Compute 256 x #duty/period value and care for corner cases */
+-	ret = clk_enable(lpc32xx->clk);
++	ret = clk_prepare_enable(lpc32xx->clk);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -103,7 +103,7 @@ static void lpc32xx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	val &= ~PWM_ENABLE;
+ 	writel(val, lpc32xx->base + (pwm->hwpwm << 2));
+ 
+-	clk_disable(lpc32xx->clk);
++	clk_disable_unprepare(lpc32xx->clk);
+ }
+ 
+ static const struct pwm_ops lpc32xx_pwm_ops = {
 -- 
 2.1.4
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
