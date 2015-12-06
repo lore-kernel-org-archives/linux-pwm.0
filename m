@@ -1,50 +1,133 @@
 From: Vladimir Zapolskiy <vz@mleia.com>
-Subject: [PATCH v2 3/6] pwm: lpc32xx: correct number of PWM channels from 2 to 1
-Date: Sun,  6 Dec 2015 13:31:59 +0200
-Message-ID: <1449401522-22590-4-git-send-email-vz@mleia.com>
+Subject: [PATCH v2 5/6] pwm: lpc32xx: fix and simplify duty cycle and period calculations
+Date: Sun,  6 Dec 2015 13:32:01 +0200
+Message-ID: <1449401522-22590-6-git-send-email-vz@mleia.com>
 References: <1449401522-22590-1-git-send-email-vz@mleia.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mleia.com ([178.79.152.223]:51876 "EHLO mail.mleia.com"
+Received: from mleia.com ([178.79.152.223]:51891 "EHLO mail.mleia.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754051AbbLFLcJ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Sun, 6 Dec 2015 06:32:09 -0500
+	id S1754068AbbLFLcK (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Sun, 6 Dec 2015 06:32:10 -0500
 In-Reply-To: <1449401522-22590-1-git-send-email-vz@mleia.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>
 Cc: Roland Stigge <stigge@antcom.de>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org
 
-LPC32xx SoC has two independent PWM controllers, they have different
-clock parents, clock gates and even slightly different controls, and
-each of these two PWM controllers has one output channel. Due to
-almost similar controls arranged in a row it is incorrectly set that
-there is one PWM controller with two channels, fix this problem, which
-at the moment prevents separate configuration of different clock
-parents and gates for both PWM controllers.
+The change fixes a problem, if duty_ns is too small in comparison
+to period_ns (as a valid corner case duty_ns is 0 ns), then due to
+PWM_DUTY() macro applied on a value the result is overflowed over 8
+bits, and instead of the highest bitfield duty cycle value 0xff the
+invalid duty cycle bitfield value 0x00 is written.
 
-The change makes previous PWM device node description incompatible
-with this update.
+For reference the LPC32xx spec defines PWMx_DUTY bitfield description
+is this way and it seems to be correct:
+
+ [Low]/[High] = [PWM_DUTY]/[256-PWM_DUTY], where 0 < PWM_DUTY <= 255.
+
+In addition according to my oscilloscope measurements LPC32xx PWM is
+"tristate" in sense that it produces a wave with floating min/max
+voltage levels for different duty cycle values, for corner cases:
+
+  PWM_DUTY == 0x01 => signal is in range from -1.05v to 0v
+  ....
+  PWM_DUTY == 0x80 => signal is in range from -0.75v to +0.75v
+  ....
+  PWM_DUTY == 0xff => signal is in range from 0v to +1.05v
+
+  PWM_DUTY == 0x00 => signal is around 0v, PWM is off
+
+Due to this peculiarity on very long period ranges (less than 1KHz)
+and odd pre-divider values PWM generated wave does not remind a
+clock shape signal, but rather a heartbit shape signal with positive
+and negative peaks, so I would recommend to use high-speed HCLK clock
+as a PWM parent clock and avoid using RTC clock as a parent.
+
+The change corrects PWM output in corner cases and prevents any
+possible overflows in calculation of values for PWM_DUTY and
+PWM_RELOADV bitfields, thus helper macro definitions may be removed.
 
 Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
 ---
 Changes from v1 to v2:
-- improved commit message
+- none
 
- drivers/pwm/pwm-lpc32xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pwm/pwm-lpc32xx.c | 53 +++++++++++++++++------------------------------
+ 1 file changed, 19 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/pwm/pwm-lpc32xx.c b/drivers/pwm/pwm-lpc32xx.c
-index 9fde60c..ce8ab20 100644
+index 63468a8..294a68f 100644
 --- a/drivers/pwm/pwm-lpc32xx.c
 +++ b/drivers/pwm/pwm-lpc32xx.c
-@@ -134,7 +134,7 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
+@@ -24,9 +24,7 @@ struct lpc32xx_pwm_chip {
+ 	void __iomem *base;
+ };
  
- 	lpc32xx->chip.dev = &pdev->dev;
- 	lpc32xx->chip.ops = &lpc32xx_pwm_ops;
--	lpc32xx->chip.npwm = 2;
-+	lpc32xx->chip.npwm = 1;
- 	lpc32xx->chip.base = -1;
+-#define PWM_ENABLE	(1 << 31)
+-#define PWM_RELOADV(x)	(((x) & 0xFF) << 8)
+-#define PWM_DUTY(x)	((x) & 0xFF)
++#define PWM_ENABLE	BIT(31)
  
- 	ret = pwmchip_add(&lpc32xx->chip);
+ #define to_lpc32xx_pwm_chip(_chip) \
+ 	container_of(_chip, struct lpc32xx_pwm_chip, chip)
+@@ -38,40 +36,27 @@ static int lpc32xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	unsigned long long c;
+ 	int period_cycles, duty_cycles;
+ 	u32 val;
+-
+-	c = clk_get_rate(lpc32xx->clk) / 256;
+-	c = c * period_ns;
+-	do_div(c, NSEC_PER_SEC);
+-
+-	/* Handle high and low extremes */
+-	if (c == 0)
+-		c = 1;
+-	if (c > 255)
+-		c = 0; /* 0 set division by 256 */
+-	period_cycles = c;
+-
+-	/* The duty-cycle value is as follows:
+-	 *
+-	 *  DUTY-CYCLE     HIGH LEVEL
+-	 *      1            99.9%
+-	 *      25           90.0%
+-	 *      128          50.0%
+-	 *      220          10.0%
+-	 *      255           0.1%
+-	 *      0             0.0%
+-	 *
+-	 * In other words, the register value is duty-cycle % 256 with
+-	 * duty-cycle in the range 1-256.
+-	 */
+-	c = 256 * duty_ns;
+-	do_div(c, period_ns);
+-	if (c > 255)
+-		c = 255;
+-	duty_cycles = 256 - c;
++	c = clk_get_rate(lpc32xx->clk);
++
++	/* The highest acceptable divisor is 256, which is represented by 0 */
++	period_cycles = div64_u64(c * period_ns,
++			       (unsigned long long)NSEC_PER_SEC * 256);
++	if (!period_cycles)
++		period_cycles = 1;
++	if (period_cycles > 255)
++		period_cycles = 0;
++
++	/* Compute 256 x #duty/period value and care for corner cases */
++	duty_cycles = div64_u64((unsigned long long)(period_ns - duty_ns) * 256,
++				period_ns);
++	if (!duty_cycles)
++		duty_cycles = 1;
++	if (duty_cycles > 255)
++		duty_cycles = 255;
+ 
+ 	val = readl(lpc32xx->base + (pwm->hwpwm << 2));
+ 	val &= ~0xFFFF;
+-	val |= PWM_RELOADV(period_cycles) | PWM_DUTY(duty_cycles);
++	val |= (period_cycles << 8) | duty_cycles;
+ 	writel(val, lpc32xx->base + (pwm->hwpwm << 2));
+ 
+ 	return 0;
 -- 
 2.1.4
