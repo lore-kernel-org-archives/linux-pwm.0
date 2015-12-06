@@ -1,192 +1,43 @@
-From: Stefan Agner <stefan@agner.ch>
-Subject: Re: [PATCH v2] pwm: ftm: fix clock enable/disable when using PM
-Date: Sat, 05 Dec 2015 11:52:26 -0800
-Message-ID: <0f474319c881e76a6a7cc97ab2089b66@agner.ch>
-References: <1448318707-18011-1-git-send-email-stefan@agner.ch>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From: Vladimir Zapolskiy <vz@mleia.com>
+Subject: [PATCH v2 1/6] dt: lpc32xx: pwm: correct LPC32xx PWM device node example
+Date: Sun,  6 Dec 2015 13:29:12 +0200
+Message-ID: <1449401357-22458-2-git-send-email-vz@mleia.com>
+References: <1449401357-22458-1-git-send-email-vz@mleia.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kmu-office.ch ([178.209.48.109]:44821 "EHLO
-	mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751749AbbLETyF (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sat, 5 Dec 2015 14:54:05 -0500
-In-Reply-To: <1448318707-18011-1-git-send-email-stefan@agner.ch>
+Received: from mleia.com ([178.79.152.223]:51788 "EHLO mail.mleia.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753831AbbLFL3g (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Sun, 6 Dec 2015 06:29:36 -0500
+In-Reply-To: <1449401357-22458-1-git-send-email-vz@mleia.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, Xiubo.Lee@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Cc: Roland Stigge <stigge@antcom.de>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org
 
-Ping
+The change removes '0x' from a device node address and uses lower case
+hex chars.
 
-On 2015-11-23 14:45, Stefan Agner wrote:
-> A FTM PWM instance enables/disables three clocks: The bus clock, the
-> counter clock and the PWM clock. The bus clock gets enabled on
-> pwm_request, whereas the counter and PWM clocks will be enabled upon
-> pwm_enable.
-> 
-> The driver has three closesly related issues when enabling/disabling
-> clocks during suspend/resume:
-> - The three clocks are not treated differently in regards to the
->   individual PWM state enabled/requested. This can lead to clocks
->   getting disabled which have not been enabled in the first place
->   (a PWM channel which only has been requested going through
->   suspend/resume).
-> 
-> - When entering suspend, the current behavior relies on the
->   FTM_OUTMASK register: If a PWM output is unmasked, the driver
->   assumes the clocks are enabled. However, some PWM instances
->   have only 2 channels connected (e.g. Vybrid's FTM1). In that case,
->   the FTM_OUTMASK reads 0x3 if all channels are disabled, even if
->   the code wrote 0xff to it before. For those PWM instances, the
->   current approach to detect enabled PWM signals does not work.
-> 
-> - A third issue applies to the bus clock only, which can get enabled
->   multiple times (once for each PWM channel of a PWM chip). This is
->   fine, however when entering suspend mode, the clock only gets
->   disabled once.
-> 
-> This change introduces a different approach by relying on the enable
-> and prepared counters of the clock framework and using the frameworks
-> PWM signal states to address all three issues.
-> 
-> Clocks get disabled during suspend and back enabled on resume
-> regarding to the PWM channels individual state (requested/enabled).
-> 
-> Since we do not count the clock enables in the driver, this change no
-> longer clears the Status and Control registers Clock Source Selection
-> (FTM_SC[CLKS]). However, since we disable the selected clock anyway,
-> and we explicitly select the clock source on reenabling a PWM channel
-> this approach should not make a difference in practice.
-> 
-> Signed-off-by: Stefan Agner <stefan@agner.ch>
-> ---
-> Hi Lee,
-> 
-> I just found your new email address. Thierry and I already had some
-> discussion about the patch here:
-> http://thread.gmane.org/gmane.linux.pwm/2878
-> 
-> Could you have a look at that patch?
-> 
-> Changes since v1:
-> - Use the pwm_is_enabled helper
-> 
->  drivers/pwm/pwm-fsl-ftm.c | 58 ++++++++++++++++++++---------------------------
->  1 file changed, 25 insertions(+), 33 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-> index f9dfc8b..7225ac6 100644
-> --- a/drivers/pwm/pwm-fsl-ftm.c
-> +++ b/drivers/pwm/pwm-fsl-ftm.c
-> @@ -80,7 +80,6 @@ struct fsl_pwm_chip {
->  
->  	struct mutex lock;
->  
-> -	unsigned int use_count;
->  	unsigned int cnt_select;
->  	unsigned int clk_ps;
->  
-> @@ -300,9 +299,6 @@ static int fsl_counter_clock_enable(struct
-> fsl_pwm_chip *fpc)
->  {
->  	int ret;
->  
-> -	if (fpc->use_count++ != 0)
-> -		return 0;
-> -
->  	/* select counter clock source */
->  	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK,
->  			   FTM_SC_CLK(fpc->cnt_select));
-> @@ -334,25 +330,6 @@ static int fsl_pwm_enable(struct pwm_chip *chip,
-> struct pwm_device *pwm)
->  	return ret;
->  }
->  
-> -static void fsl_counter_clock_disable(struct fsl_pwm_chip *fpc)
-> -{
-> -	/*
-> -	 * already disabled, do nothing
-> -	 */
-> -	if (fpc->use_count == 0)
-> -		return;
-> -
-> -	/* there are still users, so can't disable yet */
-> -	if (--fpc->use_count > 0)
-> -		return;
-> -
-> -	/* no users left, disable PWM counter clock */
-> -	regmap_update_bits(fpc->regmap, FTM_SC, FTM_SC_CLK_MASK, 0);
-> -
-> -	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
-> -	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
-> -}
-> -
->  static void fsl_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->  {
->  	struct fsl_pwm_chip *fpc = to_fsl_chip(chip);
-> @@ -362,7 +339,8 @@ static void fsl_pwm_disable(struct pwm_chip *chip,
-> struct pwm_device *pwm)
->  	regmap_update_bits(fpc->regmap, FTM_OUTMASK, BIT(pwm->hwpwm),
->  			   BIT(pwm->hwpwm));
->  
-> -	fsl_counter_clock_disable(fpc);
-> +	clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
-> +	clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
->  
->  	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
->  	if ((val & 0xFF) == 0xFF)
-> @@ -492,17 +470,24 @@ static int fsl_pwm_remove(struct platform_device *pdev)
->  static int fsl_pwm_suspend(struct device *dev)
->  {
->  	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
-> -	u32 val;
-> +	int i;
->  
->  	regcache_cache_only(fpc->regmap, true);
->  	regcache_mark_dirty(fpc->regmap);
->  
-> -	/* read from cache */
-> -	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
-> -	if ((val & 0xFF) != 0xFF) {
-> +	for (i = 0; i < fpc->chip.npwm; i++) {
-> +		struct pwm_device *pwm = &fpc->chip.pwms[i];
-> +
-> +		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
-> +			continue;
-> +
-> +		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
-> +
-> +		if (!pwm_is_enabled(pwm))
-> +			continue;
-> +
->  		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_CNTEN]);
->  		clk_disable_unprepare(fpc->clk[fpc->cnt_select]);
-> -		clk_disable_unprepare(fpc->clk[FSL_PWM_CLK_SYS]);
->  	}
->  
->  	return 0;
-> @@ -511,12 +496,19 @@ static int fsl_pwm_suspend(struct device *dev)
->  static int fsl_pwm_resume(struct device *dev)
->  {
->  	struct fsl_pwm_chip *fpc = dev_get_drvdata(dev);
-> -	u32 val;
-> +	int i;
-> +
-> +	for (i = 0; i < fpc->chip.npwm; i++) {
-> +		struct pwm_device *pwm = &fpc->chip.pwms[i];
-> +
-> +		if (!test_bit(PWMF_REQUESTED, &pwm->flags))
-> +			continue;
->  
-> -	/* read from cache */
-> -	regmap_read(fpc->regmap, FTM_OUTMASK, &val);
-> -	if ((val & 0xFF) != 0xFF) {
->  		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_SYS]);
-> +
-> +		if (!pwm_is_enabled(pwm))
-> +			continue;
-> +
->  		clk_prepare_enable(fpc->clk[fpc->cnt_select]);
->  		clk_prepare_enable(fpc->clk[FSL_PWM_CLK_CNTEN]);
->  	}
+Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
+---
+Changes from v1 to v2:
+- new change
+
+ Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
+index cfe1db3..1ab1abc 100644
+--- a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
+@@ -6,7 +6,7 @@ Required properties:
+ 
+ Examples:
+ 
+-pwm@0x4005C000 {
++pwm@4005c000 {
+ 	compatible = "nxp,lpc3220-pwm";
+-	reg = <0x4005C000 0x8>;
++	reg = <0x4005c000 0x8>;
+ };
+-- 
+2.1.4
