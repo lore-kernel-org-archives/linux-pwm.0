@@ -1,50 +1,46 @@
 From: Vladimir Zapolskiy <vz@mleia.com>
-Subject: [PATCH v2 3/6] pwm: lpc32xx: correct number of PWM channels from 2 to 1
-Date: Sun,  6 Dec 2015 13:29:14 +0200
-Message-ID: <1449401357-22458-4-git-send-email-vz@mleia.com>
-References: <1449401357-22458-1-git-send-email-vz@mleia.com>
+Subject: [PATCH v2 0/6] pwm: lpc32xx: fixes in the LPC32xx PWM driver
+Date: Sun,  6 Dec 2015 13:29:11 +0200
+Message-ID: <1449401357-22458-1-git-send-email-vz@mleia.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mleia.com ([178.79.152.223]:51806 "EHLO mail.mleia.com"
+Received: from mleia.com ([178.79.152.223]:51783 "EHLO mail.mleia.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753829AbbLFL3h (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Sun, 6 Dec 2015 06:29:37 -0500
-In-Reply-To: <1449401357-22458-1-git-send-email-vz@mleia.com>
+	id S1753829AbbLFL3g (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Sun, 6 Dec 2015 06:29:36 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh@kernel.org>, Arnd Bergmann <arnd@arndb.de>
 Cc: Roland Stigge <stigge@antcom.de>, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org
 
-LPC32xx SoC has two independent PWM controllers, they have different
-clock parents, clock gates and even slightly different controls, and
-each of these two PWM controllers has one output channel. Due to
-almost similar controls arranged in a row it is incorrectly set that
-there is one PWM controller with two channels, fix this problem, which
-at the moment prevents separate configuration of different clock
-parents and gates for both PWM controllers.
+The changeset fixes a number of issues within current implementation
+of LPC32xx PWM controller driver, namely
+- the SoC has two independent PWM controllers with one channel each,
+- runtime warnings from common clock framework,
+- overflow in duty cycle calculation may result in disabled PWM,
+- unsupported period values are not accepted.
 
-The change makes previous PWM device node description incompatible
-with this update.
+Correction of PWM channels requires a correspondent change in
+arch/arm/boot/dts/lpc32xx.dtsi, it has been already sent for review.
 
-Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
----
 Changes from v1 to v2:
-- improved commit message
+- corrected style of examples in documentation,
+- improved commit messages
 
- drivers/pwm/pwm-lpc32xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Version v1 can be found here:
+  http://comments.gmane.org/gmane.linux.pwm/2828
+  http://www.spinics.net/lists/devicetree/msg105398.html
 
-diff --git a/drivers/pwm/pwm-lpc32xx.c b/drivers/pwm/pwm-lpc32xx.c
-index 9fde60c..ce8ab20 100644
---- a/drivers/pwm/pwm-lpc32xx.c
-+++ b/drivers/pwm/pwm-lpc32xx.c
-@@ -134,7 +134,7 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
- 
- 	lpc32xx->chip.dev = &pdev->dev;
- 	lpc32xx->chip.ops = &lpc32xx_pwm_ops;
--	lpc32xx->chip.npwm = 2;
-+	lpc32xx->chip.npwm = 1;
- 	lpc32xx->chip.base = -1;
- 
- 	ret = pwmchip_add(&lpc32xx->chip);
+Vladimir Zapolskiy (6):
+  dt: lpc32xx: pwm: correct LPC32xx PWM device node example
+  dt: lpc32xx: pwm: update documentation of LPC32xx PWM device
+  pwm: lpc32xx: correct number of PWM channels from 2 to 1
+  pwm: lpc32xx: fix warnings from common clock framework
+  pwm: lpc32xx: fix and simplify duty cycle and period calculations
+  pwm: lpc32xx: return ERANGE, if requested period is not supported
+
+ .../devicetree/bindings/pwm/lpc32xx-pwm.txt        |  9 +++-
+ drivers/pwm/pwm-lpc32xx.c                          | 59 ++++++++--------------
+ 2 files changed, 29 insertions(+), 39 deletions(-)
+
 -- 
 2.1.4
