@@ -1,94 +1,29 @@
-From: Anand Moon <linux.amoon@gmail.com>
-Subject: Re: [PATCH] pwm: Avoid double mutex lock on pwm_enable
-Date: Fri, 11 Dec 2015 11:27:10 +0530
-Message-ID: <CANAwSgSccM06V4xdgdcnW=seW5n3beVKVC8zj79pV1GoDgvYeA@mail.gmail.com>
-References: <1448038740-2811-1-git-send-email-linux.amoon@gmail.com>
- <564FF287.8000201@samsung.com> <CANAwSgSRT8KYr1gAYUvspzMaqT3-3W_c7taMq5YdMo4nB3oB2Q@mail.gmail.com>
- <CAJKOXPdejej2eo4M3fuV9jn7sMMwi7zADsvmvP0n60hW9ER_oQ@mail.gmail.com>
- <CANAwSgQZnUxRR_2077Hmj=qLzAz_UNUqVWmaiy5MxSCNrk=nJg@mail.gmail.com>
- <CAJKOXPc=607yqBRThcRm+342-pBq2PozEqiE9zyHcKztDXDeBA@mail.gmail.com>
- <CANAwSgQeQy4=V7fociFJ36KibyAvbBbqTOHty3bodaajKpOBNw@mail.gmail.com>
- <CAJKOXPdvA4ovVDFyOgaagT+0sOpkUArk9FzWB_Z7iptRCsSAcA@mail.gmail.com>
- <CANAwSgTuTWntpdCrry4KNe9_b9ekJTM_gT-7-bsY53nmorb-tw@mail.gmail.com> <566A4FCE.2050303@samsung.com>
+From: "Zha, Qipeng" <qipeng.zha@intel.com>
+Subject: RE: [PATCH v5] pwm:lpss: update pwm setting for Broxton
+Date: Fri, 11 Dec 2015 06:51:38 +0000
+Message-ID: <C6287702A945AC47BE5DB5DFD4B5C6DD03833AF6@SHSMSX104.ccr.corp.intel.com>
+References: <1447752015-55339-1-git-send-email-qipeng.zha@intel.com>
+ <20151117075214.GD1604@lahna.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <566A4FCE.2050303@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Cc: Guenter Roeck <linux@roeck-us.net>, Thierry Reding <thierry.reding@gmail.com>, Javier Martinez Canillas <javier@osg.samsung.com>, linux-pwm@vger.kernel.org, Linux Kernel <linux-kernel@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Jonathan Richardson <jonathar@broadcom.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga01.intel.com ([192.55.52.88]:7061 "EHLO mga01.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753049AbbLKGvt convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 11 Dec 2015 01:51:49 -0500
+In-Reply-To: <20151117075214.GD1604@lahna.fi.intel.com>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: "Westerberg, Mika" <mika.westerberg@intel.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
 
-Hi Krzysztof
+>> For Broxton PWM controller, base unit is defined as 8bit integer and 
+>> 14bit fraction, so need to update base unit setting to output wave 
+>> with right frequency.
+>> 
+>> Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
 
-On 11 December 2015 at 09:53, Krzysztof Kozlowski
-<k.kozlowski@samsung.com> wrote:
-> On 11.12.2015 13:07, Anand Moon wrote:
->> Hi Krzysztof,
->>
->> On 22 November 2015 at 05:43, Krzysztof Kozlowski
->> <k.kozlowski@samsung.com> wrote:
->>> 2015-11-22 3:14 GMT+09:00 Anand Moon <linux.amoon@gmail.com>:
->>>> Hi Krzysztof,
->
-> [...]
->
->>> Yes, now you pasted the same warning I did...
->>>
->>> This is still the same issue. I already wrote it:
->>>> 1. BUG: sleeping function called from invalid context
->>>> 2. DEBUG_LOCKS_WARN_ON(in_interrupt())
->>>
->>> We can repeat it many times but that won't change anything...
->>>
->>> Best regards,
->>> Krzysztof
->>
->> Would you consider below changes to fix the above issue.
->> I have tested this change by enabling CONFIG_DEBUG_ATOMIC_SLEEP
->> And I don't observed issue.
->>
->> 1. BUG: sleeping function called from invalid context
->> 2. DEBUG_LOCKS_WARN_ON(in_interrupt())
->>
->> Please share your thought on this changes.
->>
->> root@odroidxu4:/usr/src/odroidxu3-4.y-devel# git diff drivers/pwm/core.c
->> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
->> index d24ca5f..f3f6cf9 100644
->> --- a/drivers/pwm/core.c
->> +++ b/drivers/pwm/core.c
->> @@ -506,6 +506,9 @@ int pwm_enable(struct pwm_device *pwm)
->>         if (!pwm)
->>                 return -EINVAL;
->>
->> +       if (!mutex_is_locked(&pwm->lock))
->> +               return -EINVAL;
->> +
->>         mutex_lock(&pwm->lock);
->>
->>         if (!test_and_set_bit(PWMF_ENABLED, &pwm->flags)) {
->
-> First of all, Thierry suggested way of fixing this:
-> "Any objections to simply removing it and make all users use a workqueue
-> or some such if they need to control a PWM as a result of an interrupt
-> trigger?"
-
-You are correct, current design need to be changes.
-
-> what is wrong with his approach?
->
-
-pwm->lock is locked but it never get unlocked, although the code looks correct.
-
-> Second, you are writing something that looks like mutex-try-lock...
-> which will fail the pwm_enable(). IMHO this *hides* the real issue and
-> does not solve anything (except hiding also the warning).
-
-Thanks for the inputs. I have realized my mistake.
-
->
-> Best regards,
-> Krzysztof
-
--Anand Moon
+>My ack still applies to this patch.
+ Hi Thierry, are you going to apply this patch, thanks.
