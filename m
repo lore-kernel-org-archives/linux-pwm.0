@@ -1,29 +1,35 @@
-From: "Zha, Qipeng" <qipeng.zha@intel.com>
-Subject: RE: [PATCH v5] pwm:lpss: update pwm setting for Broxton
-Date: Fri, 11 Dec 2015 06:51:38 +0000
-Message-ID: <C6287702A945AC47BE5DB5DFD4B5C6DD03833AF6@SHSMSX104.ccr.corp.intel.com>
-References: <1447752015-55339-1-git-send-email-qipeng.zha@intel.com>
- <20151117075214.GD1604@lahna.fi.intel.com>
+From: Robert Jarzmik <robert.jarzmik@free.fr>
+Subject: Re: [PATCH] backlight: pwm_bl: Fix broken PWM backlight for non-dt platforms
+Date: Fri, 11 Dec 2015 18:33:22 +0100
+Message-ID: <87r3isj3fh.fsf@belgarion.home>
+References: <1449738546-10279-1-git-send-email-p.zabel@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:7061 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753049AbbLKGvt convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 11 Dec 2015 01:51:49 -0500
-In-Reply-To: <20151117075214.GD1604@lahna.fi.intel.com>
-Content-Language: en-US
+Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:18416 "EHLO
+	smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752093AbbLKRd3 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 11 Dec 2015 12:33:29 -0500
+In-Reply-To: <1449738546-10279-1-git-send-email-p.zabel@pengutronix.de>
+	(Philipp Zabel's message of "Thu, 10 Dec 2015 10:09:06 +0100")
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: "Westerberg, Mika" <mika.westerberg@intel.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+To: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, kernel@pengutronix.de, linux-kernel@vger.kernel.org
 
->> For Broxton PWM controller, base unit is defined as 8bit integer and 
->> 14bit fraction, so need to update base unit setting to output wave 
->> with right frequency.
->> 
->> Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
+Philipp Zabel <p.zabel@pengutronix.de> writes:
 
->My ack still applies to this patch.
- Hi Thierry, are you going to apply this patch, thanks.
+> Commit ee65ad0e2a9e ("backlight: pwm_bl: Avoid backlight flicker when
+> probed from DT") tries to dereference the device of_node pointer
+> unconditionally, causing a NULL pointer dereference on non-dt platforms.
+> Fix it by replacing the phandle variable with a node variable and
+> by checking that for NULL before dereferencing it.
+>
+> Reported-by: Robert Jarzmik <robert.jarzmik@free.fr>
+> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+And indeed it does the trick.
+
+Tested-by: Robert Jarzmik <robert.jarzmik@free.fr>
+
+-- 
+Robert
