@@ -1,35 +1,38 @@
-From: Robert Jarzmik <robert.jarzmik@free.fr>
-Subject: Re: [PATCH] backlight: pwm_bl: Fix broken PWM backlight for non-dt platforms
-Date: Fri, 11 Dec 2015 18:33:22 +0100
-Message-ID: <87r3isj3fh.fsf@belgarion.home>
-References: <1449738546-10279-1-git-send-email-p.zabel@pengutronix.de>
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Subject: Re: [PATCH 0/3] pwm: bcm2835: improve clock handling
+Date: Tue, 15 Dec 2015 18:59:31 +0100 (CET)
+Message-ID: <2004478620.33734.6de503e6-02cb-4cce-af2d-c2614efc234a.open-xchange@email.1und1.de>
+References: <1449010541-3767-1-git-send-email-stefan.wahren@i2se.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:18416 "EHLO
-	smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752093AbbLKRd3 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 11 Dec 2015 12:33:29 -0500
-In-Reply-To: <1449738546-10279-1-git-send-email-p.zabel@pengutronix.de>
-	(Philipp Zabel's message of "Thu, 10 Dec 2015 10:09:06 +0100")
+Received: from mout.kundenserver.de ([212.227.126.134]:52836 "EHLO
+	mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753528AbbLOSAK (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 15 Dec 2015 13:00:10 -0500
+In-Reply-To: <1449010541-3767-1-git-send-email-stefan.wahren@i2se.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Philipp Zabel <p.zabel@pengutronix.de>
-Cc: Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, kernel@pengutronix.de, linux-kernel@vger.kernel.org
+To: Lee Jones <lee@kernel.org>, Eric Anholt <eric@anholt.net>, Thierry Reding <thierry.reding@gmail.com>, Stephen Warren <swarren@wwwdotorg.org>
+Cc: linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org, Remi Pommarel <repk@triplefau.lt>
 
-Philipp Zabel <p.zabel@pengutronix.de> writes:
 
-> Commit ee65ad0e2a9e ("backlight: pwm_bl: Avoid backlight flicker when
-> probed from DT") tries to dereference the device of_node pointer
-> unconditionally, causing a NULL pointer dereference on non-dt platforms.
-> Fix it by replacing the phandle variable with a node variable and
-> by checking that for NULL before dereferencing it.
+> Stefan Wahren <stefan.wahren@i2se.com> hat am 1. Dezember 2015 um 23:55
+> geschrieben:
 >
-> Reported-by: Robert Jarzmik <robert.jarzmik@free.fr>
-> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-And indeed it does the trick.
+>
+> With the upcoming PWM clock support the pwm-bcm2835 should take
+> more care about the clock handling. But this patch series doesn't
+> depend on these clock driver changes.
+>
+> Stefan Wahren (3):
+> pwm: bcm2835: calculate scaler in pwm_config
+> pwm: bcm2835: prevent division by zero
+> pwm: bcm2835: fix email address specifiction
+>
+> drivers/pwm/pwm-bcm2835.c | 18 ++++++++++++------
+> 1 file changed, 12 insertions(+), 6 deletions(-)
+>
 
-Tested-by: Robert Jarzmik <robert.jarzmik@free.fr>
-
--- 
-Robert
+gently ping
