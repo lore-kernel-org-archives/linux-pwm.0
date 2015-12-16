@@ -1,67 +1,77 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 0/3] pwm: bcm2835: improve clock handling
-Date: Wed, 16 Dec 2015 16:38:09 +0100
-Message-ID: <20151216153809.GC28947@ulmo>
-References: <1449010541-3767-1-git-send-email-stefan.wahren@i2se.com>
+Subject: Re: [PATCH] pwm: lpss: Remove ->free() callback
+Date: Wed, 16 Dec 2015 16:40:44 +0100
+Message-ID: <20151216154044.GD28947@ulmo>
+References: <1449669959-55013-1-git-send-email-mika.westerberg@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Y5rl02BVI9TCfPar"
+	protocol="application/pgp-signature"; boundary="48TaNjbzBVislYPb"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f49.google.com ([74.125.82.49]:34131 "EHLO
-	mail-wm0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965505AbbLPPiM (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Dec 2015 10:38:12 -0500
-Received: by mail-wm0-f49.google.com with SMTP id l126so45046464wml.1
-        for <linux-pwm@vger.kernel.org>; Wed, 16 Dec 2015 07:38:11 -0800 (PST)
+Received: from mail-wm0-f41.google.com ([74.125.82.41]:36876 "EHLO
+	mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752287AbbLPPkr (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Dec 2015 10:40:47 -0500
+Received: by mail-wm0-f41.google.com with SMTP id p187so6553226wmp.0
+        for <linux-pwm@vger.kernel.org>; Wed, 16 Dec 2015 07:40:46 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <1449010541-3767-1-git-send-email-stefan.wahren@i2se.com>
+In-Reply-To: <1449669959-55013-1-git-send-email-mika.westerberg@linux.intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: Stephen Warren <swarren@wwwdotorg.org>, Lee Jones <lee@kernel.org>, Eric Anholt <eric@anholt.net>, Remi Pommarel <repk@triplefau.lt>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org
+To: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Qipeng Zha <qipeng.zha@intel.com>, linux-pwm@vger.kernel.org
 
 
---Y5rl02BVI9TCfPar
+--48TaNjbzBVislYPb
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 01, 2015 at 10:55:38PM +0000, Stefan Wahren wrote:
-> With the upcoming PWM clock support the pwm-bcm2835 should take
-> more care about the clock handling. But this patch series doesn't
-> depend on these clock driver changes.
+On Wed, Dec 09, 2015 at 04:05:59PM +0200, Mika Westerberg wrote:
+> The LPSS PWM driver calls pwm_lpss_disable() when the PWM device is
+> released (for example unexported from sysfs). This in turn calls
+> pm_runtime_put() which makes runtime PM count to be unbalanced if the
+> device has not been enabled at this point.
 >=20
-> Stefan Wahren (3):
->   pwm: bcm2835: calculate scaler in pwm_config
->   pwm: bcm2835: prevent division by zero
->   pwm: bcm2835: fix email address specifiction
+> This is easy to reproduce:
 >=20
->  drivers/pwm/pwm-bcm2835.c |   18 ++++++++++++------
->  1 file changed, 12 insertions(+), 6 deletions(-)
+>   # cd /sys/class/pwm/pwmchip0
+>   # echo 0 > export
+>   # echo 0 > unexport
+>=20
+> The count is unbalanced and prevents the PWM device from being powered on
+> next time.
+>=20
+> Fix this by removing ->free() callback. There are no resources to be
+> released anyway.
+>=20
+> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> ---
+>  drivers/pwm/pwm-lpss.c | 1 -
+>  1 file changed, 1 deletion(-)
 
-All three patches applied with Eric's Reviewed-by, thanks.
+Applied, thanks.
 
 Thierry
 
---Y5rl02BVI9TCfPar
+--48TaNjbzBVislYPb
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJWcYVcAAoJEN0jrNd/PrOhCj4P/ihDanEUZ0Gyhn7RHF/fcf0t
-JPgy7S7LcHvWwGM1JiT5dgJgHXqiE8WO14uzwQy9pMTfPe28Vh/WpVgBmdNhwDoQ
-AHkK+mFFrRmN5QQmDm5XacFg09axuof/0YGhwt7kkxM3ypI3UA6VE/WePi6ePNp2
-svujwjGmDlklK/KmfuXWSlevOnmTyrdnfEmJIa3TKbm74npsdMkHaFae/NlrV/Y2
-PTMaJIGGoRnIkJtxHwzHKkGkbqX8oFI+zqzbMDhLoiEnrtCGfpS4mqBtwEQqE1/E
-Lm04ObBCZkVQIT/vbKOs10WnwFEcFfrQkeOi7GcFsqUOBpmUZtJ9KWAMljEl3XQX
-5CK9o0GuYT3zicbyBAUObYCT1ehoyULCoraDHY6PRMoca8P3Vaifu/QycsgkJ9XO
-G3GufAd91lN2xQT2uC9CATFSZN/IZGoTfgkgQYeA5cho/9SWrB9QbkWOrxHwQCli
-q1pnvhdV9e5vA6Q3waZCzzUyvE5XmPWbpPDRhLV28TAU0QPnJcs9j88FnRQLJf0l
-fQ0xwDHkVvMnfu90BWI2vOCbcTeqhbT4rxt9Rf2cj5G2lMH6dAL7KwsdjnjxtcN5
-bOct92olr5NADdUjfn13JHYd2yh1XW/zBsXSyOFHjkiCGFsy1LLrYsznsy/AFHef
-H7AKecablkZhDfpxG7kp
-=g6Hc
+iQIcBAABCAAGBQJWcYX8AAoJEN0jrNd/PrOhYboP/iU1gOM57ZrFqewbwWMZo2Uu
+rgfQNuux6tfGPIYDLUnAa9y65Ug9WDGLQkqMrt9SRuloE1YqhpAlgnUwiYQPkVB0
+Gafukl1KDVrXp9wKdlgoFejYLx4b2I/IL9nsDPSMEZtc7QwVWlJXT74quBjsyqMH
+N/hFPQ3vQpu+7lVUB31JvRBFNSSR92ORy1pZdWHg0KudHcUzJPUl+pGpPYqOybAN
+UJMqVosGFl0fcLK+aNyGfQqCNSkLjKrZ/0uujnH61RcM3U1+O14eHZBKEkWag/P5
+MKPevCuV9I0jn3oBTdH8L/0sbt/h+fzy6kX8w5gi0v4KvDfPB+BGj1LPimUHwcS/
+FovXw3gmKlFNMTRSXskfjGeUpevuFQIgjWKrq6qnP6wIEtc4sbqu0XrDlUgjKTdN
+43pLFJCdOrGhw9dnHvmwB6pzPISoqNfRY0nusPULsgGafHR4x2qDkdJgg7vxLhmE
+VDgqpKCb3Me3RBKmyjnh95TylorOBD3bd/olXvqzHDGNZMYdjqryNSHhrNh1M9qv
+33dHz7YjIyn1bAiyimEjHtKNKJKUfCPcsDezoZXuRVLljeoG3kxP8jzdm1Xs7ktX
+U2wAHq/jzLH/mkD10ho0Gv1b91TvrQ51jsfNGcIkUJg+WiEnUXdcltlbzore3+6w
+bqBXCzlb0MRPjQrBZfo3
+=FAwD
 -----END PGP SIGNATURE-----
 
---Y5rl02BVI9TCfPar--
+--48TaNjbzBVislYPb--
