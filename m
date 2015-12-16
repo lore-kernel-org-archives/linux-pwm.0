@@ -1,82 +1,109 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/2] pwm: lpss: Rework the sequence of programming
- PWM_SW_UPDATE
-Date: Wed, 16 Dec 2015 16:53:01 +0100
-Message-ID: <20151216155301.GG28947@ulmo>
-References: <1447845918-66691-1-git-send-email-mika.westerberg@linux.intel.com>
- <1447845918-66691-2-git-send-email-mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH v2] pwm: ftm: fix clock enable/disable when using PM
+Date: Wed, 16 Dec 2015 16:55:00 +0100
+Message-ID: <20151216155500.GH28947@ulmo>
+References: <1448318707-18011-1-git-send-email-stefan@agner.ch>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="qoTlaiD+Y2fIM3Ll"
+	protocol="application/pgp-signature"; boundary="smOfPzt+Qjm5bNGJ"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f47.google.com ([74.125.82.47]:34605 "EHLO
-	mail-wm0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965671AbbLPPxE (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Dec 2015 10:53:04 -0500
-Received: by mail-wm0-f47.google.com with SMTP id l126so45696675wml.1
-        for <linux-pwm@vger.kernel.org>; Wed, 16 Dec 2015 07:53:03 -0800 (PST)
+Received: from mail-wm0-f52.google.com ([74.125.82.52]:35099 "EHLO
+	mail-wm0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933885AbbLPPzD (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Dec 2015 10:55:03 -0500
 Content-Disposition: inline
-In-Reply-To: <1447845918-66691-2-git-send-email-mika.westerberg@linux.intel.com>
+In-Reply-To: <1448318707-18011-1-git-send-email-stefan@agner.ch>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Qipeng Zha <qipeng.zha@intel.com>, linux-pwm@vger.kernel.org
+To: Stefan Agner <stefan@agner.ch>
+Cc: Xiubo.Lee@gmail.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
 
---qoTlaiD+Y2fIM3Ll
+--smOfPzt+Qjm5bNGJ
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Nov 18, 2015 at 01:25:18PM +0200, Mika Westerberg wrote:
-> Setting of PWM_SW_UPDATE is bit different in Intel Broxton compared to the
-> previous generation SoCs. Previously it was OK to set the bit many times
-> (from userspace via sysfs for example) before the PWM is actually enabled.
+On Mon, Nov 23, 2015 at 02:45:07PM -0800, Stefan Agner wrote:
+> A FTM PWM instance enables/disables three clocks: The bus clock, the
+> counter clock and the PWM clock. The bus clock gets enabled on
+> pwm_request, whereas the counter and PWM clocks will be enabled upon
+> pwm_enable.
 >=20
-> Starting from Intel Broxton it seems that we must set PWM_SW_UPDATE only
-> once before the PWM is enabled. Otherwise it is possible that the PWM does
-> not start properly.
+> The driver has three closesly related issues when enabling/disabling
+> clocks during suspend/resume:
+> - The three clocks are not treated differently in regards to the
+>   individual PWM state enabled/requested. This can lead to clocks
+>   getting disabled which have not been enabled in the first place
+>   (a PWM channel which only has been requested going through
+>   suspend/resume).
 >=20
-> Change the sequence of how PWM_SW_UPDATE is programmed so that we only set
-> it in pwm_lpss_config() when the PWM is already enabled. The initial
-> setting of PWM_SW_UPDATE will be done when PWM gets enabled. This should
-> make the driver work with the previous generation Intel SoCs and Broxton.
+> - When entering suspend, the current behavior relies on the
+>   FTM_OUTMASK register: If a PWM output is unmasked, the driver
+>   assumes the clocks are enabled. However, some PWM instances
+>   have only 2 channels connected (e.g. Vybrid's FTM1). In that case,
+>   the FTM_OUTMASK reads 0x3 if all channels are disabled, even if
+>   the code wrote 0xff to it before. For those PWM instances, the
+>   current approach to detect enabled PWM signals does not work.
 >=20
-> Add also small delay after the bit is set to let the hardware propagate it
-> properly.
+> - A third issue applies to the bus clock only, which can get enabled
+>   multiple times (once for each PWM channel of a PWM chip). This is
+>   fine, however when entering suspend mode, the clock only gets
+>   disabled once.
 >=20
-> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> This change introduces a different approach by relying on the enable
+> and prepared counters of the clock framework and using the frameworks
+> PWM signal states to address all three issues.
+>=20
+> Clocks get disabled during suspend and back enabled on resume
+> regarding to the PWM channels individual state (requested/enabled).
+>=20
+> Since we do not count the clock enables in the driver, this change no
+> longer clears the Status and Control registers Clock Source Selection
+> (FTM_SC[CLKS]). However, since we disable the selected clock anyway,
+> and we explicitly select the clock source on reenabling a PWM channel
+> this approach should not make a difference in practice.
+>=20
+> Signed-off-by: Stefan Agner <stefan@agner.ch>
 > ---
-> Applies on top of Qipeng's patch here:
+> Hi Lee,
 >=20
-> https://patchwork.ozlabs.org/patch/545313/
+> I just found your new email address. Thierry and I already had some
+> discussion about the patch here:
+> http://thread.gmane.org/gmane.linux.pwm/2878
 >=20
->  drivers/pwm/pwm-lpss.c | 23 +++++++++++++++++++++--
->  1 file changed, 21 insertions(+), 2 deletions(-)
+> Could you have a look at that patch?
+>=20
+> Changes since v1:
+> - Use the pwm_is_enabled helper
+>=20
+>  drivers/pwm/pwm-fsl-ftm.c | 58 ++++++++++++++++++++---------------------=
+------
+>  1 file changed, 25 insertions(+), 33 deletions(-)
 
 Applied, thanks.
 
 Thierry
 
---qoTlaiD+Y2fIM3Ll
+--smOfPzt+Qjm5bNGJ
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJWcYjdAAoJEN0jrNd/PrOhVw8QALtdviB9pySqUdtvz1BRSgox
-HEMUPx8A9c9zmENbyvLVfRKGwEVehOZU6S9WUOZHsulJ6Q0pZeoSvJ9Yw2YbOqbW
-ZN+dGt6jxlocmWLgsOZPj2/KgzvBDCmbjguyZh2Cp2ebJL4oZ7GDF0MCu2qMjWCJ
-fkx/XHzWk0gE0bMSNFjKqjCCNdNNdvyYtBO1u8csmp3Hk2pTHqIkIZvusnR1jzny
-VxOAV1bncjCWJJC8Yp4AqSq8TRjOsx0sun5daF+5hjx54JBcWL+XlYXY7Uw4+cfA
-5TDR4Qv9MLcEVwHyEkycjSERXdYgT64K1/zwykeTsP5/FVwfBauY2o5+AHeu2h5M
-fcaW3n5GmgO3xPPwHaVNt2oZSLKW5UVI2COEdTSy5JA02IvljRxAF5nLvQmeMCxs
-vd/UfCTLOyt0pyaCR2D2tAjgFdTtNqtRxVlc8adPI+BtpBsBvMsgHcjurt2tXtRi
-fIm7y8iW/5tu2+QFNE63JEGs0z3fCoUvP51Xc1UKxLBSUw+O5VTOUbnRdMEY9x+B
-OCRqIs76fp3BWSErCwKIgSXSup1ZQCMP9freS9QK2wn7D76GaE8nXAZnYCZhc2HC
-vJG44sYPnEjHTKu4VcZHYM+pWIjzp539OahNinsBN68y3PRbvZpBR5BX5PSRH3WS
-t6ohIbT69iavp4pf35AZ
-=iq/e
+iQIcBAABCAAGBQJWcYlTAAoJEN0jrNd/PrOhs1QQAKLQX3Wh1D7isc/qisFEsiWy
+ULVeuQ6BhthSNsvMg3DCdduURfojTfquTOKPZt/L0KkpFL+4F1e2Yok7aTJfHjyR
+Bt6xp1+xYs5+nBJuj7L+RP5maNpUVVstzFhuKhXaby0oZqD5o9vdEmmRvVw7C8hL
+xBf42eLTFH7N9Q3WcedR5meunM7+o2u935h8IBTnJtgjZnA6vZou83AAugT/VqlG
+df9c850+8/uZwSgtc1AcqoMZbGFuaTM1z0Gi0HTc8oa8Z/+5JahJNxkjT3CvHB6t
+oKoNo3NqRxqJswNvVeS8wDWHxwRJXNyn6X3yMhVtXSwU9ps9AWN+GmoZaj1a7kBt
+cuuimsFE3Huv/Cx0Zqy+ySZBUVMOHaPZgP6H0o+th0ya0nuiHqUAve1ERYWYH/Xv
+RXRS+7Hb/IzxqOBzpylrOgO1Mn8PAw+F9VHj0cvF+L/TYla2jBvvxg87LTb3Sypf
+T513wPu77wY8IcjIOgLrTjRXmQHZpQSmdf5NE+zUSb1UtxfNjW0yaC8qz1frtgYs
+MtE69MlLX7F+fFmrraYmcMdTFAi2RyIBwHY1+DtO82WjNjUeuEIgsK0xkRgLEVyi
+yzJ91MJj0/JUpTynsqb9tBk7LWIT+z74yFpQFZWhyS1AiyrW0JkiVmOZeF06ijU2
+L5uZ3+uX6UHGDRdTLKNb
+=o0b3
 -----END PGP SIGNATURE-----
 
---qoTlaiD+Y2fIM3Ll--
+--smOfPzt+Qjm5bNGJ--
