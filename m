@@ -1,69 +1,66 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v5] pwm:lpss: update pwm setting for Broxton
-Date: Wed, 16 Dec 2015 16:47:07 +0100
-Message-ID: <20151216154707.GE28947@ulmo>
-References: <1447752015-55339-1-git-send-email-qipeng.zha@intel.com>
- <20151117075214.GD1604@lahna.fi.intel.com>
- <C6287702A945AC47BE5DB5DFD4B5C6DD03833AF6@SHSMSX104.ccr.corp.intel.com>
+Subject: Re: [PATCH 1/2] pwm: lpss: select core part automatically
+Date: Wed, 16 Dec 2015 16:52:46 +0100
+Message-ID: <20151216155246.GF28947@ulmo>
+References: <1447845918-66691-1-git-send-email-mika.westerberg@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="nHwqXXcoX0o6fKCv"
+	protocol="application/pgp-signature"; boundary="qftxBdZWiueWNAVY"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f43.google.com ([74.125.82.43]:35119 "EHLO
-	mail-wm0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965948AbbLPPrK (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Dec 2015 10:47:10 -0500
-Received: by mail-wm0-f43.google.com with SMTP id l126so44451857wml.0
-        for <linux-pwm@vger.kernel.org>; Wed, 16 Dec 2015 07:47:09 -0800 (PST)
+Received: from mail-wm0-f44.google.com ([74.125.82.44]:36576 "EHLO
+	mail-wm0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965747AbbLPPwt (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Dec 2015 10:52:49 -0500
+Received: by mail-wm0-f44.google.com with SMTP id p187so7095845wmp.1
+        for <linux-pwm@vger.kernel.org>; Wed, 16 Dec 2015 07:52:48 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <C6287702A945AC47BE5DB5DFD4B5C6DD03833AF6@SHSMSX104.ccr.corp.intel.com>
+In-Reply-To: <1447845918-66691-1-git-send-email-mika.westerberg@linux.intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: "Zha, Qipeng" <qipeng.zha@intel.com>
-Cc: "Westerberg, Mika" <mika.westerberg@intel.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+To: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Qipeng Zha <qipeng.zha@intel.com>, linux-pwm@vger.kernel.org
 
 
---nHwqXXcoX0o6fKCv
+--qftxBdZWiueWNAVY
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Dec 11, 2015 at 06:51:38AM +0000, Zha, Qipeng wrote:
-> >> For Broxton PWM controller, base unit is defined as 8bit integer and=
-=20
-> >> 14bit fraction, so need to update base unit setting to output wave=20
-> >> with right frequency.
-> >>=20
-> >> Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
+On Wed, Nov 18, 2015 at 01:25:17PM +0200, Mika Westerberg wrote:
+> From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 >=20
-> >My ack still applies to this patch.
->  Hi Thierry, are you going to apply this patch, thanks.
+> We have two users of core part right now. Let them to select core part
+> automatically.
+>=20
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> ---
+>  drivers/pwm/Kconfig | 15 +++++----------
+>  1 file changed, 5 insertions(+), 10 deletions(-)
 
-I've applied this. Next time if somebody gives you an Acked-by, please
-include it in the commit message if you send another version. That makes
-life a little easier for me.
+Applied, thanks.
 
 Thierry
 
---nHwqXXcoX0o6fKCv
+--qftxBdZWiueWNAVY
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJWcYd7AAoJEN0jrNd/PrOh7PYP/ir52D+vQdi9oBx4ztdlnbfn
-OZKL5Lgh1IFCXydve5f22zP213BH79bo2mXOm2TTwXeo1uiTCAZuFDmmiqUa1532
-Ke0C7Z1K/CraaqvPnvKcYTQxltj+zie/vNi04WEkZ2ynolfTfLS4SeRWo1c8RrxR
-3QppWWPg3UokSKq3ZFTLfPjv7qTD7FCHDzrgoA7ejbVfIzhPpCOPib07hGutrpoP
-c2dRRLLnQ8TJqf0n1hAqH/sNQZ6agPakISAZk0f2/FRPajpoWTQXWelMguZjuwr6
-UcTt9VVOoh99g84XbH5r8B7Je28LYmLoOsH7wQ+DkT54iPE/yZxkXew1SDTTa5uP
-ZzKwbPMcFDpr2ERhtLHqDSUlGd/WWzLERnXPYxOSidXhKqZl/3jYkaNT6PmC3IQe
-AKirA6wPtCnXm7qrtf+Je+xX0LuYsvkop0Mr8E6hCOUedgIrEshFSdPX4TZ3xatY
-lUr49RBLLn/Gg20LOmqPl/+lQJiMZd3gYelgDBPem+ifmKGNpT6OxLusmDL2r9W8
-6Xau2NaeImNdJz6RgMGFLI09wRqFFCtYtXZrJzTjWNGCpU/iDwGpTx93OXOYyV/2
-4O2Cr9rp23z1f4Ma1t2OdpOcVm+jbTYb+7le0eP/eISBCZnmTXWmAk0EnsjbQ36w
-x2Q+B5MdJ0ANXpnur+G3
-=jpKI
+iQIcBAABCAAGBQJWcYjOAAoJEN0jrNd/PrOh698P/0gI9Vg63/Pbx0bdvY4eiV0c
+L3MPT8rW/vjYv6U1HqNNHXubrXcz88Dfqyo05Sojttjfy7ZoV3eUoZUh/GkBTCWj
+l/7WetAt6Bu5Ok7pAOQHRHG49YhMdpr1Xo0KpoJ6ggH9mf8yMGQB9vR4rPmUHcv0
+G/p4GPyR1zQoYvS2Zs6KKYgEe9rWs4LBArXT5dPxqnD3/+98iGxfCV0zuM96cofz
+/whadESZ2Zyt9N0vdIQTl6Hzo4N+4yZIkE1SV/sIJM2KRVGmOAbH6iPCE4M2SHz8
+Spaeb64nonvDYIDY2y9czc/asEsA5/RbKSJqDe3NwEMMKTp6BVrkg6KX0aTQA4KO
+Sm5880MTpxDSITahiqPFqahgLkB7MT15Kaf6NGuH3+QxwSIe0fIsp4yFiYcY6lGn
+B5YArgs4+SdMZgcHugp26MPoFuwfHO+kfsaFYdxY91ZiLFbcRpopv4VbHDCqWLY8
+4AslEud6IsdjuPk/WUkVZYy+OKYba8A1p36uCGJPdxd4d+DNxGxFdhMVce8mvNVg
+zWnJUxP3jvMr90IG5ZJ5YOB94P3rjV6m1g2Qdu9KO9vu4cwigmS5ZCAMtCfNjYo0
+B4Kkgbd7E6HNGrI/1uZdELSbtCwXbRUeRkLOmI/yxQGEWdS4J1kUJz2PIMDak1Lf
+7N17/JSbA9FmCWRcU+lF
+=wj50
 -----END PGP SIGNATURE-----
 
---nHwqXXcoX0o6fKCv--
+--qftxBdZWiueWNAVY--
