@@ -1,77 +1,69 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: lpss: Remove ->free() callback
-Date: Wed, 16 Dec 2015 16:40:44 +0100
-Message-ID: <20151216154044.GD28947@ulmo>
-References: <1449669959-55013-1-git-send-email-mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH v5] pwm:lpss: update pwm setting for Broxton
+Date: Wed, 16 Dec 2015 16:47:07 +0100
+Message-ID: <20151216154707.GE28947@ulmo>
+References: <1447752015-55339-1-git-send-email-qipeng.zha@intel.com>
+ <20151117075214.GD1604@lahna.fi.intel.com>
+ <C6287702A945AC47BE5DB5DFD4B5C6DD03833AF6@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="48TaNjbzBVislYPb"
+	protocol="application/pgp-signature"; boundary="nHwqXXcoX0o6fKCv"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f41.google.com ([74.125.82.41]:36876 "EHLO
-	mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752287AbbLPPkr (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Dec 2015 10:40:47 -0500
-Received: by mail-wm0-f41.google.com with SMTP id p187so6553226wmp.0
-        for <linux-pwm@vger.kernel.org>; Wed, 16 Dec 2015 07:40:46 -0800 (PST)
+Received: from mail-wm0-f43.google.com ([74.125.82.43]:35119 "EHLO
+	mail-wm0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965948AbbLPPrK (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Dec 2015 10:47:10 -0500
+Received: by mail-wm0-f43.google.com with SMTP id l126so44451857wml.0
+        for <linux-pwm@vger.kernel.org>; Wed, 16 Dec 2015 07:47:09 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <1449669959-55013-1-git-send-email-mika.westerberg@linux.intel.com>
+In-Reply-To: <C6287702A945AC47BE5DB5DFD4B5C6DD03833AF6@SHSMSX104.ccr.corp.intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Qipeng Zha <qipeng.zha@intel.com>, linux-pwm@vger.kernel.org
+To: "Zha, Qipeng" <qipeng.zha@intel.com>
+Cc: "Westerberg, Mika" <mika.westerberg@intel.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
 
---48TaNjbzBVislYPb
+--nHwqXXcoX0o6fKCv
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Dec 09, 2015 at 04:05:59PM +0200, Mika Westerberg wrote:
-> The LPSS PWM driver calls pwm_lpss_disable() when the PWM device is
-> released (for example unexported from sysfs). This in turn calls
-> pm_runtime_put() which makes runtime PM count to be unbalanced if the
-> device has not been enabled at this point.
+On Fri, Dec 11, 2015 at 06:51:38AM +0000, Zha, Qipeng wrote:
+> >> For Broxton PWM controller, base unit is defined as 8bit integer and=
+=20
+> >> 14bit fraction, so need to update base unit setting to output wave=20
+> >> with right frequency.
+> >>=20
+> >> Signed-off-by: Qipeng Zha <qipeng.zha@intel.com>
 >=20
-> This is easy to reproduce:
->=20
->   # cd /sys/class/pwm/pwmchip0
->   # echo 0 > export
->   # echo 0 > unexport
->=20
-> The count is unbalanced and prevents the PWM device from being powered on
-> next time.
->=20
-> Fix this by removing ->free() callback. There are no resources to be
-> released anyway.
->=20
-> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> ---
->  drivers/pwm/pwm-lpss.c | 1 -
->  1 file changed, 1 deletion(-)
+> >My ack still applies to this patch.
+>  Hi Thierry, are you going to apply this patch, thanks.
 
-Applied, thanks.
+I've applied this. Next time if somebody gives you an Acked-by, please
+include it in the commit message if you send another version. That makes
+life a little easier for me.
 
 Thierry
 
---48TaNjbzBVislYPb
+--nHwqXXcoX0o6fKCv
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJWcYX8AAoJEN0jrNd/PrOhYboP/iU1gOM57ZrFqewbwWMZo2Uu
-rgfQNuux6tfGPIYDLUnAa9y65Ug9WDGLQkqMrt9SRuloE1YqhpAlgnUwiYQPkVB0
-Gafukl1KDVrXp9wKdlgoFejYLx4b2I/IL9nsDPSMEZtc7QwVWlJXT74quBjsyqMH
-N/hFPQ3vQpu+7lVUB31JvRBFNSSR92ORy1pZdWHg0KudHcUzJPUl+pGpPYqOybAN
-UJMqVosGFl0fcLK+aNyGfQqCNSkLjKrZ/0uujnH61RcM3U1+O14eHZBKEkWag/P5
-MKPevCuV9I0jn3oBTdH8L/0sbt/h+fzy6kX8w5gi0v4KvDfPB+BGj1LPimUHwcS/
-FovXw3gmKlFNMTRSXskfjGeUpevuFQIgjWKrq6qnP6wIEtc4sbqu0XrDlUgjKTdN
-43pLFJCdOrGhw9dnHvmwB6pzPISoqNfRY0nusPULsgGafHR4x2qDkdJgg7vxLhmE
-VDgqpKCb3Me3RBKmyjnh95TylorOBD3bd/olXvqzHDGNZMYdjqryNSHhrNh1M9qv
-33dHz7YjIyn1bAiyimEjHtKNKJKUfCPcsDezoZXuRVLljeoG3kxP8jzdm1Xs7ktX
-U2wAHq/jzLH/mkD10ho0Gv1b91TvrQ51jsfNGcIkUJg+WiEnUXdcltlbzore3+6w
-bqBXCzlb0MRPjQrBZfo3
-=FAwD
+iQIcBAABCAAGBQJWcYd7AAoJEN0jrNd/PrOh7PYP/ir52D+vQdi9oBx4ztdlnbfn
+OZKL5Lgh1IFCXydve5f22zP213BH79bo2mXOm2TTwXeo1uiTCAZuFDmmiqUa1532
+Ke0C7Z1K/CraaqvPnvKcYTQxltj+zie/vNi04WEkZ2ynolfTfLS4SeRWo1c8RrxR
+3QppWWPg3UokSKq3ZFTLfPjv7qTD7FCHDzrgoA7ejbVfIzhPpCOPib07hGutrpoP
+c2dRRLLnQ8TJqf0n1hAqH/sNQZ6agPakISAZk0f2/FRPajpoWTQXWelMguZjuwr6
+UcTt9VVOoh99g84XbH5r8B7Je28LYmLoOsH7wQ+DkT54iPE/yZxkXew1SDTTa5uP
+ZzKwbPMcFDpr2ERhtLHqDSUlGd/WWzLERnXPYxOSidXhKqZl/3jYkaNT6PmC3IQe
+AKirA6wPtCnXm7qrtf+Je+xX0LuYsvkop0Mr8E6hCOUedgIrEshFSdPX4TZ3xatY
+lUr49RBLLn/Gg20LOmqPl/+lQJiMZd3gYelgDBPem+ifmKGNpT6OxLusmDL2r9W8
+6Xau2NaeImNdJz6RgMGFLI09wRqFFCtYtXZrJzTjWNGCpU/iDwGpTx93OXOYyV/2
+4O2Cr9rp23z1f4Ma1t2OdpOcVm+jbTYb+7le0eP/eISBCZnmTXWmAk0EnsjbQ36w
+x2Q+B5MdJ0ANXpnur+G3
+=jpKI
 -----END PGP SIGNATURE-----
 
---48TaNjbzBVislYPb--
+--nHwqXXcoX0o6fKCv--
