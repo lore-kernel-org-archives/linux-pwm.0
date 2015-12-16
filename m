@@ -1,67 +1,67 @@
-From: Eric Anholt <eric@anholt.net>
+From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH 0/3] pwm: bcm2835: improve clock handling
-Date: Tue, 15 Dec 2015 10:24:44 -0800
-Message-ID: <87k2of4ljn.fsf@eliezer.anholt.net>
-References: <1449010541-3767-1-git-send-email-stefan.wahren@i2se.com> <2004478620.33734.6de503e6-02cb-4cce-af2d-c2614efc234a.open-xchange@email.1und1.de>
+Date: Wed, 16 Dec 2015 16:38:09 +0100
+Message-ID: <20151216153809.GC28947@ulmo>
+References: <1449010541-3767-1-git-send-email-stefan.wahren@i2se.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-	micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="Y5rl02BVI9TCfPar"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from gabe.freedesktop.org ([131.252.210.177]:33969 "EHLO
-	gabe.freedesktop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965147AbbLOSYr (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 15 Dec 2015 13:24:47 -0500
-In-Reply-To: <2004478620.33734.6de503e6-02cb-4cce-af2d-c2614efc234a.open-xchange@email.1und1.de>
+Received: from mail-wm0-f49.google.com ([74.125.82.49]:34131 "EHLO
+	mail-wm0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S965505AbbLPPiM (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Dec 2015 10:38:12 -0500
+Received: by mail-wm0-f49.google.com with SMTP id l126so45046464wml.1
+        for <linux-pwm@vger.kernel.org>; Wed, 16 Dec 2015 07:38:11 -0800 (PST)
+Content-Disposition: inline
+In-Reply-To: <1449010541-3767-1-git-send-email-stefan.wahren@i2se.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Stefan Wahren <stefan.wahren@i2se.com>, Lee Jones <lee@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Stephen Warren <swarren@wwwdotorg.org>
-Cc: linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org, Remi Pommarel <repk@triplefau.lt>
+To: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: Stephen Warren <swarren@wwwdotorg.org>, Lee Jones <lee@kernel.org>, Eric Anholt <eric@anholt.net>, Remi Pommarel <repk@triplefau.lt>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org
 
---=-=-=
-Content-Type: text/plain
 
-Stefan Wahren <stefan.wahren@i2se.com> writes:
+--Y5rl02BVI9TCfPar
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->> Stefan Wahren <stefan.wahren@i2se.com> hat am 1. Dezember 2015 um 23:55
->> geschrieben:
->>
->>
->> With the upcoming PWM clock support the pwm-bcm2835 should take
->> more care about the clock handling. But this patch series doesn't
->> depend on these clock driver changes.
->>
->> Stefan Wahren (3):
->> pwm: bcm2835: calculate scaler in pwm_config
->> pwm: bcm2835: prevent division by zero
->> pwm: bcm2835: fix email address specifiction
->>
->> drivers/pwm/pwm-bcm2835.c | 18 ++++++++++++------
->> 1 file changed, 12 insertions(+), 6 deletions(-)
->>
->
-> gently ping
+On Tue, Dec 01, 2015 at 10:55:38PM +0000, Stefan Wahren wrote:
+> With the upcoming PWM clock support the pwm-bcm2835 should take
+> more care about the clock handling. But this patch series doesn't
+> depend on these clock driver changes.
+>=20
+> Stefan Wahren (3):
+>   pwm: bcm2835: calculate scaler in pwm_config
+>   pwm: bcm2835: prevent division by zero
+>   pwm: bcm2835: fix email address specifiction
+>=20
+>  drivers/pwm/pwm-bcm2835.c |   18 ++++++++++++------
+>  1 file changed, 12 insertions(+), 6 deletions(-)
 
-Thierry, do you want to fold in my r-bs and apply, or should Stefan
-resend with them?
+All three patches applied with Eric's Reviewed-by, thanks.
 
---=-=-=
+Thierry
+
+--Y5rl02BVI9TCfPar
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Version: GnuPG v2
 
-iQIcBAEBCgAGBQJWcFrsAAoJELXWKTbR/J7oRX4QAKuqYLprJHlOTYKWohMyq+fI
-WlNSNx5kmF6FW7wCYq3fXF4aN2QaZmLsQVpgutGjFG2npQhnd2oteXEfz0WchIxr
-lUQNjsK7PuhVB9WWFXMjhQwY249pKukXMM2iHU8FViFw7dyZLbftN9rrv7BDL9j2
-pEqS6baLhPkCB8vl/f/SV6BcSu9kVq5udBAuV9H11fqJ8gP9F3mIOJ4T+1FWN6mr
-HZzFJ7wZkcFXX8xhZZjCh33xyhctSM7oSJ2CGMZ/sJ+Mpg9N3T1+sh/sjIiCWNiV
-+K/7NOt63DBByQ+PR/82eZFZoQ0IBYkkSLonbCcZoYRae/UojR17Bu4Sw+9A82ce
-JQdXptSCcJ7ymvxCNdMsReBFVNUqxSzvx/AGbLtblw/sxjcvBpObXRzfrAwHxmL5
-YCwT/lYhqwTDDAqpjmvBdVutLQuMDGTm9caT+/qQX8Lbr1xyuvULdo89D7Rpactv
-3XLroyAsRRpKczI0ukCY7xZDNk7+xe6rjwbRQ3gtZX36KnlOMxB5+fnRicgOxnk4
-WkokuAu7XwazmkqGclvS62nCWhgl13KBEBB9o5r/n09DERbBjZLDRwi44L0O8Y/6
-f7dWfh9x3tFOYa+agL/wjz6ByRNdDlvxXK3cDgAx9ZEtjnmUN9+BsIInWMA+k4Uv
-BmBU2qLSoaBUOSEu7yb5
-=QaRD
+iQIcBAABCAAGBQJWcYVcAAoJEN0jrNd/PrOhCj4P/ihDanEUZ0Gyhn7RHF/fcf0t
+JPgy7S7LcHvWwGM1JiT5dgJgHXqiE8WO14uzwQy9pMTfPe28Vh/WpVgBmdNhwDoQ
+AHkK+mFFrRmN5QQmDm5XacFg09axuof/0YGhwt7kkxM3ypI3UA6VE/WePi6ePNp2
+svujwjGmDlklK/KmfuXWSlevOnmTyrdnfEmJIa3TKbm74npsdMkHaFae/NlrV/Y2
+PTMaJIGGoRnIkJtxHwzHKkGkbqX8oFI+zqzbMDhLoiEnrtCGfpS4mqBtwEQqE1/E
+Lm04ObBCZkVQIT/vbKOs10WnwFEcFfrQkeOi7GcFsqUOBpmUZtJ9KWAMljEl3XQX
+5CK9o0GuYT3zicbyBAUObYCT1ehoyULCoraDHY6PRMoca8P3Vaifu/QycsgkJ9XO
+G3GufAd91lN2xQT2uC9CATFSZN/IZGoTfgkgQYeA5cho/9SWrB9QbkWOrxHwQCli
+q1pnvhdV9e5vA6Q3waZCzzUyvE5XmPWbpPDRhLV28TAU0QPnJcs9j88FnRQLJf0l
+fQ0xwDHkVvMnfu90BWI2vOCbcTeqhbT4rxt9Rf2cj5G2lMH6dAL7KwsdjnjxtcN5
+bOct92olr5NADdUjfn13JHYd2yh1XW/zBsXSyOFHjkiCGFsy1LLrYsznsy/AFHef
+H7AKecablkZhDfpxG7kp
+=g6Hc
 -----END PGP SIGNATURE-----
---=-=-=--
+
+--Y5rl02BVI9TCfPar--
