@@ -1,24 +1,105 @@
-From: Michael@mail.microamerica.com.pe,
-	"J.Tynan <f.digeronimo"@federconsumatori.abruzzo.it
-Subject: Review & Reply
-Date: Thu, 17 Dec 2015 07:55:35 +0700
-Message-ID: <20151217005626.8CD1589D5DDB__29358.2842722119$1450341377$gmane$org@mail.microamerica.com.pe>
-Reply-To: michaeljtynan8@gmail.com
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: Re: [PATCH 2/3] pwm: Add PWM driver for OMAP using dual-mode timers
+Date: Thu, 17 Dec 2015 15:00:35 +0100
+Message-ID: <5672C003.3010105@baylibre.com>
+References: <5637458D.60106@baylibre.com> <20151216162747.GL28947@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="skRRp6HvOUA7oj8nRgPhWMh4N6UqKD7dg"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.microamerica.com.pe ([200.37.170.69]:46533 "EHLO
-	mail.microamerica.com.pe" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751256AbbLQIfV convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 17 Dec 2015 03:35:21 -0500
-Content-Description: Mail message body
+Received: from mail-wm0-f50.google.com ([74.125.82.50]:35889 "EHLO
+	mail-wm0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753423AbbLQOAq (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 17 Dec 2015 09:00:46 -0500
+Received: by mail-wm0-f50.google.com with SMTP id p187so22408001wmp.1
+        for <linux-pwm@vger.kernel.org>; Thu, 17 Dec 2015 06:00:45 -0800 (PST)
+In-Reply-To: <20151216162747.GL28947@ulmo>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Recipients <f.digeronimo@federconsumatori.abruzzo.it>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
 
-Greetings,
-My name is Mr.Michael J. Tynan, I am a banker with Bank Of America. It is true that we have not meet each other in person, but I strongly believe in trust and friendship in every business. I have a Lebanese deceased customer's abandoned fund, which I am his personal financial adviser before his accidental death, that being the main reason why I alone working in the bank here, know much about the existence of this fund and the secrets surrounding this money. But before I disclose the full details to you, I will like to know your interest and willingness to assist me. You can call me as soon you receive my message, so that i will send to you full details about the transaction.
-My best regards,
-Mr.Michael J. Tynan
-MOBILE: +1 347 269 3740
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--skRRp6HvOUA7oj8nRgPhWMh4N6UqKD7dg
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+
+Hi Thierry,
+On 12/16/2015 05:27 PM, Thierry Reding wrote:
+> I've applied this with some coding style bikeshedding applied. Also I
+> think there's a timer leak in the probe function:
+Indeed, the coding style had some root for ameliorations ! Thanks !
+I also missed this timer leak, thanks for the fix.
+>
+>> diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmt=
+imer.c
+> [...]
+>> +static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+>> +{
+> [...]
+>> +	dm_timer =3D pdata->request_by_node(timer);
+>> +	if (!dm_timer)
+>> +		return -EPROBE_DEFER;
+>
+> dm_timer holds the requested timer now.
+>
+>> +
+>> +	omap =3D devm_kzalloc(&pdev->dev, sizeof(*omap), GFP_KERNEL);
+>> +	if (!omap)
+>> +		return -ENOMEM;
+>
+> But it's not released when this allocation fails...
+>
+>> +
+>> +	omap->pdata =3D pdata;
+>> +	omap->dm_timer =3D dm_timer;
+>> +	omap->dm_timer_pdev =3D of_find_device_by_node(timer);
+>> +	if (!omap->dm_timer_pdev) {
+>> +		dev_err(&pdev->dev, "Unable to find timer pdev\n");
+>> +		return -EINVAL;
+>> +	}
+>
+> ... nor when this lookup fails. I've taken the liberty of adding two
+> calls to omap->pdata->free(dm_timer) to these error paths.
+Perfect !
+
+> Please take a look at what's in the pwm/for-next branch to see if it
+> still works correctly.
+I had a look against my original patch and it should be ok, I will still =
+hook it up back
+on the real HW in case we forgot something.
+
+> Thanks,
+> Thierry
+>
+
+Thanks !
+Neil
+
+
+
+--skRRp6HvOUA7oj8nRgPhWMh4N6UqKD7dg
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJWcsAHAAoJEHfc29rIyEnRCngQAK8Oh43D3mYiq94hEhOZsKVY
+ZWvgrQGt2Lj+/OHy4Z08ljOQokNyFnjm5BPws3CBIql7D/1rj+VXDoQN37u5kNzg
+2yf5BTD77Dxr5zJhouIsfn7RKEELA2uUwCXS7qWLa0oRRJH80/CKMsNq0tRTER/e
+DkVNYaDZDFwUoWdqwYhtF5mhtPeogHQcs5Dy6e1VlnrETSTJZyP4u4/oGxiMY0Qn
+c+3X2h39IOb6FLlEDQzTdX/W6HpMmf0ADh9VEBHFn6yd5AXi9ex/47Udx0As5YWf
+SfZ/nxCGzQfijPq99rz175MguwypblTxNt6kJ9VDZOj0ludl3dVY4Z2hcNhtWHpe
+tLbRlZMdHpOrP+RLxxXjxBXSglknLCDzkaUaYPLwFHPPDymLwlxAOUwtcP3Y6Vsw
+WwybshrOnHG8QKMtCKbnK/VH41+7LP4qf4mVNaC096dbFQ4JPCKbTPOSd13o9Mph
+0DeVLb2CJGthXiFKkY9OotT9TWRl5gjvaTZxqMJKS0PSpliwruhnnSFBeGh5Xqhl
+yZSRCsYGKOdjzCYzlHF/jw75qzuTMJJMUMkPwvhyOb5RQaAZZOyqEmyx3qrKMszS
+Jrlo4ITBn7kw6DPxT8Ny2YHhtxqrmG2s3EHc3647SHLmvxj7eaDmFwZCRAoqJcHn
+S5l794WuWuDSiy7Z+P1y
+=RShq
+-----END PGP SIGNATURE-----
+
+--skRRp6HvOUA7oj8nRgPhWMh4N6UqKD7dg--
