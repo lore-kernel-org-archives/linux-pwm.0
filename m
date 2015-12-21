@@ -1,24 +1,34 @@
-From: Michael@mail.microamerica.com.pe,
-	"J.Tynan <f.digeronimo"@federconsumatori.abruzzo.it
-Subject: Review & Reply
-Date: Fri, 18 Dec 2015 17:18:54 +0700
-Message-ID: <20151218101948.48F5D8E86297__29795.5091381029$1450448581$gmane$org@mail.microamerica.com.pe>
-Reply-To: michaeljtynan8@gmail.com
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [patch] pwm: omap-dmtimer: Potential NULL dereference on error
+Date: Mon, 21 Dec 2015 16:13:04 +0300
+Message-ID: <20151221131304.GA27286@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.microamerica.com.pe ([200.37.170.69]:41181 "EHLO
-	mail.microamerica.com.pe" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754004AbbLROVk convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 18 Dec 2015 09:21:40 -0500
-Content-Description: Mail message body
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <kernel-janitors-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: kernel-janitors-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Neil Armstrong <narmstrong@baylibre.com>
+Cc: linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Recipients <f.digeronimo@federconsumatori.abruzzo.it>
 
-Greetings,
-My name is Mr.Michael J. Tynan, I am a banker with Bank Of America. It is true that we have not meet each other in person, but I strongly believe in trust and friendship in every business. I have a Lebanese deceased customer's abandoned fund, which I am his personal financial adviser before his accidental death, that being the main reason why I alone working in the bank here, know much about the existence of this fund and the secrets surrounding this money. But before I disclose the full details to you, I will like to know your interest and willingness to assist me. You can call me as soon you receive my message, so that i will send to you full details about the transaction.
-My best regards,
-Mr.Michael J. Tynan
-MOBILE: +1 347 269 3740
+"omap" is NULL so we can't dereference it.
+
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+It's weird that request_by_node() and free() are allocate/free pairs.
+Also this was Thierry's last minute tweaks mentioned in the changelog,
+Neil Armstrong is innocent.  :P
+
+diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
+index c453b33..826634e 100644
+--- a/drivers/pwm/pwm-omap-dmtimer.c
++++ b/drivers/pwm/pwm-omap-dmtimer.c
+@@ -243,7 +243,7 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+ 
+ 	omap = devm_kzalloc(&pdev->dev, sizeof(*omap), GFP_KERNEL);
+ 	if (!omap) {
+-		omap->pdata->free(dm_timer);
++		pdata->free(dm_timer);
+ 		return -ENOMEM;
+ 	}
+ 
