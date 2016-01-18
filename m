@@ -1,18 +1,18 @@
 From: Anand Moon <linux.amoon@gmail.com>
 Subject: Re: [PATCHv2] pwm: avoid holding mutex in interrupt context
-Date: Mon, 18 Jan 2016 08:39:07 +0530
-Message-ID: <CANAwSgShwkvs+h2yTx8otV0_0kKeeRTXe=u8+tL7RQmtW0fncQ@mail.gmail.com>
+Date: Mon, 18 Jan 2016 09:53:07 +0530
+Message-ID: <CANAwSgT3rXRBVFUQmogkPQwRY93CO0FRFwx_NGjWTHrD5LGbVg@mail.gmail.com>
 References: <1453064517-12315-1-git-send-email-linux.amoon@gmail.com> <569C2AE8.6070100@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <569C2AE8.6070100@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Krzysztof Kozlowski <k.kozlowski@samsung.com>
 Cc: Guenter Roeck <linux@roeck-us.net>, Thierry Reding <thierry.reding@gmail.com>, Javier Martinez Canillas <javier@osg.samsung.com>, linux-pwm@vger.kernel.org, Linux Kernel <linux-kernel@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-hi Krzysztof
+Hi Krzysztof,
 
 On 18 January 2016 at 05:29, Krzysztof Kozlowski
 <k.kozlowski@samsung.com> wrote:
@@ -89,9 +89,12 @@ On 18 January 2016 at 05:29, Krzysztof Kozlowski
 > Krzysztof
 >
 
-Thanks for you input. I will look into this approach suggested by you.
+Already within function pwm_samsung_set_invert is protected by
+spin_lock_irqsave(&samsung_pwm_lock, flags);
 
-Best regards,
+So no need to introduce another lock to control pwm_samsung_set_polarity.
+
+Best Regards.
 -Anand Moon
 
 >>
