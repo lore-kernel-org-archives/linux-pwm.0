@@ -1,52 +1,40 @@
-From: Richard Weinberger <richard@nod.at>
-Subject: Re: [PATCH 14/22] pwm: Fix dependencies for !HAS_IOMEM archs
-Date: Mon, 25 Jan 2016 23:40:44 +0100
-Message-ID: <56A6A46C.7090006@nod.at>
-References: <1453760661-1444-1-git-send-email-richard@nod.at>
- <1453760661-1444-15-git-send-email-richard@nod.at>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: Re: [PATCH repost] arm: plat-omap: Add PWM dmtimer platform data
+ quirks
+Date: Tue, 26 Jan 2016 09:44:56 +0100
+Message-ID: <56A73208.50808@baylibre.com>
+References: <20151130183707.GK2517@atomide.com>
+ <1453479351-21825-1-git-send-email-narmstrong@baylibre.com>
+ <20160125180829.GV19432@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from a.ns.miles-group.at ([95.130.255.143]:11949 "EHLO radon.swed.at"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932495AbcAYWkr (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 25 Jan 2016 17:40:47 -0500
-In-Reply-To: <1453760661-1444-15-git-send-email-richard@nod.at>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160125180829.GV19432@atomide.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: user-mode-linux-devel@lists.sourceforge.net, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 
-Am 25.01.2016 um 23:24 schrieb Richard Weinberger:
-> Not every arch has io memory.
-> So, unbreak the build by fixing the dependencies.
+On 01/25/2016 07:08 PM, Tony Lindgren wrote:
+> * Neil Armstrong <narmstrong@baylibre.com> [160122 08:16]:
+>>
+>> Tony, Thierry,
+>>
+>> The previous patches are now upstream, here is a repost of the patch re-tested
+>> against mainline.
+>>
+>> Ref: http://lkml.kernel.org/r/56374592.4060201@baylibre.com 
+>> Patchset: http://lkml.kernel.org/r/5620ED2C.1090107@baylibre.com
 > 
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> ---
->  drivers/pwm/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
+> OK great. I'll add this into omap-for-v4.5/fixes so we get the
+> PWM driver working.
 > 
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index 8cf0dae..e83aa94 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -150,6 +150,7 @@ config PWM_FSL_FTM
->  	tristate "Freescale FlexTimer Module (FTM) PWM support"
->  	depends on HAS_IOMEM
->  	depends on OF
-> +	depends on HAS_IOMEM
+> Regards,
+> 
+> Tony
+> 
 
-Please drop this patch.
+Thanks for all Tony !
 
-It was created before:
-commit 36d5be4bc9059f8123e818c8b63a4049cf1d0e0f
-Author: Vegard Nossum <vegard.nossum@oracle.com>
-Date:   Sat Jan 2 14:02:07 2016 +0100
-
-    pwm: add HAS_IOMEM dependency to PWM_FSL_FTM
-
-git am did not notice^^
-
-Thanks,
-//richard
+Neil
