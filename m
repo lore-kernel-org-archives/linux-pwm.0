@@ -1,74 +1,50 @@
-From: "Laison Computech Inc" <danny@lamicro.com>
-Subject: NEW ARRIVALS, CISCO,CPU's,Memory, LAPTOP AND AVAYA
-Date: Wed, 27 Jan 2016 12:42:07 +0700
-Message-ID: <201601270544.AQX06505@razorgate1.infokom.net>
-Reply-To: <LaisonComputer@computer4u.com>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="Windows-1251"
-Content-Transfer-Encoding: 7bit
+From: "David Rivshin (Allworx)" <drivshin.allworx@gmail.com>
+Subject: [PATCH 0/4] pwm: omap-dmtimer: fix period/duty_cycle calculation
+Date: Fri, 29 Jan 2016 23:26:50 -0500
+Message-ID: <1454128014-22866-1-git-send-email-drivshin.allworx@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from razorgate1.infokom.net ([202.147.192.101]:12525 "EHLO
-	razorgate1.infokom.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965587AbcA1DXO (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 27 Jan 2016 22:23:14 -0500
+Received: from mail-qg0-f65.google.com ([209.85.192.65]:35426 "EHLO
+	mail-qg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753808AbcA3EaV (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 29 Jan 2016 23:30:21 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Neil Armstrong <narmstrong@baylibre.com>
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
 
-Dear Sir/Madam,
+From: David Rivshin <drivshin@allworx.com>
 
-Clean tested working pulls CPUs and QTYs in stock.
+When using a short PWM period (approaching the min of 2/clk_rate),
+pwm-omap-dmtimer does not produce accurate results. In the worst case a
+requested period of 2/clk_rate would result in a real period of 4/clk_rate
+instead. This is a series includes a fix for that problem, as well as
+other related improvements, and is based on the current linux-pwm/for-next
+tip.
 
-115  X   X5650
-65  X   E5410
-75  X   X5660
-145  X   E5530
-100  X   E5645
-40  X   X5680
-75  X   X5690
+I have tested on a Sitara AM335x platform, using a scope to verify the
+output with a variety of periods and duty cycles. This includes a PWM
+rate up clk_rate/2 with 50% duty cycle (e.g. generating fclk/2) with
+both 32768Hz and 24MHz fclks. I do not have an OMAP4 board to test with,
+although appropriate sections in the the reference manuals appear
+substantially the same, so I believe the changes are equally correct
+there.
 
-Brand new sealed  IP phones and QTYs in stock.
+Note that the OMAP4 TRMs do effectively state that the maximum PWM
+rate is clk_rate/4, so at very fast PWM rates the behavior may not be
+as reliable as I observed with Sitara. Although I suspect that it's
+the same module and will also work, at least under some circumstances.
+If anyone with OMAP4 hardware and a scope is so inclined, I would be
+curious to know the results.
 
-55 x CP-7937G
-77 x CP-7942G
-54 x CP-7945G
-75 x CP-7962G
-......
-45 x Avaya 9630
-65 x Avaya 9641
-55 x Avaya 9640
+David Rivshin (4):
+  pwm: omap-dmtimer: fix inaccurate period/duty_cycle calculation
+  pwm: omap-dmtimer: add sanity checking for load and match values
+  pwm: omap-dmtimer: round load and match values rather than truncate
+  pwm: omap-dmtimer: add dev_dbg() message for effective period and duty
+    cycle
 
-All NIB.
+ drivers/pwm/pwm-omap-dmtimer.c | 71 ++++++++++++++++++++++++++++++++----------
+ 1 file changed, 55 insertions(+), 16 deletions(-)
 
-Here is our current stock list.
-
- SSD drives and 750 gig 2.5" sata drives
-
-We also have
-250 x i5 dell
-133 x HP
-360 x Lenevo
-all grade A
-
-Here is the qty in stock for laptops
- 
-150 x E6500 Dell Latitude E6500 Core 2 Duo 2.80GHz T9600 4GB 160GB DVD+/-RW Win 7
- 60 x E6510 Dell Ltitude E6510. 15.6" Intel Core i5- M520 @ 2.40GHz. 4GB. 320GB DVD+/-RW Win 7
-30 X 8530P HP EliteBook 8530p 15.4" Laptop 2.53GHz Core 2 Duo T9400, 4GB RAM, 160GB HDD, Win
-100 x  8740W  HP EliteBook 8740w 17" 2.4Ghz Core i5 6GB 250GB Win 7 Pr
-45 x 8760W HP EliteBook 8760W 17.3" 2nd Gen Intel Core i7 2.70GHz 8GB 320GB Windows 7 Pro
-50 x DELL 6520Dell latitude e6520 15.6" i5-2520M 2.5Ghz, 8GB Ram, 500GB HD Win 7 @ $115
-120 x DELL 6420 Laptop Dell Latitude E6420 14" Intel Core i5 2.4Ghz 4GB RAM 250GB HDD DVD Win 7
-150 x T410 Lenovo ThinkPad Laptop T410s 14.1" 2.40GHz Core i5 4GB RAM 160GB Win 7
-180 x 8440P HP EliteBook 8440p 14" M520 Core i5 2.4GHz 4GB 250GB Win 7
-
-
-Let me know if you're interested. We are very open to offers and willing to work with you to make sure that we have a deal.
-
-Thank You
-Barbara Johnson
-Laison Computech Inc
-210 N Scoring Ave,
-Rialto California, 92376
-Tel: +1-657-232-7047
-Fax: +1-347-214-047
+-- 
+2.5.0
