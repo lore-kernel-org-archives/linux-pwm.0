@@ -1,115 +1,115 @@
-From: "David Rivshin (Allworx)" <drivshin.allworx@gmail.com>
-Subject: Re: [PATCH 4/4] pwm: omap-dmtimer: add dev_dbg() message for
- effective period and duty cycle
-Date: Tue, 2 Feb 2016 18:44:43 -0500
-Message-ID: <20160202184443.1e1b0bf5.drivshin.allworx@gmail.com>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: Re: [PATCH 1/4] pwm: omap-dmtimer: fix inaccurate period/duty_cycle
+ calculation
+Date: Wed, 3 Feb 2016 11:23:43 +0100
+Message-ID: <56B1D52F.70907@baylibre.com>
 References: <1454128014-22866-1-git-send-email-drivshin.allworx@gmail.com>
-	<1454128014-22866-5-git-send-email-drivshin.allworx@gmail.com>
-	<CAA3gFWvSsctXtds6_SEtYY1yUdWJDR1XjznGS6qjdrGW5Dbw=A@mail.gmail.com>
-	<20160201132228.2634b72e.drivshin.allworx@gmail.com>
-	<20160201185952.GN19432@atomide.com>
-	<20160202162330.GA4918@ulmo>
+ <1454128014-22866-2-git-send-email-drivshin.allworx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qk0-f195.google.com ([209.85.220.195]:32844 "EHLO
-	mail-qk0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752099AbcBBXor (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 2 Feb 2016 18:44:47 -0500
-In-Reply-To: <20160202162330.GA4918@ulmo>
+Received: from mail-wm0-f45.google.com ([74.125.82.45]:33122 "EHLO
+	mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751482AbcBCKX4 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 3 Feb 2016 05:23:56 -0500
+Received: by mail-wm0-f45.google.com with SMTP id l66so156358945wml.0
+        for <linux-pwm@vger.kernel.org>; Wed, 03 Feb 2016 02:23:55 -0800 (PST)
+In-Reply-To: <1454128014-22866-2-git-send-email-drivshin.allworx@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Tony Lindgren <tony@atomide.com>, Neil Armstrong <narmstrong@baylibre.com>, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
+To: "David Rivshin (Allworx)" <drivshin.allworx@gmail.com>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
 
-On Tue, 2 Feb 2016 17:23:30 +0100
-Thierry Reding <thierry.reding@gmail.com> wrote:
-
-> On Mon, Feb 01, 2016 at 10:59:52AM -0800, Tony Lindgren wrote:
-> > Hi,
-> > 
-> > * David Rivshin (Allworx) <drivshin.allworx@gmail.com> [160201
-> > 10:23]:  
-> > > On Sat, 30 Jan 2016 15:51:06 +0100
-> > > Neil Armstrong <narmstrong@baylibre.com> wrote:
-> > >   
-> > > > 2016-01-30 5:26 GMT+01:00 David Rivshin (Allworx)
-> > > > <drivshin.allworx@gmail.com>:  
-> > > > > From: David Rivshin <drivshin@allworx.com>
-> > > > >
-> > > > > After going through the math and constraints checking to
-> > > > > compute load and match values, it is helpful to know what the
-> > > > > resultant period and duty cycle are.
-> > > > >
-> > > > > Signed-off-by: David Rivshin <drivshin@allworx.com>
-> > > > > ---
-> > > > >
-> > > > > I found this helpful while testing the other changes, so I
-> > > > > included it in case it may be of use to someone in the
-> > > > > future. I would have no issues with dropping this if it's not
-> > > > > considered worthwhile.    
-> > > > 
-> > > > It's useful, but converting it as a sysfs attribute would be
-> > > > great !  
-> > > 
-> > > Hrm, yes that is an interesting thought. I imagine that many PWM 
-> > > devices have similar constraints, so perhaps that would be best 
-> > > handled generically in the pwm core? Maybe as new optional
-> > > get_*() ops, a modification to the config() op to add output
-> > > params, or just updating new fields in the struct pwm directly?  
-> > 
-> > Yeah for /sys entry it should be Linux generic. The other option
-> > is to use debugfs for driver specific things.  
+On 01/30/2016 05:26 AM, David Rivshin (Allworx) wrote:
+> From: David Rivshin <drivshin@allworx.com>
 > 
-> Let's go with debugfs for this one. This is used for diagnostic
+> Fix the calculation of load_value and match_value. Currently they
+> are slightly too low, which produces a noticeably wrong PWM rate with
+> sufficiently short periods (i.e. when 1/period approaches clk_rate/2).
+> 
+> Example:
+>  clk_rate=32768Hz, period=122070ns, duty_cycle=61035ns (8192Hz/50% PWM)
+>  Correct values: load = 0xfffffffc, match = 0xfffffffd
+>  Current values: load = 0xfffffffa, match = 0xfffffffc
+>  effective PWM: period=183105ns, duty_cycle=91553ns (5461Hz/50% PWM)
+> 
+> Fixes: 6604c6556db9 ("pwm: Add PWM driver for OMAP using dual-mode timers")
+> Signed-off-by: David Rivshin <drivshin@allworx.com>
 
-I had looked at using the dbg_show() op to add some additional data. 
-One thing that discouraged me from going down that path was that 
-it replaced the call to pwm_dbg_show() for that chip. I wouldn't 
-want to loose the existing output, as it is useful, but also didn't
-like the thought of duplicating the logic/formatting. I think some 
-way to have both the standard output and add extra output somewhere
-(e.g. same line, line after each pwm_device, block after all 
-pwm_devices on the chip) would make that path more attractive.
+OK for me.
 
-Or were you thinking of a separate (per-chip) debugfs file for this 
-type of information? 
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
 
-> purposes and not typically needed when configuring a PWM. While other
-> drivers may compute similar hardware-specific values, there's nothing
-> generic to them. The period and duty cycle are the generic input
-> values and those are already exposed via sysfs.
+Thanks !
 
-Just to clarify, what I was thinking of as generic was the concept
-that "period/duty I asked for" and "period/duty I got" may be
-different, sometimes to a substantial degree. I could imagine 
-userspace wanting to know the latter, which is what I think Neil 
-was suggesting.
-
-For the sake of an example, the input clock for a dmtimer is sometimes
-(often?) 32768Hz, which means that the real period and duty_cycle output
-are limited to being a multiple of ~61035.2ns (16384Hz). So an attempt 
-to set a period of 100000ns (10KHz) would result in either 61035.2ns, or 
-122070.4ns (8192Hz), depending on the implementation of the driver (and 
-patch 2 changes behavior from the former to the latter). You can also 
-have cases where you desired a 33% duty cycle, but got a 25% duty cycle 
-instead.
-
-In a quick look, I see substantially similar calculations (i.e. 
-clk_rate*period_ns/10^9) in most of the other pwm drivers, which makes 
-sense for any that are programmed in terms of some input clock. This 
-type of calculation almost guarantees that requested and actual period/
-duty_cycle are going to be different to some degree. Some drivers look 
-like they have even more complicated behavior, apparently due to other 
-hardware constraints. For instance, fsl-ftm (among others) looks to be 
-using a power-of-2 prescaler to fit the period_cycles into a 16bit field.
-
-Of course if the input clock rate for these types of devices is 
-sufficiently high (enough that the desired period is many input clock 
-cycles), then the difference between "desired" and "actual" is probably 
-small enough that noone cares. I'm not sure how common it is that
-  a) there is a substantial difference, and
-  b) userspace cares about it, and
-  c) userspace didn't carefully select an achievable value already
-If noone has brought it up before, then I'd guess the answer is "not very".
+> ---
+>  drivers/pwm/pwm-omap-dmtimer.c | 27 ++++++++++++++++++++-------
+>  1 file changed, 20 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
+> index 826634e..0083e75 100644
+> --- a/drivers/pwm/pwm-omap-dmtimer.c
+> +++ b/drivers/pwm/pwm-omap-dmtimer.c
+> @@ -31,6 +31,7 @@
+>  #include <linux/time.h>
+>  
+>  #define DM_TIMER_LOAD_MIN 0xfffffffe
+> +#define DM_TIMER_MAX      0xffffffff
+>  
+>  struct pwm_omap_dmtimer_chip {
+>  	struct pwm_chip chip;
+> @@ -46,13 +47,13 @@ to_pwm_omap_dmtimer_chip(struct pwm_chip *chip)
+>  	return container_of(chip, struct pwm_omap_dmtimer_chip, chip);
+>  }
+>  
+> -static int pwm_omap_dmtimer_calc_value(unsigned long clk_rate, int ns)
+> +static u32 pwm_omap_dmtimer_get_clock_cycles(unsigned long clk_rate, int ns)
+>  {
+>  	u64 c = (u64)clk_rate * ns;
+>  
+>  	do_div(c, NSEC_PER_SEC);
+>  
+> -	return DM_TIMER_LOAD_MIN - c;
+> +	return c;
+>  }
+>  
+>  static void pwm_omap_dmtimer_start(struct pwm_omap_dmtimer_chip *omap)
+> @@ -99,7 +100,8 @@ static int pwm_omap_dmtimer_config(struct pwm_chip *chip,
+>  				   int duty_ns, int period_ns)
+>  {
+>  	struct pwm_omap_dmtimer_chip *omap = to_pwm_omap_dmtimer_chip(chip);
+> -	int load_value, match_value;
+> +	u32 period_cycles, duty_cycles;
+> +	u32 load_value, match_value;
+>  	struct clk *fclk;
+>  	unsigned long clk_rate;
+>  	bool timer_active;
+> @@ -133,11 +135,22 @@ static int pwm_omap_dmtimer_config(struct pwm_chip *chip,
+>  	/*
+>  	 * Calculate the appropriate load and match values based on the
+>  	 * specified period and duty cycle. The load value determines the
+> -	 * cycle time and the match value determines the duty cycle.
+> +	 * period time and the match value determines the duty time.
+> +	 *
+> +	 * The period lasts for (DM_TIMER_MAX-load_value+1) clock cycles.
+> +	 * Similarly, the active time lasts (match_value-load_value+1) cycles.
+> +	 * The non-active time is the remainder: (DM_TIMER_MAX-match_value)
+> +	 * clock cycles.
+> +	 *
+> +	 * References:
+> +	 *   OMAP4430/60/70 TRM sections 22.2.4.10 and 22.2.4.11
+> +	 *   AM335x Sitara TRM sections 20.1.3.5 and 20.1.3.6
+>  	 */
+> -	load_value = pwm_omap_dmtimer_calc_value(clk_rate, period_ns);
+> -	match_value = pwm_omap_dmtimer_calc_value(clk_rate,
+> -						  period_ns - duty_ns);
+> +	period_cycles = pwm_omap_dmtimer_get_clock_cycles(clk_rate, period_ns);
+> +	duty_cycles = pwm_omap_dmtimer_get_clock_cycles(clk_rate, duty_ns);
+> +
+> +	load_value = (DM_TIMER_MAX - period_cycles) + 1;
+> +	match_value = load_value + duty_cycles - 1;
+>  
+>  	/*
+>  	 * We MUST stop the associated dual-mode timer before attempting to
+> 
