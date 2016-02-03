@@ -1,165 +1,290 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 4/4] pwm: omap-dmtimer: add dev_dbg() message for
- effective period and duty cycle
-Date: Wed, 3 Feb 2016 15:14:54 +0100
-Message-ID: <20160203141454.GC9650@ulmo>
-References: <1454128014-22866-1-git-send-email-drivshin.allworx@gmail.com>
- <1454128014-22866-5-git-send-email-drivshin.allworx@gmail.com>
- <CAA3gFWvSsctXtds6_SEtYY1yUdWJDR1XjznGS6qjdrGW5Dbw=A@mail.gmail.com>
- <20160201132228.2634b72e.drivshin.allworx@gmail.com>
- <20160201185952.GN19432@atomide.com>
- <20160202162330.GA4918@ulmo>
- <20160202184443.1e1b0bf5.drivshin.allworx@gmail.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 00/12] pwm: add support for atomic update
+Date: Wed, 3 Feb 2016 15:53:37 +0100
+Message-ID: <20160203145337.GD9650@ulmo>
+References: <1442828009-6241-1-git-send-email-boris.brezillon@free-electrons.com>
+ <2341981.a79ioYM9Es@diego>
+ <20151110173416.GB21727@ulmo>
+ <CAD=FV=WL3jYEgVe-m6QcAyQwfJgdX4J5OtKisKwyoKOrTSpEQA@mail.gmail.com>
+ <20160125170855.GA10182@ulmo>
+ <CAD=FV=Xvxeqo3imUmjukC5iYk3EZkrJ04G7C1B-w4xyr-r6-2Q@mail.gmail.com>
+Reply-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="vOmOzSkFvhd7u8Ms"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f51.google.com ([74.125.82.51]:37236 "EHLO
-	mail-wm0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754136AbcBCOO5 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 3 Feb 2016 09:14:57 -0500
+	protocol="application/pgp-signature"; boundary="uxuisgdDHaNETlh8"
+Return-path: <linux-sunxi+bncBDTKFPPJUEHRB45IZC2QKGQE4IDK33Y-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20160202184443.1e1b0bf5.drivshin.allworx@gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <CAD=FV=Xvxeqo3imUmjukC5iYk3EZkrJ04G7C1B-w4xyr-r6-2Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Heiko =?utf-8?Q?St=C3=BCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, Daniel Mack <daniel-cYrQPVfZoowdnm+yROfE0A@public.gmane.org>, Haojian Zhuang <haojian.zhuang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robert Jarzmik <robert.jarzmik-GANU6spQydw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel@lists>
 List-Id: linux-pwm@vger.kernel.org
-To: "David Rivshin (Allworx)" <drivshin.allworx@gmail.com>
-Cc: Tony Lindgren <tony@atomide.com>, Neil Armstrong <narmstrong@baylibre.com>, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
 
-
---vOmOzSkFvhd7u8Ms
-Content-Type: text/plain; charset=us-ascii
+--uxuisgdDHaNETlh8
+Content-Type: text/plain; charset=UTF-8
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, Feb 02, 2016 at 06:44:43PM -0500, David Rivshin (Allworx) wrote:
-> On Tue, 2 Feb 2016 17:23:30 +0100
-> Thierry Reding <thierry.reding@gmail.com> wrote:
->=20
-> > On Mon, Feb 01, 2016 at 10:59:52AM -0800, Tony Lindgren wrote:
-> > > Hi,
-> > >=20
-> > > * David Rivshin (Allworx) <drivshin.allworx@gmail.com> [160201
-> > > 10:23]: =20
-> > > > On Sat, 30 Jan 2016 15:51:06 +0100
-> > > > Neil Armstrong <narmstrong@baylibre.com> wrote:
-> > > >  =20
-> > > > > 2016-01-30 5:26 GMT+01:00 David Rivshin (Allworx)
-> > > > > <drivshin.allworx@gmail.com>: =20
-> > > > > > From: David Rivshin <drivshin@allworx.com>
-> > > > > >
-> > > > > > After going through the math and constraints checking to
-> > > > > > compute load and match values, it is helpful to know what the
-> > > > > > resultant period and duty cycle are.
-> > > > > >
-> > > > > > Signed-off-by: David Rivshin <drivshin@allworx.com>
-> > > > > > ---
-> > > > > >
-> > > > > > I found this helpful while testing the other changes, so I
-> > > > > > included it in case it may be of use to someone in the
-> > > > > > future. I would have no issues with dropping this if it's not
-> > > > > > considered worthwhile.   =20
-> > > > >=20
-> > > > > It's useful, but converting it as a sysfs attribute would be
-> > > > > great ! =20
-> > > >=20
-> > > > Hrm, yes that is an interesting thought. I imagine that many PWM=20
-> > > > devices have similar constraints, so perhaps that would be best=20
-> > > > handled generically in the pwm core? Maybe as new optional
-> > > > get_*() ops, a modification to the config() op to add output
-> > > > params, or just updating new fields in the struct pwm directly? =20
-> > >=20
-> > > Yeah for /sys entry it should be Linux generic. The other option
-> > > is to use debugfs for driver specific things. =20
-> >=20
-> > Let's go with debugfs for this one. This is used for diagnostic
->=20
-> I had looked at using the dbg_show() op to add some additional data.=20
-> One thing that discouraged me from going down that path was that=20
-> it replaced the call to pwm_dbg_show() for that chip. I wouldn't=20
-> want to loose the existing output, as it is useful, but also didn't
-> like the thought of duplicating the logic/formatting. I think some=20
-> way to have both the standard output and add extra output somewhere
-> (e.g. same line, line after each pwm_device, block after all=20
-> pwm_devices on the chip) would make that path more attractive.
->=20
-> Or were you thinking of a separate (per-chip) debugfs file for this=20
-> type of information?=20
+On Mon, Jan 25, 2016 at 10:51:20AM -0800, Doug Anderson wrote:
+> Hi,
+> 
+> On Mon, Jan 25, 2016 at 9:08 AM, Thierry Reding
+> <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> > I really don't understand this design decision. I presume that the PWM
+> > controlling this system-critical logic is driven by the SoC? So if the
+> > regulator is system-critical, doesn't that make it a chicken and egg
+> > problem? How can the SoC turn the PWM on if it doesn't have power? But
+> > perhaps I'm completely misunderstanding what you're saying. Perhaps if
+> > somebody could summarize how exactly this works, it would help better
+> > understand the requirements or what's the correct thing to do.
+> 
+> Sure, here's how the dang thing works, as I understand it.
+> 
+> First, an overview of PWM regulator in general (maybe you know this,
+> but to get us on the same page).  There's an external regulator on the
+> system.  Looking on at least one board I see a TLV62565 specifically.
+> 
+> From the docs of TLV62565, I see it describe the situation as the chip
+> being able to provide an adjustable output voltage configurable via an
+> external resistor divider.  In simplified terms words you can adjust
+> the output voltage of the regulator by tweaking the inputs to one of
+> its pins.  I'm just a software guy so I can't explain all the details
+> of it, but the net-net of the situation is is that you can hook this
+> configuration pin up to the output of a PWM (with a bunch of well
+> balanced resistors and capacitors) and then you can set the voltage
+> based on the output of the PWM.
+> 
+> 
+> OK, so what happens at bootup?  At bootup most of the pins of the
+> rk3288 (including the PWM) are configured as inputs with a pull.  The
+> particular pin hooked up to this PWM has a pulldown.  Remember that
+> we've got this nicely balanced set of resistors and capacitors hooked
+> up to the output of our PWM pin?  So what happens when we have this
+> pin configured as an input?  As I understand it / remember it:
+> 
+> * input w/ no pull: equivalent to 50% duty cycle on the PWM
+> * input w/ pull down: equivalent to slightly higher voltage than 50%
+> duty cycle on the PWM
+> * input w/ pull up: equivalent to slightly lower voltage than 50% duty
+> cycle on the PWM
+> 
+> On our particular board that means that the rail comes up with roughly
+> 1.1V.  If you drive the PWM at 100% (or set the pin to output high)
+> you get .86V and if you drive the PWM at 0% (or set the pin to output
+> low) you get 1.36V.
+> 
+> Now, 1.1V is plenty of voltage to boot the system.  In fact most of
+> the logic within the SoC can run as low as 0.95V I think.  ...but 0.86
+> V is not enough to run the logic parts of the system (even at their
+> default bootup frequencies) 1.1V is _definitely_ not enough to run the
+> SDRAM memory controller at full speed.
+> 
+> 
+> So the bootloader wants to run the system fast so it can boot fast.
+> It increases the CPU rails (as is typical for a bootloader) and moves
+> the ARM CPU to 1.8GHz (from the relatively slow boot frequency) and
+> also raises the logic rail to 1.2V (or I think 1.15 V on systems w/
+> different memory configs) and inits the SDRAM controller to run at
+> full speed.  Then it boots Linux.
+> 
+> Note: apparently in U-Boot they actually boot system slower (this was
+> at least true 1.5 years ago with some reference U-Boot Rockchip
+> provided).  If I understand correctly they _didn't_ init the SDRAM
+> controller as full speed in the bootloader and just left the logic
+> rail at its bootup default.  If everyone had done that then our job
+> would be "easier" because we wouldn't need to read in the voltage
+> provided by the bootloader (by reading the PWM and cros-referencing
+> with our table), though even in that case we'd have to be very careful
+> not to glitch the line (since .86 V is too low).  Of course all of
+> those systems are stuck running at a very slow memory speed until
+> Linux gets DDR Frequency support for Rockchip whereas systems with our
+> bootloader not only boot faster but also get to use the full memory
+> speed even without any Linux DDRFreq drivers.
+> 
+> 
+> In any case: I think I've demonstrated how a critical system rail can
+> be using a PWM regulator and how glitching that PWM regulator at boot
+> time can be catastrophic.  Possibly it's not critical to be able to
+> "read" the voltage that that bootloader left things configured at
+> (it's mostly nice for debugging purposes), but it's definitely
+> important to make sure we don't set it to some default and important
+> to never glitch it.  Said another way, presumably a DDR Freq driver
+> would be able to switch the memory controller frequency sanely by
+> reading the memory controller frequency and using that to figure out
+> whether it needed to up the logic rail before or after the DDR Freq
+> change.
 
-Yes, generally I'd prefer a separate, chip-specific debugfs file for
-extra information. To be honest I'm not entirely sure of the usefulness
-of the pwm_dbg_show() or letting drivers override it. But that's
-slightly off-topic. However...
+Thanks for going into so much detail, this helps a lot in understanding
+the actual problem we need to solve.
 
-> > purposes and not typically needed when configuring a PWM. While other
-> > drivers may compute similar hardware-specific values, there's nothing
-> > generic to them. The period and duty cycle are the generic input
-> > values and those are already exposed via sysfs.
->=20
-> Just to clarify, what I was thinking of as generic was the concept
-> that "period/duty I asked for" and "period/duty I got" may be
-> different, sometimes to a substantial degree. I could imagine=20
-> userspace wanting to know the latter, which is what I think Neil=20
-> was suggesting.
->=20
-> For the sake of an example, the input clock for a dmtimer is sometimes
-> (often?) 32768Hz, which means that the real period and duty_cycle output
-> are limited to being a multiple of ~61035.2ns (16384Hz). So an attempt=20
-> to set a period of 100000ns (10KHz) would result in either 61035.2ns, or=
-=20
-> 122070.4ns (8192Hz), depending on the implementation of the driver (and=
-=20
-> patch 2 changes behavior from the former to the latter). You can also=20
-> have cases where you desired a 33% duty cycle, but got a 25% duty cycle=
-=20
-> instead.
->=20
-> In a quick look, I see substantially similar calculations (i.e.=20
-> clk_rate*period_ns/10^9) in most of the other pwm drivers, which makes=20
-> sense for any that are programmed in terms of some input clock. This=20
-> type of calculation almost guarantees that requested and actual period/
-> duty_cycle are going to be different to some degree. Some drivers look=20
-> like they have even more complicated behavior, apparently due to other=20
-> hardware constraints. For instance, fsl-ftm (among others) looks to be=20
-> using a power-of-2 prescaler to fit the period_cycles into a 16bit field.
->=20
-> Of course if the input clock rate for these types of devices is=20
-> sufficiently high (enough that the desired period is many input clock=20
-> cycles), then the difference between "desired" and "actual" is probably=
-=20
-> small enough that noone cares. I'm not sure how common it is that
->   a) there is a substantial difference, and
->   b) userspace cares about it, and
->   c) userspace didn't carefully select an achievable value already
-> If noone has brought it up before, then I'd guess the answer is "not very=
-".
+> > The problem that we've encountered is that since the PWM parameters are
+> > specified in DT (or board files), there is the possibility of the PWM
+> > hardware state and the board parameters disagreeing. To resolve such
+> > situations there must be a point in time where both hardware state and
+> > software state must be synchronized. Now the most straightforward way to
+> > do that would be to simply apply the software state and be done with it.
+> > However the software state initially lacks the duty cycle because it is
+> > a parameter that usually depends on the use-case (for backlight for
+> > instance it controls the brightness, for regulators it controls the
+> > output voltage, ...).
+> 
+> Excuse me for not knowing all details that have been talked about before, but...
+> 
+> A) The software state here is the period and flags (AKA "inverted),
+> right?  It does seem possible that you could apply the period and
+> flags while keeping the calculated bootup duty cycle percentage
+> (presuming that the PWM was actually enabled at probe time and there
+> was a bootup duty cycle at all).  That would basically say that
+> whenever you set the period of a PWM then the duty cycle of the PWM
+> should remain the same percentage.  That actually seems quite sane
+> IMHO.  It seems much saner than trying to keep the duty cycle "ns"
+> when the period changes or resetting the PWM to some default when the
+> period changes.
 
-=2E.. I think perhaps a better way yet would be to have drivers update the
-period and duty cycle to the actual values. That way there won't be a
-delta between what's really being programmed to hardware and what shows
-up in sysfs. It would also give users a chance to check if what's been
-programmed is within an acceptable range or not.
+That really depends on the use-case. If you're interested in the output
+power of the PWM then, yes, this is sane. But it might not be the right
+answer in other cases.
+
+> B) Alternatively, I'd also say that setting a period without a duty
+> cycle doesn't make a lot of sense.  ...so you could just apply the
+> period at the same time that you apply the duty cycle the first time.
+> Presumably you'd want to "lie" to the callers of the PWM subsystem and
+> tell them that you already changed the period even though the change
+> won't really take effect until they actually set the duty cycle.  If
+> anyone cared to find out the true hardware period we could add a new
+> pwm_get_hw_period().  ...or since the only reason you'd want to know
+> the hardware period would be if you're trying to read the current duty
+> cycle percentage, you could instead add "pwm_get_hw_state()" and have
+> that return both the hardware period ns and duty cycle ns (which is
+> the most accurate way to return the "percentage" without using fix or
+> floating point math).
+
+But then you get into a situation where behaviour is dependent on the
+PWM driver, whereas this is really very specific to one specific use-
+case.
+
+In the end the PWM API is as low-level as it is because it needs to be
+flexible enough to cope with other use-cases. In the general case the
+simple truth is that it doesn't make sense to set a period without the
+duty cycle and vice versa. That's why pwm_config() takes both as input
+parameters. The atomic API is going to take that one step further in
+that you need to specify the complete state of the PWM when applying.
+
+> Both of the above options seems like it could be sensible.  The 2nd
+> seems cleaner because it doesn't require you to recalculate /
+> approximate the old duty cycle using a new period, but it's slightly
+> uglier because it no longer returns the true hardware state from
+> pwm_get_period().
+> 
+> 
+> > Applying the software state as-is also means that there's no reason at
+> > all to read out the hardware state in the first place, because it will
+> > simply be discarded.
+> 
+> Pretty sure we can't discard the hardware duty cycle at bootup, as per above.
+> 
+> 
+> > An alternative would be to discard the software state and trust the
+> > hardware to be configured correctly. That's somewhat risky because we
+> > don't know if the hardware is properly configured. Or Linux might have
+> > different requirements from the firmware and hence needs to configure
+> > the PWM differently.
+> 
+> Doesn't seem like a good idea either.
+> 
+> 
+> > Neither of the above are very attractive options. The best I've been
+> > able to come up with so far is to completely remove this decision from
+> > the PWM subsystem and let users handle this. That is, a PWM regulator
+> > driver would have to have all the knowledge about how to configure the
+> > PWM for its needs. So upon probe, the PWM regulator driver would inspect
+> > the current state of the PWM and adjust if necessary, then apply again.
+> > Ideally of course it wouldn't have to do anything because the hardware
+> > PWM state would match the software configuration. The idea here is that
+> > the PWM regulator driver knows exactly what duty cycle to configure to
+> > obtain the desired output voltage.
+> 
+> I think this is like my suggestion B), right?  AKA the PWM regulator
+> would be the sole caller of pwm_get_hw_state() and it would use this
+> to figure out the existing duty cycle percentage.  Then it would
+> translate that into "ns" and would set the duty cycle.  Upon the first
+> set of the duty cycle both the period and duty cycle would be applied
+> at the same time.
+
+Yes and no. I think the PWM regulator would need to get the current
+hardware state and derive the output power from duty cycle and period.
+It would then need to rescale to whatever new period it wants to use
+to ensure the same output power is used.
+
+> > That doesn't really get us closer, though. There is still the issue of
+> > the user having to deal with two states: the current hardware state and
+> > the software state as configured in DT or board files.
+> 
+> I think the only users that need to deal with this are one that need a
+> seamless transition from bootup settings.  Adding a new API call to
+> support a new feature like this doesn't seem insane, and anyone who
+> doesn't want this new feature can just never call the new API.
+> 
+> The only thing that would "change" from the point of view of old
+> drivers is that the PWM period wouldn't change at bootup until the
+> duty cycle was set.  IMHO this is probably a bug fix.  AKA, for a PWM
+> backlight, imagine:
+> 
+> 1. Firmware sets period to 20000 ns, duty cycle to 8000 ns (40%)
+> 2. Linux boots up and sets period to 10000 ns.  Brightness of
+> backlight instantly goes to 80%.
+> 3. Eventually something decides to set the backlight duty cycle and it
+> goes to the proper rate.
+> 
+> Skipping #2 seems like the right move.  ...or did I misunderstand how
+> something works?
+
+I'm not aware of any code in the PWM subsystem that would do this
+automatically. If you don't call any of the pwm_*() functions the
+hardware state should not be modified. The responsibility is with
+the user drivers.
+
+That is, it is up to the regulator or backlight driver to apply any new
+configuration to a PWM channel on boot, or leave it as is. For
+backlight it's probably fine to simply apply some default, since having
+the brightness change on boot isn't going to be terribly irritating.
+
+With the atomic API it would be possible to avoid even this and have the
+backlight driver simply read out the current hardware state and apply an
+equivalent brightness even if the period changed.
+
+For the regulator case you'd need to read out the current state and then
+recompute the values that will yield the same output power given data
+specified in DT. I think that much is already implemented in Boris'
+series, and it's really only the details that are being debated.
+
+The problematic issue is still that we might have a disparity between
+the current hardware state and the state initially specified by DT. In
+the general case the DT will specify the period and polarity of the PWM
+signal and leave it up to the user driver to determine what a correct
+duty cycle would be. With the atomic API we'll essentially have two
+states: the current (hardware) state and the "initial" state, which is
+what an OS will see as the state to apply. The problem now is that once
+you have applied the initial state with a duty cycle you've determined,
+there is no longer a need to keep it around. But there's also no way to
+know when this is the case. So the controversial part about all this is
+when to start using the current state rather that the initial state.
+
+The most straightforward way to solve this would be to apply the initial
+configuration on driver probe. That is, when the pwm-regulator driver
+gets probed it would retrieve the current and initial states, then
+adjust the current state such that it matches the initial state but with
+a duty cycle that yields the same output power as the current state, and
+finally apply the new state. After that, every regulator_set_voltage()
+call could simply operate on the current state and adjust the duty cycle
+exclusively.
+
+Does that sound reasonable?
 
 Thierry
-
---vOmOzSkFvhd7u8Ms
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJWsgtbAAoJEN0jrNd/PrOh/JYQAJ5taUj7uLxbmKxkhZFFJTEZ
-rNg0Ez0yJb/gcQrjsHy5Z2I/LgrCbeyG5i+vDOqfol8LFy/PCRA9826TEc3b3Y9m
-dlhAg7ZWOywYwkXxn4T67Ylt2tIMdBUQ4OxDDUW93gMSG5KaXxDGXnsouhd9p5NX
-A8tr8/eF3rgqRW7XROiW4EAWTX33QQjgzTrDVxL4z94djB0X6doDC/cq8tGlnRl6
-pjpKTEePisNeg1dDQ6DaMxDFQ8jGAQiQdnElCPFny+Uw0WRRxWAIvr071VVfvXNp
-mQ5YxrXJ8VLfYbpDM0eJjV06Bme9wZwhFdbsQQbPze3vzahBP4zlPdEV5ow8PwKZ
-C+EsA2be+dIkkHa2oGMkaOfjVvObyU6UvA3swB5+Ma7Sdow5+GQ2YkwVXqd3Ph9C
-eDTKleYyp8qZCaRnN5vGGgBUtCHtxnjWf7TA1iD8H90IcC/cdcb917ZdL+FqgfA1
-GXdggVinxtzIlhXxMmm7dpIB+a1nSMAZL20BOEaxMuHX2Ux3+8A2Myjfsh85DcXF
-f+9MtkLxZ1V3EjvBW1D9jOFFiLLEoYfJBaqteSEwMdDeeP66aCEZt3AM/ZRQsz44
-74Du6O0AgbPek/1O0/yBwdk5URaOzOiLAryj3COGABfoPvA1sWPiku9f4WlQOidn
-PEHvNKOMwvXcnyHoLSNg
-=+u8O
------END PGP SIGNATURE-----
-
---vOmOzSkFvhd7u8Ms--
+--uxuisgdDHaNETlh8--
