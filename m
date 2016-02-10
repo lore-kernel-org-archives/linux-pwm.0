@@ -1,44 +1,40 @@
-From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH 4/4] pwm: omap-dmtimer: add dev_dbg() message for
- effective period and duty cycle
-Date: Tue, 9 Feb 2016 13:49:13 +0100
-Message-ID: <56B9E049.5080700@baylibre.com>
-References: <1454128014-22866-1-git-send-email-drivshin.allworx@gmail.com>
- <1454128014-22866-5-git-send-email-drivshin.allworx@gmail.com>
- <CAA3gFWvSsctXtds6_SEtYY1yUdWJDR1XjznGS6qjdrGW5Dbw=A@mail.gmail.com>
- <20160201132228.2634b72e.drivshin.allworx@gmail.com>
- <20160201185952.GN19432@atomide.com> <20160202162330.GA4918@ulmo>
- <20160202184443.1e1b0bf5.drivshin.allworx@gmail.com>
- <20160203141454.GC9650@ulmo>
- <20160205145146.34ec4eb9.drivshin.allworx@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 0/3] STMPE PWM driver
+Date: Wed, 10 Feb 2016 09:54:25 +0100
+Message-ID: <1455094468-25521-1-git-send-email-linus.walleij@linaro.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f50.google.com ([74.125.82.50]:34189 "EHLO
-	mail-wm0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751653AbcBIMtc (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 9 Feb 2016 07:49:32 -0500
-Received: by mail-wm0-f50.google.com with SMTP id 128so195143050wmz.1
-        for <linux-pwm@vger.kernel.org>; Tue, 09 Feb 2016 04:49:32 -0800 (PST)
-In-Reply-To: <20160205145146.34ec4eb9.drivshin.allworx@gmail.com>
+Received: from mail-lf0-f49.google.com ([209.85.215.49]:33128 "EHLO
+	mail-lf0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750750AbcBJIyi (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 10 Feb 2016 03:54:38 -0500
+Received: by mail-lf0-f49.google.com with SMTP id m1so7451103lfg.0
+        for <linux-pwm@vger.kernel.org>; Wed, 10 Feb 2016 00:54:37 -0800 (PST)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: "David Rivshin (Allworx)" <drivshin.allworx@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Tony Lindgren <tony@atomide.com>, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
 
-On 02/05/2016 08:51 PM, David Rivshin (Allworx) wrote:
-> 
-> Either way, I think any changes along these lines would probably be 
-> cleaner ontop of the atomic update work (assuming some form of that 
-> gets merged). And since it would also be outside the scope of this 
-> patchset, you may still want to consider the simple debug message 
-> in this patch as at least an interim state.
-> 
+This adds a driver for the STMPE 24xx PWMs and shows how to add it
+to the device tree.
 
-Sure, we should push these patches and rework this one later.
+If the patches are all right and get ACK from the right maintainers,
+I'd like patch 1 and 2 to be merged to the PWM tree while I will take
+patch 3 to ARM SoC, it is merely an illustration here.
 
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Linus Walleij (3):
+  pwm: add DT bindings for the STMPE PWM
+  pwm: add a driver for the STMPE PWM
+  ARM: nomadik: add STMPE PWM to the NHK15 device tree
 
-Thanks,
-Neil
+ .../devicetree/bindings/pwm/st,stmpe-pwm.txt       |  18 ++
+ arch/arm/boot/dts/ste-nomadik-nhk15.dts            |  24 ++
+ drivers/mfd/stmpe.c                                |  37 +++
+ drivers/pwm/Kconfig                                |   7 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-stmpe.c                            | 297 +++++++++++++++++++++
+ 6 files changed, 384 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt
+ create mode 100644 drivers/pwm/pwm-stmpe.c
+
+-- 
+2.4.3
