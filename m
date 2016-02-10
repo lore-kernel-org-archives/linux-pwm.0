@@ -1,40 +1,54 @@
 From: Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 0/3] STMPE PWM driver
-Date: Wed, 10 Feb 2016 09:54:25 +0100
-Message-ID: <1455094468-25521-1-git-send-email-linus.walleij@linaro.org>
+Subject: [PATCH 1/3] pwm: add DT bindings for the STMPE PWM
+Date: Wed, 10 Feb 2016 09:54:26 +0100
+Message-ID: <1455094468-25521-2-git-send-email-linus.walleij@linaro.org>
+References: <1455094468-25521-1-git-send-email-linus.walleij@linaro.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-lf0-f49.google.com ([209.85.215.49]:33128 "EHLO
-	mail-lf0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750750AbcBJIyi (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 10 Feb 2016 03:54:38 -0500
-Received: by mail-lf0-f49.google.com with SMTP id m1so7451103lfg.0
-        for <linux-pwm@vger.kernel.org>; Wed, 10 Feb 2016 00:54:37 -0800 (PST)
+Received: from mail-lf0-f46.google.com ([209.85.215.46]:33836 "EHLO
+	mail-lf0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752076AbcBJIyp (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 10 Feb 2016 03:54:45 -0500
+Received: by mail-lf0-f46.google.com with SMTP id j78so7383512lfb.1
+        for <linux-pwm@vger.kernel.org>; Wed, 10 Feb 2016 00:54:44 -0800 (PST)
+In-Reply-To: <1455094468-25521-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>, devicetree@vger.kernel.org
 
-This adds a driver for the STMPE 24xx PWMs and shows how to add it
-to the device tree.
+This adds fairly standard device tree bindings for the STMPE
+PWM found in STMPE24xx multi-purpose expanders.
 
-If the patches are all right and get ACK from the right maintainers,
-I'd like patch 1 and 2 to be merged to the PWM tree while I will take
-patch 3 to ARM SoC, it is merely an illustration here.
-
-Linus Walleij (3):
-  pwm: add DT bindings for the STMPE PWM
-  pwm: add a driver for the STMPE PWM
-  ARM: nomadik: add STMPE PWM to the NHK15 device tree
-
- .../devicetree/bindings/pwm/st,stmpe-pwm.txt       |  18 ++
- arch/arm/boot/dts/ste-nomadik-nhk15.dts            |  24 ++
- drivers/mfd/stmpe.c                                |  37 +++
- drivers/pwm/Kconfig                                |   7 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-stmpe.c                            | 297 +++++++++++++++++++++
- 6 files changed, 384 insertions(+)
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt
- create mode 100644 drivers/pwm/pwm-stmpe.c
 
+diff --git a/Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt b/Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt
+new file mode 100644
+index 000000000000..c8b53f39ae31
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt
+@@ -0,0 +1,18 @@
++== ST STMPE PWM controller ==
++
++This is a PWM block embedded in the ST Microelectronics STMPE
++(ST Multi-Purpose Expander) chips. The PWM is registered as a
++subdevices of the STMPE MFD device.
++
++Required properties:
++- compatible: should be:
++  - "st,stmpe-pwm"
++- #pwm-cells: should be 2. See pwm.txt in this directory for a description of
++  the cells format.
++
++Example:
++
++stmpe1_pwm0: stmpe_pwm {
++	compatible = "st,stmpe-pwm";
++	#pwm-cells = <2>;
++};
 -- 
 2.4.3
