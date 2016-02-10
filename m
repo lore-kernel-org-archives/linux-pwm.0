@@ -1,7 +1,7 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 05/11] pwm: sti: Supply PWM Capture register addresses and bit locations
-Date: Wed, 10 Feb 2016 13:02:22 +0000
-Message-ID: <1455109348-32767-6-git-send-email-lee.jones@linaro.org>
+Subject: [PATCH 10/11] pwm: sti: Enable PWM Capture
+Date: Wed, 10 Feb 2016 13:02:27 +0000
+Message-ID: <1455109348-32767-11-git-send-email-lee.jones@linaro.org>
 References: <1455109348-32767-1-git-send-email-lee.jones@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1455109348-32767-1-git-send-email-lee.jones@linaro.org>
@@ -10,75 +10,53 @@ To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, thierry.
 Cc: kernel@stlinux.com, maxime.coquelin@st.com, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
+Once all functionality is in place, we provide the means to
+enable PWM Capture.  Here we are simply obtaining the
+associated regmap and twiddling the relevant enable register
+bits.
+
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/pwm-sti.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ drivers/pwm/pwm-sti.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
 diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index aa217e2..2336bac 100644
+index 8de9b4a..93cf20e 100644
 --- a/drivers/pwm/pwm-sti.c
 +++ b/drivers/pwm/pwm-sti.c
-@@ -22,26 +22,48 @@
- #include <linux/time.h>
- 
- #define PWM_OUT_VAL(x)	(0x00 + (4 * (x))) /* Channel's Duty Cycle register */
-+#define PWM_CPT_VAL(x)	(0x10 + (4 * (x))) /* Capture value */
-+#define PWM_CPT_EDGE(x) (0x30 + (4 * (x))) /* Edge to capture on */
- 
- #define STI_PWM_CTRL	0x50		/* Control/Config register */
- #define STI_INT_EN	0x54		/* Interrupt Enable/Disable register */
-+#define STI_INT_STA	0x58		/* Interrupt Status register */
-+#define PWM_INT_ACK			0x5c
- #define PWM_PRESCALE_LOW_MASK		0x0f
- #define PWM_PRESCALE_HIGH_MASK		0xf0
-+#define PWM_CPT_EDGE_MASK		0x03
-+#define PWM_INT_ACK_MASK		0x1ff
+@@ -279,6 +279,13 @@ static int sti_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 				pwm->hwpwm);
+ 			goto out;
+ 		}
 +
-+#define STI_MAX_CPT_CHANS		4
-+#define CPT_DC_MAX			0xff
++		ret = regmap_field_write(pc->pwm_cpt_en, 1);
++		if (ret) {
++			dev_err(dev, "failed to enable PWM capture:%d\n",
++				pwm->hwpwm);
++			goto out;
++		}
+ 	}
+ 	pc->en_count++;
+ out:
+@@ -296,6 +303,7 @@ static void sti_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 		return;
+ 	}
+ 	regmap_field_write(pc->pwm_out_en, 0);
++	regmap_field_write(pc->pwm_cpt_en, 0);
  
- /* Regfield IDs */
- enum {
- 	/* Bits in PWM_CTRL*/
- 	PWMCLK_PRESCALE_LOW,
- 	PWMCLK_PRESCALE_HIGH,
-+	CPTCLK_PRESCALE,
+ 	clk_disable(pc->pwm_clk);
+ 	clk_disable(pc->cpt_clk);
+@@ -492,6 +500,11 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
+ 	if (IS_ERR(pc->pwm_out_en))
+ 		return PTR_ERR(pc->pwm_out_en);
  
- 	PWM_OUT_EN,
-+	PWM_CPT_EN,
- 
- 	PWM_CPT_INT_EN,
-+	PWM_CPT_INT_STAT,
- 
- 	/* Keep last */
- 	MAX_REGFIELDS
- };
- 
-+/* Each capture input can be programmed to detect rising-edge, falling-edge,
-+ * either edge or neither egde
-+ */
-+enum sti_cpt_edge {
-+	CPT_EDGE_DISABLED,
-+	CPT_EDGE_RISING,
-+	CPT_EDGE_FALLING,
-+	CPT_EDGE_BOTH,
-+};
++	pc->pwm_cpt_en = devm_regmap_field_alloc(dev, pc->regmap,
++						 reg_fields[PWM_CPT_EN]);
++	if (IS_ERR(pc->pwm_cpt_en))
++		return PTR_ERR(pc->pwm_cpt_en);
 +
- struct sti_pwm_compat_data {
- 	const struct reg_field *reg_fields;
- 	unsigned int num_chan;
-@@ -69,8 +91,11 @@ struct sti_pwm_chip {
- static const struct reg_field sti_pwm_regfields[MAX_REGFIELDS] = {
- 	[PWMCLK_PRESCALE_LOW]	= REG_FIELD(STI_PWM_CTRL, 0, 3),
- 	[PWMCLK_PRESCALE_HIGH]	= REG_FIELD(STI_PWM_CTRL, 11, 14),
-+	[CPTCLK_PRESCALE]	= REG_FIELD(STI_PWM_CTRL, 4, 8),
- 	[PWM_OUT_EN]		= REG_FIELD(STI_PWM_CTRL, 9, 9),
-+	[PWM_CPT_EN]		= REG_FIELD(STI_PWM_CTRL, 10, 10),
- 	[PWM_CPT_INT_EN]	= REG_FIELD(STI_INT_EN, 1, 4),
-+	[PWM_CPT_INT_STAT]	= REG_FIELD(STI_INT_STA, 1, 4),
- };
- 
- static inline struct sti_pwm_chip *to_sti_pwmchip(struct pwm_chip *chip)
+ 	pc->pwm_cpt_int_en = devm_regmap_field_alloc(dev, pc->regmap,
+ 						 reg_fields[PWM_CPT_INT_EN]);
+ 	if (IS_ERR(pc->pwm_cpt_int_en))
 -- 
 1.9.1
