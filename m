@@ -1,32 +1,93 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 1/3] pwm: add DT bindings for the STMPE PWM
-Date: Fri, 12 Feb 2016 09:24:54 -0600
-Message-ID: <20160212152454.GA31285@rob-hp-laptop>
-References: <1455094468-25521-1-git-send-email-linus.walleij@linaro.org>
- <1455094468-25521-2-git-send-email-linus.walleij@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] mfd: stmpe: add the proper PWM resources
+Date: Sun, 14 Feb 2016 14:07:07 +0100
+Message-ID: <1455455227-16848-1-git-send-email-linus.walleij@linaro.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:42846 "EHLO mail.kernel.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750968AbcBLPY6 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Fri, 12 Feb 2016 10:24:58 -0500
-Content-Disposition: inline
-In-Reply-To: <1455094468-25521-2-git-send-email-linus.walleij@linaro.org>
+Received: from mail-lf0-f49.google.com ([209.85.215.49]:34793 "EHLO
+	mail-lf0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751282AbcBNNHP (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sun, 14 Feb 2016 08:07:15 -0500
+Received: by mail-lf0-f49.google.com with SMTP id j78so74954773lfb.1
+        for <linux-pwm@vger.kernel.org>; Sun, 14 Feb 2016 05:07:14 -0800 (PST)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org
+To: Samuel Ortiz <sameo@linux.intel.com>, Lee Jones <lee.jones@linaro.org>, linux-kernel@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
 
-On Wed, Feb 10, 2016 at 09:54:26AM +0100, Linus Walleij wrote:
-> This adds fairly standard device tree bindings for the STMPE
-> PWM found in STMPE24xx multi-purpose expanders.
-> 
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
->  Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt
+This adds the PWM resources to the STMPE MFD driver, so that
+it can properly grab and use them.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Cc: linux-pwm@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog: split this patch off from the PWM driver and sent
+separately. This can be merged separately too so we need no
+criss-cross between MFD and PWM anymore, Lee: this one is for
+you if it looks all right, excess newlines are gone too.
+---
+ drivers/mfd/stmpe.c | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+diff --git a/drivers/mfd/stmpe.c b/drivers/mfd/stmpe.c
+index 8222e374e4b1..fb8f9e8b75df 100644
+--- a/drivers/mfd/stmpe.c
++++ b/drivers/mfd/stmpe.c
+@@ -334,6 +334,31 @@ static const struct mfd_cell stmpe_keypad_cell = {
+ };
+ 
+ /*
++ * PWM (1601, 2401, 2403)
++ */
++static struct resource stmpe_pwm_resources[] = {
++	{
++		.name	= "PWM0",
++		.flags	= IORESOURCE_IRQ,
++	},
++	{
++		.name	= "PWM1",
++		.flags	= IORESOURCE_IRQ,
++	},
++	{
++		.name	= "PWM2",
++		.flags	= IORESOURCE_IRQ,
++	},
++};
++
++static const struct mfd_cell stmpe_pwm_cell = {
++	.name		= "stmpe-pwm",
++	.of_compatible  = "st,stmpe-pwm",
++	.resources	= stmpe_pwm_resources,
++	.num_resources	= ARRAY_SIZE(stmpe_pwm_resources),
++};
++
++/*
+  * STMPE801
+  */
+ static const u8 stmpe801_regs[] = {
+@@ -537,6 +562,11 @@ static struct stmpe_variant_block stmpe1601_blocks[] = {
+ 		.irq	= STMPE1601_IRQ_KEYPAD,
+ 		.block	= STMPE_BLOCK_KEYPAD,
+ 	},
++	{
++		.cell	= &stmpe_pwm_cell,
++		.irq	= STMPE1601_IRQ_PWM0,
++		.block	= STMPE_BLOCK_PWM,
++	},
+ };
+ 
+ /* supported autosleep timeout delay (in msecs) */
+@@ -771,6 +801,11 @@ static struct stmpe_variant_block stmpe24xx_blocks[] = {
+ 		.irq	= STMPE24XX_IRQ_KEYPAD,
+ 		.block	= STMPE_BLOCK_KEYPAD,
+ 	},
++	{
++		.cell	= &stmpe_pwm_cell,
++		.irq	= STMPE24XX_IRQ_PWM0,
++		.block	= STMPE_BLOCK_PWM,
++	},
+ };
+ 
+ static int stmpe24xx_enable(struct stmpe *stmpe, unsigned int blocks,
+-- 
+2.4.3
