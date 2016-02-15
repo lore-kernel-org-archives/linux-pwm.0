@@ -1,111 +1,122 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH] mfd: stmpe: add the proper PWM resources
-Date: Mon, 15 Feb 2016 08:30:35 +0000
-Message-ID: <20160215083035.GC3455@x1>
-References: <1455455227-16848-1-git-send-email-linus.walleij@linaro.org>
+From: Adam Ford <aford173@gmail.com>
+Subject: Re: [PATCH 1/4] pwm: omap-dmtimer: fix inaccurate period/duty_cycle calculation
+Date: Mon, 15 Feb 2016 14:24:17 -0600
+Message-ID: <CAHCN7xKfn_o_EmQb3zG5-d3P9vxyLp=MX_R7ATT6pzMrS1cJDQ@mail.gmail.com>
+References: <1454128014-22866-1-git-send-email-drivshin.allworx@gmail.com>
+	<1454128014-22866-2-git-send-email-drivshin.allworx@gmail.com>
+	<56B1D52F.70907@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f53.google.com ([74.125.82.53]:35487 "EHLO
-	mail-wm0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752058AbcBOIak (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 15 Feb 2016 03:30:40 -0500
-Received: by mail-wm0-f53.google.com with SMTP id c200so101082966wme.0
-        for <linux-pwm@vger.kernel.org>; Mon, 15 Feb 2016 00:30:40 -0800 (PST)
-Content-Disposition: inline
-In-Reply-To: <1455455227-16848-1-git-send-email-linus.walleij@linaro.org>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:34497 "EHLO
+	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751212AbcBOUYS (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 15 Feb 2016 15:24:18 -0500
+In-Reply-To: <56B1D52F.70907@baylibre.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Samuel Ortiz <sameo@linux.intel.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
+To: Neil Armstrong <narmstrong@baylibre.com>
+Cc: "David Rivshin (Allworx)" <drivshin.allworx@gmail.com>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
 
-On Sun, 14 Feb 2016, Linus Walleij wrote:
+I tested this on a DM3730, Timer 10
 
-> This adds the PWM resources to the STMPE MFD driver, so that
-> it can properly grab and use them.
->=20
-> Cc: linux-pwm@vger.kernel.org
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> ChangeLog: split this patch off from the PWM driver and sent
-> separately. This can be merged separately too so we need no
-> criss-cross between MFD and PWM anymore, Lee: this one is for
-> you if it looks all right, excess newlines are gone too.
-> ---
->  drivers/mfd/stmpe.c | 35 +++++++++++++++++++++++++++++++++++
->  1 file changed, 35 insertions(+)
+Tested-by: Adam Ford <aford173@gmail.com>
 
-Applied, thanks.
-=20
-> diff --git a/drivers/mfd/stmpe.c b/drivers/mfd/stmpe.c
-> index 8222e374e4b1..fb8f9e8b75df 100644
-> --- a/drivers/mfd/stmpe.c
-> +++ b/drivers/mfd/stmpe.c
-> @@ -334,6 +334,31 @@ static const struct mfd_cell stmpe_keypad_cell =3D=
- {
->  };
-> =20
->  /*
-> + * PWM (1601, 2401, 2403)
-> + */
-> +static struct resource stmpe_pwm_resources[] =3D {
-> +	{
-> +		.name	=3D "PWM0",
-> +		.flags	=3D IORESOURCE_IRQ,
-> +	},
-> +	{
-> +		.name	=3D "PWM1",
-> +		.flags	=3D IORESOURCE_IRQ,
-> +	},
-> +	{
-> +		.name	=3D "PWM2",
-> +		.flags	=3D IORESOURCE_IRQ,
-> +	},
-> +};
-> +
-> +static const struct mfd_cell stmpe_pwm_cell =3D {
-> +	.name		=3D "stmpe-pwm",
-> +	.of_compatible  =3D "st,stmpe-pwm",
-> +	.resources	=3D stmpe_pwm_resources,
-> +	.num_resources	=3D ARRAY_SIZE(stmpe_pwm_resources),
-> +};
-> +
-> +/*
->   * STMPE801
->   */
->  static const u8 stmpe801_regs[] =3D {
-> @@ -537,6 +562,11 @@ static struct stmpe_variant_block stmpe1601_bloc=
-ks[] =3D {
->  		.irq	=3D STMPE1601_IRQ_KEYPAD,
->  		.block	=3D STMPE_BLOCK_KEYPAD,
->  	},
-> +	{
-> +		.cell	=3D &stmpe_pwm_cell,
-> +		.irq	=3D STMPE1601_IRQ_PWM0,
-> +		.block	=3D STMPE_BLOCK_PWM,
-> +	},
->  };
-> =20
->  /* supported autosleep timeout delay (in msecs) */
-> @@ -771,6 +801,11 @@ static struct stmpe_variant_block stmpe24xx_bloc=
-ks[] =3D {
->  		.irq	=3D STMPE24XX_IRQ_KEYPAD,
->  		.block	=3D STMPE_BLOCK_KEYPAD,
->  	},
-> +	{
-> +		.cell	=3D &stmpe_pwm_cell,
-> +		.irq	=3D STMPE24XX_IRQ_PWM0,
-> +		.block	=3D STMPE_BLOCK_PWM,
-> +	},
->  };
-> =20
->  static int stmpe24xx_enable(struct stmpe *stmpe, unsigned int blocks=
-,
-
---=20
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-=46ollow Linaro: Facebook | Twitter | Blog
+On Wed, Feb 3, 2016 at 4:23 AM, Neil Armstrong <narmstrong@baylibre.com> wrote:
+> On 01/30/2016 05:26 AM, David Rivshin (Allworx) wrote:
+>> From: David Rivshin <drivshin@allworx.com>
+>>
+>> Fix the calculation of load_value and match_value. Currently they
+>> are slightly too low, which produces a noticeably wrong PWM rate with
+>> sufficiently short periods (i.e. when 1/period approaches clk_rate/2).
+>>
+>> Example:
+>>  clk_rate=32768Hz, period=122070ns, duty_cycle=61035ns (8192Hz/50% PWM)
+>>  Correct values: load = 0xfffffffc, match = 0xfffffffd
+>>  Current values: load = 0xfffffffa, match = 0xfffffffc
+>>  effective PWM: period=183105ns, duty_cycle=91553ns (5461Hz/50% PWM)
+>>
+>> Fixes: 6604c6556db9 ("pwm: Add PWM driver for OMAP using dual-mode timers")
+>> Signed-off-by: David Rivshin <drivshin@allworx.com>
+>
+> OK for me.
+>
+> Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+>
+> Thanks !
+>
+>> ---
+>>  drivers/pwm/pwm-omap-dmtimer.c | 27 ++++++++++++++++++++-------
+>>  1 file changed, 20 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
+>> index 826634e..0083e75 100644
+>> --- a/drivers/pwm/pwm-omap-dmtimer.c
+>> +++ b/drivers/pwm/pwm-omap-dmtimer.c
+>> @@ -31,6 +31,7 @@
+>>  #include <linux/time.h>
+>>
+>>  #define DM_TIMER_LOAD_MIN 0xfffffffe
+>> +#define DM_TIMER_MAX      0xffffffff
+>>
+>>  struct pwm_omap_dmtimer_chip {
+>>       struct pwm_chip chip;
+>> @@ -46,13 +47,13 @@ to_pwm_omap_dmtimer_chip(struct pwm_chip *chip)
+>>       return container_of(chip, struct pwm_omap_dmtimer_chip, chip);
+>>  }
+>>
+>> -static int pwm_omap_dmtimer_calc_value(unsigned long clk_rate, int ns)
+>> +static u32 pwm_omap_dmtimer_get_clock_cycles(unsigned long clk_rate, int ns)
+>>  {
+>>       u64 c = (u64)clk_rate * ns;
+>>
+>>       do_div(c, NSEC_PER_SEC);
+>>
+>> -     return DM_TIMER_LOAD_MIN - c;
+>> +     return c;
+>>  }
+>>
+>>  static void pwm_omap_dmtimer_start(struct pwm_omap_dmtimer_chip *omap)
+>> @@ -99,7 +100,8 @@ static int pwm_omap_dmtimer_config(struct pwm_chip *chip,
+>>                                  int duty_ns, int period_ns)
+>>  {
+>>       struct pwm_omap_dmtimer_chip *omap = to_pwm_omap_dmtimer_chip(chip);
+>> -     int load_value, match_value;
+>> +     u32 period_cycles, duty_cycles;
+>> +     u32 load_value, match_value;
+>>       struct clk *fclk;
+>>       unsigned long clk_rate;
+>>       bool timer_active;
+>> @@ -133,11 +135,22 @@ static int pwm_omap_dmtimer_config(struct pwm_chip *chip,
+>>       /*
+>>        * Calculate the appropriate load and match values based on the
+>>        * specified period and duty cycle. The load value determines the
+>> -      * cycle time and the match value determines the duty cycle.
+>> +      * period time and the match value determines the duty time.
+>> +      *
+>> +      * The period lasts for (DM_TIMER_MAX-load_value+1) clock cycles.
+>> +      * Similarly, the active time lasts (match_value-load_value+1) cycles.
+>> +      * The non-active time is the remainder: (DM_TIMER_MAX-match_value)
+>> +      * clock cycles.
+>> +      *
+>> +      * References:
+>> +      *   OMAP4430/60/70 TRM sections 22.2.4.10 and 22.2.4.11
+>> +      *   AM335x Sitara TRM sections 20.1.3.5 and 20.1.3.6
+>>        */
+>> -     load_value = pwm_omap_dmtimer_calc_value(clk_rate, period_ns);
+>> -     match_value = pwm_omap_dmtimer_calc_value(clk_rate,
+>> -                                               period_ns - duty_ns);
+>> +     period_cycles = pwm_omap_dmtimer_get_clock_cycles(clk_rate, period_ns);
+>> +     duty_cycles = pwm_omap_dmtimer_get_clock_cycles(clk_rate, duty_ns);
+>> +
+>> +     load_value = (DM_TIMER_MAX - period_cycles) + 1;
+>> +     match_value = load_value + duty_cycles - 1;
+>>
+>>       /*
+>>        * We MUST stop the associated dual-mode timer before attempting to
+>>
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
