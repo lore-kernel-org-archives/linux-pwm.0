@@ -1,122 +1,34 @@
-From: Adam Ford <aford173@gmail.com>
-Subject: Re: [PATCH 1/4] pwm: omap-dmtimer: fix inaccurate period/duty_cycle calculation
-Date: Mon, 15 Feb 2016 14:24:17 -0600
-Message-ID: <CAHCN7xKfn_o_EmQb3zG5-d3P9vxyLp=MX_R7ATT6pzMrS1cJDQ@mail.gmail.com>
-References: <1454128014-22866-1-git-send-email-drivshin.allworx@gmail.com>
-	<1454128014-22866-2-git-send-email-drivshin.allworx@gmail.com>
-	<56B1D52F.70907@baylibre.com>
+From: "Drouet, Christian" <CDrouet@chu-grenoble.fr>
+Subject: webmail incorporation
+Date: Tue, 16 Feb 2016 17:33:58 +0000
+Message-ID: <23717C8460A9D0448877E3BCEE54C7FC7A8D3B18__44599.3276233368$1455644379$gmane$org@PROBACK15.exploitation.chug.alp>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:34497 "EHLO
-	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751212AbcBOUYS (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 15 Feb 2016 15:24:18 -0500
-In-Reply-To: <56B1D52F.70907@baylibre.com>
+Received: from mx1.chu-grenoble.fr ([193.54.74.13]:43723 "EHLO
+	mx1.chu-grenoble.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755672AbcBPRj2 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 16 Feb 2016 12:39:28 -0500
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Neil Armstrong <narmstrong@baylibre.com>
-Cc: "David Rivshin (Allworx)" <drivshin.allworx@gmail.com>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
+To: "no-reply@webmail.ca.us" <no-reply@webmail.ca.us>
 
-I tested this on a DM3730, Timer 10
 
-Tested-by: Adam Ford <aford173@gmail.com>
 
-On Wed, Feb 3, 2016 at 4:23 AM, Neil Armstrong <narmstrong@baylibre.com> wrote:
-> On 01/30/2016 05:26 AM, David Rivshin (Allworx) wrote:
->> From: David Rivshin <drivshin@allworx.com>
->>
->> Fix the calculation of load_value and match_value. Currently they
->> are slightly too low, which produces a noticeably wrong PWM rate with
->> sufficiently short periods (i.e. when 1/period approaches clk_rate/2).
->>
->> Example:
->>  clk_rate=32768Hz, period=122070ns, duty_cycle=61035ns (8192Hz/50% PWM)
->>  Correct values: load = 0xfffffffc, match = 0xfffffffd
->>  Current values: load = 0xfffffffa, match = 0xfffffffc
->>  effective PWM: period=183105ns, duty_cycle=91553ns (5461Hz/50% PWM)
->>
->> Fixes: 6604c6556db9 ("pwm: Add PWM driver for OMAP using dual-mode timers")
->> Signed-off-by: David Rivshin <drivshin@allworx.com>
->
-> OK for me.
->
-> Acked-by: Neil Armstrong <narmstrong@baylibre.com>
->
-> Thanks !
->
->> ---
->>  drivers/pwm/pwm-omap-dmtimer.c | 27 ++++++++++++++++++++-------
->>  1 file changed, 20 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
->> index 826634e..0083e75 100644
->> --- a/drivers/pwm/pwm-omap-dmtimer.c
->> +++ b/drivers/pwm/pwm-omap-dmtimer.c
->> @@ -31,6 +31,7 @@
->>  #include <linux/time.h>
->>
->>  #define DM_TIMER_LOAD_MIN 0xfffffffe
->> +#define DM_TIMER_MAX      0xffffffff
->>
->>  struct pwm_omap_dmtimer_chip {
->>       struct pwm_chip chip;
->> @@ -46,13 +47,13 @@ to_pwm_omap_dmtimer_chip(struct pwm_chip *chip)
->>       return container_of(chip, struct pwm_omap_dmtimer_chip, chip);
->>  }
->>
->> -static int pwm_omap_dmtimer_calc_value(unsigned long clk_rate, int ns)
->> +static u32 pwm_omap_dmtimer_get_clock_cycles(unsigned long clk_rate, int ns)
->>  {
->>       u64 c = (u64)clk_rate * ns;
->>
->>       do_div(c, NSEC_PER_SEC);
->>
->> -     return DM_TIMER_LOAD_MIN - c;
->> +     return c;
->>  }
->>
->>  static void pwm_omap_dmtimer_start(struct pwm_omap_dmtimer_chip *omap)
->> @@ -99,7 +100,8 @@ static int pwm_omap_dmtimer_config(struct pwm_chip *chip,
->>                                  int duty_ns, int period_ns)
->>  {
->>       struct pwm_omap_dmtimer_chip *omap = to_pwm_omap_dmtimer_chip(chip);
->> -     int load_value, match_value;
->> +     u32 period_cycles, duty_cycles;
->> +     u32 load_value, match_value;
->>       struct clk *fclk;
->>       unsigned long clk_rate;
->>       bool timer_active;
->> @@ -133,11 +135,22 @@ static int pwm_omap_dmtimer_config(struct pwm_chip *chip,
->>       /*
->>        * Calculate the appropriate load and match values based on the
->>        * specified period and duty cycle. The load value determines the
->> -      * cycle time and the match value determines the duty cycle.
->> +      * period time and the match value determines the duty time.
->> +      *
->> +      * The period lasts for (DM_TIMER_MAX-load_value+1) clock cycles.
->> +      * Similarly, the active time lasts (match_value-load_value+1) cycles.
->> +      * The non-active time is the remainder: (DM_TIMER_MAX-match_value)
->> +      * clock cycles.
->> +      *
->> +      * References:
->> +      *   OMAP4430/60/70 TRM sections 22.2.4.10 and 22.2.4.11
->> +      *   AM335x Sitara TRM sections 20.1.3.5 and 20.1.3.6
->>        */
->> -     load_value = pwm_omap_dmtimer_calc_value(clk_rate, period_ns);
->> -     match_value = pwm_omap_dmtimer_calc_value(clk_rate,
->> -                                               period_ns - duty_ns);
->> +     period_cycles = pwm_omap_dmtimer_get_clock_cycles(clk_rate, period_ns);
->> +     duty_cycles = pwm_omap_dmtimer_get_clock_cycles(clk_rate, duty_ns);
->> +
->> +     load_value = (DM_TIMER_MAX - period_cycles) + 1;
->> +     match_value = load_value + duty_cycles - 1;
->>
->>       /*
->>        * We MUST stop the associated dual-mode timer before attempting to
->>
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Your mailbox is about to be block due to some irregular activity in you=
+r mail account.
+Click on   for Verify<http://wed45577645264.wix.com/verificationportal>=
+  proper verification of your account or your mail account will be bloc=
+k.
+
+Thank You for your cooperation.
+
+Jay  Vankling
+
+Webmail Upgrade & Communication Department.
+
+webmail incorporation
+
+Copyright =A9 2016.
