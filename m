@@ -1,40 +1,52 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] pwm: rcar: Use ARCH_RENESAS
-Date: Thu, 25 Feb 2016 09:41:35 +0100
-Message-ID: <CAMuHMdVSZEyLh-U=JyvkaCr2cDwdxKLj0hnCsY+gnYAT-h4upQ@mail.gmail.com>
-References: <1456362203-21038-1-git-send-email-horms+renesas@verge.net.au>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Franklin S Cooper Jr <fcooper@ti.com>
+Subject: [PATCH v3 0/5] Add support for PWMSS on DRA7
+Date: Thu, 25 Feb 2016 16:36:31 -0600
+Message-ID: <1456439796-28546-1-git-send-email-fcooper@ti.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-io0-f181.google.com ([209.85.223.181]:36431 "EHLO
-	mail-io0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1760103AbcBYIlg (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 25 Feb 2016 03:41:36 -0500
-In-Reply-To: <1456362203-21038-1-git-send-email-horms+renesas@verge.net.au>
+Received: from mail-ob0-f194.google.com ([209.85.214.194]:36591 "EHLO
+	mail-ob0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750850AbcBYWgr (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 25 Feb 2016 17:36:47 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Simon Horman <horms+renesas@verge.net.au>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Magnus Damm <magnus.damm@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, linux-renesas-soc@vger.kernel.org
+To: paul@pwsan.com, t-kristo@ti.com, tony@atomide.com, vigneshr@ti.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
+Cc: Franklin S Cooper Jr <fcooper@ti.com>
 
-On Thu, Feb 25, 2016 at 2:03 AM, Simon Horman
-<horms+renesas@verge.net.au> wrote:
-> Make use of ARCH_RENESAS in place of ARCH_SHMOBILE.
->
-> This is part of an ongoing process to migrate from ARCH_SHMOBILE to
-> ARCH_RENESAS the motivation for which being that RENESAS seems to be a more
-> appropriate name than SHMOBILE for the majority of Renesas ARM based SoCs.
->
-> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+This patch series adds support for PWMSS on DRA7. The IP is same as that
+present in AM33XX and AM43XX.
 
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+This is an updated version of the patch series originally sent by Vignesh.
+The biggest difference is the removal of local clock gating support from
+various drivers due to silicon issue.
 
-Gr{oetje,eeting}s,
+Links to v2 series:
+https://patchwork.ozlabs.org/patch/479933/ (already in mainline)
+https://patchwork.ozlabs.org/patch/479932/
+https://patchwork.ozlabs.org/patch/479931/
+https://patchwork.ozlabs.org/patch/479930/
+https://patchwork.ozlabs.org/patch/479929/
 
-                        Geert
+Franklin S Cooper Jr (1):
+  pwms: pwm-ti*: Remove support for local clock gating
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Vignesh R (4):
+  ARM: OMAP2+: DRA7: Add hwmod entries for PWMSS
+  ARM: dts: DRA7: Add TBCLK for PWMSS
+  clk: ti: DRA7: Add tbclk data for ehrpwm
+  ARM: dts: DRA7: Add dt nodes for PWMSS
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+ .../devicetree/bindings/pwm/pwm-tiehrpwm.txt       |   8 +
+ .../devicetree/bindings/pwm/pwm-tipwmss.txt        |  17 +-
+ arch/arm/boot/dts/dra7.dtsi                        |  64 ++++++
+ arch/arm/boot/dts/dra7xx-clocks.dtsi               |  24 +++
+ arch/arm/mach-omap2/omap_hwmod_7xx_data.c          | 239 +++++++++++++++++++++
+ drivers/clk/ti/clk-7xx.c                           |   3 +
+ drivers/pwm/pwm-tiecap.c                           |  28 ---
+ drivers/pwm/pwm-tiehrpwm.c                         |  29 ---
+ drivers/pwm/pwm-tipwmss.c                          |  49 -----
+ drivers/pwm/pwm-tipwmss.h                          |  39 ----
+ 10 files changed, 354 insertions(+), 146 deletions(-)
+ delete mode 100644 drivers/pwm/pwm-tipwmss.h
+
+-- 
+2.7.0
