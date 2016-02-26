@@ -1,136 +1,306 @@
-From: Doug Anderson <dianders@google.com>
-Subject: Re: [PATCH v3 00/12] pwm: add support for atomic update
-Date: Thu, 25 Feb 2016 15:14:03 -0800
-Message-ID: <CAD=FV=VckTVD8b1g+f0G2kMeoTjvY0pAGhoDnWQN_dAmqSxBxg@mail.gmail.com>
-References: <20151110173416.GB21727@ulmo>
-	<CAD=FV=WL3jYEgVe-m6QcAyQwfJgdX4J5OtKisKwyoKOrTSpEQA@mail.gmail.com>
-	<20160125170855.GA10182@ulmo>
-	<CAD=FV=Xvxeqo3imUmjukC5iYk3EZkrJ04G7C1B-w4xyr-r6-2Q@mail.gmail.com>
-	<20160203145337.GD9650@ulmo>
-	<CAD=FV=U_x1cxx6RrHuVgVV8GbOwm9DXXJcyiArbbQySUOaxrvQ@mail.gmail.com>
-	<20160222175929.GA23899@ulmo>
-	<CAD=FV=UCErW3EjYRtwt49_ztNR7cyY4U0o4R_dxdomer-Ac2Dg@mail.gmail.com>
-	<20160223143859.GA27656@ulmo>
-	<CAD=FV=UvxG3MYD4MKQJqN7W68uMjd-s+FH-e8tkrLCpS0RLmZQ@mail.gmail.com>
-	<20160223181448.GA14754@ulmo.nvidia.com>
-	<CAD=FV=VM3cOQ0HqwLANBw9MVBCyFTrSyPe_dGzgPucuMUEWRKA@mail.gmail.com>
+From: Sekhar Nori <nsekhar@ti.com>
+Subject: Re: [PATCH v3 1/5] pwms: pwm-ti*: Remove support for local clock
+ gating
+Date: Fri, 26 Feb 2016 15:57:28 +0530
+Message-ID: <56D02890.8000003@ti.com>
+References: <1456439796-28546-1-git-send-email-fcooper@ti.com>
+ <1456439796-28546-2-git-send-email-fcooper@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-vk0-f54.google.com ([209.85.213.54]:35550 "EHLO
-	mail-vk0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752120AbcBYXOG (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 25 Feb 2016 18:14:06 -0500
-Received: by mail-vk0-f54.google.com with SMTP id e6so62436674vkh.2
-        for <linux-pwm@vger.kernel.org>; Thu, 25 Feb 2016 15:14:04 -0800 (PST)
-In-Reply-To: <CAD=FV=VM3cOQ0HqwLANBw9MVBCyFTrSyPe_dGzgPucuMUEWRKA@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1456439796-28546-2-git-send-email-fcooper@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Franklin S Cooper Jr <fcooper@ti.com>, paul@pwsan.com, t-kristo@ti.com, tony@atomide.com, vigneshr@ti.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, linux-pwm <linux-pwm@vger.kernel.org>, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-fbdev@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, linux-sunxi@googlegroups.com, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@li>
 
-Thierry,
++ Thierry, PWM subsystem maintainer.
 
-On Tue, Feb 23, 2016 at 10:42 AM, Doug Anderson <dianders@google.com> wrote:
-> Thierry,
->
-> On Tue, Feb 23, 2016 at 10:14 AM, Thierry Reding
-> <thierry.reding@gmail.com> wrote:
->>> pwm_get_period(): get the period of the PWM; if the PWM has not yet
->>> been configured by software this gets the default period (possibly
->>> specified by the device tree).
->>
->> No. I think we'll need a different construct for the period defined by
->> DT or board files. pwm_get_period() is the legacy API to retrieve the
->> "current" period, even if it was lying a little before the atomic API.
->
-> Ah, got it.  I think I missed that you considered pwm_get_period()
-> legacy and that you eventually wanted to get rid of it.  OK, then what
-> you say makes sense.
->
->
->>> That should work with one minor problem.  If HW readout isn't
->>> supported then pwm_get_state() in probe will presumably return 0 for
->>> the duty cycle.  That means it will change the voltage.  That's in
->>> contrast to how I think things work today where the voltage isn't
->>> changed until the first set_voltage() call.  At least the last time I
->>> tested things get_voltage() would simply report an incorrect value
->>> until the first set_voltage().  I think existing behavior (reporting
->>> the wrong value) is better than new behavior (change the value at
->>> probe).
->>
->> That's exactly the point. Reporting a wrong value isn't really a good
->> option. Changing the voltage on boot is the only way to make the logical
->> state match the hardware state on boot. Chances are that if you don't
->> have hardware readout support you probably don't care what state your
->> regulator will be in.
->>
->> Then again, if we don't support hardware readout, setting up the logical
->> state with data from DT (or board files) and defaulting the duty cycle
->> to 0, we end up with exactly what we had before, even with the atomic
->> API, right? Maybe that's okay, too.
->
-> IMHO this is a change in behavior that will break existing users.
-> Anyone using a PWM regulator will suddenly find their voltage changing
-> at bootup.  Certainly today all users of the PWM regulator don't seem
-> to mind (apparently) the the voltage is reported incorrectly at bootup
-> but I bet they'd mind if the voltage suddenly started changing for
-> them at bootup.
->
-> It seems better to preserve existing behavior and print a warning that
-> the voltage will be reported incorrectly until HW Readout is
-> supported.
->
-> Of course, we're only talking about two real users in mainline here:
-> Rockchip boards and the "stih407-family".  If we just fix both of
-> those to support HW Readout before landing the change then I'm fine
-> with doing what you say.
->
->
->>> ...and if set_voltage() remains untouched then we can solve my probe
->>> problem by renaming pwm_get_state() to pwm_get_hw_state() and having
->>> it return an error if HW readout is not supported.  Then we only call
->>> pwm_get_args() / pwm_apply_state() when we support HW readout.
->>
->> The problem is that we make the API clumsy to use. If we don't sync the
->> "initial" state (as defined by DT or board files) to hardware at any
->> point, then we need to add the pwm_args construct and always stick to
->> it. I think it weird to have to use the pwm_args.period instead of the
->> current period.
->>
->> So we're back to square one, really. That's exactly what Mark brought up
->> originally.
->
-> I had missed the part where you wanted to deprecate pwm_get_period().
-> Thus my points here aren't really valid.
->
-> In my mind the old API was perfectly fine (and actually quite clean /
-> simple to use) except in the special case of avoiding the PWM
-> regulator glitches.  With that mindset I think my previous email make
-> sense.  However, this is your subsystem to maintain and if you think
-> moving everyone to a new atomic API makes more sense then you're in
-> the best position to make that decision.  :)
-
-So just to summarize:
-
-* Add pwm_get_state(), pwm_apply_state(), pwm_get_args().
-pwm_get_state() initially returns 0 for duty cycle if driver doesn't
-support readout.
-
-* Re-implement pwm_get_period() (and maybe other similar functions)
-atop pwm_get_state() as you describe earlier in the thread.
-
-* Document pwm_get_period() (and maybe other similar functions) as deprecated.
-
-* Fix drivers for all current 2 users of PWM regulator to support
-hardware readout.
-
-* Update PWM regulator as you described earlier in the thread (Feb 23).
-
-* If PWM regulator is ever used on a new board whose PWM doesn't
-support hardware readout, the voltage will change at probe time.
-
-
-Did I get all that right?  Thanks!
-
--Doug
+On Friday 26 February 2016 04:06 AM, Franklin S Cooper Jr wrote:
+> The PWMSS local clock gating registers have no real purpose on OMAP ARM
+> devices. These registers were left over registers from DSP IP where the
+> PRCM doesn't exist. There is a silicon bug where gating and ungating clocks
+> don't function properly. TRMs will be update to indicate that these
+> registers shouldn't be touched.
+> 
+> Therefore, all code that accesses the PWMSS_CLKCONFIG or PWMSS_CLKSTATUS
+> will be removed by this patch with zero loss of functionality by the ECAP
+> and EPWM drivers.
+> 
+> Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
+> ---
+> Version 3 changes:
+> New patch
+> 
+>  drivers/pwm/pwm-tiecap.c   | 28 --------------------------
+>  drivers/pwm/pwm-tiehrpwm.c | 29 ---------------------------
+>  drivers/pwm/pwm-tipwmss.c  | 49 ----------------------------------------------
+>  drivers/pwm/pwm-tipwmss.h  | 39 ------------------------------------
+>  4 files changed, 145 deletions(-)
+>  delete mode 100644 drivers/pwm/pwm-tipwmss.h
+> 
+> diff --git a/drivers/pwm/pwm-tiecap.c b/drivers/pwm/pwm-tiecap.c
+> index 616af76..9e0865d7 100644
+> --- a/drivers/pwm/pwm-tiecap.c
+> +++ b/drivers/pwm/pwm-tiecap.c
+> @@ -27,8 +27,6 @@
+>  #include <linux/pwm.h>
+>  #include <linux/of_device.h>
+>  
+> -#include "pwm-tipwmss.h"
+> -
+>  /* ECAP registers and bits definitions */
+>  #define CAP1			0x08
+>  #define CAP2			0x0C
+> @@ -206,7 +204,6 @@ static int ecap_pwm_probe(struct platform_device *pdev)
+>  	struct resource *r;
+>  	struct clk *clk;
+>  	struct ecap_pwm_chip *pc;
+> -	u16 status;
+>  
+>  	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+>  	if (!pc)
+> @@ -243,40 +240,15 @@ static int ecap_pwm_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	pm_runtime_enable(&pdev->dev);
+> -	pm_runtime_get_sync(&pdev->dev);
+> -
+> -	status = pwmss_submodule_state_change(pdev->dev.parent,
+> -			PWMSS_ECAPCLK_EN);
+> -	if (!(status & PWMSS_ECAPCLK_EN_ACK)) {
+> -		dev_err(&pdev->dev, "PWMSS config space clock enable failed\n");
+> -		ret = -EINVAL;
+> -		goto pwmss_clk_failure;
+> -	}
+> -
+> -	pm_runtime_put_sync(&pdev->dev);
+>  
+>  	platform_set_drvdata(pdev, pc);
+>  	return 0;
+> -
+> -pwmss_clk_failure:
+> -	pm_runtime_put_sync(&pdev->dev);
+> -	pm_runtime_disable(&pdev->dev);
+> -	pwmchip_remove(&pc->chip);
+> -	return ret;
+>  }
+>  
+>  static int ecap_pwm_remove(struct platform_device *pdev)
+>  {
+>  	struct ecap_pwm_chip *pc = platform_get_drvdata(pdev);
+>  
+> -	pm_runtime_get_sync(&pdev->dev);
+> -	/*
+> -	 * Due to hardware misbehaviour, acknowledge of the stop_req
+> -	 * is missing. Hence checking of the status bit skipped.
+> -	 */
+> -	pwmss_submodule_state_change(pdev->dev.parent, PWMSS_ECAPCLK_STOP_REQ);
+> -	pm_runtime_put_sync(&pdev->dev);
+> -
+>  	pm_runtime_disable(&pdev->dev);
+>  	return pwmchip_remove(&pc->chip);
+>  }
+> diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
+> index 6a41e66..e09b1f0 100644
+> --- a/drivers/pwm/pwm-tiehrpwm.c
+> +++ b/drivers/pwm/pwm-tiehrpwm.c
+> @@ -27,8 +27,6 @@
+>  #include <linux/pm_runtime.h>
+>  #include <linux/of_device.h>
+>  
+> -#include "pwm-tipwmss.h"
+> -
+>  /* EHRPWM registers and bits definitions */
+>  
+>  /* Time base module registers */
+> @@ -437,7 +435,6 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
+>  	struct resource *r;
+>  	struct clk *clk;
+>  	struct ehrpwm_pwm_chip *pc;
+> -	u16 status;
+>  
+>  	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+>  	if (!pc)
+> @@ -487,27 +484,9 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	pm_runtime_enable(&pdev->dev);
+> -	pm_runtime_get_sync(&pdev->dev);
+> -
+> -	status = pwmss_submodule_state_change(pdev->dev.parent,
+> -			PWMSS_EPWMCLK_EN);
+> -	if (!(status & PWMSS_EPWMCLK_EN_ACK)) {
+> -		dev_err(&pdev->dev, "PWMSS config space clock enable failed\n");
+> -		ret = -EINVAL;
+> -		goto pwmss_clk_failure;
+> -	}
+> -
+> -	pm_runtime_put_sync(&pdev->dev);
+>  
+>  	platform_set_drvdata(pdev, pc);
+>  	return 0;
+> -
+> -pwmss_clk_failure:
+> -	pm_runtime_put_sync(&pdev->dev);
+> -	pm_runtime_disable(&pdev->dev);
+> -	pwmchip_remove(&pc->chip);
+> -	clk_unprepare(pc->tbclk);
+> -	return ret;
+>  }
+>  
+>  static int ehrpwm_pwm_remove(struct platform_device *pdev)
+> @@ -516,14 +495,6 @@ static int ehrpwm_pwm_remove(struct platform_device *pdev)
+>  
+>  	clk_unprepare(pc->tbclk);
+>  
+> -	pm_runtime_get_sync(&pdev->dev);
+> -	/*
+> -	 * Due to hardware misbehaviour, acknowledge of the stop_req
+> -	 * is missing. Hence checking of the status bit skipped.
+> -	 */
+> -	pwmss_submodule_state_change(pdev->dev.parent, PWMSS_EPWMCLK_STOP_REQ);
+> -	pm_runtime_put_sync(&pdev->dev);
+> -
+>  	pm_runtime_put_sync(&pdev->dev);
+>  	pm_runtime_disable(&pdev->dev);
+>  	return pwmchip_remove(&pc->chip);
+> diff --git a/drivers/pwm/pwm-tipwmss.c b/drivers/pwm/pwm-tipwmss.c
+> index 5cf65a1..829f499 100644
+> --- a/drivers/pwm/pwm-tipwmss.c
+> +++ b/drivers/pwm/pwm-tipwmss.c
+> @@ -22,32 +22,6 @@
+>  #include <linux/pm_runtime.h>
+>  #include <linux/of_device.h>
+>  
+> -#include "pwm-tipwmss.h"
+> -
+> -#define PWMSS_CLKCONFIG		0x8	/* Clock gating reg */
+> -#define PWMSS_CLKSTATUS		0xc	/* Clock gating status reg */
+> -
+> -struct pwmss_info {
+> -	void __iomem	*mmio_base;
+> -	struct mutex	pwmss_lock;
+> -	u16		pwmss_clkconfig;
+> -};
+> -
+> -u16 pwmss_submodule_state_change(struct device *dev, int set)
+> -{
+> -	struct pwmss_info *info = dev_get_drvdata(dev);
+> -	u16 val;
+> -
+> -	mutex_lock(&info->pwmss_lock);
+> -	val = readw(info->mmio_base + PWMSS_CLKCONFIG);
+> -	val |= set;
+> -	writew(val , info->mmio_base + PWMSS_CLKCONFIG);
+> -	mutex_unlock(&info->pwmss_lock);
+> -
+> -	return readw(info->mmio_base + PWMSS_CLKSTATUS);
+> -}
+> -EXPORT_SYMBOL(pwmss_submodule_state_change);
+> -
+>  static const struct of_device_id pwmss_of_match[] = {
+>  	{ .compatible	= "ti,am33xx-pwmss" },
+>  	{},
+> @@ -57,24 +31,10 @@ MODULE_DEVICE_TABLE(of, pwmss_of_match);
+>  static int pwmss_probe(struct platform_device *pdev)
+>  {
+>  	int ret;
+> -	struct resource *r;
+> -	struct pwmss_info *info;
+>  	struct device_node *node = pdev->dev.of_node;
+>  
+> -	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
+> -	if (!info)
+> -		return -ENOMEM;
+> -
+> -	mutex_init(&info->pwmss_lock);
+> -
+> -	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	info->mmio_base = devm_ioremap_resource(&pdev->dev, r);
+> -	if (IS_ERR(info->mmio_base))
+> -		return PTR_ERR(info->mmio_base);
+> -
+>  	pm_runtime_enable(&pdev->dev);
+>  	pm_runtime_get_sync(&pdev->dev);
+> -	platform_set_drvdata(pdev, info);
+>  
+>  	/* Populate all the child nodes here... */
+>  	ret = of_platform_populate(node, NULL, NULL, &pdev->dev);
+> @@ -86,30 +46,21 @@ static int pwmss_probe(struct platform_device *pdev)
+>  
+>  static int pwmss_remove(struct platform_device *pdev)
+>  {
+> -	struct pwmss_info *info = platform_get_drvdata(pdev);
+> -
+>  	pm_runtime_put_sync(&pdev->dev);
+>  	pm_runtime_disable(&pdev->dev);
+> -	mutex_destroy(&info->pwmss_lock);
+>  	return 0;
+>  }
+>  
+>  #ifdef CONFIG_PM_SLEEP
+>  static int pwmss_suspend(struct device *dev)
+>  {
+> -	struct pwmss_info *info = dev_get_drvdata(dev);
+> -
+> -	info->pwmss_clkconfig = readw(info->mmio_base + PWMSS_CLKCONFIG);
+>  	pm_runtime_put_sync(dev);
+>  	return 0;
+>  }
+>  
+>  static int pwmss_resume(struct device *dev)
+>  {
+> -	struct pwmss_info *info = dev_get_drvdata(dev);
+> -
+>  	pm_runtime_get_sync(dev);
+> -	writew(info->pwmss_clkconfig, info->mmio_base + PWMSS_CLKCONFIG);
+>  	return 0;
+>  }
+>  #endif
+> diff --git a/drivers/pwm/pwm-tipwmss.h b/drivers/pwm/pwm-tipwmss.h
+> deleted file mode 100644
+> index 10ad804..0000000
+> --- a/drivers/pwm/pwm-tipwmss.h
+> +++ /dev/null
+> @@ -1,39 +0,0 @@
+> -/*
+> - * TI PWM Subsystem driver
+> - *
+> - * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
+> - *
+> - * This program is free software; you can redistribute it and/or modify
+> - * it under the terms of the GNU General Public License as published by
+> - * the Free Software Foundation; either version 2 of the License, or
+> - * (at your option) any later version.
+> - *
+> - * This program is distributed in the hope that it will be useful,
+> - * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> - * GNU General Public License for more details.
+> - *
+> - */
+> -
+> -#ifndef __TIPWMSS_H
+> -#define __TIPWMSS_H
+> -
+> -/* PWM substem clock gating */
+> -#define PWMSS_ECAPCLK_EN	BIT(0)
+> -#define PWMSS_ECAPCLK_STOP_REQ	BIT(1)
+> -#define PWMSS_EPWMCLK_EN	BIT(8)
+> -#define PWMSS_EPWMCLK_STOP_REQ	BIT(9)
+> -
+> -#define PWMSS_ECAPCLK_EN_ACK	BIT(0)
+> -#define PWMSS_EPWMCLK_EN_ACK	BIT(8)
+> -
+> -#ifdef CONFIG_PWM_TIPWMSS
+> -extern u16 pwmss_submodule_state_change(struct device *dev, int set);
+> -#else
+> -static inline u16 pwmss_submodule_state_change(struct device *dev, int set)
+> -{
+> -	/* return success status value */
+> -	return 0xFFFF;
+> -}
+> -#endif
+> -#endif	/* __TIPWMSS_H */
+> 
