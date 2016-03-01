@@ -1,34 +1,62 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH v3 5/5] ARM: dts: DRA7: Add dt nodes for PWMSS
-Date: Tue, 1 Mar 2016 13:00:58 -0800
-Message-ID: <20160301210057.GC4469@atomide.com>
-References: <1456439796-28546-1-git-send-email-fcooper@ti.com>
- <1456439796-28546-6-git-send-email-fcooper@ti.com>
- <20160229232443.GW13417@atomide.com>
+From: Laison Computech Inc <7sales@laiisoncomputech.com>
+Subject: CISCO AND AVAYA IP Phones
+Date: Wed, 02 Mar 2016 03:10:35 +0700
+Message-ID: <20160301210942.70B54574BBB__10128.0451207005$1456883519$gmane$org@srv-mta.gcmillenium.com.br>
+Reply-To: sales@laiisoncomputech.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160229232443.GW13417@atomide.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Franklin S Cooper Jr <fcooper@ti.com>
-Cc: paul@pwsan.com, t-kristo@ti.com, vigneshr@ti.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from srv-mta.gcmillenium.com.br ([177.125.218.132]:55045 "EHLO
+	srv-mta.gcmillenium.com.br" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1754918AbcCAXxk convert rfc822-to-8bit
+	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Tue, 1 Mar 2016 18:53:40 -0500
+Content-Description: Mail message body
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Recipients <7sales@laiisoncomputech.com>
 
-* Tony Lindgren <tony@atomide.com> [160229 15:25]:
-> * Franklin S Cooper Jr <fcooper@ti.com> [160225 14:37]:
-> > From: Vignesh R <vigneshr@ti.com>
-> > 
-> > Add PWMSS device tree nodes for DRA7 SoC family and add documentation
-> > for dt bindings.
-> 
-> Seems to be all standard so applying this one into omap-for-v4.6/dt
-> thanks.
+Hi,
 
-Except this may still need to change depending on the hwmod
-related patch as pointed out by Paul. So I've reverted this
-in omap-for-v4.6/dt.
+Clean tested working pulls CPUs and QTYs in stock.
 
-Regards,
+115 X X5650
+65 X E5410
+75 X X5660
+145 X E5530
+100 X E5645
+40 X X5680
+75 X X5690
 
-Tony
+Brand new sealed IP phones and QTYs in stock.
+
+55 x CP-7937G
+77 x CP-7942G
+54 x CP-7945G
+75 x CP-7962G
+=2E.....
+45 x Avaya 9630
+65 x Avaya 9641
+55 x Avaya 9640=20
+
+USED IT HARDWARE FROM:
+
+=46UJITSU       IBM         SUN        HP
+QUANTUM   DELL       HDS        STK
+NETAPP      SGI         Oracle      EMC=B2
+
+3Com, ADVA, Alcatel, Brocade, Cisco,
+Cabletron, Enterasys, Extreme Networks,
+Huawei, Marconi, Nortel, Qlogic, Avaya
+
+Let me know if you're interested. We are very open to offers and willin=
+g to work with you to make sure that we have a deal.
+
+Sincerely
+Barbara Johnson
+Laison Computech Inc
+Tel: +1-657-205-7860
+=46ax: +1-347-214-0478
+Email: sales@laiisoncomputech.com
+Web: www.laisoncomputech.com
