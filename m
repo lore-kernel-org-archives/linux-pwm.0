@@ -1,89 +1,34 @@
-From: Tero Kristo <t-kristo@ti.com>
-Subject: Re: [PATCH v3 3/5] ARM: dts: DRA7: Add TBCLK for PWMSS
-Date: Tue, 1 Mar 2016 14:54:24 +0200
-Message-ID: <56D59100.3060803@ti.com>
-References: <1456439796-28546-1-git-send-email-fcooper@ti.com>
- <1456439796-28546-4-git-send-email-fcooper@ti.com>
- <20160229232348.GV13417@atomide.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([192.94.94.40]:38771 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750895AbcCAMyr (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Tue, 1 Mar 2016 07:54:47 -0500
-In-Reply-To: <20160229232348.GV13417@atomide.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
+Subject: [PATCH 1/3] Documentation: dt: Add Broadcom iproc pwm controller binding
+Date: Tue,  1 Mar 2016 12:42:47 -0500
+Message-ID: <1456854169-9788-2-git-send-email-yendapally.reddy@broadcom.com>
+References: <1456854169-9788-1-git-send-email-yendapally.reddy@broadcom.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1456854169-9788-1-git-send-email-yendapally.reddy@broadcom.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Jon Mason <jonmason@broadcom.com>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com, Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>, Franklin S Cooper Jr <fcooper@ti.com>
-Cc: paul@pwsan.com, vigneshr@ti.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
 
-On 03/01/2016 01:23 AM, Tony Lindgren wrote:
-> * Franklin S Cooper Jr <fcooper@ti.com> [160225 14:37]:
->> From: Vignesh R <vigneshr@ti.com>
->>
->> tbclk is used by ehrpwm to generate PWM waveform on DRA7 SoC. Add Linux
->> clock to control ehrpwm tbclk.
->> The TRM says, tbclk is derived from SYSCLKOUT. SYSCLKOUT is nothing but
->> ehrpwm functional clock derived from the gateable interface and
->> functional clock of PWMSS(l4_root_clk_div).
->> Refer AM57x TRM SPRUHZ6[1], October 2014, Table 29-4 and Section 29.2.2.1,
->> Table 29-19 and the NOTE at the end of the table.
->>
->> [1] www.ti.com/lit/ug/spruhz6/spruhz6.pdf
->
-> Applying this into omap-for-v4.6/dt thanks.
->
-> Note for Tero, let's plan on getting rid of the duplicate
-> reg entries by using the standard clock output offset within
-> the clock register. I think we should easily be able to add
-> a binding for this and then deprecate the overlapping reg
-> entries.
+Add a binding for Broadcom iproc pwm controller
 
-Yeah, we have been discussing this offline a bit, but haven't had time 
-to look at this. I believe the hwmod clock conversion is of higher 
-priority still.
+Signed-off-by: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
+---
+ Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
--Tero
-
-
->
-> Regards,
->
-> Tony
->
->> --- a/arch/arm/boot/dts/dra7xx-clocks.dtsi
->> +++ b/arch/arm/boot/dts/dra7xx-clocks.dtsi
->> @@ -2146,4 +2146,28 @@
->>   		ti,bit-shift = <0>;
->>   		reg = <0x558>;
->>   	};
->> +
->> +       ehrpwm0_tbclk: ehrpwm0_tbclk {
->> +		#clock-cells = <0>;
->> +		compatible = "ti,gate-clock";
->> +		clocks = <&l4_root_clk_div>;
->> +		ti,bit-shift = <20>;
->> +		reg = <0x0558>;
->> +	};
->> +
->> +	ehrpwm1_tbclk: ehrpwm1_tbclk {
->> +		#clock-cells = <0>;
->> +		compatible = "ti,gate-clock";
->> +		clocks = <&l4_root_clk_div>;
->> +		ti,bit-shift = <21>;
->> +		reg = <0x0558>;
->> +	};
->> +
->> +	ehrpwm2_tbclk: ehrpwm2_tbclk {
->> +		#clock-cells = <0>;
->> +		compatible = "ti,gate-clock";
->> +		clocks = <&l4_root_clk_div>;
->> +		ti,bit-shift = <22>;
->> +		reg = <0x0558>;
->> +	};
->>   };
->> --
->> 2.7.0
->>
+diff --git a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+index 8eae9fe..5036f63 100644
+--- a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+@@ -3,7 +3,7 @@ Broadcom Kona PWM controller device tree bindings
+ This controller has 6 channels.
+ 
+ Required Properties :
+-- compatible: should contain "brcm,kona-pwm"
++- compatible: should contain "brcm,kona-pwm" or "brcm,iproc-pwm"
+ - reg: physical base address and length of the controller's registers
+ - clocks: phandle + clock specifier pair for the external clock
+ - #pwm-cells: Should be 3. See pwm.txt in this directory for a
+-- 
+2.1.0
