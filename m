@@ -1,89 +1,96 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [RESEND 11/11] pwm: sti: Take the opportunity to conduct a little house keeping
-Date: Wed,  2 Mar 2016 15:32:09 +0000
-Message-ID: <1456932729-9667-12-git-send-email-lee.jones@linaro.org>
+Subject: [RESEND 05/11] pwm: sti: Supply PWM Capture register addresses and
+ bit locations
+Date: Wed,  2 Mar 2016 15:32:03 +0000
+Message-ID: <1456932729-9667-6-git-send-email-lee.jones@linaro.org>
 References: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: kernel@stlinux.com, maxime.coquelin@st.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, ajitpal.singh@st.com, Lee Jones <lee.jones@linaro.org>
+Cc: linux-pwm@vger.kernel.org, kernel@stlinux.com, ajitpal.singh@st.com, thierry.reding@gmail.com, Lee Jones <lee.jones@linaro.org>, maxime.coquelin@st.com
 List-Id: linux-pwm@vger.kernel.org
-
-This includes fixing some Coding Style issues and re-ordering/
-simplifying a little code.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/pwm-sti.c | 27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
+ drivers/pwm/pwm-sti.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
 diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index 93cf20e..93e3abf 100644
+index aa217e2..2336bac 100644
 --- a/drivers/pwm/pwm-sti.c
 +++ b/drivers/pwm/pwm-sti.c
-@@ -144,13 +144,13 @@ static int sti_pwm_get_prescale(struct sti_pwm_chip *pc, unsigned long period,
- 	val = NSEC_PER_SEC / clk_rate;
- 	val *= cdata->max_pwm_cnt + 1;
+@@ -22,26 +22,48 @@
+ #include <linux/time.h>
  
--	if (period % val) {
-+	if (period % val)
- 		return -EINVAL;
--	} else {
--		ps  = period / val - 1;
--		if (ps > cdata->max_prescale)
--			return -EINVAL;
--	}
+ #define PWM_OUT_VAL(x)	(0x00 + (4 * (x))) /* Channel's Duty Cycle register */
++#define PWM_CPT_VAL(x)	(0x10 + (4 * (x))) /* Capture value */
++#define PWM_CPT_EDGE(x) (0x30 + (4 * (x))) /* Edge to capture on */
+ 
+ #define STI_PWM_CTRL	0x50		/* Control/Config register */
+ #define STI_INT_EN	0x54		/* Interrupt Enable/Disable register */
++#define STI_INT_STA	0x58		/* Interrupt Status register */
++#define PWM_INT_ACK			0x5c
+ #define PWM_PRESCALE_LOW_MASK		0x0f
+ #define PWM_PRESCALE_HIGH_MASK		0xf0
++#define PWM_CPT_EDGE_MASK		0x03
++#define PWM_INT_ACK_MASK		0x1ff
 +
-+	ps  = period / val - 1;
-+	if (ps > cdata->max_prescale)
-+		return -EINVAL;
++#define STI_MAX_CPT_CHANS		4
++#define CPT_DC_MAX			0xff
+ 
+ /* Regfield IDs */
+ enum {
+ 	/* Bits in PWM_CTRL*/
+ 	PWMCLK_PRESCALE_LOW,
+ 	PWMCLK_PRESCALE_HIGH,
++	CPTCLK_PRESCALE,
+ 
+ 	PWM_OUT_EN,
++	PWM_CPT_EN,
+ 
+ 	PWM_CPT_INT_EN,
++	PWM_CPT_INT_STAT,
+ 
+ 	/* Keep last */
+ 	MAX_REGFIELDS
+ };
+ 
++/* Each capture input can be programmed to detect rising-edge, falling-edge,
++ * either edge or neither egde
++ */
++enum sti_cpt_edge {
++	CPT_EDGE_DISABLED,
++	CPT_EDGE_RISING,
++	CPT_EDGE_FALLING,
++	CPT_EDGE_BOTH,
++};
 +
- 	*prescale = ps;
+ struct sti_pwm_compat_data {
+ 	const struct reg_field *reg_fields;
+ 	unsigned int num_chan;
+@@ -69,8 +91,11 @@ struct sti_pwm_chip {
+ static const struct reg_field sti_pwm_regfields[MAX_REGFIELDS] = {
+ 	[PWMCLK_PRESCALE_LOW]	= REG_FIELD(STI_PWM_CTRL, 0, 3),
+ 	[PWMCLK_PRESCALE_HIGH]	= REG_FIELD(STI_PWM_CTRL, 11, 14),
++	[CPTCLK_PRESCALE]	= REG_FIELD(STI_PWM_CTRL, 4, 8),
+ 	[PWM_OUT_EN]		= REG_FIELD(STI_PWM_CTRL, 9, 9),
++	[PWM_CPT_EN]		= REG_FIELD(STI_PWM_CTRL, 10, 10),
+ 	[PWM_CPT_INT_EN]	= REG_FIELD(STI_INT_EN, 1, 4),
++	[PWM_CPT_INT_STAT]	= REG_FIELD(STI_INT_STA, 1, 4),
+ };
  
- 	return 0;
-@@ -166,7 +166,7 @@ static int sti_pwm_get_prescale(struct sti_pwm_chip *pc, unsigned long period,
-  * 256 values.
-  */
- static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
--			 int duty_ns, int period_ns)
-+			int duty_ns, int period_ns)
- {
- 	struct sti_pwm_chip *pc = to_sti_pwmchip(chip);
- 	struct sti_pwm_compat_data *cdata = pc->cdata;
-@@ -212,7 +212,7 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 			ret =
- 			regmap_field_write(pc->prescale_low,
--					   prescale & PWM_PRESCALE_LOW_MASK);
-+				prescale & PWM_PRESCALE_LOW_MASK);
- 			if (ret)
- 				goto clk_dis;
- 
-@@ -506,7 +506,7 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
- 		return PTR_ERR(pc->pwm_cpt_en);
- 
- 	pc->pwm_cpt_int_en = devm_regmap_field_alloc(dev, pc->regmap,
--						 reg_fields[PWM_CPT_INT_EN]);
-+						reg_fields[PWM_CPT_INT_EN]);
- 	if (IS_ERR(pc->pwm_cpt_int_en))
- 		return PTR_ERR(pc->pwm_cpt_int_en);
- 
-@@ -570,10 +570,11 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	 * Setup PWM data with default values: some values could be replaced
- 	 * with specific ones provided from Device Tree.
- 	 */
--	cdata->reg_fields   = &sti_pwm_regfields[0];
--	cdata->max_prescale = 0xff;
--	cdata->max_pwm_cnt  = 255;
--	cdata->pwm_num_chan     = 1;
-+
-+	cdata->reg_fields	= &sti_pwm_regfields[0];
-+	cdata->max_prescale	= 0xff;
-+	cdata->max_pwm_cnt	= 255;
-+	cdata->pwm_num_chan	= 1;
- 	cdata->cpt_num_chan	= 0;
- 
- 	pc->cdata = cdata;
+ static inline struct sti_pwm_chip *to_sti_pwmchip(struct pwm_chip *chip)
 -- 
 1.9.1
