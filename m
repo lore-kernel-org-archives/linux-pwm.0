@@ -1,52 +1,66 @@
-From: "Franklin S Cooper Jr." <fcooper@ti.com>
-Subject: Re: [PATCH v3 2/5] ARM: OMAP2+: DRA7: Add hwmod entries for PWMSS
-Date: Wed, 2 Mar 2016 10:22:09 -0600
-Message-ID: <56D71331.5020702@ti.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 5/5] ARM: dts: DRA7: Add dt nodes for PWMSS
+Date: Wed, 2 Mar 2016 12:26:34 -0600
+Message-ID: <20160302182634.GA26055@rob-hp-laptop>
 References: <1456439796-28546-1-git-send-email-fcooper@ti.com>
- <1456439796-28546-3-git-send-email-fcooper@ti.com>
- <20160301181109.GB13417@atomide.com>
- <alpine.DEB.2.02.1603011858510.14948@utopia.booyaka.com>
- <20160301205043.GA4469@atomide.com>
+ <1456439796-28546-6-git-send-email-fcooper@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-clk-owner@vger.kernel.org>
-In-Reply-To: <20160301205043.GA4469@atomide.com>
-Sender: linux-clk-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>, Paul Walmsley <paul@pwsan.com>
-Cc: t-kristo@ti.com, vigneshr@ti.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.136]:47873 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756465AbcCBS0j (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Wed, 2 Mar 2016 13:26:39 -0500
+Content-Disposition: inline
+In-Reply-To: <1456439796-28546-6-git-send-email-fcooper@ti.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Franklin S Cooper Jr <fcooper@ti.com>
+Cc: paul@pwsan.com, t-kristo@ti.com, tony@atomide.com, vigneshr@ti.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
 
-Hi Paul
+On Thu, Feb 25, 2016 at 04:36:36PM -0600, Franklin S Cooper Jr wrote:
+> From: Vignesh R <vigneshr@ti.com>
+> 
+> Add PWMSS device tree nodes for DRA7 SoC family and add documentation
+> for dt bindings.
+> 
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> ---
+> Version 3 changes:
+> None
+> 
+>  .../devicetree/bindings/pwm/pwm-tiehrpwm.txt       |  8 +++
+>  .../devicetree/bindings/pwm/pwm-tipwmss.txt        | 17 +++++-
+>  arch/arm/boot/dts/dra7.dtsi                        | 64 ++++++++++++++++++++++
+>  3 files changed, 88 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
+> index 9c100b2..25d91ae 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
+> @@ -4,6 +4,7 @@ Required properties:
+>  - compatible: Must be "ti,<soc>-ehrpwm".
+>    for am33xx - compatible = "ti,am33xx-ehrpwm";
+>    for da850  - compatible = "ti,da850-ehrpwm", "ti,am33xx-ehrpwm";
+> +  for dra7xx - compatible = "ti,dra7xx-ehrpwm", "ti,am33xx-ehrpwm";
 
-On 03/01/2016 02:50 PM, Tony Lindgren wrote:
-> * Paul Walmsley <paul@pwsan.com> [160301 10:59]:
->> On Tue, 1 Mar 2016, Tony Lindgren wrote:
->>
->>> * Franklin S Cooper Jr <fcooper@ti.com> [160225 14:37]:
->>>> From: Vignesh R <vigneshr@ti.com>
->>>>
->>>> Add hwmod entries for the PWMSS on DRA7.
->>>>
->>>> Set l4_root_clk_div as the main_clk of PWMSS. It is fixed-factored clock
->>>> equal to L4PER2_L3_GICLK/2(l3_iclk_div/2).
->>>> As per AM57x TRM SPRUHZ6[1], October 2014, Section 29.1.3 Table 29-4,
->>>> clock source to PWMSS is L4PER2_L3_GICLK. But it is actually
->>>> L4PER2_L3_GICLK/2. The TRM does not show the division by 2.
->>>>
->>>> [1] www.ti.com/lit/ug/spruhz6/spruhz6.pdf
->>> Looks OK to me, assuming Paul will pick this one or ack it.
->> Well I've already sent comments on it, it doesn't look quite ready for me 
->> yet.  I would hold off on the whole series because the hwmod comments also 
->> impact the DT files.
-> OK will drop the dt related patches then.
+We're starting to push back on wildcards in compatible strings. I guess 
+this is okay...
 
-Sorry you previously asked this question about why hwmod is
-used for eCap, ePWM and eQEP before and it wasn't addressed.
-I'll take a look at this and I will get back to you.
+>  - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
+>    the cells format. The only third cell flag supported by this binding is
+>    PWM_POLARITY_INVERTED.
+> @@ -27,3 +28,10 @@ ehrpwm0: ehrpwm@0 { /* EHRPWM on da850 */
+>  	#pwm-cells = <3>;
+>  	reg = <0x300000 0x2000>;
+>  };
+> +
+> +ehrpwm0: ehrpwm@0 { /* EHRPWM on dra7xx */
 
->
-> Regards,
->
-> Tony
+Should be pwm@48440200
 
+> +	compatible = "ti,dra7xx-ehrpwm", "ti,am33xx-ehrpwm";
+> +	#pwm-cells = <3>;
+> +	reg = <0x48440200 0x80>;
+> +	ti,hwmods = "ehrpwm0";
+> +};
