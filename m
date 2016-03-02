@@ -1,62 +1,45 @@
-From: Laison Computech Inc <7sales@laiisoncomputech.com>
-Subject: CISCO AND AVAYA IP Phones
-Date: Wed, 02 Mar 2016 03:10:35 +0700
-Message-ID: <20160301210942.70B54574BBB__10128.0451207005$1456883519$gmane$org@srv-mta.gcmillenium.com.br>
-Reply-To: sales@laiisoncomputech.com
+From: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
+Subject: Re: [PATCH 3/3] ARM: dts: NSP: Add PWM Support to DT
+Date: Wed, 2 Mar 2016 20:22:01 +0530
+Message-ID: <CAL2FKYkoXFm_pG6inxJqwkRqEK-TsMT2ndy4fgvQG1wT6AZ03Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from srv-mta.gcmillenium.com.br ([177.125.218.132]:55045 "EHLO
-	srv-mta.gcmillenium.com.br" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1754918AbcCAXxk convert rfc822-to-8bit
-	(ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Tue, 1 Mar 2016 18:53:40 -0500
-Content-Description: Mail message body
+Received: from mail-wm0-f46.google.com ([74.125.82.46]:37431 "EHLO
+	mail-wm0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751454AbcCBOwE (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Mar 2016 09:52:04 -0500
+Received: by mail-wm0-f46.google.com with SMTP id p65so81331670wmp.0
+        for <linux-pwm@vger.kernel.org>; Wed, 02 Mar 2016 06:52:03 -0800 (PST)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Recipients <7sales@laiisoncomputech.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-arm-kernel@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Jon Mason <jonmason@broadcom.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>
 
-Hi,
+On Wed, Mar 2, 2016 at 1:55 AM, Arnd Bergmann <arnd@arndb.de> wrote:
+> On Tuesday 01 March 2016 12:42:49 Yendapally Reddy Dhananjaya Reddy wrote:
+>>                 };
+>>
+>> +               pwm: pwm@31000 {
+>> +                       compatible = "brcm,iproc-pwm";
+>> +                       reg = <0x31000 0x28>;
+>> +                       clocks = <&osc>;
+>> +                       #pwm-cells = >;
+>> +                       status = "disabled";
+>> +               };
+>>
+>
+> Should this also list "brcm,kona-pwm" as compatible? From patch
+> 1, it sounds like that was the original one.
 
-Clean tested working pulls CPUs and QTYs in stock.
+Arnd,
 
-115 X X5650
-65 X E5410
-75 X X5660
-145 X E5530
-100 X E5645
-40 X X5680
-75 X X5690
+The NSP is a iProc based SoC and the pwm controller register offsets are
+slightly differ with the kona pwm controller. The compatible will be either
+"brcm,kona-pwm" or "brcm,iproc-pwm".
 
-Brand new sealed IP phones and QTYs in stock.
+>
+>         Arnd
 
-55 x CP-7937G
-77 x CP-7942G
-54 x CP-7945G
-75 x CP-7962G
-=2E.....
-45 x Avaya 9630
-65 x Avaya 9641
-55 x Avaya 9640=20
-
-USED IT HARDWARE FROM:
-
-=46UJITSU       IBM         SUN        HP
-QUANTUM   DELL       HDS        STK
-NETAPP      SGI         Oracle      EMC=B2
-
-3Com, ADVA, Alcatel, Brocade, Cisco,
-Cabletron, Enterasys, Extreme Networks,
-Huawei, Marconi, Nortel, Qlogic, Avaya
-
-Let me know if you're interested. We are very open to offers and willin=
-g to work with you to make sure that we have a deal.
-
-Sincerely
-Barbara Johnson
-Laison Computech Inc
-Tel: +1-657-205-7860
-=46ax: +1-347-214-0478
-Email: sales@laiisoncomputech.com
-Web: www.laisoncomputech.com
+Regards
+Dhananjay
