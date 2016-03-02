@@ -1,7 +1,7 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [RESEND 01/11] pwm: Add PWM Capture support
-Date: Wed,  2 Mar 2016 15:31:59 +0000
-Message-ID: <1456932729-9667-2-git-send-email-lee.jones@linaro.org>
+Subject: [RESEND 02/11] pwm: sysfs: Add PWM Capture support
+Date: Wed,  2 Mar 2016 15:32:00 +0000
+Message-ID: <1456932729-9667-3-git-send-email-lee.jones@linaro.org>
 References: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,99 +21,78 @@ To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: linux-pwm@vger.kernel.org, kernel@stlinux.com, ajitpal.singh@st.com, thierry.reding@gmail.com, Lee Jones <lee.jones@linaro.org>, maxime.coquelin@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-Supply a PWM Capture call-back Op in order to pass back
-information obtained by running analysis on PWM a signal.
-This would normally (at least during testing) be called from
-the Sysfs routines with a view to printing out PWM Capture
-data which has been encoded into a string.
+Allow a user to read PWM Capture results from /sysfs. First,
+the user must tell PWM Capture which channel they wish to
+read from:
+
+  $ echo 2 > $PWMCHIP/capture
+
+To start a capture and read the result, simply read the file:
+
+  $ cat $PWMCHIP/capture
+
+The output format is left to the device.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/core.c  | 26 ++++++++++++++++++++++++++
- include/linux/pwm.h | 13 +++++++++++++
- 2 files changed, 39 insertions(+)
+ drivers/pwm/sysfs.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index d24ca5f..8f4a8a9 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -494,6 +494,32 @@ unlock:
- EXPORT_SYMBOL_GPL(pwm_set_polarity);
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index 9c90886..3572ef4 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -23,6 +23,8 @@
+ #include <linux/kdev_t.h>
+ #include <linux/pwm.h>
  
- /**
-+ * pwm_capture() - capture and report a PWM signal
-+ * @pwm: PWM device
-+ * @channel: PWM capture channel to use
-+ * @buf: buffer to place output message into
-+ *
-+ * Returns: 0 on success or a negative error code on failure.
-+ */
-+int pwm_capture(struct pwm_device *pwm, int channel, char *buf)
-+{
-+	int err;
++static int capture_channel;
 +
-+	if (!pwm || !pwm->chip->ops)
-+		return -EINVAL;
-+
-+	if (!pwm->chip->ops->capture)
-+		return -ENOSYS;
-+
-+	mutex_lock(&pwm->lock);
-+	err = pwm->chip->ops->capture(pwm->chip, pwm, channel, buf);
-+	mutex_unlock(&pwm->lock);
-+
-+	return err;
-+}
-+EXPORT_SYMBOL_GPL(pwm_capture);
-+
-+/**
-  * pwm_enable() - start a PWM output toggling
-  * @pwm: PWM device
-  *
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index cfc3ed4..7bcff6b 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -33,6 +33,11 @@ int pwm_enable(struct pwm_device *pwm);
-  * pwm_disable - stop a PWM output toggling
-  */
- void pwm_disable(struct pwm_device *pwm);
-+
-+/*
-+ * pwm_capture - capture and report a PWM signal
-+ */
-+int pwm_capture(struct pwm_device *pwm, int channel, char *buf);
- #else
- static inline struct pwm_device *pwm_request(int pwm_id, const char *label)
- {
-@@ -56,6 +61,11 @@ static inline int pwm_enable(struct pwm_device *pwm)
- static inline void pwm_disable(struct pwm_device *pwm)
- {
+ struct pwm_export {
+ 	struct device child;
+ 	struct pwm_device *pwm;
+@@ -167,16 +169,42 @@ static ssize_t polarity_store(struct device *child,
+ 	return ret ? : size;
  }
-+
-+static inline int pwm_capture(struct pwm_device *pwm, int channel, char *buf)
-+{
-+	return -EINVAL;
-+}
- #endif
  
- struct pwm_chip;
-@@ -150,6 +160,7 @@ static inline enum pwm_polarity pwm_get_polarity(const struct pwm_device *pwm)
-  * @free: optional hook for freeing a PWM
-  * @config: configure duty cycles and period length for this PWM
-  * @set_polarity: configure the polarity of this PWM
-+ * @capture: capture and report PWM signal
-  * @enable: enable PWM output toggling
-  * @disable: disable PWM output toggling
-  * @dbg_show: optional routine to show contents in debugfs
-@@ -162,6 +173,8 @@ struct pwm_ops {
- 		      int duty_ns, int period_ns);
- 	int (*set_polarity)(struct pwm_chip *chip, struct pwm_device *pwm,
- 			    enum pwm_polarity polarity);
-+	int (*capture)(struct pwm_chip *chip, struct pwm_device *pwm,
-+		       int channel, char *buf);
- 	int (*enable)(struct pwm_chip *chip, struct pwm_device *pwm);
- 	void (*disable)(struct pwm_chip *chip, struct pwm_device *pwm);
- #ifdef CONFIG_DEBUG_FS
++static ssize_t capture_show(struct device *child,
++			    struct device_attribute *attr,
++			    char *buf)
++{
++	struct pwm_device *pwm = child_to_pwm_device(child);
++
++	return pwm_capture(pwm, capture_channel, buf);
++}
++
++static ssize_t capture_store(struct device *child,
++			     struct device_attribute *attr,
++			     const char *buf, size_t size)
++{
++	int val, ret;
++
++	ret = kstrtoint(buf, 0, &val);
++	if (ret)
++		return ret;
++
++	capture_channel = val;
++
++	return size;
++}
++
+ static DEVICE_ATTR_RW(period);
+ static DEVICE_ATTR_RW(duty_cycle);
+ static DEVICE_ATTR_RW(enable);
+ static DEVICE_ATTR_RW(polarity);
++static DEVICE_ATTR_RW(capture);
+ 
+ static struct attribute *pwm_attrs[] = {
+ 	&dev_attr_period.attr,
+ 	&dev_attr_duty_cycle.attr,
+ 	&dev_attr_enable.attr,
+ 	&dev_attr_polarity.attr,
++	&dev_attr_capture.attr,
+ 	NULL
+ };
+ ATTRIBUTE_GROUPS(pwm);
 -- 
 1.9.1
