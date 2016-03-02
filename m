@@ -1,8 +1,7 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [RESEND 05/11] pwm: sti: Supply PWM Capture register addresses and
- bit locations
-Date: Wed,  2 Mar 2016 15:32:03 +0000
-Message-ID: <1456932729-9667-6-git-send-email-lee.jones@linaro.org>
+Subject: [RESEND 04/11] pwm: sti: Only request clock rate when you need to
+Date: Wed,  2 Mar 2016 15:32:02 +0000
+Message-ID: <1456932729-9667-5-git-send-email-lee.jones@linaro.org>
 References: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,75 +21,62 @@ To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: linux-pwm@vger.kernel.org, kernel@stlinux.com, ajitpal.singh@st.com, thierry.reding@gmail.com, Lee Jones <lee.jones@linaro.org>, maxime.coquelin@st.com
 List-Id: linux-pwm@vger.kernel.org
 
+In the original code the clock rate was only obtained during
+initialisation; however, the rate may change between then and
+its use.  This patch ensures the correct rate is acquired just
+before use.
+
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/pwm-sti.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ drivers/pwm/pwm-sti.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index aa217e2..2336bac 100644
+index 4e06c4d..aa217e2 100644
 --- a/drivers/pwm/pwm-sti.c
 +++ b/drivers/pwm/pwm-sti.c
-@@ -22,26 +22,48 @@
- #include <linux/time.h>
+@@ -51,7 +51,6 @@ struct sti_pwm_compat_data {
  
- #define PWM_OUT_VAL(x)	(0x00 + (4 * (x))) /* Channel's Duty Cycle register */
-+#define PWM_CPT_VAL(x)	(0x10 + (4 * (x))) /* Capture value */
-+#define PWM_CPT_EDGE(x) (0x30 + (4 * (x))) /* Edge to capture on */
+ struct sti_pwm_chip {
+ 	struct device *dev;
+-	unsigned long clk_rate;
+ 	struct clk *pwm_clk;
+ 	struct regmap *regmap;
+ 	struct sti_pwm_compat_data *cdata;
+@@ -86,13 +85,20 @@ static int sti_pwm_get_prescale(struct sti_pwm_chip *pc, unsigned long period,
+ 				unsigned int *prescale)
+ {
+ 	struct sti_pwm_compat_data *cdata = pc->cdata;
++	unsigned long clk_rate;
+ 	unsigned long val;
+ 	unsigned int ps;
  
- #define STI_PWM_CTRL	0x50		/* Control/Config register */
- #define STI_INT_EN	0x54		/* Interrupt Enable/Disable register */
-+#define STI_INT_STA	0x58		/* Interrupt Status register */
-+#define PWM_INT_ACK			0x5c
- #define PWM_PRESCALE_LOW_MASK		0x0f
- #define PWM_PRESCALE_HIGH_MASK		0xf0
-+#define PWM_CPT_EDGE_MASK		0x03
-+#define PWM_INT_ACK_MASK		0x1ff
++	clk_rate = clk_get_rate(pc->pwm_clk);
++	if (!clk_rate) {
++		dev_err(pc->dev, "failed to get clock rate\n");
++		return -EINVAL;
++	}
 +
-+#define STI_MAX_CPT_CHANS		4
-+#define CPT_DC_MAX			0xff
+ 	/*
+ 	 * prescale = ((period_ns * clk_rate) / (10^9 * (max_pwm_count + 1)) - 1
+ 	 */
+-	val = NSEC_PER_SEC / pc->clk_rate;
++	val = NSEC_PER_SEC / clk_rate;
+ 	val *= cdata->max_pwm_cnt + 1;
  
- /* Regfield IDs */
- enum {
- 	/* Bits in PWM_CTRL*/
- 	PWMCLK_PRESCALE_LOW,
- 	PWMCLK_PRESCALE_HIGH,
-+	CPTCLK_PRESCALE,
+ 	if (period % val) {
+@@ -353,12 +359,6 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 		return PTR_ERR(pc->pwm_clk);
+ 	}
  
- 	PWM_OUT_EN,
-+	PWM_CPT_EN,
- 
- 	PWM_CPT_INT_EN,
-+	PWM_CPT_INT_STAT,
- 
- 	/* Keep last */
- 	MAX_REGFIELDS
- };
- 
-+/* Each capture input can be programmed to detect rising-edge, falling-edge,
-+ * either edge or neither egde
-+ */
-+enum sti_cpt_edge {
-+	CPT_EDGE_DISABLED,
-+	CPT_EDGE_RISING,
-+	CPT_EDGE_FALLING,
-+	CPT_EDGE_BOTH,
-+};
-+
- struct sti_pwm_compat_data {
- 	const struct reg_field *reg_fields;
- 	unsigned int num_chan;
-@@ -69,8 +91,11 @@ struct sti_pwm_chip {
- static const struct reg_field sti_pwm_regfields[MAX_REGFIELDS] = {
- 	[PWMCLK_PRESCALE_LOW]	= REG_FIELD(STI_PWM_CTRL, 0, 3),
- 	[PWMCLK_PRESCALE_HIGH]	= REG_FIELD(STI_PWM_CTRL, 11, 14),
-+	[CPTCLK_PRESCALE]	= REG_FIELD(STI_PWM_CTRL, 4, 8),
- 	[PWM_OUT_EN]		= REG_FIELD(STI_PWM_CTRL, 9, 9),
-+	[PWM_CPT_EN]		= REG_FIELD(STI_PWM_CTRL, 10, 10),
- 	[PWM_CPT_INT_EN]	= REG_FIELD(STI_INT_EN, 1, 4),
-+	[PWM_CPT_INT_STAT]	= REG_FIELD(STI_INT_STA, 1, 4),
- };
- 
- static inline struct sti_pwm_chip *to_sti_pwmchip(struct pwm_chip *chip)
+-	pc->clk_rate = clk_get_rate(pc->pwm_clk);
+-	if (!pc->clk_rate) {
+-		dev_err(dev, "failed to get clock rate\n");
+-		return -EINVAL;
+-	}
+-
+ 	ret = clk_prepare(pc->pwm_clk);
+ 	if (ret) {
+ 		dev_err(dev, "failed to prepare clock\n");
 -- 
 1.9.1
