@@ -1,66 +1,99 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 5/5] ARM: dts: DRA7: Add dt nodes for PWMSS
-Date: Wed, 2 Mar 2016 12:26:34 -0600
-Message-ID: <20160302182634.GA26055@rob-hp-laptop>
+From: "Franklin S Cooper Jr." <fcooper@ti.com>
+Subject: Re: [PATCH v3 1/5] pwms: pwm-ti*: Remove support for local clock
+ gating
+Date: Wed, 2 Mar 2016 13:41:26 -0600
+Message-ID: <56D741E6.3000708@ti.com>
 References: <1456439796-28546-1-git-send-email-fcooper@ti.com>
- <1456439796-28546-6-git-send-email-fcooper@ti.com>
+ <1456439796-28546-2-git-send-email-fcooper@ti.com>
+ <20160229220444.GQ13417@atomide.com> <56D4C69D.1090100@ti.com>
+ <20160229225536.GR13417@atomide.com> <56D4D032.7040801@ti.com>
+ <20160229232011.GU13417@atomide.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:47873 "EHLO mail.kernel.org"
+Received: from arroyo.ext.ti.com ([192.94.94.40]:47309 "EHLO arroyo.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1756465AbcCBS0j (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 2 Mar 2016 13:26:39 -0500
-Content-Disposition: inline
-In-Reply-To: <1456439796-28546-6-git-send-email-fcooper@ti.com>
+	id S1751560AbcCBTl5 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Wed, 2 Mar 2016 14:41:57 -0500
+In-Reply-To: <20160229232011.GU13417@atomide.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Franklin S Cooper Jr <fcooper@ti.com>
-Cc: paul@pwsan.com, t-kristo@ti.com, tony@atomide.com, vigneshr@ti.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: paul@pwsan.com, t-kristo@ti.com, vigneshr@ti.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
 
-On Thu, Feb 25, 2016 at 04:36:36PM -0600, Franklin S Cooper Jr wrote:
-> From: Vignesh R <vigneshr@ti.com>
-> 
-> Add PWMSS device tree nodes for DRA7 SoC family and add documentation
-> for dt bindings.
-> 
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> ---
-> Version 3 changes:
-> None
-> 
->  .../devicetree/bindings/pwm/pwm-tiehrpwm.txt       |  8 +++
->  .../devicetree/bindings/pwm/pwm-tipwmss.txt        | 17 +++++-
->  arch/arm/boot/dts/dra7.dtsi                        | 64 ++++++++++++++++++++++
->  3 files changed, 88 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
-> index 9c100b2..25d91ae 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
-> @@ -4,6 +4,7 @@ Required properties:
->  - compatible: Must be "ti,<soc>-ehrpwm".
->    for am33xx - compatible = "ti,am33xx-ehrpwm";
->    for da850  - compatible = "ti,da850-ehrpwm", "ti,am33xx-ehrpwm";
-> +  for dra7xx - compatible = "ti,dra7xx-ehrpwm", "ti,am33xx-ehrpwm";
 
-We're starting to push back on wildcards in compatible strings. I guess 
-this is okay...
 
->  - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
->    the cells format. The only third cell flag supported by this binding is
->    PWM_POLARITY_INVERTED.
-> @@ -27,3 +28,10 @@ ehrpwm0: ehrpwm@0 { /* EHRPWM on da850 */
->  	#pwm-cells = <3>;
->  	reg = <0x300000 0x2000>;
->  };
-> +
-> +ehrpwm0: ehrpwm@0 { /* EHRPWM on dra7xx */
+On 02/29/2016 05:20 PM, Tony Lindgren wrote:
+> * Franklin S Cooper Jr. <fcooper@ti.com> [160229 15:12]:
+>>
+>> On 02/29/2016 04:55 PM, Tony Lindgren wrote:
+>>> * Franklin S Cooper Jr. <fcooper@ti.com> [160229 14:31]:
+>>>> On 02/29/2016 04:04 PM, Tony Lindgren wrote:
+>>>>> Hmm but why are you also removing the pm_runtime calls? Those
+>>>>> actually do take care of gating the clocks via the interconnect
+>>>>> level code that is hwmod in this case.
+>>>> I removed all PM runtime calls that revolved around
+>>>> pwmss_submodule_state_change. Originally the driver would do
+>>>> a pm_runtime_get_sync then call pwmss_submodule_state_change
+>>>> and then immediately call pm_runtime_put_sync. Without
+>>>> pwmss_submodule_state_change those calls would be
+>>>> meaningless.  I also removed pm_runtime calls in error paths
+>>>> that no longer existed.
+>>> Typically the interconnect level code can gate the clkctrl bit
+>>> for the module with PM runtime even with no other driver specific
+>>> registers. If you remove the pm_runtime calls, that does not
+>>> happen.
+>> So the clocks should be unlocked when ever the IP registers are
+>> being read/written or if the peripheral is being used for
+>> example
+>> the pwm signal is being generated. All these cases are already
+>> being handled.
+>>
+>> Using ecap driver as an example.
+>>
+>> Pm_runtime_get_sync is called within ecap_pwm_enable when
+>> the pwm signal is to be generated. Pm_runtime_put_sync is called
+>> when the pwm signal is to be stopped.
+>>
+>> When either the pwm signal polarity is set or pwm
+>> configuration is made
+>> then a pm_runtime_get_sync and pm_runtime_put_sync are
+>> called within
+>> the same function surrounding calls to the IP's registers.
+>>
+>> Probe is calling pm_runtime_enable while remove is calling
+>> pm_runtime_disable.
+> OK good to hear you have considered this. The above answers
+> my questions then thanks.
+>
+>> So the correct pm_runtime calls are being made from what I
+>> can see.
+>> I'm not sure I understand the concern since removing those
+>> calls aren't
+>> creating any kind of imbalance.
+> OK thanks for checking.
+>
+>> If I'm not addressing your concern please give me an example
+>> of where
+>> you see a possible issue.
+> No that's fine. I thought you're ripping out all of the the
+> pm_runtime based on just looking at the patch :)
+>
+>>> Also, how do you know this change does not affect the other
+>>> SoC variants using the same driver?
+>> I've tested these changes on AM335x GP and AM437x GP evms.
+>> AM335x
+>> and AM437x were the only other users of this driver. Sorry 
+>> I should of
+>> documented this in my cover-letter.
+> OK good to hear.
+>
+> Thanks,
+>
+> Tony
 
-Should be pwm@48440200
-
-> +	compatible = "ti,dra7xx-ehrpwm", "ti,am33xx-ehrpwm";
-> +	#pwm-cells = <3>;
-> +	reg = <0x48440200 0x80>;
-> +	ti,hwmods = "ehrpwm0";
-> +};
+I know there are some comments regarding other patches in
+this patchset but this patch is unrelated and can be pulled
+in separately. Any objections to this or should I just
+resubmit this patch by itself?
