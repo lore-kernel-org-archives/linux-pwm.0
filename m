@@ -1,168 +1,167 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [RESEND 07/11] pwm: sti: Initialise PWM Capture channel data
-Date: Wed,  2 Mar 2016 15:32:05 +0000
-Message-ID: <1456932729-9667-8-git-send-email-lee.jones@linaro.org>
+Subject: [RESEND 08/11] pwm: sti: Add support for PWM Capture IRQs
+Date: Wed,  2 Mar 2016 15:32:06 +0000
+Message-ID: <1456932729-9667-9-git-send-email-lee.jones@linaro.org>
 References: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f53.google.com ([74.125.82.53]:38205 "EHLO
-	mail-wm0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754862AbcCBPeW (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Mar 2016 10:34:22 -0500
-Received: by mail-wm0-f53.google.com with SMTP id l68so83170685wml.1
-        for <linux-pwm@vger.kernel.org>; Wed, 02 Mar 2016 07:34:21 -0800 (PST)
+Received: from mail-wm0-f47.google.com ([74.125.82.47]:35708 "EHLO
+	mail-wm0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754959AbcCBPeX (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Mar 2016 10:34:23 -0500
+Received: by mail-wm0-f47.google.com with SMTP id l68so91157263wml.0
+        for <linux-pwm@vger.kernel.org>; Wed, 02 Mar 2016 07:34:23 -0800 (PST)
 In-Reply-To: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: kernel@stlinux.com, maxime.coquelin@st.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, ajitpal.singh@st.com, Lee Jones <lee.jones@linaro.org>
 
-Each PWM Capture channel is allocated a structure to hold its own
-state.  During a capture the channel may be partaking in one of 3
-phases.  Initial (rising) phase change, a subsequent (falling)
-phase change indicating end of the duty-cycle phase and finally
-a final (rising) phase change indicating the end of the period.
-The timer value snapshot each event is held in a variable of the
-same name, and the phase number (0, 1, 2) is contained in the
-index variable.  Other channel specific information, such as GPIO
-pin, the IRQ wait queue and locking is also contained in the
-structure.  This patch initialises this structure for each of
-the available channels.
+Here we're requesting the PWM Capture IRQ and supplying the
+handler which will be called in the event of an IRQ fire to
+handle it.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/pwm-sti.c | 49 ++++++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 42 insertions(+), 7 deletions(-)
+ drivers/pwm/pwm-sti.c | 91 ++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 90 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index 9e6b1c8..fca692a 100644
+index fca692a..82a69e4 100644
 --- a/drivers/pwm/pwm-sti.c
 +++ b/drivers/pwm/pwm-sti.c
-@@ -11,15 +11,19 @@
-  */
+@@ -12,6 +12,7 @@
  
  #include <linux/clk.h>
-+#include <linux/gpio.h>
+ #include <linux/gpio.h>
++#include <linux/interrupt.h>
  #include <linux/math64.h>
  #include <linux/mfd/syscon.h>
  #include <linux/module.h>
- #include <linux/of.h>
-+#include <linux/of_gpio.h>
- #include <linux/platform_device.h>
- #include <linux/pwm.h>
- #include <linux/regmap.h>
-+#include <linux/sched.h>
- #include <linux/slab.h>
- #include <linux/time.h>
-+#include <linux/wait.h>
- 
- #define PWM_OUT_VAL(x)	(0x00 + (4 * (x))) /* Channel's Duty Cycle register */
- #define PWM_CPT_VAL(x)	(0x10 + (4 * (x))) /* Capture value */
-@@ -64,9 +68,18 @@ enum sti_cpt_edge {
- 	CPT_EDGE_BOTH,
- };
- 
-+struct sti_cpt_data {
-+	u32 snapshot[3];
-+	int index;
-+	int gpio;
-+	struct mutex lock;
-+	wait_queue_head_t wait;
-+};
-+
- struct sti_pwm_compat_data {
- 	const struct reg_field *reg_fields;
--	unsigned int num_chan;
-+	unsigned int pwm_num_chan;
-+	unsigned int cpt_num_chan;
- 	unsigned int max_pwm_cnt;
- 	unsigned int max_prescale;
- };
-@@ -77,6 +90,7 @@ struct sti_pwm_chip {
- 	struct clk *cpt_clk;
- 	struct regmap *regmap;
- 	struct sti_pwm_compat_data *cdata;
-+	struct sti_cpt_data *cpt_data[STI_MAX_CPT_CHANS];
+@@ -94,7 +95,9 @@ struct sti_pwm_chip {
  	struct regmap_field *prescale_low;
  	struct regmap_field *prescale_high;
  	struct regmap_field *pwm_out_en;
-@@ -307,10 +321,15 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
- 	struct device_node *np = dev->of_node;
- 	struct sti_pwm_compat_data *cdata = pc->cdata;
- 	u32 num_chan;
-+	int ret;
++	struct regmap_field *pwm_cpt_en;
+ 	struct regmap_field *pwm_cpt_int_en;
++	struct regmap_field *pwm_cpt_int_stat;
+ 	struct pwm_chip chip;
+ 	struct pwm_device *cur;
+ 	unsigned long configured;
+@@ -314,6 +317,74 @@ static const struct pwm_ops sti_pwm_ops = {
+ 	.owner = THIS_MODULE,
+ };
  
--	of_property_read_u32(np, "st,pwm-num-chan", &num_chan);
--	if (num_chan)
--		cdata->num_chan = num_chan;
-+	ret = of_property_read_u32(np, "st,pwm-num-chan", &num_chan);
-+	if (!ret)
-+		cdata->pwm_num_chan = num_chan;
++static irqreturn_t sti_pwm_interrupt(int irq, void *data)
++{
++	struct sti_pwm_chip *pc = data;
++	struct device *dev = pc->dev;
++	struct sti_cpt_data *d;
++	int channel;
++	int cpt_int_stat;
++	int reg;
++	int ret = IRQ_NONE;
 +
-+	ret = of_property_read_u32(np, "st,capture-num-chan", &num_chan);
-+	if (!ret)
-+		cdata->cpt_num_chan = num_chan;
- 
- 	reg_fields = cdata->reg_fields;
- 
-@@ -347,9 +366,11 @@ static const struct regmap_config sti_pwm_regmap_config = {
- static int sti_pwm_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-+	struct device_node *np = dev->of_node;
- 	struct sti_pwm_compat_data *cdata;
- 	struct sti_pwm_chip *pc;
- 	struct resource *res;
-+	unsigned int chan;
- 	int ret;
- 
- 	pc = devm_kzalloc(dev, sizeof(*pc), GFP_KERNEL);
-@@ -378,7 +399,8 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	cdata->reg_fields   = &sti_pwm_regfields[0];
- 	cdata->max_prescale = 0xff;
- 	cdata->max_pwm_cnt  = 255;
--	cdata->num_chan     = 1;
-+	cdata->pwm_num_chan     = 1;
-+	cdata->cpt_num_chan	= 0;
- 
- 	pc->cdata = cdata;
- 	pc->dev = dev;
-@@ -389,6 +411,19 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
-+	for (chan = 0; chan < cdata->cpt_num_chan; chan++) {
-+		struct sti_cpt_data *data;
++	ret = regmap_field_read(pc->pwm_cpt_int_stat, &cpt_int_stat);
++	if (ret)
++		return ret;
 +
-+		data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-+		if (!data)
-+			return -ENOMEM;
++	while (cpt_int_stat) {
++		channel = ffs(cpt_int_stat) - 1;
 +
-+		init_waitqueue_head(&data->wait);
-+		mutex_init(&data->lock);
-+		data->gpio = of_get_named_gpio(np, "capture-gpios", chan);
-+		pc->cpt_data[chan] = data;
++		d = pc->cpt_data[channel];
++
++		/*
++		 * Capture input:
++		 *    _______                   _______
++		 *   |       |                 |       |
++		 * __|       |_________________|       |________
++		 *   ^0      ^1                ^2
++		 *
++		 * Capture start by the first available rising edge
++		 * When a capture event occurs, capture value (CPT_VALx)
++		 * is stored, index incremented, capture edge changed.
++		 *
++		 * After the capture, if the index > 1, we have collected
++		 * the necessary data so we signal the thread waiting for it
++		 * and disable the capture by setting capture edge to none
++		 *
++		 */
++
++		regmap_read(pc->regmap,
++			    PWM_CPT_VAL(channel), &d->snapshot[d->index]);
++
++		switch (d->index) {
++		case 0:
++		case 1:
++			regmap_read(pc->regmap, PWM_CPT_EDGE(channel), &reg);
++			reg ^= PWM_CPT_EDGE_MASK;
++			regmap_write(pc->regmap, PWM_CPT_EDGE(channel), reg);
++
++			d->index++;
++			break;
++		case 2:
++			regmap_write(pc->regmap,
++				     PWM_CPT_EDGE(channel), CPT_EDGE_DISABLED);
++			wake_up(&d->wait);
++			break;
++		default:
++			dev_err(dev, "Internal error\n");
++		}
++
++		clear_bit(channel, (unsigned long int *)&cpt_int_stat);
++
++		ret = IRQ_HANDLED;
 +	}
 +
- 	pc->pwm_clk = of_clk_get_by_name(dev->of_node, "pwm");
- 	if (IS_ERR(pc->pwm_clk)) {
- 		dev_err(dev, "failed to get PWM clock\n");
-@@ -416,7 +451,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	pc->chip.dev = dev;
- 	pc->chip.ops = &sti_pwm_ops;
- 	pc->chip.base = -1;
--	pc->chip.npwm = pc->cdata->num_chan;
-+	pc->chip.npwm = pc->cdata->pwm_num_chan;
- 	pc->chip.can_sleep = true;
++	/* Just ACK everything */
++	regmap_write(pc->regmap, PWM_INT_ACK, PWM_INT_ACK_MASK);
++
++	return ret;
++}
++
+ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
+ {
+ 	struct device *dev = pc->dev;
+@@ -354,6 +425,11 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
+ 	if (IS_ERR(pc->pwm_cpt_int_en))
+ 		return PTR_ERR(pc->pwm_cpt_int_en);
  
- 	ret = pwmchip_add(&pc->chip);
-@@ -436,7 +471,7 @@ static int sti_pwm_remove(struct platform_device *pdev)
- 	struct sti_pwm_chip *pc = platform_get_drvdata(pdev);
- 	unsigned int i;
++	pc->pwm_cpt_int_stat = devm_regmap_field_alloc(dev, pc->regmap,
++						reg_fields[PWM_CPT_INT_STAT]);
++	if (IS_ERR(pc->pwm_cpt_int_stat))
++		return PTR_ERR(pc->pwm_cpt_int_stat);
++
+ 	return 0;
+ }
  
--	for (i = 0; i < pc->cdata->num_chan; i++)
-+	for (i = 0; i < pc->cdata->pwm_num_chan; i++)
- 		pwm_disable(&pc->chip.pwms[i]);
+@@ -371,7 +447,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 	struct sti_pwm_chip *pc;
+ 	struct resource *res;
+ 	unsigned int chan;
+-	int ret;
++	int ret, irq;
  
- 	clk_unprepare(pc->pwm_clk);
+ 	pc = devm_kzalloc(dev, sizeof(*pc), GFP_KERNEL);
+ 	if (!pc)
+@@ -392,6 +468,19 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(pc->regmap))
+ 		return PTR_ERR(pc->regmap);
+ 
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		dev_err(&pdev->dev, "Failed to obtain IRQ\n");
++		return -ENODEV;
++	}
++
++	ret = devm_request_irq(&pdev->dev, irq, sti_pwm_interrupt,
++			       0, pdev->name, (void *) pc);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "Failed to request IRQ\n");
++		return ret;
++	}
++
+ 	/*
+ 	 * Setup PWM data with default values: some values could be replaced
+ 	 * with specific ones provided from Device Tree.
 -- 
 1.9.1
