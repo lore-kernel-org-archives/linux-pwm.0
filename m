@@ -1,39 +1,31 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2] pwm: pwm-lpc18xx-sct: test clock rate to avoid
- division by 0
-Date: Fri, 4 Mar 2016 16:01:06 +0100
-Message-ID: <20160304150106.GA26400@ulmo.nvidia.com>
-References: <1456959443-10032-1-git-send-email-wsa@the-dreams.de>
+Subject: Re: [PATCH 3/6] pwm: pwm-img: test clock rate to avoid division by 0
+Date: Fri, 4 Mar 2016 16:01:30 +0100
+Message-ID: <20160304150130.GB26400@ulmo.nvidia.com>
+References: <1456958018-7849-1-git-send-email-wsa@the-dreams.de>
+ <1456958018-7849-4-git-send-email-wsa@the-dreams.de>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0401651494617076072=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1456959443-10032-1-git-send-email-wsa@the-dreams.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Wolfram Sang <wsa@the-dreams.de>
-Cc: linux-pwm@vger.kernel.org, Joachim Eastwood <manabian@gmail.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-List-Id: linux-pwm@vger.kernel.org
-
-
---===============0401651494617076072==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="wac7ysb48OaltWcw"
+	protocol="application/pgp-signature"; boundary="Fba/0zbH8Xs+Fj9o"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pa0-f49.google.com ([209.85.220.49]:36789 "EHLO
+	mail-pa0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752255AbcCDPBf (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 4 Mar 2016 10:01:35 -0500
 Content-Disposition: inline
+In-Reply-To: <1456958018-7849-4-git-send-email-wsa@the-dreams.de>
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
+To: Wolfram Sang <wsa@the-dreams.de>
+Cc: linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-pwm@vger.kernel.org
 
 
---wac7ysb48OaltWcw
+--Fba/0zbH8Xs+Fj9o
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 02, 2016 at 11:57:09PM +0100, Wolfram Sang wrote:
+On Wed, Mar 02, 2016 at 11:33:34PM +0100, Wolfram Sang wrote:
 > From: Wolfram Sang <wsa+renesas@sang-engineering.com>
 >=20
 > The clk API may return 0 on clk_get_rate, so we should check the result b=
@@ -42,46 +34,35 @@ efore
 >=20
 > Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 > ---
->  drivers/pwm/pwm-lpc18xx-sct.c | 5 +++++
+>=20
+> Should go individually via subsystem tree.
+>=20
+>  drivers/pwm/pwm-img.c | 5 +++++
 >  1 file changed, 5 insertions(+)
 
 Applied, thanks.
 
 Thierry
 
---wac7ysb48OaltWcw
+--Fba/0zbH8Xs+Fj9o
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJW2aMyAAoJEN0jrNd/PrOhkxgP/iTt9FNmS6N8Ml2QARkvRJbG
-15xtuYJAcnE/UbpSp/6mS68Ejf5Fs2R9wVoamOxt+IHPptl+us0Ys80t9+pSK94+
-5d8+C3QTOjKSwoAZm/h9omgOAVy3VjAEvGXuN+CZqX0kd2dBtB55h2/Fu8r51kL2
-r7+os+ggpvENOoSTXilpXi7XO8TiD7eDyPPG8xmsqyUGYB+HfgXkmzqQLsSYeC1b
-+5iFYOId6WS7Kb075mkZR4UF+ckOoxmXQTESAhBJftA0zQkvb2O2koeI/q0xODV1
-12ede+TSwuWwVIfljJK8qu7SwhNbmk2BnQUxIar1DKrNyKmFMPBjACWa5dIvHepJ
-v3zWEUnQtszEahnQJZikkXsoBVojMbNHtWGUGBCJRP8Z0zl9ZPvzWtJBWYsyJOlZ
-48TXFBaKohntcZ9cohVwDftFn9JVZRbp7JJADNyhsdgA32qV/VxraDBQ4fMqjAsO
-aQMnzLW7Q1Lxf+/TCtkrpkHbbkZSuYyaCMVaL5UaRDJIZUW9WWZ5HgMPUsRqWt//
-gIZTsySYpCGJHcjQKTpJn47maw4NsDfv6NbvNxBdh1CEqExVSLNNL5XPvpAfElr1
-w72q43rpqvmfBJuUgulliQWwSswhdbTn/yatg+1x+ygP3NpXUxDr9bLa1E3Ukign
-xGMNloPGE8itKEub2hhB
-=dC7Y
+iQIcBAABCAAGBQJW2aNKAAoJEN0jrNd/PrOhrDkQALxc3vaC8cXSFuPl4OODUe8e
+m8k/64Uud/EDpWV57WbOKSKuUpf8RdnpsyNZjwhuMiDMbuoz74CmBruZ4hIQRAtZ
+WKJXSI7d5PxuDm64p5R2i26fbmr0O6LvSXNZhjC6sKdqptG9MJ2wX2aFaO4dv/Df
+I59PYbK+qkKcZdKQIXsIuWuRUXV0inn30mcBlYIFlBZvOHIeFwOrnKqbAgP7ef+B
+LoB+vaJMMfjhr9b2u6lAmTj0L5IVDlq7D3ASaXW0CQi8bg9zWfbnQRQ/hmkLMMY0
+qIVnaFQsXVVSdChO7U8KVXlm8RSE0qCIk58VsZilcZkTie4uF2QGhyCPikcvpmLN
+BWUZpEUwGFVqFLciFYne8yv6W8YSbKMCscWzaUlfQLWlZi8ZF7KOUILMEE7CKwk2
+85pO7t2WlMZRw4XY0hjjq7Ib0m4rvYNoMDwt/Gc3C1DG0dQB+VAoWFvOUU4WaDga
+xVvAoADItYbh1KetCY0CL9FrC8TSIrD+VSgAKfr/Kyaz6zGhXSkOAuYP+H1KZOE2
+ru+LYL4glqIC+9REE9R2OHkhxc5Cy+CrEib4Svia8buS0kScKO6+WI9cOQZtMbpf
+5KBi9i9KyVjJRW07w+Y9ohQor23y2rlj9ZIw+ag7jXWqPLNIgzC9UXnSR/J4FCBl
+ZBm9F+QeukGT/9OndROj
+=Zr2X
 -----END PGP SIGNATURE-----
 
---wac7ysb48OaltWcw--
-
-
---===============0401651494617076072==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============0401651494617076072==--
+--Fba/0zbH8Xs+Fj9o--
