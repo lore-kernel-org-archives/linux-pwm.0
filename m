@@ -1,53 +1,74 @@
-From: Joachim Eastwood <manabian@gmail.com>
-Subject: Re: [PATCH v2] pwm: pwm-lpc18xx-sct: test clock rate to avoid
- division by 0
-Date: Thu, 3 Mar 2016 00:28:29 +0100
-Message-ID: <CAGhQ9Vw+JoRv2vtiJ8m4NMnnYtC8t3okbDN=3DAUQMj78YxArw@mail.gmail.com>
-References: <1456959443-10032-1-git-send-email-wsa@the-dreams.de>
+From: "Franklin S Cooper Jr." <fcooper@ti.com>
+Subject: Re: [PATCH v3 5/5] ARM: dts: DRA7: Add dt nodes for PWMSS
+Date: Thu, 3 Mar 2016 19:39:22 -0600
+Message-ID: <56D8E74A.6090601@ti.com>
+References: <1456439796-28546-1-git-send-email-fcooper@ti.com>
+ <1456439796-28546-6-git-send-email-fcooper@ti.com>
+ <20160302182634.GA26055@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-io0-f193.google.com ([209.85.223.193]:33087 "EHLO
-	mail-io0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752106AbcCBX2a (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Mar 2016 18:28:30 -0500
-In-Reply-To: <1456959443-10032-1-git-send-email-wsa@the-dreams.de>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160302182634.GA26055@rob-hp-laptop>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: paul@pwsan.com, t-kristo@ti.com, tony@atomide.com, vigneshr@ti.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Wolfram Sang <wsa@the-dreams.de>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Ariel D'Alessandro <ariel@vanguardiasur.com.ar>
 
-Hi Wolfram,
+Hi Rob,
 
-On 2 March 2016 at 23:57, Wolfram Sang <wsa@the-dreams.de> wrote:
-> From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+On 03/02/2016 12:26 PM, Rob Herring wrote:
+> On Thu, Feb 25, 2016 at 04:36:36PM -0600, Franklin S Cooper Jr wrote:
+>> From: Vignesh R <vigneshr@ti.com>
+>>
+>> Add PWMSS device tree nodes for DRA7 SoC family and add documentation
+>> for dt bindings.
+>>
+>> Signed-off-by: Vignesh R <vigneshr@ti.com>
+>> ---
+>> Version 3 changes:
+>> None
+>>
+>>  .../devicetree/bindings/pwm/pwm-tiehrpwm.txt       |  8 +++
+>>  .../devicetree/bindings/pwm/pwm-tipwmss.txt        | 17 +++++-
+>>  arch/arm/boot/dts/dra7.dtsi                        | 64 ++++++++++++++++++++++
+>>  3 files changed, 88 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
+>> index 9c100b2..25d91ae 100644
+>> --- a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
+>> +++ b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
+>> @@ -4,6 +4,7 @@ Required properties:
+>>  - compatible: Must be "ti,<soc>-ehrpwm".
+>>    for am33xx - compatible = "ti,am33xx-ehrpwm";
+>>    for da850  - compatible = "ti,da850-ehrpwm", "ti,am33xx-ehrpwm";
+>> +  for dra7xx - compatible = "ti,dra7xx-ehrpwm", "ti,am33xx-ehrpwm";
+> We're starting to push back on wildcards in compatible strings. I guess 
+> this is okay...
 >
-> The clk API may return 0 on clk_get_rate, so we should check the result before
-> using it as a divisor.
+>>  - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
+>>    the cells format. The only third cell flag supported by this binding is
+>>    PWM_POLARITY_INVERTED.
+>> @@ -27,3 +28,10 @@ ehrpwm0: ehrpwm@0 { /* EHRPWM on da850 */
+>>  	#pwm-cells = <3>;
+>>  	reg = <0x300000 0x2000>;
+>>  };
+>> +
+>> +ehrpwm0: ehrpwm@0 { /* EHRPWM on dra7xx */
+> Should be pwm@48440200
+
+So the AM335x, AM437x  and DA850 all use ehrpwm0:
+ehrpwm@<address>. Also the address of 0 simply follows the
+pattern used in the other binding examples in that doc. I
+can replace the 0 address in this patch and make another
+patch that fixes it for the other examples in that file. But
+in terms of switching from ehrpwm0:ehrpwm@<address> to
+ehrpwm0:pwm@<address> that would also require making changes
+to the various dtsis also. So is it worth making that
+change? If so I have no problem doing it.
 >
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
->  drivers/pwm/pwm-lpc18xx-sct.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
-> index 9163085101bc94..9861fed4e67d04 100644
-> --- a/drivers/pwm/pwm-lpc18xx-sct.c
-> +++ b/drivers/pwm/pwm-lpc18xx-sct.c
-> @@ -360,6 +360,11 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
->         }
->
->         lpc18xx_pwm->clk_rate = clk_get_rate(lpc18xx_pwm->pwm_clk);
-> +       if (!lpc18xx_pwm->clk_rate) {
-> +               dev_err(&pdev->dev, "pwm clock has no frequency\n");
-> +               ret = -EINVAL;
-> +               goto disable_pwmclk;
-> +       }
-
-Acked-by: Joachim Eastwood <manabian@gmail.com>
-
-Thanks for fixing this.
-
-
-regards,
-Joachim Eastwood
+>> +	compatible = "ti,dra7xx-ehrpwm", "ti,am33xx-ehrpwm";
+>> +	#pwm-cells = <3>;
+>> +	reg = <0x48440200 0x80>;
+>> +	ti,hwmods = "ehrpwm0";
+>> +};
