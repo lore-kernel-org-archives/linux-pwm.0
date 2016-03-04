@@ -1,61 +1,75 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: rcar: Use ARCH_RENESAS
-Date: Fri, 4 Mar 2016 16:03:25 +0100
-Message-ID: <20160304150325.GC26400@ulmo.nvidia.com>
-References: <1456362203-21038-1-git-send-email-horms+renesas@verge.net.au>
+Subject: Re: [PATCH 1/4] pwm: omap-dmtimer: fix inaccurate period/duty_cycle
+ calculation
+Date: Fri, 4 Mar 2016 16:17:48 +0100
+Message-ID: <20160304151748.GD26400@ulmo.nvidia.com>
+References: <1454128014-22866-1-git-send-email-drivshin.allworx@gmail.com>
+ <1454128014-22866-2-git-send-email-drivshin.allworx@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="96YOpH+ONegL0A3E"
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="d9ADC0YsG2v16Js0"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pa0-f48.google.com ([209.85.220.48]:33929 "EHLO
+	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752255AbcCDPRx (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 4 Mar 2016 10:17:53 -0500
 Content-Disposition: inline
-In-Reply-To: <1456362203-21038-1-git-send-email-horms+renesas@verge.net.au>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Simon Horman <horms+renesas@verge.net.au>
-Cc: Magnus Damm <magnus.damm@gmail.com>, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+In-Reply-To: <1454128014-22866-2-git-send-email-drivshin.allworx@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: "David Rivshin (Allworx)" <drivshin.allworx@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
 
 
---96YOpH+ONegL0A3E
+--d9ADC0YsG2v16Js0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 25, 2016 at 10:03:23AM +0900, Simon Horman wrote:
-> Make use of ARCH_RENESAS in place of ARCH_SHMOBILE.
+On Fri, Jan 29, 2016 at 11:26:51PM -0500, David Rivshin (Allworx) wrote:
+> From: David Rivshin <drivshin@allworx.com>
 >=20
-> This is part of an ongoing process to migrate from ARCH_SHMOBILE to
-> ARCH_RENESAS the motivation for which being that RENESAS seems to be a mo=
-re
-> appropriate name than SHMOBILE for the majority of Renesas ARM based SoCs.
+> Fix the calculation of load_value and match_value. Currently they
+> are slightly too low, which produces a noticeably wrong PWM rate with
+> sufficiently short periods (i.e. when 1/period approaches clk_rate/2).
 >=20
-> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+> Example:
+>  clk_rate=3D32768Hz, period=3D122070ns, duty_cycle=3D61035ns (8192Hz/50% =
+PWM)
+>  Correct values: load =3D 0xfffffffc, match =3D 0xfffffffd
+>  Current values: load =3D 0xfffffffa, match =3D 0xfffffffc
+>  effective PWM: period=3D183105ns, duty_cycle=3D91553ns (5461Hz/50% PWM)
+>=20
+> Fixes: 6604c6556db9 ("pwm: Add PWM driver for OMAP using dual-mode timers=
+")
+> Signed-off-by: David Rivshin <drivshin@allworx.com>
 > ---
->  drivers/pwm/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/pwm/pwm-omap-dmtimer.c | 27 ++++++++++++++++++++-------
+>  1 file changed, 20 insertions(+), 7 deletions(-)
 
 Applied, thanks.
 
 Thierry
 
---96YOpH+ONegL0A3E
+--d9ADC0YsG2v16Js0
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJW2aO8AAoJEN0jrNd/PrOh5zYP/iluqezGIWMxaWXKjMVrpw0D
-zlPxpM8fQHm6tSXD8TUX+R5uhHFZushIvYzQdZt5ZqAxkqYyt+bGYJY53r3mHV6g
-7eeCcqYHi9dMh2uOKZwicJMTRT2G4/V6HRH29y5kV8IAG1SmYgAieqBHUK2LhnTF
-OLW4qLFi1waRTi2BJyDJXv3QQNMXWEwdWqUrUhFsU7Ft3BpKnaOFs7UUZI3MEBRT
-Pu+uYdolHjkPcHacRCc/EQ9DGCFcVtVy/bqPTPGmWEnVttZ8p3CNvO7mszF91apu
-rUFQCF+ltTlbR8eIvaCvYR9XIzk7zx/q8AYNJJnwytuaQ3i4YF7bARgR6oh0tiuh
-tbIgedNqKdiCIXqodbqZl0jB/Zc0MBKKZejcitjjHoW3JuQS2MRhSmvAizlnIuuO
-cJlDNlPkfC3xs6GzMU/TXhOgRHo/9YBpiFi8k1csSkHEBFXIm/AsUi7NjeyVsHXm
-MuyMwy5Qgulet9kbHVXtJ86rhNfeEQQrUMufaTj2oCqqfJ8F3CUU+YSw+URs/+j9
-Ow72sWQKipytkzykF7G2X5xKyW97wi6thkbLUWOFRJS5oNJywdCuJqw3IjzxvQC3
-am3qgMyKwcYQCNPLdgv75eqrfizbSRjZNPm9zJxVuYoKimUUIpLGDgK/qY48uC0D
-YvIrUhanmzF8L9ribKsX
-=WJWG
+iQIcBAABCAAGBQJW2accAAoJEN0jrNd/PrOhLEIP/1mPWKKyRJ7eU6XGcUhlkDJP
+FfQ90nkLZRTEEKBT9xT58nt3va8EY2gTRu67tsP6gyzuvac08lXcAMr6egqQziW3
+wx1EplEw1PkySbgDaToXKejmNQS+VYComeK0jPXbFlZRl1WF0VS61h39CoN75gCX
+BaBap5IzMccaC2nCWfSQk964zUG2OBOmb+rEJrmp0ZLFqyXH3lLN3G1Kd5wd3nRh
+MlvghLrykPm79zW+XDOfa5+/gRhMMt/kVAG40x74vWsTLGQm+zpms7R9PBuNJV1n
+HjTbAoE4klPryroSf6gIUhqVD2QyyM/vsaR+8kExR4HU6YWAYfG0rdtuhTbzPul+
+T6KNo3JJxmkfDWle/rzzE3cKJ/1DDzET97wWftM3q1TrL5dICIhCxuiPHERTi5mM
+32P2o0gT2cFJ9S/A6U+A9RMSEQiDhQl1HCTy1zpLR/EsmBdbIBxqGbY/ArafwGfK
+McC+Hhw9G6OTPH5x5letGdHxBR25FkglGOrPd2oGwPRrEq+VKg/Tk9+c0D65eQu6
+GmKL3Cf/jYp+ibgmteZ+EszsAL/8zplyCVOTwMvgj9VxG5bri6+Cp9OoK3qpZp3x
+anfDlvQLasGJG3bgDjGujL0Nve2NiSnBdR7qCjS8E0wGvF1Bf7H/es0mMEywqXww
+PTI6TGbrgC2+H+Q7DnEL
+=9JMa
 -----END PGP SIGNATURE-----
 
---96YOpH+ONegL0A3E--
+--d9ADC0YsG2v16Js0--
