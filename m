@@ -1,105 +1,89 @@
-From: Thierry Reding <thierry.reding@gmail.com>
+From: "David Rivshin (Allworx)" <drivshin.allworx@gmail.com>
 Subject: Re: [PATCH 0/4] pwm: omap-dmtimer: fix period/duty_cycle calculation
-Date: Fri, 4 Mar 2016 16:19:48 +0100
-Message-ID: <20160304151948.GF26400@ulmo.nvidia.com>
+Date: Fri, 4 Mar 2016 11:27:36 -0500
+Message-ID: <20160304112736.660e4223.drivshin.allworx@gmail.com>
 References: <1454128014-22866-1-git-send-email-drivshin.allworx@gmail.com>
  <20160226203100.303fe192.drivshin.allworx@gmail.com>
+ <20160304151948.GF26400@ulmo.nvidia.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Pgaa2uWPnPrfixyx"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f43.google.com ([209.85.220.43]:33830 "EHLO
-	mail-pa0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756801AbcCDPTx (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 4 Mar 2016 10:19:53 -0500
-Content-Disposition: inline
-In-Reply-To: <20160226203100.303fe192.drivshin.allworx@gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20160304151948.GF26400@ulmo.nvidia.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>, Tony Lindgren <tony@atomide.com>, Joachim Eastwood <manabian@gmail.com>, NeilBrown <neilb@suse.de>, Grant Erickson <marathon96@gmail.com>, linux-omap@vger.kernel.org, Adam Ford <aford173@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: "David Rivshin (Allworx)" <drivshin.allworx@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Tony Lindgren <tony@atomide.com>, Grant Erickson <marathon96@gmail.com>, NeilBrown <neilb@suse.de>, Joachim Eastwood <manabian@gmail.com>
 
+On Fri, 4 Mar 2016 16:19:48 +0100
+Thierry Reding <thierry.reding@gmail.com> wrote:
 
---Pgaa2uWPnPrfixyx
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On Fri, Feb 26, 2016 at 08:31:00PM -0500, David Rivshin (Allworx) wrote:
+> > On Fri, 29 Jan 2016 23:26:50 -0500
+> > "David Rivshin (Allworx)" <drivshin.allworx@gmail.com> wrote:
+> >   
+> > > From: David Rivshin <drivshin@allworx.com>
+> > > 
+> > > When using a short PWM period (approaching the min of 2/clk_rate),
+> > > pwm-omap-dmtimer does not produce accurate results. In the worst case a
+> > > requested period of 2/clk_rate would result in a real period of 4/clk_rate
+> > > instead. This is a series includes a fix for that problem, as well as
+> > > other related improvements, and is based on the current linux-pwm/for-next
+> > > tip.
+> > > 
+> > > I have tested on a Sitara AM335x platform, using a scope to verify the
+> > > output with a variety of periods and duty cycles. This includes a PWM
+> > > rate up clk_rate/2 with 50% duty cycle (e.g. generating fclk/2) with
+> > > both 32768Hz and 24MHz fclks. I do not have an OMAP4 board to test with,
+> > > although appropriate sections in the the reference manuals appear
+> > > substantially the same, so I believe the changes are equally correct
+> > > there.
+> > > 
+> > > Note that the OMAP4 TRMs do effectively state that the maximum PWM
+> > > rate is clk_rate/4, so at very fast PWM rates the behavior may not be
+> > > as reliable as I observed with Sitara. Although I suspect that it's
+> > > the same module and will also work, at least under some circumstances.
+> > > If anyone with OMAP4 hardware and a scope is so inclined, I would be
+> > > curious to know the results.
+> > > 
+> > > David Rivshin (4):
+> > >   pwm: omap-dmtimer: fix inaccurate period/duty_cycle calculation
+> > >   pwm: omap-dmtimer: add sanity checking for load and match values
+> > >   pwm: omap-dmtimer: round load and match values rather than truncate
+> > >   pwm: omap-dmtimer: add dev_dbg() message for effective period and duty
+> > >     cycle
+> > > 
+> > >  drivers/pwm/pwm-omap-dmtimer.c | 71 ++++++++++++++++++++++++++++++++----------
+> > >  1 file changed, 55 insertions(+), 16 deletions(-)
+> > >   
+> > 
+> > Hi Thierry,
+> > 
+> > Gentle ping. It does not look like you've taken this series, and I 
+> > wanted to make sure you're not waiting on something from me. It would 
+> > be nice to get at least the first patch into 4.5, if possible.  
+> 
+> I've applied patches 1 and 3, and I'm planning on sending out a pull
+> request for inclusion in v4.5-rc7 later on.
 
-On Fri, Feb 26, 2016 at 08:31:00PM -0500, David Rivshin (Allworx) wrote:
-> On Fri, 29 Jan 2016 23:26:50 -0500
-> "David Rivshin (Allworx)" <drivshin.allworx@gmail.com> wrote:
->=20
-> > From: David Rivshin <drivshin@allworx.com>
-> >=20
-> > When using a short PWM period (approaching the min of 2/clk_rate),
-> > pwm-omap-dmtimer does not produce accurate results. In the worst case a
-> > requested period of 2/clk_rate would result in a real period of 4/clk_r=
-ate
-> > instead. This is a series includes a fix for that problem, as well as
-> > other related improvements, and is based on the current linux-pwm/for-n=
-ext
-> > tip.
-> >=20
-> > I have tested on a Sitara AM335x platform, using a scope to verify the
-> > output with a variety of periods and duty cycles. This includes a PWM
-> > rate up clk_rate/2 with 50% duty cycle (e.g. generating fclk/2) with
-> > both 32768Hz and 24MHz fclks. I do not have an OMAP4 board to test with,
-> > although appropriate sections in the the reference manuals appear
-> > substantially the same, so I believe the changes are equally correct
-> > there.
-> >=20
-> > Note that the OMAP4 TRMs do effectively state that the maximum PWM
-> > rate is clk_rate/4, so at very fast PWM rates the behavior may not be
-> > as reliable as I observed with Sitara. Although I suspect that it's
-> > the same module and will also work, at least under some circumstances.
-> > If anyone with OMAP4 hardware and a scope is so inclined, I would be
-> > curious to know the results.
-> >=20
-> > David Rivshin (4):
-> >   pwm: omap-dmtimer: fix inaccurate period/duty_cycle calculation
-> >   pwm: omap-dmtimer: add sanity checking for load and match values
-> >   pwm: omap-dmtimer: round load and match values rather than truncate
-> >   pwm: omap-dmtimer: add dev_dbg() message for effective period and duty
-> >     cycle
-> >=20
-> >  drivers/pwm/pwm-omap-dmtimer.c | 71 ++++++++++++++++++++++++++++++++--=
---------
-> >  1 file changed, 55 insertions(+), 16 deletions(-)
-> >=20
->=20
-> Hi Thierry,
->=20
-> Gentle ping. It does not look like you've taken this series, and I=20
-> wanted to make sure you're not waiting on something from me. It would=20
-> be nice to get at least the first patch into 4.5, if possible.
+Thanks!
 
-I've applied patches 1 and 3, and I'm planning on sending out a pull
-request for inclusion in v4.5-rc7 later on.
+> Patches 2 and 4 didn't seem ready/critical, so let's finish those up
+> for v4.6-rc1.
 
-Patches 2 and 4 didn't seem ready/critical, so let's finish those up
-for v4.6-rc1.
+I know there was a lot of discussion on 4, but I'm not sure what the 
+concern is on patch 2. Is there something specific you're thinking of?
 
-Thierry
-
---Pgaa2uWPnPrfixyx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJW2aeUAAoJEN0jrNd/PrOharMP/0NBo53MjcIvfiqyH1s8bUSW
-rQ8NZnu06j7hhMjezlgpaq2kbIVkH0IKuLi1l6blic/uoj55f8RHZiJsbKZeV/Fm
-qI+C9Iv5RfVCDly4hNrWusnHoN59nt9FExwLmcGyCwHcSS4bExaFppz9yW567uB+
-47vUSRPjS5PfYDQwn4oB3Zq5++F++lROHzvWjHr+FcmdLBOTwVwmZZfDovJDpnIQ
-q2/78ujZ/NN5hknI2SIpaN4CijIYzKMEuy/ffLeuLI9Gf9Q7A67IswxpKYJTq92m
-tXNufCfk/zs2CfUDUj16/nBkP3awMR/dgJFu4foyrX7KMXdeojDI4BKTSaK3Oo++
-Ovi8eYTCONr8tD6qoonxkl1keYQjjIEvlEzaBtM/33hpdHdOOthuBJZtX8KfG4F3
-kHUfmNi5GyKVLbd17ZmQOELC28M/ReUH2bghSmEDRk9MrrRt/0XS9cUiEsx62ulq
-lkxPmsKsFBFS3dV9dB8lBfG2wKopk7afzGJLv5RbniylVkxpEq3tpMV0NNhUD+x3
-P5JesP5St/48HASW4mQOg27LqpQ7H0XPLNoH9NVxBjzvpeUr5iIcoglH3G/KbCAG
-A0gtYEVhSMNHZtLDFzn8XCq1YcFJQxlnhW47cTww8qQ5uni42EXqnnER46X1WYa/
-C+Z8JgzD9pGgwxVHoeAN
-=FIZX
------END PGP SIGNATURE-----
-
---Pgaa2uWPnPrfixyx--
+FYI, I know that Adam Ford is using this driver as the backend for
+a pwm-backlight control. Without patch 2 this driver will not configure 
+the HW in a legal way at 0 or 100% duty cycle. However, I forget what 
+the practical effect of that is, and Adam seemed to indicate it was OK
+for his purposes.
