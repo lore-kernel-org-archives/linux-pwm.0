@@ -1,62 +1,301 @@
-From: "'Doug Anderson' via linux-sunxi" <linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Subject: Re: [PATCH v3 00/12] pwm: add support for atomic update
-Date: Mon, 7 Mar 2016 08:34:19 -0800
-Message-ID: <CAD=FV=W3KPf8tyMviVNB9=HjefMdP+FBbN01Zhh7RKH+gkj2WQ@mail.gmail.com>
-References: <20151110173416.GB21727@ulmo>
-	<CAD=FV=WL3jYEgVe-m6QcAyQwfJgdX4J5OtKisKwyoKOrTSpEQA@mail.gmail.com>
-	<20160125170855.GA10182@ulmo>
-	<CAD=FV=Xvxeqo3imUmjukC5iYk3EZkrJ04G7C1B-w4xyr-r6-2Q@mail.gmail.com>
-	<20160203145337.GD9650@ulmo>
-	<CAD=FV=U_x1cxx6RrHuVgVV8GbOwm9DXXJcyiArbbQySUOaxrvQ@mail.gmail.com>
-	<20160222175929.GA23899@ulmo>
-	<CAD=FV=UCErW3EjYRtwt49_ztNR7cyY4U0o4R_dxdomer-Ac2Dg@mail.gmail.com>
-	<20160223143859.GA27656@ulmo>
-	<CAD=FV=UvxG3MYD4MKQJqN7W68uMjd-s+FH-e8tkrLCpS0RLmZQ@mail.gmail.com>
-	<20160223181448.GA14754@ulmo.nvidia.com>
-	<CAD=FV=VM3cOQ0HqwLANBw9MVBCyFTrSyPe_dGzgPucuMUEWRKA@mail.gmail.com>
-	<CAD=FV=VckTVD8b1g+f0G2kMeoTjvY0pAGhoDnWQN_dAmqSxBxg@mail.gmail.com>
-Reply-To: dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBDR6JO4Q7MHRBDG3623AKGQEBED5TIY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-In-Reply-To: <CAD=FV=VckTVD8b1g+f0G2kMeoTjvY0pAGhoDnWQN_dAmqSxBxg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, Daniel Mack <daniel-cYrQPVfZoowdnm+yROfE0A@public.gmane.org>, Haojian Zhuang <haojian.zhuang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robert Jarzmik <robert.jarzmik-GANU6spQydw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel@l>
+From: Franklin S Cooper Jr <fcooper@ti.com>
+Subject: [PATCH] pwms: pwm-ti*: Remove support for local clock gating
+Date: Mon,  7 Mar 2016 13:33:56 -0600
+Message-ID: <1457379236-14797-1-git-send-email-fcooper@ti.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pf0-f169.google.com ([209.85.192.169]:35572 "EHLO
+	mail-pf0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752861AbcCGTeN (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Mar 2016 14:34:13 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: paul@pwsan.com, t-kristo@ti.com, tony@atomide.com, thierry.reding@gmail.com, vigneshr@ti.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Cc: Franklin S Cooper Jr <fcooper@ti.com>
 
-Thierry,
+The PWMSS local clock gating registers have no real purpose on OMAP ARM
+devices. These registers were left over registers from DSP IP where the
+PRCM doesn't exist. There is a silicon bug where gating and ungating clocks
+don't function properly. TRMs will be update to indicate that these
+registers shouldn't be touched.
 
-On Thu, Feb 25, 2016 at 3:14 PM, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org> wrote:
-> So just to summarize:
->
-> * Add pwm_get_state(), pwm_apply_state(), pwm_get_args().
-> pwm_get_state() initially returns 0 for duty cycle if driver doesn't
-> support readout.
->
-> * Re-implement pwm_get_period() (and maybe other similar functions)
-> atop pwm_get_state() as you describe earlier in the thread.
->
-> * Document pwm_get_period() (and maybe other similar functions) as deprecated.
->
-> * Fix drivers for all current 2 users of PWM regulator to support
-> hardware readout.
->
-> * Update PWM regulator as you described earlier in the thread (Feb 23).
->
-> * If PWM regulator is ever used on a new board whose PWM doesn't
-> support hardware readout, the voltage will change at probe time.
->
->
-> Did I get all that right?  Thanks!
+Therefore, all code that accesses the PWMSS_CLKCONFIG or PWMSS_CLKSTATUS
+will be removed by this patch with zero loss of functionality by the ECAP
+and EPWM drivers.
 
-Can you provide a "yes, you got that right" or a "no, you didn't
-understand"?  That will unblock Boris, I think.
+Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
+---
+Tested on: AM335x and AM437x GP evms.
 
--Doug
+ drivers/pwm/pwm-tiecap.c   | 28 --------------------------
+ drivers/pwm/pwm-tiehrpwm.c | 29 ---------------------------
+ drivers/pwm/pwm-tipwmss.c  | 49 ----------------------------------------------
+ drivers/pwm/pwm-tipwmss.h  | 39 ------------------------------------
+ 4 files changed, 145 deletions(-)
+ delete mode 100644 drivers/pwm/pwm-tipwmss.h
+
+diff --git a/drivers/pwm/pwm-tiecap.c b/drivers/pwm/pwm-tiecap.c
+index 616af76..9e0865d7 100644
+--- a/drivers/pwm/pwm-tiecap.c
++++ b/drivers/pwm/pwm-tiecap.c
+@@ -27,8 +27,6 @@
+ #include <linux/pwm.h>
+ #include <linux/of_device.h>
+ 
+-#include "pwm-tipwmss.h"
+-
+ /* ECAP registers and bits definitions */
+ #define CAP1			0x08
+ #define CAP2			0x0C
+@@ -206,7 +204,6 @@ static int ecap_pwm_probe(struct platform_device *pdev)
+ 	struct resource *r;
+ 	struct clk *clk;
+ 	struct ecap_pwm_chip *pc;
+-	u16 status;
+ 
+ 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+ 	if (!pc)
+@@ -243,40 +240,15 @@ static int ecap_pwm_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	pm_runtime_enable(&pdev->dev);
+-	pm_runtime_get_sync(&pdev->dev);
+-
+-	status = pwmss_submodule_state_change(pdev->dev.parent,
+-			PWMSS_ECAPCLK_EN);
+-	if (!(status & PWMSS_ECAPCLK_EN_ACK)) {
+-		dev_err(&pdev->dev, "PWMSS config space clock enable failed\n");
+-		ret = -EINVAL;
+-		goto pwmss_clk_failure;
+-	}
+-
+-	pm_runtime_put_sync(&pdev->dev);
+ 
+ 	platform_set_drvdata(pdev, pc);
+ 	return 0;
+-
+-pwmss_clk_failure:
+-	pm_runtime_put_sync(&pdev->dev);
+-	pm_runtime_disable(&pdev->dev);
+-	pwmchip_remove(&pc->chip);
+-	return ret;
+ }
+ 
+ static int ecap_pwm_remove(struct platform_device *pdev)
+ {
+ 	struct ecap_pwm_chip *pc = platform_get_drvdata(pdev);
+ 
+-	pm_runtime_get_sync(&pdev->dev);
+-	/*
+-	 * Due to hardware misbehaviour, acknowledge of the stop_req
+-	 * is missing. Hence checking of the status bit skipped.
+-	 */
+-	pwmss_submodule_state_change(pdev->dev.parent, PWMSS_ECAPCLK_STOP_REQ);
+-	pm_runtime_put_sync(&pdev->dev);
+-
+ 	pm_runtime_disable(&pdev->dev);
+ 	return pwmchip_remove(&pc->chip);
+ }
+diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
+index 6a41e66..e09b1f0 100644
+--- a/drivers/pwm/pwm-tiehrpwm.c
++++ b/drivers/pwm/pwm-tiehrpwm.c
+@@ -27,8 +27,6 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/of_device.h>
+ 
+-#include "pwm-tipwmss.h"
+-
+ /* EHRPWM registers and bits definitions */
+ 
+ /* Time base module registers */
+@@ -437,7 +435,6 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
+ 	struct resource *r;
+ 	struct clk *clk;
+ 	struct ehrpwm_pwm_chip *pc;
+-	u16 status;
+ 
+ 	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
+ 	if (!pc)
+@@ -487,27 +484,9 @@ static int ehrpwm_pwm_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	pm_runtime_enable(&pdev->dev);
+-	pm_runtime_get_sync(&pdev->dev);
+-
+-	status = pwmss_submodule_state_change(pdev->dev.parent,
+-			PWMSS_EPWMCLK_EN);
+-	if (!(status & PWMSS_EPWMCLK_EN_ACK)) {
+-		dev_err(&pdev->dev, "PWMSS config space clock enable failed\n");
+-		ret = -EINVAL;
+-		goto pwmss_clk_failure;
+-	}
+-
+-	pm_runtime_put_sync(&pdev->dev);
+ 
+ 	platform_set_drvdata(pdev, pc);
+ 	return 0;
+-
+-pwmss_clk_failure:
+-	pm_runtime_put_sync(&pdev->dev);
+-	pm_runtime_disable(&pdev->dev);
+-	pwmchip_remove(&pc->chip);
+-	clk_unprepare(pc->tbclk);
+-	return ret;
+ }
+ 
+ static int ehrpwm_pwm_remove(struct platform_device *pdev)
+@@ -516,14 +495,6 @@ static int ehrpwm_pwm_remove(struct platform_device *pdev)
+ 
+ 	clk_unprepare(pc->tbclk);
+ 
+-	pm_runtime_get_sync(&pdev->dev);
+-	/*
+-	 * Due to hardware misbehaviour, acknowledge of the stop_req
+-	 * is missing. Hence checking of the status bit skipped.
+-	 */
+-	pwmss_submodule_state_change(pdev->dev.parent, PWMSS_EPWMCLK_STOP_REQ);
+-	pm_runtime_put_sync(&pdev->dev);
+-
+ 	pm_runtime_put_sync(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
+ 	return pwmchip_remove(&pc->chip);
+diff --git a/drivers/pwm/pwm-tipwmss.c b/drivers/pwm/pwm-tipwmss.c
+index 5cf65a1..829f499 100644
+--- a/drivers/pwm/pwm-tipwmss.c
++++ b/drivers/pwm/pwm-tipwmss.c
+@@ -22,32 +22,6 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/of_device.h>
+ 
+-#include "pwm-tipwmss.h"
+-
+-#define PWMSS_CLKCONFIG		0x8	/* Clock gating reg */
+-#define PWMSS_CLKSTATUS		0xc	/* Clock gating status reg */
+-
+-struct pwmss_info {
+-	void __iomem	*mmio_base;
+-	struct mutex	pwmss_lock;
+-	u16		pwmss_clkconfig;
+-};
+-
+-u16 pwmss_submodule_state_change(struct device *dev, int set)
+-{
+-	struct pwmss_info *info = dev_get_drvdata(dev);
+-	u16 val;
+-
+-	mutex_lock(&info->pwmss_lock);
+-	val = readw(info->mmio_base + PWMSS_CLKCONFIG);
+-	val |= set;
+-	writew(val , info->mmio_base + PWMSS_CLKCONFIG);
+-	mutex_unlock(&info->pwmss_lock);
+-
+-	return readw(info->mmio_base + PWMSS_CLKSTATUS);
+-}
+-EXPORT_SYMBOL(pwmss_submodule_state_change);
+-
+ static const struct of_device_id pwmss_of_match[] = {
+ 	{ .compatible	= "ti,am33xx-pwmss" },
+ 	{},
+@@ -57,24 +31,10 @@ MODULE_DEVICE_TABLE(of, pwmss_of_match);
+ static int pwmss_probe(struct platform_device *pdev)
+ {
+ 	int ret;
+-	struct resource *r;
+-	struct pwmss_info *info;
+ 	struct device_node *node = pdev->dev.of_node;
+ 
+-	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
+-	if (!info)
+-		return -ENOMEM;
+-
+-	mutex_init(&info->pwmss_lock);
+-
+-	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	info->mmio_base = devm_ioremap_resource(&pdev->dev, r);
+-	if (IS_ERR(info->mmio_base))
+-		return PTR_ERR(info->mmio_base);
+-
+ 	pm_runtime_enable(&pdev->dev);
+ 	pm_runtime_get_sync(&pdev->dev);
+-	platform_set_drvdata(pdev, info);
+ 
+ 	/* Populate all the child nodes here... */
+ 	ret = of_platform_populate(node, NULL, NULL, &pdev->dev);
+@@ -86,30 +46,21 @@ static int pwmss_probe(struct platform_device *pdev)
+ 
+ static int pwmss_remove(struct platform_device *pdev)
+ {
+-	struct pwmss_info *info = platform_get_drvdata(pdev);
+-
+ 	pm_runtime_put_sync(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
+-	mutex_destroy(&info->pwmss_lock);
+ 	return 0;
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+ static int pwmss_suspend(struct device *dev)
+ {
+-	struct pwmss_info *info = dev_get_drvdata(dev);
+-
+-	info->pwmss_clkconfig = readw(info->mmio_base + PWMSS_CLKCONFIG);
+ 	pm_runtime_put_sync(dev);
+ 	return 0;
+ }
+ 
+ static int pwmss_resume(struct device *dev)
+ {
+-	struct pwmss_info *info = dev_get_drvdata(dev);
+-
+ 	pm_runtime_get_sync(dev);
+-	writew(info->pwmss_clkconfig, info->mmio_base + PWMSS_CLKCONFIG);
+ 	return 0;
+ }
+ #endif
+diff --git a/drivers/pwm/pwm-tipwmss.h b/drivers/pwm/pwm-tipwmss.h
+deleted file mode 100644
+index 10ad804..0000000
+--- a/drivers/pwm/pwm-tipwmss.h
++++ /dev/null
+@@ -1,39 +0,0 @@
+-/*
+- * TI PWM Subsystem driver
+- *
+- * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License as published by
+- * the Free Software Foundation; either version 2 of the License, or
+- * (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+- * GNU General Public License for more details.
+- *
+- */
+-
+-#ifndef __TIPWMSS_H
+-#define __TIPWMSS_H
+-
+-/* PWM substem clock gating */
+-#define PWMSS_ECAPCLK_EN	BIT(0)
+-#define PWMSS_ECAPCLK_STOP_REQ	BIT(1)
+-#define PWMSS_EPWMCLK_EN	BIT(8)
+-#define PWMSS_EPWMCLK_STOP_REQ	BIT(9)
+-
+-#define PWMSS_ECAPCLK_EN_ACK	BIT(0)
+-#define PWMSS_EPWMCLK_EN_ACK	BIT(8)
+-
+-#ifdef CONFIG_PWM_TIPWMSS
+-extern u16 pwmss_submodule_state_change(struct device *dev, int set);
+-#else
+-static inline u16 pwmss_submodule_state_change(struct device *dev, int set)
+-{
+-	/* return success status value */
+-	return 0xFFFF;
+-}
+-#endif
+-#endif	/* __TIPWMSS_H */
+-- 
+2.7.0
