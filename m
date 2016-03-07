@@ -1,68 +1,91 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: bcm7038: fix check of error code returned by
- devm_ioremap_resource()
-Date: Mon, 7 Mar 2016 10:19:13 +0100
-Message-ID: <20160307091913.GF31189@ulmo.nvidia.com>
-References: <1457227306-3142-1-git-send-email-vz@mleia.com>
+Subject: Re: [PATCH 1/2] pwm: add DT bindings for the STMPE PWM
+Date: Mon, 7 Mar 2016 10:26:41 +0100
+Message-ID: <20160307092641.GG31189@ulmo.nvidia.com>
+References: <1455455317-17043-1-git-send-email-linus.walleij@linaro.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Pgaa2uWPnPrfixyx"
+	protocol="application/pgp-signature"; boundary="PpAOPzA3dXsRhoo+"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f47.google.com ([209.85.220.47]:35440 "EHLO
-	mail-pa0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752160AbcCGJTT (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Mar 2016 04:19:19 -0500
-Received: by mail-pa0-f47.google.com with SMTP id bj10so75965712pad.2
-        for <linux-pwm@vger.kernel.org>; Mon, 07 Mar 2016 01:19:19 -0800 (PST)
+Received: from mail-pf0-f194.google.com ([209.85.192.194]:35468 "EHLO
+	mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752400AbcCGJ0q (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 7 Mar 2016 04:26:46 -0500
 Content-Disposition: inline
-In-Reply-To: <1457227306-3142-1-git-send-email-vz@mleia.com>
+In-Reply-To: <1455455317-17043-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Vladimir Zapolskiy <vz@mleia.com>
-Cc: Brian Norris <computersforpeace@gmail.com>, Gregory Fong <gregory.0xf0@gmail.com>, Florian Fainelli <f.fainelli@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>, devicetree@vger.kernel.org
 
 
---Pgaa2uWPnPrfixyx
+--PpAOPzA3dXsRhoo+
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Mar 06, 2016 at 03:21:46AM +0200, Vladimir Zapolskiy wrote:
-> The change fixes potential oops while accessing iomem on invalid
-> address, if devm_ioremap_resource() fails due to some reason.
+On Sun, Feb 14, 2016 at 02:08:37PM +0100, Linus Walleij wrote:
+> This adds fairly standard device tree bindings for the STMPE
+> PWM found in STMPE24xx multi-purpose expanders.
 >=20
-> The devm_ioremap_resource() function returns ERR_PTR() and never
-> returns NULL, which makes useless a following check for NULL.
->=20
-> Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
-> Fixes: 3a9f5957020f ("pwm: Add Broadcom BCM7038 PWM controller support")
+> Cc: devicetree@vger.kernel.org
+> Acked-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 > ---
->  drivers/pwm/pwm-brcmstb.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt | 18 ++++++++++++=
+++++++
+>  1 file changed, 18 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt
+>=20
+> diff --git a/Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt b/Doc=
+umentation/devicetree/bindings/pwm/st,stmpe-pwm.txt
+> new file mode 100644
+> index 000000000000..c8b53f39ae31
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/st,stmpe-pwm.txt
+> @@ -0,0 +1,18 @@
+> +=3D=3D ST STMPE PWM controller =3D=3D
+> +
+> +This is a PWM block embedded in the ST Microelectronics STMPE
+> +(ST Multi-Purpose Expander) chips. The PWM is registered as a
+> +subdevices of the STMPE MFD device.
+> +
+> +Required properties:
+> +- compatible: should be:
+> +  - "st,stmpe-pwm"
+> +- #pwm-cells: should be 2. See pwm.txt in this directory for a descripti=
+on of
+> +  the cells format.
+> +
+> +Example:
+> +
+> +stmpe1_pwm0: stmpe_pwm {
 
-Applied, thanks.
+Shouldn't the node name simply be "pwm"? stmpe_pwm is kind of redundant
+given that this is to be embedded in an MFD node that will, presumably,
+be called stmpe.
 
 Thierry
 
---Pgaa2uWPnPrfixyx
+--PpAOPzA3dXsRhoo+
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJW3UePAAoJEN0jrNd/PrOhbHEP/2xgz77DVIy7C6bY5lJ9Yzc6
-dIlrrDjGQSjC8NfNjfzWxHTio9+wf0AaUUe0P7AGJf2F1PQaAAe1xqFuoQfJHJ+R
-wHBLOwX80XmErE78m/k2/MYIDiFJqiqIEgEyxVUDrV4idKBpKk9v/ZAx77PVejvy
-gmc2KULAy6KfWLgPjs+gEQubDWOgmUGlRxxog09pHnMVta4ORWgXHYX4F2GWThyL
-ZVzvE8mZ81Y5f56DoimRPe1RDqM9xuZl+K82+142zUeZy4WoWMv/DHofp3qcGwWP
-1oVvFKDH8OXMun90sopPEI+WD1pPu80bmYeL2gtGUxQWSboW+XSEgZxWVmne5Duh
-j1mV+9OLpIC7wnCooyLPfTwd8/e8VGWZS143BsHXle0gdJVdzHC/C5YYXVHv95Y6
-Kj2X3HkIhml5py1Ii/SmZ/ImFbNYGa2nmRatIyWqbgyQF7aRTV88M4Cl/RJQ/ZGl
-TBTASEkGj50PRyWzBLKFFsIQha4iC4osR2C3UR/D4A10l9m7tnX+I87xcTIX/u/h
-2UFcIzUOn8crf4XKqmqS2whaiJnwG6GbCGiSJS63k0b0HNnOefm7kJYM+OfhCGPN
-M+BUJKcniTCbhSxUvIdtyRq7GiPfjIp6WPE9jbd7botesDP/8LFWT1/6jl3mVxvG
-LRWDzH50rUL/V44LYwgy
-=QAXz
+iQIcBAABCAAGBQJW3UlRAAoJEN0jrNd/PrOh6C8QAK1yF2dGvPfnc+NT4GaoRHwu
+BXjvOf+xXx4yi+z10SmLXJWPn+5RSyasg+ka8M0WRz9KES1ROLuHQ+/kvhUFlgVu
+JsjqCeiiG8k0iD1EAZV4EEyRcPOFpNSvv25FwnmLRVZhIYB8/xCPNXIUBxWnz7mg
+K+qUOzq9gsem3m+0gDohAYlCMmSUNJD3JQ/CaDimAXv+OUkvx+3f04nypda7gsb2
+KTxrZRYjUni3z6agm9TbcV1FowCRjXhgT3YPfJYQEdwAHG8WH0ruuc6rp3lNRAuf
+YRcs2LgxzBu83D2z43/rsrp5FHx6hR7xnx+/UZeYt59oeGziDGr/ozVBUEB2EB+P
+RSKOaB2i0xONyfWUdRuL4mG5Mw6FVmhyjkEyAqZ+hJFnumq4gj5RtUEgWsFC/eFT
+6uFcWZk2qGFI5T/8EdU4+3nXYfVBevE+U0cF/dR2hz/e4i6xcqfSi6ecoA+7Teak
+9I0BQyYXFTsm6NuNS0QIo2hOjqPF0r2NlHH1mLuoa/YdaSCYtNZ4ZX5qPjWnGqZm
+SszXk0yS9do9r00spgABDPNavRDySQ8/GtkR1XuJ0ATfHcQ8vYxyynAE3/SuWYLM
+7t47MOeFEV51FK+wUx82xuM5UuUjztIrmWgGXmr1e2Pfx+wUD6nvlCVDvnyQ8zH/
+6XRry/V3/t3d2QsnC+Ro
+=9eBP
 -----END PGP SIGNATURE-----
 
---Pgaa2uWPnPrfixyx--
+--PpAOPzA3dXsRhoo+--
