@@ -1,45 +1,70 @@
-From: Paul Walmsley <paul@pwsan.com>
-Subject: Re: [Patch v4 6/6] ARM: dts: DRA7: Add dt nodes for PWMSS
-Date: Wed, 9 Mar 2016 18:14:05 +0000 (UTC)
-Message-ID: <alpine.DEB.2.02.1603091806550.30186@utopia.booyaka.com>
-References: <1457383187-17166-1-git-send-email-fcooper@ti.com> <1457383187-17166-7-git-send-email-fcooper@ti.com> <alpine.DEB.2.02.1603072352510.27387@utopia.booyaka.com> <56DE1AE2.5070908@ti.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 00/12] pwm: add support for atomic update
+Date: Thu, 10 Mar 2016 18:54:38 +0100
+Message-ID: <20160310175438.GA5648@ulmo.nvidia.com>
+References: <20160203145337.GD9650@ulmo>
+ <CAD=FV=U_x1cxx6RrHuVgVV8GbOwm9DXXJcyiArbbQySUOaxrvQ@mail.gmail.com>
+ <20160222175929.GA23899@ulmo>
+ <CAD=FV=UCErW3EjYRtwt49_ztNR7cyY4U0o4R_dxdomer-Ac2Dg@mail.gmail.com>
+ <20160223143859.GA27656@ulmo>
+ <CAD=FV=UvxG3MYD4MKQJqN7W68uMjd-s+FH-e8tkrLCpS0RLmZQ@mail.gmail.com>
+ <20160223181448.GA14754@ulmo.nvidia.com>
+ <CAD=FV=VM3cOQ0HqwLANBw9MVBCyFTrSyPe_dGzgPucuMUEWRKA@mail.gmail.com>
+ <CAD=FV=VckTVD8b1g+f0G2kMeoTjvY0pAGhoDnWQN_dAmqSxBxg@mail.gmail.com>
+ <CAD=FV=W3KPf8tyMviVNB9=HjefMdP+FBbN01Zhh7RKH+gkj2WQ@mail.gmail.com>
+Reply-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from utopia.booyaka.com ([74.50.51.50]:42091 "EHLO
-	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933606AbcCISOH (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 9 Mar 2016 13:14:07 -0500
-In-Reply-To: <56DE1AE2.5070908@ti.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="9jxsPFA5p3P2qPhR"
+Return-path: <linux-sunxi+bncBDTKFPPJUEHRBZHJQ23QKGQEG5YTZWQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAD=FV=W3KPf8tyMviVNB9=HjefMdP+FBbN01Zhh7RKH+gkj2WQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Heiko =?utf-8?Q?St=C3=BCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, Tomi Valkeinen <tomi.valkeinen-l0cyMroinI0@public.gmane.org>, Daniel Mack <daniel-cYrQPVfZoowdnm+yROfE0A@public.gmane.org>, Haojian Zhuang <haojian.zhuang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robert Jarzmik <robert.jarzmik-GANU6spQydw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel@lists>
 List-Id: linux-pwm@vger.kernel.org
-To: "Franklin S Cooper Jr." <fcooper@ti.com>
-Cc: vigneshr@ti.com, thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, bcousson@baylibre.com, tony@atomide.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Mon, 7 Mar 2016, Franklin S Cooper Jr. wrote:
+--9jxsPFA5p3P2qPhR
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
 
-> On 03/07/2016 05:53 PM, Paul Walmsley wrote:
->
-> > Hmm, what about moving the eqep, ecap DT nodes under the epwmss nodes?
+On Mon, Mar 07, 2016 at 08:34:19AM -0800, Doug Anderson wrote:
+> Thierry,
 > 
-> We don't have a driver for eQEP which is why there is no DT
-> entry for it.
+> On Thu, Feb 25, 2016 at 3:14 PM, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org> wrote:
+> > So just to summarize:
+> >
+> > * Add pwm_get_state(), pwm_apply_state(), pwm_get_args().
+> > pwm_get_state() initially returns 0 for duty cycle if driver doesn't
+> > support readout.
+> >
+> > * Re-implement pwm_get_period() (and maybe other similar functions)
+> > atop pwm_get_state() as you describe earlier in the thread.
+> >
+> > * Document pwm_get_period() (and maybe other similar functions) as deprecated.
+> >
+> > * Fix drivers for all current 2 users of PWM regulator to support
+> > hardware readout.
+> >
+> > * Update PWM regulator as you described earlier in the thread (Feb 23).
+> >
+> > * If PWM regulator is ever used on a new board whose PWM doesn't
+> > support hardware readout, the voltage will change at probe time.
+> >
+> >
+> > Did I get all that right?  Thanks!
+> 
+> Can you provide a "yes, you got that right" or a "no, you didn't
+> understand"?  That will unblock Boris, I think.
 
-I've already queued the patch for merging.  But just for your background 
-knowledge, and the various lists: the basic device integration data, 
-whether in DT or in hwmod, should be decoupled from the existence of 
-drivers.  It should be possible to have a complete set of SoC integration 
-data ready to integrate at the moment that a device is approved for 
-upstreaming.  That way, driver writers can simply write and merge their 
-driver, with the minimum of patches to the integration data.  
+Sounds about right. Hopefully this will eliminate any objections that
+others had about the series.
 
-Generally the people who work on device drivers aren't too familiar with 
-SoC integration - they are focused on their specific IP blocks - so it makes 
-sense to decouple these components.
-
-So: in the context of the present epwmss discussion, in an ideal world, 
-we'd have DT entries for eQEP, even though there's no driver available 
-yet.
-
-
-- Paul
+Thierry
+--9jxsPFA5p3P2qPhR--
