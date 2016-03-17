@@ -1,107 +1,73 @@
 From: "Franklin S Cooper Jr." <fcooper@ti.com>
-Subject: Re: [PATCH v5 6/6] ARM: dts: DRA7: Add dt nodes for PWMSS
-Date: Thu, 17 Mar 2016 10:53:57 -0500
-Message-ID: <56EAD315.1030307@ti.com>
-References: <1457400224-24797-1-git-send-email-fcooper@ti.com>
- <1457400224-24797-7-git-send-email-fcooper@ti.com>
- <20160317151147.GA29802@rob-hp-laptop>
+Subject: Re: [PATCH 5/5] pwm: pwm-tiehrpwm: Update dt binding document to use
+ generic node name
+Date: Thu, 17 Mar 2016 11:49:24 -0500
+Message-ID: <56EAE014.8070606@ti.com>
+References: <1457380318-15452-1-git-send-email-fcooper@ti.com>
+ <1457380318-15452-6-git-send-email-fcooper@ti.com>
+ <20160317150305.GA27356@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([192.94.94.41]:37628 "EHLO bear.ext.ti.com"
+Received: from comal.ext.ti.com ([198.47.26.152]:48379 "EHLO comal.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1031241AbcCQPzW (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Thu, 17 Mar 2016 11:55:22 -0400
-In-Reply-To: <20160317151147.GA29802@rob-hp-laptop>
+	id S965729AbcCQQur (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Thu, 17 Mar 2016 12:50:47 -0400
+In-Reply-To: <20160317150305.GA27356@rob-hp-laptop>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Rob Herring <robh@kernel.org>
-Cc: thierry.reding@gmail.com, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, paul@pwsan.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, vigneshr@ti.com
+Cc: thierry.reding@gmail.com, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, t-kristo@ti.com, mturquette@baylibre.com, sboyd@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
 
 
 
-On 03/17/2016 10:11 AM, Rob Herring wrote:
-> On Mon, Mar 07, 2016 at 07:23:44PM -0600, Franklin S Cooper Jr wrote:
->> From: Vignesh R <vigneshr@ti.com>
+On 03/17/2016 10:03 AM, Rob Herring wrote:
+> On Mon, Mar 07, 2016 at 01:51:58PM -0600, Franklin S Cooper Jr wrote:
+>> Now that the node name has been changed from ehrpwm to pwm the document
+>> should show this proper usage. Also change the unit address in the example
+>> from 0 to the proper physical address value that should be used.
 >>
->> Add PWMSS device tree nodes for DRA7 SoC family and add documentation
->> for dt bindings.
->>
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
->> [fcooper@ti.com: Add eCAP and use updated bindings for PWMSS and ePWM]
 >> Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
 >> ---
->> Version 5 changes:
->> Add DT node for eCAP and update eCAP binding documentation
+>>  Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
 >>
->> Version 4 changes:
->> Updated link to the latest documentation
->>
->>  .../devicetree/bindings/pwm/pwm-tiecap.txt         |  9 +++
->>  .../devicetree/bindings/pwm/pwm-tiehrpwm.txt       |  9 +++
->>  .../devicetree/bindings/pwm/pwm-tipwmss.txt        | 15 +++-
->>  arch/arm/boot/dts/dra7.dtsi                        | 84 ++++++++++++++++++++++
->>  4 files changed, 116 insertions(+), 1 deletion(-)
->
->> +			ehrpwm1: pwm@48440200 {
->> +				compatible = "ti,dra7xx-ehrpwm",
->> +					     "ti,am33xx-ehrpwm";
->> +				#pwm-cells = <3>;
->> +				reg = <0x48440200 0x80>;
->> +				clocks = <&ehrpwm1_tbclk>;
->> +				clock-names = "tbclk";
->> +				status = "disabled";
->> +			};
->> +
->> +			ecap1: ecap@48440100 {
-> This also is a PWM? Then it should also be pwm@...
-
-The enhanced capture module primary purpose is to measure
-time between external signals which is called capture mode.
-It also has a PWM mode. So I wouldn't recommend generalizing
-the entire node to pwm.
->
->> +				compatible = "ti,dra7xx-ecap",
->> +					     "ti,am33xx-ecap";
->> +				#pwm-cells = <3>;
->> +				reg = <0x48440100 0x80>;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		epwmss2: epwmss@48442000 {
->> +			compatible = "ti,dra7xx-pwmss", "ti,am33xx-pwmss";
->> +			reg = <0x48442000 0x30>;
->> +			ti,hwmods = "epwmss2";
->> +			#address-cells = <1>;
->> +			#size-cells = <1>;
->> +			status = "disabled";
->> +			ranges;
->> +
->> +			ehrpwm2: pwm@48442200 {
->> +				compatible = "ti,dra7xx-ehrpwm",
->> +					     "ti,am33xx-ehrpwm";
->> +				#pwm-cells = <3>;
->> +				reg = <0x48442200 0x80>;
->> +				clocks = <&ehrpwm2_tbclk>;
->> +				clock-names = "tbclk";
->> +				status = "disabled";
->> +			};
->> +
->> +			ecap2: ecap@48442100 {
-> And here.
->
->> +				compatible = "ti,dra7xx-ecap",
->> +					     "ti,am33xx-ecap";
->> +				#pwm-cells = <3>;
->> +				reg = <0x48442100 0x80>;
->> +				status = "disabled";
->> +			};
->> +		};
->>  	};
+>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
+>> index 9c100b2..20211ed 100644
+>> --- a/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
+>> +++ b/Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt
+>> @@ -15,14 +15,14 @@ Optional properties:
 >>  
->>  	thermal_zones: thermal-zones {
+>>  Example:
+>>  
+>> -ehrpwm0: ehrpwm@0 { /* EHRPWM on am33xx */
+>> +ehrpwm0: pwm@48300200 { /* EHRPWM on am33xx */
+>>  	compatible = "ti,am33xx-ehrpwm";
+>>  	#pwm-cells = <3>;
+>>  	reg = <0x48300200 0x100>;
+>>  	ti,hwmods = "ehrpwm0";
+>>  };
+>>  
+>> -ehrpwm0: ehrpwm@0 { /* EHRPWM on da850 */
+>> +ehrpwm0: pwm@01f00000 { /* EHRPWM on da850 */
+> No leading 0s, but more importantly the address is wrong.
+
+I will remove the leading 0. However, this value was taken
+from the .dtsi and I just double checked and I see the same
+value in the datasheet. I believe DA850,OMAP-L138 and AM18x
+all have the same memory mapping. I'm looking at
+http://www.ti.com/lit/ds/symlink/am1808.pdf page 233 and the
+addresses match up what is seen here and in the .dtsi.
+
+Can you point me to which document your looking at that
+shows a different value?
+
+
+>
+>>  	compatible = "ti,da850-ehrpwm", "ti,am33xx-ehrpwm";
+>>  	#pwm-cells = <3>;
+>>  	reg = <0x300000 0x2000>;
 >> -- 
 >> 2.7.0
 >>
