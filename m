@@ -1,61 +1,63 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v4 01/24] pwm: rcar: make use of pwm_is_enabled()
-Date: Wed, 16 Mar 2016 15:30:22 +0100
-Message-ID: <20160316153022.164105d1@bbrezillon>
-References: <1447664207-24370-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1447664207-24370-2-git-send-email-boris.brezillon@free-electrons.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 4/5] pwm: pwm-tipwmss: Update documentation to use empty
+ range property
+Date: Thu, 17 Mar 2016 10:01:40 -0500
+Message-ID: <20160317150140.GA25775@rob-hp-laptop>
+References: <1457380318-15452-1-git-send-email-fcooper@ti.com>
+ <1457380318-15452-5-git-send-email-fcooper@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-input-owner@vger.kernel.org>
-In-Reply-To: <1447664207-24370-2-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-input-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
-Cc: Mike Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, linux-clk@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Kamil Debski <k.debski@samsung.com>, lm-sensors@lm-sensors.org, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, linux-input@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, linux-sunxi@googlegroups.com, Joachim Eastwood <manabian@gmail.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, linux-fbd
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-clk-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1457380318-15452-5-git-send-email-fcooper@ti.com>
+Sender: linux-clk-owner@vger.kernel.org
+To: Franklin S Cooper Jr <fcooper@ti.com>
+Cc: thierry.reding@gmail.com, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, t-kristo@ti.com, mturquette@baylibre.com, sboyd@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Thierry,
+On Mon, Mar 07, 2016 at 01:51:57PM -0600, Franklin S Cooper Jr wrote:
+> Since the PWMSS and its subdevices (eCAP and ePWM) use the same address
+> space then the range property should be empty. Update the documentation
+> to show the correct usage.
 
-Can you please apply this patch?
-It's completely independent from the rest of the series.
+Why does it matter? An empty ranges is generally not preferred.
 
-Thanks,
-
-Boris
-
-On Mon, 16 Nov 2015 09:56:24 +0100
-Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
-
-> Commit 5c31252c4a86 ("pwm: Add the pwm_is_enabled() helper") introduced a
-> new function to test whether a PWM device is enabled or not without
-> manipulating PWM internal fields.
-> Hiding this is necessary if we want to smoothly move to the atomic PWM
-> config approach without impacting PWM drivers.
-> Fix this driver to use pwm_is_enabled() instead of directly accessing the
-> ->flags field.
 > 
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
 > ---
->  drivers/pwm/pwm-rcar.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt | 12 ++++--------
+>  1 file changed, 4 insertions(+), 8 deletions(-)
 > 
-> diff --git a/drivers/pwm/pwm-rcar.c b/drivers/pwm/pwm-rcar.c
-> index 6e99a63..70899c9 100644
-> --- a/drivers/pwm/pwm-rcar.c
-> +++ b/drivers/pwm/pwm-rcar.c
-> @@ -157,7 +157,7 @@ static int rcar_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->  		return div;
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt b/Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt
+> index f7eae77..672fa71 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-tipwmss.txt
+> @@ -7,11 +7,9 @@ Required properties:
+>  		  Should set to 1.
+>  - size-cells: specify number of u32 entries needed to specify child nodes size
+>  		in reg property. Should set to 1.
+> -- ranges: describes the address mapping of a memory-mapped bus. Should set to
+> -	   physical address map of child's base address, physical address within
+> -	   parent's address  space and length of the address map. For am33xx,
+> -	   3 set of child register maps present, ECAP register space, EQEP
+> -	   register space, EHRPWM register space.
+> +- ranges: describes the address mapping of a memory-mapped bus. Its value
+> +	  should be empty since no address translation is needed between the
+> +	  parent and the child.
 >  
->  	/* Let the core driver set pwm->period if disabled and duty_ns == 0 */
-> -	if (!test_bit(PWMF_ENABLED, &pwm->flags) && !duty_ns)
-> +	if (!pwm_is_enabled(pwm) && !duty_ns)
->  		return 0;
+>  Also child nodes should also populated under PWMSS DT node.
 >  
->  	rcar_pwm_update(rp, RCAR_PWMCR_SYNC, RCAR_PWMCR_SYNC, RCAR_PWMCR);
-
-
-
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+> @@ -23,9 +21,7 @@ pwmss0: pwmss@48300000 {
+>  	#address-cells = <1>;
+>  	#size-cells = <1>;
+>  	status = "disabled";
+> -	ranges = <0x48300100 0x48300100 0x80   /* ECAP */
+> -		  0x48300180 0x48300180 0x80   /* EQEP */
+> -		  0x48300200 0x48300200 0x80>; /* EHRPWM */
+> +	ranges;
+>  
+>  	/* child nodes go here */
+>  };
+> -- 
+> 2.7.0
+> 
