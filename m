@@ -1,62 +1,39 @@
-From: Franklin S Cooper Jr <fcooper@ti.com>
-Subject: [PATCH v3 1/3] clk: ti: am335x/am4372: Add tbclk to pwm node
-Date: Thu, 17 Mar 2016 20:15:21 -0500
-Message-ID: <1458263723-25770-2-git-send-email-fcooper@ti.com>
-References: <1458263723-25770-1-git-send-email-fcooper@ti.com>
+From: wan.ahmad.zainie.wan.mohamad@intel.com
+Subject: [PATCH] pwm: add support for freq_hz and duty_percent
+Date: Fri, 18 Mar 2016 17:43:14 +0800
+Message-ID: <1458294195-24538-1-git-send-email-wan.ahmad.zainie.wan.mohamad@intel.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi0-f67.google.com ([209.85.218.67]:33733 "EHLO
-	mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751321AbcCRBP0 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 17 Mar 2016 21:15:26 -0400
-In-Reply-To: <1458263723-25770-1-git-send-email-fcooper@ti.com>
+Received: from mga09.intel.com ([134.134.136.24]:30943 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1754729AbcCRJnc (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Fri, 18 Mar 2016 05:43:32 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, t-kristo@ti.com, mturquette@baylibre.com, sboyd@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
-Cc: Franklin S Cooper Jr <fcooper@ti.com>
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org
 
-Add tblck to the pwm nodes. This insures that the ehrpwm driver has access
-to the time-based clk.
+From: Wan Ahmad Zainie <wan.ahmad.zainie.wan.mohamad@intel.com>
 
-Do not remove similar entries for ehrpwm node. Later patches will switch
-from using ehrpwm node name to pwm. But to maintain ABI compatibility we
-shouldn't remove the old entries.
+Hi.
 
-Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
----
- drivers/clk/ti/clk-33xx.c | 3 +++
- drivers/clk/ti/clk-43xx.c | 6 ++++++
- 2 files changed, 9 insertions(+)
+This patch adds freq_hz and duty_percent parameters to the PWM framework.
+The value of period and duty_cycle is calculated by the additional helper
+functions. Each driver in this framework still using period and duty_cycle
+as the inputs for configuration.
 
-diff --git a/drivers/clk/ti/clk-33xx.c b/drivers/clk/ti/clk-33xx.c
-index ef2ec64..0e47d95 100644
---- a/drivers/clk/ti/clk-33xx.c
-+++ b/drivers/clk/ti/clk-33xx.c
-@@ -108,6 +108,9 @@ static struct ti_dt_clk am33xx_clks[] = {
- 	DT_CLK("48300200.ehrpwm", "tbclk", "ehrpwm0_tbclk"),
- 	DT_CLK("48302200.ehrpwm", "tbclk", "ehrpwm1_tbclk"),
- 	DT_CLK("48304200.ehrpwm", "tbclk", "ehrpwm2_tbclk"),
-+	DT_CLK("48300200.pwm", "tbclk", "ehrpwm0_tbclk"),
-+	DT_CLK("48302200.pwm", "tbclk", "ehrpwm1_tbclk"),
-+	DT_CLK("48304200.pwm", "tbclk", "ehrpwm2_tbclk"),
- 	{ .node_name = NULL },
- };
- 
-diff --git a/drivers/clk/ti/clk-43xx.c b/drivers/clk/ti/clk-43xx.c
-index 097fc90..7255aa8 100644
---- a/drivers/clk/ti/clk-43xx.c
-+++ b/drivers/clk/ti/clk-43xx.c
-@@ -115,6 +115,12 @@ static struct ti_dt_clk am43xx_clks[] = {
- 	DT_CLK("48306200.ehrpwm", "tbclk", "ehrpwm3_tbclk"),
- 	DT_CLK("48308200.ehrpwm", "tbclk", "ehrpwm4_tbclk"),
- 	DT_CLK("4830a200.ehrpwm", "tbclk", "ehrpwm5_tbclk"),
-+	DT_CLK("48300200.pwm", "tbclk", "ehrpwm0_tbclk"),
-+	DT_CLK("48302200.pwm", "tbclk", "ehrpwm1_tbclk"),
-+	DT_CLK("48304200.pwm", "tbclk", "ehrpwm2_tbclk"),
-+	DT_CLK("48306200.pwm", "tbclk", "ehrpwm3_tbclk"),
-+	DT_CLK("48308200.pwm", "tbclk", "ehrpwm4_tbclk"),
-+	DT_CLK("4830a200.pwm", "tbclk", "ehrpwm5_tbclk"),
- 	{ .node_name = NULL },
- };
- 
+This patch has been tested on Minnowboard MAX via sysfs.
+
+Best regards,
+Zainie
+
+Wan Ahmad Zainie (1):
+  pwm: add support for freq_hz and duty_percent
+
+ Documentation/ABI/testing/sysfs-class-pwm | 14 +++++
+ drivers/pwm/core.c                        | 95 ++++++++++++++++++++++++++++++-
+ drivers/pwm/sysfs.c                       | 70 +++++++++++++++++++++++
+ include/linux/pwm.h                       | 50 ++++++++++++++++
+ 4 files changed, 228 insertions(+), 1 deletion(-)
+
 -- 
-2.7.0
+1.9.1
