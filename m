@@ -1,34 +1,48 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 3/3] pwm: pwm-tiehrpwm: Update dt binding document to
- use generic node name
-Date: Sat, 19 Mar 2016 19:40:18 -0500
-Message-ID: <20160320004018.GA7611@rob-hp-laptop>
-References: <1458263723-25770-1-git-send-email-fcooper@ti.com>
- <1458263723-25770-4-git-send-email-fcooper@ti.com>
+From: "Wan Mohamad, Wan Ahmad Zainie"
+	<wan.ahmad.zainie.wan.mohamad@intel.com>
+Subject: RE: [PATCH] pwm: add support for freq_hz and duty_percent
+Date: Mon, 21 Mar 2016 03:07:22 +0000
+Message-ID: <5DFE9D34FA27A24D8F51B3E64FBE48FA0ACB0A40@PGSMSX107.gar.corp.intel.com>
+References: <1458294195-24538-1-git-send-email-wan.ahmad.zainie.wan.mohamad@intel.com>
+ <1458294195-24538-2-git-send-email-wan.ahmad.zainie.wan.mohamad@intel.com>
+ <56EBD0AA.40309@mentor.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1458263723-25770-4-git-send-email-fcooper@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Franklin S Cooper Jr <fcooper@ti.com>
-Cc: thierry.reding@gmail.com, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, t-kristo@ti.com, mturquette@baylibre.com, sboyd@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga03.intel.com ([134.134.136.65]:44397 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751480AbcCUDH0 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Sun, 20 Mar 2016 23:07:26 -0400
+In-Reply-To: <56EBD0AA.40309@mentor.com>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-On Thu, Mar 17, 2016 at 08:15:23PM -0500, Franklin S Cooper Jr wrote:
-> Now that the node name has been changed from ehrpwm to pwm the document
-> should show this proper usage. Also change the unit address in the example
-> from 0 to the proper physical address value that should be used.
-> 
-> Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
-> ---
-> Version 3 changes:
-> N/A
-> 
-> Version 2 changes:
-> Changed the unit address for da850 to match the value in the reg property.
-> 
->  Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-
-Acked-by: Rob Herring <robh@kernel.org>
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBWbGFkaW1pciBaYXBvbHNraXkg
+W21haWx0bzp2bGFkaW1pcl96YXBvbHNraXlAbWVudG9yLmNvbV0NCj4gU2VudDogRnJpZGF5LCBN
+YXJjaCAxOCwgMjAxNiA1OjU2IFBNDQo+IFRvOiBXYW4gTW9oYW1hZCwgV2FuIEFobWFkIFphaW5p
+ZQ0KPiA8d2FuLmFobWFkLnphaW5pZS53YW4ubW9oYW1hZEBpbnRlbC5jb20+OyB0aGllcnJ5LnJl
+ZGluZ0BnbWFpbC5jb20NCj4gQ2M6IGxpbnV4LXB3bUB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVj
+dDogUmU6IFtQQVRDSF0gcHdtOiBhZGQgc3VwcG9ydCBmb3IgZnJlcV9oeiBhbmQgZHV0eV9wZXJj
+ZW50DQo+IA0KPiBPbiAxOC4wMy4yMDE2IDExOjQzLCB3YW4uYWhtYWQuemFpbmllLndhbi5tb2hh
+bWFkQGludGVsLmNvbSB3cm90ZToNCj4gPiBGcm9tOiBXYW4gQWhtYWQgWmFpbmllIDx3YW4uYWht
+YWQuemFpbmllLndhbi5tb2hhbWFkQGludGVsLmNvbT4NCj4gPg0KPiA+IEFkZCBuZXcgc3lzZnMg
+aW50ZXJmYWNlLCBmcmVxX2h6IGFuZCBkdXR5X3BlcmNlbnQsIHRvZ2V0aGVyIHdpdGggdGhlaXIN
+Cj4gPiBoZWxwZXIgZnVuY3Rpb25zIHRvIHRoZSBQV00gZnJhbWV3b3JrLiBUaGlzIHBhdGNoIHdp
+bGwgZW5hYmxlIHRoZQ0KPiA+IGR1cmF0aW9uIHRvIGJlIGNvbmZpZ3VyZWQgaW4gdW5pdCBIZXJ0
+eiBhbmQgdGhlICJvbiIgZHVyYXRpb24gdG8gYmUNCj4gPiBjb25maWd1cmVkIGFzIHBlcmNlbnRh
+Z2UuDQo+IA0KPiBXaGF0J3MgeW91ciBtb3RpdmF0aW9uPyBDYW4geW91IGRvIHRoZSBjYWxjdWxh
+dGlvbnMgaW4gdXNlcnNwYWNlPw0KPiANCj4gSSBwZXJzb25hbGx5IGRpc2xpa2UgYW4gaWRlYSBv
+ZiBoYXZpbmcgbXVsdGlwbGUgd2F5cy9pbnRlcmZhY2VzIHRvIGRvIHRoZSBzYW1lDQo+IHRoaW5n
+Lg0KDQpTb3JyeSBmb3IgdGhlIGxhdGUgcmVwbHkuIFRoZSBjYWxjdWxhdGlvbnMgY2FuIGJlIGRv
+bmUgaW4gdXNlcnNwYWNlLiBUaGUNCmZvcm11bGFzIGFyZSBzdHJhaWdodGZvcndhcmQuIFRoZXJl
+IGFyZSBtb3JlIHRoYW4gb25lIHdheSB0byBjb2RlIHRoZQ0KZm9ybXVsYXMgYW5kIGVhY2ggbWF5
+IGdpdmUgc2xpZ2h0bHkgZGlmZmVyZW50IHJlc3VsdHMgZS5nLiByb3VuZCBkb3duDQp2cyByb3Vu
+ZCB1cC4gSSBiZWxpZXZlIGl0IGlzIHVzZWZ1bCB0byBoYXZlIGFuIGFjY2VwdGVkIHdheSBvZiBn
+ZXR0aW5nIHRoZQ0KY2FsY3VsYXRlZCBuYW5vc2Vjb25kIHZhbHVlIGZvciBwZXJpb2QgYW5kIGR1
+dHkgY3ljbGUsIElNSE8uDQoNCj4gDQo+ID4gU2lnbmVkLW9mZi1ieTogV2FuIEFobWFkIFphaW5p
+ZQ0KPiA+IDx3YW4uYWhtYWQuemFpbmllLndhbi5tb2hhbWFkQGludGVsLmNvbT4NCj4gPiAtLS0N
+Cj4gDQo+IC0tDQo+IFdpdGggYmVzdCB3aXNoZXMsDQo+IFZsYWRpbWlyDQo=
