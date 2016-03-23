@@ -1,59 +1,86 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [GIT PULL] pwm: Changes for v4.6-rc1
-Date: Wed, 23 Mar 2016 17:13:37 +0100
-Message-ID: <1458749617-21602-1-git-send-email-thierry.reding@gmail.com>
+From: Laison@seymour.toledo.br, Computech@seymour.toledo.br,
+	"Inc <support"@ensuretech.com
+Subject: CISCO IP PHONES AND CPU's
+Date: Thu, 24 Mar 2016 01:45:21 +0700
+Message-ID: <20160323200920.39724A6859__29332.3079626591$1458765584$gmane$org@seymour.toledo.br>
+Reply-To: sales@laisoncomputertech.us
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pf0-f174.google.com ([209.85.192.174]:34254 "EHLO
-	mail-pf0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753493AbcCWQNm (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 23 Mar 2016 12:13:42 -0400
+Received: from seymour.toledo.br ([200.148.142.55]:34496 "EHLO
+	seymour.toledo.br" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756847AbcCWUjP convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 23 Mar 2016 16:39:15 -0400
+Content-Description: Mail message body
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Recipients <support@ensuretech.com>
 
-Hi Linus,
+Hi,
 
-The following changes since commit 92e963f50fc74041b5e9e744c330dca48e04f08d:
+Our Stock list.
 
-  Linux 4.5-rc1 (2016-01-24 13:06:47 -0800)
+Brand NEW
+96 x Cisco 7900 IP Phone
+87 x Unified IP Phone 6900
+12 x Unified IP Phone 8900
+76 x Unified IP Phone 9900
+55 x Unified IP Phone 8800
+67 x Cisco 1921
+67 x Cisco 1941
+56 x Cisco CP-7961G 7961G
+34 x Cisco CP-7971G-GE 7971G
+19 x Cisco Unified IP Conference Station 7937G Model: 7937 CP-7937G
+20 x Cisco CP-7975G 7975G
 
-are available in the git repository at:
+Brand New Sealed :
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.6-rc1
+23 x  CISCO1921-SEC/K9
+Conditions: Brand New Sealed
+Description: CISCO 1921 Security Bundle w/SEC license PAK
 
-for you to fetch changes up to 922201d129c8f9d0c3207dca90ea6ffd8e2242f0:
+45 x CISCO1921/K9
+Conditions: Brand New Sealed
+Description: CISCO 1921 Modular Router, 2 GE, 2 EHWIC slots, 512DRAM, IP Base
 
-  pwm: omap-dmtimer: Add debug message for effective period and duty cycle (2016-03-23 17:11:48 +0100)
+(1)  WS-C4500X-16SFP+
+Serial number:  JAE183501L3
+US&#36;2600
 
-Thanks,
-Thierry
+(1)  WS-C3850-48PW-S
+Serial number:  FCW1823C0EW
+US&#36;2650
 
-----------------------------------------------------------------
-pwm: Changes for v4.6-rc1
+(1)  WS-X6908-10G-2T
+Serial number:  SAL1620CKUB
+US&#36;3650
 
-No new drivers this time around, but a handful of cleanups and fixes.
+(1)  ASR1000-ESP10
+Serial number:  JAE181306C3
+US&#36;3800
 
-----------------------------------------------------------------
-David Rivshin (4):
-      pwm: omap-dmtimer: Fix inaccurate period and duty cycle calculations
-      pwm: omap-dmtimer: Add sanity checking for load and match values
-      pwm: omap-dmtimer: Round load and match values rather than truncate
-      pwm: omap-dmtimer: Add debug message for effective period and duty cycle
+(1)  AIR-CT5508-250-K9   (this is new but box is open!)
+Serial number:  FCW1521L038
+US&#36;4000
 
-Simon Horman (1):
-      pwm: rcar: Depend on ARCH_RENESAS instead of ARCH_SHMOBILE
+CPUs part number below
 
-Vladimir Zapolskiy (1):
-      pwm: brcmstb: Fix check of devm_ioremap_resource() return code
+89 x  X5650
 
-Wolfram Sang (2):
-      pwm: img: Test clock rate to avoid division by 0
-      pwm: lpc18xx-sct: Test clock rate to avoid division by 0
+975 x  X5660
 
- drivers/pwm/Kconfig            |  2 +-
- drivers/pwm/pwm-brcmstb.c      |  4 +--
- drivers/pwm/pwm-img.c          |  5 +++
- drivers/pwm/pwm-lpc18xx-sct.c  |  5 +++
- drivers/pwm/pwm-omap-dmtimer.c | 74 +++++++++++++++++++++++++++++++++---------
- 5 files changed, 71 insertions(+), 19 deletions(-)
+150 x  X5680
+
+265 x  X5690
+
+Kindly make your price offers.
+
+Sincerely
+Barbara Johnson
+Laison Computech
+210 N Scoring Ave,
+Rialto California, 92376
+Tel: +1-657-232-7047
+Fax: +1-347-214-0478
+Email: sales@laisoncomputertech.us
