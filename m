@@ -1,44 +1,27 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 3/6] arm64: dts: r8a7795: Add PWM device nodes
-Date: Thu, 24 Mar 2016 14:52:09 +0100
-Message-ID: <CAMuHMdUzD91D+DJUycy09gaMJYm_XkDTx1ux+6g9xznu-W89Pw@mail.gmail.com>
+Subject: Re: [PATCH 5/6] pwm: add R-Car H3 device tree bindings
+Date: Thu, 24 Mar 2016 14:54:00 +0100
+Message-ID: <CAMuHMdU7STD1Y2m=Za5UrrxtH6Mw1T64NLY_SrKy=94p6PL-_Q@mail.gmail.com>
 References: <1457542562-7880-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-	<1457542562-7880-4-git-send-email-ulrich.hecht+renesas@gmail.com>
+	<1457542562-7880-6-git-send-email-ulrich.hecht+renesas@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1457542562-7880-4-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: linux-renesas-soc@vger.kernel.org, Linux PWM List <linux-pwm@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Ryo Kodama <ryo.kodama.vz@renesas.com>, Harunobu Kurokawa <harunobu.kurokawa.dn@renesas.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:35106 "EHLO
+	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752418AbcCXNyB (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 24 Mar 2016 09:54:01 -0400
+In-Reply-To: <1457542562-7880-6-git-send-email-ulrich.hecht+renesas@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: linux-renesas-soc@vger.kernel.org, Linux PWM List <linux-pwm@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
 
-Hi Ulrich,
-
-On Wed, Mar 9, 2016 at 5:55 PM, Ulrich Hecht
+On Wed, Mar 9, 2016 at 5:56 PM, Ulrich Hecht
 <ulrich.hecht+renesas@gmail.com> wrote:
-> Signed-off-by: Ryo Kodama <ryo.kodama.vz@renesas.com>
-> Signed-off-by: Harunobu Kurokawa <harunobu.kurokawa.dn@renesas.com>
-> [uli: adapted to new MSTP clock scheme]
 > Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-> ---
->  arch/arm64/boot/dts/renesas/r8a7795.dtsi | 54 ++++++++++++++++++++++++++++++++
->  1 file changed, 54 insertions(+)
->
-> diff --git a/arch/arm64/boot/dts/renesas/r8a7795.dtsi b/arch/arm64/boot/dts/renesas/r8a7795.dtsi
-> index 5367a7b..531e3b6 100644
-> --- a/arch/arm64/boot/dts/renesas/r8a7795.dtsi
-> +++ b/arch/arm64/boot/dts/renesas/r8a7795.dtsi
-> @@ -618,6 +618,60 @@
->                         status = "disabled";
->                 };
->
-> +               pwm1: pwm@e6e31000 {
 
-Any specific reason pwm0 is not included?
-
-Apart from that
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
 Gr{oetje,eeting}s,
 
