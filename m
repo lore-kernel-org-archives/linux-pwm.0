@@ -1,44 +1,47 @@
 From: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
-Subject: [PATCH RESEND 3/3] ARM: dts: NSP: Add PWM Support to DT
-Date: Tue, 29 Mar 2016 10:22:30 -0400
-Message-ID: <1459261350-23851-4-git-send-email-yendapally.reddy@broadcom.com>
+Subject: [PATCH RESEND 1/3] Documentation: dt: Add Broadcom iproc pwm
+ controller binding
+Date: Tue, 29 Mar 2016 10:22:28 -0400
+Message-ID: <1459261350-23851-2-git-send-email-yendapally.reddy@broadcom.com>
 References: <1459261350-23851-1-git-send-email-yendapally.reddy@broadcom.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-gw2-out.broadcom.com ([216.31.210.63]:39941 "EHLO
-	mail-gw2-out.broadcom.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757304AbcC2OWt (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 29 Mar 2016 10:22:49 -0400
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1459261350-23851-1-git-send-email-yendapally.reddy@broadcom.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Jon Mason <jonmason@broadcom.com>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com, Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>, bcm-kernel-feedback-list@broadcom.com, linux-arm-kernel@lists.infradead.org
+List-Id: linux-pwm@vger.kernel.org
 
-Add PWM support to the device tree for the Broadcom Northstar Plus SoC.
+Add a binding for Broadcom iproc pwm controller
 
 Signed-off-by: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
- arch/arm/boot/dts/bcm-nsp.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/bcm-nsp.dtsi b/arch/arm/boot/dts/bcm-nsp.dtsi
-index def9e78..f9c8341 100644
---- a/arch/arm/boot/dts/bcm-nsp.dtsi
-+++ b/arch/arm/boot/dts/bcm-nsp.dtsi
-@@ -206,6 +206,14 @@
- 			brcm,nand-has-wp;
- 		};
+diff --git a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+index 8eae9fe..5036f63 100644
+--- a/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/brcm,kona-pwm.txt
+@@ -3,7 +3,7 @@ Broadcom Kona PWM controller device tree bindings
+ This controller has 6 channels.
  
-+		pwm: pwm@31000 {
-+			compatible = "brcm,iproc-pwm";
-+			reg = <0x31000 0x28>;
-+			clocks = <&osc>;
-+			#pwm-cells = <3>;
-+			status = "disabled";
-+		};
-+
- 		ccbtimer0: timer@34000 {
- 			compatible = "arm,sp804";
- 			reg = <0x34000 0x1000>;
+ Required Properties :
+-- compatible: should contain "brcm,kona-pwm"
++- compatible: should contain "brcm,kona-pwm" or "brcm,iproc-pwm"
+ - reg: physical base address and length of the controller's registers
+ - clocks: phandle + clock specifier pair for the external clock
+ - #pwm-cells: Should be 3. See pwm.txt in this directory for a
 -- 
 2.1.0
