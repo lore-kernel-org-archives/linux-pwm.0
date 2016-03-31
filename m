@@ -1,115 +1,57 @@
-From: Shobhit Kumar <shobhit.kumar@intel.com>
-Subject: Re: [PATCH v5 45/46] drm: i915: switch to the atomic
-	PWM API
-Date: Thu, 31 Mar 2016 14:14:54 +0530
-Message-ID: <56FCE386.6060703@intel.com>
-References: <1459368249-13241-1-git-send-email-boris.brezillon@free-electrons.com>
- <1459368249-13241-46-git-send-email-boris.brezillon@free-electrons.com>
- <87io03nokg.fsf@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <87io03nokg.fsf@intel.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Jani Nikula <jani.nikula@linux.intel.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
-Cc: Daniel Vetter <daniel.vetter@intel.com>, intel-gfx@lists.freedesktop.org
+From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH v3 0/6] R8A7795/Salvator-X PWM support
+Date: Thu, 31 Mar 2016 13:39:10 +0200
+Message-ID: <1459424356-26061-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:34477 "EHLO
+	mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751771AbcCaLjz (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 31 Mar 2016 07:39:55 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-renesas-soc@vger.kernel.org, geert@linux-m68k.org
+Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, magnus.damm@gmail.com, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 
-T24gVGh1cnNkYXkgMzEgTWFyY2ggMjAxNiAxMjowNCBQTSwgSmFuaSBOaWt1bGEgd3JvdGU6Cj4K
-PiBbYWdncmVzc2l2ZWx5IHRyaW1tZWQgdGhlIHJlY2lwaWVudCBsaXN0LCBjYW4ndCBzZWVtIHRv
-IGJlIGFibGUgdG8gc2VuZAo+IHRoaXMgb3RoZXJ3aXNlXQo+Cj4gT24gV2VkLCAzMCBNYXIgMjAx
-NiwgQm9yaXMgQnJlemlsbG9uIDxib3Jpcy5icmV6aWxsb25AZnJlZS1lbGVjdHJvbnMuY29tPiB3
-cm90ZToKPj4gcHdtX2NvbmZpZy9lbmFibGUvZGlzYWJsZSgpIGhhdmUgYmVlbiBkZXByZWNhdGVk
-IGFuZCBzaG91bGQgYmUgcmVwbGFjZWQKPj4gYnkgcHdtX2FwcGx5X3N0YXRlKCkuCj4+Cj4+IFNp
-Z25lZC1vZmYtYnk6IEJvcmlzIEJyZXppbGxvbiA8Ym9yaXMuYnJlemlsbG9uQGZyZWUtZWxlY3Ry
-b25zLmNvbT4KPgo+IFJldmlld2VkLWJ5OiBKYW5pIE5pa3VsYSA8amFuaS5uaWt1bGFAaW50ZWwu
-Y29tPgo+Cj4gQ2M6IFNob2JoaXQsIGFueSBhZGRpdGlvbmFsIGNvbW1lbnRzPwoKTG9va3MgZ29v
-ZCB0byBtZS4KClJldmlld2VkLWJ5OiBTaG9iaGl0IEt1bWFyIDxzaG9iaGl0Lmt1bWFyQGludGVs
-LmNvbT4KCj4KPj4gLS0tCj4+ICAgZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfcGFuZWwuYyB8
-IDM5ICsrKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0tLS0tLS0tCj4+ICAgMSBmaWxlIGNo
-YW5nZWQsIDI2IGluc2VydGlvbnMoKyksIDEzIGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfcGFuZWwuYyBiL2RyaXZlcnMvZ3B1L2RybS9p
-OTE1L2ludGVsX3BhbmVsLmMKPj4gaW5kZXggMjFlZTY0Ny4uYjg2YmQyMCAxMDA2NDQKPj4gLS0t
-IGEvZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfcGFuZWwuYwo+PiArKysgYi9kcml2ZXJzL2dw
-dS9kcm0vaTkxNS9pbnRlbF9wYW5lbC5jCj4+IEBAIC01MzgsMTAgKzUzOCwxMCBAQCBzdGF0aWMg
-dTMyIGJ4dF9nZXRfYmFja2xpZ2h0KHN0cnVjdCBpbnRlbF9jb25uZWN0b3IgKmNvbm5lY3RvcikK
-Pj4gICBzdGF0aWMgdTMyIHB3bV9nZXRfYmFja2xpZ2h0KHN0cnVjdCBpbnRlbF9jb25uZWN0b3Ig
-KmNvbm5lY3RvcikKPj4gICB7Cj4+ICAgCXN0cnVjdCBpbnRlbF9wYW5lbCAqcGFuZWwgPSAmY29u
-bmVjdG9yLT5wYW5lbDsKPj4gLQlpbnQgZHV0eV9uczsKPj4gKwlzdHJ1Y3QgcHdtX3N0YXRlIHBz
-dGF0ZTsKPj4KPj4gLQlkdXR5X25zID0gcHdtX2dldF9kdXR5X2N5Y2xlKHBhbmVsLT5iYWNrbGln
-aHQucHdtKTsKPj4gLQlyZXR1cm4gRElWX1JPVU5EX1VQKGR1dHlfbnMgKiAxMDAsIENSQ19QTUlD
-X1BXTV9QRVJJT0RfTlMpOwo+PiArCXB3bV9nZXRfc3RhdGUocGFuZWwtPmJhY2tsaWdodC5wd20s
-ICZwc3RhdGUpOwo+PiArCXJldHVybiBESVZfUk9VTkRfVVAocHN0YXRlLmR1dHlfY3ljbGUgKiAx
-MDAsIENSQ19QTUlDX1BXTV9QRVJJT0RfTlMpOwo+PiAgIH0KPj4KPj4gICBzdGF0aWMgdTMyIGlu
-dGVsX3BhbmVsX2dldF9iYWNrbGlnaHQoc3RydWN0IGludGVsX2Nvbm5lY3RvciAqY29ubmVjdG9y
-KQo+PiBAQCAtNjMwLDkgKzYzMCwxMiBAQCBzdGF0aWMgdm9pZCBieHRfc2V0X2JhY2tsaWdodChz
-dHJ1Y3QgaW50ZWxfY29ubmVjdG9yICpjb25uZWN0b3IsIHUzMiBsZXZlbCkKPj4gICBzdGF0aWMg
-dm9pZCBwd21fc2V0X2JhY2tsaWdodChzdHJ1Y3QgaW50ZWxfY29ubmVjdG9yICpjb25uZWN0b3Is
-IHUzMiBsZXZlbCkKPj4gICB7Cj4+ICAgCXN0cnVjdCBpbnRlbF9wYW5lbCAqcGFuZWwgPSAmY29u
-bmVjdG9yLT5wYW5lbDsKPj4gLQlpbnQgZHV0eV9ucyA9IERJVl9ST1VORF9VUChsZXZlbCAqIENS
-Q19QTUlDX1BXTV9QRVJJT0RfTlMsIDEwMCk7Cj4+ICsJc3RydWN0IHB3bV9zdGF0ZSBwc3RhdGU7
-Cj4+Cj4+IC0JcHdtX2NvbmZpZyhwYW5lbC0+YmFja2xpZ2h0LnB3bSwgZHV0eV9ucywgQ1JDX1BN
-SUNfUFdNX1BFUklPRF9OUyk7Cj4+ICsJcHdtX2dldF9zdGF0ZShwYW5lbC0+YmFja2xpZ2h0LnB3
-bSwgJnBzdGF0ZSk7Cj4+ICsJcHN0YXRlLmR1dHlfY3ljbGUgPSBESVZfUk9VTkRfVVAobGV2ZWwg
-KiBDUkNfUE1JQ19QV01fUEVSSU9EX05TLCAxMDApOwo+PiArCXBzdGF0ZS5wZXJpb2QgPSBDUkNf
-UE1JQ19QV01fUEVSSU9EX05TOwo+PiArCXB3bV9hcHBseV9zdGF0ZShwYW5lbC0+YmFja2xpZ2h0
-LnB3bSwgJnBzdGF0ZSk7Cj4+ICAgfQo+Pgo+PiAgIHN0YXRpYyB2b2lkCj4+IEBAIC04MDEsMTEg
-KzgwNCwxNSBAQCBzdGF0aWMgdm9pZCBieHRfZGlzYWJsZV9iYWNrbGlnaHQoc3RydWN0IGludGVs
-X2Nvbm5lY3RvciAqY29ubmVjdG9yKQo+PiAgIHN0YXRpYyB2b2lkIHB3bV9kaXNhYmxlX2JhY2ts
-aWdodChzdHJ1Y3QgaW50ZWxfY29ubmVjdG9yICpjb25uZWN0b3IpCj4+ICAgewo+PiAgIAlzdHJ1
-Y3QgaW50ZWxfcGFuZWwgKnBhbmVsID0gJmNvbm5lY3Rvci0+cGFuZWw7Cj4+ICsJc3RydWN0IHB3
-bV9zdGF0ZSBwc3RhdGU7Cj4+Cj4+ICAgCS8qIERpc2FibGUgdGhlIGJhY2tsaWdodCAqLwo+PiAt
-CXB3bV9jb25maWcocGFuZWwtPmJhY2tsaWdodC5wd20sIDAsIENSQ19QTUlDX1BXTV9QRVJJT0Rf
-TlMpOwo+PiArCXB3bV9nZXRfc3RhdGUocGFuZWwtPmJhY2tsaWdodC5wd20sICZwc3RhdGUpOwo+
-PiArCXBzdGF0ZS5kdXR5X2N5Y2xlID0gMDsKPj4gKwlwd21fYXBwbHlfc3RhdGUocGFuZWwtPmJh
-Y2tsaWdodC5wd20sICZwc3RhdGUpOwo+PiAgIAl1c2xlZXBfcmFuZ2UoMjAwMCwgMzAwMCk7Cj4+
-IC0JcHdtX2Rpc2FibGUocGFuZWwtPmJhY2tsaWdodC5wd20pOwo+PiArCXBzdGF0ZS5lbmFibGVk
-ID0gZmFsc2U7Cj4+ICsJcHdtX2FwcGx5X3N0YXRlKHBhbmVsLT5iYWNrbGlnaHQucHdtLCAmcHN0
-YXRlKTsKPj4gICB9Cj4+Cj4+ICAgdm9pZCBpbnRlbF9wYW5lbF9kaXNhYmxlX2JhY2tsaWdodChz
-dHJ1Y3QgaW50ZWxfY29ubmVjdG9yICpjb25uZWN0b3IpCj4+IEBAIC0xMDY4LDggKzEwNzUsMTEg
-QEAgc3RhdGljIHZvaWQgYnh0X2VuYWJsZV9iYWNrbGlnaHQoc3RydWN0IGludGVsX2Nvbm5lY3Rv
-ciAqY29ubmVjdG9yKQo+PiAgIHN0YXRpYyB2b2lkIHB3bV9lbmFibGVfYmFja2xpZ2h0KHN0cnVj
-dCBpbnRlbF9jb25uZWN0b3IgKmNvbm5lY3RvcikKPj4gICB7Cj4+ICAgCXN0cnVjdCBpbnRlbF9w
-YW5lbCAqcGFuZWwgPSAmY29ubmVjdG9yLT5wYW5lbDsKPj4gKwlzdHJ1Y3QgcHdtX3N0YXRlIHBz
-dGF0ZTsKPj4KPj4gLQlwd21fZW5hYmxlKHBhbmVsLT5iYWNrbGlnaHQucHdtKTsKPj4gKwlwd21f
-Z2V0X3N0YXRlKHBhbmVsLT5iYWNrbGlnaHQucHdtLCAmcHN0YXRlKTsKPj4gKwlwc3RhdGUuZW5h
-YmxlZCA9IHRydWU7Cj4+ICsJcHdtX2FwcGx5X3N0YXRlKHBhbmVsLT5iYWNrbGlnaHQucHdtLCAm
-cHN0YXRlKTsKPj4gICAJaW50ZWxfcGFuZWxfYWN0dWFsbHlfc2V0X2JhY2tsaWdodChjb25uZWN0
-b3IsIHBhbmVsLT5iYWNrbGlnaHQubGV2ZWwpOwo+PiAgIH0KPj4KPj4gQEAgLTE2MzAsNiArMTY0
-MCw3IEBAIHN0YXRpYyBpbnQgcHdtX3NldHVwX2JhY2tsaWdodChzdHJ1Y3QgaW50ZWxfY29ubmVj
-dG9yICpjb25uZWN0b3IsCj4+ICAgewo+PiAgIAlzdHJ1Y3QgZHJtX2RldmljZSAqZGV2ID0gY29u
-bmVjdG9yLT5iYXNlLmRldjsKPj4gICAJc3RydWN0IGludGVsX3BhbmVsICpwYW5lbCA9ICZjb25u
-ZWN0b3ItPnBhbmVsOwo+PiArCXN0cnVjdCBwd21fc3RhdGUgcHN0YXRlOwo+PiAgIAlpbnQgcmV0
-dmFsOwo+Pgo+PiAgIAkvKiBHZXQgdGhlIFBXTSBjaGlwIGZvciBiYWNrbGlnaHQgY29udHJvbCAq
-Lwo+PiBAQCAtMTY0MCw4ICsxNjUxLDEwIEBAIHN0YXRpYyBpbnQgcHdtX3NldHVwX2JhY2tsaWdo
-dChzdHJ1Y3QgaW50ZWxfY29ubmVjdG9yICpjb25uZWN0b3IsCj4+ICAgCQlyZXR1cm4gLUVOT0RF
-VjsKPj4gICAJfQo+Pgo+PiAtCXJldHZhbCA9IHB3bV9jb25maWcocGFuZWwtPmJhY2tsaWdodC5w
-d20sIENSQ19QTUlDX1BXTV9QRVJJT0RfTlMsCj4+IC0JCQkgICAgQ1JDX1BNSUNfUFdNX1BFUklP
-RF9OUyk7Cj4+ICsJcHdtX2dldF9zdGF0ZShwYW5lbC0+YmFja2xpZ2h0LnB3bSwgJnBzdGF0ZSk7
-Cj4+ICsJcHN0YXRlLnBlcmlvZCA9IENSQ19QTUlDX1BXTV9QRVJJT0RfTlM7Cj4+ICsJcHN0YXRl
-LmR1dHlfY3ljbGUgPSBDUkNfUE1JQ19QV01fUEVSSU9EX05TOwo+PiArCXJldHZhbCA9IHB3bV9h
-cHBseV9zdGF0ZShwYW5lbC0+YmFja2xpZ2h0LnB3bSwgJnBzdGF0ZSk7Cj4+ICAgCWlmIChyZXR2
-YWwgPCAwKSB7Cj4+ICAgCQlEUk1fRVJST1IoIkZhaWxlZCB0byBjb25maWd1cmUgdGhlIHB3bSBj
-aGlwXG4iKTsKPj4gICAJCXB3bV9wdXQocGFuZWwtPmJhY2tsaWdodC5wd20pOwo+PiBAQCAtMTY1
-MSw5ICsxNjY0LDkgQEAgc3RhdGljIGludCBwd21fc2V0dXBfYmFja2xpZ2h0KHN0cnVjdCBpbnRl
-bF9jb25uZWN0b3IgKmNvbm5lY3RvciwKPj4KPj4gICAJcGFuZWwtPmJhY2tsaWdodC5taW4gPSAw
-OyAvKiAwJSAqLwo+PiAgIAlwYW5lbC0+YmFja2xpZ2h0Lm1heCA9IDEwMDsgLyogMTAwJSAqLwo+
-PiAtCXBhbmVsLT5iYWNrbGlnaHQubGV2ZWwgPSBESVZfUk9VTkRfVVAoCj4+IC0JCQkJIHB3bV9n
-ZXRfZHV0eV9jeWNsZShwYW5lbC0+YmFja2xpZ2h0LnB3bSkgKiAxMDAsCj4+IC0JCQkJIENSQ19Q
-TUlDX1BXTV9QRVJJT0RfTlMpOwo+PiArCXB3bV9nZXRfc3RhdGUocGFuZWwtPmJhY2tsaWdodC5w
-d20sICZwc3RhdGUpOwo+PiArCXBhbmVsLT5iYWNrbGlnaHQubGV2ZWwgPSBESVZfUk9VTkRfVVAo
-cHN0YXRlLmR1dHlfY3ljbGUgKiAxMDAsCj4+ICsJCQkJCSAgICAgIHBzdGF0ZS5wZXJpb2QpOwo+
-PiAgIAlwYW5lbC0+YmFja2xpZ2h0LmVuYWJsZWQgPSBwYW5lbC0+YmFja2xpZ2h0LmxldmVsICE9
-IDA7Cj4+Cj4+ICAgCXJldHVybiAwOwo+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fCkludGVsLWdmeCBtYWlsaW5nIGxpc3QKSW50ZWwtZ2Z4QGxpc3RzLmZy
-ZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2ludGVsLWdmeAo=
+Hi!
+
+This revision adds the missing pwm0 node as well as Geert's endorsements.
+
+CU
+Uli
+
+Changes since v2:
+- add pwm0
+- add Acked-By/Reviewed-By's
+
+Changes since v1:
+- drops the PFC driver bits that have been queued in sh-pfc-for-v4.6
+- replaces ARCH_RCAR_GEN{1,2} with ARCH_RENESAS
+- splits the DT patch in three
+- enables only one pin group for each device
+- describes what the PWM devices are used for
+- adds the missing power domain entries
+- adds module clock 523 to the MSSR driver
+
+
+Harunobu Kurokawa (1):
+  arm64: defconfig : add PWM driver support
+
+Ryo Kodama (1):
+  pwm: rcar: Use ARCH_RENESAS
+
+Ulrich Hecht (4):
+  arm64: dts: r8a7795: Add PWM device nodes
+  arm64: dts: salvator-x: enable PWM
+  pwm: add R-Car H3 device tree bindings
+  clk: shmobile: r8a7795: add PWM clock
+
+ .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   |  1 +
+ arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts | 23 ++++++++
+ arch/arm64/boot/dts/renesas/r8a7795.dtsi           | 63 ++++++++++++++++++++++
+ arch/arm64/configs/defconfig                       |  2 +
+ drivers/clk/renesas/r8a7795-cpg-mssr.c             |  1 +
+ drivers/pwm/Kconfig                                |  2 +-
+ 6 files changed, 91 insertions(+), 1 deletion(-)
+
+-- 
+2.7.4
