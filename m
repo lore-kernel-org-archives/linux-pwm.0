@@ -1,36 +1,36 @@
 From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH v3 2/6] arm64: defconfig : add PWM driver support
-Date: Thu, 31 Mar 2016 13:39:12 +0200
-Message-ID: <1459424356-26061-3-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH v3 5/6] pwm: add R-Car H3 device tree bindings
+Date: Thu, 31 Mar 2016 13:39:15 +0200
+Message-ID: <1459424356-26061-6-git-send-email-ulrich.hecht+renesas@gmail.com>
 References: <1459424356-26061-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:35529 "EHLO
+	mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753785AbcCaLkI (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 31 Mar 2016 07:40:08 -0400
 In-Reply-To: <1459424356-26061-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: linux-renesas-soc@vger.kernel.org, geert@linux-m68k.org
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, magnus.damm@gmail.com, Harunobu Kurokawa <harunobu.kurokawa.dn@renesas.com>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-renesas-soc@vger.kernel.org, geert@linux-m68k.org
+Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, magnus.damm@gmail.com, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 
-From: Harunobu Kurokawa <harunobu.kurokawa.dn@renesas.com>
-
-Signed-off-by: Harunobu Kurokawa <harunobu.kurokawa.dn@renesas.com>
 Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- arch/arm64/configs/defconfig | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index f705051..5067137 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -252,6 +252,8 @@ CONFIG_ARCH_TEGRA_210_SOC=y
- CONFIG_HISILICON_IRQ_MBIGEN=y
- CONFIG_EXTCON_USB_GPIO=y
- CONFIG_PHY_RCAR_GEN3_USB2=y
-+CONFIG_PWM=y
-+CONFIG_PWM_RCAR=y
- CONFIG_PHY_XGENE=y
- CONFIG_EXT2_FS=y
- CONFIG_EXT3_FS=y
+diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+index 0822a08..d6de643 100644
+--- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
++++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+@@ -7,6 +7,7 @@ Required Properties:
+  - "renesas,pwm-r8a7790": for R-Car H2
+  - "renesas,pwm-r8a7791": for R-Car M2-W
+  - "renesas,pwm-r8a7794": for R-Car E2
++ - "renesas,pwm-r8a7795": for R-Car H3
+ - reg: base address and length of the registers block for the PWM.
+ - #pwm-cells: should be 2. See pwm.txt in this directory for a description of
+   the cells format.
 -- 
 2.7.4
