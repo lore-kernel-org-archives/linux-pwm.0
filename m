@@ -1,119 +1,137 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v5 08/46] hwmon: pwm-fan: use pwm_get_args() where
- appropriate
-Date: Wed, 30 Mar 2016 15:52:44 -0700
-Message-ID: <20160330225244.GA24044@roeck-us.net>
-References: <1459368249-13241-1-git-send-email-boris.brezillon@free-electrons.com>
- <1459368249-13241-9-git-send-email-boris.brezillon@free-electrons.com>
+From: Jani Nikula <jani.nikula@linux.intel.com>
+Subject: Re: [PATCH v5 45/46] drm: i915: switch to the atomic PWM API
+Date: Thu, 31 Mar 2016 09:34:07 +0300
+Message-ID: <87io03nokg.fsf@intel.com>
+References: <1459368249-13241-1-git-send-email-boris.brezillon@free-electrons.com> <1459368249-13241-46-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-clk-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1459368249-13241-9-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-clk-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mike Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, linux-clk@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Kamil Debski <k.debski@samsung.com>, lm-sensors@lm-sensors.org, Jean Delvare <jdelvare@suse.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, linux-input@vger.kernel.org, Bryan Wu <cooloney@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, linux-leds@vger.kernel.org, Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, linux-sunxi@googlegroups.com, Joachim Eastwood <manabian@gmail.com>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Jingoo Han <jingoohan1@gmail.com>, Lee
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:57722 "EHLO mga09.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751455AbcCaGeh (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Thu, 31 Mar 2016 02:34:37 -0400
+In-Reply-To: <1459368249-13241-46-git-send-email-boris.brezillon@free-electrons.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Cc: intel-gfx@lists.freedesktop.org, Daniel Vetter <daniel.vetter@intel.com>, Shobhit Kumar <shobhit.kumar@intel.com>
 
-On Wed, Mar 30, 2016 at 10:03:31PM +0200, Boris Brezillon wrote:
-> The PWM framework has clarified the concept of reference PWM config
-> (the platform dependent config retrieved from the DT or the PWM
-> lookup table) and real PWM state.
-> 
-> Use pwm_get_args() when the PWM user wants to retrieve this reference
-> config and not the current state.
-> 
-> This is part of the rework allowing the PWM framework to support
-> hardware readout and expose real PWM state even when the PWM has
-> just been requested (before the user calls pwm_config/enable/disable()).
-> 
+
+[aggressively trimmed the recipient list, can't seem to be able to send
+this otherwise]
+
+On Wed, 30 Mar 2016, Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
+> pwm_config/enable/disable() have been deprecated and should be replaced
+> by pwm_apply_state().
+>
 > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+
+Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+
+Cc: Shobhit, any additional comments?
+
 > ---
->  drivers/hwmon/pwm-fan.c | 19 +++++++++++++------
->  1 file changed, 13 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
-> index 3e23003..82c5656 100644
-> --- a/drivers/hwmon/pwm-fan.c
-> +++ b/drivers/hwmon/pwm-fan.c
-> @@ -40,15 +40,18 @@ struct pwm_fan_ctx {
->  
->  static int  __set_pwm(struct pwm_fan_ctx *ctx, unsigned long pwm)
+>  drivers/gpu/drm/i915/intel_panel.c | 39 +++++++++++++++++++++++++-------------
+>  1 file changed, 26 insertions(+), 13 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/i915/intel_panel.c b/drivers/gpu/drm/i915/intel_panel.c
+> index 21ee647..b86bd20 100644
+> --- a/drivers/gpu/drm/i915/intel_panel.c
+> +++ b/drivers/gpu/drm/i915/intel_panel.c
+> @@ -538,10 +538,10 @@ static u32 bxt_get_backlight(struct intel_connector *connector)
+>  static u32 pwm_get_backlight(struct intel_connector *connector)
 >  {
-> +	struct pwm_args pargs = { };
-
-Hi Boris,
-
-I guess I am missing some context; sorry for that. Unfortunately,
-I did not easily find an explanation, so please bear with me.
-
-Two questions: Why do we need a local copy of struct pwm_args instead
-of a pointer to it ? If it can change while being used, isn't it
-inconsistent anyway ?
-
-Also, assuming the local copy is necessary, why initialize pargs ? 
-After all, pwm_get_args() just overwrites it.
-
-Thanks,
-Guenter
-
->  	unsigned long duty;
->  	int ret = 0;
+>  	struct intel_panel *panel = &connector->panel;
+> -	int duty_ns;
+> +	struct pwm_state pstate;
 >  
-> +	pwm_get_args(ctx->pwm, &pargs);
-> +
->  	mutex_lock(&ctx->lock);
->  	if (ctx->pwm_value == pwm)
->  		goto exit_set_pwm_err;
+> -	duty_ns = pwm_get_duty_cycle(panel->backlight.pwm);
+> -	return DIV_ROUND_UP(duty_ns * 100, CRC_PMIC_PWM_PERIOD_NS);
+> +	pwm_get_state(panel->backlight.pwm, &pstate);
+> +	return DIV_ROUND_UP(pstate.duty_cycle * 100, CRC_PMIC_PWM_PERIOD_NS);
+>  }
 >  
-> -	duty = DIV_ROUND_UP(pwm * (ctx->pwm->period - 1), MAX_PWM);
-> -	ret = pwm_config(ctx->pwm, duty, ctx->pwm->period);
-> +	duty = DIV_ROUND_UP(pwm * (pargs.period - 1), MAX_PWM);
-> +	ret = pwm_config(ctx->pwm, duty, pargs.period);
->  	if (ret)
->  		goto exit_set_pwm_err;
->  
-> @@ -214,6 +217,7 @@ static int pwm_fan_of_get_cooling_data(struct device *dev,
->  static int pwm_fan_probe(struct platform_device *pdev)
+>  static u32 intel_panel_get_backlight(struct intel_connector *connector)
+> @@ -630,9 +630,12 @@ static void bxt_set_backlight(struct intel_connector *connector, u32 level)
+>  static void pwm_set_backlight(struct intel_connector *connector, u32 level)
 >  {
->  	struct thermal_cooling_device *cdev;
-> +	struct pwm_args pargs = { };
->  	struct pwm_fan_ctx *ctx;
->  	struct device *hwmon;
->  	int duty_cycle;
-> @@ -234,10 +238,11 @@ static int pwm_fan_probe(struct platform_device *pdev)
->  	platform_set_drvdata(pdev, ctx);
+>  	struct intel_panel *panel = &connector->panel;
+> -	int duty_ns = DIV_ROUND_UP(level * CRC_PMIC_PWM_PERIOD_NS, 100);
+> +	struct pwm_state pstate;
 >  
->  	/* Set duty cycle to maximum allowed */
-> -	duty_cycle = ctx->pwm->period - 1;
-> +	pwm_get_args(ctx->pwm, &pargs);
-> +	duty_cycle = pargs.period - 1;
->  	ctx->pwm_value = MAX_PWM;
+> -	pwm_config(panel->backlight.pwm, duty_ns, CRC_PMIC_PWM_PERIOD_NS);
+> +	pwm_get_state(panel->backlight.pwm, &pstate);
+> +	pstate.duty_cycle = DIV_ROUND_UP(level * CRC_PMIC_PWM_PERIOD_NS, 100);
+> +	pstate.period = CRC_PMIC_PWM_PERIOD_NS;
+> +	pwm_apply_state(panel->backlight.pwm, &pstate);
+>  }
 >  
-> -	ret = pwm_config(ctx->pwm, duty_cycle, ctx->pwm->period);
-> +	ret = pwm_config(ctx->pwm, duty_cycle, pargs.period);
->  	if (ret) {
->  		dev_err(&pdev->dev, "Failed to configure PWM\n");
->  		return ret;
-> @@ -303,14 +308,16 @@ static int pwm_fan_suspend(struct device *dev)
->  static int pwm_fan_resume(struct device *dev)
+>  static void
+> @@ -801,11 +804,15 @@ static void bxt_disable_backlight(struct intel_connector *connector)
+>  static void pwm_disable_backlight(struct intel_connector *connector)
 >  {
->  	struct pwm_fan_ctx *ctx = dev_get_drvdata(dev);
-> +	struct pwm_args pargs = { };
->  	unsigned long duty;
->  	int ret;
+>  	struct intel_panel *panel = &connector->panel;
+> +	struct pwm_state pstate;
 >  
->  	if (ctx->pwm_value == 0)
->  		return 0;
+>  	/* Disable the backlight */
+> -	pwm_config(panel->backlight.pwm, 0, CRC_PMIC_PWM_PERIOD_NS);
+> +	pwm_get_state(panel->backlight.pwm, &pstate);
+> +	pstate.duty_cycle = 0;
+> +	pwm_apply_state(panel->backlight.pwm, &pstate);
+>  	usleep_range(2000, 3000);
+> -	pwm_disable(panel->backlight.pwm);
+> +	pstate.enabled = false;
+> +	pwm_apply_state(panel->backlight.pwm, &pstate);
+>  }
 >  
-> -	duty = DIV_ROUND_UP(ctx->pwm_value * (ctx->pwm->period - 1), MAX_PWM);
-> -	ret = pwm_config(ctx->pwm, duty, ctx->pwm->period);
-> +	pwm_get_args(ctx->pwm, &pargs);
-> +	duty = DIV_ROUND_UP(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
-> +	ret = pwm_config(ctx->pwm, duty, pargs.period);
->  	if (ret)
->  		return ret;
->  	return pwm_enable(ctx->pwm);
-> -- 
-> 2.5.0
-> 
+>  void intel_panel_disable_backlight(struct intel_connector *connector)
+> @@ -1068,8 +1075,11 @@ static void bxt_enable_backlight(struct intel_connector *connector)
+>  static void pwm_enable_backlight(struct intel_connector *connector)
+>  {
+>  	struct intel_panel *panel = &connector->panel;
+> +	struct pwm_state pstate;
+>  
+> -	pwm_enable(panel->backlight.pwm);
+> +	pwm_get_state(panel->backlight.pwm, &pstate);
+> +	pstate.enabled = true;
+> +	pwm_apply_state(panel->backlight.pwm, &pstate);
+>  	intel_panel_actually_set_backlight(connector, panel->backlight.level);
+>  }
+>  
+> @@ -1630,6 +1640,7 @@ static int pwm_setup_backlight(struct intel_connector *connector,
+>  {
+>  	struct drm_device *dev = connector->base.dev;
+>  	struct intel_panel *panel = &connector->panel;
+> +	struct pwm_state pstate;
+>  	int retval;
+>  
+>  	/* Get the PWM chip for backlight control */
+> @@ -1640,8 +1651,10 @@ static int pwm_setup_backlight(struct intel_connector *connector,
+>  		return -ENODEV;
+>  	}
+>  
+> -	retval = pwm_config(panel->backlight.pwm, CRC_PMIC_PWM_PERIOD_NS,
+> -			    CRC_PMIC_PWM_PERIOD_NS);
+> +	pwm_get_state(panel->backlight.pwm, &pstate);
+> +	pstate.period = CRC_PMIC_PWM_PERIOD_NS;
+> +	pstate.duty_cycle = CRC_PMIC_PWM_PERIOD_NS;
+> +	retval = pwm_apply_state(panel->backlight.pwm, &pstate);
+>  	if (retval < 0) {
+>  		DRM_ERROR("Failed to configure the pwm chip\n");
+>  		pwm_put(panel->backlight.pwm);
+> @@ -1651,9 +1664,9 @@ static int pwm_setup_backlight(struct intel_connector *connector,
+>  
+>  	panel->backlight.min = 0; /* 0% */
+>  	panel->backlight.max = 100; /* 100% */
+> -	panel->backlight.level = DIV_ROUND_UP(
+> -				 pwm_get_duty_cycle(panel->backlight.pwm) * 100,
+> -				 CRC_PMIC_PWM_PERIOD_NS);
+> +	pwm_get_state(panel->backlight.pwm, &pstate);
+> +	panel->backlight.level = DIV_ROUND_UP(pstate.duty_cycle * 100,
+> +					      pstate.period);
+>  	panel->backlight.enabled = panel->backlight.level != 0;
+>  
+>  	return 0;
+
+-- 
+Jani Nikula, Intel Open Source Technology Center
