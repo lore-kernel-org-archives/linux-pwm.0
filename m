@@ -1,151 +1,115 @@
-From: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v5 26/46] pwm: sun4i: implement hardware readout
-Date: Thu, 31 Mar 2016 10:00:33 +0200
-Message-ID: <20160331080033.GR2346@piout.net>
+From: Shobhit Kumar <shobhit.kumar@intel.com>
+Subject: Re: [PATCH v5 45/46] drm: i915: switch to the atomic
+	PWM API
+Date: Thu, 31 Mar 2016 14:14:54 +0530
+Message-ID: <56FCE386.6060703@intel.com>
 References: <1459368249-13241-1-git-send-email-boris.brezillon@free-electrons.com>
- <1459368249-13241-27-git-send-email-boris.brezillon@free-electrons.com>
-Reply-To: alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
+ <1459368249-13241-46-git-send-email-boris.brezillon@free-electrons.com>
+ <87io03nokg.fsf@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBDS7HNEFSALRBJFS6O3QKGQEEKYFEYY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-Content-Disposition: inline
-In-Reply-To: <1459368249-13241-27-git-send-email-boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kamil Debski <k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, lm-sensors-GZX6beZjE8VD60Wz+7aTrA@public.gmane.org, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jingoo
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <87io03nokg.fsf@intel.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Jani Nikula <jani.nikula@linux.intel.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Cc: Daniel Vetter <daniel.vetter@intel.com>, intel-gfx@lists.freedesktop.org
 List-Id: linux-pwm@vger.kernel.org
 
-On 30/03/2016 at 22:03:49 +0200, Boris Brezillon wrote :
-> Implement ->get_state() instead of only initializing the polarity in
-> the probe function.
-> 
-> This implementation also takes care of keeping the PWM clk enabled if at
-> least one of the PWM exported by the PWM chip is already enabled, which
-> should prevent glitches.
-> 
-> Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Reviewed-by: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-
-> ---
->  drivers/pwm/pwm-sun4i.c | 74 ++++++++++++++++++++++++++++++++++++-------------
->  1 file changed, 55 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-> index 03a99a5..34cb296 100644
-> --- a/drivers/pwm/pwm-sun4i.c
-> +++ b/drivers/pwm/pwm-sun4i.c
-> @@ -252,11 +252,65 @@ static void sun4i_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->  	clk_disable_unprepare(sun4i_pwm->clk);
->  }
->  
-> +static void sun4i_pwm_get_state(struct pwm_chip *chip,
-> +				struct pwm_device *pwm,
-> +				struct pwm_state *pstate)
-> +{
-> +	struct sun4i_pwm_chip *sun4i_pwm = to_sun4i_pwm_chip(chip);
-> +	unsigned int clk_rate = clk_get_rate(sun4i_pwm->clk);
-> +	int prescaler, prescalerid;
-> +	int ret;
-> +	u32 val;
-> +
-> +	ret = clk_prepare_enable(sun4i_pwm->clk);
-> +	if (ret) {
-> +		dev_err(chip->dev, "Failed to enable PWM clock");
-> +		return;
-> +	}
-> +
-> +	val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
-> +	if (val & BIT_CH(PWM_ACT_STATE, pwm->hwpwm))
-> +		pstate->polarity = PWM_POLARITY_INVERSED;
-> +	else
-> +		pstate->polarity = PWM_POLARITY_NORMAL;
-> +
-> +	if ((val & BIT_CH(PWM_EN, pwm->hwpwm)) &&
-> +	    (val & BIT_CH(PWM_CLK_GATING, pwm->hwpwm)))
-> +		pstate->enabled = true;
-> +	else
-> +		pstate->enabled = false;
-> +
-> +	pstate->period = 0;
-> +	pstate->duty_cycle = 0;
-> +	prescalerid = (val >> (PWMCH_OFFSET * pwm->hwpwm)) & PWM_PRESCAL_MASK;
-> +	prescaler = prescaler_table[prescalerid];
-> +	if (prescaler) {
-> +		u64 timens;
-> +
-> +		clk_rate /= prescaler;
-> +
-> +		val = sun4i_pwm_readl(sun4i_pwm, PWM_CH_PRD(pwm->hwpwm));
-> +
-> +		timens = ((val >> 16) & PWM_PRD_MASK) + 1;
-> +		timens *= NSEC_PER_SEC;
-> +		do_div(timens, clk_rate);
-> +		pstate->period = timens;
-> +
-> +		timens = val & PWM_DTY_MASK;
-> +		timens *= NSEC_PER_SEC;
-> +		do_div(timens, clk_rate);
-> +		pstate->duty_cycle = timens;
-> +	}
-> +
-> +	clk_disable_unprepare(sun4i_pwm->clk);
-> +}
-> +
->  static const struct pwm_ops sun4i_pwm_ops = {
->  	.config = sun4i_pwm_config,
->  	.set_polarity = sun4i_pwm_set_polarity,
->  	.enable = sun4i_pwm_enable,
->  	.disable = sun4i_pwm_disable,
-> +	.get_state = sun4i_pwm_get_state,
->  	.owner = THIS_MODULE,
->  };
->  
-> @@ -307,8 +361,7 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
->  {
->  	struct sun4i_pwm_chip *pwm;
->  	struct resource *res;
-> -	u32 val;
-> -	int i, ret;
-> +	int ret;
->  	const struct of_device_id *match;
->  
->  	match = of_match_device(sun4i_pwm_dt_ids, &pdev->dev);
-> @@ -345,24 +398,7 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, pwm);
->  
-> -	ret = clk_prepare_enable(pwm->clk);
-> -	if (ret) {
-> -		dev_err(&pdev->dev, "failed to enable PWM clock\n");
-> -		goto clk_error;
-> -	}
-> -
-> -	val = sun4i_pwm_readl(pwm, PWM_CTRL_REG);
-> -	for (i = 0; i < pwm->chip.npwm; i++)
-> -		if (!(val & BIT_CH(PWM_ACT_STATE, i)))
-> -			pwm_set_polarity(&pwm->chip.pwms[i],
-> -					 PWM_POLARITY_INVERSED);
-> -	clk_disable_unprepare(pwm->clk);
-> -
->  	return 0;
-> -
-> -clk_error:
-> -	pwmchip_remove(&pwm->chip);
-> -	return ret;
->  }
->  
->  static int sun4i_pwm_remove(struct platform_device *pdev)
-> -- 
-> 2.5.0
-> 
-
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux, Kernel and Android engineering
-http://free-electrons.com
+T24gVGh1cnNkYXkgMzEgTWFyY2ggMjAxNiAxMjowNCBQTSwgSmFuaSBOaWt1bGEgd3JvdGU6Cj4K
+PiBbYWdncmVzc2l2ZWx5IHRyaW1tZWQgdGhlIHJlY2lwaWVudCBsaXN0LCBjYW4ndCBzZWVtIHRv
+IGJlIGFibGUgdG8gc2VuZAo+IHRoaXMgb3RoZXJ3aXNlXQo+Cj4gT24gV2VkLCAzMCBNYXIgMjAx
+NiwgQm9yaXMgQnJlemlsbG9uIDxib3Jpcy5icmV6aWxsb25AZnJlZS1lbGVjdHJvbnMuY29tPiB3
+cm90ZToKPj4gcHdtX2NvbmZpZy9lbmFibGUvZGlzYWJsZSgpIGhhdmUgYmVlbiBkZXByZWNhdGVk
+IGFuZCBzaG91bGQgYmUgcmVwbGFjZWQKPj4gYnkgcHdtX2FwcGx5X3N0YXRlKCkuCj4+Cj4+IFNp
+Z25lZC1vZmYtYnk6IEJvcmlzIEJyZXppbGxvbiA8Ym9yaXMuYnJlemlsbG9uQGZyZWUtZWxlY3Ry
+b25zLmNvbT4KPgo+IFJldmlld2VkLWJ5OiBKYW5pIE5pa3VsYSA8amFuaS5uaWt1bGFAaW50ZWwu
+Y29tPgo+Cj4gQ2M6IFNob2JoaXQsIGFueSBhZGRpdGlvbmFsIGNvbW1lbnRzPwoKTG9va3MgZ29v
+ZCB0byBtZS4KClJldmlld2VkLWJ5OiBTaG9iaGl0IEt1bWFyIDxzaG9iaGl0Lmt1bWFyQGludGVs
+LmNvbT4KCj4KPj4gLS0tCj4+ICAgZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfcGFuZWwuYyB8
+IDM5ICsrKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0tLS0tLS0tCj4+ICAgMSBmaWxlIGNo
+YW5nZWQsIDI2IGluc2VydGlvbnMoKyksIDEzIGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfcGFuZWwuYyBiL2RyaXZlcnMvZ3B1L2RybS9p
+OTE1L2ludGVsX3BhbmVsLmMKPj4gaW5kZXggMjFlZTY0Ny4uYjg2YmQyMCAxMDA2NDQKPj4gLS0t
+IGEvZHJpdmVycy9ncHUvZHJtL2k5MTUvaW50ZWxfcGFuZWwuYwo+PiArKysgYi9kcml2ZXJzL2dw
+dS9kcm0vaTkxNS9pbnRlbF9wYW5lbC5jCj4+IEBAIC01MzgsMTAgKzUzOCwxMCBAQCBzdGF0aWMg
+dTMyIGJ4dF9nZXRfYmFja2xpZ2h0KHN0cnVjdCBpbnRlbF9jb25uZWN0b3IgKmNvbm5lY3RvcikK
+Pj4gICBzdGF0aWMgdTMyIHB3bV9nZXRfYmFja2xpZ2h0KHN0cnVjdCBpbnRlbF9jb25uZWN0b3Ig
+KmNvbm5lY3RvcikKPj4gICB7Cj4+ICAgCXN0cnVjdCBpbnRlbF9wYW5lbCAqcGFuZWwgPSAmY29u
+bmVjdG9yLT5wYW5lbDsKPj4gLQlpbnQgZHV0eV9uczsKPj4gKwlzdHJ1Y3QgcHdtX3N0YXRlIHBz
+dGF0ZTsKPj4KPj4gLQlkdXR5X25zID0gcHdtX2dldF9kdXR5X2N5Y2xlKHBhbmVsLT5iYWNrbGln
+aHQucHdtKTsKPj4gLQlyZXR1cm4gRElWX1JPVU5EX1VQKGR1dHlfbnMgKiAxMDAsIENSQ19QTUlD
+X1BXTV9QRVJJT0RfTlMpOwo+PiArCXB3bV9nZXRfc3RhdGUocGFuZWwtPmJhY2tsaWdodC5wd20s
+ICZwc3RhdGUpOwo+PiArCXJldHVybiBESVZfUk9VTkRfVVAocHN0YXRlLmR1dHlfY3ljbGUgKiAx
+MDAsIENSQ19QTUlDX1BXTV9QRVJJT0RfTlMpOwo+PiAgIH0KPj4KPj4gICBzdGF0aWMgdTMyIGlu
+dGVsX3BhbmVsX2dldF9iYWNrbGlnaHQoc3RydWN0IGludGVsX2Nvbm5lY3RvciAqY29ubmVjdG9y
+KQo+PiBAQCAtNjMwLDkgKzYzMCwxMiBAQCBzdGF0aWMgdm9pZCBieHRfc2V0X2JhY2tsaWdodChz
+dHJ1Y3QgaW50ZWxfY29ubmVjdG9yICpjb25uZWN0b3IsIHUzMiBsZXZlbCkKPj4gICBzdGF0aWMg
+dm9pZCBwd21fc2V0X2JhY2tsaWdodChzdHJ1Y3QgaW50ZWxfY29ubmVjdG9yICpjb25uZWN0b3Is
+IHUzMiBsZXZlbCkKPj4gICB7Cj4+ICAgCXN0cnVjdCBpbnRlbF9wYW5lbCAqcGFuZWwgPSAmY29u
+bmVjdG9yLT5wYW5lbDsKPj4gLQlpbnQgZHV0eV9ucyA9IERJVl9ST1VORF9VUChsZXZlbCAqIENS
+Q19QTUlDX1BXTV9QRVJJT0RfTlMsIDEwMCk7Cj4+ICsJc3RydWN0IHB3bV9zdGF0ZSBwc3RhdGU7
+Cj4+Cj4+IC0JcHdtX2NvbmZpZyhwYW5lbC0+YmFja2xpZ2h0LnB3bSwgZHV0eV9ucywgQ1JDX1BN
+SUNfUFdNX1BFUklPRF9OUyk7Cj4+ICsJcHdtX2dldF9zdGF0ZShwYW5lbC0+YmFja2xpZ2h0LnB3
+bSwgJnBzdGF0ZSk7Cj4+ICsJcHN0YXRlLmR1dHlfY3ljbGUgPSBESVZfUk9VTkRfVVAobGV2ZWwg
+KiBDUkNfUE1JQ19QV01fUEVSSU9EX05TLCAxMDApOwo+PiArCXBzdGF0ZS5wZXJpb2QgPSBDUkNf
+UE1JQ19QV01fUEVSSU9EX05TOwo+PiArCXB3bV9hcHBseV9zdGF0ZShwYW5lbC0+YmFja2xpZ2h0
+LnB3bSwgJnBzdGF0ZSk7Cj4+ICAgfQo+Pgo+PiAgIHN0YXRpYyB2b2lkCj4+IEBAIC04MDEsMTEg
+KzgwNCwxNSBAQCBzdGF0aWMgdm9pZCBieHRfZGlzYWJsZV9iYWNrbGlnaHQoc3RydWN0IGludGVs
+X2Nvbm5lY3RvciAqY29ubmVjdG9yKQo+PiAgIHN0YXRpYyB2b2lkIHB3bV9kaXNhYmxlX2JhY2ts
+aWdodChzdHJ1Y3QgaW50ZWxfY29ubmVjdG9yICpjb25uZWN0b3IpCj4+ICAgewo+PiAgIAlzdHJ1
+Y3QgaW50ZWxfcGFuZWwgKnBhbmVsID0gJmNvbm5lY3Rvci0+cGFuZWw7Cj4+ICsJc3RydWN0IHB3
+bV9zdGF0ZSBwc3RhdGU7Cj4+Cj4+ICAgCS8qIERpc2FibGUgdGhlIGJhY2tsaWdodCAqLwo+PiAt
+CXB3bV9jb25maWcocGFuZWwtPmJhY2tsaWdodC5wd20sIDAsIENSQ19QTUlDX1BXTV9QRVJJT0Rf
+TlMpOwo+PiArCXB3bV9nZXRfc3RhdGUocGFuZWwtPmJhY2tsaWdodC5wd20sICZwc3RhdGUpOwo+
+PiArCXBzdGF0ZS5kdXR5X2N5Y2xlID0gMDsKPj4gKwlwd21fYXBwbHlfc3RhdGUocGFuZWwtPmJh
+Y2tsaWdodC5wd20sICZwc3RhdGUpOwo+PiAgIAl1c2xlZXBfcmFuZ2UoMjAwMCwgMzAwMCk7Cj4+
+IC0JcHdtX2Rpc2FibGUocGFuZWwtPmJhY2tsaWdodC5wd20pOwo+PiArCXBzdGF0ZS5lbmFibGVk
+ID0gZmFsc2U7Cj4+ICsJcHdtX2FwcGx5X3N0YXRlKHBhbmVsLT5iYWNrbGlnaHQucHdtLCAmcHN0
+YXRlKTsKPj4gICB9Cj4+Cj4+ICAgdm9pZCBpbnRlbF9wYW5lbF9kaXNhYmxlX2JhY2tsaWdodChz
+dHJ1Y3QgaW50ZWxfY29ubmVjdG9yICpjb25uZWN0b3IpCj4+IEBAIC0xMDY4LDggKzEwNzUsMTEg
+QEAgc3RhdGljIHZvaWQgYnh0X2VuYWJsZV9iYWNrbGlnaHQoc3RydWN0IGludGVsX2Nvbm5lY3Rv
+ciAqY29ubmVjdG9yKQo+PiAgIHN0YXRpYyB2b2lkIHB3bV9lbmFibGVfYmFja2xpZ2h0KHN0cnVj
+dCBpbnRlbF9jb25uZWN0b3IgKmNvbm5lY3RvcikKPj4gICB7Cj4+ICAgCXN0cnVjdCBpbnRlbF9w
+YW5lbCAqcGFuZWwgPSAmY29ubmVjdG9yLT5wYW5lbDsKPj4gKwlzdHJ1Y3QgcHdtX3N0YXRlIHBz
+dGF0ZTsKPj4KPj4gLQlwd21fZW5hYmxlKHBhbmVsLT5iYWNrbGlnaHQucHdtKTsKPj4gKwlwd21f
+Z2V0X3N0YXRlKHBhbmVsLT5iYWNrbGlnaHQucHdtLCAmcHN0YXRlKTsKPj4gKwlwc3RhdGUuZW5h
+YmxlZCA9IHRydWU7Cj4+ICsJcHdtX2FwcGx5X3N0YXRlKHBhbmVsLT5iYWNrbGlnaHQucHdtLCAm
+cHN0YXRlKTsKPj4gICAJaW50ZWxfcGFuZWxfYWN0dWFsbHlfc2V0X2JhY2tsaWdodChjb25uZWN0
+b3IsIHBhbmVsLT5iYWNrbGlnaHQubGV2ZWwpOwo+PiAgIH0KPj4KPj4gQEAgLTE2MzAsNiArMTY0
+MCw3IEBAIHN0YXRpYyBpbnQgcHdtX3NldHVwX2JhY2tsaWdodChzdHJ1Y3QgaW50ZWxfY29ubmVj
+dG9yICpjb25uZWN0b3IsCj4+ICAgewo+PiAgIAlzdHJ1Y3QgZHJtX2RldmljZSAqZGV2ID0gY29u
+bmVjdG9yLT5iYXNlLmRldjsKPj4gICAJc3RydWN0IGludGVsX3BhbmVsICpwYW5lbCA9ICZjb25u
+ZWN0b3ItPnBhbmVsOwo+PiArCXN0cnVjdCBwd21fc3RhdGUgcHN0YXRlOwo+PiAgIAlpbnQgcmV0
+dmFsOwo+Pgo+PiAgIAkvKiBHZXQgdGhlIFBXTSBjaGlwIGZvciBiYWNrbGlnaHQgY29udHJvbCAq
+Lwo+PiBAQCAtMTY0MCw4ICsxNjUxLDEwIEBAIHN0YXRpYyBpbnQgcHdtX3NldHVwX2JhY2tsaWdo
+dChzdHJ1Y3QgaW50ZWxfY29ubmVjdG9yICpjb25uZWN0b3IsCj4+ICAgCQlyZXR1cm4gLUVOT0RF
+VjsKPj4gICAJfQo+Pgo+PiAtCXJldHZhbCA9IHB3bV9jb25maWcocGFuZWwtPmJhY2tsaWdodC5w
+d20sIENSQ19QTUlDX1BXTV9QRVJJT0RfTlMsCj4+IC0JCQkgICAgQ1JDX1BNSUNfUFdNX1BFUklP
+RF9OUyk7Cj4+ICsJcHdtX2dldF9zdGF0ZShwYW5lbC0+YmFja2xpZ2h0LnB3bSwgJnBzdGF0ZSk7
+Cj4+ICsJcHN0YXRlLnBlcmlvZCA9IENSQ19QTUlDX1BXTV9QRVJJT0RfTlM7Cj4+ICsJcHN0YXRl
+LmR1dHlfY3ljbGUgPSBDUkNfUE1JQ19QV01fUEVSSU9EX05TOwo+PiArCXJldHZhbCA9IHB3bV9h
+cHBseV9zdGF0ZShwYW5lbC0+YmFja2xpZ2h0LnB3bSwgJnBzdGF0ZSk7Cj4+ICAgCWlmIChyZXR2
+YWwgPCAwKSB7Cj4+ICAgCQlEUk1fRVJST1IoIkZhaWxlZCB0byBjb25maWd1cmUgdGhlIHB3bSBj
+aGlwXG4iKTsKPj4gICAJCXB3bV9wdXQocGFuZWwtPmJhY2tsaWdodC5wd20pOwo+PiBAQCAtMTY1
+MSw5ICsxNjY0LDkgQEAgc3RhdGljIGludCBwd21fc2V0dXBfYmFja2xpZ2h0KHN0cnVjdCBpbnRl
+bF9jb25uZWN0b3IgKmNvbm5lY3RvciwKPj4KPj4gICAJcGFuZWwtPmJhY2tsaWdodC5taW4gPSAw
+OyAvKiAwJSAqLwo+PiAgIAlwYW5lbC0+YmFja2xpZ2h0Lm1heCA9IDEwMDsgLyogMTAwJSAqLwo+
+PiAtCXBhbmVsLT5iYWNrbGlnaHQubGV2ZWwgPSBESVZfUk9VTkRfVVAoCj4+IC0JCQkJIHB3bV9n
+ZXRfZHV0eV9jeWNsZShwYW5lbC0+YmFja2xpZ2h0LnB3bSkgKiAxMDAsCj4+IC0JCQkJIENSQ19Q
+TUlDX1BXTV9QRVJJT0RfTlMpOwo+PiArCXB3bV9nZXRfc3RhdGUocGFuZWwtPmJhY2tsaWdodC5w
+d20sICZwc3RhdGUpOwo+PiArCXBhbmVsLT5iYWNrbGlnaHQubGV2ZWwgPSBESVZfUk9VTkRfVVAo
+cHN0YXRlLmR1dHlfY3ljbGUgKiAxMDAsCj4+ICsJCQkJCSAgICAgIHBzdGF0ZS5wZXJpb2QpOwo+
+PiAgIAlwYW5lbC0+YmFja2xpZ2h0LmVuYWJsZWQgPSBwYW5lbC0+YmFja2xpZ2h0LmxldmVsICE9
+IDA7Cj4+Cj4+ICAgCXJldHVybiAwOwo+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCkludGVsLWdmeCBtYWlsaW5nIGxpc3QKSW50ZWwtZ2Z4QGxpc3RzLmZy
+ZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3Rp
+bmZvL2ludGVsLWdmeAo=
