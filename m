@@ -1,82 +1,57 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v5 36/46] input: misc: max77693: switch to
- the atomic API
-Date: Mon, 4 Apr 2016 17:34:33 +0200
-Message-ID: <20160404153433.GD17856@ulmo>
-References: <1459368249-13241-1-git-send-email-boris.brezillon@free-electrons.com>
- <1459368249-13241-37-git-send-email-boris.brezillon@free-electrons.com>
- <20160331174801.GC39098@dtor-ws>
- <20160331205718.057a6f38@bbrezillon>
-Reply-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+From: Sekhar Nori <nsekhar@ti.com>
+Subject: Re: [PATCH v5 1/6] pwms: pwm-ti*: Get the clock from the PWMSS
+ (parent)
+Date: Tue, 5 Apr 2016 11:38:12 +0530
+Message-ID: <5703564C.7090700@ti.com>
+References: <1457400224-24797-1-git-send-email-fcooper@ti.com>
+ <1457400224-24797-2-git-send-email-fcooper@ti.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="8w3uRX/HFJGApMzv"
-Return-path: <linux-sunxi+bncBDTKFPPJUEHRBDETRK4AKGQEP54XSRQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-Content-Disposition: inline
-In-Reply-To: <20160331205718.057a6f38@bbrezillon>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kamil Debski <k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, lm-sensors-GZX6beZjE8VD60Wz+7aTrA@public.gmane.org, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jon>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from arroyo.ext.ti.com ([192.94.94.40]:40785 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752449AbcDEGJK (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Tue, 5 Apr 2016 02:09:10 -0400
+In-Reply-To: <1457400224-24797-2-git-send-email-fcooper@ti.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Franklin S Cooper Jr <fcooper@ti.com>, thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, paul@pwsan.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, vigneshr@ti.com
 
---8w3uRX/HFJGApMzv
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
-
-On Thu, Mar 31, 2016 at 08:57:18PM +0200, Boris Brezillon wrote:
-> On Thu, 31 Mar 2016 10:48:01 -0700
-> Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+On Tuesday 08 March 2016 06:53 AM, Franklin S Cooper Jr wrote:
+> The eCAP and ePWM doesn't have their own separate clocks. They simply
+> utilize the clock provided directly by the PWMSS. Therefore, they simply
+> need to grab a reference to their parent's clock.
 > 
-> > Hi Boris,
-> > 
-> > On Wed, Mar 30, 2016 at 10:03:59PM +0200, Boris Brezillon wrote:
-> > > pwm_config/enable/disable() have been deprecated and should be replaced
-> > > by pwm_apply_state().
-> > > 
-> > > Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-> > > ---
-> > >  drivers/input/misc/max77693-haptic.c | 23 +++++++++++++++++------
-> > >  1 file changed, 17 insertions(+), 6 deletions(-)
-> > > 
-> > > diff --git a/drivers/input/misc/max77693-haptic.c b/drivers/input/misc/max77693-haptic.c
-> > > index cf6aac0..aef7dc4 100644
-> > > --- a/drivers/input/misc/max77693-haptic.c
-> > > +++ b/drivers/input/misc/max77693-haptic.c
-> > > @@ -70,13 +70,16 @@ struct max77693_haptic {
-> > >  
-> > >  static int max77693_haptic_set_duty_cycle(struct max77693_haptic *haptic)
-> > >  {
-> > > +	struct pwm_state pstate;
-> > >  	struct pwm_args pargs = { };
-> > > -	int delta;
-> > >  	int error;
-> > >  
-> > >  	pwm_get_args(haptic->pwm_dev, &pargs);
-> > > -	delta = (pargs.period + haptic->pwm_duty) / 2;
-> > > -	error = pwm_config(haptic->pwm_dev, delta, pargs.period);
-> > > +	pwm_get_state(haptic->pwm_dev, &pstate);
-> > > +
-> > > +	pstate.period = pargs.period;
-> > > +	pstate.duty_cycle = (pargs.period + haptic->pwm_duty) / 2;
-> > > +	error = pwm_apply_state(haptic->pwm_dev, &pstate);
-> > 
-> > This does not make sense with regard to the atomic API. If you look in
-> > max77693_haptic_play_work(), right after calling
-> > max77693_haptic_set_duty_cycle() we either try to enable or disable the
-> > pwm. When switching to this new API we should combine both actions.
+> Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
+
+So this assumes that eCAP and eHRPWM are always under the PWMSS
+umbrella. But on TI AM18x, thats not true. These IPs exist independently
+and receive functional clock from PLL sysclk outputs.
+
+> ---
+>  drivers/pwm/pwm-tiecap.c   | 2 +-
+>  drivers/pwm/pwm-tiehrpwm.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
 > 
-> True. I'll address that, unless Thierry is fine keeping the non-atomic
-> API, in which case I'll just drop patches 32 to 46.
+> diff --git a/drivers/pwm/pwm-tiecap.c b/drivers/pwm/pwm-tiecap.c
+> index 616af76..9418159 100644
+> --- a/drivers/pwm/pwm-tiecap.c
+> +++ b/drivers/pwm/pwm-tiecap.c
+> @@ -212,7 +212,7 @@ static int ecap_pwm_probe(struct platform_device *pdev)
+>  	if (!pc)
+>  		return -ENOMEM;
+>  
+> -	clk = devm_clk_get(&pdev->dev, "fck");
+> +	clk = devm_clk_get(pdev->dev.parent, "fck");
 
-I'm fine with keeping the pwm_enable(), pwm_disable() and pwm_config()
-APIs, but they should only be used as shortcuts. Where possible the new
-atomic API should be used to combine multiple operations into one.
+Even keeping the AM18x usecase aside, this seems to be pushing too much
+platform information into the driver. The "fck" is a valid connection id
+for the eCAP IP. Whether its valid for the parent device too is not
+something this driver should need to know.
 
-Thierry
---8w3uRX/HFJGApMzv--
+So it looks like what you need is for the clock hierarchy for the
+platform to have clocks for eHRPWM and eCAP derived out of PWMSS clock?
+
+Thanks,
+Sekhar
