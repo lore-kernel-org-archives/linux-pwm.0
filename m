@@ -1,88 +1,195 @@
-From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v5 30/46] regulator: pwm: retrieve correct voltage
-Date: Thu, 7 Apr 2016 23:54:31 +0200
-Message-ID: <20160407235431.788dc24a@bbrezillon>
-References: <1459368249-13241-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1459368249-13241-31-git-send-email-boris.brezillon@free-electrons.com>
-	<20160330212410.GX2350@sirena.org.uk>
-Reply-To: boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
+From: Paul Walmsley <paul@pwsan.com>
+Subject: Re: [PATCH v5 4/6] ARM: OMAP2+: DRA7: Add hwmod entries for PWMSS
+Date: Sun, 10 Apr 2016 18:57:18 +0000 (UTC)
+Message-ID: <alpine.DEB.2.02.1604101845460.11457@utopia.booyaka.com>
+References: <1457400224-24797-1-git-send-email-fcooper@ti.com> <1457400224-24797-5-git-send-email-fcooper@ti.com> <alpine.DEB.2.02.1603080644580.4974@utopia.booyaka.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBCIPJ6FA2QLBBI5OTO4AKGQEVXNH6AI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20160330212410.GX2350-GFdadSzt00ze9xe1eoZjHA@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kamil Debski <k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, lm-sensors-GZX6beZjE8VD60Wz+7aTrA@public.gmane.org, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>Lee Jones <l>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.02.1603080644580.4974@utopia.booyaka.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Franklin S Cooper Jr <fcooper@ti.com>, vigneshr@ti.com
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Mark,
+Vignesh, Franklin,
 
-On Wed, 30 Mar 2016 14:24:10 -0700
-Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+On Tue, 8 Mar 2016, Paul Walmsley wrote:
 
-> On Wed, Mar 30, 2016 at 10:03:53PM +0200, Boris Brezillon wrote:
-> > The continuous PWM voltage regulator is caching the voltage value in
-> > the ->volt_uV field. While most of the time this value should reflect the
-> > real voltage, sometime it can be sightly different if the PWM device
-> > rounded the set_duty_cycle request.
-> > Moreover, this value is not valid until someone has modified the regulator
-> > output.
+> On Mon, 7 Mar 2016, Franklin S Cooper Jr wrote:
 > 
-> Acked-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> > From: Vignesh R <vigneshr@ti.com>
+> > 
+> > Add hwmod entries for the PWMSS on DRA7.
+> > 
+> > Set l4_root_clk_div as the main_clk of PWMSS. It is fixed-factored clock
+> > equal to L4PER2_L3_GICLK/2(l3_iclk_div/2).
+> > 
+> > Signed-off-by: Vignesh R <vigneshr@ti.com>
+> > [fcooper@ti.com: Do not add eQEP, ePWM and eCAP hwmod entries]
+> > Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
+> 
+> Thanks, queued for v4.7.
 
-Actually this patch introduces a bug (reported by Stephen):
+I took a closer look at this while preparing to merge it and it adds a 
+bunch of sparse warnings:
 
-"
-I applied your patch series [PATCH v5 00/46] pwm: add support for
-atomic update and found a null pointer dereference when probing a
-pwm-regulator at boot. See the below stack trace:
+> arch/arm/mach-omap2/omap_hwmod_7xx_data.c:3104:26: warning: symbol 'dra7xx_l4_per2__epwmss0' was not declared. Should it be static?
+> arch/arm/mach-omap2/omap_hwmod_7xx_data.c:3111:26: warning: symbol 'dra7xx_l4_per2__epwmss1' was not declared. Should it be static?
+> arch/arm/mach-omap2/omap_hwmod_7xx_data.c:3118:26: warning: symbol 'dra7xx_l4_per2__epwmss2' was not declared. Should it be static?
+> arch/arm/mach-omap2/omap_hwmod_7xx_data.c:395:25: warning: symbol 'dra7xx_epwmss_hwmod_class' was not declared. Should it be static?
+> arch/arm/mach-omap2/omap_hwmod_7xx_data.c:401:19: warning: symbol 'dra7xx_epwmss0_hwmod' was not declared. Should it be static?
+> arch/arm/mach-omap2/omap_hwmod_7xx_data.c:416:19: warning: symbol 'dra7xx_epwmss1_hwmod' was not declared. Should it be static?
+> arch/arm/mach-omap2/omap_hwmod_7xx_data.c:431:19: warning: symbol 'dra7xx_epwmss2_hwmod' was not declared. Should it be static?
 
-[ 4.282374] [<ffffffc000399088>] pwm_regulator_get_voltage+0x78/0xa0
-[ 4.289344] [<ffffffc000390740>] regulator_attr_is_visible+0x7c/0x264
-[ 4.296408] [<ffffffc0001f75a0>] internal_create_group+0x14c/0x280
-[ 4.303184] [<ffffffc0001f76e8>] sysfs_create_group+0x14/0x1c
-[ 4.309483] [<ffffffc0001f77c8>] sysfs_create_groups+0x30/0x78
-[ 4.315881] [<ffffffc00043631c>] device_add+0x224/0x4d8
-[ 4.321609] [<ffffffc0004365ec>] device_register+0x1c/0x28
-[ 4.327623] [<ffffffc0003952a4>] regulator_register+0x2e4/0xc14
-[ 4.334112] [<ffffffc000396844>] devm_regulator_register+0x54/0x94
-[ 4.340887] [<ffffffc000399328>] pwm_regulator_probe+0x278/0x2b8
-[ 4.347473] [<ffffffc000439fe4>] platform_drv_probe+0x58/0xa4
-[ 4.353772] [<ffffffc0004387a8>] driver_probe_device+0x114/0x2ac
-[ 4.360358] [<ffffffc0004389a4>] __driver_attach+0x64/0x90
-[ 4.366371] [<ffffffc000436f50>] bus_for_each_dev+0x74/0x90
-[ 4.372478] [<ffffffc000438bd4>] driver_attach+0x20/0x28
-[ 4.378299] [<ffffffc00043778c>] bus_add_driver+0xe8/0x1e0
-[ 4.384312] [<ffffffc00043959c>] driver_register+0x98/0xe4
-[ 4.390326] [<ffffffc00043aa04>] __platform_driver_register+0x48/0x50
-[ 4.397388] [<ffffffc000cb2710>] pwm_regulator_driver_init+0x18/0x20
-[ 4.404356] [<ffffffc000c8ca7c>] do_one_initcall+0xf8/0x180
-[ 4.410466] [<ffffffc000c8cc58>] kernel_init_freeable+0x154/0x1f4
-[ 4.417148] [<ffffffc000929cf4>] kernel_init+0x10/0xf8
-[ 4.422782] [<ffffffc000084450>] ret_from_fork+0x10/0x40
+It's also missing the one-line comments above each OCP interface record, 
+e.g.
 
-It looks like the root cause is that regulator_attr_is_visible will
-try to get the voltage, but at this point in regulator_register,
-rdev->constraints is still null. So
-pwm_duty_cycle_percentage_to_voltage will dereference a null
-rdev->constraints pointer.
-"
+/* l4_per1 -> gpio6 */
 
-The problem is that we need to know the min and max voltage constraints
-to calculate the current voltage. ->get_voltage() is called when the
-sysfs attributes are created (part of device registration), and
-set_machine_constraints() is called after device_register(), thus
-leading to the NULL pointer dereference.
+and a few other hwmod comments.  I've added those too.
 
-Is there any reason for calling set_machine_constraints() after
-device_register() in regulator_register()?
+By courtesy, I've fixed these issues for this patch.  But in the future, 
+please check your patches before sending to make sure that they don't add 
+new sparse warnings. If you need help running sparse, let us know (or 
+Nishanth can probably help you out; I think he's got some scripts that 
+test patch sets for common pre-submission problems).  And please try to 
+align with the comment style of the rest of the hwmod files.
 
-Best Regards,
 
-Boris
+- Paul
+
+From: Vignesh R <vigneshr@ti.com>
+Date: Sun, 10 Apr 2016 11:54:24 -0600
+Subject: [PATCH] ARM: OMAP2+: DRA7: Add hwmod entries for PWMSS
+
+Add hwmod entries for the PWMSS on DRA7.
+
+Set l4_root_clk_div as the main_clk of PWMSS. It is fixed-factored clock
+equal to L4PER2_L3_GICLK/2(l3_iclk_div/2).
+
+Signed-off-by: Vignesh R <vigneshr@ti.com>
+[fcooper@ti.com: Do not add eQEP, ePWM and eCAP hwmod entries]
+Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
+[paul@pwsan.com: fixed sparse warnings; added missing comments]
+Signed-off-by: Paul Walmsley <paul@pwsan.com>
+---
+ arch/arm/mach-omap2/omap_hwmod_7xx_data.c | 89 +++++++++++++++++++++++++++++++
+ 1 file changed, 89 insertions(+)
+
+diff --git a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
+index 7610f3ef28b7..2f15cf13e0d7 100644
+--- a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
++++ b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
+@@ -383,6 +383,68 @@ static struct omap_hwmod dra7xx_dcan2_hwmod = {
+ 	},
+ };
+ 
++/* pwmss  */
++static struct omap_hwmod_class_sysconfig dra7xx_epwmss_sysc = {
++	.rev_offs	= 0x0,
++	.sysc_offs	= 0x4,
++	.sysc_flags	= SYSC_HAS_SIDLEMODE | SYSC_HAS_SOFTRESET,
++	.idlemodes	= (SIDLE_FORCE | SIDLE_NO | SIDLE_SMART),
++	.sysc_fields	= &omap_hwmod_sysc_type2,
++};
++
++/*
++ * epwmss class
++ */
++static struct omap_hwmod_class dra7xx_epwmss_hwmod_class = {
++	.name		= "epwmss",
++	.sysc		= &dra7xx_epwmss_sysc,
++};
++
++/* epwmss0 */
++static struct omap_hwmod dra7xx_epwmss0_hwmod = {
++	.name		= "epwmss0",
++	.class		= &dra7xx_epwmss_hwmod_class,
++	.clkdm_name	= "l4per2_clkdm",
++	.main_clk	= "l4_root_clk_div",
++	.prcm		= {
++		.omap4	= {
++			.modulemode	= MODULEMODE_SWCTRL,
++			.clkctrl_offs	= DRA7XX_CM_L4PER2_PWMSS1_CLKCTRL_OFFSET,
++			.context_offs	= DRA7XX_RM_L4PER2_PWMSS1_CONTEXT_OFFSET,
++		},
++	},
++};
++
++/* epwmss1 */
++static struct omap_hwmod dra7xx_epwmss1_hwmod = {
++	.name		= "epwmss1",
++	.class		= &dra7xx_epwmss_hwmod_class,
++	.clkdm_name	= "l4per2_clkdm",
++	.main_clk	= "l4_root_clk_div",
++	.prcm		= {
++		.omap4	= {
++			.modulemode	= MODULEMODE_SWCTRL,
++			.clkctrl_offs	= DRA7XX_CM_L4PER2_PWMSS2_CLKCTRL_OFFSET,
++			.context_offs	= DRA7XX_RM_L4PER2_PWMSS2_CONTEXT_OFFSET,
++		},
++	},
++};
++
++/* epwmss2 */
++static struct omap_hwmod dra7xx_epwmss2_hwmod = {
++	.name		= "epwmss2",
++	.class		= &dra7xx_epwmss_hwmod_class,
++	.clkdm_name	= "l4per2_clkdm",
++	.main_clk	= "l4_root_clk_div",
++	.prcm		= {
++		.omap4	= {
++			.modulemode	= MODULEMODE_SWCTRL,
++			.clkctrl_offs	= DRA7XX_CM_L4PER2_PWMSS3_CLKCTRL_OFFSET,
++			.context_offs	= DRA7XX_RM_L4PER2_PWMSS3_CONTEXT_OFFSET,
++		},
++	},
++};
++
+ /*
+  * 'dma' class
+  *
+@@ -3693,6 +3755,30 @@ static struct omap_hwmod_ocp_if dra7xx_l4_wkup__wd_timer2 = {
+ 	.user		= OCP_USER_MPU | OCP_USER_SDMA,
+ };
+ 
++/* l4_per2 -> epwmss0 */
++static struct omap_hwmod_ocp_if dra7xx_l4_per2__epwmss0 = {
++	.master		= &dra7xx_l4_per2_hwmod,
++	.slave		= &dra7xx_epwmss0_hwmod,
++	.clk		= "l4_root_clk_div",
++	.user		= OCP_USER_MPU,
++};
++
++/* l4_per2 -> epwmss1 */
++static struct omap_hwmod_ocp_if dra7xx_l4_per2__epwmss1 = {
++	.master		= &dra7xx_l4_per2_hwmod,
++	.slave		= &dra7xx_epwmss1_hwmod,
++	.clk		= "l4_root_clk_div",
++	.user		= OCP_USER_MPU,
++};
++
++/* l4_per2 -> epwmss2 */
++static struct omap_hwmod_ocp_if dra7xx_l4_per2__epwmss2 = {
++	.master		= &dra7xx_l4_per2_hwmod,
++	.slave		= &dra7xx_epwmss2_hwmod,
++	.clk		= "l4_root_clk_div",
++	.user		= OCP_USER_MPU,
++};
++
+ static struct omap_hwmod_ocp_if *dra7xx_hwmod_ocp_ifs[] __initdata = {
+ 	&dra7xx_l3_main_1__dmm,
+ 	&dra7xx_l3_main_2__l3_instr,
+@@ -3814,6 +3900,9 @@ static struct omap_hwmod_ocp_if *dra7xx_hwmod_ocp_ifs[] __initdata = {
+ 	&dra7xx_l3_main_1__vcp2,
+ 	&dra7xx_l4_per2__vcp2,
+ 	&dra7xx_l4_wkup__wd_timer2,
++	&dra7xx_l4_per2__epwmss0,
++	&dra7xx_l4_per2__epwmss1,
++	&dra7xx_l4_per2__epwmss2,
+ 	NULL,
+ };
+ 
+-- 
+2.8.0.rc3
