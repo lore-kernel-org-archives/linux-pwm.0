@@ -1,50 +1,121 @@
-From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v5 30/46] regulator: pwm: retrieve correct voltage
-Date: Tue, 12 Apr 2016 10:37:22 +0200
-Message-ID: <20160412103722.0bfe1d4d@bbrezillon>
-References: <1459368249-13241-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1459368249-13241-31-git-send-email-boris.brezillon@free-electrons.com>
-	<20160330212410.GX2350@sirena.org.uk>
-	<20160407235431.788dc24a@bbrezillon>
-	<20160412044203.GW3351@sirena.org.uk>
-Reply-To: boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [RESEND 01/11] pwm: Add PWM Capture support
+Date: Tue, 12 Apr 2016 12:08:45 +0200
+Message-ID: <20160412100845.GA18882@ulmo.ba.sec>
+References: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
+ <1456932729-9667-2-git-send-email-lee.jones@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBCIPJ6FA2QLBBRPHWK4AKGQE5ZF4KBA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20160412044203.GW3351-GFdadSzt00ze9xe1eoZjHA@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kamil Debski <k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, lm-sensors-GZX6beZjE8VD60Wz+7aTrA@public.gmane.org, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>Lee Jones <l>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="qMm9M+Fa2AknHoGS"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f48.google.com ([74.125.82.48]:37049 "EHLO
+	mail-wm0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756107AbcDLKIt (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 12 Apr 2016 06:08:49 -0400
+Content-Disposition: inline
+In-Reply-To: <1456932729-9667-2-git-send-email-lee.jones@linaro.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, maxime.coquelin@st.com, linux-pwm@vger.kernel.org, ajitpal.singh@st.com
 
-Hi Mark,
 
-On Tue, 12 Apr 2016 05:42:03 +0100
-Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+--qMm9M+Fa2AknHoGS
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> On Thu, Apr 07, 2016 at 11:54:31PM +0200, Boris Brezillon wrote:
-> 
-> > Is there any reason for calling set_machine_constraints() after
-> > device_register() in regulator_register()?
-> 
-> I'm not sure there's a strong one, we don't really use the class device
-> for anything, but without doing a full audit I couldn't guarantee that.
+On Wed, Mar 02, 2016 at 03:31:59PM +0000, Lee Jones wrote:
+> Supply a PWM Capture call-back Op in order to pass back
+> information obtained by running analysis on PWM a signal.
+> This would normally (at least during testing) be called from
+> the Sysfs routines with a view to printing out PWM Capture
+> data which has been encoded into a string.
+>=20
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> ---
+>  drivers/pwm/core.c  | 26 ++++++++++++++++++++++++++
+>  include/linux/pwm.h | 13 +++++++++++++
+>  2 files changed, 39 insertions(+)
 
-At first glance I don't see any problem (even the rdev_err/info/...()
-functions do not use dev_err/info/...()). The patch will be part of v6
-(unless you want me to send it independently).
+Overall I like the concept of introducing this capture functionality.
 
-Thanks,
+However I have a couple of questions, see below.
 
-Boris
+> diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+> index d24ca5f..8f4a8a9 100644
+> --- a/drivers/pwm/core.c
+> +++ b/drivers/pwm/core.c
+> @@ -494,6 +494,32 @@ unlock:
+>  EXPORT_SYMBOL_GPL(pwm_set_polarity);
+> =20
+>  /**
+> + * pwm_capture() - capture and report a PWM signal
+> + * @pwm: PWM device
+> + * @channel: PWM capture channel to use
+> + * @buf: buffer to place output message into
+> + *
+> + * Returns: 0 on success or a negative error code on failure.
+> + */
+> +int pwm_capture(struct pwm_device *pwm, int channel, char *buf)
 
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+This public interface seems to be targetted specifically at sysfs. As
+such I'm not sure if there is reason to make it public, since the code
+is unlikely to ever be called by other users in the kernel.
+
+Do you think it would be possible to make the interface more generic by
+passing back some form of structure containing the capture result? That
+way users within the kernel could use the result without having to go
+and parse a string filled in by the driver. It would also be easy to
+implement sysfs support on top of that. Another advantage is that there
+would be a standard result structure rather than a free-form string
+filled by drivers that can't be controlled.
+
+What kind of result does the STi hardware return? Looking at the driver
+later in the series it seems to support triggering interrupts on rising
+and falling edges and capture some running counter at these events. If
+the frequency of the counter increment is known, these numbers should
+allow us to determine both the period and duty cycle of the PWM signal
+in nanoseconds. Would it be possible to rewrite this function and the
+driver patch to something like this:
+
+	int pwm_capture(struct pwm_device *pwm, struct pwm_capture *result);
+
+Where
+
+	struct pwm_capture {
+		unsigned int period;
+		unsigned int duty_cycle;
+	};
+
+?
+
+Another thing I noticed is that the code here seems to be confusing
+channels and devices. In the PWM subsystem a struct pwm_device
+represents a single channel. Allowing the channel to be specified is
+redundant at best, and confusing at worst.
+
+Thierry
+
+--qMm9M+Fa2AknHoGS
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJXDMkpAAoJEN0jrNd/PrOhAHgP/2SCyBt28J+9KQkYRo/Vi6u3
+j1mk1c91cmgDnR5IuMfd0x9BI7a+BYtFk5aLuncTrpJJ5tOQe2uG6E2R6i/nF9/Z
+jmAcoK2YSNI6fuOUAPtD3P0Bq7VFVNro2kegZ2OxofMBzRKFJMNc7hLWZinVDrfH
+qvJMP/t/r0qmDCbTv2mLcUj6pzIDmGV8iF9EG4rHLzYq0y9uvaW4UtXFjdBNcqwM
+J5KqoxEnphoWtP+TlGD43EWAZgu6JEK7viU/V5sT4VJhkXyzNvtQJyLJSm+MfGZm
+nGfNJ2BeIIVmGXtVsas7x991AEAY3n81wXkAuni76TdciLOsDBpccfqLPKNCqQIJ
+Y+6IGyaB7HctaCXT6R2XGI2n3+cj4+KSFmV4VYKGhY7lGSICkLnzWTjqM3adzQ0S
+M7quxz4KOCnXXB655zFQzaMzuC/m7G6M1A24H2gS+ipMz9oPKyugRRammUKyCpAW
+kH42KbghxZyB2EVoCdWLO4fHcjegM4hgkZ/RLZh0uTiL/f55NjSmq5Ry7l+41Skj
+ZL/4uyN8Eepeg4cx6marr8H8nZwITbTi5N/uvT1FVFX43f+FIgkygkQEG92BkJOi
+DQ6ODsur2aSv+ZuTRfkN01y2lFiq0qw7b8o/pbEM9DZdbZtZwO8iGML699PjMEp4
+vGLfVfwWHekzXHbJveVT
+=Xhr8
+-----END PGP SIGNATURE-----
+
+--qMm9M+Fa2AknHoGS--
