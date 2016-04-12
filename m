@@ -1,144 +1,105 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RESEND 02/11] pwm: sysfs: Add PWM Capture support
-Date: Tue, 12 Apr 2016 12:15:50 +0200
-Message-ID: <20160412101550.GB18882@ulmo.ba.sec>
+Subject: Re: [RESEND 07/11] pwm: sti: Initialise PWM Capture channel data
+Date: Tue, 12 Apr 2016 12:29:26 +0200
+Message-ID: <20160412102926.GC18882@ulmo.ba.sec>
 References: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
- <1456932729-9667-3-git-send-email-lee.jones@linaro.org>
+ <1456932729-9667-8-git-send-email-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="/NkBOFFp2J2Af1nK"
+	protocol="application/pgp-signature"; boundary="3siQDZowHQqNOShm"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1456932729-9667-3-git-send-email-lee.jones@linaro.org>
+In-Reply-To: <1456932729-9667-8-git-send-email-lee.jones@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Lee Jones <lee.jones@linaro.org>
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, maxime.coquelin@st.com, linux-pwm@vger.kernel.org, ajitpal.singh@st.com
 List-Id: linux-pwm@vger.kernel.org
 
 
---/NkBOFFp2J2Af1nK
+--3siQDZowHQqNOShm
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 02, 2016 at 03:32:00PM +0000, Lee Jones wrote:
-> Allow a user to read PWM Capture results from /sysfs. First,
-> the user must tell PWM Capture which channel they wish to
-> read from:
->=20
->   $ echo 2 > $PWMCHIP/capture
->=20
-> To start a capture and read the result, simply read the file:
->=20
->   $ cat $PWMCHIP/capture
->=20
-> The output format is left to the device.
->=20
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> ---
->  drivers/pwm/sysfs.c | 28 ++++++++++++++++++++++++++++
->  1 file changed, 28 insertions(+)
->=20
-> diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-> index 9c90886..3572ef4 100644
-> --- a/drivers/pwm/sysfs.c
-> +++ b/drivers/pwm/sysfs.c
-> @@ -23,6 +23,8 @@
->  #include <linux/kdev_t.h>
->  #include <linux/pwm.h>
+On Wed, Mar 02, 2016 at 03:32:05PM +0000, Lee Jones wrote:
+[...]
+> +struct sti_cpt_data {
+> +	u32 snapshot[3];
+> +	int index;
+> +	int gpio;
+
+On a side-note, this should probably use struct gpio_desc * instead of
+an integer along with the gpiod_*() APIs for the GPIO handling.
+
+> +	struct mutex lock;
+> +	wait_queue_head_t wait;
+> +};
+> +
+>  struct sti_pwm_compat_data {
+>  	const struct reg_field *reg_fields;
+> -	unsigned int num_chan;
+> +	unsigned int pwm_num_chan;
+> +	unsigned int cpt_num_chan;
+>  	unsigned int max_pwm_cnt;
+>  	unsigned int max_prescale;
+>  };
+> @@ -77,6 +90,7 @@ struct sti_pwm_chip {
+>  	struct clk *cpt_clk;
+>  	struct regmap *regmap;
+>  	struct sti_pwm_compat_data *cdata;
+> +	struct sti_cpt_data *cpt_data[STI_MAX_CPT_CHANS];
+
+The PWM subsystem allows chip-specific data to be associated with each
+PWM device. I'd prefer if the driver used it rather than homebrew some-
+thing similar. See pwm_set_chip_data() and pwm_get_chip_data().
+
+> @@ -389,6 +411,19 @@ static int sti_pwm_probe(struct platform_device *pde=
+v)
+>  	if (ret)
+>  		return ret;
 > =20
-> +static int capture_channel;
-
-Can't do that, this is very racy because it isn't protected by any lock.
-Fortunately I don't think the global variable is at all necessary. See
-below.
-
+> +	for (chan =3D 0; chan < cdata->cpt_num_chan; chan++) {
+> +		struct sti_cpt_data *data;
 > +
->  struct pwm_export {
->  	struct device child;
->  	struct pwm_device *pwm;
-> @@ -167,16 +169,42 @@ static ssize_t polarity_store(struct device *child,
->  	return ret ? : size;
->  }
-> =20
-> +static ssize_t capture_show(struct device *child,
-> +			    struct device_attribute *attr,
-> +			    char *buf)
-> +{
-> +	struct pwm_device *pwm =3D child_to_pwm_device(child);
+> +		data =3D devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+> +		if (!data)
+> +			return -ENOMEM;
 > +
-> +	return pwm_capture(pwm, capture_channel, buf);
-> +}
-> +
-> +static ssize_t capture_store(struct device *child,
-> +			     struct device_attribute *attr,
-> +			     const char *buf, size_t size)
-> +{
-> +	int val, ret;
-> +
-> +	ret =3D kstrtoint(buf, 0, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	capture_channel =3D val;
-> +
-> +	return size;
-> +}
-> +
->  static DEVICE_ATTR_RW(period);
->  static DEVICE_ATTR_RW(duty_cycle);
->  static DEVICE_ATTR_RW(enable);
->  static DEVICE_ATTR_RW(polarity);
-> +static DEVICE_ATTR_RW(capture);
+> +		init_waitqueue_head(&data->wait);
+> +		mutex_init(&data->lock);
+> +		data->gpio =3D of_get_named_gpio(np, "capture-gpios", chan);
+> +		pc->cpt_data[chan] =3D data;
 
-These are all per-PWM attributes and the specific PWM device that they
-are associated with can be retrieved using child_to_pwm_device(child)
-(see the other attributes' implementation for examples). So I don't
-think the capture attribute needs to be writable at all. You already
-implement capture_show() in almost the right way, and if you drop the
-channel parameter from pwm_capture() as I suggested in my reply to patch
-1/11 this should resolve itself automatically.
+Converting to per-PWM data should be as simple as turning this last line
+into:
 
-Of course capture_show() would become slightly more beefy if we return a
-standard result structure rather than leave it up to the drivers to fill
-out the sysfs string. The good thing is that it will be common code and
-therefore the sysfs interface would return the same format regardless of
-the driver.
+	pwm_set_chip_data(pc->chip.pwms[chan], data);
 
-Perhaps something like
-
-	struct pwm_device *pwm =3D child_to_pwm_device(child);
-	struct pwm_capture result;
-
-	err =3D pwm_capture(pwm, &result);
-	if (err < 0)
-		return err;
-
-	return sprintf(buf, "%u %u\n", result.duty_cycle, result.period);
-=09
-would work?
+Also I don't see any cleanup for this data in the driver. The memory for
+the per-PWM data should be freed by devm_*() infrastructure, but how
+will the GPIO be released?
 
 Thierry
 
---/NkBOFFp2J2Af1nK
+--3siQDZowHQqNOShm
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJXDMrWAAoJEN0jrNd/PrOhd1sP/2prP/I7HyzcNFoYXtRzEpQ6
-xPklBuExFi6EmTI+uXjR88KvtoE2SK2cNpfMPaBvWG3rhlWa9BRcLYzjTXY6mNe7
-3PzqjSo1BAXyHzEkEYYM5UhFitFlLSYXkTNhlDEte9Z0Rl748MHn2YzHnV4yuBoG
-kha8XRSBfJGTIh+cafRTf0Nidyy/xnV1g8SlSoU3pcJENDPArO3MclV//CYd742I
-pmJ/r90SraIohxxbIJuQrH+SOvjUKU5RnD+yuNctwFp6JKwgg4dMpOAWSvWwG7DA
-pgerByE0ReM3LhuB2avLTeZY/uiyfn4wsV7KaLR2ac70RaCidH5VUqa1UDFO8wNj
-jpg0tuj6xq1fesFEP5abCFBi+WGCALm5s10myhOAMvoVHNaobVuVpkESFfxC1Vdx
-4KQVsQDEBfc7u/99aBpFZLNBiNRw6X1zq8vs7NA5ZEP2fOtL6+bxPlPsmdFA11hU
-DcBj3ck3LaJQcPommhklda5OLb3RJ4hMa8ZodcvVsJM55UVx31t/Fu3aOgyIg5xB
-6whdoveewClIamD4S7TYrRyINV/ZO3JlQ3jRJt0pdbYA0bt5p+xwuLHsHClP+VXJ
-x4X+sTUF1seXhhkHRkq8h3ZNyWgFttDT4Ah15x4Rw30UeGU/r7fWPLXUNApjN8cF
-ogsHvNptWvmNVvMI9VsF
-=aC66
+iQIcBAABCAAGBQJXDM4DAAoJEN0jrNd/PrOhPAwP/2uMGQBNtEnesbN91CbSwMtp
+N/6Id7Z5nE0qX7nlBx9Nn5e62RrSZlY59csJbkx/c5mfqyAUzaRI1P/PV9aRJxb+
+sosK5ei31MH5iIpy7BaP0hLquKxrG0lxguZvAPN1Js/KIiyUcNhEZu3QZQ0PMexg
+cNcNyRdyg2e1FDDfQJI2cw/DNRJkFLLy4RunEZEOOE07dpsFuJP1X2jhl3dM/84P
+1wYTvwFZsU60S676T4GItdKwPKGWtXV20QJ4mgMXDbiThyUhvmDUoD3V7lzp4scb
+23mnt7DuI+mEET5v8mRe9YvcJTAC4cYsxZlSrbSwnIc/lpEjIcFBYZAI3vF835gv
+BrFh43UYXx+kUPB3NlFJJO9vHGy1NFwzoPSD+cGY8i7aD+qznb9JXJpTyCS9okzL
+16XqM3XP6JpLNvFZzfElJXAnleAmTENBhR+le1GVqeoFCtECOQ0w0I624z4DyzYw
+yux5rPPHrR1EMxNutXj6lynzvZgRpZivILJmoCdaQvrDQgI7z2pwVMmXn6ES/WdK
+DCnkU9VzDFxYHqp8aHCvmwiC9uNbBpGM4FTEOP9G0q1EfSM0MLymfZ7qV29yEP1j
+rdS/uGXkPGzuA+o47lrfMH+3wUrt9Lbh65CQmwBWep7Wq2QhShLKI/85qIUWC1zs
+PIuCNGyDHRw59j5wo/V9
+=nwwB
 -----END PGP SIGNATURE-----
 
---/NkBOFFp2J2Af1nK--
+--3siQDZowHQqNOShm--
