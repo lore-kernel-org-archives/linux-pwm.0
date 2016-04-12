@@ -1,52 +1,177 @@
-From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v5 30/46] regulator: pwm: retrieve correct voltage
-Date: Tue, 12 Apr 2016 12:31:45 +0200
-Message-ID: <20160412123145.092b2c1e@bbrezillon>
-References: <1459368249-13241-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1459368249-13241-31-git-send-email-boris.brezillon@free-electrons.com>
-	<20160330212410.GX2350@sirena.org.uk>
-	<20160407235431.788dc24a@bbrezillon>
-	<20160412044203.GW3351@sirena.org.uk>
-	<20160412103722.0bfe1d4d@bbrezillon>
-	<20160412100938.GA14664@sirena.org.uk>
-Reply-To: boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [RESEND 08/11] pwm: sti: Add support for PWM Capture IRQs
+Date: Tue, 12 Apr 2016 12:35:21 +0200
+Message-ID: <20160412103521.GD18882@ulmo.ba.sec>
+References: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
+ <1456932729-9667-9-git-send-email-lee.jones@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBCIPJ6FA2QLBBHM5WO4AKGQEUXJ77WQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20160412100938.GA14664-GFdadSzt00ze9xe1eoZjHA@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kamil Debski <k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, lm-sensors-GZX6beZjE8VD60Wz+7aTrA@public.gmane.org, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>Lee Jones <l>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="XvKFcGCOAo53UbWW"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f51.google.com ([74.125.82.51]:35452 "EHLO
+	mail-wm0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755871AbcDLKfY (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 12 Apr 2016 06:35:24 -0400
+Content-Disposition: inline
+In-Reply-To: <1456932729-9667-9-git-send-email-lee.jones@linaro.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, maxime.coquelin@st.com, linux-pwm@vger.kernel.org, ajitpal.singh@st.com
 
-On Tue, 12 Apr 2016 11:09:38 +0100
-Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
 
-> On Tue, Apr 12, 2016 at 10:37:22AM +0200, Boris Brezillon wrote:
-> > Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-> > > On Thu, Apr 07, 2016 at 11:54:31PM +0200, Boris Brezillon wrote:
-> 
-> > > I'm not sure there's a strong one, we don't really use the class device
-> > > for anything, but without doing a full audit I couldn't guarantee that.
-> 
-> > At first glance I don't see any problem (even the rdev_err/info/...()
-> > functions do not use dev_err/info/...()). The patch will be part of v6
-> > (unless you want me to send it independently).
-> 
-> I'd rather it didn't get sucked into this series since it seems that
-> it's getting delayed indefinitely - I can apply it to the regulator tree
-> and create a tag that can be pulled into other trees as needed if things
-> do get applied.
+--XvKFcGCOAo53UbWW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Done.
+On Wed, Mar 02, 2016 at 03:32:06PM +0000, Lee Jones wrote:
+[...]
+> diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
+[...]
+> +static irqreturn_t sti_pwm_interrupt(int irq, void *data)
+> +{
+> +	struct sti_pwm_chip *pc =3D data;
+> +	struct device *dev =3D pc->dev;
+> +	struct sti_cpt_data *d;
+> +	int channel;
+> +	int cpt_int_stat;
+> +	int reg;
+> +	int ret =3D IRQ_NONE;
+> +
+> +	ret =3D regmap_field_read(pc->pwm_cpt_int_stat, &cpt_int_stat);
+> +	if (ret)
+> +		return ret;
+> +
+> +	while (cpt_int_stat) {
+> +		channel =3D ffs(cpt_int_stat) - 1;
+> +
+> +		d =3D pc->cpt_data[channel];
+> +
+> +		/*
+> +		 * Capture input:
+> +		 *    _______                   _______
+> +		 *   |       |                 |       |
+> +		 * __|       |_________________|       |________
+> +		 *   ^0      ^1                ^2
+> +		 *
+> +		 * Capture start by the first available rising edge
+> +		 * When a capture event occurs, capture value (CPT_VALx)
+> +		 * is stored, index incremented, capture edge changed.
+> +		 *
+> +		 * After the capture, if the index > 1, we have collected
+> +		 * the necessary data so we signal the thread waiting for it
+> +		 * and disable the capture by setting capture edge to none
+> +		 *
+> +		 */
 
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+How do you deal with the situation where someone will stop the PWM
+signal half-way in? That is, suppose you've got events for the first and
+second snapshots (0 and 1) and then someone stops the PWM and the event
+for snapshot 2 never happens, how does the code recover?
+
+> +
+> +		regmap_read(pc->regmap,
+> +			    PWM_CPT_VAL(channel), &d->snapshot[d->index]);
+> +
+> +		switch (d->index) {
+> +		case 0:
+> +		case 1:
+> +			regmap_read(pc->regmap, PWM_CPT_EDGE(channel), &reg);
+> +			reg ^=3D PWM_CPT_EDGE_MASK;
+> +			regmap_write(pc->regmap, PWM_CPT_EDGE(channel), reg);
+> +
+> +			d->index++;
+> +			break;
+> +		case 2:
+> +			regmap_write(pc->regmap,
+> +				     PWM_CPT_EDGE(channel), CPT_EDGE_DISABLED);
+> +			wake_up(&d->wait);
+> +			break;
+> +		default:
+> +			dev_err(dev, "Internal error\n");
+> +		}
+> +
+> +		clear_bit(channel, (unsigned long int *)&cpt_int_stat);
+
+clear_bit() is a little unusual to use on regular data types, as
+evidenced by the need for the goofy cast here.
+
+> +
+> +		ret =3D IRQ_HANDLED;
+> +	}
+> +
+> +	/* Just ACK everything */
+> +	regmap_write(pc->regmap, PWM_INT_ACK, PWM_INT_ACK_MASK);
+> +
+> +	return ret;
+> +}
+> +
+>  static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
+>  {
+>  	struct device *dev =3D pc->dev;
+> @@ -354,6 +425,11 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
+>  	if (IS_ERR(pc->pwm_cpt_int_en))
+>  		return PTR_ERR(pc->pwm_cpt_int_en);
+> =20
+> +	pc->pwm_cpt_int_stat =3D devm_regmap_field_alloc(dev, pc->regmap,
+> +						reg_fields[PWM_CPT_INT_STAT]);
+> +	if (IS_ERR(pc->pwm_cpt_int_stat))
+> +		return PTR_ERR(pc->pwm_cpt_int_stat);
+> +
+>  	return 0;
+>  }
+> =20
+> @@ -371,7 +447,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
+>  	struct sti_pwm_chip *pc;
+>  	struct resource *res;
+>  	unsigned int chan;
+> -	int ret;
+> +	int ret, irq;
+> =20
+>  	pc =3D devm_kzalloc(dev, sizeof(*pc), GFP_KERNEL);
+>  	if (!pc)
+> @@ -392,6 +468,19 @@ static int sti_pwm_probe(struct platform_device *pde=
+v)
+>  	if (IS_ERR(pc->regmap))
+>  		return PTR_ERR(pc->regmap);
+> =20
+> +	irq =3D platform_get_irq(pdev, 0);
+> +	if (irq < 0) {
+> +		dev_err(&pdev->dev, "Failed to obtain IRQ\n");
+> +		return -ENODEV;
+> +	}
+
+I think you need to propagate the return value of platform_get_irq()
+here.
+
+> +
+> +	ret =3D devm_request_irq(&pdev->dev, irq, sti_pwm_interrupt,
+> +			       0, pdev->name, (void *) pc);
+
+No need for the explicit cast to void *.
+
+Thierry
+
+--XvKFcGCOAo53UbWW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJXDM9pAAoJEN0jrNd/PrOhZo0P/2EEXe1oI3Hz3TKK5UdFx4w4
+xfm6aYT2klYus4b8Sjpf6mjhcP3sEXChubh6xBtJ8w0IH6SXu6rzVVEu+9vuLOUB
+HwLaqpaHdMSwSWYoo7uc+0+PpZqikrSwBvpVwbBvAhoy6SFflJAXbzCMdC3YCl4L
+beFf0MfIXY43bwS3dW5ddm7Vo5zQnAgeBagRmc7zPkmoAzuDTEvn7qUhUziLXFfj
+zi84jYdDyhsqPzQDpfv0WDAXwKt/gu2W/vVz+CVK4wfru4FRwZmt70b70UxjnGQp
+X0gsWrPVWiz7T9ErB/QqXoe3S+nhcuQys4JRoSk8/S+RhALBJmvaaXhfFw2Wox0g
+9AMzEny82nqCA+lqItOlEavoXXTdPNwHch9JzGaLUOTKV4HM86M9IqXo7csekkAi
+5PCdj5vnQ8b6Csc0ndMOgMkEvB12QlohmnHR7rpusjfrc8D/XvGL3oFh+yG6z2TU
+cGpnAL8hrJbQPrWhsRbiOTOg++qmHXyeGJF2Ns6QATA6QGf1EjlTwvIPGahwtUpM
+kS8mheaKgSbtAfXHkzZ3UtHlOhxloCcUiKcwv9IAYpl4qBkr1wvf9wviOYu+lRDA
+3ioJRqFOE2+ZNG4bj/KyHi5Wq2tI03tpNH2N6oUnXwSEfmOBqLLjNWHmo3GhPhxa
+hOMvpxFWlT59nGNPgKtY
+=Os7N
+-----END PGP SIGNATURE-----
+
+--XvKFcGCOAo53UbWW--
