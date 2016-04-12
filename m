@@ -1,82 +1,88 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RESEND 10/11] pwm: sti: Enable PWM Capture
-Date: Tue, 12 Apr 2016 12:56:09 +0200
-Message-ID: <20160412105609.GF18882@ulmo.ba.sec>
-References: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
- <1456932729-9667-11-git-send-email-lee.jones@linaro.org>
+Subject: Re: [PATCH v5 01/46] pwm: rcar: make use of
+	pwm_is_enabled()
+Date: Tue, 12 Apr 2016 13:01:52 +0200
+Message-ID: <20160412110152.GG18882@ulmo.ba.sec>
+References: <1459368249-13241-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1459368249-13241-2-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="JSkcQAAxhB1h8DcT"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f43.google.com ([74.125.82.43]:37105 "EHLO
-	mail-wm0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932190AbcDLK4M (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 12 Apr 2016 06:56:12 -0400
-Content-Disposition: inline
-In-Reply-To: <1456932729-9667-11-git-send-email-lee.jones@linaro.org>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============2081931328=="
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <1459368249-13241-2-git-send-email-boris.brezillon@free-electrons.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: Milo Kim <milo.kim@ti.com>, Kamil Debski <k.debski@samsung.com>, Heiko Stuebner <heiko@sntech.de>, linux-doc@vger.kernel.org, David Airlie <airlied@linux.ie>, Mike Turquette <mturquette@baylibre.com>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Daniel Vetter <daniel.vetter@intel.com>, Lee Jones <lee.jones@linaro.org>, linux-clk@vger.kernel.org, linux-leds@vger.kernel.org, Krzysztof Kozlowski <k.kozlowski@samsung.com>, linux-samsung-soc@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>, Jonathan Corbet <corbet@lwn.net>, Robert Jarzmik <robert.jarzmik@free.fr>, lm-sensors@lm-sensors.org, linux-rockchip@lists.infradead.org, Chen-Yu Tsai <wens@csie.org>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-input@vger.kernel.org, Jean-Christophe
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, maxime.coquelin@st.com, linux-pwm@vger.kernel.org, ajitpal.singh@st.com
 
 
---JSkcQAAxhB1h8DcT
+--===============2081931328==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="JbKQpFqZXJ2T76Sg"
+Content-Disposition: inline
+
+
+--JbKQpFqZXJ2T76Sg
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 02, 2016 at 03:32:08PM +0000, Lee Jones wrote:
-> Once all functionality is in place, we provide the means to
-> enable PWM Capture.  Here we are simply obtaining the
-> associated regmap and twiddling the relevant enable register
-> bits.
+On Wed, Mar 30, 2016 at 10:03:24PM +0200, Boris Brezillon wrote:
+> Commit 5c31252c4a86 ("pwm: Add the pwm_is_enabled() helper") introduced a
+> new function to test whether a PWM device is enabled or not without
+> manipulating PWM internal fields.
+> Hiding this is necessary if we want to smoothly move to the atomic PWM
+> config approach without impacting PWM drivers.
+> Fix this driver to use pwm_is_enabled() instead of directly accessing the
+> ->flags field.
 >=20
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 > ---
->  drivers/pwm/pwm-sti.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
->=20
-> diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-> index 8de9b4a..93cf20e 100644
-> --- a/drivers/pwm/pwm-sti.c
-> +++ b/drivers/pwm/pwm-sti.c
-> @@ -279,6 +279,13 @@ static int sti_pwm_enable(struct pwm_chip *chip, str=
-uct pwm_device *pwm)
->  				pwm->hwpwm);
->  			goto out;
->  		}
-> +
-> +		ret =3D regmap_field_write(pc->pwm_cpt_en, 1);
-> +		if (ret) {
-> +			dev_err(dev, "failed to enable PWM capture:%d\n",
-> +				pwm->hwpwm);
-> +			goto out;
-> +		}
+>  drivers/pwm/pwm-rcar.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Should this perhaps be part of the driver's ->capture() implementation?
-It seems redundant to have this logic enabled if we may never use it.
+Applied, thanks.
 
 Thierry
 
---JSkcQAAxhB1h8DcT
+--JbKQpFqZXJ2T76Sg
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJXDNRJAAoJEN0jrNd/PrOhoMoP/3b7phq6PkrEgyd9gU3sfXJW
-nSRxexuvavZLyQ0p8rSzU3yJfFzcAjw5Gw3xPYU6yK3NmZcvdX3kGqBerylFhlyu
-ZuGkhj3tKrCCI8SZuvZ1olpo7+zlVPHM6tHmcAfn1S8l8Fh8Z668eckAX4E0MekM
-4wvwFf1MDQhcUAj1+kzdNYELM2pJ2pdPzGlSqHnKBxKRdfrn9lxp/j/ZE2W7EzEH
-cvHg+HNQoNOJoTqydHryqaaDHvyVfYGffQBgeQnex7YZAM6kZEj3Nr7XPYqwQ/FX
-alFkMDRuFyvNEP45ZuBrTwi1mPt1QdV7RQv8/6F8t5zmxJR4CSgM859+KUbV0Mzr
-y6GYPv1ryrBlWjLLrtt4eDM8LJrsGSuNQ2INOLXCFZ2cLirQaC/E+kGqgiyk1PrP
-GBoeyYNq0XnpEh61sSho2aofi6b37RhrJwuTD9My0TYu+v+XLpyQxaFiJGiQm5WK
-005PoQTNklsih+NnypFPzhF4Oe27aeFKSP4qhFWfOTOnE7vJuu4lOqsS9PnC5JA3
-+ZICC2dXl+tTNAd2VcAtxL9zddKqqP0+R7kufuz421DgELcfNothsHWICqG17U/y
-NzaVhMIRIbv8RXqZR6xmCzuX9wlK8jqKoqyI359Z2IkqBRZQY8adCQzPG+7BWGDX
-YJF/KGPn/962gXkmIJn+
-=St3Z
+iQIcBAABCAAGBQJXDNWfAAoJEN0jrNd/PrOhoj8QAK4UAz8ugmWPS9xJCHiJvCsZ
+cz4yyDzOQVaVTNHNEruFT+v1XMvaogalyvNxUR0z8fXpRzAj9vZyGm3VXD2CJcam
+/FvxqFKAodcSy5PjYSLoD/0bpeYpAiILFhxPTkKGFaR8vRnvY8HL7BWWM8ReXly+
+m+bPRy/JtAMpsFfYTgNGtXV101lkn8ZIvhJSCNwDwCWHAPN1q/c+XxikTuonrKiX
+p0f9SB74YUtq7gh5HE1vfrSFs2ozDXFDBfEbgTk9vfEL2O0E2gUkVF8yyLWHGUSu
+lfQB/A65nYFzn8tAqd97/RzMXeHMB9u+/FI7bwfvxK+hnRys3sxaS/5knlSe+Nzc
+EAnnoG0VEibaNctVC5ACumPP5eqS9ejMVYmenKiq7TyAM/3DhI4ZISsm/NUrmkke
+HhWUJs8U38hUK9pVHp94i63vQzLX9MWsAHXxXuTeCgkPgkklou+87nnPpcW3PWbq
+m6Bgpqijcx1OAW4ooJMpt4vls578/yFbguAGJzdm3QbB9jKMa/w4iGbuRfYiCowL
+cHLWFPSIGZrX3SXVfVNqSAHIhA1Jkaj1Ipku8+mz+SI/ai5Iitcnwe9QMBX1ttIh
+lQ5RaQmxpp6U0cxZno9Tb1lI7GEmxa0MaZnU2wmgcbDYleyg1Hp0W0eVVeIKcFi+
+5NcgYEiaLV56dufi0Vhm
+=gjRe
 -----END PGP SIGNATURE-----
 
---JSkcQAAxhB1h8DcT--
+--JbKQpFqZXJ2T76Sg--
+
+--===============2081931328==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
+IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
+dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
+
+--===============2081931328==--
