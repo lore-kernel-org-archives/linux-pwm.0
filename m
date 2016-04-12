@@ -1,55 +1,94 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v5 02/46] backlight: pwm_bl: remove useless
- call to pwm_set_period()
-Date: Tue, 12 Apr 2016 16:25:09 +0200
-Message-ID: <20160412142509.GA25006@ulmo.ba.sec>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v5 03/46] backlight: lm3630a_bl: stop
+ messing with the pwm->period field
+Date: Tue, 12 Apr 2016 16:26:08 +0200
+Message-ID: <20160412142608.GB25006@ulmo.ba.sec>
 References: <1459368249-13241-1-git-send-email-boris.brezillon@free-electrons.com>
- <1459368249-13241-3-git-send-email-boris.brezillon@free-electrons.com>
- <20160412110350.GH18882@ulmo.ba.sec>
- <20160412141653.GJ8094@x1>
-Reply-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+ <1459368249-13241-4-git-send-email-boris.brezillon@free-electrons.com>
+ <20160412110809.GI18882@ulmo.ba.sec> <20160412141613.GI8094@x1>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="d6Gm4EdcadzBjdND"
-Return-path: <linux-sunxi+bncBDTKFPPJUEHRBR4KWS4AKGQEFTSUXUA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-Content-Disposition: inline
-In-Reply-To: <20160412141653.GJ8094@x1>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kamil Debski <k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, lm-sensors-GZX6beZjE8VD60Wz+7aTrA@public.gmane.org, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: multipart/mixed; boundary="===============0663247224=="
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <20160412141613.GI8094@x1>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Milo Kim <milo.kim@ti.com>, Kamil Debski <k.debski@samsung.com>, Heiko Stuebner <heiko@sntech.de>, linux-doc@vger.kernel.org, David Airlie <airlied@linux.ie>, Mike Turquette <mturquette@baylibre.com>, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, linux-sunxi@googlegroups.com, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Daniel Vetter <daniel.vetter@intel.com>, Robert Jarzmik <robert.jarzmik@free.fr>, linux-clk@vger.kernel.org, linux-leds@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, linux-samsung-soc@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>, Jonathan Corbet <corbet@lwn.net>, lm-sensors@lm-sensors.org, linux-rockchip@lists.infradead.org, Chen-Yu Tsai <wens@csie.org>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-input@vger.kernel.
 List-Id: linux-pwm@vger.kernel.org
 
---d6Gm4EdcadzBjdND
-Content-Type: text/plain; charset=UTF-8
+
+--===============0663247224==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="TakKZr9L6Hm6aLOc"
 Content-Disposition: inline
 
-On Tue, Apr 12, 2016 at 03:16:53PM +0100, Lee Jones wrote:
+
+--TakKZr9L6Hm6aLOc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Apr 12, 2016 at 03:16:13PM +0100, Lee Jones wrote:
 > On Tue, 12 Apr 2016, Thierry Reding wrote:
-> 
-> > On Wed, Mar 30, 2016 at 10:03:25PM +0200, Boris Brezillon wrote:
-> > > The PWM period will be set when calling pwm_config. Remove this useless
-> > > call to pwm_set_period(), which might mess up with the internal PWM state.
-> > > 
-> > > Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-> > > Acked-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>=20
+> > On Wed, Mar 30, 2016 at 10:03:26PM +0200, Boris Brezillon wrote:
+> > > pwm->period field is not supposed to be changed by PWM users. The only
+> > > ones authorized to change it are the PWM core and PWM drivers.
+> > >=20
+> > > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 > > > ---
-> > >  drivers/video/backlight/pwm_bl.c | 4 +---
-> > >  1 file changed, 1 insertion(+), 3 deletions(-)
-> > 
+> > >  drivers/video/backlight/lm3630a_bl.c | 3 +--
+> > >  1 file changed, 1 insertion(+), 2 deletions(-)
+> >=20
 > > Applied, thanks.
-> 
+>=20
 > Applied?
 
-You Acked it, so I assumed you were fine with me taking it through the
-PWM tree to take care of the dependencies.
-
-Did I assume wrongly?
+You didn't specifically Ack this one, but I presumed that since the
+change is essentially the same as for pwm-backlight, and this is another
+prerequisite for the remainder of the series it should go in through the
+PWM tree as well.
 
 Thierry
---d6Gm4EdcadzBjdND--
+
+--TakKZr9L6Hm6aLOc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJXDQWAAAoJEN0jrNd/PrOh74sP/is8Fx+HimV+xQUGl5bNRqB8
+C9t16YiTbMALk6NDTOQsdDrPcXHqhVuuV/7GW+tC4JmQ/BejNof5OZP7z7BJ6QFi
+eNSBlMQn4pcMnHOOEE8NgcMuowI9Q+WDaXsYGHUd59nnYbZpScuVqJ1qZVB3DBN/
+2rS+2kjdZIS322znn71gYAck/DyEX2uoOE9QdGU7gu18ipYoEdUXGo/XFjY8I+FB
+js8LEfye1ymplhIAtfkB/sncisB59Uy3/DPN04eVf+ra1QikIYcoaFDMIIzMTfFl
+oTLDqK2ANU+cJaOlsdK8C1TACgoTqhB6PtgvYLnyL/9sUbyFKo9l51/TigvUZSCk
+Xylz4LAF0rHK/MnyR4gF5imkicv4MeyIAc9P9pSMq3Gekv02N+JsqYyXqzVhk12B
+9ea3fBivD0nmUbLwvLPcZhBEbV7x3ItW+rY2gwLVgBYEo2lFmfVuXg6U/T8KX8JM
+jHvd0lfwe2qQ1wIp1iuU9YkKsg9c9Dz1Hn7yMsTRhXoKSJQrxNrSM2Esemcuo0qv
+4aLzqaajqWWslcCDjEFYCL0zcs/n25Po6eLvHcRiIZrx+CjvQfjJf9IvQ84OFrTN
+QL+AeJwJHlrvxsVYZ5iyc/lRsl7goLJD8xMyX1pDlLWLO0a77CLXuB3YWnQIyvuG
+RP3jBvYmYnieu5++2opT
+=Dd/s
+-----END PGP SIGNATURE-----
+
+--TakKZr9L6Hm6aLOc--
+
+--===============0663247224==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
+IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
+dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
+
+--===============0663247224==--
