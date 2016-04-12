@@ -1,38 +1,67 @@
-From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v5 30/46] regulator: pwm: retrieve correct voltage
-Date: Tue, 12 Apr 2016 05:42:03 +0100
-Message-ID: <20160412044203.GW3351@sirena.org.uk>
-References: <1459368249-13241-1-git-send-email-boris.brezillon@free-electrons.com>
- <1459368249-13241-31-git-send-email-boris.brezillon@free-electrons.com>
- <20160330212410.GX2350@sirena.org.uk>
- <20160407235431.788dc24a@bbrezillon>
-Reply-To: broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [RESEND 00/11] pwm: Add support for PWM Capture
+Date: Tue, 12 Apr 2016 08:28:49 +0100
+Message-ID: <20160412072849.GH8094@x1>
+References: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="xsILJLaVOAbiPmXa"
-Return-path: <linux-sunxi+bncBDQ2L75W5QGBBZXZWG4AKGQE5T2WI6A-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f54.google.com ([74.125.82.54]:36011 "EHLO
+	mail-wm0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754450AbcDLH2x (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 12 Apr 2016 03:28:53 -0400
+Received: by mail-wm0-f54.google.com with SMTP id v188so114955863wme.1
+        for <linux-pwm@vger.kernel.org>; Tue, 12 Apr 2016 00:28:53 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <20160407235431.788dc24a@bbrezillon>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kamil Debski <k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, lm-sensors-GZX6beZjE8VD60Wz+7aTrA@public.gmane.org, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee
+In-Reply-To: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: kernel@stlinux.com, maxime.coquelin@st.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, ajitpal.singh@st.com
 
---xsILJLaVOAbiPmXa
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
+On Wed, 02 Mar 2016, Lee Jones wrote:
 
-On Thu, Apr 07, 2016 at 11:54:31PM +0200, Boris Brezillon wrote:
+> The first part of this set extends the current PWM API to allow exter=
+nal
+> code to request a PWM Capture.  Subsequent patches then make use of t=
+he
+> new API by providing a userspace offering via /sysfs.  The final part=
+ of
+> the set supplies PWM Capture functionality into the already existing =
+STi
+> PWM driver.
+> =20
+> This patch-set has been tested end to end via /sysfs.
 
-> Is there any reason for calling set_machine_constraints() after
-> device_register() in regulator_register()?
+Hopefully you still have this set in your inbox.
 
-I'm not sure there's a strong one, we don't really use the class device
-for anything, but without doing a full audit I couldn't guarantee that.
---xsILJLaVOAbiPmXa--
+Please let me know if you wish me to resend it.
+
+> Lee Jones (11):
+>   pwm: Add PWM Capture support
+>   pwm: sysfs: Add PWM Capture support
+>   pwm: sti: Reorganise register names in preparation for new
+>     functionality
+>   pwm: sti: Only request clock rate when you need to
+>   pwm: sti: Supply PWM Capture register addresses and bit locations
+>   pwm: sti: Supply PWM Capture clock handling
+>   pwm: sti: Initialise PWM Capture channel data
+>   pwm: sti: Add support for PWM Capture IRQs
+>   pwm: sti: Add PWM Capture call-back
+>   pwm: sti: Enable PWM Capture
+>   pwm: sti: Take the opportunity to conduct a little house keeping
+>=20
+>  drivers/pwm/core.c    |  26 ++++
+>  drivers/pwm/pwm-sti.c | 384 ++++++++++++++++++++++++++++++++++++++++=
+++--------
+>  drivers/pwm/sysfs.c   |  28 ++++
+>  include/linux/pwm.h   |  13 ++
+>  4 files changed, 392 insertions(+), 59 deletions(-)
+>=20
+
+--=20
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
