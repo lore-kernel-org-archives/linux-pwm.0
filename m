@@ -1,105 +1,52 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RESEND 07/11] pwm: sti: Initialise PWM Capture channel data
-Date: Tue, 12 Apr 2016 12:29:26 +0200
-Message-ID: <20160412102926.GC18882@ulmo.ba.sec>
-References: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
- <1456932729-9667-8-git-send-email-lee.jones@linaro.org>
+From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v5 30/46] regulator: pwm: retrieve correct voltage
+Date: Tue, 12 Apr 2016 12:31:45 +0200
+Message-ID: <20160412123145.092b2c1e@bbrezillon>
+References: <1459368249-13241-1-git-send-email-boris.brezillon@free-electrons.com>
+	<1459368249-13241-31-git-send-email-boris.brezillon@free-electrons.com>
+	<20160330212410.GX2350@sirena.org.uk>
+	<20160407235431.788dc24a@bbrezillon>
+	<20160412044203.GW3351@sirena.org.uk>
+	<20160412103722.0bfe1d4d@bbrezillon>
+	<20160412100938.GA14664@sirena.org.uk>
+Reply-To: boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="3siQDZowHQqNOShm"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1456932729-9667-8-git-send-email-lee.jones@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, maxime.coquelin@st.com, linux-pwm@vger.kernel.org, ajitpal.singh@st.com
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sunxi+bncBCIPJ6FA2QLBBHM5WO4AKGQEUXJ77WQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <20160412100938.GA14664-GFdadSzt00ze9xe1eoZjHA@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kamil Debski <k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, lm-sensors-GZX6beZjE8VD60Wz+7aTrA@public.gmane.org, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>Lee Jones <l>
 List-Id: linux-pwm@vger.kernel.org
 
+On Tue, 12 Apr 2016 11:09:38 +0100
+Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
 
---3siQDZowHQqNOShm
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On Tue, Apr 12, 2016 at 10:37:22AM +0200, Boris Brezillon wrote:
+> > Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+> > > On Thu, Apr 07, 2016 at 11:54:31PM +0200, Boris Brezillon wrote:
+> 
+> > > I'm not sure there's a strong one, we don't really use the class device
+> > > for anything, but without doing a full audit I couldn't guarantee that.
+> 
+> > At first glance I don't see any problem (even the rdev_err/info/...()
+> > functions do not use dev_err/info/...()). The patch will be part of v6
+> > (unless you want me to send it independently).
+> 
+> I'd rather it didn't get sucked into this series since it seems that
+> it's getting delayed indefinitely - I can apply it to the regulator tree
+> and create a tag that can be pulled into other trees as needed if things
+> do get applied.
 
-On Wed, Mar 02, 2016 at 03:32:05PM +0000, Lee Jones wrote:
-[...]
-> +struct sti_cpt_data {
-> +	u32 snapshot[3];
-> +	int index;
-> +	int gpio;
+Done.
 
-On a side-note, this should probably use struct gpio_desc * instead of
-an integer along with the gpiod_*() APIs for the GPIO handling.
-
-> +	struct mutex lock;
-> +	wait_queue_head_t wait;
-> +};
-> +
->  struct sti_pwm_compat_data {
->  	const struct reg_field *reg_fields;
-> -	unsigned int num_chan;
-> +	unsigned int pwm_num_chan;
-> +	unsigned int cpt_num_chan;
->  	unsigned int max_pwm_cnt;
->  	unsigned int max_prescale;
->  };
-> @@ -77,6 +90,7 @@ struct sti_pwm_chip {
->  	struct clk *cpt_clk;
->  	struct regmap *regmap;
->  	struct sti_pwm_compat_data *cdata;
-> +	struct sti_cpt_data *cpt_data[STI_MAX_CPT_CHANS];
-
-The PWM subsystem allows chip-specific data to be associated with each
-PWM device. I'd prefer if the driver used it rather than homebrew some-
-thing similar. See pwm_set_chip_data() and pwm_get_chip_data().
-
-> @@ -389,6 +411,19 @@ static int sti_pwm_probe(struct platform_device *pde=
-v)
->  	if (ret)
->  		return ret;
-> =20
-> +	for (chan =3D 0; chan < cdata->cpt_num_chan; chan++) {
-> +		struct sti_cpt_data *data;
-> +
-> +		data =3D devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-> +		if (!data)
-> +			return -ENOMEM;
-> +
-> +		init_waitqueue_head(&data->wait);
-> +		mutex_init(&data->lock);
-> +		data->gpio =3D of_get_named_gpio(np, "capture-gpios", chan);
-> +		pc->cpt_data[chan] =3D data;
-
-Converting to per-PWM data should be as simple as turning this last line
-into:
-
-	pwm_set_chip_data(pc->chip.pwms[chan], data);
-
-Also I don't see any cleanup for this data in the driver. The memory for
-the per-PWM data should be freed by devm_*() infrastructure, but how
-will the GPIO be released?
-
-Thierry
-
---3siQDZowHQqNOShm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJXDM4DAAoJEN0jrNd/PrOhPAwP/2uMGQBNtEnesbN91CbSwMtp
-N/6Id7Z5nE0qX7nlBx9Nn5e62RrSZlY59csJbkx/c5mfqyAUzaRI1P/PV9aRJxb+
-sosK5ei31MH5iIpy7BaP0hLquKxrG0lxguZvAPN1Js/KIiyUcNhEZu3QZQ0PMexg
-cNcNyRdyg2e1FDDfQJI2cw/DNRJkFLLy4RunEZEOOE07dpsFuJP1X2jhl3dM/84P
-1wYTvwFZsU60S676T4GItdKwPKGWtXV20QJ4mgMXDbiThyUhvmDUoD3V7lzp4scb
-23mnt7DuI+mEET5v8mRe9YvcJTAC4cYsxZlSrbSwnIc/lpEjIcFBYZAI3vF835gv
-BrFh43UYXx+kUPB3NlFJJO9vHGy1NFwzoPSD+cGY8i7aD+qznb9JXJpTyCS9okzL
-16XqM3XP6JpLNvFZzfElJXAnleAmTENBhR+le1GVqeoFCtECOQ0w0I624z4DyzYw
-yux5rPPHrR1EMxNutXj6lynzvZgRpZivILJmoCdaQvrDQgI7z2pwVMmXn6ES/WdK
-DCnkU9VzDFxYHqp8aHCvmwiC9uNbBpGM4FTEOP9G0q1EfSM0MLymfZ7qV29yEP1j
-rdS/uGXkPGzuA+o47lrfMH+3wUrt9Lbh65CQmwBWep7Wq2QhShLKI/85qIUWC1zs
-PIuCNGyDHRw59j5wo/V9
-=nwwB
------END PGP SIGNATURE-----
-
---3siQDZowHQqNOShm--
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
