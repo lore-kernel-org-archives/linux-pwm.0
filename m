@@ -1,98 +1,50 @@
-From: Sekhar Nori <nsekhar@ti.com>
-Subject: Re: [PATCH v5 1/6] pwms: pwm-ti*: Get the clock from the PWMSS
- (parent)
-Date: Tue, 12 Apr 2016 13:40:44 +0530
-Message-ID: <570CAD84.2090701@ti.com>
-References: <1457400224-24797-1-git-send-email-fcooper@ti.com>
- <1457400224-24797-2-git-send-email-fcooper@ti.com> <5703564C.7090700@ti.com>
- <5703A0C4.6010406@ti.com>
- <alpine.DEB.2.02.1604102048380.11457@utopia.booyaka.com>
- <570B8F51.6040108@ti.com>
- <CAL_JsqLkpQzVb6bzpsH5NwfLLWEtf3o6LezrL1hCejsw65J=Bw@mail.gmail.com>
+From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v5 30/46] regulator: pwm: retrieve correct voltage
+Date: Tue, 12 Apr 2016 10:37:22 +0200
+Message-ID: <20160412103722.0bfe1d4d@bbrezillon>
+References: <1459368249-13241-1-git-send-email-boris.brezillon@free-electrons.com>
+	<1459368249-13241-31-git-send-email-boris.brezillon@free-electrons.com>
+	<20160330212410.GX2350@sirena.org.uk>
+	<20160407235431.788dc24a@bbrezillon>
+	<20160412044203.GW3351@sirena.org.uk>
+Reply-To: boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:60540 "EHLO comal.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932191AbcDLILk (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Tue, 12 Apr 2016 04:11:40 -0400
-In-Reply-To: <CAL_JsqLkpQzVb6bzpsH5NwfLLWEtf3o6LezrL1hCejsw65J=Bw@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-sunxi+bncBCIPJ6FA2QLBBRPHWK4AKGQE5ZF4KBA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <20160412044203.GW3351-GFdadSzt00ze9xe1eoZjHA@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kamil Debski <k.debski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, lm-sensors-GZX6beZjE8VD60Wz+7aTrA@public.gmane.org, Jean Delvare <jdelvare-IBi9RG/b67k@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bryan Wu <cooloney-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <j.anaszewski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Joachim Eastwood <manabian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>Lee Jones <l>
 List-Id: linux-pwm@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>
-Cc: Paul Walmsley <paul@pwsan.com>, "Franklin S Cooper Jr." <fcooper@ti.com>, "Kristo, Tero" <t-kristo@ti.com>, Thierry Reding <thierry.reding@gmail.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Benoit Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Linux PWM List <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-omap <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Vignesh R <vigneshr@ti.com>
 
-On Monday 11 April 2016 06:15 PM, Rob Herring wrote:
-> On Mon, Apr 11, 2016 at 6:49 AM, Sekhar Nori <nsekhar@ti.com> wrote:
->> On Monday 11 April 2016 02:21 AM, Paul Walmsley wrote:
->>> On Tue, 5 Apr 2016, Franklin S Cooper Jr. wrote:
->>>> On 04/05/2016 01:08 AM, Sekhar Nori wrote:
->>>>> On Tuesday 08 March 2016 06:53 AM, Franklin S Cooper Jr wrote:
->>>>>> The eCAP and ePWM doesn't have their own separate clocks. They simply
->>>>>> utilize the clock provided directly by the PWMSS. Therefore, they simply
->>>>>> need to grab a reference to their parent's clock.
->>>>>>
->>>>>> Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
->>>>>
->>>>> So this assumes that eCAP and eHRPWM are always under the PWMSS
->>>>> umbrella. But on TI AM18x, thats not true. These IPs exist independently
->>>>> and receive functional clock from PLL sysclk outputs.
->>>>>
->>>>>> ---
->>>>>>  drivers/pwm/pwm-tiecap.c   | 2 +-
->>>>>>  drivers/pwm/pwm-tiehrpwm.c | 2 +-
->>>>>>  2 files changed, 2 insertions(+), 2 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/pwm/pwm-tiecap.c b/drivers/pwm/pwm-tiecap.c
->>>>>> index 616af76..9418159 100644
->>>>>> --- a/drivers/pwm/pwm-tiecap.c
->>>>>> +++ b/drivers/pwm/pwm-tiecap.c
->>>>>> @@ -212,7 +212,7 @@ static int ecap_pwm_probe(struct platform_device *pdev)
->>>>>>      if (!pc)
->>>>>>          return -ENOMEM;
->>>>>>
->>>>>> -    clk = devm_clk_get(&pdev->dev, "fck");
->>>>>> +    clk = devm_clk_get(pdev->dev.parent, "fck");
->>>>>
->>>>> Even keeping the AM18x usecase aside, this seems to be pushing too much
->>>>> platform information into the driver. The "fck" is a valid connection id
->>>>> for the eCAP IP. Whether its valid for the parent device too is not
->>>>> something this driver should need to know.
->>>>>
->>>>> So it looks like what you need is for the clock hierarchy for the
->>>>> platform to have clocks for eHRPWM and eCAP derived out of PWMSS clock?
->>>>
->>>> So I believe this is a question on if we want to hide the minor
->>>> delta between AM18 vs AM335x, AM437x and AM57x/DRA7 in the driver
->>>> or within the DT.
->>>>
->>>> Note that handling this by defining new clocks in DT will then
->>>> result in older DTBs not working. I don't think its worth breaking
->>>> backwards compatibility for AM335x and AM437x DTBs for fixing support
->>>> for AM18 based SOCs. Especially since those SOCs haven't worked with
->>>> this driver for several years. By handling things within the driver rather
->>>> than DT we can atleast insure that we can get everything working while
->>>> avoiding breaking backwards compatibility.
->>>
->>> I agree with Sekhar that we shouldn't embed this parent clock quirk
->>> into the driver.
->>>
->>> Can you just define a new compatibility string such that the driver can be
->>> written with no embedded integration quirks?  Then add a workaround in the
->>> driver that will use pdev->dev.parent for the old (deprecated)
->>> compatibility string and log a warning to the kernel console that the DT
->>> needs to be updated.
->>
->> Thanks Paul! Although not sure if adding a new compatible for the IP is
->> the best way (since that would denote a different version of the IP).
->> How about checking for parent clock iff clk_get() on own device fails
->> and of_machine_is_compatible() matches the platforms where backward
->> compatibility needs to be maintained?
+Hi Mark,
+
+On Tue, 12 Apr 2016 05:42:03 +0100
+Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+
+> On Thu, Apr 07, 2016 at 11:54:31PM +0200, Boris Brezillon wrote:
 > 
-> New compatible strings are acceptable.
+> > Is there any reason for calling set_machine_constraints() after
+> > device_register() in regulator_register()?
+> 
+> I'm not sure there's a strong one, we don't really use the class device
+> for anything, but without doing a full audit I couldn't guarantee that.
 
-Alright, thanks for clarifying that.
+At first glance I don't see any problem (even the rdev_err/info/...()
+functions do not use dev_err/info/...()). The patch will be part of v6
+(unless you want me to send it independently).
 
-Regards,
-Sekhar
+Thanks,
+
+Boris
+
+-- 
+Boris Brezillon, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
