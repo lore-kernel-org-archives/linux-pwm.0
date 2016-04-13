@@ -1,138 +1,169 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [RESEND 02/11] pwm: sysfs: Add PWM Capture support
-Date: Wed, 13 Apr 2016 10:40:50 +0100
-Message-ID: <20160413094050.GO8094@x1>
+Subject: Re: [RESEND 08/11] pwm: sti: Add support for PWM Capture IRQs
+Date: Wed, 13 Apr 2016 11:05:21 +0100
+Message-ID: <20160413100521.GP8094@x1>
 References: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
- <1456932729-9667-3-git-send-email-lee.jones@linaro.org>
- <20160412101550.GB18882@ulmo.ba.sec>
+ <1456932729-9667-9-git-send-email-lee.jones@linaro.org>
+ <20160412103521.GD18882@ulmo.ba.sec>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f43.google.com ([74.125.82.43]:36706 "EHLO
-	mail-wm0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S965747AbcDMJkz (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 13 Apr 2016 05:40:55 -0400
-Received: by mail-wm0-f43.google.com with SMTP id v188so163991491wme.1
-        for <linux-pwm@vger.kernel.org>; Wed, 13 Apr 2016 02:40:54 -0700 (PDT)
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160412101550.GB18882@ulmo.ba.sec>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+In-Reply-To: <20160412103521.GD18882@ulmo.ba.sec>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, maxime.coquelin@st.com, linux-pwm@vger.kernel.org, ajitpal.singh@st.com
+List-Id: linux-pwm@vger.kernel.org
 
 On Tue, 12 Apr 2016, Thierry Reding wrote:
 
-> On Wed, Mar 02, 2016 at 03:32:00PM +0000, Lee Jones wrote:
-> > Allow a user to read PWM Capture results from /sysfs. First,
-> > the user must tell PWM Capture which channel they wish to
-> > read from:
-> >=20
-> >   $ echo 2 > $PWMCHIP/capture
-> >=20
-> > To start a capture and read the result, simply read the file:
-> >=20
-> >   $ cat $PWMCHIP/capture
-> >=20
-> > The output format is left to the device.
-> >=20
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > ---
-> >  drivers/pwm/sysfs.c | 28 ++++++++++++++++++++++++++++
-> >  1 file changed, 28 insertions(+)
-> >=20
-> > diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-> > index 9c90886..3572ef4 100644
-> > --- a/drivers/pwm/sysfs.c
-> > +++ b/drivers/pwm/sysfs.c
-> > @@ -23,6 +23,8 @@
-> >  #include <linux/kdev_t.h>
-> >  #include <linux/pwm.h>
-> > =20
-> > +static int capture_channel;
->=20
-> Can't do that, this is very racy because it isn't protected by any lo=
-ck.
-> Fortunately I don't think the global variable is at all necessary. Se=
-e
-> below.
->=20
-> > +
-> >  struct pwm_export {
-> >  	struct device child;
-> >  	struct pwm_device *pwm;
-> > @@ -167,16 +169,42 @@ static ssize_t polarity_store(struct device *=
-child,
-> >  	return ret ? : size;
-> >  }
-> > =20
-> > +static ssize_t capture_show(struct device *child,
-> > +			    struct device_attribute *attr,
-> > +			    char *buf)
+> On Wed, Mar 02, 2016 at 03:32:06PM +0000, Lee Jones wrote:
+> [...]
+> > diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
+> [...]
+> > +static irqreturn_t sti_pwm_interrupt(int irq, void *data)
 > > +{
-> > +	struct pwm_device *pwm =3D child_to_pwm_device(child);
+> > +	struct sti_pwm_chip *pc =3D data;
+> > +	struct device *dev =3D pc->dev;
+> > +	struct sti_cpt_data *d;
+> > +	int channel;
+> > +	int cpt_int_stat;
+> > +	int reg;
+> > +	int ret =3D IRQ_NONE;
 > > +
-> > +	return pwm_capture(pwm, capture_channel, buf);
-> > +}
-> > +
-> > +static ssize_t capture_store(struct device *child,
-> > +			     struct device_attribute *attr,
-> > +			     const char *buf, size_t size)
-> > +{
-> > +	int val, ret;
-> > +
-> > +	ret =3D kstrtoint(buf, 0, &val);
+> > +	ret =3D regmap_field_read(pc->pwm_cpt_int_stat, &cpt_int_stat);
 > > +	if (ret)
 > > +		return ret;
 > > +
-> > +	capture_channel =3D val;
+> > +	while (cpt_int_stat) {
+> > +		channel =3D ffs(cpt_int_stat) - 1;
 > > +
-> > +	return size;
+> > +		d =3D pc->cpt_data[channel];
+> > +
+> > +		/*
+> > +		 * Capture input:
+> > +		 *    _______                   _______
+> > +		 *   |       |                 |       |
+> > +		 * __|       |_________________|       |________
+> > +		 *   ^0      ^1                ^2
+> > +		 *
+> > +		 * Capture start by the first available rising edge
+> > +		 * When a capture event occurs, capture value (CPT_VALx)
+> > +		 * is stored, index incremented, capture edge changed.
+> > +		 *
+> > +		 * After the capture, if the index > 1, we have collected
+> > +		 * the necessary data so we signal the thread waiting for it
+> > +		 * and disable the capture by setting capture edge to none
+> > +		 *
+> > +		 */
+>=20
+> How do you deal with the situation where someone will stop the PWM
+> signal half-way in? That is, suppose you've got events for the first =
+and
+> second snapshots (0 and 1) and then someone stops the PWM and the eve=
+nt
+> for snapshot 2 never happens, how does the code recover?
+
+The 'wait' will timeout and the cycle will be reset.
+
+> > +
+> > +		regmap_read(pc->regmap,
+> > +			    PWM_CPT_VAL(channel), &d->snapshot[d->index]);
+> > +
+> > +		switch (d->index) {
+> > +		case 0:
+> > +		case 1:
+> > +			regmap_read(pc->regmap, PWM_CPT_EDGE(channel), &reg);
+> > +			reg ^=3D PWM_CPT_EDGE_MASK;
+> > +			regmap_write(pc->regmap, PWM_CPT_EDGE(channel), reg);
+> > +
+> > +			d->index++;
+> > +			break;
+> > +		case 2:
+> > +			regmap_write(pc->regmap,
+> > +				     PWM_CPT_EDGE(channel), CPT_EDGE_DISABLED);
+> > +			wake_up(&d->wait);
+> > +			break;
+> > +		default:
+> > +			dev_err(dev, "Internal error\n");
+> > +		}
+> > +
+> > +		clear_bit(channel, (unsigned long int *)&cpt_int_stat);
+>=20
+> clear_bit() is a little unusual to use on regular data types, as
+> evidenced by the need for the goofy cast here.
+
+It's just a bit neater (and provides locking) than manually bit
+twiddling using bitwise operators.  What do you suggest?
+
+> > +
+> > +		ret =3D IRQ_HANDLED;
+> > +	}
+> > +
+> > +	/* Just ACK everything */
+> > +	regmap_write(pc->regmap, PWM_INT_ACK, PWM_INT_ACK_MASK);
+> > +
+> > +	return ret;
 > > +}
 > > +
-> >  static DEVICE_ATTR_RW(period);
-> >  static DEVICE_ATTR_RW(duty_cycle);
-> >  static DEVICE_ATTR_RW(enable);
-> >  static DEVICE_ATTR_RW(polarity);
-> > +static DEVICE_ATTR_RW(capture);
+> >  static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
+> >  {
+> >  	struct device *dev =3D pc->dev;
+> > @@ -354,6 +425,11 @@ static int sti_pwm_probe_dt(struct sti_pwm_chi=
+p *pc)
+> >  	if (IS_ERR(pc->pwm_cpt_int_en))
+> >  		return PTR_ERR(pc->pwm_cpt_int_en);
+> > =20
+> > +	pc->pwm_cpt_int_stat =3D devm_regmap_field_alloc(dev, pc->regmap,
+> > +						reg_fields[PWM_CPT_INT_STAT]);
+> > +	if (IS_ERR(pc->pwm_cpt_int_stat))
+> > +		return PTR_ERR(pc->pwm_cpt_int_stat);
+> > +
+> >  	return 0;
+> >  }
+> > =20
+> > @@ -371,7 +447,7 @@ static int sti_pwm_probe(struct platform_device=
+ *pdev)
+> >  	struct sti_pwm_chip *pc;
+> >  	struct resource *res;
+> >  	unsigned int chan;
+> > -	int ret;
+> > +	int ret, irq;
+> > =20
+> >  	pc =3D devm_kzalloc(dev, sizeof(*pc), GFP_KERNEL);
+> >  	if (!pc)
+> > @@ -392,6 +468,19 @@ static int sti_pwm_probe(struct platform_devic=
+e *pdev)
+> >  	if (IS_ERR(pc->regmap))
+> >  		return PTR_ERR(pc->regmap);
+> > =20
+> > +	irq =3D platform_get_irq(pdev, 0);
+> > +	if (irq < 0) {
+> > +		dev_err(&pdev->dev, "Failed to obtain IRQ\n");
+> > +		return -ENODEV;
+> > +	}
 >=20
-> These are all per-PWM attributes and the specific PWM device that the=
-y
-> are associated with can be retrieved using child_to_pwm_device(child)
-> (see the other attributes' implementation for examples). So I don't
-> think the capture attribute needs to be writable at all. You already
-> implement capture_show() in almost the right way, and if you drop the
-> channel parameter from pwm_capture() as I suggested in my reply to pa=
-tch
-> 1/11 this should resolve itself automatically.
->=20
-> Of course capture_show() would become slightly more beefy if we retur=
-n a
-> standard result structure rather than leave it up to the drivers to f=
-ill
-> out the sysfs string. The good thing is that it will be common code a=
-nd
-> therefore the sysfs interface would return the same format regardless=
- of
-> the driver.
->=20
-> Perhaps something like
->=20
-> 	struct pwm_device *pwm =3D child_to_pwm_device(child);
-> 	struct pwm_capture result;
->=20
-> 	err =3D pwm_capture(pwm, &result);
-> 	if (err < 0)
-> 		return err;
->=20
-> 	return sprintf(buf, "%u %u\n", result.duty_cycle, result.period);
-> =09
-> would work?
+> I think you need to propagate the return value of platform_get_irq()
+> here.
 
-Same reply as 1/11.  Now I know that we should be treating each of our
-channels, as *completely* separate devices, I think this method seems
-reasonable.
+Yes, could do.  Although, I think we could go either way:
+
+$ git grep -A5 platform_get_irq | grep "return ret\|return irq" | wc -l
+176
+$ git grep -A5 platform_get_irq | grep "return -EINVAL\|-ENODEV\|-ENXIO=
+" | wc -l
+256
+
+Happy to change it though.
+
+> > +
+> > +	ret =3D devm_request_irq(&pdev->dev, irq, sti_pwm_interrupt,
+> > +			       0, pdev->name, (void *) pc);
+>=20
+> No need for the explicit cast to void *.
+
+You're right.  Will drop it.
 
 --=20
 Lee Jones
