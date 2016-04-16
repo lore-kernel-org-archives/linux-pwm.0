@@ -1,59 +1,36 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [RESEND 07/11] pwm: sti: Initialise PWM Capture channel data
-Date: Fri, 15 Apr 2016 15:31:22 +0100
-Message-ID: <20160415143122.GF3589@x1>
-References: <1456932729-9667-1-git-send-email-lee.jones@linaro.org>
- <1456932729-9667-8-git-send-email-lee.jones@linaro.org>
- <20160412102926.GC18882@ulmo.ba.sec>
- <20160415123941.GD3589@x1>
- <20160415142243.GE3472@ulmo.ba.sec>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH 1/5] clk: ti: am335x/am4372: Add tbclk to pwm node
+Date: Fri, 15 Apr 2016 17:46:54 -0700
+Message-ID: <20160416004654.GP26353@codeaurora.org>
+References: <1457380318-15452-1-git-send-email-fcooper@ti.com>
+ <1457380318-15452-2-git-send-email-fcooper@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f41.google.com ([74.125.82.41]:38280 "EHLO
-	mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751323AbcDOOb2 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 15 Apr 2016 10:31:28 -0400
-Received: by mail-wm0-f41.google.com with SMTP id u206so35110866wme.1
-        for <linux-pwm@vger.kernel.org>; Fri, 15 Apr 2016 07:31:27 -0700 (PDT)
+Received: from smtp.codeaurora.org ([198.145.29.96]:41094 "EHLO
+	smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751351AbcDPAq6 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 15 Apr 2016 20:46:58 -0400
 Content-Disposition: inline
-In-Reply-To: <20160415142243.GE3472@ulmo.ba.sec>
+In-Reply-To: <1457380318-15452-2-git-send-email-fcooper@ti.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, maxime.coquelin@st.com, linux-pwm@vger.kernel.org, ajitpal.singh@st.com
+To: Franklin S Cooper Jr <fcooper@ti.com>
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, t-kristo@ti.com, mturquette@baylibre.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
 
-On Fri, 15 Apr 2016, Thierry Reding wrote:
+On 03/07, Franklin S Cooper Jr wrote:
+> Add tblck to the pwm nodes. This insures that the ehrpwm driver has access
+> to the time-based clk.
+> 
+> Do not remove similar entries for ehrpwm node. Later patches will switch
+> from using ehrpwm node name to pwm. But to maintain ABI compatibility we
+> shouldn't remove the old entries.
+> 
+> Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
+> ---
 
-> On Fri, Apr 15, 2016 at 01:39:41PM +0100, Lee Jones wrote:
-> > On Tue, 12 Apr 2016, Thierry Reding wrote:
-> >=20
-> > > On Wed, Mar 02, 2016 at 03:32:05PM +0000, Lee Jones wrote:
-> > > [...]
-> > > > +struct sti_cpt_data {
-> > > > +	u32 snapshot[3];
-> > > > +	int index;
-> > > > +	int gpio;
-> > >=20
-> > > On a side-note, this should probably use struct gpio_desc * inste=
-ad of
-> > > an integer along with the gpiod_*() APIs for the GPIO handling.
-> >=20
-> > Why would you need to do that?
-> >=20
-> > of_get_named_gpio() does all that for you.
->=20
-> Use the of_get_named_gpio*d*() function instead. My understanding is
-> that referring to GPIOs by integer is deprecated and should not be us=
-ed
-> in new code.
+Acked-by: Stephen Boyd <sboyd@codeaurora.org>
 
-I've since conducted some research and have now converted over to
-gpiod.  Thanks for the pointer.
-
---=20
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-=46ollow Linaro: Facebook | Twitter | Blog
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
