@@ -1,119 +1,61 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: [[PATCH v2] 07/11] pwm: sti: Supply PWM Capture clock handling
-Date: Fri, 22 Apr 2016 11:18:11 +0100
-Message-ID: <1461320295-20414-8-git-send-email-lee.jones@linaro.org>
-References: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
+From: Penny Chiu <pchiu@nvidia.com>
+Subject: [PATCH 00/11] arm64: tegra: Add Tegra DFLL for Tegra210 Jetson TX1
+Date: Fri, 22 Apr 2016 18:31:00 +0800
+Message-ID: <1461321071-6431-1-git-send-email-pchiu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: linux-pwm@vger.kernel.org, kernel@stlinux.com, ajitpal.singh@st.com, thierry.reding@gmail.com, Lee Jones <lee.jones@linaro.org>, maxime.coquelin@st.com
+Content-Type: text/plain
+Return-path: <linux-pm-owner@vger.kernel.org>
+Sender: linux-pm-owner@vger.kernel.org
+To: swarren@wwwdotorg.org, thierry.reding@gmail.com, gnurou@gmail.com, pdeschrijver@nvidia.com, pgaikwad@nvidia.com, rjw@rjwysocki.net, viresh.kumar@linaro.org
+Cc: mturquette@baylibre.com, sboyd@codeaurora.org, linux-tegra@vger.kernel.org, linux-clk@vger.kernel.org, linux-pwm@vger.kernel.org, linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Penny Chiu <pchiu@nvidia.com>
 List-Id: linux-pwm@vger.kernel.org
 
-ST's PWM IP is supplied by 2 different clocks.  One for PWM
-Output and the other for Capture.  This patch provides clock
-handling for the latter.
+This patch series implements the DFLL/CL-DVFS clock source on Tegra210
+based on Tegra124 DFLL driver, Tegra210 support on Tegra124 cpufreq
+driver, and exposes DFLL HW as a PWM controller and provides DFLL_PWM
+driver to generate PWM signals to control an OpenVReg (PWM regulator)
+for CPU rail.
 
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/pwm/pwm-sti.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+This patch series has been tested on the Jetson TX1.
 
-diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index 2f61e1e..78979d0 100644
---- a/drivers/pwm/pwm-sti.c
-+++ b/drivers/pwm/pwm-sti.c
-@@ -74,6 +74,7 @@ struct sti_pwm_compat_data {
- struct sti_pwm_chip {
- 	struct device *dev;
- 	struct clk *pwm_clk;
-+	struct clk *cpt_clk;
- 	struct regmap *regmap;
- 	struct sti_pwm_compat_data *cdata;
- 	struct regmap_field *prescale_low;
-@@ -183,6 +184,10 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		if (ret)
- 			return ret;
- 
-+		ret = clk_enable(pc->cpt_clk);
-+		if (ret)
-+			return ret;
-+
- 		if (!period_same) {
- 			ret = sti_pwm_get_prescale(pc, period_ns, &prescale);
- 			if (ret)
-@@ -227,6 +232,7 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- clk_dis:
- 	clk_disable(pc->pwm_clk);
-+	clk_disable(pc->cpt_clk);
- 	return ret;
- }
- 
-@@ -246,6 +252,10 @@ static int sti_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 		if (ret)
- 			goto out;
- 
-+		ret = clk_enable(pc->cpt_clk);
-+		if (ret)
-+			goto out;
-+
- 		ret = regmap_field_write(pc->pwm_out_en, 1);
- 		if (ret) {
- 			dev_err(dev, "failed to enable PWM device:%d\n",
-@@ -271,6 +281,7 @@ static void sti_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	regmap_field_write(pc->pwm_out_en, 0);
- 
- 	clk_disable(pc->pwm_clk);
-+	clk_disable(pc->cpt_clk);
- 	mutex_unlock(&pc->sti_pwm_lock);
- }
- 
-@@ -390,6 +401,18 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	pc->cpt_clk = of_clk_get_by_name(dev->of_node, "capture");
-+	if (IS_ERR(pc->cpt_clk)) {
-+		dev_err(dev, "failed to get PWM capture clock\n");
-+		return PTR_ERR(pc->cpt_clk);
-+	}
-+
-+	ret = clk_prepare(pc->cpt_clk);
-+	if (ret) {
-+		dev_err(dev, "failed to prepare clock\n");
-+		return ret;
-+	}
-+
- 	pc->chip.dev = dev;
- 	pc->chip.ops = &sti_pwm_ops;
- 	pc->chip.base = -1;
-@@ -399,6 +422,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	ret = pwmchip_add(&pc->chip);
- 	if (ret < 0) {
- 		clk_unprepare(pc->pwm_clk);
-+		clk_unprepare(pc->cpt_clk);
- 		return ret;
- 	}
- 
-@@ -416,6 +440,7 @@ static int sti_pwm_remove(struct platform_device *pdev)
- 		pwm_disable(&pc->chip.pwms[i]);
- 
- 	clk_unprepare(pc->pwm_clk);
-+	clk_unprepare(pc->cpt_clk);
- 
- 	return pwmchip_remove(&pc->chip);
- }
+Penny Chiu (11):
+  clk: tegra: dfll: Fix voltage comparison
+  clk: tegra: dfll: Move SoC specific data into of_device_id
+  clk: tegra: Add DFLL DVCO reset control for Tegra210
+  clk: tegra: Add Tegra210 support in DFLL driver
+  pwm: tegra-dfll: Add driver for Tegra DFLL PWM controller
+  clk: tegra: dfll: Add PWM inferface
+  cpufreq: tegra124: Add Tegra210 support
+  arm64: tegra: Add PWM regulator for CPU rail on Jetson TX1
+  arm64: tegra: Add DFLL clock node on Jetson TX1
+  arm64: tegra: Add clock properties on cpu0 for Tegra210
+  arm64: config: Enable CPUFreq-DT, Tegra DFLL PWM, and PWM regulator
+
+ .../bindings/clock/nvidia,tegra124-dfll.txt        |  21 +-
+ .../bindings/pwm/nvidia,tegra-dfll-pwm.txt         |  48 +++
+ arch/arm64/boot/dts/nvidia/tegra210-p2180.dtsi     |  56 +++
+ arch/arm64/boot/dts/nvidia/tegra210-p2371-2180.dts |  23 ++
+ arch/arm64/boot/dts/nvidia/tegra210.dtsi           |  21 +
+ arch/arm64/configs/defconfig                       |   4 +
+ drivers/clk/tegra/Makefile                         |   4 +-
+ drivers/clk/tegra/clk-dfll.c                       | 422 +++++++++++++++------
+ drivers/clk/tegra/clk-dfll.h                       |   1 +
+ drivers/clk/tegra/clk-tegra124-dfll-fcpu.c         | 127 ++++++-
+ drivers/clk/tegra/clk-tegra210.c                   |  68 ++++
+ drivers/clk/tegra/cvb.c                            |  12 +-
+ drivers/clk/tegra/cvb.h                            |   8 +-
+ drivers/cpufreq/tegra124-cpufreq.c                 |   3 +-
+ drivers/pwm/Kconfig                                |  10 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-tegra-dfll.c                       | 322 ++++++++++++++++
+ include/dt-bindings/reset/tegra210-car.h           |  12 +
+ include/soc/tegra/pwm-tegra-dfll.h                 |  27 ++
+ 19 files changed, 1046 insertions(+), 144 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/nvidia,tegra-dfll-pwm.txt
+ create mode 100644 drivers/pwm/pwm-tegra-dfll.c
+ create mode 100644 include/dt-bindings/reset/tegra210-car.h
+ create mode 100644 include/soc/tegra/pwm-tegra-dfll.h
+
 -- 
-2.8.0
+2.8.1
+
