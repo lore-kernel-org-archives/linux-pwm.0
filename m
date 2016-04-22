@@ -1,28 +1,64 @@
-From: Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 07/11] cpufreq: tegra124: Add Tegra210 support
-Date: Fri, 22 Apr 2016 16:30:15 +0530
-Message-ID: <20160422110015.GC22726@vireshk-i7>
+From: Jon Hunter <jonathanh@nvidia.com>
+Subject: Re: [PATCH 10/11] arm64: tegra: Add clock properties on cpu0 for
+ Tegra210
+Date: Fri, 22 Apr 2016 12:44:21 +0100
+Message-ID: <571A0E95.9040203@nvidia.com>
 References: <1461321071-6431-1-git-send-email-pchiu@nvidia.com>
- <1461321071-6431-8-git-send-email-pchiu@nvidia.com>
+ <1461321071-6431-11-git-send-email-pchiu@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1461321071-6431-8-git-send-email-pchiu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Penny Chiu <pchiu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, pdeschrijver-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, pgaikwad-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1461321071-6431-11-git-send-email-pchiu@nvidia.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Penny Chiu <pchiu@nvidia.com>, swarren@wwwdotorg.org, thierry.reding@gmail.com, gnurou@gmail.com, pdeschrijver@nvidia.com, pgaikwad@nvidia.com, rjw@rjwysocki.net, viresh.kumar@linaro.org
+Cc: mturquette@baylibre.com, sboyd@codeaurora.org, linux-tegra@vger.kernel.org, linux-clk@vger.kernel.org, linux-pwm@vger.kernel.org, linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On 22-04-16, 18:31, Penny Chiu wrote:
-> Add tegra210 support in tegra124 cpufreq driver.
+Hi Penny,
+
+On 22/04/16 11:31, Penny Chiu wrote:
+> Add clocks, clock-names, and clock-latency into cpu0 node.
+> These properties will be used by cpufreq driver.
 > 
-> Signed-off-by: Penny Chiu <pchiu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Penny Chiu <pchiu@nvidia.com>
 > ---
->  drivers/cpufreq/tegra124-cpufreq.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  arch/arm64/boot/dts/nvidia/tegra210.dtsi | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/nvidia/tegra210.dtsi b/arch/arm64/boot/dts/nvidia/tegra210.dtsi
+> index 204d9cd..1a85857 100644
+> --- a/arch/arm64/boot/dts/nvidia/tegra210.dtsi
+> +++ b/arch/arm64/boot/dts/nvidia/tegra210.dtsi
+> @@ -782,6 +782,12 @@
+>  			device_type = "cpu";
+>  			compatible = "arm,cortex-a57";
+>  			reg = <0>;
+> +			clocks = <&tegra_car TEGRA210_CLK_CCLK_G>,
+> +				 <&tegra_car TEGRA210_CLK_PLL_X>,
+> +				 <&tegra_car TEGRA210_CLK_PLL_P_OUT4>,
+> +				 <&dfll>;
+> +			clock-names = "cpu_g", "pll_x", "pll_p", "dfll";
+> +			clock-latency = <300000>;
+>  		};
+>  
+>  		cpu@1 {
+> 
 
-Acked-by: Viresh Kumar <viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Can you include a patch with this series to update the binding
+documentation for the nvidia,tegra124-cpufreq.txt? I think that although
+there is no specific nvidia,tegra210-cpufreq compatible string the
+documentation should state that both tegra124 and tegra210 are supported
+so it is clear.
 
--- 
-viresh
+Also I see the above binding no longer includes the "cpu_lp" for
+tegra210 which I understand we don't use here. However, the binding
+documentation should reflect this. Having said that, looking at the
+driver it appears the "cpu_lp" clock is not even used for tegra124. I
+wonder if we should drop this from the binding documentation and the
+tegra124.dtsi altogether?
+
+What about the "vdd-cpu-supply" property? Don't we need this?
+
+Cheers
+Jon
