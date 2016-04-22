@@ -1,74 +1,64 @@
-From: Jon Hunter <jonathanh@nvidia.com>
-Subject: Re: [PATCH 10/11] arm64: tegra: Add clock properties on cpu0 for
- Tegra210
-Date: Fri, 22 Apr 2016 14:36:50 +0100
-Message-ID: <571A28F2.5070203@nvidia.com>
-References: <1461321071-6431-1-git-send-email-pchiu@nvidia.com>
- <1461321071-6431-11-git-send-email-pchiu@nvidia.com>
- <571A0E95.9040203@nvidia.com> <20160422132325.GN9047@ulmo.ba.sec>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pm-owner@vger.kernel.org>
-In-Reply-To: <20160422132325.GN9047@ulmo.ba.sec>
-Sender: linux-pm-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Penny Chiu <pchiu@nvidia.com>, swarren@wwwdotorg.org, gnurou@gmail.com, pdeschrijver@nvidia.com, pgaikwad@nvidia.com, rjw@rjwysocki.net, viresh.kumar@linaro.org, mturquette@baylibre.com, sboyd@codeaurora.org, linux-tegra@vger.kernel.org, linux-clk@vger.kernel.org, linux-pwm@vger.kernel.org, linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+From: Franklin S Cooper Jr <fcooper@ti.com>
+Subject: [PATCH v6 0/7] ARM: dts: DRA7: Add dt nodes for PWMSS
+Date: Fri, 22 Apr 2016 11:40:31 -0500
+Message-ID: <1461343238-29274-1-git-send-email-fcooper@ti.com>
+Return-path: <linux-clk-owner@vger.kernel.org>
+Sender: linux-clk-owner@vger.kernel.org
+To: thierry.reding@gmail.com, tony@atomide.com, paul@pwsan.com, t-kristo@ti.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org, vigneshr@ti.com, nsekhar@ti.com
+Cc: Franklin S Cooper Jr <fcooper@ti.com>
 List-Id: linux-pwm@vger.kernel.org
 
+This patch series adds support for PWM for DRA7. The IP is the same as the
+one present in AM33XX and AM437XX.
 
-On 22/04/16 14:23, Thierry Reding wrote:
-> * PGP Signed by an unknown key
-> 
-> On Fri, Apr 22, 2016 at 12:44:21PM +0100, Jon Hunter wrote:
->> Hi Penny,
->>
->> On 22/04/16 11:31, Penny Chiu wrote:
->>> Add clocks, clock-names, and clock-latency into cpu0 node.
->>> These properties will be used by cpufreq driver.
->>>
->>> Signed-off-by: Penny Chiu <pchiu@nvidia.com>
->>> ---
->>>  arch/arm64/boot/dts/nvidia/tegra210.dtsi | 6 ++++++
->>>  1 file changed, 6 insertions(+)
->>>
->>> diff --git a/arch/arm64/boot/dts/nvidia/tegra210.dtsi b/arch/arm64/boot/dts/nvidia/tegra210.dtsi
->>> index 204d9cd..1a85857 100644
->>> --- a/arch/arm64/boot/dts/nvidia/tegra210.dtsi
->>> +++ b/arch/arm64/boot/dts/nvidia/tegra210.dtsi
->>> @@ -782,6 +782,12 @@
->>>  			device_type = "cpu";
->>>  			compatible = "arm,cortex-a57";
->>>  			reg = <0>;
->>> +			clocks = <&tegra_car TEGRA210_CLK_CCLK_G>,
->>> +				 <&tegra_car TEGRA210_CLK_PLL_X>,
->>> +				 <&tegra_car TEGRA210_CLK_PLL_P_OUT4>,
->>> +				 <&dfll>;
->>> +			clock-names = "cpu_g", "pll_x", "pll_p", "dfll";
->>> +			clock-latency = <300000>;
->>>  		};
->>>  
->>>  		cpu@1 {
->>>
->>
->> Can you include a patch with this series to update the binding
->> documentation for the nvidia,tegra124-cpufreq.txt? I think that although
->> there is no specific nvidia,tegra210-cpufreq compatible string the
->> documentation should state that both tegra124 and tegra210 are supported
->> so it is clear.
->>
->> Also I see the above binding no longer includes the "cpu_lp" for
->> tegra210 which I understand we don't use here. However, the binding
->> documentation should reflect this. Having said that, looking at the
->> driver it appears the "cpu_lp" clock is not even used for tegra124. I
->> wonder if we should drop this from the binding documentation and the
->> tegra124.dtsi altogether?
->>
->> What about the "vdd-cpu-supply" property? Don't we need this?
-> 
-> For some reason that seems to have moved into the clock@70110000 node.
+However, before doing so remove unnecessary hwmod entries for eCAP, ePWM
+and eQEP.
 
-Yes I saw that. I surprised that the cpufreq driver would probe without
-this, unless I am missing something ...
+The following are the biggest changes from v5 to v6:
+* Created two new bindings to allow ECAP and PWM to grab their functional
+clock from DT rather than depending on PWMSS parent.
+* Pull in a couple of patches from the "Correct PWM bindings" series. This
+makes it a bit easier to understand.
 
-Jon
+From the two patchsets a handful of patches have already been pulled in by
+maintainers and have already made it to linux-next. Therefore, this
+patch series is built ontop of the latest linux-next.
+
+Tested on:
+AM335x, AM437x and X15 + lcd w/backlight
+
+This series has been verified to be backwards compatible with old dtbs.
+
+Franklin S Cooper Jr (6):
+  clk: ti: am335x/am4372: Add tbclk to pwm node
+  pwm: pwm-tiehrpwm: Update dt binding document to use generic node name
+  ARM: dts: am437x/am33xx/da850: Add new ECAP and EPWM bindings
+  pwms: pwm-ti*: Get the clock from the PWMSS parent when using old
+    bindings
+  ARM: dts: am437x/am33xx: Remove hwmod entries for ECAP and EPWM nodes
+  ARM: AM335x/AM437x: hwmod: Remove eQEP, ePWM and eCAP hwmod entries
+
+Vignesh R (1):
+  ARM: dts: DRA7: Add dt nodes for PWMSS
+
+ .../devicetree/bindings/pwm/pwm-tiecap.txt         | 24 ++++--
+ .../devicetree/bindings/pwm/pwm-tiehrpwm.txt       | 28 ++++---
+ .../devicetree/bindings/pwm/pwm-tipwmss.txt        | 15 +++-
+ arch/arm/boot/dts/am33xx.dtsi                      | 36 ++++++---
+ arch/arm/boot/dts/am4372.dtsi                      | 61 +++++++++++----
+ arch/arm/boot/dts/da850.dtsi                       | 15 ++--
+ arch/arm/boot/dts/dra7.dtsi                        | 90 ++++++++++++++++++++++
+ .../mach-omap2/omap_hwmod_33xx_43xx_common_data.h  | 18 -----
+ .../omap_hwmod_33xx_43xx_interconnect_data.c       | 64 ---------------
+ .../mach-omap2/omap_hwmod_33xx_43xx_ipblock_data.c | 84 --------------------
+ arch/arm/mach-omap2/omap_hwmod_33xx_data.c         |  9 ---
+ arch/arm/mach-omap2/omap_hwmod_43xx_data.c         | 54 -------------
+ drivers/clk/ti/clk-33xx.c                          |  3 +
+ drivers/clk/ti/clk-43xx.c                          |  6 ++
+ drivers/pwm/pwm-tiecap.c                           |  7 ++
+ drivers/pwm/pwm-tiehrpwm.c                         |  7 ++
+ 16 files changed, 242 insertions(+), 279 deletions(-)
+
+-- 
+2.7.0
+
