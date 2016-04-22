@@ -1,149 +1,90 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [[PATCH v2] 01/11] pwm: Add PWM Capture support
-Date: Fri, 22 Apr 2016 11:18:05 +0100
-Message-ID: <1461320295-20414-2-git-send-email-lee.jones@linaro.org>
+Subject: [[PATCH v2] 06/11] pwm: sti: Supply PWM Capture register addresses and bit locations
+Date: Fri, 22 Apr 2016 11:18:10 +0100
+Message-ID: <1461320295-20414-7-git-send-email-lee.jones@linaro.org>
 References: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f41.google.com ([74.125.82.41]:36234 "EHLO
+	mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752653AbcDVKSc (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 22 Apr 2016 06:18:32 -0400
+Received: by mail-wm0-f41.google.com with SMTP id v188so15133940wme.1
+        for <linux-pwm@vger.kernel.org>; Fri, 22 Apr 2016 03:18:27 -0700 (PDT)
 In-Reply-To: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: linux-pwm@vger.kernel.org, kernel@stlinux.com, ajitpal.singh@st.com, thierry.reding@gmail.com, Lee Jones <lee.jones@linaro.org>, maxime.coquelin@st.com
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-
-Supply a PWM Capture call-back Op in order to pass back
-information obtained by running analysis on PWM a signal.
-This would normally (at least during testing) be called from
-the Sysfs routines with a view to printing out PWM Capture
-data which has been encoded into a string.
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: kernel@stlinux.com, maxime.coquelin@st.com, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, ajitpal.singh@st.com, Lee Jones <lee.jones@linaro.org>
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/core.c  | 27 +++++++++++++++++++++++++++
- include/linux/pwm.h | 28 ++++++++++++++++++++++++++++
- 2 files changed, 55 insertions(+)
+ drivers/pwm/pwm-sti.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 7831bc6..160784d 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -494,6 +494,33 @@ unlock:
- EXPORT_SYMBOL_GPL(pwm_set_polarity);
+diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
+index c4a34af..2f61e1e 100644
+--- a/drivers/pwm/pwm-sti.c
++++ b/drivers/pwm/pwm-sti.c
+@@ -22,26 +22,48 @@
+ #include <linux/time.h>
  
- /**
-+ * pwm_capture() - capture and report a PWM signal
-+ * @pwm: PWM device
-+ * @result: struct to fill with capture result
-+ * @timeout_ms: time to wait, in milliseconds, before giving up on capture
-+ *
-+ * Returns: 0 on success or a negative error code on failure.
-+ */
-+int pwm_capture(struct pwm_device *pwm, struct pwm_capture *result,
-+		unsigned int timeout_ms)
-+{
-+	int err;
-+
-+	if (!pwm || !pwm->chip->ops)
-+		return -EINVAL;
-+
-+	if (!pwm->chip->ops->capture)
-+		return -ENOSYS;
-+
-+	mutex_lock(&pwm->lock);
-+	err = pwm->chip->ops->capture(pwm->chip, pwm, result, timeout_ms);
-+	mutex_unlock(&pwm->lock);
-+
-+	return err;
-+}
-+EXPORT_SYMBOL_GPL(pwm_capture);
-+
-+/**
-  * pwm_enable() - start a PWM output toggling
-  * @pwm: PWM device
-  *
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index cfc3ed4..49f9648 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -6,6 +6,7 @@
- #include <linux/of.h>
+ #define PWM_OUT_VAL(x)	(0x00 + (4 * (x))) /* Device's Duty Cycle register */
++#define PWM_CPT_VAL(x)	(0x10 + (4 * (x))) /* Capture value */
++#define PWM_CPT_EDGE(x) (0x30 + (4 * (x))) /* Edge to capture on */
  
- struct pwm_device;
-+struct pwm_capture;
- struct seq_file;
- 
- #if IS_ENABLED(CONFIG_PWM)
-@@ -33,6 +34,13 @@ int pwm_enable(struct pwm_device *pwm);
-  * pwm_disable - stop a PWM output toggling
-  */
- void pwm_disable(struct pwm_device *pwm);
+ #define STI_PWM_CTRL		0x50	/* Control/Config register */
+ #define STI_INT_EN		0x54	/* Interrupt Enable/Disable register */
++#define STI_INT_STA		0x58	/* Interrupt Status register */
++#define PWM_INT_ACK			0x5c
+ #define PWM_PRESCALE_LOW_MASK		0x0f
+ #define PWM_PRESCALE_HIGH_MASK		0xf0
++#define PWM_CPT_EDGE_MASK		0x03
++#define PWM_INT_ACK_MASK		0x1ff
 +
-+/*
-+ * pwm_capture - capture and report a PWM signal
-+ */
-+int pwm_capture(struct pwm_device *pwm,
-+		struct pwm_capture *result,
-+		unsigned int timeout_ms);
- #else
- static inline struct pwm_device *pwm_request(int pwm_id, const char *label)
- {
-@@ -56,6 +64,13 @@ static inline int pwm_enable(struct pwm_device *pwm)
- static inline void pwm_disable(struct pwm_device *pwm)
- {
- }
-+
-+static inline int pwm_capture(struct pwm_device *pwm,
-+			      struct pwm_capture *result,
-+			      unsigned int timeout_ms)
-+{
-+	return -EINVAL;
-+}
- #endif
++#define STI_MAX_CPT_DEVS		4
++#define CPT_DC_MAX			0xff
  
- struct pwm_chip;
-@@ -107,6 +122,16 @@ struct pwm_device {
- 	enum pwm_polarity polarity;
+ /* Regfield IDs */
+ enum {
+ 	/* Bits in PWM_CTRL*/
+ 	PWMCLK_PRESCALE_LOW,
+ 	PWMCLK_PRESCALE_HIGH,
++	CPTCLK_PRESCALE,
+ 
+ 	PWM_OUT_EN,
++	PWM_CPT_EN,
+ 
+ 	PWM_CPT_INT_EN,
++	PWM_CPT_INT_STAT,
+ 
+ 	/* Keep last */
+ 	MAX_REGFIELDS
  };
  
-+/**
-+ * struct pwm_capture - PWM capture data
-+ * @period: period of the PWM signal (in nanoseconds)
-+ * @duty_cycle: duty cycle of the PWM signal (in nanoseconds)
++/* Each capture input can be programmed to detect rising-edge, falling-edge,
++ * either edge or neither egde
 + */
-+struct pwm_capture {
-+	unsigned long long period;
-+	unsigned long long duty_cycle;
++enum sti_cpt_edge {
++	CPT_EDGE_DISABLED,
++	CPT_EDGE_RISING,
++	CPT_EDGE_FALLING,
++	CPT_EDGE_BOTH,
 +};
 +
- static inline bool pwm_is_enabled(const struct pwm_device *pwm)
- {
- 	return test_bit(PWMF_ENABLED, &pwm->flags);
-@@ -150,6 +175,7 @@ static inline enum pwm_polarity pwm_get_polarity(const struct pwm_device *pwm)
-  * @free: optional hook for freeing a PWM
-  * @config: configure duty cycles and period length for this PWM
-  * @set_polarity: configure the polarity of this PWM
-+ * @capture: capture and report PWM signal
-  * @enable: enable PWM output toggling
-  * @disable: disable PWM output toggling
-  * @dbg_show: optional routine to show contents in debugfs
-@@ -162,6 +188,8 @@ struct pwm_ops {
- 		      int duty_ns, int period_ns);
- 	int (*set_polarity)(struct pwm_chip *chip, struct pwm_device *pwm,
- 			    enum pwm_polarity polarity);
-+	int (*capture)(struct pwm_chip *chip, struct pwm_device *pwm,
-+		       struct pwm_capture *result, unsigned int timeout_ms);
- 	int (*enable)(struct pwm_chip *chip, struct pwm_device *pwm);
- 	void (*disable)(struct pwm_chip *chip, struct pwm_device *pwm);
- #ifdef CONFIG_DEBUG_FS
+ struct sti_pwm_compat_data {
+ 	const struct reg_field *reg_fields;
+ 	unsigned int num_devs;
+@@ -69,8 +91,11 @@ struct sti_pwm_chip {
+ static const struct reg_field sti_pwm_regfields[MAX_REGFIELDS] = {
+ 	[PWMCLK_PRESCALE_LOW]	= REG_FIELD(STI_PWM_CTRL, 0, 3),
+ 	[PWMCLK_PRESCALE_HIGH]	= REG_FIELD(STI_PWM_CTRL, 11, 14),
++	[CPTCLK_PRESCALE]	= REG_FIELD(STI_PWM_CTRL, 4, 8),
+ 	[PWM_OUT_EN]		= REG_FIELD(STI_PWM_CTRL, 9, 9),
++	[PWM_CPT_EN]		= REG_FIELD(STI_PWM_CTRL, 10, 10),
+ 	[PWM_CPT_INT_EN]	= REG_FIELD(STI_INT_EN, 1, 4),
++	[PWM_CPT_INT_STAT]	= REG_FIELD(STI_INT_STA, 1, 4),
+ };
+ 
+ static inline struct sti_pwm_chip *to_sti_pwmchip(struct pwm_chip *chip)
 -- 
 2.8.0
