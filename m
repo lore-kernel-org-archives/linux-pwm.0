@@ -1,7 +1,7 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [[PATCH v2] 02/11] pwm: sti: Rename channel => device
-Date: Fri, 22 Apr 2016 11:18:06 +0100
-Message-ID: <1461320295-20414-3-git-send-email-lee.jones@linaro.org>
+Subject: [[PATCH v2] 07/11] pwm: sti: Supply PWM Capture clock handling
+Date: Fri, 22 Apr 2016 11:18:11 +0100
+Message-ID: <1461320295-20414-8-git-send-email-lee.jones@linaro.org>
 References: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,107 +21,99 @@ To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: linux-pwm@vger.kernel.org, kernel@stlinux.com, ajitpal.singh@st.com, thierry.reding@gmail.com, Lee Jones <lee.jones@linaro.org>, maxime.coquelin@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-This is to bring the terminology used in the STi PWM driver more
-into line with the PWM subsystem.
+ST's PWM IP is supplied by 2 different clocks.  One for PWM
+Output and the other for Capture.  This patch provides clock
+handling for the latter.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/pwm-sti.c | 32 ++++++++++++++++----------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
+ drivers/pwm/pwm-sti.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
 diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index 92abbd5..3dae127 100644
+index 2f61e1e..78979d0 100644
 --- a/drivers/pwm/pwm-sti.c
 +++ b/drivers/pwm/pwm-sti.c
-@@ -21,7 +21,7 @@
- #include <linux/slab.h>
- #include <linux/time.h>
+@@ -74,6 +74,7 @@ struct sti_pwm_compat_data {
+ struct sti_pwm_chip {
+ 	struct device *dev;
+ 	struct clk *pwm_clk;
++	struct clk *cpt_clk;
+ 	struct regmap *regmap;
+ 	struct sti_pwm_compat_data *cdata;
+ 	struct regmap_field *prescale_low;
+@@ -183,6 +184,10 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		if (ret)
+ 			return ret;
  
--#define STI_DS_REG(ch)	(4 * (ch))	/* Channel's Duty Cycle register */
-+#define STI_DS_REG(ch)	(4 * (ch))	/* Device's Duty Cycle register */
- #define STI_PWMCR	0x50		/* Control/Config register */
- #define STI_INTEN	0x54		/* Interrupt Enable/Disable register */
- #define PWM_PRESCALE_LOW_MASK		0x0f
-@@ -40,7 +40,7 @@ enum {
++		ret = clk_enable(pc->cpt_clk);
++		if (ret)
++			return ret;
++
+ 		if (!period_same) {
+ 			ret = sti_pwm_get_prescale(pc, period_ns, &prescale);
+ 			if (ret)
+@@ -227,6 +232,7 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
  
- struct sti_pwm_compat_data {
- 	const struct reg_field *reg_fields;
--	unsigned int num_chan;
-+	unsigned int num_devs;
- 	unsigned int max_pwm_cnt;
- 	unsigned int max_prescale;
- };
-@@ -130,13 +130,13 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ clk_dis:
+ 	clk_disable(pc->pwm_clk);
++	clk_disable(pc->cpt_clk);
+ 	return ret;
+ }
  
- 	/* Allow configuration changes if one of the
- 	 * following conditions satisfy.
--	 * 1. No channels have been configured.
--	 * 2. Only one channel has been configured and the new request
--	 *    is for the same channel.
--	 * 3. Only one channel has been configured and the new request is
--	 *    for a new channel and period of the new channel is same as
-+	 * 1. No devices have been configured.
-+	 * 2. Only one device has been configured and the new request
-+	 *    is for the same device.
-+	 * 3. Only one device has been configured and the new request is
-+	 *    for a new device and period of the new device is same as
- 	 *    the current configured period.
--	 * 4. More than one channels are configured and period of the new
-+	 * 4. More than one devices are configured and period of the new
- 	 *    requestis the same as the current period.
- 	 */
- 	if (!ncfg ||
-@@ -201,7 +201,7 @@ static int sti_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	int ret = 0;
+@@ -246,6 +252,10 @@ static int sti_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 		if (ret)
+ 			goto out;
  
- 	/*
--	 * Since we have a common enable for all PWM channels,
-+	 * Since we have a common enable for all PWM devices,
- 	 * do not enable if already enabled.
- 	 */
- 	mutex_lock(&pc->sti_pwm_lock);
-@@ -259,11 +259,11 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
- 	const struct reg_field *reg_fields;
- 	struct device_node *np = dev->of_node;
- 	struct sti_pwm_compat_data *cdata = pc->cdata;
--	u32 num_chan;
-+	u32 num_devs;
++		ret = clk_enable(pc->cpt_clk);
++		if (ret)
++			goto out;
++
+ 		ret = regmap_field_write(pc->pwm_out_en, 1);
+ 		if (ret) {
+ 			dev_err(dev, "failed to enable PWM device:%d\n",
+@@ -271,6 +281,7 @@ static void sti_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	regmap_field_write(pc->pwm_out_en, 0);
  
--	of_property_read_u32(np, "st,pwm-num-chan", &num_chan);
--	if (num_chan)
--		cdata->num_chan = num_chan;
-+	of_property_read_u32(np, "st,pwm-num-devs", &num_devs);
-+	if (num_devs)
-+		cdata->num_devs = num_devs;
+ 	clk_disable(pc->pwm_clk);
++	clk_disable(pc->cpt_clk);
+ 	mutex_unlock(&pc->sti_pwm_lock);
+ }
  
- 	reg_fields = cdata->reg_fields;
+@@ -390,6 +401,18 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
  
-@@ -330,7 +330,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	cdata->reg_fields   = &sti_pwm_regfields[0];
- 	cdata->max_prescale = 0xff;
- 	cdata->max_pwm_cnt  = 255;
--	cdata->num_chan     = 1;
-+	cdata->num_devs     = 1;
- 
- 	pc->cdata = cdata;
- 	pc->dev = dev;
-@@ -362,7 +362,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
++	pc->cpt_clk = of_clk_get_by_name(dev->of_node, "capture");
++	if (IS_ERR(pc->cpt_clk)) {
++		dev_err(dev, "failed to get PWM capture clock\n");
++		return PTR_ERR(pc->cpt_clk);
++	}
++
++	ret = clk_prepare(pc->cpt_clk);
++	if (ret) {
++		dev_err(dev, "failed to prepare clock\n");
++		return ret;
++	}
++
  	pc->chip.dev = dev;
  	pc->chip.ops = &sti_pwm_ops;
  	pc->chip.base = -1;
--	pc->chip.npwm = pc->cdata->num_chan;
-+	pc->chip.npwm = pc->cdata->num_devs;
- 	pc->chip.can_sleep = true;
- 
+@@ -399,6 +422,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
  	ret = pwmchip_add(&pc->chip);
-@@ -381,7 +381,7 @@ static int sti_pwm_remove(struct platform_device *pdev)
- 	struct sti_pwm_chip *pc = platform_get_drvdata(pdev);
- 	unsigned int i;
+ 	if (ret < 0) {
+ 		clk_unprepare(pc->pwm_clk);
++		clk_unprepare(pc->cpt_clk);
+ 		return ret;
+ 	}
  
--	for (i = 0; i < pc->cdata->num_chan; i++)
-+	for (i = 0; i < pc->cdata->num_devs; i++)
+@@ -416,6 +440,7 @@ static int sti_pwm_remove(struct platform_device *pdev)
  		pwm_disable(&pc->chip.pwms[i]);
  
- 	clk_unprepare(pc->clk);
+ 	clk_unprepare(pc->pwm_clk);
++	clk_unprepare(pc->cpt_clk);
+ 
+ 	return pwmchip_remove(&pc->chip);
+ }
 -- 
 2.8.0
