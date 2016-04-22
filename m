@@ -1,65 +1,52 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [[PATCH v2] 03/11] pwm: sysfs: Add PWM Capture support
-Date: Fri, 22 Apr 2016 11:18:07 +0100
-Message-ID: <1461320295-20414-4-git-send-email-lee.jones@linaro.org>
-References: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
+Subject: [PATCH v2 00/11] pwm: Add support for PWM Capture
+Date: Fri, 22 Apr 2016 11:18:04 +0100
+Message-ID: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: kernel@stlinux.com, maxime.coquelin@st.com, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, ajitpal.singh@st.com, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Allow a user to read PWM Capture results from /sysfs.
+The first part of this set extends the current PWM API to allow external
+code to request a PWM Capture.  Subsequent patches then make use of the
+new API by providing a userspace offering via /sysfs.  The final part of
+the set supplies PWM Capture functionality into the already existing STi
+PWM driver.
 
-To start a capture and read the result, simply read the file:
+This patch-set has been tested end to end via /sysfs.
 
-  $ cat $PWMCHIP/capture
+v1 => v2:
+  API change
+  - Use a struct to carry the result back to the caller
+  - Use 'struct pwm' to store device specific data
+  - Make timeout configurable
+  - Don't use clear_bit(), instead use raw bit logic
+  - Propagate return value of platform_get_irq()
+  - Don't cast to (void *)
+  - Move to subsystem terminology (channels => devices)
+  - Remove channel select feature
+  - Enable Capture IP during capture
 
-The output format is "<period>:<duty_cycle>".
+Lee Jones (11):
+  pwm: Add PWM Capture support
+  pwm: sti: Rename channel => device
+  pwm: sysfs: Add PWM Capture support
+  pwm: sti: Reorganise register names in preparation for new
+    functionality
+  pwm: sti: Only request clock rate when you need to
+  pwm: sti: Supply PWM Capture register addresses and bit locations
+  pwm: sti: Supply PWM Capture clock handling
+  pwm: sti: Initialise PWM Capture device data
+  pwm: sti: Add support for PWM Capture IRQs
+  pwm: sti: Add PWM Capture call-back
+  pwm: sti: Take the opportunity to conduct a little house keeping
 
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/pwm/sysfs.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/pwm/core.c    |  27 ++++
+ drivers/pwm/pwm-sti.c | 411 +++++++++++++++++++++++++++++++++++++++++---------
+ drivers/pwm/sysfs.c   |  17 +++
+ include/linux/pwm.h   |  28 ++++
+ 4 files changed, 412 insertions(+), 71 deletions(-)
 
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index 9c90886..ca0d886 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -167,16 +167,33 @@ static ssize_t polarity_store(struct device *child,
- 	return ret ? : size;
- }
- 
-+static ssize_t capture_show(struct device *child,
-+			    struct device_attribute *attr,
-+			    char *buf)
-+{
-+	struct pwm_device *pwm = child_to_pwm_device(child);
-+	struct pwm_capture result;
-+	int ret;
-+
-+	ret = pwm_capture(pwm, &result, jiffies_to_msecs(HZ));
-+	if (ret)
-+		return ret;
-+
-+	return sprintf(buf, "%llu %llu\n", result.period, result.duty_cycle);
-+}
-+
- static DEVICE_ATTR_RW(period);
- static DEVICE_ATTR_RW(duty_cycle);
- static DEVICE_ATTR_RW(enable);
- static DEVICE_ATTR_RW(polarity);
-+static DEVICE_ATTR_RO(capture);
- 
- static struct attribute *pwm_attrs[] = {
- 	&dev_attr_period.attr,
- 	&dev_attr_duty_cycle.attr,
- 	&dev_attr_enable.attr,
- 	&dev_attr_polarity.attr,
-+	&dev_attr_capture.attr,
- 	NULL
- };
- ATTRIBUTE_GROUPS(pwm);
 -- 
 2.8.0
