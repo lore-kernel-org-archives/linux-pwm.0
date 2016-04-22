@@ -1,7 +1,7 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [[PATCH v2] 05/11] pwm: sti: Only request clock rate when you need to
-Date: Fri, 22 Apr 2016 11:18:09 +0100
-Message-ID: <1461320295-20414-6-git-send-email-lee.jones@linaro.org>
+Subject: [[PATCH v2] 08/11] pwm: sti: Initialise PWM Capture device data
+Date: Fri, 22 Apr 2016 11:18:12 +0100
+Message-ID: <1461320295-20414-9-git-send-email-lee.jones@linaro.org>
 References: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
@@ -10,62 +10,139 @@ To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: kernel@stlinux.com, maxime.coquelin@st.com, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, ajitpal.singh@st.com, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-In the original code the clock rate was only obtained during
-initialisation; however, the rate may change between then and
-its use.  This patch ensures the correct rate is acquired just
-before use.
+Each PWM Capture device is allocated a structure to hold its own
+state.  During a capture the device may be partaking in one of 3
+phases.  Initial (rising) phase change, a subsequent (falling)
+phase change indicating end of the duty-cycle phase and finally
+a final (rising) phase change indicating the end of the period.
+The timer value snapshot each event is held in a variable of the
+same name, and the phase number (0, 1, 2) is contained in the
+index variable.  Other device specific information, such as GPIO
+pin, the IRQ wait queue and locking is also contained in the
+structure.  This patch initialises this structure for each of
+the available devices.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/pwm-sti.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/pwm/pwm-sti.c | 45 ++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 38 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index 5fbee61..c4a34af 100644
+index 78979d0..9d597bb 100644
 --- a/drivers/pwm/pwm-sti.c
 +++ b/drivers/pwm/pwm-sti.c
-@@ -51,7 +51,6 @@ struct sti_pwm_compat_data {
+@@ -11,6 +11,7 @@
+  */
  
- struct sti_pwm_chip {
- 	struct device *dev;
--	unsigned long clk_rate;
- 	struct clk *pwm_clk;
- 	struct regmap *regmap;
- 	struct sti_pwm_compat_data *cdata;
-@@ -86,13 +85,20 @@ static int sti_pwm_get_prescale(struct sti_pwm_chip *pc, unsigned long period,
- 				unsigned int *prescale)
- {
- 	struct sti_pwm_compat_data *cdata = pc->cdata;
-+	unsigned long clk_rate;
- 	unsigned long val;
- 	unsigned int ps;
+ #include <linux/clk.h>
++#include <linux/interrupt.h>
+ #include <linux/math64.h>
+ #include <linux/mfd/syscon.h>
+ #include <linux/module.h>
+@@ -18,8 +19,10 @@
+ #include <linux/platform_device.h>
+ #include <linux/pwm.h>
+ #include <linux/regmap.h>
++#include <linux/sched.h>
+ #include <linux/slab.h>
+ #include <linux/time.h>
++#include <linux/wait.h>
  
-+	clk_rate = clk_get_rate(pc->pwm_clk);
-+	if (!clk_rate) {
-+		dev_err(pc->dev, "failed to get clock rate\n");
-+		return -EINVAL;
-+	}
+ #define PWM_OUT_VAL(x)	(0x00 + (4 * (x))) /* Device's Duty Cycle register */
+ #define PWM_CPT_VAL(x)	(0x10 + (4 * (x))) /* Capture value */
+@@ -64,9 +67,17 @@ enum sti_cpt_edge {
+ 	CPT_EDGE_BOTH,
+ };
+ 
++struct sti_cpt_ddata {
++	u32 snapshot[3];
++	int index;
++	struct mutex lock;
++	wait_queue_head_t wait;
++};
 +
- 	/*
- 	 * prescale = ((period_ns * clk_rate) / (10^9 * (max_pwm_count + 1)) - 1
- 	 */
--	val = NSEC_PER_SEC / pc->clk_rate;
-+	val = NSEC_PER_SEC / clk_rate;
- 	val *= cdata->max_pwm_cnt + 1;
+ struct sti_pwm_compat_data {
+ 	const struct reg_field *reg_fields;
+-	unsigned int num_devs;
++	unsigned int pwm_num_devs;
++	unsigned int cpt_num_devs;
+ 	unsigned int max_pwm_cnt;
+ 	unsigned int max_prescale;
+ };
+@@ -307,10 +318,15 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
+ 	struct device_node *np = dev->of_node;
+ 	struct sti_pwm_compat_data *cdata = pc->cdata;
+ 	u32 num_devs;
++	int ret;
  
- 	if (period % val) {
-@@ -353,12 +359,6 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 		return PTR_ERR(pc->pwm_clk);
+-	of_property_read_u32(np, "st,pwm-num-devs", &num_devs);
+-	if (num_devs)
+-		cdata->num_devs = num_devs;
++	ret = of_property_read_u32(np, "st,pwm-num-devs", &num_devs);
++	if (!ret)
++		cdata->pwm_num_devs = num_devs;
++
++	ret = of_property_read_u32(np, "st,capture-num-devs", &num_devs);
++	if (!ret)
++		cdata->cpt_num_devs = num_devs;
+ 
+ 	reg_fields = cdata->reg_fields;
+ 
+@@ -350,6 +366,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 	struct sti_pwm_compat_data *cdata;
+ 	struct sti_pwm_chip *pc;
+ 	struct resource *res;
++	unsigned int devnum;
+ 	int ret;
+ 
+ 	pc = devm_kzalloc(dev, sizeof(*pc), GFP_KERNEL);
+@@ -378,7 +395,8 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 	cdata->reg_fields   = &sti_pwm_regfields[0];
+ 	cdata->max_prescale = 0xff;
+ 	cdata->max_pwm_cnt  = 255;
+-	cdata->num_devs     = 1;
++	cdata->pwm_num_devs = 1;
++	cdata->cpt_num_devs = 0;
+ 
+ 	pc->cdata = cdata;
+ 	pc->dev = dev;
+@@ -416,7 +434,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 	pc->chip.dev = dev;
+ 	pc->chip.ops = &sti_pwm_ops;
+ 	pc->chip.base = -1;
+-	pc->chip.npwm = pc->cdata->num_devs;
++	pc->chip.npwm = pc->cdata->pwm_num_devs;
+ 	pc->chip.can_sleep = true;
+ 
+ 	ret = pwmchip_add(&pc->chip);
+@@ -426,6 +444,19 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 		return ret;
  	}
  
--	pc->clk_rate = clk_get_rate(pc->pwm_clk);
--	if (!pc->clk_rate) {
--		dev_err(dev, "failed to get clock rate\n");
--		return -EINVAL;
--	}
--
- 	ret = clk_prepare(pc->pwm_clk);
- 	if (ret) {
- 		dev_err(dev, "failed to prepare clock\n");
++	for (devnum = 0; devnum < cdata->cpt_num_devs; devnum++) {
++		struct sti_cpt_ddata *ddata;
++
++		ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
++		if (!ddata)
++			return -ENOMEM;
++
++		init_waitqueue_head(&ddata->wait);
++		mutex_init(&ddata->lock);
++
++		pwm_set_chip_data(&pc->chip.pwms[devnum], ddata);
++	}
++
+ 	platform_set_drvdata(pdev, pc);
+ 
+ 	return 0;
+@@ -436,7 +467,7 @@ static int sti_pwm_remove(struct platform_device *pdev)
+ 	struct sti_pwm_chip *pc = platform_get_drvdata(pdev);
+ 	unsigned int i;
+ 
+-	for (i = 0; i < pc->cdata->num_devs; i++)
++	for (i = 0; i < pc->cdata->pwm_num_devs; i++)
+ 		pwm_disable(&pc->chip.pwms[i]);
+ 
+ 	clk_unprepare(pc->pwm_clk);
 -- 
 2.8.0
