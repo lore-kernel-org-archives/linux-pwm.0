@@ -1,155 +1,149 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [[PATCH v2] 09/11] pwm: sti: Add support for PWM Capture IRQs
-Date: Fri, 22 Apr 2016 11:18:13 +0100
-Message-ID: <1461320295-20414-10-git-send-email-lee.jones@linaro.org>
+Subject: [[PATCH v2] 01/11] pwm: Add PWM Capture support
+Date: Fri, 22 Apr 2016 11:18:05 +0100
+Message-ID: <1461320295-20414-2-git-send-email-lee.jones@linaro.org>
 References: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: kernel@stlinux.com, maxime.coquelin@st.com, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, ajitpal.singh@st.com, Lee Jones <lee.jones@linaro.org>
+Cc: linux-pwm@vger.kernel.org, kernel@stlinux.com, ajitpal.singh@st.com, thierry.reding@gmail.com, Lee Jones <lee.jones@linaro.org>, maxime.coquelin@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-Here we're requesting the PWM Capture IRQ and supplying the
-handler which will be called in the event of an IRQ fire to
-handle it.
+Supply a PWM Capture call-back Op in order to pass back
+information obtained by running analysis on PWM a signal.
+This would normally (at least during testing) be called from
+the Sysfs routines with a view to printing out PWM Capture
+data which has been encoded into a string.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/pwm-sti.c | 92 ++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 91 insertions(+), 1 deletion(-)
+ drivers/pwm/core.c  | 27 +++++++++++++++++++++++++++
+ include/linux/pwm.h | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 55 insertions(+)
 
-diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index 9d597bb..2230afb 100644
---- a/drivers/pwm/pwm-sti.c
-+++ b/drivers/pwm/pwm-sti.c
-@@ -91,7 +91,9 @@ struct sti_pwm_chip {
- 	struct regmap_field *prescale_low;
- 	struct regmap_field *prescale_high;
- 	struct regmap_field *pwm_out_en;
-+	struct regmap_field *pwm_cpt_en;
- 	struct regmap_field *pwm_cpt_int_en;
-+	struct regmap_field *pwm_cpt_int_stat;
- 	struct pwm_chip chip;
- 	struct pwm_device *cur;
- 	unsigned long configured;
-@@ -311,6 +313,76 @@ static const struct pwm_ops sti_pwm_ops = {
- 	.owner = THIS_MODULE,
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 7831bc6..160784d 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -494,6 +494,33 @@ unlock:
+ EXPORT_SYMBOL_GPL(pwm_set_polarity);
+ 
+ /**
++ * pwm_capture() - capture and report a PWM signal
++ * @pwm: PWM device
++ * @result: struct to fill with capture result
++ * @timeout_ms: time to wait, in milliseconds, before giving up on capture
++ *
++ * Returns: 0 on success or a negative error code on failure.
++ */
++int pwm_capture(struct pwm_device *pwm, struct pwm_capture *result,
++		unsigned int timeout_ms)
++{
++	int err;
++
++	if (!pwm || !pwm->chip->ops)
++		return -EINVAL;
++
++	if (!pwm->chip->ops->capture)
++		return -ENOSYS;
++
++	mutex_lock(&pwm->lock);
++	err = pwm->chip->ops->capture(pwm->chip, pwm, result, timeout_ms);
++	mutex_unlock(&pwm->lock);
++
++	return err;
++}
++EXPORT_SYMBOL_GPL(pwm_capture);
++
++/**
+  * pwm_enable() - start a PWM output toggling
+  * @pwm: PWM device
+  *
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index cfc3ed4..49f9648 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -6,6 +6,7 @@
+ #include <linux/of.h>
+ 
+ struct pwm_device;
++struct pwm_capture;
+ struct seq_file;
+ 
+ #if IS_ENABLED(CONFIG_PWM)
+@@ -33,6 +34,13 @@ int pwm_enable(struct pwm_device *pwm);
+  * pwm_disable - stop a PWM output toggling
+  */
+ void pwm_disable(struct pwm_device *pwm);
++
++/*
++ * pwm_capture - capture and report a PWM signal
++ */
++int pwm_capture(struct pwm_device *pwm,
++		struct pwm_capture *result,
++		unsigned int timeout_ms);
+ #else
+ static inline struct pwm_device *pwm_request(int pwm_id, const char *label)
+ {
+@@ -56,6 +64,13 @@ static inline int pwm_enable(struct pwm_device *pwm)
+ static inline void pwm_disable(struct pwm_device *pwm)
+ {
+ }
++
++static inline int pwm_capture(struct pwm_device *pwm,
++			      struct pwm_capture *result,
++			      unsigned int timeout_ms)
++{
++	return -EINVAL;
++}
+ #endif
+ 
+ struct pwm_chip;
+@@ -107,6 +122,16 @@ struct pwm_device {
+ 	enum pwm_polarity polarity;
  };
  
-+static irqreturn_t sti_pwm_interrupt(int irq, void *data)
-+{
-+	struct sti_pwm_chip *pc = data;
-+	struct device *dev = pc->dev;
-+	struct sti_cpt_ddata *ddata;
-+	int devicenum;
-+	unsigned int cpt_int_stat;
-+	unsigned int reg;
-+	int ret = IRQ_NONE;
++/**
++ * struct pwm_capture - PWM capture data
++ * @period: period of the PWM signal (in nanoseconds)
++ * @duty_cycle: duty cycle of the PWM signal (in nanoseconds)
++ */
++struct pwm_capture {
++	unsigned long long period;
++	unsigned long long duty_cycle;
++};
 +
-+	ret = regmap_field_read(pc->pwm_cpt_int_stat, &cpt_int_stat);
-+	if (ret)
-+		return ret;
-+
-+	while (cpt_int_stat) {
-+		devicenum = ffs(cpt_int_stat) - 1;
-+
-+		ddata = pwm_get_chip_data(&pc->chip.pwms[devicenum]);
-+
-+		/*
-+		 * Capture input:
-+		 *    _______                   _______
-+		 *   |       |                 |       |
-+		 * __|       |_________________|       |________
-+		 *   ^0      ^1                ^2
-+		 *
-+		 * Capture start by the first available rising edge
-+		 * When a capture event occurs, capture value (CPT_VALx)
-+		 * is stored, index incremented, capture edge changed.
-+		 *
-+		 * After the capture, if the index > 1, we have collected
-+		 * the necessary data so we signal the thread waiting for it
-+		 * and disable the capture by setting capture edge to none
-+		 *
-+		 */
-+
-+		regmap_read(pc->regmap,
-+			    PWM_CPT_VAL(devicenum),
-+			    &ddata->snapshot[ddata->index]);
-+
-+		switch (ddata->index) {
-+		case 0:
-+		case 1:
-+			regmap_read(pc->regmap, PWM_CPT_EDGE(devicenum), &reg);
-+			reg ^= PWM_CPT_EDGE_MASK;
-+			regmap_write(pc->regmap, PWM_CPT_EDGE(devicenum), reg);
-+
-+			ddata->index++;
-+			break;
-+		case 2:
-+			regmap_write(pc->regmap,
-+				     PWM_CPT_EDGE(devicenum),
-+				     CPT_EDGE_DISABLED);
-+			wake_up(&ddata->wait);
-+			break;
-+		default:
-+			dev_err(dev, "Internal error\n");
-+		}
-+
-+		cpt_int_stat &= ~BIT_MASK(devicenum);
-+
-+		ret = IRQ_HANDLED;
-+	}
-+
-+	/* Just ACK everything */
-+	regmap_write(pc->regmap, PWM_INT_ACK, PWM_INT_ACK_MASK);
-+
-+	return ret;
-+}
-+
- static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
+ static inline bool pwm_is_enabled(const struct pwm_device *pwm)
  {
- 	struct device *dev = pc->dev;
-@@ -351,6 +423,11 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
- 	if (IS_ERR(pc->pwm_cpt_int_en))
- 		return PTR_ERR(pc->pwm_cpt_int_en);
- 
-+	pc->pwm_cpt_int_stat = devm_regmap_field_alloc(dev, pc->regmap,
-+						reg_fields[PWM_CPT_INT_STAT]);
-+	if (PTR_ERR_OR_ZERO(pc->pwm_cpt_int_stat))
-+		return PTR_ERR(pc->pwm_cpt_int_stat);
-+
- 	return 0;
- }
- 
-@@ -367,7 +444,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	struct sti_pwm_chip *pc;
- 	struct resource *res;
- 	unsigned int devnum;
--	int ret;
-+	int irq, ret;
- 
- 	pc = devm_kzalloc(dev, sizeof(*pc), GFP_KERNEL);
- 	if (!pc)
-@@ -388,6 +465,19 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(pc->regmap))
- 		return PTR_ERR(pc->regmap);
- 
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		dev_err(&pdev->dev, "Failed to obtain IRQ\n");
-+		return irq;
-+	}
-+
-+	ret = devm_request_irq(&pdev->dev, irq, sti_pwm_interrupt,
-+			       0, pdev->name, pc);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "Failed to request IRQ\n");
-+		return ret;
-+	}
-+
- 	/*
- 	 * Setup PWM data with default values: some values could be replaced
- 	 * with specific ones provided from Device Tree.
+ 	return test_bit(PWMF_ENABLED, &pwm->flags);
+@@ -150,6 +175,7 @@ static inline enum pwm_polarity pwm_get_polarity(const struct pwm_device *pwm)
+  * @free: optional hook for freeing a PWM
+  * @config: configure duty cycles and period length for this PWM
+  * @set_polarity: configure the polarity of this PWM
++ * @capture: capture and report PWM signal
+  * @enable: enable PWM output toggling
+  * @disable: disable PWM output toggling
+  * @dbg_show: optional routine to show contents in debugfs
+@@ -162,6 +188,8 @@ struct pwm_ops {
+ 		      int duty_ns, int period_ns);
+ 	int (*set_polarity)(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			    enum pwm_polarity polarity);
++	int (*capture)(struct pwm_chip *chip, struct pwm_device *pwm,
++		       struct pwm_capture *result, unsigned int timeout_ms);
+ 	int (*enable)(struct pwm_chip *chip, struct pwm_device *pwm);
+ 	void (*disable)(struct pwm_chip *chip, struct pwm_device *pwm);
+ #ifdef CONFIG_DEBUG_FS
 -- 
 2.8.0
