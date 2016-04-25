@@ -1,37 +1,34 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v6 7/7] ARM: dts: DRA7: Add dt nodes for PWMSS
-Date: Mon, 25 Apr 2016 08:05:57 -0500
-Message-ID: <20160425130557.GA11485@rob-hp-laptop>
+From: Paul Walmsley <paul@pwsan.com>
+Subject: Re: [PATCH v6 0/7] ARM: dts: DRA7: Add dt nodes for PWMSS
+Date: Mon, 25 Apr 2016 16:18:02 +0000 (UTC)
+Message-ID: <alpine.DEB.2.02.1604251610170.22464@utopia.booyaka.com>
 References: <1461343238-29274-1-git-send-email-fcooper@ti.com>
- <1461343238-29274-8-git-send-email-fcooper@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1461343238-29274-8-git-send-email-fcooper-l0cyMroinI0@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Franklin S Cooper Jr <fcooper-l0cyMroinI0@public.gmane.org>
-Cc: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org, paul-DWxLp4Yu+b8AvxtiuMwx3w@public.gmane.org, t-kristo-l0cyMroinI0@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vigneshr-l0cyMroinI0@public.gmane.org, nsekhar-l0cyMroinI0@public.gmane.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from utopia.booyaka.com ([74.50.51.50]:52499 "EHLO
+	utopia.booyaka.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754874AbcDYQSE (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 25 Apr 2016 12:18:04 -0400
+In-Reply-To: <1461343238-29274-1-git-send-email-fcooper@ti.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Franklin S Cooper Jr <fcooper@ti.com>
+Cc: thierry.reding@gmail.com, tony@atomide.com, t-kristo@ti.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org, vigneshr@ti.com, nsekhar@ti.com
 
-On Fri, Apr 22, 2016 at 11:40:38AM -0500, Franklin S Cooper Jr wrote:
-> From: Vignesh R <vigneshr-l0cyMroinI0@public.gmane.org>
-> 
-> Add PWMSS device tree nodes for DRA7 SoC family and add documentation
-> for dt bindings.
-> 
-> Signed-off-by: Vignesh R <vigneshr-l0cyMroinI0@public.gmane.org>
-> [fcooper-l0cyMroinI0@public.gmane.org: Add eCAP and use updated bindings for PWMSS and ePWM]
-> Signed-off-by: Franklin S Cooper Jr <fcooper-l0cyMroinI0@public.gmane.org>
-> ---
->  .../devicetree/bindings/pwm/pwm-tiecap.txt         |  9 +++
->  .../devicetree/bindings/pwm/pwm-tiehrpwm.txt       |  9 +++
->  .../devicetree/bindings/pwm/pwm-tipwmss.txt        | 15 +++-
->  arch/arm/boot/dts/dra7.dtsi                        | 90 ++++++++++++++++++++++
->  4 files changed, 122 insertions(+), 1 deletion(-)
+On Fri, 22 Apr 2016, Franklin S Cooper Jr wrote:
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> This patch series adds support for PWM for DRA7. The IP is the same as the
+> one present in AM33XX and AM437XX.
+> 
+> However, before doing so remove unnecessary hwmod entries for eCAP, ePWM
+> and eQEP.
+
+Just took a quick look (nothing indepth).  Looks OK.  
+
+Once Rob's issues have been addressed, please feel free to add an 
+Acked-by: from me.  Thanks for playing along, Franklin, I think this final 
+product makes the most sense from a device architecture point of view.
+
+
+- Paul
