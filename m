@@ -1,40 +1,44 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v2 00/11] pwm: Add support for PWM Capture
-Date: Fri, 29 Apr 2016 09:40:10 +0200
-Message-ID: <20160429094010.6bfb131c@bbrezillon>
-References: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 2/2 v2] pwm: add a driver for the STMPE PWM
+Date: Sun, 1 May 2016 20:19:27 +0200
+Message-ID: <CACRpkdYsoUtSGad8caEBSUqJAjP9r4-i4Va6ZLKM+0QF3+JLiA@mail.gmail.com>
+References: <1459891357-28352-1-git-send-email-linus.walleij@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, kernel@stlinux.com, ajitpal.singh@st.com, thierry.reding@gmail.com, maxime.coquelin@st.com
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-oi0-f47.google.com ([209.85.218.47]:32878 "EHLO
+	mail-oi0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751639AbcEAST2 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sun, 1 May 2016 14:19:28 -0400
+Received: by mail-oi0-f47.google.com with SMTP id v145so135838037oie.0
+        for <linux-pwm@vger.kernel.org>; Sun, 01 May 2016 11:19:28 -0700 (PDT)
+In-Reply-To: <1459891357-28352-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Lee Jones <lee.jones@linaro.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
 
-Hi Lee,
+On Tue, Apr 5, 2016 at 11:22 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
 
-On Fri, 22 Apr 2016 11:18:04 +0100
-Lee Jones <lee.jones@linaro.org> wrote:
+> This adds a driver for the STMPE 24xx series of multi-purpose
+> I2C expanders. (I think STMPE means ST Microelectronics
+> Multi-Purpose Expander.) This PWM was designed in accordance with
+> Nokia specifications and is kind of weird and usually just
+> switched between max and zero dutycycle. However it is indeed
+> a PWM so it needs to live in the PWM subsystem.
+>
+> This PWM is mostly used for white LED backlight.
+>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v2->v3:
 
-> The first part of this set extends the current PWM API to allow external
-> code to request a PWM Capture.  Subsequent patches then make use of the
-> new API by providing a userspace offering via /sysfs.  The final part of
-> the set supplies PWM Capture functionality into the already existing STi
-> PWM driver.
+Thierry? Soon a month since I posted this and the kernel
+merge window is getting closer.
 
-Is there a reason you decided to not put this driver in IIO? IMHO, it
-would be more appropriate to make your PWM device an MFD that can either
-bind to the PWM or the capture driver.
-And BTW, IIO already has a sysfs interface (you may have to extend the
-API to support your type of capture though).
+If I need to respin this I'd like to know so I can do it before
+the merge window, else can this and 1/2 be applied?
 
-Best Regards,
-
-Boris
-
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Yours,
+Linus Walleij
