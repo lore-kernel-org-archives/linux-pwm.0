@@ -1,63 +1,38 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v8 4/9] pwm: pwm-tiecap: Update dt binding document to
- use proper unit address
-Date: Wed, 4 May 2016 08:47:03 -0500
-Message-ID: <20160504134703.GA4194@rob-hp-laptop>
-References: <1462291015-1919-1-git-send-email-fcooper@ti.com>
- <1462291015-1919-5-git-send-email-fcooper@ti.com>
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH 05/11] pwm: tegra-dfll: Add driver for Tegra DFLL PWM
+ controller
+Date: Fri, 6 May 2016 16:15:32 -0700
+Message-ID: <20160506231532.GK3492@codeaurora.org>
+References: <1461321071-6431-1-git-send-email-pchiu@nvidia.com>
+ <1461321071-6431-6-git-send-email-pchiu@nvidia.com>
+ <20160422125513.GJ9047@ulmo.ba.sec>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-clk-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1462291015-1919-5-git-send-email-fcooper@ti.com>
+In-Reply-To: <20160422125513.GJ9047@ulmo.ba.sec>
 Sender: linux-clk-owner@vger.kernel.org
-To: Franklin S Cooper Jr <fcooper@ti.com>
-Cc: thierry.reding@gmail.com, tony@atomide.com, linux@arm.linux.org.uk, paul@pwsan.com, t-kristo@ti.com, mturquette@baylibre.com, sboyd@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, vigneshr@ti.com, nsekhar@ti.com
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Penny Chiu <pchiu@nvidia.com>, swarren@wwwdotorg.org, gnurou@gmail.com, pdeschrijver@nvidia.com, pgaikwad@nvidia.com, rjw@rjwysocki.net, viresh.kumar@linaro.org, mturquette@baylibre.com, linux-tegra@vger.kernel.org, linux-clk@vger.kernel.org, linux-pwm@vger.kernel.org, linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, May 03, 2016 at 10:56:50AM -0500, Franklin S Cooper Jr wrote:
-> Replace unit address from 0 to the proper physical address. Also insure
-> that the unit address matches the reg property address.
+On 04/22, Thierry Reding wrote:
+> On Fri, Apr 22, 2016 at 06:31:05PM +0800, Penny Chiu wrote:
+> > diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra-dfll-pwm.txt b/Documentation/devicetree/bindings/pwm/nvidia,tegra-dfll-pwm.txt
+> > new file mode 100644
+> > index 0000000..bd0d247
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra-dfll-pwm.txt
+> > @@ -0,0 +1,48 @@
+> > +Tegra SoC DFLL PWM controller
 > 
-> Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-tiecap.txt | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+> Stephen, we have in the past used tegra124 in names, even if the IP was
+> already included in tegra114, but we never supported it on Tegra114 and
+> hence couldn't even verify that the binding was valid. Any preference as
+> to the name in this particular case?
 
-Acked-by: Rob Herring <robh@kernel.org>
+You meant Stephen Warren right? I don't care either way.
 
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-tiecap.txt b/Documentation/devicetree/bindings/pwm/pwm-tiecap.txt
-> index 788da6c..0d47354 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm-tiecap.txt
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-tiecap.txt
-> @@ -16,22 +16,22 @@ Optional properties:
->  
->  Example:
->  
-> -ecap0: ecap@0 { /* ECAP on am33xx */
-> +ecap0: ecap@48300100 { /* ECAP on am33xx */
->  	compatible = "ti,am33xx-ecap";
->  	#pwm-cells = <3>;
->  	reg = <0x48300100 0x80>;
->  	ti,hwmods = "ecap0";
->  };
->  
-> -ecap0: ecap@0 { /* ECAP on am4372 */
-> +ecap0: ecap@48300100 { /* ECAP on am4372 */
->  	compatible = "ti,am4372-ecap", "ti,am33xx-ecap";
->  	#pwm-cells = <3>;
->  	reg = <0x48300100 0x80>;
->  	ti,hwmods = "ecap0";
->  };
->  
-> -ecap0: ecap@0 { /* ECAP on da850 */
-> +ecap0: ecap@1f06000 { /* ECAP on da850 */
->  	compatible = "ti,da850-ecap", "ti,am33xx-ecap";
->  	#pwm-cells = <3>;
-> -	reg = <0x306000 0x80>;
-> +	reg = <0x1f06000 0x80>;
->  };
-> -- 
-> 2.7.0
-> 
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
