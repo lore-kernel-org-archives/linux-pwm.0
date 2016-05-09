@@ -1,82 +1,61 @@
-From: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-Subject: [PATCH 5/7] ARM: OMAP: dmtimer: Do not call PM runtime functions when
- not needed.
-Date: Sat,  7 May 2016 18:21:46 +0300
-Message-ID: <1462634508-24961-6-git-send-email-ivo.g.dimitrov.75@gmail.com>
+From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 5/7] ARM: OMAP: dmtimer: Do not call PM runtime functions
+ when not needed.
+Date: Mon, 9 May 2016 12:36:24 -0700
+Message-ID: <20160509193624.GH5995@atomide.com>
 References: <1462634508-24961-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
+ <1462634508-24961-6-git-send-email-ivo.g.dimitrov.75@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1462634508-24961-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, thierry.reding@gmail.com, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, mchehab@osg.samsung.com
-Cc: devicetree@vger.kernel.org, Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, sre@kernel.org, pali.rohar@gmail.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1462634508-24961-6-git-send-email-ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Ivaylo Dimitrov <ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bcousson-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pali.rohar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-once omap_dm_timer_start() is called, which calls omap_dm_timer_enable()
-and thus pm_runtime_get_sync(), it doesn't make sense to call PM runtime
-functions again before omap_dm_timer_stop is called(). Otherwise PM runtime
-functions called in omap_dm_timer_enable/disable lead to long and unneeded
-delays.
+* Ivaylo Dimitrov <ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> [160507 08:24]:
+> once omap_dm_timer_start() is called, which calls omap_dm_timer_enable()
+> and thus pm_runtime_get_sync(), it doesn't make sense to call PM runtime
+> functions again before omap_dm_timer_stop is called(). Otherwise PM runtime
+> functions called in omap_dm_timer_enable/disable lead to long and unneeded
+> delays.
+> 
+> Fix that by implementing an "enabled" counter, so the PM runtime functions
+> get called only when really needed.
+> 
+> Without that patch Nokia N900 IR TX driver (ir-rx51) does not function.
 
-Fix that by implementing an "enabled" counter, so the PM runtime functions
-get called only when really needed.
+We should use pm_runtime for the refcounting though and call PM runtime
+unconditionally. Can you try to follow the standard PM runtime usage
+like this:
 
-Without that patch Nokia N900 IR TX driver (ir-rx51) does not function.
+init:
+pm_runtime_use_autosuspend(&timer->pdev->dev);
+pm_runtime_set_autosuspend_delay(&timer->pdev->dev, 200);
+pm_runtime_enable(&timer->pdev->dev);
+...
+enable:
+pm_runtime_get_sync(&timer->pdev->dev);
+...
+disable:
+pm_runtime_mark_last_busy(&timer->pdev->dev);
+pm_runtime_put_autosuspend(&timer->pdev->dev);
+...
+exit:
+pm_runtime_dont_use_autosuspend(&timer->pdev->dev);
+pm_runtime_put_sync(&timer->pdev->dev);
+pm_runtime_disable(&timer->pdev->dev);
 
-Signed-off-by: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
----
- arch/arm/plat-omap/dmtimer.c              | 9 ++++++++-
- arch/arm/plat-omap/include/plat/dmtimer.h | 1 +
- 2 files changed, 9 insertions(+), 1 deletion(-)
+No idea what the timeout should be, maybe less than 200 ms. Also we need
+to test that off idle still works with timer1, that might need special
+handling.
 
-diff --git a/arch/arm/plat-omap/dmtimer.c b/arch/arm/plat-omap/dmtimer.c
-index 7a327bd..f35a78c 100644
---- a/arch/arm/plat-omap/dmtimer.c
-+++ b/arch/arm/plat-omap/dmtimer.c
-@@ -365,6 +365,9 @@ void omap_dm_timer_enable(struct omap_dm_timer *timer)
- {
- 	int c;
- 
-+	if (timer->enabled++)
-+		return;
-+
- 	pm_runtime_get_sync(&timer->pdev->dev);
- 
- 	if (!(timer->capability & OMAP_TIMER_ALWON)) {
-@@ -383,7 +386,11 @@ EXPORT_SYMBOL_GPL(omap_dm_timer_enable);
- 
- void omap_dm_timer_disable(struct omap_dm_timer *timer)
- {
--	pm_runtime_put_sync(&timer->pdev->dev);
-+	if (timer->enabled == 1)
-+		pm_runtime_put_sync(&timer->pdev->dev);
-+
-+	if (timer->enabled)
-+		timer->enabled--;
- }
- EXPORT_SYMBOL_GPL(omap_dm_timer_disable);
- 
-diff --git a/arch/arm/plat-omap/include/plat/dmtimer.h b/arch/arm/plat-omap/include/plat/dmtimer.h
-index dd79f30..fc984e1 100644
---- a/arch/arm/plat-omap/include/plat/dmtimer.h
-+++ b/arch/arm/plat-omap/include/plat/dmtimer.h
-@@ -114,6 +114,7 @@ struct omap_dm_timer {
- 	unsigned long rate;
- 	unsigned reserved:1;
- 	unsigned posted:1;
-+	u32 enabled;
- 	struct timer_regs context;
- 	int (*get_context_loss_count)(struct device *);
- 	int ctx_loss_count;
--- 
-1.9.1
+Regards,
+
+Tony
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
