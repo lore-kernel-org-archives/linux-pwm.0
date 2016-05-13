@@ -1,93 +1,52 @@
-From: Guillermo Rodriguez Garcia <guille.rodriguez@gmail.com>
-Subject: Re: pwm: atmel: PWM may not properly disable
-Date: Thu, 12 May 2016 15:24:06 +0200
-Message-ID: <CABDcavb73Ak7HX-1G1tpadahW8tgA1aC4cHjz3_9L6wCRqi3Cw@mail.gmail.com>
-References: <CABDcavZXCGWGajRucaFztg98KCoUi-bLxV1fj+j8mW+WdSuLBQ@mail.gmail.com>
-	<20160511133905.GA15651@ulmo.ba.sec>
-	<CABDcavZi6ofS5YUTicV8EeASMn1gG8J9X5KZidkxCf=aVZXEFg@mail.gmail.com>
-	<CABDcavYxH2B34vtAdVz=173A0Z0iEY7aNZJ1paFAt8xan5B1MQ@mail.gmail.com>
-	<CABDcavZv3KSz4a5s3f5iusF6rCnyT2-10HCR1Ns5SaJuAwptxQ@mail.gmail.com>
-	<20160512121402.GA26824@ulmo.ba.sec>
+From: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+Subject: Re: [PATCH 4/7] [media] ir-rx51: add DT support to driver
+Date: Fri, 13 May 2016 09:15:38 +0300
+Message-ID: <5735710A.6060404@gmail.com>
+References: <1462634508-24961-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
+ <1462634508-24961-5-git-send-email-ivo.g.dimitrov.75@gmail.com>
+ <20160509200657.GA3379@rob-hp-laptop> <5730F8BA.5000402@gmail.com>
+ <CAL_JsqJPZS1ne_xAuBFtCc5L1HKFJf0LDUJ7CRSFXhc3adkTfA@mail.gmail.com>
+ <20160510021826.GE1129@earth> <20160511141429.GA5894@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-vk0-f53.google.com ([209.85.213.53]:35537 "EHLO
-	mail-vk0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751912AbcELNYH (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 12 May 2016 09:24:07 -0400
-In-Reply-To: <20160512121402.GA26824@ulmo.ba.sec>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-media-owner@vger.kernel.org>
+In-Reply-To: <20160511141429.GA5894@rob-hp-laptop>
+Sender: linux-media-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>
+Cc: Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Benoit Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, linux-omap <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>, =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali.rohar@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>
 
-2016-05-12 14:14 GMT+02:00 Thierry Reding <thierry.reding@gmail.com>:
-> On Thu, May 12, 2016 at 01:49:12PM +0200, Guillermo Rodriguez Garcia wrote:
->> Hello,
+Hi,
+
+On 11.05.2016 17:14, Rob Herring wrote:
+> On Tue, May 10, 2016 at 04:18:27AM +0200, Sebastian Reichel wrote:
+>> Hi,
 >>
->> [...]
->> >>> One thing that I'd request is that instead of the cpu_relax() you use a
->> >>> usleep_range() within the loop instead. I assume it can potentially take
->> >>> a long time for the current period to finish, so busy looping isn't such
->> >>> a great idea. You could possibly use the current period_ns to derive a
->> >>> meaningful value to pass to usleep_range().
->> >>
->> >> I am not sure yet but I believe disabling does not really need to wait for the
->> >> current period to finish (at least the datasheets do not mention this anywhere).
->> >> I think that the after writing to PWM_DIS, the actual disable operation is
->> >> initiated immediately in the PWM subsystem, but is executed asynchronously
->> >> and requires the pwm_clk to complete. If this assumption is correct, perhaps
->> >> it is enough to do one single read from PWM_SR so that the disable operation
->> >> has had the chance to propagate. This is again assuming that all operations
->> >> are executed sequentially within the PWM subsystem.
->> >>
->> >> If the above is correct, then we would not need a loop at all.
->> >
->> > I was wrong. The required delay indeed seems to depend on the current PWM
->> > frequency, suggesting that indeed disabling does not take effect until
->> > the current
->> > period is finished.
->> >
->> > I will prepare a patch using usleep_range instead of cpu_relax.
+>> On Mon, May 09, 2016 at 04:07:35PM -0500, Rob Herring wrote:
+>>> There's already a pwm-led binding that can be used. Though there
+>>> may be missing consumer IR to LED subsystem support in the kernel.
+>>> You could list both compatibles, use the rx51 IR driver now, and
+>>> then move to pwm-led driver in the future.
 >>
->> I have found a problem while preparing this. If I use usleep_range I
->> keep running
->> into "BUG: scheduling while atomic". This is because I am using the PWM to
->> drive a buzzer with pwm-beeper, and pwm-beeper currently crashes if the PWM
->> driver sleeps. Apparently this patch is needed:
+>> Well from a purely HW point of view it's a PWM connected led. The
+>> usage is completely different though. Usually PWM is used to control
+>> the LED's brightness via the duty cycle (basic concept: enabling led
+>> only 50% of time reduces brightness to 50%).
 >>
->> https://lkml.org/lkml/2016/2/22/757
->>
->> However this has not been merged yet.
->>
->> How should I proceed ?
+>> In the IR led's case the aim is generating a specific serial pattern
+>> instead. For this task it uses a dmtimer in PWM mode and a second
+>> one to reconfigure the pwm timer.
 >
-> The PWM API really shouldn't be used within atomic contexts. There was a
-> change recently that marked all of the PWM devices as "might sleep". The
-> reason for the change was that we introduced a mutex in pwm_enable() and
-> hence every user would have to deal with this eventually. That mutex has
-> since been removed again, but the fact remains that users shouldn't
-> assume that a PWM can be used in atomic context, because the PWM chip
-> could equally well be behind a slow bus such as I2C and hence sleep for
-> every register access.
+> In that case, it will probably never be a generic driver.
 >
-> So the correct thing to do would be to follow what leds-pwm did and
-> implement a workqueue. Also might as well make it the only code path as
-> Dmitry suggested in the linked thread, I don't see any point in any kind
-> of fast path here.
+>> I don't know about a good name, but rx51 should be replaced with
+>> n900 in the compatible string. So maybe "nokia,n900-infrared-diode".
+>
+> That's fine, but the shorter '-ir' was too.
+>
 
-I understand. So I assume this pwm-beeper patch will be merged sooner
-or later.
+I prefer the shorter "nokia,n900-ir", will resend the series with it 
+used, unless someone has concerns about it.
 
-The reason why I was asking is that if I patch the Atmel PWM driver in
-order to use usleep_range in pwm_disable, then pwm-beeper will not work
-anymore on Atmel platforms until the pwm-beeper patch is merged.
-I was not sure about the status of the pwm-beeper patch (the last message
-in the linked thread is from March 30), hence my question.
-
-I'll go ahead with the Atmel PWM patch then.
-
-Thank you,
-
-Guillermo Rodriguez Garcia
-guille.rodriguez@gmail.com
+Ivo
