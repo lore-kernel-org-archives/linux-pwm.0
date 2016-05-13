@@ -1,52 +1,50 @@
-From: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-Subject: Re: [PATCH 4/7] [media] ir-rx51: add DT support to driver
-Date: Fri, 13 May 2016 09:15:38 +0300
-Message-ID: <5735710A.6060404@gmail.com>
-References: <1462634508-24961-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
- <1462634508-24961-5-git-send-email-ivo.g.dimitrov.75@gmail.com>
- <20160509200657.GA3379@rob-hp-laptop> <5730F8BA.5000402@gmail.com>
- <CAL_JsqJPZS1ne_xAuBFtCc5L1HKFJf0LDUJ7CRSFXhc3adkTfA@mail.gmail.com>
- <20160510021826.GE1129@earth> <20160511141429.GA5894@rob-hp-laptop>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-media-owner@vger.kernel.org>
-In-Reply-To: <20160511141429.GA5894@rob-hp-laptop>
-Sender: linux-media-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>, Sebastian Reichel <sre@kernel.org>
-Cc: Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Thierry Reding <thierry.reding@gmail.com>, Benoit Cousson <bcousson@baylibre.com>, Tony Lindgren <tony@atomide.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, linux-omap <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>, =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali.rohar@gmail.com>
+From: Guillermo Rodriguez <guille.rodriguez@gmail.com>
+Subject: [PATCH] pwm: atmel: Fix disabling of PWM channels
+Date: Fri, 13 May 2016 13:09:37 +0200
+Message-ID: <1463137777-27103-1-git-send-email-guille.rodriguez@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:33287 "EHLO
+	mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751407AbcEMLKk (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 13 May 2016 07:10:40 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Guillermo Rodriguez <guille.rodriguez@gmail.com>
 
-Hi,
+When disabling a PWM channel, the PWM clock was being stopped
+immediately after writing to PWM_DIS. As a result, the disabling
+of the PWM channel did not complete properly, and the PWM output
+might be left at the wrong level.
 
-On 11.05.2016 17:14, Rob Herring wrote:
-> On Tue, May 10, 2016 at 04:18:27AM +0200, Sebastian Reichel wrote:
->> Hi,
->>
->> On Mon, May 09, 2016 at 04:07:35PM -0500, Rob Herring wrote:
->>> There's already a pwm-led binding that can be used. Though there
->>> may be missing consumer IR to LED subsystem support in the kernel.
->>> You could list both compatibles, use the rx51 IR driver now, and
->>> then move to pwm-led driver in the future.
->>
->> Well from a purely HW point of view it's a PWM connected led. The
->> usage is completely different though. Usually PWM is used to control
->> the LED's brightness via the duty cycle (basic concept: enabling led
->> only 50% of time reduces brightness to 50%).
->>
->> In the IR led's case the aim is generating a specific serial pattern
->> instead. For this task it uses a dmtimer in PWM mode and a second
->> one to reconfigure the pwm timer.
->
-> In that case, it will probably never be a generic driver.
->
->> I don't know about a good name, but rx51 should be replaced with
->> n900 in the compatible string. So maybe "nokia,n900-infrared-diode".
->
-> That's fine, but the shorter '-ir' was too.
->
+Fix this by waiting for the channel to be effectively disabled
+(by checking the PWM_SR register) before disabling the clock.
 
-I prefer the shorter "nokia,n900-ir", will resend the series with it 
-used, unless someone has concerns about it.
+Signed-off-by: Guillermo Rodriguez <guille.rodriguez@gmail.com>
+---
+ drivers/pwm/pwm-atmel.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Ivo
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index 0e4bd4e..a714434 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -271,6 +271,16 @@ static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	mutex_unlock(&atmel_pwm->isr_lock);
+ 	atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
+ 
++	/*
++	 * Wait for the PWM channel disable operation to be effective before
++	 * stopping the clock.
++	 */
++	timeout = jiffies + 2 * HZ;
++	while ((atmel_pwm_readl(atmel_pwm, PWM_SR)& (1 << pwm->hwpwm)) &&
++	       time_before(jiffies, timeout)) {
++		usleep_range(10, 100);
++	}
++
+ 	clk_disable(atmel_pwm->clk);
+ }
+ 
+-- 
+1.7.9.5
