@@ -1,18 +1,18 @@
 From: Steven Jackson <sj@oscode.net>
-Subject: [PATCH] backlight: pwm_bl: use gpiod_set_value_cansleep to fix
+Subject: [PATCH v2] backlight: pwm_bl: use gpiod_set_value_cansleep to fix
  warnings
-Date: Sat, 14 May 2016 10:59:12 +0100
-Message-ID: <5736F6F0.4020800@oscode.net>
+Date: Sat, 14 May 2016 11:36:26 +0100
+Message-ID: <5736FFAA.9090402@oscode.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:33919 "EHLO
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:34959 "EHLO
 	mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751197AbcENJ7Q (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sat, 14 May 2016 05:59:16 -0400
-Received: by mail-wm0-f68.google.com with SMTP id n129so8167700wmn.1
-        for <linux-pwm@vger.kernel.org>; Sat, 14 May 2016 02:59:15 -0700 (PDT)
+	with ESMTP id S1751934AbcENKga (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sat, 14 May 2016 06:36:30 -0400
+Received: by mail-wm0-f68.google.com with SMTP id e201so8302488wme.2
+        for <linux-pwm@vger.kernel.org>; Sat, 14 May 2016 03:36:29 -0700 (PDT)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, jingoohan1@gmail.com
@@ -34,7 +34,7 @@ Signed-off-by: Steven Jackson <sj@oscode.net>
 
 diff --git a/drivers/video/backlight/pwm_bl.c 
 b/drivers/video/backlight/pwm_bl.c
-index 64f9e1b..1df5420 100644
+index b2b366b..1261400 100644
 --- a/drivers/video/backlight/pwm_bl.c
 +++ b/drivers/video/backlight/pwm_bl.c
 @@ -55,7 +55,7 @@ static void pwm_backlight_power_on(struct pwm_bl_data 
@@ -43,7 +43,7 @@ index 64f9e1b..1df5420 100644
 
   	if (pb->enable_gpio)
 -		gpiod_set_value(pb->enable_gpio, 1);
-+		gpiod_set_value_clansleep(pb->enable_gpio, 1);
++		gpiod_set_value_cansleep(pb->enable_gpio, 1);
 
   	pwm_enable(pb->pwm);
   	pb->enabled = true;
