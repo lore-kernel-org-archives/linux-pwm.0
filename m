@@ -1,61 +1,37 @@
 From: Steven Jackson <sj@oscode.net>
-Subject: [PATCH v2] backlight: pwm_bl: use gpiod_set_value_cansleep to fix
- warnings
-Date: Sat, 14 May 2016 11:36:26 +0100
-Message-ID: <5736FFAA.9090402@oscode.net>
+Subject: Re: [PATCH] backlight: =?utf-8?b?cHdtX2JsOg==?= use =?utf-8?b?Z3Bpb2Rfc2V0X3ZhbHVlX2NhbnNsZWVw?= to fix warnings
+Date: Sat, 14 May 2016 10:44:30 +0000 (UTC)
+Message-ID: <loom.20160514T123857-127@post.gmane.org>
+References: <5736F6F0.4020800@oscode.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:34959 "EHLO
-	mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751934AbcENKga (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sat, 14 May 2016 06:36:30 -0400
-Received: by mail-wm0-f68.google.com with SMTP id e201so8302488wme.2
-        for <linux-pwm@vger.kernel.org>; Sat, 14 May 2016 03:36:29 -0700 (PDT)
+Received: from plane.gmane.org ([80.91.229.3]:59544 "EHLO plane.gmane.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751974AbcENKuK (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Sat, 14 May 2016 06:50:10 -0400
+Received: from list by plane.gmane.org with local (Exim 4.69)
+	(envelope-from <glp-linux-pwm@m.gmane.org>)
+	id 1b1X92-0001DT-Cb
+	for linux-pwm@vger.kernel.org; Sat, 14 May 2016 12:50:04 +0200
+Received: from cpc74487-stre6-2-0-cust124.1-1.cable.virginm.net ([82.22.61.125])
+        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-pwm@vger.kernel.org>; Sat, 14 May 2016 12:50:04 +0200
+Received: from sj by cpc74487-stre6-2-0-cust124.1-1.cable.virginm.net with local (Gmexim 0.1 (Debian))
+        id 1AlnuQ-0007hv-00
+        for <linux-pwm@vger.kernel.org>; Sat, 14 May 2016 12:50:04 +0200
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, jingoohan1@gmail.com
+To: linux-pwm@vger.kernel.org
 
-This is the same issue and fix as 1581b088fc91cbb974ad2b98431a8ecabb48
-(backlight: corgi_lcd: use gpio_set_value_cansleep() to avoid WARN_ON).
+Steven Jackson <sj <at> oscode.net> writes:
 
-PWM backlights which use a SPI/I2C IO expander to control power will see
-warnings when disabling and enabling the backlight, we should use
-_cansleep variants of gpio set/get whenever the context can sleep.
+> +		gpiod_set_value_clansleep(pb->enable_gpio, 1);
 
-Other backlight drivers such as corgi_bl.c and gpio_backlight.c are
-using _cansleep variants in the same contexts.
+Apologies for submitting this stupid typo. There is a v2 patch which fixes
+it. The change has been tested on a custom board with an i.MX6.
 
-Signed-off-by: Steven Jackson <sj@oscode.net>
----
-  drivers/video/backlight/pwm_bl.c | 4 ++--
-  1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/video/backlight/pwm_bl.c 
-b/drivers/video/backlight/pwm_bl.c
-index b2b366b..1261400 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -55,7 +55,7 @@ static void pwm_backlight_power_on(struct pwm_bl_data 
-*pb, int brightness)
-  		dev_err(pb->dev, "failed to enable power supply\n");
-
-  	if (pb->enable_gpio)
--		gpiod_set_value(pb->enable_gpio, 1);
-+		gpiod_set_value_cansleep(pb->enable_gpio, 1);
-
-  	pwm_enable(pb->pwm);
-  	pb->enabled = true;
-@@ -70,7 +70,7 @@ static void pwm_backlight_power_off(struct pwm_bl_data 
-*pb)
-  	pwm_disable(pb->pwm);
-
-  	if (pb->enable_gpio)
--		gpiod_set_value(pb->enable_gpio, 0);
-+		gpiod_set_value_cansleep(pb->enable_gpio, 0);
-
-  	regulator_disable(pb->power_supply);
-  	pb->enabled = false;
--- 
-2.7.4
+Regards,
+Steven
