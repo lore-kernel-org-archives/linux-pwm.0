@@ -1,109 +1,74 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH] pwm: Fill pwm->args before calling pwm_request_from_chip()
-Date: Tue, 17 May 2016 12:35:33 +0200
-Message-ID: <1463481333-23438-2-git-send-email-boris.brezillon@free-electrons.com>
-References: <1463481333-23438-1-git-send-email-boris.brezillon@free-electrons.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] pwm: atmel-hlcdc: Fix default PWM polarity
+Date: Tue, 17 May 2016 13:00:05 +0200
+Message-ID: <20160517110005.GA26166@ulmo.ba.sec>
+References: <1463476352-7485-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="Dxnq1zWXvFF0Q93v"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:58159 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754463AbcEQKfi (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 17 May 2016 06:35:38 -0400
-In-Reply-To: <1463481333-23438-1-git-send-email-boris.brezillon@free-electrons.com>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:35866 "EHLO
+	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751724AbcEQLAJ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 17 May 2016 07:00:09 -0400
+Received: by mail-wm0-f66.google.com with SMTP id w143so3726799wmw.3
+        for <linux-pwm@vger.kernel.org>; Tue, 17 May 2016 04:00:09 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1463476352-7485-1-git-send-email-boris.brezillon@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Boris Brezillon <boris.brezillon@free-electrons.com>
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-arm-kernel@lists.infradead.org
 
-Commit e39c0df1be5a ("pwm: Introduce the pwm_args concept"), moved the
-period and polarity initialization steps into pwm_request_device() (cal=
-led
-by pwm_request_from_chip()) based on the pwm->args information.
-Make sure we fill pwm->args fields before calling pwm_request_from_chip=
-().
 
-Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-Reported-by: Mika Penttil=C3=A4 <mika.penttila@nextfour.com>
-=46ixes: e39c0df1be5a ("pwm: Introduce the pwm_args concept")
----
-Mika,
+--Dxnq1zWXvFF0Q93v
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Can you test after applying this patch and let me know if it fixes your
-bug.
+On Tue, May 17, 2016 at 11:12:32AM +0200, Boris Brezillon wrote:
+> The PWM device exposed by the HLCDC IP is configured with an inverted
+> polarity by default. Registering the PWM chip with the normal polarity
+> was not a problem before commit 42e8992c58d4 ("pwm: Add core
+> infrastructure to allow atomic updates") because the ->set_polarity()
+> hook was called no matter the current polarity state, but this is no long=
+er
+> the case.
+>=20
+> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> Fixes: 42e8992c58d4 ("pwm: Add core infrastructure to allow atomic update=
+s")
 
-Thanks,
+That's not technically correct, because it's the driver that has the
+bug. The core change merely exposes it. How about if I sort this into
+the pwm-atomic branch and reword the commit message accordingly? That
+way things should all stay bisectible.
 
-Boris
+Then again, given the breakage caused by the pwm_args patch I suppose
+it doesn't matter much because that's part of a stable branch that I
+can't rebase.
 
- drivers/pwm/core.c    | 12 ++++++------
- drivers/pwm/pwm-pxa.c |  4 ++--
- 2 files changed, 8 insertions(+), 8 deletions(-)
+Thierry
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 427142d..3d2eeaa 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -143,10 +143,6 @@ of_pwm_xlate_with_flags(struct pwm_chip *pc, const=
- struct of_phandle_args *args)
- 	if (args->args[0] >=3D pc->npwm)
- 		return ERR_PTR(-EINVAL);
-=20
--	pwm =3D pwm_request_from_chip(pc, args->args[0], NULL);
--	if (IS_ERR(pwm))
--		return pwm;
--
- 	pwm->args.period =3D args->args[1];
-=20
- 	if (args->args[2] & PWM_POLARITY_INVERTED)
-@@ -154,6 +150,10 @@ of_pwm_xlate_with_flags(struct pwm_chip *pc, const=
- struct of_phandle_args *args)
- 	else
- 		pwm->args.polarity =3D PWM_POLARITY_NORMAL;
-=20
-+	pwm =3D pwm_request_from_chip(pc, args->args[0], NULL);
-+	if (IS_ERR(pwm))
-+		return pwm;
-+
- 	return pwm;
- }
- EXPORT_SYMBOL_GPL(of_pwm_xlate_with_flags);
-@@ -169,12 +169,12 @@ of_pwm_simple_xlate(struct pwm_chip *pc, const st=
-ruct of_phandle_args *args)
- 	if (args->args[0] >=3D pc->npwm)
- 		return ERR_PTR(-EINVAL);
-=20
-+	pwm->args.period =3D args->args[1];
-+
- 	pwm =3D pwm_request_from_chip(pc, args->args[0], NULL);
- 	if (IS_ERR(pwm))
- 		return pwm;
-=20
--	pwm->args.period =3D args->args[1];
--
- 	return pwm;
- }
-=20
-diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
-index 58b709f..c33bd42 100644
---- a/drivers/pwm/pwm-pxa.c
-+++ b/drivers/pwm/pwm-pxa.c
-@@ -156,12 +156,12 @@ pxa_pwm_of_xlate(struct pwm_chip *pc, const struc=
-t of_phandle_args *args)
- {
- 	struct pwm_device *pwm;
-=20
-+	pwm->args.period =3D args->args[0];
-+
- 	pwm =3D pwm_request_from_chip(pc, 0, NULL);
- 	if (IS_ERR(pwm))
- 		return pwm;
-=20
--	pwm->args.period =3D args->args[0];
--
- 	return pwm;
- }
-=20
---=20
-2.7.4
+--Dxnq1zWXvFF0Q93v
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJXOvmyAAoJEN0jrNd/PrOhbesP/0Ct7ja8gjPvbGr6nbVGcL2u
+fwQSjRpGN2Ym1Gl+/CclpqkIMpG4hOd0IvlerdkZbAZYpjcU3rwmeJddPzuRHTJ1
+zseU07cRIYhIg8rw2vZ81e9U4wjgK2s7wnh7gmPJYDsfinyCxDsBXjqbOOhtt3ru
+lThqWRC+kWENbY1QoGVaUNnJ5FRlVBYewf43MuYw8+Ko41ScstF1nCbJqNvjrIoO
+EHJr9A82ckLZpg1uF+DZxkBFc7toW5/qDhE9zt6AcLCE0qeOTFHCJjBpVVMeTHdB
+Ed+nZ9khamRb8ym38CL9a/NjN/qTVf/ClBLA3f9UZRpHQqcn3ERRAd5E63QKnGtF
+97mrIaZDLaGPh47J1uG2iJvvX+6x7y8NMY7aIRK8Wptcf4tY5ILFQ3ZxbtvWjjB4
+Adcm9QZvxMwn5Q3dDwd4Q7lxuvKpMbDQlJ8Fb90cLfjcgBCBWv8uEGFPmkbhs662
+B2mF7DG4pl6UBIsi5w4ALe1R9UI12+hx/JtFtfEh90Ul4XpRhCn8CEzKpDou7Jav
+mbUw0OKf+SLCcJ+p88OvpAdsmg8DIiYXJ3M3ZTpYnuXtbei95g4vBqfeewvmj+Sb
+ekhkGPADyovMvQzTluZMrvxqZR/J0me5rKAWVSiJWjvbqiAFDjSmiDpUg0Bq9RrP
+mp/bf0G6lfKrbc6uum24
+=OTW/
+-----END PGP SIGNATURE-----
+
+--Dxnq1zWXvFF0Q93v--
