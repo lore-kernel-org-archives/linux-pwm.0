@@ -1,15 +1,17 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
 Subject: [PATCH] pwm: Fill pwm->args before calling pwm_request_from_chip()
-Date: Tue, 17 May 2016 12:35:32 +0200
-Message-ID: <1463481333-23438-1-git-send-email-boris.brezillon@free-electrons.com>
+Date: Tue, 17 May 2016 12:35:33 +0200
+Message-ID: <1463481333-23438-2-git-send-email-boris.brezillon@free-electrons.com>
+References: <1463481333-23438-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:58155 "EHLO
+Received: from down.free-electrons.com ([37.187.137.238]:58159 "EHLO
 	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1754427AbcEQKfi (ORCPT
+	with ESMTP id S1754463AbcEQKfi (ORCPT
 	<rfc822;linux-pwm@vger.kernel.org>); Tue, 17 May 2016 06:35:38 -0400
+In-Reply-To: <1463481333-23438-1-git-send-email-boris.brezillon@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>
