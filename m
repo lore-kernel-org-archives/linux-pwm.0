@@ -1,131 +1,42 @@
-From: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-Subject: [PATCH v2 4/6] ir-rx51: add DT support to driver
-Date: Mon, 16 May 2016 22:34:12 +0300
-Message-ID: <1463427254-7728-5-git-send-email-ivo.g.dimitrov.75@gmail.com>
-References: <1463427254-7728-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1463427254-7728-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: robh+dt@kernel.org, mark.rutland@arm.com, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, thierry.reding@gmail.com, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, mchehab@osg.samsung.com
-Cc: devicetree@vger.kernel.org, Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, sre@kernel.org, pali.rohar@gmail.com, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: [PATCH] pwm: atmel-hlcdc: Fix default PWM polarity
+Date: Tue, 17 May 2016 11:12:32 +0200
+Message-ID: <1463476352-7485-1-git-send-email-boris.brezillon@free-electrons.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from down.free-electrons.com ([37.187.137.238]:56727 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1755112AbcEQJMj (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 17 May 2016 05:12:39 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Boris Brezillon <boris.brezillon@free-electrons.com>
 
-With the upcoming removal of legacy boot, lets add support to one of the
-last N900 drivers remaining without it. As the driver still uses omap
-dmtimer, add auxdata as well.
+The PWM device exposed by the HLCDC IP is configured with an inverted
+polarity by default. Registering the PWM chip with the normal polarity
+was not a problem before commit 42e8992c58d4 ("pwm: Add core
+infrastructure to allow atomic updates") because the ->set_polarity()
+hook was called no matter the current polarity state, but this is no longer
+the case.
 
-Signed-off-by: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+Fixes: 42e8992c58d4 ("pwm: Add core infrastructure to allow atomic updates")
 ---
- .../devicetree/bindings/media/nokia,n900-ir          | 20 ++++++++++++++++++++
- arch/arm/mach-omap2/pdata-quirks.c                   |  6 +-----
- drivers/media/rc/ir-rx51.c                           | 11 ++++++++++-
- 3 files changed, 31 insertions(+), 6 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/media/nokia,n900-ir
+ drivers/pwm/pwm-atmel-hlcdc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/media/nokia,n900-ir b/Documentation/devicetree/bindings/media/nokia,n900-ir
-new file mode 100644
-index 0000000..13a18ce
---- /dev/null
-+++ b/Documentation/devicetree/bindings/media/nokia,n900-ir
-@@ -0,0 +1,20 @@
-+Device-Tree bindings for LIRC TX driver for Nokia N900(RX51)
-+
-+Required properties:
-+	- compatible: should be "nokia,n900-ir".
-+	- pwms: specifies PWM used for IR signal transmission.
-+
-+Example node:
-+
-+	pwm9: dmtimer-pwm@9 {
-+		compatible = "ti,omap-dmtimer-pwm";
-+		ti,timers = <&timer9>;
-+		ti,clock-source = <0x00>; /* timer_sys_ck */
-+		#pwm-cells = <3>;
-+	};
-+
-+	ir: n900-ir {
-+		compatible = "nokia,n900-ir";
-+
-+		pwms = <&pwm9 0 26316 0>; /* 38000 Hz */
-+	};
-diff --git a/arch/arm/mach-omap2/pdata-quirks.c b/arch/arm/mach-omap2/pdata-quirks.c
-index af65781..436c6e6 100644
---- a/arch/arm/mach-omap2/pdata-quirks.c
-+++ b/arch/arm/mach-omap2/pdata-quirks.c
-@@ -273,8 +273,6 @@ static struct platform_device omap3_rom_rng_device = {
- 	},
- };
+diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
+index f994c7e..14fc011 100644
+--- a/drivers/pwm/pwm-atmel-hlcdc.c
++++ b/drivers/pwm/pwm-atmel-hlcdc.c
+@@ -272,7 +272,7 @@ static int atmel_hlcdc_pwm_probe(struct platform_device *pdev)
+ 	chip->chip.of_pwm_n_cells = 3;
+ 	chip->chip.can_sleep = 1;
  
--static struct platform_device rx51_lirc_device;
--
- static void __init nokia_n900_legacy_init(void)
- {
- 	hsmmc2_internal_input_clk();
-@@ -293,10 +291,7 @@ static void __init nokia_n900_legacy_init(void)
- 
- 		pr_info("RX-51: Registering OMAP3 HWRNG device\n");
- 		platform_device_register(&omap3_rom_rng_device);
--
- 	}
--
--	platform_device_register(&rx51_lirc_device);
- }
- 
- static void __init omap3_tao3530_legacy_init(void)
-@@ -534,6 +529,7 @@ static struct of_dev_auxdata omap_auxdata_lookup[] __initdata = {
- 		       &omap3_iommu_pdata),
- 	OF_DEV_AUXDATA("ti,omap3-hsmmc", 0x4809c000, "4809c000.mmc", &mmc_pdata[0]),
- 	OF_DEV_AUXDATA("ti,omap3-hsmmc", 0x480b4000, "480b4000.mmc", &mmc_pdata[1]),
-+	OF_DEV_AUXDATA("nokia,n900-ir", 0, "n900-ir", &rx51_lirc_data),
- 	/* Only on am3517 */
- 	OF_DEV_AUXDATA("ti,davinci_mdio", 0x5c030000, "davinci_mdio.0", NULL),
- 	OF_DEV_AUXDATA("ti,am3517-emac", 0x5c000000, "davinci_emac.0",
-diff --git a/drivers/media/rc/ir-rx51.c b/drivers/media/rc/ir-rx51.c
-index 5096ef3..1cbb43d 100644
---- a/drivers/media/rc/ir-rx51.c
-+++ b/drivers/media/rc/ir-rx51.c
-@@ -21,6 +21,7 @@
- #include <linux/sched.h>
- #include <linux/wait.h>
- #include <linux/pwm.h>
-+#include <linux/of.h>
- 
- #include <media/lirc.h>
- #include <media/lirc_dev.h>
-@@ -478,6 +479,14 @@ static int lirc_rx51_remove(struct platform_device *dev)
- 	return lirc_unregister_driver(lirc_rx51_driver.minor);
- }
- 
-+static const struct of_device_id lirc_rx51_match[] = {
-+	{
-+		.compatible = "nokia,n900-ir",
-+	},
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, lirc_rx51_match);
-+
- struct platform_driver lirc_rx51_platform_driver = {
- 	.probe		= lirc_rx51_probe,
- 	.remove		= lirc_rx51_remove,
-@@ -485,7 +494,7 @@ struct platform_driver lirc_rx51_platform_driver = {
- 	.resume		= lirc_rx51_resume,
- 	.driver		= {
- 		.name	= DRIVER_NAME,
--		.owner	= THIS_MODULE,
-+		.of_match_table = of_match_ptr(lirc_rx51_match),
- 	},
- };
- module_platform_driver(lirc_rx51_platform_driver);
+-	ret = pwmchip_add(&chip->chip);
++	ret = pwmchip_add_with_polarity(&chip->chip, PWM_POLARITY_INVERSED);
+ 	if (ret) {
+ 		clk_disable_unprepare(hlcdc->periph_clk);
+ 		return ret;
 -- 
-1.9.1
+2.7.4
