@@ -1,42 +1,107 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH] pwm: atmel-hlcdc: Fix default PWM polarity
-Date: Tue, 17 May 2016 11:12:32 +0200
-Message-ID: <1463476352-7485-1-git-send-email-boris.brezillon@free-electrons.com>
+Subject: [PATCH] pwm: Fill pwm->args before calling pwm_request_from_chip()
+Date: Tue, 17 May 2016 12:35:32 +0200
+Message-ID: <1463481333-23438-1-git-send-email-boris.brezillon@free-electrons.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:56727 "EHLO
+Received: from down.free-electrons.com ([37.187.137.238]:58155 "EHLO
 	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1755112AbcEQJMj (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 17 May 2016 05:12:39 -0400
+	with ESMTP id S1754427AbcEQKfi (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 17 May 2016 06:35:38 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, Boris Brezillon <boris.brezillon@free-electrons.com>
+To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>
+Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Boris Brezillon <boris.brezillon@free-electrons.com>
 
-The PWM device exposed by the HLCDC IP is configured with an inverted
-polarity by default. Registering the PWM chip with the normal polarity
-was not a problem before commit 42e8992c58d4 ("pwm: Add core
-infrastructure to allow atomic updates") because the ->set_polarity()
-hook was called no matter the current polarity state, but this is no longer
-the case.
+Commit e39c0df1be5a ("pwm: Introduce the pwm_args concept"), moved the
+period and polarity initialization steps into pwm_request_device() (cal=
+led
+by pwm_request_from_chip()) based on the pwm->args information.
+Make sure we fill pwm->args fields before calling pwm_request_from_chip=
+().
 
 Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-Fixes: 42e8992c58d4 ("pwm: Add core infrastructure to allow atomic updates")
+Reported-by: Mika Penttil=C3=A4 <mika.penttila@nextfour.com>
+=46ixes: e39c0df1be5a ("pwm: Introduce the pwm_args concept")
 ---
- drivers/pwm/pwm-atmel-hlcdc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Mika,
 
-diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
-index f994c7e..14fc011 100644
---- a/drivers/pwm/pwm-atmel-hlcdc.c
-+++ b/drivers/pwm/pwm-atmel-hlcdc.c
-@@ -272,7 +272,7 @@ static int atmel_hlcdc_pwm_probe(struct platform_device *pdev)
- 	chip->chip.of_pwm_n_cells = 3;
- 	chip->chip.can_sleep = 1;
- 
--	ret = pwmchip_add(&chip->chip);
-+	ret = pwmchip_add_with_polarity(&chip->chip, PWM_POLARITY_INVERSED);
- 	if (ret) {
- 		clk_disable_unprepare(hlcdc->periph_clk);
- 		return ret;
--- 
+Can you test after applying this patch and let me know if it fixes your
+bug.
+
+Thanks,
+
+Boris
+
+ drivers/pwm/core.c    | 12 ++++++------
+ drivers/pwm/pwm-pxa.c |  4 ++--
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 427142d..3d2eeaa 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -143,10 +143,6 @@ of_pwm_xlate_with_flags(struct pwm_chip *pc, const=
+ struct of_phandle_args *args)
+ 	if (args->args[0] >=3D pc->npwm)
+ 		return ERR_PTR(-EINVAL);
+=20
+-	pwm =3D pwm_request_from_chip(pc, args->args[0], NULL);
+-	if (IS_ERR(pwm))
+-		return pwm;
+-
+ 	pwm->args.period =3D args->args[1];
+=20
+ 	if (args->args[2] & PWM_POLARITY_INVERTED)
+@@ -154,6 +150,10 @@ of_pwm_xlate_with_flags(struct pwm_chip *pc, const=
+ struct of_phandle_args *args)
+ 	else
+ 		pwm->args.polarity =3D PWM_POLARITY_NORMAL;
+=20
++	pwm =3D pwm_request_from_chip(pc, args->args[0], NULL);
++	if (IS_ERR(pwm))
++		return pwm;
++
+ 	return pwm;
+ }
+ EXPORT_SYMBOL_GPL(of_pwm_xlate_with_flags);
+@@ -169,12 +169,12 @@ of_pwm_simple_xlate(struct pwm_chip *pc, const st=
+ruct of_phandle_args *args)
+ 	if (args->args[0] >=3D pc->npwm)
+ 		return ERR_PTR(-EINVAL);
+=20
++	pwm->args.period =3D args->args[1];
++
+ 	pwm =3D pwm_request_from_chip(pc, args->args[0], NULL);
+ 	if (IS_ERR(pwm))
+ 		return pwm;
+=20
+-	pwm->args.period =3D args->args[1];
+-
+ 	return pwm;
+ }
+=20
+diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
+index 58b709f..c33bd42 100644
+--- a/drivers/pwm/pwm-pxa.c
++++ b/drivers/pwm/pwm-pxa.c
+@@ -156,12 +156,12 @@ pxa_pwm_of_xlate(struct pwm_chip *pc, const struc=
+t of_phandle_args *args)
+ {
+ 	struct pwm_device *pwm;
+=20
++	pwm->args.period =3D args->args[0];
++
+ 	pwm =3D pwm_request_from_chip(pc, 0, NULL);
+ 	if (IS_ERR(pwm))
+ 		return pwm;
+=20
+-	pwm->args.period =3D args->args[0];
+-
+ 	return pwm;
+ }
+=20
+--=20
 2.7.4
