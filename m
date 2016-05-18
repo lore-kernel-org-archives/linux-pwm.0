@@ -1,34 +1,33 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 4/6] ir-rx51: add DT support to driver
-Date: Wed, 18 May 2016 11:37:32 -0500
-Message-ID: <20160518163732.GA25142@rob-hp-laptop>
-References: <1463427254-7728-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
- <1463427254-7728-5-git-send-email-ivo.g.dimitrov.75@gmail.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH INTERNAL v2 1/3] Documentation: dt: Add Broadcom iproc
+ pwm controller binding
+Date: Wed, 18 May 2016 17:15:47 -0500
+Message-ID: <20160518221546.GA32596@rob-hp-laptop>
+References: <1463554441-47982-1-git-send-email-yendapally.reddy@broadcom.com>
+ <1463554441-47982-2-git-send-email-yendapally.reddy@broadcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.136]:42199 "EHLO mail.kernel.org"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751060AbcERWPx (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Wed, 18 May 2016 18:15:53 -0400
 Content-Disposition: inline
-In-Reply-To: <1463427254-7728-5-git-send-email-ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Ivaylo Dimitrov <ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bcousson-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pali.rohar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+In-Reply-To: <1463554441-47982-2-git-send-email-yendapally.reddy@broadcom.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Jon Mason <jonmason@broadcom.com>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
 
-On Mon, May 16, 2016 at 10:34:12PM +0300, Ivaylo Dimitrov wrote:
-> With the upcoming removal of legacy boot, lets add support to one of the
-> last N900 drivers remaining without it. As the driver still uses omap
-> dmtimer, add auxdata as well.
+Am I supposed to ignore since this is "internal"?
+
+On Wed, May 18, 2016 at 02:53:59AM -0400, Yendapally Reddy Dhananjaya Reddy wrote:
+> Add a binding for Broadcom iproc pwm controller
 > 
-> Signed-off-by: Ivaylo Dimitrov <ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
 > ---
->  .../devicetree/bindings/media/nokia,n900-ir          | 20 ++++++++++++++++++++
->  arch/arm/mach-omap2/pdata-quirks.c                   |  6 +-----
->  drivers/media/rc/ir-rx51.c                           | 11 ++++++++++-
->  3 files changed, 31 insertions(+), 6 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/media/nokia,n900-ir
+>  .../devicetree/bindings/pwm/brcm,iproc-pwm.txt      | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/brcm,iproc-pwm.txt
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Acked-by: Rob Herring <robh@kernel.org>
