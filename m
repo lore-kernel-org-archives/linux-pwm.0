@@ -1,55 +1,50 @@
-From: Scott Branden <scott.branden@broadcom.com>
-Subject: Re: [PATCH INTERNAL v2 1/3] Documentation: dt: Add Broadcom iproc pwm
- controller binding
-Date: Wed, 18 May 2016 16:04:32 -0700
-Message-ID: <573CF500.5070708@broadcom.com>
-References: <1463554441-47982-1-git-send-email-yendapally.reddy@broadcom.com>
- <1463554441-47982-2-git-send-email-yendapally.reddy@broadcom.com>
- <20160518221546.GA32596@rob-hp-laptop>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pf0-f175.google.com ([209.85.192.175]:34499 "EHLO
-	mail-pf0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751085AbcERXEp (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 18 May 2016 19:04:45 -0400
-Received: by mail-pf0-f175.google.com with SMTP id y69so22967631pfb.1
-        for <linux-pwm@vger.kernel.org>; Wed, 18 May 2016 16:04:45 -0700 (PDT)
-In-Reply-To: <20160518221546.GA32596@rob-hp-laptop>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v2 0/3] pwm support for Broadcom iProc SoC's
+Date: Fri, 20 May 2016 14:05:49 -0400
+Message-ID: <1463767552-30670-1-git-send-email-yendapally.reddy@broadcom.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Mason <jonmason-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yendapally Reddy Dhananjaya Reddy <yendapally.reddy-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Rob Herring <robh@kernel.org>, Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Jon Mason <jonmason@broadcom.com>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
 
-Hi Rob,
+This patchset contains the pwm support for the Broadcom's iProc SoC's.
 
-On 16-05-18 03:15 PM, Rob Herring wrote:
-> Am I supposed to ignore since this is "internal"?
-The "INTERNAL" was supposed to be removed after internal review before 
-sending out to the public mailing list.
+The first patch provides the documentation details and the
+second patch contains the controller support details. The third patch
+contains the enable method for Northstar Plus SoC.
 
-Also, Yendapally's git email config was not setup properly so some are 
-tagging the patchset as spam.
+This patch series has been tested on NSP bcm958625HR board.
+The pwm is not enabled for this board as the pins are open and not used.
 
-Other than that, everything is fine with the PATCH sent out to the open 
-source community :)
+This patch series is based on v4.6.0-rc1 and is available from github
+repo: https://github.com/Broadcom/cygnus-linux.git
+branch: iproc-pwm-v2
 
-I'm sure Yendapally will send out an updated version with those items 
-corrected (and can add your Acked-by now).
+Changes since v1
 
-Thanks,
-  Scott
+Addressed the review comments from Thierry
+ 1. Use separate driver for iProc SoC's.
+ 2. Added Robs ack to the Documentation patch
 
->
-> On Wed, May 18, 2016 at 02:53:59AM -0400, Yendapally Reddy Dhananjaya Reddy wrote:
->> Add a binding for Broadcom iproc pwm controller
->>
->> Signed-off-by: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
->> ---
->>   .../devicetree/bindings/pwm/brcm,iproc-pwm.txt      | 21 +++++++++++++++++++++
->>   1 file changed, 21 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/pwm/brcm,iproc-pwm.txt
->
-> Acked-by: Rob Herring <robh@kernel.org>
->
+Yendapally Reddy Dhananjaya Reddy (3):
+  Documentation: dt: Add Broadcom iproc pwm controller binding
+  pwm: iproc: Add support for Broadcom iproc pwm controller
+  ARM: dts: NSP: Add PWM Support to DT
+
+ .../devicetree/bindings/pwm/brcm,iproc-pwm.txt     |  21 ++
+ arch/arm/boot/dts/bcm-nsp.dtsi                     |   8 +
+ drivers/pwm/Kconfig                                |  10 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-bcm-iproc.c                        | 320 +++++++++++++++++++++
+ 5 files changed, 360 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/brcm,iproc-pwm.txt
+ create mode 100644 drivers/pwm/pwm-bcm-iproc.c
+
+-- 
+2.1.0
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
