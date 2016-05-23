@@ -1,82 +1,71 @@
-Return-Path: <mtk07307@mhfsdccf11>
-From: Weiqing Kong <weiqing.kong@mediatek.com>
-Subject: [PATCH 3/3] dts: Add disp bls dsti and dts config for MT2701
-Date: Mon, 16 May 2016 16:14:24 +0800
-Message-ID: <1463386464-15707-4-git-send-email-weiqing.kong@mediatek.com>
-In-Reply-To: <1463386464-15707-1-git-send-email-weiqing.kong@mediatek.com>
-References: <1463386464-15707-1-git-send-email-weiqing.kong@mediatek.com>
+Return-path: <kernel-bounces@pengutronix.de>
+From: <weiqing.kong@mediatek.com>
+Date: Mon, 23 May 2016 14:23:41 +0800
+Message-ID: <1463984624-20355-1-git-send-email-weiqing.kong@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Return-Path: mtk07307@mhfsdccf11
-List-ID: <linux-pwm.vger.kernel.org>
+Content-Type: multipart/alternative;
+ boundary="__=_Part_Boundary_001_25000531.895384788"
+Subject: [PATCH 0/3] Support Mediatek Soc MT2701 disp pwm
+List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
+List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
+List-Post: <mailto:kernel@pengutronix.de>
+List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
+List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
+ <mailto:kernel-request@pengutronix.de?subject=subscribe>
+Errors-To: kernel-bounces@pengutronix.de
+Sender: "kernel" <kernel-bounces@pengutronix.de>
 To: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, weiqing.kong@mediatek.com
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, erin.lo@mediatek.com, yingjoe.chen@mediatek.com, yh.huang@mediatek.com, yt.shen@mediatek.com
+Cc: linux-pwm@vger.kernel.org, yh.huang@mediatek.com, Russell King <linux@arm.linux.org.uk>, srv_heupstream@mediatek.com, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, erin.lo@mediatek.com, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, Kumar Gala <galak@codeaurora.org>, yt.shen@mediatek.com, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org
+List-ID: <linux-pwm.vger.kernel.org>
 
-Signed-off-by: Weiqing Kong <weiqing.kong@mediatek.com>
----
- arch/arm/boot/dts/mt2701-evb.dts | 29 +++++++++++++++++++++++++++++
- arch/arm/boot/dts/mt2701.dtsi    |  9 +++++++++
- 2 files changed, 38 insertions(+)
+This is MIME multipart 7.
+--__=_Part_Boundary_001_25000531.895384788
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
 
-diff --git a/arch/arm/boot/dts/mt2701-evb.dts b/arch/arm/boot/dts/mt2701-evb.dts
-index 082ca88..6d572f4 100644
---- a/arch/arm/boot/dts/mt2701-evb.dts
-+++ b/arch/arm/boot/dts/mt2701-evb.dts
-@@ -22,6 +22,35 @@
- 	memory {
- 		reg = <0 0x80000000 0 0x40000000>;
- 	};
-+
-+	backlight_lcd: backlight_lcd {
-+		compatible = "pwm-backlight";
-+		pwms = <&disp_bls 0 100000>;
-+		brightness-levels = <
-+			  0  16  32  48  64  80  96 112
-+			128 144 160 176 192 208 224 240
-+			255
-+		>;
-+		default-brightness-level = <9>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwm_bls_gpio>;
-+	};
-+};
-+
-+&disp_bls {
-+	status = "okay";
-+};
-+
-+&mmsys {
-+	status = "okay";
-+};
-+
-+&pio {
-+	pwm_bls_gpio: pwm_bls_gpio {
-+		pins_cmd_dat {
-+			pinmux = <MT2701_PIN_208_AUD_EXT_CK1__FUNC_DISP_PWM>;
-+		};
-+	};
- };
- 
- &uart0 {
-diff --git a/arch/arm/boot/dts/mt2701.dtsi b/arch/arm/boot/dts/mt2701.dtsi
-index 42d5a37..dae55d6 100644
---- a/arch/arm/boot/dts/mt2701.dtsi
-+++ b/arch/arm/boot/dts/mt2701.dtsi
-@@ -234,6 +234,15 @@
- 		status = "disabled";
- 	};
- 
-+	disp_bls: dispsys@1400a000 {
-+		compatible = "mediatek,mt2701-disp-bls";
-+		reg = <0 0x1400a000 0 0x1000>;
-+		#pwm-cells = <2>;
-+		clocks = <&mmsys CLK_MM_MDP_BLS_26M>, <&mmsys CLK_MM_DISP_BLS>;
-+		clock-names = "main", "mm";
-+		status = "disabled";
-+	};
-+
- 	imgsys: syscon@15000000 {
- 		compatible = "mediatek,mt2701-imgsys", "syscon";
- 		reg = <0 0x15000000 0 0x1000>;
--- 
-1.9.1
+VGhlc2Ugc2VyaWVzIHBhdGNoZXMgbW9kaWZ5IHB3bS1tdGstZGlzcC5jDQphbmQgZHRzL2R0c2kg
+Y29uZmlnIHRvIHN1cHBvcnQgTVQyNzAxIGRpc3AgcHdtLg0KDQpXZWlxaW5nIEtvbmcgKDMpOg0K
+ICBkdC1iaW5kaW5nczogcHdtOiBBZGQgTWVkaWFUZWsgZGlzcGxheSBQV00gYmluZGluZ3MNCiAg
+cHdtOiBBZGQgTWVkaWFUZWsgTVQyNzAxIGRpc3BsYXkgUFdNIGRyaXZlciBzdXBwb3J0DQogIGR0
+czogQWRkIGRpc3AgYmxzIGRzdGkgYW5kIGR0cyBjb25maWcgZm9yIE1UMjcwMQ0KDQogLi4uL2Rl
+dmljZXRyZWUvYmluZGluZ3MvcHdtL3B3bS1tdGstZGlzcC50eHQgICAgICAgfCAgNSArLQ0KIGFy
+Y2gvYXJtL2Jvb3QvZHRzL210MjcwMS1ldmIuZHRzICAgICAgICAgICAgICAgICAgIHwgMjkgKysr
+KysrKw0KIGFyY2gvYXJtL2Jvb3QvZHRzL210MjcwMS5kdHNpICAgICAgICAgICAgICAgICAgICAg
+IHwgIDkgKysrDQogZHJpdmVycy9wd20vcHdtLW10ay1kaXNwLmMgICAgICAgICAgICAgICAgICAg
+ICAgICAgfCA4OSArKysrKysrKysrKysrKysrKy0tLS0tDQogNCBmaWxlcyBjaGFuZ2VkLCAxMTMg
+aW5zZXJ0aW9ucygrKSwgMTkgZGVsZXRpb25zKC0pDQoNCi0tIA0KMS45LjENCg==
+
+--__=_Part_Boundary_001_25000531.895384788
+Content-Type: text/html
+Content-Transfer-Encoding: base64
+
+PHByZT4NClRoZXNlIHNlcmllcyBwYXRjaGVzIG1vZGlmeSBwd20tbXRrLWRpc3AuYw0KYW5kIGR0
+cy9kdHNpIGNvbmZpZyB0byBzdXBwb3J0IE1UMjcwMSBkaXNwIHB3bS4NCg0KV2VpcWluZyBLb25n
+ICgzKToNCiAgZHQtYmluZGluZ3M6IHB3bTogQWRkIE1lZGlhVGVrIGRpc3BsYXkgUFdNIGJpbmRp
+bmdzDQogIHB3bTogQWRkIE1lZGlhVGVrIE1UMjcwMSBkaXNwbGF5IFBXTSBkcml2ZXIgc3VwcG9y
+dA0KICBkdHM6IEFkZCBkaXNwIGJscyBkc3RpIGFuZCBkdHMgY29uZmlnIGZvciBNVDI3MDENCg0K
+IC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9wd20tbXRrLWRpc3AudHh0ICAgICAgIHwgIDUg
+Ky0NCiBhcmNoL2FybS9ib290L2R0cy9tdDI3MDEtZXZiLmR0cyAgICAgICAgICAgICAgICAgICB8
+IDI5ICsrKysrKysNCiBhcmNoL2FybS9ib290L2R0cy9tdDI3MDEuZHRzaSAgICAgICAgICAgICAg
+ICAgICAgICB8ICA5ICsrKw0KIGRyaXZlcnMvcHdtL3B3bS1tdGstZGlzcC5jICAgICAgICAgICAg
+ICAgICAgICAgICAgIHwgODkgKysrKysrKysrKysrKysrKystLS0tLQ0KIDQgZmlsZXMgY2hhbmdl
+ZCwgMTEzIGluc2VydGlvbnMoKyksIDE5IGRlbGV0aW9ucygtKQ0KDQotLSANCjEuOS4xDQoNCjwv
+cHJlPjwhLS10eXBlOnRleHQtLT48IS0tey0tPjxwcmU+KioqKioqKioqKioqKiBFbWFpbCBDb25m
+aWRlbnRpYWxpdHkgTm90aWNlICoqKioqKioqKioqKioqKioqKioqClRoZSBpbmZvcm1hdGlvbiBj
+b250YWluZWQgaW4gdGhpcyBlLW1haWwgbWVzc2FnZSAoaW5jbHVkaW5nIGFueSAKYXR0YWNobWVu
+dHMpIG1heSBiZSBjb25maWRlbnRpYWwsIHByb3ByaWV0YXJ5LCBwcml2aWxlZ2VkLCBvciBvdGhl
+cndpc2UKZXhlbXB0IGZyb20gZGlzY2xvc3VyZSB1bmRlciBhcHBsaWNhYmxlIGxhd3MuIEl0IGlz
+IGludGVuZGVkIHRvIGJlIApjb252ZXllZCBvbmx5IHRvIHRoZSBkZXNpZ25hdGVkIHJlY2lwaWVu
+dChzKS4gQW55IHVzZSwgZGlzc2VtaW5hdGlvbiwgCmRpc3RyaWJ1dGlvbiwgcHJpbnRpbmcsIHJl
+dGFpbmluZyBvciBjb3B5aW5nIG9mIHRoaXMgZS1tYWlsIChpbmNsdWRpbmcgaXRzIAphdHRhY2ht
+ZW50cykgYnkgdW5pbnRlbmRlZCByZWNpcGllbnQocykgaXMgc3RyaWN0bHkgcHJvaGliaXRlZCBh
+bmQgbWF5IApiZSB1bmxhd2Z1bC4gSWYgeW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50
+IG9mIHRoaXMgZS1tYWlsLCBvciBiZWxpZXZlIAp0aGF0IHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMg
+ZS1tYWlsIGluIGVycm9yLCBwbGVhc2Ugbm90aWZ5IHRoZSBzZW5kZXIgCmltbWVkaWF0ZWx5IChi
+eSByZXBseWluZyB0byB0aGlzIGUtbWFpbCksIGRlbGV0ZSBhbnkgYW5kIGFsbCBjb3BpZXMgb2Yg
+CnRoaXMgZS1tYWlsIChpbmNsdWRpbmcgYW55IGF0dGFjaG1lbnRzKSBmcm9tIHlvdXIgc3lzdGVt
+LCBhbmQgZG8gbm90CmRpc2Nsb3NlIHRoZSBjb250ZW50IG9mIHRoaXMgZS1tYWlsIHRvIGFueSBv
+dGhlciBwZXJzb24uIFRoYW5rIHlvdSE8L3ByZT48IS0tfS0tPg==
+
+--__=_Part_Boundary_001_25000531.895384788--
