@@ -1,85 +1,84 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH] pwm: don't allow duty cycle higher than period
-Date: Fri, 27 May 2016 18:40:07 +0200
-Message-ID: <20160527184007.384d23b3@bbrezillon>
-References: <1464296730-121773-1-git-send-email-briannorris@chromium.org>
-	<20160527093439.5ad237c5@bbrezillon>
-	<20160527163533.GA80118@google.com>
-	<20160527183814.6f8f4ba7@bbrezillon>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160527183814.6f8f4ba7@bbrezillon>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Brian Norris <briannorris@chromium.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Brian Norris <computersforpeace@gmail.com>, Doug Anderson <dianders@chromium.org>
+From: Brian Norris <briannorris@chromium.org>
+Subject: [PATCH v2] pwm: improve args checking in pwm_apply_state()
+Date: Fri, 27 May 2016 09:45:49 -0700
+Message-ID: <1464367549-111530-1-git-send-email-briannorris@chromium.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pa0-f48.google.com ([209.85.220.48]:33356 "EHLO
+	mail-pa0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755559AbcE0Qpz (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 27 May 2016 12:45:55 -0400
+Received: by mail-pa0-f48.google.com with SMTP id xk12so41518624pac.0
+        for <linux-pwm@vger.kernel.org>; Fri, 27 May 2016 09:45:54 -0700 (PDT)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Brian Norris <computersforpeace@gmail.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Doug Anderson <dianders@chromium.org>, Brian Norris <briannorris@chromium.org>
 
-On Fri, 27 May 2016 18:38:14 +0200
-Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
+It seems like in the process of refactoring pwm_config() to utilize the
+newly-introduced pwm_apply_state() API, some args/bounds checking was
+dropped.
 
-> On Fri, 27 May 2016 09:35:33 -0700
-> Brian Norris <briannorris@chromium.org> wrote:
-> 
-> > Hi Boris,
-> > 
-> > On Fri, May 27, 2016 at 09:34:39AM +0200, Boris Brezillon wrote:  
-> > > On Thu, 26 May 2016 14:05:30 -0700
-> > > Brian Norris <briannorris@chromium.org> wrote:
-> > >     
-> > > > It doesn't make sense to allow the duty cycle to be larger than the
-> > > > period. I can see this behavior by, e.g.:
-> > > > 
-> > > >   # echo 1 > /sys/class/pwm/pwmchip0/export
-> > > >   # cat /sys/class/pwm/pwmchip0/pwm1/period
-> > > >   100
-> > > >   # echo 101 > /sys/class/pwm/pwmchip0/pwm1/duty_cycle
-> > > >   [... driver may or may not reject the value, or trigger some logic bug ...]
-> > > > 
-> > > > It's better to see:
-> > > > 
-> > > >   # echo 1 > /sys/class/pwm/pwmchip0/export
-> > > >   # cat /sys/class/pwm/pwmchip0/pwm1/period
-> > > >   100
-> > > >   # echo 101 > /sys/class/pwm/pwmchip0/pwm1/duty_cycle
-> > > >   -bash: echo: write error: Invalid argument
-> > > > 
-> > > > Signed-off-by: Brian Norris <briannorris@chromium.org>
-> > > > ---
-> > > >  drivers/pwm/core.c | 3 +++
-> > > >  1 file changed, 3 insertions(+)
-> > > > 
-> > > > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> > > > index dba3843c53b8..9246b60f894a 100644
-> > > > --- a/drivers/pwm/core.c
-> > > > +++ b/drivers/pwm/core.c
-> > > > @@ -463,6 +463,9 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
-> > > >  	if (!memcmp(state, &pwm->state, sizeof(*state)))
-> > > >  		return 0;
-> > > >  
-> > > > +	if (state->duty_cycle > state->period)
-> > > > +		return -EINVAL;
-> > > > +    
-> > > 
-> > > Argh, I forgot to move the pwm_config() checks [1] into
-> > > pwm_apply_state() :-/.    
-> > 
-> > Oh, I didn't actually notice this was a regression.
-> >   
-> > > I think we should check all the corner cases (see this diff [2]),    
-> > 
-> > Now that you mention it, I think you've also dropped some signed
-> > (negative value) checking in pwm_config(). I'll squash in your diff +
-> > some pwm_config() fixes.  
-> 
-> ->period and ->duty_cycle are unsigned now ;).  
-> 
+In particular, I noted that we are now allowing invalid period
+selections. e.g.:
 
-Never mind, you're right (thought you were talking about checking the
-->period and ->duty_cycle values).
+  # echo 1 > /sys/class/pwm/pwmchip0/export
+  # cat /sys/class/pwm/pwmchip0/pwm1/period
+  100
+  # echo 101 > /sys/class/pwm/pwmchip0/pwm1/duty_cycle
+  [... driver may or may not reject the value, or trigger some logic bug ...]
 
+It's better to see:
+
+  # echo 1 > /sys/class/pwm/pwmchip0/export
+  # cat /sys/class/pwm/pwmchip0/pwm1/period
+  100
+  # echo 101 > /sys/class/pwm/pwmchip0/pwm1/duty_cycle
+  -bash: echo: write error: Invalid argument
+
+This patch reintroduces some bounds checks in both pwm_config() (for its
+signed parameters; we don't want to convert negative values into large
+unsigned values) and in pwm_apply_state() (which fix the above described
+behavior, as well as other potential API misuses).
+
+Fixes: 5ec803edcb70 ("pwm: Add core infrastructure to allow atomic updates")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+---
+v2:
+ * changed subject, as this covers more scope now
+ * add Fixes tag, as this is a v4.7-rc regression
+ * add more bounds/args checks in pwm_apply_state() and pwm_config()
+
+ drivers/pwm/core.c  | 3 ++-
+ include/linux/pwm.h | 3 +++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index dba3843c53b8..ed337a8c34ab 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -457,7 +457,8 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
+ {
+ 	int err;
+ 
+-	if (!pwm)
++	if (!pwm || !state || !state->period ||
++	    state->duty_cycle > state->period)
+ 		return -EINVAL;
+ 
+ 	if (!memcmp(state, &pwm->state, sizeof(*state)))
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 17018f3c066e..908b67c847cd 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -235,6 +235,9 @@ static inline int pwm_config(struct pwm_device *pwm, int duty_ns,
+ 	if (!pwm)
+ 		return -EINVAL;
+ 
++	if (duty_ns < 0 || period_ns < 0)
++		return -EINVAL;
++
+ 	pwm_get_state(pwm, &state);
+ 	if (state.duty_cycle == duty_ns && state.period == period_ns)
+ 		return 0;
 -- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+2.8.0.rc3.226.g39d4020
