@@ -1,74 +1,36 @@
-From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Subject: Re: [PATCH 0/4] pwm: add support for ChromeOS EC PWM
-Date: Mon, 30 May 2016 08:44:47 +0200
-Message-ID: <8682e810-dd86-71c7-a454-35bfbab8afa8@collabora.com>
-References: <1464399556-17222-1-git-send-email-briannorris@chromium.org>
+From: Weiqing Kong <weiqing.kong@mediatek.com>
+Subject: [PATCH RESEND 0/3] Support Mediatek Soc MT2701 disp pwm
+Date: Mon, 30 May 2016 16:41:49 +0800
+Message-ID: <1464597712-5399-1-git-send-email-weiqing.kong@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:40445 "EHLO
-	bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751093AbcE3Gox (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 30 May 2016 02:44:53 -0400
-In-Reply-To: <1464399556-17222-1-git-send-email-briannorris@chromium.org>
+Received: from mailgw02.mediatek.com ([210.61.82.184]:62969 "EHLO
+	mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1754380AbcE3Imv (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 30 May 2016 04:42:51 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Brian Norris <briannorris@chromium.org>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>
-Cc: linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Sameer Nanda <snanda@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>
+To: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, weiqing.kong@mediatek.com
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, erin.lo@mediatek.com, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, yh.huang@mediatek.com, yt.shen@mediatek.com
 
-On 05/28/2016 03:39 AM, Brian Norris wrote:
-> Hi,
-> 
-> This series adds support for the new ChromeOS EC PWM API, so we can control,
-> e.g., the backlight when it's attached to the EC. It uses Boris's latest
-> "atomic" hooks for the PWM API (i.e., the ->apply() callback), which were
-> recently merged.
-> 
-> It seems nice to have the cros_ec_cmd_xfer_status() helper, which we have
-> locally in the ChromeOS kernel, and which has been part of another larger patch
-> series:
-> 
-> https://lkml.org/lkml/2016/4/12/342
-> 
-> So I've picked it into this series as well. Obviously, I don't care which one
-> is taken, but AFAICT, Tomeu's USB PD series isn't extremely active right now.
+Sorry for sending many times, because of company
+permission settings, many people and groups can't
+receive these patches before.
 
-Hi Brian,
+These series patches modify pwm-mtk-disp.c
+and dts/dtsi config to support MT2701 disp pwm.
 
-that's on hold during the ongoing discussion about type-c userspace API,
-because right now the value of that patchset is on how userspace can
-decide from what port to charge (if any), and it was badly abusing a
-power supply property for that.
+Weiqing Kong (3):
+  dt-bindings: pwm: Add MediaTek display PWM bindings
+  pwm: Add MediaTek MT2701 display PWM driver support
+  dts: Add disp bls dsti and dts config for MT2701
 
-Regards,
+ .../devicetree/bindings/pwm/pwm-mtk-disp.txt       |  5 +-
+ arch/arm/boot/dts/mt2701-evb.dts                   | 29 +++++++
+ arch/arm/boot/dts/mt2701.dtsi                      |  9 +++
+ drivers/pwm/pwm-mtk-disp.c                         | 89 +++++++++++++++++-----
+ 4 files changed, 113 insertions(+), 19 deletions(-)
 
-Tomeu
-
-> As this touches MFD (sort of), drivers/platform/chrome/, and drivers/pwm/, I'm
-> not sure who it should all go through: Lee, Thierry, or Olof?
-> 
-> Anyway, please review.
-> 
-> Regards,
-> Brian
-> 
-> Brian Norris (3):
->   mfd: cros_ec: add EC_PWM function definitions
->   doc: dt: pwm: add binding for ChromeOS EC PWM
->   pwm: add ChromeOS EC PWM driver
-> 
-> Tomeu Vizoso (1):
->   mfd: cros_ec: Add cros_ec_cmd_xfer_status helper
-> 
->  .../devicetree/bindings/pwm/google,cros-ec-pwm.txt |  25 +++
->  drivers/platform/chrome/cros_ec_proto.c            |  15 ++
->  drivers/pwm/Kconfig                                |   7 +
->  drivers/pwm/Makefile                               |   1 +
->  drivers/pwm/pwm-cros-ec.c                          | 230 +++++++++++++++++++++
->  include/linux/mfd/cros_ec.h                        |  18 ++
->  include/linux/mfd/cros_ec_commands.h               |  31 +++
->  7 files changed, 327 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
->  create mode 100644 drivers/pwm/pwm-cros-ec.c
-> 
+-- 
+1.8.1.1.dirty
