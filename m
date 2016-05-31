@@ -1,86 +1,64 @@
-From: Weiqing Kong <weiqing.kong@mediatek.com>
-Subject: [PATCH 3/3] dts: Add disp bls dsti and dts config for MT2701
-Date: Mon, 30 May 2016 16:41:52 +0800
-Message-ID: <1464597712-5399-4-git-send-email-weiqing.kong@mediatek.com>
-References: <1464597712-5399-1-git-send-email-weiqing.kong@mediatek.com>
-Mime-Version: 1.0
-Content-Type: text/plain
+From: Dan O'Donovan <dan@emutex.com>
+Subject: [PATCH] pwm: lpss: fix base_unit calculation for PWM frequency
+Date: Tue, 31 May 2016 15:51:04 +0100
+Message-ID: <1464706264-19344-1-git-send-email-dan@emutex.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailgw02.mediatek.com ([210.61.82.184]:7647 "EHLO
-	mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S932691AbcE3Inb (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 30 May 2016 04:43:31 -0400
-In-Reply-To: <1464597712-5399-1-git-send-email-weiqing.kong@mediatek.com>
+Received: from bert.emutex.com ([91.103.1.109]:60556 "EHLO bert.emutex.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750738AbcEaPLb (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Tue, 31 May 2016 11:11:31 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, weiqing.kong@mediatek.com
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, erin.lo@mediatek.com, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, yh.huang@mediatek.com, yt.shen@mediatek.com
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, mika.westerberg@linux.intel.com, Dan O'Donovan <dan@emutex.com>
 
-Signed-off-by: Weiqing Kong <weiqing.kong@mediatek.com>
+The base_unit calculation applies an offset of 0x2 which adds
+significant error for lower frequencies and doesn't appear to be
+warranted - rounding the division result gives a correct value.
+
+Also, the upper limit check for base_unit is off-by-one; the upper
+nibble of base_unit is invalid if >=128 according to the Table 88
+in the Z8000 Processor Series Datasheet Volume 1 (Rev. 2).
+
+Verified on UP Board (Cherry Trail) and Minnowboard Max (Bay Trail).
+
+Signed-off-by: Dan O'Donovan <dan@emutex.com>
 ---
- arch/arm/boot/dts/mt2701-evb.dts | 29 +++++++++++++++++++++++++++++
- arch/arm/boot/dts/mt2701.dtsi    |  9 +++++++++
- 2 files changed, 38 insertions(+)
+ drivers/pwm/pwm-lpss.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/mt2701-evb.dts b/arch/arm/boot/dts/mt2701-evb.dts
-index 082ca88..6d572f4 100644
---- a/arch/arm/boot/dts/mt2701-evb.dts
-+++ b/arch/arm/boot/dts/mt2701-evb.dts
-@@ -22,6 +22,35 @@
- 	memory {
- 		reg = <0 0x80000000 0 0x40000000>;
- 	};
-+
-+	backlight_lcd: backlight_lcd {
-+		compatible = "pwm-backlight";
-+		pwms = <&disp_bls 0 100000>;
-+		brightness-levels = <
-+			  0  16  32  48  64  80  96 112
-+			128 144 160 176 192 208 224 240
-+			255
-+		>;
-+		default-brightness-level = <9>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwm_bls_gpio>;
-+	};
-+};
-+
-+&disp_bls {
-+	status = "okay";
-+};
-+
-+&mmsys {
-+	status = "okay";
-+};
-+
-+&pio {
-+	pwm_bls_gpio: pwm_bls_gpio {
-+		pins_cmd_dat {
-+			pinmux = <MT2701_PIN_208_AUD_EXT_CK1__FUNC_DISP_PWM>;
-+		};
-+	};
- };
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 295b963..01cc708 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -27,7 +27,6 @@
+ #define PWM_SW_UPDATE			BIT(30)
+ #define PWM_BASE_UNIT_SHIFT		8
+ #define PWM_ON_TIME_DIV_MASK		0x000000ff
+-#define PWM_DIVISION_CORRECTION		0x2
  
- &uart0 {
-diff --git a/arch/arm/boot/dts/mt2701.dtsi b/arch/arm/boot/dts/mt2701.dtsi
-index 42d5a37..dae55d6 100644
---- a/arch/arm/boot/dts/mt2701.dtsi
-+++ b/arch/arm/boot/dts/mt2701.dtsi
-@@ -234,6 +234,15 @@
- 		status = "disabled";
- 	};
+ /* Size of each PWM register space if multiple */
+ #define PWM_SIZE			0x400
+@@ -101,17 +100,16 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
  
-+	disp_bls: dispsys@1400a000 {
-+		compatible = "mediatek,mt2701-disp-bls";
-+		reg = <0 0x1400a000 0 0x1000>;
-+		#pwm-cells = <2>;
-+		clocks = <&mmsys CLK_MM_MDP_BLS_26M>, <&mmsys CLK_MM_DISP_BLS>;
-+		clock-names = "main", "mm";
-+		status = "disabled";
-+	};
-+
- 	imgsys: syscon@15000000 {
- 		compatible = "mediatek,mt2701-imgsys", "syscon";
- 		reg = <0 0x15000000 0 0x1000>;
+ 	/*
+ 	 * The equation is:
+-	 * base_unit = ((freq / c) * base_unit_range) + correction
++	 * base_unit = (round(freq / c) * 65536)
+ 	 */
+ 	base_unit_range = BIT(lpwm->info->base_unit_bits);
+-	base_unit = freq * base_unit_range;
++	freq *= base_unit_range;
+ 
+ 	c = lpwm->info->clk_rate;
+ 	if (!c)
+ 		return -EINVAL;
+ 
+-	do_div(base_unit, c);
+-	base_unit += PWM_DIVISION_CORRECTION;
++	base_unit = DIV_ROUND_CLOSEST_ULL(freq, c);
+ 
+ 	if (duty_ns <= 0)
+ 		duty_ns = 1;
 -- 
-1.8.1.1.dirty
+2.1.4
