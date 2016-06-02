@@ -1,70 +1,47 @@
-From: Dan O'Donovan <dan@emutex.com>
-Subject: [PATCH v2] pwm: lpss: fix base_unit calculation for PWM frequency
-Date: Wed,  1 Jun 2016 15:31:12 +0100
-Message-ID: <1464791472-17738-1-git-send-email-dan@emutex.com>
-References: <1464706264-19344-1-git-send-email-dan@emutex.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bert.emutex.com ([91.103.1.109]:60646 "EHLO bert.emutex.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751969AbcFAO3J (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Wed, 1 Jun 2016 10:29:09 -0400
-In-Reply-To: <1464706264-19344-1-git-send-email-dan@emutex.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 1/3] dt-bindings: pwm: Add MediaTek display PWM bindings
+Date: Thu, 2 Jun 2016 17:45:50 -0500
+Message-ID: <20160602224550.GA19256@rob-hp-laptop>
+References: <1464597712-5399-1-git-send-email-weiqing.kong@mediatek.com>
+ <1464597712-5399-2-git-send-email-weiqing.kong@mediatek.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1464597712-5399-2-git-send-email-weiqing.kong@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Weiqing Kong <weiqing.kong@mediatek.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, erin.lo@mediatek.com, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, yh.huang@mediatek.com, yt.shen@mediatek.com
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, mika.westerberg@linux.intel.com, Dan O'Donovan <dan@emutex.com>
 
-The base_unit calculation applies an offset of 0x2 which adds
-significant error for lower frequencies and doesn't appear to be
-warranted - rounding the division result gives a correct value.
+On Mon, May 30, 2016 at 04:41:50PM +0800, Weiqing Kong wrote:
+> Add MT2701 compatible string.
+> 
+> Signed-off-by: Weiqing Kong <weiqing.kong@mediatek.com>
+> ---
+>  Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> index f8f59ba..f2f2fa9 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> @@ -1,9 +1,10 @@
+>  MediaTek display PWM controller
+>  
+>  Required properties:
+> - - compatible: should be "mediatek,<name>-disp-pwm":
+> -   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
+> + - compatible: should be like these:
+> +   - "mediatek,mt2701-disp-bls": found on mt2701 SoC.
 
-Also, the upper limit check for base_unit is off-by-one; the upper
-nibble of base_unit is invalid if >=128 according to the Table 88
-in the Z8000 Processor Series Datasheet Volume 1 (Rev. 2).
+Why bls instead of pwm?
 
-Verified on UP Board (Cherry Trail) and Minnowboard Max (Bay Trail).
-
-Signed-off-by: Dan O'Donovan <dan@emutex.com>
-Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
----
-v2:
- * fixed error in a code comment regarding base_unit, spotted by Mika
-
- drivers/pwm/pwm-lpss.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 295b963..98dc8b8 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -27,7 +27,6 @@
- #define PWM_SW_UPDATE			BIT(30)
- #define PWM_BASE_UNIT_SHIFT		8
- #define PWM_ON_TIME_DIV_MASK		0x000000ff
--#define PWM_DIVISION_CORRECTION		0x2
- 
- /* Size of each PWM register space if multiple */
- #define PWM_SIZE			0x400
-@@ -101,17 +100,16 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	/*
- 	 * The equation is:
--	 * base_unit = ((freq / c) * base_unit_range) + correction
-+	 * base_unit = round(base_unit_range * freq / c)
- 	 */
- 	base_unit_range = BIT(lpwm->info->base_unit_bits);
--	base_unit = freq * base_unit_range;
-+	freq *= base_unit_range;
- 
- 	c = lpwm->info->clk_rate;
- 	if (!c)
- 		return -EINVAL;
- 
--	do_div(base_unit, c);
--	base_unit += PWM_DIVISION_CORRECTION;
-+	base_unit = DIV_ROUND_CLOSEST_ULL(freq, c);
- 
- 	if (duty_ns <= 0)
- 		duty_ns = 1;
--- 
-2.1.4
+>     - "mediatek,mt6595-disp-pwm": found on mt6595 SoC.
+> +   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
+>   - reg: physical base address and length of the controller's registers.
+>   - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
+>     the cell format.
+> -- 
+> 1.8.1.1.dirty
+> 
