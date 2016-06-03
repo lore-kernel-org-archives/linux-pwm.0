@@ -1,78 +1,85 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH 08/14] pwm: sti: Avoid glitches on already running PWMs
-Date: Fri,  3 Jun 2016 10:23:06 +0200
-Message-ID: <1464942192-25967-9-git-send-email-boris.brezillon@free-electrons.com>
+From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH 12/14] regulator: pwm: Retrieve correct voltage
+Date: Fri,  3 Jun 2016 10:23:10 +0200
+Message-ID: <1464942192-25967-13-git-send-email-boris.brezillon@free-electrons.com>
 References: <1464942192-25967-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1464942192-25967-1-git-send-email-boris.brezillon@free-electrons.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Brian Norris <briannorris@chromium.org>, linux-kernel@vger.kernel.org, Patrice Chotard <patrice.chotard@st.com>, Doug Anderson <dianders@google.com>, Milo Kim <milo.kim@ti.com>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, kernel@stlinux.com, Boris Brezillon <boris.brezillon@free-electrons.com>, Kumar Gala <galak@codeaurora.org>, Maxime Coquelin <maxime.coquelin@st.com>, Stephen Barber <smbarber@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, linux-arm-kernel@lists.infradead.org, Caesar Wang <wxt@rock-chips.com>
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1464942192-25967-1-git-send-email-boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Patrice Chotard <patrice.chotard-qxv4g6HH51o@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Milo Kim <milo.kim-l0cyMroinI0@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Maxime Coquelin <maxime.coquelin-qxv4g6HH51o@public.gmane.org>, Stephen Barber <smbarber-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Ajit Pal Singh <ajitpal.singh-qxv4g6HH51o@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Caesar Wang <wxt-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-The current logic will disable the PWM clk even if a PWM was left
-enabled by the bootloader (because it's controlling a critical device
-like a regulator for example).
-Keep the PWM clk enabled if at least one PWM is enabled to avoid any
-glitches.
+The continuous PWM voltage regulator is caching the voltage value in
+the ->volt_uV field. While most of the time this value should reflect the
+real voltage, sometime it can be sightly different if the PWM device
+rounded the set_duty_cycle request.
+Moreover, this value is not valid until someone has modified the regulator
+output.
 
-Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+Remove the ->volt_uV field and always rely on the PWM state to calculate
+the regulator output.
+
+Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 ---
- drivers/pwm/pwm-sti.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+Mark,
 
-diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index 6300d3e..8232c5b 100644
---- a/drivers/pwm/pwm-sti.c
-+++ b/drivers/pwm/pwm-sti.c
-@@ -340,7 +340,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	struct sti_pwm_compat_data *cdata;
- 	struct sti_pwm_chip *pc;
- 	struct resource *res;
--	int ret;
-+	int i, ret;
+I know you already added your Tested-by/Acked-by tags on this patch
+but this version has slightly change and is now making use of the
+pwm_get_relative_duty_cycle() helper instead of manually converting
+the absolute duty_cycle value into a relative one.
+---
+ drivers/regulator/pwm-regulator.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/regulator/pwm-regulator.c b/drivers/regulator/pwm-regulator.c
+index 8c56e16..c39ecd1 100644
+--- a/drivers/regulator/pwm-regulator.c
++++ b/drivers/regulator/pwm-regulator.c
+@@ -35,9 +35,6 @@ struct pwm_regulator_data {
+ 	struct regulator_ops ops;
  
- 	pc = devm_kzalloc(dev, sizeof(*pc), GFP_KERNEL);
- 	if (!pc)
-@@ -391,7 +391,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 		return -EINVAL;
+ 	int state;
+-
+-	/* Continuous voltage */
+-	int volt_uV;
+ };
+ 
+ struct pwm_voltages {
+@@ -135,8 +132,13 @@ static int pwm_regulator_is_enabled(struct regulator_dev *dev)
+ static int pwm_regulator_get_voltage(struct regulator_dev *rdev)
+ {
+ 	struct pwm_regulator_data *drvdata = rdev_get_drvdata(rdev);
++	int min_uV = rdev->constraints->min_uV;
++	int diff = rdev->constraints->max_uV - min_uV;
++	struct pwm_state pstate;
+ 
+-	return drvdata->volt_uV;
++	pwm_get_state(drvdata->pwm, &pstate);
++
++	return min_uV + pwm_get_relative_duty_cycle(&pstate, diff);
+ }
+ 
+ static int pwm_regulator_set_voltage(struct regulator_dev *rdev,
+@@ -162,8 +164,6 @@ static int pwm_regulator_set_voltage(struct regulator_dev *rdev,
+ 		return ret;
  	}
  
--	ret = clk_prepare(pc->clk);
-+	ret = clk_prepare_enable(pc->clk);
- 	if (ret) {
- 		dev_err(dev, "failed to prepare clock\n");
- 		return ret;
-@@ -409,6 +409,19 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 		return ret;
- 	}
+-	drvdata->volt_uV = min_uV;
+-
+ 	/* Delay required by PWM regulator to settle to the new voltage */
+ 	usleep_range(ramp_delay, ramp_delay + 1000);
  
-+	/*
-+	 * Keep the PWM clk enabled if some PWMs appear to be up and
-+	 * running.
-+	 */
-+	for (i = 0; i < pc->chip.npwm; i++) {
-+		struct pwm_state state;
-+
-+		pwm_get_state(&pc->chip.pwms[i], &state);
-+		if (state.enabled)
-+			clk_enable(pc->clk);
-+	}
-+	clk_disable(pc->clk);
-+
- 	platform_set_drvdata(pdev, pc);
- 
- 	return 0;
 -- 
 2.7.4
