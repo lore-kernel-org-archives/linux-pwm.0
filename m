@@ -1,56 +1,44 @@
-From: weiqing kong <weiqing.kong@mediatek.com>
-Subject: Re: [PATCH 1/3] dt-bindings: pwm: Add MediaTek display PWM bindings
-Date: Fri, 3 Jun 2016 14:45:49 +0800
-Message-ID: <1464936349.5209.9.camel@mhfsdcap03>
-References: <1464597712-5399-1-git-send-email-weiqing.kong@mediatek.com>
-	 <1464597712-5399-2-git-send-email-weiqing.kong@mediatek.com>
-	 <20160602224550.GA19256@rob-hp-laptop>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: [PATCH 14/14] regulator: pwm: Document pwm-dutycycle-unit and pwm-dutycycle-range
+Date: Fri,  3 Jun 2016 10:23:12 +0200
+Message-ID: <1464942192-25967-15-git-send-email-boris.brezillon@free-electrons.com>
+References: <1464942192-25967-1-git-send-email-boris.brezillon@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160602224550.GA19256@rob-hp-laptop>
+In-Reply-To: <1464942192-25967-1-git-send-email-boris.brezillon@free-electrons.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, erin.lo@mediatek.com, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, yh.huang@mediatek.com, yt.shen@mediatek.com
+To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>
+Cc: Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <milo.kim@ti.com>, Doug Anderson <dianders@google.com>, Caesar Wang <wxt@rock-chips.com>, Stephen Barber <smbarber@chromium.org>, Brian Norris <briannorris@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, kernel@stlinux.com, Boris Brezillon <boris.brezillon@free-electrons.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, 2016-06-02 at 17:45 -0500, Rob Herring wrote:
-> On Mon, May 30, 2016 at 04:41:50PM +0800, Weiqing Kong wrote:
-> > Add MT2701 compatible string.
-> > 
-> > Signed-off-by: Weiqing Kong <weiqing.kong@mediatek.com>
-> > ---
-> >  Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt | 5 +++--
-> >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
-> > index f8f59ba..f2f2fa9 100644
-> > --- a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
-> > +++ b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
-> > @@ -1,9 +1,10 @@
-> >  MediaTek display PWM controller
-> >  
-> >  Required properties:
-> > - - compatible: should be "mediatek,<name>-disp-pwm":
-> > -   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
-> > + - compatible: should be like these:
-> > +   - "mediatek,mt2701-disp-bls": found on mt2701 SoC.
-> 
-> Why bls instead of pwm?
+Document the pwm-dutycycle-unit and pwm-dutycycle-range properties.
 
-In mt6595/mt8173, we have a hardware module named pwm.
-In mt2701, we have bls hardware module which includes disp pwm function,
-so we named it mt2701-disp-bls rather than mt2701-disp-pwm in order to
-match with hardware spec.
-thanks.
+Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+---
+ .../devicetree/bindings/regulator/pwm-regulator.txt          | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-> 
-> >     - "mediatek,mt6595-disp-pwm": found on mt6595 SoC.
-> > +   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
-> >   - reg: physical base address and length of the controller's registers.
-> >   - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
-> >     the cell format.
-> > -- 
-> > 1.8.1.1.dirty
-> > 
+diff --git a/Documentation/devicetree/bindings/regulator/pwm-regulator.txt b/Documentation/devicetree/bindings/regulator/pwm-regulator.txt
+index ed936f0..5303235 100644
+--- a/Documentation/devicetree/bindings/regulator/pwm-regulator.txt
++++ b/Documentation/devicetree/bindings/regulator/pwm-regulator.txt
+@@ -34,6 +34,18 @@ Only required for Voltage Table Mode:
+ 			    First cell is voltage in microvolts (uV)
+ 			    Second cell is duty-cycle in percent (%)
+ 
++Optional properties for Continuous mode:
++- pwm-dutycycle-unit:	Integer value encoding the dutycycle unit. If not
++			defined, <100> is assumed, meaning that
++			pwm-dutycycle-range contains values expressed in
++			percent.
++
++- pwm-dutycycle-range:	Should contain 2 entries. The first entry is encoding
++			the dutycycle for regulator-min-microvolt and the
++			second one the dutycycle for regulator-max-microvolt.
++			Dutycyle values are expressed in pwm-dutycycle-unit.
++			If not defined, <0 100> is assumed.
++
+ NB: To be clear, if voltage-table is provided, then the device will be used
+ in Voltage Table Mode.  If no voltage-table is provided, then the device will
+ be used in Continuous Voltage Mode.
+-- 
+2.7.4
