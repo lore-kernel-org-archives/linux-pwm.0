@@ -1,76 +1,56 @@
-From: Brian Norris <briannorris@chromium.org>
-Subject: [PATCH v2 2/4] mfd: cros_ec: add EC_PWM function definitions
-Date: Thu,  2 Jun 2016 18:21:42 -0700
-Message-ID: <1464916904-37554-3-git-send-email-briannorris@chromium.org>
-References: <1464916904-37554-1-git-send-email-briannorris@chromium.org>
+From: weiqing kong <weiqing.kong@mediatek.com>
+Subject: Re: [PATCH 1/3] dt-bindings: pwm: Add MediaTek display PWM bindings
+Date: Fri, 3 Jun 2016 14:45:49 +0800
+Message-ID: <1464936349.5209.9.camel@mhfsdcap03>
+References: <1464597712-5399-1-git-send-email-weiqing.kong@mediatek.com>
+	 <1464597712-5399-2-git-send-email-weiqing.kong@mediatek.com>
+	 <20160602224550.GA19256@rob-hp-laptop>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1464916904-37554-1-git-send-email-briannorris@chromium.org>
+In-Reply-To: <20160602224550.GA19256@rob-hp-laptop>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>
-Cc: linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Brian Norris <briannorris@chromium.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, erin.lo@mediatek.com, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, yh.huang@mediatek.com, yt.shen@mediatek.com
 List-Id: linux-pwm@vger.kernel.org
 
-The EC_CMD_PWM_{GET,SET}_DUTY commands allow us to control a PWM that is
-attached to the EC, rather than the main host SoC. The API provides
-functionality-based (e.g., keyboard light, backlight) or index-based
-addressing of the PWM(s). Duty cycles are represented by a 16-bit value,
-where 0 maps to 0% duty cycle and U16_MAX maps to 100%. The period
-cannot be controlled.
+On Thu, 2016-06-02 at 17:45 -0500, Rob Herring wrote:
+> On Mon, May 30, 2016 at 04:41:50PM +0800, Weiqing Kong wrote:
+> > Add MT2701 compatible string.
+> > 
+> > Signed-off-by: Weiqing Kong <weiqing.kong@mediatek.com>
+> > ---
+> >  Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt | 5 +++--
+> >  1 file changed, 3 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> > index f8f59ba..f2f2fa9 100644
+> > --- a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> > +++ b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> > @@ -1,9 +1,10 @@
+> >  MediaTek display PWM controller
+> >  
+> >  Required properties:
+> > - - compatible: should be "mediatek,<name>-disp-pwm":
+> > -   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
+> > + - compatible: should be like these:
+> > +   - "mediatek,mt2701-disp-bls": found on mt2701 SoC.
+> 
+> Why bls instead of pwm?
 
-This command set is more generic than, e.g.,
-EC_CMD_PWM_{GET,SET}_KEYBOARD_BACKLIGHT and could possibly used to
-replace it on future products.
+In mt6595/mt8173, we have a hardware module named pwm.
+In mt2701, we have bls hardware module which includes disp pwm function,
+so we named it mt2701-disp-bls rather than mt2701-disp-pwm in order to
+match with hardware spec.
+thanks.
 
-Let's update the command header to include the definitions.
-
-Signed-off-by: Brian Norris <briannorris@chromium.org>
----
-v2: no change
-
- include/linux/mfd/cros_ec_commands.h | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
-
-diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
-index 13b630c10d4c..d673575e0ada 100644
---- a/include/linux/mfd/cros_ec_commands.h
-+++ b/include/linux/mfd/cros_ec_commands.h
-@@ -949,6 +949,37 @@ struct ec_params_pwm_set_fan_duty {
- 	uint32_t percent;
- } __packed;
- 
-+#define EC_CMD_PWM_SET_DUTY 0x25
-+/* 16 bit duty cycle, 65535 = 100% */
-+#define EC_PWM_MAX_DUTY 65535
-+
-+enum ec_pwm_type {
-+	/* All types, indexed by board-specific enum pwm_channel */
-+	EC_PWM_TYPE_GENERIC = 0,
-+	/* Keyboard backlight */
-+	EC_PWM_TYPE_KB_LIGHT,
-+	/* Display backlight */
-+	EC_PWM_TYPE_DISPLAY_LIGHT,
-+	EC_PWM_TYPE_COUNT,
-+};
-+
-+struct ec_params_pwm_set_duty {
-+	uint16_t duty;     /* Duty cycle, EC_PWM_MAX_DUTY = 100% */
-+	uint8_t pwm_type;  /* ec_pwm_type */
-+	uint8_t index;     /* Type-specific index, or 0 if unique */
-+} __packed;
-+
-+#define EC_CMD_PWM_GET_DUTY 0x26
-+
-+struct ec_params_pwm_get_duty {
-+	uint8_t pwm_type;  /* ec_pwm_type */
-+	uint8_t index;     /* Type-specific index, or 0 if unique */
-+} __packed;
-+
-+struct ec_response_pwm_get_duty {
-+	uint16_t duty;     /* Duty cycle, EC_PWM_MAX_DUTY = 100% */
-+} __packed;
-+
- /*****************************************************************************/
- /*
-  * Lightbar commands. This looks worse than it is. Since we only use one HOST
--- 
-2.8.0.rc3.226.g39d4020
+> 
+> >     - "mediatek,mt6595-disp-pwm": found on mt6595 SoC.
+> > +   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
+> >   - reg: physical base address and length of the controller's registers.
+> >   - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
+> >     the cell format.
+> > -- 
+> > 1.8.1.1.dirty
+> > 
