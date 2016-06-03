@@ -1,56 +1,112 @@
-From: Brian Norris <briannorris@chromium.org>
-Subject: Re: [PATCH 09/14] regulator: pwm: Adjust PWM config at probe time
-Date: Fri, 3 Jun 2016 13:41:04 -0700
-Message-ID: <20160603204104.GG124478@google.com>
+From: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH 10/14] regulator: pwm: Switch to the atomic PWM API
+Date: Fri, 3 Jun 2016 13:50:28 -0700
+Message-ID: <20160603205028.GH124478@google.com>
 References: <1464942192-25967-1-git-send-email-boris.brezillon@free-electrons.com>
- <1464942192-25967-10-git-send-email-boris.brezillon@free-electrons.com>
+ <1464942192-25967-11-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pf0-f174.google.com ([209.85.192.174]:36183 "EHLO
-	mail-pf0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S964819AbcFCUlM (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Jun 2016 16:41:12 -0400
-Received: by mail-pf0-f174.google.com with SMTP id f144so46959568pfa.3
-        for <linux-pwm@vger.kernel.org>; Fri, 03 Jun 2016 13:41:12 -0700 (PDT)
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1464942192-25967-10-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1464942192-25967-11-git-send-email-boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Milo Kim <milo.kim-l0cyMroinI0@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Caesar Wang <wxt-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Stephen Barber <smbarber-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Coquelin <maxime.coquelin-qxv4g6HH51o@public.gmane.org>, Patrice Chotard <patrice.chotard-qxv4g6HH51o@public.gmane.org>, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <milo.kim@ti.com>, Doug Anderson <dianders@google.com>, Caesar Wang <wxt@rock-chips.com>, Stephen Barber <smbarber@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, kernel@stlinux.com
 
-On Fri, Jun 03, 2016 at 10:23:07AM +0200, Boris Brezillon wrote:
-> The PWM attached to a PWM regulator device might have been previously
-> configured by the bootloader.
-> Make sure the bootloader and linux config are in sync, and adjust the PWM
-> config if that's not the case.
++ Laxman
+
+Hi,
+
+On Fri, Jun 03, 2016 at 10:23:08AM +0200, Boris Brezillon wrote:
+> Use the atomic API wherever appropriate and get rid of pwm_apply_args()
+> call (the reference period and polarity are now explicitly set when
+> calling pwm_apply_state()).
 > 
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> Acked-by: Mark Brown <broonie@kernel.org>
+> We also make use of the pwm_set_relative_duty_cycle() helper to ease
+> relative to absolute duty_cycle conversion.
+> 
+> Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 > ---
->  drivers/regulator/pwm-regulator.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
+>  drivers/regulator/pwm-regulator.c | 38 ++++++++++----------------------------
+>  1 file changed, 10 insertions(+), 28 deletions(-)
 > 
 > diff --git a/drivers/regulator/pwm-regulator.c b/drivers/regulator/pwm-regulator.c
-> index ab3cc02..524b43f 100644
+> index 524b43f..bf033fd 100644
 > --- a/drivers/regulator/pwm-regulator.c
 > +++ b/drivers/regulator/pwm-regulator.c
-> @@ -285,11 +285,9 @@ static int pwm_regulator_probe(struct platform_device *pdev)
+> @@ -59,16 +59,14 @@ static int pwm_regulator_set_voltage_sel(struct regulator_dev *rdev,
+>  					 unsigned selector)
+>  {
+>  	struct pwm_regulator_data *drvdata = rdev_get_drvdata(rdev);
+> -	struct pwm_args pargs;
+> -	int dutycycle;
+> +	struct pwm_state pstate;
+>  	int ret;
+>  
+> -	pwm_get_args(drvdata->pwm, &pargs);
+> +	pwm_prepare_new_state(drvdata->pwm, &pstate);
+> +	pwm_set_relative_duty_cycle(&pstate,
+> +			drvdata->duty_cycle_table[selector].dutycycle, 100);
+>  
+> -	dutycycle = (pargs.period *
+> -		    drvdata->duty_cycle_table[selector].dutycycle) / 100;
+> -
+> -	ret = pwm_config(drvdata->pwm, dutycycle, pargs.period);
+> +	ret = pwm_apply_state(drvdata->pwm, &pstate);
+>  	if (ret) {
+>  		dev_err(&rdev->dev, "Failed to configure PWM: %d\n", ret);
 >  		return ret;
->  	}
+> @@ -126,34 +124,18 @@ static int pwm_regulator_set_voltage(struct regulator_dev *rdev,
+>  {
+>  	struct pwm_regulator_data *drvdata = rdev_get_drvdata(rdev);
+>  	unsigned int ramp_delay = rdev->constraints->ramp_delay;
+> -	struct pwm_args pargs;
+>  	unsigned int req_diff = min_uV - rdev->constraints->min_uV;
+> +	struct pwm_state pstate;
+>  	unsigned int diff;
+> -	unsigned int duty_pulse;
+> -	u64 req_period;
+> -	u32 rem;
+>  	int ret;
 >  
-> -	/*
-> -	 * FIXME: pwm_apply_args() should be removed when switching to the
-> -	 * atomic PWM API.
+> -	pwm_get_args(drvdata->pwm, &pargs);
+> +	pwm_prepare_new_state(drvdata->pwm, &pstate);
+>  	diff = rdev->constraints->max_uV - rdev->constraints->min_uV;
+>  
+> -	/* First try to find out if we get the iduty cycle time which is
+> -	 * factor of PWM period time. If (request_diff_to_min * pwm_period)
+> -	 * is perfect divided by voltage_range_diff then it is possible to
+> -	 * get duty cycle time which is factor of PWM period. This will help
+> -	 * to get output voltage nearer to requested value as there is no
+> -	 * calculation loss.
 > -	 */
-> -	pwm_apply_args(drvdata->pwm);
-> +	ret = pwm_adjust_config(drvdata->pwm);
-> +	if (ret)
-> +		return ret;
->  
->  	regulator = devm_regulator_register(&pdev->dev,
->  					    &drvdata->desc, &config);
+> -	req_period = req_diff * pargs.period;
+> -	div_u64_rem(req_period, diff, &rem);
+> -	if (!rem) {
+> -		do_div(req_period, diff);
+> -		duty_pulse = (unsigned int)req_period;
+> -	} else {
+> -		duty_pulse = (pargs.period / 100) * ((req_diff * 100) / diff);
+> -	}
+> +	/* We pass diff as the scale to get a uV precision. */
+> +	pwm_set_relative_duty_cycle(&pstate, req_diff, diff);
 
-Acked-by: Brian Norris <briannorris@chromium.org>
-Tested-by: Brian Norris <briannorris@chromium.org>
+Notably, you're dropping much of Laxman's commit fd786fb0276a ("regulator:
+pwm: Try to avoid voltage error in duty cycle calculation"), but I
+believe the DIV_ROUND_CLOSEST_ULL() in pwm_set_relative_duty_cycle()
+solves his problem better.
+
+>  
+> -	ret = pwm_config(drvdata->pwm, duty_pulse, pargs.period);
+> +	ret = pwm_apply_state(drvdata->pwm, &pstate);
+>  	if (ret) {
+>  		dev_err(&rdev->dev, "Failed to configure PWM: %d\n", ret);
+>  		return ret;
+
+Reviewed-by: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Tested-by: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
