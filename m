@@ -1,71 +1,73 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Applied "regulator: pwm: Drop unneeded pwm_enable() call" to the regulator tree
-Date: Fri, 03 Jun 2016 12:08:47 +0100
-Message-ID: <E1b8my7-0004mI-St@finisterre>
-References: <1464942192-25967-3-git-send-email-boris.brezillon@free-electrons.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1464942192-25967-3-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Mark Brown <broonie@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.orgMark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <milo.kim@ti.com>, Doug Anderson <dianders@google.com>, Caesar Wang <wxt@rock-chips.com>, Stephen Barber <smbarber@chromium.org>, Brian Norris <briannorris@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.co>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH 1/3] dt-bindings: pwm: Add MediaTek display PWM bindings
+Date: Fri, 3 Jun 2016 17:03:53 +0200
+Message-ID: <57519C59.5040107@gmail.com>
+References: <1464597712-5399-1-git-send-email-weiqing.kong@mediatek.com>
+ <1464597712-5399-2-git-send-email-weiqing.kong@mediatek.com>
+ <20160602224550.GA19256@rob-hp-laptop> <1464936349.5209.9.camel@mhfsdcap03>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:34292 "EHLO
+	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752062AbcFCPD5 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Jun 2016 11:03:57 -0400
+In-Reply-To: <1464936349.5209.9.camel@mhfsdcap03>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: weiqing kong <weiqing.kong@mediatek.com>, Rob Herring <robh@kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, erin.lo@mediatek.com, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, yh.huang@mediatek.com, yt.shen@mediatek.com
 
-The patch
 
-   regulator: pwm: Drop unneeded pwm_enable() call
 
-has been applied to the regulator tree at
+On 03/06/16 08:45, weiqing kong wrote:
+> On Thu, 2016-06-02 at 17:45 -0500, Rob Herring wrote:
+>> On Mon, May 30, 2016 at 04:41:50PM +0800, Weiqing Kong wrote:
+>>> Add MT2701 compatible string.
+>>>
+>>> Signed-off-by: Weiqing Kong <weiqing.kong@mediatek.com>
+>>> ---
+>>>   Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt | 5 +++--
+>>>   1 file changed, 3 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+>>> index f8f59ba..f2f2fa9 100644
+>>> --- a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+>>> +++ b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+>>> @@ -1,9 +1,10 @@
+>>>   MediaTek display PWM controller
+>>>
+>>>   Required properties:
+>>> - - compatible: should be "mediatek,<name>-disp-pwm":
+>>> -   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
+>>> + - compatible: should be like these:
+>>> +   - "mediatek,mt2701-disp-bls": found on mt2701 SoC.
+>>
+>> Why bls instead of pwm?
+>
+> In mt6595/mt8173, we have a hardware module named pwm.
+> In mt2701, we have bls hardware module which includes disp pwm function,
+> so we named it mt2701-disp-bls rather than mt2701-disp-pwm in order to
+> match with hardware spec.
+> thanks.
+>
 
-   git://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git 
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.  
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+ From what I understand pwm module and disp pwm in mt6589/mt8173 is 
+independent from the disp pwm. Actually the disp pwm in mt6589 is part 
+of the bls module, so this should me mediatek,mt2701-disp-pwm as well
 
 Thanks,
-Mark
+Matthias
 
-From 830583004e615a4637eacc77866b84908414d7a0 Mon Sep 17 00:00:00 2001
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Date: Fri, 3 Jun 2016 10:23:00 +0200
-Subject: [PATCH] regulator: pwm: Drop unneeded pwm_enable() call
-
-Now that the PWM regulator driver implements the ->enable/disable() hooks
-we can remove the pwm_enable() call from pwm_regulator_set_voltage().
-
-Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-Signed-off-by: Mark Brown <broonie@kernel.org>
----
- drivers/regulator/pwm-regulator.c | 5 -----
- 1 file changed, 5 deletions(-)
-
-diff --git a/drivers/regulator/pwm-regulator.c b/drivers/regulator/pwm-regulator.c
-index fafa3488e960..ab3cc0235843 100644
---- a/drivers/regulator/pwm-regulator.c
-+++ b/drivers/regulator/pwm-regulator.c
-@@ -159,11 +159,6 @@ static int pwm_regulator_set_voltage(struct regulator_dev *rdev,
- 		return ret;
- 	}
- 
--	ret = pwm_enable(drvdata->pwm);
--	if (ret) {
--		dev_err(&rdev->dev, "Failed to enable PWM: %d\n", ret);
--		return ret;
--	}
- 	drvdata->volt_uV = min_uV;
- 
- 	/* Delay required by PWM regulator to settle to the new voltage */
--- 
-2.8.1
+>>
+>>>      - "mediatek,mt6595-disp-pwm": found on mt6595 SoC.
+>>> +   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
+>>>    - reg: physical base address and length of the controller's registers.
+>>>    - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
+>>>      the cell format.
+>>> --
+>>> 1.8.1.1.dirty
+>>>
+>
+>
