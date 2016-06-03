@@ -1,94 +1,68 @@
-From: Brian Norris <briannorris@chromium.org>
-Subject: [PATCH v2 1/4] mfd: cros_ec: Add cros_ec_cmd_xfer_status helper
-Date: Thu,  2 Jun 2016 18:21:41 -0700
-Message-ID: <1464916904-37554-2-git-send-email-briannorris@chromium.org>
-References: <1464916904-37554-1-git-send-email-briannorris@chromium.org>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pf0-f181.google.com ([209.85.192.181]:35972 "EHLO
-	mail-pf0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750966AbcFCBV4 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 2 Jun 2016 21:21:56 -0400
-Received: by mail-pf0-f181.google.com with SMTP id f144so37729945pfa.3
-        for <linux-pwm@vger.kernel.org>; Thu, 02 Jun 2016 18:21:56 -0700 (PDT)
-In-Reply-To: <1464916904-37554-1-git-send-email-briannorris@chromium.org>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: [PATCH v2 0/4] pwm: add support for ChromeOS EC PWM
+Date: Thu,  2 Jun 2016 18:21:40 -0700
+Message-ID: <1464916904-37554-1-git-send-email-briannorris@chromium.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Brian Norris <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Stephen Barber <smbarber-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Javier Martinez Canillas <javier-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, Benson Leung <bleung-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Enric Balletbo <enric.balletbo-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, Randall Spangler <rspangler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Shawn Nematbakhsh <shawnn-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Todd Broch <tbroch-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Gwendal Grignou <gwendal-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>
-Cc: linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Brian Norris <briannorris@chromium.org>
 
-From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Hi,
 
-So that callers of cros_ec_cmd_xfer don't have to repeat boilerplate
-code when checking for errors from the EC side.
+This is version 2 of my series to support the new ChromeOS EC PWM API, so we
+can control, e.g., a PWM backlight when its PWM is attached to the EC. It uses
+Boris's latest "atomic" hooks for the PWM API (i.e., the ->apply() callback),
+which were recently merged.
 
-Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Reviewed-by: Benson Leung <bleung@chromium.org>
-Signed-off-by: Brian Norris <briannorris@chromium.org>
----
-v2: no change
+It seems nice to have the cros_ec_cmd_xfer_status() helper, which we have
+locally in the ChromeOS kernel, and which has been part of another larger patch
+series:
 
- drivers/platform/chrome/cros_ec_proto.c | 15 +++++++++++++++
- include/linux/mfd/cros_ec.h             | 18 ++++++++++++++++++
- 2 files changed, 33 insertions(+)
+https://lkml.org/lkml/2016/4/12/342
 
-diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index b6e161f71b26..ecc544c728f0 100644
---- a/drivers/platform/chrome/cros_ec_proto.c
-+++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -380,3 +380,18 @@ int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev,
- 	return ret;
- }
- EXPORT_SYMBOL(cros_ec_cmd_xfer);
-+
-+int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
-+			    struct cros_ec_command *msg)
-+{
-+	int ret;
-+
-+	ret = cros_ec_cmd_xfer(ec_dev, msg);
-+	if (ret < 0)
-+		dev_err(ec_dev->dev, "Command xfer error (err:%d)\n", ret);
-+	else if (msg->result != EC_RES_SUCCESS)
-+		return -EECRESULT - msg->result;
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(cros_ec_cmd_xfer_status);
-diff --git a/include/linux/mfd/cros_ec.h b/include/linux/mfd/cros_ec.h
-index 64184d27e3cd..b1e48dfbf50a 100644
---- a/include/linux/mfd/cros_ec.h
-+++ b/include/linux/mfd/cros_ec.h
-@@ -40,6 +40,9 @@
- #define EC_MAX_REQUEST_OVERHEAD		1
- #define EC_MAX_RESPONSE_OVERHEAD	2
- 
-+/* ec_command return value for non-success result from EC */
-+#define EECRESULT 1000
-+
- /*
-  * Command interface between EC and AP, for LPC, I2C and SPI interfaces.
-  */
-@@ -226,6 +229,21 @@ int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev,
- 		     struct cros_ec_command *msg);
- 
- /**
-+ * cros_ec_cmd_xfer_status - Send a command to the ChromeOS EC
-+ *
-+ * This function is identical to cros_ec_cmd_xfer, except it returns succes
-+ * status only if both the command was transmitted successfully and the EC
-+ * replied with success status. It's not necessary to check msg->result when
-+ * using this function.
-+ *
-+ * @ec_dev: EC device
-+ * @msg: Message to write
-+ * @return: Num. of bytes transferred on success, <0 on failure
-+ */
-+int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
-+			    struct cros_ec_command *msg);
-+
-+/**
-  * cros_ec_remove - Remove a ChromeOS EC
-  *
-  * Call this to deregister a ChromeOS EC, then clean up any private data.
+So I've picked it into this series as well. Tomeu has acknowledged his USB PD
+series is on hold for now, so this should be OK.
+
+As this touches MFD (sort of), drivers/platform/chrome/, and drivers/pwm/, I'm
+still not sure who it should all go through: Lee, Thierry, or Olof?
+
+Please review.
+
+Regards,
+Brian
+
+Change log (also documented in each patch):
+
+v2:
+ * drop the "google,max-pwms" property
+ * separate the cros_ec vs. PWM abstractions a little more clearly in the driver
+ * remove dynamic kzalloc()'s and rely on on-stack memory instead
+ * auto-probe the number of PWMs supported
+
+Brian Norris (3):
+  mfd: cros_ec: add EC_PWM function definitions
+  doc: dt: pwm: add binding for ChromeOS EC PWM
+  pwm: add ChromeOS EC PWM driver
+
+Tomeu Vizoso (1):
+  mfd: cros_ec: Add cros_ec_cmd_xfer_status helper
+
+ .../devicetree/bindings/pwm/google,cros-ec-pwm.txt |  23 ++
+ drivers/platform/chrome/cros_ec_proto.c            |  15 ++
+ drivers/pwm/Kconfig                                |   7 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-cros-ec.c                          | 237 +++++++++++++++++++++
+ include/linux/mfd/cros_ec.h                        |  18 ++
+ include/linux/mfd/cros_ec_commands.h               |  31 +++
+ 7 files changed, 332 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
+ create mode 100644 drivers/pwm/pwm-cros-ec.c
+
 -- 
 2.8.0.rc3.226.g39d4020
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
