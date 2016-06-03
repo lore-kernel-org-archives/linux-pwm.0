@@ -1,232 +1,75 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH 2/3] pwm: Add MediaTek MT2701 display PWM driver support
-Date: Fri, 3 Jun 2016 17:35:57 +0200
-Message-ID: <5751A3DD.7020402@gmail.com>
-References: <1464597712-5399-1-git-send-email-weiqing.kong@mediatek.com>
- <1464597712-5399-3-git-send-email-weiqing.kong@mediatek.com>
+From: "Franklin Cooper Jr." <fcooper@ti.com>
+Subject: Re: [PATCH v8 0/9] ARM: dts: DRA7: Add dt nodes for PWMSS
+Date: Fri, 3 Jun 2016 14:00:41 -0500
+Message-ID: <47460be2-4a57-09cc-d0a0-1636988b7538@ti.com>
+References: <1462291015-1919-1-git-send-email-fcooper@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:35875 "EHLO
-	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751091AbcFCPgC (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 3 Jun 2016 11:36:02 -0400
-In-Reply-To: <1464597712-5399-3-git-send-email-weiqing.kong@mediatek.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1462291015-1919-1-git-send-email-fcooper@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: thierry.reding@gmail.com, robh+dt@kernel.org, tony@atomide.com, linux@arm.linux.org.uk, paul@pwsan.com, t-kristo@ti.com, mturquette@baylibre.com, sboyd@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, vigneshr@ti.com, nsekhar@ti.com
 List-Id: linux-pwm@vger.kernel.org
-To: Weiqing Kong <weiqing.kong@mediatek.com>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, erin.lo@mediatek.com, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, yh.huang@mediatek.com, yt.shen@mediatek.com
 
+Gentle ping on this series
 
-
-On 30/05/16 10:41, Weiqing Kong wrote:
-> Use the mtk_pwm_data struction to define different registers
-> and add MT2701 specific register operations, such as MT2701
-> doesn't have commit register, needs to disable double buffer
-> before writing register, and needs to select manual mode
-> and use PWM_PERIOD/PWM_HIGH_WIDTH.
+On 05/03/2016 10:56 AM, Franklin S Cooper Jr wrote:
+> This patch series adds support for PWM for DRA7. The IP is the same as the
+> one present in AM33XX and AM437XX.
 >
-> Signed-off-by: Weiqing Kong <weiqing.kong@mediatek.com>
-> ---
->   drivers/pwm/pwm-mtk-disp.c | 89 +++++++++++++++++++++++++++++++++++++---------
->   1 file changed, 72 insertions(+), 17 deletions(-)
+> However, before doing so remove unnecessary hwmod entries for eCAP, ePWM
+> and eQEP.
 >
-> diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
-> index 0ad3385..03b9c9e 100644
-> --- a/drivers/pwm/pwm-mtk-disp.c
-> +++ b/drivers/pwm/pwm-mtk-disp.c
-> @@ -18,33 +18,44 @@
->   #include <linux/io.h>
->   #include <linux/module.h>
->   #include <linux/of.h>
-> +#include <linux/of_device.h>
->   #include <linux/platform_device.h>
->   #include <linux/pwm.h>
->   #include <linux/slab.h>
+> The following are the biggest changes from v7 to v8:
+> Insure DT unit address matches reg property address
 >
->   #define DISP_PWM_EN		0x00
-> -#define PWM_ENABLE_MASK		BIT(0)
+> The following are the biggest changes from v6 to v7:
+> * Several patches to document previously undocumented bindings.
+> * Fix minor issues in binding documents.
 >
->   #define DISP_PWM_COMMIT		0x08
->   #define PWM_COMMIT_MASK		BIT(0)
+> The following are the biggest changes from v5 to v6:
+> * Created two new bindings to allow ECAP and PWM to grab their functional
+> clock from DT rather than depending on PWMSS parent.
+> * Pull in a couple of patches from the "Correct PWM bindings" series. This
+> makes it a bit easier to understand.
 >
-> -#define DISP_PWM_CON_0		0x10
->   #define PWM_CLKDIV_SHIFT	16
->   #define PWM_CLKDIV_MAX		0x3ff
->   #define PWM_CLKDIV_MASK		(PWM_CLKDIV_MAX << PWM_CLKDIV_SHIFT)
+> From the two patchsets a handful of patches have already been pulled in by
+> maintainers and have already made it to linux-next. Therefore, this
+> patch series is built ontop of the latest linux-next.
 >
-> -#define DISP_PWM_CON_1		0x14
->   #define PWM_PERIOD_BIT_WIDTH	12
->   #define PWM_PERIOD_MASK		((1 << PWM_PERIOD_BIT_WIDTH) - 1)
+> Tested on:
+> AM335x, AM437x and X15 + lcd w/backlight
 >
->   #define PWM_HIGH_WIDTH_SHIFT	16
->   #define PWM_HIGH_WIDTH_MASK	(0x1fff << PWM_HIGH_WIDTH_SHIFT)
+> Franklin S Cooper Jr (8):
+>   clk: ti: am335x/am4372: Add tbclk to pwm node
+>   ARM: dts: am437x: Add missing compatibles to PWM binding documents
+>   pwm: pwm-tiehrpwm: Update dt binding document to use generic node name
+>   pwm: pwm-tiecap: Update dt binding document to use proper unit address
+>   ARM: dts: am437x/am33xx/da850: Add new ECAP and EPWM bindings
+>   pwms: pwm-ti*: Get the clock from the PWMSS parent when using old
+>     bindings
+>   ARM: dts: am437x/am33xx: Remove hwmod entries for ECAP and EPWM nodes
+>   ARM: AM335x/AM437x: hwmod: Remove eQEP, ePWM and eCAP hwmod entries
 >
-> +#define MT2701_PWM_MANUAL_SEL_MASK	BIT(1)
-> +#define MT2701_PWM_BLS_DEBUG		0xb0
-
-Do we need to set magic 0x3 in the debug register? If so, this should be 
-part of mtk_pwm_data, just as con0_sel.
-
-> +#define MT2701_PWM_BLS_DEBUG_MASK	0x3
-> +
-> +struct mtk_pwm_data {
-> +	unsigned int enable_bit;
-> +	unsigned int con0;
-> +	unsigned int con0_sel;
-> +	unsigned int con1;
-> +	bool have_commit_reg;
-> +};
-> +
->   struct mtk_disp_pwm {
->   	struct pwm_chip chip;
->   	struct clk *clk_main;
->   	struct clk *clk_mm;
->   	void __iomem *base;
-> +	const struct mtk_pwm_data *data;
-
-Couldn't that just be the offset for the commit register and set it to 
-0x0 if the commit register is not present. Right now, we suppose the 
-DISP_PWM_EN is at offset 0x0, so this should not be a problem.
-
->   };
+> Vignesh R (1):
+>   ARM: dts: DRA7: Add dt nodes for PWMSS
 >
->   static inline struct mtk_disp_pwm *to_mtk_disp_pwm(struct pwm_chip *chip)
-> @@ -106,12 +117,18 @@ static int mtk_disp_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->   		return err;
->   	}
->
-> -	mtk_disp_pwm_update_bits(mdp, DISP_PWM_CON_0, PWM_CLKDIV_MASK,
-> +	mtk_disp_pwm_update_bits(mdp, mdp->data->con0,
-> +				 PWM_CLKDIV_MASK,
->   				 clk_div << PWM_CLKDIV_SHIFT);
-> -	mtk_disp_pwm_update_bits(mdp, DISP_PWM_CON_1,
-> -				 PWM_PERIOD_MASK | PWM_HIGH_WIDTH_MASK, value);
-> -	mtk_disp_pwm_update_bits(mdp, DISP_PWM_COMMIT, PWM_COMMIT_MASK, 1);
-> -	mtk_disp_pwm_update_bits(mdp, DISP_PWM_COMMIT, PWM_COMMIT_MASK, 0);
-> +	mtk_disp_pwm_update_bits(mdp, mdp->data->con1,
-> +				 PWM_PERIOD_MASK | PWM_HIGH_WIDTH_MASK,
-> +				 value);
-> +	if (mdp->data->have_commit_reg) {
-> +		mtk_disp_pwm_update_bits(mdp, DISP_PWM_COMMIT,
-> +					 PWM_COMMIT_MASK, 0x1);
-> +		mtk_disp_pwm_update_bits(mdp, DISP_PWM_COMMIT,
-> +					 PWM_COMMIT_MASK, 0x0);
-
-should be renamed to MT8173_PWM_COMMIT_MASK, although I'm not really a 
-friend of mixing up SoC specific defines with a Soc specific 
-mtk_disp_pwm structure.
-
-Regards,
-Matthias
-
-> +	}
->
->   	clk_disable(mdp->clk_mm);
->   	clk_disable(mdp->clk_main);
-> @@ -134,7 +151,9 @@ static int mtk_disp_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
->   		return err;
->   	}
->
-> -	mtk_disp_pwm_update_bits(mdp, DISP_PWM_EN, PWM_ENABLE_MASK, 1);
-> +	mtk_disp_pwm_update_bits(mdp, DISP_PWM_EN,
-> +				 mdp->data->enable_bit,
-> +				 mdp->data->enable_bit);
->
->   	return 0;
->   }
-> @@ -143,7 +162,8 @@ static void mtk_disp_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->   {
->   	struct mtk_disp_pwm *mdp = to_mtk_disp_pwm(chip);
->
-> -	mtk_disp_pwm_update_bits(mdp, DISP_PWM_EN, PWM_ENABLE_MASK, 0);
-> +	mtk_disp_pwm_update_bits(mdp, DISP_PWM_EN,
-> +				 mdp->data->enable_bit, 0x0);
->
->   	clk_disable(mdp->clk_mm);
->   	clk_disable(mdp->clk_main);
-> @@ -156,12 +176,41 @@ static const struct pwm_ops mtk_disp_pwm_ops = {
->   	.owner = THIS_MODULE,
->   };
->
-> +static const struct mtk_pwm_data mt8173_pwm_data = {
-> +	.enable_bit = BIT(0),
-> +	.con0 = 0x10,
-> +	.con0_sel = 0x0,
-> +	.con1 = 0x14,
-> +	.have_commit_reg = true,
-> +};
-> +
-> +static const struct mtk_pwm_data mt2701_pwm_data = {
-> +	.enable_bit = BIT(16),
-> +	.con0 = 0xa8,
-> +	.con0_sel = 0x2,
-> +	.con1 = 0xac,
-> +	.have_commit_reg = false,
-> +};
-> +
-> +static const struct of_device_id mtk_disp_pwm_of_match[] = {
-> +	{ .compatible = "mediatek,mt2701-disp-bls", .data = &mt2701_pwm_data},
-> +	{ .compatible = "mediatek,mt6595-disp-pwm", .data = &mt8173_pwm_data},
-> +	{ .compatible = "mediatek,mt8173-disp-pwm", .data = &mt8173_pwm_data},
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, mtk_disp_pwm_of_match);
-> +
->   static int mtk_disp_pwm_probe(struct platform_device *pdev)
->   {
-> +	const struct of_device_id *id;
->   	struct mtk_disp_pwm *mdp;
->   	struct resource *r;
->   	int ret;
->
-> +	id = of_match_device(mtk_disp_pwm_of_match, &pdev->dev);
-> +	if (!id)
-> +		return -EINVAL;
-> +
->   	mdp = devm_kzalloc(&pdev->dev, sizeof(*mdp), GFP_KERNEL);
->   	if (!mdp)
->   		return -ENOMEM;
-> @@ -191,6 +240,7 @@ static int mtk_disp_pwm_probe(struct platform_device *pdev)
->   	mdp->chip.ops = &mtk_disp_pwm_ops;
->   	mdp->chip.base = -1;
->   	mdp->chip.npwm = 1;
-> +	mdp->data = id->data;
->
->   	ret = pwmchip_add(&mdp->chip);
->   	if (ret < 0) {
-> @@ -200,6 +250,18 @@ static int mtk_disp_pwm_probe(struct platform_device *pdev)
->
->   	platform_set_drvdata(pdev, mdp);
->
-> +	/*
-> +	 * For MT2701, disable double buffer before writing register
-> +	 * and select manual mode and use PWM_PERIOD/PWM_HIGH_WIDTH.
-> +	 */
-> +	if (!mdp->data->have_commit_reg) {
-> +		mtk_disp_pwm_update_bits(mdp, MT2701_PWM_BLS_DEBUG,
-> +					 MT2701_PWM_BLS_DEBUG_MASK, 0x3);
-> +		mtk_disp_pwm_update_bits(mdp, mdp->data->con0,
-> +					 MT2701_PWM_MANUAL_SEL_MASK,
-> +					 mdp->data->con0_sel);
-> +	}
-> +
->   	return 0;
->
->   disable_clk_mm:
-> @@ -221,13 +283,6 @@ static int mtk_disp_pwm_remove(struct platform_device *pdev)
->   	return ret;
->   }
->
-> -static const struct of_device_id mtk_disp_pwm_of_match[] = {
-> -	{ .compatible = "mediatek,mt8173-disp-pwm" },
-> -	{ .compatible = "mediatek,mt6595-disp-pwm" },
-> -	{ }
-> -};
-> -MODULE_DEVICE_TABLE(of, mtk_disp_pwm_of_match);
-> -
->   static struct platform_driver mtk_disp_pwm_driver = {
->   	.driver = {
->   		.name = "mediatek-disp-pwm",
+>  .../devicetree/bindings/pwm/pwm-tiecap.txt         | 38 ++++++---
+>  .../devicetree/bindings/pwm/pwm-tiehrpwm.txt       | 38 ++++++---
+>  .../devicetree/bindings/pwm/pwm-tipwmss.txt        | 33 +++++++-
+>  arch/arm/boot/dts/am33xx.dtsi                      | 36 ++++++---
+>  arch/arm/boot/dts/am4372.dtsi                      | 63 ++++++++++-----
+>  arch/arm/boot/dts/da850.dtsi                       | 15 ++--
+>  arch/arm/boot/dts/dra7.dtsi                        | 90 ++++++++++++++++++++++
+>  .../mach-omap2/omap_hwmod_33xx_43xx_common_data.h  | 18 -----
+>  .../omap_hwmod_33xx_43xx_interconnect_data.c       | 64 ---------------
+>  .../mach-omap2/omap_hwmod_33xx_43xx_ipblock_data.c | 84 --------------------
+>  arch/arm/mach-omap2/omap_hwmod_33xx_data.c         |  9 ---
+>  arch/arm/mach-omap2/omap_hwmod_43xx_data.c         | 54 -------------
+>  drivers/clk/ti/clk-33xx.c                          |  3 +
+>  drivers/clk/ti/clk-43xx.c                          |  6 ++
+>  drivers/pwm/pwm-tiecap.c                           |  7 ++
+>  drivers/pwm/pwm-tiehrpwm.c                         |  7 ++
+>  16 files changed, 281 insertions(+), 284 deletions(-)
 >
