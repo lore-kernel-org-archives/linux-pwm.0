@@ -1,171 +1,159 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH 13/14] regulator: pwm: Support extra continuous mode cases
-Date: Fri,  3 Jun 2016 10:23:11 +0200
-Message-ID: <1464942192-25967-14-git-send-email-boris.brezillon@free-electrons.com>
+Subject: [PATCH 04/14] pwm: rockchip: Add support for hardware readout
+Date: Fri,  3 Jun 2016 10:23:02 +0200
+Message-ID: <1464942192-25967-5-git-send-email-boris.brezillon@free-electrons.com>
 References: <1464942192-25967-1-git-send-email-boris.brezillon@free-electrons.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1464942192-25967-1-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>
-Cc: Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <milo.kim@ti.com>, Doug Anderson <dianders@google.com>, Caesar Wang <wxt@rock-chips.com>, Stephen Barber <smbarber@chromium.org>, Brian Norris <briannorris@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, kernel@stlinux.com, Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Brian Norris <briannorris@chromium.org>, linux-kernel@vger.kernel.org, Patrice Chotard <patrice.chotard@st.com>, Doug Anderson <dianders@google.com>, Milo Kim <milo.kim@ti.com>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, kernel@stlinux.com, Boris Brezillon <boris.brezillon@free-electrons.com>, Kumar Gala <galak@codeaurora.org>, Maxime Coquelin <maxime.coquelin@st.com>, Stephen Barber <smbarber@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, linux-arm-kernel@lists.infradead.org, Caesar Wang <wxt@rock-chips.com>
 List-Id: linux-pwm@vger.kernel.org
 
-The continuous mode allows one to declare a PWM regulator without having
-to declare the voltage <-> dutycycle association table. It works fine as
-long as your voltage(dutycycle) function is linear, but also has the
-following constraints:
-
-- dutycycle for min_uV = 0%
-- dutycycle for max_uV = 100%
-- dutycycle for min_uV < dutycycle for max_uV
-
-While the linearity constraint is acceptable for now, we sometimes need to
-restrict of the PWM range (to limit the maximum/minimum voltage for
-example) or have a min_uV_dutycycle > max_uV_dutycycle (this could be
-tweaked with PWM polarity, but not all PWMs support inverted polarity).
-
-Add the pwm-dutycycle-range and pwm-dutycycle-unit DT properties to define
-such constraints. If those properties are not defined, the PWM regulator
-use the default pwm-dutycycle-range = <0 100> and
-pwm-dutycycle-unit = <100> values (existing behavior).
+Implement the ->get_state() function to expose initial state.
 
 Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 ---
- drivers/regulator/pwm-regulator.c | 80 ++++++++++++++++++++++++++++++++++-----
- 1 file changed, 71 insertions(+), 9 deletions(-)
+ drivers/pwm/pwm-rockchip.c | 67 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 67 insertions(+)
 
-diff --git a/drivers/regulator/pwm-regulator.c b/drivers/regulator/pwm-regulator.c
-index c39ecd1..2e70eb1 100644
---- a/drivers/regulator/pwm-regulator.c
-+++ b/drivers/regulator/pwm-regulator.c
-@@ -21,6 +21,12 @@
- #include <linux/of_device.h>
- #include <linux/pwm.h>
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index 68d72ce..dfacf7d 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -51,6 +51,8 @@ struct rockchip_pwm_data {
  
-+struct pwm_continuous_reg_data {
-+	unsigned int min_uV_dutycycle;
-+	unsigned int max_uV_dutycycle;
-+	unsigned int dutycycle_unit;
-+};
-+
- struct pwm_regulator_data {
- 	/*  Shared */
- 	struct pwm_device *pwm;
-@@ -28,6 +34,9 @@ struct pwm_regulator_data {
- 	/* Voltage table */
- 	struct pwm_voltages *duty_cycle_table;
+ 	void (*set_enable)(struct pwm_chip *chip,
+ 			   struct pwm_device *pwm, bool enable);
++	void (*get_state)(struct pwm_chip *chip, struct pwm_device *pwm,
++			  struct pwm_state *state);
+ };
  
-+	/* Continuous mode info */
-+	struct pwm_continuous_reg_data continuous;
-+
- 	/* regulator descriptor */
- 	struct regulator_desc desc;
- 
-@@ -132,31 +141,67 @@ static int pwm_regulator_is_enabled(struct regulator_dev *dev)
- static int pwm_regulator_get_voltage(struct regulator_dev *rdev)
- {
- 	struct pwm_regulator_data *drvdata = rdev_get_drvdata(rdev);
-+	unsigned int min_uV_duty = drvdata->continuous.min_uV_dutycycle;
-+	unsigned int max_uV_duty = drvdata->continuous.max_uV_dutycycle;
-+	unsigned int duty_unit = drvdata->continuous.dutycycle_unit;
- 	int min_uV = rdev->constraints->min_uV;
--	int diff = rdev->constraints->max_uV - min_uV;
-+	int max_uV = rdev->constraints->max_uV;
-+	int diff_uV = max_uV - min_uV;
- 	struct pwm_state pstate;
-+	unsigned int diff_duty;
-+	unsigned int voltage;
- 
- 	pwm_get_state(drvdata->pwm, &pstate);
- 
--	return min_uV + pwm_get_relative_duty_cycle(&pstate, diff);
-+	voltage = pwm_get_relative_duty_cycle(&pstate, duty_unit);
-+
-+	if (max_uV_duty < min_uV_duty) {
-+		voltage = min_uV_duty - voltage;
-+		diff_duty = min_uV_duty - max_uV_duty;
-+	} else {
-+		voltage = voltage - min_uV_duty;
-+		diff_duty = max_uV_duty - min_uV_duty;
-+	}
-+
-+	voltage = DIV_ROUND_CLOSEST_ULL((u64)voltage * diff_uV, diff_duty);
-+
-+	return voltage + min_uV;
+ static inline struct rockchip_pwm_chip *to_rockchip_pwm_chip(struct pwm_chip *c)
+@@ -75,6 +77,19 @@ static void rockchip_pwm_set_enable_v1(struct pwm_chip *chip,
+ 	writel_relaxed(val, pc->base + pc->data->regs.ctrl);
  }
  
- static int pwm_regulator_set_voltage(struct regulator_dev *rdev,
--					int min_uV, int max_uV,
--					unsigned *selector)
-+				     int req_min_uV, int req_max_uV,
-+				     unsigned int *selector)
++static void rockchip_pwm_get_state_v1(struct pwm_chip *chip,
++				      struct pwm_device *pwm,
++				      struct pwm_state *state)
++{
++	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++	u32 enable_conf = PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN;
++	u32 val;
++
++	val = readl(pc->base + pc->data->regs.ctrl);
++	if ((val & enable_conf) == enable_conf)
++		state->enabled = true;
++}
++
+ static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip,
+ 				       struct pwm_device *pwm, bool enable)
  {
- 	struct pwm_regulator_data *drvdata = rdev_get_drvdata(rdev);
-+	unsigned int min_uV_duty = drvdata->continuous.min_uV_dutycycle;
-+	unsigned int max_uV_duty = drvdata->continuous.max_uV_dutycycle;
-+	unsigned int duty_unit = drvdata->continuous.dutycycle_unit;
- 	unsigned int ramp_delay = rdev->constraints->ramp_delay;
--	unsigned int req_diff = min_uV - rdev->constraints->min_uV;
-+	int min_uV = rdev->constraints->min_uV;
-+	int max_uV = rdev->constraints->max_uV;
-+	int diff_uV = max_uV - min_uV;
- 	struct pwm_state pstate;
--	unsigned int diff;
-+	unsigned int diff_duty;
-+	unsigned int dutycycle;
- 	int ret;
- 
- 	pwm_prepare_new_state(drvdata->pwm, &pstate);
--	diff = rdev->constraints->max_uV - rdev->constraints->min_uV;
- 
--	/* We pass diff as the scale to get a uV precision. */
--	pwm_set_relative_duty_cycle(&pstate, req_diff, diff);
-+	if (max_uV_duty < min_uV_duty)
-+		diff_duty = min_uV_duty - max_uV_duty;
-+	else
-+		diff_duty = max_uV_duty - min_uV_duty;
-+
-+	dutycycle = DIV_ROUND_CLOSEST_ULL((u64)(req_min_uV - min_uV) *
-+					  diff_duty,
-+					  diff_uV);
-+
-+	if (max_uV_duty < min_uV_duty)
-+		dutycycle = min_uV_duty - dutycycle;
-+	else
-+		dutycycle = min_uV_duty + dutycycle;
-+
-+	pwm_set_relative_duty_cycle(&pstate, dutycycle, duty_unit);
- 
- 	ret = pwm_apply_state(drvdata->pwm, &pstate);
- 	if (ret) {
-@@ -237,11 +282,28 @@ static int pwm_regulator_init_table(struct platform_device *pdev,
- static int pwm_regulator_init_continuous(struct platform_device *pdev,
- 					 struct pwm_regulator_data *drvdata)
- {
-+	u32 dutycycle_range[2] = { 0, 100 };
-+	u32 dutycycle_unit = 100;
-+
- 	memcpy(&drvdata->ops, &pwm_regulator_voltage_continuous_ops,
- 	       sizeof(drvdata->ops));
- 	drvdata->desc.ops = &drvdata->ops;
- 	drvdata->desc.continuous_voltage_range = true;
- 
-+	of_property_read_u32_array(pdev->dev.of_node,
-+				   "pwm-dutycycle-range",
-+				   dutycycle_range, 2);
-+	of_property_read_u32(pdev->dev.of_node, "pwm-dutycycle-unit",
-+			     &dutycycle_unit);
-+
-+	if (dutycycle_range[0] > dutycycle_unit ||
-+	    dutycycle_range[1] > dutycycle_unit)
-+		return -EINVAL;
-+
-+	drvdata->continuous.dutycycle_unit = dutycycle_unit;
-+	drvdata->continuous.min_uV_dutycycle = dutycycle_range[0];
-+	drvdata->continuous.max_uV_dutycycle = dutycycle_range[1];
-+
- 	return 0;
+@@ -98,6 +113,53 @@ static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip,
+ 	writel_relaxed(val, pc->base + pc->data->regs.ctrl);
  }
  
++static void rockchip_pwm_get_state_v2(struct pwm_chip *chip,
++				      struct pwm_device *pwm,
++				      struct pwm_state *state)
++{
++	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++	u32 enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE |
++			  PWM_CONTINUOUS;
++	u32 val;
++
++	val = readl(pc->base + pc->data->regs.ctrl);
++	if ((val & enable_conf) != enable_conf)
++		return;
++
++	state->enabled = true;
++
++	if (!(val & PWM_DUTY_POSITIVE))
++		state->polarity = PWM_POLARITY_INVERSED;
++}
++
++static void rockchip_pwm_get_state(struct pwm_chip *chip,
++				   struct pwm_device *pwm,
++				   struct pwm_state *state)
++{
++	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++	unsigned long clk_rate;
++	u64 tmp;
++	int ret;
++
++	ret = clk_enable(pc->clk);
++	if (ret)
++		return;
++
++	clk_rate = clk_get_rate(pc->clk);
++
++	tmp = readl(pc->base + pc->data->regs.period);
++	tmp *= pc->data->prescaler * NSEC_PER_SEC;
++	state->period = DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
++
++	tmp = readl(pc->base + pc->data->regs.duty);
++	tmp *= pc->data->prescaler * NSEC_PER_SEC;
++	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
++
++	pc->data->get_state(chip, pwm, state);
++
++	clk_disable(pc->clk);
++}
++
+ static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			       int duty_ns, int period_ns)
+ {
+@@ -170,6 +232,7 @@ static void rockchip_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ }
+ 
+ static const struct pwm_ops rockchip_pwm_ops_v1 = {
++	.get_state = rockchip_pwm_get_state,
+ 	.config = rockchip_pwm_config,
+ 	.enable = rockchip_pwm_enable,
+ 	.disable = rockchip_pwm_disable,
+@@ -177,6 +240,7 @@ static const struct pwm_ops rockchip_pwm_ops_v1 = {
+ };
+ 
+ static const struct pwm_ops rockchip_pwm_ops_v2 = {
++	.get_state = rockchip_pwm_get_state,
+ 	.config = rockchip_pwm_config,
+ 	.set_polarity = rockchip_pwm_set_polarity,
+ 	.enable = rockchip_pwm_enable,
+@@ -194,6 +258,7 @@ static const struct rockchip_pwm_data pwm_data_v1 = {
+ 	.prescaler = 2,
+ 	.ops = &rockchip_pwm_ops_v1,
+ 	.set_enable = rockchip_pwm_set_enable_v1,
++	.get_state = rockchip_pwm_get_state_v1,
+ };
+ 
+ static const struct rockchip_pwm_data pwm_data_v2 = {
+@@ -206,6 +271,7 @@ static const struct rockchip_pwm_data pwm_data_v2 = {
+ 	.prescaler = 1,
+ 	.ops = &rockchip_pwm_ops_v2,
+ 	.set_enable = rockchip_pwm_set_enable_v2,
++	.get_state = rockchip_pwm_get_state_v2,
+ };
+ 
+ static const struct rockchip_pwm_data pwm_data_vop = {
+@@ -218,6 +284,7 @@ static const struct rockchip_pwm_data pwm_data_vop = {
+ 	.prescaler = 1,
+ 	.ops = &rockchip_pwm_ops_v2,
+ 	.set_enable = rockchip_pwm_set_enable_v2,
++	.get_state = rockchip_pwm_get_state_v2,
+ };
+ 
+ static const struct of_device_id rockchip_pwm_dt_ids[] = {
 -- 
 2.7.4
