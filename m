@@ -1,48 +1,22 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH v2 1/6] ir-rx51: Fix build after multiarch changes broke
- it
-Date: Sun, 5 Jun 2016 21:24:19 +0200
-Message-ID: <20160605192419.GA20086@amd>
-References: <1463427254-7728-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
- <1463427254-7728-2-git-send-email-ivo.g.dimitrov.75@gmail.com>
+From: Google UK Ltd <info@byggfastiskara.se>
+Subject: Fwd: CONGRATULATIONS
+Date: Mon, 06 Jun 2016 03:53:41 +0100
+Message-ID: <a7558b557a77aced5268e30d5261cb00__36492.8220668391$1465182048$gmane$org@byggfastiskara.se>
+Reply-To: google_claims@126.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1463427254-7728-2-git-send-email-ivo.g.dimitrov.75@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, thierry.reding@gmail.com, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, mchehab@osg.samsung.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org, sre@kernel.org, pali.rohar@gmail.com, Neil Armstrong <narmstrong@baylibre.com>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from smtp.outgoing.loopia.se ([194.9.94.113]:14870 "EHLO
+	smtp.outgoing.loopia.se" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752325AbcFFC75 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Sun, 5 Jun 2016 22:59:57 -0400
+Received: from s554.loopia.se (localhost [127.0.0.1])
+	by s554.loopia.se (Postfix) with ESMTP id 9C88E182F153
+	for <linux-pwm@vger.kernel.org>; Mon,  6 Jun 2016 04:53:42 +0200 (CEST)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon 2016-05-16 22:34:09, Ivaylo Dimitrov wrote:
-> From: Tony Lindgren <tony@atomide.com>
-> 
-> The ir-rx51 driver for n900 has been disabled since the multiarch
-> changes as plat include directory no longer is SoC specific.
-> 
-> Let's fix it with minimal changes to pass the dmtimer calls in
-> pdata. Then the following changes can be done while things can
-> be tested to be working for each change:
-> 
-> 1. Change the non-pwm dmtimer to use just hrtimer if possible
-> 
-> 2. Change the pwm dmtimer to use Linux PWM API with the new
->    drivers/pwm/pwm-omap-dmtimer.c and remove the direct calls
->    to dmtimer functions
-> 
-> 3. Parse configuration from device tree and drop the pdata
-> 
-> Note compilation of this depends on the previous patch
-> "ARM: OMAP2+: Add more functions to pwm pdata for ir-rx51".
-> 
-> Cc: Mauro Carvalho Chehab <mchehab@osg.samsung.com>
-> Cc: Neil Armstrong <narmstrong@baylibre.com>
-> Cc: linux-media@vger.kernel.org
-> Signed-off-by: Tony Lindgren <tony@atomide.com>
-
-Acked-by: Pavel Machek <pavel@ucw.cz>
-
--- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+Please find attached Letter confirming your email address as one of 
+Google winners for 2016 annual promotion.
