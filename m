@@ -1,104 +1,95 @@
-From: Tomi Valkeinen <tomi.valkeinen@ti.com>
-Subject: Re: [PATCH] backlight: pwm_bl: disable PWM when 'duty_cycle' is zero
-Date: Tue, 7 Jun 2016 11:02:18 +0300
-Message-ID: <57567F8A.10603@ti.com>
-References: <1465209896-10319-1-git-send-email-LW@KARO-electronics.de>
- <5755664D.5070109@ti.com> <20160607084907.14ffdc03@ipc1.ka-ro>
+From: Peter Griffin <peter.griffin@linaro.org>
+Subject: Re: [STLinux Kernel] [[PATCH v2] 07/11] pwm: sti: Supply PWM Capture
+ clock handling
+Date: Tue, 7 Jun 2016 09:12:51 +0100
+Message-ID: <20160607081251.GA22744@griffinp-ThinkPad-X1-Carbon-2nd>
+References: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
+ <1461320295-20414-8-git-send-email-lee.jones@linaro.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="aBGTKVr9S59UcVpum8XMionpkD6iXbgl7"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160607084907.14ffdc03@ipc1.ka-ro>
+Content-Disposition: inline
+In-Reply-To: <1461320295-20414-8-git-send-email-lee.jones@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Lothar_Wa=c3=9fmann?= <LW@KARO-electronics.de>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, kernel@stlinux.com, thierry.reding@gmail.com
 List-Id: linux-pwm@vger.kernel.org
 
---aBGTKVr9S59UcVpum8XMionpkD6iXbgl7
-Content-Type: multipart/mixed; boundary="JFpkeGILC0tawt8FFhTx910gbDfLiTahT"
-From: Tomi Valkeinen <tomi.valkeinen@ti.com>
-To: =?UTF-8?Q?Lothar_Wa=c3=9fmann?= <LW@KARO-electronics.de>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>,
- Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>,
- Thierry Reding <thierry.reding@gmail.com>, linux-fbdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Message-ID: <57567F8A.10603@ti.com>
-Subject: Re: [PATCH] backlight: pwm_bl: disable PWM when 'duty_cycle' is zero
-References: <1465209896-10319-1-git-send-email-LW@KARO-electronics.de>
- <5755664D.5070109@ti.com> <20160607084907.14ffdc03@ipc1.ka-ro>
-In-Reply-To: <20160607084907.14ffdc03@ipc1.ka-ro>
+Hi Lee,
 
---JFpkeGILC0tawt8FFhTx910gbDfLiTahT
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+On Fri, 22 Apr 2016, Lee Jones wrote:
 
-On 07/06/16 09:49, Lothar Wa=C3=9Fmann wrote:
-> Hi,
->=20
-> On Mon, 6 Jun 2016 15:02:21 +0300 Tomi Valkeinen wrote:
->> Hi,
->>
->> On 06/06/16 13:44, Lothar Wa=C3=9Fmann wrote:
->>> 'brightness' is usually an index into a table of duty_cycle values,
->>> where the value at index 0 may well be non-zero
->>> (tegra30-apalis-eval.dts and tegra30-colibri-eval-v3.dts are real-lif=
-e
->>> examples).
->>> Thus brightness =3D=3D 0 does not necessarily mean that the PWM outpu=
-t
->>> will be inactive.
->>> Check for 'duty_cycle =3D=3D 0' rather than 'brightness =3D=3D 0' to =
-decide
->>> whether to disable the PWM.
->>
->> The binding doc does say:
->>
->>   - brightness-levels: Array of distinct brightness levels. Typically =
-these
->>       are in the range from 0 to 255, but any range starting at 0 will=
- do.
->>       The actual brightness level (PWM duty cycle) will be interpolate=
-d
->>       from these values. 0 means a 0% duty cycle (darkest/off), while =
-the
->>       last value in the array represents a 100% duty cycle (brightest)=
-=2E
->>
-> So, what should I do, when I need a range of levels that doesn't start
-> at 0? E.g. if the brightness is inverse proportional to the PWM duty
-> cycle.
+> ST's PWM IP is supplied by 2 different clocks.  One for PWM
+> Output and the other for Capture.  This patch provides clock
+> handling for the latter.
+> 
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> ---
+>  drivers/pwm/pwm-sti.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+> 
+> diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
+> index 2f61e1e..78979d0 100644
+> --- a/drivers/pwm/pwm-sti.c
+> +++ b/drivers/pwm/pwm-sti.c
+> @@ -74,6 +74,7 @@ struct sti_pwm_compat_data {
+>  struct sti_pwm_chip {
+>  	struct device *dev;
+>  	struct clk *pwm_clk;
+> +	struct clk *cpt_clk;
+>  	struct regmap *regmap;
+>  	struct sti_pwm_compat_data *cdata;
+>  	struct regmap_field *prescale_low;
+> @@ -183,6 +184,10 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  		if (ret)
+>  			return ret;
+>  
+> +		ret = clk_enable(pc->cpt_clk);
+> +		if (ret)
+> +			return ret;
+> +
+>  		if (!period_same) {
+>  			ret = sti_pwm_get_prescale(pc, period_ns, &prescale);
+>  			if (ret)
+> @@ -227,6 +232,7 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  
+>  clk_dis:
+>  	clk_disable(pc->pwm_clk);
+> +	clk_disable(pc->cpt_clk);
+>  	return ret;
+>  }
+>  
+> @@ -246,6 +252,10 @@ static int sti_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+>  		if (ret)
+>  			goto out;
+>  
+> +		ret = clk_enable(pc->cpt_clk);
+> +		if (ret)
+> +			goto out;
+> +
+>  		ret = regmap_field_write(pc->pwm_out_en, 1);
+>  		if (ret) {
+>  			dev_err(dev, "failed to enable PWM device:%d\n",
+> @@ -271,6 +281,7 @@ static void sti_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+>  	regmap_field_write(pc->pwm_out_en, 0);
+>  
+>  	clk_disable(pc->pwm_clk);
+> +	clk_disable(pc->cpt_clk);
+>  	mutex_unlock(&pc->sti_pwm_lock);
+>  }
+>  
+> @@ -390,6 +401,18 @@ static int sti_pwm_probe(struct platform_device *pdev)
+>  		return ret;
+>  	}
+>  
+> +	pc->cpt_clk = of_clk_get_by_name(dev->of_node, "capture");
+> +	if (IS_ERR(pc->cpt_clk)) {
+> +		dev_err(dev, "failed to get PWM capture clock\n");
+> +		return PTR_ERR(pc->cpt_clk);
+> +	}
 
-That's a question to the PWM/backlight maintainers, but I think in the
-addition of your patch, the binding doc needs to be changed, as it
-doesn't hold true after your patch.
+The dt binding document pwm-st.txt also needs updating for this extra clock.
 
- Tomi
+regards,
 
-
---JFpkeGILC0tawt8FFhTx910gbDfLiTahT--
-
---aBGTKVr9S59UcVpum8XMionpkD6iXbgl7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBCAAGBQJXVn+LAAoJEPo9qoy8lh71XfcP/iD0AxZD8UubwRZ5a37SXaUh
-82QyLGYlKRv38iqOSr/r3/AeXDpDTOmhwZbyBUKHa0gZLTBP1x3G85VNeHsQQMam
-0dXUbcvospBDX6xMChjQGsG0l+fWVS6rX1XkXFvVF3CmYL4UdoHnptIG9toocZSR
-VDTFt17MHxHubQdUZxJjWHsGaEH+PrSIGXgHPJWWlVg4zGUR4ms3nQk9udair6YW
-pGZ2PvK8qWVX0l81xCqatwQ0XwQxY7AYVUvlsnI3kprvnRMrxR03XOT63G1Gb+/Z
-Hh9Re1pFE9/4jc0V9Umn31nm6oJmZAJ0lPzqX2y9PKqEHGTCSfruv6we5npGF44Y
-0JZDRyDnuB5BO75eoVMCRjSIR69HltoC+utl2yZQcw1HiOXULPZLlNHUgt37Njpm
-g4uFYTD4cGgfqBMznZ3849qbYMj2s4+HkcQKVpXmOHwKGNWqfGmey4+cJIp3H5Gk
-7xhmcV1ALWACIf7bMa0G3hrH2RKwk247FzG4hMpXwQ0FMfd1Anp6z8YELmGj6CvN
-F0xj2G7wjU/BBnYt6oMe9QlFh2oXoy/K0wmhxhlxnDR3ldtBQWWDqPDYIHFFj/iV
-7PfYVgSVvS1A2HiJqTsIiGY4RzsDDJlurNnUaMPr7QDHI5QEfNqOiKmpB7L0MOgm
-N2oICrC3wsd689HC0LGB
-=huGB
------END PGP SIGNATURE-----
-
---aBGTKVr9S59UcVpum8XMionpkD6iXbgl7--
+Peter.
