@@ -1,66 +1,55 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v2 00/11] pwm: Add support for PWM Capture
-Date: Mon, 6 Jun 2016 20:46:03 +0200
-Message-ID: <20160606204603.09a8d2cf@bbrezillon>
-References: <1461320295-20414-1-git-send-email-lee.jones@linaro.org>
-	<20160429094010.6bfb131c@bbrezillon>
-	<20160606153231.GE1525@dell>
+From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
+Subject: Re: [PATCH] backlight: pwm_bl: disable PWM when 'duty_cycle' is
+ zero
+Date: Tue, 7 Jun 2016 08:49:07 +0200
+Message-ID: <20160607084907.14ffdc03@ipc1.ka-ro>
+References: <1465209896-10319-1-git-send-email-LW@KARO-electronics.de>
+	<5755664D.5070109@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:36617 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751208AbcFFSqH (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Jun 2016 14:46:07 -0400
-In-Reply-To: <20160606153231.GE1525@dell>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5755664D.5070109@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tomi Valkeinen <tomi.valkeinen@ti.com>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, kernel@stlinux.com, ajitpal.singh@st.com, thierry.reding@gmail.com, maxime.coquelin@st.com
 
-On Mon, 6 Jun 2016 16:32:31 +0100
-Lee Jones <lee.jones@linaro.org> wrote:
+Hi,
 
-> On Fri, 29 Apr 2016, Boris Brezillon wrote:
-> 
-> > Hi Lee,
-> > 
-> > On Fri, 22 Apr 2016 11:18:04 +0100
-> > Lee Jones <lee.jones@linaro.org> wrote:
-> >   
-> > > The first part of this set extends the current PWM API to allow external
-> > > code to request a PWM Capture.  Subsequent patches then make use of the
-> > > new API by providing a userspace offering via /sysfs.  The final part of
-> > > the set supplies PWM Capture functionality into the already existing STi
-> > > PWM driver.  
-> > 
-> > Is there a reason you decided to not put this driver in IIO? IMHO, it
-> > would be more appropriate to make your PWM device an MFD that can either
-> > bind to the PWM or the capture driver.
-> > And BTW, IIO already has a sysfs interface (you may have to extend the
-> > API to support your type of capture though).  
-> 
-> Multi-Function Device drivers can only be justified if the IP
-> contained does not and can not live in a single subsystem.  The IP
-> which controls both PWM-in and PWM-out in this device is the same.  I
-> can't fathom a sane reason why you would wish to separate this
-> functionality over multiple subsystems.
-> 
+On Mon, 6 Jun 2016 15:02:21 +0300 Tomi Valkeinen wrote:
+> Hi,
+>=20
+> On 06/06/16 13:44, Lothar Wa=C3=9Fmann wrote:
+> > 'brightness' is usually an index into a table of duty_cycle values,
+> > where the value at index 0 may well be non-zero
+> > (tegra30-apalis-eval.dts and tegra30-colibri-eval-v3.dts are real-l=
+ife
+> > examples).
+> > Thus brightness =3D=3D 0 does not necessarily mean that the PWM out=
+put
+> > will be inactive.
+> > Check for 'duty_cycle =3D=3D 0' rather than 'brightness =3D=3D 0' t=
+o decide
+> > whether to disable the PWM.
+>=20
+> The binding doc does say:
+>=20
+>   - brightness-levels: Array of distinct brightness levels. Typically=
+ these
+>       are in the range from 0 to 255, but any range starting at 0 wil=
+l do.
+>       The actual brightness level (PWM duty cycle) will be interpolat=
+ed
+>       from these values. 0 means a 0% duty cycle (darkest/off), while=
+ the
+>       last value in the array represents a 100% duty cycle (brightest=
+).
+>=20
+So, what should I do, when I need a range of levels that doesn't start
+at 0? E.g. if the brightness is inverse proportional to the PWM duty
+cycle.
 
-Well, I still think what you describe as PWM-in is actually a capture
-device that would perfectly fit in the IIO subsystem, and I guess you
-can't use the PWM IP as a capture and waveform generator device as the
-same time, which is why I suggested the MFD approach to select the mode.
 
-Anyway, I'm not the PWM or the IIO maintainer, so I'm just sharing my
-opinion here.
 
-Regards,
-
-Boris
-
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Lothar Wa=C3=9Fmann
