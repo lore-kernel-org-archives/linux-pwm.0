@@ -1,43 +1,73 @@
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH] pwm: sysfs: get return value from pwm_apply_state()
-Date: Wed, 8 Jun 2016 10:58:23 +0900
-Message-ID: <1465351103-3152-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: weiqing kong <weiqing.kong@mediatek.com>
+Subject: Re: [PATCH 1/3] dt-bindings: pwm: Add MediaTek display PWM bindings
+Date: Wed, 8 Jun 2016 14:48:52 +0800
+Message-ID: <1465368532.5209.15.camel@mhfsdcap03>
+References: <1464597712-5399-1-git-send-email-weiqing.kong@mediatek.com>
+	 <1464597712-5399-2-git-send-email-weiqing.kong@mediatek.com>
+	 <20160602224550.GA19256@rob-hp-laptop> <1464936349.5209.9.camel@mhfsdcap03>
+	 <57519C59.5040107@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relmlor1.renesas.com ([210.160.252.171]:11626 "EHLO
-	relmlie4.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1753880AbcFHB6o (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Jun 2016 21:58:44 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <57519C59.5040107@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, erin.lo@mediatek.com, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, yh.huang@mediatek.com, yt.shen@mediatek.com
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: ryo.kodama.vz@renesas.com, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-From: Ryo Kodama <ryo.kodama.vz@renesas.com>
+On Fri, 2016-06-03 at 17:03 +0200, Matthias Brugger wrote:
+> 
+> On 03/06/16 08:45, weiqing kong wrote:
+> > On Thu, 2016-06-02 at 17:45 -0500, Rob Herring wrote:
+> >> On Mon, May 30, 2016 at 04:41:50PM +0800, Weiqing Kong wrote:
+> >>> Add MT2701 compatible string.
+> >>>
+> >>> Signed-off-by: Weiqing Kong <weiqing.kong@mediatek.com>
+> >>> ---
+> >>>   Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt | 5 +++--
+> >>>   1 file changed, 3 insertions(+), 2 deletions(-)
+> >>>
+> >>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> >>> index f8f59ba..f2f2fa9 100644
+> >>> --- a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> >>> +++ b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.txt
+> >>> @@ -1,9 +1,10 @@
+> >>>   MediaTek display PWM controller
+> >>>
+> >>>   Required properties:
+> >>> - - compatible: should be "mediatek,<name>-disp-pwm":
+> >>> -   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
+> >>> + - compatible: should be like these:
+> >>> +   - "mediatek,mt2701-disp-bls": found on mt2701 SoC.
+> >>
+> >> Why bls instead of pwm?
+> >
+> > In mt6595/mt8173, we have a hardware module named pwm.
+> > In mt2701, we have bls hardware module which includes disp pwm function,
+> > so we named it mt2701-disp-bls rather than mt2701-disp-pwm in order to
+> > match with hardware spec.
+> > thanks.
+> >
+> 
+>  From what I understand pwm module and disp pwm in mt6589/mt8173 is 
+> independent from the disp pwm. Actually the disp pwm in mt6589 is part 
+> of the bls module, so this should me mediatek,mt2701-disp-pwm as well
+> 
+> Thanks,
+> Matthias
+> 
 
-This patch adds to check the return value from pwm_apply_state()
-used in enable_store(). The error of enable_store() doesn't work
-if the return value doesn't received.
+ok, I will modify it into mediatek,mt2701-disp-pwm. 
 
-Signed-off-by: Ryo Kodama <ryo.kodama.vz@renesas.com>
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
----
- drivers/pwm/sysfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index d985992..01695d4 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -152,7 +152,7 @@ static ssize_t enable_store(struct device *child,
- 		goto unlock;
- 	}
- 
--	pwm_apply_state(pwm, &state);
-+	ret = pwm_apply_state(pwm, &state);
- 
- unlock:
- 	mutex_unlock(&export->lock);
--- 
-1.9.1
+> >>
+> >>>      - "mediatek,mt6595-disp-pwm": found on mt6595 SoC.
+> >>> +   - "mediatek,mt8173-disp-pwm": found on mt8173 SoC.
+> >>>    - reg: physical base address and length of the controller's registers.
+> >>>    - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
+> >>>      the cell format.
+> >>> --
+> >>> 1.8.1.1.dirty
+> >>>
+> >
+> >
