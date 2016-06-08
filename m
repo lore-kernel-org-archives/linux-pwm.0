@@ -1,7 +1,7 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v3 02/20] ARM: dts: STiH407: Supply PWM Capture IRQ
-Date: Wed,  8 Jun 2016 10:21:17 +0100
-Message-ID: <20160608092135.21184-3-lee.jones@linaro.org>
+Subject: [PATCH v3 06/20] ARM: dts: STiH416: Define PWM Capture clock
+Date: Wed,  8 Jun 2016 10:21:21 +0100
+Message-ID: <20160608092135.21184-7-lee.jones@linaro.org>
 References: <20160608092135.21184-1-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,20 +23,23 @@ List-Id: linux-pwm@vger.kernel.org
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- arch/arm/boot/dts/stih407-family.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/stih416.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/stih407-family.dtsi b/arch/arm/boot/dts/stih407-family.dtsi
-index 0723900..37a3bcc 100644
---- a/arch/arm/boot/dts/stih407-family.dtsi
-+++ b/arch/arm/boot/dts/stih407-family.dtsi
-@@ -664,6 +664,7 @@
- 			compatible	= "st,sti-pwm";
- 			#pwm-cells	= <2>;
- 			reg		= <0x9810000 0x68>;
-+			interrupts      = <GIC_SPI 128 IRQ_TYPE_NONE>;
- 			pinctrl-names	= "default";
- 			pinctrl-0	= <&pinctrl_pwm0_chan0_default>;
- 			clock-names	= "pwm";
+diff --git a/arch/arm/boot/dts/stih416.dtsi b/arch/arm/boot/dts/stih416.dtsi
+index 28d84c71..c93e78d2 100644
+--- a/arch/arm/boot/dts/stih416.dtsi
++++ b/arch/arm/boot/dts/stih416.dtsi
+@@ -483,8 +483,8 @@
+ 					&pinctrl_pwm0_chan2_default
+ 					&pinctrl_pwm0_chan3_default>;
+ 
+-			clock-names	= "pwm";
+-			clocks		= <&clk_sysin>;
++			clock-names	= "pwm", "capture";
++			clocks		= <&clk_sysin>, <&clk_s_a0_ls CLK_ICN_REG>;
+ 
+ 			st,pwm-num-devs = <4>;
+ 		};
 -- 
 2.8.3
