@@ -1,8 +1,7 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v3 03/20] ARM: dts: STiH407: Declare PWM Capture data lines
- via Pinctrl
-Date: Wed,  8 Jun 2016 10:21:18 +0100
-Message-ID: <20160608092135.21184-4-lee.jones@linaro.org>
+Subject: [PATCH v3 02/20] ARM: dts: STiH407: Supply PWM Capture IRQ
+Date: Wed,  8 Jun 2016 10:21:17 +0100
+Message-ID: <20160608092135.21184-3-lee.jones@linaro.org>
 References: <20160608092135.21184-1-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,33 +23,20 @@ List-Id: linux-pwm@vger.kernel.org
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- arch/arm/boot/dts/stih407-pinctrl.dtsi | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/boot/dts/stih407-family.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/stih407-pinctrl.dtsi b/arch/arm/boot/dts/stih407-pinctrl.dtsi
-index a538ae5..bc22122 100644
---- a/arch/arm/boot/dts/stih407-pinctrl.dtsi
-+++ b/arch/arm/boot/dts/stih407-pinctrl.dtsi
-@@ -289,10 +289,12 @@
- 				pinctrl_pwm1_chan0_default: pwm1-0-default {
- 					st,pins {
- 						pwm-out = <&pio3 0 ALT1 OUT>;
-+						pwm-capturein = <&pio3 2 ALT1 IN>;
- 					};
- 				};
- 				pinctrl_pwm1_chan1_default: pwm1-1-default {
- 					st,pins {
-+						pwm-capturein = <&pio4 3 ALT1 IN>;
- 						pwm-out = <&pio4 4 ALT1 OUT>;
- 					};
- 				};
-@@ -1030,6 +1032,7 @@
- 			pwm0 {
- 				pinctrl_pwm0_chan0_default: pwm0-0-default {
- 					st,pins {
-+						pwm-capturein = <&pio31 0 ALT1 IN>;
- 						pwm-out = <&pio31 1 ALT1 OUT>;
- 					};
- 				};
+diff --git a/arch/arm/boot/dts/stih407-family.dtsi b/arch/arm/boot/dts/stih407-family.dtsi
+index 0723900..37a3bcc 100644
+--- a/arch/arm/boot/dts/stih407-family.dtsi
++++ b/arch/arm/boot/dts/stih407-family.dtsi
+@@ -664,6 +664,7 @@
+ 			compatible	= "st,sti-pwm";
+ 			#pwm-cells	= <2>;
+ 			reg		= <0x9810000 0x68>;
++			interrupts      = <GIC_SPI 128 IRQ_TYPE_NONE>;
+ 			pinctrl-names	= "default";
+ 			pinctrl-0	= <&pinctrl_pwm0_chan0_default>;
+ 			clock-names	= "pwm";
 -- 
 2.8.3
