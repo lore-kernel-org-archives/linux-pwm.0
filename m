@@ -1,155 +1,66 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v3 16/20] pwm: sti: Add support for PWM Capture IRQs
-Date: Wed,  8 Jun 2016 10:21:31 +0100
-Message-ID: <20160608092135.21184-17-lee.jones@linaro.org>
+Subject: [PATCH v3 05/20] ARM: dts: STiH416: Declare PWM Capture data lines
+ via Pinctrl
+Date: Wed,  8 Jun 2016 10:21:20 +0100
+Message-ID: <20160608092135.21184-6-lee.jones@linaro.org>
 References: <20160608092135.21184-1-lee.jones@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <20160608092135.21184-1-lee.jones@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: kernel@stlinux.com, maxime.coquelin@st.com, patrice.chotard@st.com, thierry.reding@gmail.com, robh+dt@kernel.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Cc: linux-pwm@vger.kernel.org, kernel@stlinux.com, devicetree@vger.kernel.org, patrice.chotard@st.com, robh+dt@kernel.org, thierry.reding@gmail.com, Lee Jones <lee.jones@linaro.org>, maxime.coquelin@st.com
 List-Id: linux-pwm@vger.kernel.org
-
-Here we're requesting the PWM Capture IRQ and supplying the
-handler which will be called in the event of an IRQ fire to
-handle it.
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/pwm-sti.c | 92 ++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 91 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/stih416-pinctrl.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index 9d597bb..2230afb 100644
---- a/drivers/pwm/pwm-sti.c
-+++ b/drivers/pwm/pwm-sti.c
-@@ -91,7 +91,9 @@ struct sti_pwm_chip {
- 	struct regmap_field *prescale_low;
- 	struct regmap_field *prescale_high;
- 	struct regmap_field *pwm_out_en;
-+	struct regmap_field *pwm_cpt_en;
- 	struct regmap_field *pwm_cpt_int_en;
-+	struct regmap_field *pwm_cpt_int_stat;
- 	struct pwm_chip chip;
- 	struct pwm_device *cur;
- 	unsigned long configured;
-@@ -311,6 +313,76 @@ static const struct pwm_ops sti_pwm_ops = {
- 	.owner = THIS_MODULE,
- };
- 
-+static irqreturn_t sti_pwm_interrupt(int irq, void *data)
-+{
-+	struct sti_pwm_chip *pc = data;
-+	struct device *dev = pc->dev;
-+	struct sti_cpt_ddata *ddata;
-+	int devicenum;
-+	unsigned int cpt_int_stat;
-+	unsigned int reg;
-+	int ret = IRQ_NONE;
+diff --git a/arch/arm/boot/dts/stih416-pinctrl.dtsi b/arch/arm/boot/dts/stih416-pinctrl.dtsi
+index 051fc16..252b677 100644
+--- a/arch/arm/boot/dts/stih416-pinctrl.dtsi
++++ b/arch/arm/boot/dts/stih416-pinctrl.dtsi
+@@ -221,11 +221,14 @@
+ 				pinctrl_pwm1_chan0_default: pwm1-0-default {
+ 					st,pins {
+ 						pwm-out    = <&pio3 0 ALT1 OUT>;
++						pwm-capturein = <&pio3 2 ALT1 IN>;
 +
-+	ret = regmap_field_read(pc->pwm_cpt_int_stat, &cpt_int_stat);
-+	if (ret)
-+		return ret;
-+
-+	while (cpt_int_stat) {
-+		devicenum = ffs(cpt_int_stat) - 1;
-+
-+		ddata = pwm_get_chip_data(&pc->chip.pwms[devicenum]);
-+
-+		/*
-+		 * Capture input:
-+		 *    _______                   _______
-+		 *   |       |                 |       |
-+		 * __|       |_________________|       |________
-+		 *   ^0      ^1                ^2
-+		 *
-+		 * Capture start by the first available rising edge
-+		 * When a capture event occurs, capture value (CPT_VALx)
-+		 * is stored, index incremented, capture edge changed.
-+		 *
-+		 * After the capture, if the index > 1, we have collected
-+		 * the necessary data so we signal the thread waiting for it
-+		 * and disable the capture by setting capture edge to none
-+		 *
-+		 */
-+
-+		regmap_read(pc->regmap,
-+			    PWM_CPT_VAL(devicenum),
-+			    &ddata->snapshot[ddata->index]);
-+
-+		switch (ddata->index) {
-+		case 0:
-+		case 1:
-+			regmap_read(pc->regmap, PWM_CPT_EDGE(devicenum), &reg);
-+			reg ^= PWM_CPT_EDGE_MASK;
-+			regmap_write(pc->regmap, PWM_CPT_EDGE(devicenum), reg);
-+
-+			ddata->index++;
-+			break;
-+		case 2:
-+			regmap_write(pc->regmap,
-+				     PWM_CPT_EDGE(devicenum),
-+				     CPT_EDGE_DISABLED);
-+			wake_up(&ddata->wait);
-+			break;
-+		default:
-+			dev_err(dev, "Internal error\n");
-+		}
-+
-+		cpt_int_stat &= ~BIT_MASK(devicenum);
-+
-+		ret = IRQ_HANDLED;
-+	}
-+
-+	/* Just ACK everything */
-+	regmap_write(pc->regmap, PWM_INT_ACK, PWM_INT_ACK_MASK);
-+
-+	return ret;
-+}
-+
- static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
- {
- 	struct device *dev = pc->dev;
-@@ -351,6 +423,11 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
- 	if (IS_ERR(pc->pwm_cpt_int_en))
- 		return PTR_ERR(pc->pwm_cpt_int_en);
- 
-+	pc->pwm_cpt_int_stat = devm_regmap_field_alloc(dev, pc->regmap,
-+						reg_fields[PWM_CPT_INT_STAT]);
-+	if (PTR_ERR_OR_ZERO(pc->pwm_cpt_int_stat))
-+		return PTR_ERR(pc->pwm_cpt_int_stat);
-+
- 	return 0;
- }
- 
-@@ -367,7 +444,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	struct sti_pwm_chip *pc;
- 	struct resource *res;
- 	unsigned int devnum;
--	int ret;
-+	int irq, ret;
- 
- 	pc = devm_kzalloc(dev, sizeof(*pc), GFP_KERNEL);
- 	if (!pc)
-@@ -388,6 +465,19 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(pc->regmap))
- 		return PTR_ERR(pc->regmap);
- 
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		dev_err(&pdev->dev, "Failed to obtain IRQ\n");
-+		return irq;
-+	}
-+
-+	ret = devm_request_irq(&pdev->dev, irq, sti_pwm_interrupt,
-+			       0, pdev->name, pc);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "Failed to request IRQ\n");
-+		return ret;
-+	}
-+
- 	/*
- 	 * Setup PWM data with default values: some values could be replaced
- 	 * with specific ones provided from Device Tree.
+ 					};
+ 				};
+ 				pinctrl_pwm1_chan1_default: pwm1-1-default {
+ 					st,pins {
+ 						pwm-out    = <&pio4 4 ALT1 OUT>;
++						pwm-capturein = <&pio4 3 ALT1 IN>;
+ 					};
+ 				};
+ 				pinctrl_pwm1_chan2_default: pwm1-2-default {
+@@ -337,6 +340,7 @@
+ 				pinctrl_pwm0_chan0_default: pwm0-0-default {
+ 					st,pins {
+ 						pwm-out    = <&pio9 7 ALT2 OUT>;
++						pwm-capturein = <&pio9 6 ALT2 IN>;
+ 					};
+ 				};
+ 			};
+@@ -576,6 +580,7 @@
+ 				pinctrl_pwm0_chan1_default: pwm0-1-default {
+ 					st,pins {
+ 						pwm-out    = <&pio13 2 ALT2 OUT>;
++						pwm-capturein = <&pio13 1 ALT2 IN>;
+ 					};
+ 				};
+ 				pinctrl_pwm0_chan2_default: pwm0-2-default {
 -- 
 2.8.3
