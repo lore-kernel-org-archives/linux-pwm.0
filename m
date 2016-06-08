@@ -1,88 +1,185 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH v2 06/13] pwm: sti: Add support for hardware readout
-Date: Wed,  8 Jun 2016 18:34:41 +0200
-Message-ID: <1465403688-17098-7-git-send-email-boris.brezillon@free-electrons.com>
+Subject: [PATCH v2 12/13] regulator: pwm: Support extra continuous mode cases
+Date: Wed,  8 Jun 2016 18:34:47 +0200
+Message-ID: <1465403688-17098-13-git-send-email-boris.brezillon@free-electrons.com>
 References: <1465403688-17098-1-git-send-email-boris.brezillon@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1465403688-17098-1-git-send-email-boris.brezillon@free-electrons.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Milo Kim <milo.kim@ti.com>, Heiko Stuebner <heiko@sntech.de>, Patrice Chotard <patrice.chotard@st.com>, Laxman Dewangan <ldewangan@nvidia.com>, kernel@stlinux.com, Boris Brezillon <boris.brezillon@free-electrons.com>, Brian Norris <briannorris@chromium.org>, Stephen Barber <smbarber@chromium.org>, linux-rockchip@lists.infradead.org, Caesar Wang <wxt@rock-chips.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Doug Anderson <dianders@google.com>, Rob Herring <robh+dt@kernel.org>, linux-arm-kernel@lists.infradead.org, Maxime Coquelin <maxime.coquelin@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, linux-kernel@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, Ajit Pal Singh <ajitpal.singh@st.com>
+Cc: Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <milo.kim@ti.com>, Doug Anderson <dianders@google.com>, Caesar Wang <wxt@rock-chips.com>, Stephen Barber <smbarber@chromium.org>, Brian Norris <briannorris@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, kernel@stlinux.com, Laxman Dewangan <ldewangan@nvidia.com>, Boris Brezillon <boris.brezillon@free-electrons.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Implement ->get_state() to provide support for initial state retrieval.
+The continuous mode allows one to declare a PWM regulator without having
+to declare the voltage <-> dutycycle association table. It works fine as
+long as your voltage(dutycycle) function is linear, but also has the
+following constraints:
+
+- dutycycle for min_uV = 0%
+- dutycycle for max_uV = 100%
+- dutycycle for min_uV < dutycycle for max_uV
+
+While the linearity constraint is acceptable for now, we sometimes need to
+restrict of the PWM range (to limit the maximum/minimum voltage for
+example) or have a min_uV_dutycycle > max_uV_dutycycle (this could be
+tweaked with PWM polarity, but not all PWMs support inverted polarity).
+
+Add the pwm-dutycycle-range and pwm-dutycycle-unit DT properties to define
+such constraints. If those properties are not defined, the PWM regulator
+use the default pwm-dutycycle-range = <0 100> and
+pwm-dutycycle-unit = <100> values (existing behavior).
 
 Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Tested-by: Brian Norris <briannorris@chromium.org>
 ---
- drivers/pwm/pwm-sti.c | 38 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ drivers/regulator/pwm-regulator.c | 92 +++++++++++++++++++++++++++++++++++----
+ 1 file changed, 83 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index 92abbd5..6300d3e 100644
---- a/drivers/pwm/pwm-sti.c
-+++ b/drivers/pwm/pwm-sti.c
-@@ -238,6 +238,43 @@ static void sti_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	mutex_unlock(&pc->sti_pwm_lock);
- }
+diff --git a/drivers/regulator/pwm-regulator.c b/drivers/regulator/pwm-regulator.c
+index c39ecd1..3e8680a 100644
+--- a/drivers/regulator/pwm-regulator.c
++++ b/drivers/regulator/pwm-regulator.c
+@@ -21,6 +21,12 @@
+ #include <linux/of_device.h>
+ #include <linux/pwm.h>
  
-+static void sti_pwm_get_state(struct pwm_chip *chip,
-+			      struct pwm_device *pwm,
-+			      struct pwm_state *state)
-+{
-+	struct sti_pwm_chip *pc = to_sti_pwmchip(chip);
-+	unsigned int regval, prescaler;
-+	int ret;
++struct pwm_continuous_reg_data {
++	unsigned int min_uV_dutycycle;
++	unsigned int max_uV_dutycycle;
++	unsigned int dutycycle_unit;
++};
 +
-+	/* The clock has to be enabled to access PWM registers */
-+	ret = clk_enable(pc->clk);
-+	if (ret) {
-+		dev_err(chip->dev, "Failed to enable PWM clk");
-+		return;
+ struct pwm_regulator_data {
+ 	/*  Shared */
+ 	struct pwm_device *pwm;
+@@ -28,6 +34,9 @@ struct pwm_regulator_data {
+ 	/* Voltage table */
+ 	struct pwm_voltages *duty_cycle_table;
+ 
++	/* Continuous mode info */
++	struct pwm_continuous_reg_data continuous;
++
+ 	/* regulator descriptor */
+ 	struct regulator_desc desc;
+ 
+@@ -132,31 +141,79 @@ static int pwm_regulator_is_enabled(struct regulator_dev *dev)
+ static int pwm_regulator_get_voltage(struct regulator_dev *rdev)
+ {
+ 	struct pwm_regulator_data *drvdata = rdev_get_drvdata(rdev);
++	unsigned int min_uV_duty = drvdata->continuous.min_uV_dutycycle;
++	unsigned int max_uV_duty = drvdata->continuous.max_uV_dutycycle;
++	unsigned int duty_unit = drvdata->continuous.dutycycle_unit;
+ 	int min_uV = rdev->constraints->min_uV;
+-	int diff = rdev->constraints->max_uV - min_uV;
++	int max_uV = rdev->constraints->max_uV;
++	int diff_uV = max_uV - min_uV;
+ 	struct pwm_state pstate;
++	unsigned int diff_duty;
++	unsigned int voltage;
+ 
+ 	pwm_get_state(drvdata->pwm, &pstate);
+ 
+-	return min_uV + pwm_get_relative_duty_cycle(&pstate, diff);
++	voltage = pwm_get_relative_duty_cycle(&pstate, duty_unit);
++
++	/*
++	 * The dutycycle for the min_uV voltage might be greater than the
++	 * one for the max_uV. This is happening when the user needs an
++	 * inversed polarity, but the PWM device does not support inversing
++	 * it in hardware.
++	 */
++	if (max_uV_duty < min_uV_duty) {
++		voltage = min_uV_duty - voltage;
++		diff_duty = min_uV_duty - max_uV_duty;
++	} else {
++		voltage = voltage - min_uV_duty;
++		diff_duty = max_uV_duty - min_uV_duty;
 +	}
 +
-+	regmap_field_read(pc->prescale_high, &regval);
-+	prescaler = regval << 4;
-+	regmap_field_read(pc->prescale_low, &regval);
-+	prescaler |= regval;
-+	state->period = DIV_ROUND_CLOSEST_ULL((u64)(prescaler + 1) *
-+					      NSEC_PER_SEC *
-+					      (pc->cdata->max_pwm_cnt + 1),
-+					      pc->clk_rate);
++	voltage = DIV_ROUND_CLOSEST_ULL((u64)voltage * diff_uV, diff_duty);
 +
-+	regmap_read(pc->regmap, STI_DS_REG(pwm->hwpwm), &regval);
-+	state->duty_cycle = DIV_ROUND_CLOSEST_ULL((u64)(regval + 1) *
-+						  state->period,
-+						  pc->cdata->max_pwm_cnt + 1);
-+
-+	regmap_field_read(pc->pwm_en, &regval);
-+	state->enabled = regval;
-+
-+	state->polarity = PWM_POLARITY_NORMAL;
-+
-+	clk_disable(pc->clk);
-+}
-+
- static void sti_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
++	return voltage + min_uV;
+ }
+ 
+ static int pwm_regulator_set_voltage(struct regulator_dev *rdev,
+-					int min_uV, int max_uV,
+-					unsigned *selector)
++				     int req_min_uV, int req_max_uV,
++				     unsigned int *selector)
  {
- 	struct sti_pwm_chip *pc = to_sti_pwmchip(chip);
-@@ -249,6 +286,7 @@ static const struct pwm_ops sti_pwm_ops = {
- 	.config = sti_pwm_config,
- 	.enable = sti_pwm_enable,
- 	.disable = sti_pwm_disable,
-+	.get_state = sti_pwm_get_state,
- 	.free = sti_pwm_free,
- 	.owner = THIS_MODULE,
- };
+ 	struct pwm_regulator_data *drvdata = rdev_get_drvdata(rdev);
++	unsigned int min_uV_duty = drvdata->continuous.min_uV_dutycycle;
++	unsigned int max_uV_duty = drvdata->continuous.max_uV_dutycycle;
++	unsigned int duty_unit = drvdata->continuous.dutycycle_unit;
+ 	unsigned int ramp_delay = rdev->constraints->ramp_delay;
+-	unsigned int req_diff = min_uV - rdev->constraints->min_uV;
++	int min_uV = rdev->constraints->min_uV;
++	int max_uV = rdev->constraints->max_uV;
++	int diff_uV = max_uV - min_uV;
+ 	struct pwm_state pstate;
+-	unsigned int diff;
++	unsigned int diff_duty;
++	unsigned int dutycycle;
+ 	int ret;
+ 
+ 	pwm_prepare_new_state(drvdata->pwm, &pstate);
+-	diff = rdev->constraints->max_uV - rdev->constraints->min_uV;
+ 
+-	/* We pass diff as the scale to get a uV precision. */
+-	pwm_set_relative_duty_cycle(&pstate, req_diff, diff);
++	/*
++	 * The dutycycle for the min_uV voltage might be greater than the
++	 * one for the max_uV. This is happening when the user needs an
++	 * inversed polarity, but the PWM device does not support inversing
++	 * it in hardware.
++	 */
++	if (max_uV_duty < min_uV_duty)
++		diff_duty = min_uV_duty - max_uV_duty;
++	else
++		diff_duty = max_uV_duty - min_uV_duty;
++
++	dutycycle = DIV_ROUND_CLOSEST_ULL((u64)(req_min_uV - min_uV) *
++					  diff_duty,
++					  diff_uV);
++
++	if (max_uV_duty < min_uV_duty)
++		dutycycle = min_uV_duty - dutycycle;
++	else
++		dutycycle = min_uV_duty + dutycycle;
++
++	pwm_set_relative_duty_cycle(&pstate, dutycycle, duty_unit);
+ 
+ 	ret = pwm_apply_state(drvdata->pwm, &pstate);
+ 	if (ret) {
+@@ -237,11 +294,28 @@ static int pwm_regulator_init_table(struct platform_device *pdev,
+ static int pwm_regulator_init_continuous(struct platform_device *pdev,
+ 					 struct pwm_regulator_data *drvdata)
+ {
++	u32 dutycycle_range[2] = { 0, 100 };
++	u32 dutycycle_unit = 100;
++
+ 	memcpy(&drvdata->ops, &pwm_regulator_voltage_continuous_ops,
+ 	       sizeof(drvdata->ops));
+ 	drvdata->desc.ops = &drvdata->ops;
+ 	drvdata->desc.continuous_voltage_range = true;
+ 
++	of_property_read_u32_array(pdev->dev.of_node,
++				   "pwm-dutycycle-range",
++				   dutycycle_range, 2);
++	of_property_read_u32(pdev->dev.of_node, "pwm-dutycycle-unit",
++			     &dutycycle_unit);
++
++	if (dutycycle_range[0] > dutycycle_unit ||
++	    dutycycle_range[1] > dutycycle_unit)
++		return -EINVAL;
++
++	drvdata->continuous.dutycycle_unit = dutycycle_unit;
++	drvdata->continuous.min_uV_dutycycle = dutycycle_range[0];
++	drvdata->continuous.max_uV_dutycycle = dutycycle_range[1];
++
+ 	return 0;
+ }
+ 
 -- 
 2.7.4
