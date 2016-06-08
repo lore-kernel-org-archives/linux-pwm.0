@@ -1,76 +1,85 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v3 10/20] pwm: sysfs: Add PWM Capture support
-Date: Wed,  8 Jun 2016 10:21:25 +0100
-Message-ID: <20160608092135.21184-11-lee.jones@linaro.org>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v3 18/20] pwm: sti: It's now valid for number of PWM channels to be zero
+Date: Wed,  8 Jun 2016 10:21:33 +0100
+Message-ID: <20160608092135.21184-19-lee.jones@linaro.org>
 References: <20160608092135.21184-1-lee.jones@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20160608092135.21184-1-lee.jones@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: linux-pwm@vger.kernel.org, kernel@stlinux.com, devicetree@vger.kernel.org, patrice.chotard@st.com, robh+dt@kernel.org, thierry.reding@gmail.com, Lee Jones <lee.jones@linaro.org>, maxime.coquelin@st.com
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20160608092135.21184-1-lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, maxime.coquelin-qxv4g6HH51o@public.gmane.org, patrice.chotard-qxv4g6HH51o@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Allow a user to read PWM Capture results from /sysfs.
+Setting up the STI PWM IP as capture only, with zero PWM-out devices
+is a perfectly valued configuration.  It is no longer okay to assume
+that there must be at least 1 PWM-out devices.  In this patch we make
+the default number of PWM-out devices zero and only configure channels
+explicitly requested.
 
-To start a capture and read the result, simply read the file:
-
-  $ cat $PWMCHIP/capture
-
-The output format is "<period>:<duty_cycle>".
-
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Reported-by: Peter Griffin <peter.griffin-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 ---
- drivers/pwm/sysfs.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/pwm/pwm-sti.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index d985992..901e647 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -208,16 +208,33 @@ static ssize_t polarity_store(struct device *child,
- 	return ret ? : size;
- }
+diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
+index cecb6d4..64db5a5 100644
+--- a/drivers/pwm/pwm-sti.c
++++ b/drivers/pwm/pwm-sti.c
+@@ -483,6 +483,11 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
+ 	if (!ret)
+ 		cdata->cpt_num_devs = num_devs;
  
-+static ssize_t capture_show(struct device *child,
-+			    struct device_attribute *attr,
-+			    char *buf)
-+{
-+	struct pwm_device *pwm = child_to_pwm_device(child);
-+	struct pwm_capture result;
-+	int ret;
++	if (cdata->pwm_num_devs && !cdata->cpt_num_devs) {
++		dev_err(dev, "No channels configured\n");
++		return -EINVAL;
++	}
 +
-+	ret = pwm_capture(pwm, &result, jiffies_to_msecs(HZ));
-+	if (ret)
-+		return ret;
-+
-+	return sprintf(buf, "%llu %llu\n", result.period, result.duty_cycle);
-+}
-+
- static DEVICE_ATTR_RW(period);
- static DEVICE_ATTR_RW(duty_cycle);
- static DEVICE_ATTR_RW(enable);
- static DEVICE_ATTR_RW(polarity);
-+static DEVICE_ATTR_RO(capture);
+ 	reg_fields = cdata->reg_fields;
  
- static struct attribute *pwm_attrs[] = {
- 	&dev_attr_period.attr,
- 	&dev_attr_duty_cycle.attr,
- 	&dev_attr_enable.attr,
- 	&dev_attr_polarity.attr,
-+	&dev_attr_capture.attr,
- 	NULL
- };
- ATTRIBUTE_GROUPS(pwm);
+ 	pc->prescale_low = devm_regmap_field_alloc(dev, pc->regmap,
+@@ -573,7 +578,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 	cdata->reg_fields   = &sti_pwm_regfields[0];
+ 	cdata->max_prescale = 0xff;
+ 	cdata->max_pwm_cnt  = 255;
+-	cdata->pwm_num_devs = 1;
++	cdata->pwm_num_devs = 0;
+ 	cdata->cpt_num_devs = 0;
+ 
+ 	pc->cdata = cdata;
+@@ -585,6 +590,9 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	if (!cdata->pwm_num_devs)
++		goto skip_pwm;
++
+ 	pc->pwm_clk = of_clk_get_by_name(dev->of_node, "pwm");
+ 	if (IS_ERR(pc->pwm_clk)) {
+ 		dev_err(dev, "failed to get PWM clock\n");
+@@ -597,6 +605,10 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++skip_pwm:
++	if (!cdata->cpt_num_devs)
++		goto skip_cpt;
++
+ 	pc->cpt_clk = of_clk_get_by_name(dev->of_node, "capture");
+ 	if (IS_ERR(pc->cpt_clk)) {
+ 		dev_err(dev, "failed to get PWM capture clock\n");
+@@ -609,6 +621,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++skip_cpt:
+ 	pc->chip.dev = dev;
+ 	pc->chip.ops = &sti_pwm_ops;
+ 	pc->chip.base = -1;
 -- 
 2.8.3
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
