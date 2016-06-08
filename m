@@ -1,42 +1,78 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCHv2] backlight: pwm_bl: disable PWM when 'duty_cycle' is
- zero
-Date: Wed, 8 Jun 2016 15:06:43 -0500
-Message-ID: <20160608200643.GA13510@rob-hp-laptop>
-References: <1465294429-8570-1-git-send-email-LW@KARO-electronics.de>
+Subject: Re: [PATCH v3 20/20] dt-bindings: pwm: sti: Update DT bindings with
+ recent changes
+Date: Wed, 8 Jun 2016 15:51:52 -0500
+Message-ID: <20160608205152.GA5511@rob-hp-laptop>
+References: <20160608092135.21184-1-lee.jones@linaro.org>
+ <20160608092135.21184-21-lee.jones@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-oi0-f68.google.com ([209.85.218.68]:33288 "EHLO
+	mail-oi0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753795AbcFHUvy (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 8 Jun 2016 16:51:54 -0400
 Content-Disposition: inline
-In-Reply-To: <1465294429-8570-1-git-send-email-LW@KARO-electronics.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Pawel Moll <pawel.moll@arm.com>, devicetree@vger.kernel.org
+In-Reply-To: <20160608092135.21184-21-lee.jones@linaro.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, maxime.coquelin@st.com, patrice.chotard@st.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
 
-On Tue, Jun 07, 2016 at 12:13:49PM +0200, Lothar Wa=DFmann wrote:
-> 'brightness' is usually an index into a table of duty_cycle values,
-> where the value at index 0 may well be non-zero
-> (tegra30-apalis-eval.dts and tegra30-colibri-eval-v3.dts are real-lif=
-e
-> examples).
-> Thus brightness =3D=3D 0 does not necessarily mean that the PWM outpu=
-t
-> will be inactive.
-> Check for 'duty_cycle =3D=3D 0' rather than 'brightness =3D=3D 0' to =
-decide
-> whether to disable the PWM.
->=20
-> Signed-off-by: Lothar Wa=DFmann <LW@KARO-electronics.de>
+On Wed, Jun 08, 2016 at 10:21:35AM +0100, Lee Jones wrote:
+> We're renaming the 'st,pwm-num-chan' binding to 'st,pwm-num-devs' to
+> be more inline with the naming conventions of the subsystem.  Where
+> we used to treat each line as a channel, the PWM convention is to
+> describe them as devices.
+
+That's all linux implementation details and you are breaking 
+compatibility.
+
+> The second documentation adaption entails adding support for PWM
+> capture devices.  A new clock is required as well as an IRQ line.
+> We're also adding a new property similar to the one described
+> above, but for capture channels.  Typically, there will be less
+> capture channels than PWM-out, since all channels have the latter
+> capability, but only some have capture support.
+
+Humm, sounds like all of this should be implied from compatible strings.
+
+> 
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
 > ---
-> Changes wrt. v1:
->   - update binding docs to reflect the change
->=20
->  .../devicetree/bindings/leds/backlight/pwm-backlight.txt         | 9=
- ++++++---
->  drivers/video/backlight/pwm_bl.c                                 | 4=
- ++--
->  2 files changed, 8 insertions(+), 5 deletions(-)
-
-Acked-by: Rob Herring <robh@kernel.org>
+>  Documentation/devicetree/bindings/pwm/pwm-st.txt | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-st.txt b/Documentation/devicetree/bindings/pwm/pwm-st.txt
+> index 84d2fb8..b09f3a4 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-st.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-st.txt
+> @@ -13,13 +13,14 @@ Required parameters:
+>  - pinctrl-0: 		List of phandles pointing to pin configuration nodes
+>  			for PWM module.
+>  			For Pinctrl properties, please refer to [1].
+> -- clock-names: 		Set to "pwm".
+> +- clock-names: 		Valid entries are "pwm" and/or "capture".
+>  - clocks: 		phandle of the clock used by the PWM module.
+>  			For Clk properties, please refer to [2].
+> +- interrupts:		IRQ for the Capture device
+>  
+>  Optional properties:
+> -- st,pwm-num-chan:	Number of available channels. If not passed, the driver
+> -			will consider single channel by default.
+> +- st,pwm-num-devs:	Number of available PWM channels.  Default is 0.
+> +- st,capture-num-devs:	Number of available Capture channels.  Default is 0.
+>  
+>  [1] Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
+>  [2] Documentation/devicetree/bindings/clock/clock-bindings.txt
+> @@ -37,5 +38,6 @@ pwm1: pwm@fe510000 {
+>  		     &pinctrl_pwm1_chan3_default>;
+>  	clocks = <&clk_sysin>;
+>  	clock-names = "pwm";
+> -	st,pwm-num-chan = <4>;
+> +	st,pwm-num-devs = <4>;
+> +	st,capture-num-devs = <2>;
+>  };
+> -- 
+> 2.8.3
+> 
