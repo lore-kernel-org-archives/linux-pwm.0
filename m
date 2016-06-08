@@ -1,85 +1,96 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v3 18/20] pwm: sti: It's now valid for number of PWM channels to be zero
-Date: Wed,  8 Jun 2016 10:21:33 +0100
-Message-ID: <20160608092135.21184-19-lee.jones@linaro.org>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH v3 13/20] pwm: sti: Supply PWM Capture register addresses and
+ bit locations
+Date: Wed,  8 Jun 2016 10:21:28 +0100
+Message-ID: <20160608092135.21184-14-lee.jones@linaro.org>
 References: <20160608092135.21184-1-lee.jones@linaro.org>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20160608092135.21184-1-lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, maxime.coquelin-qxv4g6HH51o@public.gmane.org, patrice.chotard-qxv4g6HH51o@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20160608092135.21184-1-lee.jones@linaro.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: linux-pwm@vger.kernel.org, kernel@stlinux.com, devicetree@vger.kernel.org, patrice.chotard@st.com, robh+dt@kernel.org, thierry.reding@gmail.com, Lee Jones <lee.jones@linaro.org>, maxime.coquelin@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-Setting up the STI PWM IP as capture only, with zero PWM-out devices
-is a perfectly valued configuration.  It is no longer okay to assume
-that there must be at least 1 PWM-out devices.  In this patch we make
-the default number of PWM-out devices zero and only configure channels
-explicitly requested.
-
-Reported-by: Peter Griffin <peter.griffin-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/pwm-sti.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-sti.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
 diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index cecb6d4..64db5a5 100644
+index c4a34af..2f61e1e 100644
 --- a/drivers/pwm/pwm-sti.c
 +++ b/drivers/pwm/pwm-sti.c
-@@ -483,6 +483,11 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
- 	if (!ret)
- 		cdata->cpt_num_devs = num_devs;
+@@ -22,26 +22,48 @@
+ #include <linux/time.h>
  
-+	if (cdata->pwm_num_devs && !cdata->cpt_num_devs) {
-+		dev_err(dev, "No channels configured\n");
-+		return -EINVAL;
-+	}
+ #define PWM_OUT_VAL(x)	(0x00 + (4 * (x))) /* Device's Duty Cycle register */
++#define PWM_CPT_VAL(x)	(0x10 + (4 * (x))) /* Capture value */
++#define PWM_CPT_EDGE(x) (0x30 + (4 * (x))) /* Edge to capture on */
+ 
+ #define STI_PWM_CTRL		0x50	/* Control/Config register */
+ #define STI_INT_EN		0x54	/* Interrupt Enable/Disable register */
++#define STI_INT_STA		0x58	/* Interrupt Status register */
++#define PWM_INT_ACK			0x5c
+ #define PWM_PRESCALE_LOW_MASK		0x0f
+ #define PWM_PRESCALE_HIGH_MASK		0xf0
++#define PWM_CPT_EDGE_MASK		0x03
++#define PWM_INT_ACK_MASK		0x1ff
 +
- 	reg_fields = cdata->reg_fields;
++#define STI_MAX_CPT_DEVS		4
++#define CPT_DC_MAX			0xff
  
- 	pc->prescale_low = devm_regmap_field_alloc(dev, pc->regmap,
-@@ -573,7 +578,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	cdata->reg_fields   = &sti_pwm_regfields[0];
- 	cdata->max_prescale = 0xff;
- 	cdata->max_pwm_cnt  = 255;
--	cdata->pwm_num_devs = 1;
-+	cdata->pwm_num_devs = 0;
- 	cdata->cpt_num_devs = 0;
+ /* Regfield IDs */
+ enum {
+ 	/* Bits in PWM_CTRL*/
+ 	PWMCLK_PRESCALE_LOW,
+ 	PWMCLK_PRESCALE_HIGH,
++	CPTCLK_PRESCALE,
  
- 	pc->cdata = cdata;
-@@ -585,6 +590,9 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
+ 	PWM_OUT_EN,
++	PWM_CPT_EN,
  
-+	if (!cdata->pwm_num_devs)
-+		goto skip_pwm;
+ 	PWM_CPT_INT_EN,
++	PWM_CPT_INT_STAT,
+ 
+ 	/* Keep last */
+ 	MAX_REGFIELDS
+ };
+ 
++/* Each capture input can be programmed to detect rising-edge, falling-edge,
++ * either edge or neither egde
++ */
++enum sti_cpt_edge {
++	CPT_EDGE_DISABLED,
++	CPT_EDGE_RISING,
++	CPT_EDGE_FALLING,
++	CPT_EDGE_BOTH,
++};
 +
- 	pc->pwm_clk = of_clk_get_by_name(dev->of_node, "pwm");
- 	if (IS_ERR(pc->pwm_clk)) {
- 		dev_err(dev, "failed to get PWM clock\n");
-@@ -597,6 +605,10 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 		return ret;
- 	}
+ struct sti_pwm_compat_data {
+ 	const struct reg_field *reg_fields;
+ 	unsigned int num_devs;
+@@ -69,8 +91,11 @@ struct sti_pwm_chip {
+ static const struct reg_field sti_pwm_regfields[MAX_REGFIELDS] = {
+ 	[PWMCLK_PRESCALE_LOW]	= REG_FIELD(STI_PWM_CTRL, 0, 3),
+ 	[PWMCLK_PRESCALE_HIGH]	= REG_FIELD(STI_PWM_CTRL, 11, 14),
++	[CPTCLK_PRESCALE]	= REG_FIELD(STI_PWM_CTRL, 4, 8),
+ 	[PWM_OUT_EN]		= REG_FIELD(STI_PWM_CTRL, 9, 9),
++	[PWM_CPT_EN]		= REG_FIELD(STI_PWM_CTRL, 10, 10),
+ 	[PWM_CPT_INT_EN]	= REG_FIELD(STI_INT_EN, 1, 4),
++	[PWM_CPT_INT_STAT]	= REG_FIELD(STI_INT_STA, 1, 4),
+ };
  
-+skip_pwm:
-+	if (!cdata->cpt_num_devs)
-+		goto skip_cpt;
-+
- 	pc->cpt_clk = of_clk_get_by_name(dev->of_node, "capture");
- 	if (IS_ERR(pc->cpt_clk)) {
- 		dev_err(dev, "failed to get PWM capture clock\n");
-@@ -609,6 +621,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+skip_cpt:
- 	pc->chip.dev = dev;
- 	pc->chip.ops = &sti_pwm_ops;
- 	pc->chip.base = -1;
+ static inline struct sti_pwm_chip *to_sti_pwmchip(struct pwm_chip *chip)
 -- 
 2.8.3
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
