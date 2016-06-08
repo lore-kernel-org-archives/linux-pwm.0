@@ -1,100 +1,161 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH v2 09/13] regulator: pwm: Switch to the atomic PWM API
-Date: Wed,  8 Jun 2016 18:34:44 +0200
-Message-ID: <1465403688-17098-10-git-send-email-boris.brezillon@free-electrons.com>
+From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH v2 03/13] pwm: rockchip: Add support for hardware readout
+Date: Wed,  8 Jun 2016 18:34:38 +0200
+Message-ID: <1465403688-17098-4-git-send-email-boris.brezillon@free-electrons.com>
 References: <1465403688-17098-1-git-send-email-boris.brezillon@free-electrons.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1465403688-17098-1-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>
-Cc: Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <milo.kim@ti.com>, Doug Anderson <dianders@google.com>, Caesar Wang <wxt@rock-chips.com>, Stephen Barber <smbarber@chromium.org>, Brian Norris <briannorris@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, kernel@stlinux.com, Laxman Dewangan <ldewangan@nvidia.com>, Boris Brezillon <boris.brezillon@free-electrons.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1465403688-17098-1-git-send-email-boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Milo Kim <milo.kim-l0cyMroinI0@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Patrice Chotard <patrice.chotard-qxv4g6HH51o@public.gmane.org>, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Barber <smbarber-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Caesar Wang <wxt-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Maxime Coquelin <maxime.coquelin-qxv4g6HH51o@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Ajit Pal Singh <ajitpal.singh-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Use the atomic API wherever appropriate and get rid of pwm_apply_args()
-call (the reference period and polarity are now explicitly set when
-calling pwm_apply_state()).
+Implement the ->get_state() function to expose initial state.
 
-We also make use of the pwm_set_relative_duty_cycle() helper to ease
-relative to absolute duty_cycle conversion.
-
-Note that changes introduced by commit fd786fb0276a ("regulator: pwm:
-Try to avoid voltage error in duty cycle calculation") are no longer
-needed because pwm_set_relative_duty_cycle() takes care of all rounding
-approximation for us.
-
-Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Tested-by: Brian Norris <briannorris@chromium.org>
-Acked-by: Laxman Dewangan <ldewangan@nvidia.com>
+Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Reviewed-by: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Tested-by: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 ---
- drivers/regulator/pwm-regulator.c | 38 ++++++++++----------------------------
- 1 file changed, 10 insertions(+), 28 deletions(-)
+ drivers/pwm/pwm-rockchip.c | 67 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 67 insertions(+)
 
-diff --git a/drivers/regulator/pwm-regulator.c b/drivers/regulator/pwm-regulator.c
-index 524b43f..bf033fd 100644
---- a/drivers/regulator/pwm-regulator.c
-+++ b/drivers/regulator/pwm-regulator.c
-@@ -59,16 +59,14 @@ static int pwm_regulator_set_voltage_sel(struct regulator_dev *rdev,
- 					 unsigned selector)
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index 68d72ce..c72b419 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -51,6 +51,8 @@ struct rockchip_pwm_data {
+ 
+ 	void (*set_enable)(struct pwm_chip *chip,
+ 			   struct pwm_device *pwm, bool enable);
++	void (*get_state)(struct pwm_chip *chip, struct pwm_device *pwm,
++			  struct pwm_state *state);
+ };
+ 
+ static inline struct rockchip_pwm_chip *to_rockchip_pwm_chip(struct pwm_chip *c)
+@@ -75,6 +77,19 @@ static void rockchip_pwm_set_enable_v1(struct pwm_chip *chip,
+ 	writel_relaxed(val, pc->base + pc->data->regs.ctrl);
+ }
+ 
++static void rockchip_pwm_get_state_v1(struct pwm_chip *chip,
++				      struct pwm_device *pwm,
++				      struct pwm_state *state)
++{
++	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++	u32 enable_conf = PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN;
++	u32 val;
++
++	val = readl_relaxed(pc->base + pc->data->regs.ctrl);
++	if ((val & enable_conf) == enable_conf)
++		state->enabled = true;
++}
++
+ static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip,
+ 				       struct pwm_device *pwm, bool enable)
  {
- 	struct pwm_regulator_data *drvdata = rdev_get_drvdata(rdev);
--	struct pwm_args pargs;
--	int dutycycle;
-+	struct pwm_state pstate;
- 	int ret;
+@@ -98,6 +113,53 @@ static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip,
+ 	writel_relaxed(val, pc->base + pc->data->regs.ctrl);
+ }
  
--	pwm_get_args(drvdata->pwm, &pargs);
-+	pwm_prepare_new_state(drvdata->pwm, &pstate);
-+	pwm_set_relative_duty_cycle(&pstate,
-+			drvdata->duty_cycle_table[selector].dutycycle, 100);
- 
--	dutycycle = (pargs.period *
--		    drvdata->duty_cycle_table[selector].dutycycle) / 100;
--
--	ret = pwm_config(drvdata->pwm, dutycycle, pargs.period);
-+	ret = pwm_apply_state(drvdata->pwm, &pstate);
- 	if (ret) {
- 		dev_err(&rdev->dev, "Failed to configure PWM: %d\n", ret);
- 		return ret;
-@@ -126,34 +124,18 @@ static int pwm_regulator_set_voltage(struct regulator_dev *rdev,
++static void rockchip_pwm_get_state_v2(struct pwm_chip *chip,
++				      struct pwm_device *pwm,
++				      struct pwm_state *state)
++{
++	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++	u32 enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE |
++			  PWM_CONTINUOUS;
++	u32 val;
++
++	val = readl_relaxed(pc->base + pc->data->regs.ctrl);
++	if ((val & enable_conf) != enable_conf)
++		return;
++
++	state->enabled = true;
++
++	if (!(val & PWM_DUTY_POSITIVE))
++		state->polarity = PWM_POLARITY_INVERSED;
++}
++
++static void rockchip_pwm_get_state(struct pwm_chip *chip,
++				   struct pwm_device *pwm,
++				   struct pwm_state *state)
++{
++	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++	unsigned long clk_rate;
++	u64 tmp;
++	int ret;
++
++	ret = clk_enable(pc->clk);
++	if (ret)
++		return;
++
++	clk_rate = clk_get_rate(pc->clk);
++
++	tmp = readl_relaxed(pc->base + pc->data->regs.period);
++	tmp *= pc->data->prescaler * NSEC_PER_SEC;
++	state->period = DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
++
++	tmp = readl_relaxed(pc->base + pc->data->regs.duty);
++	tmp *= pc->data->prescaler * NSEC_PER_SEC;
++	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
++
++	pc->data->get_state(chip, pwm, state);
++
++	clk_disable(pc->clk);
++}
++
+ static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			       int duty_ns, int period_ns)
  {
- 	struct pwm_regulator_data *drvdata = rdev_get_drvdata(rdev);
- 	unsigned int ramp_delay = rdev->constraints->ramp_delay;
--	struct pwm_args pargs;
- 	unsigned int req_diff = min_uV - rdev->constraints->min_uV;
-+	struct pwm_state pstate;
- 	unsigned int diff;
--	unsigned int duty_pulse;
--	u64 req_period;
--	u32 rem;
- 	int ret;
+@@ -170,6 +232,7 @@ static void rockchip_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ }
  
--	pwm_get_args(drvdata->pwm, &pargs);
-+	pwm_prepare_new_state(drvdata->pwm, &pstate);
- 	diff = rdev->constraints->max_uV - rdev->constraints->min_uV;
+ static const struct pwm_ops rockchip_pwm_ops_v1 = {
++	.get_state = rockchip_pwm_get_state,
+ 	.config = rockchip_pwm_config,
+ 	.enable = rockchip_pwm_enable,
+ 	.disable = rockchip_pwm_disable,
+@@ -177,6 +240,7 @@ static const struct pwm_ops rockchip_pwm_ops_v1 = {
+ };
  
--	/* First try to find out if we get the iduty cycle time which is
--	 * factor of PWM period time. If (request_diff_to_min * pwm_period)
--	 * is perfect divided by voltage_range_diff then it is possible to
--	 * get duty cycle time which is factor of PWM period. This will help
--	 * to get output voltage nearer to requested value as there is no
--	 * calculation loss.
--	 */
--	req_period = req_diff * pargs.period;
--	div_u64_rem(req_period, diff, &rem);
--	if (!rem) {
--		do_div(req_period, diff);
--		duty_pulse = (unsigned int)req_period;
--	} else {
--		duty_pulse = (pargs.period / 100) * ((req_diff * 100) / diff);
--	}
-+	/* We pass diff as the scale to get a uV precision. */
-+	pwm_set_relative_duty_cycle(&pstate, req_diff, diff);
+ static const struct pwm_ops rockchip_pwm_ops_v2 = {
++	.get_state = rockchip_pwm_get_state,
+ 	.config = rockchip_pwm_config,
+ 	.set_polarity = rockchip_pwm_set_polarity,
+ 	.enable = rockchip_pwm_enable,
+@@ -194,6 +258,7 @@ static const struct rockchip_pwm_data pwm_data_v1 = {
+ 	.prescaler = 2,
+ 	.ops = &rockchip_pwm_ops_v1,
+ 	.set_enable = rockchip_pwm_set_enable_v1,
++	.get_state = rockchip_pwm_get_state_v1,
+ };
  
--	ret = pwm_config(drvdata->pwm, duty_pulse, pargs.period);
-+	ret = pwm_apply_state(drvdata->pwm, &pstate);
- 	if (ret) {
- 		dev_err(&rdev->dev, "Failed to configure PWM: %d\n", ret);
- 		return ret;
+ static const struct rockchip_pwm_data pwm_data_v2 = {
+@@ -206,6 +271,7 @@ static const struct rockchip_pwm_data pwm_data_v2 = {
+ 	.prescaler = 1,
+ 	.ops = &rockchip_pwm_ops_v2,
+ 	.set_enable = rockchip_pwm_set_enable_v2,
++	.get_state = rockchip_pwm_get_state_v2,
+ };
+ 
+ static const struct rockchip_pwm_data pwm_data_vop = {
+@@ -218,6 +284,7 @@ static const struct rockchip_pwm_data pwm_data_vop = {
+ 	.prescaler = 1,
+ 	.ops = &rockchip_pwm_ops_v2,
+ 	.set_enable = rockchip_pwm_set_enable_v2,
++	.get_state = rockchip_pwm_get_state_v2,
+ };
+ 
+ static const struct of_device_id rockchip_pwm_dt_ids[] = {
 -- 
 2.7.4
