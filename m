@@ -1,7 +1,8 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v3 04/20] ARM: dts: STiH416: Supply PWM Capture IRQs
-Date: Wed,  8 Jun 2016 10:21:19 +0100
-Message-ID: <20160608092135.21184-5-lee.jones@linaro.org>
+Subject: [PATCH v3 03/20] ARM: dts: STiH407: Declare PWM Capture data lines
+ via Pinctrl
+Date: Wed,  8 Jun 2016 10:21:18 +0100
+Message-ID: <20160608092135.21184-4-lee.jones@linaro.org>
 References: <20160608092135.21184-1-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,28 +24,33 @@ List-Id: linux-pwm@vger.kernel.org
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- arch/arm/boot/dts/stih416.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/stih407-pinctrl.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm/boot/dts/stih416.dtsi b/arch/arm/boot/dts/stih416.dtsi
-index 82091072..28d84c71 100644
---- a/arch/arm/boot/dts/stih416.dtsi
-+++ b/arch/arm/boot/dts/stih416.dtsi
-@@ -475,6 +475,7 @@
- 			status		= "okay";
- 			#pwm-cells	= <2>;
- 			reg		= <0xfed10000 0x68>;
-+			interrupts      = <GIC_SPI 200 IRQ_TYPE_NONE>;
- 
- 			pinctrl-names	= "default";
- 			pinctrl-0 = 	<&pinctrl_pwm0_chan0_default
-@@ -494,6 +495,7 @@
- 			status		= "disabled";
- 			#pwm-cells	= <2>;
- 			reg		= <0xfe510000 0x68>;
-+			interrupts      = <GIC_SPI 202 IRQ_TYPE_NONE>;
- 
- 			pinctrl-names	= "default";
- 			pinctrl-0	= <&pinctrl_pwm1_chan0_default
+diff --git a/arch/arm/boot/dts/stih407-pinctrl.dtsi b/arch/arm/boot/dts/stih407-pinctrl.dtsi
+index a538ae5..bc22122 100644
+--- a/arch/arm/boot/dts/stih407-pinctrl.dtsi
++++ b/arch/arm/boot/dts/stih407-pinctrl.dtsi
+@@ -289,10 +289,12 @@
+ 				pinctrl_pwm1_chan0_default: pwm1-0-default {
+ 					st,pins {
+ 						pwm-out = <&pio3 0 ALT1 OUT>;
++						pwm-capturein = <&pio3 2 ALT1 IN>;
+ 					};
+ 				};
+ 				pinctrl_pwm1_chan1_default: pwm1-1-default {
+ 					st,pins {
++						pwm-capturein = <&pio4 3 ALT1 IN>;
+ 						pwm-out = <&pio4 4 ALT1 OUT>;
+ 					};
+ 				};
+@@ -1030,6 +1032,7 @@
+ 			pwm0 {
+ 				pinctrl_pwm0_chan0_default: pwm0-0-default {
+ 					st,pins {
++						pwm-capturein = <&pio31 0 ALT1 IN>;
+ 						pwm-out = <&pio31 1 ALT1 OUT>;
+ 					};
+ 				};
 -- 
 2.8.3
