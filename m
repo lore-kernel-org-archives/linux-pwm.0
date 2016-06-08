@@ -1,7 +1,7 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v3 12/20] pwm: sti: Only request clock rate when you need to
-Date: Wed,  8 Jun 2016 10:21:27 +0100
-Message-ID: <20160608092135.21184-13-lee.jones@linaro.org>
+Subject: [PATCH v3 10/20] pwm: sysfs: Add PWM Capture support
+Date: Wed,  8 Jun 2016 10:21:25 +0100
+Message-ID: <20160608092135.21184-11-lee.jones@linaro.org>
 References: <20160608092135.21184-1-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,62 +21,56 @@ To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: linux-pwm@vger.kernel.org, kernel@stlinux.com, devicetree@vger.kernel.org, patrice.chotard@st.com, robh+dt@kernel.org, thierry.reding@gmail.com, Lee Jones <lee.jones@linaro.org>, maxime.coquelin@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-In the original code the clock rate was only obtained during
-initialisation; however, the rate may change between then and
-its use.  This patch ensures the correct rate is acquired just
-before use.
+Allow a user to read PWM Capture results from /sysfs.
+
+To start a capture and read the result, simply read the file:
+
+  $ cat $PWMCHIP/capture
+
+The output format is "<period>:<duty_cycle>".
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/pwm-sti.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/pwm/sysfs.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index 5fbee61..c4a34af 100644
---- a/drivers/pwm/pwm-sti.c
-+++ b/drivers/pwm/pwm-sti.c
-@@ -51,7 +51,6 @@ struct sti_pwm_compat_data {
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index d985992..901e647 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -208,16 +208,33 @@ static ssize_t polarity_store(struct device *child,
+ 	return ret ? : size;
+ }
  
- struct sti_pwm_chip {
- 	struct device *dev;
--	unsigned long clk_rate;
- 	struct clk *pwm_clk;
- 	struct regmap *regmap;
- 	struct sti_pwm_compat_data *cdata;
-@@ -86,13 +85,20 @@ static int sti_pwm_get_prescale(struct sti_pwm_chip *pc, unsigned long period,
- 				unsigned int *prescale)
- {
- 	struct sti_pwm_compat_data *cdata = pc->cdata;
-+	unsigned long clk_rate;
- 	unsigned long val;
- 	unsigned int ps;
- 
-+	clk_rate = clk_get_rate(pc->pwm_clk);
-+	if (!clk_rate) {
-+		dev_err(pc->dev, "failed to get clock rate\n");
-+		return -EINVAL;
-+	}
++static ssize_t capture_show(struct device *child,
++			    struct device_attribute *attr,
++			    char *buf)
++{
++	struct pwm_device *pwm = child_to_pwm_device(child);
++	struct pwm_capture result;
++	int ret;
 +
- 	/*
- 	 * prescale = ((period_ns * clk_rate) / (10^9 * (max_pwm_count + 1)) - 1
- 	 */
--	val = NSEC_PER_SEC / pc->clk_rate;
-+	val = NSEC_PER_SEC / clk_rate;
- 	val *= cdata->max_pwm_cnt + 1;
++	ret = pwm_capture(pwm, &result, jiffies_to_msecs(HZ));
++	if (ret)
++		return ret;
++
++	return sprintf(buf, "%llu %llu\n", result.period, result.duty_cycle);
++}
++
+ static DEVICE_ATTR_RW(period);
+ static DEVICE_ATTR_RW(duty_cycle);
+ static DEVICE_ATTR_RW(enable);
+ static DEVICE_ATTR_RW(polarity);
++static DEVICE_ATTR_RO(capture);
  
- 	if (period % val) {
-@@ -353,12 +359,6 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 		return PTR_ERR(pc->pwm_clk);
- 	}
- 
--	pc->clk_rate = clk_get_rate(pc->pwm_clk);
--	if (!pc->clk_rate) {
--		dev_err(dev, "failed to get clock rate\n");
--		return -EINVAL;
--	}
--
- 	ret = clk_prepare(pc->pwm_clk);
- 	if (ret) {
- 		dev_err(dev, "failed to prepare clock\n");
+ static struct attribute *pwm_attrs[] = {
+ 	&dev_attr_period.attr,
+ 	&dev_attr_duty_cycle.attr,
+ 	&dev_attr_enable.attr,
+ 	&dev_attr_polarity.attr,
++	&dev_attr_capture.attr,
+ 	NULL
+ };
+ ATTRIBUTE_GROUPS(pwm);
 -- 
 2.8.3
