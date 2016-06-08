@@ -1,8 +1,7 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v3 13/20] pwm: sti: Supply PWM Capture register addresses and
- bit locations
-Date: Wed,  8 Jun 2016 10:21:28 +0100
-Message-ID: <20160608092135.21184-14-lee.jones@linaro.org>
+Subject: [PATCH v3 14/20] pwm: sti: Supply PWM Capture clock handling
+Date: Wed,  8 Jun 2016 10:21:29 +0100
+Message-ID: <20160608092135.21184-15-lee.jones@linaro.org>
 References: <20160608092135.21184-1-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,75 +21,99 @@ To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: linux-pwm@vger.kernel.org, kernel@stlinux.com, devicetree@vger.kernel.org, patrice.chotard@st.com, robh+dt@kernel.org, thierry.reding@gmail.com, Lee Jones <lee.jones@linaro.org>, maxime.coquelin@st.com
 List-Id: linux-pwm@vger.kernel.org
 
+ST's PWM IP is supplied by 2 different clocks.  One for PWM
+Output and the other for Capture.  This patch provides clock
+handling for the latter.
+
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
  drivers/pwm/pwm-sti.c | 25 +++++++++++++++++++++++++
  1 file changed, 25 insertions(+)
 
 diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index c4a34af..2f61e1e 100644
+index 2f61e1e..78979d0 100644
 --- a/drivers/pwm/pwm-sti.c
 +++ b/drivers/pwm/pwm-sti.c
-@@ -22,26 +22,48 @@
- #include <linux/time.h>
+@@ -74,6 +74,7 @@ struct sti_pwm_compat_data {
+ struct sti_pwm_chip {
+ 	struct device *dev;
+ 	struct clk *pwm_clk;
++	struct clk *cpt_clk;
+ 	struct regmap *regmap;
+ 	struct sti_pwm_compat_data *cdata;
+ 	struct regmap_field *prescale_low;
+@@ -183,6 +184,10 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		if (ret)
+ 			return ret;
  
- #define PWM_OUT_VAL(x)	(0x00 + (4 * (x))) /* Device's Duty Cycle register */
-+#define PWM_CPT_VAL(x)	(0x10 + (4 * (x))) /* Capture value */
-+#define PWM_CPT_EDGE(x) (0x30 + (4 * (x))) /* Edge to capture on */
- 
- #define STI_PWM_CTRL		0x50	/* Control/Config register */
- #define STI_INT_EN		0x54	/* Interrupt Enable/Disable register */
-+#define STI_INT_STA		0x58	/* Interrupt Status register */
-+#define PWM_INT_ACK			0x5c
- #define PWM_PRESCALE_LOW_MASK		0x0f
- #define PWM_PRESCALE_HIGH_MASK		0xf0
-+#define PWM_CPT_EDGE_MASK		0x03
-+#define PWM_INT_ACK_MASK		0x1ff
++		ret = clk_enable(pc->cpt_clk);
++		if (ret)
++			return ret;
 +
-+#define STI_MAX_CPT_DEVS		4
-+#define CPT_DC_MAX			0xff
+ 		if (!period_same) {
+ 			ret = sti_pwm_get_prescale(pc, period_ns, &prescale);
+ 			if (ret)
+@@ -227,6 +232,7 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
  
- /* Regfield IDs */
- enum {
- 	/* Bits in PWM_CTRL*/
- 	PWMCLK_PRESCALE_LOW,
- 	PWMCLK_PRESCALE_HIGH,
-+	CPTCLK_PRESCALE,
+ clk_dis:
+ 	clk_disable(pc->pwm_clk);
++	clk_disable(pc->cpt_clk);
+ 	return ret;
+ }
  
- 	PWM_OUT_EN,
-+	PWM_CPT_EN,
+@@ -246,6 +252,10 @@ static int sti_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 		if (ret)
+ 			goto out;
  
- 	PWM_CPT_INT_EN,
-+	PWM_CPT_INT_STAT,
- 
- 	/* Keep last */
- 	MAX_REGFIELDS
- };
- 
-+/* Each capture input can be programmed to detect rising-edge, falling-edge,
-+ * either edge or neither egde
-+ */
-+enum sti_cpt_edge {
-+	CPT_EDGE_DISABLED,
-+	CPT_EDGE_RISING,
-+	CPT_EDGE_FALLING,
-+	CPT_EDGE_BOTH,
-+};
++		ret = clk_enable(pc->cpt_clk);
++		if (ret)
++			goto out;
 +
- struct sti_pwm_compat_data {
- 	const struct reg_field *reg_fields;
- 	unsigned int num_devs;
-@@ -69,8 +91,11 @@ struct sti_pwm_chip {
- static const struct reg_field sti_pwm_regfields[MAX_REGFIELDS] = {
- 	[PWMCLK_PRESCALE_LOW]	= REG_FIELD(STI_PWM_CTRL, 0, 3),
- 	[PWMCLK_PRESCALE_HIGH]	= REG_FIELD(STI_PWM_CTRL, 11, 14),
-+	[CPTCLK_PRESCALE]	= REG_FIELD(STI_PWM_CTRL, 4, 8),
- 	[PWM_OUT_EN]		= REG_FIELD(STI_PWM_CTRL, 9, 9),
-+	[PWM_CPT_EN]		= REG_FIELD(STI_PWM_CTRL, 10, 10),
- 	[PWM_CPT_INT_EN]	= REG_FIELD(STI_INT_EN, 1, 4),
-+	[PWM_CPT_INT_STAT]	= REG_FIELD(STI_INT_STA, 1, 4),
- };
+ 		ret = regmap_field_write(pc->pwm_out_en, 1);
+ 		if (ret) {
+ 			dev_err(dev, "failed to enable PWM device:%d\n",
+@@ -271,6 +281,7 @@ static void sti_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	regmap_field_write(pc->pwm_out_en, 0);
  
- static inline struct sti_pwm_chip *to_sti_pwmchip(struct pwm_chip *chip)
+ 	clk_disable(pc->pwm_clk);
++	clk_disable(pc->cpt_clk);
+ 	mutex_unlock(&pc->sti_pwm_lock);
+ }
+ 
+@@ -390,6 +401,18 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	pc->cpt_clk = of_clk_get_by_name(dev->of_node, "capture");
++	if (IS_ERR(pc->cpt_clk)) {
++		dev_err(dev, "failed to get PWM capture clock\n");
++		return PTR_ERR(pc->cpt_clk);
++	}
++
++	ret = clk_prepare(pc->cpt_clk);
++	if (ret) {
++		dev_err(dev, "failed to prepare clock\n");
++		return ret;
++	}
++
+ 	pc->chip.dev = dev;
+ 	pc->chip.ops = &sti_pwm_ops;
+ 	pc->chip.base = -1;
+@@ -399,6 +422,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 	ret = pwmchip_add(&pc->chip);
+ 	if (ret < 0) {
+ 		clk_unprepare(pc->pwm_clk);
++		clk_unprepare(pc->cpt_clk);
+ 		return ret;
+ 	}
+ 
+@@ -416,6 +440,7 @@ static int sti_pwm_remove(struct platform_device *pdev)
+ 		pwm_disable(&pc->chip.pwms[i]);
+ 
+ 	clk_unprepare(pc->pwm_clk);
++	clk_unprepare(pc->cpt_clk);
+ 
+ 	return pwmchip_remove(&pc->chip);
+ }
 -- 
 2.8.3
