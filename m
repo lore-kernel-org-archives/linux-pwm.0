@@ -1,68 +1,53 @@
-From: Guillermo Rodriguez Garcia <guille.rodriguez@gmail.com>
-Subject: Re: [PATCH] pwm: atmel: Fix disabling of PWM channels
-Date: Thu, 9 Jun 2016 18:36:31 +0200
-Message-ID: <CABDcavbouRueiO+fZECetfrhoNWZHJowptbvtkRNTN6zwGssbA@mail.gmail.com>
-References: <1463137777-27103-1-git-send-email-guille.rodriguez@gmail.com>
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+Subject: Re: [PATCH v2 00/13] regulator: pwm: various improvements
+Date: Thu, 09 Jun 2016 20:04:20 +0200
+Message-ID: <2819222.JTKrccvLNL@diego>
+References: <1465403688-17098-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-vk0-f66.google.com ([209.85.213.66]:35449 "EHLO
-	mail-vk0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751635AbcFIQgd (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 9 Jun 2016 12:36:33 -0400
-In-Reply-To: <1463137777-27103-1-git-send-email-guille.rodriguez@gmail.com>
+Received: from gloria.sntech.de ([95.129.55.99]:36532 "EHLO gloria.sntech.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752470AbcFISEj (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Thu, 9 Jun 2016 14:04:39 -0400
+In-Reply-To: <1465403688-17098-1-git-send-email-boris.brezillon@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Guillermo Rodriguez <guille.rodriguez@gmail.com>
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <milo.kim@ti.com>, Doug Anderson <dianders@google.com>, Caesar Wang <wxt@rock-chips.com>, Stephen Barber <smbarber@chromium.org>, Brian Norris <briannorris@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, kernel@stlinux.com, Laxman Dewangan <ldewangan@nvidia.com>
 
-Hello,
+Hi Boris,
 
-Any comments on this patch?
+Am Mittwoch, 8. Juni 2016, 18:34:35 schrieb Boris Brezillon:
+> This patch series series aims at adding two important features to the
+> pwm-regulator driver.
+> 
+> The first one is the support for 'smooth handover' between the
+> bootloader and the kernel. This is mainly solving problems we have when
+> the PWM is controlling a critical regulator (like the one powering the
+> DDR chip). Currently, when the PWM regulator acquire the PWM device it
+> assumes it was off and it's safe to change the configuration before
+> enabling it, which can generate glitches on the PWM signal which in turn
+> generated glitches on the output voltage.
+> To solve that we've introduced support for hardware readout to the
+> PWM framework, so that the PWM regulator driver can adjust the PWM
+> a probe time and avoid glitches.
+> Atomic update is also helping in this regard.
 
-Guillermo
+[...]
 
-2016-05-13 13:09 GMT+02:00 Guillermo Rodriguez <guille.rodriguez@gmail.com>:
-> When disabling a PWM channel, the PWM clock was being stopped
-> immediately after writing to PWM_DIS. As a result, the disabling
-> of the PWM channel did not complete properly, and the PWM output
-> might be left at the wrong level.
->
-> Fix this by waiting for the channel to be effectively disabled
-> (by checking the PWM_SR register) before disabling the clock.
->
-> Signed-off-by: Guillermo Rodriguez <guille.rodriguez@gmail.com>
-> ---
->  drivers/pwm/pwm-atmel.c |   10 ++++++++++
->  1 file changed, 10 insertions(+)
->
-> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-> index 0e4bd4e..a714434 100644
-> --- a/drivers/pwm/pwm-atmel.c
-> +++ b/drivers/pwm/pwm-atmel.c
-> @@ -271,6 +271,16 @@ static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->         mutex_unlock(&atmel_pwm->isr_lock);
->         atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
->
-> +       /*
-> +        * Wait for the PWM channel disable operation to be effective before
-> +        * stopping the clock.
-> +        */
-> +       timeout = jiffies + 2 * HZ;
-> +       while ((atmel_pwm_readl(atmel_pwm, PWM_SR)& (1 << pwm->hwpwm)) &&
-> +              time_before(jiffies, timeout)) {
-> +               usleep_range(10, 100);
-> +       }
-> +
->         clk_disable(atmel_pwm->clk);
->  }
->
-> --
-> 1.7.9.5
->
+> The second feature we add to the driver is the capability of using
+> a sub duty_cycle range in continuous mode. By default the regulator
+> is assuming that min_uV is achieved with a 0% dutycyle and max_uV
+> with a 100% dutycycle, but this is not necessarily true.
+> Moreover, in some cases (when the PWM device does not support
+> polarity inversion), we might have min_uV at 100% and max_uV at 0%.
+> Hence the addition of new properties to the existing DT bindings.
+> The feature is added in patch 12 and 13.
 
+I've tested this series on a rk3288-veyron chromebook and both the backlight-
+pwm as well as the pwm-regulator still work as expected, so for everything 
+except the STI parts:
 
-
--- 
-Guillermo Rodriguez Garcia
-guille.rodriguez@gmail.com
+Tested-by: Heiko Stuebner <heiko@sntech.de>
