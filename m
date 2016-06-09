@@ -1,96 +1,112 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v3 20/20] dt-bindings: pwm: sti: Update DT bindings with
- recent changes
-Date: Thu, 9 Jun 2016 12:41:07 +0100
-Message-ID: <20160609114107.GB1388@dell>
-References: <20160608092135.21184-1-lee.jones@linaro.org>
- <20160608092135.21184-21-lee.jones@linaro.org>
- <20160608205152.GA5511@rob-hp-laptop>
+Subject: Re: [PATCHv2] backlight: pwm_bl: disable PWM when 'duty_cycle' is
+ zero
+Date: Thu, 9 Jun 2016 14:51:25 +0100
+Message-ID: <20160609135125.GA2385@dell>
+References: <1465294429-8570-1-git-send-email-LW@KARO-electronics.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f48.google.com ([74.125.82.48]:36340 "EHLO
-	mail-wm0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750782AbcFILkd (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 9 Jun 2016 07:40:33 -0400
-Received: by mail-wm0-f48.google.com with SMTP id n184so221254701wmn.1
-        for <linux-pwm@vger.kernel.org>; Thu, 09 Jun 2016 04:40:33 -0700 (PDT)
+Received: from mail-wm0-f47.google.com ([74.125.82.47]:36122 "EHLO
+	mail-wm0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751168AbcFINuw (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 9 Jun 2016 09:50:52 -0400
+Received: by mail-wm0-f47.google.com with SMTP id n184so226433837wmn.1
+        for <linux-pwm@vger.kernel.org>; Thu, 09 Jun 2016 06:50:51 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <20160608205152.GA5511@rob-hp-laptop>
+In-Reply-To: <1465294429-8570-1-git-send-email-LW@KARO-electronics.de>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, maxime.coquelin@st.com, patrice.chotard@st.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
+To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jingoo Han <jingoohan1@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
 
-On Wed, 08 Jun 2016, Rob Herring wrote:
+On Tue, 07 Jun 2016, Lothar Wa=C3=9Fmann wrote:
 
-> On Wed, Jun 08, 2016 at 10:21:35AM +0100, Lee Jones wrote:
-> > We're renaming the 'st,pwm-num-chan' binding to 'st,pwm-num-devs' t=
-o
-> > be more inline with the naming conventions of the subsystem.  Where
-> > we used to treat each line as a channel, the PWM convention is to
-> > describe them as devices.
+> 'brightness' is usually an index into a table of duty_cycle values,
+> where the value at index 0 may well be non-zero
+> (tegra30-apalis-eval.dts and tegra30-colibri-eval-v3.dts are real-lif=
+e
+> examples).
+> Thus brightness =3D=3D 0 does not necessarily mean that the PWM outpu=
+t
+> will be inactive.
+> Check for 'duty_cycle =3D=3D 0' rather than 'brightness =3D=3D 0' to =
+decide
+> whether to disable the PWM.
 >=20
-> That's all linux implementation details and you are breaking=20
-> compatibility.
-
-Normally I'd agree with you, but I happen to know that a) this IP is
-currently unused and b) up until this point (and probably beyond), ST
-always ship the DTB with the kernel, so there will be no breakage.
-
-> > The second documentation adaption entails adding support for PWM
-> > capture devices.  A new clock is required as well as an IRQ line.
-> > We're also adding a new property similar to the one described
-> > above, but for capture channels.  Typically, there will be less
-> > capture channels than PWM-out, since all channels have the latter
-> > capability, but only some have capture support.
+> Signed-off-by: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
+> ---
+> Changes wrt. v1:
+>   - update binding docs to reflect the change
 >=20
-> Humm, sounds like all of this should be implied from compatible strin=
-gs.
+>  .../devicetree/bindings/leds/backlight/pwm-backlight.txt         | 9=
+ ++++++---
+>  drivers/video/backlight/pwm_bl.c                                 | 4=
+ ++--
+>  2 files changed, 8 insertions(+), 5 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-bac=
+klight.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backl=
+ight.txt
+> index 764db86..95fa8a9 100644
+> --- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.=
+txt
+> +++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.=
+txt
+> @@ -4,10 +4,13 @@ Required properties:
+>    - compatible: "pwm-backlight"
+>    - pwms: OF device-tree PWM specification (see PWM binding[0])
+>    - brightness-levels: Array of distinct brightness levels. Typicall=
+y these
+> -      are in the range from 0 to 255, but any range starting at 0 wi=
+ll do.
+> +      are in the range from 0 to 255, but any range will do.
+>        The actual brightness level (PWM duty cycle) will be interpola=
+ted
+> -      from these values. 0 means a 0% duty cycle (darkest/off), whil=
+e the
+> -      last value in the array represents a 100% duty cycle (brightes=
+t).
+> +      from these values. 0 means a 0% duty cycle, while the highest =
+value in
+> +      the array represents a 100% duty cycle.
+> +      The range may be in reverse order (starting with the maximum d=
+uty cycle
+> +      value) to create a PWM signal with the 100% duty cycle represe=
+nting
+> +      minimum and 0% duty cycle maximum brigthness.
+>    - default-brightness-level: the default brightness level (index in=
+to the
+>        array defined by the "brightness-levels" property)
+>    - power-supply: regulator for supply voltage
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlig=
+ht/pwm_bl.c
+> index b2b366b..80b2b52 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -103,8 +103,8 @@ static int pwm_backlight_update_status(struct bac=
+klight_device *bl)
+>  	if (pb->notify)
+>  		brightness =3D pb->notify(pb->dev, brightness);
+> =20
+> -	if (brightness > 0) {
+> -		duty_cycle =3D compute_duty_cycle(pb, brightness);
+> +	duty_cycle =3D compute_duty_cycle(pb, brightness);
+> +	if (duty_cycle > 0) {
 
-You mean have a bunch of of_machine_is_compatibles() scattered around?
+How does this work in the aforementioned:
 
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > ---
-> >  Documentation/devicetree/bindings/pwm/pwm-st.txt | 10 ++++++----
-> >  1 file changed, 6 insertions(+), 4 deletions(-)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-st.txt b/Doc=
-umentation/devicetree/bindings/pwm/pwm-st.txt
-> > index 84d2fb8..b09f3a4 100644
-> > --- a/Documentation/devicetree/bindings/pwm/pwm-st.txt
-> > +++ b/Documentation/devicetree/bindings/pwm/pwm-st.txt
-> > @@ -13,13 +13,14 @@ Required parameters:
-> >  - pinctrl-0: 		List of phandles pointing to pin configuration node=
+  "The range may be in reverse order"
+
+=2E.. case?  Surely when duty_cycle is when the screen should be at it'=
 s
-> >  			for PWM module.
-> >  			For Pinctrl properties, please refer to [1].
-> > -- clock-names: 		Set to "pwm".
-> > +- clock-names: 		Valid entries are "pwm" and/or "capture".
-> >  - clocks: 		phandle of the clock used by the PWM module.
-> >  			For Clk properties, please refer to [2].
-> > +- interrupts:		IRQ for the Capture device
-> > =20
-> >  Optional properties:
-> > -- st,pwm-num-chan:	Number of available channels. If not passed, th=
-e driver
-> > -			will consider single channel by default.
-> > +- st,pwm-num-devs:	Number of available PWM channels.  Default is 0=
-=2E
-> > +- st,capture-num-devs:	Number of available Capture channels.  Defa=
-ult is 0.
-> > =20
-> >  [1] Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
-> >  [2] Documentation/devicetree/bindings/clock/clock-bindings.txt
-> > @@ -37,5 +38,6 @@ pwm1: pwm@fe510000 {
-> >  		     &pinctrl_pwm1_chan3_default>;
-> >  	clocks =3D <&clk_sysin>;
-> >  	clock-names =3D "pwm";
-> > -	st,pwm-num-chan =3D <4>;
-> > +	st,pwm-num-devs =3D <4>;
-> > +	st,capture-num-devs =3D <2>;
-> >  };
+brightest?  Wouldn't it confuse the user if they turn their brightness
+*up* and the screen goes *off*?
+
+>  		pwm_config(pb->pwm, duty_cycle, pb->period);
+>  		pwm_backlight_power_on(pb, brightness);
+>  	} else
 
 --=20
 Lee Jones
