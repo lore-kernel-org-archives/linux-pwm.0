@@ -1,115 +1,142 @@
-Return-path: <kernel-bounces@pengutronix.de>
-From: Weiqing Kong <weiqing.kong@mediatek.com>
-Date: Mon, 23 May 2016 19:23:52 +0800
-Message-ID: <1464002632-411-4-git-send-email-weiqing.kong@mediatek.com>
-In-Reply-To: <1464002632-411-1-git-send-email-weiqing.kong@mediatek.com>
-References: <1464002632-411-1-git-send-email-weiqing.kong@mediatek.com>
+Return-Path: <guille.rodriguez@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
- boundary="__=_Part_Boundary_004_311781379.926141170"
-Subject: [PATCH 3/3] dts: Add disp bls dsti and dts config for MT2701
-List-Unsubscribe: <http://metis.pengutronix.de/cgi-bin/mailman/options/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=unsubscribe>
-List-Archive: <http://metis.pengutronix.de/cgi-bin/mailman/private/kernel/>
-List-Post: <mailto:kernel@pengutronix.de>
-List-Help: <mailto:kernel-request@pengutronix.de?subject=help>
-List-Subscribe: <http://metis.pengutronix.de/cgi-bin/mailman/listinfo/kernel>, 
- <mailto:kernel-request@pengutronix.de?subject=subscribe>
-Errors-To: kernel-bounces@pengutronix.de
-Sender: "kernel" <kernel-bounces@pengutronix.de>
-To: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, weiqing.kong@mediatek.com
-Cc: linux-pwm@vger.kernel.org, yh.huang@mediatek.com, Russell King <linux@arm.linux.org.uk>, srv_heupstream@mediatek.com, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, erin.lo@mediatek.com, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org, Sascha Hauer <kernel@pengutronix.de>, Kumar Gala <galak@codeaurora.org>, yt.shen@mediatek.com, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20160610082934.GQ2466@piout.net>
+References: <1463137777-27103-1-git-send-email-guille.rodriguez@gmail.com>
+	<20160610082934.GQ2466@piout.net>
+Date: Fri, 10 Jun 2016 11:32:24 +0200
+Message-ID: <CABDcavaqkmEsUL=ndWNVsx88yJxrwU2NuUKAuJYcZfJW84fqUQ@mail.gmail.com>
+Subject: Re: [PATCH] pwm: atmel: Fix disabling of PWM channels
+From: Guillermo Rodriguez Garcia <guille.rodriguez@gmail.com>
+Content-Type: multipart/alternative; boundary=001a114e24826685ae0534e9378c
 List-ID: <linux-pwm.vger.kernel.org>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Nicolas Ferre <nicolas.ferre@atmel.com>
 
-This is MIME multipart 7.
---__=_Part_Boundary_004_311781379.926141170
-Content-Type: text/plain
-Content-Transfer-Encoding: base64
+--001a114e24826685ae0534e9378c
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-U2lnbmVkLW9mZi1ieTogV2VpcWluZyBLb25nIDx3ZWlxaW5nLmtvbmdAbWVkaWF0ZWsuY29tPg0K
-LS0tDQogYXJjaC9hcm0vYm9vdC9kdHMvbXQyNzAxLWV2Yi5kdHMgfCAyOSArKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKw0KIGFyY2gvYXJtL2Jvb3QvZHRzL210MjcwMS5kdHNpICAgIHwgIDkg
-KysrKysrKysrDQogMiBmaWxlcyBjaGFuZ2VkLCAzOCBpbnNlcnRpb25zKCspDQoNCmRpZmYgLS1n
-aXQgYS9hcmNoL2FybS9ib290L2R0cy9tdDI3MDEtZXZiLmR0cyBiL2FyY2gvYXJtL2Jvb3QvZHRz
-L210MjcwMS1ldmIuZHRzDQppbmRleCAwODJjYTg4Li42ZDU3MmY0IDEwMDY0NA0KLS0tIGEvYXJj
-aC9hcm0vYm9vdC9kdHMvbXQyNzAxLWV2Yi5kdHMNCisrKyBiL2FyY2gvYXJtL2Jvb3QvZHRzL210
-MjcwMS1ldmIuZHRzDQpAQCAtMjIsNiArMjIsMzUgQEANCiAJbWVtb3J5IHsNCiAJCXJlZyA9IDww
-IDB4ODAwMDAwMDAgMCAweDQwMDAwMDAwPjsNCiAJfTsNCisNCisJYmFja2xpZ2h0X2xjZDogYmFj
-a2xpZ2h0X2xjZCB7DQorCQljb21wYXRpYmxlID0gInB3bS1iYWNrbGlnaHQiOw0KKwkJcHdtcyA9
-IDwmZGlzcF9ibHMgMCAxMDAwMDA+Ow0KKwkJYnJpZ2h0bmVzcy1sZXZlbHMgPSA8DQorCQkJICAw
-ICAxNiAgMzIgIDQ4ICA2NCAgODAgIDk2IDExMg0KKwkJCTEyOCAxNDQgMTYwIDE3NiAxOTIgMjA4
-IDIyNCAyNDANCisJCQkyNTUNCisJCT47DQorCQlkZWZhdWx0LWJyaWdodG5lc3MtbGV2ZWwgPSA8
-OT47DQorCQlwaW5jdHJsLW5hbWVzID0gImRlZmF1bHQiOw0KKwkJcGluY3RybC0wID0gPCZwd21f
-YmxzX2dwaW8+Ow0KKwl9Ow0KK307DQorDQorJmRpc3BfYmxzIHsNCisJc3RhdHVzID0gIm9rYXki
-Ow0KK307DQorDQorJm1tc3lzIHsNCisJc3RhdHVzID0gIm9rYXkiOw0KK307DQorDQorJnBpbyB7
-DQorCXB3bV9ibHNfZ3BpbzogcHdtX2Jsc19ncGlvIHsNCisJCXBpbnNfY21kX2RhdCB7DQorCQkJ
-cGlubXV4ID0gPE1UMjcwMV9QSU5fMjA4X0FVRF9FWFRfQ0sxX19GVU5DX0RJU1BfUFdNPjsNCisJ
-CX07DQorCX07DQogfTsNCiANCiAmdWFydDAgew0KZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2Jvb3Qv
-ZHRzL210MjcwMS5kdHNpIGIvYXJjaC9hcm0vYm9vdC9kdHMvbXQyNzAxLmR0c2kNCmluZGV4IDQy
-ZDVhMzcuLmRhZTU1ZDYgMTAwNjQ0DQotLS0gYS9hcmNoL2FybS9ib290L2R0cy9tdDI3MDEuZHRz
-aQ0KKysrIGIvYXJjaC9hcm0vYm9vdC9kdHMvbXQyNzAxLmR0c2kNCkBAIC0yMzQsNiArMjM0LDE1
-IEBADQogCQlzdGF0dXMgPSAiZGlzYWJsZWQiOw0KIAl9Ow0KIA0KKwlkaXNwX2JsczogZGlzcHN5
-c0AxNDAwYTAwMCB7DQorCQljb21wYXRpYmxlID0gIm1lZGlhdGVrLG10MjcwMS1kaXNwLWJscyI7
-DQorCQlyZWcgPSA8MCAweDE0MDBhMDAwIDAgMHgxMDAwPjsNCisJCSNwd20tY2VsbHMgPSA8Mj47
-DQorCQljbG9ja3MgPSA8Jm1tc3lzIENMS19NTV9NRFBfQkxTXzI2TT4sIDwmbW1zeXMgQ0xLX01N
-X0RJU1BfQkxTPjsNCisJCWNsb2NrLW5hbWVzID0gIm1haW4iLCAibW0iOw0KKwkJc3RhdHVzID0g
-ImRpc2FibGVkIjsNCisJfTsNCisNCiAJaW1nc3lzOiBzeXNjb25AMTUwMDAwMDAgew0KIAkJY29t
-cGF0aWJsZSA9ICJtZWRpYXRlayxtdDI3MDEtaW1nc3lzIiwgInN5c2NvbiI7DQogCQlyZWcgPSA8
-MCAweDE1MDAwMDAwIDAgMHgxMDAwPjsNCi0tIA0KMS44LjEuMS5kaXJ0eQ0K
+Hi,
 
---__=_Part_Boundary_004_311781379.926141170
-Content-Type: text/html
-Content-Transfer-Encoding: base64
+El viernes, 10 de junio de 2016, Alexandre Belloni <
+alexandre.belloni@free-electrons.com> escribi=C3=B3:
 
-PHByZT4NClNpZ25lZC1vZmYtYnk6IFdlaXFpbmcgS29uZyAmbHQ7d2VpcWluZy5rb25nQG1lZGlh
-dGVrLmNvbSZndDsNCi0tLQ0KIGFyY2gvYXJtL2Jvb3QvZHRzL210MjcwMS1ldmIuZHRzIHwgMjkg
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCiBhcmNoL2FybS9ib290L2R0cy9tdDI3MDEu
-ZHRzaSAgICB8ICA5ICsrKysrKysrKw0KIDIgZmlsZXMgY2hhbmdlZCwgMzggaW5zZXJ0aW9ucygr
-KQ0KDQpkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vYm9vdC9kdHMvbXQyNzAxLWV2Yi5kdHMgYi9hcmNo
-L2FybS9ib290L2R0cy9tdDI3MDEtZXZiLmR0cw0KaW5kZXggMDgyY2E4OC4uNmQ1NzJmNCAxMDA2
-NDQNCi0tLSBhL2FyY2gvYXJtL2Jvb3QvZHRzL210MjcwMS1ldmIuZHRzDQorKysgYi9hcmNoL2Fy
-bS9ib290L2R0cy9tdDI3MDEtZXZiLmR0cw0KQEAgLTIyLDYgKzIyLDM1IEBADQogCW1lbW9yeSB7
-DQogCQlyZWcgPSAmbHQ7MCAweDgwMDAwMDAwIDAgMHg0MDAwMDAwMCZndDs7DQogCX07DQorDQor
-CWJhY2tsaWdodF9sY2Q6IGJhY2tsaWdodF9sY2Qgew0KKwkJY29tcGF0aWJsZSA9ICZxdW90O3B3
-bS1iYWNrbGlnaHQmcXVvdDs7DQorCQlwd21zID0gJmx0OyZhbXA7ZGlzcF9ibHMgMCAxMDAwMDAm
-Z3Q7Ow0KKwkJYnJpZ2h0bmVzcy1sZXZlbHMgPSAmbHQ7DQorCQkJICAwICAxNiAgMzIgIDQ4ICA2
-NCAgODAgIDk2IDExMg0KKwkJCTEyOCAxNDQgMTYwIDE3NiAxOTIgMjA4IDIyNCAyNDANCisJCQky
-NTUNCisJCSZndDs7DQorCQlkZWZhdWx0LWJyaWdodG5lc3MtbGV2ZWwgPSAmbHQ7OSZndDs7DQor
-CQlwaW5jdHJsLW5hbWVzID0gJnF1b3Q7ZGVmYXVsdCZxdW90OzsNCisJCXBpbmN0cmwtMCA9ICZs
-dDsmYW1wO3B3bV9ibHNfZ3BpbyZndDs7DQorCX07DQorfTsNCisNCismYW1wO2Rpc3BfYmxzIHsN
-CisJc3RhdHVzID0gJnF1b3Q7b2theSZxdW90OzsNCit9Ow0KKw0KKyZhbXA7bW1zeXMgew0KKwlz
-dGF0dXMgPSAmcXVvdDtva2F5JnF1b3Q7Ow0KK307DQorDQorJmFtcDtwaW8gew0KKwlwd21fYmxz
-X2dwaW86IHB3bV9ibHNfZ3BpbyB7DQorCQlwaW5zX2NtZF9kYXQgew0KKwkJCXBpbm11eCA9ICZs
-dDtNVDI3MDFfUElOXzIwOF9BVURfRVhUX0NLMV9fRlVOQ19ESVNQX1BXTSZndDs7DQorCQl9Ow0K
-Kwl9Ow0KIH07DQogDQogJmFtcDt1YXJ0MCB7DQpkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vYm9vdC9k
-dHMvbXQyNzAxLmR0c2kgYi9hcmNoL2FybS9ib290L2R0cy9tdDI3MDEuZHRzaQ0KaW5kZXggNDJk
-NWEzNy4uZGFlNTVkNiAxMDA2NDQNCi0tLSBhL2FyY2gvYXJtL2Jvb3QvZHRzL210MjcwMS5kdHNp
-DQorKysgYi9hcmNoL2FybS9ib290L2R0cy9tdDI3MDEuZHRzaQ0KQEAgLTIzNCw2ICsyMzQsMTUg
-QEANCiAJCXN0YXR1cyA9ICZxdW90O2Rpc2FibGVkJnF1b3Q7Ow0KIAl9Ow0KIA0KKwlkaXNwX2Js
-czogZGlzcHN5c0AxNDAwYTAwMCB7DQorCQljb21wYXRpYmxlID0gJnF1b3Q7bWVkaWF0ZWssbXQy
-NzAxLWRpc3AtYmxzJnF1b3Q7Ow0KKwkJcmVnID0gJmx0OzAgMHgxNDAwYTAwMCAwIDB4MTAwMCZn
-dDs7DQorCQkjcHdtLWNlbGxzID0gJmx0OzImZ3Q7Ow0KKwkJY2xvY2tzID0gJmx0OyZhbXA7bW1z
-eXMgQ0xLX01NX01EUF9CTFNfMjZNJmd0OywgJmx0OyZhbXA7bW1zeXMgQ0xLX01NX0RJU1BfQkxT
-Jmd0OzsNCisJCWNsb2NrLW5hbWVzID0gJnF1b3Q7bWFpbiZxdW90OywgJnF1b3Q7bW0mcXVvdDs7
-DQorCQlzdGF0dXMgPSAmcXVvdDtkaXNhYmxlZCZxdW90OzsNCisJfTsNCisNCiAJaW1nc3lzOiBz
-eXNjb25AMTUwMDAwMDAgew0KIAkJY29tcGF0aWJsZSA9ICZxdW90O21lZGlhdGVrLG10MjcwMS1p
-bWdzeXMmcXVvdDssICZxdW90O3N5c2NvbiZxdW90OzsNCiAJCXJlZyA9ICZsdDswIDB4MTUwMDAw
-MDAgMCAweDEwMDAmZ3Q7Ow0KLS0gDQoxLjguMS4xLmRpcnR5DQoNCjwvcHJlPjwhLS10eXBlOnRl
-eHQtLT48IS0tey0tPjxwcmU+KioqKioqKioqKioqKiBFbWFpbCBDb25maWRlbnRpYWxpdHkgTm90
-aWNlICoqKioqKioqKioqKioqKioqKioqClRoZSBpbmZvcm1hdGlvbiBjb250YWluZWQgaW4gdGhp
-cyBlLW1haWwgbWVzc2FnZSAoaW5jbHVkaW5nIGFueSAKYXR0YWNobWVudHMpIG1heSBiZSBjb25m
-aWRlbnRpYWwsIHByb3ByaWV0YXJ5LCBwcml2aWxlZ2VkLCBvciBvdGhlcndpc2UKZXhlbXB0IGZy
-b20gZGlzY2xvc3VyZSB1bmRlciBhcHBsaWNhYmxlIGxhd3MuIEl0IGlzIGludGVuZGVkIHRvIGJl
-IApjb252ZXllZCBvbmx5IHRvIHRoZSBkZXNpZ25hdGVkIHJlY2lwaWVudChzKS4gQW55IHVzZSwg
-ZGlzc2VtaW5hdGlvbiwgCmRpc3RyaWJ1dGlvbiwgcHJpbnRpbmcsIHJldGFpbmluZyBvciBjb3B5
-aW5nIG9mIHRoaXMgZS1tYWlsIChpbmNsdWRpbmcgaXRzIAphdHRhY2htZW50cykgYnkgdW5pbnRl
-bmRlZCByZWNpcGllbnQocykgaXMgc3RyaWN0bHkgcHJvaGliaXRlZCBhbmQgbWF5IApiZSB1bmxh
-d2Z1bC4gSWYgeW91IGFyZSBub3QgYW4gaW50ZW5kZWQgcmVjaXBpZW50IG9mIHRoaXMgZS1tYWls
-LCBvciBiZWxpZXZlIAp0aGF0IHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZS1tYWlsIGluIGVycm9y
-LCBwbGVhc2Ugbm90aWZ5IHRoZSBzZW5kZXIgCmltbWVkaWF0ZWx5IChieSByZXBseWluZyB0byB0
-aGlzIGUtbWFpbCksIGRlbGV0ZSBhbnkgYW5kIGFsbCBjb3BpZXMgb2YgCnRoaXMgZS1tYWlsIChp
-bmNsdWRpbmcgYW55IGF0dGFjaG1lbnRzKSBmcm9tIHlvdXIgc3lzdGVtLCBhbmQgZG8gbm90CmRp
-c2Nsb3NlIHRoZSBjb250ZW50IG9mIHRoaXMgZS1tYWlsIHRvIGFueSBvdGhlciBwZXJzb24uIFRo
-YW5rIHlvdSE8L3ByZT48IS0tfS0tPg==
+> Hi,
+>
+> On 13/05/2016 at 13:09:37 +0200, Guillermo Rodriguez wrote :
+> > When disabling a PWM channel, the PWM clock was being stopped
+> > immediately after writing to PWM_DIS. As a result, the disabling
+> > of the PWM channel did not complete properly, and the PWM output
+> > might be left at the wrong level.
+> >
+> > Fix this by waiting for the channel to be effectively disabled
+> > (by checking the PWM_SR register) before disabling the clock.
+> >
+> > Signed-off-by: Guillermo Rodriguez <guille.rodriguez@gmail.com
+> <javascript:;>>
+> > ---
+> >  drivers/pwm/pwm-atmel.c |   10 ++++++++++
+> >  1 file changed, 10 insertions(+)
+> >
+> > diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+> > index 0e4bd4e..a714434 100644
+> > --- a/drivers/pwm/pwm-atmel.c
+> > +++ b/drivers/pwm/pwm-atmel.c
+> > @@ -271,6 +271,16 @@ static void atmel_pwm_disable(struct pwm_chip
+> *chip, struct pwm_device *pwm)
+> >       mutex_unlock(&atmel_pwm->isr_lock);
+> >       atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
+> >
+> > +     /*
+> > +      * Wait for the PWM channel disable operation to be effective
+> before
+> > +      * stopping the clock.
+> > +      */
+> > +     timeout =3D jiffies + 2 * HZ;
+> > +     while ((atmel_pwm_readl(atmel_pwm, PWM_SR)& (1 << pwm->hwpwm)) &&
+> > +            time_before(jiffies, timeout)) {
+> > +             usleep_range(10, 100);
+> > +     }
+> > +
+>
+> While this seems good, can you tell on which SoC you observed that? I'd
+> like to understand whether this is only on v1 or v2 or both.
 
---__=_Part_Boundary_004_311781379.926141170--
+
+I observed it on a sama5d3, however this article from atmel's KB would seem
+to suggest that it is not specific to this SoC:
+
+http://atmel.force.com/support/pkb_mobile#/articles/en_US/FAQ/Why-PWM-Chann=
+el-Polarity-Inversion
+
+ Guillermo
+
+
+--=20
+Guillermo Rodriguez Garcia
+guille.rodriguez@gmail.com
+
+--001a114e24826685ae0534e9378c
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Hi,<br><br>El viernes, 10 de junio de 2016, Alexandre Belloni &lt;<a href=
+=3D"mailto:alexandre.belloni@free-electrons.com">alexandre.belloni@free-ele=
+ctrons.com</a>&gt; escribi=C3=B3:<br><blockquote class=3D"gmail_quote" styl=
+e=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
+<br>
+On 13/05/2016 at 13:09:37 +0200, Guillermo Rodriguez wrote :<br>
+&gt; When disabling a PWM channel, the PWM clock was being stopped<br>
+&gt; immediately after writing to PWM_DIS. As a result, the disabling<br>
+&gt; of the PWM channel did not complete properly, and the PWM output<br>
+&gt; might be left at the wrong level.<br>
+&gt;<br>
+&gt; Fix this by waiting for the channel to be effectively disabled<br>
+&gt; (by checking the PWM_SR register) before disabling the clock.<br>
+&gt;<br>
+&gt; Signed-off-by: Guillermo Rodriguez &lt;<a href=3D"javascript:;" onclic=
+k=3D"_e(event, &#39;cvml&#39;, &#39;guille.rodriguez@gmail.com&#39;)">guill=
+e.rodriguez@gmail.com</a>&gt;<br>
+&gt; ---<br>
+&gt;=C2=A0 drivers/pwm/pwm-atmel.c |=C2=A0 =C2=A010 ++++++++++<br>
+&gt;=C2=A0 1 file changed, 10 insertions(+)<br>
+&gt;<br>
+&gt; diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c<br>
+&gt; index 0e4bd4e..a714434 100644<br>
+&gt; --- a/drivers/pwm/pwm-atmel.c<br>
+&gt; +++ b/drivers/pwm/pwm-atmel.c<br>
+&gt; @@ -271,6 +271,16 @@ static void atmel_pwm_disable(struct pwm_chip *ch=
+ip, struct pwm_device *pwm)<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0mutex_unlock(&amp;atmel_pwm-&gt;isr_lock);<b=
+r>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 &lt;&=
+lt; pwm-&gt;hwpwm);<br>
+&gt;<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0/*<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 * Wait for the PWM channel disable operation to =
+be effective before<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 * stopping the clock.<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 */<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0timeout =3D jiffies + 2 * HZ;<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0while ((atmel_pwm_readl(atmel_pwm, PWM_SR)&amp; (=
+1 &lt;&lt; pwm-&gt;hwpwm)) &amp;&amp;<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 time_before(jiffies, timeou=
+t)) {<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0usleep_range(10, 100)=
+;<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0}<br>
+&gt; +<br>
+<br>
+While this seems good, can you tell on which SoC you observed that? I&#39;d=
+<br>
+like to understand whether this is only on v1 or v2 or both.</blockquote><d=
+iv><br></div><div>I observed it on a sama5d3, however this article from atm=
+el&#39;s KB would seem to suggest that it is not specific to this SoC:</div=
+><div><br></div><div><a href=3D"http://atmel.force.com/support/pkb_mobile#/=
+articles/en_US/FAQ/Why-PWM-Channel-Polarity-Inversion">http://atmel.force.c=
+om/support/pkb_mobile#/articles/en_US/FAQ/Why-PWM-Channel-Polarity-Inversio=
+n</a><br></div><div><br></div><div>=C2=A0Guillermo</div><br><br>-- <br>Guil=
+lermo Rodriguez Garcia<br><a href=3D"mailto:guille.rodriguez@gmail.com">gui=
+lle.rodriguez@gmail.com</a><br>
+
+--001a114e24826685ae0534e9378c--
