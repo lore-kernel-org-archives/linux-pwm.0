@@ -1,487 +1,193 @@
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH 47/48] PWM: atmel-tcb: switch to new binding
-Date: Sat, 11 Jun 2016 00:03:50 +0200
-Message-ID: <1465596231-21766-48-git-send-email-alexandre.belloni@free-electrons.com>
-References: <1465596231-21766-1-git-send-email-alexandre.belloni@free-electrons.com>
+Subject: [PATCH 00/48] ARM: at91: rework Atmel TCB drivers
+Date: Sat, 11 Jun 2016 00:03:03 +0200
+Message-ID: <1465596231-21766-1-git-send-email-alexandre.belloni@free-electrons.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1465596231-21766-1-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Antoine Aubert <a.aubert@overkiz.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, devicetree@vger.kernel.org, Douglas Gilbert <dgilbert@interlog.com>, Fabio Porcedda <fabio.porcedda@gmail.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, Gregory Hermant <gregory.hermant@calao-systems.com>, Joachim Eastwood <manabian@gmail.com>, linux-clk@vger.kernel.org, linux-pwm@vger.kernel.org, Marek Vasut <marex@denx.de>, Martin Reimann <martin.reimann@egnite.de>, Rob Herring <robh+dt@kernel.org>, Rodolfo Giometti <giometti@linux.it>, Sergio Tanzilli <tanzilli@acmesystems.it>, Stephen Boyd <sboyd@codeaurora.org>, Thierry Reding <thie>
 List-Id: linux-pwm@vger.kernel.org
 
-The PWM is now a subnode of the used TCB. This is cleaner and it mainly
-allows to stop wasting TCB channels when only 4 PWMs are used.
+Hi,
 
-Cc: Thierry Reding <thierry.reding@gmail.com>
+This series reworks the Atmel Timer counter Block drivers. Those blocks
+each have 3 counters with 2 channels each and can be used for
+multiple functions:
+ - timers
+ - PWMs
+ - Quadrature decoders
+ - Stepper motor counters
+
+Up until now, each TCB was fully used by each driver, possibly wasting
+counters/channels.
+
+There is a second issue motivating that rework. Until now, the PIT is
+still used to boot then later in the boot sequence, the clocksource is
+switched to the TCB. This ends up not working well with preempt-rt
+because on some SoCs, the PIT interrupt is shared with the DBGU uart.
+When using preempt-rt the interrupt flags for the PIT and the DBGU end
+up being incompatible.
+
+The whole rework doesn't break the DT ABI for the clocksource as the old
+driver is kept anyway for AVR32. However, I still took the time to
+switch all the upstreamed board dts to the new bindings.
+However, there is no other choice than breaking the mainly unused
+pwm-atmel-tcb binding. Only the kizbox is actually using it.
+
+I hope we could quickly come to an agreement on the new DT bindings and
+include those changes in 4.8.
+
+Regarding the tcbclksrc driver, I'm not completely happy with the
+request_irq/free_irq thing but there is not much choice unless we want
+to pass in the clksrc handler even when using the clkevt driver as they
+may share the same interrupt.
+
+Cc: Antoine Aubert <a.aubert@overkiz.com>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: devicetree@vger.kernel.org
+Cc: Douglas Gilbert <dgilbert@interlog.com>
+Cc: Fabio Porcedda <fabio.porcedda@gmail.com>
+Cc: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Cc: Gregory Hermant <gregory.hermant@calao-systems.com>
+Cc: Joachim Eastwood <manabian@gmail.com>
+Cc: linux-clk@vger.kernel.org
 Cc: linux-pwm@vger.kernel.org
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
- drivers/pwm/Kconfig         |   3 +-
- drivers/pwm/pwm-atmel-tcb.c | 219 ++++++++++++++++++++++++--------------------
- 2 files changed, 120 insertions(+), 102 deletions(-)
+Cc: Marek Vasut <marex@denx.de>
+Cc: Martin Reimann <martin.reimann@egnite.de>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Rodolfo Giometti <giometti@linux.it>
+Cc: Sergio Tanzilli <tanzilli@acmesystems.it>
+Cc: Stephen Boyd <sboyd@codeaurora.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Tim Schendekehl <tim.schendekehl@egnite.de>
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index c182efc62c7b..431a68c2e82f 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -64,7 +64,8 @@ config PWM_ATMEL_HLCDC_PWM
- 
- config PWM_ATMEL_TCB
- 	tristate "Atmel TC Block PWM support"
--	depends on ATMEL_TCLIB && OF
-+	depends on OF
-+	select REGMAP_MMIO
- 	help
- 	  Generic PWM framework driver for Atmel Timer Counter Block.
- 
-diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
-index 75db585a2a94..5afb5116ad96 100644
---- a/drivers/pwm/pwm-atmel-tcb.c
-+++ b/drivers/pwm/pwm-atmel-tcb.c
-@@ -16,19 +16,26 @@
- #include <linux/err.h>
- #include <linux/ioport.h>
- #include <linux/io.h>
-+#include <linux/mfd/syscon.h>
- #include <linux/platform_device.h>
--#include <linux/atmel_tc.h>
- #include <linux/pwm.h>
- #include <linux/of_device.h>
-+#include <linux/of_irq.h>
-+#include <linux/regmap.h>
- #include <linux/slab.h>
-+#include <soc/at91/atmel_tcb.h>
- 
--#define NPWM	6
-+#define NPWM	2
- 
--#define ATMEL_TC_ACMR_MASK	(ATMEL_TC_ACPA | ATMEL_TC_ACPC |	\
--				 ATMEL_TC_AEEVT | ATMEL_TC_ASWTRG)
-+#define ATMEL_TC_ACMR_MASK	(ATMEL_TC_CMR_ACPA_MSK | \
-+				 ATMEL_TC_CMR_ACPC_MSK | \
-+				 ATMEL_TC_CMR_AEEVT_MSK | \
-+				 ATMEL_TC_CMR_ASWTRG_MSK)
- 
--#define ATMEL_TC_BCMR_MASK	(ATMEL_TC_BCPB | ATMEL_TC_BCPC |	\
--				 ATMEL_TC_BEEVT | ATMEL_TC_BSWTRG)
-+#define ATMEL_TC_BCMR_MASK	(ATMEL_TC_CMR_BCPB_MSK | \
-+				 ATMEL_TC_CMR_BCPC_MSK | \
-+				 ATMEL_TC_CMR_BEEVT_MSK | \
-+				 ATMEL_TC_CMR_BSWTRG_MSK)
- 
- struct atmel_tcb_pwm_device {
- 	enum pwm_polarity polarity;	/* PWM polarity */
-@@ -40,7 +47,11 @@ struct atmel_tcb_pwm_device {
- struct atmel_tcb_pwm_chip {
- 	struct pwm_chip chip;
- 	spinlock_t lock;
--	struct atmel_tc *tc;
-+	u8 channel;
-+	u8 width;
-+	struct regmap *regmap;
-+	struct clk *clk;
-+	struct clk *slow_clk;
- 	struct atmel_tcb_pwm_device *pwms[NPWM];
- };
- 
-@@ -65,10 +76,6 @@ static int atmel_tcb_pwm_request(struct pwm_chip *chip,
- {
- 	struct atmel_tcb_pwm_chip *tcbpwmc = to_tcb_chip(chip);
- 	struct atmel_tcb_pwm_device *tcbpwm;
--	struct atmel_tc *tc = tcbpwmc->tc;
--	void __iomem *regs = tc->regs;
--	unsigned group = pwm->hwpwm / 2;
--	unsigned index = pwm->hwpwm % 2;
- 	unsigned cmr;
- 	int ret;
- 
-@@ -76,7 +83,7 @@ static int atmel_tcb_pwm_request(struct pwm_chip *chip,
- 	if (!tcbpwm)
- 		return -ENOMEM;
- 
--	ret = clk_prepare_enable(tc->clk[group]);
-+	ret = clk_prepare_enable(tcbpwmc->clk);
- 	if (ret) {
- 		devm_kfree(chip->dev, tcbpwm);
- 		return ret;
-@@ -89,28 +96,32 @@ static int atmel_tcb_pwm_request(struct pwm_chip *chip,
- 	tcbpwm->div = 0;
- 
- 	spin_lock(&tcbpwmc->lock);
--	cmr = __raw_readl(regs + ATMEL_TC_REG(group, CMR));
-+	regmap_read(tcbpwmc->regmap, ATMEL_TC_CMR(tcbpwmc->channel), &cmr);
- 	/*
- 	 * Get init config from Timer Counter registers if
- 	 * Timer Counter is already configured as a PWM generator.
- 	 */
--	if (cmr & ATMEL_TC_WAVE) {
--		if (index == 0)
--			tcbpwm->duty =
--				__raw_readl(regs + ATMEL_TC_REG(group, RA));
-+	if (cmr & ATMEL_TC_CMR_WAVE) {
-+		if (pwm->hwpwm == 0)
-+			regmap_read(tcbpwmc->regmap,
-+				    ATMEL_TC_RA(tcbpwmc->channel),
-+				    &tcbpwm->duty);
- 		else
--			tcbpwm->duty =
--				__raw_readl(regs + ATMEL_TC_REG(group, RB));
--
--		tcbpwm->div = cmr & ATMEL_TC_TCCLKS;
--		tcbpwm->period = __raw_readl(regs + ATMEL_TC_REG(group, RC));
--		cmr &= (ATMEL_TC_TCCLKS | ATMEL_TC_ACMR_MASK |
-+			regmap_read(tcbpwmc->regmap,
-+				    ATMEL_TC_RB(tcbpwmc->channel),
-+				    &tcbpwm->duty);
-+
-+		tcbpwm->div = cmr & ATMEL_TC_CMR_TCLKS_MSK;
-+		regmap_read(tcbpwmc->regmap, ATMEL_TC_RC(tcbpwmc->channel),
-+			    &tcbpwm->period);
-+		cmr &= (ATMEL_TC_CMR_TCLKS_MSK | ATMEL_TC_ACMR_MASK |
- 			ATMEL_TC_BCMR_MASK);
- 	} else
- 		cmr = 0;
- 
--	cmr |= ATMEL_TC_WAVE | ATMEL_TC_WAVESEL_UP_AUTO | ATMEL_TC_EEVT_XC0;
--	__raw_writel(cmr, regs + ATMEL_TC_REG(group, CMR));
-+	cmr |= ATMEL_TC_CMR_WAVE | ATMEL_TC_CMR_WAVESEL_UPRC |
-+	       ATMEL_TC_CMR_EEVT_XC(0);
-+	regmap_write(tcbpwmc->regmap, ATMEL_TC_CMR(tcbpwmc->channel), cmr);
- 	spin_unlock(&tcbpwmc->lock);
- 
- 	tcbpwmc->pwms[pwm->hwpwm] = tcbpwm;
-@@ -122,9 +133,8 @@ static void atmel_tcb_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct atmel_tcb_pwm_chip *tcbpwmc = to_tcb_chip(chip);
- 	struct atmel_tcb_pwm_device *tcbpwm = pwm_get_chip_data(pwm);
--	struct atmel_tc *tc = tcbpwmc->tc;
- 
--	clk_disable_unprepare(tc->clk[pwm->hwpwm / 2]);
-+	clk_disable_unprepare(tcbpwmc->clk);
- 	tcbpwmc->pwms[pwm->hwpwm] = NULL;
- 	devm_kfree(chip->dev, tcbpwm);
- }
-@@ -133,10 +143,6 @@ static void atmel_tcb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct atmel_tcb_pwm_chip *tcbpwmc = to_tcb_chip(chip);
- 	struct atmel_tcb_pwm_device *tcbpwm = pwm_get_chip_data(pwm);
--	struct atmel_tc *tc = tcbpwmc->tc;
--	void __iomem *regs = tc->regs;
--	unsigned group = pwm->hwpwm / 2;
--	unsigned index = pwm->hwpwm % 2;
- 	unsigned cmr;
- 	enum pwm_polarity polarity = tcbpwm->polarity;
- 
-@@ -152,35 +158,35 @@ static void atmel_tcb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 		polarity = !polarity;
- 
- 	spin_lock(&tcbpwmc->lock);
--	cmr = __raw_readl(regs + ATMEL_TC_REG(group, CMR));
-+	regmap_read(tcbpwmc->regmap, ATMEL_TC_CMR(tcbpwmc->channel), &cmr);
- 
- 	/* flush old setting and set the new one */
--	if (index == 0) {
-+	if (pwm->hwpwm == 0) {
- 		cmr &= ~ATMEL_TC_ACMR_MASK;
- 		if (polarity == PWM_POLARITY_INVERSED)
--			cmr |= ATMEL_TC_ASWTRG_CLEAR;
-+			cmr |= ATMEL_TC_CMR_ASWTRG(CLEAR);
- 		else
--			cmr |= ATMEL_TC_ASWTRG_SET;
-+			cmr |= ATMEL_TC_CMR_ASWTRG(SET);
- 	} else {
- 		cmr &= ~ATMEL_TC_BCMR_MASK;
- 		if (polarity == PWM_POLARITY_INVERSED)
--			cmr |= ATMEL_TC_BSWTRG_CLEAR;
-+			cmr |= ATMEL_TC_CMR_BSWTRG(CLEAR);
- 		else
--			cmr |= ATMEL_TC_BSWTRG_SET;
-+			cmr |= ATMEL_TC_CMR_BSWTRG(SET);
- 	}
- 
--	__raw_writel(cmr, regs + ATMEL_TC_REG(group, CMR));
-+	regmap_write(tcbpwmc->regmap, ATMEL_TC_CMR(tcbpwmc->channel), cmr);
- 
- 	/*
- 	 * Use software trigger to apply the new setting.
- 	 * If both PWM devices in this group are disabled we stop the clock.
- 	 */
--	if (!(cmr & (ATMEL_TC_ACPC | ATMEL_TC_BCPC)))
--		__raw_writel(ATMEL_TC_SWTRG | ATMEL_TC_CLKDIS,
--			     regs + ATMEL_TC_REG(group, CCR));
-+	if (!(cmr & (ATMEL_TC_CMR_ACPC_MSK | ATMEL_TC_CMR_BCPC_MSK)))
-+		regmap_write(tcbpwmc->regmap, ATMEL_TC_CCR(tcbpwmc->channel),
-+			     ATMEL_TC_CCR_SWTRG | ATMEL_TC_CCR_CLKDIS);
- 	else
--		__raw_writel(ATMEL_TC_SWTRG, regs +
--			     ATMEL_TC_REG(group, CCR));
-+		regmap_write(tcbpwmc->regmap, ATMEL_TC_CCR(tcbpwmc->channel),
-+			     ATMEL_TC_CCR_SWTRG);
- 
- 	spin_unlock(&tcbpwmc->lock);
- }
-@@ -189,10 +195,6 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct atmel_tcb_pwm_chip *tcbpwmc = to_tcb_chip(chip);
- 	struct atmel_tcb_pwm_device *tcbpwm = pwm_get_chip_data(pwm);
--	struct atmel_tc *tc = tcbpwmc->tc;
--	void __iomem *regs = tc->regs;
--	unsigned group = pwm->hwpwm / 2;
--	unsigned index = pwm->hwpwm % 2;
- 	u32 cmr;
- 	enum pwm_polarity polarity = tcbpwm->polarity;
- 
-@@ -208,25 +210,25 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 		polarity = !polarity;
- 
- 	spin_lock(&tcbpwmc->lock);
--	cmr = __raw_readl(regs + ATMEL_TC_REG(group, CMR));
-+	regmap_read(tcbpwmc->regmap, ATMEL_TC_CMR(tcbpwmc->channel), &cmr);
- 
- 	/* flush old setting and set the new one */
--	cmr &= ~ATMEL_TC_TCCLKS;
-+	cmr &= ~ATMEL_TC_CMR_TCLKS_MSK;
- 
--	if (index == 0) {
-+	if (pwm->hwpwm == 0) {
- 		cmr &= ~ATMEL_TC_ACMR_MASK;
- 
- 		/* Set CMR flags according to given polarity */
- 		if (polarity == PWM_POLARITY_INVERSED)
--			cmr |= ATMEL_TC_ASWTRG_CLEAR;
-+			cmr |= ATMEL_TC_CMR_ASWTRG(CLEAR);
- 		else
--			cmr |= ATMEL_TC_ASWTRG_SET;
-+			cmr |= ATMEL_TC_CMR_ASWTRG(SET);
- 	} else {
- 		cmr &= ~ATMEL_TC_BCMR_MASK;
- 		if (polarity == PWM_POLARITY_INVERSED)
--			cmr |= ATMEL_TC_BSWTRG_CLEAR;
-+			cmr |= ATMEL_TC_CMR_BSWTRG(CLEAR);
- 		else
--			cmr |= ATMEL_TC_BSWTRG_SET;
-+			cmr |= ATMEL_TC_CMR_BSWTRG(SET);
- 	}
- 
- 	/*
-@@ -236,33 +238,40 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	 * this config till next config call.
- 	 */
- 	if (tcbpwm->duty != tcbpwm->period && tcbpwm->duty > 0) {
--		if (index == 0) {
-+		if (pwm->hwpwm == 0) {
- 			if (polarity == PWM_POLARITY_INVERSED)
--				cmr |= ATMEL_TC_ACPA_SET | ATMEL_TC_ACPC_CLEAR;
-+				cmr |= ATMEL_TC_CMR_ACPA(SET) |
-+				       ATMEL_TC_CMR_ACPC(CLEAR);
- 			else
--				cmr |= ATMEL_TC_ACPA_CLEAR | ATMEL_TC_ACPC_SET;
-+				cmr |= ATMEL_TC_CMR_ACPA(CLEAR) |
-+				       ATMEL_TC_CMR_ACPC(SET);
- 		} else {
- 			if (polarity == PWM_POLARITY_INVERSED)
--				cmr |= ATMEL_TC_BCPB_SET | ATMEL_TC_BCPC_CLEAR;
-+				cmr |= ATMEL_TC_CMR_BCPB(SET) |
-+				       ATMEL_TC_CMR_BCPC(CLEAR);
- 			else
--				cmr |= ATMEL_TC_BCPB_CLEAR | ATMEL_TC_BCPC_SET;
-+				cmr |= ATMEL_TC_CMR_BCPB(CLEAR) |
-+				       ATMEL_TC_CMR_BCPC(SET);
- 		}
- 	}
- 
--	cmr |= (tcbpwm->div & ATMEL_TC_TCCLKS);
-+	cmr |= (tcbpwm->div & ATMEL_TC_CMR_TCLKS_MSK);
- 
--	__raw_writel(cmr, regs + ATMEL_TC_REG(group, CMR));
-+	regmap_write(tcbpwmc->regmap, ATMEL_TC_CMR(tcbpwmc->channel), cmr);
- 
--	if (index == 0)
--		__raw_writel(tcbpwm->duty, regs + ATMEL_TC_REG(group, RA));
-+	if (pwm->hwpwm == 0)
-+		regmap_write(tcbpwmc->regmap, ATMEL_TC_RA(tcbpwmc->channel),
-+			     tcbpwm->duty);
- 	else
--		__raw_writel(tcbpwm->duty, regs + ATMEL_TC_REG(group, RB));
-+		regmap_write(tcbpwmc->regmap, ATMEL_TC_RB(tcbpwmc->channel),
-+			     tcbpwm->duty);
- 
--	__raw_writel(tcbpwm->period, regs + ATMEL_TC_REG(group, RC));
-+	regmap_write(tcbpwmc->regmap, ATMEL_TC_RC(tcbpwmc->channel),
-+		     tcbpwm->period);
- 
- 	/* Use software trigger to apply the new setting */
--	__raw_writel(ATMEL_TC_CLKEN | ATMEL_TC_SWTRG,
--		     regs + ATMEL_TC_REG(group, CCR));
-+	regmap_write(tcbpwmc->regmap, ATMEL_TC_CCR(tcbpwmc->channel),
-+		     ATMEL_TC_CCR_SWTRG | ATMEL_TC_CCR_CLKEN);
- 	spin_unlock(&tcbpwmc->lock);
- 	return 0;
- }
-@@ -272,15 +281,12 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct atmel_tcb_pwm_chip *tcbpwmc = to_tcb_chip(chip);
- 	struct atmel_tcb_pwm_device *tcbpwm = pwm_get_chip_data(pwm);
--	unsigned group = pwm->hwpwm / 2;
--	unsigned index = pwm->hwpwm % 2;
- 	struct atmel_tcb_pwm_device *atcbpwm = NULL;
--	struct atmel_tc *tc = tcbpwmc->tc;
- 	int i;
- 	int slowclk = 0;
- 	unsigned period;
- 	unsigned duty;
--	unsigned rate = clk_get_rate(tc->clk[group]);
-+	unsigned rate = clk_get_rate(tcbpwmc->clk);
- 	unsigned long long min;
- 	unsigned long long max;
- 
-@@ -294,7 +300,7 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 			continue;
- 		}
- 		min = div_u64((u64)NSEC_PER_SEC * atmel_tc_divisors[i], rate);
--		max = min << tc->tcb_config->counter_width;
-+		max = min << tcbpwmc->width;
- 		if (max >= period_ns)
- 			break;
- 	}
-@@ -305,9 +311,9 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 */
- 	if (i == 5) {
- 		i = slowclk;
--		rate = clk_get_rate(tc->slow_clk);
-+		rate = clk_get_rate(tcbpwmc->slow_clk);
- 		min = div_u64(NSEC_PER_SEC, rate);
--		max = min << tc->tcb_config->counter_width;
-+		max = min << tcbpwmc->width;
- 
- 		/* If period is too big return ERANGE error */
- 		if (max < period_ns)
-@@ -317,17 +323,13 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	duty = div_u64(duty_ns, min);
- 	period = div_u64(period_ns, min);
- 
--	if (index == 0)
--		atcbpwm = tcbpwmc->pwms[pwm->hwpwm + 1];
-+	if (pwm->hwpwm == 0)
-+		atcbpwm = tcbpwmc->pwms[1];
- 	else
--		atcbpwm = tcbpwmc->pwms[pwm->hwpwm - 1];
-+		atcbpwm = tcbpwmc->pwms[0];
- 
- 	/*
--	 * PWM devices provided by TCB driver are grouped by 2:
--	 * - group 0: PWM 0 & 1
--	 * - group 1: PWM 2 & 3
--	 * - group 2: PWM 4 & 5
--	 *
-+	 * PWM devices provided by the TCB driver are grouped by 2.
- 	 * PWM devices in a given group must be configured with the
- 	 * same period_ns.
- 	 *
-@@ -365,31 +367,40 @@ static const struct pwm_ops atmel_tcb_pwm_ops = {
- 
- static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- {
-+	const struct of_device_id *match;
- 	struct atmel_tcb_pwm_chip *tcbpwm;
- 	struct device_node *np = pdev->dev.of_node;
--	struct atmel_tc *tc;
-+	struct regmap *regmap;
-+	struct clk *clk;
-+	struct clk *slow_clk;
- 	int err;
--	int tcblock;
-+	int channel;
- 
--	err = of_property_read_u32(np, "tc-block", &tcblock);
-+	err = of_property_read_u32(np, "reg", &channel);
- 	if (err < 0) {
- 		dev_err(&pdev->dev,
--			"failed to get Timer Counter Block number from device tree (error: %d)\n",
-+			"failed to get Timer Counter Block channel from device tree (error: %d)\n",
- 			err);
- 		return err;
- 	}
- 
--	tc = atmel_tc_alloc(tcblock);
--	if (tc == NULL) {
--		dev_err(&pdev->dev, "failed to allocate Timer Counter Block\n");
--		return -ENOMEM;
--	}
-+	regmap = syscon_node_to_regmap(np->parent);
-+	if (IS_ERR(regmap))
-+		return PTR_ERR(regmap);
-+
-+	slow_clk = of_clk_get_by_name(np->parent, "slow_clk");
-+	if (IS_ERR(slow_clk))
-+		return PTR_ERR(slow_clk);
-+
-+	clk = tcb_clk_get(np, channel);
-+	if (IS_ERR(clk))
-+		return PTR_ERR(clk);
- 
- 	tcbpwm = devm_kzalloc(&pdev->dev, sizeof(*tcbpwm), GFP_KERNEL);
- 	if (tcbpwm == NULL) {
- 		err = -ENOMEM;
- 		dev_err(&pdev->dev, "failed to allocate memory\n");
--		goto err_free_tc;
-+		goto err_slow_clk;
- 	}
- 
- 	tcbpwm->chip.dev = &pdev->dev;
-@@ -398,11 +409,17 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- 	tcbpwm->chip.of_pwm_n_cells = 3;
- 	tcbpwm->chip.base = -1;
- 	tcbpwm->chip.npwm = NPWM;
--	tcbpwm->tc = tc;
-+	tcbpwm->channel = channel;
-+	tcbpwm->regmap = regmap;
-+	tcbpwm->clk = clk;
-+	tcbpwm->slow_clk = slow_clk;
- 
--	err = clk_prepare_enable(tc->slow_clk);
-+	match = of_match_node(atmel_tcb_dt_ids, np->parent);
-+	tcbpwm->width = (int)match->data;
-+
-+	err = clk_prepare_enable(slow_clk);
- 	if (err)
--		goto err_free_tc;
-+		goto err_slow_clk;
- 
- 	spin_lock_init(&tcbpwm->lock);
- 
-@@ -415,10 +432,10 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
- 	return 0;
- 
- err_disable_clk:
--	clk_disable_unprepare(tcbpwm->tc->slow_clk);
-+	clk_disable_unprepare(tcbpwm->slow_clk);
- 
--err_free_tc:
--	atmel_tc_free(tc);
-+err_slow_clk:
-+	clk_put(slow_clk);
- 
- 	return err;
- }
-@@ -428,14 +445,14 @@ static int atmel_tcb_pwm_remove(struct platform_device *pdev)
- 	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
- 	int err;
- 
--	clk_disable_unprepare(tcbpwm->tc->slow_clk);
-+	clk_disable_unprepare(tcbpwm->slow_clk);
-+	clk_put(tcbpwm->slow_clk);
-+	clk_put(tcbpwm->clk);
- 
- 	err = pwmchip_remove(&tcbpwm->chip);
- 	if (err < 0)
- 		return err;
- 
--	atmel_tc_free(tcbpwm->tc);
--
- 	return 0;
- }
- 
+Alexandre Belloni (47):
+  ARM: at91: Document new TCB bindings
+  ARM: dts: at91: at91rm9200: TC blocks are also simple-mfd and syscon
+    devices
+  ARM: dts: at91: at91rm9200ek; use TCB0 as clocksource
+  ARM: dts: at91: mpa1600; use TCB0 as clocksource
+  ARM: dts: at91: at91sam9260: TC blocks are also simple-mfd and syscon
+    devices
+  ARM: dts: at91: ethernut5: use TCB0 as clocksource
+  ARM: dts: at91: foxg20: use TCB0 as clocksource
+  ARM: dts: at91: animeo_ip: use TCB0 as clocksource
+  ARM: dts: at91: kizbox: use TCB0 as clocksource
+  ARM: dts: at91: at91sam9g20ek: use TCB0 as clocksource
+  ARM: dts: at91: ge863-pro3: use TCB0 as clocksource
+  ARM: dts: at91: at91sam9261: TC blocks are also simple-mfd and syscon
+    devices
+  ARM: dts: at91: at91sam9261ek: use TCB0 as clocksource
+  ARM: dts: at91: at91sam9263: TC blocks are also simple-mfd and syscon
+    devices
+  ARM: dts: at91: at91sam9263ek: use TCB0 as clocksource
+  ARM: dts: at91: calao: use TCB0 as clocksource
+  ARM: dts: at91: at91sam9g45: TC blocks are also simple-mfd and syscon
+    devices
+  ARM: dts: at91: at91sam9m10g45ek: use TCB0 as clocksource
+  ARM: dts: at91: pm9g45: use TCB0 as clocksource
+  ARM: dts: at91: at91sam9rl: TC blocks are also simple-mfd and syscon
+    devices
+  ARM: dts: at91: at91sam9rlek: use TCB0 as clocksource
+  ARM: dts: at91: at91sam9n12: TC blocks are also simple-mfd and syscon
+    devices
+  ARM: dts: at91: at91sam9n12ek: use TCB0 as clocksource
+  ARM: dts: at91: at91sam9x5: TC blocks are also simple-mfd and syscon
+    devices
+  ARM: dts: at91: at91sam9x5cm: use TCB0 as clocksource
+  ARM: dts: at91: acme/g25: use TCB0 as clocksource
+  ARM: dts: at91: cosino: use TCB0 as clocksource
+  ARM: dts: at91: kizboxmini: use TCB0 as clocksource
+  ARM: dts: at91: sama5d3: TC blocks are also simple-mfd and syscon
+    devices
+  ARM: dts: at91: sama5d3xek; use TCB0 as clocksource
+  ARM: dts: at91: sama5d3 Xplained: use TCB0 as clocksource
+  ARM: dts: at91: kizbox2: use TCB0 as clocksource
+  ARM: dts: at91: sama5d4: TC blocks are also simple-mfd and syscon
+    devices
+  ARM: dts: at91: sama5d4: Add TCB2
+  ARM: dts: at91: sama5d4ek: use TCB2 as clocksource
+  ARM: dts: at91: sama5d4 Xplained: use TCB2 as clocksource
+  ARM: dts: at91: ma5d4: use TCB2 as clocksource
+  ARM: dts: at91: vinco: use TCB2 as clocksource
+  ARM: dts: at91: sama5d2: TC blocks are also simple-mfd and syscon
+    devices
+  ARM: dts: at91: sama5d2 Xplained: use TCB0 as clocksource
+  clocksource/drivers: Add a new driver for the Atmel ARM TC blocks
+  clocksource/drivers: Add a clockevent driver for Atmel TC blocks
+  clocksource: atmel-pit: allow unselecting ATMEL_PIT
+  ARM: at91/defconfig: sama5: unselect ATMEL_PIT
+  ARM: at91/defconfig: at91_dt unselect ATMEL_PIT
+  PWM: atmel-tcb: switch to new binding
+  ARM: dts: at91: kizbox: switch to new pwm-atmel-tcb binding
+
+Cyrille Pitchen (1):
+  clk: at91: replace usleep() by udelay() calls
+
+ .../devicetree/bindings/arm/atmel-at91.txt         |  32 ---
+ .../devicetree/bindings/mfd/atmel-tcb.txt          |  62 +++++
+ .../devicetree/bindings/pwm/atmel-tcb-pwm.txt      |  12 +-
+ arch/arm/boot/dts/animeo_ip.dts                    |  12 +
+ arch/arm/boot/dts/at91-ariag25.dts                 |  12 +
+ arch/arm/boot/dts/at91-ariettag25.dts              |  12 +
+ arch/arm/boot/dts/at91-cosino.dtsi                 |  12 +
+ arch/arm/boot/dts/at91-foxg20.dts                  |  12 +
+ arch/arm/boot/dts/at91-kizbox.dts                  |  54 +++-
+ arch/arm/boot/dts/at91-kizbox2.dts                 |  12 +
+ arch/arm/boot/dts/at91-kizboxmini.dts              |  12 +
+ arch/arm/boot/dts/at91-qil_a9260.dts               |  12 +
+ arch/arm/boot/dts/at91-sama5d2_xplained.dts        |  12 +
+ arch/arm/boot/dts/at91-sama5d3_xplained.dts        |  12 +
+ arch/arm/boot/dts/at91-sama5d4_ma5d4.dtsi          |  12 +
+ arch/arm/boot/dts/at91-sama5d4_xplained.dts        |  12 +
+ arch/arm/boot/dts/at91-sama5d4ek.dts               |  12 +
+ arch/arm/boot/dts/at91-vinco.dts                   |  12 +
+ arch/arm/boot/dts/at91rm9200.dtsi                  |   8 +-
+ arch/arm/boot/dts/at91rm9200ek.dts                 |  12 +
+ arch/arm/boot/dts/at91sam9260.dtsi                 |   8 +-
+ arch/arm/boot/dts/at91sam9261.dtsi                 |   4 +-
+ arch/arm/boot/dts/at91sam9261ek.dts                |  12 +
+ arch/arm/boot/dts/at91sam9263.dtsi                 |   4 +-
+ arch/arm/boot/dts/at91sam9263ek.dts                |  12 +
+ arch/arm/boot/dts/at91sam9g20ek_common.dtsi        |  12 +
+ arch/arm/boot/dts/at91sam9g45.dtsi                 |   8 +-
+ arch/arm/boot/dts/at91sam9m10g45ek.dts             |  12 +
+ arch/arm/boot/dts/at91sam9n12.dtsi                 |   8 +-
+ arch/arm/boot/dts/at91sam9n12ek.dts                |  12 +
+ arch/arm/boot/dts/at91sam9rl.dtsi                  |   4 +-
+ arch/arm/boot/dts/at91sam9rlek.dts                 |  12 +
+ arch/arm/boot/dts/at91sam9x5.dtsi                  |   8 +-
+ arch/arm/boot/dts/at91sam9x5cm.dtsi                |  12 +
+ arch/arm/boot/dts/ethernut5.dts                    |  12 +
+ arch/arm/boot/dts/ge863-pro3.dtsi                  |  12 +
+ arch/arm/boot/dts/mpa1600.dts                      |  12 +
+ arch/arm/boot/dts/pm9g45.dts                       |  12 +
+ arch/arm/boot/dts/sama5d2.dtsi                     |   8 +-
+ arch/arm/boot/dts/sama5d3.dtsi                     |   4 +-
+ arch/arm/boot/dts/sama5d3_tcb1.dtsi                |   4 +-
+ arch/arm/boot/dts/sama5d3xcm.dtsi                  |  12 +
+ arch/arm/boot/dts/sama5d4.dtsi                     |  18 +-
+ arch/arm/boot/dts/tny_a9260_common.dtsi            |  12 +
+ arch/arm/boot/dts/tny_a9263.dts                    |  12 +
+ arch/arm/boot/dts/usb_a9260_common.dtsi            |  12 +
+ arch/arm/boot/dts/usb_a9263.dts                    |  12 +
+ arch/arm/configs/at91_dt_defconfig                 |   1 +
+ arch/arm/configs/sama5_defconfig                   |   1 +
+ drivers/clk/at91/clk-main.c                        |   2 +-
+ drivers/clk/at91/clk-slow.c                        |   6 +-
+ drivers/clocksource/Kconfig                        |  32 ++-
+ drivers/clocksource/Makefile                       |   4 +-
+ drivers/clocksource/timer-atmel-tcbclkevt.c        | 220 +++++++++++++++
+ drivers/clocksource/timer-atmel-tcbclksrc.c        | 305 +++++++++++++++++++++
+ drivers/pwm/Kconfig                                |   3 +-
+ drivers/pwm/pwm-atmel-tcb.c                        | 219 ++++++++-------
+ include/soc/at91/atmel_tcb.h                       | 220 +++++++++++++++
+ 58 files changed, 1452 insertions(+), 179 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mfd/atmel-tcb.txt
+ create mode 100644 drivers/clocksource/timer-atmel-tcbclkevt.c
+ create mode 100644 drivers/clocksource/timer-atmel-tcbclksrc.c
+ create mode 100644 include/soc/at91/atmel_tcb.h
+
 -- 
 2.8.1
