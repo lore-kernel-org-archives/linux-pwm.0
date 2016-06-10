@@ -1,52 +1,64 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH v8 5/9] ARM: dts: am437x/am33xx/da850: Add new ECAP and
- EPWM bindings
-Date: Fri, 10 Jun 2016 06:01:15 -0700
-Message-ID: <20160610130114.GP22406@atomide.com>
-References: <1462291015-1919-1-git-send-email-fcooper@ti.com>
- <1462291015-1919-6-git-send-email-fcooper@ti.com>
- <20160610103423.GT22406@atomide.com>
- <20160610120142.GK22406@atomide.com>
- <20160610124022.GD27142@ulmo.ba.sec>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v3 20/20] dt-bindings: pwm: sti: Update DT bindings with
+ recent changes
+Date: Fri, 10 Jun 2016 15:10:08 +0200
+Message-ID: <20160610131008.GF27142@ulmo.ba.sec>
+References: <20160608092135.21184-1-lee.jones@linaro.org>
+ <20160608092135.21184-21-lee.jones@linaro.org>
+ <20160608205152.GA5511@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from muru.com ([72.249.23.125]:56077 "EHLO muru.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S933321AbcFJNBU convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Jun 2016 09:01:20 -0400
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="cpvLTH7QU4gwfq3S"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160610124022.GD27142@ulmo.ba.sec>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <20160608205152.GA5511@rob-hp-laptop>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, maxime.coquelin@st.com, patrice.chotard@st.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Franklin S Cooper Jr <fcooper@ti.com>, robh+dt@kernel.org, linux@arm.linux.org.uk, paul@pwsan.com, t-kristo@ti.com, mturquette@baylibre.com, sboyd@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, vigneshr@ti.com, nsekhar@ti.com
 
-* Thierry Reding <thierry.reding@gmail.com> [160610 05:42]:
-> On Fri, Jun 10, 2016 at 05:01:43AM -0700, Tony Lindgren wrote:
-> > * Tony Lindgren <tony@atomide.com> [160610 03:37]:
-> > > * Franklin S Cooper Jr <fcooper@ti.com> [160503 08:58]:
-> > > > Switch to a new ECAP and EPWM bindings that doesn't depend on hwmod to
-> > > > provide the various required clocks.
-> > > > 
-> > > > For AM437 and AM335x, add the required clocks explicitly to DT. The
-> > > > hwmod entries for ECAP and EPWM will be removed and this will prevent
-> > > > anything from breaking.
-> > > 
-> > > I've applying the first patch into omap-for-v4.8/soc, the rest into
-> > > omap-for-v4.8/dt. Note that this patch did not apply against d850.dtsi
-> > > so please resend that change as a separate patch to the davinci
-> > > maintainer.
-> > 
-> > And I did not apply patch "pwms: pwm-ti*: Get the clock from the PWMSS
-> > parent when using old bindings", Thierry should take that one.
-> 
-> Tony, did you take patches 3 and 4 already? It's fine if yo have, just
-> wanted to know whether I should pick those up as well.
 
-Yes looks like I also took the binding documentation patches too.
+--cpvLTH7QU4gwfq3S
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Regards,
+On Wed, Jun 08, 2016 at 03:51:52PM -0500, Rob Herring wrote:
+> On Wed, Jun 08, 2016 at 10:21:35AM +0100, Lee Jones wrote:
+> > We're renaming the 'st,pwm-num-chan' binding to 'st,pwm-num-devs' to
+> > be more inline with the naming conventions of the subsystem.  Where
+> > we used to treat each line as a channel, the PWM convention is to
+> > describe them as devices.
+>=20
+> That's all linux implementation details and you are breaking=20
+> compatibility.
 
-Tony
+While it's true that the API calls channels struct pwm_device, that's
+primarily for historical reasons. It's completely fine, and in fact most
+drivers already do exactly that, to internally refer to channels as
+channels.
+
+Thierry
+
+--cpvLTH7QU4gwfq3S
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJXWrwtAAoJEN0jrNd/PrOhcpoQALhZwFanc3Z3iglfH06D4Rtq
++qp7hIfnSVFsMwYVE28Y/Q+8hWqx1zAhTkddIzARS3NAibjM5btTeZz6YFszatl8
+ufRqR56BcQj1w7ZFe2+/lNv+ZFvFIteWmPfgXwUmKjWbKj/JQe9FKX0cjtK3L8gJ
+4CKFYYBYoj8m76S0fFPyuuCkW9AywK8mlyo/z3KYuvv2DBKKiLJJFU1uWeC1xFwn
+xshanrmMdX3sz4qZEkVr0hryczbsJUo/dTD02Yha/Pa+/soLCl/nWOiMZMp6TBRX
+aIbSl/3MnNjPlCLvh2GQIfVzCsVFfbbl9zTlXX58leoqgs9Fwuo3nNli99FuD1MH
+6wF5KdS9D4jUssIjsvrKQUZnTlenHiMNginpfLnUOcD5NJ4wbzWgqzzc3TjUSGPx
+11s0Xyrluut3USnWTVHokiSFU2Gygi32+Wr/1T1KcyBa/EQrXiPmLuf3m2EyKNlL
+SSZuBH4+T+KEMK8jiJrtrqwv6v9fJEJW3sIHVBh5G42Ss9SVDb/4WfAf06kMgnQv
+5KiP/dWMyL/2RLWKG08ovMvDviWkyQ0iFMmO8kfHRc0BCJ0gXirFZyopiaXkdUDj
+WhHTZIEJsE1IryPTO+eo0qM7ufYrBjOcMo8V6SLxMHypT+hAs0t3IhL7Qf/ZHnd9
+/Qpo2Q/4Ytm70TDSkmS2
+=iKEu
+-----END PGP SIGNATURE-----
+
+--cpvLTH7QU4gwfq3S--
