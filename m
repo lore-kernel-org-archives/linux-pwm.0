@@ -1,132 +1,63 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCHv2] backlight: pwm_bl: disable PWM when 'duty_cycle' is
- zero
-Date: Fri, 10 Jun 2016 08:44:49 +0100
-Message-ID: <20160610074449.GB1537@dell>
-References: <1465294429-8570-1-git-send-email-LW@KARO-electronics.de>
- <20160609135125.GA2385@dell>
- <20160610072346.51b0a5d5@ipc1.ka-ro>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: Re: pwm: atmel: Fix disabling of PWM channels
+Date: Fri, 10 Jun 2016 10:29:34 +0200
+Message-ID: <20160610082934.GQ2466@piout.net>
+References: <1463137777-27103-1-git-send-email-guille.rodriguez@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f50.google.com ([74.125.82.50]:35902 "EHLO
-	mail-wm0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751225AbcFJHoO (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Jun 2016 03:44:14 -0400
-Received: by mail-wm0-f50.google.com with SMTP id n184so255023954wmn.1
-        for <linux-pwm@vger.kernel.org>; Fri, 10 Jun 2016 00:44:13 -0700 (PDT)
+Received: from down.free-electrons.com ([37.187.137.238]:49666 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750710AbcFJI3h (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Jun 2016 04:29:37 -0400
 Content-Disposition: inline
-In-Reply-To: <20160610072346.51b0a5d5@ipc1.ka-ro>
+In-Reply-To: <1463137777-27103-1-git-send-email-guille.rodriguez@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
-Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jingoo Han <jingoohan1@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+To: Guillermo Rodriguez <guille.rodriguez@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>
 
-On Fri, 10 Jun 2016, Lothar Wa=C3=9Fmann wrote:
+Hi,
 
-> Hi,
->=20
-> On Thu, 9 Jun 2016 14:51:25 +0100 Lee Jones wrote:
-> > On Tue, 07 Jun 2016, Lothar Wa=C3=9Fmann wrote:
-> >=20
-> > > 'brightness' is usually an index into a table of duty_cycle value=
-s,
-> > > where the value at index 0 may well be non-zero
-> > > (tegra30-apalis-eval.dts and tegra30-colibri-eval-v3.dts are real=
--life
-> > > examples).
-> > > Thus brightness =3D=3D 0 does not necessarily mean that the PWM o=
-utput
-> > > will be inactive.
-> > > Check for 'duty_cycle =3D=3D 0' rather than 'brightness =3D=3D 0'=
- to decide
-> > > whether to disable the PWM.
-> > >=20
-> > > Signed-off-by: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
-> > > ---
-> > > Changes wrt. v1:
-> > >   - update binding docs to reflect the change
-> > >=20
-> > >  .../devicetree/bindings/leds/backlight/pwm-backlight.txt        =
- | 9 ++++++---
-> > >  drivers/video/backlight/pwm_bl.c                                =
- | 4 ++--
-> > >  2 files changed, 8 insertions(+), 5 deletions(-)
-> > >=20
-> > > diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm=
--backlight.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-b=
-acklight.txt
-> > > index 764db86..95fa8a9 100644
-> > > --- a/Documentation/devicetree/bindings/leds/backlight/pwm-backli=
-ght.txt
-> > > +++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backli=
-ght.txt
-> > > @@ -4,10 +4,13 @@ Required properties:
-> > >    - compatible: "pwm-backlight"
-> > >    - pwms: OF device-tree PWM specification (see PWM binding[0])
-> > >    - brightness-levels: Array of distinct brightness levels. Typi=
-cally these
-> > > -      are in the range from 0 to 255, but any range starting at =
-0 will do.
-> > > +      are in the range from 0 to 255, but any range will do.
-> > >        The actual brightness level (PWM duty cycle) will be inter=
-polated
-> > > -      from these values. 0 means a 0% duty cycle (darkest/off), =
-while the
-> > > -      last value in the array represents a 100% duty cycle (brig=
-htest).
-> > > +      from these values. 0 means a 0% duty cycle, while the high=
-est value in
-> > > +      the array represents a 100% duty cycle.
-> > > +      The range may be in reverse order (starting with the maxim=
-um duty cycle
-> > > +      value) to create a PWM signal with the 100% duty cycle rep=
-resenting
-> > > +      minimum and 0% duty cycle maximum brigthness.
-> > >    - default-brightness-level: the default brightness level (inde=
-x into the
-> > >        array defined by the "brightness-levels" property)
-> > >    - power-supply: regulator for supply voltage
-> > > diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/bac=
-klight/pwm_bl.c
-> > > index b2b366b..80b2b52 100644
-> > > --- a/drivers/video/backlight/pwm_bl.c
-> > > +++ b/drivers/video/backlight/pwm_bl.c
-> > > @@ -103,8 +103,8 @@ static int pwm_backlight_update_status(struct=
- backlight_device *bl)
-> > >  	if (pb->notify)
-> > >  		brightness =3D pb->notify(pb->dev, brightness);
-> > > =20
-> > > -	if (brightness > 0) {
-> > > -		duty_cycle =3D compute_duty_cycle(pb, brightness);
-> > > +	duty_cycle =3D compute_duty_cycle(pb, brightness);
-> > > +	if (duty_cycle > 0) {
-> >=20
-> > How does this work in the aforementioned:
-> >=20
-> >   "The range may be in reverse order"
-> >=20
-> > ... case?  Surely when duty_cycle is when the screen should be at i=
-t's
-> > brightest?  Wouldn't it confuse the user if they turn their brightn=
-ess
-> > *up* and the screen goes *off*?
-> >=20
-> Assuming that the PWM output is inactive (LOW) when the duty_cycle is
-> set to zero, there will be no difference between operating the PWM at
-> duty_cycle 0 or disabling it.
->=20
-> Currently, the screen will go bright when it should be off in this
-> case.
+On 13/05/2016 at 13:09:37 +0200, Guillermo Rodriguez wrote :
+> When disabling a PWM channel, the PWM clock was being stopped
+> immediately after writing to PWM_DIS. As a result, the disabling
+> of the PWM channel did not complete properly, and the PWM output
+> might be left at the wrong level.
+> 
+> Fix this by waiting for the channel to be effectively disabled
+> (by checking the PWM_SR register) before disabling the clock.
+> 
+> Signed-off-by: Guillermo Rodriguez <guille.rodriguez@gmail.com>
+> ---
+>  drivers/pwm/pwm-atmel.c |   10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+> index 0e4bd4e..a714434 100644
+> --- a/drivers/pwm/pwm-atmel.c
+> +++ b/drivers/pwm/pwm-atmel.c
+> @@ -271,6 +271,16 @@ static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+>  	mutex_unlock(&atmel_pwm->isr_lock);
+>  	atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
+>  
+> +	/*
+> +	 * Wait for the PWM channel disable operation to be effective before
+> +	 * stopping the clock.
+> +	 */
+> +	timeout = jiffies + 2 * HZ;
+> +	while ((atmel_pwm_readl(atmel_pwm, PWM_SR)& (1 << pwm->hwpwm)) &&
+> +	       time_before(jiffies, timeout)) {
+> +		usleep_range(10, 100);
+> +	}
+> +
 
-It sounds like we need something that lets the framework know if
-duty_cycle =3D MAX is the brightest or if duty_cycle =3D 0 is.  Either =
-way
-someone is going to get screwed by this logic.
+While this seems good, can you tell on which SoC you observed that? I'd
+like to understand whether this is only on v1 or v2 or both.
 
---=20
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-=46ollow Linaro: Facebook | Twitter | Blog
+Thanks!
+
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
