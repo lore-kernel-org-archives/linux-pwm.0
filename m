@@ -1,75 +1,64 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v8 5/9] ARM: dts: am437x/am33xx/da850: Add new ECAP and
- EPWM bindings
-Date: Fri, 10 Jun 2016 14:40:22 +0200
-Message-ID: <20160610124022.GD27142@ulmo.ba.sec>
-References: <1462291015-1919-1-git-send-email-fcooper@ti.com>
- <1462291015-1919-6-git-send-email-fcooper@ti.com>
- <20160610103423.GT22406@atomide.com>
- <20160610120142.GK22406@atomide.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="qGV0fN9tzfkG3CxV"
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: [PATCH] pwm: lpss: Prevent on_time_div overflow on lower frequencies
+Date: Fri, 10 Jun 2016 15:43:21 +0300
+Message-ID: <1465562601-44876-1-git-send-email-mika.westerberg@linux.intel.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:35129 "EHLO
-	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932597AbcFJMk0 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Jun 2016 08:40:26 -0400
-Content-Disposition: inline
-In-Reply-To: <20160610120142.GK22406@atomide.com>
+Received: from mga04.intel.com ([192.55.52.120]:64288 "EHLO mga04.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753226AbcFJMn1 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Fri, 10 Jun 2016 08:43:27 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Franklin S Cooper Jr <fcooper@ti.com>, robh+dt@kernel.org, linux@arm.linux.org.uk, paul@pwsan.com, t-kristo@ti.com, mturquette@baylibre.com, sboyd@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, vigneshr@ti.com, nsekhar@ti.com
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Dan O'Donovan <dan@emutex.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-pwm@vger.kernel.org
 
+If duty_ns is large enough multiplying it by 255 overflows and results
+wrong duty cycle value being programmed. For example with 10ms duty when
+period is 20ms (50%) we get
 
---qGV0fN9tzfkG3CxV
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+  255 * 10000000 / 20000000 = -87
 
-On Fri, Jun 10, 2016 at 05:01:43AM -0700, Tony Lindgren wrote:
-> * Tony Lindgren <tony@atomide.com> [160610 03:37]:
-> > * Franklin S Cooper Jr <fcooper@ti.com> [160503 08:58]:
-> > > Switch to a new ECAP and EPWM bindings that doesn't depend on hwmod to
-> > > provide the various required clocks.
-> > >=20
-> > > For AM437 and AM335x, add the required clocks explicitly to DT. The
-> > > hwmod entries for ECAP and EPWM will be removed and this will prevent
-> > > anything from breaking.
-> >=20
-> > I've applying the first patch into omap-for-v4.8/soc, the rest into
-> > omap-for-v4.8/dt. Note that this patch did not apply against d850.dtsi
-> > so please resend that change as a separate patch to the davinci
-> > maintainer.
->=20
-> And I did not apply patch "pwms: pwm-ti*: Get the clock from the PWMSS
-> parent when using old bindings", Thierry should take that one.
+because 255 * 10000000 overlows int. Whereas correct value should be
 
-Tony, did you take patches 3 and 4 already? It's fine if yo have, just
-wanted to know whether I should pick those up as well.
+  255 * 10000000 / 20000000 = 127
 
-Thierry
+Fix this by using unsigned long long as type for on_time_div and changing
+integer literals to use proper type annotation.
 
---qGV0fN9tzfkG3CxV
-Content-Type: application/pgp-signature; name="signature.asc"
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+---
+Resending with linux-pwm address corrected.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+This is on top of Dan's patch:
 
-iQIcBAABCAAGBQJXWrU2AAoJEN0jrNd/PrOhI98P/RJHBVbPrFfmvqn+7CJqbC1H
-NKQmnRGbkPhxRbMqFffArWza4wQjEZjfaJTIG6taAroxy3YGcU+MiIiQW5iNn9nF
-070sfVXS1t3CHA0MPBue8Bwa7h5ts7Rxq9hvbXskjAgvPnFMBJ0Jjs4ByFOboc/G
-A1LkwOGMEbHuvmCwGABfcKHiR7yNykFAOGnYwuNcVLxUBx4X/tLn+dW0lzYgoVZ8
-Ezxzrb1gMOhKWlDisigSx2jl0KpzuttUhPKQwB+/QVH9q78q217iBh29AA2IZwc5
-kLS8YqpW7/kpV1C6b1L5vtyiweDozsv8kpMJ0Hm7chgiXgmJvyMFpMubBB5KP2nq
-W4Hj6EAM1HxHtx+jU6om+DLQkGMBfcpJFzWrzUcGhvtrxz3ShWsPhTIT3nkbDwaR
-mZQBtlpUxXXoB27kkBO4kTV+T5LaLmE67oGJ+9GUmCdlnMVLNciweXdWyu6zi8MP
-9f62X357uinNppFjWRWce6PhsKIV/nQjmxW9HINBvJtzQ8FLi24D9vNSqA2uOQkw
-ImZpf90n9gzig/m6jEnus/bziRR1k5smtR1BtY1OqFl5YjXKCO4lHU+0aZO5GlD3
-dgVIUam/GI7VoH9Q+cMLWam/M6Bf7HjGA2KGpinwxLZ4FaoPC6AYSjGKYjYrBEDe
-CkGmEJmNU35ys3YLr+ht
-=4NxK
------END PGP SIGNATURE-----
+  https://patchwork.ozlabs.org/patch/628683/
 
---qGV0fN9tzfkG3CxV--
+ drivers/pwm/pwm-lpss.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 98dc8b80b79d..be4658b42882 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -91,7 +91,7 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			   int duty_ns, int period_ns)
+ {
+ 	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
+-	u8 on_time_div;
++	unsigned long long on_time_div;
+ 	unsigned long c, base_unit_range;
+ 	unsigned long long base_unit, freq = NSEC_PER_SEC;
+ 	u32 ctrl;
+@@ -113,7 +113,9 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	if (duty_ns <= 0)
+ 		duty_ns = 1;
+-	on_time_div = 255 - (255 * duty_ns / period_ns);
++	on_time_div = 255ULL * duty_ns;
++	do_div(on_time_div, period_ns);
++	on_time_div = 255ULL - on_time_div;
+ 
+ 	pm_runtime_get_sync(chip->dev);
+ 
+-- 
+2.8.1
