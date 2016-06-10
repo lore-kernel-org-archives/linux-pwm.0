@@ -1,65 +1,66 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: sysfs: get return value from pwm_apply_state()
-Date: Fri, 10 Jun 2016 14:25:54 +0200
-Message-ID: <20160610122554.GB27142@ulmo.ba.sec>
-References: <1465351103-3152-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Subject: Re: [PATCH v3 3/3] pwm: pwm-tiehrpwm: Update dt binding document to
+ use generic node name
+Date: Fri, 10 Jun 2016 14:37:57 +0200
+Message-ID: <20160610123757.GC27142@ulmo.ba.sec>
+References: <1458263723-25770-1-git-send-email-fcooper@ti.com>
+ <1458263723-25770-4-git-send-email-fcooper@ti.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="SkvwRMAIpAhPCcCJ"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:33618 "EHLO
-	mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751899AbcFJMZ5 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Jun 2016 08:25:57 -0400
+	protocol="application/pgp-signature"; boundary="KDt/GgjP6HVcx58l"
+Return-path: <linux-clk-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1465351103-3152-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1458263723-25770-4-git-send-email-fcooper@ti.com>
+Sender: linux-clk-owner@vger.kernel.org
+To: Franklin S Cooper Jr <fcooper@ti.com>
+Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, t-kristo@ti.com, mturquette@baylibre.com, sboyd@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: ryo.kodama.vz@renesas.com, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org
 
 
---SkvwRMAIpAhPCcCJ
+--KDt/GgjP6HVcx58l
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 08, 2016 at 10:58:23AM +0900, Yoshihiro Shimoda wrote:
-> From: Ryo Kodama <ryo.kodama.vz@renesas.com>
+On Thu, Mar 17, 2016 at 08:15:23PM -0500, Franklin S Cooper Jr wrote:
+> Now that the node name has been changed from ehrpwm to pwm the document
+> should show this proper usage. Also change the unit address in the example
+> from 0 to the proper physical address value that should be used.
 >=20
-> This patch adds to check the return value from pwm_apply_state()
-> used in enable_store(). The error of enable_store() doesn't work
-> if the return value doesn't received.
->=20
-> Signed-off-by: Ryo Kodama <ryo.kodama.vz@renesas.com>
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
 > ---
->  drivers/pwm/sysfs.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Version 3 changes:
+> N/A
+>=20
+> Version 2 changes:
+> Changed the unit address for da850 to match the value in the reg property.
+>=20
+>  Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
 Applied, thanks.
 
 Thierry
 
---SkvwRMAIpAhPCcCJ
+--KDt/GgjP6HVcx58l
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJXWrHRAAoJEN0jrNd/PrOhug8P/AoA56t/pfkJRAij0BA9DyWy
-2v4pO6qomgWZF2iHGYo00kVDBqoRXOrit4j9n8TfDLlftsjrGrSSx1RFAwkVLuRk
-WdmfxpCbfTFS/wkrgUJQZCxNfc8pVWoNZB32sp0a4Mf9VDBDISguRLFl0d89PoMO
-M6QcCIrtZcUZWXhy9lOrNKSzoNTX9uZexUdtqtTDwQFN1Qweaq7p1TV9us/TWsU1
-uQmaHZbtZNBkNJtJB9k3olKVoGkhHbDGQbTuYacYhGWvEAAuQAKKok9NH8m4pcJL
-00we6qFz4/NDjfh4gmptiyTypKMFxlw2W4ZeGXid5RHNiQYUgL008qBCmkSjjgMF
-egOGUis608FhCjqHe9Ph7La8fzyIN9sm1yMcPvFGiNNpBC4nf0dk1KIDrnDzRxzR
-RRces45F0LqyO6UOlOWjfD0j46RKAvMhl64306+//wg9qlA/Nl/9cGrB9Uq3ePG9
-EQkGaAJiRttu4gAAuAw4oiKRXpKdpwebQv36BqcC1A5O8A8E034WndniRUlvEvsK
-kOtaSac7b3YTY4gZwJ4/2Lw+5uSzNkncoNQZyBJpqJkqAxFROSPkObNX0RenlW1V
-o3Jmf7yh9aRWv0vwvnSLKSMv2eiuoE/E37vX04o1+2y4oXzr7eMiSwbwgrkzF4S0
-bN2Pefm3Y/whVfIFpF85
-=o3MN
+iQIcBAABCAAGBQJXWrSjAAoJEN0jrNd/PrOhltEP/2Sj6ewFRIuy/jeWy82CsRdZ
+l8rHNHpSm/mTHupAuDlLLkkEZVV1rxUkAnHRjUSCP7McirTHvL9KwOb52KOIzBBM
+ODOJrJJQxZOGLgZkb2jKA6bAhHs8t1ziob8gTFMjZ4hQfJbwdNav5oWK9OhJMCBI
+rmPWKcwlQMeE2PM1YdiSqfcfZQnBRSvhSZkX1PfXl0mSAKMke0LSWUyZwtKK38af
+yhk9iRoB2c9j+tyKjnZzjQt33bygUIF80mpwbkKFaOTKxQ9xb3hY8qfTvYZ9gRaQ
+hQJQvZQ7BHTY0zQTLz6AFkdTh5UDBpz0HmoaUXRhivGdrVh0wGXoSBcOOj3vfUj4
+4jl3PioIYufjjsXVk0hFYorrbNd1QI247cBH948N4vcdFYyB2fnL/+JdOTtPGbsy
+mZ+O7dP0JntU231yjEyiJRbuZ+gTPBbQ+M+HGUwq0HsB0901MJ/LJG9Ly7O82Vdv
+J/PQ85KhY1snpCplGG966XfiM8k2HnJeTGyOUEZbmysO30SCr1LnRMGXiEuqmWKI
+tP14X42iQ1/iwLEIlwJ/zj5J9ivkuK8fyoZInYt9zcYnaanBeXnRuLgyR2iJl+aP
+BNnXJtiox9krY5e5ndOdztT7DnjzWv6OQRM3cTP69YFp0EwQjy34D5RhNJHJ/4m9
+k1qRDz7wLlCRr/JpLkam
+=2+ii
 -----END PGP SIGNATURE-----
 
---SkvwRMAIpAhPCcCJ--
+--KDt/GgjP6HVcx58l--
