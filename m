@@ -1,43 +1,57 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 5/7] ARM: OMAP: dmtimer: Do not call PM runtime functions
- when not needed.
-Date: Mon, 13 Jun 2016 00:39:59 -0700
-Message-ID: <20160613073958.GR22406@atomide.com>
-References: <1462634508-24961-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
- <1462634508-24961-6-git-send-email-ivo.g.dimitrov.75@gmail.com>
- <20160509193624.GH5995@atomide.com>
- <5730F840.3050807@gmail.com>
- <20160610102225.GS22406@atomide.com>
- <575B2F48.4090707@gmail.com>
- <20160613071057.GQ22406@atomide.com>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: Re: pwm: atmel: Fix disabling of PWM channels
+Date: Mon, 13 Jun 2016 11:50:07 +0200
+Message-ID: <20160613095007.GB3240@piout.net>
+References: <1463137777-27103-1-git-send-email-guille.rodriguez@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160613071057.GQ22406@atomide.com>
+In-Reply-To: <1463137777-27103-1-git-send-email-guille.rodriguez@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, thierry.reding@gmail.com, bcousson@baylibre.com, linux@arm.linux.org.uk, mchehab@osg.samsung.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org, sre@kernel.org, pali.rohar@gmail.com
+To: Guillermo Rodriguez <guille.rodriguez@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Nicolas Ferre <nicolas.ferre@atmel.com>
 List-Id: linux-pwm@vger.kernel.org
 
-* Tony Lindgren <tony@atomide.com> [160613 00:10]:
-> * Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com> [160610 14:23]:
-> > 
-> > On 10.06.2016 13:22, Tony Lindgren wrote:
-> > > 
-> > > OK. And I just applied the related dts changes. Please repost the driver
-> > > changes and DT binding doc with Rob's ack to the driver maintainers to
-> > > apply.
-> > > 
-> > 
-> > Already did, see https://lkml.org/lkml/2016/5/16/429
-> > 
-> > Shall I do anything else?
+On 13/05/2016 at 13:09:37 +0200, Guillermo Rodriguez wrote :
+> When disabling a PWM channel, the PWM clock was being stopped
+> immediately after writing to PWM_DIS. As a result, the disabling
+> of the PWM channel did not complete properly, and the PWM output
+> might be left at the wrong level.
 > 
-> Probably good idea to repost just the driver changes to the
-> subsystem maintainers. With v4.7 out any pre v4.7 patchsets
-> easily get forgotten.
+> Fix this by waiting for the channel to be effectively disabled
+> (by checking the PWM_SR register) before disabling the clock.
+> 
+> Signed-off-by: Guillermo Rodriguez <guille.rodriguez@gmail.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-Heh s/v4.7/v4.6/ :)
+> ---
+>  drivers/pwm/pwm-atmel.c |   10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+> index 0e4bd4e..a714434 100644
+> --- a/drivers/pwm/pwm-atmel.c
+> +++ b/drivers/pwm/pwm-atmel.c
+> @@ -271,6 +271,16 @@ static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+>  	mutex_unlock(&atmel_pwm->isr_lock);
+>  	atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
+>  
+> +	/*
+> +	 * Wait for the PWM channel disable operation to be effective before
+> +	 * stopping the clock.
+> +	 */
+> +	timeout = jiffies + 2 * HZ;
+> +	while ((atmel_pwm_readl(atmel_pwm, PWM_SR)& (1 << pwm->hwpwm)) &&
+> +	       time_before(jiffies, timeout)) {
+> +		usleep_range(10, 100);
+> +	}
+> +
+>  	clk_disable(atmel_pwm->clk);
+>  }
+>  
 
-Tony
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux, Kernel and Android engineering
+http://free-electrons.com
