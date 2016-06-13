@@ -1,36 +1,47 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] pwm: lpss: pci: enable PWM module on Intel Edison
-Date: Mon, 13 Jun 2016 21:52:19 +0300
-Message-ID: <1465843939-1221-1-git-send-email-andriy.shevchenko@linux.intel.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:14298 "EHLO mga01.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1422864AbcFMSwY (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 13 Jun 2016 14:52:24 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+From: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+Subject: Re: [PATCH 5/7] ARM: OMAP: dmtimer: Do not call PM runtime functions
+ when not needed.
+Date: Mon, 13 Jun 2016 21:58:39 +0300
+Message-ID: <575F025F.7000101@gmail.com>
+References: <1462634508-24961-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
+ <1462634508-24961-6-git-send-email-ivo.g.dimitrov.75@gmail.com>
+ <20160509193624.GH5995@atomide.com> <5730F840.3050807@gmail.com>
+ <20160610102225.GS22406@atomide.com> <575B2F48.4090707@gmail.com>
+ <20160613071057.GQ22406@atomide.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160613071057.GQ22406@atomide.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tony Lindgren <tony@atomide.com>
+Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, thierry.reding@gmail.com, bcousson@baylibre.com, linux@arm.linux.org.uk, mchehab@osg.samsung.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org, sre@kernel.org, pali.rohar@gmail.com
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Intel Edison has 4 PWM channels on the die with the same IP as in Broxton.
-Enable it.
+Hi,
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/pwm/pwm-lpss-pci.c | 1 +
- 1 file changed, 1 insertion(+)
+On 13.06.2016 10:10, Tony Lindgren wrote:
+> * Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com> [160610 14:23]:
+>>
+>> On 10.06.2016 13:22, Tony Lindgren wrote:
+>>>
+>>> OK. And I just applied the related dts changes. Please repost the driver
+>>> changes and DT binding doc with Rob's ack to the driver maintainers to
+>>> apply.
+>>>
+>>
+>> Already did, see https://lkml.org/lkml/2016/5/16/429
+>>
+>> Shall I do anything else?
+>
+> Probably good idea to repost just the driver changes to the
+> subsystem maintainers. With v4.7 out any pre v4.7 patchsets
+> easily get forgotten.
+>
 
-diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
-index 7160e8a..3622f09 100644
---- a/drivers/pwm/pwm-lpss-pci.c
-+++ b/drivers/pwm/pwm-lpss-pci.c
-@@ -76,6 +76,7 @@ static const struct pci_device_id pwm_lpss_pci_ids[] = {
- 	{ PCI_VDEVICE(INTEL, 0x0ac8), (unsigned long)&pwm_lpss_bxt_info},
- 	{ PCI_VDEVICE(INTEL, 0x0f08), (unsigned long)&pwm_lpss_byt_info},
- 	{ PCI_VDEVICE(INTEL, 0x0f09), (unsigned long)&pwm_lpss_byt_info},
-+	{ PCI_VDEVICE(INTEL, 0x11a5), (unsigned long)&pwm_lpss_bxt_info},
- 	{ PCI_VDEVICE(INTEL, 0x1ac8), (unsigned long)&pwm_lpss_bxt_info},
- 	{ PCI_VDEVICE(INTEL, 0x2288), (unsigned long)&pwm_lpss_bsw_info},
- 	{ PCI_VDEVICE(INTEL, 0x2289), (unsigned long)&pwm_lpss_bsw_info},
--- 
-2.8.1
+Sorry for the maybe stupid question, but does this mean that I should 
+send separate patches instead of series? Or the series without what 
+you've already applied?
+
+Thanks,
+Ivo
