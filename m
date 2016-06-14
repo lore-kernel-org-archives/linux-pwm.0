@@ -1,33 +1,60 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 01/12] gpio: Only descend into gpio directory when
- CONFIG_GPIOLIB is set
-Date: Tue, 14 Jun 2016 08:58:49 +0200
-Message-ID: <CACRpkdaEkCzp3W4x3HSurpHb1qtkJp-SvWCAQivuL3x8CBY-iQ@mail.gmail.com>
-References: <20160613200211.14790-1-afd@ti.com> <20160613200211.14790-2-afd@ti.com>
+From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 5/7] ARM: OMAP: dmtimer: Do not call PM runtime functions
+ when not needed.
+Date: Tue, 14 Jun 2016 00:53:56 -0700
+Message-ID: <20160614075356.GU22406@atomide.com>
+References: <1462634508-24961-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
+ <1462634508-24961-6-git-send-email-ivo.g.dimitrov.75@gmail.com>
+ <20160509193624.GH5995@atomide.com>
+ <5730F840.3050807@gmail.com>
+ <20160610102225.GS22406@atomide.com>
+ <575B2F48.4090707@gmail.com>
+ <20160613071057.GQ22406@atomide.com>
+ <575F025F.7000101@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi0-f43.google.com ([209.85.218.43]:35053 "EHLO
-	mail-oi0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751518AbcFNG6u (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Jun 2016 02:58:50 -0400
-Received: by mail-oi0-f43.google.com with SMTP id w5so163741912oib.2
-        for <linux-pwm@vger.kernel.org>; Mon, 13 Jun 2016 23:58:50 -0700 (PDT)
-In-Reply-To: <20160613200211.14790-2-afd@ti.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <575F025F.7000101-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Ivaylo Dimitrov <ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pawel.moll-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bcousson-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pali.rohar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: "Andrew F. Davis" <afd@ti.com>
-Cc: Russell King <linux@armlinux.org.uk>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Sebastian Reichel <sre@kernel.org>, Wolfram Sang <wsa@the-dreams.de>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, Rusty Russell <rusty@rustcorp.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, Samuel Ortiz <sameo@linux.intel.com>, Ingo Molnar <mingo@kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>, lguest@lists.ozlabs.org, "linuxppc-dev@lists.ozlabs.org list" <linuxppc-dev@lists.ozlabs.org>, linux-me
 
-On Mon, Jun 13, 2016 at 10:02 PM, Andrew F. Davis <afd@ti.com> wrote:
+* Ivaylo Dimitrov <ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> [160613 12:01]:
+> Hi,
+> 
+> On 13.06.2016 10:10, Tony Lindgren wrote:
+> > * Ivaylo Dimitrov <ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> [160610 14:23]:
+> > > 
+> > > On 10.06.2016 13:22, Tony Lindgren wrote:
+> > > > 
+> > > > OK. And I just applied the related dts changes. Please repost the driver
+> > > > changes and DT binding doc with Rob's ack to the driver maintainers to
+> > > > apply.
+> > > > 
+> > > 
+> > > Already did, see https://lkml.org/lkml/2016/5/16/429
+> > > 
+> > > Shall I do anything else?
+> > 
+> > Probably good idea to repost just the driver changes to the
+> > subsystem maintainers. With v4.7 out any pre v4.7 patchsets
+> > easily get forgotten.
+> > 
+> 
+> Sorry for the maybe stupid question, but does this mean that I should send
+> separate patches instead of series? Or the series without what you've
+> already applied?
 
-> When CONFIG_GPIOLIB is not set make will still descend into the gpio
-> directory but nothing will be built. This produces unneeded build
-> artifacts and messages in addition to slowing the build. Fix this here.
->
-> Signed-off-by: Andrew F. Davis <afd@ti.com>
+Always leave out the patches that have been already applied.
+Otherwise people will get confused. Just mention it in the
+cover letter saying "patch xyz has been already applied into
+foo tree, these patches are safe to apply separately into bar
+tree" or something similar :)
 
-Patch applied. Strange that this went unnoticed for years.
-
-Yours,
-Linus Walleij
+Tony
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
