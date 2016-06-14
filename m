@@ -1,8 +1,7 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH v3 02/14] pwm: Add two helpers to ease relative duty cycle
- manipulation
-Date: Tue, 14 Jun 2016 11:13:10 +0200
-Message-ID: <1465895602-31008-3-git-send-email-boris.brezillon@free-electrons.com>
+Subject: [PATCH v3 04/14] pwm: rockchip: Add support for hardware readout
+Date: Tue, 14 Jun 2016 11:13:12 +0200
+Message-ID: <1465895602-31008-5-git-send-email-boris.brezillon@free-electrons.com>
 References: <1465895602-31008-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,84 +21,142 @@ To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mark B
 Cc: Mark Rutland <mark.rutland@arm.com>, Milo Kim <milo.kim@ti.com>, Heiko Stuebner <heiko@sntech.de>, Patrice Chotard <patrice.chotard@st.com>, Laxman Dewangan <ldewangan@nvidia.com>, kernel@stlinux.com, Boris Brezillon <boris.brezillon@free-electrons.com>, Brian Norris <briannorris@chromium.org>, Stephen Barber <smbarber@chromium.org>, linux-rockchip@lists.infradead.org, Caesar Wang <wxt@rock-chips.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Doug Anderson <dianders@google.com>, Rob Herring <robh+dt@kernel.org>, linux-arm-kernel@lists.infradead.org, Maxime Coquelin <maxime.coquelin@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, linux-kernel@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, Ajit Pal Singh <ajitpal.singh@st.com>
 List-Id: linux-pwm@vger.kernel.org
 
-The PWM framework expects PWM users to configure the duty cycle in
-nanoseconds, but most users just want to express this duty cycle
-relatively to the period value (i.e. duty_cycle = 33% of the period).
-Add the pwm_{get,set}_relative_duty_cycle() helpers to ease this kind
-of conversion.
+Implement the ->get_state() function to expose initial state.
 
 Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Tested-by: Brian Norris <briannorris@chromium.org>
 Tested-by: Heiko Stuebner <heiko@sntech.de>
 ---
- include/linux/pwm.h | 56 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
+ drivers/pwm/pwm-rockchip.c | 67 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 67 insertions(+)
 
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index a100f6e..05e4ea4 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -181,6 +181,62 @@ static inline void pwm_init_state(const struct pwm_device *pwm,
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index 68d72ce..c72b419 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -51,6 +51,8 @@ struct rockchip_pwm_data {
+ 
+ 	void (*set_enable)(struct pwm_chip *chip,
+ 			   struct pwm_device *pwm, bool enable);
++	void (*get_state)(struct pwm_chip *chip, struct pwm_device *pwm,
++			  struct pwm_state *state);
+ };
+ 
+ static inline struct rockchip_pwm_chip *to_rockchip_pwm_chip(struct pwm_chip *c)
+@@ -75,6 +77,19 @@ static void rockchip_pwm_set_enable_v1(struct pwm_chip *chip,
+ 	writel_relaxed(val, pc->base + pc->data->regs.ctrl);
  }
  
- /**
-+ * pwm_get_relative_duty_cycle() - Get a relative duty_cycle value
-+ * @state: PWM state to extract the duty_cycle from
-+ * @scale: target scale of the relative duty cycle
-+ *
-+ * This functions converts the absolute duty_cycle stored in @state
-+ * (expressed in nanosecond) into a value relative to the period.
-+ * For example if you want to get the duty_cycle expressed in percent,
-+ * call:
-+ *
-+ * pwm_get_state(pwm, &state);
-+ * duty = pwm_get_relative_duty_cycle(&state, 100);
-+ */
-+static inline unsigned int
-+pwm_get_relative_duty_cycle(const struct pwm_state *state, unsigned int scale)
++static void rockchip_pwm_get_state_v1(struct pwm_chip *chip,
++				      struct pwm_device *pwm,
++				      struct pwm_state *state)
 +{
-+	if (!state->period)
-+		return 0;
++	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++	u32 enable_conf = PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN;
++	u32 val;
 +
-+	return DIV_ROUND_CLOSEST_ULL((u64)state->duty_cycle * scale,
-+				     state->period);
++	val = readl_relaxed(pc->base + pc->data->regs.ctrl);
++	if ((val & enable_conf) == enable_conf)
++		state->enabled = true;
 +}
 +
-+/**
-+ * pwm_set_relative_duty_cycle() - Set a relative duty_cycle value
-+ * @state: PWM state to fill
-+ * @duty_cycle: relative duty_cycle value
-+ * @scale: scale in which @duty_cycle is expressed
-+ *
-+ * This functions converts a relative duty_cycle into an absolute one
-+ * (expressed in nanoseconds), and put the result in state->duty_cycle.
-+ *
-+ * For example if you want to configure a 50% duty_cycle, call:
-+ *
-+ * pwm_init_state(pwm, &state);
-+ * pwm_set_relative_duty_cycle(&state, 50, 100);
-+ * pwm_apply_state(pwm, &state);
-+ *
-+ * This functions returns -EINVAL if @duty_cycle and/or @scale are
-+ * inconsistent (@scale == 0 or @duty_cycle > @scale).
-+ */
-+static inline int
-+pwm_set_relative_duty_cycle(struct pwm_state *state, unsigned int duty_cycle,
-+			    unsigned int scale)
+ static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip,
+ 				       struct pwm_device *pwm, bool enable)
+ {
+@@ -98,6 +113,53 @@ static void rockchip_pwm_set_enable_v2(struct pwm_chip *chip,
+ 	writel_relaxed(val, pc->base + pc->data->regs.ctrl);
+ }
+ 
++static void rockchip_pwm_get_state_v2(struct pwm_chip *chip,
++				      struct pwm_device *pwm,
++				      struct pwm_state *state)
 +{
-+	/* Make sure @scale is > 0 and @duty_cycle <= @scale */
-+	if (!scale || duty_cycle > scale)
-+		return -EINVAL;
++	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++	u32 enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE |
++			  PWM_CONTINUOUS;
++	u32 val;
 +
-+	state->duty_cycle = DIV_ROUND_CLOSEST_ULL((u64)duty_cycle *
-+						  state->period,
-+						  scale);
++	val = readl_relaxed(pc->base + pc->data->regs.ctrl);
++	if ((val & enable_conf) != enable_conf)
++		return;
 +
-+	return 0;
++	state->enabled = true;
++
++	if (!(val & PWM_DUTY_POSITIVE))
++		state->polarity = PWM_POLARITY_INVERSED;
 +}
 +
-+/**
-  * struct pwm_ops - PWM controller operations
-  * @request: optional hook for requesting a PWM
-  * @free: optional hook for freeing a PWM
++static void rockchip_pwm_get_state(struct pwm_chip *chip,
++				   struct pwm_device *pwm,
++				   struct pwm_state *state)
++{
++	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++	unsigned long clk_rate;
++	u64 tmp;
++	int ret;
++
++	ret = clk_enable(pc->clk);
++	if (ret)
++		return;
++
++	clk_rate = clk_get_rate(pc->clk);
++
++	tmp = readl_relaxed(pc->base + pc->data->regs.period);
++	tmp *= pc->data->prescaler * NSEC_PER_SEC;
++	state->period = DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
++
++	tmp = readl_relaxed(pc->base + pc->data->regs.duty);
++	tmp *= pc->data->prescaler * NSEC_PER_SEC;
++	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
++
++	pc->data->get_state(chip, pwm, state);
++
++	clk_disable(pc->clk);
++}
++
+ static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			       int duty_ns, int period_ns)
+ {
+@@ -170,6 +232,7 @@ static void rockchip_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ }
+ 
+ static const struct pwm_ops rockchip_pwm_ops_v1 = {
++	.get_state = rockchip_pwm_get_state,
+ 	.config = rockchip_pwm_config,
+ 	.enable = rockchip_pwm_enable,
+ 	.disable = rockchip_pwm_disable,
+@@ -177,6 +240,7 @@ static const struct pwm_ops rockchip_pwm_ops_v1 = {
+ };
+ 
+ static const struct pwm_ops rockchip_pwm_ops_v2 = {
++	.get_state = rockchip_pwm_get_state,
+ 	.config = rockchip_pwm_config,
+ 	.set_polarity = rockchip_pwm_set_polarity,
+ 	.enable = rockchip_pwm_enable,
+@@ -194,6 +258,7 @@ static const struct rockchip_pwm_data pwm_data_v1 = {
+ 	.prescaler = 2,
+ 	.ops = &rockchip_pwm_ops_v1,
+ 	.set_enable = rockchip_pwm_set_enable_v1,
++	.get_state = rockchip_pwm_get_state_v1,
+ };
+ 
+ static const struct rockchip_pwm_data pwm_data_v2 = {
+@@ -206,6 +271,7 @@ static const struct rockchip_pwm_data pwm_data_v2 = {
+ 	.prescaler = 1,
+ 	.ops = &rockchip_pwm_ops_v2,
+ 	.set_enable = rockchip_pwm_set_enable_v2,
++	.get_state = rockchip_pwm_get_state_v2,
+ };
+ 
+ static const struct rockchip_pwm_data pwm_data_vop = {
+@@ -218,6 +284,7 @@ static const struct rockchip_pwm_data pwm_data_vop = {
+ 	.prescaler = 1,
+ 	.ops = &rockchip_pwm_ops_v2,
+ 	.set_enable = rockchip_pwm_set_enable_v2,
++	.get_state = rockchip_pwm_get_state_v2,
+ };
+ 
+ static const struct of_device_id rockchip_pwm_dt_ids[] = {
 -- 
 2.7.4
