@@ -1,93 +1,76 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH v3 00/14] regulator: pwm: various improvements
-Date: Tue, 14 Jun 2016 11:13:08 +0200
-Message-ID: <1465895602-31008-1-git-send-email-boris.brezillon@free-electrons.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:59507 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751583AbcFNJN0 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Jun 2016 05:13:26 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH v3 01/14] pwm: Add an helper to prepare a new PWM state
+Date: Tue, 14 Jun 2016 11:13:09 +0200
+Message-ID: <1465895602-31008-2-git-send-email-boris.brezillon@free-electrons.com>
+References: <1465895602-31008-1-git-send-email-boris.brezillon@free-electrons.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1465895602-31008-1-git-send-email-boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Milo Kim <milo.kim-l0cyMroinI0@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Caesar Wang <wxt-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Stephen Barber <smbarber-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Ajit Pal Singh <ajitpal.singh-qxv4g6HH51o@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Coquelin <maxime.coquelin-qxv4g6HH51o@public.gmane.org>, Patrice Chotard <patrice.chotard-qxv4g6HH51o@public.gmane.org>, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>
-Cc: Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <milo.kim@ti.com>, Doug Anderson <dianders@google.com>, Caesar Wang <wxt@rock-chips.com>, Stephen Barber <smbarber@chromium.org>, Brian Norris <briannorris@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, kernel@stlinux.com, Laxman Dewangan <ldewangan@nvidia.com>, Boris Brezillon <boris.brezillon@free-electrons.com>
 
-Hello,
+The pwm_init_state() helper prepares a new state object containing the
+current PWM state except for the polarity and period fields which are
+set to the reference values (those in pwm_args).
+This is particularly useful for PWM users who want to apply a new
+duty-cycle expressed relatively to the reference period without
+changing the enable state.
 
-This patch series series aims at adding two important features to the
-pwm-regulator driver.
+Signed-off-by: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+---
+ include/linux/pwm.h | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-The first one is the support for 'smooth handover' between the
-bootloader and the kernel. This is mainly solving problems we have when
-the PWM is controlling a critical regulator (like the one powering the
-DDR chip). Currently, when the PWM regulator acquire the PWM device it
-assumes it was off and it's safe to change the configuration before
-enabling it, which can generate glitches on the PWM signal which in turn
-generated glitches on the output voltage.
-To solve that we've introduced support for hardware readout to the
-PWM framework, so that the PWM regulator driver can adjust the PWM
-a probe time and avoid glitches.
-Atomic update is also helping in this regard.
-
-Patch 1 is adding convenient helpers (at the PWM level) that will be
-used by the PWM regulator driver.
-Patches 2 to 7 are preparing everything on the PWM driver side to make
-hardware readout available to all platforms using the PWM regulator
-driver (rockchip and sti).
-Patches 8 to 11 are making use of the atomic update and hardware readout
-features to implement this smooth handover.
-
-The second feature we add to the driver is the capability of using
-a sub duty_cycle range in continuous mode. By default the regulator
-is assuming that min_uV is achieved with a 0% dutycyle and max_uV
-with a 100% dutycycle, but this is not necessarily true.
-Moreover, in some cases (when the PWM device does not support
-polarity inversion), we might have min_uV at 100% and max_uV at 0%.
-Hence the addition of new properties to the existing DT bindings.
-The feature is added in patch 12 and 13.
-
-Best Regards,
-
-Boris
-
-Changes since v2:
-- add Heiko's Tested-by
-- split patch 1 in 2 patches
-- rework the documentation
-- rename pwm_prepare_new_state() into pwm_init_state()
-- make pwm_set_relative_duty_cycle() return an error code when scale
-  or duty_cycle are inconsistent
-
-Changes since v1:
-- dropped already applied patches
-- added R-b/A-b/T-b tags
-- s/readl/readl_relaxed/ in patch 3 (as suggested by Brian)
-- fixed pwm-regulator DT binding doc
-- added some comments in the code
-- replaced pwm_get_state() + if (state.enabled) by if (pwm_is_enabled())
-
-Boris Brezillon (14):
-  pwm: Add an helper to prepare a new PWM state
-  pwm: Add two helpers to ease relative duty cycle manipulation
-  pwm: rockchip: Fix period and duty_cycle approximation
-  pwm: rockchip: Add support for hardware readout
-  pwm: rockchip: Avoid glitches on already running PWMs
-  pwm: rockchip: Add support for atomic update
-  pwm: sti: Add support for hardware readout
-  pwm: sti: Avoid glitches on already running PWMs
-  regulator: pwm: Adjust PWM config at probe time
-  regulator: pwm: Switch to the atomic PWM API
-  regulator: pwm: Properly initialize the ->state field
-  regulator: pwm: Retrieve correct voltage
-  regulator: pwm: Support extra continuous mode cases
-  regulator: pwm: Document pwm-dutycycle-unit and pwm-dutycycle-range
-
- .../bindings/regulator/pwm-regulator.txt           |  19 +++
- drivers/pwm/pwm-rockchip.c                         | 178 +++++++++++++++------
- drivers/pwm/pwm-sti.c                              |  52 +++++-
- drivers/regulator/pwm-regulator.c                  | 160 +++++++++++++-----
- include/linux/pwm.h                                |  89 +++++++++++
- 5 files changed, 407 insertions(+), 91 deletions(-)
-
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 17018f3..a100f6e 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -148,6 +148,39 @@ static inline void pwm_get_args(const struct pwm_device *pwm,
+ }
+ 
+ /**
++ * pwm_init_state() - prepare a new state to be applied with pwm_apply_state()
++ * @pwm: PWM device
++ * @state: state to fill with the prepared PWM state
++ *
++ * This functions prepares a state that can later be tweaked and applied
++ * to the PWM device with pwm_apply_state(). This is a convenient function
++ * that first retrieves the current PWM state and the replaces the period
++ * and polarity fields with the reference values defined in pwm->args.
++ * Once the function returns, you can adjust the ->enabled and ->duty_cycle
++ * fields according to your needs before calling pwm_apply_state().
++ *
++ * ->duty_cycle is initially set to zero to avoid cases where the current
++ * ->duty_cycle value exceed the pwm_args->period one, which would trigger
++ * an error if the user calls pwm_apply_state() without adjusting ->duty_cycle
++ * first.
++ */
++static inline void pwm_init_state(const struct pwm_device *pwm,
++				  struct pwm_state *state)
++{
++	struct pwm_args args;
++
++	/* First get the current state. */
++	pwm_get_state(pwm, state);
++
++	/* Then fill it with the reference config */
++	pwm_get_args(pwm, &args);
++
++	state->period = args.period;
++	state->polarity = args.polarity;
++	state->duty_cycle = 0;
++}
++
++/**
+  * struct pwm_ops - PWM controller operations
+  * @request: optional hook for requesting a PWM
+  * @free: optional hook for freeing a PWM
 -- 
 2.7.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
