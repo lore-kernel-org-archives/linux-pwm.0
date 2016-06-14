@@ -1,20 +1,20 @@
 From: kbuild test robot <lkp@intel.com>
-Subject: Re: [PATCH 06/12] hsi: Only descend into hsi directory when
- CONFIG_HSI is set
-Date: Tue, 14 Jun 2016 08:36:18 +0800
-Message-ID: <201606140808.bRJtAy1i%fengguang.wu@intel.com>
-References: <20160613200211.14790-7-afd@ti.com>
+Subject: Re: [PATCH 11/12] mmc: Only descend into mmc directory when
+ CONFIG_MMC is set
+Date: Tue, 14 Jun 2016 09:33:20 +0800
+Message-ID: <201606140907.a7yCPk00%fengguang.wu@intel.com>
+References: <20160613200211.14790-12-afd@ti.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="bp/iNruPH9dso1Pn"
-Return-path: <linux-media-owner@vger.kernel.org>
+Content-Type: multipart/mixed; boundary="n8g4imXOkfNTN/H1"
+Return-path: <linux-leds-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160613200211.14790-7-afd@ti.com>
-Sender: linux-media-owner@vger.kernel.org
+In-Reply-To: <20160613200211.14790-12-afd@ti.com>
+Sender: linux-leds-owner@vger.kernel.org
 Cc: kbuild-all@01.org, Russell King <linux@armlinux.org.uk>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Sebastian Reichel <sre@kernel.org>, Wolfram Sang <wsa@the-dreams.de>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, Rusty Russell <rusty@rustcorp.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, Samuel Ortiz <sameo@linux.intel.com>, Ingo Molnar <mingo@kernel.org>, linux-pwm@vger.kernel.org, lguest@lists.ozlabs.org, linux-wireless@vger.kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, "Andrew F . Davis" <afd@ti.com>, linux-gpio@vger.kernel.org, linux-i2c@vger.ke
 List-Id: linux-pwm@vger.kernel.org
 
 
---bp/iNruPH9dso1Pn
+--n8g4imXOkfNTN/H1
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
@@ -34,18 +34,20 @@ reproduce:
 
 All errors (new ones prefixed by >>):
 
->> ERROR: "hsi_board_list" [drivers/hsi/hsi.ko] undefined!
+>> ERROR: "sdhci_pci_get_data" [drivers/mmc/host/sdhci-pci.ko] undefined!
+>> ERROR: "sdhci_pci_spt_drive_strength" [drivers/mmc/host/sdhci-pci.ko] undefined!
+   ERROR: "hsi_board_list" [drivers/hsi/hsi.ko] undefined!
 
 ---
 0-DAY kernel test infrastructure                Open Source Technology Center
 https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
---bp/iNruPH9dso1Pn
+--n8g4imXOkfNTN/H1
 Content-Type: application/octet-stream
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICK5MX1cAAy5jb25maWcAlFxLc+Q2kr77V1S09zBzaHerpZZ7YkMHFAlWwUUQbACsUunC
+H4sICO5aX1cAAy5jb25maWcAlFxLc+Q2kr77V1S09zBzaHerpZZ7YkMHFAlWwUUQbACsUunC
 kKVqWzF6eKWSp/3vNxPgAwCT8q4uCiIT70Tml5lA/fjDjwv2enx6uD7e3Vzf3/+1+O3weHi+
 Ph5uF9/u7g//vcjVolJ2wXNhfwLm8u7x9fuHu9Mv54uzn37+6eP755tPi83h+fFwv8ieHr/d
 /fYKte+eHn/4EbgzVRVi1Z6fLYVd3L0sHp+Oi5fD8Yeu/PLLeXv66eKv4Hv8EJWxusmsUFWb
@@ -504,4 +506,4 @@ Ith3ZbOck5Ct9huTqsB5dpSjF4Llin9Pipd6ka4qJJVxoeP/3r45aPbC7ij27B5P94npDyvI
 bnhTqNTQVQCoGlm0670qLoR8oR9Xq7AsLqC2pjol+hg30rKImwwWGj88hsMZhseH2oyjUIVF
 MHN3hQjjKRiKKDQZDmZDxH3yObOBwj/L8FBh+HIBAA==
 
---bp/iNruPH9dso1Pn--
+--n8g4imXOkfNTN/H1--
