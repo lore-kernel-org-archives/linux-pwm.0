@@ -1,8 +1,8 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH v3 03/14] pwm: rockchip: Fix period and duty_cycle
- approximation
-Date: Tue, 14 Jun 2016 11:13:11 +0200
-Message-ID: <1465895602-31008-4-git-send-email-boris.brezillon@free-electrons.com>
+Subject: [PATCH v3 02/14] pwm: Add two helpers to ease relative duty cycle
+ manipulation
+Date: Tue, 14 Jun 2016 11:13:10 +0200
+Message-ID: <1465895602-31008-3-git-send-email-boris.brezillon@free-electrons.com>
 References: <1465895602-31008-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,72 +22,84 @@ To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mark B
 Cc: Mark Rutland <mark.rutland@arm.com>, Milo Kim <milo.kim@ti.com>, Heiko Stuebner <heiko@sntech.de>, Patrice Chotard <patrice.chotard@st.com>, Laxman Dewangan <ldewangan@nvidia.com>, kernel@stlinux.com, Boris Brezillon <boris.brezillon@free-electrons.com>, Brian Norris <briannorris@chromium.org>, Stephen Barber <smbarber@chromium.org>, linux-rockchip@lists.infradead.org, Caesar Wang <wxt@rock-chips.com>, devicetree@vger.kernel.org, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Doug Anderson <dianders@google.com>, Rob Herring <robh+dt@kernel.org>, linux-arm-kernel@lists.infradead.org, Maxime Coquelin <maxime.coquelin@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, linux-kernel@vger.kernel.org, Kumar Gala <galak@codeaurora.org>, Ajit Pal Singh <ajitpal.singh@st.com>
 List-Id: linux-pwm@vger.kernel.org
 
-The current implementation always round down the duty and period
-values, while it would be better to round them to the closest integer.
-
-These changes are needed in preparation of atomic update support to
-prevent a period/duty cycle drift when executing several time the
-'pwm_get_state() / modify / pwm_apply_state()' sequence.
-
-Say you have an expected period of 3.333 us and a clk rate of
-112.666667 MHz -- the clock frequency doesn't divide evenly,
-so the period (stashed in nanoseconds) shrinks when we convert to
-the register value and back, as follows:
-
-  pwm_apply_state(): register = period * 112666667 / 1000000000;
-  pwm_get_state(): period = register * 1000000000 / 112666667;
-
-or in other words:
-
-  period = period * 112666667 / 1000000000 * 1000000000 / 112666667;
-
-which yields a sequence like:
-
-  3333 -> 3328
-  3328 -> 3319
-  3319 -> 3310
-  3310 -> 3301
-  3301 -> 3292
-  3292 -> ... (etc) ...
-
-With this patch, we'd see instead:
-
-  period = div_round_closest(period * 112666667, 1000000000) *
-	   1000000000 / 112666667;
-
-which yields a stable sequence:
-
-  3333 -> 3337
-  3337 -> 3337
-  3337 -> ... (etc) ...
+The PWM framework expects PWM users to configure the duty cycle in
+nanoseconds, but most users just want to express this duty cycle
+relatively to the period value (i.e. duty_cycle = 33% of the period).
+Add the pwm_{get,set}_relative_duty_cycle() helpers to ease this kind
+of conversion.
 
 Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Tested-by: Brian Norris <briannorris@chromium.org>
 Tested-by: Heiko Stuebner <heiko@sntech.de>
 ---
- drivers/pwm/pwm-rockchip.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ include/linux/pwm.h | 56 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
 
-diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-index 7d9cc90..68d72ce 100644
---- a/drivers/pwm/pwm-rockchip.c
-+++ b/drivers/pwm/pwm-rockchip.c
-@@ -114,12 +114,11 @@ static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 * default prescaler value for all practical clock rate values.
- 	 */
- 	div = clk_rate * period_ns;
--	do_div(div, pc->data->prescaler * NSEC_PER_SEC);
--	period = div;
-+	period = DIV_ROUND_CLOSEST_ULL(div,
-+				       pc->data->prescaler * NSEC_PER_SEC);
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index a100f6e..05e4ea4 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -181,6 +181,62 @@ static inline void pwm_init_state(const struct pwm_device *pwm,
+ }
  
- 	div = clk_rate * duty_ns;
--	do_div(div, pc->data->prescaler * NSEC_PER_SEC);
--	duty = div;
-+	duty = DIV_ROUND_CLOSEST_ULL(div, pc->data->prescaler * NSEC_PER_SEC);
- 
- 	ret = clk_enable(pc->clk);
- 	if (ret)
+ /**
++ * pwm_get_relative_duty_cycle() - Get a relative duty_cycle value
++ * @state: PWM state to extract the duty_cycle from
++ * @scale: target scale of the relative duty cycle
++ *
++ * This functions converts the absolute duty_cycle stored in @state
++ * (expressed in nanosecond) into a value relative to the period.
++ * For example if you want to get the duty_cycle expressed in percent,
++ * call:
++ *
++ * pwm_get_state(pwm, &state);
++ * duty = pwm_get_relative_duty_cycle(&state, 100);
++ */
++static inline unsigned int
++pwm_get_relative_duty_cycle(const struct pwm_state *state, unsigned int scale)
++{
++	if (!state->period)
++		return 0;
++
++	return DIV_ROUND_CLOSEST_ULL((u64)state->duty_cycle * scale,
++				     state->period);
++}
++
++/**
++ * pwm_set_relative_duty_cycle() - Set a relative duty_cycle value
++ * @state: PWM state to fill
++ * @duty_cycle: relative duty_cycle value
++ * @scale: scale in which @duty_cycle is expressed
++ *
++ * This functions converts a relative duty_cycle into an absolute one
++ * (expressed in nanoseconds), and put the result in state->duty_cycle.
++ *
++ * For example if you want to configure a 50% duty_cycle, call:
++ *
++ * pwm_init_state(pwm, &state);
++ * pwm_set_relative_duty_cycle(&state, 50, 100);
++ * pwm_apply_state(pwm, &state);
++ *
++ * This functions returns -EINVAL if @duty_cycle and/or @scale are
++ * inconsistent (@scale == 0 or @duty_cycle > @scale).
++ */
++static inline int
++pwm_set_relative_duty_cycle(struct pwm_state *state, unsigned int duty_cycle,
++			    unsigned int scale)
++{
++	/* Make sure @scale is > 0 and @duty_cycle <= @scale */
++	if (!scale || duty_cycle > scale)
++		return -EINVAL;
++
++	state->duty_cycle = DIV_ROUND_CLOSEST_ULL((u64)duty_cycle *
++						  state->period,
++						  scale);
++
++	return 0;
++}
++
++/**
+  * struct pwm_ops - PWM controller operations
+  * @request: optional hook for requesting a PWM
+  * @free: optional hook for freeing a PWM
 -- 
 2.7.4
