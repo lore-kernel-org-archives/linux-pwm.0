@@ -1,63 +1,93 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v1 1/1] pwm: lpss: pci: enable PWM module on Intel Edison
-Date: Tue, 14 Jun 2016 10:59:17 +0200
-Message-ID: <20160614085917.GC24442@ulmo.ba.sec>
-References: <1465843939-1221-1-git-send-email-andriy.shevchenko@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="UFHRwCdBEJvubb2X"
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: [PATCH v3 00/14] regulator: pwm: various improvements
+Date: Tue, 14 Jun 2016 11:13:08 +0200
+Message-ID: <1465895602-31008-1-git-send-email-boris.brezillon@free-electrons.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f51.google.com ([74.125.82.51]:34113 "EHLO
-	mail-wm0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751702AbcFNI7V (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Jun 2016 04:59:21 -0400
-Received: by mail-wm0-f51.google.com with SMTP id k184so20360091wme.1
-        for <linux-pwm@vger.kernel.org>; Tue, 14 Jun 2016 01:59:20 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1465843939-1221-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Received: from down.free-electrons.com ([37.187.137.238]:59507 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751583AbcFNJN0 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Jun 2016 05:13:26 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>
+To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>
+Cc: Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <milo.kim@ti.com>, Doug Anderson <dianders@google.com>, Caesar Wang <wxt@rock-chips.com>, Stephen Barber <smbarber@chromium.org>, Brian Norris <briannorris@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, kernel@stlinux.com, Laxman Dewangan <ldewangan@nvidia.com>, Boris Brezillon <boris.brezillon@free-electrons.com>
 
+Hello,
 
---UFHRwCdBEJvubb2X
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch series series aims at adding two important features to the
+pwm-regulator driver.
 
-On Mon, Jun 13, 2016 at 09:52:19PM +0300, Andy Shevchenko wrote:
-> Intel Edison has 4 PWM channels on the die with the same IP as in Broxton.
-> Enable it.
->=20
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/pwm/pwm-lpss-pci.c | 1 +
->  1 file changed, 1 insertion(+)
+The first one is the support for 'smooth handover' between the
+bootloader and the kernel. This is mainly solving problems we have when
+the PWM is controlling a critical regulator (like the one powering the
+DDR chip). Currently, when the PWM regulator acquire the PWM device it
+assumes it was off and it's safe to change the configuration before
+enabling it, which can generate glitches on the PWM signal which in turn
+generated glitches on the output voltage.
+To solve that we've introduced support for hardware readout to the
+PWM framework, so that the PWM regulator driver can adjust the PWM
+a probe time and avoid glitches.
+Atomic update is also helping in this regard.
 
-Applied, thanks.
+Patch 1 is adding convenient helpers (at the PWM level) that will be
+used by the PWM regulator driver.
+Patches 2 to 7 are preparing everything on the PWM driver side to make
+hardware readout available to all platforms using the PWM regulator
+driver (rockchip and sti).
+Patches 8 to 11 are making use of the atomic update and hardware readout
+features to implement this smooth handover.
 
-Thierry
+The second feature we add to the driver is the capability of using
+a sub duty_cycle range in continuous mode. By default the regulator
+is assuming that min_uV is achieved with a 0% dutycyle and max_uV
+with a 100% dutycycle, but this is not necessarily true.
+Moreover, in some cases (when the PWM device does not support
+polarity inversion), we might have min_uV at 100% and max_uV at 0%.
+Hence the addition of new properties to the existing DT bindings.
+The feature is added in patch 12 and 13.
 
---UFHRwCdBEJvubb2X
-Content-Type: application/pgp-signature; name="signature.asc"
+Best Regards,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Boris
 
-iQIcBAABCAAGBQJXX8dlAAoJEN0jrNd/PrOh/yEP/izZve3h3h26NgUifanvoROY
-oBiN4NDnoA92LOb1NR/5yLt9UOLi/7mCOEBjumuSbOka0c1ksFlbgac9lC9P5jlf
-3O4RAn7UZQiTCqevRWgE9OFPlKyTVmwNaaXk1jbrS+rOaYesc//h4U69j6PwbJTN
-jU+t5tBZVxuQurCPkuRsdHa36fuJgL6WPGc6ax9rFJZrvDyTgpvcFA15m/QULS9r
-sjfxNaawrO+G06Zy4ZZmNTI4dqRH3sMV/baFDEeIvUkvXVXROCqBODAW+MhiVWRp
-OoKqN88Tx89w2TrIHgkpSM4V7kRZrk4imDgVaIkNghbQdnaTpDjpAc/F18GAVOak
-lIOnkoUDGZS2T3a6Kpu4n1zEUkegxo0V78IUWwfoQthqknbG1dUzSmkr3+5cdtOX
-khxJ5S4hMIkiowiAFSFsRjJ2S28ho9wCZeUDB4N0F5hh7amZoMa85LfAi7FpZkVF
-s4O+mK/dQEZ6M7p6JR/gTeVPZtCYjnXKn/MvAr2zAJapKRfFkh5tOVBB2/mmeYdH
-8Z7wSbJQlBxzdhJbUxA7dfsOWCXkJCjCMm/AjBHntKib7rgktFZPGQQojjyP8/4O
-c2GovtBsWr4jwTw0NmFHzk7ZnR6fKGaCGsN5dU8z7J2fNGIunhvK4x5j6CvlxqxY
-HZkt3mBBsSh81bpWEODx
-=pJ13
------END PGP SIGNATURE-----
+Changes since v2:
+- add Heiko's Tested-by
+- split patch 1 in 2 patches
+- rework the documentation
+- rename pwm_prepare_new_state() into pwm_init_state()
+- make pwm_set_relative_duty_cycle() return an error code when scale
+  or duty_cycle are inconsistent
 
---UFHRwCdBEJvubb2X--
+Changes since v1:
+- dropped already applied patches
+- added R-b/A-b/T-b tags
+- s/readl/readl_relaxed/ in patch 3 (as suggested by Brian)
+- fixed pwm-regulator DT binding doc
+- added some comments in the code
+- replaced pwm_get_state() + if (state.enabled) by if (pwm_is_enabled())
+
+Boris Brezillon (14):
+  pwm: Add an helper to prepare a new PWM state
+  pwm: Add two helpers to ease relative duty cycle manipulation
+  pwm: rockchip: Fix period and duty_cycle approximation
+  pwm: rockchip: Add support for hardware readout
+  pwm: rockchip: Avoid glitches on already running PWMs
+  pwm: rockchip: Add support for atomic update
+  pwm: sti: Add support for hardware readout
+  pwm: sti: Avoid glitches on already running PWMs
+  regulator: pwm: Adjust PWM config at probe time
+  regulator: pwm: Switch to the atomic PWM API
+  regulator: pwm: Properly initialize the ->state field
+  regulator: pwm: Retrieve correct voltage
+  regulator: pwm: Support extra continuous mode cases
+  regulator: pwm: Document pwm-dutycycle-unit and pwm-dutycycle-range
+
+ .../bindings/regulator/pwm-regulator.txt           |  19 +++
+ drivers/pwm/pwm-rockchip.c                         | 178 +++++++++++++++------
+ drivers/pwm/pwm-sti.c                              |  52 +++++-
+ drivers/regulator/pwm-regulator.c                  | 160 +++++++++++++-----
+ include/linux/pwm.h                                |  89 +++++++++++
+ 5 files changed, 407 insertions(+), 91 deletions(-)
+
+-- 
+2.7.4
