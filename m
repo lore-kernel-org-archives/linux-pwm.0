@@ -1,182 +1,69 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH 02/48] ARM: at91: Document new TCB bindings
-Date: Wed, 15 Jun 2016 09:29:55 +0200
-Message-ID: <20160615092955.261f14fb@bbrezillon>
-References: <1465596231-21766-1-git-send-email-alexandre.belloni@free-electrons.com>
-	<1465596231-21766-3-git-send-email-alexandre.belloni@free-electrons.com>
-	<20160614214737.GA10294@rob-hp-laptop>
+From: Sebastian Reichel <sre@kernel.org>
+Subject: Re: [PATCH] hsi: Build hsi_boardinfo.c into hsi core if enabled
+Date: Wed, 15 Jun 2016 14:48:42 +0200
+Message-ID: <20160615124842.GA6702@earth>
+References: <201606140808.bRJtAy1i%fengguang.wu@intel.com>
+ <57602D10.4080708@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:59611 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1751429AbcFOHaJ (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Wed, 15 Jun 2016 03:30:09 -0400
-In-Reply-To: <20160614214737.GA10294@rob-hp-laptop>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="h31gzZEtNLTqOjlF"
+Return-path: <linux-leds-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <57602D10.4080708@ti.com>
+Sender: linux-leds-owner@vger.kernel.org
+To: "Andrew F. Davis" <afd@ti.com>
+Cc: kbuild test robot <lkp@intel.com>, kbuild-all@01.org, Russell King <linux@armlinux.org.uk>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Wolfram Sang <wsa@the-dreams.de>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, Rusty Russell <rusty@rustcorp.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, Samuel Ortiz <sameo@linux.intel.com>, Ingo Molnar <mingo@kernel.org>, linux-pwm@vger.kernel.org, lguest@lists.ozlabs.org, linux-wireless@vger.kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, linuxppc-dev@lists.ozlab
 List-Id: linux-pwm@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Daniel Lezcano <daniel.lezcano@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
-
-On Tue, 14 Jun 2016 16:47:37 -0500
-Rob Herring <robh@kernel.org> wrote:
-
-> On Sat, Jun 11, 2016 at 12:03:05AM +0200, Alexandre Belloni wrote:
-> > The current binding for the TCB is not flexible enough for some use cases
-> > and prevents proper utilization of all the channels.
-> > 
-> > Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> > Cc: Thierry Reding <thierry.reding@gmail.com>
-> > Cc: linux-pwm@vger.kernel.org
-> > Cc: Rob Herring <robh+dt@kernel.org>
-> > Cc: devicetree@vger.kernel.org
-> > Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> > ---
-> >  .../devicetree/bindings/arm/atmel-at91.txt         | 32 -----------
-> >  .../devicetree/bindings/mfd/atmel-tcb.txt          | 62 ++++++++++++++++++++++
-> >  .../devicetree/bindings/pwm/atmel-tcb-pwm.txt      | 12 +++--
-> >  3 files changed, 69 insertions(+), 37 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/mfd/atmel-tcb.txt  
-> 
-> [...]
-> 
-> > diff --git a/Documentation/devicetree/bindings/mfd/atmel-tcb.txt b/Documentation/devicetree/bindings/mfd/atmel-tcb.txt
-> > new file mode 100644
-> > index 000000000000..48196752c78f
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/mfd/atmel-tcb.txt
-> > @@ -0,0 +1,62 @@
-> > +* Device tree bindings for Atmel Timer Counter Blocks
-> > +- compatible: Should be "atmel,<chip>-tcb", "simple-mfd", "syscon".
-> > +  <chip> can be "at91rm9200" or "at91sam9x5"
-> > +- reg: Should contain registers location and length
-> > +- #address-cells: has to be 1
-> > +- #size-cells: has to be 0
-> > +- interrupts: Should contain all interrupts for the TC block
-> > +  Note that you can specify several interrupt cells if the TC
-> > +  block has one interrupt per channel.
-> > +- clock-names: tuple listing input clock names.
-> > +	Required elements: "t0_clk", "slow_clk"
-> > +	Optional elements: "t1_clk", "t2_clk"
-> > +- clocks: phandles to input clocks.  
-> 
-> What is the order of clocks?
-> 
-> > +
-> > +The TCB can expose multiple subdevices:
-> > + * a clocksource and clockevent device  
-> 
-> No. These compatible names are linuxisms. Describe features of the 
-> timers to be able to select which timer to use if you need to pick 
-> certain timers. For example, interrupt capability could be used to 
-> select the clkevt.
-
-Would 'atmel,tcb-free-running-timer' (to replace 'atmel,tcb-clksrc') and
-'atmel,tcb-programmable-timer' (to replace 'atmel,tcb-clkevt') be
-acceptable?
-
-> 
-> > +   - compatible: Should be "atmel,tcb-clksrc"
-> > +   - reg: Should contain the TCB channels to be used. If the
-> > +     counter width is 16 bits (at91rm9200-tcb), two consecutive
-> > +     channels are needed. Else, only one channel will be used.
-> > +
-> > + * a clockevent device
-> > +   - compatible: Should be "atmel,tcb-clkevt"
-> > +   - reg: Should contain the TCB channel to be used
-> > +
-> > + * a PWM chip: see ../pwm/atmel-tcb-pwm.txt
-> > +
-> > +Examples:
-> > +
-> > +One interrupt per TC block:
-> > +	tcb0: timer@fff7c000 {
-> > +		compatible = "atmel,at91rm9200-tcb", "simple-mfd", "syscon";
-> > +		#address-cells = <1>;
-> > +		#size-cells = <0>;
-> > +		reg = <0xfff7c000 0x100>;
-> > +		interrupts = <18 4>;
-> > +		clocks = <&tcb0_clk>;
-> > +		clock-names = "t0_clk";  
-> 
-> Missing slow_clk
-> 
-> > +
-> > +		timer@0 {
-> > +			compatible = "atmel,tcb-clksrc";
-> > +			reg = <0>, <1>;
-> > +		};
-> > +
-> > +		timer@2 {
-> > +			compatible = "atmel,tcb-clkevt";
-> > +			reg = <2>;
-> > +		};
-> > +	};
-> > +
-> > +One interrupt per TC channel in a TC block:
-> > +	tcb1: timer@fffdc000 {
-> > +		compatible = "atmel,at91rm9200-tcb", "simple-mfd", "syscon";
-> > +		#address-cells = <1>;
-> > +		#size-cells = <0>;
-> > +		reg = <0xfffdc000 0x100>;
-> > +		interrupts = <26 4>, <27 4>, <28 4>;
-> > +		clocks = <&tcb1_clk>;
-> > +		clock-names = "t0_clk";
-> > +	};
-> > +
-> > +
-> > diff --git a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-> > index 8031148bcf85..ab8fbd5ba184 100644
-> > --- a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-> > +++ b/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-> > @@ -2,15 +2,17 @@ Atmel TCB PWM controller
-> >  
-> >  Required properties:
-> >  - compatible: should be "atmel,tcb-pwm"
-> > +- reg: tcb channel to use. Each channel can export 2 PWMs  
-> 
-> Is there a difference in channels? If not, then this compatible should 
-> go.
-
-This one I don't understand.
-The TCB (Timer Counter Block) is an MFD containing 3 Timer Counter
-devices. Each of these devices (also called channels) can be assigned a
-specific mode:
-- timer mode (free-running of programmable)
-- waveform generator mode (IOW, a PWM)
-- capture mode (an IIO device, but we don't have any driver for that
-  right now)
-
-So each sub-device of the TCB is represented as a sub-node with its own
-compatible. Is there a problem with that?
-
-> 
-> >  - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
-> >    the cells format. The only third cell flag supported by this binding is
-> >    PWM_POLARITY_INVERTED.
-> > -- tc-block: The Timer Counter block to use as a PWM chip.
-> >  
-> >  Example:
-> >  
-> > -pwm {
-> > -	compatible = "atmel,tcb-pwm";
-> > -	#pwm-cells = <3>;
-> > -	tc-block = <1>;
-> > +tcb0: timer@f800c000 {
-> > +	pwm@0 {
-> > +		compatible = "atmel,tcb-pwm";
-> > +		reg = <0>;
-> > +		#pwm-cells = <3>;
-> > +	};
-> >  };
-> > -- 
-> > 2.8.1
-> >   
 
 
+--h31gzZEtNLTqOjlF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Boris Brezillon, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Hi Andrew,
+
+On Tue, Jun 14, 2016 at 11:13:04AM -0500, Andrew F. Davis wrote:
+> If the HSI core is built as a module hsi_boardinfo may still
+> be built-in as its Kconfig type is bool, which can cause build
+> issues. Fix this by building this code into the HSI core when
+> enabled.
+>=20
+> Reported-by: kbuild test robot <lkp@intel.com>
+> Signed-off-by: Andrew F. Davis <afd@ti.com>
+> ---
+> This build error seems to be due to Kconfig symbol CONFIG_HSI_BOARDINFO
+> being a bool but depending on a tristate (CONFIG_HSI). This is normally
+> okay when it is just a flag to enable a feature in source, but the
+> helper code file hsi_boardinfo.c is built as a separate entity when
+> enabled. This patch is probably how it was intended, and is more like
+> how others do this kind of thing.
+>=20
+> This patch should be applied before the parent patch:
+
+Thanks, I applied both patches.
+
+-- Sebastian
+
+--h31gzZEtNLTqOjlF
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBCgAGBQJXYU6oAAoJENju1/PIO/qae6QP/35LQ3B8vO2lZZLD3fJoRLEz
+yJp80KFgWVGLlJIxoywl6Lm8tK1b48miCd73ee7Euagta3zJqZMutPO3lCiaExQh
+QXIykcVyzZXxa6AELhlPXbJlffoetyTvq7n831+Hk1IqhwOgCpm8jSVszgw11fyH
+FIDtsW7QpUnhq/lBIl+6yc8OYszH3N69Cv0sS3J5neDT2W9dochTcv01JEMAmFIL
+8TWT+5hZ/7WvvXt2tDJ03uP7aNbpDOAhutNaAjsYZEA9pX+SVa17O9eQGT5tAT5a
+0pWIFazcVt06+phTF28XlkPqVhSA0wtXeRoyLuz+UHFjGWJiwmbKTJ6QipFclEL7
+yXNE8V+g2FRiH4ZqBQ3EQtzusatln5CixirVF1wtPXp75mpZ9XHynDS2tvI6GmO+
+7jPGFRtp8QueA6LzlQN6AskCEm7BpVX2CbwTc4k3W5BDn3kmeVKdcd7a5fVLfN7Z
+y6e3kkYa8MSNfu/GFEXzeYfraIrtjwE2JfcqjDp8SgOcEaxI46n5fXNhqs4Mq/Kd
+FXUswYrJPl+hbCAklxt0YouQP55fzhBBc6FZIf3sCg/Tw1RhUs7ka0X0yKwGBp1r
+K8rHk8x9QA7ypJ66vOr4bYmqvXn5SzBb6pF4HkKLFDIrWYTrym/z2uD+H4wFq6ZN
+3viKiXS2qFAhhSbKm82E
+=h2dd
+-----END PGP SIGNATURE-----
+
+--h31gzZEtNLTqOjlF--
