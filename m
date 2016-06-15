@@ -1,153 +1,121 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 02/48] ARM: at91: Document new TCB bindings
-Date: Tue, 14 Jun 2016 16:47:37 -0500
-Message-ID: <20160614214737.GA10294@rob-hp-laptop>
-References: <1465596231-21766-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1465596231-21766-3-git-send-email-alexandre.belloni@free-electrons.com>
+From: Greg KH <gregkh@linuxfoundation.org>
+Subject: [PATCH] pwm: Create device class for pwm channels
+Date: Tue, 14 Jun 2016 19:12:04 -0700
+Message-ID: <20160615021204.GA11507@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi0-f66.google.com ([209.85.218.66]:34045 "EHLO
-	mail-oi0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751342AbcFNVrk (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Jun 2016 17:47:40 -0400
+Received: from mail.linuxfoundation.org ([140.211.169.12]:60545 "EHLO
+	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932141AbcFOCMG (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Jun 2016 22:12:06 -0400
 Content-Disposition: inline
-In-Reply-To: <1465596231-21766-3-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Daniel Lezcano <daniel.lezcano@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, David Hsu <davidhsu@google.com>
 
-On Sat, Jun 11, 2016 at 12:03:05AM +0200, Alexandre Belloni wrote:
-> The current binding for the TCB is not flexible enough for some use cases
-> and prevents proper utilization of all the channels.
-> 
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: linux-pwm@vger.kernel.org
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> ---
->  .../devicetree/bindings/arm/atmel-at91.txt         | 32 -----------
->  .../devicetree/bindings/mfd/atmel-tcb.txt          | 62 ++++++++++++++++++++++
->  .../devicetree/bindings/pwm/atmel-tcb-pwm.txt      | 12 +++--
->  3 files changed, 69 insertions(+), 37 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/mfd/atmel-tcb.txt
+From: David Hsu <davidhsu@google.com>
 
-[...]
+Pwm channels don't send uevents when exported, this change adds the
+channels to a pwm class and set their device type to pwm_channel so
+uevents are sent.
 
-> diff --git a/Documentation/devicetree/bindings/mfd/atmel-tcb.txt b/Documentation/devicetree/bindings/mfd/atmel-tcb.txt
-> new file mode 100644
-> index 000000000000..48196752c78f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/atmel-tcb.txt
-> @@ -0,0 +1,62 @@
-> +* Device tree bindings for Atmel Timer Counter Blocks
-> +- compatible: Should be "atmel,<chip>-tcb", "simple-mfd", "syscon".
-> +  <chip> can be "at91rm9200" or "at91sam9x5"
-> +- reg: Should contain registers location and length
-> +- #address-cells: has to be 1
-> +- #size-cells: has to be 0
-> +- interrupts: Should contain all interrupts for the TC block
-> +  Note that you can specify several interrupt cells if the TC
-> +  block has one interrupt per channel.
-> +- clock-names: tuple listing input clock names.
-> +	Required elements: "t0_clk", "slow_clk"
-> +	Optional elements: "t1_clk", "t2_clk"
-> +- clocks: phandles to input clocks.
+To do this properly, the device names need to change to uniquely
+identify a channel.  This change is from pwmN to pwm-(chip->base):N
 
-What is the order of clocks?
+Signed-off-by: David Hsu <davidhsu@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ Documentation/pwm.txt |    6 ++++--
+ drivers/pwm/sysfs.c   |   15 ++++++++++++---
+ 2 files changed, 16 insertions(+), 5 deletions(-)
 
-> +
-> +The TCB can expose multiple subdevices:
-> + * a clocksource and clockevent device
+Note, this patch came from David with his work on a system that has
+dynamic PWM devices and channels, and we needed some way to tell
+userspace what is going on when they are added or removed.  If anyone
+knows any other way of doing this that does not involve changing the pwm
+names, please let us know.
 
-No. These compatible names are linuxisms. Describe features of the 
-timers to be able to select which timer to use if you need to pick 
-certain timers. For example, interrupt capability could be used to 
-select the clkevt.
 
-> +   - compatible: Should be "atmel,tcb-clksrc"
-> +   - reg: Should contain the TCB channels to be used. If the
-> +     counter width is 16 bits (at91rm9200-tcb), two consecutive
-> +     channels are needed. Else, only one channel will be used.
-> +
-> + * a clockevent device
-> +   - compatible: Should be "atmel,tcb-clkevt"
-> +   - reg: Should contain the TCB channel to be used
-> +
-> + * a PWM chip: see ../pwm/atmel-tcb-pwm.txt
-> +
-> +Examples:
-> +
-> +One interrupt per TC block:
-> +	tcb0: timer@fff7c000 {
-> +		compatible = "atmel,at91rm9200-tcb", "simple-mfd", "syscon";
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +		reg = <0xfff7c000 0x100>;
-> +		interrupts = <18 4>;
-> +		clocks = <&tcb0_clk>;
-> +		clock-names = "t0_clk";
-
-Missing slow_clk
-
-> +
-> +		timer@0 {
-> +			compatible = "atmel,tcb-clksrc";
-> +			reg = <0>, <1>;
-> +		};
-> +
-> +		timer@2 {
-> +			compatible = "atmel,tcb-clkevt";
-> +			reg = <2>;
-> +		};
-> +	};
-> +
-> +One interrupt per TC channel in a TC block:
-> +	tcb1: timer@fffdc000 {
-> +		compatible = "atmel,at91rm9200-tcb", "simple-mfd", "syscon";
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +		reg = <0xfffdc000 0x100>;
-> +		interrupts = <26 4>, <27 4>, <28 4>;
-> +		clocks = <&tcb1_clk>;
-> +		clock-names = "t0_clk";
-> +	};
-> +
-> +
-> diff --git a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-> index 8031148bcf85..ab8fbd5ba184 100644
-> --- a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-> +++ b/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-> @@ -2,15 +2,17 @@ Atmel TCB PWM controller
->  
->  Required properties:
->  - compatible: should be "atmel,tcb-pwm"
-> +- reg: tcb channel to use. Each channel can export 2 PWMs
-
-Is there a difference in channels? If not, then this compatible should 
-go.
-
->  - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
->    the cells format. The only third cell flag supported by this binding is
->    PWM_POLARITY_INVERTED.
-> -- tc-block: The Timer Counter block to use as a PWM chip.
->  
->  Example:
->  
-> -pwm {
-> -	compatible = "atmel,tcb-pwm";
-> -	#pwm-cells = <3>;
-> -	tc-block = <1>;
-> +tcb0: timer@f800c000 {
-> +	pwm@0 {
-> +		compatible = "atmel,tcb-pwm";
-> +		reg = <0>;
-> +		#pwm-cells = <3>;
-> +	};
->  };
-> -- 
-> 2.8.1
-> 
+diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
+index 789b27c6ec99..7c24826691c0 100644
+--- a/Documentation/pwm.txt
++++ b/Documentation/pwm.txt
+@@ -80,9 +80,11 @@ unexport - Unexports a PWM channel from sysfs (write-only).
+ 
+ The PWM channels are numbered using a per-chip index from 0 to npwm-1.
+ 
+-When a PWM channel is exported a pwmX directory will be created in the
++When a PWM channel is exported a pwm-N:X directory will be created in the
+ pwmchipN directory it is associated with, where X is the number of the
+-channel that was exported. The following properties will then be available:
++channel that was exported. It will also be exposed at /sys/class/pwm/ and
++can be identified by the pwm_channel device type.
++The following properties will then be available:
+ 
+ period - The total period of the PWM signal (read/write).
+ 	Value is in nanoseconds and is the sum of the active and inactive
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index d98599249a05..33122355ec55 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -23,6 +23,8 @@
+ #include <linux/kdev_t.h>
+ #include <linux/pwm.h>
+ 
++static struct class pwm_class;
++
+ struct pwm_export {
+ 	struct device child;
+ 	struct pwm_device *pwm;
+@@ -222,6 +224,10 @@ static struct attribute *pwm_attrs[] = {
+ };
+ ATTRIBUTE_GROUPS(pwm);
+ 
++static const struct device_type pwm_channel_type = {
++	.name		= "pwm_channel",
++};
++
+ static void pwm_export_release(struct device *child)
+ {
+ 	struct pwm_export *export = child_to_pwm_export(child);
+@@ -231,6 +237,7 @@ static void pwm_export_release(struct device *child)
+ 
+ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
+ {
++	struct pwm_chip *chip = dev_get_drvdata(parent);
+ 	struct pwm_export *export;
+ 	int ret;
+ 
+@@ -248,9 +255,11 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
+ 
+ 	export->child.release = pwm_export_release;
+ 	export->child.parent = parent;
++	export->child.type = &pwm_channel_type;
+ 	export->child.devt = MKDEV(0, 0);
++	export->child.class = &pwm_class;
+ 	export->child.groups = pwm_groups;
+-	dev_set_name(&export->child, "pwm%u", pwm->hwpwm);
++	dev_set_name(&export->child, "pwm-%d:%u", chip->base, pwm->hwpwm);
+ 
+ 	ret = device_register(&export->child);
+ 	if (ret) {
+@@ -355,7 +364,6 @@ ATTRIBUTE_GROUPS(pwm_chip);
+ static struct class pwm_class = {
+ 	.name = "pwm",
+ 	.owner = THIS_MODULE,
+-	.dev_groups = pwm_chip_groups,
+ };
+ 
+ static int pwmchip_sysfs_match(struct device *parent, const void *data)
+@@ -371,7 +379,8 @@ void pwmchip_sysfs_export(struct pwm_chip *chip)
+ 	 * If device_create() fails the pwm_chip is still usable by
+ 	 * the kernel its just not exported.
+ 	 */
+-	parent = device_create(&pwm_class, chip->dev, MKDEV(0, 0), chip,
++	parent = device_create_with_groups(&pwm_class, chip->dev, MKDEV(0, 0),
++			       chip, pwm_chip_groups,
+ 			       "pwmchip%d", chip->base);
+ 	if (IS_ERR(parent)) {
+ 		dev_warn(chip->dev,
