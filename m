@@ -1,121 +1,57 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: [PATCH] pwm: Create device class for pwm channels
-Date: Tue, 14 Jun 2016 19:12:04 -0700
-Message-ID: <20160615021204.GA11507@kroah.com>
+From: Jacek Anaszewski <j.anaszewski@samsung.com>
+Subject: Re: [PATCH 12/12] leds: Only descend into leds directory when
+ CONFIG_NEW_LEDS is set
+Date: Wed, 15 Jun 2016 08:48:50 +0200
+Message-ID: <5760FA52.7010806@samsung.com>
+References: <20160613200211.14790-1-afd@ti.com>
+ <20160613200211.14790-13-afd@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:60545 "EHLO
-	mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932141AbcFOCMG (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Jun 2016 22:12:06 -0400
-Content-Disposition: inline
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-reply-to: <20160613200211.14790-13-afd@ti.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: "Andrew F. Davis" <afd@ti.com>
+Cc: Russell King <linux@armlinux.org.uk>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Sebastian Reichel <sre@kernel.org>, Wolfram Sang <wsa@the-dreams.de>, Richard Purdie <rpurdie@rpsys.net>, Rusty Russell <rusty@rustcorp.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, Samuel Ortiz <sameo@linux.intel.com>, Ingo Molnar <mingo@kernel.org>, linux-pwm@vger.kernel.org, lguest@lists.ozlabs.org, linux-wireless@vger.kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-leds@vger.kernel.org, linux-media@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, David Hsu <davidhsu@google.com>
 
-From: David Hsu <davidhsu@google.com>
+Hi Andrew,
 
-Pwm channels don't send uevents when exported, this change adds the
-channels to a pwm class and set their device type to pwm_channel so
-uevents are sent.
+Thanks for the patch.
 
-To do this properly, the device names need to change to uniquely
-identify a channel.  This change is from pwmN to pwm-(chip->base):N
+Please address the issue [1] raised by test bot and resubmit.
 
-Signed-off-by: David Hsu <davidhsu@google.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- Documentation/pwm.txt |    6 ++++--
- drivers/pwm/sysfs.c   |   15 ++++++++++++---
- 2 files changed, 16 insertions(+), 5 deletions(-)
+Thanks,
+Jacek Anaszewski
 
-Note, this patch came from David with his work on a system that has
-dynamic PWM devices and channels, and we needed some way to tell
-userspace what is going on when they are added or removed.  If anyone
-knows any other way of doing this that does not involve changing the pwm
-names, please let us know.
+[1] https://lkml.org/lkml/2016/6/13/1091
+
+On 06/13/2016 10:02 PM, Andrew F. Davis wrote:
+> When CONFIG_NEW_LEDS is not set make will still descend into the leds
+> directory but nothing will be built. This produces unneeded build
+> artifacts and messages in addition to slowing the build. Fix this here.
+>
+> Signed-off-by: Andrew F. Davis <afd@ti.com>
+> ---
+>   drivers/Makefile | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/Makefile b/drivers/Makefile
+> index 567e32c..fa514d5 100644
+> --- a/drivers/Makefile
+> +++ b/drivers/Makefile
+> @@ -127,7 +127,7 @@ obj-$(CONFIG_CPU_FREQ)		+= cpufreq/
+>   obj-$(CONFIG_CPU_IDLE)		+= cpuidle/
+>   obj-$(CONFIG_MMC)		+= mmc/
+>   obj-$(CONFIG_MEMSTICK)		+= memstick/
+> -obj-y				+= leds/
+> +obj-$(CONFIG_NEW_LEDS)		+= leds/
+>   obj-$(CONFIG_INFINIBAND)	+= infiniband/
+>   obj-$(CONFIG_SGI_SN)		+= sn/
+>   obj-y				+= firmware/
+>
 
 
-diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
-index 789b27c6ec99..7c24826691c0 100644
---- a/Documentation/pwm.txt
-+++ b/Documentation/pwm.txt
-@@ -80,9 +80,11 @@ unexport - Unexports a PWM channel from sysfs (write-only).
- 
- The PWM channels are numbered using a per-chip index from 0 to npwm-1.
- 
--When a PWM channel is exported a pwmX directory will be created in the
-+When a PWM channel is exported a pwm-N:X directory will be created in the
- pwmchipN directory it is associated with, where X is the number of the
--channel that was exported. The following properties will then be available:
-+channel that was exported. It will also be exposed at /sys/class/pwm/ and
-+can be identified by the pwm_channel device type.
-+The following properties will then be available:
- 
- period - The total period of the PWM signal (read/write).
- 	Value is in nanoseconds and is the sum of the active and inactive
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index d98599249a05..33122355ec55 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -23,6 +23,8 @@
- #include <linux/kdev_t.h>
- #include <linux/pwm.h>
- 
-+static struct class pwm_class;
-+
- struct pwm_export {
- 	struct device child;
- 	struct pwm_device *pwm;
-@@ -222,6 +224,10 @@ static struct attribute *pwm_attrs[] = {
- };
- ATTRIBUTE_GROUPS(pwm);
- 
-+static const struct device_type pwm_channel_type = {
-+	.name		= "pwm_channel",
-+};
-+
- static void pwm_export_release(struct device *child)
- {
- 	struct pwm_export *export = child_to_pwm_export(child);
-@@ -231,6 +237,7 @@ static void pwm_export_release(struct device *child)
- 
- static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
- {
-+	struct pwm_chip *chip = dev_get_drvdata(parent);
- 	struct pwm_export *export;
- 	int ret;
- 
-@@ -248,9 +255,11 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
- 
- 	export->child.release = pwm_export_release;
- 	export->child.parent = parent;
-+	export->child.type = &pwm_channel_type;
- 	export->child.devt = MKDEV(0, 0);
-+	export->child.class = &pwm_class;
- 	export->child.groups = pwm_groups;
--	dev_set_name(&export->child, "pwm%u", pwm->hwpwm);
-+	dev_set_name(&export->child, "pwm-%d:%u", chip->base, pwm->hwpwm);
- 
- 	ret = device_register(&export->child);
- 	if (ret) {
-@@ -355,7 +364,6 @@ ATTRIBUTE_GROUPS(pwm_chip);
- static struct class pwm_class = {
- 	.name = "pwm",
- 	.owner = THIS_MODULE,
--	.dev_groups = pwm_chip_groups,
- };
- 
- static int pwmchip_sysfs_match(struct device *parent, const void *data)
-@@ -371,7 +379,8 @@ void pwmchip_sysfs_export(struct pwm_chip *chip)
- 	 * If device_create() fails the pwm_chip is still usable by
- 	 * the kernel its just not exported.
- 	 */
--	parent = device_create(&pwm_class, chip->dev, MKDEV(0, 0), chip,
-+	parent = device_create_with_groups(&pwm_class, chip->dev, MKDEV(0, 0),
-+			       chip, pwm_chip_groups,
- 			       "pwmchip%d", chip->base);
- 	if (IS_ERR(parent)) {
- 		dev_warn(chip->dev,
+-- 
+Best regards,
+Jacek Anaszewski
