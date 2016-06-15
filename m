@@ -1,69 +1,78 @@
-From: Sebastian Reichel <sre@kernel.org>
-Subject: Re: [PATCH] hsi: Build hsi_boardinfo.c into hsi core if enabled
-Date: Wed, 15 Jun 2016 14:48:42 +0200
-Message-ID: <20160615124842.GA6702@earth>
-References: <201606140808.bRJtAy1i%fengguang.wu@intel.com>
- <57602D10.4080708@ti.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] pwm: Create device class for pwm channels
+Date: Wed, 15 Jun 2016 16:37:20 +0200
+Message-ID: <20160615143720.GA23483@ulmo.ba.sec>
+References: <20160615021204.GA11507@kroah.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="h31gzZEtNLTqOjlF"
-Return-path: <linux-leds-owner@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="ZGiS0Q5IWpPtfppv"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <57602D10.4080708@ti.com>
-Sender: linux-leds-owner@vger.kernel.org
-To: "Andrew F. Davis" <afd@ti.com>
-Cc: kbuild test robot <lkp@intel.com>, kbuild-all@01.org, Russell King <linux@armlinux.org.uk>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Wolfram Sang <wsa@the-dreams.de>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, Rusty Russell <rusty@rustcorp.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, Samuel Ortiz <sameo@linux.intel.com>, Ingo Molnar <mingo@kernel.org>, linux-pwm@vger.kernel.org, lguest@lists.ozlabs.org, linux-wireless@vger.kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, linuxppc-dev@lists.ozlab
+In-Reply-To: <20160615021204.GA11507@kroah.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, David Hsu <davidhsu@google.com>
 List-Id: linux-pwm@vger.kernel.org
 
 
---h31gzZEtNLTqOjlF
+--ZGiS0Q5IWpPtfppv
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi Andrew,
-
-On Tue, Jun 14, 2016 at 11:13:04AM -0500, Andrew F. Davis wrote:
-> If the HSI core is built as a module hsi_boardinfo may still
-> be built-in as its Kconfig type is bool, which can cause build
-> issues. Fix this by building this code into the HSI core when
-> enabled.
+On Tue, Jun 14, 2016 at 07:12:04PM -0700, Greg KH wrote:
+> From: David Hsu <davidhsu@google.com>
 >=20
-> Reported-by: kbuild test robot <lkp@intel.com>
-> Signed-off-by: Andrew F. Davis <afd@ti.com>
+> Pwm channels don't send uevents when exported, this change adds the
+> channels to a pwm class and set their device type to pwm_channel so
+> uevents are sent.
+>=20
+> To do this properly, the device names need to change to uniquely
+> identify a channel.  This change is from pwmN to pwm-(chip->base):N
+>=20
+> Signed-off-by: David Hsu <davidhsu@google.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > ---
-> This build error seems to be due to Kconfig symbol CONFIG_HSI_BOARDINFO
-> being a bool but depending on a tristate (CONFIG_HSI). This is normally
-> okay when it is just a flag to enable a feature in source, but the
-> helper code file hsi_boardinfo.c is built as a separate entity when
-> enabled. This patch is probably how it was intended, and is more like
-> how others do this kind of thing.
+>  Documentation/pwm.txt |    6 ++++--
+>  drivers/pwm/sysfs.c   |   15 ++++++++++++---
+>  2 files changed, 16 insertions(+), 5 deletions(-)
 >=20
-> This patch should be applied before the parent patch:
+> Note, this patch came from David with his work on a system that has
+> dynamic PWM devices and channels, and we needed some way to tell
+> userspace what is going on when they are added or removed.  If anyone
+> knows any other way of doing this that does not involve changing the pwm
+> names, please let us know.
 
-Thanks, I applied both patches.
+Is it truly PWM channels that dynamically appear and disappear? I'd be
+interested in how that's achieved, because there are probably other
+issues that will manifest if you do that. Do you have a pointer to the
+work that David's been undertaking? Generally some more context on the
+use-case would be helpful here.
 
--- Sebastian
+Also I'd prefer if this avoided using chip->base here, because it exists
+purely for legacy purposes and is supposed to go away eventually.
 
---h31gzZEtNLTqOjlF
+Thierry
+
+--ZGiS0Q5IWpPtfppv
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Version: GnuPG v2
 
-iQIcBAEBCgAGBQJXYU6oAAoJENju1/PIO/qae6QP/35LQ3B8vO2lZZLD3fJoRLEz
-yJp80KFgWVGLlJIxoywl6Lm8tK1b48miCd73ee7Euagta3zJqZMutPO3lCiaExQh
-QXIykcVyzZXxa6AELhlPXbJlffoetyTvq7n831+Hk1IqhwOgCpm8jSVszgw11fyH
-FIDtsW7QpUnhq/lBIl+6yc8OYszH3N69Cv0sS3J5neDT2W9dochTcv01JEMAmFIL
-8TWT+5hZ/7WvvXt2tDJ03uP7aNbpDOAhutNaAjsYZEA9pX+SVa17O9eQGT5tAT5a
-0pWIFazcVt06+phTF28XlkPqVhSA0wtXeRoyLuz+UHFjGWJiwmbKTJ6QipFclEL7
-yXNE8V+g2FRiH4ZqBQ3EQtzusatln5CixirVF1wtPXp75mpZ9XHynDS2tvI6GmO+
-7jPGFRtp8QueA6LzlQN6AskCEm7BpVX2CbwTc4k3W5BDn3kmeVKdcd7a5fVLfN7Z
-y6e3kkYa8MSNfu/GFEXzeYfraIrtjwE2JfcqjDp8SgOcEaxI46n5fXNhqs4Mq/Kd
-FXUswYrJPl+hbCAklxt0YouQP55fzhBBc6FZIf3sCg/Tw1RhUs7ka0X0yKwGBp1r
-K8rHk8x9QA7ypJ66vOr4bYmqvXn5SzBb6pF4HkKLFDIrWYTrym/z2uD+H4wFq6ZN
-3viKiXS2qFAhhSbKm82E
-=h2dd
+iQIcBAABCAAGBQJXYWgcAAoJEN0jrNd/PrOhZFYQALBO59hHHc9tzpjNnER/+zox
+vyqK4SMDvTVMWZgtWdUIii1719D7CVx1FgZaVSypN5mHTKpJ/C96riWiGZlJ6k7w
+vBokQyNixMOINoytRGO2H2H7t0nIKqGOHMJ6HPnWGOp5vfIEg1AJZNCJM8O+78yN
+tcZzYjpVQGxsYhvWfvKNv7KOCBHPS6Cj4vvil6FNczYDyYrrLOaETQVM72Lu1ufr
+L0dINhSiFm+gXZ+jMv8lY5ufI5FH9dppVrTrFnwjbzLVr8/o0faf4sYT0jtML8Wm
+mzjvhKvazuFc5h86Lf4//9CMRBNnGyA6m81wcfYHGecUEF6Hnbeq5uTGjMSCI4iK
+ba0wqKsHmVus7rqanoGKzHmj1IZ+y48J7KvRuoPIYj8ucjGdYVtxCnpPYkzpVGGb
+RCLb/W4I+ymhLNy44h7ij0I09CLfwo9kdc1OhMefyfxNckxqe2vF3NquXD12/7lO
+mOV23OXiD02utRqTeihaoFSLTtC3/IjZyrZGI+CtcnNvvwvFFqJmLgiAlM8H0Xh5
+Z0rQfSM3iPPBVoVKEUzyADCS0UEzOxyJ/5/SA9U9//4Mm8jZm0gX1Fd62aVt4DlA
+u+qXNlhCNCcnzPdrp1SNpfzWt4QxN4j0POiKqUrzt2WuNUdeN6+e1LyAbaTow77g
+LGmjFmHP9D1aYLZqc5HP
+=S4JN
 -----END PGP SIGNATURE-----
 
---h31gzZEtNLTqOjlF--
+--ZGiS0Q5IWpPtfppv--
