@@ -1,105 +1,52 @@
-From: Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v2 2/4] mfd: cros_ec: add EC_PWM function definitions
-Date: Thu, 16 Jun 2016 08:51:45 -0700
-Message-ID: <CAD=FV=X8eOQLbdAseL2_JwpOFNjSLDAi9hX=NrE=CfrrTZfAmA@mail.gmail.com>
-References: <1464916904-37554-1-git-send-email-briannorris@chromium.org>
- <1464916904-37554-3-git-send-email-briannorris@chromium.org> <20160616153817.GD21702@dell>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [GIT PULL] pwm: Fixes for v4.7-rc4
+Date: Thu, 16 Jun 2016 18:25:19 +0200
+Message-ID: <20160616162519.14243-1-thierry.reding@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-vk0-f49.google.com ([209.85.213.49]:32891 "EHLO
-	mail-vk0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753840AbcFPPvr (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 16 Jun 2016 11:51:47 -0400
-Received: by mail-vk0-f49.google.com with SMTP id d185so79243705vkg.0
-        for <linux-pwm@vger.kernel.org>; Thu, 16 Jun 2016 08:51:46 -0700 (PDT)
-In-Reply-To: <20160616153817.GD21702@dell>
+Received: from mail-pa0-f65.google.com ([209.85.220.65]:35394 "EHLO
+	mail-pa0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752615AbcFPQZY (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 16 Jun 2016 12:25:24 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Brian Norris <briannorris@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Lee,
+Hi Linus,
 
-On Thu, Jun 16, 2016 at 8:38 AM, Lee Jones <lee.jones@linaro.org> wrote:
-> On Thu, 02 Jun 2016, Brian Norris wrote:
->
->> The EC_CMD_PWM_{GET,SET}_DUTY commands allow us to control a PWM that is
->> attached to the EC, rather than the main host SoC. The API provides
->> functionality-based (e.g., keyboard light, backlight) or index-based
->> addressing of the PWM(s). Duty cycles are represented by a 16-bit value,
->> where 0 maps to 0% duty cycle and U16_MAX maps to 100%. The period
->> cannot be controlled.
->>
->> This command set is more generic than, e.g.,
->> EC_CMD_PWM_{GET,SET}_KEYBOARD_BACKLIGHT and could possibly used to
->> replace it on future products.
->>
->> Let's update the command header to include the definitions.
->>
->> Signed-off-by: Brian Norris <briannorris@chromium.org>
->> ---
->> v2: no change
->>
->>  include/linux/mfd/cros_ec_commands.h | 31 +++++++++++++++++++++++++++++++
->>  1 file changed, 31 insertions(+)
->>
->> diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
->> index 13b630c10d4c..d673575e0ada 100644
->> --- a/include/linux/mfd/cros_ec_commands.h
->> +++ b/include/linux/mfd/cros_ec_commands.h
->> @@ -949,6 +949,37 @@ struct ec_params_pwm_set_fan_duty {
->>       uint32_t percent;
->>  } __packed;
->>
->> +#define EC_CMD_PWM_SET_DUTY 0x25
->> +/* 16 bit duty cycle, 65535 = 100% */
->> +#define EC_PWM_MAX_DUTY 65535
->
-> Any reason this isn't represented in hex, like we do normally?
->
->> +enum ec_pwm_type {
->> +     /* All types, indexed by board-specific enum pwm_channel */
->> +     EC_PWM_TYPE_GENERIC = 0,
->> +     /* Keyboard backlight */
->> +     EC_PWM_TYPE_KB_LIGHT,
->> +     /* Display backlight */
->> +     EC_PWM_TYPE_DISPLAY_LIGHT,
->> +     EC_PWM_TYPE_COUNT,
->> +};
->
-> Are these comments really necessary?  I'd recommend that if your
-> defines require comments, then they are not adequately named.  In this
-> case however, I'd suggest that they are and the comments are
-> superfluous.
->
->> +struct ec_params_pwm_set_duty {
->> +     uint16_t duty;     /* Duty cycle, EC_PWM_MAX_DUTY = 100% */
->> +     uint8_t pwm_type;  /* ec_pwm_type */
->> +     uint8_t index;     /* Type-specific index, or 0 if unique */
->> +} __packed;
->
-> Please use kerneldoc format.
->
->> +#define EC_CMD_PWM_GET_DUTY 0x26
->> +
->> +struct ec_params_pwm_get_duty {
->> +     uint8_t pwm_type;  /* ec_pwm_type */
->> +     uint8_t index;     /* Type-specific index, or 0 if unique */
->> +} __packed;
+The following changes since commit 1a695a905c18548062509178b98bc91e67510864:
 
-Probably the reason for all of these non-kernel-isms is that this
-isn't a kernel file.  From the top of the file:
+  Linux 4.7-rc1 (2016-05-29 09:29:24 -0700)
 
- * NOTE: This file is copied verbatim from the ChromeOS EC Open Source
- * project in an attempt to make future updates easy to make.
+are available in the git repository at:
 
-So the source of truth for this file is
-<https://chromium.googlesource.com/chromiumos/platform/ec/+/master/include/ec_commands.h>.
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.7-rc4
 
-Someone could probably submit a CL to that project to make it a little
-more kernel-ish and then we'd have to see if the EC team would accept
-such changes...
+for you to fetch changes up to cc51846ba81ca179a3be20f6313e3b72531888c1:
 
+  pwm: atmel-hlcdc: Fix default PWM polarity (2016-06-14 10:51:45 +0200)
 
--Doug
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Fixes for v4.7-rc4
+
+These changes fix a bit of fallout from the introduction of the atomic
+API.
+
+----------------------------------------------------------------
+Boris Brezillon (1):
+      pwm: atmel-hlcdc: Fix default PWM polarity
+
+Brian Norris (1):
+      pwm: Improve args checking in pwm_apply_state()
+
+Ryo Kodama (1):
+      pwm: sysfs: Get return value from pwm_apply_state()
+
+ drivers/pwm/core.c            | 3 ++-
+ drivers/pwm/pwm-atmel-hlcdc.c | 2 +-
+ drivers/pwm/sysfs.c           | 2 +-
+ include/linux/pwm.h           | 3 +++
+ 4 files changed, 7 insertions(+), 3 deletions(-)
