@@ -1,121 +1,192 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v2 2/4] mfd: cros_ec: add EC_PWM function definitions
-Date: Fri, 17 Jun 2016 09:06:35 +0100
-Message-ID: <20160617080635.GG21702@dell>
-References: <1464916904-37554-1-git-send-email-briannorris@chromium.org>
- <1464916904-37554-3-git-send-email-briannorris@chromium.org>
- <20160616153817.GD21702@dell>
- <CAD=FV=X8eOQLbdAseL2_JwpOFNjSLDAi9hX=NrE=CfrrTZfAmA@mail.gmail.com>
+Subject: Re: [PATCHv2] backlight: pwm_bl: disable PWM when 'duty_cycle' is
+ zero
+Date: Fri, 17 Jun 2016 15:17:19 +0100
+Message-ID: <20160617141719.GH21702@dell>
+References: <1465294429-8570-1-git-send-email-LW@KARO-electronics.de>
+ <20160609135125.GA2385@dell>
+ <20160610072346.51b0a5d5@ipc1.ka-ro>
+ <20160610074449.GB1537@dell>
+ <20160610123453.3a8ee14e@ipc1.ka-ro>
+ <20160610145449.GA7351@dell>
+ <20160611090803.42aeaf5f@ipc1.ka-ro>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f45.google.com ([74.125.82.45]:37161 "EHLO
+	mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750882AbcFQOQo (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 17 Jun 2016 10:16:44 -0400
+Received: by mail-wm0-f45.google.com with SMTP id a66so1679865wme.0
+        for <linux-pwm@vger.kernel.org>; Fri, 17 Jun 2016 07:16:38 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <CAD=FV=X8eOQLbdAseL2_JwpOFNjSLDAi9hX=NrE=CfrrTZfAmA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Doug Anderson <dianders@chromium.org>
-Cc: Brian Norris <briannorris@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
+In-Reply-To: <20160611090803.42aeaf5f@ipc1.ka-ro>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>
+Cc: Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Jingoo Han <jingoohan1@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Marcel Ziswiler <marcel.ziswiler@toradex.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Pawel Moll <pawel.moll@arm.com>, Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
 
-On Thu, 16 Jun 2016, Doug Anderson wrote:
-> On Thu, Jun 16, 2016 at 8:38 AM, Lee Jones <lee.jones@linaro.org> wro=
-te:
-> > On Thu, 02 Jun 2016, Brian Norris wrote:
-> >
-> >> The EC_CMD_PWM_{GET,SET}_DUTY commands allow us to control a PWM t=
-hat is
-> >> attached to the EC, rather than the main host SoC. The API provide=
-s
-> >> functionality-based (e.g., keyboard light, backlight) or index-bas=
-ed
-> >> addressing of the PWM(s). Duty cycles are represented by a 16-bit =
-value,
-> >> where 0 maps to 0% duty cycle and U16_MAX maps to 100%. The period
-> >> cannot be controlled.
-> >>
-> >> This command set is more generic than, e.g.,
-> >> EC_CMD_PWM_{GET,SET}_KEYBOARD_BACKLIGHT and could possibly used to
-> >> replace it on future products.
-> >>
-> >> Let's update the command header to include the definitions.
-> >>
-> >> Signed-off-by: Brian Norris <briannorris@chromium.org>
-> >> ---
-> >> v2: no change
-> >>
-> >>  include/linux/mfd/cros_ec_commands.h | 31 +++++++++++++++++++++++=
-++++++++
-> >>  1 file changed, 31 insertions(+)
-> >>
-> >> diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/=
-mfd/cros_ec_commands.h
-> >> index 13b630c10d4c..d673575e0ada 100644
-> >> --- a/include/linux/mfd/cros_ec_commands.h
-> >> +++ b/include/linux/mfd/cros_ec_commands.h
-> >> @@ -949,6 +949,37 @@ struct ec_params_pwm_set_fan_duty {
-> >>       uint32_t percent;
-> >>  } __packed;
-> >>
-> >> +#define EC_CMD_PWM_SET_DUTY 0x25
-> >> +/* 16 bit duty cycle, 65535 =3D 100% */
-> >> +#define EC_PWM_MAX_DUTY 65535
-> >
-> > Any reason this isn't represented in hex, like we do normally?
-> >
-> >> +enum ec_pwm_type {
-> >> +     /* All types, indexed by board-specific enum pwm_channel */
-> >> +     EC_PWM_TYPE_GENERIC =3D 0,
-> >> +     /* Keyboard backlight */
-> >> +     EC_PWM_TYPE_KB_LIGHT,
-> >> +     /* Display backlight */
-> >> +     EC_PWM_TYPE_DISPLAY_LIGHT,
-> >> +     EC_PWM_TYPE_COUNT,
-> >> +};
-> >
-> > Are these comments really necessary?  I'd recommend that if your
-> > defines require comments, then they are not adequately named.  In t=
-his
-> > case however, I'd suggest that they are and the comments are
-> > superfluous.
-> >
-> >> +struct ec_params_pwm_set_duty {
-> >> +     uint16_t duty;     /* Duty cycle, EC_PWM_MAX_DUTY =3D 100% *=
-/
-> >> +     uint8_t pwm_type;  /* ec_pwm_type */
-> >> +     uint8_t index;     /* Type-specific index, or 0 if unique */
-> >> +} __packed;
-> >
-> > Please use kerneldoc format.
-> >
-> >> +#define EC_CMD_PWM_GET_DUTY 0x26
-> >> +
-> >> +struct ec_params_pwm_get_duty {
-> >> +     uint8_t pwm_type;  /* ec_pwm_type */
-> >> +     uint8_t index;     /* Type-specific index, or 0 if unique */
-> >> +} __packed;
->=20
-> Probably the reason for all of these non-kernel-isms is that this
-> isn't a kernel file.  From the top of the file:
->=20
->  * NOTE: This file is copied verbatim from the ChromeOS EC Open Sourc=
-e
->  * project in an attempt to make future updates easy to make.
->=20
-> So the source of truth for this file is
-> <https://chromium.googlesource.com/chromiumos/platform/ec/+/master/in=
-clude/ec_commands.h>.
->=20
-> Someone could probably submit a CL to that project to make it a littl=
-e
-> more kernel-ish and then we'd have to see if the EC team would accept
-> such changes...
+On Sat, 11 Jun 2016, Lothar Wa=C3=9Fmann wrote:
+> On Fri, 10 Jun 2016 15:54:49 +0100 Lee Jones wrote:
+> > On Fri, 10 Jun 2016, Lothar Wa=C3=9Fmann wrote:
+> > > On Fri, 10 Jun 2016 08:44:49 +0100 Lee Jones wrote:
+> > > > On Fri, 10 Jun 2016, Lothar Wa=C3=9Fmann wrote:
+> > > >=20
+> > > > > Hi,
+> > > > >=20
+> > > > > On Thu, 9 Jun 2016 14:51:25 +0100 Lee Jones wrote:
+> > > > > > On Tue, 07 Jun 2016, Lothar Wa=C3=9Fmann wrote:
+> > > > > >=20
+> > > > > > > 'brightness' is usually an index into a table of duty_cyc=
+le values,
+> > > > > > > where the value at index 0 may well be non-zero
+> > > > > > > (tegra30-apalis-eval.dts and tegra30-colibri-eval-v3.dts =
+are real-life
+> > > > > > > examples).
+> > > > > > > Thus brightness =3D=3D 0 does not necessarily mean that t=
+he PWM output
+> > > > > > > will be inactive.
+> > > > > > > Check for 'duty_cycle =3D=3D 0' rather than 'brightness =3D=
+=3D 0' to decide
+> > > > > > > whether to disable the PWM.
+> > > > > > >=20
+> > > > > > > Signed-off-by: Lothar Wa=C3=9Fmann <LW@KARO-electronics.d=
+e>
+> > > > > > > ---
+> > > > > > > Changes wrt. v1:
+> > > > > > >   - update binding docs to reflect the change
+> > > > > > >=20
+> > > > > > >  .../devicetree/bindings/leds/backlight/pwm-backlight.txt=
+         | 9 ++++++---
+> > > > > > >  drivers/video/backlight/pwm_bl.c                        =
+         | 4 ++--
+> > > > > > >  2 files changed, 8 insertions(+), 5 deletions(-)
+> > > > > > >=20
+> > > > > > > diff --git a/Documentation/devicetree/bindings/leds/backl=
+ight/pwm-backlight.txt b/Documentation/devicetree/bindings/leds/backlig=
+ht/pwm-backlight.txt
+> > > > > > > index 764db86..95fa8a9 100644
+> > > > > > > --- a/Documentation/devicetree/bindings/leds/backlight/pw=
+m-backlight.txt
+> > > > > > > +++ b/Documentation/devicetree/bindings/leds/backlight/pw=
+m-backlight.txt
+> > > > > > > @@ -4,10 +4,13 @@ Required properties:
+> > > > > > >    - compatible: "pwm-backlight"
+> > > > > > >    - pwms: OF device-tree PWM specification (see PWM bind=
+ing[0])
+> > > > > > >    - brightness-levels: Array of distinct brightness leve=
+ls. Typically these
+> > > > > > > -      are in the range from 0 to 255, but any range star=
+ting at 0 will do.
+> > > > > > > +      are in the range from 0 to 255, but any range will=
+ do.
+> > > > > > >        The actual brightness level (PWM duty cycle) will =
+be interpolated
+> > > > > > > -      from these values. 0 means a 0% duty cycle (darkes=
+t/off), while the
+> > > > > > > -      last value in the array represents a 100% duty cyc=
+le (brightest).
+> > > > > > > +      from these values. 0 means a 0% duty cycle, while =
+the highest value in
+> > > > > > > +      the array represents a 100% duty cycle.
+> > > > > > > +      The range may be in reverse order (starting with t=
+he maximum duty cycle
+> > > > > > > +      value) to create a PWM signal with the 100% duty c=
+ycle representing
+> > > > > > > +      minimum and 0% duty cycle maximum brigthness.
+> > > > > > >    - default-brightness-level: the default brightness lev=
+el (index into the
+> > > > > > >        array defined by the "brightness-levels" property)
+> > > > > > >    - power-supply: regulator for supply voltage
+> > > > > > > diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/v=
+ideo/backlight/pwm_bl.c
+> > > > > > > index b2b366b..80b2b52 100644
+> > > > > > > --- a/drivers/video/backlight/pwm_bl.c
+> > > > > > > +++ b/drivers/video/backlight/pwm_bl.c
+> > > > > > > @@ -103,8 +103,8 @@ static int pwm_backlight_update_statu=
+s(struct backlight_device *bl)
+> > > > > > >  	if (pb->notify)
+> > > > > > >  		brightness =3D pb->notify(pb->dev, brightness);
+> > > > > > > =20
+> > > > > > > -	if (brightness > 0) {
+> > > > > > > -		duty_cycle =3D compute_duty_cycle(pb, brightness);
+> > > > > > > +	duty_cycle =3D compute_duty_cycle(pb, brightness);
+> > > > > > > +	if (duty_cycle > 0) {
+> > > > > >=20
+> > > > > > How does this work in the aforementioned:
+> > > > > >=20
+> > > > > >   "The range may be in reverse order"
+> > > > > >=20
+> > > > > > ... case?  Surely when duty_cycle is when the screen should=
+ be at it's
+> > > > > > brightest?  Wouldn't it confuse the user if they turn their=
+ brightness
+> > > > > > *up* and the screen goes *off*?
+> > > > > >=20
+> > > > > Assuming that the PWM output is inactive (LOW) when the duty_=
+cycle is
+> > > > > set to zero, there will be no difference between operating th=
+e PWM at
+> > > > > duty_cycle 0 or disabling it.
+> > > > >=20
+> > > > > Currently, the screen will go bright when it should be off in=
+ this
+> > > > > case.
+> > > >=20
+> > > > It sounds like we need something that lets the framework know i=
+f
+> > > > duty_cycle =3D MAX is the brightest or if duty_cycle =3D 0 is. =
+ Either way
+> > > > someone is going to get screwed by this logic.
+> > > >=20
+> > > The backlight framework does not (and does not need to) know anyt=
+hing
+> > > about PWM duty cycles. Its 'brightness' values are consistently 0=
+ =3D=3D
+> > > dark, max =3D=3D brightest in either case.
+> >=20
+> > What I'm getting at is; by the look of the documentation, the
+> > brightest setting can either be a duty cycle of 0 or 255.  So what
+> > happens with your new semantics when the duty cycle of 0 represents
+> > the brightest setting and you reach 0?  Didn't you just turn the
+> > backlight off?
+> >=20
+> As mentioned earlier, disabling the PWM has generally the same result=
+ as
+> setting the duty cycle to 0. The current behaviour is broken in this
+> case, since setting brightness to 0 with a non-zero duty_cycle as the
+> first element of brightness-levels, the PWM will be disabled rather t=
+han
+> switched to the given duty cycle.
+> Disabling the PWM should have the same effect as setting the duty cyc=
+le
+> to 0, so it is safe to check for duty_cycle =3D=3D 0 to decide whethe=
+r to
+> disable the PWM.
 
-Hmmm... that kinda puts me in a difficult position.  Do I except
-non-kernel code, which does not conform to our stands?
+I agree with this. BUT, that's not what you're doing is it?
 
-Naturally I'd be happier if you could try to make the code more
-'kernely'.  The practices I mention above are still good ones, even if
-you're not writing kernel specific code.
+Look at the code you're trying to write:
+
+duty_cycle =3D compute_duty_cycle(pb, brightness);
+if (duty_cycle > 0) {
+        pwm_config(pb->pwm, duty_cycle, pb->period);
+        pwm_backlight_power_on(pb, brightness);
+} else
+        pwm_backlight_power_off(pb);
+
+Let's say duty_cycle =3D=3D 0.  In some cases this can mean "turn
+brightness up to the *maximum*", but with your new logic you just
+turned the backlight *off*.
+
+Conversely, let's say duty_cycle =3D=3D 255.  In some cases this can me=
+an
+"turn the brightness to the *lowest* setting" i.e. *off*. Well your
+logic just turned the backlight *on*.
+
+If there is something I'm missing, you're going to have to find a
+better way to explain it to me.
 
 --=20
 Lee Jones
