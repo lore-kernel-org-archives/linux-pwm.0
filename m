@@ -1,86 +1,64 @@
-From: Brian Norris <briannorris@chromium.org>
-Subject: [PATCH v3 2/4] mfd: cros_ec: add EC_PWM function definitions
-Date: Fri, 17 Jun 2016 12:58:13 -0700
-Message-ID: <1466193495-95801-3-git-send-email-briannorris@chromium.org>
-References: <1466193495-95801-1-git-send-email-briannorris@chromium.org>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f42.google.com ([209.85.220.42]:34923 "EHLO
-	mail-pa0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S933414AbcFQT6g (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 17 Jun 2016 15:58:36 -0400
-Received: by mail-pa0-f42.google.com with SMTP id hl6so31204088pac.2
-        for <linux-pwm@vger.kernel.org>; Fri, 17 Jun 2016 12:58:36 -0700 (PDT)
-In-Reply-To: <1466193495-95801-1-git-send-email-briannorris@chromium.org>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [v3,1/4] mfd: cros_ec: Add cros_ec_cmd_xfer_status helper
+Date: Fri, 17 Jun 2016 14:41:51 -0700
+Message-ID: <20160617214151.GA1400@roeck-us.net>
+References: <1466193495-95801-2-git-send-email-briannorris@chromium.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1466193495-95801-2-git-send-email-briannorris@chromium.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Brian Norris <briannorris@chromium.org>
+Cc: Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>, linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>
-Cc: linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Brian Norris <briannorris@chromium.org>
 
-The EC_CMD_PWM_{GET,SET}_DUTY commands allow us to control a PWM that is
-attached to the EC, rather than the main host SoC. The API provides
-functionality-based (e.g., keyboard light, backlight) or index-based
-addressing of the PWM(s). Duty cycles are represented by a 16-bit value,
-where 0 maps to 0% duty cycle and U16_MAX maps to 100%. The period
-cannot be controlled.
+On Fri, Jun 17, 2016 at 12:58:12PM -0700, Brian Norris wrote:
+> From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+> 
+> So that callers of cros_ec_cmd_xfer don't have to repeat boilerplate
+> code when checking for errors from the EC side.
+> 
+> Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+> Reviewed-by: Benson Leung <bleung@chromium.org>
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> Acked-by: Lee Jones <lee.jones@linaro.org>
+> Tested-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> ---
+> v3:
+>  * successfully spell success
+> 
+> v2:
+>  * no change
+> ---
+>  drivers/platform/chrome/cros_ec_proto.c | 15 +++++++++++++++
+>  include/linux/mfd/cros_ec.h             | 18 ++++++++++++++++++
+>  2 files changed, 33 insertions(+)
+> 
+> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+> index b6e161f71b26..ecc544c728f0 100644
+> --- a/drivers/platform/chrome/cros_ec_proto.c
+> +++ b/drivers/platform/chrome/cros_ec_proto.c
+> @@ -380,3 +380,18 @@ int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev,
+>  	return ret;
+>  }
+>  EXPORT_SYMBOL(cros_ec_cmd_xfer);
+> +
+> +int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
+> +			    struct cros_ec_command *msg)
+> +{
+> +	int ret;
+> +
+> +	ret = cros_ec_cmd_xfer(ec_dev, msg);
+> +	if (ret < 0)
+> +		dev_err(ec_dev->dev, "Command xfer error (err:%d)\n", ret);
+> +	else if (msg->result != EC_RES_SUCCESS)
+> +		return -EECRESULT - msg->result;
 
-This command set is more generic than, e.g.,
-EC_CMD_PWM_{GET,SET}_KEYBOARD_BACKLIGHT and could possibly used to
-replace it on future products.
+I have been wondering about the error return codes here, and if they should be
+converted to standard Linux error codes. For example, I just hit error -1003
+with a driver I am working on. This translates to EC_RES_INVALID_PARAM, or,
+in Linux terms, -EINVAL. I think it would be better to use standard error
+codes, especially since some of the errors are logged.
 
-Let's update the command header to include the definitions.
-
-Signed-off-by: Brian Norris <briannorris@chromium.org>
----
-v3:
- * convert from 65535 to 0xffff
-
-v2:
- * no changes
----
- include/linux/mfd/cros_ec_commands.h | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
-
-diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
-index 13b630c10d4c..7e7a8d4b4551 100644
---- a/include/linux/mfd/cros_ec_commands.h
-+++ b/include/linux/mfd/cros_ec_commands.h
-@@ -949,6 +949,37 @@ struct ec_params_pwm_set_fan_duty {
- 	uint32_t percent;
- } __packed;
- 
-+#define EC_CMD_PWM_SET_DUTY 0x25
-+/* 16 bit duty cycle, 0xffff = 100% */
-+#define EC_PWM_MAX_DUTY 0xffff
-+
-+enum ec_pwm_type {
-+	/* All types, indexed by board-specific enum pwm_channel */
-+	EC_PWM_TYPE_GENERIC = 0,
-+	/* Keyboard backlight */
-+	EC_PWM_TYPE_KB_LIGHT,
-+	/* Display backlight */
-+	EC_PWM_TYPE_DISPLAY_LIGHT,
-+	EC_PWM_TYPE_COUNT,
-+};
-+
-+struct ec_params_pwm_set_duty {
-+	uint16_t duty;     /* Duty cycle, EC_PWM_MAX_DUTY = 100% */
-+	uint8_t pwm_type;  /* ec_pwm_type */
-+	uint8_t index;     /* Type-specific index, or 0 if unique */
-+} __packed;
-+
-+#define EC_CMD_PWM_GET_DUTY 0x26
-+
-+struct ec_params_pwm_get_duty {
-+	uint8_t pwm_type;  /* ec_pwm_type */
-+	uint8_t index;     /* Type-specific index, or 0 if unique */
-+} __packed;
-+
-+struct ec_response_pwm_get_duty {
-+	uint16_t duty;     /* Duty cycle, EC_PWM_MAX_DUTY = 100% */
-+} __packed;
-+
- /*****************************************************************************/
- /*
-  * Lightbar commands. This looks worse than it is. Since we only use one HOST
--- 
-2.8.0.rc3.226.g39d4020
+Guenter
