@@ -1,92 +1,79 @@
 From: Brian Norris <briannorris@chromium.org>
-Subject: Re: [PATCH v2 2/4] mfd: cros_ec: add EC_PWM function definitions
-Date: Fri, 17 Jun 2016 12:21:33 -0700
-Message-ID: <20160617192133.GA83919@google.com>
-References: <1464916904-37554-1-git-send-email-briannorris@chromium.org>
- <1464916904-37554-3-git-send-email-briannorris@chromium.org>
- <20160616153817.GD21702@dell>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: [PATCH v3 0/4] pwm: add support for ChromeOS EC PWM
+Date: Fri, 17 Jun 2016 12:58:11 -0700
+Message-ID: <1466193495-95801-1-git-send-email-briannorris@chromium.org>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pf0-f175.google.com ([209.85.192.175]:35055 "EHLO
-	mail-pf0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752847AbcFQTVh (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 17 Jun 2016 15:21:37 -0400
-Received: by mail-pf0-f175.google.com with SMTP id c2so33515140pfa.2
-        for <linux-pwm@vger.kernel.org>; Fri, 17 Jun 2016 12:21:36 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20160616153817.GD21702@dell>
+Received: from mail-pa0-f50.google.com ([209.85.220.50]:36505 "EHLO
+	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S933385AbcFQT6e (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 17 Jun 2016 15:58:34 -0400
+Received: by mail-pa0-f50.google.com with SMTP id b5so31247961pas.3
+        for <linux-pwm@vger.kernel.org>; Fri, 17 Jun 2016 12:58:34 -0700 (PDT)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>, linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
+To: Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>
+Cc: linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Brian Norris <briannorris@chromium.org>
 
-On Thu, Jun 16, 2016 at 04:38:17PM +0100, Lee Jones wrote:
-> On Thu, 02 Jun 2016, Brian Norris wrote:
-> > The EC_CMD_PWM_{GET,SET}_DUTY commands allow us to control a PWM that is
-> > attached to the EC, rather than the main host SoC. The API provides
-> > functionality-based (e.g., keyboard light, backlight) or index-based
-> > addressing of the PWM(s). Duty cycles are represented by a 16-bit value,
-> > where 0 maps to 0% duty cycle and U16_MAX maps to 100%. The period
-> > cannot be controlled.
-> > 
-> > This command set is more generic than, e.g.,
-> > EC_CMD_PWM_{GET,SET}_KEYBOARD_BACKLIGHT and could possibly used to
-> > replace it on future products.
-> > 
-> > Let's update the command header to include the definitions.
-> > 
-> > Signed-off-by: Brian Norris <briannorris@chromium.org>
-> > ---
-> > v2: no change
-> > 
-> >  include/linux/mfd/cros_ec_commands.h | 31 +++++++++++++++++++++++++++++++
-> >  1 file changed, 31 insertions(+)
-> > 
-> > diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
-> > index 13b630c10d4c..d673575e0ada 100644
-> > --- a/include/linux/mfd/cros_ec_commands.h
-> > +++ b/include/linux/mfd/cros_ec_commands.h
-> > @@ -949,6 +949,37 @@ struct ec_params_pwm_set_fan_duty {
-> >  	uint32_t percent;
-> >  } __packed;
-> >  
-> > +#define EC_CMD_PWM_SET_DUTY 0x25
-> > +/* 16 bit duty cycle, 65535 = 100% */
-> > +#define EC_PWM_MAX_DUTY 65535
-> 
-> Any reason this isn't represented in hex, like we do normally?
+Hi,
 
-Hex would probably be clearer. I'll try to change that.
+This is version 3 of my series to support the new ChromeOS EC PWM API, so we
+can control, e.g., a PWM backlight when its PWM is attached to the EC. It uses
+Boris's latest "atomic" hooks for the PWM API (i.e., the ->apply() callback),
+which were recently merged.
 
-> > +enum ec_pwm_type {
-> > +	/* All types, indexed by board-specific enum pwm_channel */
-> > +	EC_PWM_TYPE_GENERIC = 0,
-> > +	/* Keyboard backlight */
-> > +	EC_PWM_TYPE_KB_LIGHT,
-> > +	/* Display backlight */
-> > +	EC_PWM_TYPE_DISPLAY_LIGHT,
-> > +	EC_PWM_TYPE_COUNT,
-> > +};
-> 
-> Are these comments really necessary?  I'd recommend that if your
-> defines require comments, then they are not adequately named.  In this
-> case however, I'd suggest that they are and the comments are
-> superfluous.
+It seems nice to have the cros_ec_cmd_xfer_status() helper, which we have
+locally in the ChromeOS kernel, and which has been part of another larger patch
+series:
 
-I don't think your rule holds water: there are definitely cases where
-defines/enums require (or at least are better with) additional comments.
-Sentence-long identifier names are not very readable, but sometimes a
-sentence of comment can help.
+https://lkml.org/lkml/2016/4/12/342
 
-Anyway, I think two of the three are probably unnecessary, if you really
-want to ask. The first (EC_PWM_TYPE_GENERIC) seems useful.
+So I've picked it into this series as well. Tomeu has acknowledged his USB PD
+series is on hold for now, so this should be OK.
 
-But then, how do you suggest handling this in conjunction with your
-kerneldoc suggestion? IIRC, kerneldoc requires that if one
-entry/field/parameter is documented, then all most be documented. So
-avoid kerneldoc on the enum, and just use inline comments?
+Note that after some style bikeshedding, I proposed to put off rewriting the
+entire cros_ec_commands.h header at the moment, due to the shared nature of
+this file. I plan to follow up with this bug report:
 
-[snip the rest, which was discussed in other branches of this thread]
+https://bugs.chromium.org/p/chromium/issues/detail?id=621123
 
+As this touches MFD (sort of), drivers/platform/chrome/, and drivers/pwm/, I'm
+still not sure who it should all go through: Lee, Thierry, or Olof?
+
+Please review.
+
+Regards,
 Brian
+
+Change log (also documented in each patch):
+
+v3:
+ * fix some int->hex
+ * fix a small bug in the handling of 'disabled' vs. 'duty_cycle == 0'
+ * collect acks, tested-by
+
+v2:
+ * drop the "google,max-pwms" property
+ * separate the cros_ec vs. PWM abstractions a little more clearly in the driver
+ * remove dynamic kzalloc()'s and rely on on-stack memory instead
+
+Brian Norris (3):
+  mfd: cros_ec: add EC_PWM function definitions
+  doc: dt: pwm: add binding for ChromeOS EC PWM
+  pwm: add ChromeOS EC PWM driver
+
+Tomeu Vizoso (1):
+  mfd: cros_ec: Add cros_ec_cmd_xfer_status helper
+
+ .../devicetree/bindings/pwm/google,cros-ec-pwm.txt |  23 ++
+ drivers/platform/chrome/cros_ec_proto.c            |  15 ++
+ drivers/pwm/Kconfig                                |   7 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-cros-ec.c                          | 246 +++++++++++++++++++++
+ include/linux/mfd/cros_ec.h                        |  18 ++
+ include/linux/mfd/cros_ec_commands.h               |  31 +++
+ 7 files changed, 341 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/google,cros-ec-pwm.txt
+ create mode 100644 drivers/pwm/pwm-cros-ec.c
+
+-- 
+2.8.0.rc3.226.g39d4020
