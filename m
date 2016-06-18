@@ -1,22 +1,18 @@
 From: Guenter Roeck <linux@roeck-us.net>
 Subject: Re: [v3,1/4] mfd: cros_ec: Add cros_ec_cmd_xfer_status helper
-Date: Fri, 17 Jun 2016 21:12:20 -0700
-Message-ID: <5764CA24.1080803@roeck-us.net>
+Date: Sat, 18 Jun 2016 10:09:46 -0700
+Message-ID: <5765805A.5070407@roeck-us.net>
 References: <1466193495-95801-2-git-send-email-briannorris@chromium.org>
  <20160617214151.GA1400@roeck-us.net> <20160618010855.GA67034@google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:49663 "EHLO
-	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750738AbcFRENy (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Sat, 18 Jun 2016 00:13:54 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20160618010855.GA67034@google.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Brian Norris <briannorris@chromium.org>
 Cc: Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>, linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
+List-Id: linux-pwm@vger.kernel.org
 
 On 06/17/2016 06:08 PM, Brian Norris wrote:
 > On Fri, Jun 17, 2016 at 02:41:51PM -0700, Guenter Roeck wrote:
@@ -41,21 +37,30 @@ On 06/17/2016 06:08 PM, Brian Norris wrote:
 > How do you propose we do that? Do all of the following become EINVAL?
 >
 >          EC_RES_INVALID_COMMAND
+
+	-EOPNOTSUPP
+
 >          EC_RES_INVALID_PARAM
+
+	-EINVAL or -EBADMSG
+
 >          EC_RES_INVALID_VERSION
+
+	-EPROTO or -EBADR or -EBADE or -EBADRQC or -EPROTOOPT
+
 >          EC_RES_INVALID_HEADER
->
 
-Personal preference, but yes.
+	-EPROTO or -EBADR or -EBADE
 
-> We lose a lot of information that way. And particularly, cros_ec_num_pwms()
-> won't be able to count as accurately. But I can just go back to not using this
-
-You lost me there, sorry.
-
-> API if that's what you'd like...
->
-
-That isn't what I suggested.
+Doesn't look that bad to me. Also, the raw error could still be logged,
+for example with dev_dbg().
 
 Guenter
+
+>
+> We lose a lot of information that way. And particularly, cros_ec_num_pwms()
+> won't be able to count as accurately. But I can just go back to not using this
+> API if that's what you'd like...
+>
+> Brian
+>
