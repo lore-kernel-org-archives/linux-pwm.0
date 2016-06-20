@@ -1,67 +1,115 @@
-From: Jacek Anaszewski <j.anaszewski@samsung.com>
-Subject: Re: [PATCH 12/12] leds: Only descend into leds directory when
- CONFIG_NEW_LEDS is set
-Date: Mon, 20 Jun 2016 09:41:44 +0200
-Message-ID: <57679E38.3080901@samsung.com>
-References: <20160613200211.14790-1-afd@ti.com>
- <20160613200211.14790-13-afd@ti.com> <5760FA52.7010806@samsung.com>
- <57647DBD.2010406@ti.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v2 2/4] mfd: cros_ec: add EC_PWM function definitions
+Date: Mon, 20 Jun 2016 08:47:02 +0100
+Message-ID: <20160620074702.GI21702@dell>
+References: <1464916904-37554-1-git-send-email-briannorris@chromium.org>
+ <1464916904-37554-3-git-send-email-briannorris@chromium.org>
+ <20160616153817.GD21702@dell>
+ <20160617192133.GA83919@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-reply-to: <57647DBD.2010406@ti.com>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: "Andrew F. Davis" <afd@ti.com>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, Wolfram Sang <wsa@the-dreams.de>, Linus Walleij <linus.walleij@linaro.org>, Sebastian Reichel <sre@kernel.org>, linux-i2c@vger.kernel.org, Ingo Molnar <mingo@kernel.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, lguest@lists.ozlabs.org, Samuel Ortiz <sameo@linux.intel.com>, Russell King <linux@armlinux.org.uk>, linux-leds@vger.kernel.org, linux-mmc@vger.kernel.org, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-gpio@vger.kernel.org, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f45.google.com ([74.125.82.45]:37767 "EHLO
+	mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751099AbcFTHqU (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jun 2016 03:46:20 -0400
+Received: by mail-wm0-f45.google.com with SMTP id a66so65724508wme.0
+        for <linux-pwm@vger.kernel.org>; Mon, 20 Jun 2016 00:46:19 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20160617192133.GA83919@google.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Brian Norris <briannorris@chromium.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>, linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
 
-T24gMDYvMTgvMjAxNiAxMjo0NiBBTSwgQW5kcmV3IEYuIERhdmlzIHdyb3RlOgo+IE9uIDA2LzE1
-LzIwMTYgMDE6NDggQU0sIEphY2VrIEFuYXN6ZXdza2kgd3JvdGU6Cj4+IEhpIEFuZHJldywKPj4K
-Pj4gVGhhbmtzIGZvciB0aGUgcGF0Y2guCj4+Cj4+IFBsZWFzZSBhZGRyZXNzIHRoZSBpc3N1ZSBb
-MV0gcmFpc2VkIGJ5IHRlc3QgYm90IGFuZCByZXN1Ym1pdC4KPj4KPj4gVGhhbmtzLAo+PiBKYWNl
-ayBBbmFzemV3c2tpCj4+Cj4+IFsxXSBodHRwczovL2xrbWwub3JnL2xrbWwvMjAxNi82LzEzLzEw
-OTEKPj4KPgo+IEl0IGxvb2tzIGxpa2Ugc29tZSBzeXN0ZW1zIHVzZSAnZ3Bpb19sZWRfcmVnaXN0
-ZXJfZGV2aWNlJyB0byBtYWtlIGFuCj4gaW4tbWVtb3J5IGNvcHkgb2YgdGhlaXIgTEVEIGRldmlj
-ZSB0YWJsZSBzbyB0aGUgb3JpZ2luYWwgY2FuIGJlIHJlbW92ZWQKPiBhcyAuaW5pdC5yb2RhdGEu
-IFRoaXMgZG9lc24ndCBuZWNlc3NhcmlseSBkZXBlbmQgb24gdGhlIExFRCBzdWJzeXN0ZW0KPiBi
-dXQgaXQga2luZCBvZiBzZWVtcyB1c2VsZXNzIHdoZW4gdGhlIHJlc3Qgb2YgdGhlIHN1YnN5c3Rl
-bSBpcyBkaXNhYmxlZC4KPgo+IE9uZSBzb2x1dGlvbiBjb3VsZCBiZSB0byB1c2UgYSBkdW1teSAn
-Z3Bpb19sZWRfcmVnaXN0ZXJfZGV2aWNlJyB3aGVuIHRoZQo+IHN1YnN5c3RlbSBpcyBub3QgZW5h
-YmxlZC4KCkl0IHNvdW5kcyBnb29kLiBQbGVhc2UgYWRkIGEgbm8tb3AgdmVyc2lvbiBvZiBncGlv
-X2xlZF9yZWdpc3Rlcl9kZXZpY2UoKQp0byBpbmNsdWRlL2xlZHMuaCwgaW4gYSBzZXBhcmF0ZSBw
-YXRjaC4KClRoYW5rcywKSmFjZWsgQW5hc3pld3NraQoKPiBBbm90aGVyIGlzIGp1c3QgdG8gcmVt
-b3ZlIHRoZSBmaXZlIG9yIHNvIHVzZXMKPiBvZiAnZ3Bpb19sZWRfcmVnaXN0ZXJfZGV2aWNlJyBh
-bmQgaGF2ZSB0aG9zZSBzeXN0ZW1zIHJlZ2lzdGVyIExFRCBkZXZpY2UKPiB0YWJsZXMgbGlrZSBv
-dGhlciBzeXN0ZW1zIGRvLgo+Cj4gSWYgbmV0aGVyIG9mIHRoZXNlIGFyZSBhY2NlcHRhYmxlIHRo
-ZW4gdGhpcyBwYXRjaCBjYW4gYmUgZHJvcHBlZCBmcm9tCj4gdGhpcyBzZXJpZXMgZm9yIG5vdy4K
-Pgo+IFRoYW5rcywKPiBBbmRyZXcKPgo+PiBPbiAwNi8xMy8yMDE2IDEwOjAyIFBNLCBBbmRyZXcg
-Ri4gRGF2aXMgd3JvdGU6Cj4+PiBXaGVuIENPTkZJR19ORVdfTEVEUyBpcyBub3Qgc2V0IG1ha2Ug
-d2lsbCBzdGlsbCBkZXNjZW5kIGludG8gdGhlIGxlZHMKPj4+IGRpcmVjdG9yeSBidXQgbm90aGlu
-ZyB3aWxsIGJlIGJ1aWx0LiBUaGlzIHByb2R1Y2VzIHVubmVlZGVkIGJ1aWxkCj4+PiBhcnRpZmFj
-dHMgYW5kIG1lc3NhZ2VzIGluIGFkZGl0aW9uIHRvIHNsb3dpbmcgdGhlIGJ1aWxkLiBGaXggdGhp
-cyBoZXJlLgo+Pj4KPj4+IFNpZ25lZC1vZmYtYnk6IEFuZHJldyBGLiBEYXZpcyA8YWZkQHRpLmNv
-bT4KPj4+IC0tLQo+Pj4gICAgZHJpdmVycy9NYWtlZmlsZSB8IDIgKy0KPj4+ICAgIDEgZmlsZSBj
-aGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQo+Pj4KPj4+IGRpZmYgLS1naXQg
-YS9kcml2ZXJzL01ha2VmaWxlIGIvZHJpdmVycy9NYWtlZmlsZQo+Pj4gaW5kZXggNTY3ZTMyYy4u
-ZmE1MTRkNSAxMDA2NDQKPj4+IC0tLSBhL2RyaXZlcnMvTWFrZWZpbGUKPj4+ICsrKyBiL2RyaXZl
-cnMvTWFrZWZpbGUKPj4+IEBAIC0xMjcsNyArMTI3LDcgQEAgb2JqLSQoQ09ORklHX0NQVV9GUkVR
-KSAgICAgICAgKz0gY3B1ZnJlcS8KPj4+ICAgIG9iai0kKENPTkZJR19DUFVfSURMRSkgICAgICAg
-ICs9IGNwdWlkbGUvCj4+PiAgICBvYmotJChDT05GSUdfTU1DKSAgICAgICAgKz0gbW1jLwo+Pj4g
-ICAgb2JqLSQoQ09ORklHX01FTVNUSUNLKSAgICAgICAgKz0gbWVtc3RpY2svCj4+PiAtb2JqLXkg
-ICAgICAgICAgICAgICAgKz0gbGVkcy8KPj4+ICtvYmotJChDT05GSUdfTkVXX0xFRFMpICAgICAg
-ICArPSBsZWRzLwo+Pj4gICAgb2JqLSQoQ09ORklHX0lORklOSUJBTkQpICAgICs9IGluZmluaWJh
-bmQvCj4+PiAgICBvYmotJChDT05GSUdfU0dJX1NOKSAgICAgICAgKz0gc24vCj4+PiAgICBvYmot
-eSAgICAgICAgICAgICAgICArPSBmaXJtd2FyZS8KPj4+Cj4+Cj4+Cj4KPgoKX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KTGludXhwcGMtZGV2IG1haWxpbmcg
-bGlzdApMaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZwpodHRwczovL2xpc3RzLm96bGFicy5v
-cmcvbGlzdGluZm8vbGludXhwcGMtZGV2
+On Fri, 17 Jun 2016, Brian Norris wrote:
+
+> On Thu, Jun 16, 2016 at 04:38:17PM +0100, Lee Jones wrote:
+> > On Thu, 02 Jun 2016, Brian Norris wrote:
+> > > The EC_CMD_PWM_{GET,SET}_DUTY commands allow us to control a PWM =
+that is
+> > > attached to the EC, rather than the main host SoC. The API provid=
+es
+> > > functionality-based (e.g., keyboard light, backlight) or index-ba=
+sed
+> > > addressing of the PWM(s). Duty cycles are represented by a 16-bit=
+ value,
+> > > where 0 maps to 0% duty cycle and U16_MAX maps to 100%. The perio=
+d
+> > > cannot be controlled.
+> > >=20
+> > > This command set is more generic than, e.g.,
+> > > EC_CMD_PWM_{GET,SET}_KEYBOARD_BACKLIGHT and could possibly used t=
+o
+> > > replace it on future products.
+> > >=20
+> > > Let's update the command header to include the definitions.
+> > >=20
+> > > Signed-off-by: Brian Norris <briannorris@chromium.org>
+> > > ---
+> > > v2: no change
+> > >=20
+> > >  include/linux/mfd/cros_ec_commands.h | 31 ++++++++++++++++++++++=
++++++++++
+> > >  1 file changed, 31 insertions(+)
+> > >=20
+> > > diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux=
+/mfd/cros_ec_commands.h
+> > > index 13b630c10d4c..d673575e0ada 100644
+> > > --- a/include/linux/mfd/cros_ec_commands.h
+> > > +++ b/include/linux/mfd/cros_ec_commands.h
+> > > @@ -949,6 +949,37 @@ struct ec_params_pwm_set_fan_duty {
+> > >  	uint32_t percent;
+> > >  } __packed;
+> > > =20
+> > > +#define EC_CMD_PWM_SET_DUTY 0x25
+> > > +/* 16 bit duty cycle, 65535 =3D 100% */
+> > > +#define EC_PWM_MAX_DUTY 65535
+> >=20
+> > Any reason this isn't represented in hex, like we do normally?
+>=20
+> Hex would probably be clearer. I'll try to change that.
+>=20
+> > > +enum ec_pwm_type {
+> > > +	/* All types, indexed by board-specific enum pwm_channel */
+> > > +	EC_PWM_TYPE_GENERIC =3D 0,
+> > > +	/* Keyboard backlight */
+> > > +	EC_PWM_TYPE_KB_LIGHT,
+> > > +	/* Display backlight */
+> > > +	EC_PWM_TYPE_DISPLAY_LIGHT,
+> > > +	EC_PWM_TYPE_COUNT,
+> > > +};
+> >=20
+> > Are these comments really necessary?  I'd recommend that if your
+> > defines require comments, then they are not adequately named.  In t=
+his
+> > case however, I'd suggest that they are and the comments are
+> > superfluous.
+>=20
+> I don't think your rule holds water: there are definitely cases where
+> defines/enums require (or at least are better with) additional commen=
+ts.
+> Sentence-long identifier names are not very readable, but sometimes a
+> sentence of comment can help.
+
+I was generalising.  There will always be exceptions to the rule, but
+in the standard case we can be forthcoming enough with our naming
+conventions that comments aren't required.
+
+> Anyway, I think two of the three are probably unnecessary, if you rea=
+lly
+> want to ask. The first (EC_PWM_TYPE_GENERIC) seems useful.
+>=20
+> But then, how do you suggest handling this in conjunction with your
+> kerneldoc suggestion? IIRC, kerneldoc requires that if one
+> entry/field/parameter is documented, then all most be documented. So
+> avoid kerneldoc on the enum, and just use inline comments?
+
+Sounds reasonable.
+
+--=20
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
