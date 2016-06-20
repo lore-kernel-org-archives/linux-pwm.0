@@ -1,54 +1,55 @@
-From: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
-Subject: [PATCH v3 0/3] pwm support for Broadcom iProc SoC's
-Date: Mon, 20 Jun 2016 10:14:31 -0400
-Message-ID: <1466432074-7780-1-git-send-email-yendapally.reddy@broadcom.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pf0-f179.google.com ([209.85.192.179]:36833 "EHLO
-	mail-pf0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754257AbcFTOPW (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jun 2016 10:15:22 -0400
-Received: by mail-pf0-f179.google.com with SMTP id t190so54677617pfb.3
-        for <linux-pwm@vger.kernel.org>; Mon, 20 Jun 2016 07:14:48 -0700 (PDT)
-Sender: linux-pwm-owner@vger.kernel.org
+From: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v3 1/3] Documentation: dt: Add Broadcom iproc pwm controller binding
+Date: Mon, 20 Jun 2016 10:14:32 -0400
+Message-ID: <1466432074-7780-2-git-send-email-yendapally.reddy@broadcom.com>
+References: <1466432074-7780-1-git-send-email-yendapally.reddy@broadcom.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1466432074-7780-1-git-send-email-yendapally.reddy-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Mason <jonmason-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yendapally Reddy Dhananjaya Reddy <yendapally.reddy-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Jon Mason <jonmason@broadcom.com>, Russell King <linux@arm.linux.org.uk>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org, Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
 
-This patchset contains the pwm support for the Broadcom's iProc SoC's.
+Add a binding for Broadcom iproc pwm controller
 
-The first patch provides the documentation details and the
-second patch contains the controller support details. The third patch
-contains the enable method for Northstar Plus SoC.
-
-This patch series has been tested on NSP bcm958625HR board.
-The pwm is not enabled for this board as the pins are open and not used.
-
-This patch series is based on v4.7.0-rc1 and is available from github
-repo: https://github.com/Broadcom/cygnus-linux.git
-branch: iproc-pwm-v3
-
-
-Changes since v2
-Rebased on v4.7.0-rc1
-
-Changes since v1
-Addressed the review comments from Thierry
- 1. Use separate driver for iProc SoC's.
- 2. Added Robs ack to the Documentation patch
-
-Yendapally Reddy Dhananjaya Reddy (3):
-  Documentation: dt: Add Broadcom iproc pwm controller binding
-  pwm: iproc: Add support for Broadcom iproc pwm controller
-  ARM: dts: NSP: Add PWM Support to DT
-
- .../devicetree/bindings/pwm/brcm,iproc-pwm.txt     |  21 ++
- arch/arm/boot/dts/bcm-nsp.dtsi                     |   8 +
- drivers/pwm/Kconfig                                |  10 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-bcm-iproc.c                        | 327 +++++++++++++++++++++
- 5 files changed, 367 insertions(+)
+Signed-off-by: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+---
+ .../devicetree/bindings/pwm/brcm,iproc-pwm.txt      | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/pwm/brcm,iproc-pwm.txt
- create mode 100644 drivers/pwm/pwm-bcm-iproc.c
 
+diff --git a/Documentation/devicetree/bindings/pwm/brcm,iproc-pwm.txt b/Documentation/devicetree/bindings/pwm/brcm,iproc-pwm.txt
+new file mode 100644
+index 0000000..21f75bb
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/brcm,iproc-pwm.txt
+@@ -0,0 +1,21 @@
++Broadcom iProc PWM controller device tree bindings
++
++This controller has 4 channels.
++
++Required Properties :
++- compatible: must be "brcm,iproc-pwm"
++- reg: physical base address and length of the controller's registers
++- clocks: phandle + clock specifier pair for the external clock
++- #pwm-cells: Should be 3. See pwm.txt in this directory for a
++  description of the cells format.
++
++Refer to clocks/clock-bindings.txt for generic clock consumer properties.
++
++Example:
++
++pwm: pwm@18031000 {
++	compatible = "brcm,iproc-pwm";
++	reg = <0x18031000 0x28>;
++	clocks = <&osc>;
++	#pwm-cells = <3>;
++};
 -- 
 2.1.0
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
