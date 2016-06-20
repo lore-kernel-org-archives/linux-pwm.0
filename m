@@ -1,115 +1,102 @@
-From: Lee Jones <lee.jones@linaro.org>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Subject: Re: [PATCH v2 2/4] mfd: cros_ec: add EC_PWM function definitions
-Date: Mon, 20 Jun 2016 08:47:02 +0100
-Message-ID: <20160620074702.GI21702@dell>
+Date: Mon, 20 Jun 2016 09:00:51 +0100
+Message-ID: <20160620080051.GJ21702@dell>
 References: <1464916904-37554-1-git-send-email-briannorris@chromium.org>
  <1464916904-37554-3-git-send-email-briannorris@chromium.org>
  <20160616153817.GD21702@dell>
- <20160617192133.GA83919@google.com>
+ <CAD=FV=X8eOQLbdAseL2_JwpOFNjSLDAi9hX=NrE=CfrrTZfAmA@mail.gmail.com>
+ <20160617080635.GG21702@dell>
+ <CAD=FV=UUJt4vBwHJrUYrKN56dv2YqdW3R7wah7-_PqyQ=YYr7Q@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f45.google.com ([74.125.82.45]:37767 "EHLO
-	mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751099AbcFTHqU (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jun 2016 03:46:20 -0400
-Received: by mail-wm0-f45.google.com with SMTP id a66so65724508wme.0
-        for <linux-pwm@vger.kernel.org>; Mon, 20 Jun 2016 00:46:19 -0700 (PDT)
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20160617192133.GA83919@google.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <CAD=FV=UUJt4vBwHJrUYrKN56dv2YqdW3R7wah7-_PqyQ=YYr7Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Brian Norris <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Stephen Barber <smbarber-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Javier Martinez Canillas <javier-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, Benson Leung <bleung-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Enric Balletbo <enric.balletbo-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, Randall Spangler <rspangler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Shawn Nematbakhsh <shawnn-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Todd Broch <tbroch-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Gwendal Grignou <gwendal-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Brian Norris <briannorris@chromium.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>, linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
 
-On Fri, 17 Jun 2016, Brian Norris wrote:
+On Fri, 17 Jun 2016, Doug Anderson wrote:
 
-> On Thu, Jun 16, 2016 at 04:38:17PM +0100, Lee Jones wrote:
-> > On Thu, 02 Jun 2016, Brian Norris wrote:
-> > > The EC_CMD_PWM_{GET,SET}_DUTY commands allow us to control a PWM =
-that is
-> > > attached to the EC, rather than the main host SoC. The API provid=
-es
-> > > functionality-based (e.g., keyboard light, backlight) or index-ba=
-sed
-> > > addressing of the PWM(s). Duty cycles are represented by a 16-bit=
- value,
-> > > where 0 maps to 0% duty cycle and U16_MAX maps to 100%. The perio=
-d
-> > > cannot be controlled.
-> > >=20
-> > > This command set is more generic than, e.g.,
-> > > EC_CMD_PWM_{GET,SET}_KEYBOARD_BACKLIGHT and could possibly used t=
-o
-> > > replace it on future products.
-> > >=20
-> > > Let's update the command header to include the definitions.
-> > >=20
-> > > Signed-off-by: Brian Norris <briannorris@chromium.org>
-> > > ---
-> > > v2: no change
-> > >=20
-> > >  include/linux/mfd/cros_ec_commands.h | 31 ++++++++++++++++++++++=
-+++++++++
-> > >  1 file changed, 31 insertions(+)
-> > >=20
-> > > diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux=
-/mfd/cros_ec_commands.h
-> > > index 13b630c10d4c..d673575e0ada 100644
-> > > --- a/include/linux/mfd/cros_ec_commands.h
-> > > +++ b/include/linux/mfd/cros_ec_commands.h
-> > > @@ -949,6 +949,37 @@ struct ec_params_pwm_set_fan_duty {
-> > >  	uint32_t percent;
-> > >  } __packed;
-> > > =20
-> > > +#define EC_CMD_PWM_SET_DUTY 0x25
-> > > +/* 16 bit duty cycle, 65535 =3D 100% */
-> > > +#define EC_PWM_MAX_DUTY 65535
-> >=20
-> > Any reason this isn't represented in hex, like we do normally?
+> Lee,
 >=20
-> Hex would probably be clearer. I'll try to change that.
+> On Fri, Jun 17, 2016 at 1:06 AM, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wro=
+te:
+> >> Probably the reason for all of these non-kernel-isms is that this
+> >> isn't a kernel file.  From the top of the file:
+> >>
+> >>  * NOTE: This file is copied verbatim from the ChromeOS EC Open So=
+urce
+> >>  * project in an attempt to make future updates easy to make.
+> >>
+> >> So the source of truth for this file is
+> >> <https://chromium.googlesource.com/chromiumos/platform/ec/+/master=
+/include/ec_commands.h>.
+> >>
+> >> Someone could probably submit a CL to that project to make it a li=
+ttle
+> >> more kernel-ish and then we'd have to see if the EC team would acc=
+ept
+> >> such changes...
+> >
+> > Hmmm... that kinda puts me in a difficult position.  Do I except
+> > non-kernel code, which does not conform to our stands?
 >=20
-> > > +enum ec_pwm_type {
-> > > +	/* All types, indexed by board-specific enum pwm_channel */
-> > > +	EC_PWM_TYPE_GENERIC =3D 0,
-> > > +	/* Keyboard backlight */
-> > > +	EC_PWM_TYPE_KB_LIGHT,
-> > > +	/* Display backlight */
-> > > +	EC_PWM_TYPE_DISPLAY_LIGHT,
-> > > +	EC_PWM_TYPE_COUNT,
-> > > +};
-> >=20
-> > Are these comments really necessary?  I'd recommend that if your
-> > defines require comments, then they are not adequately named.  In t=
-his
-> > case however, I'd suggest that they are and the comments are
-> > superfluous.
+> What about if Brian made sure to just fully copy the latest version o=
+f
+> "cros_ec_commands.h" from the EC codebase and changed this commit
+> message to say:
 >=20
-> I don't think your rule holds water: there are definitely cases where
-> defines/enums require (or at least are better with) additional commen=
-ts.
-> Sentence-long identifier names are not very readable, but sometimes a
-> sentence of comment can help.
-
-I was generalising.  There will always be exceptions to the rule, but
-in the standard case we can be forthcoming enough with our naming
-conventions that comments aren't required.
-
-> Anyway, I think two of the three are probably unnecessary, if you rea=
-lly
-> want to ask. The first (EC_PWM_TYPE_GENERIC) seems useful.
+> Copy the latest version of "cros_ec_commands.h" from the Chrome OS EC
+> code base, which is the source of truth for this file.  See
+> <https://chromium.googlesource.com/chromiumos/platform/ec/+/master/in=
+clude/ec_commands.h>.
 >=20
-> But then, how do you suggest handling this in conjunction with your
-> kerneldoc suggestion? IIRC, kerneldoc requires that if one
-> entry/field/parameter is documented, then all most be documented. So
-> avoid kerneldoc on the enum, and just use inline comments?
+> From the commit message it would be clear that this is an external
+> file linked into the kernel for convenience.
+>=20
+>=20
+> > Naturally I'd be happier if you could try to make the code more
+> > 'kernely'.  The practices I mention above are still good ones, even=
+ if
+> > you're not writing kernel specific code.
+>=20
+> In general requesting that code from outside the kernel conform to
+> "kerneldoc" seems like a bit of a stretch.  In general having some
+> type of parse-able format for comments is nice, but I could see that
+> in the Chrome OS EC codebase it would be a bit overkill.
 
-Sounds reasonable.
+It's unfortunate that kerneldoc is named so, since I think it's a nice
+way to write structure/function headers regardless of code base and
+not overkill at all.  It's certainly harder to convince !kernel code
+to use the format, or at least easier for others to push back due to
+the fact that is has 'kernel' in the name.
+
+> Also: it would be awfully strange if we suddenly started changing the
+> coding convention of this file or we had half the file in one
+> convention and half in another.  The rest of this file is in EC
+> convention and it seems sane to keep it that way...
+
+Right.  It's also a shame we're only catching this now.  Really we
+should have had this discussion in the first instance.
+
+Taking into consideration that this file is already in the kernel and
+that it's current format is also represented, I'm willing to keep
+adding to it.  I would like to see an internal request to adopt
+so-called kerneldoc.  Not because I am wish to blindly push our
+standards to other code-bases, but because I am an advocate of the
+format in general.
 
 --=20
 Lee Jones
 Linaro STMicroelectronics Landing Team Lead
 Linaro.org =E2=94=82 Open source software for ARM SoCs
 =46ollow Linaro: Facebook | Twitter | Blog
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
