@@ -1,72 +1,106 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v3 08/20] pwm: Add PWM Capture support
-Date: Mon, 20 Jun 2016 12:14:42 +0100
-Message-ID: <20160620111442.GA4490@dell>
-References: <20160608092135.21184-1-lee.jones@linaro.org>
- <20160608092135.21184-9-lee.jones@linaro.org>
- <20160610135302.GK27142@ulmo.ba.sec>
- <20160610143854.GE1537@dell>
- <20160610163956.GA8696@ulmo.ba.sec>
+From: Javier Martinez Canillas <javier-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>
+Subject: Re: [v3,1/4] mfd: cros_ec: Add cros_ec_cmd_xfer_status helper
+Date: Mon, 20 Jun 2016 09:46:57 -0400
+Message-ID: <3eac0aed-58ed-8376-dc29-ab374c67ebc0@osg.samsung.com>
+References: <1466193495-95801-2-git-send-email-briannorris@chromium.org>
+ <20160617214151.GA1400@roeck-us.net> <20160618010855.GA67034@google.com>
+ <5765805A.5070407@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f48.google.com ([74.125.82.48]:36385 "EHLO
-	mail-wm0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932502AbcFTLN6 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jun 2016 07:13:58 -0400
-Received: by mail-wm0-f48.google.com with SMTP id f126so64713767wma.1
-        for <linux-pwm@vger.kernel.org>; Mon, 20 Jun 2016 04:13:57 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20160610163956.GA8696@ulmo.ba.sec>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <5765805A.5070407-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Brian Norris <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Stephen Barber <smbarber-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Benson Leung <bleung-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Enric Balletbo <enric.balletbo-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, Randall Spangler <rspangler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Shawn Nematbakhsh <shawnn-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Todd Broch <tbroch-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Gwendal Grignou <gwendal-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, maxime.coquelin@st.com, patrice.chotard@st.com, robh+dt@kernel.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
 
-On Fri, 10 Jun 2016, Thierry Reding wrote:
+Hello Guenter, Brian
 
-> On Fri, Jun 10, 2016 at 03:38:54PM +0100, Lee Jones wrote:
-> > On Fri, 10 Jun 2016, Thierry Reding wrote:
-> >=20
-> > > On Wed, Jun 08, 2016 at 10:21:23AM +0100, Lee Jones wrote:
-> > > > Supply a PWM Capture call-back Op in order to pass back
-> > > > information obtained by running analysis on PWM a signal.
-> > > > This would normally (at least during testing) be called from
-> > > > the Sysfs routines with a view to printing out PWM Capture
-> > > > data which has been encoded into a string.
-> > > >=20
-> > > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > > > ---
-> > > >  drivers/pwm/core.c  | 27 +++++++++++++++++++++++++++
-> > > >  include/linux/pwm.h | 25 +++++++++++++++++++++++++
-> > > >  2 files changed, 52 insertions(+)
-> >=20
-> > So do you want me to re-spin?
-> >=20
-> > Before you said you'd make adjustments on patches 8 through 10, so =
-I'm
-> > a little confused.
->=20
-> Yeah, I only realized that it might be quicker to make these adjustme=
-nts
-> myself when I had finished looking at patch 10. I've pushed the adjus=
-ted
-> patches to a for-4.8/pwm-capture branch, so if you're going to re-spi=
-n
-> the remainder of the patches, perhaps that could be your base?
->=20
-> 	https://git.kernel.org/cgit/linux/kernel/git/thierry.reding/linux-pw=
-m.git/log/?h=3Dfor-4.8/pwm-capture
->=20
-> If you don't have any objections I can put those into linux-next earl=
-y
-> next week.
+On 06/18/2016 01:09 PM, Guenter Roeck wrote:
+> On 06/17/2016 06:08 PM, Brian Norris wrote:
+>> On Fri, Jun 17, 2016 at 02:41:51PM -0700, Guenter Roeck wrote:
+>>> On Fri, Jun 17, 2016 at 12:58:12PM -0700, Brian Norris wrote:
+>>>> +int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
+>>>> +                struct cros_ec_command *msg)
+>>>> +{
+>>>> +    int ret;
+>>>> +
+>>>> +    ret = cros_ec_cmd_xfer(ec_dev, msg);
+>>>> +    if (ret < 0)
+>>>> +        dev_err(ec_dev->dev, "Command xfer error (err:%d)\n", ret);
+>>>> +    else if (msg->result != EC_RES_SUCCESS)
+>>>> +        return -EECRESULT - msg->result;
+>>>
+>>> I have been wondering about the error return codes here, and if they should be
+>>> converted to standard Linux error codes. For example, I just hit error -1003
+>>> with a driver I am working on. This translates to EC_RES_INVALID_PARAM, or,
+>>> in Linux terms, -EINVAL. I think it would be better to use standard error
+>>> codes, especially since some of the errors are logged.
+>>
 
-That's fine by me.  I will rebase.
+Agreed, specially since drivers may (wrongly) propagate whatever is returned
+by this function to higher layers where the ChromeOS EC firmware error codes
+makes no sense. So that will be a bug and can increase the cognitive load of
+getting some weird error codes in core kernel code and developers may wonder
+from where those came from until finally find that a EC driver returned that.
 
---=20
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-=46ollow Linaro: Facebook | Twitter | Blog
+>> How do you propose we do that? Do all of the following become EINVAL?
+>>
+
+Yes, I would just do that.
+
+The idea of this helper is to remove duplicated code and AFAICT what most EC
+drivers do is something similar to the following:
+
+        ret = cros_ec_cmd_xfer(ec, msg);
+        if (ret < 0)
+	   	return ret;
+
+        if (msg->result != EC_RES_SUCCESS) {
+                dev_dbg(ec->dev, "EC result %d\n", msg->result);
+                return -EINVAL;
+        }
+
+So in practice what most drivers really care is if the result was successful
+or not, I don't see specific EC error handling in the EC drivers.  The real
+EC error code is still in the message anyways so drivers that do cares about
+the real EC error can look at msg->result instead.
+
+>>          EC_RES_INVALID_COMMAND
+> 
+>     -EOPNOTSUPP
+> 
+>>          EC_RES_INVALID_PARAM
+> 
+>     -EINVAL or -EBADMSG
+> 
+>>          EC_RES_INVALID_VERSION
+> 
+>     -EPROTO or -EBADR or -EBADE or -EBADRQC or -EPROTOOPT
+> 
+>>          EC_RES_INVALID_HEADER
+> 
+>     -EPROTO or -EBADR or -EBADE
+> 
+> Doesn't look that bad to me. Also, the raw error could still be logged,
+> for example with dev_dbg().
+>
+
+Yes, I think that adding a dev_dbg() with the real EC error code should
+be enough, that's basically what drivers do since they can't propagate
+the EC error to higher layers anyways.
+
+> Guenter
+> 
+>>
+
+Best regards,
+-- 
+Javier Martinez Canillas
+Open Source Group
+Samsung Research America
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
