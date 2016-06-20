@@ -1,106 +1,54 @@
-From: Javier Martinez Canillas <javier-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>
-Subject: Re: [v3,1/4] mfd: cros_ec: Add cros_ec_cmd_xfer_status helper
-Date: Mon, 20 Jun 2016 09:46:57 -0400
-Message-ID: <3eac0aed-58ed-8376-dc29-ab374c67ebc0@osg.samsung.com>
-References: <1466193495-95801-2-git-send-email-briannorris@chromium.org>
- <20160617214151.GA1400@roeck-us.net> <20160618010855.GA67034@google.com>
- <5765805A.5070407@roeck-us.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <5765805A.5070407-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Brian Norris <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Stephen Barber <smbarber-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Benson Leung <bleung-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Enric Balletbo <enric.balletbo-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, Randall Spangler <rspangler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Shawn Nematbakhsh <shawnn-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Todd Broch <tbroch-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Gwendal Grignou <gwendal-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+From: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
+Subject: [PATCH v3 0/3] pwm support for Broadcom iProc SoC's
+Date: Mon, 20 Jun 2016 10:14:31 -0400
+Message-ID: <1466432074-7780-1-git-send-email-yendapally.reddy@broadcom.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pf0-f179.google.com ([209.85.192.179]:36833 "EHLO
+	mail-pf0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754257AbcFTOPW (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Jun 2016 10:15:22 -0400
+Received: by mail-pf0-f179.google.com with SMTP id t190so54677617pfb.3
+        for <linux-pwm@vger.kernel.org>; Mon, 20 Jun 2016 07:14:48 -0700 (PDT)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Jon Mason <jonmason@broadcom.com>, Russell King <linux@arm.linux.org.uk>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org, Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
 
-Hello Guenter, Brian
+This patchset contains the pwm support for the Broadcom's iProc SoC's.
 
-On 06/18/2016 01:09 PM, Guenter Roeck wrote:
-> On 06/17/2016 06:08 PM, Brian Norris wrote:
->> On Fri, Jun 17, 2016 at 02:41:51PM -0700, Guenter Roeck wrote:
->>> On Fri, Jun 17, 2016 at 12:58:12PM -0700, Brian Norris wrote:
->>>> +int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
->>>> +                struct cros_ec_command *msg)
->>>> +{
->>>> +    int ret;
->>>> +
->>>> +    ret = cros_ec_cmd_xfer(ec_dev, msg);
->>>> +    if (ret < 0)
->>>> +        dev_err(ec_dev->dev, "Command xfer error (err:%d)\n", ret);
->>>> +    else if (msg->result != EC_RES_SUCCESS)
->>>> +        return -EECRESULT - msg->result;
->>>
->>> I have been wondering about the error return codes here, and if they should be
->>> converted to standard Linux error codes. For example, I just hit error -1003
->>> with a driver I am working on. This translates to EC_RES_INVALID_PARAM, or,
->>> in Linux terms, -EINVAL. I think it would be better to use standard error
->>> codes, especially since some of the errors are logged.
->>
+The first patch provides the documentation details and the
+second patch contains the controller support details. The third patch
+contains the enable method for Northstar Plus SoC.
 
-Agreed, specially since drivers may (wrongly) propagate whatever is returned
-by this function to higher layers where the ChromeOS EC firmware error codes
-makes no sense. So that will be a bug and can increase the cognitive load of
-getting some weird error codes in core kernel code and developers may wonder
-from where those came from until finally find that a EC driver returned that.
+This patch series has been tested on NSP bcm958625HR board.
+The pwm is not enabled for this board as the pins are open and not used.
 
->> How do you propose we do that? Do all of the following become EINVAL?
->>
+This patch series is based on v4.7.0-rc1 and is available from github
+repo: https://github.com/Broadcom/cygnus-linux.git
+branch: iproc-pwm-v3
 
-Yes, I would just do that.
 
-The idea of this helper is to remove duplicated code and AFAICT what most EC
-drivers do is something similar to the following:
+Changes since v2
+Rebased on v4.7.0-rc1
 
-        ret = cros_ec_cmd_xfer(ec, msg);
-        if (ret < 0)
-	   	return ret;
+Changes since v1
+Addressed the review comments from Thierry
+ 1. Use separate driver for iProc SoC's.
+ 2. Added Robs ack to the Documentation patch
 
-        if (msg->result != EC_RES_SUCCESS) {
-                dev_dbg(ec->dev, "EC result %d\n", msg->result);
-                return -EINVAL;
-        }
+Yendapally Reddy Dhananjaya Reddy (3):
+  Documentation: dt: Add Broadcom iproc pwm controller binding
+  pwm: iproc: Add support for Broadcom iproc pwm controller
+  ARM: dts: NSP: Add PWM Support to DT
 
-So in practice what most drivers really care is if the result was successful
-or not, I don't see specific EC error handling in the EC drivers.  The real
-EC error code is still in the message anyways so drivers that do cares about
-the real EC error can look at msg->result instead.
+ .../devicetree/bindings/pwm/brcm,iproc-pwm.txt     |  21 ++
+ arch/arm/boot/dts/bcm-nsp.dtsi                     |   8 +
+ drivers/pwm/Kconfig                                |  10 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-bcm-iproc.c                        | 327 +++++++++++++++++++++
+ 5 files changed, 367 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/brcm,iproc-pwm.txt
+ create mode 100644 drivers/pwm/pwm-bcm-iproc.c
 
->>          EC_RES_INVALID_COMMAND
-> 
->     -EOPNOTSUPP
-> 
->>          EC_RES_INVALID_PARAM
-> 
->     -EINVAL or -EBADMSG
-> 
->>          EC_RES_INVALID_VERSION
-> 
->     -EPROTO or -EBADR or -EBADE or -EBADRQC or -EPROTOOPT
-> 
->>          EC_RES_INVALID_HEADER
-> 
->     -EPROTO or -EBADR or -EBADE
-> 
-> Doesn't look that bad to me. Also, the raw error could still be logged,
-> for example with dev_dbg().
->
-
-Yes, I think that adding a dev_dbg() with the real EC error code should
-be enough, that's basically what drivers do since they can't propagate
-the EC error to higher layers anyways.
-
-> Guenter
-> 
->>
-
-Best regards,
 -- 
-Javier Martinez Canillas
-Open Source Group
-Samsung Research America
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2.1.0
