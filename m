@@ -1,110 +1,45 @@
-From: Vladimir Zapolskiy <vz@mleia.com>
-Subject: Re: [PATCH] pwm: lpc32xx: Set PWM_PIN_LEVEL bit in lpc32xx_pwm_disable
-Date: Tue, 21 Jun 2016 05:11:07 +0300
-Message-ID: <b499570f-e624-cbe1-4fca-44ba0e701054@mleia.com>
-References: <1464982677-24883-1-git-send-email-slemieux.tyco@gmail.com>
+From: Rusty Russell <rusty@rustcorp.com.au>
+Subject: Re: [PATCH 10/12] lguest: Only descend into lguest directory when
+ CONFIG_LGUEST is set
+Date: Tue, 21 Jun 2016 06:14:30 +0930
+Message-ID: <87a8iflhe9.fsf@rustcorp.com.au>
+References: <20160613200211.14790-1-afd@ti.com>
+ <20160613200211.14790-11-afd@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1464982677-24883-1-git-send-email-slemieux.tyco@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Sylvain Lemieux <slemieux.tyco@gmail.com>
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+In-Reply-To: <20160613200211.14790-11-afd@ti.com>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+To: Russell King <linux@armlinux.org.uk>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Sebastian Reichel <sre@kernel.org>, Wolfram Sang <wsa@the-dreams.de>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <j.anaszewski@samsung.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, Samuel Ortiz <sameo@linux.intel.com>, Ingo Molnar <mingo@kernel.org>
+Cc: linux-pwm@vger.kernel.org, lguest@lists.ozlabs.org, linux-wireless@vger.kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, "Andrew F . Davis" <afd@ti.com>, linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-leds@vger.kernel.org, linux-media@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Sylvain,
-
-On 03.06.2016 22:37, Sylvain Lemieux wrote:
-> From: Sylvain Lemieux <slemieux@tycoint.com>
-> 
-> If the PWM_PIN_LEVEL bit is setup to 1 in the bootloader, when the kernel
-> disable the PWM, the PWM output is always set as a logic 1.
-> 
-> Prior to commit 08ee77b5a5de27ad63c92262ebcb4efe0da93b58,
-> the PWM_PIN_LEVEL bit was always clear when the PWM was disable
-> and a 0 logic level was apply to the output.
-> 
-> According to the LPC32x0 User Manual [1],
-> the default value for bit 30 (PWM_PIN_LEVEL) is 0.
-> 
-> This change initialize the pin level to 0 (default value) and
-> update the register value accordingly during the disable process.
-> 
-> [1] http://www.nxp.com/documents/user_manual/UM10326.pdf
-> 
-> Signed-off-by: Sylvain Lemieux <slemieux@tycoint.com>
-
-It looks like a pin control setting, but because it depends
-on PWM enabled/disabled status, I suppose it is good enough to
-manage it from the PWM driver.
-
-I think here a new optional DTS property should be introduced,
-which if present indicates that PWM_OUT pin value is high when
-PWM is disabled. And if the property is not found then
-PWMx_PIN_LEVEL is set to 0 on driver probe.
-
-By convention the property name should be prefixed by "nxp,",
-what name is good? May be "nxp,pwm-disabled-level-high" ?
-Or add a property "nxp,pwm-disabled-level" with valid values 0/1?
-
-Also note someone may want to switch the default behaviour
-in runtime, but this feature may be added later on.
-
-> ---
->  drivers/pwm/pwm-lpc32xx.c | 12 +++++++++++-
->  1 file changed, 11 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pwm/pwm-lpc32xx.c b/drivers/pwm/pwm-lpc32xx.c
-> index 4d470c1..dbf93a1 100644
-> --- a/drivers/pwm/pwm-lpc32xx.c
-> +++ b/drivers/pwm/pwm-lpc32xx.c
-> @@ -22,9 +22,11 @@ struct lpc32xx_pwm_chip {
->  	struct pwm_chip chip;
->  	struct clk *clk;
->  	void __iomem *base;
-> +	unsigned int pin_state;
->  };
->  
->  #define PWM_ENABLE	BIT(31)
-> +#define PWM_PIN_LEVEL	BIT(30)
->  
->  #define to_lpc32xx_pwm_chip(_chip) \
->  	container_of(_chip, struct lpc32xx_pwm_chip, chip)
-> @@ -85,7 +87,14 @@ static void lpc32xx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->  	u32 val;
->  
->  	val = readl(lpc32xx->base + (pwm->hwpwm << 2));
-> -	val &= ~PWM_ENABLE;
-> +	val &= ~(PWM_ENABLE | PWM_PIN_LEVEL);
-> +
-> +	/*
-> +	 * When the PWM is disable, we have to ensure the output is configured
-> +	 * correctly:
-> +	 */
-> +	if(lpc32xx->pin_state)
-> +		val |= PWM_PIN_LEVEL;
->  	writel(val, lpc32xx->base + (pwm->hwpwm << 2));
->  
->  	clk_disable_unprepare(lpc32xx->clk);
-> @@ -121,6 +130,7 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
->  	lpc32xx->chip.ops = &lpc32xx_pwm_ops;
->  	lpc32xx->chip.npwm = 1;
->  	lpc32xx->chip.base = -1;
-> +	lpc32xx->pin_state = 0;
->  
->  	ret = pwmchip_add(&lpc32xx->chip);
->  	if (ret < 0) {
-> 
-
---
-With best wishes,
-Vladimir
+IkFuZHJldyBGLiBEYXZpcyIgPGFmZEB0aS5jb20+IHdyaXRlczoKPiBXaGVuIENPTkZJR19MR1VF
+U1QgaXMgbm90IHNldCBtYWtlIHdpbGwgc3RpbGwgZGVzY2VuZCBpbnRvIHRoZSBsZ3Vlc3QKPiBk
+aXJlY3RvcnkgYnV0IG5vdGhpbmcgd2lsbCBiZSBidWlsdC4gVGhpcyBwcm9kdWNlcyB1bm5lZWRl
+ZCBidWlsZAo+IGFydGlmYWN0cyBhbmQgbWVzc2FnZXMgaW4gYWRkaXRpb24gdG8gc2xvd2luZyB0
+aGUgYnVpbGQuIEZpeCB0aGlzIGhlcmUuCj4KPiBTaWduZWQtb2ZmLWJ5OiBBbmRyZXcgRi4gRGF2
+aXMgPGFmZEB0aS5jb20+Cj4gLS0tCj4gIGRyaXZlcnMvTWFrZWZpbGUgfCAyICstCj4gIDEgZmls
+ZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQoKQXBwbGllZCwKClRoYW5r
+cyEKUnVzdHkuCgo+Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvTWFrZWZpbGUgYi9kcml2ZXJzL01h
+a2VmaWxlCj4gaW5kZXggMTkzMDVlMC4uYjE3OGUyZiAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL01h
+a2VmaWxlCj4gKysrIGIvZHJpdmVycy9NYWtlZmlsZQo+IEBAIC0xMjIsNyArMTIyLDcgQEAgb2Jq
+LSQoQ09ORklHX0FDQ0VTU0lCSUxJVFkpCSs9IGFjY2Vzc2liaWxpdHkvCj4gIG9iai0kKENPTkZJ
+R19JU0ROKQkJKz0gaXNkbi8KPiAgb2JqLSQoQ09ORklHX0VEQUMpCQkrPSBlZGFjLwo+ICBvYmot
+JChDT05GSUdfRUlTQSkJCSs9IGVpc2EvCj4gLW9iai15CQkJCSs9IGxndWVzdC8KPiArb2JqLSQo
+Q09ORklHX0xHVUVTVCkJCSs9IGxndWVzdC8KPiAgb2JqLSQoQ09ORklHX0NQVV9GUkVRKQkJKz0g
+Y3B1ZnJlcS8KPiAgb2JqLSQoQ09ORklHX0NQVV9JRExFKQkJKz0gY3B1aWRsZS8KPiAgb2JqLXkJ
+CQkJKz0gbW1jLwo+IC0tIAo+IDIuOC4zCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCkxpbnV4cHBjLWRldiBtYWlsaW5nIGxpc3QKTGludXhwcGMtZGV2QGxp
+c3RzLm96bGFicy5vcmcKaHR0cHM6Ly9saXN0cy5vemxhYnMub3JnL2xpc3RpbmZvL2xpbnV4cHBj
+LWRldg==
