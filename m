@@ -1,411 +1,49 @@
-From: Scott Branden <scott.branden@broadcom.com>
-Subject: Re: [PATCH v3 2/3] pwm: iproc: Add support for Broadcom iproc pwm
- controller
-Date: Mon, 20 Jun 2016 14:16:59 -0700
-Message-ID: <57685D4B.3010409@broadcom.com>
-References: <1466432074-7780-1-git-send-email-yendapally.reddy@broadcom.com>
- <1466432074-7780-3-git-send-email-yendapally.reddy@broadcom.com>
+From: "Andrew F. Davis" <afd@ti.com>
+Subject: [PATCH] leds: Add no-op gpio_led_register_device when LED subsystem
+ is disabled
+Date: Mon, 20 Jun 2016 17:13:40 -0500
+Message-ID: <57686A94.2010704@ti.com>
+References: <20160613200211.14790-1-afd@ti.com>
+ <20160613200211.14790-13-afd@ti.com> <5760FA52.7010806@samsung.com>
+ <57647DBD.2010406@ti.com> <57679E38.3080901@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1466432074-7780-3-git-send-email-yendapally.reddy@broadcom.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Jon Mason <jonmason@broadcom.com>, Russell King <linux@arm.linux.org.uk>
-Cc: linux-pwm@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+In-Reply-To: <57679E38.3080901@samsung.com>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+To: Jacek Anaszewski <j.anaszewski@samsung.com>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>, Wolfram Sang <wsa@the-dreams.de>, Linus Walleij <linus.walleij@linaro.org>, Sebastian Reichel <sre@kernel.org>, linux-i2c@vger.kernel.org, Ingo Molnar <mingo@kernel.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, lguest@lists.ozlabs.org, Samuel Ortiz <sameo@linux.intel.com>, Russell King <linux@armlinux.org.uk>, linux-leds@vger.kernel.org, linux-mmc@vger.kernel.org, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-gpio@vger.kernel.org, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Dhananjaya,
-
-One minor comment inline.
-
-On 16-06-20 07:14 AM, Yendapally Reddy Dhananjaya Reddy wrote:
-> Add support for the PWM controller present in Broadcom's iProc
-> family of SoCs. This driver is derived from the pwm-bcm-kona
-> driver, with changes to the register offsets and bit positions.
-> It has been tested on the  Northstar+ bcm958625HR board.
->
-> Signed-off-by: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
-> ---
->   drivers/pwm/Kconfig         |  10 ++
->   drivers/pwm/Makefile        |   1 +
->   drivers/pwm/pwm-bcm-iproc.c | 327 ++++++++++++++++++++++++++++++++++++++++++++
->   3 files changed, 338 insertions(+)
->   create mode 100644 drivers/pwm/pwm-bcm-iproc.c
->
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index c182efc..d298ebd 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -74,6 +74,16 @@ config PWM_ATMEL_TCB
->   	  To compile this driver as a module, choose M here: the module
->   	  will be called pwm-atmel-tcb.
->
-> +config PWM_BCM_IPROC
-> +	tristate "iProc PWM support"
-> +	depends on ARCH_BCM_IPROC
-depends on ARCH_BCM_IPROC || COMPILE_TEST
-> +	help
-> +	  Generic PWM framework driver for Broadcom iProc PWM block. This
-> +	  block is used in Broadcom iProc SoC's.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called pwm-bcm-iproc.
-> +
->   config PWM_BCM_KONA
->   	tristate "Kona PWM support"
->   	depends on ARCH_BCM_MOBILE
-> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> index dd35bc1..a196d79 100644
-> --- a/drivers/pwm/Makefile
-> +++ b/drivers/pwm/Makefile
-> @@ -4,6 +4,7 @@ obj-$(CONFIG_PWM_AB8500)	+= pwm-ab8500.o
->   obj-$(CONFIG_PWM_ATMEL)		+= pwm-atmel.o
->   obj-$(CONFIG_PWM_ATMEL_HLCDC_PWM)	+= pwm-atmel-hlcdc.o
->   obj-$(CONFIG_PWM_ATMEL_TCB)	+= pwm-atmel-tcb.o
-> +obj-$(CONFIG_PWM_BCM_IPROC)	+= pwm-bcm-iproc.o
->   obj-$(CONFIG_PWM_BCM_KONA)	+= pwm-bcm-kona.o
->   obj-$(CONFIG_PWM_BCM2835)	+= pwm-bcm2835.o
->   obj-$(CONFIG_PWM_BERLIN)	+= pwm-berlin.o
-> diff --git a/drivers/pwm/pwm-bcm-iproc.c b/drivers/pwm/pwm-bcm-iproc.c
-> new file mode 100644
-> index 0000000..952c457
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-bcm-iproc.c
-> @@ -0,0 +1,327 @@
-> +/*
-> + * Copyright (C) 2016 Broadcom
-> + *
-> + * This program is free software; you can redistribute it and/or
-> + * modify it under the terms of the GNU General Public License as
-> + * published by the Free Software Foundation version 2.
-> + *
-> + * This program is distributed "as is" WITHOUT ANY WARRANTY of any
-> + * kind, whether express or implied; without even the implied warranty
-> + * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/delay.h>
-> +#include <linux/err.h>
-> +#include <linux/io.h>
-> +#include <linux/math64.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pwm.h>
-> +
-> +#define IPROC_PWM_CTRL_OFFSET			(0x00)
-> +#define IPROC_PWM_CTRL_TYPE_SHIFT(chan)		(15 + (chan))
-> +#define IPROC_PWM_CTRL_POLARITY_SHIFT(chan)	(8 + (chan))
-> +#define IPROC_PWM_CTRL_EN_SHIFT(chan)		(chan)
-> +
-> +#define IPROC_PWM_PERIOD_OFFSET(chan)		(0x04 + ((chan) << 3))
-> +#define IPROC_PWM_PERIOD_MIN			(0x02)
-> +#define IPROC_PWM_PERIOD_MAX			(0xffff)
-> +
-> +#define IPROC_PWM_DUTY_CYCLE_OFFSET(chan)	(0x08 + ((chan) << 3))
-> +#define IPROC_PWM_DUTY_CYCLE_MIN		(0x00)
-> +#define IPROC_PWM_DUTY_CYCLE_MAX		(0xffff)
-> +
-> +#define IPROC_PWM_PRESCALE_OFFSET		(0x24)
-> +#define IPROC_PWM_PRESCALE_BITS			(0x06)
-> +#define IPROC_PWM_PRESCALE_SHIFT(chan)		((3 - (chan)) *	\
-> +						IPROC_PWM_PRESCALE_BITS)
-> +#define IPROC_PWM_PRESCALE_MASK(chan)		(IPROC_PWM_PRESCALE_MAX << \
-> +						IPROC_PWM_PRESCALE_SHIFT(chan))
-> +#define IPROC_PWM_PRESCALE_MIN			(0x00)
-> +#define IPROC_PWM_PRESCALE_MAX			(0x3f)
-> +
-> +#define IPROC_PWM_CHANNEL_COUNT			(0x04)
-> +
-> +struct iproc_pwmc {
-> +	struct pwm_chip chip;
-> +	void __iomem *base;
-> +	struct clk *clk;
-> +};
-> +
-> +static inline struct iproc_pwmc *to_iproc_pwmc(struct pwm_chip *_chip)
-> +{
-> +	return container_of(_chip, struct iproc_pwmc, chip);
-> +}
-> +
-> +static void iproc_pwmc_unset_enable_bit(struct iproc_pwmc *ip, u32 chan)
-> +{
-> +	unsigned int value = readl(ip->base + IPROC_PWM_CTRL_OFFSET);
-> +
-> +	value &= ~(1 << IPROC_PWM_CTRL_EN_SHIFT(chan));
-> +	writel(value, ip->base + IPROC_PWM_CTRL_OFFSET);
-> +
-> +	/*
-> +	 * There must be a min 400ns delay between clearing trigger and setting
-> +	 * it. Failing to do this may result in no PWM signal.
-> +	 */
-> +	ndelay(400);
-> +}
-> +
-> +static void iproc_pwmc_set_enable_bit(struct iproc_pwmc *ip, unsigned int chan)
-> +{
-> +	unsigned int value = readl(ip->base + IPROC_PWM_CTRL_OFFSET);
-> +
-> +	/* Set trigger bit to apply new settings */
-> +	value |= 1 << IPROC_PWM_CTRL_EN_SHIFT(chan);
-> +	writel(value, ip->base + IPROC_PWM_CTRL_OFFSET);
-> +
-> +	/* Trigger bit must be held high for at least 400 ns. */
-> +	ndelay(400);
-> +}
-> +
-> +static int iproc_pwmc_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> +			     int duty_ns, int period_ns, bool config_apply)
-> +{
-> +	unsigned long prescale = IPROC_PWM_PRESCALE_MIN;
-> +	struct iproc_pwmc *ip = to_iproc_pwmc(chip);
-> +	unsigned int value, chan = pwm->hwpwm;
-> +	unsigned long period_cnt, duty_cnt;
-> +	u64 val, div, rate;
-> +
-> +	rate = clk_get_rate(ip->clk);
-> +	if (!rate) {
-> +		dev_err(pwm->chip->dev, "pwm clock has no frequency\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/*
-> +	 * Find period count, duty count and prescale to suit duty_ns and
-> +	 * period_ns. This is done according to formulas described below:
-> +	 *
-> +	 * period_ns = 10^9 * (PRESCALE + 1) * PC / PWM_CLK_RATE
-> +	 * duty_ns = 10^9 * (PRESCALE + 1) * DC / PWM_CLK_RATE
-> +	 *
-> +	 * PC = (PWM_CLK_RATE * period_ns) / (10^9 * (PRESCALE + 1))
-> +	 * DC = (PWM_CLK_RATE * duty_ns) / (10^9 * (PRESCALE + 1))
-> +	 */
-> +	while (1) {
-> +		div = 1000000000;
-> +		div *= 1 + prescale;
-> +		val = rate * period_ns;
-> +		period_cnt = div64_u64(val, div);
-> +		val = rate * duty_ns;
-> +		duty_cnt = div64_u64(val, div);
-> +
-> +		if (period_cnt < IPROC_PWM_PERIOD_MIN ||
-> +				duty_cnt < IPROC_PWM_DUTY_CYCLE_MIN)
-> +			return -EINVAL;
-> +
-> +		if (period_cnt <= IPROC_PWM_PERIOD_MAX &&
-> +				 duty_cnt <= IPROC_PWM_DUTY_CYCLE_MAX)
-> +			break;
-> +
-> +		/* Otherwise, increase prescale and recalculate counts */
-> +		if (++prescale > IPROC_PWM_PRESCALE_MAX)
-> +			return -EINVAL;
-> +	}
-> +
-> +	/*
-> +	 * Don't apply settings if disabled. The period and duty cycle are
-> +	 * always calculated above to ensure the new values are
-> +	 * validated immediately instead of on enable.
-> +	 */
-> +	if (pwm_is_enabled(pwm) || config_apply) {
-> +		iproc_pwmc_unset_enable_bit(ip, chan);
-> +
-> +		value = readl(ip->base + IPROC_PWM_PRESCALE_OFFSET);
-> +		value &= ~IPROC_PWM_PRESCALE_MASK(chan);
-> +		value |= prescale << IPROC_PWM_PRESCALE_SHIFT(chan);
-> +
-> +		writel(value, ip->base + IPROC_PWM_PRESCALE_OFFSET);
-> +		writel(period_cnt, ip->base + IPROC_PWM_PERIOD_OFFSET(chan));
-> +		writel(duty_cnt, ip->base + IPROC_PWM_DUTY_CYCLE_OFFSET(chan));
-> +
-> +		iproc_pwmc_set_enable_bit(ip, chan);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int iproc_pwmc_set_polarity(struct pwm_chip *chip,
-> +				   struct pwm_device *pwm,
-> +				   enum pwm_polarity polarity)
-> +{
-> +	struct iproc_pwmc *ip = to_iproc_pwmc(chip);
-> +	unsigned int chan = pwm->hwpwm;
-> +	unsigned int value;
-> +	int ret;
-> +
-> +	ret = clk_prepare_enable(ip->clk);
-> +	if (ret < 0) {
-> +		dev_err(chip->dev, "failed to enable clock: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	iproc_pwmc_unset_enable_bit(ip, chan);
-> +
-> +	value = readl(ip->base + IPROC_PWM_CTRL_OFFSET);
-> +	if (polarity == PWM_POLARITY_NORMAL)
-> +		value |= 1 << IPROC_PWM_CTRL_POLARITY_SHIFT(chan);
-> +	else
-> +		value &= ~(1 << IPROC_PWM_CTRL_POLARITY_SHIFT(chan));
-> +	writel(value, ip->base + IPROC_PWM_CTRL_OFFSET);
-> +
-> +	iproc_pwmc_set_enable_bit(ip, chan);
-> +
-> +	clk_disable_unprepare(ip->clk);
-> +
-> +	return 0;
-> +}
-> +
-> +static int iproc_pwmc_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-> +{
-> +	struct iproc_pwmc *ip = to_iproc_pwmc(chip);
-> +	int ret;
-> +
-> +	ret = clk_prepare_enable(ip->clk);
-> +	if (ret < 0) {
-> +		dev_err(chip->dev, "failed to enable clock: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	ret = iproc_pwmc_config(chip, pwm, pwm_get_duty_cycle(pwm),
-> +					pwm_get_period(pwm), true);
-> +	if (ret < 0) {
-> +		clk_disable_unprepare(ip->clk);
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void iproc_pwmc_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-> +{
-> +	struct iproc_pwmc *ip = to_iproc_pwmc(chip);
-> +	unsigned int chan = pwm->hwpwm;
-> +	unsigned int value;
-> +
-> +	iproc_pwmc_unset_enable_bit(ip, chan);
-> +
-> +	writel(0, ip->base + IPROC_PWM_DUTY_CYCLE_OFFSET(chan));
-> +	writel(0, ip->base + IPROC_PWM_PERIOD_OFFSET(chan));
-> +
-> +	/* Set prescale to 0 for this channel */
-> +	value = readl(ip->base + IPROC_PWM_PRESCALE_OFFSET);
-> +	value &= ~IPROC_PWM_PRESCALE_MASK(chan);
-> +	writel(value, ip->base + IPROC_PWM_PRESCALE_OFFSET);
-> +
-> +	iproc_pwmc_set_enable_bit(ip, chan);
-> +
-> +	clk_disable_unprepare(ip->clk);
-> +}
-> +
-> +static int iproc_pwmc_config_check(struct pwm_chip *chip,
-> +				    struct pwm_device *pwm,
-> +				    int duty_ns, int period_ns)
-> +{
-> +	return iproc_pwmc_config(chip, pwm, duty_ns, period_ns, false);
-> +}
-> +
-> +static const struct pwm_ops iproc_pwm_ops = {
-> +	.config = iproc_pwmc_config_check,
-> +	.set_polarity = iproc_pwmc_set_polarity,
-> +	.enable = iproc_pwmc_enable,
-> +	.disable = iproc_pwmc_disable,
-> +	.owner = THIS_MODULE,
-> +};
-> +
-> +static int iproc_pwmc_probe(struct platform_device *pdev)
-> +{
-> +	struct iproc_pwmc *ip;
-> +	struct resource *res;
-> +	unsigned int value;
-> +	unsigned int chan;
-> +	int ret;
-> +
-> +	ip = devm_kzalloc(&pdev->dev, sizeof(*ip), GFP_KERNEL);
-> +	if (ip == NULL)
-> +		return -ENOMEM;
-> +
-> +	platform_set_drvdata(pdev, ip);
-> +
-> +	ip->chip.dev = &pdev->dev;
-> +	ip->chip.ops = &iproc_pwm_ops;
-> +	ip->chip.base = -1;
-> +	ip->chip.npwm = IPROC_PWM_CHANNEL_COUNT;
-> +	ip->chip.of_xlate = of_pwm_xlate_with_flags;
-> +	ip->chip.of_pwm_n_cells = 3;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	ip->base = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(ip->base))
-> +		return PTR_ERR(ip->base);
-> +
-> +	ip->clk = devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(ip->clk)) {
-> +		dev_err(&pdev->dev, "failed to get clock: %ld\n",
-> +			PTR_ERR(ip->clk));
-> +		return PTR_ERR(ip->clk);
-> +	}
-> +
-> +	ret = clk_prepare_enable(ip->clk);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed to enable clock: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	/* Set full drive and normal polarity for all channels */
-> +	value = readl(ip->base + IPROC_PWM_CTRL_OFFSET);
-> +	for (chan = 0; chan < ip->chip.npwm; chan++) {
-> +		value &= ~(1 << IPROC_PWM_CTRL_TYPE_SHIFT(chan));
-> +		value |= 1 << IPROC_PWM_CTRL_POLARITY_SHIFT(chan);
-> +	}
-> +	writel(value, ip->base + IPROC_PWM_CTRL_OFFSET);
-> +
-> +	clk_disable_unprepare(ip->clk);
-> +
-> +	ret = pwmchip_add(&ip->chip);
-> +	if (ret < 0)
-> +		dev_err(&pdev->dev, "failed to add PWM chip: %d\n", ret);
-> +
-> +	return ret;
-> +}
-> +
-> +static int iproc_pwmc_remove(struct platform_device *pdev)
-> +{
-> +	struct iproc_pwmc *ip = platform_get_drvdata(pdev);
-> +	unsigned int chan;
-> +
-> +	for (chan = 0; chan < ip->chip.npwm; chan++)
-> +		if (pwm_is_enabled(&ip->chip.pwms[chan]))
-> +			clk_disable_unprepare(ip->clk);
-> +
-> +	return pwmchip_remove(&ip->chip);
-> +}
-> +
-> +static const struct of_device_id bcm_iproc_pwmc_dt[] = {
-> +	{ .compatible = "brcm,iproc-pwm" },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, bcm_iproc_pwmc_dt);
-> +
-> +static struct platform_driver iproc_pwmc_driver = {
-> +	.driver = {
-> +		.name = "bcm-iproc-pwm",
-> +		.of_match_table = bcm_iproc_pwmc_dt,
-> +	},
-> +	.probe = iproc_pwmc_probe,
-> +	.remove = iproc_pwmc_remove,
-> +};
-> +module_platform_driver(iproc_pwmc_driver);
-> +
-> +MODULE_AUTHOR("Broadcom Corporation");
-> +MODULE_DESCRIPTION("Broadcom iProc PWM driver");
-> +MODULE_LICENSE("GPL v2");
->
+U29tZSBzeXN0ZW1zIHVzZSAnZ3Bpb19sZWRfcmVnaXN0ZXJfZGV2aWNlJyB0byBtYWtlIGFuIGlu
+LW1lbW9yeSBjb3B5IG9mCnRoZWlyIExFRCBkZXZpY2UgdGFibGUgc28gdGhlIG9yaWdpbmFsIGNh
+biBiZSByZW1vdmVkIGFzIC5pbml0LnJvZGF0YS4KV2hlbiB0aGUgTEVEIHN1YnN5c3RlbSBpcyBu
+b3QgZW5hYmxlZCBzb3VyY2UgaW4gdGhlIGxlZCBkaXJlY3RvcnkgaXMgbm90CmJ1aWx0IGFuZCBz
+byB0aGlzIGZ1bmN0aW9uIG1heSBiZSB1bmRlZmluZWQuIEZpeCB0aGlzIGhlcmUuCgpTaWduZWQt
+b2ZmLWJ5OiBBbmRyZXcgRi4gRGF2aXMgPGFmZEB0aS5jb20+Ci0tLQogaW5jbHVkZS9saW51eC9s
+ZWRzLmggfCA4ICsrKysrKysrCiAxIGZpbGUgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCspCgpkaWZm
+IC0tZ2l0IGEvaW5jbHVkZS9saW51eC9sZWRzLmggYi9pbmNsdWRlL2xpbnV4L2xlZHMuaAppbmRl
+eCBkMmIxMzA2Li5hNGEzZGE2IDEwMDY0NAotLS0gYS9pbmNsdWRlL2xpbnV4L2xlZHMuaAorKysg
+Yi9pbmNsdWRlL2xpbnV4L2xlZHMuaApAQCAtMzg2LDggKzM4NiwxNiBAQCBzdHJ1Y3QgZ3Bpb19s
+ZWRfcGxhdGZvcm1fZGF0YSB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICB1bnNpZ25lZCBsb25nICpkZWxheV9vZmYpOwogfTsKCisjaWZkZWYgQ09ORklHX05FV19MRURT
+CiBzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpncGlvX2xlZF9yZWdpc3Rlcl9kZXZpY2UoCiAgICAg
+ICAgICAgICAgICBpbnQgaWQsIGNvbnN0IHN0cnVjdCBncGlvX2xlZF9wbGF0Zm9ybV9kYXRhICpw
+ZGF0YSk7CisjZWxzZQorc3RhdGljIGlubGluZSBzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpncGlv
+X2xlZF9yZWdpc3Rlcl9kZXZpY2UoCisgICAgICAgICAgICAgICBpbnQgaWQsIGNvbnN0IHN0cnVj
+dCBncGlvX2xlZF9wbGF0Zm9ybV9kYXRhICpwZGF0YSkKK3sKKyAgICAgICByZXR1cm4gMDsKK30K
+KyNlbmRpZgoKIGVudW0gY3B1X2xlZF9ldmVudCB7CiAgICAgICAgQ1BVX0xFRF9JRExFX1NUQVJU
+LCAgICAgLyogQ1BVIGVudGVycyBpZGxlICovCi0tIAoyLjkuMApfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpMaW51eHBwYy1kZXYgbWFpbGluZyBsaXN0Ckxp
+bnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnCmh0dHBzOi8vbGlzdHMub3psYWJzLm9yZy9saXN0
+aW5mby9saW51eHBwYy1kZXY=
