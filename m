@@ -1,66 +1,72 @@
-From: "Andrew F. Davis" <afd@ti.com>
-Subject: Re: [PATCH] leds: Add no-op gpio_led_register_device when LED
- subsystem is disabled
-Date: Tue, 21 Jun 2016 06:48:10 -0500
-Message-ID: <5769297A.4050608@ti.com>
-References: <20160613200211.14790-1-afd@ti.com>
- <20160613200211.14790-13-afd@ti.com> <5760FA52.7010806@samsung.com>
- <57647DBD.2010406@ti.com> <57679E38.3080901@samsung.com>
- <57686A94.2010704@ti.com> <5768E815.5080706@samsung.com>
+From: Sylvain Lemieux <slemieux.tyco@gmail.com>
+Subject: Re: [PATCH] pwm: lpc32xx: Set PWM_PIN_LEVEL bit in lpc32xx_pwm_disable
+Date: Tue, 21 Jun 2016 08:39:02 -0400
+Message-ID: <1466512742.2114.9.camel@localhost>
+References: <1464982677-24883-1-git-send-email-slemieux.tyco@gmail.com>
+ <b499570f-e624-cbe1-4fca-44ba0e701054@mleia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <5768E815.5080706@samsung.com>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Jacek Anaszewski <j.anaszewski@samsung.com>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, Wolfram Sang <wsa@the-dreams.de>, Linus Walleij <linus.walleij@linaro.org>, Sebastian Reichel <sre@kernel.org>, linux-i2c@vger.kernel.org, Ingo Molnar <mingo@kernel.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, lguest@lists.ozlabs.org, Samuel Ortiz <sameo@linux.intel.com>, Russell King <linux@armlinux.org.uk>, linux-leds@vger.kernel.org, linux-mmc@vger.kernel.org, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Rusty Russell <rusty@rustcorp.com.au>, linux-gpio@vger.kernel.org, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Richard Purdie <rpurdie@rpsys.net>, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <b499570f-e624-cbe1-4fca-44ba0e701054@mleia.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Vladimir Zapolskiy <vz@mleia.com>
+Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMDYvMjEvMjAxNiAwMjowOSBBTSwgSmFjZWsgQW5hc3pld3NraSB3cm90ZToKPiBIaSBBbmRy
-ZXcsCj4gCj4gVGhpcyBwYXRjaCBkb2Vzbid0IGFwcGx5LCBwbGVhc2UgcmViYXNlIG9udG8gcmVj
-ZW50IExFRCB0cmVlLgo+IAo+IE9uIDA2LzIxLzIwMTYgMTI6MTMgQU0sIEFuZHJldyBGLiBEYXZp
-cyB3cm90ZToKPj4gU29tZSBzeXN0ZW1zIHVzZSAnZ3Bpb19sZWRfcmVnaXN0ZXJfZGV2aWNlJyB0
-byBtYWtlIGFuIGluLW1lbW9yeSBjb3B5IG9mCj4+IHRoZWlyIExFRCBkZXZpY2UgdGFibGUgc28g
-dGhlIG9yaWdpbmFsIGNhbiBiZSByZW1vdmVkIGFzIC5pbml0LnJvZGF0YS4KPj4gV2hlbiB0aGUg
-TEVEIHN1YnN5c3RlbSBpcyBub3QgZW5hYmxlZCBzb3VyY2UgaW4gdGhlIGxlZCBkaXJlY3Rvcnkg
-aXMgbm90Cj4+IGJ1aWx0IGFuZCBzbyB0aGlzIGZ1bmN0aW9uIG1heSBiZSB1bmRlZmluZWQuIEZp
-eCB0aGlzIGhlcmUuCj4+Cj4+IFNpZ25lZC1vZmYtYnk6IEFuZHJldyBGLiBEYXZpcyA8YWZkQHRp
-LmNvbT4KPj4gLS0tCj4+ICAgaW5jbHVkZS9saW51eC9sZWRzLmggfCA4ICsrKysrKysrCj4+ICAg
-MSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVk
-ZS9saW51eC9sZWRzLmggYi9pbmNsdWRlL2xpbnV4L2xlZHMuaAo+PiBpbmRleCBkMmIxMzA2Li5h
-NGEzZGE2IDEwMDY0NAo+PiAtLS0gYS9pbmNsdWRlL2xpbnV4L2xlZHMuaAo+PiArKysgYi9pbmNs
-dWRlL2xpbnV4L2xlZHMuaAo+PiBAQCAtMzg2LDggKzM4NiwxNiBAQCBzdHJ1Y3QgZ3Bpb19sZWRf
-cGxhdGZvcm1fZGF0YSB7Cj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgdW5zaWduZWQgbG9uZyAqZGVsYXlfb2ZmKTsKPiAKPiBDdXJyZW50bHkgdGhlcmUgaXMgc29t
-ZSBzdHVmZiBoZXJlLCBhbmQgaW4gZmFjdCBpdCBoYXMgYmVlbiBmb3IKPiBhIGxvbmcgdGltZS4K
-PiAKPiBQYXRjaCAiW1BBVENIIDEyLzEyXSBsZWRzOiBPbmx5IGRlc2NlbmQgaW50byBsZWRzIGRp
-cmVjdG9yeSB3aGVuCj4gQ09ORklHX05FV19MRURTIGlzIHNldCIgYWxzbyBkb2Vzbid0IGFwcGx5
-Lgo+IFdoYXQgcmVwb3NpdG9yeSBhcmUgeW91IHVzaW5nPwo+IAoKdjQuNy1yYzQsIGl0IG1heSBu
-b3QgYXBwbHkgZHVlIHRvIHRoZSBzdXJyb3VuZGluZyBsaW5lcyBiZWluZyBjaGFuZ2VkIGluCnRo
-ZSBvdGhlciBwYXRjaGVzIHdoaWNoIG1heSBub3QgYmUgYXBwbGllZCB0byB5b3VyIHRyZWUuIEl0
-IGlzIGEgc2luZ2xlCmxpbmUgY2hhbmdlIHBlciBwYXRjaCBzbyBob3BlZnVsbHkgdGhlIG1lcmdl
-IGNvbmZsaWN0IHJlc29sdXRpb25zIHdpbGwKYmUgdHJpdmlhbC4KCkEgYmV0dGVyIHNvbHV0aW9u
-IGNvdWxkIGhhdmUgYmVlbiBnZXR0aW5nIGFuIGFjayBmcm9tIGVhY2ggbWFpbnRhaW5lcgphbmQg
-aGF2aW5nIHNvbWVvbmUgcHVsbCB0aGUgd2hvbGUgc2VyaWVzIGludG8gb25lIHRyZWUsIGJ1dCBw
-YXJ0cyBoYXZlCmFscmVhZHkgYmVlbiBwaWNrZWQgc28gaXQgbWF5IGJlIGEgbGl0dGxlIGxhdGUg
-Zm9yIHRoYXQuCgo+PiAgIH07Cj4+Cj4+ICsjaWZkZWYgQ09ORklHX05FV19MRURTCj4+ICAgc3Ry
-dWN0IHBsYXRmb3JtX2RldmljZSAqZ3Bpb19sZWRfcmVnaXN0ZXJfZGV2aWNlKAo+PiAgICAgICAg
-ICAgICAgICAgIGludCBpZCwgY29uc3Qgc3RydWN0IGdwaW9fbGVkX3BsYXRmb3JtX2RhdGEgKnBk
-YXRhKTsKPj4gKyNlbHNlCj4+ICtzdGF0aWMgaW5saW5lIHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2Ug
-KmdwaW9fbGVkX3JlZ2lzdGVyX2RldmljZSgKPj4gKyAgICAgICAgICAgICAgIGludCBpZCwgY29u
-c3Qgc3RydWN0IGdwaW9fbGVkX3BsYXRmb3JtX2RhdGEgKnBkYXRhKQo+PiArewo+PiArICAgICAg
-IHJldHVybiAwOwo+PiArfQo+PiArI2VuZGlmCj4+Cj4+ICAgZW51bSBjcHVfbGVkX2V2ZW50IHsK
-Pj4gICAgICAgICAgQ1BVX0xFRF9JRExFX1NUQVJULCAgICAgLyogQ1BVIGVudGVycyBpZGxlICov
-Cj4+Cj4gCj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CkxpbnV4cHBjLWRldiBtYWlsaW5nIGxpc3QKTGludXhwcGMtZGV2QGxpc3RzLm96bGFicy5vcmcK
-aHR0cHM6Ly9saXN0cy5vemxhYnMub3JnL2xpc3RpbmZvL2xpbnV4cHBjLWRldg==
+Hi Vladimir,
+
+On Tue, 2016-06-21 at 05:11 +0300, Vladimir Zapolskiy wrote:
+> Hi Sylvain,
+> 
+> On 03.06.2016 22:37, Sylvain Lemieux wrote:
+> > From: Sylvain Lemieux <slemieux@tycoint.com>
+> > 
+> > If the PWM_PIN_LEVEL bit is setup to 1 in the bootloader, when the kernel
+> > disable the PWM, the PWM output is always set as a logic 1.
+> > 
+> > Prior to commit 08ee77b5a5de27ad63c92262ebcb4efe0da93b58,
+> > the PWM_PIN_LEVEL bit was always clear when the PWM was disable
+> > and a 0 logic level was apply to the output.
+> > 
+> > According to the LPC32x0 User Manual [1],
+> > the default value for bit 30 (PWM_PIN_LEVEL) is 0.
+> > 
+> > This change initialize the pin level to 0 (default value) and
+> > update the register value accordingly during the disable process.
+> > 
+> > [1] http://www.nxp.com/documents/user_manual/UM10326.pdf
+> > 
+> > Signed-off-by: Sylvain Lemieux <slemieux@tycoint.com>
+> 
+> It looks like a pin control setting, but because it depends
+> on PWM enabled/disabled status, I suppose it is good enough to
+> manage it from the PWM driver.
+> 
+> I think here a new optional DTS property should be introduced,
+> which if present indicates that PWM_OUT pin value is high when
+> PWM is disabled. And if the property is not found then
+> PWMx_PIN_LEVEL is set to 0 on driver probe.
+> 
+I will add this option and submit a new revision of the patch.
+
+> By convention the property name should be prefixed by "nxp,",
+> what name is good? May be "nxp,pwm-disabled-level-high" ?
+> Or add a property "nxp,pwm-disabled-level" with valid values 0/1?
+> 
+I prefer to use "nxp,pwm-disabled-level-high".
+
+> Also note someone may want to switch the default behaviour
+> in runtime, but this feature may be added later on.
+> 
+I agree with you, this can be done later.
+
+Sylvain
