@@ -1,132 +1,84 @@
-From: Brian Norris <briannorris@chromium.org>
-Subject: Re: [PATCH v2] pwm: improve args checking in pwm_apply_state()
-Date: Tue, 21 Jun 2016 11:37:31 -0700
-Message-ID: <20160621183730.GA130978@google.com>
-References: <1464367549-111530-1-git-send-email-briannorris@chromium.org>
- <CAMuHMdUVgwb8QwKcORDuoJUCJJKE7Xmzg3R45S1VdnupAXUx0w@mail.gmail.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 02/48] ARM: at91: Document new TCB bindings
+Date: Tue, 21 Jun 2016 15:08:11 -0500
+Message-ID: <20160621200811.GA22435@rob-hp-laptop>
+References: <1465596231-21766-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <1465596231-21766-3-git-send-email-alexandre.belloni@free-electrons.com>
+ <20160614214737.GA10294@rob-hp-laptop>
+ <20160615092955.261f14fb@bbrezillon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f54.google.com ([209.85.220.54]:33419 "EHLO
-	mail-pa0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752784AbcFUShf (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 21 Jun 2016 14:37:35 -0400
-Received: by mail-pa0-f54.google.com with SMTP id b13so8698175pat.0
-        for <linux-pwm@vger.kernel.org>; Tue, 21 Jun 2016 11:37:34 -0700 (PDT)
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdUVgwb8QwKcORDuoJUCJJKE7Xmzg3R45S1VdnupAXUx0w@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <20160615092955.261f14fb@bbrezillon>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Nicolas Ferre <nicolas.ferre-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Jean-Christophe Plagniol-Villard <plagnioj-sclMFOaUSTBWk0Htik3J/w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Brian Norris <computersforpeace@gmail.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Doug Anderson <dianders@chromium.org>, linux-renesas-soc@vger.kernel.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-Hi Geert,
-
-On Tue, Jun 21, 2016 at 04:42:04PM +0200, Geert Uytterhoeven wrote:
-> On Fri, May 27, 2016 at 6:45 PM, Brian Norris <briannorris@chromium.org> wrote:
-> > It seems like in the process of refactoring pwm_config() to utilize the
-> > newly-introduced pwm_apply_state() API, some args/bounds checking was
-> > dropped.
-> >
-> > In particular, I noted that we are now allowing invalid period
-> > selections. e.g.:
-> >
-> >   # echo 1 > /sys/class/pwm/pwmchip0/export
-> >   # cat /sys/class/pwm/pwmchip0/pwm1/period
-> >   100
-> >   # echo 101 > /sys/class/pwm/pwmchip0/pwm1/duty_cycle
-> >   [... driver may or may not reject the value, or trigger some logic bug ...]
-> >
-> > It's better to see:
-> >
-> >   # echo 1 > /sys/class/pwm/pwmchip0/export
-> >   # cat /sys/class/pwm/pwmchip0/pwm1/period
-> >   100
-> >   # echo 101 > /sys/class/pwm/pwmchip0/pwm1/duty_cycle
-> >   -bash: echo: write error: Invalid argument
-> >
-> > This patch reintroduces some bounds checks in both pwm_config() (for its
-> > signed parameters; we don't want to convert negative values into large
-> > unsigned values) and in pwm_apply_state() (which fix the above described
-> > behavior, as well as other potential API misuses).
-> >
-> > Fixes: 5ec803edcb70 ("pwm: Add core infrastructure to allow atomic updates")
-> > Signed-off-by: Brian Norris <briannorris@chromium.org>
-> > ---
-> > v2:
-> >  * changed subject, as this covers more scope now
-> >  * add Fixes tag, as this is a v4.7-rc regression
-> >  * add more bounds/args checks in pwm_apply_state() and pwm_config()
-> >
-> >  drivers/pwm/core.c  | 3 ++-
-> >  include/linux/pwm.h | 3 +++
-> >  2 files changed, 5 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-> > index dba3843c53b8..ed337a8c34ab 100644
-> > --- a/drivers/pwm/core.c
-> > +++ b/drivers/pwm/core.c
-> > @@ -457,7 +457,8 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
-> >  {
-> >         int err;
-> >
-> > -       if (!pwm)
-> > +       if (!pwm || !state || !state->period ||
-> > +           state->duty_cycle > state->period)
-> >                 return -EINVAL;
+On Wed, Jun 15, 2016 at 09:29:55AM +0200, Boris Brezillon wrote:
+> On Tue, 14 Jun 2016 16:47:37 -0500
+> Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
 > 
-> This check breaks the LCD backlight on r8a7740/armadillo.
-> Apparently both period and duty_cycle are zero during the first invocation.
-> Later, these are initialized from DT, cfr.
+> > On Sat, Jun 11, 2016 at 12:03:05AM +0200, Alexandre Belloni wrote:
+> > > The current binding for the TCB is not flexible enough for some use cases
+> > > and prevents proper utilization of all the channels.
+> > > 
+> > > Cc: Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> > > Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > > Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> > > Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > > Signed-off-by: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+> > > ---
+> > >  .../devicetree/bindings/arm/atmel-at91.txt         | 32 -----------
+> > >  .../devicetree/bindings/mfd/atmel-tcb.txt          | 62 ++++++++++++++++++++++
+> > >  .../devicetree/bindings/pwm/atmel-tcb-pwm.txt      | 12 +++--
+> > >  3 files changed, 69 insertions(+), 37 deletions(-)
+> > >  create mode 100644 Documentation/devicetree/bindings/mfd/atmel-tcb.txt  
+> > 
+> > [...]
+> > 
+> > > diff --git a/Documentation/devicetree/bindings/mfd/atmel-tcb.txt b/Documentation/devicetree/bindings/mfd/atmel-tcb.txt
+> > > new file mode 100644
+> > > index 000000000000..48196752c78f
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/mfd/atmel-tcb.txt
+> > > @@ -0,0 +1,62 @@
+> > > +* Device tree bindings for Atmel Timer Counter Blocks
+> > > +- compatible: Should be "atmel,<chip>-tcb", "simple-mfd", "syscon".
+> > > +  <chip> can be "at91rm9200" or "at91sam9x5"
+> > > +- reg: Should contain registers location and length
+> > > +- #address-cells: has to be 1
+> > > +- #size-cells: has to be 0
+> > > +- interrupts: Should contain all interrupts for the TC block
+> > > +  Note that you can specify several interrupt cells if the TC
+> > > +  block has one interrupt per channel.
+> > > +- clock-names: tuple listing input clock names.
+> > > +	Required elements: "t0_clk", "slow_clk"
+> > > +	Optional elements: "t1_clk", "t2_clk"
+> > > +- clocks: phandles to input clocks.  
+> > 
+> > What is the order of clocks?
+> > 
+> > > +
+> > > +The TCB can expose multiple subdevices:
+> > > + * a clocksource and clockevent device  
+> > 
+> > No. These compatible names are linuxisms. Describe features of the 
+> > timers to be able to select which timer to use if you need to pick 
+> > certain timers. For example, interrupt capability could be used to 
+> > select the clkevt.
 > 
->         pwms = <&tpu 2 33333 PWM_POLARITY_INVERTED>;
-> 
-> in arch/arm/boot/dts/r8a7740-armadillo800eva.dts.
+> Would 'atmel,tcb-free-running-timer' (to replace 'atmel,tcb-clksrc') and
+> 'atmel,tcb-programmable-timer' (to replace 'atmel,tcb-clkevt') be
+> acceptable?
 
-Hmm, this isn't super obvious how to best fix. On one hand, the
-pwm_config() API used to reject period<=0, but on the other hand, I
-think its replacement (pwm_apply_state()) is getting used in more places
-than it used to be, and not all of them are really handling the "atomic
-update" concept yet. Seems like a product of Boris's multi-phase attempt
-to convert the PWM APIs to support atomic updates -- and many users
-haven't really converted yet.
+If that somehow matches the documentation or accurately describes the 
+h/w capabilities for them, then yes.
 
-> With added debug printing, the difference between failure and success is:
-> 
->  renesas-tpu-pwm e6600000.pwm: TPU PWM -1 registered
->  tpu_pwm_request:223
->  pwm_apply_state:460: pwm backlight/2: period 0, duty_cycle 0
-> +Ignoring failure
-> +pwm_apply_state:479: polarity 0 -> 1
-> +tpu_pwm_set_polarity:343
-> +pwm_apply_state:502: period 0 -> 0
-> +pwm_apply_state:503: duty_cycle 0 -> 0
-> +pwm_apply_state:516: enabled 0 -> 0
->  pwm_config:238: pwm backlight/2: duty_ns 33333, period_ns 33333
->  pwm_apply_state:460: pwm backlight/2: period 33333, duty_cycle 33333
-> -pwm_apply_state:479: polarity 0 -> 0
-> +pwm_apply_state:479: polarity 1 -> 1
->  pwm_apply_state:502: period 0 -> 33333
->  pwm_apply_state:503: duty_cycle 0 -> 33333
->  tpu_pwm_config:267
->  pwm_apply_state:516: enabled 0 -> 0
->  pwm_apply_state:460: pwm backlight/2: period 33333, duty_cycle 33333
-> -pwm_apply_state:479: polarity 0 -> 0
-> +pwm_apply_state:479: polarity 1 -> 1
->  pwm_apply_state:502: period 33333 -> 33333
->  pwm_apply_state:503: duty_cycle 33333 -> 33333
->  pwm_apply_state:516: enabled 0 -> 1
->  tpu_pwm_enable:354
-
-I'm not sure I 100% understand this debug log, but I think maybe the
-problem is in pwm_apply_args(), which calls pwm_disable() and
-pwm_set_polarity() sequentially, without ever configuring a period? What
-if pwm_apply_args() were to configure the period for us?
-
-Boris, any thoughts?
-
-> Sorry for not noticing last week, before it hit mainline.
-
-Sorry for the regression :(
-
-Brian
+Rob
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
