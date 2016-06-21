@@ -1,72 +1,88 @@
-From: Sylvain Lemieux <slemieux.tyco@gmail.com>
-Subject: Re: [PATCH] pwm: lpc32xx: Set PWM_PIN_LEVEL bit in lpc32xx_pwm_disable
-Date: Tue, 21 Jun 2016 08:39:02 -0400
-Message-ID: <1466512742.2114.9.camel@localhost>
-References: <1464982677-24883-1-git-send-email-slemieux.tyco@gmail.com>
- <b499570f-e624-cbe1-4fca-44ba0e701054@mleia.com>
+From: Jacek Anaszewski <j.anaszewski@samsung.com>
+Subject: Re: [PATCH] leds: Add no-op gpio_led_register_device when LED
+ subsystem is disabled
+Date: Tue, 21 Jun 2016 15:11:01 +0200
+Message-ID: <57693CE5.7050904@samsung.com>
+References: <20160613200211.14790-1-afd@ti.com>
+ <20160613200211.14790-13-afd@ti.com> <5760FA52.7010806@samsung.com>
+ <57647DBD.2010406@ti.com> <57679E38.3080901@samsung.com>
+ <57686A94.2010704@ti.com> <5768E815.5080706@samsung.com>
+ <5769297A.4050608@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <b499570f-e624-cbe1-4fca-44ba0e701054@mleia.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Vladimir Zapolskiy <vz@mleia.com>
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-mmc-owner@vger.kernel.org>
+In-reply-to: <5769297A.4050608@ti.com>
+Sender: linux-mmc-owner@vger.kernel.org
+To: "Andrew F. Davis" <afd@ti.com>
+Cc: Russell King <linux@armlinux.org.uk>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Sebastian Reichel <sre@kernel.org>, Wolfram Sang <wsa@the-dreams.de>, Richard Purdie <rpurdie@rpsys.net>, Rusty Russell <rusty@rustcorp.com.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, Samuel Ortiz <sameo@linux.intel.com>, Ingo Molnar <mingo@kernel.org>, linux-pwm@vger.kernel.org, lguest@lists.ozlabs.org, linux-wireless@vger.kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-leds@vger.kernel.org, linux-media@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Vladimir,
+On 06/21/2016 01:48 PM, Andrew F. Davis wrote:
+> On 06/21/2016 02:09 AM, Jacek Anaszewski wrote:
+>> Hi Andrew,
+>>
+>> This patch doesn't apply, please rebase onto recent LED tree.
+>>
+>> On 06/21/2016 12:13 AM, Andrew F. Davis wrote:
+>>> Some systems use 'gpio_led_register_device' to make an in-memory copy of
+>>> their LED device table so the original can be removed as .init.rodata.
+>>> When the LED subsystem is not enabled source in the led directory is not
+>>> built and so this function may be undefined. Fix this here.
+>>>
+>>> Signed-off-by: Andrew F. Davis <afd@ti.com>
+>>> ---
+>>>    include/linux/leds.h | 8 ++++++++
+>>>    1 file changed, 8 insertions(+)
+>>>
+>>> diff --git a/include/linux/leds.h b/include/linux/leds.h
+>>> index d2b1306..a4a3da6 100644
+>>> --- a/include/linux/leds.h
+>>> +++ b/include/linux/leds.h
+>>> @@ -386,8 +386,16 @@ struct gpio_led_platform_data {
+>>>                                           unsigned long *delay_off);
+>>
+>> Currently there is some stuff here, and in fact it has been for
+>> a long time.
+>>
+>> Patch "[PATCH 12/12] leds: Only descend into leds directory when
+>> CONFIG_NEW_LEDS is set" also doesn't apply.
+>> What repository are you using?
+>>
+>
+> v4.7-rc4, it may not apply due to the surrounding lines being changed in
+> the other patches which may not be applied to your tree. It is a single
+> line change per patch so hopefully the merge conflict resolutions will
+> be trivial.
+>
+> A better solution could have been getting an ack from each maintainer
+> and having someone pull the whole series into one tree, but parts have
+> already been picked so it may be a little late for that.
 
-On Tue, 2016-06-21 at 05:11 +0300, Vladimir Zapolskiy wrote:
-> Hi Sylvain,
-> 
-> On 03.06.2016 22:37, Sylvain Lemieux wrote:
-> > From: Sylvain Lemieux <slemieux@tycoint.com>
-> > 
-> > If the PWM_PIN_LEVEL bit is setup to 1 in the bootloader, when the kernel
-> > disable the PWM, the PWM output is always set as a logic 1.
-> > 
-> > Prior to commit 08ee77b5a5de27ad63c92262ebcb4efe0da93b58,
-> > the PWM_PIN_LEVEL bit was always clear when the PWM was disable
-> > and a 0 logic level was apply to the output.
-> > 
-> > According to the LPC32x0 User Manual [1],
-> > the default value for bit 30 (PWM_PIN_LEVEL) is 0.
-> > 
-> > This change initialize the pin level to 0 (default value) and
-> > update the register value accordingly during the disable process.
-> > 
-> > [1] http://www.nxp.com/documents/user_manual/UM10326.pdf
-> > 
-> > Signed-off-by: Sylvain Lemieux <slemieux@tycoint.com>
-> 
-> It looks like a pin control setting, but because it depends
-> on PWM enabled/disabled status, I suppose it is good enough to
-> manage it from the PWM driver.
-> 
-> I think here a new optional DTS property should be introduced,
-> which if present indicates that PWM_OUT pin value is high when
-> PWM is disabled. And if the property is not found then
-> PWMx_PIN_LEVEL is set to 0 on driver probe.
-> 
-I will add this option and submit a new revision of the patch.
+OK, I resolved the issues and applied, thanks.
 
-> By convention the property name should be prefixed by "nxp,",
-> what name is good? May be "nxp,pwm-disabled-level-high" ?
-> Or add a property "nxp,pwm-disabled-level" with valid values 0/1?
-> 
-I prefer to use "nxp,pwm-disabled-level-high".
+>>>    };
+>>>
+>>> +#ifdef CONFIG_NEW_LEDS
+>>>    struct platform_device *gpio_led_register_device(
+>>>                   int id, const struct gpio_led_platform_data *pdata);
+>>> +#else
+>>> +static inline struct platform_device *gpio_led_register_device(
+>>> +               int id, const struct gpio_led_platform_data *pdata)
+>>> +{
+>>> +       return 0;
+>>> +}
+>>> +#endif
+>>>
+>>>    enum cpu_led_event {
+>>>           CPU_LED_IDLE_START,     /* CPU enters idle */
+>>>
+>>
+>>
+>
+>
 
-> Also note someone may want to switch the default behaviour
-> in runtime, but this feature may be added later on.
-> 
-I agree with you, this can be done later.
 
-Sylvain
+-- 
+Best regards,
+Jacek Anaszewski
