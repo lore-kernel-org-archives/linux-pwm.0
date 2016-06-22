@@ -1,98 +1,50 @@
-From: Brian Norris <briannorris@chromium.org>
-Subject: Re: [PATCH v2] pwm: improve args checking in pwm_apply_state()
-Date: Wed, 22 Jun 2016 12:16:59 -0700
-Message-ID: <20160622191658.GA106497@google.com>
-References: <1464367549-111530-1-git-send-email-briannorris@chromium.org>
- <CAMuHMdUVgwb8QwKcORDuoJUCJJKE7Xmzg3R45S1VdnupAXUx0w@mail.gmail.com>
- <20160621183730.GA130978@google.com>
- <20160622100422.5c34f975@bbrezillon>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160622100422.5c34f975@bbrezillon>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Brian Norris <computersforpeace@gmail.com>, Doug Anderson <dianders@chromium.org>, linux-renesas-soc@vger.kernel.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+From: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+Subject: [RESEND PATCH v2 0/5] ir-rx51 driver fixes
+Date: Wed, 22 Jun 2016 22:22:16 +0300
+Message-ID: <1466623341-30130-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:35285 "EHLO
+	mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751286AbcFVTW5 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 22 Jun 2016 15:22:57 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, thierry.reding@gmail.com, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, mchehab@osg.samsung.com
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org, sre@kernel.org, pali.rohar@gmail.com, pavel@ucw.cz, Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
 
-On Wed, Jun 22, 2016 at 10:04:22AM +0200, Boris Brezillon wrote:
-> From 0610f7e24976e176054bce20445ff42d8aea9513 Mon Sep 17 00:00:00 2001
-> From: Boris Brezillon <boris.brezillon@free-electrons.com>
-> Date: Wed, 22 Jun 2016 09:25:14 +0200
-> Subject: [PATCH] pwm: Fix pwm_apply_args()
-> 
-> Commit 5ec803edcb70 ("pwm: Add core infrastructure to allow atomic
-> updates"), implemented pwm_disable() as a wrapper around
-> pwm_apply_state(), and then, commit ef2bf4997f7d ("pwm: Improve args
-> checking in pwm_apply_state()") added missing checks on the ->period
-> value in pwm_apply_state() to ensure we were not passing inappropriate
-> values to the ->config() or ->apply() methods.
-> 
-> The conjunction of these 2 commits led to a case where pwm_disable()
-> was no longer succeeding, thus preventing the polarity setting done
-> in pwm_apply_args().
-> 
-> Set a valid period in pwm_apply_args() to ensure polarity setting
-> won't be rejected.
-> 
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Suggested-by: Brian Norris <briannorris@chromium.org>
-> Fixes: 5ec803edcb70 ("pwm: Add core infrastructure to allow atomic updates")
-> ---
->  include/linux/pwm.h | 16 ++++++++++------
->  1 file changed, 10 insertions(+), 6 deletions(-)
-> 
-> diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-> index 908b67c847cd..c038ae36b10e 100644
-> --- a/include/linux/pwm.h
-> +++ b/include/linux/pwm.h
-> @@ -464,6 +464,8 @@ static inline bool pwm_can_sleep(struct pwm_device *pwm)
->  
->  static inline void pwm_apply_args(struct pwm_device *pwm)
->  {
-> +	struct pwm_state state = { };
-> +
->  	/*
->  	 * PWM users calling pwm_apply_args() expect to have a fresh config
->  	 * where the polarity and period are set according to pwm_args info.
-> @@ -476,18 +478,20 @@ static inline void pwm_apply_args(struct pwm_device *pwm)
->  	 * at startup (even if they are actually enabled), thus authorizing
->  	 * polarity setting.
->  	 *
-> -	 * Instead of setting ->enabled to false, we call pwm_disable()
-> -	 * before pwm_set_polarity() to ensure that everything is configured
-> -	 * as expected, and the PWM is really disabled when the user request
-> -	 * it.
+ir-rx51 is a driver for Nokia N900 IR transmitter. The current series
+fixes the remaining problems in the driver:
 
-I was confused by this original text when reading it the first time. I
-like the replacement text and implementation, as it seems to make more
-sense.
+ - replace GP timer 9 with PWM framework usage
+ - replace pulse width timer dmtimer usage with hrtimer
+ - add DT support to the driver
+ - add driver to the board DTS
 
-> +	 * To fulfill this requirement, we apply a new state which disables
-> +	 * the PWM device and set the reference period and polarity config.
->  	 *
->  	 * Note that PWM users requiring a smooth handover between the
->  	 * bootloader and the kernel (like critical regulators controlled by
->  	 * PWM devices) will have to switch to the atomic API and avoid calling
->  	 * pwm_apply_args().
->  	 */
-> -	pwm_disable(pwm);
-> -	pwm_set_polarity(pwm, pwm->args.polarity);
+Patch 2 is needed so the driver to function correctly, without it PWM
+refuses to set the needed carrier frequency.
 
-Notably, you're dropping the 'if (!pwm) { }' safety checks that are part
-of pwm_disable() and pwm_set_polarity(). But I don't think there should
-be any users relying on that.
+Changes compared to v1:
+ - removed [PATCH 5/7] ARM: OMAP: dmtimer: Do not call PM runtime
+   functions when not needed.
+ - DT compatible string changed to "nokia,n900-ir"
 
-> +
-> +	state.enabled = false;
-> +	state.polarity = pwm->args.polarity;
-> +	state.period = pwm->args.period;
-> +
-> +	pwm_apply_state(pwm, &state);
->  }
->  
->  struct pwm_lookup {
+Ivaylo Dimitrov (5):
+  ir-rx51: Fix build after multiarch changes broke it
+  pwm: omap-dmtimer: Allow for setting dmtimer clock source
+  ir-rx51: use PWM framework instead of OMAP dmtimer
+  ir-rx51: add DT support to driver
+  ir-rx51: use hrtimer instead of dmtimer
 
-Reviewed-by: Brian Norris <briannorris@chromium.org>
+ .../devicetree/bindings/media/nokia,n900-ir        |  20 ++
+ .../devicetree/bindings/pwm/pwm-omap-dmtimer.txt   |   4 +
+ arch/arm/mach-omap2/board-rx51-peripherals.c       |   5 -
+ arch/arm/mach-omap2/pdata-quirks.c                 |  10 +-
+ drivers/media/rc/Kconfig                           |   2 +-
+ drivers/media/rc/ir-rx51.c                         | 229 +++++++--------------
+ drivers/pwm/pwm-omap-dmtimer.c                     |  12 +-
+ include/linux/platform_data/media/ir-rx51.h        |   3 -
+ 8 files changed, 111 insertions(+), 174 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/media/nokia,n900-ir
+
+-- 
+1.9.1
