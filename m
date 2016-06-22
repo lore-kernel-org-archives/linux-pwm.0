@@ -1,7 +1,7 @@
 From: Laxman Dewangan <ldewangan@nvidia.com>
-Subject: [PATCH 3/5] pwm: tegra: fix overflow when calculating duty cycle
-Date: Wed, 22 Jun 2016 17:17:21 +0530
-Message-ID: <1466596043-27262-4-git-send-email-ldewangan@nvidia.com>
+Subject: [PATCH 4/5] pwm: tegra: Add DT node compatible for Tegra186
+Date: Wed, 22 Jun 2016 17:17:22 +0530
+Message-ID: <1466596043-27262-5-git-send-email-ldewangan@nvidia.com>
 References: <1466596043-27262-1-git-send-email-ldewangan@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -9,43 +9,39 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1466596043-27262-1-git-send-email-ldewangan@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: thierry.reding@gmail.com, robh+dt@kernel.org, swarren@wwwdotorg.org, gnurou@gmail.com
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Hyong Bin Kim <hyongbink@nvidia.com>, Laxman Dewangan <ldewangan@nvidia.com>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Laxman Dewangan <ldewangan@nvidia.com>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Hyong Bin Kim <hyongbink@nvidia.com>
+Tegra186 has 8 different PWM controller and each controller has only
+one output. Earlier generation SoCs have the 4 PWM output per controller.
 
-duty_ns * (1 << PWM_DUTY_WIDTH) could overflow in integer calcualtion
-when PWM rate is low. Hence do all calculation on unsigned long long
-to avoid overflow.
+Add DT node compatible for Tegra186.
 
-Signed-off-by: Hyong Bin Kim <hyongbink@nvidia.com>
 Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
 ---
- drivers/pwm/pwm-tegra.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-index 575ca8e..49cefd5 100644
---- a/drivers/pwm/pwm-tegra.c
-+++ b/drivers/pwm/pwm-tegra.c
-@@ -69,7 +69,7 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 			    int duty_ns, int period_ns)
- {
- 	struct tegra_pwm_chip *pc = to_tegra_pwm_chip(chip);
--	unsigned long long c;
-+	unsigned long long c = duty_ns;
- 	unsigned long rate, hz;
- 	u32 val = 0;
- 	int err;
-@@ -79,7 +79,8 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 * per (1 << PWM_DUTY_WIDTH) cycles and make sure to round to the
- 	 * nearest integer during division.
- 	 */
--	c = duty_ns * (1 << PWM_DUTY_WIDTH) + period_ns / 2;
-+	c *= (1 << PWM_DUTY_WIDTH);
-+	c += period_ns / 2;
- 	do_div(c, period_ns);
+diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
+index c52f03b..2851b2d 100644
+--- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
+@@ -1,10 +1,12 @@
+ Tegra SoC PWFM controller
  
- 	val = (u32)c << PWM_DUTY_SHIFT;
+ Required properties:
+-- compatible: For Tegra20, must contain "nvidia,tegra20-pwm".  For Tegra30,
+-  must contain "nvidia,tegra30-pwm".  Otherwise, must contain
+-  "nvidia,<chip>-pwm", plus one of the above, where <chip> is tegra114,
+-  tegra124, tegra132, or tegra210.
++- compatible: For Tegra20, must contain "nvidia,tegra20-pwm".
++	      For Tegra30, must contain "nvidia,tegra30-pwm".
++	      For Tegra114, Tegra124, Tegra132, Tegra210 must contain
++	      "nvidia,<chip>-pwm", plus one of the above, where <chip> is
++	      tegra114, tegra124, tegra132, or tegra210.
++	      For Tegra186, must contain "nvidia,tegra186-pwm".
+ - reg: physical base address and length of the controller's registers
+ - #pwm-cells: should be 2. See pwm.txt in this directory for a description of
+   the cells format.
 -- 
 2.1.4
