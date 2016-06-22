@@ -1,129 +1,112 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2] pwm: improve args checking in pwm_apply_state()
-Date: Wed, 22 Jun 2016 16:32:22 +0200
-Message-ID: <CAMuHMdUUrYj_rwVPw2YXYUq_aPzQgUR=VEP0gRvH4n3C2uE_GA@mail.gmail.com>
-References: <1464367549-111530-1-git-send-email-briannorris@chromium.org>
- <CAMuHMdUVgwb8QwKcORDuoJUCJJKE7Xmzg3R45S1VdnupAXUx0w@mail.gmail.com>
- <20160621183730.GA130978@google.com> <20160622100422.5c34f975@bbrezillon>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] pwm: lpc32xx: Set PWM_PIN_LEVEL bit in lpc32xx_pwm_disable
+Date: Wed, 22 Jun 2016 16:36:50 +0200
+Message-ID: <20160622143650.GO26943@ulmo.ba.sec>
+References: <1464982677-24883-1-git-send-email-slemieux.tyco@gmail.com>
+ <20160622123222.GD26943@ulmo.ba.sec>
+ <1466601964.5316.19.camel@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160622100422.5c34f975@bbrezillon>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Brian Norris <briannorris@chromium.org>, Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Brian Norris <computersforpeace@gmail.com>, Doug Anderson <dianders@chromium.org>, linux-renesas-soc@vger.kernel.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Content-Type: multipart/mixed; boundary="===============3135975727526881330=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1466601964.5316.19.camel@localhost>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Sylvain Lemieux <slemieux.tyco@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, vz@mleia.com
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Boris,
 
-On Wed, Jun 22, 2016 at 10:04 AM, Boris Brezillon
-<boris.brezillon@free-electrons.com> wrote:
-> On Tue, 21 Jun 2016 11:37:31 -0700
-> Brian Norris <briannorris@chromium.org> wrote:
->> On Tue, Jun 21, 2016 at 04:42:04PM +0200, Geert Uytterhoeven wrote:
->> > On Fri, May 27, 2016 at 6:45 PM, Brian Norris <briannorris@chromium.org> wrote:
->> > > It seems like in the process of refactoring pwm_config() to utilize the
->> > > newly-introduced pwm_apply_state() API, some args/bounds checking was
->> > > dropped.
->> > >
->> > > In particular, I noted that we are now allowing invalid period
->> > > selections. e.g.:
->> > >
->> > >   # echo 1 > /sys/class/pwm/pwmchip0/export
->> > >   # cat /sys/class/pwm/pwmchip0/pwm1/period
->> > >   100
->> > >   # echo 101 > /sys/class/pwm/pwmchip0/pwm1/duty_cycle
->> > >   [... driver may or may not reject the value, or trigger some logic bug ...]
->> > >
->> > > It's better to see:
->> > >
->> > >   # echo 1 > /sys/class/pwm/pwmchip0/export
->> > >   # cat /sys/class/pwm/pwmchip0/pwm1/period
->> > >   100
->> > >   # echo 101 > /sys/class/pwm/pwmchip0/pwm1/duty_cycle
->> > >   -bash: echo: write error: Invalid argument
->> > >
->> > > This patch reintroduces some bounds checks in both pwm_config() (for its
->> > > signed parameters; we don't want to convert negative values into large
->> > > unsigned values) and in pwm_apply_state() (which fix the above described
->> > > behavior, as well as other potential API misuses).
->> > >
->> > > Fixes: 5ec803edcb70 ("pwm: Add core infrastructure to allow atomic updates")
->> > > Signed-off-by: Brian Norris <briannorris@chromium.org>
->> > > ---
->> > > v2:
->> > >  * changed subject, as this covers more scope now
->> > >  * add Fixes tag, as this is a v4.7-rc regression
->> > >  * add more bounds/args checks in pwm_apply_state() and pwm_config()
->> > >
->> > >  drivers/pwm/core.c  | 3 ++-
->> > >  include/linux/pwm.h | 3 +++
->> > >  2 files changed, 5 insertions(+), 1 deletion(-)
->> > >
->> > > diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
->> > > index dba3843c53b8..ed337a8c34ab 100644
->> > > --- a/drivers/pwm/core.c
->> > > +++ b/drivers/pwm/core.c
->> > > @@ -457,7 +457,8 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
->> > >  {
->> > >         int err;
->> > >
->> > > -       if (!pwm)
->> > > +       if (!pwm || !state || !state->period ||
->> > > +           state->duty_cycle > state->period)
->> > >                 return -EINVAL;
->> >
->> > This check breaks the LCD backlight on r8a7740/armadillo.
+--===============3135975727526881330==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="gqEssfNGWsEa4HfM"
+Content-Disposition: inline
 
->> I'm not sure I 100% understand this debug log, but I think maybe the
->> problem is in pwm_apply_args(), which calls pwm_disable() and
->> pwm_set_polarity() sequentially, without ever configuring a period? What
->> if pwm_apply_args() were to configure the period for us?
->>
->> Boris, any thoughts?
->>
->
-> I had second thoughts and I think you're right: pwm_apply_args()
-> should set the pargs.period period for us.
->
-> Here is a patch addressing that.
->
-> Geert, can you test it?
->
-> --->8---
-> From 0610f7e24976e176054bce20445ff42d8aea9513 Mon Sep 17 00:00:00 2001
-> From: Boris Brezillon <boris.brezillon@free-electrons.com>
-> Date: Wed, 22 Jun 2016 09:25:14 +0200
-> Subject: [PATCH] pwm: Fix pwm_apply_args()
->
-> Commit 5ec803edcb70 ("pwm: Add core infrastructure to allow atomic
-> updates"), implemented pwm_disable() as a wrapper around
-> pwm_apply_state(), and then, commit ef2bf4997f7d ("pwm: Improve args
-> checking in pwm_apply_state()") added missing checks on the ->period
-> value in pwm_apply_state() to ensure we were not passing inappropriate
-> values to the ->config() or ->apply() methods.
->
-> The conjunction of these 2 commits led to a case where pwm_disable()
-> was no longer succeeding, thus preventing the polarity setting done
-> in pwm_apply_args().
->
-> Set a valid period in pwm_apply_args() to ensure polarity setting
-> won't be rejected.
->
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Suggested-by: Brian Norris <briannorris@chromium.org>
-> Fixes: 5ec803edcb70 ("pwm: Add core infrastructure to allow atomic updates")
 
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+--gqEssfNGWsEa4HfM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Gr{oetje,eeting}s,
+On Wed, Jun 22, 2016 at 09:26:04AM -0400, Sylvain Lemieux wrote:
+> Hi Thierry,
+>=20
+> On Wed, 2016-06-22 at 14:32 +0200, Thierry Reding wrote:
+> > On Fri, Jun 03, 2016 at 03:37:57PM -0400, Sylvain Lemieux wrote:
+> > > From: Sylvain Lemieux <slemieux@tycoint.com>
+> > >=20
+> > > If the PWM_PIN_LEVEL bit is setup to 1 in the bootloader, when the ke=
+rnel
+> > > disable the PWM, the PWM output is always set as a logic 1.
+> >=20
+> > I presume there's a reason why the bootloader set this bit to 1. Why do
+> > you assume it's the right thing to clear it?
+> >=20
+> There is an alternative mode for the PWM output pin; using the=20
+> PWM_PIN_LEVEL bit to control the PWM output (logical 0 or 1 on=20
+> output) when the PWM is disable.
+>=20
+> In this case, the bootloader is using the PWM_PIN_LEVEL bit
+> to control the PWM output (always 1) to enable the LCD; the=20
+> application is using the PWM to control the intensity of the=20
+> LCD output. When disabling the PWM, the line level should be=20
+> setup to 0.
 
-                        Geert
+But doesn't that mean that if the pin is used in PWM mode there's never
+a use-case for having it go high when disabled? Given that this is a PWM
+driver I don't see how we'd ever be in the case where the alternate
+setting makes sense.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> A version 2 of this patch will be send with support to select=20
+> the alternate PWM disable level high from the device tree.
+>=20
+> For details, you can refer to:
+> http://thread.gmane.org/gmane.linux.pwm/3882/focus=3D508758
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Given the above I don't think we should add this new device tree
+property until we encounter a setup where it's needed.
+
+Thierry
+
+--gqEssfNGWsEa4HfM
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJXaqKCAAoJEN0jrNd/PrOhXREP/0Ozq9AVXDV5QU1ltLIg8q8H
++57mUo6Xivu4ALehzFUZY8y54viBBQYSmNGVfnNbl3oj3o4dFBGuV40pSzf/dDfr
+KIDZ+kwrb9rNkjErFuXiisCItUVaxtjl+ZsxZJ7ScHG2MTmf2mPHHkax9D12RBqn
+7CtryK16r5Fv9t+mFEg2d7We83vTMzmR5AKJki0QMRB+NGukzTn3c1+wlKcegz28
+c/Ra54glqrinjCBWS2rzABX1KbSG3CRExc9FhSzBx1EQYcOumZEmFPSVcVt6Dfq/
+AxhUIpJ2H0MnLDs5Ts+cmMrVqiLqmBseYcm9X4nxvk9QEIEJagcjojhE9k1rsA+/
+w+vuBZjDoOlk+ZH0Q1fpq/aGLtdUmP3A71nus+lUKJttw3wA6Y1jSudryEQvE97K
+TJ5+TUHcO8qfQYF+I/PjgNHh6ACSzAs77yLtlJQtaUa0H6i1oF5nlidC5xPazACs
+Za14Ho5t1yw+/XOLpmplNIDoTaI/LA1iL2Wu1vnOExfOfHQgkiDqtAa0nDjtKmXx
+oiDymU9b2QMl03aZjQAH83sMlyf1o8dt1EeKlRloxrgvxUZoeko5+d2uocerRZnM
+jxUlrwNsVE901NNo+ntFH4PamenT4FURdXyY0HPgXDyi+QEaySPbhwRSuBubv9Hy
+KmyU7k3RJMewNEiws2Vs
+=zBmA
+-----END PGP SIGNATURE-----
+
+--gqEssfNGWsEa4HfM--
+
+
+--===============3135975727526881330==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============3135975727526881330==--
