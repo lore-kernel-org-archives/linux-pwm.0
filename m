@@ -1,71 +1,81 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RESEND PATCH v2 2/5] pwm: omap-dmtimer: Allow for setting
- dmtimer clock source
-Date: Thu, 23 Jun 2016 10:24:36 +0200
-Message-ID: <20160623082436.GB8136@ulmo.ba.sec>
-References: <1466623341-30130-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
- <1466623341-30130-3-git-send-email-ivo.g.dimitrov.75@gmail.com>
+Subject: Re: [PATCH v2] pwm: improve args checking in pwm_apply_state()
+Date: Thu, 23 Jun 2016 18:55:08 +0200
+Message-ID: <20160623165508.GA20051@ulmo.ba.sec>
+References: <1464367549-111530-1-git-send-email-briannorris@chromium.org>
+ <CAMuHMdUVgwb8QwKcORDuoJUCJJKE7Xmzg3R45S1VdnupAXUx0w@mail.gmail.com>
+ <20160621183730.GA130978@google.com>
+ <20160622100422.5c34f975@bbrezillon>
+ <20160622191658.GA106497@google.com>
+ <20160622224114.697c0db5@bbrezillon>
+ <20160622204647.GA14996@google.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="BwCQnh7xodEAoBMC"
+	protocol="application/pgp-signature"; boundary="zYM0uCDKw75PZbzx"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:33438 "EHLO
-	mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1750954AbcFWIYk (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Jun 2016 04:24:40 -0400
+Received: from mail-pf0-f171.google.com ([209.85.192.171]:34353 "EHLO
+	mail-pf0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750874AbcFWQzS (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Jun 2016 12:55:18 -0400
 Content-Disposition: inline
-In-Reply-To: <1466623341-30130-3-git-send-email-ivo.g.dimitrov.75@gmail.com>
+In-Reply-To: <20160622204647.GA14996@google.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, mchehab@osg.samsung.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org, sre@kernel.org, pali.rohar@gmail.com, pavel@ucw.cz
+To: Brian Norris <briannorris@chromium.org>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Geert Uytterhoeven <geert@linux-m68k.org>, Linux PWM List <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Brian Norris <computersforpeace@gmail.com>, Doug Anderson <dianders@chromium.org>, linux-renesas-soc@vger.kernel.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
 
---BwCQnh7xodEAoBMC
+--zYM0uCDKw75PZbzx
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 22, 2016 at 10:22:18PM +0300, Ivaylo Dimitrov wrote:
-> OMAP GP timers can have different input clocks that allow different PWM
-> frequencies. However, there is no other way of setting the clock source b=
-ut
-> through clocks or clock-names properties of the timer itself. This limits
-> PWM functionality to only the frequencies allowed by the particular clock
-> source. Allowing setting the clock source by PWM rather than by timer
-> allows different PWMs to have different ranges by not hard-wiring the clo=
-ck
-> source to the timer.
+On Wed, Jun 22, 2016 at 01:46:48PM -0700, Brian Norris wrote:
+> On Wed, Jun 22, 2016 at 10:41:14PM +0200, Boris Brezillon wrote:
+> > On Wed, 22 Jun 2016 12:16:59 -0700
+> > Brian Norris <briannorris@chromium.org> wrote:
+> > > Notably, you're dropping the 'if (!pwm) { }' safety checks that are p=
+art
+> > > of pwm_disable() and pwm_set_polarity(). But I don't think there shou=
+ld
+> > > be any users relying on that.
+> >=20
+> > Indeed. I can add it back here if you prefer,
 >=20
-> Signed-off-by: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-omap-dmtimer.txt |  4 ++++
->  drivers/pwm/pwm-omap-dmtimer.c                             | 12 +++++++-=
-----
->  2 files changed, 11 insertions(+), 5 deletions(-)
+> Nah, that's ok. I just had to say it anyway :)
+>=20
+> > but honestly, PWM users
+> > that are not checking the value returned by pwm_get() should be
+> > considered buggy IMHO, and a NULL pointer exception is a good way to
+> > make people realize they are not properly using the API :).
+>=20
+> Seems OK.
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+I've applied this to my fixes branch, and I'll let it cook in linux-next
+for a little while, then send it off to Linus for v4.7-rc6 next week if
+no further fallout is caused by this.
 
---BwCQnh7xodEAoBMC
+Thierry
+
+--zYM0uCDKw75PZbzx
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJXa5zBAAoJEN0jrNd/PrOhwlQQAKJqIX/WVu0eYrxSyfNzKumN
-r0uqDlK8kPVU2XrLSiUsZmSmSLsPWbYLxvJ6b8ONrV0/CEaj6ANuI2F9Sp94u9aU
-Zgl4NUWTSKbHYACj0CWgBk4PwWIbZVUZrWOTTgh73xpo4KhEnWREZjGhiYgZhQRH
-Ji6RfvoRtYpw76ORkiAZ7aO1lcPCBv/fgvC/cuC+0rAwRHHS7cMz0+nd/MC+/+O3
-uM9Mcq+fs1qvQ4kJKGGDMHYTv5FkXQ/eNFmDx03EUEYvOJ57Yhy0TQREH/ZsdEfm
-ELfUqP7UClhqO5/FFcn9wJxIxrQssnQkpCAOks6JIsV6nMYmBwVBapYmP7px4TNL
-6CohXEyx93aG99VbO1L7jvyf1PF1aIUDiNO/qFD6ZYqpcPvlr+64AdokRtfK70a0
-quZ14G7iuMiywclw6Y/CilOjf8t3GCPvIOmNk7ndiE2ca4wDAqyZ7Zohk5H58LFF
-5BZLbdhGh2GYr0ju/s+jBZmq2GsQzkGEv3KsjODIsH5jMxb0v95/418cbcMWLwHh
-6gSLOMiY213xvTPfYY4VOyW6vtKTV09r0s3A3d5478F2k82H8r4D898yZqRpYhOv
-0yBemF/xgWy88Sgpx4wnCJNUbsdwzBs31UwVvNG7IQdnQErUlRHvL2VqOU07pzCe
-75BREWFVSnfAX9zhyEog
-=BVNy
+iQIcBAABCAAGBQJXbBRpAAoJEN0jrNd/PrOhTtUQAMLbPd6hFChYXMj/K+zZDKW7
+nPk0VV11CmHyffdpcyh38Sfa0woJeye4QqaCEewDffsGgLxBUUqRFaTj43JnMOJe
+uJnjAE726KBxV6JVI7GsCuvdWaewY9vCd9VSKX5plqpmSuQbIZ3PjCC/Y604f2uc
+fTskP/Mp+aPF14BExwg7ntMhp6C7/7LxmSBjJBOJp3RY9gnbD7IOdMI1EMiUpVIf
+3BVlljDyPuhsN8h4jNa3Tjh3ZqGm8lfcSgaB3aEttGNWVF5u8kmaqgozXZfPOng2
+4s/yrlJDMT+zeRPyTjFLi/IeK23ZFTmzJ+lhhzISewPAsnA5QQIaAO+xr/GuTckc
+IkoAhv5e2UppE80e9DHSE5PWXoMdVd02NIoTnb+0Qi4jpshsCId0+hQqrVbHDhj8
+6nkUTm9080jlclsD17CZ3njlD3h6Z0/bWpRM6VBDLEoCV21now2IoFAwQIxeLSGM
+fZv1I6y2tKP96cVe/i3/4hf2zrWIuLyzOa+zgmneZXwg5nj2qzjeJsgibC0O/fqc
+gZ6sP898601rcGvpelia74YBYuQ8U7j5fMvYyMH+4P65U3hLsKflbbhPhgyDScus
+ar7OxjOQOQzlWB4xMcee1wT3mWLj9bP+fwXqsZnG7IJeeifBWQf9jzMKXL9hq2Z9
+zGn/Z+20elUEVU8dnhZ6
+=lPWi
 -----END PGP SIGNATURE-----
 
---BwCQnh7xodEAoBMC--
+--zYM0uCDKw75PZbzx--
