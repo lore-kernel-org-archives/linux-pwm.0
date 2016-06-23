@@ -1,39 +1,32 @@
-From: Brian Norris <briannorris@chromium.org>
-Subject: Re: [PATCH v2] pwm: improve args checking in pwm_apply_state()
-Date: Wed, 22 Jun 2016 13:46:48 -0700
-Message-ID: <20160622204647.GA14996@google.com>
-References: <1464367549-111530-1-git-send-email-briannorris@chromium.org>
- <CAMuHMdUVgwb8QwKcORDuoJUCJJKE7Xmzg3R45S1VdnupAXUx0w@mail.gmail.com>
- <20160621183730.GA130978@google.com>
- <20160622100422.5c34f975@bbrezillon>
- <20160622191658.GA106497@google.com>
- <20160622224114.697c0db5@bbrezillon>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [RESEND PATCH v2 0/5] ir-rx51 driver fixes
+Date: Wed, 22 Jun 2016 21:44:36 -0700
+Message-ID: <20160623044436.GK22406@atomide.com>
+References: <1466623341-30130-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160622224114.697c0db5@bbrezillon>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Brian Norris <computersforpeace@gmail.com>, Doug Anderson <dianders@chromium.org>, linux-renesas-soc@vger.kernel.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+In-Reply-To: <1466623341-30130-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, thierry.reding@gmail.com, bcousson@baylibre.com, linux@arm.linux.org.uk, mchehab@osg.samsung.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org, sre@kernel.org, pali.rohar@gmail.com, pavel@ucw.cz
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Jun 22, 2016 at 10:41:14PM +0200, Boris Brezillon wrote:
-> On Wed, 22 Jun 2016 12:16:59 -0700
-> Brian Norris <briannorris@chromium.org> wrote:
-> > Notably, you're dropping the 'if (!pwm) { }' safety checks that are part
-> > of pwm_disable() and pwm_set_polarity(). But I don't think there should
-> > be any users relying on that.
-> 
-> Indeed. I can add it back here if you prefer,
+* Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com> [160622 12:25]:
+> ir-rx51 is a driver for Nokia N900 IR transmitter. The current series
+> fixes the remaining problems in the driver:
 
-Nah, that's ok. I just had to say it anyway :)
+Thanks for updating these.
 
-> but honestly, PWM users
-> that are not checking the value returned by pwm_get() should be
-> considered buggy IMHO, and a NULL pointer exception is a good way to
-> make people realize they are not properly using the API :).
+Trierry, care to ack the PWM patch?
 
-Seems OK.
+Mauro, do you want me to set up an immutable branch with all
+these against v4.7-rc1 that we can all merge as needed?
 
-Brian
+If you want to set up the branch instead, please feel free
+to add my ack.
+
+Regards,
+
+Tony
