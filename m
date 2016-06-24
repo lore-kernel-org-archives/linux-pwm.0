@@ -1,66 +1,68 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 4/5] pwm: tegra: Add DT node compatible for Tegra186
-Date: Fri, 24 Jun 2016 11:10:15 -0500
-Message-ID: <20160624161015.GA13727@rob-hp-laptop>
-References: <1466596043-27262-1-git-send-email-ldewangan@nvidia.com>
- <1466596043-27262-5-git-send-email-ldewangan@nvidia.com>
- <20160622124614.GG26943@ulmo.ba.sec>
+From: David Hsu <davidhsu@google.com>
+Subject: Re: [PATCH] pwm: Create device class for pwm channels
+Date: Fri, 24 Jun 2016 13:54:33 -0700
+Message-ID: <CAH7o3i7DduVSW4C-zZgfTiKcqbMAHS5cf5T-R8YyOVz7NnKXZQ@mail.gmail.com>
+References: <20160615021204.GA11507@kroah.com> <20160615143720.GA23483@ulmo.ba.sec>
+ <CAH7o3i6o2489ArgLRjhgv6uS+=RFq-dby9zc9vSMfDiQ62o86g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160622124614.GG26943-EkSeR96xj6Pcmrwk2tT4+A@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org, gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-qk0-f180.google.com ([209.85.220.180]:34159 "EHLO
+	mail-qk0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751321AbcFXUyf (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 24 Jun 2016 16:54:35 -0400
+Received: by mail-qk0-f180.google.com with SMTP id t127so160320191qkf.1
+        for <linux-pwm@vger.kernel.org>; Fri, 24 Jun 2016 13:54:35 -0700 (PDT)
+In-Reply-To: <CAH7o3i6o2489ArgLRjhgv6uS+=RFq-dby9zc9vSMfDiQ62o86g@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Wed, Jun 22, 2016 at 02:46:14PM +0200, Thierry Reding wrote:
-> On Wed, Jun 22, 2016 at 05:17:22PM +0530, Laxman Dewangan wrote:
-> > Tegra186 has 8 different PWM controller and each controller has only
-> > one output. Earlier generation SoCs have the 4 PWM output per controller.
-> > 
-> > Add DT node compatible for Tegra186.
-> > 
-> > Signed-off-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> > ---
-> >  Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt | 10 ++++++----
-> >  1 file changed, 6 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-> > index c52f03b..2851b2d 100644
-> > --- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-> > +++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-> > @@ -1,10 +1,12 @@
-> >  Tegra SoC PWFM controller
-> >  
-> >  Required properties:
-> > -- compatible: For Tegra20, must contain "nvidia,tegra20-pwm".  For Tegra30,
-> > -  must contain "nvidia,tegra30-pwm".  Otherwise, must contain
-> > -  "nvidia,<chip>-pwm", plus one of the above, where <chip> is tegra114,
-> > -  tegra124, tegra132, or tegra210.
-> > +- compatible: For Tegra20, must contain "nvidia,tegra20-pwm".
-> > +	      For Tegra30, must contain "nvidia,tegra30-pwm".
-> > +	      For Tegra114, Tegra124, Tegra132, Tegra210 must contain
-> > +	      "nvidia,<chip>-pwm", plus one of the above, where <chip> is
-> > +	      tegra114, tegra124, tegra132, or tegra210.
-> > +	      For Tegra186, must contain "nvidia,tegra186-pwm".
-> 
-> Rob, I recall discussing this with you a couple of weeks ago, but fail
-> to remember the outcome and can't find a link to the discussion either.
-> Wasn't there a new standard way of documenting this kind of compatible
-> string list?
+On Wed, Jun 15, 2016 at 4:52 PM, David Hsu <davidhsu@google.com> wrote:
+> On Wed, Jun 15, 2016 at 7:37 AM, Thierry Reding
+> <thierry.reding@gmail.com> wrote:
+>> On Tue, Jun 14, 2016 at 07:12:04PM -0700, Greg KH wrote:
+>>> From: David Hsu <davidhsu@google.com>
+>>>
+>>> Pwm channels don't send uevents when exported, this change adds the
+>>> channels to a pwm class and set their device type to pwm_channel so
+>>> uevents are sent.
+>>>
+>>> To do this properly, the device names need to change to uniquely
+>>> identify a channel.  This change is from pwmN to pwm-(chip->base):N
+>>>
+>>> Signed-off-by: David Hsu <davidhsu@google.com>
+>>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>> ---
+>>>  Documentation/pwm.txt |    6 ++++--
+>>>  drivers/pwm/sysfs.c   |   15 ++++++++++++---
+>>>  2 files changed, 16 insertions(+), 5 deletions(-)
+>>>
+>>> Note, this patch came from David with his work on a system that has
+>>> dynamic PWM devices and channels, and we needed some way to tell
+>>> userspace what is going on when they are added or removed.  If anyone
+>>> knows any other way of doing this that does not involve changing the pwm
+>>> names, please let us know.
+>>
+>> Is it truly PWM channels that dynamically appear and disappear? I'd be
+>> interested in how that's achieved, because there are probably other
+>> issues that will manifest if you do that. Do you have a pointer to the
+>> work that David's been undertaking? Generally some more context on the
+>> use-case would be helpful here.
+>
+> Only PWM devices are dynamic, the number of channels exposed by
+> devices do not change after they've been added to the system.
+>
+>>
+>> Also I'd prefer if this avoided using chip->base here, because it exists
+>> purely for legacy purposes and is supposed to go away eventually.
+>>
+>> Thierry
+>
+> Would using dev_name(parent) be an acceptable alternative?
 
-We did? This is fine for me. However, "plus one of the above" is not 
-clear. That means either is valid? If all are "the same" I would expect 
-that only nvidia,tegra20-pwm is the fallback. I'm guessing this is 
-docuemnting what happened in practice though. Probably should update the 
-doc and dts files to reflect desired practice rather than what may be in 
-the wild.
+Ping! Any comments on the above?
 
-> Or did you say it didn't matter much until we moved to a YAML-based
-> description?
-
-Yes, that sounds like something I would have said.
-
-Rob
+Thanks,
+David
