@@ -1,80 +1,76 @@
-From: Stephen Warren <swarren@wwwdotorg.org>
-Subject: Re: [PATCH 4/5] pwm: tegra: Add DT node compatible for Tegra186
-Date: Fri, 24 Jun 2016 15:30:32 -0600
-Message-ID: <576DA678.7020907@wwwdotorg.org>
-References: <1466596043-27262-1-git-send-email-ldewangan@nvidia.com>
- <1466596043-27262-5-git-send-email-ldewangan@nvidia.com>
- <20160622124614.GG26943@ulmo.ba.sec> <20160624161015.GA13727@rob-hp-laptop>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Sylvain Lemieux <slemieux.tyco@gmail.com>
+Subject: [PATCH v2 1/3] pwm: lpc32xx: Set PWM_PIN_LEVEL bit to default value
+Date: Mon, 27 Jun 2016 09:09:55 -0400
+Message-ID: <1467032997-5340-2-git-send-email-slemieux.tyco@gmail.com>
+References: <1467032997-5340-1-git-send-email-slemieux.tyco@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from avon.wwwdotorg.org ([70.85.31.133]:33730 "EHLO
-	avon.wwwdotorg.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751210AbcFXVah (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 24 Jun 2016 17:30:37 -0400
-In-Reply-To: <20160624161015.GA13727@rob-hp-laptop>
+Received: from mail-io0-f194.google.com ([209.85.223.194]:34689 "EHLO
+	mail-io0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751634AbcF0NKH (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 27 Jun 2016 09:10:07 -0400
+Received: by mail-io0-f194.google.com with SMTP id 100so24284602ioh.1
+        for <linux-pwm@vger.kernel.org>; Mon, 27 Jun 2016 06:10:07 -0700 (PDT)
+In-Reply-To: <1467032997-5340-1-git-send-email-slemieux.tyco@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Rob Herring <robh@kernel.org>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Laxman Dewangan <ldewangan@nvidia.com>, gnurou@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+To: vz@mleia.com, thierry.reding@gmail.com
+Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
 
-On 06/24/2016 10:10 AM, Rob Herring wrote:
-> On Wed, Jun 22, 2016 at 02:46:14PM +0200, Thierry Reding wrote:
->> On Wed, Jun 22, 2016 at 05:17:22PM +0530, Laxman Dewangan wrote:
->>> Tegra186 has 8 different PWM controller and each controller has only
->>> one output. Earlier generation SoCs have the 4 PWM output per controller.
->>>
->>> Add DT node compatible for Tegra186.
->>>
->>> Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
->>> ---
->>>   Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt | 10 ++++++----
->>>   1 file changed, 6 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
->>> index c52f03b..2851b2d 100644
->>> --- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
->>> +++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
->>> @@ -1,10 +1,12 @@
->>>   Tegra SoC PWFM controller
->>>
->>>   Required properties:
->>> -- compatible: For Tegra20, must contain "nvidia,tegra20-pwm".  For Tegra30,
->>> -  must contain "nvidia,tegra30-pwm".  Otherwise, must contain
->>> -  "nvidia,<chip>-pwm", plus one of the above, where <chip> is tegra114,
->>> -  tegra124, tegra132, or tegra210.
->>> +- compatible: For Tegra20, must contain "nvidia,tegra20-pwm".
->>> +	      For Tegra30, must contain "nvidia,tegra30-pwm".
->>> +	      For Tegra114, Tegra124, Tegra132, Tegra210 must contain
->>> +	      "nvidia,<chip>-pwm", plus one of the above, where <chip> is
->>> +	      tegra114, tegra124, tegra132, or tegra210.
->>> +	      For Tegra186, must contain "nvidia,tegra186-pwm".
->>
->> Rob, I recall discussing this with you a couple of weeks ago, but fail
->> to remember the outcome and can't find a link to the discussion either.
->> Wasn't there a new standard way of documenting this kind of compatible
->> string list?
->
-> We did? This is fine for me. However, "plus one of the above" is not
-> clear. That means either is valid? If all are "the same" I would expect
-> that only nvidia,tegra20-pwm is the fallback. I'm guessing this is
-> docuemnting what happened in practice though. Probably should update the
-> doc and dts files to reflect desired practice rather than what may be in
-> the wild.
+From: Sylvain Lemieux <slemieux@tycoint.com>
 
-FWIW, I've started listing the legal values as explicit separate bullet 
-items rather than prose. See the example below - all those entries are 
-just one string simply due to the HW design it represents, but each 
-entry could be a list (i.e. is a complete compatible value):
+The PWM_PIN_LEVEL bit is leave unset by the kernel PWM driver.
 
-- compatible
-     Array of strings.
-     One of:
-     - "nvidia,tegra186-gpio".
-     - "nvidia,tegra186-gpio-aon".
+Prior to commit 08ee77b5a5de27ad63c92262ebcb4efe0da93b58,
+the PWM_PIN_LEVEL bit was always clear when the PWM was disable
+and a 0 logic level was apply to the output.
 
-could be expanded as e.g.
+According to the LPC32x0 User Manual [1],
+the default value for bit 30 (PWM_PIN_LEVEL) is 0.
 
-     - "nvidia,tegra999-gpio", "nvidia,tegra186-gpio"
-     ...
+This change initialize the pin level to 0 (default value) and
+update the register value accordingly.
+
+[1] http://www.nxp.com/documents/user_manual/UM10326.pdf
+
+Signed-off-by: Sylvain Lemieux <slemieux@tycoint.com>
+---
+Changes from v1 to v2:
+* Only setup the "PWMx_PIN_LEVEL" once on probe.
+
+ drivers/pwm/pwm-lpc32xx.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/pwm/pwm-lpc32xx.c b/drivers/pwm/pwm-lpc32xx.c
+index 4d470c1..a9b3cff 100644
+--- a/drivers/pwm/pwm-lpc32xx.c
++++ b/drivers/pwm/pwm-lpc32xx.c
+@@ -25,6 +25,7 @@ struct lpc32xx_pwm_chip {
+ };
+ 
+ #define PWM_ENABLE	BIT(31)
++#define PWM_PIN_LEVEL	BIT(30)
+ 
+ #define to_lpc32xx_pwm_chip(_chip) \
+ 	container_of(_chip, struct lpc32xx_pwm_chip, chip)
+@@ -103,6 +104,7 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
+ 	struct lpc32xx_pwm_chip *lpc32xx;
+ 	struct resource *res;
+ 	int ret;
++	u32 val;
+ 
+ 	lpc32xx = devm_kzalloc(&pdev->dev, sizeof(*lpc32xx), GFP_KERNEL);
+ 	if (!lpc32xx)
+@@ -128,6 +130,11 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	/* When PWM is disable, configure the output to the default value */
++	val = readl(lpc32xx->base + (lpc32xx->chip.pwms[0].hwpwm << 2));
++	val &= ~PWM_PIN_LEVEL;
++	writel(val, lpc32xx->base + (lpc32xx->chip.pwms[0].hwpwm << 2));
++
+ 	platform_set_drvdata(pdev, lpc32xx);
+ 
+ 	return 0;
+-- 
+1.8.3.1
