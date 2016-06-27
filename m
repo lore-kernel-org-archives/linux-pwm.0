@@ -1,62 +1,175 @@
-From: Sylvain Lemieux <slemieux.tyco@gmail.com>
-Subject: [PATCH v2 2/3] pwm: lpc32xx: Add support for PWM_PIN_LEVEL bit configuration
-Date: Mon, 27 Jun 2016 09:09:56 -0400
-Message-ID: <1467032997-5340-3-git-send-email-slemieux.tyco@gmail.com>
-References: <1467032997-5340-1-git-send-email-slemieux.tyco@gmail.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-it0-f68.google.com ([209.85.214.68]:36847 "EHLO
-	mail-it0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751601AbcF0NKI (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 27 Jun 2016 09:10:08 -0400
-Received: by mail-it0-f68.google.com with SMTP id h190so10227894ith.3
-        for <linux-pwm@vger.kernel.org>; Mon, 27 Jun 2016 06:10:07 -0700 (PDT)
-In-Reply-To: <1467032997-5340-1-git-send-email-slemieux.tyco@gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH v2] ARM: at91: Document new TCB bindings
+Date: Mon, 27 Jun 2016 17:05:01 +0200
+Message-ID: <1467039901-11297-1-git-send-email-alexandre.belloni@free-electrons.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@atmel.com>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: vz@mleia.com, thierry.reding@gmail.com
-Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
 
-From: Sylvain Lemieux <slemieux@tycoint.com>
+The current binding for the TCB is not flexible enough for some use cases
+and prevents proper utilization of all the channels.
 
-Provide support to configure the pin output
-(i.e. PWM_PIN_LEVEL bit) when the PWM is disabled.
-
-Note:
-When the LPC32xx PWM is disabled, both options of pin
-output high and low level values are valid; however this
-particular controller does not have polarity control.
-
-Refer to the LPC32x0 User Manual [1], for details.
-
-[1] http://www.nxp.com/documents/user_manual/UM10326.pdf
-
-Signed-off-by: Sylvain Lemieux <slemieux@tycoint.com>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 ---
-Changes from v1 to v2:
-* New patch in version 2.
 
- drivers/pwm/pwm-lpc32xx.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Changes in v2:
+ - added slow_clk in the examples
+ - removed linuxisms
 
-diff --git a/drivers/pwm/pwm-lpc32xx.c b/drivers/pwm/pwm-lpc32xx.c
-index a9b3cff..d1bd901 100644
---- a/drivers/pwm/pwm-lpc32xx.c
-+++ b/drivers/pwm/pwm-lpc32xx.c
-@@ -130,9 +130,13 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
- 		return ret;
- 	}
+Rob, does that fit what you wanted? I prefer getting your ack on that one before
+resending a 48 patches series.
+
+
+ .../devicetree/bindings/arm/atmel-at91.txt         | 32 -----------
+ .../devicetree/bindings/mfd/atmel-tcb.txt          | 62 ++++++++++++++++++++++
+ .../devicetree/bindings/pwm/atmel-tcb-pwm.txt      | 12 +++--
+ 3 files changed, 69 insertions(+), 37 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mfd/atmel-tcb.txt
+
+diff --git a/Documentation/devicetree/bindings/arm/atmel-at91.txt b/Documentation/devicetree/bindings/arm/atmel-at91.txt
+index e1f5ad855f14..3dc758403d03 100644
+--- a/Documentation/devicetree/bindings/arm/atmel-at91.txt
++++ b/Documentation/devicetree/bindings/arm/atmel-at91.txt
+@@ -60,38 +60,6 @@ System Timer (ST) required properties:
+ Its subnodes can be:
+ - watchdog: compatible should be "atmel,at91rm9200-wdt"
  
--	/* When PWM is disable, configure the output to the default value */
-+	/* When PWM is disable, configure the output correctly */
- 	val = readl(lpc32xx->base + (lpc32xx->chip.pwms[0].hwpwm << 2));
--	val &= ~PWM_PIN_LEVEL;
-+	if (device_property_read_bool(&pdev->dev,
-+				      "nxp,pwm-disabled-level-high"))
-+		val |= PWM_PIN_LEVEL;
-+	else
-+		val &= ~PWM_PIN_LEVEL;
- 	writel(val, lpc32xx->base + (lpc32xx->chip.pwms[0].hwpwm << 2));
+-TC/TCLIB Timer required properties:
+-- compatible: Should be "atmel,<chip>-tcb".
+-  <chip> can be "at91rm9200" or "at91sam9x5"
+-- reg: Should contain registers location and length
+-- interrupts: Should contain all interrupts for the TC block
+-  Note that you can specify several interrupt cells if the TC
+-  block has one interrupt per channel.
+-- clock-names: tuple listing input clock names.
+-	Required elements: "t0_clk", "slow_clk"
+-	Optional elements: "t1_clk", "t2_clk"
+-- clocks: phandles to input clocks.
+-
+-Examples:
+-
+-One interrupt per TC block:
+-	tcb0: timer@fff7c000 {
+-		compatible = "atmel,at91rm9200-tcb";
+-		reg = <0xfff7c000 0x100>;
+-		interrupts = <18 4>;
+-		clocks = <&tcb0_clk>;
+-		clock-names = "t0_clk";
+-	};
+-
+-One interrupt per TC channel in a TC block:
+-	tcb1: timer@fffdc000 {
+-		compatible = "atmel,at91rm9200-tcb";
+-		reg = <0xfffdc000 0x100>;
+-		interrupts = <26 4 27 4 28 4>;
+-		clocks = <&tcb1_clk>;
+-		clock-names = "t0_clk";
+-	};
+-
+ RSTC Reset Controller required properties:
+ - compatible: Should be "atmel,<chip>-rstc".
+   <chip> can be "at91sam9260" or "at91sam9g45" or "sama5d3"
+diff --git a/Documentation/devicetree/bindings/mfd/atmel-tcb.txt b/Documentation/devicetree/bindings/mfd/atmel-tcb.txt
+new file mode 100644
+index 000000000000..71c8d83c01a7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/atmel-tcb.txt
+@@ -0,0 +1,62 @@
++* Device tree bindings for Atmel Timer Counter Blocks
++- compatible: Should be "atmel,<chip>-tcb", "simple-mfd", "syscon".
++  <chip> can be "at91rm9200" or "at91sam9x5"
++- reg: Should contain registers location and length
++- #address-cells: has to be 1
++- #size-cells: has to be 0
++- interrupts: Should contain all interrupts for the TC block
++  Note that you can specify several interrupt cells if the TC
++  block has one interrupt per channel.
++- clock-names: tuple listing input clock names.
++	Required elements: "t0_clk", "slow_clk"
++	Optional elements: "t1_clk", "t2_clk"
++- clocks: phandles to input clocks.
++
++The TCB can expose multiple subdevices:
++ * a clocksource and clockevent device
++   - compatible: Should be "atmel,tcb-free-running-timer"
++   - reg: Should contain the TCB channels to be used. If the
++     counter width is 16 bits (at91rm9200-tcb), two consecutive
++     channels are needed. Else, only one channel will be used.
++
++ * a clockevent device
++   - compatible: Should be "atmel,tcb-programmable-timer"
++   - reg: Should contain the TCB channel to be used
++
++ * a PWM chip: see ../pwm/atmel-tcb-pwm.txt
++
++Examples:
++
++One interrupt per TC block:
++	tcb0: timer@fff7c000 {
++		compatible = "atmel,at91rm9200-tcb", "simple-mfd", "syscon";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		reg = <0xfff7c000 0x100>;
++		interrupts = <18 4>;
++		clocks = <&tcb0_clk>, <&clk32k>;
++		clock-names = "t0_clk", "slow_clk";
++
++		timer@0 {
++			compatible = "atmel,tcb-free-running-timer";
++			reg = <0>, <1>;
++		};
++
++		timer@2 {
++			compatible = "atmel,tcb-programmable-timer";
++			reg = <2>;
++		};
++	};
++
++One interrupt per TC channel in a TC block:
++	tcb1: timer@fffdc000 {
++		compatible = "atmel,at91rm9200-tcb", "simple-mfd", "syscon";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		reg = <0xfffdc000 0x100>;
++		interrupts = <26 4>, <27 4>, <28 4>;
++		clocks = <&tcb1_clk>, <&clk32k>;
++		clock-names = "t0_clk", "slow_clk";
++	};
++
++
+diff --git a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
+index 8031148bcf85..ab8fbd5ba184 100644
+--- a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
+@@ -2,15 +2,17 @@ Atmel TCB PWM controller
  
- 	platform_set_drvdata(pdev, lpc32xx);
+ Required properties:
+ - compatible: should be "atmel,tcb-pwm"
++- reg: tcb channel to use. Each channel can export 2 PWMs
+ - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
+   the cells format. The only third cell flag supported by this binding is
+   PWM_POLARITY_INVERTED.
+-- tc-block: The Timer Counter block to use as a PWM chip.
+ 
+ Example:
+ 
+-pwm {
+-	compatible = "atmel,tcb-pwm";
+-	#pwm-cells = <3>;
+-	tc-block = <1>;
++tcb0: timer@f800c000 {
++	pwm@0 {
++		compatible = "atmel,tcb-pwm";
++		reg = <0>;
++		#pwm-cells = <3>;
++	};
+ };
 -- 
-1.8.3.1
+2.8.1
