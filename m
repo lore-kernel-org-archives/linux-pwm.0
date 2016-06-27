@@ -1,175 +1,52 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: [PATCH v2] ARM: at91: Document new TCB bindings
-Date: Mon, 27 Jun 2016 17:05:01 +0200
-Message-ID: <1467039901-11297-1-git-send-email-alexandre.belloni@free-electrons.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@atmel.com>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+From: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
+Subject: Re: [RESEND PATCH v2 1/5] ir-rx51: Fix build after multiarch changes
+ broke it
+Date: Mon, 27 Jun 2016 21:19:19 +0300
+Message-ID: <57716E27.2040702@gmail.com>
+References: <1466623341-30130-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
+ <1466623341-30130-2-git-send-email-ivo.g.dimitrov.75@gmail.com>
+ <201606231948.51640@pali>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:34823 "EHLO
+	mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751745AbcF0STn (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 27 Jun 2016 14:19:43 -0400
+In-Reply-To: <201606231948.51640@pali>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-
-The current binding for the TCB is not flexible enough for some use cases
-and prevents proper utilization of all the channels.
-
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: devicetree@vger.kernel.org
-Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
----
-
-Changes in v2:
- - added slow_clk in the examples
- - removed linuxisms
-
-Rob, does that fit what you wanted? I prefer getting your ack on that one before
-resending a 48 patches series.
+To: =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali.rohar@gmail.com>
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, thierry.reding@gmail.com, bcousson@baylibre.com, tony@atomide.com, linux@arm.linux.org.uk, mchehab@osg.samsung.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org, sre@kernel.org, pavel@ucw.cz, Neil Armstrong <narmstrong@baylibre.com>
 
 
- .../devicetree/bindings/arm/atmel-at91.txt         | 32 -----------
- .../devicetree/bindings/mfd/atmel-tcb.txt          | 62 ++++++++++++++++++++++
- .../devicetree/bindings/pwm/atmel-tcb-pwm.txt      | 12 +++--
- 3 files changed, 69 insertions(+), 37 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/mfd/atmel-tcb.txt
 
-diff --git a/Documentation/devicetree/bindings/arm/atmel-at91.txt b/Documentation/devicetree/bindings/arm/atmel-at91.txt
-index e1f5ad855f14..3dc758403d03 100644
---- a/Documentation/devicetree/bindings/arm/atmel-at91.txt
-+++ b/Documentation/devicetree/bindings/arm/atmel-at91.txt
-@@ -60,38 +60,6 @@ System Timer (ST) required properties:
- Its subnodes can be:
- - watchdog: compatible should be "atmel,at91rm9200-wdt"
- 
--TC/TCLIB Timer required properties:
--- compatible: Should be "atmel,<chip>-tcb".
--  <chip> can be "at91rm9200" or "at91sam9x5"
--- reg: Should contain registers location and length
--- interrupts: Should contain all interrupts for the TC block
--  Note that you can specify several interrupt cells if the TC
--  block has one interrupt per channel.
--- clock-names: tuple listing input clock names.
--	Required elements: "t0_clk", "slow_clk"
--	Optional elements: "t1_clk", "t2_clk"
--- clocks: phandles to input clocks.
--
--Examples:
--
--One interrupt per TC block:
--	tcb0: timer@fff7c000 {
--		compatible = "atmel,at91rm9200-tcb";
--		reg = <0xfff7c000 0x100>;
--		interrupts = <18 4>;
--		clocks = <&tcb0_clk>;
--		clock-names = "t0_clk";
--	};
--
--One interrupt per TC channel in a TC block:
--	tcb1: timer@fffdc000 {
--		compatible = "atmel,at91rm9200-tcb";
--		reg = <0xfffdc000 0x100>;
--		interrupts = <26 4 27 4 28 4>;
--		clocks = <&tcb1_clk>;
--		clock-names = "t0_clk";
--	};
--
- RSTC Reset Controller required properties:
- - compatible: Should be "atmel,<chip>-rstc".
-   <chip> can be "at91sam9260" or "at91sam9g45" or "sama5d3"
-diff --git a/Documentation/devicetree/bindings/mfd/atmel-tcb.txt b/Documentation/devicetree/bindings/mfd/atmel-tcb.txt
-new file mode 100644
-index 000000000000..71c8d83c01a7
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/atmel-tcb.txt
-@@ -0,0 +1,62 @@
-+* Device tree bindings for Atmel Timer Counter Blocks
-+- compatible: Should be "atmel,<chip>-tcb", "simple-mfd", "syscon".
-+  <chip> can be "at91rm9200" or "at91sam9x5"
-+- reg: Should contain registers location and length
-+- #address-cells: has to be 1
-+- #size-cells: has to be 0
-+- interrupts: Should contain all interrupts for the TC block
-+  Note that you can specify several interrupt cells if the TC
-+  block has one interrupt per channel.
-+- clock-names: tuple listing input clock names.
-+	Required elements: "t0_clk", "slow_clk"
-+	Optional elements: "t1_clk", "t2_clk"
-+- clocks: phandles to input clocks.
-+
-+The TCB can expose multiple subdevices:
-+ * a clocksource and clockevent device
-+   - compatible: Should be "atmel,tcb-free-running-timer"
-+   - reg: Should contain the TCB channels to be used. If the
-+     counter width is 16 bits (at91rm9200-tcb), two consecutive
-+     channels are needed. Else, only one channel will be used.
-+
-+ * a clockevent device
-+   - compatible: Should be "atmel,tcb-programmable-timer"
-+   - reg: Should contain the TCB channel to be used
-+
-+ * a PWM chip: see ../pwm/atmel-tcb-pwm.txt
-+
-+Examples:
-+
-+One interrupt per TC block:
-+	tcb0: timer@fff7c000 {
-+		compatible = "atmel,at91rm9200-tcb", "simple-mfd", "syscon";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		reg = <0xfff7c000 0x100>;
-+		interrupts = <18 4>;
-+		clocks = <&tcb0_clk>, <&clk32k>;
-+		clock-names = "t0_clk", "slow_clk";
-+
-+		timer@0 {
-+			compatible = "atmel,tcb-free-running-timer";
-+			reg = <0>, <1>;
-+		};
-+
-+		timer@2 {
-+			compatible = "atmel,tcb-programmable-timer";
-+			reg = <2>;
-+		};
-+	};
-+
-+One interrupt per TC channel in a TC block:
-+	tcb1: timer@fffdc000 {
-+		compatible = "atmel,at91rm9200-tcb", "simple-mfd", "syscon";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		reg = <0xfffdc000 0x100>;
-+		interrupts = <26 4>, <27 4>, <28 4>;
-+		clocks = <&tcb1_clk>, <&clk32k>;
-+		clock-names = "t0_clk", "slow_clk";
-+	};
-+
-+
-diff --git a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-index 8031148bcf85..ab8fbd5ba184 100644
---- a/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-+++ b/Documentation/devicetree/bindings/pwm/atmel-tcb-pwm.txt
-@@ -2,15 +2,17 @@ Atmel TCB PWM controller
- 
- Required properties:
- - compatible: should be "atmel,tcb-pwm"
-+- reg: tcb channel to use. Each channel can export 2 PWMs
- - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
-   the cells format. The only third cell flag supported by this binding is
-   PWM_POLARITY_INVERTED.
--- tc-block: The Timer Counter block to use as a PWM chip.
- 
- Example:
- 
--pwm {
--	compatible = "atmel,tcb-pwm";
--	#pwm-cells = <3>;
--	tc-block = <1>;
-+tcb0: timer@f800c000 {
-+	pwm@0 {
-+		compatible = "atmel,tcb-pwm";
-+		reg = <0>;
-+		#pwm-cells = <3>;
-+	};
- };
--- 
-2.8.1
+On 23.06.2016 20:48, Pali Roh=C3=A1r wrote:
+> On Wednesday 22 June 2016 21:22:17 Ivaylo Dimitrov wrote:
+>> The ir-rx51 driver for n900 has been disabled since the multiarch
+>> changes as plat include directory no longer is SoC specific.
+>>
+>> Let's fix it with minimal changes to pass the dmtimer calls in
+>> pdata. Then the following changes can be done while things can
+>> be tested to be working for each change:
+>>
+>> 1. Change the non-pwm dmtimer to use just hrtimer if possible
+>>
+>> 2. Change the pwm dmtimer to use Linux PWM API with the new
+>>     drivers/pwm/pwm-omap-dmtimer.c and remove the direct calls
+>>     to dmtimer functions
+>>
+>> 3. Parse configuration from device tree and drop the pdata
+>>
+>> Note compilation of this depends on the previous patch
+>> "ARM: OMAP2+: Add more functions to pwm pdata for ir-rx51".
+>
+> I think that this extensive description is not needed for commit
+> message. Just for email discussion.
+>
+
+I guess Tony can strip the description a bit before applying.
+
+Ivo
