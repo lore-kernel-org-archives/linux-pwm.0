@@ -1,64 +1,39 @@
-From: Vladimir Zapolskiy <vz@mleia.com>
-Subject: Re: [PATCH v2 0/3] pwm: lpc32xx: Add support to control PWM_PIN_LEVEL
- bit
-Date: Thu, 30 Jun 2016 11:43:16 +0300
-Message-ID: <ce29f743-e481-64b0-8e05-0b610fa33fb3@mleia.com>
-References: <1467032997-5340-1-git-send-email-slemieux.tyco@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mleia.com ([178.79.152.223]:34250 "EHLO mail.mleia.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751863AbcF3InT (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Thu, 30 Jun 2016 04:43:19 -0400
-In-Reply-To: <1467032997-5340-1-git-send-email-slemieux.tyco@gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [GIT PULL] pwm: Fixes for v4.7-rc6
+Date: Thu, 30 Jun 2016 11:10:03 +0200
+Message-ID: <20160630091003.411-1-thierry.reding@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Sylvain Lemieux <slemieux.tyco@gmail.com>
-Cc: thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
 
-Hi Sylvain,
+Hi Linus,
 
-On 27.06.2016 16:09, Sylvain Lemieux wrote:
-> From: Sylvain Lemieux <slemieux@tycoint.com>
-> 
-> The PWM_PIN_LEVEL bit is leave unset by the kernel PWM driver.
-> 
-> Prior to commit 08ee77b5a5de27ad63c92262ebcb4efe0da93b58,
-> the PWM_PIN_LEVEL bit was always clear when the PWM was disable
-> and a 0 logic level was apply to the output.
-> 
-> According to the LPC32x0 User Manual [1],
-> the default value for bit 30 (PWM_PIN_LEVEL) is 0.
-> 
-> First patch:
-> * initialize the pin level to 0 (default value) and update
->   the register value accordingly.
-> 
-> Second anf third patches:
-> *  provide support to configure the pin output (i.e. PWM_PIN_LEVEL bit)
->    when the PWM is disabled.
+The following changes since commit cc51846ba81ca179a3be20f6313e3b72531888c1:
 
-a short question, how do you use PWM? Does it serve as a backlight
-or something else?
+  pwm: atmel-hlcdc: Fix default PWM polarity (2016-06-14 10:51:45 +0200)
 
-> Note:
-> * Follow this URL to access the discussion for version 1 of this
->   patch: http://thread.gmane.org/gmane.linux.pwm/3882
-> 
-> [1] http://www.nxp.com/documents/user_manual/UM10326.pdf
-> 
-> Sylvain Lemieux (3):
->   pwm: lpc32xx: Set PWM_PIN_LEVEL bit to default value
->   pwm: lpc32xx: Add support for PWM_PIN_LEVEL bit configuration
->   dt-bindings: pwm: lpc32xx: Add nxp,pwm-disabled-level-high property
-> 
->  Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt |  3 +++
->  drivers/pwm/pwm-lpc32xx.c                             | 11 +++++++++++
->  2 files changed, 14 insertions(+)
-> 
+are available in the git repository at:
 
---
-With best wishes,
-Vladimir
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.7-rc6
+
+for you to fetch changes up to 33cdcee04be3b4482be97393167e7561b2584e1e:
+
+  pwm: Fix pwm_apply_args() (2016-06-23 18:37:05 +0200)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Fixes for v4.7-rc6
+
+One more fix for some fallout observed after the introduction of the
+atomic API.
+
+----------------------------------------------------------------
+Boris Brezillon (1):
+      pwm: Fix pwm_apply_args()
+
+ include/linux/pwm.h | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
