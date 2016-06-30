@@ -1,56 +1,64 @@
-From: Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [RESEND PATCH v2 1/5] ir-rx51: Fix build after multiarch changes
- broke it
-Date: Wed, 29 Jun 2016 21:49:59 -0700
-Message-ID: <20160630044959.GL28140@atomide.com>
-References: <1466623341-30130-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
- <1466623341-30130-2-git-send-email-ivo.g.dimitrov.75@gmail.com>
- <201606231948.51640@pali>
- <57716E27.2040702@gmail.com>
+From: Vladimir Zapolskiy <vz@mleia.com>
+Subject: Re: [PATCH v2 0/3] pwm: lpc32xx: Add support to control PWM_PIN_LEVEL
+ bit
+Date: Thu, 30 Jun 2016 11:43:16 +0300
+Message-ID: <ce29f743-e481-64b0-8e05-0b610fa33fb3@mleia.com>
+References: <1467032997-5340-1-git-send-email-slemieux.tyco@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <57716E27.2040702-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Ivaylo Dimitrov <ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Pali =?utf-8?B?Um9ow6Fy?= <pali.rohar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org, galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, bcousson-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, pavel-+ZI9xUNit7I@public.gmane.org, Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mleia.com ([178.79.152.223]:34250 "EHLO mail.mleia.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751863AbcF3InT (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+	Thu, 30 Jun 2016 04:43:19 -0400
+In-Reply-To: <1467032997-5340-1-git-send-email-slemieux.tyco@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Sylvain Lemieux <slemieux.tyco@gmail.com>
+Cc: thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
 
-* Ivaylo Dimitrov <ivo.g.dimitrov.75-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> [160627 11:22]:
-> On 23.06.2016 20:48, Pali Roh=C3=A1r wrote:
-> > On Wednesday 22 June 2016 21:22:17 Ivaylo Dimitrov wrote:
-> > > The ir-rx51 driver for n900 has been disabled since the multiarch
-> > > changes as plat include directory no longer is SoC specific.
-> > >=20
-> > > Let's fix it with minimal changes to pass the dmtimer calls in
-> > > pdata. Then the following changes can be done while things can
-> > > be tested to be working for each change:
-> > >=20
-> > > 1. Change the non-pwm dmtimer to use just hrtimer if possible
-> > >=20
-> > > 2. Change the pwm dmtimer to use Linux PWM API with the new
-> > >     drivers/pwm/pwm-omap-dmtimer.c and remove the direct calls
-> > >     to dmtimer functions
-> > >=20
-> > > 3. Parse configuration from device tree and drop the pdata
-> > >=20
-> > > Note compilation of this depends on the previous patch
-> > > "ARM: OMAP2+: Add more functions to pwm pdata for ir-rx51".
-> >=20
-> > I think that this extensive description is not needed for commit
-> > message. Just for email discussion.
-> >=20
->=20
-> I guess Tony can strip the description a bit before applying.
+Hi Sylvain,
 
-OK I'll leave out the last paragraph as that already got merged
-earlier.
+On 27.06.2016 16:09, Sylvain Lemieux wrote:
+> From: Sylvain Lemieux <slemieux@tycoint.com>
+> 
+> The PWM_PIN_LEVEL bit is leave unset by the kernel PWM driver.
+> 
+> Prior to commit 08ee77b5a5de27ad63c92262ebcb4efe0da93b58,
+> the PWM_PIN_LEVEL bit was always clear when the PWM was disable
+> and a 0 logic level was apply to the output.
+> 
+> According to the LPC32x0 User Manual [1],
+> the default value for bit 30 (PWM_PIN_LEVEL) is 0.
+> 
+> First patch:
+> * initialize the pin level to 0 (default value) and update
+>   the register value accordingly.
+> 
+> Second anf third patches:
+> *  provide support to configure the pin output (i.e. PWM_PIN_LEVEL bit)
+>    when the PWM is disabled.
 
-Tony
+a short question, how do you use PWM? Does it serve as a backlight
+or something else?
+
+> Note:
+> * Follow this URL to access the discussion for version 1 of this
+>   patch: http://thread.gmane.org/gmane.linux.pwm/3882
+> 
+> [1] http://www.nxp.com/documents/user_manual/UM10326.pdf
+> 
+> Sylvain Lemieux (3):
+>   pwm: lpc32xx: Set PWM_PIN_LEVEL bit to default value
+>   pwm: lpc32xx: Add support for PWM_PIN_LEVEL bit configuration
+>   dt-bindings: pwm: lpc32xx: Add nxp,pwm-disabled-level-high property
+> 
+>  Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt |  3 +++
+>  drivers/pwm/pwm-lpc32xx.c                             | 11 +++++++++++
+>  2 files changed, 14 insertions(+)
+> 
+
 --
-To unsubscribe from this list: send the line "unsubscribe devicetree" i=
-n
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+With best wishes,
+Vladimir
