@@ -1,139 +1,275 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v2] ARM: at91: Document new TCB bindings
-Date: Mon, 4 Jul 2016 15:10:58 +0200
-Message-ID: <20160704151058.44b679bf@bbrezillon>
-References: <1467039901-11297-1-git-send-email-alexandre.belloni@free-electrons.com>
-	<20160701012743.GA16698@rob-hp-laptop>
+Subject: Re: [PATCH RESEND 2/3] pwm: kona: Add support for Broadcom iproc
+ pwm controller
+Date: Mon, 4 Jul 2016 15:37:12 +0200
+Message-ID: <20160704153712.2117077c@bbrezillon>
+References: <1459261350-23851-1-git-send-email-yendapally.reddy@broadcom.com>
+ <1459261350-23851-3-git-send-email-yendapally.reddy@broadcom.com>
+ <20160510144024.GA7149@ulmo.ba.sec>
+ <20160623223252.6b674ca3@bbrezillon>
+ <20160628125223.GA5662@ulmo.ba.sec>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160701012743.GA16698@rob-hp-laptop>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Daniel Lezcano <daniel.lezcano@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20160628125223.GA5662@ulmo.ba.sec>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, Russell King <linux@arm.linux.org.uk>, Scott Branden <sbranden@broadcom.com>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Jon Mason <jonmason@broadcom.com>, Ray Jui <rjui@broadcom.com>, linux-kernel@vger.kernel.org, Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>, Rob Herring <robh+dt@kernel.org>, bcm-kernel-feedback-list@broadcom.com, linux-arm-kernel@lists.infradead.org, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, 30 Jun 2016 20:27:43 -0500
-Rob Herring <robh@kernel.org> wrote:
+Hi Thierry,
 
-> On Mon, Jun 27, 2016 at 05:05:01PM +0200, Alexandre Belloni wrote:
-> > The current binding for the TCB is not flexible enough for some use cases
-> > and prevents proper utilization of all the channels.
+This is my last answer to this thread, after that I'll stop bothering
+you: after all, you're the PWM subsystem maintainer, and I have nothing
+to say about how you want to maintain your subsytem ;-).
+
+On Tue, 28 Jun 2016 14:52:23 +0200
+Thierry Reding <thierry.reding@gmail.com> wrote:
+
+> On Thu, Jun 23, 2016 at 10:32:52PM +0200, Boris Brezillon wrote:
+> > Hi,
 > > 
-> > Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> > Cc: Thierry Reding <thierry.reding@gmail.com>
-> > Cc: linux-pwm@vger.kernel.org
-> > Cc: Rob Herring <robh+dt@kernel.org>
-> > Cc: devicetree@vger.kernel.org
-> > Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> > ---
+> > On Tue, 10 May 2016 16:40:24 +0200
+> > Thierry Reding <thierry.reding@gmail.com> wrote:
+> >   
+> > > On Tue, Mar 29, 2016 at 10:22:29AM -0400, Yendapally Reddy Dhananjaya Reddy wrote:  
+> > > > Update the kona driver to support Broadcom iproc pwm controller
+> > > > 
+> > > > Signed-off-by: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
+> > > > ---
+> > > >  drivers/pwm/Kconfig        |   6 +-
+> > > >  drivers/pwm/pwm-bcm-kona.c | 183 +++++++++++++++++++++++++++++++++++++++------
+> > > >  2 files changed, 163 insertions(+), 26 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> > > > index c182efc..e45ea33 100644
+> > > > --- a/drivers/pwm/Kconfig
+> > > > +++ b/drivers/pwm/Kconfig
+> > > > @@ -76,9 +76,11 @@ config PWM_ATMEL_TCB
+> > > >  
+> > > >  config PWM_BCM_KONA
+> > > >  	tristate "Kona PWM support"
+> > > > -	depends on ARCH_BCM_MOBILE
+> > > > +	depends on ARCH_BCM_MOBILE || ARCH_BCM_IPROC
+> > > > +	default ARCH_BCM_IPROC    
+> > > 
+> > > Why the default? Typically you'd enable this in one or more of the
+> > > default configurations. default ARCH_* is really only useful if the
+> > > driver is essential. PWM doesn't usually fall into this category.
+> > >   
+> > > > diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
+> > > > index c634183..ef152e3a 100644
+> > > > --- a/drivers/pwm/pwm-bcm-kona.c
+> > > > +++ b/drivers/pwm/pwm-bcm-kona.c
+> > > > @@ -19,6 +19,7 @@
+> > > >  #include <linux/math64.h>
+> > > >  #include <linux/module.h>
+> > > >  #include <linux/of.h>
+> > > > +#include <linux/of_device.h>
+> > > >  #include <linux/platform_device.h>
+> > > >  #include <linux/pwm.h>
+> > > >  #include <linux/slab.h>
+> > > > @@ -47,30 +48,90 @@
+> > > >  
+> > > >  #define PWM_CONTROL_OFFSET			(0x00000000)
+> > > >  #define PWM_CONTROL_SMOOTH_SHIFT(chan)		(24 + (chan))
+> > > > -#define PWM_CONTROL_TYPE_SHIFT(chan)		(16 + (chan))
+> > > > +#define PWM_CONTROL_TYPE_SHIFT(shift, chan)	(shift + chan)    
+> > > 
+> > > You need to put the parameters into parentheses to avoid expansion from
+> > > potentially messing up the expression.
+> > >   
+> > > >  #define PWM_CONTROL_POLARITY_SHIFT(chan)	(8 + (chan))
+> > > >  #define PWM_CONTROL_TRIGGER_SHIFT(chan)		(chan)
+> > > >  
+> > > >  #define PRESCALE_OFFSET				(0x00000004)
+> > > > -#define PRESCALE_SHIFT(chan)			((chan) << 2)
+> > > > -#define PRESCALE_MASK(chan)			(0x7 << PRESCALE_SHIFT(chan))
+> > > > +#define PRESCALE_SHIFT				(0x00000004)
+> > > > +#define PRESCALE_MASK				(0x00000007)    
+> > > 
+> > > Hmm... this looks odd. Why are you dropping the chan parameter here?
+> > >   
+> > > >  #define PRESCALE_MIN				(0x00000000)
+> > > >  #define PRESCALE_MAX				(0x00000007)
+> > > >  
+> > > > -#define PERIOD_COUNT_OFFSET(chan)		(0x00000008 + ((chan) << 3))
+> > > > +#define PERIOD_COUNT_OFFSET(offset, chan)	(offset + (chan << 3))    
+> > > 
+> > > Need parentheses here as well.
+> > >   
+> > > >  #define PERIOD_COUNT_MIN			(0x00000002)
+> > > >  #define PERIOD_COUNT_MAX			(0x00ffffff)
+> > > > +#define KONA_PERIOD_COUNT_OFFSET		(0x00000008)
+> > > >  
+> > > > -#define DUTY_CYCLE_HIGH_OFFSET(chan)		(0x0000000c + ((chan) << 3))
+> > > > +#define DUTY_CYCLE_HIGH_OFFSET(offset, chan)	(offset + (chan << 3))
+> > > >  #define DUTY_CYCLE_HIGH_MIN			(0x00000000)
+> > > >  #define DUTY_CYCLE_HIGH_MAX			(0x00ffffff)
+> > > > +#define KONA_DUTY_CYCLE_HIGH_OFFSET		(0x0000000c)
+> > > > +
+> > > > +#define PWM_CHANNEL_CNT				(0x00000006)
+> > > > +#define SIGNAL_PUSH_PULL			(0x00000001)
+> > > > +#define PWMOUT_TYPE_SHIFT			(0x00000010)
+> > > > +
+> > > > +#define IPROC_PRESCALE_OFFSET			(0x00000024)
+> > > > +#define IPROC_PRESCALE_SHIFT			(0x00000006)
+> > > > +#define IPROC_PRESCALE_MAX			(0x0000003f)
+> > > > +
+> > > > +#define IPROC_PERIOD_COUNT_OFFSET		(0x00000004)
+> > > > +#define IPROC_PERIOD_COUNT_MIN			(0x00000002)
+> > > > +#define IPROC_PERIOD_COUNT_MAX			(0x0000ffff)
+> > > > +
+> > > > +#define IPROC_DUTY_CYCLE_HIGH_OFFSET		(0x00000008)
+> > > > +#define IPROC_DUTY_CYCLE_HIGH_MIN		(0x00000000)
+> > > > +#define IPROC_DUTY_CYCLE_HIGH_MAX		(0x0000ffff)
+> > > > +
+> > > > +#define IPROC_PWM_CHANNEL_CNT			(0x00000004)
+> > > > +#define IPROC_SIGNAL_PUSH_PULL			(0x00000000)
+> > > > +#define IPROC_PWMOUT_TYPE_SHIFT			(0x0000000f)
+> > > > +
+> > > > +/*
+> > > > + * pwm controller reg structure
+> > > > + *
+> > > > + * @prescale_offset: prescale register offset
+> > > > + * @period_offset: period register offset
+> > > > + * @duty_offset: duty register offset
+> > > > + * @no_of_channels: number of channels
+> > > > + * @out_type_shift: out type shift in the register
+> > > > + * @signal_type: push-pull or open drain
+> > > > + * @prescale_max: prescale max
+> > > > + * @prescale_shift: prescale shift in register
+> > > > + * @prescale_ch_ascending: prescale ch order in prescale register
+> > > > + * @duty_cycle_max: value of max duty cycle
+> > > > + * @duty_cycle_min: value of min duty cycle
+> > > > + * @period_count_max: max period count val
+> > > > + * @period_count_min: min period count val
+> > > > + * @smooth_output_support: pwm smooth output support
+> > > > + */
+> > > > +struct kona_pwmc_reg {
+> > > > +	u32 prescale_offset;
+> > > > +	u32 period_offset;
+> > > > +	u32 duty_offset;
+> > > > +	u32 no_of_channels;
+> > > > +	u32 out_type_shift;
+> > > > +	u32 signal_type;
+> > > > +	u32 prescale_max;
+> > > > +	u32 prescale_shift;
+> > > > +	bool prescale_ch_ascending;
+> > > > +	u32 duty_cycle_max;
+> > > > +	u32 duty_cycle_min;
+> > > > +	u32 period_count_max;
+> > > > +	u32 period_count_min;
+> > > > +	bool smooth_output_support;
+> > > > +};    
+> > > 
+> > > This is rather tedious. It looks to me like this isn't very similar to
+> > > the existing driver. Register offsets move around, bitfield positions
+> > > change, feature set is different. Might be better off turning this into
+> > > a separate driver after all.
+> > >   
+> > > > +static const struct kona_pwmc_reg kona_pwmc_reg_data = {
+> > > > +	.prescale_offset = PRESCALE_OFFSET,
+> > > > +	.period_offset = KONA_PERIOD_COUNT_OFFSET,
+> > > > +	.duty_offset = KONA_DUTY_CYCLE_HIGH_OFFSET,
+> > > > +	.no_of_channels = PWM_CHANNEL_CNT,
+> > > > +	.out_type_shift = PWMOUT_TYPE_SHIFT,
+> > > > +	.signal_type = SIGNAL_PUSH_PULL,
+> > > > +	.prescale_max = PRESCALE_MAX,
+> > > > +	.prescale_shift = PRESCALE_SHIFT,
+> > > > +	.prescale_ch_ascending = false,
+> > > > +	.duty_cycle_max = DUTY_CYCLE_HIGH_MAX,
+> > > > +	.duty_cycle_min = DUTY_CYCLE_HIGH_MIN,
+> > > > +	.period_count_max = PERIOD_COUNT_MAX,
+> > > > +	.period_count_min = PERIOD_COUNT_MIN,
+> > > > +	.smooth_output_support = true,
+> > > > +};
+> > > > +
+> > > > +static const struct kona_pwmc_reg iproc_pwmc_reg_data = {
+> > > > +	.prescale_offset = IPROC_PRESCALE_OFFSET,
+> > > > +	.period_offset = IPROC_PERIOD_COUNT_OFFSET,
+> > > > +	.duty_offset = IPROC_DUTY_CYCLE_HIGH_OFFSET,
+> > > > +	.no_of_channels = IPROC_PWM_CHANNEL_CNT,
+> > > > +	.out_type_shift = IPROC_PWMOUT_TYPE_SHIFT,
+> > > > +	.signal_type = IPROC_SIGNAL_PUSH_PULL,
+> > > > +	.prescale_max = IPROC_PRESCALE_MAX,
+> > > > +	.prescale_shift = IPROC_PRESCALE_SHIFT,
+> > > > +	.prescale_ch_ascending = true,
+> > > > +	.duty_cycle_max = IPROC_DUTY_CYCLE_HIGH_MAX,
+> > > > +	.duty_cycle_min = IPROC_DUTY_CYCLE_HIGH_MIN,
+> > > > +	.period_count_max = IPROC_PERIOD_COUNT_MAX,
+> > > > +	.period_count_min = IPROC_PERIOD_COUNT_MIN,
+> > > > +	.smooth_output_support = false,
+> > > > +};    
+> > > 
+> > > This looks like you could possible support a lot more hardware with this
+> > > driver because it's now almost completely parameterized.
+> > > 
+> > > I don't see much sense in keeping this in the same driver and I think
+> > > it'd be better to write a new one from scratch, even if that means
+> > > slight duplication.
+> > > 
+> > > Or you'll have to make a very compelling argument as to why this is the
+> > > better option.  
 > > 
-> > Changes in v2:
-> >  - added slow_clk in the examples
-> >  - removed linuxisms
+> > Sorry to enter the discussion just now (Brian CCed me in an answer he
+> > made to v4 of this series).
 > > 
-> > Rob, does that fit what you wanted? I prefer getting your ack on that one before
-> > resending a 48 patches series.
+> > Honestly, I'd have the exact opposite argument: if you have a look at
+> > newer versions of this patch, you'll see that more than 90% of the code
+> > is duplicated, and re-using the same logic with different field
+> > positions is quite common in other drivers. Actually the counter
+> > argument to your suggestion are bug fixes: when you find a bug, you'll
+> > have to remember fixing it for all implementations. Having a common
+> > code base has IMO more pros than cons.
 > > 
-> > 
-> >  .../devicetree/bindings/arm/atmel-at91.txt         | 32 -----------
-> >  .../devicetree/bindings/mfd/atmel-tcb.txt          | 62 ++++++++++++++++++++++
-> >  .../devicetree/bindings/pwm/atmel-tcb-pwm.txt      | 12 +++--
-> >  3 files changed, 69 insertions(+), 37 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/mfd/atmel-tcb.txt
-> > 
-> > diff --git a/Documentation/devicetree/bindings/arm/atmel-at91.txt b/Documentation/devicetree/bindings/arm/atmel-at91.txt
-> > index e1f5ad855f14..3dc758403d03 100644
-> > --- a/Documentation/devicetree/bindings/arm/atmel-at91.txt
-> > +++ b/Documentation/devicetree/bindings/arm/atmel-at91.txt
-> > @@ -60,38 +60,6 @@ System Timer (ST) required properties:
-> >  Its subnodes can be:
-> >  - watchdog: compatible should be "atmel,at91rm9200-wdt"
-> >  
-> > -TC/TCLIB Timer required properties:
-> > -- compatible: Should be "atmel,<chip>-tcb".
-> > -  <chip> can be "at91rm9200" or "at91sam9x5"
-> > -- reg: Should contain registers location and length
-> > -- interrupts: Should contain all interrupts for the TC block
-> > -  Note that you can specify several interrupt cells if the TC
-> > -  block has one interrupt per channel.
-> > -- clock-names: tuple listing input clock names.
-> > -	Required elements: "t0_clk", "slow_clk"
-> > -	Optional elements: "t1_clk", "t2_clk"
-> > -- clocks: phandles to input clocks.
-> > -
-> > -Examples:
-> > -
-> > -One interrupt per TC block:
-> > -	tcb0: timer@fff7c000 {
-> > -		compatible = "atmel,at91rm9200-tcb";
-> > -		reg = <0xfff7c000 0x100>;
-> > -		interrupts = <18 4>;
-> > -		clocks = <&tcb0_clk>;
-> > -		clock-names = "t0_clk";
-> > -	};
-> > -
-> > -One interrupt per TC channel in a TC block:
-> > -	tcb1: timer@fffdc000 {
-> > -		compatible = "atmel,at91rm9200-tcb";
-> > -		reg = <0xfffdc000 0x100>;
-> > -		interrupts = <26 4 27 4 28 4>;
-> > -		clocks = <&tcb1_clk>;
-> > -		clock-names = "t0_clk";
-> > -	};
-> > -
-> >  RSTC Reset Controller required properties:
-> >  - compatible: Should be "atmel,<chip>-rstc".
-> >    <chip> can be "at91sam9260" or "at91sam9g45" or "sama5d3"
-> > diff --git a/Documentation/devicetree/bindings/mfd/atmel-tcb.txt b/Documentation/devicetree/bindings/mfd/atmel-tcb.txt
-> > new file mode 100644
-> > index 000000000000..71c8d83c01a7
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/mfd/atmel-tcb.txt
-> > @@ -0,0 +1,62 @@
-> > +* Device tree bindings for Atmel Timer Counter Blocks
-> > +- compatible: Should be "atmel,<chip>-tcb", "simple-mfd", "syscon".
-> > +  <chip> can be "at91rm9200" or "at91sam9x5"
-> > +- reg: Should contain registers location and length
-> > +- #address-cells: has to be 1
-> > +- #size-cells: has to be 0
-> > +- interrupts: Should contain all interrupts for the TC block
-> > +  Note that you can specify several interrupt cells if the TC
-> > +  block has one interrupt per channel.
-> > +- clock-names: tuple listing input clock names.
-> > +	Required elements: "t0_clk", "slow_clk"
-> > +	Optional elements: "t1_clk", "t2_clk"
-> > +- clocks: phandles to input clocks.
-> > +
-> > +The TCB can expose multiple subdevices:
-> > + * a clocksource and clockevent device  
+> > BTW, if you switch to regmap, you have this field-position
+> > customization for free (see reg_field).  
 > 
-> This still uses Linux terminology.
+> My point was that with the above structures you have an almost
+> completely parameterized driver. There's probably a number of other PWM
+> controllers that you could support using those structure, or by adding
+> to them. The question then becomes: where do we draw the line? When is
+> a new driver warranted, and when is it not.
+
+Well, there's a difference between trying to provide a completely
+generic PWM driver and trying to factorize code for 2 almost identical
+IPs (only the field position and width changes here).
+The generic PWM driver approach is clearly an utopia because all PWM
+IPs have their own requirements in term of clock source selection,
+PWM configuration and sequencing constraints.
+
+I agree that the decision to factorize common code is subjective, and
+that the maintainer (you in this case) will always have the final word.
+
 > 
-> > +   - compatible: Should be "atmel,tcb-free-running-timer"
-> > +   - reg: Should contain the TCB channels to be used. If the
-> > +     counter width is 16 bits (at91rm9200-tcb), two consecutive
-> > +     channels are needed. Else, only one channel will be used.
-> > +
-> > + * a clockevent device
-> > +   - compatible: Should be "atmel,tcb-programmable-timer"  
+> Your argument regarding bug fixes has some weight, but these drivers are
+> really trivial, so bug fixes will be equally trivial to port between
+> them.
+
+Well, it's not only about bug fixes, but driver maintenance in general.
+Let's take the recent atomic PWM rework: we're now recommending to
+implement ->apply() instead of ->enable()/disable()/config(), and Brian
+asked Yendapally to rework his implementation to follow this
+recommendation. If we had chosen for the kona driver enhancement
+instead of duplicating the code in a new driver we would have the
+atomic update for the kona IP for free...
+
 > 
-> This still looks like assigning usage in DT. As I'm willing to accept 
-> that for PWM, either timer channels should be whatever channels are not 
-> assigned to PWM (i.e. not in DT) or they should just be "timer" and let 
-> the kernel decide their usage.
+> There's also the issue about errata and quirks that may apply to one but
+> not all supported versions. The outcome of supporting all those
+> combinations can be completely unmaintainable, so I am willing to take a
+> bit of duplication if it means that in the end it will make things
+> easier for me.
 
-I just reviewed Alexandre's new binding, and it makes the whole thing
-a lot more obscure: on older SoCs, we have to chain 2 channels to
-create an acceptable wraparound time (16 bits at 5MHz is generating too
-much interrupts to be acceptable).
-
-If we don't assign the mode from the DT, how should we know which
-channels should be chained to create the free-running timer? Note that
-not all channels can be chained together: they have to be part of the
-same timer counter block and have to be consecutive (0+1, 1+2 or 3+0).
-
-Honestly, I don't see the difference between assigning the channel to a
-PWM mode and assigning it to a free-running or oneshot timer mode. Why
-is it more acceptable?
+With only 2 revisions/versions supported, I don't expect to see a lot
+of different errata, but that's true in general.
