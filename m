@@ -1,68 +1,60 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] pwm: lpss: Move clk_rate check to ->probe()
-Date: Mon,  4 Jul 2016 18:36:27 +0300
-Message-ID: <1467646587-6613-1-git-send-email-andriy.shevchenko@linux.intel.com>
+From: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
+Subject: [PATCH v5 0/3] pwm support for Broadcom iProc SoC's
+Date: Tue,  5 Jul 2016 02:00:23 -0400
+Message-ID: <1467698426-27600-1-git-send-email-yendapally.reddy@broadcom.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:21616 "EHLO mga04.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932500AbcGDPgc (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 4 Jul 2016 11:36:32 -0400
+Received: from mail-pf0-f173.google.com ([209.85.192.173]:33045 "EHLO
+	mail-pf0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751492AbcGEGAu (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 5 Jul 2016 02:00:50 -0400
+Received: by mail-pf0-f173.google.com with SMTP id i123so66948867pfg.0
+        for <linux-pwm@vger.kernel.org>; Mon, 04 Jul 2016 23:00:49 -0700 (PDT)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Jon Mason <jonmason@broadcom.com>, Russell King <linux@arm.linux.org.uk>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org, Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
 
-There is no need to check each time if the clk_rate defined or not when we call
-pwm_lpss_config(). Move the check to ->probe() instead.
+This patchset contains the pwm support for the Broadcom's iProc SoC's.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/pwm/pwm-lpss.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+The first patch provides the documentation details and the
+second patch contains the controller support details. The third patch
+contains the enable method for Northstar Plus SoC.
 
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index be4658b..72c0bce 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -92,7 +92,7 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
- 	unsigned long long on_time_div;
--	unsigned long c, base_unit_range;
-+	unsigned long c = lpwm->info->clk_rate, base_unit_range;
- 	unsigned long long base_unit, freq = NSEC_PER_SEC;
- 	u32 ctrl;
- 
-@@ -105,10 +105,6 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	base_unit_range = BIT(lpwm->info->base_unit_bits);
- 	freq *= base_unit_range;
- 
--	c = lpwm->info->clk_rate;
--	if (!c)
--		return -EINVAL;
--
- 	base_unit = DIV_ROUND_CLOSEST_ULL(freq, c);
- 
- 	if (duty_ns <= 0)
-@@ -169,6 +165,7 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
- 				     const struct pwm_lpss_boardinfo *info)
- {
- 	struct pwm_lpss_chip *lpwm;
-+	unsigned long c;
- 	int ret;
- 
- 	lpwm = devm_kzalloc(dev, sizeof(*lpwm), GFP_KERNEL);
-@@ -180,6 +177,11 @@ struct pwm_lpss_chip *pwm_lpss_probe(struct device *dev, struct resource *r,
- 		return ERR_CAST(lpwm->regs);
- 
- 	lpwm->info = info;
-+
-+	c = lpwm->info->clk_rate;
-+	if (!c)
-+		return ERR_PTR(-EINVAL);
-+
- 	lpwm->chip.dev = dev;
- 	lpwm->chip.ops = &pwm_lpss_ops;
- 	lpwm->chip.base = -1;
+This patch series has been tested on NSP bcm958625HR board.
+The pwm is not enabled for this board as the pins are open and not used.
+
+This patch series is based on v4.7.0-rc1 and is available from github
+repo: https://github.com/Broadcom/cygnus-linux.git
+branch: iproc-pwm-v5
+
+Changes since v4
+Supported apply() callback instead of config()/set_polarity()
+/enable()/disable()? as suggested by Brian
+
+Changes since v3
+Addressed comments from Scott to include COMPILE_TEST
+
+Changes since v2
+Rebased on v4.7.0-rc1
+
+Changes since v1
+Addressed the review comments from Thierry
+ 1. Use separate driver for iProc SoC's.
+ 2. Added Robs ack to the Documentation patch
+
+Yendapally Reddy Dhananjaya Reddy (3):
+  Documentation: dt: Add Broadcom iproc pwm controller binding
+  pwm: iproc: Add support for Broadcom iproc pwm controller
+  ARM: dts: NSP: Add PWM Support to DT
+
+ .../devicetree/bindings/pwm/brcm,iproc-pwm.txt     |  21 ++
+ arch/arm/boot/dts/bcm-nsp.dtsi                     |   8 +
+ drivers/pwm/Kconfig                                |  10 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-bcm-iproc.c                        | 268 +++++++++++++++++++++
+ 5 files changed, 308 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/brcm,iproc-pwm.txt
+ create mode 100644 drivers/pwm/pwm-bcm-iproc.c
+
 -- 
-2.8.1
+2.1.0
