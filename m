@@ -1,50 +1,74 @@
-From: Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH v3 10/14] regulator: pwm: Switch to the atomic PWM API
-Date: Tue, 5 Jul 2016 16:30:40 +0200
-Message-ID: <20160705143040.GX6247@sirena.org.uk>
+From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v3 11/14] regulator: pwm: Properly initialize the ->state
+ field
+Date: Tue, 5 Jul 2016 16:31:35 +0200
+Message-ID: <20160705143135.GY6247@sirena.org.uk>
 References: <1465895602-31008-1-git-send-email-boris.brezillon@free-electrons.com>
- <1465895602-31008-11-git-send-email-boris.brezillon@free-electrons.com>
+ <1465895602-31008-12-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="ndWVA4pxvhlNOeHP"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mezzanine.sirena.org.uk ([106.187.55.193]:45018 "EHLO
-	mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754372AbcGEOb0 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 5 Jul 2016 10:31:26 -0400
-Content-Disposition: inline
-In-Reply-To: <1465895602-31008-11-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============8417070831152451929=="
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1465895602-31008-12-git-send-email-boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Milo Kim <milo.kim-l0cyMroinI0@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Stephen Barber <smbarber-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Caesar Wang <wxt-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Doug Anderson <dianders-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Maxime Coquelin <maxime.coquelin-qxv4g6HH51o@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Patrice Chotard <patrice.chotard-qxv4g6HH51o@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Ajit Pal Singh <ajitpal.singh-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <milo.kim@ti.com>, Doug Anderson <dianders@google.com>, Caesar Wang <wxt@rock-chips.com>, Stephen Barber <smbarber@chromium.org>, Brian Norris <briannorris@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, kernel@stlinux.com, Laxman Dewangan <ldewangan@nvidia.com>
 
 
---ndWVA4pxvhlNOeHP
+--===============8417070831152451929==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="2uZVBGM+62ujkrHk"
+Content-Disposition: inline
+
+
+--2uZVBGM+62ujkrHk
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Tue, Jun 14, 2016 at 11:13:18AM +0200, Boris Brezillon wrote:
+On Tue, Jun 14, 2016 at 11:13:19AM +0200, Boris Brezillon wrote:
+> The ->state field is currently initialized to 0, thus referencing the
+> voltage selector at index 0, which might not reflect the current
+> voltage value.
+> If possible, retrieve the current voltage selector from the PWM state,
+> else return -EINVAL.
 
-> Use the atomic API wherever appropriate and get rid of pwm_apply_args()
-> call (the reference period and polarity are now explicitly set when
-> calling pwm_apply_state()).
+Acked-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 
-Acked-by: Mark Brown <broonie@kernel.org>
-
---ndWVA4pxvhlNOeHP
+--2uZVBGM+62ujkrHk
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJXe8SDAAoJECTWi3JdVIfQf0AH/iyVwH4udjUoZ5KiwpYLX8UO
-UbdnOJV1X+uL4kXIcxtMV8I/c2pOYwUsHmHFMVTJf/BIHaDASAVn2E5amzgI6jcA
-LiDxoUFKg6IS8WUYWqkNalHPfoW0NB0fd62/z9eKXJGpoMWt2BBIh+lHKU0z9xuw
-8h46D+J13H23U3qu0MWoYw1S7cPyhtv/wenO5fGGN5eytJV5SA7gyPObinIPl4i/
-nxd8iu8IytmD6EdMi68JoTB+xGvby0LHZ8nCQ8xmy41nORUqGqIAoYgFAfz/qOBD
-sxxPu3wZP4YUcXUjdivNDNZiMo9VbiF3v+4LS13zfZWEf9bKSj2+jEFGXw4IpLY=
-=Qdt8
+iQEcBAEBCAAGBQJXe8TBAAoJECTWi3JdVIfQ0KEH/js7vQtbg9Yd+SBsg8YV0Gjg
+SDyw2+AoUsUcrWroPFZTvSYTfRJ9vgKjw8A0ayJcriAM1kHVgk1L8uI39LUMU7rJ
+pZmuEVTbTgFFkSwqWvcrKl2WqVJYFtKjX5hg71AnOVhVaszHzNZBw5JDy8mx/suz
+L+EZXQkPKLCPpTLiCyroiN7gZm0i4qfyfsCIl+Qdz7gFklCaLTPlFIa90yyJ46ak
+TcJkmlv0+JN9UQRSH1vcbCoX5YigPxRzPXxbX3N0X7BcDOwd4q+hHkg7l28GlLZC
+ZkjnKvyewy6MtN8b0A5HfrikmCJW4ioqcmAJVHpQGZblVpT+BH1PG6oApjA20f8=
+=BUTQ
 -----END PGP SIGNATURE-----
 
---ndWVA4pxvhlNOeHP--
+--2uZVBGM+62ujkrHk--
+
+
+--===============8417070831152451929==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+Linux-rockchip mailing list
+Linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+http://lists.infradead.org/mailman/listinfo/linux-rockchip
+
+--===============8417070831152451929==--
