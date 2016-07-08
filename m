@@ -1,71 +1,131 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v5 2/3] pwm: iproc: Add support for Broadcom iproc pwm
- controller
-Date: Fri, 8 Jul 2016 17:16:12 +0200
-Message-ID: <20160708151612.GB1151@ulmo.ba.sec>
-References: <1467698426-27600-1-git-send-email-yendapally.reddy@broadcom.com>
- <1467698426-27600-3-git-send-email-yendapally.reddy@broadcom.com>
+Subject: Re: [PATCH v3 12/14] regulator: pwm: Retrieve correct voltage
+Date: Fri, 8 Jul 2016 17:43:02 +0200
+Message-ID: <20160708154302.GC1151@ulmo.ba.sec>
+References: <1465895602-31008-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1465895602-31008-13-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Pd0ReVV5GZGQvF3a"
+	protocol="application/pgp-signature"; boundary="H8ygTp4AXg6deix2"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f67.google.com ([209.85.220.67]:32949 "EHLO
-	mail-pa0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754868AbcGHPQR (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Jul 2016 11:16:17 -0400
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:36687 "EHLO
+	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754874AbcGHPnH (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Jul 2016 11:43:07 -0400
 Content-Disposition: inline
-In-Reply-To: <1467698426-27600-3-git-send-email-yendapally.reddy@broadcom.com>
+In-Reply-To: <1465895602-31008-13-git-send-email-boris.brezillon@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Jon Mason <jonmason@broadcom.com>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: linux-pwm@vger.kernel.org, Mark Brown <broonie@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Heiko Stuebner <heiko@sntech.de>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <milo.kim@ti.com>, Doug Anderson <dianders@google.com>, Caesar Wang <wxt@rock-chips.com>, Stephen Barber <smbarber@chromium.org>, Brian Norris <briannorris@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, kernel@stlinux.com, Laxman Dewangan <ldewangan@nvidia.com>
 
 
---Pd0ReVV5GZGQvF3a
+--H8ygTp4AXg6deix2
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 05, 2016 at 02:00:25AM -0400, Yendapally Reddy Dhananjaya Reddy=
- wrote:
-> Add support for the PWM controller present in Broadcom's iProc
-> family of SoCs.It has been tested on the  Northstar+ bcm958625HR board.
+On Tue, Jun 14, 2016 at 11:13:20AM +0200, Boris Brezillon wrote:
+> The continuous PWM voltage regulator is caching the voltage value in
+> the ->volt_uV field. While most of the time this value should reflect the
+> real voltage, sometime it can be sightly different if the PWM device
+> rounded the set_duty_cycle request.
+> Moreover, this value is not valid until someone has modified the regulator
+> output.
 >=20
-> Signed-off-by: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadc=
-om.com>
+> Remove the ->volt_uV field and always rely on the PWM state to calculate
+> the regulator output.
+>=20
+> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> Reviewed-by: Brian Norris <briannorris@chromium.org>
+> Tested-by: Brian Norris <briannorris@chromium.org>
+> Tested-by: Heiko Stuebner <heiko@sntech.de>
 > ---
->  drivers/pwm/Kconfig         |  10 ++
->  drivers/pwm/Makefile        |   1 +
->  drivers/pwm/pwm-bcm-iproc.c | 268 ++++++++++++++++++++++++++++++++++++++=
-++++++
->  3 files changed, 279 insertions(+)
->  create mode 100644 drivers/pwm/pwm-bcm-iproc.c
+> Mark,
+>=20
+> I know you already added your Tested-by/Acked-by tags on this patch
+> but this version has slightly change and is now making use of the
+> pwm_get_relative_duty_cycle() helper instead of manually converting
+> the absolute duty_cycle value into a relative one.
+> ---
+>  drivers/regulator/pwm-regulator.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/regulator/pwm-regulator.c b/drivers/regulator/pwm-re=
+gulator.c
+> index 2000118..80d083f 100644
+> --- a/drivers/regulator/pwm-regulator.c
+> +++ b/drivers/regulator/pwm-regulator.c
+> @@ -35,9 +35,6 @@ struct pwm_regulator_data {
+>  	struct regulator_ops ops;
+> =20
+>  	int state;
+> -
+> -	/* Continuous voltage */
+> -	int volt_uV;
+>  };
+> =20
+>  struct pwm_voltages {
+> @@ -135,8 +132,13 @@ static int pwm_regulator_is_enabled(struct regulator=
+_dev *dev)
+>  static int pwm_regulator_get_voltage(struct regulator_dev *rdev)
+>  {
+>  	struct pwm_regulator_data *drvdata =3D rdev_get_drvdata(rdev);
+> +	int min_uV =3D rdev->constraints->min_uV;
+> +	int diff =3D rdev->constraints->max_uV - min_uV;
+> +	struct pwm_state pstate;
+> =20
+> -	return drvdata->volt_uV;
+> +	pwm_get_state(drvdata->pwm, &pstate);
+> +
+> +	return min_uV + pwm_get_relative_duty_cycle(&pstate, diff);
+>  }
+> =20
+>  static int pwm_regulator_set_voltage(struct regulator_dev *rdev,
+> @@ -162,8 +164,6 @@ static int pwm_regulator_set_voltage(struct regulator=
+_dev *rdev,
+>  		return ret;
+>  	}
+> =20
+> -	drvdata->volt_uV =3D min_uV;
+> -
+>  	/* Delay required by PWM regulator to settle to the new voltage */
+>  	usleep_range(ramp_delay, ramp_delay + 1000);
+> =20
 
-I've applied this, but I had to make a couple of changes for coding
-style and to squash compiler warnings. Please check the PWM tree's
-for-next branch to see if it still works for you.
+This hunk has a minor conflict with the regulator tree and the commit
+830583004e61 ("regulator: pwm: Drop unneeded pwm_enable() call") that
+it contains.
+
+Mark, do you want me to provide a stable branch with the PWM regulator
+patches and resolve that conflict in your tree? Or would you rather take
+the whole set based on a stable branch from the PWM tree? Or maybe yet
+another possibility would be to base the PWM tree on a stable branch
+=66rom the regulator tree containing the above commit.
+
+Or we can let Linus sort out the conflict, it's really quite trivial.
 
 Thierry
 
---Pd0ReVV5GZGQvF3a
+--H8ygTp4AXg6deix2
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJXf8O6AAoJEN0jrNd/PrOhZEMP/3As0SFkOhXhRa4Mx/nwaxiZ
-Nj2eIM8OXfcvrKxLG9JUXGg+Spxx2Gxl6jnX72LSYjXnbE+tJmbphpwAoIN7XKlF
-7enn5Gj0feLDz2Sh9AgdD+yQYpSTh/Ki4kDNj38YnvvR5GXjeLhga3W2Kqz+Szbp
-VXIqSas+S5UMdsmQcRbBwJQVP+4HD19KJLZSISXP3RRpeSuxUMmQwE/GYTPUW3qv
-1YRei3vObW6MVHi9K8gV3YesGO7P1IaJxo33crAO42MAVridIwA5g2XprN7Nw7NN
-JGz4J/H9MLiLIFysAdbGBwcwocggFHnamc1Nwvtf0zRBCUYyqMMgaWVAgDS03AHs
-XtiIQwLWmKu2fAZXbsNmqcCCS6I9ihyPDU6ad4YFwPx8P+taN6xGC7y0Jqpka5M9
-1bXU38pt9EQzvW5/MJkvGxndwkoIM4zZ4qgsUTppC+WUQah2jVQilMSXvp8ubqlG
-KEGHn6Q4ifCzQEKLv74P5DPXAPLxU/98v3g6a28k7u+PEr2XfB3f58p02M7pRZqy
-mZguEtZ6gdzdkihF9eusqlVmgOIz0S/dzYKPHgMndFD8w+REfwGphbWcXy4r6MCL
-ifr1j81wSIJdK4a05+HtxLlJM39MEt27e+9BSA9hfWR8+Q1sLbxGQDqBn0NnV0RA
-DLwX0dJ+V22Ejx5jhWPS
-=H/2x
+iQIcBAABCAAGBQJXf8oDAAoJEN0jrNd/PrOh7MwQALo8s/ft6ZkGltrlvtDOsbWH
+Ouriepw6c04tWUc0L2XU6YWN/QEGRioqCG6xiMLGluWAzOxzhq6mReDKHkBE9jmT
+NGBoT5rPKJEHG6jniogaFd4rAw4/xWXgBikFqO266wpDA8IWwNliIIvFi2eTXqEx
+ubZ3OXuAxpzB17mk30em4j3pWxDIp1OQ+KitQ65HmfUKbQHAQIEU/RZG96B/ivG9
+9zO3wcc6Lxa64JzVIRItnbveUF19/4qrF2TF2QfBt56WcPEZap/O2mictje0MAIa
+XF6bQjaF6LTgPkmVkDx40STGMStmmx1LuapSRW+G03cwcq3t8iDKAOjY9WchLp+b
+K0dguQw95Ul52Ui9cQ8PMvtod9j50O8UXs0d8+Z2yPGSGseskfIb7gjVdtWEJHbB
+C92S4B0hRw4okxs7dkhv8eT+fCOeHzyoLpcFgjFnXbb1GEwa2TWPAeM0XYecZ73z
+dEkHgMX1z6F2OunLDyXmsVcTQYt/SMPLVELeSVdI1dyuBK62UeQD8nMvBlvKMyKd
+bkYOo7KIVCPO0cM3f+OMIfvatRncw15wx3AObQzk4PksRu7uGCXoNnE90Ndzee0D
+Bhx1OWm50+4gyFctJnbB/sZCcvNn2JVt21pJ3mXGMY9+Xt/hcmGycuZlTwiHKRYB
+G+7zKdMAE4/KdvqlZYi6
+=dkY1
 -----END PGP SIGNATURE-----
 
---Pd0ReVV5GZGQvF3a--
+--H8ygTp4AXg6deix2--
