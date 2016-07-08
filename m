@@ -1,74 +1,68 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH v2] ARM: at91: Document new TCB bindings
-Date: Tue, 5 Jul 2016 20:33:17 +0200
-Message-ID: <20160705183317.GB3623@piout.net>
-References: <1467039901-11297-1-git-send-email-alexandre.belloni@free-electrons.com>
- <20160701012743.GA16698@rob-hp-laptop>
- <20160704151058.44b679bf@bbrezillon>
- <CAL_JsqL2Kjtf-BuCjK8ZHcDdbgVDy-L-_AN+=4HmxVAwy3ucdA@mail.gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v5 1/3] Documentation: dt: Add Broadcom iproc pwm
+ controller binding
+Date: Fri, 8 Jul 2016 16:35:48 +0200
+Message-ID: <20160708143548.GA1151@ulmo.ba.sec>
+References: <1467698426-27600-1-git-send-email-yendapally.reddy@broadcom.com>
+ <1467698426-27600-2-git-send-email-yendapally.reddy@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="6c2NcOVqGQ03X4Wi"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:32897 "EHLO
+	mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755769AbcGHOf4 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Jul 2016 10:35:56 -0400
 Content-Disposition: inline
-In-Reply-To: <CAL_JsqL2Kjtf-BuCjK8ZHcDdbgVDy-L-_AN+=4HmxVAwy3ucdA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Nicolas Ferre <nicolas.ferre@atmel.com>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+In-Reply-To: <1467698426-27600-2-git-send-email-yendapally.reddy@broadcom.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Jon Mason <jonmason@broadcom.com>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
 
-On 05/07/2016 at 10:40:22 -0500, Rob Herring wrote :
-> >> > +   - compatible: Should be "atmel,tcb-free-running-timer"
-> >> > +   - reg: Should contain the TCB channels to be used. If the
-> >> > +     counter width is 16 bits (at91rm9200-tcb), two consecutive
-> >> > +     channels are needed. Else, only one channel will be used.
-> >> > +
-> >> > + * a clockevent device
-> >> > +   - compatible: Should be "atmel,tcb-programmable-timer"
-> >>
-> >> This still looks like assigning usage in DT. As I'm willing to accept
-> >> that for PWM, either timer channels should be whatever channels are not
-> >> assigned to PWM (i.e. not in DT) or they should just be "timer" and let
-> >> the kernel decide their usage.
-> >
-> > I just reviewed Alexandre's new binding, and it makes the whole thing
-> > a lot more obscure: on older SoCs, we have to chain 2 channels to
-> > create an acceptable wraparound time (16 bits at 5MHz is generating too
-> > much interrupts to be acceptable).
-> >
-> > If we don't assign the mode from the DT, how should we know which
-> > channels should be chained to create the free-running timer? Note that
-> > not all channels can be chained together: they have to be part of the
-> > same timer counter block and have to be consecutive (0+1, 1+2 or 3+0).
-> 
-> The driver can have this knowledge if it is just picking 2 consecutive
-> timers. It should already know it has 16-bit timers based on the
-> compatible string. If it gets more complicated then the features or
-> limitations of the channels should be listed so the driver can make a
-> choice. OMAP is a good example of lots of timers with differing
-> features.
-> 
-> > Honestly, I don't see the difference between assigning the channel to a
-> > PWM mode and assigning it to a free-running or oneshot timer mode. Why
-> > is it more acceptable?
-> 
-> The difference is that pwm's have clients (e.g. a backlight) in DT and
-> timers do not. We could just make the pwm clients reference the parent
-> node, but then it is hard to figure out which channels are in use for
-> pwm. That could also be solved with a simple "pwm-channels" property
-> listing the channels in use.
-> 
 
-Well, at some point, we will probably have the ADC referring to channels
-used as timers as they can be used to trigger it periodically.
+--6c2NcOVqGQ03X4Wi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-We'll also get frequency measurement that will go in iio, quadrature
-decoders, gray counters and event counters that will probably used by
-different subsystems and will certainly have to be referred to in DT.
+On Tue, Jul 05, 2016 at 02:00:24AM -0400, Yendapally Reddy Dhananjaya Reddy=
+ wrote:
+> Add a binding for Broadcom iproc pwm controller
+>=20
+> Signed-off-by: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadc=
+om.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../devicetree/bindings/pwm/brcm,iproc-pwm.txt      | 21 +++++++++++++++=
+++++++
+>  1 file changed, 21 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/brcm,iproc-pwm.=
+txt
 
-It will definitively feel a bit weird to have all the channels have
-their own nodes but not the timers...
+Applied, thanks.
 
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Thierry
+
+--6c2NcOVqGQ03X4Wi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJXf7pEAAoJEN0jrNd/PrOh7NsP/2mtAvxW7pqglXWVKrnhsNok
+Ci4IPFwx4s6FE/Us9DmFKt0NiLX9n4Jh6q8G54tMCfN1DUJ44DM3919Ink/+26b/
+/mnKkcDRkUgsrAZiKEgxAVzLcUXaV8CdcFS3OkQeAt6n4LLPgceF6RTuFo8KlFwO
+cfpFrGDUHeekDSE9ytiR0Yu5xqAvpUZ4zRXcllqvosGv0B2Lp67rIXbr/RpHGMeh
+xnR90DeZhiUPwwBFJo2T66zHLzXG0/D893cOpS/DYr6sQlbULAfLOtKltAtMbbrv
+wCMa36rl8nvduvAS18QKm1EB3/qX9QefA/XZCom0ILChjZLoVb7Z5bhVsZ7AkEZ4
+4uq91VQXtL835mbfJ9F2GlUYeMzpF/dFJ/3Ui0lrQJ+Dx0Xc5hMSCxN9X9eqXWmN
+5Ke1YcSFzW3QMKEAoMFaeET1krkq1QIbA4QW0JzK6Q4wJKK/fJMXzWXor1//Lc7Y
+tW3O7C+E7QGi0R5SEv23ONNAG1xQawrtFOAQrt0uCmotC6IkVWcSQvEQwVZrHANz
+IY0uTPO6XvQbzIFJdoGPw2ztz+wpPeBBSSvrSPtvmviEf4fUYEu2UWOpbryR3OwX
+SWHUZOJAOgKdxfIlzHlv+6/0lGWQlbBaOli//lzv44wfZo22PeWIhWWeaLz2I4TL
+pgIhDgb5wpdqf9IQMWLw
+=fhCs
+-----END PGP SIGNATURE-----
+
+--6c2NcOVqGQ03X4Wi--
