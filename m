@@ -1,7 +1,7 @@
 From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: [PATCH v2 3/4] ARM64: dts: meson-gxbb: Add Meson GXBB PWM Controller nodes
-Date: Sun, 10 Jul 2016 11:24:04 +0200
-Message-ID: <1468142645-4360-4-git-send-email-narmstrong@baylibre.com>
+Subject: [PATCH v2 4/4] ARM: dts: meson8b: Add Meson8b PWM Controller nodes
+Date: Sun, 10 Jul 2016 11:24:05 +0200
+Message-ID: <1468142645-4360-5-git-send-email-narmstrong@baylibre.com>
 References: <1468142645-4360-1-git-send-email-narmstrong@baylibre.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1468142645-4360-1-git-send-email-narmstrong@baylibre.com>
@@ -12,54 +12,40 @@ List-Id: linux-pwm@vger.kernel.org
 
 Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
 ---
- arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ arch/arm/boot/dts/meson8b.dtsi | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-index 806b903..2eacef0 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-@@ -153,6 +153,27 @@
- 				status = "disabled";
- 			};
- 
-+			pwm_ab: pwm@8550 {
-+				compatible = "amlogic,meson-gxbb-pwm";
-+				reg = <0x0 0x08550 0x0 0x10>;
-+				#pwm-cells = <3>;
-+				status = "disabled";
-+			};
-+
-+			pwm_cd: pwm@8650 {
-+				compatible = "amlogic,meson-gxbb-pwm";
-+				reg = <0x0 0x08650 0x0 0x10>;
-+				#pwm-cells = <3>;
-+				status = "disabled";
-+			};
-+
-+			pwm_ef: pwm@86c0 {
-+				compatible = "amlogic,meson-gxbb-pwm";
-+				reg = <0x0 0x086c0 0x0 0x10>;
-+				#pwm-cells = <3>;
-+				status = "disabled";
-+			};
-+
- 			uart_C: serial@8700 {
- 				compatible = "amlogic,meson-uart";
- 				reg = <0x0 0x8700 0x0 0x14>;
-@@ -212,6 +233,13 @@
- 				clocks = <&xtal>;
- 				status = "disabled";
- 			};
-+
-+			pwm_ab_AO: pwm@550 {
-+				compatible = "amlogic,meson-gxbb-pwm";
-+				reg = <0x0 0x0550 0x0 0x10>;
-+				#pwm-cells = <3>;
-+				status = "disabled";
-+			};
+diff --git a/arch/arm/boot/dts/meson8b.dtsi b/arch/arm/boot/dts/meson8b.dtsi
+index fc4080d..41fd536 100644
+--- a/arch/arm/boot/dts/meson8b.dtsi
++++ b/arch/arm/boot/dts/meson8b.dtsi
+@@ -162,6 +162,27 @@
+ 			reg = <0xc1108000 0x4>, <0xc1104000 0x460>;
  		};
  
- 		periphs: periphs@c8834000 {
++		pwm_ab: pwm@8550 {
++			compatible = "amlogic,meson8b-pwm";
++			reg = <0xc1108550 0x10>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
++
++		pwm_cd: pwm@8650 {
++			compatible = "amlogic,meson8b-pwm";
++			reg = <0xc1108650 0x10>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
++
++		pwm_ef: pwm@86c0 {
++			compatible = "amlogic,meson8b-pwm";
++			reg = <0xc11086c0 0x10>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
++
+ 		pinctrl_cbus: pinctrl@c1109880 {
+ 			compatible = "amlogic,meson8b-cbus-pinctrl";
+ 			reg = <0xc1109880 0x10>;
 -- 
 2.7.0
