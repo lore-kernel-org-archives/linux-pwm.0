@@ -1,83 +1,80 @@
-From: Doug Anderson <dianders@google.com>
-Subject: Re: [PATCH v3 12/14] regulator: pwm: Retrieve correct voltage
-Date: Mon, 11 Jul 2016 09:53:12 -0700
-Message-ID: <CAD=FV=WoUi4kNHW1h6XCezJyYUXbWLXj3yPYg+W-qhMAjpPn4A@mail.gmail.com>
-References: <1465895602-31008-1-git-send-email-boris.brezillon@free-electrons.com>
- <1465895602-31008-13-git-send-email-boris.brezillon@free-electrons.com>
- <20160708154302.GC1151@ulmo.ba.sec> <20160709094718.GB6247@sirena.org.uk> <20160711070251.GA5823@ulmo.ba.sec>
+From: Michael Turquette <mturquette@baylibre.com>
+Subject: Re: [PATCH v8 1/9] clk: ti: am335x/am4372: Add tbclk to pwm node
+Date: Mon, 11 Jul 2016 15:20:10 -0700
+Message-ID: <146827561017.73491.3564276289319851088@resonance>
+References: <1462291015-1919-1-git-send-email-fcooper@ti.com>
+ <1462291015-1919-2-git-send-email-fcooper@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160711070251.GA5823@ulmo.ba.sec>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Mark Brown <broonie@kernel.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm <linux-pwm@vger.kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Heiko Stuebner <heiko@sntech.de>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Milo Kim <milo.kim@ti.com>, Caesar Wang <wxt@rock-chips.com>, Stephen Barber <smbarber@chromium.org>, Brian Norris <briannorris@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, Srinivas Kandagatla <srinivas.kandagatla@>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pf0-f176.google.com ([209.85.192.176]:34755 "EHLO
+	mail-pf0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751153AbcGKWUN convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Jul 2016 18:20:13 -0400
+Received: by mail-pf0-f176.google.com with SMTP id h14so39985295pfe.1
+        for <linux-pwm@vger.kernel.org>; Mon, 11 Jul 2016 15:20:13 -0700 (PDT)
+In-Reply-To: <1462291015-1919-2-git-send-email-fcooper@ti.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com, robh+dt@kernel.org, tony@atomide.com, linux@arm.linux.org.uk, paul@pwsan.com, t-kristo@ti.com, sboyd@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, vigneshr@ti.com, nsekhar@ti.com
+Cc: Franklin S Cooper Jr <fcooper@ti.com>
 
-Hi,
+Quoting Franklin S Cooper Jr (2016-05-03 08:56:47)
+> Add tblck to the pwm nodes. This insures that the ehrpwm driver has access
 
-On Mon, Jul 11, 2016 at 12:02 AM, Thierry Reding
-<thierry.reding@gmail.com> wrote:
-> On Sat, Jul 09, 2016 at 11:47:18AM +0200, Mark Brown wrote:
->> On Fri, Jul 08, 2016 at 05:43:02PM +0200, Thierry Reding wrote:
->>
->> > Mark, do you want me to provide a stable branch with the PWM regulator
->> > patches and resolve that conflict in your tree? Or would you rather take
->> > the whole set based on a stable branch from the PWM tree? Or maybe yet
->> > another possibility would be to base the PWM tree on a stable branch
->> > from the regulator tree containing the above commit.
->>
->> Probably easiest to use this signed tag and resolve it in your tree:
->>
->> The following changes since commit 1a695a905c18548062509178b98bc91e67510864:
->>
->>   Linux 4.7-rc1 (2016-05-29 09:29:24 -0700)
->>
->> are available in the git repository at:
->>
->>   git://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git tags/pwm-modernization
->>
->> for you to fetch changes up to c2588393e6315ab68207323d37d2a73713d6bc81:
->>
->>   regulator: pwm: Fix regulator ramp delay for continuous mode (2016-07-07 11:45:06 +0200)
->>
->> ----------------------------------------------------------------
->> regulator: Provide a branch for moderninzation of the PWM code
->>
->> There's a new, improved PWM API which allows a lot of improvements in
->> the PWM regulator driver.  Since the bulk of the changes are in the PWM
->> API this is being managed in the PWM tree, merge pending regulator API
->> changes to allow this to be resolved more easily.
->>
->> ----------------------------------------------------------------
->> Alexandre Courbot (1):
->>       regulator: pwm: Support for enable GPIO
->>
->> Boris Brezillon (1):
->>       regulator: pwm: Drop unneeded pwm_enable() call
->>
->> Douglas Anderson (1):
->>       regulator: pwm: Fix regulator ramp delay for continuous mode
->>
->>  .../bindings/regulator/pwm-regulator.txt           |  7 +++-
->>  drivers/regulator/pwm-regulator.c                  | 40 ++++++++++++++++++----
->>  2 files changed, 39 insertions(+), 8 deletions(-)
->
-> Merged into for-4.8/regulator of the PWM tree and rebased Boris'
-> pwm-regulator patches on top.
->
-> Boris, everything looks right to me, but can you take a quick look to
-> see if it all matches up with what you expect?
+s/tblck/tbclk/
 
-As I mentioned in the other thread about the linuxnext conflict,
-pwm_regulator_set_voltage() is wrong.
+I see you have acks already. What tree should this patch go through?
 
-You have:
+Regards,
+Mike
 
-  ramp_delay = DIV_ROUND_UP(abs(min_uV - old_uV), ramp_delay);
-
-You should have:
-
-  ramp_delay = DIV_ROUND_UP(abs(req_min_uV - old_uV), ramp_delay);
-
--Doug
+> to the time-based clk.
+> 
+> Do not remove similar entries for ehrpwm node. Later patches will switch
+> from using ehrpwm node name to pwm. But to maintain ABI compatibility we
+> shouldn't remove the old entries.
+> 
+> Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
+> Acked-by: Stephen Boyd <sboyd@codeaurora.org>
+> Acked-by: Tero Kristo <t-kristo@ti.com>
+> ---
+>  drivers/clk/ti/clk-33xx.c | 3 +++
+>  drivers/clk/ti/clk-43xx.c | 6 ++++++
+>  2 files changed, 9 insertions(+)
+> 
+> diff --git a/drivers/clk/ti/clk-33xx.c b/drivers/clk/ti/clk-33xx.c
+> index ef2ec64..0e47d95 100644
+> --- a/drivers/clk/ti/clk-33xx.c
+> +++ b/drivers/clk/ti/clk-33xx.c
+> @@ -108,6 +108,9 @@ static struct ti_dt_clk am33xx_clks[] = {
+>         DT_CLK("48300200.ehrpwm", "tbclk", "ehrpwm0_tbclk"),
+>         DT_CLK("48302200.ehrpwm", "tbclk", "ehrpwm1_tbclk"),
+>         DT_CLK("48304200.ehrpwm", "tbclk", "ehrpwm2_tbclk"),
+> +       DT_CLK("48300200.pwm", "tbclk", "ehrpwm0_tbclk"),
+> +       DT_CLK("48302200.pwm", "tbclk", "ehrpwm1_tbclk"),
+> +       DT_CLK("48304200.pwm", "tbclk", "ehrpwm2_tbclk"),
+>         { .node_name = NULL },
+>  };
+>  
+> diff --git a/drivers/clk/ti/clk-43xx.c b/drivers/clk/ti/clk-43xx.c
+> index 097fc90..7255aa8 100644
+> --- a/drivers/clk/ti/clk-43xx.c
+> +++ b/drivers/clk/ti/clk-43xx.c
+> @@ -115,6 +115,12 @@ static struct ti_dt_clk am43xx_clks[] = {
+>         DT_CLK("48306200.ehrpwm", "tbclk", "ehrpwm3_tbclk"),
+>         DT_CLK("48308200.ehrpwm", "tbclk", "ehrpwm4_tbclk"),
+>         DT_CLK("4830a200.ehrpwm", "tbclk", "ehrpwm5_tbclk"),
+> +       DT_CLK("48300200.pwm", "tbclk", "ehrpwm0_tbclk"),
+> +       DT_CLK("48302200.pwm", "tbclk", "ehrpwm1_tbclk"),
+> +       DT_CLK("48304200.pwm", "tbclk", "ehrpwm2_tbclk"),
+> +       DT_CLK("48306200.pwm", "tbclk", "ehrpwm3_tbclk"),
+> +       DT_CLK("48308200.pwm", "tbclk", "ehrpwm4_tbclk"),
+> +       DT_CLK("4830a200.pwm", "tbclk", "ehrpwm5_tbclk"),
+>         { .node_name = NULL },
+>  };
+>  
+> -- 
+> 2.7.0
+> 
