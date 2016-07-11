@@ -1,55 +1,62 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 5/6] pwm: add R-Car H3 device tree bindings
-Date: Mon, 11 Jul 2016 11:45:10 +0200
-Message-ID: <20160711094510.GG5823@ulmo.ba.sec>
-References: <1459424356-26061-1-git-send-email-ulrich.hecht+renesas@gmail.com>
- <1459424356-26061-6-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: Re: [PATCH v8 3/9] pwm: pwm-tiehrpwm: Update dt binding document to
+ use generic node name
+Date: Mon, 11 Jul 2016 11:55:52 +0200
+Message-ID: <20160711095552.GH5823@ulmo.ba.sec>
+References: <1462291015-1919-1-git-send-email-fcooper@ti.com>
+ <1462291015-1919-4-git-send-email-fcooper@ti.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="XRI2XbIfl/05pQwm"
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="ZPDwMsyfds7q4mrK"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1459424356-26061-6-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: linux-renesas-soc@vger.kernel.org, geert@linux-m68k.org, linux-pwm@vger.kernel.org, magnus.damm@gmail.com
+In-Reply-To: <1462291015-1919-4-git-send-email-fcooper@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Franklin S Cooper Jr <fcooper@ti.com>
+Cc: robh+dt@kernel.org, tony@atomide.com, linux@arm.linux.org.uk, paul@pwsan.com, t-kristo@ti.com, mturquette@baylibre.com, sboyd@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, vigneshr@ti.com, nsekhar@ti.com
 List-Id: linux-pwm@vger.kernel.org
 
 
---XRI2XbIfl/05pQwm
+--ZPDwMsyfds7q4mrK
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 31, 2016 at 01:39:15PM +0200, Ulrich Hecht wrote:
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-> Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+On Tue, May 03, 2016 at 10:56:49AM -0500, Franklin S Cooper Jr wrote:
+> Now that the node name has been changed from ehrpwm to pwm the document
+> should show this proper usage. Change the unit address in the example
+> from 0 to the proper physical address value that should be used. Also
+> insure that the unit address matches to the reg property.
+>=20
+> Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
+> Acked-by: Rob Herring <robh@kernel.org>
 > ---
->  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 1 +
->  1 file changed, 1 insertion(+)
+>  Documentation/devicetree/bindings/pwm/pwm-tiehrpwm.txt | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 
-Applied, thanks.
+I applied this long ago, but never replied: Applied, thanks.
 
 Thierry
 
---XRI2XbIfl/05pQwm
+--ZPDwMsyfds7q4mrK
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJXg2qlAAoJEN0jrNd/PrOhhM8QAJZc8mK23OZIeufSXw+WZByi
-hmFinqXeiEOSaGnX4zsMuUe+f1pR+vlqnvPbajZGLvMBpOfIscnUGJo2lXSabHOQ
-6TVHVRLLFr/4dMpPJpGigeCrM3TkAiP0qftOERV1XKznnKBOZhS2kJof7BJri6+0
-G1Qil20D8DGlUOi0eNkJb7vU2j+x5CxfnXG5rE9fFmopgxsSzVnP0wU0SgnFzige
-3nADgU3CA7xKk/QmPq8uyP7vtDBXKBxV4I6EGCh9ezL4h7HsNQYd+/xvw6QxTrgz
-wDHhZvx/FqXbinqJRloWmPzkqeX3wImHXq4ggexxBNHW2+/Qx/zNUqeByVn75130
-IlnHP0nWcT53aq9S1/7REu7LFmH2YseVzm5Hh3mr3gsJr1jnF5kfVPOsJriTeH5u
-z1LVOjy3p1I/5B0FDXNsrD6LRcOu0Hz4nc3ZvFBgAMTEka9huGcQkBuwwt5xuQ4P
-s272V6rfF7SdDKKDuBDBzOBSc244BbW5HGDovS2a25cz2988dw3ruR2IXZThFKvN
-HhriUcLmNp6Q24q+t0ejtKsB1tRMtDU1BILEB/Y6CaoOP/B5T2gVQkzS+IX6bDLr
-84DYYVaEMqBLt2I5TtaucljCUQxo4svswuAaTEbkJdNkQ74nVB4o7jAydNQVK9/v
-QpRPYt6GMw8MHZwWuGc0
-=9Rnh
+iQIcBAABCAAGBQJXg20mAAoJEN0jrNd/PrOhIeUP/jn+tXVGKN5TntUnYN35a8/r
+thpQZEdWLeKfro6QrXt2PVubKf7DUllHX0p3fLF5K7by13ATq+Ewm2VvLlA0mQEP
+EisBUOBbx/yN05avwMk6iuOzxXMBFwVeCJa9tjpIkOiBCQiIMywqq9ptdshpzp5p
+Ianv0aq49cwpUXpZNrvTq5Vm0G3AKkg6WFr553kmbUkmJ9cjA6sWZp6JVW2IVnLa
+IZgCpZxAwSJgGfiP6cefWWALpMpdsA7xeqCVH+yIe5xVr3St9JUd4j24qcTac8ig
+zBPOJ1Vn6pMLfT2J8XhZBpr8hJ7xL8otNakH0AIErDX0KAURgKzjwjw+m1pxuctH
+iHEgRtufRWUxmCPeJCcchEBCQvBmwJa4+hXUFVTVA+ab1VGnDcPb7MPB4NzFPaAj
+nPtA4AViRewjzjC6/uU61MT8z5p2wES34s2d23AMmrHq6aSRi9frM47vzLaWpUEc
+1G5dQn+Kpa0Ck5SEroeF4d6oh0iQZq/glUrDt8k8U4gLJrTbTMr2CsplkXM5VsGg
+prElhJyEARWOPKrWgsKA0crIeMd5gdKDNHQoG2aKTWwpf5mLg4TN10oIpgo1imwn
+MH+AyUop9jpSJ4glrpJbsqrBNr+kpkNUM0JmmXjMxAFGFoNlB9gMuegcYJTRjLxn
+wpKXs9O1Px8dylvmqcp1
+=FH2T
 -----END PGP SIGNATURE-----
 
---XRI2XbIfl/05pQwm--
+--ZPDwMsyfds7q4mrK--
