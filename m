@@ -1,81 +1,74 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 1/3] pwm: lpc32xx: Set PWM_PIN_LEVEL bit to default
- value
-Date: Mon, 11 Jul 2016 10:55:23 +0200
-Message-ID: <20160711085523.GC5823@ulmo.ba.sec>
-References: <1467032997-5340-1-git-send-email-slemieux.tyco@gmail.com>
- <1467032997-5340-2-git-send-email-slemieux.tyco@gmail.com>
+Subject: Re: [PATCH 0/5] pwm: Fixes and support for Tegra186
+Date: Mon, 11 Jul 2016 11:31:40 +0200
+Message-ID: <20160711093140.GD5823@ulmo.ba.sec>
+References: <1466596043-27262-1-git-send-email-ldewangan@nvidia.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Fig2xvG2VGoz8o/s"
+	protocol="application/pgp-signature"; boundary="llIrKcgUOe3dCx0c"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f43.google.com ([74.125.82.43]:37302 "EHLO
-	mail-wm0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757827AbcGKIz1 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Jul 2016 04:55:27 -0400
-Received: by mail-wm0-f43.google.com with SMTP id i5so6812880wmg.0
-        for <linux-pwm@vger.kernel.org>; Mon, 11 Jul 2016 01:55:26 -0700 (PDT)
+Received: from mail-wm0-f51.google.com ([74.125.82.51]:36345 "EHLO
+	mail-wm0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752968AbcGKJbo (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Jul 2016 05:31:44 -0400
 Content-Disposition: inline
-In-Reply-To: <1467032997-5340-2-git-send-email-slemieux.tyco@gmail.com>
+In-Reply-To: <1466596043-27262-1-git-send-email-ldewangan@nvidia.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Sylvain Lemieux <slemieux.tyco@gmail.com>
-Cc: vz@mleia.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
+To: Laxman Dewangan <ldewangan@nvidia.com>
+Cc: robh+dt@kernel.org, swarren@wwwdotorg.org, gnurou@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---Fig2xvG2VGoz8o/s
+--llIrKcgUOe3dCx0c
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 27, 2016 at 09:09:55AM -0400, Sylvain Lemieux wrote:
-> From: Sylvain Lemieux <slemieux@tycoint.com>
+On Wed, Jun 22, 2016 at 05:17:18PM +0530, Laxman Dewangan wrote:
+> Have fixes for 100% duty cycle, avoid computation loss for duty
+> period calculation and add support the Tegra186.
 >=20
-> The PWM_PIN_LEVEL bit is leave unset by the kernel PWM driver.
+> Hyong Bin Kim (1):
+>   pwm: tegra: fix overflow when calculating duty cycle
 >=20
-> Prior to commit 08ee77b5a5de27ad63c92262ebcb4efe0da93b58,
-> the PWM_PIN_LEVEL bit was always clear when the PWM was disable
-> and a 0 logic level was apply to the output.
+> Laxman Dewangan (2):
+>   pwm: tegra: Add DT node compatible for Tegra186
+>   pwm: tegra: Add support for Tegra186
 >=20
-> According to the LPC32x0 User Manual [1],
-> the default value for bit 30 (PWM_PIN_LEVEL) is 0.
+> Rohith Seelaboyina (1):
+>   pwm: tegra: Add support for reset control
 >=20
-> This change initialize the pin level to 0 (default value) and
-> update the register value accordingly.
+> Victor(Weiguo) Pan (1):
+>   pwm: tegra: Allow 100% duty cycle
 >=20
-> [1] http://www.nxp.com/documents/user_manual/UM10326.pdf
->=20
-> Signed-off-by: Sylvain Lemieux <slemieux@tycoint.com>
-> ---
-> Changes from v1 to v2:
-> * Only setup the "PWMx_PIN_LEVEL" once on probe.
->=20
->  drivers/pwm/pwm-lpc32xx.c | 7 +++++++
->  1 file changed, 7 insertions(+)
+>  .../devicetree/bindings/pwm/nvidia,tegra20-pwm.txt | 10 +++--
+>  drivers/pwm/pwm-tegra.c                            | 46 ++++++++++++++++=
+++----
+>  2 files changed, 45 insertions(+), 11 deletions(-)
 
-Applied, thanks.
+All of these applied, with some minor changes.
 
 Thierry
 
---Fig2xvG2VGoz8o/s
+--llIrKcgUOe3dCx0c
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJXg175AAoJEN0jrNd/PrOhkMgP/j5FICIdBwVK8xAVW6YC1qgg
-oFXJB5RWbcyu43bQBnCAN67FjPVlDYdRh21mGgxO6KqfOUGuGJUYvJlOYtyCI+ie
-Gz3+YL0Zwx3DpzArldKFAjzUyO8VfsCISwmr6UqpWc0wQqdXcHoyHeEz5pUqpH5x
-d9iXnxKF4XCB4Cuf6dD01a+vcuYEc+RINJ0VxFICpvaHmJwefAev5kT0CyIxuIMw
-6YS+ZKr/M6agYUGVPqfLXmVRT//P5WQs1qn0wKF9uweMmRJlWi8HtmDKIu6QILaR
-5m45OePuaQJal7VjPVbzguXyaWizq++fbuB8IK3axEs+4qfLn2OQZwykxXDB069y
-dCs2qWbD61QVxEQJcb0LmiX0pxbD+7DrO7CL/3DxvQWCPSTCvsWIYp1A61cjfdRR
-rNHPu8EABkX7cCD+coznA2C28XBIrTn0OlICa6Xq0sZC0T/rNH5fVimNXjIoMRtz
-wjVq/A70jLpkL1I/OMwvGGJEqHsZwN74r0kPRwMy7n+MTyeEZcsbV7bYHvfZbEY4
-vGGPwchFLA5WGgOJQ59ZoKTvCantlYhHAn5TCSDrDjUHgxton1tQTpY2Oa+qdhIs
-9ca2mJ8DOqM6nfrjZQDHezQ9LMxXcQhQF2gIEnDFxgg6blI0lw42NoEywN6ndLQG
-Ul4/ALN0aKNcufcDC2RD
-=Vz2i
+iQIcBAABCAAGBQJXg2d6AAoJEN0jrNd/PrOhHW4P/ii6bT1N4cxSOaqNueCGQzbr
+sWd+oNdXJ9EQGBgvCF81aOKtuWW5vY+cjXqLceIpvmaHEEt2HxrE24NxdXHoOxsI
+ebCJ3Mm2Js//w0bomIOIfXWHEryqNuf6MyFRWp6yqCO/oXuXvgFrNyLEG8ChJ6cb
+2oinzYODPdZGFUPlsMz6gA06/e2QUQQk8wKR8kvzdGm0aw9NrPF00QWXbxEYZZlN
+UeTmqmPZBC/3g0pAz7tU0OfRV7HQqKFJVShC7Hd71EGayxLzWUU02RRSYq3aZ9SX
+xK2V4DhfHxu7Q1xaE/v4hYhMWzTOIH0V/TX5u3Ujo1HjyOSKRzpBts01HY1BIxuH
+xzJiKhnmgz9U2ap4bckkOg01Lx1YDLMAxzAybBiyShUStk85iYbY7a2nsJtuVvXb
+UFrYP1Q0qMhJEoMlG03gRTbAYJRZv1bcXTWNpdLQnbfFMbKbqgFMXKDBWI6IWmot
+pXR7pyzq7KSXdrhx0MFm3Kw5PDMQ6rEhwuubJFz3N9IJEnC0kESb7+LAXr3cM325
+qtWuhc7x4o+tqzDPaltATfwRgTapMoIZcfS1dVANjMm6GLnsC/Zg48ZCJ2OqswlB
++Q8quKPnaK4bM/V80n6OaroHdWJulswoHFi1eHkk6HdPLPfswGIJJTjqqOrIm5he
+j4mi326cxQjBdGr62x1b
+=U9lr
 -----END PGP SIGNATURE-----
 
---Fig2xvG2VGoz8o/s--
+--llIrKcgUOe3dCx0c--
