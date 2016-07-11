@@ -1,89 +1,81 @@
-From: Weiqing Kong <weiqing.kong@mediatek.com>
-Subject: [PATCH V2 3/3] dts: Add disp bls dtsi and dts config for MT2701
-Date: Mon, 11 Jul 2016 16:18:09 +0800
-Message-ID: <1468225089-28576-4-git-send-email-weiqing.kong@mediatek.com>
-References: <1468225089-28576-1-git-send-email-weiqing.kong@mediatek.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2 1/3] pwm: lpc32xx: Set PWM_PIN_LEVEL bit to default
+ value
+Date: Mon, 11 Jul 2016 10:55:23 +0200
+Message-ID: <20160711085523.GC5823@ulmo.ba.sec>
+References: <1467032997-5340-1-git-send-email-slemieux.tyco@gmail.com>
+ <1467032997-5340-2-git-send-email-slemieux.tyco@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="Fig2xvG2VGoz8o/s"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailgw02.mediatek.com ([210.61.82.184]:54169 "EHLO
-	mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752805AbcGKIVA (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Jul 2016 04:21:00 -0400
-In-Reply-To: <1468225089-28576-1-git-send-email-weiqing.kong@mediatek.com>
+Received: from mail-wm0-f43.google.com ([74.125.82.43]:37302 "EHLO
+	mail-wm0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1757827AbcGKIz1 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Jul 2016 04:55:27 -0400
+Received: by mail-wm0-f43.google.com with SMTP id i5so6812880wmg.0
+        for <linux-pwm@vger.kernel.org>; Mon, 11 Jul 2016 01:55:26 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1467032997-5340-2-git-send-email-slemieux.tyco@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, weiqing.kong@mediatek.com
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Russell King <linux@arm.linux.org.uk>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com, Sascha Hauer <kernel@pengutronix.de>, erin.lo@mediatek.com, yingjoe.chen@mediatek.com, eddie.huang@mediatek.com, yh.huang@mediatek.com, yt.shen@mediatek.com
+To: Sylvain Lemieux <slemieux.tyco@gmail.com>
+Cc: vz@mleia.com, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
 
-Add disp_bls node in dtsi for CCF, add backlight_lcd
-in dts for backlight subsystem driver, and init pwm gpio mode.
 
-Signed-off-by: Weiqing Kong <weiqing.kong@mediatek.com>
----
- arch/arm/boot/dts/mt2701-evb.dts | 29 +++++++++++++++++++++++++++++
- arch/arm/boot/dts/mt2701.dtsi    |  9 +++++++++
- 2 files changed, 38 insertions(+)
+--Fig2xvG2VGoz8o/s
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/arch/arm/boot/dts/mt2701-evb.dts b/arch/arm/boot/dts/mt2701-evb.dts
-index 082ca88..6d572f4 100644
---- a/arch/arm/boot/dts/mt2701-evb.dts
-+++ b/arch/arm/boot/dts/mt2701-evb.dts
-@@ -22,6 +22,35 @@
- 	memory {
- 		reg = <0 0x80000000 0 0x40000000>;
- 	};
-+
-+	backlight_lcd: backlight_lcd {
-+		compatible = "pwm-backlight";
-+		pwms = <&disp_bls 0 100000>;
-+		brightness-levels = <
-+			  0  16  32  48  64  80  96 112
-+			128 144 160 176 192 208 224 240
-+			255
-+		>;
-+		default-brightness-level = <9>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwm_bls_gpio>;
-+	};
-+};
-+
-+&disp_bls {
-+	status = "okay";
-+};
-+
-+&mmsys {
-+	status = "okay";
-+};
-+
-+&pio {
-+	pwm_bls_gpio: pwm_bls_gpio {
-+		pins_cmd_dat {
-+			pinmux = <MT2701_PIN_208_AUD_EXT_CK1__FUNC_DISP_PWM>;
-+		};
-+	};
- };
- 
- &uart0 {
-diff --git a/arch/arm/boot/dts/mt2701.dtsi b/arch/arm/boot/dts/mt2701.dtsi
-index 42d5a37..49b8767 100644
---- a/arch/arm/boot/dts/mt2701.dtsi
-+++ b/arch/arm/boot/dts/mt2701.dtsi
-@@ -234,6 +234,15 @@
- 		status = "disabled";
- 	};
- 
-+	disp_bls: dispsys@1400a000 {
-+		compatible = "mediatek,mt2701-disp-pwm";
-+		reg = <0 0x1400a000 0 0x1000>;
-+		#pwm-cells = <2>;
-+		clocks = <&mmsys CLK_MM_MDP_BLS_26M>, <&mmsys CLK_MM_DISP_BLS>;
-+		clock-names = "main", "mm";
-+		status = "disabled";
-+	};
-+
- 	imgsys: syscon@15000000 {
- 		compatible = "mediatek,mt2701-imgsys", "syscon";
- 		reg = <0 0x15000000 0 0x1000>;
--- 
-1.8.1.1.dirty
+On Mon, Jun 27, 2016 at 09:09:55AM -0400, Sylvain Lemieux wrote:
+> From: Sylvain Lemieux <slemieux@tycoint.com>
+>=20
+> The PWM_PIN_LEVEL bit is leave unset by the kernel PWM driver.
+>=20
+> Prior to commit 08ee77b5a5de27ad63c92262ebcb4efe0da93b58,
+> the PWM_PIN_LEVEL bit was always clear when the PWM was disable
+> and a 0 logic level was apply to the output.
+>=20
+> According to the LPC32x0 User Manual [1],
+> the default value for bit 30 (PWM_PIN_LEVEL) is 0.
+>=20
+> This change initialize the pin level to 0 (default value) and
+> update the register value accordingly.
+>=20
+> [1] http://www.nxp.com/documents/user_manual/UM10326.pdf
+>=20
+> Signed-off-by: Sylvain Lemieux <slemieux@tycoint.com>
+> ---
+> Changes from v1 to v2:
+> * Only setup the "PWMx_PIN_LEVEL" once on probe.
+>=20
+>  drivers/pwm/pwm-lpc32xx.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+
+Applied, thanks.
+
+Thierry
+
+--Fig2xvG2VGoz8o/s
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJXg175AAoJEN0jrNd/PrOhkMgP/j5FICIdBwVK8xAVW6YC1qgg
+oFXJB5RWbcyu43bQBnCAN67FjPVlDYdRh21mGgxO6KqfOUGuGJUYvJlOYtyCI+ie
+Gz3+YL0Zwx3DpzArldKFAjzUyO8VfsCISwmr6UqpWc0wQqdXcHoyHeEz5pUqpH5x
+d9iXnxKF4XCB4Cuf6dD01a+vcuYEc+RINJ0VxFICpvaHmJwefAev5kT0CyIxuIMw
+6YS+ZKr/M6agYUGVPqfLXmVRT//P5WQs1qn0wKF9uweMmRJlWi8HtmDKIu6QILaR
+5m45OePuaQJal7VjPVbzguXyaWizq++fbuB8IK3axEs+4qfLn2OQZwykxXDB069y
+dCs2qWbD61QVxEQJcb0LmiX0pxbD+7DrO7CL/3DxvQWCPSTCvsWIYp1A61cjfdRR
+rNHPu8EABkX7cCD+coznA2C28XBIrTn0OlICa6Xq0sZC0T/rNH5fVimNXjIoMRtz
+wjVq/A70jLpkL1I/OMwvGGJEqHsZwN74r0kPRwMy7n+MTyeEZcsbV7bYHvfZbEY4
+vGGPwchFLA5WGgOJQ59ZoKTvCantlYhHAn5TCSDrDjUHgxton1tQTpY2Oa+qdhIs
+9ca2mJ8DOqM6nfrjZQDHezQ9LMxXcQhQF2gIEnDFxgg6blI0lw42NoEywN6ndLQG
+Ul4/ALN0aKNcufcDC2RD
+=Vz2i
+-----END PGP SIGNATURE-----
+
+--Fig2xvG2VGoz8o/s--
