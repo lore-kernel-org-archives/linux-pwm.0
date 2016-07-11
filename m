@@ -1,84 +1,94 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v3 12/14] regulator: pwm: Retrieve correct voltage
-Date: Mon, 11 Jul 2016 09:20:24 +0200
-Message-ID: <20160711092024.6cbd1c88@bbrezillon>
-References: <1465895602-31008-1-git-send-email-boris.brezillon@free-electrons.com>
-	<1465895602-31008-13-git-send-email-boris.brezillon@free-electrons.com>
-	<20160708154302.GC1151@ulmo.ba.sec>
-	<20160709094718.GB6247@sirena.org.uk>
-	<20160711070251.GA5823@ulmo.ba.sec>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 2/2 v2] pwm: add a driver for the STMPE PWM
+Date: Mon, 11 Jul 2016 09:59:50 +0200
+Message-ID: <20160711075950.GB5823@ulmo.ba.sec>
+References: <1459891357-28352-1-git-send-email-linus.walleij@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="NDin8bjvE/0mNLFQ"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:33519 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1030235AbcGKHU2 (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Jul 2016 03:20:28 -0400
-In-Reply-To: <20160711070251.GA5823@ulmo.ba.sec>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:35146 "EHLO
+	mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1030318AbcGKH7x (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Jul 2016 03:59:53 -0400
+Received: by mail-wm0-f67.google.com with SMTP id i5so350570wmg.2
+        for <linux-pwm@vger.kernel.org>; Mon, 11 Jul 2016 00:59:52 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1459891357-28352-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Brian Norris <briannorris@chromium.org>
-Cc: Mark Brown <broonie@kernel.org>, linux-pwm@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>, linux-rockchip@lists.infradead.org, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <milo.kim@ti.com>, Doug Anderson <dianders@google.com>, Caesar Wang <wxt@rock-chips.com>, Stephen Barber <smbarber@chromium.org>, Ajit Pal Singh <ajitpal.singh@st.com>, Srinivas Kandagatla <srinivas.kandagatla@gmail.com>, Maxime Coquelin <maxime.coquelin@st.com>, Patrice Chotard <patrice.chotard@st.com>, kernel@stlinux.com, Laxman Dewangan <ldewangan@nvidia.com>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: linux-pwm@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
 
-On Mon, 11 Jul 2016 09:02:51 +0200
-Thierry Reding <thierry.reding@gmail.com> wrote:
 
-> On Sat, Jul 09, 2016 at 11:47:18AM +0200, Mark Brown wrote:
-> > On Fri, Jul 08, 2016 at 05:43:02PM +0200, Thierry Reding wrote:
-> >   
-> > > Mark, do you want me to provide a stable branch with the PWM regulator
-> > > patches and resolve that conflict in your tree? Or would you rather take
-> > > the whole set based on a stable branch from the PWM tree? Or maybe yet
-> > > another possibility would be to base the PWM tree on a stable branch
-> > > from the regulator tree containing the above commit.  
-> > 
-> > Probably easiest to use this signed tag and resolve it in your tree:
-> > 
-> > The following changes since commit 1a695a905c18548062509178b98bc91e67510864:
-> > 
-> >   Linux 4.7-rc1 (2016-05-29 09:29:24 -0700)
-> > 
-> > are available in the git repository at:
-> > 
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git tags/pwm-modernization
-> > 
-> > for you to fetch changes up to c2588393e6315ab68207323d37d2a73713d6bc81:
-> > 
-> >   regulator: pwm: Fix regulator ramp delay for continuous mode (2016-07-07 11:45:06 +0200)
-> > 
-> > ----------------------------------------------------------------
-> > regulator: Provide a branch for moderninzation of the PWM code
-> > 
-> > There's a new, improved PWM API which allows a lot of improvements in
-> > the PWM regulator driver.  Since the bulk of the changes are in the PWM
-> > API this is being managed in the PWM tree, merge pending regulator API
-> > changes to allow this to be resolved more easily.
-> > 
-> > ----------------------------------------------------------------
-> > Alexandre Courbot (1):
-> >       regulator: pwm: Support for enable GPIO
-> > 
-> > Boris Brezillon (1):
-> >       regulator: pwm: Drop unneeded pwm_enable() call
-> > 
-> > Douglas Anderson (1):
-> >       regulator: pwm: Fix regulator ramp delay for continuous mode
-> > 
-> >  .../bindings/regulator/pwm-regulator.txt           |  7 +++-
-> >  drivers/regulator/pwm-regulator.c                  | 40 ++++++++++++++++++----
-> >  2 files changed, 39 insertions(+), 8 deletions(-)  
-> 
-> Merged into for-4.8/regulator of the PWM tree and rebased Boris'
-> pwm-regulator patches on top.
-> 
-> Boris, everything looks right to me, but can you take a quick look to
-> see if it all matches up with what you expect?
+--NDin8bjvE/0mNLFQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-It looks good, but I won't be able to test it on real hardware until
-next week.
-Heiko, Brian, can you try this pwm/for-4.8/regulator branch?
+On Tue, Apr 05, 2016 at 11:22:37PM +0200, Linus Walleij wrote:
+> This adds a driver for the STMPE 24xx series of multi-purpose
+> I2C expanders. (I think STMPE means ST Microelectronics
+> Multi-Purpose Expander.) This PWM was designed in accordance with
+> Nokia specifications and is kind of weird and usually just
+> switched between max and zero dutycycle. However it is indeed
+> a PWM so it needs to live in the PWM subsystem.
+>=20
+> This PWM is mostly used for white LED backlight.
+>=20
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v2->v3:
+> - Use pwm_is_enabled() instead of local state tracking.
+> - Convert to builtin_platform_driver_probe() and tag the init
+>   code with _init, we're not going modular with this driver.
+> - Get rid of some pointless (u8) casts
+> - Convert an if () else if () else if () ladder into a switch
+>   statement.
+> - Make a set of #defines for the PWM state machine instruction
+>   words.
+> - Don't brag about the driver being initialized.
+> ChangeLog v1->v2:
+> - Split off the MFD hunk from the patch: no need to worry about
+>   that, it can be merged orthogonally to the MFD tree.
+> ---
+>  drivers/pwm/Kconfig     |   7 ++
+>  drivers/pwm/Makefile    |   1 +
+>  drivers/pwm/pwm-stmpe.c | 299 ++++++++++++++++++++++++++++++++++++++++++=
+++++++
+>  3 files changed, 307 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-stmpe.c
+
+Sorry, this went completely under my radar. I've applied it now, fixing
+up some checkpatch warnings and addressing some of the comments that had
+been made by Vladimir.
+
+Linus, can you please check that the driver still works? Or if there's
+anything I've changed that you think is completely wrong?
 
 Thanks,
+Thierry
 
-Boris
+--NDin8bjvE/0mNLFQ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCAAGBQJXg1HuAAoJEN0jrNd/PrOhm04P/Rbvm2FTxpySrRGFoAi1DnTa
+AdEiyWD/+O6pYvdhtKkICK2U1SNihU73DVbcwloPtpJ7fOoAcWnba7qMl1gSzAf8
+820I43pm27HHkxnwa+oVqmqLVpkWXTNPQD8xM0XKhcwAVdwkA5wv+5RvaM3gVu7z
+V9xoCOyMF80i4HzTcJcT6HEPn6i6xKfijfPNFsmNvFwO52trSM3Uq5Ow8lLIZoE2
+fiMr5R1+NGnKgKTRiK1oaznYA0ecFht+cgxB1X2+q4WdcpRxPbsQoGyzJsckgc8j
+m/hrVE/HehYCcA4VuasbWTbCEuzWaqhJAizW0mIv02WsyaNZ0fc4l7WTKixrLgEk
+2qz8LG4wWx9laHd9Bs8bhAIwFzPsyXAg1woG2/qSM3HMmBEyfxYO23KQ7BebpC9B
+ZBTINbPDTsx/Anqp+HT6rfZlqDqmS5U7VkN3gAMvygjfXmkwHZ8Vm2X8RIopI9Eo
+yzOWok5h7mw+NoolEfLYNGFxr5H/ALfs6cdG6T2r9VEBNtqh27khJGPvY1TkznJk
+D1jSDWHfOOwvSdok57K/mapWGoj7ZQpH2fbr7EqKTTMfwNTLaDVYAtrQW/Kuo1kv
+DfEDcwSe4V0ykEJKpDwPKHinPC5L/pjcSXAGThC6ghy7u56bHH/1KZjLsvrtucG5
+eEVr3Ft4Wt2oBqNWJNry
+=4qgC
+-----END PGP SIGNATURE-----
+
+--NDin8bjvE/0mNLFQ--
