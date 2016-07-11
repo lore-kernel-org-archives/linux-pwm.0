@@ -1,75 +1,64 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v8 4/9] pwm: pwm-tiecap: Update dt binding document to
- use proper unit address
-Date: Mon, 11 Jul 2016 12:33:45 +0200
-Message-ID: <20160711103345.GB5503@ulmo.ba.sec>
-References: <1462291015-1919-1-git-send-email-fcooper@ti.com>
- <1462291015-1919-5-git-send-email-fcooper@ti.com>
- <20160711095623.GI5823@ulmo.ba.sec>
- <20160711100629.GJ5823@ulmo.ba.sec>
+Subject: Re: [PATCH v1 1/1] pwm: lpss: Move clk_rate check to ->probe()
+Date: Mon, 11 Jul 2016 12:49:55 +0200
+Message-ID: <20160711104955.GC5503@ulmo.ba.sec>
+References: <1467646587-6613-1-git-send-email-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="EuxKj2iCbKjpUGkD"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+	protocol="application/pgp-signature"; boundary="8NvZYKFJsRX2Djef"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:36071 "EHLO
+	mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752823AbcGKKt6 (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Jul 2016 06:49:58 -0400
+Received: by mail-wm0-f68.google.com with SMTP id x83so14020129wma.3
+        for <linux-pwm@vger.kernel.org>; Mon, 11 Jul 2016 03:49:57 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <20160711100629.GJ5823@ulmo.ba.sec>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Franklin S Cooper Jr <fcooper@ti.com>
-Cc: robh+dt@kernel.org, tony@atomide.com, linux@arm.linux.org.uk, paul@pwsan.com, t-kristo@ti.com, mturquette@baylibre.com, sboyd@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, vigneshr@ti.com, nsekhar@ti.com
+In-Reply-To: <1467646587-6613-1-git-send-email-andriy.shevchenko@linux.intel.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-pwm@vger.kernel.org
 
 
---EuxKj2iCbKjpUGkD
+--8NvZYKFJsRX2Djef
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 11, 2016 at 12:06:29PM +0200, Thierry Reding wrote:
-> On Mon, Jul 11, 2016 at 11:56:23AM +0200, Thierry Reding wrote:
-> > On Tue, May 03, 2016 at 10:56:50AM -0500, Franklin S Cooper Jr wrote:
-> > > Replace unit address from 0 to the proper physical address. Also insu=
-re
-> > > that the unit address matches the reg property address.
-> > >=20
-> > > Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
-> > > ---
-> > >  Documentation/devicetree/bindings/pwm/pwm-tiecap.txt | 8 ++++----
-> > >  1 file changed, 4 insertions(+), 4 deletions(-)
-> >=20
-> > I applied this long ago but never let you know: Applied, thanks.
+On Mon, Jul 04, 2016 at 06:36:27PM +0300, Andy Shevchenko wrote:
+> There is no need to check each time if the clk_rate defined or not when w=
+e call
+> pwm_lpss_config(). Move the check to ->probe() instead.
 >=20
-> Actually I didn't. And it seems the reason is that it doesn't apply
-> cleanly. For some reason my tree doesn't have an entry for the ecap
-> example on am437x. Am I missing a patch? Can you resend whatever is
-> not in linux-next yet?
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/pwm/pwm-lpss.c | 12 +++++++-----
+>  1 file changed, 7 insertions(+), 5 deletions(-)
 
-Oh, nevermind my blabbering, it took me too long to realize that this is
-the series that Tony had picked up for the most part, and I hadn't
-properly marked it done in patchwork.
-
-I'll go get some coffee now.
+Applied, thanks.
 
 Thierry
 
---EuxKj2iCbKjpUGkD
+--8NvZYKFJsRX2Djef
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQIcBAABCAAGBQJXg3YJAAoJEN0jrNd/PrOhzdwP/iZmYhqh/Q7NjSWzUse3NL/x
-K6W5441H1aNOs9T9gE8iTWd3d+wVimySETpZTCg7rFH0BdDrRUx5ZhKbtWOlcem4
-L6DpCjhEsPu9ObVw8vBUGaqVkh+GVueV1p6sRlb8F2FdDZtlhBj+mn89xtxDpFKQ
-/fp4rykEsh5PhalxBg//9Zbk3at4ouVev7jUNfB3Qxl5U0kxiPmkQ/sETNp2sjoX
-TxqbA23rD0B0YDAsk5iYUognAOLUcOXVqeyaw46r2/j/w35a8wzW/BLlfS0ePl9J
-Nn2o6xxWm4yEG/5F7+souAa0/65DTERe1nE5OW1UplpVsFFzBHCiH9hjgX2eiRHW
-BTCcibLN5y/w9r+tJadsE1ppN5SxdmBsFDwTdRj1/FscGJmc6nb59bHTf6HxVRHW
-fLlgCDu44WEJ1LkrAqrq/PEiI0Il/hpO90IEHGJgF1Jbyc7eJfIluSJBsT2D94C5
-faQtqO8ZC/rI01LF9pB3IfB9keb43H7c8u+T5t9gHG6QWY1smN9KNUyEJQ4HU8yz
-zfMqp7RlQdfFcnJWGLv60wv1pArOUwIYLgIfiMXgo47evWFrwM51QezWQ+iwgntA
-IPG+o1CeU/PeUub0Cir53su4Rb9J+oJGTMM5kiLicMf5envlFyBY/mfDq9vezBDn
-09ar2DQzX2bP1KfWORs5
-=Mx4R
+iQIcBAABCAAGBQJXg3nQAAoJEN0jrNd/PrOh4mMP/2Q1iNp4nwYlHz1mFXzmJpJb
+tAoG9u082MB/c20+JnV3gPd9TIt+5H+EsMjAtnrq0h7iIK/iIg4e2cR2cLc27MYw
+rZez8LAZuGF0exe8GVAjiudN2L8VMgqVUCg8EdiJ5RTQW712Yy2MQwsyJn9ZqDI7
+3mU9Za6x3b0S7JtRMN884qlXXrClBTTsZzLAfHLaS7X0JmlL7PKt1c5OEUzqJSgq
+kSe52S2v3Nhph1/k7YhHu9qF6u8tkCpBEqUsul3c5tZw04k2CYB8flx058/CFlEK
+Jw90pn9TT2jU+m0+MEhmjPts5UMdBXk9qeiTGo1UdjK0e4HeLB0dKg4svUZfxk+T
+50t36MEUWkC/vFqvenyKYvozxuwhABt5OWIkFn7Iez72+cBHhVpEaf32jaS5PaKH
+jBwUQLw0lUW4wo+sFNOoZYFURptZ0ypYd2GpqfWgiWMCKK8Ny8iFsF0lL/nLP0yT
+QcUFxM69Sx/3/SoGzOPtEn6dUemJ/kVT0h75j7zDV9auj7vZmYxRxU/4WwUaxat5
++cI9LHasw9M8l6WgPs4SJjXRxb/xxx1jMqyPVH879fA/r4N5JsEs/fRHPAMTEkqv
+9aGXxjEF/RyqB/2FZPIjVw/iWIFH9rmdCt/DWzOj0kbeELpm1IhS0Sdxdy85v4Fk
+K/wFeiQ6DvT2MqsekUir
+=ixp8
 -----END PGP SIGNATURE-----
 
---EuxKj2iCbKjpUGkD--
+--8NvZYKFJsRX2Djef--
