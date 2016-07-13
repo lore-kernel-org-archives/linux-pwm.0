@@ -1,80 +1,75 @@
-From: "Franklin S Cooper Jr." <fcooper@ti.com>
-Subject: Re: [PATCH v8 1/9] clk: ti: am335x/am4372: Add tbclk to pwm node
-Date: Tue, 12 Jul 2016 08:45:46 -0500
-Message-ID: <5784F48A.50805@ti.com>
-References: <1462291015-1919-1-git-send-email-fcooper@ti.com>
- <1462291015-1919-2-git-send-email-fcooper@ti.com>
- <146827561017.73491.3564276289319851088@resonance>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v3 20/20] dt-bindings: pwm: sti: Update DT bindings with
+ recent changes
+Date: Wed, 13 Jul 2016 10:02:46 +0100
+Message-ID: <20160713090246.GA11154@dell>
+References: <20160608092135.21184-1-lee.jones@linaro.org>
+ <20160608092135.21184-21-lee.jones@linaro.org>
+ <20160608205152.GA5511@rob-hp-laptop> <20160609114107.GB1388@dell>
+ <20160610131855.GG27142@ulmo.ba.sec> <20160610140635.GC1537@dell>
+ <20160610145323.GO27142@ulmo.ba.sec>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <146827561017.73491.3564276289319851088@resonance>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Michael Turquette <mturquette@baylibre.com>, thierry.reding@gmail.com, robh+dt@kernel.org, tony@atomide.com, linux@arm.linux.org.uk, paul@pwsan.com, t-kristo@ti.com, sboyd@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, vigneshr@ti.com, nsekhar@ti.com
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20160610145323.GO27142@ulmo.ba.sec>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: kernel@stlinux.com, linux-pwm@vger.kernel.org, patrice.chotard@st.com, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, maxime.coquelin@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-
-
-On 07/11/2016 05:20 PM, Michael Turquette wrote:
-> Quoting Franklin S Cooper Jr (2016-05-03 08:56:47)
->> Add tblck to the pwm nodes. This insures that the ehrpwm driver has access
-> 
-> s/tblck/tbclk/
-> 
-> I see you have acks already. What tree should this patch go through?
-
-
-I believe it went through Tero's tree. I currently see it in linux-next.
-> 
-> Regards,
-> Mike
-> 
->> to the time-based clk.
->>
->> Do not remove similar entries for ehrpwm node. Later patches will switch
->> from using ehrpwm node name to pwm. But to maintain ABI compatibility we
->> shouldn't remove the old entries.
->>
->> Signed-off-by: Franklin S Cooper Jr <fcooper@ti.com>
->> Acked-by: Stephen Boyd <sboyd@codeaurora.org>
->> Acked-by: Tero Kristo <t-kristo@ti.com>
->> ---
->>  drivers/clk/ti/clk-33xx.c | 3 +++
->>  drivers/clk/ti/clk-43xx.c | 6 ++++++
->>  2 files changed, 9 insertions(+)
->>
->> diff --git a/drivers/clk/ti/clk-33xx.c b/drivers/clk/ti/clk-33xx.c
->> index ef2ec64..0e47d95 100644
->> --- a/drivers/clk/ti/clk-33xx.c
->> +++ b/drivers/clk/ti/clk-33xx.c
->> @@ -108,6 +108,9 @@ static struct ti_dt_clk am33xx_clks[] = {
->>         DT_CLK("48300200.ehrpwm", "tbclk", "ehrpwm0_tbclk"),
->>         DT_CLK("48302200.ehrpwm", "tbclk", "ehrpwm1_tbclk"),
->>         DT_CLK("48304200.ehrpwm", "tbclk", "ehrpwm2_tbclk"),
->> +       DT_CLK("48300200.pwm", "tbclk", "ehrpwm0_tbclk"),
->> +       DT_CLK("48302200.pwm", "tbclk", "ehrpwm1_tbclk"),
->> +       DT_CLK("48304200.pwm", "tbclk", "ehrpwm2_tbclk"),
->>         { .node_name = NULL },
->>  };
->>  
->> diff --git a/drivers/clk/ti/clk-43xx.c b/drivers/clk/ti/clk-43xx.c
->> index 097fc90..7255aa8 100644
->> --- a/drivers/clk/ti/clk-43xx.c
->> +++ b/drivers/clk/ti/clk-43xx.c
->> @@ -115,6 +115,12 @@ static struct ti_dt_clk am43xx_clks[] = {
->>         DT_CLK("48306200.ehrpwm", "tbclk", "ehrpwm3_tbclk"),
->>         DT_CLK("48308200.ehrpwm", "tbclk", "ehrpwm4_tbclk"),
->>         DT_CLK("4830a200.ehrpwm", "tbclk", "ehrpwm5_tbclk"),
->> +       DT_CLK("48300200.pwm", "tbclk", "ehrpwm0_tbclk"),
->> +       DT_CLK("48302200.pwm", "tbclk", "ehrpwm1_tbclk"),
->> +       DT_CLK("48304200.pwm", "tbclk", "ehrpwm2_tbclk"),
->> +       DT_CLK("48306200.pwm", "tbclk", "ehrpwm3_tbclk"),
->> +       DT_CLK("48308200.pwm", "tbclk", "ehrpwm4_tbclk"),
->> +       DT_CLK("4830a200.pwm", "tbclk", "ehrpwm5_tbclk"),
->>         { .node_name = NULL },
->>  };
->>  
->> -- 
->> 2.7.0
->>
+T24gRnJpLCAxMCBKdW4gMjAxNiwgVGhpZXJyeSBSZWRpbmcgd3JvdGU6Cj4gT24gRnJpLCBKdW4g
+MTAsIDIwMTYgYXQgMDM6MDY6MzVQTSArMDEwMCwgTGVlIEpvbmVzIHdyb3RlOgo+ID4gT24gRnJp
+LCAxMCBKdW4gMjAxNiwgVGhpZXJyeSBSZWRpbmcgd3JvdGU6Cj4gPiAKPiA+ID4gPiA+ID4gVGhl
+IHNlY29uZCBkb2N1bWVudGF0aW9uIGFkYXB0aW9uIGVudGFpbHMgYWRkaW5nIHN1cHBvcnQgZm9y
+IFBXTQo+ID4gPiA+ID4gPiBjYXB0dXJlIGRldmljZXMuICBBIG5ldyBjbG9jayBpcyByZXF1aXJl
+ZCBhcyB3ZWxsIGFzIGFuIElSUSBsaW5lLgo+ID4gPiA+ID4gPiBXZSdyZSBhbHNvIGFkZGluZyBh
+IG5ldyBwcm9wZXJ0eSBzaW1pbGFyIHRvIHRoZSBvbmUgZGVzY3JpYmVkCj4gPiA+ID4gPiA+IGFi
+b3ZlLCBidXQgZm9yIGNhcHR1cmUgY2hhbm5lbHMuICBUeXBpY2FsbHksIHRoZXJlIHdpbGwgYmUg
+bGVzcwo+ID4gPiA+ID4gPiBjYXB0dXJlIGNoYW5uZWxzIHRoYW4gUFdNLW91dCwgc2luY2UgYWxs
+IGNoYW5uZWxzIGhhdmUgdGhlIGxhdHRlcgo+ID4gPiA+ID4gPiBjYXBhYmlsaXR5LCBidXQgb25s
+eSBzb21lIGhhdmUgY2FwdHVyZSBzdXBwb3J0Lgo+ID4gPiA+ID4gCj4gPiA+ID4gPiBIdW1tLCBz
+b3VuZHMgbGlrZSBhbGwgb2YgdGhpcyBzaG91bGQgYmUgaW1wbGllZCBmcm9tIGNvbXBhdGlibGUg
+c3RyaW5ncy4KPiA+ID4gPiAKPiA+ID4gPiBZb3UgbWVhbiBoYXZlIGEgYnVuY2ggb2Ygb2ZfbWFj
+aGluZV9pc19jb21wYXRpYmxlcygpIHNjYXR0ZXJlZCBhcm91bmQ/Cj4gPiA+IAo+ID4gPiBJIGRv
+bid0IHVuZGVyc3RhbmQgd2h5IHlvdSBuZWVkIHRoaXMgYXQgYWxsLiBRdWl0ZSBmcmFua2x5IEkg
+ZG9uJ3QgZXZlbgo+ID4gPiBrbm93IHdoeSBzdCxwd20tbnVtLWRldnMgZXhpc3RzLiBJIHByb2Jh
+Ymx5IG1pc3NlZCBpdCBiYWNrIGF0IHRoZSB0aW1lLgo+ID4gPiBVc3VhbGx5LCBsaWtlIFJvYiBz
+dWdnZXN0cywgdGhpcyBzaG91bGQgYmUgaW5mZXJyZWQgZnJvbSB0aGUgY29tcGF0aWJsZQo+ID4g
+PiBzdHJpbmcuIE9uZSBjb21tb25seSB1c2VkIHdheSB0byBhdm9pZCBzY2F0dGVyaW5nIGV4cGxp
+Y2l0IGNoZWNrcyBmb3IKPiA+ID4gdGhlIGNvbXBhdGlibGUgc3RyaW5nIGlzIHRvIGFkZCB0aGlz
+IGluZm9ybWF0aW9uIHRvIHRoZSBvZl9kZXZpY2VfaWQKPiA+ID4gdGFibGUuIFNlZSBhIGJ1bmNo
+IG9mIGV4aXN0aW5nIGRyaXZlcnMgZm9yIHJlZmVyZW5jZS4KPiA+IAo+ID4gWWVzLCBJIGFtIGF3
+YXJlIG9mIHRoZSBzdHJhdGVneSwgYW5kIGhhcHB5IHRvIG9ibGlnZSBpZiB0aGlzIGlzIHlvdXIK
+PiA+IHN1Z2dlc3Rpb24uICBJJ2xsIG1vdmUgYWxsIHBsYXRmb3JtIGRhdGEgaW50byB0aGUgZHJp
+dmVyIGFuZCBlcmFkaWNhdGUKPiA+IHRoZSBEVCBwcm9wZXJ0aWVzLgo+IAo+IEdyZWF0IQoKU29y
+cnkgaXQncyB0YWtlbiBzbyBsb25nIHRvIGdldCBiYWNrIGFyb3VuZCB0byB0aGlzLgoKU28gSSBq
+dXN0IGhhZCBhIGNyYWNrIGF0IGltcGxlbWVudGluZyB0aGlzIHNvbHV0aW9uIGFuZCByYW4gaW50
+bwppc3N1ZXMuICBVbmZvcnR1bmF0ZWx5LCB0aGUgY29uZmlndXJhdGlvbiBpc24ndCBlYXN5IHRv
+IGRlc2NyaWJlIHVzaW5nCmNvbXBhdGlibGUgc3RyaW5ncy4KClVubGVzcyB3ZSBhcmUgcHJlcGFy
+ZWQgdG8gaGF2ZSBzdHJpbmdzIGxpa2U6CgogIHN0LHN0aS1wd20tc3RpaDQwNy1wd20wCiAgc3Qs
+c3RpLXB3bS1zdGloNDA3LXB3bTEKICBzdCxzdGktcHdtLXN0aWg0MTYtcHdtMAogIHN0LHN0aS1w
+d20tc3RpaDQxNi1wd20xCgpPciBwZXJoYXBzOgoKICBzdCxzdGktcHdtLTRvdXQtMmNwdAogIHN0
+LHN0aS1wd20tMW91dC0xY3B0CgouLi4gc2luY2Ugc29tZSBvZiB0aGUgUFdNcyBoYXZlIGFuIG9k
+ZCBudW1iZXIgb2YgT1VUIGFuZCBDUFQKY2hhbm5lbHMvZGV2aWNlcy4gIEluIG15IG9waW5pb24g
+aG93ZXZlciwgdGhpcyBpcyB1Z2x5LiAgSSBkb24ndCB0aGluawp3ZSBkbyB0aGlzIGZvciBhbnkg
+b3RoZXIgdHlwZSBvZiBjaGFubmVsL2RldmljZS9wb3J0IGV0YywgZG8gd2U/CgpQZXJzb25hbGx5
+IEkgdGhpbmsgdGhlcmUgaXNuJ3QgYW55dGhpbmcgd3Jvbmcgd2l0aCBoYXZpbmcgRFQKcHJvcGVy
+dGllcyBkZXNjcmliaW5nIGhvdyBtYW55IGNoYW5uZWxzL2RldmljZXMgdGhlcmUgYXJlLCBidXQg
+SSdtCm9rYXkgd2l0aCB3aGF0ZXZlciB5b3UgYm90aCBkZWNpZGUuICBObyBza2luIG9mIG15IG5v
+c2UgcmVhbGx5LiA6KQoKV2hhdCBzYXkgeW91PwoKLS0gCkxlZSBKb25lcwpMaW5hcm8gU1RNaWNy
+b2VsZWN0cm9uaWNzIExhbmRpbmcgVGVhbSBMZWFkCkxpbmFyby5vcmcg4pSCIE9wZW4gc291cmNl
+IHNvZnR3YXJlIGZvciBBUk0gU29DcwpGb2xsb3cgTGluYXJvOiBGYWNlYm9vayB8IFR3aXR0ZXIg
+fCBCbG9nCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwps
+aW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJh
+ZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51
+eC1hcm0ta2VybmVsCg==
