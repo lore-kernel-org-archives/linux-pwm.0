@@ -1,75 +1,90 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v3 20/20] dt-bindings: pwm: sti: Update DT bindings with
- recent changes
-Date: Wed, 13 Jul 2016 10:02:46 +0100
-Message-ID: <20160713090246.GA11154@dell>
-References: <20160608092135.21184-1-lee.jones@linaro.org>
- <20160608092135.21184-21-lee.jones@linaro.org>
- <20160608205152.GA5511@rob-hp-laptop> <20160609114107.GB1388@dell>
- <20160610131855.GG27142@ulmo.ba.sec> <20160610140635.GC1537@dell>
- <20160610145323.GO27142@ulmo.ba.sec>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20160610145323.GO27142@ulmo.ba.sec>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: kernel@stlinux.com, linux-pwm@vger.kernel.org, patrice.chotard@st.com, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, maxime.coquelin@st.com
+From: Brian Norris <briannorris@chromium.org>
+Subject: [PATCH v4 2/4] mfd: cros_ec: add EC_PWM function definitions
+Date: Fri, 15 Jul 2016 16:28:42 -0700
+Message-ID: <1468625324-41229-3-git-send-email-briannorris@chromium.org>
+References: <1468625324-41229-1-git-send-email-briannorris@chromium.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pf0-f172.google.com ([209.85.192.172]:36283 "EHLO
+	mail-pf0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751993AbcGOXaz (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Fri, 15 Jul 2016 19:30:55 -0400
+Received: by mail-pf0-f172.google.com with SMTP id t190so45218202pfb.3
+        for <linux-pwm@vger.kernel.org>; Fri, 15 Jul 2016 16:30:55 -0700 (PDT)
+In-Reply-To: <1468625324-41229-1-git-send-email-briannorris@chromium.org>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Olof Johansson <olof@lixom.net>
+Cc: linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Brian Norris <briannorris@chromium.org>
 
-T24gRnJpLCAxMCBKdW4gMjAxNiwgVGhpZXJyeSBSZWRpbmcgd3JvdGU6Cj4gT24gRnJpLCBKdW4g
-MTAsIDIwMTYgYXQgMDM6MDY6MzVQTSArMDEwMCwgTGVlIEpvbmVzIHdyb3RlOgo+ID4gT24gRnJp
-LCAxMCBKdW4gMjAxNiwgVGhpZXJyeSBSZWRpbmcgd3JvdGU6Cj4gPiAKPiA+ID4gPiA+ID4gVGhl
-IHNlY29uZCBkb2N1bWVudGF0aW9uIGFkYXB0aW9uIGVudGFpbHMgYWRkaW5nIHN1cHBvcnQgZm9y
-IFBXTQo+ID4gPiA+ID4gPiBjYXB0dXJlIGRldmljZXMuICBBIG5ldyBjbG9jayBpcyByZXF1aXJl
-ZCBhcyB3ZWxsIGFzIGFuIElSUSBsaW5lLgo+ID4gPiA+ID4gPiBXZSdyZSBhbHNvIGFkZGluZyBh
-IG5ldyBwcm9wZXJ0eSBzaW1pbGFyIHRvIHRoZSBvbmUgZGVzY3JpYmVkCj4gPiA+ID4gPiA+IGFi
-b3ZlLCBidXQgZm9yIGNhcHR1cmUgY2hhbm5lbHMuICBUeXBpY2FsbHksIHRoZXJlIHdpbGwgYmUg
-bGVzcwo+ID4gPiA+ID4gPiBjYXB0dXJlIGNoYW5uZWxzIHRoYW4gUFdNLW91dCwgc2luY2UgYWxs
-IGNoYW5uZWxzIGhhdmUgdGhlIGxhdHRlcgo+ID4gPiA+ID4gPiBjYXBhYmlsaXR5LCBidXQgb25s
-eSBzb21lIGhhdmUgY2FwdHVyZSBzdXBwb3J0Lgo+ID4gPiA+ID4gCj4gPiA+ID4gPiBIdW1tLCBz
-b3VuZHMgbGlrZSBhbGwgb2YgdGhpcyBzaG91bGQgYmUgaW1wbGllZCBmcm9tIGNvbXBhdGlibGUg
-c3RyaW5ncy4KPiA+ID4gPiAKPiA+ID4gPiBZb3UgbWVhbiBoYXZlIGEgYnVuY2ggb2Ygb2ZfbWFj
-aGluZV9pc19jb21wYXRpYmxlcygpIHNjYXR0ZXJlZCBhcm91bmQ/Cj4gPiA+IAo+ID4gPiBJIGRv
-bid0IHVuZGVyc3RhbmQgd2h5IHlvdSBuZWVkIHRoaXMgYXQgYWxsLiBRdWl0ZSBmcmFua2x5IEkg
-ZG9uJ3QgZXZlbgo+ID4gPiBrbm93IHdoeSBzdCxwd20tbnVtLWRldnMgZXhpc3RzLiBJIHByb2Jh
-Ymx5IG1pc3NlZCBpdCBiYWNrIGF0IHRoZSB0aW1lLgo+ID4gPiBVc3VhbGx5LCBsaWtlIFJvYiBz
-dWdnZXN0cywgdGhpcyBzaG91bGQgYmUgaW5mZXJyZWQgZnJvbSB0aGUgY29tcGF0aWJsZQo+ID4g
-PiBzdHJpbmcuIE9uZSBjb21tb25seSB1c2VkIHdheSB0byBhdm9pZCBzY2F0dGVyaW5nIGV4cGxp
-Y2l0IGNoZWNrcyBmb3IKPiA+ID4gdGhlIGNvbXBhdGlibGUgc3RyaW5nIGlzIHRvIGFkZCB0aGlz
-IGluZm9ybWF0aW9uIHRvIHRoZSBvZl9kZXZpY2VfaWQKPiA+ID4gdGFibGUuIFNlZSBhIGJ1bmNo
-IG9mIGV4aXN0aW5nIGRyaXZlcnMgZm9yIHJlZmVyZW5jZS4KPiA+IAo+ID4gWWVzLCBJIGFtIGF3
-YXJlIG9mIHRoZSBzdHJhdGVneSwgYW5kIGhhcHB5IHRvIG9ibGlnZSBpZiB0aGlzIGlzIHlvdXIK
-PiA+IHN1Z2dlc3Rpb24uICBJJ2xsIG1vdmUgYWxsIHBsYXRmb3JtIGRhdGEgaW50byB0aGUgZHJp
-dmVyIGFuZCBlcmFkaWNhdGUKPiA+IHRoZSBEVCBwcm9wZXJ0aWVzLgo+IAo+IEdyZWF0IQoKU29y
-cnkgaXQncyB0YWtlbiBzbyBsb25nIHRvIGdldCBiYWNrIGFyb3VuZCB0byB0aGlzLgoKU28gSSBq
-dXN0IGhhZCBhIGNyYWNrIGF0IGltcGxlbWVudGluZyB0aGlzIHNvbHV0aW9uIGFuZCByYW4gaW50
-bwppc3N1ZXMuICBVbmZvcnR1bmF0ZWx5LCB0aGUgY29uZmlndXJhdGlvbiBpc24ndCBlYXN5IHRv
-IGRlc2NyaWJlIHVzaW5nCmNvbXBhdGlibGUgc3RyaW5ncy4KClVubGVzcyB3ZSBhcmUgcHJlcGFy
-ZWQgdG8gaGF2ZSBzdHJpbmdzIGxpa2U6CgogIHN0LHN0aS1wd20tc3RpaDQwNy1wd20wCiAgc3Qs
-c3RpLXB3bS1zdGloNDA3LXB3bTEKICBzdCxzdGktcHdtLXN0aWg0MTYtcHdtMAogIHN0LHN0aS1w
-d20tc3RpaDQxNi1wd20xCgpPciBwZXJoYXBzOgoKICBzdCxzdGktcHdtLTRvdXQtMmNwdAogIHN0
-LHN0aS1wd20tMW91dC0xY3B0CgouLi4gc2luY2Ugc29tZSBvZiB0aGUgUFdNcyBoYXZlIGFuIG9k
-ZCBudW1iZXIgb2YgT1VUIGFuZCBDUFQKY2hhbm5lbHMvZGV2aWNlcy4gIEluIG15IG9waW5pb24g
-aG93ZXZlciwgdGhpcyBpcyB1Z2x5LiAgSSBkb24ndCB0aGluawp3ZSBkbyB0aGlzIGZvciBhbnkg
-b3RoZXIgdHlwZSBvZiBjaGFubmVsL2RldmljZS9wb3J0IGV0YywgZG8gd2U/CgpQZXJzb25hbGx5
-IEkgdGhpbmsgdGhlcmUgaXNuJ3QgYW55dGhpbmcgd3Jvbmcgd2l0aCBoYXZpbmcgRFQKcHJvcGVy
-dGllcyBkZXNjcmliaW5nIGhvdyBtYW55IGNoYW5uZWxzL2RldmljZXMgdGhlcmUgYXJlLCBidXQg
-SSdtCm9rYXkgd2l0aCB3aGF0ZXZlciB5b3UgYm90aCBkZWNpZGUuICBObyBza2luIG9mIG15IG5v
-c2UgcmVhbGx5LiA6KQoKV2hhdCBzYXkgeW91PwoKLS0gCkxlZSBKb25lcwpMaW5hcm8gU1RNaWNy
-b2VsZWN0cm9uaWNzIExhbmRpbmcgVGVhbSBMZWFkCkxpbmFyby5vcmcg4pSCIE9wZW4gc291cmNl
-IHNvZnR3YXJlIGZvciBBUk0gU29DcwpGb2xsb3cgTGluYXJvOiBGYWNlYm9vayB8IFR3aXR0ZXIg
-fCBCbG9nCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwps
-aW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJh
-ZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51
-eC1hcm0ta2VybmVsCg==
+The EC_CMD_PWM_{GET,SET}_DUTY commands allow us to control a PWM that is
+attached to the EC, rather than the main host SoC. The API provides
+functionality-based (e.g., keyboard light, backlight) or index-based
+addressing of the PWM(s). Duty cycles are represented by a 16-bit value,
+where 0 maps to 0% duty cycle and U16_MAX maps to 100%. The period
+cannot be controlled.
+
+This command set is more generic than, e.g.,
+EC_CMD_PWM_{GET,SET}_KEYBOARD_BACKLIGHT and could possibly used to
+replace it on future products.
+
+Let's update the command header to include the definitions.
+
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Acked-by: Lee Jones <lee.jones@linaro.org>
+---
+v4:
+ * no change
+
+v3:
+ * convert from 65535 to 0xffff
+
+v2:
+ * no changes
+---
+ include/linux/mfd/cros_ec_commands.h | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
+index 13b630c10d4c..7e7a8d4b4551 100644
+--- a/include/linux/mfd/cros_ec_commands.h
++++ b/include/linux/mfd/cros_ec_commands.h
+@@ -949,6 +949,37 @@ struct ec_params_pwm_set_fan_duty {
+ 	uint32_t percent;
+ } __packed;
+ 
++#define EC_CMD_PWM_SET_DUTY 0x25
++/* 16 bit duty cycle, 0xffff = 100% */
++#define EC_PWM_MAX_DUTY 0xffff
++
++enum ec_pwm_type {
++	/* All types, indexed by board-specific enum pwm_channel */
++	EC_PWM_TYPE_GENERIC = 0,
++	/* Keyboard backlight */
++	EC_PWM_TYPE_KB_LIGHT,
++	/* Display backlight */
++	EC_PWM_TYPE_DISPLAY_LIGHT,
++	EC_PWM_TYPE_COUNT,
++};
++
++struct ec_params_pwm_set_duty {
++	uint16_t duty;     /* Duty cycle, EC_PWM_MAX_DUTY = 100% */
++	uint8_t pwm_type;  /* ec_pwm_type */
++	uint8_t index;     /* Type-specific index, or 0 if unique */
++} __packed;
++
++#define EC_CMD_PWM_GET_DUTY 0x26
++
++struct ec_params_pwm_get_duty {
++	uint8_t pwm_type;  /* ec_pwm_type */
++	uint8_t index;     /* Type-specific index, or 0 if unique */
++} __packed;
++
++struct ec_response_pwm_get_duty {
++	uint16_t duty;     /* Duty cycle, EC_PWM_MAX_DUTY = 100% */
++} __packed;
++
+ /*****************************************************************************/
+ /*
+  * Lightbar commands. This looks worse than it is. Since we only use one HOST
+-- 
+2.8.0.rc3.226.g39d4020
