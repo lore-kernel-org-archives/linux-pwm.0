@@ -1,41 +1,115 @@
-From: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v4 0/4] pwm: add support for ChromeOS EC PWM
-Date: Mon, 18 Jul 2016 11:45:33 -0700
-Message-ID: <20160718184532.GA131404@google.com>
-References: <1468625324-41229-1-git-send-email-briannorris@chromium.org>
- <20160718084928.GA17074@dell>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160718084928.GA17074@dell>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Brian Norris <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Stephen Barber <smbarber-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Javier Martinez Canillas <javier-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, Benson Leung <bleung-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Enric Balletbo <enric.balletbo-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, Randall Spangler <rspangler-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Shawn Nematbakhsh <shawnn-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Todd Broch <tbroch-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Gwendal Grignou <gwendal-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+From: David Hsu <davidhsu@google.com>
+Subject: [PATCH v2] pwm: Create device class for pwm channels
+Date: Mon, 18 Jul 2016 15:14:50 -0700
+Message-ID: <1468880090-46076-1-git-send-email-davidhsu@google.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pa0-f45.google.com ([209.85.220.45]:34675 "EHLO
+	mail-pa0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751041AbcGRWOz (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Jul 2016 18:14:55 -0400
+Received: by mail-pa0-f45.google.com with SMTP id fi15so146079pac.1
+        for <linux-pwm@vger.kernel.org>; Mon, 18 Jul 2016 15:14:55 -0700 (PDT)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: gregkh@linuxfoundation.org, sspatil@google.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, davidhsu@google.com
 
-On Mon, Jul 18, 2016 at 09:49:28AM +0100, Lee Jones wrote:
-> On Fri, 15 Jul 2016, Brian Norris wrote:
-> > As this touches MFD (sort of), drivers/platform/chrome/, and drivers/pwm/, I'm
-> > still not sure who it should all go through: Lee, Thierry, or Olof?
-> 
-> I usually take this type of submission through the MFD tree, although
-> it's too late in the day to make it into v4.8.
-> 
-> Which Acks are you missing?
+Pwm channels don't send uevents when exported, this change adds the
+channels to a pwm class and set their device type to pwm_channel so
+uevents are sent.
 
-I think I was only missing Thierry's. If he's planning to take it
-through his tree, then that's fine. It's also fine if it waits for 4.9,
-if that helps, although I agree it has practically zero chances of
-regressions.
+To do this properly, the device names need to change to uniquely
+identify a channel.  This change is from pwmN to pwmchipM:N
 
-But most importantly, I think various parties would like patch 1, so if
-it doesn't make 4.8-rc1, then it's probably important it makes it into a
-branch others can pull from if necessary.
+Signed-off-by: David Hsu <davidhsu@google.com>
+---
+v2: Use parent name instead of chip->base for channel naming.
 
-Regards,
-Brian
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ Documentation/pwm.txt |  6 ++++--
+ drivers/pwm/sysfs.c   | 18 +++++++++++++-----
+ 2 files changed, 17 insertions(+), 7 deletions(-)
+
+diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
+index 789b27c..8453435 100644
+--- a/Documentation/pwm.txt
++++ b/Documentation/pwm.txt
+@@ -80,9 +80,11 @@ unexport - Unexports a PWM channel from sysfs (write-only).
+ 
+ The PWM channels are numbered using a per-chip index from 0 to npwm-1.
+ 
+-When a PWM channel is exported a pwmX directory will be created in the
++When a PWM channel is exported a pwmchipN:X directory will be created in the
+ pwmchipN directory it is associated with, where X is the number of the
+-channel that was exported. The following properties will then be available:
++channel that was exported. It will also be exposed at /sys/class/pwm/ and
++can be identified by the pwm_channel device type.
++The following properties will then be available:
+ 
+ period - The total period of the PWM signal (read/write).
+ 	Value is in nanoseconds and is the sum of the active and inactive
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index 01695d4..cb2b376 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -23,6 +23,8 @@
+ #include <linux/kdev_t.h>
+ #include <linux/pwm.h>
+ 
++static struct class pwm_class;
++
+ struct pwm_export {
+ 	struct device child;
+ 	struct pwm_device *pwm;
+@@ -222,6 +224,10 @@ static struct attribute *pwm_attrs[] = {
+ };
+ ATTRIBUTE_GROUPS(pwm);
+ 
++static const struct device_type pwm_channel_type = {
++	.name		= "pwm_channel",
++};
++
+ static void pwm_export_release(struct device *child)
+ {
+ 	struct pwm_export *export = child_to_pwm_export(child);
+@@ -248,9 +254,11 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
+ 
+ 	export->child.release = pwm_export_release;
+ 	export->child.parent = parent;
++	export->child.type = &pwm_channel_type;
+ 	export->child.devt = MKDEV(0, 0);
++	export->child.class = &pwm_class;
+ 	export->child.groups = pwm_groups;
+-	dev_set_name(&export->child, "pwm%u", pwm->hwpwm);
++	dev_set_name(&export->child, "%s:%u", dev_name(parent), pwm->hwpwm);
+ 
+ 	ret = device_register(&export->child);
+ 	if (ret) {
+@@ -355,7 +363,6 @@ ATTRIBUTE_GROUPS(pwm_chip);
+ static struct class pwm_class = {
+ 	.name = "pwm",
+ 	.owner = THIS_MODULE,
+-	.dev_groups = pwm_chip_groups,
+ };
+ 
+ static int pwmchip_sysfs_match(struct device *parent, const void *data)
+@@ -368,14 +375,15 @@ void pwmchip_sysfs_export(struct pwm_chip *chip)
+ 	struct device *parent;
+ 
+ 	/*
+-	 * If device_create() fails the pwm_chip is still usable by
++	 * If device_create_with_groups() fails the pwm_chip is still usable by
+ 	 * the kernel its just not exported.
+ 	 */
+-	parent = device_create(&pwm_class, chip->dev, MKDEV(0, 0), chip,
++	parent = device_create_with_groups(&pwm_class, chip->dev, MKDEV(0, 0),
++			       chip, pwm_chip_groups,
+ 			       "pwmchip%d", chip->base);
+ 	if (IS_ERR(parent)) {
+ 		dev_warn(chip->dev,
+-			 "device_create failed for pwm_chip sysfs export\n");
++			 "device_create_with_groups failed for pwm_chip sysfs export\n");
+ 	}
+ }
+ 
+-- 
+2.8.0.rc3.226.g39d4020
