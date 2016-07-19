@@ -1,115 +1,96 @@
-From: David Hsu <davidhsu@google.com>
-Subject: [PATCH v2] pwm: Create device class for pwm channels
-Date: Mon, 18 Jul 2016 15:14:50 -0700
-Message-ID: <1468880090-46076-1-git-send-email-davidhsu@google.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v4 0/4] pwm: add support for ChromeOS EC PWM
+Date: Tue, 19 Jul 2016 08:37:17 +0100
+Message-ID: <20160719073717.GE17074@dell>
+References: <1468625324-41229-1-git-send-email-briannorris@chromium.org>
+ <20160718084928.GA17074@dell>
+ <20160718091029.GA32259@ulmo.ba.sec>
+ <20160718132426.GB17074@dell>
+ <20160718140400.GA22297@ulmo.ba.sec>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pa0-f45.google.com ([209.85.220.45]:34675 "EHLO
-	mail-pa0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751041AbcGRWOz (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Jul 2016 18:14:55 -0400
-Received: by mail-pa0-f45.google.com with SMTP id fi15so146079pac.1
-        for <linux-pwm@vger.kernel.org>; Mon, 18 Jul 2016 15:14:55 -0700 (PDT)
+Received: from mail-wm0-f41.google.com ([74.125.82.41]:36958 "EHLO
+	mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752482AbcGSHgJ (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 19 Jul 2016 03:36:09 -0400
+Received: by mail-wm0-f41.google.com with SMTP id i5so15288128wmg.0
+        for <linux-pwm@vger.kernel.org>; Tue, 19 Jul 2016 00:36:08 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <20160718140400.GA22297@ulmo.ba.sec>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: gregkh@linuxfoundation.org, sspatil@google.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, davidhsu@google.com
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Brian Norris <briannorris@chromium.org>, Olof Johansson <olof@lixom.net>, linux-kernel@vger.kernel.org, Doug Anderson <dianders@chromium.org>, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Stephen Barber <smbarber@chromium.org>, Javier Martinez Canillas <javier@osg.samsung.com>, Benson Leung <bleung@chromium.org>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Randall Spangler <rspangler@chromium.org>, Shawn Nematbakhsh <shawnn@chromium.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Todd Broch <tbroch@chromium.org>, Gwendal Grignou <gwendal@chromium.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>
 
-Pwm channels don't send uevents when exported, this change adds the
-channels to a pwm class and set their device type to pwm_channel so
-uevents are sent.
+On Mon, 18 Jul 2016, Thierry Reding wrote:
 
-To do this properly, the device names need to change to uniquely
-identify a channel.  This change is from pwmN to pwmchipM:N
+> On Mon, Jul 18, 2016 at 02:24:26PM +0100, Lee Jones wrote:
+> > On Mon, 18 Jul 2016, Thierry Reding wrote:
+> >=20
+> > > On Mon, Jul 18, 2016 at 09:49:28AM +0100, Lee Jones wrote:
+> > > > On Fri, 15 Jul 2016, Brian Norris wrote:
+> > > > > This is the 4th (and final?) version of my series to support =
+the new ChromeOS
+> > > > > EC PWM API, so we can control, e.g., a PWM backlight when its=
+ PWM is attached
+> > > > > to the EC. It uses Boris's latest "atomic" hooks for the PWM =
+API (i.e., the
+> > > > > ->apply() callback), which were recently merged.
+> > > > >=20
+> > > > > Pulled and adapted the cros_ec_cmd_xfer_status() helper from =
+this patch, with
+> > > > > some minor modifications:
+> > > > >=20
+> > > > > https://lkml.org/lkml/2016/4/12/342
+> > > > >=20
+> > > > > Note that after some style bikeshedding, I proposed to put of=
+f rewriting the
+> > > > > entire cros_ec_commands.h header at the moment, due to the sh=
+ared nature of
+> > > > > this file. Follow up here:
+> > > > >=20
+> > > > > https://bugs.chromium.org/p/chromium/issues/detail?id=3D62112=
+3
+> > > > >=20
+> > > > > As this touches MFD (sort of), drivers/platform/chrome/, and =
+drivers/pwm/, I'm
+> > > > > still not sure who it should all go through: Lee, Thierry, or=
+ Olof?
+> > > >=20
+> > > > I usually take this type of submission through the MFD tree, al=
+though
+> > > > it's too late in the day to make it into v4.8.
+> > > >=20
+> > > > Which Acks are you missing?
+> > >=20
+> > > I'm willing to take this through the PWM tree if you're okay with=
+ the
+> > > MFD changes. I can put the MFD changes into a separate branch and=
+ you
+> > > could pull that in if you needed to resolve any dependencies, whi=
+ch I
+> > > think would be quite unlikely if you've already closed your tree.
+> >=20
+> > Are you saying that you're willing to take these straight into the
+> > merge-window, with no soak in -next?
+>=20
+> There's still a bit of time to let it soak in -next, but I'm not over=
+ly
+> concerned given that this is purely additions of code, so there can't=
+ be
+> any regressions.
 
-Signed-off-by: David Hsu <davidhsu@google.com>
----
-v2: Use parent name instead of chip->base for channel naming.
+No problem my side then.  Apply away.
 
- Documentation/pwm.txt |  6 ++++--
- drivers/pwm/sysfs.c   | 18 +++++++++++++-----
- 2 files changed, 17 insertions(+), 7 deletions(-)
+Before doing so, can you see if there are any clashes with my
+mfd-for-next branch?  If conflicts occur, please construct an
+immutable tag I can pull from.  That way, I can base my branch on it
+and deal with the fallout myself.
 
-diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
-index 789b27c..8453435 100644
---- a/Documentation/pwm.txt
-+++ b/Documentation/pwm.txt
-@@ -80,9 +80,11 @@ unexport - Unexports a PWM channel from sysfs (write-only).
- 
- The PWM channels are numbered using a per-chip index from 0 to npwm-1.
- 
--When a PWM channel is exported a pwmX directory will be created in the
-+When a PWM channel is exported a pwmchipN:X directory will be created in the
- pwmchipN directory it is associated with, where X is the number of the
--channel that was exported. The following properties will then be available:
-+channel that was exported. It will also be exposed at /sys/class/pwm/ and
-+can be identified by the pwm_channel device type.
-+The following properties will then be available:
- 
- period - The total period of the PWM signal (read/write).
- 	Value is in nanoseconds and is the sum of the active and inactive
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index 01695d4..cb2b376 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -23,6 +23,8 @@
- #include <linux/kdev_t.h>
- #include <linux/pwm.h>
- 
-+static struct class pwm_class;
-+
- struct pwm_export {
- 	struct device child;
- 	struct pwm_device *pwm;
-@@ -222,6 +224,10 @@ static struct attribute *pwm_attrs[] = {
- };
- ATTRIBUTE_GROUPS(pwm);
- 
-+static const struct device_type pwm_channel_type = {
-+	.name		= "pwm_channel",
-+};
-+
- static void pwm_export_release(struct device *child)
- {
- 	struct pwm_export *export = child_to_pwm_export(child);
-@@ -248,9 +254,11 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
- 
- 	export->child.release = pwm_export_release;
- 	export->child.parent = parent;
-+	export->child.type = &pwm_channel_type;
- 	export->child.devt = MKDEV(0, 0);
-+	export->child.class = &pwm_class;
- 	export->child.groups = pwm_groups;
--	dev_set_name(&export->child, "pwm%u", pwm->hwpwm);
-+	dev_set_name(&export->child, "%s:%u", dev_name(parent), pwm->hwpwm);
- 
- 	ret = device_register(&export->child);
- 	if (ret) {
-@@ -355,7 +363,6 @@ ATTRIBUTE_GROUPS(pwm_chip);
- static struct class pwm_class = {
- 	.name = "pwm",
- 	.owner = THIS_MODULE,
--	.dev_groups = pwm_chip_groups,
- };
- 
- static int pwmchip_sysfs_match(struct device *parent, const void *data)
-@@ -368,14 +375,15 @@ void pwmchip_sysfs_export(struct pwm_chip *chip)
- 	struct device *parent;
- 
- 	/*
--	 * If device_create() fails the pwm_chip is still usable by
-+	 * If device_create_with_groups() fails the pwm_chip is still usable by
- 	 * the kernel its just not exported.
- 	 */
--	parent = device_create(&pwm_class, chip->dev, MKDEV(0, 0), chip,
-+	parent = device_create_with_groups(&pwm_class, chip->dev, MKDEV(0, 0),
-+			       chip, pwm_chip_groups,
- 			       "pwmchip%d", chip->base);
- 	if (IS_ERR(parent)) {
- 		dev_warn(chip->dev,
--			 "device_create failed for pwm_chip sysfs export\n");
-+			 "device_create_with_groups failed for pwm_chip sysfs export\n");
- 	}
- }
- 
--- 
-2.8.0.rc3.226.g39d4020
+--=20
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+=46ollow Linaro: Facebook | Twitter | Blog
