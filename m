@@ -1,17 +1,21 @@
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+From: Guenter Roeck <linux@roeck-us.net>
 Subject: Re: [PATCH] pwm: cros_ec: add __packed to prevent padding
-Date: Tue, 26 Jul 2016 12:03:02 -0700
-Message-ID: <20160726190302.GA7388@dtor-ws>
+Date: Tue, 26 Jul 2016 13:15:06 -0700
+Message-ID: <20160726201506.GB11345@roeck-us.net>
 References: <1469557333-9497-1-git-send-email-briannorris@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from bh-25.webhostbox.net ([208.91.199.152]:45107 "EHLO
+	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1756117AbcGZUPT (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 26 Jul 2016 16:15:19 -0400
 Content-Disposition: inline
 In-Reply-To: <1469557333-9497-1-git-send-email-briannorris@chromium.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Brian Norris <briannorris@chromium.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, Javier Martinez Canillas <javier@osg.samsung.com>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Gwendal Grignou <gwendal@chromium.org>, Guenter Roeck <linux@roeck-us.net>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Brian Norris <briannorris@chromium.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, Javier Martinez Canillas <javier@osg.samsung.com>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Gwendal Grignou <gwendal@chromium.org>
 
 On Tue, Jul 26, 2016 at 11:22:13AM -0700, Brian Norris wrote:
 > While the particular usage in question is likely safe (struct
@@ -27,7 +31,7 @@ On Tue, Jul 26, 2016 at 11:22:13AM -0700, Brian Norris wrote:
 > 
 > Signed-off-by: Brian Norris <briannorris@chromium.org>
 
-Reviewed-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
 > ---
 > Hi Thierry,
@@ -63,6 +67,3 @@ Reviewed-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 > -- 
 > 2.8.0.rc3.226.g39d4020
 > 
-
--- 
-Dmitry
