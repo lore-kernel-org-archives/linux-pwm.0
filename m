@@ -1,69 +1,24 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH] pwm: cros_ec: add __packed to prevent padding
-Date: Tue, 26 Jul 2016 13:15:06 -0700
-Message-ID: <20160726201506.GB11345@roeck-us.net>
-References: <1469557333-9497-1-git-send-email-briannorris@chromium.org>
+From: Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH v5 3/3] ARM: dts: NSP: Add PWM Support to DT
+Date: Wed, 27 Jul 2016 11:29:48 -0700
+Message-ID: <819d6d21-9096-4174-0bc7-3d8f3fd388b7@gmail.com>
+References: <1467698426-27600-1-git-send-email-yendapally.reddy@broadcom.com>
+ <1467698426-27600-4-git-send-email-yendapally.reddy@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:45107 "EHLO
-	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756117AbcGZUPT (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 26 Jul 2016 16:15:19 -0400
-Content-Disposition: inline
-In-Reply-To: <1469557333-9497-1-git-send-email-briannorris@chromium.org>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1467698426-27600-4-git-send-email-yendapally.reddy@broadcom.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>, Mark Rutland <mark.rutland@arm.com>, Ian Campbell <ijc+devicetree@hellion.org.uk>, Kumar Gala <galak@codeaurora.org>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, Jon Mason <jonmason@broadcom.com>, Russell King <linux@arm.linux.org.uk>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Brian Norris <briannorris@chromium.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, Javier Martinez Canillas <javier@osg.samsung.com>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Gwendal Grignou <gwendal@chromium.org>
 
-On Tue, Jul 26, 2016 at 11:22:13AM -0700, Brian Norris wrote:
-> While the particular usage in question is likely safe (struct
-> cros_ec_command is 32-bit aligned, followed by <=32-bit fields), it's
-> been suggested this is not a great pattern to follow for the general
-> case -- for example, if we follow a 'struct cros_ec_command' (which is
-> 32-bit- but not 64-bit-aligned) with a struct that starts with a 64-bit
-> type (e.g., u64), the compiler may add padding.
+On 07/04/2016 11:00 PM, Yendapally Reddy Dhananjaya Reddy wrote:
+> Add PWM support to the device tree for the Broadcom Northstar Plus SoC.
 > 
-> Let's add __packed, to inform the compiler of our true intention -- to
-> have no padding between these struct elements -- and to future proof for
-> any refactorings that might occur.
-> 
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> Signed-off-by: Yendapally Reddy Dhananjaya Reddy <yendapally.reddy@broadcom.com>
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-
-> ---
-> Hi Thierry,
-> 
-> I don't know of any bugs directly resolved by this patch, so take it for
-> v4.8/v4.9 at your discretion.
-> 
->  drivers/pwm/pwm-cros-ec.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
-> index 99b9acc1a420..f6ca4e8c6253 100644
-> --- a/drivers/pwm/pwm-cros-ec.c
-> +++ b/drivers/pwm/pwm-cros-ec.c
-> @@ -38,7 +38,7 @@ static int cros_ec_pwm_set_duty(struct cros_ec_device *ec, u8 index, u16 duty)
->  	struct {
->  		struct cros_ec_command msg;
->  		struct ec_params_pwm_set_duty params;
-> -	} buf;
-> +	} __packed buf;
->  	struct ec_params_pwm_set_duty *params = &buf.params;
->  	struct cros_ec_command *msg = &buf.msg;
->  
-> @@ -65,7 +65,7 @@ static int __cros_ec_pwm_get_duty(struct cros_ec_device *ec, u8 index,
->  			struct ec_params_pwm_get_duty params;
->  			struct ec_response_pwm_get_duty resp;
->  		};
-> -	} buf;
-> +	} __packed buf;
->  	struct ec_params_pwm_get_duty *params = &buf.params;
->  	struct ec_response_pwm_get_duty *resp = &buf.resp;
->  	struct cros_ec_command *msg = &buf.msg;
-> -- 
-> 2.8.0.rc3.226.g39d4020
-> 
+Applied, thanks
+-- 
+Florian
