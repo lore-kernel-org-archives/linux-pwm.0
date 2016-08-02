@@ -1,79 +1,69 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH] pwm: add pwm driver for HiSilicon BVT SOCs
-Date: Mon, 1 Aug 2016 13:43:55 +0100
-Message-ID: <20160801124355.GB13179@leverpostej>
-References: <1470015728-36979-1-git-send-email-yuanjian12@hisilicon.com>
+From: Seung-Woo Kim <sw0312.kim@samsung.com>
+Subject: [PATCH] pwm: samsung: fix to use lowest div for large enough
+ modulation bits
+Date: Tue, 02 Aug 2016 19:16:46 +0900
+Message-ID: <1470133006-4272-1-git-send-email-sw0312.kim@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from foss.arm.com ([217.140.101.70]:33671 "EHLO foss.arm.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753337AbcHAMqQ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-	Mon, 1 Aug 2016 08:46:16 -0400
-Content-Disposition: inline
-In-Reply-To: <1470015728-36979-1-git-send-email-yuanjian12@hisilicon.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, k.kozlowski@samsung.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org
+Cc: sw0312.kim@samsung.com, jy0922.shim@samsung.com
 List-Id: linux-pwm@vger.kernel.org
-To: Jian Yuan <yuanjian12@hisilicon.com>
-Cc: thierry.reding@gmail.com, robh+dt@kernel.org, xuejiancheng@hisilicon.com, kevin.lixu@hisilicon.com, jalen.hsu@hisilicon.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Mon, Aug 01, 2016 at 09:42:08AM +0800, Jian Yuan wrote:
-> From: yuanjian <yuanjian12@hisilicon.com>
-> 
-> Add pwm driver for HiSilicon BVT SOCs
-> 
-> Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
-> Signed-off-by: Jian Yuan <yuanjian12@hisilicon.com>
-> ---
->  .../devicetree/bindings/pwm/pwm-hibvt.txt          |  18 ++
->  drivers/pwm/Kconfig                                |  10 +
->  drivers/pwm/Makefile                               |   1 +
->  drivers/pwm/pwm-hibvt.c                            | 272 +++++++++++++++++++++
->  4 files changed, 301 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
->  create mode 100644 drivers/pwm/pwm-hibvt.c
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
-> new file mode 100644
-> index 0000000..4efd83e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
-> @@ -0,0 +1,18 @@
-> +Hisilicon PWM controller
-> +
-> +Required properties:
-> + - compatible: should be "hisilicon,hibvt-pwm" and one of the following:
-> +			"hisilicon,hi3516cv300-pwm".
+From pwm_samsung_calc_tin(), there is routine to find the lowest
+divider possible to generate lower frequency than requested one.
+But it is always possible to generate requested frequency with
+large enough modulation bits, so this patch fixes to use lowest
+div for the case. This patch removes following UBSAN warning:
 
-I take it "hisilicon,hibvt-pwm" is the fallback entry.
+   UBSAN: Undefined behaviour in drivers/pwm/pwm-samsung.c:197:13
+   shift exponent 32 is too large for 32-bit type 'long unsigned int'
+   [...]
+   [<c0670248>] (ubsan_epilogue) from [<c06707b4>] (__ubsan_handle_shift_out_of_bounds+0xd8/0x120)
+   [<c06707b4>] (__ubsan_handle_shift_out_of_bounds) from [<c0694b28>] (pwm_samsung_config+0x508/0x6a4)
+   [<c0694b28>] (pwm_samsung_config) from [<c069286c>] (pwm_apply_state+0x174/0x40c)
+   [<c069286c>] (pwm_apply_state) from [<c0b2e070>] (pwm_fan_probe+0xc8/0x488)
+   [<c0b2e070>] (pwm_fan_probe) from [<c07ba8b0>] (platform_drv_probe+0x70/0x150)
+   [...]
 
-It would be good to note that explicitly.
+Signed-off-by: Seung-Woo Kim <sw0312.kim@samsung.com>
+---
+The UBSAN warning from ARM is reported with the patch in following link:
+https://patchwork.kernel.org/patch/9189575/
+---
+ drivers/pwm/pwm-samsung.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-> + - reg: physical base address and length of the controller's registers.
-> + - clocks: phandle and clock specifier of the PWM reference clock.
-> + - resets: offset address and offset bit for reset or unreset of the controller.
-> + - pwm-nums: pwm number of the controller.
-
-This should be 'num-pwms'.
-
-I assume this is the number of PWMs exposed by this controller. Is this
-not probeable, or dicoverable based on the compatible string?
-
-How does this vary in practice?
-
-> +
-> +Example:
-> +	pwm: pwm@12130000 {
-> +		compatible = "hisilicon,hibvt-pwm";
-
-This is missing "hisilicon,hi3516cv300-pwm" as per the requirements of
-the binding.
-
-> +		reg = <0x12130000 0x10000>;
-> +		clocks = <&crg_ctrl HI3516CV300_PWM_CLK>;
-> +		resets = <&crg_ctrl 0x38 0>;
-> +		pwm-nums = <4>;
-> +	};
-
-Thanks,
-Mark.
+diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
+index ada2d32..ff0def6 100644
+--- a/drivers/pwm/pwm-samsung.c
++++ b/drivers/pwm/pwm-samsung.c
+@@ -193,9 +193,13 @@ static unsigned long pwm_samsung_calc_tin(struct samsung_pwm_chip *chip,
+ 	 * divider settings and choose the lowest divisor that can generate
+ 	 * frequencies lower than requested.
+ 	 */
+-	for (div = variant->div_base; div < 4; ++div)
+-		if ((rate >> (variant->bits + div)) < freq)
+-			break;
++	if (fls(rate) <= variant->bits) {
++		div = variant->div_base;
++	} else {
++		for (div = variant->div_base; div < 4; ++div)
++			if ((rate >> (variant->bits + div)) < freq)
++				break;
++	}
+ 
+ 	pwm_samsung_set_divisor(chip, chan, BIT(div));
+ 
+-- 
+1.7.9.5
