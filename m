@@ -1,69 +1,102 @@
-From: Joonyoung Shim <jy0922.shim@samsung.com>
-Subject: Re: [PATCH] pwm: samsung: fix to use lowest div for large enough
- modulation bits
-Date: Wed, 03 Aug 2016 10:58:40 +0900
-Message-ID: <57A14FD0.9030905@samsung.com>
-References: <CGME20160802102943epcas1p3d34d2c3536a094e2e8c91568eefd7cf8@epcas1p3.samsung.com>
- <1470133006-4272-1-git-send-email-sw0312.kim@samsung.com>
+From: Jian Yuan <yuanjian12@hisilicon.com>
+Subject: Re: [PATCH] pwm: add pwm driver for HiSilicon BVT SOCs
+Date: Wed, 3 Aug 2016 14:32:52 +0800
+Message-ID: <3fc992b7-c141-8da4-52c9-00c65ad4da42@hisilicon.com>
+References: <1470015728-36979-1-git-send-email-yuanjian12@hisilicon.com>
+ <20160801124355.GB13179@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1470133006-4272-1-git-send-email-sw0312.kim@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Seung-Woo Kim <sw0312.kim@samsung.com>, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, k.kozlowski@samsung.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, Joonyoung Shim <jy0922.shim@samsung.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from szxga03-in.huawei.com ([119.145.14.66]:18219 "EHLO
+	szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752721AbcHCGeY (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Wed, 3 Aug 2016 02:34:24 -0400
+In-Reply-To: <20160801124355.GB13179@leverpostej>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, xuejiancheng@hisilicon.com, kevin.lixu@hisilicon.com, jalen.hsu@hisilicon.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi,
 
-On 08/02/2016 07:16 PM, Seung-Woo Kim wrote:
->>From pwm_samsung_calc_tin(), there is routine to find the lowest
-> divider possible to generate lower frequency than requested one.
-> But it is always possible to generate requested frequency with
-> large enough modulation bits, so this patch fixes to use lowest
-> div for the case. This patch removes following UBSAN warning:
+
+On 2016/8/1 20:43, Mark Rutland wrote:
+> On Mon, Aug 01, 2016 at 09:42:08AM +0800, Jian Yuan wrote:
+>> From: yuanjian <yuanjian12@hisilicon.com>
+>>
+>> Add pwm driver for HiSilicon BVT SOCs
+>>
+>> Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
+>> Signed-off-by: Jian Yuan <yuanjian12@hisilicon.com>
+>> ---
+>>  .../devicetree/bindings/pwm/pwm-hibvt.txt          |  18 ++
+>>  drivers/pwm/Kconfig                                |  10 +
+>>  drivers/pwm/Makefile                               |   1 +
+>>  drivers/pwm/pwm-hibvt.c                            | 272 +++++++++++++++++++++
+>>  4 files changed, 301 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
+>>  create mode 100644 drivers/pwm/pwm-hibvt.c
+>>
+>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
+>> new file mode 100644
+>> index 0000000..4efd83e
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
+>> @@ -0,0 +1,18 @@
+>> +Hisilicon PWM controller
+>> +
+>> +Required properties:
+>> + - compatible: should be "hisilicon,hibvt-pwm" and one of the following:
+>> +			"hisilicon,hi3516cv300-pwm".
 > 
->    UBSAN: Undefined behaviour in drivers/pwm/pwm-samsung.c:197:13
->    shift exponent 32 is too large for 32-bit type 'long unsigned int'
->    [...]
->    [<c0670248>] (ubsan_epilogue) from [<c06707b4>] (__ubsan_handle_shift_out_of_bounds+0xd8/0x120)
->    [<c06707b4>] (__ubsan_handle_shift_out_of_bounds) from [<c0694b28>] (pwm_samsung_config+0x508/0x6a4)
->    [<c0694b28>] (pwm_samsung_config) from [<c069286c>] (pwm_apply_state+0x174/0x40c)
->    [<c069286c>] (pwm_apply_state) from [<c0b2e070>] (pwm_fan_probe+0xc8/0x488)
->    [<c0b2e070>] (pwm_fan_probe) from [<c07ba8b0>] (platform_drv_probe+0x70/0x150)
->    [...]
+> I take it "hisilicon,hibvt-pwm" is the fallback entry.
 > 
-> Signed-off-by: Seung-Woo Kim <sw0312.kim@samsung.com>
-> ---
-> The UBSAN warning from ARM is reported with the patch in following link:
-> https://patchwork.kernel.org/patch/9189575/
-> ---
->  drivers/pwm/pwm-samsung.c |   10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
+> It would be good to note that explicitly.
 > 
-> diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
-> index ada2d32..ff0def6 100644
-> --- a/drivers/pwm/pwm-samsung.c
-> +++ b/drivers/pwm/pwm-samsung.c
-> @@ -193,9 +193,13 @@ static unsigned long pwm_samsung_calc_tin(struct samsung_pwm_chip *chip,
->  	 * divider settings and choose the lowest divisor that can generate
->  	 * frequencies lower than requested.
->  	 */
-> -	for (div = variant->div_base; div < 4; ++div)
-> -		if ((rate >> (variant->bits + div)) < freq)
-> -			break;
-> +	if (fls(rate) <= variant->bits) {
-> +		div = variant->div_base;
+I do not understand what the fallback entry means.
 
-It's reasonable to me not to check to decide div at above case.
+"hisilicon,hibvt-pwm" is a general compatible string, which is available for most HiSilicon BVT SOCs.
+Howerver, "hisilicon,hi3516cv300-pwm" is specially for hi3516cv300.
 
-> +	} else {
-> +		for (div = variant->div_base; div < 4; ++div)
-> +			if ((rate >> (variant->bits + div)) < freq)
-> +				break;
-> +	}
->  
+Maybe I should note the compatible string as described above, right?
 
-Reviewed-by: Joonyoung Shim <jy0922.shim@samsung.com>
+>> + - reg: physical base address and length of the controller's registers.
+>> + - clocks: phandle and clock specifier of the PWM reference clock.
+>> + - resets: offset address and offset bit for reset or unreset of the controller.
+>> + - pwm-nums: pwm number of the controller.
+> 
+> This should be 'num-pwms'.
+> 
+> I assume this is the number of PWMs exposed by this controller. Is this
+> not probeable, or dicoverable based on the compatible string?
+> 
+> How does this vary in practice?
+> 
+"pwm-nums" means the maximum number of PWMS that this controller can support, which is the hardware capability.
+E.g.,HI3516CV300 PWM controller supports 4 PWM, while other chips support 8 PWM.
 
-Thanks.
+I agree that the PWM number is probeable based on the compatible string. I shall change it, thanks.
+
+>> +
+>> +Example:
+>> +	pwm: pwm@12130000 {
+>> +		compatible = "hisilicon,hibvt-pwm";
+> 
+> This is missing "hisilicon,hi3516cv300-pwm" as per the requirements of
+> the binding.
+> 
+Ok, it's right. I'll fix it in next v2 patch.
+
+>> +		reg = <0x12130000 0x10000>;
+>> +		clocks = <&crg_ctrl HI3516CV300_PWM_CLK>;
+>> +		resets = <&crg_ctrl 0x38 0>;
+>> +		pwm-nums = <4>;
+>> +	};
+> 
+> Thanks,
+> Mark.
+> 
+> .
+> 
+Thanks,
+Jian.
