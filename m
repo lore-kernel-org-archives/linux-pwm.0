@@ -1,50 +1,31 @@
-From: LABBE Corentin <clabbe.montjoie@gmail.com>
-Subject: [PATCH v2 1/1] pwm: sun4i: fix a possible NULL dereference
-Date: Tue, 16 Aug 2016 15:18:06 +0200
-Message-ID: <1471353486-11514-2-git-send-email-clabbe.montjoie@gmail.com>
-References: <1471353486-11514-1-git-send-email-clabbe.montjoie@gmail.com>
+From: Kevin Hilman <khilman@baylibre.com>
+Subject: Re: [PATCH v2 0/4] pwm: Add Amlogic Meson SoC PWM Controller
+Date: Tue, 16 Aug 2016 08:20:00 -0500
+Message-ID: <CAOi56cWRwc28RcRopLpRiFLX-rft-KfgMZHwDGFG3f6tJ_8kYw@mail.gmail.com>
+References: <1468142645-4360-1-git-send-email-narmstrong@baylibre.com> <CAOi56cVGRpSeAVwaATkx8Q2wz9hxocq6095opJQZucfDML2wSg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1471353486-11514-1-git-send-email-clabbe.montjoie@gmail.com>
+In-Reply-To: <CAOi56cVGRpSeAVwaATkx8Q2wz9hxocq6095opJQZucfDML2wSg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: maxime.ripard@free-electrons.com, thierry.reding@gmail.com, wens@csie.org
-Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, LABBE Corentin <clabbe.montjoie@gmail.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Carlo Caione <carlo@caione.org>, linux-pwm@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-amlogic@lists.infradead.org, lkml <linux-kernel@vger.kernel.org>, Neil Armstrong <narmstrong@baylibre.com>
 List-Id: linux-pwm@vger.kernel.org
 
-of_match_device could return NULL, and so cause a NULL pointer
-dereference later.
+On Wed, Aug 3, 2016 at 7:25 PM, Kevin Hilman <khilman@baylibre.com> wrote:
+> Hi Thierry,
+>
+> On Sun, Jul 10, 2016 at 2:27 AM, Neil Armstrong <narmstrong@baylibre.com> wrote:
+>> Add support for the PWM controller found in Amlogic Meson SoCs.
+>> This controller provides a dual PWM output with 4 selectable clock source
+>> and a two level divider to achieve a better PWM range.
+>>
+>> Currently Meson8b and GXBB SoCs are supported.
+>>
+>> Changes since v1 at http://lkml.kernel.org/r/1466173784-15625-1-git-send-email-narmstrong@baylibre.com :
+>> - fix meson8b dtsi
+>
+> Gentle reminder ping on this series.
+>
 
-For fixing this problem, we use of_device_get_match_data(), this will
-simplify the code a little by using a standard function for
-getting the match data.
-
-Reported-by: coverity (CID 1324139)
-Signed-off-by: LABBE Corentin <clabbe.montjoie@gmail.com>
----
- drivers/pwm/pwm-sun4i.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 03a99a5..72f0060 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -309,9 +309,6 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	u32 val;
- 	int i, ret;
--	const struct of_device_id *match;
--
--	match = of_match_device(sun4i_pwm_dt_ids, &pdev->dev);
- 
- 	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
- 	if (!pwm)
-@@ -326,7 +323,7 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(pwm->clk))
- 		return PTR_ERR(pwm->clk);
- 
--	pwm->data = match->data;
-+	pwm->data = of_device_get_match_data(&pdev->dev);
- 	pwm->chip.dev = &pdev->dev;
- 	pwm->chip.ops = &sun4i_pwm_ops;
- 	pwm->chip.base = -1;
--- 
-2.7.3
+One more... :)
