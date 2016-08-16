@@ -1,76 +1,116 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v4 09/17] pwm: sti: Only request clock rate when you need to
-Date: Tue, 16 Aug 2016 10:35:00 +0100
-Message-ID: <20160816093508.28307-10-lee.jones@linaro.org>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH v4 07/17] pwm: sti: Rename channel => device
+Date: Tue, 16 Aug 2016 10:34:58 +0100
+Message-ID: <20160816093508.28307-8-lee.jones@linaro.org>
 References: <20160816093508.28307-1-lee.jones@linaro.org>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20160816093508.28307-1-lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, patrice.chotard-qxv4g6HH51o@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160816093508.28307-1-lee.jones@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: kernel@stlinux.com, patrice.chotard@st.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-In the original code the clock rate was only obtained during
-initialisation; however, the rate may change between then and
-its use.  This patch ensures the correct rate is acquired just
-before use.
+This is to bring the terminology used in the STi PWM driver more
+into line with the PWM subsystem.
 
-Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/pwm-sti.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/pwm/pwm-sti.c | 32 ++++++++++++++++----------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index 246df77..863d5a9 100644
+index 92abbd5..5c7fdd1 100644
 --- a/drivers/pwm/pwm-sti.c
 +++ b/drivers/pwm/pwm-sti.c
-@@ -51,7 +51,6 @@ struct sti_pwm_compat_data {
+@@ -21,7 +21,7 @@
+ #include <linux/slab.h>
+ #include <linux/time.h>
  
- struct sti_pwm_chip {
- 	struct device *dev;
--	unsigned long clk_rate;
- 	struct clk *pwm_clk;
- 	struct regmap *regmap;
- 	struct sti_pwm_compat_data *cdata;
-@@ -86,13 +85,20 @@ static int sti_pwm_get_prescale(struct sti_pwm_chip *pc, unsigned long period,
- 				unsigned int *prescale)
- {
- 	struct sti_pwm_compat_data *cdata = pc->cdata;
-+	unsigned long clk_rate;
- 	unsigned long val;
- 	unsigned int ps;
+-#define STI_DS_REG(ch)	(4 * (ch))	/* Channel's Duty Cycle register */
++#define STI_DS_REG(ch)	(4 * (ch))	/* Device's Duty Cycle register */
+ #define STI_PWMCR	0x50		/* Control/Config register */
+ #define STI_INTEN	0x54		/* Interrupt Enable/Disable register */
+ #define PWM_PRESCALE_LOW_MASK		0x0f
+@@ -40,7 +40,7 @@ enum {
  
-+	clk_rate = clk_get_rate(pc->pwm_clk);
-+	if (!clk_rate) {
-+		dev_err(pc->dev, "failed to get clock rate\n");
-+		return -EINVAL;
-+	}
-+
- 	/*
- 	 * prescale = ((period_ns * clk_rate) / (10^9 * (max_pwm_count + 1)) - 1
+ struct sti_pwm_compat_data {
+ 	const struct reg_field *reg_fields;
+-	unsigned int num_chan;
++	unsigned int num_devs;
+ 	unsigned int max_pwm_cnt;
+ 	unsigned int max_prescale;
+ };
+@@ -130,13 +130,13 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 
+ 	/* Allow configuration changes if one of the
+ 	 * following conditions satisfy.
+-	 * 1. No channels have been configured.
+-	 * 2. Only one channel has been configured and the new request
+-	 *    is for the same channel.
+-	 * 3. Only one channel has been configured and the new request is
+-	 *    for a new channel and period of the new channel is same as
++	 * 1. No devices have been configured.
++	 * 2. Only one device has been configured and the new request
++	 *    is for the same device.
++	 * 3. Only one device has been configured and the new request is
++	 *    for a new device and period of the new device is same as
+ 	 *    the current configured period.
+-	 * 4. More than one channels are configured and period of the new
++	 * 4. More than one devices are configured and period of the new
+ 	 *    requestis the same as the current period.
  	 */
--	val = NSEC_PER_SEC / pc->clk_rate;
-+	val = NSEC_PER_SEC / clk_rate;
- 	val *= cdata->max_pwm_cnt + 1;
+ 	if (!ncfg ||
+@@ -201,7 +201,7 @@ static int sti_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	int ret = 0;
  
- 	if (period % val) {
-@@ -353,12 +359,6 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 		return PTR_ERR(pc->pwm_clk);
- 	}
+ 	/*
+-	 * Since we have a common enable for all PWM channels,
++	 * Since we have a common enable for all PWM devices,
+ 	 * do not enable if already enabled.
+ 	 */
+ 	mutex_lock(&pc->sti_pwm_lock);
+@@ -259,11 +259,11 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
+ 	const struct reg_field *reg_fields;
+ 	struct device_node *np = dev->of_node;
+ 	struct sti_pwm_compat_data *cdata = pc->cdata;
+-	u32 num_chan;
++	u32 num_devs;
  
--	pc->clk_rate = clk_get_rate(pc->pwm_clk);
--	if (!pc->clk_rate) {
--		dev_err(dev, "failed to get clock rate\n");
--		return -EINVAL;
--	}
--
- 	ret = clk_prepare(pc->pwm_clk);
- 	if (ret) {
- 		dev_err(dev, "failed to prepare clock\n");
+-	of_property_read_u32(np, "st,pwm-num-chan", &num_chan);
+-	if (num_chan)
+-		cdata->num_chan = num_chan;
++	of_property_read_u32(np, "st,pwm-num-chans", &num_devs);
++	if (num_devs)
++		cdata->num_devs = num_devs;
+ 
+ 	reg_fields = cdata->reg_fields;
+ 
+@@ -330,7 +330,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 	cdata->reg_fields   = &sti_pwm_regfields[0];
+ 	cdata->max_prescale = 0xff;
+ 	cdata->max_pwm_cnt  = 255;
+-	cdata->num_chan     = 1;
++	cdata->num_devs     = 1;
+ 
+ 	pc->cdata = cdata;
+ 	pc->dev = dev;
+@@ -362,7 +362,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 	pc->chip.dev = dev;
+ 	pc->chip.ops = &sti_pwm_ops;
+ 	pc->chip.base = -1;
+-	pc->chip.npwm = pc->cdata->num_chan;
++	pc->chip.npwm = pc->cdata->num_devs;
+ 	pc->chip.can_sleep = true;
+ 
+ 	ret = pwmchip_add(&pc->chip);
+@@ -381,7 +381,7 @@ static int sti_pwm_remove(struct platform_device *pdev)
+ 	struct sti_pwm_chip *pc = platform_get_drvdata(pdev);
+ 	unsigned int i;
+ 
+-	for (i = 0; i < pc->cdata->num_chan; i++)
++	for (i = 0; i < pc->cdata->num_devs; i++)
+ 		pwm_disable(&pc->chip.pwms[i]);
+ 
+ 	clk_unprepare(pc->clk);
 -- 
 2.9.0
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
