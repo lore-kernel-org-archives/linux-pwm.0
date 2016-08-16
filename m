@@ -1,7 +1,8 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v4 05/17] ARM: dts: STiH416: Define PWM Capture clock
-Date: Tue, 16 Aug 2016 10:34:56 +0100
-Message-ID: <20160816093508.28307-6-lee.jones@linaro.org>
+Subject: [PATCH v4 06/17] ARM: dts: STiH416: Define the number of PWM Capture
+ channels
+Date: Tue, 16 Aug 2016 10:34:57 +0100
+Message-ID: <20160816093508.28307-7-lee.jones@linaro.org>
 References: <20160816093508.28307-1-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,24 +24,20 @@ List-Id: linux-pwm@vger.kernel.org
 
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- arch/arm/boot/dts/stih416.dtsi | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/stih416.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/arch/arm/boot/dts/stih416.dtsi b/arch/arm/boot/dts/stih416.dtsi
-index 2001d48..bf15a32 100644
+index bf15a32..422f9bd 100644
 --- a/arch/arm/boot/dts/stih416.dtsi
 +++ b/arch/arm/boot/dts/stih416.dtsi
-@@ -483,8 +483,9 @@
- 					&pinctrl_pwm0_chan2_default
- 					&pinctrl_pwm0_chan3_default>;
+@@ -487,6 +487,7 @@
+ 			clocks		= <&clk_sysin>, <&clk_s_a0_ls CLK_ICN_REG>;
  
--			clock-names	= "pwm";
--			clocks		= <&clk_sysin>;
-+			clock-names	= "pwm", "capture";
-+			clocks		= <&clk_sysin>, <&clk_s_a0_ls CLK_ICN_REG>;
-+
  			st,pwm-num-chan = <4>;
++			st,capture-num-chan = <2>;
  		};
  
+ 		/* SBC PWM Module */
 -- 
 2.9.0
