@@ -1,145 +1,155 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v4 14/17] pwm: sti: Add PWM Capture call-back
-Date: Tue, 16 Aug 2016 10:35:05 +0100
-Message-ID: <20160816093508.28307-15-lee.jones@linaro.org>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH v4 13/17] pwm: sti: Add support for PWM Capture IRQs
+Date: Tue, 16 Aug 2016 10:35:04 +0100
+Message-ID: <20160816093508.28307-14-lee.jones@linaro.org>
 References: <20160816093508.28307-1-lee.jones@linaro.org>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20160816093508.28307-1-lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, patrice.chotard-qxv4g6HH51o@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160816093508.28307-1-lee.jones@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: kernel@stlinux.com, patrice.chotard@st.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Once a PWM Capture has been initiated, the capture call
-enables a rising edge detection IRQ, then waits.  Once each
-of the 3 phase changes have been recorded the thread then
-wakes.  The remaining part of the call carries out the
-relevant calculations and passes back a formatted string to
-the caller.
+Here we're requesting the PWM Capture IRQ and supplying the
+handler which will be called in the event of an IRQ fire to
+handle it.
 
-Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/pwm/pwm-sti.c | 88 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 88 insertions(+)
+ drivers/pwm/pwm-sti.c | 92 ++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 91 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index 4686ba0..fcc80eb 100644
+index 16c3f4d..4686ba0 100644
 --- a/drivers/pwm/pwm-sti.c
 +++ b/drivers/pwm/pwm-sti.c
-@@ -24,6 +24,8 @@
- #include <linux/time.h>
- #include <linux/wait.h>
+@@ -91,7 +91,9 @@ struct sti_pwm_chip {
+ 	struct regmap_field *prescale_low;
+ 	struct regmap_field *prescale_high;
+ 	struct regmap_field *pwm_out_en;
++	struct regmap_field *pwm_cpt_en;
+ 	struct regmap_field *pwm_cpt_int_en;
++	struct regmap_field *pwm_cpt_int_stat;
+ 	struct pwm_chip chip;
+ 	struct pwm_device *cur;
+ 	unsigned long configured;
+@@ -311,6 +313,76 @@ static const struct pwm_ops sti_pwm_ops = {
+ 	.owner = THIS_MODULE,
+ };
  
-+#define SECS_TO_NANOSECS(x) ((x) * 1000 * 1000 * 1000)
-+
- #define PWM_OUT_VAL(x)	(0x00 + (4 * (x))) /* Device's Duty Cycle register */
- #define PWM_CPT_VAL(x)	(0x10 + (4 * (x))) /* Capture value */
- #define PWM_CPT_EDGE(x) (0x30 + (4 * (x))) /* Edge to capture on */
-@@ -305,7 +307,88 @@ static void sti_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- 	clear_bit(pwm->hwpwm, &pc->configured);
- }
- 
-+static int sti_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
-+			   struct pwm_capture *result, unsigned long timeout)
++static irqreturn_t sti_pwm_interrupt(int irq, void *data)
 +{
-+	struct sti_pwm_chip *pc = to_sti_pwmchip(chip);
-+	struct sti_pwm_compat_data *cdata = pc->cdata;
-+	struct sti_cpt_ddata *ddata = pwm_get_chip_data(pwm);
++	struct sti_pwm_chip *pc = data;
 +	struct device *dev = pc->dev;
-+	unsigned int effective_ticks;
-+	unsigned long long high, low;
-+	int ret;
++	struct sti_cpt_ddata *ddata;
++	int devicenum;
++	unsigned int cpt_int_stat;
++	unsigned int reg;
++	int ret = IRQ_NONE;
 +
-+	if (pwm->hwpwm > cdata->cpt_num_devs - 1) {
-+		dev_err(dev, "Device %d is not valid\n", pwm->hwpwm);
-+		return -EINVAL;
-+	}
++	ret = regmap_field_read(pc->pwm_cpt_int_stat, &cpt_int_stat);
++	if (ret)
++		return ret;
 +
-+	mutex_lock(&ddata->lock);
++	while (cpt_int_stat) {
++		devicenum = ffs(cpt_int_stat) - 1;
 +
-+	/* Prepare capture measurement */
-+	ddata->index = 0;
-+	regmap_write(pc->regmap, PWM_CPT_EDGE(pwm->hwpwm), CPT_EDGE_RISING);
-+	regmap_field_write(pc->pwm_cpt_int_en, BIT(pwm->hwpwm));
++		ddata = pwm_get_chip_data(&pc->chip.pwms[devicenum]);
 +
-+	/* Enable capture */
-+	ret = regmap_field_write(pc->pwm_cpt_en, 1);
-+	if (ret) {
-+		dev_err(dev, "failed to enable PWM capture %d\n", pwm->hwpwm);
-+		goto out;
-+	}
-+
-+	ret = wait_event_interruptible_timeout(ddata->wait,
-+					       ddata->index > 1,
-+					       msecs_to_jiffies(timeout));
-+
-+	regmap_write(pc->regmap, PWM_CPT_EDGE(pwm->hwpwm), CPT_EDGE_DISABLED);
-+
-+	if (ret == -ERESTARTSYS)
-+		goto out;
-+
-+	switch (ddata->index) {
-+	case 0:
-+	case 1:
 +		/*
-+		 * Getting here could mean :
-+		 *  - input signal is constant of less than 1Hz
-+		 *  - there is no input signal at all
++		 * Capture input:
++		 *    _______                   _______
++		 *   |       |                 |       |
++		 * __|       |_________________|       |________
++		 *   ^0      ^1                ^2
 +		 *
-+		 * In such case the frequency is rounded down to 0
++		 * Capture start by the first available rising edge
++		 * When a capture event occurs, capture value (CPT_VALx)
++		 * is stored, index incremented, capture edge changed.
++		 *
++		 * After the capture, if the index > 1, we have collected
++		 * the necessary data so we signal the thread waiting for it
++		 * and disable the capture by setting capture edge to none
++		 *
 +		 */
 +
-+		result->period = 0;
-+		result->duty_cycle = 0;
++		regmap_read(pc->regmap,
++			    PWM_CPT_VAL(devicenum),
++			    &ddata->snapshot[ddata->index]);
 +
-+		break;
-+	case 2:
-+		/* We have everying we need */
-+		high = ddata->snapshot[1] - ddata->snapshot[0];
-+		low  = ddata->snapshot[2] - ddata->snapshot[1];
++		switch (ddata->index) {
++		case 0:
++		case 1:
++			regmap_read(pc->regmap, PWM_CPT_EDGE(devicenum), &reg);
++			reg ^= PWM_CPT_EDGE_MASK;
++			regmap_write(pc->regmap, PWM_CPT_EDGE(devicenum), reg);
 +
-+		effective_ticks = clk_get_rate(pc->cpt_clk);
++			ddata->index++;
++			break;
++		case 2:
++			regmap_write(pc->regmap,
++				     PWM_CPT_EDGE(devicenum),
++				     CPT_EDGE_DISABLED);
++			wake_up(&ddata->wait);
++			break;
++		default:
++			dev_err(dev, "Internal error\n");
++		}
 +
-+		result->period = SECS_TO_NANOSECS(high + low);
-+		result->period /= effective_ticks;
++		cpt_int_stat &= ~BIT_MASK(devicenum);
 +
-+		result->duty_cycle = SECS_TO_NANOSECS(high);
-+		result->duty_cycle /= effective_ticks;
-+
-+		break;
-+	default:
-+		dev_err(dev, "Internal error\n");
++		ret = IRQ_HANDLED;
 +	}
 +
-+out:
-+	/* Disable capture */
-+	regmap_field_write(pc->pwm_cpt_en, 0);
++	/* Just ACK everything */
++	regmap_write(pc->regmap, PWM_INT_ACK, PWM_INT_ACK_MASK);
 +
-+	mutex_unlock(&ddata->lock);
 +	return ret;
 +}
 +
- static const struct pwm_ops sti_pwm_ops = {
-+	.capture = sti_pwm_capture,
- 	.config = sti_pwm_config,
- 	.enable = sti_pwm_enable,
- 	.disable = sti_pwm_disable,
-@@ -418,6 +501,11 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
- 	if (IS_ERR(pc->pwm_out_en))
- 		return PTR_ERR(pc->pwm_out_en);
- 
-+	pc->pwm_cpt_en = devm_regmap_field_alloc(dev, pc->regmap,
-+						 reg_fields[PWM_CPT_EN]);
-+	if (IS_ERR(pc->pwm_cpt_en))
-+		return PTR_ERR(pc->pwm_cpt_en);
-+
- 	pc->pwm_cpt_int_en = devm_regmap_field_alloc(dev, pc->regmap,
- 						 reg_fields[PWM_CPT_INT_EN]);
+ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
+ {
+ 	struct device *dev = pc->dev;
+@@ -351,6 +423,11 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
  	if (IS_ERR(pc->pwm_cpt_int_en))
+ 		return PTR_ERR(pc->pwm_cpt_int_en);
+ 
++	pc->pwm_cpt_int_stat = devm_regmap_field_alloc(dev, pc->regmap,
++						reg_fields[PWM_CPT_INT_STAT]);
++	if (PTR_ERR_OR_ZERO(pc->pwm_cpt_int_stat))
++		return PTR_ERR(pc->pwm_cpt_int_stat);
++
+ 	return 0;
+ }
+ 
+@@ -367,7 +444,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 	struct sti_pwm_chip *pc;
+ 	struct resource *res;
+ 	unsigned int devnum;
+-	int ret;
++	int irq, ret;
+ 
+ 	pc = devm_kzalloc(dev, sizeof(*pc), GFP_KERNEL);
+ 	if (!pc)
+@@ -388,6 +465,19 @@ static int sti_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(pc->regmap))
+ 		return PTR_ERR(pc->regmap);
+ 
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		dev_err(&pdev->dev, "Failed to obtain IRQ\n");
++		return irq;
++	}
++
++	ret = devm_request_irq(&pdev->dev, irq, sti_pwm_interrupt,
++			       0, pdev->name, pc);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "Failed to request IRQ\n");
++		return ret;
++	}
++
+ 	/*
+ 	 * Setup PWM data with default values: some values could be replaced
+ 	 * with specific ones provided from Device Tree.
 -- 
 2.9.0
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
