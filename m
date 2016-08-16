@@ -1,120 +1,118 @@
-From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+From: Tomasz Figa <tomasz.figa@gmail.com>
 Subject: Re: [PATCH] pwm: samsung: fix to use lowest div for large enough
  modulation bits
-Date: Tue, 16 Aug 2016 11:10:45 +0200
-Message-ID: <369cde8b-f761-4a0b-50b9-a3a01ba0b75d@samsung.com>
+Date: Tue, 16 Aug 2016 18:32:20 +0900
+Message-ID: <CA+Ln22EvJRHXLxGTNK8GQPWaBE5j_vOg+sXnKbTqYA4T8AGRug@mail.gmail.com>
 References: <1470133006-4272-1-git-send-email-sw0312.kim@samsung.com>
  <CGME20160816073709epcas1p45d975f43e8f7e3fc17e30cf6f6573dfb@epcas1p4.samsung.com>
  <329cb013-4832-c443-d593-327531db7b40@samsung.com>
  <57B2CDF0.8020809@samsung.com>
  <CA+Ln22Ha6qrbXP87wqJdTTsTD8vXbxZejt7aRkoni0YKpFJvZQ@mail.gmail.com>
+ <369cde8b-f761-4a0b-50b9-a3a01ba0b75d@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:29258 "EHLO
-	mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751532AbcHPJKu (ORCPT
-	<rfc822;linux-pwm@vger.kernel.org>); Tue, 16 Aug 2016 05:10:50 -0400
-In-reply-to: <CA+Ln22Ha6qrbXP87wqJdTTsTD8vXbxZejt7aRkoni0YKpFJvZQ@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <369cde8b-f761-4a0b-50b9-a3a01ba0b75d@samsung.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Cc: linux-pwm@vger.kernel.org, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, Joonyoung Shim <jy0922.shim@samsung.com>, "sw0312.kim" <sw0312.kim@samsung.com>, linux-kernel <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Tomasz Figa <tomasz.figa@gmail.com>, "sw0312.kim" <sw0312.kim@samsung.com>
-Cc: "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Joonyoung Shim <jy0922.shim@samsung.com>
 
-On 08/16/2016 11:00 AM, Tomasz Figa wrote:
-> 2016-08-16 17:25 GMT+09:00 Seung-Woo Kim <sw0312.kim@samsung.com>:
->> Hi Krzysztof,
->>
->> On 2016년 08월 16일 16:37, Krzysztof Kozlowski wrote:
->>> On 08/02/2016 12:16 PM, Seung-Woo Kim wrote:
->>>> >From pwm_samsung_calc_tin(), there is routine to find the lowest
->>>> divider possible to generate lower frequency than requested one.
->>>> But it is always possible to generate requested frequency with
->>>> large enough modulation bits, so this patch fixes to use lowest
->>>> div for the case. This patch removes following UBSAN warning:
->>>>
->>>>    UBSAN: Undefined behaviour in drivers/pwm/pwm-samsung.c:197:13
->>>>    shift exponent 32 is too large for 32-bit type 'long unsigned int'
->>>>    [...]
->>>>    [<c0670248>] (ubsan_epilogue) from [<c06707b4>] (__ubsan_handle_shift_out_of_bounds+0xd8/0x120)
->>>>    [<c06707b4>] (__ubsan_handle_shift_out_of_bounds) from [<c0694b28>] (pwm_samsung_config+0x508/0x6a4)
->>>>    [<c0694b28>] (pwm_samsung_config) from [<c069286c>] (pwm_apply_state+0x174/0x40c)
->>>>    [<c069286c>] (pwm_apply_state) from [<c0b2e070>] (pwm_fan_probe+0xc8/0x488)
->>>>    [<c0b2e070>] (pwm_fan_probe) from [<c07ba8b0>] (platform_drv_probe+0x70/0x150)
->>>>    [...]
->>>>
->>>> Signed-off-by: Seung-Woo Kim <sw0312.kim@samsung.com>
->>>> ---
->>>> The UBSAN warning from ARM is reported with the patch in following link:
->>>> https://patchwork.kernel.org/patch/9189575/
->>>> ---
->>>>  drivers/pwm/pwm-samsung.c |   10 +++++++---
->>>>  1 file changed, 7 insertions(+), 3 deletions(-)
->>>>
->>>> diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
->>>> index ada2d32..ff0def6 100644
->>>> --- a/drivers/pwm/pwm-samsung.c
->>>> +++ b/drivers/pwm/pwm-samsung.c
->>>> @@ -193,9 +193,13 @@ static unsigned long pwm_samsung_calc_tin(struct samsung_pwm_chip *chip,
->>>>       * divider settings and choose the lowest divisor that can generate
->>>>       * frequencies lower than requested.
->>>>       */
->>>> -    for (div = variant->div_base; div < 4; ++div)
->>>> -            if ((rate >> (variant->bits + div)) < freq)
->>>> -                    break;
->>>> +    if (fls(rate) <= variant->bits) {
->>>> +            div = variant->div_base;
->>>> +    } else {
->>>> +            for (div = variant->div_base; div < 4; ++div)
->>>> +                    if ((rate >> (variant->bits + div)) < freq)
->>>> +                            break;
->>>> +    }
->>>
->>> I have trouble with understanding the idea behind initial code from
->>> Tomasz (commit 11ad39ede24ee). The variant->bits for all SoC except
->>> S3C24xx is 32. This means the shift:
->>>       if ((rate >> (variant->bits + div)) < freq)
->>> will be always by 32 or more... In practice this will choose always a
->>> "div" of 0 because in first iteration of this loop, the shift will be by 32.
->>
->> I also confused that part, but I figured out that the bit is used to
->> consider modulation bit to generate pwm signal from the input clock.
->>
->> Only the old s3c2440 has 16 bit modulation timer for pwm, and all later
->> soc has 32 bit modulation timer. So 32 bit timer cases, with the lowest
->> div, it can generate all frequencies which can be assigned with 32bit
->> variable.
->> But I uses fls() to consider 64bit case also even though there is no
->> really that kind of clock.
-> 
-> The code may look complicated (in fact I had to think a bit to recall
-> what exactly it was supposed to do), but I'm not sure how it could be
-> simplified. It's generally intended to handle variant->bits < 32 cases
-> only and is effectively a no-op when variant->bits >= 32.
-
-Right, a comment for this behavior would be very useful. No need to
-waste time for re-thinking it later.
-
-> I would suggest just making rate an u64 and be done with the warning.
-> IMHO adding this kind of special cases only complicates the (already
-> complicated) code unnecessarily.
-
-u64 could solve the warning but then one would have to figure out
-whether the casts are safe or not. Unsigned long is assigned to rate and
-then returned.
-
-How about specific check (+comment) like:
-if (variant->bits < 32) {
-	/* Only for s3c24xx */
-	// the for loop as it was
-} else {
-	/* For other variants just choose lowest divider always */
-	div = variant->div_base;
-}
-
-For me this is quite obvious and error-prone (explicit check for value
-to be used in shift).
-
-Best regards,
-Krzysztof
+MjAxNi0wOC0xNiAxODoxMCBHTVQrMDk6MDAgS3J6eXN6dG9mIEtvemxvd3NraSA8ay5rb3psb3dz
+a2lAc2Ftc3VuZy5jb20+Ogo+IE9uIDA4LzE2LzIwMTYgMTE6MDAgQU0sIFRvbWFzeiBGaWdhIHdy
+b3RlOgo+PiAyMDE2LTA4LTE2IDE3OjI1IEdNVCswOTowMCBTZXVuZy1Xb28gS2ltIDxzdzAzMTIu
+a2ltQHNhbXN1bmcuY29tPjoKPj4+IEhpIEtyenlzenRvZiwKPj4+Cj4+PiBPbiAyMDE264WEIDA4
+7JuUIDE27J28IDE2OjM3LCBLcnp5c3p0b2YgS296bG93c2tpIHdyb3RlOgo+Pj4+IE9uIDA4LzAy
+LzIwMTYgMTI6MTYgUE0sIFNldW5nLVdvbyBLaW0gd3JvdGU6Cj4+Pj4+ID5Gcm9tIHB3bV9zYW1z
+dW5nX2NhbGNfdGluKCksIHRoZXJlIGlzIHJvdXRpbmUgdG8gZmluZCB0aGUgbG93ZXN0Cj4+Pj4+
+IGRpdmlkZXIgcG9zc2libGUgdG8gZ2VuZXJhdGUgbG93ZXIgZnJlcXVlbmN5IHRoYW4gcmVxdWVz
+dGVkIG9uZS4KPj4+Pj4gQnV0IGl0IGlzIGFsd2F5cyBwb3NzaWJsZSB0byBnZW5lcmF0ZSByZXF1
+ZXN0ZWQgZnJlcXVlbmN5IHdpdGgKPj4+Pj4gbGFyZ2UgZW5vdWdoIG1vZHVsYXRpb24gYml0cywg
+c28gdGhpcyBwYXRjaCBmaXhlcyB0byB1c2UgbG93ZXN0Cj4+Pj4+IGRpdiBmb3IgdGhlIGNhc2Uu
+IFRoaXMgcGF0Y2ggcmVtb3ZlcyBmb2xsb3dpbmcgVUJTQU4gd2FybmluZzoKPj4+Pj4KPj4+Pj4g
+ICAgVUJTQU46IFVuZGVmaW5lZCBiZWhhdmlvdXIgaW4gZHJpdmVycy9wd20vcHdtLXNhbXN1bmcu
+YzoxOTc6MTMKPj4+Pj4gICAgc2hpZnQgZXhwb25lbnQgMzIgaXMgdG9vIGxhcmdlIGZvciAzMi1i
+aXQgdHlwZSAnbG9uZyB1bnNpZ25lZCBpbnQnCj4+Pj4+ICAgIFsuLi5dCj4+Pj4+ICAgIFs8YzA2
+NzAyNDg+XSAodWJzYW5fZXBpbG9ndWUpIGZyb20gWzxjMDY3MDdiND5dIChfX3Vic2FuX2hhbmRs
+ZV9zaGlmdF9vdXRfb2ZfYm91bmRzKzB4ZDgvMHgxMjApCj4+Pj4+ICAgIFs8YzA2NzA3YjQ+XSAo
+X191YnNhbl9oYW5kbGVfc2hpZnRfb3V0X29mX2JvdW5kcykgZnJvbSBbPGMwNjk0YjI4Pl0gKHB3
+bV9zYW1zdW5nX2NvbmZpZysweDUwOC8weDZhNCkKPj4+Pj4gICAgWzxjMDY5NGIyOD5dIChwd21f
+c2Ftc3VuZ19jb25maWcpIGZyb20gWzxjMDY5Mjg2Yz5dIChwd21fYXBwbHlfc3RhdGUrMHgxNzQv
+MHg0MGMpCj4+Pj4+ICAgIFs8YzA2OTI4NmM+XSAocHdtX2FwcGx5X3N0YXRlKSBmcm9tIFs8YzBi
+MmUwNzA+XSAocHdtX2Zhbl9wcm9iZSsweGM4LzB4NDg4KQo+Pj4+PiAgICBbPGMwYjJlMDcwPl0g
+KHB3bV9mYW5fcHJvYmUpIGZyb20gWzxjMDdiYThiMD5dIChwbGF0Zm9ybV9kcnZfcHJvYmUrMHg3
+MC8weDE1MCkKPj4+Pj4gICAgWy4uLl0KPj4+Pj4KPj4+Pj4gU2lnbmVkLW9mZi1ieTogU2V1bmct
+V29vIEtpbSA8c3cwMzEyLmtpbUBzYW1zdW5nLmNvbT4KPj4+Pj4gLS0tCj4+Pj4+IFRoZSBVQlNB
+TiB3YXJuaW5nIGZyb20gQVJNIGlzIHJlcG9ydGVkIHdpdGggdGhlIHBhdGNoIGluIGZvbGxvd2lu
+ZyBsaW5rOgo+Pj4+PiBodHRwczovL3BhdGNod29yay5rZXJuZWwub3JnL3BhdGNoLzkxODk1NzUv
+Cj4+Pj4+IC0tLQo+Pj4+PiAgZHJpdmVycy9wd20vcHdtLXNhbXN1bmcuYyB8ICAgMTAgKysrKysr
+Ky0tLQo+Pj4+PiAgMSBmaWxlIGNoYW5nZWQsIDcgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMo
+LSkKPj4+Pj4KPj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL3B3bS1zYW1zdW5nLmMgYi9k
+cml2ZXJzL3B3bS9wd20tc2Ftc3VuZy5jCj4+Pj4+IGluZGV4IGFkYTJkMzIuLmZmMGRlZjYgMTAw
+NjQ0Cj4+Pj4+IC0tLSBhL2RyaXZlcnMvcHdtL3B3bS1zYW1zdW5nLmMKPj4+Pj4gKysrIGIvZHJp
+dmVycy9wd20vcHdtLXNhbXN1bmcuYwo+Pj4+PiBAQCAtMTkzLDkgKzE5MywxMyBAQCBzdGF0aWMg
+dW5zaWduZWQgbG9uZyBwd21fc2Ftc3VuZ19jYWxjX3RpbihzdHJ1Y3Qgc2Ftc3VuZ19wd21fY2hp
+cCAqY2hpcCwKPj4+Pj4gICAgICAgKiBkaXZpZGVyIHNldHRpbmdzIGFuZCBjaG9vc2UgdGhlIGxv
+d2VzdCBkaXZpc29yIHRoYXQgY2FuIGdlbmVyYXRlCj4+Pj4+ICAgICAgICogZnJlcXVlbmNpZXMg
+bG93ZXIgdGhhbiByZXF1ZXN0ZWQuCj4+Pj4+ICAgICAgICovCj4+Pj4+IC0gICAgZm9yIChkaXYg
+PSB2YXJpYW50LT5kaXZfYmFzZTsgZGl2IDwgNDsgKytkaXYpCj4+Pj4+IC0gICAgICAgICAgICBp
+ZiAoKHJhdGUgPj4gKHZhcmlhbnQtPmJpdHMgKyBkaXYpKSA8IGZyZXEpCj4+Pj4+IC0gICAgICAg
+ICAgICAgICAgICAgIGJyZWFrOwo+Pj4+PiArICAgIGlmIChmbHMocmF0ZSkgPD0gdmFyaWFudC0+
+Yml0cykgewo+Pj4+PiArICAgICAgICAgICAgZGl2ID0gdmFyaWFudC0+ZGl2X2Jhc2U7Cj4+Pj4+
+ICsgICAgfSBlbHNlIHsKPj4+Pj4gKyAgICAgICAgICAgIGZvciAoZGl2ID0gdmFyaWFudC0+ZGl2
+X2Jhc2U7IGRpdiA8IDQ7ICsrZGl2KQo+Pj4+PiArICAgICAgICAgICAgICAgICAgICBpZiAoKHJh
+dGUgPj4gKHZhcmlhbnQtPmJpdHMgKyBkaXYpKSA8IGZyZXEpCj4+Pj4+ICsgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgYnJlYWs7Cj4+Pj4+ICsgICAgfQo+Pj4+Cj4+Pj4gSSBoYXZlIHRyb3Vi
+bGUgd2l0aCB1bmRlcnN0YW5kaW5nIHRoZSBpZGVhIGJlaGluZCBpbml0aWFsIGNvZGUgZnJvbQo+
+Pj4+IFRvbWFzeiAoY29tbWl0IDExYWQzOWVkZTI0ZWUpLiBUaGUgdmFyaWFudC0+Yml0cyBmb3Ig
+YWxsIFNvQyBleGNlcHQKPj4+PiBTM0MyNHh4IGlzIDMyLiBUaGlzIG1lYW5zIHRoZSBzaGlmdDoK
+Pj4+PiAgICAgICBpZiAoKHJhdGUgPj4gKHZhcmlhbnQtPmJpdHMgKyBkaXYpKSA8IGZyZXEpCj4+
+Pj4gd2lsbCBiZSBhbHdheXMgYnkgMzIgb3IgbW9yZS4uLiBJbiBwcmFjdGljZSB0aGlzIHdpbGwg
+Y2hvb3NlIGFsd2F5cyBhCj4+Pj4gImRpdiIgb2YgMCBiZWNhdXNlIGluIGZpcnN0IGl0ZXJhdGlv
+biBvZiB0aGlzIGxvb3AsIHRoZSBzaGlmdCB3aWxsIGJlIGJ5IDMyLgo+Pj4KPj4+IEkgYWxzbyBj
+b25mdXNlZCB0aGF0IHBhcnQsIGJ1dCBJIGZpZ3VyZWQgb3V0IHRoYXQgdGhlIGJpdCBpcyB1c2Vk
+IHRvCj4+PiBjb25zaWRlciBtb2R1bGF0aW9uIGJpdCB0byBnZW5lcmF0ZSBwd20gc2lnbmFsIGZy
+b20gdGhlIGlucHV0IGNsb2NrLgo+Pj4KPj4+IE9ubHkgdGhlIG9sZCBzM2MyNDQwIGhhcyAxNiBi
+aXQgbW9kdWxhdGlvbiB0aW1lciBmb3IgcHdtLCBhbmQgYWxsIGxhdGVyCj4+PiBzb2MgaGFzIDMy
+IGJpdCBtb2R1bGF0aW9uIHRpbWVyLiBTbyAzMiBiaXQgdGltZXIgY2FzZXMsIHdpdGggdGhlIGxv
+d2VzdAo+Pj4gZGl2LCBpdCBjYW4gZ2VuZXJhdGUgYWxsIGZyZXF1ZW5jaWVzIHdoaWNoIGNhbiBi
+ZSBhc3NpZ25lZCB3aXRoIDMyYml0Cj4+PiB2YXJpYWJsZS4KPj4+IEJ1dCBJIHVzZXMgZmxzKCkg
+dG8gY29uc2lkZXIgNjRiaXQgY2FzZSBhbHNvIGV2ZW4gdGhvdWdoIHRoZXJlIGlzIG5vCj4+PiBy
+ZWFsbHkgdGhhdCBraW5kIG9mIGNsb2NrLgo+Pgo+PiBUaGUgY29kZSBtYXkgbG9vayBjb21wbGlj
+YXRlZCAoaW4gZmFjdCBJIGhhZCB0byB0aGluayBhIGJpdCB0byByZWNhbGwKPj4gd2hhdCBleGFj
+dGx5IGl0IHdhcyBzdXBwb3NlZCB0byBkbyksIGJ1dCBJJ20gbm90IHN1cmUgaG93IGl0IGNvdWxk
+IGJlCj4+IHNpbXBsaWZpZWQuIEl0J3MgZ2VuZXJhbGx5IGludGVuZGVkIHRvIGhhbmRsZSB2YXJp
+YW50LT5iaXRzIDwgMzIgY2FzZXMKPj4gb25seSBhbmQgaXMgZWZmZWN0aXZlbHkgYSBuby1vcCB3
+aGVuIHZhcmlhbnQtPmJpdHMgPj0gMzIuCj4KPiBSaWdodCwgYSBjb21tZW50IGZvciB0aGlzIGJl
+aGF2aW9yIHdvdWxkIGJlIHZlcnkgdXNlZnVsLiBObyBuZWVkIHRvCj4gd2FzdGUgdGltZSBmb3Ig
+cmUtdGhpbmtpbmcgaXQgbGF0ZXIuCj4KPj4gSSB3b3VsZCBzdWdnZXN0IGp1c3QgbWFraW5nIHJh
+dGUgYW4gdTY0IGFuZCBiZSBkb25lIHdpdGggdGhlIHdhcm5pbmcuCj4+IElNSE8gYWRkaW5nIHRo
+aXMga2luZCBvZiBzcGVjaWFsIGNhc2VzIG9ubHkgY29tcGxpY2F0ZXMgdGhlIChhbHJlYWR5Cj4+
+IGNvbXBsaWNhdGVkKSBjb2RlIHVubmVjZXNzYXJpbHkuCj4KPiB1NjQgY291bGQgc29sdmUgdGhl
+IHdhcm5pbmcgYnV0IHRoZW4gb25lIHdvdWxkIGhhdmUgdG8gZmlndXJlIG91dAo+IHdoZXRoZXIg
+dGhlIGNhc3RzIGFyZSBzYWZlIG9yIG5vdC4gVW5zaWduZWQgbG9uZyBpcyBhc3NpZ25lZCB0byBy
+YXRlIGFuZAo+IHRoZW4gcmV0dXJuZWQuCj4KPiBIb3cgYWJvdXQgc3BlY2lmaWMgY2hlY2sgKCtj
+b21tZW50KSBsaWtlOgo+IGlmICh2YXJpYW50LT5iaXRzIDwgMzIpIHsKClRlY2huaWNhbGx5IHRo
+aXMgc3RpbGwgZG9lc24ndCBndWFyYW50ZWUgc2FmZSBiZWhhdmlvciwgYnV0IGluCnByYWN0aWNl
+ICgyNHh4IGhhcyBiaXRzID09IDE2KSBzaG91bGQgYmUgZmluZSwgYXNzdW1pbmcgdGhhdCBpdCBz
+dG9wcwpVQlNBTiBmcm9tIGdydW1ibGluZy4KCj4gICAgICAgICAvKiBPbmx5IGZvciBzM2MyNHh4
+ICovCj4gICAgICAgICAvLyB0aGUgZm9yIGxvb3AgYXMgaXQgd2FzCj4gfSBlbHNlIHsKPiAgICAg
+ICAgIC8qIEZvciBvdGhlciB2YXJpYW50cyBqdXN0IGNob29zZSBsb3dlc3QgZGl2aWRlciBhbHdh
+eXMgKi8KCi8qCiAqIE90aGVyIHZhcmlhbnRzIGhhdmUgZW5vdWdoIGNvdW50ZXIgYml0cyB0byBn
+ZW5lcmF0ZSBhbnkgcmVxdWVzdGVkIHJhdGUsCiAqIHNvIG5vIG5lZWQgdG8gY2hlY2sgaGlnaGVy
+IGRpdmlzb3JzLgogKi8KCj4gICAgICAgICBkaXYgPSB2YXJpYW50LT5kaXZfYmFzZTsKPiB9Cj4K
+PiBGb3IgbWUgdGhpcyBpcyBxdWl0ZSBvYnZpb3VzIGFuZCBlcnJvci1wcm9uZSAoZXhwbGljaXQg
+Y2hlY2sgZm9yIHZhbHVlCj4gdG8gYmUgdXNlZCBpbiBzaGlmdCkuCgpJIGd1ZXNzIHlvdSBtZWFu
+dCBlcnJvci1wcm9vZi4gOikgU291bmRzIGdvb2QgdG8gbWUuCgpfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlz
+dApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJh
+ZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
