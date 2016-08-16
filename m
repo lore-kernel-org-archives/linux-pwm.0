@@ -1,116 +1,139 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH v4 07/17] pwm: sti: Rename channel => device
-Date: Tue, 16 Aug 2016 10:34:58 +0100
-Message-ID: <20160816093508.28307-8-lee.jones@linaro.org>
-References: <20160816093508.28307-1-lee.jones@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160816093508.28307-1-lee.jones@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: kernel@stlinux.com, patrice.chotard@st.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+From: Seung-Woo Kim <sw0312.kim@samsung.com>
+Subject: Re: [PATCH] pwm: samsung: fix to use lowest div for large enough
+ modulation bits
+Date: Tue, 16 Aug 2016 18:54:57 +0900
+Message-ID: <57B2E2F1.1020205@samsung.com>
+References: <1470133006-4272-1-git-send-email-sw0312.kim@samsung.com>
+ <CGME20160816073709epcas1p45d975f43e8f7e3fc17e30cf6f6573dfb@epcas1p4.samsung.com>
+ <329cb013-4832-c443-d593-327531db7b40@samsung.com>
+ <57B2CDF0.8020809@samsung.com>
+ <CA+Ln22Ha6qrbXP87wqJdTTsTD8vXbxZejt7aRkoni0YKpFJvZQ@mail.gmail.com>
+ <369cde8b-f761-4a0b-50b9-a3a01ba0b75d@samsung.com>
+Reply-To: sw0312.kim@samsung.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mailout2.samsung.com ([203.254.224.25]:45466 "EHLO
+	mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751562AbcHPJyt (ORCPT
+	<rfc822;linux-pwm@vger.kernel.org>); Tue, 16 Aug 2016 05:54:49 -0400
+In-reply-to: <369cde8b-f761-4a0b-50b9-a3a01ba0b75d@samsung.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Cc: Tomasz Figa <tomasz.figa@gmail.com>, "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Joonyoung Shim <jy0922.shim@samsung.com>
 
-This is to bring the terminology used in the STi PWM driver more
-into line with the PWM subsystem.
+Hello Krzysztof,
 
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/pwm/pwm-sti.c | 32 ++++++++++++++++----------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
+On 2016년 08월 16일 18:10, Krzysztof Kozlowski wrote:
+> On 08/16/2016 11:00 AM, Tomasz Figa wrote:
+>> 2016-08-16 17:25 GMT+09:00 Seung-Woo Kim <sw0312.kim@samsung.com>:
+>>> Hi Krzysztof,
+>>>
+>>> On 2016년 08월 16일 16:37, Krzysztof Kozlowski wrote:
+>>>> On 08/02/2016 12:16 PM, Seung-Woo Kim wrote:
+>>>>> >From pwm_samsung_calc_tin(), there is routine to find the lowest
+>>>>> divider possible to generate lower frequency than requested one.
+>>>>> But it is always possible to generate requested frequency with
+>>>>> large enough modulation bits, so this patch fixes to use lowest
+>>>>> div for the case. This patch removes following UBSAN warning:
+>>>>>
+>>>>>    UBSAN: Undefined behaviour in drivers/pwm/pwm-samsung.c:197:13
+>>>>>    shift exponent 32 is too large for 32-bit type 'long unsigned int'
+>>>>>    [...]
+>>>>>    [<c0670248>] (ubsan_epilogue) from [<c06707b4>] (__ubsan_handle_shift_out_of_bounds+0xd8/0x120)
+>>>>>    [<c06707b4>] (__ubsan_handle_shift_out_of_bounds) from [<c0694b28>] (pwm_samsung_config+0x508/0x6a4)
+>>>>>    [<c0694b28>] (pwm_samsung_config) from [<c069286c>] (pwm_apply_state+0x174/0x40c)
+>>>>>    [<c069286c>] (pwm_apply_state) from [<c0b2e070>] (pwm_fan_probe+0xc8/0x488)
+>>>>>    [<c0b2e070>] (pwm_fan_probe) from [<c07ba8b0>] (platform_drv_probe+0x70/0x150)
+>>>>>    [...]
+>>>>>
+>>>>> Signed-off-by: Seung-Woo Kim <sw0312.kim@samsung.com>
+>>>>> ---
+>>>>> The UBSAN warning from ARM is reported with the patch in following link:
+>>>>> https://patchwork.kernel.org/patch/9189575/
+>>>>> ---
+>>>>>  drivers/pwm/pwm-samsung.c |   10 +++++++---
+>>>>>  1 file changed, 7 insertions(+), 3 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
+>>>>> index ada2d32..ff0def6 100644
+>>>>> --- a/drivers/pwm/pwm-samsung.c
+>>>>> +++ b/drivers/pwm/pwm-samsung.c
+>>>>> @@ -193,9 +193,13 @@ static unsigned long pwm_samsung_calc_tin(struct samsung_pwm_chip *chip,
+>>>>>       * divider settings and choose the lowest divisor that can generate
+>>>>>       * frequencies lower than requested.
+>>>>>       */
+>>>>> -    for (div = variant->div_base; div < 4; ++div)
+>>>>> -            if ((rate >> (variant->bits + div)) < freq)
+>>>>> -                    break;
+>>>>> +    if (fls(rate) <= variant->bits) {
+>>>>> +            div = variant->div_base;
+>>>>> +    } else {
+>>>>> +            for (div = variant->div_base; div < 4; ++div)
+>>>>> +                    if ((rate >> (variant->bits + div)) < freq)
+>>>>> +                            break;
+>>>>> +    }
+>>>>
+>>>> I have trouble with understanding the idea behind initial code from
+>>>> Tomasz (commit 11ad39ede24ee). The variant->bits for all SoC except
+>>>> S3C24xx is 32. This means the shift:
+>>>>       if ((rate >> (variant->bits + div)) < freq)
+>>>> will be always by 32 or more... In practice this will choose always a
+>>>> "div" of 0 because in first iteration of this loop, the shift will be by 32.
+>>>
+>>> I also confused that part, but I figured out that the bit is used to
+>>> consider modulation bit to generate pwm signal from the input clock.
+>>>
+>>> Only the old s3c2440 has 16 bit modulation timer for pwm, and all later
+>>> soc has 32 bit modulation timer. So 32 bit timer cases, with the lowest
+>>> div, it can generate all frequencies which can be assigned with 32bit
+>>> variable.
+>>> But I uses fls() to consider 64bit case also even though there is no
+>>> really that kind of clock.
+>>
+>> The code may look complicated (in fact I had to think a bit to recall
+>> what exactly it was supposed to do), but I'm not sure how it could be
+>> simplified. It's generally intended to handle variant->bits < 32 cases
+>> only and is effectively a no-op when variant->bits >= 32.
+> 
+> Right, a comment for this behavior would be very useful. No need to
+> waste time for re-thinking it later.
+> 
+>> I would suggest just making rate an u64 and be done with the warning.
+>> IMHO adding this kind of special cases only complicates the (already
+>> complicated) code unnecessarily.
+> 
+> u64 could solve the warning but then one would have to figure out
+> whether the casts are safe or not. Unsigned long is assigned to rate and
+> then returned.
+> 
+> How about specific check (+comment) like:
+> if (variant->bits < 32) {
+> 	/* Only for s3c24xx */
+> 	// the for loop as it was
+> } else {
+> 	/* For other variants just choose lowest divider always */
+> 	div = variant->div_base;
+> }
+> 
+> For me this is quite obvious and error-prone (explicit check for value
+> to be used in shift).
 
-diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index 92abbd5..5c7fdd1 100644
---- a/drivers/pwm/pwm-sti.c
-+++ b/drivers/pwm/pwm-sti.c
-@@ -21,7 +21,7 @@
- #include <linux/slab.h>
- #include <linux/time.h>
- 
--#define STI_DS_REG(ch)	(4 * (ch))	/* Channel's Duty Cycle register */
-+#define STI_DS_REG(ch)	(4 * (ch))	/* Device's Duty Cycle register */
- #define STI_PWMCR	0x50		/* Control/Config register */
- #define STI_INTEN	0x54		/* Interrupt Enable/Disable register */
- #define PWM_PRESCALE_LOW_MASK		0x0f
-@@ -40,7 +40,7 @@ enum {
- 
- struct sti_pwm_compat_data {
- 	const struct reg_field *reg_fields;
--	unsigned int num_chan;
-+	unsigned int num_devs;
- 	unsigned int max_pwm_cnt;
- 	unsigned int max_prescale;
- };
-@@ -130,13 +130,13 @@ static int sti_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	/* Allow configuration changes if one of the
- 	 * following conditions satisfy.
--	 * 1. No channels have been configured.
--	 * 2. Only one channel has been configured and the new request
--	 *    is for the same channel.
--	 * 3. Only one channel has been configured and the new request is
--	 *    for a new channel and period of the new channel is same as
-+	 * 1. No devices have been configured.
-+	 * 2. Only one device has been configured and the new request
-+	 *    is for the same device.
-+	 * 3. Only one device has been configured and the new request is
-+	 *    for a new device and period of the new device is same as
- 	 *    the current configured period.
--	 * 4. More than one channels are configured and period of the new
-+	 * 4. More than one devices are configured and period of the new
- 	 *    requestis the same as the current period.
- 	 */
- 	if (!ncfg ||
-@@ -201,7 +201,7 @@ static int sti_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	int ret = 0;
- 
- 	/*
--	 * Since we have a common enable for all PWM channels,
-+	 * Since we have a common enable for all PWM devices,
- 	 * do not enable if already enabled.
- 	 */
- 	mutex_lock(&pc->sti_pwm_lock);
-@@ -259,11 +259,11 @@ static int sti_pwm_probe_dt(struct sti_pwm_chip *pc)
- 	const struct reg_field *reg_fields;
- 	struct device_node *np = dev->of_node;
- 	struct sti_pwm_compat_data *cdata = pc->cdata;
--	u32 num_chan;
-+	u32 num_devs;
- 
--	of_property_read_u32(np, "st,pwm-num-chan", &num_chan);
--	if (num_chan)
--		cdata->num_chan = num_chan;
-+	of_property_read_u32(np, "st,pwm-num-chans", &num_devs);
-+	if (num_devs)
-+		cdata->num_devs = num_devs;
- 
- 	reg_fields = cdata->reg_fields;
- 
-@@ -330,7 +330,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	cdata->reg_fields   = &sti_pwm_regfields[0];
- 	cdata->max_prescale = 0xff;
- 	cdata->max_pwm_cnt  = 255;
--	cdata->num_chan     = 1;
-+	cdata->num_devs     = 1;
- 
- 	pc->cdata = cdata;
- 	pc->dev = dev;
-@@ -362,7 +362,7 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	pc->chip.dev = dev;
- 	pc->chip.ops = &sti_pwm_ops;
- 	pc->chip.base = -1;
--	pc->chip.npwm = pc->cdata->num_chan;
-+	pc->chip.npwm = pc->cdata->num_devs;
- 	pc->chip.can_sleep = true;
- 
- 	ret = pwmchip_add(&pc->chip);
-@@ -381,7 +381,7 @@ static int sti_pwm_remove(struct platform_device *pdev)
- 	struct sti_pwm_chip *pc = platform_get_drvdata(pdev);
- 	unsigned int i;
- 
--	for (i = 0; i < pc->cdata->num_chan; i++)
-+	for (i = 0; i < pc->cdata->num_devs; i++)
- 		pwm_disable(&pc->chip.pwms[i]);
- 
- 	clk_unprepare(pc->clk);
+Actually above was my internal first version and it also removes UBSAN
+warning. I will send as you suggested with Tomasz's comment.
+
+Thanks,
+- Seung-Woo Kim
+
+> 
+> Best regards,
+> Krzysztof
+> 
+> 
+
 -- 
-2.9.0
+Seung-Woo Kim
+Samsung Software R&D Center
+--
