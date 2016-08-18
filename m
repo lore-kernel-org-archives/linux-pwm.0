@@ -1,53 +1,45 @@
-From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Subject: Re: [PATCH v2] pwm: samsung: fix to use lowest div for large enough
- modulation bits
-Date: Tue, 16 Aug 2016 18:25:25 +0200
-Message-ID: <20160816162525.GA9249@kozik-lap>
-References: <1470133006-4272-1-git-send-email-sw0312.kim@samsung.com>
- <20160816142201.12672-1-sw0312.kim@samsung.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v4 17/17] dt-bindings: pwm: sti: Update DT bindings with
+ recent changes
+Date: Thu, 18 Aug 2016 14:20:02 -0500
+Message-ID: <20160818192002.GA26225@rob-hp-laptop>
+References: <20160816093508.28307-1-lee.jones@linaro.org>
+ <20160816093508.28307-18-lee.jones@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20160816142201.12672-1-sw0312.kim@samsung.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Seung-Woo Kim <sw0312.kim@samsung.com>
-Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, k.kozlowski@samsung.com, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, tomasz.figa@gmail.com, jy0922.shim@samsung.com, krzk@kernel.org
+In-Reply-To: <20160816093508.28307-18-lee.jones@linaro.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: linux-pwm@vger.kernel.org, kernel@stlinux.com, devicetree@vger.kernel.org, patrice.chotard@st.com, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Aug 16, 2016 at 11:22:01PM +0900, Seung-Woo Kim wrote:
-> From pwm_samsung_calc_tin(), there is routine to find the lowest
-> divider possible to generate lower frequency than requested one.
-> But it is always possible to generate requested frequency with
-> large enough modulation bits except s3c24xx, so this patch fixes
-> to use lowest div for the case. This patch removes following UBSAN
-> warning:
+On Tue, Aug 16, 2016 at 10:35:08AM +0100, Lee Jones wrote:
+> We're renaming the 'st,pwm-num-chan' binding to 'st,pwm-num-devs' to
+> be more inline with the naming conventions of the subsystem.  Where
+> we used to treat each line as a channel, the PWM convention is to
+> describe them as devices.
+
+This is out of date now. Otherwise, the binding looks fine.
+
+> The second documentation adaption entails adding support for PWM
+> capture devices.  A new clock is required as well as an IRQ line.
+> We're also adding a new property similar to the one described
+> above, but for capture channels.  Typically, there will be less
+> capture channels than PWM-out, since all channels have the latter
+> capability, but only some have capture support.
 > 
->    UBSAN: Undefined behaviour in drivers/pwm/pwm-samsung.c:197:13
->    shift exponent 32 is too large for 32-bit type 'long unsigned int'
->    [...]
->    [<c0670248>] (ubsan_epilogue) from [<c06707b4>] (__ubsan_handle_shift_out_of_bounds+0xd8/0x120)
->    [<c06707b4>] (__ubsan_handle_shift_out_of_bounds) from [<c0694b28>] (pwm_samsung_config+0x508/0x6a4)
->    [<c0694b28>] (pwm_samsung_config) from [<c069286c>] (pwm_apply_state+0x174/0x40c)
->    [<c069286c>] (pwm_apply_state) from [<c0b2e070>] (pwm_fan_probe+0xc8/0x488)
->    [<c0b2e070>] (pwm_fan_probe) from [<c07ba8b0>] (platform_drv_probe+0x70/0x150)
->    [...]
-> 
-> Cc: Tomasz Figa <tomasz.figa@gmail.com>
-> Signed-off-by: Seung-Woo Kim <sw0312.kim@samsung.com>
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
 > ---
-> Changes from v1
->  * Remove too complex condition, instead, just checking simple variant->bits as Krzysztof's suggestion
->  * Add comment from Tomasz
-> 
-> The UBSAN warning from ARM is reported with the patch in following link:
-> https://patchwork.kernel.org/patch/9189575/
-> ---
->  drivers/pwm/pwm-samsung.c | 15 ++++++++++++---
->  1 file changed, 12 insertions(+), 3 deletions(-)
-
-
-Reviewed-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-
-Best regards,
-Krzysztof
+>  Documentation/devicetree/bindings/pwm/pwm-st.txt | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
