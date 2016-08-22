@@ -1,379 +1,90 @@
-From: Jian Yuan <yuanjian12@hisilicon.com>
-Subject: [PATCH v2] pwm: add pwm driver for HiSilicon BVT SOCs
-Date: Mon, 22 Aug 2016 15:50:13 +0800
-Message-ID: <1471852213-86777-1-git-send-email-yuanjian12@hisilicon.com>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: Re: [RESEND PATCH v2 1/4] pwm: Add support for Meson PWM Controller
+Date: Mon, 22 Aug 2016 14:16:52 +0200
+Message-ID: <ad2f719e-9236-96fd-3bea-ce20c487c67f@baylibre.com>
+References: <1471718083-11516-1-git-send-email-narmstrong@baylibre.com>
+ <1471718083-11516-2-git-send-email-narmstrong@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from szxga01-in.huawei.com ([58.251.152.64]:61460 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752607AbcHVHxi (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 22 Aug 2016 03:53:38 -0400
+Received: from mail-wm0-f51.google.com ([74.125.82.51]:37128 "EHLO
+        mail-wm0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751032AbcHVMQz (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 22 Aug 2016 08:16:55 -0400
+Received: by mail-wm0-f51.google.com with SMTP id i5so140883556wmg.0
+        for <linux-pwm@vger.kernel.org>; Mon, 22 Aug 2016 05:16:55 -0700 (PDT)
+In-Reply-To: <1471718083-11516-2-git-send-email-narmstrong@baylibre.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, xuejiancheng@hisilicon.com, kevin.lixu@hisilicon.com, jalen.hsu@hisilicon.com, yuanjian <yuanjian12@hisilicon.com>
+To: thierry.reding@gmail.com, carlo@caione.org, khilman@baylibre.com
+Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 
-From: yuanjian <yuanjian12@hisilicon.com>
+Hi Thierry,
 
-Add pwm driver for HiSilicon BVT SOCs
+On 08/20/2016 08:34 PM, Neil Armstrong wrote:
+> Add support for the PWM controller found in the Amlogic SoCs.
+> This driver supports the Meson8b and GXBB SoCs.
+> 
+> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+> ---
+>  drivers/pwm/Kconfig     |   9 +
+>  drivers/pwm/Makefile    |   1 +
+>  drivers/pwm/pwm-meson.c | 491 ++++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 501 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-meson.c
+> 
 
-Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
-Signed-off-by: Jian Yuan <yuanjian12@hisilicon.com>
----
-Change Log:
-v2:
-The number of PWMs is change to be probeable based on the compatible string.
+[...]
 
- .../devicetree/bindings/pwm/pwm-hibvt.txt          |  18 ++
- drivers/pwm/Kconfig                                |  10 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-hibvt.c                            | 274 +++++++++++++++++++++
- 4 files changed, 303 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
- create mode 100644 drivers/pwm/pwm-hibvt.c
+> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+> new file mode 100644
+> index 0000000..9e7ecf5
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-meson.c
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
-new file mode 100644
-index 0000000..1274119
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
-@@ -0,0 +1,18 @@
-+Hisilicon PWM controller
-+
-+Required properties:
-+-compatible: should contain one soc specific compatible string and one generic compatible
-+string "hisilicon, hibvt-pwm". The soc specific strings supported including:
-+	"hisilicon,hi3516cv300-pwm"
-+- reg: physical base address and length of the controller's registers.
-+- clocks: phandle and clock specifier of the PWM reference clock.
-+- resets: offset address and offset bit for reset or unreset of the controller.
-+
-+Example:
-+	pwm: pwm@12130000 {
-+
-+		compatible = "hisilicon,hi3516cv300-pwm", "hisilicon,hibvt-pwm";
-+		reg = <0x12130000 0x10000>;
-+		clocks = <&crg_ctrl HI3516CV300_PWM_CLK>;
-+		resets = <&crg_ctrl 0x38 0>;
-+	};
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index c182efc..3c48768 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -158,6 +158,15 @@ config PWM_FSL_FTM
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-fsl-ftm.
- 
-+config PWM_HIBVT
-+	tristate "HiSilicon BVT PWM support"
-+	depends on ARCH_HISI
-+	help
-+	  Generic PWM framework driver for hisilicon BVT SOCs.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-hibvt.
-+
- config PWM_IMG
- 	tristate "Imagination Technologies PWM driver"
- 	depends on HAS_IOMEM
-@@ -438,4 +447,5 @@ config PWM_VT8500
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-vt8500.
- 
-+
- endif
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index dd35bc1..37ec39e 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -13,6 +13,7 @@ obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
- obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
- obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
- obj-$(CONFIG_PWM_FSL_FTM)	+= pwm-fsl-ftm.o
-+obj-$(CONFIG_PWM_HIBVT)		+= pwm-hibvt.o
- obj-$(CONFIG_PWM_IMG)		+= pwm-img.o
- obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
- obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
-diff --git a/drivers/pwm/pwm-hibvt.c b/drivers/pwm/pwm-hibvt.c
-new file mode 100644
-index 0000000..84f617e
---- /dev/null
-+++ b/drivers/pwm/pwm-hibvt.c
-@@ -0,0 +1,274 @@
-+/*
-+ * PWM Controller Driver for HiSilicon BVT SOCs
-+ *
-+ * Copyright (c) 2016 HiSilicon Technologies Co., Ltd.
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
-+ */
-+
-+#include <linux/bitops.h>
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/pwm.h>
-+#include <linux/reset.h>
-+
-+#define PWM_CFG0_ADDR(x)    (((x) * 0x20) + 0x0)
-+#define PWM_CFG1_ADDR(x)    (((x) * 0x20) + 0x4)
-+#define PWM_CFG2_ADDR(x)    (((x) * 0x20) + 0x8)
-+#define PWM_CTRL_ADDR(x)    (((x) * 0x20) + 0xC)
-+
-+#define PWM_ENABLE_SHIFT    0
-+#define PWM_ENABLE_MASK		BIT(0)
-+
-+#define PWM_POLARITY_SHIFT	1
-+#define PWM_POLARITY_MASK	BIT(1)
-+
-+#define PWM_KEEP_SHIFT	    2
-+#define PWM_KEEP_MASK	    BIT(2)
-+
-+#define PWM_PERIOD_MASK	    GENMASK(31, 0)
-+#define PWM_DUTY_MASK	    GENMASK(31, 0)
-+
-+struct hibvt_pwm_chip {
-+	struct pwm_chip	chip;
-+	struct clk	*clk;
-+	void __iomem	*mmio_base;
-+	struct reset_control *rstc;
-+};
-+
-+static int pwm_num_array[] = {8, 4};
-+
-+static inline
-+struct hibvt_pwm_chip *to_hibvt_pwm_chip(struct pwm_chip *chip)
-+{
-+	return container_of(chip, struct hibvt_pwm_chip, chip);
-+}
-+
-+static void hibvt_pwm_set_bits(void __iomem *base, unsigned int offset,
-+					unsigned int mask, unsigned int data)
-+{
-+	void __iomem *address = base + offset;
-+	unsigned int value;
-+
-+	value = readl(address);
-+	value &= ~mask;
-+	value |= (data & mask);
-+	writel(value, address);
-+}
-+
-+static int hibvt_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct hibvt_pwm_chip *hi_pwm_chip = to_hibvt_pwm_chip(chip);
-+	unsigned int offset;
-+
-+	offset = PWM_CTRL_ADDR(pwm->hwpwm);
-+	hibvt_pwm_set_bits(hi_pwm_chip->mmio_base, offset,
-+			PWM_ENABLE_MASK, 0x1);
-+
-+	return 0;
-+}
-+
-+static void hibvt_pwm_disable(struct pwm_chip *chip,
-+					struct pwm_device *pwm)
-+{
-+	struct hibvt_pwm_chip *hi_pwm_chip = to_hibvt_pwm_chip(chip);
-+	unsigned int offset;
-+
-+	offset = PWM_CTRL_ADDR(pwm->hwpwm);
-+	hibvt_pwm_set_bits(hi_pwm_chip->mmio_base, offset,
-+			PWM_ENABLE_MASK, 0x0);
-+}
-+
-+static int hibvt_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-+					int duty_cycle_ns, int period_ns)
-+{
-+	struct hibvt_pwm_chip *hi_pwm_chip = to_hibvt_pwm_chip(chip);
-+	unsigned int offset;
-+	unsigned int freq;
-+	unsigned int period_num, duty_num;
-+
-+	freq = div_u64(clk_get_rate(hi_pwm_chip->clk), 1000000);
-+
-+	period_num = div_u64(freq * period_ns, 1000);
-+	duty_num = div_u64(period_num * duty_cycle_ns, period_ns);
-+
-+	offset = PWM_CFG0_ADDR(pwm->hwpwm);
-+	hibvt_pwm_set_bits(hi_pwm_chip->mmio_base, offset,
-+			PWM_PERIOD_MASK, period_num);
-+
-+	offset = PWM_CFG1_ADDR(pwm->hwpwm);
-+	hibvt_pwm_set_bits(hi_pwm_chip->mmio_base, offset,
-+			PWM_DUTY_MASK, duty_num);
-+
-+	return 0;
-+}
-+
-+static int hibvt_pwm_set_polarity(struct pwm_chip *chip,
-+					struct pwm_device *pwm,
-+					enum pwm_polarity polarity)
-+{
-+	struct hibvt_pwm_chip *hi_pwm_chip = to_hibvt_pwm_chip(chip);
-+	unsigned int offset;
-+
-+	offset = PWM_CTRL_ADDR(pwm->hwpwm);
-+	if (polarity == PWM_POLARITY_INVERSED)
-+		hibvt_pwm_set_bits(hi_pwm_chip->mmio_base, offset,
-+				PWM_POLARITY_MASK, (0x1 << PWM_POLARITY_SHIFT));
-+	else
-+		hibvt_pwm_set_bits(hi_pwm_chip->mmio_base, offset,
-+				PWM_POLARITY_MASK, (0x0 << PWM_POLARITY_SHIFT));
-+
-+	return 0;
-+}
-+
-+void hibvt_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-+				struct pwm_state *state)
-+{
-+	struct hibvt_pwm_chip *hi_pwm_chip = to_hibvt_pwm_chip(chip);
-+	void __iomem *base;
-+	unsigned int offset;
-+	unsigned int freq;
-+	unsigned int period_num, duty_num;
-+	unsigned int enable;
-+
-+	freq = div_u64(clk_get_rate(hi_pwm_chip->clk), 1000000);
-+	base = hi_pwm_chip->mmio_base;
-+
-+	offset = PWM_CFG0_ADDR(pwm->hwpwm);
-+	period_num = readl(base + offset);
-+	state->period = div_u64(period_num * 1000, freq);
-+
-+	offset = PWM_CFG1_ADDR(pwm->hwpwm);
-+	duty_num = readl(base + offset);
-+	state->duty_cycle = div_u64(duty_num * 1000, freq);
-+
-+	offset = PWM_CTRL_ADDR(pwm->hwpwm);
-+	enable = readl(base + offset);
-+	state->enabled = (PWM_ENABLE_MASK & enable);
-+}
-+
-+static struct pwm_ops hibvt_pwm_ops = {
-+	.enable       = hibvt_pwm_enable,
-+	.disable      = hibvt_pwm_disable,
-+	.config       = hibvt_pwm_config,
-+	.set_polarity = hibvt_pwm_set_polarity,
-+	.get_state    = hibvt_pwm_get_state,
-+
-+	.owner        = THIS_MODULE,
-+};
-+
-+static const struct of_device_id hibvt_pwm_of_match[];
-+
-+static int hibvt_pwm_probe(struct platform_device *pdev)
-+{
-+	struct hibvt_pwm_chip *pwm_chip;
-+	const struct of_device_id *of_id =
-+				of_match_device(hibvt_pwm_of_match, &pdev->dev);
-+	struct resource *res;
-+	int ret = 0;
-+	int i;
-+	int offset;
-+	int pwm_nums;
-+
-+	if (!of_id)
-+		return -ENODEV;
-+
-+	pwm_chip = devm_kzalloc(&pdev->dev, sizeof(*pwm_chip), GFP_KERNEL);
-+	if (pwm_chip == NULL)
-+		return -ENOMEM;
-+
-+	pwm_chip->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(pwm_chip->clk)) {
-+		dev_err(&pdev->dev, "getting clock failed with %ld\n",
-+				PTR_ERR(pwm_chip->clk));
-+		return PTR_ERR(pwm_chip->clk);
-+	}
-+
-+	pwm_nums = *((int *)of_id->data);
-+
-+	pwm_chip->chip.ops = &hibvt_pwm_ops;
-+	pwm_chip->chip.dev = &pdev->dev;
-+	pwm_chip->chip.base = -1;
-+	pwm_chip->chip.npwm = pwm_nums;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	pwm_chip->mmio_base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(pwm_chip->mmio_base))
-+		return PTR_ERR(pwm_chip->mmio_base);
-+
-+	ret = clk_prepare_enable(pwm_chip->clk);
-+	if (ret < 0)
-+		return ret;
-+
-+	pwm_chip->rstc = devm_reset_control_get(&pdev->dev, NULL);
-+	if (IS_ERR(pwm_chip->rstc))
-+		return PTR_ERR(pwm_chip->rstc);
-+
-+	reset_control_assert(pwm_chip->rstc);
-+	msleep(30);
-+	reset_control_deassert(pwm_chip->rstc);
-+
-+	ret = pwmchip_add(&pwm_chip->chip);
-+	if (ret < 0)
-+		return ret;
-+
-+	for (i = 0; i < pwm_nums; i++) {
-+		offset = PWM_CTRL_ADDR(i);
-+		hibvt_pwm_set_bits(pwm_chip->mmio_base, offset,
-+				PWM_KEEP_MASK, (0x1 << PWM_KEEP_SHIFT));
-+	}
-+
-+	platform_set_drvdata(pdev, pwm_chip);
-+
-+	return 0;
-+}
-+
-+static int hibvt_pwm_remove(struct platform_device *pdev)
-+{
-+	struct hibvt_pwm_chip *pwm_chip;
-+
-+	pwm_chip = platform_get_drvdata(pdev);
-+	if (pwm_chip == NULL)
-+		return -ENODEV;
-+
-+	clk_disable_unprepare(pwm_chip->clk);
-+
-+	return pwmchip_remove(&pwm_chip->chip);
-+}
-+
-+static const struct of_device_id hibvt_pwm_of_match[] = {
-+	{.compatible = "hisilicon,hibvt-pwm", .data = &pwm_num_array[0]},
-+	{.compatible = "hisilicon,hi3516cv300-pwm", .data = &pwm_num_array[1]},
-+	{  }
-+};
-+MODULE_DEVICE_TABLE(of, hibvt_pwm_of_match);
-+
-+static struct platform_driver hibvt_pwm_driver = {
-+	.driver		= {
-+		.name	= "hibvt-pwm",
-+		.of_match_table = hibvt_pwm_of_match,
-+	},
-+	.probe		= hibvt_pwm_probe,
-+	.remove		= hibvt_pwm_remove,
-+};
-+
-+module_platform_driver(hibvt_pwm_driver);
-+
-+MODULE_AUTHOR("yuanjian12@hisilicon.com");
-+MODULE_DESCRIPTION("Hisilicon BVT SOCs PWM driver");
-+MODULE_LICENSE("GPL v2");
--- 
-2.1.4
+[...]
+
+> +
+> +static const char * const pwm_parents[] = {
+> +	"xtal", "vid_pll", "fclk_div4", "fclk_div3", NULL
+> +};
+
+Aww, crap, it's "vid_pll" on meson8b and "hdmi_pll" for gxbb.
+I'll add it to DT mach data.
+
+> +static int meson_pwm_enable(struct pwm_chip *chip,
+> +				 struct pwm_device *pwm)
+> +{
+> +	struct meson_pwm_chip *pwm_data = to_meson_pwm_chip(chip);
+> +	unsigned int id = pwm->hwpwm;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&pwm_data->lock, flags);
+> +	switch (id) {
+> +	case PWM_A:
+> +		writel(readl(pwm_data->base + REG_MISC_AB) | MISC_A_EN,
+> +			pwm_data->base + REG_MISC_AB);
+
+Found an issue here, the HW requires to re-write the clock counts register even if the value is correct.
+Let's got for a v3 !
+
+> +		break;
+> +
+> +	case PWM_B:
+> +		writel(readl(pwm_data->base + REG_MISC_AB) | MISC_B_EN,
+> +			pwm_data->base + REG_MISC_AB);
+> +		break;
+> +
+> +	default:
+> +		break;
+> +	}
+> +	spin_unlock_irqrestore(&pwm_data->lock, flags);
+> +
+> +	return 0;
+> +}
+
+Is it worth rewriting the driver using the apply callback ?
+I'll wish to have it for 4.9 if possible, do you think it's possible ?
+
+Neil
