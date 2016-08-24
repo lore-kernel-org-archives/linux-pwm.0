@@ -1,63 +1,74 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2] pwm: add pwm driver for HiSilicon BVT SOCs
-Date: Tue, 23 Aug 2016 13:08:12 -0500
-Message-ID: <20160823180812.GA2793@rob-hp-laptop>
-References: <1471852213-86777-1-git-send-email-yuanjian12@hisilicon.com>
+From: LABBE Corentin <clabbe.montjoie@gmail.com>
+Subject: Re: [PATCH v2 1/1] pwm: sun4i: fix a possible NULL dereference
+Date: Wed, 24 Aug 2016 13:42:45 +0200
+Message-ID: <20160824114245.GA29212@Red>
+References: <1471353486-11514-1-git-send-email-clabbe.montjoie@gmail.com>
+ <1471353486-11514-2-git-send-email-clabbe.montjoie@gmail.com>
+ <20160822065737.GA7104@lukather>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi0-f67.google.com ([209.85.218.67]:36576 "EHLO
-        mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753177AbcHWSIO (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 23 Aug 2016 14:08:14 -0400
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:35230 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752485AbcHXLmu (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 24 Aug 2016 07:42:50 -0400
 Content-Disposition: inline
-In-Reply-To: <1471852213-86777-1-git-send-email-yuanjian12@hisilicon.com>
+In-Reply-To: <20160822065737.GA7104@lukather>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jian Yuan <yuanjian12@hisilicon.com>
-Cc: thierry.reding@gmail.com, mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, xuejiancheng@hisilicon.com, kevin.lixu@hisilicon.com, jalen.hsu@hisilicon.com
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: thierry.reding@gmail.com, wens@csie.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-On Mon, Aug 22, 2016 at 03:50:13PM +0800, Jian Yuan wrote:
-> From: yuanjian <yuanjian12@hisilicon.com>
+On Mon, Aug 22, 2016 at 08:57:37AM +0200, Maxime Ripard wrote:
+> Hi,
 > 
-> Add pwm driver for HiSilicon BVT SOCs
+> On Tue, Aug 16, 2016 at 03:18:06PM +0200, LABBE Corentin wrote:
+> > of_match_device could return NULL, and so cause a NULL pointer
+> > dereference later.
+> > 
+> > For fixing this problem, we use of_device_get_match_data(), this will
+> > simplify the code a little by using a standard function for
+> > getting the match data.
+> > 
+> > Reported-by: coverity (CID 1324139)
+> > Signed-off-by: LABBE Corentin <clabbe.montjoie@gmail.com>
+> > ---
+> >  drivers/pwm/pwm-sun4i.c | 5 +----
+> >  1 file changed, 1 insertion(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+> > index 03a99a5..72f0060 100644
+> > --- a/drivers/pwm/pwm-sun4i.c
+> > +++ b/drivers/pwm/pwm-sun4i.c
+> > @@ -309,9 +309,6 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+> >  	struct resource *res;
+> >  	u32 val;
+> >  	int i, ret;
+> > -	const struct of_device_id *match;
+> > -
+> > -	match = of_match_device(sun4i_pwm_dt_ids, &pdev->dev);
+> >  
+> >  	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
+> >  	if (!pwm)
+> > @@ -326,7 +323,7 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
+> >  	if (IS_ERR(pwm->clk))
+> >  		return PTR_ERR(pwm->clk);
+> >  
+> > -	pwm->data = match->data;
+> > +	pwm->data = of_device_get_match_data(&pdev->dev);
 > 
-> Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
-> Signed-off-by: Jian Yuan <yuanjian12@hisilicon.com>
-> ---
-> Change Log:
-> v2:
-> The number of PWMs is change to be probeable based on the compatible string.
+> How does that fix anything?
 > 
->  .../devicetree/bindings/pwm/pwm-hibvt.txt          |  18 ++
+> If of_match_data fails, it will return NULL, and the NULL pointer
+> dereference will occur in the exact same cases.
+> 
+> You should just check for match to be NULL, and return in this case.
+> 
+> Maxime
+> 
 
-For the binding:
+I apologize for havent seen this subsuquent NULL deref.
 
-Acked-by: Rob Herring <robh@kernel.org>
+I send an updated version soon.
 
-One comment though...
-
->  drivers/pwm/Kconfig                                |  10 +
->  drivers/pwm/Makefile                               |   1 +
->  drivers/pwm/pwm-hibvt.c                            | 274 +++++++++++++++++++++
->  4 files changed, 303 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
->  create mode 100644 drivers/pwm/pwm-hibvt.c
-
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index c182efc..3c48768 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -158,6 +158,15 @@ config PWM_FSL_FTM
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-fsl-ftm.
->  
-> +config PWM_HIBVT
-> +	tristate "HiSilicon BVT PWM support"
-> +	depends on ARCH_HISI
-
-Add "|| COMPILE_TEST" so it can build test on other configs
-
-> +	help
-> +	  Generic PWM framework driver for hisilicon BVT SOCs.
-> +
+Regards
