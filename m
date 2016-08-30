@@ -1,31 +1,91 @@
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH v3 1/4] pwm: Add support for Meson PWM Controller
-Date: Sun, 28 Aug 2016 18:33:03 +0200
-Message-ID: <CAFBinCA3PoR_=+f8aU-Trg8uKWWXkkBOtrQUaXbdsb8E-fdM0g@mail.gmail.com>
-References: <1471880193-21879-1-git-send-email-narmstrong@baylibre.com> <1471880193-21879-2-git-send-email-narmstrong@baylibre.com>
+From: Vignesh R <vigneshr@ti.com>
+Subject: Re: [PATCH] pwm: pwm-tipwmss: Remove all pm_runtime gets and puts
+ from the driver
+Date: Tue, 30 Aug 2016 10:18:35 +0530
+Message-ID: <5ec09503-e180-7b6a-b724-a80693896ab2@ti.com>
+References: <20160808100915.30149-1-vigneshr@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f67.google.com ([74.125.82.67]:34017 "EHLO
-        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755674AbcH1QdZ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 28 Aug 2016 12:33:25 -0400
-In-Reply-To: <1471880193-21879-2-git-send-email-narmstrong@baylibre.com>
+Received: from arroyo.ext.ti.com ([198.47.19.12]:48836 "EHLO arroyo.ext.ti.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750964AbcH3Esk (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 30 Aug 2016 00:48:40 -0400
+In-Reply-To: <20160808100915.30149-1-vigneshr@ti.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Neil Armstrong <narmstrong@baylibre.com>
-Cc: thierry.reding@gmail.com, carlo@caione.org, khilman@baylibre.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-
-On Mon, Aug 22, 2016 at 5:36 PM, Neil Armstrong <narmstrong@baylibre.com> wrote:
-> Add support for the PWM controller found in the Amlogic SoCs.
-> This driver supports the Meson8b and GXBB SoCs.
->
-> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-I could enable the AP6330 SDIO wifi module with this on my
-meson-gxbb-vega-s95-meta clone, which uses pwm_e to generate the LPO
-clock for the wifi module (see [0] for the corresponding patches).
-So thank you Neil, and:
-Tested-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Jyri Sarha <jsarha@ti.com>, Dave Gerlach <d-gerlach@ti.com>, linux-omap@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
-[0] https://github.com/xdarklight/linux/tree/meson-gxbb-integration-4.8-20160828
+
+On Monday 08 August 2016 03:39 PM, Vignesh R wrote:
+> From: Jyri Sarha <jsarha@ti.com>
+> 
+> Remove all pm_runtime gets and puts, and dummy pm_ops, from the
+> pwm-tipwmss driver as there is no direct hardware access. The runtime PM
+> needs to be enabled, so that the runtime PM framework takes care of
+> enabling/disabling of PWMSS clock when submodules of PWMSS (ECAP or
+> EHRPWM) call pm_runtime APIs. With this change PWMSS clock goes to
+> idle when none of the submodules are in use.
+> 
+> Signed-off-by: Jyri Sarha <jsarha@ti.com>
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> ---
+
+
+Gentle ping....
+
+>  drivers/pwm/pwm-tipwmss.c | 19 -------------------
+>  1 file changed, 19 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-tipwmss.c b/drivers/pwm/pwm-tipwmss.c
+> index 829f4991c96f..7fa85a1604da 100644
+> --- a/drivers/pwm/pwm-tipwmss.c
+> +++ b/drivers/pwm/pwm-tipwmss.c
+> @@ -34,7 +34,6 @@ static int pwmss_probe(struct platform_device *pdev)
+>  	struct device_node *node = pdev->dev.of_node;
+>  
+>  	pm_runtime_enable(&pdev->dev);
+> -	pm_runtime_get_sync(&pdev->dev);
+>  
+>  	/* Populate all the child nodes here... */
+>  	ret = of_platform_populate(node, NULL, NULL, &pdev->dev);
+> @@ -46,31 +45,13 @@ static int pwmss_probe(struct platform_device *pdev)
+>  
+>  static int pwmss_remove(struct platform_device *pdev)
+>  {
+> -	pm_runtime_put_sync(&pdev->dev);
+>  	pm_runtime_disable(&pdev->dev);
+>  	return 0;
+>  }
+>  
+> -#ifdef CONFIG_PM_SLEEP
+> -static int pwmss_suspend(struct device *dev)
+> -{
+> -	pm_runtime_put_sync(dev);
+> -	return 0;
+> -}
+> -
+> -static int pwmss_resume(struct device *dev)
+> -{
+> -	pm_runtime_get_sync(dev);
+> -	return 0;
+> -}
+> -#endif
+> -
+> -static SIMPLE_DEV_PM_OPS(pwmss_pm_ops, pwmss_suspend, pwmss_resume);
+> -
+>  static struct platform_driver pwmss_driver = {
+>  	.driver	= {
+>  		.name	= "pwmss",
+> -		.pm	= &pwmss_pm_ops,
+>  		.of_match_table	= pwmss_of_match,
+>  	},
+>  	.probe	= pwmss_probe,
+> 
+
+-- 
+Regards
+Vignesh
