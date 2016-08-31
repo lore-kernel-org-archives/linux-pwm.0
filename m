@@ -1,55 +1,41 @@
 From: Chen-Yu Tsai <wens@csie.org>
-Subject: Re: [PATCH v2 1/4] ARM: dts: sun8i: Add PWM pin in H3
-Date: Wed, 31 Aug 2016 16:33:26 +0800
-Message-ID: <CAGb2v66etp0AsYvs8n3MgBXehqV=kwkSnuq=Kt=aLtH4xvcDkA@mail.gmail.com>
-References: <20160831082520.25962-1-woogyom.kim@gmail.com> <20160831082520.25962-2-woogyom.kim@gmail.com>
+Subject: Re: [PATCH v2 3/4] pinctrl: sunxi: Remove unsupported PWM channel
+ pinmux in H3
+Date: Wed, 31 Aug 2016 16:35:07 +0800
+Message-ID: <CAGb2v66+oQxCKFuA1yMSW_N90VPu6GOdFXKUfO3DC6_u3JAfNQ@mail.gmail.com>
+References: <20160831082520.25962-1-woogyom.kim@gmail.com>
+ <20160831082520.25962-4-woogyom.kim@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160831082520.25962-2-woogyom.kim@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20160831082520.25962-4-woogyom.kim@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Milo Kim <woogyom.kim@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, Linus Walleij <linus.walleij@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, devicetree <devicetree@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, linux-pwm@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: devicetree <devicetree@vger.kernel.org>, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, linux-kernel <linux-kernel@vger.kernel.org>, Krzysztof Adamski <k@japko.eu>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Chen-Yu Tsai <wens@csie.org>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Icenowy Zheng <icenowy@aosc.xyz>, Maxime Ripard <maxime.ripard@free-electrons.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, Jens Kuske <jenskuske@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
 On Wed, Aug 31, 2016 at 4:25 PM, Milo Kim <woogyom.kim@gmail.com> wrote:
-> H3 PA5 pin is assigned for single PWM channel.
+> H3 has single PWM channel. The second PWM channel is not supported,
+> so the pinctrl function should be removed.
 >
-> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
 > Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
 > Cc: Chen-Yu Tsai <wens@csie.org>
-> Cc: devicetree@vger.kernel.org
+> Cc: Icenowy Zheng <icenowy@aosc.xyz>
+> Cc: Jens Kuske <jenskuske@gmail.com>
+> Cc: Krzysztof Adamski <k@japko.eu>
+> Cc: linux-gpio@vger.kernel.org
 > Cc: linux-arm-kernel@lists.infradead.org
 > Cc: linux-kernel@vger.kernel.org
 > Signed-off-by: Milo Kim <woogyom.kim@gmail.com>
-> ---
->  arch/arm/boot/dts/sun8i-h3.dtsi | 7 +++++++
->  1 file changed, 7 insertions(+)
->
-> diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi b/arch/arm/boot/dts/sun8i-h3.dtsi
-> index fdf9fdb..05d0c4b 100644
-> --- a/arch/arm/boot/dts/sun8i-h3.dtsi
-> +++ b/arch/arm/boot/dts/sun8i-h3.dtsi
-> @@ -360,6 +360,13 @@
->                                 allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
->                         };
->
-> +                       pwm0_pin_a: pwm0@0 {
 
-This is the only possible configuration. You can drop the _a suffix
-from the label, and @0 from the node name.
-
-ChenYu
-
-> +                               allwinner,pins = "PA5";
-> +                               allwinner,function = "pwm0";
-> +                               allwinner,drive = <SUN4I_PINCTRL_10_MA>;
-> +                               allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
-> +                       };
-> +
->                         uart0_pins_a: uart0@0 {
->                                 allwinner,pins = "PA4", "PA5";
->                                 allwinner,function = "uart0";
-> --
-> 2.9.3
->
+Acked-by: Chen-Yu Tsai <wens@csie.org>
