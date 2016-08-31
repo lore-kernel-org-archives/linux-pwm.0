@@ -1,71 +1,47 @@
 From: Milo Kim <woogyom.kim@gmail.com>
-Subject: [PATCH v2 4/4] pwm: sunxi: Add H3 support
-Date: Wed, 31 Aug 2016 17:25:20 +0900
-Message-ID: <20160831082520.25962-5-woogyom.kim@gmail.com>
+Subject: [PATCH v2 3/4] pinctrl: sunxi: Remove unsupported PWM channel pinmux in H3
+Date: Wed, 31 Aug 2016 17:25:19 +0900
+Message-ID: <20160831082520.25962-4-woogyom.kim@gmail.com>
 References: <20160831082520.25962-1-woogyom.kim@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pa0-f68.google.com ([209.85.220.68]:33343 "EHLO
+        mail-pa0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933371AbcHaI0J (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 31 Aug 2016 04:26:09 -0400
 In-Reply-To: <20160831082520.25962-1-woogyom.kim@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>, Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, Linus Walleij <linus.walleij@linaro.org>, Thierry Reding <thierry.reding@gmail.com>
-Cc: devicetree@vger.kernel.org, linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <woogyom.kim@gmail.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Rob Herring <robh+dt@kernel.org>, Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, Linus Walleij <linus.walleij@linaro.org>, Thierry Reding <thierry.reding@gmail.com>
+Cc: devicetree@vger.kernel.org, linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Milo Kim <woogyom.kim@gmail.com>, Icenowy Zheng <icenowy@aosc.xyz>, Jens Kuske <jenskuske@gmail.com>, Krzysztof Adamski <k@japko.eu>
 
-H3 PWM controller has same register layout as sun4i driver, so it works
-by adding H3 specific data.
+H3 has single PWM channel. The second PWM channel is not supported,
+so the pinctrl function should be removed.
 
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
 Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 Cc: Chen-Yu Tsai <wens@csie.org>
-Cc: linux-pwm@vger.kernel.org
-Cc: devicetree@vger.kernel.org
+Cc: Icenowy Zheng <icenowy@aosc.xyz>
+Cc: Jens Kuske <jenskuske@gmail.com>
+Cc: Krzysztof Adamski <k@japko.eu>
+Cc: linux-gpio@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Milo Kim <woogyom.kim@gmail.com>
 ---
- Documentation/devicetree/bindings/pwm/pwm-sun4i.txt | 1 +
- drivers/pwm/pwm-sun4i.c                             | 9 +++++++++
- 2 files changed, 10 insertions(+)
+ drivers/pinctrl/sunxi/pinctrl-sun8i-h3.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
-index cf6068b..f1cbeef 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
-@@ -6,6 +6,7 @@ Required properties:
-     - "allwinner,sun5i-a10s-pwm"
-     - "allwinner,sun5i-a13-pwm"
-     - "allwinner,sun7i-a20-pwm"
-+    - "allwinner,sun8i-h3-pwm"
-   - reg: physical base address and length of the controller's registers
-   - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
-     the cells format.
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 03a99a5..b0803f6 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -284,6 +284,12 @@ static const struct sun4i_pwm_data sun4i_pwm_data_a20 = {
- 	.npwm = 2,
- };
- 
-+static const struct sun4i_pwm_data sun4i_pwm_data_h3 = {
-+	.has_prescaler_bypass = true,
-+	.has_rdy = true,
-+	.npwm = 1,
-+};
-+
- static const struct of_device_id sun4i_pwm_dt_ids[] = {
- 	{
- 		.compatible = "allwinner,sun4i-a10-pwm",
-@@ -298,6 +304,9 @@ static const struct of_device_id sun4i_pwm_dt_ids[] = {
- 		.compatible = "allwinner,sun7i-a20-pwm",
- 		.data = &sun4i_pwm_data_a20,
- 	}, {
-+		.compatible = "allwinner,sun8i-h3-pwm",
-+		.data = &sun4i_pwm_data_h3,
-+	}, {
- 		/* sentinel */
- 	},
- };
+diff --git a/drivers/pinctrl/sunxi/pinctrl-sun8i-h3.c b/drivers/pinctrl/sunxi/pinctrl-sun8i-h3.c
+index 26a2ad3..518a92d 100644
+--- a/drivers/pinctrl/sunxi/pinctrl-sun8i-h3.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sun8i-h3.c
+@@ -60,7 +60,6 @@ static const struct sunxi_desc_pin sun8i_h3_pins[] = {
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "sim"),		/* PWREN */
+-		  SUNXI_FUNCTION(0x3, "pwm1"),
+ 		  SUNXI_FUNCTION_IRQ_BANK(0x6, 0, 6)),	/* PA_EINT6 */
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(A, 7),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
 -- 
 2.9.3
