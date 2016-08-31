@@ -1,91 +1,26 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: Re: [PATCH] pwm: pwm-tipwmss: Remove all pm_runtime gets and puts
- from the driver
-Date: Tue, 30 Aug 2016 10:18:35 +0530
-Message-ID: <5ec09503-e180-7b6a-b724-a80693896ab2@ti.com>
-References: <20160808100915.30149-1-vigneshr@ti.com>
+From: Hyung Jin Jung <realbright@lgcns.com>
+Subject: [PATCH] pwm/atmel-hlcdc: Add BACKLIGHT_PWM to config dependency
+Date: Wed, 31 Aug 2016 11:58:19 +0900
+Message-ID: <61FA15C5AEE1ED4E827ADEB50820C1443EB1819493@MAIL03.corp.lgcns.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([198.47.19.12]:48836 "EHLO arroyo.ext.ti.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750964AbcH3Esk (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 30 Aug 2016 00:48:40 -0400
-In-Reply-To: <20160808100915.30149-1-vigneshr@ti.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="ks_c_5601-1987"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Language: ko-KR
+Sender: linux-kernel-owner@vger.kernel.org
+To: "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Jyri Sarha <jsarha@ti.com>, Dave Gerlach <d-gerlach@ti.com>, linux-omap@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-
-
-On Monday 08 August 2016 03:39 PM, Vignesh R wrote:
-> From: Jyri Sarha <jsarha@ti.com>
-> 
-> Remove all pm_runtime gets and puts, and dummy pm_ops, from the
-> pwm-tipwmss driver as there is no direct hardware access. The runtime PM
-> needs to be enabled, so that the runtime PM framework takes care of
-> enabling/disabling of PWMSS clock when submodules of PWMSS (ECAP or
-> EHRPWM) call pm_runtime APIs. With this change PWMSS clock goes to
-> idle when none of the submodules are in use.
-> 
-> Signed-off-by: Jyri Sarha <jsarha@ti.com>
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> ---
-
-
-Gentle ping....
-
->  drivers/pwm/pwm-tipwmss.c | 19 -------------------
->  1 file changed, 19 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-tipwmss.c b/drivers/pwm/pwm-tipwmss.c
-> index 829f4991c96f..7fa85a1604da 100644
-> --- a/drivers/pwm/pwm-tipwmss.c
-> +++ b/drivers/pwm/pwm-tipwmss.c
-> @@ -34,7 +34,6 @@ static int pwmss_probe(struct platform_device *pdev)
->  	struct device_node *node = pdev->dev.of_node;
->  
->  	pm_runtime_enable(&pdev->dev);
-> -	pm_runtime_get_sync(&pdev->dev);
->  
->  	/* Populate all the child nodes here... */
->  	ret = of_platform_populate(node, NULL, NULL, &pdev->dev);
-> @@ -46,31 +45,13 @@ static int pwmss_probe(struct platform_device *pdev)
->  
->  static int pwmss_remove(struct platform_device *pdev)
->  {
-> -	pm_runtime_put_sync(&pdev->dev);
->  	pm_runtime_disable(&pdev->dev);
->  	return 0;
->  }
->  
-> -#ifdef CONFIG_PM_SLEEP
-> -static int pwmss_suspend(struct device *dev)
-> -{
-> -	pm_runtime_put_sync(dev);
-> -	return 0;
-> -}
-> -
-> -static int pwmss_resume(struct device *dev)
-> -{
-> -	pm_runtime_get_sync(dev);
-> -	return 0;
-> -}
-> -#endif
-> -
-> -static SIMPLE_DEV_PM_OPS(pwmss_pm_ops, pwmss_suspend, pwmss_resume);
-> -
->  static struct platform_driver pwmss_driver = {
->  	.driver	= {
->  		.name	= "pwmss",
-> -		.pm	= &pwmss_pm_ops,
->  		.of_match_table	= pwmss_of_match,
->  	},
->  	.probe	= pwmss_probe,
-> 
-
--- 
-Regards
-Vignesh
+YXRtZWwtaGxjZGMtcHdtIHdvcmtpbmcgd2l0aCBwd20tYmFja2xpZ2h0IHNvIHRoYXQgYWRkIGRl
+cGVuZGVuY3kgdG8gYXZvaWQgdXNlciBmYWx1dC4NCg0KU2lnbmVkLW9mZi1ieTogSHl1bmdKaW4g
+SnVuZyA8cmVhbGJyaWdodEBsZ2Nucy5jb20+DQotLS0NCiBkcml2ZXJzL3B3bS9LY29uZmlnIHwg
+MSArDQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspDQoNCmRpZmYgLS1naXQgYS9kcml2
+ZXJzL3B3bS9LY29uZmlnIGIvZHJpdmVycy9wd20vS2NvbmZpZw0KaW5kZXggODBhNTY2YS4uYjMy
+YjJjMSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvcHdtL0tjb25maWcNCisrKyBiL2RyaXZlcnMvcHdt
+L0tjb25maWcNCkBAIC01NCw2ICs1NCw3IEBAIGNvbmZpZyBQV01fQVRNRUxfSExDRENfUFdNDQog
+CXRyaXN0YXRlICJBdG1lbCBITENEQyBQV00gc3VwcG9ydCINCiAJZGVwZW5kcyBvbiBNRkRfQVRN
+RUxfSExDREMNCiAJZGVwZW5kcyBvbiBIQVZFX0NMSw0KKwlkZXBlbmRzIG9uIEJBQ0tMSUdIVF9Q
+V00NCiAJaGVscA0KIAkgIEdlbmVyaWMgUFdNIGZyYW1ld29yayBkcml2ZXIgZm9yIHRoZSBQV00g
+b3V0cHV0IG9mIHRoZSBITENEQw0KIAkgIChBdG1lbCBIaWdoLWVuZCBMQ0QgQ29udHJvbGxlciku
+IFRoaXMgUFdNIG91dHB1dCBpcyBtYWlubHkgdXNlZA0KLS0gDQoxLjkuMQ0K
