@@ -1,90 +1,88 @@
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH v2 1/4] ARM: dts: sun8i: Add PWM pin in H3
-Date: Wed, 31 Aug 2016 18:20:02 +0200
-Message-ID: <20160831162002.GI14379@lukather>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: Re: [PATCH v2 4/4] pwm: sunxi: Add H3 support
+Date: Thu, 1 Sep 2016 12:39:18 +0200
+Message-ID: <20160901103918.dphgrha7ega3752o@piout.net>
 References: <20160831082520.25962-1-woogyom.kim@gmail.com>
- <20160831082520.25962-2-woogyom.kim@gmail.com>
+ <20160831082520.25962-5-woogyom.kim@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="5LiOUhUlsRX0HDkW"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160831082520.25962-2-woogyom.kim@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Milo Kim <woogyom.kim@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>, Linus Walleij <linus.walleij@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
-
-
---5LiOUhUlsRX0HDkW
 Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from down.free-electrons.com ([37.187.137.238]:38808 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S932588AbcIAKja (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 1 Sep 2016 06:39:30 -0400
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20160831082520.25962-5-woogyom.kim@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
+To: Milo Kim <woogyom.kim@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, Linus Walleij <linus.walleij@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
-Hi Milo,
-
-On Wed, Aug 31, 2016 at 05:25:17PM +0900, Milo Kim wrote:
-> H3 PA5 pin is assigned for single PWM channel.
->=20
+On 31/08/2016 at 17:25:20 +0900, Milo Kim wrote :
+> H3 PWM controller has same register layout as sun4i driver, so it works
+> by adding H3 specific data.
+> 
+> Cc: Thierry Reding <thierry.reding@gmail.com>
 > Cc: Rob Herring <robh+dt@kernel.org>
 > Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
+> Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 > Cc: Chen-Yu Tsai <wens@csie.org>
+> Cc: linux-pwm@vger.kernel.org
 > Cc: devicetree@vger.kernel.org
 > Cc: linux-arm-kernel@lists.infradead.org
 > Cc: linux-kernel@vger.kernel.org
 > Signed-off-by: Milo Kim <woogyom.kim@gmail.com>
+Reviewed-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+
 > ---
->  arch/arm/boot/dts/sun8i-h3.dtsi | 7 +++++++
->  1 file changed, 7 insertions(+)
->=20
-> diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi b/arch/arm/boot/dts/sun8i-h3=
-=2Edtsi
-> index fdf9fdb..05d0c4b 100644
-> --- a/arch/arm/boot/dts/sun8i-h3.dtsi
-> +++ b/arch/arm/boot/dts/sun8i-h3.dtsi
-> @@ -360,6 +360,13 @@
->  				allwinner,pull =3D <SUN4I_PINCTRL_NO_PULL>;
->  			};
-> =20
-> +			pwm0_pin_a: pwm0@0 {
-> +				allwinner,pins =3D "PA5";
-> +				allwinner,function =3D "pwm0";
-> +				allwinner,drive =3D <SUN4I_PINCTRL_10_MA>;
-> +				allwinner,pull =3D <SUN4I_PINCTRL_NO_PULL>;
-> +			};
+>  Documentation/devicetree/bindings/pwm/pwm-sun4i.txt | 1 +
+>  drivers/pwm/pwm-sun4i.c                             | 9 +++++++++
+>  2 files changed, 10 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+> index cf6068b..f1cbeef 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+> @@ -6,6 +6,7 @@ Required properties:
+>      - "allwinner,sun5i-a10s-pwm"
+>      - "allwinner,sun5i-a13-pwm"
+>      - "allwinner,sun7i-a20-pwm"
+> +    - "allwinner,sun8i-h3-pwm"
+>    - reg: physical base address and length of the controller's registers
+>    - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
+>      the cells format.
+> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+> index 03a99a5..b0803f6 100644
+> --- a/drivers/pwm/pwm-sun4i.c
+> +++ b/drivers/pwm/pwm-sun4i.c
+> @@ -284,6 +284,12 @@ static const struct sun4i_pwm_data sun4i_pwm_data_a20 = {
+>  	.npwm = 2,
+>  };
+>  
+> +static const struct sun4i_pwm_data sun4i_pwm_data_h3 = {
+> +	.has_prescaler_bypass = true,
+> +	.has_rdy = true,
+> +	.npwm = 1,
+> +};
 > +
+>  static const struct of_device_id sun4i_pwm_dt_ids[] = {
+>  	{
+>  		.compatible = "allwinner,sun4i-a10-pwm",
+> @@ -298,6 +304,9 @@ static const struct of_device_id sun4i_pwm_dt_ids[] = {
+>  		.compatible = "allwinner,sun7i-a20-pwm",
+>  		.data = &sun4i_pwm_data_a20,
+>  	}, {
+> +		.compatible = "allwinner,sun8i-h3-pwm",
+> +		.data = &sun4i_pwm_data_h3,
+> +	}, {
+>  		/* sentinel */
+>  	},
+>  };
+> -- 
+> 2.9.3
+> 
 
-Is it used on any boards?
-
-If not, we have the policy of not merging the pinctrl nodes that are
-not used by anyone to avoid bloating the DT for no particular reason.
-
-Maxime
-
---=20
-Maxime Ripard, Free Electrons
+-- 
+Alexandre Belloni, Free Electrons
 Embedded Linux and Kernel engineering
 http://free-electrons.com
-
---5LiOUhUlsRX0HDkW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJXxwOyAAoJEBx+YmzsjxAgZMoP/1O0ZF37IA20Go5n0MZxA/yw
-r86DSQ7NLprXdtaJ8L6C8RrgSruwiPyHlFrPl6i7v4qsxIe8bYungEZhbkQ4jdkJ
-4benjUJIqjB3p/aQUDZKM/ZA82rxO/agyIAbM4Fad3/7UdOulLzUUHizjCQRrqxS
-NWF44R+PI8c6IBMBrBbUadooc17eZ7Xps+P2UUuT5uLJ7AGd6f5bD3qpP2dopx7K
-wXmoElVQp2686IItnVT/BOUWax9c8XEV7tddET0+0TMa4+q2PEPXSTA9BO6UoOn4
-5X7XHuYvSKFL9D4T0oNuIMfIzA8Z9y0HgNa/Y6OwDUwTvp6fLzK2LVNXe2Zoojaq
-aQtu/jwdxHF0qgpGTNe5ZO2P9BxoLlP3jPjJXMW99Y+hKeNielKE8Qs3b29/RvrL
-smok0LTqq2YdfsYdD8aFjISAvo4MoLKbBxRLL5iC8QOCJAFgmdeJ7Ojrn/yFxrNa
-czcvWjFGAgWZ5+CYaBzQNlmje/nkIMsMtcVeojnQ/u19f8hbykD6lNI14OPLm3mK
-kh6X/thuw6pCdngNvIvm1AzkM+9coqBd7j0RYWqXX0nmcemgdhpOxTiDcbe/eHwC
-1UpDL4VeJY/UVOYIOMXuwpChZuEq+OiAKEhefAnHSuE1YFvoH5UaM9L6mFqgL5wH
-O2pUHDeUMtvJgVEPkUaT
-=ZJMN
------END PGP SIGNATURE-----
-
---5LiOUhUlsRX0HDkW--
