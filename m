@@ -1,40 +1,78 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 4/4] pwm: sunxi: Add H3 support
-Date: Fri, 2 Sep 2016 10:18:05 -0500
-Message-ID: <20160902151805.GA26806@rob-hp-laptop>
-References: <20160831082520.25962-1-woogyom.kim@gmail.com>
- <20160831082520.25962-5-woogyom.kim@gmail.com>
+From: Ariel D'Alessandro <ariel@vanguardiasur.com.ar>
+Subject: Re: [PATCHv2] pwm: lpc-18xx: use pwm_set_chip_data
+Date: Fri, 2 Sep 2016 13:07:52 -0300
+Message-ID: <30dc5bbd-8005-7bb1-1b72-9c40510d1b07@vanguardiasur.com.ar>
+References: <1472143629-29890-1-git-send-email-oliver@schinagl.nl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160831082520.25962-5-woogyom.kim-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Milo Kim <woogyom.kim-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-qk0-f176.google.com ([209.85.220.176]:34279 "EHLO
+        mail-qk0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932467AbcIBQHx (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 2 Sep 2016 12:07:53 -0400
+Received: by mail-qk0-f176.google.com with SMTP id t7so123735171qkh.1
+        for <linux-pwm@vger.kernel.org>; Fri, 02 Sep 2016 09:07:53 -0700 (PDT)
+In-Reply-To: <1472143629-29890-1-git-send-email-oliver@schinagl.nl>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Olliver Schinagl <oliver@schinagl.nl>, Thierry Reding <thierry.reding@gmail.com>, Ariel D'Alessandro <ariel@vanguardiasur.com>
+Cc: linux-pwm@vger.kernel.org, Joachim Eastwood <manabian@gmail.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Wed, Aug 31, 2016 at 05:25:20PM +0900, Milo Kim wrote:
-> H3 PWM controller has same register layout as sun4i driver, so it works
-> by adding H3 specific data.
+Hi Olliver,
+
+On 08/25/2016 01:47 PM, Olliver Schinagl wrote:
+> The lpc18xx driver currently manipulates the pwm_device struct directly
+> rather then using the pwm_set_chip_data. While the current method may
+> save a clock cycle or two, it is more obvious that data is set to
+> the local chip data pointer.
 > 
-> Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Cc: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-> Cc: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-> Cc: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-> Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Signed-off-by: Milo Kim <woogyom.kim-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-sun4i.txt | 1 +
->  drivers/pwm/pwm-sun4i.c                             | 9 +++++++++
->  2 files changed, 10 insertions(+)
+> Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
+Reviewed-by: Ariel D'Alessandro <ariel@vanguardiasur.com.ar>
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> ---
+> Hi,
+> 
+> This is a resend of a patch-series I sent last year. There was no technical
+> related feedback and so I am re-sending the patch as is. I did rebase it to
+> Linus's current master.
+> 
+> Changes since v1:
+> 	- removed wrongfully added sun4i patch
+> 	- split patch series into a single patch
+> 	- added author
+> 
+>  drivers/pwm/pwm-lpc18xx-sct.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
+> index 19dc64c..a630fc5 100644
+> --- a/drivers/pwm/pwm-lpc18xx-sct.c
+> +++ b/drivers/pwm/pwm-lpc18xx-sct.c
+> @@ -413,14 +413,17 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	for (i = 0; i < lpc18xx_pwm->chip.npwm; i++) {
+> +		struct lpc18xx_pwm_data *lpc18xx_data;
+> +
+>  		pwm = &lpc18xx_pwm->chip.pwms[i];
+> -		pwm->chip_data = devm_kzalloc(lpc18xx_pwm->dev,
+> -					      sizeof(struct lpc18xx_pwm_data),
+> -					      GFP_KERNEL);
+> -		if (!pwm->chip_data) {
+> +		lpc18xx_data = devm_kzalloc(lpc18xx_pwm->dev,
+> +					    sizeof(struct lpc18xx_pwm_data),
+> +					    GFP_KERNEL);
+> +		if (!lpc18xx_data) {
+>  			ret = -ENOMEM;
+>  			goto remove_pwmchip;
+>  		}
+> +		pwm_set_chip_data(pwm, lpc18xx_data);
+>  	}
+>  
+>  	platform_set_drvdata(pdev, lpc18xx_pwm);
+> 
+
+-- 
+Ariel D'Alessandro, VanguardiaSur
+www.vanguardiasur.com.ar
