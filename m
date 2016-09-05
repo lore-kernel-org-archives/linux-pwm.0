@@ -1,78 +1,83 @@
-From: Ariel D'Alessandro <ariel@vanguardiasur.com.ar>
-Subject: Re: [PATCHv2] pwm: lpc-18xx: use pwm_set_chip_data
-Date: Fri, 2 Sep 2016 13:07:52 -0300
-Message-ID: <30dc5bbd-8005-7bb1-1b72-9c40510d1b07@vanguardiasur.com.ar>
-References: <1472143629-29890-1-git-send-email-oliver@schinagl.nl>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] pwm: twl: Reliably disable TWL6030 PWMs
+Date: Mon, 5 Sep 2016 07:14:46 +0200
+Message-ID: <20160905051446.GA3532@ulmo.ba.sec>
+References: <1459277745-16878-1-git-send-email-contact@paulk.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="d6Gm4EdcadzBjdND"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qk0-f176.google.com ([209.85.220.176]:34279 "EHLO
-        mail-qk0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932467AbcIBQHx (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 2 Sep 2016 12:07:53 -0400
-Received: by mail-qk0-f176.google.com with SMTP id t7so123735171qkh.1
-        for <linux-pwm@vger.kernel.org>; Fri, 02 Sep 2016 09:07:53 -0700 (PDT)
-In-Reply-To: <1472143629-29890-1-git-send-email-oliver@schinagl.nl>
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:33762 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754341AbcIEFOu (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 5 Sep 2016 01:14:50 -0400
+Content-Disposition: inline
+In-Reply-To: <1459277745-16878-1-git-send-email-contact@paulk.fr>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Olliver Schinagl <oliver@schinagl.nl>, Thierry Reding <thierry.reding@gmail.com>, Ariel D'Alessandro <ariel@vanguardiasur.com>
-Cc: linux-pwm@vger.kernel.org, Joachim Eastwood <manabian@gmail.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Paul Kocialkowski <contact@paulk.fr>
+Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Tony Lindgren <tony@atomide.com>, linux-omap@vger.kernel.org
 
-Hi Olliver,
 
-On 08/25/2016 01:47 PM, Olliver Schinagl wrote:
-> The lpc18xx driver currently manipulates the pwm_device struct directly
-> rather then using the pwm_set_chip_data. While the current method may
-> save a clock cycle or two, it is more obvious that data is set to
-> the local chip data pointer.
-> 
-> Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
-Reviewed-by: Ariel D'Alessandro <ariel@vanguardiasur.com.ar>
+--d6Gm4EdcadzBjdND
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, Mar 29, 2016 at 08:55:45PM +0200, Paul Kocialkowski wrote:
+> The current TWL6030 code for the TWL PWM driver does not reliably disable=
+ the
+> PWM output, as tested with LEDs. The previous commit to that driver intro=
+duced
+> that regression.
+>=20
+> However, it does make sense to disable the PWM clock after resetting the =
+PWM,
+> but for some obscure reason, doing it all at once simply doesn't work.
+>=20
+> The TWL6030 datasheet mentions that PWMs have to be disabled in two disti=
+nct
+> steps. However, clearing the clock enable bit in a second step (after iss=
+uing a
+> reset first) does not work.
+>=20
+> The only approach that works is the one that was in place before the prev=
+ious
+> commit to the driver. It consists in enabling the PWM clock after issuing=
+ a
+> reset. This is what TI kernel trees and production code seem to be using.
+>=20
+> However, adding an extra step to disable the PWM clock seems to work reli=
+ably,
+> despite looking quite odd.
+>=20
+> Signed-off-by: Paul Kocialkowski <contact@paulk.fr>
 > ---
-> Hi,
-> 
-> This is a resend of a patch-series I sent last year. There was no technical
-> related feedback and so I am re-sending the patch as is. I did rebase it to
-> Linus's current master.
-> 
-> Changes since v1:
-> 	- removed wrongfully added sun4i patch
-> 	- split patch series into a single patch
-> 	- added author
-> 
->  drivers/pwm/pwm-lpc18xx-sct.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-lpc18xx-sct.c b/drivers/pwm/pwm-lpc18xx-sct.c
-> index 19dc64c..a630fc5 100644
-> --- a/drivers/pwm/pwm-lpc18xx-sct.c
-> +++ b/drivers/pwm/pwm-lpc18xx-sct.c
-> @@ -413,14 +413,17 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
->  	}
->  
->  	for (i = 0; i < lpc18xx_pwm->chip.npwm; i++) {
-> +		struct lpc18xx_pwm_data *lpc18xx_data;
-> +
->  		pwm = &lpc18xx_pwm->chip.pwms[i];
-> -		pwm->chip_data = devm_kzalloc(lpc18xx_pwm->dev,
-> -					      sizeof(struct lpc18xx_pwm_data),
-> -					      GFP_KERNEL);
-> -		if (!pwm->chip_data) {
-> +		lpc18xx_data = devm_kzalloc(lpc18xx_pwm->dev,
-> +					    sizeof(struct lpc18xx_pwm_data),
-> +					    GFP_KERNEL);
-> +		if (!lpc18xx_data) {
->  			ret = -ENOMEM;
->  			goto remove_pwmchip;
->  		}
-> +		pwm_set_chip_data(pwm, lpc18xx_data);
->  	}
->  
->  	platform_set_drvdata(pdev, lpc18xx_pwm);
-> 
+>  drivers/pwm/pwm-twl.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
 
--- 
-Ariel D'Alessandro, VanguardiaSur
-www.vanguardiasur.com.ar
+Applied, thanks.
+
+Thierry
+
+--d6Gm4EdcadzBjdND
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAABCAAGBQJXzP9EAAoJEN0jrNd/PrOhJZ0P/RknLyUbkHObwQVEmFqTfokE
+z6s982doQrscQLej9/hlBMtF/PG5DdDNC736bmEaU6r7RnWcK8/qlaheRql5wE2X
+eOMWB0EIS91WzYQrlCSwpv+Sj/1BKFOgka30JsNDGGtsrwA+57RsgKMONqeFg+ST
+AljzbqNlVSFqZCBwR9mVL/OAB3rtrTVX86afkVru04AyJBxdXgnRm69mlOFYUh4L
+lrVJNUPrmaDUVv8uX7/lBKV33DqEdO2x4d75Z1Wojq9eOiqOLYr/GyRmwJtwynvS
+Baqmmfru6L1gMxVn+gB/8h+pcoyzoTDU5OBJGWh7uXgDdFdYr79nX+OYwGB+a4Xx
+eWfC+111NW4D2gfUSFKg9MruExt2M9IwjFlga+wqKNk4S/i5a/16Qf6isHbR/+6k
+nAcbIA5L3DL//fl1lnawUU/HJjcW0EE3Wchp3x4n1w+OZxgtBEYNxpH5j19WhuLU
+GwKC/8AMqOecSemund1C3LaQ9xLxhR1yGrbQme1Jggvi3GwEqItRHEasmzhw0CMi
+buXDpHmaeiQ4uLeTi/tdm4ADtLTDrLDQGCyBPA9/bWTy5+BqW+pzgr4pkp65bkyu
+6H54iKJY7Y4OfKjKpyXc5MpmY4IcTJERAVa8LqO/rLP1YZTOlOhELpcSbVsvl+Jp
+bUBp1ZC8Yoce9dW1FzS8
+=ia8M
+-----END PGP SIGNATURE-----
+
+--d6Gm4EdcadzBjdND--
