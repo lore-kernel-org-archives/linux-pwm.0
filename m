@@ -1,65 +1,86 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: pwm-tipwmss: Remove all pm_runtime gets and puts
- from the driver
-Date: Mon, 5 Sep 2016 08:51:09 +0200
-Message-ID: <20160905065109.GE3532@ulmo.ba.sec>
-References: <20160808100915.30149-1-vigneshr@ti.com>
+Subject: Re: [PATCH v2] pwm: samsung: fix to use lowest div for large enough
+ modulation bits
+Date: Mon, 5 Sep 2016 08:53:08 +0200
+Message-ID: <20160905065308.GF3532@ulmo.ba.sec>
+References: <1470133006-4272-1-git-send-email-sw0312.kim@samsung.com>
+ <20160816142201.12672-1-sw0312.kim@samsung.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="5oH/S/bF6lOfqCQb"
+        protocol="application/pgp-signature"; boundary="dgjlcl3Tl+kb3YDk"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160808100915.30149-1-vigneshr@ti.com>
+In-Reply-To: <20160816142201.12672-1-sw0312.kim@samsung.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vignesh R <vigneshr@ti.com>
-Cc: Jyri Sarha <jsarha@ti.com>, Dave Gerlach <d-gerlach@ti.com>, linux-omap@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Seung-Woo Kim <sw0312.kim@samsung.com>
+Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, k.kozlowski@samsung.com, linux-pwm@vger.kernel.org, tomasz.figa@gmail.com, jy0922.shim@samsung.com, krzk@kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---5oH/S/bF6lOfqCQb
+--dgjlcl3Tl+kb3YDk
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 08, 2016 at 03:39:15PM +0530, Vignesh R wrote:
-> From: Jyri Sarha <jsarha@ti.com>
+On Tue, Aug 16, 2016 at 11:22:01PM +0900, Seung-Woo Kim wrote:
+> From pwm_samsung_calc_tin(), there is routine to find the lowest
+> divider possible to generate lower frequency than requested one.
+> But it is always possible to generate requested frequency with
+> large enough modulation bits except s3c24xx, so this patch fixes
+> to use lowest div for the case. This patch removes following UBSAN
+> warning:
 >=20
-> Remove all pm_runtime gets and puts, and dummy pm_ops, from the
-> pwm-tipwmss driver as there is no direct hardware access. The runtime PM
-> needs to be enabled, so that the runtime PM framework takes care of
-> enabling/disabling of PWMSS clock when submodules of PWMSS (ECAP or
-> EHRPWM) call pm_runtime APIs. With this change PWMSS clock goes to
-> idle when none of the submodules are in use.
+>    UBSAN: Undefined behaviour in drivers/pwm/pwm-samsung.c:197:13
+>    shift exponent 32 is too large for 32-bit type 'long unsigned int'
+>    [...]
+>    [<c0670248>] (ubsan_epilogue) from [<c06707b4>] (__ubsan_handle_shift_=
+out_of_bounds+0xd8/0x120)
+>    [<c06707b4>] (__ubsan_handle_shift_out_of_bounds) from [<c0694b28>] (p=
+wm_samsung_config+0x508/0x6a4)
+>    [<c0694b28>] (pwm_samsung_config) from [<c069286c>] (pwm_apply_state+0=
+x174/0x40c)
+>    [<c069286c>] (pwm_apply_state) from [<c0b2e070>] (pwm_fan_probe+0xc8/0=
+x488)
+>    [<c0b2e070>] (pwm_fan_probe) from [<c07ba8b0>] (platform_drv_probe+0x7=
+0/0x150)
+>    [...]
 >=20
-> Signed-off-by: Jyri Sarha <jsarha@ti.com>
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> Cc: Tomasz Figa <tomasz.figa@gmail.com>
+> Signed-off-by: Seung-Woo Kim <sw0312.kim@samsung.com>
 > ---
->  drivers/pwm/pwm-tipwmss.c | 19 -------------------
->  1 file changed, 19 deletions(-)
+> Changes from v1
+>  * Remove too complex condition, instead, just checking simple variant->b=
+its as Krzysztof's suggestion
+>  * Add comment from Tomasz
+>=20
+> The UBSAN warning from ARM is reported with the patch in following link:
+> https://patchwork.kernel.org/patch/9189575/
+> ---
+>  drivers/pwm/pwm-samsung.c | 15 ++++++++++++---
+>  1 file changed, 12 insertions(+), 3 deletions(-)
 
-Applied, with a slightly modified commit message.
+Applied, thanks.
 
-Thanks,
 Thierry
 
---5oH/S/bF6lOfqCQb
+--dgjlcl3Tl+kb3YDk
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAABCAAGBQJXzRXdAAoJEN0jrNd/PrOh5pIP/A2HAy2srZRO/Q+nsChB2nyp
-ciWfGBXXdh2Y6swndxGM42wTfjhdoJGkmCCReH/cIUgghSLIaZNu0C6oh1zRwMoz
-2QHAlmj+ig/z/eRHrbLGzo4H6BPzpQCt/z99FTb93dOdW/ElXDFy0q82zbTJUqPV
-HvG3prxl3pYYvVuv3k2/8Nb/mgB/LkTRNVmlXd7Oska1nwAHjxyySpen8QGiITQm
-4B8RPyoDBNknpadqIc0jmJMdFdlvg+oR3FGN6oYAm/IPCOl5WmZY98s7Z1BSrZg0
-qP6rQHNbBGj0AJUhJDoxYeeXqPWIy7k5NsrP6sFWF81FnYL8PhkwF8d1JOImNlxq
-ZXjJqRJkwUUyK7yRQiZXgFFVI3KYV2eQO76k2eIQwpSB4nH2MESd2Jl5jNrfH+AZ
-9R80Q4CTg0Gf0PLn9Hfwbuqm7juJXAFR/ntYnDA4CgGQW4AXHqyd5m2JGCVLgqtl
-tctGLIY98ROkn0yq5VIYZODUoZRO0vaXhhP32ISQAec7Bs0PObqTl0XviL/160M9
-gI6J6Yu75uwT3Y/v6QDA4IkZppsPIgLsR9np2cq9lJhYXFN7Kjj0tbxWwy2+jP3E
-YjbX7MJPJfrxptNaiJaGl440A0w5LlmHxbASSRnL3zNMq+8sm0Z7kUSswwyVT1ZD
-/98OZQxnja28nqD9sB2g
-=Sg+8
+iQIcBAABCAAGBQJXzRZTAAoJEN0jrNd/PrOhy0MP/iNFo2S9DN5FZz18UDVpfehU
+aUrK7PVUW0/Fk9D9k0U2bhijQGGHeR013fNNDU5h6JD1/hfef8Y6Xwa/0upGujP3
+fXDXCF6vXiTRw5zOlDnXoTKuCm05pZ42Jrc3kDM4gVDaK+seHUE0+j/9+RDTAXML
++3lshQpshu8bUTkmDMMJIUO/kEVyD6G9u6VhZdGR7mSgvGJxBFAEFlmce9damPcQ
+cmgI5BpIKtLlEkea5mWtZbYgDVtvlF4rpcBqIU8R9C765C/060xPiDcb8Q9Xc1o7
+glRprbpE/7QEl+GuqNLToReeb/ig4uEaoera9F2kgkkxAdloNV8v8OtcOKhPi7eK
+oL5iKh5lIzXBmUdxcEj7tEvAGfdikqIjXrV6uE1sadYb+mq9y0Y192IMMT87dmHC
+HYSJa9lPRaWQVNOcIS2qZfTualvdadQ/wzDfLnK2eMrxIJMK3gmcWLRRUHCs2g1U
+++QKfJV3UhuA/oku6MGehVayAXCgzNEKX0zddXt3Kl3kqFzjy4Ai/xWI+AvPB4sF
+9/lhB2DOzg9s5OPhwmJ/GQnWVRo7QjXJLoVwRQ7eRd5rX4T5RENWqBVD9Hj8vkUv
+hCIlH1A3Ovv+VPcQ3vfNFP9ZNnqdDo8VhqhXuPrZRfWWf8k3Dat1SAWe9gACuuda
+oA//igqEGTP2KY0QTatM
+=ypi0
 -----END PGP SIGNATURE-----
 
---5oH/S/bF6lOfqCQb--
+--dgjlcl3Tl+kb3YDk--
