@@ -1,71 +1,76 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2 4/4] pwm: sunxi: Add H3 support
-Date: Mon, 5 Sep 2016 12:09:19 +0200
-Message-ID: <20160905100919.GD31424@ulmo.ba.sec>
-References: <20160831082520.25962-1-woogyom.kim@gmail.com>
- <20160831082520.25962-5-woogyom.kim@gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCHv2] pwm: lpc-18xx: use pwm_set_chip_data
+Date: Mon, 5 Sep 2016 12:15:09 +0200
+Message-ID: <20160905101509.GE31424@ulmo.ba.sec>
+References: <1472143629-29890-1-git-send-email-oliver@schinagl.nl>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="T7mxYSe680VjQnyC"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+        protocol="application/pgp-signature"; boundary="CGDBiGfvSTbxKZlW"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:34593 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932835AbcIEKPN (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 5 Sep 2016 06:15:13 -0400
 Content-Disposition: inline
-In-Reply-To: <20160831082520.25962-5-woogyom.kim-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Milo Kim <woogyom.kim-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+In-Reply-To: <1472143629-29890-1-git-send-email-oliver@schinagl.nl>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Olliver Schinagl <oliver@schinagl.nl>
+Cc: Ariel D'Alessandro <ariel@vanguardiasur.com>, Joachim Eastwood <manabian@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
 
---T7mxYSe680VjQnyC
+--CGDBiGfvSTbxKZlW
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 31, 2016 at 05:25:20PM +0900, Milo Kim wrote:
-> H3 PWM controller has same register layout as sun4i driver, so it works
-> by adding H3 specific data.
+On Thu, Aug 25, 2016 at 06:47:09PM +0200, Olliver Schinagl wrote:
+> The lpc18xx driver currently manipulates the pwm_device struct directly
+> rather then using the pwm_set_chip_data. While the current method may
+> save a clock cycle or two, it is more obvious that data is set to
+> the local chip data pointer.
 >=20
-> Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Cc: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-> Cc: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-> Cc: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-> Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Signed-off-by: Milo Kim <woogyom.kim-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
 > ---
->  Documentation/devicetree/bindings/pwm/pwm-sun4i.txt | 1 +
->  drivers/pwm/pwm-sun4i.c                             | 9 +++++++++
->  2 files changed, 10 insertions(+)
+> Hi,
+>=20
+> This is a resend of a patch-series I sent last year. There was no technic=
+al
+> related feedback and so I am re-sending the patch as is. I did rebase it =
+to
+> Linus's current master.
+>=20
+> Changes since v1:
+> 	- removed wrongfully added sun4i patch
+> 	- split patch series into a single patch
+> 	- added author
+>=20
+>  drivers/pwm/pwm-lpc18xx-sct.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
 
-Applied, thanks.
+Applied with minor bikeshedding.
 
+Thanks,
 Thierry
 
---T7mxYSe680VjQnyC
+--CGDBiGfvSTbxKZlW
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAABCAAGBQJXzUROAAoJEN0jrNd/PrOhexEP/R7Q5H3A6p3e637LK75PQ7a8
-UTIbIWNaW9OL0j/3u3HY7qRxcSdmtySgp3r8fsYryciw1d0a3WTFB+K3c99YFxtd
-Hiibc8GOvMAJ2yfPldhnbxnGRBG/xkWjMUCQEmncO7XrZclr/QUymGmsXJptTJiZ
-JTGfK26PWt3wyaD8fKwhIlAbiJ2/oJYcdnri9fY+IrfLYxJHbdTdsvnyy16cNfSR
-eeWHyPtVY9UEQTLvhDbkTwvBYGCbBKnUYPQu6ba89kM8PTXlofpyCFWjHGG8NYFJ
-gbipmp/s2YQHxDmZydvBxa6g9SmWAgnMppOozNr0rbI+iSn3e2Ct/h03d2uVkzMY
-7GVacz5wMKQDR+xqwGh5Jsb2HZnAXOpbKjKemBU/IPANPHHLXkGEbYh6WpWfciXz
-Cq5A+NgAohSXl67uM/R5VUMAPMz40pE+w1UjppJ+nDFrPbkZo3q7YHHwcCm5HQoX
-g4WDkRcxOKFTMBlyK3yiE+8PTpPpUsGKrOWIame7uyxky7XTc8fvvNrEIvGKjXjO
-DHgnWYz89YWdJ/+GedYBLK6nifKb53tyCgF/9Yh/dDgU7xsFDPVQNPmiLQA4WhBa
-foPsBnTeTMCc/UYdwP0kPHEJh6em8khlPahMHatFbjY0A+VPOwfaBk9dMla3o6Hy
-tNoNBKwR5VmBYmtbTdXO
-=J2jr
+iQIcBAABCAAGBQJXzUWtAAoJEN0jrNd/PrOhK7wQAJ0Cuxu9OidSdSv0SmoCpbIg
+VXY+0XoDd6yLIYMRxZiR/HIgB+qZ2x7kgriLwL4o+iQf6sOAvwR4GB7SVMP7wSdh
+sBEOAwInt6SaoV5Mf/Vm1OrrzUTYfyoZSvoc5TVjhD7nANYiUcqET+O7BXORqEFI
+roiMWunoH2fxvN8Hhgr+02bW6CmTJ7mu/8GOyWetX26HzQUeuvAiumk9ZmZIrvXL
+f2jeHK3kaXgAnIH9Y3C5fIcbBcx9VszCBXMiiMngjdRYzNMwjZwT2OW9wYzPA4PC
+mPQRyRHDqF834uWah72E7346AEpKKEX7pLo4ZNlFf3JA3s2Q9spZxPCHJX1x0pMM
+wc5cHq637kPAi+LDbAaJP7anYvJjeWTsmlkj9AFmqIQB32r/VOS36V1JI47dN+ae
+EL1ll/yrSlPUUWZhLpTBdNwfEZKM7wnWSbA1R8s5V4ARDU2v7UbW+K+Sg6cxuHUo
+pXrQpgliIYDZZQsmMQyVcE2JtJiXRg/6WM0vDVWT66+vBE8pBPH7dd9//b9uhXof
+tF27lMMw/mG1gT4TwKYL2jnWvZ4Qqxd4ZvUJsQ/b0erOMWJGgXMUQzcW3pU6Ylnf
+9nHrL6d9uROfNi2sIJtKPfOn3EgtIf58GGAxwWQkaKZhC1qoGXXZLKquhWkbA4jm
+7s+aecMYT0ycBL89hMgj
+=kyQf
 -----END PGP SIGNATURE-----
 
---T7mxYSe680VjQnyC--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--CGDBiGfvSTbxKZlW--
