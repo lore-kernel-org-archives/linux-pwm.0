@@ -1,83 +1,69 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: twl: Reliably disable TWL6030 PWMs
-Date: Mon, 5 Sep 2016 07:14:46 +0200
-Message-ID: <20160905051446.GA3532@ulmo.ba.sec>
-References: <1459277745-16878-1-git-send-email-contact@paulk.fr>
+Subject: Re: [PATCH v2] pwm: berlin: Add PM support
+Date: Mon, 5 Sep 2016 07:32:37 +0200
+Message-ID: <20160905053237.GB3532@ulmo.ba.sec>
+References: <1448444485-4857-1-git-send-email-jszhang@marvell.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="d6Gm4EdcadzBjdND"
+        protocol="application/pgp-signature"; boundary="TakKZr9L6Hm6aLOc"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f65.google.com ([74.125.82.65]:33762 "EHLO
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:34989 "EHLO
         mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754341AbcIEFOu (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 5 Sep 2016 01:14:50 -0400
+        with ESMTP id S1750776AbcIEFcm (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 5 Sep 2016 01:32:42 -0400
 Content-Disposition: inline
-In-Reply-To: <1459277745-16878-1-git-send-email-contact@paulk.fr>
+In-Reply-To: <1448444485-4857-1-git-send-email-jszhang@marvell.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Paul Kocialkowski <contact@paulk.fr>
-Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Tony Lindgren <tony@atomide.com>, linux-omap@vger.kernel.org
+To: Jisheng Zhang <jszhang@marvell.com>
+Cc: sebastian.hesselbarth@gmail.com, antoine.tenart@free-electrons.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
 
---d6Gm4EdcadzBjdND
+--TakKZr9L6Hm6aLOc
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 29, 2016 at 08:55:45PM +0200, Paul Kocialkowski wrote:
-> The current TWL6030 code for the TWL PWM driver does not reliably disable=
- the
-> PWM output, as tested with LEDs. The previous commit to that driver intro=
-duced
-> that regression.
+On Wed, Nov 25, 2015 at 05:41:25PM +0800, Jisheng Zhang wrote:
+> This patch adds S2R support for berlin pwm driver.
 >=20
-> However, it does make sense to disable the PWM clock after resetting the =
-PWM,
-> but for some obscure reason, doing it all at once simply doesn't work.
->=20
-> The TWL6030 datasheet mentions that PWMs have to be disabled in two disti=
-nct
-> steps. However, clearing the clock enable bit in a second step (after iss=
-uing a
-> reset first) does not work.
->=20
-> The only approach that works is the one that was in place before the prev=
-ious
-> commit to the driver. It consists in enabling the PWM clock after issuing=
- a
-> reset. This is what TI kernel trees and production code seem to be using.
->=20
-> However, adding an extra step to disable the PWM clock seems to work reli=
-ably,
-> despite looking quite odd.
->=20
-> Signed-off-by: Paul Kocialkowski <contact@paulk.fr>
+> Signed-off-by: Jisheng Zhang <jszhang@marvell.com>
 > ---
->  drivers/pwm/pwm-twl.c | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
+> Since v1:
+>  - implement .request and .free hooks, allocate/free the channel in
+>    berlin_pwm_request/berlin_pwm_free. Then use pwm_get_chip_data in
+>    suspend/resume implementation.
+>  - s/int/unsigned int
+>  - check return value of clk_prepare_enable
+>  - remoev BERLIN_PWM_PM_OPS macro
+>  drivers/pwm/pwm-berlin.c | 90 ++++++++++++++++++++++++++++++++++++++++++=
++++++-
+>  1 file changed, 89 insertions(+), 1 deletion(-)
 
-Applied, thanks.
+Sorry, I had completely missed this. Applied now, with some minor
+stylistic changes.
 
+Thanks,
 Thierry
 
---d6Gm4EdcadzBjdND
+--TakKZr9L6Hm6aLOc
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAABCAAGBQJXzP9EAAoJEN0jrNd/PrOhJZ0P/RknLyUbkHObwQVEmFqTfokE
-z6s982doQrscQLej9/hlBMtF/PG5DdDNC736bmEaU6r7RnWcK8/qlaheRql5wE2X
-eOMWB0EIS91WzYQrlCSwpv+Sj/1BKFOgka30JsNDGGtsrwA+57RsgKMONqeFg+ST
-AljzbqNlVSFqZCBwR9mVL/OAB3rtrTVX86afkVru04AyJBxdXgnRm69mlOFYUh4L
-lrVJNUPrmaDUVv8uX7/lBKV33DqEdO2x4d75Z1Wojq9eOiqOLYr/GyRmwJtwynvS
-Baqmmfru6L1gMxVn+gB/8h+pcoyzoTDU5OBJGWh7uXgDdFdYr79nX+OYwGB+a4Xx
-eWfC+111NW4D2gfUSFKg9MruExt2M9IwjFlga+wqKNk4S/i5a/16Qf6isHbR/+6k
-nAcbIA5L3DL//fl1lnawUU/HJjcW0EE3Wchp3x4n1w+OZxgtBEYNxpH5j19WhuLU
-GwKC/8AMqOecSemund1C3LaQ9xLxhR1yGrbQme1Jggvi3GwEqItRHEasmzhw0CMi
-buXDpHmaeiQ4uLeTi/tdm4ADtLTDrLDQGCyBPA9/bWTy5+BqW+pzgr4pkp65bkyu
-6H54iKJY7Y4OfKjKpyXc5MpmY4IcTJERAVa8LqO/rLP1YZTOlOhELpcSbVsvl+Jp
-bUBp1ZC8Yoce9dW1FzS8
-=ia8M
+iQIcBAABCAAGBQJXzQNzAAoJEN0jrNd/PrOhR6UP/iQExK/VJCrH2X5PnBKknwQH
+oe4WDvgvxYCz/MxH857RbvCQ9iQmQxeUIl6OodkCamRaXJr5vrKihTlCAe85U1oa
+4D5Tp+8a3+2VGOczeEJlQlCaBHOqVDWXl0DDfAlINdOGGcLZnJQPmKMHULqaEezk
+2m4BcEyWhnVKa66MuD7ThiqEPxAnW1ux1COd4B86gBJi45kbRhX4MT37wtJGhpkR
+ywQwpbJd/ljcM0fHGM+iUyk5xWxtpQzcQVgKuzMB1+nmyrs7KEOITmRjvfoo2JKP
+tLWZfzp7jXx27XW08wasBtRV5zs3SrvFd2peSgKEkhKX51Mm323Ma5NyRVAG81Pj
+nM7ayoUlmr9zRvZOZrDhwYEM7zw6zna7y2N6QMHKG3T5KNMGC+Ubn6mPvsHCPd4e
+uLQ3KjBKxbc7d6PtPvD7vLJpb5An9e3UD+cREhDeEPAN/BwW6A4pm9TkRQ2XUIS+
+sKV58+KIdbteeY1YQWcA45ZCEFaUBORPivKsWGP6ttfFbwOa/amS72Yw6j+EeSOY
+a1SL1TIfFGEEMl2tABhPJLWffClhTVk0JUaLZk8KYyVnZRxzVYcMmhd9K+MXIYnY
+jXWOQTfgbzCMGWvzKWhRbTSRU5IjEcK/gkEOtIrl9Qxkioo9H7nZhy+eJwUw+t+D
+sVUNDroI5xSE5D1hs1pj
+=bPtl
 -----END PGP SIGNATURE-----
 
---d6Gm4EdcadzBjdND--
+--TakKZr9L6Hm6aLOc--
