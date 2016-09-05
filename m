@@ -1,59 +1,44 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 16/17] pwm: sti: Take the opportunity to conduct a
- little house keeping
-Date: Mon, 5 Sep 2016 13:37:56 +0200
-Message-ID: <20160905113756.GP31424@ulmo.ba.sec>
-References: <20160816093508.28307-1-lee.jones@linaro.org>
- <20160816093508.28307-17-lee.jones@linaro.org>
+From: "R, Vignesh" <vigneshr@ti.com>
+Subject: Re: [PATCH] pwm: pwm-tipwmss: Remove all pm_runtime gets and puts
+ from the driver
+Date: Mon, 5 Sep 2016 19:13:59 +0530
+Message-ID: <780acbff-615f-d6c4-eb6b-1d78fba74e28@ti.com>
+References: <20160808100915.30149-1-vigneshr@ti.com>
+ <20160905065109.GE3532@ulmo.ba.sec>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="24/piotZLKF/SXqU"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160816093508.28307-17-lee.jones@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, patrice.chotard@st.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from comal.ext.ti.com ([198.47.26.152]:58342 "EHLO comal.ext.ti.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S932501AbcIENoI (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 5 Sep 2016 09:44:08 -0400
+In-Reply-To: <20160905065109.GE3532@ulmo.ba.sec>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: "Sarha, Jyri" <jsarha@ti.com>, "Gerlach, Dave" <d-gerlach@ti.com>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 
 
---24/piotZLKF/SXqU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 16, 2016 at 10:35:07AM +0100, Lee Jones wrote:
-> This includes fixing some Coding Style issues and re-ordering/
-> simplifying a little code.
->=20
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> ---
->  drivers/pwm/pwm-sti.c | 40 ++++++++++++++++++++++------------------
->  1 file changed, 22 insertions(+), 18 deletions(-)
+On 9/5/2016 12:21 PM, Thierry Reding wrote:
+> On Mon, Aug 08, 2016 at 03:39:15PM +0530, Vignesh R wrote:
+>> From: Jyri Sarha <jsarha@ti.com>
+>>
+>> Remove all pm_runtime gets and puts, and dummy pm_ops, from the
+>> pwm-tipwmss driver as there is no direct hardware access. The runtime PM
+>> needs to be enabled, so that the runtime PM framework takes care of
+>> enabling/disabling of PWMSS clock when submodules of PWMSS (ECAP or
+>> EHRPWM) call pm_runtime APIs. With this change PWMSS clock goes to
+>> idle when none of the submodules are in use.
+>>
+>> Signed-off-by: Jyri Sarha <jsarha@ti.com>
+>> Signed-off-by: Vignesh R <vigneshr@ti.com>
+>> ---
+>>  drivers/pwm/pwm-tipwmss.c | 19 -------------------
+>>  1 file changed, 19 deletions(-)
+> 
+> Applied, with a slightly modified commit message.
+> 
 
-Applied with a little bikeshedding.
-
-Thanks,
-Thierry
-
---24/piotZLKF/SXqU
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAABCAAGBQJXzVkRAAoJEN0jrNd/PrOh8LkQALUPCx1vrhwuuG6NboZuVJqs
-CjzMUh+KJCvbO5pZCw/z/aFR2vAlgwDwAXYuIGjtZkH1Ydi8ZReCz0LH7LH/BAVH
-ZIxOyVH9nfoQlIqcvFWD1xlEVeaZdKVLMH4iG2+tgPfVM2gq4EKOoHrDY+l8ekJJ
-QkaRtLQwOj8MwLKaaZIm8u8Qui41Tw8QTYGHSofTISyhIz1pTbKumeJHs/uvr50Q
-UCMSZ/PRnFPO2RfN8TqTriyXfT+JJ29Dxvmcv2qRSuSTKDmhG0mw3gg1nMG8SEWT
-jXtLcCLe6Z7DKlIh703Rsm3P/Z/+dQFnv/P915o0J+Vc2CSB3YF7MyT4gotBY4y8
-wq+MV8LkF59gFVn70DMUFQcl85mJclmSkegqBV0sYCOpcRZG5GtXhT+VYEIm1vhJ
-asCxnQN34YwJlnUmLRTh3HdklvL4WAbmvR+cQhitYzxP6wOeBFQqpwSPpS5ihsMa
-hmGNsO/mCxlvRset5zdjalsDdOzUIlyLoeme7hpBNJPXBqezNO2wYCpRMFJb+H9l
-iUe6zP1CdHsXf/bjMyDzVkbgLhrQJB2G6l/01tvIEoU1UI6LsCJhJQxaYlJZi01o
-pAdSsrBsrwz5cMo4kh0UuH/GV5SdKicS/zwlSrFigmAcucjS2gDyhGOy4vu+eDGD
-ulHKMNDPRPg4nrqT2CT5
-=Nw7o
------END PGP SIGNATURE-----
-
---24/piotZLKF/SXqU--
+Thanks!
