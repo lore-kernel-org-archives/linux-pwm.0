@@ -1,74 +1,64 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 07/17] pwm: sti: Rename channel => device
-Date: Mon, 5 Sep 2016 12:33:01 +0200
-Message-ID: <20160905103301.GG31424@ulmo.ba.sec>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v4 08/17] pwm: sti: Reorganise register names in
+ preparation for new functionality
+Date: Mon, 5 Sep 2016 12:35:54 +0200
+Message-ID: <20160905103554.GH31424@ulmo.ba.sec>
 References: <20160816093508.28307-1-lee.jones@linaro.org>
- <20160816093508.28307-8-lee.jones@linaro.org>
+ <20160816093508.28307-9-lee.jones@linaro.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Fnm8lRGFTVS/3GuM"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+        protocol="application/pgp-signature"; boundary="Hlh2aiwFLCZwGcpw"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20160816093508.28307-8-lee.jones@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kernel@stlinux.com, patrice.chotard@st.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
+In-Reply-To: <20160816093508.28307-9-lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-F5mvAk5X5gdBDgjK7y7TUQ@public.gmane.org, patrice.chotard-qxv4g6HH51o@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---Fnm8lRGFTVS/3GuM
+--Hlh2aiwFLCZwGcpw
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 16, 2016 at 10:34:58AM +0100, Lee Jones wrote:
-> This is to bring the terminology used in the STi PWM driver more
-> into line with the PWM subsystem.
+On Tue, Aug 16, 2016 at 10:34:59AM +0100, Lee Jones wrote:
+> Exciting functionality is on the way to this device.  But
+> before we can add it, we need to do some basic housekeeping
+> so the additions can be added cleanly.
 >=20
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> Signed-off-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 > ---
->  drivers/pwm/pwm-sti.c | 32 ++++++++++++++++----------------
->  1 file changed, 16 insertions(+), 16 deletions(-)
+>  drivers/pwm/pwm-sti.c | 76 +++++++++++++++++++++++++++------------------=
+------
+>  1 file changed, 41 insertions(+), 35 deletions(-)
 
-Note that it's fine if drivers use different terminology for internals.
-Many manuals seem to be using the channel terminology and many drivers
-use that. But if you prefer devices that's fine with me.
-
-I've applied this with a minor change, see below.
-
-> diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-[...]
-> -	of_property_read_u32(np, "st,pwm-num-chan", &num_chan);
-> -	if (num_chan)
-> -		cdata->num_chan =3D num_chan;
-> +	of_property_read_u32(np, "st,pwm-num-chans", &num_devs);
-> +	if (num_devs)
-> +		cdata->num_devs =3D num_devs;
-
-I kept the "st,pwm-num-chan" as property name here to avoid breaking
-backwards compatiblity. This series changes it back to "st,pwm-num-chan"
-sometime later in this series anyway.
+Applied, thanks.
 
 Thierry
 
---Fnm8lRGFTVS/3GuM
+--Hlh2aiwFLCZwGcpw
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAABCAAGBQJXzUndAAoJEN0jrNd/PrOh0u4P/jZnPj8LlKyTNVeebgKELZgh
-noJfPvmr4nKBxUVQPZ7aGobsAKZrZvgRPnmGJWBuFBAAIfP9bbbOE6kqxfzK0Tme
-hXYK/dmwBuuxP89g8Jo4wmhRH4QgCMAfmsFidenId2O1ACke322T7c+jkArb5d+u
-Y6AkabG0lzWdkZbx9dvF825MwPcHh2JnH4gn2eV/BNkgBNQ+o5/KnMiBMZMRiF4S
-MBpLDNpcINQ4D8VP18INQU00JZ96lNspYGr07juBSTj96WCeSYqqy7IcVMrGu9NK
-QaAPqNj7kJ3U4hdsE+SamSw7gBD3CbKJpBY7bzPhj4JbEjyjDEpcsVK/owP2gldR
-QmCVM1+5hub7Uq17RaHgYQI7ldHJufAD7Xt9yeQCecVv4U9HjH42vVKKTWwNjF/B
-9wJ47EEv79ApETveVaykPlBsBt+fcyTd+ZkbnYUVtnoSUQLb4Atjivb9k/QuYCFS
-0XsWnrnsrrJKA3qqlhvYFjBrsJMYyyQqhkCdzBSzxqIGe+Jqr4ZXKi5hAVHnCO4y
-cCa08r2LWYAc+mjCTBZ2f/t+oJAiD48eoKmGvO3/LIBooSbbmkqWgFJVB2sK8RJs
-X2FPI9n8Vt0cL9DrALfO/SD324TD/+Tyhu+4U5JKGmxidp0EqyxSjZ/4r5XsGm/G
-M2rm4TM7FSa4KvIj2f0o
-=GCcu
+iQIcBAABCAAGBQJXzUqKAAoJEN0jrNd/PrOhdOgQALl/toKGiBLHeBR67Spszu76
+giN7ff49vqlJku1s2MFDt1acTQ4nwM5lKBMX/7MDqs+68LV29osskCcnPTB429sv
+nZL52UEmehbaQpQUmUsllP42/KiwYQBDvCyybUY9VKjyLgph5Z6pdyR/TqsmzKgp
+MQ8yDO34g36xc0QOuyFzx0n4abaoy6QV5VXxOcoWH73ETbaOwjx5p+xKqLuLWERb
+nZwIEvKQiIFYkGDp4+G7RNHxhfS0m0SA/8xCW5HFqACdaXLDOCYW7MeoyAJT5JZu
+oM49/4fnDFcQjb/oJET2ZrozlOUMapshqIljYppPN/jMnPj6ei+zhm3jfxFTIa9u
+yas6gJdqCyxPBm4yaHK426CEXmKQbps0YF9WJ1hZRRgo0ms+xPjmdKKONXKdbVha
+uJAcEoMLmPZHg+USNw7sWu0opkSaNx8uc3f2N+74QoL/fovYcDmv2j5SfbVcHQcg
+PjiJiXxrgobED0eu2uRR2EX+ytUYkL+vGWa/9iyqAurX7CnhcIWYPSDa1VUZGNzT
+uZads1BlnnsGIiIqoiN40b6VmJP5lhOTeZ91tWGW3zugFsvgICDIBJZ12/4Z0sbD
+y5qR19paAc6g23Y2QVvfNBjOMniljOSoKwH0CV3KnwPWZCJH7V4sXIA0JzygHKJy
+bhVXT2k4qNTt/6MQUfQF
+=i7RG
 -----END PGP SIGNATURE-----
 
---Fnm8lRGFTVS/3GuM--
+--Hlh2aiwFLCZwGcpw--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
