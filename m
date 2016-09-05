@@ -1,86 +1,86 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2] pwm: samsung: fix to use lowest div for large enough
- modulation bits
-Date: Mon, 5 Sep 2016 08:53:08 +0200
-Message-ID: <20160905065308.GF3532@ulmo.ba.sec>
-References: <1470133006-4272-1-git-send-email-sw0312.kim@samsung.com>
- <20160816142201.12672-1-sw0312.kim@samsung.com>
+Subject: Re: [PATCH v3 1/4] pwm: Add support for Meson PWM Controller
+Date: Mon, 5 Sep 2016 11:00:52 +0200
+Message-ID: <20160905090052.GG3532@ulmo.ba.sec>
+References: <1471880193-21879-1-git-send-email-narmstrong@baylibre.com>
+ <1471880193-21879-2-git-send-email-narmstrong@baylibre.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="dgjlcl3Tl+kb3YDk"
+        protocol="application/pgp-signature"; boundary="9Iq5ULCa7nGtWwZS"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160816142201.12672-1-sw0312.kim@samsung.com>
+In-Reply-To: <1471880193-21879-2-git-send-email-narmstrong@baylibre.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Seung-Woo Kim <sw0312.kim@samsung.com>
-Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, k.kozlowski@samsung.com, linux-pwm@vger.kernel.org, tomasz.figa@gmail.com, jy0922.shim@samsung.com, krzk@kernel.org
+To: Neil Armstrong <narmstrong@baylibre.com>
+Cc: carlo@caione.org, khilman@baylibre.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---dgjlcl3Tl+kb3YDk
+--9Iq5ULCa7nGtWwZS
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 16, 2016 at 11:22:01PM +0900, Seung-Woo Kim wrote:
-> From pwm_samsung_calc_tin(), there is routine to find the lowest
-> divider possible to generate lower frequency than requested one.
-> But it is always possible to generate requested frequency with
-> large enough modulation bits except s3c24xx, so this patch fixes
-> to use lowest div for the case. This patch removes following UBSAN
-> warning:
+On Mon, Aug 22, 2016 at 05:36:30PM +0200, Neil Armstrong wrote:
+> Add support for the PWM controller found in the Amlogic SoCs.
+> This driver supports the Meson8b and GXBB SoCs.
 >=20
->    UBSAN: Undefined behaviour in drivers/pwm/pwm-samsung.c:197:13
->    shift exponent 32 is too large for 32-bit type 'long unsigned int'
->    [...]
->    [<c0670248>] (ubsan_epilogue) from [<c06707b4>] (__ubsan_handle_shift_=
-out_of_bounds+0xd8/0x120)
->    [<c06707b4>] (__ubsan_handle_shift_out_of_bounds) from [<c0694b28>] (p=
-wm_samsung_config+0x508/0x6a4)
->    [<c0694b28>] (pwm_samsung_config) from [<c069286c>] (pwm_apply_state+0=
-x174/0x40c)
->    [<c069286c>] (pwm_apply_state) from [<c0b2e070>] (pwm_fan_probe+0xc8/0=
-x488)
->    [<c0b2e070>] (pwm_fan_probe) from [<c07ba8b0>] (platform_drv_probe+0x7=
-0/0x150)
->    [...]
->=20
-> Cc: Tomasz Figa <tomasz.figa@gmail.com>
-> Signed-off-by: Seung-Woo Kim <sw0312.kim@samsung.com>
+> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
 > ---
-> Changes from v1
->  * Remove too complex condition, instead, just checking simple variant->b=
-its as Krzysztof's suggestion
->  * Add comment from Tomasz
->=20
-> The UBSAN warning from ARM is reported with the patch in following link:
-> https://patchwork.kernel.org/patch/9189575/
-> ---
->  drivers/pwm/pwm-samsung.c | 15 ++++++++++++---
->  1 file changed, 12 insertions(+), 3 deletions(-)
+>  drivers/pwm/Kconfig     |   9 +
+>  drivers/pwm/Makefile    |   1 +
+>  drivers/pwm/pwm-meson.c | 528 ++++++++++++++++++++++++++++++++++++++++++=
+++++++
+>  3 files changed, 538 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-meson.c
 
-Applied, thanks.
+Hi Neil,
+
+sorry for taking so long to review this. I had actually started to write
+a review email since I had noticed a couple of slight oddities about the
+driver structure (primarily this was about how channel-specific data was
+split between struct meson_pwm_channel and struct meson_pwm_chip), but I
+ended up making some changes to the driver in order to see what my
+suggestions would look like, and if they would indeed improve things.
+But once I had done that, I thought it a bit pointless to make that into
+review comments and decided to just push what I had done and ask you to
+take a look, and if you had no objections to the changes take the driver
+for a spin to see if it still worked as expected.
+
+One other thing I noticed is that your ->get_state() implementation only
+reads the enable state, but from the looks of it it should be possible
+to read period and duty cycle information from hardware as well. I'm not
+going to reject the driver for that reason, just saying that it'd be
+good to have that implemented sometime in the future.
+
+I've pushed my modifications to the driver to the linux-pwm repository:
+
+	https://git.kernel.org/cgit/linux/kernel/git/thierry.reding/linux-pwm.git/=
+log/?h=3Dfor-next
+
+Alternatively you can also take a look at the for-4.9/drivers branch,
+but they're currently the same thing.
 
 Thierry
 
---dgjlcl3Tl+kb3YDk
+--9Iq5ULCa7nGtWwZS
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAABCAAGBQJXzRZTAAoJEN0jrNd/PrOhy0MP/iNFo2S9DN5FZz18UDVpfehU
-aUrK7PVUW0/Fk9D9k0U2bhijQGGHeR013fNNDU5h6JD1/hfef8Y6Xwa/0upGujP3
-fXDXCF6vXiTRw5zOlDnXoTKuCm05pZ42Jrc3kDM4gVDaK+seHUE0+j/9+RDTAXML
-+3lshQpshu8bUTkmDMMJIUO/kEVyD6G9u6VhZdGR7mSgvGJxBFAEFlmce9damPcQ
-cmgI5BpIKtLlEkea5mWtZbYgDVtvlF4rpcBqIU8R9C765C/060xPiDcb8Q9Xc1o7
-glRprbpE/7QEl+GuqNLToReeb/ig4uEaoera9F2kgkkxAdloNV8v8OtcOKhPi7eK
-oL5iKh5lIzXBmUdxcEj7tEvAGfdikqIjXrV6uE1sadYb+mq9y0Y192IMMT87dmHC
-HYSJa9lPRaWQVNOcIS2qZfTualvdadQ/wzDfLnK2eMrxIJMK3gmcWLRRUHCs2g1U
-++QKfJV3UhuA/oku6MGehVayAXCgzNEKX0zddXt3Kl3kqFzjy4Ai/xWI+AvPB4sF
-9/lhB2DOzg9s5OPhwmJ/GQnWVRo7QjXJLoVwRQ7eRd5rX4T5RENWqBVD9Hj8vkUv
-hCIlH1A3Ovv+VPcQ3vfNFP9ZNnqdDo8VhqhXuPrZRfWWf8k3Dat1SAWe9gACuuda
-oA//igqEGTP2KY0QTatM
-=ypi0
+iQIcBAABCAAGBQJXzTRCAAoJEN0jrNd/PrOheBMQAI4n9pQaAm7tyAeSl723FaSl
+fadqlA+/Juzm71eghUmVDNM/xT7OQvJqDQr29r6xGblNAU3JftjQDMZ6RR3e1hJo
+2z2L11kHfeJuHVgk8b08N3eM/POf1S2llMwxP5HteQ+MGUKbuiwQdV7nXRYjrFjc
+hJVXw+js59m9arGk0MkolHWkNW3tGwbwIl7YVmG+vOidDLA8xIdbB0jQ6tuiA0/i
+Cs9F/VXppk4XvDznH4UB3twQ9qb3KiOoX0Q7uID1X6heKW82w8kJ0igrIZeP4V1A
+/JlK3KSnxHE+gKtoQLET2zydTG9s15lg67MtpOLaicQMfnMz63jVl5q+tj9PacL2
+h0dy5y0rTBL2vlzCAYcEa1DoHISo76lVpvNheGPUjFnq7BfOvoC18gKiLdfz4tyk
+pBozOkpRF3ZCPo5zFFkLzRpgtV2woepkqrPs+bmdgKgJzkVmAyFKeN77QrcGfD6y
+sB+eGfNO5y2zW7PDGZaVBBpXkYt2xFdKqZfqJNieohM1ywdTtaFW5QWSlZEODbtX
+tkMbuuT3R8kZ82D8ZTsZKlrRvH/lqIqu8XvNRKDwf+WAsFLoUvmhoeRIjH4v3ADe
+Wa2iZLsUYhI4HB0QExjkKGo31EEEqFIJFIlJTeSkkEHeGVIOTXxuD59Y72vpCzda
+3fmYMsjKqnkvT+Hs0j8l
+=wyB7
 -----END PGP SIGNATURE-----
 
---dgjlcl3Tl+kb3YDk--
+--9Iq5ULCa7nGtWwZS--
