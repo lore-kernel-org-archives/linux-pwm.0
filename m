@@ -1,69 +1,65 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: cros_ec: add __packed to prevent padding
-Date: Mon, 5 Sep 2016 08:44:41 +0200
-Message-ID: <20160905064441.GD3532@ulmo.ba.sec>
-References: <1469557333-9497-1-git-send-email-briannorris@chromium.org>
+Subject: Re: [PATCH] pwm: pwm-tipwmss: Remove all pm_runtime gets and puts
+ from the driver
+Date: Mon, 5 Sep 2016 08:51:09 +0200
+Message-ID: <20160905065109.GE3532@ulmo.ba.sec>
+References: <20160808100915.30149-1-vigneshr@ti.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="q9KOos5vDmpwPx9o"
+        protocol="application/pgp-signature"; boundary="5oH/S/bF6lOfqCQb"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1469557333-9497-1-git-send-email-briannorris@chromium.org>
+In-Reply-To: <20160808100915.30149-1-vigneshr@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Brian Norris <briannorris@chromium.org>
-Cc: linux-kernel@vger.kernel.org, Brian Norris <computersforpeace@gmail.com>, linux-pwm@vger.kernel.org, Javier Martinez Canillas <javier@osg.samsung.com>, Enric Balletbo <enric.balletbo@collabora.co.uk>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Gwendal Grignou <gwendal@chromium.org>, Guenter Roeck <linux@roeck-us.net>
+To: Vignesh R <vigneshr@ti.com>
+Cc: Jyri Sarha <jsarha@ti.com>, Dave Gerlach <d-gerlach@ti.com>, linux-omap@vger.kernel.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---q9KOos5vDmpwPx9o
+--5oH/S/bF6lOfqCQb
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 26, 2016 at 11:22:13AM -0700, Brian Norris wrote:
-> While the particular usage in question is likely safe (struct
-> cros_ec_command is 32-bit aligned, followed by <=3D32-bit fields), it's
-> been suggested this is not a great pattern to follow for the general
-> case -- for example, if we follow a 'struct cros_ec_command' (which is
-> 32-bit- but not 64-bit-aligned) with a struct that starts with a 64-bit
-> type (e.g., u64), the compiler may add padding.
+On Mon, Aug 08, 2016 at 03:39:15PM +0530, Vignesh R wrote:
+> From: Jyri Sarha <jsarha@ti.com>
 >=20
-> Let's add __packed, to inform the compiler of our true intention -- to
-> have no padding between these struct elements -- and to future proof for
-> any refactorings that might occur.
+> Remove all pm_runtime gets and puts, and dummy pm_ops, from the
+> pwm-tipwmss driver as there is no direct hardware access. The runtime PM
+> needs to be enabled, so that the runtime PM framework takes care of
+> enabling/disabling of PWMSS clock when submodules of PWMSS (ECAP or
+> EHRPWM) call pm_runtime APIs. With this change PWMSS clock goes to
+> idle when none of the submodules are in use.
 >=20
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> Signed-off-by: Jyri Sarha <jsarha@ti.com>
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
 > ---
-> Hi Thierry,
->=20
-> I don't know of any bugs directly resolved by this patch, so take it for
-> v4.8/v4.9 at your discretion.
->=20
->  drivers/pwm/pwm-cros-ec.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/pwm/pwm-tipwmss.c | 19 -------------------
+>  1 file changed, 19 deletions(-)
 
-Applied, thanks.
+Applied, with a slightly modified commit message.
 
+Thanks,
 Thierry
 
---q9KOos5vDmpwPx9o
+--5oH/S/bF6lOfqCQb
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAABCAAGBQJXzRRZAAoJEN0jrNd/PrOhzwwQAJvlQzFLzDgg7nt5UZ9CI5cW
-ipmq/s7TLGpdmh7qpD/+98rS1UTVvH5JUf4BO8D8qzcGY19wtCbXHu2QGO/ydJih
-mGYFm57Vg6X2oYd8BhKPkAQ8ofKehyhfpBJ1qpHHaT0858D8KOuGkjJaukJs3k05
-Gabuuj2w3n4RmM7nV+rvw6vrjXeQdqi3ZVsONMK9GHmYckkbrkkjeWHqzNvAGpU3
-DPQEuqIpg2JhUU7QPof8HjWqZjPv7z5bRAR4wFGG+5AdCH601q13W12fLu8g2ChR
-BAGez08EZcj1O03OJNIheRBnxP1W2tZPaeJOfiP39n1S46O9BTe+WIPEnewirV/q
-sOITjQ5KDJ9kUVbHzyLrQcjuSLgQhjUrlGVLfuFGwlQ/IMLnf9EzJnOUPh+hcTqP
-v1I6tCakVAlt4kbfG3dZqQrXPaB3qs36vgZBzgK0mybCl7tkU8M2Lm4c83VwEMdm
-XgbLnMRYSXa3lLeOZZ2S7y9LpypjNX01FQaoEvoGkYgSPLv4ep3j4PxOOKlFNzuo
-NSuYcIL3qpzzKzKAq+t0ZfQy7D1Ceea2LGW8g2uRRQCFpLfiTZbL29kcHaFPzn5S
-1o+hAU2kY2s50xEagMygGTlMbob2TWMw7OZXqFO6XznXWAoXgUoZOGyXvVOGMdtg
-R/2ri3LpMvxu6QNFAhsa
-=bq34
+iQIcBAABCAAGBQJXzRXdAAoJEN0jrNd/PrOh5pIP/A2HAy2srZRO/Q+nsChB2nyp
+ciWfGBXXdh2Y6swndxGM42wTfjhdoJGkmCCReH/cIUgghSLIaZNu0C6oh1zRwMoz
+2QHAlmj+ig/z/eRHrbLGzo4H6BPzpQCt/z99FTb93dOdW/ElXDFy0q82zbTJUqPV
+HvG3prxl3pYYvVuv3k2/8Nb/mgB/LkTRNVmlXd7Oska1nwAHjxyySpen8QGiITQm
+4B8RPyoDBNknpadqIc0jmJMdFdlvg+oR3FGN6oYAm/IPCOl5WmZY98s7Z1BSrZg0
+qP6rQHNbBGj0AJUhJDoxYeeXqPWIy7k5NsrP6sFWF81FnYL8PhkwF8d1JOImNlxq
+ZXjJqRJkwUUyK7yRQiZXgFFVI3KYV2eQO76k2eIQwpSB4nH2MESd2Jl5jNrfH+AZ
+9R80Q4CTg0Gf0PLn9Hfwbuqm7juJXAFR/ntYnDA4CgGQW4AXHqyd5m2JGCVLgqtl
+tctGLIY98ROkn0yq5VIYZODUoZRO0vaXhhP32ISQAec7Bs0PObqTl0XviL/160M9
+gI6J6Yu75uwT3Y/v6QDA4IkZppsPIgLsR9np2cq9lJhYXFN7Kjj0tbxWwy2+jP3E
+YjbX7MJPJfrxptNaiJaGl440A0w5LlmHxbASSRnL3zNMq+8sm0Z7kUSswwyVT1ZD
+/98OZQxnja28nqD9sB2g
+=Sg+8
 -----END PGP SIGNATURE-----
 
---q9KOos5vDmpwPx9o--
+--5oH/S/bF6lOfqCQb--
