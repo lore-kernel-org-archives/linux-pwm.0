@@ -1,91 +1,82 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [pwm:for-4.9/drivers 2/9] drivers/pwm/pwm-berlin.c:245:35:
- error: 'struct berlin_pwm_chip' has no member named 'chips'
-Date: Tue, 6 Sep 2016 11:08:42 +0200
-Message-ID: <20160906090842.GB15644@ulmo.ba.sec>
-References: <201609051807.8q1Dh6WZ%fengguang.wu@intel.com>
- <20160906133531.367129f0@xhacker>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: Re: [PATCH v3 1/4] pwm: Add support for Meson PWM Controller
+Date: Tue, 6 Sep 2016 11:14:45 +0200
+Message-ID: <a43f6e6e-05f6-cefe-451d-528588b85a8c@baylibre.com>
+References: <1471880193-21879-1-git-send-email-narmstrong@baylibre.com>
+ <1471880193-21879-2-git-send-email-narmstrong@baylibre.com>
+ <20160905090052.GG3532@ulmo.ba.sec>
+ <bd7ea1db-d8f9-f075-14ef-732d9bb65e77@baylibre.com>
+ <20160906090749.GA15644@ulmo.ba.sec>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="8GpibOaaTibBMecb"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:35444 "EHLO
-        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932370AbcIFJIp (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Sep 2016 05:08:45 -0400
-Received: by mail-wm0-f68.google.com with SMTP id a6so6145803wmc.2
-        for <linux-pwm@vger.kernel.org>; Tue, 06 Sep 2016 02:08:44 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <20160906133531.367129f0@xhacker>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20160906090749.GA15644@ulmo.ba.sec>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, khilman@baylibre.com, linux-kernel@vger.kernel.org, carlo@caione.org, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jisheng Zhang <jszhang@marvell.com>
-Cc: kbuild test robot <fengguang.wu@intel.com>, kbuild-all@01.org, linux-pwm@vger.kernel.org
 
+On 09/06/2016 11:07 AM, Thierry Reding wrote:
+> On Tue, Sep 06, 2016 at 10:36:49AM +0200, Neil Armstrong wrote:
+>> Hi Thierry,
+>>
+[...]
+> 
+>>
+>> The second bug is in probe(), I understand the point to allocate
+>> dynamically the channels and attach them to each pwm chip, but when
+>> calling meson_pwm_init_channels() we get an OOPS because
+>> meson->chip.pwms[i] are allocated in pwmchip_add(). Moving
+>> meson_pwm_init_channels() would fix this, but in case of a clk
+>> PROBE_DEFER, we would need to remove back the pwmchip, which is a
+>> quite a bad design decision....
+> 
+> Ah yes... that one again. I remember running into that a while ago with
+> some other driver. To be honest, I think that's a short-coming of the
+> PWM subsystem and the fix would be for PWM chip registration to be split
+> into two parts: pwm_chip_init() and pwm_chip_add(). That way, a chip
+> would be initialized using pwm_chip_init() where the pwms array would be
+> allocated, and pwm_chip_add() would register the chip with the system.
+> 
+> Currently a few drivers might be vulnerable to a race condition between
+> registration and implementation (i.e. PWM channels aren't fully set up
+> when they are exposed to users and sysfs).
+> 
+>> The smartest fix I found was to allocate channels in probe, init them
+>> them attach them after pwmchip_add():
+>>
+[...]
 
---8GpibOaaTibBMecb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> 
+> That's the race I was talking about above. I suppose it's not too big an
+> issue since other drivers seem to manage, so I'm going to merge your
+> fixed driver.
 
-On Tue, Sep 06, 2016 at 01:35:31PM +0800, Jisheng Zhang wrote:
->=20
->=20
-> On Mon, 5 Sep 2016 18:37:13 +0800 kbuild test robot  wrote:
->=20
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/=
-linux-pwm.git for-4.9/drivers
-> > head:   e63ed23775362a6e1a867dc2f75ebbf4e3a8d4d2
-> > commit: fd47f104003c629d0ec6be4c2ead90191c184a23 [2/9] pwm: berlin: Add=
- suspend/resume support
-> > config: arm64-allyesconfig (attached as .config)
-> > compiler: aarch64-linux-gnu-gcc (Debian 5.4.0-6) 5.4.0 20160609
-> > reproduce:
-> >         wget https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests=
-=2Egit/plain/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         git checkout fd47f104003c629d0ec6be4c2ead90191c184a23
-> >         # save the attached .config to linux build tree
-> >         make.cross ARCH=3Darm64=20
-> >=20
-> > All errors (new ones prefixed by >>):
-> >=20
-> >    drivers/pwm/pwm-berlin.c: In function 'berlin_pwm_suspend':
-> > >> drivers/pwm/pwm-berlin.c:245:35: error: 'struct berlin_pwm_chip' has=
- no member named 'chips' =20
-> >       channel =3D pwm_get_chip_data(&pwm->chips.pwms[i]);
-> >                                       ^
->=20
->=20
-> Thanks for information. Below patch can fix it.
->=20
-> Hi Thierry,
->=20
-> a separate fix or amend the commit, which do you prefer?
+ok thanks !
 
-I've squashed the below change into the original patch.
+> 
+> Unless you feel like taking a stab at the pwm_chip_init()/pwm_chip_add()
+> split, in which case your driver would be the first to be race-free. =)
+
+Having he driver upstream is a priority, but having it completely race-free would be great!
+I'll be happy to collaborate to a race-free pwmchip probe somehow !
+
+But there is still a glitch, when pwmadd_chip() returns, pwm_get_chip_data(pwm) will still
+return crap until meson_pwm_add_channels_data() is called in the following instructions...
+
+The pwm_chip_init()/pwm_chip_add() would be the only solution !
+
+> Thierry
+> 
 
 Thanks,
-Thierry
-
---8GpibOaaTibBMecb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAABCAAGBQJXzoeZAAoJEN0jrNd/PrOhQtAP/3aJDX+gpFsNTDcP4kPD51DQ
-dYk/RbfdkRCD7gLzVOPmcVk/RhVabL1YNQiX8EVRvNv/UT4LyopK7ljjCA3kzlX8
-oIQrr278X29ADely+/A4D3j6ljQ4puypE1xNZJm+Rh6RVserFP/FGWLNqF4+t67M
-mZM9bFqS0ZCvRrxnyKGcMbeweMATkM2vs0W7t+0LfC106isvYAet05OqOCWIOIVg
-mZ8s8bxhcIpBSu9xHZdilUVUFPd8/6Xl2nRapQWVdoQUS6t31I+hMn1+HL+Qy6vC
-znkMTHdihKK1k+scq3uzhfh3dadBGgB3+sXnI1jfhJ8XyIhMmWSsq0SCPR7mfLC8
-H/qiVHRzB1TomufuACstg3yH5yczqBP9X7yjcWN/kvRxc0mEkq1hljlOPWHBES/5
-+FNQbYUYeJX8bfcGGqSpchYVlIXb6AkxcevPuJx6RsVTXwNpuNqZLpC8zS6DnJ5f
-QQ8A9ETxxps0dLDb6Y8waxup4tjD/KAKg/VxYndIpyHEPTecQK+kl9xOqH3L9Q+M
-9nIr0nUeSraF6Uz9dM3c5WqSolc+KjbAPaIPI4mSTLKGooOhdMjx6Okw0qXTu9XL
-4l7qg/uDxrT2J8zt2q/mZH74+UPhpjzAX/g8GNDYIJuiBH9Md/7/sm/mBXBKz1PM
-hhYV4J3q7l+Pd3iP2pnY
-=M3uh
------END PGP SIGNATURE-----
-
---8GpibOaaTibBMecb--
+Neil
