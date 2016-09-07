@@ -1,48 +1,39 @@
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH v3 1/4] pwm: Add support for Meson PWM Controller
-Date: Tue, 6 Sep 2016 23:24:16 +0200
-Message-ID: <CAFBinCBW_-NrQaKOML8_Y_th9P1Ozsj4UXxwSWM_LCtt8NWCDA@mail.gmail.com>
-References: <1471880193-21879-1-git-send-email-narmstrong@baylibre.com>
- <1471880193-21879-2-git-send-email-narmstrong@baylibre.com>
- <CAFBinCA3PoR_=+f8aU-Trg8uKWWXkkBOtrQUaXbdsb8E-fdM0g@mail.gmail.com> <20160905095321.GB31424@ulmo.ba.sec>
+From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 3/4] pinctrl: sunxi: Remove unsupported PWM channel
+ pinmux in H3
+Date: Wed, 7 Sep 2016 21:41:19 +0200
+Message-ID: <CACRpkdb7rr8Lpc6VZ4Ba=_YOwFDqVwwut1w_BDAfYHm6Qp=W_g@mail.gmail.com>
+References: <20160831082520.25962-1-woogyom.kim@gmail.com> <20160831082520.25962-4-woogyom.kim@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:33508 "EHLO
-        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755954AbcIFVYj (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 6 Sep 2016 17:24:39 -0400
-In-Reply-To: <20160905095321.GB31424@ulmo.ba.sec>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20160831082520.25962-4-woogyom.kim-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Milo Kim <woogyom.kim-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>, Jens Kuske <jenskuske-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Krzysztof Adamski <k@japko.eu>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Neil Armstrong <narmstrong@baylibre.com>, carlo@caione.org, khilman@baylibre.com, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hi Thierry,
+On Wed, Aug 31, 2016 at 10:25 AM, Milo Kim <woogyom.kim-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
 
-On Mon, Sep 5, 2016 at 11:53 AM, Thierry Reding
-<thierry.reding@gmail.com> wrote:
-> As mentioned in another reply in this thread I ended up restructuring
-> the driver a little before applying it to the PWM tree. I don't /think/
-> there are any functional changes, so I left your Tested-by in place, but
-> it would be great if you could retest and confirm, just to make sure.
+> H3 has single PWM channel. The second PWM channel is not supported,
+> so the pinctrl function should be removed.
 >
-> The driver is in the for-4.9/drivers branch of the PWM tree:
->
->         https://git.kernel.org/cgit/linux/kernel/git/thierry.reding/linux-pwm.git/log/?h=for-4.9/drivers
-I have tested it with the updated Neil sent today: [0]
-This is still working fine for me (driving the LPO clock of an AP6330
-SDIO wifi chip).
+> Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Cc: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+> Cc: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+> Cc: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
+> Cc: Jens Kuske <jenskuske-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: Krzysztof Adamski <k@japko.eu>
+> Cc: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Signed-off-by: Milo Kim <woogyom.kim-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
-Please note that I don't have a scope to measure the actual signal,
-but I guess it's fine since my AP6330 is happy.
+Maxime what is your opinion on this patch?
 
-So feel free to keep my:
-Tested-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-
-
-Regards,
-Martin
-
-
-[0] https://github.com/superna9999/linux/releases/tag/amlogic/v4.8/pwm-for-next-for-v4
+Yours,
+Linus Walleij
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
