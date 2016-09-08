@@ -1,45 +1,86 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v2 3/4] pinctrl: sunxi: Remove unsupported PWM channel
- pinmux in H3
-Date: Thu, 8 Sep 2016 01:09:29 +0200
-Message-ID: <CACRpkda8uMuOi41O5Cq3o-PXynoZfkxAD7P2fHS-uCUQt_B_kA@mail.gmail.com>
-References: <20160831082520.25962-1-woogyom.kim@gmail.com>
- <20160831082520.25962-4-woogyom.kim@gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] pwm: meson: handle unknown ID values
+Date: Thu, 8 Sep 2016 11:23:54 +0200
+Message-ID: <20160908092354.GB24112@ulmo.ba.sec>
+References: <20160906125106.1511562-1-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20160831082520.25962-4-woogyom.kim@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Milo Kim <woogyom.kim@gmail.com>
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Krzysztof Adamski <k@japko.eu>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Chen-Yu Tsai <wens@csie.org>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Icenowy Zheng <icenowy@aosc.xyz>, Maxime Ripard <maxime.ripard@free-electrons.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Jens Kuske <jenskuske@gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="O5XBE6gyVG5Rl6Rj"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:33493 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932646AbcIHJX6 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 8 Sep 2016 05:23:58 -0400
+Content-Disposition: inline
+In-Reply-To: <20160906125106.1511562-1-arnd@arndb.de>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Carlo Caione <carlo@caione.org>, Kevin Hilman <khilman@baylibre.com>, Neil Armstrong <narmstrong@baylibre.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2016 at 10:25 AM, Milo Kim <woogyom.kim@gmail.com> wrote:
 
-> H3 has single PWM channel. The second PWM channel is not supported,
-> so the pinctrl function should be removed.
->
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
-> Cc: Chen-Yu Tsai <wens@csie.org>
-> Cc: Icenowy Zheng <icenowy@aosc.xyz>
-> Cc: Jens Kuske <jenskuske@gmail.com>
-> Cc: Krzysztof Adamski <k@japko.eu>
-> Cc: linux-gpio@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Milo Kim <woogyom.kim@gmail.com>
+--O5XBE6gyVG5Rl6Rj
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Patch applied with Chen-Yu's ACK.
+On Tue, Sep 06, 2016 at 02:50:47PM +0200, Arnd Bergmann wrote:
+> When building with -Wmaybe-uninitialized, we get a couple of harmless
+> warnings about three functions in this new driver that don't look
+> safe to the compiler:
+>=20
+> drivers/pwm/pwm-meson.c: In function 'meson_pwm_get_state':
+> drivers/pwm/pwm-meson.c:355:26: error: 'mask' may be used uninitialized i=
+n this function [-Werror=3Dmaybe-uninitialized]
+> drivers/pwm/pwm-meson.c: In function 'meson_pwm_disable':
+> drivers/pwm/pwm-meson.c:263:13: error: 'enable' may be used uninitialized=
+ in this function [-Werror=3Dmaybe-uninitialized]
+> drivers/pwm/pwm-meson.c: In function 'meson_pwm_apply':
+> drivers/pwm/pwm-meson.c:231:13: error: 'clk_shift' may be used uninitiali=
+zed in this function [-Werror=3Dmaybe-uninitialized]
+> drivers/pwm/pwm-meson.c:231:36: error: 'enable' may be used uninitialized=
+ in this function [-Werror=3Dmaybe-uninitialized]
+> drivers/pwm/pwm-meson.c:231:24: error: 'clk_enable' may be used uninitial=
+ized in this function [-Werror=3Dmaybe-uninitialized]
+>=20
+> Specifically, if we have a device with an id other than 0 or 1,
+> this would result in undefined behavior. This is currently not
+> possible, but the compiler cannot be expected to know this.
+>=20
+> This patch adds a 'default' clause to let the compiler know
+> what to do instead, which shuts up the warning and makes the
+> code slightly more resiliant in case it gets extended to other
+> identifiers.
+>=20
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/pwm/pwm-meson.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 
-Yours,
-Linus Walleij
+Applied, though I left out the dummy assignment of state->enabled =3D 0
+because that's dead code anyway.
+
+Thanks,
+Thierry
+
+--O5XBE6gyVG5Rl6Rj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAABCAAGBQJX0S4oAAoJEN0jrNd/PrOh+98QALUsqGxiMrovYblZeqjZk4zC
+7UoFqBNRksNcPX+qqsxBLeRtRUoXSkbVePtbnMUc/jo7AGavE9QP8gr917PR6QrY
+de/5nRqm46pFiCQDLIa3pSapz+updY2YkBMFAXZfDWo9lZfbpHgSyJo1C/3RwkQo
+Bodo2PR/x2y22E1nq6m1ppQas9LVIXbcRkYLvHvKcjhqaF6tXn+H9laKtmpWzuTp
+E11S8ZJ8z1vU1It9LKwyugLQfXBWqQt/aIG62B9Rpe9Tn3eRUdb4kjnJngx99lKq
+fizRNv1yNzg8w5O+xhScFDD+QOMxyawWc/rCCDO5WoSSNSEF8E469WymAUxMGOK7
+JHulQyYcagN+j+wxI3CkfUGJFPGs03vS0gbiotTQ18OB02DCgvJtJqcJe7iToBWu
+P0ned8fzlUQ6IzJZIB/Niy7taGaKL6tL7M1ypaDZFDbpv5hF78ooFs6E90SU2H9W
+1GTyDDP5tf7mUGw8xNn/RHqFE6cMkms8ifyX/l+/dMr4+BBItrXNdgYHn2+2LsaO
+0dAIBqTVFnTzGeuT6E2zYcqbhkSZKh0Qis5dMvfG30SlPaehAhOUiLTRVR7RdEOS
+FCmoBRwXlh1KYlhjsHblMKIlCFEb96qvDsWKWtN6mZdDF4/20c7PCNnyhbSZTDyo
+bUiRq7Im7x1RlZNNTDtB
+=pbZP
+-----END PGP SIGNATURE-----
+
+--O5XBE6gyVG5Rl6Rj--
