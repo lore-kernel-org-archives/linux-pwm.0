@@ -1,59 +1,43 @@
-From: Stefan Agner <stefan@agner.ch>
+From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
 Subject: Re: [PATCHv6 0/3] pwm: imx: support output polarity inversion
-Date: Thu, 08 Sep 2016 15:15:57 -0700
-Message-ID: <6c896634c4d6446df0388da2c0228232@agner.ch>
+Date: Fri, 9 Sep 2016 09:18:57 +0200
+Message-ID: <20160909091857.7a263220@ipc1.ka-ro>
 References: <20141009151605.GA8818@ulmo.nvidia.com>
  <1412950949-7505-1-git-send-email-LW@KARO-electronics.de>
+ <6c896634c4d6446df0388da2c0228232@agner.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kmu-office.ch ([178.209.48.109]:51385 "EHLO
-        mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753046AbcIHWVU (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 8 Sep 2016 18:21:20 -0400
-In-Reply-To: <1412950949-7505-1-git-send-email-LW@KARO-electronics.de>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
-To: =?UTF-8?Q?Lothar_Wa=C3=9Fmann?= <LW@karo-electronics.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <6c896634c4d6446df0388da2c0228232@agner.ch>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Stefan Agner <stefan@agner.ch>
 Cc: linux-pwm@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org, Shawn Guo <shawn.guo@linaro.org>
+List-Id: linux-pwm@vger.kernel.org
 
-Hi Lothar,
-
-On 2014-10-10 07:22, Lothar Waßmann wrote:
-> This patch series adds support for polarity inversion to the pwm-imx
-> driver. The patches have been tested on i.MX6, i.MX53 and with the
-> ti-ehrpwm.c driver.
-
-Do you know what prevented this patchset from getting merged?
-
-We are looking for Polarity support in PWM for too, this is especially
-useful for backlight control.
-
---
-Stefan
-
-> 
-> Changes wrt. v2:
-> - make the use of '#pwm-cells = <3>' optional, so that the change does
->   not break existing DT blobs as suggested by Arnd Bergmann and Sascha
->   Hauer.
-> 
-> Changes wrt. v3:
-> - implemented the approach suggested by Sascha Hauer 
-> - don't modify struct pwm_ops in the imx_pwm probe function
-> 
-> Changes wrt. v4:
-> - rebased onto current linux-next
-> - dropped cleanup patch which is not necessary any more
-> - resent with ACK from Shawn Guo and Reviewed-By tag from Sascha Hauer
-> 
-> Changes wrt. v5:
-> - don't remove of_pwm_n_cells to keep sanity checks for #pwm-cells as
->   suggested by Thierry Reding
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+SGksCgpPbiBUaHUsIDA4IFNlcCAyMDE2IDE1OjE1OjU3IC0wNzAwIFN0ZWZhbiBBZ25lciB3cm90
+ZToKPiBPbiAyMDE0LTEwLTEwIDA3OjIyLCBMb3RoYXIgV2HDn21hbm4gd3JvdGU6Cj4gPiBUaGlz
+IHBhdGNoIHNlcmllcyBhZGRzIHN1cHBvcnQgZm9yIHBvbGFyaXR5IGludmVyc2lvbiB0byB0aGUg
+cHdtLWlteAo+ID4gZHJpdmVyLiBUaGUgcGF0Y2hlcyBoYXZlIGJlZW4gdGVzdGVkIG9uIGkuTVg2
+LCBpLk1YNTMgYW5kIHdpdGggdGhlCj4gPiB0aS1laHJwd20uYyBkcml2ZXIuCj4gCj4gRG8geW91
+IGtub3cgd2hhdCBwcmV2ZW50ZWQgdGhpcyBwYXRjaHNldCBmcm9tIGdldHRpbmcgbWVyZ2VkPwo+
+IApObyBpZGVhLgoKPiBXZSBhcmUgbG9va2luZyBmb3IgUG9sYXJpdHkgc3VwcG9ydCBpbiBQV00g
+Zm9yIHRvbywgdGhpcyBpcyBlc3BlY2lhbGx5Cj4gdXNlZnVsIGZvciBiYWNrbGlnaHQgY29udHJv
+bC4KPiAKQWN0dWFsbHkgdGhlIFBXTSBkcml2ZXIgbWF5IGJlIHRoZSB3cm9uZyBwbGFjZSB0byBh
+Y2hpZXZlIHRoaXMuIFdoZW4KdGhlIGJhY2tsaWdodCBkcml2ZXIgc2V0cyB0aGUgYnJpZ2h0bmVz
+cyB0byAwIHRvIHN3aXRjaCB0aGUgYmFja2xpZ2h0Cm9mZiwgaXQgd2lsbCBkaXNhYmxlIHRoZSBQ
+V00uIFRoaXMgd2lsbCBtYWtlIHRoZSBQV00gcGluIGdvIExPVyBhbmQKdGh1cyB0dXJuIHRoZSBi
+YWNrbGlnaHQgdG8gZnVsbCBicmlnaHRuZXNzIHJhdGhlciB0aGFuIG9mZiAodW5sZXNzIHRoZXJl
+CmlzIGFuIGFkZGl0aW9uYWwgR1BJTyB0aGF0IGNvbnRyb2xzIGEgYmFja2xpZ2h0IGVuYWJsZSBw
+aW4gb24gdGhlIExDRCkuCgoKTG90aGFyIFdhw59tYW5uCgpfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdAps
+aW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVh
+ZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
