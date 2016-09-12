@@ -1,65 +1,88 @@
-From: Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCHv6 0/3] pwm: imx: support output polarity inversion
-Date: Mon, 12 Sep 2016 16:54:33 +0300
-Message-ID: <cf4c3f2b-c9f1-b7ff-c5b9-5cf622957296@mentor.com>
+Date: Mon, 12 Sep 2016 16:04:01 +0200
+Message-ID: <20160912140401.qkezay7sqqavsf4i@pengutronix.de>
 References: <20141009151605.GA8818@ulmo.nvidia.com>
  <1412950949-7505-1-git-send-email-LW@KARO-electronics.de>
  <6c896634c4d6446df0388da2c0228232@agner.ch>
  <20160909091857.7a263220@ipc1.ka-ro>
+ <20160912124553.aqgv7b4vsx4urogi@piout.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relay1.mentorg.com ([192.94.38.131]:61714 "EHLO
-        relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1758711AbcILNyk (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 12 Sep 2016 09:54:40 -0400
-In-Reply-To: <20160909091857.7a263220@ipc1.ka-ro>
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:48568 "EHLO
+        metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S932865AbcILOEE (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 12 Sep 2016 10:04:04 -0400
+Content-Disposition: inline
+In-Reply-To: <20160912124553.aqgv7b4vsx4urogi@piout.net>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?UTF-8?Q?Lothar_Wa=c3=9fmann?= <LW@KARO-electronics.de>, Stefan Agner <stefan@agner.ch>
-Cc: linux-pwm@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org, Shawn Guo <shawn.guo@linaro.org>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>, linux-pwm@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, Thierry Reding <thierry.reding@gmail.com>, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
 
-Hi Lothar,
+Hello,
 
-On 09/09/2016 10:18 AM, Lothar Waßmann wrote:
-> Hi,
->
-> On Thu, 08 Sep 2016 15:15:57 -0700 Stefan Agner wrote:
->> On 2014-10-10 07:22, Lothar Waßmann wrote:
->>> This patch series adds support for polarity inversion to the pwm-imx
->>> driver. The patches have been tested on i.MX6, i.MX53 and with the
->>> ti-ehrpwm.c driver.
->>
->> Do you know what prevented this patchset from getting merged?
->>
-> No idea.
->
->> We are looking for Polarity support in PWM for too, this is especially
->> useful for backlight control.
->>
-> Actually the PWM driver may be the wrong place to achieve this. When
-> the backlight driver sets the brightness to 0 to switch the backlight
-> off, it will disable the PWM. This will make the PWM pin go LOW and
-> thus turn the backlight to full brightness rather than off (unless there
-> is an additional GPIO that controls a backlight enable pin on the LCD).
->
+On Mon, Sep 12, 2016 at 02:45:53PM +0200, Alexandre Belloni wrote:
+> Isn't a properly designed PWM putting a high level on its pin when
+> disabled and configured with inversed polarity ?
 
-I've just realized that I had submitted practically the same change
-(excluding iMX specifics) and about the same time in October 2014, but
-my v1 is one and a half hours later than yours preceding v6 :)
+it's not well defined. When trying several times over the years to
+properly define and document it, I didn't manage to agree with Thierry
+what is the right thing to define.
 
-Since I've subscribed to the linux-pwm right before sending my changes,
-I don't have your changes in my mailbox. Would you mind to review my
-v3 "pwm: support backward compatibility of DTB extending PWM args":
+IMHO it would be sensible to make it explicitly undefined what happens
+when a PMW is disabled. This would simplify drivers from
 
-   http://lists.infradead.org/pipermail/linux-arm-kernel/2014-November/303833.html
+	pwm_config(mypwm, value, period);
+	if (!value)
+		pwm_disable(mypwm)
+	else
+		pwm_enable(led_dat->pwm);
 
-then incorporate anything you find useful into your series and resend
-v7? Or just resend the rebased v6 if nothing is found attracting?
+to
 
-In my turn I'll spend time to review the series and test it on iMX.
+	pwm_config(mypwm, value, period);
 
---
-With best wishes,
-Vladimir
+and let the pwm driver disable it's clock (or whatever) when value is 0
+and there are energy saving benefits that don't hurt the expected
+behaviour of the pin. So the hardware specific stuff is handled in the
+hardware specific driver and usage in pwm-consumers is simplified.
+Moreover this also simplifies some pwm drivers because they don't have
+to catch in software the cases where the hardware differs from the
+expectation[1].
+Looking at drivers/leds/leds-pwm.c it doesn't ensure that each
+pwm_enable is paired by an pwm_disable (e.g. on .remove). Is this a bug?
+With my purposed semantics of .config and .disable this would be much
+easier to fix.
+
+Regarding your question: Yeah, maybe all properly designed PWMs behave
+like you expect. But reality isn't only about properly designed
+hardware, so I wouldn't expect all hardware to behave. The inverse
+property might be software emulated and so on pwm_disable the pin might
+become 0.
+
+The obvious downside of my suggestion is that this is a change in what
+most people expect (because it was "safe" to call pwm_enable before),
+but the resulting code is simpler and cleaner.
+
+Today it's a (maybe small) bug, when a pwm consumer calls pwm_config with
+value=0 and doesn't disable it afterwards. IMHO that's a bug in the pwm
+API that pwm_config with value=0 doesn't imply (the wanted effects of)
+pwm_disable.
+
+Best regards
+Uwe
+
+[1] This might even be impossible: Consider a PWM that gets 0 (or
+high-z) on hw-disable independent of configured duty or inversion. The
+driver now sees for an inverted pwm: pwm_config(this, 0, 100);
+pwm_disable(this); The driver cannot know if it should continue to drive
+the pin at 1, or if the pwm consumer stopped caring about the pwm and
+disabling the hardware is OK.
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-K�nig            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
