@@ -1,7 +1,8 @@
-From: Clemens Gruber <clemens.gruber@pqgruber.com>
+From: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?=
+        <u.kleine-koenig@pengutronix.de>
 Subject: Re: [PATCHv6 0/3] pwm: imx: support output polarity inversion
-Date: Mon, 12 Sep 2016 23:12:54 +0200
-Message-ID: <20160912211254.GA4637@archie.localdomain>
+Date: Tue, 13 Sep 2016 08:45:52 +0200
+Message-ID: <20160913064552.oywq74iqo3fecsgz@pengutronix.de>
 References: <20141009151605.GA8818@ulmo.nvidia.com>
  <1412950949-7505-1-git-send-email-LW@KARO-electronics.de>
  <6c896634c4d6446df0388da2c0228232@agner.ch>
@@ -10,49 +11,63 @@ References: <20141009151605.GA8818@ulmo.nvidia.com>
  <20160912140401.qkezay7sqqavsf4i@pengutronix.de>
  <074eed0df23199bc82f8d221690596d3@agner.ch>
  <20160912200021.fsnfdgnng4it354g@pengutronix.de>
+ <20160912211254.GA4637@archie.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:38949 "EHLO
+        metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751389AbcIMGp4 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 13 Sep 2016 02:45:56 -0400
 Content-Disposition: inline
-In-Reply-To: <20160912200021.fsnfdgnng4it354g@pengutronix.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>
+In-Reply-To: <20160912211254.GA4637@archie.localdomain>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Clemens Gruber <clemens.gruber@pqgruber.com>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@karo-electronics.de>, linux-pwm@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>, Thierry Reding <thierry.reding@gmail.com>, Shawn Guo <shawn.guo@linaro.org>, linux-arm-kernel@lists.infradead.org
 
-Hi Uwe,
+Hello Clemens,
 
-On Mon, Sep 12, 2016 at 10:00:21PM +0200, Uwe Kleine-K=F6nig wrote:
-> I want that the pwm driver disables its clock on pwm_config(mypwm, 0,
-> someperiod) such that the consumer doesn't need to call
-> pwm_disable(mypwm) to save power (assuming it's safe to do so, which
-> only the pwm provider knows).
+On Mon, Sep 12, 2016 at 11:12:54PM +0200, Clemens Gruber wrote:
+> On Mon, Sep 12, 2016 at 10:00:21PM +0200, Uwe Kleine-König wrote:
+> > I want that the pwm driver disables its clock on pwm_config(mypwm, 0,
+> > someperiod) such that the consumer doesn't need to call
+> > pwm_disable(mypwm) to save power (assuming it's safe to do so, which
+> > only the pwm provider knows).
+> 
+> I am not sure if this is such a good idea, because there are use cases
+> where you want to keep the PWM driver enabled the whole time but still
+> be able to change the duty cycle to 0 for some time without adding
+> unnecessary delays when changing the duty cycle back to something else.
+> 
+> We have an application where we control fluid valves in a beer
+> dispensing system through PWMs and these valves are pulsed with
+> different PWM duty cycles for a short time. In-between the duty cycle
+> is also 0. For example: Start at 0%, 100ms 90%, 200ms 70%, 300ms 0%,
+> 100ms 90%, and so on..
+> There it is critical that the change from and to 0 duty cycle is not
+> delayed by disabling and reenabling the clock.
+> The oscillator (if there is one) should be up and running, only the duty
+> cycle should be 0 for a short time.
 
-I am not sure if this is such a good idea, because there are use cases
-where you want to keep the PWM driver enabled the whole time but still
-be able to change the duty cycle to 0 for some time without adding
-unnecessary delays when changing the duty cycle back to something else.
+I don't think it is sensible to map this requirement in the pwm api. The
+trade-off between performance and power saving is common between all
+types of devices and there are other mechanisms to handle this.
 
-We have an application where we control fluid valves in a beer
-dispensing system through PWMs and these valves are pulsed with
-different PWM duty cycles for a short time. In-between the duty cycle
-is also 0. For example: Start at 0%, 100ms 90%, 200ms 70%, 300ms 0%,
-100ms 90%, and so on..
-There it is critical that the change from and to 0 duty cycle is not
-delayed by disabling and reenabling the clock.
-The oscillator (if there is one) should be up and running, only the duty
-cycle should be 0 for a short time.
+Also only some pwms are affected by this because disabling the clock
+doesn't introduce a measurable overhead for all of them.
 
-This would not be possible anymore with your API change, right?
+With write(2) there is also no way to define if the hard disk should
+spin down after the request is completed. And this wouldn't make sense
+for an ssd.
 
-Regards,
-Clemens
+So yes, there would be no way to prohibit stopping the pwm with the pwm
+API, but you could implement runtime pm for your device.
+
+Best regards
+Uwe
+
+-- 
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
