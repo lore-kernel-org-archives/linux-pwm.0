@@ -1,7 +1,7 @@
 From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: [PATCH 3/3] arm: dts: imx7-colibri: Use enable-gpios for BL_ON
-Date: Mon, 19 Sep 2016 19:53:47 +0530
-Message-ID: <20160919142347.11342-4-bhuvanchandra.dv@toradex.com>
+Subject: [PATCH 1/3] arm: dts: imx7: Update #pwm-cells for PWM polarity control
+Date: Mon, 19 Sep 2016 19:53:45 +0530
+Message-ID: <20160919142347.11342-2-bhuvanchandra.dv@toradex.com>
 References: <20160919142347.11342-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,48 +21,77 @@ To: shawnguo@kernel.org
 Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, stefan@agner.ch, robh+dt@kernel.org, thierry.reding@gmail.com, kernel@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Use pwm-backlight driver 'enable-gpios' property for backlight on/off control.
+Update #pwm-cells to 3 in order to support PWM signal polarity control.
 
 Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
 ---
- arch/arm/boot/dts/imx7-colibri.dtsi | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/pwm/imx-pwm.txt | 6 +++---
+ arch/arm/boot/dts/imx7s.dtsi                      | 8 ++++----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
-index 2af5e3e..ce5edb5 100644
---- a/arch/arm/boot/dts/imx7-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri.dtsi
-@@ -43,7 +43,10 @@
- / {
- 	bl: backlight {
- 		compatible = "pwm-backlight";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_gpio_bl_on>;
- 		pwms = <&pwm1 0 5000000 0>;
-+		enable-gpios = <&gpio5 1 GPIO_ACTIVE_HIGH>;
- 	};
+diff --git a/Documentation/devicetree/bindings/pwm/imx-pwm.txt b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
+index e00c2e9..c61bdf8 100644
+--- a/Documentation/devicetree/bindings/pwm/imx-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
+@@ -6,8 +6,8 @@ Required properties:
+   - "fsl,imx1-pwm" for PWM compatible with the one integrated on i.MX1
+   - "fsl,imx27-pwm" for PWM compatible with the one integrated on i.MX27
+ - reg: physical base address and length of the controller's registers
+-- #pwm-cells: should be 2. See pwm.txt in this directory for a description of
+-  the cells format.
++- #pwm-cells: 2 for i.MX1 and 3 for i.MX27 and newer SoCs. See pwm.txt
++  in this directory for a description of the cells format.
+ - clocks : Clock specifiers for both ipg and per clocks.
+ - clock-names : Clock names should include both "ipg" and "per"
+ See the clock consumer binding,
+@@ -17,7 +17,7 @@ See the clock consumer binding,
+ Example:
  
- 	reg_module_3v3: regulator-module-3v3 {
-@@ -356,7 +359,6 @@
- 		fsl,pins = <
- 			MX7D_PAD_ECSPI2_SS0__GPIO4_IO23		0x14 /* SODIMM 65 */
- 			MX7D_PAD_SD1_CD_B__GPIO5_IO0		0x14 /* SODIMM 69 */
--			MX7D_PAD_SD1_WP__GPIO5_IO1		0x14 /* SODIMM 71 */
- 			MX7D_PAD_I2C4_SDA__GPIO4_IO15		0x14 /* SODIMM 75 */
- 			MX7D_PAD_ECSPI1_MISO__GPIO4_IO18	0x14 /* SODIMM 79 */
- 			MX7D_PAD_I2C3_SCL__GPIO4_IO12		0x14 /* SODIMM 81 */
-@@ -388,6 +390,12 @@
- 		>;
- 	};
+ pwm1: pwm@53fb4000 {
+-	#pwm-cells = <2>;
++	#pwm-cells = <3>;
+ 	compatible = "fsl,imx53-pwm", "fsl,imx27-pwm";
+ 	reg = <0x53fb4000 0x4000>;
+ 	clocks = <&clks IMX5_CLK_PWM1_IPG_GATE>,
+diff --git a/arch/arm/boot/dts/imx7s.dtsi b/arch/arm/boot/dts/imx7s.dtsi
+index 0d7d5ac..8d1d471 100644
+--- a/arch/arm/boot/dts/imx7s.dtsi
++++ b/arch/arm/boot/dts/imx7s.dtsi
+@@ -601,7 +601,7 @@
+ 				clocks = <&clks IMX7D_PWM1_ROOT_CLK>,
+ 					 <&clks IMX7D_PWM1_ROOT_CLK>;
+ 				clock-names = "ipg", "per";
+-				#pwm-cells = <2>;
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
  
-+		pinctrl_gpio_bl_on: gpio-bl-on {
-+			fsl,pins = <
-+				MX7D_PAD_SD1_WP__GPIO5_IO1		0x14
-+			>;
-+		};
-+
- 	pinctrl_i2c1_int: i2c1-int-grp { /* PMIC / TOUCH */
- 		fsl,pins = <
- 			MX7D_PAD_GPIO1_IO13__GPIO1_IO13	0x79
+@@ -612,7 +612,7 @@
+ 				clocks = <&clks IMX7D_PWM2_ROOT_CLK>,
+ 					 <&clks IMX7D_PWM2_ROOT_CLK>;
+ 				clock-names = "ipg", "per";
+-				#pwm-cells = <2>;
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 
+@@ -623,7 +623,7 @@
+ 				clocks = <&clks IMX7D_PWM3_ROOT_CLK>,
+ 					 <&clks IMX7D_PWM3_ROOT_CLK>;
+ 				clock-names = "ipg", "per";
+-				#pwm-cells = <2>;
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 
+@@ -634,7 +634,7 @@
+ 				clocks = <&clks IMX7D_PWM4_ROOT_CLK>,
+ 					 <&clks IMX7D_PWM4_ROOT_CLK>;
+ 				clock-names = "ipg", "per";
+-				#pwm-cells = <2>;
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 
 -- 
 2.9.2
