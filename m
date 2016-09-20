@@ -1,72 +1,32 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3] pwm: add pwm driver for HiSilicon BVT SOCs
-Date: Tue, 20 Sep 2016 09:43:48 -0500
-Message-ID: <20160920144348.GA22856@rob-hp-laptop>
-References: <1473645106-42266-1-git-send-email-yuanjian12@hisilicon.com>
+From: John Tobias <john.tobias.ph@gmail.com>
+Subject: PWM on Suspend To Ram
+Date: Tue, 20 Sep 2016 08:50:29 -0700
+Message-ID: <CACUGKYNYLnRkWuaMWsc+524C2TscjL2L2AU-eFP-JNKy879AvQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi0-f66.google.com ([209.85.218.66]:34090 "EHLO
-        mail-oi0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751643AbcITOnu (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 20 Sep 2016 10:43:50 -0400
-Content-Disposition: inline
-In-Reply-To: <1473645106-42266-1-git-send-email-yuanjian12@hisilicon.com>
+Received: from mail-it0-f44.google.com ([209.85.214.44]:33476 "EHLO
+        mail-it0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932484AbcITPub (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 20 Sep 2016 11:50:31 -0400
+Received: by mail-it0-f44.google.com with SMTP id x192so26441002itb.0
+        for <linux-pwm@vger.kernel.org>; Tue, 20 Sep 2016 08:50:31 -0700 (PDT)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jian Yuan <yuanjian12@hisilicon.com>
-Cc: thierry.reding@gmail.com, mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, xuejiancheng@hisilicon.com, kevin.lixu@hisilicon.com, jalen.hsu@hisilicon.com
+To: linux-pwm@vger.kernel.org
 
-On Mon, Sep 12, 2016 at 09:51:46AM +0800, Jian Yuan wrote:
-> From: yuanjian <yuanjian12@hisilicon.com>
-> 
-> Add PWM driver for the PWM controller found on HiSilicon BVT SOCs, like Hi3519V100, Hi3516CV300, etc.
-> The PWM controller is primarily in charge of controlling P-Iris lens.
-> 
-> Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
-> Signed-off-by: Jian Yuan <yuanjian12@hisilicon.com>
-> ---
-> Change Log:
-> v3:
-> Add PWM compatible string for Hi3519V100.
-> Implement .apply() function which support atomic, instead of .enable()/.disable()/.config().
-> v2:
-> The number of PWMs is change to be probeable based on the compatible string.
-> 
->  .../devicetree/bindings/pwm/pwm-hibvt.txt          |  20 ++
->  drivers/pwm/Kconfig                                |   9 +
->  drivers/pwm/Makefile                               |   1 +
->  drivers/pwm/pwm-hibvt.c                            | 270 +++++++++++++++++++++
->  4 files changed, 300 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
->  create mode 100644 drivers/pwm/pwm-hibvt.c
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
-> new file mode 100644
-> index 0000000..2ecf4e4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
-> @@ -0,0 +1,20 @@
-> +Hisilicon PWM controller
-> +
-> +Required properties:
-> +-compatible: should contain one SoC specific compatible string and one generic compatible
-> +string "hisilicon, hibvt-pwm". The SoC specific strings supported including:
-> +	"hisilicon,hi3516cv300-pwm"
-> +	"hisilicon,hi3519v100-pwm"
-> +- reg: physical base address and length of the controller's registers.
-> +- clocks: phandle and clock specifier of the PWM reference clock.
-> +- resets: phandle and reset specifier for the PWM controller reset.
+Hi Guys,
 
-You are missing #pwm-cells.
+I have an iMX6 board and I can put the device in Suspend to RAM mode.
+While in the said mode, I would like to keep the PWM up and running
+(The iMX6 PWM support low power mode).
 
-> +
-> +Example:
-> +	pwm: pwm@12130000 {
-> +
-> +		compatible = "hisilicon,hi3516cv300-pwm", "hisilicon,hibvt-pwm";
-> +		compatible = "hisilicon,hi3519v100-pwm", "hisilicon,hibvt-pwm";
-> +		reg = <0x12130000 0x10000>;
-> +		clocks = <&crg_ctrl HI3516CV300_PWM_CLK>;
-> +		resets = <&crg_ctrl 0x38 0>;
-> +	};
+During the suspend mode, I set all the registers that I do believe to
+enable the PWM, but I am not getting the any signals.
+
+I would like to know if anyone here have any idea how to tweak it in
+order to accomplish for what I need?.
+
+Regards,
+
+John
