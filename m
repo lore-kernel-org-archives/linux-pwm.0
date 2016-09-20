@@ -1,230 +1,72 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH] pwm-pca9685: Allow any of the 16 PWMs to be used as a GPIO
-Date: Tue, 20 Sep 2016 17:40:56 +0300
-Message-ID: <20160920144056.130104-1-mika.westerberg@linux.intel.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3] pwm: add pwm driver for HiSilicon BVT SOCs
+Date: Tue, 20 Sep 2016 09:43:48 -0500
+Message-ID: <20160920144348.GA22856@rob-hp-laptop>
+References: <1473645106-42266-1-git-send-email-yuanjian12@hisilicon.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:23908 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754083AbcITOlA (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 20 Sep 2016 10:41:00 -0400
+Received: from mail-oi0-f66.google.com ([209.85.218.66]:34090 "EHLO
+        mail-oi0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751643AbcITOnu (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 20 Sep 2016 10:43:50 -0400
+Content-Disposition: inline
+In-Reply-To: <1473645106-42266-1-git-send-email-yuanjian12@hisilicon.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-pwm@vger.kernel.org
+To: Jian Yuan <yuanjian12@hisilicon.com>
+Cc: thierry.reding@gmail.com, mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, xuejiancheng@hisilicon.com, kevin.lixu@hisilicon.com, jalen.hsu@hisilicon.com
 
-The PCA9685 controller has full on/off bit for each PWM channel. Setting
-this bit bypasses the PWM control and the line works just as it would be a
-GPIO. Furthermore in Intel Galileo it is actually used as GPIO output for
-discreet muxes on the board.
+On Mon, Sep 12, 2016 at 09:51:46AM +0800, Jian Yuan wrote:
+> From: yuanjian <yuanjian12@hisilicon.com>
+> 
+> Add PWM driver for the PWM controller found on HiSilicon BVT SOCs, like Hi3519V100, Hi3516CV300, etc.
+> The PWM controller is primarily in charge of controlling P-Iris lens.
+> 
+> Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
+> Signed-off-by: Jian Yuan <yuanjian12@hisilicon.com>
+> ---
+> Change Log:
+> v3:
+> Add PWM compatible string for Hi3519V100.
+> Implement .apply() function which support atomic, instead of .enable()/.disable()/.config().
+> v2:
+> The number of PWMs is change to be probeable based on the compatible string.
+> 
+>  .../devicetree/bindings/pwm/pwm-hibvt.txt          |  20 ++
+>  drivers/pwm/Kconfig                                |   9 +
+>  drivers/pwm/Makefile                               |   1 +
+>  drivers/pwm/pwm-hibvt.c                            | 270 +++++++++++++++++++++
+>  4 files changed, 300 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
+>  create mode 100644 drivers/pwm/pwm-hibvt.c
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
+> new file mode 100644
+> index 0000000..2ecf4e4
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
+> @@ -0,0 +1,20 @@
+> +Hisilicon PWM controller
+> +
+> +Required properties:
+> +-compatible: should contain one SoC specific compatible string and one generic compatible
+> +string "hisilicon, hibvt-pwm". The SoC specific strings supported including:
+> +	"hisilicon,hi3516cv300-pwm"
+> +	"hisilicon,hi3519v100-pwm"
+> +- reg: physical base address and length of the controller's registers.
+> +- clocks: phandle and clock specifier of the PWM reference clock.
+> +- resets: phandle and reset specifier for the PWM controller reset.
 
-This patch adds GPIO output only support for the driver so that we can
-control the muxes on Galileo using standard GPIO interfaces available in
-the kernel. GPIO and PWM functionality is exclusive so only one can be
-active at a time on a single PWM channel.
+You are missing #pwm-cells.
 
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
----
- drivers/pwm/pwm-pca9685.c | 158 +++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 157 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index 117fccf7934a..f0c6131ccf33 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -20,8 +20,10 @@
-  */
- 
- #include <linux/acpi.h>
-+#include <linux/gpio/driver.h>
- #include <linux/i2c.h>
- #include <linux/module.h>
-+#include <linux/mutex.h>
- #include <linux/platform_device.h>
- #include <linux/property.h>
- #include <linux/pwm.h>
-@@ -81,6 +83,10 @@ struct pca9685 {
- 	int active_cnt;
- 	int duty_ns;
- 	int period_ns;
-+#if IS_ENABLED(CONFIG_GPIOLIB)
-+	struct mutex lock;
-+	struct gpio_chip gpio;
-+#endif
- };
- 
- static inline struct pca9685 *to_pca(struct pwm_chip *chip)
-@@ -88,6 +94,149 @@ static inline struct pca9685 *to_pca(struct pwm_chip *chip)
- 	return container_of(chip, struct pca9685, chip);
- }
- 
-+#if IS_ENABLED(CONFIG_GPIOLIB)
-+static int pca9685_pwm_gpio_request(struct gpio_chip *gpio, unsigned int offset)
-+{
-+	struct pca9685 *pca = gpiochip_get_data(gpio);
-+	struct pwm_device *pwm;
-+
-+	mutex_lock(&pca->lock);
-+
-+	pwm = &pca->chip.pwms[offset];
-+	if (pwm->flags & (PWMF_REQUESTED | PWMF_EXPORTED)) {
-+		mutex_unlock(&pca->lock);
-+		return -EBUSY;
-+	}
-+	pwm_set_chip_data(pwm, (void *)1);
-+
-+	mutex_unlock(&pca->lock);
-+	return 0;
-+}
-+
-+static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
-+{
-+	struct pca9685 *pca = gpiochip_get_data(gpio);
-+	struct pwm_device *pwm;
-+
-+	mutex_lock(&pca->lock);
-+	pwm = &pca->chip.pwms[offset];
-+	pwm_set_chip_data(pwm, NULL);
-+	mutex_unlock(&pca->lock);
-+}
-+
-+static bool pca9685_pwm_is_gpio(struct pca9685 *pca, struct pwm_device *pwm)
-+{
-+	bool is_gpio = false;
-+
-+	mutex_lock(&pca->lock);
-+
-+	if (pwm->hwpwm >= PCA9685_MAXCHAN) {
-+		unsigned int i;
-+
-+		/*
-+		 * Check if any of the GPIOs are requested and in that case
-+		 * prevent using all LEDs channel.
-+		 */
-+		for (i = 0; i < pca->gpio.ngpio; i++)
-+			if (gpiochip_is_requested(&pca->gpio, i)) {
-+				is_gpio = true;
-+				break;
-+			}
-+	} else if (pwm_get_chip_data(pwm)) {
-+		is_gpio = true;
-+	}
-+
-+	mutex_unlock(&pca->lock);
-+	return is_gpio;
-+}
-+
-+static int pca9685_pwm_gpio_get(struct gpio_chip *gpio, unsigned int offset)
-+{
-+	struct pca9685 *pca = gpiochip_get_data(gpio);
-+	struct pwm_device *pwm = &pca->chip.pwms[offset];
-+	unsigned int value;
-+
-+	regmap_read(pca->regmap, LED_N_ON_H(pwm->hwpwm), &value);
-+	return value & LED_FULL;
-+}
-+
-+static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
-+				 int value)
-+{
-+	struct pca9685 *pca = gpiochip_get_data(gpio);
-+	struct pwm_device *pwm = &pca->chip.pwms[offset];
-+	unsigned int reg;
-+
-+	/* Clear both OFF registers */
-+	reg = LED_N_OFF_L(pwm->hwpwm);
-+	regmap_write(pca->regmap, reg, 0);
-+	reg = LED_N_OFF_H(pwm->hwpwm);
-+	regmap_write(pca->regmap, reg, 0);
-+
-+	/* Set the full ON bit */
-+	reg = LED_N_ON_H(pwm->hwpwm);
-+	regmap_write(pca->regmap, reg, value ? LED_FULL : 0);
-+}
-+
-+static int pca9685_pwm_gpio_get_direction(struct gpio_chip *chip,
-+					  unsigned int offset)
-+{
-+	/* Always out */
-+	return 0;
-+}
-+
-+static int pca9685_pwm_gpio_direction_input(struct gpio_chip *gpio,
-+					    unsigned int offset)
-+{
-+	return -EINVAL;
-+}
-+
-+static int pca9685_pwm_gpio_direction_output(struct gpio_chip *gpio,
-+					     unsigned int offset, int value)
-+{
-+	pca9685_pwm_gpio_set(gpio, offset, value);
-+	return 0;
-+}
-+
-+/*
-+ * The PCA9685 has a bit for turning the PWM output full off or on. Some
-+ * boards like Intel Galileo actually uses these as normal GPIOs so we
-+ * expose a GPIO chip here which can exclusively take over the underlying
-+ * PWM channel.
-+ */
-+static int pca9685_pwm_gpio_probe(struct pca9685 *pca)
-+{
-+	struct device *dev = pca->chip.dev;
-+
-+	mutex_init(&pca->lock);
-+
-+	pca->gpio.label = dev_name(dev);
-+	pca->gpio.parent = dev;
-+	pca->gpio.request = pca9685_pwm_gpio_request;
-+	pca->gpio.free = pca9685_pwm_gpio_free;
-+	pca->gpio.get_direction = pca9685_pwm_gpio_get_direction;
-+	pca->gpio.direction_input = pca9685_pwm_gpio_direction_input;
-+	pca->gpio.direction_output = pca9685_pwm_gpio_direction_output;
-+	pca->gpio.get = pca9685_pwm_gpio_get;
-+	pca->gpio.set = pca9685_pwm_gpio_set;
-+	pca->gpio.base = -1;
-+	pca->gpio.ngpio = PCA9685_MAXCHAN;
-+	pca->gpio.can_sleep = true;
-+
-+	return devm_gpiochip_add_data(dev, &pca->gpio, pca);
-+}
-+#else
-+static inline bool pca9685_pwm_is_gpio(struct pca9685 *pca,
-+				       struct pwm_device *pwm)
-+{
-+	return false;
-+}
-+static inline int pca9685_pwm_gpio_probe(struct pca9685 *pca)
-+{
-+	return 0;
-+}
-+#endif
-+
- static int pca9685_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 			      int duty_ns, int period_ns)
- {
-@@ -264,6 +413,9 @@ static int pca9685_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct pca9685 *pca = to_pca(chip);
- 
-+	if (pca9685_pwm_is_gpio(pca, pwm))
-+		return -EBUSY;
-+
- 	if (pca->active_cnt++ == 0)
- 		return regmap_update_bits(pca->regmap, PCA9685_MODE1,
- 					  MODE1_SLEEP, 0x0);
-@@ -345,7 +497,11 @@ static int pca9685_pwm_probe(struct i2c_client *client,
- 	pca->chip.base = -1;
- 	pca->chip.can_sleep = true;
- 
--	return pwmchip_add(&pca->chip);
-+	ret = pwmchip_add(&pca->chip);
-+	if (ret)
-+		return ret;
-+
-+	return pca9685_pwm_gpio_probe(pca);
- }
- 
- static int pca9685_pwm_remove(struct i2c_client *client)
--- 
-2.9.3
+> +
+> +Example:
+> +	pwm: pwm@12130000 {
+> +
+> +		compatible = "hisilicon,hi3516cv300-pwm", "hisilicon,hibvt-pwm";
+> +		compatible = "hisilicon,hi3519v100-pwm", "hisilicon,hibvt-pwm";
+> +		reg = <0x12130000 0x10000>;
+> +		clocks = <&crg_ctrl HI3516CV300_PWM_CLK>;
+> +		resets = <&crg_ctrl 0x38 0>;
+> +	};
