@@ -1,97 +1,230 @@
-From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: [PATCH 1/3] arm: dts: imx7: Update #pwm-cells for PWM polarity control
-Date: Mon, 19 Sep 2016 19:53:45 +0530
-Message-ID: <20160919142347.11342-2-bhuvanchandra.dv@toradex.com>
-References: <20160919142347.11342-1-bhuvanchandra.dv@toradex.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20160919142347.11342-1-bhuvanchandra.dv@toradex.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: shawnguo@kernel.org
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, stefan@agner.ch, robh+dt@kernel.org, thierry.reding@gmail.com, kernel@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: [PATCH] pwm-pca9685: Allow any of the 16 PWMs to be used as a GPIO
+Date: Tue, 20 Sep 2016 17:40:56 +0300
+Message-ID: <20160920144056.130104-1-mika.westerberg@linux.intel.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga04.intel.com ([192.55.52.120]:23908 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1754083AbcITOlA (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 20 Sep 2016 10:41:00 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-pwm@vger.kernel.org
 
-Update #pwm-cells to 3 in order to support PWM signal polarity control.
+The PCA9685 controller has full on/off bit for each PWM channel. Setting
+this bit bypasses the PWM control and the line works just as it would be a
+GPIO. Furthermore in Intel Galileo it is actually used as GPIO output for
+discreet muxes on the board.
 
-Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+This patch adds GPIO output only support for the driver so that we can
+control the muxes on Galileo using standard GPIO interfaces available in
+the kernel. GPIO and PWM functionality is exclusive so only one can be
+active at a time on a single PWM channel.
+
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 ---
- Documentation/devicetree/bindings/pwm/imx-pwm.txt | 6 +++---
- arch/arm/boot/dts/imx7s.dtsi                      | 8 ++++----
- 2 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/pwm/pwm-pca9685.c | 158 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 157 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/imx-pwm.txt b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
-index e00c2e9..c61bdf8 100644
---- a/Documentation/devicetree/bindings/pwm/imx-pwm.txt
-+++ b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
-@@ -6,8 +6,8 @@ Required properties:
-   - "fsl,imx1-pwm" for PWM compatible with the one integrated on i.MX1
-   - "fsl,imx27-pwm" for PWM compatible with the one integrated on i.MX27
- - reg: physical base address and length of the controller's registers
--- #pwm-cells: should be 2. See pwm.txt in this directory for a description of
--  the cells format.
-+- #pwm-cells: 2 for i.MX1 and 3 for i.MX27 and newer SoCs. See pwm.txt
-+  in this directory for a description of the cells format.
- - clocks : Clock specifiers for both ipg and per clocks.
- - clock-names : Clock names should include both "ipg" and "per"
- See the clock consumer binding,
-@@ -17,7 +17,7 @@ See the clock consumer binding,
- Example:
+diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+index 117fccf7934a..f0c6131ccf33 100644
+--- a/drivers/pwm/pwm-pca9685.c
++++ b/drivers/pwm/pwm-pca9685.c
+@@ -20,8 +20,10 @@
+  */
  
- pwm1: pwm@53fb4000 {
--	#pwm-cells = <2>;
-+	#pwm-cells = <3>;
- 	compatible = "fsl,imx53-pwm", "fsl,imx27-pwm";
- 	reg = <0x53fb4000 0x4000>;
- 	clocks = <&clks IMX5_CLK_PWM1_IPG_GATE>,
-diff --git a/arch/arm/boot/dts/imx7s.dtsi b/arch/arm/boot/dts/imx7s.dtsi
-index 0d7d5ac..8d1d471 100644
---- a/arch/arm/boot/dts/imx7s.dtsi
-+++ b/arch/arm/boot/dts/imx7s.dtsi
-@@ -601,7 +601,7 @@
- 				clocks = <&clks IMX7D_PWM1_ROOT_CLK>,
- 					 <&clks IMX7D_PWM1_ROOT_CLK>;
- 				clock-names = "ipg", "per";
--				#pwm-cells = <2>;
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
+ #include <linux/acpi.h>
++#include <linux/gpio/driver.h>
+ #include <linux/i2c.h>
+ #include <linux/module.h>
++#include <linux/mutex.h>
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
+ #include <linux/pwm.h>
+@@ -81,6 +83,10 @@ struct pca9685 {
+ 	int active_cnt;
+ 	int duty_ns;
+ 	int period_ns;
++#if IS_ENABLED(CONFIG_GPIOLIB)
++	struct mutex lock;
++	struct gpio_chip gpio;
++#endif
+ };
  
-@@ -612,7 +612,7 @@
- 				clocks = <&clks IMX7D_PWM2_ROOT_CLK>,
- 					 <&clks IMX7D_PWM2_ROOT_CLK>;
- 				clock-names = "ipg", "per";
--				#pwm-cells = <2>;
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
+ static inline struct pca9685 *to_pca(struct pwm_chip *chip)
+@@ -88,6 +94,149 @@ static inline struct pca9685 *to_pca(struct pwm_chip *chip)
+ 	return container_of(chip, struct pca9685, chip);
+ }
  
-@@ -623,7 +623,7 @@
- 				clocks = <&clks IMX7D_PWM3_ROOT_CLK>,
- 					 <&clks IMX7D_PWM3_ROOT_CLK>;
- 				clock-names = "ipg", "per";
--				#pwm-cells = <2>;
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
++#if IS_ENABLED(CONFIG_GPIOLIB)
++static int pca9685_pwm_gpio_request(struct gpio_chip *gpio, unsigned int offset)
++{
++	struct pca9685 *pca = gpiochip_get_data(gpio);
++	struct pwm_device *pwm;
++
++	mutex_lock(&pca->lock);
++
++	pwm = &pca->chip.pwms[offset];
++	if (pwm->flags & (PWMF_REQUESTED | PWMF_EXPORTED)) {
++		mutex_unlock(&pca->lock);
++		return -EBUSY;
++	}
++	pwm_set_chip_data(pwm, (void *)1);
++
++	mutex_unlock(&pca->lock);
++	return 0;
++}
++
++static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
++{
++	struct pca9685 *pca = gpiochip_get_data(gpio);
++	struct pwm_device *pwm;
++
++	mutex_lock(&pca->lock);
++	pwm = &pca->chip.pwms[offset];
++	pwm_set_chip_data(pwm, NULL);
++	mutex_unlock(&pca->lock);
++}
++
++static bool pca9685_pwm_is_gpio(struct pca9685 *pca, struct pwm_device *pwm)
++{
++	bool is_gpio = false;
++
++	mutex_lock(&pca->lock);
++
++	if (pwm->hwpwm >= PCA9685_MAXCHAN) {
++		unsigned int i;
++
++		/*
++		 * Check if any of the GPIOs are requested and in that case
++		 * prevent using all LEDs channel.
++		 */
++		for (i = 0; i < pca->gpio.ngpio; i++)
++			if (gpiochip_is_requested(&pca->gpio, i)) {
++				is_gpio = true;
++				break;
++			}
++	} else if (pwm_get_chip_data(pwm)) {
++		is_gpio = true;
++	}
++
++	mutex_unlock(&pca->lock);
++	return is_gpio;
++}
++
++static int pca9685_pwm_gpio_get(struct gpio_chip *gpio, unsigned int offset)
++{
++	struct pca9685 *pca = gpiochip_get_data(gpio);
++	struct pwm_device *pwm = &pca->chip.pwms[offset];
++	unsigned int value;
++
++	regmap_read(pca->regmap, LED_N_ON_H(pwm->hwpwm), &value);
++	return value & LED_FULL;
++}
++
++static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
++				 int value)
++{
++	struct pca9685 *pca = gpiochip_get_data(gpio);
++	struct pwm_device *pwm = &pca->chip.pwms[offset];
++	unsigned int reg;
++
++	/* Clear both OFF registers */
++	reg = LED_N_OFF_L(pwm->hwpwm);
++	regmap_write(pca->regmap, reg, 0);
++	reg = LED_N_OFF_H(pwm->hwpwm);
++	regmap_write(pca->regmap, reg, 0);
++
++	/* Set the full ON bit */
++	reg = LED_N_ON_H(pwm->hwpwm);
++	regmap_write(pca->regmap, reg, value ? LED_FULL : 0);
++}
++
++static int pca9685_pwm_gpio_get_direction(struct gpio_chip *chip,
++					  unsigned int offset)
++{
++	/* Always out */
++	return 0;
++}
++
++static int pca9685_pwm_gpio_direction_input(struct gpio_chip *gpio,
++					    unsigned int offset)
++{
++	return -EINVAL;
++}
++
++static int pca9685_pwm_gpio_direction_output(struct gpio_chip *gpio,
++					     unsigned int offset, int value)
++{
++	pca9685_pwm_gpio_set(gpio, offset, value);
++	return 0;
++}
++
++/*
++ * The PCA9685 has a bit for turning the PWM output full off or on. Some
++ * boards like Intel Galileo actually uses these as normal GPIOs so we
++ * expose a GPIO chip here which can exclusively take over the underlying
++ * PWM channel.
++ */
++static int pca9685_pwm_gpio_probe(struct pca9685 *pca)
++{
++	struct device *dev = pca->chip.dev;
++
++	mutex_init(&pca->lock);
++
++	pca->gpio.label = dev_name(dev);
++	pca->gpio.parent = dev;
++	pca->gpio.request = pca9685_pwm_gpio_request;
++	pca->gpio.free = pca9685_pwm_gpio_free;
++	pca->gpio.get_direction = pca9685_pwm_gpio_get_direction;
++	pca->gpio.direction_input = pca9685_pwm_gpio_direction_input;
++	pca->gpio.direction_output = pca9685_pwm_gpio_direction_output;
++	pca->gpio.get = pca9685_pwm_gpio_get;
++	pca->gpio.set = pca9685_pwm_gpio_set;
++	pca->gpio.base = -1;
++	pca->gpio.ngpio = PCA9685_MAXCHAN;
++	pca->gpio.can_sleep = true;
++
++	return devm_gpiochip_add_data(dev, &pca->gpio, pca);
++}
++#else
++static inline bool pca9685_pwm_is_gpio(struct pca9685 *pca,
++				       struct pwm_device *pwm)
++{
++	return false;
++}
++static inline int pca9685_pwm_gpio_probe(struct pca9685 *pca)
++{
++	return 0;
++}
++#endif
++
+ static int pca9685_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			      int duty_ns, int period_ns)
+ {
+@@ -264,6 +413,9 @@ static int pca9685_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	struct pca9685 *pca = to_pca(chip);
  
-@@ -634,7 +634,7 @@
- 				clocks = <&clks IMX7D_PWM4_ROOT_CLK>,
- 					 <&clks IMX7D_PWM4_ROOT_CLK>;
- 				clock-names = "ipg", "per";
--				#pwm-cells = <2>;
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
++	if (pca9685_pwm_is_gpio(pca, pwm))
++		return -EBUSY;
++
+ 	if (pca->active_cnt++ == 0)
+ 		return regmap_update_bits(pca->regmap, PCA9685_MODE1,
+ 					  MODE1_SLEEP, 0x0);
+@@ -345,7 +497,11 @@ static int pca9685_pwm_probe(struct i2c_client *client,
+ 	pca->chip.base = -1;
+ 	pca->chip.can_sleep = true;
  
+-	return pwmchip_add(&pca->chip);
++	ret = pwmchip_add(&pca->chip);
++	if (ret)
++		return ret;
++
++	return pca9685_pwm_gpio_probe(pca);
+ }
+ 
+ static int pca9685_pwm_remove(struct i2c_client *client)
 -- 
-2.9.2
+2.9.3
