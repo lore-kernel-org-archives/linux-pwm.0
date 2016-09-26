@@ -1,165 +1,76 @@
-From: Olliver Schinagl <oliver@schinagl.nl>
-Subject: Re: [PATCH 1/2] pwm: sunxi: allow the pwm to finish its pulse
- before disable
-Date: Mon, 26 Sep 2016 10:46:25 +0200
-Message-ID: <1474879585.6096.33.camel@schinagl.nl>
-References: <1472147411-30424-1-git-send-email-oliver@schinagl.nl>
-         <1472147411-30424-2-git-send-email-oliver@schinagl.nl>
-         <20160826221900.GG3165@lukather> <1473145976.731.20.camel@schinagl.nl>
-         <20160906195149.GJ9040@lukather> <1473411668.731.75.camel@schinagl.nl>
-         <20160924202502.GF16901@lukather>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-LbZB3/FIZTCVtYeAO9mm"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160924202502.GF16901@lukather>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Chen-Yu Tsai <wens@csie.org>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [PATCH stable 4.4] pwm: Mark all devices as "might sleep"
+Date: Mon, 26 Sep 2016 21:28:08 +0200
+Message-ID: <1474918088-14184-1-git-send-email-krzk@kernel.org>
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: stable@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
+From: Thierry Reding <thierry.reding@gmail.com>
 
---=-LbZB3/FIZTCVtYeAO9mm
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+commit ff01c944cfa939f3474c28d88223213494aedf0b upstream.
 
-On za, 2016-09-24 at 22:25 +0200, Maxime Ripard wrote:
-> Hi Oliver,
->=20
-> Sorry for the slow answer.
->=20
-> On Fri, Sep 09, 2016 at 11:01:08AM +0200, Olliver Schinagl wrote:
-> >=20
-> > >=20
-> > > >=20
-> > > > >=20
-> > > > > >=20
-> > > > > > *chip, struct pwm_device *pwm)
-> > > > > > =C2=A0	spin_lock(&sun4i_pwm->ctrl_lock);
-> > > > > > =C2=A0	val =3D sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
-> > > > > > =C2=A0	val &=3D ~BIT_CH(PWM_EN, pwm->hwpwm);
-> > > > > > +	sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
-> > > > > > +	spin_unlock(&sun4i_pwm->ctrl_lock);
-> > > > > > +
-> > > > > > +	/* Allow for the PWM hardware to finish its last
-> > > > > > toggle.
-> > > > > > The pulse
-> > > > > > +	=C2=A0* may have just started and thus we should wait a
-> > > > > > full
-> > > > > > period.
-> > > > > > +	=C2=A0*/
-> > > > > > +	ndelay(pwm_get_period(pwm));
-> > > > >=20
-> > > > > Can't that use the ready bit as well?
-> > > > It depends whatever is cheaper. If we disable the pwm, we have
-> > > > to
-> > > > commit that request to hardware first. Then we have to read
-> > > > back
-> > > > the
-> > > > has ready and in the strange situation it is not, wait for it
-> > > > to
-> > > > become
-> > > > ready?
-> > >=20
-> > > If it works like you were suggesting, yes.
-> > >=20
-> > > >=20
-> > > >=20
-> > > > Also, that would mean we would loop in a spin lock, or keep
-> > > > setting/clearing an additional spinlock to read the ready bit.
-> > >=20
-> > > You're using a spin_lock, so it's not that bad, but I was just
-> > > suggesting replacing the ndelay.
-> >=20
-> > If you say the spin_lock + wait for the ready is just as expensive
-> > as
-> > the ndelay, or the ndelay is less preferred, then I gladly make the
-> > change;
->=20
-> For the spin_lock part, I was just comparing it to a
-> spin_lock_irqsave, which is pretty expensive since it masks all the
-> interrupts in the system, introducing latencies.
-so spin_lock is very expensive and we should avoid if we can?
->=20
-> >=20
-> > but I think we need the ndelay for the else where we do not
-> > have the ready flag (A10 or A13 iirc?)
->=20
-> Hmmmm, good point. But that would also apply to your second patch
-> then, wouldn't it?
-yeah, you would have an if/else for the case of !hasready.
+Commit d1cd21427747 ("pwm: Set enable state properly on failed call to
+enable") introduced a mutex that is needed to protect internal state of
+PWM devices. Since that mutex is acquired in pwm_set_polarity() and in
+pwm_enable() and might potentially block, all PWM devices effectively
+become "might sleep".
 
-this is what i've been dabbling in the train last week, but haven't
-thought it through yet, let alone tested it:
+It's rather pointless to keep the .can_sleep field around, but given
+that there are external users let's postpone the removal for the next
+release cycle.
 
+[k.kozlowski]
+This fixes warnings with DEBUG_ATOMIC_SLEEP enabled on Odroid XU3 board:
+  BUG: sleeping function called from invalid context at ../kernel/locking/mutex.c:620
+  in_atomic(): 1, irqs_disabled(): 0, pid: 0, name: swapper/1
+  INFO: lockdep is turned off.
+  Preemption disabled at:[<  (null)>]   (null)
 
-+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (!(sun4i_pwm->data->has_rdy))
-+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0ndelay(pwm_get_period(pwm));
-+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0else
-+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0do {
-+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0spin_lock=
-(&sun4i_pwm->ctrl_lock);
-+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0val =3D s=
-un4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
-+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0spin_unlo=
-ck(&sun4i_pwm->ctrl_lock);
-+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0} while (!(val & PWM_RDY(pwm->hwpwm)))
+  CPU: 1 PID: 0 Comm: swapper/1 Tainted: G        W       4.4.23-rc1-00043-g43ce821 #1461
+  Hardware name: SAMSUNG EXYNOS (Flattened Device Tree)
+  [<c00167c8>] (unwind_backtrace) from [<c001357c>] (show_stack+0x10/0x14)
+  [<c001357c>] (show_stack) from [<c0237ee4>] (dump_stack+0x88/0x9c)
+  [<c0237ee4>] (dump_stack) from [<c05d47f4>] (mutex_lock_nested+0x28/0x454)
+  [<c05d47f4>] (mutex_lock_nested) from [<c026a7b0>] (pwm_enable+0x24/0x80)
+  [<c026a7b0>] (pwm_enable) from [<c0439e94>] (led_heartbeat_function+0xe8/0x13c)
+  [<c0439e94>] (led_heartbeat_function) from [<c007f0a0>] (call_timer_fn+0x6c/0xf4)
+  [<c007f0a0>] (call_timer_fn) from [<c007f2c0>] (run_timer_softirq+0x198/0x21c)
+  [<c007f2c0>] (run_timer_softirq) from [<c0027ed8>] (__do_softirq+0x110/0x228)
+  [<c0027ed8>] (__do_softirq) from [<c00282cc>] (irq_exit+0xc0/0xfc)
+  [<c00282cc>] (irq_exit) from [<c006f510>] (__handle_domain_irq+0x80/0xec)
+  [<c006f510>] (__handle_domain_irq) from [<c00094ec>] (gic_handle_irq+0x54/0x98)
+  [<c00094ec>] (gic_handle_irq) from [<c0014014>] (__irq_svc+0x54/0x90)
+  Exception stack(0xee8bbf88 to 0xee8bbfd0)
+  bf80:                   00000001 00000000 00000000 c001c080 ee8ba000 c05dc368
+  bfa0: 00000000 00000000 ee8bbfe0 c0896364 c089e4b4 c089e4bc 00000001 ee8bbfd8
+  bfc0: c0010280 c0010284 60080013 ffffffff
+  [<c0014014>] (__irq_svc) from [<c0010284>] (arch_cpu_idle+0x38/0x3c)
+  [<c0010284>] (arch_cpu_idle) from [<c005ef94>] (cpu_startup_entry+0x1ec/0x270)
+  [<c005ef94>] (cpu_startup_entry) from [<400095cc>] (0x400095cc)
 
-Here I assumed the spin_lock is cheap to make, expensive to hold for
-long, e.g. reducing the length the spin-lock is active for. the
-alternative was to remove the spin_lock here, and remove unlock-lock
-before-after this block where you basically get a very long lasting
-spin_lock, the alternative.
-=C2=A0
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0spin_lock(&sun4i_pwm->ctrl_=
-lock);
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0val =3D sun4i_pwm_readl(sun=
-4i_pwm, PWM_CTRL_REG);
-+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (sun4i_pwm->data->has_rdy && =
-(!(val & PWM_RDY(pwm->hwpwm))))
-+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0dev_warn(chip->dev, "never became ready\n");
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Fixes: Fixes: d1cd21427747 ("pwm: Set enable state properly on failed call to enable")
+Cc: <stable@vger.kernel.org> # v4.4
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+---
+ drivers/pwm/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-this may be useful for debugging i thought.
-
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0val &=3D ~BIT_CH(PWM_CLK_GA=
-TING, pwm->hwpwm);
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0sun4i_pwm_writel(sun4i_pwm,=
- val, PWM_CTRL_REG);
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0spin_unlock(&sun4i_pwm->ctr=
-l_lock);
-
-Olliver
->=20
-> Maxime
->=20
---=-LbZB3/FIZTCVtYeAO9mm
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJX6OBhAAoJEChwBZsDyQQMoPgP/0Vg7ArNF0A/oCEZAbzqFdei
-ezg7OD/GiCNwXMMrVYuGOmBWLbMgmytEmNI0i+Xj1FNvn+Z3BYrZTIwaSoKXJCG7
-J+eOGYey5cotgKA/KbYUqxXYLx5tIzXq3DAhBSBnmNzmD4k9S1T+YZf4FLn2XKg8
-e3+1J3r7lNTV+sV5QDkmFcCvglc+qdqS6XLhnBxp3DLkzbk49bzDr1kRwLQ3gH84
-Bhx3t7oZZCVtc/XJiu3YneLIjSoCTqrdtdUHg1d2GF+G3FbqUnZPdmS3NOL8UsQw
-ndZ+FGdzCsThmmoI317x2uX87PKJB51UeLNMjdqICUpcQh3/Ppdnu467e665mE9h
-D9jMOUoBRWJoZyUxdxQ2OKIderZOCiWbEDcLNAAC0XKDMAWxgi+49aZNKJ+Pgiyg
-7A0NoCbjjnH2Mbkk8fqdqqdF9EN2cJGmh5NDuCawcEWLlCNUBmXkdBYzcAE9FBYA
-jrdoTptBKj88WG4jyBmWyTZqhMxQGnOnTShjhnsaGXW6z19ii8z4L7+irEyFMXCc
-Qt39oWLaMmhuYjlGFGfyTmER29xOp15KwEfeEcxlH7toDbYRzUolN55eHkElZacD
-wFEt2/io4ime4wHNWZ0sjf5aKstb96z8GOso9czT5t5BVj5d6kgbX/zVtjJ5sBs/
-3T0Q+/FyOeUVUY3/ww4i
-=47Jo
------END PGP SIGNATURE-----
-
---=-LbZB3/FIZTCVtYeAO9mm--
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index d24ca5f281b4..7831bc6b51dd 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -889,7 +889,7 @@ EXPORT_SYMBOL_GPL(devm_pwm_put);
+   */
+ bool pwm_can_sleep(struct pwm_device *pwm)
+ {
+-	return pwm->chip->can_sleep;
++	return true;
+ }
+ EXPORT_SYMBOL_GPL(pwm_can_sleep);
+ 
+-- 
+2.7.4
