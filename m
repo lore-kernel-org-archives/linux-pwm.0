@@ -1,48 +1,108 @@
-From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: Re: [PATCH 1/3] arm: dts: imx7: Update #pwm-cells for PWM polarity
- control
-Date: Tue, 27 Sep 2016 19:54:24 +0530
-Message-ID: <6739eff0-f6a7-7759-fe91-12790c5372f5@toradex.com>
-References: <20160919142347.11342-1-bhuvanchandra.dv@toradex.com>
- <20160919142347.11342-2-bhuvanchandra.dv@toradex.com>
- <20160923175202.GA2816@rob-hp-laptop>
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH 1/2] pwm: sunxi: allow the pwm to finish its pulse before
+ disable
+Date: Tue, 27 Sep 2016 22:16:28 +0200
+Message-ID: <20160927201628.GB9084@lukather>
+References: <1472147411-30424-1-git-send-email-oliver@schinagl.nl>
+ <1472147411-30424-2-git-send-email-oliver@schinagl.nl>
+ <20160826221900.GG3165@lukather>
+ <1473145976.731.20.camel@schinagl.nl>
+ <20160906195149.GJ9040@lukather>
+ <1473411668.731.75.camel@schinagl.nl>
+ <20160924202502.GF16901@lukather>
+ <1474879585.6096.33.camel@schinagl.nl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20160923175202.GA2816@rob-hp-laptop>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh@kernel.org>
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Stefan Agner <stefan@agner.ch>, thierry.reding@gmail.com, kernel@pengutronix.de, fabio.estevam@nxp.com, shawnguo@kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="oLBj+sq0vYjzfsbl"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from down.free-electrons.com ([37.187.137.238]:42424 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S932573AbcI0UQb (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 27 Sep 2016 16:16:31 -0400
+Content-Disposition: inline
+In-Reply-To: <1474879585.6096.33.camel@schinagl.nl>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Olliver Schinagl <oliver@schinagl.nl>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Chen-Yu Tsai <wens@csie.org>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
-On 09/23/16 23:22, Rob Herring wrote:
 
-> On Mon, Sep 19, 2016 at 07:53:45PM +0530, Bhuvanchandra DV wrote:
->> Update #pwm-cells to 3 in order to support PWM signal polarity control.
->>
->> Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
->> ---
->>   Documentation/devicetree/bindings/pwm/imx-pwm.txt | 6 +++---
->>   arch/arm/boot/dts/imx7s.dtsi                      | 8 ++++----
->>   2 files changed, 7 insertions(+), 7 deletions(-)
-> The driver will still work with old DTs, right? If so,
+--oLBj+sq0vYjzfsbl
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This patchset actually depends on the v6 patchset[1] from Lothar.
-Some how that patchset got stalled in ML. I will re-spin the v6
-patchset with the suggestions/changes from Lukasz in this patch[2]
-after testing.
+Hi,
 
-[1]http://lists.infradead.org/pipermail/linux-arm-kernel/2014-October/294027.html
-[2]https://www.spinics.net/lists/arm-kernel/msg530818.html
-
+On Mon, Sep 26, 2016 at 10:46:25AM +0200, Olliver Schinagl wrote:
+> > For the spin_lock part, I was just comparing it to a
+> > spin_lock_irqsave, which is pretty expensive since it masks all the
+> > interrupts in the system, introducing latencies.
 >
-> Acked-by: Rob Herring <robh@kernel.org>
+> so spin_lock is very expensive and we should avoid if we can?
+
+spin_lock_irqsave, if possible, yes.
+
+> > > but I think we need the ndelay for the else where we do not
+> > > have the ready flag (A10 or A13 iirc?)
+> >=20
+> > Hmmmm, good point. But that would also apply to your second patch
+> > then, wouldn't it?
+> yeah, you would have an if/else for the case of !hasready.
+>=20
+> this is what i've been dabbling in the train last week, but haven't
+> thought it through yet, let alone tested it:
+>=20
+>=20
+> +=A0=A0=A0=A0=A0=A0=A0if (!(sun4i_pwm->data->has_rdy))
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0ndelay(pwm_get_period(pwm));
+> +=A0=A0=A0=A0=A0=A0=A0else
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0do {
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0spi=
+n_lock(&sun4i_pwm->ctrl_lock);
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0val=
+ =3D sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0spi=
+n_unlock(&sun4i_pwm->ctrl_lock);
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0} while (!(val & PWM_RDY(pw=
+m->hwpwm)))
+>=20
+> Here I assumed the spin_lock is cheap to make, expensive to hold for
+> long, e.g. reducing the length the spin-lock is active for. the
+> alternative was to remove the spin_lock here, and remove unlock-lock
+> before-after this block where you basically get a very long lasting
+> spin_lock, the alternative.
+
+If you're only reading, why do you need to take the lock?
+
+You probbaly want to have a timeout too.
+
+Maxime
+
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
+
+--oLBj+sq0vYjzfsbl
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJX6tOcAAoJEBx+YmzsjxAg+0IP/31GX3LiF4mrYkdrg3g6ZcYN
+OUHFEXXQXxWErXwJYfq2Q/RwwBEk4f6IgH4dKar73ULjvZTua6dx65s1fNG+CVkU
+wbAc4SXv/OrB6meLf0rI1ylWJCADJgNEyzCJuDsPZNx76GcdL3v5jtEOJXpg3/+f
+CpJirvKanf5wAxw0W8xTnvNsYrHosMquP585idKYZhArxB8O0L9GLbWWP/qE1mzQ
+fhxY7S+um1F+pp1I6+35J2tFE58W5QxmFsW7O+q4wu1dVD3d4wZqMXy5lY1RKmeZ
+bItAmwyt9gLvPTzXrGseRtiKMvYsxWYHzI8srJWdeRinwtL+MTxZJ3pFPLu9QDnR
+rchP80+kGDFFsDotq3Yui+RfxLhHztFk7WNTNRewoECnnYYjDt/Xwpie+R4TBIIa
+ctx8/jQ8trH+bJvGOGHbAphptszEv5j8et/3aAYLDcjKAtGWQhCVdCNL2sWI0mvp
+kYk/SPHKFrZ7W/sRX7Jpnid5tScaAKjt97owwmxhhqhtXabAN944WJT3Y51+gCrm
+5b6wBsAuIwnSK9YL70LSfuz6PDLjghrc98DZBsgejPnbpCzylNVUXOg41+arCx3D
+hxsyLN3NTCD3X3jX/gb5ryoOEw35CBzsrwRzLOmPS1u/j1QCuikam+5dMf0DRhLy
+FSA8yJd6DdowZOlLBmFQ
+=AiHG
+-----END PGP SIGNATURE-----
+
+--oLBj+sq0vYjzfsbl--
