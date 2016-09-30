@@ -1,108 +1,54 @@
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH 1/2] pwm: sunxi: allow the pwm to finish its pulse before
- disable
-Date: Tue, 27 Sep 2016 22:16:28 +0200
-Message-ID: <20160927201628.GB9084@lukather>
-References: <1472147411-30424-1-git-send-email-oliver@schinagl.nl>
- <1472147411-30424-2-git-send-email-oliver@schinagl.nl>
- <20160826221900.GG3165@lukather>
- <1473145976.731.20.camel@schinagl.nl>
- <20160906195149.GJ9040@lukather>
- <1473411668.731.75.camel@schinagl.nl>
- <20160924202502.GF16901@lukather>
- <1474879585.6096.33.camel@schinagl.nl>
+From: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Subject: [PATCH 0/2] backlight: pwm_bl: Fix the initial power state selection
+Date: Fri, 30 Sep 2016 10:02:57 +0300
+Message-ID: <20160930070259.5710-1-peter.ujfalusi@ti.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="oLBj+sq0vYjzfsbl"
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:42424 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S932573AbcI0UQb (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 27 Sep 2016 16:16:31 -0400
-Content-Disposition: inline
-In-Reply-To: <1474879585.6096.33.camel@schinagl.nl>
+Received: from comal.ext.ti.com ([198.47.26.152]:41380 "EHLO comal.ext.ti.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750842AbcI3HDO (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 30 Sep 2016 03:03:14 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Olliver Schinagl <oliver@schinagl.nl>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Chen-Yu Tsai <wens@csie.org>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-
-
---oLBj+sq0vYjzfsbl
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+To: thierry.reding@gmail.com, jingoohan1@gmail.com, lee.jones@linaro.org
+Cc: tomi.valkeinen@ti.com, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, p.zabel@pengutronix.de
 
 Hi,
 
-On Mon, Sep 26, 2016 at 10:46:25AM +0200, Olliver Schinagl wrote:
-> > For the spin_lock part, I was just comparing it to a
-> > spin_lock_irqsave, which is pretty expensive since it masks all the
-> > interrupts in the system, introducing latencies.
->
-> so spin_lock is very expensive and we should avoid if we can?
+3698d7e7d221 backlight: pwm_bl: Avoid backlight flicker when probed from DT
 
-spin_lock_irqsave, if possible, yes.
+added support for avoiding backlight flickering, which in essence was designed
+to not enable the baclkight when the driver loads, but let the user of the
+backlight to enable it later on.
 
-> > > but I think we need the ndelay for the else where we do not
-> > > have the ready flag (A10 or A13 iirc?)
-> >=20
-> > Hmmmm, good point. But that would also apply to your second patch
-> > then, wouldn't it?
-> yeah, you would have an if/else for the case of !hasready.
->=20
-> this is what i've been dabbling in the train last week, but haven't
-> thought it through yet, let alone tested it:
->=20
->=20
-> +=A0=A0=A0=A0=A0=A0=A0if (!(sun4i_pwm->data->has_rdy))
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0ndelay(pwm_get_period(pwm));
-> +=A0=A0=A0=A0=A0=A0=A0else
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0do {
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0spi=
-n_lock(&sun4i_pwm->ctrl_lock);
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0val=
- =3D sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0spi=
-n_unlock(&sun4i_pwm->ctrl_lock);
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0} while (!(val & PWM_RDY(pw=
-m->hwpwm)))
->=20
-> Here I assumed the spin_lock is cheap to make, expensive to hold for
-> long, e.g. reducing the length the spin-lock is active for. the
-> alternative was to remove the spin_lock here, and remove unlock-lock
-> before-after this block where you basically get a very long lasting
-> spin_lock, the alternative.
+There are boards (like am437x-gp-evm) where we do not have valid GPIO to enable
+the backlight (TPS61081DRC's EN pin is connected to V3_3D) and the regulator
+is always on (VBAT in case of the gp-evm). In this board the logic to check the
+GPIO state and the regulator is failing and the backlight will be enabled as
+soon as the pwm_bl driver is loaded.
 
-If you're only reading, why do you need to take the lock?
+By extending the check to look at the PWM state this issue can be avoided and
+the backlight will be enabled only when it's user is asking it to be enabled.
 
-You probbaly want to have a timeout too.
+Note:
+I don't know the history of 3698d7e7d221, but I would have opted to add a DT
+bool property (default-off) indicating that the given backlight device must stay
+off when the driver is probing, other driver will enable it later.
+This way all pwm driver could use the same property (gpio-backlight would need
+to be converted) and the backward compatibility would have been retained.
 
-Maxime
+Regards,
+Peter
+---
+Peter Ujfalusi (2):
+  backlight: pwm_bl: Move the checks for initial power state to a
+    separate function
+  backlight: pwm_bl: Check the pwm state for initial backlight power
+    state
 
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+ drivers/video/backlight/pwm_bl.c | 59 ++++++++++++++++++++++++++--------------
+ 1 file changed, 39 insertions(+), 20 deletions(-)
 
---oLBj+sq0vYjzfsbl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJX6tOcAAoJEBx+YmzsjxAg+0IP/31GX3LiF4mrYkdrg3g6ZcYN
-OUHFEXXQXxWErXwJYfq2Q/RwwBEk4f6IgH4dKar73ULjvZTua6dx65s1fNG+CVkU
-wbAc4SXv/OrB6meLf0rI1ylWJCADJgNEyzCJuDsPZNx76GcdL3v5jtEOJXpg3/+f
-CpJirvKanf5wAxw0W8xTnvNsYrHosMquP585idKYZhArxB8O0L9GLbWWP/qE1mzQ
-fhxY7S+um1F+pp1I6+35J2tFE58W5QxmFsW7O+q4wu1dVD3d4wZqMXy5lY1RKmeZ
-bItAmwyt9gLvPTzXrGseRtiKMvYsxWYHzI8srJWdeRinwtL+MTxZJ3pFPLu9QDnR
-rchP80+kGDFFsDotq3Yui+RfxLhHztFk7WNTNRewoECnnYYjDt/Xwpie+R4TBIIa
-ctx8/jQ8trH+bJvGOGHbAphptszEv5j8et/3aAYLDcjKAtGWQhCVdCNL2sWI0mvp
-kYk/SPHKFrZ7W/sRX7Jpnid5tScaAKjt97owwmxhhqhtXabAN944WJT3Y51+gCrm
-5b6wBsAuIwnSK9YL70LSfuz6PDLjghrc98DZBsgejPnbpCzylNVUXOg41+arCx3D
-hxsyLN3NTCD3X3jX/gb5ryoOEw35CBzsrwRzLOmPS1u/j1QCuikam+5dMf0DRhLy
-FSA8yJd6DdowZOlLBmFQ
-=AiHG
------END PGP SIGNATURE-----
-
---oLBj+sq0vYjzfsbl--
+--
+2.10.0
