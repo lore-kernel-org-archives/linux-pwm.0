@@ -1,11 +1,12 @@
 From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: [PATCH v2 3/6] pwm: imx: support output polarity inversion
-Date: Sat, 1 Oct 2016 15:42:32 +0530
-Message-ID: <20161001101235.24598-4-bhuvanchandra.dv@toradex.com>
+Subject: [PATCH v2 4/6] arm: dts: imx7: Update #pwm-cells for PWM polarity
+ control
+Date: Sat, 1 Oct 2016 15:42:33 +0530
+Message-ID: <20161001101235.24598-5-bhuvanchandra.dv@toradex.com>
 References: <20161001101235.24598-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <20161001101235.24598-1-bhuvanchandra.dv@toradex.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
@@ -18,100 +19,56 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: shawnguo@kernel.org, thierry.reding@gmail.com
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, l.majewski@samsung.com, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, stefan@agner.ch, robh+dt@kernel.org, kernel@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org, Lothar Wassmann <LW@KARO-electronics.de>
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, l.majewski@samsung.com, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, stefan@agner.ch, robh+dt@kernel.org, kernel@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-RnJvbTogTG90aGFyIFdhc3NtYW5uIDxMV0BLQVJPLWVsZWN0cm9uaWNzLmRlPgoKVGhlIGkuTVgg
-cHdtIHVuaXQgb24gaS5NWDI3IGFuZCBuZXdlciBTb0NzIHByb3ZpZGVzIGEgY29uZmlndXJhYmxl
-IG91dHB1dApwb2xhcml0eS4gVGhpcyBwYXRjaCBhZGRzIHN1cHBvcnQgdG8gdXRpbGl6ZSB0aGlz
-IGZlYXR1cmUgd2hlcmUgYXZhaWxhYmxlLgoKU2lnbmVkLW9mZi1ieTogTG90aGFyIFdhw59tYW5u
-IDxMV0BLQVJPLWVsZWN0cm9uaWNzLmRlPgpTaWduZWQtb2ZmLWJ5OiBMdWthc3ogTWFqZXdza2kg
-PGwubWFqZXdza2lAc2Ftc3VuZy5jb20+ClNpZ25lZC1vZmYtYnk6IEJodXZhbmNoYW5kcmEgRFYg
-PGJodXZhbmNoYW5kcmEuZHZAdG9yYWRleC5jb20+CkFja2VkLWJ5OiBTaGF3biBHdW8gPHNoYXdu
-Lmd1b0BsaW5hcm8ub3JnPgpSZXZpZXdlZC1ieTogU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1
-dHJvbml4LmRlPgotLS0KIERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vaW14
-LXB3bS50eHQgfCAgNiArLS0KIGRyaXZlcnMvcHdtL3B3bS1pbXguYyAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgfCA1MSArKysrKysrKysrKysrKysrKysrKystLQogMiBmaWxlcyBjaGFuZ2Vk
-LCA1MSBpbnNlcnRpb25zKCspLCA2IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL0RvY3VtZW50
-YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vaW14LXB3bS50eHQgYi9Eb2N1bWVudGF0aW9u
-L2RldmljZXRyZWUvYmluZGluZ3MvcHdtL2lteC1wd20udHh0CmluZGV4IGUwMGMyZTkuLmM2MWJk
-ZjggMTAwNjQ0Ci0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9wd20vaW14
-LXB3bS50eHQKKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B3bS9pbXgt
-cHdtLnR4dApAQCAtNiw4ICs2LDggQEAgUmVxdWlyZWQgcHJvcGVydGllczoKICAgLSAiZnNsLGlt
-eDEtcHdtIiBmb3IgUFdNIGNvbXBhdGlibGUgd2l0aCB0aGUgb25lIGludGVncmF0ZWQgb24gaS5N
-WDEKICAgLSAiZnNsLGlteDI3LXB3bSIgZm9yIFBXTSBjb21wYXRpYmxlIHdpdGggdGhlIG9uZSBp
-bnRlZ3JhdGVkIG9uIGkuTVgyNwogLSByZWc6IHBoeXNpY2FsIGJhc2UgYWRkcmVzcyBhbmQgbGVu
-Z3RoIG9mIHRoZSBjb250cm9sbGVyJ3MgcmVnaXN0ZXJzCi0tICNwd20tY2VsbHM6IHNob3VsZCBi
-ZSAyLiBTZWUgcHdtLnR4dCBpbiB0aGlzIGRpcmVjdG9yeSBmb3IgYSBkZXNjcmlwdGlvbiBvZgot
-ICB0aGUgY2VsbHMgZm9ybWF0LgorLSAjcHdtLWNlbGxzOiAyIGZvciBpLk1YMSBhbmQgMyBmb3Ig
-aS5NWDI3IGFuZCBuZXdlciBTb0NzLiBTZWUgcHdtLnR4dAorICBpbiB0aGlzIGRpcmVjdG9yeSBm
-b3IgYSBkZXNjcmlwdGlvbiBvZiB0aGUgY2VsbHMgZm9ybWF0LgogLSBjbG9ja3MgOiBDbG9jayBz
-cGVjaWZpZXJzIGZvciBib3RoIGlwZyBhbmQgcGVyIGNsb2Nrcy4KIC0gY2xvY2stbmFtZXMgOiBD
-bG9jayBuYW1lcyBzaG91bGQgaW5jbHVkZSBib3RoICJpcGciIGFuZCAicGVyIgogU2VlIHRoZSBj
-bG9jayBjb25zdW1lciBiaW5kaW5nLApAQCAtMTcsNyArMTcsNyBAQCBTZWUgdGhlIGNsb2NrIGNv
-bnN1bWVyIGJpbmRpbmcsCiBFeGFtcGxlOgogCiBwd20xOiBwd21ANTNmYjQwMDAgewotCSNwd20t
-Y2VsbHMgPSA8Mj47CisJI3B3bS1jZWxscyA9IDwzPjsKIAljb21wYXRpYmxlID0gImZzbCxpbXg1
-My1wd20iLCAiZnNsLGlteDI3LXB3bSI7CiAJcmVnID0gPDB4NTNmYjQwMDAgMHg0MDAwPjsKIAlj
-bG9ja3MgPSA8JmNsa3MgSU1YNV9DTEtfUFdNMV9JUEdfR0FURT4sCmRpZmYgLS1naXQgYS9kcml2
-ZXJzL3B3bS9wd20taW14LmMgYi9kcml2ZXJzL3B3bS9wd20taW14LmMKaW5kZXggZDYwMGZkNS4u
-YzM3ZDIyMyAxMDA2NDQKLS0tIGEvZHJpdmVycy9wd20vcHdtLWlteC5jCisrKyBiL2RyaXZlcnMv
-cHdtL3B3bS1pbXguYwpAQCAtMzgsNiArMzgsNyBAQAogI2RlZmluZSBNWDNfUFdNQ1JfRE9aRUVO
-CQkoMSA8PCAyNCkKICNkZWZpbmUgTVgzX1BXTUNSX1dBSVRFTgkJKDEgPDwgMjMpCiAjZGVmaW5l
-IE1YM19QV01DUl9EQkdFTgkJCSgxIDw8IDIyKQorI2RlZmluZSBNWDNfUFdNQ1JfUE9VVEMJCQko
-MSA8PCAxOCkKICNkZWZpbmUgTVgzX1BXTUNSX0NMS1NSQ19JUEdfSElHSAkoMiA8PCAxNikKICNk
-ZWZpbmUgTVgzX1BXTUNSX0NMS1NSQ19JUEcJCSgxIDw8IDE2KQogI2RlZmluZSBNWDNfUFdNQ1Jf
-U1dSCQkJKDEgPDwgMykKQEAgLTE4MCw2ICsxODEsOSBAQCBzdGF0aWMgaW50IGlteF9wd21fY29u
-ZmlnX3YyKHN0cnVjdCBwd21fY2hpcCAqY2hpcCwKIAlpZiAoZW5hYmxlKQogCQljciB8PSBNWDNf
-UFdNQ1JfRU47CiAKKwlpZiAocHdtLT5hcmdzLnBvbGFyaXR5ID09IFBXTV9QT0xBUklUWV9JTlZF
-UlNFRCkKKwkJY3IgfD0gTVgzX1BXTUNSX1BPVVRDOworCiAJd3JpdGVsKGNyLCBpbXgtPm1taW9f
-YmFzZSArIE1YM19QV01DUik7CiAKIAlyZXR1cm4gMDsKQEAgLTI0MCwyNyArMjQ0LDYyIEBAIHN0
-YXRpYyB2b2lkIGlteF9wd21fZGlzYWJsZShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIHN0cnVjdCBw
-d21fZGV2aWNlICpwd20pCiAJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKGlteC0+Y2xrX3Blcik7CiB9
-CiAKLXN0YXRpYyBzdHJ1Y3QgcHdtX29wcyBpbXhfcHdtX29wcyA9IHsKK3N0YXRpYyBpbnQgaW14
-X3B3bV9zZXRfcG9sYXJpdHkoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2Rldmlj
-ZSAqcHdtLAorCQkJCWVudW0gcHdtX3BvbGFyaXR5IHBvbGFyaXR5KQoreworCXN0cnVjdCBpbXhf
-Y2hpcCAqaW14ID0gdG9faW14X2NoaXAoY2hpcCk7CisJdTMyIHZhbDsKKworCWlmIChwb2xhcml0
-eSA9PSBwd20tPmFyZ3MucG9sYXJpdHkpCisJCXJldHVybiAwOworCisJdmFsID0gcmVhZGwoaW14
-LT5tbWlvX2Jhc2UgKyBNWDNfUFdNQ1IpOworCisJaWYgKHBvbGFyaXR5ID09IFBXTV9QT0xBUklU
-WV9JTlZFUlNFRCkKKwkJdmFsIHw9IE1YM19QV01DUl9QT1VUQzsKKwllbHNlCisJCXZhbCAmPSB+
-TVgzX1BXTUNSX1BPVVRDOworCisJd3JpdGVsKHZhbCwgaW14LT5tbWlvX2Jhc2UgKyBNWDNfUFdN
-Q1IpOworCisJZGV2X2RiZyhpbXgtPmNoaXAuZGV2LCAiJXM6IHBvbGFyaXR5IHNldCB0byAlc1xu
-IiwgX19mdW5jX18sCisJCXBvbGFyaXR5ID09IFBXTV9QT0xBUklUWV9JTlZFUlNFRCA/ICJpbnZl
-cnRlZCIgOiAibm9ybWFsIik7CisKKwlyZXR1cm4gMDsKK30KKworc3RhdGljIHN0cnVjdCBwd21f
-b3BzIGlteF9wd21fb3BzX3YxID0gewogCS5lbmFibGUgPSBpbXhfcHdtX2VuYWJsZSwKIAkuZGlz
-YWJsZSA9IGlteF9wd21fZGlzYWJsZSwKIAkuY29uZmlnID0gaW14X3B3bV9jb25maWcsCiAJLm93
-bmVyID0gVEhJU19NT0RVTEUsCiB9OwogCitzdGF0aWMgc3RydWN0IHB3bV9vcHMgaW14X3B3bV9v
-cHNfdjIgPSB7CisJLmVuYWJsZSA9IGlteF9wd21fZW5hYmxlLAorCS5kaXNhYmxlID0gaW14X3B3
-bV9kaXNhYmxlLAorCS5zZXRfcG9sYXJpdHkgPSBpbXhfcHdtX3NldF9wb2xhcml0eSwKKwkuY29u
-ZmlnID0gaW14X3B3bV9jb25maWcsCisJLm93bmVyID0gVEhJU19NT0RVTEUsCit9OworCiBzdHJ1
-Y3QgaW14X3B3bV9kYXRhIHsKIAlpbnQgKCpjb25maWcpKHN0cnVjdCBwd21fY2hpcCAqY2hpcCwK
-IAkJc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwgaW50IGR1dHlfbnMsIGludCBwZXJpb2RfbnMpOwog
-CXZvaWQgKCpzZXRfZW5hYmxlKShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAsIGJvb2wgZW5hYmxlKTsK
-KwlzdHJ1Y3QgcHdtX29wcyAqcHdtX29wczsKIH07CiAKIHN0YXRpYyBzdHJ1Y3QgaW14X3B3bV9k
-YXRhIGlteF9wd21fZGF0YV92MSA9IHsKIAkuY29uZmlnID0gaW14X3B3bV9jb25maWdfdjEsCiAJ
-LnNldF9lbmFibGUgPSBpbXhfcHdtX3NldF9lbmFibGVfdjEsCisJLnB3bV9vcHMgPSAmaW14X3B3
-bV9vcHNfdjEsCiB9OwogCiBzdGF0aWMgc3RydWN0IGlteF9wd21fZGF0YSBpbXhfcHdtX2RhdGFf
-djIgPSB7CiAJLmNvbmZpZyA9IGlteF9wd21fY29uZmlnX3YyLAogCS5zZXRfZW5hYmxlID0gaW14
-X3B3bV9zZXRfZW5hYmxlX3YyLAorCS5wd21fb3BzID0gJmlteF9wd21fb3BzX3YyLAogfTsKIAog
-c3RhdGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgaW14X3B3bV9kdF9pZHNbXSA9IHsKQEAg
-LTI4Miw2ICszMjEsOCBAQCBzdGF0aWMgaW50IGlteF9wd21fcHJvYmUoc3RydWN0IHBsYXRmb3Jt
-X2RldmljZSAqcGRldikKIAlpZiAoIW9mX2lkKQogCQlyZXR1cm4gLUVOT0RFVjsKIAorCWRhdGEg
-PSBvZl9pZC0+ZGF0YTsKKwogCWlteCA9IGRldm1fa3phbGxvYygmcGRldi0+ZGV2LCBzaXplb2Yo
-KmlteCksIEdGUF9LRVJORUwpOwogCWlmIChpbXggPT0gTlVMTCkKIAkJcmV0dXJuIC1FTk9NRU07
-CkBAIC0zMDAsMTggKzM0MSwyMiBAQCBzdGF0aWMgaW50IGlteF9wd21fcHJvYmUoc3RydWN0IHBs
-YXRmb3JtX2RldmljZSAqcGRldikKIAkJcmV0dXJuIFBUUl9FUlIoaW14LT5jbGtfaXBnKTsKIAl9
-CiAKLQlpbXgtPmNoaXAub3BzID0gJmlteF9wd21fb3BzOworCWlteC0+Y2hpcC5vcHMgPSBkYXRh
-LT5wd21fb3BzOwogCWlteC0+Y2hpcC5kZXYgPSAmcGRldi0+ZGV2OwogCWlteC0+Y2hpcC5iYXNl
-ID0gLTE7CiAJaW14LT5jaGlwLm5wd20gPSAxOwogCWlteC0+Y2hpcC5jYW5fc2xlZXAgPSB0cnVl
-OworCWlmIChkYXRhLT5wd21fb3BzLT5zZXRfcG9sYXJpdHkpIHsKKwkJZGV2X2RiZygmcGRldi0+
-ZGV2LCAiUFdNIHN1cHBvcnRzIG91dHB1dCBpbnZlcnNpb25cbiIpOworCQlpbXgtPmNoaXAub2Zf
-eGxhdGUgPSBvZl9wd21feGxhdGVfd2l0aF9mbGFnczsKKwkJaW14LT5jaGlwLm9mX3B3bV9uX2Nl
-bGxzID0gMzsKKwl9CiAKIAlyID0gcGxhdGZvcm1fZ2V0X3Jlc291cmNlKHBkZXYsIElPUkVTT1VS
-Q0VfTUVNLCAwKTsKIAlpbXgtPm1taW9fYmFzZSA9IGRldm1faW9yZW1hcF9yZXNvdXJjZSgmcGRl
-di0+ZGV2LCByKTsKIAlpZiAoSVNfRVJSKGlteC0+bW1pb19iYXNlKSkKIAkJcmV0dXJuIFBUUl9F
-UlIoaW14LT5tbWlvX2Jhc2UpOwogCi0JZGF0YSA9IG9mX2lkLT5kYXRhOwogCWlteC0+Y29uZmln
-ID0gZGF0YS0+Y29uZmlnOwogCWlteC0+c2V0X2VuYWJsZSA9IGRhdGEtPnNldF9lbmFibGU7CiAK
-LS0gCjIuOS4yCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5p
-bmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8v
-bGludXgtYXJtLWtlcm5lbAo=
+Update #pwm-cells to 3 in order to support PWM signal polarity control.
+
+Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ arch/arm/boot/dts/imx7s.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/boot/dts/imx7s.dtsi b/arch/arm/boot/dts/imx7s.dtsi
+index 0d7d5ac..8d1d471 100644
+--- a/arch/arm/boot/dts/imx7s.dtsi
++++ b/arch/arm/boot/dts/imx7s.dtsi
+@@ -601,7 +601,7 @@
+ 				clocks = <&clks IMX7D_PWM1_ROOT_CLK>,
+ 					 <&clks IMX7D_PWM1_ROOT_CLK>;
+ 				clock-names = "ipg", "per";
+-				#pwm-cells = <2>;
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 
+@@ -612,7 +612,7 @@
+ 				clocks = <&clks IMX7D_PWM2_ROOT_CLK>,
+ 					 <&clks IMX7D_PWM2_ROOT_CLK>;
+ 				clock-names = "ipg", "per";
+-				#pwm-cells = <2>;
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 
+@@ -623,7 +623,7 @@
+ 				clocks = <&clks IMX7D_PWM3_ROOT_CLK>,
+ 					 <&clks IMX7D_PWM3_ROOT_CLK>;
+ 				clock-names = "ipg", "per";
+-				#pwm-cells = <2>;
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 
+@@ -634,7 +634,7 @@
+ 				clocks = <&clks IMX7D_PWM4_ROOT_CLK>,
+ 					 <&clks IMX7D_PWM4_ROOT_CLK>;
+ 				clock-names = "ipg", "per";
+-				#pwm-cells = <2>;
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 
+-- 
+2.9.2
