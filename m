@@ -1,124 +1,53 @@
-From: Peter Ujfalusi <peter.ujfalusi@ti.com>
-Subject: [PATCH 1/2] backlight: pwm_bl: Move the checks for initial power state to a separate function
-Date: Fri, 30 Sep 2016 10:02:58 +0300
-Message-ID: <20160930070259.5710-2-peter.ujfalusi@ti.com>
-References: <20160930070259.5710-1-peter.ujfalusi@ti.com>
+From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Subject: [PATCH v2 0/6] Support PWM polarity control
+Date: Sat, 1 Oct 2016 15:42:29 +0530
+Message-ID: <20161001101235.24598-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([198.47.19.11]:42213 "EHLO bear.ext.ti.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753021AbcI3HDQ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 30 Sep 2016 03:03:16 -0400
-In-Reply-To: <20160930070259.5710-1-peter.ujfalusi@ti.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: shawnguo@kernel.org, thierry.reding@gmail.com
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, l.majewski@samsung.com, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, stefan@agner.ch, robh+dt@kernel.org, kernel@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, jingoohan1@gmail.com, lee.jones@linaro.org
-Cc: tomi.valkeinen@ti.com, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, p.zabel@pengutronix.de
 
-Move the check for gpio and regulator initial state to a new function and
-document better what we are checking and why.
+Changes since v2:
 
-It is going to be easier to fix or improve the initial power state
-configuration later and it is easier to read the code.
+- Picked the stalled patchset[1] from Lothar Wassmann which adds the basic
+  support for polarity control on imx-pwm driver and adds backward compatibility
+  support for devices which does not have polarity control feature.
 
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
----
- drivers/video/backlight/pwm_bl.c | 55 +++++++++++++++++++++++++---------------
- 1 file changed, 35 insertions(+), 20 deletions(-)
+Changes since Lothars v6:
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index b2b366bb0f97..9bc4715bf116 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -192,6 +192,40 @@ static int pwm_backlight_parse_dt(struct device *dev,
- }
- #endif
- 
-+static int pwm_backlight_initial_power_state(const struct pwm_bl_data *pb)
-+{
-+	struct device_node *node = pb->dev->of_node;
-+
-+	/* Not booted with device tree or no phandle link to the node */
-+	if (!node || !node->phandle)
-+		return FB_BLANK_UNBLANK;
-+
-+	/*
-+	 * If the driver is probed from the device tree and there is a
-+	 * phandle link pointing to the backlight node, it is safe to
-+	 * assume that another driver will enable the backlight at the
-+	 * appropriate time. Therefore, if it is disabled, keep it so.
-+	 */
-+
-+	/*
-+	 * if the enable GPIO is set as output and it is disabled, do not enable
-+	 * the backlight
-+	 */
-+	if (pb->enable_gpio) {
-+		if (gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
-+		    gpiod_get_value(pb->enable_gpio) == 0)
-+			return FB_BLANK_POWERDOWN;
-+
-+		gpiod_direction_output(pb->enable_gpio, 1);
-+	}
-+
-+	/* The regulator is disabled, do not enable the backlight */
-+	if (!regulator_is_enabled(pb->power_supply))
-+		return FB_BLANK_POWERDOWN;
-+
-+	return FB_BLANK_UNBLANK;
-+}
-+
- static int pwm_backlight_probe(struct platform_device *pdev)
- {
- 	struct platform_pwm_backlight_data *data = dev_get_platdata(&pdev->dev);
-@@ -200,7 +234,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	struct backlight_device *bl;
- 	struct device_node *node = pdev->dev.of_node;
- 	struct pwm_bl_data *pb;
--	int initial_blank = FB_BLANK_UNBLANK;
- 	struct pwm_args pargs;
- 	int ret;
- 
-@@ -267,30 +300,12 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
- 	}
- 
--	if (pb->enable_gpio) {
--		/*
--		 * If the driver is probed from the device tree and there is a
--		 * phandle link pointing to the backlight node, it is safe to
--		 * assume that another driver will enable the backlight at the
--		 * appropriate time. Therefore, if it is disabled, keep it so.
--		 */
--		if (node && node->phandle &&
--		    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
--		    gpiod_get_value(pb->enable_gpio) == 0)
--			initial_blank = FB_BLANK_POWERDOWN;
--		else
--			gpiod_direction_output(pb->enable_gpio, 1);
--	}
--
- 	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
- 	if (IS_ERR(pb->power_supply)) {
- 		ret = PTR_ERR(pb->power_supply);
- 		goto err_alloc;
- 	}
- 
--	if (node && node->phandle && !regulator_is_enabled(pb->power_supply))
--		initial_blank = FB_BLANK_POWERDOWN;
--
- 	pb->pwm = devm_pwm_get(&pdev->dev, NULL);
- 	if (IS_ERR(pb->pwm) && PTR_ERR(pb->pwm) != -EPROBE_DEFER && !node) {
- 		dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
-@@ -347,7 +362,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	}
- 
- 	bl->props.brightness = data->dft_brightness;
--	bl->props.power = initial_blank;
-+	bl->props.power = pwm_backlight_initial_power_state(pb);
- 	backlight_update_status(bl);
- 
- 	platform_set_drvdata(pdev, bl);
+- Squash Lukasz patch[2].
+
+[1] http://thread.gmane.org/gmane.linux.pwm/1621
+[2] https://www.spinics.net/lists/arm-kernel/msg530818.html
+
+Bhuvanchandra DV (3):
+  arm: dts: imx7: Update #pwm-cells for PWM polarity control
+  arm: dts: imx7-colibri: Use pwm polarity control
+  arm: dts: imx7-colibri: Use enable-gpios for BL_ON
+
+Lothar Wassmann (3):
+  pwm: print error messages with pr_err() instead of pr_debug()
+  pwm: core: make the PWM_POLARITY flag in DTB optional
+  pwm: imx: support output polarity inversion
+
+ Documentation/devicetree/bindings/pwm/imx-pwm.txt |  6 +--
+ arch/arm/boot/dts/imx7-colibri.dtsi               | 12 +++++-
+ arch/arm/boot/dts/imx7s.dtsi                      |  8 ++--
+ drivers/pwm/core.c                                | 31 ++++++++------
+ drivers/pwm/pwm-imx.c                             | 51 +++++++++++++++++++++--
+ 5 files changed, 83 insertions(+), 25 deletions(-)
+
 -- 
-2.10.0
+2.9.2
