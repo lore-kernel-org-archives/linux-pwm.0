@@ -1,11 +1,12 @@
 From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: [PATCH v2 6/6] arm: dts: imx7-colibri: Use enable-gpios for BL_ON
-Date: Sat, 1 Oct 2016 15:42:35 +0530
-Message-ID: <20161001101235.24598-7-bhuvanchandra.dv@toradex.com>
+Subject: [PATCH v2 1/6] pwm: print error messages with pr_err() instead of
+ pr_debug()
+Date: Sat, 1 Oct 2016 15:42:30 +0530
+Message-ID: <20161001101235.24598-2-bhuvanchandra.dv@toradex.com>
 References: <20161001101235.24598-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <20161001101235.24598-1-bhuvanchandra.dv@toradex.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
@@ -18,51 +19,29 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: shawnguo@kernel.org, thierry.reding@gmail.com
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, l.majewski@samsung.com, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, stefan@agner.ch, robh+dt@kernel.org, kernel@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, l.majewski@samsung.com, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, stefan@agner.ch, robh+dt@kernel.org, kernel@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org, Lothar Wassmann <LW@KARO-electronics.de>
 List-Id: linux-pwm@vger.kernel.org
 
-Use pwm-backlight driver 'enable-gpios' property for backlight on/off control.
-
-Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
----
- arch/arm/boot/dts/imx7-colibri.dtsi | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
-index 2af5e3e..ce5edb5 100644
---- a/arch/arm/boot/dts/imx7-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri.dtsi
-@@ -43,7 +43,10 @@
- / {
- 	bl: backlight {
- 		compatible = "pwm-backlight";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_gpio_bl_on>;
- 		pwms = <&pwm1 0 5000000 0>;
-+		enable-gpios = <&gpio5 1 GPIO_ACTIVE_HIGH>;
- 	};
- 
- 	reg_module_3v3: regulator-module-3v3 {
-@@ -356,7 +359,6 @@
- 		fsl,pins = <
- 			MX7D_PAD_ECSPI2_SS0__GPIO4_IO23		0x14 /* SODIMM 65 */
- 			MX7D_PAD_SD1_CD_B__GPIO5_IO0		0x14 /* SODIMM 69 */
--			MX7D_PAD_SD1_WP__GPIO5_IO1		0x14 /* SODIMM 71 */
- 			MX7D_PAD_I2C4_SDA__GPIO4_IO15		0x14 /* SODIMM 75 */
- 			MX7D_PAD_ECSPI1_MISO__GPIO4_IO18	0x14 /* SODIMM 79 */
- 			MX7D_PAD_I2C3_SCL__GPIO4_IO12		0x14 /* SODIMM 81 */
-@@ -388,6 +390,12 @@
- 		>;
- 	};
- 
-+		pinctrl_gpio_bl_on: gpio-bl-on {
-+			fsl,pins = <
-+				MX7D_PAD_SD1_WP__GPIO5_IO1		0x14
-+			>;
-+		};
-+
- 	pinctrl_i2c1_int: i2c1-int-grp { /* PMIC / TOUCH */
- 		fsl,pins = <
- 			MX7D_PAD_GPIO1_IO13__GPIO1_IO13	0x79
--- 
-2.9.2
+RnJvbTogTG90aGFyIFdhc3NtYW5uIDxMV0BLQVJPLWVsZWN0cm9uaWNzLmRlPgoKTWFrZSB0aGUg
+bWVzc2FnZXMgdGhhdCBhcmUgcHJpbnRlZCBpbiBjYXNlIG9mIGZhdGFsIGVycm9ycyBhY3R1YWxs
+eSB2aXNpYmxlIHRvCnRoZSB1c2VyIHdpdGhvdXQgaGF2aW5nIHRvIHJlY29tcGlsZSB0aGUgZHJp
+dmVyIHdpdGggZGVidWdnaW5nIGVuYWJsZWQuCgpTaWduZWQtb2ZmLWJ5OiBMb3RoYXIgV2HDn21h
+bm4gPExXQEtBUk8tZWxlY3Ryb25pY3MuZGU+ClNpZ25lZC1vZmYtYnk6IEJodXZhbmNoYW5kcmEg
+RFYgPGJodXZhbmNoYW5kcmEuZHZAdG9yYWRleC5jb20+Ci0tLQogZHJpdmVycy9wd20vY29yZS5j
+IHwgNCArKy0tCiAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygt
+KQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL2NvcmUuYyBiL2RyaXZlcnMvcHdtL2NvcmUuYwpp
+bmRleCAwZGJkMjllLi4xOTUzNzNlIDEwMDY0NAotLS0gYS9kcml2ZXJzL3B3bS9jb3JlLmMKKysr
+IGIvZHJpdmVycy9wd20vY29yZS5jCkBAIC02NjEsMTMgKzY2MSwxMyBAQCBzdHJ1Y3QgcHdtX2Rl
+dmljZSAqb2ZfcHdtX2dldChzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wLCBjb25zdCBjaGFyICpjb25f
+aWQpCiAJZXJyID0gb2ZfcGFyc2VfcGhhbmRsZV93aXRoX2FyZ3MobnAsICJwd21zIiwgIiNwd20t
+Y2VsbHMiLCBpbmRleCwKIAkJCQkJICZhcmdzKTsKIAlpZiAoZXJyKSB7Ci0JCXByX2RlYnVnKCIl
+cygpOiBjYW4ndCBwYXJzZSBcInB3bXNcIiBwcm9wZXJ0eVxuIiwgX19mdW5jX18pOworCQlwcl9l
+cnIoIiVzKCk6IGNhbid0IHBhcnNlIFwicHdtc1wiIHByb3BlcnR5XG4iLCBfX2Z1bmNfXyk7CiAJ
+CXJldHVybiBFUlJfUFRSKGVycik7CiAJfQogCiAJcGMgPSBvZl9ub2RlX3RvX3B3bWNoaXAoYXJn
+cy5ucCk7CiAJaWYgKElTX0VSUihwYykpIHsKLQkJcHJfZGVidWcoIiVzKCk6IFBXTSBjaGlwIG5v
+dCBmb3VuZFxuIiwgX19mdW5jX18pOworCQlwcl9lcnIoIiVzKCk6IFBXTSBjaGlwIG5vdCBmb3Vu
+ZFxuIiwgX19mdW5jX18pOwogCQlwd20gPSBFUlJfQ0FTVChwYyk7CiAJCWdvdG8gcHV0OwogCX0K
+LS0gCjIuOS4yCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5p
+bmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8v
+bGludXgtYXJtLWtlcm5lbAo=
