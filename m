@@ -1,49 +1,55 @@
-From: Clifton Barnes <cabarnes@indesign-llc.com>
-Subject: [PATCH] pwm: tiehrpwm: fix disabled state of pwm when inverted
-Date: Mon, 3 Oct 2016 07:37:02 -0400
-Message-ID: <1475494622-43846-1-git-send-email-cabarnes@indesign-llc.com>
+From: David Lechner <david@lechnology.com>
+Subject: question about pwm-tiecap driver pwm_disable behavior
+Date: Mon, 3 Oct 2016 16:09:35 -0500
+Message-ID: <39a472c0-ba24-de7b-8783-a16a71b172cd@lechnology.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail02.indesign-llc.com ([207.67.30.40]:56848 "EHLO
-        mail02.indesign-llc.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751140AbcJCLwM (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 3 Oct 2016 07:52:12 -0400
+Received: from vern.gendns.com ([206.190.152.46]:33359 "EHLO vern.gendns.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752027AbcJCV6W (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 3 Oct 2016 17:58:22 -0400
+Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:42208 helo=[192.168.0.113])
+        by vern.gendns.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.87)
+        (envelope-from <david@lechnology.com>)
+        id 1brAU8-0010Xk-6x
+        for linux-pwm@vger.kernel.org; Mon, 03 Oct 2016 17:09:16 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: linux-pwm@vger.kernel.org
 
-The disable function forces the output to low regardless of whether
-the PWM is inverted. Fix this by checking the inverted status of the
-PWM and force the output to the proper state when disabled.
+In drivers/pwm/pwm-tiecap.c, there is the following function for 
+disabling the pwm.
 
-Signed-off-by: Clifton Barnes <cabarnes@indesign-llc.com>
----
- drivers/pwm/pwm-tiehrpwm.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+static void ecap_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+{
+	struct ecap_pwm_chip *pc = to_ecap_pwm_chip(chip);
+	unsigned int reg_val;
 
-diff --git a/drivers/pwm/pwm-tiehrpwm.c b/drivers/pwm/pwm-tiehrpwm.c
-index b5c6b06..e47e020 100644
---- a/drivers/pwm/pwm-tiehrpwm.c
-+++ b/drivers/pwm/pwm-tiehrpwm.c
-@@ -372,13 +372,14 @@ static void ehrpwm_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- {
- 	struct ehrpwm_pwm_chip *pc = to_ehrpwm_pwm_chip(chip);
- 	unsigned short aqcsfrc_val, aqcsfrc_mask;
-+	bool inv = pc->polarity[pwm->hwpwm] == PWM_POLARITY_INVERSED;
- 
--	/* Action Qualifier puts PWM output low forcefully */
-+	/* Action Qualifier puts PWM output high/low forcefully */
- 	if (pwm->hwpwm) {
--		aqcsfrc_val = AQCSFRC_CSFB_FRCLOW;
-+		aqcsfrc_val = inv ? AQCSFRC_CSFB_FRCHIGH : AQCSFRC_CSFB_FRCLOW;
- 		aqcsfrc_mask = AQCSFRC_CSFB_MASK;
- 	} else {
--		aqcsfrc_val = AQCSFRC_CSFA_FRCLOW;
-+		aqcsfrc_val = inv ? AQCSFRC_CSFA_FRCHIGH : AQCSFRC_CSFA_FRCLOW;
- 		aqcsfrc_mask = AQCSFRC_CSFA_MASK;
- 	}
- 
--- 
-1.7.9.5
+	/*
+	 * Disable 'Free run Time stamp counter mode' to stop counter
+	 * and 'APWM mode' to put APWM output to low
+	 */
+	reg_val = readw(pc->mmio_base + ECCTL2);
+	reg_val &= ~(ECCTL2_TSCTR_FREERUN | ECCTL2_APWM_MODE);
+	writew(reg_val, pc->mmio_base + ECCTL2);
+
+	/* Disable clock on PWM disable */
+	pm_runtime_put_sync(pc->chip.dev);
+}
+
+
+I am using this with the pwm-backlight driver to control the backlight 
+of a display. When you tell the pwm-backlight driver to use a brightness 
+of 0, it disables the pwm.
+
+What I would like to happen is, as the comment says, for the output to 
+go low. However, what actually happens is that the output becomes and 
+input (and therefore goes high because of an external pullup resisitor). 
+This happens because by turning off the ECCTL2_APWM_MODE bit, the PWM is 
+switched back to ECAP mode, which acts as an input.
+
+So the question is: Is the comment correct and there is a bug in the 
+code, or is the code correct and the comment should be changed?
