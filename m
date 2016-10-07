@@ -1,11 +1,12 @@
 From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: [PATCH v3 5/6] arm: dts: imx7-colibri: Use pwm polarity control
-Date: Fri, 7 Oct 2016 20:41:28 +0530
-Message-ID: <20161007151129.6043-6-bhuvanchandra.dv@toradex.com>
+Subject: [PATCH v3 1/6] pwm: print error messages with pr_err() instead of
+ pr_debug()
+Date: Fri, 7 Oct 2016 20:41:24 +0530
+Message-ID: <20161007151129.6043-2-bhuvanchandra.dv@toradex.com>
 References: <20161007151129.6043-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <20161007151129.6043-1-bhuvanchandra.dv@toradex.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
@@ -18,28 +19,29 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: shawnguo@kernel.org, thierry.reding@gmail.com
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, l.majewski@samsung.com, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, stefan@agner.ch, robh+dt@kernel.org, kernel@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, l.majewski@samsung.com, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, stefan@agner.ch, robh+dt@kernel.org, kernel@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org, Lothar Wassmann <LW@KARO-electronics.de>
 List-Id: linux-pwm@vger.kernel.org
 
-Configure PWM polarity control.
-
-Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
----
- arch/arm/boot/dts/imx7-colibri.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm/boot/dts/imx7-colibri.dtsi b/arch/arm/boot/dts/imx7-colibri.dtsi
-index a9cc657..2af5e3e 100644
---- a/arch/arm/boot/dts/imx7-colibri.dtsi
-+++ b/arch/arm/boot/dts/imx7-colibri.dtsi
-@@ -43,7 +43,7 @@
- / {
- 	bl: backlight {
- 		compatible = "pwm-backlight";
--		pwms = <&pwm1 0 5000000>;
-+		pwms = <&pwm1 0 5000000 0>;
- 	};
- 
- 	reg_module_3v3: regulator-module-3v3 {
--- 
-2.10.0
+RnJvbTogTG90aGFyIFdhc3NtYW5uIDxMV0BLQVJPLWVsZWN0cm9uaWNzLmRlPgoKTWFrZSB0aGUg
+bWVzc2FnZXMgdGhhdCBhcmUgcHJpbnRlZCBpbiBjYXNlIG9mIGZhdGFsIGVycm9ycyBhY3R1YWxs
+eQp2aXNpYmxlIHRvIHRoZSB1c2VyIHdpdGhvdXQgaGF2aW5nIHRvIHJlY29tcGlsZSB0aGUgZHJp
+dmVyIHdpdGgKZGVidWdnaW5nIGVuYWJsZWQuCgpTaWduZWQtb2ZmLWJ5OiBMb3RoYXIgV2HDn21h
+bm4gPExXQEtBUk8tZWxlY3Ryb25pY3MuZGU+ClNpZ25lZC1vZmYtYnk6IEJodXZhbmNoYW5kcmEg
+RFYgPGJodXZhbmNoYW5kcmEuZHZAdG9yYWRleC5jb20+Ci0tLQogZHJpdmVycy9wd20vY29yZS5j
+IHwgNCArKy0tCiAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygt
+KQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvcHdtL2NvcmUuYyBiL2RyaXZlcnMvcHdtL2NvcmUuYwpp
+bmRleCAwZGJkMjllLi4xOTUzNzNlIDEwMDY0NAotLS0gYS9kcml2ZXJzL3B3bS9jb3JlLmMKKysr
+IGIvZHJpdmVycy9wd20vY29yZS5jCkBAIC02NjEsMTMgKzY2MSwxMyBAQCBzdHJ1Y3QgcHdtX2Rl
+dmljZSAqb2ZfcHdtX2dldChzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wLCBjb25zdCBjaGFyICpjb25f
+aWQpCiAJZXJyID0gb2ZfcGFyc2VfcGhhbmRsZV93aXRoX2FyZ3MobnAsICJwd21zIiwgIiNwd20t
+Y2VsbHMiLCBpbmRleCwKIAkJCQkJICZhcmdzKTsKIAlpZiAoZXJyKSB7Ci0JCXByX2RlYnVnKCIl
+cygpOiBjYW4ndCBwYXJzZSBcInB3bXNcIiBwcm9wZXJ0eVxuIiwgX19mdW5jX18pOworCQlwcl9l
+cnIoIiVzKCk6IGNhbid0IHBhcnNlIFwicHdtc1wiIHByb3BlcnR5XG4iLCBfX2Z1bmNfXyk7CiAJ
+CXJldHVybiBFUlJfUFRSKGVycik7CiAJfQogCiAJcGMgPSBvZl9ub2RlX3RvX3B3bWNoaXAoYXJn
+cy5ucCk7CiAJaWYgKElTX0VSUihwYykpIHsKLQkJcHJfZGVidWcoIiVzKCk6IFBXTSBjaGlwIG5v
+dCBmb3VuZFxuIiwgX19mdW5jX18pOworCQlwcl9lcnIoIiVzKCk6IFBXTSBjaGlwIG5vdCBmb3Vu
+ZFxuIiwgX19mdW5jX18pOwogCQlwd20gPSBFUlJfQ0FTVChwYyk7CiAJCWdvdG8gcHV0OwogCX0K
+LS0gCjIuMTAuMAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMu
+aW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2xpbnV4LWFybS1rZXJuZWwK
