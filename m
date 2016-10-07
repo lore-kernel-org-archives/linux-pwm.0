@@ -1,16 +1,11 @@
 From: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Subject: Re: [PATCH v2 2/6] pwm: core: make the PWM_POLARITY flag in DTB
- optional
-Date: Fri, 7 Oct 2016 10:19:57 +0530
-Message-ID: <815c2a76-a22d-8938-6d27-ff3da5694791@toradex.com>
-References: <20161001101235.24598-1-bhuvanchandra.dv@toradex.com>
- <20161001101235.24598-3-bhuvanchandra.dv@toradex.com>
- <20161006083642.6a28a629@jawa>
+Subject: [PATCH v3 0/6] Support PWM polarity control
+Date: Fri, 7 Oct 2016 20:41:23 +0530
+Message-ID: <20161007151129.6043-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20161006083642.6a28a629@jawa>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,69 +15,47 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Lukasz Majewski <l.majewski@majess.pl>
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, l.majewski@samsung.com, linux-kernel@vger.kernel.org, stefan@agner.ch, robh+dt@kernel.org, thierry.reding@gmail.com, kernel@pengutronix.de, fabio.estevam@nxp.com, shawnguo@kernel.org, linux-arm-kernel@lists.infradead.org, Lothar Wassmann <LW@KARO-electronics.de>
+To: shawnguo@kernel.org, thierry.reding@gmail.com
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, l.majewski@samsung.com, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, stefan@agner.ch, robh+dt@kernel.org, kernel@pengutronix.de, fabio.estevam@nxp.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-SGkgTHVrYXN6LAoKT24gMTAvMDYvMTYgMTI6MDYsIEx1a2FzeiBNYWpld3NraSB3cm90ZToKCj4g
-SGkgQmh1dmFuY2hhbmRyYSwKPgo+PiBGcm9tOiBMb3RoYXIgV2Fzc21hbm4gPExXQEtBUk8tZWxl
-Y3Ryb25pY3MuZGU+Cj4+Cj4+IENoYW5nZSB0aGUgcHdtIGNoaXAgZHJpdmVyIHJlZ2lzdHJhdGlv
-biwgc28gdGhhdCBhIGNoaXAgZHJpdmVyIHRoYXQKPj4gc3VwcG9ydHMgcG9sYXJpdHkgaW52ZXJz
-aW9uIGNhbiBzdGlsbCBiZSB1c2VkIHdpdGggRFRCcyB0aGF0IGRvbid0Cj4+IHByb3ZpZGUgdGhl
-ICdQV01fUE9MQVJJVFknIGZsYWcuCj4+Cj4+IFRoaXMgaXMgZG9uZSB0byBwcm92aWRlIHBvbGFy
-aXR5IGludmVyc2lvbiBzdXBwb3J0IGZvciB0aGUgcHdtLWlteAo+PiBkcml2ZXIgd2l0aG91dCBo
-YXZpbmcgdG8gbW9kaWZ5IGFsbCBleGlzdGluZyBEVFMgZmlsZXMuCj4+Cj4+IFNpZ25lZC1vZmYt
-Ynk6IExvdGhhciBXYXNzbWFubiA8TFdAS0FSTy1lbGVjdHJvbmljcy5kZT4KPj4gU2lnbmVkLW9m
-Zi1ieTogQmh1dmFuY2hhbmRyYSBEViA8Ymh1dmFuY2hhbmRyYS5kdkB0b3JhZGV4LmNvbT4KPj4g
-U3VnZ2VzdGVkLWJ5OiBUaGllcnJ5IFJlZGluZyA8dGhpZXJyeS5yZWRpbmdAZ21haWwuY29tPgo+
-PiAtLS0KPj4gICBkcml2ZXJzL3B3bS9jb3JlLmMgfCAyNyArKysrKysrKysrKysrKysrLS0tLS0t
-LS0tLS0KPj4gICAxIGZpbGUgY2hhbmdlZCwgMTYgaW5zZXJ0aW9ucygrKSwgMTEgZGVsZXRpb25z
-KC0pCj4+Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9jb3JlLmMgYi9kcml2ZXJzL3B3bS9j
-b3JlLmMKPj4gaW5kZXggMTk1MzczZS4uYWFlOGRiMyAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9w
-d20vY29yZS5jCj4+ICsrKyBiL2RyaXZlcnMvcHdtL2NvcmUuYwo+PiBAQCAtMTM3LDkgKzEzNywx
-NCBAQCBvZl9wd21feGxhdGVfd2l0aF9mbGFncyhzdHJ1Y3QgcHdtX2NoaXAgKnBjLAo+PiBjb25z
-dCBzdHJ1Y3Qgb2ZfcGhhbmRsZV9hcmdzICphcmdzKSB7Cj4+ICAgCXN0cnVjdCBwd21fZGV2aWNl
-ICpwd207Cj4+ICAgCj4+ICsJLyogY2hlY2ssIHdoZXRoZXIgdGhlIGRyaXZlciBzdXBwb3J0cyBh
-IHRoaXJkIGNlbGwgZm9yIGZsYWdzCj4+ICovIGlmIChwYy0+b2ZfcHdtX25fY2VsbHMgPCAzKQo+
-PiAgIAkJcmV0dXJuIEVSUl9QVFIoLUVJTlZBTCk7Cj4+ICAgCj4+ICsJLyogZmxhZ3MgaW4gdGhl
-IHRoaXJkIGNlbGwgYXJlIG9wdGlvbmFsICovCj4+ICsJaWYgKGFyZ3MtPmFyZ3NfY291bnQgPCAy
-KQo+PiArCQlyZXR1cm4gRVJSX1BUUigtRUlOVkFMKTsKPj4gKwo+PiAgIAlpZiAoYXJncy0+YXJn
-c1swXSA+PSBwYy0+bnB3bSkKPj4gICAJCXJldHVybiBFUlJfUFRSKC1FSU5WQUwpOwo+PiAgIAo+
-PiBAQCAtMTQ5LDEwICsxNTQsMTIgQEAgb2ZfcHdtX3hsYXRlX3dpdGhfZmxhZ3Moc3RydWN0IHB3
-bV9jaGlwICpwYywKPj4gY29uc3Qgc3RydWN0IG9mX3BoYW5kbGVfYXJncyAqYXJncykKPj4gICAJ
-cHdtLT5hcmdzLnBlcmlvZCA9IGFyZ3MtPmFyZ3NbMV07Cj4+ICAgCj4+IC0JaWYgKGFyZ3MtPmFy
-Z3NbMl0gJiBQV01fUE9MQVJJVFlfSU5WRVJURUQpCj4+IC0JCXB3bS0+YXJncy5wb2xhcml0eSA9
-IFBXTV9QT0xBUklUWV9JTlZFUlNFRDsKPj4gLQllbHNlCj4+IC0JCXB3bS0+YXJncy5wb2xhcml0
-eSA9IFBXTV9QT0xBUklUWV9OT1JNQUw7Cj4+ICsJaWYgKGFyZ3MtPmFyZ3NfY291bnQgPiAyKSB7
-Cj4+ICsJCWlmIChhcmdzLT5hcmdzWzJdICYgUFdNX1BPTEFSSVRZX0lOVkVSVEVEKQo+PiArCQkJ
-cHdtX3NldF9wb2xhcml0eShwd20sIFBXTV9QT0xBUklUWV9JTlZFUlNFRCk7Cj4gCQkJXl5eXl5e
-Xl5eXl5eXl5eXgo+IAkJCWhlcmUgd2Ugc2hvdWxkIHNldCBwd20tPmFyZ3MucG9sYXJpdHksIHNp
-bmNlCj4gCQkJdGhlIHB3bV9zZXRfcG9sYXJpdHkoKSBjYWxscyBwd21fYXBwbHlfc3RhdGUoKQo+
-IAkJCXdoaWNoIHJlcXVpcmVzIGR1dHlfY3ljbGUgYW5kIHBlcmlvZCB0byBiZSBzZXQuCj4KPiAJ
-CQlJbiB0aGlzIHBhcnRpY3VsYXIgbW9tZW50IGl0IGlzIG5vdCB5ZXQgc2V0IGFuZAo+IAkJCXBv
-bGFyaXR5IGlzIG5vdCBwcm9wZXJseSBjb25maWd1cmVkLgoKQWdyZWVkLiBXaWxsIGRvIGEgY2xl
-YW4gdjMgcGF0Y2hzZXQgYWxvbmcgd2l0aCB0aGUgcGF0Y2ggeW91IHNlbnQKKHB3bTogY29yZTog
-VXNlIHB3bS0+YXJncy5wb2xhcml0eSB0byBzZXR1cCBQV01fUE9MQVJJVFlfSU5WRVJTRUQpLgoK
-LS0KQmh1dmFuCgo+Cj4gUGF0Y2ggZml4aW5nIHRoaXMgd2lsbCBiZSBzZW50IGFzIGEgcmVwbHkg
-dG8gdGhpcyBlLW1haWwuIFBsZWFzZSBqdXN0Cj4gc3F1YXNoIGl0IGFuZCB0ZXN0IG9uIHlvdXIg
-cGxhdGZvcm0uCj4KPiBCZXN0IHJlZ2FyZHMsCj4gxYF1a2FzeiBNYWpld3NraQo+Cj4+ICsJCWVs
-c2UKPj4gKwkJCXB3bV9zZXRfcG9sYXJpdHkocHdtLCBQV01fUE9MQVJJVFlfTk9STUFMKTsKPj4g
-Kwl9Cj4+ICAgCj4+ICAgCXJldHVybiBwd207Cj4+ICAgfQo+PiBAQCAtMTYzLDkgKzE3MCwxNCBA
-QCBvZl9wd21fc2ltcGxlX3hsYXRlKHN0cnVjdCBwd21fY2hpcCAqcGMsIGNvbnN0Cj4+IHN0cnVj
-dCBvZl9waGFuZGxlX2FyZ3MgKmFyZ3MpIHsKPj4gICAJc3RydWN0IHB3bV9kZXZpY2UgKnB3bTsK
-Pj4gICAKPj4gKwkvKiBzYW5pdHkgY2hlY2sgZHJpdmVyIHN1cHBvcnQgKi8KPj4gICAJaWYgKHBj
-LT5vZl9wd21fbl9jZWxscyA8IDIpCj4+ICAgCQlyZXR1cm4gRVJSX1BUUigtRUlOVkFMKTsKPj4g
-ICAKPj4gKwkvKiBhbGwgY2VsbHMgYXJlIHJlcXVpcmVkICovCj4+ICsJaWYgKGFyZ3MtPmFyZ3Nf
-Y291bnQgIT0gcGMtPm9mX3B3bV9uX2NlbGxzKQo+PiArCQlyZXR1cm4gRVJSX1BUUigtRUlOVkFM
-KTsKPj4gKwo+PiAgIAlpZiAoYXJncy0+YXJnc1swXSA+PSBwYy0+bnB3bSkKPj4gICAJCXJldHVy
-biBFUlJfUFRSKC1FSU5WQUwpOwo+PiAgIAo+PiBAQCAtNjcyLDEzICs2ODQsNiBAQCBzdHJ1Y3Qg
-cHdtX2RldmljZSAqb2ZfcHdtX2dldChzdHJ1Y3QgZGV2aWNlX25vZGUKPj4gKm5wLCBjb25zdCBj
-aGFyICpjb25faWQpIGdvdG8gcHV0Owo+PiAgIAl9Cj4+ICAgCj4+IC0JaWYgKGFyZ3MuYXJnc19j
-b3VudCAhPSBwYy0+b2ZfcHdtX25fY2VsbHMpIHsKPj4gLQkJcHJfZGVidWcoIiVzOiB3cm9uZyAj
-cHdtLWNlbGxzIGZvciAlc1xuIiwKPj4gbnAtPmZ1bGxfbmFtZSwKPj4gLQkJCSBhcmdzLm5wLT5m
-dWxsX25hbWUpOwo+PiAtCQlwd20gPSBFUlJfUFRSKC1FSU5WQUwpOwo+PiAtCQlnb3RvIHB1dDsK
-Pj4gLQl9Cj4+IC0KPj4gICAJcHdtID0gcGMtPm9mX3hsYXRlKHBjLCAmYXJncyk7Cj4+ICAgCWlm
-IChJU19FUlIocHdtKSkKPj4gICAJCWdvdG8gcHV0OwoKCl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0Cmxp
-bnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFk
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+Changes since v3:
+
+- Set pwm->args.polarity, before using pwm_set_polarity() function as suggested
+  by Lukasz.
+- Squash Lukasz patch( https://lkml.org/lkml/2016/10/6/32 )
+
+Tested on Toradex Colibri iMX6S module.
+
+Changes since v2:
+
+- Picked the stalled patchset[1] from Lothar Wassmann which adds the basic
+  support for polarity control on imx-pwm driver and adds backward compatibility
+  support for devices which does not have polarity control feature.
+
+Changes since Lothars v6:
+
+- Squash Lukasz patch[2].
+
+[1] http://thread.gmane.org/gmane.linux.pwm/1621
+[2] https://www.spinics.net/lists/arm-kernel/msg530818.html
+
+Bhuvanchandra DV (3):
+  arm: dts: imx7: Update #pwm-cells for PWM polarity control
+  arm: dts: imx7-colibri: Use pwm polarity control
+  arm: dts: imx7-colibri: Use enable-gpios for BL_ON
+
+Lothar Wassmann (3):
+  pwm: print error messages with pr_err() instead of pr_debug()
+  pwm: core: make the PWM_POLARITY flag in DTB optional
+  pwm: imx: support output polarity inversion
+
+ Documentation/devicetree/bindings/pwm/imx-pwm.txt |  6 +--
+ arch/arm/boot/dts/imx7-colibri.dtsi               | 12 +++++-
+ arch/arm/boot/dts/imx7s.dtsi                      |  8 ++--
+ drivers/pwm/core.c                                | 26 ++++++------
+ drivers/pwm/pwm-imx.c                             | 51 +++++++++++++++++++++--
+ 5 files changed, 79 insertions(+), 24 deletions(-)
+
+-- 
+2.10.0
