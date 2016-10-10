@@ -1,18 +1,14 @@
 From: Jian Yuan <yuanjian12@hisilicon.com>
-Subject: [PATCH v3] pwm: add pwm driver for HiSilicon BVT SOCs
-Date: Mon, 10 Oct 2016 16:49:07 +0800
-Message-ID: <1476089347-50233-1-git-send-email-yuanjian12@hisilicon.com>
+Subject: [PATCH v4] pwm: add pwm driver for HiSilicon BVT SOCs
+Date: Mon, 10 Oct 2016 19:05:16 +0800
+Message-ID: <1476097516-164577-1-git-send-email-yuanjian12@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from szxga03-in.huawei.com ([119.145.14.66]:6394 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752586AbcJJItm (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 10 Oct 2016 04:49:42 -0400
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
 Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, xuejiancheng@hisilicon.com, kevin.lixu@hisilicon.com, jalen.hsu@hisilicon.com, yuanjian <yuanjian12@hisilicon.com>
+List-Id: linux-pwm@vger.kernel.org
 
 From: yuanjian <yuanjian12@hisilicon.com>
 
@@ -23,26 +19,29 @@ Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
 Signed-off-by: Jian Yuan <yuanjian12@hisilicon.com>
 ---
 Change Log:
+v4:
+Add #pwm-cells in the bindings document.
 v3:
+fixed issues pointed by thierry.
 Add PWM compatible string for Hi3519V100.
 Implement .apply() function which support atomic, instead of .enable()/.disable()/.config().
 v2:
 The number of PWMs is change to be probeable based on the compatible string.
 
- .../devicetree/bindings/pwm/pwm-hibvt.txt          |  20 ++
+ .../devicetree/bindings/pwm/pwm-hibvt.txt          |  23 ++
  drivers/pwm/Kconfig                                |   9 +
  drivers/pwm/Makefile                               |   1 +
  drivers/pwm/pwm-hibvt.c                            | 270 +++++++++++++++++++++
- 4 files changed, 300 insertions(+)
+ 4 files changed, 303 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
  create mode 100644 drivers/pwm/pwm-hibvt.c
 
 diff --git a/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
 new file mode 100644
-index 0000000..2ecf4e4
+index 0000000..609284f
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
-@@ -0,0 +1,20 @@
+@@ -0,0 +1,23 @@
 +Hisilicon PWM controller
 +
 +Required properties:
@@ -53,6 +52,8 @@ index 0000000..2ecf4e4
 +- reg: physical base address and length of the controller's registers.
 +- clocks: phandle and clock specifier of the PWM reference clock.
 +- resets: phandle and reset specifier for the PWM controller reset.
++- #pwm-cells: Should be 2. See pwm.txt in this directory for a description of
++  the cells format.
 +
 +Example:
 +	pwm: pwm@12130000 {
@@ -62,6 +63,7 @@ index 0000000..2ecf4e4
 +		reg = <0x12130000 0x10000>;
 +		clocks = <&crg_ctrl HI3516CV300_PWM_CLK>;
 +		resets = <&crg_ctrl 0x38 0>;
++		#pwm-cells = <2>;
 +	};
 diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
 index c182efc..b2d7408 100644
