@@ -1,13 +1,12 @@
 From: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
-Subject: [PATCH 2/5] pwm: sun4i: Add support for PWM controller
- on sun6i SoCs
-Date: Wed, 12 Oct 2016 12:20:56 +0800
-Message-ID: <20161012042059.40015-2-icenowy@aosc.xyz>
+Subject: [PATCH 4/5] ARM: dts: sun6i: add pinmux for PWM0
+Date: Wed, 12 Oct 2016 12:20:58 +0800
+Message-ID: <20161012042059.40015-4-icenowy@aosc.xyz>
 References: <20161012042059.40015-1-icenowy@aosc.xyz>
 Reply-To: icenowy-ymACFijhrKM@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBCZLPFN5Q4OBBVXU627QKGQE34VFE3A-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCZLPFN5Q4OBB6HU627QKGQE7O6VRLY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 In-Reply-To: <20161012042059.40015-1-icenowy-ymACFijhrKM@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -20,118 +19,32 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob
 Cc: Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-The PWM controller in A31 is different with other Allwinner SoCs, with a
-control register per channel (in other SoCs the control register is
-shared), and each channel are allocated 16 bytes of address (but only 8
-bytes are used.). The register map in one channel is just like a
-single-channel A10 PWM controller, however, A31 have a different
-prescaler table than other SoCs.
+PWM0 is used by sun6i tablets as the backlight PWM.
 
-In order to use the driver for all 4 channels, device nodes should be
-created per channel.
+Add pinmux for it.
 
 Signed-off-by: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
 ---
- drivers/pwm/pwm-sun4i.c | 37 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 36 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/sun6i-a31.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 03a99a5..3e93bdf 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -46,7 +46,7 @@
+diff --git a/arch/arm/boot/dts/sun6i-a31.dtsi b/arch/arm/boot/dts/sun6i-a31.dtsi
+index 97626ce..76f5a06 100644
+--- a/arch/arm/boot/dts/sun6i-a31.dtsi
++++ b/arch/arm/boot/dts/sun6i-a31.dtsi
+@@ -494,6 +494,13 @@
+ 				allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
+ 			};
  
- #define BIT_CH(bit, chan)	((bit) << ((chan) * PWMCH_OFFSET))
- 
--static const u32 prescaler_table[] = {
-+static const u32 prescaler_table_a10[] = {
- 	120,
- 	180,
- 	240,
-@@ -65,10 +65,30 @@ static const u32 prescaler_table[] = {
- 	0, /* Actually 1 but tested separately */
- };
- 
-+static const u32 prescaler_table_a31[] = {
-+	1,
-+	2,
-+	4,
-+	8,
-+	16,
-+	32,
-+	64,
-+	0,
-+	0,
-+	0,
-+	0,
-+	0,
-+	0,
-+	0,
-+	0,
-+	0,
-+};
++			pwm0_pins: pwm0@0 {
++				allwinner,pins = "PH13";
++				allwinner,function = "pwm0";
++				allwinner,drive = <SUN4I_PINCTRL_10_MA>;
++				allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
++			};
 +
- struct sun4i_pwm_data {
- 	bool has_prescaler_bypass;
- 	bool has_rdy;
- 	unsigned int npwm;
-+	const u32 *prescaler_table;
- };
- 
- struct sun4i_pwm_chip {
-@@ -100,6 +120,7 @@ static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 			    int duty_ns, int period_ns)
- {
- 	struct sun4i_pwm_chip *sun4i_pwm = to_sun4i_pwm_chip(chip);
-+	const u32 *prescaler_table = sun4i_pwm->data->prescaler_table;
- 	u32 prd, dty, val, clk_gate;
- 	u64 clk_rate, div = 0;
- 	unsigned int prescaler = 0;
-@@ -264,24 +285,35 @@ static const struct sun4i_pwm_data sun4i_pwm_data_a10 = {
- 	.has_prescaler_bypass = false,
- 	.has_rdy = false,
- 	.npwm = 2,
-+	.prescaler_table = prescaler_table_a10,
- };
- 
- static const struct sun4i_pwm_data sun4i_pwm_data_a10s = {
- 	.has_prescaler_bypass = true,
- 	.has_rdy = true,
- 	.npwm = 2,
-+	.prescaler_table = prescaler_table_a10,
- };
- 
- static const struct sun4i_pwm_data sun4i_pwm_data_a13 = {
- 	.has_prescaler_bypass = true,
- 	.has_rdy = true,
- 	.npwm = 1,
-+	.prescaler_table = prescaler_table_a10,
- };
- 
- static const struct sun4i_pwm_data sun4i_pwm_data_a20 = {
- 	.has_prescaler_bypass = true,
- 	.has_rdy = true,
- 	.npwm = 2,
-+	.prescaler_table = prescaler_table_a10,
-+};
-+
-+static const struct sun4i_pwm_data sun4i_pwm_data_a31 = {
-+	.has_prescaler_bypass = false,
-+	.has_rdy = true,
-+	.npwm = 1,
-+	.prescaler_table = prescaler_table_a31,
- };
- 
- static const struct of_device_id sun4i_pwm_dt_ids[] = {
-@@ -298,6 +330,9 @@ static const struct of_device_id sun4i_pwm_dt_ids[] = {
- 		.compatible = "allwinner,sun7i-a20-pwm",
- 		.data = &sun4i_pwm_data_a20,
- 	}, {
-+		.compatible = "allwinner,sun6i-a31-pwm",
-+		.data = &sun4i_pwm_data_a31
-+	}, {
- 		/* sentinel */
- 	},
- };
+ 			mmc0_pins_a: mmc0@0 {
+ 				allwinner,pins = "PF0", "PF1", "PF2",
+ 						 "PF3", "PF4", "PF5";
 -- 
 2.10.1
