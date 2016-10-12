@@ -1,89 +1,62 @@
-From: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
-Subject: [PATCH 5/5] ARM: dts: sun6i: add pwm backlight for
- reference design tablet
-Date: Wed, 12 Oct 2016 12:20:59 +0800
-Message-ID: <20161012042059.40015-5-icenowy@aosc.xyz>
-References: <20161012042059.40015-1-icenowy@aosc.xyz>
-Reply-To: icenowy-ymACFijhrKM@public.gmane.org
+From: Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+Subject: Re: [PATCH 4/5] ARM: dts: sun6i: add pinmux for PWM0
+Date: Wed, 12 Oct 2016 15:27:37 +0800
+Message-ID: <CAGb2v6736Lr+EZM3HfP1r8RkbwF3bbDes_BtpW5aTWsGeoU2nA@mail.gmail.com>
+References: <20161012042059.40015-1-icenowy@aosc.xyz> <20161012042059.40015-4-icenowy@aosc.xyz>
+Reply-To: wens-jdAy2FN1RRM@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBCZLPFN5Q4OBBBPV627QKGQEFWO4E7I-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCMILY6JWQBBBA6M667QKGQENG3HCEI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20161012042059.40015-1-icenowy-ymACFijhrKM@public.gmane.org>
+In-Reply-To: <20161012042059.40015-4-icenowy-ymACFijhrKM@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
 List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
  <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Cc: Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
+To: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-sunxi <linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-The reference tablet design of sun6i uses pwm0 to control the backlight.
+On Wed, Oct 12, 2016 at 12:20 PM, Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org> wrote:
+> PWM0 is used by sun6i tablets as the backlight PWM.
+>
+> Add pinmux for it.
+>
+> Signed-off-by: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
+> ---
+>  arch/arm/boot/dts/sun6i-a31.dtsi | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>
+> diff --git a/arch/arm/boot/dts/sun6i-a31.dtsi b/arch/arm/boot/dts/sun6i-a31.dtsi
+> index 97626ce..76f5a06 100644
+> --- a/arch/arm/boot/dts/sun6i-a31.dtsi
+> +++ b/arch/arm/boot/dts/sun6i-a31.dtsi
+> @@ -494,6 +494,13 @@
+>                                 allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
+>                         };
+>
+> +                       pwm0_pins: pwm0@0 {
+> +                               allwinner,pins = "PH13";
+> +                               allwinner,function = "pwm0";
+> +                               allwinner,drive = <SUN4I_PINCTRL_10_MA>;
+> +                               allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
 
-As we have PWM support for sun6i now, enable the backlight control.
+Maxime is updating the pinctrl bindings to use generic pinconf,
+but otherwise this patch looks good.
 
-Signed-off-by: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
----
- .../boot/dts/sun6i-reference-design-tablet.dtsi    | 24 ++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ChenYu
 
-diff --git a/arch/arm/boot/dts/sun6i-reference-design-tablet.dtsi b/arch/arm/boot/dts/sun6i-reference-design-tablet.dtsi
-index c3fcf16..aa96acf 100644
---- a/arch/arm/boot/dts/sun6i-reference-design-tablet.dtsi
-+++ b/arch/arm/boot/dts/sun6i-reference-design-tablet.dtsi
-@@ -45,6 +45,7 @@
- #include <dt-bindings/gpio/gpio.h>
- #include <dt-bindings/input/input.h>
- #include <dt-bindings/pinctrl/sun4i-a10.h>
-+#include <dt-bindings/pwm/pwm.h>
- 
- / {
- 	aliases {
-@@ -54,6 +55,16 @@
- 	chosen {
- 		stdout-path = "serial0:115200n8";
- 	};
-+
-+	backlight: backlight {
-+		compatible = "pwm-backlight";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&bl_en_pin>;
-+		pwms = <&pwm0 0 50000 PWM_POLARITY_INVERTED>;
-+		brightness-levels = <0 10 20 30 40 50 60 70 80 90 100>;
-+		default-brightness-level = <8>;
-+		enable-gpios = <&pio 0 25 GPIO_ACTIVE_HIGH>; /* PA25 */
-+	};
- };
- 
- &cpu0 {
-@@ -76,6 +87,13 @@
- };
- 
- &pio {
-+	bl_en_pin: bl_en_pin@0 {
-+		allwinner,pins = "PA25";
-+		allwinner,function = "gpio_in";
-+		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
-+		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
-+	};
-+
- 	mmc0_cd_pin_e708_q1: mmc0_cd_pin@0 {
- 		allwinner,pins = "PA8";
- 		allwinner,function = "gpio_in";
-@@ -91,6 +109,12 @@
- 	};
- };
- 
-+&pwm0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pwm0_pins>;
-+	status = "okay";
-+};
-+
- &p2wi {
- 	status = "okay";
- 
--- 
-2.10.1
+> +                       };
+> +
+>                         mmc0_pins_a: mmc0@0 {
+>                                 allwinner,pins = "PF0", "PF1", "PF2",
+>                                                  "PF3", "PF4", "PF5";
+> --
+> 2.10.1
+>
+> --
+> You received this message because you are subscribed to the Google Groups "linux-sunxi" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+> For more options, visit https://groups.google.com/d/optout.
