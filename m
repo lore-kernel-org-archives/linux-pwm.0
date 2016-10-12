@@ -1,196 +1,117 @@
-From: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
-Subject: Re: [PATCH 2/5] pwm: sun4i: Add support for PWM
- controller on sun6i SoCs
-Date: Wed, 12 Oct 2016 16:10:03 +0800
-Message-ID: <1476259803.2317.2.camel@Nokia-N900>
-References: <20161012042059.40015-1-icenowy@aosc.xyz>
-	 <20161012042059.40015-2-icenowy@aosc.xyz>
-	  <CAGb2v65P7SQyEv+b0mU_FA=CQxy7qX9h7HE4NivqjZ-ZBh94ww@mail.gmail.com>
-Reply-To: icenowy-ymACFijhrKM@public.gmane.org
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-sunxi+bncBCZLPFN5Q4OBBSHA667QKGQEZRVWUYI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <CAGb2v65P7SQyEv+b0mU_FA=CQxy7qX9h7HE4NivqjZ-ZBh94ww-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-ID: <1476259802.2317.1.camel@Nokia-N900>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: wens-jdAy2FN1RRM@public.gmane.org
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-sunxi <linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [GIT PULL] pwm: Changes for v4.9-rc1
+Date: Wed, 12 Oct 2016 19:08:16 +0200
+Message-ID: <20161012170816.8684-1-thierry.reding@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:34465 "EHLO
+        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754624AbcJLRKu (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Oct 2016 13:10:50 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi,
+Hi Linus,
 
------ =E5=8E=9F=E4=BB=B6 -----
-> Hi,
->=20
-> On Wed, Oct 12, 2016 at 12:20 PM, Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org> wrote:
-> > The PWM controller in A31 is different with other Allwinner SoCs, with
-> > a control register per channel (in other SoCs the control register is
-> > shared), and each channel are allocated 16 bytes of address (but only 8
-> > bytes are used.). The register map in one channel is just like a
-> > single-channel A10 PWM controller, however, A31 have a different
-> > prescaler table than other SoCs.
-> >=20
-> > In order to use the driver for all 4 channels, device nodes should be
-> > created per channel.
->=20
-> I think Maxime wants you to support the different register offsets
-> in this driver, and have all 4 channels in the same device (node).
+The following changes since commit 29b4817d4018df78086157ea3a55c1d9424a7cfc:
 
-I think that will make the code much more complex...
-And in hardware there may also be 4 controllers... as the register is align=
-ed at 0x10.
+  Linux 4.8-rc1 (2016-08-07 18:18:00 -0700)
 
-The error I made in my previous patch set is making
-a dedicatded pwm-sun6i driver. So I reworked this.
-(This also why I do not call the current patchset PATCH v2 -- it's a new pa=
-tchset)
+are available in the git repository at:
 
-Icenowy Zheng
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.9-rc1
 
->=20
-> ChenYu
->=20
->=20
-> > Signed-off-by: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
-> > ---
-> > drivers/pwm/pwm-sun4i.c | 37 ++++++++++++++++++++++++++++++++++++-
-> > 1 file changed, 36 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-> > index 03a99a5..3e93bdf 100644
-> > --- a/drivers/pwm/pwm-sun4i.c
-> > +++ b/drivers/pwm/pwm-sun4i.c
-> > @@ -46,7 +46,7 @@
-> >=20
-> > #define BIT_CH(bit, chan)=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  ((bit) << =
-((chan) * PWMCH_OFFSET))
-> >=20
-> > -static const u32 prescaler_table[] =3D {
-> > +static const u32 prescaler_table_a10[] =3D {
-> > 120,
-> > 180,
-> > 240,
-> > @@ -65,10 +65,30 @@ static const u32 prescaler_table[] =3D {
-> > 0, /* Actually 1 but tested separately */
-> > };
-> >=20
-> > +static const u32 prescaler_table_a31[] =3D {
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  1,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  2,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  4,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  8,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  16,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  32,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  64,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  0,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  0,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  0,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  0,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  0,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  0,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  0,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  0,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  0,
-> > +};
-> > +
-> > struct sun4i_pwm_data {
-> > bool has_prescaler_bypass;
-> > bool has_rdy;
-> > unsigned int npwm;
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  const u32 *prescaler_table;
-> > };
-> >=20
-> > struct sun4i_pwm_chip {
-> > @@ -100,6 +120,7 @@ static int sun4i_pwm_config(struct pwm_chip *chip,
-> > struct pwm_device *pwm, int duty_ns, int period_ns)
-> > {
-> > struct sun4i_pwm_chip *sun4i_pwm =3D to_sun4i_pwm_chip(chip);
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  const u32 *prescaler_table =
-=3D sun4i_pwm->data->prescaler_table;
-> > u32 prd, dty, val, clk_gate;
-> > u64 clk_rate, div =3D 0;
-> > unsigned int prescaler =3D 0;
-> > @@ -264,24 +285,35 @@ static const struct sun4i_pwm_data
-> > sun4i_pwm_data_a10 =3D { .has_prescaler_bypass =3D false,
-> > .has_rdy =3D false,
-> > .npwm =3D 2,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  .prescaler_table =3D presca=
-ler_table_a10,
-> > };
-> >=20
-> > static const struct sun4i_pwm_data sun4i_pwm_data_a10s =3D {
-> > .has_prescaler_bypass =3D true,
-> > .has_rdy =3D true,
-> > .npwm =3D 2,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  .prescaler_table =3D presca=
-ler_table_a10,
-> > };
-> >=20
-> > static const struct sun4i_pwm_data sun4i_pwm_data_a13 =3D {
-> > .has_prescaler_bypass =3D true,
-> > .has_rdy =3D true,
-> > .npwm =3D 1,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  .prescaler_table =3D presca=
-ler_table_a10,
-> > };
-> >=20
-> > static const struct sun4i_pwm_data sun4i_pwm_data_a20 =3D {
-> > .has_prescaler_bypass =3D true,
-> > .has_rdy =3D true,
-> > .npwm =3D 2,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  .prescaler_table =3D presca=
-ler_table_a10,
-> > +};
-> > +
-> > +static const struct sun4i_pwm_data sun4i_pwm_data_a31 =3D {
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  .has_prescaler_bypass =3D f=
-alse,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  .has_rdy =3D true,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  .npwm =3D 1,
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  .prescaler_table =3D presca=
-ler_table_a31,
-> > };
-> >=20
-> > static const struct of_device_id sun4i_pwm_dt_ids[] =3D {
-> > @@ -298,6 +330,9 @@ static const struct of_device_id
-> > sun4i_pwm_dt_ids[] =3D { .compatible =3D "allwinner,sun7i-a20-pwm",
-> > .data =3D &sun4i_pwm_data_a20,
-> > }, {
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0  .compatible =3D "allwinner,sun6i-a31-pwm",
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0  .data =3D &sun4i_pwm_data_a31
-> > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0  }, {
-> > /* sentinel */
-> > },
-> > };
-> > --
-> > 2.10.1
-> >=20
-> > --
-> > You received this message because you are subscribed to the Google
-> > Groups "linux-sunxi" group. To unsubscribe from this group and stop
-> > receiving emails from it, send an email to
-> > linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org For more options, visit
-> > https://groups.google.com/d/optout.
->=20
-> --=20
-> You received this message because you are subscribed to the Google
-> Groups "linux-sunxi" group. To unsubscribe from this group and stop
-> receiving emails from it, send an email to
-> linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org For more options, visit
-> https://groups.google.com/d/optout.
+for you to fetch changes up to dc8e6e1e8f2d2719dd396708b0f56d8b73c9ea52:
 
---=20
-You received this message because you are subscribed to the Google Groups "=
-linux-sunxi" group.
-To unsubscribe from this group and stop receiving emails from it, send an e=
-mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
-For more options, visit https://groups.google.com/d/optout.
+  Merge branch 'for-4.9/drivers' into for-next (2016-09-08 10:59:30 +0200)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Changes for v4.9-rc1
+
+This set of changes contains support for PWM signal capture in the STi
+driver as well as support for the PWM controller found on Meson SoCs.
+There's also support added for the MediaTek MT2701 and SunXi H3 to the
+existing drivers.
+
+Other than that there's a fair set of miscellaneous cleanups and fixes
+across the board.
+
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      pwm: meson: Handle unknown ID values
+
+Brian Norris (1):
+      pwm: cros-ec: Add __packed to prevent padding
+
+David Hsu (1):
+      pwm: Unexport children before chip removal
+
+Jisheng Zhang (1):
+      pwm: berlin: Add suspend/resume support
+
+Jyri Sarha (1):
+      pwm: pwm-tipwmss: Remove all runtime PM gets/puts
+
+Lee Jones (11):
+      dt-bindings: pwm: sti: Update DT bindings for capture support
+      pwm: sti: Rename channel => device
+      pwm: sti: Reorganise register names in preparation for new functionality
+      pwm: sti: Only request clock rate when needed
+      pwm: sti: Supply PWM capture register addresses and bit locations
+      pwm: sti: Supply PWM Capture clock handling
+      pwm: sti: Initialise PWM capture device data
+      pwm: sti: Add support for PWM capture interrupts
+      pwm: sti: Add PWM capture callback
+      pwm: sti: It's now valid for number of PWM channels to be zero
+      pwm: sti: Take the opportunity to conduct a little house keeping
+
+Milo Kim (1):
+      pwm: sunxi: Add H3 support
+
+Neil Armstrong (2):
+      dt-bindings: pwm: Add bindings for Meson PWM Controller
+      pwm: Add support for Meson PWM Controller
+
+Paul Kocialkowski (1):
+      pwm: twl: Reliably disable TWL6030 PWMs
+
+Seung-Woo Kim (1):
+      pwm: samsung: Fix to use lowest div for large enough modulation bits
+
+Thierry Reding (2):
+      Merge branch 'for-4.9/core' into for-next
+      Merge branch 'for-4.9/drivers' into for-next
+
+Weiqing Kong (2):
+      dt-bindings: pwm: Add MediaTek display PWM bindings
+      pwm: Add MediaTek MT2701 display PWM driver support
+
+oliver@schinagl.nl (1):
+      pwm: lpc-18xx: use pwm_set_chip_data
+
+ .../devicetree/bindings/pwm/pwm-meson.txt          |  23 +
+ .../devicetree/bindings/pwm/pwm-mtk-disp.txt       |   3 +-
+ Documentation/devicetree/bindings/pwm/pwm-st.txt   |   8 +-
+ .../devicetree/bindings/pwm/pwm-sun4i.txt          |   1 +
+ drivers/pwm/Kconfig                                |   9 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/core.c                                 |   2 +
+ drivers/pwm/pwm-berlin.c                           |  84 ++++
+ drivers/pwm/pwm-cros-ec.c                          |   4 +-
+ drivers/pwm/pwm-lpc18xx-sct.c                      |  12 +-
+ drivers/pwm/pwm-meson.c                            | 529 +++++++++++++++++++++
+ drivers/pwm/pwm-mtk-disp.c                         |  87 +++-
+ drivers/pwm/pwm-samsung.c                          |  15 +-
+ drivers/pwm/pwm-sti.c                              | 483 +++++++++++++++----
+ drivers/pwm/pwm-sun4i.c                            |   9 +
+ drivers/pwm/pwm-tipwmss.c                          |  19 -
+ drivers/pwm/pwm-twl.c                              |  16 +
+ drivers/pwm/sysfs.c                                |  18 +
+ include/linux/pwm.h                                |   5 +
+ 19 files changed, 1183 insertions(+), 145 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-meson.txt
+ create mode 100644 drivers/pwm/pwm-meson.c
