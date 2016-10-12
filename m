@@ -1,12 +1,12 @@
 From: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
-Subject: [PATCH 4/5] ARM: dts: sun6i: add pinmux for PWM0
-Date: Wed, 12 Oct 2016 12:20:58 +0800
-Message-ID: <20161012042059.40015-4-icenowy@aosc.xyz>
+Subject: [PATCH 3/5] ARM: dts: sun6i: add PWM controller
+Date: Wed, 12 Oct 2016 12:20:57 +0800
+Message-ID: <20161012042059.40015-3-icenowy@aosc.xyz>
 References: <20161012042059.40015-1-icenowy@aosc.xyz>
 Reply-To: icenowy-ymACFijhrKM@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBCZLPFN5Q4OBB6HU627QKGQE7O6VRLY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCZLPFN5Q4OBB3HU627QKGQEQX2IBVQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 In-Reply-To: <20161012042059.40015-1-icenowy-ymACFijhrKM@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -19,32 +19,58 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob
 Cc: Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-PWM0 is used by sun6i tablets as the backlight PWM.
+The A31 and A31s SoCs feature a different PWM controller with 4
+channels, all channels have dedicated control register.
 
-Add pinmux for it.
+Add device nodes for them.
 
 Signed-off-by: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
 ---
- arch/arm/boot/dts/sun6i-a31.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/arm/boot/dts/sun6i-a31.dtsi | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
 diff --git a/arch/arm/boot/dts/sun6i-a31.dtsi b/arch/arm/boot/dts/sun6i-a31.dtsi
-index 97626ce..76f5a06 100644
+index ce19604..97626ce 100644
 --- a/arch/arm/boot/dts/sun6i-a31.dtsi
 +++ b/arch/arm/boot/dts/sun6i-a31.dtsi
-@@ -494,6 +494,13 @@
- 				allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
- 			};
+@@ -322,6 +322,38 @@
+ 			#size-cells = <0>;
+ 		};
  
-+			pwm0_pins: pwm0@0 {
-+				allwinner,pins = "PH13";
-+				allwinner,function = "pwm0";
-+				allwinner,drive = <SUN4I_PINCTRL_10_MA>;
-+				allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
-+			};
++		pwm0: pwm@01c21400 {
++			compatible = "allwinner,sun6i-a31-pwm";
++			reg = <0x01c21400 0x4>;
++			clocks = <&osc24M>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
 +
- 			mmc0_pins_a: mmc0@0 {
- 				allwinner,pins = "PF0", "PF1", "PF2",
- 						 "PF3", "PF4", "PF5";
++		pwm1: pwm@01c21410 {
++			compatible = "allwinner,sun6i-a31-pwm";
++			reg = <0x01c21400 0x4>;
++			clocks = <&osc24M>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
++
++		pwm2: pwm@01c21420 {
++			compatible = "allwinner,sun6i-a31-pwm";
++			reg = <0x01c21400 0x4>;
++			clocks = <&osc24M>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
++
++		pwm3: pwm@01c21430 {
++			compatible = "allwinner,sun6i-a31-pwm";
++			reg = <0x01c21430 0x4>;
++			clocks = <&osc24M>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
++
+ 		usb_otg: usb@01c19000 {
+ 			compatible = "allwinner,sun6i-a31-musb";
+ 			reg = <0x01c19000 0x0400>;
 -- 
 2.10.1
