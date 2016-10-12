@@ -1,12 +1,13 @@
 From: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
-Subject: [PATCH 3/5] ARM: dts: sun6i: add PWM controller
-Date: Wed, 12 Oct 2016 12:20:57 +0800
-Message-ID: <20161012042059.40015-3-icenowy@aosc.xyz>
+Subject: [PATCH 5/5] ARM: dts: sun6i: add pwm backlight for
+ reference design tablet
+Date: Wed, 12 Oct 2016 12:20:59 +0800
+Message-ID: <20161012042059.40015-5-icenowy@aosc.xyz>
 References: <20161012042059.40015-1-icenowy@aosc.xyz>
 Reply-To: icenowy-ymACFijhrKM@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBCZLPFN5Q4OBB3HU627QKGQEQX2IBVQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCZLPFN5Q4OBBBPV627QKGQEFWO4E7I-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 In-Reply-To: <20161012042059.40015-1-icenowy-ymACFijhrKM@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -19,58 +20,70 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob
 Cc: Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-The A31 and A31s SoCs feature a different PWM controller with 4
-channels, all channels have dedicated control register.
+The reference tablet design of sun6i uses pwm0 to control the backlight.
 
-Add device nodes for them.
+As we have PWM support for sun6i now, enable the backlight control.
 
 Signed-off-by: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
 ---
- arch/arm/boot/dts/sun6i-a31.dtsi | 32 ++++++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+ .../boot/dts/sun6i-reference-design-tablet.dtsi    | 24 ++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/arch/arm/boot/dts/sun6i-a31.dtsi b/arch/arm/boot/dts/sun6i-a31.dtsi
-index ce19604..97626ce 100644
---- a/arch/arm/boot/dts/sun6i-a31.dtsi
-+++ b/arch/arm/boot/dts/sun6i-a31.dtsi
-@@ -322,6 +322,38 @@
- 			#size-cells = <0>;
- 		};
+diff --git a/arch/arm/boot/dts/sun6i-reference-design-tablet.dtsi b/arch/arm/boot/dts/sun6i-reference-design-tablet.dtsi
+index c3fcf16..aa96acf 100644
+--- a/arch/arm/boot/dts/sun6i-reference-design-tablet.dtsi
++++ b/arch/arm/boot/dts/sun6i-reference-design-tablet.dtsi
+@@ -45,6 +45,7 @@
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/input/input.h>
+ #include <dt-bindings/pinctrl/sun4i-a10.h>
++#include <dt-bindings/pwm/pwm.h>
  
-+		pwm0: pwm@01c21400 {
-+			compatible = "allwinner,sun6i-a31-pwm";
-+			reg = <0x01c21400 0x4>;
-+			clocks = <&osc24M>;
-+			#pwm-cells = <3>;
-+			status = "disabled";
-+		};
+ / {
+ 	aliases {
+@@ -54,6 +55,16 @@
+ 	chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
 +
-+		pwm1: pwm@01c21410 {
-+			compatible = "allwinner,sun6i-a31-pwm";
-+			reg = <0x01c21400 0x4>;
-+			clocks = <&osc24M>;
-+			#pwm-cells = <3>;
-+			status = "disabled";
-+		};
++	backlight: backlight {
++		compatible = "pwm-backlight";
++		pinctrl-names = "default";
++		pinctrl-0 = <&bl_en_pin>;
++		pwms = <&pwm0 0 50000 PWM_POLARITY_INVERTED>;
++		brightness-levels = <0 10 20 30 40 50 60 70 80 90 100>;
++		default-brightness-level = <8>;
++		enable-gpios = <&pio 0 25 GPIO_ACTIVE_HIGH>; /* PA25 */
++	};
+ };
+ 
+ &cpu0 {
+@@ -76,6 +87,13 @@
+ };
+ 
+ &pio {
++	bl_en_pin: bl_en_pin@0 {
++		allwinner,pins = "PA25";
++		allwinner,function = "gpio_in";
++		allwinner,drive = <SUN4I_PINCTRL_10_MA>;
++		allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
++	};
 +
-+		pwm2: pwm@01c21420 {
-+			compatible = "allwinner,sun6i-a31-pwm";
-+			reg = <0x01c21400 0x4>;
-+			clocks = <&osc24M>;
-+			#pwm-cells = <3>;
-+			status = "disabled";
-+		};
+ 	mmc0_cd_pin_e708_q1: mmc0_cd_pin@0 {
+ 		allwinner,pins = "PA8";
+ 		allwinner,function = "gpio_in";
+@@ -91,6 +109,12 @@
+ 	};
+ };
+ 
++&pwm0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwm0_pins>;
++	status = "okay";
++};
 +
-+		pwm3: pwm@01c21430 {
-+			compatible = "allwinner,sun6i-a31-pwm";
-+			reg = <0x01c21430 0x4>;
-+			clocks = <&osc24M>;
-+			#pwm-cells = <3>;
-+			status = "disabled";
-+		};
-+
- 		usb_otg: usb@01c19000 {
- 			compatible = "allwinner,sun6i-a31-musb";
- 			reg = <0x01c19000 0x0400>;
+ &p2wi {
+ 	status = "okay";
+ 
 -- 
 2.10.1
