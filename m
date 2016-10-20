@@ -1,51 +1,45 @@
-From: Clemens Gruber <clemens.gruber@pqgruber.com>
-Subject: Re: [PATCH] pwm-pca9685: Allow any of the 16 PWMs to be used as a
- GPIO
-Date: Thu, 20 Oct 2016 15:08:53 +0200
-Message-ID: <20161020130853.GA1785@archie.localdomain>
-References: <20160920144056.130104-1-mika.westerberg@linux.intel.com>
- <20161019185638.GP1722@lahna.fi.intel.com>
- <20161020104541.GA25598@ulmo.ba.sec>
- <20161020111844.GB24289@lahna.fi.intel.com>
- <20161020125144.GA24653@ulmo.ba.sec>
+From: Kevin Hilman <khilman@baylibre.com>
+Subject: Re: [PATCH] pwm: meson: Remove unneeded platform MODULE_ALIAS
+Date: Thu, 20 Oct 2016 09:23:18 -0700
+Message-ID: <7h8ttj7zwp.fsf@baylibre.com>
+References: <1476906599-14350-1-git-send-email-javier@osg.samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.pqgruber.com ([178.189.19.235]:57495 "EHLO
-        mail.pqgruber.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S936542AbcJTNI6 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 20 Oct 2016 09:08:58 -0400
-Content-Disposition: inline
-In-Reply-To: <20161020125144.GA24653@ulmo.ba.sec>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1476906599-14350-1-git-send-email-javier@osg.samsung.com>
+        (Javier Martinez Canillas's message of "Wed, 19 Oct 2016 16:49:59
+        -0300")
+Sender: linux-kernel-owner@vger.kernel.org
+To: Javier Martinez Canillas <javier@osg.samsung.com>
+Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Carlo Caione <carlo@caione.org>, linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Linus Walleij <linus.walleij@linaro.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org
 
-On Thu, Oct 20, 2016 at 02:51:44PM +0200, Thierry Reding wrote:
-> I'm reluctant to add this to the PWM core because it's effectively
-> duplicating something for which a proper subsystem already exists.
-> 
-> If adding pinmux is considered overkill, maybe doing so needs to be
-> simplified. Surely if this is applicable to more than one PWM controller
-> some helpers could be extracted to make it easier to add.
-> 
-> But if it isn't generally useful I don't think it makes sense to add it
-> to the PWM core either. So I think our choices here are to register via
-> pinmux and in the process add helpers to make that easier (remove the
-> overkill) or to keep this to the driver until we start seeing a pattern
-> emerge.
+Javier Martinez Canillas <javier@osg.samsung.com> writes:
 
-But the fact that this one pwm chip bypasses PWM control and acts as a
-GPO is an implementation detail of the chip, this feature is helpful for
-other PWM chips too, as long as they don't toggle.
-Would this really be a good fit in the pinmux subsystem?
+> The Amlogic Meson is a DT-only platform, which means the devices are
+> registered via OF and not using the legacy platform devices support.
+>
+> So there's no need to have a MODULE_ALIAS("platform:meson-pwm") since
+> the reported uevent MODALIAS to user-space will always be the OF one.
+>
+> Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
 
-I really like the idea of Mika to add a gpio_set callback in pwm_ops and
-let the pwm core export a GPIO chip. For now we could add this callback
-only to the pwm-pca9685 driver but others could opt-in if needed.
+Acked-by: Kevin Hilman <khilman@baylibre.com>
 
-But the initial patch from Mika is fine too, in my opinion.
-
-Regards,
-Clemens
+> ---
+>
+>  drivers/pwm/pwm-meson.c | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+> index 381871b2bb46..5678092cad4b 100644
+> --- a/drivers/pwm/pwm-meson.c
+> +++ b/drivers/pwm/pwm-meson.c
+> @@ -523,7 +523,6 @@ static struct platform_driver meson_pwm_driver = {
+>  };
+>  module_platform_driver(meson_pwm_driver);
+>  
+> -MODULE_ALIAS("platform:meson-pwm");
+>  MODULE_DESCRIPTION("Amlogic Meson PWM Generator driver");
+>  MODULE_AUTHOR("Neil Armstrong <narmstrong@baylibre.com>");
+>  MODULE_LICENSE("Dual BSD/GPL");
