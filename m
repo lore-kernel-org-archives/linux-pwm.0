@@ -1,87 +1,42 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH] pwm-pca9685: Allow any of the 16 PWMs to be used as a
  GPIO
-Date: Thu, 20 Oct 2016 23:50:11 +0200
-Message-ID: <20161020215009.GA2185@mithrandir.ba.sec>
+Date: Thu, 20 Oct 2016 23:52:01 +0200
+Message-ID: <20161020215200.GB2185@mithrandir.ba.sec>
 References: <20160920144056.130104-1-mika.westerberg@linux.intel.com>
  <20161019185638.GP1722@lahna.fi.intel.com>
  <20161020104541.GA25598@ulmo.ba.sec>
  <20161020111844.GB24289@lahna.fi.intel.com>
  <20161020125144.GA24653@ulmo.ba.sec>
- <20161020130117.GK24289@lahna.fi.intel.com>
+ <20161020130853.GA1785@archie.localdomain>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Qxx1br4bt0+wmkIi"
+        protocol="application/pgp-signature"; boundary="GRPZ8SYKNexpdSJ7"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-lf0-f68.google.com ([209.85.215.68]:35926 "EHLO
-        mail-lf0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754294AbcJTVuQ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 20 Oct 2016 17:50:16 -0400
-Received: by mail-lf0-f68.google.com with SMTP id b75so2556083lfg.3
-        for <linux-pwm@vger.kernel.org>; Thu, 20 Oct 2016 14:50:15 -0700 (PDT)
+Received: from mail-lf0-f51.google.com ([209.85.215.51]:32954 "EHLO
+        mail-lf0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756245AbcJTVwF (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 20 Oct 2016 17:52:05 -0400
+Received: by mail-lf0-f51.google.com with SMTP id x79so112004035lff.0
+        for <linux-pwm@vger.kernel.org>; Thu, 20 Oct 2016 14:52:04 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <20161020130117.GK24289@lahna.fi.intel.com>
+In-Reply-To: <20161020130853.GA1785@archie.localdomain>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org
+To: Clemens Gruber <clemens.gruber@pqgruber.com>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Linus Walleij <linus.walleij@linaro.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org
 
 
---Qxx1br4bt0+wmkIi
+--GRPZ8SYKNexpdSJ7
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 20, 2016 at 04:01:17PM +0300, Mika Westerberg wrote:
+On Thu, Oct 20, 2016 at 03:08:53PM +0200, Clemens Gruber wrote:
 > On Thu, Oct 20, 2016 at 02:51:44PM +0200, Thierry Reding wrote:
-> > On Thu, Oct 20, 2016 at 02:18:44PM +0300, Mika Westerberg wrote:
-> > > On Thu, Oct 20, 2016 at 12:45:41PM +0200, Thierry Reding wrote:
-> > > > On Wed, Oct 19, 2016 at 09:56:38PM +0300, Mika Westerberg wrote:
-> > > > > On Tue, Sep 20, 2016 at 05:40:56PM +0300, Mika Westerberg wrote:
-> > > > > > The PCA9685 controller has full on/off bit for each PWM channel=
-=2E Setting
-> > > > > > this bit bypasses the PWM control and the line works just as it=
- would be a
-> > > > > > GPIO. Furthermore in Intel Galileo it is actually used as GPIO =
-output for
-> > > > > > discreet muxes on the board.
-> > > > > >=20
-> > > > > > This patch adds GPIO output only support for the driver so that=
- we can
-> > > > > > control the muxes on Galileo using standard GPIO interfaces ava=
-ilable in
-> > > > > > the kernel. GPIO and PWM functionality is exclusive so only one=
- can be
-> > > > > > active at a time on a single PWM channel.
-> > > > > >=20
-> > > > > > Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> > > > >=20
-> > > > > Thierry,
-> > > > >=20
-> > > > > Any comments on this?
-> > > >=20
-> > > > It seems to me like maybe pinmux would be a better framework to han=
-dle
-> > > > this kind of use case. The full on/off bit sounds like it's a mux t=
-hat
-> > > > selects between GPIO and PWM functionality.
-> > > >=20
-> > > > Have you thought about supporting pinmux for this?
-> > >=20
-> > > Adding a full pinmux just for this sounds a bit overkill if you ask m=
-e.
-> > >=20
-> > > How about adding that ->gpio_set() callback in pwm_ops and let the PWM
-> > > core to export a GPIO chip in that case? That would support also other
-> > > PWMs having similar full on/off capability without the need to add a =
-new
-> > > pinmux driver for each.
-> >=20
 > > I'm reluctant to add this to the PWM core because it's effectively
 > > duplicating something for which a proper subsystem already exists.
->=20
-> OK, I see.
->=20
+> >=20
 > > If adding pinmux is considered overkill, maybe doing so needs to be
 > > simplified. Surely if this is applicable to more than one PWM controller
 > > some helpers could be extracted to make it easier to add.
@@ -92,32 +47,41 @@ new
 > > overkill) or to keep this to the driver until we start seeing a pattern
 > > emerge.
 >=20
-> I would then go for keeping the code in this single driver for now and
-> re-think this later if other drivers start to develop similar.
+> But the fact that this one pwm chip bypasses PWM control and acts as a
+> GPO is an implementation detail of the chip, this feature is helpful for
+> other PWM chips too, as long as they don't toggle.
+> Would this really be a good fit in the pinmux subsystem?
+>=20
+> I really like the idea of Mika to add a gpio_set callback in pwm_ops and
+> let the pwm core export a GPIO chip. For now we could add this callback
+> only to the pwm-pca9685 driver but others could opt-in if needed.
 
-That's fine with me. I'll take a closer look at this patch and apply if
-I don't find anything out of place.
+I don't think it's as simple as that. There could be chips where only a
+subset of PWM channels could act as a GPIO, or there could be any other
+amount of quirks. A single callback is unlikely to cut it, so I think a
+better alternative is to keep this in drivers until some patterns start
+to emerge.
 
 Thierry
 
---Qxx1br4bt0+wmkIi
+--GRPZ8SYKNexpdSJ7
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAABCAAGBQJYCTwMAAoJEN0jrNd/PrOh5xUP/im2ohXnMSGYDDwTCMRYEYG6
-eIQaFNc3zlDDudbbKM/AUZNrfYVxL3+gTxf5fJkgxa5/vzCleM7/pWsPAomqiFXu
-OVJe8XEtsVI8NkwlmyxRj7A9MrbHZQVCg0YBxSqpH4FN4C/kwsAROLpHQvZOAoXt
-BAGdfs2NtTD1GZMbft2R+fhbPxdvADDiV1Xue/H98QC3snhCagVxBE8tkQzRIoAn
-8KDoRMDZCK/VJW8ghKi/5ZDqjko5bTnaRrjmUMJLdjUsZJksdPY9CJbSp5cGcylB
-DaN5xfN2ZArA5eyUu9xxrgEqSY2Xk24NsmUvj/sktp/xiHQ4h+erTvCrqVVYg8z7
-kcZefGTCk07HjhA6z7YH9yuPanJRxANooJKRE4d7cUiYUuihcvCjxyEQybHRDUZg
-dtI8OHBMmOJNbSyCLKdPR1UBEBhFff+LXo0IYjruhLo0lkTtYvQKchU7C5bAQ9tR
-4l2+L8d3GLPrU8hnzRfWb+0YFUEJ9LJ5s5q+g8MYaFWakDtEd/hq7Xuo3Ss8DWS6
-jeDog8hI+IGz10Ot/eImYWPHGqx2jkDiasc8OI8lAfX/bFC5PY9GqRr/O4gX4sOe
-Bh/0E5PcPcWg8V5I0oniDyn1+euVDKU0iVDOyosDvJrx7/h2xFOam5T1HS+ShfDN
-K7/0vPwmUGrbT0uzAorq
-=kcEJ
+iQIbBAABCAAGBQJYCTx/AAoJEN0jrNd/PrOhb1YP90FNmSwM0PzWPOlR+ADXWxvK
+pSTsNdXglSkcIOr7piRGs64FTh/UfZ005zPVervnLn/8r4C/gA66kDlw9bEJGoIC
+lXoZyZsNwo1Ksj1XXDqhLulw0RnmAOQvTufwU9zfenNwZj/NxaptksdQHLilgULR
+N2u25haJDk7LGwMBeVkkRDd4ubXAjah9yYmDsd9E4wchuSK9y6Do2GEdjNlK0GMu
+X2WPBBNW4k3Fj+pcalldnGsQAVCNklNocJ9uPa93XAGY4sVjpwnt80L7qUIskemY
+aEAqnrdAFxYgpBebklacVp0xHu+fm7T4B0PmmQO/TmM5CXwkzeE9qga479t70ZmB
+zkPxJGVXa6n5fjMKElNHomuMMILQlzDn6Tq23geto+izPqlP3airEhZjp7PhOR/O
+MOlPNunOiS/An5kCITvicXxWTPRPG9l25Daq/1kxdjBodaGNyK1HO816J4iKlwoT
+7SC+rfaY94WdDFw9ZNby+IUc2K89gMsDvxG64mFLLZbKWrOQCawPPt71oW9Oz7X6
+8I9jfq9q8khsJ5UOFhXYlbJk5sIM0nPFZVd8CDTb6GAaOMLPzAZo4mQcz8e4P+rp
+NmUA0qo7o228t6aoMXiLckV4XshyWWet4T1vlnzqhxcUXMSXNig7dh4IusoWTUHn
+xlZOoLYlE++qrym/Orc=
+=B1Od
 -----END PGP SIGNATURE-----
 
---Qxx1br4bt0+wmkIi--
+--GRPZ8SYKNexpdSJ7--
