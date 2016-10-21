@@ -1,131 +1,66 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4] pwm: add pwm driver for HiSilicon BVT SOCs
-Date: Fri, 21 Oct 2016 09:22:36 +0200
-Message-ID: <20161021072236.GD2670@ulmo.ba.sec>
-References: <1476097516-164577-1-git-send-email-yuanjian12@hisilicon.com>
- <20161010215339.GA21660@rob-hp-laptop>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: PWM on Suspend To Ram
+Date: Fri, 21 Oct 2016 09:29:01 +0200
+Message-ID: <20161021072901.GE2670@ulmo.ba.sec>
+References: <CACUGKYNYLnRkWuaMWsc+524C2TscjL2L2AU-eFP-JNKy879AvQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ZJcv+A0YCCLh2VIg"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+        protocol="application/pgp-signature"; boundary="IU5/I01NYhRvwH70"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pf0-f194.google.com ([209.85.192.194]:32863 "EHLO
+        mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754519AbcJUH3G (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 21 Oct 2016 03:29:06 -0400
+Received: by mail-pf0-f194.google.com with SMTP id i85so7861452pfa.0
+        for <linux-pwm@vger.kernel.org>; Fri, 21 Oct 2016 00:29:06 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <20161010215339.GA21660@rob-hp-laptop>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Jian Yuan <yuanjian12-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuejiancheng-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, kevin.lixu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, jalen.hsu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
+In-Reply-To: <CACUGKYNYLnRkWuaMWsc+524C2TscjL2L2AU-eFP-JNKy879AvQ@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: John Tobias <john.tobias.ph@gmail.com>
+Cc: Shawn Guo <shawn.guo@freescale.com>, Liu Ying <Ying.Liu@freescale.com>, linux-pwm@vger.kernel.org
 
 
---ZJcv+A0YCCLh2VIg
+--IU5/I01NYhRvwH70
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 10, 2016 at 04:53:39PM -0500, Rob Herring wrote:
-> On Mon, Oct 10, 2016 at 07:05:16PM +0800, Jian Yuan wrote:
-> > From: yuanjian <yuanjian12-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> >=20
-> > Add PWM driver for the PWM controller found on HiSilicon BVT SOCs, like=
- Hi3519V100, Hi3516CV300, etc.
-> > The PWM controller is primarily in charge of controlling P-Iris lens.
-> >=20
-> > Reviewed-by: Jiancheng Xue <xuejiancheng-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> > Signed-off-by: Jian Yuan <yuanjian12-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> > ---
-> > Change Log:
-> > v4:
-> > Add #pwm-cells in the bindings document.
-> > v3:
-> > fixed issues pointed by thierry.
-> > Add PWM compatible string for Hi3519V100.
-> > Implement .apply() function which support atomic, instead of .enable()/=
-=2Edisable()/.config().
-> > v2:
-> > The number of PWMs is change to be probeable based on the compatible st=
-ring.
-> >=20
-> >  .../devicetree/bindings/pwm/pwm-hibvt.txt          |  23 ++
-> >  drivers/pwm/Kconfig                                |   9 +
-> >  drivers/pwm/Makefile                               |   1 +
-> >  drivers/pwm/pwm-hibvt.c                            | 270 +++++++++++++=
-++++++++
-> >  4 files changed, 303 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
-> >  create mode 100644 drivers/pwm/pwm-hibvt.c
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt b/Docu=
-mentation/devicetree/bindings/pwm/pwm-hibvt.txt
-> > new file mode 100644
-> > index 0000000..609284f
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
-> > @@ -0,0 +1,23 @@
-> > +Hisilicon PWM controller
-> > +
-> > +Required properties:
-> > +-compatible: should contain one SoC specific compatible string and one=
- generic compatible
-> > +string "hisilicon, hibvt-pwm". The SoC specific strings supported incl=
-uding:
+On Tue, Sep 20, 2016 at 08:50:29AM -0700, John Tobias wrote:
+> Hi Guys,
 >=20
-> Extra space          ^
+> I have an iMX6 board and I can put the device in Suspend to RAM mode.
+> While in the said mode, I would like to keep the PWM up and running
+> (The iMX6 PWM support low power mode).
 >=20
-> With that, for the binding:
+> During the suspend mode, I set all the registers that I do believe to
+> enable the PWM, but I am not getting the any signals.
 >=20
-> Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> I would like to know if anyone here have any idea how to tweak it in
+> order to accomplish for what I need?.
 
-I'm wondering what the use is of the generic compatible string? Not only
-is the driver not listing it, nor is it in any way useful since there is
-nothing the driver could do based on the generic compatible string (each
-version of the IP currently supported has a different number of PWM
-channels).
-
-Should I just remove that from the above text and the example?
+Cc'ing Shawn and Liu. Any ideas?
 
 Thierry
 
-> > +	"hisilicon,hi3516cv300-pwm"
-> > +	"hisilicon,hi3519v100-pwm"
-> > +- reg: physical base address and length of the controller's registers.
-> > +- clocks: phandle and clock specifier of the PWM reference clock.
-> > +- resets: phandle and reset specifier for the PWM controller reset.
-> > +- #pwm-cells: Should be 2. See pwm.txt in this directory for a descrip=
-tion of
-> > +  the cells format.
-> > +
-> > +Example:
-> > +	pwm: pwm@12130000 {
-> > +
-> > +		compatible =3D "hisilicon,hi3516cv300-pwm", "hisilicon,hibvt-pwm";
-> > +		compatible =3D "hisilicon,hi3519v100-pwm", "hisilicon,hibvt-pwm";
-> > +		reg =3D <0x12130000 0x10000>;
-> > +		clocks =3D <&crg_ctrl HI3516CV300_PWM_CLK>;
-> > +		resets =3D <&crg_ctrl 0x38 0>;
-> > +		#pwm-cells =3D <2>;
-> > +	};
-
---ZJcv+A0YCCLh2VIg
+--IU5/I01NYhRvwH70
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAABCAAGBQJYCcI7AAoJEN0jrNd/PrOhw60P/2OE0UjxIi6JObUxmOe8F5b+
-JPKeu2G/L3byEp8Kz0bIcHNsEhX/Z2+Q895Zq9KiQFI7b6FhsX6ttx4eroMidqZG
-hg9GHo4TCKENsk4TS314KroTIZAoQ1wpZ8VCu8bkguRZaHO/AqULNJdHt4CYanmi
-w3VE3uMAAsuGTSL8+xg8HUdC/mbl6JTL9Lw0sCHO6XM3Rsm9lMUwVATNAdGEXqM+
-epqIb6dtVhUSbOdvPXZKuum9EQK9UB65Xv7g4NC67lkxmf10LyHmLrmT1s9J9W8e
-1mqjC1071boHrz+X/X+FIjST9TRiXHRmdr/KpxJ1ALluRUthhr046quID0Lido0V
-CLBGeUayeaCfb6RN6661mqxIdkUaZGiQXwJ18/RVinknIl2p4qVfL3dmdZz3PCOL
-hzxF59Zer82wjXDAzAmekOoC+uUdV7s3+f7FOjQ2v4kxBwGfdPsySDEf+A4ntYDn
-/dkmYzcfSZlgnz0R2KvCip06RM+lnRw7j0tovD7R6Imrtd6WTeN23KikVDesdLml
-KenQx1Tzh7u4AZLf9IMZxiG7o9H3aRXxevoadz5UHDoEVPVGBjWHou1++zkCXgXu
-DhgFE3KqEDqeNe4jfC1SYw7Jh+Ue766+WB+I7eGwkXtKUeQVPSiugiiXCTUQ+CIC
-/6+9awoX/Dp72qoQMoVI
-=vQtk
+iQIcBAABCAAGBQJYCcO9AAoJEN0jrNd/PrOh0soQAIWVEbpUWmc3CoGQs8mKQzv9
+8Gj0LuYxI+zpQcIU/vyJf2FKDKFPEt2CDU6y16osTwx1CMRiV5rjbrrrMrEs4YJt
+y/FqAmH2W5oRF7guwUYrNcwPUxAwn5nQs1dVQs5Zx2ChaVX2YYl/AQ9UretesQgZ
+dr/7gNDSxiU9oFJlrtT9Gm5y/gXs+wzeYTU3IToA0phj9EvRaReiZ+4F+1CUA+Jw
+o1tOMa/jQ1Hi/OxlttECOYMFB/mOWtjIHIoFlKbWCa8u+1gDHaqUtnXR6gECurQn
+MwSBdudJyHR3nsK8APEQP/YUnps+XEutNEV1YwlV2feDdBK2UenaZ7H/hKXWvTAd
+ZGBWskn2oGqEH+GED8gJoM0v+MrVZ1pPPt6p20Butx1uk9H/gvgF/qZGk8lVXEPl
+6gD5mMlsb7xyBiOFyVDM4YtrNFqRio5LAGLklKvXon0uD7XlBL/aWi3aqx3qgIQ8
+yO/zJa9W2slszjjOl2uSesfVpd/pJn7VefQzBpM7yhW1qJriBoSHsoh3SqFfwepr
+x3g/3RMuXGsegKGKQPHoLJk5GLwRl3uHB+IEIPjtV86VcZs7FVszgkQbs8ESkerd
+9R5B2mV8eUA3tkbo4UPs8OYyxzxQgOlKXDgfosOTWGd+Q9l3FGSAj0k+zUMDNj42
+7qvj1ZiMY8TUHRpSLJm9
+=2NFe
 -----END PGP SIGNATURE-----
 
---ZJcv+A0YCCLh2VIg--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--IU5/I01NYhRvwH70--
