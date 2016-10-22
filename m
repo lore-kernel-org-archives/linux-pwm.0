@@ -1,7 +1,7 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
 Subject: Re: [PATCH v3 3/6] pwm: imx: support output polarity inversion
-Date: Sat, 22 Oct 2016 12:57:52 +0200
-Message-ID: <20161022125752.61cfca30@bbrezillon>
+Date: Sat, 22 Oct 2016 14:01:18 +0200
+Message-ID: <20161022140118.7a6cb583@bbrezillon>
 References: <20161007151129.6043-1-bhuvanchandra.dv@toradex.com>
         <20161007151129.6043-4-bhuvanchandra.dv@toradex.com>
         <5325a332099473a2d8382530f79c5a8e@agner.ch>
@@ -14,14 +14,16 @@ References: <20161007151129.6043-1-bhuvanchandra.dv@toradex.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from up.free-electrons.com ([163.172.77.33]:45850 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S932718AbcJVMBY (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 22 Oct 2016 08:01:24 -0400
 In-Reply-To: <20161021234939.1a4f51f4@jawa>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 To: Lukasz Majewski <l.majewski@majess.pl>
 Cc: Stefan Agner <stefan@agner.ch>, thierry.reding@gmail.com, mark.rutland@arm.com, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, robh+dt@kernel.org, kernel@pengutronix.de, fabio.estevam@nxp.com, shawnguo@kernel.org, linux-arm-kernel@lists.infradead.org, Lothar Wassmann <LW@karo-electronics.de>
-List-Id: linux-pwm@vger.kernel.org
-
-Hi Lukasz,
 
 On Fri, 21 Oct 2016 23:49:39 +0200
 Lukasz Majewski <l.majewski@majess.pl> wrote:
@@ -108,20 +110,9 @@ Lukasz Majewski <l.majewski@majess.pl> wrote:
 > > >> > >> period/duty cycle only.  
 > > > 
 > > > Unfortunately, it also resets the PWM IP block and setups it again
-> > > (by writing to PWMCR register).
-
-Well, this is an implementation problem. If you were reading the
-MX3_PWMCR register and masking it with MX3_PWMCR_POUTC to keep the
-value set by ->set_polarity() that wouldn't be a problem.
-
-> > > In that function we setup for
+> > > (by writing to PWMCR register). In that function we setup for
 > > > example MX3_PWMCR_DOZEEN
 > > > and MX3_PWMCR_DBGEN. Why cannot we setup polarity as well?
-
-I think there's no real problem in setting the polarity again in
-->config(), it's just that it feels weird to have it set twice (in
-->set_polarity() and in ->config()).
-
 > > > 
 > > > 
 > > > I've double checked the backlight and pwm code flow.
@@ -167,38 +158,15 @@ I think there's no real problem in setting the polarity again in
 > 
 > The problem here is not the lack of ->apply() callback, but the requirement to
 > perform software reset on the pwm_v2 fifo when the pwm_v2 is NOT enabled (state->enabled: 0).
-
-Not sure what a PWM fifo is, or which software reset you are talking
-about. If you're talking about the disable()+set_polarity()+enable()
-dance, then, this is required by some PWM controllers which do not
-support changing the PWM polarity while the PWM is running.
-
 > 
 > As fair as I can see the pwm_state has following members: period, duty cycle, polarity and enabled.
 > I'm fine to implement ->apply() callback, which would change above values.
 > 
 > However, there is a problem with ->config() (imx_pwm_config_v2 @ pwm-imx.c) and imx pwm_v2 software
 > FIFO reset.
-
-->config() will not be used if you implement ->apply(), and ->apply()
-should take care of all the nasty details that should be taken care of
-on your PWM controller.
-
-Say for example that you need to disable the PWM before changing the
-polarity, then your ->apply() function should check if the PWM is
-enabled, if that's the case it should disable it, set the new polarity,
-possibly re-apply the period and duty config and finally re-enable the
-PWM.
-
 > We can set polarity in any other kernel subsystem, which uses PWM (backlight in this example) and 
 > then this setting would disappear when we call pwm_apply_state with state->enabled = 0 (as presented
 > in the log). This imposes setting polarity at ->config when we enable the PWM (as this patch does).
-
-That's really a driver problem, not a PWM user or PWM core problem. If
-you have to take extra precautions when enabling the PWM (like
-re-applying the polarity), then you can do that in your ->apply()
-implementation.
-
 > 
 > 
 > 
@@ -221,12 +189,6 @@ implementation.
 > > in the old times, it is definitely now with the atomic PWM stuff.  
 > 
 > The "atomic"[*] code (with ->apply() provided) will not solve this issue.
-
-Of course it will solve the problem, because in ->apply() you're passed
-all the information you need, and if you have to re-apply the polarity
-setting, you can (which was not the case with the old pwm_ops
-interface).
-
 > 
 > >   
 > > > 
@@ -243,72 +205,400 @@ interface).
 > As I mentioned before, the problem is not with the lack of
 > "atomic" API.
 
-And I really think it is.
+Below is a quick and dirty I made on top of this patch to show you how
+atomic update can be implemented in this driver. It's not tested, and
+probably not working, but it should give you a better idea of what is
+expected.
 
-> 
-> For me the problem is with other subsystems (like pwm backlight)
-> which do require polarity inversion to work properly.
+--->8---
+From f4dc9a368a951b619a9c67791cb9515ca70da0ee Mon Sep 17 00:00:00 2001
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Date: Sat, 22 Oct 2016 13:55:19 +0200
+Subject: [PATCH] pwm: imx: switch to the atomic interface and related cleanup
 
-Nope, it's just that, with the old pwm_ops interface, your driver was
-not able to apply things in the right order. With the ->apply() it can.
+This is just a crappy commit to show you how atomic update can be
+implemented. Please do not submit the changes as is.
 
-> 
-> > 
-> > If we can't make it happen properly in the current state of affairs,  
-> 
-> We can set polarity properly with this patch. The only thing which needs fixing
-> and another revision of the patch) is the removal of condition:
-> 
-> -       if (polarity == pwm->args.polarity)
-> -               return 0;
-> 
-> at imx_pwm_set_polarity() function.
+This commit is based on https://lkml.org/lkml/2016/10/7/454.
 
-Yes, you can probably add even more hacks, but as Stefan said, it's
-probably better to switch to the atomic interface, because by doing you
-would greatly simplify the logic.
+Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+---
+ drivers/pwm/pwm-imx.c | 262 +++++++++++++++++++++++---------------------------
+ 1 file changed, 119 insertions(+), 143 deletions(-)
 
-> 
-> > we probably should first move to the atomic API.
-> > 
-> > It really should not be that hard, since we already do almost
-> > everything in one function (imx_pwm_config_v2). We probably can
-> > almost just assign that function to the new apply function pointer
-> > and read information from the new state struct.  
-> 
-> We do need to configure polarity according to DT value during the pwm
-> config_v2 configuration after PWM IP software reset.
-
-And again, forget about ->config(), it should not be called if you
-implement ->apply() (actually, you should even drop it completely). So
-really, you should try implementing ->apply() and see what happens.
-
-> 
-> > 
-> > There are examples for instance here:
-> > https://patchwork.kernel.org/patch/7228221/  
-> 
-> The atomicity[*]:
-> 
-> - It seems to me that this "atomicity" is just embracing all the ->enable, ->disable
-> and ->set_polarity in one -> apply callback. Is this just conceptual clean up or is
-> there any other reason for it (I'm just curious) ?
-
-No, it's not just a conceptual cleanup. Some hardware are capable of
-updating the PWM config atomically (which means they will update the
-config at the end of the current period cycle), and by doing that we
-also prevent any glitches on the PWM signal.
-With the old API, this was simply impossible to do, because the
-enable/disable, set_polarity and config calls were separated. With the
-atomic API, we can.
-
-Now, let's say your controller is not guaranteeing atomicity. It's
-still interesting to implement the ->apply() function, because this way
-you can handle all those complex sequences that are required on some HW.
-
-To sum-up, I really think you should listen to Stefan and try to
-implement the atomic hook (AKA ->apply()).
-
-Regards,
-
-Boris
+diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+index c37d22371848..c6d55f92dc40 100644
+--- a/drivers/pwm/pwm-imx.c
++++ b/drivers/pwm/pwm-imx.c
+@@ -66,8 +66,6 @@ struct imx_chip {
+ static int imx_pwm_config_v1(struct pwm_chip *chip,
+ 		struct pwm_device *pwm, int duty_ns, int period_ns)
+ {
+-	struct imx_chip *imx = to_imx_chip(chip);
+-
+ 	/*
+ 	 * The PWM subsystem allows for exact frequencies. However,
+ 	 * I cannot connect a scope on my device to the PWM line and
+@@ -85,81 +83,118 @@ static int imx_pwm_config_v1(struct pwm_chip *chip,
+ 	 * both the prescaler (/1 .. /128) and then by CLKSEL
+ 	 * (/2 .. /16).
+ 	 */
++	struct imx_chip *imx = to_imx_chip(chip);
+ 	u32 max = readl(imx->mmio_base + MX1_PWMP);
+ 	u32 p = max * duty_ns / period_ns;
++	int ret;
++
++	ret = clk_prepare_enable(imx->clk_ipg);
++	if (ret)
++		return ret;
++
+ 	writel(max - p, imx->mmio_base + MX1_PWMS);
+ 
++	clk_disable_unprepare(imx->clk_ipg);
++
+ 	return 0;
+ }
+ 
+-static void imx_pwm_set_enable_v1(struct pwm_chip *chip, bool enable)
++static int imx_pwm_enable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	struct imx_chip *imx = to_imx_chip(chip);
++	int ret;
+ 	u32 val;
+ 
++	ret = clk_prepare_enable(imx->clk_ipg);
++	if (ret)
++		return ret;
++
+ 	val = readl(imx->mmio_base + MX1_PWMC);
+ 
+-	if (enable)
+-		val |= MX1_PWMC_EN;
+-	else
+-		val &= ~MX1_PWMC_EN;
++	val |= MX1_PWMC_EN;
+ 
+ 	writel(val, imx->mmio_base + MX1_PWMC);
++
++	clk_disable_unprepare(imx->clk_per);
++
++	return 0;
+ }
+ 
+-static int imx_pwm_config_v2(struct pwm_chip *chip,
+-		struct pwm_device *pwm, int duty_ns, int period_ns)
++static void imx_pwm_disable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct imx_chip *imx = to_imx_chip(chip);
++	u32 val;
++
++	val = readl(imx->mmio_base + MX1_PWMC);
++
++	val &= ~MX1_PWMC_EN;
++
++	writel(val, imx->mmio_base + MX1_PWMC);
++
++	clk_disable_unprepare(imx->clk_per);
++}
++
++static void imx_pwm_wait_fifo_slot(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	struct imx_chip *imx = to_imx_chip(chip);
+ 	struct device *dev = chip->dev;
+-	unsigned long long c;
+-	unsigned long period_cycles, duty_cycles, prescale;
+ 	unsigned int period_ms;
+-	bool enable = pwm_is_enabled(pwm);
+-	int wait_count = 0, fifoav;
+-	u32 cr, sr;
++	int fifoav;
++	u32 sr;
++
++	sr = readl(imx->mmio_base + MX3_PWMSR);
++	fifoav = sr & MX3_PWMSR_FIFOAV_MASK;
++	if (fifoav == MX3_PWMSR_FIFOAV_4WORDS) {
++		period_ms = DIV_ROUND_UP(pwm_get_period(pwm),
++					 NSEC_PER_MSEC);
++		msleep(period_ms);
+ 
+-	/*
+-	 * i.MX PWMv2 has a 4-word sample FIFO.
+-	 * In order to avoid FIFO overflow issue, we do software reset
+-	 * to clear all sample FIFO if the controller is disabled or
+-	 * wait for a full PWM cycle to get a relinquished FIFO slot
+-	 * when the controller is enabled and the FIFO is fully loaded.
+-	 */
+-	if (enable) {
+ 		sr = readl(imx->mmio_base + MX3_PWMSR);
+-		fifoav = sr & MX3_PWMSR_FIFOAV_MASK;
+-		if (fifoav == MX3_PWMSR_FIFOAV_4WORDS) {
+-			period_ms = DIV_ROUND_UP(pwm_get_period(pwm),
+-						 NSEC_PER_MSEC);
+-			msleep(period_ms);
+-
+-			sr = readl(imx->mmio_base + MX3_PWMSR);
+-			if (fifoav == (sr & MX3_PWMSR_FIFOAV_MASK))
+-				dev_warn(dev, "there is no free FIFO slot\n");
+-		}
+-	} else {
+-		writel(MX3_PWMCR_SWR, imx->mmio_base + MX3_PWMCR);
+-		do {
+-			usleep_range(200, 1000);
+-			cr = readl(imx->mmio_base + MX3_PWMCR);
+-		} while ((cr & MX3_PWMCR_SWR) &&
+-			 (wait_count++ < MX3_PWM_SWR_LOOP));
+-
+-		if (cr & MX3_PWMCR_SWR)
+-			dev_warn(dev, "software reset timeout\n");
++		if (fifoav == (sr & MX3_PWMSR_FIFOAV_MASK))
++			dev_warn(dev, "there is no free FIFO slot\n");
+ 	}
++}
++
++static void imx_pwm_empty_fifo(struct pwm_chip *chip)
++{
++	struct imx_chip *imx = to_imx_chip(chip);
++	struct device *dev = chip->dev;
++	int wait_count = 0;
++	u32 cr;
++
++	writel(MX3_PWMCR_SWR, imx->mmio_base + MX3_PWMCR);
++	do {
++		usleep_range(200, 1000);
++		cr = readl(imx->mmio_base + MX3_PWMCR);
++	} while ((cr & MX3_PWMCR_SWR) &&
++		 (wait_count++ < MX3_PWM_SWR_LOOP));
++
++	if (cr & MX3_PWMCR_SWR)
++		dev_warn(dev, "software reset timeout\n");
++}
++
++static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
++			    struct pwm_state *state)
++{
++	struct imx_chip *imx = to_imx_chip(chip);
++	unsigned long long c;
++	unsigned long period_cycles, duty_cycles, prescale;
++	struct pwm_state cstate;
++	int ret;
++	u32 cr = 0;
++
++	pwm_get_state(pwm, &cstate);
+ 
+ 	c = clk_get_rate(imx->clk_per);
+-	c = c * period_ns;
++	c = c * state->period;
+ 	do_div(c, 1000000000);
+ 	period_cycles = c;
+ 
+ 	prescale = period_cycles / 0x10000 + 1;
+ 
+ 	period_cycles /= prescale;
+-	c = (unsigned long long)period_cycles * duty_ns;
+-	do_div(c, period_ns);
++	c = (unsigned long long)period_cycles * state->duty_cycle;
++	do_div(c, state->period);
+ 	duty_cycles = c;
+ 
+ 	/*
+@@ -171,134 +206,72 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
+ 	else
+ 		period_cycles = 0;
+ 
+-	writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
+-	writel(period_cycles, imx->mmio_base + MX3_PWMPR);
+-
+-	cr = MX3_PWMCR_PRESCALER(prescale) |
+-		MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
+-		MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH;
+-
+-	if (enable)
+-		cr |= MX3_PWMCR_EN;
+-
+-	if (pwm->args.polarity == PWM_POLARITY_INVERSED)
+-		cr |= MX3_PWMCR_POUTC;
+-
+-	writel(cr, imx->mmio_base + MX3_PWMCR);
+-
+-	return 0;
+-}
+-
+-static void imx_pwm_set_enable_v2(struct pwm_chip *chip, bool enable)
+-{
+-	struct imx_chip *imx = to_imx_chip(chip);
+-	u32 val;
+-
+-	val = readl(imx->mmio_base + MX3_PWMCR);
+-
+-	if (enable)
+-		val |= MX3_PWMCR_EN;
+-	else
+-		val &= ~MX3_PWMCR_EN;
+-
+-	writel(val, imx->mmio_base + MX3_PWMCR);
+-}
+-
+-static int imx_pwm_config(struct pwm_chip *chip,
+-		struct pwm_device *pwm, int duty_ns, int period_ns)
+-{
+-	struct imx_chip *imx = to_imx_chip(chip);
+-	int ret;
+-
+-	ret = clk_prepare_enable(imx->clk_ipg);
+-	if (ret)
+-		return ret;
+-
+-	ret = imx->config(chip, pwm, duty_ns, period_ns);
+-
+-	clk_disable_unprepare(imx->clk_ipg);
+-
+-	return ret;
+-}
+-
+-static int imx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+-{
+-	struct imx_chip *imx = to_imx_chip(chip);
+-	int ret;
+-
+ 	ret = clk_prepare_enable(imx->clk_per);
+ 	if (ret)
+ 		return ret;
+ 
+-	imx->set_enable(chip, true);
+-
+-	return 0;
+-}
++	/* Enable the clock if the PWM is being enabled. */
++	if (state->enabled && !cstate.enabled) {
++		ret = clk_prepare_enable(imx->clk_per);
++		if (ret)
++			return ret;
++	}
+ 
+-static void imx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+-{
+-	struct imx_chip *imx = to_imx_chip(chip);
++	/*
++	 * Wait for a free FIFO slot if the PWM is already enabled, and flush
++	 * the FIFO if the PWM was disabled and is about to be enabled.
++	 */
++	if (cstate.enabled)
++		imx_pwm_wait_fifo_slot(chip, pwm);
++	else if (state->enabled)
++		imx_pwm_empty_fifo(chip);
+ 
+-	imx->set_enable(chip, false);
++	writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
++	writel(period_cycles, imx->mmio_base + MX3_PWMPR);
+ 
+-	clk_disable_unprepare(imx->clk_per);
+-}
++	cr |= MX3_PWMCR_PRESCALER(prescale) |
++	      MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
++	      MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH;
+ 
+-static int imx_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+-				enum pwm_polarity polarity)
+-{
+-	struct imx_chip *imx = to_imx_chip(chip);
+-	u32 val;
++	if (state->enabled)
++		cr |= MX3_PWMCR_EN;
+ 
+-	if (polarity == pwm->args.polarity)
+-		return 0;
++	if (state->polarity == PWM_POLARITY_INVERSED)
++		cr |= MX3_PWMCR_POUTC;
+ 
+-	val = readl(imx->mmio_base + MX3_PWMCR);
+ 
+-	if (polarity == PWM_POLARITY_INVERSED)
+-		val |= MX3_PWMCR_POUTC;
+-	else
+-		val &= ~MX3_PWMCR_POUTC;
++	writel(cr, imx->mmio_base + MX3_PWMCR);
+ 
+-	writel(val, imx->mmio_base + MX3_PWMCR);
++	/* Disable the clock if the PWM is being disabled. */
++	if (!state->enabled && cstate.enabled)
++		clk_disable_unprepare(imx->clk_per);
+ 
+-	dev_dbg(imx->chip.dev, "%s: polarity set to %s\n", __func__,
+-		polarity == PWM_POLARITY_INVERSED ? "inverted" : "normal");
++	clk_disable_unprepare(imx->clk_per);
+ 
+ 	return 0;
+ }
+ 
+ static struct pwm_ops imx_pwm_ops_v1 = {
+-	.enable = imx_pwm_enable,
+-	.disable = imx_pwm_disable,
+-	.config = imx_pwm_config,
++	.enable = imx_pwm_enable_v1,
++	.disable = imx_pwm_disable_v1,
++	.config = imx_pwm_config_v1,
+ 	.owner = THIS_MODULE,
+ };
+ 
+ static struct pwm_ops imx_pwm_ops_v2 = {
+-	.enable = imx_pwm_enable,
+-	.disable = imx_pwm_disable,
+-	.set_polarity = imx_pwm_set_polarity,
+-	.config = imx_pwm_config,
++	.apply = imx_pwm_apply_v2,
+ 	.owner = THIS_MODULE,
+ };
+ 
+ struct imx_pwm_data {
+-	int (*config)(struct pwm_chip *chip,
+-		struct pwm_device *pwm, int duty_ns, int period_ns);
+-	void (*set_enable)(struct pwm_chip *chip, bool enable);
+ 	struct pwm_ops *pwm_ops;
+ };
+ 
+ static struct imx_pwm_data imx_pwm_data_v1 = {
+-	.config = imx_pwm_config_v1,
+-	.set_enable = imx_pwm_set_enable_v1,
+ 	.pwm_ops = &imx_pwm_ops_v1,
+ };
+ 
+ static struct imx_pwm_data imx_pwm_data_v2 = {
+-	.config = imx_pwm_config_v2,
+-	.set_enable = imx_pwm_set_enable_v2,
+ 	.pwm_ops = &imx_pwm_ops_v2,
+ };
+ 
+@@ -317,6 +290,7 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ 	struct imx_chip *imx;
+ 	struct resource *r;
+ 	int ret = 0;
++	u32 cells;
+ 
+ 	if (!of_id)
+ 		return -ENODEV;
+@@ -346,7 +320,12 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ 	imx->chip.base = -1;
+ 	imx->chip.npwm = 1;
+ 	imx->chip.can_sleep = true;
+-	if (data->pwm_ops->set_polarity) {
++
++	ret = of_property_read_u32(pdev->dev.of_node, "#pwm-cells", &cells);
++	if (ret)
++		return ret;
++
++	if (cells == 3) {
+ 		dev_dbg(&pdev->dev, "PWM supports output inversion\n");
+ 		imx->chip.of_xlate = of_pwm_xlate_with_flags;
+ 		imx->chip.of_pwm_n_cells = 3;
+@@ -357,9 +336,6 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(imx->mmio_base))
+ 		return PTR_ERR(imx->mmio_base);
+ 
+-	imx->config = data->config;
+-	imx->set_enable = data->set_enable;
+-
+ 	ret = pwmchip_add(&imx->chip);
+ 	if (ret < 0)
+ 		return ret;
+-- 
+2.7.4
