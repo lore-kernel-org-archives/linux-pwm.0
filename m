@@ -1,75 +1,75 @@
 From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: [PATCH] video: backlight: pwm_bl: Initialize fb_bl_on[x] and use_count during pwm_backlight_probe()
-Date: Sat, 22 Oct 2016 22:58:24 +0200
-Message-ID: <1477169904-14997-1-git-send-email-l.majewski@majess.pl>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from 9.mo1.mail-out.ovh.net ([178.32.108.172]:59238 "EHLO
-        9.mo1.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755877AbcJVVSJ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 22 Oct 2016 17:18:09 -0400
-Received: from player691.ha.ovh.net (b9.ovh.net [213.186.33.59])
-        by mo1.mail-out.ovh.net (Postfix) with ESMTP id 6F89F1532D
-        for <linux-pwm@vger.kernel.org>; Sat, 22 Oct 2016 22:59:14 +0200 (CEST)
-Sender: linux-pwm-owner@vger.kernel.org
+Subject: Re: [PATCH v3 3/6] pwm: imx: support output polarity inversion
+Date: Sun, 23 Oct 2016 08:40:27 +0200
+Message-ID: <20161023084027.4a2aae51@jawa>
+References: <20161007151129.6043-1-bhuvanchandra.dv@toradex.com>
+        <20161007151129.6043-4-bhuvanchandra.dv@toradex.com>
+        <5325a332099473a2d8382530f79c5a8e@agner.ch>
+        <20161013001540.7f759158@jawa>
+        <ff9ba34df2729204c617685dd26ea625@agner.ch>
+        <20161013065812.0da91859@jawa>
+        <20161020103018.44fb94ea@jawa>
+        <1b72dcbc9a021e6fa3aef62f63bbf93f@agner.ch>
+        <20161021234939.1a4f51f4@jawa>
+        <20161022140118.7a6cb583@bbrezillon>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ boundary="Sig_/.PA.JCrjz1wDcU3oPwkxBc1"; protocol="application/pgp-signature"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20161022140118.7a6cb583@bbrezillon>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: Stefan Agner <stefan@agner.ch>, thierry.reding@gmail.com, mark.rutland@arm.com, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, robh+dt@kernel.org, kernel@pengutronix.de, fabio.estevam@nxp.com, shawnguo@kernel.org, linux-arm-kernel@lists.infradead.org, Lothar Wassmann <LW@karo-electronics.de>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>
-Cc: Tomi Valkeinen <tomi.valkeinen@ti.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Liu Ying <Ying.Liu@freescale.com>, Lukasz Majewski <l.majewski@majess.pl>
 
-The commit: a55944ca82d287ca099ca90413af857af9086773 has posed some extra
-restrictions on blanking and unblanking frame buffer device.
+--Sig_/.PA.JCrjz1wDcU3oPwkxBc1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Unfortunately, pwm_bl driver's probe did not initialize members of
-struct backlight_device necessary for further blank/unblank operation.
+Hi Boris,
 
-This code in case of initial unblank of backlight device (default behaviour)
-sets use_count to 1 and marks this particular backlight device as used
-by all available fb devices (since it is not known during probe how much
-and which fb devices will be assigned).
+> >=20
+> > Could you be more specific here?=20
+> >=20
+> > As I mentioned before, the problem is not with the lack of
+> > "atomic" API. =20
+>=20
+> Below is a quick and dirty I made on top of this patch to show you how
+> atomic update can be implemented in this driver.=20
 
-Without this code, the backlight works properly until one tries to blank it
-manually from sysfs with "echo 1 > /sys/class/graphics/fb0/blank".
-Since fb_bl_on[0] and use_count were both set to 0, the logic at
-fb_notifier_callback (@backlight.c) thought that we didn't turn on
-(unblanked) the backlight device and refuses to disable (blank) it.
-As a result we see garbage from fb displayed.
+Thank you for example patch.
 
+I will implement the ->apply() callback and post patches very soon :-).
 
-Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
----
-The patch has been tested on i.MX6q with vanilla 4.7 and 4.8 kernels.
-It applies on 4.9-rcX SHA1: dcd4693cf47801b7d988ea897519de90dfd25d17.
+I had two issues with the ->apply() implementation:
 
----
- drivers/video/backlight/pwm_bl.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+- Do my work on top of this patch (https://lkml.org/lkml/2016/10/7/454
+  as you did) to avoid rewriting work already done.
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 8040fd6..def39e8 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -203,7 +203,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	struct pwm_bl_data *pb;
- 	int initial_blank = FB_BLANK_UNBLANK;
- 	struct pwm_args pargs;
--	int ret;
-+	int ret, i;
- 
- 	if (!data) {
- 		ret = pwm_backlight_parse_dt(&pdev->dev, &defdata);
-@@ -349,6 +349,14 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 
- 	bl->props.brightness = data->dft_brightness;
- 	bl->props.power = initial_blank;
-+
-+	if (initial_blank == FB_BLANK_UNBLANK) {
-+		for (i = 0; i < FB_MAX; i++)
-+			bl->fb_bl_on[i] = true;
-+
-+		bl->use_count = 1;
-+	}
-+
- 	backlight_update_status(bl);
- 
- 	platform_set_drvdata(pdev, bl);
--- 
-2.1.4
+- In the example ->apply() implementation for rockchip
+  (https://patchwork.kernel.org/patch/7228221/) the ->config() callback
+  was not removed when ->apply() was implemented. I was confused with
+  such approach, but as you explained in this mail, the solely ->apply()
+  is enough.
+
+> It's not tested, and
+> probably not working, but it should give you a better idea of what is
+> expected.
+
+Thanks for explanation,
+
+=C5=81ukasz Majewski
+
+--Sig_/.PA.JCrjz1wDcU3oPwkxBc1
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iEYEARECAAYFAlgMW2UACgkQf9/hG2YwgjGVUwCgzsr1ctqb82DSgB/xupxIYyHO
+dv0An3Z83e9o+R6Ef9WPZTyImBVCr6vO
+=3N8k
+-----END PGP SIGNATURE-----
+
+--Sig_/.PA.JCrjz1wDcU3oPwkxBc1--
