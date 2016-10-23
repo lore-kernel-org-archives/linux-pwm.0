@@ -1,45 +1,120 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH] pwm-pca9685: Allow any of the 16 PWMs to be used as a GPIO
-Date: Sun, 23 Oct 2016 12:23:03 +0200
-Message-ID: <CACRpkdYsD76ZN9jLZWXKiW40vPcxz9+OvKc7sQzKhAurpR0_Ew@mail.gmail.com>
-References: <20160920144056.130104-1-mika.westerberg@linux.intel.com>
- <20161019185638.GP1722@lahna.fi.intel.com> <20161020104541.GA25598@ulmo.ba.sec>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qt0-f178.google.com ([209.85.216.178]:34010 "EHLO
-        mail-qt0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753457AbcJWKXE (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 23 Oct 2016 06:23:04 -0400
-Received: by mail-qt0-f178.google.com with SMTP id q7so113261951qtq.1
-        for <linux-pwm@vger.kernel.org>; Sun, 23 Oct 2016 03:23:04 -0700 (PDT)
-In-Reply-To: <20161020104541.GA25598@ulmo.ba.sec>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Lukasz Majewski <l.majewski@majess.pl>
+Subject: [PATCH 1/6] pwm: imx: Rewrite imx_pwm_*_v1 code to facilitate switch to atomic pwm operation
+Date: Sun, 23 Oct 2016 23:45:41 +0200
+Message-ID: <1477259146-19167-2-git-send-email-l.majewski@majess.pl>
+References: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de, Lukasz Majewski <l.majewski@majess.pl>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-On Thu, Oct 20, 2016 at 12:45 PM, Thierry Reding
-<thierry.reding@gmail.com> wrote:
+The code has been rewritten to remove "generic" calls to
+imx_pwm_{enable|disable|config}.
 
-> It seems to me like maybe pinmux would be a better framework to handle
-> this kind of use case. The full on/off bit sounds like it's a mux that
-> selects between GPIO and PWM functionality.
+Such approach would facilitate switch to atomic PWM (a.k.a ->apply())
+implementation.
 
-Muxing is mostly selecting between two or more hardware blocks to be
-routed to one and the same pin. Like if there was a GPIO block and a PWM
-block and either could be routed to the pin.
+Suggested-by: Stefan Agner <stefan@agner.ch>
+Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+---
+ drivers/pwm/pwm-imx.c | 46 ++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 34 insertions(+), 12 deletions(-)
 
-So selecting between two physical drivers behind the pin.
-
-What you are describing seems more like muxing two different usecases
-on the same PWM hardware, I don't think that is appropriate for pin
-multiplexing.
-
-I would more say that if the PWM is used as GPIO then it is a neat hack
-with a PWM set to duty cycle 100% or 0% and as such should be a
-GPIO driver on top of the PWM. Supported in the core as described
-in the other responses.
-
-Yours,
-Linus Walleij
+diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+index c37d223..83e43d5 100644
+--- a/drivers/pwm/pwm-imx.c
++++ b/drivers/pwm/pwm-imx.c
+@@ -66,8 +66,6 @@ struct imx_chip {
+ static int imx_pwm_config_v1(struct pwm_chip *chip,
+ 		struct pwm_device *pwm, int duty_ns, int period_ns)
+ {
+-	struct imx_chip *imx = to_imx_chip(chip);
+-
+ 	/*
+ 	 * The PWM subsystem allows for exact frequencies. However,
+ 	 * I cannot connect a scope on my device to the PWM line and
+@@ -85,26 +83,52 @@ static int imx_pwm_config_v1(struct pwm_chip *chip,
+ 	 * both the prescaler (/1 .. /128) and then by CLKSEL
+ 	 * (/2 .. /16).
+ 	 */
++	struct imx_chip *imx = to_imx_chip(chip);
+ 	u32 max = readl(imx->mmio_base + MX1_PWMP);
+ 	u32 p = max * duty_ns / period_ns;
++	int ret;
++
++	ret = clk_prepare_enable(imx->clk_ipg);
++	if (ret)
++		return ret;
++
+ 	writel(max - p, imx->mmio_base + MX1_PWMS);
+ 
++	clk_disable_unprepare(imx->clk_ipg);
++
+ 	return 0;
+ }
+ 
+-static void imx_pwm_set_enable_v1(struct pwm_chip *chip, bool enable)
++static int imx_pwm_enable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	struct imx_chip *imx = to_imx_chip(chip);
++	int ret;
+ 	u32 val;
+ 
++	ret = clk_prepare_enable(imx->clk_ipg);
++	if (ret)
++		return ret;
++
+ 	val = readl(imx->mmio_base + MX1_PWMC);
++	val |= MX1_PWMC_EN;
++	writel(val, imx->mmio_base + MX1_PWMC);
+ 
+-	if (enable)
+-		val |= MX1_PWMC_EN;
+-	else
+-		val &= ~MX1_PWMC_EN;
++	clk_disable_unprepare(imx->clk_per);
++
++	return 0;
++}
++
++static void imx_pwm_disable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct imx_chip *imx = to_imx_chip(chip);
++	u32 val;
++
++	val = readl(imx->mmio_base + MX1_PWMC);
++	val &= ~MX1_PWMC_EN;
+ 
+ 	writel(val, imx->mmio_base + MX1_PWMC);
++
++	clk_disable_unprepare(imx->clk_per);
+ }
+ 
+ static int imx_pwm_config_v2(struct pwm_chip *chip,
+@@ -269,9 +293,9 @@ static int imx_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
+ }
+ 
+ static struct pwm_ops imx_pwm_ops_v1 = {
+-	.enable = imx_pwm_enable,
+-	.disable = imx_pwm_disable,
+-	.config = imx_pwm_config,
++	.enable = imx_pwm_enable_v1,
++	.disable = imx_pwm_disable_v1,
++	.config = imx_pwm_config_v1,
+ 	.owner = THIS_MODULE,
+ };
+ 
+@@ -291,8 +315,6 @@ struct imx_pwm_data {
+ };
+ 
+ static struct imx_pwm_data imx_pwm_data_v1 = {
+-	.config = imx_pwm_config_v1,
+-	.set_enable = imx_pwm_set_enable_v1,
+ 	.pwm_ops = &imx_pwm_ops_v1,
+ };
+ 
+-- 
+2.1.4
