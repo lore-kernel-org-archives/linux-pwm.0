@@ -1,102 +1,66 @@
 From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: [PATCH 3/6] pwm: imx: Move PWMv2 wait for fifo slot code to a separate function
-Date: Sun, 23 Oct 2016 23:45:43 +0200
-Message-ID: <1477259146-19167-4-git-send-email-l.majewski@majess.pl>
-References: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from 9.mo3.mail-out.ovh.net ([87.98.184.141]:60020 "EHLO
-        9.mo3.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756789AbcJWWBx (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 23 Oct 2016 18:01:53 -0400
-Received: from player734.ha.ovh.net (b7.ovh.net [213.186.33.57])
-        by mo3.mail-out.ovh.net (Postfix) with ESMTP id AD29C3B41C
-        for <linux-pwm@vger.kernel.org>; Sun, 23 Oct 2016 23:46:47 +0200 (CEST)
-In-Reply-To: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Subject: [PATCH 0/6] pwm: imx: Provide atomic operation for IMX PWM driver
+Date: Sun, 23 Oct 2016 23:45:40 +0200
+Message-ID: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>
 Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de, Lukasz Majewski <l.majewski@majess.pl>
+List-Id: linux-pwm@vger.kernel.org
 
-The code, which waits for fifo slot, has been extracted from
-imx_pwm_config_v2 function and moved to new one - imx_pwm_wait_fifo_slot().
+This patch set brings atomic operation to i.MX's PWMv2 driver.
 
-This change reduces the overall size of imx_pwm_config_v2() and prepares
-it for atomic PWM operation.
+This work has been supported and suggested by Boris Brezillon [1] and 
+Stefan Agner, by showing how simple the transition could be :-).
 
-Suggested-by: Stefan Agner <stefan@agner.ch>
-Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
----
- drivers/pwm/pwm-imx.c | 42 +++++++++++++++++++++++++-----------------
- 1 file changed, 25 insertions(+), 17 deletions(-)
+It has been divided into several steps:
+- Separate PWMv1 commits from "generic" and non atomic PWM code.
 
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index fac5c93..f3577c5 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -149,18 +149,36 @@ static void imx_pwm_sw_reset(struct pwm_chip *chip)
- 		dev_warn(dev, "software reset timeout\n");
- }
- 
-+static void imx_pwm_wait_fifo_slot(struct pwm_chip *chip,
-+				   struct pwm_device *pwm)
-+{
-+	struct imx_chip *imx = to_imx_chip(chip);
-+	struct device *dev = chip->dev;
-+	unsigned int period_ms;
-+	int fifoav;
-+	u32 sr;
-+
-+	sr = readl(imx->mmio_base + MX3_PWMSR);
-+	fifoav = sr & MX3_PWMSR_FIFOAV_MASK;
-+	if (fifoav == MX3_PWMSR_FIFOAV_4WORDS) {
-+		period_ms = DIV_ROUND_UP(pwm_get_period(pwm),
-+					 NSEC_PER_MSEC);
-+		msleep(period_ms);
-+
-+		sr = readl(imx->mmio_base + MX3_PWMSR);
-+		if (fifoav == (sr & MX3_PWMSR_FIFOAV_MASK))
-+			dev_warn(dev, "there is no free FIFO slot\n");
-+	}
-+}
- 
- static int imx_pwm_config_v2(struct pwm_chip *chip,
- 		struct pwm_device *pwm, int duty_ns, int period_ns)
- {
- 	struct imx_chip *imx = to_imx_chip(chip);
--	struct device *dev = chip->dev;
- 	unsigned long long c;
- 	unsigned long period_cycles, duty_cycles, prescale;
--	unsigned int period_ms;
- 	bool enable = pwm_is_enabled(pwm);
--	int fifoav;
--	u32 cr, sr;
-+	u32 cr;
- 
- 	/*
- 	 * i.MX PWMv2 has a 4-word sample FIFO.
-@@ -169,19 +187,9 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
- 	 * wait for a full PWM cycle to get a relinquished FIFO slot
- 	 * when the controller is enabled and the FIFO is fully loaded.
- 	 */
--	if (enable) {
--		sr = readl(imx->mmio_base + MX3_PWMSR);
--		fifoav = sr & MX3_PWMSR_FIFOAV_MASK;
--		if (fifoav == MX3_PWMSR_FIFOAV_4WORDS) {
--			period_ms = DIV_ROUND_UP(pwm_get_period(pwm),
--						 NSEC_PER_MSEC);
--			msleep(period_ms);
--
--			sr = readl(imx->mmio_base + MX3_PWMSR);
--			if (fifoav == (sr & MX3_PWMSR_FIFOAV_MASK))
--				dev_warn(dev, "there is no free FIFO slot\n");
--		}
--	} else
-+	if (enable)
-+		imx_pwm_wait_fifo_slot(chip, pwm);
-+	else
- 		imx_pwm_sw_reset(chip);
- 
- 	c = clk_get_rate(imx->clk_per);
+  NOTE: Since I do not have board with PWMv1, I would like to ask somebody
+  	for testing
+
+- Move some imx_config_v2 code to separate functions
+
+- Provide PWM atomic implementation (the ->apply() driver) in a single patch
+  for better readability.
+
+- Remove redundant PWM code (disable, enable, config callbacks)
+
+- Clean up the driver infrastructure
+
+- Provide "polarity_supported" flag to indicate support for polarity 
+  inversion
+
+This work should be applied on top of following commits:
+
+http://patchwork.ozlabs.org/patch/679706/
+http://patchwork.ozlabs.org/patch/679707/
+http://patchwork.ozlabs.org/patch/679680/
+
+
+Test HW:
+--------
+This patch set has been tested on i.MX6q board with vanilla 4.7 kernel.
+It applies clearly on 4.9-rcX SHA1: 0c2b6dc4fd4fa13796b319aae969a009f03222c6
+
+
+The PWM operation has been tested with pwm_bl backlight driver by changing
+its brightness.
+
+[1]: http://patchwork.ozlabs.org/patch/685402/
+
+
+Lukasz Majewski (6):
+  pwm: imx: Rewrite imx_pwm_*_v1 code to facilitate switch to atomic pwm
+    operation
+  pwm: imx: Move PWMv2 software reset code to a separate function
+  pwm: imx: Move PWMv2 wait for fifo slot code to a separate function
+  pwm: imx: Provide atomic PWM support for IMXv2 PWM
+  pwm: imx: Remove redundant IMX PWMv2 code
+  pwm: imx: Introduce "polarity_supported" flag to PWMv2 driver
+
+ drivers/pwm/pwm-imx.c | 262 ++++++++++++++++++++++----------------------------
+ 1 file changed, 114 insertions(+), 148 deletions(-)
+
 -- 
 2.1.4
