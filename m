@@ -1,66 +1,86 @@
-From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: [PATCH 0/6] pwm: imx: Provide atomic operation for IMX PWM driver
-Date: Sun, 23 Oct 2016 23:45:40 +0200
-Message-ID: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
+From: "Jingoo Han" <jingoohan1@gmail.com>
+Subject: Re: [PATCH] video: backlight: pwm_bl: Initialize fb_bl_on[x] and use_count during pwm_backlight_probe()
+Date: Sun, 23 Oct 2016 22:34:24 -0400
+Message-ID: <000201d22d9f$22acb6c0$68062440$@gmail.com>
+References: <1477169904-14997-1-git-send-email-l.majewski@majess.pl>
+Mime-Version: 1.0
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1477169904-14997-1-git-send-email-l.majewski@majess.pl>
+Content-Language: ko
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de, Lukasz Majewski <l.majewski@majess.pl>
+To: 'Lukasz Majewski' <l.majewski@majess.pl>
+Cc: 'Thierry Reding' <thierry.reding@gmail.com>, 'Lee Jones' <lee.jones@linaro.org>, 'Jean-Christophe Plagniol-Villard' <plagnioj@jcrosoft.com>, 'Tomi Valkeinen' <tomi.valkeinen@ti.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, 'Fabio Estevam' <fabio.estevam@nxp.com>, 'Fabio Estevam' <festevam@gmail.com>, 'Liu Ying' <Ying.Liu@freescale.com>
 List-Id: linux-pwm@vger.kernel.org
 
-This patch set brings atomic operation to i.MX's PWMv2 driver.
+On Saturday, October 22, 2016, Lukasz Majewski wrote:
+> 
+> The commit: a55944ca82d287ca099ca90413af857af9086773 has posed some extra
 
-This work has been supported and suggested by Boris Brezillon [1] and 
-Stefan Agner, by showing how simple the transition could be :-).
+Please add the subject of the patch, in order to let people know which patch
+you mention exactly. Please loot at other commits that fixed bugs or
+behavior
+of other patches.
 
-It has been divided into several steps:
-- Separate PWMv1 commits from "generic" and non atomic PWM code.
-
-  NOTE: Since I do not have board with PWMv1, I would like to ask somebody
-  	for testing
-
-- Move some imx_config_v2 code to separate functions
-
-- Provide PWM atomic implementation (the ->apply() driver) in a single patch
-  for better readability.
-
-- Remove redundant PWM code (disable, enable, config callbacks)
-
-- Clean up the driver infrastructure
-
-- Provide "polarity_supported" flag to indicate support for polarity 
-  inversion
-
-This work should be applied on top of following commits:
-
-http://patchwork.ozlabs.org/patch/679706/
-http://patchwork.ozlabs.org/patch/679707/
-http://patchwork.ozlabs.org/patch/679680/
-
-
-Test HW:
---------
-This patch set has been tested on i.MX6q board with vanilla 4.7 kernel.
-It applies clearly on 4.9-rcX SHA1: 0c2b6dc4fd4fa13796b319aae969a009f03222c6
-
-
-The PWM operation has been tested with pwm_bl backlight driver by changing
-its brightness.
-
-[1]: http://patchwork.ozlabs.org/patch/685402/
-
-
-Lukasz Majewski (6):
-  pwm: imx: Rewrite imx_pwm_*_v1 code to facilitate switch to atomic pwm
-    operation
-  pwm: imx: Move PWMv2 software reset code to a separate function
-  pwm: imx: Move PWMv2 wait for fifo slot code to a separate function
-  pwm: imx: Provide atomic PWM support for IMXv2 PWM
-  pwm: imx: Remove redundant IMX PWMv2 code
-  pwm: imx: Introduce "polarity_supported" flag to PWMv2 driver
-
- drivers/pwm/pwm-imx.c | 262 ++++++++++++++++++++++----------------------------
- 1 file changed, 114 insertions(+), 148 deletions(-)
-
--- 
-2.1.4
+> restrictions on blanking and unblanking frame buffer device.
+> 
+> Unfortunately, pwm_bl driver's probe did not initialize members of struct
+> backlight_device necessary for further blank/unblank operation.
+> 
+> This code in case of initial unblank of backlight device (default
+> behaviour) sets use_count to 1 and marks this particular backlight device
+> as used by all available fb devices (since it is not known during probe
+> how much and which fb devices will be assigned).
+> 
+> Without this code, the backlight works properly until one tries to blank
+> it manually from sysfs with "echo 1 > /sys/class/graphics/fb0/blank".
+> Since fb_bl_on[0] and use_count were both set to 0, the logic at
+> fb_notifier_callback (@backlight.c) thought that we didn't turn on
+> (unblanked) the backlight device and refuses to disable (blank) it.
+> As a result we see garbage from fb displayed.
+> 
+> 
+> Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+> ---
+> The patch has been tested on i.MX6q with vanilla 4.7 and 4.8 kernels.
+> It applies on 4.9-rcX SHA1: dcd4693cf47801b7d988ea897519de90dfd25d17.
+> 
+> ---
+>  drivers/video/backlight/pwm_bl.c | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/video/backlight/pwm_bl.c
+> b/drivers/video/backlight/pwm_bl.c
+> index 8040fd6..def39e8 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -203,7 +203,7 @@ static int pwm_backlight_probe(struct platform_device
+> *pdev)
+>  	struct pwm_bl_data *pb;
+>  	int initial_blank = FB_BLANK_UNBLANK;
+>  	struct pwm_args pargs;
+> -	int ret;
+> +	int ret, i;
+> 
+>  	if (!data) {
+>  		ret = pwm_backlight_parse_dt(&pdev->dev, &defdata); @@ -
+> 349,6 +349,14 @@ static int pwm_backlight_probe(struct platform_device
+> *pdev)
+> 
+>  	bl->props.brightness = data->dft_brightness;
+>  	bl->props.power = initial_blank;
+> +
+> +	if (initial_blank == FB_BLANK_UNBLANK) {
+> +		for (i = 0; i < FB_MAX; i++)
+> +			bl->fb_bl_on[i] = true;
+> +
+> +		bl->use_count = 1;
+> +	}
+> +
+>  	backlight_update_status(bl);
+> 
+>  	platform_set_drvdata(pdev, bl);
+> --
+> 2.1.4
