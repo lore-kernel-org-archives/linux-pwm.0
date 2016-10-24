@@ -1,32 +1,28 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH 1/6] pwm: imx: Rewrite imx_pwm_*_v1 code to facilitate
- switch to atomic pwm operation
-Date: Mon, 24 Oct 2016 17:21:01 +0200
-Message-ID: <20161024172101.2ea74462@bbrezillon>
+Subject: Re: [PATCH 2/6] pwm: imx: Move PWMv2 software reset code to a
+ separate function
+Date: Mon, 24 Oct 2016 17:23:22 +0200
+Message-ID: <20161024172322.3924eb8a@bbrezillon>
 References: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
-        <1477259146-19167-2-git-send-email-l.majewski@majess.pl>
+        <1477259146-19167-3-git-send-email-l.majewski@majess.pl>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from up.free-electrons.com ([163.172.77.33]:46670 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1752360AbcJXPVK (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Oct 2016 11:21:10 -0400
-In-Reply-To: <1477259146-19167-2-git-send-email-l.majewski@majess.pl>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1477259146-19167-3-git-send-email-l.majewski@majess.pl>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Lukasz Majewski <l.majewski@majess.pl>
 Cc: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de
+List-Id: linux-pwm@vger.kernel.org
 
-On Sun, 23 Oct 2016 23:45:41 +0200
+On Sun, 23 Oct 2016 23:45:42 +0200
 Lukasz Majewski <l.majewski@majess.pl> wrote:
 
-> The code has been rewritten to remove "generic" calls to
-> imx_pwm_{enable|disable|config}.
+> The software reset code has been extracted from imx_pwm_config_v2 function
+> and moved to new one - imx_pwm_sw_reset().
 > 
-> Such approach would facilitate switch to atomic PWM (a.k.a ->apply())
-> implementation.
+> This change reduces the overall size of imx_pwm_config_v2() and prepares
+> it for atomic PWM operation.
 > 
 > Suggested-by: Stefan Agner <stefan@agner.ch>
 > Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
@@ -34,100 +30,75 @@ Lukasz Majewski <l.majewski@majess.pl> wrote:
 
 Reviewed-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 
+Just a nit below ;).
+
+BTW, can't you just merge path 2 and 3?
+
 > ---
->  drivers/pwm/pwm-imx.c | 46 ++++++++++++++++++++++++++++++++++------------
->  1 file changed, 34 insertions(+), 12 deletions(-)
+>  drivers/pwm/pwm-imx.c | 34 ++++++++++++++++++++++------------
+>  1 file changed, 22 insertions(+), 12 deletions(-)
 > 
 > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> index c37d223..83e43d5 100644
+> index 83e43d5..fac5c93 100644
 > --- a/drivers/pwm/pwm-imx.c
 > +++ b/drivers/pwm/pwm-imx.c
-> @@ -66,8 +66,6 @@ struct imx_chip {
->  static int imx_pwm_config_v1(struct pwm_chip *chip,
->  		struct pwm_device *pwm, int duty_ns, int period_ns)
->  {
-> -	struct imx_chip *imx = to_imx_chip(chip);
-> -
->  	/*
->  	 * The PWM subsystem allows for exact frequencies. However,
->  	 * I cannot connect a scope on my device to the PWM line and
-> @@ -85,26 +83,52 @@ static int imx_pwm_config_v1(struct pwm_chip *chip,
->  	 * both the prescaler (/1 .. /128) and then by CLKSEL
->  	 * (/2 .. /16).
->  	 */
-> +	struct imx_chip *imx = to_imx_chip(chip);
->  	u32 max = readl(imx->mmio_base + MX1_PWMP);
->  	u32 p = max * duty_ns / period_ns;
-> +	int ret;
-> +
-> +	ret = clk_prepare_enable(imx->clk_ipg);
-> +	if (ret)
-> +		return ret;
-> +
->  	writel(max - p, imx->mmio_base + MX1_PWMS);
->  
-> +	clk_disable_unprepare(imx->clk_ipg);
-> +
->  	return 0;
+> @@ -131,6 +131,25 @@ static void imx_pwm_disable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
+>  	clk_disable_unprepare(imx->clk_per);
 >  }
 >  
-> -static void imx_pwm_set_enable_v1(struct pwm_chip *chip, bool enable)
-> +static int imx_pwm_enable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
->  {
->  	struct imx_chip *imx = to_imx_chip(chip);
-> +	int ret;
->  	u32 val;
->  
-> +	ret = clk_prepare_enable(imx->clk_ipg);
-> +	if (ret)
-> +		return ret;
-> +
->  	val = readl(imx->mmio_base + MX1_PWMC);
-> +	val |= MX1_PWMC_EN;
-> +	writel(val, imx->mmio_base + MX1_PWMC);
->  
-> -	if (enable)
-> -		val |= MX1_PWMC_EN;
-> -	else
-> -		val &= ~MX1_PWMC_EN;
-> +	clk_disable_unprepare(imx->clk_per);
-> +
-> +	return 0;
-> +}
-> +
-> +static void imx_pwm_disable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
+> +static void imx_pwm_sw_reset(struct pwm_chip *chip)
 > +{
 > +	struct imx_chip *imx = to_imx_chip(chip);
-> +	u32 val;
+> +	struct device *dev = chip->dev;
+> +	int wait_count = 0;
+> +	u32 cr;
 > +
-> +	val = readl(imx->mmio_base + MX1_PWMC);
-> +	val &= ~MX1_PWMC_EN;
->  
->  	writel(val, imx->mmio_base + MX1_PWMC);
+> +	writel(MX3_PWMCR_SWR, imx->mmio_base + MX3_PWMCR);
+> +	do {
+> +		usleep_range(200, 1000);
+> +		cr = readl(imx->mmio_base + MX3_PWMCR);
+> +	} while ((cr & MX3_PWMCR_SWR) &&
+> +		 (wait_count++ < MX3_PWM_SWR_LOOP));
 > +
-> +	clk_disable_unprepare(imx->clk_per);
->  }
->  
+> +	if (cr & MX3_PWMCR_SWR)
+> +		dev_warn(dev, "software reset timeout\n");
+> +}
+> +
+> +
 >  static int imx_pwm_config_v2(struct pwm_chip *chip,
-> @@ -269,9 +293,9 @@ static int imx_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
->  }
+>  		struct pwm_device *pwm, int duty_ns, int period_ns)
+>  {
+> @@ -140,7 +159,7 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
+>  	unsigned long period_cycles, duty_cycles, prescale;
+>  	unsigned int period_ms;
+>  	bool enable = pwm_is_enabled(pwm);
+> -	int wait_count = 0, fifoav;
+> +	int fifoav;
+>  	u32 cr, sr;
 >  
->  static struct pwm_ops imx_pwm_ops_v1 = {
-> -	.enable = imx_pwm_enable,
-> -	.disable = imx_pwm_disable,
-> -	.config = imx_pwm_config,
-> +	.enable = imx_pwm_enable_v1,
-> +	.disable = imx_pwm_disable_v1,
-> +	.config = imx_pwm_config_v1,
->  	.owner = THIS_MODULE,
->  };
+>  	/*
+> @@ -162,17 +181,8 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
+>  			if (fifoav == (sr & MX3_PWMSR_FIFOAV_MASK))
+>  				dev_warn(dev, "there is no free FIFO slot\n");
+>  		}
+> -	} else {
+> -		writel(MX3_PWMCR_SWR, imx->mmio_base + MX3_PWMCR);
+> -		do {
+> -			usleep_range(200, 1000);
+> -			cr = readl(imx->mmio_base + MX3_PWMCR);
+> -		} while ((cr & MX3_PWMCR_SWR) &&
+> -			 (wait_count++ < MX3_PWM_SWR_LOOP));
+> -
+> -		if (cr & MX3_PWMCR_SWR)
+> -			dev_warn(dev, "software reset timeout\n");
+> -	}
+> +	} else
+> +		imx_pwm_sw_reset(chip);
+
+	} else {
+		imx_pwm_sw_reset(chip);
+	}
+
 >  
-> @@ -291,8 +315,6 @@ struct imx_pwm_data {
->  };
->  
->  static struct imx_pwm_data imx_pwm_data_v1 = {
-> -	.config = imx_pwm_config_v1,
-> -	.set_enable = imx_pwm_set_enable_v1,
->  	.pwm_ops = &imx_pwm_ops_v1,
->  };
->  
+>  	c = clk_get_rate(imx->clk_per);
+>  	c = c * period_ns;
