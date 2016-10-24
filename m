@@ -1,137 +1,133 @@
 From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: Re: [PATCH 2/6] pwm: imx: Move PWMv2 software reset code to a
- separate function
-Date: Mon, 24 Oct 2016 23:02:32 +0200
-Message-ID: <20161024230232.3527fd42@jawa>
+Subject: Re: [PATCH 6/6] pwm: imx: Introduce "polarity_supported" flag to
+ PWMv2 driver
+Date: Mon, 24 Oct 2016 23:14:58 +0200
+Message-ID: <20161024231458.075ea50b@jawa>
 References: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
-        <1477259146-19167-3-git-send-email-l.majewski@majess.pl>
-        <20161024172322.3924eb8a@bbrezillon>
+        <1477259146-19167-7-git-send-email-l.majewski@majess.pl>
+        <20161024172852.40662611@bbrezillon>
+        <20161024173410.6e641b9c@bbrezillon>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- boundary="Sig_/X77/RGRthTMdkAQeAQs5=eO"; protocol="application/pgp-signature"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161024172322.3924eb8a@bbrezillon>
-Sender: linux-kernel-owner@vger.kernel.org
+ boundary="Sig_/Qzg.UH4Wtnc8Wj_GLzOWK+B"; protocol="application/pgp-signature"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from 11.mo3.mail-out.ovh.net ([87.98.184.158]:35126 "EHLO
+        11.mo3.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755128AbcJXVPS (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Oct 2016 17:15:18 -0400
+Received: from player693.ha.ovh.net (b9.ovh.net [213.186.33.59])
+        by mo3.mail-out.ovh.net (Postfix) with ESMTP id 8FCBC4B513
+        for <linux-pwm@vger.kernel.org>; Mon, 24 Oct 2016 23:15:16 +0200 (CEST)
+In-Reply-To: <20161024173410.6e641b9c@bbrezillon>
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 To: Boris Brezillon <boris.brezillon@free-electrons.com>
 Cc: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de
-List-Id: linux-pwm@vger.kernel.org
 
---Sig_/X77/RGRthTMdkAQeAQs5=eO
+--Sig_/Qzg.UH4Wtnc8Wj_GLzOWK+B
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 Hi Boris,
 
-> On Sun, 23 Oct 2016 23:45:42 +0200
-> Lukasz Majewski <l.majewski@majess.pl> wrote:
+> On Mon, 24 Oct 2016 17:28:52 +0200
+> Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
 >=20
-> > The software reset code has been extracted from imx_pwm_config_v2
-> > function and moved to new one - imx_pwm_sw_reset().
+> > On Sun, 23 Oct 2016 23:45:46 +0200
+> > Lukasz Majewski <l.majewski@majess.pl> wrote:
 > >=20
-> > This change reduces the overall size of imx_pwm_config_v2() and
-> > prepares it for atomic PWM operation.
+> > > The need for set_polarity() function has been removed by
+> > > implementing PWM atomic support (apply() callback).
+> > >=20
+> > > To indicate that the PWMv2 supports polarity inversion, new flag -
+> > > "polarity_supported" has been introduced.
+> > >=20
+> > > Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+> > > ---
+> > >  drivers/pwm/pwm-imx.c | 4 +++-
+> > >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > >=20
+> > > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+> > > index 02d3dfd..be3034d 100644
+> > > --- a/drivers/pwm/pwm-imx.c
+> > > +++ b/drivers/pwm/pwm-imx.c
+> > > @@ -258,6 +258,7 @@ static struct pwm_ops imx_pwm_ops_v2 =3D {
+> > >  };
+> > > =20
+> > >  struct imx_pwm_data {
+> > > +	bool polarity_supported;
+> > >  	struct pwm_ops *pwm_ops;
+> > >  };
+> > > =20
+> > > @@ -266,6 +267,7 @@ static struct imx_pwm_data imx_pwm_data_v1 =3D {
+> > >  };
+> > > =20
+> > >  static struct imx_pwm_data imx_pwm_data_v2 =3D {
+> > > +	.polarity_supported =3D true,
+> > >  	.pwm_ops =3D &imx_pwm_ops_v2,
+> > >  };
+> > > =20
+> > > @@ -313,7 +315,7 @@ static int imx_pwm_probe(struct
+> > > platform_device *pdev) imx->chip.base =3D -1;
+> > >  	imx->chip.npwm =3D 1;
+> > >  	imx->chip.can_sleep =3D true;
+> > > -	if (data->pwm_ops->set_polarity) {
+> > > +	if (data->polarity_supported) { =20
 > >=20
-> > Suggested-by: Stefan Agner <stefan@agner.ch>
-> > Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> > Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
->=20
-> Reviewed-by: Boris Brezillon <boris.brezillon@free-electrons.com>
->=20
-> Just a nit below ;).
->=20
-> BTW, can't you just merge path 2 and 3?
-
-I do prefer to have many small patches touching and changing just one
-thing.
-
->=20
-> > ---
-> >  drivers/pwm/pwm-imx.c | 34 ++++++++++++++++++++++------------
-> >  1 file changed, 22 insertions(+), 12 deletions(-)
+> > You're still breaking backward compatibility with DTs defining
+> > #pwm-cells =3D 2.
 > >=20
-> > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> > index 83e43d5..fac5c93 100644
-> > --- a/drivers/pwm/pwm-imx.c
-> > +++ b/drivers/pwm/pwm-imx.c
-> > @@ -131,6 +131,25 @@ static void imx_pwm_disable_v1(struct pwm_chip
-> > *chip, struct pwm_device *pwm) clk_disable_unprepare(imx->clk_per);
-> >  }
-> > =20
-> > +static void imx_pwm_sw_reset(struct pwm_chip *chip)
-> > +{
-> > +	struct imx_chip *imx =3D to_imx_chip(chip);
-> > +	struct device *dev =3D chip->dev;
-> > +	int wait_count =3D 0;
-> > +	u32 cr;
-> > +
-> > +	writel(MX3_PWMCR_SWR, imx->mmio_base + MX3_PWMCR);
-> > +	do {
-> > +		usleep_range(200, 1000);
-> > +		cr =3D readl(imx->mmio_base + MX3_PWMCR);
-> > +	} while ((cr & MX3_PWMCR_SWR) &&
-> > +		 (wait_count++ < MX3_PWM_SWR_LOOP));
-> > +
-> > +	if (cr & MX3_PWMCR_SWR)
-> > +		dev_warn(dev, "software reset timeout\n");
-> > +}
-> > +
-> > +
-> >  static int imx_pwm_config_v2(struct pwm_chip *chip,
-> >  		struct pwm_device *pwm, int duty_ns, int period_ns)
-> >  {
-> > @@ -140,7 +159,7 @@ static int imx_pwm_config_v2(struct pwm_chip
-> > *chip, unsigned long period_cycles, duty_cycles, prescale;
-> >  	unsigned int period_ms;
-> >  	bool enable =3D pwm_is_enabled(pwm);
-> > -	int wait_count =3D 0, fifoav;
-> > +	int fifoav;
-> >  	u32 cr, sr;
-> > =20
-> >  	/*
-> > @@ -162,17 +181,8 @@ static int imx_pwm_config_v2(struct pwm_chip
-> > *chip, if (fifoav =3D=3D (sr & MX3_PWMSR_FIFOAV_MASK))
-> >  				dev_warn(dev, "there is no free
-> > FIFO slot\n"); }
-> > -	} else {
-> > -		writel(MX3_PWMCR_SWR, imx->mmio_base + MX3_PWMCR);
-> > -		do {
-> > -			usleep_range(200, 1000);
-> > -			cr =3D readl(imx->mmio_base + MX3_PWMCR);
-> > -		} while ((cr & MX3_PWMCR_SWR) &&
-> > -			 (wait_count++ < MX3_PWM_SWR_LOOP));
-> > -
-> > -		if (cr & MX3_PWMCR_SWR)
-> > -			dev_warn(dev, "software reset timeout\n");
-> > -	}
-> > +	} else
-> > +		imx_pwm_sw_reset(chip);
+> > Please test the #pwm-cells value before deciding which of_xlate
+> > should be used.
 >=20
-> 	} else {
-> 		imx_pwm_sw_reset(chip);
-> 	}
+> Nevermind, I didn't look at [1] and [2].
 
-OK.
+Yes, some patches are required to make this code work. Especially, I
+wanted to explicitly reuse and credit work already done by
+Bhuvanchandra.
 
->=20
-> > =20
-> >  	c =3D clk_get_rate(imx->clk_per);
-> >  	c =3D c * period_ns;
->=20
+> But still, your series is not bisectable: this change should be part
+> of patch 5 where you remove the ->set_polarity implementation.
+> Otherwise, this means you don't support polarity setting between
+> patch 5 and 6.
+
+Frankly speaking, I did it on purpose, to have operations in commits
+logically separated.
+
+I personally, do detest commits which blur the picture and are not
+corresponding to one single logical change - for example remove some
+large chunk of code and also add some tiny, new flag.
+
+For me it is not a problem to have polarity disabled between patches 5
+and 6, since at the end of the day we have it enabled.
+
+Thanks for your support and review,
 
 Best regards,
 
 =C5=81ukasz Majewski
 
---Sig_/X77/RGRthTMdkAQeAQs5=eO
+>=20
+> >=20
+> > >  		dev_dbg(&pdev->dev, "PWM supports output
+> > > inversion\n"); imx->chip.of_xlate =3D of_pwm_xlate_with_flags;
+> > >  		imx->chip.of_pwm_n_cells =3D 3; =20
+> >=20
+>=20
+> [1]http://patchwork.ozlabs.org/patch/679706/
+> [2]http://patchwork.ozlabs.org/patch/679707/
+
+
+--Sig_/Qzg.UH4Wtnc8Wj_GLzOWK+B
 Content-Type: application/pgp-signature
 Content-Description: OpenPGP digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iEYEARECAAYFAlgOdu0ACgkQf9/hG2YwgjEJ2QCcDZe8anNTk8fxkq3aBSehxLCZ
-QC0AnjHWUQPHH8Ir9pjia3nlfr7BZ8wk
-=orfo
+iEYEARECAAYFAlgOedcACgkQf9/hG2YwgjEXywCgqWAJ5ANUieWzZC7g/Al/nAr7
+PIIAoKX9CVeNxDmBqw3RdNPOyNhvBqpu
+=Zfdt
 -----END PGP SIGNATURE-----
 
---Sig_/X77/RGRthTMdkAQeAQs5=eO--
+--Sig_/Qzg.UH4Wtnc8Wj_GLzOWK+B--
