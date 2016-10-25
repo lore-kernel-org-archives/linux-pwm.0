@@ -1,32 +1,32 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: Re: [PATCH v1 4/4] pwm: lpss: Switch to new atomic API
-Date: Tue, 25 Oct 2016 12:39:36 +0300
-Message-ID: <20161025093936.GG1476@lahna.fi.intel.com>
-References: <20161024144325.130353-1-andriy.shevchenko@linux.intel.com>
- <20161024144325.130353-5-andriy.shevchenko@linux.intel.com>
+From: Randy Li <randy.li-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Subject: The PWM is broken at RK3288
+Date: Tue, 25 Oct 2016 20:47:49 +0800
+Message-ID: <e2f9b965-e025-e260-48a2-b6968f96e11b@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:46243 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S965633AbcJYJjp (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 25 Oct 2016 05:39:45 -0400
-Content-Disposition: inline
-In-Reply-To: <20161024144325.130353-5-andriy.shevchenko@linux.intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "ayaka-xPW3/0Ywev/iB9QmIjCX8w@public.gmane.org" <ayaka-xPW3/0Ywev/iB9QmIjCX8w@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, contact-W9ppeneeCTY@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 
-On Mon, Oct 24, 2016 at 05:43:25PM +0300, Andy Shevchenko wrote:
-> Instead of doing things separately, which is not so reliable on some platforms,
-> switch the driver to use new atomic API, i.e. ->apply() callback.
-> 
-> The change has been tested on Intel platforms such as Broxton, BayTrail, and
-> Merrifield.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Nice!
-
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Hello
+   Recently, paulk told me that he meet a problem with PWM backlight at 
+rk3288, I do a test at EVB board a few minutes age, it is true. The 
+kernel 4.4 would work fine. So the pwm driver at next-20161020 maybe 
+broken. It is too late, so I have no time to confirm whether the PWM1 
+would have the same problem.
+   I would look into it in the other day and see whether I could do 
+something for that.
+-- 
+Randy Li
+The third produce department
