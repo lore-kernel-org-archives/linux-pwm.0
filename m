@@ -1,29 +1,158 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH 0/6] pwm: imx: Provide atomic operation for IMX PWM driver
-Date: Tue, 25 Oct 2016 15:09:03 -0200
-Message-ID: <CAOMZO5AS93=RhsDeJ99YV_01dbFAYidF4UY1hqgJh=AWEsqedw@mail.gmail.com>
-References: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
- <20161024173607.36bc2cb9@bbrezillon> <20161024232615.77d4ea28@jawa>
- <35a950b7ff431e0545bbb259ba69b483@agner.ch> <20161025090724.727c10bc@jawa> <CAOMZO5Bnfg43VY6tdsahCQ3PoVaL+wCzmPLCMTBK39FCHY9SpQ@mail.gmail.com>
+From: "Jingoo Han" <jingoohan1@gmail.com>
+Subject: Re: [PATCH] video: backlight: pwm_bl: Initialize fb_bl_on[x] and use_count during pwm_backlight_probe()
+Date: Tue, 25 Oct 2016 18:47:00 -0400
+Message-ID: <000d01d22f11$b333ed80$199bc880$@gmail.com>
+References: <1477169904-14997-1-git-send-email-l.majewski@majess.pl>    <000201d22d9f$22acb6c0$68062440$@gmail.com> <20161024230041.41959e5e@jawa>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ua0-f193.google.com ([209.85.217.193]:34463 "EHLO
-        mail-ua0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S964952AbcJYRJE (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Oct 2016 13:09:04 -0400
-In-Reply-To: <CAOMZO5Bnfg43VY6tdsahCQ3PoVaL+wCzmPLCMTBK39FCHY9SpQ@mail.gmail.com>
+Received: from mail-qk0-f193.google.com ([209.85.220.193]:35311 "EHLO
+        mail-qk0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751576AbcJYWrD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Oct 2016 18:47:03 -0400
+In-Reply-To: <20161024230041.41959e5e@jawa>
+Content-Language: ko
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lukasz Majewski <l.majewski@majess.pl>
-Cc: Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, Sascha Hauer <kernel@pengutronix.de>
+To: 'Lukasz Majewski' <l.majewski@majess.pl>
+Cc: 'Thierry Reding' <thierry.reding@gmail.com>, 'Lee Jones' <lee.jones@linaro.org>, 'Jean-Christophe Plagniol-Villard' <plagnioj@jcrosoft.com>, 'Tomi Valkeinen' <tomi.valkeinen@ti.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, 'Fabio Estevam' <fabio.estevam@nxp.com>, 'Fabio Estevam' <festevam@gmail.com>, 'Liu Ying' <Ying.Liu@freescale.com>
 
-On Tue, Oct 25, 2016 at 3:08 PM, Fabio Estevam <festevam@gmail.com> wrote:
+On Monday, October 24, 2016, Lukasz Majewski wrote:
+>=20
+> Hi Jingoo,
+>=20
+> > On Saturday, October 22, 2016, Lukasz Majewski wrote:
+> > >
+> > > The commit: a55944ca82d287ca099ca90413af857af9086773 has posed =
+some
+> > > extra
 
->> the i.MX6q is not booting. Apparently I do need to wait for things to
->> calm down.
->
-> Does this commit help with the boot issue you observed?
+Please add the 'subject' of patch as below.
 
-Sorry, missed to put the commit. Here it goes:
-https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/commit/arch/arm/mach-imx/gpc.c?id=eef0b282bb586259d35548851cf6a4ce847bb804
+The commit a55944ca82d2 ("backlight: update bd state & fb_blank =
+properties when necessary ")
+has posted some extra.
+
+Best regards,
+Jingoo Han
+
+
+> >
+> > Please add the subject of the patch, in order to let people know
+> > which patch you mention exactly. Please loot at other commits that
+> > fixed bugs or behavior
+> > of other patches.
+>=20
+> Thanks for the tip.
+>=20
+> The mentioned patch:
+>=20
+> commit a55944ca82d287ca099ca90413af857af9086773
+> Author: Liu Ying <Ying.Liu@freescale.com>
+> Date:   Thu Apr 3 14:48:54 2014 -0700
+>=20
+>     backlight: update bd state & fb_blank properties when necessary
+>=20
+>     We don't have to update the state and fb_blank properties of a
+> backlight
+>     device every time a blanking or unblanking event comes because =
+they
+> may
+>     have already been what we want.  Another thought is that one =
+backlight
+>     device may be shared by multiple framebuffers.  The backlight =
+driver
+>     should take the backlight device as a resource shared by all the
+>     associated framebuffers.
+>=20
+>     This patch adds some logic to record each framebuffer's backlight
+> usage
+>     to determine the backlight device use count and whether the two
+>     properties should be updated or not.  To be more specific, only =
+one
+>     unblank operation on a certain blanked framebuffer may increase =
+the
+>     backlight device's use count by one, while one blank operation on =
+a
+>     certain unblanked framebuffer may decrease the use count by one,
+> because
+>     the userspace is likely to unblank an unblanked framebuffer or =
+blank a
+>     blanked framebuffer.
+>=20
+>=20
+> Could you provide more feedback regarding provided fix?
+>=20
+> Thanks in advance,
+>=20
+> =C5=81ukasz Majewski
+>=20
+> >
+> > > restrictions on blanking and unblanking frame buffer device.
+> > >
+> > > Unfortunately, pwm_bl driver's probe did not initialize members of
+> > > struct backlight_device necessary for further blank/unblank
+> > > operation.
+> > >
+> > > This code in case of initial unblank of backlight device (default
+> > > behaviour) sets use_count to 1 and marks this particular backlight
+> > > device as used by all available fb devices (since it is not known
+> > > during probe how much and which fb devices will be assigned).
+> > >
+> > > Without this code, the backlight works properly until one tries to
+> > > blank it manually from sysfs with "echo 1
+> > > > /sys/class/graphics/fb0/blank". Since fb_bl_on[0] and use_count
+> > > > were both set to 0, the logic at
+> > > fb_notifier_callback (@backlight.c) thought that we didn't turn on
+> > > (unblanked) the backlight device and refuses to disable (blank) =
+it.
+> > > As a result we see garbage from fb displayed.
+> > >
+> > >
+> > > Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+> > > ---
+> > > The patch has been tested on i.MX6q with vanilla 4.7 and 4.8
+> > > kernels. It applies on 4.9-rcX SHA1:
+> > > dcd4693cf47801b7d988ea897519de90dfd25d17.
+> > >
+> > > ---
+> > >  drivers/video/backlight/pwm_bl.c | 10 +++++++++-
+> > >  1 file changed, 9 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/video/backlight/pwm_bl.c
+> > > b/drivers/video/backlight/pwm_bl.c
+> > > index 8040fd6..def39e8 100644
+> > > --- a/drivers/video/backlight/pwm_bl.c
+> > > +++ b/drivers/video/backlight/pwm_bl.c
+> > > @@ -203,7 +203,7 @@ static int pwm_backlight_probe(struct
+> > > platform_device *pdev)
+> > >  	struct pwm_bl_data *pb;
+> > >  	int initial_blank =3D FB_BLANK_UNBLANK;
+> > >  	struct pwm_args pargs;
+> > > -	int ret;
+> > > +	int ret, i;
+> > >
+> > >  	if (!data) {
+> > >  		ret =3D pwm_backlight_parse_dt(&pdev->dev,
+> > > &defdata); @@ - 349,6 +349,14 @@ static int
+> > > pwm_backlight_probe(struct platform_device *pdev)
+> > >
+> > >  	bl->props.brightness =3D data->dft_brightness;
+> > >  	bl->props.power =3D initial_blank;
+> > > +
+> > > +	if (initial_blank =3D=3D FB_BLANK_UNBLANK) {
+> > > +		for (i =3D 0; i < FB_MAX; i++)
+> > > +			bl->fb_bl_on[i] =3D true;
+> > > +
+> > > +		bl->use_count =3D 1;
+> > > +	}
+> > > +
+> > >  	backlight_update_status(bl);
+> > >
+> > >  	platform_set_drvdata(pdev, bl);
+> > > --
+> > > 2.1.4
+> >
+> >
