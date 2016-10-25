@@ -1,110 +1,130 @@
 From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH 6/6] pwm: imx: Introduce "polarity_supported" flag to
- PWMv2 driver
-Date: Tue, 25 Oct 2016 08:37:00 +0200
-Message-ID: <20161025083700.342f9abe@bbrezillon>
+Subject: Re: [PATCH 1/6] pwm: imx: Rewrite imx_pwm_*_v1 code to facilitate
+ switch to atomic pwm operation
+Date: Tue, 25 Oct 2016 08:42:56 +0200
+Message-ID: <20161025084256.546139cc@bbrezillon>
 References: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
-        <1477259146-19167-7-git-send-email-l.majewski@majess.pl>
-        <20161024172852.40662611@bbrezillon>
-        <20161024173410.6e641b9c@bbrezillon>
-        <20161024231458.075ea50b@jawa>
+        <1477259146-19167-2-git-send-email-l.majewski@majess.pl>
+        <20161025055454.emytytmcg6d23jdd@pengutronix.de>
+        <20161025082737.2ecc9fe4@bbrezillon>
+        <20161025063259.clbb3ta7qdpej2xq@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from up.free-electrons.com ([163.172.77.33]:33716 "EHLO
+Received: from up.free-electrons.com ([163.172.77.33]:33887 "EHLO
         mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S932674AbcJYGhE (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Oct 2016 02:37:04 -0400
-In-Reply-To: <20161024231458.075ea50b@jawa>
+        with ESMTP id S933470AbcJYGnB (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 25 Oct 2016 02:43:01 -0400
+In-Reply-To: <20161025063259.clbb3ta7qdpej2xq@pengutronix.de>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lukasz Majewski <l.majewski@majess.pl>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Lukasz Majewski <l.majewski@majess.pl>, Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>
 
-Hi Lukasz,
+On Tue, 25 Oct 2016 08:32:59 +0200
+Sascha Hauer <s.hauer@pengutronix.de> wrote:
 
-On Mon, 24 Oct 2016 23:14:58 +0200
-Lukasz Majewski <l.majewski@majess.pl> wrote:
-
-> Hi Boris,
-> 
-> > On Mon, 24 Oct 2016 17:28:52 +0200
-> > Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
+> On Tue, Oct 25, 2016 at 08:27:37AM +0200, Boris Brezillon wrote:
+> > On Tue, 25 Oct 2016 07:54:54 +0200
+> > Sascha Hauer <s.hauer@pengutronix.de> wrote:
 > >   
-> > > On Sun, 23 Oct 2016 23:45:46 +0200
-> > > Lukasz Majewski <l.majewski@majess.pl> wrote:
-> > >   
-> > > > The need for set_polarity() function has been removed by
-> > > > implementing PWM atomic support (apply() callback).
+> > > On Sun, Oct 23, 2016 at 11:45:41PM +0200, Lukasz Majewski wrote:  
+> > > > The code has been rewritten to remove "generic" calls to
+> > > > imx_pwm_{enable|disable|config}.
 > > > > 
-> > > > To indicate that the PWMv2 supports polarity inversion, new flag -
-> > > > "polarity_supported" has been introduced.
+> > > > Such approach would facilitate switch to atomic PWM (a.k.a ->apply())
+> > > > implementation.
 > > > > 
+> > > > Suggested-by: Stefan Agner <stefan@agner.ch>
+> > > > Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 > > > > Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
 > > > > ---
-> > > >  drivers/pwm/pwm-imx.c | 4 +++-
-> > > >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > > >  drivers/pwm/pwm-imx.c | 46 ++++++++++++++++++++++++++++++++++------------
+> > > >  1 file changed, 34 insertions(+), 12 deletions(-)
 > > > > 
 > > > > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> > > > index 02d3dfd..be3034d 100644
+> > > > index c37d223..83e43d5 100644
 > > > > --- a/drivers/pwm/pwm-imx.c
 > > > > +++ b/drivers/pwm/pwm-imx.c
-> > > > @@ -258,6 +258,7 @@ static struct pwm_ops imx_pwm_ops_v2 = {
-> > > >  };
+> > > > @@ -66,8 +66,6 @@ struct imx_chip {
+> > > >  static int imx_pwm_config_v1(struct pwm_chip *chip,
+> > > >  		struct pwm_device *pwm, int duty_ns, int period_ns)
+> > > >  {
+> > > > -	struct imx_chip *imx = to_imx_chip(chip);
+> > > > -
+> > > >  	/*
+> > > >  	 * The PWM subsystem allows for exact frequencies. However,
+> > > >  	 * I cannot connect a scope on my device to the PWM line and
+> > > > @@ -85,26 +83,52 @@ static int imx_pwm_config_v1(struct pwm_chip *chip,
+> > > >  	 * both the prescaler (/1 .. /128) and then by CLKSEL
+> > > >  	 * (/2 .. /16).
+> > > >  	 */
+> > > > +	struct imx_chip *imx = to_imx_chip(chip);
+> > > >  	u32 max = readl(imx->mmio_base + MX1_PWMP);
+> > > >  	u32 p = max * duty_ns / period_ns;
+> > > > +	int ret;
+> > > > +
+> > > > +	ret = clk_prepare_enable(imx->clk_ipg);
+> > > > +	if (ret)
+> > > > +		return ret;
+> > > > +
+> > > >  	writel(max - p, imx->mmio_base + MX1_PWMS);
 > > > >  
-> > > >  struct imx_pwm_data {
-> > > > +	bool polarity_supported;
-> > > >  	struct pwm_ops *pwm_ops;
-> > > >  };
+> > > > +	clk_disable_unprepare(imx->clk_ipg);
+> > > > +
+> > > >  	return 0;
+> > > >  }
 > > > >  
-> > > > @@ -266,6 +267,7 @@ static struct imx_pwm_data imx_pwm_data_v1 = {
-> > > >  };
+> > > > -static void imx_pwm_set_enable_v1(struct pwm_chip *chip, bool enable)
+> > > > +static int imx_pwm_enable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
+> > > >  {
+> > > >  	struct imx_chip *imx = to_imx_chip(chip);
+> > > > +	int ret;
+> > > >  	u32 val;
 > > > >  
-> > > >  static struct imx_pwm_data imx_pwm_data_v2 = {
-> > > > +	.polarity_supported = true,
-> > > >  	.pwm_ops = &imx_pwm_ops_v2,
-> > > >  };
+> > > > +	ret = clk_prepare_enable(imx->clk_ipg);
+> > > > +	if (ret)
+> > > > +		return ret;
+> > > > +
+> > > >  	val = readl(imx->mmio_base + MX1_PWMC);
+> > > > +	val |= MX1_PWMC_EN;
+> > > > +	writel(val, imx->mmio_base + MX1_PWMC);
 > > > >  
-> > > > @@ -313,7 +315,7 @@ static int imx_pwm_probe(struct
-> > > > platform_device *pdev) imx->chip.base = -1;
-> > > >  	imx->chip.npwm = 1;
-> > > >  	imx->chip.can_sleep = true;
-> > > > -	if (data->pwm_ops->set_polarity) {
-> > > > +	if (data->polarity_supported) {    
+> > > > -	if (enable)
+> > > > -		val |= MX1_PWMC_EN;
+> > > > -	else
+> > > > -		val &= ~MX1_PWMC_EN;
+> > > > +	clk_disable_unprepare(imx->clk_per);    
 > > > 
-> > > You're still breaking backward compatibility with DTs defining
-> > > #pwm-cells = 2.
-> > > 
-> > > Please test the #pwm-cells value before deciding which of_xlate
-> > > should be used.  
+> > > This looks wrong. You start by enabling clk_ipg which is needed for
+> > > register access, but then end with disabling clk_per which is needed for
+> > > driving the actual PWM output. This function should probably enable
+> > > clk_per on entry and enable clk_ipg while accessing registers.  
 > > 
-> > Nevermind, I didn't look at [1] and [2].  
+> > Oh, I didn't notice there was 2 different clocks here. This probably
+> > means you have to enable clk_ipg when manipulating the registers in  
+> > ->disable().  
+> > 
+> > One question, if there's a separate clk for the registers, why don't we
+> > leave this clock enabled, and disable it in ->suspend() or ->remove()
+> > instead of enabling/disabling it each time we access the registers?  
 > 
-> Yes, some patches are required to make this code work. Especially, I
-> wanted to explicitly reuse and credit work already done by
-> Bhuvanchandra.
-> 
-> > But still, your series is not bisectable: this change should be part
-> > of patch 5 where you remove the ->set_polarity implementation.
-> > Otherwise, this means you don't support polarity setting between
-> > patch 5 and 6.  
-> 
-> Frankly speaking, I did it on purpose, to have operations in commits
-> logically separated.
-> 
-> I personally, do detest commits which blur the picture and are not
-> corresponding to one single logical change - for example remove some
-> large chunk of code and also add some tiny, new flag.
-> 
-> For me it is not a problem to have polarity disabled between patches 5
-> and 6, since at the end of the day we have it enabled.
+> Well, if we don't need this clock, then why not save the power and
+> disable it?
 
-It's really simple to make this series bisectable, all you have to do
-is move patch 6 before patch 5. This being said, I really think you
-should follow Stefan's recommendation: base your changes on mainline
-and switch to the atomic hook before supporting polarity setting.
+That's true, especially if enabling the clock is instantaneous (i.e. the
+clock driver does not have to wait for the clk to be ready).
 
-Regards,
-
-Boris
+> However, I'll have to ask Philipp about this clock. It was introduced in
+> 
+> commit 7b27c160c68152581c702b9f1fe362338d2a0cad
+> Author: Philipp Zabel <p.zabel@pengutronix.de>
+> Date:   Mon Jun 25 16:15:20 2012 +0200
+> 
+> And even back then the additional clock was not enabled for all register
+> accesses, so handling this seems broken from the start.
+> 
+> Sascha
+> 
+> 
