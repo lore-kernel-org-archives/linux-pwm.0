@@ -1,36 +1,27 @@
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-Subject: Re: The PWM is broken at RK3288
-Date: Tue, 25 Oct 2016 14:58:11 +0200
-Message-ID: <25477004.WQlyuGeDoO@diego>
-References: <e2f9b965-e025-e260-48a2-b6968f96e11b@rock-chips.com>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH 0/6] pwm: imx: Provide atomic operation for IMX PWM driver
+Date: Tue, 25 Oct 2016 15:08:21 -0200
+Message-ID: <CAOMZO5Bnfg43VY6tdsahCQ3PoVaL+wCzmPLCMTBK39FCHY9SpQ@mail.gmail.com>
+References: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
+ <20161024173607.36bc2cb9@bbrezillon> <20161024232615.77d4ea28@jawa>
+ <35a950b7ff431e0545bbb259ba69b483@agner.ch> <20161025090724.727c10bc@jawa>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:42973 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932241AbcJYM6X (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 25 Oct 2016 08:58:23 -0400
-In-Reply-To: <e2f9b965-e025-e260-48a2-b6968f96e11b@rock-chips.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20161025090724.727c10bc@jawa>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lukasz Majewski <l.majewski@majess.pl>
+Cc: Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, Sascha Hauer <kernel@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
-To: Randy Li <randy.li@rock-chips.com>
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com, linux-rockchip@lists.infradead.org, "ayaka@soulik.info" <ayaka@soulik.info>, contact@paulk.fr
 
-Hi Randy,
+Hi Lukasz,
 
-Am Dienstag, 25. Oktober 2016, 20:47:49 schrieb Randy Li:
->    Recently, paulk told me that he meet a problem with PWM backlight at
-> rk3288, I do a test at EVB board a few minutes age, it is true. The
-> kernel 4.4 would work fine. So the pwm driver at next-20161020 maybe
-> broken. It is too late, so I have no time to confirm whether the PWM1
-> would have the same problem.
->    I would look into it in the other day and see whether I could do
-> something for that.
+On Tue, Oct 25, 2016 at 5:07 AM, Lukasz Majewski <l.majewski@majess.pl> wrote:
 
-just yesterday I booted a 4.9-rc2 on my rk3288-veyron-pinky Chromebook and the 
-display (backlight supplied by the pwm) was still working correctly. I haven't 
-tested any next-kernels yet though, so maybe something broke there.
+> With the newest mainline 4.9-rcX
+> SHA:0c2b6dc4fd4fa13796b319aae969a009f03222c6
+>
+> the i.MX6q is not booting. Apparently I do need to wait for things to
+> calm down.
 
-
-Heiko
+Does this commit help with the boot issue you observed?
