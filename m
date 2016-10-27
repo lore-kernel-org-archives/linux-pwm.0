@@ -1,140 +1,52 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v2 03/10] pwm: imx: Rewrite imx_pwm_*_v1 code to
- facilitate switch to atomic pwm operation
-Date: Thu, 27 Oct 2016 09:40:05 +0200
-Message-ID: <20161027094005.2da3b7d4@bbrezillon>
-References: <1477549785-4972-1-git-send-email-l.majewski@majess.pl>
-        <1477549785-4972-4-git-send-email-l.majewski@majess.pl>
+From: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Subject: [PATCH v2 0/2] backlight: pwm_bl: Fix the initial power state selection
+Date: Thu, 27 Oct 2016 13:01:55 +0300
+Message-ID: <20161027100157.2231-1-peter.ujfalusi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1477549785-4972-4-git-send-email-l.majewski@majess.pl>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lukasz Majewski <l.majewski@majess.pl>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de
+To: thierry.reding@gmail.com, lee.jones@linaro.org
+Cc: tomi.valkeinen@ti.com, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, p.zabel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, 27 Oct 2016 08:29:39 +0200
-Lukasz Majewski <l.majewski@majess.pl> wrote:
+Hi,
 
-> The code has been rewritten to remove "generic" calls to
-> imx_pwm_{enable|disable|config}.
-> 
-> Such approach would facilitate switch to atomic PWM (a.k.a ->apply())
-> implementation.
-> 
-> Suggested-by: Stefan Agner <stefan@agner.ch>
-> Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
-> ---
-> Changes for v2:
-> - Add missing clock unprepare for clk_ipg
-> - Enable peripheral PWM clock (clk_per)
-> ---
->  drivers/pwm/pwm-imx.c | 50 ++++++++++++++++++++++++++++++++++++++------------
->  1 file changed, 38 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> index ea3ce79..822eb5a 100644
-> --- a/drivers/pwm/pwm-imx.c
-> +++ b/drivers/pwm/pwm-imx.c
-> @@ -65,8 +65,6 @@ struct imx_chip {
->  static int imx_pwm_config_v1(struct pwm_chip *chip,
->  		struct pwm_device *pwm, int duty_ns, int period_ns)
->  {
-> -	struct imx_chip *imx = to_imx_chip(chip);
-> -
->  	/*
->  	 * The PWM subsystem allows for exact frequencies. However,
->  	 * I cannot connect a scope on my device to the PWM line and
-> @@ -84,26 +82,56 @@ static int imx_pwm_config_v1(struct pwm_chip *chip,
->  	 * both the prescaler (/1 .. /128) and then by CLKSEL
->  	 * (/2 .. /16).
->  	 */
-> +	struct imx_chip *imx = to_imx_chip(chip);
->  	u32 max = readl(imx->mmio_base + MX1_PWMP);
->  	u32 p = max * duty_ns / period_ns;
-> +	int ret;
-> +
-> +	ret = clk_prepare_enable(imx->clk_ipg);
-> +	if (ret)
-> +		return ret;
-> +
->  	writel(max - p, imx->mmio_base + MX1_PWMS);
->  
-> +	clk_disable_unprepare(imx->clk_ipg);
-> +
->  	return 0;
->  }
->  
-> -static void imx_pwm_set_enable_v1(struct pwm_chip *chip, bool enable)
-> +static int imx_pwm_enable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
->  {
->  	struct imx_chip *imx = to_imx_chip(chip);
-> +	int ret;
->  	u32 val;
->  
-> +	ret = clk_prepare_enable(imx->clk_ipg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = clk_prepare_enable(imx->clk_per);
-> +	if (ret)
-> +		return ret;
-> +
->  	val = readl(imx->mmio_base + MX1_PWMC);
-> +	val |= MX1_PWMC_EN;
-> +	writel(val, imx->mmio_base + MX1_PWMC);
->  
-> -	if (enable)
-> -		val |= MX1_PWMC_EN;
-> -	else
-> -		val &= ~MX1_PWMC_EN;
-> +	clk_disable_unprepare(imx->clk_ipg);
-> +
-> +	return 0;
-> +}
-> +
-> +static void imx_pwm_disable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
-> +{
-> +	struct imx_chip *imx = to_imx_chip(chip);
-> +	u32 val;
-> +
-> +	val = readl(imx->mmio_base + MX1_PWMC);
-> +	val &= ~MX1_PWMC_EN;
->  
->  	writel(val, imx->mmio_base + MX1_PWMC);
+Changes since v1:
+- Handling of the enable GPIO is reworked:
+ - Only change direction to output when the pin was input and in this case set
+   the GPIO line physical low
+ - With this change we can ensure that the enable GPIO is output so we do not
+   need to check the direction of it later on.
 
-Are you sure you don't need to enable the ipg clk when manipulating the
-PWMC register?
-If it's not needed here, then it's probably not needed in
-imx_pwm_enable_v1() either.
+Cover letter:
 
-> +
-> +	clk_disable_unprepare(imx->clk_per);
->  }
->  
->  static int imx_pwm_config_v2(struct pwm_chip *chip,
-> @@ -241,9 +269,9 @@ static void imx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->  }
->  
->  static struct pwm_ops imx_pwm_ops_v1 = {
-> -	.enable = imx_pwm_enable,
-> -	.disable = imx_pwm_disable,
-> -	.config = imx_pwm_config,
-> +	.enable = imx_pwm_enable_v1,
-> +	.disable = imx_pwm_disable_v1,
-> +	.config = imx_pwm_config_v1,
->  	.owner = THIS_MODULE,
->  };
->  
-> @@ -262,8 +290,6 @@ struct imx_pwm_data {
->  };
->  
->  static struct imx_pwm_data imx_pwm_data_v1 = {
-> -	.config = imx_pwm_config_v1,
-> -	.set_enable = imx_pwm_set_enable_v1,
->  	.pwm_ops = &imx_pwm_ops_v1,
->  };
->  
+3698d7e7d221 backlight: pwm_bl: Avoid backlight flicker when probed from DT
+
+added support for avoiding backlight flickering, which in essence was designed
+to not enable the baclkight when the driver loads, but let the user of the
+backlight to enable it later on.
+
+There are boards (like am437x-gp-evm) where we do not have valid GPIO to enable
+the backlight (TPS61081DRC's EN pin is connected to V3_3D) and the regulator
+is always on (VBAT in case of the gp-evm). In this board the logic to check the
+GPIO state and the regulator is failing and the backlight will be enabled as
+soon as the pwm_bl driver is loaded.
+
+By extending the check to look at the PWM state this issue can be avoided and
+the backlight will be enabled only when it's user is asking it to be enabled.
+
+Regards,
+Peter
+---
+Peter Ujfalusi (2):
+  backlight: pwm_bl: Move the checks for initial power state to a
+    separate function
+  backlight: pwm_bl: Check the pwm state for initial backlight power
+    state
+
+ drivers/video/backlight/pwm_bl.c | 58 +++++++++++++++++++++++++++-------------
+ 1 file changed, 39 insertions(+), 19 deletions(-)
+
+--
+2.10.1
