@@ -1,83 +1,183 @@
-From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: [PATCH v2 10/10] pwm: imx: Add polarity inversion support to i.MX's PWMv2
-Date: Thu, 27 Oct 2016 08:29:45 +0200
-Message-ID: <1477549785-4972-10-git-send-email-l.majewski@majess.pl>
-References: <1477549785-4972-1-git-send-email-l.majewski@majess.pl>
+From: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Subject: Re: [PATCH 1/2] backlight: pwm_bl: Move the checks for initial power
+ state to a separate function
+Date: Thu, 27 Oct 2016 10:18:46 +0300
+Message-ID: <476602db-0c9c-b642-83c0-be4979addde0@ti.com>
+References: <20160930070259.5710-1-peter.ujfalusi@ti.com>
+ <20160930070259.5710-2-peter.ujfalusi@ti.com> <20161026121258.GQ8574@dell>
+ <fd224a5e-9487-eabf-a68f-bbd3ae49f8ef@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from 6.mo4.mail-out.ovh.net ([188.165.36.253]:43457 "EHLO
-        6.mo4.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932605AbcJ0Gla (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Oct 2016 02:41:30 -0400
-Received: from player159.ha.ovh.net (b9.ovh.net [213.186.33.59])
-        by mo4.mail-out.ovh.net (Postfix) with ESMTP id 3528016155
-        for <linux-pwm@vger.kernel.org>; Thu, 27 Oct 2016 08:31:59 +0200 (CEST)
-In-Reply-To: <1477549785-4972-1-git-send-email-l.majewski@majess.pl>
+Received: from comal.ext.ti.com ([198.47.26.152]:54744 "EHLO comal.ext.ti.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751591AbcJ0HTA (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 27 Oct 2016 03:19:00 -0400
+In-Reply-To: <fd224a5e-9487-eabf-a68f-bbd3ae49f8ef@ti.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de, Lukasz Majewski <l.majewski@majess.pl>
+To: Lee Jones <lee.jones@linaro.org>
+Cc: thierry.reding@gmail.com, jingoohan1@gmail.com, tomi.valkeinen@ti.com, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, p.zabel@pengutronix.de
 
-With this patch the polarity settings for i.MX's PWMv2 is now supported
-on top of atomic PWM setting
+On 10/26/16 16:02, Peter Ujfalusi wrote:
+> On 10/26/16 15:12, Lee Jones wrote:
+>> On Fri, 30 Sep 2016, Peter Ujfalusi wrote:
+>>
+>>> Move the check for gpio and regulator initial state to a new function and
+>>> document better what we are checking and why.
+>>>
+>>> It is going to be easier to fix or improve the initial power state
+>>> configuration later and it is easier to read the code.
+>>>
+>>> Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+>>> ---
+>>>  drivers/video/backlight/pwm_bl.c | 55 +++++++++++++++++++++++++---------------
+>>>  1 file changed, 35 insertions(+), 20 deletions(-)
+>>>
+>>> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+>>> index b2b366bb0f97..9bc4715bf116 100644
+>>> --- a/drivers/video/backlight/pwm_bl.c
+>>> +++ b/drivers/video/backlight/pwm_bl.c
+>>> @@ -192,6 +192,40 @@ static int pwm_backlight_parse_dt(struct device *dev,
+>>>  }
+>>>  #endif
+>>>  
+>>> +static int pwm_backlight_initial_power_state(const struct pwm_bl_data *pb)
+>>> +{
+>>> +	struct device_node *node = pb->dev->of_node;
+>>> +
+>>> +	/* Not booted with device tree or no phandle link to the node */
+>>> +	if (!node || !node->phandle)
+>>> +		return FB_BLANK_UNBLANK;
+>>
+>> This changes the semantics of the current implementation.
+>>
+>> In the code you're removing, if the enable_gpio is present and no DT
+>> is found, we set the GPIO direction to output.  In your implementation,
+>> if no DT is found you don't do anything regardless.
+>>
+>> Is that intentional?
+> 
+> Argh, no, it is not intentional.
+> 
+> It should have been like this:
+> 
+> 	/* Not booted with device tree or no phandle link to the node */
+> 	if (!node || !node->phandle) {
+> 		/* Set enable GPIO if it is valid */
+> 		if (pb->enable_gpio)
+> 			gpiod_direction_output(pb->enable_gpio, 1);
+> 
+> 		return FB_BLANK_UNBLANK;
+> 	}
+> 
+> On the other hand we are not doing the same for the regulator in case of non
+> DT boot or when the backlight has no users. So we do enable the GPIO, but the
+> regulator might be left disabled...
+> 
+> I'll resend the series with this change.
 
-Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
----
-Changes for v2:
-- New patch
----
- drivers/pwm/pwm-imx.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+This is not really correct either.
 
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index 0132439a..92b4ba0 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -38,6 +38,7 @@
- #define MX3_PWMCR_DOZEEN		(1 << 24)
- #define MX3_PWMCR_WAITEN		(1 << 23)
- #define MX3_PWMCR_DBGEN			(1 << 22)
-+#define MX3_PWMCR_POUTC			(1 << 18)
- #define MX3_PWMCR_CLKSRC_IPG_HIGH	(2 << 16)
- #define MX3_PWMCR_CLKSRC_IPG		(1 << 16)
- #define MX3_PWMCR_SWR			(1 << 3)
-@@ -234,6 +235,9 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (state->enabled)
- 		cr |= MX3_PWMCR_EN;
- 
-+	if (state->polarity == PWM_POLARITY_INVERSED)
-+		cr |= MX3_PWMCR_POUTC;
-+
- 	writel(cr, imx->mmio_base + MX3_PWMCR);
- 
- 	/* Disable the clock if the PWM is being disabled. */
-@@ -258,6 +262,7 @@ static struct pwm_ops imx_pwm_ops_v2 = {
- };
- 
- struct imx_pwm_data {
-+	bool polarity_supported;
- 	struct pwm_ops *pwm_ops;
- };
- 
-@@ -266,6 +271,7 @@ static struct imx_pwm_data imx_pwm_data_v1 = {
- };
- 
- static struct imx_pwm_data imx_pwm_data_v2 = {
-+	.polarity_supported = true,
- 	.pwm_ops = &imx_pwm_ops_v2,
- };
- 
-@@ -313,6 +319,11 @@ static int imx_pwm_probe(struct platform_device *pdev)
- 	imx->chip.base = -1;
- 	imx->chip.npwm = 1;
- 	imx->chip.can_sleep = true;
-+	if (data->polarity_supported) {
-+		dev_dbg(&pdev->dev, "PWM supports output inversion\n");
-+		imx->chip.of_xlate = of_pwm_xlate_with_flags;
-+		imx->chip.of_pwm_n_cells = 3;
-+	}
- 
- 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	imx->mmio_base = devm_ioremap_resource(&pdev->dev, r);
+If we boot in legacy mode the data->enable_gpio number is used to get the GPIO
+and we configure the initial state as GPIOF_OUT_INIT_HIGH. So legacy boot will
+have the line high in any case.
+
+I think the only case we should handle differently is when the GPIO is
+configured as input (I don't think it happens, but just to be sure). In that
+case we need to change the direction to output and set the GPIO as disabled.
+If it was input, it was not driving the line.
+
+In the pwm_backlight_initial_power_state() function we will not need to check
+for GPIO direction as it is guaranteed that it is output, we can only check
+for the value of the GPIO.
+
+I will resubmit with this change.
+
+> 
+>>
+>>> +	/*
+>>> +	 * If the driver is probed from the device tree and there is a
+>>> +	 * phandle link pointing to the backlight node, it is safe to
+>>> +	 * assume that another driver will enable the backlight at the
+>>> +	 * appropriate time. Therefore, if it is disabled, keep it so.
+>>> +	 */
+>>> +
+>>> +	/*
+>>> +	 * if the enable GPIO is set as output and it is disabled, do not enable
+>>> +	 * the backlight
+>>> +	 */
+>>> +	if (pb->enable_gpio) {
+>>> +		if (gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
+>>> +		    gpiod_get_value(pb->enable_gpio) == 0)
+>>> +			return FB_BLANK_POWERDOWN;
+>>> +
+>>> +		gpiod_direction_output(pb->enable_gpio, 1);
+>>> +	}
+>>> +
+>>> +	/* The regulator is disabled, do not enable the backlight */
+>>> +	if (!regulator_is_enabled(pb->power_supply))
+>>> +		return FB_BLANK_POWERDOWN;
+>>> +
+>>> +	return FB_BLANK_UNBLANK;
+>>> +}
+>>> +
+>>>  static int pwm_backlight_probe(struct platform_device *pdev)
+>>>  {
+>>>  	struct platform_pwm_backlight_data *data = dev_get_platdata(&pdev->dev);
+>>> @@ -200,7 +234,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>>>  	struct backlight_device *bl;
+>>>  	struct device_node *node = pdev->dev.of_node;
+>>>  	struct pwm_bl_data *pb;
+>>> -	int initial_blank = FB_BLANK_UNBLANK;
+>>>  	struct pwm_args pargs;
+>>>  	int ret;
+>>>  
+>>> @@ -267,30 +300,12 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>>>  		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
+>>>  	}
+>>>  
+>>> -	if (pb->enable_gpio) {
+>>> -		/*
+>>> -		 * If the driver is probed from the device tree and there is a
+>>> -		 * phandle link pointing to the backlight node, it is safe to
+>>> -		 * assume that another driver will enable the backlight at the
+>>> -		 * appropriate time. Therefore, if it is disabled, keep it so.
+>>> -		 */
+>>> -		if (node && node->phandle &&
+>>> -		    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
+>>> -		    gpiod_get_value(pb->enable_gpio) == 0)
+>>> -			initial_blank = FB_BLANK_POWERDOWN;
+>>> -		else
+>>> -			gpiod_direction_output(pb->enable_gpio, 1);
+>>> -	}
+>>> -
+>>>  	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
+>>>  	if (IS_ERR(pb->power_supply)) {
+>>>  		ret = PTR_ERR(pb->power_supply);
+>>>  		goto err_alloc;
+>>>  	}
+>>>  
+>>> -	if (node && node->phandle && !regulator_is_enabled(pb->power_supply))
+>>> -		initial_blank = FB_BLANK_POWERDOWN;
+>>> -
+>>>  	pb->pwm = devm_pwm_get(&pdev->dev, NULL);
+>>>  	if (IS_ERR(pb->pwm) && PTR_ERR(pb->pwm) != -EPROBE_DEFER && !node) {
+>>>  		dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
+>>> @@ -347,7 +362,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>>>  	}
+>>>  
+>>>  	bl->props.brightness = data->dft_brightness;
+>>> -	bl->props.power = initial_blank;
+>>> +	bl->props.power = pwm_backlight_initial_power_state(pb);
+>>>  	backlight_update_status(bl);
+>>>  
+>>>  	platform_set_drvdata(pdev, bl);
+>>
+> 
+> 
+
+
 -- 
-2.1.4
+Péter
