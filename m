@@ -1,69 +1,72 @@
 From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: Re: [PATCH 0/6] pwm: imx: Provide atomic operation for IMX PWM
- driver
-Date: Thu, 27 Oct 2016 07:59:13 +0200
-Message-ID: <20161027075913.3f473095@jawa>
-References: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
-        <20161024173607.36bc2cb9@bbrezillon>
-        <20161024232615.77d4ea28@jawa>
-        <35a950b7ff431e0545bbb259ba69b483@agner.ch>
-        <20161025090724.727c10bc@jawa>
-        <CAOMZO5Bnfg43VY6tdsahCQ3PoVaL+wCzmPLCMTBK39FCHY9SpQ@mail.gmail.com>
-        <CAOMZO5AS93=RhsDeJ99YV_01dbFAYidF4UY1hqgJh=AWEsqedw@mail.gmail.com>
+Subject: [PATCH v2 00/10] pwm: imx: Provide atomic operation for IMX PWM driver
+Date: Thu, 27 Oct 2016 08:29:36 +0200
+Message-ID: <1477549785-4972-1-git-send-email-l.majewski@majess.pl>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- boundary="Sig_/pqQnife51P5LtreIiRsY8SA"; protocol="application/pgp-signature"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from 20.mo4.mail-out.ovh.net ([46.105.33.73]:33851 "EHLO
-        20.mo4.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932140AbcJ0F7f (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Oct 2016 01:59:35 -0400
-Received: from player159.ha.ovh.net (b9.ovh.net [213.186.33.59])
-        by mo4.mail-out.ovh.net (Postfix) with ESMTP id 22F3E1A165
-        for <linux-pwm@vger.kernel.org>; Thu, 27 Oct 2016 07:59:33 +0200 (CEST)
-In-Reply-To: <CAOMZO5AS93=RhsDeJ99YV_01dbFAYidF4UY1hqgJh=AWEsqedw@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>, Fabio Estevam <fabio.estevam@nxp.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, Sascha Hauer <kernel@pengutronix.de>
-
---Sig_/pqQnife51P5LtreIiRsY8SA
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de, Lukasz Majewski <l.majewski@majess.pl>
+List-Id: linux-pwm@vger.kernel.org
 
-On Tue, 25 Oct 2016 15:09:03 -0200
-Fabio Estevam <festevam@gmail.com> wrote:
+This patch set brings atomic operation to i.MX's PWMv2 driver.
 
-> On Tue, Oct 25, 2016 at 3:08 PM, Fabio Estevam <festevam@gmail.com>
-> wrote:
->=20
-> >> the i.MX6q is not booting. Apparently I do need to wait for things
-> >> to calm down.
-> >
-> > Does this commit help with the boot issue you observed?
->=20
-> Sorry, missed to put the commit. Here it goes:
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git/commit/a=
-rch/arm/mach-imx/gpc.c?id=3Deef0b282bb586259d35548851cf6a4ce847bb804
+This work has been supported and suggested by Boris Brezillon [1] and 
+Stefan Agner, by showing how simple the transition could be :-).
 
-I can confirm that the above patch fixed the problem.
+It has been divided into several steps:
 
-My iMX6q board boots on 4.9.0-rc2
+- Provide different pwm ops for PWMv1 and PWM v2
 
-Thanks for support,
+- Separate PWMv1 commits from "generic" and non atomic PWM code.
 
-=C5=81ukasz Majewski
+  NOTE: Since I do not have board with PWMv1, I would like to ask somebody
+        for testing
 
---Sig_/pqQnife51P5LtreIiRsY8SA
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+- Move some imx_config_v2 code to separate functions
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+- Provide PWM atomic implementation (the ->apply() driver) for PWMv2 in a
+  single patch for better readability.
+	
+- Remove redundant PWM code (disable, enable, config callbacks)
 
-iEYEARECAAYFAlgRl7YACgkQf9/hG2YwgjFj1QCgz0kkPDMAkny79LtCi6YhGgiW
-t6wAnRwgGPTmJPB7/akcsR+tk1yuDGZi
-=AQlX
------END PGP SIGNATURE-----
+- Update proper documentation entries
 
---Sig_/pqQnife51P5LtreIiRsY8SA--
+- Provide support for polarity inversion on top of atomic PWM rework
+
+Test HW:
+--------
+This patch set has been tested on i.MX6q board with vanilla 4.7, 4.8 and
+v4.9-rc2 kernel SHA1: 07d9a380680d1c0eb51ef87ff2eab5c994949e69
+
+
+The PWM operation has been tested with pwm_bl backlight driver by changing
+its brightness.
+
+[1]: http://patchwork.ozlabs.org/patch/685402/
+
+
+Lothar Wassmann (2):
+  pwm: print error messages with pr_err() instead of pr_debug()
+  pwm: core: make the PWM_POLARITY flag in DTB optional
+
+Lukasz Majewski (8):
+  pwm: imx: Add separate set of pwm ops for PWMv1 and PWMv2
+  pwm: imx: Rewrite imx_pwm_*_v1 code to facilitate switch to atomic pwm
+    operation
+  pwm: imx: Move PWMv2 software reset code to a separate function
+  pwm: imx: Move PWMv2 wait for fifo slot code to a separate function
+  pwm: imx: Provide atomic PWM support for i.MX PWMv2
+  pwm: imx: Remove redundant i.MX PWMv2 code
+  pwm: imx: doc: Update imx-pwm.txt documentation entry
+  pwm: imx: Add polarity inversion support to i.MX's PWMv2
+
+ Documentation/devicetree/bindings/pwm/imx-pwm.txt |   6 +-
+ drivers/pwm/core.c                                |  26 ++-
+ drivers/pwm/pwm-imx.c                             | 255 ++++++++++++----------
+ 3 files changed, 152 insertions(+), 135 deletions(-)
+
+-- 
+2.1.4
