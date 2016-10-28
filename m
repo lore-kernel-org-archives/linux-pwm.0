@@ -1,103 +1,90 @@
 From: Jian Yuan <yuanjian12@hisilicon.com>
 Subject: Re: [PATCH v4] pwm: add pwm driver for HiSilicon BVT SOCs
-Date: Fri, 28 Oct 2016 10:48:08 +0800
-Message-ID: <d1652f2b-b25f-b6b9-15b0-d5584742c885@hisilicon.com>
+Date: Fri, 28 Oct 2016 10:56:08 +0800
+Message-ID: <3a69d460-8217-73e5-f132-8789a9728bce@hisilicon.com>
 References: <1476097516-164577-1-git-send-email-yuanjian12@hisilicon.com>
- <20161010215339.GA21660@rob-hp-laptop>
+ <20161010215339.GA21660@rob-hp-laptop> <20161021072236.GD2670@ulmo.ba.sec>
+ <20161021073457.GF2670@ulmo.ba.sec>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from szxga02-in.huawei.com ([119.145.14.65]:30500 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751207AbcJ1Csl (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Oct 2016 22:48:41 -0400
-In-Reply-To: <20161010215339.GA21660@rob-hp-laptop>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20161021073457.GF2670@ulmo.ba.sec>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh@kernel.org>
+Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, xuejiancheng@hisilicon.com, kevin.lixu@hisilicon.com, jalen.hsu@hisilicon.com
 List-Id: linux-pwm@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: thierry.reding@gmail.com, mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, xuejiancheng@hisilicon.com, kevin.lixu@hisilicon.com, jalen.hsu@hisilicon.com
 
 
 
-On 2016/10/11 5:53, Rob Herring wrote:
-> On Mon, Oct 10, 2016 at 07:05:16PM +0800, Jian Yuan wrote:
->> From: yuanjian <yuanjian12@hisilicon.com>
+On 2016/10/21 15:34, Thierry Reding wrote:
+> On Fri, Oct 21, 2016 at 09:22:36AM +0200, Thierry Reding wrote:
+>> On Mon, Oct 10, 2016 at 04:53:39PM -0500, Rob Herring wrote:
+>>> On Mon, Oct 10, 2016 at 07:05:16PM +0800, Jian Yuan wrote:
+>>>> From: yuanjian <yuanjian12@hisilicon.com>
+>>>>
+>>>> Add PWM driver for the PWM controller found on HiSilicon BVT SOCs, like Hi3519V100, Hi3516CV300, etc.
+>>>> The PWM controller is primarily in charge of controlling P-Iris lens.
+>>>>
+>>>> Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
+>>>> Signed-off-by: Jian Yuan <yuanjian12@hisilicon.com>
+>>>> ---
+>>>> Change Log:
+>>>> v4:
+>>>> Add #pwm-cells in the bindings document.
+>>>> v3:
+>>>> fixed issues pointed by thierry.
+>>>> Add PWM compatible string for Hi3519V100.
+>>>> Implement .apply() function which support atomic, instead of .enable()/.disable()/.config().
+>>>> v2:
+>>>> The number of PWMs is change to be probeable based on the compatible string.
+>>>>
+>>>>  .../devicetree/bindings/pwm/pwm-hibvt.txt          |  23 ++
+>>>>  drivers/pwm/Kconfig                                |   9 +
+>>>>  drivers/pwm/Makefile                               |   1 +
+>>>>  drivers/pwm/pwm-hibvt.c                            | 270 +++++++++++++++++++++
+>>>>  4 files changed, 303 insertions(+)
+>>>>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
+>>>>  create mode 100644 drivers/pwm/pwm-hibvt.c
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
+>>>> new file mode 100644
+>>>> index 0000000..609284f
+>>>> --- /dev/null
+>>>> +++ b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
+>>>> @@ -0,0 +1,23 @@
+>>>> +Hisilicon PWM controller
+>>>> +
+>>>> +Required properties:
+>>>> +-compatible: should contain one SoC specific compatible string and one generic compatible
+>>>> +string "hisilicon, hibvt-pwm". The SoC specific strings supported including:
+>>>
+>>> Extra space          ^
+>>>
+>>> With that, for the binding:
+>>>
+>>> Acked-by: Rob Herring <robh@kernel.org>
 >>
->> Add PWM driver for the PWM controller found on HiSilicon BVT SOCs, like Hi3519V100, Hi3516CV300, etc.
->> The PWM controller is primarily in charge of controlling P-Iris lens.
->>
->> Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
->> Signed-off-by: Jian Yuan <yuanjian12@hisilicon.com>
->> ---
->> Change Log:
->> v4:
->> Add #pwm-cells in the bindings document.
->> v3:
->> fixed issues pointed by thierry.
->> Add PWM compatible string for Hi3519V100.
->> Implement .apply() function which support atomic, instead of .enable()/.disable()/.config().
->> v2:
->> The number of PWMs is change to be probeable based on the compatible string.
->>
->>  .../devicetree/bindings/pwm/pwm-hibvt.txt          |  23 ++
->>  drivers/pwm/Kconfig                                |   9 +
->>  drivers/pwm/Makefile                               |   1 +
->>  drivers/pwm/pwm-hibvt.c                            | 270 +++++++++++++++++++++
->>  4 files changed, 303 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
->>  create mode 100644 drivers/pwm/pwm-hibvt.c
->>
->> diff --git a/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
->> new file mode 100644
->> index 0000000..609284f
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
->> @@ -0,0 +1,23 @@
->> +Hisilicon PWM controller
->> +
->> +Required properties:
->> +-compatible: should contain one SoC specific compatible string and one generic compatible
->> +string "hisilicon, hibvt-pwm". The SoC specific strings supported including:
+>> I'm wondering what the use is of the generic compatible string? Not only
+>> is the driver not listing it, nor is it in any way useful since there is
+>> nothing the driver could do based on the generic compatible string (each
+>> version of the IP currently supported has a different number of PWM
+>> channels).
 > 
-> Extra space          ^
+> Actually it's worse. The driver does have an entry for the generic
+> compatible string but it doesn't assign .data in that case (which is
+> really what I was saying above). Now according to the bindings it is
+> disallowed to have only the generic compatible string, which is good
+> because doing so would crash the driver on probe.
 > 
-> With that, for the binding:
+> So, if it's not allowed to have only the generic compatible string,
+> why even have one at all? We always have an SoC-specific compatible
+> string as well, so the generic one is completely redundant.
 > 
-> Acked-by: Rob Herring <robh@kernel.org>
+> Thierry
 > 
 
-Hi, Rob, I am ready to remove the generic compatible string, because I think it's not useful and it would affect the driver on probe when only a generic compatible string existed.
-changed as follows:
-	pwm: pwm@12130000 {
-		compatible = "hisilicon,hi3516cv300-pwm";
-		reg = <0x12130000 0x10000>;
-		clocks = <&crg_ctrl HI3516CV300_PWM_CLK>;
-		resets = <&crg_ctrl 0x38 0>;
-		#pwm-cells = <2>;
-	};
-Is that ok?
+Hi, Thierry, are there some other issue about driver except the generic compatible string? awaiting your reply.
+thanks.
 
 Jian Yuan.
-
->> +	"hisilicon,hi3516cv300-pwm"
->> +	"hisilicon,hi3519v100-pwm"
->> +- reg: physical base address and length of the controller's registers.
->> +- clocks: phandle and clock specifier of the PWM reference clock.
->> +- resets: phandle and reset specifier for the PWM controller reset.
->> +- #pwm-cells: Should be 2. See pwm.txt in this directory for a description of
->> +  the cells format.
->> +
->> +Example:
->> +	pwm: pwm@12130000 {
->> +
->> +		compatible = "hisilicon,hi3516cv300-pwm", "hisilicon,hibvt-pwm";
->> +		compatible = "hisilicon,hi3519v100-pwm", "hisilicon,hibvt-pwm";
->> +		reg = <0x12130000 0x10000>;
->> +		clocks = <&crg_ctrl HI3516CV300_PWM_CLK>;
->> +		resets = <&crg_ctrl 0x38 0>;
->> +		#pwm-cells = <2>;
->> +	};
-> 
-> .
-> 
