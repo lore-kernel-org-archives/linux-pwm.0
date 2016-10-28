@@ -1,176 +1,103 @@
-From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: Re: [PATCH v2 03/10] pwm: imx: Rewrite imx_pwm_*_v1 code to
- facilitate switch to atomic pwm operation
-Date: Thu, 27 Oct 2016 10:22:18 +0200
-Message-ID: <20161027102218.028384ff@jawa>
-References: <1477549785-4972-1-git-send-email-l.majewski@majess.pl>
-        <1477549785-4972-4-git-send-email-l.majewski@majess.pl>
-        <20161027094005.2da3b7d4@bbrezillon>
+From: Jian Yuan <yuanjian12@hisilicon.com>
+Subject: Re: [PATCH v4] pwm: add pwm driver for HiSilicon BVT SOCs
+Date: Fri, 28 Oct 2016 10:48:08 +0800
+Message-ID: <d1652f2b-b25f-b6b9-15b0-d5584742c885@hisilicon.com>
+References: <1476097516-164577-1-git-send-email-yuanjian12@hisilicon.com>
+ <20161010215339.GA21660@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- boundary="Sig_/cLESMSui2ED3VAhNYH.eaMp"; protocol="application/pgp-signature"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161027094005.2da3b7d4@bbrezillon>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from szxga02-in.huawei.com ([119.145.14.65]:30500 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751207AbcJ1Csl (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Oct 2016 22:48:41 -0400
+In-Reply-To: <20161010215339.GA21660@rob-hp-laptop>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-
---Sig_/cLESMSui2ED3VAhNYH.eaMp
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-Hi Boris,
-
-> On Thu, 27 Oct 2016 08:29:39 +0200
-> Lukasz Majewski <l.majewski@majess.pl> wrote:
->=20
-> > The code has been rewritten to remove "generic" calls to
-> > imx_pwm_{enable|disable|config}.
-> >=20
-> > Such approach would facilitate switch to atomic PWM (a.k.a
-> > ->apply()) implementation.
-> >=20
-> > Suggested-by: Stefan Agner <stefan@agner.ch>
-> > Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> > Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
-> > ---
-> > Changes for v2:
-> > - Add missing clock unprepare for clk_ipg
-> > - Enable peripheral PWM clock (clk_per)
-> > ---
-> >  drivers/pwm/pwm-imx.c | 50
-> > ++++++++++++++++++++++++++++++++++++++------------ 1 file changed,
-> > 38 insertions(+), 12 deletions(-)
-> >=20
-> > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> > index ea3ce79..822eb5a 100644
-> > --- a/drivers/pwm/pwm-imx.c
-> > +++ b/drivers/pwm/pwm-imx.c
-> > @@ -65,8 +65,6 @@ struct imx_chip {
-> >  static int imx_pwm_config_v1(struct pwm_chip *chip,
-> >  		struct pwm_device *pwm, int duty_ns, int period_ns)
-> >  {
-> > -	struct imx_chip *imx =3D to_imx_chip(chip);
-> > -
-> >  	/*
-> >  	 * The PWM subsystem allows for exact frequencies. However,
-> >  	 * I cannot connect a scope on my device to the PWM line
-> > and @@ -84,26 +82,56 @@ static int imx_pwm_config_v1(struct
-> > pwm_chip *chip,
-> >  	 * both the prescaler (/1 .. /128) and then by CLKSEL
-> >  	 * (/2 .. /16).
-> >  	 */
-> > +	struct imx_chip *imx =3D to_imx_chip(chip);
-> >  	u32 max =3D readl(imx->mmio_base + MX1_PWMP);
-> >  	u32 p =3D max * duty_ns / period_ns;
-> > +	int ret;
-> > +
-> > +	ret =3D clk_prepare_enable(imx->clk_ipg);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> >  	writel(max - p, imx->mmio_base + MX1_PWMS);
-> > =20
-> > +	clk_disable_unprepare(imx->clk_ipg);
-> > +
-> >  	return 0;
-> >  }
-> > =20
-> > -static void imx_pwm_set_enable_v1(struct pwm_chip *chip, bool
-> > enable) +static int imx_pwm_enable_v1(struct pwm_chip *chip, struct
-> > pwm_device *pwm) {
-> >  	struct imx_chip *imx =3D to_imx_chip(chip);
-> > +	int ret;
-> >  	u32 val;
-> > =20
-> > +	ret =3D clk_prepare_enable(imx->clk_ipg);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	ret =3D clk_prepare_enable(imx->clk_per);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> >  	val =3D readl(imx->mmio_base + MX1_PWMC);
-> > +	val |=3D MX1_PWMC_EN;
-> > +	writel(val, imx->mmio_base + MX1_PWMC);
-> > =20
-> > -	if (enable)
-> > -		val |=3D MX1_PWMC_EN;
-> > -	else
-> > -		val &=3D ~MX1_PWMC_EN;
-> > +	clk_disable_unprepare(imx->clk_ipg);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static void imx_pwm_disable_v1(struct pwm_chip *chip, struct
-> > pwm_device *pwm) +{
-> > +	struct imx_chip *imx =3D to_imx_chip(chip);
-> > +	u32 val;
-> > +
-> > +	val =3D readl(imx->mmio_base + MX1_PWMC);
-> > +	val &=3D ~MX1_PWMC_EN;
-> > =20
-> >  	writel(val, imx->mmio_base + MX1_PWMC);
->=20
-> Are you sure you don't need to enable the ipg clk when manipulating
-> the PWMC register?
-> If it's not needed here, then it's probably not needed in
-> imx_pwm_enable_v1() either.
-
-Yes, probably it is needed.
-
-As I've mentioned in the cover letter - I do not have PWMv1 HW so I can
-only compile test the code.
-
-(And here support from the community is very welcome).
-
-Best regards,
-=C5=81ukasz Majewski
-
->=20
-> > +
-> > +	clk_disable_unprepare(imx->clk_per);
-> >  }
-> > =20
-> >  static int imx_pwm_config_v2(struct pwm_chip *chip,
-> > @@ -241,9 +269,9 @@ static void imx_pwm_disable(struct pwm_chip
-> > *chip, struct pwm_device *pwm) }
-> > =20
-> >  static struct pwm_ops imx_pwm_ops_v1 =3D {
-> > -	.enable =3D imx_pwm_enable,
-> > -	.disable =3D imx_pwm_disable,
-> > -	.config =3D imx_pwm_config,
-> > +	.enable =3D imx_pwm_enable_v1,
-> > +	.disable =3D imx_pwm_disable_v1,
-> > +	.config =3D imx_pwm_config_v1,
-> >  	.owner =3D THIS_MODULE,
-> >  };
-> > =20
-> > @@ -262,8 +290,6 @@ struct imx_pwm_data {
-> >  };
-> > =20
-> >  static struct imx_pwm_data imx_pwm_data_v1 =3D {
-> > -	.config =3D imx_pwm_config_v1,
-> > -	.set_enable =3D imx_pwm_set_enable_v1,
-> >  	.pwm_ops =3D &imx_pwm_ops_v1,
-> >  };
-> > =20
->=20
+To: Rob Herring <robh@kernel.org>
+Cc: thierry.reding@gmail.com, mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, xuejiancheng@hisilicon.com, kevin.lixu@hisilicon.com, jalen.hsu@hisilicon.com
 
 
---Sig_/cLESMSui2ED3VAhNYH.eaMp
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+On 2016/10/11 5:53, Rob Herring wrote:
+> On Mon, Oct 10, 2016 at 07:05:16PM +0800, Jian Yuan wrote:
+>> From: yuanjian <yuanjian12@hisilicon.com>
+>>
+>> Add PWM driver for the PWM controller found on HiSilicon BVT SOCs, like Hi3519V100, Hi3516CV300, etc.
+>> The PWM controller is primarily in charge of controlling P-Iris lens.
+>>
+>> Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
+>> Signed-off-by: Jian Yuan <yuanjian12@hisilicon.com>
+>> ---
+>> Change Log:
+>> v4:
+>> Add #pwm-cells in the bindings document.
+>> v3:
+>> fixed issues pointed by thierry.
+>> Add PWM compatible string for Hi3519V100.
+>> Implement .apply() function which support atomic, instead of .enable()/.disable()/.config().
+>> v2:
+>> The number of PWMs is change to be probeable based on the compatible string.
+>>
+>>  .../devicetree/bindings/pwm/pwm-hibvt.txt          |  23 ++
+>>  drivers/pwm/Kconfig                                |   9 +
+>>  drivers/pwm/Makefile                               |   1 +
+>>  drivers/pwm/pwm-hibvt.c                            | 270 +++++++++++++++++++++
+>>  4 files changed, 303 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
+>>  create mode 100644 drivers/pwm/pwm-hibvt.c
+>>
+>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
+>> new file mode 100644
+>> index 0000000..609284f
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
+>> @@ -0,0 +1,23 @@
+>> +Hisilicon PWM controller
+>> +
+>> +Required properties:
+>> +-compatible: should contain one SoC specific compatible string and one generic compatible
+>> +string "hisilicon, hibvt-pwm". The SoC specific strings supported including:
+> 
+> Extra space          ^
+> 
+> With that, for the binding:
+> 
+> Acked-by: Rob Herring <robh@kernel.org>
+> 
 
-iEYEARECAAYFAlgRuT8ACgkQf9/hG2YwgjGSWACgs8dBXwciCIzFq9zUFPpZZzLo
-eMUAn1sqhk1WGFO7MmsJbErjMQSPtK74
-=MqVz
------END PGP SIGNATURE-----
+Hi, Rob, I am ready to remove the generic compatible string, because I think it's not useful and it would affect the driver on probe when only a generic compatible string existed.
+changed as follows:
+	pwm: pwm@12130000 {
+		compatible = "hisilicon,hi3516cv300-pwm";
+		reg = <0x12130000 0x10000>;
+		clocks = <&crg_ctrl HI3516CV300_PWM_CLK>;
+		resets = <&crg_ctrl 0x38 0>;
+		#pwm-cells = <2>;
+	};
+Is that ok?
 
---Sig_/cLESMSui2ED3VAhNYH.eaMp--
+Jian Yuan.
+
+>> +	"hisilicon,hi3516cv300-pwm"
+>> +	"hisilicon,hi3519v100-pwm"
+>> +- reg: physical base address and length of the controller's registers.
+>> +- clocks: phandle and clock specifier of the PWM reference clock.
+>> +- resets: phandle and reset specifier for the PWM controller reset.
+>> +- #pwm-cells: Should be 2. See pwm.txt in this directory for a description of
+>> +  the cells format.
+>> +
+>> +Example:
+>> +	pwm: pwm@12130000 {
+>> +
+>> +		compatible = "hisilicon,hi3516cv300-pwm", "hisilicon,hibvt-pwm";
+>> +		compatible = "hisilicon,hi3519v100-pwm", "hisilicon,hibvt-pwm";
+>> +		reg = <0x12130000 0x10000>;
+>> +		clocks = <&crg_ctrl HI3516CV300_PWM_CLK>;
+>> +		resets = <&crg_ctrl 0x38 0>;
+>> +		#pwm-cells = <2>;
+>> +	};
+> 
+> .
+> 
