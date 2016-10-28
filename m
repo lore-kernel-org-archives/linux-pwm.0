@@ -1,90 +1,147 @@
-From: Jian Yuan <yuanjian12@hisilicon.com>
-Subject: Re: [PATCH v4] pwm: add pwm driver for HiSilicon BVT SOCs
-Date: Fri, 28 Oct 2016 10:56:08 +0800
-Message-ID: <3a69d460-8217-73e5-f132-8789a9728bce@hisilicon.com>
-References: <1476097516-164577-1-git-send-email-yuanjian12@hisilicon.com>
- <20161010215339.GA21660@rob-hp-laptop> <20161021072236.GD2670@ulmo.ba.sec>
- <20161021073457.GF2670@ulmo.ba.sec>
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH v2 1/2] backlight: pwm_bl: Move the checks for initial
+ power state to a separate function
+Date: Fri, 28 Oct 2016 15:27:14 +0200
+Message-ID: <1477661234.3010.49.camel@pengutronix.de>
+References: <20161027100157.2231-1-peter.ujfalusi@ti.com>
+         <20161027100157.2231-2-peter.ujfalusi@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161021073457.GF2670@ulmo.ba.sec>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh@kernel.org>
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, xuejiancheng@hisilicon.com, kevin.lixu@hisilicon.com, jalen.hsu@hisilicon.com
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:37886 "EHLO
+        metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751795AbcJ1N1V (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Oct 2016 09:27:21 -0400
+In-Reply-To: <20161027100157.2231-2-peter.ujfalusi@ti.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Cc: thierry.reding@gmail.com, lee.jones@linaro.org, tomi.valkeinen@ti.com, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
 
+Hi Peter,
 
+Am Donnerstag, den 27.10.2016, 13:01 +0300 schrieb Peter Ujfalusi:
+> Move the checks to select the initial state for the backlight to a new
+> function and document the checks we are doing.
+>
+> At the same time correct the handling of the case when the GPIO is
+> initially configured as input: we need to change the direction of the GPIO
+> to output and set the GPIO to low as the pin was not driven when the GPIO
+> was configured as input.
 
-On 2016/10/21 15:34, Thierry Reding wrote:
-> On Fri, Oct 21, 2016 at 09:22:36AM +0200, Thierry Reding wrote:
->> On Mon, Oct 10, 2016 at 04:53:39PM -0500, Rob Herring wrote:
->>> On Mon, Oct 10, 2016 at 07:05:16PM +0800, Jian Yuan wrote:
->>>> From: yuanjian <yuanjian12@hisilicon.com>
->>>>
->>>> Add PWM driver for the PWM controller found on HiSilicon BVT SOCs, like Hi3519V100, Hi3516CV300, etc.
->>>> The PWM controller is primarily in charge of controlling P-Iris lens.
->>>>
->>>> Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
->>>> Signed-off-by: Jian Yuan <yuanjian12@hisilicon.com>
->>>> ---
->>>> Change Log:
->>>> v4:
->>>> Add #pwm-cells in the bindings document.
->>>> v3:
->>>> fixed issues pointed by thierry.
->>>> Add PWM compatible string for Hi3519V100.
->>>> Implement .apply() function which support atomic, instead of .enable()/.disable()/.config().
->>>> v2:
->>>> The number of PWMs is change to be probeable based on the compatible string.
->>>>
->>>>  .../devicetree/bindings/pwm/pwm-hibvt.txt          |  23 ++
->>>>  drivers/pwm/Kconfig                                |   9 +
->>>>  drivers/pwm/Makefile                               |   1 +
->>>>  drivers/pwm/pwm-hibvt.c                            | 270 +++++++++++++++++++++
->>>>  4 files changed, 303 insertions(+)
->>>>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
->>>>  create mode 100644 drivers/pwm/pwm-hibvt.c
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
->>>> new file mode 100644
->>>> index 0000000..609284f
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
->>>> @@ -0,0 +1,23 @@
->>>> +Hisilicon PWM controller
->>>> +
->>>> +Required properties:
->>>> +-compatible: should contain one SoC specific compatible string and one generic compatible
->>>> +string "hisilicon, hibvt-pwm". The SoC specific strings supported including:
->>>
->>> Extra space          ^
->>>
->>> With that, for the binding:
->>>
->>> Acked-by: Rob Herring <robh@kernel.org>
->>
->> I'm wondering what the use is of the generic compatible string? Not only
->> is the driver not listing it, nor is it in any way useful since there is
->> nothing the driver could do based on the generic compatible string (each
->> version of the IP currently supported has a different number of PWM
->> channels).
+I think this part should be a separate patch. At least it is a
+significant enough change to warrant a mention in the subject.
+
+And I'm not entirely sure this is better than before. If there happens
+to be a pull-up on the GPIO (for whatever reason), we might introduce
+flicker again if the GPIO goes from input (high) to output (low), and
+back to output (high) again due to FB_BLANK_UNBLANK.
+
+regards
+Philipp
+
+> With the separate function it is going to be easier to fix or improve the
+> initial power state configuration later and it is easier to read the code.
 > 
-> Actually it's worse. The driver does have an entry for the generic
-> compatible string but it doesn't assign .data in that case (which is
-> really what I was saying above). Now according to the bindings it is
-> disallowed to have only the generic compatible string, which is good
-> because doing so would crash the driver on probe.
+> Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> ---
+>  drivers/video/backlight/pwm_bl.c | 54 ++++++++++++++++++++++++++--------------
+>  1 file changed, 35 insertions(+), 19 deletions(-)
 > 
-> So, if it's not allowed to have only the generic compatible string,
-> why even have one at all? We always have an SoC-specific compatible
-> string as well, so the generic one is completely redundant.
-> 
-> Thierry
-> 
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+> index 12614006211e..74083d880144 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -192,6 +192,32 @@ static int pwm_backlight_parse_dt(struct device *dev,
+>  }
+>  #endif
+>  
+> +static int pwm_backlight_initial_power_state(const struct pwm_bl_data *pb)
+> +{
+> +	struct device_node *node = pb->dev->of_node;
+> +
+> +	/* Not booted with device tree or no phandle link to the node */
+> +	if (!node || !node->phandle)
+> +		return FB_BLANK_UNBLANK;
+> +
+> +	/*
+> +	 * If the driver is probed from the device tree and there is a
+> +	 * phandle link pointing to the backlight node, it is safe to
+> +	 * assume that another driver will enable the backlight at the
+> +	 * appropriate time. Therefore, if it is disabled, keep it so.
+> +	 */
+> +
+> +	/* if the enable GPIO is disabled, do not enable the backlight */
 
-Hi, Thierry, are there some other issue about driver except the generic compatible string? awaiting your reply.
-thanks.
+nitpick: s/if/If/ for consistency.
 
-Jian Yuan.
+> +	if (pb->enable_gpio && gpiod_get_value(pb->enable_gpio) == 0)
+> +		return FB_BLANK_POWERDOWN;
+> +
+> +	/* The regulator is disabled, do not enable the backlight */
+> +	if (!regulator_is_enabled(pb->power_supply))
+> +		return FB_BLANK_POWERDOWN;
+> +
+> +	return FB_BLANK_UNBLANK;
+> +}
+> +
+>  static int pwm_backlight_probe(struct platform_device *pdev)
+>  {
+>  	struct platform_pwm_backlight_data *data = dev_get_platdata(&pdev->dev);
+> @@ -200,7 +226,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>  	struct backlight_device *bl;
+>  	struct device_node *node = pdev->dev.of_node;
+>  	struct pwm_bl_data *pb;
+> -	int initial_blank = FB_BLANK_UNBLANK;
+>  	struct pwm_args pargs;
+>  	int ret;
+>  
+> @@ -267,20 +292,14 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>  		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
+>  	}
+>  
+> -	if (pb->enable_gpio) {
+> -		/*
+> -		 * If the driver is probed from the device tree and there is a
+> -		 * phandle link pointing to the backlight node, it is safe to
+> -		 * assume that another driver will enable the backlight at the
+> -		 * appropriate time. Therefore, if it is disabled, keep it so.
+> -		 */
+> -		if (node && node->phandle &&
+> -		    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
+> -		    gpiod_get_value(pb->enable_gpio) == 0)
+> -			initial_blank = FB_BLANK_POWERDOWN;
+> -		else
+> -			gpiod_direction_output(pb->enable_gpio, 1);
+> -	}
+> +	/*
+> +	 * If the GPIO is configured as input, change the direction to output
+> +	 * and set the GPIO as low since the line was not driven when it was
+> +	 * configured as input.
+> +	 */
+> +	if (pb->enable_gpio &&
+> +	    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_IN)
+> +		gpiod_direction_output_raw(pb->enable_gpio, 0);
+>  
+>  	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
+>  	if (IS_ERR(pb->power_supply)) {
+> @@ -288,9 +307,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>  		goto err_alloc;
+>  	}
+>  
+> -	if (node && node->phandle && !regulator_is_enabled(pb->power_supply))
+> -		initial_blank = FB_BLANK_POWERDOWN;
+> -
+>  	pb->pwm = devm_pwm_get(&pdev->dev, NULL);
+>  	if (IS_ERR(pb->pwm) && PTR_ERR(pb->pwm) != -EPROBE_DEFER && !node) {
+>  		dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
+> @@ -347,7 +363,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	bl->props.brightness = data->dft_brightness;
+> -	bl->props.power = initial_blank;
+> +	bl->props.power = pwm_backlight_initial_power_state(pb);
+>  	backlight_update_status(bl);
+>  
+>  	platform_set_drvdata(pdev, bl);
