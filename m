@@ -1,147 +1,34 @@
-From: Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH v2 1/2] backlight: pwm_bl: Move the checks for initial
- power state to a separate function
-Date: Fri, 28 Oct 2016 15:27:14 +0200
-Message-ID: <1477661234.3010.49.camel@pengutronix.de>
-References: <20161027100157.2231-1-peter.ujfalusi@ti.com>
-         <20161027100157.2231-2-peter.ujfalusi@ti.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 09/10] pwm: imx: doc: Update imx-pwm.txt documentation
+ entry
+Date: Sun, 30 Oct 2016 23:56:23 -0500
+Message-ID: <20161031045623.qhn2xbahel6f5i4y@rob-hp-laptop>
+References: <1477549999-5125-1-git-send-email-l.majewski@majess.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:37886 "EHLO
-        metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1751795AbcJ1N1V (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Oct 2016 09:27:21 -0400
-In-Reply-To: <20161027100157.2231-2-peter.ujfalusi@ti.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1477549999-5125-1-git-send-email-l.majewski-AM3owJQeAb5mR6Xm/wNWPw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Lukasz Majewski <l.majewski-AM3owJQeAb5mR6Xm/wNWPw@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Stefan Agner <stefan-XLVq0VzYD2Y@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>, Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lothar Wassmann <LW-AvR2QvxeiV7DiMYJYoSAnRvVK+yQ3ZXh@public.gmane.org>, Bhuvanchandra DV <bhuvanchandra.dv-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Peter Ujfalusi <peter.ujfalusi@ti.com>
-Cc: thierry.reding@gmail.com, lee.jones@linaro.org, tomi.valkeinen@ti.com, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi Peter,
-
-Am Donnerstag, den 27.10.2016, 13:01 +0300 schrieb Peter Ujfalusi:
-> Move the checks to select the initial state for the backlight to a new
-> function and document the checks we are doing.
->
-> At the same time correct the handling of the case when the GPIO is
-> initially configured as input: we need to change the direction of the GPIO
-> to output and set the GPIO to low as the pin was not driven when the GPIO
-> was configured as input.
-
-I think this part should be a separate patch. At least it is a
-significant enough change to warrant a mention in the subject.
-
-And I'm not entirely sure this is better than before. If there happens
-to be a pull-up on the GPIO (for whatever reason), we might introduce
-flicker again if the GPIO goes from input (high) to output (low), and
-back to output (high) again due to FB_BLANK_UNBLANK.
-
-regards
-Philipp
-
-> With the separate function it is going to be easier to fix or improve the
-> initial power state configuration later and it is easier to read the code.
+On Thu, Oct 27, 2016 at 08:33:19AM +0200, Lukasz Majewski wrote:
+> The imx-pwm.txt documentation update as a preparation for polarity
+> support.
 > 
-> Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv-2KBjVHiyJgBBDgjK7y7TUQ@public.gmane.org>
+> Signed-off-by: Lukasz Majewski <l.majewski-AM3owJQeAb5mR6Xm/wNWPw@public.gmane.org>
 > ---
->  drivers/video/backlight/pwm_bl.c | 54 ++++++++++++++++++++++++++--------------
->  1 file changed, 35 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-> index 12614006211e..74083d880144 100644
-> --- a/drivers/video/backlight/pwm_bl.c
-> +++ b/drivers/video/backlight/pwm_bl.c
-> @@ -192,6 +192,32 @@ static int pwm_backlight_parse_dt(struct device *dev,
->  }
->  #endif
->  
-> +static int pwm_backlight_initial_power_state(const struct pwm_bl_data *pb)
-> +{
-> +	struct device_node *node = pb->dev->of_node;
-> +
-> +	/* Not booted with device tree or no phandle link to the node */
-> +	if (!node || !node->phandle)
-> +		return FB_BLANK_UNBLANK;
-> +
-> +	/*
-> +	 * If the driver is probed from the device tree and there is a
-> +	 * phandle link pointing to the backlight node, it is safe to
-> +	 * assume that another driver will enable the backlight at the
-> +	 * appropriate time. Therefore, if it is disabled, keep it so.
-> +	 */
-> +
-> +	/* if the enable GPIO is disabled, do not enable the backlight */
+> Changes for v2:
+> - New patch
+> ---
+>  Documentation/devicetree/bindings/pwm/imx-pwm.txt | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
-nitpick: s/if/If/ for consistency.
-
-> +	if (pb->enable_gpio && gpiod_get_value(pb->enable_gpio) == 0)
-> +		return FB_BLANK_POWERDOWN;
-> +
-> +	/* The regulator is disabled, do not enable the backlight */
-> +	if (!regulator_is_enabled(pb->power_supply))
-> +		return FB_BLANK_POWERDOWN;
-> +
-> +	return FB_BLANK_UNBLANK;
-> +}
-> +
->  static int pwm_backlight_probe(struct platform_device *pdev)
->  {
->  	struct platform_pwm_backlight_data *data = dev_get_platdata(&pdev->dev);
-> @@ -200,7 +226,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
->  	struct backlight_device *bl;
->  	struct device_node *node = pdev->dev.of_node;
->  	struct pwm_bl_data *pb;
-> -	int initial_blank = FB_BLANK_UNBLANK;
->  	struct pwm_args pargs;
->  	int ret;
->  
-> @@ -267,20 +292,14 @@ static int pwm_backlight_probe(struct platform_device *pdev)
->  		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
->  	}
->  
-> -	if (pb->enable_gpio) {
-> -		/*
-> -		 * If the driver is probed from the device tree and there is a
-> -		 * phandle link pointing to the backlight node, it is safe to
-> -		 * assume that another driver will enable the backlight at the
-> -		 * appropriate time. Therefore, if it is disabled, keep it so.
-> -		 */
-> -		if (node && node->phandle &&
-> -		    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
-> -		    gpiod_get_value(pb->enable_gpio) == 0)
-> -			initial_blank = FB_BLANK_POWERDOWN;
-> -		else
-> -			gpiod_direction_output(pb->enable_gpio, 1);
-> -	}
-> +	/*
-> +	 * If the GPIO is configured as input, change the direction to output
-> +	 * and set the GPIO as low since the line was not driven when it was
-> +	 * configured as input.
-> +	 */
-> +	if (pb->enable_gpio &&
-> +	    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_IN)
-> +		gpiod_direction_output_raw(pb->enable_gpio, 0);
->  
->  	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
->  	if (IS_ERR(pb->power_supply)) {
-> @@ -288,9 +307,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
->  		goto err_alloc;
->  	}
->  
-> -	if (node && node->phandle && !regulator_is_enabled(pb->power_supply))
-> -		initial_blank = FB_BLANK_POWERDOWN;
-> -
->  	pb->pwm = devm_pwm_get(&pdev->dev, NULL);
->  	if (IS_ERR(pb->pwm) && PTR_ERR(pb->pwm) != -EPROBE_DEFER && !node) {
->  		dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
-> @@ -347,7 +363,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
->  	}
->  
->  	bl->props.brightness = data->dft_brightness;
-> -	bl->props.power = initial_blank;
-> +	bl->props.power = pwm_backlight_initial_power_state(pb);
->  	backlight_update_status(bl);
->  
->  	platform_set_drvdata(pdev, bl);
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
