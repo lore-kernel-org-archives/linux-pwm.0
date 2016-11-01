@@ -1,52 +1,47 @@
-From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: [PATCH v3 01/11] pwm: print error messages with pr_err() instead of pr_debug()
-Date: Tue,  1 Nov 2016 08:10:20 +0100
-Message-ID: <1477984230-18071-2-git-send-email-l.majewski@majess.pl>
-References: <1477984230-18071-1-git-send-email-l.majewski@majess.pl>
+From: Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: [PATCH v2 03/10] pwm: imx: Rewrite imx_pwm_*_v1 code to
+ facilitate switch to atomic pwm operation
+Date: Tue, 1 Nov 2016 08:17:43 +0100
+Message-ID: <20161101071743.ef3nhdhaquhbgtlo@pengutronix.de>
+References: <1477549785-4972-1-git-send-email-l.majewski@majess.pl>
+ <1477549785-4972-4-git-send-email-l.majewski@majess.pl>
+ <20161027094005.2da3b7d4@bbrezillon>
+ <20161031055904.av45k535c26gjonz@pengutronix.de>
+ <20161031092937.im5epytgorcd5fbm@pengutronix.de>
+ <20161101065723.7751a55e@jawa>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1477984230-18071-1-git-send-email-l.majewski@majess.pl>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, Sascha Hauer <s.hauer@pengutronix.de>, Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de, Lukasz Majewski <l.majewski@majess.pl>, =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:36582 "EHLO
+        metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1034089AbcKAHRs (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 1 Nov 2016 03:17:48 -0400
+Content-Disposition: inline
+In-Reply-To: <20161101065723.7751a55e@jawa>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Lukasz Majewski <l.majewski@majess.pl>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, Stefan Agner <stefan@agner.ch>, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Philipp Zabel <pza@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>
 
-From: Lothar Wassmann <LW@KARO-electronics.de>
+On Tue, Nov 01, 2016 at 06:57:23AM +0100, Lukasz Majewski wrote:
+> Hi Sascha,
+> 
+> > The current assumption as discussed by Philipp and me is that the ipg
+> > clk is only needed when the pwm output is driven by the ipg clk
+> > (MX3_PWMCR[16:17] = MX3_PWMCR_CLKSRC_IPG)
+> 
+> At least on my setup (i.MX6q) the ipg clock (ipg_clk) don't need to be
+> explicitly enabled in the ->apply() callback (in the pwm-imx.c) when
+> MX3_PWMCR_CLKSRC_IPG (0x01 - ipg_clk) is selected as the PWM source.
 
-Make the messages that are printed in case of fatal errors actually
-visible to the user without having to recompile the driver with
-debugging enabled.
+No. If you look in the device tree you'll see that there is no special
+gateable ipg clock for the PWM. Instead the SoC ipg clock is registered
+for the PWM which is not gateable.
 
-Signed-off-by: Lothar Waßmann <LW@KARO-electronics.de>
-Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
----
-Changes for v3:
-- None
----
- drivers/pwm/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Sascha
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 172ef82..ec7179f 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -663,13 +663,13 @@ struct pwm_device *of_pwm_get(struct device_node *np, const char *con_id)
- 	err = of_parse_phandle_with_args(np, "pwms", "#pwm-cells", index,
- 					 &args);
- 	if (err) {
--		pr_debug("%s(): can't parse \"pwms\" property\n", __func__);
-+		pr_err("%s(): can't parse \"pwms\" property\n", __func__);
- 		return ERR_PTR(err);
- 	}
- 
- 	pc = of_node_to_pwmchip(args.np);
- 	if (IS_ERR(pc)) {
--		pr_debug("%s(): PWM chip not found\n", __func__);
-+		pr_err("%s(): PWM chip not found\n", __func__);
- 		pwm = ERR_CAST(pc);
- 		goto put;
- 	}
 -- 
-2.1.4
+Pengutronix e.K.                           |                             |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+Peiner Str. 6-8, 31137 Hildesheim, Germany | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
