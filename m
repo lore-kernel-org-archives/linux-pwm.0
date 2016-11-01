@@ -1,125 +1,79 @@
 From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: [PATCH v3 07/11] pwm: imx: Provide atomic PWM support for i.MX PWMv2
-Date: Tue,  1 Nov 2016 08:10:26 +0100
-Message-ID: <1477984230-18071-8-git-send-email-l.majewski@majess.pl>
-References: <1477984230-18071-1-git-send-email-l.majewski@majess.pl>
+Subject: Re: [PATCH v2 03/10] pwm: imx: Rewrite imx_pwm_*_v1 code to
+ facilitate switch to atomic pwm operation
+Date: Tue, 1 Nov 2016 09:20:58 +0100
+Message-ID: <20161101092058.3a9446e8@jawa>
+References: <1477549785-4972-1-git-send-email-l.majewski@majess.pl>
+        <1477549785-4972-4-git-send-email-l.majewski@majess.pl>
+        <20161027094005.2da3b7d4@bbrezillon>
+        <20161031055904.av45k535c26gjonz@pengutronix.de>
+        <20161031092937.im5epytgorcd5fbm@pengutronix.de>
+        <20161101065723.7751a55e@jawa>
+        <20161101071743.ef3nhdhaquhbgtlo@pengutronix.de>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ boundary="Sig_/cc4c_QfTbQSMbtEYrz9p/_1"; protocol="application/pgp-signature"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from 1.mo173.mail-out.ovh.net ([178.33.111.180]:38809 "EHLO
-        1.mo173.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1034691AbcKAHcV (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 1 Nov 2016 03:32:21 -0400
-Received: from player687.ha.ovh.net (b9.ovh.net [213.186.33.59])
-        by mo173.mail-out.ovh.net (Postfix) with ESMTP id CD46BBFCB
-        for <linux-pwm@vger.kernel.org>; Tue,  1 Nov 2016 08:12:33 +0100 (CET)
-In-Reply-To: <1477984230-18071-1-git-send-email-l.majewski@majess.pl>
+Received: from 20.mo3.mail-out.ovh.net ([178.33.47.94]:39343 "EHLO
+        20.mo3.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1167971AbcKAIVV (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 1 Nov 2016 04:21:21 -0400
+Received: from player772.ha.ovh.net (b7.ovh.net [213.186.33.57])
+        by mo3.mail-out.ovh.net (Postfix) with ESMTP id E139F57710
+        for <linux-pwm@vger.kernel.org>; Tue,  1 Nov 2016 09:21:19 +0100 (CET)
+In-Reply-To: <20161101071743.ef3nhdhaquhbgtlo@pengutronix.de>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, Sascha Hauer <s.hauer@pengutronix.de>, Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de, Lukasz Majewski <l.majewski@majess.pl>, =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+To: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, Stefan Agner <stefan@agner.ch>, Thierry Reding <thierry.reding@gmail.com>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Philipp Zabel <pza@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>
 
-This commit provides apply() callback implementation for i.MX's PWMv2.
+--Sig_/cc4c_QfTbQSMbtEYrz9p/_1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Suggested-by: Stefan Agner <stefan@agner.ch>
-Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
-Reviewed-by: Boris Brezillon <boris.brezillon@free-electrons.com>
----
-Changes for v3:
-- Remove ipg clock enable/disable functions
+Hi Sascha
 
-Changes for v2:
-- None
----
- drivers/pwm/pwm-imx.c | 70 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 70 insertions(+)
+> On Tue, Nov 01, 2016 at 06:57:23AM +0100, Lukasz Majewski wrote:
+> > Hi Sascha,
+> >=20
+> > > The current assumption as discussed by Philipp and me is that the
+> > > ipg clk is only needed when the pwm output is driven by the ipg
+> > > clk (MX3_PWMCR[16:17] =3D MX3_PWMCR_CLKSRC_IPG)
+> >=20
+> > At least on my setup (i.MX6q) the ipg clock (ipg_clk) don't need to
+> > be explicitly enabled in the ->apply() callback (in the pwm-imx.c)
+> > when MX3_PWMCR_CLKSRC_IPG (0x01 - ipg_clk) is selected as the PWM
+> > source.
+>=20
+> No. If you look in the device tree you'll see that there is no special
+> gateable ipg clock for the PWM. Instead the SoC ipg clock is
+> registered for the PWM which is not gateable.
 
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index ebe9b0c..cd53c05 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -159,6 +159,75 @@ static void imx_pwm_wait_fifo_slot(struct pwm_chip *chip,
- 	}
- }
- 
-+static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
-+			    struct pwm_state *state)
-+{
-+	unsigned long period_cycles, duty_cycles, prescale;
-+	struct imx_chip *imx = to_imx_chip(chip);
-+	struct pwm_state cstate;
-+	unsigned long long c;
-+	u32 cr = 0;
-+	int ret;
-+
-+	pwm_get_state(pwm, &cstate);
-+
-+	c = clk_get_rate(imx->clk_per);
-+	c *= state->period;
-+
-+	do_div(c, 1000000000);
-+	period_cycles = c;
-+
-+	prescale = period_cycles / 0x10000 + 1;
-+
-+	period_cycles /= prescale;
-+	c = (unsigned long long)period_cycles * state->duty_cycle;
-+	do_div(c, state->period);
-+	duty_cycles = c;
-+
-+	/*
-+	 * according to imx pwm RM, the real period value should be
-+	 * PERIOD value in PWMPR plus 2.
-+	 */
-+	if (period_cycles > 2)
-+		period_cycles -= 2;
-+	else
-+		period_cycles = 0;
-+
-+	/* Enable the clock if the PWM is being enabled. */
-+	if (state->enabled && !cstate.enabled) {
-+		ret = clk_prepare_enable(imx->clk_per);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/*
-+	 * Wait for a free FIFO slot if the PWM is already enabled, and flush
-+	 * the FIFO if the PWM was disabled and is about to be enabled.
-+	 */
-+	if (cstate.enabled)
-+		imx_pwm_wait_fifo_slot(chip, pwm);
-+	else if (state->enabled)
-+		imx_pwm_sw_reset(chip);
-+
-+	writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
-+	writel(period_cycles, imx->mmio_base + MX3_PWMPR);
-+
-+	cr |= MX3_PWMCR_PRESCALER(prescale) |
-+	      MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
-+	      MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH;
-+
-+	if (state->enabled)
-+		cr |= MX3_PWMCR_EN;
-+
-+	writel(cr, imx->mmio_base + MX3_PWMCR);
-+
-+	/* Disable the clock if the PWM is being disabled. */
-+	if (!state->enabled && cstate.enabled)
-+		clk_disable_unprepare(imx->clk_per);
-+
-+	return 0;
-+}
-+
- static int imx_pwm_config_v2(struct pwm_chip *chip,
- 		struct pwm_device *pwm, int duty_ns, int period_ns)
- {
-@@ -273,6 +342,7 @@ static struct pwm_ops imx_pwm_ops_v2 = {
- 	.enable = imx_pwm_enable,
- 	.disable = imx_pwm_disable,
- 	.config = imx_pwm_config,
-+	.apply = imx_pwm_apply_v2,
- 	.owner = THIS_MODULE,
- };
- 
--- 
-2.1.4
+I do understand that the goal is to enable ipg clock only on demand
+(when we access registers) and just wanted to say that the approach with
+ipg enabled in dts works on my setup (and for now is sufficient).
+
+I suppose that ipg gating support for PWM will be provided in a separate
+patch.
+
+>=20
+> Sascha
+>=20
+
+Best regards,
+
+=C5=81ukasz Majewski
+
+--Sig_/cc4c_QfTbQSMbtEYrz9p/_1
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iEYEARECAAYFAlgYUG8ACgkQf9/hG2YwgjGrWwCgkaGIMwKCZuhKQJj+G7zIAnTb
+EYUAn2/vX6s3q3bB2A3eM/d8CHt5KWE/
+=Djn4
+-----END PGP SIGNATURE-----
+
+--Sig_/cc4c_QfTbQSMbtEYrz9p/_1--
