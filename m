@@ -1,107 +1,111 @@
 From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: Re: [PATCH v3 00/11] pwm: imx: Provide atomic operation for IMX PWM
- driver
-Date: Tue, 8 Nov 2016 23:24:20 +0100
-Message-ID: <20161108232420.307400b7@jawa>
-References: <1477984230-18071-1-git-send-email-l.majewski@majess.pl>
+Subject: Re: [PATCH v2] video: backlight: pwm_bl: Initialize fb_bl_on[x] and
+ use_count during pwm_backlight_probe()
+Date: Tue, 8 Nov 2016 23:25:25 +0100
+Message-ID: <20161108232525.639ea49f@jawa>
+References: <1477169904-14997-1-git-send-email-l.majewski@majess.pl>
+        <1477985147-18835-1-git-send-email-l.majewski@majess.pl>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- boundary="Sig_/dhHVrWVjNam.CyFvU0S/9Bv"; protocol="application/pgp-signature"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1477984230-18071-1-git-send-email-l.majewski@majess.pl>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, Sascha Hauer <s.hauer@pengutronix.de>, Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de
+ boundary="Sig_/NyEX8F8KHl9JxWarQvsi.WO"; protocol="application/pgp-signature"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from 19.mo7.mail-out.ovh.net ([178.33.251.118]:49374 "EHLO
+        19.mo7.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752948AbcKHWlJ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Nov 2016 17:41:09 -0500
+Received: from player697.ha.ovh.net (b9.ovh.net [213.186.33.59])
+        by mo7.mail-out.ovh.net (Postfix) with ESMTP id EF08D19283
+        for <linux-pwm@vger.kernel.org>; Tue,  8 Nov 2016 23:25:43 +0100 (CET)
+In-Reply-To: <1477985147-18835-1-git-send-email-l.majewski@majess.pl>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jean-Christophe Plagniol-Villard <plagnioj@jcrosoft.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, linux-fbdev@vger.kernel.org, Liu Ying <Ying.Liu@freescale.com>
 
---Sig_/dhHVrWVjNam.CyFvU0S/9Bv
+--Sig_/NyEX8F8KHl9JxWarQvsi.WO
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
 Dear All,
 
-> This patch set brings atomic operation to i.MX's PWMv2 driver.
+> The commit a55944ca82d2 ("backlight: update bd state & fb_blank
+> properties when necessary") has posed some extra restrictions on
+> blanking and unblanking frame buffer device.
+>=20
+> Unfortunately, pwm_bl driver's probe did not initialize members of
+> struct backlight_device necessary for further blank/unblank operation.
+>=20
+> This code in case of initial unblank of backlight device (default=20
+> behaviour) sets use_count to 1 and marks this particular backlight
+> device as used by all available fb devices (since it is not known
+> during probe how much and which fb devices will be assigned).
+>=20
+> Without this code, the backlight works properly until one tries to
+> blank it manually from sysfs with "echo 1
+> > /sys/class/graphics/fb0/blank". Since fb_bl_on[0] and use_count
+> > were both set to 0, the logic at
+> fb_notifier_callback (@backlight.c) thought that we didn't turn on
+> (unblanked) the backlight device and refuses to disable (blank) it.
+> As a result we see garbage from fb displayed.
 
-Are there any more comments regarding this patch set?
+COmments/acks are more than welcome :-)
 
 Best regards,
 =C5=81ukasz Majewski
 
 >=20
-> This work has been supported and suggested by Boris Brezillon [1] and=20
-> Stefan Agner, by showing how simple the transition could be :-).
+> Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+> ---
+> The patch has been tested on i.MX6q with 4.9-rc3
+> SHA1: a909d3e636995ba7c349e2ca5dbb528154d4ac30
+> ---
+> Changes for v2:
+> - Update commit message with proper other commit reference
 >=20
-> It has been divided into several steps:
+> ---
+>  drivers/video/backlight/pwm_bl.c | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
 >=20
-> - Remove ipg clock enable/disable code (as proposed by Sascha Hauer)
-> - this is the most notable change for v3
->=20
-> - Provide different pwm ops for PWMv1 and PWMv2
->=20
-> - Separate PWMv1 commits from "generic" and non atomic PWM code
->=20
->   NOTE: Since I do _not_ have board with PWMv1, I would like to ask
-> somebody for testing
->=20
-> - Move some imx_config_v2 code to separate functions
->=20
-> - Provide PWM atomic implementation (the ->apply() driver) for PWMv2
-> in a single patch for better readability.
->=20
-> - Remove redundant PWM code (disable, enable, config callbacks)
->=20
-> - Update proper documentation entries
->=20
-> - Provide support for polarity inversion on top of atomic PWM rework
->=20
-> Test HW:
-> --------
-> This patch set has been tested on i.MX6q board with
-> v4.9-rc3 kernel SHA1: a909d3e636995ba7c349e2ca5dbb528154d4ac30
->=20
->=20
-> The PWM operation has been tested with pwm_bl backlight driver by
-> changing its brightness.
->=20
-> [1]: http://patchwork.ozlabs.org/patch/685402/
->=20
->=20
-> Lothar Wassmann (2):
->   pwm: print error messages with pr_err() instead of pr_debug()
->   pwm: core: make the PWM_POLARITY flag in DTB optional
->=20
-> Lukasz Majewski (8):
->   pwm: imx: Add separate set of pwm ops for PWMv1 and PWMv2
->   pwm: imx: Rewrite imx_pwm_*_v1 code to facilitate switch to atomic
-> pwm operation
->   pwm: imx: Move PWMv2 software reset code to a separate function
->   pwm: imx: Move PWMv2 wait for fifo slot code to a separate function
->   pwm: imx: Provide atomic PWM support for i.MX PWMv2
->   pwm: imx: Remove redundant i.MX PWMv2 code
->   pwm: imx: doc: Update imx-pwm.txt documentation entry
->   pwm: imx: Add polarity inversion support to i.MX's PWMv2
->=20
-> Sascha Hauer (1):
->   pwm: imx: remove ipg clock
->=20
->  Documentation/devicetree/bindings/pwm/imx-pwm.txt |   6 +-
->  drivers/pwm/core.c                                |  26 +--
->  drivers/pwm/pwm-imx.c                             | 247
-> ++++++++++------------ 3 files changed, 134 insertions(+), 145
-> deletions(-)
->=20
+> diff --git a/drivers/video/backlight/pwm_bl.c
+> b/drivers/video/backlight/pwm_bl.c index 1261400..6859ba0 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -202,7 +202,7 @@ static int pwm_backlight_probe(struct
+> platform_device *pdev) struct pwm_bl_data *pb;
+>  	int initial_blank =3D FB_BLANK_UNBLANK;
+>  	struct pwm_args pargs;
+> -	int ret;
+> +	int ret, i;
+> =20
+>  	if (!data) {
+>  		ret =3D pwm_backlight_parse_dt(&pdev->dev, &defdata);
+> @@ -348,6 +348,14 @@ static int pwm_backlight_probe(struct
+> platform_device *pdev)=20
+>  	bl->props.brightness =3D data->dft_brightness;
+>  	bl->props.power =3D initial_blank;
+> +
+> +	if (initial_blank =3D=3D FB_BLANK_UNBLANK) {
+> +		for (i =3D 0; i < FB_MAX; i++)
+> +			bl->fb_bl_on[i] =3D true;
+> +
+> +		bl->use_count =3D 1;
+> +	}
+> +
+>  	backlight_update_status(bl);
+> =20
+>  	platform_set_drvdata(pdev, bl);
 
 
---Sig_/dhHVrWVjNam.CyFvU0S/9Bv
+--Sig_/NyEX8F8KHl9JxWarQvsi.WO
 Content-Type: application/pgp-signature
 Content-Description: OpenPGP digital signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iEYEARECAAYFAlgiUJsACgkQf9/hG2YwgjES+gCeLD85ybXPZnZ7QLQLRlyvbmTN
-f3kAn33MShylwSB06EZTx4+hi66Ev58N
-=Hfpc
+iEYEARECAAYFAlgiUNwACgkQf9/hG2YwgjHfgwCggyLwAKP8bo3UD/ZFlqWJTzYX
+rnwAoKjiSoTaRrAXB3uXPwJUpCRcUs2g
+=RiCW
 -----END PGP SIGNATURE-----
 
---Sig_/dhHVrWVjNam.CyFvU0S/9Bv--
+--Sig_/NyEX8F8KHl9JxWarQvsi.WO--
