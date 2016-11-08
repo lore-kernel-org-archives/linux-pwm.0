@@ -1,106 +1,107 @@
-From: Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH v2 04/10] pwm: imx: Move PWMv2 software reset code to a
- separate function
-Date: Thu, 03 Nov 2016 10:34:32 +0100
-Message-ID: <1478165672.3650.3.camel@pengutronix.de>
-References: <1477549785-4972-1-git-send-email-l.majewski@majess.pl>
-         <1477549785-4972-5-git-send-email-l.majewski@majess.pl>
+From: Lukasz Majewski <l.majewski@majess.pl>
+Subject: Re: [PATCH v3 00/11] pwm: imx: Provide atomic operation for IMX PWM
+ driver
+Date: Tue, 8 Nov 2016 23:24:20 +0100
+Message-ID: <20161108232420.307400b7@jawa>
+References: <1477984230-18071-1-git-send-email-l.majewski@majess.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from metis.ext.4.pengutronix.de ([92.198.50.35]:57852 "EHLO
-        metis.ext.4.pengutronix.de" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1752194AbcKCJej (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 3 Nov 2016 05:34:39 -0400
-In-Reply-To: <1477549785-4972-5-git-send-email-l.majewski@majess.pl>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ boundary="Sig_/dhHVrWVjNam.CyFvU0S/9Bv"; protocol="application/pgp-signature"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1477984230-18071-1-git-send-email-l.majewski@majess.pl>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, Sascha Hauer <s.hauer@pengutronix.de>, Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de
 List-Id: linux-pwm@vger.kernel.org
-To: Lukasz Majewski <l.majewski@majess.pl>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>
 
-Hi Lukasz,
+--Sig_/dhHVrWVjNam.CyFvU0S/9Bv
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Am Donnerstag, den 27.10.2016, 08:29 +0200 schrieb Lukasz Majewski:
-> The software reset code has been extracted from imx_pwm_config_v2 function
-> and moved to new one - imx_pwm_sw_reset().
-> 
-> This change reduces the overall size of imx_pwm_config_v2() and prepares
-> it for atomic PWM operation.
-> 
-> Suggested-by: Stefan Agner <stefan@agner.ch>
-> Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+Dear All,
 
-Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
+> This patch set brings atomic operation to i.MX's PWMv2 driver.
 
-> ---
-> Changes for v2:
-> - Add missing parenthesis
-> ---
->  drivers/pwm/pwm-imx.c | 31 +++++++++++++++++++++----------
->  1 file changed, 21 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> index 822eb5a..8174ae6 100644
-> --- a/drivers/pwm/pwm-imx.c
-> +++ b/drivers/pwm/pwm-imx.c
-> @@ -134,6 +134,25 @@ static void imx_pwm_disable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
->  	clk_disable_unprepare(imx->clk_per);
->  }
->  
-> +static void imx_pwm_sw_reset(struct pwm_chip *chip)
-> +{
-> +	struct imx_chip *imx = to_imx_chip(chip);
-> +	struct device *dev = chip->dev;
-> +	int wait_count = 0;
-> +	u32 cr;
-> +
-> +	writel(MX3_PWMCR_SWR, imx->mmio_base + MX3_PWMCR);
-> +	do {
-> +		usleep_range(200, 1000);
-> +		cr = readl(imx->mmio_base + MX3_PWMCR);
-> +	} while ((cr & MX3_PWMCR_SWR) &&
-> +		 (wait_count++ < MX3_PWM_SWR_LOOP));
+Are there any more comments regarding this patch set?
 
-Not an issue for this patch, but this could be converted to use
-readl_poll_timeout.
+Best regards,
+=C5=81ukasz Majewski
 
-> +
-> +	if (cr & MX3_PWMCR_SWR)
-> +		dev_warn(dev, "software reset timeout\n");
-> +}
-> +
-> +
->  static int imx_pwm_config_v2(struct pwm_chip *chip,
->  		struct pwm_device *pwm, int duty_ns, int period_ns)
->  {
-> @@ -143,7 +162,7 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
->  	unsigned long period_cycles, duty_cycles, prescale;
->  	unsigned int period_ms;
->  	bool enable = pwm_is_enabled(pwm);
-> -	int wait_count = 0, fifoav;
-> +	int fifoav;
->  	u32 cr, sr;
->  
->  	/*
-> @@ -166,15 +185,7 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
->  				dev_warn(dev, "there is no free FIFO slot\n");
->  		}
->  	} else {
-> -		writel(MX3_PWMCR_SWR, imx->mmio_base + MX3_PWMCR);
-> -		do {
-> -			usleep_range(200, 1000);
-> -			cr = readl(imx->mmio_base + MX3_PWMCR);
-> -		} while ((cr & MX3_PWMCR_SWR) &&
-> -			 (wait_count++ < MX3_PWM_SWR_LOOP));
-> -
-> -		if (cr & MX3_PWMCR_SWR)
-> -			dev_warn(dev, "software reset timeout\n");
-> +		imx_pwm_sw_reset(chip);
->  	}
->  
->  	c = clk_get_rate(imx->clk_per);
+>=20
+> This work has been supported and suggested by Boris Brezillon [1] and=20
+> Stefan Agner, by showing how simple the transition could be :-).
+>=20
+> It has been divided into several steps:
+>=20
+> - Remove ipg clock enable/disable code (as proposed by Sascha Hauer)
+> - this is the most notable change for v3
+>=20
+> - Provide different pwm ops for PWMv1 and PWMv2
+>=20
+> - Separate PWMv1 commits from "generic" and non atomic PWM code
+>=20
+>   NOTE: Since I do _not_ have board with PWMv1, I would like to ask
+> somebody for testing
+>=20
+> - Move some imx_config_v2 code to separate functions
+>=20
+> - Provide PWM atomic implementation (the ->apply() driver) for PWMv2
+> in a single patch for better readability.
+>=20
+> - Remove redundant PWM code (disable, enable, config callbacks)
+>=20
+> - Update proper documentation entries
+>=20
+> - Provide support for polarity inversion on top of atomic PWM rework
+>=20
+> Test HW:
+> --------
+> This patch set has been tested on i.MX6q board with
+> v4.9-rc3 kernel SHA1: a909d3e636995ba7c349e2ca5dbb528154d4ac30
+>=20
+>=20
+> The PWM operation has been tested with pwm_bl backlight driver by
+> changing its brightness.
+>=20
+> [1]: http://patchwork.ozlabs.org/patch/685402/
+>=20
+>=20
+> Lothar Wassmann (2):
+>   pwm: print error messages with pr_err() instead of pr_debug()
+>   pwm: core: make the PWM_POLARITY flag in DTB optional
+>=20
+> Lukasz Majewski (8):
+>   pwm: imx: Add separate set of pwm ops for PWMv1 and PWMv2
+>   pwm: imx: Rewrite imx_pwm_*_v1 code to facilitate switch to atomic
+> pwm operation
+>   pwm: imx: Move PWMv2 software reset code to a separate function
+>   pwm: imx: Move PWMv2 wait for fifo slot code to a separate function
+>   pwm: imx: Provide atomic PWM support for i.MX PWMv2
+>   pwm: imx: Remove redundant i.MX PWMv2 code
+>   pwm: imx: doc: Update imx-pwm.txt documentation entry
+>   pwm: imx: Add polarity inversion support to i.MX's PWMv2
+>=20
+> Sascha Hauer (1):
+>   pwm: imx: remove ipg clock
+>=20
+>  Documentation/devicetree/bindings/pwm/imx-pwm.txt |   6 +-
+>  drivers/pwm/core.c                                |  26 +--
+>  drivers/pwm/pwm-imx.c                             | 247
+> ++++++++++------------ 3 files changed, 134 insertions(+), 145
+> deletions(-)
+>=20
 
-regards
-Philipp
+
+--Sig_/dhHVrWVjNam.CyFvU0S/9Bv
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iEYEARECAAYFAlgiUJsACgkQf9/hG2YwgjES+gCeLD85ybXPZnZ7QLQLRlyvbmTN
+f3kAn33MShylwSB06EZTx4+hi66Ev58N
+=Hfpc
+-----END PGP SIGNATURE-----
+
+--Sig_/dhHVrWVjNam.CyFvU0S/9Bv--
