@@ -1,24 +1,30 @@
-From: Jian Yuan <yuanjian12-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Subject: [RESEND PATCH v4] pwm: add pwm driver for HiSilicon BVT SOCs
-Date: Tue, 15 Nov 2016 20:41:32 +0800
-Message-ID: <1479213692-223477-1-git-send-email-yuanjian12@hisilicon.com>
+From: Jian Yuan <yuanjian12@hisilicon.com>
+Subject: [PATCH v5] pwm: add pwm driver for HiSilicon BVT SOCs
+Date: Wed, 16 Nov 2016 17:50:33 +0800
+Message-ID: <1479289833-232200-1-git-send-email-yuanjian12@hisilicon.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuejiancheng-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, kevin.lixu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, jalen.hsu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, yuanjian <yuanjian12-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from szxga01-in.huawei.com ([58.251.152.64]:49924 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S934007AbcKPJut (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 16 Nov 2016 04:50:49 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, xuejiancheng@hisilicon.com, kevin.lixu@hisilicon.com, jalen.hsu@hisilicon.com, yuanjian <yuanjian12@hisilicon.com>
 
-From: yuanjian <yuanjian12-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+From: yuanjian <yuanjian12@hisilicon.com>
 
 Add PWM driver for the PWM controller found on HiSilicon BVT SOCs, like Hi3519V100, Hi3516CV300, etc.
 The PWM controller is primarily in charge of controlling P-Iris lens.
 
-Reviewed-by: Jiancheng Xue <xuejiancheng-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Signed-off-by: Jian Yuan <yuanjian12-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
+Signed-off-by: Jian Yuan <yuanjian12@hisilicon.com>
 ---
 Change Log:
+v5:
+remove the generic compatible string "hisilicon, hibvt-pwm".
 v4:
 Add #pwm-cells in the bindings document.
 v3:
@@ -28,25 +34,25 @@ Implement .apply() function which support atomic, instead of .enable()/.disable(
 v2:
 The number of PWMs is change to be probeable based on the compatible string.
 
- .../devicetree/bindings/pwm/pwm-hibvt.txt          |  23 ++
+ .../devicetree/bindings/pwm/pwm-hibvt.txt          |  22 ++
  drivers/pwm/Kconfig                                |   9 +
  drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-hibvt.c                            | 270 +++++++++++++++++++++
- 4 files changed, 303 insertions(+)
+ drivers/pwm/pwm-hibvt.c                            | 269 +++++++++++++++++++++
+ 4 files changed, 301 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
  create mode 100644 drivers/pwm/pwm-hibvt.c
 
 diff --git a/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
 new file mode 100644
-index 0000000..609284f
+index 0000000..fe63950
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,22 @@
 +Hisilicon PWM controller
 +
 +Required properties:
-+-compatible: should contain one SoC specific compatible string and one generic compatible
-+string "hisilicon, hibvt-pwm". The SoC specific strings supported including:
++-compatible: should contain one SoC specific compatible string
++ The SoC specific strings supported including:
 +	"hisilicon,hi3516cv300-pwm"
 +	"hisilicon,hi3519v100-pwm"
 +- reg: physical base address and length of the controller's registers.
@@ -58,8 +64,7 @@ index 0000000..609284f
 +Example:
 +	pwm: pwm@12130000 {
 +
-+		compatible = "hisilicon,hi3516cv300-pwm", "hisilicon,hibvt-pwm";
-+		compatible = "hisilicon,hi3519v100-pwm", "hisilicon,hibvt-pwm";
++		compatible = "hisilicon,hi3516cv300-pwm";
 +		reg = <0x12130000 0x10000>;
 +		clocks = <&crg_ctrl HI3516CV300_PWM_CLK>;
 +		resets = <&crg_ctrl 0x38 0>;
@@ -99,10 +104,10 @@ index dd35bc1..37ec39e 100644
  obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
 diff --git a/drivers/pwm/pwm-hibvt.c b/drivers/pwm/pwm-hibvt.c
 new file mode 100644
-index 0000000..1c14c21
+index 0000000..feadb3d
 --- /dev/null
 +++ b/drivers/pwm/pwm-hibvt.c
-@@ -0,0 +1,270 @@
+@@ -0,0 +1,269 @@
 +/*
 + * PWM Controller Driver for HiSilicon BVT SoCs
 + *
@@ -353,7 +358,6 @@ index 0000000..1c14c21
 +}
 +
 +static const struct of_device_id hibvt_pwm_of_match[] = {
-+	{ .compatible = "hisilicon,hibvt-pwm" },
 +	{ .compatible = "hisilicon,hi3516cv300-pwm", .data = &pwm_soc[0] },
 +	{ .compatible = "hisilicon,hi3519v100-pwm", .data = &pwm_soc[1] },
 +	{  }
@@ -375,8 +379,3 @@ index 0000000..1c14c21
 +MODULE_LICENSE("GPL");
 -- 
 2.1.4
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
