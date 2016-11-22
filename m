@@ -1,41 +1,50 @@
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
 Subject: Re: [PATCH 5/7] add bindings for stm32 IIO timer drivers
-Date: Tue, 22 Nov 2016 18:01:11 +0100
-Message-ID: <CA+M3ks6ZoOND4VobU65OntEYU-f_XoNCV4wNZZ0_dYoOxy73+w@mail.gmail.com>
+Date: Tue, 22 Nov 2016 18:02:42 +0100
+Message-ID: <216b3783-9f7f-4ead-81fb-5568c762e90f@metafoo.de>
 References: <1479831207-32699-1-git-send-email-benjamin.gaignard@st.com>
- <1479831207-32699-6-git-send-email-benjamin.gaignard@st.com> <b9a82ce7-745a-1c25-f97f-68aaf0551f3b@metafoo.de>
+ <1479831207-32699-6-git-send-email-benjamin.gaignard@st.com>
+ <b9a82ce7-745a-1c25-f97f-68aaf0551f3b@metafoo.de>
+ <CA+M3ks6ZoOND4VobU65OntEYU-f_XoNCV4wNZZ0_dYoOxy73+w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qk0-f170.google.com ([209.85.220.170]:34213 "EHLO
-        mail-qk0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755424AbcKVRBR (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 22 Nov 2016 12:01:17 -0500
-Received: by mail-qk0-f170.google.com with SMTP id q130so33772539qke.1
-        for <linux-pwm@vger.kernel.org>; Tue, 22 Nov 2016 09:01:12 -0800 (PST)
-In-Reply-To: <b9a82ce7-745a-1c25-f97f-68aaf0551f3b@metafoo.de>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CA+M3ks6ZoOND4VobU65OntEYU-f_XoNCV4wNZZ0_dYoOxy73+w@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, robh+dt@kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, knaack.h@gmx.de, Gerald Baeza <gerald.baeza@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, Lee Jones <lee.jones@linaro.org>, jic23@kernel.org, Benjamin Gaignard <benjamin.gaignard@st.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Lee Jones <lee.jones@linaro.org>, robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>, alexandre.torgue@st.com, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Fabrice Gasnier <fabrice.gasnier@st.com>, Gerald Baeza <gerald.baeza@st.com>, Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linus Walleij <linus.walleij@linaro.org>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, Benjamin Gaignard <benjamin.gaignard@st.com>
 
-[snip]
->> +     "st,stm32-iio-timer5"
->> +     "st,stm32-iio-timer6"
->> +     "st,stm32-iio-timer7"
->> +     "st,stm32-iio-timer8"
->> +     "st,stm32-iio-timer9"
->> +     "st,stm32-iio-timer10"
->> +     "st,stm32-iio-timer11"
->> +     "st,stm32-iio-timer12"
->> +     "st,stm32-iio-timer13"
->> +     "st,stm32-iio-timer14"
->
-> We can't do this. This is a binding for a driver, not for the hardware.
->
+On 11/22/2016 06:01 PM, Benjamin Gaignard wrote:
+> [snip]
+>>> +     "st,stm32-iio-timer5"
+>>> +     "st,stm32-iio-timer6"
+>>> +     "st,stm32-iio-timer7"
+>>> +     "st,stm32-iio-timer8"
+>>> +     "st,stm32-iio-timer9"
+>>> +     "st,stm32-iio-timer10"
+>>> +     "st,stm32-iio-timer11"
+>>> +     "st,stm32-iio-timer12"
+>>> +     "st,stm32-iio-timer13"
+>>> +     "st,stm32-iio-timer14"
+>>
+>> We can't do this. This is a binding for a driver, not for the hardware.
+>>
+> 
+> Unfortunately each instance for the hardware IP have little
+> differences like which triggers they could accept or size of the
+> counter register,
+> and I doesn't have value inside the hardware to distinguish them so
+> the only way I found is to use compatible.
 
-Unfortunately each instance for the hardware IP have little
-differences like which triggers they could accept or size of the
-counter register,
-and I doesn't have value inside the hardware to distinguish them so
-the only way I found is to use compatible.
+But IIO is not a piece of hardware, its a software framework in the Linux
+kernel.
