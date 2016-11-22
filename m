@@ -1,147 +1,58 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 1/7] add binding for stm32 multifunctions timer driver
-Date: Tue, 22 Nov 2016 16:52:28 +0000
-Message-ID: <20161122165228.GK10134@dell.home>
+From: Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>
+Subject: Re: [PATCH 5/7] add bindings for stm32 IIO timer drivers
+Date: Tue, 22 Nov 2016 17:53:18 +0100
+Message-ID: <b9a82ce7-745a-1c25-f97f-68aaf0551f3b@metafoo.de>
 References: <1479831207-32699-1-git-send-email-benjamin.gaignard@st.com>
- <1479831207-32699-2-git-send-email-benjamin.gaignard@st.com>
+ <1479831207-32699-6-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f50.google.com ([74.125.82.50]:37014 "EHLO
-        mail-wm0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756081AbcKVQtg (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 22 Nov 2016 11:49:36 -0500
-Received: by mail-wm0-f50.google.com with SMTP id t79so34840512wmt.0
-        for <linux-pwm@vger.kernel.org>; Tue, 22 Nov 2016 08:49:28 -0800 (PST)
-Content-Disposition: inline
-In-Reply-To: <1479831207-32699-2-git-send-email-benjamin.gaignard@st.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1479831207-32699-6-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com, gerald.baeza@st.com, arnaud.pouliquen@st.com, linus.walleij@linaro.org, linaro-kernel@lists.linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>
 
-On Tue, 22 Nov 2016, Benjamin Gaignard wrote:
-
-> Add bindings information for stm32 timer MFD
+On 11/22/2016 05:13 PM, Benjamin Gaignard wrote:
+> Define bindings for stm32 IIO timer
 > 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 > ---
->  .../devicetree/bindings/mfd/stm32-timer.txt        | 53 ++++++++++++++++++++++
->  1 file changed, 53 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timer.txt
+>  .../bindings/iio/timer/stm32-iio-timer.txt         | 33 ++++++++++++++++++++++
+>  1 file changed, 33 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-iio-timer.txt
 > 
-> diff --git a/Documentation/devicetree/bindings/mfd/stm32-timer.txt b/Documentation/devicetree/bindings/mfd/stm32-timer.txt
+> diff --git a/Documentation/devicetree/bindings/iio/timer/stm32-iio-timer.txt b/Documentation/devicetree/bindings/iio/timer/stm32-iio-timer.txt
 > new file mode 100644
-> index 0000000..3cefce1
+> index 0000000..b80025e
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/stm32-timer.txt
-> @@ -0,0 +1,53 @@
-> +STM32 multifunctions timer driver
-
-"STM32 Multi-Function Timer/PWM device bindings"
-
-Doesn't this shared device have a better name?
-
-> +stm32 timer MFD allow to handle at the same time pwm and IIO timer devices
-
-No need for this sentence.
-
+> +++ b/Documentation/devicetree/bindings/iio/timer/stm32-iio-timer.txt
+> @@ -0,0 +1,33 @@
+> +timer IIO trigger bindings for STM32
+> +
+> +Must be a child of STM32 multifunctions timer driver
+> +
 > +Required parameters:
 > +- compatible: must be one of the follow value:
-> +	"st,stm32-mfd-timer1"
-> +	"st,stm32-mfd-timer2"
-> +	"st,stm32-mfd-timer3"
-> +	"st,stm32-mfd-timer4"
-> +	"st,stm32-mfd-timer5"
-> +	"st,stm32-mfd-timer6"
-> +	"st,stm32-mfd-timer7"
-> +	"st,stm32-mfd-timer8"
-> +	"st,stm32-mfd-timer9"
-> +	"st,stm32-mfd-timer10"
-> +	"st,stm32-mfd-timer11"
-> +	"st,stm32-mfd-timer12"
-> +	"st,stm32-mfd-timer13"
-> +	"st,stm32-mfd-timer14"
+> +	"st,stm32-iio-timer1"
+> +	"st,stm32-iio-timer2"
+> +	"st,stm32-iio-timer3"
+> +	"st,stm32-iio-timer4"
+> +	"st,stm32-iio-timer5"
+> +	"st,stm32-iio-timer6"
+> +	"st,stm32-iio-timer7"
+> +	"st,stm32-iio-timer8"
+> +	"st,stm32-iio-timer9"
+> +	"st,stm32-iio-timer10"
+> +	"st,stm32-iio-timer11"
+> +	"st,stm32-iio-timer12"
+> +	"st,stm32-iio-timer13"
+> +	"st,stm32-iio-timer14"
 
-We don't normally number devices.
+We can't do this. This is a binding for a driver, not for the hardware.
 
-What's stopping you from simply doing:
-
-	pwm1: pwm1@40010000 {
-		compatible = "st,stm32-pwm";
-	};
-	pwm2: pwm1@40020000 {
-		compatible = "st,stm32-pwm";
-	};
-	pwm3: pwm1@40030000 {
-		compatible = "st,stm32-pwm";
-	};
-
-> +- reg :			Physical base address and length of the controller's
-> +			registers.
-> +- clock-names: 		Set to "mfd_timer_clk".
-
-How many clocks are there?
-
-If only 1, you don't need this property.
-
-"mfd_timer_clk" is not the correct name.
-
-What is it called in the datasheet?
-
-> +- clocks: 		Phandle of the clock used by the timer module.
-
-"Phandle to the clock ..."
-
-> +			For Clk properties, please refer to [1].
-> +- interrupts :		Reference to the timer interrupt
-
-Reference to?
-
-See how other binding documents describe this property.
-
-> +Optional parameters:
-> +- resets :		Reference to a reset controller asserting the timer
-
-As above.
-
-> +Optional subnodes:
-
-Either use ":" or " :" or "<tab>:", but keep it consistent.
-
-> +- pwm:			See Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-> +- iiotimer:		See Documentation/devicetree/bindings/iio/timer/stm32-iio-timer.txt
-> +
-> +[1] Documentation/devicetree/bindings/clock/clock-bindings.txt
-
-Use the relative paths "../clock/", "../pwm/", "../iio/".
-
-> +Example:
-> +	mfd_timer1: mfdtimer1@40010000 {
-
-This is not an "MFD timer".  MFD is a Linuxisum.
-
-> +		compatible = "st,stm32-mfd-timer1";
-
-Better description required.
-
-> +		reg = <0x40010000 0x400>;
-> +		clocks = <&rcc 0 160>;
-> +		clock-names = "mfd_timer_clk";
-> +		interrupts = <27>;
-> +
-> +		pwm1: pwm1@40010000 {
-> +			compatible = "st,stm32-pwm1";
-> +		};
-> +
-> +		iiotimer1: iiotimer1@40010000 {
-> +			compatible = "st,stm32-iio-timer1";
-> +		};
-> +	};
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
