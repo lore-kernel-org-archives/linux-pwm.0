@@ -1,49 +1,110 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 5/7] add bindings for stm32 IIO timer drivers
-Date: Tue, 22 Nov 2016 17:18:20 +0000
-Message-ID: <20161122171820.GL10134@dell.home>
-References: <1479831207-32699-1-git-send-email-benjamin.gaignard@st.com>
- <1479831207-32699-6-git-send-email-benjamin.gaignard@st.com>
- <b9a82ce7-745a-1c25-f97f-68aaf0551f3b@metafoo.de>
- <CA+M3ks6ZoOND4VobU65OntEYU-f_XoNCV4wNZZ0_dYoOxy73+w@mail.gmail.com>
+From: Stefan Agner <stefan@agner.ch>
+Subject: Re: [PATCH v3 02/11] pwm: imx: remove ipg clock
+Date: Tue, 22 Nov 2016 13:04:11 -0800
+Message-ID: <369235b4acf1cc29991c18b05202ca49@agner.ch>
+References: <1477984230-18071-1-git-send-email-l.majewski@majess.pl>
+ <1477984230-18071-3-git-send-email-l.majewski@majess.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CA+M3ks6ZoOND4VobU65OntEYU-f_XoNCV4wNZZ0_dYoOxy73+w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>, Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>, Arnaud Pouliquen <arnaud.pouliquen-qxv4g6HH51o@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linaro Kernel Mailman List <linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1477984230-18071-3-git-send-email-l.majewski@majess.pl>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lukasz Majewski <l.majewski@majess.pl>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de, Philipp Zabel <p.zabel@pengutronix.de>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, 22 Nov 2016, Benjamin Gaignard wrote:
-
-> [snip]
-> >> +     "st,stm32-iio-timer5"
-> >> +     "st,stm32-iio-timer6"
-> >> +     "st,stm32-iio-timer7"
-> >> +     "st,stm32-iio-timer8"
-> >> +     "st,stm32-iio-timer9"
-> >> +     "st,stm32-iio-timer10"
-> >> +     "st,stm32-iio-timer11"
-> >> +     "st,stm32-iio-timer12"
-> >> +     "st,stm32-iio-timer13"
-> >> +     "st,stm32-iio-timer14"
-> >
-> > We can't do this. This is a binding for a driver, not for the hardware.
-> >
+On 2016-11-01 00:10, Lukasz Majewski wrote:
+> From: Sascha Hauer <s.hauer@pengutronix.de>
 > 
-> Unfortunately each instance for the hardware IP have little
-> differences like which triggers they could accept or size of the
-> counter register,
-> and I doesn't have value inside the hardware to distinguish them so
-> the only way I found is to use compatible.
+> The use of the ipg clock was introduced with commit 7b27c160c681
+> ("pwm: i.MX: fix clock lookup").
+> In the commit message it was claimed that the ipg clock is enabled for
+> register accesses. This is true for the ->config() callback, but not
+> for the ->set_enable() callback. Given that the ipg clock is not
+> consistently enabled for all register accesses we can assume that either
+> it is not required at all or that the current code does not work.
+> Remove the ipg clock code for now so that it's no longer in the way of
+> refactoring the driver.
+> 
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: Philipp Zabel <p.zabel@pengutronix.de>
 
-Can't you represent these as properties?
+I have to NACK here, sorry guys.
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Just tested this on a i.MX 7, the kernel freezes in imx_pwm_config, I
+guess that is where the code accesses a register first.
+
+The i.MX 7 DT (imx7s.dtsi) specifies the same clock for ipg and per, but
+it seems that this clock is crucial for register access on i.MX 7:
+
+clocks = <&clks IMX7D_PWM1_ROOT_CLK>,
+         <&clks IMX7D_PWM1_ROOT_CLK>;
+clock-names = "ipg", "per";          
+
+So since the "per" clock is the same in the i.MX 7 case, imx_pwm_enable
+worked...
+
+I agree that the old code is a bit weird, especially that we get the
+clock in imx_pwm_enable. It seems that all device trees specify a "ipg"
+clock, so I guess we can get the clock at probe time for all variants of
+this IP and just enable it on peripheral access...
+
+--
+Stefan
+
+
+> ---
+> [commit message text refactored by Lukasz Majewski <l.majewski@majess.pl>]
+> ---
+> Changes for v3:
+> - New patch
+> ---
+>  drivers/pwm/pwm-imx.c | 19 +------------------
+>  1 file changed, 1 insertion(+), 18 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+> index d600fd5..70609ef2 100644
+> --- a/drivers/pwm/pwm-imx.c
+> +++ b/drivers/pwm/pwm-imx.c
+> @@ -49,7 +49,6 @@
+>  
+>  struct imx_chip {
+>  	struct clk	*clk_per;
+> -	struct clk	*clk_ipg;
+>  
+>  	void __iomem	*mmio_base;
+>  
+> @@ -204,17 +203,8 @@ static int imx_pwm_config(struct pwm_chip *chip,
+>  		struct pwm_device *pwm, int duty_ns, int period_ns)
+>  {
+>  	struct imx_chip *imx = to_imx_chip(chip);
+> -	int ret;
+> -
+> -	ret = clk_prepare_enable(imx->clk_ipg);
+> -	if (ret)
+> -		return ret;
+>  
+> -	ret = imx->config(chip, pwm, duty_ns, period_ns);
+> -
+> -	clk_disable_unprepare(imx->clk_ipg);
+> -
+> -	return ret;
+> +	return imx->config(chip, pwm, duty_ns, period_ns);
+>  }
+>  
+>  static int imx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+> @@ -293,13 +283,6 @@ static int imx_pwm_probe(struct platform_device *pdev)
+>  		return PTR_ERR(imx->clk_per);
+>  	}
+>  
+> -	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
+> -	if (IS_ERR(imx->clk_ipg)) {
+> -		dev_err(&pdev->dev, "getting ipg clock failed with %ld\n",
+> -				PTR_ERR(imx->clk_ipg));
+> -		return PTR_ERR(imx->clk_ipg);
+> -	}
+> -
+>  	imx->chip.ops = &imx_pwm_ops;
+>  	imx->chip.dev = &pdev->dev;
+>  	imx->chip.base = -1;
