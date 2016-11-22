@@ -1,424 +1,410 @@
-From: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 4/7] add pwm driver for stm32 plaftorm
-Date: Tue, 22 Nov 2016 17:13:24 +0100
-Message-ID: <1479831207-32699-5-git-send-email-benjamin.gaignard@st.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH 2/7] add MFD for stm32 timer IP
+Date: Tue, 22 Nov 2016 16:30:18 +0000
+Message-ID: <20161122163018.GI10134@dell.home>
 References: <1479831207-32699-1-git-send-email-benjamin.gaignard@st.com>
-Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1479831207-32699-1-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
-Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+ <1479831207-32699-3-git-send-email-benjamin.gaignard@st.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1479831207-32699-3-git-send-email-benjamin.gaignard@st.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com, gerald.baeza@st.com, arnaud.pouliquen@st.com, linus.walleij@linaro.org, linaro-kernel@lists.linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>
 List-Id: linux-pwm@vger.kernel.org
 
-This driver add support for pwm driver on stm32 platform.
-The SoC have multiple instances of the hardware IP and each
-of them could have small differences: number of channels,
-complementary output, counter register size...
-To handle those variations each block have its own compatible
-linked to internal table that describe them.
+On Tue, 22 Nov 2016, Benjamin Gaignard wrote:
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
----
- drivers/pwm/Kconfig     |   8 ++
- drivers/pwm/Makefile    |   1 +
- drivers/pwm/pwm-stm32.c | 358 ++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 367 insertions(+)
- create mode 100644 drivers/pwm/pwm-stm32.c
+> This hardware block could at used at same time for PWM generation
+> and IIO timer for other IPs like DAC, ADC or other timers.
+> PWM and IIO timer configuration are mixed in the same registers
+> so we need a MFD to be able to share those registers.
+> 
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+> ---
+>  drivers/mfd/Kconfig                 |  10 ++
+>  drivers/mfd/Makefile                |   2 +
+>  drivers/mfd/stm32-mfd-timer.c       | 236 ++++++++++++++++++++++++++++++++++++
+>  include/linux/mfd/stm32-mfd-timer.h |  78 ++++++++++++
+>  4 files changed, 326 insertions(+)
+>  create mode 100644 drivers/mfd/stm32-mfd-timer.c
+>  create mode 100644 include/linux/mfd/stm32-mfd-timer.h
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index bf01288..aeee045 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -388,6 +388,14 @@ config PWM_STI
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-sti.
- 
-+config PWM_STM32
-+	bool "STMicroelectronics STM32 PWM"
-+	depends on ARCH_STM32
-+	depends on OF
-+	select MFD_STM32_TIMER
-+	help
-+	  Generic PWM framework driver for STM32 SoCs.
-+
- config PWM_STMPE
- 	bool "STMPE expander PWM export"
- 	depends on MFD_STMPE
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 1194c54..5aa9308 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -37,6 +37,7 @@ obj-$(CONFIG_PWM_ROCKCHIP)	+= pwm-rockchip.o
- obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
- obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
- obj-$(CONFIG_PWM_STI)		+= pwm-sti.o
-+obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
- obj-$(CONFIG_PWM_STMPE)		+= pwm-stmpe.o
- obj-$(CONFIG_PWM_SUN4I)		+= pwm-sun4i.o
- obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
-diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
-new file mode 100644
-index 0000000..2d71ee7
---- /dev/null
-+++ b/drivers/pwm/pwm-stm32.c
-@@ -0,0 +1,358 @@
-+/*
-+ * Copyright (C) STMicroelectronics 2016
-+ * Author:  Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>
-+ * License terms:  GNU General Public License (GPL), version 2
-+ *
-+ * Inspired by timer-stm32.c from Maxime Coquelin
-+ *             pwm-atmel.c from Bo Shen
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/pwm.h>
-+
-+#include <linux/mfd/stm32-mfd-timer.h>
-+
-+#define DRIVER_NAME "stm32-pwm"
-+
-+#define CAP_COMPLEMENTARY	BIT(0)
-+#define CAP_32BIT_COUNTER	BIT(1)
-+#define CAP_BREAKINPUT		BIT(2)
-+
-+struct stm32_pwm_cfg {
-+	int npwm;
-+	int caps;
-+};
-+
-+static struct stm32_pwm_cfg f4_pwm_cfg[] = {
-+	/* for pwm 1 and 8 */
-+	{
-+		.npwm = 4,
-+		.caps = CAP_COMPLEMENTARY | CAP_BREAKINPUT,
-+	},
-+	/* for pwm 2 and 5 */
-+	{
-+		.npwm = 4,
-+		.caps = CAP_32BIT_COUNTER,
-+	},
-+	/* for pwm 3 and 4 */
-+	{
-+		.npwm = 4,
-+		.caps = 0,
-+	},
-+	/* for pwm 9 and 12 */
-+	{
-+		.npwm = 2,
-+		.caps = 0,
-+	},
-+	/* for pwm 10, 11, 13 and 14 */
-+	{
-+		.npwm = 1,
-+		.caps = 0,
-+	},
-+};
-+
-+struct stm32_pwm_dev {
-+	struct device *dev;
-+	struct clk *clk;
-+	struct regmap *regmap;
-+	struct pwm_chip chip;
-+	struct stm32_pwm_cfg *cfg;
-+	bool have_breakinput;
-+	u32 breakinput_polarity;
-+};
-+
-+#define to_stm32_pwm_dev(x) container_of(chip, struct stm32_pwm_dev, chip)
-+
-+static u32 __active_channels(struct stm32_pwm_dev *pwm_dev)
-+{
-+	u32 ccer;
-+
-+	regmap_read(pwm_dev->regmap, TIM_CCER, &ccer);
-+
-+	return ccer & TIM_CCER_CCXE;
-+}
-+
-+static int write_ccrx(struct stm32_pwm_dev *dev, struct pwm_device *pwm,
-+		      u32 ccr)
-+{
-+	switch (pwm->hwpwm) {
-+	case 0:
-+		return regmap_write(dev->regmap, TIM_CCR1, ccr);
-+	case 1:
-+		return regmap_write(dev->regmap, TIM_CCR2, ccr);
-+	case 2:
-+		return regmap_write(dev->regmap, TIM_CCR3, ccr);
-+	case 3:
-+		return regmap_write(dev->regmap, TIM_CCR4, ccr);
-+	}
-+	return -EINVAL;
-+}
-+
-+static int stm32_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-+			    int duty_ns, int period_ns)
-+{
-+	struct stm32_pwm_dev *dev = to_stm32_pwm_dev(chip);
-+	unsigned long long prd, div, dty;
-+	int prescaler = 0;
-+	u32 max_arr = 0xFFFF, ccmr, mask, shift, bdtr;
-+
-+	if (dev->cfg->caps & CAP_32BIT_COUNTER)
-+		max_arr = 0xFFFFFFFF;
-+
-+	/* Period and prescaler values depends of clock rate */
-+	div = (unsigned long long)clk_get_rate(dev->clk) * period_ns;
-+
-+	do_div(div, NSEC_PER_SEC);
-+	prd = div;
-+
-+	while (div > max_arr) {
-+		prescaler++;
-+		div = prd;
-+		do_div(div, (prescaler + 1));
-+	}
-+	prd = div;
-+
-+	if (prescaler > MAX_TIM_PSC) {
-+		dev_err(chip->dev, "prescaler exceeds the maximum value\n");
-+		return -EINVAL;
-+	}
-+
-+	/* All channels share the same prescaler and counter so
-+	 * when two channels are active at the same we can't change them
-+	 */
-+	if (__active_channels(dev) & ~(1 << pwm->hwpwm * 4)) {
-+		u32 psc, arr;
-+
-+		regmap_read(dev->regmap, TIM_PSC, &psc);
-+		regmap_read(dev->regmap, TIM_ARR, &arr);
-+
-+		if ((psc != prescaler) || (arr != prd - 1))
-+			return -EINVAL;
-+	}
-+
-+	regmap_write(dev->regmap, TIM_PSC, prescaler);
-+	regmap_write(dev->regmap, TIM_ARR, prd - 1);
-+	regmap_update_bits(dev->regmap, TIM_CR1, TIM_CR1_ARPE, TIM_CR1_ARPE);
-+
-+	/* Calculate the duty cycles */
-+	dty = prd * duty_ns;
-+	do_div(dty, period_ns);
-+
-+	write_ccrx(dev, pwm, dty);
-+
-+	/* Configure output mode */
-+	shift = (pwm->hwpwm & 0x1) * 8;
-+	ccmr = (TIM_CCMR_PE | TIM_CCMR_M1) << shift;
-+	mask = 0xFF << shift;
-+
-+	if (pwm->hwpwm & 0x2)
-+		regmap_update_bits(dev->regmap, TIM_CCMR2, mask, ccmr);
-+	else
-+		regmap_update_bits(dev->regmap, TIM_CCMR1, mask, ccmr);
-+
-+	bdtr = TIM_BDTR_MOE | TIM_BDTR_AOE;
-+	if (dev->have_breakinput) {
-+		bdtr |= TIM_BDTR_BKE;
-+		if (dev->breakinput_polarity)
-+			bdtr |= TIM_BDTR_BKP;
-+	}
-+
-+	regmap_update_bits(dev->regmap, TIM_BDTR,
-+			   TIM_BDTR_MOE | TIM_BDTR_AOE |
-+			   TIM_BDTR_BKP | TIM_BDTR_BKE,
-+			   bdtr);
-+
-+	return 0;
-+}
-+
-+static int stm32_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
-+				  enum pwm_polarity polarity)
-+{
-+	u32 mask;
-+	struct stm32_pwm_dev *dev = to_stm32_pwm_dev(chip);
-+
-+	mask = TIM_CCER_CC1P << (pwm->hwpwm * 4);
-+	if (dev->cfg->caps & CAP_COMPLEMENTARY)
-+		mask |= TIM_CCER_CC1NP << (pwm->hwpwm * 4);
-+
-+	regmap_update_bits(dev->regmap, TIM_CCER, mask,
-+			   polarity == PWM_POLARITY_NORMAL ? 0 : mask);
-+
-+	return 0;
-+}
-+
-+static int stm32_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	u32 mask;
-+	struct stm32_pwm_dev *dev = to_stm32_pwm_dev(chip);
-+
-+	clk_enable(dev->clk);
-+
-+	/* Enable channel */
-+	mask = TIM_CCER_CC1E << (pwm->hwpwm * 4);
-+	if (dev->cfg->caps & CAP_COMPLEMENTARY)
-+		mask |= TIM_CCER_CC1NE << (pwm->hwpwm * 4);
-+
-+	regmap_update_bits(dev->regmap, TIM_CCER, mask, mask);
-+
-+	/* Make sure that registers are updated */
-+	regmap_update_bits(dev->regmap, TIM_EGR, TIM_EGR_UG, TIM_EGR_UG);
-+
-+	/* Enable controller */
-+	regmap_update_bits(dev->regmap, TIM_CR1, TIM_CR1_CEN, TIM_CR1_CEN);
-+
-+	return 0;
-+}
-+
-+static void stm32_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	u32 mask;
-+	struct stm32_pwm_dev *dev = to_stm32_pwm_dev(chip);
-+
-+	/* Disable channel */
-+	mask = TIM_CCER_CC1E << (pwm->hwpwm * 4);
-+	if (dev->cfg->caps & CAP_COMPLEMENTARY)
-+		mask |= TIM_CCER_CC1NE << (pwm->hwpwm * 4);
-+
-+	regmap_update_bits(dev->regmap, TIM_CCER, mask, 0);
-+
-+	/* When all channels are disabled, we can disable the controller */
-+	if (!__active_channels(dev))
-+		regmap_update_bits(dev->regmap, TIM_CR1, TIM_CR1_CEN, 0);
-+
-+	clk_disable(dev->clk);
-+}
-+
-+static const struct pwm_ops stm32pwm_ops = {
-+	.config = stm32_pwm_config,
-+	.set_polarity = stm32_pwm_set_polarity,
-+	.enable = stm32_pwm_enable,
-+	.disable = stm32_pwm_disable,
-+};
-+
-+static const struct of_device_id stm32_pwm_of_match[] = {
-+	{
-+		.compatible = "st,stm32-pwm1",
-+		.data = &f4_pwm_cfg[0],
-+	},
-+	{
-+		.compatible = "st,stm32-pwm2",
-+		.data = &f4_pwm_cfg[1],
-+	},
-+	{
-+		.compatible = "st,stm32-pwm3",
-+		.data = &f4_pwm_cfg[2],
-+	},
-+	{
-+		.compatible = "st,stm32-pwm4",
-+		.data = &f4_pwm_cfg[2],
-+	},
-+	{
-+		.compatible = "st,stm32-pwm5",
-+		.data = &f4_pwm_cfg[1],
-+	},
-+	{
-+		.compatible = "st,stm32-pwm8",
-+		.data = &f4_pwm_cfg[0],
-+	},
-+	{
-+		.compatible = "st,stm32-pwm9",
-+		.data = &f4_pwm_cfg[3],
-+	},
-+	{
-+		.compatible = "st,stm32-pwm10",
-+		.data = &f4_pwm_cfg[4],
-+	},
-+	{
-+		.compatible = "st,stm32-pwm11",
-+		.data = &f4_pwm_cfg[4],
-+	},
-+	{
-+		.compatible = "st,stm32-pwm12",
-+		.data = &f4_pwm_cfg[3],
-+	},
-+	{
-+		.compatible = "st,stm32-pwm13",
-+		.data = &f4_pwm_cfg[4],
-+	},
-+	{
-+		.compatible = "st,stm32-pwm14",
-+		.data = &f4_pwm_cfg[4],
-+	},
-+	{
-+		/* end node */
-+	},
-+};
-+MODULE_DEVICE_TABLE(of, stm32_pwm_of_match);
-+
-+static int stm32_pwm_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct device_node *np = dev->of_node;
-+	struct stm32_mfd_timer_dev *mfd = pdev->dev.platform_data;
-+	struct stm32_pwm_dev *pwm;
-+	int ret;
-+
-+	pwm = devm_kzalloc(dev, sizeof(*pwm), GFP_KERNEL);
-+	if (!pwm)
-+		return -ENOMEM;
-+
-+	pwm->regmap = mfd->regmap;
-+	pwm->clk = mfd->clk;
-+
-+	if (!pwm->regmap || !pwm->clk)
-+		return -EINVAL;
-+
-+	/* populate data structure depending on compatibility */
-+	if (!of_match_node(stm32_pwm_of_match, np)->data)
-+		return -EINVAL;
-+
-+	pwm->cfg =
-+	(struct stm32_pwm_cfg *)of_match_node(stm32_pwm_of_match, np)->data;
-+
-+	if (pwm->cfg->caps & CAP_BREAKINPUT) {
-+		if (!of_property_read_u32(np, "st,breakinput-polarity",
-+					  &pwm->breakinput_polarity))
-+			pwm->have_breakinput = true;
-+	}
-+
-+	pwm->chip.base = -1;
-+	pwm->chip.dev = dev;
-+	pwm->chip.ops = &stm32pwm_ops;
-+	pwm->chip.npwm = pwm->cfg->npwm;
-+
-+	ret = pwmchip_add(&pwm->chip);
-+	if (ret < 0)
-+		return ret;
-+
-+	platform_set_drvdata(pdev, pwm);
-+
-+	return 0;
-+}
-+
-+static int stm32_pwm_remove(struct platform_device *pdev)
-+{
-+	struct stm32_pwm_dev *pwm = platform_get_drvdata(pdev);
-+	int i;
-+
-+	for (i = 0; i < pwm->cfg->npwm; i++)
-+		pwm_disable(&pwm->chip.pwms[i]);
-+
-+	pwmchip_remove(&pwm->chip);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver stm32_pwm_driver = {
-+	.probe		= stm32_pwm_probe,
-+	.remove		= stm32_pwm_remove,
-+	.driver	= {
-+		.name	= DRIVER_NAME,
-+		.of_match_table = stm32_pwm_of_match,
-+	},
-+};
-+module_platform_driver(stm32_pwm_driver);
-+
-+MODULE_ALIAS("platform:" DRIVER_NAME);
-+MODULE_DESCRIPTION("STMicroelectronics STM32 PWM driver");
-+MODULE_LICENSE("GPL");
+This driver is going to need a re-write.
+
+However, it's difficult to provide suggestions, since I've been left
+off of the Cc: list for all the other patches.
+
+Please re-send the set with all of the Maintainers Cc'ed on all of
+the patches.
+
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index c6df644..63aee36 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -1607,6 +1607,15 @@ config MFD_STW481X
+>  	  in various ST Microelectronics and ST-Ericsson embedded
+>  	  Nomadik series.
+>  
+> +config MFD_STM32_TIMER
+> +	tristate "Support for STM32 multifunctions timer"
+> +	select MFD_CORE
+> +	select REGMAP
+> +	depends on ARCH_STM32
+> +	depends on OF
+> +	help
+> +	  Select multifunction driver (pwm, IIO trigger) for stm32 timers
+> +
+>  menu "Multimedia Capabilities Port drivers"
+>  	depends on ARCH_SA1100
+>  
+> @@ -1644,4 +1653,5 @@ config MFD_VEXPRESS_SYSREG
+>  	  on the ARM Ltd. Versatile Express board.
+>  
+>  endmenu
+> +
+>  endif
+> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> index 9834e66..b348c3e 100644
+> --- a/drivers/mfd/Makefile
+> +++ b/drivers/mfd/Makefile
+> @@ -211,3 +211,5 @@ obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
+>  obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
+>  
+>  obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
+> +
+> +obj-$(CONFIG_MFD_STM32_TIMER) 	+= stm32-mfd-timer.o
+> diff --git a/drivers/mfd/stm32-mfd-timer.c b/drivers/mfd/stm32-mfd-timer.c
+> new file mode 100644
+> index 0000000..67e7db3
+> --- /dev/null
+> +++ b/drivers/mfd/stm32-mfd-timer.c
+> @@ -0,0 +1,236 @@
+> +/*
+> + * stm32-timer.c
+> + *
+> + * Copyright (C) STMicroelectronics 2016
+> + * Author: Benjamin Gaignard <benjamin.gaignard@st.com> for STMicroelectronics.
+> + * License terms:  GNU General Public License (GPL), version 2
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/init.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +
+> +#include <linux/mfd/stm32-mfd-timer.h>
+> +
+> +static const struct stm32_mfd_timer_cfg mfd_cells_cfg[] = {
+> +	{
+> +		.pwm_name = "pwm1",
+> +		.pwm_compatible = "st,stm32-pwm1",
+> +		.trigger_name = "iiotimer1",
+> +		.trigger_compatible = "st,stm32-iio-timer1",
+> +	},
+> +	{
+> +		.pwm_name = "pwm2",
+> +		.pwm_compatible = "st,stm32-pwm2",
+> +		.trigger_name = "iiotimer2",
+> +		.trigger_compatible = "st,stm32-iio-timer2",
+> +	},
+> +	{
+> +		.pwm_name = "pwm3",
+> +		.pwm_compatible = "st,stm32-pwm3",
+> +		.trigger_name = "iiotimer3",
+> +		.trigger_compatible = "st,stm32-iio-timer3",
+> +	},
+> +	{
+> +		.pwm_name = "pwm4",
+> +		.pwm_compatible = "st,stm32-pwm4",
+> +		.trigger_name = "iiotimer4",
+> +		.trigger_compatible = "st,stm32-iio-timer4",
+> +	},
+> +	{
+> +		.pwm_name = "pwm5",
+> +		.pwm_compatible = "st,stm32-pwm5",
+> +		.trigger_name = "iiotimer5",
+> +		.trigger_compatible = "st,stm32-iio-timer5",
+> +	},
+> +	{
+> +		.trigger_name = "iiotimer6",
+> +		.trigger_compatible = "st,stm32-iio-timer6",
+> +	},
+> +	{
+> +		.trigger_name = "iiotimer7",
+> +		.trigger_compatible = "st,stm32-iio-timer7",
+> +	},
+> +	{
+> +		.pwm_name = "pwm8",
+> +		.pwm_compatible = "st,stm32-pwm8",
+> +		.trigger_name = "iiotimer8",
+> +		.trigger_compatible = "st,stm32-iio-timer8",
+> +	},
+> +	{
+> +		.pwm_name = "pwm9",
+> +		.pwm_compatible = "st,stm32-pwm9",
+> +		.trigger_name = "iiotimer9",
+> +		.trigger_compatible = "st,stm32-iio-timer9",
+> +	},
+> +	{
+> +		.pwm_name = "pwm10",
+> +		.pwm_compatible = "st,stm32-pwm10",
+> +	},
+> +	{
+> +		.pwm_name = "pwm11",
+> +		.pwm_compatible = "st,stm32-pwm11",
+> +	},
+> +	{
+> +		.pwm_name = "pwm12",
+> +		.pwm_compatible = "st,stm32-pwm12",
+> +		.trigger_name = "iiotimer12",
+> +		.trigger_compatible = "st,stm32-iio-timer12",
+> +	},
+> +	{
+> +		.pwm_name = "pwm13",
+> +		.pwm_compatible = "st,stm32-pwm13",
+> +	},
+> +	{
+> +		.pwm_name = "pwm14",
+> +		.pwm_compatible = "st,stm32-pwm14",
+> +	},
+> +};
+> +
+> +static const struct of_device_id stm32_timer_of_match[] = {
+> +	{
+> +		.compatible = "st,stm32-mfd-timer1",
+> +		.data = &mfd_cells_cfg[0],
+> +	},
+> +	{
+> +		.compatible = "st,stm32-mfd-timer2",
+> +		.data = &mfd_cells_cfg[1],
+> +	},
+> +	{
+> +		.compatible = "st,stm32-mfd-timer3",
+> +		.data = &mfd_cells_cfg[2],
+> +	},
+> +	{
+> +		.compatible = "st,stm32-mfd-timer4",
+> +		.data = &mfd_cells_cfg[3],
+> +	},
+> +	{
+> +		.compatible = "st,stm32-mfd-timer5",
+> +		.data = &mfd_cells_cfg[4],
+> +	},
+> +	{
+> +		.compatible = "st,stm32-mfd-timer6",
+> +		.data = &mfd_cells_cfg[5],
+> +	},
+> +	{
+> +		.compatible = "st,stm32-mfd-timer7",
+> +		.data = &mfd_cells_cfg[6],
+> +	},
+> +	{
+> +		.compatible = "st,stm32-mfd-timer8",
+> +		.data = &mfd_cells_cfg[7],
+> +	},
+> +	{
+> +		.compatible = "st,stm32-mfd-timer9",
+> +		.data = &mfd_cells_cfg[8],
+> +	},
+> +	{
+> +		.compatible = "st,stm32-mfd-timer10",
+> +		.data = &mfd_cells_cfg[9],
+> +	},
+> +	{
+> +		.compatible = "st,stm32-mfd-timer11",
+> +		.data = &mfd_cells_cfg[10],
+> +	},
+> +	{
+> +		.compatible = "st,stm32-mfd-timer12",
+> +		.data = &mfd_cells_cfg[11],
+> +	},
+> +	{
+> +		.compatible = "st,stm32-mfd-timer13",
+> +		.data = &mfd_cells_cfg[12],
+> +	},
+> +	{
+> +		.compatible = "st,stm32-mfd-timer14",
+> +		.data = &mfd_cells_cfg[13],
+> +	},
+> +};
+> +
+> +static const struct regmap_config stm32_timer_regmap_cfg = {
+> +	.reg_bits = 32,
+> +	.val_bits = 32,
+> +	.reg_stride = sizeof(u32),
+> +	.max_register = 0x400,
+> +	.fast_io = true,
+> +};
+> +
+> +static int stm32_mfd_timer_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct device_node *np = dev->of_node;
+> +	struct stm32_mfd_timer_dev *mfd;
+> +	struct resource *res;
+> +	int ret, nb_cells = 0;
+> +	struct mfd_cell *cell = NULL;
+> +	void __iomem *mmio;
+> +
+> +	mfd = devm_kzalloc(dev, sizeof(*mfd), GFP_KERNEL);
+> +	if (!mfd)
+> +		return -ENOMEM;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (!res)
+> +		return -ENOMEM;
+> +
+> +	mmio = devm_ioremap_resource(dev, res);
+> +	if (IS_ERR(mmio))
+> +		return PTR_ERR(mmio);
+> +
+> +	mfd->regmap = devm_regmap_init_mmio_clk(dev, "mfd_timer_clk", mmio,
+> +						&stm32_timer_regmap_cfg);
+> +	if (IS_ERR(mfd->regmap))
+> +		return PTR_ERR(mfd->regmap);
+> +
+> +	mfd->clk = devm_clk_get(dev, NULL);
+> +	if (IS_ERR(mfd->clk))
+> +		return PTR_ERR(mfd->clk);
+> +
+> +	mfd->irq = platform_get_irq(pdev, 0);
+> +	if (mfd->irq < 0)
+> +		return -EINVAL;
+> +
+> +	/* populate data structure depending on compatibility */
+> +	if (!of_match_node(stm32_timer_of_match, np)->data)
+> +		return -EINVAL;
+> +
+> +	mfd->cfg =
+> +	(struct stm32_mfd_timer_cfg *)of_match_node(stm32_timer_of_match, np)->data;
+> +
+> +	if (mfd->cfg->pwm_name && mfd->cfg->pwm_compatible) {
+> +		cell = &mfd->cells[nb_cells++];
+> +		cell->name = mfd->cfg->pwm_name;
+> +		cell->of_compatible = mfd->cfg->pwm_compatible;
+> +		cell->platform_data = mfd;
+> +		cell->pdata_size = sizeof(*mfd);
+> +	}
+> +
+> +	if (mfd->cfg->trigger_name && mfd->cfg->trigger_compatible) {
+> +		cell = &mfd->cells[nb_cells++];
+> +		cell->name = mfd->cfg->trigger_name;
+> +		cell->of_compatible = mfd->cfg->trigger_compatible;
+> +		cell->platform_data = mfd;
+> +		cell->pdata_size = sizeof(*mfd);
+> +	}
+> +
+> +	ret = devm_mfd_add_devices(&pdev->dev, pdev->id, mfd->cells,
+> +				   nb_cells, NULL, 0, NULL);
+> +	if (ret)
+> +		return ret;
+> +
+> +	platform_set_drvdata(pdev, mfd);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver stm32_mfd_timer_driver = {
+> +	.probe		= stm32_mfd_timer_probe,
+> +	.driver	= {
+> +		.name	= "stm32-mfd-timer",
+> +		.of_match_table = stm32_timer_of_match,
+> +	},
+> +};
+> +module_platform_driver(stm32_mfd_timer_driver);
+> +
+> +MODULE_DESCRIPTION("STMicroelectronics STM32 Timer MFD");
+> +MODULE_LICENSE("GPL");
+> diff --git a/include/linux/mfd/stm32-mfd-timer.h b/include/linux/mfd/stm32-mfd-timer.h
+> new file mode 100644
+> index 0000000..4a79c22
+> --- /dev/null
+> +++ b/include/linux/mfd/stm32-mfd-timer.h
+> @@ -0,0 +1,78 @@
+> +/*
+> + * stm32-mfd-timer.h
+> + *
+> + * Copyright (C) STMicroelectronics 2016
+> + * Author: Benjamin Gaignard <benjamin.gaignard@st.com> for STMicroelectronics.
+> + * License terms:  GNU General Public License (GPL), version 2
+> + */
+> +
+> +#ifndef _LINUX_MFD_STM32_TIMER_H_
+> +#define _LINUX_MFD_STM32_TIMER_H_
+> +
+> +#include <linux/clk.h>
+> +#include <linux/mfd/core.h>
+> +#include <linux/regmap.h>
+> +#include <linux/reset.h>
+> +
+> +#define TIM_CR1		0x00	/* Control Register 1      */
+> +#define TIM_CR2		0x04	/* Control Register 2      */
+> +#define TIM_SMCR	0x08	/* Slave mode control reg  */
+> +#define TIM_DIER	0x0C	/* DMA/interrupt register  */
+> +#define TIM_SR		0x10	/* Status register	   */
+> +#define TIM_EGR		0x14	/* Event Generation Reg    */
+> +#define TIM_CCMR1	0x18	/* Capt/Comp 1 Mode Reg    */
+> +#define TIM_CCMR2	0x1C	/* Capt/Comp 2 Mode Reg    */
+> +#define TIM_CCER	0x20	/* Capt/Comp Enable Reg    */
+> +#define TIM_PSC		0x28	/* Prescaler               */
+> +#define TIM_ARR		0x2c	/* Auto-Reload Register    */
+> +#define TIM_CCR1	0x34	/* Capt/Comp Register 1    */
+> +#define TIM_CCR2	0x38	/* Capt/Comp Register 2    */
+> +#define TIM_CCR3	0x3C	/* Capt/Comp Register 3    */
+> +#define TIM_CCR4	0x40	/* Capt/Comp Register 4    */
+> +#define TIM_BDTR	0x44	/* Break and Dead-Time Reg */
+> +
+> +#define TIM_CR1_CEN	BIT(0)	/* Counter Enable	   */
+> +#define TIM_CR1_ARPE	BIT(7)	/* Auto-reload Preload Ena */
+> +#define TIM_CR2_MMS	(BIT(4) | BIT(5) | BIT(6)) /* Master mode selection */
+> +#define TIM_SMCR_SMS	(BIT(0) | BIT(1) | BIT(2)) /* Slave mode selection */
+> +#define TIM_SMCR_TS	(BIT(4) | BIT(5) | BIT(6)) /* Trigger selection */
+> +#define TIM_DIER_UIE	BIT(0)	/* Update interrupt	   */
+> +#define TIM_SR_UIF	BIT(0)	/* Update interrupt flag   */
+> +#define TIM_EGR_UG	BIT(0)	/* Update Generation       */
+> +#define TIM_CCMR_PE	BIT(3)	/* Channel Preload Enable  */
+> +#define TIM_CCMR_M1	(BIT(6) | BIT(5))  /* Channel PWM Mode 1 */
+> +#define TIM_CCER_CC1E	BIT(0)	/* Capt/Comp 1  out Ena    */
+> +#define TIM_CCER_CC1P	BIT(1)	/* Capt/Comp 1  Polarity   */
+> +#define TIM_CCER_CC1NE	BIT(2)	/* Capt/Comp 1N out Ena    */
+> +#define TIM_CCER_CC1NP	BIT(3)	/* Capt/Comp 1N Polarity   */
+> +#define TIM_CCER_CCXE	(BIT(0) | BIT(4) | BIT(8) | BIT(12))
+> +#define TIM_BDTR_BKE	BIT(12) /* Break input enable	   */
+> +#define TIM_BDTR_BKP	BIT(13) /* Break input polarity	   */
+> +#define TIM_BDTR_AOE	BIT(14)	/* Automatic Output Enable */
+> +#define TIM_BDTR_MOE	BIT(15)	/* Main Output Enable      */
+> +
+> +#define STM32_TIMER_CELLS	2
+> +#define MAX_TIM_PSC		0xFFFF
+> +
+> +struct stm32_mfd_timer_cfg {
+> +	const char *pwm_name;
+> +	const char *pwm_compatible;
+> +	const char *trigger_name;
+> +	const char *trigger_compatible;
+> +};
+> +
+> +struct stm32_mfd_timer_dev {
+> +	/* Device data */
+> +	struct device *dev;
+> +	struct clk *clk;
+> +	int irq;
+> +
+> +	/* Registers mapping */
+> +	struct regmap *regmap;
+> +
+> +	/* Private data */
+> +	struct mfd_cell cells[STM32_TIMER_CELLS];
+> +	struct stm32_mfd_timer_cfg *cfg;
+> +};
+> +
+> +#endif
+
 -- 
-1.9.1
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
