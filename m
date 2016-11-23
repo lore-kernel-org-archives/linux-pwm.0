@@ -1,99 +1,166 @@
-From: Stefan Agner <stefan@agner.ch>
-Subject: Re: [PATCH v3 11/11] pwm: imx: Add polarity inversion support to
- i.MX's PWMv2
-Date: Tue, 22 Nov 2016 14:08:55 -0800
-Message-ID: <de2ef973ca82916d5d6aece4ae0ffc30@agner.ch>
-References: <1477984230-18071-1-git-send-email-l.majewski@majess.pl>
- <1477984230-18071-12-git-send-email-l.majewski@majess.pl>
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Subject: Re: [PATCH 1/7] add binding for stm32 multifunctions timer driver
+Date: Wed, 23 Nov 2016 09:15:46 +0100
+Message-ID: <CA+M3ks4cVLtVe4zSvSiDUz6jKy0Wbw8j24VuStf_31D5ntwfvw@mail.gmail.com>
+References: <1479831207-32699-1-git-send-email-benjamin.gaignard@st.com>
+ <1479831207-32699-2-git-send-email-benjamin.gaignard@st.com> <20161122165228.GK10134@dell.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kmu-office.ch ([178.209.48.109]:49855 "EHLO
-        mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932273AbcKVWPQ (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 22 Nov 2016 17:15:16 -0500
-In-Reply-To: <1477984230-18071-12-git-send-email-l.majewski@majess.pl>
+Received: from mail-qt0-f178.google.com ([209.85.216.178]:34061 "EHLO
+        mail-qt0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933106AbcKWIPs (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 23 Nov 2016 03:15:48 -0500
+Received: by mail-qt0-f178.google.com with SMTP id n6so4689353qtd.1
+        for <linux-pwm@vger.kernel.org>; Wed, 23 Nov 2016 00:15:47 -0800 (PST)
+In-Reply-To: <20161122165228.GK10134@dell.home>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lukasz Majewski <l.majewski@majess.pl>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de
+To: Lee Jones <lee.jones@linaro.org>
+Cc: robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>, alexandre.torgue@st.com, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Fabrice Gasnier <fabrice.gasnier@st.com>, Gerald Baeza <gerald.baeza@st.com>, Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linus Walleij <linus.walleij@linaro.org>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, Benjamin Gaignard <benjamin.gaignard@st.com>
 
-On 2016-11-01 00:10, Lukasz Majewski wrote:
-> With this patch the polarity settings for i.MX's PWMv2 is now supported
-> on top of atomic PWM setting
+2016-11-22 17:52 GMT+01:00 Lee Jones <lee.jones@linaro.org>:
+> On Tue, 22 Nov 2016, Benjamin Gaignard wrote:
+>
+>> Add bindings information for stm32 timer MFD
+>>
+>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+>> ---
+>>  .../devicetree/bindings/mfd/stm32-timer.txt        | 53 ++++++++++++++++++++++
+>>  1 file changed, 53 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timer.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/mfd/stm32-timer.txt b/Documentation/devicetree/bindings/mfd/stm32-timer.txt
+>> new file mode 100644
+>> index 0000000..3cefce1
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/mfd/stm32-timer.txt
+>> @@ -0,0 +1,53 @@
+>> +STM32 multifunctions timer driver
+>
+> "STM32 Multi-Function Timer/PWM device bindings"
+>
+> Doesn't this shared device have a better name?
 
-Nit: Try to use imperative, e.g. "Update the driver to support...." (see
-also Documentation/SubmittingPatches).
+In SoC documentation those hardware blocks are named "advanced-control
+timers", "general purpose timers" or "basic timers"
+"stm32-timer" name is already used for clock source driver, that why I
+have prefix it with mfd
 
-I prefer to have the documentation and driver update in one commit so it
-is obvious that the driver support has been added at the same time the
-documentation has been updated.
+>
+>> +stm32 timer MFD allow to handle at the same time pwm and IIO timer devices
+>
+> No need for this sentence.
+>
+OK
 
---
-Stefan
+>> +Required parameters:
+>> +- compatible: must be one of the follow value:
+>> +     "st,stm32-mfd-timer1"
+>> +     "st,stm32-mfd-timer2"
+>> +     "st,stm32-mfd-timer3"
+>> +     "st,stm32-mfd-timer4"
+>> +     "st,stm32-mfd-timer5"
+>> +     "st,stm32-mfd-timer6"
+>> +     "st,stm32-mfd-timer7"
+>> +     "st,stm32-mfd-timer8"
+>> +     "st,stm32-mfd-timer9"
+>> +     "st,stm32-mfd-timer10"
+>> +     "st,stm32-mfd-timer11"
+>> +     "st,stm32-mfd-timer12"
+>> +     "st,stm32-mfd-timer13"
+>> +     "st,stm32-mfd-timer14"
+>
+> We don't normally number devices.
+>
+> What's stopping you from simply doing:
+>
+>         pwm1: pwm1@40010000 {
+>                 compatible = "st,stm32-pwm";
+>         };
+>         pwm2: pwm1@40020000 {
+>                 compatible = "st,stm32-pwm";
+>         };
+>         pwm3: pwm1@40030000 {
+>                 compatible = "st,stm32-pwm";
+>         };
+>
 
-> 
-> Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-> Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
-> ---
-> Changes for v3:
-> - None
-> 
-> Changes for v2:
-> - New patch
-> ---
->  drivers/pwm/pwm-imx.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
-> 
-> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> index b636526..03b01a4 100644
-> --- a/drivers/pwm/pwm-imx.c
-> +++ b/drivers/pwm/pwm-imx.c
-> @@ -38,6 +38,7 @@
->  #define MX3_PWMCR_DOZEEN		(1 << 24)
->  #define MX3_PWMCR_WAITEN		(1 << 23)
->  #define MX3_PWMCR_DBGEN			(1 << 22)
-> +#define MX3_PWMCR_POUTC			(1 << 18)
->  #define MX3_PWMCR_CLKSRC_IPG_HIGH	(2 << 16)
->  #define MX3_PWMCR_CLKSRC_IPG		(1 << 16)
->  #define MX3_PWMCR_SWR			(1 << 3)
-> @@ -215,6 +216,9 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip,
-> struct pwm_device *pwm,
->  	if (state->enabled)
->  		cr |= MX3_PWMCR_EN;
->  
-> +	if (state->polarity == PWM_POLARITY_INVERSED)
-> +		cr |= MX3_PWMCR_POUTC;
-> +
->  	writel(cr, imx->mmio_base + MX3_PWMCR);
->  
->  	/* Disable the clock if the PWM is being disabled. */
-> @@ -237,6 +241,7 @@ static struct pwm_ops imx_pwm_ops_v2 = {
->  };
->  
->  struct imx_pwm_data {
-> +	bool polarity_supported;
->  	struct pwm_ops *pwm_ops;
->  };
->  
-> @@ -245,6 +250,7 @@ static struct imx_pwm_data imx_pwm_data_v1 = {
->  };
->  
->  static struct imx_pwm_data imx_pwm_data_v2 = {
-> +	.polarity_supported = true,
->  	.pwm_ops = &imx_pwm_ops_v2,
->  };
->  
-> @@ -285,6 +291,11 @@ static int imx_pwm_probe(struct platform_device *pdev)
->  	imx->chip.base = -1;
->  	imx->chip.npwm = 1;
->  	imx->chip.can_sleep = true;
-> +	if (data->polarity_supported) {
-> +		dev_dbg(&pdev->dev, "PWM supports output inversion\n");
-> +		imx->chip.of_xlate = of_pwm_xlate_with_flags;
-> +		imx->chip.of_pwm_n_cells = 3;
-> +	}
->  
->  	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->  	imx->mmio_base = devm_ioremap_resource(&pdev->dev, r);
+Because each instance of the hardware is slightly different: number of
+pwm channels, triggers capabilities, etc ..
+so I need to distinguish them.
+Since it look to be a problem I will follow your suggestion and add a
+property this driver to be able to identify each instance.
+Do you think that "id" parameter (integer for 1 to 14) is acceptable ?
+
+>> +- reg :                      Physical base address and length of the controller's
+>> +                     registers.
+>> +- clock-names:               Set to "mfd_timer_clk".
+>
+Only one but I use devm_regmap_init_mmio_clk() to avoid calling
+clk_{enable/disable}
+everywhere in the drivers when reading/writing regsister.
+devm_regmap_init_mmio_clk() find the clock by it name that why I have
+put it here
+In the doc this clock in named "clk_int" I will use this name.
+
+
+> How many clocks are there?
+>
+> If only 1, you don't need this property.
+>
+> "mfd_timer_clk" is not the correct name.
+>
+> What is it called in the datasheet?
+>
+>> +- clocks:            Phandle of the clock used by the timer module.
+>
+> "Phandle to the clock ..."
+>
+>> +                     For Clk properties, please refer to [1].
+>> +- interrupts :               Reference to the timer interrupt
+>
+> Reference to?
+>
+> See how other binding documents describe this property.
+>
+>> +Optional parameters:
+>> +- resets :           Reference to a reset controller asserting the timer
+>
+> As above.
+>
+>> +Optional subnodes:
+>
+> Either use ":" or " :" or "<tab>:", but keep it consistent.
+>
+>> +- pwm:                       See Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+>> +- iiotimer:          See Documentation/devicetree/bindings/iio/timer/stm32-iio-timer.txt
+>> +
+>> +[1] Documentation/devicetree/bindings/clock/clock-bindings.txt
+>
+> Use the relative paths "../clock/", "../pwm/", "../iio/".
+>
+OK
+
+>> +Example:
+>> +     mfd_timer1: mfdtimer1@40010000 {
+>
+> This is not an "MFD timer".  MFD is a Linuxisum.
+>
+>> +             compatible = "st,stm32-mfd-timer1";
+>
+> Better description required.
+>
+>> +             reg = <0x40010000 0x400>;
+>> +             clocks = <&rcc 0 160>;
+>> +             clock-names = "mfd_timer_clk";
+>> +             interrupts = <27>;
+>> +
+>> +             pwm1: pwm1@40010000 {
+>> +                     compatible = "st,stm32-pwm1";
+>> +             };
+>> +
+>> +             iiotimer1: iiotimer1@40010000 {
+>> +                     compatible = "st,stm32-iio-timer1";
+>> +             };
+>> +     };
