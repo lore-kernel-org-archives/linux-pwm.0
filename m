@@ -1,145 +1,245 @@
-From: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/7] add binding for stm32 multifunctions timer driver
-Date: Wed, 23 Nov 2016 18:02:01 +0100
-Message-ID: <CA+M3ks6rnago88JC0C5Uj6JpGZGuwyoOj-W8+r7Oj4s8_GuXyA@mail.gmail.com>
-References: <1479831207-32699-1-git-send-email-benjamin.gaignard@st.com>
- <1479831207-32699-2-git-send-email-benjamin.gaignard@st.com>
- <20161122165228.GK10134@dell.home> <CA+M3ks4cVLtVe4zSvSiDUz6jKy0Wbw8j24VuStf_31D5ntwfvw@mail.gmail.com>
- <20161123092148.GO10134@dell.home>
+From: Stefan Agner <stefan@agner.ch>
+Subject: Re: [PATCH v3 07/11] pwm: imx: Provide atomic PWM support for i.MX
+ PWMv2
+Date: Wed, 23 Nov 2016 11:30:44 -0800
+Message-ID: <a46e6054dd24c44e48b995837d9be205@agner.ch>
+References: <1477984230-18071-1-git-send-email-l.majewski@majess.pl>
+ <1477984230-18071-8-git-send-email-l.majewski@majess.pl>
+ <4f514a235a404d0ab9d26f389fc83f51@agner.ch>
+ <20161123093848.206ad78f@bbrezillon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20161123092148.GO10134-Re9dqnLqz4GzQB+pC5nmwQ@public.gmane.org>
-Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>, Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>, Arnaud Pouliquen <arnaud.pouliquen-qxv4g6HH51o@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linaro Kernel Mailman List <linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.kmu-office.ch ([178.209.48.109]:60489 "EHLO
+        mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932984AbcKWTjk (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 23 Nov 2016 14:39:40 -0500
+In-Reply-To: <20161123093848.206ad78f@bbrezillon>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: Lukasz Majewski <l.majewski@majess.pl>, Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de
 
-2016-11-23 10:21 GMT+01:00 Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>:
-> On Wed, 23 Nov 2016, Benjamin Gaignard wrote:
->
->> 2016-11-22 17:52 GMT+01:00 Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>:
->> > On Tue, 22 Nov 2016, Benjamin Gaignard wrote:
+On 2016-11-23 00:38, Boris Brezillon wrote:
+> On Tue, 22 Nov 2016 13:55:33 -0800
+> Stefan Agner <stefan@agner.ch> wrote:
+> 
+>> On 2016-11-01 00:10, Lukasz Majewski wrote:
+>> > This commit provides apply() callback implementation for i.MX's PWMv2.
 >> >
->> >> Add bindings information for stm32 timer MFD
->> >>
->> >> Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
->> >> ---
->> >>  .../devicetree/bindings/mfd/stm32-timer.txt        | 53 ++++++++++++++++++++++
->> >>  1 file changed, 53 insertions(+)
->> >>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timer.txt
->> >>
->> >> diff --git a/Documentation/devicetree/bindings/mfd/stm32-timer.txt b/Documentation/devicetree/bindings/mfd/stm32-timer.txt
->> >> new file mode 100644
->> >> index 0000000..3cefce1
->> >> --- /dev/null
->> >> +++ b/Documentation/devicetree/bindings/mfd/stm32-timer.txt
->> >> @@ -0,0 +1,53 @@
->> >> +STM32 multifunctions timer driver
+>> > Suggested-by: Stefan Agner <stefan@agner.ch>
+>> > Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+>> > Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+>> > Reviewed-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+>> > ---
+>> > Changes for v3:
+>> > - Remove ipg clock enable/disable functions
 >> >
->> > "STM32 Multi-Function Timer/PWM device bindings"
+>> > Changes for v2:
+>> > - None
+>> > ---
+>> >  drivers/pwm/pwm-imx.c | 70 +++++++++++++++++++++++++++++++++++++++++++++++++++
+>> >  1 file changed, 70 insertions(+)
 >> >
->> > Doesn't this shared device have a better name?
+>> > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+>> > index ebe9b0c..cd53c05 100644
+>> > --- a/drivers/pwm/pwm-imx.c
+>> > +++ b/drivers/pwm/pwm-imx.c
+>> > @@ -159,6 +159,75 @@ static void imx_pwm_wait_fifo_slot(struct pwm_chip *chip,
+>> >  	}
+>> >  }
+>> >
+>> > +static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
+>> > +			    struct pwm_state *state)
+>> > +{
+>> > +	unsigned long period_cycles, duty_cycles, prescale;
+>> > +	struct imx_chip *imx = to_imx_chip(chip);
+>> > +	struct pwm_state cstate;
+>> > +	unsigned long long c;
+>> > +	u32 cr = 0;
+>> > +	int ret;
+>> > +
+>> > +	pwm_get_state(pwm, &cstate);
+>> > +
 >>
->> In SoC documentation those hardware blocks are named "advanced-control
->> timers", "general purpose timers" or "basic timers"
->> "stm32-timer" name is already used for clock source driver, that why I
->> have prefix it with mfd
->
-> MFD is a Linuxisum and has no place in hardware description.
->
-> Please used one of the names you mentioned above.
-
-I will go for "st,stm32-advanced-timer"
-
->
-> Hopefully the one that best fits.
->
->> >> +stm32 timer MFD allow to handle at the same time pwm and IIO timer devices
->> >
->> > No need for this sentence.
->> >
->> OK
+>> Couldn't we do:
 >>
->> >> +Required parameters:
->> >> +- compatible: must be one of the follow value:
->> >> +     "st,stm32-mfd-timer1"
->> >> +     "st,stm32-mfd-timer2"
->> >> +     "st,stm32-mfd-timer3"
->> >> +     "st,stm32-mfd-timer4"
->> >> +     "st,stm32-mfd-timer5"
->> >> +     "st,stm32-mfd-timer6"
->> >> +     "st,stm32-mfd-timer7"
->> >> +     "st,stm32-mfd-timer8"
->> >> +     "st,stm32-mfd-timer9"
->> >> +     "st,stm32-mfd-timer10"
->> >> +     "st,stm32-mfd-timer11"
->> >> +     "st,stm32-mfd-timer12"
->> >> +     "st,stm32-mfd-timer13"
->> >> +     "st,stm32-mfd-timer14"
->> >
->> > We don't normally number devices.
->> >
->> > What's stopping you from simply doing:
->> >
->> >         pwm1: pwm1@40010000 {
->> >                 compatible = "st,stm32-pwm";
->> >         };
->> >         pwm2: pwm1@40020000 {
->> >                 compatible = "st,stm32-pwm";
->> >         };
->> >         pwm3: pwm1@40030000 {
->> >                 compatible = "st,stm32-pwm";
->> >         };
->> >
+>> if (cstate.enabled) { ...
 >>
->> Because each instance of the hardware is slightly different: number of
->> pwm channels, triggers capabilities, etc ..
->> so I need to distinguish them.
->> Since it look to be a problem I will follow your suggestion and add a
->> property this driver to be able to identify each instance.
->> Do you think that "id" parameter (integer for 1 to 14) is acceptable ?
->
-> Unfortunately not. IDs aren't allowed in DT.
->
-> What about "pwm-chans" and "trigger"?
->
-> pwm-chans              : Number of available channels available
+>> > +	c = clk_get_rate(imx->clk_per);
+>> > +	c *= state->period;
+>> > +
+>> > +	do_div(c, 1000000000);
+>> > +	period_cycles = c;
+>> > +
+>> > +	prescale = period_cycles / 0x10000 + 1;
+>> > +
+>> > +	period_cycles /= prescale;
+>> > +	c = (unsigned long long)period_cycles * state->duty_cycle;
+>> > +	do_div(c, state->period);
+>> > +	duty_cycles = c;
+>> > +
+>> > +	/*
+>> > +	 * according to imx pwm RM, the real period value should be
+>> > +	 * PERIOD value in PWMPR plus 2.
+>> > +	 */
+>> > +	if (period_cycles > 2)
+>> > +		period_cycles -= 2;
+>> > +	else
+>> > +		period_cycles = 0;
+>> > +
+>> > +	/* Enable the clock if the PWM is being enabled. */
+>> > +	if (state->enabled && !cstate.enabled) {
+>> > +		ret = clk_prepare_enable(imx->clk_per);
+>> > +		if (ret)
+>> > +			return ret;
+>> > +	}
+>> > +
+>> > +	/*
+>> > +	 * Wait for a free FIFO slot if the PWM is already enabled, and flush
+>> > +	 * the FIFO if the PWM was disabled and is about to be enabled.
+>> > +	 */
+>> > +	if (cstate.enabled)
+>> > +		imx_pwm_wait_fifo_slot(chip, pwm);
+>> > +	else if (state->enabled)
+>> > +		imx_pwm_sw_reset(chip);
+>> > +
+>> > +	writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
+>> > +	writel(period_cycles, imx->mmio_base + MX3_PWMPR);
+>> > +
+>> > +	cr |= MX3_PWMCR_PRESCALER(prescale) |
+>> > +	      MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
+>> > +	      MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH;
+>> > +
+>> > +	if (state->enabled)
+>> > +		cr |= MX3_PWMCR_EN;
+>>
+>> } else if (state->enabled) {
+>> 	imx_pwm_sw_reset(chip);
+>> }
+>>
+>> and get rid of the if (state->enabled) in between? This would safe us
+>> useless recalculation when disabling the controller...
+> 
+> I get your point, but I'm pretty sure your proposal does not do what
+> you want (remember that cstate is the current state, and state is the
+> new state to apply).
+> 
+> Something like that would work better:
+> 
+> 	if (state->enabled) {
 
-For pwm I need those 4 properties:
-st,pwm-number: the number of PWM devices
-st,complementary: if exist have complementary ouput
-st,32bit-counter: if exist have 32 bits counter
-st,breakinput-polarity: if set enable break input feature.
+Oops, yes, got that wrong. state->enabled is what I meant.
 
-Is it acceptable from pwm maintainer point of view ?
+> 		c = clk_get_rate(imx->clk_per);
+> 		c *= state->period;
+> 
+> 		do_div(c, 1000000000);
+> 		period_cycles = c;
+> 
+> 		prescale = period_cycles / 0x10000 + 1;
+> 
+> 		period_cycles /= prescale;
+> 		c = (unsigned long long)period_cycles *
+> 		    state->duty_cycle;
+> 		do_div(c, state->period);
+> 		duty_cycles = c;
+> 
+> 		/*
+> 		 * According to imx pwm RM, the real period value
+> 		 * should be PERIOD value in PWMPR plus 2.
+> 		 */
+> 		if (period_cycles > 2)
+> 			period_cycles -= 2;
+> 		else
+> 			period_cycles = 0;
+> 
+> 		/*
+> 		 * Enable the clock if the PWM is not already
+> 		 * enabled.
+> 		 */
+> 		if (!cstate.enabled) {
+> 			ret = clk_prepare_enable(imx->clk_per);
+> 			if (ret)
+> 			return ret;
+> 		}
+> 
+> 		/*
+> 		 * Wait for a free FIFO slot if the PWM is already
+> 		 * enabled, and flush the FIFO if the PWM was disabled
+> 		 * and is about to be enabled.
+> 		 */
+> 		if (cstate.enabled)
+> 			imx_pwm_wait_fifo_slot(chip, pwm);
+> 		else
+> 			imx_pwm_sw_reset(chip);
+> 
+> 		writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
+> 		writel(period_cycles, imx->mmio_base + MX3_PWMPR);
+> 
+> 		writel(MX3_PWMCR_PRESCALER(prescale) |
+> 		       MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
+> 		       MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH |
+> 		       MX3_PWMCR_EN,
+> 		       imx->mmio_base + MX3_PWMCR);
+> 	} else {
+> 
+> 		writel(0, imx->mmio_base + MX3_PWMCR);
+> 
+> 		/* Disable the clock if the PWM is currently enabled. */
+> 		if (cstate.enabled)
+> 			clk_disable_unprepare(imx->clk_per);
+> 	}
+> 
+> 
+> This being said, I'm a bit concerned by the way this driver handles PWM
+> config requests.
+> It seems that the new config request is queued, and nothing guarantees
 
-> trigger                : Boolean value specifying whether a timer is present
+Not sure if that is true. The RM says: "A change in the period value due
+to a write in PWM_PWMPR results in the counter being reset to zero and
+the start of a new count period."
 
-Following our discussion on IRC I will try to code for your proposal:
+And for PWMSAR: "When a new value is written, the duty cycle changes
+after the current period is over."
 
-advanced-timer@40010000 {
-        compatible = "st,stm32-advanced-timer";
-        reg = <0x40010000 0x400>;
-        clocks = <&rcc 0 160>;
-        clock-names = "clk_int";
+So I guess writing the period basically makes sure the next value from
+PWMSAR will be active immediately...
 
-        pwm@0 {
-                compatible = "st,stm32-pwm";
-                st,pwm-number= <4>;
-                st,complementary;
-                st,breakinput;
-        };
 
-        timer@0 {
-                reg = <1>;
-                compatible = "st,stm32-iio-timer";
-                interrupts = <27>;
-                triggers = <5 2 3 4>;
-        };
-};
+> that it is actually applied when the pwm_apply/config/enable/disable()
+> functions return.
 
-triggers parameter will be used to know which trigger are valid for
-the IIO device
 
-[snip]
+Given that the driver did it like that since quite some time, I am
+assuming it mostly works in practice. 
+
+I would rather prefer to do that conversion to atomic PWM API now, and
+fix that in a second step...
+
+> 
+> This approach has several flaws IMO:
+> 
+> 1/ I'm not sure this is what the PWM users expect. Getting your request
+>    queued with no guarantees that it is applied can be weird in some
+>    cases (especially when the user changes the PWM config several times
+>    in a short period of time).
+> 2/ In the disable path, you queue a "stop PWM" request, but you're not
+>    sure that it's actually dequeued before the per clk is disabled.
+>    What happens in that case? And more importantly, what happens when
+>    the PWM is re-enabled to apply a new config? AFAICS, there might be
+>    a short period of time where the re-enabled PWM is actually running
+>    with the old config until we flush the command queue and queue a new
+>    command.
+> 3/ The queueing approach complicates the whole logic. You have to
+>    flush the FIFO in some cases, or wait for an empty slots if too many
+>    commands are queued.
+>    Forcing imx_pwm_apply_v2() to wait for the config request to be
+>    applied should simplify the whole thing, because you will always be
+>    guaranteed that the FIFO is empty, and that the current
+>    configuration is the last requested one.
+> 
+
+--
+Stefan
