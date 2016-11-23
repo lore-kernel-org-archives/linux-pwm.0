@@ -1,190 +1,178 @@
 From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 1/7] add binding for stm32 multifunctions timer driver
-Date: Wed, 23 Nov 2016 09:21:48 +0000
-Message-ID: <20161123092148.GO10134@dell.home>
+Subject: Re: [PATCH 7/7] add stm32 multi-functions timer driver in DT
+Date: Wed, 23 Nov 2016 09:53:17 +0000
+Message-ID: <20161123095317.GP10134@dell.home>
 References: <1479831207-32699-1-git-send-email-benjamin.gaignard@st.com>
- <1479831207-32699-2-git-send-email-benjamin.gaignard@st.com>
- <20161122165228.GK10134@dell.home>
- <CA+M3ks4cVLtVe4zSvSiDUz6jKy0Wbw8j24VuStf_31D5ntwfvw@mail.gmail.com>
+ <1479831207-32699-8-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <CA+M3ks4cVLtVe4zSvSiDUz6jKy0Wbw8j24VuStf_31D5ntwfvw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <1479831207-32699-8-git-send-email-benjamin.gaignard@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>, alexandre.torgue@st.com, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Fabrice Gasnier <fabrice.gasnier@st.com>, Gerald Baeza <gerald.baeza@st.com>, Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linus Walleij <linus.walleij@linaro.org>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, Benjamin Gaignard <benjamin.gaignard@st.com>
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, lars@metafoo.de, alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linus.walleij@linaro.org, arnaud.pouliquen@st.com, linux-kernel@vger.kernel.org, robh+dt@kernel.org, thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org, pmeerw@pmeerw.net, knaack.h@gmx.de, gerald.baeza@st.com, fabrice.gasnier@st.com, linaro-kernel@lists.linaro.org, jic23@kernel.org, Benjamin Gaignard <benjamin.gaignard@st.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, 23 Nov 2016, Benjamin Gaignard wrote:
-
-> 2016-11-22 17:52 GMT+01:00 Lee Jones <lee.jones@linaro.org>:
-> > On Tue, 22 Nov 2016, Benjamin Gaignard wrote:
-> >
-> >> Add bindings information for stm32 timer MFD
-> >>
-> >> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-> >> ---
-> >>  .../devicetree/bindings/mfd/stm32-timer.txt        | 53 ++++++++++++++++++++++
-> >>  1 file changed, 53 insertions(+)
-> >>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timer.txt
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/mfd/stm32-timer.txt b/Documentation/devicetree/bindings/mfd/stm32-timer.txt
-> >> new file mode 100644
-> >> index 0000000..3cefce1
-> >> --- /dev/null
-> >> +++ b/Documentation/devicetree/bindings/mfd/stm32-timer.txt
-> >> @@ -0,0 +1,53 @@
-> >> +STM32 multifunctions timer driver
-> >
-> > "STM32 Multi-Function Timer/PWM device bindings"
-> >
-> > Doesn't this shared device have a better name?
-> 
-> In SoC documentation those hardware blocks are named "advanced-control
-> timers", "general purpose timers" or "basic timers"
-> "stm32-timer" name is already used for clock source driver, that why I
-> have prefix it with mfd
-
-MFD is a Linuxisum and has no place in hardware description.
-
-Please used one of the names you mentioned above.
-
-Hopefully the one that best fits.
-
-> >> +stm32 timer MFD allow to handle at the same time pwm and IIO timer devices
-> >
-> > No need for this sentence.
-> >
-> OK
-> 
-> >> +Required parameters:
-> >> +- compatible: must be one of the follow value:
-> >> +     "st,stm32-mfd-timer1"
-> >> +     "st,stm32-mfd-timer2"
-> >> +     "st,stm32-mfd-timer3"
-> >> +     "st,stm32-mfd-timer4"
-> >> +     "st,stm32-mfd-timer5"
-> >> +     "st,stm32-mfd-timer6"
-> >> +     "st,stm32-mfd-timer7"
-> >> +     "st,stm32-mfd-timer8"
-> >> +     "st,stm32-mfd-timer9"
-> >> +     "st,stm32-mfd-timer10"
-> >> +     "st,stm32-mfd-timer11"
-> >> +     "st,stm32-mfd-timer12"
-> >> +     "st,stm32-mfd-timer13"
-> >> +     "st,stm32-mfd-timer14"
-> >
-> > We don't normally number devices.
-> >
-> > What's stopping you from simply doing:
-> >
-> >         pwm1: pwm1@40010000 {
-> >                 compatible = "st,stm32-pwm";
-> >         };
-> >         pwm2: pwm1@40020000 {
-> >                 compatible = "st,stm32-pwm";
-> >         };
-> >         pwm3: pwm1@40030000 {
-> >                 compatible = "st,stm32-pwm";
-> >         };
-> >
-> 
-> Because each instance of the hardware is slightly different: number of
-> pwm channels, triggers capabilities, etc ..
-> so I need to distinguish them.
-> Since it look to be a problem I will follow your suggestion and add a
-> property this driver to be able to identify each instance.
-> Do you think that "id" parameter (integer for 1 to 14) is acceptable ?
-
-Unfortunately not. IDs aren't allowed in DT.
-
-What about "pwm-chans" and "trigger"?
-
-pwm-chans  	       : Number of available channels available
-trigger		       : Boolean value specifying whether a timer is present
-
-Why can't you let of_platform_populate() register the devices for you?
-Then you can get rid of all of the meaningless numbers all over the place.
-
-> >> +- reg :                      Physical base address and length of the controller's
-> >> +                     registers.
-> >> +- clock-names:               Set to "mfd_timer_clk".
-> >
-> Only one but I use devm_regmap_init_mmio_clk() to avoid calling
-> clk_{enable/disable}
-> everywhere in the drivers when reading/writing regsister.
-> devm_regmap_init_mmio_clk() find the clock by it name that why I have
-> put it here
-> In the doc this clock in named "clk_int" I will use this name.
-
-Please reply *below* the quote.
-
-But okay, "clk_int" sounds like a more suitable name.
-
-> > How many clocks are there?
-> >
-> > If only 1, you don't need this property.
-> >
-> > "mfd_timer_clk" is not the correct name.
-> >
-> > What is it called in the datasheet?
-> >
-> >> +- clocks:            Phandle of the clock used by the timer module.
-> >
-> > "Phandle to the clock ..."
-> >
-> >> +                     For Clk properties, please refer to [1].
-> >> +- interrupts :               Reference to the timer interrupt
-> >
-> > Reference to?
-> >
-> > See how other binding documents describe this property.
-> >
-> >> +Optional parameters:
-> >> +- resets :           Reference to a reset controller asserting the timer
-> >
-> > As above.
-> >
-> >> +Optional subnodes:
-> >
-> > Either use ":" or " :" or "<tab>:", but keep it consistent.
-> >
-> >> +- pwm:                       See Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-> >> +- iiotimer:          See Documentation/devicetree/bindings/iio/timer/stm32-iio-timer.txt
-> >> +
-> >> +[1] Documentation/devicetree/bindings/clock/clock-bindings.txt
-> >
-> > Use the relative paths "../clock/", "../pwm/", "../iio/".
-> >
-> OK
-> 
-> >> +Example:
-> >> +     mfd_timer1: mfdtimer1@40010000 {
-> >
-> > This is not an "MFD timer".  MFD is a Linuxisum.
-> >
-> >> +             compatible = "st,stm32-mfd-timer1";
-> >
-> > Better description required.
-> >
-> >> +             reg = <0x40010000 0x400>;
-> >> +             clocks = <&rcc 0 160>;
-> >> +             clock-names = "mfd_timer_clk";
-> >> +             interrupts = <27>;
-> >> +
-> >> +             pwm1: pwm1@40010000 {
-> >> +                     compatible = "st,stm32-pwm1";
-> >> +             };
-> >> +
-> >> +             iiotimer1: iiotimer1@40010000 {
-> >> +                     compatible = "st,stm32-iio-timer1";
-> >> +             };
-> >> +     };
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+T24gVHVlLCAyMiBOb3YgMjAxNiwgQmVuamFtaW4gR2FpZ25hcmQgd3JvdGU6Cgo+IEFkZCB0aW1l
+cnMgTUZEIGFuZCBjaGlsZHMgaW50byBEVCBmb3Igc3RtMzJmNC4KPiBEZWZpbmUgYW5kIGVuYWJs
+ZSBwd20xIGFuZCBwd20zIGZvciBzdG0zMmY0NjkgZGlzY292ZXJ5IGJvYXJkCj4gCj4gU2lnbmVk
+LW9mZi1ieTogQmVuamFtaW4gR2FpZ25hcmQgPGJlbmphbWluLmdhaWduYXJkQHN0LmNvbT4KPiAt
+LS0KPiAgYXJjaC9hcm0vYm9vdC9kdHMvc3RtMzJmNDI5LmR0c2kgICAgICB8IDI0NiArKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrCj4gIGFyY2gvYXJtL2Jvb3QvZHRzL3N0bTMyZjQ2
+OS1kaXNjby5kdHMgfCAgMjkgKysrKwo+ICAyIGZpbGVzIGNoYW5nZWQsIDI3NSBpbnNlcnRpb25z
+KCspCj4gCj4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtL2Jvb3QvZHRzL3N0bTMyZjQyOS5kdHNpIGIv
+YXJjaC9hcm0vYm9vdC9kdHMvc3RtMzJmNDI5LmR0c2kKPiBpbmRleCBiY2E0OTFkLi4yOGEwZmU5
+IDEwMDY0NAo+IC0tLSBhL2FyY2gvYXJtL2Jvb3QvZHRzL3N0bTMyZjQyOS5kdHNpCj4gKysrIGIv
+YXJjaC9hcm0vYm9vdC9kdHMvc3RtMzJmNDI5LmR0c2kKPiBAQCAtMzU1LDYgKzM1NSwyMSBAQAo+
+ICAJCQkJCXNsZXctcmF0ZSA9IDwyPjsKPiAgCQkJCX07Cj4gIAkJCX07Cj4gKwo+ICsJCQlwd20x
+X3BpbnM6IHB3bUAxIHsKPiArCQkJCXBpbnMgewo+ICsJCQkJCXBpbm11eCA9IDxTVE0zMkY0Mjlf
+UEE4X0ZVTkNfVElNMV9DSDE+LAo+ICsJCQkJCQkgPFNUTTMyRjQyOV9QQjEzX0ZVTkNfVElNMV9D
+SDFOPiwKPiArCQkJCQkJIDxTVE0zMkY0MjlfUEIxMl9GVU5DX1RJTTFfQktJTj47Cj4gKwkJCQl9
+Owo+ICsJCQl9Owo+ICsKPiArCQkJcHdtM19waW5zOiBwd21AMyB7Cj4gKwkJCQlwaW5zIHsKPiAr
+CQkJCQlwaW5tdXggPSA8U1RNMzJGNDI5X1BCNF9GVU5DX1RJTTNfQ0gxPiwKPiArCQkJCQkJIDxT
+VE0zMkY0MjlfUEI1X0ZVTkNfVElNM19DSDI+Owo+ICsJCQkJfTsKPiArCQkJfTsKPiAgCQl9Owo+
+ICAKPiAgCQlyY2M6IHJjY0A0MDAyMzgxMCB7Cj4gQEAgLTQyNiw2ICs0NDEsMjM3IEBACj4gIAkJ
+CWludGVycnVwdHMgPSA8ODA+Owo+ICAJCQljbG9ja3MgPSA8JnJjYyAwIDM4PjsKPiAgCQl9Owo+
+ICsKPiArCQltZmRfdGltZXIxOiBtZmR0aW1lcjFANDAwMTAwMDAgewoKRG8geW91IHJlZmVyZW5j
+ZSB0aGlzIG5vZGU/CgpJZiBub3QsIGl0IHNob3VsZCByZWFkOgoKICBhZHZhbmNlZC1jb250cm9s
+QDQwMDEwMDAwCgo+ICsJCQljb21wYXRpYmxlID0gInN0LHN0bTMyLW1mZC10aW1lcjEiOwoKInN0
+LHN0bTMyLWFkdmFuY2VkLWNvbnRyb2wiCgo+ICsJCQlyZWcgPSA8MHg0MDAxMDAwMCAweDQwMD47
+Cj4gKwkJCWNsb2NrcyA9IDwmcmNjIDAgMTYwPjsKPiArCQkJY2xvY2stbmFtZXMgPSAibWZkX3Rp
+bWVyX2NsayI7CgoiY2xrX2ludCIKCj4gKwkJCWludGVycnVwdHMgPSA8Mjc+OwoKVGhpcyBpcyBh
+IHRpbWVyIHByb3BlcnR5LgoKQWxzbyBtb3ZlIHRoZSBhc3NvY2lhdGVkIHJlZ2lzdHJhdGlvbiBD
+IGNvZGUgaW50byB0aGUgdGltZXIgZHJpdmVyLgoKPiArCQkJc3RhdHVzID0gImRpc2FibGVkIjsK
+PiArCj4gKwkJCXB3bTE6IHB3bTFANDAwMTAwMDAgewoKICBwd21AMCB7Cgo+ICsJCQkJY29tcGF0
+aWJsZSA9ICJzdCxzdG0zMi1wd20xIjsKCnN0LHN0bTMyLWFkdmFuY2VkLWNvbnRyb2wtcHdtCgo+
+ICsJCQkJc3RhdHVzID0gImRpc2FibGVkIjsKPiArCQkJfTsKPiArCj4gKwkJCWlpb3RpbWVyMTog
+aWlvdGltZXIxQDQwMDEwMDAwIHsKClNhbWUgaGVyZToKCiAgdGltZXJAMAoKPiArCQkJCWNvbXBh
+dGlibGUgPSAic3Qsc3RtMzItaWlvLXRpbWVyMSI7CgpzdCxzdG0zMi1hZHZhbmNlZC1jb250cm9s
+LXRpbWVyCgo+ICsJCQkJc3RhdHVzID0gImRpc2FibGVkIjsKPiArCQkJfTsKPiArCQl9Owo+ICsK
+PiArCQltZmRfdGltZXIyOiBtZmR0aW1lcjJANDAwMDAwMDAgewo+ICsJCQljb21wYXRpYmxlID0g
+InN0LHN0bTMyLW1mZC10aW1lcjIiOwo+ICsJCQlyZWcgPSA8MHg0MDAwMDAwMCAweDQwMD47Cj4g
+KwkJCWNsb2NrcyA9IDwmcmNjIDAgMTI4PjsKPiArCQkJY2xvY2stbmFtZXMgPSAibWZkX3RpbWVy
+X2NsayI7Cj4gKwkJCWludGVycnVwdHMgPSA8Mjg+Owo+ICsJCQlzdGF0dXMgPSAiZGlzYWJsZWQi
+Owo+ICsKPiArCQkJcHdtMjogcHdtMkA0MDAwMDAwMCB7Cj4gKwkJCQljb21wYXRpYmxlID0gInN0
+LHN0bTMyLXB3bTIiOwo+ICsJCQkJc3RhdHVzID0gImRpc2FibGVkIjsKPiArCQkJfTsKPiArCQkJ
+aWlvdGltZXIyOiBpaW90aW1lcjJANDAwMDAwMDAgewo+ICsJCQkJY29tcGF0aWJsZSA9ICJzdCxz
+dG0zMi1paW8tdGltZXIyIjsKPiArCQkJCXN0YXR1cyA9ICJkaXNhYmxlZCI7Cj4gKwkJCX07Cj4g
+KwkJfTsKPiArCj4gKwkJbWZkX3RpbWVyMzogbWZkdGltZXIzQDQwMDAwNDAwIHsKPiArCQkJY29t
+cGF0aWJsZSA9ICJzdCxzdG0zMi1tZmQtdGltZXIzIjsKPiArCQkJcmVnID0gPDB4NDAwMDA0MDAg
+MHg0MDA+Owo+ICsJCQljbG9ja3MgPSA8JnJjYyAwIDEyOT47Cj4gKwkJCWNsb2NrLW5hbWVzID0g
+Im1mZF90aW1lcl9jbGsiOwo+ICsJCQlpbnRlcnJ1cHRzID0gPDI5PjsKPiArCQkJc3RhdHVzID0g
+ImRpc2FibGVkIjsKPiArCj4gKwkJCXB3bTM6IHB3bTNANDAwMDA0MDAgewo+ICsJCQkJY29tcGF0
+aWJsZSA9ICJzdCxzdG0zMi1wd20zIjsKPiArCQkJCXN0YXR1cyA9ICJkaXNhYmxlZCI7Cj4gKwkJ
+CX07Cj4gKwkJCWlpb3RpbWVyMzogaWlvdGltZXIzQDQwMDAwNDAwIHsKPiArCQkJCWNvbXBhdGli
+bGUgPSAic3Qsc3RtMzItaWlvLXRpbWVyMyI7Cj4gKwkJCQlzdGF0dXMgPSAiZGlzYWJsZWQiOwo+
+ICsJCQl9Owo+ICsJCX07Cj4gKwo+ICsJCW1mZF90aW1lcjQ6IG1mZHRpbWVyNEA0MDAwMDgwMCB7
+Cj4gKwkJCWNvbXBhdGlibGUgPSAic3Qsc3RtMzItbWZkLXRpbWVyNCI7Cj4gKwkJCXJlZyA9IDww
+eDQwMDAwODAwIDB4NDAwPjsKPiArCQkJY2xvY2tzID0gPCZyY2MgMCAxMzA+Owo+ICsJCQljbG9j
+ay1uYW1lcyA9ICJtZmRfdGltZXJfY2xrIjsKPiArCQkJaW50ZXJydXB0cyA9IDwzMD47Cj4gKwkJ
+CXN0YXR1cyA9ICJkaXNhYmxlZCI7Cj4gKwo+ICsJCQlwd200OiBwd200QDQwMDAwODAwIHsKPiAr
+CQkJCWNvbXBhdGlibGUgPSAic3Qsc3RtMzItcHdtNCI7Cj4gKwkJCQlzdGF0dXMgPSAiZGlzYWJs
+ZWQiOwo+ICsJCQl9Owo+ICsJCQlpaW90aW1lcjQ6IGlpb3RpbWVyNEA0MDAwMDgwMCB7Cj4gKwkJ
+CQljb21wYXRpYmxlID0gInN0LHN0bTMyLWlpby10aW1lcjQiOwo+ICsJCQkJc3RhdHVzID0gImRp
+c2FibGVkIjsKPiArCQkJfTsKPiArCQl9Owo+ICsKPiArCQltZmRfdGltZXI1OiBtZmR0aW1lcjVA
+NDAwMDBDMDAgewo+ICsJCQljb21wYXRpYmxlID0gInN0LHN0bTMyLW1mZC10aW1lcjUiOwo+ICsJ
+CQlyZWcgPSA8MHg0MDAwMEMwMCAweDQwMD47Cj4gKwkJCWNsb2NrcyA9IDwmcmNjIDAgMTMxPjsK
+PiArCQkJY2xvY2stbmFtZXMgPSAibWZkX3RpbWVyX2NsayI7Cj4gKwkJCWludGVycnVwdHMgPSA8
+NTA+Owo+ICsJCQlzdGF0dXMgPSAiZGlzYWJsZWQiOwo+ICsKPiArCQkJcHdtNTogcHdtNUA0MDAw
+MEMwMCB7Cj4gKwkJCQljb21wYXRpYmxlID0gInN0LHN0bTMyLXB3bTUiOwo+ICsJCQkJc3RhdHVz
+ID0gImRpc2FibGVkIjsKPiArCQkJfTsKPiArCQkJaWlvdGltZXI1OiBpaW90aW1lcjVANDAwMDA4
+MDAgewo+ICsJCQkJY29tcGF0aWJsZSA9ICJzdCxzdG0zMi1paW8tdGltZXI1IjsKPiArCQkJCXN0
+YXR1cyA9ICJkaXNhYmxlZCI7Cj4gKwkJCX07Cj4gKwkJfTsKPiArCj4gKwkJbWZkX3RpbWVyNjog
+bWZkdGltZXI2QDQwMDAxMDAwIHsKPiArCQkJY29tcGF0aWJsZSA9ICJzdCxzdG0zMi1tZmQtdGlt
+ZXI2IjsKPiArCQkJcmVnID0gPDB4NDAwMDEwMDAgMHg0MDA+Owo+ICsJCQljbG9ja3MgPSA8JnJj
+YyAwIDEzMj47Cj4gKwkJCWNsb2NrLW5hbWVzID0gIm1mZF90aW1lcl9jbGsiOwo+ICsJCQlpbnRl
+cnJ1cHRzID0gPDU0PjsKPiArCQkJc3RhdHVzID0gImRpc2FibGVkIjsKPiArCj4gKwkJCWlpb3Rp
+bWVyNjogaWlvdGltZXI2QDQwMDAxMDAwIHsKPiArCQkJCWNvbXBhdGlibGUgPSAic3Qsc3RtMzIt
+aWlvLXRpbWVyNiI7Cj4gKwkJCQlzdGF0dXMgPSAiZGlzYWJsZWQiOwo+ICsJCQl9Owo+ICsJCX07
+Cj4gKwo+ICsJCW1mZF90aW1lcjc6IG1mZHRpbWVyN0A0MDAwMTQwMCB7Cj4gKwkJCWNvbXBhdGli
+bGUgPSAic3Qsc3RtMzItbWZkLXRpbWVyNyI7Cj4gKwkJCXJlZyA9IDwweDQwMDAxNDAwIDB4NDAw
+PjsKPiArCQkJY2xvY2tzID0gPCZyY2MgMCAxMzM+Owo+ICsJCQljbG9jay1uYW1lcyA9ICJtZmRf
+dGltZXJfY2xrIjsKPiArCQkJaW50ZXJydXB0cyA9IDw1NT47Cj4gKwkJCXN0YXR1cyA9ICJkaXNh
+YmxlZCI7Cj4gKwo+ICsJCQlpaW90aW1lcjc6IGlpb3RpbWVyN0A0MDAwMTQwMCB7Cj4gKwkJCQlj
+b21wYXRpYmxlID0gInN0LHN0bTMyLWlpby10aW1lcjciOwo+ICsJCQkJc3RhdHVzID0gImRpc2Fi
+bGVkIjsKPiArCQkJfTsKPiArCQl9Owo+ICsKPiArCQltZmRfdGltZXI4OiBtZmR0aW1lcjhANDAw
+MTA0MDAgewo+ICsJCQljb21wYXRpYmxlID0gInN0LHN0bTMyLW1mZC10aW1lcjgiOwo+ICsJCQly
+ZWcgPSA8MHg0MDAxMDQwMCAweDQwMD47Cj4gKwkJCWNsb2NrcyA9IDwmcmNjIDAgMTYxPjsKPiAr
+CQkJY2xvY2stbmFtZXMgPSAibWZkX3RpbWVyX2NsayI7Cj4gKwkJCWludGVycnVwdHMgPSA8NDY+
+Owo+ICsJCQlzdGF0dXMgPSAiZGlzYWJsZWQiOwo+ICsKPiArCQkJcHdtODogcHdtOEA0MDAxMDQw
+MCB7Cj4gKwkJCQljb21wYXRpYmxlID0gInN0LHN0bTMyLXB3bTgiOwo+ICsJCQkJc3RhdHVzID0g
+ImRpc2FibGVkIjsKPiArCQkJfTsKPiArCj4gKwkJCWlpb3RpbWVyODogaWlvdGltZXI3QDQwMDEw
+NDAwIHsKPiArCQkJCWNvbXBhdGlibGUgPSAic3Qsc3RtMzItaWlvLXRpbWVyOCI7Cj4gKwkJCQlz
+dGF0dXMgPSAiZGlzYWJsZWQiOwo+ICsJCQl9Owo+ICsJCX07Cj4gKwo+ICsJCW1mZF90aW1lcjk6
+IG1mZHRpbWVyOUA0MDAxNDAwMCB7Cj4gKwkJCWNvbXBhdGlibGUgPSAic3Qsc3RtMzItbWZkLXRp
+bWVyOSI7Cj4gKwkJCXJlZyA9IDwweDQwMDE0MDAwIDB4NDAwPjsKPiArCQkJY2xvY2tzID0gPCZy
+Y2MgMCAxNzY+Owo+ICsJCQljbG9jay1uYW1lcyA9ICJtZmRfdGltZXJfY2xrIjsKPiArCQkJaW50
+ZXJydXB0cyA9IDwyND47Cj4gKwkJCXN0YXR1cyA9ICJkaXNhYmxlZCI7Cj4gKwo+ICsJCQlwd205
+OiBwd205QDQwMDE0MDAwIHsKPiArCQkJCWNvbXBhdGlibGUgPSAic3Qsc3RtMzItcHdtOSI7Cj4g
+KwkJCQlzdGF0dXMgPSAiZGlzYWJsZWQiOwo+ICsJCQl9Owo+ICsKPiArCQkJaWlvdGltZXI5OiBp
+aW90aW1lcjlANDAwMTQwMDAgewo+ICsJCQkJY29tcGF0aWJsZSA9ICJzdCxzdG0zMi1paW8tdGlt
+ZXI5IjsKPiArCQkJCXN0YXR1cyA9ICJkaXNhYmxlZCI7Cj4gKwkJCX07Cj4gKwkJfTsKPiArCj4g
+KwkJbWZkX3RpbWVyMTA6IG1mZHRpbWVyMTBANDAwMTQ0MDAgewo+ICsJCQljb21wYXRpYmxlID0g
+InN0LHN0bTMyLW1mZC10aW1lcjEwIjsKPiArCQkJcmVnID0gPDB4NDAwMTQ0MDAgMHg0MDA+Owo+
+ICsJCQljbG9ja3MgPSA8JnJjYyAwIDE3Nz47Cj4gKwkJCWNsb2NrLW5hbWVzID0gIm1mZF90aW1l
+cl9jbGsiOwo+ICsJCQlpbnRlcnJ1cHRzID0gPDI1PjsKPiArCQkJc3RhdHVzID0gImRpc2FibGVk
+IjsKPiArCj4gKwkJCXB3bTEwOiBwd20xMEA0MDAxNDQwMCB7Cj4gKwkJCQljb21wYXRpYmxlID0g
+InN0LHN0bTMyLXB3bTEwIjsKPiArCQkJCXN0YXR1cyA9ICJkaXNhYmxlZCI7Cj4gKwkJCX07Cj4g
+KwkJfTsKPiArCj4gKwkJbWZkX3RpbWVyMTE6IG1mZHRpbWVyMTFANDAwMTQ4MDAgewo+ICsJCQlj
+b21wYXRpYmxlID0gInN0LHN0bTMyLW1mZC10aW1lcjExIjsKPiArCQkJcmVnID0gPDB4NDAwMTQ4
+MDAgMHg0MDA+Owo+ICsJCQljbG9ja3MgPSA8JnJjYyAwIDE3OD47Cj4gKwkJCWNsb2NrLW5hbWVz
+ID0gIm1mZF90aW1lcl9jbGsiOwo+ICsJCQlpbnRlcnJ1cHRzID0gPDI2PjsKPiArCQkJc3RhdHVz
+ID0gImRpc2FibGVkIjsKPiArCj4gKwkJCXB3bTExOiBwd20xMUA0MDAxNDgwMCB7Cj4gKwkJCQlj
+b21wYXRpYmxlID0gInN0LHN0bTMyLXB3bTExIjsKPiArCQkJCXN0YXR1cyA9ICJkaXNhYmxlZCI7
+Cj4gKwkJCX07Cj4gKwkJfTsKPiArCj4gKwkJbWZkX3RpbWVyMTI6IG1mZHRpbWVyMTJANDAwMDE4
+MDAgewo+ICsJCQljb21wYXRpYmxlID0gInN0LHN0bTMyLW1mZC10aW1lcjEyIjsKPiArCQkJcmVn
+ID0gPDB4NDAwMDE4MDAgMHg0MDA+Owo+ICsJCQljbG9ja3MgPSA8JnJjYyAwIDEzND47Cj4gKwkJ
+CWNsb2NrLW5hbWVzID0gIm1mZF90aW1lcl9jbGsiOwo+ICsJCQlpbnRlcnJ1cHRzID0gPDQzPjsK
+PiArCQkJc3RhdHVzID0gImRpc2FibGVkIjsKPiArCj4gKwkJCXB3bTEyOiBwd20xMkA0MDAwMTgw
+MCB7Cj4gKwkJCQljb21wYXRpYmxlID0gInN0LHN0bTMyLXB3bTEyIjsKPiArCQkJCXN0YXR1cyA9
+ICJkaXNhYmxlZCI7Cj4gKwkJCX07Cj4gKwkJCWlpb3RpbWVyMTI6IGlpb3RpbWVyMTJANDAwMDE4
+MDAgewo+ICsJCQkJY29tcGF0aWJsZSA9ICJzdCxzdG0zMi1paW8tdGltZXIxMiI7Cj4gKwkJCQlz
+dGF0dXMgPSAiZGlzYWJsZWQiOwo+ICsJCQl9Owo+ICsJCX07Cj4gKwo+ICsJCW1mZF90aW1lcjEz
+OiBtZmR0aW1lcjEzQDQwMDAxQzAwIHsKPiArCQkJY29tcGF0aWJsZSA9ICJzdCxzdG0zMi1tZmQt
+dGltZXIxMyI7Cj4gKwkJCXJlZyA9IDwweDQwMDAxQzAwIDB4NDAwPjsKPiArCQkJY2xvY2tzID0g
+PCZyY2MgMCAxMzU+Owo+ICsJCQljbG9jay1uYW1lcyA9ICJtZmRfdGltZXJfY2xrIjsKPiArCQkJ
+aW50ZXJydXB0cyA9IDw0ND47Cj4gKwkJCXN0YXR1cyA9ICJkaXNhYmxlZCI7Cj4gKwo+ICsJCQlw
+d20xMzogcHdtMTNANDAwMDFDMDAgewo+ICsJCQkJY29tcGF0aWJsZSA9ICJzdCxzdG0zMi1wd20x
+MyI7Cj4gKwkJCQlzdGF0dXMgPSAiZGlzYWJsZWQiOwo+ICsJCQl9Owo+ICsJCX07Cj4gKwo+ICsJ
+CW1mZF90aW1lcjE0OiBtZmR0aW1lcjE0QDQwMDAyMDAwIHsKPiArCQkJY29tcGF0aWJsZSA9ICJz
+dCxzdG0zMi1tZmQtdGltZXIxNCI7Cj4gKwkJCXJlZyA9IDwweDQwMDAyMDAwIDB4NDAwPjsKPiAr
+CQkJY2xvY2tzID0gPCZyY2MgMCAxMzY+Owo+ICsJCQljbG9jay1uYW1lcyA9ICJtZmRfdGltZXJf
+Y2xrIjsKPiArCQkJaW50ZXJydXB0cyA9IDw0NT47Cj4gKwkJCXN0YXR1cyA9ICJkaXNhYmxlZCI7
+Cj4gKwo+ICsJCQlwd20xNDogcHdtMTRANDAwMDIwMDAgewo+ICsJCQkJY29tcGF0aWJsZSA9ICJz
+dCxzdG0zMi1wd20xNCI7Cj4gKwkJCQlzdGF0dXMgPSAiZGlzYWJsZWQiOwo+ICsJCQl9Owo+ICsJ
+CX07Cj4gIAl9Owo+ICB9Owo+ICAKPiBkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vYm9vdC9kdHMvc3Rt
+MzJmNDY5LWRpc2NvLmR0cyBiL2FyY2gvYXJtL2Jvb3QvZHRzL3N0bTMyZjQ2OS1kaXNjby5kdHMK
+PiBpbmRleCA4YTE2M2Q3Li5hOGYxNzg4IDEwMDY0NAo+IC0tLSBhL2FyY2gvYXJtL2Jvb3QvZHRz
+L3N0bTMyZjQ2OS1kaXNjby5kdHMKPiArKysgYi9hcmNoL2FybS9ib290L2R0cy9zdG0zMmY0Njkt
+ZGlzY28uZHRzCj4gQEAgLTgxLDMgKzgxLDMyIEBACj4gICZ1c2FydDMgewo+ICAJc3RhdHVzID0g
+Im9rYXkiOwo+ICB9Owo+ICsKPiArJm1mZF90aW1lcjEgewo+ICsJc3RhdHVzID0gIm9rYXkiOwo+
+ICt9Owo+ICsKPiArJnB3bTEgewo+ICsJcGluY3RybC0wCT0gPCZwd20xX3BpbnM+Owo+ICsJcGlu
+Y3RybC1uYW1lcwk9ICJkZWZhdWx0IjsKPiArCXN0LGJyZWFraW5wdXQtcG9sYXJpdHkgPSA8MD47
+CgpJcyB0aGlzIGRvY3VtZW50ZWQ/CgpJJ20gc3VyZSB3ZSBoYXZlIGdlbmVyaWMgcG9sYXJpdHkg
+cHJvcGVydGllcyBzb21ld2hlcmUgYWxyZWFkeT8KCj4gKwlzdGF0dXMgPSAib2theSI7Cj4gK307
+Cj4gKwo+ICsmaWlvdGltZXIxIHsKPiArCXN0YXR1cyA9ICJva2F5IjsKPiArfTsKPiArCj4gKyZt
+ZmRfdGltZXIzIHsKPiArCXN0YXR1cyA9ICJva2F5IjsKPiArfTsKPiArCj4gKyZwd20zIHsKPiAr
+CXBpbmN0cmwtMAk9IDwmcHdtM19waW5zPjsKPiArCXBpbmN0cmwtbmFtZXMJPSAiZGVmYXVsdCI7
+Cj4gKwlzdGF0dXMgPSAib2theSI7Cj4gK307Cj4gKwo+ICsmaWlvdGltZXIzIHsKPiArCXN0YXR1
+cyA9ICJva2F5IjsKPiArfTsKCkkndmUgYWx3YXlzIGRpc2xpa2VkIHRoaXMgd2F5IG9mIHJlZmVy
+ZW5jaW5nIG5vZGVzIQoKQW55IGNoYW5jZSB3ZSBjYW4gcmVwcmVzZW50IHRoZW0gaW4gYSBoaWVy
+YXJjaHksIHNvIHdlIGRvbid0IGxvc2UgdGhhdAppbmZvcm1hdGlvbiBhbmQgd2UgY2FuIGdldCBy
+aWQgb2YgYWxsIHRob3NlIGhvcnJpYmxlIGxhYmVscz8KCkknbSBoYXBweSB0byBkbyB0aGUgd29y
+ay4KCi0tIApMZWUgSm9uZXMKTGluYXJvIFNUTWljcm9lbGVjdHJvbmljcyBMYW5kaW5nIFRlYW0g
+TGVhZApMaW5hcm8ub3JnIOKUgiBPcGVuIHNvdXJjZSBzb2Z0d2FyZSBmb3IgQVJNIFNvQ3MKRm9s
+bG93IExpbmFybzogRmFjZWJvb2sgfCBUd2l0dGVyIHwgQmxvZwoKX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxp
+c3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZy
+YWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
