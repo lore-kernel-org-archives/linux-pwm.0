@@ -1,35 +1,87 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH linux-pwm/for-next] pwm: renesas-tpu: remove support for sh7372
-Date: Thu, 24 Nov 2016 14:26:12 +0100
-Message-ID: <CAMuHMdXwPJ3=jBz3-J7j-gGYtM_Oi7ZDdkq6M0s39aAByzpEhQ@mail.gmail.com>
-References: <1479993552-10518-1-git-send-email-horms+renesas@verge.net.au>
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Subject: [PATCH v2 1/7] MFD: add bindings for stm32 general purpose timer
+ driver
+Date: Thu, 24 Nov 2016 16:14:17 +0100
+Message-ID: <1480000463-9625-2-git-send-email-benjamin.gaignard@st.com>
+References: <1480000463-9625-1-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1479993552-10518-1-git-send-email-horms+renesas@verge.net.au>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Simon Horman <horms+renesas@verge.net.au>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Magnus Damm <magnus.damm@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1480000463-9625-1-git-send-email-benjamin.gaignard@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: linaro-kernel@lists.linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>, linus.walleij@linaro.org, arnaud.pouliquen@st.com, benjamin.gaignard@linaro.org, gerald.baeza@st.com, fabrice.gasnier@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Nov 24, 2016 at 2:19 PM, Simon Horman
-<horms+renesas@verge.net.au> wrote:
-> Remove support for the SH7372 (SH-Mobile AP4) from the renesas-tpu driver.
->
-> Commit edf4100906044225 ("ARM: shmobile: sh7372 dtsi: Remove Legacy file")
-> removes this SoC from the kernel in v4.1.
->
-> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+Add bindings information for stm32 general purpose timer
 
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+version 2:
+- rename stm32-mfd-timer to stm32-gptimer
+- only keep one compatible string
 
-Gr{oetje,eeting}s,
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+---
+ .../bindings/mfd/stm32-general-purpose-timer.txt   | 43 ++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt b/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
+new file mode 100644
+index 0000000..2f10e67
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
+@@ -0,0 +1,43 @@
++STM32 general purpose timer driver
++
++Required parameters:
++- compatible: must be "st,stm32-gptimer"
++
++- reg:			Physical base address and length of the controller's
++			registers.
++- clock-names: 		Set to "clk_int".
++- clocks: 		Phandle to the clock used by the timer module.
++			For Clk properties, please refer to ../clock/clock-bindings.txt
++
++Optional parameters:
++- resets:		Phandle to the parent reset controller.
++			See ..reset/st,stm32-rcc.txt
++
++Optional subnodes:
++- pwm:			See ../pwm/pwm-stm32.txt
++- iiotimer:		See ../iio/timer/stm32-iio-timer.txt
++
++Example:
++	gptimer1: gptimer1@40010000 {
++		compatible = "st,stm32-gptimer";
++		reg = <0x40010000 0x400>;
++		clocks = <&rcc 0 160>;
++		clock-names = "clk_int";
++
++		pwm1@0 {
++			compatible = "st,stm32-pwm";
++			st,pwm-num-chan = <4>;
++			st,breakinput;
++			st,complementary;
++		};
++
++		iiotimer1@0 {
++			compatible = "st,stm32-iio-timer";
++			interrupts = <27>;
++			st,input-triggers-names = TIM5_TRGO,
++						  TIM2_TRGO,
++						  TIM4_TRGO,
++						  TIM3_TRGO;
++			st,output-triggers-names = TIM1_TRGO;
++		};
++	};
+-- 
+1.9.1
