@@ -1,323 +1,78 @@
-From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: Re: [PATCH v3 07/11] pwm: imx: Provide atomic PWM support for i.MX
- PWMv2
-Date: Mon, 28 Nov 2016 21:48:57 +0100
-Message-ID: <20161128214857.7d1abeb9@jawa>
-References: <1477984230-18071-1-git-send-email-l.majewski@majess.pl>
-        <1477984230-18071-8-git-send-email-l.majewski@majess.pl>
-        <4f514a235a404d0ab9d26f389fc83f51@agner.ch>
-        <20161123093848.206ad78f@bbrezillon>
-        <a46e6054dd24c44e48b995837d9be205@agner.ch>
-        <20161128065031.712d9e7f@jawa>
-        <20161128091508.685324a5@bbrezillon>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 5/7] add bindings for stm32 IIO timer drivers
+Date: Mon, 28 Nov 2016 15:44:44 -0600
+Message-ID: <20161128214444.wyek4zjyy2sbynzh@rob-hp-laptop>
+References: <1479831207-32699-1-git-send-email-benjamin.gaignard@st.com>
+ <1479831207-32699-6-git-send-email-benjamin.gaignard@st.com>
+ <b9a82ce7-745a-1c25-f97f-68aaf0551f3b@metafoo.de>
+ <CA+M3ks6ZoOND4VobU65OntEYU-f_XoNCV4wNZZ0_dYoOxy73+w@mail.gmail.com>
+ <20161122171820.GL10134@dell.home>
+ <CA+M3ks7MgnUJoDoNG157+MbdhgbqwzRmhPcD-uQKC7_DJVAK6A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- boundary="Sig_/8=3S5zCw=eLH0/_H9/WHws_"; protocol="application/pgp-signature"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161128091508.685324a5@bbrezillon>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>, Stefan Agner <stefan@agner.ch>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CA+M3ks7MgnUJoDoNG157+MbdhgbqwzRmhPcD-uQKC7_DJVAK6A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>, Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>, Arnaud Pouliquen <arnaud.pouliquen-qxv4g6HH51o@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linaro Kernel Mailman List <linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
---Sig_/8=3S5zCw=eLH0/_H9/WHws_
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On Wed, Nov 23, 2016 at 09:17:58AM +0100, Benjamin Gaignard wrote:
+> If it is ok for you I will add "id" parameter in mfd driver and
+> forward it to the sub-devices drivers
+> to be able to distinguish the hardware blocks
 
-Dear Boris, Stefan,
+Please don't top post.
 
-> On Mon, 28 Nov 2016 06:50:31 +0100
-> Lukasz Majewski <l.majewski@majess.pl> wrote:
->=20
-> > Dear Stefan, Boris,
-> >=20
-> > > On 2016-11-23 00:38, Boris Brezillon wrote: =20
-> > > > On Tue, 22 Nov 2016 13:55:33 -0800
-> > > > Stefan Agner <stefan@agner.ch> wrote:
-> > > >  =20
-> > > >> On 2016-11-01 00:10, Lukasz Majewski wrote: =20
-> > > >> > This commit provides apply() callback implementation for
-> > > >> > i.MX's PWMv2.
-> > > >> >
-> > > >> > Suggested-by: Stefan Agner <stefan@agner.ch>
-> > > >> > Suggested-by: Boris Brezillon
-> > > >> > <boris.brezillon@free-electrons.com> Signed-off-by: Lukasz
-> > > >> > Majewski <l.majewski@majess.pl> Reviewed-by: Boris Brezillon
-> > > >> > <boris.brezillon@free-electrons.com> ---
-> > > >> > Changes for v3:
-> > > >> > - Remove ipg clock enable/disable functions
-> > > >> >
-> > > >> > Changes for v2:
-> > > >> > - None
-> > > >> > ---
-> > > >> >  drivers/pwm/pwm-imx.c | 70
-> > > >> > +++++++++++++++++++++++++++++++++++++++++++++++++++ 1 file
-> > > >> > changed, 70 insertions(+)
-> > > >> >
-> > > >> > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> > > >> > index ebe9b0c..cd53c05 100644
-> > > >> > --- a/drivers/pwm/pwm-imx.c
-> > > >> > +++ b/drivers/pwm/pwm-imx.c
-> > > >> > @@ -159,6 +159,75 @@ static void
-> > > >> > imx_pwm_wait_fifo_slot(struct pwm_chip *chip, }
-> > > >> >  }
-> > > >> >
-> > > >> > +static int imx_pwm_apply_v2(struct pwm_chip *chip, struct
-> > > >> > pwm_device *pwm,
-> > > >> > +			    struct pwm_state *state)
-> > > >> > +{
-> > > >> > +	unsigned long period_cycles, duty_cycles, prescale;
-> > > >> > +	struct imx_chip *imx =3D to_imx_chip(chip);
-> > > >> > +	struct pwm_state cstate;
-> > > >> > +	unsigned long long c;
-> > > >> > +	u32 cr =3D 0;
-> > > >> > +	int ret;
-> > > >> > +
-> > > >> > +	pwm_get_state(pwm, &cstate);
-> > > >> > + =20
-> > > >>
-> > > >> Couldn't we do:
-> > > >>
-> > > >> if (cstate.enabled) { ...
-> > > >> =20
-> > > >> > +	c =3D clk_get_rate(imx->clk_per);
-> > > >> > +	c *=3D state->period;
-> > > >> > +
-> > > >> > +	do_div(c, 1000000000);
-> > > >> > +	period_cycles =3D c;
-> > > >> > +
-> > > >> > +	prescale =3D period_cycles / 0x10000 + 1;
-> > > >> > +
-> > > >> > +	period_cycles /=3D prescale;
-> > > >> > +	c =3D (unsigned long long)period_cycles *
-> > > >> > state->duty_cycle;
-> > > >> > +	do_div(c, state->period);
-> > > >> > +	duty_cycles =3D c;
-> > > >> > +
-> > > >> > +	/*
-> > > >> > +	 * according to imx pwm RM, the real period value
-> > > >> > should be
-> > > >> > +	 * PERIOD value in PWMPR plus 2.
-> > > >> > +	 */
-> > > >> > +	if (period_cycles > 2)
-> > > >> > +		period_cycles -=3D 2;
-> > > >> > +	else
-> > > >> > +		period_cycles =3D 0;
-> > > >> > +
-> > > >> > +	/* Enable the clock if the PWM is being enabled. */
-> > > >> > +	if (state->enabled && !cstate.enabled) {
-> > > >> > +		ret =3D clk_prepare_enable(imx->clk_per);
-> > > >> > +		if (ret)
-> > > >> > +			return ret;
-> > > >> > +	}
-> > > >> > +
-> > > >> > +	/*
-> > > >> > +	 * Wait for a free FIFO slot if the PWM is already
-> > > >> > enabled, and flush
-> > > >> > +	 * the FIFO if the PWM was disabled and is about to
-> > > >> > be enabled.
-> > > >> > +	 */
-> > > >> > +	if (cstate.enabled)
-> > > >> > +		imx_pwm_wait_fifo_slot(chip, pwm);
-> > > >> > +	else if (state->enabled)
-> > > >> > +		imx_pwm_sw_reset(chip);
-> > > >> > +
-> > > >> > +	writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
-> > > >> > +	writel(period_cycles, imx->mmio_base + MX3_PWMPR);
-> > > >> > +
-> > > >> > +	cr |=3D MX3_PWMCR_PRESCALER(prescale) |
-> > > >> > +	      MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
-> > > >> > +	      MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH;
-> > > >> > +
-> > > >> > +	if (state->enabled)
-> > > >> > +		cr |=3D MX3_PWMCR_EN; =20
-> > > >>
-> > > >> } else if (state->enabled) {
-> > > >> 	imx_pwm_sw_reset(chip);
-> > > >> }
-> > > >>
-> > > >> and get rid of the if (state->enabled) in between? This would
-> > > >> safe us useless recalculation when disabling the
-> > > >> controller... =20
-> > > >=20
-> > > > I get your point, but I'm pretty sure your proposal does not do
-> > > > what you want (remember that cstate is the current state, and
-> > > > state is the new state to apply).
-> > > >=20
-> > > > Something like that would work better:
-> > > >=20
-> > > > 	if (state->enabled) { =20
-> > >=20
-> > > Oops, yes, got that wrong. state->enabled is what I meant.
-> > >  =20
-> > > > 		c =3D clk_get_rate(imx->clk_per);
-> > > > 		c *=3D state->period;
-> > > >=20
-> > > > 		do_div(c, 1000000000);
-> > > > 		period_cycles =3D c;
-> > > >=20
-> > > > 		prescale =3D period_cycles / 0x10000 + 1;
-> > > >=20
-> > > > 		period_cycles /=3D prescale;
-> > > > 		c =3D (unsigned long long)period_cycles *
-> > > > 		    state->duty_cycle;
-> > > > 		do_div(c, state->period);
-> > > > 		duty_cycles =3D c;
-> > > >=20
-> > > > 		/*
-> > > > 		 * According to imx pwm RM, the real period
-> > > > value
-> > > > 		 * should be PERIOD value in PWMPR plus 2.
-> > > > 		 */
-> > > > 		if (period_cycles > 2)
-> > > > 			period_cycles -=3D 2;
-> > > > 		else
-> > > > 			period_cycles =3D 0;
-> > > >=20
-> > > > 		/*
-> > > > 		 * Enable the clock if the PWM is not already
-> > > > 		 * enabled.
-> > > > 		 */
-> > > > 		if (!cstate.enabled) {
-> > > > 			ret =3D clk_prepare_enable(imx->clk_per);
-> > > > 			if (ret)
-> > > > 			return ret;
-> > > > 		}
-> > > >=20
-> > > > 		/*
-> > > > 		 * Wait for a free FIFO slot if the PWM is
-> > > > already
-> > > > 		 * enabled, and flush the FIFO if the PWM was
-> > > > disabled
-> > > > 		 * and is about to be enabled.
-> > > > 		 */
-> > > > 		if (cstate.enabled)
-> > > > 			imx_pwm_wait_fifo_slot(chip, pwm);
-> > > > 		else
-> > > > 			imx_pwm_sw_reset(chip);
-> > > >=20
-> > > > 		writel(duty_cycles, imx->mmio_base +
-> > > > MX3_PWMSAR); writel(period_cycles, imx->mmio_base + MX3_PWMPR);
-> > > >=20
-> > > > 		writel(MX3_PWMCR_PRESCALER(prescale) |
-> > > > 		       MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
-> > > > 		       MX3_PWMCR_DBGEN |
-> > > > MX3_PWMCR_CLKSRC_IPG_HIGH | MX3_PWMCR_EN,
-> > > > 		       imx->mmio_base + MX3_PWMCR);
-> > > > 	} else {
-> > > >=20
-> > > > 		writel(0, imx->mmio_base + MX3_PWMCR);
-> > > >=20
-> > > > 		/* Disable the clock if the PWM is currently
-> > > > enabled. */ if (cstate.enabled)
-> > > > 			clk_disable_unprepare(imx->clk_per);
-> > > > 	}
-> > > >=20
-> > > >=20
-> > > > This being said, I'm a bit concerned by the way this driver
-> > > > handles PWM config requests.
-> > > > It seems that the new config request is queued, and nothing
-> > > > guarantees =20
-> > >=20
-> > > Not sure if that is true. The RM says: "A change in the period
-> > > value due to a write in PWM_PWMPR results in the counter being
-> > > reset to zero and the start of a new count period."
-> > >=20
-> > > And for PWMSAR: "When a new value is written, the duty cycle
-> > > changes after the current period is over."
-> > >=20
-> > > So I guess writing the period basically makes sure the next value
-> > > from PWMSAR will be active immediately...
-> > >=20
-> > >  =20
-> > > > that it is actually applied when the
-> > > > pwm_apply/config/enable/disable() functions return. =20
-> > >=20
-> > >=20
-> > > Given that the driver did it like that since quite some time, I am
-> > > assuming it mostly works in practice.=20
-> > >=20
-> > > I would rather prefer to do that conversion to atomic PWM API
-> > > now, and fix that in a second step... =20
-> >=20
-> > I'm also for fixing one problem in a time. The "PWM ->apply()" set
-> > of patches now tries to fix all problems in IMX PWM driver.
-> >=20
-> > Could we agree on the scope of this work? I mean what should be
-> > included to "->apply()" rework and what will be fixed latter?
->=20
-> I never asked to fix that in this series ;-), I was just pointing the
-> weird behavior of the existing code.
->=20
-> Let's focus on the atomic support for now.
+No, it's not okay. If the counter sizes are different, then have a 
+property for the counter size. Describe how they are different without 
+numbering them. If you can't describe the differences, then it shouldn't 
+matter which ones the OS picks to use.
 
-So Boris, you don't have any comments to the atomic support patches? :-)
+> 2016-11-22 18:18 GMT+01:00 Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>:
+> > On Tue, 22 Nov 2016, Benjamin Gaignard wrote:
+> >
+> >> [snip]
+> >> >> +     "st,stm32-iio-timer5"
+> >> >> +     "st,stm32-iio-timer6"
+> >> >> +     "st,stm32-iio-timer7"
+> >> >> +     "st,stm32-iio-timer8"
+> >> >> +     "st,stm32-iio-timer9"
+> >> >> +     "st,stm32-iio-timer10"
+> >> >> +     "st,stm32-iio-timer11"
+> >> >> +     "st,stm32-iio-timer12"
+> >> >> +     "st,stm32-iio-timer13"
+> >> >> +     "st,stm32-iio-timer14"
 
-Stefan, do you require to change the ipg stuff in the atomic series or
-could it be done as a subsequent patch?
+I doubt the h/w manual calls these "IIO timers".
 
-If you don't have any more questions, I will prepare next patch
-iteration according to Stefan comments.
-
-Best regards,
-=C5=81ukasz Majewski
-
->=20
-> >=20
-> > Frankly, I think that this patch series comes to the point where it
-> > is not manageable anymore.
-> >=20
-> > Please also keep in mind that I do have iMX6q system, Stefan has
-> > imx7 and Sasha has HW with PWMv1 working.
-> >=20
-> > Changing the driver in N different places not related to the
-> > "->apply()" atomicity support (the ipg clock, FIFO) requires far
-> > more work and testing.
-> >=20
-> >=20
-> > Best regards,
-> > =C5=81ukasz Majewski
-> >=20
-> > >  =20
-> > > >=20
-> > > > This approach has several flaws IMO:
-> > > >=20
-> > > > 1/ I'm not sure this is what the PWM users expect. Getting your
-> > > > request queued with no guarantees that it is applied can be
-> > > > weird in some cases (especially when the user changes the PWM
-> > > > config several times in a short period of time).
-> > > > 2/ In the disable path, you queue a "stop PWM" request, but
-> > > > you're not sure that it's actually dequeued before the per clk
-> > > > is disabled. What happens in that case? And more importantly,
-> > > > what happens when the PWM is re-enabled to apply a new config?
-> > > > AFAICS, there might be a short period of time where the
-> > > > re-enabled PWM is actually running with the old config until we
-> > > > flush the command queue and queue a new command.
-> > > > 3/ The queueing approach complicates the whole logic. You have
-> > > > to flush the FIFO in some cases, or wait for an empty slots if
-> > > > too many commands are queued.
-> > > >    Forcing imx_pwm_apply_v2() to wait for the config request to
-> > > > be applied should simplify the whole thing, because you will
-> > > > always be guaranteed that the FIFO is empty, and that the
-> > > > current configuration is the last requested one.
-> > > >  =20
-> > >=20
-> > > --
-> > > Stefan =20
-> >=20
->=20
-
-
---Sig_/8=3S5zCw=eLH0/_H9/WHws_
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iEYEARECAAYFAlg8mEAACgkQf9/hG2YwgjGHYQCfQ7Rqt8PyMeQpGLOpPkIXW2ij
-AuQAoJ4C+KApVFD7hYFspQuberT4dOLs
-=PKjI
------END PGP SIGNATURE-----
-
---Sig_/8=3S5zCw=eLH0/_H9/WHws_--
+> >> >
+> >> > We can't do this. This is a binding for a driver, not for the hardware.
+> >> >
+> >>
+> >> Unfortunately each instance for the hardware IP have little
+> >> differences like which triggers they could accept or size of the
+> >> counter register,
+> >> and I doesn't have value inside the hardware to distinguish them so
+> >> the only way I found is to use compatible.
+> >
+> > Can't you represent these as properties?
+> >
+> > --
+> > Lee Jones
+> > Linaro STMicroelectronics Landing Team Lead
+> > Linaro.org │ Open source software for ARM SoCs
+> > Follow Linaro: Facebook | Twitter | Blog
+> 
+> 
+> 
+> -- 
+> Benjamin Gaignard
+> 
+> Graphic Study Group
+> 
+> Linaro.org │ Open source software for ARM SoCs
+> 
+> Follow Linaro: Facebook | Twitter | Blog
