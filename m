@@ -1,270 +1,247 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH v3 07/11] pwm: imx: Provide atomic PWM support for i.MX
- PWMv2
-Date: Tue, 29 Nov 2016 09:24:08 +0100
-Message-ID: <20161129092408.2f7f2222@bbrezillon>
-References: <1477984230-18071-1-git-send-email-l.majewski@majess.pl>
-        <1477984230-18071-8-git-send-email-l.majewski@majess.pl>
-        <4f514a235a404d0ab9d26f389fc83f51@agner.ch>
-        <20161123093848.206ad78f@bbrezillon>
-        <a46e6054dd24c44e48b995837d9be205@agner.ch>
-        <20161128065031.712d9e7f@jawa>
-        <20161128091508.685324a5@bbrezillon>
-        <20161128214857.7d1abeb9@jawa>
+From: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 1/7] MFD: add bindings for stm32 general purpose timer driver
+Date: Tue, 29 Nov 2016 09:48:34 +0100
+Message-ID: <CA+M3ks4Y4FnJGqwyH0oitrxvzRnKNHA261wqfEOSfc1aA4am4g@mail.gmail.com>
+References: <1480000463-9625-1-git-send-email-benjamin.gaignard@st.com>
+ <1480000463-9625-2-git-send-email-benjamin.gaignard@st.com>
+ <2b751c4a-3038-4220-05d8-d745c51a3691@kernel.org> <b78a21f7-38a1-5a40-b96e-d1c9156aee68@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:45414 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754610AbcK2IYL (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 29 Nov 2016 03:24:11 -0500
-In-Reply-To: <20161128214857.7d1abeb9@jawa>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <b78a21f7-38a1-5a40-b96e-d1c9156aee68-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>, Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>, Arnaud Pouliquen <arnaud.pouliquen-qxv4g6HH51o@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linaro Kernel Mailman List <linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Lukasz Majewski <l.majewski@majess.pl>
-Cc: Stefan Agner <stefan@agner.ch>, Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, kernel@pengutronix.de
 
-On Mon, 28 Nov 2016 21:48:57 +0100
-Lukasz Majewski <l.majewski@majess.pl> wrote:
+2016-11-27 16:41 GMT+01:00 Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>:
+> On 27/11/16 14:10, Jonathan Cameron wrote:
+>> On 24/11/16 15:14, Benjamin Gaignard wrote:
+>>> Add bindings information for stm32 general purpose timer
+>>>
+>>> version 2:
+>>> - rename stm32-mfd-timer to stm32-gptimer
+>>> - only keep one compatible string
+>>>
+>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+>>> ---
+>>>  .../bindings/mfd/stm32-general-purpose-timer.txt   | 43 ++++++++++++++=
+++++++++
+>>>  1 file changed, 43 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-general=
+-purpose-timer.txt
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/mfd/stm32-general-purpos=
+e-timer.txt b/Documentation/devicetree/bindings/mfd/stm32-general-purpose-t=
+imer.txt
+>>> new file mode 100644
+>>> index 0000000..2f10e67
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer=
+.txt
+>>> @@ -0,0 +1,43 @@
+>>> +STM32 general purpose timer driver
+>>> +
+>>> +Required parameters:
+>>> +- compatible: must be "st,stm32-gptimer"
+>>> +
+>>> +- reg:                      Physical base address and length of the co=
+ntroller's
+>>> +                    registers.
+>>> +- clock-names:              Set to "clk_int".
+>>> +- clocks:           Phandle to the clock used by the timer module.
+>>> +                    For Clk properties, please refer to ../clock/clock=
+-bindings.txt
+>>> +
+>>> +Optional parameters:
+>>> +- resets:           Phandle to the parent reset controller.
+>>> +                    See ..reset/st,stm32-rcc.txt
+>>> +
+>>> +Optional subnodes:
+>>> +- pwm:                      See ../pwm/pwm-stm32.txt
+>>> +- iiotimer:         See ../iio/timer/stm32-iio-timer.txt
+>> Naming issue here.  Can't mention IIO as that's a linux subsystem and al=
+l
+>> bindings must be independent of OS.
+>>
+>> Perhaps adc-trigger-timer?
+>>> +
+>>> +Example:
+>>> +    gptimer1: gptimer1@40010000 {
+>>> +            compatible =3D "st,stm32-gptimer";
+>>> +            reg =3D <0x40010000 0x400>;
+>>> +            clocks =3D <&rcc 0 160>;
+>>> +            clock-names =3D "clk_int";
+>>> +
+>>> +            pwm1@0 {
+>>> +                    compatible =3D "st,stm32-pwm";
+>>> +                    st,pwm-num-chan =3D <4>;
+>>> +                    st,breakinput;
+>>> +                    st,complementary;
+>>> +            };
+>>> +
+>>> +            iiotimer1@0 {
+>>> +                    compatible =3D "st,stm32-iio-timer";
+>> Again, avoid the use of iio in here (same issue you had with mfd in the =
+previous
+>> version).
+>>> +                    interrupts =3D <27>;
+>>> +                    st,input-triggers-names =3D TIM5_TRGO,
+>> Docs for these should be introduced before they are used in an example.
+>> Same for the PWM ones above.  Expand the detail fo the example as you ad=
+d
+>> the other elements.
+>
+> I've just dived into the datasheet for these timers.
+> http://www.st.com/content/ccc/resource/technical/document/reference_manua=
+l/3d/6d/5a/66/b4/99/40/d4/DM00031020.pdf/files/DM00031020.pdf/jcr:content/t=
+ranslations/en.DM00031020.pdf
+>
 
-> Dear Boris, Stefan,
-> 
-> > On Mon, 28 Nov 2016 06:50:31 +0100
-> > Lukasz Majewski <l.majewski@majess.pl> wrote:
-> >   
-> > > Dear Stefan, Boris,
-> > >   
-> > > > On 2016-11-23 00:38, Boris Brezillon wrote:    
-> > > > > On Tue, 22 Nov 2016 13:55:33 -0800
-> > > > > Stefan Agner <stefan@agner.ch> wrote:
-> > > > >     
-> > > > >> On 2016-11-01 00:10, Lukasz Majewski wrote:    
-> > > > >> > This commit provides apply() callback implementation for
-> > > > >> > i.MX's PWMv2.
-> > > > >> >
-> > > > >> > Suggested-by: Stefan Agner <stefan@agner.ch>
-> > > > >> > Suggested-by: Boris Brezillon
-> > > > >> > <boris.brezillon@free-electrons.com> Signed-off-by: Lukasz
-> > > > >> > Majewski <l.majewski@majess.pl> Reviewed-by: Boris Brezillon
-> > > > >> > <boris.brezillon@free-electrons.com> ---
-> > > > >> > Changes for v3:
-> > > > >> > - Remove ipg clock enable/disable functions
-> > > > >> >
-> > > > >> > Changes for v2:
-> > > > >> > - None
-> > > > >> > ---
-> > > > >> >  drivers/pwm/pwm-imx.c | 70
-> > > > >> > +++++++++++++++++++++++++++++++++++++++++++++++++++ 1 file
-> > > > >> > changed, 70 insertions(+)
-> > > > >> >
-> > > > >> > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> > > > >> > index ebe9b0c..cd53c05 100644
-> > > > >> > --- a/drivers/pwm/pwm-imx.c
-> > > > >> > +++ b/drivers/pwm/pwm-imx.c
-> > > > >> > @@ -159,6 +159,75 @@ static void
-> > > > >> > imx_pwm_wait_fifo_slot(struct pwm_chip *chip, }
-> > > > >> >  }
-> > > > >> >
-> > > > >> > +static int imx_pwm_apply_v2(struct pwm_chip *chip, struct
-> > > > >> > pwm_device *pwm,
-> > > > >> > +			    struct pwm_state *state)
-> > > > >> > +{
-> > > > >> > +	unsigned long period_cycles, duty_cycles, prescale;
-> > > > >> > +	struct imx_chip *imx = to_imx_chip(chip);
-> > > > >> > +	struct pwm_state cstate;
-> > > > >> > +	unsigned long long c;
-> > > > >> > +	u32 cr = 0;
-> > > > >> > +	int ret;
-> > > > >> > +
-> > > > >> > +	pwm_get_state(pwm, &cstate);
-> > > > >> > +    
-> > > > >>
-> > > > >> Couldn't we do:
-> > > > >>
-> > > > >> if (cstate.enabled) { ...
-> > > > >>    
-> > > > >> > +	c = clk_get_rate(imx->clk_per);
-> > > > >> > +	c *= state->period;
-> > > > >> > +
-> > > > >> > +	do_div(c, 1000000000);
-> > > > >> > +	period_cycles = c;
-> > > > >> > +
-> > > > >> > +	prescale = period_cycles / 0x10000 + 1;
-> > > > >> > +
-> > > > >> > +	period_cycles /= prescale;
-> > > > >> > +	c = (unsigned long long)period_cycles *
-> > > > >> > state->duty_cycle;
-> > > > >> > +	do_div(c, state->period);
-> > > > >> > +	duty_cycles = c;
-> > > > >> > +
-> > > > >> > +	/*
-> > > > >> > +	 * according to imx pwm RM, the real period value
-> > > > >> > should be
-> > > > >> > +	 * PERIOD value in PWMPR plus 2.
-> > > > >> > +	 */
-> > > > >> > +	if (period_cycles > 2)
-> > > > >> > +		period_cycles -= 2;
-> > > > >> > +	else
-> > > > >> > +		period_cycles = 0;
-> > > > >> > +
-> > > > >> > +	/* Enable the clock if the PWM is being enabled. */
-> > > > >> > +	if (state->enabled && !cstate.enabled) {
-> > > > >> > +		ret = clk_prepare_enable(imx->clk_per);
-> > > > >> > +		if (ret)
-> > > > >> > +			return ret;
-> > > > >> > +	}
-> > > > >> > +
-> > > > >> > +	/*
-> > > > >> > +	 * Wait for a free FIFO slot if the PWM is already
-> > > > >> > enabled, and flush
-> > > > >> > +	 * the FIFO if the PWM was disabled and is about to
-> > > > >> > be enabled.
-> > > > >> > +	 */
-> > > > >> > +	if (cstate.enabled)
-> > > > >> > +		imx_pwm_wait_fifo_slot(chip, pwm);
-> > > > >> > +	else if (state->enabled)
-> > > > >> > +		imx_pwm_sw_reset(chip);
-> > > > >> > +
-> > > > >> > +	writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
-> > > > >> > +	writel(period_cycles, imx->mmio_base + MX3_PWMPR);
-> > > > >> > +
-> > > > >> > +	cr |= MX3_PWMCR_PRESCALER(prescale) |
-> > > > >> > +	      MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
-> > > > >> > +	      MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH;
-> > > > >> > +
-> > > > >> > +	if (state->enabled)
-> > > > >> > +		cr |= MX3_PWMCR_EN;    
-> > > > >>
-> > > > >> } else if (state->enabled) {
-> > > > >> 	imx_pwm_sw_reset(chip);
-> > > > >> }
-> > > > >>
-> > > > >> and get rid of the if (state->enabled) in between? This would
-> > > > >> safe us useless recalculation when disabling the
-> > > > >> controller...    
-> > > > > 
-> > > > > I get your point, but I'm pretty sure your proposal does not do
-> > > > > what you want (remember that cstate is the current state, and
-> > > > > state is the new state to apply).
-> > > > > 
-> > > > > Something like that would work better:
-> > > > > 
-> > > > > 	if (state->enabled) {    
-> > > > 
-> > > > Oops, yes, got that wrong. state->enabled is what I meant.
-> > > >     
-> > > > > 		c = clk_get_rate(imx->clk_per);
-> > > > > 		c *= state->period;
-> > > > > 
-> > > > > 		do_div(c, 1000000000);
-> > > > > 		period_cycles = c;
-> > > > > 
-> > > > > 		prescale = period_cycles / 0x10000 + 1;
-> > > > > 
-> > > > > 		period_cycles /= prescale;
-> > > > > 		c = (unsigned long long)period_cycles *
-> > > > > 		    state->duty_cycle;
-> > > > > 		do_div(c, state->period);
-> > > > > 		duty_cycles = c;
-> > > > > 
-> > > > > 		/*
-> > > > > 		 * According to imx pwm RM, the real period
-> > > > > value
-> > > > > 		 * should be PERIOD value in PWMPR plus 2.
-> > > > > 		 */
-> > > > > 		if (period_cycles > 2)
-> > > > > 			period_cycles -= 2;
-> > > > > 		else
-> > > > > 			period_cycles = 0;
-> > > > > 
-> > > > > 		/*
-> > > > > 		 * Enable the clock if the PWM is not already
-> > > > > 		 * enabled.
-> > > > > 		 */
-> > > > > 		if (!cstate.enabled) {
-> > > > > 			ret = clk_prepare_enable(imx->clk_per);
-> > > > > 			if (ret)
-> > > > > 			return ret;
-> > > > > 		}
-> > > > > 
-> > > > > 		/*
-> > > > > 		 * Wait for a free FIFO slot if the PWM is
-> > > > > already
-> > > > > 		 * enabled, and flush the FIFO if the PWM was
-> > > > > disabled
-> > > > > 		 * and is about to be enabled.
-> > > > > 		 */
-> > > > > 		if (cstate.enabled)
-> > > > > 			imx_pwm_wait_fifo_slot(chip, pwm);
-> > > > > 		else
-> > > > > 			imx_pwm_sw_reset(chip);
-> > > > > 
-> > > > > 		writel(duty_cycles, imx->mmio_base +
-> > > > > MX3_PWMSAR); writel(period_cycles, imx->mmio_base + MX3_PWMPR);
-> > > > > 
-> > > > > 		writel(MX3_PWMCR_PRESCALER(prescale) |
-> > > > > 		       MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
-> > > > > 		       MX3_PWMCR_DBGEN |
-> > > > > MX3_PWMCR_CLKSRC_IPG_HIGH | MX3_PWMCR_EN,
-> > > > > 		       imx->mmio_base + MX3_PWMCR);
-> > > > > 	} else {
-> > > > > 
-> > > > > 		writel(0, imx->mmio_base + MX3_PWMCR);
-> > > > > 
-> > > > > 		/* Disable the clock if the PWM is currently
-> > > > > enabled. */ if (cstate.enabled)
-> > > > > 			clk_disable_unprepare(imx->clk_per);
-> > > > > 	}
-> > > > > 
-> > > > > 
-> > > > > This being said, I'm a bit concerned by the way this driver
-> > > > > handles PWM config requests.
-> > > > > It seems that the new config request is queued, and nothing
-> > > > > guarantees    
-> > > > 
-> > > > Not sure if that is true. The RM says: "A change in the period
-> > > > value due to a write in PWM_PWMPR results in the counter being
-> > > > reset to zero and the start of a new count period."
-> > > > 
-> > > > And for PWMSAR: "When a new value is written, the duty cycle
-> > > > changes after the current period is over."
-> > > > 
-> > > > So I guess writing the period basically makes sure the next value
-> > > > from PWMSAR will be active immediately...
-> > > > 
-> > > >     
-> > > > > that it is actually applied when the
-> > > > > pwm_apply/config/enable/disable() functions return.    
-> > > > 
-> > > > 
-> > > > Given that the driver did it like that since quite some time, I am
-> > > > assuming it mostly works in practice. 
-> > > > 
-> > > > I would rather prefer to do that conversion to atomic PWM API
-> > > > now, and fix that in a second step...    
-> > > 
-> > > I'm also for fixing one problem in a time. The "PWM ->apply()" set
-> > > of patches now tries to fix all problems in IMX PWM driver.
-> > > 
-> > > Could we agree on the scope of this work? I mean what should be
-> > > included to "->apply()" rework and what will be fixed latter?  
-> > 
-> > I never asked to fix that in this series ;-), I was just pointing the
-> > weird behavior of the existing code.
-> > 
-> > Let's focus on the atomic support for now.  
-> 
-> So Boris, you don't have any comments to the atomic support patches? :-)
+I really appreciate that you do this effort, thanks.
 
-Nope.
+>
+> I think you need a binding that describes the capabilities of each of the=
+ timers
+> explicitly.   Down to the level of whether there is a repetition counter =
+or not.
+> Each should exists as a separate entity in device tree.
+>
+> They then have an existence as timers separate to the description of what=
+ they
+> are used for.
+>
+> Here the only way we are saying they exist is by their use which doesn't =
+feel
+> right to me.
+>
+> So I think you need to move back to what you had in the first place.  The=
+ key
+> thing is that ever timer needs describing fully.  They are different enou=
+gh
+> that for example the datasheet doesn't even try to describe them in one s=
+ection.
+> (it has 4 separate chapters covering different sets of these hardware blo=
+cks).
+> The naming isn't really based on index, we are talking different hardware
+> that the datasheet authors have decided not to give different names to!
 
-> 
-> Stefan, do you require to change the ipg stuff in the atomic series or
-> could it be done as a subsequent patch?
-> 
-> If you don't have any more questions, I will prepare next patch
-> iteration according to Stefan comments.
-> 
-> Best regards,
-> Łukasz Majewski
+Even if the hardware are named differently in the documentation they
+all share the
+same registers definitions and mapping but configurations are
+different for each device.
+
+>
+> If they'd called them
+> advanced timers
+> generic timers
+> basic timers
+> really basic timers meant for driving the DAC (6 and 7)
+>
+> We'd all have been quite happy with different compatible strings giving a=
+way
+> what they can do.
+
+4 compatible strings will not be enough to describe devices
+configuration, for example
+in the documentation general purpose timers could have a 16 or 32 bit
+counter, for 1 to 4
+pwm channels and triggers (accepted or generated by the device) are
+different for each device.
+
+DAC could be drive by timers 2, 4, 5, 6, 7 and 8.
+ADC could be driver by 32 triggers
+
+> What you have here is far too specific to what you are trying to do with =
+them
+> right now.
+>
+> These things are separately capable of timing capture (which is I guess w=
+here
+> the IIO device later comes in).
+>
+> So my expectation is that we end up potentially instantiating:
+>
+> 1) An MFD to handle the shared elements of the timers.
+> 2) Up to 12ish timers each with separate existence as a device in the dri=
+ver model
+> and in device tree.
+> (nasty corner cases here are using timers as perscalers for other timers =
+- I'd be
+> tempted to leave that for now)
+> Note that each of these devices has a different register set I think? Any=
+ shared
+> bits are handled via the mfd above (if we even need that MFD which I'm st=
+arting
+> to doubt looking at the datasheet).
+>
+
+pwm and trigger share the same registers but not the same bits.
+With regmap write functions I don't have sharing problems.
+
+> 3) Up to N pwms again with there own existence in the device model.  Thes=
+e don't
+> do much other than wrap the timer and stick it in output mode.
+> 4) Up to N iio triggers - this is basically using the timer as a periodic=
+ interrupt
+> (though without the interrupt having visibility to the kernel) which fire=
+s off
+> sampling on associated ADCs.
+> 5) Up to N iio capture devices for all channels that support timing captu=
+re.
+> Note there is also hardware encoder capture support in these which should=
+ be
+> correctly handled as well.  This comes back to an ancient discussion on t=
+he
+> TI ecap units which have similar capabilities (driver never went anywhere=
+ but
+> I think that was because the author left TI).
+>
+> Certainly for the IIO devices these should no be bound up into one instan=
+ce
+> as you have done here.
+>
+> Anyhow, I fear that right now this discussion is missing the key ingredie=
+nt
+> that the hardware is horrendously variable in it's capabilities and reall=
+y
+> is 4-5 different types of hardware that just happen to share a few bits o=
+f
+> their offsets in their register maps.
+
+Hardware really share the same registers mapping that why I have wrote
+one only driver
+per framework. Only the configurations are different
+
+>
+> So after all that I'm almost more confused than I was at the start!
+>
+> Jonathan
+>
+>
+>>> +                                              TIM2_TRGO,
+>>> +                                              TIM4_TRGO,
+>>> +                                              TIM3_TRGO;
+>>> +                    st,output-triggers-names =3D TIM1_TRGO;
+>>> +            };
+>>> +    };
+>>>
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+>
+
+
+
+--=20
+Benjamin Gaignard
+
+Graphic Study Group
+
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+
+Follow Linaro: Facebook | Twitter | Blog
