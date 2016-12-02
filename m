@@ -1,118 +1,80 @@
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Subject: Re: [PATCH v2 3/7] PWM: add pwm-stm32 DT bindings
-Date: Thu, 1 Dec 2016 09:44:58 +0100
-Message-ID: <CA+M3ks5xKHj49bLH1XQ97RrF+2xcXc-e7T5inZNN19uUWVOuRg@mail.gmail.com>
-References: <1480000463-9625-1-git-send-email-benjamin.gaignard@st.com>
- <1480000463-9625-4-git-send-email-benjamin.gaignard@st.com> <20161130212055.b57qkqy66j5gg57q@rob-hp-laptop>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 1/2] pwm: lpss: Make builtin and add lookup-table so that i915
+ can find the pwm_backlight
+Date: Fri,  2 Dec 2016 11:17:35 +0100
+Message-ID: <20161202101736.12236-1-hdegoede@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161130212055.b57qkqy66j5gg57q@rob-hp-laptop>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>, Mark Rutland <mark.rutland@arm.com>, alexandre.torgue@st.com, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Fabrice Gasnier <fabrice.gasnier@st.com>, Gerald Baeza <gerald.baeza@st.com>, Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linus Walleij <linus.walleij@linaro.org>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, Benjamin Gaignard <benjamin.gaignard@st.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Jani Nikula <jani.nikula@linux.intel.com>, =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= <ville.syrjala@linux.intel.com>
+Cc: linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Hans de Goede <hdegoede@redhat.com>
 List-Id: linux-pwm@vger.kernel.org
 
-2016-11-30 22:20 GMT+01:00 Rob Herring <robh@kernel.org>:
-> On Thu, Nov 24, 2016 at 04:14:19PM +0100, Benjamin Gaignard wrote:
->> Define bindings for pwm-stm32
->>
->> version 2:
->> - use parameters instead of compatible of handle the hardware configurat=
-ion
->>
->> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
->> ---
->>  .../devicetree/bindings/pwm/pwm-stm32.txt          | 37 +++++++++++++++=
-+++++++
->>  1 file changed, 37 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
->>
->> diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Docum=
-entation/devicetree/bindings/pwm/pwm-stm32.txt
->> new file mode 100644
->> index 0000000..36263f0
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
->> @@ -0,0 +1,37 @@
->> +STMicroelectronics PWM driver bindings for STM32
->> +
->> +Must be a sub-node of STM32 general purpose timer driver
->> +
->> +Required parameters:
->> +- compatible:                Must be "st,stm32-pwm"
->> +- pinctrl-names:     Set to "default".
->> +- pinctrl-0:                 List of phandles pointing to pin configura=
-tion nodes
->> +                     for PWM module.
->> +                     For Pinctrl properties, please refer to [1].
->> +
->> +Optional parameters:
->> +- st,breakinput:     Set if the hardware have break input capabilities
->> +- st,breakinput-polarity: Set break input polarity. Default is 0
->> +                      The value define the active polarity:
->> +                       - 0 (active LOW)
->> +                       - 1 (active HIGH)
->> +- st,pwm-num-chan:   Number of available PWM channels.  Default is 0.
->> +- st,32bits-counter: Set if the hardware have a 32 bits counter
->> +- st,complementary:  Set if the hardware have complementary output chan=
-nels
->
-> What does complementary mean here?
-
-Complementary channels are pwm channels where the signal level is inverted
-compare to the original channel.
-This parameter indicate that the hardware have this kind of outputs.
-If the polarity of the original channel change then polarity of
-complementary channel
-change too.
-
->
->> +
->> +[1] Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
->> +
->> +Example:
->> +     gptimer1: gptimer1@40010000 {
->
-> timer@...
-
-I would like keep "timer" for timer-trigger sub-node
-
->
->> +             compatible =3D "st,stm32-gptimer";
->> +             reg =3D <0x40010000 0x400>;
->> +             clocks =3D <&rcc 0 160>;
->> +             clock-names =3D "clk_int";
->> +
->> +             pwm1@0 {
->
-> pwm {
->
-> Is there more than one?
-
-Not per hardware block but their is 12 of them in the SoC.
-Adding a number (which match with SoC documentation) help to find
-the wanted pwm in sysfs either we only have the address.
-
->
->> +                     compatible =3D "st,stm32-pwm";
->> +                     st,pwm-num-chan =3D <4>;
->> +                     st,breakinput;
->> +                     st,complementary;
->> +             };
->> +     };
->> --
->> 1.9.1
->>
-
-
-
---=20
-Benjamin Gaignard
-
-Graphic Study Group
-
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-
-Follow Linaro: Facebook | Twitter | Blog
+VGhlIHByaW1hcnkgY29uc3VtZXIgb2YgdGhlIGxwc3MgcHdtIGlzIHRoZSBpOTE1IGttcyBkcml2
+ZXIsIGJ1dApjdXJyZW50bHkgdGhhdCBkcml2ZXIgY2Fubm90IGdldCB0aGUgcHdtIGJlY2F1c2Ug
+aTkxNSBwbGF0Zm9ybXMgYXJlCm5vdCB1c2luZyBkZXZpY2V0cmVlIGFuZCBwd20tbHBzcyBkb2Vz
+IG5vdCBjYWxsIHB3bV9hZGRfdGFibGUuCgpBbm90aGVyIHByb2JsZW0gaXMgdGhhdCBpOTE1IGRv
+ZXMgbm90IHN1cHBvcnQgZ2V0X3B3bSByZXR1cm5pbmcKLUVQUk9CRV9ERUZFUiBhbmQgaTkxNSdz
+IGluaXQgaXMgdmVyeSBjb21wbGV4IGFuZCB0aGlzIGlzIGFsbW9zdAppbXBvc3NpYmxlIHRvIGZp
+eC4KClRoaXMgY29tbWl0IGNoYW5nZXMgdGhlIFBXTV9MUFNTIEtjb25maWcgZnJvbSBhIHRyaXN0
+YXRlIHRvIGEgYm9vbCwgc28KdGhhdCB3aGVuIHRoZSBpOTE1IGRyaXZlciBsb2FkcyB0aGUgbHBz
+cyBwd20gd2lsbCBiZSBhdmFpbGFibGUgYXZvaWRpbmcKdGhlIC1FUFJPQkVfREVGRVIgaXNzdWUu
+IE5vdGUgdGhhdCB0aGlzIGlzIGlkZW50aWNhbCB0byBob3cgdGhlIHNhbWUKcHJvYmxlbSB3YXMg
+c29sdmVkIGZvciB0aGUgcHdtLWNyYyBkcml2ZXIuCgpCZWluZyBidWlsdGluIGFsc28gYWxsb3dz
+IGNhbGxpbmcgcHdtX2FkZF90YWJsZSBkaXJlY3RseSBmcm9tIHRoZQpwd20tbHBzcyBjb2RlLCBv
+dGhlcndpc2UgdGhlIHB3bV9hZGRfdGFibGUgY2FsbCB3b3VsZCBuZWVkIHRvIGJlIHB1dApzb21l
+d2hlcmUgZWxzZSB0byBlbnN1cmUgaXQgaGFwcGVucyBiZWZvcmUgaTkxNSBjYWxscyBwd21fZ2V0
+LApldmVuIGlmIGk5MTUgd291bGQgc3VwcG9ydCAtRVBST0JFX0RFRkVSLgoKU2lnbmVkLW9mZi1i
+eTogSGFucyBkZSBHb2VkZSA8aGRlZ29lZGVAcmVkaGF0LmNvbT4KLS0tCiBkcml2ZXJzL3B3bS9L
+Y29uZmlnICAgIHwgMTIgKysrLS0tLS0tLS0tCiBkcml2ZXJzL3B3bS9wd20tbHBzcy5jIHwgMTEg
+KysrKysrKysrKysKIDIgZmlsZXMgY2hhbmdlZCwgMTQgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlv
+bnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9LY29uZmlnIGIvZHJpdmVycy9wd20vS2Nv
+bmZpZwppbmRleCBiZjAxMjg4Li5jZGEzMWVhIDEwMDY0NAotLS0gYS9kcml2ZXJzL3B3bS9LY29u
+ZmlnCisrKyBiL2RyaXZlcnMvcHdtL0tjb25maWcKQEAgLTI0MCwyOCArMjQwLDIyIEBAIGNvbmZp
+ZyBQV01fTFBDMzJYWAogCSAgd2lsbCBiZSBjYWxsZWQgcHdtLWxwYzMyeHguCiAKIGNvbmZpZyBQ
+V01fTFBTUwotCXRyaXN0YXRlCisJYm9vbAogCiBjb25maWcgUFdNX0xQU1NfUENJCi0JdHJpc3Rh
+dGUgIkludGVsIExQU1MgUFdNIFBDSSBkcml2ZXIiCisJYm9vbCAiSW50ZWwgTFBTUyBQV00gUENJ
+IGRyaXZlciIKIAlkZXBlbmRzIG9uIFg4NiAmJiBQQ0kKIAlzZWxlY3QgUFdNX0xQU1MKIAloZWxw
+CiAJICBUaGUgUENJIGRyaXZlciBmb3IgSW50ZWwgTG93IFBvd2VyIFN1YnN5c3RlbSBQV00gY29u
+dHJvbGxlci4KIAotCSAgVG8gY29tcGlsZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hvb3Nl
+IE0gaGVyZTogdGhlIG1vZHVsZQotCSAgd2lsbCBiZSBjYWxsZWQgcHdtLWxwc3MtcGNpLgotCiBj
+b25maWcgUFdNX0xQU1NfUExBVEZPUk0KLQl0cmlzdGF0ZSAiSW50ZWwgTFBTUyBQV00gcGxhdGZv
+cm0gZHJpdmVyIgorCWJvb2wgIkludGVsIExQU1MgUFdNIHBsYXRmb3JtIGRyaXZlciIKIAlkZXBl
+bmRzIG9uIFg4NiAmJiBBQ1BJCiAJc2VsZWN0IFBXTV9MUFNTCiAJaGVscAogCSAgVGhlIHBsYXRm
+b3JtIGRyaXZlciBmb3IgSW50ZWwgTG93IFBvd2VyIFN1YnN5c3RlbSBQV00gY29udHJvbGxlci4K
+IAotCSAgVG8gY29tcGlsZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hvb3NlIE0gaGVyZTog
+dGhlIG1vZHVsZQotCSAgd2lsbCBiZSBjYWxsZWQgcHdtLWxwc3MtcGxhdGZvcm0uCi0KIGNvbmZp
+ZyBQV01fTUVTT04KIAl0cmlzdGF0ZSAiQW1sb2dpYyBNZXNvbiBQV00gZHJpdmVyIgogCWRlcGVu
+ZHMgb24gQVJDSF9NRVNPTgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLWxwc3MuYyBiL2Ry
+aXZlcnMvcHdtL3B3bS1scHNzLmMKaW5kZXggNzJjMGJjZS4uYjRkODgzNSAxMDA2NDQKLS0tIGEv
+ZHJpdmVycy9wd20vcHdtLWxwc3MuYworKysgYi9kcml2ZXJzL3B3bS9wd20tbHBzcy5jCkBAIC0x
+NjEsNiArMTYxLDEyIEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgcHdtX29wcyBwd21fbHBzc19vcHMg
+PSB7CiAJLm93bmVyID0gVEhJU19NT0RVTEUsCiB9OwogCisvKiBQV00gY29uc3VtZWQgYnkgdGhl
+IEludGVsIEdGWCAqLworc3RhdGljIHN0cnVjdCBwd21fbG9va3VwIHB3bV9scHNzX2xvb2t1cFtd
+ID0geworCVBXTV9MT09LVVAoInB3bS1scHNzIiwgMCwgIjAwMDA6MDA6MDIuMCIsICJwd21fYmFj
+a2xpZ2h0IiwgMCwKKwkJICAgUFdNX1BPTEFSSVRZX05PUk1BTCksCit9OworCiBzdHJ1Y3QgcHdt
+X2xwc3NfY2hpcCAqcHdtX2xwc3NfcHJvYmUoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgcmVz
+b3VyY2UgKnIsCiAJCQkJICAgICBjb25zdCBzdHJ1Y3QgcHdtX2xwc3NfYm9hcmRpbmZvICppbmZv
+KQogewpAQCAtMTkzLDEyICsxOTksMTcgQEAgc3RydWN0IHB3bV9scHNzX2NoaXAgKnB3bV9scHNz
+X3Byb2JlKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IHJlc291cmNlICpyLAogCQlyZXR1cm4g
+RVJSX1BUUihyZXQpOwogCX0KIAorCS8qIEFkZCBsb29rdXAgdGFibGUgZm9yIHB3bV9iYWNrbGln
+aHQgKi8KKwlwd21fbHBzc19sb29rdXBbMF0ucHJvdmlkZXIgPSBkZXZfbmFtZShkZXYpOworCXB3
+bV9hZGRfdGFibGUocHdtX2xwc3NfbG9va3VwLCBBUlJBWV9TSVpFKHB3bV9scHNzX2xvb2t1cCkp
+OworCiAJcmV0dXJuIGxwd207CiB9CiBFWFBPUlRfU1lNQk9MX0dQTChwd21fbHBzc19wcm9iZSk7
+CiAKIGludCBwd21fbHBzc19yZW1vdmUoc3RydWN0IHB3bV9scHNzX2NoaXAgKmxwd20pCiB7CisJ
+cHdtX3JlbW92ZV90YWJsZShwd21fbHBzc19sb29rdXAsIEFSUkFZX1NJWkUocHdtX2xwc3NfbG9v
+a3VwKSk7CiAJcmV0dXJuIHB3bWNoaXBfcmVtb3ZlKCZscHdtLT5jaGlwKTsKIH0KIEVYUE9SVF9T
+WU1CT0xfR1BMKHB3bV9scHNzX3JlbW92ZSk7Ci0tIAoyLjkuMwoKX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmkt
+ZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
+L21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
