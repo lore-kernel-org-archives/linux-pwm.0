@@ -1,80 +1,72 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 1/2] pwm: lpss: Make builtin and add lookup-table so that i915
- can find the pwm_backlight
-Date: Fri,  2 Dec 2016 11:17:35 +0100
-Message-ID: <20161202101736.12236-1-hdegoede@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+Subject: [PATCH 2/2] pwm: lpss: Add get_state callback
+Date: Fri,  2 Dec 2016 11:17:36 +0100
+Message-ID: <20161202101736.12236-2-hdegoede@redhat.com>
+References: <20161202101736.12236-1-hdegoede@redhat.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mx1.redhat.com ([209.132.183.28]:35820 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1759436AbcLBKRl (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 2 Dec 2016 05:17:41 -0500
+In-Reply-To: <20161202101736.12236-1-hdegoede@redhat.com>
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Jani Nikula <jani.nikula@linux.intel.com>, =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= <ville.syrjala@linux.intel.com>
 Cc: linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Hans de Goede <hdegoede@redhat.com>
-List-Id: linux-pwm@vger.kernel.org
 
-VGhlIHByaW1hcnkgY29uc3VtZXIgb2YgdGhlIGxwc3MgcHdtIGlzIHRoZSBpOTE1IGttcyBkcml2
-ZXIsIGJ1dApjdXJyZW50bHkgdGhhdCBkcml2ZXIgY2Fubm90IGdldCB0aGUgcHdtIGJlY2F1c2Ug
-aTkxNSBwbGF0Zm9ybXMgYXJlCm5vdCB1c2luZyBkZXZpY2V0cmVlIGFuZCBwd20tbHBzcyBkb2Vz
-IG5vdCBjYWxsIHB3bV9hZGRfdGFibGUuCgpBbm90aGVyIHByb2JsZW0gaXMgdGhhdCBpOTE1IGRv
-ZXMgbm90IHN1cHBvcnQgZ2V0X3B3bSByZXR1cm5pbmcKLUVQUk9CRV9ERUZFUiBhbmQgaTkxNSdz
-IGluaXQgaXMgdmVyeSBjb21wbGV4IGFuZCB0aGlzIGlzIGFsbW9zdAppbXBvc3NpYmxlIHRvIGZp
-eC4KClRoaXMgY29tbWl0IGNoYW5nZXMgdGhlIFBXTV9MUFNTIEtjb25maWcgZnJvbSBhIHRyaXN0
-YXRlIHRvIGEgYm9vbCwgc28KdGhhdCB3aGVuIHRoZSBpOTE1IGRyaXZlciBsb2FkcyB0aGUgbHBz
-cyBwd20gd2lsbCBiZSBhdmFpbGFibGUgYXZvaWRpbmcKdGhlIC1FUFJPQkVfREVGRVIgaXNzdWUu
-IE5vdGUgdGhhdCB0aGlzIGlzIGlkZW50aWNhbCB0byBob3cgdGhlIHNhbWUKcHJvYmxlbSB3YXMg
-c29sdmVkIGZvciB0aGUgcHdtLWNyYyBkcml2ZXIuCgpCZWluZyBidWlsdGluIGFsc28gYWxsb3dz
-IGNhbGxpbmcgcHdtX2FkZF90YWJsZSBkaXJlY3RseSBmcm9tIHRoZQpwd20tbHBzcyBjb2RlLCBv
-dGhlcndpc2UgdGhlIHB3bV9hZGRfdGFibGUgY2FsbCB3b3VsZCBuZWVkIHRvIGJlIHB1dApzb21l
-d2hlcmUgZWxzZSB0byBlbnN1cmUgaXQgaGFwcGVucyBiZWZvcmUgaTkxNSBjYWxscyBwd21fZ2V0
-LApldmVuIGlmIGk5MTUgd291bGQgc3VwcG9ydCAtRVBST0JFX0RFRkVSLgoKU2lnbmVkLW9mZi1i
-eTogSGFucyBkZSBHb2VkZSA8aGRlZ29lZGVAcmVkaGF0LmNvbT4KLS0tCiBkcml2ZXJzL3B3bS9L
-Y29uZmlnICAgIHwgMTIgKysrLS0tLS0tLS0tCiBkcml2ZXJzL3B3bS9wd20tbHBzcy5jIHwgMTEg
-KysrKysrKysrKysKIDIgZmlsZXMgY2hhbmdlZCwgMTQgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlv
-bnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9LY29uZmlnIGIvZHJpdmVycy9wd20vS2Nv
-bmZpZwppbmRleCBiZjAxMjg4Li5jZGEzMWVhIDEwMDY0NAotLS0gYS9kcml2ZXJzL3B3bS9LY29u
-ZmlnCisrKyBiL2RyaXZlcnMvcHdtL0tjb25maWcKQEAgLTI0MCwyOCArMjQwLDIyIEBAIGNvbmZp
-ZyBQV01fTFBDMzJYWAogCSAgd2lsbCBiZSBjYWxsZWQgcHdtLWxwYzMyeHguCiAKIGNvbmZpZyBQ
-V01fTFBTUwotCXRyaXN0YXRlCisJYm9vbAogCiBjb25maWcgUFdNX0xQU1NfUENJCi0JdHJpc3Rh
-dGUgIkludGVsIExQU1MgUFdNIFBDSSBkcml2ZXIiCisJYm9vbCAiSW50ZWwgTFBTUyBQV00gUENJ
-IGRyaXZlciIKIAlkZXBlbmRzIG9uIFg4NiAmJiBQQ0kKIAlzZWxlY3QgUFdNX0xQU1MKIAloZWxw
-CiAJICBUaGUgUENJIGRyaXZlciBmb3IgSW50ZWwgTG93IFBvd2VyIFN1YnN5c3RlbSBQV00gY29u
-dHJvbGxlci4KIAotCSAgVG8gY29tcGlsZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hvb3Nl
-IE0gaGVyZTogdGhlIG1vZHVsZQotCSAgd2lsbCBiZSBjYWxsZWQgcHdtLWxwc3MtcGNpLgotCiBj
-b25maWcgUFdNX0xQU1NfUExBVEZPUk0KLQl0cmlzdGF0ZSAiSW50ZWwgTFBTUyBQV00gcGxhdGZv
-cm0gZHJpdmVyIgorCWJvb2wgIkludGVsIExQU1MgUFdNIHBsYXRmb3JtIGRyaXZlciIKIAlkZXBl
-bmRzIG9uIFg4NiAmJiBBQ1BJCiAJc2VsZWN0IFBXTV9MUFNTCiAJaGVscAogCSAgVGhlIHBsYXRm
-b3JtIGRyaXZlciBmb3IgSW50ZWwgTG93IFBvd2VyIFN1YnN5c3RlbSBQV00gY29udHJvbGxlci4K
-IAotCSAgVG8gY29tcGlsZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hvb3NlIE0gaGVyZTog
-dGhlIG1vZHVsZQotCSAgd2lsbCBiZSBjYWxsZWQgcHdtLWxwc3MtcGxhdGZvcm0uCi0KIGNvbmZp
-ZyBQV01fTUVTT04KIAl0cmlzdGF0ZSAiQW1sb2dpYyBNZXNvbiBQV00gZHJpdmVyIgogCWRlcGVu
-ZHMgb24gQVJDSF9NRVNPTgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLWxwc3MuYyBiL2Ry
-aXZlcnMvcHdtL3B3bS1scHNzLmMKaW5kZXggNzJjMGJjZS4uYjRkODgzNSAxMDA2NDQKLS0tIGEv
-ZHJpdmVycy9wd20vcHdtLWxwc3MuYworKysgYi9kcml2ZXJzL3B3bS9wd20tbHBzcy5jCkBAIC0x
-NjEsNiArMTYxLDEyIEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgcHdtX29wcyBwd21fbHBzc19vcHMg
-PSB7CiAJLm93bmVyID0gVEhJU19NT0RVTEUsCiB9OwogCisvKiBQV00gY29uc3VtZWQgYnkgdGhl
-IEludGVsIEdGWCAqLworc3RhdGljIHN0cnVjdCBwd21fbG9va3VwIHB3bV9scHNzX2xvb2t1cFtd
-ID0geworCVBXTV9MT09LVVAoInB3bS1scHNzIiwgMCwgIjAwMDA6MDA6MDIuMCIsICJwd21fYmFj
-a2xpZ2h0IiwgMCwKKwkJICAgUFdNX1BPTEFSSVRZX05PUk1BTCksCit9OworCiBzdHJ1Y3QgcHdt
-X2xwc3NfY2hpcCAqcHdtX2xwc3NfcHJvYmUoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgcmVz
-b3VyY2UgKnIsCiAJCQkJICAgICBjb25zdCBzdHJ1Y3QgcHdtX2xwc3NfYm9hcmRpbmZvICppbmZv
-KQogewpAQCAtMTkzLDEyICsxOTksMTcgQEAgc3RydWN0IHB3bV9scHNzX2NoaXAgKnB3bV9scHNz
-X3Byb2JlKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IHJlc291cmNlICpyLAogCQlyZXR1cm4g
-RVJSX1BUUihyZXQpOwogCX0KIAorCS8qIEFkZCBsb29rdXAgdGFibGUgZm9yIHB3bV9iYWNrbGln
-aHQgKi8KKwlwd21fbHBzc19sb29rdXBbMF0ucHJvdmlkZXIgPSBkZXZfbmFtZShkZXYpOworCXB3
-bV9hZGRfdGFibGUocHdtX2xwc3NfbG9va3VwLCBBUlJBWV9TSVpFKHB3bV9scHNzX2xvb2t1cCkp
-OworCiAJcmV0dXJuIGxwd207CiB9CiBFWFBPUlRfU1lNQk9MX0dQTChwd21fbHBzc19wcm9iZSk7
-CiAKIGludCBwd21fbHBzc19yZW1vdmUoc3RydWN0IHB3bV9scHNzX2NoaXAgKmxwd20pCiB7CisJ
-cHdtX3JlbW92ZV90YWJsZShwd21fbHBzc19sb29rdXAsIEFSUkFZX1NJWkUocHdtX2xwc3NfbG9v
-a3VwKSk7CiAJcmV0dXJuIHB3bWNoaXBfcmVtb3ZlKCZscHdtLT5jaGlwKTsKIH0KIEVYUE9SVF9T
-WU1CT0xfR1BMKHB3bV9scHNzX3JlbW92ZSk7Ci0tIAoyLjkuMwoKX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmkt
-ZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
-L21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+Add a get_state callback so that the initial state correctly reflects
+the actual hardware state.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/pwm/pwm-lpss.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index b4d8835..f5603c0 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -135,6 +135,33 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	return 0;
+ }
+ 
++static void pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
++			       struct pwm_state *state)
++{
++	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
++	unsigned long base_unit_range, freq;
++	unsigned long long base_unit, on_time_div;
++	u32 ctrl;
++
++	base_unit_range = BIT(lpwm->info->base_unit_bits);
++
++	ctrl = pwm_lpss_read(pwm);
++	on_time_div = ctrl & PWM_ON_TIME_DIV_MASK;
++	base_unit = (ctrl >> PWM_BASE_UNIT_SHIFT) & (base_unit_range - 1);
++
++	freq = base_unit * lpwm->info->clk_rate / base_unit_range;
++	if (freq == 0)
++		freq = 1;
++
++	state->period = NSEC_PER_SEC / freq;
++	state->duty_cycle = state->period * on_time_div / 255ULL;
++	state->polarity = PWM_POLARITY_NORMAL;
++	state->enabled = (ctrl & PWM_ENABLE) ? true : false;
++
++	if (state->enabled)
++		pm_runtime_get_sync(chip->dev);
++}
++
+ static int pwm_lpss_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	pm_runtime_get_sync(chip->dev);
+@@ -156,6 +183,7 @@ static void pwm_lpss_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ static const struct pwm_ops pwm_lpss_ops = {
+ 	.config = pwm_lpss_config,
++	.get_state = pwm_lpss_get_state,
+ 	.enable = pwm_lpss_enable,
+ 	.disable = pwm_lpss_disable,
+ 	.owner = THIS_MODULE,
+-- 
+2.9.3
