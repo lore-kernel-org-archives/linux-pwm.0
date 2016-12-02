@@ -1,753 +1,92 @@
-From: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v3 6/7] IIO: add STM32 timer trigger driver
-Date: Fri,  2 Dec 2016 11:17:21 +0100
-Message-ID: <1480673842-20804-7-git-send-email-benjamin.gaignard@st.com>
-References: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1480673842-20804-1-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+From: Jani Nikula <jani.nikula@linux.intel.com>
+Subject: Re: [PATCH 1/2] pwm: lpss: Make builtin and add
+	lookup-table so that i915 can find the pwm_backlight
+Date: Fri, 02 Dec 2016 12:55:57 +0200
+Message-ID: <87inr2zjk2.fsf@intel.com>
+References: <20161202101736.12236-1-hdegoede@redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <20161202101736.12236-1-hdegoede@redhat.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel.vetter@intel.com>, Ville =?utf-8?B?U3lyasOkbMOk?= <ville.syrjala@linux.intel.com>
+Cc: linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Hans de Goede <hdegoede@redhat.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Timers IPs can be used to generate triggers for other IPs like
-DAC, ADC or other timers.
-Each trigger may result of timer internals signals like counter enable,
-reset or edge, this configuration could be done through "master_mode"
-device attribute.
-
-A timer device could be triggered by other timers, we use the trigger
-name and is_stm32_iio_timer_trigger() function to distinguish them
-and configure IP input switch.
-
-Timer may also decide on which event (edge, level) they could
-be activated by a trigger, this configuration is done by writing in
-"slave_mode" device attribute.
-
-Since triggers could also be used by DAC or ADC their names are defined
-in include/dt-bindings/iio/timer/st,stm32-iio-timer.h so those IPs will be able
-to configure themselves in valid_trigger function
-
-Trigger have a "sampling_frequency" attribute which allow to configure
-timer sampling frequency without using pwm interface
-
-version 3:
-- change compatible to "st,stm32-timer-trigger"
-- fix attributes access right
-- use string instead of int for master_mode and slave_mode
-- document device attributes in sysfs-bus-iio-timer-stm32
-
-version 2:
-- keep only one compatible
-- use st,input-triggers-names and st,output-triggers-names
-  to know which triggers are accepted and/or create by the device
-
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
----
- .../ABI/testing/sysfs-bus-iio-timer-stm32          |  47 ++
- drivers/iio/Kconfig                                |   2 +-
- drivers/iio/Makefile                               |   1 +
- drivers/iio/timer/Kconfig                          |  15 +
- drivers/iio/timer/Makefile                         |   1 +
- drivers/iio/timer/stm32-timer-trigger.c            | 477 +++++++++++++++++++++
- drivers/iio/trigger/Kconfig                        |   1 -
- .../iio/timer/st,stm32-timer-triggers.h            |  60 +++
- include/linux/iio/timer/stm32-timer-trigger.h      |  16 +
- 9 files changed, 618 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
- create mode 100644 drivers/iio/timer/Kconfig
- create mode 100644 drivers/iio/timer/Makefile
- create mode 100644 drivers/iio/timer/stm32-timer-trigger.c
- create mode 100644 include/dt-bindings/iio/timer/st,stm32-timer-triggers.h
- create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-new file mode 100644
-index 0000000..b70bb2a
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-@@ -0,0 +1,47 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/master_mode_available
-+KernelVersion:	4.10
-+Contact:	benjamin.gaignard-qxv4g6HH51o@public.gmane.org
-+Description:
-+		Reading returns the list possible master modes which are:
-+		- "reset"     :	The UG bit from the TIMx_EGR register is used as trigger output (TRGO).
-+		- "enable"    : The Counter Enable signal CNT_EN is used as trigger output.
-+		- "update"    : The update event is selected as trigger output.
-+				For instance a master timer can then be used as a prescaler for a slave timer.
-+		- "compare_pulse" : The trigger output send a positive pulse when the CC1IF flag is to be set.
-+		- "OC1REF"    : OC1REF signal is used as trigger output.
-+		- "OC2REF"    : OC2REF signal is used as trigger output.
-+		- "OC3REF"    : OC3REF signal is used as trigger output.
-+		- "OC4REF"    : OC4REF signal is used as trigger output.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/master_mode
-+KernelVersion:	4.10
-+Contact:	benjamin.gaignard-qxv4g6HH51o@public.gmane.org
-+Description:
-+		Reading returns the current master modes.
-+		Writing set the master mode
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/slave_mode_available
-+KernelVersion:	4.10
-+Contact:	benjamin.gaignard-qxv4g6HH51o@public.gmane.org
-+Description:
-+		Reading returns the list possible slave modes which are:
-+		- "disabled"  : The prescaler is clocked directly by the internal clock.
-+		- "encoder_1" : Counter counts up/down on TI2FP1 edge depending on TI1FP2 level.
-+		- "encoder_2" : Counter counts up/down on TI1FP2 edge depending on TI2FP1 level.
-+		- "encoder_3" : Counter counts up/down on both TI1FP1 and TI2FP2 edges depending
-+				on the level of the other input.
-+		- "reset"     : Rising edge of the selected trigger input reinitializes the counter
-+				and generates an update of the registers.
-+		- "gated"     : The counter clock is enabled when the trigger input is high.
-+				The counter stops (but is not reset) as soon as the trigger becomes low.
-+				Both start and stop of the counter are controlled.
-+		- "trigger"   : The counter starts at a rising edge of the trigger TRGI (but it is not
-+				reset). Only the start of the counter is controlled.
-+		- "external_clock": Rising edges of the selected trigger (TRGI) clock the counter.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/slave_mode
-+KernelVersion:	4.10
-+Contact:	benjamin.gaignard-qxv4g6HH51o@public.gmane.org
-+Description:
-+		Reading returns the current slave mode.
-+		Writing set the slave mode
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 6743b18..2de2a80 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -90,5 +90,5 @@ source "drivers/iio/potentiometer/Kconfig"
- source "drivers/iio/pressure/Kconfig"
- source "drivers/iio/proximity/Kconfig"
- source "drivers/iio/temperature/Kconfig"
--
-+source "drivers/iio/timer/Kconfig"
- endif # IIO
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 87e4c43..b797c08 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -32,4 +32,5 @@ obj-y += potentiometer/
- obj-y += pressure/
- obj-y += proximity/
- obj-y += temperature/
-+obj-y += timer/
- obj-y += trigger/
-diff --git a/drivers/iio/timer/Kconfig b/drivers/iio/timer/Kconfig
-new file mode 100644
-index 0000000..149a917
---- /dev/null
-+++ b/drivers/iio/timer/Kconfig
-@@ -0,0 +1,15 @@
-+#
-+# Timers drivers
-+
-+menu "Timers"
-+
-+config IIO_STM32_TIMER_TRIGGER
-+	tristate "stm32 timer trigger"
-+	depends on ARCH_STM32
-+	depends on OF
-+	select IIO_TRIGGERED_EVENT
-+	select MFD_STM32_GP_TIMER
-+	help
-+	  Select this option to enable stm32 timer trigger
-+
-+endmenu
-diff --git a/drivers/iio/timer/Makefile b/drivers/iio/timer/Makefile
-new file mode 100644
-index 0000000..4ad95ec9
---- /dev/null
-+++ b/drivers/iio/timer/Makefile
-@@ -0,0 +1 @@
-+obj-$(CONFIG_IIO_STM32_TIMER_TRIGGER) += stm32-timer-trigger.o
-diff --git a/drivers/iio/timer/stm32-timer-trigger.c b/drivers/iio/timer/stm32-timer-trigger.c
-new file mode 100644
-index 0000000..0c51601
---- /dev/null
-+++ b/drivers/iio/timer/stm32-timer-trigger.c
-@@ -0,0 +1,477 @@
-+/*
-+ * stm32-iio-timer.c
-+ *
-+ * Copyright (C) STMicroelectronics 2016
-+ * Author: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org> for STMicroelectronics.
-+ * License terms:  GNU General Public License (GPL), version 2
-+ */
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/timer/stm32-timer-trigger.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/triggered_event.h>
-+#include <linux/interrupt.h>
-+#include <linux/mfd/stm32-gptimer.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+
-+#define DRIVER_NAME	"stm32-timer-trigger"
-+#define MAX_MODES	8
-+
-+struct stm32_timer_trigger_dev {
-+	struct device *dev;
-+	struct regmap *regmap;
-+	struct clk *clk;
-+	int irq;
-+	bool own_timer;
-+	unsigned int sampling_frequency;
-+	struct iio_trigger *active_trigger;
-+};
-+
-+static ssize_t _store_frequency(struct device *dev,
-+				struct device_attribute *attr,
-+				const char *buf, size_t len)
-+{
-+	struct iio_trigger *trig = to_iio_trigger(dev);
-+	struct stm32_timer_trigger_dev *stm32 = iio_trigger_get_drvdata(trig);
-+	unsigned int freq;
-+	int ret;
-+
-+	ret = kstrtouint(buf, 10, &freq);
-+	if (ret)
-+		return ret;
-+
-+	stm32->sampling_frequency = freq;
-+
-+	return len;
-+}
-+
-+static ssize_t _read_frequency(struct device *dev,
-+			       struct device_attribute *attr, char *buf)
-+{
-+	struct iio_trigger *trig = to_iio_trigger(dev);
-+	struct stm32_timer_trigger_dev *stm32 = iio_trigger_get_drvdata(trig);
-+	unsigned long long freq = stm32->sampling_frequency;
-+	u32 psc, arr, cr1;
-+
-+	regmap_read(stm32->regmap, TIM_CR1, &cr1);
-+	regmap_read(stm32->regmap, TIM_PSC, &psc);
-+	regmap_read(stm32->regmap, TIM_ARR, &arr);
-+
-+	if (psc && arr && (cr1 & TIM_CR1_CEN)) {
-+		freq = (unsigned long long)clk_get_rate(stm32->clk);
-+		do_div(freq, psc);
-+		do_div(freq, arr);
-+	}
-+
-+	return sprintf(buf, "%d\n", (unsigned int)freq);
-+}
-+
-+static IIO_DEV_ATTR_SAMP_FREQ(0660, _read_frequency, _store_frequency);
-+
-+static struct attribute *stm32_trigger_attrs[] = {
-+	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group stm32_trigger_attr_group = {
-+	.attrs = stm32_trigger_attrs,
-+};
-+
-+static const struct attribute_group *stm32_trigger_attr_groups[] = {
-+	&stm32_trigger_attr_group,
-+	NULL,
-+};
-+
-+static char *master_mode_table[] = {
-+	"reset",
-+	"enable",
-+	"update",
-+	"compare_pulse",
-+	"OC1REF",
-+	"OC2REF",
-+	"OC3REF",
-+	"OC4REF"
-+};
-+
-+static
-+ssize_t _show_master_mode(struct device *dev,
-+			  struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct stm32_timer_trigger_dev *stm32 = iio_priv(indio_dev);
-+	u32 cr2;
-+
-+	regmap_read(stm32->regmap, TIM_CR2, &cr2);
-+	cr2 = (cr2 >> 4) & 0x7;
-+
-+	return snprintf(buf, PAGE_SIZE, "%s\n", master_mode_table[cr2]);
-+}
-+
-+static
-+ssize_t _store_master_mode(struct device *dev,
-+			   struct device_attribute *attr,
-+			   const char *buf, size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct stm32_timer_trigger_dev *stm32 = iio_priv(indio_dev);
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(master_mode_table); i++) {
-+		if (!strncmp(master_mode_table[i], buf,
-+			     strlen(master_mode_table[i]))) {
-+			regmap_update_bits(stm32->regmap, TIM_CR2,
-+					   TIM_CR2_MMS, i << 4);
-+			return len;
-+		}
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static IIO_CONST_ATTR(master_mode_available,
-+	"reset enable update compare_pulse OC1REF OC2REF OC3REF OC4REF");
-+
-+static IIO_DEVICE_ATTR(master_mode, 0660,
-+		       _show_master_mode,
-+		       _store_master_mode,
-+		       0);
-+
-+static char *slave_mode_table[] = {
-+	"disabled",
-+	"encoder_1",
-+	"encoder_2",
-+	"encoder_3",
-+	"reset",
-+	"gated",
-+	"trigger",
-+	"external_clock",
-+};
-+
-+static
-+ssize_t _show_slave_mode(struct device *dev,
-+			 struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct stm32_timer_trigger_dev *stm32 = iio_priv(indio_dev);
-+	u32 smcr;
-+
-+	regmap_read(stm32->regmap, TIM_SMCR, &smcr);
-+	smcr &= 0x7;
-+
-+	return snprintf(buf, PAGE_SIZE, "%s\n", slave_mode_table[smcr]);
-+}
-+
-+static
-+ssize_t _store_slave_mode(struct device *dev,
-+			  struct device_attribute *attr,
-+			  const char *buf, size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct stm32_timer_trigger_dev *stm32 = iio_priv(indio_dev);
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(slave_mode_table); i++) {
-+		if (!strncmp(slave_mode_table[i], buf,
-+			     strlen(slave_mode_table[i]))) {
-+			regmap_update_bits(stm32->regmap,
-+					   TIM_SMCR, TIM_SMCR_SMS, i);
-+			return len;
-+		}
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static IIO_CONST_ATTR(slave_mode_available,
-+       "disabled encoder_1 encoder_2 encoder_3 reset gated trigger external_clock");
-+
-+static IIO_DEVICE_ATTR(slave_mode, 0660,
-+		       _show_slave_mode,
-+		       _store_slave_mode,
-+		       0);
-+
-+static struct attribute *stm32_timer_attrs[] = {
-+	&iio_dev_attr_master_mode.dev_attr.attr,
-+	&iio_const_attr_master_mode_available.dev_attr.attr,
-+	&iio_dev_attr_slave_mode.dev_attr.attr,
-+	&iio_const_attr_slave_mode_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group stm32_timer_attr_group = {
-+	.attrs = stm32_timer_attrs,
-+};
-+
-+static int stm32_timer_start(struct stm32_timer_trigger_dev *stm32)
-+{
-+	unsigned long long prd, div;
-+	int prescaler = 0;
-+	u32 max_arr = 0xFFFF, cr1;
-+
-+	if (stm32->sampling_frequency == 0)
-+		return 0;
-+
-+	/* Period and prescaler values depends of clock rate */
-+	div = (unsigned long long)clk_get_rate(stm32->clk);
-+
-+	do_div(div, stm32->sampling_frequency);
-+
-+	prd = div;
-+
-+	while (div > max_arr) {
-+		prescaler++;
-+		div = prd;
-+		do_div(div, (prescaler + 1));
-+	}
-+	prd = div;
-+
-+	if (prescaler > MAX_TIM_PSC) {
-+		dev_err(stm32->dev, "prescaler exceeds the maximum value\n");
-+		return -EINVAL;
-+	}
-+
-+	/* Check that we own the timer */
-+	regmap_read(stm32->regmap, TIM_CR1, &cr1);
-+	if ((cr1 & TIM_CR1_CEN) && !stm32->own_timer)
-+		return -EBUSY;
-+
-+	if (!stm32->own_timer) {
-+		stm32->own_timer = true;
-+		clk_enable(stm32->clk);
-+	}
-+
-+	regmap_write(stm32->regmap, TIM_PSC, prescaler);
-+	regmap_write(stm32->regmap, TIM_ARR, prd - 1);
-+	regmap_update_bits(stm32->regmap, TIM_CR1, TIM_CR1_ARPE, TIM_CR1_ARPE);
-+
-+	/* Force master mode to update mode */
-+	regmap_update_bits(stm32->regmap, TIM_CR2, TIM_CR2_MMS, 0x20);
-+
-+	/* Make sure that registers are updated */
-+	regmap_update_bits(stm32->regmap, TIM_EGR, TIM_EGR_UG, TIM_EGR_UG);
-+
-+	/* Enable interrupt */
-+	regmap_write(stm32->regmap, TIM_SR, 0);
-+	regmap_update_bits(stm32->regmap, TIM_DIER, TIM_DIER_UIE, TIM_DIER_UIE);
-+
-+	/* Enable controller */
-+	regmap_update_bits(stm32->regmap, TIM_CR1, TIM_CR1_CEN, TIM_CR1_CEN);
-+
-+	return 0;
-+}
-+
-+static int stm32_timer_stop(struct stm32_timer_trigger_dev *stm32)
-+{
-+	if (!stm32->own_timer)
-+		return 0;
-+
-+	/* Stop timer */
-+	regmap_update_bits(stm32->regmap, TIM_DIER, TIM_DIER_UIE, 0);
-+	regmap_update_bits(stm32->regmap, TIM_CR1, TIM_CR1_CEN, 0);
-+	regmap_write(stm32->regmap, TIM_PSC, 0);
-+	regmap_write(stm32->regmap, TIM_ARR, 0);
-+
-+	clk_disable(stm32->clk);
-+
-+	stm32->own_timer = false;
-+	stm32->active_trigger = NULL;
-+
-+	return 0;
-+}
-+
-+static int stm32_set_trigger_state(struct iio_trigger *trig, bool state)
-+{
-+	struct stm32_timer_trigger_dev *stm32 = iio_trigger_get_drvdata(trig);
-+
-+	stm32->active_trigger = trig;
-+
-+	if (state)
-+		return stm32_timer_start(stm32);
-+	else
-+		return stm32_timer_stop(stm32);
-+}
-+
-+static irqreturn_t stm32_timer_irq_handler(int irq, void *private)
-+{
-+	struct stm32_timer_trigger_dev *stm32 = private;
-+	u32 sr;
-+
-+	regmap_read(stm32->regmap, TIM_SR, &sr);
-+	regmap_write(stm32->regmap, TIM_SR, 0);
-+
-+	if ((sr & TIM_SR_UIF) && stm32->active_trigger)
-+		iio_trigger_poll(stm32->active_trigger);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static const struct iio_trigger_ops timer_trigger_ops = {
-+	.owner = THIS_MODULE,
-+	.set_trigger_state = stm32_set_trigger_state,
-+};
-+
-+static int stm32_setup_iio_triggers(struct stm32_timer_trigger_dev *stm32)
-+{
-+	int ret;
-+	struct property *p;
-+	const char *cur = NULL;
-+
-+	p = of_find_property(stm32->dev->of_node,
-+			     "st,output-triggers-names", NULL);
-+
-+	while ((cur = of_prop_next_string(p, cur)) != NULL) {
-+		struct iio_trigger *trig;
-+
-+		trig = devm_iio_trigger_alloc(stm32->dev, "%s", cur);
-+		if  (!trig)
-+			return -ENOMEM;
-+
-+		trig->dev.parent = stm32->dev->parent;
-+		trig->ops = &timer_trigger_ops;
-+		trig->dev.groups = stm32_trigger_attr_groups;
-+		iio_trigger_set_drvdata(trig, stm32);
-+
-+		ret = devm_iio_trigger_register(stm32->dev, trig);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * is_stm32_timer_trigger
-+ * @trig: trigger to be checked
-+ *
-+ * return true if the trigger is a valid stm32 iio timer trigger
-+ * either return false
-+ */
-+bool is_stm32_timer_trigger(struct iio_trigger *trig)
-+{
-+	return (trig->ops == &timer_trigger_ops);
-+}
-+EXPORT_SYMBOL(is_stm32_timer_trigger);
-+
-+static int stm32_validate_trigger(struct iio_dev *indio_dev,
-+				  struct iio_trigger *trig)
-+{
-+	struct stm32_timer_trigger_dev *dev = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (!is_stm32_timer_trigger(trig))
-+		return -EINVAL;
-+
-+	ret = of_property_match_string(dev->dev->of_node,
-+				       "st,input-triggers-names",
-+				       trig->name);
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	regmap_update_bits(dev->regmap, TIM_SMCR, TIM_SMCR_TS, ret << 4);
-+
-+	return 0;
-+}
-+
-+static const struct iio_info stm32_trigger_info = {
-+	.driver_module = THIS_MODULE,
-+	.validate_trigger = stm32_validate_trigger,
-+	.attrs = &stm32_timer_attr_group,
-+};
-+
-+static struct stm32_timer_trigger_dev *stm32_setup_iio_device(struct device *dev)
-+{
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(struct stm32_timer_trigger_dev));
-+	if (!indio_dev)
-+		return NULL;
-+
-+	indio_dev->name = dev_name(dev);
-+	indio_dev->dev.parent = dev;
-+	indio_dev->info = &stm32_trigger_info;
-+	indio_dev->modes = INDIO_EVENT_TRIGGERED;
-+	indio_dev->num_channels = 0;
-+	indio_dev->dev.of_node = dev->of_node;
-+
-+	ret = iio_triggered_event_setup(indio_dev,
-+					NULL,
-+					stm32_timer_irq_handler);
-+	if (ret)
-+		return NULL;
-+
-+	ret = devm_iio_device_register(dev, indio_dev);
-+	if (ret) {
-+		iio_triggered_event_cleanup(indio_dev);
-+		return NULL;
-+	}
-+
-+	return iio_priv(indio_dev);
-+}
-+
-+static int stm32_timer_trigger_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct stm32_timer_trigger_dev *stm32;
-+	struct stm32_gptimer_dev *mfd = dev_get_drvdata(pdev->dev.parent);
-+	int ret;
-+
-+	stm32 = stm32_setup_iio_device(dev);
-+	if (!stm32)
-+		return -ENOMEM;
-+
-+	stm32->dev = dev;
-+	stm32->regmap = mfd->regmap;
-+	stm32->clk = mfd->clk;
-+
-+	stm32->irq = platform_get_irq(pdev, 0);
-+	if (stm32->irq < 0)
-+		return -EINVAL;
-+
-+	ret = devm_request_irq(stm32->dev, stm32->irq,
-+			       stm32_timer_irq_handler, IRQF_SHARED,
-+			       "timer_event", stm32);
-+	if (ret)
-+		return ret;
-+
-+	ret = stm32_setup_iio_triggers(stm32);
-+	if (ret)
-+		return ret;
-+
-+	platform_set_drvdata(pdev, stm32);
-+
-+	return 0;
-+}
-+
-+static int stm32_timer_trigger_remove(struct platform_device *pdev)
-+{
-+	struct stm32_timer_trigger_dev *stm32 = platform_get_drvdata(pdev);
-+
-+	iio_triggered_event_cleanup((struct iio_dev *)stm32);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id stm32_trig_of_match[] = {
-+	{
-+		.compatible = "st,stm32-timer-trigger",
-+	},
-+};
-+MODULE_DEVICE_TABLE(of, stm32_trig_of_match);
-+
-+static struct platform_driver stm32_timer_trigger_driver = {
-+	.probe = stm32_timer_trigger_probe,
-+	.remove = stm32_timer_trigger_remove,
-+	.driver = {
-+		.name = DRIVER_NAME,
-+		.of_match_table = stm32_trig_of_match,
-+	},
-+};
-+module_platform_driver(stm32_timer_trigger_driver);
-+
-+MODULE_ALIAS("platform:" DRIVER_NAME);
-+MODULE_DESCRIPTION("STMicroelectronics STM32 timer trigger driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
-index 809b2e7..f2af4fe 100644
---- a/drivers/iio/trigger/Kconfig
-+++ b/drivers/iio/trigger/Kconfig
-@@ -46,5 +46,4 @@ config IIO_SYSFS_TRIGGER
- 
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called iio-trig-sysfs.
--
- endmenu
-diff --git a/include/dt-bindings/iio/timer/st,stm32-timer-triggers.h b/include/dt-bindings/iio/timer/st,stm32-timer-triggers.h
-new file mode 100644
-index 0000000..a13db63
---- /dev/null
-+++ b/include/dt-bindings/iio/timer/st,stm32-timer-triggers.h
-@@ -0,0 +1,60 @@
-+/*
-+ * st,stm32-timer-triggers.h
-+ *
-+ * Copyright (C) STMicroelectronics 2016
-+ * Author: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org> for STMicroelectronics.
-+ * License terms:  GNU General Public License (GPL), version 2
-+ */
-+
-+#ifndef _DT_BINDINGS_STM32_TIMER_TRIGGERS_H_
-+#define _DT_BINDINGS_STM32_TIMER_TRIGGERS_H_
-+
-+#define TIM1_TRGO	"tim1_trgo"
-+#define TIM1_CH1	"tim1_ch1"
-+#define TIM1_CH2	"tim1_ch2"
-+#define TIM1_CH3	"tim1_ch3"
-+#define TIM1_CH4	"tim1_ch4"
-+
-+#define TIM2_TRGO	"tim2_trgo"
-+#define TIM2_CH1	"tim2_ch1"
-+#define TIM2_CH2	"tim2_ch2"
-+#define TIM2_CH3	"tim2_ch3"
-+#define TIM2_CH4	"tim2_ch4"
-+
-+#define TIM3_TRGO	"tim3_trgo"
-+#define TIM3_CH1	"tim3_ch1"
-+#define TIM3_CH2	"tim3_ch2"
-+#define TIM3_CH3	"tim3_ch3"
-+#define TIM3_CH4	"tim3_ch4"
-+
-+#define TIM4_TRGO	"tim4_trgo"
-+#define TIM4_CH1	"tim4_ch1"
-+#define TIM4_CH2	"tim4_ch2"
-+#define TIM4_CH3	"tim4_ch3"
-+#define TIM4_CH4	"tim4_ch4"
-+
-+#define TIM5_TRGO	"tim5_trgo"
-+#define TIM5_CH1	"tim5_ch1"
-+#define TIM5_CH2	"tim5_ch2"
-+#define TIM5_CH3	"tim5_ch3"
-+#define TIM5_CH4	"tim5_ch4"
-+
-+#define TIM6_TRGO	"tim6_trgo"
-+
-+#define TIM7_TRGO	"tim7_trgo"
-+
-+#define TIM8_TRGO	"tim8_trgo"
-+#define TIM8_CH1	"tim8_ch1"
-+#define TIM8_CH2	"tim8_ch2"
-+#define TIM8_CH3	"tim8_ch3"
-+#define TIM8_CH4	"tim8_ch4"
-+
-+#define TIM9_TRGO	"tim9_trgo"
-+#define TIM9_CH1	"tim9_ch1"
-+#define TIM9_CH2	"tim9_ch2"
-+
-+#define TIM12_TRGO	"tim12_trgo"
-+#define TIM12_CH1	"tim12_ch1"
-+#define TIM12_CH2	"tim12_ch2"
-+
-+#endif
-diff --git a/include/linux/iio/timer/stm32-timer-trigger.h b/include/linux/iio/timer/stm32-timer-trigger.h
-new file mode 100644
-index 0000000..c22fb3b
---- /dev/null
-+++ b/include/linux/iio/timer/stm32-timer-trigger.h
-@@ -0,0 +1,16 @@
-+/*
-+ * stm32-timer-trigger.h
-+ *
-+ * Copyright (C) STMicroelectronics 2016
-+ * Author: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org> for STMicroelectronics.
-+ * License terms:  GNU General Public License (GPL), version 2
-+ */
-+
-+#ifndef _STM32_TIMER_TRIGGER_H_
-+#define _STM32_TIMER_TRIGGER_H_
-+
-+#include <dt-bindings/iio/timer/st,stm32-timer-triggers.h>
-+
-+bool is_stm32_timer_trigger(struct iio_trigger *trig);
-+
-+#endif
--- 
-1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+T24gRnJpLCAwMiBEZWMgMjAxNiwgSGFucyBkZSBHb2VkZSA8aGRlZ29lZGVAcmVkaGF0LmNvbT4g
+d3JvdGU6Cj4gVGhlIHByaW1hcnkgY29uc3VtZXIgb2YgdGhlIGxwc3MgcHdtIGlzIHRoZSBpOTE1
+IGttcyBkcml2ZXIsIGJ1dAo+IGN1cnJlbnRseSB0aGF0IGRyaXZlciBjYW5ub3QgZ2V0IHRoZSBw
+d20gYmVjYXVzZSBpOTE1IHBsYXRmb3JtcyBhcmUKPiBub3QgdXNpbmcgZGV2aWNldHJlZSBhbmQg
+cHdtLWxwc3MgZG9lcyBub3QgY2FsbCBwd21fYWRkX3RhYmxlLgo+Cj4gQW5vdGhlciBwcm9ibGVt
+IGlzIHRoYXQgaTkxNSBkb2VzIG5vdCBzdXBwb3J0IGdldF9wd20gcmV0dXJuaW5nCj4gLUVQUk9C
+RV9ERUZFUiBhbmQgaTkxNSdzIGluaXQgaXMgdmVyeSBjb21wbGV4IGFuZCB0aGlzIGlzIGFsbW9z
+dAo+IGltcG9zc2libGUgdG8gZml4Lgo+Cj4gVGhpcyBjb21taXQgY2hhbmdlcyB0aGUgUFdNX0xQ
+U1MgS2NvbmZpZyBmcm9tIGEgdHJpc3RhdGUgdG8gYSBib29sLCBzbwo+IHRoYXQgd2hlbiB0aGUg
+aTkxNSBkcml2ZXIgbG9hZHMgdGhlIGxwc3MgcHdtIHdpbGwgYmUgYXZhaWxhYmxlIGF2b2lkaW5n
+Cj4gdGhlIC1FUFJPQkVfREVGRVIgaXNzdWUuIE5vdGUgdGhhdCB0aGlzIGlzIGlkZW50aWNhbCB0
+byBob3cgdGhlIHNhbWUKPiBwcm9ibGVtIHdhcyBzb2x2ZWQgZm9yIHRoZSBwd20tY3JjIGRyaXZl
+ci4KCkFyZ3VhYmx5IHRoaXMgc29sdXRpb24gd2FzIHdvcnNlIGZvciBwd20tY3JjIHRoYW4gcHdt
+LWxwc3MgaGVyZSwgYmVjYXVzZQpib29sIENPTkZJR19QV01fQ1JDIGRlcGVuZHMgb24gSU5URUxf
+U09DX1BNSUMgd2hpY2ggZGVwZW5kcyBvbiBJMkMgYmVpbmcKYnVpbHQtaW4uIFRoaXMgb25lIGRv
+ZXNuJ3QgaGF2ZSBhbGwgdGhhdCBiYWQgZGVwZW5kZW5jaWVzLgoKRldJVywgYm90aCBwYXRjaGVz
+IGFyZQoKQWNrZWQtYnk6IEphbmkgTmlrdWxhIDxqYW5pLm5pa3VsYUBpbnRlbC5jb20+CgoKCj4K
+PiBCZWluZyBidWlsdGluIGFsc28gYWxsb3dzIGNhbGxpbmcgcHdtX2FkZF90YWJsZSBkaXJlY3Rs
+eSBmcm9tIHRoZQo+IHB3bS1scHNzIGNvZGUsIG90aGVyd2lzZSB0aGUgcHdtX2FkZF90YWJsZSBj
+YWxsIHdvdWxkIG5lZWQgdG8gYmUgcHV0Cj4gc29tZXdoZXJlIGVsc2UgdG8gZW5zdXJlIGl0IGhh
+cHBlbnMgYmVmb3JlIGk5MTUgY2FsbHMgcHdtX2dldCwKPiBldmVuIGlmIGk5MTUgd291bGQgc3Vw
+cG9ydCAtRVBST0JFX0RFRkVSLgo+Cj4gU2lnbmVkLW9mZi1ieTogSGFucyBkZSBHb2VkZSA8aGRl
+Z29lZGVAcmVkaGF0LmNvbT4KPiAtLS0KPiAgZHJpdmVycy9wd20vS2NvbmZpZyAgICB8IDEyICsr
+Ky0tLS0tLS0tLQo+ICBkcml2ZXJzL3B3bS9wd20tbHBzcy5jIHwgMTEgKysrKysrKysrKysKPiAg
+MiBmaWxlcyBjaGFuZ2VkLCAxNCBpbnNlcnRpb25zKCspLCA5IGRlbGV0aW9ucygtKQo+Cj4gZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvcHdtL0tjb25maWcgYi9kcml2ZXJzL3B3bS9LY29uZmlnCj4gaW5k
+ZXggYmYwMTI4OC4uY2RhMzFlYSAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL3B3bS9LY29uZmlnCj4g
+KysrIGIvZHJpdmVycy9wd20vS2NvbmZpZwo+IEBAIC0yNDAsMjggKzI0MCwyMiBAQCBjb25maWcg
+UFdNX0xQQzMyWFgKPiAgCSAgd2lsbCBiZSBjYWxsZWQgcHdtLWxwYzMyeHguCj4gIAo+ICBjb25m
+aWcgUFdNX0xQU1MKPiAtCXRyaXN0YXRlCj4gKwlib29sCj4gIAo+ICBjb25maWcgUFdNX0xQU1Nf
+UENJCj4gLQl0cmlzdGF0ZSAiSW50ZWwgTFBTUyBQV00gUENJIGRyaXZlciIKPiArCWJvb2wgIklu
+dGVsIExQU1MgUFdNIFBDSSBkcml2ZXIiCj4gIAlkZXBlbmRzIG9uIFg4NiAmJiBQQ0kKPiAgCXNl
+bGVjdCBQV01fTFBTUwo+ICAJaGVscAo+ICAJICBUaGUgUENJIGRyaXZlciBmb3IgSW50ZWwgTG93
+IFBvd2VyIFN1YnN5c3RlbSBQV00gY29udHJvbGxlci4KPiAgCj4gLQkgIFRvIGNvbXBpbGUgdGhp
+cyBkcml2ZXIgYXMgYSBtb2R1bGUsIGNob29zZSBNIGhlcmU6IHRoZSBtb2R1bGUKPiAtCSAgd2ls
+bCBiZSBjYWxsZWQgcHdtLWxwc3MtcGNpLgo+IC0KPiAgY29uZmlnIFBXTV9MUFNTX1BMQVRGT1JN
+Cj4gLQl0cmlzdGF0ZSAiSW50ZWwgTFBTUyBQV00gcGxhdGZvcm0gZHJpdmVyIgo+ICsJYm9vbCAi
+SW50ZWwgTFBTUyBQV00gcGxhdGZvcm0gZHJpdmVyIgo+ICAJZGVwZW5kcyBvbiBYODYgJiYgQUNQ
+SQo+ICAJc2VsZWN0IFBXTV9MUFNTCj4gIAloZWxwCj4gIAkgIFRoZSBwbGF0Zm9ybSBkcml2ZXIg
+Zm9yIEludGVsIExvdyBQb3dlciBTdWJzeXN0ZW0gUFdNIGNvbnRyb2xsZXIuCj4gIAo+IC0JICBU
+byBjb21waWxlIHRoaXMgZHJpdmVyIGFzIGEgbW9kdWxlLCBjaG9vc2UgTSBoZXJlOiB0aGUgbW9k
+dWxlCj4gLQkgIHdpbGwgYmUgY2FsbGVkIHB3bS1scHNzLXBsYXRmb3JtLgo+IC0KPiAgY29uZmln
+IFBXTV9NRVNPTgo+ICAJdHJpc3RhdGUgIkFtbG9naWMgTWVzb24gUFdNIGRyaXZlciIKPiAgCWRl
+cGVuZHMgb24gQVJDSF9NRVNPTgo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3B3bS9wd20tbHBzcy5j
+IGIvZHJpdmVycy9wd20vcHdtLWxwc3MuYwo+IGluZGV4IDcyYzBiY2UuLmI0ZDg4MzUgMTAwNjQ0
+Cj4gLS0tIGEvZHJpdmVycy9wd20vcHdtLWxwc3MuYwo+ICsrKyBiL2RyaXZlcnMvcHdtL3B3bS1s
+cHNzLmMKPiBAQCAtMTYxLDYgKzE2MSwxMiBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHB3bV9vcHMg
+cHdtX2xwc3Nfb3BzID0gewo+ICAJLm93bmVyID0gVEhJU19NT0RVTEUsCj4gIH07Cj4gIAo+ICsv
+KiBQV00gY29uc3VtZWQgYnkgdGhlIEludGVsIEdGWCAqLwo+ICtzdGF0aWMgc3RydWN0IHB3bV9s
+b29rdXAgcHdtX2xwc3NfbG9va3VwW10gPSB7Cj4gKwlQV01fTE9PS1VQKCJwd20tbHBzcyIsIDAs
+ICIwMDAwOjAwOjAyLjAiLCAicHdtX2JhY2tsaWdodCIsIDAsCj4gKwkJICAgUFdNX1BPTEFSSVRZ
+X05PUk1BTCksCj4gK307Cj4gKwo+ICBzdHJ1Y3QgcHdtX2xwc3NfY2hpcCAqcHdtX2xwc3NfcHJv
+YmUoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgcmVzb3VyY2UgKnIsCj4gIAkJCQkgICAgIGNv
+bnN0IHN0cnVjdCBwd21fbHBzc19ib2FyZGluZm8gKmluZm8pCj4gIHsKPiBAQCAtMTkzLDEyICsx
+OTksMTcgQEAgc3RydWN0IHB3bV9scHNzX2NoaXAgKnB3bV9scHNzX3Byb2JlKHN0cnVjdCBkZXZp
+Y2UgKmRldiwgc3RydWN0IHJlc291cmNlICpyLAo+ICAJCXJldHVybiBFUlJfUFRSKHJldCk7Cj4g
+IAl9Cj4gIAo+ICsJLyogQWRkIGxvb2t1cCB0YWJsZSBmb3IgcHdtX2JhY2tsaWdodCAqLwo+ICsJ
+cHdtX2xwc3NfbG9va3VwWzBdLnByb3ZpZGVyID0gZGV2X25hbWUoZGV2KTsKPiArCXB3bV9hZGRf
+dGFibGUocHdtX2xwc3NfbG9va3VwLCBBUlJBWV9TSVpFKHB3bV9scHNzX2xvb2t1cCkpOwo+ICsK
+PiAgCXJldHVybiBscHdtOwo+ICB9Cj4gIEVYUE9SVF9TWU1CT0xfR1BMKHB3bV9scHNzX3Byb2Jl
+KTsKPiAgCj4gIGludCBwd21fbHBzc19yZW1vdmUoc3RydWN0IHB3bV9scHNzX2NoaXAgKmxwd20p
+Cj4gIHsKPiArCXB3bV9yZW1vdmVfdGFibGUocHdtX2xwc3NfbG9va3VwLCBBUlJBWV9TSVpFKHB3
+bV9scHNzX2xvb2t1cCkpOwo+ICAJcmV0dXJuIHB3bWNoaXBfcmVtb3ZlKCZscHdtLT5jaGlwKTsK
+PiAgfQo+ICBFWFBPUlRfU1lNQk9MX0dQTChwd21fbHBzc19yZW1vdmUpOwoKLS0gCkphbmkgTmlr
+dWxhLCBJbnRlbCBPcGVuIFNvdXJjZSBUZWNobm9sb2d5IENlbnRlcgpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBsaXN0Cklu
+dGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
+cmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
