@@ -1,433 +1,100 @@
-From: Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 7/7] ARM: dts: stm32: add stm32 general purpose timer
- driver in DT
-Date: Sat, 3 Dec 2016 09:45:57 +0000
-Message-ID: <325096ce-a8c4-5119-8f94-1ed65267cee0@kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v3 5/7] IIO: add bindings for stm32 timer trigger driver
+Date: Sat, 3 Dec 2016 09:35:58 +0000
+Message-ID: <7f9e10e7-6793-64f2-9e62-bebd9f60ce72@kernel.org>
 References: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
- <1480673842-20804-8-git-send-email-benjamin.gaignard@st.com>
+ <1480673842-20804-6-git-send-email-benjamin.gaignard@st.com>
+ <20161202135904.GN2683@dell>
+ <CA+M3ks7GhvApJwZVFK7KAbbvbAhp40sdOVvhkyZWBHZXpLfZDQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1480673842-20804-8-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
-Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CA+M3ks7GhvApJwZVFK7KAbbvbAhp40sdOVvhkyZWBHZXpLfZDQ@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Benjamin Gaignard <benjamin.gaignard@linaro.org>, Lee Jones <lee.jones@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, robh+dt@kernel.org, Thierry Reding <thierry.reding@gmail.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, knaack.h@gmx.de, Gerald Baeza <gerald.baeza@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, linux-arm-kernel@lists.infradead.org, Benjamin Gaignard <benjamin.gaignard@st.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On 02/12/16 10:17, Benjamin Gaignard wrote:
-> Add general purpose timers and it sub-nodes into DT for stm32f4.
-> Define and enable pwm1 and pwm3 for stm32f469 discovery board
-> 
-> version 3:
-> - use "st,stm32-timer-trigger" in DT
-> 
-> version 2:
-> - use parameters to describe hardware capabilities
-> - do not use references for pwm and iio timer subnodes
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
-This didn't come out nearly as badly as I thought it would.
-
-Seems we don't need the multiple compatibles which is good!
-
-> ---
->  arch/arm/boot/dts/stm32f429.dtsi      | 333 +++++++++++++++++++++++++++++++++-
->  arch/arm/boot/dts/stm32f469-disco.dts |  28 +++
->  2 files changed, 360 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f429.dtsi
-> index bca491d..8c50d03 100644
-> --- a/arch/arm/boot/dts/stm32f429.dtsi
-> +++ b/arch/arm/boot/dts/stm32f429.dtsi
-> @@ -48,7 +48,7 @@
->  #include "skeleton.dtsi"
->  #include "armv7-m.dtsi"
->  #include <dt-bindings/pinctrl/stm32f429-pinfunc.h>
-> -
-> +#include <dt-bindings/iio/timer/st,stm32-timer-triggers.h>
->  / {
->  	clocks {
->  		clk_hse: clk-hse {
-> @@ -355,6 +355,21 @@
->  					slew-rate = <2>;
->  				};
->  			};
-> +
-> +			pwm1_pins: pwm@1 {
-> +				pins {
-> +					pinmux = <STM32F429_PA8_FUNC_TIM1_CH1>,
-> +						 <STM32F429_PB13_FUNC_TIM1_CH1N>,
-> +						 <STM32F429_PB12_FUNC_TIM1_BKIN>;
-> +				};
-> +			};
-> +
-> +			pwm3_pins: pwm@3 {
-> +				pins {
-> +					pinmux = <STM32F429_PB4_FUNC_TIM3_CH1>,
-> +						 <STM32F429_PB5_FUNC_TIM3_CH2>;
-> +				};
-> +			};
->  		};
->  
->  		rcc: rcc@40023810 {
-> @@ -426,6 +441,322 @@
->  			interrupts = <80>;
->  			clocks = <&rcc 0 38>;
->  		};
-> +
-> +		gptimer1: gptimer1@40010000 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40010000 0x400>;
-> +			clocks = <&rcc 0 160>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			pwm1@0 {
-> +				compatible = "st,stm32-pwm";
-> +				st,pwm-num-chan = <4>;
-> +				st,breakinput;
-> +				st,complementary;
-> +				status = "disabled";
-> +			};
-> +
-> +			timer1@0 {
-> +				compatible = "st,stm32-timer-trigger";
-> +				interrupts = <27>;
-> +				st,input-triggers-names = TIM5_TRGO,
-> +							  TIM2_TRGO,
-> +							  TIM4_TRGO,
-> +							  TIM3_TRGO;
-> +				st,output-triggers-names = TIM1_TRGO,
-> +							   TIM1_CH1,
-> +							   TIM1_CH2,
-> +							   TIM1_CH3,
-> +							   TIM1_CH4;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		gptimer2: gptimer2@40000000 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40000000 0x400>;
-> +			clocks = <&rcc 0 128>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			pwm2@0 {
-> +				compatible = "st,stm32-pwm";
-> +				st,pwm-num-chan = <4>;
-> +				st,32bits-counter;
-> +				status = "disabled";
-> +			};
-> +
-> +			timer2@0 {
-> +				compatible = "st,stm32-timer-trigger";
-> +				interrupts = <28>;
-> +				st,input-triggers-names = TIM1_TRGO,
-> +							  TIM8_TRGO,
-> +							  TIM3_TRGO,
-> +							  TIM4_TRGO;
-> +				st,output-triggers-names = TIM2_TRGO,
-> +							   TIM2_CH1,
-> +							   TIM2_CH2,
-> +							   TIM2_CH3,
-> +							   TIM2_CH4;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		gptimer3: gptimer3@40000400 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40000400 0x400>;
-> +			clocks = <&rcc 0 129>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			pwm3@0 {
-> +				compatible = "st,stm32-pwm";
-> +				st,pwm-num-chan = <4>;
-> +				status = "disabled";
-> +			};
-> +
-> +			timer3@0 {
-> +				compatible = "st,stm32-timer-trigger";
-> +				interrupts = <29>;
-> +				st,input-triggers-names = TIM1_TRGO,
-> +							  TIM8_TRGO,
-> +							  TIM5_TRGO,
-> +							  TIM4_TRGO;
-> +				st,output-triggers-names = TIM3_TRGO,
-> +							   TIM3_CH1,
-> +							   TIM3_CH2,
-> +							   TIM3_CH3,
-> +							   TIM3_CH4;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		gptimer4: gptimer4@40000800 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40000800 0x400>;
-> +			clocks = <&rcc 0 130>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			pwm4@0 {
-> +				compatible = "st,stm32-pwm";
-> +				st,pwm-num-chan = <4>;
-> +				status = "disabled";
-> +			};
-> +
-> +			timer4@0 {
-> +				compatible = "st,stm32-timer-trigger";
-> +				interrupts = <30>;
-> +				st,input-triggers-names = TIM1_TRGO,
-> +							  TIM2_TRGO,
-> +							  TIM3_TRGO,
-> +							  TIM8_TRGO;
-> +				st,output-triggers-names = TIM4_TRGO,
-> +							   TIM4_CH1,
-> +							   TIM4_CH2,
-> +							   TIM4_CH3,
-> +							   TIM4_CH4;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		gptimer5: gptimer5@40000C00 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40000C00 0x400>;
-> +			clocks = <&rcc 0 131>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			pwm5@0 {
-> +				compatible = "st,stm32-pwm";
-> +				st,pwm-num-chan = <4>;
-> +				st,32bits-counter;
-> +				status = "disabled";
-> +			};
-> +
-> +			timer5@0 {
-> +				compatible = "st,stm32-timer-trigger";
-> +				interrupts = <50>;
-> +				st,input-triggers-names = TIM2_TRGO,
-> +							  TIM3_TRGO,
-> +							  TIM4_TRGO,
-> +							  TIM8_TRGO;
-> +				st,output-triggers-names = TIM5_TRGO,
-> +							   TIM5_CH1,
-> +							   TIM5_CH2,
-> +							   TIM5_CH3,
-> +							   TIM5_CH4;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		gptimer6: gptimer6@40001000 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40001000 0x400>;
-> +			clocks = <&rcc 0 132>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			timer6@0 {
-> +				compatible = "st,stm32-timer-trigger";
-> +				interrupts = <54>;
-> +				st,output-triggers-names = TIM6_TRGO;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		gptimer7: gptimer7@40001400 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40001400 0x400>;
-> +			clocks = <&rcc 0 133>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			timer7@0 {
-> +				compatible = "st,stm32-timer-trigger";
-> +				interrupts = <55>;
-> +				st,output-triggers-names = TIM7_TRGO;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		gptimer8: gptimer8@40010400 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40010400 0x400>;
-> +			clocks = <&rcc 0 161>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			pwm8@0 {
-> +				compatible = "st,stm32-pwm";
-> +				st,pwm-num-chan = <4>;
-> +				st,complementary;
-> +				st,breakinput;
-> +				status = "disabled";
-> +			};
-> +
-> +			timer8@0 {
-> +				compatible = "st,stm32-timer-trigger";
-> +				interrupts = <46>;
-> +				st,input-triggers-names = TIM1_TRGO,
-> +							  TIM2_TRGO,
-> +							  TIM4_TRGO,
-> +							  TIM5_TRGO;
-> +				st,output-triggers-names = TIM8_TRGO,
-> +							   TIM8_CH1,
-> +							   TIM8_CH2,
-> +							   TIM8_CH3,
-> +							   TIM8_CH4;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		gptimer9: gptimer9@40014000 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40014000 0x400>;
-> +			clocks = <&rcc 0 176>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			pwm9@0 {
-> +				compatible = "st,stm32-pwm";
-> +				st,pwm-num-chan = <2>;
-> +				status = "disabled";
-> +			};
-> +
-> +			timer9@0 {
-> +				compatible = "st,stm32-timer-trigger";
-> +				interrupts = <24>;
-> +				st,input-triggers-names = TIM2_TRGO,
-> +							  TIM3_TRGO;
-> +				st,output-triggers-names = TIM9_TRGO,
-> +							   TIM9_CH1,
-> +							   TIM9_CH2;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		gptimer10: gptimer10@40014400 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40014400 0x400>;
-> +			clocks = <&rcc 0 177>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			pwm10@0 {
-> +				compatible = "st,stm32-pwm";
-> +				st,pwm-num-chan = <1>;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		gptimer11: gptimer11@40014800 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40014800 0x400>;
-> +			clocks = <&rcc 0 178>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			pwm11@0 {
-> +				compatible = "st,stm32-pwm";
-> +				st,pwm-num-chan = <1>;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		gptimer12: gptimer12@40001800 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40001800 0x400>;
-> +			clocks = <&rcc 0 134>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			pwm12@0 {
-> +				compatible = "st,stm32-pwm";
-> +				st,pwm-num-chan = <2>;
-> +				status = "disabled";
-> +			};
-> +
-> +			timer12@0 {
-> +				compatible = "st,stm32-timer-trigger";
-> +				interrupts = <43>;
-> +				st,input-triggers-names = TIM4_TRGO,
-> +							  TIM5_TRGO;
-> +				st,output-triggers-names = TIM12_TRGO,
-> +							   TIM12_CH1,
-> +							   TIM12_CH2;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		gptimer13: gptimer13@40001C00 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40001C00 0x400>;
-> +			clocks = <&rcc 0 135>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			pwm13@0 {
-> +				compatible = "st,stm32-pwm";
-> +				st,pwm-num-chan = <1>;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		gptimer14: gptimer14@40002000 {
-> +			compatible = "st,stm32-gptimer";
-> +			reg = <0x40002000 0x400>;
-> +			clocks = <&rcc 0 136>;
-> +			clock-names = "clk_int";
-> +			status = "disabled";
-> +
-> +			pwm14@0 {
-> +				compatible = "st,stm32-pwm";
-> +				st,pwm-num-chan = <1>;
-> +				status = "disabled";
-> +			};
-> +		};
->  	};
->  };
->  
-> diff --git a/arch/arm/boot/dts/stm32f469-disco.dts b/arch/arm/boot/dts/stm32f469-disco.dts
-> index 8a163d7..df4ca7e 100644
-> --- a/arch/arm/boot/dts/stm32f469-disco.dts
-> +++ b/arch/arm/boot/dts/stm32f469-disco.dts
-> @@ -81,3 +81,31 @@
->  &usart3 {
->  	status = "okay";
->  };
-> +
-> +&gptimer1 {
-> +	status = "okay";
-> +
-> +	pwm1@0 {
-> +		pinctrl-0	= <&pwm1_pins>;
-> +		pinctrl-names	= "default";
-> +		status = "okay";
-> +	};
-> +
-> +	timer1@0 {
-> +		status = "okay";
-> +	};
-> +};
-> +
-> +&gptimer3 {
-> +	status = "okay";
-> +
-> +	pwm3@0 {
-> +		pinctrl-0	= <&pwm3_pins>;
-> +		pinctrl-names	= "default";
-> +		status = "okay";
-> +	};
-> +
-> +	timer3@0 {
-> +		status = "okay";
-> +	};
-> +};
-> 
+T24gMDIvMTIvMTYgMTQ6MjMsIEJlbmphbWluIEdhaWduYXJkIHdyb3RlOgo+IDIwMTYtMTItMDIg
+MTQ6NTkgR01UKzAxOjAwIExlZSBKb25lcyA8bGVlLmpvbmVzQGxpbmFyby5vcmc+Ogo+PiBPbiBG
+cmksIDAyIERlYyAyMDE2LCBCZW5qYW1pbiBHYWlnbmFyZCB3cm90ZToKPj4KPj4+IERlZmluZSBi
+aW5kaW5ncyBmb3Igc3RtMzIgdGltZXIgdHJpZ2dlcgo+Pj4KPj4+IHZlcnNpb24gMzoKPj4+IC0g
+Y2hhbmdlIGZpbGUgbmFtZQo+Pj4gLSBhZGQgY3Jvc3MgcmVmZXJlbmNlIHdpdGggbWZkIGJpbmRp
+bmdzCj4+Pgo+Pj4gdmVyc2lvbiAyOgo+Pj4gLSBvbmx5IGtlZXAgb25lIGNvbXBhdGlibGUKPj4+
+IC0gYWRkIERUIHBhcmFtZXRlcnMgdG8gc2V0IGxpc3RzIG9mIHRoZSB0cmlnZ2VyczoKPj4+ICAg
+b25lIGxpc3QgZGVzY3JpYmUgdGhlIHRyaWdnZXJzIGNyZWF0ZWQgYnkgdGhlIGRldmljZQo+Pj4g
+ICBhbm90aGVyIG9uZSBnaXZlIHRoZSB0cmlnZ2VycyBhY2NlcHRlZCBieSB0aGUgZGV2aWNlCj4+
+Pgo+Pj4gU2lnbmVkLW9mZi1ieTogQmVuamFtaW4gR2FpZ25hcmQgPGJlbmphbWluLmdhaWduYXJk
+QHN0LmNvbT4KPj4+IC0tLQo+Pj4gIC4uLi9iaW5kaW5ncy9paW8vdGltZXIvc3RtMzItdGltZXIt
+dHJpZ2dlci50eHQgICAgIHwgMzkgKysrKysrKysrKysrKysrKysrKysrKwo+Pj4gIDEgZmlsZSBj
+aGFuZ2VkLCAzOSBpbnNlcnRpb25zKCspCj4+PiAgY3JlYXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50
+YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vdGltZXIvc3RtMzItdGltZXItdHJpZ2dlci50
+eHQKPj4+Cj4+PiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdz
+L2lpby90aW1lci9zdG0zMi10aW1lci10cmlnZ2VyLnR4dCBiL0RvY3VtZW50YXRpb24vZGV2aWNl
+dHJlZS9iaW5kaW5ncy9paW8vdGltZXIvc3RtMzItdGltZXItdHJpZ2dlci50eHQKPj4+IG5ldyBm
+aWxlIG1vZGUgMTAwNjQ0Cj4+PiBpbmRleCAwMDAwMDAwLi44NTg4MTZkCj4+PiAtLS0gL2Rldi9u
+dWxsCj4+PiArKysgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL3RpbWVy
+L3N0bTMyLXRpbWVyLXRyaWdnZXIudHh0Cj4+PiBAQCAtMCwwICsxLDM5IEBACj4+PiArdGltZXIg
+dHJpZ2dlciBiaW5kaW5ncyBmb3IgU1RNMzIKPj4+ICsKPj4+ICtNdXN0IGJlIGEgc3ViLW5vZGUg
+b2YgU1RNMzIgZ2VuZXJhbCBwdXJwb3NlIHRpbWVyIGRyaXZlcgo+Pj4gK1BhcmVudCBub2RlIHBy
+b3BlcnRpZXMgYXJlIGRlc2NyaWJlIGluIC4uL21mZC9zdG0zMi1nZW5lcmFsLXB1cnBvc2UtdGlt
+ZXIudHh0Cj4+PiArCj4+PiArUmVxdWlyZWQgcGFyYW1ldGVyczoKPj4+ICstIGNvbXBhdGlibGU6
+ICAgICAgICAgICAgICAgIG11c3QgYmUgInN0LHN0bTMyLWlpby10aW1lciIKPj4+ICstIGludGVy
+cnVwdHM6ICAgICAgICAgICAgICAgIEludGVycnVwdCBmb3IgdGhpcyBkZXZpY2UKPj4+ICsgICAg
+ICAgICAgICAgICAgICAgICBTZWUgLi4vaW50ZXJydXB0LWNvbnRyb2xsZXIvc3Qsc3RtMzItZXh0
+aS50eHQKPj4+ICsKPj4+ICtPcHRpb25hbCBwYXJhbWV0ZXJzOgo+Pj4gKy0gc3QsaW5wdXQtdHJp
+Z2dlcnMtbmFtZXM6ICAgTGlzdCBvZiB0aGUgcG9zc2libGUgaW5wdXQgdHJpZ2dlcnMgZm9yCj4+
+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0aGUgZGV2aWNlCj4+PiArLSBzdCxvdXRw
+dXQtdHJpZ2dlcnMtbmFtZXM6ICBMaXN0IG9mIHRoZSBwb3NzaWJsZSBvdXRwdXQgdHJpZ2dlcnMg
+Zm9yCj4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0aGUgZGV2aWNlCj4+PiArCj4+
+PiArUG9zc2libGUgdHJpZ2dlcnMgYXJlIGRlZmluZWQgaW4gaW5jbHVkZS9kdC1iaW5kaW5ncy9p
+aW8vdGltZXIvc3Qsc3RtMzItdGltZXItdHJpZ2dlci5oCj4+PiArCj4+PiArRXhhbXBsZToKPj4+
+ICsgICAgIGdwdGltZXIxOiBncHRpbWVyMUA0MDAxMDAwMCB7Cj4+PiArICAgICAgICAgICAgIGNv
+bXBhdGlibGUgPSAic3Qsc3RtMzItZ3B0aW1lciI7Cj4+PiArICAgICAgICAgICAgIHJlZyA9IDww
+eDQwMDEwMDAwIDB4NDAwPjsKPj4+ICsgICAgICAgICAgICAgY2xvY2tzID0gPCZyY2MgMCAxNjA+
+Owo+Pj4gKyAgICAgICAgICAgICBjbG9jay1uYW1lcyA9ICJjbGtfaW50IjsKPj4+ICsKPj4+ICsg
+ICAgICAgICAgICAgdGltZXIxQDAgewo+Pj4gKyAgICAgICAgICAgICAgICAgICAgIGNvbXBhdGli
+bGUgPSAic3Qsc3RtMzItdGltZXItdHJpZ2dlciI7Cj4+PiArICAgICAgICAgICAgICAgICAgICAg
+aW50ZXJydXB0cyA9IDwyNz47Cj4+PiArICAgICAgICAgICAgICAgICAgICAgc3QsaW5wdXQtdHJp
+Z2dlcnMtbmFtZXMgPSBUSU01X1RSR08sCj4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBUSU0yX1RSR08sCj4+PiArICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICBUSU00X1RSR08sCj4+PiArICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBUSU0zX1RSR087Cj4+PiArICAgICAgICAg
+ICAgICAgICAgICAgc3Qsb3V0cHV0LXRyaWdnZXJzLW5hbWVzID0gVElNMV9UUkdPLAo+Pj4gKyAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFRJTTFfQ0gxLAo+
+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFRJTTFf
+Q0gyLAo+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IFRJTTFfQ0gzLAo+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIFRJTTFfQ0g0Owo+Pgo+PiBJIHNlZSB3aHkgeW91J3ZlIGRvbmUgaXQgbGlrZSB0aGlz
+IG5vdyAuLi4gYmVjYXVzZSBpdCBtYWtlcyB0aGluZ3MKPj4gZWFzaWVyIGZvciB5b3UgaW4gdGhl
+IGRyaXZlciwgc2luY2UgdGhlIElJTyBzdWJzeXN0ZW0gbWF0Y2hlcyBvbiBuYW1lcwo+PiBzdWNo
+IGFzIHRoZXNlLgo+Pgo+PiBCVVQsIHRoaXMgaXMgYSBMaW51eC1pbXBsZW1lbnRhdGlvbi1pc20u
+ICBKdXN0IHVzZSBwYWlycyBvZiBpbnRlZ2Vycwo+PiBhbmQgY3JlYXRlIHRoZSBMaW51eC1pc20g
+c3RyaW5ncyBpbiB0aGUgZHJpdmVyLgo+IAo+IFRoZSBnb2FsIGlzIG5vdCB0byBtYWtlIHRoaW5n
+cyBlYXNpZXIgaW4gZHJpdmVyIGJ1dCB0byBiZSBhYmxlIHRvIHNoYXJlCj4gdGhlIHRyaWdnZXJz
+IG5hbWVzIHdpdGggb3RoZXIgZHJpdmVycyBsaWtlIERBQyBvciBBREMuCj4gSWYgZWFjaCBkcml2
+ZXIgaGF2ZSB0byBjcmVhdGUgaXQgb3duIHRyaWdnZXJzIG5hbWVzIGl0IHdpbGwgbW9yZSBkaWZm
+aWN1bHQKPiB0byBrZWVwIHRoZW0gY29oZXJlbnQgdGhhbiBpdCB0aGV5IHNoYXJlIHRoZSBzYW1l
+IGRlZmluaXRpb25zCkRvIGl0IGJ5IGRvY3VtZW50YXRpb24uICBUaGlzIHdpbGwgYmUgZWZmZWN0
+aXZlbHkgQUJJIGdvaW5nIGZvcndhcmQKc28gZml4ZWQgb25jZSBpdCBpcyBkZWZpbmVkLiBTaG91
+bGQgYmUgZmFpcmx5IGVhc3kgdG8gdGVsbCBkdXJpbmcgdGVzdGluZwppZiBzb21lb25lIGhhcyBt
+ZXNzZWQgaXQgdXAgOykKCkpvbmF0aGFuCj4gCj4+Cj4+PiArICAgICAgICAgICAgIH07Cj4+PiAr
+ICAgICB9Owo+Pgo+PiAtLQo+PiBMZWUgSm9uZXMKPj4gTGluYXJvIFNUTWljcm9lbGVjdHJvbmlj
+cyBMYW5kaW5nIFRlYW0gTGVhZAo+PiBMaW5hcm8ub3JnIOKUgiBPcGVuIHNvdXJjZSBzb2Z0d2Fy
+ZSBmb3IgQVJNIFNvQ3MKPj4gRm9sbG93IExpbmFybzogRmFjZWJvb2sgfCBUd2l0dGVyIHwgQmxv
+Zwo+IC0tCj4gVG8gdW5zdWJzY3JpYmUgZnJvbSB0aGlzIGxpc3Q6IHNlbmQgdGhlIGxpbmUgInVu
+c3Vic2NyaWJlIGxpbnV4LWlpbyIgaW4KPiB0aGUgYm9keSBvZiBhIG1lc3NhZ2UgdG8gbWFqb3Jk
+b21vQHZnZXIua2VybmVsLm9yZwo+IE1vcmUgbWFqb3Jkb21vIGluZm8gYXQgIGh0dHA6Ly92Z2Vy
+Lmtlcm5lbC5vcmcvbWFqb3Jkb21vLWluZm8uaHRtbAo+IAoKCl9fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0
+CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFk
+ZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
