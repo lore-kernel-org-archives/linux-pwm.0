@@ -1,172 +1,455 @@
 From: Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 0/7] Add pwm and IIO timer drivers for stm32
-Date: Sat, 3 Dec 2016 09:32:42 +0000
-Message-ID: <ad5bacf0-3836-dd3d-5d7c-cbd92b626618@kernel.org>
+Subject: Re: [PATCH v3 7/7] ARM: dts: stm32: add stm32 general purpose timer
+ driver in DT
+Date: Sat, 3 Dec 2016 09:42:50 +0000
+Message-ID: <14837e15-07bb-39e5-b5b6-39a7dfb9130f@kernel.org>
 References: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
+ <1480673842-20804-8-git-send-email-benjamin.gaignard@st.com>
+ <20161202132251.GL2683@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1480673842-20804-1-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20161202132251.GL2683@dell>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On 02/12/16 10:17, Benjamin Gaignard wrote:
-> version 3:
-> - no change on mfd and pwm divers patches
-> - add cross reference between bindings
-> - change compatible to "st,stm32-timer-trigger"
-> - fix attributes access rights
-> - use string instead of int for master_mode and slave_mode
-> - document device attributes in sysfs-bus-iio-timer-stm32
-> - udpate DT with the new compatible
+On 02/12/16 13:22, Lee Jones wrote:
+> On Fri, 02 Dec 2016, Benjamin Gaignard wrote:
 > 
-> version 2:
-> - keep only one compatible per driver
-> - use DT parameters to describe hardware block configuration:
->   - pwm channels, complementary output, counter size, break input
->   - triggers accepted and create by IIO timers
-> - change DT to limite use of reference to the node
-> - interrupt is now in IIO timer driver
-> - rename stm32-mfd-timer to stm32-gptimer (for general purpose timer)
+>> Add general purpose timers and it sub-nodes into DT for stm32f4.
+>> Define and enable pwm1 and pwm3 for stm32f469 discovery board
+>>
+>> version 3:
+>> - use "st,stm32-timer-trigger" in DT
+>>
+>> version 2:
+>> - use parameters to describe hardware capabilities
+>> - do not use references for pwm and iio timer subnodes
+>>
+>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+>> ---
+>>  arch/arm/boot/dts/stm32f429.dtsi      | 333 +++++++++++++++++++++++++++++++++-
+>>  arch/arm/boot/dts/stm32f469-disco.dts |  28 +++
+>>  2 files changed, 360 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f429.dtsi
+>> index bca491d..8c50d03 100644
+>> --- a/arch/arm/boot/dts/stm32f429.dtsi
+>> +++ b/arch/arm/boot/dts/stm32f429.dtsi
+>> @@ -48,7 +48,7 @@
+>>  #include "skeleton.dtsi"
+>>  #include "armv7-m.dtsi"
+>>  #include <dt-bindings/pinctrl/stm32f429-pinfunc.h>
+>> -
+>> +#include <dt-bindings/iio/timer/st,stm32-timer-triggers.h>
+>>  / {
+>>  	clocks {
+>>  		clk_hse: clk-hse {
+>> @@ -355,6 +355,21 @@
+>>  					slew-rate = <2>;
+>>  				};
+>>  			};
+>> +
+>> +			pwm1_pins: pwm@1 {
+>> +				pins {
+>> +					pinmux = <STM32F429_PA8_FUNC_TIM1_CH1>,
+>> +						 <STM32F429_PB13_FUNC_TIM1_CH1N>,
+>> +						 <STM32F429_PB12_FUNC_TIM1_BKIN>;
+>> +				};
+>> +			};
+>> +
+>> +			pwm3_pins: pwm@3 {
+>> +				pins {
+>> +					pinmux = <STM32F429_PB4_FUNC_TIM3_CH1>,
+>> +						 <STM32F429_PB5_FUNC_TIM3_CH2>;
+>> +				};
+>> +			};
+>>  		};
+>>  
+>>  		rcc: rcc@40023810 {
+>> @@ -426,6 +441,322 @@
+>>  			interrupts = <80>;
+>>  			clocks = <&rcc 0 38>;
+>>  		};
+>> +
+>> +		gptimer1: gptimer1@40010000 {
 > 
-> The following patches enable pwm and IIO Timer features for stm32 platforms.
+> timer@xxxxxxx
 > 
-> Those two features are mixed into the registers of the same hardware block
-> (named general purpose timer) which lead to introduce a multifunctions driver 
-> on the top of them to be able to share the registers.
+> Node names should be generic and not numbered.
 > 
-> In stm32 14 instances of timer hardware block exist, even if they all have
-> the same register mapping they could have a different number of pwm channels
-> and/or different triggers capabilities. We use various parameters in DT to 
-> describe the differences between hardware blocks
-> 
-> The MFD (stm32-gptimer.c) takes care of clock and register mapping
-> by using regmap. stm32_gptimer_dev structure is provided to its sub-node to
-> share those information.
-> 
-> PWM driver is implemented into pwm-stm32.c. Depending of the instance we may
-> have up to 4 channels, sometime with complementary outputs or 32 bits counter
-> instead of 16 bits. Some hardware blocks may also have a break input function
-> which allows to stop pwm depending of a level, defined in devicetree, on an
-> external pin.
-> 
-> IIO timer driver (stm32-iio-timer.c and stm32-iio-timers.h) define a list of 
-> hardware triggers usable by hardware blocks like ADC, DAC or other timers. 
-> 
-> The matrix of possible connections between blocks is quite complex so we use 
-> trigger names and is_stm32_iio_timer_trigger() function to be sure that
-> triggers are valid and configure the IPs.
-> Possible triggers ar listed in include/dt-bindings/iio/timer/st,stm32-iio-timer.h
-> 
-> At run time IIO timer hardware blocks can configure (through "master_mode" 
-> IIO device attribute) which internal signal (counter enable, reset,
-> comparison block, etc...) is used to generate the trigger.
-> 
-> By using "slave_mode" IIO device attribute timer can also configure on which
-> event (level, rising edge) of the block is enabled.
-> 
-> Since we can use trigger from one hardware to control an other block, we can
-> use a pwm to control an other one. The following example shows how to configure
-> pwm1 and pwm3 to make pwm3 generate pulse only when pwm1 pulse level is high.
-> 
-> /sys/bus/iio/devices # ls
-> iio:device0  iio:device1  trigger0     trigger1
-> 
-> configure timer1 to use pwm1 channel 0 as output trigger
-> /sys/bus/iio/devices # echo 'OC1REF' > iio\:device0/master_mode
-> configure timer3 to enable only when input is high
-> /sys/bus/iio/devices # echo 'gated' > iio\:device1/slave_mode
-> /sys/bus/iio/devices # cat trigger0/name
-> tim1_trgo
-> configure timer2 to use timer1 trigger is input
-> /sys/bus/iio/devices # echo "tim1_trgo" > iio\:device1/trigger/current_trigger
-> 
-> configure pwm3 channel 0 to generate a signal with a period of 100ms and a
-> duty cycle of 50%
-> /sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 0 > export
-> /sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 100000000 > pwm0/period
-> /sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 50000000 > pwm0/duty_cycle
-> /sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4# echo 1 > pwm0/enable
-> here pwm3 channel 0, as expected, doesn't start because has to be triggered by
-> pwm1 channel 0
-> 
-> configure pwm1 channel 0 to generate a signal with a period of 1s and a
-> duty cycle of 50%
-> /sys/devices/platform/soc/40010000.gptimer1/40010000.gptimer1:pwm1@0/pwm/pwmchip0 # echo 0 > export
-> /sys/devices/platform/soc/40010000.gptimer1/40010000.gptimer1:pwm1@0/pwm/pwmchip0 # echo 1000000000 > pwm0/period
-> /sys/devices/platform/soc/40010000.gptimer1/40010000.gptimer1:pwm1@0/pwm/pwmchip0 # echo 500000000 > pwm0/duty_cycle
-> /sys/devices/platform/soc/40010000.gptimer1/40010000.gptimer1:pwm1@0/pwm/pwmchip0 # echo 1 > pwm0/enable 
-> finally pwm1 starts and pwm3 only generates pulse when pwm1 signal is high
-> 
-> An other example to use a timer as source of clock for another device.
-> Here timer1 is used a source clock for pwm3:
-> 
-> /sys/bus/iio/devices # echo 100000 > trigger0/sampling_frequency 
-> /sys/bus/iio/devices # echo tim1_trgo > iio\:device1/trigger/current_trigger 
-> /sys/bus/iio/devices # echo 'external_clock' > iio\:device1/slave_mode
-> /sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 0 > export 
-> /sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 1000000 > pwm0/period 
-> /sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 500000 > pwm0/duty_cycle 
-> /sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 1 > pwm0/enable 
-This is good thorough documentation.  Could we have an additional
-patch adding just this documentation to the tree (probably under
-Documentation/mfd?). Documentation in general is a bit in flux at the
-moment so we'll may want to sphixify it afterwards but plain text
-is fine for now.
+> I suggest that this isn't actually a timer either.  Is contains a
+> timer (and a PWM), but in it's completeness it is not a timer per
+> say.
+That's just mean ;)  At least suggest an alternative?
 
-Jonathan
+stm32-gptimerish-magic?
 
 
 > 
-> Benjamin Gaignard (7):
->   MFD: add bindings for stm32 general purpose timer driver
->   MFD: add stm32 general purpose timer driver
->   PWM: add pwm-stm32 DT bindings
->   PWM: add pwm driver for stm32 plaftorm
->   IIO: add bindings for stm32 timer trigger driver
->   IIO: add STM32 timer trigger driver
->   ARM: dts: stm32: add stm32 general purpose timer driver in DT
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40010000 0x400>;
+>> +			clocks = <&rcc 0 160>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			pwm1@0 {
+>> +				compatible = "st,stm32-pwm";
+>> +				st,pwm-num-chan = <4>;
+>> +				st,breakinput;
+>> +				st,complementary;
+>> +				status = "disabled";
+>> +			};
+>> +
+>> +			timer1@0 {
+>> +				compatible = "st,stm32-timer-trigger";
+>> +				interrupts = <27>;
+>> +				st,input-triggers-names = TIM5_TRGO,
+>> +							  TIM2_TRGO,
+>> +							  TIM4_TRGO,
+>> +							  TIM3_TRGO;
 > 
->  .../ABI/testing/sysfs-bus-iio-timer-stm32          |  47 ++
->  .../bindings/iio/timer/stm32-timer-trigger.txt     |  39 ++
->  .../bindings/mfd/stm32-general-purpose-timer.txt   |  47 ++
->  .../devicetree/bindings/pwm/pwm-stm32.txt          |  38 ++
->  arch/arm/boot/dts/stm32f429.dtsi                   | 333 +++++++++++++-
->  arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
->  drivers/iio/Kconfig                                |   2 +-
->  drivers/iio/Makefile                               |   1 +
->  drivers/iio/timer/Kconfig                          |  15 +
->  drivers/iio/timer/Makefile                         |   1 +
->  drivers/iio/timer/stm32-timer-trigger.c            | 477 +++++++++++++++++++++
->  drivers/iio/trigger/Kconfig                        |   1 -
->  drivers/mfd/Kconfig                                |  10 +
->  drivers/mfd/Makefile                               |   2 +
->  drivers/mfd/stm32-gptimer.c                        |  73 ++++
->  drivers/pwm/Kconfig                                |   8 +
->  drivers/pwm/Makefile                               |   1 +
->  drivers/pwm/pwm-stm32.c                            | 285 ++++++++++++
->  .../iio/timer/st,stm32-timer-triggers.h            |  60 +++
->  include/linux/iio/timer/stm32-timer-trigger.h      |  16 +
->  include/linux/mfd/stm32-gptimer.h                  |  62 +++
->  21 files changed, 1543 insertions(+), 3 deletions(-)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
->  create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
->  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
->  create mode 100644 drivers/iio/timer/Kconfig
->  create mode 100644 drivers/iio/timer/Makefile
->  create mode 100644 drivers/iio/timer/stm32-timer-trigger.c
->  create mode 100644 drivers/mfd/stm32-gptimer.c
->  create mode 100644 drivers/pwm/pwm-stm32.c
->  create mode 100644 include/dt-bindings/iio/timer/st,stm32-timer-triggers.h
->  create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
->  create mode 100644 include/linux/mfd/stm32-gptimer.h
+> I'm still dubious with matching by strings.
 > 
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> I'll take a look at the C code to see what the alternatives could be.
+> 
+>> +				st,output-triggers-names = TIM1_TRGO,
+>> +							   TIM1_CH1,
+>> +							   TIM1_CH2,
+>> +							   TIM1_CH3,
+>> +							   TIM1_CH4;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>> +
+>> +		gptimer2: gptimer2@40000000 {
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40000000 0x400>;
+>> +			clocks = <&rcc 0 128>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			pwm2@0 {
+>> +				compatible = "st,stm32-pwm";
+>> +				st,pwm-num-chan = <4>;
+>> +				st,32bits-counter;
+>> +				status = "disabled";
+>> +			};
+>> +
+>> +			timer2@0 {
+>> +				compatible = "st,stm32-timer-trigger";
+>> +				interrupts = <28>;
+>> +				st,input-triggers-names = TIM1_TRGO,
+>> +							  TIM8_TRGO,
+>> +							  TIM3_TRGO,
+>> +							  TIM4_TRGO;
+>> +				st,output-triggers-names = TIM2_TRGO,
+>> +							   TIM2_CH1,
+>> +							   TIM2_CH2,
+>> +							   TIM2_CH3,
+>> +							   TIM2_CH4;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>> +
+>> +		gptimer3: gptimer3@40000400 {
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40000400 0x400>;
+>> +			clocks = <&rcc 0 129>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			pwm3@0 {
+>> +				compatible = "st,stm32-pwm";
+>> +				st,pwm-num-chan = <4>;
+>> +				status = "disabled";
+>> +			};
+>> +
+>> +			timer3@0 {
+>> +				compatible = "st,stm32-timer-trigger";
+>> +				interrupts = <29>;
+>> +				st,input-triggers-names = TIM1_TRGO,
+>> +							  TIM8_TRGO,
+>> +							  TIM5_TRGO,
+>> +							  TIM4_TRGO;
+>> +				st,output-triggers-names = TIM3_TRGO,
+>> +							   TIM3_CH1,
+>> +							   TIM3_CH2,
+>> +							   TIM3_CH3,
+>> +							   TIM3_CH4;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>> +
+>> +		gptimer4: gptimer4@40000800 {
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40000800 0x400>;
+>> +			clocks = <&rcc 0 130>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			pwm4@0 {
+>> +				compatible = "st,stm32-pwm";
+>> +				st,pwm-num-chan = <4>;
+>> +				status = "disabled";
+>> +			};
+>> +
+>> +			timer4@0 {
+>> +				compatible = "st,stm32-timer-trigger";
+>> +				interrupts = <30>;
+>> +				st,input-triggers-names = TIM1_TRGO,
+>> +							  TIM2_TRGO,
+>> +							  TIM3_TRGO,
+>> +							  TIM8_TRGO;
+>> +				st,output-triggers-names = TIM4_TRGO,
+>> +							   TIM4_CH1,
+>> +							   TIM4_CH2,
+>> +							   TIM4_CH3,
+>> +							   TIM4_CH4;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>> +
+>> +		gptimer5: gptimer5@40000C00 {
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40000C00 0x400>;
+>> +			clocks = <&rcc 0 131>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			pwm5@0 {
+>> +				compatible = "st,stm32-pwm";
+>> +				st,pwm-num-chan = <4>;
+>> +				st,32bits-counter;
+>> +				status = "disabled";
+>> +			};
+>> +
+>> +			timer5@0 {
+>> +				compatible = "st,stm32-timer-trigger";
+>> +				interrupts = <50>;
+>> +				st,input-triggers-names = TIM2_TRGO,
+>> +							  TIM3_TRGO,
+>> +							  TIM4_TRGO,
+>> +							  TIM8_TRGO;
+>> +				st,output-triggers-names = TIM5_TRGO,
+>> +							   TIM5_CH1,
+>> +							   TIM5_CH2,
+>> +							   TIM5_CH3,
+>> +							   TIM5_CH4;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>> +
+>> +		gptimer6: gptimer6@40001000 {
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40001000 0x400>;
+>> +			clocks = <&rcc 0 132>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			timer6@0 {
+>> +				compatible = "st,stm32-timer-trigger";
+>> +				interrupts = <54>;
+>> +				st,output-triggers-names = TIM6_TRGO;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>> +
+>> +		gptimer7: gptimer7@40001400 {
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40001400 0x400>;
+>> +			clocks = <&rcc 0 133>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			timer7@0 {
+>> +				compatible = "st,stm32-timer-trigger";
+>> +				interrupts = <55>;
+>> +				st,output-triggers-names = TIM7_TRGO;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>> +
+>> +		gptimer8: gptimer8@40010400 {
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40010400 0x400>;
+>> +			clocks = <&rcc 0 161>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			pwm8@0 {
+>> +				compatible = "st,stm32-pwm";
+>> +				st,pwm-num-chan = <4>;
+>> +				st,complementary;
+>> +				st,breakinput;
+>> +				status = "disabled";
+>> +			};
+>> +
+>> +			timer8@0 {
+>> +				compatible = "st,stm32-timer-trigger";
+>> +				interrupts = <46>;
+>> +				st,input-triggers-names = TIM1_TRGO,
+>> +							  TIM2_TRGO,
+>> +							  TIM4_TRGO,
+>> +							  TIM5_TRGO;
+>> +				st,output-triggers-names = TIM8_TRGO,
+>> +							   TIM8_CH1,
+>> +							   TIM8_CH2,
+>> +							   TIM8_CH3,
+>> +							   TIM8_CH4;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>> +
+>> +		gptimer9: gptimer9@40014000 {
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40014000 0x400>;
+>> +			clocks = <&rcc 0 176>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			pwm9@0 {
+>> +				compatible = "st,stm32-pwm";
+>> +				st,pwm-num-chan = <2>;
+>> +				status = "disabled";
+>> +			};
+>> +
+>> +			timer9@0 {
+>> +				compatible = "st,stm32-timer-trigger";
+>> +				interrupts = <24>;
+>> +				st,input-triggers-names = TIM2_TRGO,
+>> +							  TIM3_TRGO;
+>> +				st,output-triggers-names = TIM9_TRGO,
+>> +							   TIM9_CH1,
+>> +							   TIM9_CH2;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>> +
+>> +		gptimer10: gptimer10@40014400 {
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40014400 0x400>;
+>> +			clocks = <&rcc 0 177>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			pwm10@0 {
+>> +				compatible = "st,stm32-pwm";
+>> +				st,pwm-num-chan = <1>;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>> +
+>> +		gptimer11: gptimer11@40014800 {
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40014800 0x400>;
+>> +			clocks = <&rcc 0 178>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			pwm11@0 {
+>> +				compatible = "st,stm32-pwm";
+>> +				st,pwm-num-chan = <1>;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>> +
+>> +		gptimer12: gptimer12@40001800 {
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40001800 0x400>;
+>> +			clocks = <&rcc 0 134>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			pwm12@0 {
+>> +				compatible = "st,stm32-pwm";
+>> +				st,pwm-num-chan = <2>;
+>> +				status = "disabled";
+>> +			};
+>> +
+>> +			timer12@0 {
+>> +				compatible = "st,stm32-timer-trigger";
+>> +				interrupts = <43>;
+>> +				st,input-triggers-names = TIM4_TRGO,
+>> +							  TIM5_TRGO;
+>> +				st,output-triggers-names = TIM12_TRGO,
+>> +							   TIM12_CH1,
+>> +							   TIM12_CH2;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>> +
+>> +		gptimer13: gptimer13@40001C00 {
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40001C00 0x400>;
+>> +			clocks = <&rcc 0 135>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			pwm13@0 {
+>> +				compatible = "st,stm32-pwm";
+>> +				st,pwm-num-chan = <1>;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>> +
+>> +		gptimer14: gptimer14@40002000 {
+>> +			compatible = "st,stm32-gptimer";
+>> +			reg = <0x40002000 0x400>;
+>> +			clocks = <&rcc 0 136>;
+>> +			clock-names = "clk_int";
+>> +			status = "disabled";
+>> +
+>> +			pwm14@0 {
+>> +				compatible = "st,stm32-pwm";
+>> +				st,pwm-num-chan = <1>;
+>> +				status = "disabled";
+>> +			};
+>> +		};
+>>  	};
+>>  };
+>>  
+>> diff --git a/arch/arm/boot/dts/stm32f469-disco.dts b/arch/arm/boot/dts/stm32f469-disco.dts
+>> index 8a163d7..df4ca7e 100644
+>> --- a/arch/arm/boot/dts/stm32f469-disco.dts
+>> +++ b/arch/arm/boot/dts/stm32f469-disco.dts
+>> @@ -81,3 +81,31 @@
+>>  &usart3 {
+>>  	status = "okay";
+>>  };
+>> +
+>> +&gptimer1 {
+>> +	status = "okay";
+>> +
+>> +	pwm1@0 {
+>> +		pinctrl-0	= <&pwm1_pins>;
+>> +		pinctrl-names	= "default";
+>> +		status = "okay";
+>> +	};
+>> +
+>> +	timer1@0 {
+>> +		status = "okay";
+>> +	};
+>> +};
+> 
+> This is a much *better* format than before.
+> 
+> I still don't like the '&' syntax though.
+> 
+>> +&gptimer3 {
+>> +	status = "okay";
+>> +
+>> +	pwm3@0 {
+>> +		pinctrl-0	= <&pwm3_pins>;
+>> +		pinctrl-names	= "default";
+>> +		status = "okay";
+>> +	};
+>> +
+>> +	timer3@0 {
+>> +		status = "okay";
+>> +	};
+>> +};
+> 
