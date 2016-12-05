@@ -1,178 +1,118 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 3/7] PWM: add pwm-stm32 DT bindings
-Date: Mon, 5 Dec 2016 13:21:24 +0100
-Message-ID: <20161205122124.GA20856@ulmo.ba.sec>
-References: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
- <1480673842-20804-4-git-send-email-benjamin.gaignard@st.com>
- <20161205065350.GA18069@ulmo.ba.sec>
- <CA+M3ks4-JQNGYtdiXNj1J701x0njKD0_bf4yN1mLSjEcT2Z=6A@mail.gmail.com>
- <20161205112347.GF19891@ulmo.ba.sec>
- <CA+M3ks5j2e-EQEf74YSduboNnCiWC7+e_PD5aAz5XdFA1tGztQ@mail.gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH 1/2] pwm: lpss: Make builtin and add lookup-table so that
+ i915 can find the pwm_backlight
+Date: Mon, 5 Dec 2016 14:23:10 +0100
+Message-ID: <023df77a-d517-b3f0-3f37-b440db4e113e@redhat.com>
+References: <20161202101736.12236-1-hdegoede@redhat.com>
+ <20161205074630.GD18069@ulmo.ba.sec>
+ <bcd2a008-7dac-5084-90b5-e21634e7b57d@redhat.com>
+ <20161205105943.GB19891@ulmo.ba.sec>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ibTvN161/egqYuK8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pg0-f65.google.com ([74.125.83.65]:34364 "EHLO
-        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750998AbcLEMV5 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 5 Dec 2016 07:21:57 -0500
-Content-Disposition: inline
-In-Reply-To: <CA+M3ks5j2e-EQEf74YSduboNnCiWC7+e_PD5aAz5XdFA1tGztQ@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20161205105943.GB19891@ulmo.ba.sec>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Daniel Vetter <daniel.vetter@intel.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: Lee Jones <lee.jones@linaro.org>, robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>, alexandre.torgue@st.com, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-pwm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Fabrice Gasnier <fabrice.gasnier@st.com>, Gerald Baeza <gerald.baeza@st.com>, Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linus Walleij <linus.walleij@linaro.org>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, Benjamin Gaignard <benjamin.gaignard@st.com>
 
-
---ibTvN161/egqYuK8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, Dec 05, 2016 at 01:12:25PM +0100, Benjamin Gaignard wrote:
-> 2016-12-05 12:23 GMT+01:00 Thierry Reding <thierry.reding@gmail.com>:
-> > On Mon, Dec 05, 2016 at 12:08:32PM +0100, Benjamin Gaignard wrote:
-> >> 2016-12-05 7:53 GMT+01:00 Thierry Reding <thierry.reding@gmail.com>:
-> >> > On Fri, Dec 02, 2016 at 11:17:18AM +0100, Benjamin Gaignard wrote:
-> >> >> Define bindings for pwm-stm32
-> >> >>
-> >> >> version 2:
-> >> >> - use parameters instead of compatible of handle the hardware confi=
-guration
-> >> >>
-> >> >> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-> >> >> ---
-> >> >>  .../devicetree/bindings/pwm/pwm-stm32.txt          | 38 ++++++++++=
-++++++++++++
-> >> >>  1 file changed, 38 insertions(+)
-> >> >>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32=
-=2Etxt
-> >> >>
-> >> >> diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/=
-Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-> >> >> new file mode 100644
-> >> >> index 0000000..575b9fb
-> >> >> --- /dev/null
-> >> >> +++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-> >> >> @@ -0,0 +1,38 @@
-> >> >> +STMicroelectronics PWM driver bindings for STM32
-> >> >
-> >> > Technically this bindings describe devices, so "driver binding" is a
-> >> > somewhat odd wording. Perhaps:
-> >> >
-> >> >         STMicroelectronics STM32 General Purpose Timer PWM bindings
-> >> >
-> >> > ?
-> >>  done
-> >>
-> >> >
-> >> >> +
-> >> >> +Must be a sub-node of STM32 general purpose timer driver
-> >> >> +Parent node properties are describe in ../mfd/stm32-general-purpos=
-e-timer.txt
-> >> >
-> >> > Again, "driver parent node" is odd. Perhaps:
-> >> >
-> >> >         Must be a sub-node of an STM32 General Purpose Timer device =
-tree
-> >> >         node. See ../mfd/stm32-general-purpose-timer.txt for details=
- about
-> >> >         the parent node.
-> >> >
-> >> > ?
-> >>
-> >> done
-> >>
-> >> >
-> >> >> +Required parameters:
-> >> >> +- compatible:                Must be "st,stm32-pwm"
-> >> >> +- pinctrl-names:     Set to "default".
-> >> >> +- pinctrl-0:                 List of phandles pointing to pin conf=
-iguration nodes
-> >> >> +                     for PWM module.
-> >> >> +                     For Pinctrl properties, please refer to [1].
-> >> >
-> >> > Your indentation and capitalization are inconsistent. Also, please r=
-efer
-> >> > to the pinctrl bindings by relative path and inline, rather than as a
-> >> > footnote reference.
-> >>
-> >> OK
-> >>
-> >> >
-> >> >> +
-> >> >> +Optional parameters:
-> >> >> +- st,breakinput:     Set if the hardware have break input capabili=
-ties
-> >> >> +- st,breakinput-polarity: Set break input polarity. Default is 0
-> >> >> +                      The value define the active polarity:
-> >> >> +                       - 0 (active LOW)
-> >> >> +                       - 1 (active HIGH)
-> >> >
-> >> > Could we fold these into a single property? If st,breakinput-polarit=
-y is
-> >> > not present it could simply mean that there is no break input, and i=
-f it
-> >> > is present you don't have to rely on a default.
-> >>
-> >> I need to know if I have to activate breakinput feature and on which l=
-evel
-> >> I will rewrite it like that:
-> >> Optional parameters:
-> >> - st,breakinput-polarity-high: Set if break input polarity is active
-> >> on high level.
-> >> - st,breakinput-polarity-high: Set if break input polarity is active
-> >> on low level.
-> >
-> > How is that different from a single property:
-> >
-> >         Optional properties:
-> >         - st,breakinput-polarity: If present, a break input is available
-> >             for the channel. In that case the property value denotes the
-> >             polarity of the break input:
-> >             - 0: active low
-> >             - 1: active high
-> >
-> > ?
->=20
-> For break input feature I need two information: do I have to active it
-> and if activated
-> on which level.
-> I have two solutions:
-> - one parameter with a value (0 or 1) -> st,breakinput-polarity
-> - two parameters without value -> st,breakinput-active-high and
-> st,breakinput-active-low
->=20
-> By default break input feature is disabled
-
-Right, what I was suggesting is that you use the first solution because
-it's the typical way to use for tristate options. It's also much easier
-to test for in practice because for the second solution you have to
-parse two properties before you know whether it is active or not.
-
-The second is typically the solution for required properties where only
-one of the properties is used to override the default.
-
-Thierry
-
---ibTvN161/egqYuK8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAABCAAGBQJYRVvCAAoJEN0jrNd/PrOhujwP/1w8e4ZwTw+PKUVyCuMAieJ/
-N7SeawE7FJdQlSSwp88c0WUvU3YqFp1YmUSl5d31g7GFcexV604PAqIqVbLAXSwY
-ciCNoq9HEERpi6oIeJLet0h3PNSh5unLD/klVDSSVVAT5lMoUz8IuLtRnkjp8W/f
-92Dem5Bb/61ewdpmjS9LeYyf6xHQV15yKHkuwRbNsnRWDrHa2LG4gjcwUVW9kQgr
-5DTwAnszymhpj0AkXe6Zq58Oni2s7cZJ9xFHjwSaFeXzx8EsS24ZuqZpm7OgkcaX
-4K/isEnx6+3YU7NenLolWsCMn69yhaaOOilK8a36P3nAJZWtSdls+798NDCVgghE
-gfKXzQC9Lf4kJSthvJfgcULSOWrzJ4fUsXLmm7o7Z7/vMKSoU2FGadPuSW4Seezl
-S7fAbn1k7o72Li+E3SdfT9s2jVvJn42Nmts//d+8sHFLH0CNS61Cuga52SPf0evd
-+uwx0jIOqycsaJkCtTMiAfmeTJpRGf+2ilb1JFGnF4tVX2XExR0ET4mC9dMH/vte
-bKE6DRrN8b1IZoN7VAWH6PCtux8meW0Fy7UnxA/NRmsYp+W2wwhaAEwUq0xi92wF
-uhtjJM0fG/YEoUkqi2bhwlGxkOxljdQIE+TeG9PNfOG/uT1OaobEk0kT93d5joMT
-CIJh3qnl/AsPpPr6+YXj
-=iCYg
------END PGP SIGNATURE-----
-
---ibTvN161/egqYuK8--
+SGksCgpPbiAwNS0xMi0xNiAxMTo1OSwgVGhpZXJyeSBSZWRpbmcgd3JvdGU6Cj4gT24gTW9uLCBE
+ZWMgMDUsIDIwMTYgYXQgMDk6MTg6MDNBTSArMDEwMCwgSGFucyBkZSBHb2VkZSB3cm90ZToKPj4g
+SGksCj4+Cj4+IE9uIDA1LTEyLTE2IDA4OjQ2LCBUaGllcnJ5IFJlZGluZyB3cm90ZToKPj4+IE9u
+IEZyaSwgRGVjIDAyLCAyMDE2IGF0IDExOjE3OjM1QU0gKzAxMDAsIEhhbnMgZGUgR29lZGUgd3Jv
+dGU6Cj4+Pj4gVGhlIHByaW1hcnkgY29uc3VtZXIgb2YgdGhlIGxwc3MgcHdtIGlzIHRoZSBpOTE1
+IGttcyBkcml2ZXIsIGJ1dAo+Pj4+IGN1cnJlbnRseSB0aGF0IGRyaXZlciBjYW5ub3QgZ2V0IHRo
+ZSBwd20gYmVjYXVzZSBpOTE1IHBsYXRmb3JtcyBhcmUKPj4+PiBub3QgdXNpbmcgZGV2aWNldHJl
+ZSBhbmQgcHdtLWxwc3MgZG9lcyBub3QgY2FsbCBwd21fYWRkX3RhYmxlLgo+Pj4+Cj4+Pj4gQW5v
+dGhlciBwcm9ibGVtIGlzIHRoYXQgaTkxNSBkb2VzIG5vdCBzdXBwb3J0IGdldF9wd20gcmV0dXJu
+aW5nCj4+Pj4gLUVQUk9CRV9ERUZFUiBhbmQgaTkxNSdzIGluaXQgaXMgdmVyeSBjb21wbGV4IGFu
+ZCB0aGlzIGlzIGFsbW9zdAo+Pj4+IGltcG9zc2libGUgdG8gZml4Lgo+Pj4+Cj4+Pj4gVGhpcyBj
+b21taXQgY2hhbmdlcyB0aGUgUFdNX0xQU1MgS2NvbmZpZyBmcm9tIGEgdHJpc3RhdGUgdG8gYSBi
+b29sLCBzbwo+Pj4+IHRoYXQgd2hlbiB0aGUgaTkxNSBkcml2ZXIgbG9hZHMgdGhlIGxwc3MgcHdt
+IHdpbGwgYmUgYXZhaWxhYmxlIGF2b2lkaW5nCj4+Pj4gdGhlIC1FUFJPQkVfREVGRVIgaXNzdWUu
+IE5vdGUgdGhhdCB0aGlzIGlzIGlkZW50aWNhbCB0byBob3cgdGhlIHNhbWUKPj4+PiBwcm9ibGVt
+IHdhcyBzb2x2ZWQgZm9yIHRoZSBwd20tY3JjIGRyaXZlci4KPj4+Pgo+Pj4+IEJlaW5nIGJ1aWx0
+aW4gYWxzbyBhbGxvd3MgY2FsbGluZyBwd21fYWRkX3RhYmxlIGRpcmVjdGx5IGZyb20gdGhlCj4+
+Pj4gcHdtLWxwc3MgY29kZSwgb3RoZXJ3aXNlIHRoZSBwd21fYWRkX3RhYmxlIGNhbGwgd291bGQg
+bmVlZCB0byBiZSBwdXQKPj4+PiBzb21ld2hlcmUgZWxzZSB0byBlbnN1cmUgaXQgaGFwcGVucyBi
+ZWZvcmUgaTkxNSBjYWxscyBwd21fZ2V0LAo+Pj4+IGV2ZW4gaWYgaTkxNSB3b3VsZCBzdXBwb3J0
+IC1FUFJPQkVfREVGRVIuCj4+Pj4KPj4+PiBTaWduZWQtb2ZmLWJ5OiBIYW5zIGRlIEdvZWRlIDxo
+ZGVnb2VkZUByZWRoYXQuY29tPgo+Pj4+IC0tLQo+Pj4+ICBkcml2ZXJzL3B3bS9LY29uZmlnICAg
+IHwgMTIgKysrLS0tLS0tLS0tCj4+Pj4gIGRyaXZlcnMvcHdtL3B3bS1scHNzLmMgfCAxMSArKysr
+KysrKysrKwo+Pj4+ICAyIGZpbGVzIGNoYW5nZWQsIDE0IGluc2VydGlvbnMoKyksIDkgZGVsZXRp
+b25zKC0pCj4+Pgo+Pj4gVGhpcyBpcyBjb21wbGV0ZWx5IGJhY2t3YXJkcy4gWW91J3JlIHB1dHRp
+bmcgYm9hcmQtc3BlY2lmaWMgYml0cyBpbnRvIGEKPj4+IGdlbmVyaWMgZHJpdmVyLgo+Pgo+PiBU
+aGlzIGlzIG5vdCByZWFsbHkgYm9hcmQgc3BlY2lmaWMgSSdtIGFkdmVydGlzaW5nIHRoYXQgdGhl
+IGdvYWwgb2YKPj4gdGhlIHB3bSBpcyB0byBiZSB1c2VkIHRvIGNvbnRyb2wgYSBiYWNrbGlnaHQu
+Cj4KPiBwd21fYWRkX3RhYmxlKCkgaXMgYSBib2FyZC1zcGVjaWZpYyBBUEkuIERvY3VtZW50YXRp
+b24vcHdtLnR4dCBzYXlzIHRoYXQKPiAiYm9hcmQgc2V0dXAgY29kZSIgc2hvdWxkIGJlIHVzaW5n
+IHB3bV9hZGRfdGFibGUoKS4gVXNpbmcgaXQgZnJvbSB3aXRoaW4KPiB0aGUgcHJvdmlkZXIgaXMg
+Y29tcGxldGVseSB0aGUgb3Bwb3NpdGUuCgpUaGUgcHJvYmxlbSBoZXJlIHJlYWxseSBpcyB0aGF0
+IHRoZXJlIGlzIG5vIHN1Y2ggdGhpbmcgYXMKYm9hcmQgc2V0dXAgY29kZSBvbiB4ODYgKyBFRkkv
+QUNQSSwgdGhhdCBpcyBzdXBwb3NlZGx5IGFsbApoYW5kbGVkIGJ5IHRoZSBFRkkvQUNQSSBjb2Rl
+IHRoZXJlLgoKPj4gQmVmb3JlIHR5cGluZyB0aGlzIHJlcGx5IEkndmUgYmVlbiB0aGlua2luZyBh
+Ym91dCBhbm90aGVyIHBsYWNlCj4+IHRvIHB1dCB0aGUgcHdtX2FkZF90YWJsZSBjYWxsIHB1dCBJ
+IGNhbm5vdCBjb21lIHVwIHdpdGggYW55Lgo+Cj4gSSBzdWdnZXN0ZWQgZHJpdmVycy9wbGF0Zm9y
+bS94ODYuIEEgYnVuY2ggb2YgY29kZSBpbiB0aGVyZSBpcyBkb2luZwo+IGV4YWN0bHkgdGhlIGtp
+bmQgb2YgYm9hcmQvcGxhdGZvcm0gc2V0dXAgc3R1ZmYgdGhhdCB5b3UncmUgdHJ5aW5nIHRvIGRv
+Cj4gaGVyZS4KCkFsbCBkcml2ZXJzIHVuZGVyIGRyaXZlcnMvcGxhdGZvcm0veDg2IGJpbmQgdG8g
+c29tZXRoaW5nLCBiZSBpdAphbiBBQ1BJIGludGVyZmFjZSBvciBhbiBhY3R1YWwgcGxhdGZvcm0g
+ZGV2aWNlLiBJbiB0aGUgY2FzZSBvZiB0aGUKcHdtLWxwc3Mgd2UgaGF2ZSBhbiBhY3R1YWwgcGxh
+dGZvcm0gb3IgcGNpIGRldmljZSBhbmQgYSBkcml2ZXIgYmluZGluZwp0byBpdCwgdGhhdCBpcyB0
+aGUgb25seSBjb21tb24gY29kZSBwYXRoIEkgc2VlIHdoZXJlIEkgY2FuIGFkZCB0aGUKcHdtX2Fk
+ZF90YWJsZS4KClN1cmUgSSBjYW4gcHV0IGEgYnVpbHQtaW4gYml0IG9mIGNvZGUgdW5kZXIgZHJp
+dmVycy9wbGF0Zm9ybS94ODYKd2hpY2ggY2hlY2tzIGZyb20gaXRzIG1vZHVsZV9pbml0KCkgdGhh
+dCB0aGVyZSBpcyBhbiBwd20tbHBzcyBjb250cm9sbGVyCnByZXNlbnQgKGVpdGhlciBsaXN0ZWQg
+dW5kZXIgQUNQSSBvciB0aHJvdWdoIFBDSSkgYW5kIHRoZW4gY2FsbHMKcHdtX2FkZF90YWJsZSwg
+YnV0IHNlZW1zIHNpbGx5LiBOb3RlIGFzIHNhaWQgdGhpcyB0aGVuIG11c3QgYmUKYnVpbHQtaW4s
+IGJlY2F1c2UgaWYgaXQgaXMgYSBtb2R1bGUgbm90aGluZyB3aWxsIHRyaWdnZXIgdGhlCmxvYWRp
+bmcgb2YgdGhlIG1vZHVsZSwgdW5sZXNzIEkgYWRkIGR1cGxpY2F0ZSBNT0RVTEVfREVWSUNFX1RB
+QkxFCnRhYmxlcyBpbiB0aGVyZSB3aXRoIHRoZSBjb2RlIHVuZGVyIGRyaXZlcnMvcHdtL3B3bS1s
+cHNzLgoKVEw7RFI6IHRoZSBwcm9ibGVtIGlzIHRoYXQgc29tZXRoaW5nIG5lZWRzIHRvIHRyaWdn
+ZXIgLyBhY3RpdmF0ZQp0aGUgY29kZSBkb2luZyB0aGUgcHdtX2FkZF90YWJsZSgpIGFuZCBBRkFJ
+Q1Qgd2UgaGF2ZSBubyBvdGhlcgp0cmlnZ2VyIHRoZW4gdGhlIHByZXNlbmNlIG9mIHRoZSBwd20t
+bHBzcyBkZXZpY2UsIGF0IHdoaWNoIHBvaW50CnRoZSBwd21fbHBzc19wcm9iZSBmdW5jdGlvbiBi
+ZWNvbWVzIHRoZSBiZXN0IHBsYWNlIHRvIGRvIHRoZQpwd21fYWRkX3RhYmxlIGNhbGwuCgpSZWdh
+cmRzLAoKSGFucwoKCgoKCj4KPj4KPj4gZHJpdmVycy9hY3BpL2FjcGlfbHBzcy5jIGNvbWVzIHRv
+IG1pbmQsIGJ1dCB0aGF0IHdvdWxkIG9ubHkgd29yawo+PiB3aXRoIHRoZSBwd20gZGV2aWNlIGlu
+IGFjcGkgbW9kZSBhbmQgbm90IHdpdGggaXQgaW4gcGNpIG1vZGUuCj4+Cj4+IEFub3RoZXIgY2Fu
+ZGlkYXRlIHdvdWxkIGJlIHRvIHB1dCB0aGUgcHdtX2FkZF90YWJsZSBjYWxsIGluIHRoZQo+PiBp
+OTE1IGRyaXZlciBpdHNlbGYsIHdoZW4gdGhlIHZidCBzYXlzIHdlIG5lZWQgdG8gdXNlIGFuIGV4
+dGVybmFsCj4+IHB3bSBhbmQgdGhlIHBsYWZvcm0gaXMgY2hlcnJ5dHJhaWwsIGJ1dCBpdCBkb2Vz
+IG5vdCBrbm93IGlmIHRoZQo+PiBwd20gZGV2aWNlIGlzIGluIHBjaSBvciBhY3BpIG1vZGVzIHdo
+aWNoIHJlcXVpcmVzIGEgZGlmZmVyZW50Cj4+IHByb3ZpZGVyIGVudHJ5IGluIHRoZSB0YWJsZS4K
+Pgo+IGk5MTUgaXNuJ3QgYSBnb29kIGxvY2F0aW9uIGZvciB0aGF0IGVpdGhlci4gVGhpcyBzaG91
+bGQgcmVhbGx5IGJlIGRyaXZlbgo+IGJ5IGNvZGUgZXh0ZXJuYWwgdG8gYW55IGdlbmVyaWMgZHJp
+dmVycy4gSXQncyBleGFjdGx5IHRoZSBraW5kIG9mIGdsdWUKPiB0aGF0IHBsYXRmb3JtIG9yIGJv
+YXJkIHNldHVwIGNvZGUgaXMgdXNlZCBmb3IuCj4KPiBJZiB5b3UgbG9vayBhdCBkcml2ZXJzL3Bs
+YXRmb3JtL3g4Ni9pbnRlbF9vYWt0cmFpbC5jLCBpdCBkb2VzIHZlcnkKPiBzaW1pbGFyIHRoaW5n
+cy4gSWYgdGhpcyBpcyBzcGVjaWZpYyB0byBDaGVycnkgVHJhaWwsIEknbSBzdXJlIHlvdSBjYW4K
+PiBmaW5kIHdheXMgdG8gaWRlbnRpZnkgdGhlIHBsYXRmb3JtIGFzIHN1Y2ggYW5kIGRyaXZlIGl0
+IGluIGEgc2ltaWxhciB3YXkKPiBmcm9tIGRyaXZlcnMvcGxhdGZvcm0veDg2L2ludGVsX2NoZXJy
+eXRyYWlsLmMuCj4KPj4gQmVzaWRlcyB0aGF0IGhhdmluZyB0aGUgcHdtIGluIHRoZSB0YWJsZSB3
+aWxsIG5vdCBkbyBhbnl0aGluZwo+PiB1bmxlc3MgdGhlIGk5MTUgZHJpdmVyIGRvZXMgYSBwd21f
+Z2V0LCBzbyB0aGlzIGRvZXMgbm90IGdhaW4gdXMKPj4gYW55dGhpbmcuCj4KPiBJdCB3aWxsIGtl
+ZXAgdGhlIGRyaXZlciBnZW5lcmljIGFuZCBwdXQgdGhlIGJvYXJkIGNvZGUgd2hlcmUgaXQgYmVs
+b25ncy4KPiBJIGNhbGwgdGhhdCB2ZXJ5IG11Y2ggb2YgYSBnYWluLgo+Cj4+IE1heWJlIHdlIG5l
+ZWQgdG8gcmVuYW1lIHRoZSBjb25faWQgZnJvbSAicHdtX2JhY2tsaWdodCIgdG8KPj4gInB3bV9s
+cHNzMCIsIHRoYXQgd2F5IGl0IGlzIHZlcnkgY2xlYXIgd2hpY2ggcHdtIGFueSBwd21fZ2V0IGNh
+bGxzCj4+IGFyZSBnZXR0aW5nIChhbmQgbHBzcy1wd20uYyBpcyBvYnZpb3VzbHkgdGhlIGNvcnJl
+Y3QgcGxhY2UgdG8KPj4gZG8gdGhlIGFkZF90YWJsZSksIGFuZCB0aGVuIHdlIGNhbiB0ZWFjaCB0
+aGUgaTkxNSBjb2RlIHRvIGxvb2sKPj4gZm9yICJwd21fbHBzczAiIGJhc2VkIG9uIHZidCBpbmZv
+ID8KPgo+IHB3bV9iYWNrbGlnaHQgaXMgdGhlIG11Y2ggYmV0dGVyIGNvbnN1bWVyIG5hbWUgYmVj
+YXVzZSBieSB5b3VyIG93biB3b3Jkcwo+IHRoYXQncyBleGFjdGx5IHdoYXQgdGhlIFBXTSBpcyB1
+c2VkIGZvci4gT2JmdXNjYXRpbmcgdGhpcyBieSB0dXJuaW5nIHRoZQo+IG5hbWUgaW50byBzb21l
+dGhpbmcgdW5yZWNvZ25pemFibGUgc3VjaCBhcyBwd21fbHBzczAgaXNuJ3QgZ29pbmcgdG8KPiBj
+aGFuZ2UgYW55IG9mIHRoZSBhYm92ZS4KPgo+IFRoaWVycnkKPgpfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1k
+ZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcv
+bWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
