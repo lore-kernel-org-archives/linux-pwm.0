@@ -1,110 +1,81 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 1/2] pwm: lpss: Make builtin and add
- lookup-table so that i915 can find the pwm_backlight
-Date: Mon, 5 Dec 2016 08:46:30 +0100
-Message-ID: <20161205074630.GD18069@ulmo.ba.sec>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH 1/2] pwm: lpss: Make builtin and add lookup-table so that
+ i915 can find the pwm_backlight
+Date: Mon, 5 Dec 2016 09:18:03 +0100
+Message-ID: <bcd2a008-7dac-5084-90b5-e21634e7b57d@redhat.com>
 References: <20161202101736.12236-1-hdegoede@redhat.com>
+ <20161205074630.GD18069@ulmo.ba.sec>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1495125422=="
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <20161202101736.12236-1-hdegoede@redhat.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Hans de Goede <hdegoede@redhat.com>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20161205074630.GD18069@ulmo.ba.sec>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Thierry Reding <thierry.reding@gmail.com>
 Cc: linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org, Daniel Vetter <daniel.vetter@intel.com>
 List-Id: linux-pwm@vger.kernel.org
 
-
---===============1495125422==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="UoPmpPX/dBe4BELn"
-Content-Disposition: inline
-
-
---UoPmpPX/dBe4BELn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Dec 02, 2016 at 11:17:35AM +0100, Hans de Goede wrote:
-> The primary consumer of the lpss pwm is the i915 kms driver, but
-> currently that driver cannot get the pwm because i915 platforms are
-> not using devicetree and pwm-lpss does not call pwm_add_table.
->=20
-> Another problem is that i915 does not support get_pwm returning
-> -EPROBE_DEFER and i915's init is very complex and this is almost
-> impossible to fix.
->=20
-> This commit changes the PWM_LPSS Kconfig from a tristate to a bool, so
-> that when the i915 driver loads the lpss pwm will be available avoiding
-> the -EPROBE_DEFER issue. Note that this is identical to how the same
-> problem was solved for the pwm-crc driver.
->=20
-> Being builtin also allows calling pwm_add_table directly from the
-> pwm-lpss code, otherwise the pwm_add_table call would need to be put
-> somewhere else to ensure it happens before i915 calls pwm_get,
-> even if i915 would support -EPROBE_DEFER.
->=20
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
->  drivers/pwm/Kconfig    | 12 +++---------
->  drivers/pwm/pwm-lpss.c | 11 +++++++++++
->  2 files changed, 14 insertions(+), 9 deletions(-)
-
-This is completely backwards. You're putting board-specific bits into a
-generic driver.
-
-And no, this is not the same as pwm-crc because the board-specific bits
-went into the MFD driver. I don't like that very much either, but there
-is documentation that suggests that the Crystal Cove PMIC is used on a
-single platform, whereas there's no such evidence for LPSS.
-
-Why can't you just add something to drivers/platform/x86 to register the
-table? You could base that on some kind of identifier (ACPI, DMI, ...)
-to only do so if necessary.
-
-I could probably live with making this builtin, but your justification
-sounds like a bit of a lame excuse rather than a good technical reason.
-
-Thierry
-
---UoPmpPX/dBe4BELn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAABCAAGBQJYRRtUAAoJEN0jrNd/PrOh4mMP/A9wBcwsvqBprUW9WlCWCkU7
-sdPaQ0U+2T1je7/vjEZHUdCrEfInbG43mb4opAEyCdYlU4ZMTGrFLji2GbrwgxI0
-jY3LjlsskzjLuATRdxTJjlU7zgwWlHdA/taA7EOPnvc9Zbch4RoYbFjTuVu8zW9U
-Gy+JDQO+Ao1CoF1tp2vT1OqF6AJmpytHHImEHl7YpkWghrCMzDsJD+PSneP3OWSg
-w8mLWx1+G8NCuWw0SdwhR7iU7npoQvSmZjPsfjS7HUdH+14De4nDYKyXA0HyhdGY
-EHZWldVE0/OTGEQ4SspaMbs8+i2zck4QTDRrPu5rpezMHhtFsv0QAr5IAlo600cl
-PsR10wfQkGi5Ae3oKsijx0wWV3mnhesvTn24SJF+Wtz0irMh91C+p1I3XOU1pnuA
-6kMStEIjluGq1dINnLqhH+pMBr6wIEopkqtOWwATtzRax6CI1Zm1QMRY2YtpTQsJ
-X29XoEwg8Me+gObbdRnXc07nTYs/nE2lZIIIhSE6lKssJPFwD9ER15vlQWexot/N
-5ADlPCwBt0ajCfTelCFIrTNQH4gueQjd9e7XJaZBWX3EOZiFmk4X5L40QTtPWsW9
-dc2gcmIb9fXu+w1GpKcd5UPuXpvbICMoSzQ334VSP3k0JiYeMFdRRTuKwMETieEE
-f6ojes8CI+VGx5NdoZx4
-=3uSq
------END PGP SIGNATURE-----
-
---UoPmpPX/dBe4BELn--
-
---===============1495125422==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
-IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
-
---===============1495125422==--
+SGksCgpPbiAwNS0xMi0xNiAwODo0NiwgVGhpZXJyeSBSZWRpbmcgd3JvdGU6Cj4gT24gRnJpLCBE
+ZWMgMDIsIDIwMTYgYXQgMTE6MTc6MzVBTSArMDEwMCwgSGFucyBkZSBHb2VkZSB3cm90ZToKPj4g
+VGhlIHByaW1hcnkgY29uc3VtZXIgb2YgdGhlIGxwc3MgcHdtIGlzIHRoZSBpOTE1IGttcyBkcml2
+ZXIsIGJ1dAo+PiBjdXJyZW50bHkgdGhhdCBkcml2ZXIgY2Fubm90IGdldCB0aGUgcHdtIGJlY2F1
+c2UgaTkxNSBwbGF0Zm9ybXMgYXJlCj4+IG5vdCB1c2luZyBkZXZpY2V0cmVlIGFuZCBwd20tbHBz
+cyBkb2VzIG5vdCBjYWxsIHB3bV9hZGRfdGFibGUuCj4+Cj4+IEFub3RoZXIgcHJvYmxlbSBpcyB0
+aGF0IGk5MTUgZG9lcyBub3Qgc3VwcG9ydCBnZXRfcHdtIHJldHVybmluZwo+PiAtRVBST0JFX0RF
+RkVSIGFuZCBpOTE1J3MgaW5pdCBpcyB2ZXJ5IGNvbXBsZXggYW5kIHRoaXMgaXMgYWxtb3N0Cj4+
+IGltcG9zc2libGUgdG8gZml4Lgo+Pgo+PiBUaGlzIGNvbW1pdCBjaGFuZ2VzIHRoZSBQV01fTFBT
+UyBLY29uZmlnIGZyb20gYSB0cmlzdGF0ZSB0byBhIGJvb2wsIHNvCj4+IHRoYXQgd2hlbiB0aGUg
+aTkxNSBkcml2ZXIgbG9hZHMgdGhlIGxwc3MgcHdtIHdpbGwgYmUgYXZhaWxhYmxlIGF2b2lkaW5n
+Cj4+IHRoZSAtRVBST0JFX0RFRkVSIGlzc3VlLiBOb3RlIHRoYXQgdGhpcyBpcyBpZGVudGljYWwg
+dG8gaG93IHRoZSBzYW1lCj4+IHByb2JsZW0gd2FzIHNvbHZlZCBmb3IgdGhlIHB3bS1jcmMgZHJp
+dmVyLgo+Pgo+PiBCZWluZyBidWlsdGluIGFsc28gYWxsb3dzIGNhbGxpbmcgcHdtX2FkZF90YWJs
+ZSBkaXJlY3RseSBmcm9tIHRoZQo+PiBwd20tbHBzcyBjb2RlLCBvdGhlcndpc2UgdGhlIHB3bV9h
+ZGRfdGFibGUgY2FsbCB3b3VsZCBuZWVkIHRvIGJlIHB1dAo+PiBzb21ld2hlcmUgZWxzZSB0byBl
+bnN1cmUgaXQgaGFwcGVucyBiZWZvcmUgaTkxNSBjYWxscyBwd21fZ2V0LAo+PiBldmVuIGlmIGk5
+MTUgd291bGQgc3VwcG9ydCAtRVBST0JFX0RFRkVSLgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBIYW5z
+IGRlIEdvZWRlIDxoZGVnb2VkZUByZWRoYXQuY29tPgo+PiAtLS0KPj4gIGRyaXZlcnMvcHdtL0tj
+b25maWcgICAgfCAxMiArKystLS0tLS0tLS0KPj4gIGRyaXZlcnMvcHdtL3B3bS1scHNzLmMgfCAx
+MSArKysrKysrKysrKwo+PiAgMiBmaWxlcyBjaGFuZ2VkLCAxNCBpbnNlcnRpb25zKCspLCA5IGRl
+bGV0aW9ucygtKQo+Cj4gVGhpcyBpcyBjb21wbGV0ZWx5IGJhY2t3YXJkcy4gWW91J3JlIHB1dHRp
+bmcgYm9hcmQtc3BlY2lmaWMgYml0cyBpbnRvIGEKPiBnZW5lcmljIGRyaXZlci4KClRoaXMgaXMg
+bm90IHJlYWxseSBib2FyZCBzcGVjaWZpYyBJJ20gYWR2ZXJ0aXNpbmcgdGhhdCB0aGUgZ29hbCBv
+Zgp0aGUgcHdtIGlzIHRvIGJlIHVzZWQgdG8gY29udHJvbCBhIGJhY2tsaWdodC4KCkJlZm9yZSB0
+eXBpbmcgdGhpcyByZXBseSBJJ3ZlIGJlZW4gdGhpbmtpbmcgYWJvdXQgYW5vdGhlciBwbGFjZQp0
+byBwdXQgdGhlIHB3bV9hZGRfdGFibGUgY2FsbCBwdXQgSSBjYW5ub3QgY29tZSB1cCB3aXRoIGFu
+eS4KCmRyaXZlcnMvYWNwaS9hY3BpX2xwc3MuYyBjb21lcyB0byBtaW5kLCBidXQgdGhhdCB3b3Vs
+ZCBvbmx5IHdvcmsKd2l0aCB0aGUgcHdtIGRldmljZSBpbiBhY3BpIG1vZGUgYW5kIG5vdCB3aXRo
+IGl0IGluIHBjaSBtb2RlLgoKQW5vdGhlciBjYW5kaWRhdGUgd291bGQgYmUgdG8gcHV0IHRoZSBw
+d21fYWRkX3RhYmxlIGNhbGwgaW4gdGhlCmk5MTUgZHJpdmVyIGl0c2VsZiwgd2hlbiB0aGUgdmJ0
+IHNheXMgd2UgbmVlZCB0byB1c2UgYW4gZXh0ZXJuYWwKcHdtIGFuZCB0aGUgcGxhZm9ybSBpcyBj
+aGVycnl0cmFpbCwgYnV0IGl0IGRvZXMgbm90IGtub3cgaWYgdGhlCnB3bSBkZXZpY2UgaXMgaW4g
+cGNpIG9yIGFjcGkgbW9kZXMgd2hpY2ggcmVxdWlyZXMgYSBkaWZmZXJlbnQKcHJvdmlkZXIgZW50
+cnkgaW4gdGhlIHRhYmxlLgoKQmVzaWRlcyB0aGF0IGhhdmluZyB0aGUgcHdtIGluIHRoZSB0YWJs
+ZSB3aWxsIG5vdCBkbyBhbnl0aGluZwp1bmxlc3MgdGhlIGk5MTUgZHJpdmVyIGRvZXMgYSBwd21f
+Z2V0LCBzbyB0aGlzIGRvZXMgbm90IGdhaW4gdXMKYW55dGhpbmcuCgpNYXliZSB3ZSBuZWVkIHRv
+IHJlbmFtZSB0aGUgY29uX2lkIGZyb20gInB3bV9iYWNrbGlnaHQiIHRvCiJwd21fbHBzczAiLCB0
+aGF0IHdheSBpdCBpcyB2ZXJ5IGNsZWFyIHdoaWNoIHB3bSBhbnkgcHdtX2dldCBjYWxscwphcmUg
+Z2V0dGluZyAoYW5kIGxwc3MtcHdtLmMgaXMgb2J2aW91c2x5IHRoZSBjb3JyZWN0IHBsYWNlIHRv
+CmRvIHRoZSBhZGRfdGFibGUpLCBhbmQgdGhlbiB3ZSBjYW4gdGVhY2ggdGhlIGk5MTUgY29kZSB0
+byBsb29rCmZvciAicHdtX2xwc3MwIiBiYXNlZCBvbiB2YnQgaW5mbyA/CgpSZWdhcmRzLAoKSGFu
+cwoKCgo+IEFuZCBubywgdGhpcyBpcyBub3QgdGhlIHNhbWUgYXMgcHdtLWNyYyBiZWNhdXNlIHRo
+ZSBib2FyZC1zcGVjaWZpYyBiaXRzCj4gd2VudCBpbnRvIHRoZSBNRkQgZHJpdmVyLiBJIGRvbid0
+IGxpa2UgdGhhdCB2ZXJ5IG11Y2ggZWl0aGVyLCBidXQgdGhlcmUKPiBpcyBkb2N1bWVudGF0aW9u
+IHRoYXQgc3VnZ2VzdHMgdGhhdCB0aGUgQ3J5c3RhbCBDb3ZlIFBNSUMgaXMgdXNlZCBvbiBhCj4g
+c2luZ2xlIHBsYXRmb3JtLCB3aGVyZWFzIHRoZXJlJ3Mgbm8gc3VjaCBldmlkZW5jZSBmb3IgTFBT
+Uy4KPgo+IFdoeSBjYW4ndCB5b3UganVzdCBhZGQgc29tZXRoaW5nIHRvIGRyaXZlcnMvcGxhdGZv
+cm0veDg2IHRvIHJlZ2lzdGVyIHRoZQo+IHRhYmxlPyBZb3UgY291bGQgYmFzZSB0aGF0IG9uIHNv
+bWUga2luZCBvZiBpZGVudGlmaWVyIChBQ1BJLCBETUksIC4uLikKPiB0byBvbmx5IGRvIHNvIGlm
+IG5lY2Vzc2FyeS4KPgo+IEkgY291bGQgcHJvYmFibHkgbGl2ZSB3aXRoIG1ha2luZyB0aGlzIGJ1
+aWx0aW4sIGJ1dCB5b3VyIGp1c3RpZmljYXRpb24KPiBzb3VuZHMgbGlrZSBhIGJpdCBvZiBhIGxh
+bWUgZXhjdXNlIHJhdGhlciB0aGFuIGEgZ29vZCB0ZWNobmljYWwgcmVhc29uLgo+Cj4gVGhpZXJy
+eQo+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1k
+ZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczov
+L2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
