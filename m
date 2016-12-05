@@ -1,100 +1,39 @@
-From: Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v3 5/7] IIO: add bindings for stm32 timer trigger driver
-Date: Sat, 3 Dec 2016 09:35:58 +0000
-Message-ID: <7f9e10e7-6793-64f2-9e62-bebd9f60ce72@kernel.org>
-References: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
- <1480673842-20804-6-git-send-email-benjamin.gaignard@st.com>
- <20161202135904.GN2683@dell>
- <CA+M3ks7GhvApJwZVFK7KAbbvbAhp40sdOVvhkyZWBHZXpLfZDQ@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CA+M3ks7GhvApJwZVFK7KAbbvbAhp40sdOVvhkyZWBHZXpLfZDQ@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>, Lee Jones <lee.jones@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, robh+dt@kernel.org, Thierry Reding <thierry.reding@gmail.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, knaack.h@gmx.de, Gerald Baeza <gerald.baeza@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, linux-arm-kernel@lists.infradead.org, Benjamin Gaignard <benjamin.gaignard@st.com>
+From: Vladimir Zapolskiy <vz-ChpfBGZJDbMAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] dt: pwm: bcm2835: fix typo in clocks property name
+Date: Mon,  5 Dec 2016 02:10:25 +0200
+Message-ID: <20161205001025.13909-1-vz@mleia.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-T24gMDIvMTIvMTYgMTQ6MjMsIEJlbmphbWluIEdhaWduYXJkIHdyb3RlOgo+IDIwMTYtMTItMDIg
-MTQ6NTkgR01UKzAxOjAwIExlZSBKb25lcyA8bGVlLmpvbmVzQGxpbmFyby5vcmc+Ogo+PiBPbiBG
-cmksIDAyIERlYyAyMDE2LCBCZW5qYW1pbiBHYWlnbmFyZCB3cm90ZToKPj4KPj4+IERlZmluZSBi
-aW5kaW5ncyBmb3Igc3RtMzIgdGltZXIgdHJpZ2dlcgo+Pj4KPj4+IHZlcnNpb24gMzoKPj4+IC0g
-Y2hhbmdlIGZpbGUgbmFtZQo+Pj4gLSBhZGQgY3Jvc3MgcmVmZXJlbmNlIHdpdGggbWZkIGJpbmRp
-bmdzCj4+Pgo+Pj4gdmVyc2lvbiAyOgo+Pj4gLSBvbmx5IGtlZXAgb25lIGNvbXBhdGlibGUKPj4+
-IC0gYWRkIERUIHBhcmFtZXRlcnMgdG8gc2V0IGxpc3RzIG9mIHRoZSB0cmlnZ2VyczoKPj4+ICAg
-b25lIGxpc3QgZGVzY3JpYmUgdGhlIHRyaWdnZXJzIGNyZWF0ZWQgYnkgdGhlIGRldmljZQo+Pj4g
-ICBhbm90aGVyIG9uZSBnaXZlIHRoZSB0cmlnZ2VycyBhY2NlcHRlZCBieSB0aGUgZGV2aWNlCj4+
-Pgo+Pj4gU2lnbmVkLW9mZi1ieTogQmVuamFtaW4gR2FpZ25hcmQgPGJlbmphbWluLmdhaWduYXJk
-QHN0LmNvbT4KPj4+IC0tLQo+Pj4gIC4uLi9iaW5kaW5ncy9paW8vdGltZXIvc3RtMzItdGltZXIt
-dHJpZ2dlci50eHQgICAgIHwgMzkgKysrKysrKysrKysrKysrKysrKysrKwo+Pj4gIDEgZmlsZSBj
-aGFuZ2VkLCAzOSBpbnNlcnRpb25zKCspCj4+PiAgY3JlYXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50
-YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vdGltZXIvc3RtMzItdGltZXItdHJpZ2dlci50
-eHQKPj4+Cj4+PiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdz
-L2lpby90aW1lci9zdG0zMi10aW1lci10cmlnZ2VyLnR4dCBiL0RvY3VtZW50YXRpb24vZGV2aWNl
-dHJlZS9iaW5kaW5ncy9paW8vdGltZXIvc3RtMzItdGltZXItdHJpZ2dlci50eHQKPj4+IG5ldyBm
-aWxlIG1vZGUgMTAwNjQ0Cj4+PiBpbmRleCAwMDAwMDAwLi44NTg4MTZkCj4+PiAtLS0gL2Rldi9u
-dWxsCj4+PiArKysgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL3RpbWVy
-L3N0bTMyLXRpbWVyLXRyaWdnZXIudHh0Cj4+PiBAQCAtMCwwICsxLDM5IEBACj4+PiArdGltZXIg
-dHJpZ2dlciBiaW5kaW5ncyBmb3IgU1RNMzIKPj4+ICsKPj4+ICtNdXN0IGJlIGEgc3ViLW5vZGUg
-b2YgU1RNMzIgZ2VuZXJhbCBwdXJwb3NlIHRpbWVyIGRyaXZlcgo+Pj4gK1BhcmVudCBub2RlIHBy
-b3BlcnRpZXMgYXJlIGRlc2NyaWJlIGluIC4uL21mZC9zdG0zMi1nZW5lcmFsLXB1cnBvc2UtdGlt
-ZXIudHh0Cj4+PiArCj4+PiArUmVxdWlyZWQgcGFyYW1ldGVyczoKPj4+ICstIGNvbXBhdGlibGU6
-ICAgICAgICAgICAgICAgIG11c3QgYmUgInN0LHN0bTMyLWlpby10aW1lciIKPj4+ICstIGludGVy
-cnVwdHM6ICAgICAgICAgICAgICAgIEludGVycnVwdCBmb3IgdGhpcyBkZXZpY2UKPj4+ICsgICAg
-ICAgICAgICAgICAgICAgICBTZWUgLi4vaW50ZXJydXB0LWNvbnRyb2xsZXIvc3Qsc3RtMzItZXh0
-aS50eHQKPj4+ICsKPj4+ICtPcHRpb25hbCBwYXJhbWV0ZXJzOgo+Pj4gKy0gc3QsaW5wdXQtdHJp
-Z2dlcnMtbmFtZXM6ICAgTGlzdCBvZiB0aGUgcG9zc2libGUgaW5wdXQgdHJpZ2dlcnMgZm9yCj4+
-PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0aGUgZGV2aWNlCj4+PiArLSBzdCxvdXRw
-dXQtdHJpZ2dlcnMtbmFtZXM6ICBMaXN0IG9mIHRoZSBwb3NzaWJsZSBvdXRwdXQgdHJpZ2dlcnMg
-Zm9yCj4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0aGUgZGV2aWNlCj4+PiArCj4+
-PiArUG9zc2libGUgdHJpZ2dlcnMgYXJlIGRlZmluZWQgaW4gaW5jbHVkZS9kdC1iaW5kaW5ncy9p
-aW8vdGltZXIvc3Qsc3RtMzItdGltZXItdHJpZ2dlci5oCj4+PiArCj4+PiArRXhhbXBsZToKPj4+
-ICsgICAgIGdwdGltZXIxOiBncHRpbWVyMUA0MDAxMDAwMCB7Cj4+PiArICAgICAgICAgICAgIGNv
-bXBhdGlibGUgPSAic3Qsc3RtMzItZ3B0aW1lciI7Cj4+PiArICAgICAgICAgICAgIHJlZyA9IDww
-eDQwMDEwMDAwIDB4NDAwPjsKPj4+ICsgICAgICAgICAgICAgY2xvY2tzID0gPCZyY2MgMCAxNjA+
-Owo+Pj4gKyAgICAgICAgICAgICBjbG9jay1uYW1lcyA9ICJjbGtfaW50IjsKPj4+ICsKPj4+ICsg
-ICAgICAgICAgICAgdGltZXIxQDAgewo+Pj4gKyAgICAgICAgICAgICAgICAgICAgIGNvbXBhdGli
-bGUgPSAic3Qsc3RtMzItdGltZXItdHJpZ2dlciI7Cj4+PiArICAgICAgICAgICAgICAgICAgICAg
-aW50ZXJydXB0cyA9IDwyNz47Cj4+PiArICAgICAgICAgICAgICAgICAgICAgc3QsaW5wdXQtdHJp
-Z2dlcnMtbmFtZXMgPSBUSU01X1RSR08sCj4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICBUSU0yX1RSR08sCj4+PiArICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICBUSU00X1RSR08sCj4+PiArICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBUSU0zX1RSR087Cj4+PiArICAgICAgICAg
-ICAgICAgICAgICAgc3Qsb3V0cHV0LXRyaWdnZXJzLW5hbWVzID0gVElNMV9UUkdPLAo+Pj4gKyAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFRJTTFfQ0gxLAo+
-Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFRJTTFf
-Q0gyLAo+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IFRJTTFfQ0gzLAo+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIFRJTTFfQ0g0Owo+Pgo+PiBJIHNlZSB3aHkgeW91J3ZlIGRvbmUgaXQgbGlrZSB0aGlz
-IG5vdyAuLi4gYmVjYXVzZSBpdCBtYWtlcyB0aGluZ3MKPj4gZWFzaWVyIGZvciB5b3UgaW4gdGhl
-IGRyaXZlciwgc2luY2UgdGhlIElJTyBzdWJzeXN0ZW0gbWF0Y2hlcyBvbiBuYW1lcwo+PiBzdWNo
-IGFzIHRoZXNlLgo+Pgo+PiBCVVQsIHRoaXMgaXMgYSBMaW51eC1pbXBsZW1lbnRhdGlvbi1pc20u
-ICBKdXN0IHVzZSBwYWlycyBvZiBpbnRlZ2Vycwo+PiBhbmQgY3JlYXRlIHRoZSBMaW51eC1pc20g
-c3RyaW5ncyBpbiB0aGUgZHJpdmVyLgo+IAo+IFRoZSBnb2FsIGlzIG5vdCB0byBtYWtlIHRoaW5n
-cyBlYXNpZXIgaW4gZHJpdmVyIGJ1dCB0byBiZSBhYmxlIHRvIHNoYXJlCj4gdGhlIHRyaWdnZXJz
-IG5hbWVzIHdpdGggb3RoZXIgZHJpdmVycyBsaWtlIERBQyBvciBBREMuCj4gSWYgZWFjaCBkcml2
-ZXIgaGF2ZSB0byBjcmVhdGUgaXQgb3duIHRyaWdnZXJzIG5hbWVzIGl0IHdpbGwgbW9yZSBkaWZm
-aWN1bHQKPiB0byBrZWVwIHRoZW0gY29oZXJlbnQgdGhhbiBpdCB0aGV5IHNoYXJlIHRoZSBzYW1l
-IGRlZmluaXRpb25zCkRvIGl0IGJ5IGRvY3VtZW50YXRpb24uICBUaGlzIHdpbGwgYmUgZWZmZWN0
-aXZlbHkgQUJJIGdvaW5nIGZvcndhcmQKc28gZml4ZWQgb25jZSBpdCBpcyBkZWZpbmVkLiBTaG91
-bGQgYmUgZmFpcmx5IGVhc3kgdG8gdGVsbCBkdXJpbmcgdGVzdGluZwppZiBzb21lb25lIGhhcyBt
-ZXNzZWQgaXQgdXAgOykKCkpvbmF0aGFuCj4gCj4+Cj4+PiArICAgICAgICAgICAgIH07Cj4+PiAr
-ICAgICB9Owo+Pgo+PiAtLQo+PiBMZWUgSm9uZXMKPj4gTGluYXJvIFNUTWljcm9lbGVjdHJvbmlj
-cyBMYW5kaW5nIFRlYW0gTGVhZAo+PiBMaW5hcm8ub3JnIOKUgiBPcGVuIHNvdXJjZSBzb2Z0d2Fy
-ZSBmb3IgQVJNIFNvQ3MKPj4gRm9sbG93IExpbmFybzogRmFjZWJvb2sgfCBUd2l0dGVyIHwgQmxv
-Zwo+IC0tCj4gVG8gdW5zdWJzY3JpYmUgZnJvbSB0aGlzIGxpc3Q6IHNlbmQgdGhlIGxpbmUgInVu
-c3Vic2NyaWJlIGxpbnV4LWlpbyIgaW4KPiB0aGUgYm9keSBvZiBhIG1lc3NhZ2UgdG8gbWFqb3Jk
-b21vQHZnZXIua2VybmVsLm9yZwo+IE1vcmUgbWFqb3Jkb21vIGluZm8gYXQgIGh0dHA6Ly92Z2Vy
-Lmtlcm5lbC5vcmcvbWFqb3Jkb21vLWluZm8uaHRtbAo+IAoKCl9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0
-CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFk
-ZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+According to the examples of BCM2835 PWM device nodes there is a typo in
+'clocks' property name, which is a common property name on clock consumer
+side to store a phandle to an input clock.
+
+Signed-off-by: Vladimir Zapolskiy <vz-ChpfBGZJDbMAvxtiuMwx3w@public.gmane.org>
+---
+ Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
+index fb6fb31..cf573e8 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
+@@ -3,7 +3,7 @@ BCM2835 PWM controller (Raspberry Pi controller)
+ Required properties:
+ - compatible: should be "brcm,bcm2835-pwm"
+ - reg: physical base address and length of the controller's registers
+-- clock: This clock defines the base clock frequency of the PWM hardware
++- clocks: This clock defines the base clock frequency of the PWM hardware
+   system, the period and the duty_cycle of the PWM signal is a multiple of
+   the base period.
+ - #pwm-cells: Should be 2. See pwm.txt in this directory for a description of
+-- 
+2.10.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
