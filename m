@@ -1,135 +1,529 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 3/7] PWM: add pwm-stm32 DT bindings
-Date: Mon, 5 Dec 2016 07:53:50 +0100
-Message-ID: <20161205065350.GA18069@ulmo.ba.sec>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 4/7] PWM: add pwm driver for stm32 plaftorm
+Date: Mon, 5 Dec 2016 08:23:57 +0100
+Message-ID: <20161205072357.GB18069@ulmo.ba.sec>
 References: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
- <1480673842-20804-4-git-send-email-benjamin.gaignard@st.com>
+ <1480673842-20804-5-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="nFreZHaLTZJo0R7j"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+        protocol="application/pgp-signature"; boundary="8GpibOaaTibBMecb"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1480673842-20804-4-git-send-email-benjamin.gaignard@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com, gerald.baeza@st.com, arnaud.pouliquen@st.com, linus.walleij@linaro.org, linaro-kernel@lists.linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>
+In-Reply-To: <1480673842-20804-5-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
 
---nFreZHaLTZJo0R7j
+--8GpibOaaTibBMecb
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Dec 02, 2016 at 11:17:18AM +0100, Benjamin Gaignard wrote:
-> Define bindings for pwm-stm32
+On Fri, Dec 02, 2016 at 11:17:19AM +0100, Benjamin Gaignard wrote:
+> This driver add support for pwm driver on stm32 platform.
+
+"adds". Also please use PWM in prose because it's an abbreviation.
+
+> The SoC have multiple instances of the hardware IP and each
+> of them could have small differences: number of channels,
+> complementary output, counter register size...
+> Use DT parameters to handle those differentes configuration
+
+"different configurations"
+
 >=20
 > version 2:
-> - use parameters instead of compatible of handle the hardware configurati=
-on
+> - only keep one comptatible
+> - use DT paramaters to discover hardware block configuration
+
+"parameters"
+
 >=20
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 > ---
->  .../devicetree/bindings/pwm/pwm-stm32.txt          | 38 ++++++++++++++++=
+>  drivers/pwm/Kconfig     |   8 ++
+>  drivers/pwm/Makefile    |   1 +
+>  drivers/pwm/pwm-stm32.c | 285 ++++++++++++++++++++++++++++++++++++++++++=
 ++++++
->  1 file changed, 38 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+>  3 files changed, 294 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-stm32.c
 >=20
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Docume=
-ntation/devicetree/bindings/pwm/pwm-stm32.txt
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index bf01288..a89fdba 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -388,6 +388,14 @@ config PWM_STI
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-sti.
+> =20
+> +config PWM_STM32
+> +	bool "STMicroelectronics STM32 PWM"
+> +	depends on ARCH_STM32
+> +	depends on OF
+> +	select MFD_STM32_GP_TIMER
+
+Should that be a "depends on"?
+
+> +	help
+> +	  Generic PWM framework driver for STM32 SoCs.
+> +
+>  config PWM_STMPE
+>  	bool "STMPE expander PWM export"
+>  	depends on MFD_STMPE
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index 1194c54..5aa9308 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -37,6 +37,7 @@ obj-$(CONFIG_PWM_ROCKCHIP)	+=3D pwm-rockchip.o
+>  obj-$(CONFIG_PWM_SAMSUNG)	+=3D pwm-samsung.o
+>  obj-$(CONFIG_PWM_SPEAR)		+=3D pwm-spear.o
+>  obj-$(CONFIG_PWM_STI)		+=3D pwm-sti.o
+> +obj-$(CONFIG_PWM_STM32)		+=3D pwm-stm32.o
+>  obj-$(CONFIG_PWM_STMPE)		+=3D pwm-stmpe.o
+>  obj-$(CONFIG_PWM_SUN4I)		+=3D pwm-sun4i.o
+>  obj-$(CONFIG_PWM_TEGRA)		+=3D pwm-tegra.o
+> diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
 > new file mode 100644
-> index 0000000..575b9fb
+> index 0000000..a362f63
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-> @@ -0,0 +1,38 @@
-> +STMicroelectronics PWM driver bindings for STM32
+> +++ b/drivers/pwm/pwm-stm32.c
+> @@ -0,0 +1,285 @@
+> +/*
+> + * Copyright (C) STMicroelectronics 2016
+> + * Author:  Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>
 
-Technically this bindings describe devices, so "driver binding" is a
-somewhat odd wording. Perhaps:
+Could use a blank line between the above. Also, please use a single
+space after : for consistency.
 
-	STMicroelectronics STM32 General Purpose Timer PWM bindings
+> + * License terms:  GNU General Public License (GPL), version 2
 
-?
+Here too.
+
+> + *
+> + * Inspired by timer-stm32.c from Maxime Coquelin
+> + *             pwm-atmel.c from Bo Shen
+> + */
+> +
+> +#include <linux/of.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+
+Please sort these alphabetically.
 
 > +
-> +Must be a sub-node of STM32 general purpose timer driver
-> +Parent node properties are describe in ../mfd/stm32-general-purpose-time=
-r.txt
+> +#include <linux/mfd/stm32-gptimer.h>
+> +
+> +#define DRIVER_NAME "stm32-pwm"
+> +
+> +#define CAP_COMPLEMENTARY	BIT(0)
+> +#define CAP_32BITS_COUNTER	BIT(1)
+> +#define CAP_BREAKINPUT		BIT(2)
+> +#define CAP_BREAKINPUT_POLARITY BIT(3)
 
-Again, "driver parent node" is odd. Perhaps:
-
-	Must be a sub-node of an STM32 General Purpose Timer device tree
-	node. See ../mfd/stm32-general-purpose-timer.txt for details about
-	the parent node.
-
-?
-
-> +Required parameters:
-> +- compatible:		Must be "st,stm32-pwm"
-> +- pinctrl-names: 	Set to "default".
-> +- pinctrl-0: 		List of phandles pointing to pin configuration nodes
-> +			for PWM module.
-> +			For Pinctrl properties, please refer to [1].
-
-Your indentation and capitalization are inconsistent. Also, please refer
-to the pinctrl bindings by relative path and inline, rather than as a
-footnote reference.
+Just make these boolean. Makes the conditionals a lot simpler to read.
 
 > +
-> +Optional parameters:
-> +- st,breakinput:	Set if the hardware have break input capabilities
-> +- st,breakinput-polarity: Set break input polarity. Default is 0
-> +			 The value define the active polarity:
-> +			  - 0 (active LOW)
-> +			  - 1 (active HIGH)
+> +struct stm32_pwm_dev {
 
-Could we fold these into a single property? If st,breakinput-polarity is
-not present it could simply mean that there is no break input, and if it
-is present you don't have to rely on a default.
+No need for the _dev suffix.
 
-> +- st,pwm-num-chan:	Number of available PWM channels.  Default is 0.
+> +	struct device *dev;
+> +	struct clk *clk;
+> +	struct regmap *regmap;
+> +	struct pwm_chip chip;
 
-The pwm- prefix is rather redundant since the node is already named pwm.
-Why not simply st,channels? Or simply channels, since it's not really
-anything specific to this hardware.
+It's slightly more efficient to put this as first field because then
+to_stm32_pwm() becomes a no-op.
 
-Come to think of it, might be worth having a discussion with our DT
-gurus about what their stance is on using the # as prefix for numbers
-(such as in #address-cells or #size-cells). This could be #channels to
-mark it more explicitly as representing a count.
+> +	int caps;
+> +	int npwm;
 
-> +- st,32bits-counter:	Set if the hardware have a 32 bits counter
-> +- st,complementary:	Set if the hardware have complementary output channe=
-ls
+unsigned int, please.
 
-"hardware has" and also maybe mention explicitly that this is a boolean
-property. Otherwise people might be left wondering what it should be set
-to. Or maybe word this differently to imply that it's boolean:
+> +	u32 polarity;
 
-	- st,32bits-counter: if present, the hardware has a 32 bit counter
-	- st,complementary: if present, the hardware has a complementary
-	                    output channel
+Maybe use a prefix here to stress that it is the polarity of the
+complementary output. Otherwise one might take it for the PWM signal's
+polarity that's already part of the PWM state.
 
+> +};
+> +
+> +#define to_stm32_pwm_dev(x) container_of(chip, struct stm32_pwm_dev, chi=
+p)
+
+Please turn this into a static inline.
+
+> +
+> +static u32 __active_channels(struct stm32_pwm_dev *pwm_dev)
+
+No need for a __ prefix.
+
+> +{
+> +	u32 ccer;
+> +
+> +	regmap_read(pwm_dev->regmap, TIM_CCER, &ccer);
+> +
+> +	return ccer & TIM_CCER_CCXE;
+> +}
+> +
+> +static int write_ccrx(struct stm32_pwm_dev *dev, struct pwm_device *pwm,
+> +		      u32 ccr)
+
+u32 value, perhaps? I first mistook this to be a register offset.
+
+> +{
+> +	switch (pwm->hwpwm) {
+> +	case 0:
+> +		return regmap_write(dev->regmap, TIM_CCR1, ccr);
+> +	case 1:
+> +		return regmap_write(dev->regmap, TIM_CCR2, ccr);
+> +	case 2:
+> +		return regmap_write(dev->regmap, TIM_CCR3, ccr);
+> +	case 3:
+> +		return regmap_write(dev->regmap, TIM_CCR4, ccr);
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static int stm32_pwm_config(struct pwm_chip *chip, struct pwm_device *pw=
+m,
+> +			    int duty_ns, int period_ns)
+
+Please implement this as an atomic PWM driver, I don't want new drivers
+to use the legacy callbacks.
+
+> +{
+> +	struct stm32_pwm_dev *dev =3D to_stm32_pwm_dev(chip);
+
+I think something like "stm", or "priv" would be more appropriate here.
+If you ever need access to a struct device, you'll be hard-pressed to
+find a good name for it.
+
+> +	unsigned long long prd, div, dty;
+> +	int prescaler =3D 0;
+
+If this can never be negative, please make it unsigned int.
+
+> +	u32 max_arr =3D 0xFFFF, ccmr, mask, shift, bdtr;
+> +
+> +	if (dev->caps & CAP_32BITS_COUNTER)
+> +		max_arr =3D 0xFFFFFFFF;
+
+I prefer lower-case hexadecimal digits.
+
+> +
+> +	/* Period and prescaler values depends of clock rate */
+
+"depend on"
+
+> +	div =3D (unsigned long long)clk_get_rate(dev->clk) * period_ns;
+> +
+> +	do_div(div, NSEC_PER_SEC);
+> +	prd =3D div;
+> +
+> +	while (div > max_arr) {
+> +		prescaler++;
+> +		div =3D prd;
+> +		do_div(div, (prescaler + 1));
+> +	}
+> +	prd =3D div;
+
+Blank line after blocks, please.
+
+> +
+> +	if (prescaler > MAX_TIM_PSC) {
+> +		dev_err(chip->dev, "prescaler exceeds the maximum value\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* All channels share the same prescaler and counter so
+> +	 * when two channels are active at the same we can't change them
+> +	 */
+
+This isn't proper block comment style. Also, please use all of the
+columns at your disposal.
+
+> +	if (__active_channels(dev) & ~(1 << pwm->hwpwm * 4)) {
+> +		u32 psc, arr;
+> +
+> +		regmap_read(dev->regmap, TIM_PSC, &psc);
+> +		regmap_read(dev->regmap, TIM_ARR, &arr);
+> +
+> +		if ((psc !=3D prescaler) || (arr !=3D prd - 1))
+> +			return -EINVAL;
+
+Maybe -EBUSY to differentiate from other error cases?
+
+> +	}
+> +
+> +	regmap_write(dev->regmap, TIM_PSC, prescaler);
+> +	regmap_write(dev->regmap, TIM_ARR, prd - 1);
+> +	regmap_update_bits(dev->regmap, TIM_CR1, TIM_CR1_ARPE, TIM_CR1_ARPE);
+> +
+> +	/* Calculate the duty cycles */
+> +	dty =3D prd * duty_ns;
+> +	do_div(dty, period_ns);
+> +
+> +	write_ccrx(dev, pwm, dty);
+> +
+> +	/* Configure output mode */
+> +	shift =3D (pwm->hwpwm & 0x1) * 8;
+> +	ccmr =3D (TIM_CCMR_PE | TIM_CCMR_M1) << shift;
+> +	mask =3D 0xFF << shift;
+> +
+> +	if (pwm->hwpwm & 0x2)
+
+This looks as though TIM_CCMR1 is used for channels 0 and 1, while
+TIM_CCMR2 is used for channels 2 and 3. Wouldn't it be more natural to
+make the conditional above:
+
+	if (pwm->hwpwm >=3D 2)
+
+? Or perhaps better yet:
+
+	if (pwm->hwpwm < 2)
+		/* update TIM_CCMR1 */
+	else
+		/* update TIM_CCMR2 */
+
+The other alternative, which might make the code slightly more readable,
+would be to get rid of all these conditionals by parameterizing the
+offsets per PWM channel. The PWM subsystem has a means of storing per-
+channel chip-specific data (see pwm_{set,get}_chip_data()). It might be
+a little overkill for this particular driver, given that the number of
+conditionals is fairly small.
+
+> +		regmap_update_bits(dev->regmap, TIM_CCMR2, mask, ccmr);
+> +	else
+> +		regmap_update_bits(dev->regmap, TIM_CCMR1, mask, ccmr);
+> +
+> +	if (!(dev->caps & CAP_BREAKINPUT))
+> +		return 0;
+
+If you make these capabilities boolean, it becomes much more readable,
+especially for negations:
+
+	if (!dev->has_breakinput)
+
+> +
+> +	bdtr =3D TIM_BDTR_MOE | TIM_BDTR_AOE;
+> +
+> +	if (dev->caps & CAP_BREAKINPUT_POLARITY)
+> +		bdtr |=3D TIM_BDTR_BKE;
+> +
+> +	if (dev->polarity)
+> +		bdtr |=3D TIM_BDTR_BKP;
+> +
+> +	regmap_update_bits(dev->regmap, TIM_BDTR,
+> +			   TIM_BDTR_MOE | TIM_BDTR_AOE |
+> +			   TIM_BDTR_BKP | TIM_BDTR_BKE,
+> +			   bdtr);
+> +
+> +	return 0;
+> +}
+> +
+> +static int stm32_pwm_set_polarity(struct pwm_chip *chip, struct pwm_devi=
+ce *pwm,
+> +				  enum pwm_polarity polarity)
+> +{
+> +	u32 mask;
+> +	struct stm32_pwm_dev *dev =3D to_stm32_pwm_dev(chip);
+> +
+> +	mask =3D TIM_CCER_CC1P << (pwm->hwpwm * 4);
+> +	if (dev->caps & CAP_COMPLEMENTARY)
+> +		mask |=3D TIM_CCER_CC1NP << (pwm->hwpwm * 4);
+> +
+> +	regmap_update_bits(dev->regmap, TIM_CCER, mask,
+> +			   polarity =3D=3D PWM_POLARITY_NORMAL ? 0 : mask);
+> +
+> +	return 0;
+> +}
+> +
+> +static int stm32_pwm_enable(struct pwm_chip *chip, struct pwm_device *pw=
+m)
+> +{
+> +	u32 mask;
+> +	struct stm32_pwm_dev *dev =3D to_stm32_pwm_dev(chip);
+> +
+> +	clk_enable(dev->clk);
+> +
+> +	/* Enable channel */
+> +	mask =3D TIM_CCER_CC1E << (pwm->hwpwm * 4);
+> +	if (dev->caps & CAP_COMPLEMENTARY)
+> +		mask |=3D TIM_CCER_CC1NE << (pwm->hwpwm * 4);
+> +
+> +	regmap_update_bits(dev->regmap, TIM_CCER, mask, mask);
+> +
+> +	/* Make sure that registers are updated */
+> +	regmap_update_bits(dev->regmap, TIM_EGR, TIM_EGR_UG, TIM_EGR_UG);
+> +
+> +	/* Enable controller */
+> +	regmap_update_bits(dev->regmap, TIM_CR1, TIM_CR1_CEN, TIM_CR1_CEN);
+> +
+> +	return 0;
+> +}
+> +
+> +static void stm32_pwm_disable(struct pwm_chip *chip, struct pwm_device *=
+pwm)
+> +{
+> +	u32 mask;
+> +	struct stm32_pwm_dev *dev =3D to_stm32_pwm_dev(chip);
+> +
+> +	/* Disable channel */
+> +	mask =3D TIM_CCER_CC1E << (pwm->hwpwm * 4);
+> +	if (dev->caps & CAP_COMPLEMENTARY)
+> +		mask |=3D TIM_CCER_CC1NE << (pwm->hwpwm * 4);
+> +
+> +	regmap_update_bits(dev->regmap, TIM_CCER, mask, 0);
+> +
+> +	/* When all channels are disabled, we can disable the controller */
+> +	if (!__active_channels(dev))
+> +		regmap_update_bits(dev->regmap, TIM_CR1, TIM_CR1_CEN, 0);
+> +
+> +	clk_disable(dev->clk);
+> +}
+
+All of the above can be folded into the ->apply() hook for atomic PWM
+support.
+
+Also, in the above you use clk_enable() in the ->enable() callback and
+clk_disable() in ->disable(). If you need the clock to access registers
+you'll have to enabled it in the others as well because there are no
+guarantees that configuration will only happen between ->enable() and
+->disable(). Atomic PWM simplifies this a bit, but you still need to be
+careful about when to enable the clock in your ->apply() hook.
+
+> +
+> +static const struct pwm_ops stm32pwm_ops =3D {
+> +	.config =3D stm32_pwm_config,
+> +	.set_polarity =3D stm32_pwm_set_polarity,
+> +	.enable =3D stm32_pwm_enable,
+> +	.disable =3D stm32_pwm_disable,
+> +};
+
+You need to set the .owner field as well.
+
+> +
+> +static int stm32_pwm_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev =3D &pdev->dev;
+> +	struct device_node *np =3D dev->of_node;
+> +	struct stm32_gptimer_dev *mfd =3D dev_get_drvdata(pdev->dev.parent);
+> +	struct stm32_pwm_dev *pwm;
+> +	int ret;
+> +
+> +	pwm =3D devm_kzalloc(dev, sizeof(*pwm), GFP_KERNEL);
+> +	if (!pwm)
+> +		return -ENOMEM;
+> +
+> +	pwm->regmap =3D mfd->regmap;
+> +	pwm->clk =3D mfd->clk;
+> +
+> +	if (!pwm->regmap || !pwm->clk)
+> +		return -EINVAL;
+> +
+> +	if (of_property_read_bool(np, "st,complementary"))
+> +		pwm->caps |=3D CAP_COMPLEMENTARY;
+> +
+> +	if (of_property_read_bool(np, "st,32bits-counter"))
+> +		pwm->caps |=3D CAP_32BITS_COUNTER;
+> +
+> +	if (of_property_read_bool(np, "st,breakinput"))
+> +		pwm->caps |=3D CAP_BREAKINPUT;
+> +
+> +	if (!of_property_read_u32(np, "st,breakinput-polarity", &pwm->polarity))
+> +		pwm->caps |=3D CAP_BREAKINPUT_POLARITY;
+> +
+> +	of_property_read_u32(np, "st,pwm-num-chan", &pwm->npwm);
+> +
+> +	pwm->chip.base =3D -1;
+> +	pwm->chip.dev =3D dev;
+> +	pwm->chip.ops =3D &stm32pwm_ops;
+> +	pwm->chip.npwm =3D pwm->npwm;
+> +
+> +	ret =3D pwmchip_add(&pwm->chip);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	platform_set_drvdata(pdev, pwm);
+> +
+> +	return 0;
+> +}
+> +
+> +static int stm32_pwm_remove(struct platform_device *pdev)
+> +{
+> +	struct stm32_pwm_dev *pwm =3D platform_get_drvdata(pdev);
+> +	int i;
+
+unsigned int, please.
+
+> +
+> +	for (i =3D 0; i < pwm->npwm; i++)
+> +		pwm_disable(&pwm->chip.pwms[i]);
+> +
+> +	pwmchip_remove(&pwm->chip);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id stm32_pwm_of_match[] =3D {
+> +	{
+> +		.compatible =3D "st,stm32-pwm",
+> +	},
+
+The above can be collapsed into a single line.
+
+> +};
+> +MODULE_DEVICE_TABLE(of, stm32_pwm_of_match);
+> +
+> +static struct platform_driver stm32_pwm_driver =3D {
+> +	.probe		=3D stm32_pwm_probe,
+> +	.remove		=3D stm32_pwm_remove,
+> +	.driver	=3D {
+> +		.name	=3D DRIVER_NAME,
+> +		.of_match_table =3D stm32_pwm_of_match,
+> +	},
+> +};
+
+Please don't use tabs for padding within the structure definition since
+it doesn't align properly anyway.
+
+> +module_platform_driver(stm32_pwm_driver);
+> +
+> +MODULE_ALIAS("platform:" DRIVER_NAME);
+> +MODULE_DESCRIPTION("STMicroelectronics STM32 PWM driver");
+> +MODULE_LICENSE("GPL");
+
+According to the header comment this should be "GPL v2".
+
+Thanks,
 Thierry
 
---nFreZHaLTZJo0R7j
+--8GpibOaaTibBMecb
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAABCAAGBQJYRQ77AAoJEN0jrNd/PrOhOBgP/28PHXhXGflOwIPIw+NEH8Gc
-kk0pZoSr1PXL4IjdXS6Kb//qZPjZ/eMTKhpEmqsB3fQQDVaFrPaEMukdiZgc3utQ
-SJSR6uIlhDSdFeUojY6EwQ8GmGy90G1V/fDoRmshgmXSEyssxY9o75EpbADax/T6
-6HEljxgJOlQ1g6xdIeGkr3CCm4Y2EWF1u7gOJ9wj/YOPSFbzZcbdEqVrP7m448vN
-iRdG0cFgJXfGXGrj58g1Wg/oZN8lVQ8qu60ryyE5zg8iZi9QG5SyQGLpOIDnvauT
-Gr+8q2VO138SKS1CMRt/ikveB+LC1ewh/UDDx32+ey1oqVlWAGzaGw6b+tdiqEnD
-LvCRRtYRdENtvyELdzMCHRVZ2d0kDmpNKdKk07WCPVebbRS88RTZi5ETLHlOIH1h
-n0EtU/D4L7YiRCuUiszTRtaP8euQ1JSYOd/W0r8XOObfUazK3NZLyhQZBZ1BPOgn
-N/uX/B7wUa/pOaGfzZhkNQnq9+qozB8STLsuwUmzrKFIbnEP6k5mWr4LQNGYx7gd
-IOdwf0CU+UaHTYrEDD2NOuzBFEaJD7+UWXjN7K+oS9hhB/F/B+oRjs/GH/iaD12F
-JYMiMgpSK3wzqJzizk2Hy1hPILD5lKYVo4vg7nFlolLWq+MYCcCRf1Hg7ujjnL0v
-ypLoafI4gGOAvqXIypwc
-=gtLz
+iQIcBAABCAAGBQJYRRYLAAoJEN0jrNd/PrOh8N0P/1HkuW/tkm3b90jqSI2qW2gp
+/D48utHNi2f+xOdbo5u5Igkog3M5qh5/EFfRIQF4y7lIIrwG7xWRs1MfaQHWxmoz
+lQ5bR74WUWgmdDSQ5Uc40GyRAluq1jCHjkI6FKAUYVj5vr6bF8AzBICK/x9DfE1y
+1rfmoMxMxhRBavwGjhfAE5uEDVpYgwyNIVJ6999Mf87zaCJNob3zpttJ3mXfKz6M
+r4p9XxwDsj0y8hXehqTe8s2zQsuAZh+HuImGDvBfU35+pcu9hSRGuhtc5WygE/+S
+5Jw9wX9yMsAC1PkpDXSYcO+etkIlWK0lQKWW34u8xgM4cBTbXLpGoyBDO7y66Z2b
++YqiKJ566kqWgvXzslj0quOik3zadHe2zmCv+ijMxHWWp0kQb/14IwfMuYV2tV6Z
+5J69r/88IBc26VaZytew0kniFu0uT0ow9ij5hqbUYDToIeYm7DP7h7/7GM0QbvAI
+d0XJ9LorEFTcERd71dbAVjDFA+5dt5+gFe7MZ9TaftEI2yLHEqUI9nMLTjflBbrB
+AtAq7OBV999Rc5Fx9lrKpQOHhJCleQU5K8VZlgHBQGbm9dYe0id4XKY5Q2+7rF67
+Gv6dx5TFFWTg4Jyrtn1tQJTtX1GNtbXNoE8i/E9wCGb4RgzhIVNl+HretbbgvVOt
+MzFp1jsTLSO9my5EaJpt
+=S0nc
 -----END PGP SIGNATURE-----
 
---nFreZHaLTZJo0R7j--
+--8GpibOaaTibBMecb--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
