@@ -1,35 +1,55 @@
 From: Vladimir Zapolskiy <vz-ChpfBGZJDbMAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] dt: pwm: bcm2835: fix typo in clocks property name
-Date: Mon,  5 Dec 2016 02:10:25 +0200
-Message-ID: <20161205001025.13909-1-vz@mleia.com>
+Subject: [PATCH 1/3] dt: pwm: lpc32xx: add description of clocks and #pwm-cells properties
+Date: Mon,  5 Dec 2016 03:42:37 +0200
+Message-ID: <20161205014237.1689-2-vz@mleia.com>
+References: <20161205014237.1689-1-vz@mleia.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20161205014237.1689-1-vz-ChpfBGZJDbMAvxtiuMwx3w@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sylvain Lemieux <slemieux.tyco-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-According to the examples of BCM2835 PWM device nodes there is a typo in
-'clocks' property name, which is a common property name on clock consumer
-side to store a phandle to an input clock.
+NXP LPC32xx SoCs have two simple independent PWM controllers with a single
+output each, in this case there is no need to specify PWM channel argument
+on client side, one cell for setting PWM output frequency is sufficient.
+
+Another added to the description property 'clocks' has a standard meaning
+of a controller supply clock, in the LPC32xx User's Manual the clock is
+denoted as PWM1_CLK or PWM2_CLK clock.
 
 Signed-off-by: Vladimir Zapolskiy <vz-ChpfBGZJDbMAvxtiuMwx3w@public.gmane.org>
 ---
- Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
-index fb6fb31..cf573e8 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt
-@@ -3,7 +3,7 @@ BCM2835 PWM controller (Raspberry Pi controller)
+diff --git a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
+index 74b5bc5..523d796 100644
+--- a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
+@@ -3,15 +3,22 @@ LPC32XX PWM controller
  Required properties:
- - compatible: should be "brcm,bcm2835-pwm"
+ - compatible: should be "nxp,lpc3220-pwm"
  - reg: physical base address and length of the controller's registers
--- clock: This clock defines the base clock frequency of the PWM hardware
-+- clocks: This clock defines the base clock frequency of the PWM hardware
-   system, the period and the duty_cycle of the PWM signal is a multiple of
-   the base period.
- - #pwm-cells: Should be 2. See pwm.txt in this directory for a description of
++- clocks: clock phandle and clock specifier pair
++- #pwm-cells: should be 1, the cell is used to specify the period in
++  nanoseconds.
+ 
+ Examples:
+ 
+ pwm@4005c000 {
+ 	compatible = "nxp,lpc3220-pwm";
+ 	reg = <0x4005c000 0x4>;
++	clocks = <&clk LPC32XX_CLK_PWM1>;
++	#pwm-cells = <1>;
+ };
+ 
+ pwm@4005c004 {
+ 	compatible = "nxp,lpc3220-pwm";
+ 	reg = <0x4005c004 0x4>;
++	clocks = <&clk LPC32XX_CLK_PWM2>;
++	#pwm-cells = <1>;
+ };
 -- 
 2.10.2
 
