@@ -1,8 +1,7 @@
 From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Subject: [PATCH v4 1/7] MFD: add bindings for STM32 General Purpose Timer
- driver
-Date: Tue,  6 Dec 2016 13:38:43 +0100
-Message-ID: <1481027929-13704-2-git-send-email-benjamin.gaignard@st.com>
+Subject: [PATCH v4 3/7] PWM: add pwm-stm32 DT bindings
+Date: Tue,  6 Dec 2016 13:38:45 +0100
+Message-ID: <1481027929-13704-4-git-send-email-benjamin.gaignard@st.com>
 References: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,42 +21,40 @@ To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.to
 Cc: linaro-kernel@lists.linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>, linus.walleij@linaro.org, arnaud.pouliquen@st.com, benjamin.gaignard@linaro.org, gerald.baeza@st.com, fabrice.gasnier@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-Add bindings information for STM32 General Purpose Timer
+Define bindings for pwm-stm32
 
 version 2:
-- rename stm32-mfd-timer to stm32-gptimer
-- only keep one compatible string
+- use parameters instead of compatible of handle the hardware configuration
 
 Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
 ---
- .../bindings/mfd/stm32-general-purpose-timer.txt   | 39 ++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
+ .../devicetree/bindings/pwm/pwm-stm32.txt          | 33 ++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
 
-diff --git a/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt b/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
 new file mode 100644
-index 0000000..e92c8be
+index 0000000..c0cc246
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
-@@ -0,0 +1,39 @@
-+STM32 General Purpose Timer driver bindings
++++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+@@ -0,0 +1,33 @@
++STMicroelectronics STM32 General Purpose Timer PWM bindings
++
++Must be a sub-node of an STM32 General Purpose Timer device tree node.
++See ../mfd/stm32-general-purpose-timer.txt for details about the parent node.
 +
 +Required parameters:
-+- compatible: must be "st,stm32-gptimer"
-+
-+- reg:			Physical base address and length of the controller's
-+			registers.
-+- clock-names: 		Set to "clk_int".
-+- clocks: 		Phandle to the clock used by the timer module.
-+			For Clk properties, please refer to ../clock/clock-bindings.txt
++- compatible:		Must be "st,stm32-pwm".
++- pinctrl-names: 	Set to "default".
++- pinctrl-0: 		List of phandles pointing to pin configuration nodes for PWM module.
++			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
 +
 +Optional parameters:
-+- resets:		Phandle to the parent reset controller.
-+			See ../reset/st,stm32-rcc.txt
-+
-+Optional subnodes:
-+- pwm:			See ../pwm/pwm-stm32.txt
-+- timer:		See ../iio/timer/stm32-timer-trigger.txt
++- st,breakinput-polarity: If present, a break input is available
++            for the channel. In that case the property value denotes the
++            polarity of the break input:
++            - 0: active low
++            - 1: active high
 +
 +Example:
 +	gptimer@40010000 {
@@ -72,11 +69,6 @@ index 0000000..e92c8be
 +			compatible = "st,stm32-pwm";
 +			pinctrl-0	= <&pwm1_pins>;
 +			pinctrl-names	= "default";
-+		};
-+
-+		timer@0 {
-+			compatible = "st,stm32-timer-trigger";
-+			reg = <0>;
 +		};
 +	};
 -- 
