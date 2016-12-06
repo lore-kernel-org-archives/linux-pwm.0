@@ -1,75 +1,120 @@
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Subject: [PATCH v4 3/7] PWM: add pwm-stm32 DT bindings
-Date: Tue,  6 Dec 2016 13:38:45 +0100
-Message-ID: <1481027929-13704-4-git-send-email-benjamin.gaignard@st.com>
-References: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v3 7/7] ARM: dts: stm32: add stm32 general purpose timer
+ driver in DT
+Date: Tue, 6 Dec 2016 12:54:10 +0000
+Message-ID: <20161206125410.GE25385@dell.home>
+References: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
+ <1480673842-20804-8-git-send-email-benjamin.gaignard@st.com>
+ <20161202132251.GL2683@dell>
+ <e15186cb-a93e-c2e7-13bb-6704be5e8949@st.com>
+ <20161206094835.GB25385@dell.home>
+ <8f881cf7-ba63-315f-b852-71869ad480f3@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: linaro-kernel@lists.linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>, linus.walleij@linaro.org, arnaud.pouliquen@st.com, benjamin.gaignard@linaro.org, gerald.baeza@st.com, fabrice.gasnier@st.com
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <8f881cf7-ba63-315f-b852-71869ad480f3-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alexandre Torgue <alexandre.torgue-qxv4g6HH51o@public.gmane.org>
+Cc: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Define bindings for pwm-stm32
+On Tue, 06 Dec 2016, Alexandre Torgue wrote:
+> On 12/06/2016 10:48 AM, Lee Jones wrote:
+> > On Mon, 05 Dec 2016, Alexandre Torgue wrote:
+> > > On 12/02/2016 02:22 PM, Lee Jones wrote:
+> > > > On Fri, 02 Dec 2016, Benjamin Gaignard wrote:
+> > > > 
+> > > > > Add general purpose timers and it sub-nodes into DT for stm32f4.
+> > > > > Define and enable pwm1 and pwm3 for stm32f469 discovery board
+> > > > > 
+> > > > > version 3:
+> > > > > - use "st,stm32-timer-trigger" in DT
+> > > > > 
+> > > > > version 2:
+> > > > > - use parameters to describe hardware capabilities
+> > > > > - do not use references for pwm and iio timer subnodes
+> > > > > 
+> > > > > Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+> > > > > ---
+> > > > >  arch/arm/boot/dts/stm32f429.dtsi      | 333 +++++++++++++++++++++++++++++++++-
+> > > > >  arch/arm/boot/dts/stm32f469-disco.dts |  28 +++
+> > > > >  2 files changed, 360 insertions(+), 1 deletion(-)
+> > 
+> > [...]
+> > 
+> > If you're only commenting on a little piece of the patch, it's always
+> > a good idea to trim the rest.
+> > 
+> > > > > diff --git a/arch/arm/boot/dts/stm32f469-disco.dts b/arch/arm/boot/dts/stm32f469-disco.dts
+> > > > > index 8a163d7..df4ca7e 100644
+> > > > > --- a/arch/arm/boot/dts/stm32f469-disco.dts
+> > > > > +++ b/arch/arm/boot/dts/stm32f469-disco.dts
+> > > > > @@ -81,3 +81,31 @@
+> > > > >  &usart3 {
+> > > > >  	status = "okay";
+> > > > >  };
+> > > > > +
+> > > > > +&gptimer1 {
+> > > > > +	status = "okay";
+> > > > > +
+> > > > > +	pwm1@0 {
+> > > > > +		pinctrl-0	= <&pwm1_pins>;
+> > > > > +		pinctrl-names	= "default";
+> > > > > +		status = "okay";
+> > > > > +	};
+> > > > > +
+> > > > > +	timer1@0 {
+> > > > > +		status = "okay";
+> > > > > +	};
+> > > > > +};
+> > > > 
+> > > > This is a much *better* format than before.
+> > > > 
+> > > > I still don't like the '&' syntax though.
+> > > 
+> > > Please keep "&" format to match with existing nodes.
+> > 
+> > Right.  I wasn't suggesting that he differs from the current format in
+> > *this* set.  I am suggesting that we change the format in a subsequent
+> > set though.
+> 
+> Why change? Looking at Linux ARM kernel patchwork, new DT board file
+> contains this format. Did you already discuss with Arnd or Olof about it ?
 
-version 2:
-- use parameters instead of compatible of handle the hardware configuration
+Because the syntax is horrible.  It removes any indication of
+hierarchy and insists all nodes include labels that would otherwise be
+unnecessary.
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
----
- .../devicetree/bindings/pwm/pwm-stm32.txt          | 33 ++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+The syntax is approved, so there is no issue with Arnd/Olof, nor the
+DT Maintainers.  The decision is left to the sub-arch maintainer to
+choose to use it or not.  My vote (which doesn't really count for
+anything in this scenario) is to not use it for the aforementioned
+reasons.
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-new file mode 100644
-index 0000000..c0cc246
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-@@ -0,0 +1,33 @@
-+STMicroelectronics STM32 General Purpose Timer PWM bindings
-+
-+Must be a sub-node of an STM32 General Purpose Timer device tree node.
-+See ../mfd/stm32-general-purpose-timer.txt for details about the parent node.
-+
-+Required parameters:
-+- compatible:		Must be "st,stm32-pwm".
-+- pinctrl-names: 	Set to "default".
-+- pinctrl-0: 		List of phandles pointing to pin configuration nodes for PWM module.
-+			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
-+
-+Optional parameters:
-+- st,breakinput-polarity: If present, a break input is available
-+            for the channel. In that case the property value denotes the
-+            polarity of the break input:
-+            - 0: active low
-+            - 1: active high
-+
-+Example:
-+	gptimer@40010000 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "st,stm32-gptimer";
-+		reg = <0x40010000 0x400>;
-+		clocks = <&rcc 0 160>;
-+		clock-names = "clk_int";
-+
-+		pwm@0 {
-+			compatible = "st,stm32-pwm";
-+			pinctrl-0	= <&pwm1_pins>;
-+			pinctrl-names	= "default";
-+		};
-+	};
+> > > > > +&gptimer3 {
+> > > > > +	status = "okay";
+> > > > > +
+> > > > > +	pwm3@0 {
+> > > > > +		pinctrl-0	= <&pwm3_pins>;
+> > > > > +		pinctrl-names	= "default";
+> > > > > +		status = "okay";
+> > > > > +	};
+> > > > > +
+> > > > > +	timer3@0 {
+> > > > > +		status = "okay";
+> > > > > +	};
+> > > > > +};
+> > > > 
+> > 
+
 -- 
-1.9.1
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
