@@ -1,35 +1,76 @@
-From: Sylvain Lemieux <slemieux.tyco@gmail.com>
-Subject: Re: [PATCH 3/3] pwm: lpc32xx: remove handling of PWM channels
-Date: Wed, 07 Dec 2016 12:58:16 -0500
-Message-ID: <1481133496.9248.3.camel@localhost>
-References: <20161205014237.1689-1-vz@mleia.com>
-         <20161205014308.1741-2-vz@mleia.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-io0-f195.google.com ([209.85.223.195]:33515 "EHLO
-        mail-io0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752850AbcLGR6S (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Dec 2016 12:58:18 -0500
-Received: by mail-io0-f195.google.com with SMTP id j92so15320413ioi.0
-        for <linux-pwm@vger.kernel.org>; Wed, 07 Dec 2016 09:58:18 -0800 (PST)
-In-Reply-To: <20161205014308.1741-2-vz@mleia.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v5 1/7] MFD: add bindings for STM32 General Purpose Timer driver
+Date: Thu,  8 Dec 2016 13:20:44 +0100
+Message-ID: <1481199650-22484-2-git-send-email-benjamin.gaignard@st.com>
+References: <1481199650-22484-1-git-send-email-benjamin.gaignard@st.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1481199650-22484-1-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Vladimir Zapolskiy <vz@mleia.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Mon, 2016-12-05 at 03:43 +0200, Vladimir Zapolskiy wrote:
-> Because LPC32xx PWM controllers have single output which is registered as
-> the only PWM device/channel per controller, it is known in advance that
-> pwm->hwpwm value is always 0. On basis of this fact simplify the code
-> by removing operations with pwm->hwpwm, there is no controls which require
-> channel number as input.
-> 
-> Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
-> ---
->  drivers/pwm/pwm-lpc32xx.c | 20 +++++++++-----------
->  1 file changed, 9 insertions(+), 11 deletions(-)
-> 
-Reviewed-by: Sylvain Lemieux <slemieux.tyco@gmail.com>
+Add bindings information for STM32 General Purpose Timer
+
+version 2:
+- rename stm32-mfd-timer to stm32-gptimer
+- only keep one compatible string
+
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+---
+ .../bindings/mfd/stm32-general-purpose-timer.txt   | 39 ++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
+
+diff --git a/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt b/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
+new file mode 100644
+index 0000000..ce67755
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
+@@ -0,0 +1,39 @@
++STM32 General Purpose Timer driver bindings
++
++Required parameters:
++- compatible: must be "st,stm32-gptimer"
++
++- reg:			Physical base address and length of the controller's
++			registers.
++- clock-names: 		Set to "clk_int".
++- clocks: 		Phandle to the clock used by the timer module.
++			For Clk properties, please refer to ../clock/clock-bindings.txt
++
++Optional parameters:
++- resets:		Phandle to the parent reset controller.
++			See ../reset/st,stm32-rcc.txt
++
++Optional subnodes:
++- pwm:			See ../pwm/pwm-stm32.txt
++- timer:		See ../iio/timer/stm32-timer-trigger.txt
++
++Example:
++	timers@40010000 {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		compatible = "st,stm32-gptimer";
++		reg = <0x40010000 0x400>;
++		clocks = <&rcc 0 160>;
++		clock-names = "clk_int";
++
++		pwm@0 {
++			compatible = "st,stm32-pwm";
++			pinctrl-0	= <&pwm1_pins>;
++			pinctrl-names	= "default";
++		};
++
++		timer@0 {
++			compatible = "st,stm32-timer-trigger";
++			reg = <0>;
++		};
++	};
+-- 
+1.9.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
