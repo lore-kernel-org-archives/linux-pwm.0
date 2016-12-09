@@ -1,7 +1,7 @@
 From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Subject: [PATCH v6 3/8] PWM: add pwm-stm32 DT bindings
-Date: Fri,  9 Dec 2016 15:15:14 +0100
-Message-ID: <1481292919-26587-4-git-send-email-benjamin.gaignard@st.com>
+Subject: [PATCH v6 1/8] MFD: add bindings for STM32 Timers driver
+Date: Fri,  9 Dec 2016 15:15:12 +0100
+Message-ID: <1481292919-26587-2-git-send-email-benjamin.gaignard@st.com>
 References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
@@ -10,42 +10,54 @@ To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.to
 Cc: fabrice.gasnier@st.com, gerald.baeza@st.com, arnaud.pouliquen@st.com, linus.walleij@linaro.org, linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Define bindings for pwm-stm32
+Add bindings information for STM32 Timers
 
 version 6:
-- change st,breakinput parameter format to make it usuable on stm32f7 too.
+- rename stm32-gtimer to stm32-timers
+- change compatible
+- add description about the IPs
 
 version 2:
-- use parameters instead of compatible of handle the hardware configuration
+- rename stm32-mfd-timer to stm32-gptimer
+- only keep one compatible string
 
 Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
 ---
- .../devicetree/bindings/pwm/pwm-stm32.txt          | 33 ++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+ .../devicetree/bindings/mfd/stm32-timers.txt       | 46 ++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+diff --git a/Documentation/devicetree/bindings/mfd/stm32-timers.txt b/Documentation/devicetree/bindings/mfd/stm32-timers.txt
 new file mode 100644
-index 0000000..866f222
+index 0000000..b30868e
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-@@ -0,0 +1,33 @@
-+STMicroelectronics STM32 Timers PWM bindings
++++ b/Documentation/devicetree/bindings/mfd/stm32-timers.txt
+@@ -0,0 +1,46 @@
++STM32 Timers driver bindings
 +
-+Must be a sub-node of an STM32 Timers device tree node.
-+See ../mfd/stm32-timers.txt for details about the parent node.
++This IP provides 3 types of timer along with PWM functionality:
++- advanced-control timers consist of a 16-bit auto-reload counter driven by a programmable
++  prescaler, break input feature, PWM outputs and complementary PWM ouputs channels.
++- general-purpose timers consist of a 16-bit or 32-bit auto-reload counter driven by a
++  programmable prescaler and PWM outputs.
++- basic timers consist of a 16-bit auto-reload counter driven by a programmable prescaler.
 +
 +Required parameters:
-+- compatible:		Must be "st,stm32-pwm".
-+- pinctrl-names: 	Set to "default".
-+- pinctrl-0: 		List of phandles pointing to pin configuration nodes for PWM module.
-+			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
++- compatible: must be "st,stm32-timers"
++
++- reg:			Physical base address and length of the controller's
++			registers.
++- clock-names: 		Set to "clk_int".
++- clocks: 		Phandle to the clock used by the timer module.
++			For Clk properties, please refer to ../clock/clock-bindings.txt
 +
 +Optional parameters:
-+- st,breakinput:	Arrays of three u32 <index level filter> to describe break input configurations.
-+			"index" indicates on which break input the configuration should be applied.
-+			"level" gives the active level (0=low or 1=high) for this configuration.
-+			"filter" gives the filtering value to be applied.
++- resets:		Phandle to the parent reset controller.
++			See ../reset/st,stm32-rcc.txt
++
++Optional subnodes:
++- pwm:			See ../pwm/pwm-stm32.txt
++- timer:		See ../iio/timer/stm32-timer-trigger.txt
 +
 +Example:
 +	timers@40010000 {
@@ -60,7 +72,11 @@ index 0000000..866f222
 +			compatible = "st,stm32-pwm";
 +			pinctrl-0	= <&pwm1_pins>;
 +			pinctrl-names	= "default";
-+			st,breakinput = <0 1 5>;
++		};
++
++		timer {
++			compatible = "st,stm32-timer-trigger";
++			reg = <0>;
 +		};
 +	};
 -- 
