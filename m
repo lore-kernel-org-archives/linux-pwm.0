@@ -1,133 +1,139 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v4 6/7] IIO: add STM32 timer trigger driver
-Date: Fri, 9 Dec 2016 08:59:15 +0000
-Message-ID: <20161209085915.GD3625@dell.home>
-References: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
- <1481027929-13704-7-git-send-email-benjamin.gaignard@st.com>
- <20161206131635.GJ25385@dell.home>
- <CA+M3ks6fxCucmaY0OgpMb_opA=YLrowijJ0YQ+imeprhWg6N_w@mail.gmail.com>
- <20161207105002.GA3625@dell.home>
- <CA+M3ks4VbV6z6t7aORKGmduZfFF+Ls7Sq8umWRFyo3sn8WZt7g@mail.gmail.com>
- <5dcec09c-8b4b-4cc2-ce3f-fde86366ec05@linaro.org>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v4 1/2] backlight: pwm_bl: Move the checks for initial
+ power state to a separate function
+Date: Fri, 9 Dec 2016 09:13:47 +0000
+Message-ID: <20161209091347.GE3625@dell.home>
+References: <20161122134123.1209-1-peter.ujfalusi@ti.com>
+ <20161122134123.1209-2-peter.ujfalusi@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f47.google.com ([74.125.82.47]:35531 "EHLO
+        mail-wm0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932173AbcLIJKf (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 9 Dec 2016 04:10:35 -0500
+Received: by mail-wm0-f47.google.com with SMTP id a197so17078888wmd.0
+        for <linux-pwm@vger.kernel.org>; Fri, 09 Dec 2016 01:10:34 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <5dcec09c-8b4b-4cc2-ce3f-fde86366ec05-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, knaack.h-Mmb7MZpHnFY@public.gmane.org, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>, Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>, Arnaud Pouliquen <arnaud.pouliquen-qxv4g6HH51o@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linaro Kernel Mailman List <linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+In-Reply-To: <20161122134123.1209-2-peter.ujfalusi@ti.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Cc: thierry.reding@gmail.com, tomi.valkeinen@ti.com, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, p.zabel@pengutronix.de
 
-On Wed, 07 Dec 2016, Daniel Thompson wrote:
+On Tue, 22 Nov 2016, Peter Ujfalusi wrote:
 
-> On 07/12/16 11:00, Benjamin Gaignard wrote:
-> > 2016-12-07 11:50 GMT+01:00 Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>:
-> > > On Tue, 06 Dec 2016, Benjamin Gaignard wrote:
-> > > 
-> > > > [snip]
-> > > > > > +
-> > > > > > +static const char * const triggers0[] = {
-> > > > > > +     TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers1[] = {
-> > > > > > +     TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers2[] = {
-> > > > > > +     TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers3[] = {
-> > > > > > +     TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers4[] = {
-> > > > > > +     TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers5[] = {
-> > > > > > +     TIM6_TRGO, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers6[] = {
-> > > > > > +     TIM7_TRGO, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers7[] = {
-> > > > > > +     TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers8[] = {
-> > > > > > +     TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers9[] = {
-> > > > > > +     TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const void *triggers_table[] = {
-> > > > > > +     triggers0,
-> > > > > > +     triggers1,
-> > > > > > +     triggers2,
-> > > > > > +     triggers3,
-> > > > > > +     triggers4,
-> > > > > > +     triggers5,
-> > > > > > +     triggers6,
-> > > > > > +     triggers7,
-> > > > > > +     triggers8,
-> > > > > > +     triggers9,
-> > > > > > +};
-> > > > > 
-> > > > > What about:
-> > > > > 
-> > > > > static const char * const triggers[][] = {
-> > > > >         { TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL },
-> > > > >         { TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL },
-> > > > >         { TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL },
-> > > > >         { TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL },
-> > > > >         { TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL },
-> > > > >         { TIM6_TRGO, NULL },
-> > > > >         { TIM7_TRGO, NULL },
-> > > > >         { TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL },
-> > > > >         { TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL },
-> > > > >         { TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL }
-> > > > > };
-> > > > 
-> > > > I can't because the second dimension of the array isn't fix.
-> > > > I could have between 2 and 6 elements per row... to create a dual dimension
-> > > > array I would have to add NULL entries like that:
-> > > > 
-> > > > #define MAX_TRIGGERS 6
-> > > > 
-> > > > static const void *triggers_table[][MAX_TRIGGERS] = {
-> > > > { TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL,},
-> > > > { TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL,},
-> > > > { TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL,},
-> > > > { TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL,},
-> > > > { TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL,},
-> > > > { TIM6_TRGO, NULL,     NULL,     NULL,     NULL,     NULL,},
-> > > > { TIM7_TRGO, NULL,     NULL,     NULL,     NULL,     NULL,},
-> > > > { TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL,},
-> > > > { TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL,     NULL,     NULL,},
-> > > > { TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL,  NULL,     NULL,},
-> > > > };
-> > > 
-> > > It was just an idea, not a tested implementation.
-> > > 
-> > > I don't understand why you have to pad with NULLs, but either way, it
-> > > looks much better than before and saves lots of lines of code.
-> > 
-> > I have tested it this morning and it works fine so I will include it in v5.
-> > I use NULL as limit when iterate in the table and for table padding too.
+> Move the checks to select the initial state for the backlight to a new
+> function and document the checks we are doing.
 > 
-> If the initializer is shorter than the array then the array will be
-> implicitly zero/NULL padded. I don't think there is any need to type out all
-> the NULLs (not even at -Wall).
+> With the separate function it is going to be easier to fix or improve the
+> initial power state configuration later and it is easier to read the code.
+> 
+> Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+> Reviewed-by: Thierry Reding <treding@nvidia.com>
+> ---
+>  drivers/video/backlight/pwm_bl.c | 56 ++++++++++++++++++++++++++--------------
+>  1 file changed, 37 insertions(+), 19 deletions(-)
 
-+1.  My point precisely.
+Applied for v4.11, thanks.
+
+> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+> index 12614006211e..5712ddd053dd 100644
+> --- a/drivers/video/backlight/pwm_bl.c
+> +++ b/drivers/video/backlight/pwm_bl.c
+> @@ -192,6 +192,32 @@ static int pwm_backlight_parse_dt(struct device *dev,
+>  }
+>  #endif
+>  
+> +static int pwm_backlight_initial_power_state(const struct pwm_bl_data *pb)
+> +{
+> +	struct device_node *node = pb->dev->of_node;
+> +
+> +	/* Not booted with device tree or no phandle link to the node */
+> +	if (!node || !node->phandle)
+> +		return FB_BLANK_UNBLANK;
+> +
+> +	/*
+> +	 * If the driver is probed from the device tree and there is a
+> +	 * phandle link pointing to the backlight node, it is safe to
+> +	 * assume that another driver will enable the backlight at the
+> +	 * appropriate time. Therefore, if it is disabled, keep it so.
+> +	 */
+> +
+> +	/* if the enable GPIO is disabled, do not enable the backlight */
+> +	if (pb->enable_gpio && gpiod_get_value(pb->enable_gpio) == 0)
+> +		return FB_BLANK_POWERDOWN;
+> +
+> +	/* The regulator is disabled, do not enable the backlight */
+> +	if (!regulator_is_enabled(pb->power_supply))
+> +		return FB_BLANK_POWERDOWN;
+> +
+> +	return FB_BLANK_UNBLANK;
+> +}
+> +
+>  static int pwm_backlight_probe(struct platform_device *pdev)
+>  {
+>  	struct platform_pwm_backlight_data *data = dev_get_platdata(&pdev->dev);
+> @@ -200,7 +226,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>  	struct backlight_device *bl;
+>  	struct device_node *node = pdev->dev.of_node;
+>  	struct pwm_bl_data *pb;
+> -	int initial_blank = FB_BLANK_UNBLANK;
+>  	struct pwm_args pargs;
+>  	int ret;
+>  
+> @@ -267,20 +292,16 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>  		pb->enable_gpio = gpio_to_desc(data->enable_gpio);
+>  	}
+>  
+> -	if (pb->enable_gpio) {
+> -		/*
+> -		 * If the driver is probed from the device tree and there is a
+> -		 * phandle link pointing to the backlight node, it is safe to
+> -		 * assume that another driver will enable the backlight at the
+> -		 * appropriate time. Therefore, if it is disabled, keep it so.
+> -		 */
+> -		if (node && node->phandle &&
+> -		    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_OUT &&
+> -		    gpiod_get_value(pb->enable_gpio) == 0)
+> -			initial_blank = FB_BLANK_POWERDOWN;
+> -		else
+> -			gpiod_direction_output(pb->enable_gpio, 1);
+> -	}
+> +	/*
+> +	 * If the GPIO is configured as input, change the direction to output
+> +	 * and set the GPIO as active.
+> +	 * Do not force the GPIO to active when it was already output as it
+> +	 * could cause backlight flickering or we would enable the backlight too
+> +	 * early. Leave the decision of the initial backlight state for later.
+> +	 */
+> +	if (pb->enable_gpio &&
+> +	    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_IN)
+> +		gpiod_direction_output(pb->enable_gpio, 1);
+>  
+>  	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
+>  	if (IS_ERR(pb->power_supply)) {
+> @@ -288,9 +309,6 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>  		goto err_alloc;
+>  	}
+>  
+> -	if (node && node->phandle && !regulator_is_enabled(pb->power_supply))
+> -		initial_blank = FB_BLANK_POWERDOWN;
+> -
+>  	pb->pwm = devm_pwm_get(&pdev->dev, NULL);
+>  	if (IS_ERR(pb->pwm) && PTR_ERR(pb->pwm) != -EPROBE_DEFER && !node) {
+>  		dev_err(&pdev->dev, "unable to request PWM, trying legacy API\n");
+> @@ -347,7 +365,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	bl->props.brightness = data->dft_brightness;
+> -	bl->props.power = initial_blank;
+> +	bl->props.power = pwm_backlight_initial_power_state(pb);
+>  	backlight_update_status(bl);
+>  
+>  	platform_set_drvdata(pdev, bl);
 
 -- 
 Lee Jones
