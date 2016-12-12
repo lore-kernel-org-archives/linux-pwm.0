@@ -1,255 +1,187 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v6 2/8] MFD: add STM32 Timers driver
-Date: Mon, 12 Dec 2016 07:47:31 +0000
-Message-ID: <20161212074731.GP3625@dell.home>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v6 0/8] Add PWM and IIO timer drivers for STM32
+Date: Mon, 12 Dec 2016 07:48:17 +0000
+Message-ID: <20161212074817.GQ3625@dell.home>
 References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
- <1481292919-26587-3-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1481292919-26587-3-git-send-email-benjamin.gaignard@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com, gerald.baeza@st.com, arnaud.pouliquen@st.com, linus.walleij@linaro.org, linaro-kernel@lists.linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>
+In-Reply-To: <1481292919-26587-1-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
 On Fri, 09 Dec 2016, Benjamin Gaignard wrote:
 
-> This hardware block could at used at same time for PWM generation
-> and IIO timers.
-> PWM and IIO timer configuration are mixed in the same registers
-> so we need a multi fonction driver to be able to share those registers.
-> 
 > version 6:
-> - rename files to stm32-timers
-> - rename functions to stm32_timers_xxx
+> - rename stm32-gptimer in stm32-timers.
+> - change "st,stm32-gptimer" compatible to "st,stm32-timers".
+> - modify "st,breakinput" parameter in pwm part.
+> - split DT patch in 2
 > 
 > version 5:
-> - fix Lee comments about detect function
-> - add missing dependency on REGMAP_MMIO
+> - fix comments done on version 4
+> - rebased on kernel 4.9-rc8
+> - change nodes names and re-order then by addresses
 > 
 > version 4:
-> - add a function to detect Auto Reload Register (ARR) size
-> - rename the structure shared with other drivers
+> - fix comments done on version 3
+> - don't use interrupts anymore in IIO timer
+> - detect hardware capabilities at probe time to simplify binding
+> 
+> version 3:
+> - no change on mfd and pwm divers patches
+> - add cross reference between bindings
+> - change compatible to "st,stm32-timer-trigger"
+> - fix attributes access rights
+> - use string instead of int for master_mode and slave_mode
+> - document device attributes in sysfs-bus-iio-timer-stm32
+> - update DT with the new compatible
 > 
 > version 2:
-> - rename driver "stm32-gptimer" to be align with SoC documentation
-> - only keep one compatible
-> - use of_platform_populate() instead of devm_mfd_add_devices()
+> - keep only one compatible per driver
+> - use DT parameters to describe hardware block configuration:
+>   - pwm channels, complementary output, counter size, break input
+>   - triggers accepted and create by IIO timers
+> - change DT to limite use of reference to the node
+> - interrupt is now in IIO timer driver
+> - rename stm32-mfd-timer to stm32-timers (for general purpose timer)
 > 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-> ---
->  drivers/mfd/Kconfig              | 11 ++++++
->  drivers/mfd/Makefile             |  2 +
->  drivers/mfd/stm32-timers.c       | 80 ++++++++++++++++++++++++++++++++++++++++
->  include/linux/mfd/stm32-timers.h | 71 +++++++++++++++++++++++++++++++++++
->  4 files changed, 164 insertions(+)
+> The following patches enable PWM and IIO Timer features for STM32 platforms.
+> 
+> Those two features are mixed into the registers of the same hardware block
+> (named general purpose timer) which lead to introduce a multifunctions driver 
+> on the top of them to be able to share the registers.
+> 
+> In STM32f4 14 instances of timer hardware block exist, even if they all have
+> the same register mapping they could have a different number of pwm channels
+> and/or different triggers capabilities. We use various parameters in DT to 
+> describe the differences between hardware blocks
+> 
+> The MFD (stm32-timers.c) takes care of clock and register mapping
+> by using regmap. stm32_timers structure is provided to its sub-node to
+> share those information.
+> 
+> PWM driver is implemented into pwm-stm32.c. Depending of the instance we may
+> have up to 4 channels, sometime with complementary outputs or 32 bits counter
+> instead of 16 bits. Some hardware blocks may also have a break input function
+> which allows to stop pwm depending of a level, defined in devicetree, on an
+> external pin.
+> 
+> IIO timer driver (stm32-timer-trigger.c and stm32-timer-trigger.h) define a list
+> of hardware triggers usable by hardware blocks like ADC, DAC or other timers. 
+> 
+> The matrix of possible connections between blocks is quite complex so we use 
+> trigger names and is_stm32_iio_timer_trigger() function to be sure that
+> triggers are valid and configure the IPs.
+> 
+> At run time IIO timer hardware blocks can configure (through "master_mode" 
+> IIO device attribute) which internal signal (counter enable, reset,
+> comparison block, etc...) is used to generate the trigger.
+> 
+> By using "slave_mode" IIO device attribute timer can also configure on which
+> event (level, rising edge) of the block is enabled.
+> 
+> Since we can use trigger from one hardware to control an other block, we can
+> use a pwm to control an other one. The following example shows how to configure
+> pwm1 and pwm3 to make pwm3 generate pulse only when pwm1 pulse level is high.
+> 
+> /sys/bus/iio/devices # ls
+> iio:device0  iio:device1  trigger0     trigger1
+> 
+> configure timer1 to use pwm1 channel 0 as output trigger
+> /sys/bus/iio/devices # echo 'OC1REF' > iio\:device0/master_mode
+> configure timer3 to enable only when input is high
+> /sys/bus/iio/devices # echo 'gated' > iio\:device1/slave_mode
+> /sys/bus/iio/devices # cat trigger0/name
+> tim1_trgo
+> configure timer2 to use timer1 trigger is input
+> /sys/bus/iio/devices # echo "tim1_trgo" > iio\:device1/trigger/current_trigger
+> 
+> configure pwm3 channel 0 to generate a signal with a period of 100ms and a
+> duty cycle of 50%
+> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 0 > export
+> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 100000000 > pwm0/period
+> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 50000000 > pwm0/duty_cycle
+> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 1 > pwm0/enable
+> here pwm3 channel 0, as expected, doesn't start because has to be triggered by
+> pwm1 channel 0
+> 
+> configure pwm1 channel 0 to generate a signal with a period of 1s and a
+> duty cycle of 50%
+> /sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 0 > export
+> /sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 1000000000 > pwm0/period
+> /sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 500000000 > pwm0/duty_cycle
+> /sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 1 > pwm0/enable 
+> finally pwm1 starts and pwm3 only generates pulse when pwm1 signal is high
+> 
+> An other example to use a timer as source of clock for another device.
+> Here timer1 is used a source clock for pwm3:
+> 
+> /sys/bus/iio/devices # echo 100000 > trigger0/sampling_frequency 
+> /sys/bus/iio/devices # echo "tim1_trgo" > iio\:device1/trigger/current_trigger 
+> /sys/bus/iio/devices # echo 'external_clock' > iio\:device1/slave_mode
+> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 0 > export 
+> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 1000000 > pwm0/period 
+> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 500000 > pwm0/duty_cycle 
+> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 1 > pwm0/enable
+> 
+> Benjamin Gaignard (8):
+>   MFD: add bindings for STM32 Timers driver
+>   MFD: add STM32 Timers driver
+>   PWM: add pwm-stm32 DT bindings
+>   PWM: add PWM driver for STM32 plaftorm
+>   IIO: add bindings for STM32 timer trigger driver
+>   IIO: add STM32 timer trigger driver
+>   ARM: dts: stm32: add Timers driver for stm32f429 MCU
+>   ARM: dts: stm32: Enable pw1 and pwm3 for stm32f469-disco
+> 
+>  .../ABI/testing/sysfs-bus-iio-timer-stm32          |  55 +++
+>  .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 +
+>  .../devicetree/bindings/mfd/stm32-timers.txt       |  46 ++
+>  .../devicetree/bindings/pwm/pwm-stm32.txt          |  33 ++
+>  arch/arm/boot/dts/stm32f429.dtsi                   | 275 ++++++++++++
+>  arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
+>  drivers/iio/Kconfig                                |   2 +-
+>  drivers/iio/Makefile                               |   1 +
+>  drivers/iio/timer/Kconfig                          |  13 +
+>  drivers/iio/timer/Makefile                         |   1 +
+>  drivers/iio/timer/stm32-timer-trigger.c            | 466 +++++++++++++++++++++
+>  drivers/iio/trigger/Kconfig                        |   1 -
+>  drivers/mfd/Kconfig                                |  11 +
+>  drivers/mfd/Makefile                               |   2 +
+>  drivers/mfd/stm32-timers.c                         |  80 ++++
+>  drivers/pwm/Kconfig                                |   9 +
+>  drivers/pwm/Makefile                               |   1 +
+>  drivers/pwm/pwm-stm32.c                            | 434 +++++++++++++++++++
+>  include/linux/iio/timer/stm32-timer-trigger.h      |  62 +++
+>  include/linux/mfd/stm32-timers.h                   |  71 ++++
+>  20 files changed, 1612 insertions(+), 2 deletions(-)
+>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
+>  create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+>  create mode 100644 drivers/iio/timer/Kconfig
+>  create mode 100644 drivers/iio/timer/Makefile
+>  create mode 100644 drivers/iio/timer/stm32-timer-trigger.c
 >  create mode 100644 drivers/mfd/stm32-timers.c
+>  create mode 100644 drivers/pwm/pwm-stm32.c
+>  create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
 >  create mode 100644 include/linux/mfd/stm32-timers.h
 
-For my own reference:
-  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+This has really come together nicely.
 
-> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> index c6df644..4ec1906 100644
-> --- a/drivers/mfd/Kconfig
-> +++ b/drivers/mfd/Kconfig
-> @@ -1607,6 +1607,17 @@ config MFD_STW481X
->  	  in various ST Microelectronics and ST-Ericsson embedded
->  	  Nomadik series.
->  
-> +config MFD_STM32_TIMERS
-> +	tristate "Support for STM32 Timers"
-> +	depends on (ARCH_STM32 && OF) || COMPILE_TEST
-> +	select MFD_CORE
-> +	select REGMAP
-> +	select REGMAP_MMIO
-> +	help
-> +	  Select this option to enable STM32 timers driver used
-> +	  for PWM and IIO Timer. This driver allow to share the
-> +	  registers between the others drivers.
-> +
->  menu "Multimedia Capabilities Port drivers"
->  	depends on ARCH_SA1100
->  
-> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-> index 9834e66..11a52f8 100644
-> --- a/drivers/mfd/Makefile
-> +++ b/drivers/mfd/Makefile
-> @@ -211,3 +211,5 @@ obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
->  obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
->  
->  obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
-> +
-> +obj-$(CONFIG_MFD_STM32_TIMERS) 	+= stm32-timers.o
-> diff --git a/drivers/mfd/stm32-timers.c b/drivers/mfd/stm32-timers.c
-> new file mode 100644
-> index 0000000..68d115e
-> --- /dev/null
-> +++ b/drivers/mfd/stm32-timers.c
-> @@ -0,0 +1,80 @@
-> +/*
-> + * Copyright (C) STMicroelectronics 2016
-> + *
-> + * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
-> + *
-> + * License terms:  GNU General Public License (GPL), version 2
-> + */
-> +
-> +#include <linux/mfd/stm32-timers.h>
-> +#include <linux/module.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/reset.h>
-> +
-> +static const struct regmap_config stm32_timers_regmap_cfg = {
-> +	.reg_bits = 32,
-> +	.val_bits = 32,
-> +	.reg_stride = sizeof(u32),
-> +	.max_register = 0x400,
-> +};
-> +
-> +static void stm32_timers_get_arr_size(struct stm32_timers *ddata)
-> +{
-> +	/*
-> +	 * Only the available bits will be written so when readback
-> +	 * we get the maximum value of auto reload register
-> +	 */
-> +	regmap_write(ddata->regmap, TIM_ARR, ~0L);
-> +	regmap_read(ddata->regmap, TIM_ARR, &ddata->max_arr);
-> +	regmap_write(ddata->regmap, TIM_ARR, 0x0);
-> +}
-> +
-> +static int stm32_timers_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct stm32_timers *ddata;
-> +	struct resource *res;
-> +	void __iomem *mmio;
-> +
-> +	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
-> +	if (!ddata)
-> +		return -ENOMEM;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	mmio = devm_ioremap_resource(dev, res);
-> +	if (IS_ERR(mmio))
-> +		return PTR_ERR(mmio);
-> +
-> +	ddata->regmap = devm_regmap_init_mmio_clk(dev, "clk_int", mmio,
-> +						  &stm32_timers_regmap_cfg);
-> +	if (IS_ERR(ddata->regmap))
-> +		return PTR_ERR(ddata->regmap);
-> +
-> +	ddata->clk = devm_clk_get(dev, NULL);
-> +	if (IS_ERR(ddata->clk))
-> +		return PTR_ERR(ddata->clk);
-> +
-> +	stm32_timers_get_arr_size(ddata);
-> +
-> +	platform_set_drvdata(pdev, ddata);
-> +
-> +	return of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
-> +}
-> +
-> +static const struct of_device_id stm32_timers_of_match[] = {
-> +	{ .compatible = "st,stm32-timers", },
-> +	{ /* end node */ },
-> +};
-> +MODULE_DEVICE_TABLE(of, stm32_timers_of_match);
-> +
-> +static struct platform_driver stm32_timers_driver = {
-> +	.probe = stm32_timers_probe,
-> +	.driver	= {
-> +		.name = "stm32-timers",
-> +		.of_match_table = stm32_timers_of_match,
-> +	},
-> +};
-> +module_platform_driver(stm32_timers_driver);
-> +
-> +MODULE_DESCRIPTION("STMicroelectronics STM32 Timers");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/include/linux/mfd/stm32-timers.h b/include/linux/mfd/stm32-timers.h
-> new file mode 100644
-> index 0000000..d030004
-> --- /dev/null
-> +++ b/include/linux/mfd/stm32-timers.h
-> @@ -0,0 +1,71 @@
-> +/*
-> + * Copyright (C) STMicroelectronics 2016
-> + *
-> + * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
-> + *
-> + * License terms:  GNU General Public License (GPL), version 2
-> + */
-> +
-> +#ifndef _LINUX_STM32_GPTIMER_H_
-> +#define _LINUX_STM32_GPTIMER_H_
-> +
-> +#include <linux/clk.h>
-> +#include <linux/regmap.h>
-> +
-> +#define TIM_CR1		0x00	/* Control Register 1      */
-> +#define TIM_CR2		0x04	/* Control Register 2      */
-> +#define TIM_SMCR	0x08	/* Slave mode control reg  */
-> +#define TIM_DIER	0x0C	/* DMA/interrupt register  */
-> +#define TIM_SR		0x10	/* Status register	   */
-> +#define TIM_EGR		0x14	/* Event Generation Reg    */
-> +#define TIM_CCMR1	0x18	/* Capt/Comp 1 Mode Reg    */
-> +#define TIM_CCMR2	0x1C	/* Capt/Comp 2 Mode Reg    */
-> +#define TIM_CCER	0x20	/* Capt/Comp Enable Reg    */
-> +#define TIM_PSC		0x28	/* Prescaler               */
-> +#define TIM_ARR		0x2c	/* Auto-Reload Register    */
-> +#define TIM_CCR1	0x34	/* Capt/Comp Register 1    */
-> +#define TIM_CCR2	0x38	/* Capt/Comp Register 2    */
-> +#define TIM_CCR3	0x3C	/* Capt/Comp Register 3    */
-> +#define TIM_CCR4	0x40	/* Capt/Comp Register 4    */
-> +#define TIM_BDTR	0x44	/* Break and Dead-Time Reg */
-> +
-> +#define TIM_CR1_CEN	BIT(0)	/* Counter Enable	   */
-> +#define TIM_CR1_ARPE	BIT(7)	/* Auto-reload Preload Ena */
-> +#define TIM_CR2_MMS	(BIT(4) | BIT(5) | BIT(6)) /* Master mode selection */
-> +#define TIM_SMCR_SMS	(BIT(0) | BIT(1) | BIT(2)) /* Slave mode selection */
-> +#define TIM_SMCR_TS	(BIT(4) | BIT(5) | BIT(6)) /* Trigger selection */
-> +#define TIM_DIER_UIE	BIT(0)	/* Update interrupt	   */
-> +#define TIM_SR_UIF	BIT(0)	/* Update interrupt flag   */
-> +#define TIM_EGR_UG	BIT(0)	/* Update Generation       */
-> +#define TIM_CCMR_PE	BIT(3)	/* Channel Preload Enable  */
-> +#define TIM_CCMR_M1	(BIT(6) | BIT(5))  /* Channel PWM Mode 1 */
-> +#define TIM_CCER_CC1E	BIT(0)	/* Capt/Comp 1  out Ena    */
-> +#define TIM_CCER_CC1P	BIT(1)	/* Capt/Comp 1  Polarity   */
-> +#define TIM_CCER_CC1NE	BIT(2)	/* Capt/Comp 1N out Ena    */
-> +#define TIM_CCER_CC1NP	BIT(3)	/* Capt/Comp 1N Polarity   */
-> +#define TIM_CCER_CC2E	BIT(4)	/* Capt/Comp 2  out Ena    */
-> +#define TIM_CCER_CC3E	BIT(8)	/* Capt/Comp 3  out Ena    */
-> +#define TIM_CCER_CC4E	BIT(12)	/* Capt/Comp 4  out Ena    */
-> +#define TIM_CCER_CCXE	(BIT(0) | BIT(4) | BIT(8) | BIT(12))
-> +#define TIM_BDTR_BKE	BIT(12) /* Break input enable	   */
-> +#define TIM_BDTR_BKP	BIT(13) /* Break input polarity	   */
-> +#define TIM_BDTR_AOE	BIT(14)	/* Automatic Output Enable */
-> +#define TIM_BDTR_MOE	BIT(15)	/* Main Output Enable      */
-> +#define TIM_BDTR_BKF	(BIT(16) | BIT(17) | BIT(18) | BIT(19))
-> +#define TIM_BDTR_BK2F	(BIT(20) | BIT(21) | BIT(22) | BIT(23))
-> +#define TIM_BDTR_BK2E	BIT(24) /* Break 2 input enable	   */
-> +#define TIM_BDTR_BK2P	BIT(25) /* Break 2 input polarity  */
-> +
-> +#define MAX_TIM_PSC		0xFFFF
-> +#define TIM_CR2_MMS_SHIFT	4
-> +#define TIM_SMCR_TS_SHIFT	4
-> +#define TIM_BDTR_BKF_MASK	0xF
-> +#define TIM_BDTR_BKF_SHIFT	16
-> +#define TIM_BDTR_BK2F_SHIFT	20
-> +
-> +struct stm32_timers {
-> +	struct clk *clk;
-> +	struct regmap *regmap;
-> +	u32 max_arr;
-> +};
-> +#endif
+Great work Benjamin.
 
 -- 
 Lee Jones
 Linaro STMicroelectronics Landing Team Lead
 Linaro.org │ Open source software for ARM SoCs
 Follow Linaro: Facebook | Twitter | Blog
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
