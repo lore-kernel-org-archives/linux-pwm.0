@@ -1,114 +1,145 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH 1/2] pwm: lpss: Make builtin and add lookup-table so that
- i915 can find the pwm_backlight
-Date: Mon, 12 Dec 2016 12:54:09 +0100
-Message-ID: <792736b5-2f95-da56-9ccf-9729b7bbc720@redhat.com>
-References: <20161202101736.12236-1-hdegoede@redhat.com>
- <20161205074630.GD18069@ulmo.ba.sec>
- <bcd2a008-7dac-5084-90b5-e21634e7b57d@redhat.com>
- <20161205105943.GB19891@ulmo.ba.sec>
- <023df77a-d517-b3f0-3f37-b440db4e113e@redhat.com>
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH 1/2] pwm: sunxi: allow the pwm to finish its pulse before
+ disable
+Date: Mon, 12 Dec 2016 13:24:27 +0100
+Message-ID: <20161212122427.4ixo7terrlvnuqmd@lukather>
+References: <1472147411-30424-1-git-send-email-oliver@schinagl.nl>
+ <1472147411-30424-2-git-send-email-oliver@schinagl.nl>
+ <20160826221900.GG3165@lukather>
+ <afcb938d-d2df-4740-6c85-cdf2766f671c@schinagl.nl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:38354 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750899AbcLLLyM (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 12 Dec 2016 06:54:12 -0500
-In-Reply-To: <023df77a-d517-b3f0-3f37-b440db4e113e@redhat.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="3r6osu2yag7ymblo"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <afcb938d-d2df-4740-6c85-cdf2766f671c@schinagl.nl>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Olliver Schinagl <oliver@schinagl.nl>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Chen-Yu Tsai <wens@csie.org>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Daniel Vetter <daniel.vetter@intel.com>, Jani Nikula <jani.nikula@linux.intel.com>, =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org
 
-Hi,
 
-On 05-12-16 14:23, Hans de Goede wrote:
-> Hi,
->
-> On 05-12-16 11:59, Thierry Reding wrote:
->> On Mon, Dec 05, 2016 at 09:18:03AM +0100, Hans de Goede wrote:
->>> Hi,
->>>
->>> On 05-12-16 08:46, Thierry Reding wrote:
->>>> On Fri, Dec 02, 2016 at 11:17:35AM +0100, Hans de Goede wrote:
->>>>> The primary consumer of the lpss pwm is the i915 kms driver, but
->>>>> currently that driver cannot get the pwm because i915 platforms are
->>>>> not using devicetree and pwm-lpss does not call pwm_add_table.
->>>>>
->>>>> Another problem is that i915 does not support get_pwm returning
->>>>> -EPROBE_DEFER and i915's init is very complex and this is almost
->>>>> impossible to fix.
->>>>>
->>>>> This commit changes the PWM_LPSS Kconfig from a tristate to a bool, so
->>>>> that when the i915 driver loads the lpss pwm will be available avoiding
->>>>> the -EPROBE_DEFER issue. Note that this is identical to how the same
->>>>> problem was solved for the pwm-crc driver.
->>>>>
->>>>> Being builtin also allows calling pwm_add_table directly from the
->>>>> pwm-lpss code, otherwise the pwm_add_table call would need to be put
->>>>> somewhere else to ensure it happens before i915 calls pwm_get,
->>>>> even if i915 would support -EPROBE_DEFER.
->>>>>
->>>>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
->>>>> ---
->>>>>  drivers/pwm/Kconfig    | 12 +++---------
->>>>>  drivers/pwm/pwm-lpss.c | 11 +++++++++++
->>>>>  2 files changed, 14 insertions(+), 9 deletions(-)
->>>>
->>>> This is completely backwards. You're putting board-specific bits into a
->>>> generic driver.
->>>
->>> This is not really board specific I'm advertising that the goal of
->>> the pwm is to be used to control a backlight.
->>
->> pwm_add_table() is a board-specific API. Documentation/pwm.txt says that
->> "board setup code" should be using pwm_add_table(). Using it from within
->> the provider is completely the opposite.
->
-> The problem here really is that there is no such thing as
-> board setup code on x86 + EFI/ACPI, that is supposedly all
-> handled by the EFI/ACPI code there.
->
->>> Before typing this reply I've been thinking about another place
->>> to put the pwm_add_table call put I cannot come up with any.
->>
->> I suggested drivers/platform/x86. A bunch of code in there is doing
->> exactly the kind of board/platform setup stuff that you're trying to do
->> here.
->
-> All drivers under drivers/platform/x86 bind to something, be it
-> an ACPI interface or an actual platform device. In the case of the
-> pwm-lpss we have an actual platform or pci device and a driver binding
-> to it, that is the only common code path I see where I can add the
-> pwm_add_table.
->
-> Sure I can put a built-in bit of code under drivers/platform/x86
-> which checks from its module_init() that there is an pwm-lpss controller
-> present (either listed under ACPI or through PCI) and then calls
-> pwm_add_table, but seems silly. Note as said this then must be
-> built-in, because if it is a module nothing will trigger the
-> loading of the module, unless I add duplicate MODULE_DEVICE_TABLE
-> tables in there with the code under drivers/pwm/pwm-lpss.
->
-> TL;DR: the problem is that something needs to trigger / activate
-> the code doing the pwm_add_table() and AFAICT we have no other
-> trigger then the presence of the pwm-lpss device, at which point
-> the pwm_lpss_probe function becomes the best place to do the
-> pwm_add_table call.
+--3r6osu2yag7ymblo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-ping ?
+On Thu, Dec 08, 2016 at 02:23:39PM +0100, Olliver Schinagl wrote:
+> Hey Maxime,
+>=20
+> first off, also sorry for the slow delay :) (pun not intended)
+>=20
+> On 27-08-16 00:19, Maxime Ripard wrote:
+> > On Thu, Aug 25, 2016 at 07:50:10PM +0200, Olliver Schinagl wrote:
+> > > When we inform the PWM block to stop toggeling the output, we may end=
+ up
+> > > in a state where the output is not what we would expect (e.g. not the
+> > > low-pulse) but whatever the output was at when the clock got disabled.
+> > >=20
+> > > To counter this we have to wait for maximally the time of one whole
+> > > period to ensure the pwm hardware was able to finish. Since we already
+> > > told the PWM hardware to disable it self, it will not continue toggli=
+ng
+> > > but merly finish its current pulse.
+> > >=20
+> > > If a whole period is considered to much, it may be contemplated to us=
+e a
+> > > half period + a little bit to ensure we get passed the transition.
+> > >=20
+> > > Signed-off-by: Olliver Schinagl<oliver@schinagl.nl>
+> > > ---
+> > >   drivers/pwm/pwm-sun4i.c | 11 +++++++++++
+> > >   1 file changed, 11 insertions(+)
+> > >=20
+> > > diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+> > > index 03a99a5..5e97c8a 100644
+> > > --- a/drivers/pwm/pwm-sun4i.c
+> > > +++ b/drivers/pwm/pwm-sun4i.c
+> > > @@ -8,6 +8,7 @@
+> > >   #include <linux/bitops.h>
+> > >   #include <linux/clk.h>
+> > > +#include <linux/delay.h>
+> > >   #include <linux/err.h>
+> > >   #include <linux/io.h>
+> > >   #include <linux/module.h>
+> > > @@ -245,6 +246,16 @@ static void sun4i_pwm_disable(struct pwm_chip *c=
+hip, struct pwm_device *pwm)
+> > >   	spin_lock(&sun4i_pwm->ctrl_lock);
+> > >   	val =3D sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+> > >   	val &=3D ~BIT_CH(PWM_EN, pwm->hwpwm);
+> > > +	sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
+> > > +	spin_unlock(&sun4i_pwm->ctrl_lock);
+> > > +
+> > > +	/* Allow for the PWM hardware to finish its last toggle. The pulse
+> > > +	 * may have just started and thus we should wait a full period.
+> > > +	 */
+> > > +	ndelay(pwm_get_period(pwm));
+> > Can't that use the ready bit as well?
+>=20
+> I started to implement our earlier discussed suggestions, but I do not th=
+ink
+> they will work. The read bit is not to let the user know it is ready with
+> all of its commands, but only if the period registers are ready. I think =
+it
+> is some write lock while it copies the data into its internal control loo=
+p.
+> From the manual:
+> PWM0 period register ready.
+> 0: PWM0 period register is ready to write,
+> 1: PWM0 period register is busy.
+>=20
+>=20
+> So no, I don't think i can use the ready bit here at all. The only thing =
+we
+> can do here, but I doubt it's worth it, is to read the period register,
+> caluclate a time from it, and then ndelay(pwm_get_period(pwm) - ran_time)
+>=20
+> The only 'win' then is that we could are potentially not waiting the full
+> pwm period, but only a fraction of it. Since we are disabling the hardware
+> (for power reasons) anyway, I don't think this is any significant win,
+> except for extreme situations. E.g. we have a pwm period of 10 seconds, we
+> disable it after 9.9 second, and now we have to wait for 10 seconds before
+> the pwm_disable is finally done. So this could in that case be reduced to
+> then only wait for 0.2 seconds since it is 'done' sooner.
+>=20
+> However that optimization is also not 'free'. We have to read the period
+> register and calculate back the time. I suggest to do that when reworking
+> this driver to work with atomic mode, and merge this patch 'as is' to
+> atleast fix te bug where simply not finish properly.
 
-Can I please get an answer to the above. I'm happy to put the
-pwm_add_table call somewhere-else if that is what it takes to
-get these fixes merged, but I don't see any obvious other place
-to put this. So can you please tell me where to put the
-pwm_add_table call, if not in pwm-lpss.c ? Note as said before
-it should be triggered by the acpi-ids used to bind
-the pwm-lpss driver, which to me really makes the pwm-lpss
-driver the best place to do it.
+That whole discussion made me realise something that is really
+bad. AFAIK, pwm_get_period returns a 32 bits register, which means a
+theorical period of 4s. Busy looping during 4 seconds is already very
+bad, as you basically kill one CPU during that time, but doing so in a
+(potentially) atomic context is even worse.
 
-Regards,
+NACK.
 
-Hans
+Maxime
+
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
+
+--3r6osu2yag7ymblo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAEBCAAGBQJYTpb3AAoJEBx+YmzsjxAgcp0P/A5VQCqw4IG++RgSWsI4OIt0
+4xCWCzEGOufs1+q8ZMSLE1VinCnpZRMMR0+9am/DzIrY1Jg+pKyzLHDlYUz3pbnN
+PXQSwb3WCgR9fuFFtK27tyWsedhQc3IPavPOt7n0iq7aMIl9P4PmclLDGn0rRcqr
+pNkZ88+Y5xH/EgkJhvicY1FBuODTNAwBYdC9o/sX7ViZtZguFS7NYBA8vSTdGAxl
+1WUWEX2dTQNdKmPl3NT1GgtdiV4g9pEzIy7260E2kV+vNVzOKAId9HhevzIZa+5z
+kjNjQ3Jpgep2RFk9NvonPXaft7pIB90DLFUrYOWs/C16QrTtw5BJIJRnd04n9jM3
+3ChyVccuLrcYR5m3KY7pwmtQtZTLbWIXueCnrHx5LNUhnIq7RV3Ri2QR8oSs7LjF
+YOxbYGUzbbF4OKZ2G+z9oqtH/sHBcShPkv9TZqV9j+ygcEeqSHth9ivTvh/9gfXm
+umbLZxHV8nX6jog6zjs20RofoHDWni6kRY1IaTOx2t8zuQxZ7GLpOGJPcs4r+flr
+c5TQfpIn3GdYaloDs7x3ScyJBRKToLO/4xh8tWhOBybS8DJezGynyL6H+1DmBRhD
+GbJUcu8rhDA9AdWj6JDfePwnM987i6IbQoFWfSix6tGjQjpaNepDQJ5vdx5LkmDI
+blIwdlZq4WaSYbb/rT28
+=G1Qy
+-----END PGP SIGNATURE-----
+
+--3r6osu2yag7ymblo--
