@@ -1,78 +1,97 @@
-From: Vladimir Zapolskiy <vz@mleia.com>
-Subject: Re: [PATCH 1/3] dt: pwm: lpc32xx: add description of clocks and
- #pwm-cells properties
-Date: Sat, 10 Dec 2016 01:51:01 +0200
-Message-ID: <015305d5-c22f-52da-9605-f2c19e3108b1@mleia.com>
-References: <20161205014237.1689-1-vz@mleia.com>
- <20161205014237.1689-2-vz@mleia.com>
- <20161209214137.2hdugl5rmnwjrus4@rob-hp-laptop>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v6 1/8] MFD: add bindings for STM32 Timers driver
+Date: Mon, 12 Dec 2016 07:46:54 +0000
+Message-ID: <20161212074654.GO3625@dell.home>
+References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
+ <1481292919-26587-2-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mleia.com ([178.79.152.223]:58107 "EHLO mail.mleia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752053AbcLIXvG (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 9 Dec 2016 18:51:06 -0500
-In-Reply-To: <20161209214137.2hdugl5rmnwjrus4@rob-hp-laptop>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1481292919-26587-2-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Sylvain Lemieux <slemieux.tyco@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hi Rob,
+On Fri, 09 Dec 2016, Benjamin Gaignard wrote:
 
-On 12/09/2016 11:41 PM, Rob Herring wrote:
-> On Mon, Dec 05, 2016 at 03:42:37AM +0200, Vladimir Zapolskiy wrote:
->> NXP LPC32xx SoCs have two simple independent PWM controllers with a single
->> output each, in this case there is no need to specify PWM channel argument
->> on client side, one cell for setting PWM output frequency is sufficient.
->>
->> Another added to the description property 'clocks' has a standard meaning
->> of a controller supply clock, in the LPC32xx User's Manual the clock is
->> denoted as PWM1_CLK or PWM2_CLK clock.
->>
->> Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
->> ---
->>  Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt | 7 +++++++
->>  1 file changed, 7 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
->> index 74b5bc5..523d796 100644
->> --- a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
->> +++ b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
->> @@ -3,15 +3,22 @@ LPC32XX PWM controller
->>  Required properties:
->>  - compatible: should be "nxp,lpc3220-pwm"
->>  - reg: physical base address and length of the controller's registers
->> +- clocks: clock phandle and clock specifier pair
->> +- #pwm-cells: should be 1, the cell is used to specify the period in
->> +  nanoseconds.
+> Add bindings information for STM32 Timers
 > 
-> This use of the cell is a bit odd as the period is s/w config and this 
-> would typically be a channel selection or such.
-
-this is a classic PWM channel configuration property for PWM consumers
-described in DT, for instance PWM frequency for display panel backlight
-on boot.
-
-I think >90% of PWM controllers with device tree bindings have this
-argument in #pwm-cells, from bindings/pwm/pwm.txt :
-
-    pwm-specifier typically encodes the chip-relative PWM number and
-    the PWM period in nanoseconds.
-
-You also may skim through phandle arguments of 'pwms' property,
-commonly the second argument is the requested frequency.
-
-In this particular case I just drop PWM channel number, because
-the LPC32xx PWM controller has a single output channel.
-
-> What if I want user specified/changed periods?
+> version 6:
+> - rename stm32-gtimer to stm32-timers
+> - change compatible
+> - add description about the IPs
 > 
+> version 2:
+> - rename stm32-mfd-timer to stm32-gptimer
+> - only keep one compatible string
+> 
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+> ---
+>  .../devicetree/bindings/mfd/stm32-timers.txt       | 46 ++++++++++++++++++++++
+>  1 file changed, 46 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
 
-The preset period still can be changed over sysfs in runtime.
+For my own reference:
+  Acked-for-MFD-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
---
-With best wishes,
-Vladimir
+> diff --git a/Documentation/devicetree/bindings/mfd/stm32-timers.txt b/Documentation/devicetree/bindings/mfd/stm32-timers.txt
+> new file mode 100644
+> index 0000000..b30868e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mfd/stm32-timers.txt
+> @@ -0,0 +1,46 @@
+> +STM32 Timers driver bindings
+> +
+> +This IP provides 3 types of timer along with PWM functionality:
+> +- advanced-control timers consist of a 16-bit auto-reload counter driven by a programmable
+> +  prescaler, break input feature, PWM outputs and complementary PWM ouputs channels.
+> +- general-purpose timers consist of a 16-bit or 32-bit auto-reload counter driven by a
+> +  programmable prescaler and PWM outputs.
+> +- basic timers consist of a 16-bit auto-reload counter driven by a programmable prescaler.
+> +
+> +Required parameters:
+> +- compatible: must be "st,stm32-timers"
+> +
+> +- reg:			Physical base address and length of the controller's
+> +			registers.
+> +- clock-names: 		Set to "clk_int".
+> +- clocks: 		Phandle to the clock used by the timer module.
+> +			For Clk properties, please refer to ../clock/clock-bindings.txt
+> +
+> +Optional parameters:
+> +- resets:		Phandle to the parent reset controller.
+> +			See ../reset/st,stm32-rcc.txt
+> +
+> +Optional subnodes:
+> +- pwm:			See ../pwm/pwm-stm32.txt
+> +- timer:		See ../iio/timer/stm32-timer-trigger.txt
+> +
+> +Example:
+> +	timers@40010000 {
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +		compatible = "st,stm32-timers";
+> +		reg = <0x40010000 0x400>;
+> +		clocks = <&rcc 0 160>;
+> +		clock-names = "clk_int";
+> +
+> +		pwm {
+> +			compatible = "st,stm32-pwm";
+> +			pinctrl-0	= <&pwm1_pins>;
+> +			pinctrl-names	= "default";
+> +		};
+> +
+> +		timer {
+> +			compatible = "st,stm32-timer-trigger";
+> +			reg = <0>;
+> +		};
+> +	};
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
