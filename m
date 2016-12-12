@@ -1,187 +1,114 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v6 0/8] Add PWM and IIO timer drivers for STM32
-Date: Mon, 12 Dec 2016 07:48:17 +0000
-Message-ID: <20161212074817.GQ3625@dell.home>
-References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH 1/2] pwm: lpss: Make builtin and add lookup-table so that
+ i915 can find the pwm_backlight
+Date: Mon, 12 Dec 2016 12:54:09 +0100
+Message-ID: <792736b5-2f95-da56-9ccf-9729b7bbc720@redhat.com>
+References: <20161202101736.12236-1-hdegoede@redhat.com>
+ <20161205074630.GD18069@ulmo.ba.sec>
+ <bcd2a008-7dac-5084-90b5-e21634e7b57d@redhat.com>
+ <20161205105943.GB19891@ulmo.ba.sec>
+ <023df77a-d517-b3f0-3f37-b440db4e113e@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1481292919-26587-1-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mx1.redhat.com ([209.132.183.28]:38354 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750899AbcLLLyM (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 12 Dec 2016 06:54:12 -0500
+In-Reply-To: <023df77a-d517-b3f0-3f37-b440db4e113e@redhat.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Daniel Vetter <daniel.vetter@intel.com>, Jani Nikula <jani.nikula@linux.intel.com>, =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel@lists.freedesktop.org
 
-On Fri, 09 Dec 2016, Benjamin Gaignard wrote:
+Hi,
 
-> version 6:
-> - rename stm32-gptimer in stm32-timers.
-> - change "st,stm32-gptimer" compatible to "st,stm32-timers".
-> - modify "st,breakinput" parameter in pwm part.
-> - split DT patch in 2
-> 
-> version 5:
-> - fix comments done on version 4
-> - rebased on kernel 4.9-rc8
-> - change nodes names and re-order then by addresses
-> 
-> version 4:
-> - fix comments done on version 3
-> - don't use interrupts anymore in IIO timer
-> - detect hardware capabilities at probe time to simplify binding
-> 
-> version 3:
-> - no change on mfd and pwm divers patches
-> - add cross reference between bindings
-> - change compatible to "st,stm32-timer-trigger"
-> - fix attributes access rights
-> - use string instead of int for master_mode and slave_mode
-> - document device attributes in sysfs-bus-iio-timer-stm32
-> - update DT with the new compatible
-> 
-> version 2:
-> - keep only one compatible per driver
-> - use DT parameters to describe hardware block configuration:
->   - pwm channels, complementary output, counter size, break input
->   - triggers accepted and create by IIO timers
-> - change DT to limite use of reference to the node
-> - interrupt is now in IIO timer driver
-> - rename stm32-mfd-timer to stm32-timers (for general purpose timer)
-> 
-> The following patches enable PWM and IIO Timer features for STM32 platforms.
-> 
-> Those two features are mixed into the registers of the same hardware block
-> (named general purpose timer) which lead to introduce a multifunctions driver 
-> on the top of them to be able to share the registers.
-> 
-> In STM32f4 14 instances of timer hardware block exist, even if they all have
-> the same register mapping they could have a different number of pwm channels
-> and/or different triggers capabilities. We use various parameters in DT to 
-> describe the differences between hardware blocks
-> 
-> The MFD (stm32-timers.c) takes care of clock and register mapping
-> by using regmap. stm32_timers structure is provided to its sub-node to
-> share those information.
-> 
-> PWM driver is implemented into pwm-stm32.c. Depending of the instance we may
-> have up to 4 channels, sometime with complementary outputs or 32 bits counter
-> instead of 16 bits. Some hardware blocks may also have a break input function
-> which allows to stop pwm depending of a level, defined in devicetree, on an
-> external pin.
-> 
-> IIO timer driver (stm32-timer-trigger.c and stm32-timer-trigger.h) define a list
-> of hardware triggers usable by hardware blocks like ADC, DAC or other timers. 
-> 
-> The matrix of possible connections between blocks is quite complex so we use 
-> trigger names and is_stm32_iio_timer_trigger() function to be sure that
-> triggers are valid and configure the IPs.
-> 
-> At run time IIO timer hardware blocks can configure (through "master_mode" 
-> IIO device attribute) which internal signal (counter enable, reset,
-> comparison block, etc...) is used to generate the trigger.
-> 
-> By using "slave_mode" IIO device attribute timer can also configure on which
-> event (level, rising edge) of the block is enabled.
-> 
-> Since we can use trigger from one hardware to control an other block, we can
-> use a pwm to control an other one. The following example shows how to configure
-> pwm1 and pwm3 to make pwm3 generate pulse only when pwm1 pulse level is high.
-> 
-> /sys/bus/iio/devices # ls
-> iio:device0  iio:device1  trigger0     trigger1
-> 
-> configure timer1 to use pwm1 channel 0 as output trigger
-> /sys/bus/iio/devices # echo 'OC1REF' > iio\:device0/master_mode
-> configure timer3 to enable only when input is high
-> /sys/bus/iio/devices # echo 'gated' > iio\:device1/slave_mode
-> /sys/bus/iio/devices # cat trigger0/name
-> tim1_trgo
-> configure timer2 to use timer1 trigger is input
-> /sys/bus/iio/devices # echo "tim1_trgo" > iio\:device1/trigger/current_trigger
-> 
-> configure pwm3 channel 0 to generate a signal with a period of 100ms and a
-> duty cycle of 50%
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 0 > export
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 100000000 > pwm0/period
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 50000000 > pwm0/duty_cycle
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 1 > pwm0/enable
-> here pwm3 channel 0, as expected, doesn't start because has to be triggered by
-> pwm1 channel 0
-> 
-> configure pwm1 channel 0 to generate a signal with a period of 1s and a
-> duty cycle of 50%
-> /sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 0 > export
-> /sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 1000000000 > pwm0/period
-> /sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 500000000 > pwm0/duty_cycle
-> /sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 1 > pwm0/enable 
-> finally pwm1 starts and pwm3 only generates pulse when pwm1 signal is high
-> 
-> An other example to use a timer as source of clock for another device.
-> Here timer1 is used a source clock for pwm3:
-> 
-> /sys/bus/iio/devices # echo 100000 > trigger0/sampling_frequency 
-> /sys/bus/iio/devices # echo "tim1_trgo" > iio\:device1/trigger/current_trigger 
-> /sys/bus/iio/devices # echo 'external_clock' > iio\:device1/slave_mode
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 0 > export 
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 1000000 > pwm0/period 
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 500000 > pwm0/duty_cycle 
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 1 > pwm0/enable
-> 
-> Benjamin Gaignard (8):
->   MFD: add bindings for STM32 Timers driver
->   MFD: add STM32 Timers driver
->   PWM: add pwm-stm32 DT bindings
->   PWM: add PWM driver for STM32 plaftorm
->   IIO: add bindings for STM32 timer trigger driver
->   IIO: add STM32 timer trigger driver
->   ARM: dts: stm32: add Timers driver for stm32f429 MCU
->   ARM: dts: stm32: Enable pw1 and pwm3 for stm32f469-disco
-> 
->  .../ABI/testing/sysfs-bus-iio-timer-stm32          |  55 +++
->  .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 +
->  .../devicetree/bindings/mfd/stm32-timers.txt       |  46 ++
->  .../devicetree/bindings/pwm/pwm-stm32.txt          |  33 ++
->  arch/arm/boot/dts/stm32f429.dtsi                   | 275 ++++++++++++
->  arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
->  drivers/iio/Kconfig                                |   2 +-
->  drivers/iio/Makefile                               |   1 +
->  drivers/iio/timer/Kconfig                          |  13 +
->  drivers/iio/timer/Makefile                         |   1 +
->  drivers/iio/timer/stm32-timer-trigger.c            | 466 +++++++++++++++++++++
->  drivers/iio/trigger/Kconfig                        |   1 -
->  drivers/mfd/Kconfig                                |  11 +
->  drivers/mfd/Makefile                               |   2 +
->  drivers/mfd/stm32-timers.c                         |  80 ++++
->  drivers/pwm/Kconfig                                |   9 +
->  drivers/pwm/Makefile                               |   1 +
->  drivers/pwm/pwm-stm32.c                            | 434 +++++++++++++++++++
->  include/linux/iio/timer/stm32-timer-trigger.h      |  62 +++
->  include/linux/mfd/stm32-timers.h                   |  71 ++++
->  20 files changed, 1612 insertions(+), 2 deletions(-)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
->  create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
->  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
->  create mode 100644 drivers/iio/timer/Kconfig
->  create mode 100644 drivers/iio/timer/Makefile
->  create mode 100644 drivers/iio/timer/stm32-timer-trigger.c
->  create mode 100644 drivers/mfd/stm32-timers.c
->  create mode 100644 drivers/pwm/pwm-stm32.c
->  create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
->  create mode 100644 include/linux/mfd/stm32-timers.h
+On 05-12-16 14:23, Hans de Goede wrote:
+> Hi,
+>
+> On 05-12-16 11:59, Thierry Reding wrote:
+>> On Mon, Dec 05, 2016 at 09:18:03AM +0100, Hans de Goede wrote:
+>>> Hi,
+>>>
+>>> On 05-12-16 08:46, Thierry Reding wrote:
+>>>> On Fri, Dec 02, 2016 at 11:17:35AM +0100, Hans de Goede wrote:
+>>>>> The primary consumer of the lpss pwm is the i915 kms driver, but
+>>>>> currently that driver cannot get the pwm because i915 platforms are
+>>>>> not using devicetree and pwm-lpss does not call pwm_add_table.
+>>>>>
+>>>>> Another problem is that i915 does not support get_pwm returning
+>>>>> -EPROBE_DEFER and i915's init is very complex and this is almost
+>>>>> impossible to fix.
+>>>>>
+>>>>> This commit changes the PWM_LPSS Kconfig from a tristate to a bool, so
+>>>>> that when the i915 driver loads the lpss pwm will be available avoiding
+>>>>> the -EPROBE_DEFER issue. Note that this is identical to how the same
+>>>>> problem was solved for the pwm-crc driver.
+>>>>>
+>>>>> Being builtin also allows calling pwm_add_table directly from the
+>>>>> pwm-lpss code, otherwise the pwm_add_table call would need to be put
+>>>>> somewhere else to ensure it happens before i915 calls pwm_get,
+>>>>> even if i915 would support -EPROBE_DEFER.
+>>>>>
+>>>>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+>>>>> ---
+>>>>>  drivers/pwm/Kconfig    | 12 +++---------
+>>>>>  drivers/pwm/pwm-lpss.c | 11 +++++++++++
+>>>>>  2 files changed, 14 insertions(+), 9 deletions(-)
+>>>>
+>>>> This is completely backwards. You're putting board-specific bits into a
+>>>> generic driver.
+>>>
+>>> This is not really board specific I'm advertising that the goal of
+>>> the pwm is to be used to control a backlight.
+>>
+>> pwm_add_table() is a board-specific API. Documentation/pwm.txt says that
+>> "board setup code" should be using pwm_add_table(). Using it from within
+>> the provider is completely the opposite.
+>
+> The problem here really is that there is no such thing as
+> board setup code on x86 + EFI/ACPI, that is supposedly all
+> handled by the EFI/ACPI code there.
+>
+>>> Before typing this reply I've been thinking about another place
+>>> to put the pwm_add_table call put I cannot come up with any.
+>>
+>> I suggested drivers/platform/x86. A bunch of code in there is doing
+>> exactly the kind of board/platform setup stuff that you're trying to do
+>> here.
+>
+> All drivers under drivers/platform/x86 bind to something, be it
+> an ACPI interface or an actual platform device. In the case of the
+> pwm-lpss we have an actual platform or pci device and a driver binding
+> to it, that is the only common code path I see where I can add the
+> pwm_add_table.
+>
+> Sure I can put a built-in bit of code under drivers/platform/x86
+> which checks from its module_init() that there is an pwm-lpss controller
+> present (either listed under ACPI or through PCI) and then calls
+> pwm_add_table, but seems silly. Note as said this then must be
+> built-in, because if it is a module nothing will trigger the
+> loading of the module, unless I add duplicate MODULE_DEVICE_TABLE
+> tables in there with the code under drivers/pwm/pwm-lpss.
+>
+> TL;DR: the problem is that something needs to trigger / activate
+> the code doing the pwm_add_table() and AFAICT we have no other
+> trigger then the presence of the pwm-lpss device, at which point
+> the pwm_lpss_probe function becomes the best place to do the
+> pwm_add_table call.
 
-This has really come together nicely.
+ping ?
 
-Great work Benjamin.
+Can I please get an answer to the above. I'm happy to put the
+pwm_add_table call somewhere-else if that is what it takes to
+get these fixes merged, but I don't see any obvious other place
+to put this. So can you please tell me where to put the
+pwm_add_table call, if not in pwm-lpss.c ? Note as said before
+it should be triggered by the acpi-ids used to bind
+the pwm-lpss driver, which to me really makes the pwm-lpss
+driver the best place to do it.
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Regards,
+
+Hans
