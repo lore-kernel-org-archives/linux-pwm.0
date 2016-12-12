@@ -1,85 +1,47 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v6 3/8] PWM: add pwm-stm32 DT bindings
-Date: Mon, 12 Dec 2016 13:02:05 -0600
-Message-ID: <20161212190205.b5t3x6i2o7igldlo@rob-hp-laptop>
+Subject: Re: [PATCH v6 5/8] IIO: add bindings for STM32 timer trigger driver
+Date: Mon, 12 Dec 2016 13:28:09 -0600
+Message-ID: <20161212192809.hwcq2owmybacsqke@rob-hp-laptop>
 References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
- <1481292919-26587-4-git-send-email-benjamin.gaignard@st.com>
+ <1481292919-26587-6-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi0-f67.google.com ([209.85.218.67]:36126 "EHLO
+Received: from mail-oi0-f67.google.com ([209.85.218.67]:34599 "EHLO
         mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752411AbcLLTCH (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 12 Dec 2016 14:02:07 -0500
+        with ESMTP id S1751792AbcLLT2L (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 12 Dec 2016 14:28:11 -0500
 Content-Disposition: inline
-In-Reply-To: <1481292919-26587-4-git-send-email-benjamin.gaignard@st.com>
+In-Reply-To: <1481292919-26587-6-git-send-email-benjamin.gaignard@st.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
 Cc: lee.jones@linaro.org, mark.rutland@arm.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com, gerald.baeza@st.com, arnaud.pouliquen@st.com, linus.walleij@linaro.org, linaro-kernel@lists.linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>
 
-On Fri, Dec 09, 2016 at 03:15:14PM +0100, Benjamin Gaignard wrote:
-> Define bindings for pwm-stm32
+On Fri, Dec 09, 2016 at 03:15:16PM +0100, Benjamin Gaignard wrote:
+> Define bindings for STM32 timer trigger
 > 
-> version 6:
-> - change st,breakinput parameter format to make it usuable on stm32f7 too.
+> version 4:
+> - remove triggers enumeration from DT
+> - add reg parameter
+> 
+> version 3:
+> - change file name
+> - add cross reference with mfd bindings
 > 
 > version 2:
-> - use parameters instead of compatible of handle the hardware configuration
+> - only keep one compatible
+> - add DT parameters to set lists of the triggers:
+>   one list describe the triggers created by the device
+>   another one give the triggers accepted by the device
 > 
 > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
 > ---
->  .../devicetree/bindings/pwm/pwm-stm32.txt          | 33 ++++++++++++++++++++++
->  1 file changed, 33 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-> new file mode 100644
-> index 0000000..866f222
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-> @@ -0,0 +1,33 @@
-> +STMicroelectronics STM32 Timers PWM bindings
-> +
-> +Must be a sub-node of an STM32 Timers device tree node.
-> +See ../mfd/stm32-timers.txt for details about the parent node.
-> +
-> +Required parameters:
-> +- compatible:		Must be "st,stm32-pwm".
-> +- pinctrl-names: 	Set to "default".
-> +- pinctrl-0: 		List of phandles pointing to pin configuration nodes for PWM module.
-> +			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
-> +
-> +Optional parameters:
-> +- st,breakinput:	Arrays of three u32 <index level filter> to describe break input configurations.
-> +			"index" indicates on which break input the configuration should be applied.
-> +			"level" gives the active level (0=low or 1=high) for this configuration.
-> +			"filter" gives the filtering value to be applied.
-> +
-> +Example:
-> +	timers@40010000 {
+>  .../bindings/iio/timer/stm32-timer-trigger.txt     | 23 ++++++++++++++++++++++
+>  1 file changed, 23 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
 
-timer@...
-
-With that,
+Other than same comments I made in the other patches for the example, 
+looks fine.
 
 Acked-by: Rob Herring <robh@kernel.org>
-
-
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +		compatible = "st,stm32-timers";
-> +		reg = <0x40010000 0x400>;
-> +		clocks = <&rcc 0 160>;
-> +		clock-names = "clk_int";
-> +
-> +		pwm {
-> +			compatible = "st,stm32-pwm";
-> +			pinctrl-0	= <&pwm1_pins>;
-> +			pinctrl-names	= "default";
-> +			st,breakinput = <0 1 5>;
-> +		};
-> +	};
-> -- 
-> 1.9.1
-> 
