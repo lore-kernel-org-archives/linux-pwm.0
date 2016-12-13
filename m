@@ -1,97 +1,66 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v6 3/8] PWM: add pwm-stm32 DT bindings
-Date: Tue, 13 Dec 2016 11:11:37 +0000
-Message-ID: <20161213111137.GW3625@dell.home>
-References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
- <1481292919-26587-4-git-send-email-benjamin.gaignard@st.com>
- <20161212190205.b5t3x6i2o7igldlo@rob-hp-laptop>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20161212190205.b5t3x6i2o7igldlo@rob-hp-laptop>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+From: Clemens Gruber <clemens.gruber@pqgruber.com>
+Subject: [PATCH 2/2] pwm: pca9685: fix prescaler initialization
+Date: Tue, 13 Dec 2016 16:52:51 +0100
+Message-ID: <20161213155251.28684-2-clemens.gruber@pqgruber.com>
+References: <20161213155251.28684-1-clemens.gruber@pqgruber.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20161213155251.28684-1-clemens.gruber@pqgruber.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-pwm@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, linux-stable@vger.kernel.org, Florian Vaussard <florian.vaussard@heig-vd.ch>, Clemens Gruber <clemens.gruber@pqgruber.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, 12 Dec 2016, Rob Herring wrote:
+Until now, we assumed that the period is the hardware default of 1/200Hz
+at probe time, but if the period was changed and the user reboots, this
+assumption is wrong.
 
-> On Fri, Dec 09, 2016 at 03:15:14PM +0100, Benjamin Gaignard wrote:
-> > Define bindings for pwm-stm32
-> > 
-> > version 6:
-> > - change st,breakinput parameter format to make it usuable on stm32f7 too.
-> > 
-> > version 2:
-> > - use parameters instead of compatible of handle the hardware configuration
-> > 
-> > Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
-> > ---
-> >  .../devicetree/bindings/pwm/pwm-stm32.txt          | 33 ++++++++++++++++++++++
-> >  1 file changed, 33 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-> > 
-> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-> > new file mode 100644
-> > index 0000000..866f222
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-> > @@ -0,0 +1,33 @@
-> > +STMicroelectronics STM32 Timers PWM bindings
-> > +
-> > +Must be a sub-node of an STM32 Timers device tree node.
-> > +See ../mfd/stm32-timers.txt for details about the parent node.
-> > +
-> > +Required parameters:
-> > +- compatible:		Must be "st,stm32-pwm".
-> > +- pinctrl-names: 	Set to "default".
-> > +- pinctrl-0: 		List of phandles pointing to pin configuration nodes for PWM module.
-> > +			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
-> > +
-> > +Optional parameters:
-> > +- st,breakinput:	Arrays of three u32 <index level filter> to describe break input configurations.
-> > +			"index" indicates on which break input the configuration should be applied.
-> > +			"level" gives the active level (0=low or 1=high) for this configuration.
-> > +			"filter" gives the filtering value to be applied.
-> > +
-> > +Example:
-> > +	timers@40010000 {
-> 
-> timer@...
+Solution: Check if the prescaler is set to the hardware default. If not,
+reprogram the prescaler at first configuration.
 
-No, it should be timers.
+Cc: <stable@vger.kernel.org> # v4.3+
+Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
+---
+ drivers/pwm/pwm-pca9685.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-The 's' is intentional, since this parent (MFD) device houses 3
-different types of timers.  The "timer" node is a child of this one.
-
-> With that,
-> 
-> Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> 
-> 
-> > +		#address-cells = <1>;
-> > +		#size-cells = <0>;
-> > +		compatible = "st,stm32-timers";
-> > +		reg = <0x40010000 0x400>;
-> > +		clocks = <&rcc 0 160>;
-> > +		clock-names = "clk_int";
-> > +
-> > +		pwm {
-> > +			compatible = "st,stm32-pwm";
-> > +			pinctrl-0	= <&pwm1_pins>;
-> > +			pinctrl-names	= "default";
-> > +			st,breakinput = <0 1 5>;
-> > +		};
-> > +	};
-
+diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+index 01a6a83..efc657e 100644
+--- a/drivers/pwm/pwm-pca9685.c
++++ b/drivers/pwm/pwm-pca9685.c
+@@ -55,6 +55,7 @@
+ #define PCA9685_PRESCALE	0xFE
+ 
+ #define PCA9685_PRESCALE_MIN	0x03	/* => max. frequency of 1526 Hz */
++#define PCA9685_PRESCALE_DEF	0x1E	/* => default frequency of 200 Hz */
+ #define PCA9685_PRESCALE_MAX	0xFF	/* => min. frequency of 24 Hz */
+ 
+ #define PCA9685_COUNTER_RANGE	4096
+@@ -289,8 +290,8 @@ static int pca9685_pwm_probe(struct i2c_client *client,
+ 				const struct i2c_device_id *id)
+ {
+ 	struct pca9685 *pca;
++	int prescale, mode2;
+ 	int ret;
+-	int mode2;
+ 
+ 	pca = devm_kzalloc(&client->dev, sizeof(*pca), GFP_KERNEL);
+ 	if (!pca)
+@@ -304,10 +305,15 @@ static int pca9685_pwm_probe(struct i2c_client *client,
+ 		return ret;
+ 	}
+ 	pca->duty_ns = 0;
+-	pca->period_ns = PCA9685_DEFAULT_PERIOD;
+ 
+ 	i2c_set_clientdata(client, pca);
+ 
++	regmap_read(pca->regmap, PCA9685_PRESCALE, &prescale);
++	if (prescale == PCA9685_PRESCALE_DEF)
++		pca->period_ns = PCA9685_DEFAULT_PERIOD;
++	else
++		pca->period_ns = 0;
++
+ 	regmap_read(pca->regmap, PCA9685_MODE2, &mode2);
+ 
+ 	if (device_property_read_bool(&client->dev, "invert"))
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2.10.2
