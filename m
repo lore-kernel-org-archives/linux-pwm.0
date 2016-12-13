@@ -1,397 +1,379 @@
-From: Jian Yuan <yuanjian12-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Subject: Re: [PATCH v6] pwm: add pwm driver for HiSilicon BVT SOCs
-Date: Tue, 13 Dec 2016 11:29:17 +0800
-Message-ID: <4306a9d5-f3b8-0695-d009-9c40f087b91d@hisilicon.com>
-References: <1480326166-145999-1-git-send-email-yuanjian12@hisilicon.com>
+From: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v6 7/8] ARM: dts: stm32: add Timers driver for stm32f429 MCU
+Date: Tue, 13 Dec 2016 10:15:21 +0100
+Message-ID: <CA+M3ks6hMDVqDkjn_vcu-d2YkJkiAmCS44Nc7rtfgAkD09LNFA@mail.gmail.com>
+References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
+ <1481292919-26587-8-git-send-email-benjamin.gaignard@st.com> <20161212185943.ph7njaqb2lxtgdn4@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1480326166-145999-1-git-send-email-yuanjian12-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuejiancheng-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, kevin.lixu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, jalen.hsu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20161212185943.ph7njaqb2lxtgdn4@rob-hp-laptop>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, knaack.h-Mmb7MZpHnFY@public.gmane.org, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>, Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>, Arnaud Pouliquen <arnaud.pouliquen-qxv4g6HH51o@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linaro Kernel Mailman List <linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi, Thierry,
-  Are there any issues with the PWM driver below.
-  I would like to request some comment and advice form you, if you had reviewed the driver code.
+2016-12-12 19:59 GMT+01:00 Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>:
+> On Fri, Dec 09, 2016 at 03:15:18PM +0100, Benjamin Gaignard wrote:
+>> Add Timers and it sub-nodes into DT for stm32f429 family.
+>>
+>> version 6:
+>> - split patch in two: one for SoC family and one for stm32f469
+>>   discovery board.
+>>
+>> version 5:
+>> - rename gptimer node to timers
+>> - re-order timers node par addresses
+>>
+>> version 4:
+>> - remove unwanted indexing in pwm@ and timer@ node name
+>> - use "reg" instead of additional parameters to set timer
+>>   configuration
+>>
+>> version 3:
+>> - use "st,stm32-timer-trigger" in DT
+>>
+>> version 2:
+>> - use parameters to describe hardware capabilities
+>> - do not use references for pwm and iio timer subnodes
+>>
+>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+>> ---
+>>  arch/arm/boot/dts/stm32f429.dtsi | 275 ++++++++++++++++++++++++++++++++=
++++++++
+>>  1 file changed, 275 insertions(+)
+>>
+>> diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f=
+429.dtsi
+>> index bca491d..d0fb9cc 100644
+>> --- a/arch/arm/boot/dts/stm32f429.dtsi
+>> +++ b/arch/arm/boot/dts/stm32f429.dtsi
+>> @@ -355,6 +355,21 @@
+>>                                       slew-rate =3D <2>;
+>>                               };
+>>                       };
+>> +
+>> +                     pwm1_pins: pwm@1 {
+>
+> No reg prop, so should not have a unit-address. Given the names in the
+> define below, seems like "timer1" would be appropriate.
+>
+>> +                             pins {
+>> +                                     pinmux =3D <STM32F429_PA8_FUNC_TIM=
+1_CH1>,
+>> +                                              <STM32F429_PB13_FUNC_TIM1=
+_CH1N>,
+>> +                                              <STM32F429_PB12_FUNC_TIM1=
+_BKIN>;
+>> +                             };
+>> +                     };
+>> +
+>> +                     pwm3_pins: pwm@3 {
+>> +                             pins {
+>> +                                     pinmux =3D <STM32F429_PB4_FUNC_TIM=
+3_CH1>,
+>> +                                              <STM32F429_PB5_FUNC_TIM3_=
+CH2>;
+>> +                             };
+>> +                     };
+>>               };
+>>
+>>               rcc: rcc@40023810 {
+>> @@ -426,6 +441,266 @@
+>>                       interrupts =3D <80>;
+>>                       clocks =3D <&rcc 0 38>;
+>>               };
+>> +
+>> +             timers2: timers@40000000 {
+>
+> timer@...
+>
+> It may be more than just a timer, there's not a better generic name.
+>
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40000000 0x400>;
+>> +                     clocks =3D <&rcc 0 128>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <1>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers3: timers@40000400 {
+>
+> ditto
+>
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40000400 0x400>;
+>> +                     clocks =3D <&rcc 0 129>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <2>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers4: timers@40000800 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40000800 0x400>;
+>> +                     clocks =3D <&rcc 0 130>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <3>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers5: timers@40000C00 {
+>
+> timer@...
+>
+> And use lowercase hex.
+>
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40000C00 0x400>;
+>
+> ditto
+>
+>> +                     clocks =3D <&rcc 0 131>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <4>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers6: timers@40001000 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40001000 0x400>;
+>> +                     clocks =3D <&rcc 0 132>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <5>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers7: timers@40001400 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40001400 0x400>;
+>> +                     clocks =3D <&rcc 0 133>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <6>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers12: timers@40001800 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40001800 0x400>;
+>> +                     clocks =3D <&rcc 0 134>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <9>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers13: timers@40001C00 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40001C00 0x400>;
+>> +                     clocks =3D <&rcc 0 135>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers14: timers@40002000 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40002000 0x400>;
+>> +                     clocks =3D <&rcc 0 136>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers1: timers@40010000 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40010000 0x400>;
+>> +                     clocks =3D <&rcc 0 160>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <0>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers8: timers@40010400 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40010400 0x400>;
+>> +                     clocks =3D <&rcc 0 161>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <7>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers9: timers@40014000 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40014000 0x400>;
+>> +                     clocks =3D <&rcc 0 176>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <8>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers10: timers@40014400 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40014400 0x400>;
+>> +                     clocks =3D <&rcc 0 177>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers11: timers@40014800 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40014800 0x400>;
+>> +                     clocks =3D <&rcc 0 178>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>>       };
+>>  };
+>>
+>> --
+>> 1.9.1
+>>
 
-  With best wishes,
-  Jian Yuan
 
-On 2016/11/28 17:42, Jian Yuan wrote:
-> From: yuanjian <yuanjian12-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> 
-> Add PWM driver for the PWM controller found on HiSilicon BVT SOCs, like Hi3519V100, Hi3516CV300, etc.
-> The PWM controller is primarily in charge of controlling P-Iris lens.
-> 
-> Reviewed-by: Jiancheng Xue <xuejiancheng-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> Signed-off-by: Jian Yuan <yuanjian12-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> ---
-> Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> 
-> Change Log:
-> v6:
-> It supports polarity specified in DTB and #pwm-cells can be set to 3.
-> v5:
-> remove the generic compatible string "hisilicon, hibvt-pwm".
-> v4:
-> Add #pwm-cells in the bindings document.
-> v3:
-> fixed issues pointed by thierry.
-> Add PWM compatible string for Hi3519V100.
-> Implement .apply() function which support atomic, instead of .enable()/.disable()/.config().
-> v2:
-> The number of PWMs is change to be probeable based on the compatible string.
-> 
->  .../devicetree/bindings/pwm/pwm-hibvt.txt          |  22 ++
->  drivers/pwm/Kconfig                                |   9 +
->  drivers/pwm/Makefile                               |   1 +
->  drivers/pwm/pwm-hibvt.c                            | 271 +++++++++++++++++++++
->  4 files changed, 302 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
->  create mode 100644 drivers/pwm/pwm-hibvt.c
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
-> new file mode 100644
-> index 0000000..fa7849d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
-> @@ -0,0 +1,21 @@
-> +Hisilicon PWM controller
-> +
-> +Required properties:
-> +-compatible: should contain one SoC specific compatible string
-> + The SoC specific strings supported including:
-> +	"hisilicon,hi3516cv300-pwm"
-> +	"hisilicon,hi3519v100-pwm"
-> +- reg: physical base address and length of the controller's registers.
-> +- clocks: phandle and clock specifier of the PWM reference clock.
-> +- resets: phandle and reset specifier for the PWM controller reset.
-> +- #pwm-cells: Should be 3. See pwm.txt in this directory for a description of
-> +  the cells format.
-> +
-> +Example:
-> +	pwm: pwm@12130000 {
-> +		compatible = "hisilicon,hi3516cv300-pwm";
-> +		reg = <0x12130000 0x10000>;
-> +		clocks = <&crg_ctrl HI3516CV300_PWM_CLK>;
-> +		resets = <&crg_ctrl 0x38 0>;
-> +		#pwm-cells = <3>;
-> +	};
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index c182efc..b2d7408 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -158,6 +158,15 @@ config PWM_FSL_FTM
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-fsl-ftm.
->  
-> +config PWM_HIBVT
-> +	tristate "HiSilicon BVT PWM support"
-> +	depends on ARCH_HISI || COMPILE_TEST
-> +	help
-> +	  Generic PWM framework driver for HiSilicon BVT SoCs.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called pwm-hibvt.
-> +
->  config PWM_IMG
->  	tristate "Imagination Technologies PWM driver"
->  	depends on HAS_IOMEM
-> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> index dd35bc1..37ec39e 100644
-> --- a/drivers/pwm/Makefile
-> +++ b/drivers/pwm/Makefile
-> @@ -13,6 +13,7 @@ obj-$(CONFIG_PWM_CLPS711X)	+= pwm-clps711x.o
->  obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
->  obj-$(CONFIG_PWM_EP93XX)	+= pwm-ep93xx.o
->  obj-$(CONFIG_PWM_FSL_FTM)	+= pwm-fsl-ftm.o
-> +obj-$(CONFIG_PWM_HIBVT)		+= pwm-hibvt.o
->  obj-$(CONFIG_PWM_IMG)		+= pwm-img.o
->  obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
->  obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
-> diff --git a/drivers/pwm/pwm-hibvt.c b/drivers/pwm/pwm-hibvt.c
-> new file mode 100644
-> index 0000000..d0e8f85
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-hibvt.c
-> @@ -0,0 +1,271 @@
-> +/*
-> + * PWM Controller Driver for HiSilicon BVT SoCs
-> + *
-> + * Copyright (c) 2016 HiSilicon Technologies Co., Ltd.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + *
-> + * You should have received a copy of the GNU General Public License
-> + * along with this program. If not, see <http://www.gnu.org/licenses/>.
-> + */
-> +
-> +#include <linux/bitops.h>
-> +#include <linux/clk.h>
-> +#include <linux/delay.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pwm.h>
-> +#include <linux/reset.h>
-> +
-> +#define PWM_CFG0_ADDR(x)    (((x) * 0x20) + 0x0)
-> +#define PWM_CFG1_ADDR(x)    (((x) * 0x20) + 0x4)
-> +#define PWM_CFG2_ADDR(x)    (((x) * 0x20) + 0x8)
-> +#define PWM_CTRL_ADDR(x)    (((x) * 0x20) + 0xC)
-> +
-> +#define PWM_ENABLE_SHIFT    0
-> +#define PWM_ENABLE_MASK     BIT(0)
-> +
-> +#define PWM_POLARITY_SHIFT  1
-> +#define PWM_POLARITY_MASK   BIT(1)
-> +
-> +#define PWM_KEEP_SHIFT      2
-> +#define PWM_KEEP_MASK       BIT(2)
-> +
-> +#define PWM_PERIOD_MASK     GENMASK(31, 0)
-> +#define PWM_DUTY_MASK       GENMASK(31, 0)
-> +
-> +struct hibvt_pwm_chip {
-> +	struct pwm_chip	chip;
-> +	struct clk *clk;
-> +	void __iomem *base;
-> +	struct reset_control *rstc;
-> +};
-> +
-> +struct hibvt_pwm_soc {
-> +	u32 num_pwms;
-> +};
-> +
-> +static const struct hibvt_pwm_soc pwm_soc[2] = {
-> +	{ .num_pwms = 4 },
-> +	{ .num_pwms = 8 },
-> +};
-> +
-> +static inline struct hibvt_pwm_chip *to_hibvt_pwm_chip(struct pwm_chip *chip)
-> +{
-> +	return container_of(chip, struct hibvt_pwm_chip, chip);
-> +}
-> +
-> +static void hibvt_pwm_set_bits(void __iomem *base, u32 offset,
-> +					u32 mask, u32 data)
-> +{
-> +	void __iomem *address = base + offset;
-> +	u32 value;
-> +
-> +	value = readl(address);
-> +	value &= ~mask;
-> +	value |= (data & mask);
-> +	writel(value, address);
-> +}
-> +
-> +static void hibvt_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-> +{
-> +	struct hibvt_pwm_chip *hi_pwm_chip = to_hibvt_pwm_chip(chip);
-> +
-> +	hibvt_pwm_set_bits(hi_pwm_chip->base, PWM_CTRL_ADDR(pwm->hwpwm),
-> +			PWM_ENABLE_MASK, 0x1);
-> +}
-> +
-> +static void hibvt_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-> +{
-> +	struct hibvt_pwm_chip *hi_pwm_chip = to_hibvt_pwm_chip(chip);
-> +
-> +	hibvt_pwm_set_bits(hi_pwm_chip->base, PWM_CTRL_ADDR(pwm->hwpwm),
-> +			PWM_ENABLE_MASK, 0x0);
-> +}
-> +
-> +static void hibvt_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> +					int duty_cycle_ns, int period_ns)
-> +{
-> +	struct hibvt_pwm_chip *hi_pwm_chip = to_hibvt_pwm_chip(chip);
-> +	u32 freq, period, duty;
-> +
-> +	freq = div_u64(clk_get_rate(hi_pwm_chip->clk), 1000000);
-> +
-> +	period = div_u64(freq * period_ns, 1000);
-> +	duty = div_u64(period * duty_cycle_ns, period_ns);
-> +
-> +	hibvt_pwm_set_bits(hi_pwm_chip->base, PWM_CFG0_ADDR(pwm->hwpwm),
-> +			PWM_PERIOD_MASK, period);
-> +
-> +	hibvt_pwm_set_bits(hi_pwm_chip->base, PWM_CFG1_ADDR(pwm->hwpwm),
-> +			PWM_DUTY_MASK, duty);
-> +}
-> +
-> +static void hibvt_pwm_set_polarity(struct pwm_chip *chip,
-> +					struct pwm_device *pwm,
-> +					enum pwm_polarity polarity)
-> +{
-> +	struct hibvt_pwm_chip *hi_pwm_chip = to_hibvt_pwm_chip(chip);
-> +
-> +	if (polarity == PWM_POLARITY_INVERSED)
-> +		hibvt_pwm_set_bits(hi_pwm_chip->base, PWM_CTRL_ADDR(pwm->hwpwm),
-> +				PWM_POLARITY_MASK, (0x1 << PWM_POLARITY_SHIFT));
-> +	else
-> +		hibvt_pwm_set_bits(hi_pwm_chip->base, PWM_CTRL_ADDR(pwm->hwpwm),
-> +				PWM_POLARITY_MASK, (0x0 << PWM_POLARITY_SHIFT));
-> +}
-> +
-> +static void hibvt_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-> +				struct pwm_state *state)
-> +{
-> +	struct hibvt_pwm_chip *hi_pwm_chip = to_hibvt_pwm_chip(chip);
-> +	void __iomem *base;
-> +	u32 freq, value;
-> +
-> +	freq = div_u64(clk_get_rate(hi_pwm_chip->clk), 1000000);
-> +	base = hi_pwm_chip->base;
-> +
-> +	value = readl(base + PWM_CFG0_ADDR(pwm->hwpwm));
-> +	state->period = div_u64(value * 1000, freq);
-> +
-> +	value = readl(base + PWM_CFG1_ADDR(pwm->hwpwm));
-> +	state->duty_cycle = div_u64(value * 1000, freq);
-> +
-> +	value = readl(base + PWM_CTRL_ADDR(pwm->hwpwm));
-> +	state->enabled = (PWM_ENABLE_MASK & value);
-> +}
-> +
-> +static int hibvt_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-> +				struct pwm_state *state)
-> +{
-> +	if (state->polarity != pwm->state.polarity)
-> +		hibvt_pwm_set_polarity(chip, pwm, state->polarity);
-> +
-> +	if (state->period != pwm->state.period ||
-> +		state->duty_cycle != pwm->state.duty_cycle)
-> +		hibvt_pwm_config(chip, pwm, state->duty_cycle, state->period);
-> +
-> +	if (state->enabled != pwm->state.enabled) {
-> +		if (state->enabled)
-> +			hibvt_pwm_enable(chip, pwm);
-> +		else
-> +			hibvt_pwm_disable(chip, pwm);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static struct pwm_ops hibvt_pwm_ops = {
-> +	.get_state = hibvt_pwm_get_state,
-> +	.apply = hibvt_pwm_apply,
-> +
-> +	.owner = THIS_MODULE,
-> +};
-> +
-> +static int hibvt_pwm_probe(struct platform_device *pdev)
-> +{
-> +	const struct hibvt_pwm_soc *soc =
-> +				of_device_get_match_data(&pdev->dev);
-> +	struct hibvt_pwm_chip *pwm_chip;
-> +	struct resource *res;
-> +	int ret;
-> +	int i;
-> +
-> +	pwm_chip = devm_kzalloc(&pdev->dev, sizeof(*pwm_chip), GFP_KERNEL);
-> +	if (pwm_chip == NULL)
-> +		return -ENOMEM;
-> +
-> +	pwm_chip->clk = devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(pwm_chip->clk)) {
-> +		dev_err(&pdev->dev, "getting clock failed with %ld\n",
-> +				PTR_ERR(pwm_chip->clk));
-> +		return PTR_ERR(pwm_chip->clk);
-> +	}
-> +
-> +	pwm_chip->chip.ops = &hibvt_pwm_ops;
-> +	pwm_chip->chip.dev = &pdev->dev;
-> +	pwm_chip->chip.base = -1;
-> +	pwm_chip->chip.npwm = soc->num_pwms;
-> +	pwm_chip->chip.of_xlate = of_pwm_xlate_with_flags;
-> +	pwm_chip->chip.of_pwm_n_cells = 3;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	pwm_chip->base = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(pwm_chip->base))
-> +		return PTR_ERR(pwm_chip->base);
-> +
-> +	ret = clk_prepare_enable(pwm_chip->clk);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	pwm_chip->rstc = devm_reset_control_get(&pdev->dev, NULL);
-> +	if (IS_ERR(pwm_chip->rstc)) {
-> +		clk_disable_unprepare(pwm_chip->clk);
-> +		return PTR_ERR(pwm_chip->rstc);
-> +	}
-> +
-> +	reset_control_assert(pwm_chip->rstc);
-> +	msleep(30);
-> +	reset_control_deassert(pwm_chip->rstc);
-> +
-> +	ret = pwmchip_add(&pwm_chip->chip);
-> +	if (ret < 0) {
-> +		clk_disable_unprepare(pwm_chip->clk);
-> +		return ret;
-> +	}
-> +
-> +	for (i = 0; i < pwm_chip->chip.npwm; i++) {
-> +		hibvt_pwm_set_bits(pwm_chip->base, PWM_CTRL_ADDR(i),
-> +				PWM_KEEP_MASK, (0x1 << PWM_KEEP_SHIFT));
-> +	}
-> +
-> +	platform_set_drvdata(pdev, pwm_chip);
-> +
-> +	return 0;
-> +}
-> +
-> +static int hibvt_pwm_remove(struct platform_device *pdev)
-> +{
-> +	struct hibvt_pwm_chip *pwm_chip;
-> +
-> +	pwm_chip = platform_get_drvdata(pdev);
-> +
-> +	reset_control_assert(pwm_chip->rstc);
-> +	msleep(30);
-> +	reset_control_deassert(pwm_chip->rstc);
-> +
-> +	clk_disable_unprepare(pwm_chip->clk);
-> +
-> +	return pwmchip_remove(&pwm_chip->chip);
-> +}
-> +
-> +static const struct of_device_id hibvt_pwm_of_match[] = {
-> +	{ .compatible = "hisilicon,hi3516cv300-pwm", .data = &pwm_soc[0] },
-> +	{ .compatible = "hisilicon,hi3519v100-pwm", .data = &pwm_soc[1] },
-> +	{  }
-> +};
-> +MODULE_DEVICE_TABLE(of, hibvt_pwm_of_match);
-> +
-> +static struct platform_driver hibvt_pwm_driver = {
-> +	.driver = {
-> +		.name = "hibvt-pwm",
-> +		.of_match_table = hibvt_pwm_of_match,
-> +	},
-> +	.probe = hibvt_pwm_probe,
-> +	.remove	= hibvt_pwm_remove,
-> +};
-> +module_platform_driver(hibvt_pwm_driver);
-> +
-> +MODULE_AUTHOR("Jian Yuan");
-> +MODULE_DESCRIPTION("HiSilicon BVT SoCs PWM driver");
-> +MODULE_LICENSE("GPL");
-> 
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--=20
+Benjamin Gaignard
+
+Graphic Study Group
+
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+
+Follow Linaro: Facebook | Twitter | Blog
