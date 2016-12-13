@@ -1,77 +1,117 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v6 3/8] PWM: add pwm-stm32 DT bindings
-Date: Tue, 13 Dec 2016 11:11:04 -0600
-Message-ID: <CAL_Jsq+y175h8HE3c+r7ArGVqpHe5hKyrjY_Ay-w0oEcLMy6TA@mail.gmail.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v6 1/8] MFD: add bindings for STM32 Timers driver
+Date: Tue, 13 Dec 2016 15:07:14 -0600
+Message-ID: <CAL_Jsq+qzhUAMG_jL6CSHz+kHu6M6N8Nko4KfRQRgRgtk-KTKg@mail.gmail.com>
 References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
- <1481292919-26587-4-git-send-email-benjamin.gaignard@st.com>
- <20161212190205.b5t3x6i2o7igldlo@rob-hp-laptop> <20161213111137.GW3625@dell.home>
- <CAL_JsqL8pJSFb8LbABAYJOQ0URaMpyupbFryk_mS2ToN1kStdA@mail.gmail.com> <CA+M3ks6CQsOA0w82yiTaCw04e7gRwNx1mfeHanE3MDjkuX-gjg@mail.gmail.com>
+ <1481292919-26587-2-git-send-email-benjamin.gaignard@st.com>
+ <20161212185149.rt3xqpn3mbaavb4l@rob-hp-laptop> <CA+M3ks4ukP14YE5-6+gAzJBjEmjEyGyVbsVGOm8ehVm0EfzO-w@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CA+M3ks6CQsOA0w82yiTaCw04e7gRwNx1mfeHanE3MDjkuX-gjg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: Lee Jones <lee.jones@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Alexandre Torgue <alexandre.torgue@st.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Fabrice Gasnier <fabrice.gasnier@st.com>, Gerald Baeza <gerald.baeza@st.com>, Arnaud POULIQUEN <arnaud.pouliquen@st.com>, Linus Walleij <linus.walleij@lin>
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CA+M3ks4ukP14YE5-6+gAzJBjEmjEyGyVbsVGOm8ehVm0EfzO-w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Alexandre Torgue <alexandre.torgue-qxv4g6HH51o@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linux PWM List <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Hartmut Knaack <knaack.h-Mmb7MZpHnFY@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, "linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>, Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>, Arnaud Pouliquen <arnaud.pouliquen-qxv4g6HH51o@public.gmane.org>, Linus Walleij <linus.walleij@>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Dec 13, 2016 at 10:28 AM, Benjamin Gaignard
-<benjamin.gaignard@linaro.org> wrote:
-> 2016-12-13 16:57 GMT+01:00 Rob Herring <robh@kernel.org>:
->> On Tue, Dec 13, 2016 at 5:11 AM, Lee Jones <lee.jones@linaro.org> wrote:
->>> On Mon, 12 Dec 2016, Rob Herring wrote:
+On Tue, Dec 13, 2016 at 3:29 AM, Benjamin Gaignard
+<benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+> 2016-12-12 19:51 GMT+01:00 Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>:
+>> On Fri, Dec 09, 2016 at 03:15:12PM +0100, Benjamin Gaignard wrote:
+>>> Add bindings information for STM32 Timers
 >>>
->>>> On Fri, Dec 09, 2016 at 03:15:14PM +0100, Benjamin Gaignard wrote:
->>>> > Define bindings for pwm-stm32
->>>> >
->>>> > version 6:
->>>> > - change st,breakinput parameter format to make it usuable on stm32f7 too.
->>>> >
->>>> > version 2:
->>>> > - use parameters instead of compatible of handle the hardware configuration
->>>> >
->>>> > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
->>>> > ---
->>>> >  .../devicetree/bindings/pwm/pwm-stm32.txt          | 33 ++++++++++++++++++++++
->>>> >  1 file changed, 33 insertions(+)
->>>> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
->>>> >
->>>> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
->>>> > new file mode 100644
->>>> > index 0000000..866f222
->>>> > --- /dev/null
->>>> > +++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
->>>> > @@ -0,0 +1,33 @@
->>>> > +STMicroelectronics STM32 Timers PWM bindings
->>>> > +
->>>> > +Must be a sub-node of an STM32 Timers device tree node.
->>>> > +See ../mfd/stm32-timers.txt for details about the parent node.
->>>> > +
->>>> > +Required parameters:
->>>> > +- compatible:              Must be "st,stm32-pwm".
->>>> > +- pinctrl-names:   Set to "default".
->>>> > +- pinctrl-0:               List of phandles pointing to pin configuration nodes for PWM module.
->>>> > +                   For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
->>>> > +
->>>> > +Optional parameters:
->>>> > +- st,breakinput:   Arrays of three u32 <index level filter> to describe break input configurations.
->>>> > +                   "index" indicates on which break input the configuration should be applied.
->>>> > +                   "level" gives the active level (0=low or 1=high) for this configuration.
->>>> > +                   "filter" gives the filtering value to be applied.
->>>> > +
->>>> > +Example:
->>>> > +   timers@40010000 {
->>>>
->>>> timer@...
+>>> version 6:
+>>> - rename stm32-gtimer to stm32-timers
+>>> - change compatible
+>>> - add description about the IPs
 >>>
->>> No, it should be timers.
+>>> version 2:
+>>> - rename stm32-mfd-timer to stm32-gptimer
+>>> - only keep one compatible string
+>>>
+>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+>>> ---
+>>>  .../devicetree/bindings/mfd/stm32-timers.txt       | 46 ++++++++++++++++++++++
+>>>  1 file changed, 46 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/mfd/stm32-timers.txt b/Documentation/devicetree/bindings/mfd/stm32-timers.txt
+>>> new file mode 100644
+>>> index 0000000..b30868e
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/mfd/stm32-timers.txt
+>>> @@ -0,0 +1,46 @@
+>>> +STM32 Timers driver bindings
+>>> +
+>>> +This IP provides 3 types of timer along with PWM functionality:
+>>> +- advanced-control timers consist of a 16-bit auto-reload counter driven by a programmable
+>>> +  prescaler, break input feature, PWM outputs and complementary PWM ouputs channels.
+>>> +- general-purpose timers consist of a 16-bit or 32-bit auto-reload counter driven by a
+>>> +  programmable prescaler and PWM outputs.
+>>> +- basic timers consist of a 16-bit auto-reload counter driven by a programmable prescaler.
+>>> +
+>>> +Required parameters:
+>>> +- compatible: must be "st,stm32-timers"
+>>> +
+>>> +- reg:                       Physical base address and length of the controller's
+>>> +                     registers.
+>>> +- clock-names:               Set to "clk_int".
 >>
->> Read the spec. "timer" is a generic node name. "timers" is not. How
->> many is not relevant.
+>> 'clk' is redundant. Also, you don't really need -names when there is
+>> only one of them.
 >
-> "timer" is already used in stm32 DT for clocksource node... It is also why
-> I use "timers" for this.
+> I use devm_regmap_init_mmio_clk() which get the clock by it name so
+> I have to define it in DT.
 
-That doesn't matter. They are at different levels in the hierarchy.
+Are you sure NULL is not allowed? I don't know, but at least clk_get()
+allows NULL.
+
+It's fine to keep, just drop the "clk_" part.
+
+>
+>>> +- clocks:            Phandle to the clock used by the timer module.
+>>> +                     For Clk properties, please refer to ../clock/clock-bindings.txt
+>>> +
+>>> +Optional parameters:
+>>> +- resets:            Phandle to the parent reset controller.
+>>> +                     See ../reset/st,stm32-rcc.txt
+>>> +
+>>> +Optional subnodes:
+>>> +- pwm:                       See ../pwm/pwm-stm32.txt
+>>> +- timer:             See ../iio/timer/stm32-timer-trigger.txt
+>>> +
+>>> +Example:
+>>> +     timers@40010000 {
+>>> +             #address-cells = <1>;
+>>> +             #size-cells = <0>;
+>>> +             compatible = "st,stm32-timers";
+>>> +             reg = <0x40010000 0x400>;
+>>> +             clocks = <&rcc 0 160>;
+>>> +             clock-names = "clk_int";
+>>> +
+>>> +             pwm {
+>>> +                     compatible = "st,stm32-pwm";
+>>> +                     pinctrl-0       = <&pwm1_pins>;
+>>> +                     pinctrl-names   = "default";
+>>> +             };
+>>> +
+>>> +             timer {
+>>> +                     compatible = "st,stm32-timer-trigger";
+>>> +                     reg = <0>;
+>>
+>> You don't need reg here as there is only one. In turn, you don't need
+>> #address-cells or #size-cells.
+>
+> I use "reg" to set each timer configuration.
+> From hardware point of view they are all the same except for which hardware
+> signals they could consume and/or send.
+
+This sounds okay, but...
+
+> "reg" is used as index of the two tables in driver code.
+
+this statement doesn't really sound like valid use of reg.
+
+If you keep reg, then the node needs a unit address (timer@0).
 
 Rob
