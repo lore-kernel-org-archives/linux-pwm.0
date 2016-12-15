@@ -1,54 +1,52 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v1 0/4] pwm: lpss: clean up series
-Date: Wed, 14 Dec 2016 18:41:24 +0200
-Message-ID: <1481733684.9552.3.camel@linux.intel.com>
-References: <20161024144325.130353-1-andriy.shevchenko@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:48550 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1756082AbcLNQlp (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 14 Dec 2016 11:41:45 -0500
-In-Reply-To: <20161024144325.130353-1-andriy.shevchenko@linux.intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [GIT PULL] pwm: Changes for v4.10-rc1
+Date: Thu, 15 Dec 2016 11:44:11 +0100
+Message-ID: <20161215104411.18257-1-thierry.reding@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>
 
-On Mon, 2016-10-24 at 17:43 +0300, Andy Shevchenko wrote:
-> There are clean ups and switch to new atomic API (would be considered
-> as an
-> improvement).
-> 
-> The series tested on various Intel platforms, such as Edison and
-> Minnowboard
-> MAX.
+Hi Linus,
 
-It's already two months and no single comment, no movement somewhere.
+The following changes since commit 1001354ca34179f3db924eb66672442a173147dc:
 
-What should we do to get this pushed?
+  Linux 4.9-rc1 (2016-10-15 12:17:50 -0700)
 
+are available in the git repository at:
 
-> 
-> And the part I like most is -2 lines statistics!
-> 
-> Andy Shevchenko (3):
->   pwm: lpss: Avoid potential overflow of base_unit
->   pwm: lpss: Allow duty cycle to be 0
->   pwm: lpss: Switch to new atomic API
-> 
-> Mika Westerberg (1):
->   pwm: lpss: Do not export board infos for different PWM types
-> 
->  drivers/pwm/pwm-lpss-pci.c      |  20 +++----
->  drivers/pwm/pwm-lpss-platform.c |  10 ++--
->  drivers/pwm/pwm-lpss.c          | 120 +++++++++++++++++++++--------
-> -----------
->  drivers/pwm/pwm-lpss.h          |  14 ++---
->  4 files changed, 81 insertions(+), 83 deletions(-)
-> 
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.10-rc1
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+for you to fetch changes up to d09f00810850dd6e6eac8895b62bc3fc35435431:
+
+  pwm: Add PWM driver for HiSilicon BVT SOCs (2016-11-29 16:50:12 +0100)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Changes for v4.10-rc1
+
+This is a very tiny pull request, with just a new driver for HiSilicon
+BVT SoCs and a cleanup for the Amlogic Meson driver.
+
+There are other patches on the list, but my timing was really bad this
+time and I ended up not having the time to look at them in enough detail
+to be comfortable merging them.
+
+----------------------------------------------------------------
+Javier Martinez Canillas (1):
+      pwm: meson: Remove unneeded platform MODULE_ALIAS
+
+yuanjian (1):
+      pwm: Add PWM driver for HiSilicon BVT SOCs
+
+ .../devicetree/bindings/pwm/pwm-hibvt.txt          |  21 ++
+ drivers/pwm/Kconfig                                |   9 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-hibvt.c                            | 271 +++++++++++++++++++++
+ drivers/pwm/pwm-meson.c                            |   1 -
+ 5 files changed, 302 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-hibvt.txt
+ create mode 100644 drivers/pwm/pwm-hibvt.c
