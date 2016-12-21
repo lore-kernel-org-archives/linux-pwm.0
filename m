@@ -1,55 +1,84 @@
-From: Scott Branden <scott.branden@broadcom.com>
-Subject: Re: [PATCH v3] pwm: add depends, COMPILE_TEST and default y for
- brcm-iproc-pwm
-Date: Tue, 20 Dec 2016 11:32:21 -0800
-Message-ID: <b75e58ab-7078-1a1a-8a79-b5482afad874@broadcom.com>
-References: <1475960045-19313-1-git-send-email-scott.branden@broadcom.com>
- <8b29ebaa-eaaa-2f77-6408-a476af3aaa84@broadcom.com>
+From: Vladimir Zapolskiy <vz@mleia.com>
+Subject: Re: [PATCH 1/3] dt: pwm: lpc32xx: add description of clocks and
+ #pwm-cells properties
+Date: Wed, 21 Dec 2016 05:30:21 +0200
+Message-ID: <5a865e27-e673-2f45-6c71-ca1e7d92a346@mleia.com>
+References: <20161205014237.1689-1-vz@mleia.com>
+ <20161205014237.1689-2-vz@mleia.com>
+ <20161209214137.2hdugl5rmnwjrus4@rob-hp-laptop>
+ <015305d5-c22f-52da-9605-f2c19e3108b1@mleia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <8b29ebaa-eaaa-2f77-6408-a476af3aaa84@broadcom.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ray Jui <ray.jui@broadcom.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mleia.com ([178.79.152.223]:49286 "EHLO mail.mleia.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1753185AbcLUDab (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 20 Dec 2016 22:30:31 -0500
+In-Reply-To: <015305d5-c22f-52da-9605-f2c19e3108b1@mleia.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Sylvain Lemieux <slemieux.tyco@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hi Thierry,
+On 12/10/2016 01:51 AM, Vladimir Zapolskiy wrote:
+> Hi Rob,
+> 
+> On 12/09/2016 11:41 PM, Rob Herring wrote:
+>> On Mon, Dec 05, 2016 at 03:42:37AM +0200, Vladimir Zapolskiy wrote:
+>>> NXP LPC32xx SoCs have two simple independent PWM controllers with a single
+>>> output each, in this case there is no need to specify PWM channel argument
+>>> on client side, one cell for setting PWM output frequency is sufficient.
+>>>
+>>> Another added to the description property 'clocks' has a standard meaning
+>>> of a controller supply clock, in the LPC32xx User's Manual the clock is
+>>> denoted as PWM1_CLK or PWM2_CLK clock.
+>>>
+>>> Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
+>>> ---
+>>>  Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt | 7 +++++++
+>>>  1 file changed, 7 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
+>>> index 74b5bc5..523d796 100644
+>>> --- a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
+>>> +++ b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
+>>> @@ -3,15 +3,22 @@ LPC32XX PWM controller
+>>>  Required properties:
+>>>  - compatible: should be "nxp,lpc3220-pwm"
+>>>  - reg: physical base address and length of the controller's registers
+>>> +- clocks: clock phandle and clock specifier pair
+>>> +- #pwm-cells: should be 1, the cell is used to specify the period in
+>>> +  nanoseconds.
+>>
+>> This use of the cell is a bit odd as the period is s/w config and this 
+>> would typically be a channel selection or such.
+> 
+> this is a classic PWM channel configuration property for PWM consumers
+> described in DT, for instance PWM frequency for display panel backlight
+> on boot.
+> 
+> I think >90% of PWM controllers with device tree bindings have this
+> argument in #pwm-cells, from bindings/pwm/pwm.txt :
+> 
+>     pwm-specifier typically encodes the chip-relative PWM number and
+>     the PWM period in nanoseconds.
+> 
+> You also may skim through phandle arguments of 'pwms' property,
+> commonly the second argument is the requested frequency.
+> 
+> In this particular case I just drop PWM channel number, because
+> the LPC32xx PWM controller has a single output channel.
+> 
+>> What if I want user specified/changed periods?
+>>
+> 
+> The preset period still can be changed over sysfs in runtime.
 
-Could you pick up this patch?
+Rob, have I managed to answer your questions?
 
-On 16-10-08 02:02 PM, Ray Jui wrote:
->
->
-> On 10/8/2016 1:54 PM, Scott Branden wrote:
->> - Add depends on COMMON_CLK for PWM_BCM_IPROC
->> - Enable COMPILE_TEST for broader compile coverage.
->> - Default y for IPROC PWM driver for IPROC SoCs.
->> This allows you to turn it on simply by selecting CONFIG_PWM.
->>
->> Signed-off-by: Scott Branden <scott.branden@broadcom.com>
->> ---
->>  drivers/pwm/Kconfig | 4 +++-
->>  1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->> index 80a566a..3eb1b6b 100644
->> --- a/drivers/pwm/Kconfig
->> +++ b/drivers/pwm/Kconfig
->> @@ -76,7 +76,9 @@ config PWM_ATMEL_TCB
->>
->>  config PWM_BCM_IPROC
->>      tristate "iProc PWM support"
->> -    depends on ARCH_BCM_IPROC
->> +    depends on ARCH_BCM_IPROC || COMPILE_TEST
->> +    depends on COMMON_CLK
->> +    default ARCH_BCM_IPROC
->>      help
->>        Generic PWM framework driver for Broadcom iProc PWM block. This
->>        block is used in Broadcom iProc SoC's.
->>
->
-> Looks good to me!
->
-> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
+If you accept my clarification, could you please ack the change?
+
+--
+With best wishes,
+Vladimir
