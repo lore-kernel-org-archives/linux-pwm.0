@@ -1,83 +1,109 @@
 From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: [PATCH v3 RESEND 02/11] pwm: imx: remove ipg clock
-Date: Mon, 26 Dec 2016 23:55:52 +0100
-Message-ID: <1482792961-12702-3-git-send-email-l.majewski@majess.pl>
+Subject: [PATCH v3 RESEND 03/11] pwm: imx: Add separate set of pwm ops for PWMv1 and PWMv2
+Date: Mon, 26 Dec 2016 23:55:53 +0100
+Message-ID: <1482792961-12702-4-git-send-email-l.majewski@majess.pl>
 References: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
  <1482792961-12702-1-git-send-email-l.majewski@majess.pl>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from 2.mo177.mail-out.ovh.net ([178.33.109.80]:51140 "EHLO
+        2.mo177.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755376AbcLZW5E (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 26 Dec 2016 17:57:04 -0500
+Received: from player716.ha.ovh.net (b7.ovh.net [213.186.33.57])
+        by mo177.mail-out.ovh.net (Postfix) with ESMTP id 8DBC965A9
+        for <linux-pwm@vger.kernel.org>; Mon, 26 Dec 2016 23:57:02 +0100 (CET)
 In-Reply-To: <1482792961-12702-1-git-send-email-l.majewski@majess.pl>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org
-Cc: Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Philipp Zabel <p.zabel@pengutronix.de>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org
+Cc: Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Lukasz Majewski <l.majewski@majess.pl>, =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+This patch provides separate set of pwm ops utilized by
+i.MX's PWMv1 and PWMv2.
 
-The use of the ipg clock was introduced with commit 7b27c160c681
-("pwm: i.MX: fix clock lookup").
-In the commit message it was claimed that the ipg clock is enabled for
-register accesses. This is true for the ->config() callback, but not
-for the ->set_enable() callback. Given that the ipg clock is not
-consistently enabled for all register accesses we can assume that either
-it is not required at all or that the current code does not work.
-Remove the ipg clock code for now so that it's no longer in the way of
-refactoring the driver.
-
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>
----
-[commit message text refactored by Lukasz Majewski <l.majewski@majess.pl>]
+Signed-off-by: Lothar Waßmann <LW@KARO-electronics.de>
+Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+Acked-by: Shawn Guo <shawn.guo@linaro.org>
+Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
 ---
 Changes for v3:
+- Adjust the code to work with ipg clock removed
+
+Changes for v2:
 - New patch
 ---
- drivers/pwm/pwm-imx.c | 19 +------------------
- 1 file changed, 1 insertion(+), 18 deletions(-)
+ drivers/pwm/pwm-imx.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index d600fd5..70609ef2 100644
+index 70609ef2..d594501 100644
 --- a/drivers/pwm/pwm-imx.c
 +++ b/drivers/pwm/pwm-imx.c
-@@ -49,7 +49,6 @@
- 
- struct imx_chip {
- 	struct clk	*clk_per;
--	struct clk	*clk_ipg;
- 
- 	void __iomem	*mmio_base;
- 
-@@ -204,17 +203,8 @@ static int imx_pwm_config(struct pwm_chip *chip,
- 		struct pwm_device *pwm, int duty_ns, int period_ns)
- {
- 	struct imx_chip *imx = to_imx_chip(chip);
--	int ret;
--
--	ret = clk_prepare_enable(imx->clk_ipg);
--	if (ret)
--		return ret;
- 
--	ret = imx->config(chip, pwm, duty_ns, period_ns);
--
--	clk_disable_unprepare(imx->clk_ipg);
--
--	return ret;
-+	return imx->config(chip, pwm, duty_ns, period_ns);
+@@ -230,7 +230,14 @@ static void imx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	clk_disable_unprepare(imx->clk_per);
  }
  
- static int imx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-@@ -293,13 +283,6 @@ static int imx_pwm_probe(struct platform_device *pdev)
+-static struct pwm_ops imx_pwm_ops = {
++static struct pwm_ops imx_pwm_ops_v1 = {
++	.enable = imx_pwm_enable,
++	.disable = imx_pwm_disable,
++	.config = imx_pwm_config,
++	.owner = THIS_MODULE,
++};
++
++static struct pwm_ops imx_pwm_ops_v2 = {
+ 	.enable = imx_pwm_enable,
+ 	.disable = imx_pwm_disable,
+ 	.config = imx_pwm_config,
+@@ -241,16 +248,19 @@ struct imx_pwm_data {
+ 	int (*config)(struct pwm_chip *chip,
+ 		struct pwm_device *pwm, int duty_ns, int period_ns);
+ 	void (*set_enable)(struct pwm_chip *chip, bool enable);
++	struct pwm_ops *pwm_ops;
+ };
+ 
+ static struct imx_pwm_data imx_pwm_data_v1 = {
+ 	.config = imx_pwm_config_v1,
+ 	.set_enable = imx_pwm_set_enable_v1,
++	.pwm_ops = &imx_pwm_ops_v1,
+ };
+ 
+ static struct imx_pwm_data imx_pwm_data_v2 = {
+ 	.config = imx_pwm_config_v2,
+ 	.set_enable = imx_pwm_set_enable_v2,
++	.pwm_ops = &imx_pwm_ops_v2,
+ };
+ 
+ static const struct of_device_id imx_pwm_dt_ids[] = {
+@@ -272,6 +282,8 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ 	if (!of_id)
+ 		return -ENODEV;
+ 
++	data = of_id->data;
++
+ 	imx = devm_kzalloc(&pdev->dev, sizeof(*imx), GFP_KERNEL);
+ 	if (imx == NULL)
+ 		return -ENOMEM;
+@@ -283,7 +295,7 @@ static int imx_pwm_probe(struct platform_device *pdev)
  		return PTR_ERR(imx->clk_per);
  	}
  
--	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
--	if (IS_ERR(imx->clk_ipg)) {
--		dev_err(&pdev->dev, "getting ipg clock failed with %ld\n",
--				PTR_ERR(imx->clk_ipg));
--		return PTR_ERR(imx->clk_ipg);
--	}
--
- 	imx->chip.ops = &imx_pwm_ops;
+-	imx->chip.ops = &imx_pwm_ops;
++	imx->chip.ops = data->pwm_ops;
  	imx->chip.dev = &pdev->dev;
  	imx->chip.base = -1;
+ 	imx->chip.npwm = 1;
+@@ -294,7 +306,6 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(imx->mmio_base))
+ 		return PTR_ERR(imx->mmio_base);
+ 
+-	data = of_id->data;
+ 	imx->config = data->config;
+ 	imx->set_enable = data->set_enable;
+ 
 -- 
 2.1.4
