@@ -1,84 +1,88 @@
-From: Vladimir Zapolskiy <vz@mleia.com>
-Subject: Re: [PATCH 1/3] dt: pwm: lpc32xx: add description of clocks and
- #pwm-cells properties
-Date: Wed, 21 Dec 2016 05:30:21 +0200
-Message-ID: <5a865e27-e673-2f45-6c71-ca1e7d92a346@mleia.com>
-References: <20161205014237.1689-1-vz@mleia.com>
- <20161205014237.1689-2-vz@mleia.com>
- <20161209214137.2hdugl5rmnwjrus4@rob-hp-laptop>
- <015305d5-c22f-52da-9605-f2c19e3108b1@mleia.com>
+From: Lukasz Majewski <l.majewski@majess.pl>
+Subject: [PATCH v3 RESEND 00/11] pwm: imx: Provide atomic operation for IMX PWM driver
+Date: Mon, 26 Dec 2016 23:55:50 +0100
+Message-ID: <1482792961-12702-1-git-send-email-l.majewski@majess.pl>
+References: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mleia.com ([178.79.152.223]:49286 "EHLO mail.mleia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753185AbcLUDab (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 20 Dec 2016 22:30:31 -0500
-In-Reply-To: <015305d5-c22f-52da-9605-f2c19e3108b1@mleia.com>
+Received: from 7.mo177.mail-out.ovh.net ([46.105.61.149]:57158 "EHLO
+        7.mo177.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754338AbcLZW4Z (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 26 Dec 2016 17:56:25 -0500
+Received: from player716.ha.ovh.net (b7.ovh.net [213.186.33.57])
+        by mo177.mail-out.ovh.net (Postfix) with ESMTP id F2D93746D
+        for <linux-pwm@vger.kernel.org>; Mon, 26 Dec 2016 23:56:22 +0100 (CET)
+In-Reply-To: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Sylvain Lemieux <slemieux.tyco@gmail.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org
+Cc: Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Lukasz Majewski <l.majewski@majess.pl>
 
-On 12/10/2016 01:51 AM, Vladimir Zapolskiy wrote:
-> Hi Rob,
-> 
-> On 12/09/2016 11:41 PM, Rob Herring wrote:
->> On Mon, Dec 05, 2016 at 03:42:37AM +0200, Vladimir Zapolskiy wrote:
->>> NXP LPC32xx SoCs have two simple independent PWM controllers with a single
->>> output each, in this case there is no need to specify PWM channel argument
->>> on client side, one cell for setting PWM output frequency is sufficient.
->>>
->>> Another added to the description property 'clocks' has a standard meaning
->>> of a controller supply clock, in the LPC32xx User's Manual the clock is
->>> denoted as PWM1_CLK or PWM2_CLK clock.
->>>
->>> Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
->>> ---
->>>  Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt | 7 +++++++
->>>  1 file changed, 7 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
->>> index 74b5bc5..523d796 100644
->>> --- a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
->>> +++ b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
->>> @@ -3,15 +3,22 @@ LPC32XX PWM controller
->>>  Required properties:
->>>  - compatible: should be "nxp,lpc3220-pwm"
->>>  - reg: physical base address and length of the controller's registers
->>> +- clocks: clock phandle and clock specifier pair
->>> +- #pwm-cells: should be 1, the cell is used to specify the period in
->>> +  nanoseconds.
->>
->> This use of the cell is a bit odd as the period is s/w config and this 
->> would typically be a channel selection or such.
-> 
-> this is a classic PWM channel configuration property for PWM consumers
-> described in DT, for instance PWM frequency for display panel backlight
-> on boot.
-> 
-> I think >90% of PWM controllers with device tree bindings have this
-> argument in #pwm-cells, from bindings/pwm/pwm.txt :
-> 
->     pwm-specifier typically encodes the chip-relative PWM number and
->     the PWM period in nanoseconds.
-> 
-> You also may skim through phandle arguments of 'pwms' property,
-> commonly the second argument is the requested frequency.
-> 
-> In this particular case I just drop PWM channel number, because
-> the LPC32xx PWM controller has a single output channel.
-> 
->> What if I want user specified/changed periods?
->>
-> 
-> The preset period still can be changed over sysfs in runtime.
+This patch set brings atomic operation to i.MX's PWMv2 driver.
 
-Rob, have I managed to answer your questions?
+This work has been supported and suggested by Boris Brezillon [1] and 
+Stefan Agner, by showing how simple the transition could be :-).
 
-If you accept my clarification, could you please ack the change?
+It has been divided into several steps:
 
---
-With best wishes,
-Vladimir
+- Remove ipg clock enable/disable code (as proposed by Sascha Hauer) - this
+  is the most notable change for v3
+
+- Provide different pwm ops for PWMv1 and PWMv2
+
+- Separate PWMv1 commits from "generic" and non atomic PWM code
+
+  NOTE: Since I do _not_ have board with PWMv1, I would like to ask somebody
+        for testing
+
+- Move some imx_config_v2 code to separate functions
+
+- Provide PWM atomic implementation (the ->apply() driver) for PWMv2 in a
+  single patch for better readability.
+
+- Remove redundant PWM code (disable, enable, config callbacks)
+
+- Update proper documentation entries
+
+- Provide support for polarity inversion on top of atomic PWM rework
+
+
+Test HW:
+--------
+This patch set has been tested on i.MX6q board with
+v4.9 vanila kernel SHA1: 69973b830859bc6529a7a0468ba0d80ee5117826
+
+
+The PWM operation has been tested with pwm_bl backlight driver by changing
+its brightness.
+
+[1]: http://patchwork.ozlabs.org/patch/685402/
+
+
+Lothar Wassmann (2):
+  pwm: print error messages with pr_err() instead of pr_debug()
+  pwm: core: make the PWM_POLARITY flag in DTB optional
+
+Lukasz Majewski (8):
+  pwm: imx: Add separate set of pwm ops for PWMv1 and PWMv2
+  pwm: imx: Rewrite imx_pwm_*_v1 code to facilitate switch to atomic pwm
+    operation
+  pwm: imx: Move PWMv2 software reset code to a separate function
+  pwm: imx: Move PWMv2 wait for fifo slot code to a separate function
+  pwm: imx: Provide atomic PWM support for i.MX PWMv2
+  pwm: imx: Remove redundant i.MX PWMv2 code
+  pwm: imx: doc: Update imx-pwm.txt documentation entry
+  pwm: imx: Add polarity inversion support to i.MX's PWMv2
+
+Sascha Hauer (1):
+  pwm: imx: remove ipg clock
+
+ Documentation/devicetree/bindings/pwm/imx-pwm.txt |   6 +-
+ drivers/pwm/core.c                                |  26 +--
+ drivers/pwm/pwm-imx.c                             | 247 ++++++++++------------
+ 3 files changed, 134 insertions(+), 145 deletions(-)
+
+-- 
+2.1.4
