@@ -1,88 +1,83 @@
 From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: [PATCH v3 RESEND 00/11] pwm: imx: Provide atomic operation for IMX PWM driver
-Date: Mon, 26 Dec 2016 23:55:50 +0100
-Message-ID: <1482792961-12702-1-git-send-email-l.majewski@majess.pl>
+Subject: [PATCH v3 RESEND 02/11] pwm: imx: remove ipg clock
+Date: Mon, 26 Dec 2016 23:55:52 +0100
+Message-ID: <1482792961-12702-3-git-send-email-l.majewski@majess.pl>
 References: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from 7.mo177.mail-out.ovh.net ([46.105.61.149]:57158 "EHLO
-        7.mo177.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754338AbcLZW4Z (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 26 Dec 2016 17:56:25 -0500
-Received: from player716.ha.ovh.net (b7.ovh.net [213.186.33.57])
-        by mo177.mail-out.ovh.net (Postfix) with ESMTP id F2D93746D
-        for <linux-pwm@vger.kernel.org>; Mon, 26 Dec 2016 23:56:22 +0100 (CET)
-In-Reply-To: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+ <1482792961-12702-1-git-send-email-l.majewski@majess.pl>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1482792961-12702-1-git-send-email-l.majewski@majess.pl>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org
-Cc: Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Lukasz Majewski <l.majewski@majess.pl>
+Cc: Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Philipp Zabel <p.zabel@pengutronix.de>
+List-Id: linux-pwm@vger.kernel.org
 
-This patch set brings atomic operation to i.MX's PWMv2 driver.
+From: Sascha Hauer <s.hauer@pengutronix.de>
 
-This work has been supported and suggested by Boris Brezillon [1] and 
-Stefan Agner, by showing how simple the transition could be :-).
+The use of the ipg clock was introduced with commit 7b27c160c681
+("pwm: i.MX: fix clock lookup").
+In the commit message it was claimed that the ipg clock is enabled for
+register accesses. This is true for the ->config() callback, but not
+for the ->set_enable() callback. Given that the ipg clock is not
+consistently enabled for all register accesses we can assume that either
+it is not required at all or that the current code does not work.
+Remove the ipg clock code for now so that it's no longer in the way of
+refactoring the driver.
 
-It has been divided into several steps:
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Philipp Zabel <p.zabel@pengutronix.de>
+---
+[commit message text refactored by Lukasz Majewski <l.majewski@majess.pl>]
+---
+Changes for v3:
+- New patch
+---
+ drivers/pwm/pwm-imx.c | 19 +------------------
+ 1 file changed, 1 insertion(+), 18 deletions(-)
 
-- Remove ipg clock enable/disable code (as proposed by Sascha Hauer) - this
-  is the most notable change for v3
-
-- Provide different pwm ops for PWMv1 and PWMv2
-
-- Separate PWMv1 commits from "generic" and non atomic PWM code
-
-  NOTE: Since I do _not_ have board with PWMv1, I would like to ask somebody
-        for testing
-
-- Move some imx_config_v2 code to separate functions
-
-- Provide PWM atomic implementation (the ->apply() driver) for PWMv2 in a
-  single patch for better readability.
-
-- Remove redundant PWM code (disable, enable, config callbacks)
-
-- Update proper documentation entries
-
-- Provide support for polarity inversion on top of atomic PWM rework
-
-
-Test HW:
---------
-This patch set has been tested on i.MX6q board with
-v4.9 vanila kernel SHA1: 69973b830859bc6529a7a0468ba0d80ee5117826
-
-
-The PWM operation has been tested with pwm_bl backlight driver by changing
-its brightness.
-
-[1]: http://patchwork.ozlabs.org/patch/685402/
-
-
-Lothar Wassmann (2):
-  pwm: print error messages with pr_err() instead of pr_debug()
-  pwm: core: make the PWM_POLARITY flag in DTB optional
-
-Lukasz Majewski (8):
-  pwm: imx: Add separate set of pwm ops for PWMv1 and PWMv2
-  pwm: imx: Rewrite imx_pwm_*_v1 code to facilitate switch to atomic pwm
-    operation
-  pwm: imx: Move PWMv2 software reset code to a separate function
-  pwm: imx: Move PWMv2 wait for fifo slot code to a separate function
-  pwm: imx: Provide atomic PWM support for i.MX PWMv2
-  pwm: imx: Remove redundant i.MX PWMv2 code
-  pwm: imx: doc: Update imx-pwm.txt documentation entry
-  pwm: imx: Add polarity inversion support to i.MX's PWMv2
-
-Sascha Hauer (1):
-  pwm: imx: remove ipg clock
-
- Documentation/devicetree/bindings/pwm/imx-pwm.txt |   6 +-
- drivers/pwm/core.c                                |  26 +--
- drivers/pwm/pwm-imx.c                             | 247 ++++++++++------------
- 3 files changed, 134 insertions(+), 145 deletions(-)
-
+diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+index d600fd5..70609ef2 100644
+--- a/drivers/pwm/pwm-imx.c
++++ b/drivers/pwm/pwm-imx.c
+@@ -49,7 +49,6 @@
+ 
+ struct imx_chip {
+ 	struct clk	*clk_per;
+-	struct clk	*clk_ipg;
+ 
+ 	void __iomem	*mmio_base;
+ 
+@@ -204,17 +203,8 @@ static int imx_pwm_config(struct pwm_chip *chip,
+ 		struct pwm_device *pwm, int duty_ns, int period_ns)
+ {
+ 	struct imx_chip *imx = to_imx_chip(chip);
+-	int ret;
+-
+-	ret = clk_prepare_enable(imx->clk_ipg);
+-	if (ret)
+-		return ret;
+ 
+-	ret = imx->config(chip, pwm, duty_ns, period_ns);
+-
+-	clk_disable_unprepare(imx->clk_ipg);
+-
+-	return ret;
++	return imx->config(chip, pwm, duty_ns, period_ns);
+ }
+ 
+ static int imx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -293,13 +283,6 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ 		return PTR_ERR(imx->clk_per);
+ 	}
+ 
+-	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
+-	if (IS_ERR(imx->clk_ipg)) {
+-		dev_err(&pdev->dev, "getting ipg clock failed with %ld\n",
+-				PTR_ERR(imx->clk_ipg));
+-		return PTR_ERR(imx->clk_ipg);
+-	}
+-
+ 	imx->chip.ops = &imx_pwm_ops;
+ 	imx->chip.dev = &pdev->dev;
+ 	imx->chip.base = -1;
 -- 
 2.1.4
