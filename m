@@ -1,41 +1,21 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 2/4] pwm: lpss: Allow duty cycle to be 0
-Date: Mon,  2 Jan 2017 11:16:45 +0200
-Message-ID: <20170102091647.86910-3-andriy.shevchenko@linux.intel.com>
-References: <20170102091647.86910-1-andriy.shevchenko@linux.intel.com>
+From: "Dr. David White" <"wd."@eagle.ocn.ne.jp>
+Subject: Urgent Please;;
+Date: Tue, 3 Jan 2017 02:34:44 +0900 (JST)
+Message-ID: <196117354.116392318.1483378484299.JavaMail.root__35168.5269423344$1483379805$gmane$org@eagle.ocn.ne.jp>
+Reply-To: "Dr. David White" <david_white34@mynet.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-2022-JP
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga05.intel.com ([192.55.52.43]:4750 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1755228AbdABJRw (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 2 Jan 2017 04:17:52 -0500
-In-Reply-To: <20170102091647.86910-1-andriy.shevchenko@linux.intel.com>
+Received: from mbkd0128.ocn.ad.jp ([153.149.230.29]:33607 "EHLO
+        mbkd0128.ocn.ad.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756103AbdABR4V (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 2 Jan 2017 12:56:21 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Linus Torvalds <torvalds@linux-foundation.org>, Ilkka Koskinen <ilkka.koskinen@intel.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-A duty cycle is represented by values [0..<period>] which reflects [0%..100%].
-0% of the duty cycle means always off (logical "0") on output. Allow this in
-the driver.
+Dear,
+With due respect to your person and much sincerity of purpose. I have a business proposal which I will like to handle with you and $14.5 Million USD is involve. But be rest assured that everything is legal and risk free as I have concluded all the arrangements and the legal papers that will back the transaction up. Kindly indicate your interest as to enable me tell you more detail of the proposal. Waiting for your urgent response.
 
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/pwm/pwm-lpss.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
-index 8642feeb8abd..ffa01ab907a6 100644
---- a/drivers/pwm/pwm-lpss.c
-+++ b/drivers/pwm/pwm-lpss.c
-@@ -107,8 +107,6 @@ static int pwm_lpss_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 	base_unit = DIV_ROUND_CLOSEST_ULL(freq, c);
- 
--	if (duty_ns <= 0)
--		duty_ns = 1;
- 	on_time_div = 255ULL * duty_ns;
- 	do_div(on_time_div, period_ns);
- 	on_time_div = 255ULL - on_time_div;
--- 
-2.11.0
+Yours Faithfully,
+Dr. David White
