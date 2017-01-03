@@ -1,18 +1,19 @@
 From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 Subject: Re: [PATCH v6 6/8] IIO: add STM32 timer trigger driver
-Date: Tue, 03 Jan 2017 17:16:26 +0000
-Message-ID: <B846E852-F63E-439D-A6FF-374D0A635AEC@jic23.retrosnub.co.uk>
+Date: Tue, 03 Jan 2017 17:24:01 +0000
+Message-ID: <C1D9F3DC-34A0-4600-B879-0C0287B1E35A@jic23.retrosnub.co.uk>
 References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
  <1481292919-26587-7-git-send-email-benjamin.gaignard@st.com>
  <70f15b07-55d9-bd0d-25c7-712363e30974@kernel.org>
  <CA+M3ks7O_6cWZLAAjEvPD-DQBmU--qrsuh1HfcTa9eLqaT-+fQ@mail.gmail.com>
  <c46e6e59-b5b6-39e6-d6f4-5ca4539f746c@kernel.org>
  <CA+M3ks6jshX-rEsi7Qfo-65awzWcHsEMVBjm-baYy979V9187Q@mail.gmail.com>
+ <CA+M3ks4RuhUiBTu=GS9_9S8i2y53-Lc_r9rCZ1piPPuooZ4+Eg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CA+M3ks6jshX-rEsi7Qfo-65awzWcHsEMVBjm-baYy979V9187Q@mail.gmail.com>
+In-Reply-To: <CA+M3ks4RuhUiBTu=GS9_9S8i2y53-Lc_r9rCZ1piPPuooZ4+Eg@mail.gmail.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -26,948 +27,629 @@ To: Benjamin Gaignard <benjamin.gaignard@linaro.org>, Jonathan Cameron <jic23@ke
 Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, Alexandre Torgue <alexandre.torgue@st.com>, Linux PWM List <linux-pwm@vger.kernel.org>, linux-iio@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, robh+dt@kernel.org, Thierry Reding <thierry.reding@gmail.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Hartmut Knaack <knaack.h@gmx.de>, Gerald Baeza <gerald.baeza@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, Lee Jones <lee.jones@linaro.org>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, linux-arm-kernel@lists.infradead.org, Benjamin Gaignard <benjamin.gaignard@st.com>
 List-Id: linux-pwm@vger.kernel.org
 
-
-
-On 3 January 2017 09:23:34 GMT+00:00, Benjamin Gaignard <benjamin.gaignard@linaro.org> wrote:
->2017-01-02 19:22 GMT+01:00 Jonathan Cameron <jic23@kernel.org>:
->> On 02/01/17 08:46, Benjamin Gaignard wrote:
->>> 2016-12-30 22:12 GMT+01:00 Jonathan Cameron <jic23@kernel.org>:
->>>> On 09/12/16 14:15, Benjamin Gaignard wrote:
->>>>> Timers IPs can be used to generate triggers for other IPs like
->>>>> DAC, ADC or other timers.
->>>>> Each trigger may result of timer internals signals like counter
->enable,
->>>>> reset or edge, this configuration could be done through
->"master_mode"
->>>>> device attribute.
->>>>>
->>>>> A timer device could be triggered by other timers, we use the
->trigger
->>>>> name and is_stm32_iio_timer_trigger() function to distinguish them
->>>>> and configure IP input switch.
->>>>>
->>>>> Timer may also decide on which event (edge, level) they could
->>>>> be activated by a trigger, this configuration is done by writing
->in
->>>>> "slave_mode" device attribute.
->>>>>
->>>>> Since triggers could also be used by DAC or ADC their names are
->defined
->>>>> in include/ nux/iio/timer/stm32-timer-trigger.h so those IPs will
->be able
->>>>> to configure themselves in valid_trigger function
->>>>>
->>>>> Trigger have a "sampling_frequency" attribute which allow to
->configure
->>>>> timer sampling frequency without using PWM interface
->>>>>
->>>>> version 5:
->>>>> - simplify tables of triggers
->>>>> - only create an IIO device when needed
->>>>>
->>>>> version 4:
->>>>> - get triggers configuration from "reg" in DT
->>>>> - add tables of triggers
->>>>> - sampling frequency is enable/disable when writing in trigger
->>>>>   sampling_frequency attribute
->>>>> - no more use of interruptions
->>>>>
->>>>> version 3:
->>>>> - change compatible to "st,stm32-timer-trigger"
->>>>> - fix attributes access right
->>>>> - use string instead of int for master_mode and slave_mode
->>>>> - document device attributes in sysfs-bus-iio-timer-stm32
->>>>>
->>>>> version 2:
->>>>> - keep only one compatible
->>>>> - use st,input-triggers-names and st,output-triggers-names
->>>>>   to know which triggers are accepted and/or create by the device
->>>> Firstly, sorry it has taken me so long to get back to this.
->>>>
->>>> I'm still not keen on this use of iio_device elements just to act
->as
->>>> glue between triggers.  I think we need to work out a more light
->weight
->>>> way to do this.  As you are only using them for validation and to
->provide
->>>> somewhere to hang the control attibutes off, there is nothing
->stopping us
->>>> moving that over to the iio_trigger instead which would avoid the
->messy
->>>> duality going on here.
->>>
->>> I have add an iio_device because each hardware can generate multiple
->>> triggers (up to 5: trgo, ch 1...4) and slave_mode attribute will
->impact all the
->>> triggers of a device. For me it was making sense to centralize that
->in an
->>> iio_device rather than having an attribute "shared" (from hardware
->>> point of view)
->>> on multiple triggers.
->>> Since master_mode attribute is only used by trgo and not impact
->ch1...4
->>> triggers I will move it to trigger instead of the iio_device.
->>>
->>> I also wanted to be able to connect triggers on a iio_device as I
->>> could do for an
->>> ADC with a command like 'echo "tim1_trgo" >
->iio_deviceX/trigger/current_trigger'
->> This is interesting, but with a bit of refactoring I would think it
->would
->> be possible to share some of that code thus allowing non IIO devices
->to
->> bind to triggers.  Ultimately I want to be able to bind a trigger to
->> a trigger - I appreciate here the topology is more limited than that
->> so some complexity comes in.
->>
->> My gut feeling is that representing that topology explicitly is hard
->> to do in a remotely general way, but lets try it and see.
->> We run into this sort of interdependency issue between different bits
->of
->> the hardware all the time.  Setting a value somewhere effects the
->configuration
->> elsewhere - often the best plan is to just let that happen and leave
->it up to
->> userspace to check for changes if it cares.
->
->okay
->
->>> If I change that to parent_trigger attribute it change this behavior
->>> and I will have to
->>> duplicated what is done in iio_trigger_write_current() to find and
->>> validate triggers.
->> I get the reasoning, but we still end up with something represented
->> by an IIO device that isn't providing any channels at all. It's
->simply
->> using some of the infrastructure.  To my mind it is 'something else'
->> and should be represented as such.  I have no problem at all with
->> you registering additional elements in /sysfs/bus/iio/ to represent
->> these shared elements - we already have drivers that do that to
->> provide some centralized infrastructure (e.g. the sysfs-trigger)
->
->My hardware block are timers maybe I can add a channel type "IIO_TIMER"
->and declare a channel with info_mask_separate =
->BIT(IIO_CHAN_INFO_SAMP_FREQ)
->so I will be able to write/read sampling frequency on IIO device.
-Hmm stretching a point. There aren't really input or output channels. 
-
-Still not convinced there should be any IIO devices near this at all.
->
->> I'm worried about the scope spread we get for an IIO device
->otherwise.
->> They serve a well defined purpose at the moment, and that isn't what
->> is happening here.
->>
->> So my gut feeling is we are better deliberately not representing the
->> inter dependence and claiming all triggers we are creating are
->> independent.  That way we can have a nice generic infrastructure
->> that will work in all cases (be it pushing the sanity checking to
->> userspace).
->>
->> So each trigger has direct access to what controls it.  Changing
->anything
->> can effect other triggers in weird ways.
->>
->> I'm finding it hard to see anything else generalizing sufficiently
->> as we'll always get cases where we can't represent the topology
->without
->> diving into the complexity of something like the media controller
->> framework.
->>
->> Jonathan
->>>
->>>> I might still be missing something though!
->>>>
->>>> You would only I think need 3 attributes
->>>>
->>>> parrent_trigger
->>>> and something like your master_mode and slave_mode attributes.
->>>>
->>>> The parrent_trigger would need some validation etc, but if we keep
->it
->>>> within this driver initially that won't be hard to do. Checking the
->device
->>>> parent matches will do most of it.
->>>>
->>>> Jonathan
->>>>>
->>>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
->>>>> ---
->>>>>  .../ABI/testing/sysfs-bus-iio-timer-stm32          |  55 +++
->>>>>  drivers/iio/Kconfig                                |   2 +-
->>>>>  drivers/iio/Makefile                               |   1 +
->>>>>  drivers/iio/timer/Kconfig                          |  13 +
->>>>>  drivers/iio/timer/Makefile                         |   1 +
->>>>>  drivers/iio/timer/stm32-timer-trigger.c            | 466
->+++++++++++++++++++++
->>>>>  drivers/iio/trigger/Kconfig                        |   1 -
->>>>>  include/linux/iio/timer/stm32-timer-trigger.h      |  62 +++
->>>>>  8 files changed, 599 insertions(+), 2 deletions(-)
->>>>>  create mode 100644
->Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
->>>>>  create mode 100644 drivers/iio/timer/Kconfig
->>>>>  create mode 100644 drivers/iio/timer/Makefile
->>>>>  create mode 100644 drivers/iio/timer/stm32-timer-trigger.c
->>>>>  create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
->>>>>
->>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
->b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
->>>>> new file mode 100644
->>>>> index 0000000..26583dd
->>>>> --- /dev/null
->>>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
->>>>> @@ -0,0 +1,55 @@
->>>>> +What:               
->/sys/bus/iio/devices/iio:deviceX/master_mode_available
->>>>> +KernelVersion:       4.10
->>>>> +Contact:     benjamin.gaignard@st.com
->>>>> +Description:
->>>>> +             Reading returns the list possible master modes which
->are:
->>>>> +             - "reset"     : The UG bit from the TIMx_EGR
->register is used as trigger output (TRGO).
->>>>> +             - "enable"    : The Counter Enable signal CNT_EN is
->used as trigger output.
->>>>> +             - "update"    : The update event is selected as
->trigger output.
->>>>> +                             For instance a master timer can then
->be used as a prescaler for a slave timer.
->>>>> +             - "compare_pulse" : The trigger output send a
->positive pulse when the CC1IF flag is to be set.
->>>>> +             - "OC1REF"    : OC1REF signal is used as trigger
->output.
->>>>> +             - "OC2REF"    : OC2REF signal is used as trigger
->output.
->>>>> +             - "OC3REF"    : OC3REF signal is used as trigger
->output.
->>>>> +             - "OC4REF"    : OC4REF signal is used as trigger
->output.
->>>>> +
->>>>> +What:                /sys/bus/iio/devices/iio:deviceX/master_mode
->>>>> +KernelVersion:       4.10
->>>>> +Contact:     benjamin.gaignard@st.com
->>>>> +Description:
->>>>> +             Reading returns the current master modes.
->>>>> +             Writing set the master mode
->>>>> +
->>>>> +What:               
->/sys/bus/iio/devices/iio:deviceX/slave_mode_available
->>>>> +KernelVersion:       4.10
->>>>> +Contact:     benjamin.gaignard@st.com
->>>>> +Description:
->>>>> +             Reading returns the list possible slave modes which
->are:
->>>>> +             - "disabled"  : The prescaler is clocked directly by
->the internal clock.
->>>>> +             - "encoder_1" : Counter counts up/down on TI2FP1
->edge depending on TI1FP2 level.
->>>>> +             - "encoder_2" : Counter counts up/down on TI1FP2
->edge depending on TI2FP1 level.
->>>>> +             - "encoder_3" : Counter counts up/down on both
->TI1FP1 and TI2FP2 edges depending
->>>>> +                             on the level of the other input.
->>>>> +             - "reset"     : Rising edge of the selected trigger
->input reinitializes the counter
->>>>> +                             and generates an update of the
->registers.
->>>>> +             - "gated"     : The counter clock is enabled when
->the trigger input is high.
->>>>> +                             The counter stops (but is not reset)
->as soon as the trigger becomes low.
->>>>> +                             Both start and stop of the counter
->are controlled.
->>>>> +             - "trigger"   : The counter starts at a rising edge
->of the trigger TRGI (but it is not
->>>>> +                             reset). Only the start of the
->counter is controlled.
->>>>> +             - "external_clock": Rising edges of the selected
->trigger (TRGI) clock the counter.
->>>>> +
->>>>> +What:                /sys/bus/iio/devices/iio:deviceX/slave_mode
->>>>> +KernelVersion:       4.10
->>>>> +Contact:     benjamin.gaignard@st.com
->>>>> +Description:
->>>>> +             Reading returns the current slave mode.
->>>>> +             Writing set the slave mode
->>>>> +
->>>>> +What:               
->/sys/bus/iio/devices/triggerX/sampling_frequency
->>>>> +KernelVersion:       4.10
->>>>> +Contact:     benjamin.gaignard@st.com
->>>>> +Description:
->>>>> +             Reading returns the current sampling frequency.
->>>>> +             Writing an value different of 0 set and start
->sampling.
->>>>> +             Writing 0 stop sampling.
->>>>> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
->>>>> index 6743b18..2de2a80 100644
->>>>> --- a/drivers/iio/Kconfig
->>>>> +++ b/drivers/iio/Kconfig
->>>>> @@ -90,5 +90,5 @@ source "drivers/iio/potentiometer/Kconfig"
->>>>>  source "drivers/iio/pressure/Kconfig"
->>>>>  source "drivers/iio/proximity/Kconfig"
->>>>>  source "drivers/iio/temperature/Kconfig"
->>>>> -
->>>>> +source "drivers/iio/timer/Kconfig"
->>>>>  endif # IIO
->>>>> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
->>>>> index 87e4c43..b797c08 100644
->>>>> --- a/drivers/iio/Makefile
->>>>> +++ b/drivers/iio/Makefile
->>>>> @@ -32,4 +32,5 @@ obj-y += potentiometer/
->>>>>  obj-y += pressure/
->>>>>  obj-y += proximity/
->>>>>  obj-y += temperature/
->>>>> +obj-y += timer/
->>>>>  obj-y += trigger/
->>>>> diff --git a/drivers/iio/timer/Kconfig b/drivers/iio/timer/Kconfig
->>>>> new file mode 100644
->>>>> index 0000000..e3c21f2
->>>>> --- /dev/null
->>>>> +++ b/drivers/iio/timer/Kconfig
->>>>> @@ -0,0 +1,13 @@
->>>>> +#
->>>>> +# Timers drivers
->>>>> +
->>>>> +menu "Timers"
->>>>> +
->>>>> +config IIO_STM32_TIMER_TRIGGER
->>>>> +     tristate "STM32 Timer Trigger"
->>>>> +     depends on (ARCH_STM32 && OF && MFD_STM32_TIMERS) ||
->COMPILE_TEST
->>>>> +     select IIO_TRIGGERED_EVENT
->>>>> +     help
->>>>> +       Select this option to enable STM32 Timer Trigger
->>>>> +
->>>>> +endmenu
->>>>> diff --git a/drivers/iio/timer/Makefile
->b/drivers/iio/timer/Makefile
->>>>> new file mode 100644
->>>>> index 0000000..4ad95ec9
->>>>> --- /dev/null
->>>>> +++ b/drivers/iio/timer/Makefile
->>>>> @@ -0,0 +1 @@
->>>>> +obj-$(CONFIG_IIO_STM32_TIMER_TRIGGER) += stm32-timer-trigger.o
->>>>> diff --git a/drivers/iio/timer/stm32-timer-trigger.c
->b/drivers/iio/timer/stm32-timer-trigger.c
->>>>> new file mode 100644
->>>>> index 0000000..8d16e8f
->>>>> --- /dev/null
->>>>> +++ b/drivers/iio/timer/stm32-timer-trigger.c
->>>>> @@ -0,0 +1,466 @@
->>>>> +/*
->>>>> + * Copyright (C) STMicroelectronics 2016
->>>>> + *
->>>>> + * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
->>>>> + *
->>>>> + * License terms:  GNU General Public License (GPL), version 2
->>>>> + */
->>>>> +
->>>>> +#include <linux/iio/iio.h>
->>>>> +#include <linux/iio/sysfs.h>
->>>>> +#include <linux/iio/timer/stm32-timer-trigger.h>
->>>>> +#include <linux/iio/trigger.h>
->>>>> +#include <linux/iio/triggered_event.h>
->>>>> +#include <linux/interrupt.h>
->>>>> +#include <linux/mfd/stm32-timers.h>
->>>>> +#include <linux/module.h>
->>>>> +#include <linux/platform_device.h>
->>>>> +
->>>>> +#define MAX_TRIGGERS 6
->>>>> +#define MAX_VALIDS 5
->>>>> +
->>>>> +/* List the triggers created by each timer */
->>>>> +static const void *triggers_table[][MAX_TRIGGERS] = {
->>>>> +     { TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4,},
->>>>> +     { TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4,},
->>>>> +     { TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4,},
->>>>> +     { TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4,},
->>>>> +     { TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4,},
->>>>> +     { TIM6_TRGO,},
->>>>> +     { TIM7_TRGO,},
->>>>> +     { TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4,},
->>>>> +     { TIM9_TRGO, TIM9_CH1, TIM9_CH2,},
->>>>> +     { TIM12_TRGO, TIM12_CH1, TIM12_CH2,},
->>>>> +};
->>>>> +
->>>>> +/* List the triggers accepted by each timer */
->>>>> +static const void *valids_table[][MAX_VALIDS] = {
->>>>> +     { TIM5_TRGO, TIM2_TRGO, TIM4_TRGO, TIM3_TRGO,},
->>>>> +     { TIM1_TRGO, TIM8_TRGO, TIM3_TRGO, TIM4_TRGO,},
->>>>> +     { TIM1_TRGO, TIM8_TRGO, TIM5_TRGO, TIM4_TRGO,},
->>>>> +     { TIM1_TRGO, TIM2_TRGO, TIM3_TRGO, TIM8_TRGO,},
->>>>> +     { TIM2_TRGO, TIM3_TRGO, TIM4_TRGO, TIM8_TRGO,},
->>>>> +     { }, /* timer 6 */
->>>>> +     { }, /* timer 7 */
->>>>> +     { TIM1_TRGO, TIM2_TRGO, TIM4_TRGO, TIM5_TRGO,},
->>>>> +     { TIM2_TRGO, TIM3_TRGO,},
->>>>> +     { TIM4_TRGO, TIM5_TRGO,},
->>>>> +};
->>>>> +
->>>>> +struct stm32_timer_trigger {
->>>>> +     struct device *dev;
->>>>> +     struct regmap *regmap;
->>>>> +     struct clk *clk;
->>>>> +     u32 max_arr;
->>>>> +     const void *triggers;
->>>>> +     const void *valids;
->>>>> +};
->>>>> +
->>>>> +static int stm32_timer_start(struct stm32_timer_trigger *priv,
->>>>> +                          unsigned int frequency)
->>>>> +{
->>>>> +     unsigned long long prd, div;
->>>>> +     int prescaler = 0;
->>>>> +     u32 ccer, cr1;
->>>>> +
->>>>> +     /* Period and prescaler values depends of clock rate */
->>>>> +     div = (unsigned long long)clk_get_rate(priv->clk);
->>>>> +
->>>>> +     do_div(div, frequency);
->>>>> +
->>>>> +     prd = div;
->>>>> +
->>>>> +     /*
->>>>> +      * Increase prescaler value until we get a result that fit
->>>>> +      * with auto reload register maximum value.
->>>>> +      */
->>>>> +     while (div > priv->max_arr) {
->>>>> +             prescaler++;
->>>>> +             div = prd;
->>>>> +             do_div(div, (prescaler + 1));
->>>>> +     }
->>>>> +     prd = div;
->>>>> +
->>>>> +     if (prescaler > MAX_TIM_PSC) {
->>>>> +             dev_err(priv->dev, "prescaler exceeds the maximum
->value\n");
->>>>> +             return -EINVAL;
->>>>> +     }
->>>>> +
->>>>> +     /* Check if nobody else use the timer */
->>>>> +     regmap_read(priv->regmap, TIM_CCER, &ccer);
->>>>> +     if (ccer & TIM_CCER_CCXE)
->>>>> +             return -EBUSY;
->>>>> +
->>>>> +     regmap_read(priv->regmap, TIM_CR1, &cr1);
->>>>> +     if (!(cr1 & TIM_CR1_CEN))
->>>>> +             clk_enable(priv->clk);
->>>>> +
->>>>> +     regmap_write(priv->regmap, TIM_PSC, prescaler);
->>>>> +     regmap_write(priv->regmap, TIM_ARR, prd - 1);
->>>>> +     regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_ARPE,
->TIM_CR1_ARPE);
->>>>> +
->>>>> +     /* Force master mode to update mode */
->>>>> +     regmap_update_bits(priv->regmap, TIM_CR2, TIM_CR2_MMS,
->0x20);
->>>>> +
->>>>> +     /* Make sure that registers are updated */
->>>>> +     regmap_update_bits(priv->regmap, TIM_EGR, TIM_EGR_UG,
->TIM_EGR_UG);
->>>>> +
->>>>> +     /* Enable controller */
->>>>> +     regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN,
->TIM_CR1_CEN);
->>>>> +
->>>>> +     return 0;
->>>>> +}
->>>>> +
->>>>> +static void stm32_timer_stop(struct stm32_timer_trigger *priv)
->>>>> +{
->>>>> +     u32 ccer, cr1;
->>>>> +
->>>>> +     regmap_read(priv->regmap, TIM_CCER, &ccer);
->>>>> +     if (ccer & TIM_CCER_CCXE)
->>>>> +             return;
->>>>> +
->>>>> +     regmap_read(priv->regmap, TIM_CR1, &cr1);
->>>>> +     if (cr1 & TIM_CR1_CEN)
->>>>> +             clk_disable(priv->clk);
->>>>> +
->>>>> +     /* Stop timer */
->>>>> +     regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, 0);
->>>>> +     regmap_write(priv->regmap, TIM_PSC, 0);
->>>>> +     regmap_write(priv->regmap, TIM_ARR, 0);
->>>>> +}
->>>>> +
->>>>> +static ssize_t stm32_tt_store_frequency(struct device *dev,
->>>>> +                                     struct device_attribute
->*attr,
->>>>> +                                     const char *buf, size_t len)
->>>>> +{
->>>>> +     struct iio_trigger *trig = to_iio_trigger(dev);
->>>>> +     struct stm32_timer_trigger *priv =
->iio_trigger_get_drvdata(trig);
->>>>> +     unsigned int freq;
->>>>> +     int ret;
->>>>> +
->>>>> +     ret = kstrtouint(buf, 10, &freq);
->>>>> +     if (ret)
->>>>> +             return ret;
->>>>> +
->>>>> +     if (freq == 0) {
->>>>> +             stm32_timer_stop(priv);
->>>>> +     } else {
->>>>> +             ret = stm32_timer_start(priv, freq);
->>>>> +             if (ret)
->>>>> +                     return ret;
->>>>> +     }
->>>>> +
->>>>> +     return len;
->>>>> +}
->>>>> +
->>>>> +static ssize_t stm32_tt_read_frequency(struct device *dev,
->>>>> +                                    struct device_attribute
->*attr, char *buf)
->>>>> +{
->>>>> +     struct iio_trigger *trig = to_iio_trigger(dev);
->>>>> +     struct stm32_timer_trigger *priv =
->iio_trigger_get_drvdata(trig);
->>>>> +     u32 psc, arr, cr1;
->>>>> +     unsigned long long freq = 0;
->>>>> +
->>>>> +     regmap_read(priv->regmap, TIM_CR1, &cr1);
->>>>> +     regmap_read(priv->regmap, TIM_PSC, &psc);
->>>>> +     regmap_read(priv->regmap, TIM_ARR, &arr);
->>>>> +
->>>>> +     if (psc && arr && (cr1 & TIM_CR1_CEN)) {
->>>>> +             freq = (unsigned long long)clk_get_rate(priv->clk);
->>>>> +             do_div(freq, psc);
->>>>> +             do_div(freq, arr);
->>>>> +     }
->>>>> +
->>>>> +     return sprintf(buf, "%d\n", (unsigned int)freq);
->>>>> +}
->>>>> +
->>>>> +static IIO_DEV_ATTR_SAMP_FREQ(0660,
->>>>> +                           stm32_tt_read_frequency,
->>>>> +                           stm32_tt_store_frequency);
->>>>> +
->>>>> +static struct attribute *stm32_trigger_attrs[] = {
->>>>> +     &iio_dev_attr_sampling_frequency.dev_attr.attr,
->>>>> +     NULL,
->>>>> +};
->>>>> +
->>>>> +static const struct attribute_group stm32_trigger_attr_group = {
->>>>> +     .attrs = stm32_trigger_attrs,
->>>>> +};
->>>>> +
->>>>> +static const struct attribute_group *stm32_trigger_attr_groups[]
->= {
->>>>> +     &stm32_trigger_attr_group,
->>>>> +     NULL,
->>>>> +};
->>>>> +
->>>>> +static char *master_mode_table[] = {
->>>>> +     "reset",
->>>>> +     "enable",
->>>>> +     "update",
->>>>> +     "compare_pulse",
->>>>> +     "OC1REF",
->>>>> +     "OC2REF",
->>>>> +     "OC3REF",
->>>>> +     "OC4REF"
->>>>> +};
->>>>> +
->>>>> +static ssize_t stm32_tt_show_master_mode(struct device *dev,
->>>>> +                                      struct device_attribute
->*attr,
->>>>> +                                      char *buf)
->>>>> +{
->>>>> +     struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>>> +     struct stm32_timer_trigger *priv = iio_priv(indio_dev);
->>>>> +     u32 cr2;
->>>>> +
->>>>> +     regmap_read(priv->regmap, TIM_CR2, &cr2);
->>>>> +     cr2 = (cr2 & TIM_CR2_MMS) >> TIM_CR2_MMS_SHIFT;
->>>>> +
->>>>> +     return snprintf(buf, PAGE_SIZE, "%s\n",
->master_mode_table[cr2]);
->>>>> +}
->>>>> +
->>>>> +static ssize_t stm32_tt_store_master_mode(struct device *dev,
->>>>> +                                       struct device_attribute
->*attr,
->>>>> +                                       const char *buf, size_t
->len)
->>>>> +{
->>>>> +     struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>>> +     struct stm32_timer_trigger *priv = iio_priv(indio_dev);
->>>>> +     int i;
->>>>> +
->>>>> +     for (i = 0; i < ARRAY_SIZE(master_mode_table); i++) {
->>>>> +             if (!strncmp(master_mode_table[i], buf,
->>>>> +                          strlen(master_mode_table[i]))) {
->>>>> +                     regmap_update_bits(priv->regmap, TIM_CR2,
->>>>> +                                        TIM_CR2_MMS, i <<
->TIM_CR2_MMS_SHIFT);
->>>>> +                     return len;
->>>>> +             }
->>>>> +     }
->>>>> +
->>>>> +     return -EINVAL;
->>>>> +}
->>>>> +
->>>>> +static IIO_CONST_ATTR(master_mode_available,
->>>>> +     "reset enable update compare_pulse OC1REF OC2REF OC3REF
->OC4REF");
->>>>> +
->>>>> +static IIO_DEVICE_ATTR(master_mode, 0660,
->>>>> +                    stm32_tt_show_master_mode,
->>>>> +                    stm32_tt_store_master_mode,
->>>>> +                    0);
->>>>> +
->>>>> +static char *slave_mode_table[] = {
->>>>> +     "disabled",
->>>>> +     "encoder_1",
->>>>> +     "encoder_2",
->>>>> +     "encoder_3",
->>>>> +     "reset",
->>>>> +     "gated",
->>>>> +     "trigger",
->>>>> +     "external_clock",
->>>>> +};
->>>>> +
->>>>> +static ssize_t stm32_tt_show_slave_mode(struct device *dev,
->>>>> +                                     struct device_attribute
->*attr,
->>>>> +                                     char *buf)
->>>>> +{
->>>>> +     struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>>> +     struct stm32_timer_trigger *priv = iio_priv(indio_dev);
->>>>> +     u32 smcr;
->>>>> +
->>>>> +     regmap_read(priv->regmap, TIM_SMCR, &smcr);
->>>>> +     smcr &= TIM_SMCR_SMS;
->>>>> +
->>>>> +     return snprintf(buf, PAGE_SIZE, "%s\n",
->slave_mode_table[smcr]);
->>>>> +}
->>>>> +
->>>>> +static ssize_t stm32_tt_store_slave_mode(struct device *dev,
->>>>> +                                      struct device_attribute
->*attr,
->>>>> +                                      const char *buf, size_t
->len)
->>>>> +{
->>>>> +     struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>>> +     struct stm32_timer_trigger *priv = iio_priv(indio_dev);
->>>>> +     int i;
->>>>> +
->>>>> +     for (i = 0; i < ARRAY_SIZE(slave_mode_table); i++) {
->>>>> +             if (!strncmp(slave_mode_table[i], buf,
->>>>> +                          strlen(slave_mode_table[i]))) {
->>>>> +                     regmap_update_bits(priv->regmap,
->>>>> +                                        TIM_SMCR, TIM_SMCR_SMS,
->i);
->>>>> +                     return len;
->>>>> +             }
->>>>> +     }
->>>>> +
->>>>> +     return -EINVAL;
->>>>> +}
->>>>> +
->>>>> +static IIO_CONST_ATTR(slave_mode_available,
->>>>> +"disabled encoder_1 encoder_2 encoder_3 reset gated trigger
->external_clock");
->>>>> +
->>>>> +static IIO_DEVICE_ATTR(slave_mode, 0660,
->>>>> +                    stm32_tt_show_slave_mode,
->>>>> +                    stm32_tt_store_slave_mode,
->>>>> +                    0);
->>>>> +
->>>>> +static struct attribute *stm32_timer_attrs[] = {
->>>>> +     &iio_dev_attr_master_mode.dev_attr.attr,
->>>>> +     &iio_const_attr_master_mode_available.dev_attr.attr,
->>>>> +     &iio_dev_attr_slave_mode.dev_attr.attr,
->>>>> +     &iio_const_attr_slave_mode_available.dev_attr.attr,
->>>>> +     NULL,
->>>>> +};
->>>>> +
->>>>> +static const struct attribute_group stm32_timer_attr_group = {
->>>>> +     .attrs = stm32_timer_attrs,
->>>>> +};
->>>>> +
->>>>> +static const struct iio_trigger_ops timer_trigger_ops = {
->>>>> +     .owner = THIS_MODULE,
->>>>> +};
->>>>> +
->>>>> +static int stm32_setup_iio_triggers(struct stm32_timer_trigger
->*priv)
->>>>> +{
->>>>> +     int ret;
->>>>> +     const char * const *cur = priv->triggers;
->>>>> +
->>>>> +     while (cur && *cur) {
->>>>> +             struct iio_trigger *trig;
->>>>> +
->>>>> +             trig = devm_iio_trigger_alloc(priv->dev, "%s",
->*cur);
->>>>> +             if  (!trig)
->>>>> +                     return -ENOMEM;
->>>>> +
->>>>> +             trig->dev.parent = priv->dev->parent;
->>>>> +             trig->ops = &timer_trigger_ops;
->>>>> +             trig->dev.groups = stm32_trigger_attr_groups;
->>>>> +             iio_trigger_set_drvdata(trig, priv);
->>>>> +
->>>>> +             ret = devm_iio_trigger_register(priv->dev, trig);
->>>>> +             if (ret)
->>>>> +                     return ret;
->>>>> +             cur++;
->>>>> +     }
->>>>> +
->>>>> +     return 0;
->>>>> +}
->>>>> +
->>>>> +/**
->>>>> + * is_stm32_timer_trigger
->>>>> + * @trig: trigger to be checked
->>>>> + *
->>>>> + * return true if the trigger is a valid stm32 iio timer trigger
->>>>> + * either return false
->>>>> + */
->>>>> +bool is_stm32_timer_trigger(struct iio_trigger *trig)
->>>>> +{
->>>>> +     return (trig->ops == &timer_trigger_ops);
->>>>> +}
->>>>> +EXPORT_SYMBOL(is_stm32_timer_trigger);
->>>>> +
->>>>> +static int stm32_validate_trigger(struct iio_dev *indio_dev,
->>>>> +                               struct iio_trigger *trig)
->>>>> +{
->>>>> +     struct stm32_timer_trigger *priv = iio_priv(indio_dev);
->>>>> +     const char * const *cur = priv->valids;
->>>>> +     unsigned int i = 0;
->>>>> +
->>>>> +     if (!is_stm32_timer_trigger(trig))
->>>>> +             return -EINVAL;
->>>>> +
->>>>> +     while (cur && *cur) {
->>>>> +             if (!strncmp(trig->name, *cur, strlen(trig->name)))
->{
->>>>> +                     regmap_update_bits(priv->regmap,
->>>>> +                                        TIM_SMCR, TIM_SMCR_TS,
->>>>> +                                        i << TIM_SMCR_TS_SHIFT);
->>>>> +                     return 0;
->>>>> +             }
->>>>> +             cur++;
->>>>> +             i++;
->>>>> +     }
->>>>> +
->>>>> +     return -EINVAL;
->>>>> +}
->>>>> +
->>>>> +static const struct iio_info stm32_trigger_info = {
->>>>> +     .driver_module = THIS_MODULE,
->>>>> +     .validate_trigger = stm32_validate_trigger,
->>>>> +     .attrs = &stm32_timer_attr_group,
->>>>> +};
->>>>> +
->>>>> +static struct stm32_timer_trigger *stm32_setup_iio_device(struct
->device *dev)
->>>>> +{
->>>>> +     struct iio_dev *indio_dev;
->>>>> +     int ret;
->>>>> +
->>>>> +     indio_dev = devm_iio_device_alloc(dev,
->>>>> +                                       sizeof(struct
->stm32_timer_trigger));
->>>>> +     if (!indio_dev)
->>>>> +             return NULL;
->>>>> +
->>>>> +     indio_dev->name = dev_name(dev);
->>>>> +     indio_dev->dev.parent = dev;
->>>>> +     indio_dev->info = &stm32_trigger_info;
->>>>> +     indio_dev->modes = INDIO_EVENT_TRIGGERED;
->>>>> +     indio_dev->num_channels = 0;
->>>>> +     indio_dev->dev.of_node = dev->of_node;
->>>>> +
->>>>> +     ret = devm_iio_device_register(dev, indio_dev);
->>>>> +     if (ret)
->>>>> +             return NULL;
->>>>> +
->>>>> +     return iio_priv(indio_dev);
->>>>> +}
->>>>> +
->>>>> +static int stm32_timer_trigger_probe(struct platform_device
->*pdev)
->>>>> +{
->>>>> +     struct device *dev = &pdev->dev;
->>>>> +     struct stm32_timer_trigger *priv;
->>>>> +     struct stm32_timers *ddata =
->dev_get_drvdata(pdev->dev.parent);
->>>>> +     unsigned int index;
->>>>> +     int ret;
->>>>> +
->>>>> +     if (of_property_read_u32(dev->of_node, "reg", &index))
->>>>> +             return -EINVAL;
->>>>> +
->>>>> +     if (index >= ARRAY_SIZE(triggers_table))
->>>>> +             return -EINVAL;
->>>>> +
->>>>> +     /* Create an IIO device only if we have triggers to be
->validated */
->>>>> +     if (*valids_table[index])
->>>>> +             priv = stm32_setup_iio_device(dev);
->>>>
->>>> I still don't like this. Really feels like we shouldn't be creating
->an
->>>> iio device with all the bagage that carries just to allow us to do
->the
->>>> trigger trees.  We ought to have a much more light weight solution
->for this
->>>> functionality - we aren't typically even using the interrupt tree
->stuff
->>>> that the triggers for devices are all really about.
->>>>
->>>> A simpler approach of allowing each trigger the option of a parent
->seems like
->>>> it would be cleaner.  Could be done entirely within this driver in
->the first
->>>> instance.  Basically it would just look like your master and slave
->attributes
->>>> but have those under triggerX not iio:deviceX.
->>>>
->>>> We can work out how to make it more generic later - including
->perhaps the
->>>> option to trigger from triggers outside this driver, using some
->parallel
->>>> infrastructure to the device triggering.
->>>>
->>>>
->>>>> +     else
->>>>> +             priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
->>>>> +
->>>>> +     if (!priv)
->>>>> +             return -ENOMEM;
->>>>> +
->>>>> +     priv->dev = dev;
->>>>> +     priv->regmap = ddata->regmap;
->>>>> +     priv->clk = ddata->clk;
->>>>> +     priv->max_arr = ddata->max_arr;
->>>>> +     priv->triggers = triggers_table[index];
->>>>> +     priv->valids = valids_table[index];
->>>>> +
->>>>> +     ret = stm32_setup_iio_triggers(priv);
->>>>> +     if (ret)
->>>>> +             return ret;
->>>>> +
->>>>> +     platform_set_drvdata(pdev, priv);
->>>>> +
->>>>> +     return 0;
->>>>> +}
->>>>> +
->>>>> +static const struct of_device_id stm32_trig_of_match[] = {
->>>>> +     { .compatible = "st,stm32-timer-trigger", },
->>>>> +     { /* end node */ },
->>>>> +};
->>>>> +MODULE_DEVICE_TABLE(of, stm32_trig_of_match);
->>>>> +
->>>>> +static struct platform_driver stm32_timer_trigger_driver = {
->>>>> +     .probe = stm32_timer_trigger_probe,
->>>>> +     .driver = {
->>>>> +             .name = "stm32-timer-trigger",
->>>>> +             .of_match_table = stm32_trig_of_match,
->>>>> +     },
->>>>> +};
->>>>> +module_platform_driver(stm32_timer_trigger_driver);
->>>>> +
->>>>> +MODULE_ALIAS("platform: stm32-timer-trigger");
->>>>> +MODULE_DESCRIPTION("STMicroelectronics STM32 Timer Trigger
->driver");
->>>>> +MODULE_LICENSE("GPL v2");
->>>>> diff --git a/drivers/iio/trigger/Kconfig
->b/drivers/iio/trigger/Kconfig
->>>>> index 809b2e7..f2af4fe 100644
->>>>> --- a/drivers/iio/trigger/Kconfig
->>>>> +++ b/drivers/iio/trigger/Kconfig
->>>>> @@ -46,5 +46,4 @@ config IIO_SYSFS_TRIGGER
->>>>>
->>>>>         To compile this driver as a module, choose M here: the
->>>>>         module will be called iio-trig-sysfs.
->>>>> -
->>>> Clean this up.
->>>
->>> ok
->>>
->>>>>  endmenu
->>>>> diff --git a/include/linux/iio/timer/stm32-timer-trigger.h
->b/include/linux/iio/timer/stm32-timer-trigger.h
->>>>> new file mode 100644
->>>>> index 0000000..55535ae
->>>>> --- /dev/null
->>>>> +++ b/include/linux/iio/timer/stm32-timer-trigger.h
->>>>> @@ -0,0 +1,62 @@
->>>>> +/*
->>>>> + * Copyright (C) STMicroelectronics 2016
->>>>> + *
->>>>> + * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
->>>>> + *
->>>>> + * License terms:  GNU General Public License (GPL), version 2
->>>>> + */
->>>>> +
->>>>> +#ifndef _STM32_TIMER_TRIGGER_H_
->>>>> +#define _STM32_TIMER_TRIGGER_H_
->>>>> +
->>>>> +#define TIM1_TRGO    "tim1_trgo"
->>>>> +#define TIM1_CH1     "tim1_ch1"
->>>>> +#define TIM1_CH2     "tim1_ch2"
->>>>> +#define TIM1_CH3     "tim1_ch3"
->>>>> +#define TIM1_CH4     "tim1_ch4"
->>>>> +
->>>>> +#define TIM2_TRGO    "tim2_trgo"
->>>>> +#define TIM2_CH1     "tim2_ch1"
->>>>> +#define TIM2_CH2     "tim2_ch2"
->>>>> +#define TIM2_CH3     "tim2_ch3"
->>>>> +#define TIM2_CH4     "tim2_ch4"
->>>>> +
->>>>> +#define TIM3_TRGO    "tim3_trgo"
->>>>> +#define TIM3_CH1     "tim3_ch1"
->>>>> +#define TIM3_CH2     "tim3_ch2"
->>>>> +#define TIM3_CH3     "tim3_ch3"
->>>>> +#define TIM3_CH4     "tim3_ch4"
->>>>> +
->>>>> +#define TIM4_TRGO    "tim4_trgo"
->>>>> +#define TIM4_CH1     "tim4_ch1"
->>>>> +#define TIM4_CH2     "tim4_ch2"
->>>>> +#define TIM4_CH3     "tim4_ch3"
->>>>> +#define TIM4_CH4     "tim4_ch4"
->>>>> +
->>>>> +#define TIM5_TRGO    "tim5_trgo"
->>>>> +#define TIM5_CH1     "tim5_ch1"
->>>>> +#define TIM5_CH2     "tim5_ch2"
->>>>> +#define TIM5_CH3     "tim5_ch3"
->>>>> +#define TIM5_CH4     "tim5_ch4"
->>>>> +
->>>>> +#define TIM6_TRGO    "tim6_trgo"
->>>>> +
->>>>> +#define TIM7_TRGO    "tim7_trgo"
->>>>> +
->>>>> +#define TIM8_TRGO    "tim8_trgo"
->>>>> +#define TIM8_CH1     "tim8_ch1"
->>>>> +#define TIM8_CH2     "tim8_ch2"
->>>>> +#define TIM8_CH3     "tim8_ch3"
->>>>> +#define TIM8_CH4     "tim8_ch4"
->>>>> +
->>>>> +#define TIM9_TRGO    "tim9_trgo"
->>>>> +#define TIM9_CH1     "tim9_ch1"
->>>>> +#define TIM9_CH2     "tim9_ch2"
->>>>> +
->>>>> +#define TIM12_TRGO   "tim12_trgo"
->>>>> +#define TIM12_CH1    "tim12_ch1"
->>>>> +#define TIM12_CH2    "tim12_ch2"
->>>>> +
->>>>> +bool is_stm32_timer_trigger(struct iio_trigger *trig);
->>>>> +
->>>>> +#endif
->>>>>
->>>>
->>>
->>>
->>>
->>
-
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+CgpPbiAzIEphbnVhcnkgMjAxNyAxMjo1OToyMCBHTVQrMDA6MDAsIEJlbmphbWluIEdhaWduYXJk
+IDxiZW5qYW1pbi5nYWlnbmFyZEBsaW5hcm8ub3JnPiB3cm90ZToKPjIwMTctMDEtMDMgMTA6MjMg
+R01UKzAxOjAwIEJlbmphbWluIEdhaWduYXJkCj48YmVuamFtaW4uZ2FpZ25hcmRAbGluYXJvLm9y
+Zz46Cj4+IDIwMTctMDEtMDIgMTk6MjIgR01UKzAxOjAwIEpvbmF0aGFuIENhbWVyb24gPGppYzIz
+QGtlcm5lbC5vcmc+Ogo+Pj4gT24gMDIvMDEvMTcgMDg6NDYsIEJlbmphbWluIEdhaWduYXJkIHdy
+b3RlOgo+Pj4+IDIwMTYtMTItMzAgMjI6MTIgR01UKzAxOjAwIEpvbmF0aGFuIENhbWVyb24gPGpp
+YzIzQGtlcm5lbC5vcmc+Ogo+Pj4+PiBPbiAwOS8xMi8xNiAxNDoxNSwgQmVuamFtaW4gR2FpZ25h
+cmQgd3JvdGU6Cj4+Pj4+PiBUaW1lcnMgSVBzIGNhbiBiZSB1c2VkIHRvIGdlbmVyYXRlIHRyaWdn
+ZXJzIGZvciBvdGhlciBJUHMgbGlrZQo+Pj4+Pj4gREFDLCBBREMgb3Igb3RoZXIgdGltZXJzLgo+
+Pj4+Pj4gRWFjaCB0cmlnZ2VyIG1heSByZXN1bHQgb2YgdGltZXIgaW50ZXJuYWxzIHNpZ25hbHMg
+bGlrZSBjb3VudGVyCj5lbmFibGUsCj4+Pj4+PiByZXNldCBvciBlZGdlLCB0aGlzIGNvbmZpZ3Vy
+YXRpb24gY291bGQgYmUgZG9uZSB0aHJvdWdoCj4ibWFzdGVyX21vZGUiCj4+Pj4+PiBkZXZpY2Ug
+YXR0cmlidXRlLgo+Pj4+Pj4KPj4+Pj4+IEEgdGltZXIgZGV2aWNlIGNvdWxkIGJlIHRyaWdnZXJl
+ZCBieSBvdGhlciB0aW1lcnMsIHdlIHVzZSB0aGUKPnRyaWdnZXIKPj4+Pj4+IG5hbWUgYW5kIGlz
+X3N0bTMyX2lpb190aW1lcl90cmlnZ2VyKCkgZnVuY3Rpb24gdG8gZGlzdGluZ3Vpc2gKPnRoZW0K
+Pj4+Pj4+IGFuZCBjb25maWd1cmUgSVAgaW5wdXQgc3dpdGNoLgo+Pj4+Pj4KPj4+Pj4+IFRpbWVy
+IG1heSBhbHNvIGRlY2lkZSBvbiB3aGljaCBldmVudCAoZWRnZSwgbGV2ZWwpIHRoZXkgY291bGQK
+Pj4+Pj4+IGJlIGFjdGl2YXRlZCBieSBhIHRyaWdnZXIsIHRoaXMgY29uZmlndXJhdGlvbiBpcyBk
+b25lIGJ5IHdyaXRpbmcKPmluCj4+Pj4+PiAic2xhdmVfbW9kZSIgZGV2aWNlIGF0dHJpYnV0ZS4K
+Pj4+Pj4+Cj4+Pj4+PiBTaW5jZSB0cmlnZ2VycyBjb3VsZCBhbHNvIGJlIHVzZWQgYnkgREFDIG9y
+IEFEQyB0aGVpciBuYW1lcyBhcmUKPmRlZmluZWQKPj4+Pj4+IGluIGluY2x1ZGUvIG51eC9paW8v
+dGltZXIvc3RtMzItdGltZXItdHJpZ2dlci5oIHNvIHRob3NlIElQcyB3aWxsCj5iZSBhYmxlCj4+
+Pj4+PiB0byBjb25maWd1cmUgdGhlbXNlbHZlcyBpbiB2YWxpZF90cmlnZ2VyIGZ1bmN0aW9uCj4+
+Pj4+Pgo+Pj4+Pj4gVHJpZ2dlciBoYXZlIGEgInNhbXBsaW5nX2ZyZXF1ZW5jeSIgYXR0cmlidXRl
+IHdoaWNoIGFsbG93IHRvCj5jb25maWd1cmUKPj4+Pj4+IHRpbWVyIHNhbXBsaW5nIGZyZXF1ZW5j
+eSB3aXRob3V0IHVzaW5nIFBXTSBpbnRlcmZhY2UKPj4+Pj4+Cj4+Pj4+PiB2ZXJzaW9uIDU6Cj4+
+Pj4+PiAtIHNpbXBsaWZ5IHRhYmxlcyBvZiB0cmlnZ2Vycwo+Pj4+Pj4gLSBvbmx5IGNyZWF0ZSBh
+biBJSU8gZGV2aWNlIHdoZW4gbmVlZGVkCj4+Pj4+Pgo+Pj4+Pj4gdmVyc2lvbiA0Ogo+Pj4+Pj4g
+LSBnZXQgdHJpZ2dlcnMgY29uZmlndXJhdGlvbiBmcm9tICJyZWciIGluIERUCj4+Pj4+PiAtIGFk
+ZCB0YWJsZXMgb2YgdHJpZ2dlcnMKPj4+Pj4+IC0gc2FtcGxpbmcgZnJlcXVlbmN5IGlzIGVuYWJs
+ZS9kaXNhYmxlIHdoZW4gd3JpdGluZyBpbiB0cmlnZ2VyCj4+Pj4+PiAgIHNhbXBsaW5nX2ZyZXF1
+ZW5jeSBhdHRyaWJ1dGUKPj4+Pj4+IC0gbm8gbW9yZSB1c2Ugb2YgaW50ZXJydXB0aW9ucwo+Pj4+
+Pj4KPj4+Pj4+IHZlcnNpb24gMzoKPj4+Pj4+IC0gY2hhbmdlIGNvbXBhdGlibGUgdG8gInN0LHN0
+bTMyLXRpbWVyLXRyaWdnZXIiCj4+Pj4+PiAtIGZpeCBhdHRyaWJ1dGVzIGFjY2VzcyByaWdodAo+
+Pj4+Pj4gLSB1c2Ugc3RyaW5nIGluc3RlYWQgb2YgaW50IGZvciBtYXN0ZXJfbW9kZSBhbmQgc2xh
+dmVfbW9kZQo+Pj4+Pj4gLSBkb2N1bWVudCBkZXZpY2UgYXR0cmlidXRlcyBpbiBzeXNmcy1idXMt
+aWlvLXRpbWVyLXN0bTMyCj4+Pj4+Pgo+Pj4+Pj4gdmVyc2lvbiAyOgo+Pj4+Pj4gLSBrZWVwIG9u
+bHkgb25lIGNvbXBhdGlibGUKPj4+Pj4+IC0gdXNlIHN0LGlucHV0LXRyaWdnZXJzLW5hbWVzIGFu
+ZCBzdCxvdXRwdXQtdHJpZ2dlcnMtbmFtZXMKPj4+Pj4+ICAgdG8ga25vdyB3aGljaCB0cmlnZ2Vy
+cyBhcmUgYWNjZXB0ZWQgYW5kL29yIGNyZWF0ZSBieSB0aGUgZGV2aWNlCj4+Pj4+IEZpcnN0bHks
+IHNvcnJ5IGl0IGhhcyB0YWtlbiBtZSBzbyBsb25nIHRvIGdldCBiYWNrIHRvIHRoaXMuCj4+Pj4+
+Cj4+Pj4+IEknbSBzdGlsbCBub3Qga2VlbiBvbiB0aGlzIHVzZSBvZiBpaW9fZGV2aWNlIGVsZW1l
+bnRzIGp1c3QgdG8gYWN0Cj5hcwo+Pj4+PiBnbHVlIGJldHdlZW4gdHJpZ2dlcnMuICBJIHRoaW5r
+IHdlIG5lZWQgdG8gd29yayBvdXQgYSBtb3JlIGxpZ2h0Cj53ZWlnaHQKPj4+Pj4gd2F5IHRvIGRv
+IHRoaXMuICBBcyB5b3UgYXJlIG9ubHkgdXNpbmcgdGhlbSBmb3IgdmFsaWRhdGlvbiBhbmQgdG8K
+PnByb3ZpZGUKPj4+Pj4gc29tZXdoZXJlIHRvIGhhbmcgdGhlIGNvbnRyb2wgYXR0aWJ1dGVzIG9m
+ZiwgdGhlcmUgaXMgbm90aGluZwo+c3RvcHBpbmcgdXMKPj4+Pj4gbW92aW5nIHRoYXQgb3ZlciB0
+byB0aGUgaWlvX3RyaWdnZXIgaW5zdGVhZCB3aGljaCB3b3VsZCBhdm9pZCB0aGUKPm1lc3N5Cj4+
+Pj4+IGR1YWxpdHkgZ29pbmcgb24gaGVyZS4KPj4+Pgo+Pj4+IEkgaGF2ZSBhZGQgYW4gaWlvX2Rl
+dmljZSBiZWNhdXNlIGVhY2ggaGFyZHdhcmUgY2FuIGdlbmVyYXRlCj5tdWx0aXBsZQo+Pj4+IHRy
+aWdnZXJzICh1cCB0byA1OiB0cmdvLCBjaCAxLi4uNCkgYW5kIHNsYXZlX21vZGUgYXR0cmlidXRl
+IHdpbGwKPmltcGFjdCBhbGwgdGhlCj4+Pj4gdHJpZ2dlcnMgb2YgYSBkZXZpY2UuIEZvciBtZSBp
+dCB3YXMgbWFraW5nIHNlbnNlIHRvIGNlbnRyYWxpemUgdGhhdAo+aW4gYW4KPj4+PiBpaW9fZGV2
+aWNlIHJhdGhlciB0aGFuIGhhdmluZyBhbiBhdHRyaWJ1dGUgInNoYXJlZCIgKGZyb20gaGFyZHdh
+cmUKPj4+PiBwb2ludCBvZiB2aWV3KQo+Pj4+IG9uIG11bHRpcGxlIHRyaWdnZXJzLgo+Pj4+IFNp
+bmNlIG1hc3Rlcl9tb2RlIGF0dHJpYnV0ZSBpcyBvbmx5IHVzZWQgYnkgdHJnbyBhbmQgbm90IGlt
+cGFjdAo+Y2gxLi4uNAo+Pj4+IHRyaWdnZXJzIEkgd2lsbCBtb3ZlIGl0IHRvIHRyaWdnZXIgaW5z
+dGVhZCBvZiB0aGUgaWlvX2RldmljZS4KPj4+Pgo+Pj4+IEkgYWxzbyB3YW50ZWQgdG8gYmUgYWJs
+ZSB0byBjb25uZWN0IHRyaWdnZXJzIG9uIGEgaWlvX2RldmljZSBhcyBJCj4+Pj4gY291bGQgZG8g
+Zm9yIGFuCj4+Pj4gQURDIHdpdGggYSBjb21tYW5kIGxpa2UgJ2VjaG8gInRpbTFfdHJnbyIgPgo+
+aWlvX2RldmljZVgvdHJpZ2dlci9jdXJyZW50X3RyaWdnZXInCj4+PiBUaGlzIGlzIGludGVyZXN0
+aW5nLCBidXQgd2l0aCBhIGJpdCBvZiByZWZhY3RvcmluZyBJIHdvdWxkIHRoaW5rIGl0Cj53b3Vs
+ZAo+Pj4gYmUgcG9zc2libGUgdG8gc2hhcmUgc29tZSBvZiB0aGF0IGNvZGUgdGh1cyBhbGxvd2lu
+ZyBub24gSUlPIGRldmljZXMKPnRvCj4+PiBiaW5kIHRvIHRyaWdnZXJzLiAgVWx0aW1hdGVseSBJ
+IHdhbnQgdG8gYmUgYWJsZSB0byBiaW5kIGEgdHJpZ2dlciB0bwo+Pj4gYSB0cmlnZ2VyIC0gSSBh
+cHByZWNpYXRlIGhlcmUgdGhlIHRvcG9sb2d5IGlzIG1vcmUgbGltaXRlZCB0aGFuIHRoYXQKPj4+
+IHNvIHNvbWUgY29tcGxleGl0eSBjb21lcyBpbi4KPj4+Cj4+PiBNeSBndXQgZmVlbGluZyBpcyB0
+aGF0IHJlcHJlc2VudGluZyB0aGF0IHRvcG9sb2d5IGV4cGxpY2l0bHkgaXMgaGFyZAo+Pj4gdG8g
+ZG8gaW4gYSByZW1vdGVseSBnZW5lcmFsIHdheSwgYnV0IGxldHMgdHJ5IGl0IGFuZCBzZWUuCj4+
+PiBXZSBydW4gaW50byB0aGlzIHNvcnQgb2YgaW50ZXJkZXBlbmRlbmN5IGlzc3VlIGJldHdlZW4g
+ZGlmZmVyZW50Cj5iaXRzIG9mCj4+PiB0aGUgaGFyZHdhcmUgYWxsIHRoZSB0aW1lLiAgU2V0dGlu
+ZyBhIHZhbHVlIHNvbWV3aGVyZSBlZmZlY3RzIHRoZQo+Y29uZmlndXJhdGlvbgo+Pj4gZWxzZXdo
+ZXJlIC0gb2Z0ZW4gdGhlIGJlc3QgcGxhbiBpcyB0byBqdXN0IGxldCB0aGF0IGhhcHBlbiBhbmQg
+bGVhdmUKPml0IHVwIHRvCj4+PiB1c2Vyc3BhY2UgdG8gY2hlY2sgZm9yIGNoYW5nZXMgaWYgaXQg
+Y2FyZXMuCj4+Cj4+IG9rYXkKPj4KPj4+PiBJZiBJIGNoYW5nZSB0aGF0IHRvIHBhcmVudF90cmln
+Z2VyIGF0dHJpYnV0ZSBpdCBjaGFuZ2UgdGhpcwo+YmVoYXZpb3IKPj4+PiBhbmQgSSB3aWxsIGhh
+dmUgdG8KPj4+PiBkdXBsaWNhdGVkIHdoYXQgaXMgZG9uZSBpbiBpaW9fdHJpZ2dlcl93cml0ZV9j
+dXJyZW50KCkgdG8gZmluZCBhbmQKPj4+PiB2YWxpZGF0ZSB0cmlnZ2Vycy4KPj4+IEkgZ2V0IHRo
+ZSByZWFzb25pbmcsIGJ1dCB3ZSBzdGlsbCBlbmQgdXAgd2l0aCBzb21ldGhpbmcgcmVwcmVzZW50
+ZWQKPj4+IGJ5IGFuIElJTyBkZXZpY2UgdGhhdCBpc24ndCBwcm92aWRpbmcgYW55IGNoYW5uZWxz
+IGF0IGFsbC4gSXQncwo+c2ltcGx5Cj4+PiB1c2luZyBzb21lIG9mIHRoZSBpbmZyYXN0cnVjdHVy
+ZS4gIFRvIG15IG1pbmQgaXQgaXMgJ3NvbWV0aGluZyBlbHNlJwo+Pj4gYW5kIHNob3VsZCBiZSBy
+ZXByZXNlbnRlZCBhcyBzdWNoLiAgSSBoYXZlIG5vIHByb2JsZW0gYXQgYWxsIHdpdGgKPj4+IHlv
+dSByZWdpc3RlcmluZyBhZGRpdGlvbmFsIGVsZW1lbnRzIGluIC9zeXNmcy9idXMvaWlvLyB0byBy
+ZXByZXNlbnQKPj4+IHRoZXNlIHNoYXJlZCBlbGVtZW50cyAtIHdlIGFscmVhZHkgaGF2ZSBkcml2
+ZXJzIHRoYXQgZG8gdGhhdCB0bwo+Pj4gcHJvdmlkZSBzb21lIGNlbnRyYWxpemVkIGluZnJhc3Ry
+dWN0dXJlIChlLmcuIHRoZSBzeXNmcy10cmlnZ2VyKQo+Pgo+PiBNeSBoYXJkd2FyZSBibG9jayBh
+cmUgdGltZXJzIG1heWJlIEkgY2FuIGFkZCBhIGNoYW5uZWwgdHlwZQo+IklJT19USU1FUiIKPj4g
+YW5kIGRlY2xhcmUgYSBjaGFubmVsIHdpdGggaW5mb19tYXNrX3NlcGFyYXRlID0KPkJJVChJSU9f
+Q0hBTl9JTkZPX1NBTVBfRlJFUSkKPj4gc28gSSB3aWxsIGJlIGFibGUgdG8gd3JpdGUvcmVhZCBz
+YW1wbGluZyBmcmVxdWVuY3kgb24gSUlPIGRldmljZS4KPj4KPgo+SWYgaXQgaXNuJ3QgcG9zc2li
+bGUgdG8gaW1wbGVtZW50IElJT19USU1FUiBJIHdpbGwgc2ltcGx5IGRyb3AgZGV2aWNlCj5wYXJ0
+IG9mCj5teSBkcml2ZXIgdW50aWwgd2UgZmluZCBhIHNvbHV0aW9uIGJlY2F1c2UgSSB3b3VsZCBs
+aWtlIHRvIHVwc3RyZWFtIGF0Cj5sZWFzdCB3aGF0IGlzCj5uZWVkIHRvIEFEQy9EQUMuCgpBZ3Jl
+ZWQuIExldCdzIG1vdmUgZm9yd2FyZCB3aXRoIHRoZSBlYXN5IHN0dWZmLgpJIG1pZ2h0IGdldCBh
+IGNoYW5jZSB0byBsb29rIGF0IHRyaWdnZXIgdHJlZXMgbGF0ZXIKdGhpcyB3ZWVrIGRlcGVuZGlu
+ZyBvbiBob3cgc29tZSB0ZWRpb3VzIHRpbWUgaW4gYSBwaGFybWEgY2xlYW4gcm9vbSBhbmQgb24g
+cGxhbmVzIGdvZXMuCgpJIHRoaW5rIHdlIGNhbiBtb2NrIG1vc3Qgb2YgdGhpcyB1cCB3aXRoIHNv
+ZnR3YXJlIHRyaWdnZXJzIGFuZCB0aGUgZHVtbXkgZHJpdmVyLgoKUGVyaGFwcyBhIHN5c2ZzIHRy
+aWdnZXIgZHJpdmluZyBhIHRpbWVyIHRyaWdnZXIgd2lsbCBnZXQgdXMgbW92aW5nIGluIHRoZSBy
+aWdodCBkaXJlY3Rpb24gQVBJIHdpc2UuCk1pZ2h0IGxldCB1cyBmaWd1cmUgb3V0IHNvbWV0aGlu
+ZyBnZW5lcmljIHdpdGhvdXQgbmVlZGluZyBoYXJkd2FyZS4KCkEgZmV3IG90aGVyIGJpdHMgb2Yg
+aGFyZHdhcmUgY2FuIGRvIHNpbWlsYXIgdG8geW91cnMgYnV0IEkgZG9uJ3QgdGhpbmsgSSBoYXZl
+IGFueSBpbiBteSBwaWxlIG9mIGJvYXJkcy4KCkoKPgo+Pj4gSSdtIHdvcnJpZWQgYWJvdXQgdGhl
+IHNjb3BlIHNwcmVhZCB3ZSBnZXQgZm9yIGFuIElJTyBkZXZpY2UKPm90aGVyd2lzZS4KPj4+IFRo
+ZXkgc2VydmUgYSB3ZWxsIGRlZmluZWQgcHVycG9zZSBhdCB0aGUgbW9tZW50LCBhbmQgdGhhdCBp
+c24ndCB3aGF0Cj4+PiBpcyBoYXBwZW5pbmcgaGVyZS4KPj4+Cj4+PiBTbyBteSBndXQgZmVlbGlu
+ZyBpcyB3ZSBhcmUgYmV0dGVyIGRlbGliZXJhdGVseSBub3QgcmVwcmVzZW50aW5nIHRoZQo+Pj4g
+aW50ZXIgZGVwZW5kZW5jZSBhbmQgY2xhaW1pbmcgYWxsIHRyaWdnZXJzIHdlIGFyZSBjcmVhdGlu
+ZyBhcmUKPj4+IGluZGVwZW5kZW50LiAgVGhhdCB3YXkgd2UgY2FuIGhhdmUgYSBuaWNlIGdlbmVy
+aWMgaW5mcmFzdHJ1Y3R1cmUKPj4+IHRoYXQgd2lsbCB3b3JrIGluIGFsbCBjYXNlcyAoYmUgaXQg
+cHVzaGluZyB0aGUgc2FuaXR5IGNoZWNraW5nIHRvCj4+PiB1c2Vyc3BhY2UpLgo+Pj4KPj4+IFNv
+IGVhY2ggdHJpZ2dlciBoYXMgZGlyZWN0IGFjY2VzcyB0byB3aGF0IGNvbnRyb2xzIGl0LiAgQ2hh
+bmdpbmcKPmFueXRoaW5nCj4+PiBjYW4gZWZmZWN0IG90aGVyIHRyaWdnZXJzIGluIHdlaXJkIHdh
+eXMuCj4+Pgo+Pj4gSSdtIGZpbmRpbmcgaXQgaGFyZCB0byBzZWUgYW55dGhpbmcgZWxzZSBnZW5l
+cmFsaXppbmcgc3VmZmljaWVudGx5Cj4+PiBhcyB3ZSdsbCBhbHdheXMgZ2V0IGNhc2VzIHdoZXJl
+IHdlIGNhbid0IHJlcHJlc2VudCB0aGUgdG9wb2xvZ3kKPndpdGhvdXQKPj4+IGRpdmluZyBpbnRv
+IHRoZSBjb21wbGV4aXR5IG9mIHNvbWV0aGluZyBsaWtlIHRoZSBtZWRpYSBjb250cm9sbGVyCj4+
+PiBmcmFtZXdvcmsuCj4+Pgo+Pj4gSm9uYXRoYW4KPj4+Pgo+Pj4+PiBJIG1pZ2h0IHN0aWxsIGJl
+IG1pc3Npbmcgc29tZXRoaW5nIHRob3VnaCEKPj4+Pj4KPj4+Pj4gWW91IHdvdWxkIG9ubHkgSSB0
+aGluayBuZWVkIDMgYXR0cmlidXRlcwo+Pj4+Pgo+Pj4+PiBwYXJyZW50X3RyaWdnZXIKPj4+Pj4g
+YW5kIHNvbWV0aGluZyBsaWtlIHlvdXIgbWFzdGVyX21vZGUgYW5kIHNsYXZlX21vZGUgYXR0cmli
+dXRlcy4KPj4+Pj4KPj4+Pj4gVGhlIHBhcnJlbnRfdHJpZ2dlciB3b3VsZCBuZWVkIHNvbWUgdmFs
+aWRhdGlvbiBldGMsIGJ1dCBpZiB3ZSBrZWVwCj5pdAo+Pj4+PiB3aXRoaW4gdGhpcyBkcml2ZXIg
+aW5pdGlhbGx5IHRoYXQgd29uJ3QgYmUgaGFyZCB0byBkby4gQ2hlY2tpbmcKPnRoZSBkZXZpY2UK
+Pj4+Pj4gcGFyZW50IG1hdGNoZXMgd2lsbCBkbyBtb3N0IG9mIGl0Lgo+Pj4+Pgo+Pj4+PiBKb25h
+dGhhbgo+Pj4+Pj4KPj4+Pj4+IFNpZ25lZC1vZmYtYnk6IEJlbmphbWluIEdhaWduYXJkIDxiZW5q
+YW1pbi5nYWlnbmFyZEBzdC5jb20+Cj4+Pj4+PiAtLS0KPj4+Pj4+ICAuLi4vQUJJL3Rlc3Rpbmcv
+c3lzZnMtYnVzLWlpby10aW1lci1zdG0zMiAgICAgICAgICB8ICA1NSArKysKPj4+Pj4+ICBkcml2
+ZXJzL2lpby9LY29uZmlnICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMiArLQo+
+Pj4+Pj4gIGRyaXZlcnMvaWlvL01ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IHwgICAxICsKPj4+Pj4+ICBkcml2ZXJzL2lpby90aW1lci9LY29uZmlnICAgICAgICAgICAgICAg
+ICAgICAgICAgICB8ICAxMyArCj4+Pj4+PiAgZHJpdmVycy9paW8vdGltZXIvTWFrZWZpbGUgICAg
+ICAgICAgICAgICAgICAgICAgICAgfCAgIDEgKwo+Pj4+Pj4gIGRyaXZlcnMvaWlvL3RpbWVyL3N0
+bTMyLXRpbWVyLXRyaWdnZXIuYyAgICAgICAgICAgIHwgNDY2Cj4rKysrKysrKysrKysrKysrKysr
+KysKPj4+Pj4+ICBkcml2ZXJzL2lpby90cmlnZ2VyL0tjb25maWcgICAgICAgICAgICAgICAgICAg
+ICAgICB8ICAgMSAtCj4+Pj4+PiAgaW5jbHVkZS9saW51eC9paW8vdGltZXIvc3RtMzItdGltZXIt
+dHJpZ2dlci5oICAgICAgfCAgNjIgKysrCj4+Pj4+PiAgOCBmaWxlcyBjaGFuZ2VkLCA1OTkgaW5z
+ZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKPj4+Pj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQKPkRv
+Y3VtZW50YXRpb24vQUJJL3Rlc3Rpbmcvc3lzZnMtYnVzLWlpby10aW1lci1zdG0zMgo+Pj4+Pj4g
+IGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lpby90aW1lci9LY29uZmlnCj4+Pj4+PiAgY3Jl
+YXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvaWlvL3RpbWVyL01ha2VmaWxlCj4+Pj4+PiAgY3JlYXRl
+IG1vZGUgMTAwNjQ0IGRyaXZlcnMvaWlvL3RpbWVyL3N0bTMyLXRpbWVyLXRyaWdnZXIuYwo+Pj4+
+Pj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBpbmNsdWRlL2xpbnV4L2lpby90aW1lci9zdG0zMi10aW1l
+ci10cmlnZ2VyLmgKPj4+Pj4+Cj4+Pj4+PiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9BQkkv
+dGVzdGluZy9zeXNmcy1idXMtaWlvLXRpbWVyLXN0bTMyCj5iL0RvY3VtZW50YXRpb24vQUJJL3Rl
+c3Rpbmcvc3lzZnMtYnVzLWlpby10aW1lci1zdG0zMgo+Pj4+Pj4gbmV3IGZpbGUgbW9kZSAxMDA2
+NDQKPj4+Pj4+IGluZGV4IDAwMDAwMDAuLjI2NTgzZGQKPj4+Pj4+IC0tLSAvZGV2L251bGwKPj4+
+Pj4+ICsrKyBiL0RvY3VtZW50YXRpb24vQUJJL3Rlc3Rpbmcvc3lzZnMtYnVzLWlpby10aW1lci1z
+dG0zMgo+Pj4+Pj4gQEAgLTAsMCArMSw1NSBAQAo+Pj4+Pj4gK1doYXQ6ICAgICAgICAgICAgICAg
+Cj4vc3lzL2J1cy9paW8vZGV2aWNlcy9paW86ZGV2aWNlWC9tYXN0ZXJfbW9kZV9hdmFpbGFibGUK
+Pj4+Pj4+ICtLZXJuZWxWZXJzaW9uOiAgICAgICA0LjEwCj4+Pj4+PiArQ29udGFjdDogICAgIGJl
+bmphbWluLmdhaWduYXJkQHN0LmNvbQo+Pj4+Pj4gK0Rlc2NyaXB0aW9uOgo+Pj4+Pj4gKyAgICAg
+ICAgICAgICBSZWFkaW5nIHJldHVybnMgdGhlIGxpc3QgcG9zc2libGUgbWFzdGVyIG1vZGVzCj53
+aGljaCBhcmU6Cj4+Pj4+PiArICAgICAgICAgICAgIC0gInJlc2V0IiAgICAgOiBUaGUgVUcgYml0
+IGZyb20gdGhlIFRJTXhfRUdSCj5yZWdpc3RlciBpcyB1c2VkIGFzIHRyaWdnZXIgb3V0cHV0IChU
+UkdPKS4KPj4+Pj4+ICsgICAgICAgICAgICAgLSAiZW5hYmxlIiAgICA6IFRoZSBDb3VudGVyIEVu
+YWJsZSBzaWduYWwgQ05UX0VOIGlzCj51c2VkIGFzIHRyaWdnZXIgb3V0cHV0Lgo+Pj4+Pj4gKyAg
+ICAgICAgICAgICAtICJ1cGRhdGUiICAgIDogVGhlIHVwZGF0ZSBldmVudCBpcyBzZWxlY3RlZCBh
+cwo+dHJpZ2dlciBvdXRwdXQuCj4+Pj4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICBG
+b3IgaW5zdGFuY2UgYSBtYXN0ZXIgdGltZXIgY2FuCj50aGVuIGJlIHVzZWQgYXMgYSBwcmVzY2Fs
+ZXIgZm9yIGEgc2xhdmUgdGltZXIuCj4+Pj4+PiArICAgICAgICAgICAgIC0gImNvbXBhcmVfcHVs
+c2UiIDogVGhlIHRyaWdnZXIgb3V0cHV0IHNlbmQgYQo+cG9zaXRpdmUgcHVsc2Ugd2hlbiB0aGUg
+Q0MxSUYgZmxhZyBpcyB0byBiZSBzZXQuCj4+Pj4+PiArICAgICAgICAgICAgIC0gIk9DMVJFRiIg
+ICAgOiBPQzFSRUYgc2lnbmFsIGlzIHVzZWQgYXMgdHJpZ2dlcgo+b3V0cHV0Lgo+Pj4+Pj4gKyAg
+ICAgICAgICAgICAtICJPQzJSRUYiICAgIDogT0MyUkVGIHNpZ25hbCBpcyB1c2VkIGFzIHRyaWdn
+ZXIKPm91dHB1dC4KPj4+Pj4+ICsgICAgICAgICAgICAgLSAiT0MzUkVGIiAgICA6IE9DM1JFRiBz
+aWduYWwgaXMgdXNlZCBhcyB0cmlnZ2VyCj5vdXRwdXQuCj4+Pj4+PiArICAgICAgICAgICAgIC0g
+Ik9DNFJFRiIgICAgOiBPQzRSRUYgc2lnbmFsIGlzIHVzZWQgYXMgdHJpZ2dlcgo+b3V0cHV0Lgo+
+Pj4+Pj4gKwo+Pj4+Pj4gK1doYXQ6ICAgICAgICAgICAgICAgCj4vc3lzL2J1cy9paW8vZGV2aWNl
+cy9paW86ZGV2aWNlWC9tYXN0ZXJfbW9kZQo+Pj4+Pj4gK0tlcm5lbFZlcnNpb246ICAgICAgIDQu
+MTAKPj4+Pj4+ICtDb250YWN0OiAgICAgYmVuamFtaW4uZ2FpZ25hcmRAc3QuY29tCj4+Pj4+PiAr
+RGVzY3JpcHRpb246Cj4+Pj4+PiArICAgICAgICAgICAgIFJlYWRpbmcgcmV0dXJucyB0aGUgY3Vy
+cmVudCBtYXN0ZXIgbW9kZXMuCj4+Pj4+PiArICAgICAgICAgICAgIFdyaXRpbmcgc2V0IHRoZSBt
+YXN0ZXIgbW9kZQo+Pj4+Pj4gKwo+Pj4+Pj4gK1doYXQ6ICAgICAgICAgICAgICAgCj4vc3lzL2J1
+cy9paW8vZGV2aWNlcy9paW86ZGV2aWNlWC9zbGF2ZV9tb2RlX2F2YWlsYWJsZQo+Pj4+Pj4gK0tl
+cm5lbFZlcnNpb246ICAgICAgIDQuMTAKPj4+Pj4+ICtDb250YWN0OiAgICAgYmVuamFtaW4uZ2Fp
+Z25hcmRAc3QuY29tCj4+Pj4+PiArRGVzY3JpcHRpb246Cj4+Pj4+PiArICAgICAgICAgICAgIFJl
+YWRpbmcgcmV0dXJucyB0aGUgbGlzdCBwb3NzaWJsZSBzbGF2ZSBtb2RlcyB3aGljaAo+YXJlOgo+
+Pj4+Pj4gKyAgICAgICAgICAgICAtICJkaXNhYmxlZCIgIDogVGhlIHByZXNjYWxlciBpcyBjbG9j
+a2VkIGRpcmVjdGx5Cj5ieSB0aGUgaW50ZXJuYWwgY2xvY2suCj4+Pj4+PiArICAgICAgICAgICAg
+IC0gImVuY29kZXJfMSIgOiBDb3VudGVyIGNvdW50cyB1cC9kb3duIG9uIFRJMkZQMQo+ZWRnZSBk
+ZXBlbmRpbmcgb24gVEkxRlAyIGxldmVsLgo+Pj4+Pj4gKyAgICAgICAgICAgICAtICJlbmNvZGVy
+XzIiIDogQ291bnRlciBjb3VudHMgdXAvZG93biBvbiBUSTFGUDIKPmVkZ2UgZGVwZW5kaW5nIG9u
+IFRJMkZQMSBsZXZlbC4KPj4+Pj4+ICsgICAgICAgICAgICAgLSAiZW5jb2Rlcl8zIiA6IENvdW50
+ZXIgY291bnRzIHVwL2Rvd24gb24gYm90aAo+VEkxRlAxIGFuZCBUSTJGUDIgZWRnZXMgZGVwZW5k
+aW5nCj4+Pj4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICBvbiB0aGUgbGV2ZWwgb2Yg
+dGhlIG90aGVyIGlucHV0Lgo+Pj4+Pj4gKyAgICAgICAgICAgICAtICJyZXNldCIgICAgIDogUmlz
+aW5nIGVkZ2Ugb2YgdGhlIHNlbGVjdGVkIHRyaWdnZXIKPmlucHV0IHJlaW5pdGlhbGl6ZXMgdGhl
+IGNvdW50ZXIKPj4+Pj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGFuZCBnZW5lcmF0
+ZXMgYW4gdXBkYXRlIG9mIHRoZQo+cmVnaXN0ZXJzLgo+Pj4+Pj4gKyAgICAgICAgICAgICAtICJn
+YXRlZCIgICAgIDogVGhlIGNvdW50ZXIgY2xvY2sgaXMgZW5hYmxlZCB3aGVuCj50aGUgdHJpZ2dl
+ciBpbnB1dCBpcyBoaWdoLgo+Pj4+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgVGhl
+IGNvdW50ZXIgc3RvcHMgKGJ1dCBpcyBub3QKPnJlc2V0KSBhcyBzb29uIGFzIHRoZSB0cmlnZ2Vy
+IGJlY29tZXMgbG93Lgo+Pj4+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQm90aCBz
+dGFydCBhbmQgc3RvcCBvZiB0aGUgY291bnRlcgo+YXJlIGNvbnRyb2xsZWQuCj4+Pj4+PiArICAg
+ICAgICAgICAgIC0gInRyaWdnZXIiICAgOiBUaGUgY291bnRlciBzdGFydHMgYXQgYSByaXNpbmcg
+ZWRnZQo+b2YgdGhlIHRyaWdnZXIgVFJHSSAoYnV0IGl0IGlzIG5vdAo+Pj4+Pj4gKyAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgcmVzZXQpLiBPbmx5IHRoZSBzdGFydCBvZiB0aGUKPmNvdW50
+ZXIgaXMgY29udHJvbGxlZC4KPj4+Pj4+ICsgICAgICAgICAgICAgLSAiZXh0ZXJuYWxfY2xvY2si
+OiBSaXNpbmcgZWRnZXMgb2YgdGhlIHNlbGVjdGVkCj50cmlnZ2VyIChUUkdJKSBjbG9jayB0aGUg
+Y291bnRlci4KPj4+Pj4+ICsKPj4+Pj4+ICtXaGF0OiAgICAgICAgICAgICAgICAvc3lzL2J1cy9p
+aW8vZGV2aWNlcy9paW86ZGV2aWNlWC9zbGF2ZV9tb2RlCj4+Pj4+PiArS2VybmVsVmVyc2lvbjog
+ICAgICAgNC4xMAo+Pj4+Pj4gK0NvbnRhY3Q6ICAgICBiZW5qYW1pbi5nYWlnbmFyZEBzdC5jb20K
+Pj4+Pj4+ICtEZXNjcmlwdGlvbjoKPj4+Pj4+ICsgICAgICAgICAgICAgUmVhZGluZyByZXR1cm5z
+IHRoZSBjdXJyZW50IHNsYXZlIG1vZGUuCj4+Pj4+PiArICAgICAgICAgICAgIFdyaXRpbmcgc2V0
+IHRoZSBzbGF2ZSBtb2RlCj4+Pj4+PiArCj4+Pj4+PiArV2hhdDogICAgICAgICAgICAgICAKPi9z
+eXMvYnVzL2lpby9kZXZpY2VzL3RyaWdnZXJYL3NhbXBsaW5nX2ZyZXF1ZW5jeQo+Pj4+Pj4gK0tl
+cm5lbFZlcnNpb246ICAgICAgIDQuMTAKPj4+Pj4+ICtDb250YWN0OiAgICAgYmVuamFtaW4uZ2Fp
+Z25hcmRAc3QuY29tCj4+Pj4+PiArRGVzY3JpcHRpb246Cj4+Pj4+PiArICAgICAgICAgICAgIFJl
+YWRpbmcgcmV0dXJucyB0aGUgY3VycmVudCBzYW1wbGluZyBmcmVxdWVuY3kuCj4+Pj4+PiArICAg
+ICAgICAgICAgIFdyaXRpbmcgYW4gdmFsdWUgZGlmZmVyZW50IG9mIDAgc2V0IGFuZCBzdGFydAo+
+c2FtcGxpbmcuCj4+Pj4+PiArICAgICAgICAgICAgIFdyaXRpbmcgMCBzdG9wIHNhbXBsaW5nLgo+
+Pj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL0tjb25maWcgYi9kcml2ZXJzL2lpby9LY29u
+ZmlnCj4+Pj4+PiBpbmRleCA2NzQzYjE4Li4yZGUyYTgwIDEwMDY0NAo+Pj4+Pj4gLS0tIGEvZHJp
+dmVycy9paW8vS2NvbmZpZwo+Pj4+Pj4gKysrIGIvZHJpdmVycy9paW8vS2NvbmZpZwo+Pj4+Pj4g
+QEAgLTkwLDUgKzkwLDUgQEAgc291cmNlICJkcml2ZXJzL2lpby9wb3RlbnRpb21ldGVyL0tjb25m
+aWciCj4+Pj4+PiAgc291cmNlICJkcml2ZXJzL2lpby9wcmVzc3VyZS9LY29uZmlnIgo+Pj4+Pj4g
+IHNvdXJjZSAiZHJpdmVycy9paW8vcHJveGltaXR5L0tjb25maWciCj4+Pj4+PiAgc291cmNlICJk
+cml2ZXJzL2lpby90ZW1wZXJhdHVyZS9LY29uZmlnIgo+Pj4+Pj4gLQo+Pj4+Pj4gK3NvdXJjZSAi
+ZHJpdmVycy9paW8vdGltZXIvS2NvbmZpZyIKPj4+Pj4+ICBlbmRpZiAjIElJTwo+Pj4+Pj4gZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvaWlvL01ha2VmaWxlIGIvZHJpdmVycy9paW8vTWFrZWZpbGUKPj4+
+Pj4+IGluZGV4IDg3ZTRjNDMuLmI3OTdjMDggMTAwNjQ0Cj4+Pj4+PiAtLS0gYS9kcml2ZXJzL2lp
+by9NYWtlZmlsZQo+Pj4+Pj4gKysrIGIvZHJpdmVycy9paW8vTWFrZWZpbGUKPj4+Pj4+IEBAIC0z
+Miw0ICszMiw1IEBAIG9iai15ICs9IHBvdGVudGlvbWV0ZXIvCj4+Pj4+PiAgb2JqLXkgKz0gcHJl
+c3N1cmUvCj4+Pj4+PiAgb2JqLXkgKz0gcHJveGltaXR5Lwo+Pj4+Pj4gIG9iai15ICs9IHRlbXBl
+cmF0dXJlLwo+Pj4+Pj4gK29iai15ICs9IHRpbWVyLwo+Pj4+Pj4gIG9iai15ICs9IHRyaWdnZXIv
+Cj4+Pj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vdGltZXIvS2NvbmZpZwo+Yi9kcml2ZXJz
+L2lpby90aW1lci9LY29uZmlnCj4+Pj4+PiBuZXcgZmlsZSBtb2RlIDEwMDY0NAo+Pj4+Pj4gaW5k
+ZXggMDAwMDAwMC4uZTNjMjFmMgo+Pj4+Pj4gLS0tIC9kZXYvbnVsbAo+Pj4+Pj4gKysrIGIvZHJp
+dmVycy9paW8vdGltZXIvS2NvbmZpZwo+Pj4+Pj4gQEAgLTAsMCArMSwxMyBAQAo+Pj4+Pj4gKyMK
+Pj4+Pj4+ICsjIFRpbWVycyBkcml2ZXJzCj4+Pj4+PiArCj4+Pj4+PiArbWVudSAiVGltZXJzIgo+
+Pj4+Pj4gKwo+Pj4+Pj4gK2NvbmZpZyBJSU9fU1RNMzJfVElNRVJfVFJJR0dFUgo+Pj4+Pj4gKyAg
+ICAgdHJpc3RhdGUgIlNUTTMyIFRpbWVyIFRyaWdnZXIiCj4+Pj4+PiArICAgICBkZXBlbmRzIG9u
+IChBUkNIX1NUTTMyICYmIE9GICYmIE1GRF9TVE0zMl9USU1FUlMpIHx8Cj5DT01QSUxFX1RFU1QK
+Pj4+Pj4+ICsgICAgIHNlbGVjdCBJSU9fVFJJR0dFUkVEX0VWRU5UCj4+Pj4+PiArICAgICBoZWxw
+Cj4+Pj4+PiArICAgICAgIFNlbGVjdCB0aGlzIG9wdGlvbiB0byBlbmFibGUgU1RNMzIgVGltZXIg
+VHJpZ2dlcgo+Pj4+Pj4gKwo+Pj4+Pj4gK2VuZG1lbnUKPj4+Pj4+IGRpZmYgLS1naXQgYS9kcml2
+ZXJzL2lpby90aW1lci9NYWtlZmlsZQo+Yi9kcml2ZXJzL2lpby90aW1lci9NYWtlZmlsZQo+Pj4+
+Pj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQKPj4+Pj4+IGluZGV4IDAwMDAwMDAuLjRhZDk1ZWM5Cj4+
+Pj4+PiAtLS0gL2Rldi9udWxsCj4+Pj4+PiArKysgYi9kcml2ZXJzL2lpby90aW1lci9NYWtlZmls
+ZQo+Pj4+Pj4gQEAgLTAsMCArMSBAQAo+Pj4+Pj4gK29iai0kKENPTkZJR19JSU9fU1RNMzJfVElN
+RVJfVFJJR0dFUikgKz0gc3RtMzItdGltZXItdHJpZ2dlci5vCj4+Pj4+PiBkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9paW8vdGltZXIvc3RtMzItdGltZXItdHJpZ2dlci5jCj5iL2RyaXZlcnMvaWlvL3Rp
+bWVyL3N0bTMyLXRpbWVyLXRyaWdnZXIuYwo+Pj4+Pj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQKPj4+
+Pj4+IGluZGV4IDAwMDAwMDAuLjhkMTZlOGYKPj4+Pj4+IC0tLSAvZGV2L251bGwKPj4+Pj4+ICsr
+KyBiL2RyaXZlcnMvaWlvL3RpbWVyL3N0bTMyLXRpbWVyLXRyaWdnZXIuYwo+Pj4+Pj4gQEAgLTAs
+MCArMSw0NjYgQEAKPj4+Pj4+ICsvKgo+Pj4+Pj4gKyAqIENvcHlyaWdodCAoQykgU1RNaWNyb2Vs
+ZWN0cm9uaWNzIDIwMTYKPj4+Pj4+ICsgKgo+Pj4+Pj4gKyAqIEF1dGhvcjogQmVuamFtaW4gR2Fp
+Z25hcmQgPGJlbmphbWluLmdhaWduYXJkQHN0LmNvbT4KPj4+Pj4+ICsgKgo+Pj4+Pj4gKyAqIExp
+Y2Vuc2UgdGVybXM6ICBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSAoR1BMKSwgdmVyc2lvbiAy
+Cj4+Pj4+PiArICovCj4+Pj4+PiArCj4+Pj4+PiArI2luY2x1ZGUgPGxpbnV4L2lpby9paW8uaD4K
+Pj4+Pj4+ICsjaW5jbHVkZSA8bGludXgvaWlvL3N5c2ZzLmg+Cj4+Pj4+PiArI2luY2x1ZGUgPGxp
+bnV4L2lpby90aW1lci9zdG0zMi10aW1lci10cmlnZ2VyLmg+Cj4+Pj4+PiArI2luY2x1ZGUgPGxp
+bnV4L2lpby90cmlnZ2VyLmg+Cj4+Pj4+PiArI2luY2x1ZGUgPGxpbnV4L2lpby90cmlnZ2VyZWRf
+ZXZlbnQuaD4KPj4+Pj4+ICsjaW5jbHVkZSA8bGludXgvaW50ZXJydXB0Lmg+Cj4+Pj4+PiArI2lu
+Y2x1ZGUgPGxpbnV4L21mZC9zdG0zMi10aW1lcnMuaD4KPj4+Pj4+ICsjaW5jbHVkZSA8bGludXgv
+bW9kdWxlLmg+Cj4+Pj4+PiArI2luY2x1ZGUgPGxpbnV4L3BsYXRmb3JtX2RldmljZS5oPgo+Pj4+
+Pj4gKwo+Pj4+Pj4gKyNkZWZpbmUgTUFYX1RSSUdHRVJTIDYKPj4+Pj4+ICsjZGVmaW5lIE1BWF9W
+QUxJRFMgNQo+Pj4+Pj4gKwo+Pj4+Pj4gKy8qIExpc3QgdGhlIHRyaWdnZXJzIGNyZWF0ZWQgYnkg
+ZWFjaCB0aW1lciAqLwo+Pj4+Pj4gK3N0YXRpYyBjb25zdCB2b2lkICp0cmlnZ2Vyc190YWJsZVtd
+W01BWF9UUklHR0VSU10gPSB7Cj4+Pj4+PiArICAgICB7IFRJTTFfVFJHTywgVElNMV9DSDEsIFRJ
+TTFfQ0gyLCBUSU0xX0NIMywgVElNMV9DSDQsfSwKPj4+Pj4+ICsgICAgIHsgVElNMl9UUkdPLCBU
+SU0yX0NIMSwgVElNMl9DSDIsIFRJTTJfQ0gzLCBUSU0yX0NINCx9LAo+Pj4+Pj4gKyAgICAgeyBU
+SU0zX1RSR08sIFRJTTNfQ0gxLCBUSU0zX0NIMiwgVElNM19DSDMsIFRJTTNfQ0g0LH0sCj4+Pj4+
+PiArICAgICB7IFRJTTRfVFJHTywgVElNNF9DSDEsIFRJTTRfQ0gyLCBUSU00X0NIMywgVElNNF9D
+SDQsfSwKPj4+Pj4+ICsgICAgIHsgVElNNV9UUkdPLCBUSU01X0NIMSwgVElNNV9DSDIsIFRJTTVf
+Q0gzLCBUSU01X0NINCx9LAo+Pj4+Pj4gKyAgICAgeyBUSU02X1RSR08sfSwKPj4+Pj4+ICsgICAg
+IHsgVElNN19UUkdPLH0sCj4+Pj4+PiArICAgICB7IFRJTThfVFJHTywgVElNOF9DSDEsIFRJTThf
+Q0gyLCBUSU04X0NIMywgVElNOF9DSDQsfSwKPj4+Pj4+ICsgICAgIHsgVElNOV9UUkdPLCBUSU05
+X0NIMSwgVElNOV9DSDIsfSwKPj4+Pj4+ICsgICAgIHsgVElNMTJfVFJHTywgVElNMTJfQ0gxLCBU
+SU0xMl9DSDIsfSwKPj4+Pj4+ICt9Owo+Pj4+Pj4gKwo+Pj4+Pj4gKy8qIExpc3QgdGhlIHRyaWdn
+ZXJzIGFjY2VwdGVkIGJ5IGVhY2ggdGltZXIgKi8KPj4+Pj4+ICtzdGF0aWMgY29uc3Qgdm9pZCAq
+dmFsaWRzX3RhYmxlW11bTUFYX1ZBTElEU10gPSB7Cj4+Pj4+PiArICAgICB7IFRJTTVfVFJHTywg
+VElNMl9UUkdPLCBUSU00X1RSR08sIFRJTTNfVFJHTyx9LAo+Pj4+Pj4gKyAgICAgeyBUSU0xX1RS
+R08sIFRJTThfVFJHTywgVElNM19UUkdPLCBUSU00X1RSR08sfSwKPj4+Pj4+ICsgICAgIHsgVElN
+MV9UUkdPLCBUSU04X1RSR08sIFRJTTVfVFJHTywgVElNNF9UUkdPLH0sCj4+Pj4+PiArICAgICB7
+IFRJTTFfVFJHTywgVElNMl9UUkdPLCBUSU0zX1RSR08sIFRJTThfVFJHTyx9LAo+Pj4+Pj4gKyAg
+ICAgeyBUSU0yX1RSR08sIFRJTTNfVFJHTywgVElNNF9UUkdPLCBUSU04X1RSR08sfSwKPj4+Pj4+
+ICsgICAgIHsgfSwgLyogdGltZXIgNiAqLwo+Pj4+Pj4gKyAgICAgeyB9LCAvKiB0aW1lciA3ICov
+Cj4+Pj4+PiArICAgICB7IFRJTTFfVFJHTywgVElNMl9UUkdPLCBUSU00X1RSR08sIFRJTTVfVFJH
+Tyx9LAo+Pj4+Pj4gKyAgICAgeyBUSU0yX1RSR08sIFRJTTNfVFJHTyx9LAo+Pj4+Pj4gKyAgICAg
+eyBUSU00X1RSR08sIFRJTTVfVFJHTyx9LAo+Pj4+Pj4gK307Cj4+Pj4+PiArCj4+Pj4+PiArc3Ry
+dWN0IHN0bTMyX3RpbWVyX3RyaWdnZXIgewo+Pj4+Pj4gKyAgICAgc3RydWN0IGRldmljZSAqZGV2
+Owo+Pj4+Pj4gKyAgICAgc3RydWN0IHJlZ21hcCAqcmVnbWFwOwo+Pj4+Pj4gKyAgICAgc3RydWN0
+IGNsayAqY2xrOwo+Pj4+Pj4gKyAgICAgdTMyIG1heF9hcnI7Cj4+Pj4+PiArICAgICBjb25zdCB2
+b2lkICp0cmlnZ2VyczsKPj4+Pj4+ICsgICAgIGNvbnN0IHZvaWQgKnZhbGlkczsKPj4+Pj4+ICt9
+Owo+Pj4+Pj4gKwo+Pj4+Pj4gK3N0YXRpYyBpbnQgc3RtMzJfdGltZXJfc3RhcnQoc3RydWN0IHN0
+bTMyX3RpbWVyX3RyaWdnZXIgKnByaXYsCj4+Pj4+PiArICAgICAgICAgICAgICAgICAgICAgICAg
+ICB1bnNpZ25lZCBpbnQgZnJlcXVlbmN5KQo+Pj4+Pj4gK3sKPj4+Pj4+ICsgICAgIHVuc2lnbmVk
+IGxvbmcgbG9uZyBwcmQsIGRpdjsKPj4+Pj4+ICsgICAgIGludCBwcmVzY2FsZXIgPSAwOwo+Pj4+
+Pj4gKyAgICAgdTMyIGNjZXIsIGNyMTsKPj4+Pj4+ICsKPj4+Pj4+ICsgICAgIC8qIFBlcmlvZCBh
+bmQgcHJlc2NhbGVyIHZhbHVlcyBkZXBlbmRzIG9mIGNsb2NrIHJhdGUgKi8KPj4+Pj4+ICsgICAg
+IGRpdiA9ICh1bnNpZ25lZCBsb25nIGxvbmcpY2xrX2dldF9yYXRlKHByaXYtPmNsayk7Cj4+Pj4+
+PiArCj4+Pj4+PiArICAgICBkb19kaXYoZGl2LCBmcmVxdWVuY3kpOwo+Pj4+Pj4gKwo+Pj4+Pj4g
+KyAgICAgcHJkID0gZGl2Owo+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgLyoKPj4+Pj4+ICsgICAgICAq
+IEluY3JlYXNlIHByZXNjYWxlciB2YWx1ZSB1bnRpbCB3ZSBnZXQgYSByZXN1bHQgdGhhdCBmaXQK
+Pj4+Pj4+ICsgICAgICAqIHdpdGggYXV0byByZWxvYWQgcmVnaXN0ZXIgbWF4aW11bSB2YWx1ZS4K
+Pj4+Pj4+ICsgICAgICAqLwo+Pj4+Pj4gKyAgICAgd2hpbGUgKGRpdiA+IHByaXYtPm1heF9hcnIp
+IHsKPj4+Pj4+ICsgICAgICAgICAgICAgcHJlc2NhbGVyKys7Cj4+Pj4+PiArICAgICAgICAgICAg
+IGRpdiA9IHByZDsKPj4+Pj4+ICsgICAgICAgICAgICAgZG9fZGl2KGRpdiwgKHByZXNjYWxlciAr
+IDEpKTsKPj4+Pj4+ICsgICAgIH0KPj4+Pj4+ICsgICAgIHByZCA9IGRpdjsKPj4+Pj4+ICsKPj4+
+Pj4+ICsgICAgIGlmIChwcmVzY2FsZXIgPiBNQVhfVElNX1BTQykgewo+Pj4+Pj4gKyAgICAgICAg
+ICAgICBkZXZfZXJyKHByaXYtPmRldiwgInByZXNjYWxlciBleGNlZWRzIHRoZSBtYXhpbXVtCj52
+YWx1ZVxuIik7Cj4+Pj4+PiArICAgICAgICAgICAgIHJldHVybiAtRUlOVkFMOwo+Pj4+Pj4gKyAg
+ICAgfQo+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgLyogQ2hlY2sgaWYgbm9ib2R5IGVsc2UgdXNlIHRo
+ZSB0aW1lciAqLwo+Pj4+Pj4gKyAgICAgcmVnbWFwX3JlYWQocHJpdi0+cmVnbWFwLCBUSU1fQ0NF
+UiwgJmNjZXIpOwo+Pj4+Pj4gKyAgICAgaWYgKGNjZXIgJiBUSU1fQ0NFUl9DQ1hFKQo+Pj4+Pj4g
+KyAgICAgICAgICAgICByZXR1cm4gLUVCVVNZOwo+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgcmVnbWFw
+X3JlYWQocHJpdi0+cmVnbWFwLCBUSU1fQ1IxLCAmY3IxKTsKPj4+Pj4+ICsgICAgIGlmICghKGNy
+MSAmIFRJTV9DUjFfQ0VOKSkKPj4+Pj4+ICsgICAgICAgICAgICAgY2xrX2VuYWJsZShwcml2LT5j
+bGspOwo+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgcmVnbWFwX3dyaXRlKHByaXYtPnJlZ21hcCwgVElN
+X1BTQywgcHJlc2NhbGVyKTsKPj4+Pj4+ICsgICAgIHJlZ21hcF93cml0ZShwcml2LT5yZWdtYXAs
+IFRJTV9BUlIsIHByZCAtIDEpOwo+Pj4+Pj4gKyAgICAgcmVnbWFwX3VwZGF0ZV9iaXRzKHByaXYt
+PnJlZ21hcCwgVElNX0NSMSwgVElNX0NSMV9BUlBFLAo+VElNX0NSMV9BUlBFKTsKPj4+Pj4+ICsK
+Pj4+Pj4+ICsgICAgIC8qIEZvcmNlIG1hc3RlciBtb2RlIHRvIHVwZGF0ZSBtb2RlICovCj4+Pj4+
+PiArICAgICByZWdtYXBfdXBkYXRlX2JpdHMocHJpdi0+cmVnbWFwLCBUSU1fQ1IyLCBUSU1fQ1Iy
+X01NUywKPjB4MjApOwo+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgLyogTWFrZSBzdXJlIHRoYXQgcmVn
+aXN0ZXJzIGFyZSB1cGRhdGVkICovCj4+Pj4+PiArICAgICByZWdtYXBfdXBkYXRlX2JpdHMocHJp
+di0+cmVnbWFwLCBUSU1fRUdSLCBUSU1fRUdSX1VHLAo+VElNX0VHUl9VRyk7Cj4+Pj4+PiArCj4+
+Pj4+PiArICAgICAvKiBFbmFibGUgY29udHJvbGxlciAqLwo+Pj4+Pj4gKyAgICAgcmVnbWFwX3Vw
+ZGF0ZV9iaXRzKHByaXYtPnJlZ21hcCwgVElNX0NSMSwgVElNX0NSMV9DRU4sCj5USU1fQ1IxX0NF
+Tik7Cj4+Pj4+PiArCj4+Pj4+PiArICAgICByZXR1cm4gMDsKPj4+Pj4+ICt9Cj4+Pj4+PiArCj4+
+Pj4+PiArc3RhdGljIHZvaWQgc3RtMzJfdGltZXJfc3RvcChzdHJ1Y3Qgc3RtMzJfdGltZXJfdHJp
+Z2dlciAqcHJpdikKPj4+Pj4+ICt7Cj4+Pj4+PiArICAgICB1MzIgY2NlciwgY3IxOwo+Pj4+Pj4g
+Kwo+Pj4+Pj4gKyAgICAgcmVnbWFwX3JlYWQocHJpdi0+cmVnbWFwLCBUSU1fQ0NFUiwgJmNjZXIp
+Owo+Pj4+Pj4gKyAgICAgaWYgKGNjZXIgJiBUSU1fQ0NFUl9DQ1hFKQo+Pj4+Pj4gKyAgICAgICAg
+ICAgICByZXR1cm47Cj4+Pj4+PiArCj4+Pj4+PiArICAgICByZWdtYXBfcmVhZChwcml2LT5yZWdt
+YXAsIFRJTV9DUjEsICZjcjEpOwo+Pj4+Pj4gKyAgICAgaWYgKGNyMSAmIFRJTV9DUjFfQ0VOKQo+
+Pj4+Pj4gKyAgICAgICAgICAgICBjbGtfZGlzYWJsZShwcml2LT5jbGspOwo+Pj4+Pj4gKwo+Pj4+
+Pj4gKyAgICAgLyogU3RvcCB0aW1lciAqLwo+Pj4+Pj4gKyAgICAgcmVnbWFwX3VwZGF0ZV9iaXRz
+KHByaXYtPnJlZ21hcCwgVElNX0NSMSwgVElNX0NSMV9DRU4sIDApOwo+Pj4+Pj4gKyAgICAgcmVn
+bWFwX3dyaXRlKHByaXYtPnJlZ21hcCwgVElNX1BTQywgMCk7Cj4+Pj4+PiArICAgICByZWdtYXBf
+d3JpdGUocHJpdi0+cmVnbWFwLCBUSU1fQVJSLCAwKTsKPj4+Pj4+ICt9Cj4+Pj4+PiArCj4+Pj4+
+PiArc3RhdGljIHNzaXplX3Qgc3RtMzJfdHRfc3RvcmVfZnJlcXVlbmN5KHN0cnVjdCBkZXZpY2Ug
+KmRldiwKPj4+Pj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0
+IGRldmljZV9hdHRyaWJ1dGUKPiphdHRyLAo+Pj4+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICBjb25zdCBjaGFyICpidWYsIHNpemVfdAo+bGVuKQo+Pj4+Pj4gK3sKPj4+
+Pj4+ICsgICAgIHN0cnVjdCBpaW9fdHJpZ2dlciAqdHJpZyA9IHRvX2lpb190cmlnZ2VyKGRldik7
+Cj4+Pj4+PiArICAgICBzdHJ1Y3Qgc3RtMzJfdGltZXJfdHJpZ2dlciAqcHJpdiA9Cj5paW9fdHJp
+Z2dlcl9nZXRfZHJ2ZGF0YSh0cmlnKTsKPj4+Pj4+ICsgICAgIHVuc2lnbmVkIGludCBmcmVxOwo+
+Pj4+Pj4gKyAgICAgaW50IHJldDsKPj4+Pj4+ICsKPj4+Pj4+ICsgICAgIHJldCA9IGtzdHJ0b3Vp
+bnQoYnVmLCAxMCwgJmZyZXEpOwo+Pj4+Pj4gKyAgICAgaWYgKHJldCkKPj4+Pj4+ICsgICAgICAg
+ICAgICAgcmV0dXJuIHJldDsKPj4+Pj4+ICsKPj4+Pj4+ICsgICAgIGlmIChmcmVxID09IDApIHsK
+Pj4+Pj4+ICsgICAgICAgICAgICAgc3RtMzJfdGltZXJfc3RvcChwcml2KTsKPj4+Pj4+ICsgICAg
+IH0gZWxzZSB7Cj4+Pj4+PiArICAgICAgICAgICAgIHJldCA9IHN0bTMyX3RpbWVyX3N0YXJ0KHBy
+aXYsIGZyZXEpOwo+Pj4+Pj4gKyAgICAgICAgICAgICBpZiAocmV0KQo+Pj4+Pj4gKyAgICAgICAg
+ICAgICAgICAgICAgIHJldHVybiByZXQ7Cj4+Pj4+PiArICAgICB9Cj4+Pj4+PiArCj4+Pj4+PiAr
+ICAgICByZXR1cm4gbGVuOwo+Pj4+Pj4gK30KPj4+Pj4+ICsKPj4+Pj4+ICtzdGF0aWMgc3NpemVf
+dCBzdG0zMl90dF9yZWFkX2ZyZXF1ZW5jeShzdHJ1Y3QgZGV2aWNlICpkZXYsCj4+Pj4+PiArICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IGRldmljZV9hdHRyaWJ1dGUK
+PiphdHRyLCBjaGFyICpidWYpCj4+Pj4+PiArewo+Pj4+Pj4gKyAgICAgc3RydWN0IGlpb190cmln
+Z2VyICp0cmlnID0gdG9faWlvX3RyaWdnZXIoZGV2KTsKPj4+Pj4+ICsgICAgIHN0cnVjdCBzdG0z
+Ml90aW1lcl90cmlnZ2VyICpwcml2ID0KPmlpb190cmlnZ2VyX2dldF9kcnZkYXRhKHRyaWcpOwo+
+Pj4+Pj4gKyAgICAgdTMyIHBzYywgYXJyLCBjcjE7Cj4+Pj4+PiArICAgICB1bnNpZ25lZCBsb25n
+IGxvbmcgZnJlcSA9IDA7Cj4+Pj4+PiArCj4+Pj4+PiArICAgICByZWdtYXBfcmVhZChwcml2LT5y
+ZWdtYXAsIFRJTV9DUjEsICZjcjEpOwo+Pj4+Pj4gKyAgICAgcmVnbWFwX3JlYWQocHJpdi0+cmVn
+bWFwLCBUSU1fUFNDLCAmcHNjKTsKPj4+Pj4+ICsgICAgIHJlZ21hcF9yZWFkKHByaXYtPnJlZ21h
+cCwgVElNX0FSUiwgJmFycik7Cj4+Pj4+PiArCj4+Pj4+PiArICAgICBpZiAocHNjICYmIGFyciAm
+JiAoY3IxICYgVElNX0NSMV9DRU4pKSB7Cj4+Pj4+PiArICAgICAgICAgICAgIGZyZXEgPSAodW5z
+aWduZWQgbG9uZyBsb25nKWNsa19nZXRfcmF0ZShwcml2LT5jbGspOwo+Pj4+Pj4gKyAgICAgICAg
+ICAgICBkb19kaXYoZnJlcSwgcHNjKTsKPj4+Pj4+ICsgICAgICAgICAgICAgZG9fZGl2KGZyZXEs
+IGFycik7Cj4+Pj4+PiArICAgICB9Cj4+Pj4+PiArCj4+Pj4+PiArICAgICByZXR1cm4gc3ByaW50
+ZihidWYsICIlZFxuIiwgKHVuc2lnbmVkIGludClmcmVxKTsKPj4+Pj4+ICt9Cj4+Pj4+PiArCj4+
+Pj4+PiArc3RhdGljIElJT19ERVZfQVRUUl9TQU1QX0ZSRVEoMDY2MCwKPj4+Pj4+ICsgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBzdG0zMl90dF9yZWFkX2ZyZXF1ZW5jeSwKPj4+Pj4+ICsgICAg
+ICAgICAgICAgICAgICAgICAgICAgICBzdG0zMl90dF9zdG9yZV9mcmVxdWVuY3kpOwo+Pj4+Pj4g
+Kwo+Pj4+Pj4gK3N0YXRpYyBzdHJ1Y3QgYXR0cmlidXRlICpzdG0zMl90cmlnZ2VyX2F0dHJzW10g
+PSB7Cj4+Pj4+PiArICAgICAmaWlvX2Rldl9hdHRyX3NhbXBsaW5nX2ZyZXF1ZW5jeS5kZXZfYXR0
+ci5hdHRyLAo+Pj4+Pj4gKyAgICAgTlVMTCwKPj4+Pj4+ICt9Owo+Pj4+Pj4gKwo+Pj4+Pj4gK3N0
+YXRpYyBjb25zdCBzdHJ1Y3QgYXR0cmlidXRlX2dyb3VwIHN0bTMyX3RyaWdnZXJfYXR0cl9ncm91
+cCA9IHsKPj4+Pj4+ICsgICAgIC5hdHRycyA9IHN0bTMyX3RyaWdnZXJfYXR0cnMsCj4+Pj4+PiAr
+fTsKPj4+Pj4+ICsKPj4+Pj4+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGF0dHJpYnV0ZV9ncm91cCAq
+c3RtMzJfdHJpZ2dlcl9hdHRyX2dyb3Vwc1tdCj49IHsKPj4+Pj4+ICsgICAgICZzdG0zMl90cmln
+Z2VyX2F0dHJfZ3JvdXAsCj4+Pj4+PiArICAgICBOVUxMLAo+Pj4+Pj4gK307Cj4+Pj4+PiArCj4+
+Pj4+PiArc3RhdGljIGNoYXIgKm1hc3Rlcl9tb2RlX3RhYmxlW10gPSB7Cj4+Pj4+PiArICAgICAi
+cmVzZXQiLAo+Pj4+Pj4gKyAgICAgImVuYWJsZSIsCj4+Pj4+PiArICAgICAidXBkYXRlIiwKPj4+
+Pj4+ICsgICAgICJjb21wYXJlX3B1bHNlIiwKPj4+Pj4+ICsgICAgICJPQzFSRUYiLAo+Pj4+Pj4g
+KyAgICAgIk9DMlJFRiIsCj4+Pj4+PiArICAgICAiT0MzUkVGIiwKPj4+Pj4+ICsgICAgICJPQzRS
+RUYiCj4+Pj4+PiArfTsKPj4+Pj4+ICsKPj4+Pj4+ICtzdGF0aWMgc3NpemVfdCBzdG0zMl90dF9z
+aG93X21hc3Rlcl9tb2RlKHN0cnVjdCBkZXZpY2UgKmRldiwKPj4+Pj4+ICsgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCBkZXZpY2VfYXR0cmlidXRlCj4qYXR0ciwK
+Pj4+Pj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNoYXIgKmJ1ZikK
+Pj4+Pj4+ICt7Cj4+Pj4+PiArICAgICBzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2ID0gZGV2X3Rv
+X2lpb19kZXYoZGV2KTsKPj4+Pj4+ICsgICAgIHN0cnVjdCBzdG0zMl90aW1lcl90cmlnZ2VyICpw
+cml2ID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsKPj4+Pj4+ICsgICAgIHUzMiBjcjI7Cj4+Pj4+PiAr
+Cj4+Pj4+PiArICAgICByZWdtYXBfcmVhZChwcml2LT5yZWdtYXAsIFRJTV9DUjIsICZjcjIpOwo+
+Pj4+Pj4gKyAgICAgY3IyID0gKGNyMiAmIFRJTV9DUjJfTU1TKSA+PiBUSU1fQ1IyX01NU19TSElG
+VDsKPj4+Pj4+ICsKPj4+Pj4+ICsgICAgIHJldHVybiBzbnByaW50ZihidWYsIFBBR0VfU0laRSwg
+IiVzXG4iLAo+bWFzdGVyX21vZGVfdGFibGVbY3IyXSk7Cj4+Pj4+PiArfQo+Pj4+Pj4gKwo+Pj4+
+Pj4gK3N0YXRpYyBzc2l6ZV90IHN0bTMyX3R0X3N0b3JlX21hc3Rlcl9tb2RlKHN0cnVjdCBkZXZp
+Y2UgKmRldiwKPj4+Pj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBz
+dHJ1Y3QgZGV2aWNlX2F0dHJpYnV0ZQo+KmF0dHIsCj4+Pj4+PiArICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgY29uc3QgY2hhciAqYnVmLCBzaXplX3QKPmxlbikKPj4+Pj4+
+ICt7Cj4+Pj4+PiArICAgICBzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2ID0gZGV2X3RvX2lpb19k
+ZXYoZGV2KTsKPj4+Pj4+ICsgICAgIHN0cnVjdCBzdG0zMl90aW1lcl90cmlnZ2VyICpwcml2ID0g
+aWlvX3ByaXYoaW5kaW9fZGV2KTsKPj4+Pj4+ICsgICAgIGludCBpOwo+Pj4+Pj4gKwo+Pj4+Pj4g
+KyAgICAgZm9yIChpID0gMDsgaSA8IEFSUkFZX1NJWkUobWFzdGVyX21vZGVfdGFibGUpOyBpKysp
+IHsKPj4+Pj4+ICsgICAgICAgICAgICAgaWYgKCFzdHJuY21wKG1hc3Rlcl9tb2RlX3RhYmxlW2ld
+LCBidWYsCj4+Pj4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICBzdHJsZW4obWFzdGVyX21v
+ZGVfdGFibGVbaV0pKSkgewo+Pj4+Pj4gKyAgICAgICAgICAgICAgICAgICAgIHJlZ21hcF91cGRh
+dGVfYml0cyhwcml2LT5yZWdtYXAsIFRJTV9DUjIsCj4+Pj4+PiArICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIFRJTV9DUjJfTU1TLCBpIDw8Cj5USU1fQ1IyX01NU19TSElG
+VCk7Cj4+Pj4+PiArICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIGxlbjsKPj4+Pj4+ICsgICAg
+ICAgICAgICAgfQo+Pj4+Pj4gKyAgICAgfQo+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgcmV0dXJuIC1F
+SU5WQUw7Cj4+Pj4+PiArfQo+Pj4+Pj4gKwo+Pj4+Pj4gK3N0YXRpYyBJSU9fQ09OU1RfQVRUUiht
+YXN0ZXJfbW9kZV9hdmFpbGFibGUsCj4+Pj4+PiArICAgICAicmVzZXQgZW5hYmxlIHVwZGF0ZSBj
+b21wYXJlX3B1bHNlIE9DMVJFRiBPQzJSRUYgT0MzUkVGCj5PQzRSRUYiKTsKPj4+Pj4+ICsKPj4+
+Pj4+ICtzdGF0aWMgSUlPX0RFVklDRV9BVFRSKG1hc3Rlcl9tb2RlLCAwNjYwLAo+Pj4+Pj4gKyAg
+ICAgICAgICAgICAgICAgICAgc3RtMzJfdHRfc2hvd19tYXN0ZXJfbW9kZSwKPj4+Pj4+ICsgICAg
+ICAgICAgICAgICAgICAgIHN0bTMyX3R0X3N0b3JlX21hc3Rlcl9tb2RlLAo+Pj4+Pj4gKyAgICAg
+ICAgICAgICAgICAgICAgMCk7Cj4+Pj4+PiArCj4+Pj4+PiArc3RhdGljIGNoYXIgKnNsYXZlX21v
+ZGVfdGFibGVbXSA9IHsKPj4+Pj4+ICsgICAgICJkaXNhYmxlZCIsCj4+Pj4+PiArICAgICAiZW5j
+b2Rlcl8xIiwKPj4+Pj4+ICsgICAgICJlbmNvZGVyXzIiLAo+Pj4+Pj4gKyAgICAgImVuY29kZXJf
+MyIsCj4+Pj4+PiArICAgICAicmVzZXQiLAo+Pj4+Pj4gKyAgICAgImdhdGVkIiwKPj4+Pj4+ICsg
+ICAgICJ0cmlnZ2VyIiwKPj4+Pj4+ICsgICAgICJleHRlcm5hbF9jbG9jayIsCj4+Pj4+PiArfTsK
+Pj4+Pj4+ICsKPj4+Pj4+ICtzdGF0aWMgc3NpemVfdCBzdG0zMl90dF9zaG93X3NsYXZlX21vZGUo
+c3RydWN0IGRldmljZSAqZGV2LAo+Pj4+Pj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICBzdHJ1Y3QgZGV2aWNlX2F0dHJpYnV0ZQo+KmF0dHIsCj4+Pj4+PiArICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNoYXIgKmJ1ZikKPj4+Pj4+ICt7Cj4+Pj4+PiAr
+ICAgICBzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2ID0gZGV2X3RvX2lpb19kZXYoZGV2KTsKPj4+
+Pj4+ICsgICAgIHN0cnVjdCBzdG0zMl90aW1lcl90cmlnZ2VyICpwcml2ID0gaWlvX3ByaXYoaW5k
+aW9fZGV2KTsKPj4+Pj4+ICsgICAgIHUzMiBzbWNyOwo+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgcmVn
+bWFwX3JlYWQocHJpdi0+cmVnbWFwLCBUSU1fU01DUiwgJnNtY3IpOwo+Pj4+Pj4gKyAgICAgc21j
+ciAmPSBUSU1fU01DUl9TTVM7Cj4+Pj4+PiArCj4+Pj4+PiArICAgICByZXR1cm4gc25wcmludGYo
+YnVmLCBQQUdFX1NJWkUsICIlc1xuIiwKPnNsYXZlX21vZGVfdGFibGVbc21jcl0pOwo+Pj4+Pj4g
+K30KPj4+Pj4+ICsKPj4+Pj4+ICtzdGF0aWMgc3NpemVfdCBzdG0zMl90dF9zdG9yZV9zbGF2ZV9t
+b2RlKHN0cnVjdCBkZXZpY2UgKmRldiwKPj4+Pj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIHN0cnVjdCBkZXZpY2VfYXR0cmlidXRlCj4qYXR0ciwKPj4+Pj4+ICsgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IGNoYXIgKmJ1Ziwgc2l6ZV90
+Cj5sZW4pCj4+Pj4+PiArewo+Pj4+Pj4gKyAgICAgc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9
+IGRldl90b19paW9fZGV2KGRldik7Cj4+Pj4+PiArICAgICBzdHJ1Y3Qgc3RtMzJfdGltZXJfdHJp
+Z2dlciAqcHJpdiA9IGlpb19wcml2KGluZGlvX2Rldik7Cj4+Pj4+PiArICAgICBpbnQgaTsKPj4+
+Pj4+ICsKPj4+Pj4+ICsgICAgIGZvciAoaSA9IDA7IGkgPCBBUlJBWV9TSVpFKHNsYXZlX21vZGVf
+dGFibGUpOyBpKyspIHsKPj4+Pj4+ICsgICAgICAgICAgICAgaWYgKCFzdHJuY21wKHNsYXZlX21v
+ZGVfdGFibGVbaV0sIGJ1ZiwKPj4+Pj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgIHN0cmxl
+bihzbGF2ZV9tb2RlX3RhYmxlW2ldKSkpIHsKPj4+Pj4+ICsgICAgICAgICAgICAgICAgICAgICBy
+ZWdtYXBfdXBkYXRlX2JpdHMocHJpdi0+cmVnbWFwLAo+Pj4+Pj4gKyAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICBUSU1fU01DUiwgVElNX1NNQ1JfU01TLAo+aSk7Cj4+Pj4+
+PiArICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIGxlbjsKPj4+Pj4+ICsgICAgICAgICAgICAg
+fQo+Pj4+Pj4gKyAgICAgfQo+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgcmV0dXJuIC1FSU5WQUw7Cj4+
+Pj4+PiArfQo+Pj4+Pj4gKwo+Pj4+Pj4gK3N0YXRpYyBJSU9fQ09OU1RfQVRUUihzbGF2ZV9tb2Rl
+X2F2YWlsYWJsZSwKPj4+Pj4+ICsiZGlzYWJsZWQgZW5jb2Rlcl8xIGVuY29kZXJfMiBlbmNvZGVy
+XzMgcmVzZXQgZ2F0ZWQgdHJpZ2dlcgo+ZXh0ZXJuYWxfY2xvY2siKTsKPj4+Pj4+ICsKPj4+Pj4+
+ICtzdGF0aWMgSUlPX0RFVklDRV9BVFRSKHNsYXZlX21vZGUsIDA2NjAsCj4+Pj4+PiArICAgICAg
+ICAgICAgICAgICAgICBzdG0zMl90dF9zaG93X3NsYXZlX21vZGUsCj4+Pj4+PiArICAgICAgICAg
+ICAgICAgICAgICBzdG0zMl90dF9zdG9yZV9zbGF2ZV9tb2RlLAo+Pj4+Pj4gKyAgICAgICAgICAg
+ICAgICAgICAgMCk7Cj4+Pj4+PiArCj4+Pj4+PiArc3RhdGljIHN0cnVjdCBhdHRyaWJ1dGUgKnN0
+bTMyX3RpbWVyX2F0dHJzW10gPSB7Cj4+Pj4+PiArICAgICAmaWlvX2Rldl9hdHRyX21hc3Rlcl9t
+b2RlLmRldl9hdHRyLmF0dHIsCj4+Pj4+PiArICAgICAmaWlvX2NvbnN0X2F0dHJfbWFzdGVyX21v
+ZGVfYXZhaWxhYmxlLmRldl9hdHRyLmF0dHIsCj4+Pj4+PiArICAgICAmaWlvX2Rldl9hdHRyX3Ns
+YXZlX21vZGUuZGV2X2F0dHIuYXR0ciwKPj4+Pj4+ICsgICAgICZpaW9fY29uc3RfYXR0cl9zbGF2
+ZV9tb2RlX2F2YWlsYWJsZS5kZXZfYXR0ci5hdHRyLAo+Pj4+Pj4gKyAgICAgTlVMTCwKPj4+Pj4+
+ICt9Owo+Pj4+Pj4gKwo+Pj4+Pj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgYXR0cmlidXRlX2dyb3Vw
+IHN0bTMyX3RpbWVyX2F0dHJfZ3JvdXAgPSB7Cj4+Pj4+PiArICAgICAuYXR0cnMgPSBzdG0zMl90
+aW1lcl9hdHRycywKPj4+Pj4+ICt9Owo+Pj4+Pj4gKwo+Pj4+Pj4gK3N0YXRpYyBjb25zdCBzdHJ1
+Y3QgaWlvX3RyaWdnZXJfb3BzIHRpbWVyX3RyaWdnZXJfb3BzID0gewo+Pj4+Pj4gKyAgICAgLm93
+bmVyID0gVEhJU19NT0RVTEUsCj4+Pj4+PiArfTsKPj4+Pj4+ICsKPj4+Pj4+ICtzdGF0aWMgaW50
+IHN0bTMyX3NldHVwX2lpb190cmlnZ2VycyhzdHJ1Y3Qgc3RtMzJfdGltZXJfdHJpZ2dlcgo+KnBy
+aXYpCj4+Pj4+PiArewo+Pj4+Pj4gKyAgICAgaW50IHJldDsKPj4+Pj4+ICsgICAgIGNvbnN0IGNo
+YXIgKiBjb25zdCAqY3VyID0gcHJpdi0+dHJpZ2dlcnM7Cj4+Pj4+PiArCj4+Pj4+PiArICAgICB3
+aGlsZSAoY3VyICYmICpjdXIpIHsKPj4+Pj4+ICsgICAgICAgICAgICAgc3RydWN0IGlpb190cmln
+Z2VyICp0cmlnOwo+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgICAgICAgICB0cmlnID0gZGV2bV9paW9f
+dHJpZ2dlcl9hbGxvYyhwcml2LT5kZXYsICIlcyIsCj4qY3VyKTsKPj4+Pj4+ICsgICAgICAgICAg
+ICAgaWYgICghdHJpZykKPj4+Pj4+ICsgICAgICAgICAgICAgICAgICAgICByZXR1cm4gLUVOT01F
+TTsKPj4+Pj4+ICsKPj4+Pj4+ICsgICAgICAgICAgICAgdHJpZy0+ZGV2LnBhcmVudCA9IHByaXYt
+PmRldi0+cGFyZW50Owo+Pj4+Pj4gKyAgICAgICAgICAgICB0cmlnLT5vcHMgPSAmdGltZXJfdHJp
+Z2dlcl9vcHM7Cj4+Pj4+PiArICAgICAgICAgICAgIHRyaWctPmRldi5ncm91cHMgPSBzdG0zMl90
+cmlnZ2VyX2F0dHJfZ3JvdXBzOwo+Pj4+Pj4gKyAgICAgICAgICAgICBpaW9fdHJpZ2dlcl9zZXRf
+ZHJ2ZGF0YSh0cmlnLCBwcml2KTsKPj4+Pj4+ICsKPj4+Pj4+ICsgICAgICAgICAgICAgcmV0ID0g
+ZGV2bV9paW9fdHJpZ2dlcl9yZWdpc3Rlcihwcml2LT5kZXYsIHRyaWcpOwo+Pj4+Pj4gKyAgICAg
+ICAgICAgICBpZiAocmV0KQo+Pj4+Pj4gKyAgICAgICAgICAgICAgICAgICAgIHJldHVybiByZXQ7
+Cj4+Pj4+PiArICAgICAgICAgICAgIGN1cisrOwo+Pj4+Pj4gKyAgICAgfQo+Pj4+Pj4gKwo+Pj4+
+Pj4gKyAgICAgcmV0dXJuIDA7Cj4+Pj4+PiArfQo+Pj4+Pj4gKwo+Pj4+Pj4gKy8qKgo+Pj4+Pj4g
+KyAqIGlzX3N0bTMyX3RpbWVyX3RyaWdnZXIKPj4+Pj4+ICsgKiBAdHJpZzogdHJpZ2dlciB0byBi
+ZSBjaGVja2VkCj4+Pj4+PiArICoKPj4+Pj4+ICsgKiByZXR1cm4gdHJ1ZSBpZiB0aGUgdHJpZ2dl
+ciBpcyBhIHZhbGlkIHN0bTMyIGlpbyB0aW1lciB0cmlnZ2VyCj4+Pj4+PiArICogZWl0aGVyIHJl
+dHVybiBmYWxzZQo+Pj4+Pj4gKyAqLwo+Pj4+Pj4gK2Jvb2wgaXNfc3RtMzJfdGltZXJfdHJpZ2dl
+cihzdHJ1Y3QgaWlvX3RyaWdnZXIgKnRyaWcpCj4+Pj4+PiArewo+Pj4+Pj4gKyAgICAgcmV0dXJu
+ICh0cmlnLT5vcHMgPT0gJnRpbWVyX3RyaWdnZXJfb3BzKTsKPj4+Pj4+ICt9Cj4+Pj4+PiArRVhQ
+T1JUX1NZTUJPTChpc19zdG0zMl90aW1lcl90cmlnZ2VyKTsKPj4+Pj4+ICsKPj4+Pj4+ICtzdGF0
+aWMgaW50IHN0bTMyX3ZhbGlkYXRlX3RyaWdnZXIoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiwK
+Pj4+Pj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IGlpb190cmlnZ2Vy
+ICp0cmlnKQo+Pj4+Pj4gK3sKPj4+Pj4+ICsgICAgIHN0cnVjdCBzdG0zMl90aW1lcl90cmlnZ2Vy
+ICpwcml2ID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsKPj4+Pj4+ICsgICAgIGNvbnN0IGNoYXIgKiBj
+b25zdCAqY3VyID0gcHJpdi0+dmFsaWRzOwo+Pj4+Pj4gKyAgICAgdW5zaWduZWQgaW50IGkgPSAw
+Owo+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgaWYgKCFpc19zdG0zMl90aW1lcl90cmlnZ2VyKHRyaWcp
+KQo+Pj4+Pj4gKyAgICAgICAgICAgICByZXR1cm4gLUVJTlZBTDsKPj4+Pj4+ICsKPj4+Pj4+ICsg
+ICAgIHdoaWxlIChjdXIgJiYgKmN1cikgewo+Pj4+Pj4gKyAgICAgICAgICAgICBpZiAoIXN0cm5j
+bXAodHJpZy0+bmFtZSwgKmN1ciwgc3RybGVuKHRyaWctPm5hbWUpKSkKPnsKPj4+Pj4+ICsgICAg
+ICAgICAgICAgICAgICAgICByZWdtYXBfdXBkYXRlX2JpdHMocHJpdi0+cmVnbWFwLAo+Pj4+Pj4g
+KyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBUSU1fU01DUiwgVElNX1NN
+Q1JfVFMsCj4+Pj4+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGkg
+PDwgVElNX1NNQ1JfVFNfU0hJRlQpOwo+Pj4+Pj4gKyAgICAgICAgICAgICAgICAgICAgIHJldHVy
+biAwOwo+Pj4+Pj4gKyAgICAgICAgICAgICB9Cj4+Pj4+PiArICAgICAgICAgICAgIGN1cisrOwo+
+Pj4+Pj4gKyAgICAgICAgICAgICBpKys7Cj4+Pj4+PiArICAgICB9Cj4+Pj4+PiArCj4+Pj4+PiAr
+ICAgICByZXR1cm4gLUVJTlZBTDsKPj4+Pj4+ICt9Cj4+Pj4+PiArCj4+Pj4+PiArc3RhdGljIGNv
+bnN0IHN0cnVjdCBpaW9faW5mbyBzdG0zMl90cmlnZ2VyX2luZm8gPSB7Cj4+Pj4+PiArICAgICAu
+ZHJpdmVyX21vZHVsZSA9IFRISVNfTU9EVUxFLAo+Pj4+Pj4gKyAgICAgLnZhbGlkYXRlX3RyaWdn
+ZXIgPSBzdG0zMl92YWxpZGF0ZV90cmlnZ2VyLAo+Pj4+Pj4gKyAgICAgLmF0dHJzID0gJnN0bTMy
+X3RpbWVyX2F0dHJfZ3JvdXAsCj4+Pj4+PiArfTsKPj4+Pj4+ICsKPj4+Pj4+ICtzdGF0aWMgc3Ry
+dWN0IHN0bTMyX3RpbWVyX3RyaWdnZXIgKnN0bTMyX3NldHVwX2lpb19kZXZpY2Uoc3RydWN0Cj5k
+ZXZpY2UgKmRldikKPj4+Pj4+ICt7Cj4+Pj4+PiArICAgICBzdHJ1Y3QgaWlvX2RldiAqaW5kaW9f
+ZGV2Owo+Pj4+Pj4gKyAgICAgaW50IHJldDsKPj4+Pj4+ICsKPj4+Pj4+ICsgICAgIGluZGlvX2Rl
+diA9IGRldm1faWlvX2RldmljZV9hbGxvYyhkZXYsCj4+Pj4+PiArICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgc2l6ZW9mKHN0cnVjdAo+c3RtMzJfdGltZXJfdHJpZ2dlcikp
+Owo+Pj4+Pj4gKyAgICAgaWYgKCFpbmRpb19kZXYpCj4+Pj4+PiArICAgICAgICAgICAgIHJldHVy
+biBOVUxMOwo+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgaW5kaW9fZGV2LT5uYW1lID0gZGV2X25hbWUo
+ZGV2KTsKPj4+Pj4+ICsgICAgIGluZGlvX2Rldi0+ZGV2LnBhcmVudCA9IGRldjsKPj4+Pj4+ICsg
+ICAgIGluZGlvX2Rldi0+aW5mbyA9ICZzdG0zMl90cmlnZ2VyX2luZm87Cj4+Pj4+PiArICAgICBp
+bmRpb19kZXYtPm1vZGVzID0gSU5ESU9fRVZFTlRfVFJJR0dFUkVEOwo+Pj4+Pj4gKyAgICAgaW5k
+aW9fZGV2LT5udW1fY2hhbm5lbHMgPSAwOwo+Pj4+Pj4gKyAgICAgaW5kaW9fZGV2LT5kZXYub2Zf
+bm9kZSA9IGRldi0+b2Zfbm9kZTsKPj4+Pj4+ICsKPj4+Pj4+ICsgICAgIHJldCA9IGRldm1faWlv
+X2RldmljZV9yZWdpc3RlcihkZXYsIGluZGlvX2Rldik7Cj4+Pj4+PiArICAgICBpZiAocmV0KQo+
+Pj4+Pj4gKyAgICAgICAgICAgICByZXR1cm4gTlVMTDsKPj4+Pj4+ICsKPj4+Pj4+ICsgICAgIHJl
+dHVybiBpaW9fcHJpdihpbmRpb19kZXYpOwo+Pj4+Pj4gK30KPj4+Pj4+ICsKPj4+Pj4+ICtzdGF0
+aWMgaW50IHN0bTMyX3RpbWVyX3RyaWdnZXJfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZQo+
+KnBkZXYpCj4+Pj4+PiArewo+Pj4+Pj4gKyAgICAgc3RydWN0IGRldmljZSAqZGV2ID0gJnBkZXYt
+PmRldjsKPj4+Pj4+ICsgICAgIHN0cnVjdCBzdG0zMl90aW1lcl90cmlnZ2VyICpwcml2Owo+Pj4+
+Pj4gKyAgICAgc3RydWN0IHN0bTMyX3RpbWVycyAqZGRhdGEgPQo+ZGV2X2dldF9kcnZkYXRhKHBk
+ZXYtPmRldi5wYXJlbnQpOwo+Pj4+Pj4gKyAgICAgdW5zaWduZWQgaW50IGluZGV4Owo+Pj4+Pj4g
+KyAgICAgaW50IHJldDsKPj4+Pj4+ICsKPj4+Pj4+ICsgICAgIGlmIChvZl9wcm9wZXJ0eV9yZWFk
+X3UzMihkZXYtPm9mX25vZGUsICJyZWciLCAmaW5kZXgpKQo+Pj4+Pj4gKyAgICAgICAgICAgICBy
+ZXR1cm4gLUVJTlZBTDsKPj4+Pj4+ICsKPj4+Pj4+ICsgICAgIGlmIChpbmRleCA+PSBBUlJBWV9T
+SVpFKHRyaWdnZXJzX3RhYmxlKSkKPj4+Pj4+ICsgICAgICAgICAgICAgcmV0dXJuIC1FSU5WQUw7
+Cj4+Pj4+PiArCj4+Pj4+PiArICAgICAvKiBDcmVhdGUgYW4gSUlPIGRldmljZSBvbmx5IGlmIHdl
+IGhhdmUgdHJpZ2dlcnMgdG8gYmUKPnZhbGlkYXRlZCAqLwo+Pj4+Pj4gKyAgICAgaWYgKCp2YWxp
+ZHNfdGFibGVbaW5kZXhdKQo+Pj4+Pj4gKyAgICAgICAgICAgICBwcml2ID0gc3RtMzJfc2V0dXBf
+aWlvX2RldmljZShkZXYpOwo+Pj4+Pgo+Pj4+PiBJIHN0aWxsIGRvbid0IGxpa2UgdGhpcy4gUmVh
+bGx5IGZlZWxzIGxpa2Ugd2Ugc2hvdWxkbid0IGJlCj5jcmVhdGluZyBhbgo+Pj4+PiBpaW8gZGV2
+aWNlIHdpdGggYWxsIHRoZSBiYWdhZ2UgdGhhdCBjYXJyaWVzIGp1c3QgdG8gYWxsb3cgdXMgdG8g
+ZG8KPnRoZQo+Pj4+PiB0cmlnZ2VyIHRyZWVzLiAgV2Ugb3VnaHQgdG8gaGF2ZSBhIG11Y2ggbW9y
+ZSBsaWdodCB3ZWlnaHQgc29sdXRpb24KPmZvciB0aGlzCj4+Pj4+IGZ1bmN0aW9uYWxpdHkgLSB3
+ZSBhcmVuJ3QgdHlwaWNhbGx5IGV2ZW4gdXNpbmcgdGhlIGludGVycnVwdCB0cmVlCj5zdHVmZgo+
+Pj4+PiB0aGF0IHRoZSB0cmlnZ2VycyBmb3IgZGV2aWNlcyBhcmUgYWxsIHJlYWxseSBhYm91dC4K
+Pj4+Pj4KPj4+Pj4gQSBzaW1wbGVyIGFwcHJvYWNoIG9mIGFsbG93aW5nIGVhY2ggdHJpZ2dlciB0
+aGUgb3B0aW9uIG9mIGEgcGFyZW50Cj5zZWVtcyBsaWtlCj4+Pj4+IGl0IHdvdWxkIGJlIGNsZWFu
+ZXIuICBDb3VsZCBiZSBkb25lIGVudGlyZWx5IHdpdGhpbiB0aGlzIGRyaXZlciBpbgo+dGhlIGZp
+cnN0Cj4+Pj4+IGluc3RhbmNlLiAgQmFzaWNhbGx5IGl0IHdvdWxkIGp1c3QgbG9vayBsaWtlIHlv
+dXIgbWFzdGVyIGFuZCBzbGF2ZQo+YXR0cmlidXRlcwo+Pj4+PiBidXQgaGF2ZSB0aG9zZSB1bmRl
+ciB0cmlnZ2VyWCBub3QgaWlvOmRldmljZVguCj4+Pj4+Cj4+Pj4+IFdlIGNhbiB3b3JrIG91dCBo
+b3cgdG8gbWFrZSBpdCBtb3JlIGdlbmVyaWMgbGF0ZXIgLSBpbmNsdWRpbmcKPnBlcmhhcHMgdGhl
+Cj4+Pj4+IG9wdGlvbiB0byB0cmlnZ2VyIGZyb20gdHJpZ2dlcnMgb3V0c2lkZSB0aGlzIGRyaXZl
+ciwgdXNpbmcgc29tZQo+cGFyYWxsZWwKPj4+Pj4gaW5mcmFzdHJ1Y3R1cmUgdG8gdGhlIGRldmlj
+ZSB0cmlnZ2VyaW5nLgo+Pj4+Pgo+Pj4+Pgo+Pj4+Pj4gKyAgICAgZWxzZQo+Pj4+Pj4gKyAgICAg
+ICAgICAgICBwcml2ID0gZGV2bV9remFsbG9jKGRldiwgc2l6ZW9mKCpwcml2KSwKPkdGUF9LRVJO
+RUwpOwo+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgaWYgKCFwcml2KQo+Pj4+Pj4gKyAgICAgICAgICAg
+ICByZXR1cm4gLUVOT01FTTsKPj4+Pj4+ICsKPj4+Pj4+ICsgICAgIHByaXYtPmRldiA9IGRldjsK
+Pj4+Pj4+ICsgICAgIHByaXYtPnJlZ21hcCA9IGRkYXRhLT5yZWdtYXA7Cj4+Pj4+PiArICAgICBw
+cml2LT5jbGsgPSBkZGF0YS0+Y2xrOwo+Pj4+Pj4gKyAgICAgcHJpdi0+bWF4X2FyciA9IGRkYXRh
+LT5tYXhfYXJyOwo+Pj4+Pj4gKyAgICAgcHJpdi0+dHJpZ2dlcnMgPSB0cmlnZ2Vyc190YWJsZVtp
+bmRleF07Cj4+Pj4+PiArICAgICBwcml2LT52YWxpZHMgPSB2YWxpZHNfdGFibGVbaW5kZXhdOwo+
+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgcmV0ID0gc3RtMzJfc2V0dXBfaWlvX3RyaWdnZXJzKHByaXYp
+Owo+Pj4+Pj4gKyAgICAgaWYgKHJldCkKPj4+Pj4+ICsgICAgICAgICAgICAgcmV0dXJuIHJldDsK
+Pj4+Pj4+ICsKPj4+Pj4+ICsgICAgIHBsYXRmb3JtX3NldF9kcnZkYXRhKHBkZXYsIHByaXYpOwo+
+Pj4+Pj4gKwo+Pj4+Pj4gKyAgICAgcmV0dXJuIDA7Cj4+Pj4+PiArfQo+Pj4+Pj4gKwo+Pj4+Pj4g
+K3N0YXRpYyBjb25zdCBzdHJ1Y3Qgb2ZfZGV2aWNlX2lkIHN0bTMyX3RyaWdfb2ZfbWF0Y2hbXSA9
+IHsKPj4+Pj4+ICsgICAgIHsgLmNvbXBhdGlibGUgPSAic3Qsc3RtMzItdGltZXItdHJpZ2dlciIs
+IH0sCj4+Pj4+PiArICAgICB7IC8qIGVuZCBub2RlICovIH0sCj4+Pj4+PiArfTsKPj4+Pj4+ICtN
+T0RVTEVfREVWSUNFX1RBQkxFKG9mLCBzdG0zMl90cmlnX29mX21hdGNoKTsKPj4+Pj4+ICsKPj4+
+Pj4+ICtzdGF0aWMgc3RydWN0IHBsYXRmb3JtX2RyaXZlciBzdG0zMl90aW1lcl90cmlnZ2VyX2Ry
+aXZlciA9IHsKPj4+Pj4+ICsgICAgIC5wcm9iZSA9IHN0bTMyX3RpbWVyX3RyaWdnZXJfcHJvYmUs
+Cj4+Pj4+PiArICAgICAuZHJpdmVyID0gewo+Pj4+Pj4gKyAgICAgICAgICAgICAubmFtZSA9ICJz
+dG0zMi10aW1lci10cmlnZ2VyIiwKPj4+Pj4+ICsgICAgICAgICAgICAgLm9mX21hdGNoX3RhYmxl
+ID0gc3RtMzJfdHJpZ19vZl9tYXRjaCwKPj4+Pj4+ICsgICAgIH0sCj4+Pj4+PiArfTsKPj4+Pj4+
+ICttb2R1bGVfcGxhdGZvcm1fZHJpdmVyKHN0bTMyX3RpbWVyX3RyaWdnZXJfZHJpdmVyKTsKPj4+
+Pj4+ICsKPj4+Pj4+ICtNT0RVTEVfQUxJQVMoInBsYXRmb3JtOiBzdG0zMi10aW1lci10cmlnZ2Vy
+Iik7Cj4+Pj4+PiArTU9EVUxFX0RFU0NSSVBUSU9OKCJTVE1pY3JvZWxlY3Ryb25pY3MgU1RNMzIg
+VGltZXIgVHJpZ2dlcgo+ZHJpdmVyIik7Cj4+Pj4+PiArTU9EVUxFX0xJQ0VOU0UoIkdQTCB2MiIp
+Owo+Pj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL3RyaWdnZXIvS2NvbmZpZwo+Yi9kcml2
+ZXJzL2lpby90cmlnZ2VyL0tjb25maWcKPj4+Pj4+IGluZGV4IDgwOWIyZTcuLmYyYWY0ZmUgMTAw
+NjQ0Cj4+Pj4+PiAtLS0gYS9kcml2ZXJzL2lpby90cmlnZ2VyL0tjb25maWcKPj4+Pj4+ICsrKyBi
+L2RyaXZlcnMvaWlvL3RyaWdnZXIvS2NvbmZpZwo+Pj4+Pj4gQEAgLTQ2LDUgKzQ2LDQgQEAgY29u
+ZmlnIElJT19TWVNGU19UUklHR0VSCj4+Pj4+Pgo+Pj4+Pj4gICAgICAgICBUbyBjb21waWxlIHRo
+aXMgZHJpdmVyIGFzIGEgbW9kdWxlLCBjaG9vc2UgTSBoZXJlOiB0aGUKPj4+Pj4+ICAgICAgICAg
+bW9kdWxlIHdpbGwgYmUgY2FsbGVkIGlpby10cmlnLXN5c2ZzLgo+Pj4+Pj4gLQo+Pj4+PiBDbGVh
+biB0aGlzIHVwLgo+Pj4+Cj4+Pj4gb2sKPj4+Pgo+Pj4+Pj4gIGVuZG1lbnUKPj4+Pj4+IGRpZmYg
+LS1naXQgYS9pbmNsdWRlL2xpbnV4L2lpby90aW1lci9zdG0zMi10aW1lci10cmlnZ2VyLmgKPmIv
+aW5jbHVkZS9saW51eC9paW8vdGltZXIvc3RtMzItdGltZXItdHJpZ2dlci5oCj4+Pj4+PiBuZXcg
+ZmlsZSBtb2RlIDEwMDY0NAo+Pj4+Pj4gaW5kZXggMDAwMDAwMC4uNTU1MzVhZQo+Pj4+Pj4gLS0t
+IC9kZXYvbnVsbAo+Pj4+Pj4gKysrIGIvaW5jbHVkZS9saW51eC9paW8vdGltZXIvc3RtMzItdGlt
+ZXItdHJpZ2dlci5oCj4+Pj4+PiBAQCAtMCwwICsxLDYyIEBACj4+Pj4+PiArLyoKPj4+Pj4+ICsg
+KiBDb3B5cmlnaHQgKEMpIFNUTWljcm9lbGVjdHJvbmljcyAyMDE2Cj4+Pj4+PiArICoKPj4+Pj4+
+ICsgKiBBdXRob3I6IEJlbmphbWluIEdhaWduYXJkIDxiZW5qYW1pbi5nYWlnbmFyZEBzdC5jb20+
+Cj4+Pj4+PiArICoKPj4+Pj4+ICsgKiBMaWNlbnNlIHRlcm1zOiAgR05VIEdlbmVyYWwgUHVibGlj
+IExpY2Vuc2UgKEdQTCksIHZlcnNpb24gMgo+Pj4+Pj4gKyAqLwo+Pj4+Pj4gKwo+Pj4+Pj4gKyNp
+Zm5kZWYgX1NUTTMyX1RJTUVSX1RSSUdHRVJfSF8KPj4+Pj4+ICsjZGVmaW5lIF9TVE0zMl9USU1F
+Ul9UUklHR0VSX0hfCj4+Pj4+PiArCj4+Pj4+PiArI2RlZmluZSBUSU0xX1RSR08gICAgInRpbTFf
+dHJnbyIKPj4+Pj4+ICsjZGVmaW5lIFRJTTFfQ0gxICAgICAidGltMV9jaDEiCj4+Pj4+PiArI2Rl
+ZmluZSBUSU0xX0NIMiAgICAgInRpbTFfY2gyIgo+Pj4+Pj4gKyNkZWZpbmUgVElNMV9DSDMgICAg
+ICJ0aW0xX2NoMyIKPj4+Pj4+ICsjZGVmaW5lIFRJTTFfQ0g0ICAgICAidGltMV9jaDQiCj4+Pj4+
+PiArCj4+Pj4+PiArI2RlZmluZSBUSU0yX1RSR08gICAgInRpbTJfdHJnbyIKPj4+Pj4+ICsjZGVm
+aW5lIFRJTTJfQ0gxICAgICAidGltMl9jaDEiCj4+Pj4+PiArI2RlZmluZSBUSU0yX0NIMiAgICAg
+InRpbTJfY2gyIgo+Pj4+Pj4gKyNkZWZpbmUgVElNMl9DSDMgICAgICJ0aW0yX2NoMyIKPj4+Pj4+
+ICsjZGVmaW5lIFRJTTJfQ0g0ICAgICAidGltMl9jaDQiCj4+Pj4+PiArCj4+Pj4+PiArI2RlZmlu
+ZSBUSU0zX1RSR08gICAgInRpbTNfdHJnbyIKPj4+Pj4+ICsjZGVmaW5lIFRJTTNfQ0gxICAgICAi
+dGltM19jaDEiCj4+Pj4+PiArI2RlZmluZSBUSU0zX0NIMiAgICAgInRpbTNfY2gyIgo+Pj4+Pj4g
+KyNkZWZpbmUgVElNM19DSDMgICAgICJ0aW0zX2NoMyIKPj4+Pj4+ICsjZGVmaW5lIFRJTTNfQ0g0
+ICAgICAidGltM19jaDQiCj4+Pj4+PiArCj4+Pj4+PiArI2RlZmluZSBUSU00X1RSR08gICAgInRp
+bTRfdHJnbyIKPj4+Pj4+ICsjZGVmaW5lIFRJTTRfQ0gxICAgICAidGltNF9jaDEiCj4+Pj4+PiAr
+I2RlZmluZSBUSU00X0NIMiAgICAgInRpbTRfY2gyIgo+Pj4+Pj4gKyNkZWZpbmUgVElNNF9DSDMg
+ICAgICJ0aW00X2NoMyIKPj4+Pj4+ICsjZGVmaW5lIFRJTTRfQ0g0ICAgICAidGltNF9jaDQiCj4+
+Pj4+PiArCj4+Pj4+PiArI2RlZmluZSBUSU01X1RSR08gICAgInRpbTVfdHJnbyIKPj4+Pj4+ICsj
+ZGVmaW5lIFRJTTVfQ0gxICAgICAidGltNV9jaDEiCj4+Pj4+PiArI2RlZmluZSBUSU01X0NIMiAg
+ICAgInRpbTVfY2gyIgo+Pj4+Pj4gKyNkZWZpbmUgVElNNV9DSDMgICAgICJ0aW01X2NoMyIKPj4+
+Pj4+ICsjZGVmaW5lIFRJTTVfQ0g0ICAgICAidGltNV9jaDQiCj4+Pj4+PiArCj4+Pj4+PiArI2Rl
+ZmluZSBUSU02X1RSR08gICAgInRpbTZfdHJnbyIKPj4+Pj4+ICsKPj4+Pj4+ICsjZGVmaW5lIFRJ
+TTdfVFJHTyAgICAidGltN190cmdvIgo+Pj4+Pj4gKwo+Pj4+Pj4gKyNkZWZpbmUgVElNOF9UUkdP
+ICAgICJ0aW04X3RyZ28iCj4+Pj4+PiArI2RlZmluZSBUSU04X0NIMSAgICAgInRpbThfY2gxIgo+
+Pj4+Pj4gKyNkZWZpbmUgVElNOF9DSDIgICAgICJ0aW04X2NoMiIKPj4+Pj4+ICsjZGVmaW5lIFRJ
+TThfQ0gzICAgICAidGltOF9jaDMiCj4+Pj4+PiArI2RlZmluZSBUSU04X0NINCAgICAgInRpbThf
+Y2g0Igo+Pj4+Pj4gKwo+Pj4+Pj4gKyNkZWZpbmUgVElNOV9UUkdPICAgICJ0aW05X3RyZ28iCj4+
+Pj4+PiArI2RlZmluZSBUSU05X0NIMSAgICAgInRpbTlfY2gxIgo+Pj4+Pj4gKyNkZWZpbmUgVElN
+OV9DSDIgICAgICJ0aW05X2NoMiIKPj4+Pj4+ICsKPj4+Pj4+ICsjZGVmaW5lIFRJTTEyX1RSR08g
+ICAidGltMTJfdHJnbyIKPj4+Pj4+ICsjZGVmaW5lIFRJTTEyX0NIMSAgICAidGltMTJfY2gxIgo+
+Pj4+Pj4gKyNkZWZpbmUgVElNMTJfQ0gyICAgICJ0aW0xMl9jaDIiCj4+Pj4+PiArCj4+Pj4+PiAr
+Ym9vbCBpc19zdG0zMl90aW1lcl90cmlnZ2VyKHN0cnVjdCBpaW9fdHJpZ2dlciAqdHJpZyk7Cj4+
+Pj4+PiArCj4+Pj4+PiArI2VuZGlmCj4+Pj4+Pgo+Pj4+Pgo+Pj4+Cj4+Pj4KPj4+Pgo+Pj4KPj4K
+Pj4KPj4KPj4gLS0KPj4gQmVuamFtaW4gR2FpZ25hcmQKPj4KPj4gR3JhcGhpYyBTdHVkeSBHcm91
+cAo+Pgo+PiBMaW5hcm8ub3JnIOKUgiBPcGVuIHNvdXJjZSBzb2Z0d2FyZSBmb3IgQVJNIFNvQ3MK
+Pj4KPj4gRm9sbG93IExpbmFybzogRmFjZWJvb2sgfCBUd2l0dGVyIHwgQmxvZwoKLS0gClNlbnQg
+ZnJvbSBteSBBbmRyb2lkIGRldmljZSB3aXRoIEstOSBNYWlsLiBQbGVhc2UgZXhjdXNlIG15IGJy
+ZXZpdHkuCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwps
+aW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJh
+ZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51
+eC1hcm0ta2VybmVsCg==
