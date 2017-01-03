@@ -1,127 +1,85 @@
-From: Olliver Schinagl <o.schinagl@ultimaker.com>
-Subject: Re: [PATCH 1/2] pwm: sunxi: allow the pwm to finish its pulse before
- disable
-Date: Tue, 3 Jan 2017 16:59:57 +0100
-Message-ID: <627ddbeb-d199-e2df-2073-090216a9fb0b@schinagl.nl>
-References: <1472147411-30424-1-git-send-email-oliver@schinagl.nl>
- <1472147411-30424-2-git-send-email-oliver@schinagl.nl>
- <20160826221900.GG3165@lukather>
- <afcb938d-d2df-4740-6c85-cdf2766f671c@schinagl.nl>
- <20161212122427.4ixo7terrlvnuqmd@lukather>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: Re: [PATCH] pwm: sunxi: wait for the READY bit
+Date: Tue, 3 Jan 2017 17:44:53 +0100
+Message-ID: <20170103164453.wtdi4mxdxogbx4i5@piout.net>
+References: <20170103145732.2108-1-alexandre.belloni@free-electrons.com>
+ <73f5fc87-717f-2238-b653-1b117359cbb8@schinagl.nl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wj0-f175.google.com ([209.85.210.175]:33977 "EHLO
-        mail-wj0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1758100AbdACQAA (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 3 Jan 2017 11:00:00 -0500
-Received: by mail-wj0-f175.google.com with SMTP id sd9so263389427wjb.1
-        for <linux-pwm@vger.kernel.org>; Tue, 03 Jan 2017 07:59:59 -0800 (PST)
-In-Reply-To: <20161212122427.4ixo7terrlvnuqmd@lukather>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <73f5fc87-717f-2238-b653-1b117359cbb8@schinagl.nl>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Olliver Schinagl <o.schinagl@ultimaker.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Chen-Yu Tsai <wens@csie.org>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
-Hey Maxime,
+On 03/01/2017 at 16:56:16 +0100, Olliver Schinagl wrote :
+> Hey Alexandre,
+> 
+> I've sent several patches regarding pwm a while ago, sadly you never
+> responded [0]. So I guess this is a follow up from that?
+> 
 
-Happy new year! I'm sorry that I missed your previous mail! I completely 
-looked over it. Sorry!
+Well, we had the issue and I just had a bit of time to look at it. As I
+remembered you kind of had the same issue, I chose to Cc you.
 
-On 12-12-16 13:24, Maxime Ripard wrote:
-> On Thu, Dec 08, 2016 at 02:23:39PM +0100, Olliver Schinagl wrote:
->> Hey Maxime,
->>
->> first off, also sorry for the slow delay :) (pun not intended)
->>
->> On 27-08-16 00:19, Maxime Ripard wrote:
->>> On Thu, Aug 25, 2016 at 07:50:10PM +0200, Olliver Schinagl wrote:
->>>> When we inform the PWM block to stop toggeling the output, we may end up
->>>> in a state where the output is not what we would expect (e.g. not the
->>>> low-pulse) but whatever the output was at when the clock got disabled.
->>>>
->>>> To counter this we have to wait for maximally the time of one whole
->>>> period to ensure the pwm hardware was able to finish. Since we already
->>>> told the PWM hardware to disable it self, it will not continue toggling
->>>> but merly finish its current pulse.
->>>>
->>>> If a whole period is considered to much, it may be contemplated to use a
->>>> half period + a little bit to ensure we get passed the transition.
->>>>
->>>> Signed-off-by: Olliver Schinagl<oliver@schinagl.nl>
->>>> ---
->>>>   drivers/pwm/pwm-sun4i.c | 11 +++++++++++
->>>>   1 file changed, 11 insertions(+)
->>>>
->>>> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
->>>> index 03a99a5..5e97c8a 100644
->>>> --- a/drivers/pwm/pwm-sun4i.c
->>>> +++ b/drivers/pwm/pwm-sun4i.c
->>>> @@ -8,6 +8,7 @@
->>>>   #include <linux/bitops.h>
->>>>   #include <linux/clk.h>
->>>> +#include <linux/delay.h>
->>>>   #include <linux/err.h>
->>>>   #include <linux/io.h>
->>>>   #include <linux/module.h>
->>>> @@ -245,6 +246,16 @@ static void sun4i_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->>>>   	spin_lock(&sun4i_pwm->ctrl_lock);
->>>>   	val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
->>>>   	val &= ~BIT_CH(PWM_EN, pwm->hwpwm);
->>>> +	sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
->>>> +	spin_unlock(&sun4i_pwm->ctrl_lock);
->>>> +
->>>> +	/* Allow for the PWM hardware to finish its last toggle. The pulse
->>>> +	 * may have just started and thus we should wait a full period.
->>>> +	 */
->>>> +	ndelay(pwm_get_period(pwm));
->>> Can't that use the ready bit as well?
->>
->> I started to implement our earlier discussed suggestions, but I do not think
->> they will work. The read bit is not to let the user know it is ready with
->> all of its commands, but only if the period registers are ready. I think it
->> is some write lock while it copies the data into its internal control loop.
->> From the manual:
->> PWM0 period register ready.
->> 0: PWM0 period register is ready to write,
->> 1: PWM0 period register is busy.
->>
->>
->> So no, I don't think i can use the ready bit here at all. The only thing we
->> can do here, but I doubt it's worth it, is to read the period register,
->> caluclate a time from it, and then ndelay(pwm_get_period(pwm) - ran_time)
->>
->> The only 'win' then is that we could are potentially not waiting the full
->> pwm period, but only a fraction of it. Since we are disabling the hardware
->> (for power reasons) anyway, I don't think this is any significant win,
->> except for extreme situations. E.g. we have a pwm period of 10 seconds, we
->> disable it after 9.9 second, and now we have to wait for 10 seconds before
->> the pwm_disable is finally done. So this could in that case be reduced to
->> then only wait for 0.2 seconds since it is 'done' sooner.
->>
->> However that optimization is also not 'free'. We have to read the period
->> register and calculate back the time. I suggest to do that when reworking
->> this driver to work with atomic mode, and merge this patch 'as is' to
->> atleast fix te bug where simply not finish properly.
->
-> That whole discussion made me realise something that is really
-> bad. AFAIK, pwm_get_period returns a 32 bits register, which means a
-> theorical period of 4s. Busy looping during 4 seconds is already very
-> bad, as you basically kill one CPU during that time, but doing so in a
-> (potentially) atomic context is even worse.
-Well technically, isn't it a 16 bit register? (half for the period, 
-other half for the duty cycle?) Anyway, I think the delay can be far 
-exceeding 4 seconds (though I haven't checked what the PWM delay max 
-option is).
+> I couldn't quickly find the resubmitted version however.
+> 
 
-Anyway, you are right, we should absolutely not do this!
+Was there a new version?
 
->
-> NACK.
-Absolutely! But what do you suggest? Would usleep (or msleep) instead of 
-the ndelay work properly?
+> >  	clk_gate = val & BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
+> > -	if (clk_gate) {
+> > -		val &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
+> > +
+> > +	if (sun4i_pwm->data->has_rdy && (val & PWM_RDY(pwm->hwpwm))) {
+> > +		val |= BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
+> >  		sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
+> > +
+> > +		err = readl_poll_timeout(sun4i_pwm->base + PWM_CTRL_REG, val,
+> > +					 !(val & PWM_RDY(pwm->hwpwm)), 400,
+> > +					 500000);
+> > +		if (err)
+> > +			goto finish;
+> >  	}
+> > 
+> What happens on sun4i here? sun4i does not have the RDY flag, but it does
+> need the PWM_CLK_GATING to be active.
+> 
 
->
-> Maxime
->
+Does it actually need it? The datasheet doesn't say anything about it.
+I'm actually wondering what happens if the period is written twice in a
+row without waiting. If the latest period is used, maybe we don't
+actually care.
+
+> maybe only the readl_poll_timeout() should be guarded by the has_rdy, where
+> you poll the register as you do now, and in the else just have a 'known safe
+> delay' to emulate the has_rdy behavior? I'm guessing a few clock cycles of
+> the PWM block. I don't think the documentation states how long this
+> could/should be.
+> 
+
+My guess is that the IP is waiting for the current period to finish
+before updating the period internally. That would be the sane way to do it but
+maybe I'm an optimist.
+
+> With my 'wait before disable' patch [1] I run into the same issue, I think.
+> We do not know how long to wait before the hardware is ready.
+> 
+
+Up to 196.8s if I'm right...
+
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
