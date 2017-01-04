@@ -1,250 +1,243 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH 2/2] pwm: Remove .can_sleep from struct pwm_chip
-Date: Wed,  4 Jan 2017 10:13:48 +0100
-Message-ID: <20170104091348.31277-2-thierry.reding@gmail.com>
-References: <20170104091348.31277-1-thierry.reding@gmail.com>
+From: Lukasz Majewski <lukma@denx.de>
+Subject: Re: [PATCH v3 RESEND 07/11] pwm: imx: Provide atomic PWM support
+ for i.MX PWMv2
+Date: Wed, 4 Jan 2017 12:29:22 +0100
+Message-ID: <20170104122922.44ec1e4a@jawa>
+References: <1477259146-19167-1-git-send-email-l.majewski@majess.pl>
+        <1482792961-12702-1-git-send-email-l.majewski@majess.pl>
+        <1482792961-12702-8-git-send-email-l.majewski@majess.pl>
+        <20161229172117.523a42a4@bbrezillon>
+        <20161229174535.01b87fb7@jawa>
+        <20161229180838.66ca218f@bbrezillon>
+        <20170103124314.4c979807@jawa>
+        <20170103134645.6496a193@bbrezillon>
+        <7401088f38dc214449fe541e43185fda@agner.ch>
+        <20170103203551.737e3a45@bbrezillon>
+        <20170103230111.53154d49@jawa>
+        <20170103231826.6d11e65e@bbrezillon>
+        <20170103234658.2632350e@jawa>
+        <20170104003416.286d99c6@bbrezillon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
-In-Reply-To: <20170104091348.31277-1-thierry.reding@gmail.com>
-List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
-List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
-List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
-List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
-List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
- <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
-Errors-To: driverdev-devel-bounces@linuxdriverproject.org
-Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: devel@driverdev.osuosl.org, linux-pwm@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Johan Hovold <johan@kernel.org>, linux-kernel@vger.kernel.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.10]:35998 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1758628AbdADL3s (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Jan 2017 06:29:48 -0500
+In-Reply-To: <20170104003416.286d99c6@bbrezillon>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: Stefan Agner <stefan@agner.ch>, Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de
 
-All PWM devices have been marked as "might sleep" since v4.5, there is
-no longer a need to differentiate on a per-chip basis.
+Hi Boris,
 
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
----
- drivers/pwm/pwm-atmel-hlcdc.c | 1 -
- drivers/pwm/pwm-atmel.c       | 1 -
- drivers/pwm/pwm-bcm-kona.c    | 1 -
- drivers/pwm/pwm-berlin.c      | 1 -
- drivers/pwm/pwm-brcmstb.c     | 1 -
- drivers/pwm/pwm-fsl-ftm.c     | 1 -
- drivers/pwm/pwm-imx.c         | 1 -
- drivers/pwm/pwm-lp3943.c      | 1 -
- drivers/pwm/pwm-mxs.c         | 2 +-
- drivers/pwm/pwm-pca9685.c     | 1 -
- drivers/pwm/pwm-sti.c         | 1 -
- drivers/pwm/pwm-sun4i.c       | 1 -
- drivers/pwm/pwm-twl-led.c     | 1 -
- drivers/pwm/pwm-twl.c         | 1 -
- drivers/staging/greybus/pwm.c | 1 -
- include/linux/pwm.h           | 3 ---
- 16 files changed, 1 insertion(+), 18 deletions(-)
+> On Tue, 3 Jan 2017 23:46:58 +0100
+> Lukasz Majewski <lukma@denx.de> wrote:
+> 
+> > > > > > >> > > > Same goes for the regression introduced in patch
+> > > > > > >> > > > 2: I think it's better to keep things bisectable
+> > > > > > >> > > > on all platforms (even if it appeared to work by
+> > > > > > >> > > > chance on imx7, it did work before this
+> > > > > > >> > > > change).      
+> > > > > > >> > >
+> > > > > > >> > > Could you be more specific about your idea to solve
+> > > > > > >> > > this problem?      
+> > > > > > >> >
+> > > > > > >> > Stefan already provided a patch, I just think it
+> > > > > > >> > should be fixed before patch 2 to avoid breaking
+> > > > > > >> > bisectibility.      
+> > > > > > >>
+> > > > > > >> My idea is as follows:
+> > > > > > >>
+> > > > > > >> I will drop patch v2 (prepared by Sasha) and then squash
+> > > > > > >> Stefan's patch [1] to patch 7/11. The "old" ipg enable
+> > > > > > >> code will be removed with other not needed code during
+> > > > > > >> conversion.      
+> > > > > > > 
+> > > > > > > How about keeping patch 2 but enabling/disabling the
+> > > > > > > periph clk in imx_pwm_config() instead of completely
+> > > > > > > dropping the enable/disable clk sequence.
+> > > > > > > 
+> > > > > > > In patch 7 you just add the logic we talked about earlier:
+> > > > > > > unconditionally enable the periph clk when entering the
+> > > > > > > imx_pwm_apply_v2() function and disable it before leaving
+> > > > > > > the function.
+> > > > > > > 
+> > > > > > > This way you can preserve bisectibility and still get rid
+> > > > > > > of the ipg clk.
+> > > > > > > 
+> > > > > > > Stefan, what's your opinion?      
+> > > > > > 
+> > > > > > We will get rid of the ipg clocks anyway in patch 8 (which
+> > > > > > removes those functions completely).
+> > > > > > 
+> > > > > > So I think Lukasz approach should be fine, just drop patch
+> > > > > > 2 and squash my patch into patch 7.    
+> > > > > 
+> > > > > Well, the end result will be same (ipg_clk will be gone after
+> > > > > patch 8), but then it's hard to track why this clock suddenly
+> > > > > disappeared. I still think it's worth adding an extra commit
+> > > > > explaining that enabling the per_clk before accessing IP
+> > > > > registers is needed on some platforms (imx7), and that IPG
+> > > > > clk is actually not required until we start using it as a
+> > > > > source for the PWM signal generation.
+> > > > > 
+> > > > > Maybe I'm the only one to think so. In this case, feel free to
+> > > > > drop patch 2.    
+> > > > 
+> > > > If you feel really bad about this issue, then we can drop patch
+> > > > 2 and:
+> > > > 
+> > > > reorganize patch 7/11 to 
+> > > >  - keep code, which adds imx_pwm_apply_v2() function code (just
+> > > > moves it as is) 
+> > > >  - remove .apply = imx_pwm_apply_v2 entry from pwm_ops
+> > > > structure.
+> > > > 
+> > > > 
+> > > > On top of it add patch to enable/disable unconditionally the
+> > > > imx->clk_per clock to avoid problems on imx7 (and state them in
+> > > > commit message).
+> > > > 
+> > > > Then we add separate patch with 
+> > > > .apply = imx_pwm_apply_v2 to pwm_ops structure to enable "new"
+> > > > atomic approach.
+> > > > 
+> > > > And at last we apply patch 8/11, which removes the code for old
+> > > > (non atomic) behaviour.
+> > > > 
+> > > > All the issues are documented in this way on the cost of having
+> > > > "dead" (I mean not used) imx_pwm_apply_v2() for two commits.
+> > > >   
+> > > 
+> > > This looks even more complicated.
+> > > Sorry, but I don't see the problem with modifying patch 2 to
+> > > enable per_clk instead of ipg_clk. Can you explain what's
+> > > bothering you?  
+> > 
+> > But in patch 2:
+> > "pwm: imx: remove ipg clock"
+> > 
+> >  we _remove_ the clk_ipg from imx_pwm_config() and imx_pwm_probe(),
+> > so I'm quite puzzled with your above statement.
+> 
+> See my reworked version below.
+> 
+> > 
+> > > 
+> > > If you really want to do the change after patch 7, fine, but in
+> > > this case, keep the existing logic: enable/disable ipg_clk in
+> > > imx_pwm_apply_v2() until you drop the ipg_clk and replace the
+> > > ipg_clk enable/disable sequence by the equivalent enable/disable
+> > > per_clk one. 
+> > 
+> > Frankly, I do agree with Stefan here - we should drop patch 2,
+> > squash all changes (including imx7 clock issues) to patch 7
+> > (including verbose commit message) and remove the non-atomic code
+> > in patch 8.
+> 
+> Hm, this is not like I'm asking something impossible here (see the
+> following patch).
+> 
+> --->8---
+> From c79bb872a40b8e322fd13f33f374fb1ba085e7a9 Mon Sep 17 00:00:00 2001
+> From: Sascha Hauer <s.hauer@pengutronix.de>
+> Date: Mon, 26 Dec 2016 23:55:52 +0100
+> Subject: [PATCH v4] pwm: imx: remove ipg clock and enable per clock
+> when required
+> 
+> The use of the ipg clock was introduced with commit 7b27c160c681
+> ("pwm: i.MX: fix clock lookup").
+> In the commit message it was claimed that the ipg clock is enabled for
+> register accesses. This is true for the ->config() callback, but not
+> for the ->set_enable() callback. Given that the ipg clock is not
+> consistently enabled for all register accesses we can assume that
+> either it is not required at all or that the current code does not
+> work. Remove the ipg clock code for now so that it's no longer in the
+> way of refactoring the driver.
+> 
+> In the other hand, the imx7 IP requires the peripheral clock to be
+> enabled before accessing its registers. Since ->config() can be called
+> when the PWM is disabled (in which case, the peripheral clock is also
+> disabled), we need to surround the imx->config() with
+> clk_prepare_enable(per_clk)/clk_disable_unprepare(per_clk) calls.
+> 
+> Note that the imx7 IP was working fine so far because the ipg clock
+> was actually pointing to the peripheral clock, which guaranteed
+> peripheral clock activation even when ->config() was called when the
+> PWM was disabled.
+> 
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: Philipp Zabel <p.zabel@pengutronix.de>
+> ---
+> Changes in v4:
+> - Enable per clk before calling imx->config()
+> 
+> Changes in v3:
+> - New patch
+> 
+>  drivers/pwm/pwm-imx.c | 12 ++----------
+>  1 file changed, 2 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+> index d600fd5cd4ba..b1d1e50d3956 100644
+> --- a/drivers/pwm/pwm-imx.c
+> +++ b/drivers/pwm/pwm-imx.c
+> @@ -49,7 +49,6 @@
+>  
+>  struct imx_chip {
+>  	struct clk	*clk_per;
+> -	struct clk	*clk_ipg;
+>  
+>  	void __iomem	*mmio_base;
+>  
+> @@ -206,13 +205,13 @@ static int imx_pwm_config(struct pwm_chip *chip,
+>  	struct imx_chip *imx = to_imx_chip(chip);
+>  	int ret;
+>  
+> -	ret = clk_prepare_enable(imx->clk_ipg);
+> +	ret = clk_prepare_enable(imx->clk_per);
+>  	if (ret)
+>  		return ret;
+>  
+>  	ret = imx->config(chip, pwm, duty_ns, period_ns);
+>  
+> -	clk_disable_unprepare(imx->clk_ipg);
+> +	clk_disable_unprepare(imx->clk_per);
+>  
+>  	return ret;
+>  }
+> @@ -293,13 +292,6 @@ static int imx_pwm_probe(struct platform_device
+> *pdev) return PTR_ERR(imx->clk_per);
+>  	}
+>  
+> -	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
+> -	if (IS_ERR(imx->clk_ipg)) {
+> -		dev_err(&pdev->dev, "getting ipg clock failed with
+> %ld\n",
+> -				PTR_ERR(imx->clk_ipg));
+> -		return PTR_ERR(imx->clk_ipg);
+> -	}
+> -
+>  	imx->chip.ops = &imx_pwm_ops;
+>  	imx->chip.dev = &pdev->dev;
+>  	imx->chip.base = -1;
 
-diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
-index 14fc011faa32..999187277ea5 100644
---- a/drivers/pwm/pwm-atmel-hlcdc.c
-+++ b/drivers/pwm/pwm-atmel-hlcdc.c
-@@ -270,7 +270,6 @@ static int atmel_hlcdc_pwm_probe(struct platform_device *pdev)
- 	chip->chip.npwm = 1;
- 	chip->chip.of_xlate = of_pwm_xlate_with_flags;
- 	chip->chip.of_pwm_n_cells = 3;
--	chip->chip.can_sleep = 1;
- 
- 	ret = pwmchip_add_with_polarity(&chip->chip, PWM_POLARITY_INVERSED);
- 	if (ret) {
-diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-index e6b8b1b7e6ba..67a7023be5c2 100644
---- a/drivers/pwm/pwm-atmel.c
-+++ b/drivers/pwm/pwm-atmel.c
-@@ -385,7 +385,6 @@ static int atmel_pwm_probe(struct platform_device *pdev)
- 
- 	atmel_pwm->chip.base = -1;
- 	atmel_pwm->chip.npwm = 4;
--	atmel_pwm->chip.can_sleep = true;
- 	atmel_pwm->config = data->config;
- 	atmel_pwm->updated_pwms = 0;
- 	mutex_init(&atmel_pwm->isr_lock);
-diff --git a/drivers/pwm/pwm-bcm-kona.c b/drivers/pwm/pwm-bcm-kona.c
-index c63418322023..09a95aeb3a70 100644
---- a/drivers/pwm/pwm-bcm-kona.c
-+++ b/drivers/pwm/pwm-bcm-kona.c
-@@ -276,7 +276,6 @@ static int kona_pwmc_probe(struct platform_device *pdev)
- 	kp->chip.npwm = 6;
- 	kp->chip.of_xlate = of_pwm_xlate_with_flags;
- 	kp->chip.of_pwm_n_cells = 3;
--	kp->chip.can_sleep = true;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	kp->base = devm_ioremap_resource(&pdev->dev, res);
-diff --git a/drivers/pwm/pwm-berlin.c b/drivers/pwm/pwm-berlin.c
-index 01339c152ab0..771859aca4be 100644
---- a/drivers/pwm/pwm-berlin.c
-+++ b/drivers/pwm/pwm-berlin.c
-@@ -206,7 +206,6 @@ static int berlin_pwm_probe(struct platform_device *pdev)
- 	pwm->chip.ops = &berlin_pwm_ops;
- 	pwm->chip.base = -1;
- 	pwm->chip.npwm = 4;
--	pwm->chip.can_sleep = true;
- 	pwm->chip.of_xlate = of_pwm_xlate_with_flags;
- 	pwm->chip.of_pwm_n_cells = 3;
- 
-diff --git a/drivers/pwm/pwm-brcmstb.c b/drivers/pwm/pwm-brcmstb.c
-index 5d5adee16886..8063cffa1c96 100644
---- a/drivers/pwm/pwm-brcmstb.c
-+++ b/drivers/pwm/pwm-brcmstb.c
-@@ -270,7 +270,6 @@ static int brcmstb_pwm_probe(struct platform_device *pdev)
- 	p->chip.ops = &brcmstb_pwm_ops;
- 	p->chip.base = -1;
- 	p->chip.npwm = 2;
--	p->chip.can_sleep = true;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	p->base = devm_ioremap_resource(&pdev->dev, res);
-diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
-index fad968eb75f6..557b4ea16796 100644
---- a/drivers/pwm/pwm-fsl-ftm.c
-+++ b/drivers/pwm/pwm-fsl-ftm.c
-@@ -446,7 +446,6 @@ static int fsl_pwm_probe(struct platform_device *pdev)
- 	fpc->chip.of_pwm_n_cells = 3;
- 	fpc->chip.base = -1;
- 	fpc->chip.npwm = 8;
--	fpc->chip.can_sleep = true;
- 
- 	ret = pwmchip_add(&fpc->chip);
- 	if (ret < 0) {
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index d600fd5cd4ba..1223187ad354 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -304,7 +304,6 @@ static int imx_pwm_probe(struct platform_device *pdev)
- 	imx->chip.dev = &pdev->dev;
- 	imx->chip.base = -1;
- 	imx->chip.npwm = 1;
--	imx->chip.can_sleep = true;
- 
- 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	imx->mmio_base = devm_ioremap_resource(&pdev->dev, r);
-diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
-index 872ea76a4f19..52584e9962ed 100644
---- a/drivers/pwm/pwm-lp3943.c
-+++ b/drivers/pwm/pwm-lp3943.c
-@@ -278,7 +278,6 @@ static int lp3943_pwm_probe(struct platform_device *pdev)
- 	lp3943_pwm->chip.dev = &pdev->dev;
- 	lp3943_pwm->chip.ops = &lp3943_pwm_ops;
- 	lp3943_pwm->chip.npwm = LP3943_NUM_PWMS;
--	lp3943_pwm->chip.can_sleep = true;
- 
- 	platform_set_drvdata(pdev, lp3943_pwm);
- 
-diff --git a/drivers/pwm/pwm-mxs.c b/drivers/pwm/pwm-mxs.c
-index 9a596324ebef..a6017ad9926c 100644
---- a/drivers/pwm/pwm-mxs.c
-+++ b/drivers/pwm/pwm-mxs.c
-@@ -151,7 +151,7 @@ static int mxs_pwm_probe(struct platform_device *pdev)
- 	mxs->chip.dev = &pdev->dev;
- 	mxs->chip.ops = &mxs_pwm_ops;
- 	mxs->chip.base = -1;
--	mxs->chip.can_sleep = true;
-+
- 	ret = of_property_read_u32(np, "fsl,pwm-number", &mxs->chip.npwm);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to get pwm number: %d\n", ret);
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index 117fccf7934a..c8282a2650be 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -343,7 +343,6 @@ static int pca9685_pwm_probe(struct i2c_client *client,
- 
- 	pca->chip.dev = &client->dev;
- 	pca->chip.base = -1;
--	pca->chip.can_sleep = true;
- 
- 	return pwmchip_add(&pca->chip);
- }
-diff --git a/drivers/pwm/pwm-sti.c b/drivers/pwm/pwm-sti.c
-index dd82dc840af9..2b7c31c9d1ab 100644
---- a/drivers/pwm/pwm-sti.c
-+++ b/drivers/pwm/pwm-sti.c
-@@ -635,7 +635,6 @@ static int sti_pwm_probe(struct platform_device *pdev)
- 	pc->chip.ops = &sti_pwm_ops;
- 	pc->chip.base = -1;
- 	pc->chip.npwm = pc->cdata->pwm_num_devs;
--	pc->chip.can_sleep = true;
- 
- 	ret = pwmchip_add(&pc->chip);
- 	if (ret < 0) {
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index b0803f6c64d9..1284ffa05921 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -340,7 +340,6 @@ static int sun4i_pwm_probe(struct platform_device *pdev)
- 	pwm->chip.ops = &sun4i_pwm_ops;
- 	pwm->chip.base = -1;
- 	pwm->chip.npwm = pwm->data->npwm;
--	pwm->chip.can_sleep = true;
- 	pwm->chip.of_xlate = of_pwm_xlate_with_flags;
- 	pwm->chip.of_pwm_n_cells = 3;
- 
-diff --git a/drivers/pwm/pwm-twl-led.c b/drivers/pwm/pwm-twl-led.c
-index b964470025c5..21eff991d0e3 100644
---- a/drivers/pwm/pwm-twl-led.c
-+++ b/drivers/pwm/pwm-twl-led.c
-@@ -303,7 +303,6 @@ static int twl_pwmled_probe(struct platform_device *pdev)
- 
- 	twl->chip.dev = &pdev->dev;
- 	twl->chip.base = -1;
--	twl->chip.can_sleep = true;
- 
- 	mutex_init(&twl->mutex);
- 
-diff --git a/drivers/pwm/pwm-twl.c b/drivers/pwm/pwm-twl.c
-index 7a993b056638..9de617b76680 100644
---- a/drivers/pwm/pwm-twl.c
-+++ b/drivers/pwm/pwm-twl.c
-@@ -323,7 +323,6 @@ static int twl_pwm_probe(struct platform_device *pdev)
- 	twl->chip.dev = &pdev->dev;
- 	twl->chip.base = -1;
- 	twl->chip.npwm = 2;
--	twl->chip.can_sleep = true;
- 
- 	mutex_init(&twl->mutex);
- 
-diff --git a/drivers/staging/greybus/pwm.c b/drivers/staging/greybus/pwm.c
-index c4bf3298ba07..f0404bc37123 100644
---- a/drivers/staging/greybus/pwm.c
-+++ b/drivers/staging/greybus/pwm.c
-@@ -284,7 +284,6 @@ static int gb_pwm_probe(struct gbphy_device *gbphy_dev,
- 	pwm->ops = &gb_pwm_ops;
- 	pwm->base = -1;			/* Allocate base dynamically */
- 	pwm->npwm = pwmc->pwm_max + 1;
--	pwm->can_sleep = true;		/* FIXME */
- 
- 	ret = pwmchip_add(pwm);
- 	if (ret) {
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index e15fd3ce6502..eae215ef1b2c 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -287,8 +287,6 @@ struct pwm_ops {
-  * @pwms: array of PWM devices allocated by the framework
-  * @of_xlate: request a PWM device given a device tree PWM specifier
-  * @of_pwm_n_cells: number of cells expected in the device tree PWM specifier
-- * @can_sleep: must be true if the .config(), .enable() or .disable()
-- *             operations may sleep
-  */
- struct pwm_chip {
- 	struct device *dev;
-@@ -302,7 +300,6 @@ struct pwm_chip {
- 	struct pwm_device * (*of_xlate)(struct pwm_chip *pc,
- 					const struct of_phandle_args *args);
- 	unsigned int of_pwm_n_cells;
--	bool can_sleep;
- };
- 
- /**
--- 
-2.11.0
+Patch seems OK, so I will test it latter today including rework of
+patch 7 (do not recalculate things when enabling PWM and the peripheral
+clock availability.
+
+Thanks Boris for preparing the patch.
+
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
