@@ -1,95 +1,55 @@
 From: Lukasz Majewski <lukma@denx.de>
-Subject: [PATCH v4 05/11] pwm: imx: Move PWMv2 software reset code to a separate function
-Date: Thu,  5 Jan 2017 00:36:48 +0100
-Message-ID: <1483573014-13185-6-git-send-email-lukma@denx.de>
+Subject: [PATCH v4 01/11] pwm: print error messages with pr_err() instead of pr_debug()
+Date: Thu,  5 Jan 2017 00:36:44 +0100
+Message-ID: <1483573014-13185-2-git-send-email-lukma@denx.de>
 References: <1483573014-13185-1-git-send-email-lukma@denx.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1483573014-13185-1-git-send-email-lukma@denx.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org
-Cc: Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <l.majewski@majess.pl>
+Cc: Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lothar Wassmann <LW@KARO-electronics.de>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Lukasz Majewski <l.majewski@majess.pl>
+From: Lothar Wassmann <LW@KARO-electronics.de>
 
-The software reset code has been extracted from imx_pwm_config_v2 function
-and moved to new one - imx_pwm_sw_reset().
+Make the messages that are printed in case of fatal errors actually
+visible to the user without having to recompile the driver with
+debugging enabled.
 
-This change reduces the overall size of imx_pwm_config_v2() and prepares
-it for atomic PWM operation.
-
-Suggested-by: Stefan Agner <stefan@agner.ch>
-Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
-
+Signed-off-by: Lothar Waßmann <LW@KARO-electronics.de>
+Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
 ---
 Changes for v4:
 - None
 
 Changes for v3:
 - None
-
-Changes for v2:
-- Add missing parenthesis
 ---
- drivers/pwm/pwm-imx.c | 31 +++++++++++++++++++++----------
- 1 file changed, 21 insertions(+), 10 deletions(-)
+ drivers/pwm/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index 11e3f3e..f0d78f3 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -120,6 +120,25 @@ static void imx_pwm_disable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
- 	clk_disable_unprepare(imx->clk_per);
- }
- 
-+static void imx_pwm_sw_reset(struct pwm_chip *chip)
-+{
-+	struct imx_chip *imx = to_imx_chip(chip);
-+	struct device *dev = chip->dev;
-+	int wait_count = 0;
-+	u32 cr;
-+
-+	writel(MX3_PWMCR_SWR, imx->mmio_base + MX3_PWMCR);
-+	do {
-+		usleep_range(200, 1000);
-+		cr = readl(imx->mmio_base + MX3_PWMCR);
-+	} while ((cr & MX3_PWMCR_SWR) &&
-+		 (wait_count++ < MX3_PWM_SWR_LOOP));
-+
-+	if (cr & MX3_PWMCR_SWR)
-+		dev_warn(dev, "software reset timeout\n");
-+}
-+
-+
- static int imx_pwm_config_v2(struct pwm_chip *chip,
- 		struct pwm_device *pwm, int duty_ns, int period_ns)
- {
-@@ -129,7 +148,7 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
- 	unsigned long period_cycles, duty_cycles, prescale;
- 	unsigned int period_ms;
- 	bool enable = pwm_is_enabled(pwm);
--	int wait_count = 0, fifoav;
-+	int fifoav;
- 	u32 cr, sr;
- 
- 	/*
-@@ -152,15 +171,7 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
- 				dev_warn(dev, "there is no free FIFO slot\n");
- 		}
- 	} else {
--		writel(MX3_PWMCR_SWR, imx->mmio_base + MX3_PWMCR);
--		do {
--			usleep_range(200, 1000);
--			cr = readl(imx->mmio_base + MX3_PWMCR);
--		} while ((cr & MX3_PWMCR_SWR) &&
--			 (wait_count++ < MX3_PWM_SWR_LOOP));
--
--		if (cr & MX3_PWMCR_SWR)
--			dev_warn(dev, "software reset timeout\n");
-+		imx_pwm_sw_reset(chip);
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index 172ef82..ec7179f 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -663,13 +663,13 @@ struct pwm_device *of_pwm_get(struct device_node *np, const char *con_id)
+ 	err = of_parse_phandle_with_args(np, "pwms", "#pwm-cells", index,
+ 					 &args);
+ 	if (err) {
+-		pr_debug("%s(): can't parse \"pwms\" property\n", __func__);
++		pr_err("%s(): can't parse \"pwms\" property\n", __func__);
+ 		return ERR_PTR(err);
  	}
  
- 	c = clk_get_rate(imx->clk_per);
+ 	pc = of_node_to_pwmchip(args.np);
+ 	if (IS_ERR(pc)) {
+-		pr_debug("%s(): PWM chip not found\n", __func__);
++		pr_err("%s(): PWM chip not found\n", __func__);
+ 		pwm = ERR_CAST(pc);
+ 		goto put;
+ 	}
 -- 
 2.1.4
