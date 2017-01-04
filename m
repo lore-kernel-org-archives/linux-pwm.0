@@ -1,7 +1,7 @@
 From: Lukasz Majewski <lukma@denx.de>
-Subject: [PATCH v4 01/11] pwm: print error messages with pr_err() instead of pr_debug()
-Date: Thu,  5 Jan 2017 00:36:44 +0100
-Message-ID: <1483573014-13185-2-git-send-email-lukma@denx.de>
+Subject: [PATCH v4 03/11] pwm: imx: Add separate set of pwm ops for PWMv1 and PWMv2
+Date: Thu,  5 Jan 2017 00:36:46 +0100
+Message-ID: <1483573014-13185-4-git-send-email-lukma@denx.de>
 References: <1483573014-13185-1-git-send-email-lukma@denx.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -10,46 +10,97 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1483573014-13185-1-git-send-email-lukma@denx.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org
-Cc: Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lothar Wassmann <LW@KARO-electronics.de>
+Cc: Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <l.majewski@majess.pl>, =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 List-Id: linux-pwm@vger.kernel.org
 
-From: Lothar Wassmann <LW@KARO-electronics.de>
+From: Lukasz Majewski <l.majewski@majess.pl>
 
-Make the messages that are printed in case of fatal errors actually
-visible to the user without having to recompile the driver with
-debugging enabled.
+This patch provides separate set of pwm ops utilized by
+i.MX's PWMv1 and PWMv2.
 
 Signed-off-by: Lothar Waßmann <LW@KARO-electronics.de>
 Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+Acked-by: Shawn Guo <shawn.guo@linaro.org>
+Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
 ---
 Changes for v4:
 - None
 
 Changes for v3:
-- None
----
- drivers/pwm/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+- Adjust the code to work with ipg clock removed
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 172ef82..ec7179f 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -663,13 +663,13 @@ struct pwm_device *of_pwm_get(struct device_node *np, const char *con_id)
- 	err = of_parse_phandle_with_args(np, "pwms", "#pwm-cells", index,
- 					 &args);
- 	if (err) {
--		pr_debug("%s(): can't parse \"pwms\" property\n", __func__);
-+		pr_err("%s(): can't parse \"pwms\" property\n", __func__);
- 		return ERR_PTR(err);
+Changes for v2:
+- New patch
+---
+ drivers/pwm/pwm-imx.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+index b1d1e50..0fa480d 100644
+--- a/drivers/pwm/pwm-imx.c
++++ b/drivers/pwm/pwm-imx.c
+@@ -239,7 +239,14 @@ static void imx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	clk_disable_unprepare(imx->clk_per);
+ }
+ 
+-static struct pwm_ops imx_pwm_ops = {
++static struct pwm_ops imx_pwm_ops_v1 = {
++	.enable = imx_pwm_enable,
++	.disable = imx_pwm_disable,
++	.config = imx_pwm_config,
++	.owner = THIS_MODULE,
++};
++
++static struct pwm_ops imx_pwm_ops_v2 = {
+ 	.enable = imx_pwm_enable,
+ 	.disable = imx_pwm_disable,
+ 	.config = imx_pwm_config,
+@@ -250,16 +257,19 @@ struct imx_pwm_data {
+ 	int (*config)(struct pwm_chip *chip,
+ 		struct pwm_device *pwm, int duty_ns, int period_ns);
+ 	void (*set_enable)(struct pwm_chip *chip, bool enable);
++	struct pwm_ops *pwm_ops;
+ };
+ 
+ static struct imx_pwm_data imx_pwm_data_v1 = {
+ 	.config = imx_pwm_config_v1,
+ 	.set_enable = imx_pwm_set_enable_v1,
++	.pwm_ops = &imx_pwm_ops_v1,
+ };
+ 
+ static struct imx_pwm_data imx_pwm_data_v2 = {
+ 	.config = imx_pwm_config_v2,
+ 	.set_enable = imx_pwm_set_enable_v2,
++	.pwm_ops = &imx_pwm_ops_v2,
+ };
+ 
+ static const struct of_device_id imx_pwm_dt_ids[] = {
+@@ -281,6 +291,8 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ 	if (!of_id)
+ 		return -ENODEV;
+ 
++	data = of_id->data;
++
+ 	imx = devm_kzalloc(&pdev->dev, sizeof(*imx), GFP_KERNEL);
+ 	if (imx == NULL)
+ 		return -ENOMEM;
+@@ -292,7 +304,7 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ 		return PTR_ERR(imx->clk_per);
  	}
  
- 	pc = of_node_to_pwmchip(args.np);
- 	if (IS_ERR(pc)) {
--		pr_debug("%s(): PWM chip not found\n", __func__);
-+		pr_err("%s(): PWM chip not found\n", __func__);
- 		pwm = ERR_CAST(pc);
- 		goto put;
- 	}
+-	imx->chip.ops = &imx_pwm_ops;
++	imx->chip.ops = data->pwm_ops;
+ 	imx->chip.dev = &pdev->dev;
+ 	imx->chip.base = -1;
+ 	imx->chip.npwm = 1;
+@@ -303,7 +315,6 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(imx->mmio_base))
+ 		return PTR_ERR(imx->mmio_base);
+ 
+-	data = of_id->data;
+ 	imx->config = data->config;
+ 	imx->set_enable = data->set_enable;
+ 
 -- 
 2.1.4
