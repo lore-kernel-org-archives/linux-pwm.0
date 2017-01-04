@@ -1,101 +1,215 @@
 From: Lukasz Majewski <lukma@denx.de>
-Subject: [PATCH v4 11/11] pwm: imx: Add polarity inversion support to i.MX's PWMv2
-Date: Thu,  5 Jan 2017 00:36:54 +0100
-Message-ID: <1483573014-13185-12-git-send-email-lukma@denx.de>
+Subject: [PATCH v4 08/11] pwm: imx: Remove redundant i.MX PWMv2 code
+Date: Thu,  5 Jan 2017 00:36:51 +0100
+Message-ID: <1483573014-13185-9-git-send-email-lukma@denx.de>
 References: <1483573014-13185-1-git-send-email-lukma@denx.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.10]:54639 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754291AbdADXhl (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Jan 2017 18:37:41 -0500
 In-Reply-To: <1483573014-13185-1-git-send-email-lukma@denx.de>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org
 Cc: Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <lukma@denx.de>, Lukasz Majewski <l.majewski@majess.pl>
-List-Id: linux-pwm@vger.kernel.org
 
-With this patch the polarity settings for i.MX's PWMv2 is now supported
-on top of atomic PWM setting
+The code providing functionality surpassed by the atomic PWM is not needed
+anymore and hence can be removed.
 
-Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+Suggested-by: Stefan Agner <stefan@agner.ch>
+Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+Reviewed-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 ---
 Changes for v4:
-- MX3_PWMCR_POUTC setting adjustements after apply_v2() previous changes
+- None
 
 Changes for v3:
 - None
 
 Changes for v2:
-- New patch
+- None
 ---
- drivers/pwm/pwm-imx.c | 22 +++++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
+ drivers/pwm/pwm-imx.c | 127 --------------------------------------------------
+ 1 file changed, 127 deletions(-)
 
 diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index afca5f5..d35d83f 100644
+index 134dd66..afca5f5 100644
 --- a/drivers/pwm/pwm-imx.c
 +++ b/drivers/pwm/pwm-imx.c
-@@ -38,6 +38,7 @@
- #define MX3_PWMCR_DOZEEN		(1 << 24)
- #define MX3_PWMCR_WAITEN		(1 << 23)
- #define MX3_PWMCR_DBGEN			(1 << 22)
-+#define MX3_PWMCR_POUTC			(1 << 18)
- #define MX3_PWMCR_CLKSRC_IPG_HIGH	(2 << 16)
- #define MX3_PWMCR_CLKSRC_IPG		(1 << 16)
- #define MX3_PWMCR_SWR			(1 << 3)
-@@ -164,6 +165,7 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct pwm_state cstate;
- 	unsigned long long c;
- 	int ret;
-+	u32 cr;
+@@ -53,10 +53,6 @@ struct imx_chip {
+ 	void __iomem	*mmio_base;
  
- 	pwm_get_state(pwm, &cstate);
+ 	struct pwm_chip	chip;
+-
+-	int (*config)(struct pwm_chip *chip,
+-		struct pwm_device *pwm, int duty_ns, int period_ns);
+-	void (*set_enable)(struct pwm_chip *chip, bool enable);
+ };
  
-@@ -207,12 +209,15 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
- 		writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
- 		writel(period_cycles, imx->mmio_base + MX3_PWMPR);
+ #define to_imx_chip(chip)	container_of(chip, struct imx_chip, chip)
+@@ -160,95 +156,6 @@ static void imx_pwm_wait_fifo_slot(struct pwm_chip *chip,
+ 	}
+ }
  
--		writel(MX3_PWMCR_PRESCALER(prescale) |
--		       MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
--		       MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH |
--		       MX3_PWMCR_EN,
--		       imx->mmio_base + MX3_PWMCR);
-+		cr = MX3_PWMCR_PRESCALER(prescale) |
-+			MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
-+			MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH |
-+			MX3_PWMCR_EN;
-+
-+		if (state->polarity == PWM_POLARITY_INVERSED)
-+			cr |= MX3_PWMCR_POUTC;
+-static int imx_pwm_config_v2(struct pwm_chip *chip,
+-		struct pwm_device *pwm, int duty_ns, int period_ns)
+-{
+-	struct imx_chip *imx = to_imx_chip(chip);
+-	unsigned long long c;
+-	unsigned long period_cycles, duty_cycles, prescale;
+-	bool enable = pwm_is_enabled(pwm);
+-	u32 cr;
+-
+-	/*
+-	 * i.MX PWMv2 has a 4-word sample FIFO.
+-	 * In order to avoid FIFO overflow issue, we do software reset
+-	 * to clear all sample FIFO if the controller is disabled or
+-	 * wait for a full PWM cycle to get a relinquished FIFO slot
+-	 * when the controller is enabled and the FIFO is fully loaded.
+-	 */
+-	if (enable)
+-		imx_pwm_wait_fifo_slot(chip, pwm);
+-	else
+-		imx_pwm_sw_reset(chip);
+-
+-	c = clk_get_rate(imx->clk_per);
+-	c = c * period_ns;
+-	do_div(c, 1000000000);
+-	period_cycles = c;
+-
+-	prescale = period_cycles / 0x10000 + 1;
+-
+-	period_cycles /= prescale;
+-	c = (unsigned long long)period_cycles * duty_ns;
+-	do_div(c, period_ns);
+-	duty_cycles = c;
+-
+-	/*
+-	 * according to imx pwm RM, the real period value should be
+-	 * PERIOD value in PWMPR plus 2.
+-	 */
+-	if (period_cycles > 2)
+-		period_cycles -= 2;
+-	else
+-		period_cycles = 0;
+-
+-	writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
+-	writel(period_cycles, imx->mmio_base + MX3_PWMPR);
+-
+-	cr = MX3_PWMCR_PRESCALER(prescale) |
+-		MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
+-		MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH;
+-
+-	if (enable)
+-		cr |= MX3_PWMCR_EN;
+-
+-	writel(cr, imx->mmio_base + MX3_PWMCR);
+-
+-	return 0;
+-}
+-
+-static void imx_pwm_set_enable_v2(struct pwm_chip *chip, bool enable)
+-{
+-	struct imx_chip *imx = to_imx_chip(chip);
+-	u32 val;
+-
+-	val = readl(imx->mmio_base + MX3_PWMCR);
+-
+-	if (enable)
+-		val |= MX3_PWMCR_EN;
+-	else
+-		val &= ~MX3_PWMCR_EN;
+-
+-	writel(val, imx->mmio_base + MX3_PWMCR);
+-}
+-
+-static int imx_pwm_config(struct pwm_chip *chip,
+-		struct pwm_device *pwm, int duty_ns, int period_ns)
+-{
+-	struct imx_chip *imx = to_imx_chip(chip);
+-	int ret;
+-
+-	ret = clk_prepare_enable(imx->clk_per);
+-	if (ret)
+-		return ret;
+-
+-	ret = imx->config(chip, pwm, duty_ns, period_ns);
+-
+-	clk_disable_unprepare(imx->clk_per);
+-
+-	return ret;
+-}
+-
+ static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			    struct pwm_state *state)
+ {
+@@ -315,29 +222,6 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	return 0;
+ }
  
-+		writel(cr, imx->mmio_base + MX3_PWMCR);
- 	} else {
- 		writel(0, imx->mmio_base + MX3_PWMCR);
+-static int imx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+-{
+-	struct imx_chip *imx = to_imx_chip(chip);
+-	int ret;
+-
+-	ret = clk_prepare_enable(imx->clk_per);
+-	if (ret)
+-		return ret;
+-
+-	imx->set_enable(chip, true);
+-
+-	return 0;
+-}
+-
+-static void imx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+-{
+-	struct imx_chip *imx = to_imx_chip(chip);
+-
+-	imx->set_enable(chip, false);
+-
+-	clk_disable_unprepare(imx->clk_per);
+-}
+-
+ static struct pwm_ops imx_pwm_ops_v1 = {
+ 	.enable = imx_pwm_enable_v1,
+ 	.disable = imx_pwm_disable_v1,
+@@ -347,16 +231,10 @@ static struct pwm_ops imx_pwm_ops_v1 = {
  
-@@ -235,6 +240,7 @@ static struct pwm_ops imx_pwm_ops_v2 = {
+ static struct pwm_ops imx_pwm_ops_v2 = {
+ 	.apply = imx_pwm_apply_v2,
+-	.enable = imx_pwm_enable,
+-	.disable = imx_pwm_disable,
+-	.config = imx_pwm_config,
+ 	.owner = THIS_MODULE,
  };
  
  struct imx_pwm_data {
-+	bool polarity_supported;
+-	int (*config)(struct pwm_chip *chip,
+-		struct pwm_device *pwm, int duty_ns, int period_ns);
+-	void (*set_enable)(struct pwm_chip *chip, bool enable);
  	struct pwm_ops *pwm_ops;
  };
  
-@@ -243,6 +249,7 @@ static struct imx_pwm_data imx_pwm_data_v1 = {
+@@ -365,8 +243,6 @@ static struct imx_pwm_data imx_pwm_data_v1 = {
  };
  
  static struct imx_pwm_data imx_pwm_data_v2 = {
-+	.polarity_supported = true,
+-	.config = imx_pwm_config_v2,
+-	.set_enable = imx_pwm_set_enable_v2,
  	.pwm_ops = &imx_pwm_ops_v2,
  };
  
-@@ -283,6 +290,11 @@ static int imx_pwm_probe(struct platform_device *pdev)
- 	imx->chip.base = -1;
- 	imx->chip.npwm = 1;
- 	imx->chip.can_sleep = true;
-+	if (data->polarity_supported) {
-+		dev_dbg(&pdev->dev, "PWM supports output inversion\n");
-+		imx->chip.of_xlate = of_pwm_xlate_with_flags;
-+		imx->chip.of_pwm_n_cells = 3;
-+	}
+@@ -413,9 +289,6 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(imx->mmio_base))
+ 		return PTR_ERR(imx->mmio_base);
  
- 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	imx->mmio_base = devm_ioremap_resource(&pdev->dev, r);
+-	imx->config = data->config;
+-	imx->set_enable = data->set_enable;
+-
+ 	ret = pwmchip_add(&imx->chip);
+ 	if (ret < 0)
+ 		return ret;
 -- 
 2.1.4
