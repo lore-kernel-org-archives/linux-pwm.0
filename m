@@ -1,120 +1,108 @@
 From: Lukasz Majewski <lukma@denx.de>
-Subject: [PATCH v4 07/11] pwm: imx: Provide atomic PWM support for i.MX PWMv2
-Date: Thu,  5 Jan 2017 00:36:50 +0100
-Message-ID: <1483573014-13185-8-git-send-email-lukma@denx.de>
+Subject: [PATCH v4 06/11] pwm: imx: Move PWMv2 wait for fifo slot code to a separate function
+Date: Thu,  5 Jan 2017 00:36:49 +0100
+Message-ID: <1483573014-13185-7-git-send-email-lukma@denx.de>
 References: <1483573014-13185-1-git-send-email-lukma@denx.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1483573014-13185-1-git-send-email-lukma@denx.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org
-Cc: Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <lukma@denx.de>, Lukasz Majewski <l.majewski@majess.pl>
+Cc: Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <l.majewski@majess.pl>
 List-Id: linux-pwm@vger.kernel.org
 
-This commit provides apply() callback implementation for i.MX's PWMv2.
+From: Lukasz Majewski <l.majewski@majess.pl>
+
+The code, which waits for fifo slot, has been extracted from
+imx_pwm_config_v2 function and moved to new one - imx_pwm_wait_fifo_slot().
+
+This change reduces the overall size of imx_pwm_config_v2() and prepares
+it for atomic PWM operation.
 
 Suggested-by: Stefan Agner <stefan@agner.ch>
 Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
-Reviewed-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 ---
 Changes for v4:
-- Avoid recalculation of PWM parameters when disabling PWM signal
-- Unconditionally call clk_prepare_enable(imx->clk_per) and
-  clk_disable_unprepare(imx->clk_per)
+- None
 
 Changes for v3:
-- Remove ipg clock enable/disable functions
+- None
 
 Changes for v2:
 - None
 ---
- drivers/pwm/pwm-imx.c | 67 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 67 insertions(+)
+ drivers/pwm/pwm-imx.c | 43 +++++++++++++++++++++++++------------------
+ 1 file changed, 25 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index 60cdc5c..134dd66 100644
+index f0d78f3..60cdc5c 100644
 --- a/drivers/pwm/pwm-imx.c
 +++ b/drivers/pwm/pwm-imx.c
-@@ -249,6 +249,72 @@ static int imx_pwm_config(struct pwm_chip *chip,
- 	return ret;
+@@ -138,18 +138,36 @@ static void imx_pwm_sw_reset(struct pwm_chip *chip)
+ 		dev_warn(dev, "software reset timeout\n");
  }
  
-+static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
-+			    struct pwm_state *state)
++static void imx_pwm_wait_fifo_slot(struct pwm_chip *chip,
++				   struct pwm_device *pwm)
 +{
-+	unsigned long period_cycles, duty_cycles, prescale;
 +	struct imx_chip *imx = to_imx_chip(chip);
-+	struct pwm_state cstate;
-+	unsigned long long c;
-+	int ret;
++	struct device *dev = chip->dev;
++	unsigned int period_ms;
++	int fifoav;
++	u32 sr;
 +
-+	pwm_get_state(pwm, &cstate);
++	sr = readl(imx->mmio_base + MX3_PWMSR);
++	fifoav = sr & MX3_PWMSR_FIFOAV_MASK;
++	if (fifoav == MX3_PWMSR_FIFOAV_4WORDS) {
++		period_ms = DIV_ROUND_UP(pwm_get_period(pwm),
++					 NSEC_PER_MSEC);
++		msleep(period_ms);
 +
-+	if (state->enabled) {
-+		c = clk_get_rate(imx->clk_per);
-+		c *= state->period;
-+
-+		do_div(c, 1000000000);
-+		period_cycles = c;
-+
-+		prescale = period_cycles / 0x10000 + 1;
-+
-+		period_cycles /= prescale;
-+		c = (unsigned long long)period_cycles * state->duty_cycle;
-+		do_div(c, state->period);
-+		duty_cycles = c;
-+
-+		/*
-+		 * according to imx pwm RM, the real period value should be
-+		 * PERIOD value in PWMPR plus 2.
-+		 */
-+		if (period_cycles > 2)
-+			period_cycles -= 2;
-+		else
-+			period_cycles = 0;
-+
-+		ret = clk_prepare_enable(imx->clk_per);
-+		if (ret)
-+			return ret;
-+
-+		/*
-+		 * Wait for a free FIFO slot if the PWM is already enabled, and
-+		 * flush the FIFO if the PWM was disabled and is about to be
-+		 * enabled.
-+		 */
-+		if (cstate.enabled)
-+			imx_pwm_wait_fifo_slot(chip, pwm);
-+		else if (state->enabled)
-+			imx_pwm_sw_reset(chip);
-+
-+		writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
-+		writel(period_cycles, imx->mmio_base + MX3_PWMPR);
-+
-+		writel(MX3_PWMCR_PRESCALER(prescale) |
-+		       MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
-+		       MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH |
-+		       MX3_PWMCR_EN,
-+		       imx->mmio_base + MX3_PWMCR);
-+
-+	} else {
-+		writel(0, imx->mmio_base + MX3_PWMCR);
-+
-+		clk_disable_unprepare(imx->clk_per);
++		sr = readl(imx->mmio_base + MX3_PWMSR);
++		if (fifoav == (sr & MX3_PWMSR_FIFOAV_MASK))
++			dev_warn(dev, "there is no free FIFO slot\n");
 +	}
-+
-+	return 0;
 +}
-+
- static int imx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 
+ static int imx_pwm_config_v2(struct pwm_chip *chip,
+ 		struct pwm_device *pwm, int duty_ns, int period_ns)
  {
  	struct imx_chip *imx = to_imx_chip(chip);
-@@ -280,6 +346,7 @@ static struct pwm_ops imx_pwm_ops_v1 = {
- };
+-	struct device *dev = chip->dev;
+ 	unsigned long long c;
+ 	unsigned long period_cycles, duty_cycles, prescale;
+-	unsigned int period_ms;
+ 	bool enable = pwm_is_enabled(pwm);
+-	int fifoav;
+-	u32 cr, sr;
++	u32 cr;
  
- static struct pwm_ops imx_pwm_ops_v2 = {
-+	.apply = imx_pwm_apply_v2,
- 	.enable = imx_pwm_enable,
- 	.disable = imx_pwm_disable,
- 	.config = imx_pwm_config,
+ 	/*
+ 	 * i.MX PWMv2 has a 4-word sample FIFO.
+@@ -158,21 +176,10 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
+ 	 * wait for a full PWM cycle to get a relinquished FIFO slot
+ 	 * when the controller is enabled and the FIFO is fully loaded.
+ 	 */
+-	if (enable) {
+-		sr = readl(imx->mmio_base + MX3_PWMSR);
+-		fifoav = sr & MX3_PWMSR_FIFOAV_MASK;
+-		if (fifoav == MX3_PWMSR_FIFOAV_4WORDS) {
+-			period_ms = DIV_ROUND_UP(pwm_get_period(pwm),
+-						 NSEC_PER_MSEC);
+-			msleep(period_ms);
+-
+-			sr = readl(imx->mmio_base + MX3_PWMSR);
+-			if (fifoav == (sr & MX3_PWMSR_FIFOAV_MASK))
+-				dev_warn(dev, "there is no free FIFO slot\n");
+-		}
+-	} else {
++	if (enable)
++		imx_pwm_wait_fifo_slot(chip, pwm);
++	else
+ 		imx_pwm_sw_reset(chip);
+-	}
+ 
+ 	c = clk_get_rate(imx->clk_per);
+ 	c = c * period_ns;
 -- 
 2.1.4
