@@ -1,81 +1,112 @@
 From: Lukasz Majewski <lukma@denx.de>
-Subject: [PATCH v4 00/11] pwm: imx: Provide atomic operation for IMX PWM driver
-Date: Thu,  5 Jan 2017 00:36:43 +0100
-Message-ID: <1483573014-13185-1-git-send-email-lukma@denx.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org
-Cc: Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <lukma@denx.de>
+Subject: [PATCH v4 04/11] pwm: imx: Rewrite imx_pwm_*_v1 code to facilitate switch to atomic pwm operation
+Date: Thu,  5 Jan 2017 00:36:47 +0100
+Message-ID: <1483573014-13185-5-git-send-email-lukma@denx.de>
+References: <1483573014-13185-1-git-send-email-lukma@denx.de>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.10]:33272 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S969765AbdADXhb (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 4 Jan 2017 18:37:31 -0500
+In-Reply-To: <1483573014-13185-1-git-send-email-lukma@denx.de>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org
+Cc: Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <l.majewski@majess.pl>
 
-This patch set brings atomic operation to i.MX's PWMv2 driver.
+From: Lukasz Majewski <l.majewski@majess.pl>
 
-This work has been supported and suggested by Boris Brezillon [1] and 
-Stefan Agner, by showing how simple the transition could be :-).
+The code has been rewritten to remove "generic" calls to
+imx_pwm_{enable|disable|config}.
 
-It has been divided into several steps:
+Such approach would facilitate switch to atomic PWM (a.k.a ->apply())
+implementation.
 
-- Remove ipg clock and enable per clock when required (as proposed by Boris 
-  Brezillon) - this is the most notable change for v4
+Suggested-by: Stefan Agner <stefan@agner.ch>
+Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+Reviewed-by: Stefan Agner <stefan@agner.ch>
+Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+---
+Changes for v4:
+- None
 
-- Provide different pwm ops for PWMv1 and PWMv2
+[Minor code adjustment according to Stefan Agner comment]
 
-- Separate PWMv1 commits from "generic" and non atomic PWM code
+Changes for v3:
+- Remove ipg clock
 
-  NOTE: Since I do _not_ have board with PWMv1, I would like to ask somebody
-        for testing
+Changes for v2:
+- Add missing clock unprepare for clk_ipg
+- Enable peripheral PWM clock (clk_per)
+---
+ drivers/pwm/pwm-imx.c | 33 +++++++++++++++++++++++----------
+ 1 file changed, 23 insertions(+), 10 deletions(-)
 
-- Move some imx_config_v2 code to separate functions
-
-- Provide PWM atomic implementation (the ->apply() driver) for PWMv2 in a
-  single patch for better readability. This patch also includes some code
-  to address potential issues on i.MX7 (lack of peripheral clock when accessing
-  PWM registers).
-
-- Remove redundant PWM code (disable, enable, config callbacks)
-
-- Update proper documentation entries
-
-- Provide support for polarity inversion on top of atomic PWM rework
-
-
-Test HW:
---------
-This patch set has been tested on i.MX6q board with
-v4.9 vanila kernel SHA1: 69973b830859bc6529a7a0468ba0d80ee5117826
-It applies to v4.10-rc2
-
-The PWM operation has been tested with pwm_bl backlight driver by changing
-its brightness.
-
-[1]: http://patchwork.ozlabs.org/patch/685402/
-
-
-Boris Brezillon (1):
-  pwm: imx: remove ipg clock and enable per clock when required
-
-Lothar Wassmann (2):
-  pwm: print error messages with pr_err() instead of pr_debug()
-  pwm: core: make the PWM_POLARITY flag in DTB optional
-
-Lukasz Majewski (8):
-  pwm: imx: Add separate set of pwm ops for PWMv1 and PWMv2
-  pwm: imx: Rewrite imx_pwm_*_v1 code to facilitate switch to atomic pwm
-    operation
-  pwm: imx: Move PWMv2 software reset code to a separate function
-  pwm: imx: Move PWMv2 wait for fifo slot code to a separate function
-  pwm: imx: Provide atomic PWM support for i.MX PWMv2
-  pwm: imx: Remove redundant i.MX PWMv2 code
-  pwm: imx: doc: Update imx-pwm.txt documentation entry
-  pwm: imx: Add polarity inversion support to i.MX's PWMv2
-
- Documentation/devicetree/bindings/pwm/imx-pwm.txt |   6 +-
- drivers/pwm/core.c                                |  26 ++-
- drivers/pwm/pwm-imx.c                             | 272 ++++++++++------------
- 3 files changed, 146 insertions(+), 158 deletions(-)
-
+diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+index 0fa480d..11e3f3e 100644
+--- a/drivers/pwm/pwm-imx.c
++++ b/drivers/pwm/pwm-imx.c
+@@ -90,19 +90,34 @@ static int imx_pwm_config_v1(struct pwm_chip *chip,
+ 	return 0;
+ }
+ 
+-static void imx_pwm_set_enable_v1(struct pwm_chip *chip, bool enable)
++static int imx_pwm_enable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	struct imx_chip *imx = to_imx_chip(chip);
++	int ret;
+ 	u32 val;
+ 
++	ret = clk_prepare_enable(imx->clk_per);
++	if (ret)
++		return ret;
++
+ 	val = readl(imx->mmio_base + MX1_PWMC);
++	val |= MX1_PWMC_EN;
++	writel(val, imx->mmio_base + MX1_PWMC);
+ 
+-	if (enable)
+-		val |= MX1_PWMC_EN;
+-	else
+-		val &= ~MX1_PWMC_EN;
++	return 0;
++}
++
++static void imx_pwm_disable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct imx_chip *imx = to_imx_chip(chip);
++	u32 val;
++
++	val = readl(imx->mmio_base + MX1_PWMC);
++	val &= ~MX1_PWMC_EN;
+ 
+ 	writel(val, imx->mmio_base + MX1_PWMC);
++
++	clk_disable_unprepare(imx->clk_per);
+ }
+ 
+ static int imx_pwm_config_v2(struct pwm_chip *chip,
+@@ -240,9 +255,9 @@ static void imx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ }
+ 
+ static struct pwm_ops imx_pwm_ops_v1 = {
+-	.enable = imx_pwm_enable,
+-	.disable = imx_pwm_disable,
+-	.config = imx_pwm_config,
++	.enable = imx_pwm_enable_v1,
++	.disable = imx_pwm_disable_v1,
++	.config = imx_pwm_config_v1,
+ 	.owner = THIS_MODULE,
+ };
+ 
+@@ -261,8 +276,6 @@ struct imx_pwm_data {
+ };
+ 
+ static struct imx_pwm_data imx_pwm_data_v1 = {
+-	.config = imx_pwm_config_v1,
+-	.set_enable = imx_pwm_set_enable_v1,
+ 	.pwm_ops = &imx_pwm_ops_v1,
+ };
+ 
 -- 
 2.1.4
