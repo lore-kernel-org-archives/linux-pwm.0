@@ -1,49 +1,36 @@
-From: "Andrew F. Davis" <afd@ti.com>
-Subject: [PATCH v2 4/6] macintosh: Only descend into directory when
- CONFIG_MACINTOSH_DRIVERS is set
-Date: Thu, 5 Jan 2017 15:01:56 -0600
-Message-ID: <20170105210158.14204-5-afd@ti.com>
-References: <20170105210158.14204-1-afd@ti.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH v2 6/6] [media] Only descend into directory when CONFIG_MEDIA_SUPPORT is set
+Date: Thu, 05 Jan 2017 22:42:16 +0100
+Message-ID: <4225650.R96pl5clWf@wuerfel>
+References: <20170105210158.14204-1-afd@ti.com> <20170105210158.14204-7-afd@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <20170105210158.14204-1-afd@ti.com>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Russell King <linux@armlinux.org.uk>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Wolfram Sang <wsa@the-dreams.de>, Richard Purdie <rpurdie@rpsys.net>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, Samuel Ortiz <sameo@linux.intel.com>, Ingo Molnar <mingo@kernel.org>
-Cc: linux-pwm@vger.kernel.org, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, "Andrew F . Davis" <afd@ti.com>, linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-wireless-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170105210158.14204-7-afd-l0cyMroinI0@public.gmane.org>
+Sender: linux-wireless-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Cc: "Andrew F. Davis" <afd-l0cyMroinI0@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Mauro Carvalho Chehab <mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Lauro Ramos Venancio <lauro.venancio-430g2QfJUUCGglJvpFV4uA@public.gmane.org>, Aloisio Almeida Jr <aloisio.almeida-430g2QfJUUCGglJvpFV4uA@public.gmane.org>, Samuel Ortiz <sameo-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-When CONFIG_MACINTOSH_DRIVERS is not set make will still descend into the
-macintosh directory but nothing will be built. This produces unneeded
-build artifacts and messages in addition to slowing the build.
-Fix this here.
+On Thursday, January 5, 2017 3:01:58 PM CET Andrew F. Davis wrote:
+> @@ -109,7 +109,8 @@ obj-$(CONFIG_SERIO)         += input/serio/
+>  obj-$(CONFIG_GAMEPORT)         += input/gameport/
+>  obj-$(CONFIG_INPUT)            += input/
+>  obj-$(CONFIG_RTC_LIB)          += rtc/
+> -obj-y                          += i2c/ media/
+> +obj-y                          += i2c/
+> +obj-$(CONFIG_MEDIA_SUPPORT)    += media/
+>  obj-$(CONFIG_PPS)              += pps/
+>  obj-y                          += ptp/
+>  obj-$(CONFIG_W1)               += w1/
+> 
 
-Signed-off-by: Andrew F. Davis <afd@ti.com>
----
- drivers/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This one seems wrong: if CONFIG_MEDIA_SUPPORT=m, but some I2C drivers
+inside of drivers/media/ are built-in, we will fail to enter the directory,
+see drivers/media/Makefile.
 
-diff --git a/drivers/Makefile b/drivers/Makefile
-index f47f23cf817a..0823730bc50b 100644
---- a/drivers/Makefile
-+++ b/drivers/Makefile
-@@ -75,7 +75,7 @@ obj-$(CONFIG_LIBNVDIMM)		+= nvdimm/
- obj-$(CONFIG_DEV_DAX)		+= dax/
- obj-$(CONFIG_DMA_SHARED_BUFFER) += dma-buf/
- obj-$(CONFIG_NUBUS)		+= nubus/
--obj-y				+= macintosh/
-+obj-$(CONFIG_MACINTOSH_DRIVERS)	+= macintosh/
- obj-$(CONFIG_IDE)		+= ide/
- obj-$(CONFIG_SCSI)		+= scsi/
- obj-y				+= nvme/
--- 
-2.11.0
+I checked the other five patches in the series as well, they all look
+ok to me.
+
+	Arnd
