@@ -1,131 +1,58 @@
-From: Lukasz Majewski <lukma@denx.de>
-Subject: Re: [PATCH v4 02/11] pwm: imx: remove ipg clock and enable per
- clock when required
-Date: Thu, 5 Jan 2017 08:26:09 +0100
-Message-ID: <20170105082609.0bd2e884@jawa>
-References: <1483573014-13185-1-git-send-email-lukma@denx.de>
-        <1483573014-13185-3-git-send-email-lukma@denx.de>
-        <20170105081429.32909fe1@bbrezillon>
+From: Ilkka Koskinen <ilkka.koskinen@intel.com>
+Subject: Re: [PATCH v2 0/4] pwm: lpss: clean up series
+Date: Thu, 5 Jan 2017 00:09:19 -0800
+Message-ID: <20170105080919.GA45669@kammari>
+References: <20170102091647.86910-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170105081429.32909fe1@bbrezillon>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Philipp Zabel <p.zabel@pengutronix.de>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga06.intel.com ([134.134.136.31]:12134 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1031437AbdAEIJ4 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 5 Jan 2017 03:09:56 -0500
+Content-Disposition: inline
+In-Reply-To: <20170102091647.86910-1-andriy.shevchenko@linux.intel.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Linus Torvalds <torvalds@linux-foundation.org>
 
-Hi Boris,
-
-> On Thu,  5 Jan 2017 00:36:45 +0100
-> Lukasz Majewski <lukma@denx.de> wrote:
+On Mon, Jan 02, 2017 at 11:16:43AM +0200, Andy Shevchenko wrote:
+> There are clean ups and switch to new atomic API (would be considered as an
+> improvement).
 > 
-> > From: Boris Brezillon <boris.brezillon@free-electrons.com>
+> The series tested on various Intel platforms, such as Edison and Minnowboard
+> MAX.
 > 
-> Can you keep Sascha as the author of this patch?
-
-But the patch differs from the original one - and that change was sent
-by you - so I assume that you made the modifications.
-
-Apparently there are two authors and we only have one "Author"
-field :-) so I took the patch as it was sent by you.
-
-Is the rest of the series correct?
-
-Best regards,
-Łukasz Majewski
-
+> And the part I like most is -2 lines statistics!
 > 
-> > 
-> > The use of the ipg clock was introduced with commit 7b27c160c681
-> > ("pwm: i.MX: fix clock lookup").
-> > In the commit message it was claimed that the ipg clock is enabled
-> > for register accesses. This is true for the ->config() callback,
-> > but not for the ->set_enable() callback. Given that the ipg clock
-> > is not consistently enabled for all register accesses we can assume
-> > that either it is not required at all or that the current code does
-> > not work. Remove the ipg clock code for now so that it's no longer
-> > in the way of refactoring the driver.
-> > 
-> > In the other hand, the imx7 IP requires the peripheral clock to be
-> > enabled before accessing its registers. Since ->config() can be
-> > called when the PWM is disabled (in which case, the peripheral
-> > clock is also disabled), we need to surround the imx->config() with
-> > clk_prepare_enable(per_clk)/clk_disable_unprepare(per_clk) calls.
-> > 
-> > Note that the imx7 IP was working fine so far because the ipg clock
-> > was actually pointing to the peripheral clock, which guaranteed
-> > peripheral clock activation even when ->config() was called when
-> > the PWM was disabled.
-> > 
-> > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> > Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> > Cc: Philipp Zabel <p.zabel@pengutronix.de>
-> > ---
-> > Changes in v4:
-> > - Enable per clk before calling imx->config()
-> > 
-> > Changes in v3:
-> > - New patch
-> > ---
-> >  drivers/pwm/pwm-imx.c | 12 ++----------
-> >  1 file changed, 2 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> > index d600fd5..b1d1e50 100644
-> > --- a/drivers/pwm/pwm-imx.c
-> > +++ b/drivers/pwm/pwm-imx.c
-> > @@ -49,7 +49,6 @@
-> >  
-> >  struct imx_chip {
-> >  	struct clk	*clk_per;
-> > -	struct clk	*clk_ipg;
-> >  
-> >  	void __iomem	*mmio_base;
-> >  
-> > @@ -206,13 +205,13 @@ static int imx_pwm_config(struct pwm_chip
-> > *chip, struct imx_chip *imx = to_imx_chip(chip);
-> >  	int ret;
-> >  
-> > -	ret = clk_prepare_enable(imx->clk_ipg);
-> > +	ret = clk_prepare_enable(imx->clk_per);
-> >  	if (ret)
-> >  		return ret;
-> >  
-> >  	ret = imx->config(chip, pwm, duty_ns, period_ns);
-> >  
-> > -	clk_disable_unprepare(imx->clk_ipg);
-> > +	clk_disable_unprepare(imx->clk_per);
-> >  
-> >  	return ret;
-> >  }
-> > @@ -293,13 +292,6 @@ static int imx_pwm_probe(struct
-> > platform_device *pdev) return PTR_ERR(imx->clk_per);
-> >  	}
-> >  
-> > -	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
-> > -	if (IS_ERR(imx->clk_ipg)) {
-> > -		dev_err(&pdev->dev, "getting ipg clock failed with
-> > %ld\n",
-> > -				PTR_ERR(imx->clk_ipg));
-> > -		return PTR_ERR(imx->clk_ipg);
-> > -	}
-> > -
-> >  	imx->chip.ops = &imx_pwm_ops;
-> >  	imx->chip.dev = &pdev->dev;
-> >  	imx->chip.base = -1;
+> Thierry, what should we do to get this series in? It was already more than 2
+> months of waiting for response from you. Two pings went to black hole.
+> So, Cc'ing to Linus directly this time, sorry.
+> 
+> Since v1:
+> - rebase on top of v4.10-rc2
+> - fix typo in commit message of patch 1
+> - add Mika's tag
+> 
+> Andy Shevchenko (3):
+>   pwm: lpss: Avoid potential overflow of base_unit
+>   pwm: lpss: Allow duty cycle to be 0
+>   pwm: lpss: Switch to new atomic API
+> 
+> Mika Westerberg (1):
+>   pwm: lpss: Do not export board infos for different PWM types
+> 
+>  drivers/pwm/pwm-lpss-pci.c      |  20 +++----
+>  drivers/pwm/pwm-lpss-platform.c |  10 ++--
+>  drivers/pwm/pwm-lpss.c          | 120 +++++++++++++++++++++-------------------
+>  drivers/pwm/pwm-lpss.h          |  14 ++---
+>  4 files changed, 81 insertions(+), 83 deletions(-)
+> 
+> -- 
+> 2.11.0
 > 
 
+Tested-by: Ilkka Koskinen <ilkka.koskinen@intel.com>
 
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+Cheers, Ilkka
