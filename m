@@ -1,127 +1,516 @@
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Subject: [PATCH v7 0/8] Add PWM and IIO timer drivers for STM32
-Date: Thu,  5 Jan 2017 10:25:36 +0100
-Message-ID: <1483608344-9012-1-git-send-email-benjamin.gaignard@st.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wj0-f176.google.com ([209.85.210.176]:33795 "EHLO
-        mail-wj0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1762105AbdAEJZ4 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 5 Jan 2017 04:25:56 -0500
-Received: by mail-wj0-f176.google.com with SMTP id tn15so30384324wjb.1
-        for <linux-pwm@vger.kernel.org>; Thu, 05 Jan 2017 01:25:55 -0800 (PST)
-Sender: linux-pwm-owner@vger.kernel.org
+From: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v7 4/8] PWM: add PWM driver for STM32 plaftorm
+Date: Thu,  5 Jan 2017 10:25:40 +0100
+Message-ID: <1483608344-9012-5-git-send-email-benjamin.gaignard@st.com>
+References: <1483608344-9012-1-git-send-email-benjamin.gaignard@st.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1483608344-9012-1-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: fabrice.gasnier@st.com, gerald.baeza@st.com, arnaud.pouliquen@st.com, linus.walleij@linaro.org, linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>
 
-version 7:
-- rebase on v4.10-rc2
-- remove iio_device code from driver and keep only the trigger part
+This driver adds support for PWM driver on STM32 platform.
+The SoC have multiple instances of the hardware IP and each
+of them could have small differences: number of channels,
+complementary output, auto reload register size...
 
 version 6:
-- rename stm32-gptimer in stm32-timers.
-- change "st,stm32-gptimer" compatible to "st,stm32-timers".
-- modify "st,breakinput" parameter in pwm part.
-- split DT patch in 2
-
-version 5:
-- fix comments done on version 4
-- rebased on kernel 4.9-rc8
-- change nodes names and re-order then by addresses
+- change st,breakinput parameter to make it usuable for stm32f7 too.
 
 version 4:
-- fix comments done on version 3
-- don't use interrupts anymore in IIO timer
-- detect hardware capabilities at probe time to simplify binding
-
-version 3:
-- no change on mfd and pwm divers patches
-- add cross reference between bindings
-- change compatible to "st,stm32-timer-trigger"
-- fix attributes access rights
-- use string instead of int for master_mode and slave_mode
-- document device attributes in sysfs-bus-iio-timer-stm32
-- update DT with the new compatible
+- detect at probe time hardware capabilities
+- fix comments done on v2 and v3
+- use PWM atomic ops
 
 version 2:
-- keep only one compatible per driver
-- use DT parameters to describe hardware block configuration:
-  - pwm channels, complementary output, counter size, break input
-  - triggers accepted and create by IIO timers
-- change DT to limite use of reference to the node
-- interrupt is now in IIO timer driver
-- rename stm32-mfd-timer to stm32-timers (for general purpose timer)
+- only keep one comptatible
+- use DT parameters to discover hardware block configuration
 
-The following patches enable PWM and IIO Timer features for STM32 platforms.
-
-Those two features are mixed into the registers of the same hardware block
-(named general purpose timer) which lead to introduce a multifunctions driver 
-on the top of them to be able to share the registers.
-
-In STM32f4 14 instances of timer hardware block exist, even if they all have
-the same register mapping they could have a different number of pwm channels
-and/or different triggers capabilities. We use various parameters in DT to 
-describe the differences between hardware blocks
-
-The MFD (stm32-timers.c) takes care of clock and register mapping
-by using regmap. stm32_timers structure is provided to its sub-node to
-share those information.
-
-PWM driver is implemented into pwm-stm32.c. Depending of the instance we may
-have up to 4 channels, sometime with complementary outputs or 32 bits counter
-instead of 16 bits. Some hardware blocks may also have a break input function
-which allows to stop pwm depending of a level, defined in devicetree, on an
-external pin.
-
-IIO timer driver (stm32-timer-trigger.c and stm32-timer-trigger.h) define a list
-of hardware triggers usable by hardware blocks like ADC, DAC or other timers. 
-
-The matrix of possible connections between blocks is quite complex so we use 
-trigger names and is_stm32_iio_timer_trigger() function to be sure that
-triggers are valid and configure the IPs.
-
-At run time IIO timer hardware blocks can configure (through "master_mode" 
-IIO device attribute) which internal signal (counter enable, reset,
-comparison block, etc...) is used to generate the trigger.
-
-Benjamin Gaignard (8):
-  MFD: add bindings for STM32 Timers driver
-  MFD: add STM32 Timers driver
-  PWM: add pwm-stm32 DT bindings
-  PWM: add PWM driver for STM32 plaftorm
-  IIO: add bindings for STM32 timer trigger driver
-  IIO: add STM32 timer trigger driver
-  ARM: dts: stm32: add Timers driver for stm32f429 MCU
-  ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-disco
-
- .../ABI/testing/sysfs-bus-iio-timer-stm32          |  29 ++
- .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 ++
- .../devicetree/bindings/mfd/stm32-timers.txt       |  46 +++
- .../devicetree/bindings/pwm/pwm-stm32.txt          |  33 ++
- arch/arm/boot/dts/stm32f429.dtsi                   | 275 +++++++++++++
- arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
- drivers/iio/Kconfig                                |   1 -
- drivers/iio/trigger/Kconfig                        |  10 +
- drivers/iio/trigger/Makefile                       |   1 +
- drivers/iio/trigger/stm32-timer-trigger.c          | 340 ++++++++++++++++
- drivers/mfd/Kconfig                                |  11 +
- drivers/mfd/Makefile                               |   2 +
- drivers/mfd/stm32-timers.c                         |  80 ++++
- drivers/pwm/Kconfig                                |   9 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-stm32.c                            | 434 +++++++++++++++++++++
- include/linux/iio/timer/stm32-timer-trigger.h      |  62 +++
- include/linux/mfd/stm32-timers.h                   |  71 ++++
- 18 files changed, 1455 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
- create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
- create mode 100644 drivers/iio/trigger/stm32-timer-trigger.c
- create mode 100644 drivers/mfd/stm32-timers.c
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+---
+ drivers/pwm/Kconfig     |   9 +
+ drivers/pwm/Makefile    |   1 +
+ drivers/pwm/pwm-stm32.c | 434 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 444 insertions(+)
  create mode 100644 drivers/pwm/pwm-stm32.c
- create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
- create mode 100644 include/linux/mfd/stm32-timers.h
 
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index f92dd41..88035c0 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -397,6 +397,15 @@ config PWM_STI
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-sti.
+ 
++config PWM_STM32
++	tristate "STMicroelectronics STM32 PWM"
++	depends on (ARCH_STM32 && OF && MFD_STM32_TIMERS) || COMPILE_TEST
++	help
++	  Generic PWM framework driver for STM32 SoCs.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called pwm-stm32.
++
+ config PWM_STMPE
+ 	bool "STMPE expander PWM export"
+ 	depends on MFD_STMPE
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index a48bdb5..346a83b 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -38,6 +38,7 @@ obj-$(CONFIG_PWM_ROCKCHIP)	+= pwm-rockchip.o
+ obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
+ obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
+ obj-$(CONFIG_PWM_STI)		+= pwm-sti.o
++obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
+ obj-$(CONFIG_PWM_STMPE)		+= pwm-stmpe.o
+ obj-$(CONFIG_PWM_SUN4I)		+= pwm-sun4i.o
+ obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
+diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
+new file mode 100644
+index 0000000..fcf0a78
+--- /dev/null
++++ b/drivers/pwm/pwm-stm32.c
+@@ -0,0 +1,434 @@
++/*
++ * Copyright (C) STMicroelectronics 2016
++ *
++ * Author: Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>
++ *
++ * License terms: GNU General Public License (GPL), version 2
++ *
++ * Inspired by timer-stm32.c from Maxime Coquelin
++ *             pwm-atmel.c from Bo Shen
++ */
++
++#include <linux/mfd/stm32-timers.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/pwm.h>
++#include <linux/of.h>
++
++#define CCMR_CHANNEL_SHIFT 8
++#define CCMR_CHANNEL_MASK  0xFF
++#define MAX_BREAKINPUT 2
++
++struct stm32_pwm {
++	struct pwm_chip chip;
++	struct device *dev;
++	struct clk *clk;
++	struct regmap *regmap;
++	unsigned int caps;
++	unsigned int npwm;
++	u32 max_arr;
++	bool have_complementary_output;
++};
++
++struct stm32_breakinput {
++	u32 index;
++	u32 level;
++	u32 filter;
++};
++
++static inline struct stm32_pwm *to_stm32_pwm_dev(struct pwm_chip *chip)
++{
++	return container_of(chip, struct stm32_pwm, chip);
++}
++
++static u32 active_channels(struct stm32_pwm *dev)
++{
++	u32 ccer;
++
++	regmap_read(dev->regmap, TIM_CCER, &ccer);
++
++	return ccer & TIM_CCER_CCXE;
++}
++
++static int write_ccrx(struct stm32_pwm *dev, struct pwm_device *pwm,
++		      u32 value)
++{
++	switch (pwm->hwpwm) {
++	case 0:
++		return regmap_write(dev->regmap, TIM_CCR1, value);
++	case 1:
++		return regmap_write(dev->regmap, TIM_CCR2, value);
++	case 2:
++		return regmap_write(dev->regmap, TIM_CCR3, value);
++	case 3:
++		return regmap_write(dev->regmap, TIM_CCR4, value);
++	}
++	return -EINVAL;
++}
++
++static int stm32_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
++			    int duty_ns, int period_ns)
++{
++	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
++	unsigned long long prd, div, dty;
++	unsigned int prescaler = 0;
++	u32 ccmr, mask, shift;
++
++	/* Period and prescaler values depends on clock rate */
++	div = (unsigned long long)clk_get_rate(priv->clk) * period_ns;
++
++	do_div(div, NSEC_PER_SEC);
++	prd = div;
++
++	while (div > priv->max_arr) {
++		prescaler++;
++		div = prd;
++		do_div(div, (prescaler + 1));
++	}
++
++	prd = div;
++
++	if (prescaler > MAX_TIM_PSC) {
++		dev_err(chip->dev, "prescaler exceeds the maximum value\n");
++		return -EINVAL;
++	}
++
++	/*
++	 * All channels share the same prescaler and counter so when two
++	 * channels are active at the same we can't change them
++	 */
++	if (active_channels(priv) & ~(1 << pwm->hwpwm * 4)) {
++		u32 psc, arr;
++
++		regmap_read(priv->regmap, TIM_PSC, &psc);
++		regmap_read(priv->regmap, TIM_ARR, &arr);
++
++		if ((psc != prescaler) || (arr != prd - 1))
++			return -EBUSY;
++	}
++
++	regmap_write(priv->regmap, TIM_PSC, prescaler);
++	regmap_write(priv->regmap, TIM_ARR, prd - 1);
++	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_ARPE, TIM_CR1_ARPE);
++
++	/* Calculate the duty cycles */
++	dty = prd * duty_ns;
++	do_div(dty, period_ns);
++
++	write_ccrx(priv, pwm, dty);
++
++	/* Configure output mode */
++	shift = (pwm->hwpwm & 0x1) * CCMR_CHANNEL_SHIFT;
++	ccmr = (TIM_CCMR_PE | TIM_CCMR_M1) << shift;
++	mask = CCMR_CHANNEL_MASK << shift;
++
++	if (pwm->hwpwm < 2)
++		regmap_update_bits(priv->regmap, TIM_CCMR1, mask, ccmr);
++	else
++		regmap_update_bits(priv->regmap, TIM_CCMR2, mask, ccmr);
++
++	regmap_update_bits(priv->regmap, TIM_BDTR,
++			   TIM_BDTR_MOE | TIM_BDTR_AOE,
++			   TIM_BDTR_MOE | TIM_BDTR_AOE);
++
++	return 0;
++}
++
++static int stm32_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
++				  enum pwm_polarity polarity)
++{
++	u32 mask;
++	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
++
++	mask = TIM_CCER_CC1P << (pwm->hwpwm * 4);
++	if (priv->have_complementary_output)
++		mask |= TIM_CCER_CC1NP << (pwm->hwpwm * 4);
++
++	regmap_update_bits(priv->regmap, TIM_CCER, mask,
++			   polarity == PWM_POLARITY_NORMAL ? 0 : mask);
++
++	return 0;
++}
++
++static int stm32_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	u32 mask;
++	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
++
++	clk_enable(priv->clk);
++
++	/* Enable channel */
++	mask = TIM_CCER_CC1E << (pwm->hwpwm * 4);
++	if (priv->have_complementary_output)
++		mask |= TIM_CCER_CC1NE << (pwm->hwpwm * 4);
++
++	regmap_update_bits(priv->regmap, TIM_CCER, mask, mask);
++
++	/* Make sure that registers are updated */
++	regmap_update_bits(priv->regmap, TIM_EGR, TIM_EGR_UG, TIM_EGR_UG);
++
++	/* Enable controller */
++	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, TIM_CR1_CEN);
++
++	return 0;
++}
++
++static void stm32_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	u32 mask;
++	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
++
++	/* Disable channel */
++	mask = TIM_CCER_CC1E << (pwm->hwpwm * 4);
++	if (priv->have_complementary_output)
++		mask |= TIM_CCER_CC1NE << (pwm->hwpwm * 4);
++
++	regmap_update_bits(priv->regmap, TIM_CCER, mask, 0);
++
++	/* When all channels are disabled, we can disable the controller */
++	if (!active_channels(priv))
++		regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, 0);
++
++	clk_disable(priv->clk);
++}
++
++static int stm32_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
++			   struct pwm_state *state)
++{
++	struct pwm_state curstate;
++	bool enabled;
++	int ret;
++
++	pwm_get_state(pwm, &curstate);
++	enabled = curstate.enabled;
++
++	if (enabled && !state->enabled) {
++		stm32_pwm_disable(chip, pwm);
++		return 0;
++	}
++
++	if (state->polarity != curstate.polarity && enabled)
++		stm32_pwm_set_polarity(chip, pwm, state->polarity);
++
++	ret = stm32_pwm_config(chip, pwm, state->duty_cycle, state->period);
++	if (ret)
++		return ret;
++
++	if (!enabled && state->enabled)
++		ret = stm32_pwm_enable(chip, pwm);
++
++	return ret;
++}
++
++static const struct pwm_ops stm32pwm_ops = {
++	.owner = THIS_MODULE,
++	.apply = stm32_pwm_apply,
++};
++
++static int stm32_pwm_set_breakinput(struct stm32_pwm *priv,
++				    int level, int filter)
++{
++	u32 bdtr = TIM_BDTR_BKE;
++
++	if (level)
++		bdtr |= TIM_BDTR_BKP;
++
++	bdtr |= (filter & TIM_BDTR_BKF_MASK) << TIM_BDTR_BKF_SHIFT;
++
++	regmap_update_bits(priv->regmap,
++			   TIM_BDTR, TIM_BDTR_BKE | TIM_BDTR_BKP | TIM_BDTR_BKF,
++			   bdtr);
++
++	regmap_read(priv->regmap, TIM_BDTR, &bdtr);
++
++	return (bdtr & TIM_BDTR_BKE) ? 0 : -EINVAL;
++}
++
++static int stm32_pwm_set_breakinput2(struct stm32_pwm *priv,
++				     int level, int filter)
++{
++	u32 bdtr = TIM_BDTR_BK2E;
++
++	if (level)
++		bdtr |= TIM_BDTR_BK2P;
++
++	bdtr |= (filter & TIM_BDTR_BKF_MASK) << TIM_BDTR_BK2F_SHIFT;
++
++	regmap_update_bits(priv->regmap,
++			   TIM_BDTR, TIM_BDTR_BK2E |
++			   TIM_BDTR_BK2P |
++			   TIM_BDTR_BK2F,
++			   bdtr);
++
++	regmap_read(priv->regmap, TIM_BDTR, &bdtr);
++
++	return (bdtr & TIM_BDTR_BK2E) ? 0 : -EINVAL;
++}
++
++static int stm32_pwm_apply_breakinputs(struct stm32_pwm *priv,
++				       struct device_node *np)
++{
++	struct stm32_breakinput breakinput[MAX_BREAKINPUT];
++	int nb, ret, i, array_size;
++
++	nb = of_property_count_elems_of_size(np, "st,breakinput",
++					     sizeof(struct stm32_breakinput));
++
++	/*
++	 * Because "st,breakinput" parameter is optional do not make probe
++	 * failed if it doesn't exist.
++	 */
++	if (nb <= 0)
++		return 0;
++
++	if (nb > MAX_BREAKINPUT)
++		return -EINVAL;
++
++	array_size = nb * sizeof(struct stm32_breakinput) / sizeof(u32);
++	ret = of_property_read_u32_array(np, "st,breakinput",
++					 &breakinput[0].index, array_size);
++	if (ret)
++		return ret;
++
++	for (i = 0; i < nb && !ret; i++) {
++		switch (breakinput[i].index) {
++		case 0:
++		{
++			ret = stm32_pwm_set_breakinput(priv,
++						       breakinput[i].level,
++						       breakinput[i].filter);
++			break;
++		}
++		case 1:
++		{
++			ret = stm32_pwm_set_breakinput2(priv,
++							breakinput[i].level,
++							breakinput[i].filter);
++
++			break;
++		}
++		default:
++		{
++			ret = -EINVAL;
++			break;
++		}
++		}
++	}
++
++	return ret;
++}
++
++static void stm32_pwm_detect_complementary(struct stm32_pwm *priv)
++{
++	u32 ccer;
++
++	/*
++	 * If complementary bit doesn't exist writing 1 will have no
++	 * effect so we can detect it.
++	 */
++	regmap_update_bits(priv->regmap,
++			   TIM_CCER, TIM_CCER_CC1NE, TIM_CCER_CC1NE);
++	regmap_read(priv->regmap, TIM_CCER, &ccer);
++	regmap_update_bits(priv->regmap, TIM_CCER, TIM_CCER_CCXE, 0);
++
++	priv->have_complementary_output = (ccer != 0);
++}
++
++static void stm32_pwm_detect_channels(struct stm32_pwm *priv)
++{
++	u32 ccer;
++
++	/*
++	 * If channels enable bits don't exist writing 1 will have no
++	 * effect so we can detect and count them.
++	 */
++	regmap_update_bits(priv->regmap,
++			   TIM_CCER, TIM_CCER_CCXE, TIM_CCER_CCXE);
++	regmap_read(priv->regmap, TIM_CCER, &ccer);
++	regmap_update_bits(priv->regmap, TIM_CCER, TIM_CCER_CCXE, 0);
++
++	if (ccer & TIM_CCER_CC1E)
++		priv->npwm++;
++
++	if (ccer & TIM_CCER_CC2E)
++		priv->npwm++;
++
++	if (ccer & TIM_CCER_CC3E)
++		priv->npwm++;
++
++	if (ccer & TIM_CCER_CC4E)
++		priv->npwm++;
++}
++
++static int stm32_pwm_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *np = dev->of_node;
++	struct stm32_timers *ddata = dev_get_drvdata(pdev->dev.parent);
++	struct stm32_pwm *priv;
++	int ret;
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	priv->regmap = ddata->regmap;
++	priv->clk = ddata->clk;
++	priv->max_arr = ddata->max_arr;
++
++	if (!priv->regmap || !priv->clk)
++		return -EINVAL;
++
++	ret = stm32_pwm_apply_breakinputs(priv, np);
++	if (ret)
++		return ret;
++
++	stm32_pwm_detect_complementary(priv);
++	stm32_pwm_detect_channels(priv);
++
++	priv->chip.base = -1;
++	priv->chip.dev = dev;
++	priv->chip.ops = &stm32pwm_ops;
++	priv->chip.npwm = priv->npwm;
++
++	ret = pwmchip_add(&priv->chip);
++	if (ret < 0)
++		return ret;
++
++	platform_set_drvdata(pdev, priv);
++
++	return 0;
++}
++
++static int stm32_pwm_remove(struct platform_device *pdev)
++{
++	struct stm32_pwm *priv = platform_get_drvdata(pdev);
++	unsigned int i;
++
++	for (i = 0; i < priv->npwm; i++)
++		pwm_disable(&priv->chip.pwms[i]);
++
++	pwmchip_remove(&priv->chip);
++
++	return 0;
++}
++
++static const struct of_device_id stm32_pwm_of_match[] = {
++	{ .compatible = "st,stm32-pwm",	},
++	{ /* end node */ },
++};
++MODULE_DEVICE_TABLE(of, stm32_pwm_of_match);
++
++static struct platform_driver stm32_pwm_driver = {
++	.probe	= stm32_pwm_probe,
++	.remove	= stm32_pwm_remove,
++	.driver	= {
++		.name = "stm32-pwm",
++		.of_match_table = stm32_pwm_of_match,
++	},
++};
++module_platform_driver(stm32_pwm_driver);
++
++MODULE_ALIAS("platform: stm32-pwm");
++MODULE_DESCRIPTION("STMicroelectronics STM32 PWM driver");
++MODULE_LICENSE("GPL v2");
 -- 
 1.9.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
