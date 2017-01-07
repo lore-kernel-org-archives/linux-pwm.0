@@ -1,116 +1,267 @@
-From: Lukasz Majewski <l.majewski@majess.pl>
-Subject: Re: [PATCH v2 RESEND] video: backlight: pwm_bl: Initialize
- fb_bl_on[x] and use_count during pwm_backlight_probe()
-Date: Fri, 6 Jan 2017 13:29:49 +0100
-Message-ID: <20170106132949.3fa201f8@jawa>
-References: <1477169904-14997-1-git-send-email-l.majewski@majess.pl>
-        <1482790896-29202-1-git-send-email-l.majewski@majess.pl>
-        <20170103083032.GA2977@dell>
+From: Lukasz Majewski <lukma@denx.de>
+Subject: Re: [PATCH v4 07/11] pwm: imx: Provide atomic PWM support for i.MX
+ PWMv2
+Date: Sat, 7 Jan 2017 19:35:25 +0100
+Message-ID: <20170107193525.2b021397@jawa>
+References: <1483573014-13185-1-git-send-email-lukma@denx.de>
+        <1483573014-13185-8-git-send-email-lukma@denx.de>
+        <20170105095035.2f1fe6db@bbrezillon>
+        <20170105100347.1358df34@jawa>
+        <20170105101935.2365d647@bbrezillon>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- boundary="Sig_/ub5e1_3.5/BomBZpGqTCZCC"; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from 1.mo6.mail-out.ovh.net ([46.105.56.136]:44703 "EHLO
-        1.mo6.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S936210AbdAFMkS (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 6 Jan 2017 07:40:18 -0500
-Received: from player761.ha.ovh.net (b9.ovh.net [213.186.33.59])
-        by mo6.mail-out.ovh.net (Postfix) with ESMTP id 3E1416BCA3
-        for <linux-pwm@vger.kernel.org>; Fri,  6 Jan 2017 13:30:15 +0100 (CET)
-In-Reply-To: <20170103083032.GA2977@dell>
+Received: from mail-out.m-online.net ([212.18.0.10]:32902 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752155AbdAGSfc (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 7 Jan 2017 13:35:32 -0500
+In-Reply-To: <20170105101935.2365d647@bbrezillon>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Liu Ying <Ying.Liu@freescale.com>, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>
+To: Stefan Agner <stefan@agner.ch>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <l.majewski@majess.pl>
 
---Sig_/ub5e1_3.5/BomBZpGqTCZCC
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Hi Stefan,
 
-Hi Lee, Thierry, Jingoo,
+> On Thu, 5 Jan 2017 10:03:47 +0100
+> Lukasz Majewski <lukma@denx.de> wrote:
+> 
+> > On Thu, 5 Jan 2017 09:50:35 +0100
+> > Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
+> > 
+> > > On Thu,  5 Jan 2017 00:36:50 +0100
+> > > Lukasz Majewski <lukma@denx.de> wrote:
+> > >   
+> > > > This commit provides apply() callback implementation for i.MX's
+> > > > PWMv2.
+> > > > 
+> > > > Suggested-by: Stefan Agner <stefan@agner.ch>
+> > > > Suggested-by: Boris Brezillon
+> > > > <boris.brezillon@free-electrons.com> Signed-off-by: Lukasz
+> > > > Majewski <l.majewski@majess.pl> Reviewed-by: Boris Brezillon
+> > > > <boris.brezillon@free-electrons.com> ---
+> > > > Changes for v4:
+> > > > - Avoid recalculation of PWM parameters when disabling PWM
+> > > > signal
+> > > > - Unconditionally call clk_prepare_enable(imx->clk_per) and
+> > > >   clk_disable_unprepare(imx->clk_per)  
+> > > 
+> > > I don't see that one, but I'm not sure this is actually needed.
+> > > In the enabled path we enable the clk before accessing the
+> > > registers, and in the disable path, assuming you change the code
+> > > according to my suggestion, the clk should already be enabled
+> > > when you write to MX3_PWMCR.
+> > >   
+> > > > 
+> > > > Changes for v3:
+> > > > - Remove ipg clock enable/disable functions
+> > > > 
+> > > > Changes for v2:
+> > > > - None
+> > > > ---
+> > > >  drivers/pwm/pwm-imx.c | 67
+> > > > +++++++++++++++++++++++++++++++++++++++++++++++++++ 1 file
+> > > > changed, 67 insertions(+)
+> > > > 
+> > > > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+> > > > index 60cdc5c..134dd66 100644
+> > > > --- a/drivers/pwm/pwm-imx.c
+> > > > +++ b/drivers/pwm/pwm-imx.c
+> > > > @@ -249,6 +249,72 @@ static int imx_pwm_config(struct pwm_chip
+> > > > *chip, return ret;
+> > > >  }
+> > > >  
+> > > > +static int imx_pwm_apply_v2(struct pwm_chip *chip, struct
+> > > > pwm_device *pwm,
+> > > > +			    struct pwm_state *state)
+> > > > +{
+> > > > +	unsigned long period_cycles, duty_cycles, prescale;
+> > > > +	struct imx_chip *imx = to_imx_chip(chip);
+> > > > +	struct pwm_state cstate;
+> > > > +	unsigned long long c;
+> > > > +	int ret;
+> > > > +
+> > > > +	pwm_get_state(pwm, &cstate);
+> > > > +
+> > > > +	if (state->enabled) {
+> > > > +		c = clk_get_rate(imx->clk_per);
+> > > > +		c *= state->period;
+> > > > +
+> > > > +		do_div(c, 1000000000);
+> > > > +		period_cycles = c;
+> > > > +
+> > > > +		prescale = period_cycles / 0x10000 + 1;
+> > > > +
+> > > > +		period_cycles /= prescale;
+> > > > +		c = (unsigned long long)period_cycles *
+> > > > state->duty_cycle;
+> > > > +		do_div(c, state->period);
+> > > > +		duty_cycles = c;
+> > > > +
+> > > > +		/*
+> > > > +		 * according to imx pwm RM, the real period
+> > > > value should be
+> > > > +		 * PERIOD value in PWMPR plus 2.
+> > > > +		 */
+> > > > +		if (period_cycles > 2)
+> > > > +			period_cycles -= 2;
+> > > > +		else
+> > > > +			period_cycles = 0;
+> > > > +  
+> > > 
+> > > Starting here...
+> > >   
+> > > > +		ret = clk_prepare_enable(imx->clk_per);
+> > > > +		if (ret)
+> > > > +			return ret;
+> > > > +
+> > > > +		/*
+> > > > +		 * Wait for a free FIFO slot if the PWM is
+> > > > already enabled, and
+> > > > +		 * flush the FIFO if the PWM was disabled and
+> > > > is about to be
+> > > > +		 * enabled.
+> > > > +		 */
+> > > > +		if (cstate.enabled)
+> > > > +			imx_pwm_wait_fifo_slot(chip, pwm);
+> > > > +		else if (state->enabled)
+> > > > +			imx_pwm_sw_reset(chip);  
+> > > 
+> > > ... till here, should be replaced by:
+> > > 
+> > > 
+> > > 		/*
+> > > 		 * Wait for a free FIFO slot if the PWM is already
+> > > enabled, and
+> > > 		 * flush the FIFO if the PWM was disabled and is
+> > > about to be
+> > > 		 * enabled.
+> > > 		 */
+> > > 		if (cstate.enabled) {
+> > > 			imx_pwm_wait_fifo_slot(chip, pwm);
+> > > 		} else {
+> > > 			ret = clk_prepare_enable(imx->clk_per);
+> > > 			if (ret)
+> > > 				return ret;  
+> > 
+> > In the other mail you mentioned that the clock should be enabled
+> > unconditionally to fix issue on iMX7 when we want to access
+> > registers.
+> 
+> When I said unconditionally, I meant call
+> clk_prepare_enable(imx->clk_per) just after pwm_get_state() (at the
+> beginning of the function) and call clk_disable_(imx->clk_per) just
+> before returning 0 at the end of the function. This way you're
+> guaranteed that the clk is always enabled when you access registers in
+> between. Of course, you still need the the clk_prepare_enable() and
+> clk_disable_unprepare() in the enable and disable path to keep the clk
+> enabled when the PWM is enabled, and to disable it when the clk is
+> being disabled.
+> 
+> But, while reviewing your patch I realized this was actually unneeded
+> (see the explanation in my previous review).
+> 
+> > 
+> > Now it depends on cstate.enabled flag. 
+> > 
+> > So we end up with 
+> > 
+> > if (state.enabled && !cstate.enabled)
+> > 	clk_preapre_enable();
+> 
+> Yep, and that's correct.
+> 
+> > 
+> > which was the reason of iMX7 failure reported by Stefan to v3.
+> 
+> Stefan, do you confirm that? I don't see how this can possibly fail
+> since the clk is either already enabled (cstate.enabled) or we enable
+> it (!cstate.enable) before accessing registers.
 
->=20
-> Please respond to Lukasz.
+Stefan, could you respond on this issue?
 
-Gentel Ping....
+Thanks in advance,
+Łukasz Majewski
+
+> 
+> What's for sure is that your implementation is introducing possible
+> unbalanced ref counting on the per clk.
+> 
+> > 
+> > 
+> > > 
+> > > 			imx_pwm_sw_reset(chip);
+> > > 		}
+> > > 
+> > > Otherwise you keep incrementing the prepare/enable counters of
+> > > the clk when you change the config of an already enabled PWM.
+> > >   
+> > > > +
+> > > > +		writel(duty_cycles, imx->mmio_base +
+> > > > MX3_PWMSAR);
+> > > > +		writel(period_cycles, imx->mmio_base +
+> > > > MX3_PWMPR); +
+> > > > +		writel(MX3_PWMCR_PRESCALER(prescale) |
+> > > > +		       MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
+> > > > +		       MX3_PWMCR_DBGEN |
+> > > > MX3_PWMCR_CLKSRC_IPG_HIGH |
+> > > > +		       MX3_PWMCR_EN,
+> > > > +		       imx->mmio_base + MX3_PWMCR);
+> > > > +
+> > > > +	} else {  
+> > > 
+> > > 	} else if (cstate.enabled) {
+> > > 
+> > > Again, this is to avoid unbalanced prepare/enable counters on the
+> > > per clk if the PWM config is changed several times when the PWM is
+> > > disabled.
+> > >   
+> > > > +		writel(0, imx->mmio_base + MX3_PWMCR);
+> > > > +
+> > > > +		clk_disable_unprepare(imx->clk_per);
+> > > > +	}
+> > > > +
+> > > > +	return 0;
+> > > > +}
+> > > > +
+> > > >  static int imx_pwm_enable(struct pwm_chip *chip, struct
+> > > > pwm_device *pwm) {
+> > > >  	struct imx_chip *imx = to_imx_chip(chip);
+> > > > @@ -280,6 +346,7 @@ static struct pwm_ops imx_pwm_ops_v1 = {
+> > > >  };
+> > > >  
+> > > >  static struct pwm_ops imx_pwm_ops_v2 = {
+> > > > +	.apply = imx_pwm_apply_v2,
+> > > >  	.enable = imx_pwm_enable,
+> > > >  	.disable = imx_pwm_disable,
+> > > >  	.config = imx_pwm_config,  
+> > >   
+> > 
+> > 
+> > 
+> > 
+> > Best regards,
+> > 
+> > Lukasz Majewski
+> > 
+> > --
+> > 
+> > DENX Software Engineering GmbH,      Managing Director: Wolfgang
+> > Denk HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell,
+> > Germany Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email:
+> > wd@denx.de
+> 
+
+
+
 
 Best regards,
-=C5=81ukasz Majewski
 
->=20
-> On Mon, 26 Dec 2016, Lukasz Majewski wrote:
->=20
-> > The commit a55944ca82d2=20
-> > ("backlight: update bd state & fb_blank properties when necessary")
-> > has posed some extra restrictions on blanking and unblanking frame
-> > buffer device.
-> >=20
-> > Unfortunately, pwm_bl driver's probe did not initialize members of
-> > struct backlight_device necessary for further blank/unblank
-> > operation.
-> >=20
-> > This code in case of initial unblank of backlight device (default=20
-> > behaviour) sets use_count to 1 and marks this particular backlight
-> > device as used by all available fb devices (since it is not known
-> > during probe how much and which fb devices will be assigned).
-> >=20
-> > Without this code, the backlight works properly until one tries to
-> > blank it manually from sysfs with "echo 1
-> > > /sys/class/graphics/fb0/blank". Since fb_bl_on[0] and use_count
-> > > were both set to 0, the logic at
-> > fb_notifier_callback (@backlight.c) thought that we didn't turn on
-> > (unblanked) the backlight device and refuses to disable (blank) it.
-> > As a result we see garbage from fb displayed.
-> >=20
-> > Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
-> > ---
-> > The patch has been tested on i.MX6q with vanilla 4.9 kernel.
-> > It applies on 4.10-rc1.
-> > ---
-> >  drivers/video/backlight/pwm_bl.c | 10 +++++++++-
-> >  1 file changed, 9 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/video/backlight/pwm_bl.c
-> > b/drivers/video/backlight/pwm_bl.c index 1261400..6859ba0 100644
-> > --- a/drivers/video/backlight/pwm_bl.c
-> > +++ b/drivers/video/backlight/pwm_bl.c
-> > @@ -202,7 +202,7 @@ static int pwm_backlight_probe(struct
-> > platform_device *pdev) struct pwm_bl_data *pb;
-> >  	int initial_blank =3D FB_BLANK_UNBLANK;
-> >  	struct pwm_args pargs;
-> > -	int ret;
-> > +	int ret, i;
-> > =20
-> >  	if (!data) {
-> >  		ret =3D pwm_backlight_parse_dt(&pdev->dev, &defdata);
-> > @@ -348,6 +348,14 @@ static int pwm_backlight_probe(struct
-> > platform_device *pdev)=20
-> >  	bl->props.brightness =3D data->dft_brightness;
-> >  	bl->props.power =3D initial_blank;
-> > +
-> > +	if (initial_blank =3D=3D FB_BLANK_UNBLANK) {
-> > +		for (i =3D 0; i < FB_MAX; i++)
-> > +			bl->fb_bl_on[i] =3D true;
-> > +
-> > +		bl->use_count =3D 1;
-> > +	}
-> > +
-> >  	backlight_update_status(bl);
-> > =20
-> >  	platform_set_drvdata(pdev, bl);
->=20
+Lukasz Majewski
 
+--
 
---Sig_/ub5e1_3.5/BomBZpGqTCZCC
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iEYEARECAAYFAlhvjcQACgkQf9/hG2YwgjGtXgCfTcxyxNpYQzwQEYuSka+TGcZb
-dcQAnijZYvxmPhhY0e2/Brtl+dWUzNAQ
-=xhCd
------END PGP SIGNATURE-----
-
---Sig_/ub5e1_3.5/BomBZpGqTCZCC--
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
