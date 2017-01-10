@@ -1,89 +1,122 @@
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Subject: Re: [PATCH v7 2/8] MFD: add STM32 Timers driver
-Date: Tue, 10 Jan 2017 09:56:08 +0100
-Message-ID: <CA+M3ks5r71FAuy5tKeHSRtSVvDvZ21pXecYFnZEF2VrxdT81xw@mail.gmail.com>
-References: <1483608344-9012-1-git-send-email-benjamin.gaignard@st.com>
- <1483608344-9012-3-git-send-email-benjamin.gaignard@st.com> <20170109180051.uwd4su3maj5gkf5l@rob-hp-laptop>
+From: Stefan Agner <stefan@agner.ch>
+Subject: Re: [PATCH v4 02/11] pwm: imx: remove ipg clock and enable per clock
+ when required
+Date: Tue, 10 Jan 2017 09:28:36 -0800
+Message-ID: <07eb3b937691011ee3138cd4cf5835d0@agner.ch>
+References: <1483573014-13185-1-git-send-email-lukma@denx.de>
+ <1483573014-13185-3-git-send-email-lukma@denx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170109180051.uwd4su3maj5gkf5l@rob-hp-laptop>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Lee Jones <lee.jones@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Alexandre Torgue <alexandre.torgue@st.com>, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Fabrice Gasnier <fabrice.gasnier@st.com>, Gerald Baeza <gerald.baeza@st.com>, Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linus Walleij <linus.walleij@linaro.org>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, Benjamin Gaignard <benjamin.g>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.kmu-office.ch ([178.209.48.109]:45119 "EHLO
+        mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1031551AbdAJR2j (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 10 Jan 2017 12:28:39 -0500
+In-Reply-To: <1483573014-13185-3-git-send-email-lukma@denx.de>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Lukasz Majewski <lukma@denx.de>, Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Philipp Zabel <p.zabel@pengutronix.de>
 
-2017-01-09 19:00 GMT+01:00 Rob Herring <robh@kernel.org>:
-> On Thu, Jan 05, 2017 at 10:25:38AM +0100, Benjamin Gaignard wrote:
->> This hardware block could at used at same time for PWM generation
->> and IIO timers.
->> PWM and IIO timer configuration are mixed in the same registers
->> so we need a multi fonction driver to be able to share those registers.
->>
->> version 7:
->> - rebase on v4.10-rc2
->>
->> version 6:
->> - rename files to stm32-timers
->> - rename functions to stm32_timers_xxx
->>
->> version 5:
->> - fix Lee comments about detect function
->> - add missing dependency on REGMAP_MMIO
->>
->> version 4:
->> - add a function to detect Auto Reload Register (ARR) size
->> - rename the structure shared with other drivers
->>
->> version 2:
->> - rename driver "stm32-gptimer" to be align with SoC documentation
->> - only keep one compatible
->> - use of_platform_populate() instead of devm_mfd_add_devices()
->>
->> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
->> ---
->>  .../devicetree/bindings/mfd/stm32-timers.txt       |  2 +-
->>  drivers/mfd/Kconfig                                | 11 +++
->>  drivers/mfd/Makefile                               |  2 +
->>  drivers/mfd/stm32-timers.c                         | 80 +++++++++++++++=
-+++++++
->>  include/linux/mfd/stm32-timers.h                   | 71 +++++++++++++++=
-++++
->>  5 files changed, 165 insertions(+), 1 deletion(-)
->>  create mode 100644 drivers/mfd/stm32-timers.c
->>  create mode 100644 include/linux/mfd/stm32-timers.h
->>
->> diff --git a/Documentation/devicetree/bindings/mfd/stm32-timers.txt b/Do=
-cumentation/devicetree/bindings/mfd/stm32-timers.txt
->> index a73301d..897e7c2 100644
->> --- a/Documentation/devicetree/bindings/mfd/stm32-timers.txt
->> +++ b/Documentation/devicetree/bindings/mfd/stm32-timers.txt
->> @@ -12,7 +12,7 @@ Required parameters:
->>
->>  - reg:                       Physical base address and length of the co=
-ntroller's
->>                       registers.
->> -- clock-names:               Set to "int".
->> +- clock-names:               Set to "int".
->
-> This hunk should be dropped or moved to previous patch.
+On 2017-01-04 15:36, Lukasz Majewski wrote:
+> From: Boris Brezillon <boris.brezillon@free-electrons.com>
+> 
+> The use of the ipg clock was introduced with commit 7b27c160c681
+> ("pwm: i.MX: fix clock lookup").
+> In the commit message it was claimed that the ipg clock is enabled for
+> register accesses. This is true for the ->config() callback, but not
+> for the ->set_enable() callback. Given that the ipg clock is not
+> consistently enabled for all register accesses we can assume that either
+> it is not required at all or that the current code does not work.
+> Remove the ipg clock code for now so that it's no longer in the way of
+> refactoring the driver.
+> 
+> In the other hand, the imx7 IP requires the peripheral clock to be
 
-I will move it in the previous patch
+Nit:
 
->
->>  - clocks:            Phandle to the clock used by the timer module.
->>                       For Clk properties, please refer to ../clock/clock=
--bindings.txt
->>
+s/In/On?
 
+> enabled before accessing its registers. Since ->config() can be called
+> when the PWM is disabled (in which case, the peripheral clock is also
+> disabled), we need to surround the imx->config() with
+> clk_prepare_enable(per_clk)/clk_disable_unprepare(per_clk) calls.
+> 
+> Note that the imx7 IP was working fine so far because the ipg clock was
+> actually pointing to the peripheral clock, which guaranteed peripheral
+> clock activation even when ->config() was called when the PWM was
+> disabled.
 
+That is not entirely true, but almost, I would say:
 
---=20
-Benjamin Gaignard
+"Note that the driver was working fine for the i.MX 7 IP so far because
+the ipg and peripheral clock use the same hardware clock gate, which
+guaranteed..."
 
-Graphic Study Group
+> 
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> Cc: Philipp Zabel <p.zabel@pengutronix.de>
 
-Linaro.org =E2=94=82 Open source software for ARM SoCs
+Reviewed-by: Stefan Agner <stefan@agner.ch>
 
-Follow Linaro: Facebook | Twitter | Blog
+Tried on-top of 4.10-rc3, only this patch, still works.
+
+Tested-by: Stefan Agner <stefan@agner.ch>
+
+--
+Stefan
+
+> ---
+> Changes in v4:
+> - Enable per clk before calling imx->config()
+> 
+> Changes in v3:
+> - New patch
+> ---
+>  drivers/pwm/pwm-imx.c | 12 ++----------
+>  1 file changed, 2 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+> index d600fd5..b1d1e50 100644
+> --- a/drivers/pwm/pwm-imx.c
+> +++ b/drivers/pwm/pwm-imx.c
+> @@ -49,7 +49,6 @@
+>  
+>  struct imx_chip {
+>  	struct clk	*clk_per;
+> -	struct clk	*clk_ipg;
+>  
+>  	void __iomem	*mmio_base;
+>  
+> @@ -206,13 +205,13 @@ static int imx_pwm_config(struct pwm_chip *chip,
+>  	struct imx_chip *imx = to_imx_chip(chip);
+>  	int ret;
+>  
+> -	ret = clk_prepare_enable(imx->clk_ipg);
+> +	ret = clk_prepare_enable(imx->clk_per);
+>  	if (ret)
+>  		return ret;
+>  
+>  	ret = imx->config(chip, pwm, duty_ns, period_ns);
+>  
+> -	clk_disable_unprepare(imx->clk_ipg);
+> +	clk_disable_unprepare(imx->clk_per);
+>  
+>  	return ret;
+>  }
+> @@ -293,13 +292,6 @@ static int imx_pwm_probe(struct platform_device *pdev)
+>  		return PTR_ERR(imx->clk_per);
+>  	}
+>  
+> -	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
+> -	if (IS_ERR(imx->clk_ipg)) {
+> -		dev_err(&pdev->dev, "getting ipg clock failed with %ld\n",
+> -				PTR_ERR(imx->clk_ipg));
+> -		return PTR_ERR(imx->clk_ipg);
+> -	}
+> -
+>  	imx->chip.ops = &imx_pwm_ops;
+>  	imx->chip.dev = &pdev->dev;
+>  	imx->chip.base = -1;
