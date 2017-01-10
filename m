@@ -1,122 +1,140 @@
-From: Stefan Agner <stefan@agner.ch>
-Subject: Re: [PATCH v4 02/11] pwm: imx: remove ipg clock and enable per clock
- when required
-Date: Tue, 10 Jan 2017 09:28:36 -0800
-Message-ID: <07eb3b937691011ee3138cd4cf5835d0@agner.ch>
-References: <1483573014-13185-1-git-send-email-lukma@denx.de>
- <1483573014-13185-3-git-send-email-lukma@denx.de>
+From: Bhumika Goyal <bhumirks@gmail.com>
+Subject: [PATCH] pwm: constify pwm_ops structures
+Date: Tue, 10 Jan 2017 23:42:06 +0530
+Message-ID: <1484071926-21582-1-git-send-email-bhumirks@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kmu-office.ch ([178.209.48.109]:45119 "EHLO
-        mail.kmu-office.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1031551AbdAJR2j (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 10 Jan 2017 12:28:39 -0500
-In-Reply-To: <1483573014-13185-3-git-send-email-lukma@denx.de>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: julia.lawall@lip6.fr, thierry.reding@gmail.com, linux@prisktech.co.nz, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Bhumika Goyal <bhumirks@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Lukasz Majewski <lukma@denx.de>, Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Philipp Zabel <p.zabel@pengutronix.de>
 
-On 2017-01-04 15:36, Lukasz Majewski wrote:
-> From: Boris Brezillon <boris.brezillon@free-electrons.com>
-> 
-> The use of the ipg clock was introduced with commit 7b27c160c681
-> ("pwm: i.MX: fix clock lookup").
-> In the commit message it was claimed that the ipg clock is enabled for
-> register accesses. This is true for the ->config() callback, but not
-> for the ->set_enable() callback. Given that the ipg clock is not
-> consistently enabled for all register accesses we can assume that either
-> it is not required at all or that the current code does not work.
-> Remove the ipg clock code for now so that it's no longer in the way of
-> refactoring the driver.
-> 
-> In the other hand, the imx7 IP requires the peripheral clock to be
+Declare pwm_ops structures as const as they are only stored in the ops
+field of a pwm_chip structure. This field is of type const struct pwm_ops
+*, so pwm_ops structures having this property can be declared as const.
+Done using Coccinelle:
 
-Nit:
+@r1 disable optional_qualifier@
+identifier i;
+position p;
+@@
+static struct pwm_ops i@p={...};
 
-s/In/On?
+@ok1@
+identifier r1.i;
+position p;
+struct pxa_pwm_chip pwm;
+struct bfin_pwm_chip bwm;
+struct vt8500_chip vp;
+struct imx_chip icp;
+@@
+(
+pwm.chip.ops=&i@p
+|
+bwm.chip.ops=&i@p
+|
+vp.chip.ops=&i@p
+|
+icp.chip.ops=&i@p
+)
 
-> enabled before accessing its registers. Since ->config() can be called
-> when the PWM is disabled (in which case, the peripheral clock is also
-> disabled), we need to surround the imx->config() with
-> clk_prepare_enable(per_clk)/clk_disable_unprepare(per_clk) calls.
-> 
-> Note that the imx7 IP was working fine so far because the ipg clock was
-> actually pointing to the peripheral clock, which guaranteed peripheral
-> clock activation even when ->config() was called when the PWM was
-> disabled.
+@bad@
+position p!={r1.p,ok1.p};
+identifier r1.i;
+@@
+i@p
 
-That is not entirely true, but almost, I would say:
+@depends on !bad disable optional_qualifier@
+identifier r1.i;
+@@
++const
+struct pwm_ops i;
 
-"Note that the driver was working fine for the i.MX 7 IP so far because
-the ipg and peripheral clock use the same hardware clock gate, which
-guaranteed..."
+File size details:
 
-> 
-> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> Cc: Philipp Zabel <p.zabel@pengutronix.de>
+   text	   data	    bss	    dec	    hex	filename
+   1646	    328	      0	   1974	    7b6	drivers/pwm/pwm-imx.o
+   1742	    224	      0	   1966	    7ae	drivers/pwm/pwm-imx.o
 
-Reviewed-by: Stefan Agner <stefan@agner.ch>
+   1941	    296	      0	   2237	    8bd	drivers/pwm/pwm-pxa.o
+   2037	    192	      0	   2229	    8b5	drivers/pwm/pwm-pxa.o
 
-Tried on-top of 4.10-rc3, only this patch, still works.
+   1946	    296	      0	   2242	    8c2	drivers/pwm/pwm-vt8500.o
+   2050	    192	      0	   2242	    8c2	drivers/pwm/pwm-vt8500.o
 
-Tested-by: Stefan Agner <stefan@agner.ch>
+The drivers/pwm/pwm-bfin.o file did not compile.
 
---
-Stefan
+Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
+---
+File: drivers/pwm/pwm-bfin.c is not tested
 
-> ---
-> Changes in v4:
-> - Enable per clk before calling imx->config()
-> 
-> Changes in v3:
-> - New patch
-> ---
->  drivers/pwm/pwm-imx.c | 12 ++----------
->  1 file changed, 2 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> index d600fd5..b1d1e50 100644
-> --- a/drivers/pwm/pwm-imx.c
-> +++ b/drivers/pwm/pwm-imx.c
-> @@ -49,7 +49,6 @@
->  
->  struct imx_chip {
->  	struct clk	*clk_per;
-> -	struct clk	*clk_ipg;
->  
->  	void __iomem	*mmio_base;
->  
-> @@ -206,13 +205,13 @@ static int imx_pwm_config(struct pwm_chip *chip,
->  	struct imx_chip *imx = to_imx_chip(chip);
->  	int ret;
->  
-> -	ret = clk_prepare_enable(imx->clk_ipg);
-> +	ret = clk_prepare_enable(imx->clk_per);
->  	if (ret)
->  		return ret;
->  
->  	ret = imx->config(chip, pwm, duty_ns, period_ns);
->  
-> -	clk_disable_unprepare(imx->clk_ipg);
-> +	clk_disable_unprepare(imx->clk_per);
->  
->  	return ret;
->  }
-> @@ -293,13 +292,6 @@ static int imx_pwm_probe(struct platform_device *pdev)
->  		return PTR_ERR(imx->clk_per);
->  	}
->  
-> -	imx->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
-> -	if (IS_ERR(imx->clk_ipg)) {
-> -		dev_err(&pdev->dev, "getting ipg clock failed with %ld\n",
-> -				PTR_ERR(imx->clk_ipg));
-> -		return PTR_ERR(imx->clk_ipg);
-> -	}
-> -
->  	imx->chip.ops = &imx_pwm_ops;
->  	imx->chip.dev = &pdev->dev;
->  	imx->chip.base = -1;
+ drivers/pwm/pwm-bfin.c   | 2 +-
+ drivers/pwm/pwm-imx.c    | 2 +-
+ drivers/pwm/pwm-pxa.c    | 2 +-
+ drivers/pwm/pwm-vt8500.c | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/pwm/pwm-bfin.c b/drivers/pwm/pwm-bfin.c
+index 7631ef1..d2ed0a2 100644
+--- a/drivers/pwm/pwm-bfin.c
++++ b/drivers/pwm/pwm-bfin.c
+@@ -103,7 +103,7 @@ static void bfin_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	disable_gptimer(priv->pin);
+ }
+ 
+-static struct pwm_ops bfin_pwm_ops = {
++static const struct pwm_ops bfin_pwm_ops = {
+ 	.request = bfin_pwm_request,
+ 	.free = bfin_pwm_free,
+ 	.config = bfin_pwm_config,
+diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+index d600fd5..177fb81 100644
+--- a/drivers/pwm/pwm-imx.c
++++ b/drivers/pwm/pwm-imx.c
+@@ -240,7 +240,7 @@ static void imx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	clk_disable_unprepare(imx->clk_per);
+ }
+ 
+-static struct pwm_ops imx_pwm_ops = {
++static const struct pwm_ops imx_pwm_ops = {
+ 	.enable = imx_pwm_enable,
+ 	.disable = imx_pwm_disable,
+ 	.config = imx_pwm_config,
+diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
+index 58b709f..4143a46 100644
+--- a/drivers/pwm/pwm-pxa.c
++++ b/drivers/pwm/pwm-pxa.c
+@@ -118,7 +118,7 @@ static void pxa_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	clk_disable_unprepare(pc->clk);
+ }
+ 
+-static struct pwm_ops pxa_pwm_ops = {
++static const struct pwm_ops pxa_pwm_ops = {
+ 	.config = pxa_pwm_config,
+ 	.enable = pxa_pwm_enable,
+ 	.disable = pxa_pwm_disable,
+diff --git a/drivers/pwm/pwm-vt8500.c b/drivers/pwm/pwm-vt8500.c
+index cdb58fd..8141a49 100644
+--- a/drivers/pwm/pwm-vt8500.c
++++ b/drivers/pwm/pwm-vt8500.c
+@@ -184,7 +184,7 @@ static int vt8500_pwm_set_polarity(struct pwm_chip *chip,
+ 	return 0;
+ }
+ 
+-static struct pwm_ops vt8500_pwm_ops = {
++static const struct pwm_ops vt8500_pwm_ops = {
+ 	.enable = vt8500_pwm_enable,
+ 	.disable = vt8500_pwm_disable,
+ 	.config = vt8500_pwm_config,
+-- 
+1.9.1
