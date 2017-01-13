@@ -1,106 +1,203 @@
-From: Lukasz Majewski <lukma@denx.de>
-Subject: Re: [PATCH v2 RESEND] video: backlight: pwm_bl: Initialize
- fb_bl_on[x] and use_count during pwm_backlight_probe()
-Date: Fri, 13 Jan 2017 01:27:37 +0100
-Message-ID: <20170113012737.45f5a3db@jawa>
-References: <1477169904-14997-1-git-send-email-l.majewski@majess.pl>
-        <1482790896-29202-1-git-send-email-l.majewski@majess.pl>
-        <20170103083032.GA2977@dell>
+From: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v7 0/8] Add PWM and IIO timer drivers for STM32
+Date: Fri, 13 Jan 2017 13:30:27 +0100
+Message-ID: <CA+M3ks6CK7PtqrMUC=Hpy8kELyo3hT9mjn-hkUq-Na8D0ySaSQ@mail.gmail.com>
+References: <1483608344-9012-1-git-send-email-benjamin.gaignard@st.com>
+ <20170105144953.GT24225@dell> <CA+M3ks43GYEQo6Sev9oB5RfSF3fYNLixESSceXpu2CtKPnpB1Q@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:59981 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750760AbdAMA1l (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Jan 2017 19:27:41 -0500
-In-Reply-To: <20170103083032.GA2977@dell>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CA+M3ks43GYEQo6Sev9oB5RfSF3fYNLixESSceXpu2CtKPnpB1Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Alexandre Torgue <alexandre.torgue-qxv4g6HH51o@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linux PWM List <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Hartmut Knaack <knaack.h-Mmb7MZpHnFY@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>, Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>, Arnaud Pouliquen <arnaud.pouliquen-qxv4g6HH51o@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linaro Kernel Mailman List <linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org>, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>
-Cc: Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Liu Ying <Ying.Liu@freescale.com>, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, l.majewski@majess.pl
 
-Dear All,
+2017-01-06 8:58 GMT+01:00 Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>:
+> 2017-01-05 15:49 GMT+01:00 Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>:
+>> On Thu, 05 Jan 2017, Benjamin Gaignard wrote:
+>>
+>>> version 7:
+>>> - rebase on v4.10-rc2
+>>> - remove iio_device code from driver and keep only the trigger part
 
-> Thierry, Jingoo,
-> 
-> Please respond to Lukasz.
+Version 7 got ACK for MFD (binding and driver), PWM (bindings), IIO (driver=
+).
 
-Yes, your response is more than welcome....... :-)
+I would like to progress on this series but I there is still 2 blocking poi=
+nts:
+1) usage of reg in IIO driver as an hardware block index, Rob does it
+sound reasonable for you ?
+2) PWM driver haven't receive comments (neither ack), Thierry do you
+think you will be able to find time to review it ?
 
-Thanks in advance,
+Benjamin
 
-Łukasz Majewski
+>>>
+>>> version 6:
+>>> - rename stm32-gptimer in stm32-timers.
+>>> - change "st,stm32-gptimer" compatible to "st,stm32-timers".
+>>> - modify "st,breakinput" parameter in pwm part.
+>>> - split DT patch in 2
+>>>
+>>> version 5:
+>>> - fix comments done on version 4
+>>> - rebased on kernel 4.9-rc8
+>>> - change nodes names and re-order then by addresses
+>>>
+>>> version 4:
+>>> - fix comments done on version 3
+>>> - don't use interrupts anymore in IIO timer
+>>> - detect hardware capabilities at probe time to simplify binding
+>>>
+>>> version 3:
+>>> - no change on mfd and pwm divers patches
+>>> - add cross reference between bindings
+>>> - change compatible to "st,stm32-timer-trigger"
+>>> - fix attributes access rights
+>>> - use string instead of int for master_mode and slave_mode
+>>> - document device attributes in sysfs-bus-iio-timer-stm32
+>>> - update DT with the new compatible
+>>>
+>>> version 2:
+>>> - keep only one compatible per driver
+>>> - use DT parameters to describe hardware block configuration:
+>>>   - pwm channels, complementary output, counter size, break input
+>>>   - triggers accepted and create by IIO timers
+>>> - change DT to limite use of reference to the node
+>>> - interrupt is now in IIO timer driver
+>>> - rename stm32-mfd-timer to stm32-timers (for general purpose timer)
+>>>
+>>> The following patches enable PWM and IIO Timer features for STM32 platf=
+orms.
+>>>
+>>> Those two features are mixed into the registers of the same hardware bl=
+ock
+>>> (named general purpose timer) which lead to introduce a multifunctions =
+driver
+>>> on the top of them to be able to share the registers.
+>>>
+>>> In STM32f4 14 instances of timer hardware block exist, even if they all=
+ have
+>>> the same register mapping they could have a different number of pwm cha=
+nnels
+>>> and/or different triggers capabilities. We use various parameters in DT=
+ to
+>>> describe the differences between hardware blocks
+>>>
+>>> The MFD (stm32-timers.c) takes care of clock and register mapping
+>>> by using regmap. stm32_timers structure is provided to its sub-node to
+>>> share those information.
+>>>
+>>> PWM driver is implemented into pwm-stm32.c. Depending of the instance w=
+e may
+>>> have up to 4 channels, sometime with complementary outputs or 32 bits c=
+ounter
+>>> instead of 16 bits. Some hardware blocks may also have a break input fu=
+nction
+>>> which allows to stop pwm depending of a level, defined in devicetree, o=
+n an
+>>> external pin.
+>>>
+>>> IIO timer driver (stm32-timer-trigger.c and stm32-timer-trigger.h) defi=
+ne a list
+>>> of hardware triggers usable by hardware blocks like ADC, DAC or other t=
+imers.
+>>>
+>>> The matrix of possible connections between blocks is quite complex so w=
+e use
+>>> trigger names and is_stm32_iio_timer_trigger() function to be sure that
+>>> triggers are valid and configure the IPs.
+>>>
+>>> At run time IIO timer hardware blocks can configure (through "master_mo=
+de"
+>>> IIO device attribute) which internal signal (counter enable, reset,
+>>> comparison block, etc...) is used to generate the trigger.
+>>>
+>>> Benjamin Gaignard (8):
+>>>   MFD: add bindings for STM32 Timers driver
+>>>   MFD: add STM32 Timers driver
+>>>   PWM: add pwm-stm32 DT bindings
+>>>   PWM: add PWM driver for STM32 plaftorm
+>>>   IIO: add bindings for STM32 timer trigger driver
+>>>   IIO: add STM32 timer trigger driver
+>>>   ARM: dts: stm32: add Timers driver for stm32f429 MCU
+>>>   ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-disco
+>>
+>> Any reason why you've dropped all your Acks?
+>>
+>> I don't really want to review it again if little is different.
+>>
+>> How much MFD related code has changed since the last review?
+>
+> All my apologies I forgot to add your Acks for MFD parts.
+>
+> Sorry for that
+>
+>>
+>>>  .../ABI/testing/sysfs-bus-iio-timer-stm32          |  29 ++
+>>>  .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 ++
+>>>  .../devicetree/bindings/mfd/stm32-timers.txt       |  46 +++
+>>>  .../devicetree/bindings/pwm/pwm-stm32.txt          |  33 ++
+>>>  arch/arm/boot/dts/stm32f429.dtsi                   | 275 +++++++++++++
+>>>  arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
+>>>  drivers/iio/Kconfig                                |   1 -
+>>>  drivers/iio/trigger/Kconfig                        |  10 +
+>>>  drivers/iio/trigger/Makefile                       |   1 +
+>>>  drivers/iio/trigger/stm32-timer-trigger.c          | 340 +++++++++++++=
++++
+>>>  drivers/mfd/Kconfig                                |  11 +
+>>>  drivers/mfd/Makefile                               |   2 +
+>>>  drivers/mfd/stm32-timers.c                         |  80 ++++
+>>>  drivers/pwm/Kconfig                                |   9 +
+>>>  drivers/pwm/Makefile                               |   1 +
+>>>  drivers/pwm/pwm-stm32.c                            | 434 +++++++++++++=
+++++++++
+>>>  include/linux/iio/timer/stm32-timer-trigger.h      |  62 +++
+>>>  include/linux/mfd/stm32-timers.h                   |  71 ++++
+>>>  18 files changed, 1455 insertions(+), 1 deletion(-)
+>>>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
+>>>  create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-t=
+imer-trigger.txt
+>>>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.=
+txt
+>>>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+>>>  create mode 100644 drivers/iio/trigger/stm32-timer-trigger.c
+>>>  create mode 100644 drivers/mfd/stm32-timers.c
+>>>  create mode 100644 drivers/pwm/pwm-stm32.c
+>>>  create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
+>>>  create mode 100644 include/linux/mfd/stm32-timers.h
+>>>
+>>
+>> --
+>> Lee Jones
+>> Linaro STMicroelectronics Landing Team Lead
+>> Linaro.org =E2=94=82 Open source software for ARM SoCs
+>> Follow Linaro: Facebook | Twitter | Blog
+>
+>
+>
+> --
+> Benjamin Gaignard
+>
+> Graphic Study Group
+>
+> Linaro.org =E2=94=82 Open source software for ARM SoCs
+>
+> Follow Linaro: Facebook | Twitter | Blog
 
-> 
-> On Mon, 26 Dec 2016, Lukasz Majewski wrote:
-> 
-> > The commit a55944ca82d2 
-> > ("backlight: update bd state & fb_blank properties when necessary")
-> > has posed some extra restrictions on blanking and unblanking frame
-> > buffer device.
-> > 
-> > Unfortunately, pwm_bl driver's probe did not initialize members of
-> > struct backlight_device necessary for further blank/unblank
-> > operation.
-> > 
-> > This code in case of initial unblank of backlight device (default 
-> > behaviour) sets use_count to 1 and marks this particular backlight
-> > device as used by all available fb devices (since it is not known
-> > during probe how much and which fb devices will be assigned).
-> > 
-> > Without this code, the backlight works properly until one tries to
-> > blank it manually from sysfs with "echo 1
-> > > /sys/class/graphics/fb0/blank". Since fb_bl_on[0] and use_count
-> > > were both set to 0, the logic at
-> > fb_notifier_callback (@backlight.c) thought that we didn't turn on
-> > (unblanked) the backlight device and refuses to disable (blank) it.
-> > As a result we see garbage from fb displayed.
-> > 
-> > Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
-> > ---
-> > The patch has been tested on i.MX6q with vanilla 4.9 kernel.
-> > It applies on 4.10-rc1.
-> > ---
-> >  drivers/video/backlight/pwm_bl.c | 10 +++++++++-
-> >  1 file changed, 9 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/video/backlight/pwm_bl.c
-> > b/drivers/video/backlight/pwm_bl.c index 1261400..6859ba0 100644
-> > --- a/drivers/video/backlight/pwm_bl.c
-> > +++ b/drivers/video/backlight/pwm_bl.c
-> > @@ -202,7 +202,7 @@ static int pwm_backlight_probe(struct
-> > platform_device *pdev) struct pwm_bl_data *pb;
-> >  	int initial_blank = FB_BLANK_UNBLANK;
-> >  	struct pwm_args pargs;
-> > -	int ret;
-> > +	int ret, i;
-> >  
-> >  	if (!data) {
-> >  		ret = pwm_backlight_parse_dt(&pdev->dev, &defdata);
-> > @@ -348,6 +348,14 @@ static int pwm_backlight_probe(struct
-> > platform_device *pdev) 
-> >  	bl->props.brightness = data->dft_brightness;
-> >  	bl->props.power = initial_blank;
-> > +
-> > +	if (initial_blank == FB_BLANK_UNBLANK) {
-> > +		for (i = 0; i < FB_MAX; i++)
-> > +			bl->fb_bl_on[i] = true;
-> > +
-> > +		bl->use_count = 1;
-> > +	}
-> > +
-> >  	backlight_update_status(bl);
-> >  
-> >  	platform_set_drvdata(pdev, bl);
-> 
 
-Best regards,
 
-Lukasz Majewski
+--=20
+Benjamin Gaignard
 
+Graphic Study Group
+
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+
+Follow Linaro: Facebook | Twitter | Blog
 --
-
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
