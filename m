@@ -1,140 +1,106 @@
-From: Bhumika Goyal <bhumirks@gmail.com>
-Subject: [PATCH] pwm: constify pwm_ops structures
-Date: Tue, 10 Jan 2017 23:42:06 +0530
-Message-ID: <1484071926-21582-1-git-send-email-bhumirks@gmail.com>
+From: Lukasz Majewski <lukma@denx.de>
+Subject: Re: [PATCH v2 RESEND] video: backlight: pwm_bl: Initialize
+ fb_bl_on[x] and use_count during pwm_backlight_probe()
+Date: Fri, 13 Jan 2017 01:27:37 +0100
+Message-ID: <20170113012737.45f5a3db@jawa>
+References: <1477169904-14997-1-git-send-email-l.majewski@majess.pl>
+        <1482790896-29202-1-git-send-email-l.majewski@majess.pl>
+        <20170103083032.GA2977@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: julia.lawall@lip6.fr, thierry.reding@gmail.com, linux@prisktech.co.nz, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Bhumika Goyal <bhumirks@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.10]:59981 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750760AbdAMA1l (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 12 Jan 2017 19:27:41 -0500
+In-Reply-To: <20170103083032.GA2977@dell>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>
+Cc: Lee Jones <lee.jones@linaro.org>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Liu Ying <Ying.Liu@freescale.com>, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>, l.majewski@majess.pl
 
-Declare pwm_ops structures as const as they are only stored in the ops
-field of a pwm_chip structure. This field is of type const struct pwm_ops
-*, so pwm_ops structures having this property can be declared as const.
-Done using Coccinelle:
+Dear All,
 
-@r1 disable optional_qualifier@
-identifier i;
-position p;
-@@
-static struct pwm_ops i@p={...};
+> Thierry, Jingoo,
+> 
+> Please respond to Lukasz.
 
-@ok1@
-identifier r1.i;
-position p;
-struct pxa_pwm_chip pwm;
-struct bfin_pwm_chip bwm;
-struct vt8500_chip vp;
-struct imx_chip icp;
-@@
-(
-pwm.chip.ops=&i@p
-|
-bwm.chip.ops=&i@p
-|
-vp.chip.ops=&i@p
-|
-icp.chip.ops=&i@p
-)
+Yes, your response is more than welcome....... :-)
 
-@bad@
-position p!={r1.p,ok1.p};
-identifier r1.i;
-@@
-i@p
+Thanks in advance,
 
-@depends on !bad disable optional_qualifier@
-identifier r1.i;
-@@
-+const
-struct pwm_ops i;
+Łukasz Majewski
 
-File size details:
+> 
+> On Mon, 26 Dec 2016, Lukasz Majewski wrote:
+> 
+> > The commit a55944ca82d2 
+> > ("backlight: update bd state & fb_blank properties when necessary")
+> > has posed some extra restrictions on blanking and unblanking frame
+> > buffer device.
+> > 
+> > Unfortunately, pwm_bl driver's probe did not initialize members of
+> > struct backlight_device necessary for further blank/unblank
+> > operation.
+> > 
+> > This code in case of initial unblank of backlight device (default 
+> > behaviour) sets use_count to 1 and marks this particular backlight
+> > device as used by all available fb devices (since it is not known
+> > during probe how much and which fb devices will be assigned).
+> > 
+> > Without this code, the backlight works properly until one tries to
+> > blank it manually from sysfs with "echo 1
+> > > /sys/class/graphics/fb0/blank". Since fb_bl_on[0] and use_count
+> > > were both set to 0, the logic at
+> > fb_notifier_callback (@backlight.c) thought that we didn't turn on
+> > (unblanked) the backlight device and refuses to disable (blank) it.
+> > As a result we see garbage from fb displayed.
+> > 
+> > Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+> > ---
+> > The patch has been tested on i.MX6q with vanilla 4.9 kernel.
+> > It applies on 4.10-rc1.
+> > ---
+> >  drivers/video/backlight/pwm_bl.c | 10 +++++++++-
+> >  1 file changed, 9 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/video/backlight/pwm_bl.c
+> > b/drivers/video/backlight/pwm_bl.c index 1261400..6859ba0 100644
+> > --- a/drivers/video/backlight/pwm_bl.c
+> > +++ b/drivers/video/backlight/pwm_bl.c
+> > @@ -202,7 +202,7 @@ static int pwm_backlight_probe(struct
+> > platform_device *pdev) struct pwm_bl_data *pb;
+> >  	int initial_blank = FB_BLANK_UNBLANK;
+> >  	struct pwm_args pargs;
+> > -	int ret;
+> > +	int ret, i;
+> >  
+> >  	if (!data) {
+> >  		ret = pwm_backlight_parse_dt(&pdev->dev, &defdata);
+> > @@ -348,6 +348,14 @@ static int pwm_backlight_probe(struct
+> > platform_device *pdev) 
+> >  	bl->props.brightness = data->dft_brightness;
+> >  	bl->props.power = initial_blank;
+> > +
+> > +	if (initial_blank == FB_BLANK_UNBLANK) {
+> > +		for (i = 0; i < FB_MAX; i++)
+> > +			bl->fb_bl_on[i] = true;
+> > +
+> > +		bl->use_count = 1;
+> > +	}
+> > +
+> >  	backlight_update_status(bl);
+> >  
+> >  	platform_set_drvdata(pdev, bl);
+> 
 
-   text	   data	    bss	    dec	    hex	filename
-   1646	    328	      0	   1974	    7b6	drivers/pwm/pwm-imx.o
-   1742	    224	      0	   1966	    7ae	drivers/pwm/pwm-imx.o
+Best regards,
 
-   1941	    296	      0	   2237	    8bd	drivers/pwm/pwm-pxa.o
-   2037	    192	      0	   2229	    8b5	drivers/pwm/pwm-pxa.o
+Lukasz Majewski
 
-   1946	    296	      0	   2242	    8c2	drivers/pwm/pwm-vt8500.o
-   2050	    192	      0	   2242	    8c2	drivers/pwm/pwm-vt8500.o
+--
 
-The drivers/pwm/pwm-bfin.o file did not compile.
-
-Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
----
-File: drivers/pwm/pwm-bfin.c is not tested
-
- drivers/pwm/pwm-bfin.c   | 2 +-
- drivers/pwm/pwm-imx.c    | 2 +-
- drivers/pwm/pwm-pxa.c    | 2 +-
- drivers/pwm/pwm-vt8500.c | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/pwm/pwm-bfin.c b/drivers/pwm/pwm-bfin.c
-index 7631ef1..d2ed0a2 100644
---- a/drivers/pwm/pwm-bfin.c
-+++ b/drivers/pwm/pwm-bfin.c
-@@ -103,7 +103,7 @@ static void bfin_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	disable_gptimer(priv->pin);
- }
- 
--static struct pwm_ops bfin_pwm_ops = {
-+static const struct pwm_ops bfin_pwm_ops = {
- 	.request = bfin_pwm_request,
- 	.free = bfin_pwm_free,
- 	.config = bfin_pwm_config,
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index d600fd5..177fb81 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -240,7 +240,7 @@ static void imx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	clk_disable_unprepare(imx->clk_per);
- }
- 
--static struct pwm_ops imx_pwm_ops = {
-+static const struct pwm_ops imx_pwm_ops = {
- 	.enable = imx_pwm_enable,
- 	.disable = imx_pwm_disable,
- 	.config = imx_pwm_config,
-diff --git a/drivers/pwm/pwm-pxa.c b/drivers/pwm/pwm-pxa.c
-index 58b709f..4143a46 100644
---- a/drivers/pwm/pwm-pxa.c
-+++ b/drivers/pwm/pwm-pxa.c
-@@ -118,7 +118,7 @@ static void pxa_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	clk_disable_unprepare(pc->clk);
- }
- 
--static struct pwm_ops pxa_pwm_ops = {
-+static const struct pwm_ops pxa_pwm_ops = {
- 	.config = pxa_pwm_config,
- 	.enable = pxa_pwm_enable,
- 	.disable = pxa_pwm_disable,
-diff --git a/drivers/pwm/pwm-vt8500.c b/drivers/pwm/pwm-vt8500.c
-index cdb58fd..8141a49 100644
---- a/drivers/pwm/pwm-vt8500.c
-+++ b/drivers/pwm/pwm-vt8500.c
-@@ -184,7 +184,7 @@ static int vt8500_pwm_set_polarity(struct pwm_chip *chip,
- 	return 0;
- }
- 
--static struct pwm_ops vt8500_pwm_ops = {
-+static const struct pwm_ops vt8500_pwm_ops = {
- 	.enable = vt8500_pwm_enable,
- 	.disable = vt8500_pwm_disable,
- 	.config = vt8500_pwm_config,
--- 
-1.9.1
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
