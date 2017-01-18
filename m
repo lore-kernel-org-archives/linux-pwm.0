@@ -1,105 +1,118 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 13/13] MIPS: jz4740: Remove custom GPIO code
-Date: Wed, 18 Jan 2017 08:27:51 +0100
-Message-ID: <20170118072751.GC18989@ulmo.ba.sec>
-References: <20170117231421.16310-1-paul@crapouillou.net>
- <20170117231421.16310-14-paul@crapouillou.net>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v7 3/8] PWM: add pwm-stm32 DT bindings
+Date: Wed, 18 Jan 2017 10:20:21 +0100
+Message-ID: <20170118092021.GE18989@ulmo.ba.sec>
+References: <1483608344-9012-1-git-send-email-benjamin.gaignard@st.com>
+ <1483608344-9012-4-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5335441250778327517=="
-Return-path: <linux-mtd-bounces+gldm-linux-mtd-36=gmane.org@lists.infradead.org>
-In-Reply-To: <20170117231421.16310-14-paul@crapouillou.net>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mtd>,
- <mailto:linux-mtd-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-mtd/>
-List-Post: <mailto:linux-mtd@lists.infradead.org>
-List-Help: <mailto:linux-mtd-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mtd>,
- <mailto:linux-mtd-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-mtd" <linux-mtd-bounces@lists.infradead.org>
-Errors-To: linux-mtd-bounces+gldm-linux-mtd-36=gmane.org@lists.infradead.org
-To: Paul Cercueil <paul@crapouillou.net>, Ralf Baechle <ralf@linux-mips.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Ulf Hansson <ulf.hansson@linaro.org>, Lars-Peter Clausen <lars@metafoo.de>, james.hogan@imgtec.com, Paul Burton <paul.burton@imgtec.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Linus Walleij <linus.walleij@linaro.org>, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-mips@linux-mips.org, linux-fbdev@vger.kernel.org, Maarten ter Huurne <maarten@treewalker.org>, linux-mtd@lists.infradead.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="AjmyJqqohANyBN/e"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1483608344-9012-4-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
 
---===============5335441250778327517==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="yVhtmJPUSI46BTXb"
-Content-Disposition: inline
-
-
---yVhtmJPUSI46BTXb
+--AjmyJqqohANyBN/e
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jan 18, 2017 at 12:14:21AM +0100, Paul Cercueil wrote:
-> All the drivers for the various hardware elements of the jz4740 SoC have
-> been modified to use the pinctrl framework for their pin configuration
-> needs.
-> As such, this platform code is now unused and can be deleted.
+On Thu, Jan 05, 2017 at 10:25:39AM +0100, Benjamin Gaignard wrote:
+> Define bindings for pwm-stm32
 >=20
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> version 6:
+> - change st,breakinput parameter format to make it usuable on stm32f7 too.
+>=20
+> version 2:
+> - use parameters instead of compatible of handle the hardware configurati=
+on
+>=20
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 > ---
->  arch/mips/include/asm/mach-jz4740/gpio.h | 371 ----------------------
->  arch/mips/jz4740/Makefile                |   2 -
->  arch/mips/jz4740/gpio.c                  | 519 -------------------------=
-------
->  3 files changed, 892 deletions(-)
->  delete mode 100644 arch/mips/jz4740/gpio.c
+>  .../devicetree/bindings/pwm/pwm-stm32.txt          | 33 ++++++++++++++++=
+++++++
+>  1 file changed, 33 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+>=20
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Docume=
+ntation/devicetree/bindings/pwm/pwm-stm32.txt
+> new file mode 100644
+> index 0000000..866f222
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+> @@ -0,0 +1,33 @@
+> +STMicroelectronics STM32 Timers PWM bindings
+> +
+> +Must be a sub-node of an STM32 Timers device tree node.
+> +See ../mfd/stm32-timers.txt for details about the parent node.
+> +
+> +Required parameters:
+> +- compatible:		Must be "st,stm32-pwm".
+> +- pinctrl-names: 	Set to "default".
+> +- pinctrl-0: 		List of phandles pointing to pin configuration nodes for =
+PWM module.
+> +			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
+> +
+> +Optional parameters:
+> +- st,breakinput:	Arrays of three u32 <index level filter> to describe br=
+eak input configurations.
+> +			"index" indicates on which break input the configuration should be ap=
+plied.
 
-Have you considered how this could best be merged? It's probably easiest
-to take all of this through the MIPS tree because we have an addition of
-the pinctrl that would be a replacement for the GPIO code, while at the
-same time a bunch of drivers rely on the JZ4740 GPIO code for successful
-compilation.
+It might be useful to specify what the valid values are for the break
+input index.
 
-That's slightly complicated by the number of drivers, so needs a lot of
-coordination, but it's not the worst I've seen.
+Also, u32 is kind of a Linuxism, perhaps "Arrays of three cells"? Also,
+does this mean there can be multiple entries? Such as 6 cells for two
+configurations? What's the maximum number of such configurations?
 
-Maybe one other solution that would make the transition easier would be
-to stub out the GPIO functions if the pinctrl driver is enabled, and do
-the removal of the mach-jz4740/gpio.h after all drivers have been merged
-through their corresponding subsystem trees. That way all drivers should
-remain compilable and functional at runtime, while still having the
-possibility to merge through the subsystem trees.
+If it's possible to specify multiple configurations, maybe a slightly
+clearer wording would be: "One or more <index level filter> triplets to
+describe..."
 
-That said, the whole series is fairly simple, so merging everything
-through the MIPS tree sounds like the easiest way to go.
+> +			"level" gives the active level (0=3Dlow or 1=3Dhigh) for this configu=
+ration.
+
+So how does this work exactly? "level" specifies the output level if the
+filter value is matched?
+
+> +			"filter" gives the filtering value to be applied.
+
+Is this a single value at which "level" will be applied? Or is it an
+upper/lower bound that can be used to restrict the output to "level" if
+the signal goes beyond/below a certain threshold?
+
+Maybe an example would clarify this. Or perhaps a reference to a manual
+where a more in-depth description of this functionality can be found.
 
 Thierry
 
---yVhtmJPUSI46BTXb
+--AjmyJqqohANyBN/e
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlh/GPcACgkQ3SOs138+
-s6HJuA/8DBbCWXiobPupHIJkfkobmKLcWcDTCHrFnZvAFle+RTPeoANQQYkJ75pW
-qHYVgHTL0x3n4NBLFvYl1Twl+fGLQNxEKbg87WBSj5jeAyTK3y4KA0P79OAfnkee
-nSWeP8v+TluNV7gWSnFpUgFffHif24BbwtIsuLYxxn/awM2ZPQEx3CxDr5jvJD4E
-2lTp4sYoRLmgHQb7Q7YH6b8JSibxXFEafzIfuSC42ySLXThDqY2TiMcQproKxfXl
-/lruvG7w89INCAQOlXHG81sX0XGcbFYW0Cv1M5c0E3hk7DkbgFL3A5Q6IpnHjHdO
-tOXg+DMjByeZMy9H3PP2vVnVva+fg5oMCWJHIP2Ih3d+CIBJdo6YlI/TvGH+Gh4h
-4HKGiO83F+JljR5/ver0BBue9gyxCGs9sUO3B3TVAiunrS+hgfw/Wv+hcQ1IsubU
-wnxXDrj54QxeP9O1T84yPD98e75O4tD1DHltfPZOI+bkxiQmvOGFYarcATKS0Edk
-uJdWdEbfV/gB+1ckUpq0QEoTDdx7YEwuQCVn7dcS2hwyD4qEEc86j9Z+hkvk2+zg
-cGHxOJ54wGqgIUMQM9/ohreFUPpifTWo6afe4tlos4V9BhA+1/dj29d0EmBJ2gON
-TmNKjvYGHnilhT2uGMYDx6xfaXLGq8QG8o1kVlfRhCBWnGEyqzc=
-=/Oal
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlh/M1MACgkQ3SOs138+
+s6FoGBAAoPA2amY+CvmCZQoYktOqkJpSoNPfge4/uzCau9x/jgz7gc2mRUhEYam3
+qQUhkBtJ6npRcovfiad3Q8hHqBWeej0CO/TtTuFGBMRF7joYdZecy7BgskxuLS1g
+9RM6ngvISwA63IkQ31JEMPgx51Z/Cg0mg4uql82r1oT5mb3kM0Y/f6lo58/lhhM0
+3uppHrUWAIs/BdQ13q/MarMxZWfs5AMm5j+WWuKqoEQQM29HCEBy90tyDRD3Bwc9
+FVIdnqGYulpgu+MgC8y/FF1t+woRE6kQp19YFsYMvCtpocv7qyANjgKKiTOCUhUG
++utVT9+yoS9U1iO1PXovtCMooryACfgqObuCPBAedOlx+K1MTqs8x1c9QbXWxJww
+2KOHutj4qcqtYQVxLhE3JrMKrEr5dKnC+Q9bi5OBb3NylGokPUH2Q/g52che5ca0
+CpJvHTcwOy8RM2CiVpLIbAboaUyA+mnpGeH6NnM/674PtZqRd258EH3Y7AZ8YezD
+Ho0v6WolcYD9GfMe8EzrZAlHzM30w/fAT7vkykmxOVa9COXSYgPRK4XNPVYbCT9G
+FKQ3UbjLe2Fp7xGioANMqGugRbLCa07F5uTj5VaryQPzVBHcB7adBHkiJuyq3Xrz
+Mm3Xigav6FIjs+OxtxnHl/mY+xdCcYSJOOeR+I3/lMFPILvXCn0=
+=t9ed
 -----END PGP SIGNATURE-----
 
---yVhtmJPUSI46BTXb--
-
-
---===============5335441250778327517==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-______________________________________________________
-Linux MTD discussion mailing list
-http://lists.infradead.org/mailman/listinfo/linux-mtd/
-
---===============5335441250778327517==--
+--AjmyJqqohANyBN/e--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
