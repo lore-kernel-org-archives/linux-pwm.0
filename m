@@ -1,107 +1,115 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/2] pwm: pca9685: fix prescaler initialization
-Date: Wed, 18 Jan 2017 11:57:35 +0100
-Message-ID: <20170118105735.GM18989@ulmo.ba.sec>
-References: <20161213155251.28684-1-clemens.gruber@pqgruber.com>
- <20161213155251.28684-2-clemens.gruber@pqgruber.com>
+Subject: Re: [PATCH] pwm: pca9685: Fix misuse of regmap_update_bits
+Date: Wed, 18 Jan 2017 12:00:32 +0100
+Message-ID: <20170118110032.GN18989@ulmo.ba.sec>
+References: <1480438970-15317-1-git-send-email-florian.vaussard@heig-vd.ch>
+ <20161205163402.GA14964@archie.localdomain>
+ <20170118105510.GK18989@ulmo.ba.sec>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="W4pDZ/VvazBYHhxQ"
+        protocol="application/pgp-signature"; boundary="O27Gs9jTTFWz3gAR"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20161213155251.28684-2-clemens.gruber@pqgruber.com>
+In-Reply-To: <20170118105510.GK18989@ulmo.ba.sec>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Clemens Gruber <clemens.gruber@pqgruber.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-stable@vger.kernel.org, Florian Vaussard <florian.vaussard@heig-vd.ch>, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-pwm@vger.kernel.org, Florian Vaussard <florian.vaussard@gmail.com>, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---W4pDZ/VvazBYHhxQ
+--O27Gs9jTTFWz3gAR
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 13, 2016 at 04:52:51PM +0100, Clemens Gruber wrote:
-> Until now, we assumed that the period is the hardware default of 1/200Hz
-> at probe time, but if the period was changed and the user reboots, this
-> assumption is wrong.
+On Wed, Jan 18, 2017 at 11:55:10AM +0100, Thierry Reding wrote:
+> On Mon, Dec 05, 2016 at 05:34:02PM +0100, Clemens Gruber wrote:
+> > On Tue, Nov 29, 2016 at 06:02:50PM +0100, Florian Vaussard wrote:
+> > > Using regmap_update_bits(..., mask, 1) with 'mask' following (1 << k)
+> > > and k greater than 0 is wrong. Indeed, _regmap_update_bits will perfo=
+rm
+> > > (mask & 1), which results in 0 if LSB of mask is 0. Thus the call
+> > > regmap_update_bits(..., mask, 1) is in reality equivalent to
+> > > regmap_update_bits(..., mask, 0).
+> > >=20
+> > > In such a case, the correct use is regmap_update_bits(..., mask, mask=
+).
+> > >=20
+> > > This driver is performing such a mistake with the MODE1_RESTART mask,
+> > > which equals (1 << 6). Fix the driver to make it consistent with the
+> > > API. Please note that this change is untested, as I do not have this
+> > > piece of hardware. Testers are welcome!
+> > >=20
+> > > Signed-off-by: Florian Vaussard <florian.vaussard@heig-vd.ch>
+> > > ---
+> > >  drivers/pwm/pwm-pca9685.c | 3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > >=20
+> > > diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+> > > index 117fccf..6b9ff6c 100644
+> > > --- a/drivers/pwm/pwm-pca9685.c
+> > > +++ b/drivers/pwm/pwm-pca9685.c
+> > > @@ -124,7 +124,8 @@ static int pca9685_pwm_config(struct pwm_chip *ch=
+ip, struct pwm_device *pwm,
+> > >  			 */
+> > >  			if (duty_ns =3D=3D pca->duty_ns) {
+> > >  				regmap_update_bits(pca->regmap, PCA9685_MODE1,
+> > > -						   MODE1_RESTART, 0x1);
+> > > +						   MODE1_RESTART,
+> > > +						   MODE1_RESTART);
+> > >  				return 0;
+> > >  			}
+> > >  		} else {
+> > > --=20
+> > > 2.5.5
+> >=20
+> > Good catch!
+> > During testing your change however, I noticed that this whole
+> > conditional for duty_ns =3D=3D pca->duty_ns (which I added) is bogus:
+> > Restarting the chip means using the same ON and OFF times as before, so
+> > the duty cycle "ratio" stays the same, relative to the period.
+> > Here we are checking for an equal duty cycle in nanoseconds though..
+> >=20
+> > Instead we would have to check if the ratio changed and only if it did
+> > not, set the RESTART bit.
+> >=20
+> > Or we could just remove that conditional. This is only an optimization
+> > for the special case of changing both period_ns and duty_ns at the same
+> > time but with the same ratio as before.
 >=20
-> Solution: Check if the prescaler is set to the hardware default. If not,
-> reprogram the prescaler at first configuration.
->=20
-> Cc: <stable@vger.kernel.org> # v4.3+
-> Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
-> ---
->  drivers/pwm/pwm-pca9685.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
+> So what's the status on this?
 
-Cc'ing Mika and Andy and quoting verbatim for review.
+Oh wait, that's what these:
+
+	http://patchwork.ozlabs.org/patch/705438/
+	http://patchwork.ozlabs.org/patch/705437/
+
+are fixing, right?
+
+Florian, I take it there's no reason to apply this patch anymore given
+that Clemens' patch removes this hunk and replaces it with a proper fix
+for this particular driver?
 
 Thierry
 
-> diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-> index 01a6a83..efc657e 100644
-> --- a/drivers/pwm/pwm-pca9685.c
-> +++ b/drivers/pwm/pwm-pca9685.c
-> @@ -55,6 +55,7 @@
->  #define PCA9685_PRESCALE	0xFE
-> =20
->  #define PCA9685_PRESCALE_MIN	0x03	/* =3D> max. frequency of 1526 Hz */
-> +#define PCA9685_PRESCALE_DEF	0x1E	/* =3D> default frequency of 200 Hz */
->  #define PCA9685_PRESCALE_MAX	0xFF	/* =3D> min. frequency of 24 Hz */
-> =20
->  #define PCA9685_COUNTER_RANGE	4096
-> @@ -289,8 +290,8 @@ static int pca9685_pwm_probe(struct i2c_client *clien=
-t,
->  				const struct i2c_device_id *id)
->  {
->  	struct pca9685 *pca;
-> +	int prescale, mode2;
->  	int ret;
-> -	int mode2;
-> =20
->  	pca =3D devm_kzalloc(&client->dev, sizeof(*pca), GFP_KERNEL);
->  	if (!pca)
-> @@ -304,10 +305,15 @@ static int pca9685_pwm_probe(struct i2c_client *cli=
-ent,
->  		return ret;
->  	}
->  	pca->duty_ns =3D 0;
-> -	pca->period_ns =3D PCA9685_DEFAULT_PERIOD;
-> =20
->  	i2c_set_clientdata(client, pca);
-> =20
-> +	regmap_read(pca->regmap, PCA9685_PRESCALE, &prescale);
-> +	if (prescale =3D=3D PCA9685_PRESCALE_DEF)
-> +		pca->period_ns =3D PCA9685_DEFAULT_PERIOD;
-> +	else
-> +		pca->period_ns =3D 0;
-> +
->  	regmap_read(pca->regmap, PCA9685_MODE2, &mode2);
-> =20
->  	if (device_property_read_bool(&client->dev, "invert"))
-> --=20
-> 2.10.2
->=20
-
---W4pDZ/VvazBYHhxQ
+--O27Gs9jTTFWz3gAR
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlh/Sh8ACgkQ3SOs138+
-s6EvkQ/+LuiRipO6xTxZjZfSxd7WD6bb7BfH83j+bQWOsvlkS33wqrGw1mPfy0TB
-cM+En4CLxhLZEOG+JtOFYvG2ZqB6AzMoNPT+UMqbPYtevikgP9EPC3yvillQb50m
-L8e/YsvYDbch3Ibvvo6QOdwfcnx3Je5A5Uip/OioOf/x+QvVxu+RWDM3ErOX8yvl
-wNBZv7YdLl1Ro9ke55m/SeIR8xJIuAjJO3dIUe5jpYi1qfAW2XWW6hE8kRNt9d0q
-QtQxo2aoJ8I8a457zHdi7A0w5wU8lEMPun+PmUnK1mn8pwoo5x0mNfTRE+ymfto8
-i5rdEkLqPaoh/AEEC/UCI3Wbk6V7R7cdHTMsJaLB2DBPkO3BrUTm6IFR4JToI6LY
-HX8i7i2IaAVjR3LvwGURNH3NTBiTxwpzY5N2ho2g4DPZRo/PYJ40yPfGXHwNlD7o
-senyYtVRxzQ+VhLFlMM9Z4FfuplKKu+pkxxMAxepVgBj0w1SzkUoP57hvZ1WHVrt
-OKlZc0u0A73sE0vHe0Uel+DoRmOjJdqKRC/4vlHA9UAPpxuUqiAzXtIwkFx4ycqV
-KDewTsdvvci+DyLJ8iVAf7wd2Bk3Xj96qnWrwu1uMmGJEfuSLCSuQpb40NQL7AoT
-YlDv6SPfaTdRDl3l2Y+KHeHP/FT2tGF8G1B/5cBYkAoSpz8NebY=
-=Sum1
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlh/StAACgkQ3SOs138+
+s6GkYA//dvED3+NEEb36CAUGk019x5DLC6xQ5XVRk6/Lu3PNNpDkGztzSrYOAiIO
+7ygpDQ3ucfF6+QgaUIVNdT+PS2b/cduRiD/DgdWw3i+zFe5H13GO+I/tiHEbcnSp
++uIdGABDy90WfimJtU9JUL1rNe99eEPAM1fqKOtC3Y4/PnPtitM75XZZHI7ifp3/
+1FH680/VQk5Ys0SO5R2drdj2vslgyhrsN2yJxfBpHe6vJXVVBpbpWZHf+tA943qf
+Em9DTY3T82/igYzqZ5f8GeRnYS5G+x+M/BSIfJGNhGXJqLpOAHBgKKKq986H3M4y
+S8/LW6Sh4vCEHDRClWxobj2CXLXf2HPNbOUZyRA5Zldjxe7hZE9HfoXM9VSVeNk4
+/6hKAOr2g2ISZv3JSCow2XgKTO8Dy01qY9Yoc5OBsTll0QtjLFuG1eDboHvKPEZz
+/6IA6qWn0LpoU5YD7ybAu3Y0oeTg8jgjIvoAvfwH3q5LaPBgbu5kDxWIRxBhoYIz
+MrXBiYwR+3pq6O9ZkVpJf+LJPdoM/NQjYhyoiRH1pladBmw0ChIX9+wj7uD6s/RX
+nYB5TdKhZNwnUcmsnPFN35ATu3t5UHcgl5rASTdjMjGJUH/rKbV7AvawBUta2Vxx
+2lJu5XUJ9iHaC55X0Kfpu+0qQ9xkST6y0hW80DyxU/j4bGCJ2tM=
+=6nH+
 -----END PGP SIGNATURE-----
 
---W4pDZ/VvazBYHhxQ--
+--O27Gs9jTTFWz3gAR--
