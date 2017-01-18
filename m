@@ -1,334 +1,69 @@
-From: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v8 7/8] ARM: dts: stm32: add Timers driver for stm32f429 MCU
-Date: Wed, 18 Jan 2017 15:20:50 +0100
-Message-ID: <1484749251-14445-8-git-send-email-benjamin.gaignard@st.com>
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Subject: [PATCH v8 5/8] IIO: add bindings for STM32 timer trigger driver
+Date: Wed, 18 Jan 2017 15:20:48 +0100
+Message-ID: <1484749251-14445-6-git-send-email-benjamin.gaignard@st.com>
 References: <1484749251-14445-1-git-send-email-benjamin.gaignard@st.com>
-Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1484749251-14445-1-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
-Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1484749251-14445-1-git-send-email-benjamin.gaignard@st.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: fabrice.gasnier@st.com, gerald.baeza@st.com, arnaud.pouliquen@st.com, linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Add Timers and it sub-nodes into DT for stm32f429 family.
+Define bindings for STM32 timer trigger
 
-version 6:
-- split patch in two: one for SoC family and one for stm32f469
-  discovery board.
-
-version 5:
-- rename gptimer node to timers
-- re-order timers node par addresses
+version 8:
+- reword "reg" parameter description
 
 version 4:
-- remove unwanted indexing in pwm@ and timer@ node name
-- use "reg" instead of additional parameters to set timer
-  configuration
+- remove triggers enumeration from DT
+- add reg parameter
 
 version 3:
-- use "st,stm32-timer-trigger" in DT
+- change file name
+- add cross reference with mfd bindings
 
 version 2:
-- use parameters to describe hardware capabilities
-- do not use references for pwm and iio timer subnodes
+- only keep one compatible
+- add DT parameters to set lists of the triggers:
+  one list describe the triggers created by the device
+  another one give the triggers accepted by the device
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 ---
- arch/arm/boot/dts/stm32f429.dtsi | 275 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 275 insertions(+)
+ .../bindings/iio/timer/stm32-timer-trigger.txt     | 23 ++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
 
-diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f429.dtsi
-index e4dae0e..2f85691 100644
---- a/arch/arm/boot/dts/stm32f429.dtsi
-+++ b/arch/arm/boot/dts/stm32f429.dtsi
-@@ -355,6 +355,21 @@
- 					slew-rate = <2>;
- 				};
- 			};
+diff --git a/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt b/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+new file mode 100644
+index 0000000..55a653d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+@@ -0,0 +1,23 @@
++STMicroelectronics STM32 Timers IIO timer bindings
 +
-+			pwm1_pins: pwm@1 {
-+				pins {
-+					pinmux = <STM32F429_PA8_FUNC_TIM1_CH1>,
-+						 <STM32F429_PB13_FUNC_TIM1_CH1N>,
-+						 <STM32F429_PB12_FUNC_TIM1_BKIN>;
-+				};
-+			};
++Must be a sub-node of an STM32 Timers device tree node.
++See ../mfd/stm32-timers.txt for details about the parent node.
 +
-+			pwm3_pins: pwm@3 {
-+				pins {
-+					pinmux = <STM32F429_PB4_FUNC_TIM3_CH1>,
-+						 <STM32F429_PB5_FUNC_TIM3_CH2>;
-+				};
-+			};
- 		};
- 
- 		rcc: rcc@40023810 {
-@@ -426,6 +441,266 @@
- 			interrupts = <80>;
- 			clocks = <&rcc 0 38>;
- 		};
++Required parameters:
++- compatible:	Must be "st,stm32-timer-trigger".
++- reg:		Identify trigger hardware block.
 +
-+		timers2: timers@40000000 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40000000 0x400>;
-+			clocks = <&rcc 0 128>;
-+			clock-names = "int";
-+			status = "disabled";
++Example:
++	timers@40010000 {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		compatible = "st,stm32-timers";
++		reg = <0x40010000 0x400>;
++		clocks = <&rcc 0 160>;
++		clock-names = "clk_int";
 +
-+			pwm {
-+				compatible = "st,stm32-pwm";
-+				status = "disabled";
-+			};
-+
-+			timer@1 {
-+				compatible = "st,stm32-timer-trigger";
-+				reg = <1>;
-+				status = "disabled";
-+			};
++		timer@0 {
++			compatible = "st,stm32-timer-trigger";
++			reg = <0>;
 +		};
-+
-+		timers3: timers@40000400 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40000400 0x400>;
-+			clocks = <&rcc 0 129>;
-+			clock-names = "int";
-+			status = "disabled";
-+
-+			pwm {
-+				compatible = "st,stm32-pwm";
-+				status = "disabled";
-+			};
-+
-+			timer@2 {
-+				compatible = "st,stm32-timer-trigger";
-+				reg = <2>;
-+				status = "disabled";
-+			};
-+		};
-+
-+		timers4: timers@40000800 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40000800 0x400>;
-+			clocks = <&rcc 0 130>;
-+			clock-names = "int";
-+			status = "disabled";
-+
-+			pwm {
-+				compatible = "st,stm32-pwm";
-+				status = "disabled";
-+			};
-+
-+			timer@3 {
-+				compatible = "st,stm32-timer-trigger";
-+				reg = <3>;
-+				status = "disabled";
-+			};
-+		};
-+
-+		timers5: timers@40000c00 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40000C00 0x400>;
-+			clocks = <&rcc 0 131>;
-+			clock-names = "int";
-+			status = "disabled";
-+
-+			pwm {
-+				compatible = "st,stm32-pwm";
-+				status = "disabled";
-+			};
-+
-+			timer@4 {
-+				compatible = "st,stm32-timer-trigger";
-+				reg = <4>;
-+				status = "disabled";
-+			};
-+		};
-+
-+		timers6: timers@40001000 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40001000 0x400>;
-+			clocks = <&rcc 0 132>;
-+			clock-names = "int";
-+			status = "disabled";
-+
-+			timer@5 {
-+				compatible = "st,stm32-timer-trigger";
-+				reg = <5>;
-+				status = "disabled";
-+			};
-+		};
-+
-+		timers7: timers@40001400 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40001400 0x400>;
-+			clocks = <&rcc 0 133>;
-+			clock-names = "int";
-+			status = "disabled";
-+
-+			timer@6 {
-+				compatible = "st,stm32-timer-trigger";
-+				reg = <6>;
-+				status = "disabled";
-+			};
-+		};
-+
-+		timers12: timers@40001800 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40001800 0x400>;
-+			clocks = <&rcc 0 134>;
-+			clock-names = "int";
-+			status = "disabled";
-+
-+			pwm {
-+				compatible = "st,stm32-pwm";
-+				status = "disabled";
-+			};
-+
-+			timer@11 {
-+				compatible = "st,stm32-timer-trigger";
-+				reg = <11>;
-+				status = "disabled";
-+			};
-+		};
-+
-+		timers13: timers@40001c00 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40001C00 0x400>;
-+			clocks = <&rcc 0 135>;
-+			clock-names = "int";
-+			status = "disabled";
-+
-+			pwm {
-+				compatible = "st,stm32-pwm";
-+				status = "disabled";
-+			};
-+		};
-+
-+		timers14: timers@40002000 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40002000 0x400>;
-+			clocks = <&rcc 0 136>;
-+			clock-names = "int";
-+			status = "disabled";
-+
-+			pwm {
-+				compatible = "st,stm32-pwm";
-+				status = "disabled";
-+			};
-+		};
-+
-+		timers1: timers@40010000 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40010000 0x400>;
-+			clocks = <&rcc 0 160>;
-+			clock-names = "int";
-+			status = "disabled";
-+
-+			pwm {
-+				compatible = "st,stm32-pwm";
-+				status = "disabled";
-+			};
-+
-+			timer@0 {
-+				compatible = "st,stm32-timer-trigger";
-+				reg = <0>;
-+				status = "disabled";
-+			};
-+		};
-+
-+		timers8: timers@40010400 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40010400 0x400>;
-+			clocks = <&rcc 0 161>;
-+			clock-names = "int";
-+			status = "disabled";
-+
-+			pwm {
-+				compatible = "st,stm32-pwm";
-+				status = "disabled";
-+			};
-+
-+			timer@7 {
-+				compatible = "st,stm32-timer-trigger";
-+				reg = <7>;
-+				status = "disabled";
-+			};
-+		};
-+
-+		timers9: timers@40014000 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40014000 0x400>;
-+			clocks = <&rcc 0 176>;
-+			clock-names = "int";
-+			status = "disabled";
-+
-+			pwm {
-+				compatible = "st,stm32-pwm";
-+				status = "disabled";
-+			};
-+
-+			timer@8 {
-+				compatible = "st,stm32-timer-trigger";
-+				reg = <8>;
-+				status = "disabled";
-+			};
-+		};
-+
-+		timers10: timers@40014400 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40014400 0x400>;
-+			clocks = <&rcc 0 177>;
-+			clock-names = "int";
-+			status = "disabled";
-+
-+			pwm {
-+				compatible = "st,stm32-pwm";
-+				status = "disabled";
-+			};
-+		};
-+
-+		timers11: timers@40014800 {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			compatible = "st,stm32-timers";
-+			reg = <0x40014800 0x400>;
-+			clocks = <&rcc 0 178>;
-+			clock-names = "int";
-+			status = "disabled";
-+
-+			pwm {
-+				compatible = "st,stm32-pwm";
-+				status = "disabled";
-+			};
-+		};
- 	};
- };
- 
++	};
 -- 
 1.9.1
