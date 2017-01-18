@@ -1,139 +1,105 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: constify pwm_ops structures
-Date: Wed, 18 Jan 2017 11:49:36 +0100
-Message-ID: <20170118104936.GJ18989@ulmo.ba.sec>
-References: <1484071926-21582-1-git-send-email-bhumirks@gmail.com>
+Subject: Re: [PATCH 1/2] pwm: pca9685: fix period change with same duty cycle
+Date: Wed, 18 Jan 2017 11:56:50 +0100
+Message-ID: <20170118105650.GL18989@ulmo.ba.sec>
+References: <20161213155251.28684-1-clemens.gruber@pqgruber.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============7855040322075939098=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1484071926-21582-1-git-send-email-bhumirks@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Bhumika Goyal <bhumirks@gmail.com>
-Cc: linux@prisktech.co.nz, julia.lawall@lip6.fr, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
-
-
---===============7855040322075939098==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="rwgQ89ZNnFUwFHTC"
+        protocol="application/pgp-signature"; boundary="nrM5Z5VIJgwP9LWp"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wj0-f194.google.com ([209.85.210.194]:36533 "EHLO
+        mail-wj0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753258AbdARK75 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Jan 2017 05:59:57 -0500
 Content-Disposition: inline
+In-Reply-To: <20161213155251.28684-1-clemens.gruber@pqgruber.com>
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
+To: Clemens Gruber <clemens.gruber@pqgruber.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-stable@vger.kernel.org, Florian Vaussard <florian.vaussard@heig-vd.ch>, Mika Westerberg <mika.westerberg@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
 
---rwgQ89ZNnFUwFHTC
+--nrM5Z5VIJgwP9LWp
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jan 10, 2017 at 11:42:06PM +0530, Bhumika Goyal wrote:
-> Declare pwm_ops structures as const as they are only stored in the ops
-> field of a pwm_chip structure. This field is of type const struct pwm_ops
-> *, so pwm_ops structures having this property can be declared as const.
-> Done using Coccinelle:
+On Tue, Dec 13, 2016 at 04:52:50PM +0100, Clemens Gruber wrote:
+> When first implementing support for changing the output frequency, an
+> optimization was added to continue the PWM after changing the prescaler
+> without having to reprogram the ON and OFF registers for the duty cycle,
+> in case the duty cycle stayed the same.
+> This was flawed, because we compared the absolute value of the duty
+> cycle in nanoseconds instead of the ratio to the period.
 >=20
-> @r1 disable optional_qualifier@
-> identifier i;
-> position p;
-> @@
-> static struct pwm_ops i@p=3D{...};
+> Fix the problem by removing the shortcut.
 >=20
-> @ok1@
-> identifier r1.i;
-> position p;
-> struct pxa_pwm_chip pwm;
-> struct bfin_pwm_chip bwm;
-> struct vt8500_chip vp;
-> struct imx_chip icp;
-> @@
-> (
-> pwm.chip.ops=3D&i@p
-> |
-> bwm.chip.ops=3D&i@p
-> |
-> vp.chip.ops=3D&i@p
-> |
-> icp.chip.ops=3D&i@p
-> )
->=20
-> @bad@
-> position p!=3D{r1.p,ok1.p};
-> identifier r1.i;
-> @@
-> i@p
->=20
-> @depends on !bad disable optional_qualifier@
-> identifier r1.i;
-> @@
-> +const
-> struct pwm_ops i;
->=20
-> File size details:
->=20
->    text	   data	    bss	    dec	    hex	filename
->    1646	    328	      0	   1974	    7b6	drivers/pwm/pwm-imx.o
->    1742	    224	      0	   1966	    7ae	drivers/pwm/pwm-imx.o
->=20
->    1941	    296	      0	   2237	    8bd	drivers/pwm/pwm-pxa.o
->    2037	    192	      0	   2229	    8b5	drivers/pwm/pwm-pxa.o
->=20
->    1946	    296	      0	   2242	    8c2	drivers/pwm/pwm-vt8500.o
->    2050	    192	      0	   2242	    8c2	drivers/pwm/pwm-vt8500.o
->=20
-> The drivers/pwm/pwm-bfin.o file did not compile.
->=20
-> Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
+> Fixes: 01ec8472009c9 ("pwm-pca9685: Support changing the output frequency=
+")
+> Cc: <stable@vger.kernel.org> # v4.3+
+> Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
 > ---
-> File: drivers/pwm/pwm-bfin.c is not tested
->=20
->  drivers/pwm/pwm-bfin.c   | 2 +-
->  drivers/pwm/pwm-imx.c    | 2 +-
->  drivers/pwm/pwm-pxa.c    | 2 +-
->  drivers/pwm/pwm-vt8500.c | 2 +-
->  4 files changed, 4 insertions(+), 4 deletions(-)
+>  drivers/pwm/pwm-pca9685.c | 11 -----------
+>  1 file changed, 11 deletions(-)
 
-Applied, thanks.
+Mika, Andy, can you guys help review this and 2/2?
 
+Thanks,
 Thierry
 
---rwgQ89ZNnFUwFHTC
+>=20
+> diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+> index 117fccf..01a6a83 100644
+> --- a/drivers/pwm/pwm-pca9685.c
+> +++ b/drivers/pwm/pwm-pca9685.c
+> @@ -65,7 +65,6 @@
+>  #define PCA9685_MAXCHAN		0x10
+> =20
+>  #define LED_FULL		(1 << 4)
+> -#define MODE1_RESTART		(1 << 7)
+>  #define MODE1_SLEEP		(1 << 4)
+>  #define MODE2_INVRT		(1 << 4)
+>  #define MODE2_OUTDRV		(1 << 2)
+> @@ -117,16 +116,6 @@ static int pca9685_pwm_config(struct pwm_chip *chip,=
+ struct pwm_device *pwm,
+>  			udelay(500);
+> =20
+>  			pca->period_ns =3D period_ns;
+> -
+> -			/*
+> -			 * If the duty cycle did not change, restart PWM with
+> -			 * the same duty cycle to period ratio and return.
+> -			 */
+> -			if (duty_ns =3D=3D pca->duty_ns) {
+> -				regmap_update_bits(pca->regmap, PCA9685_MODE1,
+> -						   MODE1_RESTART, 0x1);
+> -				return 0;
+> -			}
+>  		} else {
+>  			dev_err(chip->dev,
+>  				"prescaler not set: period out of bounds!\n");
+> --=20
+> 2.10.2
+>=20
+
+--nrM5Z5VIJgwP9LWp
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlh/SEAACgkQ3SOs138+
-s6EVmBAAg9oolXDX7TbnYKdo9leL7v0LJQ4Nd2Wg4M6n7bLnM76uMwVXfPhNCAhO
-euUP0njFBt9uaY7gVFjyXS2M4QEp3GrnoLU5afpXnCbg/KhJqhkmFEFuRQkoCmu3
-TyytVn7WMuuwWrKcW/Qg/3XScjf1VUJ3vOz+377lwo05FIgi/5dmTsJR/jmQ5oBs
-wg3CpCa7ZVsLPFEgly4pvsTdt5zP5ISuoW0MeKPLrF1DuHbCPtuK462aixiLDU8Y
-fpKVdfHuVNX0ZhJFk4fxYyMgUoXtETWtiW6FtROYNiPZsNoCs5cGosCUI+nD7JWr
-8I43QQ4RCCnuNx4m4Foa9GXlvGRDh1joxn81ZcZ8Hag+LacFxJHNSnq/4lwPv5gf
-QBTyXmyIjQOv7FG8AkzBOsbsdqh91m6sC4VjSuDvhJ8RaAunmmoEl1hRy8Wd0067
-9u26JWkBGTv/yGoT/bZrd8l0UZDTm5Oz7f+sOiYq2lO0E6iT/RmbOR7elMAZXQT2
-pHWQ/8j52qfHOwrNztooV4fj9lIxMv2dnEyT0BCVWMmn8QhpHEJpBFB8ruL0/IFL
-KtYyW1Di2lrvOYVb8t7cE0+PXlbmayUbipqnYSrU3vJOJN6mFeJ+5qDxRcQjBHJn
-VKwUPrLMRYqHROm4QGTQnBeBE72IRdlXH3Y8jONer+DrlmFc5VA=
-=5MBc
+iQIyBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlh/SfEACgkQ3SOs138+
+s6HV9g/43NYFdkiTksOJBtPGrAbHxEKiz+5dRiuHujAutzJ/zu0c4RpNkoXUjGru
+eG2w7GlGsFGSTJ7d4vS2QHpm+Mk6aq7FaFhqsO3jxLS6ymIKYd8WeAUjWTMfrQKx
+zj/6P0hpHJvUWiq+sD1fB3Y/HeuTz+5gDBTC7s1izn9lzEoKgTFHkj2MYanGePQr
+CzroNuEHVFx0XeuGxQVUj97bS6T6QGJZVtqtgaxsSChC3a8lLTFijti4p77DT6kL
+ZErQXLgXa2ULxikKgXofJoX1XGg1PlfUvXktKZoCgsvebz/DIplg9DGLryz1B1jU
+Bn9NpTnuFsm3yaXmsfMoS1Ek/9osl8718ZtblX0zrV9bM/2elFyo8rsaKiyezdPE
+8sDtpCXlX5q+GXKogQcCO19wF1bAo43ZdzvBno+Q4T1yE1Jc8aKBMLRdko3MLK4n
+Y5LQipNH700Elb9A3QRA5XkIxxZecRMN4L4dLcTUzFXLPJ8vnYoa9bMHZEuRotna
+r8hgoTA2lYnnFWJRIiSHQm3JdYf+1PM2ea34cks4jTH4GwWe9ZiO395LK+xPIxRI
+hIfDBRSvcwmL9gXdOTogWRIZEBPQcdGmVI5p9A42Uq41XeSq/Xv3aO5KJlaDPvbU
+qpv52OF2n+yc1CPqyOm0ARsC5yPfAjCa9X5BMDXACRB/CZFe/w==
+=SK76
 -----END PGP SIGNATURE-----
 
---rwgQ89ZNnFUwFHTC--
-
-
---===============7855040322075939098==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============7855040322075939098==--
+--nrM5Z5VIJgwP9LWp--
