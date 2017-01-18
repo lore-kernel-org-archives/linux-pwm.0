@@ -1,51 +1,49 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: Re: [PATCH v2 3/4] pwm: lpss: Do not export board infos for
- different PWM types
-Date: Wed, 18 Jan 2017 15:01:38 +0200
-Message-ID: <20170118130138.GO2023@lahna.fi.intel.com>
-References: <20170102091647.86910-1-andriy.shevchenko@linux.intel.com>
- <20170102091647.86910-4-andriy.shevchenko@linux.intel.com>
- <20170118111109.GO18989@ulmo.ba.sec>
+From: Clemens Gruber <clemens.gruber@pqgruber.com>
+Subject: Re: [PATCH 2/2] pwm: pca9685: fix prescaler initialization
+Date: Wed, 18 Jan 2017 14:53:25 +0100
+Message-ID: <20170118135325.GA2498@archie.localdomain>
+References: <20161213155251.28684-1-clemens.gruber@pqgruber.com>
+ <20161213155251.28684-2-clemens.gruber@pqgruber.com>
+ <20170118105735.GM18989@ulmo.ba.sec>
+ <1484737764.2133.193.camel@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:9561 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754635AbdARNEA (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 18 Jan 2017 08:04:00 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170118111109.GO18989@ulmo.ba.sec>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1484737764.2133.193.camel@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-stable@vger.kernel.org, Florian Vaussard <florian.vaussard@heig-vd.ch>, Mika Westerberg <mika.westerberg@linux.intel.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Ilkka Koskinen <ilkka.koskinen@intel.com>
 
-On Wed, Jan 18, 2017 at 12:11:09PM +0100, Thierry Reding wrote:
-> On Mon, Jan 02, 2017 at 11:16:46AM +0200, Andy Shevchenko wrote:
-> > From: Mika Westerberg <mika.westerberg@linux.intel.com>
-> > 
-> > The PWM LPSS probe drivers just pass a pointer to the exported board info
-> > structures to pwm_lpss_probe() based on device PCI or ACPI ID. Since the
-> > core driver knows everything else except mapping between device ID and the
-> > type, just pass the type with pwm_lpss_probe() and stop exporting the board
-> > info structures.
-> > 
-> > Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> > ---
-> >  drivers/pwm/pwm-lpss-pci.c      | 20 ++++++++---------
-> >  drivers/pwm/pwm-lpss-platform.c | 10 ++++-----
-> >  drivers/pwm/pwm-lpss.c          | 49 ++++++++++++++++++++++-------------------
-> >  drivers/pwm/pwm-lpss.h          | 14 +++++-------
-> >  4 files changed, 44 insertions(+), 49 deletions(-)
+On Wed, Jan 18, 2017 at 01:09:24PM +0200, Andy Shevchenko wrote:
+> On Wed, 2017-01-18 at 11:57 +0100, Thierry Reding wrote:
+> > On Tue, Dec 13, 2016 at 04:52:51PM +0100, Clemens Gruber wrote:
+> > > Until now, we assumed that the period is the hardware default of
+> > > 1/200Hz
+> > > at probe time, but if the period was changed and the user reboots,
+> > > this
+> > > assumption is wrong.
+> > > 
+> > > Solution: Check if the prescaler is set to the hardware default. If
+> > > not,
+> > > reprogram the prescaler at first configuration.
 > 
-> Is there anything in particular that you think will need this change? It
-> looks to me more like churn than anything else. Moving away from the per
-> device struct to describe the particular instance seems to me like
-> removing flexibility that we might want at some point rather than any
-> real gain.
+> AFAIU the PWM is off until user space or kernel user enables it
+> explicitly after reboot. Is it correct?
 
-It simplifies the probe drivers for one. Since the core driver already
-handles details of the specific SoC family, I don't think we need the
-flexibility to be able to pass arbitrary platform data anyway.
+Yes, but the period could be different, maybe modified in the bootloader
+or at a previous boot without hardware reset in between. (We do not send
+a SWRST to the chip, so the period register could be different)
 
-No strong feelings, though. I'm fine either way :)
+Until now, we assumed it is always 1/200 Hz and skipped the lengthy
+prescale configuration (put chip into sleep mode, set prescaler, go out
+of sleep mode, udelay for 0.5ms until the oscillator is back up) if the
+user wants a period of 1/200 Hz.
+
+With this patch, we check if it is in fact set to the hardware default.
+If not, we set pca->period_ns to 0 which leads to changing the prescaler
+in the next call to pca9685_pwm_config.
+
+Thanks,
+Clemens
