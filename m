@@ -1,84 +1,57 @@
 From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Subject: [PATCH v8 3/8] PWM: add pwm-stm32 DT bindings
-Date: Wed, 18 Jan 2017 15:20:46 +0100
-Message-ID: <1484749251-14445-4-git-send-email-benjamin.gaignard@st.com>
+Subject: [PATCH v8 8/8] ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-disco
+Date: Wed, 18 Jan 2017 15:20:51 +0100
+Message-ID: <1484749251-14445-9-git-send-email-benjamin.gaignard@st.com>
 References: <1484749251-14445-1-git-send-email-benjamin.gaignard@st.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1484749251-14445-1-git-send-email-benjamin.gaignard@st.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: linaro-kernel@lists.linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>, arnaud.pouliquen@st.com, benjamin.gaignard@linaro.org, gerald.baeza@st.com, fabrice.gasnier@st.com
+Cc: fabrice.gasnier@st.com, gerald.baeza@st.com, arnaud.pouliquen@st.com, linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Define bindings for pwm-stm32
-
-version 8:
-- reword st,breakinput description.
-
-version 6:
-- change st,breakinput parameter format to make it usuable on stm32f7 too.
-
-version 2:
-- use parameters instead of compatible of handle the hardware configuration
+Define and enable pwm1 and pwm3 for stm32f469 discovery board
 
 Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
- .../devicetree/bindings/pwm/pwm-stm32.txt          | 35 ++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+ arch/arm/boot/dts/stm32f469-disco.dts | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-new file mode 100644
-index 0000000..6dd0403
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-@@ -0,0 +1,35 @@
-+STMicroelectronics STM32 Timers PWM bindings
+diff --git a/arch/arm/boot/dts/stm32f469-disco.dts b/arch/arm/boot/dts/stm32f469-disco.dts
+index 8a163d7..92552d3 100644
+--- a/arch/arm/boot/dts/stm32f469-disco.dts
++++ b/arch/arm/boot/dts/stm32f469-disco.dts
+@@ -81,3 +81,31 @@
+ &usart3 {
+ 	status = "okay";
+ };
 +
-+Must be a sub-node of an STM32 Timers device tree node.
-+See ../mfd/stm32-timers.txt for details about the parent node.
++&timers1 {
++	status = "okay";
 +
-+Required parameters:
-+- compatible:		Must be "st,stm32-pwm".
-+- pinctrl-names: 	Set to "default".
-+- pinctrl-0: 		List of phandles pointing to pin configuration nodes for PWM module.
-+			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
-+
-+Optional parameters:
-+- st,breakinput:	One or two <index level filter> to describe break input configurations.
-+			"index" indicates on which break input (0 or 1) the configuration
-+			should be applied.
-+			"level" gives the active level (0=low or 1=high) of the input signal
-+			for this configuration.
-+			"filter" gives the filtering value to be applied.
-+
-+Example:
-+	timers@40010000 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "st,stm32-timers";
-+		reg = <0x40010000 0x400>;
-+		clocks = <&rcc 0 160>;
-+		clock-names = "clk_int";
-+
-+		pwm {
-+			compatible = "st,stm32-pwm";
-+			pinctrl-0	= <&pwm1_pins>;
-+			pinctrl-names	= "default";
-+			st,breakinput = <0 1 5>;
-+		};
++	pwm {
++		pinctrl-0 = <&pwm1_pins>;
++		pinctrl-names = "default";
++		status = "okay";
 +	};
++
++	timer@0 {
++		status = "okay";
++	};
++};
++
++&timers3 {
++	status = "okay";
++
++	pwm {
++		pinctrl-0 = <&pwm3_pins>;
++		pinctrl-names = "default";
++		status = "okay";
++	};
++
++	timer@2 {
++		status = "okay";
++	};
++};
 -- 
 1.9.1
