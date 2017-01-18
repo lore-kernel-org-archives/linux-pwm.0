@@ -1,67 +1,137 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 2/2] pwm: pca9685: fix prescaler initialization
-Date: Wed, 18 Jan 2017 16:01:58 +0200
-Message-ID: <1484748118.2133.206.camel@linux.intel.com>
-References: <20161213155251.28684-1-clemens.gruber@pqgruber.com>
-         <20161213155251.28684-2-clemens.gruber@pqgruber.com>
-         <20170118105735.GM18989@ulmo.ba.sec>
-         <1484737764.2133.193.camel@linux.intel.com>
-         <20170118135325.GA2498@archie.localdomain>
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Subject: [PATCH v8 0/8] Add PWM and IIO timer drivers for STM32
+Date: Wed, 18 Jan 2017 15:20:43 +0100
+Message-ID: <1484749251-14445-1-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170118135325.GA2498@archie.localdomain>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Clemens Gruber <clemens.gruber@pqgruber.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-stable@vger.kernel.org, Florian Vaussard <florian.vaussard@heig-vd.ch>, Mika Westerberg <mika.westerberg@linux.intel.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: linaro-kernel@lists.linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>, arnaud.pouliquen@st.com, benjamin.gaignard@linaro.org, gerald.baeza@st.com, fabrice.gasnier@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, 2017-01-18 at 14:53 +0100, Clemens Gruber wrote:
-> On Wed, Jan 18, 2017 at 01:09:24PM +0200, Andy Shevchenko wrote:
-> > On Wed, 2017-01-18 at 11:57 +0100, Thierry Reding wrote:
-> > > On Tue, Dec 13, 2016 at 04:52:51PM +0100, Clemens Gruber wrote:
-> > > > Until now, we assumed that the period is the hardware default of
-> > > > 1/200Hz
-> > > > at probe time, but if the period was changed and the user
-> > > > reboots,
-> > > > this
-> > > > assumption is wrong.
-> > > > 
-> > > > Solution: Check if the prescaler is set to the hardware default.
-> > > > If
-> > > > not,
-> > > > reprogram the prescaler at first configuration.
-> > 
-> > AFAIU the PWM is off until user space or kernel user enables it
-> > explicitly after reboot. Is it correct?
-> 
-> Yes, but the period could be different, maybe modified in the
-> bootloader
-> or at a previous boot without hardware reset in between. (We do not
-> send
-> a SWRST to the chip, so the period register could be different)
+version 8:
+- rebase on v4.10-rc4
+- fix comments done by Thierry on PWM
+- reword "reg" parameter description
+- change kernel kernel in IIO ABI documentation
 
-It's fragile to rely on some external settings, right? Wouldn't be
-better to leave device in a known state after ->probe()?
+version 7:
+- rebase on v4.10-rc2
+- remove iio_device code from driver and keep only the trigger part
 
-> Until now, we assumed it is always 1/200 Hz and skipped the lengthy
-> prescale configuration (put chip into sleep mode, set prescaler, go
-> out
-> of sleep mode, udelay for 0.5ms until the oscillator is back up) if
-> the
-> user wants a period of 1/200 Hz.
-> 
-> With this patch, we check if it is in fact set to the hardware
-> default.
-> If not, we set pca->period_ns to 0 which leads to changing the
-> prescaler
-> in the next call to pca9685_pwm_config.
+version 6:
+- rename stm32-gptimer in stm32-timers.
+- change "st,stm32-gptimer" compatible to "st,stm32-timers".
+- modify "st,breakinput" parameter in pwm part.
+- split DT patch in 2
 
-And this contradicts, for my opinion, to the logic you referred in the
-first paragraph. If you would like to use preset values, you need to
-read and recalculate period correctly.
+version 5:
+- fix comments done on version 4
+- rebased on kernel 4.9-rc8
+- change nodes names and re-order then by addresses
+
+version 4:
+- fix comments done on version 3
+- don't use interrupts anymore in IIO timer
+- detect hardware capabilities at probe time to simplify binding
+
+version 3:
+- no change on mfd and pwm divers patches
+- add cross reference between bindings
+- change compatible to "st,stm32-timer-trigger"
+- fix attributes access rights
+- use string instead of int for master_mode and slave_mode
+- document device attributes in sysfs-bus-iio-timer-stm32
+- update DT with the new compatible
+
+version 2:
+- keep only one compatible per driver
+- use DT parameters to describe hardware block configuration:
+  - pwm channels, complementary output, counter size, break input
+  - triggers accepted and create by IIO timers
+- change DT to limite use of reference to the node
+- interrupt is now in IIO timer driver
+- rename stm32-mfd-timer to stm32-timers (for general purpose timer)
+
+The following patches enable PWM and IIO Timer features for STM32 platforms.
+
+Those two features are mixed into the registers of the same hardware block
+(named general purpose timer) which lead to introduce a multifunctions driver 
+on the top of them to be able to share the registers.
+
+In STM32f4 14 instances of timer hardware block exist, even if they all have
+the same register mapping they could have a different number of pwm channels
+and/or different triggers capabilities. We use various parameters in DT to 
+describe the differences between hardware blocks
+
+The MFD (stm32-timers.c) takes care of clock and register mapping
+by using regmap. stm32_timers structure is provided to its sub-node to
+share those information.
+
+PWM driver is implemented into pwm-stm32.c. Depending of the instance we may
+have up to 4 channels, sometime with complementary outputs or 32 bits counter
+instead of 16 bits. Some hardware blocks may also have a break input function
+which allows to stop pwm depending of a level, defined in devicetree, on an
+external pin.
+
+IIO timer driver (stm32-timer-trigger.c and stm32-timer-trigger.h) define a list
+of hardware triggers usable by hardware blocks like ADC, DAC or other timers. 
+
+The matrix of possible connections between blocks is quite complex so we use 
+trigger names and is_stm32_iio_timer_trigger() function to be sure that
+triggers are valid and configure the IPs.
+
+At run time IIO timer hardware blocks can configure (through "master_mode" 
+IIO device attribute) which internal signal (counter enable, reset,
+comparison block, etc...) is used to generate the trigger.
+
+Benjamin Gaignard (8):
+  MFD: add bindings for STM32 Timers driver
+  MFD: add STM32 Timers driver
+  PWM: add pwm-stm32 DT bindings
+  PWM: add PWM driver for STM32 plaftorm
+  IIO: add bindings for STM32 timer trigger driver
+  IIO: add STM32 timer trigger driver
+  ARM: dts: stm32: add Timers driver for stm32f429 MCU
+  ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-disco
+
+ .../ABI/testing/sysfs-bus-iio-timer-stm32          |  29 ++
+ .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 ++
+ .../devicetree/bindings/mfd/stm32-timers.txt       |  46 +++
+ .../devicetree/bindings/pwm/pwm-stm32.txt          |  35 ++
+ arch/arm/boot/dts/stm32f429.dtsi                   | 275 ++++++++++++++
+ arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
+ drivers/iio/trigger/Kconfig                        |   9 +
+ drivers/iio/trigger/Makefile                       |   1 +
+ drivers/iio/trigger/stm32-timer-trigger.c          | 342 ++++++++++++++++++
+ drivers/mfd/Kconfig                                |  11 +
+ drivers/mfd/Makefile                               |   2 +
+ drivers/mfd/stm32-timers.c                         |  80 +++++
+ drivers/pwm/Kconfig                                |   9 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-stm32.c                            | 398 +++++++++++++++++++++
+ include/linux/iio/timer/stm32-timer-trigger.h      |  62 ++++
+ include/linux/mfd/stm32-timers.h                   |  71 ++++
+ 17 files changed, 1422 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
+ create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+ create mode 100644 drivers/iio/trigger/stm32-timer-trigger.c
+ create mode 100644 drivers/mfd/stm32-timers.c
+ create mode 100644 drivers/pwm/pwm-stm32.c
+ create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
+ create mode 100644 include/linux/mfd/stm32-timers.h
 
 -- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+1.9.1
