@@ -1,57 +1,44 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v2] pwm: lpss: Make builtin so that i915 can
-	find the pwm_backlight
-Date: Thu, 19 Jan 2017 18:58:30 +0100
-Message-ID: <20170119175830.3754-1-hdegoede@redhat.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v8 5/8] IIO: add bindings for STM32 timer trigger driver
+Date: Thu, 19 Jan 2017 13:31:19 -0600
+Message-ID: <20170119193119.kejcwpqrqo735mxh@rob-hp-laptop>
+References: <1484749251-14445-1-git-send-email-benjamin.gaignard@st.com>
+ <1484749251-14445-6-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, Hans de Goede <hdegoede@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1484749251-14445-6-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-VGhlIHByaW1hcnkgY29uc3VtZXIgb2YgdGhlIGxwc3MgcHdtIGlzIHRoZSBpOTE1IGttcyBkcml2
-ZXIsCnRoZSBpOTE1IGRyaXZlciBkb2VzIG5vdCBzdXBwb3J0IGdldF9wd20gcmV0dXJuaW5nIC1F
-UFJPQkVfREVGRVIgYW5kCml0cyBpbml0IGlzIHZlcnkgY29tcGxleCBtYWtpbmcgdGhpcyBpcyBh
-bG1vc3QgaW1wb3NzaWJsZSB0byBmaXguCgpUaGlzIGNvbW1pdCBjaGFuZ2VzIHRoZSBQV01fTFBT
-UyBLY29uZmlnIGZyb20gYSB0cmlzdGF0ZSB0byBhIGJvb2wsIHNvCnRoYXQgd2hlbiB0aGUgaTkx
-NSBkcml2ZXIgbG9hZHMgdGhlIGxwc3MgcHdtIHdpbGwgYmUgYXZhaWxhYmxlIGF2b2lkaW5nCnRo
-ZSAtRVBST0JFX0RFRkVSIGlzc3VlLiBOb3RlIHRoYXQgdGhpcyBpcyBpZGVudGljYWwgdG8gaG93
-IHRoZSBzYW1lCnByb2JsZW0gd2FzIHNvbHZlZCBmb3IgdGhlIHB3bS1jcmMgZHJpdmVyLCB3aGlj
-aCBpcyB1c2VkIGJ5IHRoZSBpOTE1CmRyaXZlciBvbiBvdGhlciBwbGF0Zm9ybXMuCgpTaWduZWQt
-b2ZmLWJ5OiBIYW5zIGRlIEdvZWRlIDxoZGVnb2VkZUByZWRoYXQuY29tPgpBY2tlZC1ieTogSmFu
-aSBOaWt1bGEgPGphbmkubmlrdWxhQGludGVsLmNvbT4KLS0tCkNoYW5nZXMgaW4gdjI6Ci1Ecm9w
-IHRoZSBwd21fYWRkX3RhYmxlIGNhbGwgKHRoaXMgaGFzIGJlZW4gbW92ZWQgdG8gdGhlIGFjcGlf
-bHBzcyBkcml2ZXIpCi0tLQogZHJpdmVycy9wd20vS2NvbmZpZyB8IDEyICsrKy0tLS0tLS0tLQog
-MSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlvbnMoLSkKCmRpZmYgLS1n
-aXQgYS9kcml2ZXJzL3B3bS9LY29uZmlnIGIvZHJpdmVycy9wd20vS2NvbmZpZwppbmRleCBmOTJk
-ZDQxLi4xMmE2Y2Y4IDEwMDY0NAotLS0gYS9kcml2ZXJzL3B3bS9LY29uZmlnCisrKyBiL2RyaXZl
-cnMvcHdtL0tjb25maWcKQEAgLTI0OSwyOCArMjQ5LDIyIEBAIGNvbmZpZyBQV01fTFBDMzJYWAog
-CSAgd2lsbCBiZSBjYWxsZWQgcHdtLWxwYzMyeHguCiAKIGNvbmZpZyBQV01fTFBTUwotCXRyaXN0
-YXRlCisJYm9vbAogCiBjb25maWcgUFdNX0xQU1NfUENJCi0JdHJpc3RhdGUgIkludGVsIExQU1Mg
-UFdNIFBDSSBkcml2ZXIiCisJYm9vbCAiSW50ZWwgTFBTUyBQV00gUENJIGRyaXZlciIKIAlkZXBl
-bmRzIG9uIFg4NiAmJiBQQ0kKIAlzZWxlY3QgUFdNX0xQU1MKIAloZWxwCiAJICBUaGUgUENJIGRy
-aXZlciBmb3IgSW50ZWwgTG93IFBvd2VyIFN1YnN5c3RlbSBQV00gY29udHJvbGxlci4KIAotCSAg
-VG8gY29tcGlsZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hvb3NlIE0gaGVyZTogdGhlIG1v
-ZHVsZQotCSAgd2lsbCBiZSBjYWxsZWQgcHdtLWxwc3MtcGNpLgotCiBjb25maWcgUFdNX0xQU1Nf
-UExBVEZPUk0KLQl0cmlzdGF0ZSAiSW50ZWwgTFBTUyBQV00gcGxhdGZvcm0gZHJpdmVyIgorCWJv
-b2wgIkludGVsIExQU1MgUFdNIHBsYXRmb3JtIGRyaXZlciIKIAlkZXBlbmRzIG9uIFg4NiAmJiBB
-Q1BJCiAJc2VsZWN0IFBXTV9MUFNTCiAJaGVscAogCSAgVGhlIHBsYXRmb3JtIGRyaXZlciBmb3Ig
-SW50ZWwgTG93IFBvd2VyIFN1YnN5c3RlbSBQV00gY29udHJvbGxlci4KIAotCSAgVG8gY29tcGls
-ZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hvb3NlIE0gaGVyZTogdGhlIG1vZHVsZQotCSAg
-d2lsbCBiZSBjYWxsZWQgcHdtLWxwc3MtcGxhdGZvcm0uCi0KIGNvbmZpZyBQV01fTUVTT04KIAl0
-cmlzdGF0ZSAiQW1sb2dpYyBNZXNvbiBQV00gZHJpdmVyIgogCWRlcGVuZHMgb24gQVJDSF9NRVNP
-TgotLSAKMi45LjMKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fCkludGVsLWdmeCBtYWlsaW5nIGxpc3QKSW50ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9y
-ZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdm
-eAo=
+On Wed, Jan 18, 2017 at 03:20:48PM +0100, Benjamin Gaignard wrote:
+> Define bindings for STM32 timer trigger
+> 
+> version 8:
+> - reword "reg" parameter description
+> 
+> version 4:
+> - remove triggers enumeration from DT
+> - add reg parameter
+> 
+> version 3:
+> - change file name
+> - add cross reference with mfd bindings
+> 
+> version 2:
+> - only keep one compatible
+> - add DT parameters to set lists of the triggers:
+>   one list describe the triggers created by the device
+>   another one give the triggers accepted by the device
+> 
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+> Acked-by: Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> ---
+>  .../bindings/iio/timer/stm32-timer-trigger.txt     | 23 ++++++++++++++++++++++
+>  1 file changed, 23 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
