@@ -1,72 +1,79 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 13/13] MIPS: jz4740: Remove custom GPIO code
-Date: Thu, 19 Jan 2017 12:24:54 +0100
-Message-ID: <b88d4818b42ae6b0853e5c01d4121c47@mail.crapouillou.net>
-References: <20170117231421.16310-1-paul@crapouillou.net>
- <20170117231421.16310-14-paul@crapouillou.net>
- <20170118072751.GC18989@ulmo.ba.sec>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 2/2] pwm: pca9685: fix prescaler initialization
+Date: Thu, 19 Jan 2017 14:34:39 +0200
+Message-ID: <1484829279.2133.236.camel@linux.intel.com>
+References: <20161213155251.28684-1-clemens.gruber@pqgruber.com>
+         <20161213155251.28684-2-clemens.gruber@pqgruber.com>
+         <20170118105735.GM18989@ulmo.ba.sec>
+         <1484737764.2133.193.camel@linux.intel.com>
+         <20170118135325.GA2498@archie.localdomain>
+         <1484748118.2133.206.camel@linux.intel.com>
+         <20170118142533.GA17640@archie.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <20170118072751.GC18989@ulmo.ba.sec>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Ralf Baechle <ralf@linux-mips.org>, Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ulf Hansson <ulf.hansson@linaro.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, james.hogan@imgtec.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga05.intel.com ([192.55.52.43]:18704 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752402AbdASMgP (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 19 Jan 2017 07:36:15 -0500
+In-Reply-To: <20170118142533.GA17640@archie.localdomain>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Clemens Gruber <clemens.gruber@pqgruber.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Florian Vaussard <florian.vaussard@heig-vd.ch>, Mika Westerberg <mika.westerberg@linux.intel.com>
 
-Le 2017-01-18 08:27, Thierry Reding a écrit :
+On Wed, 2017-01-18 at 15:25 +0100, Clemens Gruber wrote:
+> On Wed, Jan 18, 2017 at 04:01:58PM +0200, Andy Shevchenko wrote:
+> > On Wed, 2017-01-18 at 14:53 +0100, Clemens Gruber wrote:
+> > > Yes, but the period could be different, maybe modified in the
+> > > bootloader
+> > > or at a previous boot without hardware reset in between. (We do
+> > > not
+> > > send
+> > > a SWRST to the chip, so the period register could be different)
+> > 
+> > It's fragile to rely on some external settings, right? Wouldn't be
+> > better to leave device in a known state after ->probe()?
+> 
+> Yes, that's what this patch tries to solve by verifying that the
+> external setting (the prescale register) is set to its hardware
+> default
+> value of 0x1E (corresponding to a period of 1/200 Hz).
+> If it is not 0x1E, the driver will reconfigure the prescaler according
+> to the desired period at the time of the next configuration.
 
-> On Wed, Jan 18, 2017 at 12:14:21AM +0100, Paul Cercueil wrote:
-> 
->> All the drivers for the various hardware elements of the jz4740 SoC 
->> have been modified to use the pinctrl framework for their pin 
->> configuration needs. As such, this platform code is now unused and can 
->> be deleted. Signed-off-by: Paul Cercueil <paul@crapouillou.net> --- 
->> arch/mips/include/asm/mach-jz4740/gpio.h | 371 ---------------------- 
->> arch/mips/jz4740/Makefile | 2 - arch/mips/jz4740/gpio.c | 519 
->> ------------------------------- 3 files changed, 892 deletions(-) 
->> delete mode 100644 arch/mips/jz4740/gpio.c
-> 
-> Have you considered how this could best be merged? It's probably 
-> easiest
-> to take all of this through the MIPS tree because we have an addition 
-> of
-> the pinctrl that would be a replacement for the GPIO code, while at the
-> same time a bunch of drivers rely on the JZ4740 GPIO code for 
-> successful
-> compilation.
-> 
-> That's slightly complicated by the number of drivers, so needs a lot of
-> coordination, but it's not the worst I've seen.
-> 
-> Maybe one other solution that would make the transition easier would be
-> to stub out the GPIO functions if the pinctrl driver is enabled, and do
-> the removal of the mach-jz4740/gpio.h after all drivers have been 
-> merged
-> through their corresponding subsystem trees. That way all drivers 
-> should
-> remain compilable and functional at runtime, while still having the
-> possibility to merge through the subsystem trees.
-> 
-> That said, the whole series is fairly simple, so merging everything
-> through the MIPS tree sounds like the easiest way to go.
-> 
-> Thierry
+Yes, and my question is what is possible go wrong if you just enforce
+prescaler to be 1/200Hz?
 
-I think it would make sense to merge it through the MIPS tree, yes,
-considering that the patches for the drivers in the other subsystems are
-quite small, and that they just remove code (well, except the pinctrl
-driver itself). Besides, the files modified are not touched very often
-so the chances of breakage are pretty low.
+> > > Until now, we assumed it is always 1/200 Hz and skipped the
+> > > lengthy
+> > > prescale configuration (put chip into sleep mode, set prescaler,
+> > > go
+> > > out
+> > > of sleep mode, udelay for 0.5ms until the oscillator is back up)
+> > > if
+> > > the
+> > > user wants a period of 1/200 Hz.
+> > > 
+> > > With this patch, we check if it is in fact set to the hardware
+> > > default.
+> > > If not, we set pca->period_ns to 0 which leads to changing the
+> > > prescaler
+> > > in the next call to pca9685_pwm_config.
+> > 
+> > And this contradicts, for my opinion, to the logic you referred in
+> > the
+> > first paragraph. If you would like to use preset values, you need to
+> > read and recalculate period correctly.
+> 
+> I don't want to use preset values. I wanted to be sure that we do not
+> skip the prescaler configuration if the prescale register was
+> modified.
+> We should only skip it, if it is already at 0x1E.
 
--Paul
+Same question here.
+
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
