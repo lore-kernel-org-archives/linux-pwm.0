@@ -1,44 +1,72 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v8 5/8] IIO: add bindings for STM32 timer trigger driver
-Date: Thu, 19 Jan 2017 13:31:19 -0600
-Message-ID: <20170119193119.kejcwpqrqo735mxh@rob-hp-laptop>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v8 0/8] Add PWM and IIO timer drivers for STM32
+Date: Thu, 19 Jan 2017 13:35:25 -0600
+Message-ID: <20170119193525.jufn5vh4huap7umm@rob-hp-laptop>
 References: <1484749251-14445-1-git-send-email-benjamin.gaignard@st.com>
- <1484749251-14445-6-git-send-email-benjamin.gaignard@st.com>
+ <20170119084355.GF3718@dell>
+ <CA+M3ks7UchJ3QdQrHO6rSsc4YNhNEmLejoeRBVNhn=2biSn=cQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1484749251-14445-6-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
-Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+In-Reply-To: <CA+M3ks7UchJ3QdQrHO6rSsc4YNhNEmLejoeRBVNhn=2biSn=cQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Cc: Lee Jones <lee.jones@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Alexandre Torgue <alexandre.torgue@st.com>, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Fabrice Gasnier <fabrice.gasnier@st.com>, Gerald Baeza <gerald.baeza@st.com>, Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, Benjamin Gaignard <benjamin.gaignard@st.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Jan 18, 2017 at 03:20:48PM +0100, Benjamin Gaignard wrote:
-> Define bindings for STM32 timer trigger
-> 
-> version 8:
-> - reword "reg" parameter description
-> 
-> version 4:
-> - remove triggers enumeration from DT
-> - add reg parameter
-> 
-> version 3:
-> - change file name
-> - add cross reference with mfd bindings
-> 
-> version 2:
-> - only keep one compatible
-> - add DT parameters to set lists of the triggers:
->   one list describe the triggers created by the device
->   another one give the triggers accepted by the device
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
-> Acked-by: Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> ---
->  .../bindings/iio/timer/stm32-timer-trigger.txt     | 23 ++++++++++++++++++++++
->  1 file changed, 23 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+On Thu, Jan 19, 2017 at 05:02:11PM +0100, Benjamin Gaignard wrote:
+> 2017-01-19 9:43 GMT+01:00 Lee Jones <lee.jones@linaro.org>:
+> > On Wed, 18 Jan 2017, Benjamin Gaignard wrote:
+> >
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> >> Benjamin Gaignard (8):
+> >>   MFD: add bindings for STM32 Timers driver
+> >>   MFD: add STM32 Timers driver
+> >>   PWM: add pwm-stm32 DT bindings
+> >>   PWM: add PWM driver for STM32 plaftorm
+> >>   IIO: add bindings for STM32 timer trigger driver
+> >>   IIO: add STM32 timer trigger driver
+> >>   ARM: dts: stm32: add Timers driver for stm32f429 MCU
+> >>   ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-disco
+> >>
+> >>  .../ABI/testing/sysfs-bus-iio-timer-stm32          |  29 ++
+> >>  .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 ++
+> >>  .../devicetree/bindings/mfd/stm32-timers.txt       |  46 +++
+> >>  .../devicetree/bindings/pwm/pwm-stm32.txt          |  35 ++
+> >>  arch/arm/boot/dts/stm32f429.dtsi                   | 275 ++++++++++++++
+> >>  arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
+> >>  drivers/iio/trigger/Kconfig                        |   9 +
+> >>  drivers/iio/trigger/Makefile                       |   1 +
+> >>  drivers/iio/trigger/stm32-timer-trigger.c          | 342 ++++++++++++++++++
+> >>  drivers/mfd/Kconfig                                |  11 +
+> >>  drivers/mfd/Makefile                               |   2 +
+> >>  drivers/mfd/stm32-timers.c                         |  80 +++++
+> >>  drivers/pwm/Kconfig                                |   9 +
+> >>  drivers/pwm/Makefile                               |   1 +
+> >>  drivers/pwm/pwm-stm32.c                            | 398 +++++++++++++++++++++
+> >>  include/linux/iio/timer/stm32-timer-trigger.h      |  62 ++++
+> >>  include/linux/mfd/stm32-timers.h                   |  71 ++++
+> >>  17 files changed, 1422 insertions(+)
+> >>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
+> >>  create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+> >>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
+> >>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+> >>  create mode 100644 drivers/iio/trigger/stm32-timer-trigger.c
+> >>  create mode 100644 drivers/mfd/stm32-timers.c
+> >>  create mode 100644 drivers/pwm/pwm-stm32.c
+> >>  create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
+> >>  create mode 100644 include/linux/mfd/stm32-timers.h
+> >
+> > Let me know when you have all your Acks.
+> >
+> > I would be happy to take this through the MFD tree.
+> 
+> Some Acks are still missing on DT patches, I hope that Rob could find
+> to review them
+> after that it will ok :-)
+
+I've acked all the bindings. stm32 maintainer needs to ack the dts 
+files.
+
+Rob
