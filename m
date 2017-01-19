@@ -1,56 +1,134 @@
-From: Clemens Gruber <clemens.gruber@pqgruber.com>
-Subject: Re: [PATCH 2/2] pwm: pca9685: fix prescaler initialization
-Date: Thu, 19 Jan 2017 15:49:25 +0100
-Message-ID: <20170119144925.GA1660@archie.localdomain>
-References: <20161213155251.28684-1-clemens.gruber@pqgruber.com>
- <20161213155251.28684-2-clemens.gruber@pqgruber.com>
- <20170118105735.GM18989@ulmo.ba.sec>
- <1484737764.2133.193.camel@linux.intel.com>
- <20170118135325.GA2498@archie.localdomain>
- <1484748118.2133.206.camel@linux.intel.com>
- <20170118142533.GA17640@archie.localdomain>
- <1484829279.2133.236.camel@linux.intel.com>
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Subject: Re: [PATCH v8 0/8] Add PWM and IIO timer drivers for STM32
+Date: Thu, 19 Jan 2017 17:02:11 +0100
+Message-ID: <CA+M3ks7UchJ3QdQrHO6rSsc4YNhNEmLejoeRBVNhn=2biSn=cQ@mail.gmail.com>
+References: <1484749251-14445-1-git-send-email-benjamin.gaignard@st.com>
+ <20170119084355.GF3718@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.pqgruber.com ([178.189.19.235]:15133 "EHLO
-        mail.pqgruber.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752656AbdASOvh (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Jan 2017 09:51:37 -0500
-Content-Disposition: inline
-In-Reply-To: <1484829279.2133.236.camel@linux.intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170119084355.GF3718@dell>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Lee Jones <lee.jones@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, Alexandre Torgue <alexandre.torgue@st.com>, Linux PWM List <linux-pwm@vger.kernel.org>, linux-iio@vger.kernel.org, Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, robh+dt@kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Hartmut Knaack <knaack.h@gmx.de>, Gerald Baeza <gerald.baeza@st.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, Jonathan Cameron <jic23@kernel.org>, Benjamin Gaignard <benjamin.gaignard@st.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Florian Vaussard <florian.vaussard@heig-vd.ch>, Mika Westerberg <mika.westerberg@linux.intel.com>
 
-On Thu, Jan 19, 2017 at 02:34:39PM +0200, Andy Shevchenko wrote:
-> On Wed, 2017-01-18 at 15:25 +0100, Clemens Gruber wrote:
-> > Yes, that's what this patch tries to solve by verifying that the
-> > external setting (the prescale register) is set to its hardware
-> > default
-> > value of 0x1E (corresponding to a period of 1/200 Hz).
-> > If it is not 0x1E, the driver will reconfigure the prescaler according
-> > to the desired period at the time of the next configuration.
-> 
-> Yes, and my question is what is possible go wrong if you just enforce
-> prescaler to be 1/200Hz?
-
-If we enforce a default of 1 / 200 Hz, we have to go through the SLEEP
-mode and udelay for 0.5ms once for our default and then again for the
-user, if he does not want a period of 1 / 200 Hz.
--> Number of prescaler changes: 1 or 2
-
-I think it is better as it is now + my patch applied: We verify if the
-prescaler is already set to 1 / 200 Hz.
-Then, as soon as the user configures his PWM channels, we either do not
-have to change the prescaler at all (if he wants 1 / 200 Hz) or do it
-once at the time of configuration.
--> Number of prescaler changes: 0 or 1
-
-What's the advantage of enforcing the prescaler to 1 / 200 Hz in the
-probe function when we do not know yet if 1 / 200 Hz is the period the
-user is going to configure?
-
-Thanks,
-Clemens
+MjAxNy0wMS0xOSA5OjQzIEdNVCswMTowMCBMZWUgSm9uZXMgPGxlZS5qb25lc0BsaW5hcm8ub3Jn
+PjoKPiBPbiBXZWQsIDE4IEphbiAyMDE3LCBCZW5qYW1pbiBHYWlnbmFyZCB3cm90ZToKPgo+PiB2
+ZXJzaW9uIDg6Cj4+IC0gcmViYXNlIG9uIHY0LjEwLXJjNAo+PiAtIGZpeCBjb21tZW50cyBkb25l
+IGJ5IFRoaWVycnkgb24gUFdNCj4+IC0gcmV3b3JkICJyZWciIHBhcmFtZXRlciBkZXNjcmlwdGlv
+bgo+PiAtIGNoYW5nZSBrZXJuZWwga2VybmVsIGluIElJTyBBQkkgZG9jdW1lbnRhdGlvbgo+Pgo+
+PiB2ZXJzaW9uIDc6Cj4+IC0gcmViYXNlIG9uIHY0LjEwLXJjMgo+PiAtIHJlbW92ZSBpaW9fZGV2
+aWNlIGNvZGUgZnJvbSBkcml2ZXIgYW5kIGtlZXAgb25seSB0aGUgdHJpZ2dlciBwYXJ0Cj4+Cj4+
+IHZlcnNpb24gNjoKPj4gLSByZW5hbWUgc3RtMzItZ3B0aW1lciBpbiBzdG0zMi10aW1lcnMuCj4+
+IC0gY2hhbmdlICJzdCxzdG0zMi1ncHRpbWVyIiBjb21wYXRpYmxlIHRvICJzdCxzdG0zMi10aW1l
+cnMiLgo+PiAtIG1vZGlmeSAic3QsYnJlYWtpbnB1dCIgcGFyYW1ldGVyIGluIHB3bSBwYXJ0Lgo+
+PiAtIHNwbGl0IERUIHBhdGNoIGluIDIKPj4KPj4gdmVyc2lvbiA1Ogo+PiAtIGZpeCBjb21tZW50
+cyBkb25lIG9uIHZlcnNpb24gNAo+PiAtIHJlYmFzZWQgb24ga2VybmVsIDQuOS1yYzgKPj4gLSBj
+aGFuZ2Ugbm9kZXMgbmFtZXMgYW5kIHJlLW9yZGVyIHRoZW4gYnkgYWRkcmVzc2VzCj4+Cj4+IHZl
+cnNpb24gNDoKPj4gLSBmaXggY29tbWVudHMgZG9uZSBvbiB2ZXJzaW9uIDMKPj4gLSBkb24ndCB1
+c2UgaW50ZXJydXB0cyBhbnltb3JlIGluIElJTyB0aW1lcgo+PiAtIGRldGVjdCBoYXJkd2FyZSBj
+YXBhYmlsaXRpZXMgYXQgcHJvYmUgdGltZSB0byBzaW1wbGlmeSBiaW5kaW5nCj4+Cj4+IHZlcnNp
+b24gMzoKPj4gLSBubyBjaGFuZ2Ugb24gbWZkIGFuZCBwd20gZGl2ZXJzIHBhdGNoZXMKPj4gLSBh
+ZGQgY3Jvc3MgcmVmZXJlbmNlIGJldHdlZW4gYmluZGluZ3MKPj4gLSBjaGFuZ2UgY29tcGF0aWJs
+ZSB0byAic3Qsc3RtMzItdGltZXItdHJpZ2dlciIKPj4gLSBmaXggYXR0cmlidXRlcyBhY2Nlc3Mg
+cmlnaHRzCj4+IC0gdXNlIHN0cmluZyBpbnN0ZWFkIG9mIGludCBmb3IgbWFzdGVyX21vZGUgYW5k
+IHNsYXZlX21vZGUKPj4gLSBkb2N1bWVudCBkZXZpY2UgYXR0cmlidXRlcyBpbiBzeXNmcy1idXMt
+aWlvLXRpbWVyLXN0bTMyCj4+IC0gdXBkYXRlIERUIHdpdGggdGhlIG5ldyBjb21wYXRpYmxlCj4+
+Cj4+IHZlcnNpb24gMjoKPj4gLSBrZWVwIG9ubHkgb25lIGNvbXBhdGlibGUgcGVyIGRyaXZlcgo+
+PiAtIHVzZSBEVCBwYXJhbWV0ZXJzIHRvIGRlc2NyaWJlIGhhcmR3YXJlIGJsb2NrIGNvbmZpZ3Vy
+YXRpb246Cj4+ICAgLSBwd20gY2hhbm5lbHMsIGNvbXBsZW1lbnRhcnkgb3V0cHV0LCBjb3VudGVy
+IHNpemUsIGJyZWFrIGlucHV0Cj4+ICAgLSB0cmlnZ2VycyBhY2NlcHRlZCBhbmQgY3JlYXRlIGJ5
+IElJTyB0aW1lcnMKPj4gLSBjaGFuZ2UgRFQgdG8gbGltaXRlIHVzZSBvZiByZWZlcmVuY2UgdG8g
+dGhlIG5vZGUKPj4gLSBpbnRlcnJ1cHQgaXMgbm93IGluIElJTyB0aW1lciBkcml2ZXIKPj4gLSBy
+ZW5hbWUgc3RtMzItbWZkLXRpbWVyIHRvIHN0bTMyLXRpbWVycyAoZm9yIGdlbmVyYWwgcHVycG9z
+ZSB0aW1lcikKPj4KPj4gVGhlIGZvbGxvd2luZyBwYXRjaGVzIGVuYWJsZSBQV00gYW5kIElJTyBU
+aW1lciBmZWF0dXJlcyBmb3IgU1RNMzIgcGxhdGZvcm1zLgo+Pgo+PiBUaG9zZSB0d28gZmVhdHVy
+ZXMgYXJlIG1peGVkIGludG8gdGhlIHJlZ2lzdGVycyBvZiB0aGUgc2FtZSBoYXJkd2FyZSBibG9j
+awo+PiAobmFtZWQgZ2VuZXJhbCBwdXJwb3NlIHRpbWVyKSB3aGljaCBsZWFkIHRvIGludHJvZHVj
+ZSBhIG11bHRpZnVuY3Rpb25zIGRyaXZlcgo+PiBvbiB0aGUgdG9wIG9mIHRoZW0gdG8gYmUgYWJs
+ZSB0byBzaGFyZSB0aGUgcmVnaXN0ZXJzLgo+Pgo+PiBJbiBTVE0zMmY0IDE0IGluc3RhbmNlcyBv
+ZiB0aW1lciBoYXJkd2FyZSBibG9jayBleGlzdCwgZXZlbiBpZiB0aGV5IGFsbCBoYXZlCj4+IHRo
+ZSBzYW1lIHJlZ2lzdGVyIG1hcHBpbmcgdGhleSBjb3VsZCBoYXZlIGEgZGlmZmVyZW50IG51bWJl
+ciBvZiBwd20gY2hhbm5lbHMKPj4gYW5kL29yIGRpZmZlcmVudCB0cmlnZ2VycyBjYXBhYmlsaXRp
+ZXMuIFdlIHVzZSB2YXJpb3VzIHBhcmFtZXRlcnMgaW4gRFQgdG8KPj4gZGVzY3JpYmUgdGhlIGRp
+ZmZlcmVuY2VzIGJldHdlZW4gaGFyZHdhcmUgYmxvY2tzCj4+Cj4+IFRoZSBNRkQgKHN0bTMyLXRp
+bWVycy5jKSB0YWtlcyBjYXJlIG9mIGNsb2NrIGFuZCByZWdpc3RlciBtYXBwaW5nCj4+IGJ5IHVz
+aW5nIHJlZ21hcC4gc3RtMzJfdGltZXJzIHN0cnVjdHVyZSBpcyBwcm92aWRlZCB0byBpdHMgc3Vi
+LW5vZGUgdG8KPj4gc2hhcmUgdGhvc2UgaW5mb3JtYXRpb24uCj4+Cj4+IFBXTSBkcml2ZXIgaXMg
+aW1wbGVtZW50ZWQgaW50byBwd20tc3RtMzIuYy4gRGVwZW5kaW5nIG9mIHRoZSBpbnN0YW5jZSB3
+ZSBtYXkKPj4gaGF2ZSB1cCB0byA0IGNoYW5uZWxzLCBzb21ldGltZSB3aXRoIGNvbXBsZW1lbnRh
+cnkgb3V0cHV0cyBvciAzMiBiaXRzIGNvdW50ZXIKPj4gaW5zdGVhZCBvZiAxNiBiaXRzLiBTb21l
+IGhhcmR3YXJlIGJsb2NrcyBtYXkgYWxzbyBoYXZlIGEgYnJlYWsgaW5wdXQgZnVuY3Rpb24KPj4g
+d2hpY2ggYWxsb3dzIHRvIHN0b3AgcHdtIGRlcGVuZGluZyBvZiBhIGxldmVsLCBkZWZpbmVkIGlu
+IGRldmljZXRyZWUsIG9uIGFuCj4+IGV4dGVybmFsIHBpbi4KPj4KPj4gSUlPIHRpbWVyIGRyaXZl
+ciAoc3RtMzItdGltZXItdHJpZ2dlci5jIGFuZCBzdG0zMi10aW1lci10cmlnZ2VyLmgpIGRlZmlu
+ZSBhIGxpc3QKPj4gb2YgaGFyZHdhcmUgdHJpZ2dlcnMgdXNhYmxlIGJ5IGhhcmR3YXJlIGJsb2Nr
+cyBsaWtlIEFEQywgREFDIG9yIG90aGVyIHRpbWVycy4KPj4KPj4gVGhlIG1hdHJpeCBvZiBwb3Nz
+aWJsZSBjb25uZWN0aW9ucyBiZXR3ZWVuIGJsb2NrcyBpcyBxdWl0ZSBjb21wbGV4IHNvIHdlIHVz
+ZQo+PiB0cmlnZ2VyIG5hbWVzIGFuZCBpc19zdG0zMl9paW9fdGltZXJfdHJpZ2dlcigpIGZ1bmN0
+aW9uIHRvIGJlIHN1cmUgdGhhdAo+PiB0cmlnZ2VycyBhcmUgdmFsaWQgYW5kIGNvbmZpZ3VyZSB0
+aGUgSVBzLgo+Pgo+PiBBdCBydW4gdGltZSBJSU8gdGltZXIgaGFyZHdhcmUgYmxvY2tzIGNhbiBj
+b25maWd1cmUgKHRocm91Z2ggIm1hc3Rlcl9tb2RlIgo+PiBJSU8gZGV2aWNlIGF0dHJpYnV0ZSkg
+d2hpY2ggaW50ZXJuYWwgc2lnbmFsIChjb3VudGVyIGVuYWJsZSwgcmVzZXQsCj4+IGNvbXBhcmlz
+b24gYmxvY2ssIGV0Yy4uLikgaXMgdXNlZCB0byBnZW5lcmF0ZSB0aGUgdHJpZ2dlci4KPj4KPj4g
+QmVuamFtaW4gR2FpZ25hcmQgKDgpOgo+PiAgIE1GRDogYWRkIGJpbmRpbmdzIGZvciBTVE0zMiBU
+aW1lcnMgZHJpdmVyCj4+ICAgTUZEOiBhZGQgU1RNMzIgVGltZXJzIGRyaXZlcgo+PiAgIFBXTTog
+YWRkIHB3bS1zdG0zMiBEVCBiaW5kaW5ncwo+PiAgIFBXTTogYWRkIFBXTSBkcml2ZXIgZm9yIFNU
+TTMyIHBsYWZ0b3JtCj4+ICAgSUlPOiBhZGQgYmluZGluZ3MgZm9yIFNUTTMyIHRpbWVyIHRyaWdn
+ZXIgZHJpdmVyCj4+ICAgSUlPOiBhZGQgU1RNMzIgdGltZXIgdHJpZ2dlciBkcml2ZXIKPj4gICBB
+Uk06IGR0czogc3RtMzI6IGFkZCBUaW1lcnMgZHJpdmVyIGZvciBzdG0zMmY0MjkgTUNVCj4+ICAg
+QVJNOiBkdHM6IHN0bTMyOiBFbmFibGUgcHdtMSBhbmQgcHdtMyBmb3Igc3RtMzJmNDY5LWRpc2Nv
+Cj4+Cj4+ICAuLi4vQUJJL3Rlc3Rpbmcvc3lzZnMtYnVzLWlpby10aW1lci1zdG0zMiAgICAgICAg
+ICB8ICAyOSArKwo+PiAgLi4uL2JpbmRpbmdzL2lpby90aW1lci9zdG0zMi10aW1lci10cmlnZ2Vy
+LnR4dCAgICAgfCAgMjMgKysKPj4gIC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdzL21mZC9zdG0zMi10
+aW1lcnMudHh0ICAgICAgIHwgIDQ2ICsrKwo+PiAgLi4uL2RldmljZXRyZWUvYmluZGluZ3MvcHdt
+L3B3bS1zdG0zMi50eHQgICAgICAgICAgfCAgMzUgKysKPj4gIGFyY2gvYXJtL2Jvb3QvZHRzL3N0
+bTMyZjQyOS5kdHNpICAgICAgICAgICAgICAgICAgIHwgMjc1ICsrKysrKysrKysrKysrCj4+ICBh
+cmNoL2FybS9ib290L2R0cy9zdG0zMmY0NjktZGlzY28uZHRzICAgICAgICAgICAgICB8ICAyOCAr
+Kwo+PiAgZHJpdmVycy9paW8vdHJpZ2dlci9LY29uZmlnICAgICAgICAgICAgICAgICAgICAgICAg
+fCAgIDkgKwo+PiAgZHJpdmVycy9paW8vdHJpZ2dlci9NYWtlZmlsZSAgICAgICAgICAgICAgICAg
+ICAgICAgfCAgIDEgKwo+PiAgZHJpdmVycy9paW8vdHJpZ2dlci9zdG0zMi10aW1lci10cmlnZ2Vy
+LmMgICAgICAgICAgfCAzNDIgKysrKysrKysrKysrKysrKysrCj4+ICBkcml2ZXJzL21mZC9LY29u
+ZmlnICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAxMSArCj4+ICBkcml2ZXJzL21m
+ZC9NYWtlZmlsZSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMiArCj4+ICBkcml2
+ZXJzL21mZC9zdG0zMi10aW1lcnMuYyAgICAgICAgICAgICAgICAgICAgICAgICB8ICA4MCArKysr
+Kwo+PiAgZHJpdmVycy9wd20vS2NvbmZpZyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+fCAgIDkgKwo+PiAgZHJpdmVycy9wd20vTWFrZWZpbGUgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgfCAgIDEgKwo+PiAgZHJpdmVycy9wd20vcHdtLXN0bTMyLmMgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgfCAzOTggKysrKysrKysrKysrKysrKysrKysrCj4+ICBpbmNsdWRlL2xpbnV4
+L2lpby90aW1lci9zdG0zMi10aW1lci10cmlnZ2VyLmggICAgICB8ICA2MiArKysrCj4+ICBpbmNs
+dWRlL2xpbnV4L21mZC9zdG0zMi10aW1lcnMuaCAgICAgICAgICAgICAgICAgICB8ICA3MSArKysr
+Cj4+ICAxNyBmaWxlcyBjaGFuZ2VkLCAxNDIyIGluc2VydGlvbnMoKykKPj4gIGNyZWF0ZSBtb2Rl
+IDEwMDY0NCBEb2N1bWVudGF0aW9uL0FCSS90ZXN0aW5nL3N5c2ZzLWJ1cy1paW8tdGltZXItc3Rt
+MzIKPj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGlu
+Z3MvaWlvL3RpbWVyL3N0bTMyLXRpbWVyLXRyaWdnZXIudHh0Cj4+ICBjcmVhdGUgbW9kZSAxMDA2
+NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL21mZC9zdG0zMi10aW1lcnMudHh0
+Cj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdz
+L3B3bS9wd20tc3RtMzIudHh0Cj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9paW8vdHJp
+Z2dlci9zdG0zMi10aW1lci10cmlnZ2VyLmMKPj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJz
+L21mZC9zdG0zMi10aW1lcnMuYwo+PiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvcHdtL3B3
+bS1zdG0zMi5jCj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQgaW5jbHVkZS9saW51eC9paW8vdGltZXIv
+c3RtMzItdGltZXItdHJpZ2dlci5oCj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQgaW5jbHVkZS9saW51
+eC9tZmQvc3RtMzItdGltZXJzLmgKPgo+IExldCBtZSBrbm93IHdoZW4geW91IGhhdmUgYWxsIHlv
+dXIgQWNrcy4KPgo+IEkgd291bGQgYmUgaGFwcHkgdG8gdGFrZSB0aGlzIHRocm91Z2ggdGhlIE1G
+RCB0cmVlLgoKU29tZSBBY2tzIGFyZSBzdGlsbCBtaXNzaW5nIG9uIERUIHBhdGNoZXMsIEkgaG9w
+ZSB0aGF0IFJvYiBjb3VsZCBmaW5kCnRvIHJldmlldyB0aGVtCmFmdGVyIHRoYXQgaXQgd2lsbCBv
+ayA6LSkKCj4KPiAtLQo+IExlZSBKb25lcwo+IExpbmFybyBTVE1pY3JvZWxlY3Ryb25pY3MgTGFu
+ZGluZyBUZWFtIExlYWQKPiBMaW5hcm8ub3JnIOKUgiBPcGVuIHNvdXJjZSBzb2Z0d2FyZSBmb3Ig
+QVJNIFNvQ3MKPiBGb2xsb3cgTGluYXJvOiBGYWNlYm9vayB8IFR3aXR0ZXIgfCBCbG9nCgoKCi0t
+IApCZW5qYW1pbiBHYWlnbmFyZAoKR3JhcGhpYyBTdHVkeSBHcm91cAoKTGluYXJvLm9yZyDilIIg
+T3BlbiBzb3VyY2Ugc29mdHdhcmUgZm9yIEFSTSBTb0NzCgpGb2xsb3cgTGluYXJvOiBGYWNlYm9v
+ayB8IFR3aXR0ZXIgfCBCbG9nCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwpsaW51eC1hcm0ta2VybmVsIG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVs
+QGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
