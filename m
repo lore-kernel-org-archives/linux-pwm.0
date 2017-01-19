@@ -1,65 +1,57 @@
 From: Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH] acpi: lpss: call pwm_add_table() for bsw pwm device
-Date: Thu, 19 Jan 2017 18:53:38 +0100
-Message-ID: <20170119175338.3543-1-hdegoede@redhat.com>
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>
-Cc: linux-acpi@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH v2] pwm: lpss: Make builtin so that i915 can
+	find the pwm_backlight
+Date: Thu, 19 Jan 2017 18:58:30 +0100
+Message-ID: <20170119175830.3754-1-hdegoede@redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, Hans de Goede <hdegoede@redhat.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On x86 we do not have devicetree to link the pwm controller and
-the display controller together. So someone needs to call
-pwm_add_table() to create the link, so that the i915 driver's
-pwm_get(dev, "pwm_backlight") call returns the lpss' pwm0.
-
-The pwm subsystem does not want to have pwm_add_table() calls
-directly in pwm drivers (this leads to probe ordering issues),
-so lets do it here since the acpi-lpss code is always builtin.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/acpi/acpi_lpss.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
-index 8ea836c..1b4bcf6 100644
---- a/drivers/acpi/acpi_lpss.c
-+++ b/drivers/acpi/acpi_lpss.c
-@@ -20,6 +20,7 @@
- #include <linux/platform_data/clk-lpss.h>
- #include <linux/pm_domain.h>
- #include <linux/pm_runtime.h>
-+#include <linux/pwm.h>
- #include <linux/delay.h>
- 
- #include "internal.h"
-@@ -154,6 +155,17 @@ static void byt_i2c_setup(struct lpss_private_data *pdata)
- 	writel(0, pdata->mmio_base + LPSS_I2C_ENABLE);
- }
- 
-+/* BSW PWM used for backlight control by the i915 driver */
-+static struct pwm_lookup bsw_pwm_lookup[] = {
-+	PWM_LOOKUP("80862288:00", 0, "0000:00:02.0", "pwm_backlight", 0,
-+		   PWM_POLARITY_NORMAL),
-+};
-+
-+static void bsw_pwm_setup(struct lpss_private_data *pdata)
-+{
-+	pwm_add_table(bsw_pwm_lookup, ARRAY_SIZE(bsw_pwm_lookup));
-+}
-+
- static const struct lpss_device_desc lpt_dev_desc = {
- 	.flags = LPSS_CLK | LPSS_CLK_GATE | LPSS_CLK_DIVIDER | LPSS_LTR,
- 	.prv_offset = 0x800,
-@@ -191,6 +203,7 @@ static const struct lpss_device_desc byt_pwm_dev_desc = {
- 
- static const struct lpss_device_desc bsw_pwm_dev_desc = {
- 	.flags = LPSS_SAVE_CTX | LPSS_NO_D3_DELAY,
-+	.setup = bsw_pwm_setup,
- };
- 
- static const struct lpss_device_desc byt_uart_dev_desc = {
--- 
-2.9.3
-
+VGhlIHByaW1hcnkgY29uc3VtZXIgb2YgdGhlIGxwc3MgcHdtIGlzIHRoZSBpOTE1IGttcyBkcml2
+ZXIsCnRoZSBpOTE1IGRyaXZlciBkb2VzIG5vdCBzdXBwb3J0IGdldF9wd20gcmV0dXJuaW5nIC1F
+UFJPQkVfREVGRVIgYW5kCml0cyBpbml0IGlzIHZlcnkgY29tcGxleCBtYWtpbmcgdGhpcyBpcyBh
+bG1vc3QgaW1wb3NzaWJsZSB0byBmaXguCgpUaGlzIGNvbW1pdCBjaGFuZ2VzIHRoZSBQV01fTFBT
+UyBLY29uZmlnIGZyb20gYSB0cmlzdGF0ZSB0byBhIGJvb2wsIHNvCnRoYXQgd2hlbiB0aGUgaTkx
+NSBkcml2ZXIgbG9hZHMgdGhlIGxwc3MgcHdtIHdpbGwgYmUgYXZhaWxhYmxlIGF2b2lkaW5nCnRo
+ZSAtRVBST0JFX0RFRkVSIGlzc3VlLiBOb3RlIHRoYXQgdGhpcyBpcyBpZGVudGljYWwgdG8gaG93
+IHRoZSBzYW1lCnByb2JsZW0gd2FzIHNvbHZlZCBmb3IgdGhlIHB3bS1jcmMgZHJpdmVyLCB3aGlj
+aCBpcyB1c2VkIGJ5IHRoZSBpOTE1CmRyaXZlciBvbiBvdGhlciBwbGF0Zm9ybXMuCgpTaWduZWQt
+b2ZmLWJ5OiBIYW5zIGRlIEdvZWRlIDxoZGVnb2VkZUByZWRoYXQuY29tPgpBY2tlZC1ieTogSmFu
+aSBOaWt1bGEgPGphbmkubmlrdWxhQGludGVsLmNvbT4KLS0tCkNoYW5nZXMgaW4gdjI6Ci1Ecm9w
+IHRoZSBwd21fYWRkX3RhYmxlIGNhbGwgKHRoaXMgaGFzIGJlZW4gbW92ZWQgdG8gdGhlIGFjcGlf
+bHBzcyBkcml2ZXIpCi0tLQogZHJpdmVycy9wd20vS2NvbmZpZyB8IDEyICsrKy0tLS0tLS0tLQog
+MSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgOSBkZWxldGlvbnMoLSkKCmRpZmYgLS1n
+aXQgYS9kcml2ZXJzL3B3bS9LY29uZmlnIGIvZHJpdmVycy9wd20vS2NvbmZpZwppbmRleCBmOTJk
+ZDQxLi4xMmE2Y2Y4IDEwMDY0NAotLS0gYS9kcml2ZXJzL3B3bS9LY29uZmlnCisrKyBiL2RyaXZl
+cnMvcHdtL0tjb25maWcKQEAgLTI0OSwyOCArMjQ5LDIyIEBAIGNvbmZpZyBQV01fTFBDMzJYWAog
+CSAgd2lsbCBiZSBjYWxsZWQgcHdtLWxwYzMyeHguCiAKIGNvbmZpZyBQV01fTFBTUwotCXRyaXN0
+YXRlCisJYm9vbAogCiBjb25maWcgUFdNX0xQU1NfUENJCi0JdHJpc3RhdGUgIkludGVsIExQU1Mg
+UFdNIFBDSSBkcml2ZXIiCisJYm9vbCAiSW50ZWwgTFBTUyBQV00gUENJIGRyaXZlciIKIAlkZXBl
+bmRzIG9uIFg4NiAmJiBQQ0kKIAlzZWxlY3QgUFdNX0xQU1MKIAloZWxwCiAJICBUaGUgUENJIGRy
+aXZlciBmb3IgSW50ZWwgTG93IFBvd2VyIFN1YnN5c3RlbSBQV00gY29udHJvbGxlci4KIAotCSAg
+VG8gY29tcGlsZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hvb3NlIE0gaGVyZTogdGhlIG1v
+ZHVsZQotCSAgd2lsbCBiZSBjYWxsZWQgcHdtLWxwc3MtcGNpLgotCiBjb25maWcgUFdNX0xQU1Nf
+UExBVEZPUk0KLQl0cmlzdGF0ZSAiSW50ZWwgTFBTUyBQV00gcGxhdGZvcm0gZHJpdmVyIgorCWJv
+b2wgIkludGVsIExQU1MgUFdNIHBsYXRmb3JtIGRyaXZlciIKIAlkZXBlbmRzIG9uIFg4NiAmJiBB
+Q1BJCiAJc2VsZWN0IFBXTV9MUFNTCiAJaGVscAogCSAgVGhlIHBsYXRmb3JtIGRyaXZlciBmb3Ig
+SW50ZWwgTG93IFBvd2VyIFN1YnN5c3RlbSBQV00gY29udHJvbGxlci4KIAotCSAgVG8gY29tcGls
+ZSB0aGlzIGRyaXZlciBhcyBhIG1vZHVsZSwgY2hvb3NlIE0gaGVyZTogdGhlIG1vZHVsZQotCSAg
+d2lsbCBiZSBjYWxsZWQgcHdtLWxwc3MtcGxhdGZvcm0uCi0KIGNvbmZpZyBQV01fTUVTT04KIAl0
+cmlzdGF0ZSAiQW1sb2dpYyBNZXNvbiBQV00gZHJpdmVyIgogCWRlcGVuZHMgb24gQVJDSF9NRVNP
+TgotLSAKMi45LjMKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCkludGVsLWdmeCBtYWlsaW5nIGxpc3QKSW50ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9y
+ZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdm
+eAo=
