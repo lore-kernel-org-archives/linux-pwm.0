@@ -1,57 +1,53 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 13/13] MIPS: jz4740: Remove custom GPIO code
-Date: Fri, 20 Jan 2017 11:01:35 +0100
-Message-ID: <8944dd20e8ae6ed705dcf69e9f0ed4fd@mail.crapouillou.net>
-References: <20170117231421.16310-1-paul@crapouillou.net>
- <20170117231421.16310-14-paul@crapouillou.net>
- <CACRpkdYMm0iWxmEGyQyEz4JfWukXNyGXO1rqw1dSiABgHdA1tQ@mail.gmail.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 2/2] pwm: pca9685: fix prescaler initialization
+Date: Fri, 20 Jan 2017 11:58:18 +0200
+Message-ID: <1484906298.2133.264.camel@linux.intel.com>
+References: <20161213155251.28684-2-clemens.gruber@pqgruber.com>
+         <20170118105735.GM18989@ulmo.ba.sec>
+         <1484737764.2133.193.camel@linux.intel.com>
+         <20170118135325.GA2498@archie.localdomain>
+         <1484748118.2133.206.camel@linux.intel.com>
+         <20170118142533.GA17640@archie.localdomain>
+         <1484829279.2133.236.camel@linux.intel.com>
+         <20170119144925.GA1660@archie.localdomain>
+         <1484842208.2133.245.camel@linux.intel.com>
+         <20170119165210.GA2139@archie.localdomain>
+         <20170120063907.GA4894@ulmo.ba.sec>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdYMm0iWxmEGyQyEz4JfWukXNyGXO1rqw1dSiABgHdA1tQ@mail.gmail.com>
+In-Reply-To: <20170120063907.GA4894@ulmo.ba.sec>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Ulf Hansson <ulf.hansson@linaro.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Linux MIPS <linux-mips@linux-mips.org>, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, James Hogan <james.hogan@imgtec.com>
+To: Thierry Reding <thierry.reding@gmail.com>, Clemens Gruber <clemens.gruber@pqgruber.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Florian Vaussard <florian.vaussard@heig-vd.ch>, Mika Westerberg <mika.westerberg@linux.intel.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Le 2017-01-19 10:07, Linus Walleij a écrit :
+On Fri, 2017-01-20 at 07:39 +0100, Thierry Reding wrote:
+> On Thu, Jan 19, 2017 at 05:52:10PM +0100, Clemens Gruber wrote:
+> > On Thu, Jan 19, 2017 at 06:10:08PM +0200, Andy Shevchenko wrote:
+> > > Combining with your proposal I would see the best approach is to
+> > > set
+> > > pca->period_ns accordingly to current prescaler value if you want
+> > > to.
 
-> On Wed, Jan 18, 2017 at 12:14 AM, Paul Cercueil <paul@crapouillou.net> 
-> wrote:
+> > I'll send v2 of patch 2/2 with aforementioned changes in the next
+> > days.
 > 
->> All the drivers for the various hardware elements of the jz4740 SoC 
->> have been modified to use the pinctrl framework for their pin 
->> configuration needs. As such, this platform code is now unused and can 
->> be deleted. Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> Like I said above, I think atomic API conversion wouldn't be very
+> difficult for this driver and it has the added advantage of giving you
+> the proper infrastructure to do this rather than having to duplicate
+> it in the driver.
 > 
-> I feel I might have come across as a bit harsh in the previous review 
-> of the
-> patches leading up to this one. In that case I'm sorry.
-> 
-> I can clearly see that the intent of the series is to remove this 
-> hopelessly
-> idiomatic code from the MIPS hurdle, and move these systems over
-> to standard frameworks.
-> 
-> In a way, if I look at the kernel as a whole, it would likely look 
-> better
-> after these patches were merged, than before. Even with the
-> shortcomings I painted out in the previous review comments.
-> 
-> A very complicated piece of messy code is cut from MIPS.
-> 
-> I think this is very valuable work and well worth persuing, so please
-> go ahead and work with the series, your effort is very much 
-> appreciated!
-> 
-> Yours,
-> Linus Walleij
+> That would be my preference, but I'm willing to take v2 of 2/2 as well
+> if it ends up being really nice and compact. =)
 
-Well thank you for your very constructive criticism ;) And for your 
-review.
-I'll submit a v2 very soon - I don't want to miss the 4.11 merge.
+I think we may split to this fix and separate change to move to atomic
+API. Does it sound reasonable?
 
-Regards,
--Paul
+P.S. <offtopic>Can you comment further pwm-lpss changes Mika and I
+did?</offtopic>
+
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
