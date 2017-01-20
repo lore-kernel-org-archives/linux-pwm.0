@@ -1,82 +1,37 @@
-From: Jani Nikula <jani.nikula@linux.intel.com>
-Subject: Re: [PATCH v2] pwm: lpss: Make builtin so that i915 can
-	find the pwm_backlight
-Date: Fri, 20 Jan 2017 10:02:50 +0200
-Message-ID: <8737gei2fp.fsf@intel.com>
-References: <20170119175830.3754-1-hdegoede@redhat.com>
- <20170120070333.GD4894@ulmo.ba.sec>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 00/13] Ingenic JZ4740 / JZ4780 pinctrl driver
+Date: Fri, 20 Jan 2017 09:40:30 +0100
+Message-ID: <CACRpkdaeu9OxaSPeOrkKtKNQGUQh4puCFw8A2h=xhqVdDWgoow@mail.gmail.com>
+References: <20170117231421.16310-1-paul@crapouillou.net> <20170118071530.GA18989@ulmo.ba.sec>
+ <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <20170120070333.GD4894@ulmo.ba.sec>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>, Hans de Goede <hdegoede@redhat.com>
-Cc: linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Ulf Hansson <ulf.hansson@linaro.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux MIPS <linux-mips@linux-mips.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>, linux-p
 List-Id: linux-pwm@vger.kernel.org
 
-T24gRnJpLCAyMCBKYW4gMjAxNywgVGhpZXJyeSBSZWRpbmcgPHRoaWVycnkucmVkaW5nQGdtYWls
-LmNvbT4gd3JvdGU6Cj4gT24gVGh1LCBKYW4gMTksIDIwMTcgYXQgMDY6NTg6MzBQTSArMDEwMCwg
-SGFucyBkZSBHb2VkZSB3cm90ZToKPj4gVGhlIHByaW1hcnkgY29uc3VtZXIgb2YgdGhlIGxwc3Mg
-cHdtIGlzIHRoZSBpOTE1IGttcyBkcml2ZXIsCj4+IHRoZSBpOTE1IGRyaXZlciBkb2VzIG5vdCBz
-dXBwb3J0IGdldF9wd20gcmV0dXJuaW5nIC1FUFJPQkVfREVGRVIgYW5kCj4+IGl0cyBpbml0IGlz
-IHZlcnkgY29tcGxleCBtYWtpbmcgdGhpcyBpcyBhbG1vc3QgaW1wb3NzaWJsZSB0byBmaXguCj4+
-IAo+PiBUaGlzIGNvbW1pdCBjaGFuZ2VzIHRoZSBQV01fTFBTUyBLY29uZmlnIGZyb20gYSB0cmlz
-dGF0ZSB0byBhIGJvb2wsIHNvCj4+IHRoYXQgd2hlbiB0aGUgaTkxNSBkcml2ZXIgbG9hZHMgdGhl
-IGxwc3MgcHdtIHdpbGwgYmUgYXZhaWxhYmxlIGF2b2lkaW5nCj4+IHRoZSAtRVBST0JFX0RFRkVS
-IGlzc3VlLiBOb3RlIHRoYXQgdGhpcyBpcyBpZGVudGljYWwgdG8gaG93IHRoZSBzYW1lCj4+IHBy
-b2JsZW0gd2FzIHNvbHZlZCBmb3IgdGhlIHB3bS1jcmMgZHJpdmVyLCB3aGljaCBpcyB1c2VkIGJ5
-IHRoZSBpOTE1Cj4+IGRyaXZlciBvbiBvdGhlciBwbGF0Zm9ybXMuCj4+IAo+PiBTaWduZWQtb2Zm
-LWJ5OiBIYW5zIGRlIEdvZWRlIDxoZGVnb2VkZUByZWRoYXQuY29tPgo+PiBBY2tlZC1ieTogSmFu
-aSBOaWt1bGEgPGphbmkubmlrdWxhQGludGVsLmNvbT4KPj4gLS0tCj4+IENoYW5nZXMgaW4gdjI6
-Cj4+IC1Ecm9wIHRoZSBwd21fYWRkX3RhYmxlIGNhbGwgKHRoaXMgaGFzIGJlZW4gbW92ZWQgdG8g
-dGhlIGFjcGlfbHBzcyBkcml2ZXIpCj4+IC0tLQo+PiAgZHJpdmVycy9wd20vS2NvbmZpZyB8IDEy
-ICsrKy0tLS0tLS0tLQo+PiAgMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgOSBkZWxl
-dGlvbnMoLSkKPgo+IEZvciB0aGUgcmVjb3JkIEkgdGhpbmsgdGhpcyBpcyBjb21wbGV0ZWx5IHdy
-b25nIGFuZCBpOTE1IHNob3VsZCBiZQo+IHRhdWdodCBob3cgdG8gZGVhbCB3aXRoIC1FUFJPQkVf
-REVGRVIuIFdlJ3ZlIGdvbmUgdGhyb3VnaCBhIGxvdCBvZgo+IHBhaW4gdG8gY2xlYW4gdXAgdGhp
-cyBraW5kIG9mIGluaXQtbGV2ZWwgb3JkZXJpbmcgb24gb3RoZXIgZGV2aWNlcwo+IGFuZCB0aGUg
-cmVzdWx0IGlzLCBpbiBteSBvcGluaW9uLCBhICpsb3QqIGJldHRlciB0aGFuIHdoYXQgd2UgaGFk
-Cj4gYmVmb3JlLiBJdCdkIGJlIHNoYW1lIHRvIHNlZSBpOTE1IGJhY2twZWRhbCBvbiB0aGF0Lgo+
-Cj4gVGhhdCBzYWlkLCBpZiBldmVyeW9uZSBlbHNlIHRoaW5rcyB0aGF0IGl0IHJlYWxseSBjYW4n
-dCBiZSBkb25lIGFuZAo+IHRoaXMgd29ya2Fyb3VuZCBpcyB0aGUgYmVzdCB3YXkgZm9yd2FyZCwg
-SSdsbCBqdXN0IHNodXQgdXAgYWJvdXQgaXQKPiBhbmQgc3RvcCBjYXJpbmcuCgpTdXBlcmZpY2lh
-bGx5LCBpdCBpcywgb2YgY291cnNlLCBlYXN5IHRvIGFncmVlIHdlIHNob3VsZCBoYW5kbGUgZGVm
-ZXJyZWQKcHJvYmluZy4KCmk5MTUgaXMgYSBjb21wbGV4IGRyaXZlciBmb3IgY29tcGxleCBoYXJk
-d2FyZS4gV2UgcmVxdWlyZSBhIHRvbiBvZgppbml0aWFsaXphdGlvbiBiZWZvcmUgd2UgZXZlbiBn
-ZXQgdG8gdGhlIHBvaW50IHdlIHJlYWxpemUgd2UgbWlnaHQgbmVlZAp0aGUgUFdNLiBOYXR1cmFs
-bHksIHdlJ2QgbmVlZCB0byBncmFjZWZ1bGx5IHRlYXIgYWxsIHRoYXQgZG93biBmb3IKLUVQUk9C
-RV9ERUZFUiBoYW5kbGluZy4gQW5kIHdlJ3ZlIGJlZW4gc2xvd2x5IHdvcmtpbmcgdG93YXJkcyB0
-aGlzOwp3ZSd2ZSBldmVuIGFkZGVkIGluamVjdGVkIHByb2JlIGZhaWx1cmVzIGluIENJIHRvIHRl
-c3QgdGhpcy4gQnV0IHdlJ3JlCm5vdCB0aGVyZSB5ZXQuIFRoaXMgcGF0Y2ggc2VlbXMgbGlrZSBh
-IHJhdGhlciBzaW1wbGUgd29ya2Fyb3VuZCBmb3IgdGhlCnRpbWUgYmVpbmcuCgpUaGVyZSBhcmUg
-dHdvIG90aGVyIHJlbGF0ZWQgdGhpbmdzIEkgd29uZGVyIGFib3V0LgoKSSBzZWUgbW9kdWxlIHJl
-bG9hZGluZyBtb3N0bHkgYXMgYSBkZXZlbG9wZXIgZmVhdHVyZS4gSSBkb24ndCB0aGluayBJJ20K
-YWxvbmUgaW4gdGhhdC4gWW91IGp1c3QgZG9uJ3QgcmVjb21tZW5kIGFueW9uZSBkb2luZyBtb2R1
-bGUgcmVsb2FkcyBpbiBhCnByb2R1Y3Rpb24gZW52aXJvbm1lbnQuIEhvd2V2ZXIsIGRlZmVycmVk
-IHByb2JpbmcgaXMgaW4gc29tZSB3YXlzIG1vcmUKZGVtYW5kaW5nIHRoYW4gbW9kdWxlIHJlbG9h
-ZCwgYmVjYXVzZSBpdCBuZWVkcyB0byBncmFjZWZ1bGx5IGhhbmRsZQpwYXJ0aWFsIHByb2Jlcy4g
-WWV0IHRoYXQgaXMgdGhlIHNvbHV0aW9uIG9mIGNob2ljZSBmb3IgaW5pdApvcmRlcmluZy4gTWFr
-ZXMgeW91IHdvbmRlci4KCkFub3RoZXIgdGhpbmcgdGhhdCBjb21lcyB1cCBhIGxvdCB3aXRoIGdy
-YXBoaWNzIGlzIHRoYXQgcGVvcGxlIHJlYWxseSBkbwphcHByZWNpYXRlIGFueSBjcmFwcHkgZGVn
-cmFkZWQgaW1hZ2Ugb3ZlciBhIGJsYWNrIHNjcmVlbi4gSWYgdGhlIFBXTQpuZXZlciBzaG93cyB1
-cCwgYWxsIHRoZSBleHRlcm5hbCBzY3JlZW5zIHdpbGwgYmUgYmxhY2sgaW4gYWRkaXRpb24gdG8K
-dGhlIGVtYmVkZGVkIGRpc3BsYXkuIFdlJ3JlIGFsd2F5cyB0b3JuIGJldHdlZW4gZmFpbGluZyBm
-YXN0CnZzLiBwbHVuZ2luZyBvbiBkZXNwaXRlIGZhaWx1cmVzLgoKLS0tCgpUaGF0IHNhaWQsIEkg
-c3VwcG9zZSB0aGVyZSBjb3VsZCBiZSBhbiBhbHRlcm5hdGl2ZSB0byBoYW5kbGluZyBwd21fZ2V0
-KCkKZmFpbHVyZXMgYXQgcHJvYmUuIFdlIGNvdWxkIGp1c3QgZ28gb24gd2l0aCBvdXIgaW5pdCwg
-YnV0IHNjaGVkdWxlIGEKcmV0cnkgbGF0ZXIuIFBlcmhhcHMgYSBiaXQgaGFja3ksIGJ1dCBpdCB3
-b3VsZCBhZGRyZXNzIGJvdGggb2YgdGhlCmNvbmNlcm5zIGFib3ZlLiBBZ2FpbiwgdGhpcyBwYXRj
-aCBzZWVtcyBhIHNpbXBsZSB3b3JrYXJvdW5kIGluIHRoZSBtZWFuCnRpbWUuCgpCUiwKSmFuaS4K
-Ci0tIApKYW5pIE5pa3VsYSwgSW50ZWwgT3BlbiBTb3VyY2UgVGVjaG5vbG9neSBDZW50ZXIKX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4IG1h
-aWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMu
-ZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
+On Thu, Jan 19, 2017 at 12:19 PM, Paul Cercueil <paul@crapouillou.net> wrote:
+
+> The problem with pinctrl and PWM, is that the pinctrl API works by "states".
+> A default state, sleep state, and basically any custom state that the
+> devicetree
+> provides. This works well until you need to control individually each pin;
+> with
+> 8 pins, you would need 2^8 states, each one corresponding to a given
+> configuration.
+
+I do not really understand, do you really use all 2^8 states in a given
+system?
+
+The pin control states are to be used for practical situations, not
+for all theoretical situations.
+
+You should define in your device tree the states that your
+particular system will use. Not all possible states on all possible
+systems.
+
+Yours,
+Linus Walleij
