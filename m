@@ -1,51 +1,49 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 00/13] Ingenic JZ4740 / JZ4780 pinctrl driver
-Date: Fri, 20 Jan 2017 11:17:28 +0100
-Message-ID: <775b4a87768de7263ce6ff9a38659334@mail.crapouillou.net>
-References: <20170117231421.16310-1-paul@crapouillou.net>
- <20170118071530.GA18989@ulmo.ba.sec>
- <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
- <CACRpkdaeu9OxaSPeOrkKtKNQGUQh4puCFw8A2h=xhqVdDWgoow@mail.gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH v2] pwm: lpss: Make builtin so that i915 can
+ find the pwm_backlight
+Date: Fri, 20 Jan 2017 11:18:29 +0100
+Message-ID: <94d3254b-c658-526d-dd5e-173aad9779c6@redhat.com>
+References: <20170119175830.3754-1-hdegoede@redhat.com>
+ <20170120070333.GD4894@ulmo.ba.sec> <8737gei2fp.fsf@intel.com>
+ <20170120085617.GG4894@ulmo.ba.sec>
+ <280ead58-d2c9-f36e-cbfb-90cd7ad5b6f3@redhat.com>
+ <1484906109.2133.262.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdaeu9OxaSPeOrkKtKNQGUQh4puCFw8A2h=xhqVdDWgoow@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Ulf Hansson <ulf.hansson@linaro.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Linux MIPS <linux-mips@linux-mips.org>, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, James Hogan <james.hogan@imgtec.com>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <1484906109.2133.262.camel@linux.intel.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, Jani Nikula <jani.nikula@linux.intel.com>
+Cc: linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, Mika Westerberg <mika.westerberg@linux.intel.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Le 2017-01-20 09:40, Linus Walleij a écrit :
-
-> On Thu, Jan 19, 2017 at 12:19 PM, Paul Cercueil <paul@crapouillou.net> 
-> wrote:
-> 
->> The problem with pinctrl and PWM, is that the pinctrl API works by 
->> "states". A default state, sleep state, and basically any custom state 
->> that the devicetree provides. This works well until you need to 
->> control individually each pin; with 8 pins, you would need 2^8 states, 
->> each one corresponding to a given configuration.
-> 
-> I do not really understand, do you really use all 2^8 states in a given
-> system?
-> 
-> The pin control states are to be used for practical situations, not
-> for all theoretical situations.
-> 
-> You should define in your device tree the states that your
-> particular system will use. Not all possible states on all possible
-> systems.
-> 
-
-Well, that was if I wanted to dynamically set/unset the pin mux and
-configuration when requesting/freeing a PWM. Then I'd need 2^x states
-for X PWM pins.
-
-Anyway, a static configuration works for me too. If at some point I
-want dynamic configuration of the pins then I'll make the PWM driver
-handle only one PWM pin and create one driver instance for each pin.
-
-Regards,
--Paul
+SGksCgpPbiAyMC0wMS0xNyAxMDo1NSwgQW5keSBTaGV2Y2hlbmtvIHdyb3RlOgo+IE9uIEZyaSwg
+MjAxNy0wMS0yMCBhdCAxMDo0OCArMDEwMCwgSGFucyBkZSBHb2VkZSB3cm90ZToKPj4gSSdtIGZp
+bmUgd2l0aCBkb2luZyBhIHYzIHdpdGggYSBjb21tZW50LCBob3cgYWJvdXQgcHV0dGluZyB0aGF0
+Cj4+IGNvbW1lbnQKPj4gcmlnaHQgYXQgYWxsIHRoZSBtb2R1bGUqIHN0dWZmIGFuZCBleHBsYWlu
+IHRoZXJlIHRoYXQgdGhhdCBpcyB0bwo+PiBzdGF5IGFzIHRoZSBidWlsdGluIG9ubHkgc3RhdHVz
+IGlzIG1lYW50IHRvIGJlIHRlbXBvcmFyeSA/Cj4KPiBDYW4gd2UgZG8gb3RoZXIgd2F5IGFyb3Vu
+ZD8gSSBtZWFuIHRoYXQgZWl0aGVyIGk5MTUgc2VsZWN0cyBQV01fTFBTUyB0bwo+IGJlIGJ1aWx0
+LWluLCBvciB1c2VzIHJlcXVlc3RfbW9kdWxlKCkgY2FsbD8KClBXTV9MUFNTIG5lZWRzIHRvIGJl
+IGJ1aWx0LWluIGlmIGVuYWJsZWQsIGEgc3RyaXBwZWQgZG93biBrZXJuZWwKZm9yIG5vbiBjaGVy
+cnl0cmFpbCBoYXJkd2FyZSBkb2VzIG5vdCBuZWVkIGl0IC4uLgoKQWxzbyAoYW5kIGVzcCBmb3Ig
+cmVxdWVzdF9tb2R1bGUpIHRoaXMgbWVhbnMgYnVpbGRpbmcga25vd2xlZGdlCmludG8gdGhlIGk5
+MTUgZHJpdmVyIGFib3V0IHdoaWNoIHB3bSBoYXJkd2FyZSB0aGVyZSBpcyBvbiB3aGljaApib2Fy
+ZHMgd2hpY2ggaXMgdW5kZXNpcmFibGUuCgpUaGllcnJ5LCB0aGlzIGRvZXMgZ2l2ZSBtZSBhbiBp
+ZGVhIHRob3VnaCwgd2hhdCBpZiB3ZSBleHRlbmQKdGhlIGluZm8gcGFzc2VkIHRvIHB3bV9hZGRf
+dGFibGUgd2l0aCBhIG1vZHVsZS1uYW1lIGFuZAptYWtlIHB3bV9nZXQgY2FsbCByZXF1ZXN0X21v
+ZHVsZSgpID8KClRoYXQgc2VlbXMgbGlrZSBhIGdvb2Qgc29sdXRpb24gYW5kIHdlIGNvdWxkIHRo
+ZW4gYWxzbyBtYWtlClBXTV9DUkMgYSB0cmlzdGF0ZSBhZ2FpbiAoYWZ0ZXIgc29tZW9uZSB3aXRo
+IGh3IGFjY2VzcyBoYXMgdGVzdGVkCnRoaXMpLgoKUmVnYXJkcywKCkhhbnMKCgoKX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4IG1haWxpbmcg
+bGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRl
+c2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
