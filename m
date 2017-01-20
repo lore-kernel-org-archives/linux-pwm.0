@@ -1,124 +1,112 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 4/4] pwm: lpss: Switch to new atomic API
-Date: Fri, 20 Jan 2017 11:48:27 +0100
-Message-ID: <20170120104827.GI3824@ulmo.ba.sec>
+Subject: Re: [PATCH v2 3/4] pwm: lpss: Do not export board infos for
+ different PWM types
+Date: Fri, 20 Jan 2017 12:00:51 +0100
+Message-ID: <20170120110051.GJ3824@ulmo.ba.sec>
 References: <20170102091647.86910-1-andriy.shevchenko@linux.intel.com>
- <20170102091647.86910-5-andriy.shevchenko@linux.intel.com>
- <20170118111518.GP18989@ulmo.ba.sec>
- <1484836366.2133.243.camel@linux.intel.com>
+ <20170102091647.86910-4-andriy.shevchenko@linux.intel.com>
+ <20170118111109.GO18989@ulmo.ba.sec>
+ <20170118130138.GO2023@lahna.fi.intel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="3U8TY7m7wOx7RL1F"
+        protocol="application/pgp-signature"; boundary="yr/DzoowOgTDcSCF"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:36809 "EHLO
-        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751712AbdATKsb (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Jan 2017 05:48:31 -0500
-Received: by mail-wm0-f68.google.com with SMTP id r126so5736619wmr.3
-        for <linux-pwm@vger.kernel.org>; Fri, 20 Jan 2017 02:48:30 -0800 (PST)
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:34286 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751912AbdATLHG (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Jan 2017 06:07:06 -0500
+Received: by mail-wm0-f66.google.com with SMTP id c85so5849273wmi.1
+        for <linux-pwm@vger.kernel.org>; Fri, 20 Jan 2017 03:07:05 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <1484836366.2133.243.camel@linux.intel.com>
+In-Reply-To: <20170118130138.GO2023@lahna.fi.intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Linus Torvalds <torvalds@linux-foundation.org>, Ilkka Koskinen <ilkka.koskinen@intel.com>
+To: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Ilkka Koskinen <ilkka.koskinen@intel.com>
 
 
---3U8TY7m7wOx7RL1F
-Content-Type: text/plain; charset=utf-8
+--yr/DzoowOgTDcSCF
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jan 19, 2017 at 04:32:46PM +0200, Andy Shevchenko wrote:
-> On Wed, 2017-01-18 at 12:15 +0100, Thierry Reding wrote:
-> > On Mon, Jan 02, 2017 at 11:16:47AM +0200, Andy Shevchenko wrote:
-> > > Instead of doing things separately, which is not so reliable on some
-> > > platforms,
-> > > switch the driver to use new atomic API, i.e. ->apply() callback.
+On Wed, Jan 18, 2017 at 03:01:38PM +0200, Mika Westerberg wrote:
+> On Wed, Jan 18, 2017 at 12:11:09PM +0100, Thierry Reding wrote:
+> > On Mon, Jan 02, 2017 at 11:16:46AM +0200, Andy Shevchenko wrote:
+> > > From: Mika Westerberg <mika.westerberg@linux.intel.com>
 > > >=20
-> > > The change has been tested on Intel platforms such as Broxton,
-> > > BayTrail, and
-> > > Merrifield.
->=20
-> > > +static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device
-> > > *pwm,
-> > > +			=C2=A0=C2=A0struct pwm_state *state)
-> > > +{
-> > > +	struct pwm_lpss_chip *lpwm =3D to_lpwm(chip);
-> > > +
-> > > +	if (state->enabled) {
-> > > +		if (!pwm_is_enabled(pwm)) {
-> > > +			pm_runtime_get_sync(chip->dev);
-> > > +			pwm_lpss_config(lpwm, pwm, state-
-> > > >duty_cycle, state->period);
-> > > +			pwm_lpss_enable(pwm);
-> > > +		} else {
-> > > +			pwm_lpss_config(lpwm, pwm, state-
-> > > >duty_cycle, state->period);
-> > > +		}
-> > > +	} else if (pwm_is_enabled(pwm)) {
-> > > +		pwm_lpss_disable(pwm);
-> > > +		pm_runtime_put(chip->dev);
-> > > +	}
+> > > The PWM LPSS probe drivers just pass a pointer to the exported board =
+info
+> > > structures to pwm_lpss_probe() based on device PCI or ACPI ID. Since =
+the
+> > > core driver knows everything else except mapping between device ID an=
+d the
+> > > type, just pass the type with pwm_lpss_probe() and stop exporting the=
+ board
+> > > info structures.
+> > >=20
+> > > Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > > ---
+> > >  drivers/pwm/pwm-lpss-pci.c      | 20 ++++++++---------
+> > >  drivers/pwm/pwm-lpss-platform.c | 10 ++++-----
+> > >  drivers/pwm/pwm-lpss.c          | 49 ++++++++++++++++++++++---------=
+----------
+> > >  drivers/pwm/pwm-lpss.h          | 14 +++++-------
+> > >  4 files changed, 44 insertions(+), 49 deletions(-)
 > >=20
-> > Would you mind doing another pass over this and inline the
-> > pwm_lpss_enable(), pwm_lpss_disable() and pwm_lpss_config() functions
-> > into pwm_lpss_apply()? Your current version effectively duplicates the
-> > transitional helpers, but the goal should be to fully get rid of the
-> > remainders of the legacy API.
+> > Is there anything in particular that you think will need this change? It
+> > looks to me more like churn than anything else. Moving away from the per
+> > device struct to describe the particular instance seems to me like
+> > removing flexibility that we might want at some point rather than any
+> > real gain.
 >=20
-> I don't see how inlining them helps. For me readability of code is more
-> important than names of the functions.
+> It simplifies the probe drivers for one. Since the core driver already
+> handles details of the specific SoC family, I don't think we need the
+> flexibility to be able to pass arbitrary platform data anyway.
 >=20
-> I can rename functions, but I would like to have them separate from the
-> ->apply() callback.
->=20
-> Compiler inlines them during optimization.
->=20
-> > Besides being much cleaner this also gets rid of slight
-> > inconsistencies
-> > between the two APIs.
->=20
-> I don't see how One Big Function can be cleaner than split version. But
-> I give a try to see it on my side when you have settled with Mika's
-> patch.
+> No strong feelings, though. I'm fine either way :)
 
-It doesn't necessarily have to be one big function. You obviously need
-to find the right balance. If the combined function is still readable,
-there's no reason, in my opinion, to split it up. If it gets too large
-I think a good split is to keep all of the register programming to be
-within ->apply() and have a helper that computes the values to program
-and that is called from ->apply().
+The current driver uses a strange inversion of the abstraction layer.
+For one we have a "board info" structure that is supposed to describe
+the variants of the hardware that exist. That data is in the core
+driver, for reasons that I no longer remember, and then the PCI and
+ACPI drivers reference those info structures depending on the type of
+hardware they bind to. And worse, we now have to export symbols to
+the PCI and ACPI drivers to make use of them.
 
-What I want to avoid is people converting to atomic by mindlessly
-duplicating the fallback path in pwm_apply_state().
+I think this is the wrong way around. The core would ideally be unaware
+of any particular variants and use only the struct pwm_lpss_boardinfo.
+It would then be up to the ACPI and PCI drivers to provide the variants
+they need.
 
-The goal of the atomic API is that programming of the hardware becomes
-atomic. So if you have any computations that may fail because of invalid
-inputs or similar, then all of that should happen before any registers
-are touched. That's difficult to do with the old enable/config/disable
-callbacks, so I don't think we should be following it when converting.
+Perhaps the only reason why the board info structures are in the core
+driver is because the same variant exists as PCI and ACPI devices, so
+putting them in the core removes potential duplication.
+
+What I'm saying is that its wrong to have board specific bits in the
+core driver. Duplicating the board info isn't a very attractive
+alternative either, though, so it's not going to be elegant either way.
 
 Thierry
 
---3U8TY7m7wOx7RL1F
+--yr/DzoowOgTDcSCF
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAliB6vsACgkQ3SOs138+
-s6HbFQ/9HCOu7qRFYAxf8I5gn+DpqkMZoQxX7+GjZ+rknH6DsoZd3hRJW5rUS3sN
-4b9ZnYzLCehB9XumUSb5onLhx8l1KAAa6rAevHL927zQawj/5cHGAB6S22MpGZ99
-mWxhT5KDuPVPDbQGi2B9Ve2Ow8vesD5bnAohGYtRO9uO3TbZjlOa592z3nkIj2sx
-9fFbB3o6hQUq7HEOGbe0I2buLUhe8pACDx7EwzluTOPd9HeTquYdF/F1c/Hma5HS
-7AS/BGuRxjLzx6sGDWXT8LcDebt8am0q4x4W+WTA2zi3vPwBFEhaqyWyrrI18zDS
-mE56c6WTi/3ZroO7l+xHx+weT6PMgND/h1Vt3f9A/QUBe2YqH9aQhdZs5CK4HyqK
-8HmRLb/NF+97hCogw17CjdaJdKoE3UR9aOOmFULP33KOCHFie1m40M3iovnu9S51
-isg1PevfF1of96qcpe2v20OYirgHEK7XVJxxrR6xOaoCZoiwXW/jO3ew9BY7KLsC
-wEQnLFGb2B3tzRQEhX645v8WJqzIPmpdFmiirrry4g11f7HEtQLRgCB3Ix4chYOL
-LlpLCU6FoECaIPjoLlj54cd2gC8Wh/WIIhkgwMPZKO9K3uWr0nUevteMeWP8dq+S
-mUcB01fEFjXQ3VVYuNLDoYkTQise0rWVqyhBacst4kK1Eb0tTLo=
-=otUm
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAliB7eAACgkQ3SOs138+
+s6F3qxAAnxrqH2xdrjuHdYh0+J47nsXPe1md7pHSHwxMgkoVAU8KBApoGlki2+1y
+WSqXXt1mjVw7U+GDbBFzgb7c0B9ENmX2Pfo/fRfp+lf+7tMg83FuNvlcUXLkm1l/
+N2QPPTC6hISf1hzZQIzb2s3LM/Zct4UMFTzYGXb3q6CzBFZXuBpEyNqPzpdPibUM
+PCkHTD1NGZc29Tplvbb0G/+yZdXMJtrZsxiKwfTywDWNHJ5KRY7lbgaq/dwp/gaL
+rE6KyFM/cb6TIf1f452lcuhtbgncUn0R9cWYK85k4pYAwuBltvkAmrEGf47ImWIo
+1XxBzLcyoekMuv/ewiJdD2BqUX/GXlbznWi/7qwBW4tbdsdC93I2/KHapiWTxJsv
+tNLWRD6dV2cRWO5E/QMNtpHntcmfTRzFzvDv1R3cosmdO8TiFGgiDcFoYaJUvoMN
+xCTKyQaSn4FAsv+pnArHa8BJotdq1vGcZRvcZYqkOez2vn/3uMeDlyoKNe4ktKje
+wQHusYkEcH0hMgU5Qy48oD7g3Owv/L8FInOGyxUR4n7Sl6nfB5ns8S8vZ603HEjB
+fA9A8zbyxaur8y1BjqULPE2PvlmUvBypkqBAGuHod8FtR5qyYh2ODQWjpb5xy1DI
+DFeRNdctEfW1u48XeDR9/f7gEMyZ//YzL+okMaClO5+dMKsDF4w=
+=2GPJ
 -----END PGP SIGNATURE-----
 
---3U8TY7m7wOx7RL1F--
+--yr/DzoowOgTDcSCF--
