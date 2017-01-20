@@ -1,31 +1,41 @@
-From: Paul Cercueil <paul-icTtO2rgO2OTuSrc4Mpeew@public.gmane.org>
-Subject: Re: [PATCH 09/13] mmc: jz4740: Let the pinctrl driver configure the  pins
-Date: Fri, 20 Jan 2017 12:59:07 +0100
-Message-ID: <81c24244706ce24a678a3d05bbf6b17c@mail.crapouillou.net>
-References: <20170117231421.16310-1-paul@crapouillou.net>
- <20170117231421.16310-10-paul@crapouillou.net>
- <CAPDyKFp4idZx+ynQByz22zwsiK+reBcvt3OdHm1kR2QUy+sUhw@mail.gmail.com>
+From: Sekhar Nori <nsekhar@ti.com>
+Subject: Re: [PATCH] ARM: dts: da850-lcdk: enable pwm nodes
+Date: Fri, 20 Jan 2017 18:23:31 +0530
+Message-ID: <8e981b0b-cdff-aed4-b25b-8875465f0bbb@ti.com>
+References: <1484586189-3118-1-git-send-email-fisaksen@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAPDyKFp4idZx+ynQByz22zwsiK+reBcvt3OdHm1kR2QUy+sUhw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Maarten ter Huurne <maarten-Ph2Y2OKCxY1M656bX5wj8A@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux Fbdev development list <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, James Hogan <james.hogan-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1484586189-3118-1-git-send-email-fisaksen@baylibre.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Frode Isaksen <fisaksen@baylibre.com>, khilman@baylibre.com, ptitiano@baylibre.com, linux-arm-kernel@lists.infradead.org
+Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com
 List-Id: linux-pwm@vger.kernel.org
 
-Le 2017-01-19 11:55, Ulf Hansson a écrit :
+Hi Frode,
 
-> Shouldn't this be replaced with a call to:
-> pinctrl_pm_select_sleep_state();
+On Monday 16 January 2017 10:33 PM, Frode Isaksen wrote:
+> Enable the ecap1 and ecap2 pwm nodes for the
+> lcdk board.
+> Note that the other pwm nodes are not enabled,
+> since the pins are shared with ethernet and spi.
+> 
+> Signed-off-by: Frode Isaksen <fisaksen@baylibre.com>
+> ---
 
-You're totally right. I'll change it.
+Looks like the eCAP is available on the headers at the bottom of the
+board. While patch like this is fine to be able to test the PWM
+functionality, I dont think we should apply it because this can
+potentially clash with usage of the pin on daughter card.
 
 Thanks,
--Paul
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Sekhar
