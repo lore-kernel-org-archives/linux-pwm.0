@@ -1,31 +1,77 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: Re: [PATCH v2] pwm: lpss: Make builtin so that i915 can find the
- pwm_backlight
-Date: Fri, 20 Jan 2017 11:55:19 +0200
-Message-ID: <20170120095519.GF17297@lahna.fi.intel.com>
-References: <20170119175830.3754-1-hdegoede@redhat.com>
- <20170120070333.GD4894@ulmo.ba.sec>
- <8737gei2fp.fsf@intel.com>
+From: Alexandre Torgue <alexandre.torgue@st.com>
+Subject: Re: [PATCH v9 8/8] ARM: dts: stm32: Enable pwm1 and pwm3 for
+ stm32f469-disco
+Date: Fri, 20 Jan 2017 11:03:19 +0100
+Message-ID: <77a0e229-1ab0-33f2-edf0-71efd76fdc4a@st.com>
+References: <1484903709-11650-1-git-send-email-benjamin.gaignard@st.com>
+ <1484903709-11650-9-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga07.intel.com ([134.134.136.100]:60156 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751590AbdATKEI (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 20 Jan 2017 05:04:08 -0500
-Content-Disposition: inline
-In-Reply-To: <8737gei2fp.fsf@intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1484903709-11650-9-git-send-email-benjamin.gaignard@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Benjamin Gaignard <benjamin.gaignard@linaro.org>, lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: gerald.baeza@st.com, fabrice.gasnier@st.com, arnaud.pouliquen@st.com, Benjamin Gaignard <benjamin.gaignard@st.com>, linaro-kernel@lists.linaro.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jani Nikula <jani.nikula@linux.intel.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Hans de Goede <hdegoede@redhat.com>, Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-pwm@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-On Fri, Jan 20, 2017 at 10:02:50AM +0200, Jani Nikula wrote:
-> That said, I suppose there could be an alternative to handling pwm_get()
-> failures at probe. We could just go on with our init, but schedule a
-> retry later. Perhaps a bit hacky, but it would address both of the
-> concerns above. Again, this patch seems a simple workaround in the mean
-> time.
+Hi Benjamin,
 
-Not sure if this works or how hacky it is, but can't you
-request_module() before you start looking up for the pwm?
+On 01/20/2017 10:15 AM, Benjamin Gaignard wrote:
+> Define and enable pwm1 and pwm3 for stm32f469 discovery board
+>
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+> ---
+>  arch/arm/boot/dts/stm32f469-disco.dts | 28 ++++++++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
+>
+> diff --git a/arch/arm/boot/dts/stm32f469-disco.dts b/arch/arm/boot/dts/stm32f469-disco.dts
+> index 8a163d7..92552d3 100644
+> --- a/arch/arm/boot/dts/stm32f469-disco.dts
+> +++ b/arch/arm/boot/dts/stm32f469-disco.dts
+> @@ -81,3 +81,31 @@
+>  &usart3 {
+>  	status = "okay";
+>  };
+> +
+> +&timers1 {
+> +	status = "okay";
+> +
+> +	pwm {
+> +		pinctrl-0 = <&pwm1_pins>;
+> +		pinctrl-names = "default";
+> +		status = "okay";
+> +	};
+> +
+> +	timer@0 {
+> +		status = "okay";
+> +	};
+> +};
+> +
+> +&timers3 {
+> +	status = "okay";
+> +
+> +	pwm {
+> +		pinctrl-0 = <&pwm3_pins>;
+> +		pinctrl-names = "default";
+> +		status = "okay";
+> +	};
+> +
+> +	timer@2 {
+> +		status = "okay";
+> +	};
+> +};
+>
+
+Acked-by: Alexandre TORGUE <alexandre.torgue@st.com>
+
+Thanks
+Alex
