@@ -1,246 +1,391 @@
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Subject: [PATCH v9 2/8] MFD: add STM32 Timers driver
-Date: Fri, 20 Jan 2017 10:15:03 +0100
-Message-ID: <1484903709-11650-3-git-send-email-benjamin.gaignard@st.com>
+From: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v9 7/8] ARM: dts: stm32: add Timers driver for stm32f429 MCU
+Date: Fri, 20 Jan 2017 10:15:08 +0100
+Message-ID: <1484903709-11650-8-git-send-email-benjamin.gaignard@st.com>
 References: <1484903709-11650-1-git-send-email-benjamin.gaignard@st.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1484903709-11650-1-git-send-email-benjamin.gaignard@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: fabrice.gasnier@st.com, gerald.baeza@st.com, arnaud.pouliquen@st.com, linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1484903709-11650-1-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-This hardware block could at used at same time for PWM generation
-and IIO timers.
-PWM and IIO timer configuration are mixed in the same registers
-so we need a multi fonction driver to be able to share those registers.
+Add Timers and it sub-nodes into DT for stm32f429 family.
 
-version 7:
-- rebase on v4.10-rc2
+version 9:
+- re-order timers node per addresses
 
 version 6:
-- rename files to stm32-timers
-- rename functions to stm32_timers_xxx
+- split patch in two: one for SoC family and one for stm32f469
+  discovery board.
 
 version 5:
-- fix Lee comments about detect function
-- add missing dependency on REGMAP_MMIO
+- rename gptimer node to timers
+- re-order timers node per addresses
 
 version 4:
-- add a function to detect Auto Reload Register (ARR) size
-- rename the structure shared with other drivers
+- remove unwanted indexing in pwm@ and timer@ node name
+- use "reg" instead of additional parameters to set timer
+  configuration
+
+version 3:
+- use "st,stm32-timer-trigger" in DT
 
 version 2:
-- rename driver "stm32-gptimer" to be align with SoC documentation
-- only keep one compatible
-- use of_platform_populate() instead of devm_mfd_add_devices()
+- use parameters to describe hardware capabilities
+- do not use references for pwm and iio timer subnodes
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-Acked-by: Lee Jones <lee.jones@linaro.org>
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 ---
- drivers/mfd/Kconfig              | 11 ++++++
- drivers/mfd/Makefile             |  2 +
- drivers/mfd/stm32-timers.c       | 80 ++++++++++++++++++++++++++++++++++++++++
- include/linux/mfd/stm32-timers.h | 71 +++++++++++++++++++++++++++++++++++
- 4 files changed, 164 insertions(+)
- create mode 100644 drivers/mfd/stm32-timers.c
- create mode 100644 include/linux/mfd/stm32-timers.h
+ arch/arm/boot/dts/stm32f429.dtsi | 275 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 275 insertions(+)
 
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index 4ce3b6f..d0c14b8 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -1621,6 +1621,17 @@ config MFD_STW481X
- 	  in various ST Microelectronics and ST-Ericsson embedded
- 	  Nomadik series.
+diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f429.dtsi
+index e4dae0e..b608935 100644
+--- a/arch/arm/boot/dts/stm32f429.dtsi
++++ b/arch/arm/boot/dts/stm32f429.dtsi
+@@ -79,6 +79,27 @@
+ 			status = "disabled";
+ 		};
  
-+config MFD_STM32_TIMERS
-+	tristate "Support for STM32 Timers"
-+	depends on (ARCH_STM32 && OF) || COMPILE_TEST
-+	select MFD_CORE
-+	select REGMAP
-+	select REGMAP_MMIO
-+	help
-+	  Select this option to enable STM32 timers driver used
-+	  for PWM and IIO Timer. This driver allow to share the
-+	  registers between the others drivers.
++		timers2: timers@40000000 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40000000 0x400>;
++			clocks = <&rcc 0 128>;
++			clock-names = "int";
++			status = "disabled";
 +
- menu "Multimedia Capabilities Port drivers"
- 	depends on ARCH_SA1100
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++
++			timer@1 {
++				compatible = "st,stm32-timer-trigger";
++				reg = <1>;
++				status = "disabled";
++			};
++		};
++
+ 		timer3: timer@40000400 {
+ 			compatible = "st,stm32-timer";
+ 			reg = <0x40000400 0x400>;
+@@ -87,6 +108,27 @@
+ 			status = "disabled";
+ 		};
  
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index dda4d4f..876ca86 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -212,3 +212,5 @@ obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
++		timers3: timers@40000400 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40000400 0x400>;
++			clocks = <&rcc 0 129>;
++			clock-names = "int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++
++			timer@2 {
++				compatible = "st,stm32-timer-trigger";
++				reg = <2>;
++				status = "disabled";
++			};
++		};
++
+ 		timer4: timer@40000800 {
+ 			compatible = "st,stm32-timer";
+ 			reg = <0x40000800 0x400>;
+@@ -95,6 +137,27 @@
+ 			status = "disabled";
+ 		};
  
- obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
- obj-$(CONFIG_MFD_SUN4I_GPADC)	+= sun4i-gpadc.o
++		timers4: timers@40000800 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40000800 0x400>;
++			clocks = <&rcc 0 130>;
++			clock-names = "int";
++			status = "disabled";
 +
-+obj-$(CONFIG_MFD_STM32_TIMERS) 	+= stm32-timers.o
-diff --git a/drivers/mfd/stm32-timers.c b/drivers/mfd/stm32-timers.c
-new file mode 100644
-index 0000000..41bd901
---- /dev/null
-+++ b/drivers/mfd/stm32-timers.c
-@@ -0,0 +1,80 @@
-+/*
-+ * Copyright (C) STMicroelectronics 2016
-+ *
-+ * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
-+ *
-+ * License terms:  GNU General Public License (GPL), version 2
-+ */
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
 +
-+#include <linux/mfd/stm32-timers.h>
-+#include <linux/module.h>
-+#include <linux/of_platform.h>
-+#include <linux/reset.h>
++			timer@3 {
++				compatible = "st,stm32-timer-trigger";
++				reg = <3>;
++				status = "disabled";
++			};
++		};
 +
-+static const struct regmap_config stm32_timers_regmap_cfg = {
-+	.reg_bits = 32,
-+	.val_bits = 32,
-+	.reg_stride = sizeof(u32),
-+	.max_register = 0x400,
-+};
+ 		timer5: timer@40000c00 {
+ 			compatible = "st,stm32-timer";
+ 			reg = <0x40000c00 0x400>;
+@@ -102,6 +165,27 @@
+ 			clocks = <&rcc 0 131>;
+ 		};
+ 
++		timers5: timers@40000c00 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40000C00 0x400>;
++			clocks = <&rcc 0 131>;
++			clock-names = "int";
++			status = "disabled";
 +
-+static void stm32_timers_get_arr_size(struct stm32_timers *ddata)
-+{
-+	/*
-+	 * Only the available bits will be written so when readback
-+	 * we get the maximum value of auto reload register
-+	 */
-+	regmap_write(ddata->regmap, TIM_ARR, ~0L);
-+	regmap_read(ddata->regmap, TIM_ARR, &ddata->max_arr);
-+	regmap_write(ddata->regmap, TIM_ARR, 0x0);
-+}
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
 +
-+static int stm32_timers_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct stm32_timers *ddata;
-+	struct resource *res;
-+	void __iomem *mmio;
++			timer@4 {
++				compatible = "st,stm32-timer-trigger";
++				reg = <4>;
++				status = "disabled";
++			};
++		};
 +
-+	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
-+	if (!ddata)
-+		return -ENOMEM;
+ 		timer6: timer@40001000 {
+ 			compatible = "st,stm32-timer";
+ 			reg = <0x40001000 0x400>;
+@@ -110,6 +194,22 @@
+ 			status = "disabled";
+ 		};
+ 
++		timers6: timers@40001000 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40001000 0x400>;
++			clocks = <&rcc 0 132>;
++			clock-names = "int";
++			status = "disabled";
 +
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	mmio = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(mmio))
-+		return PTR_ERR(mmio);
++			timer@5 {
++				compatible = "st,stm32-timer-trigger";
++				reg = <5>;
++				status = "disabled";
++			};
++		};
 +
-+	ddata->regmap = devm_regmap_init_mmio_clk(dev, "int", mmio,
-+						  &stm32_timers_regmap_cfg);
-+	if (IS_ERR(ddata->regmap))
-+		return PTR_ERR(ddata->regmap);
+ 		timer7: timer@40001400 {
+ 			compatible = "st,stm32-timer";
+ 			reg = <0x40001400 0x400>;
+@@ -118,6 +218,73 @@
+ 			status = "disabled";
+ 		};
+ 
++		timers7: timers@40001400 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40001400 0x400>;
++			clocks = <&rcc 0 133>;
++			clock-names = "int";
++			status = "disabled";
 +
-+	ddata->clk = devm_clk_get(dev, NULL);
-+	if (IS_ERR(ddata->clk))
-+		return PTR_ERR(ddata->clk);
++			timer@6 {
++				compatible = "st,stm32-timer-trigger";
++				reg = <6>;
++				status = "disabled";
++			};
++		};
 +
-+	stm32_timers_get_arr_size(ddata);
++			timers12: timers@40001800 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40001800 0x400>;
++			clocks = <&rcc 0 134>;
++			clock-names = "int";
++			status = "disabled";
 +
-+	platform_set_drvdata(pdev, ddata);
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
 +
-+	return of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
-+}
++			timer@11 {
++				compatible = "st,stm32-timer-trigger";
++				reg = <11>;
++				status = "disabled";
++			};
++		};
 +
-+static const struct of_device_id stm32_timers_of_match[] = {
-+	{ .compatible = "st,stm32-timers", },
-+	{ /* end node */ },
-+};
-+MODULE_DEVICE_TABLE(of, stm32_timers_of_match);
++		timers13: timers@40001c00 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40001C00 0x400>;
++			clocks = <&rcc 0 135>;
++			clock-names = "int";
++			status = "disabled";
 +
-+static struct platform_driver stm32_timers_driver = {
-+	.probe = stm32_timers_probe,
-+	.driver	= {
-+		.name = "stm32-timers",
-+		.of_match_table = stm32_timers_of_match,
-+	},
-+};
-+module_platform_driver(stm32_timers_driver);
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++		};
 +
-+MODULE_DESCRIPTION("STMicroelectronics STM32 Timers");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/mfd/stm32-timers.h b/include/linux/mfd/stm32-timers.h
-new file mode 100644
-index 0000000..d030004
---- /dev/null
-+++ b/include/linux/mfd/stm32-timers.h
-@@ -0,0 +1,71 @@
-+/*
-+ * Copyright (C) STMicroelectronics 2016
-+ *
-+ * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
-+ *
-+ * License terms:  GNU General Public License (GPL), version 2
-+ */
++		timers14: timers@40002000 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40002000 0x400>;
++			clocks = <&rcc 0 136>;
++			clock-names = "int";
++			status = "disabled";
 +
-+#ifndef _LINUX_STM32_GPTIMER_H_
-+#define _LINUX_STM32_GPTIMER_H_
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++		};
 +
-+#include <linux/clk.h>
-+#include <linux/regmap.h>
+ 		usart2: serial@40004400 {
+ 			compatible = "st,stm32-usart", "st,stm32-uart";
+ 			reg = <0x40004400 0x400>;
+@@ -169,6 +336,48 @@
+ 			status = "disabled";
+ 		};
+ 
++		timers1: timers@40010000 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40010000 0x400>;
++			clocks = <&rcc 0 160>;
++			clock-names = "int";
++			status = "disabled";
 +
-+#define TIM_CR1		0x00	/* Control Register 1      */
-+#define TIM_CR2		0x04	/* Control Register 2      */
-+#define TIM_SMCR	0x08	/* Slave mode control reg  */
-+#define TIM_DIER	0x0C	/* DMA/interrupt register  */
-+#define TIM_SR		0x10	/* Status register	   */
-+#define TIM_EGR		0x14	/* Event Generation Reg    */
-+#define TIM_CCMR1	0x18	/* Capt/Comp 1 Mode Reg    */
-+#define TIM_CCMR2	0x1C	/* Capt/Comp 2 Mode Reg    */
-+#define TIM_CCER	0x20	/* Capt/Comp Enable Reg    */
-+#define TIM_PSC		0x28	/* Prescaler               */
-+#define TIM_ARR		0x2c	/* Auto-Reload Register    */
-+#define TIM_CCR1	0x34	/* Capt/Comp Register 1    */
-+#define TIM_CCR2	0x38	/* Capt/Comp Register 2    */
-+#define TIM_CCR3	0x3C	/* Capt/Comp Register 3    */
-+#define TIM_CCR4	0x40	/* Capt/Comp Register 4    */
-+#define TIM_BDTR	0x44	/* Break and Dead-Time Reg */
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
 +
-+#define TIM_CR1_CEN	BIT(0)	/* Counter Enable	   */
-+#define TIM_CR1_ARPE	BIT(7)	/* Auto-reload Preload Ena */
-+#define TIM_CR2_MMS	(BIT(4) | BIT(5) | BIT(6)) /* Master mode selection */
-+#define TIM_SMCR_SMS	(BIT(0) | BIT(1) | BIT(2)) /* Slave mode selection */
-+#define TIM_SMCR_TS	(BIT(4) | BIT(5) | BIT(6)) /* Trigger selection */
-+#define TIM_DIER_UIE	BIT(0)	/* Update interrupt	   */
-+#define TIM_SR_UIF	BIT(0)	/* Update interrupt flag   */
-+#define TIM_EGR_UG	BIT(0)	/* Update Generation       */
-+#define TIM_CCMR_PE	BIT(3)	/* Channel Preload Enable  */
-+#define TIM_CCMR_M1	(BIT(6) | BIT(5))  /* Channel PWM Mode 1 */
-+#define TIM_CCER_CC1E	BIT(0)	/* Capt/Comp 1  out Ena    */
-+#define TIM_CCER_CC1P	BIT(1)	/* Capt/Comp 1  Polarity   */
-+#define TIM_CCER_CC1NE	BIT(2)	/* Capt/Comp 1N out Ena    */
-+#define TIM_CCER_CC1NP	BIT(3)	/* Capt/Comp 1N Polarity   */
-+#define TIM_CCER_CC2E	BIT(4)	/* Capt/Comp 2  out Ena    */
-+#define TIM_CCER_CC3E	BIT(8)	/* Capt/Comp 3  out Ena    */
-+#define TIM_CCER_CC4E	BIT(12)	/* Capt/Comp 4  out Ena    */
-+#define TIM_CCER_CCXE	(BIT(0) | BIT(4) | BIT(8) | BIT(12))
-+#define TIM_BDTR_BKE	BIT(12) /* Break input enable	   */
-+#define TIM_BDTR_BKP	BIT(13) /* Break input polarity	   */
-+#define TIM_BDTR_AOE	BIT(14)	/* Automatic Output Enable */
-+#define TIM_BDTR_MOE	BIT(15)	/* Main Output Enable      */
-+#define TIM_BDTR_BKF	(BIT(16) | BIT(17) | BIT(18) | BIT(19))
-+#define TIM_BDTR_BK2F	(BIT(20) | BIT(21) | BIT(22) | BIT(23))
-+#define TIM_BDTR_BK2E	BIT(24) /* Break 2 input enable	   */
-+#define TIM_BDTR_BK2P	BIT(25) /* Break 2 input polarity  */
++			timer@0 {
++				compatible = "st,stm32-timer-trigger";
++				reg = <0>;
++				status = "disabled";
++			};
++		};
 +
-+#define MAX_TIM_PSC		0xFFFF
-+#define TIM_CR2_MMS_SHIFT	4
-+#define TIM_SMCR_TS_SHIFT	4
-+#define TIM_BDTR_BKF_MASK	0xF
-+#define TIM_BDTR_BKF_SHIFT	16
-+#define TIM_BDTR_BK2F_SHIFT	20
++		timers8: timers@40010400 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40010400 0x400>;
++			clocks = <&rcc 0 161>;
++			clock-names = "int";
++			status = "disabled";
 +
-+struct stm32_timers {
-+	struct clk *clk;
-+	struct regmap *regmap;
-+	u32 max_arr;
-+};
-+#endif
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++
++			timer@7 {
++				compatible = "st,stm32-timer-trigger";
++				reg = <7>;
++				status = "disabled";
++			};
++		};
++
+ 		usart1: serial@40011000 {
+ 			compatible = "st,stm32-usart", "st,stm32-uart";
+ 			reg = <0x40011000 0x400>;
+@@ -201,6 +410,57 @@
+ 			interrupts = <1>, <2>, <3>, <6>, <7>, <8>, <9>, <10>, <23>, <40>, <41>, <42>, <62>, <76>;
+ 		};
+ 
++		timers9: timers@40014000 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40014000 0x400>;
++			clocks = <&rcc 0 176>;
++			clock-names = "int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++
++			timer@8 {
++				compatible = "st,stm32-timer-trigger";
++				reg = <8>;
++				status = "disabled";
++			};
++		};
++
++		timers10: timers@40014400 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40014400 0x400>;
++			clocks = <&rcc 0 177>;
++			clock-names = "int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++		};
++
++		timers11: timers@40014800 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40014800 0x400>;
++			clocks = <&rcc 0 178>;
++			clock-names = "int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++		};
++
+ 		pwrcfg: power-config@40007000 {
+ 			compatible = "syscon";
+ 			reg = <0x40007000 0x400>;
+@@ -355,6 +615,21 @@
+ 					slew-rate = <2>;
+ 				};
+ 			};
++
++			pwm1_pins: pwm@1 {
++				pins {
++					pinmux = <STM32F429_PA8_FUNC_TIM1_CH1>,
++						 <STM32F429_PB13_FUNC_TIM1_CH1N>,
++						 <STM32F429_PB12_FUNC_TIM1_BKIN>;
++				};
++			};
++
++			pwm3_pins: pwm@3 {
++				pins {
++					pinmux = <STM32F429_PB4_FUNC_TIM3_CH1>,
++						 <STM32F429_PB5_FUNC_TIM3_CH2>;
++				};
++			};
+ 		};
+ 
+ 		rcc: rcc@40023810 {
 -- 
 1.9.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
