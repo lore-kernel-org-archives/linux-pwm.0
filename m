@@ -1,7 +1,7 @@
 From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Subject: [PATCH v9 3/8] dt-bindings: pwm: Add STM32 bindings
-Date: Fri, 20 Jan 2017 10:15:04 +0100
-Message-ID: <1484903709-11650-4-git-send-email-benjamin.gaignard@st.com>
+Subject: [PATCH v9 5/8] IIO: add bindings for STM32 timer trigger driver
+Date: Fri, 20 Jan 2017 10:15:06 +0100
+Message-ID: <1484903709-11650-6-git-send-email-benjamin.gaignard@st.com>
 References: <1484903709-11650-1-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,52 +21,47 @@ To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.to
 Cc: linaro-kernel@lists.linaro.org, Benjamin Gaignard <benjamin.gaignard@st.com>, arnaud.pouliquen@st.com, benjamin.gaignard@linaro.org, gerald.baeza@st.com, fabrice.gasnier@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-Define bindings for pwm-stm32
-
-version 9:
-- change commit message header
+Define bindings for STM32 timer trigger
 
 version 8:
-- reword st,breakinput description.
+- reword "reg" parameter description
 
-version 6:
-- change st,breakinput parameter format to make it usuable on stm32f7 too.
+version 4:
+- remove triggers enumeration from DT
+- add reg parameter
+
+version 3:
+- change file name
+- add cross reference with mfd bindings
 
 version 2:
-- use parameters instead of compatible of handle the hardware configuration
+- only keep one compatible
+- add DT parameters to set lists of the triggers:
+  one list describe the triggers created by the device
+  another one give the triggers accepted by the device
 
 Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 Acked-by: Rob Herring <robh@kernel.org>
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
 ---
- .../devicetree/bindings/pwm/pwm-stm32.txt          | 35 ++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+ .../bindings/iio/timer/stm32-timer-trigger.txt     | 23 ++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+diff --git a/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt b/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
 new file mode 100644
-index 0000000..6dd0403
+index 0000000..55a653d
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-@@ -0,0 +1,35 @@
-+STMicroelectronics STM32 Timers PWM bindings
++++ b/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+@@ -0,0 +1,23 @@
++STMicroelectronics STM32 Timers IIO timer bindings
 +
 +Must be a sub-node of an STM32 Timers device tree node.
 +See ../mfd/stm32-timers.txt for details about the parent node.
 +
 +Required parameters:
-+- compatible:		Must be "st,stm32-pwm".
-+- pinctrl-names: 	Set to "default".
-+- pinctrl-0: 		List of phandles pointing to pin configuration nodes for PWM module.
-+			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
-+
-+Optional parameters:
-+- st,breakinput:	One or two <index level filter> to describe break input configurations.
-+			"index" indicates on which break input (0 or 1) the configuration
-+			should be applied.
-+			"level" gives the active level (0=low or 1=high) of the input signal
-+			for this configuration.
-+			"filter" gives the filtering value to be applied.
++- compatible:	Must be "st,stm32-timer-trigger".
++- reg:		Identify trigger hardware block.
 +
 +Example:
 +	timers@40010000 {
@@ -77,11 +72,9 @@ index 0000000..6dd0403
 +		clocks = <&rcc 0 160>;
 +		clock-names = "clk_int";
 +
-+		pwm {
-+			compatible = "st,stm32-pwm";
-+			pinctrl-0	= <&pwm1_pins>;
-+			pinctrl-names	= "default";
-+			st,breakinput = <0 1 5>;
++		timer@0 {
++			compatible = "st,stm32-timer-trigger";
++			reg = <0>;
 +		};
 +	};
 -- 
