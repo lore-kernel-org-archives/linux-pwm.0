@@ -1,109 +1,124 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2] pwm: lpss: Make builtin so that i915 can
- find the pwm_backlight
-Date: Fri, 20 Jan 2017 11:42:10 +0100
-Message-ID: <20170120104210.GH3824@ulmo.ba.sec>
-References: <20170119175830.3754-1-hdegoede@redhat.com>
- <20170120070333.GD4894@ulmo.ba.sec> <8737gei2fp.fsf@intel.com>
- <20170120085617.GG4894@ulmo.ba.sec>
- <280ead58-d2c9-f36e-cbfb-90cd7ad5b6f3@redhat.com>
- <1484906109.2133.262.camel@linux.intel.com>
- <94d3254b-c658-526d-dd5e-173aad9779c6@redhat.com>
+Subject: Re: [PATCH v2 4/4] pwm: lpss: Switch to new atomic API
+Date: Fri, 20 Jan 2017 11:48:27 +0100
+Message-ID: <20170120104827.GI3824@ulmo.ba.sec>
+References: <20170102091647.86910-1-andriy.shevchenko@linux.intel.com>
+ <20170102091647.86910-5-andriy.shevchenko@linux.intel.com>
+ <20170118111518.GP18989@ulmo.ba.sec>
+ <1484836366.2133.243.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1285343483=="
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <94d3254b-c658-526d-dd5e-173aad9779c6@redhat.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
-List-Id: linux-pwm@vger.kernel.org
-
-
---===============1285343483==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="tcC6YSqBgqqkz7Sb"
+        protocol="application/pgp-signature"; boundary="3U8TY7m7wOx7RL1F"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:36809 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751712AbdATKsb (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 20 Jan 2017 05:48:31 -0500
+Received: by mail-wm0-f68.google.com with SMTP id r126so5736619wmr.3
+        for <linux-pwm@vger.kernel.org>; Fri, 20 Jan 2017 02:48:30 -0800 (PST)
 Content-Disposition: inline
+In-Reply-To: <1484836366.2133.243.camel@linux.intel.com>
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Linus Torvalds <torvalds@linux-foundation.org>, Ilkka Koskinen <ilkka.koskinen@intel.com>
 
 
---tcC6YSqBgqqkz7Sb
-Content-Type: text/plain; charset=us-ascii
+--3U8TY7m7wOx7RL1F
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jan 20, 2017 at 11:18:29AM +0100, Hans de Goede wrote:
-> Hi,
+On Thu, Jan 19, 2017 at 04:32:46PM +0200, Andy Shevchenko wrote:
+> On Wed, 2017-01-18 at 12:15 +0100, Thierry Reding wrote:
+> > On Mon, Jan 02, 2017 at 11:16:47AM +0200, Andy Shevchenko wrote:
+> > > Instead of doing things separately, which is not so reliable on some
+> > > platforms,
+> > > switch the driver to use new atomic API, i.e. ->apply() callback.
+> > >=20
+> > > The change has been tested on Intel platforms such as Broxton,
+> > > BayTrail, and
+> > > Merrifield.
 >=20
-> On 20-01-17 10:55, Andy Shevchenko wrote:
-> > On Fri, 2017-01-20 at 10:48 +0100, Hans de Goede wrote:
-> > > I'm fine with doing a v3 with a comment, how about putting that
-> > > comment
-> > > right at all the module* stuff and explain there that that is to
-> > > stay as the builtin only status is meant to be temporary ?
+> > > +static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device
+> > > *pwm,
+> > > +			=C2=A0=C2=A0struct pwm_state *state)
+> > > +{
+> > > +	struct pwm_lpss_chip *lpwm =3D to_lpwm(chip);
+> > > +
+> > > +	if (state->enabled) {
+> > > +		if (!pwm_is_enabled(pwm)) {
+> > > +			pm_runtime_get_sync(chip->dev);
+> > > +			pwm_lpss_config(lpwm, pwm, state-
+> > > >duty_cycle, state->period);
+> > > +			pwm_lpss_enable(pwm);
+> > > +		} else {
+> > > +			pwm_lpss_config(lpwm, pwm, state-
+> > > >duty_cycle, state->period);
+> > > +		}
+> > > +	} else if (pwm_is_enabled(pwm)) {
+> > > +		pwm_lpss_disable(pwm);
+> > > +		pm_runtime_put(chip->dev);
+> > > +	}
 > >=20
-> > Can we do other way around? I mean that either i915 selects PWM_LPSS to
-> > be built-in, or uses request_module() call?
+> > Would you mind doing another pass over this and inline the
+> > pwm_lpss_enable(), pwm_lpss_disable() and pwm_lpss_config() functions
+> > into pwm_lpss_apply()? Your current version effectively duplicates the
+> > transitional helpers, but the goal should be to fully get rid of the
+> > remainders of the legacy API.
 >=20
-> PWM_LPSS needs to be built-in if enabled, a stripped down kernel
-> for non cherrytrail hardware does not need it ...
+> I don't see how inlining them helps. For me readability of code is more
+> important than names of the functions.
 >=20
-> Also (and esp for request_module) this means building knowledge
-> into the i915 driver about which pwm hardware there is on which
-> boards which is undesirable.
+> I can rename functions, but I would like to have them separate from the
+> ->apply() callback.
 >=20
-> Thierry, this does give me an idea though, what if we extend
-> the info passed to pwm_add_table with a module-name and
-> make pwm_get call request_module() ?
+> Compiler inlines them during optimization.
+>=20
+> > Besides being much cleaner this also gets rid of slight
+> > inconsistencies
+> > between the two APIs.
+>=20
+> I don't see how One Big Function can be cleaner than split version. But
+> I give a try to see it on my side when you have settled with Mika's
+> patch.
 
-I'm not sure that's even necessary. request_module() forwards the string
-you pass to it to the userspace helper, so you can pass things like the
-modalias to it. I suspect that for ACPI the modalias could be trivially
-derived from the provider name already in the table.
+It doesn't necessarily have to be one big function. You obviously need
+to find the right balance. If the combined function is still readable,
+there's no reason, in my opinion, to split it up. If it gets too large
+I think a good split is to keep all of the register programming to be
+within ->apply() and have a helper that computes the values to program
+and that is called from ->apply().
 
-Or maybe it couldn't. We don't have information about the type of device
-and the name doesn't match, or at least it would be much more difficult
-to extend the same method to other types of devices. Module name doesn't
-sound too bad, as long as it's optional.
+What I want to avoid is people converting to atomic by mindlessly
+duplicating the fallback path in pwm_apply_state().
+
+The goal of the atomic API is that programming of the hardware becomes
+atomic. So if you have any computations that may fail because of invalid
+inputs or similar, then all of that should happen before any registers
+are touched. That's difficult to do with the old enable/config/disable
+callbacks, so I don't think we should be following it when converting.
 
 Thierry
 
---tcC6YSqBgqqkz7Sb
+--3U8TY7m7wOx7RL1F
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAliB6YAACgkQ3SOs138+
-s6FDIw//f6EBXRJ0eVzSe6qXf26GZVRgnveWKDvlp+KlBdik5WUXETlS4sEjo5Ct
-O5TuDfPf6cd4X8DSh8NhzT4cnRLm4oJKNLw55hGXVgkYzZSwIWpTs8v1mgUpJrxC
-AQYgHsv0F6GAjLV03JCY7f6QDR1k0hUMPkGX2AGXY3xDcpaJoBugcOsN2nryyjUp
-6MNyEkloqbkd7xChQL9Jxn73pxQ51KurmrPYsSCRAUpgd5VUIGmP/1fcDq+2Ql/T
-epIjsR/8IJ82fLcmCHgOYslvPFPwK/78A0p0GLLM77/CqhhEJXxBTC82+BDxg/vX
-1jVMnxSZAyuy73yUcOTVZwlKtWNbniLsvUt7UDk50AYFSbmpDDMVuNp9it5s9WcG
-LR4KQ85xQXjf+6U+xn3huzuVTtcicz5EEkYuQLQMyii8lg2Gg4A9cZ4C+FWZY+vF
-t9WSowCH+tEo0lhgzcpfIDRrNV/Wf8HLjmQZneDeUPv8T8jIhUudaY3x8Dw6xce7
-+mpeGz0FT6Stxot9Rd7qpX6txWaUVi+TnngUzT9hyzCKdKilgK8X7yUKVL8p2XYC
-qzSrpaQRCaXOIQXPvE4WudP3/3UqJ27X01pKcxaBvONy+JI+vxBc2zPaL0TWcy+h
-wZX3gkU6Z74pv3rZGgAhE2DrMWcK/a1LQBRPAVeXLVw8KRqutXE=
-=I0b+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAliB6vsACgkQ3SOs138+
+s6HbFQ/9HCOu7qRFYAxf8I5gn+DpqkMZoQxX7+GjZ+rknH6DsoZd3hRJW5rUS3sN
+4b9ZnYzLCehB9XumUSb5onLhx8l1KAAa6rAevHL927zQawj/5cHGAB6S22MpGZ99
+mWxhT5KDuPVPDbQGi2B9Ve2Ow8vesD5bnAohGYtRO9uO3TbZjlOa592z3nkIj2sx
+9fFbB3o6hQUq7HEOGbe0I2buLUhe8pACDx7EwzluTOPd9HeTquYdF/F1c/Hma5HS
+7AS/BGuRxjLzx6sGDWXT8LcDebt8am0q4x4W+WTA2zi3vPwBFEhaqyWyrrI18zDS
+mE56c6WTi/3ZroO7l+xHx+weT6PMgND/h1Vt3f9A/QUBe2YqH9aQhdZs5CK4HyqK
+8HmRLb/NF+97hCogw17CjdaJdKoE3UR9aOOmFULP33KOCHFie1m40M3iovnu9S51
+isg1PevfF1of96qcpe2v20OYirgHEK7XVJxxrR6xOaoCZoiwXW/jO3ew9BY7KLsC
+wEQnLFGb2B3tzRQEhX645v8WJqzIPmpdFmiirrry4g11f7HEtQLRgCB3Ix4chYOL
+LlpLCU6FoECaIPjoLlj54cd2gC8Wh/WIIhkgwMPZKO9K3uWr0nUevteMeWP8dq+S
+mUcB01fEFjXQ3VVYuNLDoYkTQise0rWVqyhBacst4kK1Eb0tTLo=
+=otUm
 -----END PGP SIGNATURE-----
 
---tcC6YSqBgqqkz7Sb--
-
---===============1285343483==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
-IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
-
---===============1285343483==--
+--3U8TY7m7wOx7RL1F--
