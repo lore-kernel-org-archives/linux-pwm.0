@@ -1,72 +1,108 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v8 0/8] Add PWM and IIO timer drivers for STM32
-Date: Thu, 19 Jan 2017 13:35:25 -0600
-Message-ID: <20170119193525.jufn5vh4huap7umm@rob-hp-laptop>
-References: <1484749251-14445-1-git-send-email-benjamin.gaignard@st.com>
- <20170119084355.GF3718@dell>
- <CA+M3ks7UchJ3QdQrHO6rSsc4YNhNEmLejoeRBVNhn=2biSn=cQ@mail.gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 2/2] pwm: pca9685: fix prescaler initialization
+Date: Fri, 20 Jan 2017 07:39:07 +0100
+Message-ID: <20170120063907.GA4894@ulmo.ba.sec>
+References: <20161213155251.28684-2-clemens.gruber@pqgruber.com>
+ <20170118105735.GM18989@ulmo.ba.sec>
+ <1484737764.2133.193.camel@linux.intel.com>
+ <20170118135325.GA2498@archie.localdomain>
+ <1484748118.2133.206.camel@linux.intel.com>
+ <20170118142533.GA17640@archie.localdomain>
+ <1484829279.2133.236.camel@linux.intel.com>
+ <20170119144925.GA1660@archie.localdomain>
+ <1484842208.2133.245.camel@linux.intel.com>
+ <20170119165210.GA2139@archie.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="UlVJffcvxoiEqYs2"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CA+M3ks7UchJ3QdQrHO6rSsc4YNhNEmLejoeRBVNhn=2biSn=cQ@mail.gmail.com>
+In-Reply-To: <20170119165210.GA2139@archie.localdomain>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: Lee Jones <lee.jones@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Alexandre Torgue <alexandre.torgue@st.com>, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Fabrice Gasnier <fabrice.gasnier@st.com>, Gerald Baeza <gerald.baeza@st.com>, Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>, Benjamin Gaignard <benjamin.gaignard@st.com>
+To: Clemens Gruber <clemens.gruber@pqgruber.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Florian Vaussard <florian.vaussard@heig-vd.ch>, Mika Westerberg <mika.westerberg@linux.intel.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Jan 19, 2017 at 05:02:11PM +0100, Benjamin Gaignard wrote:
-> 2017-01-19 9:43 GMT+01:00 Lee Jones <lee.jones@linaro.org>:
-> > On Wed, 18 Jan 2017, Benjamin Gaignard wrote:
-> >
 
-> >> Benjamin Gaignard (8):
-> >>   MFD: add bindings for STM32 Timers driver
-> >>   MFD: add STM32 Timers driver
-> >>   PWM: add pwm-stm32 DT bindings
-> >>   PWM: add PWM driver for STM32 plaftorm
-> >>   IIO: add bindings for STM32 timer trigger driver
-> >>   IIO: add STM32 timer trigger driver
-> >>   ARM: dts: stm32: add Timers driver for stm32f429 MCU
-> >>   ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-disco
-> >>
-> >>  .../ABI/testing/sysfs-bus-iio-timer-stm32          |  29 ++
-> >>  .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 ++
-> >>  .../devicetree/bindings/mfd/stm32-timers.txt       |  46 +++
-> >>  .../devicetree/bindings/pwm/pwm-stm32.txt          |  35 ++
-> >>  arch/arm/boot/dts/stm32f429.dtsi                   | 275 ++++++++++++++
-> >>  arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
-> >>  drivers/iio/trigger/Kconfig                        |   9 +
-> >>  drivers/iio/trigger/Makefile                       |   1 +
-> >>  drivers/iio/trigger/stm32-timer-trigger.c          | 342 ++++++++++++++++++
-> >>  drivers/mfd/Kconfig                                |  11 +
-> >>  drivers/mfd/Makefile                               |   2 +
-> >>  drivers/mfd/stm32-timers.c                         |  80 +++++
-> >>  drivers/pwm/Kconfig                                |   9 +
-> >>  drivers/pwm/Makefile                               |   1 +
-> >>  drivers/pwm/pwm-stm32.c                            | 398 +++++++++++++++++++++
-> >>  include/linux/iio/timer/stm32-timer-trigger.h      |  62 ++++
-> >>  include/linux/mfd/stm32-timers.h                   |  71 ++++
-> >>  17 files changed, 1422 insertions(+)
-> >>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-> >>  create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
-> >>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
-> >>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-> >>  create mode 100644 drivers/iio/trigger/stm32-timer-trigger.c
-> >>  create mode 100644 drivers/mfd/stm32-timers.c
-> >>  create mode 100644 drivers/pwm/pwm-stm32.c
-> >>  create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
-> >>  create mode 100644 include/linux/mfd/stm32-timers.h
-> >
-> > Let me know when you have all your Acks.
-> >
-> > I would be happy to take this through the MFD tree.
-> 
-> Some Acks are still missing on DT patches, I hope that Rob could find
-> to review them
-> after that it will ok :-)
+--UlVJffcvxoiEqYs2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I've acked all the bindings. stm32 maintainer needs to ack the dts 
-files.
+On Thu, Jan 19, 2017 at 05:52:10PM +0100, Clemens Gruber wrote:
+> On Thu, Jan 19, 2017 at 06:10:08PM +0200, Andy Shevchenko wrote:
+> > Combining with your proposal I would see the best approach is to set
+> > pca->period_ns accordingly to current prescaler value if you want to.
+>=20
+> Yes, I agree.
+>=20
+> > In your patch I see no benefit, since it's quite unlikely user will want
+> > to have 5ms period among all possibilities.
+>=20
+> It is the hardware default, but you are right, the user probably does
+> not care about that.
+>=20
+> > So, summarize, I prefer (in order of preference from high to low):
+> > - enforce default prescaler value based on default period (it's just one
+> > line to write a register)
+> > - calculate default period based on actual prescaler value
+>=20
+> Let's go with this one. I'll spin up a v2 where I calculate the
+> period_ns value from the current prescaler value in the probe function.
 
-Rob
+This effectively ends up duplicating much of what the atomic API is
+supposed to be doing.
+
+So generally before the atomic API there is no way for the PWM driver
+(and consequently the PWM users) to know what the current setting is.
+That implies that we either can't care about the settings that were
+programmed by some bootloader or that we force the PWM to a setting
+on ->probe().
+
+The result is inconsistent behaviour across drivers, and that's just
+fine for many cases. But for some cases it is really not something that
+we can work with.
+
+So perhaps another possibility would be for this driver to implement the
+atomic API. This should give you the necessary infrastructure to do
+exactly what you want.
+
+> Thierry: I think you could merge v1 of patch 1/2 from my series
+> independently.
+
+Okay, will do.
+
+> I'll send v2 of patch 2/2 with aforementioned changes in the next
+> days.
+
+Like I said above, I think atomic API conversion wouldn't be very
+difficult for this driver and it has the added advantage of giving you
+the proper infrastructure to do this rather than having to duplicate
+it in the driver.
+
+That would be my preference, but I'm willing to take v2 of 2/2 as well
+if it ends up being really nice and compact. =3D)
+
+Thierry
+
+--UlVJffcvxoiEqYs2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAliBsIgACgkQ3SOs138+
+s6HLzxAAstQIbCtVOULUvga/eT5LdWY6/Prll2SrtKCx99wsSu/5bh0mE7QcZ6LU
+nbr/QJABS4FbYMNuRJNUZVNr/Yi0sGcWsrDRrdLw0YuYA1pdZebPRAMMjmGNme+v
+XWiKK+3AxHbD26isAf/RNsP8DorRY568vCwxEwuCbiiyc92dPpUL711AWZZjM7x0
+/QhST6qjbfdCOS8u6csAeK27tAEku02J1qPqJVQAq6X4eYUHgJxbkwaFuOlTyR13
+6H8+GP2LSkTXt6299+z3mf6LtSG++QvLOH9IurNQvynE/Pu/k6ZfNBmCpjKs1JN5
+WitUNVt34Q9wRhzoY64UXj679eeOoK/rJdQKeSvewRdxqKFZZ5aLgAhBET1A3tx6
+KBYedJu7vXN+D76zO898FAt+w2yqnaGZEeIILUJQfBu4ok0DpF/34EwunL2OwvX5
+Sk45WXsnEwbBAumrmjrmXQNCYql6Km5aksbmg65qc7X9n2fi6fJjgCoO3qLDsiIW
+/Cu/qqljSXKMrop911Jk6wCHkyipJm0iVkeVUbByGunoH5UifEQztQjQOtkBO4s1
+zKcWuI5zToZ4Xdmfl+NdFIb/5m0DlBTauS+5AA0q1DWFPhHZwDzK8XsoADQryfED
+IV0rLwpv0WNURPzOMK5k1cl2fcwT+3COEv+SSOzRg/sua5YXjW0=
+=lJlu
+-----END PGP SIGNATURE-----
+
+--UlVJffcvxoiEqYs2--
