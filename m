@@ -1,108 +1,65 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/2] pwm: pca9685: fix prescaler initialization
-Date: Fri, 20 Jan 2017 07:39:07 +0100
-Message-ID: <20170120063907.GA4894@ulmo.ba.sec>
-References: <20161213155251.28684-2-clemens.gruber@pqgruber.com>
- <20170118105735.GM18989@ulmo.ba.sec>
- <1484737764.2133.193.camel@linux.intel.com>
- <20170118135325.GA2498@archie.localdomain>
- <1484748118.2133.206.camel@linux.intel.com>
- <20170118142533.GA17640@archie.localdomain>
- <1484829279.2133.236.camel@linux.intel.com>
- <20170119144925.GA1660@archie.localdomain>
- <1484842208.2133.245.camel@linux.intel.com>
- <20170119165210.GA2139@archie.localdomain>
+Subject: Re: [PATCH 1/2] pwm: pca9685: fix period change with same duty cycle
+Date: Fri, 20 Jan 2017 07:44:28 +0100
+Message-ID: <20170120064428.GB4894@ulmo.ba.sec>
+References: <20161213155251.28684-1-clemens.gruber@pqgruber.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="UlVJffcvxoiEqYs2"
+        protocol="application/pgp-signature"; boundary="KFztAG8eRSV9hGtP"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170119165210.GA2139@archie.localdomain>
+In-Reply-To: <20161213155251.28684-1-clemens.gruber@pqgruber.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Clemens Gruber <clemens.gruber@pqgruber.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Florian Vaussard <florian.vaussard@heig-vd.ch>, Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-stable@vger.kernel.org, Florian Vaussard <florian.vaussard@heig-vd.ch>
 List-Id: linux-pwm@vger.kernel.org
 
 
---UlVJffcvxoiEqYs2
+--KFztAG8eRSV9hGtP
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jan 19, 2017 at 05:52:10PM +0100, Clemens Gruber wrote:
-> On Thu, Jan 19, 2017 at 06:10:08PM +0200, Andy Shevchenko wrote:
-> > Combining with your proposal I would see the best approach is to set
-> > pca->period_ns accordingly to current prescaler value if you want to.
+On Tue, Dec 13, 2016 at 04:52:50PM +0100, Clemens Gruber wrote:
+> When first implementing support for changing the output frequency, an
+> optimization was added to continue the PWM after changing the prescaler
+> without having to reprogram the ON and OFF registers for the duty cycle,
+> in case the duty cycle stayed the same.
+> This was flawed, because we compared the absolute value of the duty
+> cycle in nanoseconds instead of the ratio to the period.
 >=20
-> Yes, I agree.
+> Fix the problem by removing the shortcut.
 >=20
-> > In your patch I see no benefit, since it's quite unlikely user will want
-> > to have 5ms period among all possibilities.
->=20
-> It is the hardware default, but you are right, the user probably does
-> not care about that.
->=20
-> > So, summarize, I prefer (in order of preference from high to low):
-> > - enforce default prescaler value based on default period (it's just one
-> > line to write a register)
-> > - calculate default period based on actual prescaler value
->=20
-> Let's go with this one. I'll spin up a v2 where I calculate the
-> period_ns value from the current prescaler value in the probe function.
+> Fixes: 01ec8472009c9 ("pwm-pca9685: Support changing the output
+> frequency")
+> Cc: <stable@vger.kernel.org> # v4.3+
+> Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
+> ---
+>  drivers/pwm/pwm-pca9685.c | 11 -----------
+>  1 file changed, 11 deletions(-)
 
-This effectively ends up duplicating much of what the atomic API is
-supposed to be doing.
-
-So generally before the atomic API there is no way for the PWM driver
-(and consequently the PWM users) to know what the current setting is.
-That implies that we either can't care about the settings that were
-programmed by some bootloader or that we force the PWM to a setting
-on ->probe().
-
-The result is inconsistent behaviour across drivers, and that's just
-fine for many cases. But for some cases it is really not something that
-we can work with.
-
-So perhaps another possibility would be for this driver to implement the
-atomic API. This should give you the necessary infrastructure to do
-exactly what you want.
-
-> Thierry: I think you could merge v1 of patch 1/2 from my series
-> independently.
-
-Okay, will do.
-
-> I'll send v2 of patch 2/2 with aforementioned changes in the next
-> days.
-
-Like I said above, I think atomic API conversion wouldn't be very
-difficult for this driver and it has the added advantage of giving you
-the proper infrastructure to do this rather than having to duplicate
-it in the driver.
-
-That would be my preference, but I'm willing to take v2 of 2/2 as well
-if it ends up being really nice and compact. =3D)
+Applied, thanks.
 
 Thierry
 
---UlVJffcvxoiEqYs2
+--KFztAG8eRSV9hGtP
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAliBsIgACgkQ3SOs138+
-s6HLzxAAstQIbCtVOULUvga/eT5LdWY6/Prll2SrtKCx99wsSu/5bh0mE7QcZ6LU
-nbr/QJABS4FbYMNuRJNUZVNr/Yi0sGcWsrDRrdLw0YuYA1pdZebPRAMMjmGNme+v
-XWiKK+3AxHbD26isAf/RNsP8DorRY568vCwxEwuCbiiyc92dPpUL711AWZZjM7x0
-/QhST6qjbfdCOS8u6csAeK27tAEku02J1qPqJVQAq6X4eYUHgJxbkwaFuOlTyR13
-6H8+GP2LSkTXt6299+z3mf6LtSG++QvLOH9IurNQvynE/Pu/k6ZfNBmCpjKs1JN5
-WitUNVt34Q9wRhzoY64UXj679eeOoK/rJdQKeSvewRdxqKFZZ5aLgAhBET1A3tx6
-KBYedJu7vXN+D76zO898FAt+w2yqnaGZEeIILUJQfBu4ok0DpF/34EwunL2OwvX5
-Sk45WXsnEwbBAumrmjrmXQNCYql6Km5aksbmg65qc7X9n2fi6fJjgCoO3qLDsiIW
-/Cu/qqljSXKMrop911Jk6wCHkyipJm0iVkeVUbByGunoH5UifEQztQjQOtkBO4s1
-zKcWuI5zToZ4Xdmfl+NdFIb/5m0DlBTauS+5AA0q1DWFPhHZwDzK8XsoADQryfED
-IV0rLwpv0WNURPzOMK5k1cl2fcwT+3COEv+SSOzRg/sua5YXjW0=
-=lJlu
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAliBscsACgkQ3SOs138+
+s6HDRA//ZCpzcrI1yRCOJQgwSWloCMdSJS4EmHqFP8i8zbcjqAxm7CYhOqATTH3z
+kj3CfbHCwY2TPuGmP+eAGsPmVXucYkD6E724s/yC/q3SsuxBubwTW/YdIE6uG+Xz
+i2GQSlbKaE8OaLMa0nM6XqdD1o7ID5aFz2wXp1kWVENuMTSvAD3Eix/DCoVw6sOz
+muzx+RsRAalz3qkhc0KCrhg+hUtZuQXTxr2DfZe2nazm6qO7NhrCVjvg+uPfJnAx
+QVZsr0+qh7kj3Mj3f6QMn9kL6T1rsm3GHc161xBkwMpwJI1/dTEcRqAl37hct2QZ
+c/zqXO63cZffyuJYJFbuRBHnyoTkMxhMmMitND0SYlKKalnvHT/ckqSnakhLC1KC
+j2JcwGRaqDdrVmCvxgOs+nOH6p6I2PSnTLXlbxnLOMdhNGeAiXIoVwniDXEc9eup
+NTpgq7DkP5MOT+S3d6+gmcBpdRDj9wMXkpPu+inLZSTytQ0PpbE9LREE5pxbTwC5
+IfYyiNqDck2zk8q4nSaxIRbhPBasExlMaxjTukgsxp/tRDNYa1LXdHhXfeS+xhHS
+AJHz+ukp2dtgnNvbDnuto+XR5zOet3r+EsDYJETz9rXvj+zNT/BvgPfdW0YMGPXh
+x0G5Ba+6jFfewQDekfEIm4hLWFeuIxSGGWIuFlzXLO6z2wm6xtA=
+=IM12
 -----END PGP SIGNATURE-----
 
---UlVJffcvxoiEqYs2--
+--KFztAG8eRSV9hGtP--
