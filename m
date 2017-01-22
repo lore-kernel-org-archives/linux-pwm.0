@@ -1,41 +1,24 @@
-From: Sekhar Nori <nsekhar@ti.com>
-Subject: Re: [PATCH] ARM: dts: da850-lcdk: enable pwm nodes
-Date: Fri, 20 Jan 2017 18:23:31 +0530
-Message-ID: <8e981b0b-cdff-aed4-b25b-8875465f0bbb@ti.com>
-References: <1484586189-3118-1-git-send-email-fisaksen@baylibre.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1484586189-3118-1-git-send-email-fisaksen@baylibre.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Frode Isaksen <fisaksen@baylibre.com>, khilman@baylibre.com, ptitiano@baylibre.com, linux-arm-kernel@lists.infradead.org
-Cc: linux-pwm@vger.kernel.org, thierry.reding@gmail.com
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2 00/14] Ingenic JZ4740 / JZ4780 pinctrl driver
+Date: Sun, 22 Jan 2017 15:49:33 +0100
+Message-ID: <20170122144947.16158-1-paul@crapouillou.net>
+References: <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
+Return-path: <linux-mmc-owner@vger.kernel.org>
+In-Reply-To: <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
+Sender: linux-mmc-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, james.hogan@imgtec.com
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Frode,
+Hi,
 
-On Monday 16 January 2017 10:33 PM, Frode Isaksen wrote:
-> Enable the ecap1 and ecap2 pwm nodes for the
-> lcdk board.
-> Note that the other pwm nodes are not enabled,
-> since the pins are shared with ethernet and spi.
-> 
-> Signed-off-by: Frode Isaksen <fisaksen@baylibre.com>
-> ---
+This is the v2 of my ingenic pinctrl patch series.
+Huge changes in there, the pinctrl driver was completely rewritten, and the
+GPIO code was split into a separate driver.
 
-Looks like the eCAP is available on the headers at the bottom of the
-board. While patch like this is fine to be able to test the PWM
-functionality, I dont think we should apply it because this can
-potentially clash with usage of the pin on daughter card.
+It now uses the generic functions to handle pin groups, as well as generic
+devicetree bindings.
 
-Thanks,
-Sekhar
+Best regards,
+- Paul
+
