@@ -1,84 +1,40 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [GIT PULL] Immutable branch between MFD, ARM, IIO and PWM due for
- the v4.10 merge window
-Date: Mon, 23 Jan 2017 12:12:22 +0000
-Message-ID: <20170123121222.GJ16020@dell>
-References: <1484903709-11650-1-git-send-email-benjamin.gaignard@st.com>
+From: Joyes Dadi <"YD."@biscuit.ocn.ne.jp>
+Subject: Urgent Please,,
+Date: Mon, 23 Jan 2017 23:07:54 +0900 (JST)
+Message-ID: <1307460608.25784291.1485180474314.JavaMail.root__12184.1232445606$1485181149$gmane$org@biscuit.ocn.ne.jp>
+Reply-To: Joyes Dadi <joyesdadi767@citromail.hu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1484903709-11650-1-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: arm-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Content-Type: text/plain; charset=ISO-2022-JP
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mbkd0323.ocn.ad.jp ([153.149.236.24]:53271 "EHLO
+        mbkd0323.ocn.ad.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750761AbdAWOSo (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 23 Jan 2017 09:18:44 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Arm, IIO and PWM Maintainers,
+Good Day Dear,
 
-Enjoy!
+My name is Ms. Joyes Dadi, I am glad you are reading this letter and I hope
+we will start our communication and I know that this message will look strange,
+surprising and probably unbelievable to you, but it is the reality. I want to
+make a donation of money to you.
 
-The following changes since commit 7ce7d89f48834cefece7804d38fc5d85382edf77:
+I contact you by the will of God. I am a firm German woman specialized in
+mining gold and diamonds in Africa. But now, I'm very sick of a cancer. My
+husband died in an accident two years ago with our two children and now I have
+cancer of the esophagus that damaged almost all the cells in my system/agencies
+and I'll die soon according to my doctor.
 
-  Linux 4.10-rc1 (2016-12-25 16:13:08 -0800)
+My most concern now is, we grew up in the orphanage and were married in
+orphanage. If I die this deposited fund will soon be left alone in the hand of
+the bank, and I do want to it that  way. Please, if you can be reliable and
+sincere to accept my humble proposal; I have (10.5Millions Euro) in a fixed
+deposit account; I will order the Bank to transfer the money into your account
+in your country immediately, and then you will take the fund to  your country
+and invest it to the orphanage homes Please, answer as quickly as possible.
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-arm-iio-pwm-v4.10
-
-for you to fetch changes up to 94df449273475980a39f1bf47f1e3d2b07ce6577:
-
-  ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-disco (2017-01-23 12:06:28 +0000)
-
-----------------------------------------------------------------
-Immutable branch between MFD, ARM, IIO and PWM due for the v4.10 merge window
-
-----------------------------------------------------------------
-Benjamin Gaignard (8):
-      dt-bindings: mfd: Add bindings for STM32 Timers driver
-      mfd: Add STM32 Timers driver
-      dt-bindings: pwm: Add STM32 bindings
-      pwm: Add driver for STM32 plaftorm
-      iio: Add bindings for STM32 timer trigger driver
-      iio: Add STM32 timer trigger driver
-      ARM: dts: stm32: add Timers driver for stm32f429 MCU
-      ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-disco
-
- .../ABI/testing/sysfs-bus-iio-timer-stm32          |  29 ++
- .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 ++
- .../devicetree/bindings/mfd/stm32-timers.txt       |  46 +++
- .../devicetree/bindings/pwm/pwm-stm32.txt          |  35 ++
- arch/arm/boot/dts/stm32f429.dtsi                   | 275 ++++++++++++++
- arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
- drivers/iio/trigger/Kconfig                        |   9 +
- drivers/iio/trigger/Makefile                       |   1 +
- drivers/iio/trigger/stm32-timer-trigger.c          | 342 ++++++++++++++++++
- drivers/mfd/Kconfig                                |  11 +
- drivers/mfd/Makefile                               |   2 +
- drivers/mfd/stm32-timers.c                         |  80 +++++
- drivers/pwm/Kconfig                                |   9 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-stm32.c                            | 398 +++++++++++++++++++++
- include/linux/iio/timer/stm32-timer-trigger.h      |  62 ++++
- include/linux/mfd/stm32-timers.h                   |  71 ++++
- 17 files changed, 1422 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
- create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
- create mode 100644 drivers/iio/trigger/stm32-timer-trigger.c
- create mode 100644 drivers/mfd/stm32-timers.c
- create mode 100644 drivers/pwm/pwm-stm32.c
- create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
- create mode 100644 include/linux/mfd/stm32-timers.h
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+God bless you.
+Ms. Joyes Dadi
+Email: joyesdadi767@citromail.hu
