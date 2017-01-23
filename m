@@ -1,128 +1,148 @@
-From: Lukasz Majewski <lukma@denx.de>
-Subject: Re: [PATCH v2 RESEND] video: backlight: pwm_bl: Initialize
- fb_bl_on[x] and use_count during pwm_backlight_probe()
-Date: Mon, 23 Jan 2017 01:50:41 +0100
-Message-ID: <20170123015041.34b8e64d@jawa>
-References: <1477169904-14997-1-git-send-email-l.majewski@majess.pl>
-        <1482790896-29202-1-git-send-email-l.majewski@majess.pl>
-        <20170103083032.GA2977@dell>
-        <20170113012737.45f5a3db@jawa>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v2 10/14] mmc: jz4740: Let the pinctrl driver configure
+ the pins
+Date: Mon, 23 Jan 2017 11:40:12 +0100
+Message-ID: <CAPDyKFpqs+w4jsYNBeH3VuB08Yp72JPh7wcYZZHJKSKeuAGE2A@mail.gmail.com>
+References: <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
+ <20170122144947.16158-1-paul@crapouillou.net> <20170122144947.16158-11-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:46511 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750713AbdAWAuo (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 22 Jan 2017 19:50:44 -0500
-In-Reply-To: <20170113012737.45f5a3db@jawa>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170122144947.16158-11-paul@crapouillou.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-mips@linux-mips.org, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, Linux
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Liu Ying <Ying.Liu@freescale.com>, Fabio Estevam <fabio.estevam@nxp.com>, Fabio Estevam <festevam@gmail.com>, Tomi Valkeinen <tomi.valkeinen@ti.com>
 
-Dear All,
+On 22 January 2017 at 15:49, Paul Cercueil <paul@crapouillou.net> wrote:
+> Now that the JZ4740 and similar SoCs have a pinctrl driver, we rely on
+> the pins being properly configured before the driver probes.
+>
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 
-> Dear All,
-> 
-> > Thierry, Jingoo,
-> > 
-> > Please respond to Lukasz.
-> 
-> Yes, your response is more than welcome....... :-)
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-More, more than welcome.
+Kind regards
+Uffe
 
-Ping for this patch. I do understand that kernel developers are busy
-people, but this patch is not reviewed since Nov last year :-)
-
-> 
-> Thanks in advance,
-> 
-> Łukasz Majewski
-> 
-> > 
-> > On Mon, 26 Dec 2016, Lukasz Majewski wrote:
-> > 
-> > > The commit a55944ca82d2 
-> > > ("backlight: update bd state & fb_blank properties when
-> > > necessary") has posed some extra restrictions on blanking and
-> > > unblanking frame buffer device.
-> > > 
-> > > Unfortunately, pwm_bl driver's probe did not initialize members of
-> > > struct backlight_device necessary for further blank/unblank
-> > > operation.
-> > > 
-> > > This code in case of initial unblank of backlight device (default 
-> > > behaviour) sets use_count to 1 and marks this particular backlight
-> > > device as used by all available fb devices (since it is not known
-> > > during probe how much and which fb devices will be assigned).
-> > > 
-> > > Without this code, the backlight works properly until one tries to
-> > > blank it manually from sysfs with "echo 1
-> > > > /sys/class/graphics/fb0/blank". Since fb_bl_on[0] and use_count
-> > > > were both set to 0, the logic at
-> > > fb_notifier_callback (@backlight.c) thought that we didn't turn on
-> > > (unblanked) the backlight device and refuses to disable (blank)
-> > > it. As a result we see garbage from fb displayed.
-> > > 
-> > > Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
-> > > ---
-> > > The patch has been tested on i.MX6q with vanilla 4.9 kernel.
-> > > It applies on 4.10-rc1.
-> > > ---
-> > >  drivers/video/backlight/pwm_bl.c | 10 +++++++++-
-> > >  1 file changed, 9 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/video/backlight/pwm_bl.c
-> > > b/drivers/video/backlight/pwm_bl.c index 1261400..6859ba0 100644
-> > > --- a/drivers/video/backlight/pwm_bl.c
-> > > +++ b/drivers/video/backlight/pwm_bl.c
-> > > @@ -202,7 +202,7 @@ static int pwm_backlight_probe(struct
-> > > platform_device *pdev) struct pwm_bl_data *pb;
-> > >  	int initial_blank = FB_BLANK_UNBLANK;
-> > >  	struct pwm_args pargs;
-> > > -	int ret;
-> > > +	int ret, i;
-> > >  
-> > >  	if (!data) {
-> > >  		ret = pwm_backlight_parse_dt(&pdev->dev,
-> > > &defdata); @@ -348,6 +348,14 @@ static int
-> > > pwm_backlight_probe(struct platform_device *pdev) 
-> > >  	bl->props.brightness = data->dft_brightness;
-> > >  	bl->props.power = initial_blank;
-> > > +
-> > > +	if (initial_blank == FB_BLANK_UNBLANK) {
-> > > +		for (i = 0; i < FB_MAX; i++)
-> > > +			bl->fb_bl_on[i] = true;
-> > > +
-> > > +		bl->use_count = 1;
-> > > +	}
-> > > +
-> > >  	backlight_update_status(bl);
-> > >  
-> > >  	platform_set_drvdata(pdev, bl);
-> > 
-> 
-> Best regards,
-> 
-> Lukasz Majewski
-> 
+> ---
+>  drivers/mmc/host/jz4740_mmc.c | 45 +++++--------------------------------------
+>  1 file changed, 5 insertions(+), 40 deletions(-)
+>
+> v2: Set pin sleep/default state in suspend/resume callbacks
+>
+> diff --git a/drivers/mmc/host/jz4740_mmc.c b/drivers/mmc/host/jz4740_mmc.c
+> index 819ad32964fc..b5fec5b7ee7b 100644
+> --- a/drivers/mmc/host/jz4740_mmc.c
+> +++ b/drivers/mmc/host/jz4740_mmc.c
+> @@ -20,14 +20,13 @@
+>  #include <linux/irq.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/module.h>
+> +#include <linux/pinctrl/consumer.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/delay.h>
+>  #include <linux/scatterlist.h>
+>  #include <linux/clk.h>
+>
+>  #include <linux/bitops.h>
+> -#include <linux/gpio.h>
+> -#include <asm/mach-jz4740/gpio.h>
+>  #include <asm/cacheflush.h>
+>  #include <linux/dma-mapping.h>
+>  #include <linux/dmaengine.h>
+> @@ -906,15 +905,6 @@ static const struct mmc_host_ops jz4740_mmc_ops = {
+>         .enable_sdio_irq = jz4740_mmc_enable_sdio_irq,
+>  };
+>
+> -static const struct jz_gpio_bulk_request jz4740_mmc_pins[] = {
+> -       JZ_GPIO_BULK_PIN(MSC_CMD),
+> -       JZ_GPIO_BULK_PIN(MSC_CLK),
+> -       JZ_GPIO_BULK_PIN(MSC_DATA0),
+> -       JZ_GPIO_BULK_PIN(MSC_DATA1),
+> -       JZ_GPIO_BULK_PIN(MSC_DATA2),
+> -       JZ_GPIO_BULK_PIN(MSC_DATA3),
+> -};
+> -
+>  static int jz4740_mmc_request_gpio(struct device *dev, int gpio,
+>         const char *name, bool output, int value)
+>  {
+> @@ -978,15 +968,6 @@ static void jz4740_mmc_free_gpios(struct platform_device *pdev)
+>                 gpio_free(pdata->gpio_power);
+>  }
+>
+> -static inline size_t jz4740_mmc_num_pins(struct jz4740_mmc_host *host)
+> -{
+> -       size_t num_pins = ARRAY_SIZE(jz4740_mmc_pins);
+> -       if (host->pdata && host->pdata->data_1bit)
+> -               num_pins -= 3;
+> -
+> -       return num_pins;
+> -}
+> -
+>  static int jz4740_mmc_probe(struct platform_device* pdev)
+>  {
+>         int ret;
+> @@ -1027,15 +1008,9 @@ static int jz4740_mmc_probe(struct platform_device* pdev)
+>                 goto err_free_host;
+>         }
+>
+> -       ret = jz_gpio_bulk_request(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
+> -       if (ret) {
+> -               dev_err(&pdev->dev, "Failed to request mmc pins: %d\n", ret);
+> -               goto err_free_host;
+> -       }
+> -
+>         ret = jz4740_mmc_request_gpios(mmc, pdev);
+>         if (ret)
+> -               goto err_gpio_bulk_free;
+> +               goto err_release_dma;
+>
+>         mmc->ops = &jz4740_mmc_ops;
+>         mmc->f_min = JZ_MMC_CLK_RATE / 128;
+> @@ -1091,10 +1066,9 @@ static int jz4740_mmc_probe(struct platform_device* pdev)
+>         free_irq(host->irq, host);
+>  err_free_gpios:
+>         jz4740_mmc_free_gpios(pdev);
+> -err_gpio_bulk_free:
+> +err_release_dma:
+>         if (host->use_dma)
+>                 jz4740_mmc_release_dma_channels(host);
+> -       jz_gpio_bulk_free(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
+>  err_free_host:
+>         mmc_free_host(mmc);
+>
+> @@ -1114,7 +1088,6 @@ static int jz4740_mmc_remove(struct platform_device *pdev)
+>         free_irq(host->irq, host);
+>
+>         jz4740_mmc_free_gpios(pdev);
+> -       jz_gpio_bulk_free(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
+>
+>         if (host->use_dma)
+>                 jz4740_mmc_release_dma_channels(host);
+> @@ -1128,20 +1101,12 @@ static int jz4740_mmc_remove(struct platform_device *pdev)
+>
+>  static int jz4740_mmc_suspend(struct device *dev)
+>  {
+> -       struct jz4740_mmc_host *host = dev_get_drvdata(dev);
+> -
+> -       jz_gpio_bulk_suspend(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
+> -
+> -       return 0;
+> +       return pinctrl_pm_select_sleep_state(dev);
+>  }
+>
+>  static int jz4740_mmc_resume(struct device *dev)
+>  {
+> -       struct jz4740_mmc_host *host = dev_get_drvdata(dev);
+> -
+> -       jz_gpio_bulk_resume(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
+> -
+> -       return 0;
+> +       return pinctrl_pm_select_default_state(dev);
+>  }
+>
+>  static SIMPLE_DEV_PM_OPS(jz4740_mmc_pm_ops, jz4740_mmc_suspend,
 > --
-> 
-> DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-> HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-> Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-
-
-
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+> 2.11.0
+>
