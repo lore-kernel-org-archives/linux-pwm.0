@@ -1,148 +1,84 @@
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v2 10/14] mmc: jz4740: Let the pinctrl driver configure
- the pins
-Date: Mon, 23 Jan 2017 11:40:12 +0100
-Message-ID: <CAPDyKFpqs+w4jsYNBeH3VuB08Yp72JPh7wcYZZHJKSKeuAGE2A@mail.gmail.com>
-References: <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
- <20170122144947.16158-1-paul@crapouillou.net> <20170122144947.16158-11-paul@crapouillou.net>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [GIT PULL] Immutable branch between MFD, ARM, IIO and PWM due for
+ the v4.10 merge window
+Date: Mon, 23 Jan 2017 12:12:22 +0000
+Message-ID: <20170123121222.GJ16020@dell>
+References: <1484903709-11650-1-git-send-email-benjamin.gaignard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170122144947.16158-11-paul@crapouillou.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-mips@linux-mips.org, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, Linux
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1484903709-11650-1-git-send-email-benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: arm-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On 22 January 2017 at 15:49, Paul Cercueil <paul@crapouillou.net> wrote:
-> Now that the JZ4740 and similar SoCs have a pinctrl driver, we rely on
-> the pins being properly configured before the driver probes.
->
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Arm, IIO and PWM Maintainers,
 
-Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+Enjoy!
 
-Kind regards
-Uffe
+The following changes since commit 7ce7d89f48834cefece7804d38fc5d85382edf77:
 
-> ---
->  drivers/mmc/host/jz4740_mmc.c | 45 +++++--------------------------------------
->  1 file changed, 5 insertions(+), 40 deletions(-)
->
-> v2: Set pin sleep/default state in suspend/resume callbacks
->
-> diff --git a/drivers/mmc/host/jz4740_mmc.c b/drivers/mmc/host/jz4740_mmc.c
-> index 819ad32964fc..b5fec5b7ee7b 100644
-> --- a/drivers/mmc/host/jz4740_mmc.c
-> +++ b/drivers/mmc/host/jz4740_mmc.c
-> @@ -20,14 +20,13 @@
->  #include <linux/irq.h>
->  #include <linux/interrupt.h>
->  #include <linux/module.h>
-> +#include <linux/pinctrl/consumer.h>
->  #include <linux/platform_device.h>
->  #include <linux/delay.h>
->  #include <linux/scatterlist.h>
->  #include <linux/clk.h>
->
->  #include <linux/bitops.h>
-> -#include <linux/gpio.h>
-> -#include <asm/mach-jz4740/gpio.h>
->  #include <asm/cacheflush.h>
->  #include <linux/dma-mapping.h>
->  #include <linux/dmaengine.h>
-> @@ -906,15 +905,6 @@ static const struct mmc_host_ops jz4740_mmc_ops = {
->         .enable_sdio_irq = jz4740_mmc_enable_sdio_irq,
->  };
->
-> -static const struct jz_gpio_bulk_request jz4740_mmc_pins[] = {
-> -       JZ_GPIO_BULK_PIN(MSC_CMD),
-> -       JZ_GPIO_BULK_PIN(MSC_CLK),
-> -       JZ_GPIO_BULK_PIN(MSC_DATA0),
-> -       JZ_GPIO_BULK_PIN(MSC_DATA1),
-> -       JZ_GPIO_BULK_PIN(MSC_DATA2),
-> -       JZ_GPIO_BULK_PIN(MSC_DATA3),
-> -};
-> -
->  static int jz4740_mmc_request_gpio(struct device *dev, int gpio,
->         const char *name, bool output, int value)
->  {
-> @@ -978,15 +968,6 @@ static void jz4740_mmc_free_gpios(struct platform_device *pdev)
->                 gpio_free(pdata->gpio_power);
->  }
->
-> -static inline size_t jz4740_mmc_num_pins(struct jz4740_mmc_host *host)
-> -{
-> -       size_t num_pins = ARRAY_SIZE(jz4740_mmc_pins);
-> -       if (host->pdata && host->pdata->data_1bit)
-> -               num_pins -= 3;
-> -
-> -       return num_pins;
-> -}
-> -
->  static int jz4740_mmc_probe(struct platform_device* pdev)
->  {
->         int ret;
-> @@ -1027,15 +1008,9 @@ static int jz4740_mmc_probe(struct platform_device* pdev)
->                 goto err_free_host;
->         }
->
-> -       ret = jz_gpio_bulk_request(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
-> -       if (ret) {
-> -               dev_err(&pdev->dev, "Failed to request mmc pins: %d\n", ret);
-> -               goto err_free_host;
-> -       }
-> -
->         ret = jz4740_mmc_request_gpios(mmc, pdev);
->         if (ret)
-> -               goto err_gpio_bulk_free;
-> +               goto err_release_dma;
->
->         mmc->ops = &jz4740_mmc_ops;
->         mmc->f_min = JZ_MMC_CLK_RATE / 128;
-> @@ -1091,10 +1066,9 @@ static int jz4740_mmc_probe(struct platform_device* pdev)
->         free_irq(host->irq, host);
->  err_free_gpios:
->         jz4740_mmc_free_gpios(pdev);
-> -err_gpio_bulk_free:
-> +err_release_dma:
->         if (host->use_dma)
->                 jz4740_mmc_release_dma_channels(host);
-> -       jz_gpio_bulk_free(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
->  err_free_host:
->         mmc_free_host(mmc);
->
-> @@ -1114,7 +1088,6 @@ static int jz4740_mmc_remove(struct platform_device *pdev)
->         free_irq(host->irq, host);
->
->         jz4740_mmc_free_gpios(pdev);
-> -       jz_gpio_bulk_free(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
->
->         if (host->use_dma)
->                 jz4740_mmc_release_dma_channels(host);
-> @@ -1128,20 +1101,12 @@ static int jz4740_mmc_remove(struct platform_device *pdev)
->
->  static int jz4740_mmc_suspend(struct device *dev)
->  {
-> -       struct jz4740_mmc_host *host = dev_get_drvdata(dev);
-> -
-> -       jz_gpio_bulk_suspend(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
-> -
-> -       return 0;
-> +       return pinctrl_pm_select_sleep_state(dev);
->  }
->
->  static int jz4740_mmc_resume(struct device *dev)
->  {
-> -       struct jz4740_mmc_host *host = dev_get_drvdata(dev);
-> -
-> -       jz_gpio_bulk_resume(jz4740_mmc_pins, jz4740_mmc_num_pins(host));
-> -
-> -       return 0;
-> +       return pinctrl_pm_select_default_state(dev);
->  }
->
->  static SIMPLE_DEV_PM_OPS(jz4740_mmc_pm_ops, jz4740_mmc_suspend,
-> --
-> 2.11.0
->
+  Linux 4.10-rc1 (2016-12-25 16:13:08 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-arm-iio-pwm-v4.10
+
+for you to fetch changes up to 94df449273475980a39f1bf47f1e3d2b07ce6577:
+
+  ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-disco (2017-01-23 12:06:28 +0000)
+
+----------------------------------------------------------------
+Immutable branch between MFD, ARM, IIO and PWM due for the v4.10 merge window
+
+----------------------------------------------------------------
+Benjamin Gaignard (8):
+      dt-bindings: mfd: Add bindings for STM32 Timers driver
+      mfd: Add STM32 Timers driver
+      dt-bindings: pwm: Add STM32 bindings
+      pwm: Add driver for STM32 plaftorm
+      iio: Add bindings for STM32 timer trigger driver
+      iio: Add STM32 timer trigger driver
+      ARM: dts: stm32: add Timers driver for stm32f429 MCU
+      ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-disco
+
+ .../ABI/testing/sysfs-bus-iio-timer-stm32          |  29 ++
+ .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 ++
+ .../devicetree/bindings/mfd/stm32-timers.txt       |  46 +++
+ .../devicetree/bindings/pwm/pwm-stm32.txt          |  35 ++
+ arch/arm/boot/dts/stm32f429.dtsi                   | 275 ++++++++++++++
+ arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
+ drivers/iio/trigger/Kconfig                        |   9 +
+ drivers/iio/trigger/Makefile                       |   1 +
+ drivers/iio/trigger/stm32-timer-trigger.c          | 342 ++++++++++++++++++
+ drivers/mfd/Kconfig                                |  11 +
+ drivers/mfd/Makefile                               |   2 +
+ drivers/mfd/stm32-timers.c                         |  80 +++++
+ drivers/pwm/Kconfig                                |   9 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-stm32.c                            | 398 +++++++++++++++++++++
+ include/linux/iio/timer/stm32-timer-trigger.h      |  62 ++++
+ include/linux/mfd/stm32-timers.h                   |  71 ++++
+ 17 files changed, 1422 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
+ create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+ create mode 100644 drivers/iio/trigger/stm32-timer-trigger.c
+ create mode 100644 drivers/mfd/stm32-timers.c
+ create mode 100644 drivers/pwm/pwm-stm32.c
+ create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
+ create mode 100644 include/linux/mfd/stm32-timers.h
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
