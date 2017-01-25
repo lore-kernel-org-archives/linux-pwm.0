@@ -1,75 +1,60 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [GIT PULL] Immutable branch between MFD, ARM, IIO and PWM due
- for the v4.10 merge window
-Date: Wed, 25 Jan 2017 16:40:50 +0000
-Message-ID: <20170125164050.GC19242@dell>
-References: <1484903709-11650-1-git-send-email-benjamin.gaignard@st.com>
- <20170123121222.GJ16020@dell>
+From: Clemens Gruber <clemens.gruber@pqgruber.com>
+Subject: Re: [PATCH 2/2] pwm: pca9685: fix prescaler initialization
+Date: Wed, 25 Jan 2017 19:05:10 +0100
+Message-ID: <20170125180510.GA9566@archie.localdomain>
+References: <20170118105735.GM18989@ulmo.ba.sec>
+ <1484737764.2133.193.camel@linux.intel.com>
+ <20170118135325.GA2498@archie.localdomain>
+ <1484748118.2133.206.camel@linux.intel.com>
+ <20170118142533.GA17640@archie.localdomain>
+ <1484829279.2133.236.camel@linux.intel.com>
+ <20170119144925.GA1660@archie.localdomain>
+ <1484842208.2133.245.camel@linux.intel.com>
+ <20170119165210.GA2139@archie.localdomain>
+ <20170120063907.GA4894@ulmo.ba.sec>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170123121222.GJ16020@dell>
-Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: arm-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, knaack.h-Mmb7MZpHnFY@public.gmane.org, lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org, pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza-qxv4g6HH51o@public.gmane.org, arnaud.pouliquen-qxv4g6HH51o@public.gmane.org, linaro-kernel-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Gaignard <benjamin.gaignard-qxv4g6HH51o@public.gmane.org>
+In-Reply-To: <20170120063907.GA4894@ulmo.ba.sec>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Florian Vaussard <florian.vaussard@heig-vd.ch>, Mika Westerberg <mika.westerberg@linux.intel.com>
 List-Id: linux-pwm@vger.kernel.org
 
-As promised.
+On Fri, Jan 20, 2017 at 07:39:07AM +0100, Thierry Reding wrote:
+> On Thu, Jan 19, 2017 at 05:52:10PM +0100, Clemens Gruber wrote:
+> > Let's go with this one. I'll spin up a v2 where I calculate the
+> > period_ns value from the current prescaler value in the probe function.
+> 
+> This effectively ends up duplicating much of what the atomic API is
+> supposed to be doing.
+> 
+> So generally before the atomic API there is no way for the PWM driver
+> (and consequently the PWM users) to know what the current setting is.
+> That implies that we either can't care about the settings that were
+> programmed by some bootloader or that we force the PWM to a setting
+> on ->probe().
+> 
+> The result is inconsistent behaviour across drivers, and that's just
+> fine for many cases. But for some cases it is really not something that
+> we can work with.
+> 
+> So perhaps another possibility would be for this driver to implement the
+> atomic API. This should give you the necessary infrastructure to do
+> exactly what you want.
 
-The following changes since commit 7ce7d89f48834cefece7804d38fc5d85382edf77:
+Sounds good. I'll work on that.
 
-  Linux 4.10-rc1 (2016-12-25 16:13:08 -0800)
+One oddity remains though:
+The chip has one prescaler, so changing the period of one channel
+changes the period of all other channels as well.
+If somebody configures different periods for each channel, the last one
+wins, but the PWM core still stores the period values the user set
+initially. Should we update the period in pwm_state of all pwms in the
+chip if the period of one pwm is changed?
+Then, when the user calls pwm_get_state, the pwm_state would contain the
+correct period?
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-iio-pwm-4.11
-
-for you to fetch changes up to 93fbe91b552194af970256ce72934745d01df435:
-
-  iio: Add STM32 timer trigger driver (2017-01-25 16:11:56 +0000)
-
-----------------------------------------------------------------
-Immutable branch between MFD, IIO and PWM due for the v4.11 merge window
-
-----------------------------------------------------------------
-Benjamin Gaignard (6):
-      dt-bindings: mfd: Add bindings for STM32 Timers driver
-      mfd: Add STM32 Timers driver
-      dt-bindings: pwm: Add STM32 bindings
-      pwm: Add driver for STM32 plaftorm
-      iio: Add bindings for STM32 timer trigger driver
-      iio: Add STM32 timer trigger driver
-
- .../ABI/testing/sysfs-bus-iio-timer-stm32          |  29 ++
- .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 ++
- .../devicetree/bindings/mfd/stm32-timers.txt       |  46 +++
- .../devicetree/bindings/pwm/pwm-stm32.txt          |  35 ++
- drivers/iio/trigger/Kconfig                        |   9 +
- drivers/iio/trigger/Makefile                       |   1 +
- drivers/iio/trigger/stm32-timer-trigger.c          | 342 ++++++++++++++++++
- drivers/mfd/Kconfig                                |  11 +
- drivers/mfd/Makefile                               |   2 +
- drivers/mfd/stm32-timers.c                         |  80 +++++
- drivers/pwm/Kconfig                                |   9 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-stm32.c                            | 397 +++++++++++++++++++++
- include/linux/iio/timer/stm32-timer-trigger.h      |  62 ++++
- include/linux/mfd/stm32-timers.h                   |  71 ++++
- 15 files changed, 1118 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
- create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
- create mode 100644 drivers/iio/trigger/stm32-timer-trigger.c
- create mode 100644 drivers/mfd/stm32-timers.c
- create mode 100644 drivers/pwm/pwm-stm32.c
- create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
- create mode 100644 include/linux/mfd/stm32-timers.h
- 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Thanks,
+Clemens
