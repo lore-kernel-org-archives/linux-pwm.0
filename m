@@ -1,60 +1,144 @@
-From: Clemens Gruber <clemens.gruber@pqgruber.com>
-Subject: Re: [PATCH 2/2] pwm: pca9685: fix prescaler initialization
-Date: Wed, 25 Jan 2017 19:05:10 +0100
-Message-ID: <20170125180510.GA9566@archie.localdomain>
-References: <20170118105735.GM18989@ulmo.ba.sec>
- <1484737764.2133.193.camel@linux.intel.com>
- <20170118135325.GA2498@archie.localdomain>
- <1484748118.2133.206.camel@linux.intel.com>
- <20170118142533.GA17640@archie.localdomain>
- <1484829279.2133.236.camel@linux.intel.com>
- <20170119144925.GA1660@archie.localdomain>
- <1484842208.2133.245.camel@linux.intel.com>
- <20170119165210.GA2139@archie.localdomain>
- <20170120063907.GA4894@ulmo.ba.sec>
+From: Jonathan Cameron <jic23-tko9wxEg+fIOOJlXag/Snyp2UmYkHbXO@public.gmane.org>
+Subject: Re: [GIT PULL] Immutable branch between MFD, ARM, IIO and PWM due for the v4.10 merge window
+Date: Wed, 25 Jan 2017 18:23:33 +0000
+Message-ID: <DC96044D-44CE-4D3E-92B2-1C1C73E45FFA@jic23.retrosnub.co.uk>
+References: <1484903709-11650-1-git-send-email-benjamin.gaignard@st.com> <20170123121222.GJ16020@dell> <CAOesGMhx6ZWekgW01-7GRcMiWtAohcfGdcu1FhkP=bTfsjBCmQ@mail.gmail.com> <20170124081244.GP16020@dell> <CAOesGMhauUd0mPuUsRZnEWrAfQZj3Di_YwvxtD1rXr7B9fgqdw@mail.gmail.com> <20170125100858.GA16202@dell>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170120063907.GA4894@ulmo.ba.sec>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Florian Vaussard <florian.vaussard@heig-vd.ch>, Mika Westerberg <mika.westerberg@linux.intel.com>
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170125100858.GA16202@dell>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>
+Cc: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "arm-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <arm-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Alexandre TORGUE <alexandre.torgue-qxv4g6HH51o@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linux PWM List <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Hartmut Knaack <knaack.h-Mmb7MZpHnFY@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, "linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, gerald.baeza@s
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Jan 20, 2017 at 07:39:07AM +0100, Thierry Reding wrote:
-> On Thu, Jan 19, 2017 at 05:52:10PM +0100, Clemens Gruber wrote:
-> > Let's go with this one. I'll spin up a v2 where I calculate the
-> > period_ns value from the current prescaler value in the probe function.
-> 
-> This effectively ends up duplicating much of what the atomic API is
-> supposed to be doing.
-> 
-> So generally before the atomic API there is no way for the PWM driver
-> (and consequently the PWM users) to know what the current setting is.
-> That implies that we either can't care about the settings that were
-> programmed by some bootloader or that we force the PWM to a setting
-> on ->probe().
-> 
-> The result is inconsistent behaviour across drivers, and that's just
-> fine for many cases. But for some cases it is really not something that
-> we can work with.
-> 
-> So perhaps another possibility would be for this driver to implement the
-> atomic API. This should give you the necessary infrastructure to do
-> exactly what you want.
 
-Sounds good. I'll work on that.
 
-One oddity remains though:
-The chip has one prescaler, so changing the period of one channel
-changes the period of all other channels as well.
-If somebody configures different periods for each channel, the last one
-wins, but the PWM core still stores the period values the user set
-initially. Should we update the period in pwm_state of all pwms in the
-chip if the period of one pwm is changed?
-Then, when the user calls pwm_get_state, the pwm_state would contain the
-correct period?
+On 25 January 2017 10:08:58 GMT+00:00, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+>Jonathan, Thierry,
+>
+>On Tue, 24 Jan 2017, Olof Johansson wrote:
+>> On Tue, Jan 24, 2017 at 12:12 AM, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>wrote:
+>> > On Mon, 23 Jan 2017, Olof Johansson wrote:
+>> >> On Mon, Jan 23, 2017 at 4:12 AM, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>wrote:
+>> >> > Arm, IIO and PWM Maintainers,
+>> >> >
+>> >> > Enjoy!
+>> >> >
+>> >> > The following changes since commit
+>7ce7d89f48834cefece7804d38fc5d85382edf77:
+>> >> >
+>> >> >   Linux 4.10-rc1 (2016-12-25 16:13:08 -0800)
+>> >> >
+>> >> > are available in the git repository at:
+>> >> >
+>> >> >   git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git
+>ib-mfd-arm-iio-pwm-v4.10
+>> >> >
+>> >> > for you to fetch changes up to
+>94df449273475980a39f1bf47f1e3d2b07ce6577:
+>> >> >
+>> >> >   ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-disco
+>(2017-01-23 12:06:28 +0000)
+>> >> >
+>> >> > ----------------------------------------------------------------
+>> >> > Immutable branch between MFD, ARM, IIO and PWM due for the v4.10
+>merge window
+>> >> >
+>> >> > ----------------------------------------------------------------
+>> >> > Benjamin Gaignard (8):
+>> >> >       dt-bindings: mfd: Add bindings for STM32 Timers driver
+>> >> >       mfd: Add STM32 Timers driver
+>> >> >       dt-bindings: pwm: Add STM32 bindings
+>> >> >       pwm: Add driver for STM32 plaftorm
+>> >> >       iio: Add bindings for STM32 timer trigger driver
+>> >> >       iio: Add STM32 timer trigger driver
+>> >> >       ARM: dts: stm32: add Timers driver for stm32f429 MCU
+>> >> >       ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-disco
+>> >> >
+>> >> >  .../ABI/testing/sysfs-bus-iio-timer-stm32          |  29 ++
+>> >> >  .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 ++
+>> >> >  .../devicetree/bindings/mfd/stm32-timers.txt       |  46 +++
+>> >> >  .../devicetree/bindings/pwm/pwm-stm32.txt          |  35 ++
+>> >> >  arch/arm/boot/dts/stm32f429.dtsi                   | 275
+>++++++++++++++
+>> >> >  arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
+>> >> >  drivers/iio/trigger/Kconfig                        |   9 +
+>> >> >  drivers/iio/trigger/Makefile                       |   1 +
+>> >> >  drivers/iio/trigger/stm32-timer-trigger.c          | 342
+>++++++++++++++++++
+>> >> >  drivers/mfd/Kconfig                                |  11 +
+>> >> >  drivers/mfd/Makefile                               |   2 +
+>> >> >  drivers/mfd/stm32-timers.c                         |  80 +++++
+>> >> >  drivers/pwm/Kconfig                                |   9 +
+>> >> >  drivers/pwm/Makefile                               |   1 +
+>> >> >  drivers/pwm/pwm-stm32.c                            | 398
+>+++++++++++++++++++++
+>> >> >  include/linux/iio/timer/stm32-timer-trigger.h      |  62 ++++
+>> >> >  include/linux/mfd/stm32-timers.h                   |  71 ++++
+>> >> >  17 files changed, 1422 insertions(+)
+>> >> >  create mode 100644
+>Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
+>> >> >  create mode 100644
+>Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+>> >> >  create mode 100644
+>Documentation/devicetree/bindings/mfd/stm32-timers.txt
+>> >> >  create mode 100644
+>Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+>> >> >  create mode 100644 drivers/iio/trigger/stm32-timer-trigger.c
+>> >> >  create mode 100644 drivers/mfd/stm32-timers.c
+>> >> >  create mode 100644 drivers/pwm/pwm-stm32.c
+>> >> >  create mode 100644
+>include/linux/iio/timer/stm32-timer-trigger.h
+>> >> >  create mode 100644 include/linux/mfd/stm32-timers.h
+>> >>
+>> >> May I ask why you're creating an immutable branch of all this
+>contents?
+>> >>
+>> >> We should get the dts/dtsi contents like usual from any
+>maintainer;
+>> >> just the DT updates in a branch.
+>> >>
+>> >> Sometimes (but less and less due to us discouraging the use) we
+>need
+>> >> an immutable branch that includes dt-include updates. But I don't
+>see
+>> >> any of those in this contents.
+>> >>
+>> >> I.e. I guess I can see the need between mfd and downstream trees
+>> >> (iio/pwm), but not the DTS contents at this time. Or am I missing
+>> >> something here?
+>> >
+>> > I agree with you.  However, since one of the STM32 Maintainers
+>Acked
+>> > the DTS patches, and the other one hasn't been heard from for
+>months,
+>> > I took that to mean he wanted me to apply and take them through the
+>> > MFD tree.
+>> >
+>> > A misunderstanding or misaction perhaps, but this is the normal
+>> > assumption.
+>> 
+>> It seems to be a misunderstanding in this case, since there are other
+>> additions in the stm32 tree this release cycle so we should only pick
+>> up DTS changes through our tree.
+>> 
+>> By now, I think it should be pretty well known that we nearly never
+>> want DTS contents merged through any other tree. Ever.
+>> 
+>> So, please revoke your branch and take those out. We'll take them
+>> through the normal flow. Thanks!
+>
+>That okay with you?
+Bit late from me but fine. I tend to only pull in these branches when stuff to go on top turns up.
+Not happened with this set yet!
 
-Thanks,
-Clemens
+
+J
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
