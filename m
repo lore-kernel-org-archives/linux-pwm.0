@@ -1,69 +1,66 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH] pwm: fix undefined behavior in stm32_pwm_apply
-Date: Thu, 26 Jan 2017 12:16:18 +0000
-Message-ID: <20170126121618.s66oob576faozd6z@dell>
-References: <20170125223155.1388582-1-arnd@arndb.de>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v2 01/14] Documentation: dt/bindings: Document pinctrl-ingenic
+Date: Fri, 27 Jan 2017 12:18:39 +0100
+Message-ID: <CACRpkdZFRH84c4x7HBwgmY3fH+=Qq4q167c9oPhvrJ70MQkjaA@mail.gmail.com>
+References: <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
+ <20170122144947.16158-1-paul@crapouillou.net> <20170122144947.16158-2-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f54.google.com ([74.125.82.54]:34906 "EHLO
-        mail-wm0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752136AbdAZMQW (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 26 Jan 2017 07:16:22 -0500
-Received: by mail-wm0-f54.google.com with SMTP id r126so69317034wmr.0
-        for <linux-pwm@vger.kernel.org>; Thu, 26 Jan 2017 04:16:21 -0800 (PST)
-Content-Disposition: inline
-In-Reply-To: <20170125223155.1388582-1-arnd@arndb.de>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <20170122144947.16158-2-paul@crapouillou.net>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Ulf Hansson <ulf.hansson@linaro.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux MIPS <linux-mips@linux-mips.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>, linux-p
 List-Id: linux-pwm@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Benjamin Gaignard <benjamin.gaignard@linaro.org>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
-On Wed, 25 Jan 2017, Arnd Bergmann wrote:
+On Sun, Jan 22, 2017 at 3:49 PM, Paul Cercueil <paul@crapouillou.net> wrote:
 
-> The stm32_pwm_apply randomly sets the polarity or doesn't,
-> as pointed out by this gcc warning:
-> 
-> drivers/pwm/pwm-stm32.c: In function 'stm32_pwm_apply':
-> drivers/pwm/pwm-stm32.c:204:33: error: 'curstate.polarity' may be used uninitialized in this function [-Werror=maybe-uninitialized]
-> 
-> I assume it was meant to compare the new state to the current
-> state rather than an uninitialized stack variable, so let's
-> do that instead.
-> 
-> Fixes: bafffb6e7bd1 ("pwm: Add driver for STM32 plaftorm")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/pwm/pwm-stm32.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
 
-Fix from the author already applied.
+> +Required properties:
+> +- compatible: One of:
+> +  - "ingenic,jz4740-pinctrl"
+> +  - "ingenic,jz4780-pinctrl"
+> +
+> +Optional properties:
+> +- ingenic,pull-ups: A list of 32-bit bit fields, where each bit set tells the
+> +  driver that a pull-up resistor is available for this pin.
+> +  By default, the driver considers that all pins feature a pull-up resistor.
+> +- ingenic,pull-downs: A list of 32-bit bit fields, where each bit set tells
+> +  the driver that a pull-down resistor is available for this pin.
+> +  By default, the driver considers that all pins feature a pull-down
+> +  resistor.
 
-> diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
-> index ce6232ebefe1..6139512aab7b 100644
-> --- a/drivers/pwm/pwm-stm32.c
-> +++ b/drivers/pwm/pwm-stm32.c
-> @@ -189,7 +189,6 @@ static void stm32_pwm_disable(struct stm32_pwm *priv, int ch)
->  static int stm32_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  			   struct pwm_state *state)
->  {
-> -	struct pwm_state curstate;
->  	bool enabled;
->  	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
->  	int ret;
-> @@ -201,7 +200,7 @@ static int stm32_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  		return 0;
->  	}
->  
-> -	if (state->polarity != curstate.polarity)
-> +	if (state->polarity != pwm->state.polarity)
->  		stm32_pwm_set_polarity(priv, pwm->hwpwm, state->polarity);
->  
->  	ret = stm32_pwm_config(priv, pwm->hwpwm,
+So I still don't understand these properties.
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Does this mean that there is a pull-up *inside* the SoC or *outside*
+on the board where it is mounted?
+
+If it is *outside* the SoC, on the board, the pulls should be set on
+the consumers, not on the controller.
+
+In the former case, if this pertains to the *inside* of the SoC:
+is it just different between jz4740 and jz4780?
+In that case, just code this into the driver as .data to the .compatible
+in the DT match. No special DT properties needed.
+
+If it is different between e.g. different versions of jz4740, why not
+make different compatible-properties? If there are different versions
+of the circuit, with different hard-wired hardware configuration, they
+are different devices and should have different compatible strings.
+
+> +                               /* CLK, CMD, D0 */
+> +                               ingenic,pins = <0x69 0 0x68 0 0x6a 0>;
+
+Standard bindings use just "pins". Why the custom ingenic,
+prefix?
+
+Yours,
+Linus Walleij
