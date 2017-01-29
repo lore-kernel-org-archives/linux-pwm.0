@@ -1,29 +1,26 @@
 From: Lukasz Majewski <lukma@denx.de>
-Subject: [PATCH v5 06/11] pwm: imx: Move PWMv2 wait for fifo slot code to a separate function
-Date: Sun, 29 Jan 2017 22:54:10 +0100
-Message-ID: <1485726855-16236-7-git-send-email-lukma@denx.de>
+Subject: [PATCH v5 04/11] pwm: imx: Rewrite imx_pwm_*_v1 code to facilitate switch to atomic pwm operation
+Date: Sun, 29 Jan 2017 22:54:08 +0100
+Message-ID: <1485726855-16236-5-git-send-email-lukma@denx.de>
 References: <1485726855-16236-1-git-send-email-lukma@denx.de>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:41916 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750952AbdA2VzL (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 29 Jan 2017 16:55:11 -0500
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1485726855-16236-1-git-send-email-lukma@denx.de>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org
 Cc: Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <l.majewski@majess.pl>
+List-Id: linux-pwm@vger.kernel.org
 
 From: Lukasz Majewski <l.majewski@majess.pl>
 
-The code, which waits for fifo slot, has been extracted from
-imx_pwm_config_v2 function and moved to new one - imx_pwm_wait_fifo_slot().
+The code has been rewritten to remove "generic" calls to
+imx_pwm_{enable|disable|config}.
 
-This change reduces the overall size of imx_pwm_config_v2() and prepares
-it for atomic PWM operation.
+Such approach would facilitate switch to atomic PWM (a.k.a ->apply())
+implementation.
 
 Suggested-by: Stefan Agner <stefan@agner.ch>
 Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+Reviewed-by: Stefan Agner <stefan@agner.ch>
 Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
 ---
 Changes for v5:
@@ -32,84 +29,83 @@ Changes for v5:
 Changes for v4:
 - None
 
+[Minor code adjustment according to Stefan Agner comment]
+
 Changes for v3:
-- None
+- Remove ipg clock
 
 Changes for v2:
-- None
+- Add missing clock unprepare for clk_ipg
+- Enable peripheral PWM clock (clk_per)
 ---
- drivers/pwm/pwm-imx.c | 43 +++++++++++++++++++++++++------------------
- 1 file changed, 25 insertions(+), 18 deletions(-)
+ drivers/pwm/pwm-imx.c | 33 +++++++++++++++++++++++----------
+ 1 file changed, 23 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index f0d78f3..60cdc5c 100644
+index 0fa480d..11e3f3e 100644
 --- a/drivers/pwm/pwm-imx.c
 +++ b/drivers/pwm/pwm-imx.c
-@@ -138,18 +138,36 @@ static void imx_pwm_sw_reset(struct pwm_chip *chip)
- 		dev_warn(dev, "software reset timeout\n");
+@@ -90,19 +90,34 @@ static int imx_pwm_config_v1(struct pwm_chip *chip,
+ 	return 0;
  }
  
-+static void imx_pwm_wait_fifo_slot(struct pwm_chip *chip,
-+				   struct pwm_device *pwm)
-+{
-+	struct imx_chip *imx = to_imx_chip(chip);
-+	struct device *dev = chip->dev;
-+	unsigned int period_ms;
-+	int fifoav;
-+	u32 sr;
-+
-+	sr = readl(imx->mmio_base + MX3_PWMSR);
-+	fifoav = sr & MX3_PWMSR_FIFOAV_MASK;
-+	if (fifoav == MX3_PWMSR_FIFOAV_4WORDS) {
-+		period_ms = DIV_ROUND_UP(pwm_get_period(pwm),
-+					 NSEC_PER_MSEC);
-+		msleep(period_ms);
-+
-+		sr = readl(imx->mmio_base + MX3_PWMSR);
-+		if (fifoav == (sr & MX3_PWMSR_FIFOAV_MASK))
-+			dev_warn(dev, "there is no free FIFO slot\n");
-+	}
-+}
- 
- static int imx_pwm_config_v2(struct pwm_chip *chip,
- 		struct pwm_device *pwm, int duty_ns, int period_ns)
+-static void imx_pwm_set_enable_v1(struct pwm_chip *chip, bool enable)
++static int imx_pwm_enable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
  {
  	struct imx_chip *imx = to_imx_chip(chip);
--	struct device *dev = chip->dev;
- 	unsigned long long c;
- 	unsigned long period_cycles, duty_cycles, prescale;
--	unsigned int period_ms;
- 	bool enable = pwm_is_enabled(pwm);
--	int fifoav;
--	u32 cr, sr;
-+	u32 cr;
++	int ret;
+ 	u32 val;
  
- 	/*
- 	 * i.MX PWMv2 has a 4-word sample FIFO.
-@@ -158,21 +176,10 @@ static int imx_pwm_config_v2(struct pwm_chip *chip,
- 	 * wait for a full PWM cycle to get a relinquished FIFO slot
- 	 * when the controller is enabled and the FIFO is fully loaded.
- 	 */
--	if (enable) {
--		sr = readl(imx->mmio_base + MX3_PWMSR);
--		fifoav = sr & MX3_PWMSR_FIFOAV_MASK;
--		if (fifoav == MX3_PWMSR_FIFOAV_4WORDS) {
--			period_ms = DIV_ROUND_UP(pwm_get_period(pwm),
--						 NSEC_PER_MSEC);
--			msleep(period_ms);
--
--			sr = readl(imx->mmio_base + MX3_PWMSR);
--			if (fifoav == (sr & MX3_PWMSR_FIFOAV_MASK))
--				dev_warn(dev, "there is no free FIFO slot\n");
--		}
--	} else {
-+	if (enable)
-+		imx_pwm_wait_fifo_slot(chip, pwm);
-+	else
- 		imx_pwm_sw_reset(chip);
--	}
++	ret = clk_prepare_enable(imx->clk_per);
++	if (ret)
++		return ret;
++
+ 	val = readl(imx->mmio_base + MX1_PWMC);
++	val |= MX1_PWMC_EN;
++	writel(val, imx->mmio_base + MX1_PWMC);
  
- 	c = clk_get_rate(imx->clk_per);
- 	c = c * period_ns;
+-	if (enable)
+-		val |= MX1_PWMC_EN;
+-	else
+-		val &= ~MX1_PWMC_EN;
++	return 0;
++}
++
++static void imx_pwm_disable_v1(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct imx_chip *imx = to_imx_chip(chip);
++	u32 val;
++
++	val = readl(imx->mmio_base + MX1_PWMC);
++	val &= ~MX1_PWMC_EN;
+ 
+ 	writel(val, imx->mmio_base + MX1_PWMC);
++
++	clk_disable_unprepare(imx->clk_per);
+ }
+ 
+ static int imx_pwm_config_v2(struct pwm_chip *chip,
+@@ -240,9 +255,9 @@ static void imx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ }
+ 
+ static struct pwm_ops imx_pwm_ops_v1 = {
+-	.enable = imx_pwm_enable,
+-	.disable = imx_pwm_disable,
+-	.config = imx_pwm_config,
++	.enable = imx_pwm_enable_v1,
++	.disable = imx_pwm_disable_v1,
++	.config = imx_pwm_config_v1,
+ 	.owner = THIS_MODULE,
+ };
+ 
+@@ -261,8 +276,6 @@ struct imx_pwm_data {
+ };
+ 
+ static struct imx_pwm_data imx_pwm_data_v1 = {
+-	.config = imx_pwm_config_v1,
+-	.set_enable = imx_pwm_set_enable_v1,
+ 	.pwm_ops = &imx_pwm_ops_v1,
+ };
+ 
 -- 
 2.1.4
