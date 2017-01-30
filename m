@@ -1,142 +1,53 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v5 03/11] pwm: imx: Add separate set of pwm ops for PWMv1
- and PWMv2
-Date: Mon, 30 Jan 2017 10:04:24 +0100
-Message-ID: <20170130090424.GR3585@ulmo.ba.sec>
-References: <1485726855-16236-1-git-send-email-lukma@denx.de>
- <1485726855-16236-4-git-send-email-lukma@denx.de>
- <20170130072312.GI3585@ulmo.ba.sec>
- <20170130074318.GK3585@ulmo.ba.sec>
- <20170130093649.236e67b1@jawa>
- <20170130084513.GO3585@ulmo.ba.sec>
- <20170130095504.57e4ee3e@jawa>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH v2 3/3] acpi: lpss: call pwm_add_table() for
+ bsw PWM device
+Date: Mon, 30 Jan 2017 11:33:10 +0200
+Message-ID: <20170130093310.GI17297@lahna.fi.intel.com>
+References: <20170122161409.21601-1-hdegoede@redhat.com>
+ <20170122161409.21601-4-hdegoede@redhat.com>
+ <20170130081839.GN3585@ulmo.ba.sec>
+ <CAJZ5v0hS08PX88+bXcnCz_V5f_VZ1L49iXnu9rHwDGO2uM7Q0A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="3gk1bTGVZuaU9V5/"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wj0-f193.google.com ([209.85.210.193]:33574 "EHLO
-        mail-wj0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752540AbdA3JEg (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Jan 2017 04:04:36 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20170130095504.57e4ee3e@jawa>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <CAJZ5v0hS08PX88+bXcnCz_V5f_VZ1L49iXnu9rHwDGO2uM7Q0A@mail.gmail.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Linux PWM List <linux-pwm@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Hans de Goede <hdegoede@redhat.com>, Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Len Brown <lenb@kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Lukasz Majewski <lukma@denx.de>, Sascha Hauer <s.hauer@pengutronix.de>, Lothar Wassmann <LW@karo-electronics.de>, Fabio Estevam <fabio.estevam@nxp.com>, Shawn Guo <shawn.guo@linaro.org>
-Cc: Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, kernel@pengutronix.de, Lukasz Majewski <l.majewski@majess.pl>
 
-
---3gk1bTGVZuaU9V5/
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, Jan 30, 2017 at 09:55:04AM +0100, Lukasz Majewski wrote:
-> Hi Thierry,
->=20
-> > On Mon, Jan 30, 2017 at 09:36:49AM +0100, Lukasz Majewski wrote:
-> > > Hi Thierry,
-> > >=20
-> > > > On Mon, Jan 30, 2017 at 08:23:12AM +0100, Thierry Reding wrote:
-> > > > > On Sun, Jan 29, 2017 at 10:54:07PM +0100, Lukasz Majewski wrote:
-> > > > > > From: Lukasz Majewski <l.majewski@majess.pl>
-> > > > > >=20
-> > > > > > This patch provides separate set of pwm ops utilized by
-> > > > > > i.MX's PWMv1 and PWMv2.
-> > > > > >=20
-> > > > > > Signed-off-by: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
-> > > > > > Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-> > > > > > Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
-> > > > > > Acked-by: Shawn Guo <shawn.guo@linaro.org>
-> > > > > > Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-> > > > > > ---
-> > > > > > Changes for v5:
-> > > > > > - None
-> > > > > >=20
-> > > > > > Changes for v4:
-> > > > > > - None
-> > > > > >=20
-> > > > > > Changes for v3:
-> > > > > > - Adjust the code to work with ipg clock removed
-> > > > > >=20
-> > > > > > Changes for v2:
-> > > > > > - New patch
-> > > > > > ---
-> > > > > >  drivers/pwm/pwm-imx.c | 17 ++++++++++++++---
-> > > > > >  1 file changed, 14 insertions(+), 3 deletions(-)
-> > > > > >=20
-> > > > > > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> > > > > > index b1d1e50..0fa480d 100644
-> > > > > > --- a/drivers/pwm/pwm-imx.c
-> > > > > > +++ b/drivers/pwm/pwm-imx.c
-> > > > > > @@ -239,7 +239,14 @@ static void imx_pwm_disable(struct
-> > > > > > pwm_chip *chip, struct pwm_device *pwm)
-> > > > > > clk_disable_unprepare(imx->clk_per); }
-> > > > > > =20
-> > > > > > -static struct pwm_ops imx_pwm_ops =3D {
-> > > > > > +static struct pwm_ops imx_pwm_ops_v1 =3D {
-> > > > > > +	.enable =3D imx_pwm_enable,
-> > > > > > +	.disable =3D imx_pwm_disable,
-> > > > > > +	.config =3D imx_pwm_config,
-> > > > > > +	.owner =3D THIS_MODULE,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static struct pwm_ops imx_pwm_ops_v2 =3D {
-> > > > >=20
-> > > > > Can't these two be const? No need to respin for only this, just
-> > > > > let me know and I can make the change while applying.
-> > > >=20
-> > > > Nevermind that. I just remembered that I had picked up a patch to
-> > > > make the original imx_pwm_ops a const and things still work fine
-> > > > if I make both of the above const, so I just had to manually
-> > > > apply your patch, but other than that it seems fine. Let me apply
-> > > > the rest of this set and push out. It'd be great if you could
-> > > > check afterwards that it's all still what you expect.
-> > >=20
-> > > I will do that. Thanks for integrating the patch series :-).
-> >=20
-> > Thanks for sticking with it. I know the initial patches for optional
-> > polarity support have been around for years, and it took a really long
-> > time for this all to come together.
-> >=20
-> > But I think the end result is sound and looks really good.
->=20
-> You are welcome :-)
->=20
-> >=20
-> > The one remaining bit that I'm not 100% happy about is that the v1
-> > support is not atomic while the v2 support is.
->=20
-> Here the only limitation is the lack of v1 HW.
-
-That doesn't have to be a blocker. If you're willing to invest some more
-work to do the additional conversion (I think it would be a fairly minor
-change, looking at the existing v1 code), I'm sure we can find someone
-with the hardware to test it.
-
-Sascha, Lothar, Fabio, Shawn: do you guys have access to v1 hardware, or
-know of anyone who might?
-
-Thierry
-
---3gk1bTGVZuaU9V5/
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAliPAZgACgkQ3SOs138+
-s6FcQQ/7BVg9CARmrv40n0nn8LxvuOtGoxv0uEY1uFWw3tYUG+xj8xttWLclk2fQ
-FDJ3Jk+zeI9qQgYRADNNyOlPWLkax/SHMSVDF1Hh500Nr9d+OK0WZnSHDQok5cKq
-FpSp084TJ+O3B5VrRhA/3cNcprLNBRjyEgGXNybfmFv4Rnoprg+HwoHdtR5wAQVn
-wBzKkbP/eTnnWFcuiv+HsdTJ0WRnAe/hcMXb/uI4csD1w/NVznfJLkk3fNr4iZBp
-ECdtLhA152dcp3Z/YKaUQ7LBXW0sdh+i6tEN0Xu8W9jBpqI09mx9YTcHQAVThV60
-3RtLjlUa7q6EYvvyMuoTYSNQH8roze4NQRgVRdtreihvXf/mweFA+Awbd4bzyu88
-m44ooTwHBN9g+zjgrR0Usr4109PLadHENwvjkpFtE9BBTdy9GIfeNY0+LXy2Ow0h
-aeikEvsOQRGIhqJuDtnuuJacKDwh7pNGoazANxCKmM2+NmM4oiIw2BnP8qRH5NMo
-S9Zhpe4iy+2Vp96E8XON65Dly8EUnA77ntW5NVhs0PGkYoJq3vXqVjMakhIERZ6f
-ElGOrtb1WHHTSCzgFY52c22gmyokhSFz6VEE5j6WhfIrUB48Kzohgbt/sCSctDkU
-nq1wu0lYC8dgXuG330C8lIFDf708eKLzvQD9TJp7TPsAk2vuIvY=
-=Aetz
------END PGP SIGNATURE-----
-
---3gk1bTGVZuaU9V5/--
+T24gTW9uLCBKYW4gMzAsIDIwMTcgYXQgMDk6Mjg6MDlBTSArMDEwMCwgUmFmYWVsIEouIFd5c29j
+a2kgd3JvdGU6Cj4gT24gTW9uLCBKYW4gMzAsIDIwMTcgYXQgOToxOCBBTSwgVGhpZXJyeSBSZWRp
+bmcKPiA8dGhpZXJyeS5yZWRpbmdAZ21haWwuY29tPiB3cm90ZToKPiA+IE9uIFN1biwgSmFuIDIy
+LCAyMDE3IGF0IDA1OjE0OjA5UE0gKzAxMDAsIEhhbnMgZGUgR29lZGUgd3JvdGU6Cj4gPj4gT24g
+eDg2IHdlIGRvIG5vdCBoYXZlIGRldmljZXRyZWUgdG8gbGluayB0aGUgUFdNIGNvbnRyb2xsZXIg
+YW5kCj4gPj4gdGhlIGRpc3BsYXkgY29udHJvbGxlciB0b2dldGhlci4gU28gc29tZW9uZSBuZWVk
+cyB0byBjYWxsCj4gPj4gcHdtX2FkZF90YWJsZSgpIHRvIGNyZWF0ZSB0aGUgbGluaywgc28gdGhh
+dCB0aGUgaTkxNSBkcml2ZXIncwo+ID4+IHB3bV9nZXQoZGV2LCAicHdtX2JhY2tsaWdodCIpIGNh
+bGwgcmV0dXJucyB0aGUgbHBzcycgcHdtMC4KPiA+Pgo+ID4+IFRoZSBQV00gc3Vic3lzdGVtIGRv
+ZXMgbm90IHdhbnQgdG8gaGF2ZSBwd21fYWRkX3RhYmxlKCkgY2FsbHMKPiA+PiBkaXJlY3RseSBp
+biBQV00gZHJpdmVycyAodGhpcyBsZWFkcyB0byBwcm9iZSBvcmRlcmluZyBpc3N1ZXMpLAo+ID4+
+IHNvIGxldHMgZG8gaXQgaGVyZSBzaW5jZSB0aGUgYWNwaS1scHNzIGNvZGUgaXMgYWx3YXlzIGJ1
+aWx0aW4uCj4gPj4KPiA+PiBTaWduZWQtb2ZmLWJ5OiBIYW5zIGRlIEdvZWRlIDxoZGVnb2VkZUBy
+ZWRoYXQuY29tPgo+ID4+IEFja2VkLWJ5OiBUaGllcnJ5IFJlZGluZyA8dGhpZXJyeS5yZWRpbmdA
+Z21haWwuY29tPgo+ID4+IC0tLQo+ID4+IENoYW5nZXMgaW4gdjI6Cj4gPj4gLVNldCBuZXcgcHdt
+X2xvb2t1cCBtb2R1bGVfbmFtZSBmaWVsZCBpbiB0aGUgdGFibGUKPiA+PiAtLS0KPiA+PiAgZHJp
+dmVycy9hY3BpL2FjcGlfbHBzcy5jIHwgMTMgKysrKysrKysrKysrKwo+ID4+ICAxIGZpbGUgY2hh
+bmdlZCwgMTMgaW5zZXJ0aW9ucygrKQo+ID4KPiA+IFJhZmFlbCwgZG8geW91IG1pbmQgaWYgSSB0
+YWtlIHRoaXMgdGhyb3VnaCB0aGUgUFdNIHRyZWUgdG8gcmVzb2x2ZSB0aGUKPiA+IGJ1aWxkLXRp
+bWUgZGVwZW5kZW5jeT8KPiAKPiBObywgSSBkb24ndCwgcGxlYXNlIGdvIGFoZWFkLCB1bmxlc3Mg
+TWlrYS9BbmR5IHNlZSBhbnkgcHJvYmxlbXMgaW4gaXQuCgpObyBwcm9ibGVtcyBmcm9tIG15IHNp
+ZGUgLSBsb29rcyBnb29kLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBsaXN0CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3Rv
+cC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRl
+bC1nZngK
