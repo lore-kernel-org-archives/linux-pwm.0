@@ -1,100 +1,91 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v5 03/11] pwm: imx: Add separate set of pwm ops for PWMv1
- and PWMv2
-Date: Mon, 30 Jan 2017 08:23:12 +0100
-Message-ID: <20170130072312.GI3585@ulmo.ba.sec>
-References: <1485726855-16236-1-git-send-email-lukma@denx.de>
- <1485726855-16236-4-git-send-email-lukma@denx.de>
+Subject: Re: [PATCH v3 0/6] pwm: lpss: Fix and clean up series
+Date: Mon, 30 Jan 2017 08:18:08 +0100
+Message-ID: <20170130071808.GH3585@ulmo.ba.sec>
+References: <20170128151044.87572-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="5uO961YFyoDlzFnP"
+        protocol="application/pgp-signature"; boundary="v2Uk6McLiE8OV1El"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f67.google.com ([74.125.82.67]:33369 "EHLO
-        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751403AbdA3HYu (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Jan 2017 02:24:50 -0500
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:33057 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752244AbdA3HZw (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Jan 2017 02:25:52 -0500
+Received: by mail-wm0-f66.google.com with SMTP id v77so14346365wmv.0
+        for <linux-pwm@vger.kernel.org>; Sun, 29 Jan 2017 23:25:51 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <1485726855-16236-4-git-send-email-lukma@denx.de>
+In-Reply-To: <20170128151044.87572-1-andriy.shevchenko@linux.intel.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lukasz Majewski <lukma@denx.de>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <l.majewski@majess.pl>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>, Ilkka Koskinen <ilkka.koskinen@intel.com>
 
 
---5uO961YFyoDlzFnP
-Content-Type: text/plain; charset=utf-8
+--v2Uk6McLiE8OV1El
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jan 29, 2017 at 10:54:07PM +0100, Lukasz Majewski wrote:
-> From: Lukasz Majewski <l.majewski@majess.pl>
+On Sat, Jan 28, 2017 at 05:10:38PM +0200, Andy Shevchenko wrote:
+> There are clean ups and switch to new atomic API (would be considered as
+> an improvement).
 >=20
-> This patch provides separate set of pwm ops utilized by
-> i.MX's PWMv1 and PWMv2.
+> The series tested on various Intel platforms, such as Edison and
+> Minnowboard MAX.
 >=20
-> Signed-off-by: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
-> Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-> Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
-> Acked-by: Shawn Guo <shawn.guo@linaro.org>
-> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-> ---
-> Changes for v5:
-> - None
+> Since v2:
+> - rebase on top of v4.10-rc5
+> - replace patch 3 with duplicating board info files in bus drivers
+> - eliminate reminders of legacy API
+> - incorporate Mika's Gemini Lake patch
+> - add new patch from Ilkka
 >=20
-> Changes for v4:
-> - None
+> Since v1:
+> - rebase on top of v4.10-rc2
+> - fix typo in commit message of patch 1
+> - add Mika's tag
 >=20
-> Changes for v3:
-> - Adjust the code to work with ipg clock removed
+> Andy Shevchenko (4):
+>   pwm: lpss: Avoid potential overflow of base_unit
+>   pwm: lpss: Allow duty cycle to be 0
+>   pwm: lpss: Switch to new atomic API
+>   pwm: lpss: Do not export board infos for different PWM types
 >=20
-> Changes for v2:
-> - New patch
-> ---
->  drivers/pwm/pwm-imx.c | 17 ++++++++++++++---
->  1 file changed, 14 insertions(+), 3 deletions(-)
+> Ilkka Koskinen (1):
+>   pwm: lpss: Avoid reconfiguring while UPDATE bit is still enabled
 >=20
-> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> index b1d1e50..0fa480d 100644
-> --- a/drivers/pwm/pwm-imx.c
-> +++ b/drivers/pwm/pwm-imx.c
-> @@ -239,7 +239,14 @@ static void imx_pwm_disable(struct pwm_chip *chip, s=
-truct pwm_device *pwm)
->  	clk_disable_unprepare(imx->clk_per);
->  }
-> =20
-> -static struct pwm_ops imx_pwm_ops =3D {
-> +static struct pwm_ops imx_pwm_ops_v1 =3D {
-> +	.enable =3D imx_pwm_enable,
-> +	.disable =3D imx_pwm_disable,
-> +	.config =3D imx_pwm_config,
-> +	.owner =3D THIS_MODULE,
-> +};
-> +
-> +static struct pwm_ops imx_pwm_ops_v2 =3D {
+> Mika Westerberg (1):
+>   pwm: lpss: Add Intel Gemini Lake PCI ID
+>=20
+>  drivers/pwm/pwm-lpss-pci.c      |  22 +++++++
+>  drivers/pwm/pwm-lpss-platform.c |  21 +++++++
+>  drivers/pwm/pwm-lpss.c          | 132 ++++++++++++++++++++--------------=
+------
+>  drivers/pwm/pwm-lpss.h          |   4 --
+>  4 files changed, 110 insertions(+), 69 deletions(-)
 
-Can't these two be const? No need to respin for only this, just let me
-know and I can make the change while applying.
+Applied all six patches, thanks.
 
 Thierry
 
---5uO961YFyoDlzFnP
+--v2Uk6McLiE8OV1El
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAliO6eAACgkQ3SOs138+
-s6Hicw//R7/md7s9Fx/ColJxDjpFk6RQO5K9XBZ4i1BsnuuSiC9n1zFLZie7dYr0
-rtLb9KdlaMTzz6QP7VPqs5VhHxeTHC3j5QjPlan9vJ5SP1GBYV5rGKHNlKFD9hsV
-PrVygShq1SL3otelv+2O5OH8TzcsStKbmOZGy0KwtuaoFBEjGRrO0LycYjbDp1Zw
-MEFAkt/t7SJcRyIFxXO1ZI7d3WWULpKi7i3CPYsAI9k+HEQNc3dX6w0i/5u2k9wd
-F/rLCNsPuEP/Mog8Jzp6zZ6bKXlptQ13yGQyQq6ZG73Te0JybMHp38ZujXNC16dd
-2aoDbm/q/DVd+3cK5jrJJkmnl0kU4zXiMDzrd4q9ODgaSh6Sr3ud5RDj6RjlRxC5
-JFC4OWHWpJvjF6YDL4BsIDvuL7sp+qXAqgiGtP/B0QIYTqJt73SVaSng5ouBxTHF
-YG9YsCYcnxyVcJm1eiHTrLEg5grByJA109tskOYSO8RRtMcUQflm/AEJ6PkMKP/v
-oXCcIW2dhnf4vmVFMKRUFij69LKJhcqi4Gx1GEjowUG10320NTm8IQ1ixmcXzMxJ
-9lL+VkQhX7xpBr/+ULlHbfVYliS/c3AYB1y5bUWTsq0/lcQEbx4SWutA+6h/1nh+
-anXzOlNzC+IGpLq/SnxRh39GVXA4xFRhbbzwZG2OdS6CkhHGU68=
-=niP5
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAliO6LAACgkQ3SOs138+
+s6FAFg//SXBYvWPTbuJl9NJRxpXT4cqADu8sdG0RVx2JDXflXtWudITCsM+3QuCJ
+Ci7i6GDQ+d1HFk1jzRUMKE/Q7qBZfJVcgK7BqrIg9MU62srfnvRBmKc7wUyB+pcN
+ZZZhbn4vyxjx3HuRVlsN22rvIevzcC7OoJXNBZv8L/82Gj2HkCjEUnJScJ54JuGf
+7RgSiZZ2gX1T3ZNrhYXwcybF3JjVRyFG2EB6x5yY0DNaK4bvN634gn+TpS+mwWyN
+0ntpbWHjt9h6e3dns7OUQQDR2HJWNvuL3kW04zdWwD6T5/9WfetRTezrS8kwqfvB
+Yg31agYv87DQg02H/oZr1V22/zPpRissHMEafMDhboYxCZ/r6+IEyNiQ3h1LQMy6
+W1jbAv3W8TNFWAKnZeRHyVf5/WIsRCrCNBeSXemt453MPhHFC11pCHj7uIwpFIsT
+oyDOhzKKTFLZ+k7j0gIrCQdbmON8ZcjUGOqcBOqbVW8WYUJUQlbQAQ9vf/SShgt0
+1El6U9S/c6bqWytvmqo9mTNtUa5Ks2eHDfYlNT6CLKSoxvIw19Mu6vz8ZEBsaoXo
+LCf7iCaBFbNzn/Gtn8W5X+5dL7lsuivXMFZpneG1AWg4b2z1qFRVC11GC0JZ79QF
+ivXOO8u8zEjefBJtUsNWq4Q6LCW+nsTtQbtHD+CFvmoH4OWvAEE=
+=98ab
 -----END PGP SIGNATURE-----
 
---5uO961YFyoDlzFnP--
+--v2Uk6McLiE8OV1El--
