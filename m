@@ -1,109 +1,135 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v5 03/11] pwm: imx: Add separate set of pwm ops for PWMv1
- and PWMv2
-Date: Mon, 30 Jan 2017 08:43:18 +0100
-Message-ID: <20170130074318.GK3585@ulmo.ba.sec>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH v5 07/11] pwm: imx: Provide atomic PWM support for i.MX
+ PWMv2
+Date: Mon, 30 Jan 2017 08:49:14 +0100
+Message-ID: <20170130084914.672dd16e@bbrezillon>
 References: <1485726855-16236-1-git-send-email-lukma@denx.de>
- <1485726855-16236-4-git-send-email-lukma@denx.de>
- <20170130072312.GI3585@ulmo.ba.sec>
+        <1485726855-16236-8-git-send-email-lukma@denx.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="DfnuYBTqzt7sVGu3"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:36252 "EHLO
-        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752245AbdA3HnW (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Jan 2017 02:43:22 -0500
-Content-Disposition: inline
-In-Reply-To: <20170130072312.GI3585@ulmo.ba.sec>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1485726855-16236-8-git-send-email-lukma@denx.de>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Lukasz Majewski <lukma@denx.de>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <l.majewski@majess.pl>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <l.majewski@majess.pl>
+List-Id: linux-pwm@vger.kernel.org
 
+On Sun, 29 Jan 2017 22:54:11 +0100
+Lukasz Majewski <lukma@denx.de> wrote:
 
---DfnuYBTqzt7sVGu3
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> This commit provides apply() callback implementation for i.MX's PWMv2.
+> 
+> Suggested-by: Stefan Agner <stefan@agner.ch>
+> Suggested-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+> Reviewed-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> ---
+> Changes for v5:
+> - Modify ->apply() function to avoid unbalanced clock enabling/disabling
+> - Fix preventing iMX7 from hanging
+> 
+> Changes for v4:
+> - Avoid recalculation of PWM parameters when disabling PWM signal
+> - Unconditionally call clk_prepare_enable(imx->clk_per) and
+>   clk_disable_unprepare(imx->clk_per)
+> 
+> Changes for v3:
+> - Remove ipg clock enable/disable functions
+> 
+> Changes for v2:
+> - None
+> ---
+>  drivers/pwm/pwm-imx.c | 68 +++++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 68 insertions(+)
+> 
+> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+> index 60cdc5c..fdaa11b 100644
+> --- a/drivers/pwm/pwm-imx.c
+> +++ b/drivers/pwm/pwm-imx.c
+> @@ -249,6 +249,73 @@ static int imx_pwm_config(struct pwm_chip *chip,
+>  	return ret;
+>  }
+>  
+> +static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
+> +			    struct pwm_state *state)
+> +{
+> +	unsigned long period_cycles, duty_cycles, prescale;
+> +	struct imx_chip *imx = to_imx_chip(chip);
+> +	struct pwm_state cstate;
+> +	unsigned long long c;
+> +	int ret;
+> +
+> +	pwm_get_state(pwm, &cstate);
+> +
+> +	if (state->enabled) {
+> +		c = clk_get_rate(imx->clk_per);
+> +		c *= state->period;
+> +
+> +		do_div(c, 1000000000);
+> +		period_cycles = c;
+> +
+> +		prescale = period_cycles / 0x10000 + 1;
+> +
+> +		period_cycles /= prescale;
+> +		c = (unsigned long long)period_cycles * state->duty_cycle;
+> +		do_div(c, state->period);
+> +		duty_cycles = c;
+> +
+> +		/*
+> +		 * according to imx pwm RM, the real period value should be
+> +		 * PERIOD value in PWMPR plus 2.
+> +		 */
+> +		if (period_cycles > 2)
+> +			period_cycles -= 2;
+> +		else
+> +			period_cycles = 0;
+> +
+> +		/*
+> +		 * Wait for a free FIFO slot if the PWM is already enabled, and
+> +		 * flush the FIFO if the PWM was disabled and is about to be
+> +		 * enabled.
+> +		 */
+> +		if (cstate.enabled) {
+> +			imx_pwm_wait_fifo_slot(chip, pwm);
+> +		} else if (state->enabled) {
 
-On Mon, Jan 30, 2017 at 08:23:12AM +0100, Thierry Reding wrote:
-> On Sun, Jan 29, 2017 at 10:54:07PM +0100, Lukasz Majewski wrote:
-> > From: Lukasz Majewski <l.majewski@majess.pl>
-> >=20
-> > This patch provides separate set of pwm ops utilized by
-> > i.MX's PWMv1 and PWMv2.
-> >=20
-> > Signed-off-by: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
-> > Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
-> > Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
-> > Acked-by: Shawn Guo <shawn.guo@linaro.org>
-> > Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
-> > ---
-> > Changes for v5:
-> > - None
-> >=20
-> > Changes for v4:
-> > - None
-> >=20
-> > Changes for v3:
-> > - Adjust the code to work with ipg clock removed
-> >=20
-> > Changes for v2:
-> > - New patch
-> > ---
-> >  drivers/pwm/pwm-imx.c | 17 ++++++++++++++---
-> >  1 file changed, 14 insertions(+), 3 deletions(-)
-> >=20
-> > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-> > index b1d1e50..0fa480d 100644
-> > --- a/drivers/pwm/pwm-imx.c
-> > +++ b/drivers/pwm/pwm-imx.c
-> > @@ -239,7 +239,14 @@ static void imx_pwm_disable(struct pwm_chip *chip,=
- struct pwm_device *pwm)
-> >  	clk_disable_unprepare(imx->clk_per);
-> >  }
-> > =20
-> > -static struct pwm_ops imx_pwm_ops =3D {
-> > +static struct pwm_ops imx_pwm_ops_v1 =3D {
-> > +	.enable =3D imx_pwm_enable,
-> > +	.disable =3D imx_pwm_disable,
-> > +	.config =3D imx_pwm_config,
-> > +	.owner =3D THIS_MODULE,
-> > +};
-> > +
-> > +static struct pwm_ops imx_pwm_ops_v2 =3D {
->=20
-> Can't these two be const? No need to respin for only this, just let me
-> know and I can make the change while applying.
+Should just be
 
-Nevermind that. I just remembered that I had picked up a patch to make
-the original imx_pwm_ops a const and things still work fine if I make
-both of the above const, so I just had to manually apply your patch, but
-other than that it seems fine. Let me apply the rest of this set and
-push out. It'd be great if you could check afterwards that it's all
-still what you expect.
+		} else {
 
-Thierry
+since we're already in the 'if (state->enabled)' block (see above).
 
---DfnuYBTqzt7sVGu3
-Content-Type: application/pgp-signature; name="signature.asc"
+I see that Thierry already applied the series, so, just for the record,
+with this fixed, the whole series is
 
------BEGIN PGP SIGNATURE-----
+Reviewed-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAliO7pQACgkQ3SOs138+
-s6FaZw//VtD1DTXyPXWa0IGcFwPvVW/gxKuERWU9BSJipajhEUarRIa6YVeNt2lM
-G9L/BmE4F0o3E0x1WN4kZ4WD9CV6vktPlTx7SCLDWM9GR9CFBGHHKSXtfmteGQDq
-st04xBTSZIPeBajTlguVGXzEMw3vsPGhvE894ISUbVuz6a23ICf2YIK/Ijb30Zlp
-FF2nE3OKll9+d556l6doW1RO1ZQ+WBm7aZQfieEuzR0qtVj8GmmGexDZMssuivw/
-IGHh7l2sJJl9KRrY2d53kbMjl5ZndaZyDSIpFwXvcsqFMSxcSYmF+tIJT/PKOtAo
-wCAWMwiEO30E5EOfK2/CjJhHcjxRyUR4TO9Ab/iMpyYJFsbIvbclRnjDpbQF13lW
-A7EQCZlwf+tzM8+74yq9vheRryeSHJdr3gWy1sHF+G2OfsQUDGoj2g1VRn1wlyPt
-KvLg/+BTlWrPCxPMQ9ne8md2A8sGBbfLR+U1xk4fvWYd8+qnO92ui1PCL5uFaZH+
-VYKSl15YBINXkjQZLEIGdUB807Q0klwD13DaU9XDszF4cSmvVuz/8s3yetAtBb7h
-fXzDwtIKTGBWADHNu4eHt7mLpJQGUD+GSY5/eMBag6FSCAfxpQpO4JQHzJMNTmZ0
-EpqC/+1d3ZO/uDUsBU4vjTxLgaJqBR+xRwEGECRb4COstzCGZHc=
-=L3D6
------END PGP SIGNATURE-----
+Thanks,
 
---DfnuYBTqzt7sVGu3--
+Boris
+
+> +			ret = clk_prepare_enable(imx->clk_per);
+> +			if (ret)
+> +				return ret;
+> +
+> +			imx_pwm_sw_reset(chip);
+> +		}
+> +
+> +		writel(duty_cycles, imx->mmio_base + MX3_PWMSAR);
+> +		writel(period_cycles, imx->mmio_base + MX3_PWMPR);
+> +
+> +		writel(MX3_PWMCR_PRESCALER(prescale) |
+> +		       MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
+> +		       MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH |
+> +		       MX3_PWMCR_EN,
+> +		       imx->mmio_base + MX3_PWMCR);
+> +
+> +	} else if (cstate.enabled) {
+> +		writel(0, imx->mmio_base + MX3_PWMCR);
+> +
+> +		clk_disable_unprepare(imx->clk_per);
+> +	}
+> +
+> +	return 0;
+> +}
