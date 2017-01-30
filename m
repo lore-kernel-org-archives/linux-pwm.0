@@ -1,48 +1,114 @@
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v2 3/3] acpi: lpss: call pwm_add_table() for
-	bsw PWM device
-Date: Mon, 30 Jan 2017 09:28:09 +0100
-Message-ID: <CAJZ5v0hS08PX88+bXcnCz_V5f_VZ1L49iXnu9rHwDGO2uM7Q0A@mail.gmail.com>
-References: <20170122161409.21601-1-hdegoede@redhat.com>
- <20170122161409.21601-4-hdegoede@redhat.com>
- <20170130081839.GN3585@ulmo.ba.sec>
+From: Lukasz Majewski <lukma@denx.de>
+Subject: Re: [PATCH v5 03/11] pwm: imx: Add separate set of pwm ops for
+ PWMv1 and PWMv2
+Date: Mon, 30 Jan 2017 09:36:49 +0100
+Message-ID: <20170130093649.236e67b1@jawa>
+References: <1485726855-16236-1-git-send-email-lukma@denx.de>
+        <1485726855-16236-4-git-send-email-lukma@denx.de>
+        <20170130072312.GI3585@ulmo.ba.sec>
+        <20170130074318.GK3585@ulmo.ba.sec>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <20170130081839.GN3585@ulmo.ba.sec>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Linux PWM List <linux-pwm@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Hans de Goede <hdegoede@redhat.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Len Brown <lenb@kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ boundary="Sig_/2an2nbXJD/8ajUjjfJy1dKk"; protocol="application/pgp-signature"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.9]:37815 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752116AbdA3IhL (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Jan 2017 03:37:11 -0500
+In-Reply-To: <20170130074318.GK3585@ulmo.ba.sec>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <l.majewski@majess.pl>
 
-T24gTW9uLCBKYW4gMzAsIDIwMTcgYXQgOToxOCBBTSwgVGhpZXJyeSBSZWRpbmcKPHRoaWVycnku
-cmVkaW5nQGdtYWlsLmNvbT4gd3JvdGU6Cj4gT24gU3VuLCBKYW4gMjIsIDIwMTcgYXQgMDU6MTQ6
-MDlQTSArMDEwMCwgSGFucyBkZSBHb2VkZSB3cm90ZToKPj4gT24geDg2IHdlIGRvIG5vdCBoYXZl
-IGRldmljZXRyZWUgdG8gbGluayB0aGUgUFdNIGNvbnRyb2xsZXIgYW5kCj4+IHRoZSBkaXNwbGF5
-IGNvbnRyb2xsZXIgdG9nZXRoZXIuIFNvIHNvbWVvbmUgbmVlZHMgdG8gY2FsbAo+PiBwd21fYWRk
-X3RhYmxlKCkgdG8gY3JlYXRlIHRoZSBsaW5rLCBzbyB0aGF0IHRoZSBpOTE1IGRyaXZlcidzCj4+
-IHB3bV9nZXQoZGV2LCAicHdtX2JhY2tsaWdodCIpIGNhbGwgcmV0dXJucyB0aGUgbHBzcycgcHdt
-MC4KPj4KPj4gVGhlIFBXTSBzdWJzeXN0ZW0gZG9lcyBub3Qgd2FudCB0byBoYXZlIHB3bV9hZGRf
-dGFibGUoKSBjYWxscwo+PiBkaXJlY3RseSBpbiBQV00gZHJpdmVycyAodGhpcyBsZWFkcyB0byBw
-cm9iZSBvcmRlcmluZyBpc3N1ZXMpLAo+PiBzbyBsZXRzIGRvIGl0IGhlcmUgc2luY2UgdGhlIGFj
-cGktbHBzcyBjb2RlIGlzIGFsd2F5cyBidWlsdGluLgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBIYW5z
-IGRlIEdvZWRlIDxoZGVnb2VkZUByZWRoYXQuY29tPgo+PiBBY2tlZC1ieTogVGhpZXJyeSBSZWRp
-bmcgPHRoaWVycnkucmVkaW5nQGdtYWlsLmNvbT4KPj4gLS0tCj4+IENoYW5nZXMgaW4gdjI6Cj4+
-IC1TZXQgbmV3IHB3bV9sb29rdXAgbW9kdWxlX25hbWUgZmllbGQgaW4gdGhlIHRhYmxlCj4+IC0t
-LQo+PiAgZHJpdmVycy9hY3BpL2FjcGlfbHBzcy5jIHwgMTMgKysrKysrKysrKysrKwo+PiAgMSBm
-aWxlIGNoYW5nZWQsIDEzIGluc2VydGlvbnMoKykKPgo+IFJhZmFlbCwgZG8geW91IG1pbmQgaWYg
-SSB0YWtlIHRoaXMgdGhyb3VnaCB0aGUgUFdNIHRyZWUgdG8gcmVzb2x2ZSB0aGUKPiBidWlsZC10
-aW1lIGRlcGVuZGVuY3k/CgpObywgSSBkb24ndCwgcGxlYXNlIGdvIGFoZWFkLCB1bmxlc3MgTWlr
-YS9BbmR5IHNlZSBhbnkgcHJvYmxlbXMgaW4gaXQuCgpUaGFua3MsClJhZmFlbApfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBs
-aXN0CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVz
-a3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
+--Sig_/2an2nbXJD/8ajUjjfJy1dKk
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Hi Thierry,
+
+> On Mon, Jan 30, 2017 at 08:23:12AM +0100, Thierry Reding wrote:
+> > On Sun, Jan 29, 2017 at 10:54:07PM +0100, Lukasz Majewski wrote:
+> > > From: Lukasz Majewski <l.majewski@majess.pl>
+> > >=20
+> > > This patch provides separate set of pwm ops utilized by
+> > > i.MX's PWMv1 and PWMv2.
+> > >=20
+> > > Signed-off-by: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
+> > > Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+> > > Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+> > > Acked-by: Shawn Guo <shawn.guo@linaro.org>
+> > > Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+> > > ---
+> > > Changes for v5:
+> > > - None
+> > >=20
+> > > Changes for v4:
+> > > - None
+> > >=20
+> > > Changes for v3:
+> > > - Adjust the code to work with ipg clock removed
+> > >=20
+> > > Changes for v2:
+> > > - New patch
+> > > ---
+> > >  drivers/pwm/pwm-imx.c | 17 ++++++++++++++---
+> > >  1 file changed, 14 insertions(+), 3 deletions(-)
+> > >=20
+> > > diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+> > > index b1d1e50..0fa480d 100644
+> > > --- a/drivers/pwm/pwm-imx.c
+> > > +++ b/drivers/pwm/pwm-imx.c
+> > > @@ -239,7 +239,14 @@ static void imx_pwm_disable(struct pwm_chip
+> > > *chip, struct pwm_device *pwm)
+> > > clk_disable_unprepare(imx->clk_per); }
+> > > =20
+> > > -static struct pwm_ops imx_pwm_ops =3D {
+> > > +static struct pwm_ops imx_pwm_ops_v1 =3D {
+> > > +	.enable =3D imx_pwm_enable,
+> > > +	.disable =3D imx_pwm_disable,
+> > > +	.config =3D imx_pwm_config,
+> > > +	.owner =3D THIS_MODULE,
+> > > +};
+> > > +
+> > > +static struct pwm_ops imx_pwm_ops_v2 =3D {
+> >=20
+> > Can't these two be const? No need to respin for only this, just let
+> > me know and I can make the change while applying.
+>=20
+> Nevermind that. I just remembered that I had picked up a patch to make
+> the original imx_pwm_ops a const and things still work fine if I make
+> both of the above const, so I just had to manually apply your patch,
+> but other than that it seems fine. Let me apply the rest of this set
+> and push out. It'd be great if you could check afterwards that it's
+> all still what you expect.
+
+I will do that. Thanks for integrating the patch series :-).
+
+>=20
+> Thierry
+
+
+Best regards,
+
+Lukasz Majewski
+
+--
+
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+
+--Sig_/2an2nbXJD/8ajUjjfJy1dKk
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iEYEARECAAYFAliO+zIACgkQf9/hG2YwgjFsHwCfWB4SyNytRST7psUnLYR2Mqec
+cW8AnRrpY+PdVni9otrZBiC0jsgpNRWR
+=Iozp
+-----END PGP SIGNATURE-----
+
+--Sig_/2an2nbXJD/8ajUjjfJy1dKk--
