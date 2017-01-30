@@ -1,63 +1,100 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm - Fix possible NULL derefrence.
-Date: Mon, 30 Jan 2017 08:10:20 +0100
-Message-ID: <20170130071020.GE3585@ulmo.ba.sec>
-References: <CGME20170130045241epcas1p2a5a0625327e4caab59236ec85551f95e@epcas1p2.samsung.com>
- <1485751953-29341-1-git-send-email-shailendra.v@samsung.com>
+Subject: Re: [PATCH v5 03/11] pwm: imx: Add separate set of pwm ops for PWMv1
+ and PWMv2
+Date: Mon, 30 Jan 2017 08:23:12 +0100
+Message-ID: <20170130072312.GI3585@ulmo.ba.sec>
+References: <1485726855-16236-1-git-send-email-lukma@denx.de>
+ <1485726855-16236-4-git-send-email-lukma@denx.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="J4XPiPrVK1ev6Sgr"
+        protocol="application/pgp-signature"; boundary="5uO961YFyoDlzFnP"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wj0-f195.google.com ([209.85.210.195]:34135 "EHLO
-        mail-wj0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752421AbdA3HKY (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Jan 2017 02:10:24 -0500
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:33369 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751403AbdA3HYu (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 30 Jan 2017 02:24:50 -0500
 Content-Disposition: inline
-In-Reply-To: <1485751953-29341-1-git-send-email-shailendra.v@samsung.com>
+In-Reply-To: <1485726855-16236-4-git-send-email-lukma@denx.de>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Shailendra Verma <shailendra.v@samsung.com>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, Stephen Warren <swarren@wwwdotorg.org>, Alexandre Courbot <gnurou@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, p.shailesh@samsung.com, ashish.kalra@samsung.com, Shailendra Verma <shailendra.capricorn@gmail.com>
+To: Lukasz Majewski <lukma@denx.de>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>, Stefan Agner <stefan@agner.ch>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>, linux-kernel@vger.kernel.org, Lothar Wassmann <LW@karo-electronics.de>, kernel@pengutronix.de, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <l.majewski@majess.pl>
 
 
---J4XPiPrVK1ev6Sgr
-Content-Type: text/plain; charset=us-ascii
+--5uO961YFyoDlzFnP
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 30, 2017 at 10:22:33AM +0530, Shailendra Verma wrote:
-> of_match_device could return NULL, and so can cause a NULL
-> pointer dereference later.
+On Sun, Jan 29, 2017 at 10:54:07PM +0100, Lukasz Majewski wrote:
+> From: Lukasz Majewski <l.majewski@majess.pl>
 >=20
-> Signed-off-by: Shailendra Verma <shailendra.v@samsung.com>
+> This patch provides separate set of pwm ops utilized by
+> i.MX's PWMv1 and PWMv2.
+>=20
+> Signed-off-by: Lothar Wa=C3=9Fmann <LW@KARO-electronics.de>
+> Signed-off-by: Bhuvanchandra DV <bhuvanchandra.dv@toradex.com>
+> Signed-off-by: Lukasz Majewski <l.majewski@majess.pl>
+> Acked-by: Shawn Guo <shawn.guo@linaro.org>
+> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
 > ---
->  drivers/pwm/pwm-sun4i.c |    4 ++++
->  drivers/pwm/pwm-tegra.c |    5 +++++
->  2 files changed, 9 insertions(+)
+> Changes for v5:
+> - None
+>=20
+> Changes for v4:
+> - None
+>=20
+> Changes for v3:
+> - Adjust the code to work with ipg clock removed
+>=20
+> Changes for v2:
+> - New patch
+> ---
+>  drivers/pwm/pwm-imx.c | 17 ++++++++++++++---
+>  1 file changed, 14 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+> index b1d1e50..0fa480d 100644
+> --- a/drivers/pwm/pwm-imx.c
+> +++ b/drivers/pwm/pwm-imx.c
+> @@ -239,7 +239,14 @@ static void imx_pwm_disable(struct pwm_chip *chip, s=
+truct pwm_device *pwm)
+>  	clk_disable_unprepare(imx->clk_per);
+>  }
+> =20
+> -static struct pwm_ops imx_pwm_ops =3D {
+> +static struct pwm_ops imx_pwm_ops_v1 =3D {
+> +	.enable =3D imx_pwm_enable,
+> +	.disable =3D imx_pwm_disable,
+> +	.config =3D imx_pwm_config,
+> +	.owner =3D THIS_MODULE,
+> +};
+> +
+> +static struct pwm_ops imx_pwm_ops_v2 =3D {
 
-Both of these drivers will only run on purely OF systems, so this check
-is unnecessary.
+Can't these two be const? No need to respin for only this, just let me
+know and I can make the change while applying.
 
 Thierry
 
---J4XPiPrVK1ev6Sgr
+--5uO961YFyoDlzFnP
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAliO5twACgkQ3SOs138+
-s6GhWhAAuYPweIDoZgmOms25t+vRqYAuuocTTOrBEuk3cwgTapKoObqJ/tTLJU1s
-txlzvRdzjc5F0/XrADYHM35lnbPOmYEkMpDr3NZwKHMMRzTY2EBn1W5E9EiwyH7V
-AwuXWwf3T3qTOakklS6EmhII8EtQFP+kBvZASMk2huz7QqSgcM2rCsuCLuEL8Y+n
-0ThS7hKrVkYM7xI3aqQPY+LSVJ7k961H3DPKvIVVhRxFoUWpEuMwestUmE3EW9fS
-CfNw7sC4fthN8DPot50NtX2+5YvEEE5yTW0ne+0FX7E4wkvSDwLJbxoauPMZH8f+
-LK3mRup2iHFbZZoV+0gn24Jdm9Dx+dyrqC64TOg//YLqNhG/kvm4+nm+cmrnthZr
-E9ZlVWnos0nK7FFrkcbo0V6Ymrl1mdnd0RDyePtb/OOwHP+evcAnF7qzTcLGPCgc
-6iQCodX1uSSdPgnJBsWKG5TgbiKWXOalXaWFXlbhE2sfR31jgPUX1/4aswJQh7x9
-W7yHVjTckkebAY0P21bXZvYrntUksJA5oYVYBw62v0Sk7jynYRp0h34SVn9WfLg4
-Sa5B0AQaNoPX1YA59u8lZIdl2tiYJfele/ZNl58oVR4A/Ugwqg+UGZWk6MHyoFcv
-4nAB6MwEbqHWwiG+09PQqm+MTPl0vdCpQS9LbvRm99nRkZaTwPM=
-=DhXH
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAliO6eAACgkQ3SOs138+
+s6Hicw//R7/md7s9Fx/ColJxDjpFk6RQO5K9XBZ4i1BsnuuSiC9n1zFLZie7dYr0
+rtLb9KdlaMTzz6QP7VPqs5VhHxeTHC3j5QjPlan9vJ5SP1GBYV5rGKHNlKFD9hsV
+PrVygShq1SL3otelv+2O5OH8TzcsStKbmOZGy0KwtuaoFBEjGRrO0LycYjbDp1Zw
+MEFAkt/t7SJcRyIFxXO1ZI7d3WWULpKi7i3CPYsAI9k+HEQNc3dX6w0i/5u2k9wd
+F/rLCNsPuEP/Mog8Jzp6zZ6bKXlptQ13yGQyQq6ZG73Te0JybMHp38ZujXNC16dd
+2aoDbm/q/DVd+3cK5jrJJkmnl0kU4zXiMDzrd4q9ODgaSh6Sr3ud5RDj6RjlRxC5
+JFC4OWHWpJvjF6YDL4BsIDvuL7sp+qXAqgiGtP/B0QIYTqJt73SVaSng5ouBxTHF
+YG9YsCYcnxyVcJm1eiHTrLEg5grByJA109tskOYSO8RRtMcUQflm/AEJ6PkMKP/v
+oXCcIW2dhnf4vmVFMKRUFij69LKJhcqi4Gx1GEjowUG10320NTm8IQ1ixmcXzMxJ
+9lL+VkQhX7xpBr/+ULlHbfVYliS/c3AYB1y5bUWTsq0/lcQEbx4SWutA+6h/1nh+
+anXzOlNzC+IGpLq/SnxRh39GVXA4xFRhbbzwZG2OdS6CkhHGU68=
+=niP5
 -----END PGP SIGNATURE-----
 
---J4XPiPrVK1ev6Sgr--
+--5uO961YFyoDlzFnP--
