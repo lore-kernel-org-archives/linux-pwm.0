@@ -1,59 +1,27 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH] pwm: lpss: Add Intel Gemini Lake PCI ID
-Date: Fri, 20 Jan 2017 12:25:33 +0200
-Message-ID: <1484907933.2133.266.camel@linux.intel.com>
-References: <20170104154334.29046-1-mika.westerberg@linux.intel.com>
+From: Miss Marbell <spdr3re9@friend.ocn.ne.jp>
+Subject: =?utf-8?Q?Bitte_kontaktieren_Sie_mich_f=C3=BCr_weitere_Details!?=
+Date: Wed, 1 Feb 2017 17:20:19 +0900 (JST)
+Message-ID: <1622959562.132176298.1485937219553.JavaMail.root@friend.ocn.ne.jp>
+Reply-To: Miss Marbell <brownson.m221@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:14472 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751581AbdATKZj (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 20 Jan 2017 05:25:39 -0500
-In-Reply-To: <20170104154334.29046-1-mika.westerberg@linux.intel.com>
+Received: from mbkd0304.ocn.ad.jp ([153.149.236.5]:42255 "EHLO
+        mbkd0304.ocn.ad.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751875AbdBAIjc (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 1 Feb 2017 03:39:32 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Mika Westerberg <mika.westerberg@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org
 
-On Wed, 2017-01-04 at 18:43 +0300, Mika Westerberg wrote:
-> Intel Gemini Lake PWM is pretty much same as used in Intel Broxton.
-> Add
-> this new PCI ID to the list of supported devices.
-> 
+Sehr geehrte Damen und Herren,
 
-Since we didn't yet settle the dependence series, I will incorporate
-your patch in the next version of that series.
+Ich brauche Ihre Unterstützung in Ihrem Land zu verlagern und zu investieren.Ich bitte Sie um Hilfe, weil ich nicht das Wissen über
+Geschäft und die Regeln, die Ihr Land für eine sichere Investition führen.
 
-Change looks good to me!
+Werden Sie versprechen, mit mir aufrichtig zu sein?
 
-> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> ---
-> Hi, this is on top of Andy's series here:
-> 
-> https://patchwork.ozlabs.org/patch/710104/
-> https://patchwork.ozlabs.org/patch/710107/
-> https://patchwork.ozlabs.org/patch/710105/
-> https://patchwork.ozlabs.org/patch/710106/
-> 
->  drivers/pwm/pwm-lpss-pci.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/pwm/pwm-lpss-pci.c b/drivers/pwm/pwm-lpss-pci.c
-> index dfe0a2e8e4de..2c2ca370dc26 100644
-> --- a/drivers/pwm/pwm-lpss-pci.c
-> +++ b/drivers/pwm/pwm-lpss-pci.c
-> @@ -78,6 +78,7 @@ static const struct pci_device_id pwm_lpss_pci_ids[]
-> = {
->  	{ PCI_VDEVICE(INTEL, 0x1ac8), PWM_LPSS_BXT },
->  	{ PCI_VDEVICE(INTEL, 0x2288), PWM_LPSS_BSW },
->  	{ PCI_VDEVICE(INTEL, 0x2289), PWM_LPSS_BSW },
-> +	{ PCI_VDEVICE(INTEL, 0x31c8), PWM_LPSS_BXT },
->  	{ PCI_VDEVICE(INTEL, 0x5ac8), PWM_LPSS_BXT },
->  	{ },
->  };
+Bitte kontaktieren Sie mich für weitere Details!
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Mit freundlichen Grüßen,
+Fräulein Marbell.
