@@ -1,277 +1,70 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: [PATCH] pwm: atmel-hlcdc: Convert to the atomic PWM API
-Date: Wed,  1 Feb 2017 15:35:34 +0100
-Message-ID: <1485959734-22317-1-git-send-email-boris.brezillon@free-electrons.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:52736 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750920AbdBAOgB (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 1 Feb 2017 09:36:01 -0500
-Sender: linux-pwm-owner@vger.kernel.org
+From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v3 04/14] GPIO: Add gpio-ingenic driver
+Date: Fri, 3 Feb 2017 14:58:50 +0100
+Message-ID: <CACRpkdZNodsRJ33wTJGgrAJpSs=_bXa0yv5ate_7XwjKR0xEnw@mail.gmail.com>
+References: <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
+ <20170125185207.23902-1-paul@crapouillou.net> <20170125185207.23902-5-paul@crapouillou.net>
+ <CACRpkdbcO+1c7izYpn0sb1mkE1ORFETMq=xtzVi1hKbJz0EWfw@mail.gmail.com> <699f0c63e95ecdafe6946fdcdbb97a37@mail.crapouillou.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <699f0c63e95ecdafe6946fdcdbb97a37-p8hskv8pF7lEPksTRSfcJOTW4wlIGRCZ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Paul Cercueil <paul-icTtO2rgO2OTuSrc4Mpeew@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Maarten ter Huurne <maarten-Ph2Y2OKCxY1M656bX5wj8A@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, "linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux MIPS <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-p
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
-Cc: Nicolas Ferre <nicolas.ferre@atmel.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>
 
-Implement the ->apply() hook and drop the ->enable(), ->disable,
-->set_polarity and ->config() ones.
+On Tue, Jan 31, 2017 at 4:29 PM, Paul Cercueil <paul-icTtO2rgO2OTuSrc4Mpeew@public.gmane.org> wrote=
+:
+> Le 2017-01-31 15:20, Linus Walleij a =C3=A9crit :
+>
+>>> + of_property_read_u32(dev->of_node, "base", &jzgc->gc.base);
+>>
+>>
+>> Remove this. Dynamic allocation should be fine, if you're using the
+>> new userspace ABI like tools/gpio/* or libgpiod and only that and
+>> in-kernel
+>> consumers, dynamic numbers are just fine.
+>
+>
+> The problem is that the QI_LB60 board code still have a lot of references
+> to global GPIO numbers. Just grep for JZ_GPIO_PORT in
+> arch/mips/jz4740/board-qi_lb60.c to see what I mean...
 
-Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
----
- drivers/pwm/pwm-atmel-hlcdc.c | 215 +++++++++++++++++-------------------------
- 1 file changed, 86 insertions(+), 129 deletions(-)
+OK I understand we might need a compromise here to get the code moving.
 
-diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
-index 14fc011faa32..64f1e1662b57 100644
---- a/drivers/pwm/pwm-atmel-hlcdc.c
-+++ b/drivers/pwm/pwm-atmel-hlcdc.c
-@@ -49,162 +49,119 @@ static inline struct atmel_hlcdc_pwm *to_atmel_hlcdc_pwm(struct pwm_chip *chip)
- 	return container_of(chip, struct atmel_hlcdc_pwm, chip);
- }
- 
--static int atmel_hlcdc_pwm_config(struct pwm_chip *c,
--				  struct pwm_device *pwm,
--				  int duty_ns, int period_ns)
-+static int atmel_hlcdc_pwm_apply(struct pwm_chip *c, struct pwm_device *pwm,
-+				 struct pwm_state *state)
- {
- 	struct atmel_hlcdc_pwm *chip = to_atmel_hlcdc_pwm(c);
- 	struct atmel_hlcdc *hlcdc = chip->hlcdc;
--	struct clk *new_clk = hlcdc->slow_clk;
--	u64 pwmcval = duty_ns * 256;
--	unsigned long clk_freq;
--	u64 clk_period_ns;
--	u32 pwmcfg;
--	int pres;
--
--	if (!chip->errata || !chip->errata->slow_clk_erratum) {
--		clk_freq = clk_get_rate(new_clk);
--		if (!clk_freq)
--			return -EINVAL;
--
--		clk_period_ns = (u64)NSEC_PER_SEC * 256;
--		do_div(clk_period_ns, clk_freq);
--	}
--
--	/* Errata: cannot use slow clk on some IP revisions */
--	if ((chip->errata && chip->errata->slow_clk_erratum) ||
--	    clk_period_ns > period_ns) {
--		new_clk = hlcdc->sys_clk;
--		clk_freq = clk_get_rate(new_clk);
--		if (!clk_freq)
--			return -EINVAL;
--
--		clk_period_ns = (u64)NSEC_PER_SEC * 256;
--		do_div(clk_period_ns, clk_freq);
--	}
-+	unsigned int status;
-+	int ret;
- 
--	for (pres = 0; pres <= ATMEL_HLCDC_PWMPS_MAX; pres++) {
-+	if (state->enabled) {
-+		struct clk *new_clk = hlcdc->slow_clk;
-+		u64 pwmcval = state->duty_cycle * 256;
-+		unsigned long clk_freq;
-+		u64 clk_period_ns;
-+		u32 pwmcfg;
-+		int pres;
-+
-+		if (!chip->errata || !chip->errata->slow_clk_erratum) {
-+			clk_freq = clk_get_rate(new_clk);
-+			if (!clk_freq)
-+				return -EINVAL;
-+
-+			clk_period_ns = (u64)NSEC_PER_SEC * 256;
-+			do_div(clk_period_ns, clk_freq);
-+		}
-+
-+		/* Errata: cannot use slow clk on some IP revisions */
-+		if ((chip->errata && chip->errata->slow_clk_erratum) ||
-+		    clk_period_ns > state->period) {
-+			new_clk = hlcdc->sys_clk;
-+			clk_freq = clk_get_rate(new_clk);
-+			if (!clk_freq)
-+				return -EINVAL;
-+
-+			clk_period_ns = (u64)NSEC_PER_SEC * 256;
-+			do_div(clk_period_ns, clk_freq);
-+		}
-+
-+		for (pres = 0; pres <= ATMEL_HLCDC_PWMPS_MAX; pres++) {
- 		/* Errata: cannot divide by 1 on some IP revisions */
--		if (!pres && chip->errata && chip->errata->div1_clk_erratum)
--			continue;
--
--		if ((clk_period_ns << pres) >= period_ns)
--			break;
--	}
--
--	if (pres > ATMEL_HLCDC_PWMPS_MAX)
--		return -EINVAL;
--
--	pwmcfg = ATMEL_HLCDC_PWMPS(pres);
-+			if (!pres && chip->errata &&
-+			    chip->errata->div1_clk_erratum)
-+				continue;
- 
--	if (new_clk != chip->cur_clk) {
--		u32 gencfg = 0;
--		int ret;
-+			if ((clk_period_ns << pres) >= state->period)
-+				break;
-+		}
- 
--		ret = clk_prepare_enable(new_clk);
--		if (ret)
--			return ret;
-+		if (pres > ATMEL_HLCDC_PWMPS_MAX)
-+			return -EINVAL;
- 
--		clk_disable_unprepare(chip->cur_clk);
--		chip->cur_clk = new_clk;
-+		pwmcfg = ATMEL_HLCDC_PWMPS(pres);
- 
--		if (new_clk == hlcdc->sys_clk)
--			gencfg = ATMEL_HLCDC_CLKPWMSEL;
-+		if (new_clk != chip->cur_clk) {
-+			u32 gencfg = 0;
-+			int ret;
- 
--		ret = regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(0),
--					 ATMEL_HLCDC_CLKPWMSEL, gencfg);
--		if (ret)
--			return ret;
--	}
-+			ret = clk_prepare_enable(new_clk);
-+			if (ret)
-+				return ret;
- 
--	do_div(pwmcval, period_ns);
-+			clk_disable_unprepare(chip->cur_clk);
-+			chip->cur_clk = new_clk;
- 
--	/*
--	 * The PWM duty cycle is configurable from 0/256 to 255/256 of the
--	 * period cycle. Hence we can't set a duty cycle occupying the
--	 * whole period cycle if we're asked to.
--	 * Set it to 255 if pwmcval is greater than 256.
--	 */
--	if (pwmcval > 255)
--		pwmcval = 255;
-+			if (new_clk == hlcdc->sys_clk)
-+				gencfg = ATMEL_HLCDC_CLKPWMSEL;
- 
--	pwmcfg |= ATMEL_HLCDC_PWMCVAL(pwmcval);
--
--	return regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(6),
--				  ATMEL_HLCDC_PWMCVAL_MASK |
--				  ATMEL_HLCDC_PWMPS_MASK,
--				  pwmcfg);
--}
--
--static int atmel_hlcdc_pwm_set_polarity(struct pwm_chip *c,
--					struct pwm_device *pwm,
--					enum pwm_polarity polarity)
--{
--	struct atmel_hlcdc_pwm *chip = to_atmel_hlcdc_pwm(c);
--	struct atmel_hlcdc *hlcdc = chip->hlcdc;
--	u32 cfg = 0;
-+			ret = regmap_update_bits(hlcdc->regmap,
-+						 ATMEL_HLCDC_CFG(0),
-+						 ATMEL_HLCDC_CLKPWMSEL,
-+						 gencfg);
-+			if (ret)
-+				return ret;
-+		}
- 
--	if (polarity == PWM_POLARITY_NORMAL)
--		cfg = ATMEL_HLCDC_PWMPOL;
-+		do_div(pwmcval, state->period);
- 
--	return regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(6),
--				  ATMEL_HLCDC_PWMPOL, cfg);
--}
-+		/*
-+		 * The PWM duty cycle is configurable from 0/256 to 255/256 of
-+		 * the period cycle. Hence we can't set a duty cycle occupying
-+		 * the whole period cycle if we're asked to.
-+		 * Set it to 255 if pwmcval is greater than 256.
-+		 */
-+		if (pwmcval > 255)
-+			pwmcval = 255;
- 
--static int atmel_hlcdc_pwm_enable(struct pwm_chip *c, struct pwm_device *pwm)
--{
--	struct atmel_hlcdc_pwm *chip = to_atmel_hlcdc_pwm(c);
--	struct atmel_hlcdc *hlcdc = chip->hlcdc;
--	u32 status;
--	int ret;
-+		pwmcfg |= ATMEL_HLCDC_PWMCVAL(pwmcval);
- 
--	ret = regmap_write(hlcdc->regmap, ATMEL_HLCDC_EN, ATMEL_HLCDC_PWM);
--	if (ret)
--		return ret;
-+		if (state->polarity == PWM_POLARITY_NORMAL)
-+			pwmcfg |= ATMEL_HLCDC_PWMPOL;
- 
--	while (true) {
--		ret = regmap_read(hlcdc->regmap, ATMEL_HLCDC_SR, &status);
-+		ret = regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(6),
-+					 ATMEL_HLCDC_PWMCVAL_MASK |
-+					 ATMEL_HLCDC_PWMPS_MASK |
-+					 ATMEL_HLCDC_PWMPOL,
-+					 pwmcfg);
- 		if (ret)
- 			return ret;
--
--		if ((status & ATMEL_HLCDC_PWM) != 0)
--			break;
--
--		usleep_range(1, 10);
- 	}
- 
--	return 0;
--}
--
--static void atmel_hlcdc_pwm_disable(struct pwm_chip *c,
--				    struct pwm_device *pwm)
--{
--	struct atmel_hlcdc_pwm *chip = to_atmel_hlcdc_pwm(c);
--	struct atmel_hlcdc *hlcdc = chip->hlcdc;
--	u32 status;
--	int ret;
--
--	ret = regmap_write(hlcdc->regmap, ATMEL_HLCDC_DIS, ATMEL_HLCDC_PWM);
-+	ret = regmap_write(hlcdc->regmap,
-+			   state->enabled ? ATMEL_HLCDC_EN : ATMEL_HLCDC_DIS,
-+			   ATMEL_HLCDC_PWM);
- 	if (ret)
--		return;
--
--	while (true) {
--		ret = regmap_read(hlcdc->regmap, ATMEL_HLCDC_SR, &status);
--		if (ret)
--			return;
--
--		if ((status & ATMEL_HLCDC_PWM) == 0)
--			break;
-+		return ret;
- 
--		usleep_range(1, 10);
--	}
-+	return regmap_read_poll_timeout(hlcdc->regmap, ATMEL_HLCDC_SR, status,
-+					(status & ATMEL_HLCDC_PWM) ==
-+					(state->enabled ? ATMEL_HLCDC_PWM : 0),
-+					10, 0);
- }
- 
- static const struct pwm_ops atmel_hlcdc_pwm_ops = {
--	.config = atmel_hlcdc_pwm_config,
--	.set_polarity = atmel_hlcdc_pwm_set_polarity,
--	.enable = atmel_hlcdc_pwm_enable,
--	.disable = atmel_hlcdc_pwm_disable,
-+	.apply = atmel_hlcdc_pwm_apply,
- 	.owner = THIS_MODULE,
- };
- 
--- 
-2.7.4
+But we need to keep it out of the device tree.
+
+I think it's better to put a base table relative to the memory base in
+the driver in that case:
+
+unsigned int gpio_global_base;
+
+switch (memory_base_address) {
+case 0x41000000:
+    gpio_global_base =3D 0x00;
+    break;
+case 0x42000000:
+    gpio_global_base =3D 0x20;
+
+(...)
+
+etc. (Those are not your base addresses but you get the idea).
+
+Include a few comments like:
+
+/*
+ * DO NOT EXPAND THIS: FOR BACKWARD GPIO NUMBERSPACE
+ * COMPATIBIBILITY ONLY: WORK TO TRANSITION CONSUMERS TO
+ * USE THE GPIO DESCRIPTOR API IN <linux/gpio/consumer.h> INSTEAD.
+ */
+
+Then I'll be happy :)
+
+Yours,
+Linus Walleij
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
