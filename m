@@ -1,103 +1,163 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 1/3] dt: pwm: lpc32xx: add description of clocks and
- #pwm-cells properties
-Date: Tue, 7 Feb 2017 17:22:03 -0600
-Message-ID: <CAL_JsqJ_g1jGuzE5m9=2iNSPDt2nDFYTXZJOpqPzrtw8kH-qQw@mail.gmail.com>
-References: <20161205014237.1689-1-vz@mleia.com> <20161205014237.1689-2-vz@mleia.com>
- <20161209214137.2hdugl5rmnwjrus4@rob-hp-laptop> <015305d5-c22f-52da-9605-f2c19e3108b1@mleia.com>
- <5a865e27-e673-2f45-6c71-ca1e7d92a346@mleia.com> <1483456920.7643.1.camel@localhost>
- <1486494208.32098.3.camel@localhost>
+From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v2 3/4] ARM: pwm: sun6i: add support the
+ Allwinner A31 PWM.
+Date: Wed, 8 Feb 2017 08:53:27 +0100
+Message-ID: <20170208075327.vv4p4svukxh7frvn@lukather>
+References: <1486489846-662-1-git-send-email-lis8215@gmail.com>
+ <1486489846-662-4-git-send-email-lis8215@gmail.com>
+Reply-To: maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:42134 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751906AbdBGXWd (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 7 Feb 2017 18:22:33 -0500
-In-Reply-To: <1486494208.32098.3.camel@localhost>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="seq76nlc3mleerbw"
+Return-path: <linux-sunxi+bncBDSJBYGBRIMBBVVR5PCAKGQE23HU3NY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Disposition: inline
+In-Reply-To: <1486489846-662-4-git-send-email-lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Sylvain Lemieux <slemieux.tyco@gmail.com>
-Cc: Vladimir Zapolskiy <vz@mleia.com>, Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 
-On Tue, Feb 7, 2017 at 1:03 PM, Sylvain Lemieux <slemieux.tyco@gmail.com> wrote:
-> Hi Rob,
->
-> On Tue, 2017-01-03 at 10:22 -0500, Sylvain Lemieux wrote:
->> Hi Rob,
->>
->> On Wed, 2016-12-21 at 05:30 +0200, Vladimir Zapolskiy wrote:
->> > On 12/10/2016 01:51 AM, Vladimir Zapolskiy wrote:
->> > > Hi Rob,
->> > >
->> > > On 12/09/2016 11:41 PM, Rob Herring wrote:
->> > >> On Mon, Dec 05, 2016 at 03:42:37AM +0200, Vladimir Zapolskiy wrote:
->> > >>> NXP LPC32xx SoCs have two simple independent PWM controllers with a single
->> > >>> output each, in this case there is no need to specify PWM channel argument
->> > >>> on client side, one cell for setting PWM output frequency is sufficient.
->> > >>>
->> > >>> Another added to the description property 'clocks' has a standard meaning
->> > >>> of a controller supply clock, in the LPC32xx User's Manual the clock is
->> > >>> denoted as PWM1_CLK or PWM2_CLK clock.
->> > >>>
->> > >>> Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
->> > >>> ---
->> > >>>  Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt | 7 +++++++
->> > >>>  1 file changed, 7 insertions(+)
->> > >>>
->> > >>> diff --git a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
->> > >>> index 74b5bc5..523d796 100644
->> > >>> --- a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
->> > >>> +++ b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
->> > >>> @@ -3,15 +3,22 @@ LPC32XX PWM controller
->> > >>>  Required properties:
->> > >>>  - compatible: should be "nxp,lpc3220-pwm"
->> > >>>  - reg: physical base address and length of the controller's registers
->> > >>> +- clocks: clock phandle and clock specifier pair
->> > >>> +- #pwm-cells: should be 1, the cell is used to specify the period in
->> > >>> +  nanoseconds.
->> > >>
->> > >> This use of the cell is a bit odd as the period is s/w config and this
->> > >> would typically be a channel selection or such.
->> > >
->> > > this is a classic PWM channel configuration property for PWM consumers
->> > > described in DT, for instance PWM frequency for display panel backlight
->> > > on boot.
->> > >
->> > > I think >90% of PWM controllers with device tree bindings have this
->> > > argument in #pwm-cells, from bindings/pwm/pwm.txt :
->> > >
->> > >     pwm-specifier typically encodes the chip-relative PWM number and
->> > >     the PWM period in nanoseconds.
->> > >
->> > > You also may skim through phandle arguments of 'pwms' property,
->> > > commonly the second argument is the requested frequency.
->> > >
->> > > In this particular case I just drop PWM channel number, because
->> > > the LPC32xx PWM controller has a single output channel.
->> > >
->> > >> What if I want user specified/changed periods?
->> > >>
->> > >
->> > > The preset period still can be changed over sysfs in runtime.
->> >
->> > Rob, have I managed to answer your questions?
->> >
->> > If you accept my clarification, could you please ack the change?
->> >
->> > --
->> > With best wishes,
->> > Vladimir
->> >
->> ping
->>
->> Sylvain
->>
-> Can you provide feedback; I think your questions were answered
-> by Vladimir.
 
-Yes. Sorry for the delay. It's best to resend if you want to be sure I see it.
+--seq76nlc3mleerbw
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
 
-Acked-by: Rob Herring <robh@kernel.org>
+On Tue, Feb 07, 2017 at 08:50:45PM +0300, lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
+> From: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> 
+> This patch introduce the sun6i PWM driver itself:
+>  - sun6i register operations,
+>  - sun6i prescaler table,
+>  - DT bindings for A31 SoC,
+>  - documentation update.
+> 
+> Signed-off-by: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>  .../devicetree/bindings/pwm/pwm-sun4i.txt          |  3 +-
+>  drivers/pwm/pwm-sun4i.c                            | 71 ++++++++++++++++++++++
+>  2 files changed, 73 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+> index f1cbeef..b737934 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+> @@ -1,10 +1,11 @@
+> -Allwinner sun4i and sun7i SoC PWM controller
+> +Allwinner sun4i, sun6i and sun7i SoC PWM controller
+>  
+>  Required properties:
+>    - compatible: should be one of:
+>      - "allwinner,sun4i-a10-pwm"
+>      - "allwinner,sun5i-a10s-pwm"
+>      - "allwinner,sun5i-a13-pwm"
+> +    - "allwinner,sun6i-a31-pwm"
+>      - "allwinner,sun7i-a20-pwm"
+>      - "allwinner,sun8i-h3-pwm"
+>    - reg: physical base address and length of the controller's registers
+> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+> index 39912fc..0c1c372 100644
+> --- a/drivers/pwm/pwm-sun4i.c
+> +++ b/drivers/pwm/pwm-sun4i.c
+> @@ -47,6 +47,12 @@
+>  
+>  #define BIT_CH(bit, chan)	((bit) << ((chan) * PWMCH_OFFSET))
+>  
+> +#define SUN6I_PWM_RDY_BIT	PWM_RDY_BASE
+> +#define SUN6I_PWM_CTL_OFFS	0x0
+> +#define SUN6I_PWM_PRD_OFFS	0x4
+> +#define SUN6I_PWM_CH_CTL(ch)	(0x10 * (ch) + SUN6I_PWM_CTL_OFFS)
+> +#define SUN6I_PWM_CH_PRD(ch)	(0x10 * (ch) + SUN6I_PWM_PRD_OFFS)
+> +
+>  struct sun4i_pwm_chip;
+>  
+>  static const u32 sun4i_prescaler_table[] = {
+> @@ -68,6 +74,25 @@ static const u32 sun4i_prescaler_table[] = {
+>  	0, /* Actually 1 but tested separately */
+>  };
+>  
+> +static const u32 sun6i_prescaler_table[] = {
+> +	1,
+> +	2,
+> +	4,
+> +	8,
+> +	16,
+> +	32,
+> +	64,
+> +	0,
+> +	0,
+> +	0,
+> +	0,
+> +	0,
+> +	0,
+> +	0,
+> +	0,
+> +	0,
+> +};
+> +
+>  struct sunxi_reg_ops {
+>  	int (*ctl_rdy)(struct sun4i_pwm_chip *chip, int npwm);
+>  	u32 (*ctl_read)(struct sun4i_pwm_chip *chip, int npwm);
+> @@ -140,6 +165,33 @@ static void sun4i_reg_prd_write(struct sun4i_pwm_chip *chip, int npwm, u32 val)
+>  	sun4i_pwm_writel(chip, val, PWM_CH_PRD(npwm));
+>  }
+>  
+> +static int sun6i_reg_ctl_rdy(struct sun4i_pwm_chip *chip, int npwm)
+> +{
+> +	u32 val = sun4i_pwm_readl(chip, SUN6I_PWM_CH_CTL(npwm));
+> +
+> +	return val & BIT(SUN6I_PWM_RDY_BIT);
+> +}
+> +
+> +static u32 sun6i_reg_ctl_read(struct sun4i_pwm_chip *chip, int npwm)
+> +{
+> +	return sun4i_pwm_readl(chip, SUN6I_PWM_CH_CTL(npwm));
+> +}
+> +
+> +static void sun6i_reg_ctl_write(struct sun4i_pwm_chip *chip, int npwm, u32 val)
+> +{
+> +	return sun4i_pwm_writel(chip, val, SUN6I_PWM_CH_CTL(npwm));
+> +}
+> +
+> +static u32 sun6i_reg_prd_read(struct sun4i_pwm_chip *chip, int npwm)
+> +{
+> +	return sun4i_pwm_readl(chip, SUN6I_PWM_CH_PRD(npwm));
+> +}
+> +
+> +static void sun6i_reg_prd_write(struct sun4i_pwm_chip *chip, int npwm, u32 val)
+> +{
+> +	return sun4i_pwm_writel(chip, val, SUN6I_PWM_CH_PRD(npwm));
+> +}
+> +
+>  static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  			    int duty_ns, int period_ns)
+>  {
+> @@ -306,6 +358,14 @@ static const struct sunxi_reg_ops sun4i_reg_ops = {
+>  	.prd_write = sun4i_reg_prd_write,
+>  };
+>  
+> +static const struct sunxi_reg_ops sun6i_reg_ops = {
+> +	.ctl_rdy   = sun6i_reg_ctl_rdy,
+> +	.ctl_read  = sun6i_reg_ctl_read,
+> +	.ctl_write = sun6i_reg_ctl_write,
+> +	.prd_read  = sun6i_reg_prd_read,
+> +	.prd_write = sun6i_reg_prd_write,
+> +};
+> +
 
-Rob
+... And use regmap's reg_field to deal with the different offsets in
+that case ?
+
+Looks quite good otherwise, thanks!
+Maxime
+
+-- 
+Maxime Ripard, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
+--seq76nlc3mleerbw--
