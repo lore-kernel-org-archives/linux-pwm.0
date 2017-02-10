@@ -1,96 +1,120 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v3 01/14] Documentation: dt/bindings: Document  pinctrl-ingenic
-Date: Thu, 09 Feb 2017 18:28:25 +0100
-Message-ID: <fd3c507484a9ee34a08c9f92e60624db@mail.crapouillou.net>
-References: <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
- <20170125185207.23902-1-paul@crapouillou.net>
- <20170125185207.23902-2-paul@crapouillou.net>
- <20170130203617.hpljtcmzava3rq2n@rob-hp-laptop>
- <12dc62a7255bd453ff4e5e89f93ebc58@mail.crapouillou.net>
- <CACRpkdbAgy4sh6NT5DdQD6EQtOZEwevohEA6OGRcVz98yqS52Q@mail.gmail.com>
+From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v2 1/4] ARM: pwm: sun4i: unification of
+ register operations for support sun6i.
+Date: Fri, 10 Feb 2017 09:38:04 +0100
+Message-ID: <20170210083804.woe3bbc6b6c3vsp3@lukather>
+References: <1486489846-662-1-git-send-email-lis8215@gmail.com>
+ <1486489846-662-2-git-send-email-lis8215@gmail.com>
+ <20170208075219.oo234d5zartzmzsg@lukather>
+ <CAKNVLfaYoPf-b-mGc0eSmmAk0QPhMCRt5aT5Z3JBcfKhridWDA@mail.gmail.com>
+Reply-To: maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdbAgy4sh6NT5DdQD6EQtOZEwevohEA6OGRcVz98yqS52Q@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Rob Herring <robh@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Ulf Hansson <ulf.hansson@linaro.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Linux MIPS <linux-mips@linux-mips.org>, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, James Hogan <james.hogan@imgtec.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="3bgobrdjg5sbf3zk"
+Return-path: <linux-sunxi+bncBDSJBYGBRIMBB3PX6XCAKGQERGB32WY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Disposition: inline
+In-Reply-To: <CAKNVLfaYoPf-b-mGc0eSmmAk0QPhMCRt5aT5Z3JBcfKhridWDA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: =?utf-8?B?0JLQvtC70LrQvtCyINCh0LXRgNCz0LXQuQ==?= <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Le 2017-01-31 14:09, Linus Walleij a écrit :
-> On Tue, Jan 31, 2017 at 11:31 AM, Paul Cercueil <paul@crapouillou.net> 
-> wrote:
->> [Rob]:
->>> From the overlapping register addresses in the examples and this
->>> description, it looks like the pinctrlr and gpio controller are 1 
->>> block.
->>> If so, then there should only be 1 node.
->> 
->> Well, that's what I had until Linus W. just told me to do the 
->> opposite:
->> 
->>> Just pull all these down two levels and make them one device
->>> each instead of having them inside the pin controller node
->>> like this.
-> 
-> I guess the argument is that they are in the same coherent memory
-> range so they should be one device node. That is how we handle
-> e.g. system controllers so it makes some sense.
-> 
-> So can the two GPIO controllers be modeled as two subnodes of
-> the pin controller then?
-> 
-> Subnodes are certainly OK, we have that for many other devices
-> such as interrupt controllers on PCI bridges and what not.
-> 
-> So when the probing of the pin controller is ready it can just
-> walk down and populate the GPIO subdevices with
-> of_platform_default_populate() or simply by registering the
-> device directly with platform_device_add_data() just like an
-> MFD device does?
-> 
-> This is nice because we want to use the standard gpio ranges
-> to map pins to GPIO lines.
-> 
-> I'm sorry about the unclarities here, but it's essentially an intrinsic
-> problem with GPIO that has been with us for years: do we model
-> each "bank" as a device or do we just register each bank as a
-> gpiochip, or do we even make one gpiochip to cover all the banks.
-> All solutions can be found in the kernel... also the different DT 
-> bindings:
-> one node for a whole slew of GPIO controllers, or seveal nodes
-> and I bet also several nodes for memory ranges in close proximity.
-> 
-> I don't know for sure what is the most elegant solution, we might
-> need to build some consensus here for the future so it doesn't
-> get to heterogeneous.
-> 
-> Yours,
-> Linus Walleij
 
-I was thinking that instead of having one pinctrl-ingenic instance 
-covering
-0x600 of register space, and 6 instances of gpio-ingenic having 0x100 
-each,
-I could just have 6 instances of pinctrl-ingenic, each one with an 
-instance
-of gpio-ingenic declared as a sub-node, each handling just 0x100 of 
-memory space.
+--3bgobrdjg5sbf3zk
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Then I can make pinctrl-ingenic and gpio-ingenic share a regmap (through 
-syscon),
-which would be a good idea anyway since the two drivers poke to the very 
-same
-registers (in theory not at the same time, but it's never safe to assume 
-things
-like this).
+Hi,
 
-Problem is, that in that case the pin functions/groups (and 
-ingenic,pull-ups)
-would have to be in DTS because we would have 6 instances with different 
-pin
-groups, and I know you hate that.
+On Wed, Feb 08, 2017 at 07:41:55PM +0300, =D0=92=D0=BE=D0=BB=D0=BA=D0=BE=D0=
+=B2 =D0=A1=D0=B5=D1=80=D0=B3=D0=B5=D0=B9 wrote:
+> Hello all,
+>=20
+> >> This patch not introduce new features, just prepare code for
+> >> adding sun6i PWM driver in next commits.
+> >>
+> >> A31 SoC have a different map of PWM registers than others ASoCs,
+> >> but register bits purposes are very similar.
+> >>
+> >> This patch introduce set of register access routines, which
+> >> are common for existing in driver ASoCs:
+> >>  - ctl_rdy   - checks the ready bit of specified PWM channel,
+> >>  - ctl_read  - reads value from control register of specified PWM
+> channel,
+> >>  - ctl_write - writes significant bits to control register of specifie=
+d
+> PWM channel,
+> >>  - prd_read  - reads value from period register of specified PWM chann=
+el,
+> >>  - prd_write - writes value to period register of specified PWM channe=
+l.
+> >> Driver code redesigned to use the new routines.
+> >
+> > Why don't you use regmap for that?
+>=20
+> First of all, i'm newbie and its my first patchset. I just remake
+> what i see in the driver. I even don't suspect about use regmap
+> here.
 
-Thoughts?
+Don't worry, a review is here to point where things could be better,
+which doesn't mean that you did wrong :)
+
+> Second thing - i can't test these driver on all existing sunxi SoCs,
+> i have only A31 and A20 based boards where only pwm0 is
+> accessible. Huge redesign cause bigger chance to make a mistake.
+
+Don't worry about that either. We have a good number of platforms
+using the PWMs already. If there's something broken at some point,
+we'll catch it as well.
+
+> If you think regmap solution is a must, then i will do that. This
+> will be a good experience for me.
+
+Yes, this really should cover what you're trying to do here,
+especially reg_field.
+
+You can have a look at drivers/reset/sti/reset-syscfg.c if you want to
+have a look at a rather simple driver using it.
+
+Maxime
+
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
+
+--=20
+You received this message because you are subscribed to the Google Groups "=
+linux-sunxi" group.
+To unsubscribe from this group and stop receiving emails from it, send an e=
+mail to linux-sunxi+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+For more options, visit https://groups.google.com/d/optout.
+
+--3bgobrdjg5sbf3zk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAEBCAAGBQJYnXvoAAoJEBx+YmzsjxAgZsgQAIHsVd6K68qpA61kXVKKYTRW
+klCiGO9ubW7LzfngaW/ghhs4tWSN101DzPNnHEqdajvqcIL3I+fmHia1OFHPMZ3w
+Sib4JWWYjGg50TbAYIzlBIjuBSsGqZy040CLqTdEeBl4DBjbCiRWA330hndvhnE9
+SK0ohV29OugH9cATZAoRBGNuoCH3mgdWa9Z2wcRCxvZ64QinzjE+aG1gkvFYQOfl
+Wd7MnznuMk0f6R0o43lbc8/fueBGKVOGQY2KS2Vj5c2Gvqx4h5w1PAVEWgqHreyU
+6A2Z/G5Rx7lWm1EsCgAVScy9sCHdbn58nz2DT/1XNu9FMbvZENkMU0BphS7sgUcP
+fA6hmV29O1m6fyBliCWCLBMwDSwoRzXYMXpNCtouZ+3lThBG3qJMUV/6WaBKaBap
+cwG5UZBam4Pglro3CxMKuVFyuQocWTsrx8zaIVTTRnMJk9NE483dVswhv6nX4bh0
+Hm3stbQHTswMv5gUlFAGdPOaZPEZf/UPCLltQUQXlThtVMBnhOVc1PoHZe70aUqZ
+Y/KAO848ky2AuRQBzRTbNB8n54bNbViBrv6HlEsWOfI43j672Oq8Q4p3Scy057Ev
+1MKCyVYuEptjLRJJNy16kXwxpD2FPQmFECWpArFCxW6nvkswzVGfDIimthuj5Hyb
+RUosY7n4QHXdk3DpIx0X
+=gwA9
+-----END PGP SIGNATURE-----
+
+--3bgobrdjg5sbf3zk--
