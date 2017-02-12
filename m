@@ -1,77 +1,51 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: Fix compile error in pwm_get()
-Date: Fri, 10 Feb 2017 15:23:12 +0100
-Message-ID: <20170210142312.GA10204@ulmo.ba.sec>
-References: <20170210114430.21512-1-hdegoede@redhat.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v3 04/14] GPIO: Add gpio-ingenic driver
+Date: Sun, 12 Feb 2017 21:48:59 +0100
+Message-ID: <CACRpkdbusY=gsZ=a9yGfRMi5t=+539OwKt0i5FNczxNyEVPHwg@mail.gmail.com>
+References: <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
+ <20170125185207.23902-1-paul@crapouillou.net> <20170125185207.23902-5-paul@crapouillou.net>
+ <CACRpkdaqQ2==B1_o-Ru81Nbu_kUF+Kxn=XFYms-1e=nAtHiJ4A@mail.gmail.com> <b032ad924ae905ce4fd11535d08c29a8@mail.crapouillou.net>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="fdj2RfSjLxBAspz7"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f194.google.com ([209.85.128.194]:33776 "EHLO
-        mail-wr0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752336AbdBJOa7 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 10 Feb 2017 09:30:59 -0500
-Received: by mail-wr0-f194.google.com with SMTP id i10so15334424wrb.0
-        for <linux-pwm@vger.kernel.org>; Fri, 10 Feb 2017 06:30:29 -0800 (PST)
-Content-Disposition: inline
-In-Reply-To: <20170210114430.21512-1-hdegoede@redhat.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <b032ad924ae905ce4fd11535d08c29a8@mail.crapouillou.net>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>, Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Ulf Hansson <ulf.hansson@linaro.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux MIPS <linux-mips@linux-mips.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>, linux-p
 List-Id: linux-pwm@vger.kernel.org
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: linux-pwm@vger.kernel.org
 
+On Thu, Feb 9, 2017 at 6:14 PM, Paul Cercueil <paul@crapouillou.net> wrote:
 
---fdj2RfSjLxBAspz7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+>> If you're not just replacing these with GPIO_GENERIC, please also
+>> include a .get_direction() callback.
+>
+> My .direction_input() and .direction_output() callbacks just call into
+> the pinctrl driver, using pinctrl_gpio_direction_[in,out]put().
+> I didn't find a way to get the direction info from the pinctrl driver,
+> is that something that the core should provide?
 
-On Fri, Feb 10, 2017 at 12:44:30PM +0100, Hans de Goede wrote:
-> commit bf71f4e8fb95 ("pwm: Try to load modules during pwm_get()") had
-> error checking added to the request_module call it adds, before merging
-> it. But the "err" variable the error checking uses was never declared,
-> this commit fixes this.
->=20
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
-> Feel free to squash this into the original commit
-> ---
->  drivers/pwm/core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Hm OK you have a clear point there, there is no such callback.
 
-You had me really confused there for a little bit. Turns out I had two
-versions of that patch in my tree, one with the missing variable
-declaration and another where I had already added it after build tests
-had failed. The old patch stuck around because it was part of a branch
-that I had created in case anyone wanted to pull this into the ACPI
-tree to resolve dependencies and I had forgotten to rebase that branch
-onto the fixed patch.
+OK I do not require you to fix that at this time.
 
-I've pushed a new set of branches, so this confusion should be gone by
-tomorrow. It's a little odd that you even saw this failing to build,
-since none of the farms seemed to have noticed, and the file in
-linux-next is actually the correct one.
+I am hesitant about providing ever more callbacks from GPIO
+to pin control, I might need some help for consolidation here.
 
-Thierry
+With Mika's patches we have a .set_config() call to
+pinctrl_gpio_set_config() so essentially
+we *could* actually refactor all pin control drivers providing
+a GPIO back-end to use:
 
---fdj2RfSjLxBAspz7
-Content-Type: application/pgp-signature; name="signature.asc"
+pinctrl_gpio_set_config(gpio, PIN_CONF_PACKED(PIN_CONFIG_INPUT_ENABLE, 0));
+pinctrl_gpio_set_config(gpio, PIN_CONF_PACKED(PIN_CONFIG_OUTPUT, val));
 
------BEGIN PGP SIGNATURE-----
+And replace the calls to pinctrl_gpio_direction_input()
+and pinctrl_gpio_direction_output() with this throughout.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlidzMwACgkQ3SOs138+
-s6GQnA/+O15MIV5oYUrLiW7t4xqDuCxgC/LTZ7KrHdYvVrAmu+EPaqGD9Jg5Onb2
-VZtRrsbjcecPNQHmfKfz3SNMz5WhHAaR9YBfH/bNNe4dGPpBe1U+0Fc+VCZ8b3X5
-D8E/RDlvudaY3K7TdCnz3ASHGwKPukwRalJwlPVzRCdo5mtIHK8+1jUjQd48zmz7
-VDUHnr8BmyOpDcnnjRWXMi1zOJfOcwXoFi6RVwaY2mHFPr8nUDWDG92J5NemEbVk
-DBmw93sra87GvUo+q9zm/7Ww9th/C+bMVU5YLL0eBnx5IJwc4rNTHYDuJkM1DIgZ
-UnjkYAOOiuC/EkbSeR/sXGKHG3Vx1VQArV7gjGiNXDop6Y393RyXeT8T9Ti1k1vY
-gn8mvfuvBt5pxYmxSTeJFXszhTH7jDS6gk2K/8aM2KgmhsgIC8UNDpBxLglOmowQ
-qxpape6xNA++6Cy6Clj7aQVvfbpCyEUpKIngIMtbBlXIQnL4DsIZAByTYwHJjEcm
-eEYsN6BGlg8e1+vH52TWifIS1WalxWuaGhEcURpPvNyg/gaz0Z5cQPFVG6qyHQOv
-NcUkONOXRBwktHeM0pWA1mc/E0dozASJhSAoPVBbPDi/91kSoCfiBPlxsNuTIss2
-veaKmywe2rbfhqRs9lrGUM5VR9Cq11apvUsoPTRQCGHblmhr6Zk=
-=zYKR
------END PGP SIGNATURE-----
+It makes things a bit simpler. If we need to figure things
+out the reverse direction then pinctrl_gpio_get_config()
+should be implemented and used as back-end for
+figuring out direction.
 
---fdj2RfSjLxBAspz7--
+Yours,
+Linus Walleij
