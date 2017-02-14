@@ -1,232 +1,62 @@
-From: Yang Ling <gnaygnil@gmail.com>
-Subject: [PATCH 1/2] pwm: loongson1: Add PWM driver for Loongson1 SoC
-Date: Mon, 13 Feb 2017 23:28:01 +0800
-Message-ID: <20170213152801.GA32019@ubuntu>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: ACPI problem causing non functional backlight control
+ on win10 cherrytrail devices
+Date: Tue, 14 Feb 2017 14:56:13 +0100
+Message-ID: <0ff3690e-e851-eee4-665a-a487a1c24988@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, keguang.zhang@gmail.com
-Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-mips@linux-mips.org
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: intel-gfx <intel-gfx@lists.freedesktop.org>, linux-acpi <linux-acpi@vger.kernel.org>
+Cc: linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Add support for the PWM controller present in Loongson1 family of SoCs.
-
-Signed-off-by: Yang Ling <gnaygnil@gmail.com>
----
- drivers/pwm/Kconfig         |   9 +++
- drivers/pwm/Makefile        |   1 +
- drivers/pwm/pwm-loongson1.c | 169 ++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 179 insertions(+)
- create mode 100644 drivers/pwm/pwm-loongson1.c
-
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index f92dd41..985f2fe 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -216,6 +216,15 @@ config PWM_JZ4740
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-jz4740.
- 
-+config PWM_LOONGSON1
-+	tristate "Loongson1 PWM support"
-+	depends on MACH_LOONGSON32
-+	help
-+	  Generic PWM framework driver for Loongson1 based machines.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-loongson1.
-+
- config PWM_LP3943
- 	tristate "TI/National Semiconductor LP3943 PWM support"
- 	depends on MFD_LP3943
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index a48bdb5..1979453 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -19,6 +19,7 @@ obj-$(CONFIG_PWM_HIBVT)		+= pwm-hibvt.o
- obj-$(CONFIG_PWM_IMG)		+= pwm-img.o
- obj-$(CONFIG_PWM_IMX)		+= pwm-imx.o
- obj-$(CONFIG_PWM_JZ4740)	+= pwm-jz4740.o
-+obj-$(CONFIG_PWM_LOONGSON1)	+= pwm-loongson1.o
- obj-$(CONFIG_PWM_LP3943)	+= pwm-lp3943.o
- obj-$(CONFIG_PWM_LPC18XX_SCT)	+= pwm-lpc18xx-sct.o
- obj-$(CONFIG_PWM_LPC32XX)	+= pwm-lpc32xx.o
-diff --git a/drivers/pwm/pwm-loongson1.c b/drivers/pwm/pwm-loongson1.c
-new file mode 100644
-index 0000000..72e3fe3
---- /dev/null
-+++ b/drivers/pwm/pwm-loongson1.c
-@@ -0,0 +1,169 @@
-+/*
-+ * Copyright (c) 2017 Yang Ling <gnaygnil@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License as published by the
-+ * Free Software Foundation; either version 2 of the License, or (at your
-+ * option) any later version.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/pwm.h>
-+#include <loongson1.h>
-+
-+struct ls1x_pwm_chip {
-+	struct clk *clk;
-+	void __iomem *base;
-+	struct pwm_chip chip;
-+};
-+
-+struct ls1x_pwm_channel {
-+	u32 period_ns;
-+	u32 duty_ns;
-+};
-+
-+static inline struct ls1x_pwm_chip *to_ls1x_pwm_chip(struct pwm_chip *chip)
-+{
-+	return container_of(chip, struct ls1x_pwm_chip, chip);
-+}
-+
-+static int ls1x_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct ls1x_pwm_channel *chan = NULL;
-+
-+	chan = devm_kzalloc(chip->dev, sizeof(*chan), GFP_KERNEL);
-+	if (!chan)
-+		return -ENOMEM;
-+
-+	pwm_set_chip_data(pwm, chan);
-+
-+	return 0;
-+}
-+
-+static void ls1x_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	devm_kfree(chip->dev, pwm_get_chip_data(pwm));
-+	pwm_set_chip_data(pwm, NULL);
-+}
-+
-+static int ls1x_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-+			int duty_ns, int period_ns)
-+{
-+	struct ls1x_pwm_chip *pc = to_ls1x_pwm_chip(chip);
-+	struct ls1x_pwm_channel *chan = pwm_get_chip_data(pwm);
-+	unsigned long long tmp;
-+	unsigned long period, duty;
-+
-+	if (period_ns == chan->period_ns && duty_ns == chan->duty_ns)
-+		return 0;
-+
-+	tmp = (unsigned long long)clk_get_rate(pc->clk) * period_ns;
-+	do_div(tmp, 1000000000);
-+	period = tmp;
-+
-+	tmp = (unsigned long long)period * duty_ns;
-+	do_div(tmp, period_ns);
-+	duty = period - tmp;
-+
-+	if (duty >= period)
-+		duty = period - 1;
-+
-+	if (duty >> 24 || period >> 24)
-+		return -EINVAL;
-+
-+	chan->period_ns = period_ns;
-+	chan->duty_ns = duty_ns;
-+
-+	writel(duty, pc->base + PWM_HRC(pwm->hwpwm));
-+	writel(period, pc->base + PWM_LRC(pwm->hwpwm));
-+	writel(0x00, pc->base + PWM_CNT(pwm->hwpwm));
-+
-+	return 0;
-+}
-+
-+static int ls1x_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct ls1x_pwm_chip *pc = to_ls1x_pwm_chip(chip);
-+
-+	writel(CNT_RST, pc->base + PWM_CTRL(pwm->hwpwm));
-+	writel(CNT_EN, pc->base + PWM_CTRL(pwm->hwpwm));
-+
-+	return 0;
-+}
-+
-+static void ls1x_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
-+{
-+	struct ls1x_pwm_chip *pc = to_ls1x_pwm_chip(chip);
-+
-+	writel(PWM_OE, pc->base + PWM_CTRL(pwm->hwpwm));
-+}
-+
-+static const struct pwm_ops ls1x_pwm_ops = {
-+	.request = ls1x_pwm_request,
-+	.free = ls1x_pwm_free,
-+	.config = ls1x_pwm_config,
-+	.enable = ls1x_pwm_enable,
-+	.disable = ls1x_pwm_disable,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int ls1x_pwm_probe(struct platform_device *pdev)
-+{
-+	struct ls1x_pwm_chip *pc = NULL;
-+	struct resource *res = NULL;
-+
-+	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
-+	if (!pc)
-+		return -ENOMEM;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	pc->base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(pc->base))
-+		return PTR_ERR(pc->base);
-+
-+	pc->clk = devm_clk_get(&pdev->dev, "ls1x-pwmtimer");
-+	if (IS_ERR(pc->clk)) {
-+		dev_err(&pdev->dev, "failed to get %s clock\n", pdev->name);
-+		return PTR_ERR(pc->clk);
-+	}
-+	clk_prepare_enable(pc->clk);
-+
-+	pc->chip.ops = &ls1x_pwm_ops;
-+	pc->chip.dev = &pdev->dev;
-+	pc->chip.base = -1;
-+	pc->chip.npwm = 4;
-+
-+	platform_set_drvdata(pdev, pc);
-+
-+	return pwmchip_add(&pc->chip);
-+}
-+
-+static int ls1x_pwm_remove(struct platform_device *pdev)
-+{
-+	struct ls1x_pwm_chip *pc = platform_get_drvdata(pdev);
-+	int ret;
-+
-+	ret = pwmchip_remove(&pc->chip);
-+	if (ret < 0)
-+		return ret;
-+
-+	clk_disable_unprepare(pc->clk);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver ls1x_pwm_driver = {
-+	.driver = {
-+		.name = "ls1x-pwm",
-+	},
-+	.probe = ls1x_pwm_probe,
-+	.remove = ls1x_pwm_remove,
-+};
-+module_platform_driver(ls1x_pwm_driver);
-+
-+MODULE_AUTHOR("Yang Ling <gnaygnil@gmail.com>");
-+MODULE_DESCRIPTION("Loongson1 PWM driver");
-+MODULE_ALIAS("platform:loongson1-pwm");
-+MODULE_LICENSE("GPL");
--- 
-1.9.1
+SGkgQWxsLAoKT24gY2hlcnJ5dHJhaWwgdGFibGV0cyAvIGxhcHRvcHMgdGhlIGJhY2tsaWdodCB0
+eXBpY2FsbHkKaXMgY29udHJvbGxlZCBieSB0aGUgbHBzcyBwd20gbW9kdWxlLCB0aGlzIGlzIGxp
+c3RlZAphcyBhbiBhY3BpIGRldmljZSB3aXRoIGEgSElEIG9mIDgwODYyMjg4LiBBbGwgMyBjaGVy
+cnl0cmFpbApkZXZpY2VzIEkndmUgYWNjZXNzIHRvIGhhdmUgdGhlIGZvbGxvd2luZyBkc2R0IGNv
+ZGUgZm9yIHRoaXM6CgogICAgICAgICBEZXZpY2UgKFBXTTEpCiAgICAgICAgIHsKICAgICAgICAg
+ICAgIE5hbWUgKF9ISUQsICI4MDg2MjI4OCIpICAvLyBfSElEOiBIYXJkd2FyZSBJRAogICAgICAg
+ICAgICAgTmFtZSAoX0NJRCwgIjgwODYyMjg4IikgIC8vIF9DSUQ6IENvbXBhdGlibGUgSUQKICAg
+ICAgICAgICAgIE5hbWUgKF9ERE4sICJJbnRlbChSKSBQV00gQ29udHJvbGxlciAjMSAtIDgwODYy
+Mjg4IikgIC8vIF9ERE46IERPUyBECjxzbmlwPgoKICAgICAgICAgICAgIE1ldGhvZCAoX1NUQSwg
+MCwgTm90U2VyaWFsaXplZCkgIC8vIF9TVEE6IFN0YXR1cwogICAgICAgICAgICAgewogICAgICAg
+ICAgICAgICAgIElmIChPU0lEID09IE9uZSkKICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAg
+ICAgICAgICAgIFJldHVybiAoWmVybykKICAgICAgICAgICAgICAgICB9CgogICAgICAgICAgICAg
+ICAgIFJldHVybiAoMHgwRikKICAgICAgICAgICAgIH0KPHNuaXA+CiAgICAgICAgIH0KCk5vdGlj
+ZSB0aGUgT1NJRCA9PSBPbmUsIE9TSUQgaXMgc29tZXRoaW5nLCB3ZWxsIHJlYWxseSBzdHVwaWQK
+KHNvcnJ5IEkndmUgbm8gbmljZXIgd29yZCBmb3IgdGhpcykgaW4gY2hlcnJ5dHJhaWwgQUNQSSB0
+YWJsZXMsCndoZXJlIG9uZSBjYW4gb2Z0ZW4gY2hvb3NlIHdoaWNoIE9TIHRvIGNvbmZpZ3VyZSB0
+aGUgdGFibGVzIGZvcgppbiB0aGUgQklPUyB0eXBpY2FsbHkgb25lIGNhbiBjaG9vc2UgYmV0d2Vl
+biBBbmRyb2lkIGFuZCBXaW44LjEKKHRoaXMgaXMgbWl4ZWQgd2l0aCB0aGUgdHlwaWNhbCBfT1NJ
+IGNhbGxzIHNldHRpbmcgT1NZUykuCgpGb3IgYWRkZWQgZnVuLCBPU0lEIHNvbWV0aW1lcyBjaGFu
+Z2VzIGRlcGVuZGluZyBvbiB0aGluZ3MgbGlrZQp0aGUgRUZJIHN5c3RlbSBwYXJ0aXRpb24gaGF2
+aW5nIGFuIEVGSS9Cb290L2Jvb3R4NjQuZWZpIHByZXNlbnQKb3Igbm90LiBJZiBwcmVzZW50IHRo
+ZW4gdGhlIGZpcm13YXJlIGFzc3VtZXMgaXQgaXMgYm9vdGluZyB3aW5kb3dzCjEwIGFuZCB3aWxs
+IHNldCBPU0lEIHRvIE9uZS4gT24gYW5vdGhlciBkZXZpY2UgaXQgaXMgc2ltcGx5CmFsd2F5cyBP
+bmUsIHNvIG9uIHRoZXNlIGRldmljZXMgX1NUQSBmb3IgdGhlICI4MDg2MjI4OCIgZGV2aWNlCnJl
+dHVybnMgMCwgbm8gbWF0Y2hpbmcgcGxhdGZvcm0gZGV2aWNlIGdldHMgY3JlYXRlZCBhbmQgdGhl
+CnB3bS1scHNzLXBsYXRmcm9tIGRyaXZlciBkb2VzIG5vdCBiaW5kIHRvIHRoZSBwd20gY29udHJv
+bGxlci4KCldoaWNoIGNhdXNlcyBub25lIHdvcmtpbmcgYmFja2xpZ2h0IGNvbnRyb2wsIHRoZXJl
+IGFyZSA4LCB5ZXMKRUlHSFQgYWNwaV92aWRlbyMgYmFja2xpZ2h0IGludGVyZmFjZXMgd2hpY2gg
+Z2V0IHJlZ2lzdGVyZWQKaWYgdGhlIHB3bSBjb250cm9sbGVyIGlzIG5vdCBmb3VuZCBieSB0aGUg
+aTkxNSBkcml2ZXIsIGJ1dCBub25lCm9mIHRoZW0gd29ya3MuCgpJJ20gZ3Vlc3NpbmcgdGhhdCBp
+biBXaW5kb3dzIDEwIGlmIHRoZSBpOTE1IG9wcmVnaW9uIHNwZWNpZmllcwp0aGF0IHB3bSBzaG91
+bGQgYmUgdXNlZCB0aGF0IHRoZSB3aW5kb3dzIGdyYXBoaWNzIGRyaXZlcnMgdGhlbgoic2ltcGx5
+IiBkaXJlY3RseSBhY2Nlc3NlcyB0aGUgcHdtIGNvbnRyb2xsZXIgaXRzZWxmLgoKVW5sZXNzIHdl
+IHdhbnQgdG8gZG8gdGhlIHNhbWUsIHdlIGFyZSBnb2luZyB0byBuZWVkIHNvbWUgd2F5CnRvIG92
+ZXJyaWRlIHRoZSBfU1RBIHJlc3VsdCBmb3IgYSBkZXZpY2UgYW5kIGdldCB0aGUgYWNwaQpidXMg
+dG8gcmUtZW51bWVyYXRlIHRoZSBkZXZpY2UgYWZ0ZXIgd2UndmUgZG9uZSB0aGUgb3ZlcnJpZGUu
+CgpSZWdhcmRzLAoKSGFucwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBsaXN0CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3Rv
+cC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRl
+bC1nZngK
