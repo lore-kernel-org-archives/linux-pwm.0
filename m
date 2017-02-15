@@ -1,12 +1,15 @@
 From: lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Subject: [PATCH v3 0/4] Add the Allwinner A31/A31s PWM driver
-Date: Wed, 15 Feb 2017 23:06:03 +0300
-Message-ID: <1487189167-32486-1-git-send-email-lis8215@gmail.com>
+Subject: [PATCH v3 4/4] ARM: dts: sun6i: Add the PWM block to
+ the A31/A31s.
+Date: Wed, 15 Feb 2017 23:06:07 +0300
+Message-ID: <1487189167-32486-5-git-send-email-lis8215@gmail.com>
+References: <1487189167-32486-1-git-send-email-lis8215@gmail.com>
 Reply-To: lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBDJLROMN3MJRBMXJSLCQKGQEI7B67SY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBDJLROMN3MJRBOHJSLCQKGQE4P7UJIA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <1487189167-32486-1-git-send-email-lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -19,25 +22,29 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
-Main goal is to add support of the sun6i PWM variant.
+Signed-off-by: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ arch/arm/boot/dts/sun6i-a31.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-This is the third version of the sun6i PWM patchset.
-Difference between v2 and v3:
- - regmap API used for access to PWM registers.
-
-Thanks to Maxime Ripard for pointing me to the regmap API.
-
-Siarhei Volkau (4):
-  pwm: sunxi: Code switched to regmap API instead of iomem.
-  pwm: sunxi: Selectable prescaler table for support sun6i.
-  pwm: sunxi: Add support the Allwinner A31 PWM.
-  ARM: dts: sun6i: Add the PWM block to the A31/A31s.
-
- .../devicetree/bindings/pwm/pwm-sun4i.txt          |   3 +-
- arch/arm/boot/dts/sun6i-a31.dtsi                   |   8 +
- drivers/pwm/Kconfig                                |   2 +-
- drivers/pwm/pwm-sun4i.c                            | 359 ++++++++++++++++-----
- 4 files changed, 294 insertions(+), 78 deletions(-)
-
---
+diff --git a/arch/arm/boot/dts/sun6i-a31.dtsi b/arch/arm/boot/dts/sun6i-a31.dtsi
+index ee1eb6d..fcba129 100644
+--- a/arch/arm/boot/dts/sun6i-a31.dtsi
++++ b/arch/arm/boot/dts/sun6i-a31.dtsi
+@@ -627,6 +627,14 @@
+ 			status = "disabled";
+ 		};
+ 
++		pwm: pwm@01c21400 {
++			compatible = "allwinner,sun6i-a31-pwm";
++			reg = <0x01c21400 0x400>;
++			clocks = <&osc24M>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
++
+ 		lradc: lradc@01c22800 {
+ 			compatible = "allwinner,sun4i-a10-lradc-keys";
+ 			reg = <0x01c22800 0x100>;
+-- 
 2.4.11
