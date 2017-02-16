@@ -1,68 +1,98 @@
-From: slemieux.tyco@gmail.com
-Subject: [RESEND PATCH 2/3] pwm: lpc32xx: switch driver to one phandle argument for PWM consumers
-Date: Thu, 16 Feb 2017 15:27:48 -0500
-Message-ID: <20170216202749.20653-3-slemieux.tyco@gmail.com>
+From: slemieux.tyco-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Subject: [RESEND PATCH 3/3] pwm: lpc32xx: remove handling of PWM channels
+Date: Thu, 16 Feb 2017 15:27:49 -0500
+Message-ID: <20170216202749.20653-4-slemieux.tyco@gmail.com>
 References: <20170216202749.20653-1-slemieux.tyco@gmail.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi0-f65.google.com ([209.85.218.65]:33212 "EHLO
-        mail-oi0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933101AbdBPU2C (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 16 Feb 2017 15:28:02 -0500
-In-Reply-To: <20170216202749.20653-1-slemieux.tyco@gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170216202749.20653-1-slemieux.tyco-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, vz-ChpfBGZJDbMAvxtiuMwx3w@public.gmane.org
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, robh+dt@kernel.org, vz@mleia.com
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-From: Vladimir Zapolskiy <vz@mleia.com>
+From: Vladimir Zapolskiy <vz-ChpfBGZJDbMAvxtiuMwx3w@public.gmane.org>
 
-NXP LPC32xx SoCs have two simple independent PWM controllers with a single
-output each, in this case there is no need to specify PWM channel argument
-on client side, one cell for setting PWM output frequency is sufficient.
+Because LPC32xx PWM controllers have single output which is registered as
+the only PWM device/channel per controller, it is known in advance that
+pwm->hwpwm value is always 0. On basis of this fact simplify the code
+by removing operations with pwm->hwpwm, there is no controls which require
+channel number as input.
 
-The change adds private of_xlate() handling of a single cell value given
-with a PWM phandle on client side, the handling is taken from the PXA PWM
-driver.
-
-Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
-Reviewed-by: Sylvain Lemieux <slemieux.tyco@gmail.com>
+Signed-off-by: Vladimir Zapolskiy <vz-ChpfBGZJDbMAvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Sylvain Lemieux <slemieux.tyco-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/pwm/pwm-lpc32xx.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/pwm/pwm-lpc32xx.c | 20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/pwm/pwm-lpc32xx.c b/drivers/pwm/pwm-lpc32xx.c
-index a9b3cff96aac..ce8418101e85 100644
+index ce8418101e85..786c887c296d 100644
 --- a/drivers/pwm/pwm-lpc32xx.c
 +++ b/drivers/pwm/pwm-lpc32xx.c
-@@ -92,6 +92,20 @@ static void lpc32xx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+@@ -55,10 +55,10 @@ static int lpc32xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (duty_cycles > 255)
+ 		duty_cycles = 255;
+ 
+-	val = readl(lpc32xx->base + (pwm->hwpwm << 2));
++	val = readl(lpc32xx->base);
+ 	val &= ~0xFFFF;
+ 	val |= (period_cycles << 8) | duty_cycles;
+-	writel(val, lpc32xx->base + (pwm->hwpwm << 2));
++	writel(val, lpc32xx->base);
+ 
+ 	return 0;
+ }
+@@ -73,9 +73,9 @@ static int lpc32xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	if (ret)
+ 		return ret;
+ 
+-	val = readl(lpc32xx->base + (pwm->hwpwm << 2));
++	val = readl(lpc32xx->base);
+ 	val |= PWM_ENABLE;
+-	writel(val, lpc32xx->base + (pwm->hwpwm << 2));
++	writel(val, lpc32xx->base);
+ 
+ 	return 0;
+ }
+@@ -85,9 +85,9 @@ static void lpc32xx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	struct lpc32xx_pwm_chip *lpc32xx = to_lpc32xx_pwm_chip(chip);
+ 	u32 val;
+ 
+-	val = readl(lpc32xx->base + (pwm->hwpwm << 2));
++	val = readl(lpc32xx->base);
+ 	val &= ~PWM_ENABLE;
+-	writel(val, lpc32xx->base + (pwm->hwpwm << 2));
++	writel(val, lpc32xx->base);
+ 
  	clk_disable_unprepare(lpc32xx->clk);
  }
+@@ -147,9 +147,9 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
+ 	}
  
-+static struct pwm_device *lpc32xx_pwm_of_xlate(struct pwm_chip *pc,
-+				       const struct of_phandle_args *args)
-+{
-+	struct pwm_device *pwm;
-+
-+	pwm = pwm_request_from_chip(pc, 0, NULL);
-+	if (IS_ERR(pwm))
-+		return pwm;
-+
-+	pwm->args.period = args->args[0];
-+
-+	return pwm;
-+}
-+
- static const struct pwm_ops lpc32xx_pwm_ops = {
- 	.config = lpc32xx_pwm_config,
- 	.enable = lpc32xx_pwm_enable,
-@@ -123,6 +137,8 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
- 	lpc32xx->chip.ops = &lpc32xx_pwm_ops;
- 	lpc32xx->chip.npwm = 1;
- 	lpc32xx->chip.base = -1;
-+	lpc32xx->chip.of_xlate = lpc32xx_pwm_of_xlate;
-+	lpc32xx->chip.of_pwm_n_cells = 1;
+ 	/* When PWM is disable, configure the output to the default value */
+-	val = readl(lpc32xx->base + (lpc32xx->chip.pwms[0].hwpwm << 2));
++	val = readl(lpc32xx->base);
+ 	val &= ~PWM_PIN_LEVEL;
+-	writel(val, lpc32xx->base + (lpc32xx->chip.pwms[0].hwpwm << 2));
++	writel(val, lpc32xx->base);
  
- 	ret = pwmchip_add(&lpc32xx->chip);
- 	if (ret < 0) {
+ 	platform_set_drvdata(pdev, lpc32xx);
+ 
+@@ -159,10 +159,8 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
+ static int lpc32xx_pwm_remove(struct platform_device *pdev)
+ {
+ 	struct lpc32xx_pwm_chip *lpc32xx = platform_get_drvdata(pdev);
+-	unsigned int i;
+ 
+-	for (i = 0; i < lpc32xx->chip.npwm; i++)
+-		pwm_disable(&lpc32xx->chip.pwms[i]);
++	pwm_disable(&lpc32xx->chip.pwms[0]);
+ 
+ 	return pwmchip_remove(&lpc32xx->chip);
+ }
 -- 
 2.11.0
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
