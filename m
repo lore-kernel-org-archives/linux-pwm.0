@@ -1,66 +1,38 @@
-From: Marcin Nowakowski <marcin.nowakowski@imgtec.com>
-Subject: Re: [PATCH 1/2] pwm: loongson1: Add PWM driver for Loongson1 SoC
-Date: Thu, 16 Feb 2017 10:27:15 +0100
-Message-ID: <0d0c43f5-1016-4cb5-01f8-9ca82860b8ad@imgtec.com>
-References: <20170213152801.GA32019@ubuntu>
- <f27d34d4-b0ac-2fd6-bc75-89a6c913ba3c@imgtec.com>
- <20170215130902.GA32795@ubuntu>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170215130902.GA32795@ubuntu>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yang Ling <gnaygnil@gmail.com>
-Cc: thierry.reding@gmail.com, keguang.zhang@gmail.com, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-mips@linux-mips.org
+From: slemieux.tyco@gmail.com
+Subject: [RESEND PATCH 0/3] pwm: lpc32xx: switch driver to one phandle argument for PWM consumers
+Date: Thu, 16 Feb 2017 15:27:46 -0500
+Message-ID: <20170216202749.20653-1-slemieux.tyco@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-it0-f67.google.com ([209.85.214.67]:34512 "EHLO
+        mail-it0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932740AbdBPU2A (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 16 Feb 2017 15:28:00 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com, robh+dt@kernel.org, vz@mleia.com
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hi Yang,
+From: Sylvain Lemieux <slemieux@tycoint.com>
 
-On 15.02.2017 14:09, Yang Ling wrote:
+The change adds private of_xlate() function to process one argument given along with a PWM phandle. LPC32xx SoCs have two independent single channel PWM controllers, the argument is used as a description of PWM output frequency, see previous discussion here:
 
->>> +	tmp = (unsigned long long)clk_get_rate(pc->clk) * period_ns;
->>> +	do_div(tmp, 1000000000);
+  http://www.spinics.net/lists/arm-kernel/msg534068.html
 
-NSEC_PER_SEC ?
+The changes on actual board dts files are not needed at the moment, because all LPC32xx boards in upstream don't describe any PWM consumers.
 
->>> +	period = tmp;
->>> +
->>> +	tmp = (unsigned long long)period * duty_ns;
->>> +	do_div(tmp, period_ns);
->>> +	duty = period - tmp;
->>> +
->>> +	if (duty >= period)
->>> +		duty = period - 1;
->>> +
->>> +	if (duty >> 24 || period >> 24)
->>> +		return -EINVAL;
->>> +
->>> +	chan->period_ns = period_ns;
->>> +	chan->duty_ns = duty_ns;
->>> +
->>> +	writel(duty, pc->base + PWM_HRC(pwm->hwpwm));
->>> +	writel(period, pc->base + PWM_LRC(pwm->hwpwm));
->>> +	writel(0x00, pc->base + PWM_CNT(pwm->hwpwm));
->>> +
->>
->> PWM_HRC and PWM_LRC names suggest that you're using high/low state
->> counters here rather than duty/period - but with no documentation
->> I'm just guessing here.
->
-> Indeed, the high/low state counters is used here.
-> Change the name to duty_cnt/period_cnt.
->
->
+Please refer to the following URL to view the previous patch #1 review discussion:
+  http://www.spinics.net/lists/arm-kernel/msg549772.html
 
-What I was referring to here is that if you have a high/low value 
-counters that you enter then these are not the same as duty/period, in 
-simple terms:
-high_cnt = duty_cnt
-low_cnt = period_cnt - duty_cnt
+The "Reviewed-by" and "Acked-by" from the original posting are added into this resend.
 
-so please double check that this is what you want to be doing? As the 
-names used suggest that this code may be wrong. Or maybe what you're 
-doing is correct but the register access macros have misleading names?
+Vladimir Zapolskiy (3):
+  dt: pwm: lpc32xx: add description of clocks and #pwm-cells properties
+  pwm: lpc32xx: switch driver to one phandle argument for PWM consumers
+  pwm: lpc32xx: remove handling of PWM channels
 
-Marcin
+ .../devicetree/bindings/pwm/lpc32xx-pwm.txt        |  7 +++++
+ drivers/pwm/pwm-lpc32xx.c                          | 36 +++++++++++++++-------
+ 2 files changed, 32 insertions(+), 11 deletions(-)
+
+-- 
+2.11.0
