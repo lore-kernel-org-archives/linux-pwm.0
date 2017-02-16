@@ -1,7 +1,7 @@
 From: slemieux.tyco-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Subject: [RESEND PATCH 3/3] pwm: lpc32xx: remove handling of PWM channels
-Date: Thu, 16 Feb 2017 15:27:49 -0500
-Message-ID: <20170216202749.20653-4-slemieux.tyco@gmail.com>
+Subject: [RESEND PATCH 1/3] dt: pwm: lpc32xx: add description of clocks and #pwm-cells properties
+Date: Thu, 16 Feb 2017 15:27:47 -0500
+Message-ID: <20170216202749.20653-2-slemieux.tyco@gmail.com>
 References: <20170216202749.20653-1-slemieux.tyco@gmail.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <20170216202749.20653-1-slemieux.tyco-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
@@ -12,83 +12,48 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Vladimir Zapolskiy <vz-ChpfBGZJDbMAvxtiuMwx3w@public.gmane.org>
 
-Because LPC32xx PWM controllers have single output which is registered as
-the only PWM device/channel per controller, it is known in advance that
-pwm->hwpwm value is always 0. On basis of this fact simplify the code
-by removing operations with pwm->hwpwm, there is no controls which require
-channel number as input.
+NXP LPC32xx SoCs have two simple independent PWM controllers with a single
+output each, in this case there is no need to specify PWM channel argument
+on client side, one cell for setting PWM output frequency is sufficient.
+
+Another added to the description property 'clocks' has a standard meaning
+of a controller supply clock, in the LPC32xx User's Manual the clock is
+denoted as PWM1_CLK or PWM2_CLK clock.
 
 Signed-off-by: Vladimir Zapolskiy <vz-ChpfBGZJDbMAvxtiuMwx3w@public.gmane.org>
 Reviewed-by: Sylvain Lemieux <slemieux.tyco-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 ---
- drivers/pwm/pwm-lpc32xx.c | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
+ Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/pwm/pwm-lpc32xx.c b/drivers/pwm/pwm-lpc32xx.c
-index ce8418101e85..786c887c296d 100644
---- a/drivers/pwm/pwm-lpc32xx.c
-+++ b/drivers/pwm/pwm-lpc32xx.c
-@@ -55,10 +55,10 @@ static int lpc32xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (duty_cycles > 255)
- 		duty_cycles = 255;
+diff --git a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
+index 74b5bc5dd19a..523d79662861 100644
+--- a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
+@@ -3,15 +3,22 @@ LPC32XX PWM controller
+ Required properties:
+ - compatible: should be "nxp,lpc3220-pwm"
+ - reg: physical base address and length of the controller's registers
++- clocks: clock phandle and clock specifier pair
++- #pwm-cells: should be 1, the cell is used to specify the period in
++  nanoseconds.
  
--	val = readl(lpc32xx->base + (pwm->hwpwm << 2));
-+	val = readl(lpc32xx->base);
- 	val &= ~0xFFFF;
- 	val |= (period_cycles << 8) | duty_cycles;
--	writel(val, lpc32xx->base + (pwm->hwpwm << 2));
-+	writel(val, lpc32xx->base);
+ Examples:
  
- 	return 0;
- }
-@@ -73,9 +73,9 @@ static int lpc32xx_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	if (ret)
- 		return ret;
+ pwm@4005c000 {
+ 	compatible = "nxp,lpc3220-pwm";
+ 	reg = <0x4005c000 0x4>;
++	clocks = <&clk LPC32XX_CLK_PWM1>;
++	#pwm-cells = <1>;
+ };
  
--	val = readl(lpc32xx->base + (pwm->hwpwm << 2));
-+	val = readl(lpc32xx->base);
- 	val |= PWM_ENABLE;
--	writel(val, lpc32xx->base + (pwm->hwpwm << 2));
-+	writel(val, lpc32xx->base);
- 
- 	return 0;
- }
-@@ -85,9 +85,9 @@ static void lpc32xx_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	struct lpc32xx_pwm_chip *lpc32xx = to_lpc32xx_pwm_chip(chip);
- 	u32 val;
- 
--	val = readl(lpc32xx->base + (pwm->hwpwm << 2));
-+	val = readl(lpc32xx->base);
- 	val &= ~PWM_ENABLE;
--	writel(val, lpc32xx->base + (pwm->hwpwm << 2));
-+	writel(val, lpc32xx->base);
- 
- 	clk_disable_unprepare(lpc32xx->clk);
- }
-@@ -147,9 +147,9 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
- 	}
- 
- 	/* When PWM is disable, configure the output to the default value */
--	val = readl(lpc32xx->base + (lpc32xx->chip.pwms[0].hwpwm << 2));
-+	val = readl(lpc32xx->base);
- 	val &= ~PWM_PIN_LEVEL;
--	writel(val, lpc32xx->base + (lpc32xx->chip.pwms[0].hwpwm << 2));
-+	writel(val, lpc32xx->base);
- 
- 	platform_set_drvdata(pdev, lpc32xx);
- 
-@@ -159,10 +159,8 @@ static int lpc32xx_pwm_probe(struct platform_device *pdev)
- static int lpc32xx_pwm_remove(struct platform_device *pdev)
- {
- 	struct lpc32xx_pwm_chip *lpc32xx = platform_get_drvdata(pdev);
--	unsigned int i;
- 
--	for (i = 0; i < lpc32xx->chip.npwm; i++)
--		pwm_disable(&lpc32xx->chip.pwms[i]);
-+	pwm_disable(&lpc32xx->chip.pwms[0]);
- 
- 	return pwmchip_remove(&lpc32xx->chip);
- }
+ pwm@4005c004 {
+ 	compatible = "nxp,lpc3220-pwm";
+ 	reg = <0x4005c004 0x4>;
++	clocks = <&clk LPC32XX_CLK_PWM2>;
++	#pwm-cells = <1>;
+ };
 -- 
 2.11.0
 
