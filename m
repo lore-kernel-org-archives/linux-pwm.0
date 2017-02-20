@@ -1,118 +1,287 @@
-From: Olliver Schinagl <o.schinagl@ultimaker.com>
-Subject: Re: [PATCH] pwm: sunxi: wait for the READY bit
-Date: Mon, 20 Feb 2017 17:22:55 +0100
-Message-ID: <03a0afa1-f9dc-819e-1926-a7b91526fcbd@schinagl.nl>
-References: <20170103145732.2108-1-alexandre.belloni@free-electrons.com>
- <73f5fc87-717f-2238-b653-1b117359cbb8@schinagl.nl>
- <20170103164453.wtdi4mxdxogbx4i5@piout.net>
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: Re: [PATCH] pwm: atmel-hlcdc: Convert to the atomic PWM API
+Date: Mon, 20 Feb 2017 18:29:19 +0100
+Message-ID: <c0ea643f-9244-b396-63ee-d3c9dbd62189@microchip.com>
+References: <1485959734-22317-1-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170103164453.wtdi4mxdxogbx4i5@piout.net>
+In-Reply-To: <1485959734-22317-1-git-send-email-boris.brezillon@free-electrons.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Olliver Schinagl <o.schinagl@ultimaker.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hey Alexandre,
+Le 01/02/2017 à 15:35, Boris Brezillon a écrit :
+> Implement the ->apply() hook and drop the ->enable(), ->disable,
+> ->set_polarity and ->config() ones.
+> 
+> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 
-Sorry for the very slow reply. We just bought a house so have been 
-offline for 6+ weeks!
+Seems okay:
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
 
-On 03-01-17 17:44, Alexandre Belloni wrote:
-> On 03/01/2017 at 16:56:16 +0100, Olliver Schinagl wrote :
->> Hey Alexandre,
->>
->> I've sent several patches regarding pwm a while ago, sadly you never
->> responded [0]. So I guess this is a follow up from that?
->>
->
-> Well, we had the issue and I just had a bit of time to look at it. As I
-> remembered you kind of had the same issue, I chose to Cc you.
->
->> I couldn't quickly find the resubmitted version however.
->>
->
-> Was there a new version?
-I believe there was, but I think this is almost 18 - 24 months ago when 
-I started these patches.
+> ---
+>  drivers/pwm/pwm-atmel-hlcdc.c | 215 +++++++++++++++++-------------------------
+>  1 file changed, 86 insertions(+), 129 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
+> index 14fc011faa32..64f1e1662b57 100644
+> --- a/drivers/pwm/pwm-atmel-hlcdc.c
+> +++ b/drivers/pwm/pwm-atmel-hlcdc.c
+> @@ -49,162 +49,119 @@ static inline struct atmel_hlcdc_pwm *to_atmel_hlcdc_pwm(struct pwm_chip *chip)
+>  	return container_of(chip, struct atmel_hlcdc_pwm, chip);
+>  }
+>  
+> -static int atmel_hlcdc_pwm_config(struct pwm_chip *c,
+> -				  struct pwm_device *pwm,
+> -				  int duty_ns, int period_ns)
+> +static int atmel_hlcdc_pwm_apply(struct pwm_chip *c, struct pwm_device *pwm,
+> +				 struct pwm_state *state)
+>  {
+>  	struct atmel_hlcdc_pwm *chip = to_atmel_hlcdc_pwm(c);
+>  	struct atmel_hlcdc *hlcdc = chip->hlcdc;
+> -	struct clk *new_clk = hlcdc->slow_clk;
+> -	u64 pwmcval = duty_ns * 256;
+> -	unsigned long clk_freq;
+> -	u64 clk_period_ns;
+> -	u32 pwmcfg;
+> -	int pres;
+> -
+> -	if (!chip->errata || !chip->errata->slow_clk_erratum) {
+> -		clk_freq = clk_get_rate(new_clk);
+> -		if (!clk_freq)
+> -			return -EINVAL;
+> -
+> -		clk_period_ns = (u64)NSEC_PER_SEC * 256;
+> -		do_div(clk_period_ns, clk_freq);
+> -	}
+> -
+> -	/* Errata: cannot use slow clk on some IP revisions */
+> -	if ((chip->errata && chip->errata->slow_clk_erratum) ||
+> -	    clk_period_ns > period_ns) {
+> -		new_clk = hlcdc->sys_clk;
+> -		clk_freq = clk_get_rate(new_clk);
+> -		if (!clk_freq)
+> -			return -EINVAL;
+> -
+> -		clk_period_ns = (u64)NSEC_PER_SEC * 256;
+> -		do_div(clk_period_ns, clk_freq);
+> -	}
+> +	unsigned int status;
+> +	int ret;
+>  
+> -	for (pres = 0; pres <= ATMEL_HLCDC_PWMPS_MAX; pres++) {
+> +	if (state->enabled) {
+> +		struct clk *new_clk = hlcdc->slow_clk;
+> +		u64 pwmcval = state->duty_cycle * 256;
+> +		unsigned long clk_freq;
+> +		u64 clk_period_ns;
+> +		u32 pwmcfg;
+> +		int pres;
+> +
+> +		if (!chip->errata || !chip->errata->slow_clk_erratum) {
+> +			clk_freq = clk_get_rate(new_clk);
+> +			if (!clk_freq)
+> +				return -EINVAL;
+> +
+> +			clk_period_ns = (u64)NSEC_PER_SEC * 256;
+> +			do_div(clk_period_ns, clk_freq);
+> +		}
+> +
+> +		/* Errata: cannot use slow clk on some IP revisions */
+> +		if ((chip->errata && chip->errata->slow_clk_erratum) ||
+> +		    clk_period_ns > state->period) {
+> +			new_clk = hlcdc->sys_clk;
+> +			clk_freq = clk_get_rate(new_clk);
+> +			if (!clk_freq)
+> +				return -EINVAL;
+> +
+> +			clk_period_ns = (u64)NSEC_PER_SEC * 256;
+> +			do_div(clk_period_ns, clk_freq);
+> +		}
+> +
+> +		for (pres = 0; pres <= ATMEL_HLCDC_PWMPS_MAX; pres++) {
+>  		/* Errata: cannot divide by 1 on some IP revisions */
+> -		if (!pres && chip->errata && chip->errata->div1_clk_erratum)
+> -			continue;
+> -
+> -		if ((clk_period_ns << pres) >= period_ns)
+> -			break;
+> -	}
+> -
+> -	if (pres > ATMEL_HLCDC_PWMPS_MAX)
+> -		return -EINVAL;
+> -
+> -	pwmcfg = ATMEL_HLCDC_PWMPS(pres);
+> +			if (!pres && chip->errata &&
+> +			    chip->errata->div1_clk_erratum)
+> +				continue;
+>  
+> -	if (new_clk != chip->cur_clk) {
+> -		u32 gencfg = 0;
+> -		int ret;
+> +			if ((clk_period_ns << pres) >= state->period)
+> +				break;
+> +		}
+>  
+> -		ret = clk_prepare_enable(new_clk);
+> -		if (ret)
+> -			return ret;
+> +		if (pres > ATMEL_HLCDC_PWMPS_MAX)
+> +			return -EINVAL;
+>  
+> -		clk_disable_unprepare(chip->cur_clk);
+> -		chip->cur_clk = new_clk;
+> +		pwmcfg = ATMEL_HLCDC_PWMPS(pres);
+>  
+> -		if (new_clk == hlcdc->sys_clk)
+> -			gencfg = ATMEL_HLCDC_CLKPWMSEL;
+> +		if (new_clk != chip->cur_clk) {
+> +			u32 gencfg = 0;
+> +			int ret;
+>  
+> -		ret = regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(0),
+> -					 ATMEL_HLCDC_CLKPWMSEL, gencfg);
+> -		if (ret)
+> -			return ret;
+> -	}
+> +			ret = clk_prepare_enable(new_clk);
+> +			if (ret)
+> +				return ret;
+>  
+> -	do_div(pwmcval, period_ns);
+> +			clk_disable_unprepare(chip->cur_clk);
+> +			chip->cur_clk = new_clk;
+>  
+> -	/*
+> -	 * The PWM duty cycle is configurable from 0/256 to 255/256 of the
+> -	 * period cycle. Hence we can't set a duty cycle occupying the
+> -	 * whole period cycle if we're asked to.
+> -	 * Set it to 255 if pwmcval is greater than 256.
+> -	 */
+> -	if (pwmcval > 255)
+> -		pwmcval = 255;
+> +			if (new_clk == hlcdc->sys_clk)
+> +				gencfg = ATMEL_HLCDC_CLKPWMSEL;
+>  
+> -	pwmcfg |= ATMEL_HLCDC_PWMCVAL(pwmcval);
+> -
+> -	return regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(6),
+> -				  ATMEL_HLCDC_PWMCVAL_MASK |
+> -				  ATMEL_HLCDC_PWMPS_MASK,
+> -				  pwmcfg);
+> -}
+> -
+> -static int atmel_hlcdc_pwm_set_polarity(struct pwm_chip *c,
+> -					struct pwm_device *pwm,
+> -					enum pwm_polarity polarity)
+> -{
+> -	struct atmel_hlcdc_pwm *chip = to_atmel_hlcdc_pwm(c);
+> -	struct atmel_hlcdc *hlcdc = chip->hlcdc;
+> -	u32 cfg = 0;
+> +			ret = regmap_update_bits(hlcdc->regmap,
+> +						 ATMEL_HLCDC_CFG(0),
+> +						 ATMEL_HLCDC_CLKPWMSEL,
+> +						 gencfg);
+> +			if (ret)
+> +				return ret;
+> +		}
+>  
+> -	if (polarity == PWM_POLARITY_NORMAL)
+> -		cfg = ATMEL_HLCDC_PWMPOL;
+> +		do_div(pwmcval, state->period);
+>  
+> -	return regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(6),
+> -				  ATMEL_HLCDC_PWMPOL, cfg);
+> -}
+> +		/*
+> +		 * The PWM duty cycle is configurable from 0/256 to 255/256 of
+> +		 * the period cycle. Hence we can't set a duty cycle occupying
+> +		 * the whole period cycle if we're asked to.
+> +		 * Set it to 255 if pwmcval is greater than 256.
+> +		 */
+> +		if (pwmcval > 255)
+> +			pwmcval = 255;
+>  
+> -static int atmel_hlcdc_pwm_enable(struct pwm_chip *c, struct pwm_device *pwm)
+> -{
+> -	struct atmel_hlcdc_pwm *chip = to_atmel_hlcdc_pwm(c);
+> -	struct atmel_hlcdc *hlcdc = chip->hlcdc;
+> -	u32 status;
+> -	int ret;
+> +		pwmcfg |= ATMEL_HLCDC_PWMCVAL(pwmcval);
+>  
+> -	ret = regmap_write(hlcdc->regmap, ATMEL_HLCDC_EN, ATMEL_HLCDC_PWM);
+> -	if (ret)
+> -		return ret;
+> +		if (state->polarity == PWM_POLARITY_NORMAL)
+> +			pwmcfg |= ATMEL_HLCDC_PWMPOL;
+>  
+> -	while (true) {
+> -		ret = regmap_read(hlcdc->regmap, ATMEL_HLCDC_SR, &status);
+> +		ret = regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(6),
+> +					 ATMEL_HLCDC_PWMCVAL_MASK |
+> +					 ATMEL_HLCDC_PWMPS_MASK |
+> +					 ATMEL_HLCDC_PWMPOL,
+> +					 pwmcfg);
+>  		if (ret)
+>  			return ret;
+> -
+> -		if ((status & ATMEL_HLCDC_PWM) != 0)
+> -			break;
+> -
+> -		usleep_range(1, 10);
+>  	}
+>  
+> -	return 0;
+> -}
+> -
+> -static void atmel_hlcdc_pwm_disable(struct pwm_chip *c,
+> -				    struct pwm_device *pwm)
+> -{
+> -	struct atmel_hlcdc_pwm *chip = to_atmel_hlcdc_pwm(c);
+> -	struct atmel_hlcdc *hlcdc = chip->hlcdc;
+> -	u32 status;
+> -	int ret;
+> -
+> -	ret = regmap_write(hlcdc->regmap, ATMEL_HLCDC_DIS, ATMEL_HLCDC_PWM);
+> +	ret = regmap_write(hlcdc->regmap,
+> +			   state->enabled ? ATMEL_HLCDC_EN : ATMEL_HLCDC_DIS,
+> +			   ATMEL_HLCDC_PWM);
+>  	if (ret)
+> -		return;
+> -
+> -	while (true) {
+> -		ret = regmap_read(hlcdc->regmap, ATMEL_HLCDC_SR, &status);
+> -		if (ret)
+> -			return;
+> -
+> -		if ((status & ATMEL_HLCDC_PWM) == 0)
+> -			break;
+> +		return ret;
+>  
+> -		usleep_range(1, 10);
+> -	}
+> +	return regmap_read_poll_timeout(hlcdc->regmap, ATMEL_HLCDC_SR, status,
+> +					(status & ATMEL_HLCDC_PWM) ==
+> +					(state->enabled ? ATMEL_HLCDC_PWM : 0),
+> +					10, 0);
+>  }
+>  
+>  static const struct pwm_ops atmel_hlcdc_pwm_ops = {
+> -	.config = atmel_hlcdc_pwm_config,
+> -	.set_polarity = atmel_hlcdc_pwm_set_polarity,
+> -	.enable = atmel_hlcdc_pwm_enable,
+> -	.disable = atmel_hlcdc_pwm_disable,
+> +	.apply = atmel_hlcdc_pwm_apply,
+>  	.owner = THIS_MODULE,
+>  };
+>  
+> 
 
-Anyhow,
 
->
->>>  	clk_gate = val & BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
->>> -	if (clk_gate) {
->>> -		val &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
->>> +
->>> +	if (sun4i_pwm->data->has_rdy && (val & PWM_RDY(pwm->hwpwm))) {
->>> +		val |= BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
->>>  		sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
->>> +
->>> +		err = readl_poll_timeout(sun4i_pwm->base + PWM_CTRL_REG, val,
->>> +					 !(val & PWM_RDY(pwm->hwpwm)), 400,
->>> +					 500000);
->>> +		if (err)
->>> +			goto finish;
->>>  	}
->>>
->> What happens on sun4i here? sun4i does not have the RDY flag, but it does
->> need the PWM_CLK_GATING to be active.
->>
->
-> Does it actually need it? The datasheet doesn't say anything about it.
-
-I'm fairly certain it does, everything needs the gate enabled to run. 
-E.g. no clock gate enabled, the entire IP is unable to do anything.
-
-> I'm actually wondering what happens if the period is written twice in a
-> row without waiting. If the latest period is used, maybe we don't
-> actually care.
-
-That approach sounds a little hack-ish, (and I have forgot almost all 
-context here, so forgive me) but basically you are suggesting to just 
-spam the period register until it sticks?
-
-Anyway, as I said, I'm fairly certain also the A10 needs the gate 
-enabled to be able to 'eat' the data, so it looks like this would break 
-things on A10.
-
->
->> maybe only the readl_poll_timeout() should be guarded by the has_rdy, where
->> you poll the register as you do now, and in the else just have a 'known safe
->> delay' to emulate the has_rdy behavior? I'm guessing a few clock cycles of
->> the PWM block. I don't think the documentation states how long this
->> could/should be.
->>
->
-> My guess is that the IP is waiting for the current period to finish
-> before updating the period internally. That would be the sane way to do it but
-> maybe I'm an optimist.
-
-Well that does sound logically; i'm guessing in pseudo code the vhdl 
-likley looks like this
-
-if (clk > HIGH) {
-	if (counter < period) {
-		counter++;
-	} else {
-		counter = 0;
-		period = period_reg;
-	}
-}
-
-where the clock only ticks if the clk_gate is active, otherwise clk 
-never toggles from HIGH to LOW.
-
-I'll give some more thought into this ...
-
-Olliver
-
->
->> With my 'wait before disable' patch [1] I run into the same issue, I think.
->> We do not know how long to wait before the hardware is ready.
->>
->
-> Up to 196.8s if I'm right...
->
+-- 
+Nicolas Ferre
