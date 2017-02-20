@@ -1,287 +1,77 @@
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: Re: [PATCH] pwm: atmel-hlcdc: Convert to the atomic PWM API
-Date: Mon, 20 Feb 2017 18:29:19 +0100
-Message-ID: <c0ea643f-9244-b396-63ee-d3c9dbd62189@microchip.com>
-References: <1485959734-22317-1-git-send-email-boris.brezillon@free-electrons.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1485959734-22317-1-git-send-email-boris.brezillon@free-electrons.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 2/3] pwm: lpss: Simplify update check in pwm_lpss_apply
+Date: Mon, 20 Feb 2017 21:16:56 +0100
+Message-ID: <20170220201657.24801-3-hdegoede@redhat.com>
+References: <20170220201657.24801-1-hdegoede@redhat.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mx1.redhat.com ([209.132.183.28]:54728 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751249AbdBTURD (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 20 Feb 2017 15:17:03 -0500
+In-Reply-To: <20170220201657.24801-1-hdegoede@redhat.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org
 
-Le 01/02/2017 à 15:35, Boris Brezillon a écrit :
-> Implement the ->apply() hook and drop the ->enable(), ->disable,
-> ->set_polarity and ->config() ones.
-> 
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+Simple keep a pm ref over the entire function and do the update check
+once at the beginning. This simplifies the code and makes sure we also
+check the update bit when disabling the pwm.
 
-Seems okay:
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/pwm/pwm-lpss.c | 26 +++++++++++---------------
+ 1 file changed, 11 insertions(+), 15 deletions(-)
 
-
-> ---
->  drivers/pwm/pwm-atmel-hlcdc.c | 215 +++++++++++++++++-------------------------
->  1 file changed, 86 insertions(+), 129 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-atmel-hlcdc.c b/drivers/pwm/pwm-atmel-hlcdc.c
-> index 14fc011faa32..64f1e1662b57 100644
-> --- a/drivers/pwm/pwm-atmel-hlcdc.c
-> +++ b/drivers/pwm/pwm-atmel-hlcdc.c
-> @@ -49,162 +49,119 @@ static inline struct atmel_hlcdc_pwm *to_atmel_hlcdc_pwm(struct pwm_chip *chip)
->  	return container_of(chip, struct atmel_hlcdc_pwm, chip);
->  }
->  
-> -static int atmel_hlcdc_pwm_config(struct pwm_chip *c,
-> -				  struct pwm_device *pwm,
-> -				  int duty_ns, int period_ns)
-> +static int atmel_hlcdc_pwm_apply(struct pwm_chip *c, struct pwm_device *pwm,
-> +				 struct pwm_state *state)
->  {
->  	struct atmel_hlcdc_pwm *chip = to_atmel_hlcdc_pwm(c);
->  	struct atmel_hlcdc *hlcdc = chip->hlcdc;
-> -	struct clk *new_clk = hlcdc->slow_clk;
-> -	u64 pwmcval = duty_ns * 256;
-> -	unsigned long clk_freq;
-> -	u64 clk_period_ns;
-> -	u32 pwmcfg;
-> -	int pres;
-> -
-> -	if (!chip->errata || !chip->errata->slow_clk_erratum) {
-> -		clk_freq = clk_get_rate(new_clk);
-> -		if (!clk_freq)
-> -			return -EINVAL;
-> -
-> -		clk_period_ns = (u64)NSEC_PER_SEC * 256;
-> -		do_div(clk_period_ns, clk_freq);
-> -	}
-> -
-> -	/* Errata: cannot use slow clk on some IP revisions */
-> -	if ((chip->errata && chip->errata->slow_clk_erratum) ||
-> -	    clk_period_ns > period_ns) {
-> -		new_clk = hlcdc->sys_clk;
-> -		clk_freq = clk_get_rate(new_clk);
-> -		if (!clk_freq)
-> -			return -EINVAL;
-> -
-> -		clk_period_ns = (u64)NSEC_PER_SEC * 256;
-> -		do_div(clk_period_ns, clk_freq);
-> -	}
-> +	unsigned int status;
-> +	int ret;
->  
-> -	for (pres = 0; pres <= ATMEL_HLCDC_PWMPS_MAX; pres++) {
-> +	if (state->enabled) {
-> +		struct clk *new_clk = hlcdc->slow_clk;
-> +		u64 pwmcval = state->duty_cycle * 256;
-> +		unsigned long clk_freq;
-> +		u64 clk_period_ns;
-> +		u32 pwmcfg;
-> +		int pres;
-> +
-> +		if (!chip->errata || !chip->errata->slow_clk_erratum) {
-> +			clk_freq = clk_get_rate(new_clk);
-> +			if (!clk_freq)
-> +				return -EINVAL;
-> +
-> +			clk_period_ns = (u64)NSEC_PER_SEC * 256;
-> +			do_div(clk_period_ns, clk_freq);
-> +		}
-> +
-> +		/* Errata: cannot use slow clk on some IP revisions */
-> +		if ((chip->errata && chip->errata->slow_clk_erratum) ||
-> +		    clk_period_ns > state->period) {
-> +			new_clk = hlcdc->sys_clk;
-> +			clk_freq = clk_get_rate(new_clk);
-> +			if (!clk_freq)
-> +				return -EINVAL;
-> +
-> +			clk_period_ns = (u64)NSEC_PER_SEC * 256;
-> +			do_div(clk_period_ns, clk_freq);
-> +		}
-> +
-> +		for (pres = 0; pres <= ATMEL_HLCDC_PWMPS_MAX; pres++) {
->  		/* Errata: cannot divide by 1 on some IP revisions */
-> -		if (!pres && chip->errata && chip->errata->div1_clk_erratum)
-> -			continue;
-> -
-> -		if ((clk_period_ns << pres) >= period_ns)
-> -			break;
-> -	}
-> -
-> -	if (pres > ATMEL_HLCDC_PWMPS_MAX)
-> -		return -EINVAL;
-> -
-> -	pwmcfg = ATMEL_HLCDC_PWMPS(pres);
-> +			if (!pres && chip->errata &&
-> +			    chip->errata->div1_clk_erratum)
-> +				continue;
->  
-> -	if (new_clk != chip->cur_clk) {
-> -		u32 gencfg = 0;
-> -		int ret;
-> +			if ((clk_period_ns << pres) >= state->period)
-> +				break;
-> +		}
->  
-> -		ret = clk_prepare_enable(new_clk);
-> -		if (ret)
-> -			return ret;
-> +		if (pres > ATMEL_HLCDC_PWMPS_MAX)
-> +			return -EINVAL;
->  
-> -		clk_disable_unprepare(chip->cur_clk);
-> -		chip->cur_clk = new_clk;
-> +		pwmcfg = ATMEL_HLCDC_PWMPS(pres);
->  
-> -		if (new_clk == hlcdc->sys_clk)
-> -			gencfg = ATMEL_HLCDC_CLKPWMSEL;
-> +		if (new_clk != chip->cur_clk) {
-> +			u32 gencfg = 0;
-> +			int ret;
->  
-> -		ret = regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(0),
-> -					 ATMEL_HLCDC_CLKPWMSEL, gencfg);
-> -		if (ret)
-> -			return ret;
-> -	}
-> +			ret = clk_prepare_enable(new_clk);
-> +			if (ret)
-> +				return ret;
->  
-> -	do_div(pwmcval, period_ns);
-> +			clk_disable_unprepare(chip->cur_clk);
-> +			chip->cur_clk = new_clk;
->  
-> -	/*
-> -	 * The PWM duty cycle is configurable from 0/256 to 255/256 of the
-> -	 * period cycle. Hence we can't set a duty cycle occupying the
-> -	 * whole period cycle if we're asked to.
-> -	 * Set it to 255 if pwmcval is greater than 256.
-> -	 */
-> -	if (pwmcval > 255)
-> -		pwmcval = 255;
-> +			if (new_clk == hlcdc->sys_clk)
-> +				gencfg = ATMEL_HLCDC_CLKPWMSEL;
->  
-> -	pwmcfg |= ATMEL_HLCDC_PWMCVAL(pwmcval);
-> -
-> -	return regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(6),
-> -				  ATMEL_HLCDC_PWMCVAL_MASK |
-> -				  ATMEL_HLCDC_PWMPS_MASK,
-> -				  pwmcfg);
-> -}
-> -
-> -static int atmel_hlcdc_pwm_set_polarity(struct pwm_chip *c,
-> -					struct pwm_device *pwm,
-> -					enum pwm_polarity polarity)
-> -{
-> -	struct atmel_hlcdc_pwm *chip = to_atmel_hlcdc_pwm(c);
-> -	struct atmel_hlcdc *hlcdc = chip->hlcdc;
-> -	u32 cfg = 0;
-> +			ret = regmap_update_bits(hlcdc->regmap,
-> +						 ATMEL_HLCDC_CFG(0),
-> +						 ATMEL_HLCDC_CLKPWMSEL,
-> +						 gencfg);
-> +			if (ret)
-> +				return ret;
-> +		}
->  
-> -	if (polarity == PWM_POLARITY_NORMAL)
-> -		cfg = ATMEL_HLCDC_PWMPOL;
-> +		do_div(pwmcval, state->period);
->  
-> -	return regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(6),
-> -				  ATMEL_HLCDC_PWMPOL, cfg);
-> -}
-> +		/*
-> +		 * The PWM duty cycle is configurable from 0/256 to 255/256 of
-> +		 * the period cycle. Hence we can't set a duty cycle occupying
-> +		 * the whole period cycle if we're asked to.
-> +		 * Set it to 255 if pwmcval is greater than 256.
-> +		 */
-> +		if (pwmcval > 255)
-> +			pwmcval = 255;
->  
-> -static int atmel_hlcdc_pwm_enable(struct pwm_chip *c, struct pwm_device *pwm)
-> -{
-> -	struct atmel_hlcdc_pwm *chip = to_atmel_hlcdc_pwm(c);
-> -	struct atmel_hlcdc *hlcdc = chip->hlcdc;
-> -	u32 status;
-> -	int ret;
-> +		pwmcfg |= ATMEL_HLCDC_PWMCVAL(pwmcval);
->  
-> -	ret = regmap_write(hlcdc->regmap, ATMEL_HLCDC_EN, ATMEL_HLCDC_PWM);
-> -	if (ret)
-> -		return ret;
-> +		if (state->polarity == PWM_POLARITY_NORMAL)
-> +			pwmcfg |= ATMEL_HLCDC_PWMPOL;
->  
-> -	while (true) {
-> -		ret = regmap_read(hlcdc->regmap, ATMEL_HLCDC_SR, &status);
-> +		ret = regmap_update_bits(hlcdc->regmap, ATMEL_HLCDC_CFG(6),
-> +					 ATMEL_HLCDC_PWMCVAL_MASK |
-> +					 ATMEL_HLCDC_PWMPS_MASK |
-> +					 ATMEL_HLCDC_PWMPOL,
-> +					 pwmcfg);
->  		if (ret)
->  			return ret;
-> -
-> -		if ((status & ATMEL_HLCDC_PWM) != 0)
-> -			break;
-> -
-> -		usleep_range(1, 10);
->  	}
->  
-> -	return 0;
-> -}
-> -
-> -static void atmel_hlcdc_pwm_disable(struct pwm_chip *c,
-> -				    struct pwm_device *pwm)
-> -{
-> -	struct atmel_hlcdc_pwm *chip = to_atmel_hlcdc_pwm(c);
-> -	struct atmel_hlcdc *hlcdc = chip->hlcdc;
-> -	u32 status;
-> -	int ret;
-> -
-> -	ret = regmap_write(hlcdc->regmap, ATMEL_HLCDC_DIS, ATMEL_HLCDC_PWM);
-> +	ret = regmap_write(hlcdc->regmap,
-> +			   state->enabled ? ATMEL_HLCDC_EN : ATMEL_HLCDC_DIS,
-> +			   ATMEL_HLCDC_PWM);
->  	if (ret)
-> -		return;
-> -
-> -	while (true) {
-> -		ret = regmap_read(hlcdc->regmap, ATMEL_HLCDC_SR, &status);
-> -		if (ret)
-> -			return;
-> -
-> -		if ((status & ATMEL_HLCDC_PWM) == 0)
-> -			break;
-> +		return ret;
->  
-> -		usleep_range(1, 10);
-> -	}
-> +	return regmap_read_poll_timeout(hlcdc->regmap, ATMEL_HLCDC_SR, status,
-> +					(status & ATMEL_HLCDC_PWM) ==
-> +					(state->enabled ? ATMEL_HLCDC_PWM : 0),
-> +					10, 0);
->  }
->  
->  static const struct pwm_ops atmel_hlcdc_pwm_ops = {
-> -	.config = atmel_hlcdc_pwm_config,
-> -	.set_polarity = atmel_hlcdc_pwm_set_polarity,
-> -	.enable = atmel_hlcdc_pwm_enable,
-> -	.disable = atmel_hlcdc_pwm_disable,
-> +	.apply = atmel_hlcdc_pwm_apply,
->  	.owner = THIS_MODULE,
->  };
->  
-> 
-
-
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 6c99abc..0b549dc 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -128,34 +128,30 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
+ 	int ret;
+ 
++	pm_runtime_get_sync(chip->dev);
++	ret = pwm_lpss_is_updating(pwm);
++	if (ret)
++		goto out;
++
+ 	if (state->enabled) {
+ 		if (!pwm_is_enabled(pwm)) {
+-			pm_runtime_get_sync(chip->dev);
+-			ret = pwm_lpss_is_updating(pwm);
+-			if (ret) {
+-				pm_runtime_put(chip->dev);
+-				return ret;
+-			}
+ 			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
+ 			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_ENABLE);
+ 			ret = pwm_lpss_update(pwm);
+-			if (ret) {
+-				pm_runtime_put(chip->dev);
+-				return ret;
+-			}
++			if (ret == 0)
++				pm_runtime_get(chip->dev);
+ 		} else {
+-			ret = pwm_lpss_is_updating(pwm);
+-			if (ret)
+-				return ret;
+ 			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
+-			return pwm_lpss_update(pwm);
++			ret = pwm_lpss_update(pwm);
+ 		}
+ 	} else if (pwm_is_enabled(pwm)) {
+ 		pwm_lpss_write(pwm, pwm_lpss_read(pwm) & ~PWM_ENABLE);
+ 		pm_runtime_put(chip->dev);
+ 	}
+ 
+-	return 0;
++out:
++	pm_runtime_put(chip->dev);
++	return ret;
+ }
+ 
+ static const struct pwm_ops pwm_lpss_ops = {
 -- 
-Nicolas Ferre
+2.9.3
