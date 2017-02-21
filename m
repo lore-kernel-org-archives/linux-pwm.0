@@ -1,58 +1,76 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v3 01/14] Documentation: dt/bindings: Document
- pinctrl-ingenic
-Date: Tue, 21 Feb 2017 12:20:10 +0100
-Message-ID: <f19fea79c2616455f5f08070923428cc@crapouillou.net>
-References: <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
- <20170125185207.23902-1-paul@crapouillou.net>
- <20170125185207.23902-2-paul@crapouillou.net>
- <20170130203617.hpljtcmzava3rq2n@rob-hp-laptop>
- <12dc62a7255bd453ff4e5e89f93ebc58@mail.crapouillou.net>
- <CACRpkdbAgy4sh6NT5DdQD6EQtOZEwevohEA6OGRcVz98yqS52Q@mail.gmail.com>
- <fd3c507484a9ee34a08c9f92e60624db@mail.crapouillou.net>
- <CACRpkdbAA33FFrMgx-eZPmpBBfQ_hF+=dSu0hANVthdbadicDg@mail.gmail.com>
+From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v3 1/4] pwm: sunxi: Code switched to regmap
+ API instead of iomem.
+Date: Tue, 21 Feb 2017 15:37:14 -0800
+Message-ID: <20170221233714.4t2jaivwwbokbo7y@lukather>
+References: <1487189167-32486-1-git-send-email-lis8215@gmail.com>
+ <1487189167-32486-2-git-send-email-lis8215@gmail.com>
+ <20170216175952.34qn72pi47epma37@lukather>
+ <CAKNVLfa-doz_6oARF5Eg1EbKFuita34Pg2x6Jutjzt9fshUEwQ@mail.gmail.com>
+Reply-To: maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-mmc-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdbAA33FFrMgx-eZPmpBBfQ_hF+=dSu0hANVthdbadicDg@mail.gmail.com>
-Sender: linux-mmc-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Rob Herring <robh@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Ulf Hansson <ulf.hansson@linaro.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Linux MIPS <linux-mips@linux-mips.org>, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, James Hogan <james.hogan@imgtec.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="cydpvm455q7s2nil"
+Return-path: <linux-sunxi+bncBDSJBYGBRIMBBLM6WPCQKGQEGMG66QI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Disposition: inline
+In-Reply-To: <CAKNVLfa-doz_6oARF5Eg1EbKFuita34Pg2x6Jutjzt9fshUEwQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Le 2017-02-20 14:56, Linus Walleij a écrit :
-> On Thu, Feb 9, 2017 at 6:28 PM, Paul Cercueil <paul@crapouillou.net> 
-> wrote:
-> 
->> I was thinking that instead of having one pinctrl-ingenic instance 
->> covering
->> 0x600 of register space, and 6 instances of gpio-ingenic having 0x100 
->> each,
->> I could just have 6 instances of pinctrl-ingenic, each one with an 
->> instance
->> of gpio-ingenic declared as a sub-node, each handling just 0x100 of 
->> memory
->> space.
-> 
-> My head is spinning,  but I think I get it. What is wrong with the 
-> solution
-> I proposed with one pin control instance covering the whole 0x600 and 
-> with 6
-> subnodes of GPIO?
-> 
-> The GPIO nodes do not even have to have an address range associated 
-> with
-> them you know, that can be distributed out with regmap code accessing
-> the parent regmap.
 
-OK, but then each GPIO chip 'X' still need to know its offset in the 
-register
-area, which is (pinctrl_base + X * 0x100).
-What's the best way to pass that info to the driver? (I assume it's not 
-with
-a custom DT binding...).
+--cydpvm455q7s2nil
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
 
-Regards,
--Paul
+Hi,
+
+On Tue, Feb 21, 2017 at 09:47:43AM +0300, Siarhei Volkau wrote:
+> >> +#define SUN4I_REGMAP_FIELDS(chan) {\
+> >> +     [FIELD_PRESCALER] = \
+> >> +             REG_FIELD(PWM_CTRL_REG, \
+> >> +                       BIT_CH(PWM_PRESCAL_LSB, chan), \
+> >> +                       BIT_CH(PWM_PRESCAL_MSB, chan)), \
+> >> +     [FIELD_POLARITY] = \
+> >> +             REG_FIELD(PWM_CTRL_REG, \
+> >> +                       BIT_CH(PWM_ACT_STATE_BIT, chan), \
+> >> +                       BIT_CH(PWM_ACT_STATE_BIT, chan)), \
+> >> +     [FIELD_CLK_GATING] = \
+> >> +             REG_FIELD(PWM_CTRL_REG, \
+> >> +                       BIT_CH(PWM_CLK_GATING_BIT, chan), \
+> >> +                       BIT_CH(PWM_CLK_GATING_BIT, chan)), \
+> >> +     [FIELD_READY] = \
+> >> +             REG_FIELD(PWM_CTRL_REG, \
+> >> +                       PWM_RDY_BIT(chan), \
+> >> +                       PWM_RDY_BIT(chan)), \
+> >> +}
+> >> +
+> >
+> > This is not correct, unfortunately. If someone calls that macro with
+> > chan++ or chan--, it will be modified four times instead of one as the
+> > caller would expect.
+> 
+> Ok, i will refactor that.
+> I think you should know about existence of unsafe macros (like MIN
+> MAX or ABS) into existing linux kernel tree, this macros can be easily
+> refactored into the inline functions. Please tell me your point of view
+> on that things.
+
+This might be bad, but we also have functions for those, which should
+behave properly. Anyway, I don't really expect you to fix the whole
+kernel before taking that patch in :)
+
+Maxime
+
+-- 
+Maxime Ripard, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
+--cydpvm455q7s2nil--
