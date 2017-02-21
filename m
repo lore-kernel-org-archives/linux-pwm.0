@@ -1,92 +1,58 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH 3/3] pwm: lpss: Add get_state callback
-Date: Tue, 21 Feb 2017 12:33:16 +0200
-Message-ID: <1487673196.20145.7.camel@linux.intel.com>
-References: <20170220201657.24801-1-hdegoede@redhat.com>
-         <20170220201657.24801-4-hdegoede@redhat.com>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v3 01/14] Documentation: dt/bindings: Document
+ pinctrl-ingenic
+Date: Tue, 21 Feb 2017 12:20:10 +0100
+Message-ID: <f19fea79c2616455f5f08070923428cc@crapouillou.net>
+References: <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
+ <20170125185207.23902-1-paul@crapouillou.net>
+ <20170125185207.23902-2-paul@crapouillou.net>
+ <20170130203617.hpljtcmzava3rq2n@rob-hp-laptop>
+ <12dc62a7255bd453ff4e5e89f93ebc58@mail.crapouillou.net>
+ <CACRpkdbAgy4sh6NT5DdQD6EQtOZEwevohEA6OGRcVz98yqS52Q@mail.gmail.com>
+ <fd3c507484a9ee34a08c9f92e60624db@mail.crapouillou.net>
+ <CACRpkdbAA33FFrMgx-eZPmpBBfQ_hF+=dSu0hANVthdbadicDg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga05.intel.com ([192.55.52.43]:16033 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751639AbdBUKdT (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 21 Feb 2017 05:33:19 -0500
-In-Reply-To: <20170220201657.24801-4-hdegoede@redhat.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-mmc-owner@vger.kernel.org>
+In-Reply-To: <CACRpkdbAA33FFrMgx-eZPmpBBfQ_hF+=dSu0hANVthdbadicDg@mail.gmail.com>
+Sender: linux-mmc-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Rob Herring <robh@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Ulf Hansson <ulf.hansson@linaro.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Linux MIPS <linux-mips@linux-mips.org>, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, James Hogan <james.hogan@imgtec.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Hans de Goede <hdegoede@redhat.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org
 
-On Mon, 2017-02-20 at 21:16 +0100, Hans de Goede wrote:
-> Add a get_state callback so that the initial state correctly reflects
-> the actual hardware state.
+Le 2017-02-20 14:56, Linus Walleij a écrit :
+> On Thu, Feb 9, 2017 at 6:28 PM, Paul Cercueil <paul@crapouillou.net> 
+> wrote:
 > 
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> Acked-by: Jani Nikula <jani.nikula@intel.com>
+>> I was thinking that instead of having one pinctrl-ingenic instance 
+>> covering
+>> 0x600 of register space, and 6 instances of gpio-ingenic having 0x100 
+>> each,
+>> I could just have 6 instances of pinctrl-ingenic, each one with an 
+>> instance
+>> of gpio-ingenic declared as a sub-node, each handling just 0x100 of 
+>> memory
+>> space.
+> 
+> My head is spinning,  but I think I get it. What is wrong with the 
+> solution
+> I proposed with one pin control instance covering the whole 0x600 and 
+> with 6
+> subnodes of GPIO?
+> 
+> The GPIO nodes do not even have to have an address range associated 
+> with
+> them you know, that can be distributed out with regmap code accessing
+> the parent regmap.
 
- 
-> +static void pwm_lpss_get_state(struct pwm_chip *chip, struct
-> pwm_device *pwm,
-> +			       struct pwm_state *state)
-> +{
-> +	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
-> +	unsigned long base_unit_range, freq;
-> +	unsigned long long base_unit, on_time_div;
+OK, but then each GPIO chip 'X' still need to know its offset in the 
+register
+area, which is (pinctrl_base + X * 0x100).
+What's the best way to pass that info to the driver? (I assume it's not 
+with
+a custom DT binding...).
 
-Something with types.
-
-on_time_div is 8-bit only.
-OTOH freq (due to multiplication below) might need bigger type.
-
-Have you tried 32-bit compilation, btw? No warnings for division?
-
-> +	u32 ctrl;
-> +
-> +	base_unit_range = BIT(lpwm->info->base_unit_bits);
-> +
-> +	ctrl = pwm_lpss_read(pwm);
-> +	on_time_div = ctrl & PWM_ON_TIME_DIV_MASK;
-> +	base_unit = (ctrl >> PWM_BASE_UNIT_SHIFT) & (base_unit_range
-> - 1);
-> +
-> +	freq = base_unit * lpwm->info->clk_rate / base_unit_range;
-
-> +	if (freq == 0)
-> +		freq = 1;
-
-Why?
-I'm not sure it will give correct value.
-
-> +
-
-> +	state->period = NSEC_PER_SEC / freq;
-
-
-> +	state->duty_cycle = state->period * on_time_div / 255ULL;
-> +	state->polarity = PWM_POLARITY_NORMAL;
-
-> +	state->enabled = (ctrl & PWM_ENABLE) ? true : false;
-
-!!(ctrl & PWM_ENABLE)
-
-> +
-
-> +	if (state->enabled)
-> +		pm_runtime_get_sync(chip->dev);
-
-How is this supposed to work in balance with ->apply() ?
-
-> +}
-> +
->  static const struct pwm_ops pwm_lpss_ops = {
->  	.apply = pwm_lpss_apply,
-> +	.get_state = pwm_lpss_get_state,
->  	.owner = THIS_MODULE,
->  };
->  
-
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+Regards,
+-Paul
