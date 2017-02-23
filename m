@@ -1,76 +1,88 @@
-From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v3 1/4] pwm: sunxi: Code switched to regmap
- API instead of iomem.
-Date: Tue, 21 Feb 2017 15:37:14 -0800
-Message-ID: <20170221233714.4t2jaivwwbokbo7y@lukather>
-References: <1487189167-32486-1-git-send-email-lis8215@gmail.com>
- <1487189167-32486-2-git-send-email-lis8215@gmail.com>
- <20170216175952.34qn72pi47epma37@lukather>
- <CAKNVLfa-doz_6oARF5Eg1EbKFuita34Pg2x6Jutjzt9fshUEwQ@mail.gmail.com>
-Reply-To: maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
+From: Ilkka Koskinen <ilkka.koskinen@intel.com>
+Subject: Re: [PATCH 1/3] pwm: lpss: Do not set / wait_for update_bit when not
+ enabled
+Date: Thu, 23 Feb 2017 00:06:23 -0800
+Message-ID: <20170223080623.GB61837@kammari>
+References: <20170220201657.24801-1-hdegoede@redhat.com>
+ <20170220201657.24801-2-hdegoede@redhat.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="cydpvm455q7s2nil"
-Return-path: <linux-sunxi+bncBDSJBYGBRIMBBLM6WPCQKGQEGMG66QI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:46055 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750952AbdBWIL7 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Thu, 23 Feb 2017 03:11:59 -0500
 Content-Disposition: inline
-In-Reply-To: <CAKNVLfa-doz_6oARF5Eg1EbKFuita34Pg2x6Jutjzt9fshUEwQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20170220201657.24801-2-hdegoede@redhat.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Hans de Goede <hdegoede@redhat.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
++Andy
 
---cydpvm455q7s2nil
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
 
 Hi,
 
-On Tue, Feb 21, 2017 at 09:47:43AM +0300, Siarhei Volkau wrote:
-> >> +#define SUN4I_REGMAP_FIELDS(chan) {\
-> >> +     [FIELD_PRESCALER] = \
-> >> +             REG_FIELD(PWM_CTRL_REG, \
-> >> +                       BIT_CH(PWM_PRESCAL_LSB, chan), \
-> >> +                       BIT_CH(PWM_PRESCAL_MSB, chan)), \
-> >> +     [FIELD_POLARITY] = \
-> >> +             REG_FIELD(PWM_CTRL_REG, \
-> >> +                       BIT_CH(PWM_ACT_STATE_BIT, chan), \
-> >> +                       BIT_CH(PWM_ACT_STATE_BIT, chan)), \
-> >> +     [FIELD_CLK_GATING] = \
-> >> +             REG_FIELD(PWM_CTRL_REG, \
-> >> +                       BIT_CH(PWM_CLK_GATING_BIT, chan), \
-> >> +                       BIT_CH(PWM_CLK_GATING_BIT, chan)), \
-> >> +     [FIELD_READY] = \
-> >> +             REG_FIELD(PWM_CTRL_REG, \
-> >> +                       PWM_RDY_BIT(chan), \
-> >> +                       PWM_RDY_BIT(chan)), \
-> >> +}
-> >> +
-> >
-> > This is not correct, unfortunately. If someone calls that macro with
-> > chan++ or chan--, it will be modified four times instead of one as the
-> > caller would expect.
+Thanks for the patch!
+
+On Mon, Feb 20, 2017 at 10:16:55PM +0200, Hans de Goede wrote:
+> At least on cherrytrail, the update bit will never go low when the
+> enabled bit is not set.
 > 
-> Ok, i will refactor that.
-> I think you should know about existence of unsafe macros (like MIN
-> MAX or ABS) into existing linux kernel tree, this macros can be easily
-> refactored into the inline functions. Please tell me your point of view
-> on that things.
+> This causes the backlight on my cube iwork8 air tablet to never go on
+> again after being turned off, because the enable path does:
+> 
+> 	pwm_lpss_prepare();
+> 	ret = pwm_lpss_update(pwm);
+> 	if (ret)
+> 		return ret;
+> 	pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_ENABLE);
+> 
+> And the pwm_lpss_update() call fails, as the setting of the
+> UPDATE bit never gets acked, because the ENABLE bit is not set.
+> 
+> Subsequent calls then all fail because of the pwm_lpss_is_updating()
+> check done by pwm_lpss_apply().
+> 
+> This commit fixes this by setting the enable bit before calling
+> pwm_lpss_update().
+> 
+> Fixes: 10d56a4cb1c6 ("pwm: lpss: Avoid reconfiguring while UPDATE bit...")
+> Cc: Ilkka Koskinen <ilkka.koskinen@intel.com>
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> ---
+>  drivers/pwm/pwm-lpss.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+> index 689d2c1..6c99abc 100644
+> --- a/drivers/pwm/pwm-lpss.c
+> +++ b/drivers/pwm/pwm-lpss.c
+> @@ -137,12 +137,12 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+>  				return ret;
+>  			}
+>  			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
+> +			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_ENABLE);
+>  			ret = pwm_lpss_update(pwm);
 
-This might be bad, but we also have functions for those, which should
-behave properly. Anyway, I don't really expect you to fix the whole
-kernel before taking that patch in :)
+The BXT documentation that I have recommends to set update bit before enable
+one. However, based on your experiment on Cherryview, we still have to set it
+before read_poll_timeout(). 
 
-Maxime
+Andy, should we indeed remove the return value from apply() and just print a warning
+like Mika initially suggested?
 
--- 
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
---cydpvm455q7s2nil--
+--Ilkka
+
+>  			if (ret) {
+>  				pm_runtime_put(chip->dev);
+>  				return ret;
+>  			}
+> -			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_ENABLE);
+>  		} else {
+>  			ret = pwm_lpss_is_updating(pwm);
+>  			if (ret)
+> -- 
+> 2.9.3
+> 
