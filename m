@@ -1,94 +1,142 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v3 01/14] Documentation: dt/bindings: Document pinctrl-ingenic
-Date: Thu, 23 Feb 2017 10:59:14 +0100
-Message-ID: <CACRpkdYiA157afJW2hnJzRgWOT02pCuU5rPCdHC-G5qb-FrxQA@mail.gmail.com>
-References: <27071da2f01d48141e8ac3dfaa13255d@mail.crapouillou.net>
- <20170125185207.23902-1-paul@crapouillou.net> <20170125185207.23902-2-paul@crapouillou.net>
- <20170130203617.hpljtcmzava3rq2n@rob-hp-laptop> <12dc62a7255bd453ff4e5e89f93ebc58@mail.crapouillou.net>
- <CACRpkdbAgy4sh6NT5DdQD6EQtOZEwevohEA6OGRcVz98yqS52Q@mail.gmail.com>
- <fd3c507484a9ee34a08c9f92e60624db@mail.crapouillou.net> <CACRpkdbAA33FFrMgx-eZPmpBBfQ_hF+=dSu0hANVthdbadicDg@mail.gmail.com>
- <f19fea79c2616455f5f08070923428cc@crapouillou.net>
+From: m18063 <Claudiu.Beznea@microchip.com>
+Subject: Re: [PATCH 2/2] drivers: pwm: pwm-atmel: add support to allow run
+ time changing of pwm parameters
+Date: Thu, 23 Feb 2017 12:25:58 +0200
+Message-ID: <f963def2-6d82-3bf7-22fa-8915f408ca54@microchip.com>
+References: <1487839120-13650-1-git-send-email-claudiu.beznea@microchip.com>
+ <1487839120-13650-3-git-send-email-claudiu.beznea@microchip.com>
+ <20170223092148.5qmxy62xkufwbsrw@piout.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-mmc-owner@vger.kernel.org>
-In-Reply-To: <f19fea79c2616455f5f08070923428cc@crapouillou.net>
-Sender: linux-mmc-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Rob Herring <robh@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Ulf Hansson <ulf.hansson@linaro.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux MIPS <linux-mips@linux-mips.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>, linux-pwm@vger.ker
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from smtpout.microchip.com ([198.175.253.82]:39836 "EHLO
+        email.microchip.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1751017AbdBWK0y (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Feb 2017 05:26:54 -0500
+In-Reply-To: <20170223092148.5qmxy62xkufwbsrw@piout.net>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, boris.brezillon@free-electrons.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Tue, Feb 21, 2017 at 12:20 PM, Paul Cercueil <paul@crapouillou.net> wrot=
-e:
-> Le 2017-02-20 14:56, Linus Walleij a =C3=A9crit :
+Hi,
+
+
+On 23.02.2017 11:21, Alexandre Belloni wrote:
+> On 23/02/2017 at 10:38:40 +0200, Claudiu Beznea wrote:
+>> sama5d2 supports changing of pwm parameters like period and
+>> duty factor without first to disable pwm. Since pwm code
+>> is supported by more than one SoC add allow_runtime_cfg
+>> parameter to atmel_pwm_chip data structure. This will be
+>> filled statically for every SoC, saved in pwm specific
+>> structure at probing time and checked while configuring
+>> the device. Based on this, pwm clock will not be
+>> enabled/disabled while configuring if it still enabled.
 >>
->> On Thu, Feb 9, 2017 at 6:28 PM, Paul Cercueil <paul@crapouillou.net>
->> wrote:
+>> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+>> ---
+>>  drivers/pwm/pwm-atmel.c | 24 ++++++++++++++++++------
+>>  1 file changed, 18 insertions(+), 6 deletions(-)
 >>
->>> I was thinking that instead of having one pinctrl-ingenic instance
->>> covering
->>> 0x600 of register space, and 6 instances of gpio-ingenic having 0x100
->>> each,
->>> I could just have 6 instances of pinctrl-ingenic, each one with an
->>> instance
->>> of gpio-ingenic declared as a sub-node, each handling just 0x100 of
->>> memory
->>> space.
->>
->>
->> My head is spinning,  but I think I get it. What is wrong with the
->> solution
->> I proposed with one pin control instance covering the whole 0x600 and wi=
-th
->> 6
->> subnodes of GPIO?
->>
->> The GPIO nodes do not even have to have an address range associated with
->> them you know, that can be distributed out with regmap code accessing
->> the parent regmap.
+>> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+>> index 4406639..9e1dece 100644
+>> --- a/drivers/pwm/pwm-atmel.c
+>> +++ b/drivers/pwm/pwm-atmel.c
+>> @@ -68,6 +68,8 @@ struct atmel_pwm_chip {
+>>  
+>>  	void (*config)(struct pwm_chip *chip, struct pwm_device *pwm,
+>>  		       unsigned long dty, unsigned long prd);
+>> +
+>> +	bool allow_runtime_cfg;
+>>  };
+>>  
+>>  static inline struct atmel_pwm_chip *to_atmel_pwm_chip(struct pwm_chip *chip)
+>> @@ -114,7 +116,8 @@ static int atmel_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>>  	u32 val;
+>>  	int ret;
+>>  
+>> -	if (pwm_is_enabled(pwm) && (period_ns != pwm_get_period(pwm))) {
+>> +	if (!atmel_pwm->allow_runtime_cfg &&
+>> +	    pwm_is_enabled(pwm) && (period_ns != pwm_get_period(pwm))) {
+>>  		dev_err(chip->dev, "cannot change PWM period while enabled\n");
+>>  		return -EBUSY;
+>>  	}
+>> @@ -139,10 +142,12 @@ static int atmel_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>>  	do_div(div, period_ns);
+>>  	dty = prd - div;
+>>  
+>> -	ret = clk_enable(atmel_pwm->clk);
+>> -	if (ret) {
+>> -		dev_err(chip->dev, "failed to enable PWM clock\n");
+>> -		return ret;
+>> +	if (!pwm_is_enabled(pwm)) {
+>> +		ret = clk_enable(atmel_pwm->clk);
+>> +		if (ret) {
+>> +			dev_err(chip->dev, "failed to enable PWM clock\n");
+>> +			return ret;
+>> +		}
+>>  	}
+>>  
+> It is probably worth switching to atomic PWM instead of changing this
+> function. This would simplify the whole driver.
+I was thinking to switch to atomic PWM in a future patch.
 >
+>>  	/* It is necessary to preserve CPOL, inside CMR */
+>> @@ -155,7 +160,9 @@ static int atmel_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>>  	atmel_pwm->updated_pwms &= ~(1 << pwm->hwpwm);
+>>  	mutex_unlock(&atmel_pwm->isr_lock);
+>>  
+>> -	clk_disable(atmel_pwm->clk);
+>> +	if (!pwm_is_enabled(pwm))
+>> +		clk_disable(atmel_pwm->clk);
+>> +
+>>  	return ret;
+>>  }
+>>  
+>> @@ -294,18 +301,22 @@ static const struct pwm_ops atmel_pwm_ops = {
+>>  struct atmel_pwm_data {
+>>  	void (*config)(struct pwm_chip *chip, struct pwm_device *pwm,
+>>  		       unsigned long dty, unsigned long prd);
+>> +	bool allow_runtime_cfg;
+>>  };
+>>  
+>>  static const struct atmel_pwm_data atmel_pwm_data_v1 = {
+>>  	.config = atmel_pwm_config_v1,
+>> +	.allow_runtime_cfg = false,
+> This is useless as it is false even if not explicitly set.
+Ok. I will do it in v2.
 >
-> OK, but then each GPIO chip 'X' still need to know its offset in the
-> register
-> area, which is (pinctrl_base + X * 0x100).
-> What's the best way to pass that info to the driver? (I assume it's not w=
-ith
-> a custom DT binding...).
+>>  };
+>>  
+>>  static const struct atmel_pwm_data atmel_pwm_data_v2 = {
+>>  	.config = atmel_pwm_config_v2,
+>> +	.allow_runtime_cfg = false,
+> ditto.
+>
+>>  };
+>>  
+>>  static const struct atmel_pwm_data atmel_pwm_data_v3 = {
+>>  	.config = atmel_pwm_config_v3,
+>> +	.allow_runtime_cfg = true,
+>>  };
+>>  
+>>  static const struct platform_device_id atmel_pwm_devtypes[] = {
+>> @@ -399,6 +410,7 @@ static int atmel_pwm_probe(struct platform_device *pdev)
+>>  	atmel_pwm->chip.npwm = 4;
+>>  	atmel_pwm->chip.can_sleep = true;
+>>  	atmel_pwm->config = data->config;
+>> +	atmel_pwm->allow_runtime_cfg = data->allow_runtime_cfg;
+> It is probably worth having a pointer to the atmel_pwm_data instead of
+> having to copy all the members.
+Ok. I will do it in v2.
+>
+>>  	atmel_pwm->updated_pwms = 0;
+>>  	mutex_init(&atmel_pwm->isr_lock);
+>>  
+>> -- 
+>> 2.7.4
+>>
 
-I do not really understand what driver you are referring to.
-
-If the pin controller node is overarching and spawning children for
-the gpiochips, you use the design pattern from MFD to pass data
-from parents to children, e.g.:
-
-#include <linux/regmap.h>
-
-pinctrl driver:
-     struct regmap_config mapconf =3D {
-                .reg_bits =3D 32,
-                .val_bits =3D 32,
-                .reg_stride =3D 4,
-     };
-    struct regmap *map;
-
-    map =3D regmap_init_mmio(dev, base, &mapconf);
-    if (IS_ERR(map))
-          ....
-    dev_set_drvdata(dev, map);
-    of_populate_children(dev,)..
-    (can also use platform_device_add_data() or "simple-bus" etc)
-
-gpio subdrivers:
-     struct regmap *map;
-
-     map =3D dev_get_drvdata(dev->parent);
-
-There are examples of drivers passing more complex things to
-their children than a regmap, just put some struct in a <linux/*/*.h>
-file and pass it with drvdata as per above.
-
-PS i2c_set_drvdata(), platform_set_drvdata() are just aliases
-for dev_set_drvdata().
-
-Yours,
-Linus Walleij
+Thank you,
+Claudiu Beznea
