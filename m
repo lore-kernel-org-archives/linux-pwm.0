@@ -1,12 +1,15 @@
 From: lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Subject: [PATCH v4 0/9] Add the Allwinner A31/A31s PWM driver.
-Date: Fri, 24 Feb 2017 08:41:07 +0300
-Message-ID: <1487914876-8594-1-git-send-email-lis8215@gmail.com>
+Subject: [PATCH v4 4/9] pwm: sunxi: Customizable control and
+ period register position.
+Date: Fri, 24 Feb 2017 08:41:11 +0300
+Message-ID: <1487914876-8594-5-git-send-email-lis8215@gmail.com>
+References: <1487914876-8594-1-git-send-email-lis8215@gmail.com>
 Reply-To: lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBDJLROMN3MJRB74OX7CQKGQEBYHN5LY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBDJLROMN3MJRBBEPX7CQKGQEJCQFZYQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <1487914876-8594-1-git-send-email-lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -19,36 +22,157 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
-This is the 4-th version of the sun6i PWM patchset.
-Difference between v3 and v4:
- - patchset split on many small patches for easier bisect.
- - avoid unsafe macros usage.
- - some minor cleanups.
+sun6i has same registers as sun4i compatible chips, but its position
+in register map are different.
 
-First two patches moves register access operations
-from custom iomem read-modify-write operations to regmap API.
+This patch make register's position selectable for support sun6i in
+next patches.
 
-Patches from 3 to 6 makes all different things between
-sun4i and sun6i PWM variants customizable.
+Signed-off-by: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/pwm/pwm-sun4i.c | 57 ++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 54 insertions(+), 3 deletions(-)
 
-Patch 7 introduce sun6i PWM driver itself.
-
-Siarhei Volkau (9):
-  pwm: sunxi: Use regmap API for register access.
-  pwm: sunxi: Use regmap fields for bit operations.
-  pwm: sunxi: Selectable prescaler table.
-  pwm: sunxi: Customizable control and period register position.
-  pwm: sunxi: Customizable regmap fields and enable bit mask.
-  pwm: sunxi: Increase max number of pwm channels.
-  pwm: sunxi: Add support the Allwinner A31 PWM.
-  pwm: sunxi: Code cleanup.
-  ARM: dts: sun6i: Add the PWM block to the A31/A31s.
-
- .../devicetree/bindings/pwm/pwm-sun4i.txt          |   3 +-
- arch/arm/boot/dts/sun6i-a31.dtsi                   |   8 +
- drivers/pwm/Kconfig                                |   2 +-
- drivers/pwm/pwm-sun4i.c                            | 366 +++++++++++++++++----
- 4 files changed, 311 insertions(+), 68 deletions(-)
-
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index 418a625..9ddc812 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -79,11 +79,17 @@ static const u32 sun4i_prescaler_table[] = {
+ 	0, /* Actually 1 but tested separately */
+ };
+ 
++struct sunxi_pwmch_data {
++	unsigned int ctl_reg;
++	unsigned int prd_reg;
++};
++
+ struct sun4i_pwm_data {
+ 	bool has_prescaler_bypass;
+ 	bool has_rdy;
+ 	unsigned int npwm;
+ 	const u32 *prescaler_table;
++	const struct sunxi_pwmch_data *chan_data[SUN4I_MAX_PWM_CHANNELS];
+ };
+ 
+ struct sun4i_pwm_chip {
+@@ -100,6 +106,18 @@ static inline struct sun4i_pwm_chip *to_sun4i_pwm_chip(struct pwm_chip *chip)
+ 	return container_of(chip, struct sun4i_pwm_chip, chip);
+ }
+ 
++static inline unsigned int sunxi_pwm_ctl_reg(struct sun4i_pwm_chip *chip,
++					     int chan)
++{
++	return chip->data->chan_data[chan]->ctl_reg;
++}
++
++static inline unsigned int sunxi_pwm_prd_reg(struct sun4i_pwm_chip *chip,
++					     int chan)
++{
++	return chip->data->chan_data[chan]->prd_reg;
++}
++
+ static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			    int duty_ns, int period_ns)
+ {
+@@ -192,7 +210,8 @@ static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	}
+ 
+ 	val = (dty & PWM_DTY_MASK) | PWM_PRD(prd);
+-	err = regmap_write(sun4i_pwm->regmap, PWM_CH_PRD(pwm->hwpwm), val);
++	err = regmap_write(sun4i_pwm->regmap,
++			   sunxi_pwm_prd_reg(sun4i_pwm, pwm->hwpwm), val);
+ 	if (err) {
+ 		dev_err(chip->dev, "failed to write to PRD register\n");
+ 		goto err_cleanup;
+@@ -256,7 +275,9 @@ static int sun4i_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	mask |= BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
+ 
+ 	spin_lock(&sun4i_pwm->ctrl_lock);
+-	ret = regmap_update_bits(sun4i_pwm->regmap, PWM_CTRL_REG, mask, mask);
++	ret = regmap_update_bits(sun4i_pwm->regmap,
++				 sunxi_pwm_ctl_reg(sun4i_pwm, pwm->hwpwm),
++				 mask, mask);
+ 	if (ret)
+ 		dev_err(chip->dev, "failed to write to CTL register\n");
+ 	spin_unlock(&sun4i_pwm->ctrl_lock);
+@@ -276,7 +297,9 @@ static void sun4i_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	mask |= BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
+ 
+ 	spin_lock(&sun4i_pwm->ctrl_lock);
+-	err = regmap_update_bits(sun4i_pwm->regmap, PWM_CTRL_REG, mask, 0);
++	err = regmap_update_bits(sun4i_pwm->regmap,
++				 sunxi_pwm_ctl_reg(sun4i_pwm, pwm->hwpwm),
++				 mask, 0);
+ 	if (err)
+ 		dev_err(chip->dev, "failed to write to CTL register\n");
+ 	spin_unlock(&sun4i_pwm->ctrl_lock);
+@@ -308,11 +331,25 @@ sun4i_pwm_regfields[SUN4I_MAX_PWM_CHANNELS][NUM_FIELDS] = {
+ 	},
+ };
+ 
++static const struct sunxi_pwmch_data sun4i_pwm_chan0_data = {
++	.ctl_reg = PWM_CTRL_REG,
++	.prd_reg = PWM_CH_PRD(0),
++};
++
++static const struct sunxi_pwmch_data sun4i_pwm_chan1_data = {
++	.ctl_reg = PWM_CTRL_REG,
++	.prd_reg = PWM_CH_PRD(1),
++};
++
+ static const struct sun4i_pwm_data sun4i_pwm_data_a10 = {
+ 	.has_prescaler_bypass = false,
+ 	.has_rdy = false,
+ 	.npwm = 2,
+ 	.prescaler_table = sun4i_prescaler_table,
++	.chan_data = {
++		&sun4i_pwm_chan0_data,
++		&sun4i_pwm_chan1_data,
++	}
+ };
+ 
+ static const struct sun4i_pwm_data sun4i_pwm_data_a10s = {
+@@ -320,6 +357,10 @@ static const struct sun4i_pwm_data sun4i_pwm_data_a10s = {
+ 	.has_rdy = true,
+ 	.npwm = 2,
+ 	.prescaler_table = sun4i_prescaler_table,
++	.chan_data = {
++		&sun4i_pwm_chan0_data,
++		&sun4i_pwm_chan1_data,
++	}
+ };
+ 
+ static const struct sun4i_pwm_data sun4i_pwm_data_a13 = {
+@@ -327,6 +368,9 @@ static const struct sun4i_pwm_data sun4i_pwm_data_a13 = {
+ 	.has_rdy = true,
+ 	.npwm = 1,
+ 	.prescaler_table = sun4i_prescaler_table,
++	.chan_data = {
++		&sun4i_pwm_chan0_data,
++	}
+ };
+ 
+ static const struct sun4i_pwm_data sun4i_pwm_data_a20 = {
+@@ -334,6 +378,10 @@ static const struct sun4i_pwm_data sun4i_pwm_data_a20 = {
+ 	.has_rdy = true,
+ 	.npwm = 2,
+ 	.prescaler_table = sun4i_prescaler_table,
++	.chan_data = {
++		&sun4i_pwm_chan0_data,
++		&sun4i_pwm_chan1_data,
++	}
+ };
+ 
+ static const struct sun4i_pwm_data sun4i_pwm_data_h3 = {
+@@ -341,6 +389,9 @@ static const struct sun4i_pwm_data sun4i_pwm_data_h3 = {
+ 	.has_rdy = true,
+ 	.npwm = 1,
+ 	.prescaler_table = sun4i_prescaler_table,
++	.chan_data = {
++		&sun4i_pwm_chan0_data,
++	}
+ };
+ 
+ static const struct of_device_id sun4i_pwm_dt_ids[] = {
 -- 
 2.4.11
