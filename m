@@ -1,12 +1,13 @@
 From: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
-Subject: [PATCH 2/3] pwm: sunxi: Add A64 support
-Date: Sat, 25 Feb 2017 15:42:15 +0800
-Message-ID: <20170225074216.64868-2-icenowy@aosc.xyz>
+Subject: [PATCH 3/3] arm64: dts: allwinner: add pwm device node
+ for A64
+Date: Sat, 25 Feb 2017 15:42:16 +0800
+Message-ID: <20170225074216.64868-3-icenowy@aosc.xyz>
 References: <20170225074216.64868-1-icenowy@aosc.xyz>
 Reply-To: icenowy-ymACFijhrKM@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBCZLPFN5Q4OBBCHLYTCQKGQEJKU6OSA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBCZLPFN5Q4OBBIXLYTCQKGQEQEJ6Z6A-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 In-Reply-To: <20170225074216.64868-1-icenowy-ymACFijhrKM@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -19,40 +20,34 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob
 Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-A64 PWM controller has same register layout as sun4i driver, so it works
-by adding A64 specific data.
+Allwinner A64 features a PWM controller, which is used for backlight
+control by several boards (Pine64 Pinebook, Olimex TERES I).
+
+Add its device node.
 
 Signed-off-by: Icenowy Zheng <icenowy-ymACFijhrKM@public.gmane.org>
 ---
- drivers/pwm/pwm-sun4i.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 1284ffa05921..ca3431e03fb8 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -290,6 +290,12 @@ static const struct sun4i_pwm_data sun4i_pwm_data_h3 = {
- 	.npwm = 1,
- };
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
+index 601514ead28c..afc76d5df4e2 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
+@@ -302,6 +302,14 @@
+ 			};
+ 		};
  
-+static const struct sun4i_pwm_data sun4i_pwm_data_a64 = {
-+	.has_prescaler_bypass = true,
-+	.has_rdy = true,
-+	.npwm = 1,
-+};
++		pwm: pwm@01c21400 {
++			compatible = "allwinner,sun50i-a64-pwm";
++			reg = <0x01c21400 0x8>;
++			clocks = <&osc24M>;
++			#pwm-cells = <3>;
++			status = "disabled";
++		};
 +
- static const struct of_device_id sun4i_pwm_dt_ids[] = {
- 	{
- 		.compatible = "allwinner,sun4i-a10-pwm",
-@@ -307,6 +313,9 @@ static const struct of_device_id sun4i_pwm_dt_ids[] = {
- 		.compatible = "allwinner,sun8i-h3-pwm",
- 		.data = &sun4i_pwm_data_h3,
- 	}, {
-+		.compatible = "allwinner,sun50i-a64-pwm",
-+		.data = &sun4i_pwm_data_a64,
-+	}, {
- 		/* sentinel */
- 	},
- };
+ 		uart0: serial@1c28000 {
+ 			compatible = "snps,dw-apb-uart";
+ 			reg = <0x01c28000 0x400>;
 -- 
 2.11.1
