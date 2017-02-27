@@ -1,16 +1,16 @@
 From: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4 1/9] pwm: sunxi: Use regmap API for
- register access.
-Date: Mon, 27 Feb 2017 14:22:02 +0300
-Message-ID: <CAKNVLfYLfiTKu1CWcR5JiYepgfy-AO4CZ6ZKLaijmj+rmpxWAg@mail.gmail.com>
+Subject: Re: [PATCH v4 2/9] pwm: sunxi: Use regmap fields for
+ bit operations.
+Date: Mon, 27 Feb 2017 14:41:10 +0300
+Message-ID: <CAKNVLfYVfMDDeBB0cOb-_d5EytCWG8DDssnUH573_yOfJdJ8uA@mail.gmail.com>
 References: <1487914876-8594-1-git-send-email-lis8215@gmail.com>
- <1487914876-8594-2-git-send-email-lis8215@gmail.com> <20170227091718.nzjfk67osgntrrd2@lukather>
+ <1487914876-8594-3-git-send-email-lis8215@gmail.com> <20170227092814.7g5fnfvew3hcqefl@lukather>
 Reply-To: lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-sunxi+bncBDJLROMN3MJRBW4X2DCQKGQEQRFHYCY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBDJLROMN3MJRBVVA2DCQKGQEOZUWWCI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20170227091718.nzjfk67osgntrrd2@lukather>
+In-Reply-To: <20170227092814.7g5fnfvew3hcqefl@lukather>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -21,91 +21,42 @@ To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.o
 Cc: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi, Maxime
+Hi,
 
-2017-02-27 12:17 GMT+03:00 Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>:
-> Hi Siarhei,
+2017-02-27 12:28 GMT+03:00 Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>:
 >
-> On Fri, Feb 24, 2017 at 08:41:08AM +0300, lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
->> From: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->>
->> The patch replaces iomem register access routines to regmap
->> equivalents.
->>
->> Signed-off-by: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->> ---
->>  drivers/pwm/Kconfig     |   2 +-
->>  drivers/pwm/pwm-sun4i.c | 143 ++++++++++++++++++++++++++++++++++++------------
->>  2 files changed, 110 insertions(+), 35 deletions(-)
->>
->> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
->> index 2d0cfaa..6b4dc1a 100644
->> --- a/drivers/pwm/Kconfig
->> +++ b/drivers/pwm/Kconfig
->> @@ -416,7 +416,7 @@ config PWM_STMPE
->>  config PWM_SUN4I
->>       tristate "Allwinner PWM support"
->>       depends on ARCH_SUNXI || COMPILE_TEST
->> -     depends on HAS_IOMEM && COMMON_CLK
->> +     depends on REGMAP_MMIO && COMMON_CLK
->>       help
->>         Generic PWM framework driver for Allwinner SoCs.
->>
->> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
->> index b0803f6..5565f03 100644
->> --- a/drivers/pwm/pwm-sun4i.c
->> +++ b/drivers/pwm/pwm-sun4i.c
->> @@ -9,7 +9,7 @@
->>  #include <linux/bitops.h>
->>  #include <linux/clk.h>
->>  #include <linux/err.h>
->> -#include <linux/io.h>
->> +#include <linux/regmap.h>
->>  #include <linux/module.h>
->>  #include <linux/of.h>
->>  #include <linux/of_device.h>
->> @@ -74,7 +74,7 @@ struct sun4i_pwm_data {
->>  struct sun4i_pwm_chip {
->>       struct pwm_chip chip;
->>       struct clk *clk;
->> -     void __iomem *base;
->> +     struct regmap *regmap;
->>       spinlock_t ctrl_lock;
->>       const struct sun4i_pwm_data *data;
->>  };
->> @@ -84,18 +84,6 @@ static inline struct sun4i_pwm_chip *to_sun4i_pwm_chip(struct pwm_chip *chip)
->>       return container_of(chip, struct sun4i_pwm_chip, chip);
->>  }
->>
->> -static inline u32 sun4i_pwm_readl(struct sun4i_pwm_chip *chip,
->> -                               unsigned long offset)
->> -{
->> -     return readl(chip->base + offset);
->> -}
->> -
->> -static inline void sun4i_pwm_writel(struct sun4i_pwm_chip *chip,
->> -                                 u32 val, unsigned long offset)
->> -{
->> -     writel(val, chip->base + offset);
->> -}
->> -
->>  static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->>                           int duty_ns, int period_ns)
->>  {
->> @@ -152,7 +140,11 @@ static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->>       }
->>
->>       spin_lock(&sun4i_pwm->ctrl_lock);
->> -     val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
->> +     err = regmap_read(sun4i_pwm->regmap, PWM_CTRL_REG, &val);
->> +     if (err) {
->> +             dev_err(chip->dev, "failed to read from CTL register\n");
->> +             goto err_cleanup;
->> +     }
+> Hi,
 >
-> I'm not sure you need those error checks. If there's an error when you
-> write to an MMIO bus, you have much more important issues than your
-> return code there.
+> On Fri, Feb 24, 2017 at 08:41:09AM +0300, lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
+> > +static const struct reg_field
+> > +sun4i_pwm_regfields[SUN4I_MAX_PWM_CHANNELS][NUM_FIELDS] = {
+> > +     {
+> > +             [FIELD_PRESCALER]  = REG_FIELD(PWM_CTRL_REG,  0,  3),
+> > +             [FIELD_POLARITY]   = REG_FIELD(PWM_CTRL_REG,  5,  5),
+> > +             [FIELD_CLK_GATING] = REG_FIELD(PWM_CTRL_REG,  6,  6),
+> > +             [FIELD_READY]      = REG_FIELD(PWM_CTRL_REG, 28, 28),
+> > +     },
+> > +     {
+> > +             [FIELD_PRESCALER]  = REG_FIELD(PWM_CTRL_REG, 15, 18),
+> > +             [FIELD_POLARITY]   = REG_FIELD(PWM_CTRL_REG, 20, 20),
+> > +             [FIELD_CLK_GATING] = REG_FIELD(PWM_CTRL_REG, 21, 21),
+> > +             [FIELD_READY]      = REG_FIELD(PWM_CTRL_REG, 29, 29),
+> > +     },
+> > +};
+> > +
+>
+> I'm not sure you need something that complicated.
+>
+> What about something like:
+>
+> struct sun4i_chan_fields {
+>        struct reg_field prescaler;
+>        struct reg_field polarity;
+>        struct reg_field clk_gating;
+>        struct reg_field ready;
+> };
+>
+> And in sun4i_pwm_data add an array of this struct.
 >
 > Maxime
 >
@@ -114,7 +65,10 @@ Hi, Maxime
 > Embedded Linux and Kernel engineering
 > http://free-electrons.com
 
-This probably overkill for MMIO, but it helps when wrong parameters passed
-to regmap functions - mostly during debugging stage.
+Code with struct looks cleaner, but in this case need to be
+written separate code for each reg_field entry allocation,
+please look at the sunxi_alloc_reg_fields() function.
+
+Current solution allows adding new fields slightly easier.
 
 Siarhei
