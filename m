@@ -1,99 +1,79 @@
-From: m18063 <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH 1/2] drivers: pwm: pwm-atmel: add support for pwm on
- sama5d2
-Date: Mon, 27 Feb 2017 17:23:59 +0200
-Message-ID: <99294e68-5503-6ea0-6b6d-c0c29c3bfd81@microchip.com>
-References: <1487839120-13650-1-git-send-email-claudiu.beznea@microchip.com>
- <1487839120-13650-2-git-send-email-claudiu.beznea@microchip.com>
- <20170223091607.j5yfz7jvfzeinrap@piout.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH v3] pwm: lpss: Add get_state callback
+Date: Mon, 27 Feb 2017 17:59:41 +0100
+Message-ID: <20170227165941.1379-1-hdegoede@redhat.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from exsmtp03.microchip.com ([198.175.253.49]:33723 "EHLO
-        email.microchip.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1752027AbdB0P2D (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 27 Feb 2017 10:28:03 -0500
-In-Reply-To: <20170223091607.j5yfz7jvfzeinrap@piout.net>
+Received: from mx1.redhat.com ([209.132.183.28]:58062 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751039AbdB0Q7p (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 27 Feb 2017 11:59:45 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, boris.brezillon@free-electrons.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andy@infradead.org>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, Takashi Iwai <tiwai@suse.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Hi,
-Please ignore this patch also. I will resend it after
-switching to atomic PWM.
+Add a get_state callback so that the initial state correctly reflects
+the actual hardware state.
 
-Thank you,
-Claudiu Beznea
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Jani Nikula <jani.nikula@intel.com>
+---
+Changes in v2:
+-Rebase on top of linux-pwm/for-next
+Changes in v3:
+-Invert on_time_div 255 means 0 brightness not max brightness
+-Use do_div to avoid issues with 64 bit division on 32 bit archs
+-Use !!foo instead of foo? true:fale
+---
+ drivers/pwm/pwm-lpss.c | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-
-On 23.02.2017 11:16, Alexandre Belloni wrote:
-> On 23/02/2017 at 10:38:39 +0200, Claudiu Beznea wrote:
->> Enable PWM on sama5d2 by adding atmel_pwm_config_v3().
->> This, simply, sets the period and duty factor registers.
->>
->> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
->
->> ---
->>  Documentation/devicetree/bindings/pwm/atmel-pwm.txt |  1 +
->>  drivers/pwm/pwm-atmel.c                             | 16 ++++++++++++++++
->>  2 files changed, 17 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/pwm/atmel-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
->> index 02331b9..c8c831d 100644
->> --- a/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
->> +++ b/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
->> @@ -4,6 +4,7 @@ Required properties:
->>    - compatible: should be one of:
->>      - "atmel,at91sam9rl-pwm"
->>      - "atmel,sama5d3-pwm"
->> +    - "atmel,sama5d2-pwm"
->>    - reg: physical base address and length of the controller's registers
->>    - #pwm-cells: Should be 3. See pwm.txt in this directory for a
->>      description of the cells format.
->> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
->> index 0e4bd4e..4406639 100644
->> --- a/drivers/pwm/pwm-atmel.c
->> +++ b/drivers/pwm/pwm-atmel.c
->> @@ -207,6 +207,15 @@ static void atmel_pwm_config_v2(struct pwm_chip *chip, struct pwm_device *pwm,
->>  	}
->>  }
->>  
->> +static void atmel_pwm_config_v3(struct pwm_chip *chip, struct pwm_device *pwm,
->> +				unsigned long dty, unsigned long prd)
->> +{
->> +	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
->> +
->> +	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CDTY, dty);
->> +	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWMV2_CPRD, prd);
->> +}
->> +
->>  static int atmel_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
->>  				  enum pwm_polarity polarity)
->>  {
->> @@ -295,6 +304,10 @@ static const struct atmel_pwm_data atmel_pwm_data_v2 = {
->>  	.config = atmel_pwm_config_v2,
->>  };
->>  
->> +static const struct atmel_pwm_data atmel_pwm_data_v3 = {
->> +	.config = atmel_pwm_config_v3,
->> +};
->> +
->>  static const struct platform_device_id atmel_pwm_devtypes[] = {
->>  	{
->>  		.name = "at91sam9rl-pwm",
->> @@ -316,6 +329,9 @@ static const struct of_device_id atmel_pwm_dt_ids[] = {
->>  		.compatible = "atmel,sama5d3-pwm",
->>  		.data = &atmel_pwm_data_v2,
->>  	}, {
->> +		.compatible = "atmel,sama5d2-pwm",
->> +		.data = &atmel_pwm_data_v3,
->> +	}, {
->>  		/* sentinel */
->>  	},
->>  };
->> -- 
->> 2.7.4
->>
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 0b549dc..6605777 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -154,8 +154,41 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	return ret;
+ }
+ 
++static void pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
++			       struct pwm_state *state)
++{
++	struct pwm_lpss_chip *lpwm = to_lpwm(chip);
++	unsigned long base_unit_range;
++	unsigned long long base_unit, freq, on_time_div;
++	u32 ctrl;
++
++	base_unit_range = BIT(lpwm->info->base_unit_bits);
++
++	ctrl = pwm_lpss_read(pwm);
++	on_time_div = 255 - (ctrl & PWM_ON_TIME_DIV_MASK);
++	base_unit = (ctrl >> PWM_BASE_UNIT_SHIFT) & (base_unit_range - 1);
++
++	freq = base_unit * lpwm->info->clk_rate;
++	do_div(freq, base_unit_range);
++	if (freq == 0)
++		state->period = NSEC_PER_SEC;
++	else
++		state->period = NSEC_PER_SEC / (unsigned long)freq;
++
++	on_time_div *= state->period;
++	do_div(on_time_div, 255);
++	state->duty_cycle = on_time_div;
++
++	state->polarity = PWM_POLARITY_NORMAL;
++	state->enabled = !!(ctrl & PWM_ENABLE);
++
++	if (state->enabled)
++		pm_runtime_get_sync(chip->dev);
++}
++
+ static const struct pwm_ops pwm_lpss_ops = {
+ 	.apply = pwm_lpss_apply,
++	.get_state = pwm_lpss_get_state,
+ 	.owner = THIS_MODULE,
+ };
+ 
+-- 
+2.9.3
