@@ -1,17 +1,18 @@
 From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v4 3/9] pwm: sunxi: Selectable prescaler table.
-Date: Mon, 27 Feb 2017 10:28:44 +0100
-Message-ID: <20170227092844.atkqitrhret7yh2k@lukather>
+Subject: Re: [PATCH v4 4/9] pwm: sunxi: Customizable control and
+ period register position.
+Date: Mon, 27 Feb 2017 10:30:26 +0100
+Message-ID: <20170227093026.zsau7vbugmizivz2@lukather>
 References: <1487914876-8594-1-git-send-email-lis8215@gmail.com>
- <1487914876-8594-4-git-send-email-lis8215@gmail.com>
+ <1487914876-8594-5-git-send-email-lis8215@gmail.com>
 Reply-To: maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="wjooi6jvzrsb7llz"
-Return-path: <linux-sunxi+bncBDSJBYGBRIMBBTPCZ7CQKGQE73GWM4A-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="a7tmtficdybpeuxp"
+Return-path: <linux-sunxi+bncBDSJBYGBRIMBBMXDZ7CQKGQEFKTOPLQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Content-Disposition: inline
-In-Reply-To: <1487914876-8594-4-git-send-email-lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1487914876-8594-5-git-send-email-lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -23,28 +24,44 @@ Cc: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, thierry.reding-Re5JQEeQ
 List-Id: linux-pwm@vger.kernel.org
 
 
---wjooi6jvzrsb7llz
+--a7tmtficdybpeuxp
 Content-Type: text/plain; charset=UTF-8
 Content-Disposition: inline
 
-On Fri, Feb 24, 2017 at 08:41:10AM +0300, lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
+On Fri, Feb 24, 2017 at 08:41:11AM +0300, lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
 > From: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 > 
-> A31 SoC have a different set of prescalers than sun4i
-> compatible ASoCs, but its position and count in the control
-> register are the same.
+> sun6i has same registers as sun4i compatible chips, but its position
+> in register map are different.
 > 
-> This patch make the table of prescalers customizable.
+> This patch make register's position selectable for support sun6i in
+> next patches.
 > 
 > Signed-off-by: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/pwm/pwm-sun4i.c | 57 ++++++++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 54 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+> index 418a625..9ddc812 100644
+> --- a/drivers/pwm/pwm-sun4i.c
+> +++ b/drivers/pwm/pwm-sun4i.c
+> @@ -79,11 +79,17 @@ static const u32 sun4i_prescaler_table[] = {
+>  	0, /* Actually 1 but tested separately */
+>  };
+>  
+> +struct sunxi_pwmch_data {
+> +	unsigned int ctl_reg;
+> +	unsigned int prd_reg;
+> +};
+> +
 
-Acked-by: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Why don't you use regmap_fields for that too?
 
-Thanks,
 Maxime
 
 -- 
 Maxime Ripard, Free Electrons
 Embedded Linux and Kernel engineering
 http://free-electrons.com
---wjooi6jvzrsb7llz--
+--a7tmtficdybpeuxp--
