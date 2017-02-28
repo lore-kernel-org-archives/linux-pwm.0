@@ -1,20 +1,20 @@
 From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v4 1/9] pwm: sunxi: Use regmap API for
- register access.
-Date: Tue, 28 Feb 2017 16:53:26 +0100
-Message-ID: <20170228155326.ujzm2p3e7iraep7j@lukather>
+Subject: Re: [PATCH v4 2/9] pwm: sunxi: Use regmap fields for
+ bit operations.
+Date: Tue, 28 Feb 2017 16:56:28 +0100
+Message-ID: <20170228155628.ekctc3iypgxb56hb@lukather>
 References: <1487914876-8594-1-git-send-email-lis8215@gmail.com>
- <1487914876-8594-2-git-send-email-lis8215@gmail.com>
- <20170227091718.nzjfk67osgntrrd2@lukather>
- <CAKNVLfYLfiTKu1CWcR5JiYepgfy-AO4CZ6ZKLaijmj+rmpxWAg@mail.gmail.com>
+ <1487914876-8594-3-git-send-email-lis8215@gmail.com>
+ <20170227092814.7g5fnfvew3hcqefl@lukather>
+ <CAKNVLfYVfMDDeBB0cOb-_d5EytCWG8DDssnUH573_yOfJdJ8uA@mail.gmail.com>
 Reply-To: maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="o7gxiav3klpsvfzq"
-Return-path: <linux-sunxi+bncBDSJBYGBRIMBBAF223CQKGQEDEZF5GY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="surnlalfqk6qhpma"
+Return-path: <linux-sunxi+bncBDSJBYGBRIMBBN5323CQKGQEZZ75D4I-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Content-Disposition: inline
-In-Reply-To: <CAKNVLfYLfiTKu1CWcR5JiYepgfy-AO4CZ6ZKLaijmj+rmpxWAg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAKNVLfYVfMDDeBB0cOb-_d5EytCWG8DDssnUH573_yOfJdJ8uA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -26,104 +26,70 @@ Cc: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Thierry Reding <thierry
 List-Id: linux-pwm@vger.kernel.org
 
 
---o7gxiav3klpsvfzq
+--surnlalfqk6qhpma
 Content-Type: text/plain; charset=UTF-8
 Content-Disposition: inline
 
-On Mon, Feb 27, 2017 at 02:22:02PM +0300, Siarhei Volkau wrote:
-> Hi, Maxime
+On Mon, Feb 27, 2017 at 02:41:10PM +0300, Siarhei Volkau wrote:
+> Hi,
 > 
-> 2017-02-27 12:17 GMT+03:00 Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>:
-> > Hi Siarhei,
+> 2017-02-27 12:28 GMT+03:00 Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>:
 > >
-> > On Fri, Feb 24, 2017 at 08:41:08AM +0300, lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
-> >> From: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> >>
-> >> The patch replaces iomem register access routines to regmap
-> >> equivalents.
-> >>
-> >> Signed-off-by: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> >> ---
-> >>  drivers/pwm/Kconfig     |   2 +-
-> >>  drivers/pwm/pwm-sun4i.c | 143 ++++++++++++++++++++++++++++++++++++------------
-> >>  2 files changed, 110 insertions(+), 35 deletions(-)
-> >>
-> >> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> >> index 2d0cfaa..6b4dc1a 100644
-> >> --- a/drivers/pwm/Kconfig
-> >> +++ b/drivers/pwm/Kconfig
-> >> @@ -416,7 +416,7 @@ config PWM_STMPE
-> >>  config PWM_SUN4I
-> >>       tristate "Allwinner PWM support"
-> >>       depends on ARCH_SUNXI || COMPILE_TEST
-> >> -     depends on HAS_IOMEM && COMMON_CLK
-> >> +     depends on REGMAP_MMIO && COMMON_CLK
-> >>       help
-> >>         Generic PWM framework driver for Allwinner SoCs.
-> >>
-> >> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-> >> index b0803f6..5565f03 100644
-> >> --- a/drivers/pwm/pwm-sun4i.c
-> >> +++ b/drivers/pwm/pwm-sun4i.c
-> >> @@ -9,7 +9,7 @@
-> >>  #include <linux/bitops.h>
-> >>  #include <linux/clk.h>
-> >>  #include <linux/err.h>
-> >> -#include <linux/io.h>
-> >> +#include <linux/regmap.h>
-> >>  #include <linux/module.h>
-> >>  #include <linux/of.h>
-> >>  #include <linux/of_device.h>
-> >> @@ -74,7 +74,7 @@ struct sun4i_pwm_data {
-> >>  struct sun4i_pwm_chip {
-> >>       struct pwm_chip chip;
-> >>       struct clk *clk;
-> >> -     void __iomem *base;
-> >> +     struct regmap *regmap;
-> >>       spinlock_t ctrl_lock;
-> >>       const struct sun4i_pwm_data *data;
-> >>  };
-> >> @@ -84,18 +84,6 @@ static inline struct sun4i_pwm_chip *to_sun4i_pwm_chip(struct pwm_chip *chip)
-> >>       return container_of(chip, struct sun4i_pwm_chip, chip);
-> >>  }
-> >>
-> >> -static inline u32 sun4i_pwm_readl(struct sun4i_pwm_chip *chip,
-> >> -                               unsigned long offset)
-> >> -{
-> >> -     return readl(chip->base + offset);
-> >> -}
-> >> -
-> >> -static inline void sun4i_pwm_writel(struct sun4i_pwm_chip *chip,
-> >> -                                 u32 val, unsigned long offset)
-> >> -{
-> >> -     writel(val, chip->base + offset);
-> >> -}
-> >> -
-> >>  static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> >>                           int duty_ns, int period_ns)
-> >>  {
-> >> @@ -152,7 +140,11 @@ static int sun4i_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> >>       }
-> >>
-> >>       spin_lock(&sun4i_pwm->ctrl_lock);
-> >> -     val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
-> >> +     err = regmap_read(sun4i_pwm->regmap, PWM_CTRL_REG, &val);
-> >> +     if (err) {
-> >> +             dev_err(chip->dev, "failed to read from CTL register\n");
-> >> +             goto err_cleanup;
-> >> +     }
+> > Hi,
 > >
-> > I'm not sure you need those error checks. If there's an error when you
-> > write to an MMIO bus, you have much more important issues than your
-> > return code there.
+> > On Fri, Feb 24, 2017 at 08:41:09AM +0300, lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
+> > > +static const struct reg_field
+> > > +sun4i_pwm_regfields[SUN4I_MAX_PWM_CHANNELS][NUM_FIELDS] = {
+> > > +     {
+> > > +             [FIELD_PRESCALER]  = REG_FIELD(PWM_CTRL_REG,  0,  3),
+> > > +             [FIELD_POLARITY]   = REG_FIELD(PWM_CTRL_REG,  5,  5),
+> > > +             [FIELD_CLK_GATING] = REG_FIELD(PWM_CTRL_REG,  6,  6),
+> > > +             [FIELD_READY]      = REG_FIELD(PWM_CTRL_REG, 28, 28),
+> > > +     },
+> > > +     {
+> > > +             [FIELD_PRESCALER]  = REG_FIELD(PWM_CTRL_REG, 15, 18),
+> > > +             [FIELD_POLARITY]   = REG_FIELD(PWM_CTRL_REG, 20, 20),
+> > > +             [FIELD_CLK_GATING] = REG_FIELD(PWM_CTRL_REG, 21, 21),
+> > > +             [FIELD_READY]      = REG_FIELD(PWM_CTRL_REG, 29, 29),
+> > > +     },
+> > > +};
+> > > +
+> >
+> > I'm not sure you need something that complicated.
+> >
+> > What about something like:
+> >
+> > struct sun4i_chan_fields {
+> >        struct reg_field prescaler;
+> >        struct reg_field polarity;
+> >        struct reg_field clk_gating;
+> >        struct reg_field ready;
+> > };
+> >
+> > And in sun4i_pwm_data add an array of this struct.
+> >
+> > Maxime
+> >
+> > --
+> > Maxime Ripard, Free Electrons
+> > Embedded Linux and Kernel engineering
+> > http://free-electrons.com
 > 
-> This probably overkill for MMIO, but it helps when wrong parameters
-> passed to regmap functions - mostly during debugging stage.
+> Code with struct looks cleaner, but in this case need to be
+> written separate code for each reg_field entry allocation,
+> please look at the sunxi_alloc_reg_fields() function.
+> 
+> Current solution allows adding new fields slightly easier.
 
-There's no way you can get it wrong with regmap_read / write here. And
-what's useful during debugging may not be fit for real world use
-case. We never had error checking before, it was working just fine,
-this is just as true here.
+Yet, you also end up with a similar pattern in your later patches,
+with the pwmch_data structure. But since using that structure for that
+was not as easy as it was supposed to be, you just dropped reg_field
+entirely for those.
+
+Really, consistency is key, and having a structure like this, even if
+slightly less easy to initialise (but that's not rocket science
+either) provides that consistency that makes it easier to review,
+understand and maintain.
 
 Maxime
 
@@ -131,4 +97,4 @@ Maxime
 Maxime Ripard, Free Electrons
 Embedded Linux and Kernel engineering
 http://free-electrons.com
---o7gxiav3klpsvfzq--
+--surnlalfqk6qhpma--
