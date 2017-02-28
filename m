@@ -1,115 +1,100 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v3] pwm: lpss: Add get_state callback
-Date: Tue, 28 Feb 2017 15:09:11 +0100
-Message-ID: <8e7e2207-6004-13c3-1d6f-416bf306bc11@redhat.com>
-References: <20170227165941.1379-1-hdegoede@redhat.com>
- <CAHp75Vdx4JNRzZSzfEe5H6Oj8vxJ7FJ-aA2ojY_HNgeXmCKq8A@mail.gmail.com>
+From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v4 4/9] pwm: sunxi: Customizable control and
+ period register position.
+Date: Tue, 28 Feb 2017 16:48:50 +0100
+Message-ID: <20170228154850.75uqjzcei7pkb4rd@lukather>
+References: <1487914876-8594-1-git-send-email-lis8215@gmail.com>
+ <1487914876-8594-5-git-send-email-lis8215@gmail.com>
+ <20170227093026.zsau7vbugmizivz2@lukather>
+ <CAKNVLfa6NgRBSVZgOb5yp31Eq8nZYRSKQzgUzoXL5_QFfYVjeQ@mail.gmail.com>
+Reply-To: maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:47378 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752001AbdB1OJh (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 28 Feb 2017 09:09:37 -0500
-In-Reply-To: <CAHp75Vdx4JNRzZSzfEe5H6Oj8vxJ7FJ-aA2ojY_HNgeXmCKq8A@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="ndzrufzmvr546cjp"
+Return-path: <linux-sunxi+bncBDSJBYGBRIMBB3NX23CQKGQEXZNFJ4I-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Disposition: inline
+In-Reply-To: <CAKNVLfa6NgRBSVZgOb5yp31Eq8nZYRSKQzgUzoXL5_QFfYVjeQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andy@infradead.org>, linux-pwm@vger.kernel.org, Takashi Iwai <tiwai@suse.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Hi,
-
-On 27-02-17 23:20, Andy Shevchenko wrote:
-> On Mon, Feb 27, 2017 at 6:59 PM, Hans de Goede <hdegoede@redhat.com> wrote:
->> Add a get_state callback so that the initial state correctly reflects
->> the actual hardware state.
->
->> +static void pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
->> +                              struct pwm_state *state)
->> +{
->> +       struct pwm_lpss_chip *lpwm = to_lpwm(chip);
->> +       unsigned long base_unit_range;
->> +       unsigned long long base_unit, freq, on_time_div;
->> +       u32 ctrl;
->> +
->> +       base_unit_range = BIT(lpwm->info->base_unit_bits);
->> +
->> +       ctrl = pwm_lpss_read(pwm);
->> +       on_time_div = 255 - (ctrl & PWM_ON_TIME_DIV_MASK);
->> +       base_unit = (ctrl >> PWM_BASE_UNIT_SHIFT) & (base_unit_range - 1);
->> +
->> +       freq = base_unit * lpwm->info->clk_rate;
->> +       do_div(freq, base_unit_range);
->
->> +       if (freq == 0)
->> +               state->period = NSEC_PER_SEC;
->
-> And this is wrong. IIRC base_unit = 0 *or* on_time_div = 255 means
-> duty cycle = 100%.
-
-Ok, so maybe we should do this then ?
-
-	if (freq == 0) {
-		state->period = NSEC_PER_SEC;
-		state->duty_cycle = NSEC_PER_SEC;
-		return;
-	}
-
-?
 
 
->
->> +       else
->> +               state->period = NSEC_PER_SEC / (unsigned long)freq;
->
-> I would stop doing versions so fast and give one more try with
-> carefully chosen variable types and perhaps a bit straighter
-> arithmetic here.
+--ndzrufzmvr546cjp
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
 
-I've carefully chosen the variable types, freq needs to
-be 64 bits for do_div usage. Here I'm going from
-freq (which has been divided by now) to a period time
-in nsec, for which:
+On Mon, Feb 27, 2017 at 03:35:04PM +0300, Siarhei Volkau wrote:
+> Hi,
+> 
+> 2017-02-27 12:30 GMT+03:00 Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>:
+> > On Fri, Feb 24, 2017 at 08:41:11AM +0300, lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
+> >> From: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> >>
+> >> sun6i has same registers as sun4i compatible chips, but its position
+> >> in register map are different.
+> >>
+> >> This patch make register's position selectable for support sun6i in
+> >> next patches.
+> >>
+> >> Signed-off-by: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> >> ---
+> >>  drivers/pwm/pwm-sun4i.c | 57 ++++++++++++++++++++++++++++++++++++++++++++++---
+> >>  1 file changed, 54 insertions(+), 3 deletions(-)
+> >>
+> >> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+> >> index 418a625..9ddc812 100644
+> >> --- a/drivers/pwm/pwm-sun4i.c
+> >> +++ b/drivers/pwm/pwm-sun4i.c
+> >> @@ -79,11 +79,17 @@ static const u32 sun4i_prescaler_table[] = {
+> >>       0, /* Actually 1 but tested separately */
+> >>  };
+> >>
+> >> +struct sunxi_pwmch_data {
+> >> +     unsigned int ctl_reg;
+> >> +     unsigned int prd_reg;
+> >> +};
+> >> +
+> >
+> > Why don't you use regmap_fields for that too?
+> >
+> > Maxime
+> >
+> > --
+> > Maxime Ripard, Free Electrons
+> > Embedded Linux and Kernel engineering
+> > http://free-electrons.com
+> 
+> Period register contains 2 fields (duty cycle and active period),
+> A20 user manual says:
+> (C) Note: the active cycles should be no larger than the period cycles.
+> 
+> I just try to avoid situation when active cycles can have bigger value
+> than duty cycle. Regmap fields not allows update 2
+> or more fields simultaneously, or maybe i'm not found this.
+> 
+> Same situation with enable/disable bitmask in control register.
+> Updating these bits (clock gating and enable) in different moments
+> in time can produce some artefacts on pwm output signal.
 
-	state->period = NSEC_PER_SEC / (unsigned long)freq;
+That really should be dealt with in the driver itself though, and not
+in your accessor. It's up to the driver to use the accessor in a way
+that makes sense for that particular device.
 
-Is as straight forward as one can get, the
-(unsigned long) cast is there to force a 32 bit
-division since freq is known to fit in 32 bits at this
-time.
+All these constraints should be documented, but you don't need to
+change the way you access those registers to do that (unless you
+really really really have no other way to do so).
 
->> +
->> +       on_time_div *= state->period;
->> +       do_div(on_time_div, 255);
->> +       state->duty_cycle = on_time_div;
->> +
->> +       state->polarity = PWM_POLARITY_NORMAL;
->> +       state->enabled = !!(ctrl & PWM_ENABLE);
->> +
->
->> +       if (state->enabled)
->> +               pm_runtime_get_sync(chip->dev);
->
-> Since you are too fast (again), let me ask where is the balanced put
-> for this call?
+Maxime
 
-As I explained in my earlier mail this is balanced
-by the disable path in apply(). But I guess what you are
-getting at is what if the driver gets removed while the
-pwm is enabled? It seems that we then indeed leak our
-runtime-pm ref, note that is a pre-existing bug.
-
-Anyways since we now may get a pm-ref during probe
-I will add the balancing (and equally conditional)
-put of that ref to pwm_lpss_remove().
-
-> Second question, how ->get_state() is supposed to work if power is off
-> when it enters it?
-
-get_state only gets called on probe and the device is guaranteed to
-be powered on during probe().
-
-Regards,
-
-Hans
+-- 
+Maxime Ripard, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
+--ndzrufzmvr546cjp--
