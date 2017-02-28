@@ -1,20 +1,19 @@
 From: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v4 4/9] pwm: sunxi: Customizable control and
- period register position.
-Date: Tue, 28 Feb 2017 16:48:50 +0100
-Message-ID: <20170228154850.75uqjzcei7pkb4rd@lukather>
+Subject: Re: [PATCH v4 8/9] pwm: sunxi: Code cleanup.
+Date: Tue, 28 Feb 2017 16:49:05 +0100
+Message-ID: <20170228154905.ru6joyj4he2ohaws@lukather>
 References: <1487914876-8594-1-git-send-email-lis8215@gmail.com>
- <1487914876-8594-5-git-send-email-lis8215@gmail.com>
- <20170227093026.zsau7vbugmizivz2@lukather>
- <CAKNVLfa6NgRBSVZgOb5yp31Eq8nZYRSKQzgUzoXL5_QFfYVjeQ@mail.gmail.com>
+ <1487914876-8594-9-git-send-email-lis8215@gmail.com>
+ <20170227093231.tfdbxp7yybd6hd6l@lukather>
+ <CAKNVLfZ_eHQPu0mbQ9LkOfSO+tKMt+ExUj-VcE-tBn65_D2J=Q@mail.gmail.com>
 Reply-To: maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="ndzrufzmvr546cjp"
-Return-path: <linux-sunxi+bncBDSJBYGBRIMBB3NX23CQKGQEXZNFJ4I-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+	protocol="application/pgp-signature"; boundary="p7ltu3eyqzxq2bl4"
+Return-path: <linux-sunxi+bncBDSJBYGBRIMBB7FX23CQKGQE5FAFOOQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Content-Disposition: inline
-In-Reply-To: <CAKNVLfa6NgRBSVZgOb5yp31Eq8nZYRSKQzgUzoXL5_QFfYVjeQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAKNVLfZ_eHQPu0mbQ9LkOfSO+tKMt+ExUj-VcE-tBn65_D2J=Q@mail.gmail.com>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -26,43 +25,24 @@ Cc: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Thierry Reding <thierry
 List-Id: linux-pwm@vger.kernel.org
 
 
---ndzrufzmvr546cjp
+--p7ltu3eyqzxq2bl4
 Content-Type: text/plain; charset=UTF-8
 Content-Disposition: inline
 
-On Mon, Feb 27, 2017 at 03:35:04PM +0300, Siarhei Volkau wrote:
+On Mon, Feb 27, 2017 at 04:21:49PM +0300, Siarhei Volkau wrote:
 > Hi,
 > 
-> 2017-02-27 12:30 GMT+03:00 Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>:
-> > On Fri, Feb 24, 2017 at 08:41:11AM +0300, lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
+> 2017-02-27 12:32 GMT+03:00 Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>:
+> > On Fri, Feb 24, 2017 at 08:41:15AM +0300, lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
 > >> From: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 > >>
-> >> sun6i has same registers as sun4i compatible chips, but its position
-> >> in register map are different.
-> >>
-> >> This patch make register's position selectable for support sun6i in
-> >> next patches.
+> >> This patch removes macros, which are not use anymore and
+> >> fixes two extra -Wsign-compare warnings.
 > >>
 > >> Signed-off-by: Siarhei Volkau <lis8215-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> >> ---
-> >>  drivers/pwm/pwm-sun4i.c | 57 ++++++++++++++++++++++++++++++++++++++++++++++---
-> >>  1 file changed, 54 insertions(+), 3 deletions(-)
-> >>
-> >> diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-> >> index 418a625..9ddc812 100644
-> >> --- a/drivers/pwm/pwm-sun4i.c
-> >> +++ b/drivers/pwm/pwm-sun4i.c
-> >> @@ -79,11 +79,17 @@ static const u32 sun4i_prescaler_table[] = {
-> >>       0, /* Actually 1 but tested separately */
-> >>  };
-> >>
-> >> +struct sunxi_pwmch_data {
-> >> +     unsigned int ctl_reg;
-> >> +     unsigned int prd_reg;
-> >> +};
-> >> +
 > >
-> > Why don't you use regmap_fields for that too?
+> > You've been adding this code in your previous patches, why is that
+> > even added there?
 > >
 > > Maxime
 > >
@@ -71,25 +51,9 @@ On Mon, Feb 27, 2017 at 03:35:04PM +0300, Siarhei Volkau wrote:
 > > Embedded Linux and Kernel engineering
 > > http://free-electrons.com
 > 
-> Period register contains 2 fields (duty cycle and active period),
-> A20 user manual says:
-> (C) Note: the active cycles should be no larger than the period cycles.
-> 
-> I just try to avoid situation when active cycles can have bigger value
-> than duty cycle. Regmap fields not allows update 2
-> or more fields simultaneously, or maybe i'm not found this.
-> 
-> Same situation with enable/disable bitmask in control register.
-> Updating these bits (clock gating and enable) in different moments
-> in time can produce some artefacts on pwm output signal.
+> Are you mean there are no needs in separate patch for that?
 
-That really should be dealt with in the driver itself though, and not
-in your accessor. It's up to the driver to use the accessor in a way
-that makes sense for that particular device.
-
-All these constraints should be documented, but you don't need to
-change the way you access those registers to do that (unless you
-really really really have no other way to do so).
+Yes
 
 Maxime
 
@@ -97,4 +61,4 @@ Maxime
 Maxime Ripard, Free Electrons
 Embedded Linux and Kernel engineering
 http://free-electrons.com
---ndzrufzmvr546cjp--
+--p7ltu3eyqzxq2bl4--
