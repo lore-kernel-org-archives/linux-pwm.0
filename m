@@ -1,76 +1,96 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v3] pwm: lpss: Add get_state callback
-Date: Tue, 28 Feb 2017 00:20:57 +0200
-Message-ID: <CAHp75Vdx4JNRzZSzfEe5H6Oj8vxJ7FJ-aA2ojY_HNgeXmCKq8A@mail.gmail.com>
-References: <20170227165941.1379-1-hdegoede@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qk0-f195.google.com ([209.85.220.195]:36689 "EHLO
-        mail-qk0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751559AbdB0W25 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 27 Feb 2017 17:28:57 -0500
-Received: by mail-qk0-f195.google.com with SMTP id r90so20509923qki.3
-        for <linux-pwm@vger.kernel.org>; Mon, 27 Feb 2017 14:27:21 -0800 (PST)
-In-Reply-To: <20170227165941.1379-1-hdegoede@redhat.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: David Wu <david.wu@rock-chips.com>
+Subject: [PATCH] pwm: rockchip: State of pwm clock should synchronize with pwm enabled state
+Date: Tue, 28 Feb 2017 14:43:36 +0800
+Message-ID: <1488264216-9361-1-git-send-email-david.wu@rock-chips.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: boris.brezillon@free-electrons.com, briannorris@chromium.org, heiko@sntech.de, thierry.reding@gmail.com
+Cc: dianders@chromium.org, b.galvani@gmail.com, caesar.wang@rock-chips.com, huangtao@rock-chips.com, linux-rockchip@lists.infradead.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, "david.wu" <david.wu@rock-chips.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andy@infradead.org>, linux-pwm@vger.kernel.org, Takashi Iwai <tiwai@suse.de>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-On Mon, Feb 27, 2017 at 6:59 PM, Hans de Goede <hdegoede@redhat.com> wrote:
-> Add a get_state callback so that the initial state correctly reflects
-> the actual hardware state.
+From: "david.wu" <david.wu@rock-chips.com>
 
-> +static void pwm_lpss_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-> +                              struct pwm_state *state)
-> +{
-> +       struct pwm_lpss_chip *lpwm = to_lpwm(chip);
-> +       unsigned long base_unit_range;
-> +       unsigned long long base_unit, freq, on_time_div;
-> +       u32 ctrl;
-> +
-> +       base_unit_range = BIT(lpwm->info->base_unit_bits);
-> +
-> +       ctrl = pwm_lpss_read(pwm);
-> +       on_time_div = 255 - (ctrl & PWM_ON_TIME_DIV_MASK);
-> +       base_unit = (ctrl >> PWM_BASE_UNIT_SHIFT) & (base_unit_range - 1);
-> +
-> +       freq = base_unit * lpwm->info->clk_rate;
-> +       do_div(freq, base_unit_range);
+If the pwm was not enabled at uboot loader, pwm could not work for clock
+always disabled at pwm driver. The pwm clock is enabled at beginning of
+pwm_apply(), but disabled at end of pwm_apply().
 
-> +       if (freq == 0)
-> +               state->period = NSEC_PER_SEC;
+If the pwm was enabled at uboot loader, pwm clock is always enabled unless
+closed by ATF. The pwm-backlight might turn off the power at early suspend,
+should disable pwm clock for saving power consume.
 
-And this is wrong. IIRC base_unit = 0 *or* on_time_div = 255 means
-duty cycle = 100%.
+It is important to provide opportunity to enable/disable clock at pwm driver,
+the pwm consumer should ensure correct order to call pwm enable/disable, and
+pwm driver ensure state of pwm clock synchronized with pwm enabled state.
 
-> +       else
-> +               state->period = NSEC_PER_SEC / (unsigned long)freq;
+Signed-off-by: David Wu <david.wu@rock-chips.com>
+---
+ drivers/pwm/pwm-rockchip.c | 38 +++++++++++++++++++++++++++++++-------
+ 1 file changed, 31 insertions(+), 7 deletions(-)
 
-I would stop doing versions so fast and give one more try with
-carefully chosen variable types and perhaps a bit straighter
-arithmetic here.
-
-> +
-> +       on_time_div *= state->period;
-> +       do_div(on_time_div, 255);
-> +       state->duty_cycle = on_time_div;
-> +
-> +       state->polarity = PWM_POLARITY_NORMAL;
-> +       state->enabled = !!(ctrl & PWM_ENABLE);
-> +
-
-> +       if (state->enabled)
-> +               pm_runtime_get_sync(chip->dev);
-
-Since you are too fast (again), let me ask where is the balanced put
-for this call?
-Second question, how ->get_state() is supposed to work if power is off
-when it enters it?
-
-> +}
-
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index ef89df1..14a0445 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -191,6 +191,26 @@ static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	return 0;
+ }
+ 
++static int rk_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm,
++			 bool enable, enum pwm_polarity polarity)
++{
++	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++	int ret;
++
++	if (enable) {
++		ret = clk_enable(pc->clk);
++		if (ret)
++			return ret;
++	}
++
++	pc->data->set_enable(chip, pwm, enable, polarity);
++
++	if (!enable)
++		clk_disable(pc->clk);
++
++	return 0;
++}
++
+ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			      struct pwm_state *state)
+ {
+@@ -207,22 +227,26 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		return ret;
+ 
+ 	if (state->polarity != curstate.polarity && enabled) {
+-		pc->data->set_enable(chip, pwm, false, state->polarity);
++		ret = rk_pwm_enable(chip, pwm, false, state->polarity);
++		if (ret)
++			goto out;
+ 		enabled = false;
+ 	}
+ 
+ 	ret = rockchip_pwm_config(chip, pwm, state->duty_cycle, state->period);
+ 	if (ret) {
+ 		if (enabled != curstate.enabled)
+-			pc->data->set_enable(chip, pwm, !enabled,
+-					     state->polarity);
+-
++			rk_pwm_enable(chip, pwm, !enabled,
++				      state->polarity);
+ 		goto out;
+ 	}
+ 
+-	if (state->enabled != enabled)
+-		pc->data->set_enable(chip, pwm, state->enabled,
+-				     state->polarity);
++	if (state->enabled != enabled) {
++		ret = rk_pwm_enable(chip, pwm, state->enabled,
++				    state->polarity);
++		if (ret)
++			goto out;
++	}
+ 
+ 	/*
+ 	 * Update the state with the real hardware, which can differ a bit
 -- 
-With Best Regards,
-Andy Shevchenko
+1.9.1
