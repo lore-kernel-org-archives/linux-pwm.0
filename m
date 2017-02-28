@@ -1,134 +1,93 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH] pwm: rockchip: State of pwm clock should synchronize
- with pwm enabled state
-Date: Tue, 28 Feb 2017 08:55:44 +0100
-Message-ID: <20170228085544.1b3d7283@bbrezillon>
-References: <1488264216-9361-1-git-send-email-david.wu@rock-chips.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH 1/3] pwm: lpss: Do not set / wait_for update_bit when
+ not enabled
+Date: Tue, 28 Feb 2017 11:46:25 +0200
+Message-ID: <1488275185.20145.48.camel@linux.intel.com>
+References: <20170220201657.24801-1-hdegoede@redhat.com>
+         <20170220201657.24801-2-hdegoede@redhat.com>
+         <20170223080623.GB61837@kammari>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1488264216-9361-1-git-send-email-david.wu@rock-chips.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: David Wu <david.wu@rock-chips.com>
-Cc: huangtao@rock-chips.com, linux-pwm@vger.kernel.org, heiko@sntech.de, briannorris@chromium.org, dianders@chromium.org, linux-kernel@vger.kernel.org, b.galvani@gmail.com, linux-rockchip@lists.infradead.org, thierry.reding@gmail.com, caesar.wang@rock-chips.com, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga09.intel.com ([134.134.136.24]:27226 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751123AbdB1Jr4 (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 28 Feb 2017 04:47:56 -0500
+In-Reply-To: <20170223080623.GB61837@kammari>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Ilkka Koskinen <ilkka.koskinen@intel.com>, Hans de Goede <hdegoede@redhat.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-Hi David,
+On Thu, 2017-02-23 at 00:06 -0800, Ilkka Koskinen wrote:
 
-On Tue, 28 Feb 2017 14:43:36 +0800
-David Wu <david.wu@rock-chips.com> wrote:
+> > At least on cherrytrail, the update bit will never go low when the
+> > enabled bit is not set.
+> > 
+> > This causes the backlight on my cube iwork8 air tablet to never go
+> > on
+> > again after being turned off, because the enable path does:
+> > 
+> > 	pwm_lpss_prepare();
+> > 	ret = pwm_lpss_update(pwm);
+> > 	if (ret)
+> > 		return ret;
+> > 	pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_ENABLE);
+> > 
+> > And the pwm_lpss_update() call fails, as the setting of the
+> > UPDATE bit never gets acked, because the ENABLE bit is not set.
+> > 
+> > Subsequent calls then all fail because of the pwm_lpss_is_updating()
+> > check done by pwm_lpss_apply().
+> > 
 
-> From: "david.wu" <david.wu@rock-chips.com>
+> > This commit fixes this by setting the enable bit before calling
+> > pwm_lpss_update().
+
+This might break other systems.
+
+> > @@ -137,12 +137,12 @@ static int pwm_lpss_apply(struct pwm_chip
+> > *chip, struct pwm_device *pwm,
+> >  				return ret;
+> >  			}
+> >  			pwm_lpss_prepare(lpwm, pwm, state-
+> > >duty_cycle, state->period);
+> > +			pwm_lpss_write(pwm, pwm_lpss_read(pwm) |
+> > PWM_ENABLE);
+> >  			ret = pwm_lpss_update(pwm);
 > 
-> If the pwm was not enabled at uboot loader, pwm could not work for clock
-> always disabled at pwm driver. The pwm clock is enabled at beginning of
-> pwm_apply(), but disabled at end of pwm_apply().
-> 
-> If the pwm was enabled at uboot loader, pwm clock is always enabled unless
-> closed by ATF. The pwm-backlight might turn off the power at early suspend,
-> should disable pwm clock for saving power consume.
-> 
-> It is important to provide opportunity to enable/disable clock at pwm driver,
-> the pwm consumer should ensure correct order to call pwm enable/disable, and
-> pwm driver ensure state of pwm clock synchronized with pwm enabled state.
+> The BXT documentation that I have recommends to set update bit before
+> enable
+> one.
 
-Oops. It seems I'm the one who introduced this regression when moving
-to the atomic PWM API.
+We have the same work flow for all SoCs that have this PWM IP. I suspect
+it might be a silicon bug somewhere, but I have never heard of it.
 
-You should add
+>  However, based on your experiment on Cherryview, we still have to set
+> it
+> before read_poll_timeout(). 
 
-Fixes: 2bf1c98aa5a4 ("pwm: rockchip: Add support for atomic update")
-Cc: stable@vger.kernel.org
+I would test and confirm the issue on our machines to see that the fix
+doesn't break the rest. Seems like we have several subtle different
+implementation of it: BYT, CHT, MRFLD, BXT.
 
-> 
-> Signed-off-by: David Wu <david.wu@rock-chips.com>
-> ---
->  drivers/pwm/pwm-rockchip.c | 38 +++++++++++++++++++++++++++++++-------
->  1 file changed, 31 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-> index ef89df1..14a0445 100644
-> --- a/drivers/pwm/pwm-rockchip.c
-> +++ b/drivers/pwm/pwm-rockchip.c
-> @@ -191,6 +191,26 @@ static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->  	return 0;
->  }
->  
-> +static int rk_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm,
-> +			 bool enable, enum pwm_polarity polarity)
+> Andy, should we indeed remove the return value from apply() and just
+> print a warning
+> like Mika initially suggested?
 
-Please stay consistent with the existing naming scheme:
+I definitely consider it better than Hans' initial proposal.
 
-static int rockchip_pwm_enable(struct pwm_chip *chip,
-			       struct pwm_device *pwm,
-			       bool enable,
-			       enum pwm_polarity polarity)
+Hans, can you just replace
 
-Once fixed, you can add
+ return ret;
 
-Reviewed-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+by
 
-> +{
-> +	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
-> +	int ret;
-> +
-> +	if (enable) {
-> +		ret = clk_enable(pc->clk);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	pc->data->set_enable(chip, pwm, enable, polarity);
-> +
-> +	if (!enable)
-> +		clk_disable(pc->clk);
-> +
-> +	return 0;
-> +}
-> +
->  static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  			      struct pwm_state *state)
->  {
-> @@ -207,22 +227,26 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  		return ret;
->  
->  	if (state->polarity != curstate.polarity && enabled) {
-> -		pc->data->set_enable(chip, pwm, false, state->polarity);
-> +		ret = rk_pwm_enable(chip, pwm, false, state->polarity);
-> +		if (ret)
-> +			goto out;
->  		enabled = false;
->  	}
->  
->  	ret = rockchip_pwm_config(chip, pwm, state->duty_cycle, state->period);
->  	if (ret) {
->  		if (enabled != curstate.enabled)
-> -			pc->data->set_enable(chip, pwm, !enabled,
-> -					     state->polarity);
-> -
-> +			rk_pwm_enable(chip, pwm, !enabled,
-> +				      state->polarity);
->  		goto out;
->  	}
->  
-> -	if (state->enabled != enabled)
-> -		pc->data->set_enable(chip, pwm, state->enabled,
-> -				     state->polarity);
-> +	if (state->enabled != enabled) {
-> +		ret = rk_pwm_enable(chip, pwm, state->enabled,
-> +				    state->polarity);
-> +		if (ret)
-> +			goto out;
-> +	}
->  
->  	/*
->  	 * Update the state with the real hardware, which can differ a bit
+ dev_warn(..., "UPDATE bit is not cleared!\n");
+
+and test it?
+
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
