@@ -1,116 +1,113 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [GIT PULL] pwm: Changes for v4.11-rc1
-Date: Tue, 28 Feb 2017 23:31:55 +0100
-Message-ID: <20170228223155.1878-1-thierry.reding@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+From: David Wu <david.wu@rock-chips.com>
+Subject: [PATCH v2] pwm: rockchip: State of pwm clock should synchronize with
+ pwm enabled state
+Date: Wed,  1 Mar 2017 18:16:02 +0800
+Message-ID: <1488363362-26624-1-git-send-email-david.wu@rock-chips.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: boris.brezillon@free-electrons.com, briannorris@chromium.org, heiko@sntech.de, thierry.reding@gmail.com
+Cc: huangtao@rock-chips.com, linux-pwm@vger.kernel.org, dianders@chromium.org, stable@vger.kernel.org, linux-kernel@vger.kernel.org, b.galvani@gmail.com, linux-rockchip@lists.infradead.org, caesar.wang@rock-chips.com, "david.wu" <david.wu@rock-chips.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Linus,
+From: "david.wu" <david.wu@rock-chips.com>
 
-The following changes since commit 0c744ea4f77d72b3dcebb7a8f2684633ec79be88:
+If the pwm was not enabled at uboot loader, pwm could not work for clock
+always disabled at pwm driver. The pwm clock is enabled at beginning of
+pwm_apply(), but disabled at end of pwm_apply().
 
-  Linux 4.10-rc2 (2017-01-01 14:31:53 -0800)
+If the pwm was enabled at uboot loader, pwm clock is always enabled unless
+closed by ATF. The pwm-backlight might turn off the power at early suspend,
+should disable pwm clock for saving power consume.
 
-are available in the git repository at:
+It is important to provide opportunity to enable/disable clock at pwm driver,
+the pwm consumer should ensure correct order to call pwm enable/disable, and
+pwm driver ensure state of pwm clock synchronized with pwm enabled state.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.11-rc1
+Fixes: 2bf1c98aa5a4 ("pwm: rockchip: Add support for atomic update")
+Cc: stable@vger.kernel.org
+Signed-off-by: David Wu <david.wu@rock-chips.com>
+Reviewed-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+---
+ drivers/pwm/pwm-rockchip.c | 40 +++++++++++++++++++++++++++++++++-------
+ 1 file changed, 33 insertions(+), 7 deletions(-)
 
-for you to fetch changes up to 38b0a526ec33314ee1d9926e3a347078f63eac8e:
-
-  Merge branch 'for-4.11/drivers' into for-next (2017-02-10 15:15:56 +0100)
-
-Thanks,
-Thierry
-
-----------------------------------------------------------------
-pwm: Changes for v4.11-rc1
-
-This set contains mostly fixes to existing drivers as well as cleanup of
-code that's not been in active use for a while.
-
-----------------------------------------------------------------
-Andy Shevchenko (4):
-      pwm: lpss: Avoid potential overflow of base_unit
-      pwm: lpss: Allow duty cycle to be 0
-      pwm: lpss: Switch to new atomic API
-      pwm: lpss: Do not export board infos for different PWM types
-
-Bhumika Goyal (1):
-      pwm: constify pwm_ops structures
-
-Clemens Gruber (1):
-      pwm: pca9685: Fix period change with same duty cycle
-
-Hans de Goede (3):
-      pwm: Don't hold pwm_lookup_lock longer than necessary
-      pwm: Try to load modules during pwm_get()
-      acpi: lpss: call pwm_add_table() for BSW PWM device
-
-Ilkka Koskinen (1):
-      pwm: lpss: Avoid reconfiguring while UPDATE bit is still enabled
-
-Lothar Wassmann (2):
-      pwm: Print error messages with pr_err() instead of pr_debug()
-      pwm: Make the PWM_POLARITY flag in DTB optional
-
-Lukasz Majewski (8):
-      pwm: imx: Add separate set of PWM ops for v1 and v2
-      pwm: imx: Rewrite v1 code to facilitate switch to atomic PWM
-      pwm: imx: Move PWMv2 software reset code to a separate function
-      pwm: imx: Move PWMv2 wait for fifo slot code to a separate function
-      pwm: imx: Provide atomic PWM support for i.MX PWMv2
-      pwm: imx: Remove redundant i.MX PWMv2 code
-      pwm: imx: doc: Update imx-pwm.txt documentation entry
-      pwm: imx: Add polarity inversion support to i.MX's PWMv2
-
-Mika Westerberg (2):
-      pwm: pca9685: Allow any of the 16 PWMs to be used as a GPIO
-      pwm: lpss: Add Intel Gemini Lake PCI ID
-
-Sascha Hauer (1):
-      pwm: imx: Remove ipg clock and enable per clock when required
-
-Scott Branden (1):
-      pwm: bcm-iproc: Update dependencies for compile-test
-
-Thierry Reding (7):
-      leds: pwm: Remove atomic code paths
-      pwm: Remove pwm_can_sleep()
-      pwm: Remove .can_sleep from struct pwm_chip
-      Merge branch 'for-4.11/core' into for-4.11/acpi
-      Merge branch 'for-4.11/core' into for-next
-      Merge branch 'for-4.11/acpi' into for-next
-      Merge branch 'for-4.11/drivers' into for-next
-
- Documentation/devicetree/bindings/pwm/imx-pwm.txt |   6 +-
- drivers/acpi/acpi_lpss.c                          |  14 ++
- drivers/leds/leds-pwm.c                           |  16 +-
- drivers/pwm/Kconfig                               |   4 +-
- drivers/pwm/core.c                                |  70 +++---
- drivers/pwm/pwm-atmel-hlcdc.c                     |   1 -
- drivers/pwm/pwm-atmel.c                           |   1 -
- drivers/pwm/pwm-bcm-kona.c                        |   1 -
- drivers/pwm/pwm-berlin.c                          |   1 -
- drivers/pwm/pwm-bfin.c                            |   2 +-
- drivers/pwm/pwm-brcmstb.c                         |   1 -
- drivers/pwm/pwm-fsl-ftm.c                         |   1 -
- drivers/pwm/pwm-imx.c                             | 272 ++++++++++------------
- drivers/pwm/pwm-lp3943.c                          |   1 -
- drivers/pwm/pwm-lpss-pci.c                        |  22 ++
- drivers/pwm/pwm-lpss-platform.c                   |  21 ++
- drivers/pwm/pwm-lpss.c                            | 132 +++++------
- drivers/pwm/pwm-lpss.h                            |   4 -
- drivers/pwm/pwm-mxs.c                             |   2 +-
- drivers/pwm/pwm-pca9685.c                         | 176 ++++++++++++--
- drivers/pwm/pwm-pxa.c                             |   2 +-
- drivers/pwm/pwm-sti.c                             |   1 -
- drivers/pwm/pwm-sun4i.c                           |   1 -
- drivers/pwm/pwm-twl-led.c                         |   1 -
- drivers/pwm/pwm-twl.c                             |   1 -
- drivers/pwm/pwm-vt8500.c                          |   2 +-
- drivers/staging/greybus/pwm.c                     |   1 -
- include/linux/pwm.h                               |  33 ++-
- 28 files changed, 480 insertions(+), 310 deletions(-)
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index ef89df1..dbee3c3 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -191,6 +191,28 @@ static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	return 0;
+ }
+ 
++static int rk_pwm_enable(struct pwm_chip *chip,
++			 struct pwm_device *pwm,
++			 bool enable,
++			 enum pwm_polarity polarity)
++{
++	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
++	int ret;
++
++	if (enable) {
++		ret = clk_enable(pc->clk);
++		if (ret)
++			return ret;
++	}
++
++	pc->data->set_enable(chip, pwm, enable, polarity);
++
++	if (!enable)
++		clk_disable(pc->clk);
++
++	return 0;
++}
++
+ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			      struct pwm_state *state)
+ {
+@@ -207,22 +229,26 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		return ret;
+ 
+ 	if (state->polarity != curstate.polarity && enabled) {
+-		pc->data->set_enable(chip, pwm, false, state->polarity);
++		ret = rk_pwm_enable(chip, pwm, false, state->polarity);
++		if (ret)
++			goto out;
+ 		enabled = false;
+ 	}
+ 
+ 	ret = rockchip_pwm_config(chip, pwm, state->duty_cycle, state->period);
+ 	if (ret) {
+ 		if (enabled != curstate.enabled)
+-			pc->data->set_enable(chip, pwm, !enabled,
+-					     state->polarity);
+-
++			rk_pwm_enable(chip, pwm, !enabled,
++				      state->polarity);
+ 		goto out;
+ 	}
+ 
+-	if (state->enabled != enabled)
+-		pc->data->set_enable(chip, pwm, state->enabled,
+-				     state->polarity);
++	if (state->enabled != enabled) {
++		ret = rk_pwm_enable(chip, pwm, state->enabled,
++				    state->polarity);
++		if (ret)
++			goto out;
++	}
+ 
+ 	/*
+ 	 * Update the state with the real hardware, which can differ a bit
+-- 
+1.9.1
