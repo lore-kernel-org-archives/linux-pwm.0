@@ -1,117 +1,86 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
+From: "David.Wu" <david.wu@rock-chips.com>
 Subject: Re: [PATCH v2] pwm: rockchip: State of pwm clock should synchronize
  with pwm enabled state
-Date: Wed, 1 Mar 2017 11:19:15 +0100
-Message-ID: <20170301111915.445925ad@bbrezillon>
+Date: Wed, 1 Mar 2017 19:00:48 +0800
+Message-ID: <cd8c01a0-3463-21ad-8958-28e8a86e01d7@rock-chips.com>
 References: <1488363362-26624-1-git-send-email-david.wu@rock-chips.com>
+ <20170301111915.445925ad@bbrezillon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:37591 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751467AbdCAKTj (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 1 Mar 2017 05:19:39 -0500
-In-Reply-To: <1488363362-26624-1-git-send-email-david.wu@rock-chips.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170301111915.445925ad@bbrezillon>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: huangtao@rock-chips.com, linux-pwm@vger.kernel.org, heiko@sntech.de, briannorris@chromium.org, dianders@chromium.org, stable@vger.kernel.org, linux-kernel@vger.kernel.org, b.galvani@gmail.com, linux-rockchip@lists.infradead.org, thierry.reding@gmail.com, caesar.wang@rock-chips.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: David Wu <david.wu@rock-chips.com>
-Cc: briannorris@chromium.org, heiko@sntech.de, thierry.reding@gmail.com, dianders@chromium.org, b.galvani@gmail.com, caesar.wang@rock-chips.com, huangtao@rock-chips.com, linux-rockchip@lists.infradead.org, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
 
-On Wed,  1 Mar 2017 18:16:02 +0800
-David Wu <david.wu@rock-chips.com> wrote:
-
-> From: "david.wu" <david.wu@rock-chips.com>
-> 
-> If the pwm was not enabled at uboot loader, pwm could not work for clock
-> always disabled at pwm driver. The pwm clock is enabled at beginning of
-> pwm_apply(), but disabled at end of pwm_apply().
-> 
-> If the pwm was enabled at uboot loader, pwm clock is always enabled unless
-> closed by ATF. The pwm-backlight might turn off the power at early suspend,
-> should disable pwm clock for saving power consume.
-> 
-> It is important to provide opportunity to enable/disable clock at pwm driver,
-> the pwm consumer should ensure correct order to call pwm enable/disable, and
-> pwm driver ensure state of pwm clock synchronized with pwm enabled state.
-> 
-> Fixes: 2bf1c98aa5a4 ("pwm: rockchip: Add support for atomic update")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: David Wu <david.wu@rock-chips.com>
-> Reviewed-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> ---
->  drivers/pwm/pwm-rockchip.c | 40 +++++++++++++++++++++++++++++++++-------
->  1 file changed, 33 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-> index ef89df1..dbee3c3 100644
-> --- a/drivers/pwm/pwm-rockchip.c
-> +++ b/drivers/pwm/pwm-rockchip.c
-> @@ -191,6 +191,28 @@ static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->  	return 0;
->  }
->  
-> +static int rk_pwm_enable(struct pwm_chip *chip,
-> +			 struct pwm_device *pwm,
-> +			 bool enable,
-> +			 enum pwm_polarity polarity)
-
-You didn't change the function name:
-
-s/rk_pwm_enable/rockchip_pwm_enable/
-
-> +{
-> +	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
-> +	int ret;
-> +
-> +	if (enable) {
-> +		ret = clk_enable(pc->clk);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	pc->data->set_enable(chip, pwm, enable, polarity);
-> +
-> +	if (!enable)
-> +		clk_disable(pc->clk);
-> +
-> +	return 0;
-> +}
-> +
->  static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  			      struct pwm_state *state)
->  {
-> @@ -207,22 +229,26 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->  		return ret;
->  
->  	if (state->polarity != curstate.polarity && enabled) {
-> -		pc->data->set_enable(chip, pwm, false, state->polarity);
-> +		ret = rk_pwm_enable(chip, pwm, false, state->polarity);
-> +		if (ret)
-> +			goto out;
->  		enabled = false;
->  	}
->  
->  	ret = rockchip_pwm_config(chip, pwm, state->duty_cycle, state->period);
->  	if (ret) {
->  		if (enabled != curstate.enabled)
-> -			pc->data->set_enable(chip, pwm, !enabled,
-> -					     state->polarity);
-> -
-> +			rk_pwm_enable(chip, pwm, !enabled,
-> +				      state->polarity);
->  		goto out;
->  	}
->  
-> -	if (state->enabled != enabled)
-> -		pc->data->set_enable(chip, pwm, state->enabled,
-> -				     state->polarity);
-> +	if (state->enabled != enabled) {
-> +		ret = rk_pwm_enable(chip, pwm, state->enabled,
-> +				    state->polarity);
-> +		if (ret)
-> +			goto out;
-> +	}
->  
->  	/*
->  	 * Update the state with the real hardware, which can differ a bit
+SGkgQm9yaXPvvIwKCuWcqCAyMDE3LzMvMSAxODoxOSwgQm9yaXMgQnJlemlsbG9uIOWGmemBkzoK
+PiBPbiBXZWQsICAxIE1hciAyMDE3IDE4OjE2OjAyICswODAwCj4gRGF2aWQgV3UgPGRhdmlkLnd1
+QHJvY2stY2hpcHMuY29tPiB3cm90ZToKPgo+PiBGcm9tOiAiZGF2aWQud3UiIDxkYXZpZC53dUBy
+b2NrLWNoaXBzLmNvbT4KPj4KPj4gSWYgdGhlIHB3bSB3YXMgbm90IGVuYWJsZWQgYXQgdWJvb3Qg
+bG9hZGVyLCBwd20gY291bGQgbm90IHdvcmsgZm9yIGNsb2NrCj4+IGFsd2F5cyBkaXNhYmxlZCBh
+dCBwd20gZHJpdmVyLiBUaGUgcHdtIGNsb2NrIGlzIGVuYWJsZWQgYXQgYmVnaW5uaW5nIG9mCj4+
+IHB3bV9hcHBseSgpLCBidXQgZGlzYWJsZWQgYXQgZW5kIG9mIHB3bV9hcHBseSgpLgo+Pgo+PiBJ
+ZiB0aGUgcHdtIHdhcyBlbmFibGVkIGF0IHVib290IGxvYWRlciwgcHdtIGNsb2NrIGlzIGFsd2F5
+cyBlbmFibGVkIHVubGVzcwo+PiBjbG9zZWQgYnkgQVRGLiBUaGUgcHdtLWJhY2tsaWdodCBtaWdo
+dCB0dXJuIG9mZiB0aGUgcG93ZXIgYXQgZWFybHkgc3VzcGVuZCwKPj4gc2hvdWxkIGRpc2FibGUg
+cHdtIGNsb2NrIGZvciBzYXZpbmcgcG93ZXIgY29uc3VtZS4KPj4KPj4gSXQgaXMgaW1wb3J0YW50
+IHRvIHByb3ZpZGUgb3Bwb3J0dW5pdHkgdG8gZW5hYmxlL2Rpc2FibGUgY2xvY2sgYXQgcHdtIGRy
+aXZlciwKPj4gdGhlIHB3bSBjb25zdW1lciBzaG91bGQgZW5zdXJlIGNvcnJlY3Qgb3JkZXIgdG8g
+Y2FsbCBwd20gZW5hYmxlL2Rpc2FibGUsIGFuZAo+PiBwd20gZHJpdmVyIGVuc3VyZSBzdGF0ZSBv
+ZiBwd20gY2xvY2sgc3luY2hyb25pemVkIHdpdGggcHdtIGVuYWJsZWQgc3RhdGUuCj4+Cj4+IEZp
+eGVzOiAyYmYxYzk4YWE1YTQgKCJwd206IHJvY2tjaGlwOiBBZGQgc3VwcG9ydCBmb3IgYXRvbWlj
+IHVwZGF0ZSIpCj4+IENjOiBzdGFibGVAdmdlci5rZXJuZWwub3JnCj4+IFNpZ25lZC1vZmYtYnk6
+IERhdmlkIFd1IDxkYXZpZC53dUByb2NrLWNoaXBzLmNvbT4KPj4gUmV2aWV3ZWQtYnk6IEJvcmlz
+IEJyZXppbGxvbiA8Ym9yaXMuYnJlemlsbG9uQGZyZWUtZWxlY3Ryb25zLmNvbT4KPj4gLS0tCj4+
+ICBkcml2ZXJzL3B3bS9wd20tcm9ja2NoaXAuYyB8IDQwICsrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKy0tLS0tLS0KPj4gIDEgZmlsZSBjaGFuZ2VkLCAzMyBpbnNlcnRpb25zKCspLCA3
+IGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9wd20vcHdtLXJvY2tjaGlw
+LmMgYi9kcml2ZXJzL3B3bS9wd20tcm9ja2NoaXAuYwo+PiBpbmRleCBlZjg5ZGYxLi5kYmVlM2Mz
+IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL3B3bS9wd20tcm9ja2NoaXAuYwo+PiArKysgYi9kcml2
+ZXJzL3B3bS9wd20tcm9ja2NoaXAuYwo+PiBAQCAtMTkxLDYgKzE5MSwyOCBAQCBzdGF0aWMgaW50
+IHJvY2tjaGlwX3B3bV9jb25maWcoc3RydWN0IHB3bV9jaGlwICpjaGlwLCBzdHJ1Y3QgcHdtX2Rl
+dmljZSAqcHdtLAo+PiAgCXJldHVybiAwOwo+PiAgfQo+Pgo+PiArc3RhdGljIGludCBya19wd21f
+ZW5hYmxlKHN0cnVjdCBwd21fY2hpcCAqY2hpcCwKPj4gKwkJCSBzdHJ1Y3QgcHdtX2RldmljZSAq
+cHdtLAo+PiArCQkJIGJvb2wgZW5hYmxlLAo+PiArCQkJIGVudW0gcHdtX3BvbGFyaXR5IHBvbGFy
+aXR5KQo+Cj4gWW91IGRpZG4ndCBjaGFuZ2UgdGhlIGZ1bmN0aW9uIG5hbWU6Cj4KPiBzL3JrX3B3
+bV9lbmFibGUvcm9ja2NoaXBfcHdtX2VuYWJsZS8KClNvcnJ5LCBpdCBpcyBhIHBpdHkgbm90IHRv
+IGZpeCBpbiBpbiB2Mi4KCj4KPj4gK3sKPj4gKwlzdHJ1Y3Qgcm9ja2NoaXBfcHdtX2NoaXAgKnBj
+ID0gdG9fcm9ja2NoaXBfcHdtX2NoaXAoY2hpcCk7Cj4+ICsJaW50IHJldDsKPj4gKwo+PiArCWlm
+IChlbmFibGUpIHsKPj4gKwkJcmV0ID0gY2xrX2VuYWJsZShwYy0+Y2xrKTsKPj4gKwkJaWYgKHJl
+dCkKPj4gKwkJCXJldHVybiByZXQ7Cj4+ICsJfQo+PiArCj4+ICsJcGMtPmRhdGEtPnNldF9lbmFi
+bGUoY2hpcCwgcHdtLCBlbmFibGUsIHBvbGFyaXR5KTsKPj4gKwo+PiArCWlmICghZW5hYmxlKQo+
+PiArCQljbGtfZGlzYWJsZShwYy0+Y2xrKTsKPj4gKwo+PiArCXJldHVybiAwOwo+PiArfQo+PiAr
+Cj4+ICBzdGF0aWMgaW50IHJvY2tjaGlwX3B3bV9hcHBseShzdHJ1Y3QgcHdtX2NoaXAgKmNoaXAs
+IHN0cnVjdCBwd21fZGV2aWNlICpwd20sCj4+ICAJCQkgICAgICBzdHJ1Y3QgcHdtX3N0YXRlICpz
+dGF0ZSkKPj4gIHsKPj4gQEAgLTIwNywyMiArMjI5LDI2IEBAIHN0YXRpYyBpbnQgcm9ja2NoaXBf
+cHdtX2FwcGx5KHN0cnVjdCBwd21fY2hpcCAqY2hpcCwgc3RydWN0IHB3bV9kZXZpY2UgKnB3bSwK
+Pj4gIAkJcmV0dXJuIHJldDsKPj4KPj4gIAlpZiAoc3RhdGUtPnBvbGFyaXR5ICE9IGN1cnN0YXRl
+LnBvbGFyaXR5ICYmIGVuYWJsZWQpIHsKPj4gLQkJcGMtPmRhdGEtPnNldF9lbmFibGUoY2hpcCwg
+cHdtLCBmYWxzZSwgc3RhdGUtPnBvbGFyaXR5KTsKPj4gKwkJcmV0ID0gcmtfcHdtX2VuYWJsZShj
+aGlwLCBwd20sIGZhbHNlLCBzdGF0ZS0+cG9sYXJpdHkpOwo+PiArCQlpZiAocmV0KQo+PiArCQkJ
+Z290byBvdXQ7Cj4+ICAJCWVuYWJsZWQgPSBmYWxzZTsKPj4gIAl9Cj4+Cj4+ICAJcmV0ID0gcm9j
+a2NoaXBfcHdtX2NvbmZpZyhjaGlwLCBwd20sIHN0YXRlLT5kdXR5X2N5Y2xlLCBzdGF0ZS0+cGVy
+aW9kKTsKPj4gIAlpZiAocmV0KSB7Cj4+ICAJCWlmIChlbmFibGVkICE9IGN1cnN0YXRlLmVuYWJs
+ZWQpCj4+IC0JCQlwYy0+ZGF0YS0+c2V0X2VuYWJsZShjaGlwLCBwd20sICFlbmFibGVkLAo+PiAt
+CQkJCQkgICAgIHN0YXRlLT5wb2xhcml0eSk7Cj4+IC0KPj4gKwkJCXJrX3B3bV9lbmFibGUoY2hp
+cCwgcHdtLCAhZW5hYmxlZCwKPj4gKwkJCQkgICAgICBzdGF0ZS0+cG9sYXJpdHkpOwo+PiAgCQln
+b3RvIG91dDsKPj4gIAl9Cj4+Cj4+IC0JaWYgKHN0YXRlLT5lbmFibGVkICE9IGVuYWJsZWQpCj4+
+IC0JCXBjLT5kYXRhLT5zZXRfZW5hYmxlKGNoaXAsIHB3bSwgc3RhdGUtPmVuYWJsZWQsCj4+IC0J
+CQkJICAgICBzdGF0ZS0+cG9sYXJpdHkpOwo+PiArCWlmIChzdGF0ZS0+ZW5hYmxlZCAhPSBlbmFi
+bGVkKSB7Cj4+ICsJCXJldCA9IHJrX3B3bV9lbmFibGUoY2hpcCwgcHdtLCBzdGF0ZS0+ZW5hYmxl
+ZCwKPj4gKwkJCQkgICAgc3RhdGUtPnBvbGFyaXR5KTsKPj4gKwkJaWYgKHJldCkKPj4gKwkJCWdv
+dG8gb3V0Owo+PiArCX0KPj4KPj4gIAkvKgo+PiAgCSAqIFVwZGF0ZSB0aGUgc3RhdGUgd2l0aCB0
+aGUgcmVhbCBoYXJkd2FyZSwgd2hpY2ggY2FuIGRpZmZlciBhIGJpdAo+Cj4KPgo+CgoKX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KbGludXgtYXJtLWtlcm5l
+bCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6
+Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtYXJtLWtlcm5lbAo=
