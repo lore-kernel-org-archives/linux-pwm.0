@@ -1,11 +1,13 @@
 From: Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v2 0/2] switch to atomic PWM
-Date: Thu, 2 Mar 2017 17:28:43 +0200
-Message-ID: <1488468525-28726-1-git-send-email-claudiu.beznea@microchip.com>
+Subject: [PATCH v2 2/2] drivers: pwm: pwm-atmel: enable PWM on sama5d2
+Date: Thu, 2 Mar 2017 17:28:45 +0200
+Message-ID: <1488468525-28726-3-git-send-email-claudiu.beznea@microchip.com>
+References: <1488468525-28726-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1488468525-28726-1-git-send-email-claudiu.beznea@microchip.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -19,46 +21,40 @@ To: thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutla
 Cc: linux-pwm@vger.kernel.org, Claudiu Beznea <claudiu.beznea@microchip.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Changes since v1:
-- update only duty factor without disabling the PWM channel
-- if PWM channel is enabled, period, as signal polarity, is
-updated by disabling + enabling the PWM channel
-- atmel_pwm_config_prepare() function has been removed and
-added instead two functions, one to compute the CPRD+Prescaler
-(atmel_pwm_calculate_cprd_and_pres()), one to compute CRDY
-(atmel_pwm_calculate_cdty())
-- atmel_pwm_config_set() body was directly moved to atmel_pwm_apply()
-- add 3 new members to atmel_pwm_data: update_cdty, set_cprd_cdty and
-regs:
-	- update_cdty is called to configure duty factor without
-	disabling PWM channel, when necessary
-	- set_cprd_cdty is called to configure both period and
-	duty factor parameters
-	- regs keeps the period and duty registers and was added to
-	have common functions for update_cdty and set_cprd_cdty
-	members of atmel_pwm_data for all boards;
-- add a new parameter to atmel_pwm_disable(); this will be used in
-updating period + signal polarity by disabling + enabling the
-PWM channel. In this case, there is no need to disable PWM clock
-since new configuration will be imediately applied.
-- adapted the other reviewer comments excepts the one regarding
-"cdty = cprd - cycles;" from atmel_pwm_calculate_cdty() since
-in atmel_pwm_apply(), selecting polarity in the other way arround
-than is currently done in this commit will need the changing of DPOLI
-bit from Channel Mode Register, in order to keep the initial
-output level of PWM channel after disable operation; this works
-for sama5d2 but not for sam9rl which hasn't document the DPOLI
-bit in datasheet; sama5d3 also hasn't document the DPOLI bit in
-datasheet; one option was to have different aproach for different
-boards but the code becomes messy.
+sama5d2 can use the same atmel_pwm_data as sama5d3.
 
-Claudiu Beznea (2):
-  drivers: pwm: pwm-atmel: switch to atomic PWM
-  drivers: pwm: pwm-atmel: enable PWM on sama5d2
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 
- .../devicetree/bindings/pwm/atmel-pwm.txt          |   1 +
- drivers/pwm/pwm-atmel.c                            | 274 +++++++++++----------
- 2 files changed, 142 insertions(+), 133 deletions(-)
+---
+ Documentation/devicetree/bindings/pwm/atmel-pwm.txt | 1 +
+ drivers/pwm/pwm-atmel.c                             | 3 +++
+ 2 files changed, 4 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/pwm/atmel-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
+index 02331b9..c8c831d 100644
+--- a/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
+@@ -4,6 +4,7 @@ Required properties:
+   - compatible: should be one of:
+     - "atmel,at91sam9rl-pwm"
+     - "atmel,sama5d3-pwm"
++    - "atmel,sama5d2-pwm"
+   - reg: physical base address and length of the controller's registers
+   - #pwm-cells: Should be 3. See pwm.txt in this directory for a
+     description of the cells format.
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index 3db82c3..e773311 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -332,6 +332,9 @@ static const struct of_device_id atmel_pwm_dt_ids[] = {
+ 		.compatible = "atmel,sama5d3-pwm",
+ 		.data = &atmel_pwm_data_v2,
+ 	}, {
++		.compatible = "atmel,sama5d2-pwm",
++		.data = &atmel_pwm_data_v2,
++	}, {
+ 		/* sentinel */
+ 	},
+ };
 -- 
 2.7.4
