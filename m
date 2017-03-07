@@ -1,58 +1,52 @@
-From: m18063 <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH 2/2] drivers: pwm: pwm-atmel: enable pwm on sama5d2
-Date: Fri, 3 Mar 2017 11:53:17 +0200
-Message-ID: <a4ce6e72-bc67-cb53-6c45-910a7c1497e0@microchip.com>
-References: <1488278415-2786-1-git-send-email-claudiu.beznea@microchip.com>
- <1488278415-2786-3-git-send-email-claudiu.beznea@microchip.com>
- <20170303062120.uippq2ajtnrxfcx5@rob-hp-laptop>
+From: Sylvain Lemieux <slemieux.tyco@gmail.com>
+Subject: Re: [RESEND PATCH 0/3] pwm: lpc32xx: switch driver to one phandle
+ argument for PWM consumers
+Date: Tue, 07 Mar 2017 13:20:19 -0500
+Message-ID: <1488910819.4022.2.camel@gmail.com>
+References: <20170216202749.20653-1-slemieux.tyco@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170303062120.uippq2ajtnrxfcx5@rob-hp-laptop>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh@kernel.org>
-Cc: mark.rutland@arm.com, boris.brezillon@free-electrons.com, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, thierry.reding@gmail.com, alexandre.belloni@free-electrons.com, galak@codeaurora.org, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-io0-f195.google.com ([209.85.223.195]:34737 "EHLO
+        mail-io0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933073AbdCGSUW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 7 Mar 2017 13:20:22 -0500
+In-Reply-To: <20170216202749.20653-1-slemieux.tyco@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: robh+dt@kernel.org, vz@mleia.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hi,
+On Thu, 2017-02-16 at 15:27 -0500, slemieux.tyco@gmail.com wrote:
+> From: Sylvain Lemieux <slemieux@tycoint.com>
+> 
+> The change adds private of_xlate() function to process one argument given along with a PWM phandle. LPC32xx SoCs have two independent single channel PWM controllers, the argument is used as a description of PWM output frequency, see previous discussion here:
+> 
+>   http://www.spinics.net/lists/arm-kernel/msg534068.html
+> 
+> The changes on actual board dts files are not needed at the moment, because all LPC32xx boards in upstream don't describe any PWM consumers.
+> 
+> Please refer to the following URL to view the previous patch #1 review discussion:
+>   http://www.spinics.net/lists/arm-kernel/msg549772.html
+> 
+Hi Thierry,
 
+can you take this patchset for 4.12?
 
-On 03.03.2017 08:21, Rob Herring wrote:
-> On Tue, Feb 28, 2017 at 12:40:15PM +0200, Claudiu Beznea wrote:
->> sama5d2 can use the same atmel_pwm_data as sama5d3.
->>
->> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
->> ---
->>  Documentation/devicetree/bindings/pwm/atmel-pwm.txt | 1 +
->>  drivers/pwm/pwm-atmel.c                             | 3 +++
->>  2 files changed, 4 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/pwm/atmel-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
->> index 02331b9..c8c831d 100644
->> --- a/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
->> +++ b/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
->> @@ -4,6 +4,7 @@ Required properties:
->>    - compatible: should be one of:
->>      - "atmel,at91sam9rl-pwm"
->>      - "atmel,sama5d3-pwm"
->> +    - "atmel,sama5d2-pwm"
-> Perhaps sama5d3 should be a fallback, then you don't need a driver 
-> change.
->
-> Rob
+Let me know if you have more questions.
 
-sama5d2 PWM controller have additional features. We intend to support
-some of these. This is why I choose to add specific compatible string
-for it.
+Regards,
+Sylvain
 
-Thank you,
-Claudiu Beznea
+> The "Reviewed-by" and "Acked-by" from the original posting are added into this resend.
+> 
+> Vladimir Zapolskiy (3):
+>   dt: pwm: lpc32xx: add description of clocks and #pwm-cells properties
+>   pwm: lpc32xx: switch driver to one phandle argument for PWM consumers
+>   pwm: lpc32xx: remove handling of PWM channels
+> 
+>  .../devicetree/bindings/pwm/lpc32xx-pwm.txt        |  7 +++++
+>  drivers/pwm/pwm-lpc32xx.c                          | 36 +++++++++++++++-------
+>  2 files changed, 32 insertions(+), 11 deletions(-)
+> 
