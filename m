@@ -1,81 +1,101 @@
-From: Jani Nikula <jani.nikula@linux.intel.com>
-Subject: Re: [PATCH v2] pwm: lpss: Make builtin so that i915 can
-	find the pwm_backlight
-Date: Wed, 08 Mar 2017 12:15:16 +0200
-Message-ID: <87shmohy6j.fsf@intel.com>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH v2] pwm: lpss: Make builtin so that i915 can find the
+ pwm_backlight
+Date: Wed, 8 Mar 2017 14:41:59 +0100
+Message-ID: <1acd14d3-207d-2330-6d92-dc7113835025@redhat.com>
 References: <20170119175830.3754-1-hdegoede@redhat.com>
  <20170120070333.GD4894@ulmo.ba.sec> <8737gei2fp.fsf@intel.com>
  <20170120095519.GF17297@lahna.fi.intel.com> <87varkhzt9.fsf@intel.com>
- <2fe8a18f-260a-c035-5424-e28bd0bd5c16@redhat.com>
+ <2fe8a18f-260a-c035-5424-e28bd0bd5c16@redhat.com> <87shmohy6j.fsf@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <2fe8a18f-260a-c035-5424-e28bd0bd5c16@redhat.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Hans de Goede <hdegoede@redhat.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: linux-pwm@vger.kernel.org, intel-gfx <intel-gfx@lists.freedesktop.org>, Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mx1.redhat.com ([209.132.183.28]:54322 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752820AbdCHNmb (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 8 Mar 2017 08:42:31 -0500
+In-Reply-To: <87shmohy6j.fsf@intel.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Jani Nikula <jani.nikula@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-pwm@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-T24gV2VkLCAwOCBNYXIgMjAxNywgSGFucyBkZSBHb2VkZSA8aGRlZ29lZGVAcmVkaGF0LmNvbT4g
-d3JvdGU6Cj4gSGksCj4KPiBPbiAwOC0wMy0xNyAxMDo0MCwgSmFuaSBOaWt1bGEgd3JvdGU6Cj4+
-IE9uIEZyaSwgMjAgSmFuIDIwMTcsIE1pa2EgV2VzdGVyYmVyZyA8bWlrYS53ZXN0ZXJiZXJnQGxp
-bnV4LmludGVsLmNvbT4gd3JvdGU6Cj4+PiBPbiBGcmksIEphbiAyMCwgMjAxNyBhdCAxMDowMjo1
-MEFNICswMjAwLCBKYW5pIE5pa3VsYSB3cm90ZToKPj4+PiBUaGF0IHNhaWQsIEkgc3VwcG9zZSB0
-aGVyZSBjb3VsZCBiZSBhbiBhbHRlcm5hdGl2ZSB0byBoYW5kbGluZyBwd21fZ2V0KCkKPj4+PiBm
-YWlsdXJlcyBhdCBwcm9iZS4gV2UgY291bGQganVzdCBnbyBvbiB3aXRoIG91ciBpbml0LCBidXQg
-c2NoZWR1bGUgYQo+Pj4+IHJldHJ5IGxhdGVyLiBQZXJoYXBzIGEgYml0IGhhY2t5LCBidXQgaXQg
-d291bGQgYWRkcmVzcyBib3RoIG9mIHRoZQo+Pj4+IGNvbmNlcm5zIGFib3ZlLiBBZ2FpbiwgdGhp
-cyBwYXRjaCBzZWVtcyBhIHNpbXBsZSB3b3JrYXJvdW5kIGluIHRoZSBtZWFuCj4+Pj4gdGltZS4K
-Pj4+Cj4+PiBOb3Qgc3VyZSBpZiB0aGlzIHdvcmtzIG9yIGhvdyBoYWNreSBpdCBpcywgYnV0IGNh
-bid0IHlvdQo+Pj4gcmVxdWVzdF9tb2R1bGUoKSBiZWZvcmUgeW91IHN0YXJ0IGxvb2tpbmcgdXAg
-Zm9yIHRoZSBwd20/Cj4+Cj4+IEkgZXllYmFsbGVkIHRoaXMgYSBsaXR0bGUsIGFuZCBub3RpY2Vk
-Ogo+Pgo+PiBkcml2ZXJzL2FjcGkvYWNwaV9scHNzLmM6Cj4+Cj4+IHN0YXRpYyBzdHJ1Y3QgcHdt
-X2xvb2t1cCBic3dfcHdtX2xvb2t1cFtdID0gewo+PiAJUFdNX0xPT0tVUF9XSVRIX01PRFVMRSgi
-ODA4NjIyODg6MDAiLCAwLCAiMDAwMDowMDowMi4wIiwKPj4gCQkJICAgICAgICJwd21fYmFja2xp
-Z2h0IiwgMCwgUFdNX1BPTEFSSVRZX05PUk1BTCwKPj4gCQkJICAgICAgICJwd20tbHBzcy1wbGF0
-Zm9ybSIpLAo+PiB9Owo+Pgo+PiBkcml2ZXJzL21mZC9pbnRlbF9zb2NfcG1pY19jb3JlLmM6Cj4+
-Cj4+IHN0YXRpYyBzdHJ1Y3QgcHdtX2xvb2t1cCBjcmNfcHdtX2xvb2t1cFtdID0gewo+PiAJUFdN
-X0xPT0tVUCgiY3J5c3RhbF9jb3ZlX3B3bSIsIDAsICIwMDAwOjAwOjAyLjAiLCAicHdtX2JhY2ts
-aWdodCIsIDAsIFBXTV9QT0xBUklUWV9OT1JNQUwpLAo+PiB9Owo+Pgo+PiBTaG91bGQgY3JjX3B3
-bV9sb29rdXAgYWxzbyB1c2UgUFdNX0xPT0tVUF9XSVRIX01PRFVMRT8gQW5kIHdoaWNoIG1vZHVs
-ZQo+PiBleGFjdGx5PyBwd21fZ2V0KCkgZG9lcyBhbiBhdXRvbWF0aWMgcmVxdWVzdF9tb2R1bGUo
-KSwgaWYgdGhlIG1vZHVsZSBpcwo+PiBnaXZlbi4KPj4KPj4gQW5kIHdpbGwgdGhpcyBzdGlsbCBi
-ZSBlbm91Z2g/Cj4KPiBJIHdhcyB0aGlua2luZyBhYm91dCB0aGlzIGEgY291cGxlIG9mIGRheXMg
-YWdvLCB1bmZvcnR1bmF0ZWx5IHRoZQo+IHNpdHVhdGlvbiB3aXRoIHB3bV9jcmMgaXMgbW9yZSBj
-b21wbGljYXRlZCBhcyB0aGF0IGlzIHBhcnQgb2YKPiBhbiBpMmMgbWZkIGRldmljZSwgc28gYm90
-aCB0aGUgaTJjLWFkYXB0ZXIgZHJpdmVyIGFuZCB0aGUgbWZkIGRyaXZlcgo+IChpbnRlbF9zb2Nf
-cG1pY19jcmMpIG5lZWQgdG8gYmUgYnVpbHRpbiBjdXJyZW50bHkgdGhlIG1mZCBkcml2ZXIKPiBj
-YW5ub3QgYmUgbW9kdWxhciwgYnV0IHRoZSBpMmMtYWRhcHRlciBkcml2ZXIgY2FuIChhbmQgb24g
-bW9zdAo+IExpbnV4IGRpc3RyaWJ1dGlvbiBrZXJuZWxzIGlzKSBjb25maWd1cmVkIHRvIGJlIG1v
-ZHVsYXIuCj4KPiBTbyBqdXN0IGRvaW5nIHJlcXVlc3QgbW9kdWxlIGZvciBwd20tY3JjIGlzIG5v
-dCBnb2luZyB0byBoZWxwCj4gc2luY2UgdGhlIGkyYy1hZGFwdGVyIGRyaXZlciBtYXkgbm90IHll
-dCBoYXZlIGxvYWRlZCAvIGluaXRpYWxpemVkLgo+Cj4gQWxsIGluIGFsbCB3ZSByZWFsbHkgbmVl
-ZCB0byBmaW5kIGEgd2F5IHRvIGZpZ3VyZSBvdXQgaWYgd2Ugd2lsbCBuZWVkCj4gdG8gZG8gYSBw
-d21fZ2V0IGVhcmxpZXIgb24gZHVyaW5nIGk5MTUgaW5pdGlhbGl6YXRpb24gKGJ5IG1vdmluZyB0
-aGUKPiBWQlQgcGFyc2luZyB0byBlYXJsaWVyLCBvciBhdCBsZWFzdCBwYXJ0IG9mIGl0KSBhbmQg
-ZG8gdGhlIHB3bV9nZXQKPiBiZWZvcmUgd2UgZG8gYW55dGhpbmcgaS1yZXZlcnNpYmxlIGFuZCBp
-ZiBpdCBmYWlscyB0aGVuIHJldHVybgo+IC1FUFJPQkVfREVGRVIuIFRoZW4gd2UgY2FuIG1ha2Ug
-cHdtX2NyYyBtb2R1bGFyIGFzIHdlbGwgYXMgYWxsIG9mCj4gaW50ZWxfc29jX3BtaWMqIGFzIGl0
-IHJlYWxseSBzaG91bGQgYmUuCgpUaGUgb3RoZXIgYWx0ZXJuYXRpdmVzIGFyZToKCjEpIEhhbmRs
-ZSBkZWZlcnMgdXNpbmcgYSB3b3JrcXVldWUgd2l0aGluIGk5MTUuIEl0J3MgYSBiaXQgdGVkaW91
-cywgYnV0CkkgZGlkbid0IHNwb3QgYW55IHNob3cgc3RvcHBlcnMgd2l0aCB0aGUgYXBwcm9hY2gu
-IFdlJ2QgcmVnaXN0ZXIgYQpub24tZnVuY3Rpb25hbCBiYWNrbGlnaHQgaW50ZXJmYWNlIHVudGls
-IHRoZSBwd21fZ2V0KCkgc3VjY2VlZHMuCgoyKSBSaXAgb3V0IHB3bSBiYWNrbGlnaHQgZnJvbSBp
-OTE1IGFsdG9nZXRoZXIsIGFuZCB0dXJuIGl0IGludG8gYQpzZXBhcmF0ZSBwbGF0Zm9ybSBiYWNr
-bGlnaHQgdGhhdCB1c2VzIHB3bS4gSSB0aGluayB0aGVyZSdzIHJlYWR5CmluZnJhc3RydWN0dXJl
-IGZvciB0aGF0LiBJdCdzIG5vdCB3aXRob3V0IHByb2JsZW1zLCB0aG91Z2gsIGFzIHRoZW4gd2UK
-bG9zZSBjb250cm9sIG92ZXIgdGhlIHNlcXVlbmNlIGluIHdoaWNoIGJhY2tsaWdodCBnZXRzIGVu
-YWJsZWQvZGlzYWJsZWQuCgpCUiwKSmFuaS4KCj4KPiBSZWdhcmRzLAo+Cj4gSGFucwoKLS0gCkph
-bmkgTmlrdWxhLCBJbnRlbCBPcGVuIFNvdXJjZSBUZWNobm9sb2d5IENlbnRlcgpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBs
-aXN0CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVz
-a3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
+Hi,
+
+On 08-03-17 11:15, Jani Nikula wrote:
+> On Wed, 08 Mar 2017, Hans de Goede <hdegoede@redhat.com> wrote:
+>> Hi,
+>>
+>> On 08-03-17 10:40, Jani Nikula wrote:
+>>> On Fri, 20 Jan 2017, Mika Westerberg <mika.westerberg@linux.intel.com> wrote:
+>>>> On Fri, Jan 20, 2017 at 10:02:50AM +0200, Jani Nikula wrote:
+>>>>> That said, I suppose there could be an alternative to handling pwm_get()
+>>>>> failures at probe. We could just go on with our init, but schedule a
+>>>>> retry later. Perhaps a bit hacky, but it would address both of the
+>>>>> concerns above. Again, this patch seems a simple workaround in the mean
+>>>>> time.
+>>>>
+>>>> Not sure if this works or how hacky it is, but can't you
+>>>> request_module() before you start looking up for the pwm?
+>>>
+>>> I eyeballed this a little, and noticed:
+>>>
+>>> drivers/acpi/acpi_lpss.c:
+>>>
+>>> static struct pwm_lookup bsw_pwm_lookup[] = {
+>>> 	PWM_LOOKUP_WITH_MODULE("80862288:00", 0, "0000:00:02.0",
+>>> 			       "pwm_backlight", 0, PWM_POLARITY_NORMAL,
+>>> 			       "pwm-lpss-platform"),
+>>> };
+>>>
+>>> drivers/mfd/intel_soc_pmic_core.c:
+>>>
+>>> static struct pwm_lookup crc_pwm_lookup[] = {
+>>> 	PWM_LOOKUP("crystal_cove_pwm", 0, "0000:00:02.0", "pwm_backlight", 0, PWM_POLARITY_NORMAL),
+>>> };
+>>>
+>>> Should crc_pwm_lookup also use PWM_LOOKUP_WITH_MODULE? And which module
+>>> exactly? pwm_get() does an automatic request_module(), if the module is
+>>> given.
+>>>
+>>> And will this still be enough?
+>>
+>> I was thinking about this a couple of days ago, unfortunately the
+>> situation with pwm_crc is more complicated as that is part of
+>> an i2c mfd device, so both the i2c-adapter driver and the mfd driver
+>> (intel_soc_pmic_crc) need to be builtin currently the mfd driver
+>> cannot be modular, but the i2c-adapter driver can (and on most
+>> Linux distribution kernels is) configured to be modular.
+>>
+>> So just doing request module for pwm-crc is not going to help
+>> since the i2c-adapter driver may not yet have loaded / initialized.
+>>
+>> All in all we really need to find a way to figure out if we will need
+>> to do a pwm_get earlier on during i915 initialization (by moving the
+>> VBT parsing to earlier, or at least part of it) and do the pwm_get
+>> before we do anything i-reversible and if it fails then return
+>> -EPROBE_DEFER. Then we can make pwm_crc modular as well as all of
+>> intel_soc_pmic* as it really should be.
+>
+> The other alternatives are:
+>
+> 1) Handle defers using a workqueue within i915. It's a bit tedious, but
+> I didn't spot any show stoppers with the approach. We'd register a
+> non-functional backlight interface until the pwm_get() succeeds.
+
+Ack, although I would prefer for i915 just to properly at deferred
+probing handling instead of this hack. But if doing the VBT parsing
+earlier so we know in advance if we will need the pwm or not turns
+out to be really tricky we could go with this instead.
+
+> 2) Rip out pwm backlight from i915 altogether, and turn it into a
+> separate platform backlight that uses pwm. I think there's ready
+> infrastructure for that. It's not without problems, though, as then we
+> lose control over the sequence in which backlight gets enabled/disabled.
+
+Yeah, not a fan of this.
+
+Regards,
+
+Hans
