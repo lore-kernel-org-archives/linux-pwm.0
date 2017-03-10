@@ -1,101 +1,122 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v2] pwm: lpss: Make builtin so that i915 can find the
- pwm_backlight
-Date: Wed, 8 Mar 2017 14:41:59 +0100
-Message-ID: <1acd14d3-207d-2330-6d92-dc7113835025@redhat.com>
-References: <20170119175830.3754-1-hdegoede@redhat.com>
- <20170120070333.GD4894@ulmo.ba.sec> <8737gei2fp.fsf@intel.com>
- <20170120095519.GF17297@lahna.fi.intel.com> <87varkhzt9.fsf@intel.com>
- <2fe8a18f-260a-c035-5424-e28bd0bd5c16@redhat.com> <87shmohy6j.fsf@intel.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v3] pwm: lpss: Add get_state callback
+Date: Fri, 10 Mar 2017 17:49:50 +0200
+Message-ID: <1489160990.20145.192.camel@linux.intel.com>
+References: <20170227165941.1379-1-hdegoede@redhat.com>
+         <CAHp75Vdx4JNRzZSzfEe5H6Oj8vxJ7FJ-aA2ojY_HNgeXmCKq8A@mail.gmail.com>
+         <8e7e2207-6004-13c3-1d6f-416bf306bc11@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:54322 "EHLO mx1.redhat.com"
+Received: from mga03.intel.com ([134.134.136.65]:22048 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752820AbdCHNmb (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 8 Mar 2017 08:42:31 -0500
-In-Reply-To: <87shmohy6j.fsf@intel.com>
+        id S1750922AbdCJPtz (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 10 Mar 2017 10:49:55 -0500
+In-Reply-To: <8e7e2207-6004-13c3-1d6f-416bf306bc11@redhat.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jani Nikula <jani.nikula@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, =?UTF-8?B?VmlsbGUgU3lyasOkbMOk?= <ville.syrjala@linux.intel.com>, intel-gfx <intel-gfx@lists.freedesktop.org>, linux-pwm@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Hans de Goede <hdegoede@redhat.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andy@infradead.org>, linux-pwm@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
 
-Hi,
+On Tue, 2017-02-28 at 15:09 +0100, Hans de Goede wrote:
+> Hi,
+> 
+> On 27-02-17 23:20, Andy Shevchenko wrote:
+> > On Mon, Feb 27, 2017 at 6:59 PM, Hans de Goede <hdegoede@redhat.com>
+> > wrote:
 
-On 08-03-17 11:15, Jani Nikula wrote:
-> On Wed, 08 Mar 2017, Hans de Goede <hdegoede@redhat.com> wrote:
->> Hi,
->>
->> On 08-03-17 10:40, Jani Nikula wrote:
->>> On Fri, 20 Jan 2017, Mika Westerberg <mika.westerberg@linux.intel.com> wrote:
->>>> On Fri, Jan 20, 2017 at 10:02:50AM +0200, Jani Nikula wrote:
->>>>> That said, I suppose there could be an alternative to handling pwm_get()
->>>>> failures at probe. We could just go on with our init, but schedule a
->>>>> retry later. Perhaps a bit hacky, but it would address both of the
->>>>> concerns above. Again, this patch seems a simple workaround in the mean
->>>>> time.
->>>>
->>>> Not sure if this works or how hacky it is, but can't you
->>>> request_module() before you start looking up for the pwm?
->>>
->>> I eyeballed this a little, and noticed:
->>>
->>> drivers/acpi/acpi_lpss.c:
->>>
->>> static struct pwm_lookup bsw_pwm_lookup[] = {
->>> 	PWM_LOOKUP_WITH_MODULE("80862288:00", 0, "0000:00:02.0",
->>> 			       "pwm_backlight", 0, PWM_POLARITY_NORMAL,
->>> 			       "pwm-lpss-platform"),
->>> };
->>>
->>> drivers/mfd/intel_soc_pmic_core.c:
->>>
->>> static struct pwm_lookup crc_pwm_lookup[] = {
->>> 	PWM_LOOKUP("crystal_cove_pwm", 0, "0000:00:02.0", "pwm_backlight", 0, PWM_POLARITY_NORMAL),
->>> };
->>>
->>> Should crc_pwm_lookup also use PWM_LOOKUP_WITH_MODULE? And which module
->>> exactly? pwm_get() does an automatic request_module(), if the module is
->>> given.
->>>
->>> And will this still be enough?
->>
->> I was thinking about this a couple of days ago, unfortunately the
->> situation with pwm_crc is more complicated as that is part of
->> an i2c mfd device, so both the i2c-adapter driver and the mfd driver
->> (intel_soc_pmic_crc) need to be builtin currently the mfd driver
->> cannot be modular, but the i2c-adapter driver can (and on most
->> Linux distribution kernels is) configured to be modular.
->>
->> So just doing request module for pwm-crc is not going to help
->> since the i2c-adapter driver may not yet have loaded / initialized.
->>
->> All in all we really need to find a way to figure out if we will need
->> to do a pwm_get earlier on during i915 initialization (by moving the
->> VBT parsing to earlier, or at least part of it) and do the pwm_get
->> before we do anything i-reversible and if it fails then return
->> -EPROBE_DEFER. Then we can make pwm_crc modular as well as all of
->> intel_soc_pmic* as it really should be.
->
-> The other alternatives are:
->
-> 1) Handle defers using a workqueue within i915. It's a bit tedious, but
-> I didn't spot any show stoppers with the approach. We'd register a
-> non-functional backlight interface until the pwm_get() succeeds.
+> > > +       base_unit_range = BIT(lpwm->info->base_unit_bits);
+> > > +
+> > > +       ctrl = pwm_lpss_read(pwm);
+> > > +       on_time_div = 255 - (ctrl & PWM_ON_TIME_DIV_MASK);
+> > > +       base_unit = (ctrl >> PWM_BASE_UNIT_SHIFT) &
+> > > (base_unit_range - 1);
+> > > +
+> > > +       freq = base_unit * lpwm->info->clk_rate;
+> > > +       do_div(freq, base_unit_range);
+> > > +       if (freq == 0)
+> > > +               state->period = NSEC_PER_SEC;
+> > 
+> > And this is wrong. IIRC base_unit = 0 *or* on_time_div = 255 means
+> > duty cycle = 100%.
+> 
+> Ok, so maybe we should do this then ?
+> 
+> 	if (freq == 0) {
+> 		state->period = NSEC_PER_SEC;
+> 		state->duty_cycle = NSEC_PER_SEC;
+> 		return;
+> 	}
+> 
+> ?
 
-Ack, although I would prefer for i915 just to properly at deferred
-probing handling instead of this hack. But if doing the VBT parsing
-earlier so we know in advance if we will need the pwm or not turns
-out to be really tricky we could go with this instead.
+But the period is not that one. Can we assign them to 0?
 
-> 2) Rip out pwm backlight from i915 altogether, and turn it into a
-> separate platform backlight that uses pwm. I think there's ready
-> infrastructure for that. It's not without problems, though, as then we
-> lose control over the sequence in which backlight gets enabled/disabled.
+> > > +       else
+> > > +               state->period = NSEC_PER_SEC / (unsigned
+> > > long)freq;
+> > 
+> > I would stop doing versions so fast and give one more try with
+> > carefully chosen variable types and perhaps a bit straighter
+> > arithmetic here.
+> 
+> I've carefully chosen the variable types, freq needs to
+> be 64 bits for do_div usage. Here I'm going from
+> freq (which has been divided by now) to a period time
+> in nsec, for which:
+> 
+> 	state->period = NSEC_PER_SEC / (unsigned long)freq;
+> 
+> Is as straight forward as one can get, the
+> (unsigned long) cast is there to force a 32 bit
+> division since freq is known to fit in 32 bits at this
+> time.
 
-Yeah, not a fan of this.
+OK!
 
-Regards,
+> 
+> > > +
+> > > +       on_time_div *= state->period;
+> > > +       do_div(on_time_div, 255);
+> > > +       state->duty_cycle = on_time_div;
+> > > +
+> > > +       state->polarity = PWM_POLARITY_NORMAL;
+> > > +       state->enabled = !!(ctrl & PWM_ENABLE);
+> > > +
+> > > +       if (state->enabled)
+> > > +               pm_runtime_get_sync(chip->dev);
+> > 
+> > Since you are too fast (again), let me ask where is the balanced put
+> > for this call?
+> 
+> As I explained in my earlier mail this is balanced
+> by the disable path in apply(). But I guess what you are
+> getting at is what if the driver gets removed while the
+> pwm is enabled? It seems that we then indeed leak our
+> runtime-pm ref, note that is a pre-existing bug.
 
-Hans
+I see.
+
+> Anyways since we now may get a pm-ref during probe
+> I will add the balancing (and equally conditional)
+> put of that ref to pwm_lpss_remove().
+> 
+> > Second question, how ->get_state() is supposed to work if power is
+> > off
+> > when it enters it?
+> 
+> get_state only gets called on probe and the device is guaranteed to
+> be powered on during probe().
+
+Ah, seems I now understand what this call back actually does.
+
+So, the name of the callback a bit confusing, to me it sounds rather
+"get_to_[initial_]state()".
+
+Thus, would it be better to split ->apply() to get a common part for
+both?
+
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
