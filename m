@@ -1,13 +1,10 @@
 From: "Andrew F. Davis" <afd@ti.com>
-Subject: [PATCH v3 7/7] mmc: Only descend into mmc directory when CONFIG_MMC
- is set
-Date: Wed, 15 Mar 2017 11:37:30 -0500
-Message-ID: <20170315163730.17055-8-afd@ti.com>
-References: <20170315163730.17055-1-afd@ti.com>
+Subject: [PATCH v3 0/7] Remove unneeded build directory traversals
+Date: Wed, 15 Mar 2017 11:37:23 -0500
+Message-ID: <20170315163730.17055-1-afd@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <20170315163730.17055-1-afd@ti.com>
 List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
  <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
 List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
@@ -22,27 +19,41 @@ To: Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Wolfram Sang <wsa@t
 Cc: linux-pwm@vger.kernel.org, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, "Andrew F . Davis" <afd@ti.com>, linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-When CONFIG_MMC is not set make will still descend into the mmc
-directory but nothing will be built. This produces unneeded build
-artifacts and messages in addition to slowing the build. Fix this here.
+Hello all,
 
-Signed-off-by: Andrew F. Davis <afd@ti.com>
----
- drivers/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I was building a kernel for x86 and noticed Make still descended into
+directories like drivers/gpu/drm/hisilicon, this seems kind of odd given
+nothing will be built here. It looks to be due to some directories being
+included in obj-y unconditionally instead of only when the relevant
+CONFIG_ is set.
 
-diff --git a/drivers/Makefile b/drivers/Makefile
-index 3d758020d248..03da7a38e989 100644
---- a/drivers/Makefile
-+++ b/drivers/Makefile
-@@ -129,7 +129,7 @@ obj-$(CONFIG_EISA)		+= eisa/
- obj-$(CONFIG_LGUEST)		+= lguest/
- obj-$(CONFIG_CPU_FREQ)		+= cpufreq/
- obj-$(CONFIG_CPU_IDLE)		+= cpuidle/
--obj-y				+= mmc/
-+obj-$(CONFIG_MMC)		+= mmc/
- obj-$(CONFIG_MEMSTICK)		+= memstick/
- obj-$(CONFIG_NEW_LEDS)		+= leds/
- obj-$(CONFIG_INFINIBAND)	+= infiniband/
+These patches are split by subsystem in-case, for some reason, a file in
+a directory does need to be built, I believe I have checked for all
+instances of this, but a quick review from some maintainers would be nice.
+
+Thanks,
+Andrew
+
+Changes from v2:
+ - Removed patches that would not work
+ - Rebased on v4.11-rc1 (no changes needed)
+
+Changes from v1:
+ - Removed patches already taken by maintainers
+ - Rebased on v4.10-rc1 (no changes needed)
+
+Andrew F. Davis (7):
+  pwm: Only descend into pwm directory when CONFIG_PWM is set
+  amba: Only descend into amba directory when CONFIG_ARM_AMBA is set
+  NFC: Only descend into nfc directory when CONFIG_NFC is set
+  macintosh: Only descend into directory when CONFIG_MACINTOSH_DRIVERS
+    is set
+  auxdisplay: Only descend into directory when CONFIG_AUXDISPLAY is set
+  lguest: Only descend into lguest directory when CONFIG_LGUEST is set
+  mmc: Only descend into mmc directory when CONFIG_MMC is set
+
+ drivers/Makefile | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
+
 -- 
 2.11.0
