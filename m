@@ -1,31 +1,35 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 2/2] drivers: pwm: pwm-atmel: enable PWM on sama5d2
-Date: Wed, 15 Mar 2017 14:37:39 -0500
-Message-ID: <20170315193739.cebry3tafla5zz5v@rob-hp-laptop>
-References: <1488468525-28726-1-git-send-email-claudiu.beznea@microchip.com>
- <1488468525-28726-3-git-send-email-claudiu.beznea@microchip.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v3 0/7] Remove unneeded build directory traversals
+Date: Wed, 15 Mar 2017 22:03:43 +0100
+Message-ID: <CAK8P3a1XBUUtJHrzfTa3GRqh+beU+1MteQ0evB8Vvy5zABRbmw@mail.gmail.com>
+References: <20170315163730.17055-1-afd@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pg0-f65.google.com ([74.125.83.65]:32774 "EHLO
-        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750774AbdCOThm (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 15 Mar 2017 15:37:42 -0400
-Content-Disposition: inline
-In-Reply-To: <1488468525-28726-3-git-send-email-claudiu.beznea@microchip.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170315163730.17055-1-afd@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Andrew F. Davis" <afd@ti.com>
+Cc: Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Wolfram Sang <wsa@the-dreams.de>, Richard Purdie <rpurdie@rpsys.net>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, Samuel Ortiz <sameo@linux.intel.com>, kernel-janitors@vger.kernel.org, linux-pwm@vger.kernel.org, linux-wireless <linux-wireless@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc: thierry.reding@gmail.com, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, boris.brezillon@free-electrons.com, alexandre.belloni@free-electrons.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Thu, Mar 02, 2017 at 05:28:45PM +0200, Claudiu Beznea wrote:
-> sama5d2 can use the same atmel_pwm_data as sama5d3.
-> 
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> 
-> ---
->  Documentation/devicetree/bindings/pwm/atmel-pwm.txt | 1 +
->  drivers/pwm/pwm-atmel.c                             | 3 +++
->  2 files changed, 4 insertions(+)
+On Wed, Mar 15, 2017 at 5:37 PM, Andrew F. Davis <afd@ti.com> wrote:
+> Hello all,
+>
+> I was building a kernel for x86 and noticed Make still descended into
+> directories like drivers/gpu/drm/hisilicon, this seems kind of odd given
+> nothing will be built here. It looks to be due to some directories being
+> included in obj-y unconditionally instead of only when the relevant
+> CONFIG_ is set.
+>
+> These patches are split by subsystem in-case, for some reason, a file in
+> a directory does need to be built, I believe I have checked for all
+> instances of this, but a quick review from some maintainers would be nice.
 
-Acked-by: Rob Herring <robh@kernel.org>
+I didn't see anything wrong with the patches, and made sure that there
+are no tristate symbols controlling the subdirectory for anything that
+requires a built-in driver (which would cause a link failure).
+
+I'm not sure about drivers/lguest, which has some special magic
+in its Makefile, it's possible that this now fails with CONFIG_LGUEST=m.
+
+      Arnd
