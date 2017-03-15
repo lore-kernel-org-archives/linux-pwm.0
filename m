@@ -1,49 +1,31 @@
-From: "Andrew F. Davis" <afd@ti.com>
-Subject: [PATCH v3 4/7] macintosh: Only descend into directory when
- CONFIG_MACINTOSH_DRIVERS is set
-Date: Wed, 15 Mar 2017 11:37:27 -0500
-Message-ID: <20170315163730.17055-5-afd@ti.com>
-References: <20170315163730.17055-1-afd@ti.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 2/2] drivers: pwm: pwm-atmel: enable PWM on sama5d2
+Date: Wed, 15 Mar 2017 14:37:39 -0500
+Message-ID: <20170315193739.cebry3tafla5zz5v@rob-hp-laptop>
+References: <1488468525-28726-1-git-send-email-claudiu.beznea@microchip.com>
+ <1488468525-28726-3-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <20170315163730.17055-1-afd@ti.com>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Wolfram Sang <wsa@the-dreams.de>, Richard Purdie <rpurdie@rpsys.net>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, Samuel Ortiz <sameo@linux.intel.com>, kernel-janitors@vger.kernel.org
-Cc: linux-pwm@vger.kernel.org, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, "Andrew F . Davis" <afd@ti.com>, linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pg0-f65.google.com ([74.125.83.65]:32774 "EHLO
+        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750774AbdCOThm (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 15 Mar 2017 15:37:42 -0400
+Content-Disposition: inline
+In-Reply-To: <1488468525-28726-3-git-send-email-claudiu.beznea@microchip.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc: thierry.reding@gmail.com, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, boris.brezillon@free-electrons.com, alexandre.belloni@free-electrons.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-When CONFIG_MACINTOSH_DRIVERS is not set make will still descend into the
-macintosh directory but nothing will be built. This produces unneeded
-build artifacts and messages in addition to slowing the build.
-Fix this here.
+On Thu, Mar 02, 2017 at 05:28:45PM +0200, Claudiu Beznea wrote:
+> sama5d2 can use the same atmel_pwm_data as sama5d3.
+> 
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> 
+> ---
+>  Documentation/devicetree/bindings/pwm/atmel-pwm.txt | 1 +
+>  drivers/pwm/pwm-atmel.c                             | 3 +++
+>  2 files changed, 4 insertions(+)
 
-Signed-off-by: Andrew F. Davis <afd@ti.com>
----
- drivers/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/Makefile b/drivers/Makefile
-index 9cf52524ecab..cd92491bd76b 100644
---- a/drivers/Makefile
-+++ b/drivers/Makefile
-@@ -78,7 +78,7 @@ obj-$(CONFIG_LIBNVDIMM)		+= nvdimm/
- obj-$(CONFIG_DEV_DAX)		+= dax/
- obj-$(CONFIG_DMA_SHARED_BUFFER) += dma-buf/
- obj-$(CONFIG_NUBUS)		+= nubus/
--obj-y				+= macintosh/
-+obj-$(CONFIG_MACINTOSH_DRIVERS)	+= macintosh/
- obj-$(CONFIG_IDE)		+= ide/
- obj-$(CONFIG_SCSI)		+= scsi/
- obj-y				+= nvme/
--- 
-2.11.0
+Acked-by: Rob Herring <robh@kernel.org>
