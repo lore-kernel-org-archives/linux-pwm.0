@@ -1,8 +1,8 @@
 From: "Andrew F. Davis" <afd@ti.com>
-Subject: [PATCH v3 6/7] lguest: Only descend into lguest directory when
- CONFIG_LGUEST is set
-Date: Wed, 15 Mar 2017 11:37:29 -0500
-Message-ID: <20170315163730.17055-7-afd@ti.com>
+Subject: [PATCH v3 4/7] macintosh: Only descend into directory when
+ CONFIG_MACINTOSH_DRIVERS is set
+Date: Wed, 15 Mar 2017 11:37:27 -0500
+Message-ID: <20170315163730.17055-5-afd@ti.com>
 References: <20170315163730.17055-1-afd@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -22,9 +22,10 @@ To: Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Wolfram Sang <wsa@t
 Cc: linux-pwm@vger.kernel.org, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, "Andrew F . Davis" <afd@ti.com>, linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-When CONFIG_LGUEST is not set make will still descend into the lguest
-directory but nothing will be built. This produces unneeded build
-artifacts and messages in addition to slowing the build. Fix this here.
+When CONFIG_MACINTOSH_DRIVERS is not set make will still descend into the
+macintosh directory but nothing will be built. This produces unneeded
+build artifacts and messages in addition to slowing the build.
+Fix this here.
 
 Signed-off-by: Andrew F. Davis <afd@ti.com>
 ---
@@ -32,17 +33,17 @@ Signed-off-by: Andrew F. Davis <afd@ti.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/Makefile b/drivers/Makefile
-index 8a9ed5c59778..3d758020d248 100644
+index 9cf52524ecab..cd92491bd76b 100644
 --- a/drivers/Makefile
 +++ b/drivers/Makefile
-@@ -126,7 +126,7 @@ obj-$(CONFIG_ACCESSIBILITY)	+= accessibility/
- obj-$(CONFIG_ISDN)		+= isdn/
- obj-$(CONFIG_EDAC)		+= edac/
- obj-$(CONFIG_EISA)		+= eisa/
--obj-y				+= lguest/
-+obj-$(CONFIG_LGUEST)		+= lguest/
- obj-$(CONFIG_CPU_FREQ)		+= cpufreq/
- obj-$(CONFIG_CPU_IDLE)		+= cpuidle/
- obj-y				+= mmc/
+@@ -78,7 +78,7 @@ obj-$(CONFIG_LIBNVDIMM)		+= nvdimm/
+ obj-$(CONFIG_DEV_DAX)		+= dax/
+ obj-$(CONFIG_DMA_SHARED_BUFFER) += dma-buf/
+ obj-$(CONFIG_NUBUS)		+= nubus/
+-obj-y				+= macintosh/
++obj-$(CONFIG_MACINTOSH_DRIVERS)	+= macintosh/
+ obj-$(CONFIG_IDE)		+= ide/
+ obj-$(CONFIG_SCSI)		+= scsi/
+ obj-y				+= nvme/
 -- 
 2.11.0
