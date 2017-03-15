@@ -1,8 +1,8 @@
 From: "Andrew F. Davis" <afd@ti.com>
-Subject: [PATCH v3 1/7] pwm: Only descend into pwm directory when CONFIG_PWM
- is set
-Date: Wed, 15 Mar 2017 11:37:24 -0500
-Message-ID: <20170315163730.17055-2-afd@ti.com>
+Subject: [PATCH v3 2/7] amba: Only descend into amba directory when
+ CONFIG_ARM_AMBA is set
+Date: Wed, 15 Mar 2017 11:37:25 -0500
+Message-ID: <20170315163730.17055-3-afd@ti.com>
 References: <20170315163730.17055-1-afd@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -22,7 +22,7 @@ To: Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Wolfram Sang <wsa@t
 Cc: linux-pwm@vger.kernel.org, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, "Andrew F . Davis" <afd@ti.com>, linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-When CONFIG_PWM is not set make will still descend into the pwm
+When CONFIG_ARM_AMBA is not set make will still descend into the amba
 directory but nothing will be built. This produces unneeded build
 artifacts and messages in addition to slowing the build. Fix this here.
 
@@ -32,17 +32,17 @@ Signed-off-by: Andrew F. Davis <afd@ti.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/Makefile b/drivers/Makefile
-index 2eced9afba53..00d86749a843 100644
+index 00d86749a843..23712a92a89a 100644
 --- a/drivers/Makefile
 +++ b/drivers/Makefile
-@@ -13,7 +13,7 @@ obj-$(CONFIG_GENERIC_PHY)	+= phy/
- # GPIO must come after pinctrl as gpios may need to mux pins etc
- obj-$(CONFIG_PINCTRL)		+= pinctrl/
- obj-$(CONFIG_GPIOLIB)		+= gpio/
--obj-y				+= pwm/
-+obj-$(CONFIG_PWM)		+= pwm/
- obj-$(CONFIG_PCI)		+= pci/
- # PCI dwc controller drivers
- obj-y				+= pci/dwc/
+@@ -31,7 +31,7 @@ obj-$(CONFIG_SFI)		+= sfi/
+ # PnP must come after ACPI since it will eventually need to check if acpi
+ # was used and do nothing if so
+ obj-$(CONFIG_PNP)		+= pnp/
+-obj-y				+= amba/
++obj-$(CONFIG_ARM_AMBA)		+= amba/
+ 
+ obj-y				+= clk/
+ # Many drivers will want to use DMA so this has to be made available
 -- 
 2.11.0
