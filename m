@@ -1,42 +1,42 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH v3 4/7] macintosh: Only descend into directory when
- CONFIG_MACINTOSH_DRIVERS is set
-Date: Thu, 16 Mar 2017 15:28:36 +1100
-Message-ID: <87var9u9or.fsf@concordia.ellerman.id.au>
-References: <20170315163730.17055-1-afd@ti.com>
- <20170315163730.17055-5-afd@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <20170315163730.17055-5-afd@ti.com>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>, Wolfram Sang <wsa@the-dreams.de>, Richard Purdie <rpurdie@rpsys.net>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Lauro Ramos Venancio <lauro.venancio@openbossa.org>, Aloisio Almeida Jr <aloisio.almeida@openbossa.org>, Samuel Ortiz <sameo@linux.intel.com>, kernel-janitors@vger.kernel.org
-Cc: linux-pwm@vger.kernel.org, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, "Andrew F . Davis" <afd@ti.com>, linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org
+From: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+Subject: [PATCH 3/4] ARM: mvebu: Enable SENSORS_PWM_FAN in defconfig
+Date: Thu, 16 Mar 2017 07:42:17 +0100
+Message-ID: <20170316064218.9169-4-ralph.sennhauser@gmail.com>
+References: <20170316064218.9169-1-ralph.sennhauser@gmail.com>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20170316064218.9169-1-ralph.sennhauser@gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: linux-gpio@vger.kernel.org
+Cc: Andrew Lunn <andrew@lunn.ch>, Imre Kaloz <kaloz@openwrt.org>, Ralph Sennhauser <ralph.sennhauser@gmail.com>, Jason Cooper <jason@lakedaemon.net>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Russell King <linux@armlinux.org.uk>, Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, "moderated list:ARM/Marvell
+        Kirkwood and Armada 370, 375, 38x,..." <linux-arm-kernel@lists.infradead.org>, open list <linux-kernel@vger.kernel.org>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-"Andrew F. Davis" <afd@ti.com> writes:
+From: Andrew Lunn <andrew@lunn.ch>
 
-> When CONFIG_MACINTOSH_DRIVERS is not set make will still descend into the
-> macintosh directory but nothing will be built. This produces unneeded
-> build artifacts and messages in addition to slowing the build.
-> Fix this here.
->
-> Signed-off-by: Andrew F. Davis <afd@ti.com>
-> ---
->  drivers/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Now that the gpio driver also supports PWM operation, enable the PWM
+framework and fan driver in mvebu_v7_defconfig.
 
-LGTM.
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+URL: https://patchwork.ozlabs.org/patch/427297/
+[Ralph Sennhauser: add fan driver to defconfig]
+Signed-off-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+---
+ arch/arm/configs/mvebu_v7_defconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Acked-by: Michael Ellerman <mpe@ellerman.id.au>
+diff --git a/arch/arm/configs/mvebu_v7_defconfig b/arch/arm/configs/mvebu_v7_defconfig
+index f1a0e25..6955370 100644
+--- a/arch/arm/configs/mvebu_v7_defconfig
++++ b/arch/arm/configs/mvebu_v7_defconfig
+@@ -135,6 +135,8 @@ CONFIG_DMADEVICES=y
+ CONFIG_MV_XOR=y
+ # CONFIG_IOMMU_SUPPORT is not set
+ CONFIG_MEMORY=y
++CONFIG_PWM=y
++CONFIG_SENSORS_PWM_FAN=y
+ CONFIG_EXT4_FS=y
+ CONFIG_ISO9660_FS=y
+ CONFIG_JOLIET=y
+-- 
+2.10.2
 
-cheersj
