@@ -1,164 +1,109 @@
-From: m18063 <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH v2 1/2] drivers: pwm: pwm-atmel: switch to atomic PWM
-Date: Fri, 17 Mar 2017 11:07:43 +0200
-Message-ID: <7947e576-d2fa-9e5a-3b46-8001344218e7@microchip.com>
-References: <1488468525-28726-1-git-send-email-claudiu.beznea@microchip.com>
- <1488468525-28726-2-git-send-email-claudiu.beznea@microchip.com>
- <20170316121409.3e910813@bbrezillon>
+From: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+Subject: Re: [PATCH 1/4] gpio: mvebu: Add limited PWM support
+Date: Fri, 17 Mar 2017 10:17:47 +0100
+Message-ID: <20170317101747.67a09ccd@gmail.com>
+References: <20170316064218.9169-1-ralph.sennhauser@gmail.com>
+ <20170316064218.9169-2-ralph.sennhauser@gmail.com>
+ <CACRpkdZ=bor380ic_X36M7vVbopDCZe9Yb9TxkmOHyO75gdAnw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170316121409.3e910813@bbrezillon>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, linux-kernel@vger.kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org, thierry.reding@gmail.com, alexandre.belloni@free-electrons.com, galak@codeaurora.org, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:36391 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751057AbdCQJRw (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 17 Mar 2017 05:17:52 -0400
+In-Reply-To: <CACRpkdZ=bor380ic_X36M7vVbopDCZe9Yb9TxkmOHyO75gdAnw@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>, Imre Kaloz <kaloz@openwrt.org>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "David S. Miller" <davem@davemloft.net>, Geert Uytterhoeven <geert+renesas@glider.be>, Mauro Carvalho Chehab <mchehab@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 
-Hi Boris,
+On Thu, 16 Mar 2017 17:03:05 +0100
+Linus Walleij <linus.walleij@linaro.org> wrote:
+
+> 
+> In essence I am very positive of this patch set and happy to merge
+> it as a PWM driver inside of GPIO if Thierry is OK with it.
+
+Hi Linus,
+
+thanks for merging the cleanup patches. 
 
 
-On 16.03.2017 13:14, Boris Brezillon wrote:
-> Hi Claudiu,
+> 
+> > +static void mvebu_pwm_free(struct pwm_chip *chip, struct
+> > pwm_device *pwmd) +{
+> > +       struct mvebu_pwm *pwm = to_mvebu_pwm(chip);
+> > +       struct gpio_desc *desc = gpio_to_desc(pwmd->pwm);
+> > +       unsigned long flags;
+> > +
+> > +       spin_lock_irqsave(&pwm->lock, flags);
+> > +       gpiod_free(desc);
+> > +       pwm->used = false;
+> > +       spin_unlock_irqrestore(&pwm->lock, flags);
+> > +}  
+> 
+> No need to set the output value to zero or something here?
+> And turn off blinking? Or is that done some other way?
 >
-> On Thu, 2 Mar 2017 17:28:44 +0200
-> Claudiu Beznea <claudiu.beznea@microchip.com> wrote:
->
->> The currently Atmel PWM controllers supported by this driver
->> could change period or duty factor without channel disable,
->> for regular channels (sama5d3 support this by using period
->> or duty factor update registers, sam9rl support this by
->> writing channel update register and select the corresponding
->> update: period or duty factor). The chip doesn't support run
->> time changings of signal polarity. To take advantage of
->> atomic PWM framework and let controller works without glitches,
->> in this patch only the duty factor could be changed without
->> disabling PWM channel. For period and signal polarity the
->> atomic PWM is simulated by disabling + enabling the right PWM channel.
->>
->> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
->>
->> ---
->>  drivers/pwm/pwm-atmel.c | 271 ++++++++++++++++++++++++------------------------
->>  1 file changed, 138 insertions(+), 133 deletions(-)
->>
->> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
->> index 67a7023..3db82c3 100644
->> --- a/drivers/pwm/pwm-atmel.c
->> +++ b/drivers/pwm/pwm-atmel.c
->> @@ -58,17 +58,30 @@
->>  #define PWM_MAX_PRD		0xFFFF
->>  #define PRD_MAX_PRES		10
->>  
->> +struct atmel_pwm_reg_data {
->> +	u8 period;
->> +	u8 period_upd;
->> +	u8 duty;
->> +	u8 duty_upd;
->> +};
->> +
->> +struct atmel_pwm_data {
->> +	void (*update_cdty)(struct pwm_chip *chip, struct pwm_device *pwm,
->> +			    unsigned long cdty);
->> +	void (*set_cprd_cdty)(struct pwm_chip *chip, struct pwm_device *pwm,
->> +			      unsigned long cprd, unsigned long cdty);
->> +	const struct atmel_pwm_reg_data regs;
-> If you go for this per-IP reg layout definition approach, you don't need
-> the ->update_cdty()/->set_cprd_cdty() hooks anymore.
 
-Agree, I will send another version.
+Heh, good point, will need to look into this.
 
->
->> +};
->> +
-> [...]
->
->> +static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->> +			   struct pwm_state *state)
->> +{
->> +	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
->> +	struct pwm_state cstate;
->> +	unsigned long cprd, cdty;
->> +	u32 pres, val;
->> +	bool pwm_reset = false;
->> +	int ret;
->> +
->> +	pwm_get_state(pwm, &cstate);
->> +
->> +	if (cstate.enabled &&
->> +	    (cstate.polarity != state->polarity ||
->> +	     cstate.period != state->period))
->> +		pwm_reset = true;
-> You can move that in the 'if (state->enabled)' block, but I'm not even
-> sure this is really needed (see below).
 
-Agree. I will send another version. Sorry for the noise.
+> 
+> > +       u = readl_relaxed(mvebu_gpioreg_blink_select(mvchip));
+> > +       u &= ~(1 << pwm->pin);  
+> 
+> In GPIO code I usually do this:
+> 
+> #include <linus/bitops.h>
+> 
+> u &= ~BIT(pwm->pin);
+>
 
->
->> +
->> +	if (state->enabled) {
->> +		if (cstate.enabled && !pwm_reset) {
-> 		if (cstate.enabled &&
-> 		    (cstate.polarity != state->polarity ||
-> 		     cstate.period != state->period)) {
->
->> +			cprd = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm,
->> +						  atmel_pwm->data->regs.period);
->> +			atmel_pwm_calculate_cdty(state, cprd, &cdty);
->> +			atmel_pwm->data->update_cdty(chip, pwm, cdty);
->> +			return 0;
->> +		}
->> +
->> +		ret = atmel_pwm_calculate_cprd_and_pres(chip, state, &cprd,
->> +							&pres);
->> +		if (ret) {
->> +			dev_err(chip->dev,
->> +				"failed to calculate cprd and prescaler\n");
->> +			return ret;
->> +		}
->> +
->> +		atmel_pwm_calculate_cdty(state, cprd, &cdty);
->> +
->> +		if (pwm_reset) {
-> 		if (cstate.enabled) {
->
->> +			atmel_pwm_disable(chip, pwm, false);
->> +		} else {
->> +			ret = clk_enable(atmel_pwm->clk);
->> +			if (ret) {
->> +				dev_err(chip->dev, "failed to enable clock\n");
->> +				return ret;
->> +			}
->> +		}
->> +
->> +		/* It is necessary to preserve CPOL, inside CMR */
->> +		val = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
->> +		val = (val & ~PWM_CMR_CPRE_MSK) | (pres & PWM_CMR_CPRE_MSK);
->> +		if (state->polarity == PWM_POLARITY_NORMAL)
->> +			val &= ~PWM_CMR_CPOL;
->> +		else
->> +			val |= PWM_CMR_CPOL;
->> +		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
->> +		atmel_pwm->data->set_cprd_cdty(chip, pwm, cprd, cdty);
->> +		mutex_lock(&atmel_pwm->isr_lock);
->> +		atmel_pwm->updated_pwms |= atmel_pwm_readl(atmel_pwm, PWM_ISR);
->> +		atmel_pwm->updated_pwms &= ~(1 << pwm->hwpwm);
->> +		mutex_unlock(&atmel_pwm->isr_lock);
->> +		atmel_pwm_writel(atmel_pwm, PWM_ENA, 1 << pwm->hwpwm);
->> +	} else if (cstate.enabled) {
->> +		atmel_pwm_disable(chip, pwm, true);
->> +	}
->> +
->> +	return 0;
->>  }
+linus/bitops.h ...
+    ^
+Another one of those nifty macros, sure, can do so for v2, though there
+are many instances of this technique already, I'll send another cleanup
+patch to convert them all for consistency sake.
 
-Thank you,
-Claudiu
+
+> 
+> > +       u |= (pwm->id << pwm->pin);
+> 
+> I don't understand this line. Above you mask BIT(pwm->pin)
+> so we are only manipulating one bit, and then you ... shift the ID?
+> Is the ID always 0 or 1? If that is the case then this
+> is easier to understand:
+> 
+> if (pwm->id)
+>   u |= BIT(pwm->pin);
+> 
+> + a comment
+>
+
+mvebu_pwm_probe returns -EINVAL if id isn't 0 or 1.
+
+        if (id < 0 || id > 1)
+                return -EINVAL;
+
+Guess this needs commenting as well then.
+
+> 
+> > +static void mvebu_pwm_suspend(struct mvebu_gpio_chip *mvchip)
+> > +static void mvebu_pwm_resume(struct mvebu_gpio_chip *mvchip)
+> 
+> I think both of these need to be tagged __maybe_unused to not give
+> noise in randconfig builds.
+
+I haven't seen any warnings with CONFIG_PWM disabled. Which
+configuration you expect to trigger a warning? mvebu_pwm_probe should
+be the same, right?
+
+> 
+> Yours,
+> Linus Walleij
+
+Thanks for the review.
+Ralph
