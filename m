@@ -1,67 +1,81 @@
 From: Thierry Reding <thierry.reding@gmail.com>
 Subject: Re: [PATCH 1/4] gpio: mvebu: Add limited PWM support
-Date: Mon, 20 Mar 2017 14:51:31 +0100
-Message-ID: <20170320135131.GP22463@ulmo.ba.sec>
+Date: Mon, 20 Mar 2017 14:44:40 +0100
+Message-ID: <20170320134440.GN22463@ulmo.ba.sec>
 References: <20170316064218.9169-1-ralph.sennhauser@gmail.com>
  <20170316064218.9169-2-ralph.sennhauser@gmail.com>
  <CACRpkdZ=bor380ic_X36M7vVbopDCZe9Yb9TxkmOHyO75gdAnw@mail.gmail.com>
- <20170317101747.67a09ccd@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="wg9FEZT+WCTrEXgJ"
+        protocol="application/pgp-signature"; boundary="qi3SIpffvxS/TM8d"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170317101747.67a09ccd@gmail.com>
+In-Reply-To: <CACRpkdZ=bor380ic_X36M7vVbopDCZe9Yb9TxkmOHyO75gdAnw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>, Imre Kaloz <kaloz@openwrt.org>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "David S. Miller" <davem@davemloft.net>, Geert Uytterhoeven <geert+renesas@glider.be>, Mauro Carvalho Chehab <mchehab@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Ralph Sennhauser <ralph.sennhauser@gmail.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>, Imre Kaloz <kaloz@openwrt.org>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "David S. Miller" <davem@davemloft.net>, Geert Uytterhoeven <geert+renesas@glider.be>, Mauro Carvalho Chehab <mchehab@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
 
---wg9FEZT+WCTrEXgJ
+--qi3SIpffvxS/TM8d
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Mar 17, 2017 at 10:17:47AM +0100, Ralph Sennhauser wrote:
-> On Thu, 16 Mar 2017 17:03:05 +0100
-> Linus Walleij <linus.walleij@linaro.org> wrote:
-[...]
-> > > +static void mvebu_pwm_suspend(struct mvebu_gpio_chip *mvchip)
-> > > +static void mvebu_pwm_resume(struct mvebu_gpio_chip *mvchip)
-> >=20
-> > I think both of these need to be tagged __maybe_unused to not give
-> > noise in randconfig builds.
+On Thu, Mar 16, 2017 at 05:03:05PM +0100, Linus Walleij wrote:
+> On Thu, Mar 16, 2017 at 7:42 AM, Ralph Sennhauser
+> <ralph.sennhauser@gmail.com> wrote:
 >=20
-> I haven't seen any warnings with CONFIG_PWM disabled. Which
-> configuration you expect to trigger a warning? mvebu_pwm_probe should
-> be the same, right?
+> > From: Andrew Lunn <andrew@lunn.ch>
+> >
+> > Armada 370/XP devices can 'blink' gpio lines with a configurable on
+> > and off period. This can be modelled as a PWM.
+> >
+> > However, there are only two sets of PWM configuration registers for
+> > all the gpio lines. This driver simply allows a single gpio line per
+> > gpio chip of 32 lines to be used as a PWM. Attempts to use more return
+> > EBUSY.
+> >
+> > Due to the interleaving of registers it is not simple to separate the
+> > PWM driver from the gpio driver. Thus the gpio driver has been
+> > extended with a PWM driver.
+> >
+> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> > URL: https://patchwork.ozlabs.org/patch/427287/
+> > URL: https://patchwork.ozlabs.org/patch/427295/
+> > [Ralph Sennhauser:
+> >   * port forward
+> >   * merge pwm portion into gpio-mvebu.c
+> >   * merge doc patch
+> >   * update MAINAINERS]
+> > Signed-off-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+>=20
+> In essence I am very positive of this patch set and happy to merge
+> it as a PWM driver inside of GPIO if Thierry is OK with it.
 
-It's got nothing to do with CONFIG_PWM and as far as I can tell your
-usage of IS_ENABLED() is fine here. However, if you try building the
-driver with a !PM configuration, both *_suspend() and *_resume() end
-up being unused and giving you a warning.
+No objections to the concept of making a GPIO driver implement a PWM
+chip when it makes sense.
 
 Thierry
 
---wg9FEZT+WCTrEXgJ
+--qi3SIpffvxS/TM8d
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAljP3mMACgkQ3SOs138+
-s6HzvBAAghBQOT1/tVK3+wouBS6rHP2zZSJoX6EYTqYCzY7M1m5yaCeiqnVrZ1jh
-oD0Z556a+GxjxOIFAyN2hP6+72GZkBGVpkPnGAZ+y9PK25ShJyQM8yCoDu2rtf0w
-K1h2fIX2IVgH+q+08yvKPthu/pgCmni8EIv5Li1BN2ckZD3oOC6wQOWobLE980CE
-nGQaXaKrGbUX1WTPiTN384jTyaVnF0PGlzhMipQDBLNp+VXstjcZhj1nbT6dtb7a
-bkZ3nb9ht+MlWF5rFEw785fFjUtAoCJ0RN7vZ1/BBi1QVHo/pcN1NETZ05tPCraR
-8O1m8/G2dz5661ulEFY31amE6Wa5+tDbLXv2ml5ff2ggnyrrB7jnDEiLTVDN13BE
-wvARhlqScLCtVTLNGYsDkDeRST25MYvgf/v9o6GsIeTJyGGAhpae5EmRKEG9AEFk
-967u17Z1tdj9QLKkUznvceksg2ciP05v0xASPwVWqHygXUoXLhBQrpfWUn/c50PN
-Lb7EU6ABW/l3qq3a3ZPT/TVNvK2dmSnb9d2/TVep/xRql/iQglNWD6tDcH6DCMO1
-ohcGpKAqRcZI5+bUZdEZsXS/SRwNrPvEIEBXGBX6EaP37+qg77bxO/AdINqL4tH8
-uiE3PqMqRzck3DYKkilaB3RZ5ZxoUTnsJBl+rzXSS07KoKZJlt0=
-=bj05
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAljP3MgACgkQ3SOs138+
+s6HXwhAAk7F5OVxOoRVqzMxZJ1EDc5pOgWJjfIlxkQKT1FUCBu446QLU+HNfXgsm
+xKKVlSvRF83nR1VHhG5qB9m+rNhh2H5Uc4x74xXOwC8od5XflN/+ejUaNlT/BqUN
+LkcIT7Y76kb0qYaMcLFGrJJFK0CZjB7LUVkUDneB+97bRZTH5qmKER3sgzfBxOBL
+87nrlwNhgCYbjPdRwxdsCloEDGXfOE71bn+CHKzARj/TqdQh96FBvvst4XlgSDJN
+/CLcnt/TPXbVlkaOq2k4Flfm3HM29GSKarz3andDacas8LooVMXLiD9X/AlAzZ5D
+X0cYDx7xec2B9eQUja/ecG4RauuvFlodRkWKUEK4PobFkCUc/QiBG8D40xLWdsng
+8FyEj5bUHwfTkZdJ8dEuNVBEEYoHrY0QyJNeoRMJQKaz1c3Sh1E8NK9EpwjzPYza
+HXVl8STRC3PYQ+W2pZaXERht7ZMHKB2AvnvKioJiKzwo0CQAALg9x5tnn5Z4gSYz
+487xF7fTf32TkLOYJB1zZJpr5V+OhojG8ZshS+mLJJ6GC8KlrtTPHUAKEvythr72
+NSCD09MTYGbSMoJcp08B24Jb55L6V45Cg2B7A21lUfHg8ZlQMQoqP2fKRf2BZITw
+ZuasdbcOsB8USXnXUYhU+Gur3i9z6hKDxF0ilDUMK+xf7iyBne8=
+=OBHh
 -----END PGP SIGNATURE-----
 
---wg9FEZT+WCTrEXgJ--
+--qi3SIpffvxS/TM8d--
