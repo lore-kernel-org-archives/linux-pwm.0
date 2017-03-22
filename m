@@ -1,67 +1,54 @@
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v3 2/2] drivers: pwm: pwm-atmel: enable PWM on sama5d2
-Date: Wed, 22 Mar 2017 15:29:35 +0200
-Message-ID: <1490189375-20384-3-git-send-email-claudiu.beznea@microchip.com>
-References: <1490189375-20384-1-git-send-email-claudiu.beznea@microchip.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1490189375-20384-1-git-send-email-claudiu.beznea@microchip.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, boris.brezillon@free-electrons.com, alexandre.belloni@free-electrons.com
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, tudor.ambarus@microchip.com, linux-kernel@vger.kernel.org, andrei.pistirica@microchip.com, linux-arm-kernel@lists.infradead.org, eugen.hristev@microchip.com, Claudiu Beznea <claudiu.beznea@microchip.com>, cristian.birsan@microchip.com
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] backlight: pwm_bl: Fix GPIO out for unimplemented .get_direction()
+Date: Wed, 22 Mar 2017 18:21:25 +0100
+Message-ID: <1490203285-28324-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>, Philipp Zabel <p.zabel@pengutronix.de>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: linux-pwm@vger.kernel.org
 
-sama5d2 can use the same atmel_pwm_data as sama5d3.
+Commit 7613c922315e308a ("backlight: pwm_bl: Move the checks for initial
+power state to a separate function") not just moved some code, but made
+slight changes in semantics.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Acked-by: Rob Herring <robh@kernel.org>
+If a gpiochip doesn't implement the optional .get_direction() callback,
+gpiod_get_direction always returns -EINVAL, which is never equal to
+GPIOF_DIR_IN, leading to the GPIO not being configured for output.
 
+To avoid this, invert the test and check for not GPIOF_DIR_OUT instead,
+like the original code did.
+
+This restores the display on r8a7740/armadillo.
+
+Fixes: 7613c922315e308a ("backlight: pwm_bl: Move the checks for initial power state to a separate function")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
-Changes since v2:
-- the variable name used to initialize the .data member of
-the of_device_id was renamed to atmel_pwm_regs_v2 to be
-consistent with the approach from the first patch from
-this series
+ drivers/video/backlight/pwm_bl.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
- Documentation/devicetree/bindings/pwm/atmel-pwm.txt | 1 +
- drivers/pwm/pwm-atmel.c                             | 3 +++
- 2 files changed, 4 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/pwm/atmel-pwm.txt b/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
-index 02331b9..c8c831d 100644
---- a/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
-+++ b/Documentation/devicetree/bindings/pwm/atmel-pwm.txt
-@@ -4,6 +4,7 @@ Required properties:
-   - compatible: should be one of:
-     - "atmel,at91sam9rl-pwm"
-     - "atmel,sama5d3-pwm"
-+    - "atmel,sama5d2-pwm"
-   - reg: physical base address and length of the controller's registers
-   - #pwm-cells: Should be 3. See pwm.txt in this directory for a
-     description of the cells format.
-diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-index f147154..530d7dc 100644
---- a/drivers/pwm/pwm-atmel.c
-+++ b/drivers/pwm/pwm-atmel.c
-@@ -312,6 +312,9 @@ static const struct of_device_id atmel_pwm_dt_ids[] = {
- 		.compatible = "atmel,sama5d3-pwm",
- 		.data = &atmel_pwm_regs_v2,
- 	}, {
-+		.compatible = "atmel,sama5d2-pwm",
-+		.data = &atmel_pwm_regs_v2,
-+	}, {
- 		/* sentinel */
- 	},
- };
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index d7efcb632f7d9dde..002f1ce22bd02032 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -297,14 +297,15 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	/*
+-	 * If the GPIO is configured as input, change the direction to output
+-	 * and set the GPIO as active.
++	 * If the GPIO is not known to be already configured as output, that
++	 * is, if gpiod_get_direction returns either GPIOF_DIR_IN or -EINVAL,
++	 * change the direction to output and set the GPIO as active.
+ 	 * Do not force the GPIO to active when it was already output as it
+ 	 * could cause backlight flickering or we would enable the backlight too
+ 	 * early. Leave the decision of the initial backlight state for later.
+ 	 */
+ 	if (pb->enable_gpio &&
+-	    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_IN)
++	    gpiod_get_direction(pb->enable_gpio) != GPIOF_DIR_OUT)
+ 		gpiod_direction_output(pb->enable_gpio, 1);
+ 
+ 	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
 -- 
 2.7.4
