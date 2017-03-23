@@ -1,49 +1,46 @@
-From: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-Subject: Re: [PATCH v2 0/4] gpio: mvebu: Add PWM fan support
-Date: Thu, 23 Mar 2017 10:57:26 +0100
-Message-ID: <20170323105726.2200c806@gmail.com>
-References: <20170318154305.28348-1-ralph.sennhauser@gmail.com>
-        <CACRpkdbdnkWpDHeAwWQ-dmJL4DB-vsW17Po7-7bzKMPCb_KaMA@mail.gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH 1/4] gpio: mvebu: Add limited PWM support
+Date: Thu, 23 Mar 2017 11:11:09 +0100
+Message-ID: <CACRpkdaqoJ6J+qoxOyGsT4X=-e1PH71_2oi0hQeQh72T0OnBfw@mail.gmail.com>
+References: <20170316064218.9169-1-ralph.sennhauser@gmail.com>
+ <20170316064218.9169-2-ralph.sennhauser@gmail.com> <CACRpkdZ=bor380ic_X36M7vVbopDCZe9Yb9TxkmOHyO75gdAnw@mail.gmail.com>
+ <20170317101747.67a09ccd@gmail.com> <20170320135131.GP22463@ulmo.ba.sec>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f67.google.com ([74.125.82.67]:32931 "EHLO
-        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754102AbdCWJ5a (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 23 Mar 2017 05:57:30 -0400
-In-Reply-To: <CACRpkdbdnkWpDHeAwWQ-dmJL4DB-vsW17Po7-7bzKMPCb_KaMA@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20170320135131.GP22463@ulmo.ba.sec>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Ralph Sennhauser <ralph.sennhauser@gmail.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>, Imre Kaloz <kaloz@openwrt.org>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "David S. Miller" <davem@davemloft.net>, Geert Uytterhoeven <geert+renesas@glider.be>, Mauro Carvalho Chehab <mchehab@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Guenter Roeck <linux@roeck-us.net>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>, Imre Kaloz <kaloz@openwrt.org>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <gnurou@gmail.com>, "open list:PWM SUBSYSTEM" <linux-pwm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 
-On Thu, 23 Mar 2017 10:23:47 +0100
-Linus Walleij <linus.walleij@linaro.org> wrote:
+On Mon, Mar 20, 2017 at 2:51 PM, Thierry Reding
+<thierry.reding@gmail.com> wrote:
+> On Fri, Mar 17, 2017 at 10:17:47AM +0100, Ralph Sennhauser wrote:
+>> On Thu, 16 Mar 2017 17:03:05 +0100
+>> Linus Walleij <linus.walleij@linaro.org> wrote:
+> [...]
+>> > > +static void mvebu_pwm_suspend(struct mvebu_gpio_chip *mvchip)
+>> > > +static void mvebu_pwm_resume(struct mvebu_gpio_chip *mvchip)
+>> >
+>> > I think both of these need to be tagged __maybe_unused to not give
+>> > noise in randconfig builds.
+>>
+>> I haven't seen any warnings with CONFIG_PWM disabled. Which
+>> configuration you expect to trigger a warning? mvebu_pwm_probe should
+>> be the same, right?
+>
+> It's got nothing to do with CONFIG_PWM and as far as I can tell your
+> usage of IS_ENABLED() is fine here. However, if you try building the
+> driver with a !PM configuration, both *_suspend() and *_resume() end
+> up being unused and giving you a warning.
 
-> On Sat, Mar 18, 2017 at 4:43 PM, Ralph Sennhauser
-> <ralph.sennhauser@gmail.com> wrote:
-> 
-> > This patch series was originally submitted by Andrew Lunn but got
-> > stalled. I picked up the series and addressed what was discussed
-> > for the earlier submission with some helpful input from Andrew.
-> > Hopefully this time support for the PWM fan as found on Linksys
-> > WRT1900AC (Mamba) will make it in.  
-> 
-> All looks good to me, I'm waiting for an ACK from the PWM
-> maintainer.
-> 
-> Yours,
-> Linus Walleij
+Yes I was referring to the !PM case.
 
-Hi Linus,
+Those are not found by zeroday builds.
 
-There are still several open issues brought up by the PWM maintainer
-after posting v2 which need to be addressed first (not done in 5
-minutes). There will be a v3 for sure and maybe a v4 if necessary. v3
-is currently under verification.
+But they are found a couple of days later by Arnd Bergmann running
+randconfig builds.
 
-Thanks for applying the additional cleanup patch.
-
-Thanks
-Ralph
+Yours,
+Linus Walleij
