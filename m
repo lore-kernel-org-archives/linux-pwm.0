@@ -1,82 +1,129 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH] backlight: pwm_bl: Fix GPIO out for unimplemented
- .get_direction()
-Date: Fri, 24 Mar 2017 16:43:44 +0000
-Message-ID: <6960ceea-5e34-3435-eecb-10e18322b15c@linaro.org>
-References: <1490203285-28324-1-git-send-email-geert+renesas@glider.be>
- <c00f689f-dae6-14d6-55d3-b1b44db19dc1@linaro.org>
+From: Ralph Sennhauser <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 1/4] gpio: mvebu: Add limited PWM support
+Date: Fri, 24 Mar 2017 23:21:15 +0100
+Message-ID: <20170324232115.3d97aff2@gmail.com>
+References: <20170318154305.28348-1-ralph.sennhauser@gmail.com>
+        <20170318154305.28348-2-ralph.sennhauser@gmail.com>
+        <20170324151829.awmhshsent4ngqb5@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <c00f689f-dae6-14d6-55d3-b1b44db19dc1@linaro.org>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>, Philipp Zabel <p.zabel@pengutronix.de>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170324151829.awmhshsent4ngqb5@rob-hp-laptop>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Imre Kaloz <kaloz-p3rKhJxN3npAfugRpC6u6w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "David S. Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Mauro Carvalho Chehab <mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>, "open list:PWM SUBSYSTEM" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On 24/03/17 16:42, Daniel Thompson wrote:
-> On 22/03/17 17:21, Geert Uytterhoeven wrote:
->> Commit 7613c922315e308a ("backlight: pwm_bl: Move the checks for initial
->> power state to a separate function") not just moved some code, but made
->> slight changes in semantics.
->>
->> If a gpiochip doesn't implement the optional .get_direction() callback,
->> gpiod_get_direction always returns -EINVAL, which is never equal to
->> GPIOF_DIR_IN, leading to the GPIO not being configured for output.
->>
->> To avoid this, invert the test and check for not GPIOF_DIR_OUT instead,
->> like the original code did.
->>
->> This restores the display on r8a7740/armadillo.
->>
->> Fixes: 7613c922315e308a ("backlight: pwm_bl: Move the checks for
->> initial power state to a separate function")
->> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
->
-> Acked-by: Daniel Thommpson <daniel.thompson@linaro.org>
+On Fri, 24 Mar 2017 10:18:29 -0500
+Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
 
-Actually, it would be better if there only one m...
+> On Sat, Mar 18, 2017 at 04:43:01PM +0100, Ralph Sennhauser wrote:
+> > From: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>
+> > 
+> > Armada 370/XP devices can 'blink' gpio lines with a configurable on
+> > and off period. This can be modelled as a PWM.
+> > 
+> > However, there are only two sets of PWM configuration registers for
+> > all the gpio lines. This driver simply allows a single gpio line per
+> > gpio chip of 32 lines to be used as a PWM. Attempts to use more
+> > return EBUSY.
+> > 
+> > Due to the interleaving of registers it is not simple to separate
+> > the PWM driver from the gpio driver. Thus the gpio driver has been
+> > extended with a PWM driver.
+> > 
+> > Signed-off-by: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>
+> > URL: https://patchwork.ozlabs.org/patch/427287/
+> > URL: https://patchwork.ozlabs.org/patch/427295/
+> > [Ralph Sennhauser:
+> >   * port forward
+> >   * merge pwm portion into gpio-mvebu.c
+> >   * merge documentation patch
+> >   * update MAINTAINERS]
+> > Signed-off-by: Ralph Sennhauser <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > ---
+> >  .../devicetree/bindings/gpio/gpio-mvebu.txt        |  31 +++
+> >  MAINTAINERS                                        |   2 +
+> >  drivers/gpio/gpio-mvebu.c                          | 291
+> > +++++++++++++++++++-- 3 files changed, 307 insertions(+), 17
+> > deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
+> > b/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt index
+> > a6f3bec..86932e3 100644 ---
+> > a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt +++
+> > b/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt @@ -38,6
+> > +38,23 @@ Required properties:
+> >  - #gpio-cells: Should be two. The first cell is the pin number. The
+> >    second cell is reserved for flags, unused at the moment.
+> >  
+> > +Optional properties:
+> > +
+> > +In order to use the gpio lines in PWM mode, some additional
+> > optional +properties are required. Only Armada 370 and XP support
+> > these properties. +
+> > +- reg: an additional register set is needed, for the GPIO Blink
+> > +  Counter on/off registers.
+> > +
+> > +- reg-names: Must contain an entry "pwm" corresponding to the
+> > +  additional register range needed for pwm operation.
+> > +
+> > +- #pwm-cells: Should be two. The first cell is the pin number.
+> > The  
+> 
+> s/pin number/gpio line/ ?
 
-Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+Better indeed.
+
+> 
+> > +  second cell is reserved for flags and should be set to 0, so it
+> > has a
+> > +  known value. It then becomes possible to use it in the future.
+> > +
+> > +- clocks: Must be a phandle to the clock for the gpio controller.
+> > +
+> >  Example:
+> >  
+> >  		gpio0: gpio@d0018100 {
+> > @@ -51,3 +68,17 @@ Example:
+> >  			#interrupt-cells = <2>;
+> >  			interrupts = <16>, <17>, <18>, <19>;
+> >  		};
+> > +
+> > +		gpio1: gpio@18140 {
+> > +			compatible = "marvell,orion-gpio";  
+> 
+> If only 370 and XP support this, I'd expect a compatible string for
+> one of them here.
+
+Commit 5f79c651e81e ("arm: mvebu: use global interrupts for GPIOs on
+Armada XP") changes it from "marvell,armadaxp-gpio". The commit message
+says for 3.8 basically leaving it open for a "fix" later.
+
+Adding Thomas Petazzoni as the author.
+
+Thomas, would you happen to know if this is still how it's supposed to
+be for now?
+
+Thanks
+Ralph
 
 
-Daniel.
+> 
+> > +			reg = <0x18140 0x40>, <0x181c8 0x08>;
+> > +			reg-names = "gpio", "pwm";
+> > +			ngpios = <17>;
+> > +			gpio-controller;
+> > +			#gpio-cells = <2>;
+> > +			#pwm-cells = <2>;
+> > +			interrupt-controller;
+> > +			#interrupt-cells = <2>;
+> > +			interrupts = <87>, <88>, <89>;
+> > +			clocks = <&coreclk 0>;
+> > +		};  
 
->
->
->> ---
->>  drivers/video/backlight/pwm_bl.c | 7 ++++---
->>  1 file changed, 4 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/video/backlight/pwm_bl.c
->> b/drivers/video/backlight/pwm_bl.c
->> index d7efcb632f7d9dde..002f1ce22bd02032 100644
->> --- a/drivers/video/backlight/pwm_bl.c
->> +++ b/drivers/video/backlight/pwm_bl.c
->> @@ -297,14 +297,15 @@ static int pwm_backlight_probe(struct
->> platform_device *pdev)
->>      }
->>
->>      /*
->> -     * If the GPIO is configured as input, change the direction to
->> output
->> -     * and set the GPIO as active.
->> +     * If the GPIO is not known to be already configured as output, that
->> +     * is, if gpiod_get_direction returns either GPIOF_DIR_IN or
->> -EINVAL,
->> +     * change the direction to output and set the GPIO as active.
->>       * Do not force the GPIO to active when it was already output as it
->>       * could cause backlight flickering or we would enable the
->> backlight too
->>       * early. Leave the decision of the initial backlight state for
->> later.
->>       */
->>      if (pb->enable_gpio &&
->> -        gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_IN)
->> +        gpiod_get_direction(pb->enable_gpio) != GPIOF_DIR_OUT)
->>          gpiod_direction_output(pb->enable_gpio, 1);
->>
->>      pb->power_supply = devm_regulator_get(&pdev->dev, "power");
->>
->
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
