@@ -1,46 +1,89 @@
-From: Ralph Sennhauser <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 4/4] mvebu: wrt1900ac: Use pwm-fan rather than
- gpio-fan
-Date: Fri, 24 Mar 2017 23:23:40 +0100
-Message-ID: <20170324232340.7487f638@gmail.com>
-References: <20170324141815.7252-1-ralph.sennhauser@gmail.com>
-        <20170324141815.7252-5-ralph.sennhauser@gmail.com>
-        <20170324143505.GK28518@lunn.ch>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170324143505.GK28518-g2DYL2Zd6BY@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>
-Cc: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Imre Kaloz <kaloz-p3rKhJxN3npAfugRpC6u6w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Gregory Clement <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH v2 resend] pwm: lpss: Set enable-bit before waiting for update-bit to go low
+Date: Sat, 25 Mar 2017 15:06:58 +0100
+Message-ID: <20170325140658.26868-2-hdegoede@redhat.com>
+References: <20170325140658.26868-1-hdegoede@redhat.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mx1.redhat.com ([209.132.183.28]:60858 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750903AbdCYOHC (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Sat, 25 Mar 2017 10:07:02 -0400
+In-Reply-To: <20170325140658.26868-1-hdegoede@redhat.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Hans de Goede <hdegoede@redhat.com>, linux-pwm@vger.kernel.org, Ilkka Koskinen <ilkka.koskinen@intel.com>
 
-On Fri, 24 Mar 2017 15:35:05 +0100
-Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org> wrote:
+At least on cherrytrail, the update bit will never go low when the
+enabled bit is not set.
 
-> > +	pwm_fan {
-> >  		/* SUNON HA4010V4-0000-C99 */
-> > -		compatible = "gpio-fan";
-> > -		gpios = <&gpio0 24 0>;
-> >  
-> > -		gpio-fan,speed-map = <0    0
-> > -				      4500 1>;
-> > +		compatible = "pwm-fan";
-> > +		pwms = <&gpio0 24 4000 0>;  
-> 
-> Hi Ralph
-> 
-> I believe this last 0 is the flags parameter. Now that we have
-> #pwm-cells = 1, i think this last 0 should be dropped.
-> 
-> 	  Andrew
+This causes the backlight on my cube iwork8 air tablet to never turn on
+again after being turned off because in the pwm_lpss_apply enable path
+pwm_lpss_update will fail causing an error exit and the enable-bit to
+never get set. Any following pwm_lpss_apply calls will fail the
+pwm_lpss_is_updating check.
 
-Missed it. Duly noted like the other comments.
+Since the docs say that the update bit should be set before the
+enable-bit, split pwm_lpss_update into setting the update-bit and
+pwm_lpss_wait_for_update, and move the pwm_lpss_wait_for_update call
+in the enable path to after setting the enable-bit.
 
-Thanks
-Ralph
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Fixes: 10d56a4 ("pwm: lpss: Avoid reconfiguring while UPDATE bit...")
+Cc: Ilkka Koskinen <ilkka.koskinen@intel.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+Changes in v2:
+-This is a new approach to fixing the problem, replacing
+ "pwm: lpss: Do not set / wait_for update_bit when not enabled"
+---
+ drivers/pwm/pwm-lpss.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/pwm/pwm-lpss.c b/drivers/pwm/pwm-lpss.c
+index 689d2c1..eac3d52 100644
+--- a/drivers/pwm/pwm-lpss.c
++++ b/drivers/pwm/pwm-lpss.c
+@@ -57,7 +57,7 @@ static inline void pwm_lpss_write(const struct pwm_device *pwm, u32 value)
+ 	writel(value, lpwm->regs + pwm->hwpwm * PWM_SIZE + PWM);
+ }
+ 
+-static int pwm_lpss_update(struct pwm_device *pwm)
++static int pwm_lpss_wait_for_update(struct pwm_device *pwm)
+ {
+ 	struct pwm_lpss_chip *lpwm = to_lpwm(pwm->chip);
+ 	const void __iomem *addr = lpwm->regs + pwm->hwpwm * PWM_SIZE + PWM;
+@@ -65,8 +65,6 @@ static int pwm_lpss_update(struct pwm_device *pwm)
+ 	u32 val;
+ 	int err;
+ 
+-	pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_SW_UPDATE);
+-
+ 	/*
+ 	 * PWM Configuration register has SW_UPDATE bit that is set when a new
+ 	 * configuration is written to the register. The bit is automatically
+@@ -137,18 +135,20 @@ static int pwm_lpss_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 				return ret;
+ 			}
+ 			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
+-			ret = pwm_lpss_update(pwm);
++			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_SW_UPDATE);
++			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_ENABLE);
++			ret = pwm_lpss_wait_for_update(pwm);
+ 			if (ret) {
+ 				pm_runtime_put(chip->dev);
+ 				return ret;
+ 			}
+-			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_ENABLE);
+ 		} else {
+ 			ret = pwm_lpss_is_updating(pwm);
+ 			if (ret)
+ 				return ret;
+ 			pwm_lpss_prepare(lpwm, pwm, state->duty_cycle, state->period);
+-			return pwm_lpss_update(pwm);
++			pwm_lpss_write(pwm, pwm_lpss_read(pwm) | PWM_SW_UPDATE);
++			return pwm_lpss_wait_for_update(pwm);
+ 		}
+ 	} else if (pwm_is_enabled(pwm)) {
+ 		pwm_lpss_write(pwm, pwm_lpss_read(pwm) & ~PWM_ENABLE);
+-- 
+2.9.3
