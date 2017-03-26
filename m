@@ -1,99 +1,48 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH v3] pwm: lpss: Add get_state callback
-Date: Sun, 26 Mar 2017 16:46:15 +0200
-Message-ID: <91f24051-07dc-d6a4-ca62-a65916e82ed3@redhat.com>
-References: <20170227165941.1379-1-hdegoede@redhat.com>
- <CAHp75Vdx4JNRzZSzfEe5H6Oj8vxJ7FJ-aA2ojY_HNgeXmCKq8A@mail.gmail.com>
- <8e7e2207-6004-13c3-1d6f-416bf306bc11@redhat.com>
- <1489160990.20145.192.camel@linux.intel.com>
- <29c21164-c5d7-3772-0bae-306780075ce6@redhat.com>
- <1490531692.708.5.camel@linux.intel.com>
+From: Ralph Sennhauser <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 4/4] mvebu: wrt1900ac: Use pwm-fan rather than
+ gpio-fan
+Date: Sun, 26 Mar 2017 23:05:58 +0200
+Message-ID: <20170326230558.6b6c4ec6@gmail.com>
+References: <20170324141815.7252-1-ralph.sennhauser@gmail.com>
+ <20170324141815.7252-5-ralph.sennhauser@gmail.com>
+ <20170324143505.GK28518@lunn.ch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:53190 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751392AbdCZOqT (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sun, 26 Mar 2017 10:46:19 -0400
-In-Reply-To: <1490531692.708.5.camel@linux.intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170324143505.GK28518-g2DYL2Zd6BY@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>
+Cc: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Imre Kaloz <kaloz-p3rKhJxN3npAfugRpC6u6w@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Gregory Clement <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Andy Shevchenko <andy@infradead.org>, linux-pwm@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
 
-Hi,
+On Fri, 24 Mar 2017 15:35:05 +0100
+Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org> wrote:
 
-On 26-03-17 14:34, Andy Shevchenko wrote:
-> On Fri, 2017-03-10 at 22:13 +0100, Hans de Goede wrote:
->> Hi,
->>
->> On 03/10/2017 04:49 PM, Andy Shevchenko wrote:
->>> On Tue, 2017-02-28 at 15:09 +0100, Hans de Goede wrote:
->>>> Hi,
->>>>
->>>> On 27-02-17 23:20, Andy Shevchenko wrote:
->>>>> On Mon, Feb 27, 2017 at 6:59 PM, Hans de Goede <hdegoede@redhat.
->>>>> com>
->>>>> wrote:
->
->>>> Ok, so maybe we should do this then ?
->>>>
->>>> 	if (freq == 0) {
->>>> 		state->period = NSEC_PER_SEC;
->>>> 		state->duty_cycle = NSEC_PER_SEC;
->>>> 		return;
->>>> 	}
->>>>
->>>> ?
->>>
->>> But the period is not that one. Can we assign them to 0?
->>
->> That will cause a divide by 0 in apply() when a user
->> calls apply without changing / setting period.
->
-> I have to look closer to this one. Perhaps next week together with yours
-> other change.
+> > +	pwm_fan {
+> >  		/* SUNON HA4010V4-0000-C99 */
+> > -		compatible = "gpio-fan";
+> > -		gpios = <&gpio0 24 0>;
+> >  
+> > -		gpio-fan,speed-map = <0    0
+> > -				      4500 1>;
+> > +		compatible = "pwm-fan";
+> > +		pwms = <&gpio0 24 4000 0>;  
+> 
+> Hi Ralph
+> 
+> I believe this last 0 is the flags parameter. Now that we have
+> #pwm-cells = 1, i think this last 0 should be dropped.
+> 
+> 	  Andrew
 
-Ok, note this one has no hurry.
+Hi Andrew,
 
->>>> Anyways since we now may get a pm-ref during probe
->>>> I will add the balancing (and equally conditional)
->>>> put of that ref to pwm_lpss_remove().
->>>>
->>>>> Second question, how ->get_state() is supposed to work if power
->>>>> is
->>>>> off
->>>>> when it enters it?
->>>>
->>>> get_state only gets called on probe and the device is guaranteed
->>>> to
->>>> be powered on during probe().
->>>
->>> Ah, seems I now understand what this call back actually does.
->>>
->>> So, the name of the callback a bit confusing, to me it sounds rather
->>> "get_to_[initial_]state()".
->>>
->>> Thus, would it be better to split ->apply() to get a common part for
->>> both?
->>
->> I don't understand what you mean here ? Ah I guess you mean split
->> out the pm_runtime_get / put stuff. I don't think that is going
->> to work well as apply compares old and new state and we do not
->> have old state when get_state gets called.
->
-> I mean to have similar flow in ->get_state() and ->apply() when we
-> enable the device.
->
-> I don't like ->get_state() name as I mentioned before. If its
-> functionality is "get *to* (initial) state", that what we need to
-> implement.
+isn't the 4000 (period?) pwm-cell #2 and 0 (flags?) pwm-cell #3? I
+actually expect "pwms = <&gpio0 24>;" here or "#pwm-cells = <2>;"
 
-The way this works is part of the pwm core, also I still do not
-understand what you're trying to say here, can you give some
-pseudo-code as example how you want to see things split ?
-
-Regards,
-
-Hans
+Ralph
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
