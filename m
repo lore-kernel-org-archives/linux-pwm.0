@@ -1,59 +1,86 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH v3 1/2] drivers: pwm: pwm-atmel: switch to atomic PWM
-Date: Mon, 27 Mar 2017 15:15:30 +0200
-Message-ID: <20170327131530.ifexyrgrp5egtbtr@piout.net>
-References: <1490189375-20384-1-git-send-email-claudiu.beznea@microchip.com>
- <1490189375-20384-2-git-send-email-claudiu.beznea@microchip.com>
- <20170327150237.69d8523f@bbrezillon>
+From: Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH v3 4/4] mvebu: wrt1900ac: Use pwm-fan rather than gpio-fan
+Date: Mon, 27 Mar 2017 15:17:25 +0200
+Message-ID: <20170327131725.GA25549@lunn.ch>
+References: <20170324141815.7252-1-ralph.sennhauser@gmail.com>
+ <20170324141815.7252-5-ralph.sennhauser@gmail.com>
+ <20170324143505.GK28518@lunn.ch>
+ <20170326230558.6b6c4ec6@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:35929 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752059AbdC0NP7 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 27 Mar 2017 09:15:59 -0400
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20170327150237.69d8523f@bbrezillon>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <20170326230558.6b6c4ec6@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, Alexandre Courbot <gnurou@gmail.com>, Jason Cooper <jason@lakedaemon.net>, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Gregory Clement <gregory.clement@free-electrons.com>, Imre Kaloz <kaloz@openwrt.org>, linux-arm-kernel@lists.infradead.org, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Claudiu Beznea <claudiu.beznea@microchip.com>, thierry.reding@gmail.com, robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, nicolas.ferre@microchip.com, cristian.birsan@microchip.com, andrei.pistirica@microchip.com, tudor.ambarus@microchip.com, eugen.hristev@microchip.com
 
-On 27/03/2017 at 15:02:37 +0200, Boris Brezillon wrote:
-> Hi Claudiu,
+On Sun, Mar 26, 2017 at 11:05:58PM +0200, Ralph Sennhauser wrote:
+> On Fri, 24 Mar 2017 15:35:05 +0100
+> Andrew Lunn <andrew@lunn.ch> wrote:
 > 
-> On Wed, 22 Mar 2017 15:29:34 +0200
-> Claudiu Beznea <claudiu.beznea@microchip.com> wrote:
+> > > +	pwm_fan {
+> > >  		/* SUNON HA4010V4-0000-C99 */
+> > > -		compatible = "gpio-fan";
+> > > -		gpios = <&gpio0 24 0>;
+> > >  
+> > > -		gpio-fan,speed-map = <0    0
+> > > -				      4500 1>;
+> > > +		compatible = "pwm-fan";
+> > > +		pwms = <&gpio0 24 4000 0>;  
+> > 
+> > Hi Ralph
+> > 
+> > I believe this last 0 is the flags parameter. Now that we have
+> > #pwm-cells = 1, i think this last 0 should be dropped.
+> > 
+> > 	  Andrew
 > 
-> >  static const struct platform_device_id atmel_pwm_devtypes[] = {
-> >  	{
-> >  		.name = "at91sam9rl-pwm",
-> > -		.driver_data = (kernel_ulong_t)&atmel_pwm_data_v1,
-> > +		.driver_data = (kernel_ulong_t)&atmel_pwm_regs_v1,
-> >  	}, {
-> >  		.name = "sama5d3-pwm",
-> > -		.driver_data = (kernel_ulong_t)&atmel_pwm_data_v2,
-> > +		.driver_data = (kernel_ulong_t)&atmel_pwm_regs_v2,
-> >  	}, {
-> >  		/* sentinel */
-> >  	},
+> Hi Andrew,
 > 
-> Unrelated to this series, but can you prepare a patch to get rid of
-> this platform id table (AT91 platforms have completely switched to DT
-> for quite some time now).
-> 
+> isn't the 4000 (period?) pwm-cell #2 and 0 (flags?) pwm-cell #3? I
+> actually expect "pwms = <&gpio0 24>;" here or "#pwm-cells = <2>;"
 
-Please, don't until AVR32 is gone.
+Hi Ralph
 
-> You can also get rid of the "if (pdev->dev.of_node)" condition in
-> atmel_pwm_probe() since it's guaranteed to be true, otherwise the
-> ->probe() method wouldn't be called.
-> 
-> Thanks,
-> 
-> Boris
+From Documentation/devicetree/bindings/pwm/pwm.txt:
 
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+        pwm-list ::= <single-pwm> [pwm-list]
+        single-pwm ::= <pwm-phandle> <pwm-specifier>
+        pwm-phandle : phandle to PWM controller node
+        pwm-specifier : array of #pwm-cells specifying the given PWM
+                        (controller specific)
+
+Our pwm-list has a single single-pwm.
+phandle is &gpio0.
+The remaining parts are the specifier, or which there should be #pwm-calls.
+
+From Documentation/devicetree/bindings/pwm/pwm.txt again:
+
+pwm-specifier typically encodes the chip-relative PWM number and the PWM
+period in nanoseconds.
+
+Optionally, the pwm-specifier can encode a number of flags (defined in
+<dt-bindings/pwm/pwm.h>) in a third cell:
+- PWM_POLARITY_INVERTED: invert the PWM signal polarity
+
+So we are using the 24th PWM and 4000 nanosecod period. We don't want
+any flags.
+
+So
+
+pwms = <&gpio0 24 4000>;  
+
+has a phandle, and then 2 cells.
+
+    Andrew
