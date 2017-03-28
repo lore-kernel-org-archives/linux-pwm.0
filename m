@@ -1,67 +1,72 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH REGRESSION-FIX resend] pwm: lpss: Set enable-bit before
- waiting for update-bit
-Date: Tue, 28 Mar 2017 19:20:11 +0200
-Message-ID: <d24997bc-9afc-00ec-425d-92a2d48ec2c6@redhat.com>
-References: <20170325140658.26868-1-hdegoede@redhat.com>
- <1490712327.708.30.camel@linux.intel.com>
+From: Sylvain Lemieux <slemieux.tyco@gmail.com>
+Subject: Re: [RESEND PATCH 1/3] dt: pwm: lpc32xx: add description of clocks
+ and #pwm-cells properties
+Date: Tue, 28 Mar 2017 13:24:01 -0400
+Message-ID: <1490721841.24147.1.camel@gmail.com>
+References: <20170216202749.20653-1-slemieux.tyco@gmail.com>
+ <20170216202749.20653-2-slemieux.tyco@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:23795 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754410AbdC1RUU (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 28 Mar 2017 13:20:20 -0400
-In-Reply-To: <1490712327.708.30.camel@linux.intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170216202749.20653-2-slemieux.tyco@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, vz@mleia.com
 List-Id: linux-pwm@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, "Koskinen, Ilkka" <ilkka.koskinen@intel.com>
 
-Hi,
+ping
 
-On 03/28/2017 04:45 PM, Andy Shevchenko wrote:
-> On Sat, 2017-03-25 at 15:06 +0100, Hans de Goede wrote:
->> Hi Andy, Thierry,
->>
->> This patch fixes a regression with the pwm-lpss driver in 4.11,
->> where it once turned off will not turn back on again on some
->> machines. Yet it has been silent around this patch for some
->> time now. Can you please review this and get it queued as a fix
->> for 4.11 ?
->
-> I have tested this patch (*) on 3 boards:
-> 1) internal development board (ApolloLake)
-> 2) MinnowBoard MAX (BayTrail)
-> 3) Intel Edison / Arduino break out (Tangier)
-> 4) ...not yet... (CherryTrail / Braswell)
->
-> So, the patch *broke* functionality on 1), while 2) and 3) are survived.
-
-Bummer, so on Apollo Lake we need to set the update bit
-*and* wait for it to get acked before setting enable ?
-
-NOte my patch does not change the order of writes, only when we
-do the wait.
-
-The only good options I see to fix this is to introduce SoC family
-specific code paths :|
-
-If you can whip up a new version which is tested on Apollo Lake
-and Bay Trail I can run some tests on Cherry Trail.
-
-Regards,
-
-Hans
-
-
-
->
-> (*) The base is my eds branch (https://github.com/andy-shev/linux/tree/e
-> ds, v4.11-rc4 based) + few pin control related patches to enable PWM
-> output.
->
-> P.S. I'll continue looking for CherryTrail / Braswell based board to
-> have some coverage there in the future.
->
+On Thu, 2017-02-16 at 15:27 -0500, slemieux.tyco@gmail.com wrote:
+> From: Vladimir Zapolskiy <vz@mleia.com>
+> 
+> NXP LPC32xx SoCs have two simple independent PWM controllers with a single
+> output each, in this case there is no need to specify PWM channel argument
+> on client side, one cell for setting PWM output frequency is sufficient.
+> 
+> Another added to the description property 'clocks' has a standard meaning
+> of a controller supply clock, in the LPC32xx User's Manual the clock is
+> denoted as PWM1_CLK or PWM2_CLK clock.
+> 
+> Signed-off-by: Vladimir Zapolskiy <vz@mleia.com>
+> Reviewed-by: Sylvain Lemieux <slemieux.tyco@gmail.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
+> index 74b5bc5dd19a..523d79662861 100644
+> --- a/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
+> +++ b/Documentation/devicetree/bindings/pwm/lpc32xx-pwm.txt
+> @@ -3,15 +3,22 @@ LPC32XX PWM controller
+>  Required properties:
+>  - compatible: should be "nxp,lpc3220-pwm"
+>  - reg: physical base address and length of the controller's registers
+> +- clocks: clock phandle and clock specifier pair
+> +- #pwm-cells: should be 1, the cell is used to specify the period in
+> +  nanoseconds.
+>  
+>  Examples:
+>  
+>  pwm@4005c000 {
+>  	compatible = "nxp,lpc3220-pwm";
+>  	reg = <0x4005c000 0x4>;
+> +	clocks = <&clk LPC32XX_CLK_PWM1>;
+> +	#pwm-cells = <1>;
+>  };
+>  
+>  pwm@4005c004 {
+>  	compatible = "nxp,lpc3220-pwm";
+>  	reg = <0x4005c004 0x4>;
+> +	clocks = <&clk LPC32XX_CLK_PWM2>;
+> +	#pwm-cells = <1>;
+>  };
