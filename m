@@ -1,51 +1,35 @@
-From: Ilkka Koskinen <ilkka.koskinen@intel.com>
-Subject: Re: [PATCH REGRESSION-FIX resend] pwm: lpss: Set enable-bit before
- waiting for update-bit
-Date: Mon, 27 Mar 2017 15:14:59 -0700
-Message-ID: <20170327221459.GA105573@kammari>
-References: <20170325140658.26868-1-hdegoede@redhat.com>
- <1490531124.708.1.camel@linux.intel.com>
+From: Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH v4 0/4] gpio: mvebu: Add PWM fan support
+Date: Tue, 28 Mar 2017 15:57:39 +0200
+Message-ID: <20170328135739.GL17041@lunn.ch>
+References: <20170327194301.1104-1-ralph.sennhauser@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga05.intel.com ([192.55.52.43]:36210 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752580AbdC0WOy (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Mon, 27 Mar 2017 18:14:54 -0400
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <1490531124.708.1.camel@linux.intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <20170327194301.1104-1-ralph.sennhauser@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, Alexandre Courbot <gnurou@gmail.com>, Jason Cooper <jason@lakedaemon.net>, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Gregory Clement <gregory.clement@free-electrons.com>, Imre Kaloz <kaloz@openwrt.org>, linux-arm-kernel@lists.infradead.org, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Hans de Goede <hdegoede@redhat.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 
-Hi,
+> Pending:
+>   * npwm = 1? I vote no if that counts. ;) (suggested by Thierry Reding)
+>   * Tested-by: Andrew Lunn for v1 needs renewing
 
-On Sun, Mar 26, 2017 at 03:25:24PM +0300, Andy Shevchenko wrote:
-> On Sat, 2017-03-25 at 15:06 +0100, Hans de Goede wrote:
-> > Hi Andy, Thierry,
-> > 
-> > This patch fixes a regression with the pwm-lpss driver in 4.11,
-> > where it once turned off will not turn back on again on some
-> > machines. Yet it has been silent around this patch for some
-> > time now. Can you please review this and get it queued as a fix
-> > for 4.11 ?
-> > 
+Hi Ralph
 
-Sorry, my bad. I thought I replied to this but obviously didn't.
+I just tested this version. Fan it still keeping my Mamba board cool.
 
-> Hans, please, give me and Ilkka time to test this. It might appear that
-> this fix breaks other platforms and we might need to introduce a quirk
-> based on PCI ID. (Hope not)
+Tested-by: Andrew Lunn <andrew@lunn.ch>
 
-While the patch seems ok, I have the same concern. 
- 
-> P.S. I will try to allocate time next week soonish for that.
-> 
-> Ilkka, can you do some tests on your side?
-
-Unfortunately, I don't have a suitable device anymore as I changed the
-team. However, I have asked a colleague to test the patch on BXT. He's
-planning to do that this week.
-
-Br, Ilkka
+    Andrew
