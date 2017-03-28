@@ -1,35 +1,47 @@
-From: Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v4 0/4] gpio: mvebu: Add PWM fan support
-Date: Tue, 28 Mar 2017 15:57:39 +0200
-Message-ID: <20170328135739.GL17041@lunn.ch>
-References: <20170327194301.1104-1-ralph.sennhauser@gmail.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH REGRESSION-FIX resend] pwm: lpss: Set enable-bit before
+ waiting for update-bit
+Date: Tue, 28 Mar 2017 17:45:27 +0300
+Message-ID: <1490712327.708.30.camel@linux.intel.com>
+References: <20170325140658.26868-1-hdegoede@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20170327194301.1104-1-ralph.sennhauser@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, Alexandre Courbot <gnurou@gmail.com>, Jason Cooper <jason@lakedaemon.net>, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Gregory Clement <gregory.clement@free-electrons.com>, Imre Kaloz <kaloz@openwrt.org>, linux-arm-kernel@lists.infradead.org, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:17884 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751903AbdC1Opf (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 28 Mar 2017 10:45:35 -0400
+In-Reply-To: <20170325140658.26868-1-hdegoede@redhat.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Hans de Goede <hdegoede@redhat.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, "Koskinen, Ilkka" <ilkka.koskinen@intel.com>
 
-> Pending:
->   * npwm = 1? I vote no if that counts. ;) (suggested by Thierry Reding)
->   * Tested-by: Andrew Lunn for v1 needs renewing
+On Sat, 2017-03-25 at 15:06 +0100, Hans de Goede wrote:
+> Hi Andy, Thierry,
+> 
+> This patch fixes a regression with the pwm-lpss driver in 4.11,
+> where it once turned off will not turn back on again on some
+> machines. Yet it has been silent around this patch for some
+> time now. Can you please review this and get it queued as a fix
+> for 4.11 ?
 
-Hi Ralph
+I have tested this patch (*) on 3 boards:
+1) internal development board (ApolloLake)
+2) MinnowBoard MAX (BayTrail)
+3) Intel Edison / Arduino break out (Tangier)
+4) ...not yet... (CherryTrail / Braswell)
 
-I just tested this version. Fan it still keeping my Mamba board cool.
+So, the patch *broke* functionality on 1), while 2) and 3) are survived.
 
-Tested-by: Andrew Lunn <andrew@lunn.ch>
+(*) The base is my eds branch (https://github.com/andy-shev/linux/tree/e
+ds, v4.11-rc4 based) + few pin control related patches to enable PWM
+output.
 
-    Andrew
+P.S. I'll continue looking for CherryTrail / Braswell based board to
+have some coverage there in the future.
+
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
