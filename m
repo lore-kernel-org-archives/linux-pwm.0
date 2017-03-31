@@ -1,80 +1,56 @@
-From: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-Subject: Re: [PATCH v4 2/4] mvebu: xp: Add PWM properties to .dtsi files
-Date: Thu, 30 Mar 2017 18:14:49 +0200
-Message-ID: <20170330181449.27508830@gmail.com>
-References: <20170327194301.1104-1-ralph.sennhauser@gmail.com>
-        <20170327194301.1104-3-ralph.sennhauser@gmail.com>
-        <87wpb693az.fsf@free-electrons.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH REGRESSION-FIX resend] pwm: lpss: Set enable-bit before
+ waiting for update-bit
+Date: Fri, 31 Mar 2017 23:07:04 +0300
+Message-ID: <1490990824.708.90.camel@linux.intel.com>
+References: <20170325140658.26868-1-hdegoede@redhat.com>
+         <1490712327.708.30.camel@linux.intel.com>
+         <d24997bc-9afc-00ec-425d-92a2d48ec2c6@redhat.com>
+         <1490722132.708.43.camel@linux.intel.com>
+         <1490722434.708.45.camel@linux.intel.com>
+         <f2687abf-1fbb-de12-ab1f-be5056cddb70@redhat.com>
+         <1490786665.708.47.camel@linux.intel.com>
+         <3445f086-3619-33fb-7cfc-1c06b1ea654b@redhat.com>
+         <1490809289.708.57.camel@linux.intel.com>
+         <d399a9cb-7f73-08cd-47b5-f25aee416a6e@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f194.google.com ([209.85.128.194]:36441 "EHLO
-        mail-wr0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933356AbdC3QOz (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 30 Mar 2017 12:14:55 -0400
-In-Reply-To: <87wpb693az.fsf@free-electrons.com>
+Received: from mga04.intel.com ([192.55.52.120]:34990 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1755104AbdCaUHI (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 31 Mar 2017 16:07:08 -0400
+In-Reply-To: <d399a9cb-7f73-08cd-47b5-f25aee416a6e@redhat.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Imre Kaloz <kaloz@openwrt.org>, Andrew Lunn <andrew@lunn.ch>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jason Cooper <jason@lakedaemon.net>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Russell King <linux@armlinux.org.uk>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Hans de Goede <hdegoede@redhat.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, "Koskinen, Ilkka" <ilkka.koskinen@intel.com>
 
-On Thu, 30 Mar 2017 17:45:08 +0200
-Gregory CLEMENT <gregory.clement@free-electrons.com> wrote:
-
-> Hi Ralph,
->  
->  On lun., mars 27 2017, Ralph Sennhauser <ralph.sennhauser@gmail.com>
-> wrote:
+On Wed, 2017-03-29 at 20:25 +0200, Hans de Goede wrote:
+> Hi,
 > 
-> The title should start by ARM: dts: mvebu:
-> 
-> If there is no need to have a v5 then I wil take care of modifying the
-> title while applying it.
+> On 29-03-17 19:41, Andy Shevchenko wrote:
+> > On Wed, 2017-03-29 at 14:42 +0200, Hans de Goede wrote:
 
-Noted.
+Thanks for your patience and valuable input.
 
-> 
-> 
-> > From: Andrew Lunn <andrew@lunn.ch>
-> >
-> > Add properties to the GPIO nodes to allow them to be also used as
-> > PWM lines.
-> >
-> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> > URL: https://patchwork.ozlabs.org/patch/427294/
-> > [Ralph Sennhauser:
-> >   * Use new compatible string marvell,armada-370-xp-gpio
-> >   * Add missing reg-names / #pwm-cell properties to
-> > armada-xp-mv78260.dtsi 'gpio1' node]
-> > Signed-off-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-> > ---
-> >  arch/arm/boot/dts/armada-370.dtsi        | 16 +++++++++++-----
-> >  arch/arm/boot/dts/armada-xp-mv78230.dtsi | 14 ++++++++++----
-> >  arch/arm/boot/dts/armada-xp-mv78260.dtsi | 16 +++++++++++-----
-> >  arch/arm/boot/dts/armada-xp-mv78460.dtsi | 16 +++++++++++-----
-> >  4 files changed, 43 insertions(+), 19 deletions(-)
-> >
-> > diff --git a/arch/arm/boot/dts/armada-370.dtsi
-> > b/arch/arm/boot/dts/armada-370.dtsi index cc011c8..e30b076 100644
-> > --- a/arch/arm/boot/dts/armada-370.dtsi
-> > +++ b/arch/arm/boot/dts/armada-370.dtsi
-> > @@ -137,29 +137,35 @@
-> >  			};
-> >  
-> >  			gpio0: gpio@18100 {
-> > -				compatible = "marvell,orion-gpio";
-> > -				reg = <0x18100 0x40>;
-> > +				compatible =
-> > "marvell,armada-370-xp-gpio";  
-> 
-> I think we should keep the "marvell,orion-gpio" too because the
-> hardware is still compatible with it. Morever it will allow to use a
-> recent dtb with an old kernel.
+So, I found CharryTrail with enabled PWM (UP board v0.4) and confirm the
+bug.
 
-And it will remain compatible. Apart from not collecting compatible
-strings there is no reason to drop them right now, so will add them back
-for a (possible) v5.
+Moreover, I have re-tested again all 4 platforms with and without your
+fix, and I dunno how I did not notice this before, but looks like either
+mine (though commit message shows that I have tested on 3 platforms at
+least, so, I can re-test for sure) or Ilkka's patch broke it on all
+platforms except Broxton / Apollo Lake.
 
-Thanks
-Ralph
+So, summurize what we need is a quirk for Broxton / Apollo Lake. I need
+to check Gemini Lake also to be sure.
+
+And we definitely need this as a fix for stable. I would appreciate if
+you can figure out which patch from previous series (b14e8ceff034
+or 10d56a4cb1c6) broke it.
+
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
