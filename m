@@ -1,79 +1,76 @@
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH REGRESSION-FIX resend] pwm: lpss: Set enable-bit before
- waiting for update-bit
-Date: Fri, 31 Mar 2017 22:52:18 +0200
-Message-ID: <05b8cb4a-ae77-8a06-67de-a89b7333f651@redhat.com>
-References: <20170325140658.26868-1-hdegoede@redhat.com>
- <1490712327.708.30.camel@linux.intel.com>
- <d24997bc-9afc-00ec-425d-92a2d48ec2c6@redhat.com>
- <1490722132.708.43.camel@linux.intel.com>
- <1490722434.708.45.camel@linux.intel.com>
- <f2687abf-1fbb-de12-ab1f-be5056cddb70@redhat.com>
- <1490786665.708.47.camel@linux.intel.com>
- <3445f086-3619-33fb-7cfc-1c06b1ea654b@redhat.com>
- <1490809289.708.57.camel@linux.intel.com>
- <d399a9cb-7f73-08cd-47b5-f25aee416a6e@redhat.com>
- <1490990824.708.90.camel@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:36880 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1755216AbdCaUwV (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Fri, 31 Mar 2017 16:52:21 -0400
-In-Reply-To: <1490990824.708.90.camel@linux.intel.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v4 01/14] dt/bindings: Document pinctrl-ingenic
+Date: Sun,  2 Apr 2017 22:42:31 +0200
+Message-ID: <20170402204244.14216-2-paul@crapouillou.net>
+References: <20170125185207.23902-2-paul@crapouillou.net>
+ <20170402204244.14216-1-paul@crapouillou.net>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170402204244.14216-1-paul@crapouillou.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>
+Cc: Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, james.hogan@imgtec.com, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
 List-Id: linux-pwm@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, "Koskinen, Ilkka" <ilkka.koskinen@intel.com>
 
-Hi,
+This commit adds documentation for the devicetree bindings of the
+pinctrl-ingenic driver, which handles pin configuration and pin
+muxing of the Ingenic SoCs currently supported by the Linux kernel.
 
-On 31-03-17 22:07, Andy Shevchenko wrote:
-> On Wed, 2017-03-29 at 20:25 +0200, Hans de Goede wrote:
->> Hi,
->>
->> On 29-03-17 19:41, Andy Shevchenko wrote:
->>> On Wed, 2017-03-29 at 14:42 +0200, Hans de Goede wrote:
->
-> Thanks for your patience and valuable input.
->
-> So, I found CharryTrail with enabled PWM (UP board v0.4) and confirm the
-> bug.
->
-> Moreover, I have re-tested again all 4 platforms with and without your
-> fix, and I dunno how I did not notice this before, but looks like either
-> mine (though commit message shows that I have tested on 3 platforms at
-> least, so, I can re-test for sure) or Ilkka's patch broke it on all
-> platforms except Broxton / Apollo Lake.
->
-> So, summurize what we need is a quirk for Broxton / Apollo Lake. I need
-> to check Gemini Lake also to be sure.
->
-> And we definitely need this as a fix for stable. I would appreciate if
-> you can figure out which patch from previous series (b14e8ceff034
-> or 10d56a4cb1c6) broke it.
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ .../bindings/pinctrl/ingenic,pinctrl.txt           | 41 ++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/ingenic,pinctrl.txt
 
-My patch commit msg says: "fixes 10d56a4cb1c6c894c60acbaec0f8aa44aba833b0"
-and unless my memory deceives me I tested that that was the bad commit
-by reverting it.
+ v2: Rewrote the documentation for the new pinctrl-ingenic driver
+ v3: No changes
+ v4: Update for the v4 version of the pinctrl-ingenic driver
 
-The problem for Cherry Trail is not perse the order in which the
-update / enable bits are written (AFAICT), but the waiting for
-the update bit to clear while the enable bit is not set, which
-is why my latest version only moves the wait.
-
-That wait was already present before 10d56a4cb1c6, but with a
-reasonable short timeout, and just continuing on after the
-timeout. 10d56a4cb1c6 makes pwm_lpss_apply() exit with an
-error (without ever setting the enable bit) when the timeout
-expires.
-
-The troublesome commit caused 2 issues:
-1) An IMHO unacceptable long timeout (0.5 seconds of near busy waiting on each enable)
-2) Erroring out when the timeout expires without the update flag clearing
-
-Regards,
-
-Hans
+diff --git a/Documentation/devicetree/bindings/pinctrl/ingenic,pinctrl.txt b/Documentation/devicetree/bindings/pinctrl/ingenic,pinctrl.txt
+new file mode 100644
+index 000000000000..0e43b527b681
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pinctrl/ingenic,pinctrl.txt
+@@ -0,0 +1,41 @@
++Ingenic jz47xx pin controller
++
++Please refer to pinctrl-bindings.txt in this directory for details of the
++common pinctrl bindings used by client devices, including the meaning of the
++phrase "pin configuration node".
++
++For the jz47xx SoCs, pin control is tightly bound with GPIO ports. All pins may
++be used as GPIOs, multiplexed device functions are configured within the
++GPIO port configuration registers and it is typical to refer to pins using the
++naming scheme "PxN" where x is a character identifying the GPIO port with
++which the pin is associated and N is an integer from 0 to 31 identifying the
++pin within that GPIO port. For example PA0 is the first pin in GPIO port A, and
++PB31 is the last pin in GPIO port B. The jz4740 contains 4 GPIO ports, PA to
++PD, for a total of 128 pins. The jz4780 contains 6 GPIO ports, PA to PF, for a
++total of 192 pins.
++
++
++Required properties:
++--------------------
++
++ - compatible: One of:
++    - "ingenic,jz4740-pinctrl"
++    - "ingenic,jz4770-pinctrl"
++    - "ingenic,jz4780-pinctrl"
++ - reg: Address range of the pinctrl registers.
++
++
++GPIO sub-nodes
++--------------
++
++The pinctrl node can have optional sub-nodes for the Ingenic GPIO driver;
++please refer to ../gpio/ingenic,gpio.txt.
++
++
++Example:
++--------
++
++pinctrl: ingenic-pinctrl@10010000 {
++	compatible = "ingenic,jz4740-pinctrl";
++	reg = <0x10010000 0x400>;
++};
+-- 
+2.11.0
