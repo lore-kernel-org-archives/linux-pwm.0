@@ -1,74 +1,53 @@
-From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH v4 06/14] MIPS: jz4740: DTS: Add nodes for ingenic pinctrl
- and gpio drivers
-Date: Mon, 3 Apr 2017 13:32:46 +0300
-Message-ID: <b5d195a9-ec3d-1b92-b17c-e87bd6d990cf@cogentembedded.com>
-References: <20170125185207.23902-2-paul@crapouillou.net>
- <20170402204244.14216-1-paul@crapouillou.net>
- <20170402204244.14216-7-paul@crapouillou.net>
- <48f7f4ee-b8e3-0096-ddea-2fbe0b399b40@cogentembedded.com>
- <cf809000718514ba612b4f7b477586a9@crapouillou.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <cf809000718514ba612b4f7b477586a9@crapouillou.net>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, james.hogan@imgtec.com, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
+From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Subject: [PATCH 0/3] pwm: pwm-samsung: fix suspend/resume support
+Date: Mon, 03 Apr 2017 15:47:03 +0200
+Message-ID: <1491227226-12972-1-git-send-email-b.zolnierkie@samsung.com>
+References: <CGME20170403134731epcas1p411267df663cda69eb32f382011fdda08@epcas1p4.samsung.com>
+Return-path: <linux-hwmon-owner@vger.kernel.org>
+Sender: linux-hwmon-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Kamil Debski <kamil@wypas.org>
+Cc: Tomasz Figa <tomasz.figa@gmail.com>, linux-pwm@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, b.zolnierkie@samsung.com
 List-Id: linux-pwm@vger.kernel.org
 
-On 4/3/2017 1:20 PM, Paul Cercueil wrote:
+Hi,
 
->>> For a description of the pinctrl devicetree node, please read
->>> Documentation/devicetree/bindings/pinctrl/ingenic,pinctrl.txt
->>>
->>> For a description of the gpio devicetree nodes, please read
->>> Documentation/devicetree/bindings/gpio/ingenic,gpio.txt
->>>
->>> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
->> [...]
->>
->>> diff --git a/arch/mips/boot/dts/ingenic/jz4740.dtsi
->>> b/arch/mips/boot/dts/ingenic/jz4740.dtsi
->>> index 3e1587f1f77a..9c23c877fc34 100644
->>> --- a/arch/mips/boot/dts/ingenic/jz4740.dtsi
->>> +++ b/arch/mips/boot/dts/ingenic/jz4740.dtsi
->>> @@ -55,6 +55,67 @@
->>>          clock-names = "rtc";
->>>      };
->>>
->>> +    pinctrl: ingenic-pinctrl@10010000 {
->>
->>    The node name should be generic, so please rename it to something
->> like "pin-controller@..."
->
-> OK.
->
->>> +        compatible = "ingenic,jz4740-pinctrl";
->>> +        reg = <0x10010000 0x400>;
->>> +
->>> +        gpa: gpio-controller@0 {
->>
->>    The name should be just "gpio@0", according to ePAPR and its
->> successor spec. Although, using the <unit-address> without the "reg"
->> prop isn't allowed either...
->
-> ePAPR says: "If the node has no reg property, the unit-address may be
+This patchset fixes suspend/resume support in pwm-samsung
+driver (which has an effect of fixing suspend/resume support
+for PWM client drivers such as pwm-fan one). Then it removes
+no longer needed suspend/resume code from pwm-fan driver.
 
-    My copy of ePAPR 1.1 says "must be omitted". :-)
+It was tested on Odroid-XU3 board (with few extra patches
+adding SoC/board suspend/resume support which are not in
+upstream yet).
 
-> omitted if the node name alone differentiates the node from other nodes at
-> the same level in the tree."
+The initial issue that has been observed on this configuration
+was that after suspend/resume operation the fan was turned on
+(while the thermal code had explicitly disabled the fan by
+calling back into pwm-fan driver before the suspend/resume).
 
-> I could use 'gpio@bank-a', it is allowed by the spec. Or do you prefer 'gpio@0'?
+Fixing this in the pwm-fan driver itself is not feasible since
+pwm_config()/pwm_disable() & co. API saves information about
+current state and doesn't pass the relevant values to PWM core
+if they are identical to the ones used previously (moreover PWM
+core itself does the same before calling into the PWM hardware
+driver).
 
-    Hm... maybe you should just use the "reg" prop.
+Best regards,
+--
+Bartlomiej Zolnierkiewicz
+Samsung R&D Institute Poland
+Samsung Electronics
 
-> I'll wait from some feedback on the other patches then send a v5.
->
-> Thanks,
-> -Paul
 
-MBR, Sergei
+Bartlomiej Zolnierkiewicz (3):
+  pwm: pwm-samsung: remove redundant checks from pwm_samsung_config()
+  pwm: pwm-samsung: fix suspend/resume support
+  hwmon: pwm-fan: remove no longer needed suspend/resume code
+
+ drivers/hwmon/pwm-fan.c   | 32 ----------------------
+ drivers/pwm/pwm-samsung.c | 70 +++++++++++++++++++++++------------------------
+ 2 files changed, 35 insertions(+), 67 deletions(-)
+
+-- 
+1.9.1
 
