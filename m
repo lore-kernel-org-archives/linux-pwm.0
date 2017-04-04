@@ -1,62 +1,29 @@
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2] backlight: pwm_bl: Fix GPIO out for unimplemented .get_direction()
-Date: Tue,  4 Apr 2017 12:54:35 +0200
-Message-ID: <1491303275-27180-1-git-send-email-geert+renesas@glider.be>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Peter Ujfalusi <peter.ujfalusi@ti.com>, Philipp Zabel <p.zabel@pengutronix.de>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v4 01/14] dt/bindings: Document pinctrl-ingenic
+Date: Tue, 4 Apr 2017 09:48:51 -0500
+Message-ID: <20170404144851.s53lj3hfdu5mjlx5@rob-hp-laptop>
+References: <20170125185207.23902-2-paul@crapouillou.net>
+ <20170402204244.14216-1-paul@crapouillou.net>
+ <20170402204244.14216-2-paul@crapouillou.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-mmc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170402204244.14216-2-paul@crapouillou.net>
+Sender: linux-mmc-owner@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, james.hogan@imgtec.com, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Commit 7613c922315e308a ("backlight: pwm_bl: Move the checks for initial
-power state to a separate function") not just moved some code, but made
-slight changes in semantics.
+On Sun, Apr 02, 2017 at 10:42:31PM +0200, Paul Cercueil wrote:
+> This commit adds documentation for the devicetree bindings of the
+> pinctrl-ingenic driver, which handles pin configuration and pin
+> muxing of the Ingenic SoCs currently supported by the Linux kernel.
+> 
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> ---
+>  .../bindings/pinctrl/ingenic,pinctrl.txt           | 41 ++++++++++++++++++++++
+>  1 file changed, 41 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/ingenic,pinctrl.txt
 
-If a gpiochip doesn't implement the optional .get_direction() callback,
-gpiod_get_direction always returns -EINVAL, which is never equal to
-GPIOF_DIR_IN, leading to the GPIO not being configured for output.
-
-To avoid this, invert the test and check for not GPIOF_DIR_OUT instead,
-like the original code did.
-
-This restores the display on r8a7740/armadillo.
-
-Fixes: 7613c922315e308a ("backlight: pwm_bl: Move the checks for initial power state to a separate function")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
-Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
-Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
----
-This fixes a regression introduced in v4.11-rc1.
-
-v2:
-  - Add Reviewed-by, Acked-by.
-
- drivers/video/backlight/pwm_bl.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index d7efcb632f7d9dde..002f1ce22bd02032 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -297,14 +297,15 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	}
- 
- 	/*
--	 * If the GPIO is configured as input, change the direction to output
--	 * and set the GPIO as active.
-+	 * If the GPIO is not known to be already configured as output, that
-+	 * is, if gpiod_get_direction returns either GPIOF_DIR_IN or -EINVAL,
-+	 * change the direction to output and set the GPIO as active.
- 	 * Do not force the GPIO to active when it was already output as it
- 	 * could cause backlight flickering or we would enable the backlight too
- 	 * early. Leave the decision of the initial backlight state for later.
- 	 */
- 	if (pb->enable_gpio &&
--	    gpiod_get_direction(pb->enable_gpio) == GPIOF_DIR_IN)
-+	    gpiod_get_direction(pb->enable_gpio) != GPIOF_DIR_OUT)
- 		gpiod_direction_output(pb->enable_gpio, 1);
- 
- 	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
--- 
-2.7.4
+Acked-by: Rob Herring <robh@kernel.org>
