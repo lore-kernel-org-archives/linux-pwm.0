@@ -1,13 +1,11 @@
 From: Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [RFC PATCH 2/2] drivers: pwm: pwm-atmel: add support for pwm modes
-Date: Wed, 5 Apr 2017 16:58:59 +0300
-Message-ID: <1491400739-9618-3-git-send-email-claudiu.beznea@microchip.com>
-References: <1491400739-9618-1-git-send-email-claudiu.beznea@microchip.com>
+Subject: [RFC PATCH 0/2] extends PWM framework to support PWM dead-times
+Date: Wed, 5 Apr 2017 17:02:28 +0300
+Message-ID: <1491400950-9857-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1491400739-9618-1-git-send-email-claudiu.beznea@microchip.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -17,228 +15,109 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: thierry.reding@gmail.com, corbet@lwn.net, robh+dt@kernel.org, mark.rutland@arm.com, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alexandre.belloni@free-electrons.com, boris.brezillon@free-electrons.com
+To: thierry.reding@gmail.com, corbet@lwn.net, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alexandre.belloni@free-electrons.com, boris.brezillon@free-electrons.com
 Cc: tudor.ambarus@microchip.com, andrei.pistirica@microchip.com, eugen.hristev@microchip.com, Claudiu Beznea <claudiu.beznea@microchip.com>, cristian.birsan@microchip.com
 List-Id: linux-pwm@vger.kernel.org
 
-Implement pwm modes by adding PWM controller specific
-configuration. Since this driver is used by controllers
-which supports PWM push-pull mode and controllers which
-doesn't, a new field was added in driver private data
-structure. Also, the driver private data structure was
-changed to adapt the new feature.
+Hi all,
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/pwm/pwm-atmel.c | 94 +++++++++++++++++++++++++++++++++----------------
- 1 file changed, 63 insertions(+), 31 deletions(-)
+Please give feedback on these patches which extends PWM framework
+in order to support PWM dead-times.
 
-diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-index 530d7dc..9e812ce 100644
---- a/drivers/pwm/pwm-atmel.c
-+++ b/drivers/pwm/pwm-atmel.c
-@@ -33,8 +33,11 @@
- 
- #define PWM_CMR			0x0
- /* Bit field in CMR */
--#define PWM_CMR_CPOL		(1 << 9)
--#define PWM_CMR_UPD_CDTY	(1 << 10)
-+#define PWM_CMR_CPOL		BIT(9)
-+#define PWM_CMR_UPD_CDTY	BIT(10)
-+#define PWM_CMR_DTHI		BIT(17)
-+#define PWM_CMR_DTLI		BIT(18)
-+#define PWM_CMR_PPM		BIT(19)
- #define PWM_CMR_CPRE_MSK	0xF
- 
- /* The following registers for PWM v1 */
-@@ -65,11 +68,16 @@ struct atmel_pwm_registers {
- 	u8 duty_upd;
- };
- 
-+struct atmel_pwm_data {
-+	struct atmel_pwm_registers regs;
-+	bool ppm_supported;
-+};
-+
- struct atmel_pwm_chip {
- 	struct pwm_chip chip;
- 	struct clk *clk;
- 	void __iomem *base;
--	const struct atmel_pwm_registers *regs;
-+	const struct atmel_pwm_data *data;
- 
- 	unsigned int updated_pwms;
- 	/* ISR is cleared when read, ensure only one thread does that */
-@@ -150,15 +158,15 @@ static void atmel_pwm_update_cdty(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
- 	u32 val;
- 
--	if (atmel_pwm->regs->duty_upd ==
--	    atmel_pwm->regs->period_upd) {
-+	if (atmel_pwm->data->regs.duty_upd ==
-+	    atmel_pwm->data->regs.period_upd) {
- 		val = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
- 		val &= ~PWM_CMR_UPD_CDTY;
- 		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
- 	}
- 
- 	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm,
--			    atmel_pwm->regs->duty_upd, cdty);
-+			    atmel_pwm->data->regs.duty_upd, cdty);
- }
- 
- static void atmel_pwm_set_cprd_cdty(struct pwm_chip *chip,
-@@ -168,9 +176,9 @@ static void atmel_pwm_set_cprd_cdty(struct pwm_chip *chip,
- 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
- 
- 	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm,
--			    atmel_pwm->regs->duty, cdty);
-+			    atmel_pwm->data->regs.duty, cdty);
- 	atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm,
--			    atmel_pwm->regs->period, cprd);
-+			    atmel_pwm->data->regs.period, cprd);
- }
- 
- static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -223,9 +231,10 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (state->enabled) {
- 		if (cstate.enabled &&
- 		    cstate.polarity == state->polarity &&
--		    cstate.period == state->period) {
-+		    cstate.period == state->period &&
-+		    cstate.mode == state->mode) {
- 			cprd = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm,
--						  atmel_pwm->regs->period);
-+						  atmel_pwm->data->regs.period);
- 			atmel_pwm_calculate_cdty(state, cprd, &cdty);
- 			atmel_pwm_update_cdty(chip, pwm, cdty);
- 			return 0;
-@@ -258,6 +267,23 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			val &= ~PWM_CMR_CPOL;
- 		else
- 			val |= PWM_CMR_CPOL;
-+
-+		/* PWM mode. */
-+		if (atmel_pwm->data->ppm_supported) {
-+			if (state->mode == PWM_MODE_PUSH_PULL) {
-+				val |= PWM_CMR_PPM;
-+				if (state->polarity == PWM_POLARITY_NORMAL)
-+					val = (val & ~PWM_CMR_DTHI) |
-+					      PWM_CMR_DTLI;
-+				else
-+					val = (val & ~PWM_CMR_DTLI) |
-+					      PWM_CMR_DTHI;
-+			} else {
-+				val &= ~(PWM_CMR_PPM | PWM_CMR_DTLI |
-+					 PWM_CMR_DTHI);
-+			}
-+		}
-+
- 		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
- 		atmel_pwm_set_cprd_cdty(chip, pwm, cprd, cdty);
- 		mutex_lock(&atmel_pwm->isr_lock);
-@@ -277,27 +303,33 @@ static const struct pwm_ops atmel_pwm_ops = {
- 	.owner = THIS_MODULE,
- };
- 
--static const struct atmel_pwm_registers atmel_pwm_regs_v1 = {
--	.period		= PWMV1_CPRD,
--	.period_upd	= PWMV1_CUPD,
--	.duty		= PWMV1_CDTY,
--	.duty_upd	= PWMV1_CUPD,
-+static const struct atmel_pwm_data atmel_pwm_data_v1 = {
-+	.regs = {
-+		.period		= PWMV1_CPRD,
-+		.period_upd	= PWMV1_CUPD,
-+		.duty		= PWMV1_CDTY,
-+		.duty_upd	= PWMV1_CUPD,
-+	},
-+	.ppm_supported = false,
- };
- 
--static const struct atmel_pwm_registers atmel_pwm_regs_v2 = {
--	.period		= PWMV2_CPRD,
--	.period_upd	= PWMV2_CPRDUPD,
--	.duty		= PWMV2_CDTY,
--	.duty_upd	= PWMV2_CDTYUPD,
-+static const struct atmel_pwm_data atmel_pwm_data_v2 = {
-+	.regs = {
-+		.period		= PWMV2_CPRD,
-+		.period_upd	= PWMV2_CPRDUPD,
-+		.duty		= PWMV2_CDTY,
-+		.duty_upd	= PWMV2_CDTYUPD,
-+	},
-+	.ppm_supported = true,
- };
- 
- static const struct platform_device_id atmel_pwm_devtypes[] = {
- 	{
- 		.name = "at91sam9rl-pwm",
--		.driver_data = (kernel_ulong_t)&atmel_pwm_regs_v1,
-+		.driver_data = (kernel_ulong_t)&atmel_pwm_data_v1,
- 	}, {
- 		.name = "sama5d3-pwm",
--		.driver_data = (kernel_ulong_t)&atmel_pwm_regs_v2,
-+		.driver_data = (kernel_ulong_t)&atmel_pwm_data_v2,
- 	}, {
- 		/* sentinel */
- 	},
-@@ -307,20 +339,20 @@ MODULE_DEVICE_TABLE(platform, atmel_pwm_devtypes);
- static const struct of_device_id atmel_pwm_dt_ids[] = {
- 	{
- 		.compatible = "atmel,at91sam9rl-pwm",
--		.data = &atmel_pwm_regs_v1,
-+		.data = &atmel_pwm_data_v1,
- 	}, {
- 		.compatible = "atmel,sama5d3-pwm",
--		.data = &atmel_pwm_regs_v2,
-+		.data = &atmel_pwm_data_v2,
- 	}, {
- 		.compatible = "atmel,sama5d2-pwm",
--		.data = &atmel_pwm_regs_v2,
-+		.data = &atmel_pwm_data_v2,
- 	}, {
- 		/* sentinel */
- 	},
- };
- MODULE_DEVICE_TABLE(of, atmel_pwm_dt_ids);
- 
--static inline const struct atmel_pwm_registers *
-+static inline const struct atmel_pwm_data*
- atmel_pwm_get_driver_data(struct platform_device *pdev)
- {
- 	const struct platform_device_id *id;
-@@ -330,18 +362,18 @@ atmel_pwm_get_driver_data(struct platform_device *pdev)
- 
- 	id = platform_get_device_id(pdev);
- 
--	return (struct atmel_pwm_registers *)id->driver_data;
-+	return (struct atmel_pwm_data *)id->driver_data;
- }
- 
- static int atmel_pwm_probe(struct platform_device *pdev)
- {
--	const struct atmel_pwm_registers *regs;
-+	const struct atmel_pwm_data *data;
- 	struct atmel_pwm_chip *atmel_pwm;
- 	struct resource *res;
- 	int ret;
- 
--	regs = atmel_pwm_get_driver_data(pdev);
--	if (!regs)
-+	data = atmel_pwm_get_driver_data(pdev);
-+	if (!data)
- 		return -ENODEV;
- 
- 	atmel_pwm = devm_kzalloc(&pdev->dev, sizeof(*atmel_pwm), GFP_KERNEL);
-@@ -373,7 +405,7 @@ static int atmel_pwm_probe(struct platform_device *pdev)
- 
- 	atmel_pwm->chip.base = -1;
- 	atmel_pwm->chip.npwm = 4;
--	atmel_pwm->regs = regs;
-+	atmel_pwm->data = data;
- 	atmel_pwm->updated_pwms = 0;
- 	mutex_init(&atmel_pwm->isr_lock);
- 
+For a PWM controller with more than one output signals per PWM channel
+dead-times are the delays introduced between the edges of the output
+signals and the original signal introduced in dead-time generator
+engine.
+E.g. consider a PWM controller with with the following diagram:
+
+                        -----------------
+                       |                 |---> PWMH
+        PWM signal --->| Dead-time engine|
+                       |                 |---> PWML
+                        -----------------
+
+With no dead-time configured, the PWMH and PWML signals will be
+complementary signals (rising and falling edges of PWMH and PWML
+have opposite leves, same duration and same starting time) as
+follows:
+
+                      ____0    D____P     ____      ____      ____
+        PWM signal __|    |____|    |____|    |____|    |____|    |___
+                      ____      ____      ____      ____      ____
+              PWMH __|    |____|    |____|    |____|    |____|    |___
+                   __      ____      ____      ____      ____      ___
+              PWML   |____|    |____|    |____|    |____|    |____|
+
+Where - 0 is the starting point of the signal
+      - D is the starting point of the duty-cycle
+      - P is the signal period
+
+Based on the above diagram:
+- rising edge dead-time - is the delay introduced in one of the
+dead-time engine output signal; the delay is introduced after
+rising edge of PWM signal
+- falling edge dead-time - is the delay introduced in one of the
+dead-time engine output signal; the delay is introduced after
+the end of falling edge of the PWM signal
+The following diagram explain how PWM dead-times falls on some signals:
+
+                      ____0    D____P     ____      ____      ____
+        PWM signal __|    |____|    |____|    |____|    |____|    |___
+                        __        __        __        __        __
+              PWMH ____|  |____re|  |______|  |______|  |______|  |___
+                   __        __        __        __        __        __
+              PWML   |______|  |____fe|  |______|  |______|  |______|
+
+In the upper diagram:
+- re = rising edge = the delay between D point of PWM signal
+(rising edge) and the starting point of the next edge
+- fe = falling edge = the delay between P point of PWM signal
+(falling edge) and the starting point of the next edge
+
+To configure the PWM dead-times new inputs were added to sysfs,
+in PWM subsystem, one for rising edge dead-time, one for falling
+edge deadtime.
+
+root@sama5d2-xplained:/sys/devices/platform/ahb/ahb:apb/f802c000.pwm/pwm/pwmchip0/pwm2# ls -l
+-r--r--r--    1 root     root          4096 Feb 10 10:00 capture
+-rw-r--r--    1 root     root          4096 Feb 10 10:01 deadtime_fe
+-rw-r--r--    1 root     root          4096 Feb 10 10:02 deadtime_re
+-rw-r--r--    1 root     root          4096 Feb 10 10:00 duty_cycle
+-rw-r--r--    1 root     root          4096 Feb 10 10:00 enable
+-rw-r--r--    1 root     root          4096 Feb 10 10:00 period
+-rw-r--r--    1 root     root          4096 Feb 10 10:00 polarity
+drwxr-xr-x    2 root     root             0 Feb 10 10:00 power
+-rw-r--r--    1 root     root          4096 Feb 10 10:00 uevent
+
+The PWM dead-times are used in half bridge converters applications.
+
+Please consider that this series was build on top of following
+patch series:
+[PATCH v3 0/2] switch to atomic PWM
+[PATCH v3 1/2] drivers: pwm: pwm-atmel: switch to atomic PWM
+[PATCH v3 2/2] drivers: pwm: pwm-atmel: enable PWM on sama5d2
+
+This patch series is not dependent on the other patch series
+I've made for extending PWM framework with PWM mode:
+[RFC PATCH 0/2] extend PWM framework to support PWM modes
+[RFC PATCH 1/2] drivers: pwm: core: implement pwm mode
+[RFC PATCH 2/2] drivers: pwm: pwm-atmel: add support for pwm modes
+but, if you consider relevant, and both patch changes are considered
+relevant for PWM subsistem, I can combine both of them, if any.
+
+Thanks you,
+Claudiu Beznea
+
+Claudiu Beznea (2):
+  drivers: pwm: core: implement pwm dead-times
+  drivers: pwm: pwm-atmel: implement pwm dead-time
+
+ Documentation/pwm.txt   | 52 ++++++++++++++++++++++++++++++++++
+ drivers/pwm/core.c      | 10 ++++++-
+ drivers/pwm/pwm-atmel.c | 56 ++++++++++++++++++++++++++++++++++---
+ drivers/pwm/sysfs.c     | 74 +++++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/pwm.h     | 36 ++++++++++++++++++++++++
+ 5 files changed, 223 insertions(+), 5 deletions(-)
+
 -- 
 2.7.4
