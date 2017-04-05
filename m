@@ -1,296 +1,168 @@
 From: Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [RFC PATCH 1/2] drivers: pwm: core: implement pwm dead-times
-Date: Wed, 5 Apr 2017 17:02:29 +0300
-Message-ID: <1491400950-9857-2-git-send-email-claudiu.beznea@microchip.com>
+Subject: [RFC PATCH 2/2] drivers: pwm: pwm-atmel: implement pwm dead-time
+Date: Wed, 5 Apr 2017 17:02:30 +0300
+Message-ID: <1491400950-9857-3-git-send-email-claudiu.beznea@microchip.com>
 References: <1491400950-9857-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1491400950-9857-1-git-send-email-claudiu.beznea@microchip.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: thierry.reding@gmail.com, corbet@lwn.net, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alexandre.belloni@free-electrons.com, boris.brezillon@free-electrons.com
-Cc: nicolas.ferre@microchip.com, andrei.pistirica@microchip.com, cristian.birsan@microchip.com, eugen.hristev@microchip.com, tudor.ambarus@microchip.com, Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc: tudor.ambarus@microchip.com, andrei.pistirica@microchip.com, eugen.hristev@microchip.com, Claudiu Beznea <claudiu.beznea@microchip.com>, cristian.birsan@microchip.com
 List-Id: linux-pwm@vger.kernel.org
 
-Extends PWM framework to support PWM dead-times.
-The notions introduced are rising edge dead-time
-and falling edge dead-time. These are useful for
-PWM controllers with cannels that have more than
-one outputs.
-The implementation add sysfs interface for
-configuration. It extends the pwm_state structure
-with two new members which keeps the values for
-dead-times.
-There was no additions in device tree for PWM channels
-with inputs there.
+Implement PWM dead-times for atmel PWM controllers.
+Since this driver is used by PWM controllers which
+supports dead-times and PWM controllers which doesn't,
+add specific input for dead-time register in atmel
+register private data structure.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- Documentation/pwm.txt | 52 ++++++++++++++++++++++++++++++++++++
- drivers/pwm/core.c    | 10 ++++++-
- drivers/pwm/sysfs.c   | 74 +++++++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/pwm.h   | 36 +++++++++++++++++++++++++
- 4 files changed, 171 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-atmel.c | 56 +++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 52 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
-index 789b27c..1dc530b 100644
---- a/Documentation/pwm.txt
-+++ b/Documentation/pwm.txt
-@@ -100,6 +100,58 @@ enable - Enable/disable the PWM signal (read/write).
- 	0 - disabled
- 	1 - enabled
+diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
+index 530d7dc..0e69319 100644
+--- a/drivers/pwm/pwm-atmel.c
++++ b/drivers/pwm/pwm-atmel.c
+@@ -33,8 +33,9 @@
  
-+deadtime_re -The rising edge dead-time
-+deadtime_fe - the falling edge dead-time
-+	For a PWM controller with more than one output signals per PWM channel
-+	dead-times are the delays introduced between the edges of the output
-+	signals and the original signal introduced in dead-time generator
-+	engine.
-+	E.g. consider a PWM controller with with the following diagram:
-+
-+                        -----------------
-+                       |                 |---> PWMH
-+        PWM signal --->| Dead-time engine|
-+                       |                 |---> PWML
-+                        -----------------
-+
-+	With no dead-time configured, the PWMH and PWML signals will be
-+	complementary signals (rising and falling edges of PWMH and PWML
-+	have opposite leves, same duration and same starting time) as
-+	follows:
-+
-+                      ____0    D____P     ____      ____      ____
-+        PWM signal __|    |____|    |____|    |____|    |____|    |___
-+                      ____      ____      ____      ____      ____
-+              PWMH __|    |____|    |____|    |____|    |____|    |___
-+                   __      ____      ____      ____      ____      ___
-+              PWML   |____|    |____|    |____|    |____|    |____|
-+	
-+	Where - 0 is the starting point of the signal
-+	      - D is the starting point of the duty-cycle
-+	      - P is the signal period
-+
-+	Based on the above diagram:
-+	- rising edge dead-time - is the delay introduced in one of the
-+	dead-time engine output signal; the delay is introduced after
-+	rising edge of PWM signal
-+	- falling edge dead-time - is the delay introduced in one of the
-+	dead-time engine output signal; the delay is introduced after
-+	the end of falling edge of the PWM signal
-+	See the following diagram:
-+
-+                      ____0    D____P     ____      ____      ____
-+        PWM signal __|    |____|    |____|    |____|    |____|    |___
-+                        __        __        __        __        __
-+              PWMH ____|  |____re|  |______|  |______|  |______|  |___
-+                   __        __        __        __        __        __
-+              PWML   |______|  |____fe|  |______|  |______|  |______|
-+
-+	In the upper diagram:
-+	- re = rising edge = the delay between D point of PWM signal
-+	(rising edge) and the starting point of the next edge
-+	- fe = falling edge = the delay between P point of PWM signal
-+	(falling edge) and the starting point of the next edge
-+
- Implementing a PWM driver
- -------------------------
+ #define PWM_CMR			0x0
+ /* Bit field in CMR */
+-#define PWM_CMR_CPOL		(1 << 9)
+-#define PWM_CMR_UPD_CDTY	(1 << 10)
++#define PWM_CMR_CPOL		BIT(9)
++#define PWM_CMR_UPD_CDTY	BIT(10)
++#define PWM_CMR_DTE		BIT(16)
+ #define PWM_CMR_CPRE_MSK	0xF
  
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index a0860b3..c1a9828 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -469,7 +469,8 @@ int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state)
- 	int err;
+ /* The following registers for PWM v1 */
+@@ -47,6 +48,7 @@
+ #define PWMV2_CDTYUPD		0x08
+ #define PWMV2_CPRD		0x0C
+ #define PWMV2_CPRDUPD		0x10
++#define PWMV2_DT		0x18
  
- 	if (!pwm || !state || !state->period ||
--	    state->duty_cycle > state->period)
-+	    state->duty_cycle > state->period ||
-+	    state->deadtime_re + state->deadtime_fe > state->period)
- 		return -EINVAL;
+ /*
+  * Max value for duty and period
+@@ -63,6 +65,7 @@ struct atmel_pwm_registers {
+ 	u8 period_upd;
+ 	u8 duty;
+ 	u8 duty_upd;
++	u8 dt;
+ };
  
- 	if (!memcmp(state, &pwm->state, sizeof(*state)))
-@@ -579,6 +580,9 @@ int pwm_adjust_config(struct pwm_device *pwm)
- 	pwm_get_args(pwm, &pargs);
- 	pwm_get_state(pwm, &state);
- 
-+	state.deadtime_re = 0;
-+	state.deadtime_fe = 0;
-+
- 	/*
- 	 * If the current period is zero it means that either the PWM driver
- 	 * does not support initial state retrieval or the PWM has not yet
-@@ -997,6 +1001,10 @@ static void pwm_dbg_show(struct pwm_chip *chip, struct seq_file *s)
- 		seq_printf(s, " duty: %u ns", state.duty_cycle);
- 		seq_printf(s, " polarity: %s",
- 			   state.polarity ? "inverse" : "normal");
-+		seq_printf(s, " dead-time rising edge: %u ns",
-+			   state.deadtime_re);
-+		seq_printf(s, " dead-time falling edge: %u ns",
-+			   state.deadtime_fe);
- 
- 		seq_puts(s, "\n");
- 	}
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index a813239..f91686e 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -223,11 +223,83 @@ static ssize_t capture_show(struct device *child,
- 	return sprintf(buf, "%u %u\n", result.period, result.duty_cycle);
+ struct atmel_pwm_chip {
+@@ -161,6 +164,32 @@ static void atmel_pwm_update_cdty(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			    atmel_pwm->regs->duty_upd, cdty);
  }
  
-+static ssize_t deadtime_re_show(struct device *child,
-+				struct device_attribute *attr,
-+				char *buf)
++static int atmel_pwm_calculate_deadtime(struct pwm_chip *chip,
++					struct pwm_state *state,
++					unsigned long cprd, unsigned long *dt)
 +{
-+	const struct pwm_device *pwm = child_to_pwm_device(child);
-+	struct pwm_state state;
++	unsigned long long cycles;
 +
-+	pwm_get_state(pwm, &state);
++	if (state->deadtime_fe > state->duty_cycle ||
++	    state->deadtime_re > state->period - state->duty_cycle)
++		return -EINVAL;
 +
-+	return sprintf(buf, "%u\n", state.deadtime_re);
++	*dt = 0;
++	if (state->deadtime_fe) {
++		cycles = (unsigned long long)state->deadtime_fe * cprd;
++		do_div(cycles, state->period);
++		*dt = (cycles << 16);
++	}
++
++	if (state->deadtime_re) {
++		cycles = (unsigned long long)state->deadtime_re * cprd;
++		do_div(cycles, state->period);
++		*dt |= cycles;
++	}
++
++	return 0;
 +}
 +
-+static ssize_t deadtime_re_store(struct device *child,
-+				 struct device_attribute *attr,
-+				 const char *buf, size_t size)
-+{
-+	struct pwm_export *export = child_to_pwm_export(child);
-+	struct pwm_device *pwm = export->pwm;
-+	struct pwm_state state;
-+	unsigned int val;
-+	int ret;
-+
-+	ret = kstrtouint(buf, 0, &val);
-+	if (ret)
-+		return ret;
-+
-+	mutex_lock(&export->lock);
-+	pwm_get_state(pwm, &state);
-+	state.deadtime_re = val;
-+	ret = pwm_apply_state(pwm, &state);
-+	mutex_unlock(&export->lock);
-+
-+	return ret ? : size;
-+}
-+
-+static ssize_t deadtime_fe_show(struct device *child,
-+				struct device_attribute *attr,
-+				char *buf)
-+{
-+	const struct pwm_device *pwm = child_to_pwm_device(child);
-+	struct pwm_state state;
-+
-+	pwm_get_state(pwm, &state);
-+
-+	return sprintf(buf, "%u\n", state.deadtime_fe);
-+}
-+
-+static ssize_t deadtime_fe_store(struct device *child,
-+				 struct device_attribute *attr,
-+				 const char *buf, size_t size)
-+{
-+	struct pwm_export *export = child_to_pwm_export(child);
-+	struct pwm_device *pwm = export->pwm;
-+	struct pwm_state state;
-+	unsigned int val;
-+	int ret;
-+
-+	ret = kstrtouint(buf, 0, &val);
-+	if (ret)
-+		return ret;
-+
-+	mutex_lock(&export->lock);
-+	pwm_get_state(pwm, &state);
-+	state.deadtime_fe = val;
-+	ret = pwm_apply_state(pwm, &state);
-+	mutex_unlock(&export->lock);
-+
-+	return ret ? : size;
-+}
-+
- static DEVICE_ATTR_RW(period);
- static DEVICE_ATTR_RW(duty_cycle);
- static DEVICE_ATTR_RW(enable);
- static DEVICE_ATTR_RW(polarity);
- static DEVICE_ATTR_RO(capture);
-+static DEVICE_ATTR_RW(deadtime_re);
-+static DEVICE_ATTR_RW(deadtime_fe);
- 
- static struct attribute *pwm_attrs[] = {
- 	&dev_attr_period.attr,
-@@ -235,6 +307,8 @@ static struct attribute *pwm_attrs[] = {
- 	&dev_attr_enable.attr,
- 	&dev_attr_polarity.attr,
- 	&dev_attr_capture.attr,
-+	&dev_attr_deadtime_re.attr,
-+	&dev_attr_deadtime_fe.attr,
- 	NULL
- };
- ATTRIBUTE_GROUPS(pwm);
-diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index 08fad7c..7547053 100644
---- a/include/linux/pwm.h
-+++ b/include/linux/pwm.h
-@@ -53,10 +53,14 @@ enum {
-  * @duty_cycle: PWM duty cycle (in nanoseconds)
-  * @polarity: PWM polarity
-  * @enabled: PWM enabled status
-+ * @deadtime_re: PWM rising edge deadtime
-+ * @deadtime_fe: PWM falling edge deadtime
-  */
- struct pwm_state {
- 	unsigned int period;
- 	unsigned int duty_cycle;
-+	unsigned int deadtime_re;
-+	unsigned int deadtime_fe;
- 	enum pwm_polarity polarity;
- 	bool enabled;
- };
-@@ -143,6 +147,36 @@ static inline enum pwm_polarity pwm_get_polarity(const struct pwm_device *pwm)
- 	return state.polarity;
- }
- 
-+static inline void pwm_set_deadtime_re(struct pwm_device *pwm, unsigned int dt)
-+{
-+	if (pwm)
-+		pwm->state.deadtime_re = dt;
-+}
-+
-+static inline unsigned int pwm_get_deadtime_re(const struct pwm_device *pwm)
-+{
-+	struct pwm_state state;
-+
-+	pwm_get_state(pwm, &state);
-+
-+	return state.deadtime_re;
-+}
-+
-+static inline void pwm_set_deadtime_fe(struct pwm_device *pwm, unsigned int dt)
-+{
-+	if (pwm)
-+		pwm->state.deadtime_fe = dt;
-+}
-+
-+static inline unsigned int pwm_get_deadtime_fe(const struct pwm_device *pwm)
-+{
-+	struct pwm_state state;
-+
-+	pwm_get_state(pwm, &state);
-+
-+	return state.deadtime_fe;
-+}
-+
- static inline void pwm_get_args(const struct pwm_device *pwm,
- 				struct pwm_args *args)
+ static void atmel_pwm_set_cprd_cdty(struct pwm_chip *chip,
+ 				    struct pwm_device *pwm,
+ 				    unsigned long cprd, unsigned long cdty)
+@@ -214,7 +243,7 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
  {
-@@ -180,6 +214,8 @@ static inline void pwm_init_state(const struct pwm_device *pwm,
- 	state->period = args.period;
- 	state->polarity = args.polarity;
- 	state->duty_cycle = 0;
-+	state->deadtime_re = 0;
-+	state->deadtime_fe = 0;
- }
+ 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
+ 	struct pwm_state cstate;
+-	unsigned long cprd, cdty;
++	unsigned long cprd, cdty, dt;
+ 	u32 pres, val;
+ 	int ret;
  
- /**
+@@ -223,7 +252,9 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (state->enabled) {
+ 		if (cstate.enabled &&
+ 		    cstate.polarity == state->polarity &&
+-		    cstate.period == state->period) {
++		    cstate.period == state->period &&
++		    cstate.deadtime_re == state->deadtime_re &&
++		    cstate.deadtime_fe == state->deadtime_fe) {
+ 			cprd = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm,
+ 						  atmel_pwm->regs->period);
+ 			atmel_pwm_calculate_cdty(state, cprd, &cdty);
+@@ -239,6 +270,12 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			return ret;
+ 		}
+ 
++		ret = atmel_pwm_calculate_deadtime(chip, state, cprd, &dt);
++		if (ret) {
++			dev_err(chip->dev, "failed to calculate dead-time\n");
++			return ret;
++		}
++
+ 		atmel_pwm_calculate_cdty(state, cprd, &cdty);
+ 
+ 		if (cstate.enabled) {
+@@ -258,8 +295,17 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			val &= ~PWM_CMR_CPOL;
+ 		else
+ 			val |= PWM_CMR_CPOL;
++
++		if (dt)
++			val |= PWM_CMR_DTE;
++		else
++			val &= ~PWM_CMR_DTE;
++
+ 		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
+ 		atmel_pwm_set_cprd_cdty(chip, pwm, cprd, cdty);
++		if (atmel_pwm->regs->dt)
++			atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm,
++					    atmel_pwm->regs->dt, dt);
+ 		mutex_lock(&atmel_pwm->isr_lock);
+ 		atmel_pwm->updated_pwms |= atmel_pwm_readl(atmel_pwm, PWM_ISR);
+ 		atmel_pwm->updated_pwms &= ~(1 << pwm->hwpwm);
+@@ -282,6 +328,7 @@ static const struct atmel_pwm_registers atmel_pwm_regs_v1 = {
+ 	.period_upd	= PWMV1_CUPD,
+ 	.duty		= PWMV1_CDTY,
+ 	.duty_upd	= PWMV1_CUPD,
++	.dt		= 0,
+ };
+ 
+ static const struct atmel_pwm_registers atmel_pwm_regs_v2 = {
+@@ -289,6 +336,7 @@ static const struct atmel_pwm_registers atmel_pwm_regs_v2 = {
+ 	.period_upd	= PWMV2_CPRDUPD,
+ 	.duty		= PWMV2_CDTY,
+ 	.duty_upd	= PWMV2_CDTYUPD,
++	.dt		= PWMV2_DT,
+ };
+ 
+ static const struct platform_device_id atmel_pwm_devtypes[] = {
 -- 
 2.7.4
