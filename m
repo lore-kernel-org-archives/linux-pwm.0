@@ -1,168 +1,31 @@
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [RFC PATCH 2/2] drivers: pwm: pwm-atmel: implement pwm dead-time
-Date: Wed, 5 Apr 2017 17:02:30 +0300
-Message-ID: <1491400950-9857-3-git-send-email-claudiu.beznea@microchip.com>
-References: <1491400950-9857-1-git-send-email-claudiu.beznea@microchip.com>
+From: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH 0/4] pwm: tegra: Pin configuration in suspend/resume and cleanups
+Date: Wed, 5 Apr 2017 19:43:42 +0530
+Message-ID: <1491401626-31303-1-git-send-email-ldewangan@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1491400950-9857-1-git-send-email-claudiu.beznea@microchip.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: thierry.reding@gmail.com, corbet@lwn.net, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alexandre.belloni@free-electrons.com, boris.brezillon@free-electrons.com
-Cc: tudor.ambarus@microchip.com, andrei.pistirica@microchip.com, eugen.hristev@microchip.com, Claudiu Beznea <claudiu.beznea@microchip.com>, cristian.birsan@microchip.com
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
+Cc: jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Implement PWM dead-times for atmel PWM controllers.
-Since this driver is used by PWM controllers which
-supports dead-times and PWM controllers which doesn't,
-add specific input for dead-time register in atmel
-register private data structure.
+This patch series have following fixes:
+- Add more precession in PWM period register value calculation
+  for lower pwm frequency.
+- Add support to configure PWM pins in different state in the
+  suspend/resume.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/pwm/pwm-atmel.c | 56 +++++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 52 insertions(+), 4 deletions(-)
+Laxman Dewangan (4):
+  pwm: tegra: Use DIV_ROUND_CLOSEST_ULL() instead of local
+    implementation
+  pwm: tegra: Increase precision in pwm rate calculation
+  pwm: tegra: Add DT binding details to configure pin in suspends/resume
+  pwm: tegra: Add support to configure pin state in suspends/resume
 
-diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-index 530d7dc..0e69319 100644
---- a/drivers/pwm/pwm-atmel.c
-+++ b/drivers/pwm/pwm-atmel.c
-@@ -33,8 +33,9 @@
- 
- #define PWM_CMR			0x0
- /* Bit field in CMR */
--#define PWM_CMR_CPOL		(1 << 9)
--#define PWM_CMR_UPD_CDTY	(1 << 10)
-+#define PWM_CMR_CPOL		BIT(9)
-+#define PWM_CMR_UPD_CDTY	BIT(10)
-+#define PWM_CMR_DTE		BIT(16)
- #define PWM_CMR_CPRE_MSK	0xF
- 
- /* The following registers for PWM v1 */
-@@ -47,6 +48,7 @@
- #define PWMV2_CDTYUPD		0x08
- #define PWMV2_CPRD		0x0C
- #define PWMV2_CPRDUPD		0x10
-+#define PWMV2_DT		0x18
- 
- /*
-  * Max value for duty and period
-@@ -63,6 +65,7 @@ struct atmel_pwm_registers {
- 	u8 period_upd;
- 	u8 duty;
- 	u8 duty_upd;
-+	u8 dt;
- };
- 
- struct atmel_pwm_chip {
-@@ -161,6 +164,32 @@ static void atmel_pwm_update_cdty(struct pwm_chip *chip, struct pwm_device *pwm,
- 			    atmel_pwm->regs->duty_upd, cdty);
- }
- 
-+static int atmel_pwm_calculate_deadtime(struct pwm_chip *chip,
-+					struct pwm_state *state,
-+					unsigned long cprd, unsigned long *dt)
-+{
-+	unsigned long long cycles;
-+
-+	if (state->deadtime_fe > state->duty_cycle ||
-+	    state->deadtime_re > state->period - state->duty_cycle)
-+		return -EINVAL;
-+
-+	*dt = 0;
-+	if (state->deadtime_fe) {
-+		cycles = (unsigned long long)state->deadtime_fe * cprd;
-+		do_div(cycles, state->period);
-+		*dt = (cycles << 16);
-+	}
-+
-+	if (state->deadtime_re) {
-+		cycles = (unsigned long long)state->deadtime_re * cprd;
-+		do_div(cycles, state->period);
-+		*dt |= cycles;
-+	}
-+
-+	return 0;
-+}
-+
- static void atmel_pwm_set_cprd_cdty(struct pwm_chip *chip,
- 				    struct pwm_device *pwm,
- 				    unsigned long cprd, unsigned long cdty)
-@@ -214,7 +243,7 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct atmel_pwm_chip *atmel_pwm = to_atmel_pwm_chip(chip);
- 	struct pwm_state cstate;
--	unsigned long cprd, cdty;
-+	unsigned long cprd, cdty, dt;
- 	u32 pres, val;
- 	int ret;
- 
-@@ -223,7 +252,9 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (state->enabled) {
- 		if (cstate.enabled &&
- 		    cstate.polarity == state->polarity &&
--		    cstate.period == state->period) {
-+		    cstate.period == state->period &&
-+		    cstate.deadtime_re == state->deadtime_re &&
-+		    cstate.deadtime_fe == state->deadtime_fe) {
- 			cprd = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm,
- 						  atmel_pwm->regs->period);
- 			atmel_pwm_calculate_cdty(state, cprd, &cdty);
-@@ -239,6 +270,12 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			return ret;
- 		}
- 
-+		ret = atmel_pwm_calculate_deadtime(chip, state, cprd, &dt);
-+		if (ret) {
-+			dev_err(chip->dev, "failed to calculate dead-time\n");
-+			return ret;
-+		}
-+
- 		atmel_pwm_calculate_cdty(state, cprd, &cdty);
- 
- 		if (cstate.enabled) {
-@@ -258,8 +295,17 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 			val &= ~PWM_CMR_CPOL;
- 		else
- 			val |= PWM_CMR_CPOL;
-+
-+		if (dt)
-+			val |= PWM_CMR_DTE;
-+		else
-+			val &= ~PWM_CMR_DTE;
-+
- 		atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm, PWM_CMR, val);
- 		atmel_pwm_set_cprd_cdty(chip, pwm, cprd, cdty);
-+		if (atmel_pwm->regs->dt)
-+			atmel_pwm_ch_writel(atmel_pwm, pwm->hwpwm,
-+					    atmel_pwm->regs->dt, dt);
- 		mutex_lock(&atmel_pwm->isr_lock);
- 		atmel_pwm->updated_pwms |= atmel_pwm_readl(atmel_pwm, PWM_ISR);
- 		atmel_pwm->updated_pwms &= ~(1 << pwm->hwpwm);
-@@ -282,6 +328,7 @@ static const struct atmel_pwm_registers atmel_pwm_regs_v1 = {
- 	.period_upd	= PWMV1_CUPD,
- 	.duty		= PWMV1_CDTY,
- 	.duty_upd	= PWMV1_CUPD,
-+	.dt		= 0,
- };
- 
- static const struct atmel_pwm_registers atmel_pwm_regs_v2 = {
-@@ -289,6 +336,7 @@ static const struct atmel_pwm_registers atmel_pwm_regs_v2 = {
- 	.period_upd	= PWMV2_CPRDUPD,
- 	.duty		= PWMV2_CDTY,
- 	.duty_upd	= PWMV2_CDTYUPD,
-+	.dt		= PWMV2_DT,
- };
- 
- static const struct platform_device_id atmel_pwm_devtypes[] = {
+ .../devicetree/bindings/pwm/nvidia,tegra20-pwm.txt | 43 ++++++++++++
+ drivers/pwm/pwm-tegra.c                            | 77 ++++++++++++++++++++--
+ 2 files changed, 116 insertions(+), 4 deletions(-)
+
 -- 
-2.7.4
+2.1.4
