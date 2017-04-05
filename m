@@ -1,92 +1,84 @@
-From: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 3/4] pwm: tegra: Add DT binding details to configure pin in suspends/resume
-Date: Wed, 5 Apr 2017 19:43:45 +0530
-Message-ID: <1491401626-31303-4-git-send-email-ldewangan@nvidia.com>
+From: Laxman Dewangan <ldewangan@nvidia.com>
+Subject: [PATCH 2/4] pwm: tegra: Increase precision in pwm rate calculation
+Date: Wed, 5 Apr 2017 19:43:44 +0530
+Message-ID: <1491401626-31303-3-git-send-email-ldewangan@nvidia.com>
 References: <1491401626-31303-1-git-send-email-ldewangan@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1491401626-31303-1-git-send-email-ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
-Cc: jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:17236 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753317AbdDEOc1 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 5 Apr 2017 10:32:27 -0400
+In-Reply-To: <1491401626-31303-1-git-send-email-ldewangan@nvidia.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
+Cc: jonathanh@nvidia.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Laxman Dewangan <ldewangan@nvidia.com>
 
-In some of NVIDIA Tegra's platform, PWM controller is used to
-control the PWM controlled regulators. PWM signal is connected to
-the VID pin of the regulator where duty cycle of PWM signal decide
-the voltage level of the regulator output.
+The rate of the PWM calculated as follows:
+	hz = NSEC_PER_SEC / period_ns;
+ 	rate = (rate + (hz / 2)) / hz;
 
-The tristate (high impedance of PWM pin form Tegra) also define
-one of the state of PWM regulator which needs to be configure in
-suspend state of system.
+This has the precision loss in lower PWM rate.
+Changing this to have more precision as:
+	hz = DIV_ROUND_CLOSE(NSEC_PER_SEC * 100, period_ns);
+	rate = DIV_ROUND_CLOSE(rate * 100, hz)
 
-Add DT binding details to provide the pin configuration state
-from PWM and pinctrl DT node in suspend and active state of
-the system.
+Example:
+1. period_ns = 16672000, PWM clock rate is 200KHz.
+	Based on old formula
+		hz = NSEC_PER_SEC / period_ns
+		   = 1000000000ul/16672000
+		   = 59 (59.98)
+		rate = (200K + 59/2)/59 = 3390
 
-Signed-off-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+	Based on new method:
+		hz = 5998
+		rate = DIV_ROUND_CLOSE(200000*100, 5998) = 3334
+
+	If we measure the PWM signal rate, we will get more accurate period
+	with rate value of 3334 instead of 3390.
+
+2.  period_ns = 16803898, PWM clock rate is 200KHz.
+	Based on old formula:
+		hz = 60, rate = 3333
+	Based on new formula:
+		hz = 5951, rate = 3360
+
+	The rate of 3360 is more near to requested period then the 3333.
+
+Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
 ---
- .../devicetree/bindings/pwm/nvidia,tegra20-pwm.txt | 43 ++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
+ drivers/pwm/pwm-tegra.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-index b4e7377..145c323 100644
---- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-+++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-@@ -19,6 +19,19 @@ Required properties:
- - reset-names: Must include the following entries:
-   - pwm
+diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+index 0a688da..e9c4de5 100644
+--- a/drivers/pwm/pwm-tegra.c
++++ b/drivers/pwm/pwm-tegra.c
+@@ -76,6 +76,8 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct tegra_pwm_chip *pc = to_tegra_pwm_chip(chip);
+ 	unsigned long long c = duty_ns;
+ 	unsigned long rate, hz;
++	unsigned long long ns100 = NSEC_PER_SEC;
++	unsigned long precision = 100; /* Consider 2 digit precision */
+ 	u32 val = 0;
+ 	int err;
  
-+Optional properties:
-+============================
-+In some of the interface like PWM based regualator device, it is required
-+to configure the pins diffrently in different states, specially in suspend
-+state of the system. The configuration of pin is provided via the pinctrl
-+DT node as detailed in the pinctrl DT binding document
-+	Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
-+
-+The PWM node will have following optional properties.
-+pinctrl-names:	Pin state names. Must be "suspend" and "resume".
-+pinctrl-0:	Node handle of the suspend state configuration of pins.
-+pinctrl-1:	Node handle of the resume state configuration of pins.
-+
- Example:
+@@ -94,9 +96,11 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	 * cycles at the PWM clock rate will take period_ns nanoseconds.
+ 	 */
+ 	rate = clk_get_rate(pc->clk) >> PWM_DUTY_WIDTH;
+-	hz = NSEC_PER_SEC / period_ns;
  
- 	pwm: pwm@7000a000 {
-@@ -29,3 +42,33 @@ Example:
- 		resets = <&tegra_car 17>;
- 		reset-names = "pwm";
- 	};
-+
-+
-+Example with the pin configuration for suspend and resume:
-+=========================================================
-+Here Pin PE7 is used as PWM.
-+
-+#include <dt-bindings/pinctrl/pinctrl-tegra.h>
-+
-+	pinmux@70000868 {
-+		pwm_suspend: pwm_suspend_state {
-+                        pe7 {
-+                                nvidia,pins = "pe7";
-+                                nvidia,tristate = <TEGRA_PIN_DISABLE>;
-+			};
-+		};
-+
-+		pwm_resume: pwm_resume_state {
-+                        pe7 {
-+                                nvidia,pins = "pe7";
-+                                nvidia,tristate = <TEGRA_PIN_DISABLE>;
-+			};
-+		};
-+	};
-+
-+	pwm@7000a000 {
-+		/* Mandatory pwm properties */
-+		pinctrl-names = "suspend", "resume";
-+		pinctrl-0 = <&pwm_suspend>;
-+		pinctrl-1 = <&pwm_resume>;
-+	};
+-	rate = (rate + (hz / 2)) / hz;
++	/* Consider precision in PWM_SCALE_WIDTH rate calculation */
++	ns100 *= precision;
++	hz = DIV_ROUND_CLOSEST_ULL(ns100, period_ns);
++	rate = DIV_ROUND_CLOSEST(rate * precision, hz);
+ 
+ 	/*
+ 	 * Since the actual PWM divider is the register's frequency divider
 -- 
 2.1.4
