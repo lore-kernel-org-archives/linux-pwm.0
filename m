@@ -1,165 +1,305 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH REGRESSION-FIX resend] pwm: lpss: Set enable-bit before
- waiting for update-bit
-Date: Tue, 04 Apr 2017 20:23:17 +0300
-Message-ID: <1491326597.708.141.camel@linux.intel.com>
-References: <20170325140658.26868-1-hdegoede@redhat.com>
-         <1490712327.708.30.camel@linux.intel.com>
-         <d24997bc-9afc-00ec-425d-92a2d48ec2c6@redhat.com>
-         <1490722132.708.43.camel@linux.intel.com>
-         <1490722434.708.45.camel@linux.intel.com>
-         <f2687abf-1fbb-de12-ab1f-be5056cddb70@redhat.com>
-         <1490786665.708.47.camel@linux.intel.com>
-         <3445f086-3619-33fb-7cfc-1c06b1ea654b@redhat.com>
-         <1490809289.708.57.camel@linux.intel.com>
-         <d399a9cb-7f73-08cd-47b5-f25aee416a6e@redhat.com>
-         <1490990824.708.90.camel@linux.intel.com>
-         <05b8cb4a-ae77-8a06-67de-a89b7333f651@redhat.com>
-         <1491229366.708.102.camel@linux.intel.com>
-         <34d9f755-251e-b365-6d4c-09a516b10d78@redhat.com>
-         <1491322827.708.136.camel@linux.intel.com>
-         <2e47d44c-7fd7-b16d-7d2e-9b7873c435ae@redhat.com>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [RFC PATCH 1/2] drivers: pwm: core: implement pwm mode
+Date: Wed, 5 Apr 2017 16:58:58 +0300
+Message-ID: <1491400739-9618-2-git-send-email-claudiu.beznea@microchip.com>
+References: <1491400739-9618-1-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga05.intel.com ([192.55.52.43]:46496 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754468AbdDDRXU (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 4 Apr 2017 13:23:20 -0400
-In-Reply-To: <2e47d44c-7fd7-b16d-7d2e-9b7873c435ae@redhat.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1491400739-9618-1-git-send-email-claudiu.beznea@microchip.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: thierry.reding@gmail.com, corbet@lwn.net, robh+dt@kernel.org, mark.rutland@arm.com, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alexandre.belloni@free-electrons.com, boris.brezillon@free-electrons.com
+Cc: nicolas.ferre@microchip.com, andrei.pistirica@microchip.com, cristian.birsan@microchip.com, eugen.hristev@microchip.com, tudor.ambarus@microchip.com, Claudiu Beznea <claudiu.beznea@microchip.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Hans de Goede <hdegoede@redhat.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, "Koskinen, Ilkka" <ilkka.koskinen@intel.com>
 
-On Tue, 2017-04-04 at 19:02 +0200, Hans de Goede wrote:
-> Hi,
-> 
-> On 04/04/2017 06:20 PM, Andy Shevchenko wrote:
-> > On Mon, 2017-04-03 at 16:32 +0200, Hans de Goede wrote:
-> > > HI,
-> > > 
-> > > On 03-04-17 16:22, Andy Shevchenko wrote:
-> > > > On Fri, 2017-03-31 at 22:52 +0200, Hans de Goede wrote:
-> > > > > Hi,
-> > > > > 
-> > > > > On 31-03-17 22:07, Andy Shevchenko wrote:
-> > > > > > On Wed, 2017-03-29 at 20:25 +0200, Hans de Goede wrote:
-> > > > > > > Hi,
-> > > > > > > 
-> > > > > > > On 29-03-17 19:41, Andy Shevchenko wrote:
-> > > > > > > > On Wed, 2017-03-29 at 14:42 +0200, Hans de Goede wrote:
-> > > > > > 
-> > > > > > Thanks for your patience and valuable input.
-> > > > > > 
-> > > > > > So, I found CharryTrail with enabled PWM (UP board v0.4) and
-> > > > > > confirm
-> > > > > > the
-> > > > > > bug.
-> > > > > > 
-> > > > > > Moreover, I have re-tested again all 4 platforms with and
-> > > > > > without
-> > > > > > your
-> > > > > > fix, and I dunno how I did not notice this before, but looks
-> > > > > > like
-> > > > > > either
-> > > > > > mine (though commit message shows that I have tested on 3
-> > > > > > platforms
-> > > > > > at
-> > > > > > least, so, I can re-test for sure) or Ilkka's patch broke it
-> > > > > > on
-> > > > > > all
-> > > > > > platforms except Broxton / Apollo Lake.
-> > > > > > 
-> > > > > > So, summurize what we need is a quirk for Broxton / Apollo
-> > > > > > Lake.
-> > > > > > I
-> > > > > > need
-> > > > > > to check Gemini Lake also to be sure.
-> > > > > > 
-> > > > > > And we definitely need this as a fix for stable. I would
-> > > > > > appreciate
-> > > > > > if
-> > > > > > you can figure out which patch from previous series
-> > > > > > (b14e8ceff034
-> > > > > > or 10d56a4cb1c6) broke it.
-> > > > > 
-> > > > > My patch commit msg says: "fixes
-> > > > > 10d56a4cb1c6c894c60acbaec0f8aa44aba833b0"
-> > > > > and unless my memory deceives me I tested that that was the
-> > > > > bad
-> > > > > commit
-> > > > > by reverting it.
-> > > > 
-> > > > Oh, yes, thanks for pointing this out.
-> > > > 
-> > > > > 
-> > > > > The problem for Cherry Trail is not perse the order in which
-> > > > > the
-> > > > > update / enable bits are written (AFAICT), but the waiting for
-> > > > > the update bit to clear while the enable bit is not set, which
-> > > > > is why my latest version only moves the wait.
-> > > > 
-> > > > And it looks sane.
-> > > > 
-> > > > > That wait was already present before 10d56a4cb1c6, but with a
-> > > > > reasonable short timeout, and just continuing on after the
-> > > > > timeout. 10d56a4cb1c6 makes pwm_lpss_apply() exit with an
-> > > > > error (without ever setting the enable bit) when the timeout
-> > > > > expires.
-> > > > > 
-> > > > > The troublesome commit caused 2 issues:
-> > > > > 1) An IMHO unacceptable long timeout (0.5 seconds of near busy
-> > > > > waiting
-> > > > > on each enable
-> > > > > )
-> > > > 
-> > > > The current clocks and divisor values allow us to set pulses up
-> > > > to
-> > > > 218 ms. I have no idea how we can decrease this significantly.
-> > > > 300
-> > > > ms?
-> > > > Or other way which I proposed to Mika and Ilkka during internal
-> > > > review
-> > > > is to calculate it from last cycle.
-> > > 
-> > > Right, I was not clear, sorry I mean this is a problem because
-> > > normally we should not wait so long, but now on Cherry Trail
-> > > (and others) we do wait so long as the enabled bit is not set.
-> > > 
-> > > What I was trying to say is that the code was already wrongly
-> > > waiting for the timeout to expire (since update would never
-> > > clear before commit 10d56a4cb1c6 already) but this was not a big
-> > > deal as it was not waiting for a long time.
-> > > 
-> > > > > 2) Erroring out when the timeout expires without the update
-> > > > > flag
-> > > > > clearing
-> > > > 
-> > > > What would we do in such case? There is no recovery for us
-> > > > except
-> > > > waiting more.
-> > > 
-> > > Same here, again what I meant is that the commit makes the already
-> > > wrong behavior from before a problem because it has turned it
-> > > into an error condition. The proper fix is of course to make sure
-> > > we do not hit the timeout by setting enabled before waiting for
-> > > the update bit to clear on all hardware except broxton.
-> > 
-> > Thanks for elaborative message.
-> > Feel free to use my patch as a base for yours to provide a quirk-
-> > based
-> > solution. I would test it on my side for 4 platforms I have PWM
-> > enabled
-> > on.
-> 
-> I was kinda expecting you or Ilkka to do a new version, as I don't
-> have access to Apollo Lake hardware and atm also not really much time
-> for this.
+Extends PWM framework to support PWM modes. The currently
+implemented PWM modes were called PWM complementary mode
+and PWM push-pull mode. For devices that have more than one
+output per PWM channel:
+- PWM complementary mode is standard working mode; in PWM
+complementary mode the rising and falling edges of the
+channels outputs have opposite levels, same duration and
+same starting time.
+- in PWM push-pull mode the channles outputs has same levels,
+same duration and the rising edges are delayed until the
+beginning of the next period.
+A new member was added in pwm_state structure in order to
+keep the new PWM argument.
+For PWM channels with inputs in DT, the mode could also be
+passed via DT. No new extra field need to be added in device
+tree; since the signal polarity is passed as a flag via DT,
+the filed used to pass information for PWM channel polarity
+via DT is also used by PWM mode. Since, for the moment, only
+the complementary and push-pull modes are implemented, only
+one bit in flags used to pass polarity could also be used for
+PWM mode. The other drivers are not affected by this change.
 
-Okay, I can do it, but it will be delayed a bit.
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ Documentation/pwm.txt         | 24 +++++++++++++++++---
+ drivers/pwm/core.c            | 13 +++++++++--
+ drivers/pwm/sysfs.c           | 52 +++++++++++++++++++++++++++++++++++++++++++
+ include/dt-bindings/pwm/pwm.h |  1 +
+ include/linux/pwm.h           | 37 ++++++++++++++++++++++++++++--
+ 5 files changed, 120 insertions(+), 7 deletions(-)
 
+diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
+index 789b27c..1b6fc59 100644
+--- a/Documentation/pwm.txt
++++ b/Documentation/pwm.txt
+@@ -59,9 +59,9 @@ In addition to the PWM state, the PWM API also exposes PWM arguments, which
+ are the reference PWM config one should use on this PWM.
+ PWM arguments are usually platform-specific and allows the PWM user to only
+ care about dutycycle relatively to the full period (like, duty = 50% of the
+-period). struct pwm_args contains 2 fields (period and polarity) and should
+-be used to set the initial PWM config (usually done in the probe function
+-of the PWM user). PWM arguments are retrieved with pwm_get_args().
++period). struct pwm_args contains 3 fields (period, polarity and mode) and
++should be used to set the initial PWM config (usually done in the probe
++function of the PWM user). PWM arguments are retrieved with pwm_get_args().
+ 
+ Using PWMs with the sysfs interface
+ -----------------------------------
+@@ -100,6 +100,24 @@ enable - Enable/disable the PWM signal (read/write).
+ 	0 - disabled
+ 	1 - enabled
+ 
++mode - Set PWM signal type (for channels with more than one output
++       per channel)
++	complementary - for an output signal as follow:
++                        __    __    __    __
++                PWMH __|  |__|  |__|  |__|  |__
++                     __    __    __    __    __
++                PWML   |__|  |__|  |__|  |__|
++                       <--T-->
++		Where T is the signal period.
++
++	push-pull - for an output signal as follows:
++                        __          __
++                PWMH __|  |________|  |________
++                              __          __
++                PWML ________|  |________|  |__
++                       <--T-->
++		Where T is the signal period.
++
+ Implementing a PWM driver
+ -------------------------
+ 
+diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
+index a0860b3..4efc92d 100644
+--- a/drivers/pwm/core.c
++++ b/drivers/pwm/core.c
+@@ -154,9 +154,14 @@ of_pwm_xlate_with_flags(struct pwm_chip *pc, const struct of_phandle_args *args)
+ 
+ 	pwm->args.period = args->args[1];
+ 	pwm->args.polarity = PWM_POLARITY_NORMAL;
++	pwm->args.mode = PWM_MODE_COMPLEMENTARY;
+ 
+-	if (args->args_count > 2 && args->args[2] & PWM_POLARITY_INVERTED)
+-		pwm->args.polarity = PWM_POLARITY_INVERSED;
++	if (args->args_count > 2) {
++		if (args->args[2] & PWM_POLARITY_INVERTED)
++			pwm->args.polarity = PWM_POLARITY_INVERSED;
++		if (args->args[2] & PWM_MODE_PUSHPULL)
++			pwm->args.mode = PWM_MODE_PUSH_PULL;
++	}
+ 
+ 	return pwm;
+ }
+@@ -579,6 +584,8 @@ int pwm_adjust_config(struct pwm_device *pwm)
+ 	pwm_get_args(pwm, &pargs);
+ 	pwm_get_state(pwm, &state);
+ 
++	state.mode = pargs.mode;
++
+ 	/*
+ 	 * If the current period is zero it means that either the PWM driver
+ 	 * does not support initial state retrieval or the PWM has not yet
+@@ -997,6 +1004,8 @@ static void pwm_dbg_show(struct pwm_chip *chip, struct seq_file *s)
+ 		seq_printf(s, " duty: %u ns", state.duty_cycle);
+ 		seq_printf(s, " polarity: %s",
+ 			   state.polarity ? "inverse" : "normal");
++		seq_printf(s, " mode: %s",
++			   state.mode ? "push-pull" : "complementary");
+ 
+ 		seq_puts(s, "\n");
+ 	}
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index a813239..58f02bf 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -223,11 +223,62 @@ static ssize_t capture_show(struct device *child,
+ 	return sprintf(buf, "%u %u\n", result.period, result.duty_cycle);
+ }
+ 
++static ssize_t mode_show(struct device *child,
++			 struct device_attribute *attr,
++			 char *buf)
++{
++	const struct pwm_device *pwm = child_to_pwm_device(child);
++	const char *mode = "unknown";
++	struct pwm_state state;
++
++	pwm_get_state(pwm, &state);
++
++	switch (state.mode) {
++	case PWM_MODE_COMPLEMENTARY:
++		mode = "complementary";
++		break;
++
++	case PWM_MODE_PUSH_PULL:
++		mode = "push-pull";
++		break;
++	}
++
++	return sprintf(buf, "%s\n", mode);
++}
++
++static ssize_t mode_store(struct device *child,
++			  struct device_attribute *attr,
++			  const char *buf, size_t size)
++{
++	struct pwm_export *export = child_to_pwm_export(child);
++	struct pwm_device *pwm = export->pwm;
++	enum pwm_mode mode;
++	struct pwm_state state;
++	int ret;
++
++	if (sysfs_streq(buf, "complementary"))
++		mode = PWM_MODE_COMPLEMENTARY;
++	else if (sysfs_streq(buf, "push-pull"))
++		mode = PWM_MODE_PUSH_PULL;
++	else
++		return -EINVAL;
++
++	mutex_lock(&export->lock);
++	pwm_get_state(pwm, &state);
++	state.mode = mode;
++	ret = pwm_apply_state(pwm, &state);
++	mutex_unlock(&export->lock);
++
++	return ret ? : size;
++}
++
+ static DEVICE_ATTR_RW(period);
+ static DEVICE_ATTR_RW(duty_cycle);
+ static DEVICE_ATTR_RW(enable);
+ static DEVICE_ATTR_RW(polarity);
+ static DEVICE_ATTR_RO(capture);
++static DEVICE_ATTR_RW(mode);
+ 
+ static struct attribute *pwm_attrs[] = {
+ 	&dev_attr_period.attr,
+@@ -235,6 +286,7 @@ static struct attribute *pwm_attrs[] = {
+ 	&dev_attr_enable.attr,
+ 	&dev_attr_polarity.attr,
+ 	&dev_attr_capture.attr,
++	&dev_attr_mode.attr,
+ 	NULL
+ };
+ ATTRIBUTE_GROUPS(pwm);
+diff --git a/include/dt-bindings/pwm/pwm.h b/include/dt-bindings/pwm/pwm.h
+index 96f49e8..83bb884 100644
+--- a/include/dt-bindings/pwm/pwm.h
++++ b/include/dt-bindings/pwm/pwm.h
+@@ -10,5 +10,6 @@
+ #define _DT_BINDINGS_PWM_PWM_H
+ 
+ #define PWM_POLARITY_INVERTED			(1 << 0)
++#define PWM_MODE_PUSHPULL			(1 << 1)
+ 
+ #endif
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 08fad7c..d924e55 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -25,9 +25,23 @@ enum pwm_polarity {
+ };
+ 
+ /**
++ * enum pwm_mode - PWM mode
++ * @PWM_MODE_COMPLEMENTARY: rising and falling edges of the complementary
++ * PWM channels have opposite levels, same duration and same starting time
++ * @PWM_MODE_PUSH_PULL: rising and falling edges of the complementary PWM
++ * channels have same levels, same duration and are delayed until the
++ * beginning of the next period
++ */
++enum pwm_mode {
++	PWM_MODE_COMPLEMENTARY,
++	PWM_MODE_PUSH_PULL,
++};
++
++/**
+  * struct pwm_args - board-dependent PWM arguments
+  * @period: reference period
+  * @polarity: reference polarity
++ * @mode: pwm mode
+  *
+  * This structure describes board-dependent arguments attached to a PWM
+  * device. These arguments are usually retrieved from the PWM lookup table or
+@@ -40,6 +54,7 @@ enum pwm_polarity {
+ struct pwm_args {
+ 	unsigned int period;
+ 	enum pwm_polarity polarity;
++	enum pwm_mode mode;
+ };
+ 
+ enum {
+@@ -52,12 +67,14 @@ enum {
+  * @period: PWM period (in nanoseconds)
+  * @duty_cycle: PWM duty cycle (in nanoseconds)
+  * @polarity: PWM polarity
++ * @mode: PWM mode
+  * @enabled: PWM enabled status
+  */
+ struct pwm_state {
+ 	unsigned int period;
+ 	unsigned int duty_cycle;
+ 	enum pwm_polarity polarity;
++	enum pwm_mode mode;
+ 	bool enabled;
+ };
+ 
+@@ -143,6 +160,21 @@ static inline enum pwm_polarity pwm_get_polarity(const struct pwm_device *pwm)
+ 	return state.polarity;
+ }
+ 
++static inline void pwm_set_mode(struct pwm_device *pwm, enum pwm_mode mode)
++{
++	if (pwm)
++		pwm->state.mode = mode;
++}
++
++static inline enum pwm_mode pwm_get_mode(const struct pwm_device *pwm)
++{
++	struct pwm_state state;
++
++	pwm_get_state(pwm, &state);
++
++	return state.mode;
++}
++
+ static inline void pwm_get_args(const struct pwm_device *pwm,
+ 				struct pwm_args *args)
+ {
+@@ -156,8 +188,8 @@ static inline void pwm_get_args(const struct pwm_device *pwm,
+  *
+  * This functions prepares a state that can later be tweaked and applied
+  * to the PWM device with pwm_apply_state(). This is a convenient function
+- * that first retrieves the current PWM state and the replaces the period
+- * and polarity fields with the reference values defined in pwm->args.
++ * that first retrieves the current PWM state and the replaces the period,
++ * polarity and mode fields with the reference values defined in pwm->args.
+  * Once the function returns, you can adjust the ->enabled and ->duty_cycle
+  * fields according to your needs before calling pwm_apply_state().
+  *
+@@ -180,6 +212,7 @@ static inline void pwm_init_state(const struct pwm_device *pwm,
+ 	state->period = args.period;
+ 	state->polarity = args.polarity;
+ 	state->duty_cycle = 0;
++	state->mode = args.mode;
+ }
+ 
+ /**
 -- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+2.7.4
