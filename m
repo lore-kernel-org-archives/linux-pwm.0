@@ -1,87 +1,40 @@
-From: Laxman Dewangan <ldewangan@nvidia.com>
-Subject: [PATCH V2 2/4] pwm: tegra: Increase precision in pwm rate calculation
-Date: Thu, 6 Apr 2017 19:50:59 +0530
-Message-ID: <1491488461-24621-3-git-send-email-ldewangan@nvidia.com>
-References: <1491488461-24621-1-git-send-email-ldewangan@nvidia.com>
+From: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH V2 0/4] pwm: tegra: Pin configuration in suspend/resume and cleanups
+Date: Thu, 6 Apr 2017 19:50:57 +0530
+Message-ID: <1491488461-24621-1-git-send-email-ldewangan@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:16186 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935324AbdDFOku (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Apr 2017 10:40:50 -0400
-In-Reply-To: <1491488461-24621-1-git-send-email-ldewangan@nvidia.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, robh+dt@kernel.org, jonathanh@nvidia.com
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Laxman Dewangan <ldewangan@nvidia.com>
 
-The rate of the PWM calculated as follows:
-	hz = NSEC_PER_SEC / period_ns;
- 	rate = (rate + (hz / 2)) / hz;
+This patch series have following fixes:
+- Add more precession in PWM period register value calculation
+  for lower pwm frequency.
+- Add support to configure PWM pins in different state in the
+  suspend/resume.
 
-This has the precision loss in lower PWM rate.
-Changing this to have more precision as:
-	hz = DIV_ROUND_CLOSE(NSEC_PER_SEC * 100, period_ns);
-	rate = DIV_ROUND_CLOSE(rate * 100, hz)
+Changes from v1:
+- Use standard pinctrl names for sleep and active state.
+- Use API pinctrl_pm_select_*()
 
-Example:
-1. period_ns = 16672000, PWM clock rate is 200KHz.
-	Based on old formula
-		hz = NSEC_PER_SEC / period_ns
-		   = 1000000000ul/16672000
-		   = 59 (59.98)
-		rate = (200K + 59/2)/59 = 3390
+Laxman Dewangan (4):
+  pwm: tegra: Use DIV_ROUND_CLOSEST_ULL() instead of local
+    implementation
+  pwm: tegra: Increase precision in pwm rate calculation
+  pwm: tegra: Add DT binding details to configure pin in suspends/resume
+  pwm: tegra: Add support to configure pin state in suspends/resume
 
-	Based on new method:
-		hz = 5998
-		rate = DIV_ROUND_CLOSE(200000*100, 5998) = 3334
+ .../devicetree/bindings/pwm/nvidia,tegra20-pwm.txt | 43 ++++++++++++
+ drivers/pwm/pwm-tegra.c                            | 77 ++++++++++++++++++++--
+ 2 files changed, 116 insertions(+), 4 deletions(-)
 
-	If we measure the PWM signal rate, we will get more accurate period
-	with rate value of 3334 instead of 3390.
-
-2.  period_ns = 16803898, PWM clock rate is 200KHz.
-	Based on old formula:
-		hz = 60, rate = 3333
-	Based on new formula:
-		hz = 5951, rate = 3360
-
-	The rate of 3360 is more near to requested period then the 3333.
-
-Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
----
-Changes from V1:
-- None
-
- drivers/pwm/pwm-tegra.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-index 0a688da..e9c4de5 100644
---- a/drivers/pwm/pwm-tegra.c
-+++ b/drivers/pwm/pwm-tegra.c
-@@ -76,6 +76,8 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	struct tegra_pwm_chip *pc = to_tegra_pwm_chip(chip);
- 	unsigned long long c = duty_ns;
- 	unsigned long rate, hz;
-+	unsigned long long ns100 = NSEC_PER_SEC;
-+	unsigned long precision = 100; /* Consider 2 digit precision */
- 	u32 val = 0;
- 	int err;
- 
-@@ -94,9 +96,11 @@ static int tegra_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	 * cycles at the PWM clock rate will take period_ns nanoseconds.
- 	 */
- 	rate = clk_get_rate(pc->clk) >> PWM_DUTY_WIDTH;
--	hz = NSEC_PER_SEC / period_ns;
- 
--	rate = (rate + (hz / 2)) / hz;
-+	/* Consider precision in PWM_SCALE_WIDTH rate calculation */
-+	ns100 *= precision;
-+	hz = DIV_ROUND_CLOSEST_ULL(ns100, period_ns);
-+	rate = DIV_ROUND_CLOSEST(rate * precision, hz);
- 
- 	/*
- 	 * Since the actual PWM divider is the register's frequency divider
 -- 
 2.1.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
