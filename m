@@ -1,130 +1,82 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v3 0/2] switch to atomic PWM
-Date: Thu, 6 Apr 2017 16:33:19 +0200
-Message-ID: <20170406143319.GD8438@ulmo.ba.sec>
-References: <1490189375-20384-1-git-send-email-claudiu.beznea@microchip.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v4 13/14] pwm: jz4740: Let the pinctrl driver configure
+ the pins
+Date: Thu, 6 Apr 2017 16:40:34 +0200
+Message-ID: <20170406144034.GE8438@ulmo.ba.sec>
+References: <20170125185207.23902-2-paul@crapouillou.net>
+ <20170402204244.14216-1-paul@crapouillou.net>
+ <20170402204244.14216-14-paul@crapouillou.net>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="sgneBHv3152wZ8jf"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+        protocol="application/pgp-signature"; boundary="brEuL7wsLY8+TuWz"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1490189375-20384-1-git-send-email-claudiu.beznea@microchip.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc: robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com, ijc+devicetree@hellion.org.uk, galak@codeaurora.org, boris.brezillon@free-electrons.com, alexandre.belloni@free-electrons.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, nicolas.ferre@microchip.com, cristian.birsan@microchip.com, andrei.pistirica@microchip.com, tudor.ambarus@microchip.com, eugen.hristev@microchip.com
+In-Reply-To: <20170402204244.14216-14-paul-icTtO2rgO2OTuSrc4Mpeew@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Paul Cercueil <paul-icTtO2rgO2OTuSrc4Mpeew@public.gmane.org>
+Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Maarten ter Huurne <maarten-Ph2Y2OKCxY1M656bX5wj8A@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Paul Burton <paul.burton-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, james.hogan-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---sgneBHv3152wZ8jf
+--brEuL7wsLY8+TuWz
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 22, 2017 at 03:29:33PM +0200, Claudiu Beznea wrote:
-> Changes in v3:
-> - since v2 introduced per-IP register layout there is no need
-> to keep update_cdty and set_cprd_cdty members in atmel_pwm_data
-> data structure used in v2; doing in this way the atmel_pwm_data
-> data structure will remain with only one member, regs. To avoid
-> another level of indirection, the atmel_pwm_data has been removed
-> and only atmel_pwm_registers data structure has been keept. In
-> this way, "data" member of atmel_pwm_chip data structure was
-> replaced by "regs" member; due to these changes prototype of
-> atmel_pwm_get_driver_data() function was also changed;
-> also, driver private data variables were renamed in the following
-> format "atmel_pwm_regs_v*"
-> - there is no need for the following checks at the begining
-> of atmel_pwm_apply() which were present in v2:
+On Sun, Apr 02, 2017 at 10:42:43PM +0200, Paul Cercueil wrote:
+> Now that the JZ4740 and similar SoCs have a pinctrl driver, we rely on
+> the pins being properly configured before the driver probes.
 >=20
-> 	if (cstate.enabled &&
-> 	    (cstate.polarity !=3D state->polarity ||
-> 	     cstate.period !=3D state->period))
-> 		pwm_reset =3D true;
+> One inherent problem of this new approach is that the pinctrl framework
+> does not allow us to configure each pin on demand, when the various PWM
+> channels are requested or released. For instance, the PWM channels can
+> be configured from sysfs, which would require all PWM pins to be configur=
+ed
+> properly beforehand for the PWM function, eventually causing conflicts
+> with other platform or board drivers.
 >=20
-> it is enough to add:
+> The proper solution here would be to modify the pwm-jz4740 driver to
+> handle only one PWM channel, and create an instance of this driver
+> for each one of the 8 PWM channels. Then, it could use the pinctrl
+> framework to dynamically configure the PWM pin it controls.
 >=20
-> 	if (state->enabled) {
-> 		if (cstate.enabled &&
-> 		    cstate.polarity =3D=3D state->polarity &&
-> 		    cstate.period =3D=3D state->period) {
+> Until this can be done, the only jz4740 board supported upstream
+> (Qi lb60) can configure all of its connected PWM pins in PWM function
+> mode, since those are not used by other drivers nor by GPIOs on the
+> board.
 >=20
-> inside "if (state->enabled)" block and also to check cstate.enabled
-> instead of checking pwm_reset variable introduced in v2:
->=20
-> 		if (cstate.enabled) {
-> 			atmel_pwm_disable(chip, pwm, false);
-> 		} else {
-> 			ret =3D clk_enable(atmel_pwm->clk);
-> 			if (ret) {
-> 				dev_err(chip->dev, "failed to enable clock\n");
-> 				return ret;
-> 			}
-> 		}
->=20
-> Changes in v2:
-> - update only duty factor without disabling the PWM channel
-> - if PWM channel is enabled, period, as signal polarity, is
-> updated by disabling + enabling the PWM channel
-> - atmel_pwm_config_prepare() function has been removed and
-> added instead two functions, one to compute the CPRD+Prescaler
-> (atmel_pwm_calculate_cprd_and_pres()), one to compute CRDY
-> (atmel_pwm_calculate_cdty())
-> - atmel_pwm_config_set() body was directly moved to atmel_pwm_apply()
-> - add 3 new members to atmel_pwm_data: update_cdty, set_cprd_cdty and
-> regs:
-> 	- update_cdty is called to configure duty factor without
-> 	disabling PWM channel, when necessary
-> 	- set_cprd_cdty is called to configure both period and
-> 	duty factor parameters
-> 	- regs keeps the period and duty registers and was added to
-> 	have common functions for update_cdty and set_cprd_cdty
-> 	members of atmel_pwm_data for all boards;
-> - add a new parameter to atmel_pwm_disable(); this will be used in
-> updating period + signal polarity by disabling + enabling the
-> PWM channel. In this case, there is no need to disable PWM clock
-> since new configuration will be imediately applied.
-> - adapted the other reviewer comments excepts the one regarding
-> "cdty =3D cprd - cycles;" from atmel_pwm_calculate_cdty() since
-> in atmel_pwm_apply(), selecting polarity in the other way arround
-> than is currently done in this commit will need the changing of DPOLI
-> bit from Channel Mode Register, in order to keep the initial
-> output level of PWM channel after disable operation; this works
-> for sama5d2 but not for sam9rl which hasn't document the DPOLI
-> bit in datasheet; sama5d3 also hasn't document the DPOLI bit in
-> datasheet; one option was to have different aproach for different
-> boards but the code becomes messy.
->=20
-> Claudiu Beznea (2):
->   drivers: pwm: pwm-atmel: switch to atomic PWM
->   drivers: pwm: pwm-atmel: enable PWM on sama5d2
->=20
->  .../devicetree/bindings/pwm/atmel-pwm.txt          |   1 +
->  drivers/pwm/pwm-atmel.c                            | 276 ++++++++++-----=
-------
->  2 files changed, 133 insertions(+), 144 deletions(-)
+> Signed-off-by: Paul Cercueil <paul-icTtO2rgO2OTuSrc4Mpeew@public.gmane.org>
+> ---
+>  drivers/pwm/pwm-jz4740.c | 29 -----------------------------
+>  1 file changed, 29 deletions(-)
 
-Applied, thanks.
+Assuming that you want to take this through the pinctrl tree along with
+the remainder of the series:
 
-Thierry
+Acked-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
---sgneBHv3152wZ8jf
+--brEuL7wsLY8+TuWz
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAljmUawACgkQ3SOs138+
-s6GM3w//WPuF1+8E/PbotEhI000xIWuo670+axSqAgxpkhZtCuyP7Zv1srQYm+09
-YRNOnfjqRTn0PZLJ4TrXtDlB1kQxlmIyBEFIOm1D3W9nEDU1X7cekF6CnOJ9R2Ce
-pRt+TJdTqocUuxJNxqGqgt/sHYyjZAdtZY8xio7VSNrL66G5yEv+qwBPXZzd+SvA
-QaZeS2JT/EP7kZEGLott/P4VzZfVkNnvIWr7y2uF5IsTwAEcKjWuNCsxz4/IcyrB
-YE58JNBAE6kSNWTInwjITYzvpXxJ6/iIn0euYU44cQtOxPbZ+3PLMiROQlF8swBN
-6a73ZEpjmlfxbycq7rw62r/rtk2k3xrXfkViMsiLUxJvNray4EMwV4Gw65Rum4I3
-IrQ3ctZvaLDRbIaVBCcXoDIx3QefsNIRnT0m0k6HNk5FzKkxoQQ92Q4eU93qctlB
-5Zv1sfk9vSGbzuFK+OxVZzVYjFd5apfn4jjzekXRNxPyYmi+QtHOgsSrbHaxFILJ
-9i57nMr+bqYeOOpg9PaxBpPCz9mcQIlU6a5fCS2WBMYy3SRqEyAXzUKy8y8H8qd3
-YXyyOGuMDNyaJ6O14awW0AMgUUk1FJacLXMq3JvXHsqZEnp9cLflAIJIyCHgNukT
-wnz83bnPpZaqCbWXBlkQyrzDS1BR4v3efztv1Of1RWgUXLAJiMI=
-=wJK0
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAljmU2EACgkQ3SOs138+
+s6HGABAApLsMiPuePBh0cJc9OAijswAsVlj72HCTmH1JA3qrEfhOVWZxltlReNwi
+z9upRVFfXOAux8PGiJT+0N/z5Zrkwu/haho/al14XxloMx4DSW4UWkeBAVyqBkba
+N6btN6WY2TLAMi7gav0GWbXFhspUJCncB+HqK2wmXyAhQJfBjMQ2Et1OpniwQ5fe
+v60TCWUjBY7dZtgtZ5I80tQKjYnZC6hLQoXZcBwTNvQbeIM3sl9cymdPbMXVIJH4
+dzxud0NQLfx1flI0KlEI35gpRAAfinGr5XqUYipP1JtsegR51uvpQdQ6l2WdGcBV
+9mICw0SZnFuELmPzAYXFjKEYvmOFLB9kMgVHISOgCCwFtJfIH4slY27lZLLvmUkg
+y/erHU6r8KQfjkVdxNiMcktqMOoAoHaUpWfgsBL/kE3Am0aoXXL3AFEsKY8WXbDg
+qjN3dsSIdafpEngfpz6tyxbZfPeUkpYubI4+D9T4ov5SC9JeKuPLd6TTXnGtAntx
+FNhSfWilbcbkYG1r37LpNkW8xWo904JQ7G0pn7opGScBH92xGhV3+g0MBTlTfs/8
+t1fqhL3r7+z576vncJwup/hFZq2XrjqCWjizIHKwp2q7vj8JFyN1NXrwRp0CwfJt
+IwPgbk9MEqstyCKhNIpM4qoJvvmSTQS/SC3k2JvQVGkwjWiytNM=
+=QxS9
 -----END PGP SIGNATURE-----
 
---sgneBHv3152wZ8jf--
+--brEuL7wsLY8+TuWz--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
