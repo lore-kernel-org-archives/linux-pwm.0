@@ -1,13 +1,13 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Subject: Re: [PATCH V2 2/4] pwm: tegra: Increase precision in pwm rate
  calculation
-Date: Thu, 6 Apr 2017 18:24:17 +0200
-Message-ID: <20170406162417.GB19312@ulmo.ba.sec>
+Date: Thu, 6 Apr 2017 18:28:26 +0200
+Message-ID: <20170406162826.GA24332@ulmo.ba.sec>
 References: <1491488461-24621-1-git-send-email-ldewangan@nvidia.com>
  <1491488461-24621-3-git-send-email-ldewangan@nvidia.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="oC1+HKm2/end4ao3"
+        protocol="application/pgp-signature"; boundary="4Ckj6UjgE2iN1+kY"
 Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
 In-Reply-To: <1491488461-24621-3-git-send-email-ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
@@ -17,7 +17,7 @@ Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR
 List-Id: linux-pwm@vger.kernel.org
 
 
---oC1+HKm2/end4ao3
+--4Ckj6UjgE2iN1+kY
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
@@ -32,8 +32,9 @@ On Thu, Apr 06, 2017 at 07:50:59PM +0530, Laxman Dewangan wrote:
 > 	hz =3D DIV_ROUND_CLOSE(NSEC_PER_SEC * 100, period_ns);
 > 	rate =3D DIV_ROUND_CLOSE(rate * 100, hz)
 
-DIV_ROUND_CLOSEST(). And I much prefer this to the actual code below. I
-don't think it's necessary to have a local variable for the precision.
+DIV_ROUND_CLOSEST(). Also I very much prefer this notation over the
+actual code below. I don't think we need a local variable to hold the
+precision.
 
 Thierry
 
@@ -101,24 +102,24 @@ uct pwm_device *pwm,
 > 2.1.4
 >=20
 
---oC1+HKm2/end4ao3
+--4Ckj6UjgE2iN1+kY
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAljma7EACgkQ3SOs138+
-s6E8sw/+LEQDv/PGS9C0Arb2cUYTIl5t3Ct4RKZvSNyMe2mAOla3u8y6pNG0Ejry
-YWghLUuX38cX8MTa+dOJYH1b4wKINgySVX6r17gU8hWjzYl1e0simlVMugBGZwO4
-Ly/mbhTlTrQQh0hDiVf5vUUdE618bPHpwbPkBK8w54ohSABDHEAuVnGy6Fs57D0K
-1tbsqFS+R/qMVbGa/+R7v7+0gUb9Li4aBhCS6Q9Hgvqm62unF2j576jeBMcrh6ql
-XgthYU3KllUIVJx+A8ZBCHPRXr/XGATRatgfjB3R0kmRExvjxk9Fyr9px1VECjKs
-FMi4bJICd1RX1M0iEuWP+oAH7LOW7eItv7LtA+gxi2RquvJTpCo02Dbb5pBkkL9o
-TiEShTb8SgH7xz7oXtAgtJHQ2zO1hFlkxkA09eXxoCKcZaRjZ80Vgv6WL6gb0AWh
-XYmPuMpIBKkJjMCBx+hQZNDUjFXHSWBXt9CDQG7MhNHpazaMx84aac6edaWCy4jG
-rEuqg7MfYB20QT8yvb6SbY4ihK0yUFmDDj663CJh0aM5sE21IcA1WcK3HS6cTc77
-LmKV5f1LjF7gTb5VOW4crIE+AF4KQHEYPLywPo2VteJTtqn6shPzvDgi6M9Fz1ku
-X0OgSeK93i3PNfYQ1M7V5Veh9lp/PV7cz0ISc9HxVRWYm1ZZMPI=
-=6f9P
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAljmbKoACgkQ3SOs138+
+s6Flsw/+JRZIQJnTD+nnvTOQVRWS5Oc+dC/+WROzKZrmupfkP15NTmAxVOqn6BIW
+hvSRc5zIIKXKqO8erHrsTeeLbsmNp906GrV8oNqEkJ5mUWIs1BXo8qlA+1UQx49S
+e7Srl0LF0GIZ92lKtqMy/grk/Jvs22hqDjNiuwRK35x9MBIG4g/MJiUhOXY91t3H
+4sjJkG4d1r1b2+oRZk2+2RemBUzf6lczjTyA30Thn36nounGmYuW5Gz0+o76Om5x
+gRJW61MTD9pgM0ry8qhhFIWF4MuIzbciItyyvljZTK0KZY9CSyu1QQrh5K/Nzu61
+EHrU8HL01q1LutGOGIzmD9fSh4+ag9iQKSkDChrNX9V+N6is54FrFHWfjCCOiUpi
+HBjMFZfudP1f7lkQpprip4cgGv2n1iqe24AqulQWZRska621FU0PGQx4XPPClpXJ
+tJYoP0cdg+uC2DD/S6rn2Ow6WkTYCq+KmDwtgFGQzK82g155uBooDWxMgXKJrwkZ
+HIav3ApdFHRkdLlROymvxSwpadEXDtKucBx91u7Uxiffl/Ss0tfswIxO7dLf1Kma
+LvVezF3v8tEYKWNLd/yHEduSlpG2zIfB8aaJV7KLTm1RUfwIwqvxK/nQgGtsGvfS
+5XBLk58pADECt3kLB0vEIwKlGLLU0Xd1jHpacxf1RZF1DcMq4Y4=
+=2/xf
 -----END PGP SIGNATURE-----
 
---oC1+HKm2/end4ao3--
+--4Ckj6UjgE2iN1+kY--
