@@ -1,99 +1,98 @@
-From: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH V3 4/4] pwm: tegra: Add support to configure pin state in
- suspends/resume
-Date: Fri, 7 Apr 2017 11:27:03 +0100
-Message-ID: <afc48437-a35c-7074-1f86-b6c29d3dc257@nvidia.com>
-References: <1491557642-15940-1-git-send-email-ldewangan@nvidia.com>
- <1491557642-15940-5-git-send-email-ldewangan@nvidia.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v4 03/14] pinctrl-ingenic: add a pinctrl driver for the
+ Ingenic jz47xx SoCs
+Date: Fri, 7 Apr 2017 11:56:29 +0100
+Message-ID: <20170407105629.n6a2cxt3pof66gu2@dell>
+References: <20170125185207.23902-2-paul@crapouillou.net>
+ <20170402204244.14216-1-paul@crapouillou.net>
+ <20170402204244.14216-4-paul@crapouillou.net>
+ <CACRpkdbeudhXDE8KEgB_kZSAUUwS4Sd3=+GyR0YZ2-PQnEa9zw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1491557642-15940-5-git-send-email-ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wr0-f170.google.com ([209.85.128.170]:35685 "EHLO
+        mail-wr0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753779AbdDGK4e (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 7 Apr 2017 06:56:34 -0400
+Received: by mail-wr0-f170.google.com with SMTP id o21so73778851wrb.2
+        for <linux-pwm@vger.kernel.org>; Fri, 07 Apr 2017 03:56:34 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <CACRpkdbeudhXDE8KEgB_kZSAUUwS4Sd3=+GyR0YZ2-PQnEa9zw@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Paul Cercueil <paul@crapouillou.net>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, James Hogan <james.hogan@imgtec.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux MIPS <linux-mips@linux-mips.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>
 
+On Fri, 07 Apr 2017, Linus Walleij wrote:
 
-On 07/04/17 10:34, Laxman Dewangan wrote:
-> In some of NVIDIA Tegra's platform, PWM controller is used to
-> control the PWM controlled regulators. PWM signal is connected to
-> the VID pin of the regulator where duty cycle of PWM signal decide
-> the voltage level of the regulator output.
+> On Sun, Apr 2, 2017 at 10:42 PM, Paul Cercueil <paul@crapouillou.net> wrote:
 > 
-> When system enters suspend, some PWM client/slave regulator devices
-> require the PWM output to be tristated.
+> > This driver handles pin configuration and pin muxing for the
+> > JZ4740 and JZ4780 SoCs from Ingenic.
+> >
+> > Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> (...)
+> > +       select MFD_CORE
+> (...)
+> > +#include <linux/mfd/core.h>
 > 
-> Add support to configure the pin state via pinctrl frameworks in
-> suspend and active state of the system.
+> That's unorthodox. Still quite pretty!
+> I would nee Lee Jones to say something about this, as it is
+> essentially hijacking MFD into the pinctrl subsystem.
 > 
-> Signed-off-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > +static struct mfd_cell ingenic_pinctrl_mfd_cells[] = {
+> > +       {
+> > +               .id = 0,
+> > +               .name = "GPIOA",
+> > +               .of_compatible = "ingenic,gpio-bank-a",
+> > +       },
+> > +       {
+> > +               .id = 1,
+> > +               .name = "GPIOB",
+> > +               .of_compatible = "ingenic,gpio-bank-b",
+> > +       },
+> > +       {
+> > +               .id = 2,
+> > +               .name = "GPIOC",
+> > +               .of_compatible = "ingenic,gpio-bank-c",
+> > +       },
+> > +       {
+> > +               .id = 3,
+> > +               .name = "GPIOD",
+> > +               .of_compatible = "ingenic,gpio-bank-d",
+> > +       },
+> > +       {
+> > +               .id = 4,
+> > +               .name = "GPIOE",
+> > +               .of_compatible = "ingenic,gpio-bank-e",
+> > +       },
+> > +       {
+> > +               .id = 5,
+> > +               .name = "GPIOF",
+> > +               .of_compatible = "ingenic,gpio-bank-f",
+> > +       },
+> > +};
+> (...)
+> > +       err = devm_mfd_add_devices(dev, 0, ingenic_pinctrl_mfd_cells,
+> > +                       ARRAY_SIZE(ingenic_pinctrl_mfd_cells), NULL, 0, NULL);
+> > +       if (err) {
+> > +               dev_err(dev, "Failed to add MFD devices\n");
+> > +               return err;
+> > +       }
 > 
-> ---
-> Changes from v1:
-> - Use standard pinctrl names for sleep and active state.
-> - Use API pinctrl_pm_select_*()
+> I guess the alternative would be to reimplement the MFD structure.
 > 
-> Changes from V2:
-> - Use returns of pinctrl_pm_select_*()
-> - Rephrase commit message.
-> ---
->  drivers/pwm/pwm-tegra.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
-> 
-> diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-> index 21518be..9c7f180 100644
-> --- a/drivers/pwm/pwm-tegra.c
-> +++ b/drivers/pwm/pwm-tegra.c
-> @@ -29,6 +29,7 @@
->  #include <linux/of_device.h>
->  #include <linux/pwm.h>
->  #include <linux/platform_device.h>
-> +#include <linux/pinctrl/consumer.h>
->  #include <linux/slab.h>
->  #include <linux/reset.h>
->  
-> @@ -255,6 +256,18 @@ static int tegra_pwm_remove(struct platform_device *pdev)
->  	return pwmchip_remove(&pc->chip);
->  }
->  
-> +#ifdef CONFIG_PM_SLEEP
-> +static int tegra_pwm_suspend(struct device *dev)
-> +{
-> +	return pinctrl_pm_select_sleep_state(dev);
-> +}
-> +
-> +static int tegra_pwm_resume(struct device *dev)
-> +{
-> +	return pinctrl_pm_select_default_state(dev);
-> +}
-> +#endif
-> +
->  static const struct tegra_pwm_soc tegra20_pwm_soc = {
->  	.num_channels = 4,
->  };
-> @@ -271,10 +284,15 @@ static const struct of_device_id tegra_pwm_of_match[] = {
->  
->  MODULE_DEVICE_TABLE(of, tegra_pwm_of_match);
->  
-> +static const struct dev_pm_ops tegra_pwm_pm_ops = {
-> +	SET_SYSTEM_SLEEP_PM_OPS(tegra_pwm_suspend, tegra_pwm_resume)
-> +};
-> +
->  static struct platform_driver tegra_pwm_driver = {
->  	.driver = {
->  		.name = "tegra-pwm",
->  		.of_match_table = tegra_pwm_of_match,
-> +		.pm = &tegra_pwm_pm_ops,
->  	},
->  	.probe = tegra_pwm_probe,
->  	.remove = tegra_pwm_remove,
+> Did you check the approach to use "simple-mfd" and just let the subnodes
+> spawn as devices that way? I guess you did and this adds something
+> necessary.
 
-Acked-by: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-
-Cheers
-Jon
+I'd like to hear what the OP has to say about why this is necessary.
+However, as a first glimpse, I'm dead against exporting MFD
+functionality to outside of the subsystem.
 
 -- 
-nvpublic
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
