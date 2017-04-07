@@ -1,20 +1,16 @@
-From: Laxman Dewangan <ldewangan@nvidia.com>
-Subject: [PATCH V3 3/4] pwm: tegra: Add DT binding details to configure pin in suspends/resume
-Date: Fri, 7 Apr 2017 15:04:01 +0530
-Message-ID: <1491557642-15940-4-git-send-email-ldewangan@nvidia.com>
+From: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH V3 4/4] pwm: tegra: Add support to configure pin state in suspends/resume
+Date: Fri, 7 Apr 2017 15:04:02 +0530
+Message-ID: <1491557642-15940-5-git-send-email-ldewangan@nvidia.com>
 References: <1491557642-15940-1-git-send-email-ldewangan@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:16419 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756647AbdDGJxB (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 7 Apr 2017 05:53:01 -0400
-In-Reply-To: <1491557642-15940-1-git-send-email-ldewangan@nvidia.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1491557642-15940-1-git-send-email-ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, robh+dt@kernel.org, jonathanh@nvidia.com
-Cc: mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org, Laxman Dewangan <ldewangan@nvidia.com>
 
 In some of NVIDIA Tegra's platform, PWM controller is used to
 control the PWM controlled regulators. PWM signal is connected to
@@ -24,81 +20,74 @@ the voltage level of the regulator output.
 When system enters suspend, some PWM client/slave regulator devices
 require the PWM output to be tristated.
 
-Add DT binding details to provide the pin configuration state
-from PWM and pinctrl DT node in suspend and active state of
-the system.
+Add support to configure the pin state via pinctrl frameworks in
+suspend and active state of the system.
 
-Signed-off-by: Laxman Dewangan <ldewangan@nvidia.com>
+Signed-off-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
 ---
 Changes from v1:
 - Use standard pinctrl names for sleep and active state.
+- Use API pinctrl_pm_select_*()
 
 Changes from V2:
-- Fix the commit message and details
+- Use returns of pinctrl_pm_select_*()
+- Rephrase commit message.
 ---
- .../devicetree/bindings/pwm/nvidia,tegra20-pwm.txt | 45 ++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+ drivers/pwm/pwm-tegra.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-index b4e7377..c57e11b 100644
---- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-+++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
-@@ -19,6 +19,19 @@ Required properties:
- - reset-names: Must include the following entries:
-   - pwm
+diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+index 21518be..9c7f180 100644
+--- a/drivers/pwm/pwm-tegra.c
++++ b/drivers/pwm/pwm-tegra.c
+@@ -29,6 +29,7 @@
+ #include <linux/of_device.h>
+ #include <linux/pwm.h>
+ #include <linux/platform_device.h>
++#include <linux/pinctrl/consumer.h>
+ #include <linux/slab.h>
+ #include <linux/reset.h>
  
-+Optional properties:
-+============================
-+In some of the interface like PWM based regulator device, it is required
-+to configure the pins differently in different states, especially in suspend
-+state of the system. The configuration of pin is provided via the pinctrl
-+DT node as detailed in the pinctrl DT binding document
-+	Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
-+
-+The PWM node will have following optional properties.
-+pinctrl-names:	Pin state names. Must be "default" and "sleep".
-+pinctrl-0:	phandle for the default/active state of pin configurations.
-+pinctrl-1:	phandle for the sleep state of pin configurations.
-+
- Example:
+@@ -255,6 +256,18 @@ static int tegra_pwm_remove(struct platform_device *pdev)
+ 	return pwmchip_remove(&pc->chip);
+ }
  
- 	pwm: pwm@7000a000 {
-@@ -29,3 +42,35 @@ Example:
- 		resets = <&tegra_car 17>;
- 		reset-names = "pwm";
- 	};
++#ifdef CONFIG_PM_SLEEP
++static int tegra_pwm_suspend(struct device *dev)
++{
++	return pinctrl_pm_select_sleep_state(dev);
++}
 +
++static int tegra_pwm_resume(struct device *dev)
++{
++	return pinctrl_pm_select_default_state(dev);
++}
++#endif
 +
-+Example with the pin configuration for suspend and resume:
-+=========================================================
-+Suppose pin PE7 (On Tegra210) interfaced with the regulator device and
-+it requires PWM output to be tristated when system enters suspend.
-+Following will be DT binding to achieve this:
+ static const struct tegra_pwm_soc tegra20_pwm_soc = {
+ 	.num_channels = 4,
+ };
+@@ -271,10 +284,15 @@ static const struct of_device_id tegra_pwm_of_match[] = {
+ 
+ MODULE_DEVICE_TABLE(of, tegra_pwm_of_match);
+ 
++static const struct dev_pm_ops tegra_pwm_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(tegra_pwm_suspend, tegra_pwm_resume)
++};
 +
-+#include <dt-bindings/pinctrl/pinctrl-tegra.h>
-+
-+	pinmux@700008d4 {
-+		pwm_active_state: pwm_active_state {
-+                        pe7 {
-+                                nvidia,pins = "pe7";
-+                                nvidia,tristate = <TEGRA_PIN_DISABLE>;
-+			};
-+		};
-+
-+		pwm_sleep_state: pwm_sleep_state {
-+                        pe7 {
-+                                nvidia,pins = "pe7";
-+                                nvidia,tristate = <TEGRA_PIN_ENABLE>;
-+			};
-+		};
-+	};
-+
-+	pwm@7000a000 {
-+		/* Mandatory PWM properties */
-+		pinctrl-names = "default", "sleep";
-+		pinctrl-0 = <&pwm_active_state>;
-+		pinctrl-1 = <&pwm_sleep_state>;
-+	};
+ static struct platform_driver tegra_pwm_driver = {
+ 	.driver = {
+ 		.name = "tegra-pwm",
+ 		.of_match_table = tegra_pwm_of_match,
++		.pm = &tegra_pwm_pm_ops,
+ 	},
+ 	.probe = tegra_pwm_probe,
+ 	.remove = tegra_pwm_remove,
 -- 
 2.1.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
