@@ -1,104 +1,117 @@
-From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 3/4] pwm: tegra: Add DT binding details to configure pin
- in suspends/resume
-Date: Fri, 7 Apr 2017 12:19:47 +0200
-Message-ID: <CACRpkdZXQNkQX1gYO3KEq8vc2+QD2h7JhjPHV-J+bu-tZULyYA@mail.gmail.com>
-References: <1491401626-31303-1-git-send-email-ldewangan@nvidia.com>
- <1491401626-31303-4-git-send-email-ldewangan@nvidia.com> <33445b27-ae0b-b28e-afca-e7b776b4b7c0@nvidia.com>
- <20170406130315.GB7784@ulmo.ba.sec> <58E6405E.5020402@nvidia.com>
+From: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH V3 3/4] pwm: tegra: Add DT binding details to configure
+ pin in suspends/resume
+Date: Fri, 7 Apr 2017 11:25:35 +0100
+Message-ID: <2e814d14-cfb5-3c55-0200-ec963958467c@nvidia.com>
+References: <1491557642-15940-1-git-send-email-ldewangan@nvidia.com>
+ <1491557642-15940-4-git-send-email-ldewangan@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <58E6405E.5020402-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1491557642-15940-4-git-send-email-ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Apr 6, 2017 at 3:19 PM, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org> wrote:
-> On Thursday 06 April 2017 06:33 PM, Thierry Reding wrote:
->> On Thu, Apr 06, 2017 at 09:57:09AM +0100, Jon Hunter wrote:
->>> On 05/04/17 15:13, Laxman Dewangan wrote:
->>>>
->>>> +state of the system. The configuration of pin is provided via the
->>>> pinctrl
->>>> +DT node as detailed in the pinctrl DT binding document
->>>> +       Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
->>>> +
->>>> +The PWM node will have following optional properties.
->>>> +pinctrl-names: Pin state names. Must be "suspend" and "resume".
->>>
->>> Why not just use the pre-defined names here? There is a pre-defined name
->>> for "default", "idle" and "sleep" and then you can use the following
->>> APIs and avoid the lookup of the state ...
->>>
->>> pinctrl_pm_select_default_state()
->>> pinctrl_pm_select_idle_state()
->>> pinctrl_pm_select_sleep_state()
->>>
->>> Note for i2c [0][1], I used "default" as the active/on state (which I
->>> know is not that descriptive) and then used 'idle' as the suspended
->>> state. This way we don't need any custom names.
->>
->> Agreed, I think that's how these states are meant to be used.
->
-> I did quick grep for the pinctrl_pm_select_* functions in the code tree and
-> found usage of these APIs in some of the places.
-> I am taking the reference of i2c-st, i2c-nomadic and
-> extcon/extcon-usb-gpio.c drivers and from this the interpretation is
->
-> default state: When interface active and transfer need to be done in IO
-> interface.
-> idle state: Active state of the system but interface is not active, put in
-> non-active state of the interface.
-> sleep state: When system entering into suspend and IO interface is going to
-> be inactive.
->
-> So in PWM case, we will need the "default" and "sleep" state.
->
-> In suspend(), set the "sleep" state and in resume, set the "default" state.
->
-> + Linus W as I refereed his st/nomadik driver for reference.
 
-It is actually documented:
-include/linux/pinctrl/pinctrl-state.h
+On 07/04/17 10:34, Laxman Dewangan wrote:
+> In some of NVIDIA Tegra's platform, PWM controller is used to
+> control the PWM controlled regulators. PWM signal is connected to
+> the VID pin of the regulator where duty cycle of PWM signal decide
+> the voltage level of the regulator output.
+> 
+> When system enters suspend, some PWM client/slave regulator devices
+> require the PWM output to be tristated.
+> 
+> Add DT binding details to provide the pin configuration state
+> from PWM and pinctrl DT node in suspend and active state of
+> the system.
+> 
+> Signed-off-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> 
+> ---
+> Changes from v1:
+> - Use standard pinctrl names for sleep and active state.
+> 
+> Changes from V2:
+> - Fix the commit message and details
+> ---
+>  .../devicetree/bindings/pwm/nvidia,tegra20-pwm.txt | 45 ++++++++++++++++++++++
+>  1 file changed, 45 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
+> index b4e7377..c57e11b 100644
+> --- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
+> +++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.txt
+> @@ -19,6 +19,19 @@ Required properties:
+>  - reset-names: Must include the following entries:
+>    - pwm
+>  
+> +Optional properties:
+> +============================
+> +In some of the interface like PWM based regulator device, it is required
+> +to configure the pins differently in different states, especially in suspend
+> +state of the system. The configuration of pin is provided via the pinctrl
+> +DT node as detailed in the pinctrl DT binding document
+> +	Documentation/devicetree/bindings/pinctrl/pinctrl-bindings.txt
+> +
+> +The PWM node will have following optional properties.
+> +pinctrl-names:	Pin state names. Must be "default" and "sleep".
+> +pinctrl-0:	phandle for the default/active state of pin configurations.
+> +pinctrl-1:	phandle for the sleep state of pin configurations.
+> +
+>  Example:
+>  
+>  	pwm: pwm@7000a000 {
+> @@ -29,3 +42,35 @@ Example:
+>  		resets = <&tegra_car 17>;
+>  		reset-names = "pwm";
+>  	};
+> +
+> +
+> +Example with the pin configuration for suspend and resume:
+> +=========================================================
+> +Suppose pin PE7 (On Tegra210) interfaced with the regulator device and
+> +it requires PWM output to be tristated when system enters suspend.
+> +Following will be DT binding to achieve this:
+> +
+> +#include <dt-bindings/pinctrl/pinctrl-tegra.h>
+> +
+> +	pinmux@700008d4 {
+> +		pwm_active_state: pwm_active_state {
+> +                        pe7 {
+> +                                nvidia,pins = "pe7";
+> +                                nvidia,tristate = <TEGRA_PIN_DISABLE>;
+> +			};
+> +		};
+> +
+> +		pwm_sleep_state: pwm_sleep_state {
+> +                        pe7 {
+> +                                nvidia,pins = "pe7";
+> +                                nvidia,tristate = <TEGRA_PIN_ENABLE>;
+> +			};
+> +		};
+> +	};
+> +
+> +	pwm@7000a000 {
+> +		/* Mandatory PWM properties */
 
-/*
- * Standard pin control state definitions
- */
+Maybe these are mandatory for the platform, but given these are
+optional, its a bit confusing.
 
-/**
- * @PINCTRL_STATE_DEFAULT: the state the pinctrl handle shall be put
- *      into as default, usually this means the pins are up and ready to
- *      be used by the device driver. This state is commonly used by
- *      hogs to configure muxing and pins at boot, and also as a state
- *      to go into when returning from sleep and idle in
- *      .pm_runtime_resume() or ordinary .resume() for example.
- * @PINCTRL_STATE_INIT: normally the pinctrl will be set to "default"
- *      before the driver's probe() function is called.  There are some
- *      drivers where that is not appropriate becausing doing so would
- *      glitch the pins.  In those cases you can add an "init" pinctrl
- *      which is the state of the pins before drive probe.  After probe
- *      if the pins are still in "init" state they'll be moved to
- *      "default".
- * @PINCTRL_STATE_IDLE: the state the pinctrl handle shall be put into
- *      when the pins are idle. This is a state where the system is relaxed
- *      but not fully sleeping - some power may be on but clocks gated for
- *      example. Could typically be set from a pm_runtime_suspend() or
- *      pm_runtime_idle() operation.
- * @PINCTRL_STATE_SLEEP: the state the pinctrl handle shall be put into
- *      when the pins are sleeping. This is a state where the system is in
- *      its lowest sleep state. Could typically be set from an
- *      ordinary .suspend() function.
- */
-#define PINCTRL_STATE_DEFAULT "default"
-#define PINCTRL_STATE_INIT "init"
-#define PINCTRL_STATE_IDLE "idle"
-#define PINCTRL_STATE_SLEEP "sleep"
+> +		pinctrl-names = "default", "sleep";
+> +		pinctrl-0 = <&pwm_active_state>;
+> +		pinctrl-1 = <&pwm_sleep_state>;
+> +	};
 
-Yours,
-Linus Walleij
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+However, fine with me so ...
+
+Acked-by: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+Cheers
+Jon
+
+-- 
+nvpublic
