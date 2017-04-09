@@ -1,84 +1,228 @@
-From: Sven Van Asbroeck <thesven73@gmail.com>
-Subject: [PATCH 1/1] pwm: pca9685: fix gpio-only operation.
-Date: Sun,  9 Apr 2017 12:11:24 -0400
-Message-ID: <1491754284-3870-2-git-send-email-svenv@arcx.com>
-References: <1491754284-3870-1-git-send-email-svenv@arcx.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1491754284-3870-1-git-send-email-svenv@arcx.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, clemens.gruber@pqgruber.com, mika.westerberg@linux.intel.com, andriy.shevchenko@linux.intel.com, Sven Van Asbroeck <TheSven73@googlemail.com>
+From: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+Subject: [PATCH v5 2/4] ARM: dts: mvebu: Add PWM properties to .dtsi files
+Date: Sun,  9 Apr 2017 20:09:28 +0200
+Message-ID: <20170409180931.4884-3-ralph.sennhauser@gmail.com>
+References: <20170409180931.4884-1-ralph.sennhauser@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170409180931.4884-1-ralph.sennhauser@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, Andrew Lunn <andrew@lunn.ch>, Jason Cooper <jason@lakedaemon.net>, Alexandre Courbot <gnurou@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Gregory Clement <gregory.clement@free-electrons.com>, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-gpio@vger.kernel.org, Ralph Sennhauser <ralph.sennhauser@gmail.com>, linux-arm-kernel@lists.infradead.org, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-gpio-only driver operation never clears the SLEEP bit, which can
-cause the gpios to become unusable.
+From: Andrew Lunn <andrew@lunn.ch>
 
-Example:
-1. user requests first pwm  ->      driver clears SLEEP bit
-2. user frees last pwm      ->      driver sets SLEEP bit
-3. user requests gpio
-4. user switches gpio on    ->      output does not turn on
-                                    because SLEEP bit is set
+Add properties to the GPIO nodes to allow them to be also used as PWM
+lines.
 
-Prevent this behaviour by keeping the SLEEP bit cleared
-for the lifetime of the driver instance.
-
-Fixes: bccec89f0a35 ("Allow any of the 16 PWMs to be used as a GPIO")
-Signed-off-by: Sven Van Asbroeck <TheSven73@googlemail.com>
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+URL: https://patchwork.ozlabs.org/patch/427294/
+[Ralph Sennhauser: Add new compatible string marvell,armada-370-xp-gpio]
+Signed-off-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+Tested-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/pwm/pwm-pca9685.c | 18 +++---------------
- 1 file changed, 3 insertions(+), 15 deletions(-)
+ arch/arm/boot/dts/armada-370.dtsi        | 19 ++++++++++++++-----
+ arch/arm/boot/dts/armada-xp-mv78230.dtsi | 16 ++++++++++++----
+ arch/arm/boot/dts/armada-xp-mv78260.dtsi | 19 ++++++++++++++-----
+ arch/arm/boot/dts/armada-xp-mv78460.dtsi | 19 ++++++++++++++-----
+ 4 files changed, 54 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index 0cfb357..4b6adaf 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -79,7 +79,6 @@
- struct pca9685 {
- 	struct pwm_chip chip;
- 	struct regmap *regmap;
--	int active_cnt;
- 	int duty_ns;
- 	int period_ns;
- #if IS_ENABLED(CONFIG_GPIOLIB)
-@@ -407,28 +406,14 @@ static int pca9685_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 	if (pca9685_pwm_is_gpio(pca, pwm))
- 		return -EBUSY;
+diff --git a/arch/arm/boot/dts/armada-370.dtsi b/arch/arm/boot/dts/armada-370.dtsi
+index cc011c8..5e815cc 100644
+--- a/arch/arm/boot/dts/armada-370.dtsi
++++ b/arch/arm/boot/dts/armada-370.dtsi
+@@ -137,29 +137,38 @@
+ 			};
  
--	if (pca->active_cnt++ == 0)
--		return regmap_update_bits(pca->regmap, PCA9685_MODE1,
--					  MODE1_SLEEP, 0x0);
--
- 	return 0;
- }
+ 			gpio0: gpio@18100 {
+-				compatible = "marvell,orion-gpio";
+-				reg = <0x18100 0x40>;
++				compatible = "marvell,armada-370-xp-gpio",
++					     "marvell,orion-gpio";
++				reg = <0x18100 0x40>, <0x181c0 0x08>;
++				reg-names = "gpio", "pwm";
+ 				ngpios = <32>;
+ 				gpio-controller;
+ 				#gpio-cells = <2>;
++				#pwm-cells = <2>;
+ 				interrupt-controller;
+ 				#interrupt-cells = <2>;
+ 				interrupts = <82>, <83>, <84>, <85>;
++				clocks = <&coreclk 0>;
+ 			};
  
--static void pca9685_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
--{
--	struct pca9685 *pca = to_pca(chip);
--
--	if (--pca->active_cnt == 0)
--		regmap_update_bits(pca->regmap, PCA9685_MODE1, MODE1_SLEEP,
--				   MODE1_SLEEP);
--}
--
- static const struct pwm_ops pca9685_pwm_ops = {
- 	.enable = pca9685_pwm_enable,
- 	.disable = pca9685_pwm_disable,
- 	.config = pca9685_pwm_config,
- 	.request = pca9685_pwm_request,
--	.free = pca9685_pwm_free,
- 	.owner = THIS_MODULE,
- };
+ 			gpio1: gpio@18140 {
+-				compatible = "marvell,orion-gpio";
+-				reg = <0x18140 0x40>;
++				compatible = "marvell,armada-370-xp-gpio",
++					     "marvell,orion-gpio";
++				reg = <0x18140 0x40>, <0x181c8 0x08>;
++				reg-names = "gpio", "pwm";
+ 				ngpios = <32>;
+ 				gpio-controller;
+ 				#gpio-cells = <2>;
++				#pwm-cells = <2>;
+ 				interrupt-controller;
+ 				#interrupt-cells = <2>;
+ 				interrupts = <87>, <88>, <89>, <90>;
++				clocks = <&coreclk 0>;
+ 			};
  
-@@ -479,6 +464,9 @@ static int pca9685_pwm_probe(struct i2c_client *client,
- 	/* clear all "full off" bits */
- 	regmap_write(pca->regmap, PCA9685_ALL_LED_OFF_L, 0);
- 	regmap_write(pca->regmap, PCA9685_ALL_LED_OFF_H, 0);
-+	/* clear the "sleep" bit */
-+	regmap_update_bits(pca->regmap, PCA9685_MODE1,
-+					  MODE1_SLEEP, 0x0);
+ 			gpio2: gpio@18180 {
+-				compatible = "marvell,orion-gpio";
++				compatible = "marvell,armada-370-xp-gpio",
++					     "marvell,orion-gpio";
+ 				reg = <0x18180 0x40>;
+ 				ngpios = <2>;
+ 				gpio-controller;
+diff --git a/arch/arm/boot/dts/armada-xp-mv78230.dtsi b/arch/arm/boot/dts/armada-xp-mv78230.dtsi
+index 07c5090..f77168c9 100644
+--- a/arch/arm/boot/dts/armada-xp-mv78230.dtsi
++++ b/arch/arm/boot/dts/armada-xp-mv78230.dtsi
+@@ -202,25 +202,33 @@
  
- 	pca->chip.ops = &pca9685_pwm_ops;
- 	/* add an extra channel for ALL_LED */
+ 		internal-regs {
+ 			gpio0: gpio@18100 {
+-				compatible = "marvell,orion-gpio";
+-				reg = <0x18100 0x40>;
++				compatible = "marvell,armada-370-xp-gpio",
++					     "marvell,orion-gpio";
++				reg = <0x18100 0x40>, <0x181c0 0x08>;
++				reg-names = "gpio", "pwm";
+ 				ngpios = <32>;
+ 				gpio-controller;
+ 				#gpio-cells = <2>;
++				#pwm-cells = <2>;
+ 				interrupt-controller;
+ 				#interrupt-cells = <2>;
+ 				interrupts = <82>, <83>, <84>, <85>;
++				clocks = <&coreclk 0>;
+ 			};
+ 
+ 			gpio1: gpio@18140 {
+-				compatible = "marvell,orion-gpio";
+-				reg = <0x18140 0x40>;
++				compatible = "marvell,armada-370-xp-gpio",
++					     "marvell,orion-gpio";
++				reg = <0x18140 0x40>, <0x181c8 0x08>;
++				reg-names = "gpio", "pwm";
+ 				ngpios = <17>;
+ 				gpio-controller;
+ 				#gpio-cells = <2>;
++				#pwm-cells = <2>;
+ 				interrupt-controller;
+ 				#interrupt-cells = <2>;
+ 				interrupts = <87>, <88>, <89>;
++				clocks = <&coreclk 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm/boot/dts/armada-xp-mv78260.dtsi b/arch/arm/boot/dts/armada-xp-mv78260.dtsi
+index 64e936a..0ecfaf4 100644
+--- a/arch/arm/boot/dts/armada-xp-mv78260.dtsi
++++ b/arch/arm/boot/dts/armada-xp-mv78260.dtsi
+@@ -285,29 +285,38 @@
+ 
+ 		internal-regs {
+ 			gpio0: gpio@18100 {
+-				compatible = "marvell,orion-gpio";
+-				reg = <0x18100 0x40>;
++				compatible = "marvell,armada-370-xp-gpio",
++					     "marvell,orion-gpio";
++				reg = <0x18100 0x40>, <0x181c0 0x08>;
++				reg-names = "gpio", "pwm";
+ 				ngpios = <32>;
+ 				gpio-controller;
+ 				#gpio-cells = <2>;
++				#pwm-cells = <2>;
+ 				interrupt-controller;
+ 				#interrupt-cells = <2>;
+ 				interrupts = <82>, <83>, <84>, <85>;
++				clocks = <&coreclk 0>;
+ 			};
+ 
+ 			gpio1: gpio@18140 {
+-				compatible = "marvell,orion-gpio";
+-				reg = <0x18140 0x40>;
++				compatible = "marvell,armada-370-xp-gpio",
++					     "marvell,orion-gpio";
++				reg = <0x18140 0x40>, <0x181c8 0x08>;
++				reg-names = "gpio", "pwm";
+ 				ngpios = <32>;
+ 				gpio-controller;
+ 				#gpio-cells = <2>;
++				#pwm-cells = <2>;
+ 				interrupt-controller;
+ 				#interrupt-cells = <2>;
+ 				interrupts = <87>, <88>, <89>, <90>;
++				clocks = <&coreclk 0>;
+ 			};
+ 
+ 			gpio2: gpio@18180 {
+-				compatible = "marvell,orion-gpio";
++				compatible = "marvell,armada-370-xp-gpio",
++					     "marvell,orion-gpio";
+ 				reg = <0x18180 0x40>;
+ 				ngpios = <3>;
+ 				gpio-controller;
+diff --git a/arch/arm/boot/dts/armada-xp-mv78460.dtsi b/arch/arm/boot/dts/armada-xp-mv78460.dtsi
+index d1383dd..670ece4c 100644
+--- a/arch/arm/boot/dts/armada-xp-mv78460.dtsi
++++ b/arch/arm/boot/dts/armada-xp-mv78460.dtsi
+@@ -323,29 +323,38 @@
+ 
+ 		internal-regs {
+ 			gpio0: gpio@18100 {
+-				compatible = "marvell,orion-gpio";
+-				reg = <0x18100 0x40>;
++				compatible = "marvell,armada-370-xp-gpio",
++					     "marvell,orion-gpio";
++				reg = <0x18100 0x40>, <0x181c0 0x08>;
++				reg-names = "gpio", "pwm";
+ 				ngpios = <32>;
+ 				gpio-controller;
+ 				#gpio-cells = <2>;
++				#pwm-cells = <2>;
+ 				interrupt-controller;
+ 				#interrupt-cells = <2>;
+ 				interrupts = <82>, <83>, <84>, <85>;
++				clocks = <&coreclk 0>;
+ 			};
+ 
+ 			gpio1: gpio@18140 {
+-				compatible = "marvell,orion-gpio";
+-				reg = <0x18140 0x40>;
++				compatible = "marvell,armada-370-xp-gpio",
++					     "marvell,orion-gpio";
++				reg = <0x18140 0x40>, <0x181c8 0x08>;
++				reg-names = "gpio", "pwm";
+ 				ngpios = <32>;
+ 				gpio-controller;
+ 				#gpio-cells = <2>;
++				#pwm-cells = <2>;
+ 				interrupt-controller;
+ 				#interrupt-cells = <2>;
+ 				interrupts = <87>, <88>, <89>, <90>;
++				clocks = <&coreclk 0>;
+ 			};
+ 
+ 			gpio2: gpio@18180 {
+-				compatible = "marvell,orion-gpio";
++				compatible = "marvell,armada-370-xp-gpio",
++					     "marvell,orion-gpio";
+ 				reg = <0x18180 0x40>;
+ 				ngpios = <3>;
+ 				gpio-controller;
 -- 
-1.9.1
+2.10.2
