@@ -1,132 +1,532 @@
-From: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-Subject: [PATCH v5 0/4] gpio: mvebu: Add PWM fan support
-Date: Sun,  9 Apr 2017 20:09:26 +0200
-Message-ID: <20170409180931.4884-1-ralph.sennhauser@gmail.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f193.google.com ([209.85.128.193]:34987 "EHLO
-        mail-wr0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752495AbdDISJm (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sun, 9 Apr 2017 14:09:42 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+From: Ralph Sennhauser <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v5 1/4] gpio: mvebu: Add limited PWM support
+Date: Sun,  9 Apr 2017 20:09:27 +0200
+Message-ID: <20170409180931.4884-2-ralph.sennhauser@gmail.com>
+References: <20170409180931.4884-1-ralph.sennhauser@gmail.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170409180931.4884-1-ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Ralph Sennhauser <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Gregory Clement <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Ralph Sennhauser <ralph.sennhauser@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Russell King <linux@armlinux.org.uk>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-Hi Therry,
+From: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>
 
-Resending this as v5 with some minor changes since v4. What is missing is
-an ACK from you so Linus can merge the driver and Gregory the dts
-changes. For this driver to make it into 4.12 it would be nice to have
-it in next soon. I hope you can make some room in your schedule to have
-another look at this series.
+Armada 370/XP devices can 'blink' GPIO lines with a configurable on
+and off period. This can be modelled as a PWM.
 
-Thanks
-Ralph
+However, there are only two sets of PWM configuration registers for
+all the GPIO lines. This driver simply allows a single GPIO line per
+GPIO chip of 32 lines to be used as a PWM. Attempts to use more return
+EBUSY.
 
+Due to the interleaving of registers it is not simple to separate the
+PWM driver from the GPIO driver. Thus the GPIO driver has been
+extended with a PWM driver.
+
+Signed-off-by: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>
+URL: https://patchwork.ozlabs.org/patch/427287/
+URL: https://patchwork.ozlabs.org/patch/427295/
+[Ralph Sennhauser:
+  * Port forward
+  * Merge PWM portion into gpio-mvebu.c
+  * Switch to atomic PWM API
+  * Add new compatible string marvell,armada-370-xp-gpio
+  * Update and merge documentation patch
+  * Update MAINTAINERS]
+Signed-off-by: Ralph Sennhauser <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Tested-by: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>
 ---
-
-Notes:
-
-  About npwm = 1:
-    The only way I can think of to achieve that requires reading the
-    GPIO line from the device tree. This would prevent a user to
-    dynamically choose a line. Which is fine for the fan found on Mamba
-    but let's take some development board with freely accessible GPIOs
-    and suddenly we limit the use of this driver. Given the above, npwm
-    = ngpio with only one usable at a time is a more accurate
-    description of the situation. The only downside is some "wasted"
-    space.
-
-  About the new compatible string:
-    Orion was chosen for the SoC variant for the same reason as in
-    commit 5f79c651e81e ("arm: mvebu: use global interrupts for GPIOs on
-    Armada XP").
-    The "pwm" property remains optional for the new compatible string so
-    the compatiple string "marvell,armada-370-xp-gpio" can be used by
-    all and not just the first two GPIO chips. A property to select "Set
-    A" / "Set B" registers could be invented though.
-
----
-
-Pending:
-  * Needs ACK from Thierry Reding to be merged via linux-gpio tree by Linus
-    Walleij. (fine with the general approach, requested changes which
-    should have been taken care of now)
-
----
-
-Changes v4->v5:
-  All
-    * add Tested-by: Andrew Lunn <andrew@lunn.ch>, thanks
-  Patch 2/4 mvebu: xp: Add PWM properties to .dtsi files
-    * keep the old compatible stings, we don't have to drop them,
-      therefore keep them (suggested by Gregory CLEMENT)
-    * subject starts with ARM: dts: mvebu: (suggested by Gregory CLEMENT)
-  Patch 4/4 mvebu: wrt1900ac: Use pwm-fan rather than gpio-fan
-    * subject starts with ARM: dts: armada-xp: (suggested by Gregory CLEMENT)
-
-Changes v3->v4:
-  Patch 1/4 gpio: mvebu: Add limited PWM support:
-    * braces for both branches in if statement if one needs it. (suggested
-      by Andrew Lunn)
-    * introduce compatible string marvell,armada-370-xp-gpio (suggest by
-      Rob Herring)
-    * fix mvebu_pwmreg_blink_on_duration -> mvebu_pwmreg_blink_off_duration
-      for period callculation in mvebu_pwm_get_state()
-  Patch 4/4 mvebu: wrt1900ac: Use pwm-fan rather than gpio-fan
-    * Drop flags from pwms for Mamba, as no longer used (suggested by
-      Andrew Lunn)
-    * Use again #pwm-cell = 2, the second cell is actually the period.
-
-Changes v2->v3:
-  Patch 1/4 gpio: mvebu: Add limited PWM support:
-    * drop pin from mvebu_pwn, can be infered (suggested by Thierry Reding)
-    * rename pwm to mvpwm so pwm can be used for pwm_device as in the API,
-      avoids some mental gymnastic.
-    * drop id from struct mvebu_gpio_chip, select blink counter in
-      mvebu_pwm_probe for all lines instead. We do not care about the
-      unused ones. I think a clear improvement in readability.
-      Makes coming up with a good comment simple as well.
-    * Switch to new atomic PWM API (suggested by Thierry Reding)
-    * rename use mvebu_gpioreg_blink_select to
-      mvebu_gpioreg_blink_counter_select.
-    * mark *_suspend() / *_resume() as __maybe_unused (suggested by Linus
-      Walleij)
-    * document #pwm-cells = 1 (suggested by Thierry Reding)
-  Patch 2/4 mvebu: xp: Add PWM properties to .dtsi files
-    * add missing reg-names / #pwm-cell properties to
-      armada-xp-mv78260.dtsi gpio1 node
-    * set pwm-cells = 1 (suggested by Thierry Reding)
-  All:
-    * always uppercase GPIO/PWM in prose (suggested by Thierry Reding)
-
-Changes v1 -> v2:
-  Patch 1/4 gpio: mvebu: Add limited PWM support:
-    * use BIT macro (suggested by Linus Walleij)
-    * move id from struct mvebu_pwm to struct mvebu_gpio_chip, implement
-      blink select as if else and comment on the chip id for code clarity
-      (to accommodate Linus Walleijs request for a code clarification /
-      comment. If you can word it better I'm all ears.)
-    * Move function comment mvebu_pwm_probe into the function itself.
-
----
-
-Andrew Lunn (4):
-  gpio: mvebu: Add limited PWM support
-  ARM: dts: mvebu: Add PWM properties to .dtsi files
-  ARM: mvebu: Enable SENSORS_PWM_FAN in defconfig
-  ARM: dts: armada-xp: Use pwm-fan rather than gpio-fan
-
  .../devicetree/bindings/gpio/gpio-mvebu.txt        |  32 ++
  MAINTAINERS                                        |   2 +
- arch/arm/boot/dts/armada-370.dtsi                  |  19 +-
- arch/arm/boot/dts/armada-xp-linksys-mamba.dts      |   8 +-
- arch/arm/boot/dts/armada-xp-mv78230.dtsi           |  16 +-
- arch/arm/boot/dts/armada-xp-mv78260.dtsi           |  19 +-
- arch/arm/boot/dts/armada-xp-mv78460.dtsi           |  19 +-
- arch/arm/configs/mvebu_v7_defconfig                |   2 +
  drivers/gpio/gpio-mvebu.c                          | 324 ++++++++++++++++++++-
- 9 files changed, 405 insertions(+), 36 deletions(-)
+ 3 files changed, 346 insertions(+), 12 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt b/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
+index a6f3bec..fe49e9d 100644
+--- a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
++++ b/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
+@@ -38,6 +38,24 @@ Required properties:
+ - #gpio-cells: Should be two. The first cell is the pin number. The
+   second cell is reserved for flags, unused at the moment.
+ 
++Optional properties:
++
++In order to use the gpio lines in PWM mode, some additional optional
++properties are required. Only Armada 370 and XP support these properties.
++
++- compatible: Must contain "marvell,armada-370-xp-gpio"
++
++- reg: an additional register set is needed, for the GPIO Blink
++  Counter on/off registers.
++
++- reg-names: Must contain an entry "pwm" corresponding to the
++  additional register range needed for pwm operation.
++
++- #pwm-cells: Should be two. The first cell is the GPIO line number. The
++  second cell is the period in nanoseconds.
++
++- clocks: Must be a phandle to the clock for the gpio controller.
++
+ Example:
+ 
+ 		gpio0: gpio@d0018100 {
+@@ -51,3 +69,17 @@ Example:
+ 			#interrupt-cells = <2>;
+ 			interrupts = <16>, <17>, <18>, <19>;
+ 		};
++
++		gpio1: gpio@18140 {
++			compatible = "marvell,armada-370-xp-gpio";
++			reg = <0x18140 0x40>, <0x181c8 0x08>;
++			reg-names = "gpio", "pwm";
++			ngpios = <17>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			#pwm-cells = <2>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			interrupts = <87>, <88>, <89>;
++			clocks = <&coreclk 0>;
++		};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 58b3a22..19382f5 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10295,6 +10295,8 @@ F:	include/linux/pwm.h
+ F:	drivers/pwm/
+ F:	drivers/video/backlight/pwm_bl.c
+ F:	include/linux/pwm_backlight.h
++F:	drivers/gpio/gpio-mvebu.c
++F:	Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
+ 
+ PXA2xx/PXA3xx SUPPORT
+ M:	Daniel Mack <daniel-cYrQPVfZoowdnm+yROfE0A@public.gmane.org>
+diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
+index fae4db6..e310951 100644
+--- a/drivers/gpio/gpio-mvebu.c
++++ b/drivers/gpio/gpio-mvebu.c
+@@ -42,22 +42,34 @@
+ #include <linux/io.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_device.h>
++#include <linux/pwm.h>
+ #include <linux/clk.h>
+ #include <linux/pinctrl/consumer.h>
+ #include <linux/irqchip/chained_irq.h>
++#include <linux/platform_device.h>
+ #include <linux/bitops.h>
+ 
++#include "gpiolib.h"
++
+ /*
+  * GPIO unit register offsets.
+  */
+-#define GPIO_OUT_OFF		0x0000
+-#define GPIO_IO_CONF_OFF	0x0004
+-#define GPIO_BLINK_EN_OFF	0x0008
+-#define GPIO_IN_POL_OFF		0x000c
+-#define GPIO_DATA_IN_OFF	0x0010
+-#define GPIO_EDGE_CAUSE_OFF	0x0014
+-#define GPIO_EDGE_MASK_OFF	0x0018
+-#define GPIO_LEVEL_MASK_OFF	0x001c
++#define GPIO_OUT_OFF			0x0000
++#define GPIO_IO_CONF_OFF		0x0004
++#define GPIO_BLINK_EN_OFF		0x0008
++#define GPIO_IN_POL_OFF			0x000c
++#define GPIO_DATA_IN_OFF		0x0010
++#define GPIO_EDGE_CAUSE_OFF		0x0014
++#define GPIO_EDGE_MASK_OFF		0x0018
++#define GPIO_LEVEL_MASK_OFF		0x001c
++#define GPIO_BLINK_CNT_SELECT_OFF	0x0020
++
++/*
++ * PWM register offsets.
++ */
++#define PWM_BLINK_ON_DURATION_OFF	0x0
++#define PWM_BLINK_OFF_DURATION_OFF	0x4
++
+ 
+ /* The MV78200 has per-CPU registers for edge mask and level mask */
+ #define GPIO_EDGE_MASK_MV78200_OFF(cpu)	  ((cpu) ? 0x30 : 0x18)
+@@ -78,6 +90,20 @@
+ 
+ #define MVEBU_MAX_GPIO_PER_BANK		32
+ 
++struct mvebu_pwm {
++	void __iomem		*membase;
++	unsigned long		 clk_rate;
++	bool			 used;
++	struct pwm_chip		 chip;
++	spinlock_t		 lock;
++	struct mvebu_gpio_chip	*mvchip;
++
++	/* Used to preserve GPIO/PWM registers across suspend/resume */
++	u32			 blink_select;
++	u32			 blink_on_duration;
++	u32			 blink_off_duration;
++};
++
+ struct mvebu_gpio_chip {
+ 	struct gpio_chip   chip;
+ 	spinlock_t	   lock;
+@@ -87,6 +113,10 @@ struct mvebu_gpio_chip {
+ 	struct irq_domain *domain;
+ 	int		   soc_variant;
+ 
++	/* Used for PWM support */
++	struct clk	  *clk;
++	struct mvebu_pwm  *mvpwm;
++
+ 	/* Used to preserve GPIO registers across suspend/resume */
+ 	u32		   out_reg;
+ 	u32		   io_conf_reg;
+@@ -110,6 +140,12 @@ static void __iomem *mvebu_gpioreg_blink(struct mvebu_gpio_chip *mvchip)
+ 	return mvchip->membase + GPIO_BLINK_EN_OFF;
+ }
+ 
++static void __iomem *mvebu_gpioreg_blink_counter_select(struct mvebu_gpio_chip
++							*mvchip)
++{
++	return mvchip->membase + GPIO_BLINK_CNT_SELECT_OFF;
++}
++
+ static void __iomem *mvebu_gpioreg_io_conf(struct mvebu_gpio_chip *mvchip)
+ {
+ 	return mvchip->membase + GPIO_IO_CONF_OFF;
+@@ -181,6 +217,20 @@ static void __iomem *mvebu_gpioreg_level_mask(struct mvebu_gpio_chip *mvchip)
+ }
+ 
+ /*
++ * Functions returning addresses of individual registers for a given
++ * PWM controller.
++ */
++static void __iomem *mvebu_pwmreg_blink_on_duration(struct mvebu_pwm *mvpwm)
++{
++	return mvpwm->membase + PWM_BLINK_ON_DURATION_OFF;
++}
++
++static void __iomem *mvebu_pwmreg_blink_off_duration(struct mvebu_pwm *mvpwm)
++{
++	return mvpwm->membase + PWM_BLINK_OFF_DURATION_OFF;
++}
++
++/*
+  * Functions implementing the gpio_chip methods
+  */
+ static void mvebu_gpio_set(struct gpio_chip *chip, unsigned int pin, int value)
+@@ -484,6 +534,243 @@ static void mvebu_gpio_irq_handler(struct irq_desc *desc)
+ 	chained_irq_exit(chip, desc);
+ }
+ 
++/*
++ * Functions implementing the pwm_chip methods
++ */
++static struct mvebu_pwm *to_mvebu_pwm(struct pwm_chip *chip)
++{
++	return container_of(chip, struct mvebu_pwm, chip);
++}
++
++static int mvebu_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct mvebu_pwm *mvpwm = to_mvebu_pwm(chip);
++	struct gpio_desc *desc = gpio_to_desc(pwm->pwm);
++	unsigned long flags;
++	int ret = 0;
++
++	spin_lock_irqsave(&mvpwm->lock, flags);
++	if (mvpwm->used) {
++		ret = -EBUSY;
++	} else {
++		if (!desc) {
++			ret = -ENODEV;
++			goto out;
++		}
++		ret = gpiod_request(desc, "mvebu-pwm");
++		if (ret)
++			goto out;
++
++		ret = gpiod_direction_output(desc, 0);
++		if (ret) {
++			gpiod_free(desc);
++			goto out;
++		}
++
++		mvpwm->used = true;
++	}
++
++out:
++	spin_unlock_irqrestore(&mvpwm->lock, flags);
++	return ret;
++}
++
++static void mvebu_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct mvebu_pwm *mvpwm = to_mvebu_pwm(chip);
++	struct gpio_desc *desc = gpio_to_desc(pwm->pwm);
++	unsigned long flags;
++
++	spin_lock_irqsave(&mvpwm->lock, flags);
++	gpiod_free(desc);
++	mvpwm->used = false;
++	spin_unlock_irqrestore(&mvpwm->lock, flags);
++}
++
++static void mvebu_pwm_get_state(struct pwm_chip *chip,
++				struct pwm_device *pwm,
++				struct pwm_state *state) {
++
++	struct mvebu_pwm *mvpwm = to_mvebu_pwm(chip);
++	struct mvebu_gpio_chip *mvchip = mvpwm->mvchip;
++	unsigned long long val;
++	unsigned long flags;
++	u32 u;
++
++	spin_lock_irqsave(&mvpwm->lock, flags);
++
++	val = (unsigned long long)
++		readl_relaxed(mvebu_pwmreg_blink_on_duration);
++	val *= NSEC_PER_SEC;
++	do_div(val, mvpwm->clk_rate);
++	if (val > UINT_MAX)
++		state->duty_cycle = UINT_MAX;
++	else if (val)
++		state->duty_cycle = val;
++	else
++		state->duty_cycle = 1;
++
++	val = (unsigned long long)
++		readl_relaxed(mvebu_pwmreg_blink_off_duration);
++	val *= NSEC_PER_SEC;
++	do_div(val, mvpwm->clk_rate);
++	if (val < state->duty_cycle) {
++		state->period = 1;
++	} else {
++		val -= state->duty_cycle;
++		if (val > UINT_MAX)
++			state->period = UINT_MAX;
++		else if (val)
++			state->period = val;
++		else
++			state->period = 1;
++	}
++
++	u = readl_relaxed(mvebu_gpioreg_blink(mvchip));
++	if (u)
++		state->enabled = true;
++	else
++		state->enabled = false;
++
++	spin_unlock_irqrestore(&mvpwm->lock, flags);
++}
++
++static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
++			   struct pwm_state *state)
++{
++	struct mvebu_pwm *mvpwm = to_mvebu_pwm(chip);
++	struct mvebu_gpio_chip *mvchip = mvpwm->mvchip;
++	unsigned long long val;
++	unsigned long flags;
++	unsigned int on, off;
++
++	val = (unsigned long long) mvpwm->clk_rate * state->duty_cycle;
++	do_div(val, NSEC_PER_SEC);
++	if (val > UINT_MAX)
++		return -EINVAL;
++	if (val)
++		on = val;
++	else
++		on = 1;
++
++	val = (unsigned long long) mvpwm->clk_rate *
++		(state->period - state->duty_cycle);
++	do_div(val, NSEC_PER_SEC);
++	if (val > UINT_MAX)
++		return -EINVAL;
++	if (val)
++		off = val;
++	else
++		off = 1;
++
++	spin_lock_irqsave(&mvpwm->lock, flags);
++
++	writel_relaxed(on, mvebu_pwmreg_blink_on_duration(mvpwm));
++	writel_relaxed(off, mvebu_pwmreg_blink_off_duration(mvpwm));
++	if (state->enabled)
++		mvebu_gpio_blink(&mvchip->chip, pwm->hwpwm, 1);
++	else
++		mvebu_gpio_blink(&mvchip->chip, pwm->hwpwm, 0);
++
++	spin_unlock_irqrestore(&mvpwm->lock, flags);
++
++	return 0;
++}
++
++static const struct pwm_ops mvebu_pwm_ops = {
++	.request = mvebu_pwm_request,
++	.free = mvebu_pwm_free,
++	.get_state = mvebu_pwm_get_state,
++	.apply = mvebu_pwm_apply,
++	.owner = THIS_MODULE,
++};
++
++static void __maybe_unused mvebu_pwm_suspend(struct mvebu_gpio_chip *mvchip)
++{
++	struct mvebu_pwm *mvpwm = mvchip->mvpwm;
++
++	mvpwm->blink_select =
++		readl_relaxed(mvebu_gpioreg_blink_counter_select(mvchip));
++	mvpwm->blink_on_duration =
++		readl_relaxed(mvebu_pwmreg_blink_on_duration(mvpwm));
++	mvpwm->blink_off_duration =
++		readl_relaxed(mvebu_pwmreg_blink_off_duration(mvpwm));
++}
++
++static void __maybe_unused mvebu_pwm_resume(struct mvebu_gpio_chip *mvchip)
++{
++	struct mvebu_pwm *mvpwm = mvchip->mvpwm;
++
++	writel_relaxed(mvpwm->blink_select,
++		       mvebu_gpioreg_blink_counter_select(mvchip));
++	writel_relaxed(mvpwm->blink_on_duration,
++		       mvebu_pwmreg_blink_on_duration(mvpwm));
++	writel_relaxed(mvpwm->blink_off_duration,
++		       mvebu_pwmreg_blink_off_duration(mvpwm));
++}
++
++static int mvebu_pwm_probe(struct platform_device *pdev,
++			   struct mvebu_gpio_chip *mvchip,
++			   int id)
++{
++	struct device *dev = &pdev->dev;
++	struct mvebu_pwm *mvpwm;
++	struct resource *res;
++
++	if (!of_device_is_compatible(mvchip->chip.of_node,
++				     "marvell,armada-370-xp-gpio"))
++		return 0;
++	/*
++	 * There are only two sets of PWM configuration registers for
++	 * all the GPIO lines on those SoCs which this driver reserves
++	 * for the first two GPIO chips. So if the resource is missing
++	 * we can't treat it as an error.
++	 */
++	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "pwm");
++	if (!res)
++		return 0;
++
++	/*
++	 * Use set A for lines of GPIO chip with id 0, B for GPIO chip
++	 * with id 1. Don't allow further GPIO chips to be used for PWM.
++	 */
++	if (id == 0)
++		writel_relaxed(0, mvebu_gpioreg_blink_counter_select(mvchip));
++	else if (id == 1)
++		writel_relaxed(U32_MAX,
++			       mvebu_gpioreg_blink_counter_select(mvchip));
++	else
++		return -EINVAL;
++
++	mvpwm = devm_kzalloc(dev, sizeof(struct mvebu_pwm), GFP_KERNEL);
++	if (!mvpwm)
++		return -ENOMEM;
++	mvchip->mvpwm = mvpwm;
++	mvpwm->mvchip = mvchip;
++
++	mvpwm->membase = devm_ioremap_resource(dev, res);
++	if (IS_ERR(mvpwm->membase))
++		return PTR_ERR(mvpwm->membase);
++
++	if (IS_ERR(mvchip->clk))
++		return PTR_ERR(mvchip->clk);
++
++	mvpwm->clk_rate = clk_get_rate(mvchip->clk);
++	if (!mvpwm->clk_rate) {
++		dev_err(dev, "failed to get clock rate\n");
++		return -EINVAL;
++	}
++
++	mvpwm->chip.dev = dev;
++	mvpwm->chip.ops = &mvebu_pwm_ops;
++	mvpwm->chip.base = mvchip->chip.base;
++	mvpwm->chip.npwm = mvchip->chip.ngpio;
++
++	spin_lock_init(&mvpwm->lock);
++
++	return pwmchip_add(&mvpwm->chip);
++}
++
+ #ifdef CONFIG_DEBUG_FS
+ #include <linux/seq_file.h>
+ 
+@@ -555,6 +842,10 @@ static const struct of_device_id mvebu_gpio_of_match[] = {
+ 		.data	    = (void *) MVEBU_GPIO_SOC_VARIANT_ARMADAXP,
+ 	},
+ 	{
++		.compatible = "marvell,armada-370-xp-gpio",
++		.data	    = (void *) MVEBU_GPIO_SOC_VARIANT_ORION,
++	},
++	{
+ 		/* sentinel */
+ 	},
+ };
+@@ -600,6 +891,9 @@ static int mvebu_gpio_suspend(struct platform_device *pdev, pm_message_t state)
+ 		BUG();
+ 	}
+ 
++	if (IS_ENABLED(CONFIG_PWM))
++		mvebu_pwm_suspend(mvchip);
++
+ 	return 0;
+ }
+ 
+@@ -643,6 +937,9 @@ static int mvebu_gpio_resume(struct platform_device *pdev)
+ 		BUG();
+ 	}
+ 
++	if (IS_ENABLED(CONFIG_PWM))
++		mvebu_pwm_resume(mvchip);
++
+ 	return 0;
+ }
+ 
+@@ -654,7 +951,6 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
+ 	struct resource *res;
+ 	struct irq_chip_generic *gc;
+ 	struct irq_chip_type *ct;
+-	struct clk *clk;
+ 	unsigned int ngpios;
+ 	bool have_irqs;
+ 	int soc_variant;
+@@ -688,10 +984,10 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
+ 		return id;
+ 	}
+ 
+-	clk = devm_clk_get(&pdev->dev, NULL);
++	mvchip->clk = devm_clk_get(&pdev->dev, NULL);
+ 	/* Not all SoCs require a clock.*/
+-	if (!IS_ERR(clk))
+-		clk_prepare_enable(clk);
++	if (!IS_ERR(mvchip->clk))
++		clk_prepare_enable(mvchip->clk);
+ 
+ 	mvchip->soc_variant = soc_variant;
+ 	mvchip->chip.label = dev_name(&pdev->dev);
+@@ -822,6 +1118,10 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
+ 						 mvchip);
+ 	}
+ 
++	/* Armada 370/XP has simple PWM support for GPIO lines */
++	if (IS_ENABLED(CONFIG_PWM))
++		return mvebu_pwm_probe(pdev, mvchip, id);
++
+ 	return 0;
+ 
+ err_domain:
 -- 
 2.10.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
