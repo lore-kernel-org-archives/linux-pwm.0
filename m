@@ -1,68 +1,29 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v4 06/14] MIPS: jz4740: DTS: Add nodes for ingenic pinctrl
- and gpio drivers
-Date: Fri, 07 Apr 2017 15:57:11 +0200
-Message-ID: <e4aaf8c3e8a54df2c5878f8e873e290f@crapouillou.net>
-References: <20170125185207.23902-2-paul@crapouillou.net>
- <20170402204244.14216-1-paul@crapouillou.net>
- <20170402204244.14216-7-paul@crapouillou.net>
- <CACRpkdbXe1Xxk93jqLXBdEDwWOnWD+CkZrqvok-PcmWxzBbSZA@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
+From: Sven Van Asbroeck <thesven73@gmail.com>
+Subject: [PATCH 0/1] pwm: pca9685: fix gpio-only operation.
+Date: Sun,  9 Apr 2017 12:11:23 -0400
+Message-ID: <1491754284-3870-1-git-send-email-svenv@arcx.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from outils.crapouillou.net ([89.234.176.41]:60984 "EHLO
-        outils.crapouillou.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752987AbdDGN5P (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 7 Apr 2017 09:57:15 -0400
-In-Reply-To: <CACRpkdbXe1Xxk93jqLXBdEDwWOnWD+CkZrqvok-PcmWxzBbSZA@mail.gmail.com>
+Received: from mail-io0-f196.google.com ([209.85.223.196]:35407 "EHLO
+        mail-io0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752243AbdDIQL3 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 9 Apr 2017 12:11:29 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, James Hogan <james.hogan@imgtec.com>, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Linux MIPS <linux-mips@linux-mips.org>, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, clemens.gruber@pqgruber.com, mika.westerberg@linux.intel.com, andriy.shevchenko@linux.intel.com
 
-Le 2017-04-07 11:44, Linus Walleij a écrit :
-> On Sun, Apr 2, 2017 at 10:42 PM, Paul Cercueil <paul@crapouillou.net> 
-> wrote:
-> 
->> For a description of the pinctrl devicetree node, please read
->> Documentation/devicetree/bindings/pinctrl/ingenic,pinctrl.txt
->> 
->> For a description of the gpio devicetree nodes, please read
->> Documentation/devicetree/bindings/gpio/ingenic,gpio.txt
->> 
->> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
->> ---
->>  arch/mips/boot/dts/ingenic/jz4740.dtsi | 61 
->> ++++++++++++++++++++++++++++++++++
->>  1 file changed, 61 insertions(+)
->> 
->>  v2: Changed the devicetree bindings to match the new driver
->>  v3: No changes
->>  v4: Update the bindings for the v4 version of the drivers
-> (...)
-> 
->> +       pinctrl: ingenic-pinctrl@10010000 {
->> +               compatible = "ingenic,jz4740-pinctrl";
->> +               reg = <0x10010000 0x400>;
->> +
->> +               gpa: gpio-controller@0 {
->> +                       compatible = "ingenic,gpio-bank-a", 
->> "ingenic,jz4740-gpio";
-> 
-> As Sergei and Rob notes, the bank compatible properties look
-> a bit strange. Especially if they are all the same essentially.
-> 
-> I like Sergei's idea to simply use the reg property if what you want
-> is really a unique ID number. What do you think about this?
-> 
-> Yours,
-> Linus Walleij
+The solution to the bug presented here (always keep SLEEP cleared)
+works for me, but perhaps other users might want to set SLEEP at
+some point while the driver instance is still loaded ?
 
-I think the 'reg' property makes more sense, yes. I'll fix this in the 
-v5, this
-week-end. Do you think it can go in 4.12?
+If so, I'd love to hear feedback, so we can find a solution which
+works for all users.
 
-Thanks,
--Paul
+Sven Van Asbroeck (1):
+  pwm: pca9685: fix gpio-only operation.
+
+ drivers/pwm/pwm-pca9685.c | 18 +++---------------
+ 1 file changed, 3 insertions(+), 15 deletions(-)
+
+-- 
+1.9.1
