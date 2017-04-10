@@ -1,104 +1,60 @@
-From: Boris Brezillon <boris.brezillon@free-electrons.com>
-Subject: Re: [PATCH] drivers: pwm: pwm-atmel: implement suspend/resume
- functions
-Date: Mon, 10 Apr 2017 18:01:37 +0200
-Message-ID: <20170410180137.6b4f3a74@bbrezillon>
-References: <1491834020-3194-1-git-send-email-claudiu.beznea@microchip.com>
- <20170410163558.494cf9be@bbrezillon>
- <20170410151011.GA18753@ulmo.ba.sec>
+From: Sven Van Asbroeck <thesven73@gmail.com>
+Subject: Re: [PATCH 1/1] pwm: pca9685: fix gpio-only operation.
+Date: Mon, 10 Apr 2017 12:08:05 -0400
+Message-ID: <CAGngYiXK0R4+CkVnPuBUp9sKzg3Fng306o8SiPJEf9uVABScYQ@mail.gmail.com>
+References: <1491754284-3870-1-git-send-email-svenv@arcx.com>
+ <1491754284-3870-2-git-send-email-svenv@arcx.com> <20170410103320.GG2957@lahna.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170410151011.GA18753@ulmo.ba.sec>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, alexandre.belloni@free-electrons.com, Claudiu Beznea <claudiu.beznea@microchip.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-io0-f178.google.com ([209.85.223.178]:34530 "EHLO
+        mail-io0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751837AbdDJQIR (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 10 Apr 2017 12:08:17 -0400
+In-Reply-To: <20170410103320.GG2957@lahna.fi.intel.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, clemens.gruber@pqgruber.com, andriy.shevchenko@linux.intel.com
 
-On Mon, 10 Apr 2017 17:10:11 +0200
-Thierry Reding <thierry.reding@gmail.com> wrote:
+Thanks for the feedback Mika, I really appreciate it.
 
-> On Mon, Apr 10, 2017 at 04:35:58PM +0200, Boris Brezillon wrote:
-> > On Mon, 10 Apr 2017 17:20:20 +0300
-> > Claudiu Beznea <claudiu.beznea@microchip.com> wrote:
-> >   
-> > > Implement suspend and resume power management specific
-> > > function to allow PWM controller to correctly suspend
-> > > and resume.
-> > > 
-> > > Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> > > ---
-> > >  drivers/pwm/pwm-atmel.c | 81 +++++++++++++++++++++++++++++++++++++++++++++++++
-> > >  1 file changed, 81 insertions(+)
-> > > 
-> > > diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-> > > index 530d7dc..75177c6 100644
-> > > --- a/drivers/pwm/pwm-atmel.c
-> > > +++ b/drivers/pwm/pwm-atmel.c
-> > > @@ -58,6 +58,8 @@
-> > >  #define PWM_MAX_PRD		0xFFFF
-> > >  #define PRD_MAX_PRES		10
-> > >  
-> > > +#define PWM_MAX_CH_NUM		(4)
-> > > +
-> > >  struct atmel_pwm_registers {
-> > >  	u8 period;
-> > >  	u8 period_upd;
-> > > @@ -65,11 +67,18 @@ struct atmel_pwm_registers {
-> > >  	u8 duty_upd;
-> > >  };
-> > >  
-> > > +struct atmel_pwm_pm_ctx {
-> > > +	u32 cmr;
-> > > +	u32 cdty;
-> > > +	u32 cprd;
-> > > +};
-> > > +
-> > >  struct atmel_pwm_chip {
-> > >  	struct pwm_chip chip;
-> > >  	struct clk *clk;
-> > >  	void __iomem *base;
-> > >  	const struct atmel_pwm_registers *regs;
-> > > +	struct atmel_pwm_pm_ctx ctx[PWM_MAX_CH_NUM];  
-> > 
-> > Hm, I'm pretty sure you can rely on the current PWM state and call
-> > atmel_pwm_apply() at resume time instead of doing that. See what I did
-> > here [1].
-> > 
-> > Thierry, maybe it's time to start thinking about a generic solution to
-> > save/restore PWM states.  
-> 
-> Generally speaking I think applying the states are the right way to go.
-> Ideally the PWM core could simply resume all of the PWM channels that a
-> device exports and the ->apply() callback would be enough to restore
-> that. I'm not sure if that's going to work with current implementations,
-> though. Your pwm-atmel-hlcdc patch certainly indicates that we're not
-> quite there yet.
-> 
-> On the other hand, I'm beginning to think that maybe PWMs are too low-
-> level for this kind of suspend/resume. For example if you use the PWM to
-> control a backlight brightness, restoring it via the driver core's
-> resume hook is potentially going to turn it back on at the wrong time. I
-> have a feeling that we might be better off just pushing this up to the
-> PWM users. A slight special case might be sysfs, for which no external
-> user driver exists. But we already have separate data structures to keep
-> track of sysfs-related context, so suspend/resume support could be added
-> there.
+> How about implementing a real runtime PM in the driver? Then when the
+> device is idle regardless of whether it is GPIO or PWM, the SLEEP bit is
+> set and cleared accordingly.
 
-Yep, you're probably right, we should let the PWM user take care of
-re-applying the PWM state, because it's the only one having enough
-knowledge about what the PWM is really driving to take a wise decision.
+The current code will keep driving pwms/leds even when these are
+currently not exported in sysfs. Until the last export disappears.
+That behaviour feels counter-intuitive to me.
 
-This goes against my patch adding suspend/resume hooks to the
-pwm-atmel-hlcdc driver, but we can easily drop the call to
-atmel_hlcdc_pwm_apply() in ->resume() once we have patched the
-pwm-backlight driver to take care of that.
+Example:
+1. export pwm1 and pwm2
+    echo 1 > export
+    echo 2 > export
+2. configure/enable pwm1 and pwm2
+3. enjoy the blinkenlights on your board
+4. unexport pwm1
+    echo 1 > unexport
+    both pwms are still driven !
+5. unexport pwm2
+    echo 2 > unexport
+    both pwms shut down !
+6. export pwm1
+echo 1 > export
+both pwms come back on !
+
+Do we want to get rid of this behaviour? I see two intuitive alternatives:
+
+a) keep SLEEP off all the time, so LEDs are still driven even when no
+pwms/gpios are exported.
+
+Pro: simple, predictable
+Con: not power efficient
+
+b) when a pwm/gpio is unexported, turn off the LED. when all pwms/gpios
+are unexported, set the SLEEP bit.
+
+Pro: power efficient
+Con: output turns off when gpio/pwm is unexported, this may surprise users
+
+Sven
