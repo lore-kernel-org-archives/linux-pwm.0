@@ -1,128 +1,34 @@
-From: m18063 <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH] drivers: pwm: pwm-atmel: implement suspend/resume
- functions
-Date: Tue, 11 Apr 2017 11:59:50 +0300
-Message-ID: <2b061549-4710-eec2-fe91-f20ac92ee87a@microchip.com>
-References: <1491834020-3194-1-git-send-email-claudiu.beznea@microchip.com>
- <20170410163558.494cf9be@bbrezillon> <20170410151011.GA18753@ulmo.ba.sec>
- <20170410180137.6b4f3a74@bbrezillon> <20170410182726.730ea8f0@bbrezillon>
- <60b4ac51-6cee-04b3-f74a-3d2693e1f021@microchip.com>
- <20170411105017.43ea5009@bbrezillon>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH 1/1] pwm: pca9685: fix gpio-only operation.
+Date: Tue, 11 Apr 2017 12:11:26 +0300
+Message-ID: <20170411091126.GP2957@lahna.fi.intel.com>
+References: <1491754284-3870-1-git-send-email-svenv@arcx.com>
+ <1491754284-3870-2-git-send-email-svenv@arcx.com>
+ <20170410103320.GG2957@lahna.fi.intel.com>
+ <CAGngYiVpWa9qrTFn9BmTahgyBZDsX22vjfjL=4JZUMV9W+nxmw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170411105017.43ea5009@bbrezillon>
+Content-Disposition: inline
+In-Reply-To: <CAGngYiVpWa9qrTFn9BmTahgyBZDsX22vjfjL=4JZUMV9W+nxmw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alexandre.belloni@free-electrons.com, nicolas.ferre@microchip.com
+To: Sven Van Asbroeck <thesven73@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, clemens.gruber@pqgruber.com, andriy.shevchenko@linux.intel.com, Sven Van Asbroeck <TheSven73@googlemail.com>
 List-Id: linux-pwm@vger.kernel.org
 
+On Mon, Apr 10, 2017 at 11:35:39PM -0400, Sven Van Asbroeck wrote:
+> > How about implementing a real runtime PM in the driver? Then when the
+> > device is idle regardless of whether it is GPIO or PWM, the SLEEP bit is
+> > set and cleared accordingly.
+> 
+> You mean: increase the runtime_pm refcnt when a pwm/gpio is enabled,
+> and vice versa ? And don't touch the refcnt on pwm/gpio export/unexport?
 
+I mean whenever the thing is in use, it is in runtime PM active state.
+Then when the last user closes the device, it goest to runtime PM
+suspend state where you effectively set that SLEEP bit. The functions
+for refcounting are called pm_runtime_get* and pm_runtime_put*.
 
-On 11.04.2017 11:50, Boris Brezillon wrote:
-> On Tue, 11 Apr 2017 11:33:44 +0300
-> m18063 <Claudiu.Beznea@microchip.com> wrote:
-> 
->> On 10.04.2017 19:27, Boris Brezillon wrote:
->>> On Mon, 10 Apr 2017 18:01:37 +0200
->>> Boris Brezillon <boris.brezillon@free-electrons.com> wrote:
->>>   
->>>> On Mon, 10 Apr 2017 17:10:11 +0200
->>>> Thierry Reding <thierry.reding@gmail.com> wrote:
->>>>  
->>>>> On Mon, Apr 10, 2017 at 04:35:58PM +0200, Boris Brezillon wrote:    
->>>>>> On Mon, 10 Apr 2017 17:20:20 +0300
->>>>>> Claudiu Beznea <claudiu.beznea@microchip.com> wrote:
->>>>>>       
->>>>>>> Implement suspend and resume power management specific
->>>>>>> function to allow PWM controller to correctly suspend
->>>>>>> and resume.
->>>>>>>
->>>>>>> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
->>>>>>> ---
->>>>>>>  drivers/pwm/pwm-atmel.c | 81 +++++++++++++++++++++++++++++++++++++++++++++++++
->>>>>>>  1 file changed, 81 insertions(+)
->>>>>>>
->>>>>>> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
->>>>>>> index 530d7dc..75177c6 100644
->>>>>>> --- a/drivers/pwm/pwm-atmel.c
->>>>>>> +++ b/drivers/pwm/pwm-atmel.c
->>>>>>> @@ -58,6 +58,8 @@
->>>>>>>  #define PWM_MAX_PRD		0xFFFF
->>>>>>>  #define PRD_MAX_PRES		10
->>>>>>>  
->>>>>>> +#define PWM_MAX_CH_NUM		(4)
->>>>>>> +
->>>>>>>  struct atmel_pwm_registers {
->>>>>>>  	u8 period;
->>>>>>>  	u8 period_upd;
->>>>>>> @@ -65,11 +67,18 @@ struct atmel_pwm_registers {
->>>>>>>  	u8 duty_upd;
->>>>>>>  };
->>>>>>>  
->>>>>>> +struct atmel_pwm_pm_ctx {
->>>>>>> +	u32 cmr;
->>>>>>> +	u32 cdty;
->>>>>>> +	u32 cprd;
->>>>>>> +};
->>>>>>> +
->>>>>>>  struct atmel_pwm_chip {
->>>>>>>  	struct pwm_chip chip;
->>>>>>>  	struct clk *clk;
->>>>>>>  	void __iomem *base;
->>>>>>>  	const struct atmel_pwm_registers *regs;
->>>>>>> +	struct atmel_pwm_pm_ctx ctx[PWM_MAX_CH_NUM];      
->>>>>>
->>>>>> Hm, I'm pretty sure you can rely on the current PWM state and call
->>>>>> atmel_pwm_apply() at resume time instead of doing that. See what I did
->>>>>> here [1].
->>>>>>
->>>>>> Thierry, maybe it's time to start thinking about a generic solution to
->>>>>> save/restore PWM states.      
->>>>>
->>>>> Generally speaking I think applying the states are the right way to go.
->>>>> Ideally the PWM core could simply resume all of the PWM channels that a
->>>>> device exports and the ->apply() callback would be enough to restore
->>>>> that. I'm not sure if that's going to work with current implementations,
->>>>> though. Your pwm-atmel-hlcdc patch certainly indicates that we're not
->>>>> quite there yet.
->>>>>
->>>>> On the other hand, I'm beginning to think that maybe PWMs are too low-
->>>>> level for this kind of suspend/resume. For example if you use the PWM to
->>>>> control a backlight brightness, restoring it via the driver core's
->>>>> resume hook is potentially going to turn it back on at the wrong time. I
->>>>> have a feeling that we might be better off just pushing this up to the
->>>>> PWM users. A slight special case might be sysfs, for which no external
->>>>> user driver exists. But we already have separate data structures to keep
->>>>> track of sysfs-related context, so suspend/resume support could be added
->>>>> there.    
->>>>
->>>> Yep, you're probably right, we should let the PWM user take care of
->>>> re-applying the PWM state, because it's the only one having enough
->>>> knowledge about what the PWM is really driving to take a wise decision.  
->>>
->>> Note that we need drivers to implement both ->apply() and ->get_state()
->>> for this approach to work correctly, and we also need some help from
->>> the core to reset the PWM states at resume time, otherwise
->>> pwm_apply_state() will just compare the old state to the new one, see
->>> that they match and never call the ->apply() method.
->>>
->>> Another solution would be to remove the memcmp here [1] and
->>> unconditionally call ->apply().  
->> There are drivers which checks, in ->apply() hooks, the current PWM state
->> before applying the new state or take actions based on differences
->> b/w current and new PWM states. Removing memcmp without resetting
->> the PWM state would lead to wrong states in those drivers.
-> 
-> Indeed. So it just leaves the solution where we implement ->get_state().
-> Honestly, it shouldn't be too hard to do that in the atmel driver.
-I agree.
-> 
-> Note that for drivers that do not implement ->get_state(), the first
-> pwm_apply_state() after the system has resumed should be harmless,
-> because the current PWM should exactly match the one the PWM user is
-> re-applying.
-I agree.
+You need to implement runtime PM callbacks for the driver as well.
 
-> 
+See Documentation/power/runtime_pm.txt for more information.
