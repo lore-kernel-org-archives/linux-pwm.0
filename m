@@ -1,60 +1,32 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [GIT PULL] pwm: Fixes for v4.11-rc7
-Date: Wed, 12 Apr 2017 19:55:05 +0200
-Message-ID: <20170412175505.13472-1-thierry.reding@gmail.com>
+From: kbuild test robot <fengguang.wu@intel.com>
+Subject: [pwm:for-4.12/drivers 6/11] drivers/pwm/pwm-mediatek.c:210:3-8: No
+ need to set .owner here. The core will do it.
+Date: Thu, 13 Apr 2017 04:54:42 +0800
+Message-ID: <201704130438.qZYSDVF1%fengguang.wu@intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f193.google.com ([209.85.128.193]:36454 "EHLO
-        mail-wr0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752095AbdDLRzI (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Apr 2017 13:55:08 -0400
+Received: from mga05.intel.com ([192.55.52.43]:22070 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752851AbdDLUyw (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 12 Apr 2017 16:54:52 -0400
+Content-Disposition: inline
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: John Crispin <john@phrozen.org>
+Cc: kbuild-all@01.org, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
 
-Hi Linus,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git for-4.12/drivers
+head:   de758fcd8e31fa308bfb80e7bfd19f81e0c05967
+commit: caf065f8fd583b43a3f95d84c8a0a0d07597963b [6/11] pwm: Add MediaTek PWM support
 
-The following changes since commit c1ae3cfa0e89fa1a7ecc4c99031f5e9ae99d9201:
 
-  Linux 4.11-rc1 (2017-03-05 12:59:56 -0800)
+coccinelle warnings: (new ones prefixed by >>)
 
-are available in the git repository at:
+>> drivers/pwm/pwm-mediatek.c:210:3-8: No need to set .owner here. The core will do it.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.11-rc7
+Please review and possibly fold the followup patch.
 
-for you to fetch changes up to a900152b5c29aea8134cc7a4c5db25552b3cd8f7:
-
-  pwm: rockchip: State of PWM clock should synchronize with PWM enabled state (2017-04-06 15:08:52 +0200)
-
-This comes about a week later than I wanted, but I got side-tracked with
-other things, unfortunately.
-
-Thanks,
-Thierry
-
-----------------------------------------------------------------
-pwm: Fixes for v4.11-rc7
-
-This contain a fix for the atomic update support recently added to the
-Rockchip driver where the clock reference count would become unbalanced
-and result in the clock feeding the PWM to always be disabled.
-
-Another fix to the Intel LPSS driver that adds an update bit quirk
-required for a specific configuration.
-
-----------------------------------------------------------------
-Andy Shevchenko (1):
-      pwm: lpss: Split Tangier configuration
-
-David Wu (1):
-      pwm: rockchip: State of PWM clock should synchronize with PWM enabled state
-
-Hans de Goede (1):
-      pwm: lpss: Set enable-bit before waiting for update-bit to go low
-
- drivers/pwm/pwm-lpss-pci.c      | 10 +++++++++-
- drivers/pwm/pwm-lpss-platform.c |  1 +
- drivers/pwm/pwm-lpss.c          | 19 +++++++++++++------
- drivers/pwm/pwm-lpss.h          |  1 +
- drivers/pwm/pwm-rockchip.c      | 40 +++++++++++++++++++++++++++++++++-------
- 5 files changed, 57 insertions(+), 14 deletions(-)
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
