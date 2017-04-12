@@ -1,244 +1,86 @@
-From: Sven Van Asbroeck <thesven73@gmail.com>
-Subject: [PATCH v3 1/1] pwm: pca9685: fix gpio-only operation.
-Date: Wed, 12 Apr 2017 11:15:59 -0400
-Message-ID: <1492010159-6050-2-git-send-email-svenv@arcx.com>
-References: <1492010159-6050-1-git-send-email-svenv@arcx.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1492010159-6050-1-git-send-email-svenv@arcx.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, clemens.gruber@pqgruber.com, mika.westerberg@linux.intel.com, andriy.shevchenko@linux.intel.com, Sven Van Asbroeck <TheSven73@googlemail.com>
+From: Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH v5 1/4] gpio: mvebu: Add limited PWM support
+Date: Wed, 12 Apr 2017 17:19:32 +0200
+Message-ID: <20170412151932.GE7023@lunn.ch>
+References: <20170409180931.4884-1-ralph.sennhauser@gmail.com>
+ <20170409180931.4884-2-ralph.sennhauser@gmail.com>
+ <20170412163128.5c985a26@free-electrons.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170412163128.5c985a26@free-electrons.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Cc: Ralph Sennhauser <ralph.sennhauser@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Jason Cooper <jason@lakedaemon.net>, Alexandre Courbot <gnurou@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Gregory Clement <gregory.clement@free-electrons.com>, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-gpio-only driver operation never clears the SLEEP bit, which can
-cause the gpios to become unusable.
+On Wed, Apr 12, 2017 at 04:31:28PM +0200, Thomas Petazzoni wrote:
+> Hello,
+> 
+> Sorry for the late feedback about this.
+> 
+> On Sun,  9 Apr 2017 20:09:27 +0200, Ralph Sennhauser wrote:
+> 
+> > +		gpio1: gpio@18140 {
+> > +			compatible = "marvell,armada-370-xp-gpio";
+> > +			reg = <0x18140 0x40>, <0x181c8 0x08>;
+> 
+> One issue I see is that you have only two counters A and B. You
+> associate counter A with the first bank of GPIOs, and counter B with
+> the second bank of GPIOs.
+> 
+> Which means that if you need to PWM a GPIO from the third bank of
+> GPIOs, you can't, even if the HW allows it.
+>
+> 
+> While I'm fine with not supporting all the HW features, but it's a bit
+> sad that this gets encoded into the DT.
+> 
+> But I guess the only way to make this possible would be to have a
+> single node for all GPIOs rather than one per bank? Or do we have a way
+> to have those counter A/B registers bound to a separate PWM driver, and
+> then the GPIO driver being smart enough to select the counter to be
+> used? Seems not easy to do though :-/
 
-Example:
-1. user requests first pwm  ->      driver clears SLEEP bit
-2. user frees last pwm      ->      driver sets SLEEP bit
-3. user requests gpio
-4. user switches gpio on    ->      output does not turn on
-                                    because SLEEP bit is set
+Hi Thomas
 
-Prevent this behaviour by letting the runtime_pm framework
-control the SLEEP bit. This will put the chip to SLEEP if
-no pwms/gpios are exported/in use.
+Yep. It was a compromise. By adding a new binding for the GPIO driver,
+this might be possible. But it did not seem worth such a major change.
 
-Fixes: bccec89f0a35 ("Allow any of the 16 PWMs to be used as a GPIO")
-Reported-by: Sven Van Asbroeck <TheSven73@googlemail.com>
-Signed-off-by: Sven Van Asbroeck <TheSven73@googlemail.com>
-Suggested-by: Mika Westerberg <mika.westerberg@linux.intel.com>
----
- drivers/pwm/pwm-pca9685.c | 111 ++++++++++++++++++++++++++++++++--------------
- 1 file changed, 78 insertions(+), 33 deletions(-)
+The prime use of this feature is for controlling a fan. So far, i've
+not seen any hardware with more than one fan, i.e. needs more than one
+PWM. Nor have i seen any hardware with the GPIO for the fan being on
+the third bank. A hardware manufacture could add multiple fans, but i
+doubt it, they make noise and fail. And if a manufacture does place a
+fan on the third bank, it can still be controlled as a plain GPIO fan,
+as we have been doing for the last few years.
 
-diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-index 0cfb357..f4c422a 100644
---- a/drivers/pwm/pwm-pca9685.c
-+++ b/drivers/pwm/pwm-pca9685.c
-@@ -30,6 +30,7 @@
- #include <linux/regmap.h>
- #include <linux/slab.h>
- #include <linux/delay.h>
-+#include <linux/pm_runtime.h>
- 
- /*
-  * Because the PCA9685 has only one prescaler per chip, changing the period of
-@@ -79,7 +80,6 @@
- struct pca9685 {
- 	struct pwm_chip chip;
- 	struct regmap *regmap;
--	int active_cnt;
- 	int duty_ns;
- 	int period_ns;
- #if IS_ENABLED(CONFIG_GPIOLIB)
-@@ -111,20 +111,10 @@ static int pca9685_pwm_gpio_request(struct gpio_chip *gpio, unsigned int offset)
- 	pwm_set_chip_data(pwm, (void *)1);
- 
- 	mutex_unlock(&pca->lock);
-+	pm_runtime_get_sync(pca->chip.dev);
- 	return 0;
- }
- 
--static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
--{
--	struct pca9685 *pca = gpiochip_get_data(gpio);
--	struct pwm_device *pwm;
--
--	mutex_lock(&pca->lock);
--	pwm = &pca->chip.pwms[offset];
--	pwm_set_chip_data(pwm, NULL);
--	mutex_unlock(&pca->lock);
--}
--
- static bool pca9685_pwm_is_gpio(struct pca9685 *pca, struct pwm_device *pwm)
- {
- 	bool is_gpio = false;
-@@ -177,6 +167,19 @@ static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
- 	regmap_write(pca->regmap, LED_N_ON_H(pwm->hwpwm), on);
- }
- 
-+static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
-+{
-+	struct pca9685 *pca = gpiochip_get_data(gpio);
-+	struct pwm_device *pwm;
-+
-+	pca9685_pwm_gpio_set(gpio, offset, 0);
-+	pm_runtime_put(pca->chip.dev);
-+	mutex_lock(&pca->lock);
-+	pwm = &pca->chip.pwms[offset];
-+	pwm_set_chip_data(pwm, NULL);
-+	mutex_unlock(&pca->lock);
-+}
-+
- static int pca9685_pwm_gpio_get_direction(struct gpio_chip *chip,
- 					  unsigned int offset)
- {
-@@ -238,6 +241,16 @@ static inline int pca9685_pwm_gpio_probe(struct pca9685 *pca)
- }
- #endif
- 
-+static void pca9685_set_sleep_mode(struct pca9685 *pca, int sleep)
-+{
-+	regmap_update_bits(pca->regmap, PCA9685_MODE1,
-+			   MODE1_SLEEP, sleep ? MODE1_SLEEP : 0);
-+	if (!sleep) {
-+		/* Wait 500us for the oscillator to be back up */
-+		udelay(500);
-+	}
-+}
-+
- static int pca9685_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 			      int duty_ns, int period_ns)
- {
-@@ -252,19 +265,20 @@ static int pca9685_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 
- 		if (prescale >= PCA9685_PRESCALE_MIN &&
- 			prescale <= PCA9685_PRESCALE_MAX) {
-+			/*
-+			 * putting the chip briefly into SLEEP mode
-+			 * at this point won't interfere with the
-+			 * pm_runtime framework, because the pm_runtime
-+			 * state is guaranteed active here.
-+			 */
- 			/* Put chip into sleep mode */
--			regmap_update_bits(pca->regmap, PCA9685_MODE1,
--					   MODE1_SLEEP, MODE1_SLEEP);
-+			pca9685_set_sleep_mode(pca, 1);
- 
- 			/* Change the chip-wide output frequency */
- 			regmap_write(pca->regmap, PCA9685_PRESCALE, prescale);
- 
- 			/* Wake the chip up */
--			regmap_update_bits(pca->regmap, PCA9685_MODE1,
--					   MODE1_SLEEP, 0x0);
--
--			/* Wait 500us for the oscillator to be back up */
--			udelay(500);
-+			pca9685_set_sleep_mode(pca, 0);
- 
- 			pca->period_ns = period_ns;
- 		} else {
-@@ -406,21 +420,15 @@ static int pca9685_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
- 
- 	if (pca9685_pwm_is_gpio(pca, pwm))
- 		return -EBUSY;
--
--	if (pca->active_cnt++ == 0)
--		return regmap_update_bits(pca->regmap, PCA9685_MODE1,
--					  MODE1_SLEEP, 0x0);
-+	pm_runtime_get_sync(chip->dev);
- 
- 	return 0;
- }
- 
- static void pca9685_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- {
--	struct pca9685 *pca = to_pca(chip);
--
--	if (--pca->active_cnt == 0)
--		regmap_update_bits(pca->regmap, PCA9685_MODE1, MODE1_SLEEP,
--				   MODE1_SLEEP);
-+	pca9685_pwm_disable(chip, pwm);
-+	pm_runtime_put(chip->dev);
- }
- 
- static const struct pwm_ops pca9685_pwm_ops = {
-@@ -492,21 +500,52 @@ static int pca9685_pwm_probe(struct i2c_client *client,
- 		return ret;
- 
- 	ret = pca9685_pwm_gpio_probe(pca);
--	if (ret < 0)
-+	if (ret < 0) {
- 		pwmchip_remove(&pca->chip);
-+		return ret;
-+	}
- 
--	return ret;
-+	/* the chip comes out of power-up in the active state */
-+	pm_runtime_set_active(&client->dev);
-+	/* enable will put the chip into suspend, which is what we
-+	 * want as all outputs are disabled at this point
-+	 */
-+	pm_runtime_enable(&client->dev);
-+
-+	return 0;
- }
- 
- static int pca9685_pwm_remove(struct i2c_client *client)
- {
- 	struct pca9685 *pca = i2c_get_clientdata(client);
-+	int ret;
-+
-+	ret = pwmchip_remove(&pca->chip);
-+	if (ret)
-+		return ret;
-+	pm_runtime_disable(&client->dev);
-+	return 0;
-+}
-+
-+#ifdef CONFIG_PM
-+static int pca9685_pwm_runtime_suspend(struct device *dev)
-+{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct pca9685 *pca = i2c_get_clientdata(client);
- 
--	regmap_update_bits(pca->regmap, PCA9685_MODE1, MODE1_SLEEP,
--			   MODE1_SLEEP);
-+	pca9685_set_sleep_mode(pca, 1);
-+	return 0;
-+}
- 
--	return pwmchip_remove(&pca->chip);
-+static int pca9685_pwm_runtime_resume(struct device *dev)
-+{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct pca9685 *pca = i2c_get_clientdata(client);
-+
-+	pca9685_set_sleep_mode(pca, 0);
-+	return 0;
- }
-+#endif
- 
- static const struct i2c_device_id pca9685_id[] = {
- 	{ "pca9685", 0 },
-@@ -530,11 +569,17 @@ static int pca9685_pwm_remove(struct i2c_client *client)
- MODULE_DEVICE_TABLE(of, pca9685_dt_ids);
- #endif
- 
-+static const struct dev_pm_ops pca9685_pwm_pm = {
-+	SET_RUNTIME_PM_OPS(pca9685_pwm_runtime_suspend,
-+			   pca9685_pwm_runtime_resume, NULL)
-+};
-+
- static struct i2c_driver pca9685_i2c_driver = {
- 	.driver = {
- 		.name = "pca9685-pwm",
- 		.acpi_match_table = ACPI_PTR(pca9685_acpi_ids),
- 		.of_match_table = of_match_ptr(pca9685_dt_ids),
-+		.pm = &pca9685_pwm_pm,
- 	},
- 	.probe = pca9685_pwm_probe,
- 	.remove = pca9685_pwm_remove,
--- 
-1.9.1
+So i personally think it is an O.K. compromise.
+
+> > @@ -555,6 +842,10 @@ static const struct of_device_id mvebu_gpio_of_match[] = {
+> >  		.data	    = (void *) MVEBU_GPIO_SOC_VARIANT_ARMADAXP,
+> >  	},
+> >  	{
+> > +		.compatible = "marvell,armada-370-xp-gpio",
+> > +		.data	    = (void *) MVEBU_GPIO_SOC_VARIANT_ORION,
+> 
+> Whum, what are you doing here?
+
+Since you are late to the discussion, you probably missed this part.
+
+Only 370 and XP have the hardware needed to do this. Kirkwood and
+Orion5x does not. It was requested a compatible string was added to
+indicate SoC has the needed hardware.
+
+The driver was extended when XP was added, due it is per CPU
+interrupts. However, that turned out to be broken. One CPU would
+enable the interrupt, and it was delivered to another, causing it to
+be missed. So XP was reverted to use the plan old ORION way of doing
+interrupts.
+
+So this patch adds in a new compatible string for 370 and XP, to
+indicate the PWM hardware is available, and keeps using the ORION way
+of handing interrupts.
+
+   Andrew
