@@ -1,272 +1,158 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: Re: [PATCH v2 1/1] pwm: pca9685: fix gpio-only operation.
-Date: Wed, 12 Apr 2017 11:53:50 +0300
-Message-ID: <20170412085350.GB29222@lahna.fi.intel.com>
-References: <1491938345-16933-1-git-send-email-svenv@arcx.com>
- <1491938345-16933-2-git-send-email-svenv@arcx.com>
+From: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Subject: Re: [PATCH v5 0/4] gpio: mvebu: Add PWM fan support
+Date: Wed, 12 Apr 2017 11:11:17 +0200
+Message-ID: <87bms2gfd6.fsf@free-electrons.com>
+References: <20170409180931.4884-1-ralph.sennhauser@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mga05.intel.com ([192.55.52.43]:20084 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751992AbdDLIxz (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 12 Apr 2017 04:53:55 -0400
-Content-Disposition: inline
-In-Reply-To: <1491938345-16933-2-git-send-email-svenv@arcx.com>
+Received: from mail.free-electrons.com ([62.4.15.54]:50389 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751876AbdDLJLp (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 12 Apr 2017 05:11:45 -0400
+In-Reply-To: <20170409180931.4884-1-ralph.sennhauser@gmail.com> (Ralph
+        Sennhauser's message of "Sun, 9 Apr 2017 20:09:26 +0200")
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Sven Van Asbroeck <thesven73@gmail.com>
-Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, clemens.gruber@pqgruber.com, andriy.shevchenko@linux.intel.com, Sven Van Asbroeck <TheSven73@googlemail.com>
+To: Thierry Reding <thierry.reding@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralph Sennhauser <ralph.sennhauser@gmail.com>
+Cc: Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Russell King <linux@armlinux.org.uk>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Tue, Apr 11, 2017 at 03:19:05PM -0400, Sven Van Asbroeck wrote:
-> gpio-only driver operation never clears the SLEEP bit, which can
-> cause the gpios to become unusable.
-> 
-> Example:
-> 1. user requests first pwm  ->      driver clears SLEEP bit
-> 2. user frees last pwm      ->      driver sets SLEEP bit
-> 3. user requests gpio
-> 4. user switches gpio on    ->      output does not turn on
->                                     because SLEEP bit is set
-> 
-> Prevent this behaviour by letting the runtime_pm framework
-> control the SLEEP bit. This will put the chip to SLEEP if
-> no pwms/gpios are exported/in use.
+Hi all,
+ 
+ On dim., avril 09 2017, Ralph Sennhauser <ralph.sennhauser@gmail.com> wrote:
 
-Looks like going to the right direction. I have a couple of comments see
-below.
+> Hi Therry,
+>
+> Resending this as v5 with some minor changes since v4. What is missing is
+> an ACK from you so Linus can merge the driver and Gregory the dts
+> changes. For this driver to make it into 4.12 it would be nice to have
+> it in next soon. I hope you can make some room in your schedule to have
+> another look at this series.
 
-> 
-> Fixes: bccec89f0a35 ("Allow any of the 16 PWMs to be used as a GPIO")
-> Reported-by: Sven Van Asbroeck <TheSven73@googlemail.com>
-> Signed-off-by: Sven Van Asbroeck <TheSven73@googlemail.com>
-> Suggested-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+If the other maintainer agree I can apply the arm-soc related patch (2,
+3 and 4) to my mvebu branches. Actually even if the gpio driver is not
+merged yet, these patches won't hurt. The only things I would like to
+check is that the binding won't change.
+
+Thanks,
+
+Gregory
+
+>
+> Thanks
+> Ralph
+>
 > ---
->  drivers/pwm/pwm-pca9685.c | 111 ++++++++++++++++++++++++++++++++--------------
->  1 file changed, 78 insertions(+), 33 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
-> index 0cfb357..465eb57 100644
-> --- a/drivers/pwm/pwm-pca9685.c
-> +++ b/drivers/pwm/pwm-pca9685.c
-> @@ -30,6 +30,7 @@
->  #include <linux/regmap.h>
->  #include <linux/slab.h>
->  #include <linux/delay.h>
-> +#include <linux/pm_runtime.h>
->  
->  /*
->   * Because the PCA9685 has only one prescaler per chip, changing the period of
-> @@ -79,7 +80,6 @@
->  struct pca9685 {
->  	struct pwm_chip chip;
->  	struct regmap *regmap;
-> -	int active_cnt;
->  	int duty_ns;
->  	int period_ns;
->  #if IS_ENABLED(CONFIG_GPIOLIB)
-> @@ -111,20 +111,10 @@ static int pca9685_pwm_gpio_request(struct gpio_chip *gpio, unsigned int offset)
->  	pwm_set_chip_data(pwm, (void *)1);
->  
->  	mutex_unlock(&pca->lock);
-> +	pm_runtime_get_sync(pca->chip.dev);
->  	return 0;
->  }
->  
-> -static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
-> -{
-> -	struct pca9685 *pca = gpiochip_get_data(gpio);
-> -	struct pwm_device *pwm;
-> -
-> -	mutex_lock(&pca->lock);
-> -	pwm = &pca->chip.pwms[offset];
-> -	pwm_set_chip_data(pwm, NULL);
-> -	mutex_unlock(&pca->lock);
-> -}
-> -
->  static bool pca9685_pwm_is_gpio(struct pca9685 *pca, struct pwm_device *pwm)
->  {
->  	bool is_gpio = false;
-> @@ -177,6 +167,19 @@ static void pca9685_pwm_gpio_set(struct gpio_chip *gpio, unsigned int offset,
->  	regmap_write(pca->regmap, LED_N_ON_H(pwm->hwpwm), on);
->  }
->  
-> +static void pca9685_pwm_gpio_free(struct gpio_chip *gpio, unsigned int offset)
-> +{
-> +	struct pca9685 *pca = gpiochip_get_data(gpio);
-> +	struct pwm_device *pwm;
-> +
-> +	pca9685_pwm_gpio_set(gpio, offset, 0);
-> +	pm_runtime_put(pca->chip.dev);
-> +	mutex_lock(&pca->lock);
-> +	pwm = &pca->chip.pwms[offset];
-> +	pwm_set_chip_data(pwm, NULL);
-> +	mutex_unlock(&pca->lock);
-> +}
-
-Why did you move the function here?
-
-> +
->  static int pca9685_pwm_gpio_get_direction(struct gpio_chip *chip,
->  					  unsigned int offset)
->  {
-> @@ -238,6 +241,16 @@ static inline int pca9685_pwm_gpio_probe(struct pca9685 *pca)
->  }
->  #endif
->  
-> +static void pca9685_set_sleep_mode(struct pca9685 *pca, int sleep)
-> +{
-> +	regmap_update_bits(pca->regmap, PCA9685_MODE1,
-> +			   MODE1_SLEEP, sleep ? MODE1_SLEEP : 0);
-> +	if (!sleep) {
-> +		/* Wait 500us for the oscillator to be back up */
-> +		udelay(500);
-> +	}
-> +}
-> +
->  static int pca9685_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->  			      int duty_ns, int period_ns)
->  {
-> @@ -252,19 +265,19 @@ static int pca9685_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->  
->  		if (prescale >= PCA9685_PRESCALE_MIN &&
->  			prescale <= PCA9685_PRESCALE_MAX) {
-> +			/* putting the chip briefly into SLEEP mode
-> +			 * at this point won't interfere with the
-> +			 * pm_runtime framework, because the pm_runtime
-> +			 * state is guaranteed active here.
-> +			 */
-
-The comment style should follow the one in
-Documentation/process/coding-style.rst.
-
->  			/* Put chip into sleep mode */
-> -			regmap_update_bits(pca->regmap, PCA9685_MODE1,
-> -					   MODE1_SLEEP, MODE1_SLEEP);
-> +			pca9685_set_sleep_mode(pca, 1);
->  
->  			/* Change the chip-wide output frequency */
->  			regmap_write(pca->regmap, PCA9685_PRESCALE, prescale);
->  
->  			/* Wake the chip up */
-> -			regmap_update_bits(pca->regmap, PCA9685_MODE1,
-> -					   MODE1_SLEEP, 0x0);
-> -
-> -			/* Wait 500us for the oscillator to be back up */
-> -			udelay(500);
-> +			pca9685_set_sleep_mode(pca, 0);
->  
->  			pca->period_ns = period_ns;
->  		} else {
-> @@ -406,21 +419,15 @@ static int pca9685_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
->  
->  	if (pca9685_pwm_is_gpio(pca, pwm))
->  		return -EBUSY;
-> -
-> -	if (pca->active_cnt++ == 0)
-> -		return regmap_update_bits(pca->regmap, PCA9685_MODE1,
-> -					  MODE1_SLEEP, 0x0);
-> +	pm_runtime_get_sync(chip->dev);
->  
->  	return 0;
->  }
->  
->  static void pca9685_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
->  {
-> -	struct pca9685 *pca = to_pca(chip);
-> -
-> -	if (--pca->active_cnt == 0)
-> -		regmap_update_bits(pca->regmap, PCA9685_MODE1, MODE1_SLEEP,
-> -				   MODE1_SLEEP);
-> +	pca9685_pwm_disable(chip, pwm);
-> +	pm_runtime_put(chip->dev);
->  }
->  
->  static const struct pwm_ops pca9685_pwm_ops = {
-> @@ -492,21 +499,53 @@ static int pca9685_pwm_probe(struct i2c_client *client,
->  		return ret;
->  
->  	ret = pca9685_pwm_gpio_probe(pca);
-> -	if (ret < 0)
-> +	if (ret < 0) {
->  		pwmchip_remove(&pca->chip);
-> +		return ret;
-> +	}
->  
-> -	return ret;
-> +	/* the chip comes out of power-up in the active state */
-> +	pm_runtime_set_active(&client->dev);
-> +	/* enable will put the chip into suspend, which is what we
-> +	 * want as all outputs are disabled at this point
-> +	 */
-> +	pm_runtime_enable(&client->dev);
-> +
-> +	return 0;
->  }
->  
->  static int pca9685_pwm_remove(struct i2c_client *client)
->  {
->  	struct pca9685 *pca = i2c_get_clientdata(client);
-> +	int ret;
-> +
-> +	ret = pwmchip_remove(&pca->chip);
-> +	if (ret)
-> +		return ret;
-> +	pm_runtime_suspend(&client->dev);
-
-Is it necessary to call this? 
-
-In principle you need to undo whatever you did in ->probe() so calling
-pm_runtime_set_suspended() here makes more sense IMHO.
-
-You can try how it works if you load/unload the driver several times-.
-
-> +	pm_runtime_disable(&client->dev);
-> +	return 0;
-> +}
-> +
-> +#ifdef CONFIG_PM
-> +static int pca9685_pwm_runtime_suspend(struct device *dev)
-> +{
-> +	struct i2c_client *client = to_i2c_client(dev);
-> +	struct pca9685 *pca = i2c_get_clientdata(client);
->  
-> -	regmap_update_bits(pca->regmap, PCA9685_MODE1, MODE1_SLEEP,
-> -			   MODE1_SLEEP);
-> +	pca9685_set_sleep_mode(pca, 1);
-> +	return 0;
-> +}
->  
-> -	return pwmchip_remove(&pca->chip);
-> +static int pca9685_pwm_runtime_resume(struct device *dev)
-> +{
-> +	struct i2c_client *client = to_i2c_client(dev);
-> +	struct pca9685 *pca = i2c_get_clientdata(client);
-> +
-> +	pca9685_set_sleep_mode(pca, 0);
-> +	return 0;
->  }
-> +#endif
->  
->  static const struct i2c_device_id pca9685_id[] = {
->  	{ "pca9685", 0 },
-> @@ -530,11 +569,17 @@ static int pca9685_pwm_remove(struct i2c_client *client)
->  MODULE_DEVICE_TABLE(of, pca9685_dt_ids);
->  #endif
->  
-> +static const struct dev_pm_ops pca9685_pwm_pm = {
-> +	SET_RUNTIME_PM_OPS(pca9685_pwm_runtime_suspend,
-> +			   pca9685_pwm_runtime_resume, NULL)
-> +};
-> +
->  static struct i2c_driver pca9685_i2c_driver = {
->  	.driver = {
->  		.name = "pca9685-pwm",
->  		.acpi_match_table = ACPI_PTR(pca9685_acpi_ids),
->  		.of_match_table = of_match_ptr(pca9685_dt_ids),
-> +		.pm = &pca9685_pwm_pm,
->  	},
->  	.probe = pca9685_pwm_probe,
->  	.remove = pca9685_pwm_remove,
+>
+> Notes:
+>
+>   About npwm = 1:
+>     The only way I can think of to achieve that requires reading the
+>     GPIO line from the device tree. This would prevent a user to
+>     dynamically choose a line. Which is fine for the fan found on Mamba
+>     but let's take some development board with freely accessible GPIOs
+>     and suddenly we limit the use of this driver. Given the above, npwm
+>     = ngpio with only one usable at a time is a more accurate
+>     description of the situation. The only downside is some "wasted"
+>     space.
+>
+>   About the new compatible string:
+>     Orion was chosen for the SoC variant for the same reason as in
+>     commit 5f79c651e81e ("arm: mvebu: use global interrupts for GPIOs on
+>     Armada XP").
+>     The "pwm" property remains optional for the new compatible string so
+>     the compatiple string "marvell,armada-370-xp-gpio" can be used by
+>     all and not just the first two GPIO chips. A property to select "Set
+>     A" / "Set B" registers could be invented though.
+>
+> ---
+>
+> Pending:
+>   * Needs ACK from Thierry Reding to be merged via linux-gpio tree by Linus
+>     Walleij. (fine with the general approach, requested changes which
+>     should have been taken care of now)
+>
+> ---
+>
+> Changes v4->v5:
+>   All
+>     * add Tested-by: Andrew Lunn <andrew@lunn.ch>, thanks
+>   Patch 2/4 mvebu: xp: Add PWM properties to .dtsi files
+>     * keep the old compatible stings, we don't have to drop them,
+>       therefore keep them (suggested by Gregory CLEMENT)
+>     * subject starts with ARM: dts: mvebu: (suggested by Gregory CLEMENT)
+>   Patch 4/4 mvebu: wrt1900ac: Use pwm-fan rather than gpio-fan
+>     * subject starts with ARM: dts: armada-xp: (suggested by Gregory CLEMENT)
+>
+> Changes v3->v4:
+>   Patch 1/4 gpio: mvebu: Add limited PWM support:
+>     * braces for both branches in if statement if one needs it. (suggested
+>       by Andrew Lunn)
+>     * introduce compatible string marvell,armada-370-xp-gpio (suggest by
+>       Rob Herring)
+>     * fix mvebu_pwmreg_blink_on_duration -> mvebu_pwmreg_blink_off_duration
+>       for period callculation in mvebu_pwm_get_state()
+>   Patch 4/4 mvebu: wrt1900ac: Use pwm-fan rather than gpio-fan
+>     * Drop flags from pwms for Mamba, as no longer used (suggested by
+>       Andrew Lunn)
+>     * Use again #pwm-cell = 2, the second cell is actually the period.
+>
+> Changes v2->v3:
+>   Patch 1/4 gpio: mvebu: Add limited PWM support:
+>     * drop pin from mvebu_pwn, can be infered (suggested by Thierry Reding)
+>     * rename pwm to mvpwm so pwm can be used for pwm_device as in the API,
+>       avoids some mental gymnastic.
+>     * drop id from struct mvebu_gpio_chip, select blink counter in
+>       mvebu_pwm_probe for all lines instead. We do not care about the
+>       unused ones. I think a clear improvement in readability.
+>       Makes coming up with a good comment simple as well.
+>     * Switch to new atomic PWM API (suggested by Thierry Reding)
+>     * rename use mvebu_gpioreg_blink_select to
+>       mvebu_gpioreg_blink_counter_select.
+>     * mark *_suspend() / *_resume() as __maybe_unused (suggested by Linus
+>       Walleij)
+>     * document #pwm-cells = 1 (suggested by Thierry Reding)
+>   Patch 2/4 mvebu: xp: Add PWM properties to .dtsi files
+>     * add missing reg-names / #pwm-cell properties to
+>       armada-xp-mv78260.dtsi gpio1 node
+>     * set pwm-cells = 1 (suggested by Thierry Reding)
+>   All:
+>     * always uppercase GPIO/PWM in prose (suggested by Thierry Reding)
+>
+> Changes v1 -> v2:
+>   Patch 1/4 gpio: mvebu: Add limited PWM support:
+>     * use BIT macro (suggested by Linus Walleij)
+>     * move id from struct mvebu_pwm to struct mvebu_gpio_chip, implement
+>       blink select as if else and comment on the chip id for code clarity
+>       (to accommodate Linus Walleijs request for a code clarification /
+>       comment. If you can word it better I'm all ears.)
+>     * Move function comment mvebu_pwm_probe into the function itself.
+>
+> ---
+>
+> Andrew Lunn (4):
+>   gpio: mvebu: Add limited PWM support
+>   ARM: dts: mvebu: Add PWM properties to .dtsi files
+>   ARM: mvebu: Enable SENSORS_PWM_FAN in defconfig
+>   ARM: dts: armada-xp: Use pwm-fan rather than gpio-fan
+>
+>  .../devicetree/bindings/gpio/gpio-mvebu.txt        |  32 ++
+>  MAINTAINERS                                        |   2 +
+>  arch/arm/boot/dts/armada-370.dtsi                  |  19 +-
+>  arch/arm/boot/dts/armada-xp-linksys-mamba.dts      |   8 +-
+>  arch/arm/boot/dts/armada-xp-mv78230.dtsi           |  16 +-
+>  arch/arm/boot/dts/armada-xp-mv78260.dtsi           |  19 +-
+>  arch/arm/boot/dts/armada-xp-mv78460.dtsi           |  19 +-
+>  arch/arm/configs/mvebu_v7_defconfig                |   2 +
+>  drivers/gpio/gpio-mvebu.c                          | 324 ++++++++++++++++++++-
+>  9 files changed, 405 insertions(+), 36 deletions(-)
+>
 > -- 
-> 1.9.1
+> 2.10.2
+>
+
+-- 
+Gregory Clement, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
