@@ -1,122 +1,111 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH V3 2/4] pwm: tegra: Increase precision in pwm rate
- calculation
-Date: Wed, 12 Apr 2017 19:19:31 +0200
-Message-ID: <20170412171931.GE11964@ulmo.ba.sec>
-References: <1491557642-15940-1-git-send-email-ldewangan@nvidia.com>
- <1491557642-15940-3-git-send-email-ldewangan@nvidia.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v5 1/4] gpio: mvebu: Add limited PWM support
+Date: Wed, 12 Apr 2017 19:21:58 +0200
+Message-ID: <20170412172158.GF11964@ulmo.ba.sec>
+References: <20170409180931.4884-1-ralph.sennhauser@gmail.com>
+ <20170409180931.4884-2-ralph.sennhauser@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="8vCeF2GUdMpe9ZbK"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+        protocol="application/pgp-signature"; boundary="gneEPciiIl/aKvOT"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1491557642-15940-3-git-send-email-ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20170409180931.4884-2-ralph.sennhauser@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+Cc: Andrew Lunn <andrew@lunn.ch>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jason Cooper <jason@lakedaemon.net>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Russell King <linux@armlinux.org.uk>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---8vCeF2GUdMpe9ZbK
+--gneEPciiIl/aKvOT
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 07, 2017 at 03:04:00PM +0530, Laxman Dewangan wrote:
-> The rate of the PWM calculated as follows:
-> 	hz =3D NSEC_PER_SEC / period_ns;
->  	rate =3D (rate + (hz / 2)) / hz;
+On Sun, Apr 09, 2017 at 08:09:27PM +0200, Ralph Sennhauser wrote:
+> From: Andrew Lunn <andrew@lunn.ch>
 >=20
-> This has the precision loss in lower PWM rate.
+> Armada 370/XP devices can 'blink' GPIO lines with a configurable on
+> and off period. This can be modelled as a PWM.
 >=20
-> Change this to have more precision as:
-> 	hz =3D DIV_ROUND_CLOSEST_ULL(NSEC_PER_SEC * 100, period_ns);
-> 	rate =3D DIV_ROUND_CLOSEST(rate * 100, hz)
+> However, there are only two sets of PWM configuration registers for
+> all the GPIO lines. This driver simply allows a single GPIO line per
+> GPIO chip of 32 lines to be used as a PWM. Attempts to use more return
+> EBUSY.
 >=20
-> Example:
-> 1. period_ns =3D 16672000, PWM clock rate is 200KHz.
-> 	Based on old formula
-> 		hz =3D NSEC_PER_SEC / period_ns
-> 		   =3D 1000000000ul/16672000
-> 		   =3D 59 (59.98)
-> 		rate =3D (200K + 59/2)/59 =3D 3390
+> Due to the interleaving of registers it is not simple to separate the
+> PWM driver from the GPIO driver. Thus the GPIO driver has been
+> extended with a PWM driver.
 >=20
-> 	Based on new method:
-> 		hz =3D 5998
-> 		rate =3D DIV_ROUND_CLOSE(200000*100, 5998) =3D 3334
->=20
-> 	If we measure the PWM signal rate, we will get more accurate period
-> 	with rate value of 3334 instead of 3390.
->=20
-> 2.  period_ns =3D 16803898, PWM clock rate is 200KHz.
-> 	Based on old formula:
-> 		hz =3D 59, rate =3D 3390
-> 	Based on new formula:
-> 		hz =3D 5951, rate =3D 3360
->=20
-> 	The PWM signal rate of 3360 is more near to requested period than 3333.
->=20
-> Signed-off-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
->=20
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> URL: https://patchwork.ozlabs.org/patch/427287/
+> URL: https://patchwork.ozlabs.org/patch/427295/
+> [Ralph Sennhauser:
+>   * Port forward
+>   * Merge PWM portion into gpio-mvebu.c
+>   * Switch to atomic PWM API
+>   * Add new compatible string marvell,armada-370-xp-gpio
+>   * Update and merge documentation patch
+>   * Update MAINTAINERS]
+> Signed-off-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+> Tested-by: Andrew Lunn <andrew@lunn.ch>
 > ---
-> Changes from v1:
-> - None
+>  .../devicetree/bindings/gpio/gpio-mvebu.txt        |  32 ++
+>  MAINTAINERS                                        |   2 +
+>  drivers/gpio/gpio-mvebu.c                          | 324 +++++++++++++++=
++++++-
+>  3 files changed, 346 insertions(+), 12 deletions(-)
 >=20
-> Changes from V2:
-> - Fix the commit message with exact formula used.
-> ---
->  drivers/pwm/pwm-tegra.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
-> index 0a688da..21518be 100644
-> --- a/drivers/pwm/pwm-tegra.c
-> +++ b/drivers/pwm/pwm-tegra.c
-> @@ -76,6 +76,7 @@ static int tegra_pwm_config(struct pwm_chip *chip, stru=
-ct pwm_device *pwm,
->  	struct tegra_pwm_chip *pc =3D to_tegra_pwm_chip(chip);
->  	unsigned long long c =3D duty_ns;
->  	unsigned long rate, hz;
-> +	unsigned long long ns100 =3D NSEC_PER_SEC;
->  	u32 val =3D 0;
->  	int err;
+> diff --git a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt b/Docu=
+mentation/devicetree/bindings/gpio/gpio-mvebu.txt
+> index a6f3bec..fe49e9d 100644
+> --- a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
+> +++ b/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
+> @@ -38,6 +38,24 @@ Required properties:
+>  - #gpio-cells: Should be two. The first cell is the pin number. The
+>    second cell is reserved for flags, unused at the moment.
 > =20
-> @@ -94,9 +95,11 @@ static int tegra_pwm_config(struct pwm_chip *chip, str=
-uct pwm_device *pwm,
->  	 * cycles at the PWM clock rate will take period_ns nanoseconds.
->  	 */
->  	rate =3D clk_get_rate(pc->clk) >> PWM_DUTY_WIDTH;
-> -	hz =3D NSEC_PER_SEC / period_ns;
-> =20
-> -	rate =3D (rate + (hz / 2)) / hz;
-> +	/* Consider precision in PWM_SCALE_WIDTH rate calculation */
-> +	ns100 *=3D 100;
-> +	hz =3D DIV_ROUND_CLOSEST_ULL(ns100, period_ns);
+> +Optional properties:
+> +
+> +In order to use the gpio lines in PWM mode, some additional optional
+> +properties are required. Only Armada 370 and XP support these properties.
+> +
+> +- compatible: Must contain "marvell,armada-370-xp-gpio"
+> +
+> +- reg: an additional register set is needed, for the GPIO Blink
+> +  Counter on/off registers.
+> +
+> +- reg-names: Must contain an entry "pwm" corresponding to the
+> +  additional register range needed for pwm operation.
+> +
+> +- #pwm-cells: Should be two. The first cell is the GPIO line number. The
+> +  second cell is the period in nanoseconds.
+> +
+> +- clocks: Must be a phandle to the clock for the gpio controller.
 
-I think hz could overflow for small enough values of period_ns. I've
-sent a patch that makes hz unsigned long long. While at it, the patch
-also removes the ns100 variable which isn't really necessary here.
+One other thing: there's a mix of pwm/PWM and gpio/GPIO in this hunk. In
+prose, always use the all-uppercase variants because they are
+abbreviations.
 
 Thierry
 
---8vCeF2GUdMpe9ZbK
+--gneEPciiIl/aKvOT
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAljuYaMACgkQ3SOs138+
-s6EBYxAAmQdfxvQ/dAcjnqNJJAe4fpc3qP5GZdjXF0VXbD8FoOlvLC5BjufxJJmv
-Q29D+Zcxhp/YutSjLkNr4GlWgvCfndZki1aGbiAOXMVUuPlyhh0kI0eM1w3UuKaS
-QozK+LcI579Se5eZFmzFnCgiy9uBES/iL+xhS4hwqqhfFFI0DvGLo0VkO8R3ty5w
-VDg5OoUPVBMLu9OlyNaKscavkqpRdPdNH8UsqY3pz3PCiBXop4dyWoefKTeWnNOr
-/0UTdh2AbcmD4MzVAG9FglWlQuxsIvScru33Dql9wHh8V3krbDjLem2XOqxRvvsa
-SUHz58g3/riejUE4ikAj8HipzSk0btf69GRdZitO912w8bvy2MKgav2pWlQvjRxm
-MQdzneVxAhZPscu5tiYTaJZqz8tpci+TdRQ3tlFBA1UrzR7bij4rmQH5OyxLkpRx
-hBT9ZDQBhnx+WR97r8MwGNcv57IuOmRuH28zAQ1dTOzmewfm2IbwnqyQKjT8bkvK
-GcbbiwC5BWaoEkKWOOdk8KcILsvF4JeeTCmGJy84Qsmc+IEA1htPUbNwyCq74kSY
-lMGozveMlbeM8KQPTIR2qZeQrq2AzKtH7bibRNoM2Z+5HUuc6uZ3p2rlXboSOcKC
-xD2s5aD+yM06RY9kAP9dBnxxkIgonaOIijx/g7DcBD+L8dXYtb0=
-=+uHw
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAljuYjYACgkQ3SOs138+
+s6FkgA//Ryn2pStMlaD7yTkQgTMaDoalwaL/OXPiz0BJr6Rn/cNbAgmtKmlDs1Q3
+fpqxAhU4v/Y8Wojf8MaT3J64eQKQ0s7bC0hjx/MGsefNdL+XP5krfXLmZoyJ5OV7
+ZjOoTSxzt9stVoEGgmdJF54miaCTc4B2Cj0HRn5Ygs8LLR3+rwHiaLNpTh34VBqB
+tvHLRRF9G/xUNGpBqJ7hmO3VhLRkxUU8TAQq5gBuBTpbY1PKvwtrJf7pPTM3xcja
+OWfwrIZ2EvSSQsFMAaHlUfZ9y0Zrv5mslTI0QVWCseEOHwY3x4CnqLwfYoaiI8+c
+hk6wh732ea7FTUxJEbVwk/YeYl67DOpxsVfSpM1UqH1SC/u+9oNq8Mtb81mCtPJA
+tVMjZbnRSrBFqhmgbg638SsjqQ+Z6QOy/SyGr30H0RUYEmz++DhGmXw0qPfwV7sl
+VmOm89RlydVnGUEfFovATa3JX7Fe0yLEYO1V/ulMttLWiiT6+aMUwX580gmPqiL4
+/UiIVhN9xnymJEntaqKn9+FEmj48wSNHW8eq9k5bPbGWJC+GqU7O20eUP3z+WXlh
+lg1PBn8pSMdFHQt++qZeyD0uvE+KM9wLq0T+A+23PQ8jG6DNKJtMEfBo8WQVcAyR
+FJJkYoG+MFr8VNwsQG+ttkqDudZHnN1CgdWaOb9rnVeGMe3+ehQ=
+=e7yD
 -----END PGP SIGNATURE-----
 
---8vCeF2GUdMpe9ZbK--
+--gneEPciiIl/aKvOT--
