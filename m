@@ -1,154 +1,79 @@
-From: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-Subject: Re: [PATCH v5 1/4] gpio: mvebu: Add limited PWM support
-Date: Thu, 13 Apr 2017 09:45:33 +0200
-Message-ID: <20170413094533.68d47edd@gmail.com>
+From: Ralph Sennhauser <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v5 0/4] gpio: mvebu: Add PWM fan support
+Date: Thu, 13 Apr 2017 09:49:04 +0200
+Message-ID: <20170413094904.4fdd9b89@gmail.com>
 References: <20170409180931.4884-1-ralph.sennhauser@gmail.com>
- <20170409180931.4884-2-ralph.sennhauser@gmail.com>
- <20170412171121.GB11964@ulmo.ba.sec>
+ <20170412171656.GC11964@ulmo.ba.sec>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20170412171121.GB11964@ulmo.ba.sec>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jason Cooper <jason@lakedaemon.net>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Russell King <linux@armlinux.org.uk>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170412171656.GC11964-EkSeR96xj6Pcmrwk2tT4+A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Gregory Clement <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, 12 Apr 2017 19:11:21 +0200
-Thierry Reding <thierry.reding@gmail.com> wrote:
+On Wed, 12 Apr 2017 19:16:56 +0200
+Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
 
-> On Sun, Apr 09, 2017 at 08:09:27PM +0200, Ralph Sennhauser wrote:
-> > From: Andrew Lunn <andrew@lunn.ch>
+> On Sun, Apr 09, 2017 at 08:09:26PM +0200, Ralph Sennhauser wrote:
+> > Hi Therry,
 > > 
-> > Armada 370/XP devices can 'blink' GPIO lines with a configurable on
-> > and off period. This can be modelled as a PWM.
+> > Resending this as v5 with some minor changes since v4. What is
+> > missing is an ACK from you so Linus can merge the driver and
+> > Gregory the dts changes. For this driver to make it into 4.12 it
+> > would be nice to have it in next soon. I hope you can make some
+> > room in your schedule to have another look at this series.
 > > 
-> > However, there are only two sets of PWM configuration registers for
-> > all the GPIO lines. This driver simply allows a single GPIO line per
-> > GPIO chip of 32 lines to be used as a PWM. Attempts to use more
-> > return EBUSY.
+> > Thanks
+> > Ralph
 > > 
-> > Due to the interleaving of registers it is not simple to separate
-> > the PWM driver from the GPIO driver. Thus the GPIO driver has been
-> > extended with a PWM driver.
-> > 
-> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> > URL: https://patchwork.ozlabs.org/patch/427287/
-> > URL: https://patchwork.ozlabs.org/patch/427295/
-> > [Ralph Sennhauser:
-> >   * Port forward
-> >   * Merge PWM portion into gpio-mvebu.c
-> >   * Switch to atomic PWM API
-> >   * Add new compatible string marvell,armada-370-xp-gpio
-> >   * Update and merge documentation patch
-> >   * Update MAINTAINERS]
-> > Signed-off-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-> > Tested-by: Andrew Lunn <andrew@lunn.ch>
 > > ---
-> >  .../devicetree/bindings/gpio/gpio-mvebu.txt        |  32 ++
-> >  MAINTAINERS                                        |   2 +
-> >  drivers/gpio/gpio-mvebu.c                          | 324
-> > ++++++++++++++++++++- 3 files changed, 346 insertions(+), 12
-> > deletions(-)
 > > 
-> > diff --git a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
-> > b/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt index
-> > a6f3bec..fe49e9d 100644 ---
-> > a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt +++
-> > b/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt @@ -38,6
-> > +38,24 @@ Required properties:
-> >  - #gpio-cells: Should be two. The first cell is the pin number. The
-> >    second cell is reserved for flags, unused at the moment.
-> >  
-> > +Optional properties:
-> > +
-> > +In order to use the gpio lines in PWM mode, some additional
-> > optional +properties are required. Only Armada 370 and XP support
-> > these properties. +
-> > +- compatible: Must contain "marvell,armada-370-xp-gpio"
-> > +
-> > +- reg: an additional register set is needed, for the GPIO Blink
-> > +  Counter on/off registers.
-> > +
-> > +- reg-names: Must contain an entry "pwm" corresponding to the
-> > +  additional register range needed for pwm operation.
-> > +
-> > +- #pwm-cells: Should be two. The first cell is the GPIO line
-> > number. The
-> > +  second cell is the period in nanoseconds.
-> > +
-> > +- clocks: Must be a phandle to the clock for the gpio controller.
-> > +
-> >  Example:
-> >  
-> >  		gpio0: gpio@d0018100 {
-> > @@ -51,3 +69,17 @@ Example:
-> >  			#interrupt-cells = <2>;
-> >  			interrupts = <16>, <17>, <18>, <19>;
-> >  		};
-> > +
-> > +		gpio1: gpio@18140 {
-> > +			compatible = "marvell,armada-370-xp-gpio";
-> > +			reg = <0x18140 0x40>, <0x181c8 0x08>;
-> > +			reg-names = "gpio", "pwm";
-> > +			ngpios = <17>;
-> > +			gpio-controller;
-> > +			#gpio-cells = <2>;
-> > +			#pwm-cells = <2>;
-> > +			interrupt-controller;
-> > +			#interrupt-cells = <2>;
-> > +			interrupts = <87>, <88>, <89>;
-> > +			clocks = <&coreclk 0>;
-> > +		};  
+> > Notes:
+> > 
+> >   About npwm = 1:
+> >     The only way I can think of to achieve that requires reading the
+> >     GPIO line from the device tree. This would prevent a user to
+> >     dynamically choose a line. Which is fine for the fan found on
+> > Mamba but let's take some development board with freely accessible
+> > GPIOs and suddenly we limit the use of this driver. Given the
+> > above, npwm = ngpio with only one usable at a time is a more
+> > accurate  
 > 
-> This is going to need an Acked-by from one of the device tree
-> maintainers. Rob and devicetree@vger.kernel.org are on Cc, but I
-> suspect nobody might look for the binding change "hidden" in this
-> patch.
-> 
-> Maybe best to split this off into a separate patch, or explicitly ping
-> Rob to look at this patch.
+> I think "accurate" is perhaps not the word I'd choose. "npwm" is
+> defined as "number of PWMs controlled by this chip", and that's
+> effectively just the one. It's implied that all PWMs exposed by a
+> chip can be used concurrently.
 
-Hi Thierry,
+I'm not native English so some terms might be off a tad in how I use
+them, replace accurate with what you think I meant ;).
 
-Rob asked for the new compatible string so he did see it presumably. As
-you prefer to have an ACK by him I'll see to getting one for the driver
-(bindings part). The patch could be split but then one might want to
-split it even further. Like this the first patch in the series is a nice
-self contained package.
-
->
-<snip/>
-> 
-> > +
-> > +	mvpwm->clk_rate = clk_get_rate(mvchip->clk);
-> > +	if (!mvpwm->clk_rate) {
-> > +		dev_err(dev, "failed to get clock rate\n");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	mvpwm->chip.dev = dev;
-> > +	mvpwm->chip.ops = &mvebu_pwm_ops;
-> > +	mvpwm->chip.base = mvchip->chip.base;
-> > +	mvpwm->chip.npwm = mvchip->chip.ngpio;  
-> 
-> I still would've done this differently. If you use this with a PWM
-> user you have to hook it up via DT anyway, so it doesn't matter
-> whether you specify the PWM index or the GPIO via some other
-> property. The _only_ use-case where this might actually be an
-> advantage is if you request a PWM via the sysfs interface.
-
-Let me answer this in the other mail where you bring this up.
+The "it's implied" sounds like a contract and EBUSY a violation thereof.
 
 > 
-<snip/>
-> All of my comments are effectively of a bikeshed nature, so from a PWM
-> perspective this is:
-> 
-> Acked-by: Thierry Reding <thierry.reding@gmail.com>
+> Anyway, I can see how npwm = ngpio might be more convenient, and if
+> that is what you want to do, I don't feel strongly enough to object.
 
-Thanks for the detailed review and the ACK. Will work on all the
-mentioned bits for v6.
+The goal is a pwm-fan driver for Mamba. So npwm=1 would work just fine
+from that stand point. It's indeed the sysfs case I had in mind which
+would be hampered. Whether to consider that one valid / desirable I
+don't want to judge. For me it's a hypothetical use case for others it
+might be real.
 
+For this series I want just this one device to work and getting the
+bindings right to not prevent others extending the driver later when
+they need.
+
+The driver which is under rework here is in use for 2 years, so I went
+with the feature set provided by it which is more than I need. It's a
+one of it's kind driver and I only have this single use case, so really
+your call.
+
+Thanks
 Ralph
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
