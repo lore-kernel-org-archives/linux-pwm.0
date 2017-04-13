@@ -1,27 +1,26 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: Re: [PATCH v3 1/1] pwm: pca9685: fix gpio-only operation.
-Date: Thu, 13 Apr 2017 11:15:55 +0300
-Message-ID: <20170413081555.GC3473@lahna.fi.intel.com>
-References: <1492010159-6050-1-git-send-email-svenv@arcx.com>
- <1492010159-6050-2-git-send-email-svenv@arcx.com>
+From: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] pwm: tegra: Avoid potential overflow for short periods
+Date: Thu, 13 Apr 2017 16:46:44 +0530
+Message-ID: <58EF5E1C.6020107@nvidia.com>
+References: <20170412163320.11760-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1492010159-6050-2-git-send-email-svenv@arcx.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sven Van Asbroeck <thesven73@gmail.com>
-Cc: thierry.reding@gmail.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, clemens.gruber@pqgruber.com, andriy.shevchenko@linux.intel.com, Sven Van Asbroeck <TheSven73@googlemail.com>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170412163320.11760-1-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Apr 12, 2017 at 11:15:59AM -0400, Sven Van Asbroeck wrote:
-> +	pm_runtime_set_active(&client->dev);
-> +	/* enable will put the chip into suspend, which is what we
-> +	 * want as all outputs are disabled at this point
-> +	 */
 
-This comment should also be in the standard block comment format.
+On Wednesday 12 April 2017 10:03 PM, Thierry Reding wrote:
+> For very short periods, the result of the division might overflow the
+> unsigned long hz variable (on 32-bit architectures). Avoid that by
+> making it an unsigned long long. While at it, also remove an unneeded
+> local variable whose only purpose is to store a temporary computation.
+>
+> Signed-off-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
 
-Other than that, the patch looks good to me.
-
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Acked-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
