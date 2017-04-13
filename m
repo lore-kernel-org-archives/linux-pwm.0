@@ -1,26 +1,39 @@
-From: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] pwm: tegra: Avoid potential overflow for short periods
-Date: Thu, 13 Apr 2017 16:46:44 +0530
-Message-ID: <58EF5E1C.6020107@nvidia.com>
-References: <20170412163320.11760-1-thierry.reding@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170412163320.11760-1-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Sven Van Asbroeck <thesven73@gmail.com>
+Subject: [PATCH v4 0/1] pwm: pca9685: fix gpio-only operation.
+Date: Thu, 13 Apr 2017 08:58:10 -0400
+Message-ID: <1492088291-5215-1-git-send-email-svenv@arcx.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-io0-f196.google.com ([209.85.223.196]:35487 "EHLO
+        mail-io0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750773AbdDMM6Q (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 13 Apr 2017 08:58:16 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, clemens.gruber@pqgruber.com, mika.westerberg@linux.intel.com, andriy.shevchenko@linux.intel.com
 
+v4:
+	fix coding style for multi-line comment
+	added Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-On Wednesday 12 April 2017 10:03 PM, Thierry Reding wrote:
-> For very short periods, the result of the division might overflow the
-> unsigned long hz variable (on 32-bit architectures). Avoid that by
-> making it an unsigned long long. While at it, also remove an unneeded
-> local variable whose only purpose is to store a temporary computation.
->
-> Signed-off-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
+v3:
+	remove unnecessary call to pm_runtime_suspend()
 
-Acked-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+	fix coding style for multi-line comment
+	(checkpatch.pl should ideally catch this, but did not?)
+
+v2:
+	the pm_runtime framework controls the SLEEP bit, as suggested by
+	Mika Westerberg.
+
+v1:
+	the SLEEP bit is always on.
+
+Sven Van Asbroeck (1):
+  pwm: pca9685: fix gpio-only operation.
+
+ drivers/pwm/pwm-pca9685.c | 112 ++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 79 insertions(+), 33 deletions(-)
+
+-- 
+1.9.1
