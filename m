@@ -1,7 +1,7 @@
 From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH 2/5] clk: renesas: r8a7796: add PWM clock
-Date: Wed, 19 Apr 2017 15:24:50 +0200
-Message-ID: <1492608293-12435-3-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH 4/5] arm64: dts: r8a7796-salvator-x: Add PWM device support
+Date: Wed, 19 Apr 2017 15:24:52 +0200
+Message-ID: <1492608293-12435-5-git-send-email-ulrich.hecht+renesas@gmail.com>
 References: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com>
@@ -12,26 +12,54 @@ List-Id: linux-pwm@vger.kernel.org
 
 From: Ryo Kodama <ryo.kodama.vz@renesas.com>
 
-This patch adds PWM clock for PWM.
+This patch adds support of PWM{1,2} device for Salvator-X board on
+R8A7796 SoC.
 
 Signed-off-by: Ryo Kodama <ryo.kodama.vz@renesas.com>
 Signed-off-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
 Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 ---
- drivers/clk/renesas/r8a7796-cpg-mssr.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/drivers/clk/renesas/r8a7796-cpg-mssr.c b/drivers/clk/renesas/r8a7796-cpg-mssr.c
-index 9d114b3..be0fc00 100644
---- a/drivers/clk/renesas/r8a7796-cpg-mssr.c
-+++ b/drivers/clk/renesas/r8a7796-cpg-mssr.c
-@@ -151,6 +151,7 @@ static const struct mssr_mod_clk r8a7796_mod_clks[] __initconst = {
- 	DEF_MOD("hscif1",		 519,	R8A7796_CLK_S3D1),
- 	DEF_MOD("hscif0",		 520,	R8A7796_CLK_S3D1),
- 	DEF_MOD("thermal",		 522,	R8A7796_CLK_CP),
-+	DEF_MOD("pwm",			 523,	R8A7796_CLK_S3D4),
- 	DEF_MOD("fcpvd2",		 601,	R8A7796_CLK_S0D2),
- 	DEF_MOD("fcpvd1",		 602,	R8A7796_CLK_S0D2),
- 	DEF_MOD("fcpvd0",		 603,	R8A7796_CLK_S0D2),
+diff --git a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
+index 14d9e51..b4ff1b6 100644
+--- a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
++++ b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
+@@ -105,6 +105,18 @@
+ 	};
+ };
+ 
++&pwm1 {
++	pinctrl-0 = <&pwm1_pins>;
++	pinctrl-names = "default";
++	status = "okay";
++};
++
++&pwm2 {
++	pinctrl-0 = <&pwm2_pins>;
++	pinctrl-names = "default";
++	status = "okay";
++};
++
+ &pfc {
+ 	pinctrl-0 = <&scif_clk_pins>;
+ 	pinctrl-names = "default";
+@@ -114,6 +126,15 @@
+ 		function = "avb";
+ 	};
+ 
++	pwm1_pins: pwm1 {
++		groups = "pwm1_a", "pwm1_b";
++		function = "pwm1";
++	};
++	pwm2_pins: pwm2 {
++		groups = "pwm2_a", "pwm2_b";
++		function = "pwm2";
++	};
++
+ 	scif1_pins: scif1 {
+ 		groups = "scif1_data_a", "scif1_ctrl";
+ 		function = "scif1";
 -- 
 2.7.4
