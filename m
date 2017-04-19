@@ -1,64 +1,32 @@
-From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH 5/5] arm64: dts: r8a7795-salvator-x: Enable PWM
-Date: Wed, 19 Apr 2017 15:24:53 +0200
-Message-ID: <1492608293-12435-6-git-send-email-ulrich.hecht+renesas@gmail.com>
-References: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: geert@glider.be, horms@verge.net.au
-Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, Takeshi Kihara <takeshi.kihara.df@renesas.com>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH v4 1/1] pwm: pca9685: fix gpio-only operation.
+Date: Wed, 19 Apr 2017 23:24:33 +0300
+Message-ID: <20170419202433.GH2619@lahna.fi.intel.com>
+References: <1492088291-5215-1-git-send-email-svenv@arcx.com>
+ <1492088291-5215-2-git-send-email-svenv@arcx.com>
+ <1492506852.24567.54.camel@linux.intel.com>
+ <CAGngYiWj1jBsgYAL31Qb2Ne+Te34vpjWD14xbV+u9vRS0i8kkQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga14.intel.com ([192.55.52.115]:44271 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S936989AbdDSUYi (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 19 Apr 2017 16:24:38 -0400
+Content-Disposition: inline
+In-Reply-To: <CAGngYiWj1jBsgYAL31Qb2Ne+Te34vpjWD14xbV+u9vRS0i8kkQ@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Sven Van Asbroeck <thesven73@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, clemens.gruber@pqgruber.com, Sven Van Asbroeck <TheSven73@googlemail.com>
 
-From: Takeshi Kihara <takeshi.kihara.df@renesas.com>
+On Tue, Apr 18, 2017 at 11:52:49AM -0400, Sven Van Asbroeck wrote:
+> > __maybe_unused and remove ugly #ifdef:ery.
+> 
+> If this works on non- CONFIG_PM systems, I'm all for it !
+> Grepping the drivers/ directory, I see that some drivers use
+> #ifdef CONFIG_PM, some use __maybe_unused for runtime_pm.
+> 
+> Mika and Thierry, thoughts ?
 
-This patch enables PWM{1,2} for Salvator-X board on R8A7795 SoC.
-
-Signed-off-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
-Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
----
- arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts b/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
-index bf4674e..842b0dd 100644
---- a/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
-+++ b/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
-@@ -282,6 +282,18 @@
- 	};
- };
- 
-+&pwm1 {
-+	pinctrl-0 = <&pwm1_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&pwm2 {
-+	pinctrl-0 = <&pwm2_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
- &du {
- 	pinctrl-0 = <&du_pins>;
- 	pinctrl-names = "default";
-@@ -324,6 +336,16 @@
- 	pinctrl-0 = <&scif_clk_pins>;
- 	pinctrl-names = "default";
- 
-+	pwm1_pins: pwm1 {
-+		groups = "pwm1_a", "pwm1_b";
-+		function = "pwm1";
-+	};
-+
-+	pwm2_pins: pwm2 {
-+		groups = "pwm2_a", "pwm2_b";
-+		function = "pwm2";
-+	};
-+
- 	scif1_pins: scif1 {
- 		groups = "scif1_data_a", "scif1_ctrl";
- 		function = "scif1";
--- 
-2.7.4
+I actually prefer CONFIG_PM here but up to Thierry to decide, I guess.
