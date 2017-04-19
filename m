@@ -1,51 +1,41 @@
-From: Sven Van Asbroeck <thesven73@gmail.com>
-Subject: Re: [PATCH v4 1/1] pwm: pca9685: fix gpio-only operation.
-Date: Tue, 18 Apr 2017 11:52:49 -0400
-Message-ID: <CAGngYiWj1jBsgYAL31Qb2Ne+Te34vpjWD14xbV+u9vRS0i8kkQ@mail.gmail.com>
-References: <1492088291-5215-1-git-send-email-svenv@arcx.com>
- <1492088291-5215-2-git-send-email-svenv@arcx.com> <1492506852.24567.54.camel@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1492506852.24567.54.camel@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, clemens.gruber@pqgruber.com, Mika Westerberg <mika.westerberg@linux.intel.com>, Sven Van Asbroeck <TheSven73@googlemail.com>
+From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH 0/5] r8a7795/6 Salvator-X PWM enablement
+Date: Wed, 19 Apr 2017 15:24:48 +0200
+Message-ID: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: geert@glider.be, horms@verge.net.au
+Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Thanks for the feedback Andy !!
+Hi!
 
-> I would go with
->
-> /* Wait for @sleep microseconds for the oscillator to be back up */
-> if (sleep)
->  udelay(sleep);
->
-> Otherwise int sleep is oddly here.
->
-> Or
->
-> bool sleep
->
-> /* Wait 500us ... */
-> if (sleep)
->  udelay(500);
->
->> +}
+This is a straight port from the BSP, enabling PWM1 and PWM2 on the
+Salvator-X boards. For r8a7796 it also adds the required infrastructure
+(clock and pins).
 
-I think you may be getting confused between:
-- the chip's SLEEP bit (int sleep)
-- the amount of time to delay after chip comes _out of_ sleep.
-(always 500 us)
+Not fully tested because I cannot find my breakout adapter. Looks OK from
+the software side, though.
 
-If it's confusing for you, it might be confusing for others?
-Perhaps change the parameter to 'bool sleep_bit' or 'bool do_sleep'
-to make the distinction clearer?
+CU
+Uli
 
-> __maybe_unused and remove ugly #ifdef:ery.
 
-If this works on non- CONFIG_PM systems, I'm all for it !
-Grepping the drivers/ directory, I see that some drivers use
-#ifdef CONFIG_PM, some use __maybe_unused for runtime_pm.
+Ryo Kodama (2):
+  clk: renesas: r8a7796: add PWM clock
+  arm64: dts: r8a7796-salvator-x: Add PWM device support
 
-Mika and Thierry, thoughts ?
+Takeshi Kihara (3):
+  pinctrl: sh-pfc: r8a7796: Add PWM pins, groups and functions
+  arm64: dts: r8a7796: Add PWM device nodes
+  arm64: dts: r8a7795-salvator-x: Enable PWM
+
+ arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts |  22 +++
+ arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts |  21 +++
+ arch/arm64/boot/dts/renesas/r8a7796.dtsi           |  63 +++++++++
+ drivers/clk/renesas/r8a7796-cpg-mssr.c             |   1 +
+ drivers/pinctrl/sh-pfc/pfc-r8a7796.c               | 153 +++++++++++++++++++++
+ 5 files changed, 260 insertions(+)
+
+-- 
+2.7.4
