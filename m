@@ -1,40 +1,71 @@
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v4 1/1] pwm: pca9685: fix gpio-only operation.
-Date: Thu, 20 Apr 2017 19:13:11 +0300
-Message-ID: <1492704791.24567.104.camel@linux.intel.com>
-References: <1492088291-5215-1-git-send-email-svenv@arcx.com>
-         <1492088291-5215-2-git-send-email-svenv@arcx.com>
-         <1492506852.24567.54.camel@linux.intel.com>
-         <CAGngYiWj1jBsgYAL31Qb2Ne+Te34vpjWD14xbV+u9vRS0i8kkQ@mail.gmail.com>
-         <CAHp75VdaDP8GZGz5ZkKpSDdszjRzA+Miw=K7d_g3aeKTN4Ce=A@mail.gmail.com>
-         <CAGngYiXHaDxbz9jpc=P4kT6n2yKHRmFznuse3beWXi35JCK8Yw@mail.gmail.com>
-         <CAHp75VcOb1_kvNNP5Ptp5e_8-ipHLM5Oy6W-_pv=GcUNiz0XVQ@mail.gmail.com>
-         <CAGngYiW7wASpqf-h9fieDV8ctd61=8WqBs=8n1NJ-jSm0uULrw@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 3/5] arm64: dts: r8a7796: Add PWM device nodes
+Date: Thu, 20 Apr 2017 19:40:01 +0200
+Message-ID: <CAMuHMdWO3X5LJ8RozuGwueJcVYNjSV1gDpHXW+aMrfc8wYt9Lw@mail.gmail.com>
+References: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1492608293-12435-4-git-send-email-ulrich.hecht+renesas@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAGngYiW7wASpqf-h9fieDV8ctd61=8WqBs=8n1NJ-jSm0uULrw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sven Van Asbroeck <thesven73@gmail.com>, Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Mika Westerberg <mika.westerberg@linux.intel.com>, Sven Van Asbroeck <TheSven73@googlemail.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-io0-f195.google.com ([209.85.223.195]:36210 "EHLO
+        mail-io0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S944667AbdDTRkD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 20 Apr 2017 13:40:03 -0400
+In-Reply-To: <1492608293-12435-4-git-send-email-ulrich.hecht+renesas@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: Simon Horman <horms@verge.net.au>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Takeshi Kihara <takeshi.kihara.df@renesas.com>
 
-On Thu, 2017-04-20 at 11:50 -0400, Sven Van Asbroeck wrote:
-> > Thus, I would suggest: int sleep -> bool enable (or alike).
-> > 
-> > Would we agree on that?
-> 
-> I would. Perhaps also:
-> set_sleep_mode(int sleep) -> enable_sleep_mode(bool enable) ?
+Hi Uli,
 
-I'm okay with a such (don't forget to change 0/1 in call sites to
-false/true as well).
+On Wed, Apr 19, 2017 at 3:24 PM, Ulrich Hecht
+<ulrich.hecht+renesas@gmail.com> wrote:
+> From: Takeshi Kihara <takeshi.kihara.df@renesas.com>
+>
+> This patch adds PWM{0,1,2,3,4,5,6} device nodes for R8A7796 SoC.
+>
+> Signed-off-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
+> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+> ---
+>  arch/arm64/boot/dts/renesas/r8a7796.dtsi | 63 ++++++++++++++++++++++++++++++++
+>  1 file changed, 63 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/renesas/r8a7796.dtsi b/arch/arm64/boot/dts/renesas/r8a7796.dtsi
+> index 798fe0f..578b318 100644
+> --- a/arch/arm64/boot/dts/renesas/r8a7796.dtsi
+> +++ b/arch/arm64/boot/dts/renesas/r8a7796.dtsi
+> @@ -455,6 +455,69 @@
+>                         status = "disabled";
+>                 };
+>
+> +               pwm0: pwm@e6e30000 {
+> +                       compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
 
-> Let's see what Mika and Thierry think.
+Please also send a patch to document "renesas,pwm-r8a7796" in the
+renesas,pwm-rcar DT bindings.
 
-I suppose Mika's answer is an acknowledge to the change.
+> +                       reg = <0 0xe6e30000 0 0x10>;
 
--- 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Intel Finland Oy
+A length of 8 would be sufficient.  Not a big issue due, as ioremap()
+granularity
+is PAGE_SIZE anyway.
+
+> +                       #pwm-cells = <2>;
+> +                       clocks = <&cpg CPG_MOD 523>;
+> +                       power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
+
+Missing "resets = <&cpg 523>;"
+
+> +                       status = "disabled";
+> +               };
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
