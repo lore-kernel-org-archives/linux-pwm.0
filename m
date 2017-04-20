@@ -1,72 +1,57 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v4 1/1] pwm: pca9685: fix gpio-only operation.
-Date: Thu, 20 Apr 2017 10:29:36 +0300
-Message-ID: <CAHp75VdaDP8GZGz5ZkKpSDdszjRzA+Miw=K7d_g3aeKTN4Ce=A@mail.gmail.com>
-References: <1492088291-5215-1-git-send-email-svenv@arcx.com>
- <1492088291-5215-2-git-send-email-svenv@arcx.com> <1492506852.24567.54.camel@linux.intel.com>
- <CAGngYiWj1jBsgYAL31Qb2Ne+Te34vpjWD14xbV+u9vRS0i8kkQ@mail.gmail.com>
+From: Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] backlight: pwm_bl: Fix condition to set enable gpio as
+ output
+Date: Thu, 20 Apr 2017 10:55:34 +0100
+Message-ID: <e5a9e6ce-b1dd-96ae-c051-60be7cbfbe1d@linaro.org>
+References: <20170416103546.3021-1-contact@paulk.fr>
+ <CAMuHMdV1+caNwbuk=Kw7cRUxcp1iC=YArnQXf2mcn+qnc6+OOQ@mail.gmail.com>
+ <1492443526.12267.4.camel@paulk.fr>
+ <CAMuHMdVLUmT_NJt86tspYEZnsFEiEwiNu_19RQu0qhtcyP1SdQ@mail.gmail.com>
+ <1492505196.2014.0.camel@paulk.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qt0-f180.google.com ([209.85.216.180]:34816 "EHLO
-        mail-qt0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751284AbdDTH3j (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 20 Apr 2017 03:29:39 -0400
-In-Reply-To: <CAGngYiWj1jBsgYAL31Qb2Ne+Te34vpjWD14xbV+u9vRS0i8kkQ@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1492505196.2014.0.camel-W9ppeneeCTY@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Paul Kocialkowski <contact-W9ppeneeCTY@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Linux PWM List <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Fbdev development list <linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Sven Van Asbroeck <thesven73@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Clemens Gruber <clemens.gruber@pqgruber.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Sven Van Asbroeck <TheSven73@googlemail.com>
 
-On Tue, Apr 18, 2017 at 6:52 PM, Sven Van Asbroeck <thesven73@gmail.com> wrote:
-> Thanks for the feedback Andy !!
-
-You're welcome.
-
+On 18/04/17 09:46, Paul Kocialkowski wrote:
+> Hi,
 >
->> I would go with
+> Le lundi 17 avril 2017 à 21:36 +0200, Geert Uytterhoeven a écrit :
+>> On Mon, Apr 17, 2017 at 5:38 PM, Paul Kocialkowski <contact-W9ppeneeCTY@public.gmane.org> wrote:
+>>> Le dimanche 16 avril 2017 à 22:55 +0200, Geert Uytterhoeven a écrit :
+>>>> On Sun, Apr 16, 2017 at 12:35 PM, Paul Kocialkowski <contact-W9ppeneeCTY@public.gmane.org>
+>>>> wrote:
+>>>>> The move to a dedicated pwm_backlight_initial_power_state function in
+>>>>> commit 7613c922315e308a6486d802abed2eb74443dffd modified the condition
+>>>>> to set the enable gpio as output. This breaks specific use cases using
+>>>>> that GPIO, such as tegra124-based nyan Chromebooks where backlight
+>>>>> stopped working.
+>>>>>
+>>>>> This puts the condition back to the way it was before the move.
+>>>>>
+>>>>> Signed-off-by: Paul Kocialkowski <contact-W9ppeneeCTY@public.gmane.org>
+>>>>
+>>>> Does "[PATCH v2] backlight: pwm_bl: Fix GPIO out for unimplemented
+>>>> .get_direction()"
+>>>> (https://lkml.org/lkml/2017/4/4/225) fix your issue?
+>>>
+>>> This definitely solves the issue!
+>>>
+>>> Since this fixes broken backlight (that, in turn, makes systems unusable),
+>>> perhaps this should be included in the next rc cycle?
 >>
->> /* Wait for @sleep microseconds for the oscillator to be back up */
->> if (sleep)
->>  udelay(sleep);
->>
->> Otherwise int sleep is oddly here.
->>
->> Or
->>
->> bool sleep
->>
->> /* Wait 500us ... */
->> if (sleep)
->>  udelay(500);
->>
->>> +}
+>> You mean v4.11 final, as there probably won't be another rc?
+>> Yes!
 >
-> I think you may be getting confused between:
-> - the chip's SLEEP bit (int sleep)
-> - the amount of time to delay after chip comes _out of_ sleep.
-> (always 500 us)
->
-> If it's confusing for you, it might be confusing for others?
-> Perhaps change the parameter to 'bool sleep_bit' or 'bool do_sleep'
-> to make the distinction clearer?
+> I'm all for it!
 
-Taking above into consideration perhaps sleep is not quite good word
-at all. By functional description it sounds like latency tolerance to
-me.
+Thanks for keeping our attention on this. I sent a PR yesterday (and 
+hope my GPG key has attracted enough signatures).
 
->> __maybe_unused and remove ugly #ifdef:ery.
->
-> If this works on non- CONFIG_PM systems, I'm all for it !
-> Grepping the drivers/ directory, I see that some drivers use
-> #ifdef CONFIG_PM, some use __maybe_unused for runtime_pm.
 
-This approach kinda new that's why you see variety of approaches.
-
-> Mika and Thierry, thoughts ?
-
-At the end it's Thierry's call, so, I'm not insisting.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Daniel.
