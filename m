@@ -1,35 +1,30 @@
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 0/5] r8a7795/6 Salvator-X PWM enablement
-Date: Thu, 20 Apr 2017 16:23:17 +0200
-Message-ID: <CAMuHMdXX1Q8Fh07jkRvmVHmY3OBoSMbpFtByN2+KzSMfwAYq=A@mail.gmail.com>
-References: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: Re: [PATCH 1/5] pinctrl: sh-pfc: r8a7796: Add PWM pins, groups and functions
+Date: Thu, 20 Apr 2017 16:29:59 +0200
+Message-ID: <CAMuHMdXSVkvfRR_9oDXuRu41+VwV3CB6at6pqXXxR3VszmD54g@mail.gmail.com>
+References: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1492608293-12435-2-git-send-email-ulrich.hecht+renesas@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-io0-f173.google.com ([209.85.223.173]:33509 "EHLO
-        mail-io0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1032639AbdDTOXf (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 20 Apr 2017 10:23:35 -0400
-In-Reply-To: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1492608293-12435-2-git-send-email-ulrich.hecht+renesas@gmail.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
 To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: Simon Horman <horms@verge.net.au>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>
-
-Hi Uli,
+Cc: Simon Horman <horms@verge.net.au>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Takeshi Kihara <takeshi.kihara.df@renesas.com>
+List-Id: linux-pwm@vger.kernel.org
 
 On Wed, Apr 19, 2017 at 3:24 PM, Ulrich Hecht
 <ulrich.hecht+renesas@gmail.com> wrote:
-> This is a straight port from the BSP, enabling PWM1 and PWM2 on the
-> Salvator-X boards. For r8a7796 it also adds the required infrastructure
-> (clock and pins).
+> From: Takeshi Kihara <takeshi.kihara.df@renesas.com>
 >
-> Not fully tested because I cannot find my breakout adapter. Looks OK from
-> the software side, though.
+> This patch adds PWM{0,1,2,3,4,5,6} pins, groups and functions to
+> R8A7796 SoC.
+>
+> Signed-off-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
+> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 
-Did you manage to test it with the new "Easter bunny" adapter?
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Thanks!
+i.e. will queue in sh-pfc-for-v4.13.
 
 Gr{oetje,eeting}s,
 
