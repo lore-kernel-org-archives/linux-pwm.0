@@ -1,49 +1,43 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 2/5] clk: renesas: r8a7796: add PWM clock
-Date: Thu, 20 Apr 2017 16:31:53 +0200
-Message-ID: <CAMuHMdUA6u9BSOT97Fv9WzxtcrO0wXc3C9F+mTofES=gxB+dbg@mail.gmail.com>
-References: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1492608293-12435-3-git-send-email-ulrich.hecht+renesas@gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v4 1/1] pwm: pca9685: fix gpio-only operation.
+Date: Thu, 20 Apr 2017 18:07:37 +0300
+Message-ID: <CAHp75VcOb1_kvNNP5Ptp5e_8-ipHLM5Oy6W-_pv=GcUNiz0XVQ@mail.gmail.com>
+References: <1492088291-5215-1-git-send-email-svenv@arcx.com>
+ <1492088291-5215-2-git-send-email-svenv@arcx.com> <1492506852.24567.54.camel@linux.intel.com>
+ <CAGngYiWj1jBsgYAL31Qb2Ne+Te34vpjWD14xbV+u9vRS0i8kkQ@mail.gmail.com>
+ <CAHp75VdaDP8GZGz5ZkKpSDdszjRzA+Miw=K7d_g3aeKTN4Ce=A@mail.gmail.com> <CAGngYiXHaDxbz9jpc=P4kT6n2yKHRmFznuse3beWXi35JCK8Yw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1492608293-12435-3-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: Simon Horman <horms@verge.net.au>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Ryo Kodama <ryo.kodama.vz@renesas.com>, Takeshi Kihara <takeshi.kihara.df@renesas.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-qk0-f196.google.com ([209.85.220.196]:36857 "EHLO
+        mail-qk0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S970349AbdDTPHj (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 20 Apr 2017 11:07:39 -0400
+In-Reply-To: <CAGngYiXHaDxbz9jpc=P4kT6n2yKHRmFznuse3beWXi35JCK8Yw@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Sven Van Asbroeck <thesven73@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-pwm@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Mika Westerberg <mika.westerberg@linux.intel.com>, Sven Van Asbroeck <TheSven73@googlemail.com>
 
-On Wed, Apr 19, 2017 at 3:24 PM, Ulrich Hecht
-<ulrich.hecht+renesas@gmail.com> wrote:
-> From: Ryo Kodama <ryo.kodama.vz@renesas.com>
+On Thu, Apr 20, 2017 at 5:12 PM, Sven Van Asbroeck <thesven73@gmail.com> wrote:
+>> Taking above into consideration perhaps sleep is not quite good word
+>> at all. By functional description it sounds like latency tolerance to
+>> me.
 >
-> This patch adds PWM clock for PWM.
+> That's true, but the bit description in the chip datasheet is 'SLEEP'.
+> (its real function is suspend/low power, but the chip designers called
+> it 'SLEEP')
 >
-> Signed-off-by: Ryo Kodama <ryo.kodama.vz@renesas.com>
-> Signed-off-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-> ---
->  drivers/clk/renesas/r8a7796-cpg-mssr.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/clk/renesas/r8a7796-cpg-mssr.c b/drivers/clk/renesas/r8a7796-cpg-mssr.c
-> index 9d114b3..be0fc00 100644
-> --- a/drivers/clk/renesas/r8a7796-cpg-mssr.c
-> +++ b/drivers/clk/renesas/r8a7796-cpg-mssr.c
-> @@ -151,6 +151,7 @@ static const struct mssr_mod_clk r8a7796_mod_clks[] __initconst = {
->         DEF_MOD("hscif1",                519,   R8A7796_CLK_S3D1),
->         DEF_MOD("hscif0",                520,   R8A7796_CLK_S3D1),
->         DEF_MOD("thermal",               522,   R8A7796_CLK_CP),
-> +       DEF_MOD("pwm",                   523,   R8A7796_CLK_S3D4),
+> Calling the bit/function something else is likely to confuse someone
+> who's reading the driver in combination with the chip datasheet.
 
-My copy of the R-Car Gen3 user manual rev. 0.53 says S0D12.
+Looking again into the patch I have noticed:
+1) word 'sleep' is used as a part of a function name;
+2) int sleep is used as binary value.
 
-Gr{oetje,eeting}s,
+Thus, I would suggest: int sleep -> bool enable (or alike).
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Would we agree on that?
+-- 
+With Best Regards,
+Andy Shevchenko
