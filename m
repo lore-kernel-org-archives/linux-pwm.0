@@ -1,45 +1,80 @@
-From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: Re: [PATCH 5/5] arm64: dts: r8a7795-salvator-x: Enable PWM
-Date: Fri, 21 Apr 2017 14:00:41 +0200
-Message-ID: <CAO3366zn+4b7wkd9kQpigAbv97EW9e1Z9cArGpKeoCrORPaynQ@mail.gmail.com>
-References: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com>
- <1492608293-12435-6-git-send-email-ulrich.hecht+renesas@gmail.com>
- <CAMuHMdXOZD6HrWEuinOKGBjnR--VfY3VJF4k1uOSE06UKEVj3g@mail.gmail.com>
- <CAO3366zJmCvNLkW4SjG2VbZjBPq8jxGq5fyBY7iMbp+mHhsg3Q@mail.gmail.com> <87wpaeushw.wl%kuninori.morimoto.gx@renesas.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi0-f51.google.com ([209.85.218.51]:34807 "EHLO
-        mail-oi0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1036874AbdDUMAn (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 21 Apr 2017 08:00:43 -0400
-In-Reply-To: <87wpaeushw.wl%kuninori.morimoto.gx@renesas.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Sven Van Asbroeck <thesven73@gmail.com>
+Subject: [PATCH v1] pwm: pca9685: clarify pca9685_set_sleep_mode() interface.
+Date: Fri, 21 Apr 2017 09:19:02 -0400
+Message-ID: <1492780742-11251-1-git-send-email-thesven73@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, mika.westerberg@linux.intel.com, andriy.shevchenko@linux.intel.com
 List-Id: linux-pwm@vger.kernel.org
-To: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Simon Horman <horms@verge.net.au>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Takeshi Kihara <takeshi.kihara.df@renesas.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-On Fri, Apr 21, 2017 at 9:35 AM, Kuninori Morimoto
-<kuninori.morimoto.gx@renesas.com> wrote:
->
-> Hi Ulrich
->
->> > And we already have a correct v3 from you in patchwork:
->> > https://patchwork.kernel.org/patch/8711801/
->>
->> Whoops...
->>
->> In my defense, that was over a year ago. Simon, any reason this didn't
->> make it in?
->
-> If I were you, I track posted my patch, and re-send it
-> after 2weeks if nothing happen ;P
+The function
+static void pca9685_set_sleep_mode(struct pca9685 *pca, int sleep)
+takes the chip in and out of sleep mode, depending on the value of
+sleep, which is interpreted as a boolean.
 
-Yes, mom...
+To clarify that 'int sleep' is a boolean and not a sleep delay,
+change the function interface to:
+static void pca9685_set_sleep_mode(struct pca9685 *pca, bool enable)
 
-(And to whoever might consider telling me that I should clean up my
-office so I don't lose track of my equipment: I will make sure my next
-patch will accidentally electrocute you. At compile time.)
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+---
+ drivers/pwm/pwm-pca9685.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-CU
-Uli
+diff --git a/drivers/pwm/pwm-pca9685.c b/drivers/pwm/pwm-pca9685.c
+index 5f55cfa..a7eaf962 100644
+--- a/drivers/pwm/pwm-pca9685.c
++++ b/drivers/pwm/pwm-pca9685.c
+@@ -241,11 +241,11 @@ static inline int pca9685_pwm_gpio_probe(struct pca9685 *pca)
+ }
+ #endif
+ 
+-static void pca9685_set_sleep_mode(struct pca9685 *pca, int sleep)
++static void pca9685_set_sleep_mode(struct pca9685 *pca, bool enable)
+ {
+ 	regmap_update_bits(pca->regmap, PCA9685_MODE1,
+-			   MODE1_SLEEP, sleep ? MODE1_SLEEP : 0);
+-	if (!sleep) {
++			   MODE1_SLEEP, enable ? MODE1_SLEEP : 0);
++	if (!enable) {
+ 		/* Wait 500us for the oscillator to be back up */
+ 		udelay(500);
+ 	}
+@@ -272,13 +272,13 @@ static int pca9685_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 			 * state is guaranteed active here.
+ 			 */
+ 			/* Put chip into sleep mode */
+-			pca9685_set_sleep_mode(pca, 1);
++			pca9685_set_sleep_mode(pca, true);
+ 
+ 			/* Change the chip-wide output frequency */
+ 			regmap_write(pca->regmap, PCA9685_PRESCALE, prescale);
+ 
+ 			/* Wake the chip up */
+-			pca9685_set_sleep_mode(pca, 0);
++			pca9685_set_sleep_mode(pca, false);
+ 
+ 			pca->period_ns = period_ns;
+ 		} else {
+@@ -534,7 +534,7 @@ static int pca9685_pwm_runtime_suspend(struct device *dev)
+ 	struct i2c_client *client = to_i2c_client(dev);
+ 	struct pca9685 *pca = i2c_get_clientdata(client);
+ 
+-	pca9685_set_sleep_mode(pca, 1);
++	pca9685_set_sleep_mode(pca, true);
+ 	return 0;
+ }
+ 
+@@ -543,7 +543,7 @@ static int pca9685_pwm_runtime_resume(struct device *dev)
+ 	struct i2c_client *client = to_i2c_client(dev);
+ 	struct pca9685 *pca = i2c_get_clientdata(client);
+ 
+-	pca9685_set_sleep_mode(pca, 0);
++	pca9685_set_sleep_mode(pca, false);
+ 	return 0;
+ }
+ #endif
+-- 
+1.9.1
