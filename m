@@ -1,66 +1,45 @@
-From: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-Subject: Re: [PATCH v5 1/4] gpio: mvebu: Add limited PWM support
-Date: Fri, 21 Apr 2017 11:19:52 +0200
-Message-ID: <20170421111952.54978e80@free-electrons.com>
-References: <20170409180931.4884-1-ralph.sennhauser@gmail.com>
- <20170409180931.4884-2-ralph.sennhauser@gmail.com>
- <20170412163128.5c985a26@free-electrons.com>
- <20170412151932.GE7023@lunn.ch>
+From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Subject: Re: [PATCH 5/5] arm64: dts: r8a7795-salvator-x: Enable PWM
+Date: Fri, 21 Apr 2017 14:00:41 +0200
+Message-ID: <CAO3366zn+4b7wkd9kQpigAbv97EW9e1Z9cArGpKeoCrORPaynQ@mail.gmail.com>
+References: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+ <1492608293-12435-6-git-send-email-ulrich.hecht+renesas@gmail.com>
+ <CAMuHMdXOZD6HrWEuinOKGBjnR--VfY3VJF4k1uOSE06UKEVj3g@mail.gmail.com>
+ <CAO3366zJmCvNLkW4SjG2VbZjBPq8jxGq5fyBY7iMbp+mHhsg3Q@mail.gmail.com> <87wpaeushw.wl%kuninori.morimoto.gx@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170412151932.GE7023@lunn.ch>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andrew Lunn <andrew@lunn.ch>
-Cc: Mark Rutland <mark.rutland@arm.com>, Alexandre Courbot <gnurou@gmail.com>, Jason Cooper <jason@lakedaemon.net>, linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org, Gregory Clement <gregory.clement@free-electrons.com>, devicetree@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, linux-gpio@vger.kernel.org, Ralph Sennhauser <ralph.sennhauser@gmail.com>, linux-arm-kernel@lists.infradead.org, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-oi0-f51.google.com ([209.85.218.51]:34807 "EHLO
+        mail-oi0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1036874AbdDUMAn (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 21 Apr 2017 08:00:43 -0400
+In-Reply-To: <87wpaeushw.wl%kuninori.morimoto.gx@renesas.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Simon Horman <horms@verge.net.au>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Takeshi Kihara <takeshi.kihara.df@renesas.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-Hello,
+On Fri, Apr 21, 2017 at 9:35 AM, Kuninori Morimoto
+<kuninori.morimoto.gx@renesas.com> wrote:
+>
+> Hi Ulrich
+>
+>> > And we already have a correct v3 from you in patchwork:
+>> > https://patchwork.kernel.org/patch/8711801/
+>>
+>> Whoops...
+>>
+>> In my defense, that was over a year ago. Simon, any reason this didn't
+>> make it in?
+>
+> If I were you, I track posted my patch, and re-send it
+> after 2weeks if nothing happen ;P
 
-On Wed, 12 Apr 2017 17:19:32 +0200, Andrew Lunn wrote:
+Yes, mom...
 
-> Yep. It was a compromise. By adding a new binding for the GPIO driver,
-> this might be possible. But it did not seem worth such a major change.
-> 
-> The prime use of this feature is for controlling a fan. So far, i've
-> not seen any hardware with more than one fan, i.e. needs more than one
-> PWM. Nor have i seen any hardware with the GPIO for the fan being on
-> the third bank. A hardware manufacture could add multiple fans, but i
-> doubt it, they make noise and fail. And if a manufacture does place a
-> fan on the third bank, it can still be controlled as a plain GPIO fan,
-> as we have been doing for the last few years.
+(And to whoever might consider telling me that I should clean up my
+office so I don't lose track of my equipment: I will make sure my next
+patch will accidentally electrocute you. At compile time.)
 
-Right.
-
-> So i personally think it is an O.K. compromise.
-
-I clearly don't want to block this, but I believe this is a very good
-illustration of why stable DT bindings simply don't work. We are
-realizing here that having each GPIO bank represented as a separate DT
-node doesn't work, because this blinking functionality is not per GPIO
-bank, but global to all GPIO banks.
-
-I am totally fine with compromise, and having things simple first, and
-extend them later if needed. But this stable DT binding rule makes this
-quite impossible: what is a compromise today might put you in big
-troubles tomorrow.
-
-Anyway, it's fine for me, I don't think it's worth the effort making a
-much more complicated solution/change.
-
-Best regards,
-
-Thomas
--- 
-Thomas Petazzoni, CTO, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+CU
+Uli
