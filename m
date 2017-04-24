@@ -1,35 +1,191 @@
-From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: Re: [PATCH 5/5] arm64: dts: r8a7795-salvator-x: Enable PWM
-Date: Mon, 24 Apr 2017 12:02:17 +0200
-Message-ID: <CAO3366yMRXnuL9mMPVA2-FwLmz0gaPLtk413K06Q42nQO48L7Q@mail.gmail.com>
-References: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com>
- <2637169.nvyUM18Pqy@avalon> <CAO3366xaWH7YtktGpJ07ypzxuudyJc63PxxAeVeOi98Rann1Lg@mail.gmail.com>
- <2906686.sXpvJSxI8y@avalon>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <2906686.sXpvJSxI8y@avalon>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert@linux-m68k.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Takeshi Kihara <takeshi.kihara.df@renesas.com>
+From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Subject: [PATCH v2 2/3] pwm: pwm-samsung: fix suspend/resume support
+Date: Mon, 24 Apr 2017 12:01:08 +0200
+Message-ID: <1493028069-32003-3-git-send-email-b.zolnierkie@samsung.com>
+References: <1493028069-32003-1-git-send-email-b.zolnierkie@samsung.com>
+ <CGME20170424100135epcas5p28465e84a8517c219cb8a1b719fb1137d@epcas5p2.samsung.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mailout3.samsung.com ([203.254.224.33]:57861 "EHLO
+        mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1166836AbdDXKBi (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Apr 2017 06:01:38 -0400
+In-reply-to: <1493028069-32003-1-git-send-email-b.zolnierkie@samsung.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Kamil Debski <kamil@wypas.org>
+Cc: Tomasz Figa <tomasz.figa@gmail.com>, linux-pwm@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, b.zolnierkie@samsung.com
 
-On Mon, Apr 24, 2017 at 10:35 AM, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
-> Hi Ulrich,
->
-> On Monday 24 Apr 2017 10:22:31 Ulrich Hecht wrote:
->> On Mon, Apr 24, 2017 at 9:59 AM, Laurent Pinchart wrote:
->> > How about using pwm1 for backlight as done in "[PATCH v2 09/13] arm64:
->> > dts: r8a7795: salvator-x: Add panel backlight support" ?
->>
->> Makes sense. Simon, should that go in a separate patch, or should I
->> add it to this one?
->
-> How about applying "[PATCH v2 09/13] arm64: dts: r8a7795: salvator-x: Add
-> panel backlight support" and rebasing this patch to only handle pwm2 ?
+Fix suspend/resume support:
 
-I'll do that then.
+- add disabled_mask to struct samsung_pwm_chip to track PWM
+  disabled state information in pwm_samsung_{disable,enable}()
 
-CU
-Uli
+- rename pwm_samsung_config() to __pwm_samsung_config() and
+  add extra force_period parameter to be used during resume
+  (to force tin_ns and tcnt recalculation)
+
+- add pwm_samsung_config() wrapper for preserving old behavior
+
+- properly restore PWM configuration in pwm_samsung_resume()
+
+- remove no longer needed pwm_samsung_suspend()
+
+- update Copyrights
+
+Signed-off-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+---
+ drivers/pwm/pwm-samsung.c | 67 +++++++++++++++++++++++++----------------------
+ 1 file changed, 35 insertions(+), 32 deletions(-)
+
+diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
+index 9ea7638..062f2cf 100644
+--- a/drivers/pwm/pwm-samsung.c
++++ b/drivers/pwm/pwm-samsung.c
+@@ -3,6 +3,7 @@
+  * Copyright (c) 2008 Simtec Electronics
+  *     Ben Dooks <ben@simtec.co.uk>, <ben-linux@fluff.org>
+  * Copyright (c) 2013 Tomasz Figa <tomasz.figa@gmail.com>
++ * Copyright (c) 2017 Samsung Electronics Co., Ltd.
+  *
+  * PWM driver for Samsung SoCs
+  *
+@@ -74,6 +75,7 @@ struct samsung_pwm_channel {
+  * @chip:		generic PWM chip
+  * @variant:		local copy of hardware variant data
+  * @inverter_mask:	inverter status for all channels - one bit per channel
++ * @disabled_mask:	disabled status for all channels - one bit per channel
+  * @base:		base address of mapped PWM registers
+  * @base_clk:		base clock used to drive the timers
+  * @tclk0:		external clock 0 (can be ERR_PTR if not present)
+@@ -83,6 +85,7 @@ struct samsung_pwm_chip {
+ 	struct pwm_chip chip;
+ 	struct samsung_pwm_variant variant;
+ 	u8 inverter_mask;
++	u8 disabled_mask;
+ 
+ 	void __iomem *base;
+ 	struct clk *base_clk;
+@@ -257,6 +260,8 @@ static int pwm_samsung_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	tcon |= TCON_START(tcon_chan) | TCON_AUTORELOAD(tcon_chan);
+ 	writel(tcon, our_chip->base + REG_TCON);
+ 
++	our_chip->disabled_mask &= ~BIT(pwm->hwpwm);
++
+ 	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
+ 
+ 	return 0;
+@@ -275,6 +280,8 @@ static void pwm_samsung_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	tcon &= ~TCON_AUTORELOAD(tcon_chan);
+ 	writel(tcon, our_chip->base + REG_TCON);
+ 
++	our_chip->disabled_mask |= BIT(pwm->hwpwm);
++
+ 	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
+ }
+ 
+@@ -297,8 +304,8 @@ static void pwm_samsung_manual_update(struct samsung_pwm_chip *chip,
+ 	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
+ }
+ 
+-static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
+-			      int duty_ns, int period_ns)
++static int __pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
++				int duty_ns, int period_ns, bool force_period)
+ {
+ 	struct samsung_pwm_chip *our_chip = to_samsung_pwm_chip(chip);
+ 	struct samsung_pwm_channel *chan = pwm_get_chip_data(pwm);
+@@ -319,7 +326,7 @@ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	++tcnt;
+ 
+ 	/* Check to see if we are changing the clock rate of the PWM. */
+-	if (chan->period_ns != period_ns) {
++	if (chan->period_ns != period_ns || force_period) {
+ 		unsigned long tin_rate;
+ 		u32 period;
+ 
+@@ -378,6 +385,12 @@ static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	return 0;
+ }
+ 
++static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *pwm,
++			      int duty_ns, int period_ns)
++{
++	return __pwm_samsung_config(chip, pwm, duty_ns, period_ns, false);
++}
++
+ static void pwm_samsung_set_invert(struct samsung_pwm_chip *chip,
+ 				   unsigned int channel, bool invert)
+ {
+@@ -589,51 +602,41 @@ static int pwm_samsung_remove(struct platform_device *pdev)
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+-static int pwm_samsung_suspend(struct device *dev)
++static int pwm_samsung_resume(struct device *dev)
+ {
+-	struct samsung_pwm_chip *chip = dev_get_drvdata(dev);
++	struct samsung_pwm_chip *our_chip = dev_get_drvdata(dev);
++	struct pwm_chip *chip = &our_chip->chip;
+ 	unsigned int i;
+ 
+-	/*
+-	 * No one preserves these values during suspend so reset them.
+-	 * Otherwise driver leaves PWM unconfigured if same values are
+-	 * passed to pwm_config() next time.
+-	 */
+-	for (i = 0; i < SAMSUNG_PWM_NUM; ++i) {
+-		struct pwm_device *pwm = &chip->chip.pwms[i];
++	for (i = 0; i < SAMSUNG_PWM_NUM; i++) {
++		struct pwm_device *pwm = &chip->pwms[i];
+ 		struct samsung_pwm_channel *chan = pwm_get_chip_data(pwm);
+ 
+ 		if (!chan)
+ 			continue;
+ 
+-		chan->period_ns = 0;
+-		chan->duty_ns = 0;
+-	}
+-
+-	return 0;
+-}
++		if (our_chip->variant.output_mask & BIT(i))
++			pwm_samsung_set_invert(our_chip, i,
++					our_chip->inverter_mask & BIT(i));
+ 
+-static int pwm_samsung_resume(struct device *dev)
+-{
+-	struct samsung_pwm_chip *chip = dev_get_drvdata(dev);
+-	unsigned int chan;
++		if (chan->period_ns) {
++			__pwm_samsung_config(chip, pwm, chan->duty_ns,
++					     chan->period_ns, true);
++			/* needed to make PWM disable work on Odroid-XU3 */
++			pwm_samsung_manual_update(our_chip, pwm);
++		}
+ 
+-	/*
+-	 * Inverter setting must be preserved across suspend/resume
+-	 * as nobody really seems to configure it more than once.
+-	 */
+-	for (chan = 0; chan < SAMSUNG_PWM_NUM; ++chan) {
+-		if (chip->variant.output_mask & BIT(chan))
+-			pwm_samsung_set_invert(chip, chan,
+-					chip->inverter_mask & BIT(chan));
++		if (our_chip->disabled_mask & BIT(i))
++			pwm_samsung_disable(chip, pwm);
++		else
++			pwm_samsung_enable(chip, pwm);
+ 	}
+ 
+ 	return 0;
+ }
+ #endif
+ 
+-static SIMPLE_DEV_PM_OPS(pwm_samsung_pm_ops, pwm_samsung_suspend,
+-			 pwm_samsung_resume);
++static SIMPLE_DEV_PM_OPS(pwm_samsung_pm_ops, NULL, pwm_samsung_resume);
+ 
+ static struct platform_driver pwm_samsung_driver = {
+ 	.driver		= {
+-- 
+1.9.1
