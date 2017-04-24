@@ -1,35 +1,58 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v6 4/4] ARM: dts: armada-xp: Use pwm-fan rather than gpio-fan
-Date: Mon, 24 Apr 2017 11:20:31 +0200
-Message-ID: <CACRpkdbVVf91NhbiaHxo6doUdGH6thVsjoUom4nYQRhj_qkz3g@mail.gmail.com>
-References: <20170414154056.32055-1-ralph.sennhauser@gmail.com> <20170414154056.32055-5-ralph.sennhauser@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20170414154056.32055-5-ralph.sennhauser@gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-Cc: "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jason Cooper <jason@lakedaemon.net>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Russell King <linux@armlinux.org.uk>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Subject: [PATCH v2 0/3] pwm: pwm-samsung: fix suspend/resume support
+Date: Mon, 24 Apr 2017 12:01:06 +0200
+Message-ID: <1493028069-32003-1-git-send-email-b.zolnierkie@samsung.com>
+References: <CGME20170424100128epcas5p20396f75d5626a320a9eb11d89ae87ac5@epcas5p2.samsung.com>
+Return-path: <linux-hwmon-owner@vger.kernel.org>
+Sender: linux-hwmon-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Kamil Debski <kamil@wypas.org>
+Cc: Tomasz Figa <tomasz.figa@gmail.com>, linux-pwm@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, b.zolnierkie@samsung.com
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Apr 14, 2017 at 5:40 PM, Ralph Sennhauser
-<ralph.sennhauser@gmail.com> wrote:
+Hi,
 
-> From: Andrew Lunn <andrew@lunn.ch>
->
-> The mvebu GPIO driver can also perform PWM on some pins. Use the pwm-fan
-> driver to control the fan of the WRT1900AC, giving us finer grained control
-> over its speed and hence noise.
->
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> URL: https://patchwork.ozlabs.org/patch/427291/
-> [Ralph Sennhauser: drop flags paramter from pwms, no longer used]
-> Signed-off-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-> Tested-by: Andrew Lunn <andrew@lunn.ch>
+This patchset fixes suspend/resume support in pwm-samsung
+driver (which has an effect of fixing suspend/resume support
+for PWM client drivers such as pwm-fan one). Then it removes
+no longer needed suspend/resume code from pwm-fan driver.
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+It was tested on Odroid-XU3 board (with few extra patches
+adding SoC/board suspend/resume support which are not in
+upstream yet).
 
-Please funnel this through ARM SoC.
+The initial issue that has been observed on this configuration
+was that after suspend/resume operation the fan was turned on
+(while the thermal code had explicitly disabled the fan by
+calling back into pwm-fan driver before the suspend/resume).
 
-Yours,
-Linus Walleij
+Fixing this in the pwm-fan driver itself is not feasible since
+pwm_config()/pwm_disable() & co. API saves information about
+current state and doesn't pass the relevant values to PWM core
+if they are identical to the ones used previously (moreover PWM
+core itself does the same before calling into the PWM hardware
+driver).
+
+Changes since v1
+(https://www.spinics.net/lists/kernel/msg2480445.html):
+- added Acked-by from Guenter to patch #3
+- fixed patch #2 to use the right variable (chip -> our_chip)
+
+Best regards,
+--
+Bartlomiej Zolnierkiewicz
+Samsung R&D Institute Poland
+Samsung Electronics
+
+
+Bartlomiej Zolnierkiewicz (3):
+  pwm: pwm-samsung: remove redundant checks from pwm_samsung_config()
+  pwm: pwm-samsung: fix suspend/resume support
+  hwmon: pwm-fan: remove no longer needed suspend/resume code
+
+ drivers/hwmon/pwm-fan.c   | 32 ----------------------
+ drivers/pwm/pwm-samsung.c | 70 +++++++++++++++++++++++------------------------
+ 2 files changed, 35 insertions(+), 67 deletions(-)
+
+-- 
+1.9.1
+
