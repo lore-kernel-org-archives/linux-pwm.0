@@ -1,50 +1,36 @@
-From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Subject: Re: [PATCH] hwmon: pwm-fan: switch to new atomic PWM API
-Date: Mon, 24 Apr 2017 16:25:56 +0200
-Message-ID: <1767160.ko02kahecW@amdc3058>
-References: <CGME20170424131342epcas5p4cb2f53f6c780119557ff3da56fb8f0a8@epcas5p4.samsung.com>
- <1493039598-25881-1-git-send-email-b.zolnierkie@samsung.com>
- <6c741041-faf4-6951-5f2d-9f7b9c54c9ca@roeck-us.net>
+From: "Ms. Katherine" <ulia@distral.ro>
+Subject: EXTREMELY IMPORTANT
+Date: Mon, 24 Apr 2017 19:52:13 +0100
+Message-ID: <20170424185220.509A651B3352__32661.044659517$1493062870$gmane$org@mail.distral.ro>
+Reply-To: kathrynnmison@gmail.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-hwmon-owner@vger.kernel.org>
-In-reply-to: <6c741041-faf4-6951-5f2d-9f7b9c54c9ca@roeck-us.net>
-Sender: linux-hwmon-owner@vger.kernel.org
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Jean Delvare <jdelvare@suse.com>, Kamil Debski <kamil@wypas.org>, Tomasz Figa <tomasz.figa@gmail.com>, linux-pwm@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.distral.ro ([5.2.192.160]:51742 "EHLO mail.distral.ro"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S972945AbdDXTlA (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Mon, 24 Apr 2017 15:41:00 -0400
+Content-Description: Mail message body
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Recipients <ulia@distral.ro>
+
+Dear Beloved, Sorry for the inconvenience, I am getting in touch with you regarding an extremely important and urgent matter, Please I need your urgent assistance and idea to finish up a project (Orphanage Home) Due to my health condition, Everything is available to finish up the project, All I need is your idea and trust.
+
+Sehr geehrte Geliebte, traurig für die Unannehmlichkeiten, ich bin in Kontakt mit Ihnen über eine äußerst wichtige und dringende Angelegenheit, Bitte brauche ich Ihre dringende Hilfe und Idee, um ein Projekt zu beenden (Orphanage Home) Wegen meines Gesundheitszustandes ist alles verfügbar Beenden Sie das Projekt, Alles was ich brauche ist Ihre Idee und Vertrauen.
+
+Please contact me for more details.
+Contact Email: kathrynnmison@gmail.com
+
+Thanks
+
+---
+This email has been checked for viruses by Avast antivirus software.
+https://www.avast.com/antivirus
 
 
-Hi,
-
-On Monday, April 24, 2017 06:26:12 AM Guenter Roeck wrote:
-> On 04/24/2017 06:13 AM, Bartlomiej Zolnierkiewicz wrote:
-> > Switch pwm-fan driver to new atomic PWM API.
-> >
-> > Signed-off-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-> > ---
-> > Depends on "[PATCH v2 0/3] pwm: pwm-samsung: fix suspend/resume support"
-> > patchset (https://www.spinics.net/lists/kernel/msg2495209.html).
-> >
-> 
-> Why would this driver, which does not depend on any Samsung code,
-> depend on a Samsung specific fix ?
-
-The above patchset contains pwm-fan specific patch:
-"[PATCH v2 3/3] hwmon: pwm-fan: remove no longer needed suspend/resume code"
-(https://www.spinics.net/lists/kernel/msg2495210.html).
-
-It seems that the patchset name itself could be better,
-sorry for this.
-
-> Was this tested with hardware ?
-
-Yes, on Exynos5422 based Odroid-XU3 board.
-
-Best regards,
---
-Bartlomiej Zolnierkiewicz
-Samsung R&D Institute Poland
-Samsung Electronics
-
+-- 
+This message has been scanned for viruses and
+dangerous content by MailScanner, and is
+believed to be clean.
