@@ -1,48 +1,50 @@
 From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v5 1/4] gpio: mvebu: Add limited PWM support
-Date: Mon, 24 Apr 2017 11:15:24 +0200
-Message-ID: <CACRpkdYeJkc8g0A6TXF3NO=jCZZvVpQ4kTPHg5=BriHbpN_-9g@mail.gmail.com>
-References: <20170409180931.4884-1-ralph.sennhauser@gmail.com>
- <20170409180931.4884-2-ralph.sennhauser@gmail.com> <20170412163128.5c985a26@free-electrons.com>
- <20170412151932.GE7023@lunn.ch> <20170421111952.54978e80@free-electrons.com>
+Subject: Re: [PATCH v6 1/4] gpio: mvebu: Add limited PWM support
+Date: Mon, 24 Apr 2017 11:18:30 +0200
+Message-ID: <CACRpkdYPp6pBemTT_a4V6a-Qbk2475qOOxWJOhfVaEz=cojOvA@mail.gmail.com>
+References: <20170414154056.32055-1-ralph.sennhauser@gmail.com> <20170414154056.32055-2-ralph.sennhauser@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-io0-f170.google.com ([209.85.223.170]:36773 "EHLO
-        mail-io0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1167709AbdDXJP0 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Apr 2017 05:15:26 -0400
-Received: by mail-io0-f170.google.com with SMTP id p80so66469639iop.3
-        for <linux-pwm@vger.kernel.org>; Mon, 24 Apr 2017 02:15:26 -0700 (PDT)
-In-Reply-To: <20170421111952.54978e80@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20170414154056.32055-2-ralph.sennhauser@gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+Cc: "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jason Cooper <jason@lakedaemon.net>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Russell King <linux@armlinux.org.uk>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ralph Sennhauser <ralph.sennhauser@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Jason Cooper <jason@lakedaemon.net>, Alexandre Courbot <gnurou@gmail.com>, Russell King <linux@armlinux.org.uk>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Gregory Clement <gregory.clement@free-electrons.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 
-On Fri, Apr 21, 2017 at 11:19 AM, Thomas Petazzoni
-<thomas.petazzoni@free-electrons.com> wrote:
+On Fri, Apr 14, 2017 at 5:40 PM, Ralph Sennhauser
+<ralph.sennhauser@gmail.com> wrote:
 
-> I clearly don't want to block this, but I believe this is a very good
-> illustration of why stable DT bindings simply don't work. We are
-> realizing here that having each GPIO bank represented as a separate DT
-> node doesn't work, because this blinking functionality is not per GPIO
-> bank, but global to all GPIO banks.
+> From: Andrew Lunn <andrew@lunn.ch>
 >
-> I am totally fine with compromise, and having things simple first, and
-> extend them later if needed. But this stable DT binding rule makes this
-> quite impossible: what is a compromise today might put you in big
-> troubles tomorrow.
+> Armada 370/XP devices can 'blink' GPIO lines with a configurable on
+> and off period. This can be modelled as a PWM.
+>
+> However, there are only two sets of PWM configuration registers for
+> all the GPIO lines. This driver simply allows a single GPIO line per
+> GPIO chip of 32 lines to be used as a PWM. Attempts to use more return
+> EBUSY.
+>
+> Due to the interleaving of registers it is not simple to separate the
+> PWM driver from the GPIO driver. Thus the GPIO driver has been
+> extended with a PWM driver.
+>
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> URL: https://patchwork.ozlabs.org/patch/427287/
+> URL: https://patchwork.ozlabs.org/patch/427295/
+> [Ralph Sennhauser:
+>   * Port forward
+>   * Merge PWM portion into gpio-mvebu.c
+>   * Switch to atomic PWM API
+>   * Add new compatible string marvell,armada-370-xp-gpio
+>   * Update and merge documentation patch
+>   * Update MAINTAINERS]
+> Signed-off-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+> Tested-by: Andrew Lunn <andrew@lunn.ch>
+> Acked-by: Thierry Reding <thierry.reding@gmail.com>
+> Acked-by: Rob Herring <robh@kernel.org>
 
-Really "stable bindings" I never believed in. It's just a pipe dream.
-
-Well they might become stable when the system is "finished"
-whenever that happens.
-
-I think a better rationale is that of the IETF:
-"rough consensus and running code", make deployed DTs work,
-if they are not deployed, or only getting deployed together with the
-kernel, changing the bindings are not a problem.
+Patch applied.
 
 Yours,
 Linus Walleij
