@@ -1,76 +1,35 @@
-From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Subject: [PATCH v2 3/3] hwmon: pwm-fan: remove no longer needed
- suspend/resume code
-Date: Mon, 24 Apr 2017 12:01:09 +0200
-Message-ID: <1493028069-32003-4-git-send-email-b.zolnierkie@samsung.com>
-References: <1493028069-32003-1-git-send-email-b.zolnierkie@samsung.com>
-        <CGME20170424100139epcas1p4e8e120d2da6ef7eb69ca28f6b3077c59@epcas1p4.samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1493028069-32003-1-git-send-email-b.zolnierkie@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Kamil Debski <kamil@wypas.org>
-Cc: Tomasz Figa <tomasz.figa@gmail.com>, linux-pwm@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, b.zolnierkie@samsung.com
+From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Subject: Re: [PATCH 5/5] arm64: dts: r8a7795-salvator-x: Enable PWM
+Date: Mon, 24 Apr 2017 12:02:17 +0200
+Message-ID: <CAO3366yMRXnuL9mMPVA2-FwLmz0gaPLtk413K06Q42nQO48L7Q@mail.gmail.com>
+References: <1492608293-12435-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+ <2637169.nvyUM18Pqy@avalon> <CAO3366xaWH7YtktGpJ07ypzxuudyJc63PxxAeVeOi98Rann1Lg@mail.gmail.com>
+ <2906686.sXpvJSxI8y@avalon>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <2906686.sXpvJSxI8y@avalon>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert@linux-m68k.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Takeshi Kihara <takeshi.kihara.df@renesas.com>
 List-Id: linux-pwm@vger.kernel.org
 
-The suspend/resume is now properly handled by pwm-samsung driver
-(pwm-fan is currently only used by ARM Exynos boards) and the old
-code only handles ctx->pwm_value != 0 case. Just remove it.
+On Mon, Apr 24, 2017 at 10:35 AM, Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+> Hi Ulrich,
+>
+> On Monday 24 Apr 2017 10:22:31 Ulrich Hecht wrote:
+>> On Mon, Apr 24, 2017 at 9:59 AM, Laurent Pinchart wrote:
+>> > How about using pwm1 for backlight as done in "[PATCH v2 09/13] arm64:
+>> > dts: r8a7795: salvator-x: Add panel backlight support" ?
+>>
+>> Makes sense. Simon, should that go in a separate patch, or should I
+>> add it to this one?
+>
+> How about applying "[PATCH v2 09/13] arm64: dts: r8a7795: salvator-x: Add
+> panel backlight support" and rebasing this patch to only handle pwm2 ?
 
-Signed-off-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Acked-by: Guenter Roeck <linux@roeck-us.net>
----
- drivers/hwmon/pwm-fan.c | 32 --------------------------------
- 1 file changed, 32 deletions(-)
+I'll do that then.
 
-diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
-index f9af393..9dc40f3 100644
---- a/drivers/hwmon/pwm-fan.c
-+++ b/drivers/hwmon/pwm-fan.c
-@@ -302,37 +302,6 @@ static int pwm_fan_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
--#ifdef CONFIG_PM_SLEEP
--static int pwm_fan_suspend(struct device *dev)
--{
--	struct pwm_fan_ctx *ctx = dev_get_drvdata(dev);
--
--	if (ctx->pwm_value)
--		pwm_disable(ctx->pwm);
--	return 0;
--}
--
--static int pwm_fan_resume(struct device *dev)
--{
--	struct pwm_fan_ctx *ctx = dev_get_drvdata(dev);
--	struct pwm_args pargs;
--	unsigned long duty;
--	int ret;
--
--	if (ctx->pwm_value == 0)
--		return 0;
--
--	pwm_get_args(ctx->pwm, &pargs);
--	duty = DIV_ROUND_UP(ctx->pwm_value * (pargs.period - 1), MAX_PWM);
--	ret = pwm_config(ctx->pwm, duty, pargs.period);
--	if (ret)
--		return ret;
--	return pwm_enable(ctx->pwm);
--}
--#endif
--
--static SIMPLE_DEV_PM_OPS(pwm_fan_pm, pwm_fan_suspend, pwm_fan_resume);
--
- static const struct of_device_id of_pwm_fan_match[] = {
- 	{ .compatible = "pwm-fan", },
- 	{},
-@@ -344,7 +313,6 @@ static int pwm_fan_resume(struct device *dev)
- 	.remove		= pwm_fan_remove,
- 	.driver	= {
- 		.name		= "pwm-fan",
--		.pm		= &pwm_fan_pm,
- 		.of_match_table	= of_pwm_fan_match,
- 	},
- };
--- 
-1.9.1
+CU
+Uli
