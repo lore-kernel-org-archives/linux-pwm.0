@@ -1,82 +1,149 @@
-From: Yang Ling <gnaygnil@gmail.com>
-Subject: Re: [PATCH 1/2] pwm: loongson1: Add PWM driver for Loongson1 SoC
-Date: Mon, 24 Apr 2017 21:08:09 +0800
-Message-ID: <20170424130809.GA3998@mint-host>
-References: <20170213152801.GA32019@ubuntu>
- <f27d34d4-b0ac-2fd6-bc75-89a6c913ba3c@imgtec.com>
- <20170215130902.GA32795@ubuntu>
- <0d0c43f5-1016-4cb5-01f8-9ca82860b8ad@imgtec.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:34250 "EHLO
-        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1170468AbdDXNIS (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 24 Apr 2017 09:08:18 -0400
-Content-Disposition: inline
-In-Reply-To: <0d0c43f5-1016-4cb5-01f8-9ca82860b8ad@imgtec.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Subject: [PATCH] hwmon: pwm-fan: switch to new atomic PWM API
+Date: Mon, 24 Apr 2017 15:13:17 +0200
+Message-ID: <1493039598-25881-1-git-send-email-b.zolnierkie@samsung.com>
+References: <CGME20170424131342epcas5p4cb2f53f6c780119557ff3da56fb8f0a8@epcas5p4.samsung.com>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Kamil Debski <kamil@wypas.org>
+Cc: Tomasz Figa <tomasz.figa@gmail.com>, linux-pwm@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, b.zolnierkie@samsung.com
 List-Id: linux-pwm@vger.kernel.org
-To: Marcin Nowakowski <marcin.nowakowski@imgtec.com>
-Cc: Yang Ling <gnaygnil@gmail.com>, thierry.reding@gmail.com, keguang.zhang@gmail.com, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-mips@linux-mips.org
 
-Hi, Marcin,
+Switch pwm-fan driver to new atomic PWM API.
 
-I am sorry for the late reply.
+Signed-off-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+---
+Depends on "[PATCH v2 0/3] pwm: pwm-samsung: fix suspend/resume support"
+patchset (https://www.spinics.net/lists/kernel/msg2495209.html).
 
-On Thu, Feb 16, 2017 at 10:27:15AM +0100, Marcin Nowakowski wrote:
-> Hi Yang,
-> 
-> On 15.02.2017 14:09, Yang Ling wrote:
-> 
-> >>>+	tmp = (unsigned long long)clk_get_rate(pc->clk) * period_ns;
-> >>>+	do_div(tmp, 1000000000);
-> 
-> NSEC_PER_SEC ?
-> 
-Indeed, NSEC_PER_SEC should be used.
+ drivers/hwmon/pwm-fan.c | 68 +++++++++++++++++++------------------------------
+ 1 file changed, 26 insertions(+), 42 deletions(-)
 
-> >>>+	period = tmp;
-> >>>+
-> >>>+	tmp = (unsigned long long)period * duty_ns;
-> >>>+	do_div(tmp, period_ns);
-> >>>+	duty = period - tmp;
-> >>>+
-> >>>+	if (duty >= period)
-> >>>+		duty = period - 1;
-> >>>+
-> >>>+	if (duty >> 24 || period >> 24)
-> >>>+		return -EINVAL;
-> >>>+
-> >>>+	chan->period_ns = period_ns;
-> >>>+	chan->duty_ns = duty_ns;
-> >>>+
-> >>>+	writel(duty, pc->base + PWM_HRC(pwm->hwpwm));
-> >>>+	writel(period, pc->base + PWM_LRC(pwm->hwpwm));
-> >>>+	writel(0x00, pc->base + PWM_CNT(pwm->hwpwm));
-> >>>+
-> >>
-> >>PWM_HRC and PWM_LRC names suggest that you're using high/low state
-> >>counters here rather than duty/period - but with no documentation
-> >>I'm just guessing here.
-> >
-> >Indeed, the high/low state counters is used here.
-> >Change the name to duty_cnt/period_cnt.
-> >
-> >
-> 
-> What I was referring to here is that if you have a high/low value counters
-> that you enter then these are not the same as duty/period, in simple terms:
-> high_cnt = duty_cnt
-> low_cnt = period_cnt - duty_cnt
-> 
-> so please double check that this is what you want to be doing? As the names
-> used suggest that this code may be wrong. Or maybe what you're doing is
-> correct but the register access macros have misleading names?
->
-The macro definition of the register here is misleading.
-I will fix these problems afterwards.
-
-Thanks for your friendly reminder.
-
-Yang
+diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
+index 9dc40f3..4ac7700 100644
+--- a/drivers/hwmon/pwm-fan.c
++++ b/drivers/hwmon/pwm-fan.c
+@@ -40,31 +40,22 @@ struct pwm_fan_ctx {
+ 
+ static int  __set_pwm(struct pwm_fan_ctx *ctx, unsigned long pwm)
+ {
+-	struct pwm_args pargs;
+-	unsigned long duty;
++	unsigned long period;
+ 	int ret = 0;
+-
+-	pwm_get_args(ctx->pwm, &pargs);
++	struct pwm_state state = { };
+ 
+ 	mutex_lock(&ctx->lock);
+ 	if (ctx->pwm_value == pwm)
+ 		goto exit_set_pwm_err;
+ 
+-	duty = DIV_ROUND_UP(pwm * (pargs.period - 1), MAX_PWM);
+-	ret = pwm_config(ctx->pwm, duty, pargs.period);
+-	if (ret)
+-		goto exit_set_pwm_err;
+-
+-	if (pwm == 0)
+-		pwm_disable(ctx->pwm);
++	pwm_init_state(ctx->pwm, &state);
++	period = ctx->pwm->args.period;
++	state.duty_cycle = DIV_ROUND_UP(pwm * (period - 1), MAX_PWM);
++	state.enabled = pwm ? true : false;
+ 
+-	if (ctx->pwm_value == 0) {
+-		ret = pwm_enable(ctx->pwm);
+-		if (ret)
+-			goto exit_set_pwm_err;
+-	}
+-
+-	ctx->pwm_value = pwm;
++	ret = pwm_apply_state(ctx->pwm, &state);
++	if (!ret)
++		ctx->pwm_value = pwm;
+ exit_set_pwm_err:
+ 	mutex_unlock(&ctx->lock);
+ 	return ret;
+@@ -218,10 +209,9 @@ static int pwm_fan_probe(struct platform_device *pdev)
+ {
+ 	struct thermal_cooling_device *cdev;
+ 	struct pwm_fan_ctx *ctx;
+-	struct pwm_args pargs;
+ 	struct device *hwmon;
+-	int duty_cycle;
+ 	int ret;
++	struct pwm_state state = { };
+ 
+ 	ctx = devm_kzalloc(&pdev->dev, sizeof(*ctx), GFP_KERNEL);
+ 	if (!ctx)
+@@ -237,28 +227,16 @@ static int pwm_fan_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, ctx);
+ 
+-	/*
+-	 * FIXME: pwm_apply_args() should be removed when switching to the
+-	 * atomic PWM API.
+-	 */
+-	pwm_apply_args(ctx->pwm);
+-
+-	/* Set duty cycle to maximum allowed */
+-	pwm_get_args(ctx->pwm, &pargs);
+-
+-	duty_cycle = pargs.period - 1;
+ 	ctx->pwm_value = MAX_PWM;
+ 
+-	ret = pwm_config(ctx->pwm, duty_cycle, pargs.period);
+-	if (ret) {
+-		dev_err(&pdev->dev, "Failed to configure PWM\n");
+-		return ret;
+-	}
++	/* Set duty cycle to maximum allowed and enable PWM output */
++	pwm_init_state(ctx->pwm, &state);
++	state.duty_cycle = ctx->pwm->args.period - 1;
++	state.enabled = true;
+ 
+-	/* Enbale PWM output */
+-	ret = pwm_enable(ctx->pwm);
++	ret = pwm_apply_state(ctx->pwm, &state);
+ 	if (ret) {
+-		dev_err(&pdev->dev, "Failed to enable PWM\n");
++		dev_err(&pdev->dev, "Failed to configure PWM\n");
+ 		return ret;
+ 	}
+ 
+@@ -266,8 +244,8 @@ static int pwm_fan_probe(struct platform_device *pdev)
+ 						       ctx, pwm_fan_groups);
+ 	if (IS_ERR(hwmon)) {
+ 		dev_err(&pdev->dev, "Failed to register hwmon device\n");
+-		pwm_disable(ctx->pwm);
+-		return PTR_ERR(hwmon);
++		ret = PTR_ERR(hwmon);
++		goto err_pwm_disable;
+ 	}
+ 
+ 	ret = pwm_fan_of_get_cooling_data(&pdev->dev, ctx);
+@@ -282,14 +260,20 @@ static int pwm_fan_probe(struct platform_device *pdev)
+ 		if (IS_ERR(cdev)) {
+ 			dev_err(&pdev->dev,
+ 				"Failed to register pwm-fan as cooling device");
+-			pwm_disable(ctx->pwm);
+-			return PTR_ERR(cdev);
++			ret = PTR_ERR(cdev);
++			goto err_pwm_disable;
+ 		}
+ 		ctx->cdev = cdev;
+ 		thermal_cdev_update(cdev);
+ 	}
+ 
+ 	return 0;
++
++err_pwm_disable:
++	state.enabled = false;
++	pwm_apply_state(ctx->pwm, &state);
++
++	return ret;
+ }
+ 
+ static int pwm_fan_remove(struct platform_device *pdev)
+-- 
+1.9.1
