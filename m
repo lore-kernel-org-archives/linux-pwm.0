@@ -1,87 +1,32 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH v2 4/8] arm64: dts: r8a7796: salvator-x: Add panel backlight support
-Date: Thu, 27 Apr 2017 17:43:56 +0300
-Message-ID: <1600524.FrhoU262MZ@avalon>
-References: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1493303863-23719-5-git-send-email-ulrich.hecht+renesas@gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v2 8/8] dt-bindings: pwm: Add R-Car M3-W device tree bindings
+Date: Thu, 27 Apr 2017 16:50:37 +0200
+Message-ID: <CAMuHMdU+i3ogoHQnjh0R7ea8GBz2WsEUOO4=wrTnYT5BKjgtqw@mail.gmail.com>
+References: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1493303863-23719-9-git-send-email-ulrich.hecht+renesas@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from galahad.ideasonboard.com ([185.26.127.97]:49876 "EHLO
-        galahad.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1162789AbdD0Omq (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Apr 2017 10:42:46 -0400
-In-Reply-To: <1493303863-23719-5-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1493303863-23719-9-git-send-email-ulrich.hecht+renesas@gmail.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
 To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: geert@glider.be, horms@verge.net.au, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com
+Cc: Simon Horman <horms@verge.net.au>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+List-Id: linux-pwm@vger.kernel.org
 
-Hi Ulrich,
-
-Thank you for the patch.
-
-On Thursday 27 Apr 2017 16:37:39 Ulrich Hecht wrote:
-> The panel backlight is controlled through a GPIO and a PWM channel.
-> 
+On Thu, Apr 27, 2017 at 4:37 PM, Ulrich Hecht
+<ulrich.hecht+renesas@gmail.com> wrote:
+> Add device tree bindings for the PWM controller found on R-Car M3-W SoCs.
+>
 > Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-> ---
->  arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts | 22 ++++++++++++++++++
->  1 file changed, 22 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-> b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts index 14d9e51..abda84c
-> 100644
-> --- a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-> +++ b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-> @@ -133,6 +133,11 @@
->  		function = "i2c2";
->  	};
-> 
-> +	pwm1_pins: pwm {
-> +		groups = "pwm1_a";
-> +		function = "pwm1";
-> +	};
-> +
->  	sdhi0_pins: sd0 {
->  		groups = "sdhi0_data4", "sdhi0_ctrl";
->  		function = "sdhi0";
-> @@ -183,6 +188,16 @@
->  		interrupt-parent = <&gpio2>;
->  		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
->  	};
-> +
-> +	backlight: backlight {
-> +		compatible = "pwm-backlight";
-> +		pwms = <&pwm1 0 50000>;
-> +
-> +		brightness-levels = <256 128 64 16 8 4 0>;
-> +		default-brightness-level = <6>;
-> +
-> +		enable-gpios = <&gpio6 7 GPIO_ACTIVE_HIGH>;
-> +	};
->  };
-> 
->  &extal_clk {
-> @@ -235,6 +250,13 @@
->  	status = "okay";
->  };
-> 
-> +&pwm1 {
-> +	pinctrl-0 = <&pwm1_pins>;
-> +	pinctrl-names = "default";
-> +
-> +	status = "okay";
-> +};
-> +
->  &scif1 {
->  	pinctrl-0 = <&scif1_pins>;
->  	pinctrl-names = "default";
+Gr{oetje,eeting}s,
 
--- 
-Regards,
+                        Geert
 
-Laurent Pinchart
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
