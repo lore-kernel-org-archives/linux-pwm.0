@@ -1,41 +1,31 @@
 From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH v2 4/8] arm64: dts: r8a7796: salvator-x: Add panel backlight support
-Date: Thu, 27 Apr 2017 16:37:39 +0200
-Message-ID: <1493303863-23719-5-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH v2 6/8] arm64: dts: r8a7795: salvator-x: Add panel backlight support
+Date: Thu, 27 Apr 2017 16:37:41 +0200
+Message-ID: <1493303863-23719-7-git-send-email-ulrich.hecht+renesas@gmail.com>
 References: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
 To: geert@glider.be, horms@verge.net.au
-Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, laurent.pinchart@ideasonboard.com, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, laurent.pinchart@ideasonboard.com, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 List-Id: linux-pwm@vger.kernel.org
+
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
 The panel backlight is controlled through a GPIO and a PWM channel.
 
-Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts | 22 ++++++++++++++++++++++
+ arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts | 22 ++++++++++++++++++++++
  1 file changed, 22 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-index 14d9e51..abda84c 100644
---- a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-+++ b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-@@ -133,6 +133,11 @@
- 		function = "i2c2";
- 	};
- 
-+	pwm1_pins: pwm {
-+		groups = "pwm1_a";
-+		function = "pwm1";
-+	};
-+
- 	sdhi0_pins: sd0 {
- 		groups = "sdhi0_data4", "sdhi0_ctrl";
- 		function = "sdhi0";
-@@ -183,6 +188,16 @@
- 		interrupt-parent = <&gpio2>;
- 		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
+diff --git a/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts b/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
+index bf4674e..8558b27 100644
+--- a/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
++++ b/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
+@@ -280,6 +280,16 @@
+ 			};
+ 		};
  	};
 +
 +	backlight: backlight {
@@ -49,9 +39,21 @@ index 14d9e51..abda84c 100644
 +	};
  };
  
- &extal_clk {
-@@ -235,6 +250,13 @@
- 	status = "okay";
+ &du {
+@@ -366,6 +376,11 @@
+ 		function = "du";
+ 	};
+ 
++	pwm1_pins: pwm {
++		groups = "pwm1_a";
++		function = "pwm1";
++	};
++
+ 	sdhi0_pins: sd0 {
+ 		groups = "sdhi0_data4", "sdhi0_ctrl";
+ 		function = "sdhi0";
+@@ -441,6 +456,13 @@
+ 	};
  };
  
 +&pwm1 {
