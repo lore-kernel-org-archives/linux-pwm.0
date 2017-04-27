@@ -1,33 +1,70 @@
-From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH v2 8/8] dt-bindings: pwm: Add R-Car M3-W device tree bindings
-Date: Thu, 27 Apr 2017 16:37:43 +0200
-Message-ID: <1493303863-23719-9-git-send-email-ulrich.hecht+renesas@gmail.com>
-References: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH v2 7/8] arm64: dts: r8a7795-salvator-x: Enable PWM2
+Date: Thu, 27 Apr 2017 17:40:51 +0300
+Message-ID: <5664970.rvzlHsyOZi@avalon>
+References: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1493303863-23719-8-git-send-email-ulrich.hecht+renesas@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+In-Reply-To: <1493303863-23719-8-git-send-email-ulrich.hecht+renesas@gmail.com>
 Sender: linux-renesas-soc-owner@vger.kernel.org
-To: geert@glider.be, horms@verge.net.au
-Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, laurent.pinchart@ideasonboard.com, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: geert@glider.be, horms@verge.net.au, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, Takeshi Kihara <takeshi.kihara.df@renesas.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Add device tree bindings for the PWM controller found on R-Car M3-W SoCs.
+Hi Ulrich,
 
-Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
----
- Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 1 +
- 1 file changed, 1 insertion(+)
+Thank you for the patch.
 
-diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-index d6de643..7e94b80 100644
---- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-+++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-@@ -8,6 +8,7 @@ Required Properties:
-  - "renesas,pwm-r8a7791": for R-Car M2-W
-  - "renesas,pwm-r8a7794": for R-Car E2
-  - "renesas,pwm-r8a7795": for R-Car H3
-+ - "renesas,pwm-r8a7796": for R-Car M3-W
- - reg: base address and length of the registers block for the PWM.
- - #pwm-cells: should be 2. See pwm.txt in this directory for a description of
-   the cells format.
+On Thursday 27 Apr 2017 16:37:42 Ulrich Hecht wrote:
+> From: Takeshi Kihara <takeshi.kihara.df@renesas.com>
+> 
+> This patch enables PWM2 for Salvator-X board on R8A7795 SoC.
+> 
+> Signed-off-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
+> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+> ---
+>  arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
+> b/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts index 8558b27..534b17e
+> 100644
+> --- a/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
+> +++ b/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
+> @@ -381,6 +381,11 @@
+>  		function = "pwm1";
+>  	};
+> 
+> +	pwm2_pins: pwm2 {
+> +		groups = "pwm2_a";
+> +		function = "pwm2";
+> +	};
+> +
+>  	sdhi0_pins: sd0 {
+>  		groups = "sdhi0_data4", "sdhi0_ctrl";
+>  		function = "sdhi0";
+> @@ -463,6 +468,13 @@
+>  	status = "okay";
+>  };
+> 
+> +&pwm2 {
+> +	/* PMIC DC/DC switching frequency synchronization */
+
+Please pardon the stupid question, but if the PWM channel is used by the PMIC, 
+is there a point in enabling it without a PMIC DT node using it ?
+
+> +	pinctrl-0 = <&pwm2_pins>;
+> +	pinctrl-names = "default";
+> +	status = "okay";
+> +};
+> +
+>  &scif1 {
+>  	pinctrl-0 = <&scif1_pins>;
+>  	pinctrl-names = "default";
+
 -- 
-2.7.4
+Regards,
+
+Laurent Pinchart
