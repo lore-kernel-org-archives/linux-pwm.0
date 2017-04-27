@@ -1,110 +1,38 @@
 From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Subject: [PATCH v2 3/8] arm64: dts: r8a7796: Add PWM device nodes
-Date: Thu, 27 Apr 2017 16:37:38 +0200
-Message-ID: <1493303863-23719-4-git-send-email-ulrich.hecht+renesas@gmail.com>
+Subject: [PATCH v2 2/8] clk: renesas: r8a7796: add PWM clock
+Date: Thu, 27 Apr 2017 16:37:37 +0200
+Message-ID: <1493303863-23719-3-git-send-email-ulrich.hecht+renesas@gmail.com>
 References: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f194.google.com ([209.85.128.194]:34990 "EHLO
-        mail-wr0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S938428AbdD0Oh6 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Apr 2017 10:37:58 -0400
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-renesas-soc-owner@vger.kernel.org
 To: geert@glider.be, horms@verge.net.au
-Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, laurent.pinchart@ideasonboard.com, Takeshi Kihara <takeshi.kihara.df@renesas.com>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, laurent.pinchart@ideasonboard.com, Ryo Kodama <ryo.kodama.vz@renesas.com>, Takeshi Kihara <takeshi.kihara.df@renesas.com>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+List-Id: linux-pwm@vger.kernel.org
 
-From: Takeshi Kihara <takeshi.kihara.df@renesas.com>
+From: Ryo Kodama <ryo.kodama.vz@renesas.com>
 
-This patch adds PWM{0,1,2,3,4,5,6} device nodes for R8A7796 SoC.
+This patch adds PWM clock for PWM.
 
+Signed-off-by: Ryo Kodama <ryo.kodama.vz@renesas.com>
 Signed-off-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
-[uli: added resets, shortened reg lengths to 8]
+[uli: changed from S3D4 to S0D12 in accordance with datasheet]
 Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 ---
- arch/arm64/boot/dts/renesas/r8a7796.dtsi | 70 ++++++++++++++++++++++++++++++++
- 1 file changed, 70 insertions(+)
+ drivers/clk/renesas/r8a7796-cpg-mssr.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a7796.dtsi b/arch/arm64/boot/dts/renesas/r8a7796.dtsi
-index 798fe0f..9a12d9d 100644
---- a/arch/arm64/boot/dts/renesas/r8a7796.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a7796.dtsi
-@@ -455,6 +455,76 @@
- 			status = "disabled";
- 		};
- 
-+		pwm0: pwm@e6e30000 {
-+			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
-+			reg = <0 0xe6e30000 0 8>;
-+			#pwm-cells = <2>;
-+			clocks = <&cpg CPG_MOD 523>;
-+			resets = <&cpg 523>;
-+			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
-+			status = "disabled";
-+		};
-+
-+		pwm1: pwm@e6e31000 {
-+			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
-+			reg = <0 0xe6e31000 0 8>;
-+			#pwm-cells = <2>;
-+			clocks = <&cpg CPG_MOD 523>;
-+			resets = <&cpg 523>;
-+			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
-+			status = "disabled";
-+		};
-+
-+		pwm2: pwm@e6e32000 {
-+			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
-+			reg = <0 0xe6e32000 0 8>;
-+			#pwm-cells = <2>;
-+			clocks = <&cpg CPG_MOD 523>;
-+			resets = <&cpg 523>;
-+			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
-+			status = "disabled";
-+		};
-+
-+		pwm3: pwm@e6e33000 {
-+			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
-+			reg = <0 0xe6e33000 0 8>;
-+			#pwm-cells = <2>;
-+			clocks = <&cpg CPG_MOD 523>;
-+			resets = <&cpg 523>;
-+			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
-+			status = "disabled";
-+		};
-+
-+		pwm4: pwm@e6e34000 {
-+			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
-+			reg = <0 0xe6e34000 0 8>;
-+			#pwm-cells = <2>;
-+			clocks = <&cpg CPG_MOD 523>;
-+			resets = <&cpg 523>;
-+			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
-+			status = "disabled";
-+		};
-+
-+		pwm5: pwm@e6e35000 {
-+			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
-+			reg = <0 0xe6e35000 0 8>;
-+			#pwm-cells = <2>;
-+			clocks = <&cpg CPG_MOD 523>;
-+			resets = <&cpg 523>;
-+			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
-+			status = "disabled";
-+		};
-+
-+		pwm6: pwm@e6e36000 {
-+			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
-+			reg = <0 0xe6e36000 0 8>;
-+			#pwm-cells = <2>;
-+			clocks = <&cpg CPG_MOD 523>;
-+			resets = <&cpg 523>;
-+			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
-+			status = "disabled";
-+		};
-+
- 		i2c0: i2c@e6500000 {
- 			#address-cells = <1>;
- 			#size-cells = <0>;
+diff --git a/drivers/clk/renesas/r8a7796-cpg-mssr.c b/drivers/clk/renesas/r8a7796-cpg-mssr.c
+index 9d114b3..3f1c5aa4 100644
+--- a/drivers/clk/renesas/r8a7796-cpg-mssr.c
++++ b/drivers/clk/renesas/r8a7796-cpg-mssr.c
+@@ -151,6 +151,7 @@ static const struct mssr_mod_clk r8a7796_mod_clks[] __initconst = {
+ 	DEF_MOD("hscif1",		 519,	R8A7796_CLK_S3D1),
+ 	DEF_MOD("hscif0",		 520,	R8A7796_CLK_S3D1),
+ 	DEF_MOD("thermal",		 522,	R8A7796_CLK_CP),
++	DEF_MOD("pwm",			 523,	R8A7796_CLK_S0D12),
+ 	DEF_MOD("fcpvd2",		 601,	R8A7796_CLK_S0D2),
+ 	DEF_MOD("fcpvd1",		 602,	R8A7796_CLK_S0D2),
+ 	DEF_MOD("fcpvd0",		 603,	R8A7796_CLK_S0D2),
 -- 
 2.7.4
