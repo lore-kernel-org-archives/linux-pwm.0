@@ -1,38 +1,32 @@
 From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH v2 6/8] arm64: dts: r8a7795: salvator-x: Add panel
- backlight support
-Date: Fri, 28 Apr 2017 07:23:45 +0200
-Message-ID: <20170428052344.GH18349@verge.net.au>
+Subject: Re: [PATCH v2 8/8] dt-bindings: pwm: Add R-Car M3-W device tree
+ bindings
+Date: Fri, 28 Apr 2017 07:24:37 +0200
+Message-ID: <20170428052436.GI18349@verge.net.au>
 References: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com>
- <1493303863-23719-7-git-send-email-ulrich.hecht+renesas@gmail.com>
- <2942315.eI4rjftHNO@avalon>
- <5380113.rA7rrcbnKf@avalon>
+ <1493303863-23719-9-git-send-email-ulrich.hecht+renesas@gmail.com>
+ <CAMuHMdU+i3ogoHQnjh0R7ea8GBz2WsEUOO4=wrTnYT5BKjgtqw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:45653 "EHLO
+Received: from kirsty.vergenet.net ([202.4.237.240]:45681 "EHLO
         kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755031AbdD1FXv (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Apr 2017 01:23:51 -0400
+        with ESMTP id S1161905AbdD1FYm (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 28 Apr 2017 01:24:42 -0400
 Content-Disposition: inline
-In-Reply-To: <5380113.rA7rrcbnKf@avalon>
+In-Reply-To: <CAMuHMdU+i3ogoHQnjh0R7ea8GBz2WsEUOO4=wrTnYT5BKjgtqw@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, geert@glider.be, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-On Thu, Apr 27, 2017 at 05:43:35PM +0300, Laurent Pinchart wrote:
-> On Thursday 27 Apr 2017 17:42:53 Laurent Pinchart wrote:
-> > On Thursday 27 Apr 2017 16:37:41 Ulrich Hecht wrote:
-> > > From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-> > > 
-> > > The panel backlight is controlled through a GPIO and a PWM channel.
-> > > 
-> > > Signed-off-by: Laurent Pinchart
-> > > <laurent.pinchart+renesas@ideasonboard.com>
-> > 
-> > Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+On Thu, Apr 27, 2017 at 04:50:37PM +0200, Geert Uytterhoeven wrote:
+> On Thu, Apr 27, 2017 at 4:37 PM, Ulrich Hecht
+> <ulrich.hecht+renesas@gmail.com> wrote:
+> > Add device tree bindings for the PWM controller found on R-Car M3-W SoCs.
+> >
+> > Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 > 
-> Please ignore this, I meant to reply to the M3-W patch.
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Thanks, noted.
+Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
