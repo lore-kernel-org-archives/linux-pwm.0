@@ -1,41 +1,43 @@
-From: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-Subject: [PATCH v5 3/4] ARM: mvebu: Enable SENSORS_PWM_FAN in defconfig
-Date: Sun,  9 Apr 2017 20:09:29 +0200
-Message-ID: <20170409180931.4884-4-ralph.sennhauser@gmail.com>
-References: <20170409180931.4884-1-ralph.sennhauser@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170409180931.4884-1-ralph.sennhauser@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ralph Sennhauser <ralph.sennhauser@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jason Cooper <jason@lakedaemon.net>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Russell King <linux@armlinux.org.uk>, linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+From: Gottfried Haider <gottfried.haider@gmail.com>
+Subject: [PATCH] pwm: Set class for exported channels in sysfs
+Date: Mon,  1 May 2017 06:59:58 +0000
+Message-ID: <1493621998-4982-1-git-send-email-gottfried.haider@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wr0-f195.google.com ([209.85.128.195]:35736 "EHLO
+        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S642757AbdEAHAf (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 1 May 2017 03:00:35 -0400
+Received: by mail-wr0-f195.google.com with SMTP id g12so13091600wrg.2
+        for <linux-pwm@vger.kernel.org>; Mon, 01 May 2017 00:00:34 -0700 (PDT)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Gottfried Haider <gottfried.haider@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: hsweeten@visionengravers.com, linux-pwm@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
+Notifications for devices without bus or class set get dropped by
+dev_uevent_filter. Adding the class to the exported child matches
+what the gpio subsystem is doing.
 
-Now that the GPIO driver also supports PWM operation, enable the PWM
-framework and fan driver in mvebu_v7_defconfig.
+With this change exporting a channel triggers a udev event, which
+gives userspace a chance to fixup permissions and makes it possible
+for non-root users to make use of the pwm subsystem.
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-URL: https://patchwork.ozlabs.org/patch/427297/
-[Ralph Sennhauser: add fan driver to defconfig]
-Signed-off-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-Tested-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Gottfried Haider <gottfried.haider@gmail.com>
 ---
- arch/arm/configs/mvebu_v7_defconfig | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/pwm/sysfs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/configs/mvebu_v7_defconfig b/arch/arm/configs/mvebu_v7_defconfig
-index f1a0e25..6955370 100644
---- a/arch/arm/configs/mvebu_v7_defconfig
-+++ b/arch/arm/configs/mvebu_v7_defconfig
-@@ -135,6 +135,8 @@ CONFIG_DMADEVICES=y
- CONFIG_MV_XOR=y
- # CONFIG_IOMMU_SUPPORT is not set
- CONFIG_MEMORY=y
-+CONFIG_PWM=y
-+CONFIG_SENSORS_PWM_FAN=y
- CONFIG_EXT4_FS=y
- CONFIG_ISO9660_FS=y
- CONFIG_JOLIET=y
+diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
+index a813239..83f2b0b 100644
+--- a/drivers/pwm/sysfs.c
++++ b/drivers/pwm/sysfs.c
+@@ -263,6 +263,7 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
+ 	export->pwm = pwm;
+ 	mutex_init(&export->lock);
+ 
++	export->child.class = parent->class;
+ 	export->child.release = pwm_export_release;
+ 	export->child.parent = parent;
+ 	export->child.devt = MKDEV(0, 0);
 -- 
-2.10.2
+2.1.4
