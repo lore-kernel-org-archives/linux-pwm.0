@@ -1,43 +1,81 @@
-From: Gottfried Haider <gottfried.haider@gmail.com>
-Subject: [PATCH] pwm: Set class for exported channels in sysfs
-Date: Mon,  1 May 2017 06:59:58 +0000
-Message-ID: <1493621998-4982-1-git-send-email-gottfried.haider@gmail.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f195.google.com ([209.85.128.195]:35736 "EHLO
-        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S642757AbdEAHAf (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 1 May 2017 03:00:35 -0400
-Received: by mail-wr0-f195.google.com with SMTP id g12so13091600wrg.2
-        for <linux-pwm@vger.kernel.org>; Mon, 01 May 2017 00:00:34 -0700 (PDT)
-Sender: linux-pwm-owner@vger.kernel.org
+From: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH V2] pwm: tegra: Set maximum pwm clock source per SoC tapeout
+Date: Tue, 2 May 2017 19:35:37 +0530
+Message-ID: <1493733937-15822-1-git-send-email-ldewangan@nvidia.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Gottfried Haider <gottfried.haider@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: hsweeten@visionengravers.com, linux-pwm@vger.kernel.org
 
-Notifications for devices without bus or class set get dropped by
-dev_uevent_filter. Adding the class to the exported child matches
-what the gpio subsystem is doing.
+The PWM hardware IP is taped-out with different maximum frequency
+on different SoCs.
 
-With this change exporting a channel triggers a udev event, which
-gives userspace a chance to fixup permissions and makes it possible
-for non-root users to make use of the pwm subsystem.
+From HW team:
+	Before Tegra186, it is 38.4MHz.
+	In Tegra186, it is 102MHz.
 
-Signed-off-by: Gottfried Haider <gottfried.haider@gmail.com>
+Add support to limit the clock source frequency to the maximum IP
+supported frequency. Provide these values via SoC chipdata.
+
+Signed-off-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
 ---
- drivers/pwm/sysfs.c | 1 +
- 1 file changed, 1 insertion(+)
+Changes from V1:
+- Set the 48MHz maximum frequency for Tegra210 and earlier.
+- Set the maximum frequency unconditionally as per V1 review comment.
+---
+ drivers/pwm/pwm-tegra.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index a813239..83f2b0b 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -263,6 +263,7 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
- 	export->pwm = pwm;
- 	mutex_init(&export->lock);
+diff --git a/drivers/pwm/pwm-tegra.c b/drivers/pwm/pwm-tegra.c
+index 8c6ed55..e9b33f0 100644
+--- a/drivers/pwm/pwm-tegra.c
++++ b/drivers/pwm/pwm-tegra.c
+@@ -41,6 +41,9 @@
  
-+	export->child.class = parent->class;
- 	export->child.release = pwm_export_release;
- 	export->child.parent = parent;
- 	export->child.devt = MKDEV(0, 0);
+ struct tegra_pwm_soc {
+ 	unsigned int num_channels;
++
++	/* Maximum IP frequency for given SoCs */
++	unsigned long max_frequency;
+ };
+ 
+ struct tegra_pwm_chip {
+@@ -201,7 +204,18 @@ static int tegra_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(pwm->clk))
+ 		return PTR_ERR(pwm->clk);
+ 
+-	/* Read PWM clock rate from source */
++	/* Set maximum frequency of the IP */
++	ret = clk_set_rate(pwm->clk, pwm->soc->max_frequency);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "Failed to set max frequency: %d\n", ret);
++		return ret;
++	}
++
++	/*
++	 * The requested and configured frequency may differ due to
++	 * clock register resolutions. Get the configured frequency
++	 * so that PWM period can be calculated more accurately.
++	 */
+ 	pwm->clk_rate = clk_get_rate(pwm->clk);
+ 
+ 	pwm->rst = devm_reset_control_get(&pdev->dev, "pwm");
+@@ -273,10 +287,12 @@ static int tegra_pwm_resume(struct device *dev)
+ 
+ static const struct tegra_pwm_soc tegra20_pwm_soc = {
+ 	.num_channels = 4,
++	.max_frequency = 48000000UL,
+ };
+ 
+ static const struct tegra_pwm_soc tegra186_pwm_soc = {
+ 	.num_channels = 1,
++	.max_frequency = 102000000UL,
+ };
+ 
+ static const struct of_device_id tegra_pwm_of_match[] = {
 -- 
 2.1.4
