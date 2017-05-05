@@ -1,85 +1,42 @@
-From: Ralph Sennhauser <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v6 2/4] ARM: dts: mvebu: Add PWM properties to .dtsi
- files
-Date: Fri, 5 May 2017 10:15:00 +0200
-Message-ID: <20170505101500.170001a8@gmail.com>
-References: <20170414154056.32055-1-ralph.sennhauser@gmail.com>
-        <20170414154056.32055-3-ralph.sennhauser@gmail.com>
-        <CACRpkdZE0wnotF+OdAmutJcU9JSE_LxNd7Lz7yXqcn_bq5VqgQ@mail.gmail.com>
-        <20170505094139.484db2e7@gmail.com>
-        <87lgqb7mje.fsf@free-electrons.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v5 02/14] dt/bindings: Document gpio-ingenic
+Date: Fri, 5 May 2017 14:57:24 -0500
+Message-ID: <20170505195724.mph4uov3vd52hscm@rob-hp-laptop>
+References: <20170402204244.14216-2-paul@crapouillou.net>
+ <20170428200824.10906-1-paul@crapouillou.net>
+ <20170428200824.10906-3-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <87lgqb7mje.fsf-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-gpio@vger.kernel.org" <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, "linux-pwm@vger.kernel.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree@vger.kernel.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel@vger.kernel.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-mips-bounce@linux-mips.org>
+Content-Disposition: inline
+In-Reply-To: <20170428200824.10906-3-paul@crapouillou.net>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, james.hogan@imgtec.com, linux-gpio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mips@linux-mips.org, linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, 05 May 2017 10:09:09 +0200
-Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org> wrote:
-
-> Hi Ralph,
->  
->  On ven., mai 05 2017, Ralph Sennhauser <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> wrote:
+On Fri, Apr 28, 2017 at 10:08:12PM +0200, Paul Cercueil wrote:
+> This commit adds documentation for the devicetree bindings of the
+> gpio-ingenic driver, which handles GPIOs of the Ingenic SoCs
+> currently supported by the Linux kernel.
 > 
-> > On Mon, 24 Apr 2017 11:19:32 +0200
-> > Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-> >  
-> >> On Fri, Apr 14, 2017 at 5:40 PM, Ralph Sennhauser
-> >> <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> >>   
-> >> > From: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>
-> >> >
-> >> > Add properties to the GPIO nodes to allow them to be also used as
-> >> > PWM lines.
-> >> >
-> >> > Signed-off-by: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>
-> >> > URL: https://patchwork.ozlabs.org/patch/427294/
-> >> > [Ralph Sennhauser: Add new compatible string
-> >> > marvell,armada-370-xp-gpio] Signed-off-by: Ralph Sennhauser
-> >> > <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> Tested-by: Andrew Lunn
-> >> > <andrew-g2DYL2Zd6BY@public.gmane.org>    
-> >> 
-> >> Acked-by: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> >> 
-> >> Please funnel this through ARM SoC.  
-> >
-> > Hi Gregory,
-> >
-> > A reminder on the off chance you have missed this and it's not to
-> > late already, Linus Walleij took the driver and submitted it for
-> > inclusion in 4.12 [1]. So for completeness it be nice to have the
-> > dts(i) and defconfig changes in as well.  
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> ---
+>  .../devicetree/bindings/gpio/ingenic,gpio.txt      | 46 ++++++++++++++++++++++
+>  1 file changed, 46 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/gpio/ingenic,gpio.txt
 > 
-> Unfortunately it was too late to applied and to push it to arm-soc
-> when the gpio part was applied.
-> 
-> So I will apply when 4.12-rc1 will be released and it will be
-> included in the 4.13 release.
+>  v2: New patch
+>  v3: No changes
+>  v4: Update for the v4 version of the gpio-ingenic driver
+>  v5: Remove gpio-bank-... compatible strings, and add 'reg' property
 
-Such is life, thanks for the heads up.
-
-Ralph
-
-> 
-> Gregory
-> >
-> > Thanks
-> > Ralph
-> >
-> > [1] https://lkml.org/lkml/2017/5/4/82
-> >  
-> >> 
-> >> Yours,
-> >> Linus Walleij  
-> >  
-> 
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Acked-by: Rob Herring <robh@kernel.org>
