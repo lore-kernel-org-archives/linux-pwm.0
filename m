@@ -1,36 +1,78 @@
-From: Arvind Yadav <arvind.yadav.cs@gmail.com>
-Subject: [PATCH v1] pwm : pwm-vt8500 - Undo preparation of a clock source.
-Date: Fri,  5 May 2017 13:30:14 +0530
-Message-ID: <1493971214-3763-1-git-send-email-arvind.yadav.cs@gmail.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pg0-f68.google.com ([74.125.83.68]:35619 "EHLO
-        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751660AbdEEIBS (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 5 May 2017 04:01:18 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+From: Gregory CLEMENT <gregory.clement-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v6 2/4] ARM: dts: mvebu: Add PWM properties to .dtsi files
+Date: Fri, 05 May 2017 10:09:09 +0200
+Message-ID: <87lgqb7mje.fsf@free-electrons.com>
+References: <20170414154056.32055-1-ralph.sennhauser@gmail.com>
+        <20170414154056.32055-3-ralph.sennhauser@gmail.com>
+        <CACRpkdZE0wnotF+OdAmutJcU9JSE_LxNd7Lz7yXqcn_bq5VqgQ@mail.gmail.com>
+        <20170505094139.484db2e7@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170505094139.484db2e7-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> (Ralph Sennhauser's message
+        of "Fri, 5 May 2017 09:41:39 +0200")
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Ralph Sennhauser <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-gpio@vger.kernel.org" <linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Sebastian Hesselbarth <sebastian.hesselbarth-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, "linux-pwm@vger.kernel.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree@vger.kernel.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel@vger.kernel.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: linux@prisktech.co.nz, thierry.reding@gmail.com
-Cc: linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Undo preparation of a clock source, if vt8500_pwm_probe is not
-successful.
-
-Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
----
- drivers/pwm/pwm-vt8500.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/pwm/pwm-vt8500.c b/drivers/pwm/pwm-vt8500.c
-index 8141a49..3a78dd0 100644
---- a/drivers/pwm/pwm-vt8500.c
-+++ b/drivers/pwm/pwm-vt8500.c
-@@ -241,6 +241,7 @@ static int vt8500_pwm_probe(struct platform_device *pdev)
- 	ret = pwmchip_add(&chip->chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to add PWM chip\n");
-+		clk_unprepare(chip->clk);
- 		return ret;
- 	}
+Hi Ralph,
  
+ On ven., mai 05 2017, Ralph Sennhauser <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+
+> On Mon, 24 Apr 2017 11:19:32 +0200
+> Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+>
+>> On Fri, Apr 14, 2017 at 5:40 PM, Ralph Sennhauser
+>> <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>> 
+>> > From: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>
+>> >
+>> > Add properties to the GPIO nodes to allow them to be also used as
+>> > PWM lines.
+>> >
+>> > Signed-off-by: Andrew Lunn <andrew-g2DYL2Zd6BY@public.gmane.org>
+>> > URL: https://patchwork.ozlabs.org/patch/427294/
+>> > [Ralph Sennhauser: Add new compatible string
+>> > marvell,armada-370-xp-gpio] Signed-off-by: Ralph Sennhauser
+>> > <ralph.sennhauser-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> Tested-by: Andrew Lunn
+>> > <andrew-g2DYL2Zd6BY@public.gmane.org>  
+>> 
+>> Acked-by: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>> 
+>> Please funnel this through ARM SoC.
+>
+> Hi Gregory,
+>
+> A reminder on the off chance you have missed this and it's not to late
+> already, Linus Walleij took the driver and submitted it for inclusion in
+> 4.12 [1]. So for completeness it be nice to have the dts(i) and
+> defconfig changes in as well.
+
+Unfortunately it was too late to applied and to push it to arm-soc when
+the gpio part was applied.
+
+So I will apply when 4.12-rc1 will be released and it will be
+included in the 4.13 release.
+
+Gregory
+>
+> Thanks
+> Ralph
+>
+> [1] https://lkml.org/lkml/2017/5/4/82
+>
+>> 
+>> Yours,
+>> Linus Walleij
+>
+
 -- 
-1.9.1
+Gregory Clement, Free Electrons
+Kernel, drivers, real-time and embedded Linux
+development, consulting, training and support.
+http://free-electrons.com
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
