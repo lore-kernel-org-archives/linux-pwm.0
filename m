@@ -1,98 +1,34 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [GIT PULL] pwm: Changes for v4.12-rc1
-Date: Tue,  9 May 2017 17:59:11 +0200
-Message-ID: <20170509155911.31267-1-thierry.reding@gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v5 03/14] pinctrl: add a pinctrl driver for the Ingenic
+ jz47xx SoCs
+Date: Thu, 11 May 2017 13:01:30 +0200
+Message-ID: <CACRpkdYR8Y77VXrNz=NwczgxZvitkO72bAYcDuhneZbVVsT6=g@mail.gmail.com>
+References: <20170402204244.14216-2-paul@crapouillou.net> <20170428200824.10906-1-paul@crapouillou.net>
+ <20170428200824.10906-4-paul@crapouillou.net> <7941dbfbaeaf5c23bb177e66165060d3@crapouillou.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f193.google.com ([209.85.128.193]:33830 "EHLO
-        mail-wr0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755343AbdEIP7P (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 9 May 2017 11:59:15 -0400
+Received: from mail-it0-f48.google.com ([209.85.214.48]:37834 "EHLO
+        mail-it0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754327AbdEKLBc (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 11 May 2017 07:01:32 -0400
+Received: by mail-it0-f48.google.com with SMTP id g126so17444357ith.0
+        for <linux-pwm@vger.kernel.org>; Thu, 11 May 2017 04:01:32 -0700 (PDT)
+In-Reply-To: <7941dbfbaeaf5c23bb177e66165060d3@crapouillou.net>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, James Hogan <james.hogan@imgtec.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux MIPS <linux-mips@linux-mips.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>"linux-mtd@lists.infradead.org" <li>
 
-Hi Linus,
+On Wed, May 3, 2017 at 11:12 AM, Paul Cercueil <paul@crapouillou.net> wrote:
 
-The following changes since commit c1ae3cfa0e89fa1a7ecc4c99031f5e9ae99d9201:
+> The dependency on MFD is gone but now I notice I forgot to remove the
+> 'select MFD_CORE'
+> in the Kconfig. It'd be great if you can make a quick edit when merging
+> this,
+> otherwise I'll send a v6.
 
-  Linux 4.11-rc1 (2017-03-05 12:59:56 -0800)
+No problem I can fix it up.
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.12-rc1
-
-for you to fetch changes up to 97512ceafaacf8cdb96d6a36ae55e8335c0a9e55:
-
-  Merge branch 'for-4.12/drivers' into for-next (2017-04-13 17:41:50 +0200)
-
-Thanks,
-Thierry
-
-----------------------------------------------------------------
-pwm: Changes for v4.12-rc1
-
-Adds a new driver for the PWM controller found on MediaTek SoCs and
-extends support for the Atmel PWM controller to include the SAMA5D2.
-
-Some existing drivers have been migrated to the atomic API and a few
-others see miscellaneous improvements.
-
-----------------------------------------------------------------
-Andy Shevchenko (1):
-      pwm: lpss: Split Tangier configuration
-
-Boris Brezillon (2):
-      pwm: atmel-hlcdc: Convert to the atomic PWM API
-      pwm: atmel-hlcdc: Implement the suspend/resume hooks
-
-Claudiu Beznea (2):
-      pwm: atmel: Switch to atomic PWM
-      pwm: atmel: Enable PWM on sama5d2
-
-David Wu (1):
-      pwm: rockchip: State of PWM clock should synchronize with PWM enabled state
-
-Hans de Goede (1):
-      pwm: lpss: Set enable-bit before waiting for update-bit to go low
-
-John Crispin (2):
-      dt-bindings: pwm: Add MediaTek PWM bindings
-      pwm: Add MediaTek PWM support
-
-Laxman Dewangan (5):
-      pwm: tegra: Use DIV_ROUND_CLOSEST_ULL() instead of local implementation
-      pwm: tegra: Increase precision in PWM rate calculation
-      pwm: tegra: Add DT binding details to configure pin in suspends/resume
-      pwm: tegra: Add support to configure pin state in suspends/resume
-      pwm: tegra: Read PWM clock source rate in driver init
-
-Sven Van Asbroeck (1):
-      pwm: pca9685: Fix GPIO-only operation
-
-Thierry Reding (3):
-      pwm: tegra: Avoid potential overflow for short periods
-      Merge branch 'for-4.11/fixes' into for-next
-      Merge branch 'for-4.12/drivers' into for-next
-
-kbuild test robot (1):
-      pwm: mediatek: Don't explicitly set .owner
-
- .../devicetree/bindings/pwm/atmel-pwm.txt          |   1 +
- .../devicetree/bindings/pwm/nvidia,tegra20-pwm.txt |  45 ++++
- .../devicetree/bindings/pwm/pwm-mediatek.txt       |  34 +++
- drivers/pwm/Kconfig                                |   9 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-atmel-hlcdc.c                      | 260 +++++++++----------
- drivers/pwm/pwm-atmel.c                            | 276 ++++++++++-----------
- drivers/pwm/pwm-lpss-pci.c                         |  10 +-
- drivers/pwm/pwm-lpss-platform.c                    |   1 +
- drivers/pwm/pwm-lpss.c                             |  19 +-
- drivers/pwm/pwm-lpss.h                             |   1 +
- drivers/pwm/pwm-mediatek.c                         | 219 ++++++++++++++++
- drivers/pwm/pwm-pca9685.c                          | 112 ++++++---
- drivers/pwm/pwm-rockchip.c                         |  40 ++-
- drivers/pwm/pwm-tegra.c                            |  37 ++-
- 15 files changed, 742 insertions(+), 323 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
- create mode 100644 drivers/pwm/pwm-mediatek.c
+Yours,
+Linus Walleij
