@@ -1,41 +1,84 @@
 From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH v4] dt-bindings: pwm: Add R-Car M3-W device tree bindings
-Date: Fri, 12 May 2017 10:55:01 +0200
-Message-ID: <20170512085500.GF27979@verge.net.au>
-References: <1494576582-17881-1-git-send-email-horms+renesas@verge.net.au>
- <CAMuHMdXL+T7DkgtG2DLmVvmmYE0=cG6xP9tijNWEm2bmq3c_sA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/8] r8a7795/6 Salvator-X PWM enablement
+Date: Fri, 12 May 2017 11:16:39 +0200
+Message-ID: <20170512091636.GG27979@verge.net.au>
+References: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:47637 "EHLO
+Received: from kirsty.vergenet.net ([202.4.237.240]:48331 "EHLO
         kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757586AbdELIzH (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 12 May 2017 04:55:07 -0400
+        with ESMTP id S932925AbdELJQp (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 12 May 2017 05:16:45 -0400
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdXL+T7DkgtG2DLmVvmmYE0=cG6xP9tijNWEm2bmq3c_sA@mail.gmail.com>
+In-Reply-To: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: geert@glider.be, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, laurent.pinchart@ideasonboard.com
 
-On Fri, May 12, 2017 at 10:11:53AM +0200, Geert Uytterhoeven wrote:
-> On Fri, May 12, 2017 at 10:09 AM, Simon Horman
-> <horms+renesas@verge.net.au> wrote:
-> > From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-> >
-> > Add device tree bindings for the PWM controller found on R-Car M3-W SoCs.
-> >
-> > Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+On Thu, Apr 27, 2017 at 04:37:35PM +0200, Ulrich Hecht wrote:
+> Hi!
 > 
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Here's the revised series enabling PWMs on r8a7795 and r8a7796 Salvator-X
+> boards.
 > 
-> > ---
-> > v4
-> > * Broke out of lager patchset on which it appears to have no dependencies
-> > * Added Reviewed by tags
+> This revision addresses the issues found by Geert and adds Laurent's
+> backlight support patch, including a version for r8a7796.
 > 
-> Really? ;-)
+> CU
+> Uli
+> 
+> Changes since v1:
+> - PWM clock is S0D12, not S3D4
+> - dts: fix register lengths, add resets
+> - only enable one set of pins for each PWM
+> - add backlight support
+> 
+> 
+> Laurent Pinchart (1):
+>   arm64: dts: r8a7795: salvator-x: Add panel backlight support
+> 
+> Ryo Kodama (2):
+>   clk: renesas: r8a7796: add PWM clock
+>   arm64: dts: r8a7796-salvator-x: Add PWM device support
+> 
+> Takeshi Kihara (3):
+>   pinctrl: sh-pfc: r8a7796: Add PWM pins, groups and functions
+>   arm64: dts: r8a7796: Add PWM device nodes
+>   arm64: dts: r8a7795-salvator-x: Enable PWM2
 
-Apparently not.
+I did not notice any regressions on salvator-x/r8a7796 after applying up
+the dts patches without the clk and pinctrl patches. So I have queued up
+the dts patches as follows:
 
-Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+* arm64: dts: r8a7796: Add PWM device nodes
+  -> applied
+
+* arm64: dts: r8a7795: salvator-x: Add panel backlight support
+* arm64: dts: r8a7795-salvator-x: Enable PWM2
+  -> applied to salvator-x.dtsi instead of r8a7796-salvator-x.dts
+
+* arm64: dts: r8a7796: salvator-x: Add panel backlight support
+* arm64: dts: r8a7796-salvator-x: Add PWM device support
+  -> not applied as they would be the same changes as those above
+     applied to salvator-x.dtsi
+
+> Ulrich Hecht (2):
+>   arm64: dts: r8a7796: salvator-x: Add panel backlight support
+>   dt-bindings: pwm: Add R-Car M3-W device tree bindings
+
+I took the liberty of reposting the dt-bindings patch with an updated To/Cc
+list.
+
+>  .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   |   1 +
+>  arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts |  34 +++++
+>  arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts |  35 +++++
+>  arch/arm64/boot/dts/renesas/r8a7796.dtsi           |  70 ++++++++++
+>  drivers/clk/renesas/r8a7796-cpg-mssr.c             |   1 +
+>  drivers/pinctrl/sh-pfc/pfc-r8a7796.c               | 153 +++++++++++++++++++++
+>  6 files changed, 294 insertions(+)
+> 
+> -- 
+> 2.7.4
+> 
