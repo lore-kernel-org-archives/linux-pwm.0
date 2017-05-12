@@ -1,44 +1,41 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH v5 05/14] MIPS: ingenic: Enable pinctrl for all ingenic SoCs
-Date: Thu, 11 May 2017 13:08:55 +0200
-Message-ID: <CACRpkdaYRmB=i-=k4vfFYL6wHVrpNo1w11xnLGbu+6YPPmT8vA@mail.gmail.com>
-References: <20170402204244.14216-2-paul@crapouillou.net> <20170428200824.10906-1-paul@crapouillou.net>
- <20170428200824.10906-6-paul@crapouillou.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From: Simon Horman <horms+renesas@verge.net.au>
+Subject: [PATCH v4] dt-bindings: pwm: Add R-Car M3-W device tree bindings
+Date: Fri, 12 May 2017 10:09:42 +0200
+Message-ID: <1494576582-17881-1-git-send-email-horms+renesas@verge.net.au>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-io0-f179.google.com ([209.85.223.179]:36521 "EHLO
-        mail-io0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755375AbdEKLI4 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 11 May 2017 07:08:56 -0400
-Received: by mail-io0-f179.google.com with SMTP id o12so18948235iod.3
-        for <linux-pwm@vger.kernel.org>; Thu, 11 May 2017 04:08:56 -0700 (PDT)
-In-Reply-To: <20170428200824.10906-6-paul@crapouillou.net>
+Received: from kirsty.vergenet.net ([202.4.237.240]:47122 "EHLO
+        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756554AbdELIKC (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 12 May 2017 04:10:02 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Paul Cercueil <paul@crapouillou.net>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, James Hogan <james.hogan@imgtec.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux MIPS <linux-mips@linux-mips.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>"linux-mtd@lists.infradead.org" <li>
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 
-On Fri, Apr 28, 2017 at 10:08 PM, Paul Cercueil <paul@crapouillou.net> wrote:
+From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 
-> There is a pinctrl driver for each of the Ingenic SoCs supported by the
-> upstream Linux kernel. In order to switch away from the old GPIO
-> platform code, we now enable the pinctrl drivers by default for the
-> Ingenic SoCs.
->
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> ---
->  arch/mips/Kconfig | 1 +
+Add device tree bindings for the PWM controller found on R-Car M3-W SoCs.
 
-So please tell me your desired merge strategy for these bits. I can
-provide an immutable branch for pinctrl if you want to pull the deps in
-or we can just merge this orthogonally in the MIPS tree and let things
-smoothen together in the merge window.
+Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+---
+v4
+* Broke out of lager patchset on which it appears to have no dependencies
+* Added Reviewed by tags 
+---
+ Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-This goes for everything outside of pinctrl/gpio.
-
-If I should merge patches for other subsystems I need ACKs from
-the maintainers of MIPS etc.
-
-Yours,
-Linus Walleij
+diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+index d6de64335022..7e94b802395d 100644
+--- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
++++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+@@ -8,6 +8,7 @@ Required Properties:
+  - "renesas,pwm-r8a7791": for R-Car M2-W
+  - "renesas,pwm-r8a7794": for R-Car E2
+  - "renesas,pwm-r8a7795": for R-Car H3
++ - "renesas,pwm-r8a7796": for R-Car M3-W
+ - reg: base address and length of the registers block for the PWM.
+ - #pwm-cells: should be 2. See pwm.txt in this directory for a description of
+   the cells format.
+-- 
+2.1.4
