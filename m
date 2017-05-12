@@ -1,40 +1,32 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH v2 0/8] r8a7795/6 Salvator-X PWM enablement
-Date: Fri, 12 May 2017 14:03:55 +0300
-Message-ID: <3796049.09pyf4pHBH@avalon>
-References: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com> <4398514.qBghdda7X5@avalon> <CAO3366w2JtF9Ni6_yzuQs7-dEy=LNFSekOyiA9YJbHHvvpPLzQ@mail.gmail.com>
+From: "Thomas Credit Firm" <miorellana@salud.gob.sv>
+Subject: APPLY FOR YOUR URGENT LOAN AT 2%
+Date: Fri, 12 May 2017 11:53:56 +0100
+Message-ID: <20170512105410.0245F4807243@mail.salud.gob.sv>
+Reply-To: thomascreditfirm@gmail.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from galahad.ideasonboard.com ([185.26.127.97]:36645 "EHLO
-        galahad.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751370AbdELLDz (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 12 May 2017 07:03:55 -0400
-In-Reply-To: <CAO3366w2JtF9Ni6_yzuQs7-dEy=LNFSekOyiA9YJbHHvvpPLzQ@mail.gmail.com>
+Received: from mail.salud.gob.sv ([190.5.143.2]:34356 "EHLO mail.salud.gob.sv"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S932184AbdELLFv (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 12 May 2017 07:05:51 -0400
+Content-Description: Mail message body
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
-Cc: Simon Horman <horms@verge.net.au>, geert@glider.be, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>
+To: receipt <miorellana@salud.gob.sv>
 
-Hi Ulrich,
+* Do you need an urgent loan? We offer all kinds of loan
+* Very fast and urgent transfer to your bank account. 
+* Payment begins (6) months after you get the money in your bank account 
+* Low interest rates 2% 
+* Payment of long-term (1-30 years) duration 
+For more information and loan application form through the Contact now 
 
-On Friday 12 May 2017 12:36:50 Ulrich Hecht wrote:
-> On Fri, May 12, 2017 at 12:00 PM, Laurent Pinchart wrote:
-> >> * arm64: dts: r8a7795-salvator-x: Enable PWM2
-> > 
-> > I've asked Ulrich for a clarification on this patch as I'm not sure it's
-> > needed, but he hasn't answered yet. Could we delay merging it until the
-> > situation is clarified ?
-> 
-> Enabling it allows to control the switching frequency from userspace
-> via sysfs. I guess it's a matter of taste whether to do this by
-> default, but I see no downside to it.
+E-mail:  Thomascreditfirm@gmail.com 
+Thomas B. Dawson 
+THOMAS CREDIT FIRM
 
-For PWM signals that are meant to be used by expansion boards, sure, but this 
-one is meant to control the PMIC. I'd rather not let userspace mess with it.
-
--- 
-Regards,
-
-Laurent Pinchart
+---
+This email has been checked for viruses by Avast antivirus software.
+https://www.avast.com/antivirus
