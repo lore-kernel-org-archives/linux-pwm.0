@@ -1,54 +1,103 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v5 05/14] MIPS: ingenic: Enable pinctrl for all ingenic
- SoCs
-Date: Fri, 12 May 2017 19:00:15 +0200
-Message-ID: <421a30e7-1bfc-b1de-6db8-96216a65adcf@crapouillou.net>
-References: <20170402204244.14216-2-paul@crapouillou.net>
- <20170428200824.10906-1-paul@crapouillou.net>
- <20170428200824.10906-6-paul@crapouillou.net>
- <CACRpkdaYRmB=i-=k4vfFYL6wHVrpNo1w11xnLGbu+6YPPmT8vA@mail.gmail.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH v2 4/8] arm64: dts: r8a7796: salvator-x: Add panel backlight support
+Date: Sat, 13 May 2017 21:56:12 +0300
+Message-ID: <1843896.Iy7IFdxQto@avalon>
+References: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com> <1493303863-23719-5-git-send-email-ulrich.hecht+renesas@gmail.com> <1600524.FrhoU262MZ@avalon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdaYRmB=i-=k4vfFYL6wHVrpNo1w11xnLGbu+6YPPmT8vA@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, James Hogan <james.hogan@imgtec.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux MIPS <linux-mips@linux-mips.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>"linux-mtd@lists.infradead.org" <li>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1600524.FrhoU262MZ@avalon>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: horms@verge.net.au
+Cc: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, geert@glider.be, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+Hi Simon,
 
-On 11/05/2017 13:08, Linus Walleij wrote:
-> On Fri, Apr 28, 2017 at 10:08 PM, Paul Cercueil <paul@crapouillou.net> wrote:
->
->> There is a pinctrl driver for each of the Ingenic SoCs supported by the
->> upstream Linux kernel. In order to switch away from the old GPIO
->> platform code, we now enable the pinctrl drivers by default for the
->> Ingenic SoCs.
->>
->> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
->> ---
->>   arch/mips/Kconfig | 1 +
-> So please tell me your desired merge strategy for these bits. I can
-> provide an immutable branch for pinctrl if you want to pull the deps in
-> or we can just merge this orthogonally in the MIPS tree and let things
-> smoothen together in the merge window.
->
-> This goes for everything outside of pinctrl/gpio.
->
-> If I should merge patches for other subsystems I need ACKs from
-> the maintainers of MIPS etc.
->
-> Yours,
-> Linus Walleij
->
-It is very unlikely that those patches will cause merge failures
-if you merge it in your tree, these drivers are touched very rarely;
-so I'd say you can merge them.
+I'm afraid you added nodes in the wrong places when applying the patch to 
+salvator-x.dtsi :-( Please see below.
 
-But to be sure I'd like Ralf's input on that.
+On Thursday 27 Apr 2017 17:43:56 Laurent Pinchart wrote:
+> Hi Ulrich,
+> 
+> Thank you for the patch.
+> 
+> On Thursday 27 Apr 2017 16:37:39 Ulrich Hecht wrote:
+> > The panel backlight is controlled through a GPIO and a PWM channel.
+> > 
+> > Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+> 
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> 
+> > ---
+> > 
+> >  arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts | 22 ++++++++++++++++
+> >  1 file changed, 22 insertions(+)
+> > 
+> > diff --git a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
+> > b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts index
+> > 14d9e51..abda84c
+> > 100644
+> > --- a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
+> > +++ b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
+> > @@ -133,6 +133,11 @@
+> >  		function = "i2c2";
+> >  	};
+> > 
+> > +	pwm1_pins: pwm {
+> > +		groups = "pwm1_a";
+> > +		function = "pwm1";
+> > +	};
+> > +
 
+This is alphabetically ordered here and isn't anymore in your devel branch.
+
+> >  	sdhi0_pins: sd0 {
+> >  		groups = "sdhi0_data4", "sdhi0_ctrl";
+> >  		function = "sdhi0";
+> > @@ -183,6 +188,16 @@
+> >  		interrupt-parent = <&gpio2>;
+> >  		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
+> >  	};
+> > +
+> > +	backlight: backlight {
+> > +		compatible = "pwm-backlight";
+> > +		pwms = <&pwm1 0 50000>;
+> > +
+> > +		brightness-levels = <256 128 64 16 8 4 0>;
+> > +		default-brightness-level = <6>;
+> > +
+> > +		enable-gpios = <&gpio6 7 GPIO_ACTIVE_HIGH>;
+> > +	};
+
+The backlight node needs to be added as a child of the root node, while you've 
+added it to the DU node in your devel branch.
+
+> >  };
+> >  
+> >  &extal_clk {
+> > @@ -235,6 +250,13 @@
+> >  	status = "okay";
+> >  };
+> > 
+> > +&pwm1 {
+> > +	pinctrl-0 = <&pwm1_pins>;
+> > +	pinctrl-names = "default";
+> > +
+> > +	status = "okay";
+> > +};
+> > +
+
+This is alphabetically ordered here and isn't anymore in your devel branch.
+
+Can you rebase your devel branch to fix this ?
+
+> >  &scif1 {
+> >  	pinctrl-0 = <&scif1_pins>;
+> >  	pinctrl-names = "default";
+
+-- 
 Regards,
--Paul
 
+Laurent Pinchart
