@@ -1,28 +1,48 @@
-From: Gottfried Haider <gottfried.haider@gmail.com>
-Subject: Re: [PATCH] pwm: Set class for exported channels in sysfs
-Date: Mon, 15 May 2017 13:07:26 +0200
-Message-ID: <CAPoCmYJpyY5Yza9UcJLYEq-u7H3ydaBTANrYk=n+46r6y1Vb7w@mail.gmail.com>
-References: <1493621998-4982-1-git-send-email-gottfried.haider@gmail.com>
+From: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH V2] pwm: tegra: Set maximum pwm clock source per SoC tapeout
+Date: Mon, 15 May 2017 20:47:16 +0530
+Message-ID: <5919C67C.8070006@nvidia.com>
+References: <1493733937-15822-1-git-send-email-ldewangan@nvidia.com> <908ed0dc-2a75-4348-357c-191fa7348974@nvidia.com> <5908C555.7090204@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ua0-f193.google.com ([209.85.217.193]:34177 "EHLO
-        mail-ua0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932418AbdEOLHs (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 15 May 2017 07:07:48 -0400
-Received: by mail-ua0-f193.google.com with SMTP id j17so9714918uag.1
-        for <linux-pwm@vger.kernel.org>; Mon, 15 May 2017 04:07:48 -0700 (PDT)
-In-Reply-To: <1493621998-4982-1-git-send-email-gottfried.haider@gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <5908C555.7090204-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Gottfried Haider <gottfried.haider@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: hsweeten@visionengravers.com, linux-pwm@vger.kernel.org
 
-Does anyone have time to review this patch?
 
-I wrote this with the Raspberry Pi in mind, but they want to see this
-at least acknowledged by upstream before carrying in their downstream
-tree (which seems quite sensible to me).
+On Tuesday 02 May 2017 11:13 PM, Laxman Dewangan wrote:
+>
+> On Tuesday 02 May 2017 08:53 PM, Jon Hunter wrote:
+>> On 02/05/17 15:05, Laxman Dewangan wrote:
+>>> The PWM hardware IP is taped-out with different maximum frequency
+>>> on different SoCs.
+>>>
+>>>  From HW team:
+>>>     Before Tegra186, it is 38.4MHz.
+>>>     In Tegra186, it is 102MHz.
+>>>
+>>> Add support to limit the clock source frequency to the maximum IP
+>>> supported frequency. Provide these values via SoC chipdata.
+>>>
+>>> Signed-off-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+>>>
+>>> ---
+>>> Changes from V1:
+>>> - Set the 48MHz maximum frequency for Tegra210 and earlier.
+>> I think that your changelog needs to be updated, because it still says
+>> 38.4MHz and not 48MHz.
+>>
+>
+> Oops, thanks for pointing.
+>
+> Thierry,
+> Do I need to recycle the patch or can be corrected when applying?
+> If there is any further review comment in code then I will recycle and 
+> correct it.
 
-Thanks in advance,
-Gottfried
+Thierry,
+Can you please review?
