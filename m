@@ -1,100 +1,179 @@
 From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH v2 0/8] r8a7795/6 Salvator-X PWM enablement
-Date: Mon, 15 May 2017 07:42:25 +0200
-Message-ID: <20170515054225.GB16545@verge.net.au>
+Subject: Re: [PATCH v2 4/8] arm64: dts: r8a7796: salvator-x: Add panel
+ backlight support
+Date: Mon, 15 May 2017 07:48:11 +0200
+Message-ID: <20170515054810.GC16545@verge.net.au>
 References: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com>
- <20170512091636.GG27979@verge.net.au>
- <4398514.qBghdda7X5@avalon>
+ <1493303863-23719-5-git-send-email-ulrich.hecht+renesas@gmail.com>
+ <1600524.FrhoU262MZ@avalon>
+ <1843896.Iy7IFdxQto@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from kirsty.vergenet.net ([202.4.237.240]:48744 "EHLO
+Received: from kirsty.vergenet.net ([202.4.237.240]:48796 "EHLO
         kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1758532AbdEOFma (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 15 May 2017 01:42:30 -0400
+        with ESMTP id S1758229AbdEOFsP (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 15 May 2017 01:48:15 -0400
 Content-Disposition: inline
-In-Reply-To: <4398514.qBghdda7X5@avalon>
+In-Reply-To: <1843896.Iy7IFdxQto@avalon>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Cc: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, geert@glider.be, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com
 
-On Fri, May 12, 2017 at 01:00:34PM +0300, Laurent Pinchart wrote:
+On Sat, May 13, 2017 at 09:56:12PM +0300, Laurent Pinchart wrote:
 > Hi Simon,
 > 
-> On Friday 12 May 2017 11:16:39 Simon Horman wrote:
-> > On Thu, Apr 27, 2017 at 04:37:35PM +0200, Ulrich Hecht wrote:
-> > > Hi!
-> > > 
-> > > Here's the revised series enabling PWMs on r8a7795 and r8a7796 Salvator-X
-> > > boards.
-> > > 
-> > > This revision addresses the issues found by Geert and adds Laurent's
-> > > backlight support patch, including a version for r8a7796.
-> > > 
-> > > CU
-> > > Uli
-> > > 
-> > > Changes since v1:
-> > > - PWM clock is S0D12, not S3D4
-> > > - dts: fix register lengths, add resets
-> > > - only enable one set of pins for each PWM
-> > > - add backlight support
-> > > 
-> > > Laurent Pinchart (1):
-> > >   arm64: dts: r8a7795: salvator-x: Add panel backlight support
-> > > 
-> > > Ryo Kodama (2):
-> > >   clk: renesas: r8a7796: add PWM clock
-> > >   arm64: dts: r8a7796-salvator-x: Add PWM device support
-> > > 
-> > > Takeshi Kihara (3):
-> > >   pinctrl: sh-pfc: r8a7796: Add PWM pins, groups and functions
-> > >   arm64: dts: r8a7796: Add PWM device nodes
-> > >   arm64: dts: r8a7795-salvator-x: Enable PWM2
-> > 
-> > I did not notice any regressions on salvator-x/r8a7796 after applying up
-> > the dts patches without the clk and pinctrl patches. So I have queued up
-> > the dts patches as follows:
-> > 
-> > * arm64: dts: r8a7796: Add PWM device nodes
-> >   -> applied
-> > 
-> > * arm64: dts: r8a7795: salvator-x: Add panel backlight support
-> > * arm64: dts: r8a7795-salvator-x: Enable PWM2
+> I'm afraid you added nodes in the wrong places when applying the patch to 
+> salvator-x.dtsi :-( Please see below.
 > 
-> I've asked Ulrich for a clarification on this patch as I'm not sure it's 
-> needed, but he hasn't answered yet. Could we delay merging it until the 
-> situation is clarified ?
+> On Thursday 27 Apr 2017 17:43:56 Laurent Pinchart wrote:
+> > Hi Ulrich,
+> > 
+> > Thank you for the patch.
+> > 
+> > On Thursday 27 Apr 2017 16:37:39 Ulrich Hecht wrote:
+> > > The panel backlight is controlled through a GPIO and a PWM channel.
+> > > 
+> > > Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+> > 
+> > Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> > 
+> > > ---
+> > > 
+> > >  arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts | 22 ++++++++++++++++
+> > >  1 file changed, 22 insertions(+)
+> > > 
+> > > diff --git a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
+> > > b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts index
+> > > 14d9e51..abda84c
+> > > 100644
+> > > --- a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
+> > > +++ b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
+> > > @@ -133,6 +133,11 @@
+> > >  		function = "i2c2";
+> > >  	};
+> > > 
+> > > +	pwm1_pins: pwm {
+> > > +		groups = "pwm1_a";
+> > > +		function = "pwm1";
+> > > +	};
+> > > +
+> 
+> This is alphabetically ordered here and isn't anymore in your devel branch.
 
-Sure, I will drop the "Enable PWM2" patch.
+Thanks, I  will move it from between scif_clk_pins and sdhi0_pins to
+between i2c2_pins and scif1_pins.
 
-> All other patches in this series should be fine.
+> > >  	sdhi0_pins: sd0 {
+> > >  		groups = "sdhi0_data4", "sdhi0_ctrl";
+> > >  		function = "sdhi0";
+> > > @@ -183,6 +188,16 @@
+> > >  		interrupt-parent = <&gpio2>;
+> > >  		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
+> > >  	};
+> > > +
+> > > +	backlight: backlight {
+> > > +		compatible = "pwm-backlight";
+> > > +		pwms = <&pwm1 0 50000>;
+> > > +
+> > > +		brightness-levels = <256 128 64 16 8 4 0>;
+> > > +		default-brightness-level = <6>;
+> > > +
+> > > +		enable-gpios = <&gpio6 7 GPIO_ACTIVE_HIGH>;
+> > > +	};
 > 
-> >   -> applied to salvator-x.dtsi instead of r8a7796-salvator-x.dts
-> > 
-> > * arm64: dts: r8a7796: salvator-x: Add panel backlight support
-> > * arm64: dts: r8a7796-salvator-x: Add PWM device support
-> >   -> not applied as they would be the same changes as those above
-> >      applied to salvator-x.dtsi
-> > 
-> > > Ulrich Hecht (2):
-> > >   arm64: dts: r8a7796: salvator-x: Add panel backlight support
-> > >   dt-bindings: pwm: Add R-Car M3-W device tree bindings
-> > 
-> > I took the liberty of reposting the dt-bindings patch with an updated To/Cc
-> > list.
-> > 
-> > >  .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   |   1 +
-> > >  arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts |  34 +++++
-> > >  arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts |  35 +++++
-> > >  arch/arm64/boot/dts/renesas/r8a7796.dtsi           |  70 ++++++++++
-> > >  drivers/clk/renesas/r8a7796-cpg-mssr.c             |   1 +
-> > >  drivers/pinctrl/sh-pfc/pfc-r8a7796.c               | 153 ++++++++++++++++
-> > >  6 files changed, 294 insertions(+)
+> The backlight node needs to be added as a child of the root node, while you've 
+> added it to the DU node in your devel branch.
+
+Thanks. I have moved it to between audio_clkout and reg_1p8v in
+the root node.
+
+> > >  };
+> > >  
+> > >  &extal_clk {
+> > > @@ -235,6 +250,13 @@
+> > >  	status = "okay";
+> > >  };
+> > > 
+> > > +&pwm1 {
+> > > +	pinctrl-0 = <&pwm1_pins>;
+> > > +	pinctrl-names = "default";
+> > > +
+> > > +	status = "okay";
+> > > +};
+> > > +
 > 
-> -- 
-> Regards,
-> 
-> Laurent Pinchart
-> 
+> This is alphabetically ordered here and isn't anymore in your devel branch.
+
+Thanks, I have moved it from between rcar_sound and scif1 to
+between pfc and rcar_sound. 
+
+> Can you rebase your devel branch to fix this ?
+
+Sure. I have the following in my local tree which I plan to push
+a later today.
+
+
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+
+[PATCH] arm64: dts: salvator-x: Add panel backlight support
+
+The panel backlight is controlled through a GPIO and a PWM channel.
+
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+[simon: apply to salvator-x.dtsi instead of r8a7795-salvator-x.dts]
+Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+---
+ arch/arm64/boot/dts/renesas/salvator-x.dtsi | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/renesas/salvator-x.dtsi b/arch/arm64/boot/dts/renesas/salvator-x.dtsi
+index d5eb022d247c..7240bcd75918 100644
+--- a/arch/arm64/boot/dts/renesas/salvator-x.dtsi
++++ b/arch/arm64/boot/dts/renesas/salvator-x.dtsi
+@@ -58,6 +58,16 @@
+ 		clock-frequency = <11289600>;
+ 	};
+ 
++	backlight: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&pwm1 0 50000>;
++
++		brightness-levels = <256 128 64 16 8 4 0>;
++		default-brightness-level = <6>;
++
++		enable-gpios = <&gpio6 7 GPIO_ACTIVE_HIGH>;
++	};
++
+ 	reg_1p8v: regulator0 {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "fixed-1.8V";
+@@ -358,6 +368,11 @@
+ 		function = "i2c2";
+ 	};
+ 
++	pwm1_pins: pwm {
++		groups = "pwm1_a";
++		function = "pwm1";
++	};
++
+ 	scif1_pins: scif1 {
+ 		groups = "scif1_data_a", "scif1_ctrl";
+ 		function = "scif1";
+@@ -443,6 +458,13 @@
+ 	};
+ };
+ 
++&pwm1 {
++	pinctrl-0 = <&pwm1_pins>;
++	pinctrl-names = "default";
++
++	status = "okay";
++};
++
+ &rcar_sound {
+ 	pinctrl-0 = <&sound_pins &sound_clk_pins>;
+ 	pinctrl-names = "default";
+-- 
+2.1.4
