@@ -1,48 +1,30 @@
-From: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH V2] pwm: tegra: Set maximum pwm clock source per SoC tapeout
-Date: Mon, 15 May 2017 20:47:16 +0530
-Message-ID: <5919C67C.8070006@nvidia.com>
-References: <1493733937-15822-1-git-send-email-ldewangan@nvidia.com> <908ed0dc-2a75-4348-357c-191fa7348974@nvidia.com> <5908C555.7090204@nvidia.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v4] dt-bindings: pwm: Add R-Car M3-W device tree bindings
+Date: Mon, 15 May 2017 15:57:46 -0500
+Message-ID: <20170515205746.ixqd4v44ek2mhjna@rob-hp-laptop>
+References: <1494576582-17881-1-git-send-email-horms+renesas@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <5908C555.7090204-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1494576582-17881-1-git-send-email-horms+renesas@verge.net.au>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Simon Horman <horms+renesas@verge.net.au>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
 
+On Fri, May 12, 2017 at 10:09:42AM +0200, Simon Horman wrote:
+> From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+> 
+> Add device tree bindings for the PWM controller found on R-Car M3-W SoCs.
+> 
+> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+> ---
+> v4
+> * Broke out of lager patchset on which it appears to have no dependencies
+> * Added Reviewed by tags 
+> ---
+>  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 1 +
+>  1 file changed, 1 insertion(+)
 
-On Tuesday 02 May 2017 11:13 PM, Laxman Dewangan wrote:
->
-> On Tuesday 02 May 2017 08:53 PM, Jon Hunter wrote:
->> On 02/05/17 15:05, Laxman Dewangan wrote:
->>> The PWM hardware IP is taped-out with different maximum frequency
->>> on different SoCs.
->>>
->>>  From HW team:
->>>     Before Tegra186, it is 38.4MHz.
->>>     In Tegra186, it is 102MHz.
->>>
->>> Add support to limit the clock source frequency to the maximum IP
->>> supported frequency. Provide these values via SoC chipdata.
->>>
->>> Signed-off-by: Laxman Dewangan <ldewangan-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
->>>
->>> ---
->>> Changes from V1:
->>> - Set the 48MHz maximum frequency for Tegra210 and earlier.
->> I think that your changelog needs to be updated, because it still says
->> 38.4MHz and not 48MHz.
->>
->
-> Oops, thanks for pointing.
->
-> Thierry,
-> Do I need to recycle the patch or can be corrected when applying?
-> If there is any further review comment in code then I will recycle and 
-> correct it.
-
-Thierry,
-Can you please review?
+Acked-by: Rob Herring <robh@kernel.org> 
