@@ -1,50 +1,57 @@
-From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH] pwm-bfin: Delete an error message for a failed memory
- allocation in bfin_pwm_probe()
-Date: Tue, 16 May 2017 11:46:37 +0200
-Message-ID: <98188bf2-25b4-b784-6d98-21d51ba5c432@users.sourceforge.net>
+From: "Gustavo A. R. Silva" <garsilva@embeddedor.com>
+Subject: [pwm] question about potential division by zero
+Date: Tue, 16 May 2017 16:56:53 -0500
+Message-ID: <20170516165653.Horde.Xe6MBOoWtIt1Jni0nYqF1GM@gator4166.hostgator.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mout.web.de ([212.227.17.12]:53997 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751080AbdEPJqt (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Tue, 16 May 2017 05:46:49 -0400
-Content-Language: en-US
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>
 
-From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Tue, 16 May 2017 11:40:09 +0200
 
-Omit an extra message for a memory allocation failure in this function.
+Hello everybody,
 
-This issue was detected by using the Coccinelle software.
+While looking into Coverity ID 1408721 I ran into the following piece  
+of code at /drivers/pwm/pwm-mediatek.c:77:
 
-Link: http://events.linuxfoundation.org/sites/events/files/slides/LCJ16-Refactor_Strings-WSang_0.pdf
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
----
- drivers/pwm/pwm-bfin.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+  77static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+  78                          int duty_ns, int period_ns)
+  79{
+  80        struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
+  81        struct clk *clk = pc->clks[MTK_CLK_PWM1 + pwm->hwpwm];
+  82        u32 resolution, clkdiv = 0;
+  83
+  84        resolution = NSEC_PER_SEC / clk_get_rate(clk);
+  85
+  86        while (period_ns / resolution > 8191) {
+  87                resolution *= 2;
+  88                clkdiv++;
+  89        }
+  90
+  91        if (clkdiv > 7)
+  92                return -EINVAL;
+  93
+  94        mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | BIT(3) | clkdiv);
+  95        mtk_pwm_writel(pc, pwm->hwpwm, PWMDWIDTH, period_ns / resolution);
+  96        mtk_pwm_writel(pc, pwm->hwpwm, PWMTHRES, duty_ns / resolution);
+  97
+  98        return 0;
+  99}
 
-diff --git a/drivers/pwm/pwm-bfin.c b/drivers/pwm/pwm-bfin.c
-index d2ed0a2a18e8..a9a88137f2cb 100644
---- a/drivers/pwm/pwm-bfin.c
-+++ b/drivers/pwm/pwm-bfin.c
-@@ -118,10 +118,8 @@ static int bfin_pwm_probe(struct platform_device *pdev)
- 	int ret;
- 
- 	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
--	if (!pwm) {
--		dev_err(&pdev->dev, "failed to allocate memory\n");
-+	if (!pwm)
- 		return -ENOMEM;
--	}
- 
- 	platform_set_drvdata(pdev, pwm);
- 
--- 
-2.13.0
+The issue here is that in case _clk_ is null, function clk_get_rate()  
+at line 84 will return zero and a division by zero will occur.
+
+So my question here is if there is any chance for _clk_ to be null at  
+line 81, hence ending up triggering a division by zero at line 84?
+
+I'm trying to figure out if this is a false positive or something that  
+needs to be fixed.
+
+I'd really appreciate any comment on this.
+
+Thank you
+--
+Gustavo A. R. Silva
