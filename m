@@ -1,113 +1,124 @@
-From: Mauro Carvalho Chehab <mchehab-JsYNTwtnfakRB7SZvlqPiA@public.gmane.org>
-Subject: [PATCH 00/29] Standardize doc formats - part 3
-Date: Thu, 18 May 2017 22:25:44 -0300
-Message-ID: <cover.1495157082.git.mchehab@s-opensource.com>
-Reply-To: rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <rtc-linux+bncBDN2TRMCWQGRBOUT7HEAKGQESX2WDPQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: Mauro Carvalho Chehab <mchehab-+2H6TX3emwOR5IQWS55C32Xnswh1EIUO@public.gmane.org>
-List-Post: <https://groups.google.com/group/rtc-linux/post>, <mailto:rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:rtc-linux+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/rtc-linux
-List-Subscribe: <https://groups.google.com/group/rtc-linux/subscribe>, <mailto:rtc-linux+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+712029733259+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/rtc-linux/subscribe>
-To: Linux Doc Mailing List <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Mauro Carvalho Chehab <mchehab-JsYNTwtnfakRB7SZvlqPiA@public.gmane.org>, Mauro Carvalho Chehab <mchehab-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Brian Norris <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Weinberger <richard-/L3Ra7n9ekc@public.gmane.org>, Cyrille Pitchen <cyrille.pitchen-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, kpreempt-tech-5NWGOfrQmneHXe+LvDLADg@public.gmane.org
+From: Mauro Carvalho Chehab <mchehab@s-opensource.com>
+Subject: [PATCH 05/29] pwm.txt: standardize document format
+Date: Thu, 18 May 2017 22:25:49 -0300
+Message-ID: <1eb33d27e057f4bdbd715fea8f03a9e7e3236b67.1495157082.git.mchehab@s-opensource.com>
+References: <cover.1495157082.git.mchehab@s-opensource.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:43767
+        "EHLO osg.samsung.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S932393AbdESB0V (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 18 May 2017 21:26:21 -0400
+In-Reply-To: <cover.1495157082.git.mchehab@s-opensource.com>
+In-Reply-To: <cover.1495157082.git.mchehab@s-opensource.com>
+References: <cover.1495157082.git.mchehab@s-opensource.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc: Mauro Carvalho Chehab <mchehab@s-opensource.com>, Mauro Carvalho Chehab <mchehab@infradead.org>, linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Marek Vasut <marek.vasut@gmail.com>, Richard Weinberger <richard@nod.at>, Cyrille Pitchen <cyrille.pitchen@atmel.com>, linux-mtd@lists.infradead.org, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 
-Each document under Documentation/*.txt has its own format.
-Some follow markup notations, some don't even have a title!
+Each text file under Documentation follows a different
+format. Some doesn't even have titles!
 
-In order to try to get some order on it, change the document
-style to the standard we're adopting after the adoption of
-ReStructured Text.
+Change its representation to follow the adopted standard,
+using ReST markups for it to be parseable by Sphinx:
 
-The documents touched on this series now build fine with
-Sphinx, if renamed to *.rst extension.
+- mark document title;
+- mark literal blocks;
+- better format the parameters.
 
-The main goal with this is to teach people by example about
-what format is expected on newer documents. It also helps
-to add those files to Kernel books.
+Signed-off-by: Mauro Carvalho Chehab <mchehab@s-opensource.com>
+---
+ Documentation/pwm.txt | 46 ++++++++++++++++++++++++++++------------------
+ 1 file changed, 28 insertions(+), 18 deletions(-)
 
-In order to make things more palatable, I'm spliting the
-conversion into three parts.
-
-This is	part 3.
-
-Mauro Carvalho Chehab (29):
-  pinctrl.txt: standardize document format
-  pnp.txt: standardize document format
-  preempt-locking.txt: standardize document format
-  printk-formats.txt: standardize document format
-  pwm.txt: standardize document format
-  rbtree.txt: standardize document format
-  remoteproc.txt: standardize document format
-  rfkill.txt: standardize document format
-  robust-futex-ABI.txt: standardize document format
-  robust-futexes.txt: standardize document format
-  rpmsg.txt: standardize document format
-  rtc.txt: standardize document format
-  SAK.txt: standardize document format
-  sgi-ioc4.txt: standardize document format
-  siphash.txt: standardize document format
-  SM501.txt: standardize document format
-  smsc_ece1099.txt: standardize document format
-  static-keys.txt: standardize document format
-  svga.txt: standardize document format
-  sync_file.txt: standardize document format
-  this_cpu_ops.txt: standardize document format
-  unaligned-memory-access.txt: standardize document format
-  vfio-mediated-device.txt: standardize document format
-  vfio.txt: standardize document format
-  video-output.txt: standardize document format
-  xillybus.txt: standardize document format
-  xz.txt: standardize document format
-  zorro.txt: standardize document format
-  dell_rbu.txt: standardize document format
-
- Documentation/SAK.txt                     |   65 +-
- Documentation/SM501.txt                   |    9 +-
- Documentation/dell_rbu.txt                |   81 ++-
- Documentation/pinctrl.txt                 | 1104 +++++++++++++++--------------
- Documentation/pnp.txt                     |  343 +++++----
- Documentation/preempt-locking.txt         |   40 +-
- Documentation/printk-formats.txt          |  416 ++++++-----
- Documentation/pwm.txt                     |   46 +-
- Documentation/rbtree.txt                  |   88 +--
- Documentation/remoteproc.txt              |  320 +++++----
- Documentation/rfkill.txt                  |   47 +-
- Documentation/robust-futex-ABI.txt        |   14 +-
- Documentation/robust-futexes.txt          |   12 +-
- Documentation/rpmsg.txt                   |  340 +++++----
- Documentation/rtc.txt                     |   44 +-
- Documentation/sgi-ioc4.txt                |    4 +
- Documentation/siphash.txt                 |  186 ++---
- Documentation/smsc_ece1099.txt            |    4 +
- Documentation/static-keys.txt             |  199 +++---
- Documentation/svga.txt                    |  146 ++--
- Documentation/sync_file.txt               |   23 +-
- Documentation/this_cpu_ops.txt            |   49 +-
- Documentation/unaligned-memory-access.txt |   57 +-
- Documentation/vfio-mediated-device.txt    |  252 +++----
- Documentation/vfio.txt                    |  261 +++----
- Documentation/video-output.txt            |   54 +-
- Documentation/xillybus.txt                |   29 +-
- Documentation/xz.txt                      |  182 ++---
- Documentation/zorro.txt                   |   59 +-
- 29 files changed, 2437 insertions(+), 2037 deletions(-)
-
+diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
+index 789b27c6ec99..8fbf0aa3ba2d 100644
+--- a/Documentation/pwm.txt
++++ b/Documentation/pwm.txt
+@@ -1,4 +1,6 @@
++======================================
+ Pulse Width Modulation (PWM) interface
++======================================
+ 
+ This provides an overview about the Linux PWM interface
+ 
+@@ -16,7 +18,7 @@ Users of the legacy PWM API use unique IDs to refer to PWM devices.
+ 
+ Instead of referring to a PWM device via its unique ID, board setup code
+ should instead register a static mapping that can be used to match PWM
+-consumers to providers, as given in the following example:
++consumers to providers, as given in the following example::
+ 
+ 	static struct pwm_lookup board_pwm_lookup[] = {
+ 		PWM_LOOKUP("tegra-pwm", 0, "pwm-backlight", NULL,
+@@ -40,9 +42,9 @@ New users should use the pwm_get() function and pass to it the consumer
+ device or a consumer name. pwm_put() is used to free the PWM device. Managed
+ variants of these functions, devm_pwm_get() and devm_pwm_put(), also exist.
+ 
+-After being requested, a PWM has to be configured using:
++After being requested, a PWM has to be configured using::
+ 
+-int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state);
++	int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state);
+ 
+ This API controls both the PWM period/duty_cycle config and the
+ enable/disable state.
+@@ -72,11 +74,14 @@ interface is provided to use the PWMs from userspace. It is exposed at
+ pwmchipN, where N is the base of the PWM chip. Inside the directory you
+ will find:
+ 
+-npwm - The number of PWM channels this chip supports (read-only).
++  npwm
++    The number of PWM channels this chip supports (read-only).
+ 
+-export - Exports a PWM channel for use with sysfs (write-only).
++  export
++    Exports a PWM channel for use with sysfs (write-only).
+ 
+-unexport - Unexports a PWM channel from sysfs (write-only).
++  unexport
++   Unexports a PWM channel from sysfs (write-only).
+ 
+ The PWM channels are numbered using a per-chip index from 0 to npwm-1.
+ 
+@@ -84,21 +89,26 @@ When a PWM channel is exported a pwmX directory will be created in the
+ pwmchipN directory it is associated with, where X is the number of the
+ channel that was exported. The following properties will then be available:
+ 
+-period - The total period of the PWM signal (read/write).
+-	Value is in nanoseconds and is the sum of the active and inactive
+-	time of the PWM.
++  period
++    The total period of the PWM signal (read/write).
++    Value is in nanoseconds and is the sum of the active and inactive
++    time of the PWM.
+ 
+-duty_cycle - The active time of the PWM signal (read/write).
+-	Value is in nanoseconds and must be less than the period.
++  duty_cycle
++    The active time of the PWM signal (read/write).
++    Value is in nanoseconds and must be less than the period.
+ 
+-polarity - Changes the polarity of the PWM signal (read/write).
+-	Writes to this property only work if the PWM chip supports changing
+-	the polarity. The polarity can only be changed if the PWM is not
+-	enabled. Value is the string "normal" or "inversed".
++  polarity
++    Changes the polarity of the PWM signal (read/write).
++    Writes to this property only work if the PWM chip supports changing
++    the polarity. The polarity can only be changed if the PWM is not
++    enabled. Value is the string "normal" or "inversed".
+ 
+-enable - Enable/disable the PWM signal (read/write).
+-	0 - disabled
+-	1 - enabled
++  enable
++    Enable/disable the PWM signal (read/write).
++
++	- 0 - disabled
++	- 1 - enabled
+ 
+ Implementing a PWM driver
+ -------------------------
 -- 
 2.9.4
-
-
--- 
-You received this message because you are subscribed to "rtc-linux".
-Membership options at http://groups.google.com/group/rtc-linux .
-Please read http://groups.google.com/group/rtc-linux/web/checklist
-before submitting a driver.
---- 
-You received this message because you are subscribed to the Google Groups "rtc-linux" group.
-To unsubscribe from this group and stop receiving emails from it, send an email to rtc-linux+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
-For more options, visit https://groups.google.com/d/optout.
