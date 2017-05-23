@@ -1,13 +1,14 @@
-From: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Subject: Re: [PATCH 3/3] mfd: twl: move header file out of I2C realm
-Date: Mon, 22 May 2017 16:37:58 -0700
-Message-ID: <20170522233758.GC12016@dtor-ws>
+Date: Tue, 23 May 2017 08:16:36 +0100
+Message-ID: <20170523071636.hiws54msfxpg6qkb@dell>
 References: <20170521220212.1404-1-wsa@the-dreams.de>
  <20170521220212.1404-4-wsa@the-dreams.de>
 Reply-To: rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <rtc-linux+bncBDP6N55ZUYDRBWXMRXEQKGQE25EBU6Q-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <rtc-linux+bncBDA7X7F2WUEBBWODR7EQKGQEGIEGCHA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Content-Disposition: inline
 In-Reply-To: <20170521220212.1404-4-wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
@@ -18,13 +19,14 @@ List-Subscribe: <https://groups.google.com/group/rtc-linux/subscribe>, <mailto:r
 List-Unsubscribe: <mailto:googlegroups-manage+712029733259+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
  <https://groups.google.com/group/rtc-linux/subscribe>
 To: Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
-Cc: linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Hartmut Knaack <knaack.h-Mmb7MZpHnFY@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Kishon Vijay Abraham I <kishon-l0cyMroinI0@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Wim
+Cc: linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Hartmut Knaack <knaack.h-Mmb7MZpHnFY@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kishon Vijay Abraham I <kishon-l0cyMroinI0@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, May 22, 2017 at 12:02:10AM +0200, Wolfram Sang wrote:
+On Mon, 22 May 2017, Wolfram Sang wrote:
+
 > include/linux/i2c is not for client devices. Move the header file to a
 > more appropriate location.
-> 
+>=20
 > Signed-off-by: Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
 > ---
 >  arch/arm/mach-omap2/common.h            | 2 +-
@@ -36,13 +38,17 @@ On Mon, May 22, 2017 at 12:02:10AM +0200, Wolfram Sang wrote:
 >  drivers/input/misc/twl4030-pwrbutton.c  | 2 +-
 >  drivers/input/misc/twl4030-vibra.c      | 2 +-
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-
 >  drivers/mfd/twl-core.c                  | 6 +++---
 >  drivers/mfd/twl4030-audio.c             | 2 +-
 >  drivers/mfd/twl4030-irq.c               | 2 +-
 >  drivers/mfd/twl4030-power.c             | 2 +-
 >  drivers/mfd/twl6030-irq.c               | 2 +-
+
+For my own reference:
+  Acked-for-MFD-by: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+
+I guess this will be going through the MFD tree?
+
 >  drivers/phy/phy-twl4030-usb.c           | 2 +-
 >  drivers/power/supply/twl4030_charger.c  | 2 +-
 >  drivers/pwm/pwm-twl-led.c               | 2 +-
@@ -53,11 +59,11 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 >  drivers/usb/phy/phy-twl6030-usb.c       | 2 +-
 >  drivers/video/backlight/pandora_bl.c    | 2 +-
 >  drivers/watchdog/twl4030_wdt.c          | 2 +-
->  include/linux/{i2c => mfd}/twl.h        | 0
+>  include/linux/{i2c =3D> mfd}/twl.h        | 0
 >  sound/soc/codecs/twl4030.c              | 2 +-
 >  25 files changed, 26 insertions(+), 26 deletions(-)
->  rename include/linux/{i2c => mfd}/twl.h (100%)
-> 
+>  rename include/linux/{i2c =3D> mfd}/twl.h (100%)
+>=20
 > diff --git a/arch/arm/mach-omap2/common.h b/arch/arm/mach-omap2/common.h
 > index 8cc6338fcb1288..b5ad7fcb80ed24 100644
 > --- a/arch/arm/mach-omap2/common.h
@@ -71,7 +77,8 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 >  #include <linux/i2c-omap.h>
 >  #include <linux/reboot.h>
 >  #include <linux/irqchip/irq-omap-intc.h>
-> diff --git a/arch/arm/mach-omap2/omap_twl.c b/arch/arm/mach-omap2/omap_twl.c
+> diff --git a/arch/arm/mach-omap2/omap_twl.c b/arch/arm/mach-omap2/omap_tw=
+l.c
 > index 1346b3ab34a5e3..295124b248ae3f 100644
 > --- a/arch/arm/mach-omap2/omap_twl.c
 > +++ b/arch/arm/mach-omap2/omap_twl.c
@@ -81,7 +88,7 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 >  #include <linux/kernel.h>
 > -#include <linux/i2c/twl.h>
 > +#include <linux/mfd/twl.h>
->  
+> =20
 >  #include "soc.h"
 >  #include "voltage.h"
 > diff --git a/drivers/gpio/gpio-twl4030.c b/drivers/gpio/gpio-twl4030.c
@@ -91,13 +98,14 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 > @@ -35,7 +35,7 @@
 >  #include <linux/of.h>
 >  #include <linux/irqdomain.h>
->  
+> =20
 > -#include <linux/i2c/twl.h>
 > +#include <linux/mfd/twl.h>
->  
+> =20
 >  /*
 >   * The GPIO "subchip" supports 18 GPIOs which can be configured as
-> diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+> diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-mad=
+c.c
 > index 0c74869a540ad3..5a64eda1652061 100644
 > --- a/drivers/iio/adc/twl4030-madc.c
 > +++ b/drivers/iio/adc/twl4030-madc.c
@@ -110,7 +118,8 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 >  #include <linux/i2c/twl4030-madc.h>
 >  #include <linux/module.h>
 >  #include <linux/stddef.h>
-> diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
+> diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gp=
+adc.c
 > index becbb0aef232b9..bc0e60b9da452e 100644
 > --- a/drivers/iio/adc/twl6030-gpadc.c
 > +++ b/drivers/iio/adc/twl6030-gpadc.c
@@ -122,8 +131,9 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 > +#include <linux/mfd/twl.h>
 >  #include <linux/iio/iio.h>
 >  #include <linux/iio/sysfs.h>
->  
-> diff --git a/drivers/input/keyboard/twl4030_keypad.c b/drivers/input/keyboard/twl4030_keypad.c
+> =20
+> diff --git a/drivers/input/keyboard/twl4030_keypad.c b/drivers/input/keyb=
+oard/twl4030_keypad.c
 > index 39e72b3219d8a4..f9f98ef1d98e3f 100644
 > --- a/drivers/input/keyboard/twl4030_keypad.c
 > +++ b/drivers/input/keyboard/twl4030_keypad.c
@@ -135,8 +145,9 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 > +#include <linux/mfd/twl.h>
 >  #include <linux/slab.h>
 >  #include <linux/of.h>
->  
-> diff --git a/drivers/input/misc/twl4030-pwrbutton.c b/drivers/input/misc/twl4030-pwrbutton.c
+> =20
+> diff --git a/drivers/input/misc/twl4030-pwrbutton.c b/drivers/input/misc/=
+twl4030-pwrbutton.c
 > index 1c13005b228fa7..b307cca1702226 100644
 > --- a/drivers/input/misc/twl4030-pwrbutton.c
 > +++ b/drivers/input/misc/twl4030-pwrbutton.c
@@ -146,10 +157,11 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 >  #include <linux/platform_device.h>
 > -#include <linux/i2c/twl.h>
 > +#include <linux/mfd/twl.h>
->  
+> =20
 >  #define PWR_PWRON_IRQ (1 << 0)
->  
-> diff --git a/drivers/input/misc/twl4030-vibra.c b/drivers/input/misc/twl4030-vibra.c
+> =20
+> diff --git a/drivers/input/misc/twl4030-vibra.c b/drivers/input/misc/twl4=
+030-vibra.c
 > index caa5a62c42fbe0..6c51d404874bbd 100644
 > --- a/drivers/input/misc/twl4030-vibra.c
 > +++ b/drivers/input/misc/twl4030-vibra.c
@@ -168,31 +180,32 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 > +++ b/drivers/mfd/twl-core.c
 > @@ -44,7 +44,7 @@
 >  #include <linux/regulator/machine.h>
->  
+> =20
 >  #include <linux/i2c.h>
 > -#include <linux/i2c/twl.h>
 > +#include <linux/mfd/twl.h>
->  
+> =20
 >  /* Register descriptions for audio */
 >  #include <linux/mfd/twl4030-audio.h>
 > @@ -173,7 +173,7 @@ static struct twl_private *twl_priv;
->  static struct twl_mapping twl4030_map[] = {
+>  static struct twl_mapping twl4030_map[] =3D {
 >  	/*
 >  	 * NOTE:  don't change this table without updating the
 > -	 * <linux/i2c/twl.h> defines for TWL4030_MODULE_*
 > +	 * <linux/mfd/twl.h> defines for TWL4030_MODULE_*
 >  	 * so they continue to match the order in this table.
 >  	 */
->  
-> @@ -344,7 +344,7 @@ static const struct regmap_config twl4030_regmap_config[4] = {
->  static struct twl_mapping twl6030_map[] = {
+> =20
+> @@ -344,7 +344,7 @@ static const struct regmap_config twl4030_regmap_conf=
+ig[4] =3D {
+>  static struct twl_mapping twl6030_map[] =3D {
 >  	/*
 >  	 * NOTE:  don't change this table without updating the
 > -	 * <linux/i2c/twl.h> defines for TWL4030_MODULE_*
 > +	 * <linux/mfd/twl.h> defines for TWL4030_MODULE_*
 >  	 * so they continue to match the order in this table.
 >  	 */
->  
+> =20
 > diff --git a/drivers/mfd/twl4030-audio.c b/drivers/mfd/twl4030-audio.c
 > index 0a1606480023f9..da16bf45fab43e 100644
 > --- a/drivers/mfd/twl4030-audio.c
@@ -205,7 +218,7 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 > +#include <linux/mfd/twl.h>
 >  #include <linux/mfd/core.h>
 >  #include <linux/mfd/twl4030-audio.h>
->  
+> =20
 > diff --git a/drivers/mfd/twl4030-irq.c b/drivers/mfd/twl4030-irq.c
 > index b46c0cfc27d958..86f8fd8e81e4b5 100644
 > --- a/drivers/mfd/twl4030-irq.c
@@ -216,15 +229,15 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 >  #include <linux/irqdomain.h>
 > -#include <linux/i2c/twl.h>
 > +#include <linux/mfd/twl.h>
->  
+> =20
 >  #include "twl-core.h"
->  
+> =20
 > diff --git a/drivers/mfd/twl4030-power.c b/drivers/mfd/twl4030-power.c
 > index f4b2c29d77e330..6b36932263ba78 100644
 > --- a/drivers/mfd/twl4030-power.c
 > +++ b/drivers/mfd/twl4030-power.c
 > @@ -25,7 +25,7 @@
->  
+> =20
 >  #include <linux/module.h>
 >  #include <linux/pm.h>
 > -#include <linux/i2c/twl.h>
@@ -245,7 +258,8 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 >  #include <linux/platform_device.h>
 >  #include <linux/suspend.h>
 >  #include <linux/of.h>
-> diff --git a/drivers/phy/phy-twl4030-usb.c b/drivers/phy/phy-twl4030-usb.c
+> diff --git a/drivers/phy/phy-twl4030-usb.c b/drivers/phy/phy-twl4030-usb.=
+c
 > index 2990b3965460e8..28f49902760d82 100644
 > --- a/drivers/phy/phy-twl4030-usb.c
 > +++ b/drivers/phy/phy-twl4030-usb.c
@@ -258,7 +272,8 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 >  #include <linux/regulator/consumer.h>
 >  #include <linux/err.h>
 >  #include <linux/slab.h>
-> diff --git a/drivers/power/supply/twl4030_charger.c b/drivers/power/supply/twl4030_charger.c
+> diff --git a/drivers/power/supply/twl4030_charger.c b/drivers/power/suppl=
+y/twl4030_charger.c
 > index 2f82d0e9ec1bf7..390bfde86ae39b 100644
 > --- a/drivers/power/supply/twl4030_charger.c
 > +++ b/drivers/power/supply/twl4030_charger.c
@@ -282,7 +297,7 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 > -#include <linux/i2c/twl.h>
 > +#include <linux/mfd/twl.h>
 >  #include <linux/slab.h>
->  
+> =20
 >  /*
 > diff --git a/drivers/pwm/pwm-twl.c b/drivers/pwm/pwm-twl.c
 > index 9de617b766801b..b7a45be998153b 100644
@@ -295,9 +310,10 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 > -#include <linux/i2c/twl.h>
 > +#include <linux/mfd/twl.h>
 >  #include <linux/slab.h>
->  
+> =20
 >  /*
-> diff --git a/drivers/regulator/twl-regulator.c b/drivers/regulator/twl-regulator.c
+> diff --git a/drivers/regulator/twl-regulator.c b/drivers/regulator/twl-re=
+gulator.c
 > index 6c9ec84121bde4..a4456db5849d06 100644
 > --- a/drivers/regulator/twl-regulator.c
 > +++ b/drivers/regulator/twl-regulator.c
@@ -308,9 +324,10 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 > -#include <linux/i2c/twl.h>
 > +#include <linux/mfd/twl.h>
 >  #include <linux/delay.h>
->  
+> =20
 >  /*
-> diff --git a/drivers/regulator/twl6030-regulator.c b/drivers/regulator/twl6030-regulator.c
+> diff --git a/drivers/regulator/twl6030-regulator.c b/drivers/regulator/tw=
+l6030-regulator.c
 > index 56aada38788776..219cbd910dbf52 100644
 > --- a/drivers/regulator/twl6030-regulator.c
 > +++ b/drivers/regulator/twl6030-regulator.c
@@ -321,7 +338,7 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 > -#include <linux/i2c/twl.h>
 > +#include <linux/mfd/twl.h>
 >  #include <linux/delay.h>
->  
+> =20
 >  struct twlreg_info {
 > diff --git a/drivers/rtc/rtc-twl.c b/drivers/rtc/rtc-twl.c
 > index c18c39212ce680..3472e79f2b1782 100644
@@ -330,13 +347,14 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 > @@ -31,7 +31,7 @@
 >  #include <linux/interrupt.h>
 >  #include <linux/of.h>
->  
+> =20
 > -#include <linux/i2c/twl.h>
 > +#include <linux/mfd/twl.h>
->  
+> =20
 >  enum twl_class {
->  	TWL_4030 = 0,
-> diff --git a/drivers/usb/phy/phy-twl6030-usb.c b/drivers/usb/phy/phy-twl6030-usb.c
+>  	TWL_4030 =3D 0,
+> diff --git a/drivers/usb/phy/phy-twl6030-usb.c b/drivers/usb/phy/phy-twl6=
+030-usb.c
 > index 628b600b02b174..b5dc077ed7d3c6 100644
 > --- a/drivers/usb/phy/phy-twl6030-usb.c
 > +++ b/drivers/usb/phy/phy-twl6030-usb.c
@@ -349,7 +367,8 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 >  #include <linux/regulator/consumer.h>
 >  #include <linux/err.h>
 >  #include <linux/slab.h>
-> diff --git a/drivers/video/backlight/pandora_bl.c b/drivers/video/backlight/pandora_bl.c
+> diff --git a/drivers/video/backlight/pandora_bl.c b/drivers/video/backlig=
+ht/pandora_bl.c
 > index 5d8bb8b201835d..a186bc677c7d80 100644
 > --- a/drivers/video/backlight/pandora_bl.c
 > +++ b/drivers/video/backlight/pandora_bl.c
@@ -360,9 +379,10 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 > -#include <linux/i2c/twl.h>
 > +#include <linux/mfd/twl.h>
 >  #include <linux/err.h>
->  
+> =20
 >  #define TWL_PWM0_ON		0x00
-> diff --git a/drivers/watchdog/twl4030_wdt.c b/drivers/watchdog/twl4030_wdt.c
+> diff --git a/drivers/watchdog/twl4030_wdt.c b/drivers/watchdog/twl4030_wd=
+t.c
 > index 9bf3cc0f396106..569fe85e52da75 100644
 > --- a/drivers/watchdog/twl4030_wdt.c
 > +++ b/drivers/watchdog/twl4030_wdt.c
@@ -372,9 +392,9 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 >  #include <linux/platform_device.h>
 > -#include <linux/i2c/twl.h>
 > +#include <linux/mfd/twl.h>
->  
+> =20
 >  #define TWL4030_WATCHDOG_CFG_REG_OFFS	0x3
->  
+> =20
 > diff --git a/include/linux/i2c/twl.h b/include/linux/mfd/twl.h
 > similarity index 100%
 > rename from include/linux/i2c/twl.h
@@ -392,19 +412,21 @@ Acked-by: Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.o
 >  #include <linux/slab.h>
 >  #include <linux/gpio.h>
 >  #include <sound/core.h>
-> -- 
-> 2.11.0
-> 
 
--- 
-Dmitry
+--=20
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
 
--- 
+--=20
 You received this message because you are subscribed to "rtc-linux".
 Membership options at http://groups.google.com/group/rtc-linux .
 Please read http://groups.google.com/group/rtc-linux/web/checklist
 before submitting a driver.
---- 
-You received this message because you are subscribed to the Google Groups "rtc-linux" group.
-To unsubscribe from this group and stop receiving emails from it, send an email to rtc-linux+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+---=20
+You received this message because you are subscribed to the Google Groups "=
+rtc-linux" group.
+To unsubscribe from this group and stop receiving emails from it, send an e=
+mail to rtc-linux+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
 For more options, visit https://groups.google.com/d/optout.
