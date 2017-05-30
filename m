@@ -1,68 +1,39 @@
-From: m18063 <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH v2 1/2] drivers: pwm: core: implement pwm dead-times
-Date: Tue, 30 May 2017 13:20:26 +0300
-Message-ID: <009fe3a4-1a89-90d4-0610-5162bfcfc056@microchip.com>
-References: <1494317990-9131-1-git-send-email-claudiu.beznea@microchip.com>
- <1494317990-9131-2-git-send-email-claudiu.beznea@microchip.com>
- <CAHp75Ve=v=50UmpOyi1guY3NVuk41U0Ma+_P__5NK7_dNr6gZg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHp75Ve=v=50UmpOyi1guY3NVuk41U0Ma+_P__5NK7_dNr6gZg@mail.gmail.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-pwm@vger.kernel.org, Linux Documentation List <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, nicolas.ferre@microchip.com
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: [PATCH 1/2] gpio: mvebu: fix blink counter register selection
+Date: Tue, 30 May 2017 14:28:47 +0200
+Message-ID: <20170530122848.2803-1-richard.genoud@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:36497 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751347AbdE3M3I (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 30 May 2017 08:29:08 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@free-electrons.com>, Jason Cooper <jason@lakedaemon.net>, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, Ralph Sennhauser <ralph.sennhauser@gmail.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@armlinux.org.uk>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>
 
-Hi Andy,
+The blink counter A was always selected because 0 was forced in the
+blink select counter register.
+The variable 'set' was obviously there to be used as the register value,
+selecting the B counter when id==1 and A counter when id==0.
 
-On 28.05.2017 01:28, Andy Shevchenko wrote:
-> On Tue, May 9, 2017 at 11:19 AM, Claudiu Beznea
-> <claudiu.beznea@microchip.com> wrote:
->> Extends PWM framework to support PWM dead-times.
->> The notions introduced are rising edge dead-time
->> and falling edge dead-time. These are useful for
->> PWM controllers with channels that have more than
->> one outputs.
->> The implementation add sysfs interface for
->> configuration. It extends the pwm_state structure
->> with two new members which keeps the values for
->> dead-times.
->> There were no additions in device tree for PWM channels
->> initialized by device tree.
-> 
-> AFAIU it's effectively called phase of the signal.
-It is actually a delay introduce by the PWM controller
-between it's outputs. As I said in cover letter, for
-PWM controllers with 2 output signals per channel
-(these signals are on different physical pins), this
-dead-time is the delay introduced b/w these two outputs.
-The term is a PWM literature specific.
-These delays are useful when PWM drives a half bridge
-converter where you need delays b/w positive edges of
-the signals which drivers the transistors to avoid
-shoot through scenarios.
+Tested on clearfog-pro (Marvell 88F6828)
 
-> It looks to me much simpler if you allow to have linked / virtual
-> channels instead of creating a lot of (duplicated) properties.My linked channels (the 2 outputs per PWM channel) are PWM controller
-specifics. The standard output of these linked channels is as
-follows:
-              __    __    __    __
-channel Xa __|  |__|  |__|  |__|  |__
-           __    __    __    __    __
-channel Xb   |__|  |__|  |__|  |__|
-             <--T-->
+Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+---
+ drivers/gpio/gpio-mvebu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This is the default output. To be able to use the controller
-in applications which needs delays b/w the fronts of this outputs
-I introduced the dead-time configuration. This allow the user
-to set it's PWM output as he needs in his setup (these dead-times,
-delays, if PWM is used e.g. in half bridge converters, depends
-on the transistors used).
-
-Thank you,
-Claudiu Beznea
-
-> 
+diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
+index 19a92efabbef..cdef2c78cb3b 100644
+--- a/drivers/gpio/gpio-mvebu.c
++++ b/drivers/gpio/gpio-mvebu.c
+@@ -747,7 +747,7 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+ 		set = U32_MAX;
+ 	else
+ 		return -EINVAL;
+-	writel_relaxed(0, mvebu_gpioreg_blink_counter_select(mvchip));
++	writel_relaxed(set, mvebu_gpioreg_blink_counter_select(mvchip));
+ 
+ 	mvpwm = devm_kzalloc(dev, sizeof(struct mvebu_pwm), GFP_KERNEL);
+ 	if (!mvpwm)
