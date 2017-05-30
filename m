@@ -1,88 +1,113 @@
-From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH v6 1/4] gpio: mvebu: Add limited PWM support
-Date: Tue, 30 May 2017 15:40:00 +0200
-Message-ID: <87tw42tqdr.fsf@free-electrons.com>
-References: <20170414154056.32055-1-ralph.sennhauser@gmail.com>
-        <20170414154056.32055-2-ralph.sennhauser@gmail.com>
-        <CACRpkdYPp6pBemTT_a4V6a-Qbk2475qOOxWJOhfVaEz=cojOvA@mail.gmail.com>
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: Re: [PATCH 2/2] gpio: mvebu: fix gpio bank registration when pwm is used
+Date: Tue, 30 May 2017 16:45:24 +0200
+Message-ID: <CACQ1gAhy_S16YfxQ1eOJUX45rdnjrsPFckYJm_1OHGW0CThg0g@mail.gmail.com>
+References: <20170530122848.2803-1-richard.genoud@gmail.com>
+ <20170530122848.2803-2-richard.genoud@gmail.com> <87y3tetrg4.fsf@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:51154 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751249AbdE3NkN (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 30 May 2017 09:40:13 -0400
-In-Reply-To: <CACRpkdYPp6pBemTT_a4V6a-Qbk2475qOOxWJOhfVaEz=cojOvA@mail.gmail.com>
-        (Linus Walleij's message of "Mon, 24 Apr 2017 11:18:30 +0200")
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <87y3tetrg4.fsf@free-electrons.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Gregory CLEMENT <gregory.clement@free-electrons.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>, Andrew Lunn <andrew@lunn.ch>, Jason Cooper <jason@lakedaemon.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-pwm@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, Ralph Sennhauser <ralph.sennhauser@gmail.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@armlinux.org.uk>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Ralph Sennhauser <ralph.sennhauser@gmail.com>, Linus Walleij <linus.walleij@linaro.org>
-Cc: "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jason Cooper <jason@lakedaemon.net>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Russell King <linux@armlinux.org.uk>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Richard Genoud <richard.genoud@gmail.com>
 
-Hi Ralph and Linus,
+2017-05-30 15:16 GMT+02:00 Gregory CLEMENT <gregory.clement@free-electrons.com>:
+> Hi Richard,
+Hi Greg !
 
-I resurrect this thread following the series post by Richard Genoud:
-http://lists.infradead.org/pipermail/linux-arm-kernel/2017-May/509461.html
-
- On lun., avril 24 2017, Linus Walleij <linus.walleij@linaro.org> wrote:
-
-> On Fri, Apr 14, 2017 at 5:40 PM, Ralph Sennhauser
-> <ralph.sennhauser@gmail.com> wrote:
 >
->> From: Andrew Lunn <andrew@lunn.ch>
->>
->> Armada 370/XP devices can 'blink' GPIO lines with a configurable on
->> and off period. This can be modelled as a PWM.
->>
->> However, there are only two sets of PWM configuration registers for
->> all the GPIO lines. This driver simply allows a single GPIO line per
->> GPIO chip of 32 lines to be used as a PWM. Attempts to use more return
->> EBUSY.
->>
->> Due to the interleaving of registers it is not simple to separate the
->> PWM driver from the GPIO driver. Thus the GPIO driver has been
->> extended with a PWM driver.
->>
->> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
->> URL: https://patchwork.ozlabs.org/patch/427287/
->> URL: https://patchwork.ozlabs.org/patch/427295/
->> [Ralph Sennhauser:
->>   * Port forward
->>   * Merge PWM portion into gpio-mvebu.c
->>   * Switch to atomic PWM API
->>   * Add new compatible string marvell,armada-370-xp-gpio
-
-The fact that Richard managed to run the code on Armada 38x draw my
-attention on the documentation that need to be amend.
-
-And it makes me realized that I missed the bad naming of the compatible
-string. We don't use family name for the compatible string, but the name
-of the first SoC compatible with. So in this case we should use
-"marvell,armada-370", as it is still in rc and not yet deployed. What
-about fixing the name now?
-
-I can send a patch for it if you want and fix the dts that are still in
-my mvebu branch.
-
-Thanks,
-
-Gregory
-
-
->>   * Update and merge documentation patch
->>   * Update MAINTAINERS]
->> Signed-off-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
->> Tested-by: Andrew Lunn <andrew@lunn.ch>
->> Acked-by: Thierry Reding <thierry.reding@gmail.com>
->> Acked-by: Rob Herring <robh@kernel.org>
+>  On mar., mai 30 2017, Richard Genoud <richard.genoud@gmail.com> wrote:
 >
-> Patch applied.
+>> If more than one gpio bank has the "pwm" property, only one will be
+>> registered successfully, all the others will fail with:
+>> mvebu-gpio: probe of f1018140.gpio failed with error -17
+>>
+>> That's because in alloc_pwms(), the chip->base (aka "int pwm"), was not
+>> set (thus, ==0) ; and 0 is a meaningful start value in alloc_pwm().
+>> What was intended is chip->base = -1.
+>> Like that, the numbering will be done auto-magically
+>>
+>> Tested on clearfog-pro (Marvell 88F6828)
+>>
+>> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
+>> ---
+>>  drivers/gpio/gpio-mvebu.c | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
+>> index cdef2c78cb3b..4734923e11fd 100644
+>> --- a/drivers/gpio/gpio-mvebu.c
+>> +++ b/drivers/gpio/gpio-mvebu.c
+>> @@ -768,6 +768,7 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
+>>       mvpwm->chip.dev = dev;
+>>       mvpwm->chip.ops = &mvebu_pwm_ops;
+>>       mvpwm->chip.npwm = mvchip->chip.ngpio;
+>> +     mvpwm->chip.base = -1;
 >
-> Yours,
-> Linus Walleij
+> Why not using
+> mvpwm->chip.base = id * MVEBU_MAX_GPIO_PER_BANK;
+> as it is done in the mvebu_gpio_probe() function?
+Yes, that was my first move:
+mvpwm->chip.base = mvchip->chip.base;
 
--- 
-Gregory Clement, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+But after some reflexion, mvpwm->chip.base is not the GPIO base, it's
+the PWM base,
+(mvpwm->chip is a struct pwm_chip), so it would we weird to have
+"holes" in the declared PWMs.
+I'm not clear, so here's an example:
+If, in the DTS, we have:
+            gpio0: gpio@18100 {
+                compatible = "marvell,armada-370-xp-gpio",
+                         "marvell,orion-gpio";
+                reg = <0x18100 0x40>, <0x181c0 0x08>;
+                reg-names = "gpio";  /* "pwm" missing */
+[...]
+            gpio1: gpio@18140 {
+                compatible = "marvell,armada-370-xp-gpio",
+                         "marvell,orion-gpio";
+                reg = <0x18140 0x40>, <0x181c8 0x08>;
+                reg-names = "gpio", "pwm";
+In this case, if gpio0 is not declared as PWM capable, the PWM
+numbering will start at 32 if we have
+mvpwm->chip.base = mvchip->chip.base;
+but it will start at 0 if we have mvpwm->chip.base = -1;
+
+The pros for having mvpwm->chip.base = mvchip->chip.base; is mainly
+the stable numbering:
+if we add the "pwm" feature to gpio0 afterwards, the pwm numbering in
+sysfs will stay the same.
+And if we have mvpwm->chip.base = -1; the pwm numbering will be shifted.
+
+Looking back at the V5 of this patch
+https://www.spinics.net/lists/kernel/msg2484889.html
+There was the line:
+mvpwm->chip.base = mvchip->chip.base;
+I guess it got lost in the v6 rebase.
+
+So I could change it back, but I'm not sure which one is better.
+
+>
+> I think that if you use base = -1, then the number start from (512 -
+> number of pin already use). So starting from a low number for one
+> compatible and a high number for an other compatible could be confusing.
+>
+> Besides that I agree that mvpwm->chip.base must be initialized and here
+> again for adding mor context to this patch, we could add:
+>
+> Fixes: 757642f9a584 ("gpio: mvebu: Add limited PWM support")
+yes, definitely !
+should I resend the patch with it or the maintainer will add it ?
+
+> Gregory
+>
+>>
+>>       spin_lock_init(&mvpwm->lock);
+>>
+>
+> --
+> Gregory Clement, Free Electrons
+> Kernel, drivers, real-time and embedded Linux
+> development, consulting, training and support.
+> http://free-electrons.com
