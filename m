@@ -1,92 +1,70 @@
-From: Gregory CLEMENT <gregory.clement@free-electrons.com>
-Subject: Re: [PATCH v6 1/4] gpio: mvebu: Add limited PWM support
-Date: Wed, 31 May 2017 14:36:21 +0200
-Message-ID: <87bmq9td8a.fsf@free-electrons.com>
-References: <20170414154056.32055-1-ralph.sennhauser@gmail.com>
-        <20170414154056.32055-2-ralph.sennhauser@gmail.com>
-        <CACRpkdYPp6pBemTT_a4V6a-Qbk2475qOOxWJOhfVaEz=cojOvA@mail.gmail.com>
-        <87tw42tqdr.fsf@free-electrons.com>
-        <20170530165101.73ae0bf6@gmail.com>
-        <CACQ1gAhhVEem9=We3mTJwhDbLDNw+_uyr2LpAyjQSk0iJ4O6Ew@mail.gmail.com>
-        <20170531142614.5f32fca6@gmail.com>
+From: Chen-Yu Tsai <wens@csie.org>
+Subject: Re: [PATCH v2 1/3] pwm: sun4i: improve hardware read out
+Date: Wed, 31 May 2017 22:13:55 +0800
+Message-ID: <CAGb2v64Vhr_s0LuwtN7pFZ0eknTcdE=2pHdDKZpXXF4xUKowfw@mail.gmail.com>
+References: <20170530193209.19247-1-alexandre.belloni@free-electrons.com>
+ <20170530193209.19247-2-alexandre.belloni@free-electrons.com>
+ <CAGb2v65sznGc9Tp6RSGpQ6KND4BxRFkfHZag5AFrKLBoZJ-r8w@mail.gmail.com> <20170531073516.jrpgtu7nlkuizvfx@piout.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:38944 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751000AbdEaMgX (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 31 May 2017 08:36:23 -0400
-In-Reply-To: <20170531142614.5f32fca6@gmail.com> (Ralph Sennhauser's message
-        of "Wed, 31 May 2017 14:26:14 +0200")
+Received: from smtp.csie.ntu.edu.tw ([140.112.30.61]:44558 "EHLO
+        smtp.csie.ntu.edu.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751022AbdEaOOU (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 31 May 2017 10:14:20 -0400
+In-Reply-To: <20170531073516.jrpgtu7nlkuizvfx@piout.net>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-Cc: Richard Genoud <richard.genoud@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jason Cooper <jason@lakedaemon.net>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Russell King <linux@armlinux.org.uk>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>, Olliver Schinagl <o.schinagl@ultimaker.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Jonathan Liu <net147@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>
 
-Hi Ralph,
- 
- On mer., mai 31 2017, Ralph Sennhauser <ralph.sennhauser@gmail.com> wrote:
+On Wed, May 31, 2017 at 3:35 PM, Alexandre Belloni
+<alexandre.belloni@free-electrons.com> wrote:
+> On 31/05/2017 at 11:34:43 +0800, Chen-Yu Tsai wrote:
+>> On Wed, May 31, 2017 at 3:32 AM, Alexandre Belloni
+>> <alexandre.belloni@free-electrons.com> wrote:
+>> > +static void sun4i_pwm_get_state(struct pwm_chip *chip,
+>> > +                               struct pwm_device *pwm,
+>> > +                               struct pwm_state *state)
+>> > +{
+>> > +       struct sun4i_pwm_chip *sun4i_pwm = to_sun4i_pwm_chip(chip);
+>> > +       u64 clk_rate, tmp;
+>> > +       u32 val;
+>> > +       unsigned int prescaler;
+>> > +
+>> > +       clk_rate = clk_get_rate(sun4i_pwm->clk);
+>> > +
+>> > +       val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+>> > +
+>> > +       if ((val == PWM_PRESCAL_MASK) && sun4i_pwm->data->has_prescaler_bypass)
+>> > +               prescaler = 1;
+>> > +       else
+>> > +               prescaler = prescaler_table[PWM_REG_PRESCAL(val, pwm->hwpwm)];
+>> > +
+>> > +       if (prescaler == 0)
+>> > +               return;
+>>
+>> This looks like an invalid state. How does the PWM core handle it?
+>> Or rather, how does the driver signal an invalid state?
+>>
+>
+> It doesn't and it doesn't really matter, if the IP is in an invalid
+> state, this bails out without modifying the know state so the core will
+> behave as if there was no hardware read out and everything will be
+> synchronized on the first ->apply() call.
 
-> On Tue, 30 May 2017 17:35:33 +0200
-> Richard Genoud <richard.genoud@gmail.com> wrote:
->   
->> Hi Ralph,
->> 
->> I have the functional spec (no NDA needed, but it's not the full
->> one) : A38x-Functional-Spec-PU0A.pdf
->> https://marvellcorp.wufoo.com/forms/marvell-armada-38x-functional-specifications/
->> (just an email needed, no blood signing nor chicken slaughtering)
->> There are the GPIO Blink Counter A/B is ON/OFF Duration Registers as
->> well as the Blink Enable Registers.
->> 
->
-> Hi Richard,
->
-> Thanks for the link, as the terms only talk about materials obtained
-> from www.marvell.com this one from wufoo.com should be exempt ;)
-> Also at a glance looks like the complete one. Also says "Functional
-> Specifications – Unrestricted". Maybe you want to re-download it.
->
-> Regardless, as you said the blinking registers are all described. So
-> it's probably safe to assume 39x will have them as well.
+Cool.
 
-I guess you meant 38x. (But I suppose it is also true for 39x)
-
-
->
->> I've done a pwm with different periods (8ms, 4ms, 100ns).
->> Looking at the scope, it seems to work pretty well :)
->> 
->> >>
->> >> And it makes me realized that I missed the bad naming of the
->> >> compatible string. We don't use family name for the compatible
->> >> string, but the name of the first SoC compatible with. So in this
->> >> case we should use "marvell,armada-370", as it is still in rc and
->> >> not yet deployed. What about fixing the name now?  
->
-> Gregory,
->
-> Knowing it's not limited to 370/XP makes "marvell,armada-370-gpio" an
-> obviously better choice for the compatible string. Guess you didn't
-> mean to drop the "-gpio" suffix.
-
-You're right I meant "marvell,armada-370-gpio".
+Thanks
+ChenYu
 
 >
-> Will work on a patch changing the compatible string / documentation for
-> 4.12 and an updated patch for armada 370/XP dtsi as well as a patch
-> adding the properties to 38x for 4.13+. Expect them tomorrow, probably
-> won't get around to it today anymore.
-
-Great!
-
-Thanks,
-
-Gregory
-
--- 
-Gregory Clement, Free Electrons
-Kernel, drivers, real-time and embedded Linux
-development, consulting, training and support.
-http://free-electrons.com
+>> Otherwise,
+>>
+>> Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+>>
+>
+> --
+> Alexandre Belloni, Free Electrons
+> Embedded Linux and Kernel engineering
+> http://free-electrons.com
