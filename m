@@ -1,43 +1,61 @@
 From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH 00/58] ARM: at91: rework Atmel TCB drivers
-Date: Wed, 31 May 2017 09:21:15 +0200
-Message-ID: <20170531072115.apeyzsqmfxa2qnd6@piout.net>
-References: <20170530215139.9983-1-alexandre.belloni@free-electrons.com>
- <da7069d4-e5b3-f10f-0816-ff973195aff6@axentia.se>
+Subject: Re: [PATCH v2 1/3] pwm: sun4i: improve hardware read out
+Date: Wed, 31 May 2017 09:35:16 +0200
+Message-ID: <20170531073516.jrpgtu7nlkuizvfx@piout.net>
+References: <20170530193209.19247-1-alexandre.belloni@free-electrons.com>
+ <20170530193209.19247-2-alexandre.belloni@free-electrons.com>
+ <CAGb2v65sznGc9Tp6RSGpQ6KND4BxRFkfHZag5AFrKLBoZJ-r8w@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([62.4.15.54]:60067 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750902AbdEaHfS (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 31 May 2017 03:35:18 -0400
 Content-Disposition: inline
-In-Reply-To: <da7069d4-e5b3-f10f-0816-ff973195aff6@axentia.se>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Rosin <peda@axentia.se>
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Antoine Aubert <a.aubert@overkiz.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, devicetree@vger.kernel.org, Douglas Gilbert <dgilbert@interlog.com>, Fabio Porcedda <fabio.porcedda@gmail.com>, Gregory CLEMENT <gregory.clement@free-electrons.com>, Gregory Hermant <gregory.hermant@calao-systems.com>, Joachim Eastwood <manabian@gmail.com>, linux-pwm@vger.kernel.org, Marek Vasut <marex@denx.de>, Martin Reimann <martin.reimann@egnite.de>, Raashid Muhammed <raashidmuhammed@zilogic.com>, Rob Herring <robh+dt@kernel.org>, Rodolfo Giometti <giometti@linux.it>, Sergio Tanzilli <tanzilli@acmesystems.it>
+In-Reply-To: <CAGb2v65sznGc9Tp6RSGpQ6KND4BxRFkfHZag5AFrKLBoZJ-r8w@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Chen-Yu Tsai <wens@csie.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Olliver Schinagl <o.schinagl@ultimaker.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Jonathan Liu <net147@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>
 
-Hi,
+On 31/05/2017 at 11:34:43 +0800, Chen-Yu Tsai wrote:
+> On Wed, May 31, 2017 at 3:32 AM, Alexandre Belloni
+> <alexandre.belloni@free-electrons.com> wrote:
+> > +static void sun4i_pwm_get_state(struct pwm_chip *chip,
+> > +                               struct pwm_device *pwm,
+> > +                               struct pwm_state *state)
+> > +{
+> > +       struct sun4i_pwm_chip *sun4i_pwm = to_sun4i_pwm_chip(chip);
+> > +       u64 clk_rate, tmp;
+> > +       u32 val;
+> > +       unsigned int prescaler;
+> > +
+> > +       clk_rate = clk_get_rate(sun4i_pwm->clk);
+> > +
+> > +       val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+> > +
+> > +       if ((val == PWM_PRESCAL_MASK) && sun4i_pwm->data->has_prescaler_bypass)
+> > +               prescaler = 1;
+> > +       else
+> > +               prescaler = prescaler_table[PWM_REG_PRESCAL(val, pwm->hwpwm)];
+> > +
+> > +       if (prescaler == 0)
+> > +               return;
+> 
+> This looks like an invalid state. How does the PWM core handle it?
+> Or rather, how does the driver signal an invalid state?
+> 
 
-On 31/05/2017 at 08:34:00 +0200, Peter Rosin wrote:
-> On 2017-05-30 23:50, Alexandre Belloni wrote:
-> > Hi,
-> > 
-> > This series reworks the Atmel Timer counter Block drivers. Those blocks
-> > each have 3 counters with 2 channels each and can be used for
-> > multiple functions:
-> >  - timers
-> >  - PWMs
-> >  - Quadrature decoders
-> >  - Stepper motor counters
-> 
-> I'd like to test this, but I have a hard time doing that since all I got
-> was this cover letter and a single DT-only patch.
-> 
-> I understand that you were reluctant to spam too many people with
-> dozens of patches, but perhaps the series can be fetched from
-> somewhere?
-> 
+It doesn't and it doesn't really matter, if the IP is in an invalid
+state, this bails out without modifying the know state so the core will
+behave as if there was no hardware read out and everything will be
+synchronized on the first ->apply() call.
 
-Sure, I've pushed the branch here:
-https://github.com/alexandrebelloni/linux/tree/at91-tcb-v3
+> Otherwise,
+> 
+> Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+> 
 
 -- 
 Alexandre Belloni, Free Electrons
