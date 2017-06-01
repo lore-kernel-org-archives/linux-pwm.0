@@ -1,70 +1,30 @@
-From: Chen-Yu Tsai <wens@csie.org>
-Subject: Re: [PATCH v2 1/3] pwm: sun4i: improve hardware read out
-Date: Wed, 31 May 2017 22:13:55 +0800
-Message-ID: <CAGb2v64Vhr_s0LuwtN7pFZ0eknTcdE=2pHdDKZpXXF4xUKowfw@mail.gmail.com>
-References: <20170530193209.19247-1-alexandre.belloni@free-electrons.com>
- <20170530193209.19247-2-alexandre.belloni@free-electrons.com>
- <CAGb2v65sznGc9Tp6RSGpQ6KND4BxRFkfHZag5AFrKLBoZJ-r8w@mail.gmail.com> <20170531073516.jrpgtu7nlkuizvfx@piout.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Richard Genoud <richard.genoud@gmail.com>
+Subject: [PATCHv2 0/2] gpio: mvebu: fixes for PWM/blink
+Date: Thu,  1 Jun 2017 14:18:24 +0200
+Message-ID: <20170601121826.14685-1-richard.genoud@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from smtp.csie.ntu.edu.tw ([140.112.30.61]:44558 "EHLO
-        smtp.csie.ntu.edu.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751022AbdEaOOU (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 31 May 2017 10:14:20 -0400
-In-Reply-To: <20170531073516.jrpgtu7nlkuizvfx@piout.net>
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:35251 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750952AbdFAMSs (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 1 Jun 2017 08:18:48 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>, Olliver Schinagl <o.schinagl@ultimaker.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Jonathan Liu <net147@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@free-electrons.com>, Jason Cooper <jason@lakedaemon.net>, linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, Ralph Sennhauser <ralph.sennhauser@gmail.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@armlinux.org.uk>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>
 
-On Wed, May 31, 2017 at 3:35 PM, Alexandre Belloni
-<alexandre.belloni@free-electrons.com> wrote:
-> On 31/05/2017 at 11:34:43 +0800, Chen-Yu Tsai wrote:
->> On Wed, May 31, 2017 at 3:32 AM, Alexandre Belloni
->> <alexandre.belloni@free-electrons.com> wrote:
->> > +static void sun4i_pwm_get_state(struct pwm_chip *chip,
->> > +                               struct pwm_device *pwm,
->> > +                               struct pwm_state *state)
->> > +{
->> > +       struct sun4i_pwm_chip *sun4i_pwm = to_sun4i_pwm_chip(chip);
->> > +       u64 clk_rate, tmp;
->> > +       u32 val;
->> > +       unsigned int prescaler;
->> > +
->> > +       clk_rate = clk_get_rate(sun4i_pwm->clk);
->> > +
->> > +       val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
->> > +
->> > +       if ((val == PWM_PRESCAL_MASK) && sun4i_pwm->data->has_prescaler_bypass)
->> > +               prescaler = 1;
->> > +       else
->> > +               prescaler = prescaler_table[PWM_REG_PRESCAL(val, pwm->hwpwm)];
->> > +
->> > +       if (prescaler == 0)
->> > +               return;
->>
->> This looks like an invalid state. How does the PWM core handle it?
->> Or rather, how does the driver signal an invalid state?
->>
->
-> It doesn't and it doesn't really matter, if the IP is in an invalid
-> state, this bails out without modifying the know state so the core will
-> behave as if there was no hardware read out and everything will be
-> synchronized on the first ->apply() call.
+These are 2 fixes for gpio-mvebu, related to the PWM support introduced
+by commit 757642f9a584 ("gpio: mvebu: Add limited PWM support")
+As that commit was merged in 4.12-rc1, I guess these commits are 4.12
+material.
 
-Cool.
+Changes from v1:
+ - Add tags Fixes: and Reviewed-by:
+ - Add some comments to motivate the mvpwm->chip->base = -1 choice
+instead of mvpwm->chip->base = mvchip->chip.base
 
-Thanks
-ChenYu
+Richard Genoud (2):
+  gpio: mvebu: fix blink counter register selection
+  gpio: mvebu: fix gpio bank registration when pwm is used
 
->
->> Otherwise,
->>
->> Reviewed-by: Chen-Yu Tsai <wens@csie.org>
->>
->
-> --
-> Alexandre Belloni, Free Electrons
-> Embedded Linux and Kernel engineering
-> http://free-electrons.com
+ drivers/gpio/gpio-mvebu.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
