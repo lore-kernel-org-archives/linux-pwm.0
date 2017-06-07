@@ -1,31 +1,43 @@
-From: Jerome Brunet <jbrunet-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH 0/2] pwm: add pwm AO on meson gx
-Date: Wed,  7 Jun 2017 15:30:11 +0200
-Message-ID: <20170607133013.4766-1-jbrunet@baylibre.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kevin Hilman <khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Neil Armstrong <narmstrong-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-Cc: Jerome Brunet <jbrunet-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Carlo Caione <carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Jerome Brunet <jbrunet@baylibre.com>
+Subject: [PATCH 1/2] dt-bindings: pwm: meson: add comptabible for gxbb ao pwms
+Date: Wed,  7 Jun 2017 15:30:12 +0200
+Message-ID: <20170607133013.4766-2-jbrunet@baylibre.com>
+References: <20170607133013.4766-1-jbrunet@baylibre.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f52.google.com ([74.125.82.52]:35360 "EHLO
+        mail-wm0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751507AbdFGNaT (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jun 2017 09:30:19 -0400
+Received: by mail-wm0-f52.google.com with SMTP id x70so57997055wme.0
+        for <linux-pwm@vger.kernel.org>; Wed, 07 Jun 2017 06:30:19 -0700 (PDT)
+In-Reply-To: <20170607133013.4766-1-jbrunet@baylibre.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Kevin Hilman <khilman@baylibre.com>, Neil Armstrong <narmstrong@baylibre.com>
+Cc: Jerome Brunet <jbrunet@baylibre.com>, Carlo Caione <carlo@caione.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 
-The pwms found in the AO domain of the meson gx family have different
-clock sources than the one found in the EE domain. The AO pwms have only
-2 connected clock input which are clk81 and the crytal.
+Add compatible string to properly handle the PWMs found in the AO domain
+of the gxbb (and gxl) family
 
-This patchset adds the necessary compatible and the clock data for it.
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+---
+ Documentation/devicetree/bindings/pwm/pwm-meson.txt | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Jerome Brunet (2):
-  dt-bindings: pwm: meson: add comptabible for gxbb ao pwms
-  pwm: meson: add compatible for the gxbb ao pwms
-
- .../devicetree/bindings/pwm/pwm-meson.txt          |  4 ++-
- drivers/pwm/pwm-meson.c                            | 32 ++++++++++++++++++++--
- 2 files changed, 32 insertions(+), 4 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-meson.txt b/Documentation/devicetree/bindings/pwm/pwm-meson.txt
+index 5376a4468cb6..5b07bebbf6f7 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-meson.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-meson.txt
+@@ -2,7 +2,9 @@ Amlogic Meson PWM Controller
+ ============================
+ 
+ Required properties:
+-- compatible: Shall contain "amlogic,meson8b-pwm" or "amlogic,meson-gxbb-pwm".
++- compatible: Shall contain "amlogic,meson8b-pwm"
++                         or "amlogic,meson-gxbb-pwm"
++                         or "amlogic,meson-gxbb-ao-pwm"
+ - #pwm-cells: Should be 3. See pwm.txt in this directory for a description of
+   the cells format.
+ 
 -- 
 2.9.4
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
