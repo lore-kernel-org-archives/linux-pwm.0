@@ -1,99 +1,43 @@
-From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH 2/2] pwm: meson: add compatible for the gxbb ao pwms
-Date: Wed, 7 Jun 2017 15:35:36 +0200
-Message-ID: <767ce709-ca18-4ba6-77a1-baaeb52c9f1b@baylibre.com>
-References: <20170607133013.4766-1-jbrunet@baylibre.com>
- <20170607133013.4766-3-jbrunet@baylibre.com>
+From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Subject: Re: hwmon: pwm-fan: switch to new atomic PWM API
+Date: Wed, 07 Jun 2017 15:38:44 +0200
+Message-ID: <2730680.la1ZiRyv91@amdc3058>
+References: <1493039598-25881-1-git-send-email-b.zolnierkie@samsung.com>
+        <CGME20170602132359epcas4p113157cdf641dae2e186c4ccd75432e00@epcas4p1.samsung.com>
+        <20170602132353.GA12690@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170607133013.4766-3-jbrunet@baylibre.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jerome Brunet <jbrunet@baylibre.com>, Thierry Reding <thierry.reding@gmail.com>, Kevin Hilman <khilman@baylibre.com>
-Cc: Carlo Caione <carlo@caione.org>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mailout2.samsung.com ([203.254.224.25]:36112 "EHLO
+        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751454AbdFGNit (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jun 2017 09:38:49 -0400
+In-reply-to: <20170602132353.GA12690@roeck-us.net>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jean Delvare <jdelvare@suse.com>, Kamil Debski <kamil@wypas.org>, Tomasz Figa <tomasz.figa@gmail.com>, linux-pwm@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
 
-On 06/07/2017 03:30 PM, Jerome Brunet wrote:
-> On the gxbb (and gxl) family, the PWMs of the AO domain require a
-> specific compatible because the possible input clocks are different
-> from the EE PWMs input clocks.
+On Friday, June 02, 2017 06:23:53 AM Guenter Roeck wrote:
+> On Mon, Apr 24, 2017 at 03:13:17PM +0200, Bartlomiej Zolnierkiewicz wrote:
+> > Switch pwm-fan driver to new atomic PWM API.
+> > 
+> > Signed-off-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+> > ---
+> > Depends on "[PATCH v2 0/3] pwm: pwm-samsung: fix suspend/resume support"
+> > patchset (https://www.spinics.net/lists/kernel/msg2495209.html).
 > 
-> Since the number of possible input clocks is also different, the
-> 'num_parents' field is added to all the meson pwm data.
-> 
-> Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
-> ---
->  drivers/pwm/pwm-meson.c | 32 +++++++++++++++++++++++++++++---
->  1 file changed, 29 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-> index 045ef9fa6fe3..a385fcc5cfad 100644
-> --- a/drivers/pwm/pwm-meson.c
-> +++ b/drivers/pwm/pwm-meson.c
-> @@ -103,6 +103,7 @@ struct meson_pwm_channel {
->  
->  struct meson_pwm_data {
->  	const char * const *parent_names;
-> +	int num_parents;
->  };
->  
->  struct meson_pwm {
-> @@ -381,6 +382,7 @@ static const char * const pwm_meson8b_parent_names[] = {
->  
->  static const struct meson_pwm_data pwm_meson8b_data = {
->  	.parent_names = pwm_meson8b_parent_names,
-> +	.num_parents = ARRAY_SIZE(pwm_meson8b_parent_names),
->  };
->  
->  static const char * const pwm_gxbb_parent_names[] = {
-> @@ -389,11 +391,35 @@ static const char * const pwm_gxbb_parent_names[] = {
->  
->  static const struct meson_pwm_data pwm_gxbb_data = {
->  	.parent_names = pwm_gxbb_parent_names,
-> +	.num_parents = ARRAY_SIZE(pwm_gxbb_parent_names),
-> +};
-> +
-> +/*
-> + * Only the 2 first inputs of the GXBB AO PWMs are valid
-> + * The last 2 are grounded
-> + */
-> +static const char * const pwm_gxbb_ao_parent_names[] = {
-> +	"clk81", "xtal"
-> +};
-> +
-> +static const struct meson_pwm_data pwm_gxbb_ao_data = {
-> +	.parent_names = pwm_gxbb_ao_parent_names,
-> +	.num_parents = ARRAY_SIZE(pwm_gxbb_ao_parent_names),
->  };
->  
->  static const struct of_device_id meson_pwm_matches[] = {
-> -	{ .compatible = "amlogic,meson8b-pwm", .data = &pwm_meson8b_data },
-> -	{ .compatible = "amlogic,meson-gxbb-pwm", .data = &pwm_gxbb_data },
-> +	{
-> +		.compatible = "amlogic,meson8b-pwm",
-> +		.data = &pwm_meson8b_data
-> +	},
-> +	{
-> +		.compatible = "amlogic,meson-gxbb-pwm",
-> +		.data = &pwm_gxbb_data
-> +	},
-> +	{
-> +		.compatible = "amlogic,meson-gxbb-ao-pwm",
-> +		.data = &pwm_gxbb_ao_data
-> +	},
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, meson_pwm_matches);
-> @@ -417,7 +443,7 @@ static int meson_pwm_init_channels(struct meson_pwm *meson,
->  		init.ops = &clk_mux_ops;
->  		init.flags = CLK_IS_BASIC;
->  		init.parent_names = meson->data->parent_names;
-> -		init.num_parents = 1 << MISC_CLK_SEL_WIDTH;
-> +		init.num_parents = meson->data->num_parents;
->  
->  		channel->mux.reg = meson->base + REG_MISC_AB;
->  		channel->mux.shift = mux_reg_shifts[i];
-> 
+> I lost track where we are with this patch. The above series set did not make
+> it, as far as I can see. Is this patch truly dependent on that series, or
+> can it be applied separately ? It does apply cleanly.
 
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+I think that it can be applied separately (the broken suspend/resume code
+will continue to use the old API until the previous patchset is finally
+merged and the code in question is removed altogether).
+
+Best regards,
+--
+Bartlomiej Zolnierkiewicz
+Samsung R&D Institute Poland
+Samsung Electronics
