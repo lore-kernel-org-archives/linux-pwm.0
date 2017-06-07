@@ -1,45 +1,38 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: hwmon: pwm-fan: switch to new atomic PWM API
-Date: Wed, 7 Jun 2017 14:07:02 -0700
-Message-ID: <20170607210057.GA29962@roeck-us.net>
-References: <1493039598-25881-1-git-send-email-b.zolnierkie@samsung.com>
- <CGME20170602132359epcas4p113157cdf641dae2e186c4ccd75432e00@epcas4p1.samsung.com>
- <20170602132353.GA12690@roeck-us.net>
- <2730680.la1ZiRyv91@amdc3058>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 01/58] ARM: at91: Document new TCB bindings
+Date: Wed, 7 Jun 2017 16:17:52 -0500
+Message-ID: <20170607211752.avts3cofvac7ks3q@rob-hp-laptop>
+References: <20170530215139.9983-1-alexandre.belloni@free-electrons.com>
+ <20170530215139.9983-2-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:47514 "EHLO
-        bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751299AbdFGVHE (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 7 Jun 2017 17:07:04 -0400
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <2730680.la1ZiRyv91@amdc3058>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <20170530215139.9983-2-alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Jean Delvare <jdelvare@suse.com>, Kamil Debski <kamil@wypas.org>, Tomasz Figa <tomasz.figa@gmail.com>, linux-pwm@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
 
-On Wed, Jun 07, 2017 at 03:38:44PM +0200, Bartlomiej Zolnierkiewicz wrote:
-> On Friday, June 02, 2017 06:23:53 AM Guenter Roeck wrote:
-> > On Mon, Apr 24, 2017 at 03:13:17PM +0200, Bartlomiej Zolnierkiewicz wrote:
-> > > Switch pwm-fan driver to new atomic PWM API.
-> > > 
-> > > Signed-off-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-> > > ---
-> > > Depends on "[PATCH v2 0/3] pwm: pwm-samsung: fix suspend/resume support"
-> > > patchset (https://www.spinics.net/lists/kernel/msg2495209.html).
-> > 
-> > I lost track where we are with this patch. The above series set did not make
-> > it, as far as I can see. Is this patch truly dependent on that series, or
-> > can it be applied separately ? It does apply cleanly.
+On Tue, May 30, 2017 at 11:50:42PM +0200, Alexandre Belloni wrote:
+> The current binding for the TCB is not flexible enough for some use cases
+> and prevents proper utilization of all the channels.
 > 
-> I think that it can be applied separately (the broken suspend/resume code
-> will continue to use the old API until the previous patchset is finally
-> merged and the code in question is removed altogether).
-> 
+> Cc: Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Signed-off-by: Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+> ---
+>  .../devicetree/bindings/arm/atmel-at91.txt         | 32 ------------
+>  .../devicetree/bindings/mfd/atmel-tcb.txt          | 58 ++++++++++++++++++++++
+>  .../devicetree/bindings/pwm/atmel-tcb-pwm.txt      | 12 +++--
+>  3 files changed, 65 insertions(+), 37 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/atmel-tcb.txt
 
-Ok. Applied to hwmon-next.
-
-Thanks,
-Guenter
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
