@@ -1,87 +1,53 @@
 From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH V1 2/2] pwm: pwm-qti-lpg: Add PWM driver for QTI LPG
- module
-Date: Wed, 7 Jun 2017 16:19:42 -0500
-Message-ID: <20170607211942.o3lddk7waowobpgt@rob-hp-laptop>
-References: <20170531061541.10808-1-fenglinw@codeaurora.org>
- <20170531061541.10808-3-fenglinw@codeaurora.org>
+Subject: Re: [PATCH] gpio: mvebu: change compatible string for PWM support
+Date: Wed, 7 Jun 2017 17:13:32 -0500
+Message-ID: <20170607221332.vu2xnzyhtr7x6yoe@rob-hp-laptop>
+References: <20170601200820.22396-1-ralph.sennhauser@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Return-path: <linux-gpio-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170531061541.10808-3-fenglinw@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: fenglinw@codeaurora.org
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, subbaram@quicinc.com, aghayal@qti.qualcomm.com, wruan@quicinc.com, kgunda@qti.qualcomm.com
+In-Reply-To: <20170601200820.22396-1-ralph.sennhauser@gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+Cc: linux-gpio@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Courbot <gnurou@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Jason Cooper <jason@lakedaemon.net>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@free-electrons.com>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Russell King <linux@armlinux.org.uk>, Richard Genoud <richard.genoud@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, May 31, 2017 at 02:14:38PM +0800, fenglinw@codeaurora.org wrote:
-> From: Fenglin Wu <fenglinw@codeaurora.org>
+On Thu, Jun 01, 2017 at 10:08:20PM +0200, Ralph Sennhauser wrote:
+> As it turns out more than just Armada 370 and XP support using GPIO
+> lines as PWM lines. For example the Armada 38x family has the same
+> hardware support. As such "marvell,armada-370-xp-gpio" for the
+> compatible string is a misnomer.
 > 
-> Add pwm_chip to support QTI LPG module and export LPG channels as
-> PWM devices for consumer drivers' usage.
+> Change the compatible string to "marvell,armada-370-gpio" before the
+> driver makes it out of the -rc stage. This also follows the practice of
+> using only the first device family supported as part of the name.
 > 
-> Signed-off-by: Fenglin Wu <fenglinw@codeaurora.org>
+> Also update the documentation and comments in the code accordingly.
+> 
+> Fixes: 757642f9a584 ("gpio: mvebu: Add limited PWM support")
+> Signed-off-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+> 
 > ---
->  .../devicetree/bindings/pwm/pwm-qti-lpg.txt        |  39 ++
-
-Please put binding in a separate patch.
-
->  drivers/pwm/Kconfig                                |  10 +
->  drivers/pwm/Makefile                               |   1 +
->  drivers/pwm/pwm-qti-lpg.c                          | 578 +++++++++++++++++++++
->  4 files changed, 628 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-qti-lpg.txt
->  create mode 100644 drivers/pwm/pwm-qti-lpg.c
 > 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-qti-lpg.txt b/Documentation/devicetree/bindings/pwm/pwm-qti-lpg.txt
-> new file mode 100644
-> index 0000000..df81f5f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-qti-lpg.txt
-> @@ -0,0 +1,39 @@
-> +Qualcomm Technologies, Inc. LPG driver specific bindings
-> +
-> +This binding document describes the properties of LPG (Light Pulse Generator)
-> +device module in Qualcomm Technologies, Inc. PMIC chips.
-> +
-> +- compatible:
-> +	Usage: required
-> +	Value type: <string>
-> +	Definition: Must be "qcom,pwm-lpg".
+> Hi everyone,
+> 
+> The suggestion to change the compatible string last minute comes from
+> Gregory CLEMENT after we realized the bad choice of name due to Richard
+> Genoud reporting an issue when he used the driver with an Armada-388.
+> 
+> Rob Herring just requested to use a separate compatible string but not
+> what it should look like. So I assume he is fine with the new one as
+> well. The rest of this patch is rather minor.
+> 
+> Nothing in tree is using this driver so far, first consumers will be
+> added with 4.13.
+> 
+> Ralph
+> 
+> ---
+>  Documentation/devicetree/bindings/gpio/gpio-mvebu.txt | 6 +++---
+>  drivers/gpio/gpio-mvebu.c                             | 6 +++---
+>  2 files changed, 6 insertions(+), 6 deletions(-)
 
-Needs SoC specific compatible strings.
-
-> +
-> +- reg:
-> +	Usage: required
-> +	Value type: <prop-encoded-array>
-> +	Definition: Register base and length for LPG modules. The length
-> +		      varies based on the number of channels available in
-> +		      the PMIC chips.
-> +
-> +- reg-names:
-> +	Usage: required
-> +	Value type: <string>
-> +	Definition: The name of the register defined in the reg property.
-> +		      It must be "lpg-base".
-
--names is pointless when there is only 1.
-
-> +
-> +- #pwm-cells:
-> +	Usage: required
-> +	Value type: <u32>
-> +	Definition: The number of cells in "pwms" property specified in
-> +		      PWM user nodes. It should be 2. The first cell is
-> +		      the PWM channel ID indexed from 0, and the second
-> +		      cell is the PWM default period in nanoseconds.
-> +
-> +Example:
-> +
-> +	pmi8998_lpg: lpg@b100 {
-> +		compatible = "qcom,pwm-lpg";
-> +		reg = <0xb100 0x600>;
-> +		reg-names = "lpg-base";
-> +		#pwm-cells = <2>;
-> +	};
+Acked-by: Rob Herring <robh@kernel.org>
