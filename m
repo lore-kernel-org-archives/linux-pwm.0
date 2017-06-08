@@ -1,100 +1,89 @@
-From: Jerome Brunet <jbrunet@baylibre.com>
-Subject: [PATCH v2 2/3] pwm: meson: add compatible for the gxbb ao pwms
-Date: Thu,  8 Jun 2017 14:24:15 +0200
-Message-ID: <20170608122416.1993-3-jbrunet@baylibre.com>
+From: Neil Armstrong <narmstrong@baylibre.com>
+Subject: Re: [PATCH v2 3/3] pwm: meson: improve pwm calculation precision.
+Date: Thu, 8 Jun 2017 14:35:59 +0200
+Message-ID: <935f2e9a-9872-d1c5-8300-2d0697593e75@baylibre.com>
 References: <20170608122416.1993-1-jbrunet@baylibre.com>
+ <20170608122416.1993-4-jbrunet@baylibre.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f47.google.com ([74.125.82.47]:36121 "EHLO
-        mail-wm0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751469AbdFHMYX (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 8 Jun 2017 08:24:23 -0400
-Received: by mail-wm0-f47.google.com with SMTP id 7so136780461wmo.1
-        for <linux-pwm@vger.kernel.org>; Thu, 08 Jun 2017 05:24:23 -0700 (PDT)
-In-Reply-To: <20170608122416.1993-1-jbrunet@baylibre.com>
+Received: from mail-wm0-f44.google.com ([74.125.82.44]:37475 "EHLO
+        mail-wm0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750788AbdFHMgF (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 8 Jun 2017 08:36:05 -0400
+Received: by mail-wm0-f44.google.com with SMTP id d73so30073657wma.0
+        for <linux-pwm@vger.kernel.org>; Thu, 08 Jun 2017 05:36:04 -0700 (PDT)
+In-Reply-To: <20170608122416.1993-4-jbrunet@baylibre.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Kevin Hilman <khilman@baylibre.com>, Neil Armstrong <narmstrong@baylibre.com>
-Cc: Jerome Brunet <jbrunet@baylibre.com>, Carlo Caione <carlo@caione.org>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Jerome Brunet <jbrunet@baylibre.com>, Thierry Reding <thierry.reding@gmail.com>, Kevin Hilman <khilman@baylibre.com>
+Cc: Carlo Caione <carlo@caione.org>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 
-On the gxbb (and gxl) family, the PWMs of the AO domain require a
-specific compatible because the possible input clocks are different
-from the EE PWMs input clocks.
+On 06/08/2017 02:24 PM, Jerome Brunet wrote:
+> When using input clocks with high rates, such as clk81 (166MHz), the
+> fin_ns = NSEC_PER_SEC / fin_freq can introduce a significant error.
+> 
+> Ex: fin_freq = 166666667, NSEC_PER_SEC = 1000000000
+>     fin_ns = 5,9999999
+> 
+> which is, of course, rounded down to 5. This introduce an error of ~20%
+> on the period requested from the pwm.
+> 
+> This patch use ps instead of ns (and 64bits integer) to perform the
+> calculation. This should give a good enough precision.
+> 
+> Fixes: 211ed630753d ("pwm: Add support for Meson PWM Controller")
+> Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+> ---
+>  drivers/pwm/pwm-meson.c | 15 +++++++++------
+>  1 file changed, 9 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+> index b911a944744a..4cdc66f7f718 100644
+> --- a/drivers/pwm/pwm-meson.c
+> +++ b/drivers/pwm/pwm-meson.c
+> @@ -163,7 +163,8 @@ static int meson_pwm_calc(struct meson_pwm *meson,
+>  			  unsigned int duty, unsigned int period)
+>  {
+>  	unsigned int pre_div, cnt, duty_cnt;
+> -	unsigned long fin_freq = -1, fin_ns;
+> +	unsigned long fin_freq = -1;
+> +	u64 fin_ps;
+>  
+>  	if (~(meson->inverter_mask >> id) & 0x1)
+>  		duty = period - duty;
+> @@ -179,13 +180,14 @@ static int meson_pwm_calc(struct meson_pwm *meson,
+>  	}
+>  
+>  	dev_dbg(meson->chip.dev, "fin_freq: %lu Hz\n", fin_freq);
+> -	fin_ns = NSEC_PER_SEC / fin_freq;
+> +	fin_ps = ((u64)NSEC_PER_SEC * 1000) / fin_freq;
+>  
+>  	/* Calc pre_div with the period */
+>  	for (pre_div = 0; pre_div < MISC_CLK_DIV_MASK; pre_div++) {
+> -		cnt = DIV_ROUND_CLOSEST(period, fin_ns * (pre_div + 1));
+> -		dev_dbg(meson->chip.dev, "fin_ns=%lu pre_div=%u cnt=%u\n",
+> -			fin_ns, pre_div, cnt);
+> +		cnt = DIV_ROUND_CLOSEST_ULL((u64)period * 1000,
+> +					    fin_ps * (pre_div + 1));
+> +		dev_dbg(meson->chip.dev, "fin_ps=%llu pre_div=%u cnt=%u\n",
+> +			fin_ps, pre_div, cnt);
+>  		if (cnt <= 0xffff)
+>  			break;
+>  	}
+> @@ -208,7 +210,8 @@ static int meson_pwm_calc(struct meson_pwm *meson,
+>  		channel->lo = cnt;
+>  	} else {
+>  		/* Then check is we can have the duty with the same pre_div */
+> -		duty_cnt = DIV_ROUND_CLOSEST(duty, fin_ns * (pre_div + 1));
+> +		duty_cnt = DIV_ROUND_CLOSEST_ULL((u64)duty * 1000,
+> +						 fin_ps * (pre_div + 1));
+>  		if (duty_cnt > 0xffff) {
+>  			dev_err(meson->chip.dev, "unable to get duty cycle\n");
+>  			return -EINVAL;
+> 
 
-Since the number of possible input clocks is also different, the
-'num_parents' field is added to all the meson pwm data.
+Great, I missed this !!
 
 Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
----
- drivers/pwm/pwm-meson.c | 32 +++++++++++++++++++++++++++++---
- 1 file changed, 29 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-index 045ef9fa6fe3..b911a944744a 100644
---- a/drivers/pwm/pwm-meson.c
-+++ b/drivers/pwm/pwm-meson.c
-@@ -103,6 +103,7 @@ struct meson_pwm_channel {
- 
- struct meson_pwm_data {
- 	const char * const *parent_names;
-+	int num_parents;
- };
- 
- struct meson_pwm {
-@@ -381,6 +382,7 @@ static const char * const pwm_meson8b_parent_names[] = {
- 
- static const struct meson_pwm_data pwm_meson8b_data = {
- 	.parent_names = pwm_meson8b_parent_names,
-+	.num_parents = ARRAY_SIZE(pwm_meson8b_parent_names),
- };
- 
- static const char * const pwm_gxbb_parent_names[] = {
-@@ -389,11 +391,35 @@ static const char * const pwm_gxbb_parent_names[] = {
- 
- static const struct meson_pwm_data pwm_gxbb_data = {
- 	.parent_names = pwm_gxbb_parent_names,
-+	.num_parents = ARRAY_SIZE(pwm_gxbb_parent_names),
-+};
-+
-+/*
-+ * Only the 2 first inputs of the GXBB AO PWMs are valid
-+ * The last 2 are grounded
-+ */
-+static const char * const pwm_gxbb_ao_parent_names[] = {
-+	"xtal", "clk81"
-+};
-+
-+static const struct meson_pwm_data pwm_gxbb_ao_data = {
-+	.parent_names = pwm_gxbb_ao_parent_names,
-+	.num_parents = ARRAY_SIZE(pwm_gxbb_ao_parent_names),
- };
- 
- static const struct of_device_id meson_pwm_matches[] = {
--	{ .compatible = "amlogic,meson8b-pwm", .data = &pwm_meson8b_data },
--	{ .compatible = "amlogic,meson-gxbb-pwm", .data = &pwm_gxbb_data },
-+	{
-+		.compatible = "amlogic,meson8b-pwm",
-+		.data = &pwm_meson8b_data
-+	},
-+	{
-+		.compatible = "amlogic,meson-gxbb-pwm",
-+		.data = &pwm_gxbb_data
-+	},
-+	{
-+		.compatible = "amlogic,meson-gxbb-ao-pwm",
-+		.data = &pwm_gxbb_ao_data
-+	},
- 	{},
- };
- MODULE_DEVICE_TABLE(of, meson_pwm_matches);
-@@ -417,7 +443,7 @@ static int meson_pwm_init_channels(struct meson_pwm *meson,
- 		init.ops = &clk_mux_ops;
- 		init.flags = CLK_IS_BASIC;
- 		init.parent_names = meson->data->parent_names;
--		init.num_parents = 1 << MISC_CLK_SEL_WIDTH;
-+		init.num_parents = meson->data->num_parents;
- 
- 		channel->mux.reg = meson->base + REG_MISC_AB;
- 		channel->mux.shift = mux_reg_shifts[i];
--- 
-2.9.4
