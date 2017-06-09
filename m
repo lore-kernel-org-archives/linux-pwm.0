@@ -1,89 +1,37 @@
-From: Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH v2 3/3] pwm: meson: improve pwm calculation precision.
-Date: Thu, 8 Jun 2017 14:35:59 +0200
-Message-ID: <935f2e9a-9872-d1c5-8300-2d0697593e75@baylibre.com>
-References: <20170608122416.1993-1-jbrunet@baylibre.com>
- <20170608122416.1993-4-jbrunet@baylibre.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCHv2 1/2] gpio: mvebu: fix blink counter register selection
+Date: Fri, 9 Jun 2017 09:37:55 +0200
+Message-ID: <CACRpkdbRN3pgNqUJXHimpMjSOMeZepjxACveTSVzYJWneM9hOQ@mail.gmail.com>
+References: <20170601121826.14685-1-richard.genoud@gmail.com> <20170601121826.14685-2-richard.genoud@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f44.google.com ([74.125.82.44]:37475 "EHLO
-        mail-wm0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750788AbdFHMgF (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 8 Jun 2017 08:36:05 -0400
-Received: by mail-wm0-f44.google.com with SMTP id d73so30073657wma.0
-        for <linux-pwm@vger.kernel.org>; Thu, 08 Jun 2017 05:36:04 -0700 (PDT)
-In-Reply-To: <20170608122416.1993-4-jbrunet@baylibre.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20170601121826.14685-2-richard.genoud@gmail.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Richard Genoud <richard.genoud@gmail.com>
+Cc: Alexandre Courbot <gnurou@gmail.com>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@free-electrons.com>, Jason Cooper <jason@lakedaemon.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Ralph Sennhauser <ralph.sennhauser@gmail.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@armlinux.org.uk>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
 List-Id: linux-pwm@vger.kernel.org
-To: Jerome Brunet <jbrunet@baylibre.com>, Thierry Reding <thierry.reding@gmail.com>, Kevin Hilman <khilman@baylibre.com>
-Cc: Carlo Caione <carlo@caione.org>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 
-On 06/08/2017 02:24 PM, Jerome Brunet wrote:
-> When using input clocks with high rates, such as clk81 (166MHz), the
-> fin_ns = NSEC_PER_SEC / fin_freq can introduce a significant error.
-> 
-> Ex: fin_freq = 166666667, NSEC_PER_SEC = 1000000000
->     fin_ns = 5,9999999
-> 
-> which is, of course, rounded down to 5. This introduce an error of ~20%
-> on the period requested from the pwm.
-> 
-> This patch use ps instead of ns (and 64bits integer) to perform the
-> calculation. This should give a good enough precision.
-> 
-> Fixes: 211ed630753d ("pwm: Add support for Meson PWM Controller")
-> Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
-> ---
->  drivers/pwm/pwm-meson.c | 15 +++++++++------
->  1 file changed, 9 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-> index b911a944744a..4cdc66f7f718 100644
-> --- a/drivers/pwm/pwm-meson.c
-> +++ b/drivers/pwm/pwm-meson.c
-> @@ -163,7 +163,8 @@ static int meson_pwm_calc(struct meson_pwm *meson,
->  			  unsigned int duty, unsigned int period)
->  {
->  	unsigned int pre_div, cnt, duty_cnt;
-> -	unsigned long fin_freq = -1, fin_ns;
-> +	unsigned long fin_freq = -1;
-> +	u64 fin_ps;
->  
->  	if (~(meson->inverter_mask >> id) & 0x1)
->  		duty = period - duty;
-> @@ -179,13 +180,14 @@ static int meson_pwm_calc(struct meson_pwm *meson,
->  	}
->  
->  	dev_dbg(meson->chip.dev, "fin_freq: %lu Hz\n", fin_freq);
-> -	fin_ns = NSEC_PER_SEC / fin_freq;
-> +	fin_ps = ((u64)NSEC_PER_SEC * 1000) / fin_freq;
->  
->  	/* Calc pre_div with the period */
->  	for (pre_div = 0; pre_div < MISC_CLK_DIV_MASK; pre_div++) {
-> -		cnt = DIV_ROUND_CLOSEST(period, fin_ns * (pre_div + 1));
-> -		dev_dbg(meson->chip.dev, "fin_ns=%lu pre_div=%u cnt=%u\n",
-> -			fin_ns, pre_div, cnt);
-> +		cnt = DIV_ROUND_CLOSEST_ULL((u64)period * 1000,
-> +					    fin_ps * (pre_div + 1));
-> +		dev_dbg(meson->chip.dev, "fin_ps=%llu pre_div=%u cnt=%u\n",
-> +			fin_ps, pre_div, cnt);
->  		if (cnt <= 0xffff)
->  			break;
->  	}
-> @@ -208,7 +210,8 @@ static int meson_pwm_calc(struct meson_pwm *meson,
->  		channel->lo = cnt;
->  	} else {
->  		/* Then check is we can have the duty with the same pre_div */
-> -		duty_cnt = DIV_ROUND_CLOSEST(duty, fin_ns * (pre_div + 1));
-> +		duty_cnt = DIV_ROUND_CLOSEST_ULL((u64)duty * 1000,
-> +						 fin_ps * (pre_div + 1));
->  		if (duty_cnt > 0xffff) {
->  			dev_err(meson->chip.dev, "unable to get duty cycle\n");
->  			return -EINVAL;
-> 
+On Thu, Jun 1, 2017 at 2:18 PM, Richard Genoud <richard.genoud@gmail.com> wrote:
 
-Great, I missed this !!
+> The blink counter A was always selected because 0 was forced in the
+> blink select counter register.
+> The variable 'set' was obviously there to be used as the register value,
+> selecting the B counter when id==1 and A counter when id==0.
+>
+> Tested on clearfog-pro (Marvell 88F6828)
+>
+> Fixes: 757642f9a584 ("gpio: mvebu: Add limited PWM support")
+> Reviewed-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
+> Reviewed-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
+> Signed-off-by: Richard Genoud <richard.genoud@gmail.com>
 
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Patch applied for fixes.
+
+It appears this will clash with patches on the development branch :(
+
+I might screw up the merges so help me check the end result
+later.
+
+Yours,
+Linus Walleij
