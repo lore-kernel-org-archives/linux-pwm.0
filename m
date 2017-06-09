@@ -1,51 +1,28 @@
-From: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-Subject: Re: [PATCHv2 1/2] gpio: mvebu: fix blink counter register selection
-Date: Fri, 9 Jun 2017 10:03:22 +0200
-Message-ID: <20170609100322.765adf7f@gmail.com>
-References: <20170601121826.14685-1-richard.genoud@gmail.com>
-        <20170601121826.14685-2-richard.genoud@gmail.com>
-        <CACRpkdbRN3pgNqUJXHimpMjSOMeZepjxACveTSVzYJWneM9hOQ@mail.gmail.com>
+From: Chen-Yu Tsai <wens@csie.org>
+Subject: Re: [PATCH v2 3/3] pwm: sun4i: drop legacy callbacks
+Date: Sat, 10 Jun 2017 00:22:40 +0800
+Message-ID: <CAGb2v64sL=uJtLmtEeGcbAMrgsEmKDsca0f2+HfDS18jZeMjqQ@mail.gmail.com>
+References: <20170530193209.19247-1-alexandre.belloni@free-electrons.com> <20170530193209.19247-4-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f193.google.com ([209.85.128.193]:35035 "EHLO
-        mail-wr0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751540AbdFIID0 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 9 Jun 2017 04:03:26 -0400
-In-Reply-To: <CACRpkdbRN3pgNqUJXHimpMjSOMeZepjxACveTSVzYJWneM9hOQ@mail.gmail.com>
+Received: from smtp.csie.ntu.edu.tw ([140.112.30.61]:55008 "EHLO
+        smtp.csie.ntu.edu.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751657AbdFIQXE (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 9 Jun 2017 12:23:04 -0400
+In-Reply-To: <20170530193209.19247-4-alexandre.belloni@free-electrons.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Richard Genoud <richard.genoud@gmail.com>, Alexandre Courbot <gnurou@gmail.com>, Andrew Lunn <andrew@lunn.ch>, Gregory Clement <gregory.clement@free-electrons.com>, Jason Cooper <jason@lakedaemon.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@armlinux.org.uk>, Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>, Thierry Reding <thierry.reding@gmail.com>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Olliver Schinagl <o.schinagl@ultimaker.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Jonathan Liu <net147@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-kernel <linux-kernel@vger.kernel.org>
 
-On Fri, 9 Jun 2017 09:37:55 +0200
-Linus Walleij <linus.walleij@linaro.org> wrote:
+On Wed, May 31, 2017 at 3:32 AM, Alexandre Belloni
+<alexandre.belloni@free-electrons.com> wrote:
+> Remove the legacy callbacks .enable(), .disable(), .set_polarity() and
+> .config().
+>
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 
-> On Thu, Jun 1, 2017 at 2:18 PM, Richard Genoud
-> <richard.genoud@gmail.com> wrote:
-> 
-> > The blink counter A was always selected because 0 was forced in the
-> > blink select counter register.
-> > The variable 'set' was obviously there to be used as the register
-> > value, selecting the B counter when id==1 and A counter when id==0.
-> >
-> > Tested on clearfog-pro (Marvell 88F6828)
-> >
-> > Fixes: 757642f9a584 ("gpio: mvebu: Add limited PWM support")
-> > Reviewed-by: Gregory CLEMENT <gregory.clement@free-electrons.com>
-> > Reviewed-by: Ralph Sennhauser <ralph.sennhauser@gmail.com>
-> > Signed-off-by: Richard Genoud <richard.genoud@gmail.com>  
-> 
-> Patch applied for fixes.
-> 
-> It appears this will clash with patches on the development branch :(
+FWIW,
 
-Hi Linus,
-
-The commit 2233bf7a92e7 ("gpio: mvebu: switch to regmap for register
-access") which you likely mean breaks gpio-keys, reported about an hour
-ago, so you might just want to drop that one for now instead as it
-needs mor work anyway.
-
-Ralph
+Acked-by: Chen-Yu Tsai <wens@csie.org>
