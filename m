@@ -1,39 +1,29 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [PATCH v2 3/3] dt-bindings: pwm: update STM32 timers clock names
-Date: Wed, 14 Jun 2017 17:13:16 +0200
-Message-ID: <1497453196-31470-4-git-send-email-fabrice.gasnier@st.com>
-References: <1497453196-31470-1-git-send-email-fabrice.gasnier@st.com>
+From: Kevin Hilman <khilman@baylibre.com>
+Subject: Re: [PATCH v2 2/3] pwm: meson: add compatible for the gxbb ao pwms
+Date: Wed, 14 Jun 2017 10:38:05 -0700
+Message-ID: <m21sqm4ghu.fsf@baylibre.com>
+References: <20170608122416.1993-1-jbrunet@baylibre.com>
+        <20170608122416.1993-3-jbrunet@baylibre.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1497453196-31470-1-git-send-email-fabrice.gasnier@st.com>
+In-Reply-To: <20170608122416.1993-3-jbrunet@baylibre.com> (Jerome Brunet's
+        message of "Thu, 8 Jun 2017 14:24:15 +0200")
 Sender: linux-kernel-owner@vger.kernel.org
-To: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org, thierry.reding@gmail.com, robh+dt@kernel.org
-Cc: mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, benjamin.gaignard@st.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Jerome Brunet <jbrunet@baylibre.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Neil Armstrong <narmstrong@baylibre.com>, Carlo Caione <carlo@caione.org>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Clock name has been updated during driver/DT binding review:
-https://lkml.org/lkml/2016/12/13/718
-Update DT binding doc to reflect this.
+Jerome Brunet <jbrunet@baylibre.com> writes:
 
-Fixes: cd9a99c2f8e8 (dt-bindings: pwm: Add STM32 bindings)
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
----
- Documentation/devicetree/bindings/pwm/pwm-stm32.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On the gxbb (and gxl) family, the PWMs of the AO domain require a
+> specific compatible because the possible input clocks are different
+> from the EE PWMs input clocks.
+>
+> Since the number of possible input clocks is also different, the
+> 'num_parents' field is added to all the meson pwm data.
+>
+> Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+> Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-index 6dd0403..3e6d550 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-@@ -24,7 +24,7 @@ Example:
- 		compatible = "st,stm32-timers";
- 		reg = <0x40010000 0x400>;
- 		clocks = <&rcc 0 160>;
--		clock-names = "clk_int";
-+		clock-names = "int";
- 
- 		pwm {
- 			compatible = "st,stm32-pwm";
--- 
-1.9.1
+Reviewed-by: Kevin Hilman <khilman@baylibre.com>
