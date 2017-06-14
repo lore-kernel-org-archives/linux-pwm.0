@@ -1,44 +1,39 @@
 From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [PATCH v2 0/3] Fix STM32 timers dt-bindings
-Date: Wed, 14 Jun 2017 17:13:13 +0200
-Message-ID: <1497453196-31470-1-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH v2 3/3] dt-bindings: pwm: update STM32 timers clock names
+Date: Wed, 14 Jun 2017 17:13:16 +0200
+Message-ID: <1497453196-31470-4-git-send-email-fabrice.gasnier@st.com>
+References: <1497453196-31470-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1497453196-31470-1-git-send-email-fabrice.gasnier@st.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org, thierry.reding@gmail.com, robh+dt@kernel.org
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
+Cc: mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, benjamin.gaignard@st.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-STM32 timers clock names has been updated during driver/DT binding review:
+Clock name has been updated during driver/DT binding review:
 https://lkml.org/lkml/2016/12/13/718
+Update DT binding doc to reflect this.
 
-STM32 timers driver has been fixed with these remarks. It looks like it's
-been missed on DT binding part.
-Update DT binding doc to reflect this as well.
+Fixes: cd9a99c2f8e8 (dt-bindings: pwm: Add STM32 bindings)
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
-Changes in v2:
-- Also fix stm32 pwm dt-bindings
-- Add Fixes tags
+ Documentation/devicetree/bindings/pwm/pwm-stm32.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Fabrice Gasnier (3):
-  dt-bindings: mfd: update STM32 timers clock names
-  dt-bindings: iio: update STM32 timers clock names
-  dt-bindings: pwm: update STM32 timers clock names
-
- Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt | 2 +-
- Documentation/devicetree/bindings/mfd/stm32-timers.txt              | 2 +-
- Documentation/devicetree/bindings/pwm/pwm-stm32.txt                 | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+index 6dd0403..3e6d550 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+@@ -24,7 +24,7 @@ Example:
+ 		compatible = "st,stm32-timers";
+ 		reg = <0x40010000 0x400>;
+ 		clocks = <&rcc 0 160>;
+-		clock-names = "clk_int";
++		clock-names = "int";
+ 
+ 		pwm {
+ 			compatible = "st,stm32-pwm";
 -- 
 1.9.1
