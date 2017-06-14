@@ -1,32 +1,49 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 1/3] dt-bindings: pwm: meson: add comptabible for gxbb
- ao pwms
-Date: Tue, 13 Jun 2017 17:18:59 -0500
-Message-ID: <20170613221859.5e6wldvyybcav2y4@rob-hp-laptop>
-References: <20170608122416.1993-1-jbrunet@baylibre.com>
- <20170608122416.1993-2-jbrunet@baylibre.com>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: [PATCH v2 1/3] dt-bindings: mfd: update STM32 timers clock names
+Date: Wed, 14 Jun 2017 17:13:14 +0200
+Message-ID: <1497453196-31470-2-git-send-email-fabrice.gasnier@st.com>
+References: <1497453196-31470-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ot0-f194.google.com ([74.125.82.194]:34016 "EHLO
-        mail-ot0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751802AbdFMWTB (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 13 Jun 2017 18:19:01 -0400
-Content-Disposition: inline
-In-Reply-To: <20170608122416.1993-2-jbrunet@baylibre.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1497453196-31470-1-git-send-email-fabrice.gasnier@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org, thierry.reding@gmail.com, robh+dt@kernel.org
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
 List-Id: linux-pwm@vger.kernel.org
-To: Jerome Brunet <jbrunet@baylibre.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Kevin Hilman <khilman@baylibre.com>, Neil Armstrong <narmstrong@baylibre.com>, Carlo Caione <carlo@caione.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 
-On Thu, Jun 08, 2017 at 02:24:14PM +0200, Jerome Brunet wrote:
-> Add compatible string to properly handle the PWMs found in the AO domain
-> of the gxbb (and gxl) family
-> 
-> Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-> Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-meson.txt | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+Clock name has been updated during driver/DT binding review:
+https://lkml.org/lkml/2016/12/13/718
+Update DT binding doc to reflect this.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Fixes: 8f9359c6c6a0 (dt-bindings: mfd: Add bindings for STM32 Timers driver)
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+Acked-by: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+---
+ Documentation/devicetree/bindings/mfd/stm32-timers.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/mfd/stm32-timers.txt b/Documentation/devicetree/bindings/mfd/stm32-timers.txt
+index bbd083f..1db6e00 100644
+--- a/Documentation/devicetree/bindings/mfd/stm32-timers.txt
++++ b/Documentation/devicetree/bindings/mfd/stm32-timers.txt
+@@ -31,7 +31,7 @@ Example:
+ 		compatible = "st,stm32-timers";
+ 		reg = <0x40010000 0x400>;
+ 		clocks = <&rcc 0 160>;
+-		clock-names = "clk_int";
++		clock-names = "int";
+ 
+ 		pwm {
+ 			compatible = "st,stm32-pwm";
+-- 
+1.9.1
