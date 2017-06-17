@@ -1,77 +1,124 @@
-From: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-Subject: [PATCH 0/8] Add STM32 LPTimer: PWM, trigger and counter
-Date: Fri, 16 Jun 2017 17:58:38 +0200
-Message-ID: <1497628726-7563-1-git-send-email-fabrice.gasnier@st.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, benjamin.gaignard-qxv4g6HH51o@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Mauro Carvalho Chehab <mchehab@s-opensource.com>
+Subject: [PATCH v2 04/26] pwm.txt: standardize document format
+Date: Sat, 17 Jun 2017 12:26:44 -0300
+Message-ID: <2fb7d94b573b500d99f6d21b477657482cfa0e2e.1497713221.git.mchehab@s-opensource.com>
+References: <1a82f2bf2de4b016964cb71ff92dc3a472044f40.1497713221.git.mchehab@s-opensource.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:38711
+        "EHLO osg.samsung.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1753313AbdFQP1e (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 17 Jun 2017 11:27:34 -0400
+In-Reply-To: <1a82f2bf2de4b016964cb71ff92dc3a472044f40.1497713221.git.mchehab@s-opensource.com>
+In-Reply-To: <1a82f2bf2de4b016964cb71ff92dc3a472044f40.1497713221.git.mchehab@s-opensource.com>
+References: <1a82f2bf2de4b016964cb71ff92dc3a472044f40.1497713221.git.mchehab@s-opensource.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc: Mauro Carvalho Chehab <mchehab@s-opensource.com>, Mauro Carvalho Chehab <mchehab@infradead.org>, linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org
 
-This series adds support for Low Power Timer that can be found on
-some STM32 devices.
+Each text file under Documentation follows a different
+format. Some doesn't even have titles!
 
-STM32 LPTimer (LPTIM) is a 16-bit timer that provides several
-functionalities. This series adds support for following features:
-- PWM output (with programmable prescaler, configurable polarity)
-- Trigger source for STM32 ADC or DAC (LPTIM_OUT)
-- Quadrature encoder and counter
+Change its representation to follow the adopted standard,
+using ReST markups for it to be parseable by Sphinx:
 
-The MFD core is used to manage common resources (clock, register,
-reset) and to detect encoder feature. "stm32_lptimer" structure is
-provided to its sub-nodes to share those information:
-- PWM driver is used to implement single PWM channel
-- IIO trigger
-- IIO quadrature encoder and counter
+- mark document title;
+- mark literal blocks;
+- better format the parameters.
 
-Fabrice Gasnier (8):
-  dt-bindings: mfd: Add STM32 LPTimer binding
-  mfd: Add STM32 LPTimer driver
-  dt-bindings: pwm: Add STM32 LPTimer PWM binding
-  pwm: Add STM32 LPTimer PWM driver
-  dt-bindings: iio: Add STM32 LPTimer trigger binding
-  iio: trigger: Add STM32 LPTimer trigger driver
-  dt-bindings: iio: Add STM32 LPTimer quadrature encoder and counter
-  iio: counter: Add support for STM32 LPTimer
+Signed-off-by: Mauro Carvalho Chehab <mchehab@s-opensource.com>
+---
+ Documentation/pwm.txt | 46 ++++++++++++++++++++++++++++------------------
+ 1 file changed, 28 insertions(+), 18 deletions(-)
 
- .../ABI/testing/sysfs-bus-iio-lptimer-stm32        |  57 +++
- .../bindings/iio/counter/stm32-lptimer-cnt.txt     |  25 ++
- .../bindings/iio/timer/stm32-lptimer-trigger.txt   |  21 ++
- .../devicetree/bindings/mfd/stm32-lptimer.txt      |  51 +++
- .../devicetree/bindings/pwm/pwm-stm32-lp.txt       |  24 ++
- drivers/iio/counter/Kconfig                        |   9 +
- drivers/iio/counter/Makefile                       |   1 +
- drivers/iio/counter/stm32-lptimer-cnt.c            | 382 +++++++++++++++++++++
- drivers/iio/trigger/Kconfig                        |  11 +
- drivers/iio/trigger/Makefile                       |   1 +
- drivers/iio/trigger/stm32-lptimer-trigger.c        | 110 ++++++
- drivers/mfd/Kconfig                                |  15 +
- drivers/mfd/Makefile                               |   1 +
- drivers/mfd/stm32-lptimer.c                        | 110 ++++++
- drivers/pwm/Kconfig                                |  10 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-stm32-lp.c                         | 216 ++++++++++++
- include/linux/iio/timer/stm32-lptim-trigger.h      |  24 ++
- include/linux/mfd/stm32-lptimer.h                  |  55 +++
- 19 files changed, 1124 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32
- create mode 100644 Documentation/devicetree/bindings/iio/counter/stm32-lptimer-cnt.txt
- create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-lptimer-trigger.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
- create mode 100644 drivers/iio/counter/stm32-lptimer-cnt.c
- create mode 100644 drivers/iio/trigger/stm32-lptimer-trigger.c
- create mode 100644 drivers/mfd/stm32-lptimer.c
- create mode 100644 drivers/pwm/pwm-stm32-lp.c
- create mode 100644 include/linux/iio/timer/stm32-lptim-trigger.h
- create mode 100644 include/linux/mfd/stm32-lptimer.h
-
+diff --git a/Documentation/pwm.txt b/Documentation/pwm.txt
+index 789b27c6ec99..8fbf0aa3ba2d 100644
+--- a/Documentation/pwm.txt
++++ b/Documentation/pwm.txt
+@@ -1,4 +1,6 @@
++======================================
+ Pulse Width Modulation (PWM) interface
++======================================
+ 
+ This provides an overview about the Linux PWM interface
+ 
+@@ -16,7 +18,7 @@ Users of the legacy PWM API use unique IDs to refer to PWM devices.
+ 
+ Instead of referring to a PWM device via its unique ID, board setup code
+ should instead register a static mapping that can be used to match PWM
+-consumers to providers, as given in the following example:
++consumers to providers, as given in the following example::
+ 
+ 	static struct pwm_lookup board_pwm_lookup[] = {
+ 		PWM_LOOKUP("tegra-pwm", 0, "pwm-backlight", NULL,
+@@ -40,9 +42,9 @@ New users should use the pwm_get() function and pass to it the consumer
+ device or a consumer name. pwm_put() is used to free the PWM device. Managed
+ variants of these functions, devm_pwm_get() and devm_pwm_put(), also exist.
+ 
+-After being requested, a PWM has to be configured using:
++After being requested, a PWM has to be configured using::
+ 
+-int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state);
++	int pwm_apply_state(struct pwm_device *pwm, struct pwm_state *state);
+ 
+ This API controls both the PWM period/duty_cycle config and the
+ enable/disable state.
+@@ -72,11 +74,14 @@ interface is provided to use the PWMs from userspace. It is exposed at
+ pwmchipN, where N is the base of the PWM chip. Inside the directory you
+ will find:
+ 
+-npwm - The number of PWM channels this chip supports (read-only).
++  npwm
++    The number of PWM channels this chip supports (read-only).
+ 
+-export - Exports a PWM channel for use with sysfs (write-only).
++  export
++    Exports a PWM channel for use with sysfs (write-only).
+ 
+-unexport - Unexports a PWM channel from sysfs (write-only).
++  unexport
++   Unexports a PWM channel from sysfs (write-only).
+ 
+ The PWM channels are numbered using a per-chip index from 0 to npwm-1.
+ 
+@@ -84,21 +89,26 @@ When a PWM channel is exported a pwmX directory will be created in the
+ pwmchipN directory it is associated with, where X is the number of the
+ channel that was exported. The following properties will then be available:
+ 
+-period - The total period of the PWM signal (read/write).
+-	Value is in nanoseconds and is the sum of the active and inactive
+-	time of the PWM.
++  period
++    The total period of the PWM signal (read/write).
++    Value is in nanoseconds and is the sum of the active and inactive
++    time of the PWM.
+ 
+-duty_cycle - The active time of the PWM signal (read/write).
+-	Value is in nanoseconds and must be less than the period.
++  duty_cycle
++    The active time of the PWM signal (read/write).
++    Value is in nanoseconds and must be less than the period.
+ 
+-polarity - Changes the polarity of the PWM signal (read/write).
+-	Writes to this property only work if the PWM chip supports changing
+-	the polarity. The polarity can only be changed if the PWM is not
+-	enabled. Value is the string "normal" or "inversed".
++  polarity
++    Changes the polarity of the PWM signal (read/write).
++    Writes to this property only work if the PWM chip supports changing
++    the polarity. The polarity can only be changed if the PWM is not
++    enabled. Value is the string "normal" or "inversed".
+ 
+-enable - Enable/disable the PWM signal (read/write).
+-	0 - disabled
+-	1 - enabled
++  enable
++    Enable/disable the PWM signal (read/write).
++
++	- 0 - disabled
++	- 1 - enabled
+ 
+ Implementing a PWM driver
+ -------------------------
 -- 
-1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2.9.4
