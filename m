@@ -1,87 +1,71 @@
-Return-Path: <ldewangan@nvidia.com>
-Message-ID: <58E674FB.3080006@nvidia.com>
-Date: Thu, 6 Apr 2017 22:33:55 +0530
-From: Laxman Dewangan <ldewangan@nvidia.com>
+Return-Path: <zhi.mao@mediatek.com>
+From: Zhi Mao <zhi.mao@mediatek.com>
+Subject: [PATCH 0/4] mediatek: pwm driver add MT2712/MT7622 support 
+Date: Tue, 20 Jun 2017 14:54:12 +0800
+Message-ID: <1497941657-23876-1-git-send-email-zhi.mao@mediatek.com>
+Return-Path: zhi.mao@mediatek.com
 MIME-Version: 1.0
-Subject: Re: [PATCH V2 2/4] pwm: tegra: Increase precision in pwm rate calculation
-References: <1491488461-24621-1-git-send-email-ldewangan@nvidia.com> <1491488461-24621-3-git-send-email-ldewangan@nvidia.com> <20170406162417.GB19312@ulmo.ba.sec>
-In-Reply-To: <20170406162417.GB19312@ulmo.ba.sec>
-Return-Path: ldewangan@nvidia.com
-Content-Type: multipart/alternative;
-	boundary="------------090305010106000103050904"
+Content-Type: multipart/related;
+	boundary="__=_Part_Boundary_007_1456252146.276366653"
 List-ID: <linux-pwm.vger.kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: robh+dt@kernel.org, jonathanh@nvidia.com, mark.rutland@arm.com, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+To: john@phrozen.org, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org
+Cc: srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, zhi.mao@mediatek.com, yingjoe.chen@mediatek.com, yt.shen@mediatek.com, sean.wang@mediatek.com, zhenbao.liu@mediatek.com
 
---------------090305010106000103050904
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+--__=_Part_Boundary_007_1456252146.276366653
+Content-Transfer-Encoding: base64
+Content-Type: multipart/alternative;
+	boundary="__=_Part_Boundary_008_1874387408.576876725"
 
+--__=_Part_Boundary_008_1874387408.576876725
+Content-Type: text/html
+Content-Transfer-Encoding: base64
 
-On Thursday 06 April 2017 09:54 PM, Thierry Reding wrote:
-> * PGP Signed by an unknown key
->
-> On Thu, Apr 06, 2017 at 07:50:59PM +0530, Laxman Dewangan wrote:
->> The rate of the PWM calculated as follows:
->> 	hz = NSEC_PER_SEC / period_ns;
->>   	rate = (rate + (hz / 2)) / hz;
->>
->> This has the precision loss in lower PWM rate.
->> Changing this to have more precision as:
->> 	hz = DIV_ROUND_CLOSE(NSEC_PER_SEC * 100, period_ns);
->> 	rate = DIV_ROUND_CLOSE(rate * 100, hz)
-> DIV_ROUND_CLOSEST(). And I much prefer this to the actual code below. I
-> don't think it's necessary to have a local variable for the precision.
-Do you suggest to use DIV_ROUND_CLOSEST() instead of 
-DIV_ROUND_CLOSEST_ULL()?
+PHByZT4NCnB3bSBkcml2ZXIgYWRkIE1UMjcxMi9NVDc2MjIgc3VwcG9ydCwgZml4IGNsb2NrIGNv
+bnRyb2wgaXNzdWUuDQpkdHNpIGZpbGUgd2lsbCBiZSB1cGxvYWQgbGF0dGVyLCBhZnRlciB0aGUg
+Y2xvY2sgZGVmaW5lIGlzIHJlYWR5Lg0KDQpaaGkgTWFvICg0KToNCiAgcHdtOiBrY29uZmlnOiBt
+b2RpZnkgbWVkaWF0ZWsgaW5mb3JtYXRpb24NCiAgcHdtOiBtZWRpYXRlazogZml4IGNsayBpc3N1
+ZQ0KICBwd206IGJpbmRpbmdzOiBhZGQgTVQyNzEyL01UNzYyMiBpbmZvcm1hdGlvbg0KICBwd206
+IG1lZGlhdGVrOiBhZGQgTVQyNzEyL01UNzYyMiBzdXBwb3J0DQoNCiAuLi4vZGV2aWNldHJlZS9i
+aW5kaW5ncy9wd20vcHdtLW1lZGlhdGVrLnR4dCAgICAgICB8ICAgIDYgKy0NCiBkcml2ZXJzL3B3
+bS9LY29uZmlnICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgIDIgKy0NCiBkcml2
+ZXJzL3B3bS9wd20tbWVkaWF0ZWsuYyAgICAgICAgICAgICAgICAgICAgICAgICB8ICAxMzIgKysr
+KysrKysrKysrKystLS0tLS0NCiAzIGZpbGVzIGNoYW5nZWQsIDEwMCBpbnNlcnRpb25zKCspLCA0
+MCBkZWxldGlvbnMoLSkNCg0KPC9wcmU+PCEtLXR5cGU6dGV4dC0tPjwhLS17LS0+PHByZT4qKioq
+KioqKioqKioqIEVtYWlsIENvbmZpZGVudGlhbGl0eSBOb3RpY2UNCiAqKioqKioqKioqKioqKioq
+KioqKg0KVGhlIGluZm9ybWF0aW9uIGNvbnRhaW5lZCBpbiB0aGlzIGUtbWFpbCBtZXNzYWdlIChp
+bmNsdWRpbmcgYW55IA0KYXR0YWNobWVudHMpIG1heSBiZSBjb25maWRlbnRpYWwsIHByb3ByaWV0
+YXJ5LCBwcml2aWxlZ2VkLCBvciBvdGhlcndpc2UNCmV4ZW1wdCBmcm9tIGRpc2Nsb3N1cmUgdW5k
+ZXIgYXBwbGljYWJsZSBsYXdzLiBJdCBpcyBpbnRlbmRlZCB0byBiZSANCmNvbnZleWVkIG9ubHkg
+dG8gdGhlIGRlc2lnbmF0ZWQgcmVjaXBpZW50KHMpLiBBbnkgdXNlLCBkaXNzZW1pbmF0aW9uLCAN
+CmRpc3RyaWJ1dGlvbiwgcHJpbnRpbmcsIHJldGFpbmluZyBvciBjb3B5aW5nIG9mIHRoaXMgZS1t
+YWlsIChpbmNsdWRpbmcgaXRzIA0KYXR0YWNobWVudHMpIGJ5IHVuaW50ZW5kZWQgcmVjaXBpZW50
+KHMpIGlzIHN0cmljdGx5IHByb2hpYml0ZWQgYW5kIG1heSANCmJlIHVubGF3ZnVsLiBJZiB5b3Ug
+YXJlIG5vdCBhbiBpbnRlbmRlZCByZWNpcGllbnQgb2YgdGhpcyBlLW1haWwsIG9yIGJlbGlldmUN
+CiANCnRoYXQgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlLW1haWwgaW4gZXJyb3IsIHBsZWFzZSBu
+b3RpZnkgdGhlIHNlbmRlciANCmltbWVkaWF0ZWx5IChieSByZXBseWluZyB0byB0aGlzIGUtbWFp
+bCksIGRlbGV0ZSBhbnkgYW5kIGFsbCBjb3BpZXMgb2YgDQp0aGlzIGUtbWFpbCAoaW5jbHVkaW5n
+IGFueSBhdHRhY2htZW50cykgZnJvbSB5b3VyIHN5c3RlbSwgYW5kIGRvIG5vdA0KZGlzY2xvc2Ug
+dGhlIGNvbnRlbnQgb2YgdGhpcyBlLW1haWwgdG8gYW55IG90aGVyIHBlcnNvbi4gVGhhbmsNCiB5
+b3UhPC9wcmU+PCEtLX0tLT4=
 
-This is ULL division and so we need to use this one.
+--__=_Part_Boundary_008_1874387408.576876725
+Content-Type: text/plain
 
-Or am I missing something
+pwm driver add MT2712/MT7622 support, fix clock control issue.
+dtsi file will be upload latter, after the clock define is ready.
 
---------------090305010106000103050904
-Content-Type: text/html; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
+Zhi Mao (4):
+  pwm: kconfig: modify mediatek information
+  pwm: mediatek: fix clk issue
+  pwm: bindings: add MT2712/MT7622 information
+  pwm: mediatek: add MT2712/MT7622 support
 
-<html>
-  <head>
-    <meta content="text/html; charset=ISO-8859-1"
-      http-equiv="Content-Type">
-  </head>
-  <body text="#000000" bgcolor="#FFFFFF">
-    <br>
-    <div class="moz-cite-prefix">On Thursday 06 April 2017 09:54 PM,
-      Thierry Reding wrote:<br>
-    </div>
-    <blockquote cite="mid:20170406162417.GB19312@ulmo.ba.sec"
-      type="cite">
-      <pre wrap="">* PGP Signed by an unknown key
+ .../devicetree/bindings/pwm/pwm-mediatek.txt       |    6 +-
+ drivers/pwm/Kconfig                                |    2 +-
+ drivers/pwm/pwm-mediatek.c                         |  132
+ ++++++++++++++------
+ 3 files changed, 100 insertions(+), 40 deletions(-)
 
-On Thu, Apr 06, 2017 at 07:50:59PM +0530, Laxman Dewangan wrote:
-</pre>
-      <blockquote type="cite">
-        <pre wrap="">The rate of the PWM calculated as follows:
-	hz = NSEC_PER_SEC / period_ns;
- 	rate = (rate + (hz / 2)) / hz;
+--__=_Part_Boundary_008_1874387408.576876725--
 
-This has the precision loss in lower PWM rate.
-Changing this to have more precision as:
-	hz = DIV_ROUND_CLOSE(NSEC_PER_SEC * 100, period_ns);
-	rate = DIV_ROUND_CLOSE(rate * 100, hz)
-</pre>
-      </blockquote>
-      <pre wrap="">
-DIV_ROUND_CLOSEST(). And I much prefer this to the actual code below. I
-don't think it's necessary to have a local variable for the precision.
-</pre>
-    </blockquote>
-    Do you suggest to use DIV_ROUND_CLOSEST() instead of <font
-      face="sans-serif">DIV_ROUND_CLOSEST_ULL</font>()?<br>
-    <br>
-    This is ULL division and so we need to use this one.<br>
-    <br>
-    Or am I missing something<br>
-  </body>
-</html>
-
---------------090305010106000103050904--
+--__=_Part_Boundary_007_1456252146.276366653--
