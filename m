@@ -1,312 +1,192 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 2/8] mfd: Add STM32 LPTimer driver
-Date: Mon, 19 Jun 2017 16:51:06 +0100
-Message-ID: <20170619155106.aphrn2jxzzxszmrl@dell>
-References: <1497628726-7563-1-git-send-email-fabrice.gasnier@st.com>
- <1497628726-7563-3-git-send-email-fabrice.gasnier@st.com>
+From: John Crispin <john@phrozen.org>
+Subject: Re: [PATCH 2/4] pwm: mediatek: fix clk issue
+Date: Tue, 20 Jun 2017 09:00:41 +0200
+Message-ID: <06d16cb2-ba57-f367-9af1-f96148f246f8@phrozen.org>
+References: <1497941657-23876-1-git-send-email-zhi.mao@mediatek.com>
+ <1497941657-23876-3-git-send-email-zhi.mao@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f43.google.com ([74.125.82.43]:36157 "EHLO
-        mail-wm0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752919AbdFSPvW (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 19 Jun 2017 11:51:22 -0400
-Received: by mail-wm0-f43.google.com with SMTP id m125so80710169wmm.1
-        for <linux-pwm@vger.kernel.org>; Mon, 19 Jun 2017 08:51:21 -0700 (PDT)
-Content-Disposition: inline
-In-Reply-To: <1497628726-7563-3-git-send-email-fabrice.gasnier@st.com>
+Received: from nbd.name ([46.4.11.11]:44635 "EHLO nbd.name"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750960AbdFTHAs (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 20 Jun 2017 03:00:48 -0400
+In-Reply-To: <1497941657-23876-3-git-send-email-zhi.mao@mediatek.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: benjamin.gaignard@linaro.org, jic23@kernel.org, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Zhi Mao <zhi.mao@mediatek.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org
+Cc: srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com, yt.shen@mediatek.com, sean.wang@mediatek.com, zhenbao.liu@mediatek.com
 
-On Fri, 16 Jun 2017, Fabrice Gasnier wrote:
-> STM32 Low Power Timer hardware block can be used for:
-> - PWM generation
-> - IIO trigger (in sync with PWM)
-> - IIO quadrature encoder counter
-> PWM and IIO timer configuration are mixed in the same registers so
-> we need a multi fonction driver to be able to share those registers.
-> 
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+
+On 20/06/17 08:54, Zhi Mao wrote:
+> 1.fix clock control
+>   - prepare top/main clk in mtk_pwm_probe() function,
+>     it will increase power consumption
+>     and in original code these clocks is only prepeare but never enabled
+>   - pwm clock should be enabled before setting pwm registers
+>     in function: mtk_pwm_config()
+>
+> 2.fix pwm source clock selection
+>   - in original code, the pwm output frequency is not correct
+>     when set bit<3>=1 to PWMCON register.
+>
+> Signed-off-by: Zhi Mao <zhi.mao@mediatek.com>
+
+Hi Zhi,
+
+it looks like you sent the series as text/html and also as text/plain 
+with lines getting wrapped. You might want to try and use "git send-email"
+
 > ---
->  drivers/mfd/Kconfig               |  15 ++++++
->  drivers/mfd/Makefile              |   1 +
->  drivers/mfd/stm32-lptimer.c       | 110 ++++++++++++++++++++++++++++++++++++++
->  include/linux/mfd/stm32-lptimer.h |  55 +++++++++++++++++++
->  4 files changed, 181 insertions(+)
->  create mode 100644 drivers/mfd/stm32-lptimer.c
->  create mode 100644 include/linux/mfd/stm32-lptimer.h
-> 
-> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> index 3eb5c93..32c1f3f 100644
-> --- a/drivers/mfd/Kconfig
-> +++ b/drivers/mfd/Kconfig
-> @@ -1683,6 +1683,21 @@ config MFD_STW481X
->  	  in various ST Microelectronics and ST-Ericsson embedded
->  	  Nomadik series.
->  
-> +config MFD_STM32_LPTIMER
-> +	tristate "Support for STM32 low power timer"
+>   drivers/pwm/pwm-mediatek.c |   69
+>   +++++++++++++++++++++++++++-----------------
+>   1 file changed, 43 insertions(+), 26 deletions(-)
+>
+> diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+> index 5c11bc7..c803ff6 100644
+> --- a/drivers/pwm/pwm-mediatek.c
+> +++ b/drivers/pwm/pwm-mediatek.c
+[ ... ]
 
-It think this should be "Low Power Timer" throughout.
+> @@ -61,6 +62,40 @@ static inline struct mtk_pwm_chip *to_mtk_pwm_chip(struct
+>   pwm_chip *chip)
+>   	return container_of(chip, struct mtk_pwm_chip, chip);
+>   }
+>   
+> +static int mtk_pwm_clk_enable(struct pwm_chip *chip, struct pwm_device
+>   *pwm)
+^^ here for example
 
-Or even "Low-Power Timer".  You decide.
+     John
 
-> +	depends on (ARCH_STM32 && OF) || COMPILE_TEST
-> +	select MFD_CORE
-> +	select REGMAP
-> +	select REGMAP_MMIO
-> +	select RESET_CONTROLLER
-> +	help
-> +	  Select this option to enable STM32 low power timer driver
-> +	  used for PWM, IIO trigger, IIO encoder and counter. This driver
-
-"Counter"
-
-> +	  allows to share the resources between these drivers.
-
-"Shared resources are also dealt with here."  Or similar.
-
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called stm32-lptimer.
-> +
->  config MFD_STM32_TIMERS
->  	tristate "Support for STM32 Timers"
->  	depends on (ARCH_STM32 && OF) || COMPILE_TEST
-> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-> index c16bf1e..a5308d8 100644
-> --- a/drivers/mfd/Makefile
-> +++ b/drivers/mfd/Makefile
-> @@ -219,5 +219,6 @@ obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
->  obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
->  obj-$(CONFIG_MFD_SUN4I_GPADC)	+= sun4i-gpadc.o
->  
-> +obj-$(CONFIG_MFD_STM32_LPTIMER)	+= stm32-lptimer.o
->  obj-$(CONFIG_MFD_STM32_TIMERS) 	+= stm32-timers.o
->  obj-$(CONFIG_MFD_MXS_LRADC)     += mxs-lradc.o
-> diff --git a/drivers/mfd/stm32-lptimer.c b/drivers/mfd/stm32-lptimer.c
-> new file mode 100644
-> index 0000000..fcfefa3
-> --- /dev/null
-> +++ b/drivers/mfd/stm32-lptimer.c
-> @@ -0,0 +1,110 @@
-> +/*
-> + * This file is part of STM32 low-power timer driver
-
-This is a separate driver.  It isn't part of anything.
-
-"STM32 Low Power Timer parent driver".
-
-> + * Copyright (C) STMicroelectronics 2017
-> + *
-> + * Author: Fabrice Gasnier <fabrice.gasnier@st.com>
-
-'\n' here.
-
-> + * Inspired from: stm32-timers from Benjamin Gaignard
-
-"Inspired by Benjamin Gaignard's stm32-timers driver"
-
-> + * License terms:  GNU General Public License (GPL), version 2
-> + */
-> +
-> +#include <linux/mfd/stm32-lptimer.h>
-> +#include <linux/module.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/reset.h>
-> +
-> +static const struct regmap_config stm32_lptimer_regmap_cfg = {
-> +	.reg_bits = 32,
-> +	.val_bits = 32,
-> +	.reg_stride = sizeof(u32),
-> +	.max_register = 0x3fc,
-
-This should be defined.
-
-> +};
-> +
-> +static int stm32_lptimer_detect_encoder(struct stm32_lptimer *ddata)
 > +{
-> +	u32 val, enc = STM32_LPTIM_ENC;
-
-Why have enc?  Why not just use STM32_LPTIM_ENC?
-
-> +	int ret;
+> +	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
+> +	int ret = 0;
 > +
-> +	/*
-> +	 * Quadrature encoder mode bit can only be written and read back when
-> +	 * LP Timer supports is.
-
-"it"
-
-> +	 */
-> +	ret = regmap_update_bits(ddata->regmap, STM32_LPTIM_CFGR, enc, enc);
-> +	if (ret)
+> +	ret = clk_prepare_enable(pc->clks[MTK_CLK_TOP]);
+> +	if (ret < 0)
 > +		return ret;
-
-'\n' here.
-
-> +	ret = regmap_read(ddata->regmap, STM32_LPTIM_CFGR, &val);
-> +	if (ret)
+> +
+> +	ret = clk_prepare_enable(pc->clks[MTK_CLK_MAIN]);
+> +	if (ret < 0) {
+> +		clk_disable_unprepare(pc->clks[MTK_CLK_TOP]);
 > +		return ret;
-
-'\n' here.
-
-> +	ret = regmap_update_bits(ddata->regmap, STM32_LPTIM_CFGR, enc, 0);
-> +	if (ret)
-> +		return ret;
-
-'\n' here.
-
-> +	ddata->has_encoder = !!val;
-> +
-> +	return 0;
-> +}
-> +
-> +static int stm32_lptimer_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct stm32_lptimer *ddata;
-> +	struct reset_control *rst;
-
-This looks quite a lot like 'ret'.  Just use 'reset'.
-
-> +	struct resource *res;
-> +	void __iomem *mmio;
-> +	int ret;
-> +
-> +	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
-> +	if (!ddata)
-> +		return -ENOMEM;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	mmio = devm_ioremap_resource(dev, res);
-> +	if (IS_ERR(mmio))
-> +		return PTR_ERR(mmio);
-> +
-> +	ddata->regmap = devm_regmap_init_mmio_clk(dev, "int", mmio,
-
-Is that what the clock is called in the datasheet?
-
-> +						  &stm32_lptimer_regmap_cfg);
-> +	if (IS_ERR(ddata->regmap))
-> +		return PTR_ERR(ddata->regmap);
-> +
-> +	ddata->clk = devm_clk_get(dev, NULL);
-> +	if (IS_ERR(ddata->clk))
-> +		return PTR_ERR(ddata->clk);
-> +
-> +	rst = devm_reset_control_get_optional(dev, NULL);
-> +	if (IS_ERR(rst))
-> +		return PTR_ERR(rst);
-> +
-> +	if (rst) {
-> +		reset_control_assert(rst);
-> +		reset_control_deassert(rst);
 > +	}
-This is odd.  Please provide a comment as to why you're doing this.
-
-> +	ret = stm32_lptimer_detect_encoder(ddata);
-> +	if (ret)
+> +
+> +	ret = clk_prepare_enable(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
+> +	if (ret < 0) {
+> +		clk_disable_unprepare(pc->clks[MTK_CLK_MAIN]);
+> +		clk_disable_unprepare(pc->clks[MTK_CLK_TOP]);
 > +		return ret;
+> +	}
 > +
-> +	platform_set_drvdata(pdev, ddata);
-> +
-> +	return devm_of_platform_populate(&pdev->dev);
+> +	return ret;
 > +}
 > +
-> +static const struct of_device_id stm32_lptimer_of_match[] = {
-> +	{ .compatible = "st,stm32-lptimer", },
-> +	{ /* end node */ },
-
-No need for the comment.
-
-> +};
-> +MODULE_DEVICE_TABLE(of, stm32_lptimer_of_match);
+> +static void mtk_pwm_clk_disable(struct pwm_chip *chip, struct pwm_device
+>   *pwm)
+> +{
+> +	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
 > +
-> +static struct platform_driver stm32_lptimer_driver = {
-> +	.probe = stm32_lptimer_probe,
-> +	.driver = {
-> +		.name = "stm32-lptimer",
-> +		.of_match_table = stm32_lptimer_of_match,
-> +	},
-> +};
-> +module_platform_driver(stm32_lptimer_driver);
+> +	clk_disable_unprepare(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
+> +	clk_disable_unprepare(pc->clks[MTK_CLK_MAIN]);
+> +	clk_disable_unprepare(pc->clks[MTK_CLK_TOP]);
+> +}
 > +
-> +MODULE_AUTHOR("Fabrice Gasnier <fabrice.gasnier@st.com>");
-> +MODULE_DESCRIPTION("STMicroelectronics STM32 Low Power Timer");
-> +MODULE_ALIAS("platform:stm32-lptimer");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/include/linux/mfd/stm32-lptimer.h b/include/linux/mfd/stm32-lptimer.h
-> new file mode 100644
-> index 0000000..72bc9be
-> --- /dev/null
-> +++ b/include/linux/mfd/stm32-lptimer.h
-> @@ -0,0 +1,55 @@
-> +/*
-> + * This file is part of STM32 low-power timer driver
-> + *
-> + * Copyright (C) STMicroelectronics 2016
-> + *
-> + * Author: Fabrice Gasnier <fabrice.gasnier@st.com>
-> + * Inspired from: stm32-timers
-
-Same as the comments I provided for the *.c file above.
-
-> + * License terms:  GNU General Public License (GPL), version 2
-> + */
+>   static inline u32 mtk_pwm_readl(struct mtk_pwm_chip *chip, unsigned int
+>   num,
+>   				unsigned int offset)
+>   {
+> @@ -81,6 +116,8 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct
+>   pwm_device *pwm,
+>   	struct clk *clk = pc->clks[MTK_CLK_PWM1 + pwm->hwpwm];
+>   	u32 resolution, clkdiv = 0;
+>   
+> +	mtk_pwm_clk_enable(chip, pwm);
 > +
-> +#ifndef _LINUX_STM32_LPTIMER_H_
-> +#define _LINUX_STM32_LPTIMER_H_
+>   	resolution = NSEC_PER_SEC / clk_get_rate(clk);
+>   
+>   	while (period_ns / resolution > 8191) {
+> @@ -91,10 +128,12 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct
+>   pwm_device *pwm,
+>   	if (clkdiv > 7)
+>   		return -EINVAL;
+>   
+> -	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | BIT(3) | clkdiv);
+> +	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | clkdiv);
+>   	mtk_pwm_writel(pc, pwm->hwpwm, PWMDWIDTH, period_ns / resolution);
+>   	mtk_pwm_writel(pc, pwm->hwpwm, PWMTHRES, duty_ns / resolution);
+>   
+> +	mtk_pwm_clk_disable(chip, pwm);
 > +
-> +#include <linux/clk.h>
-> +#include <linux/regmap.h>
-> +
-> +#define STM32_LPTIM_ISR		0x00	/* Interrupt and Status Reg  */
-> +#define STM32_LPTIM_ICR		0x04	/* Interrupt Clear Reg       */
-> +#define STM32_LPTIM_IER		0x08	/* Interrupt Enable Reg      */
-> +#define STM32_LPTIM_CFGR	0x0C	/* Configuration Reg         */
-> +#define STM32_LPTIM_CR		0x10	/* Control Reg               */
-> +#define STM32_LPTIM_CMP		0x14	/* Compare Reg               */
-> +#define STM32_LPTIM_ARR		0x18	/* Autoreload Reg            */
-> +#define STM32_LPTIM_CNT		0x1C	/* Counter Reg               */
-> +
-> +/* STM32_LPTIM_ISR - bit fields */
-> +#define STM32_LPTIM_CMPOK_ARROK		GENMASK(4, 3)
-> +#define STM32_LPTIM_ARROK		BIT(4)
-> +#define STM32_LPTIM_CMPOK		BIT(3)
-> +
-> +/* STM32_LPTIM_ICR - bit fields */
-> +#define STM32_LPTIM_CMPOKCF_ARROKCF	GENMASK(4, 3)
-> +
-> +/* STM32_LPTIM_CR - bit fields */
-> +#define STM32_LPTIM_CNTSTRT	BIT(2)
-> +#define STM32_LPTIM_ENABLE	BIT(0)
-> +
-> +/* STM32_LPTIM_CFGR - bit fields */
-> +#define STM32_LPTIM_ENC		BIT(24)
-> +#define STM32_LPTIM_COUNTMODE	BIT(23)
-> +#define STM32_LPTIM_WAVPOL	BIT(21)
-> +#define STM32_LPTIM_PRESC	GENMASK(11, 9)
-> +#define STM32_LPTIM_CKPOL	GENMASK(2, 1)
-> +
-> +/* STM32_LPTIM_ARR */
-> +#define STM32_LPTIM_MAX_ARR	0xFFFF
-> +
-> +struct stm32_lptimer {
-> +	struct clk *clk;
-> +	struct regmap *regmap;
-> +	bool has_encoder;
-> +};
-
-Please provide a kerneldoc type header for this struct.
-
-> +#endif
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+>   	return 0;
+>   }
+>   
+> @@ -102,11 +141,8 @@ static int mtk_pwm_enable(struct pwm_chip *chip, struct
+>   pwm_device *pwm)
+>   {
+>   	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
+>   	u32 value;
+> -	int ret;
+>   
+> -	ret = clk_prepare(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
+> -	if (ret < 0)
+> -		return ret;
+> +	mtk_pwm_clk_enable(chip, pwm);
+>   
+>   	value = readl(pc->regs);
+>   	value |= BIT(pwm->hwpwm);
+> @@ -124,7 +160,7 @@ static void mtk_pwm_disable(struct pwm_chip *chip,
+>   struct pwm_device *pwm)
+>   	value &= ~BIT(pwm->hwpwm);
+>   	writel(value, pc->regs);
+>   
+> -	clk_unprepare(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
+> +	mtk_pwm_clk_disable(chip, pwm);
+>   }
+>   
+>   static const struct pwm_ops mtk_pwm_ops = {
+> @@ -156,14 +192,6 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+>   			return PTR_ERR(pc->clks[i]);
+>   	}
+>   
+> -	ret = clk_prepare(pc->clks[MTK_CLK_TOP]);
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	ret = clk_prepare(pc->clks[MTK_CLK_MAIN]);
+> -	if (ret < 0)
+> -		goto disable_clk_top;
+> -
+>   	platform_set_drvdata(pdev, pc);
+>   
+>   	pc->chip.dev = &pdev->dev;
+> @@ -174,26 +202,15 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+>   	ret = pwmchip_add(&pc->chip);
+>   	if (ret < 0) {
+>   		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
+> -		goto disable_clk_main;
+> +		return ret;
+>   	}
+>   
+>   	return 0;
+> -
+> -disable_clk_main:
+> -	clk_unprepare(pc->clks[MTK_CLK_MAIN]);
+> -disable_clk_top:
+> -	clk_unprepare(pc->clks[MTK_CLK_TOP]);
+> -
+> -	return ret;
+>   }
+>   
+>   static int mtk_pwm_remove(struct platform_device *pdev)
+>   {
+>   	struct mtk_pwm_chip *pc = platform_get_drvdata(pdev);
+> -	unsigned int i;
+> -
+> -	for (i = 0; i < pc->chip.npwm; i++)
+> -		pwm_disable(&pc->chip.pwms[i]);
+>   
+>   	return pwmchip_remove(&pc->chip);
+>   }
