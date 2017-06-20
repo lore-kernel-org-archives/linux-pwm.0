@@ -1,110 +1,54 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/8] dt-bindings: mfd: Add STM32 LPTimer binding
-Date: Tue, 20 Jun 2017 12:50:40 +0100
-Message-ID: <20170620115040.xyaivbtcuufhxlv7@dell>
-References: <1497628726-7563-1-git-send-email-fabrice.gasnier@st.com>
- <1497628726-7563-2-git-send-email-fabrice.gasnier@st.com>
+From: "Jingoo Han" <jingoohan1@gmail.com>
+Subject: Re: [PATCH] backlight: pwm_bl: make of_device_ids const
+Date: Tue, 20 Jun 2017 09:59:06 -0400
+Message-ID: <000001d2e9cd$624285e0$26c791a0$@gmail.com>
+References: <b9daeb15d40f6682803d8dafde3bc3dcb63909ff.1497940816.git.arvind.yadav.cs@gmail.com> <2574238d-640f-79b3-4650-c51766b4a478@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1497628726-7563-2-git-send-email-fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-Cc: benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, benjamin.gaignard-qxv4g6HH51o@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <2574238d-640f-79b3-4650-c51766b4a478@linaro.org>
+Content-Language: en-us
+Sender: linux-kernel-owner@vger.kernel.org
+To: 'Daniel Thompson' <daniel.thompson@linaro.org>, 'Arvind Yadav' <arvind.yadav.cs@gmail.com>, thierry.reding@gmail.com, lee.jones@linaro.org, b.zolnierkie@samsung.com
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, 16 Jun 2017, Fabrice Gasnier wrote:
-
-> Add documentation for STMicroelectronics STM32 Low Power Timer binding.
+On Tuesday, June 20, 2017 6:53 AM, Daniel Thompson wrote:
 > 
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-> ---
->  .../devicetree/bindings/mfd/stm32-lptimer.txt      | 51 ++++++++++++++++++++++
->  1 file changed, 51 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+> On 20/06/17 08:52, Arvind Yadav wrote:
+> > of_device_ids are not supposed to change at runtime. All functions
+> > working with of_device_ids provided by <linux/of.h> work with const
+> > of_device_ids. So mark the non-const structs as const.
+> >
+> > Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
 > 
-> diff --git a/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
-> new file mode 100644
-> index 0000000..237b7d6
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
-> @@ -0,0 +1,51 @@
-> +STMicroelectronics STM32 Low Power Timer
-> +
-> +The STM32 Low Power Timer (LPTIM) is a 16-bit timer that provides several
-> +functionalities:
+> Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
 
-"functions".
+Acked-by: Jingoo Han <jingoohan1@gmail.com>
 
-> +- PWM output (with programmable prescaler, configurable polarity)
-> +- Quadrature encoder, counter
-> +- Trigger source for STM32 ADC/DAC (LPTIM_OUT)
-> +
-> +Required properties:
-> +- compatible: Must be "st,stm32-lptimer".
-> +- reg: Offset and length of the device's register set.
-> +- clocks: Phandle to the clock used by the LP Timer module.
-> +- clock-names: Must be "int".
+Best regards,
+Jingoo Han
 
-These look better when padded:
-
-- compatible:		Must be "st,stm32-lptimer".
-- reg:			Offset and length of the device's register set.
-- clocks:		Phandle to the clock used by the LP Timer module.
-- clock-names:		Must be "int".
-
-> +- #address-cells = <1>;
-> +- #size-cells = <0>;
-
-Please use the same format as you did for the other properties.
-
-> +Optional properties:
-> +- resets: Must contain the phandle to the reset controller.
-> +
-> +Optional subnodes:
-> +- pwm: See ../pwm/pwm-stm32-lp.txt
-> +- counter: See ../iio/timer/stm32-lptimer-cnt.txt
-> +- trigger: See ../iio/timer/stm32-lptimer-trigger.txt
-> +
-> +Example:
-> +
-> +	lptimer1: lptimer@0x40002400 {
-
-Remove '0x'
-
-> +		compatible = "st,stm32-lptimer";
-> +		reg = <0x40002400 0x400>;
-> +		clocks = <&timer_clk>;
-> +		clock-names = "int";
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		pwm {
-> +			compatible = "st,stm32-pwm-lp";
-> +			pinctrl-names = "default";
-> +			pinctrl-0 = <&lppwm1_pins>;
-> +		};
-> +
-> +		trigger@0 {
-
-Why is this @0 and no reg properties are provided for the other 2
-nodes?
-
-> +			compatible = "st,stm32-lptimer-trigger";
-> +			reg = <0>;
-> +		};
-> +
-> +		counter {
-> +			compatible = "st,stm32-lptimer-counter";
-> +			pinctrl-names = "default";
-> +			pinctrl-0 = <&lptim1_in_pins>;
-> +		};
-> +	};
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> 
+> 
+> > ---
+> >   drivers/video/backlight/pwm_bl.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/video/backlight/pwm_bl.c
+> b/drivers/video/backlight/pwm_bl.c
+> > index 002f1ce..9bd1768 100644
+> > --- a/drivers/video/backlight/pwm_bl.c
+> > +++ b/drivers/video/backlight/pwm_bl.c
+> > @@ -178,7 +178,7 @@ static int pwm_backlight_parse_dt(struct device *dev,
+> >   	return 0;
+> >   }
+> >
+> > -static struct of_device_id pwm_backlight_of_match[] = {
+> > +static const struct of_device_id pwm_backlight_of_match[] = {
+> >   	{ .compatible = "pwm-backlight" },
+> >   	{ }
+> >   };
+> >
