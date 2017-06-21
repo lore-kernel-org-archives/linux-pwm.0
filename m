@@ -1,7 +1,7 @@
 From: Zhi Mao <zhi.mao@mediatek.com>
-Subject: [PATCH RESEND 3/4] pwm: bindings: add MT2712/MT7622 information
-Date: Wed, 21 Jun 2017 16:11:11 +0800
-Message-ID: <1498032672-7172-4-git-send-email-zhi.mao@mediatek.com>
+Subject: [PATCH RESEND 4/4] pwm: mediatek: add MT2712/MT7622 support
+Date: Wed, 21 Jun 2017 16:11:12 +0800
+Message-ID: <1498032672-7172-5-git-send-email-zhi.mao@mediatek.com>
 References: <1498032672-7172-1-git-send-email-zhi.mao@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,36 +12,158 @@ To: john@phrozen.org, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <ro
 Cc: srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, zhi.mao@mediatek.com, yingjoe.chen@mediatek.com, yt.shen@mediatek.com, sean.wang@mediatek.com, zhenbao.liu@mediatek.com
 List-Id: linux-pwm@vger.kernel.org
 
-add MT2712/MT7622 pwm information
+support multiple chip(MT2712, MT7622, MT7623)
 
 Signed-off-by: Zhi Mao <zhi.mao@mediatek.com>
 ---
- .../devicetree/bindings/pwm/pwm-mediatek.txt       |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-mediatek.c |   63 +++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 51 insertions(+), 12 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-index 54c59b0..ef8bd3c 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-@@ -2,6 +2,8 @@ MediaTek PWM controller
+diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+index c803ff6..d520356 100644
+--- a/drivers/pwm/pwm-mediatek.c
++++ b/drivers/pwm/pwm-mediatek.c
+@@ -16,6 +16,7 @@
+ #include <linux/module.h>
+ #include <linux/clk.h>
+ #include <linux/of.h>
++#include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/pwm.h>
+ #include <linux/slab.h>
+@@ -30,6 +31,8 @@
+ #define PWMDWIDTH		0x2c
+ #define PWMTHRES		0x30
  
- Required properties:
-  - compatible: should be "mediatek,<name>-pwm":
-+   - "mediatek,mt2712-pwm": found on mt2712 SoC.
-+   - "mediatek,mt7622-pwm": found on mt7622 SoC.
-    - "mediatek,mt7623-pwm": found on mt7623 SoC.
-  - reg: physical base address and length of the controller's registers.
-  - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
-@@ -10,7 +12,9 @@ Required properties:
-  - clock-names: must contain the following:
-    - "top": the top clock generator
-    - "main": clock used by the PWM core
--   - "pwm1-5": the five per PWM clocks
-+   - "pwm1-8": the eight per PWM clocks for mt2712
-+   - "pwm1-6": the six per PWM clocks for mt7622
-+   - "pwm1-5": the five per PWM clocks for mt7623
-  - pinctrl-names: Must contain a "default" entry.
-  - pinctrl-0: One property must exist for each entry in pinctrl-names.
-    See pinctrl/pinctrl-bindings.txt for details of the property values.
++#define PWM_CLK_DIV_MAX		7
++
+ enum {
+ 	MTK_CLK_MAIN = 0,
+ 	MTK_CLK_TOP,
+@@ -38,11 +41,19 @@ enum {
+ 	MTK_CLK_PWM3,
+ 	MTK_CLK_PWM4,
+ 	MTK_CLK_PWM5,
++	MTK_CLK_PWM6,
++	MTK_CLK_PWM7,
++	MTK_CLK_PWM8,
+ 	MTK_CLK_MAX,
+ };
+ 
+-static const char * const mtk_pwm_clk_name[] = {
+-	"main", "top", "pwm1", "pwm2", "pwm3", "pwm4", "pwm5"
++static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
++	"main", "top", "pwm1", "pwm2", "pwm3", "pwm4",
++	"pwm5", "pwm6", "pwm7", "pwm8"
++};
++
++struct mtk_com_pwm_data {
++	unsigned int pwm_nums;
+ };
+ 
+ /**
+@@ -55,6 +66,11 @@ struct mtk_pwm_chip {
+ 	struct pwm_chip chip;
+ 	void __iomem *regs;
+ 	struct clk *clks[MTK_CLK_MAX];
++	const struct mtk_com_pwm_data *data;
++};
++
++static const unsigned long mtk_pwm_com_reg[] = {
++	0x0010, 0x0050, 0x0090, 0x00d0, 0x0110, 0x0150, 0x0190, 0x0220
+ };
+ 
+ static inline struct mtk_pwm_chip *to_mtk_pwm_chip(struct pwm_chip *chip)
+@@ -99,14 +115,14 @@ static void mtk_pwm_clk_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ static inline u32 mtk_pwm_readl(struct mtk_pwm_chip *chip, unsigned int num,
+ 				unsigned int offset)
+ {
+-	return readl(chip->regs + 0x10 + (num * 0x40) + offset);
++	return readl(chip->regs + mtk_pwm_com_reg[num] + offset);
+ }
+ 
+ static inline void mtk_pwm_writel(struct mtk_pwm_chip *chip,
+ 				  unsigned int num, unsigned int offset,
+ 				  u32 value)
+ {
+-	writel(value, chip->regs + 0x10 + (num * 0x40) + offset);
++	writel(value, chip->regs + mtk_pwm_com_reg[num] + offset);
+ }
+ 
+ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+@@ -125,8 +141,10 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		clkdiv++;
+ 	}
+ 
+-	if (clkdiv > 7)
++	if (clkdiv > PWM_CLK_DIV_MAX) {
++		dev_err(chip->dev, "period %d not supported\n", period_ns);
+ 		return -EINVAL;
++	}
+ 
+ 	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | clkdiv);
+ 	mtk_pwm_writel(pc, pwm->hwpwm, PWMDWIDTH, period_ns / resolution);
+@@ -181,23 +199,28 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+ 	if (!pc)
+ 		return -ENOMEM;
+ 
++	pc->data = of_device_get_match_data(&pdev->dev);
++
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	pc->regs = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(pc->regs))
+ 		return PTR_ERR(pc->regs);
+ 
+-	for (i = 0; i < MTK_CLK_MAX; i++) {
++	for (i = 0; i < pc->data->pwm_nums + 2; i++) {
+ 		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
+-		if (IS_ERR(pc->clks[i]))
++		if (IS_ERR(pc->clks[i])) {
++			dev_err(&pdev->dev, "[PWM] clock: %s fail: %ld\n",
++				mtk_pwm_clk_name[i], PTR_ERR(pc->clks[i]));
+ 			return PTR_ERR(pc->clks[i]);
++		}
+ 	}
+ 
+-	platform_set_drvdata(pdev, pc);
+-
+ 	pc->chip.dev = &pdev->dev;
+ 	pc->chip.ops = &mtk_pwm_ops;
+ 	pc->chip.base = -1;
+-	pc->chip.npwm = 5;
++	pc->chip.npwm = pc->data->pwm_nums;
++
++	platform_set_drvdata(pdev, pc);
+ 
+ 	ret = pwmchip_add(&pc->chip);
+ 	if (ret < 0) {
+@@ -215,9 +238,25 @@ static int mtk_pwm_remove(struct platform_device *pdev)
+ 	return pwmchip_remove(&pc->chip);
+ }
+ 
++/*==========================================*/
++static const struct mtk_com_pwm_data mt2712_pwm_data = {
++	.pwm_nums = 8,
++};
++
++static const struct mtk_com_pwm_data mt7622_pwm_data = {
++	.pwm_nums = 6,
++};
++
++static const struct mtk_com_pwm_data mt7623_pwm_data = {
++	.pwm_nums = 5,
++};
++/*==========================================*/
++
+ static const struct of_device_id mtk_pwm_of_match[] = {
+-	{ .compatible = "mediatek,mt7623-pwm" },
+-	{ }
++	{.compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data},
++	{.compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data},
++	{.compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data},
++	{},
+ };
+ MODULE_DEVICE_TABLE(of, mtk_pwm_of_match);
+ 
 -- 
 1.7.9.5
