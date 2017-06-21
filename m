@@ -1,30 +1,47 @@
-From: Zhi Mao <zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH RESEND 0/4] mediatek: pwm driver add MT2712/MT7622 support
-Date: Wed, 21 Jun 2017 16:11:08 +0800
-Message-ID: <1498032672-7172-1-git-send-email-zhi.mao@mediatek.com>
+From: Zhi Mao <zhi.mao@mediatek.com>
+Subject: [PATCH RESEND 3/4] pwm: bindings: add MT2712/MT7622 information
+Date: Wed, 21 Jun 2017 16:11:11 +0800
+Message-ID: <1498032672-7172-4-git-send-email-zhi.mao@mediatek.com>
+References: <1498032672-7172-1-git-send-email-zhi.mao@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, zhenbao.liu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1498032672-7172-1-git-send-email-zhi.mao@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: john@phrozen.org, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org
+Cc: srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, zhi.mao@mediatek.com, yingjoe.chen@mediatek.com, yt.shen@mediatek.com, sean.wang@mediatek.com, zhenbao.liu@mediatek.com
 List-Id: linux-pwm@vger.kernel.org
 
-pwm driver add MT2712/MT7622 support, fix clock control issue.
-dtsi file will be upload latter, after the clock define is ready.
+add MT2712/MT7622 pwm information
 
-Zhi Mao (4):
-  pwm: kconfig: modify mediatek information
-  pwm: mediatek: fix clk issue
-  pwm: bindings: add MT2712/MT7622 information
-  pwm: mediatek: add MT2712/MT7622 support
+Signed-off-by: Zhi Mao <zhi.mao@mediatek.com>
+---
+ .../devicetree/bindings/pwm/pwm-mediatek.txt       |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
- .../devicetree/bindings/pwm/pwm-mediatek.txt       |    6 +-
- drivers/pwm/Kconfig                                |    2 +-
- drivers/pwm/pwm-mediatek.c                         |  132 ++++++++++++++------
- 3 files changed, 100 insertions(+), 40 deletions(-)
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+index 54c59b0..ef8bd3c 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
+@@ -2,6 +2,8 @@ MediaTek PWM controller
+ 
+ Required properties:
+  - compatible: should be "mediatek,<name>-pwm":
++   - "mediatek,mt2712-pwm": found on mt2712 SoC.
++   - "mediatek,mt7622-pwm": found on mt7622 SoC.
+    - "mediatek,mt7623-pwm": found on mt7623 SoC.
+  - reg: physical base address and length of the controller's registers.
+  - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
+@@ -10,7 +12,9 @@ Required properties:
+  - clock-names: must contain the following:
+    - "top": the top clock generator
+    - "main": clock used by the PWM core
+-   - "pwm1-5": the five per PWM clocks
++   - "pwm1-8": the eight per PWM clocks for mt2712
++   - "pwm1-6": the six per PWM clocks for mt7622
++   - "pwm1-5": the five per PWM clocks for mt7623
+  - pinctrl-names: Must contain a "default" entry.
+  - pinctrl-0: One property must exist for each entry in pinctrl-names.
+    See pinctrl/pinctrl-bindings.txt for details of the property values.
+-- 
+1.7.9.5
