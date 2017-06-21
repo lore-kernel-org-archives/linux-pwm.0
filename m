@@ -1,169 +1,45 @@
-From: Zhi Mao <zhi.mao@mediatek.com>
-Subject: [PATCH RESEND 4/4] pwm: mediatek: add MT2712/MT7622 support
-Date: Wed, 21 Jun 2017 16:11:12 +0800
-Message-ID: <1498032672-7172-5-git-send-email-zhi.mao@mediatek.com>
+From: Zhi Mao <zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH RESEND 1/4] pwm: kconfig: modify mediatek information
+Date: Wed, 21 Jun 2017 16:11:09 +0800
+Message-ID: <1498032672-7172-2-git-send-email-zhi.mao@mediatek.com>
 References: <1498032672-7172-1-git-send-email-zhi.mao@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1498032672-7172-1-git-send-email-zhi.mao@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: john@phrozen.org, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org
-Cc: srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, zhi.mao@mediatek.com, yingjoe.chen@mediatek.com, yt.shen@mediatek.com, sean.wang@mediatek.com, zhenbao.liu@mediatek.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <1498032672-7172-1-git-send-email-zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-mediatek/>
+List-Post: <mailto:linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-mediatek>,
+ <mailto:linux-mediatek-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-mediatek" <linux-mediatek-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-mediatek-bounces+glpam-linux-mediatek=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: zhenbao.liu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-support multiple chip(MT2712, MT7622, MT7623)
+modify mediatek information
 
-Signed-off-by: Zhi Mao <zhi.mao@mediatek.com>
+Signed-off-by: Zhi Mao <zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 ---
- drivers/pwm/pwm-mediatek.c |   63 +++++++++++++++++++++++++++++++++++---------
- 1 file changed, 51 insertions(+), 12 deletions(-)
+ drivers/pwm/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index c803ff6..d520356 100644
---- a/drivers/pwm/pwm-mediatek.c
-+++ b/drivers/pwm/pwm-mediatek.c
-@@ -16,6 +16,7 @@
- #include <linux/module.h>
- #include <linux/clk.h>
- #include <linux/of.h>
-+#include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/pwm.h>
- #include <linux/slab.h>
-@@ -30,6 +31,8 @@
- #define PWMDWIDTH		0x2c
- #define PWMTHRES		0x30
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 313c107..45cdf2a 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -300,7 +300,7 @@ config PWM_MEDIATEK
+ 	  Generic PWM framework driver for Mediatek ARM SoC.
  
-+#define PWM_CLK_DIV_MAX		7
-+
- enum {
- 	MTK_CLK_MAIN = 0,
- 	MTK_CLK_TOP,
-@@ -38,11 +41,19 @@ enum {
- 	MTK_CLK_PWM3,
- 	MTK_CLK_PWM4,
- 	MTK_CLK_PWM5,
-+	MTK_CLK_PWM6,
-+	MTK_CLK_PWM7,
-+	MTK_CLK_PWM8,
- 	MTK_CLK_MAX,
- };
+ 	  To compile this driver as a module, choose M here: the module
+-	  will be called pwm-mxs.
++	  will be called pwm-mediatek.
  
--static const char * const mtk_pwm_clk_name[] = {
--	"main", "top", "pwm1", "pwm2", "pwm3", "pwm4", "pwm5"
-+static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
-+	"main", "top", "pwm1", "pwm2", "pwm3", "pwm4",
-+	"pwm5", "pwm6", "pwm7", "pwm8"
-+};
-+
-+struct mtk_com_pwm_data {
-+	unsigned int pwm_nums;
- };
- 
- /**
-@@ -55,6 +66,11 @@ struct mtk_pwm_chip {
- 	struct pwm_chip chip;
- 	void __iomem *regs;
- 	struct clk *clks[MTK_CLK_MAX];
-+	const struct mtk_com_pwm_data *data;
-+};
-+
-+static const unsigned long mtk_pwm_com_reg[] = {
-+	0x0010, 0x0050, 0x0090, 0x00d0, 0x0110, 0x0150, 0x0190, 0x0220
- };
- 
- static inline struct mtk_pwm_chip *to_mtk_pwm_chip(struct pwm_chip *chip)
-@@ -99,14 +115,14 @@ static void mtk_pwm_clk_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- static inline u32 mtk_pwm_readl(struct mtk_pwm_chip *chip, unsigned int num,
- 				unsigned int offset)
- {
--	return readl(chip->regs + 0x10 + (num * 0x40) + offset);
-+	return readl(chip->regs + mtk_pwm_com_reg[num] + offset);
- }
- 
- static inline void mtk_pwm_writel(struct mtk_pwm_chip *chip,
- 				  unsigned int num, unsigned int offset,
- 				  u32 value)
- {
--	writel(value, chip->regs + 0x10 + (num * 0x40) + offset);
-+	writel(value, chip->regs + mtk_pwm_com_reg[num] + offset);
- }
- 
- static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -125,8 +141,10 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		clkdiv++;
- 	}
- 
--	if (clkdiv > 7)
-+	if (clkdiv > PWM_CLK_DIV_MAX) {
-+		dev_err(chip->dev, "period %d not supported\n", period_ns);
- 		return -EINVAL;
-+	}
- 
- 	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | clkdiv);
- 	mtk_pwm_writel(pc, pwm->hwpwm, PWMDWIDTH, period_ns / resolution);
-@@ -181,23 +199,28 @@ static int mtk_pwm_probe(struct platform_device *pdev)
- 	if (!pc)
- 		return -ENOMEM;
- 
-+	pc->data = of_device_get_match_data(&pdev->dev);
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	pc->regs = devm_ioremap_resource(&pdev->dev, res);
- 	if (IS_ERR(pc->regs))
- 		return PTR_ERR(pc->regs);
- 
--	for (i = 0; i < MTK_CLK_MAX; i++) {
-+	for (i = 0; i < pc->data->pwm_nums + 2; i++) {
- 		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
--		if (IS_ERR(pc->clks[i]))
-+		if (IS_ERR(pc->clks[i])) {
-+			dev_err(&pdev->dev, "[PWM] clock: %s fail: %ld\n",
-+				mtk_pwm_clk_name[i], PTR_ERR(pc->clks[i]));
- 			return PTR_ERR(pc->clks[i]);
-+		}
- 	}
- 
--	platform_set_drvdata(pdev, pc);
--
- 	pc->chip.dev = &pdev->dev;
- 	pc->chip.ops = &mtk_pwm_ops;
- 	pc->chip.base = -1;
--	pc->chip.npwm = 5;
-+	pc->chip.npwm = pc->data->pwm_nums;
-+
-+	platform_set_drvdata(pdev, pc);
- 
- 	ret = pwmchip_add(&pc->chip);
- 	if (ret < 0) {
-@@ -215,9 +238,25 @@ static int mtk_pwm_remove(struct platform_device *pdev)
- 	return pwmchip_remove(&pc->chip);
- }
- 
-+/*==========================================*/
-+static const struct mtk_com_pwm_data mt2712_pwm_data = {
-+	.pwm_nums = 8,
-+};
-+
-+static const struct mtk_com_pwm_data mt7622_pwm_data = {
-+	.pwm_nums = 6,
-+};
-+
-+static const struct mtk_com_pwm_data mt7623_pwm_data = {
-+	.pwm_nums = 5,
-+};
-+/*==========================================*/
-+
- static const struct of_device_id mtk_pwm_of_match[] = {
--	{ .compatible = "mediatek,mt7623-pwm" },
--	{ }
-+	{.compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data},
-+	{.compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data},
-+	{.compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data},
-+	{},
- };
- MODULE_DEVICE_TABLE(of, mtk_pwm_of_match);
- 
+ config PWM_MXS
+ 	tristate "Freescale MXS PWM support"
 -- 
 1.7.9.5
