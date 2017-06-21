@@ -1,81 +1,91 @@
-From: John Crispin <john@phrozen.org>
-Subject: Re: [PATCH RESEND 4/4] pwm: mediatek: add MT2712/MT7622 support
-Date: Wed, 21 Jun 2017 14:22:31 +0200
-Message-ID: <4600cf23-5e59-df02-37dc-056cb4a9744c@phrozen.org>
-References: <1498032672-7172-1-git-send-email-zhi.mao@mediatek.com>
- <1498032672-7172-5-git-send-email-zhi.mao@mediatek.com>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: [PATCH v2 1/8] dt-bindings: mfd: Add STM32 LPTimer binding
+Date: Wed, 21 Jun 2017 16:30:08 +0200
+Message-ID: <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
+References: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from nbd.name ([46.4.11.11]:44438 "EHLO nbd.name"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750823AbdFUMWf (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 21 Jun 2017 08:22:35 -0400
-In-Reply-To: <1498032672-7172-5-git-send-email-zhi.mao@mediatek.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org, thierry.reding@gmail.com, robh+dt@kernel.org
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
 List-Id: linux-pwm@vger.kernel.org
-To: Zhi Mao <zhi.mao@mediatek.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org
-Cc: zhenbao.liu@mediatek.com, devicetree@vger.kernel.org, srv_heupstream@mediatek.com, sean.wang@mediatek.com, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, yt.shen@mediatek.com, yingjoe.chen@mediatek.com, linux-arm-kernel@lists.infradead.org
 
+Add documentation for STMicroelectronics STM32 Low-Power Timer binding.
 
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+---
+Changes in v2:
+- Lee's comments: s/Low Power/Low-Power/, remove 0x in example, improve
+  properties descriptions
+---
+ .../devicetree/bindings/mfd/stm32-lptimer.txt      | 48 ++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
 
-On 21/06/17 10:11, Zhi Mao wrote:
-> support multiple chip(MT2712, MT7622, MT7623)
-This patch does more than add extra SoC support. It also
-* adds PWM_CLK_DIV_MAX which really should go into its own patch
-* adds mtk_pwm_com_reg which should also go into its own patch
-
-more comments inline
-
->
-> Signed-off-by: Zhi Mao <zhi.mao@mediatek.com>
-> ---
->   drivers/pwm/pwm-mediatek.c |   63 +++++++++++++++++++++++++++++++++++---------
->   1 file changed, 51 insertions(+), 12 deletions(-)
->
-> diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-> index c803ff6..d520356 100644
-> --- a/drivers/pwm/pwm-mediatek.c
-> +++ b/drivers/pwm/pwm-mediatek.c
-> @@ -16,6 +16,7 @@
->   #include <linux/module.h>
->   #include <linux/clk.h>
->   #include <linux/of.h>
-> +#include <linux/of_device.h>
->   #include <linux/platform_device.h>
->   #include <linux/pwm.h>
->   #include <linux/slab.h>
-[...]
-> @@ -215,9 +238,25 @@ static int mtk_pwm_remove(struct platform_device *pdev)
->   	return pwmchip_remove(&pc->chip);
->   }
->   
-> +/*==========================================*/
-
-please remove these comment lines
-
-     John
-> +static const struct mtk_com_pwm_data mt2712_pwm_data = {
-> +	.pwm_nums = 8,
-> +};
-> +
-> +static const struct mtk_com_pwm_data mt7622_pwm_data = {
-> +	.pwm_nums = 6,
-> +};
-> +
-> +static const struct mtk_com_pwm_data mt7623_pwm_data = {
-> +	.pwm_nums = 5,
-> +};
-> +/*==========================================*/
-> +
->   static const struct of_device_id mtk_pwm_of_match[] = {
-> -	{ .compatible = "mediatek,mt7623-pwm" },
-> -	{ }
-> +	{.compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data},
-> +	{.compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data},
-> +	{.compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data},
-> +	{},
->   };
->   MODULE_DEVICE_TABLE(of, mtk_pwm_of_match);
->   
+diff --git a/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+new file mode 100644
+index 0000000..af859c8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+@@ -0,0 +1,48 @@
++STMicroelectronics STM32 Low-Power Timer
++
++The STM32 Low-Power Timer (LPTIM) is a 16-bit timer that provides several
++functions:
++- PWM output (with programmable prescaler, configurable polarity)
++- Quadrature encoder, counter
++- Trigger source for STM32 ADC/DAC (LPTIM_OUT)
++
++Required properties:
++- compatible:		Must be "st,stm32-lptimer".
++- reg:			Offset and length of the device's register set.
++- clocks:		Phandle to the clock used by the LP Timer module.
++- clock-names:		Must be "mux".
++- #address-cells:	Should be '<1>'.
++- #size-cells:		Should be '<0>'.
++
++Optional subnodes:
++- pwm:			See ../pwm/pwm-stm32-lp.txt
++- counter:		See ../iio/timer/stm32-lptimer-cnt.txt
++- trigger:		See ../iio/timer/stm32-lptimer-trigger.txt
++
++Example:
++
++	lptimer1: lptimer@40002400 {
++		compatible = "st,stm32-lptimer";
++		reg = <0x40002400 0x400>;
++		clocks = <&timer_clk>;
++		clock-names = "mux";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		pwm {
++			compatible = "st,stm32-pwm-lp";
++			pinctrl-names = "default";
++			pinctrl-0 = <&lppwm1_pins>;
++		};
++
++		trigger@0 {
++			compatible = "st,stm32-lptimer-trigger";
++			reg = <0>;
++		};
++
++		counter {
++			compatible = "st,stm32-lptimer-counter";
++			pinctrl-names = "default";
++			pinctrl-0 = <&lptim1_in_pins>;
++		};
++	};
+-- 
+1.9.1
