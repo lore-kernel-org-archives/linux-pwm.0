@@ -1,136 +1,30 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: Re: [PATCH 1/8] dt-bindings: mfd: Add STM32 LPTimer binding
-Date: Tue, 20 Jun 2017 18:06:46 +0200
-Message-ID: <b6e64096-db0a-afea-ca4e-b21e86e1aa29@st.com>
-References: <1497628726-7563-1-git-send-email-fabrice.gasnier@st.com>
- <1497628726-7563-2-git-send-email-fabrice.gasnier@st.com>
- <20170620115040.xyaivbtcuufhxlv7@dell>
+From: Zhi Mao <zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH RESEND 0/4] mediatek: pwm driver add MT2712/MT7622 support
+Date: Wed, 21 Jun 2017 16:11:08 +0800
+Message-ID: <1498032672-7172-1-git-send-email-zhi.mao@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:35096 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1750993AbdFTQHY (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 20 Jun 2017 12:07:24 -0400
-In-Reply-To: <20170620115040.xyaivbtcuufhxlv7@dell>
-Content-Language: en-US
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, zhenbao.liu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: benjamin.gaignard@linaro.org, jic23@kernel.org, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-On 06/20/2017 01:50 PM, Lee Jones wrote:
-> On Fri, 16 Jun 2017, Fabrice Gasnier wrote:
-> 
->> Add documentation for STMicroelectronics STM32 Low Power Timer binding.
->>
->> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
->> ---
->>  .../devicetree/bindings/mfd/stm32-lptimer.txt      | 51 ++++++++++++++++++++++
->>  1 file changed, 51 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
->>
->> diff --git a/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
->> new file mode 100644
->> index 0000000..237b7d6
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
->> @@ -0,0 +1,51 @@
->> +STMicroelectronics STM32 Low Power Timer
->> +
->> +The STM32 Low Power Timer (LPTIM) is a 16-bit timer that provides several
->> +functionalities:
-> 
-> "functions".
+pwm driver add MT2712/MT7622 support, fix clock control issue.
+dtsi file will be upload latter, after the clock define is ready.
 
-Hi Lee,
+Zhi Mao (4):
+  pwm: kconfig: modify mediatek information
+  pwm: mediatek: fix clk issue
+  pwm: bindings: add MT2712/MT7622 information
+  pwm: mediatek: add MT2712/MT7622 support
 
-I'll fix it in v2.
-> 
->> +- PWM output (with programmable prescaler, configurable polarity)
->> +- Quadrature encoder, counter
->> +- Trigger source for STM32 ADC/DAC (LPTIM_OUT)
->> +
->> +Required properties:
->> +- compatible: Must be "st,stm32-lptimer".
->> +- reg: Offset and length of the device's register set.
->> +- clocks: Phandle to the clock used by the LP Timer module.
->> +- clock-names: Must be "int".
-> 
-> These look better when padded:
-> 
-> - compatible:		Must be "st,stm32-lptimer".
-> - reg:			Offset and length of the device's register set.
-> - clocks:		Phandle to the clock used by the LP Timer module.
-> - clock-names:		Must be "int".
-> 
->> +- #address-cells = <1>;
->> +- #size-cells = <0>;
-> 
-> Please use the same format as you did for the other properties.
+ .../devicetree/bindings/pwm/pwm-mediatek.txt       |    6 +-
+ drivers/pwm/Kconfig                                |    2 +-
+ drivers/pwm/pwm-mediatek.c                         |  132 ++++++++++++++------
+ 3 files changed, 100 insertions(+), 40 deletions(-)
 
-I'll fix it in v2.
-
-> 
->> +Optional properties:
->> +- resets: Must contain the phandle to the reset controller.
->> +
->> +Optional subnodes:
->> +- pwm: See ../pwm/pwm-stm32-lp.txt
->> +- counter: See ../iio/timer/stm32-lptimer-cnt.txt
->> +- trigger: See ../iio/timer/stm32-lptimer-trigger.txt
->> +
->> +Example:
->> +
->> +	lptimer1: lptimer@0x40002400 {
-> 
-> Remove '0x'
-nice shot :-)
-
-> 
->> +		compatible = "st,stm32-lptimer";
->> +		reg = <0x40002400 0x400>;
->> +		clocks = <&timer_clk>;
->> +		clock-names = "int";
->> +		#address-cells = <1>;
->> +		#size-cells = <0>;
->> +
->> +		pwm {
->> +			compatible = "st,stm32-pwm-lp";
->> +			pinctrl-names = "default";
->> +			pinctrl-0 = <&lppwm1_pins>;
->> +		};
->> +
->> +		trigger@0 {
-> 
-> Why is this @0 and no reg properties are provided for the other 2
-> nodes?
-
-This is to select each LPTimer configuration (similar to stm32-timers).
-All LPTimers that provide output as trigger for ADC and/or DAC are the
-same, except for which hardware signals they're connected to, and send
-to ADC and/or DAC.
-"reg" is used as index for trigger table in trigger driver code (PATCH
-6): it must be 0 for lptimer1 output, 1 for lptimer2 output or 2 for
-lptimer3 output.
-I should probably document it in stm32-lptimer-trigger dt-bindings ?
-
-This is not needed for other two nodes.
-
-Thanks for reviewing,
-Best Regards,
-Fabrice
-
-> 
->> +			compatible = "st,stm32-lptimer-trigger";
->> +			reg = <0>;
->> +		};
->> +
->> +		counter {
->> +			compatible = "st,stm32-lptimer-counter";
->> +			pinctrl-names = "default";
->> +			pinctrl-0 = <&lptim1_in_pins>;
->> +		};
->> +	};
-> 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
