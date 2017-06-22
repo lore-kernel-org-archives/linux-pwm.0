@@ -1,7 +1,7 @@
 From: John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
 Subject: Re: [PATCH RESEND 4/4] pwm: mediatek: add MT2712/MT7622 support
-Date: Thu, 22 Jun 2017 08:12:47 +0200
-Message-ID: <05b53007-44de-a236-f592-aea8e75ced44@phrozen.org>
+Date: Thu, 22 Jun 2017 08:52:54 +0200
+Message-ID: <f81a5fe1-4d9a-aa54-e680-035ca6075660@phrozen.org>
 References: <1498032672-7172-1-git-send-email-zhi.mao@mediatek.com>
  <1498032672-7172-5-git-send-email-zhi.mao@mediatek.com>
  <4600cf23-5e59-df02-37dc-056cb4a9744c@phrozen.org>
@@ -41,17 +41,19 @@ On 22/06/17 08:09, Zhi Mao wrote:
 > Zhi
 >
 >
->
->
 
 Hi Zhi,
 
-I just had another look and noticed that the CON registers are not at a 
-fixed offset of 0x40 for the new pwm8 register so having 2) inside this 
-patch makes sense. please explain in the description that this is the case
+I just had a closer look and noticed that the new CON registers are not 
+at the same fixed 0x40 offset as the pwm0-5 ones. sorry i did not notice 
+this. 2) needs to be part of this patch in that case. please add a short 
+info to the patches description explaining this.
 
      John
 
+
+>
+>
 >
 > On Wed, 2017-06-21 at 20:22 +0800, John Crispin wrote:
 >> On 21/06/17 10:11, Zhi Mao wrote:
