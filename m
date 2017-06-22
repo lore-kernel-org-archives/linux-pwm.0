@@ -1,124 +1,96 @@
-From: John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
-Subject: Re: [PATCH RESEND 4/4] pwm: mediatek: add MT2712/MT7622 support
-Date: Thu, 22 Jun 2017 08:52:54 +0200
-Message-ID: <f81a5fe1-4d9a-aa54-e680-035ca6075660@phrozen.org>
+From: Zhi Mao <zhi.mao@mediatek.com>
+Subject: Re: [PATCH RESEND 2/4] pwm: mediatek: fix clk issue
+Date: Thu, 22 Jun 2017 20:48:07 +0800
+Message-ID: <1498135687.18841.29.camel@mhfsdcap03>
 References: <1498032672-7172-1-git-send-email-zhi.mao@mediatek.com>
- <1498032672-7172-5-git-send-email-zhi.mao@mediatek.com>
- <4600cf23-5e59-df02-37dc-056cb4a9744c@phrozen.org>
- <1498111776.18841.10.camel@mhfsdcap03>
+         <1498032672-7172-3-git-send-email-zhi.mao@mediatek.com>
+         <046facdc-b558-146a-dcfd-0ed98bfeb517@phrozen.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1498111776.18841.10.camel@mhfsdcap03>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Zhi Mao <zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, =?UTF-8?B?WmhlbmJhbyBMaXUgKOWImOaMr+WunSk=?= <Zhenbao.Liu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, =?UTF-8?B?U2VhbiBXYW5nICjnjovlv5fkupgp?= <sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, =?UTF-8?B?WVQgU2hlbiAo5rKI5bKz6ZyGKQ==?= <Yt.Shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, =?UTF-8?B?WWluZ2pvZSBDaGVuICg/P+iLsea0sik=?= <Yingjoe.Chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWMMKQXVYFwzLw@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <046facdc-b558-146a-dcfd-0ed98bfeb517@phrozen.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: John Crispin <john@phrozen.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Zhenbao Liu =?UTF-8?Q?=28=E5=88=98=E6=8C=AF=E5=AE=9D=29?= <Zhenbao.Liu@mediatek.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, srv_heupstream <srv_heupstream@mediatek.com>, Sean Wang =?UTF-8?Q?=28=E7=8E=8B=E5=BF=97=E4=BA=98=29?= <sean.wang@mediatek.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, YT Shen =?UTF-8?Q?=28=E6=B2=88=E5=B2=B3=E9=9C=86=29?= <Yt.Shen@mediatek.com>, Yingjoe
 List-Id: linux-pwm@vger.kernel.org
 
+On Wed, 2017-06-21 at 20:07 +0800, John Crispin wrote:
+> Hi
+> 
+> comments inline
+> 
+> 
+> > +static int mtk_pwm_clk_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+> > +{
 
+> > +	ret = clk_prepare_enable(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
+> > +	if (ret < 0) {
+> > +		clk_disable_unprepare(pc->clks[MTK_CLK_MAIN]);
+> > +		clk_disable_unprepare(pc->clks[MTK_CLK_TOP]);
+> > +		return ret;
+> > +	}
+> > +
+> Rather than disabling the already prepared clks in each error path and 
+> then returning, you should use goto err_clk_{top,main,pwm1} in the same 
+> style as what this patch removes from mtk_pwm_probe()
+> 
+> > +	return ret;
+> > +}
 
-On 22/06/17 08:09, Zhi Mao wrote:
-> Hi John,
->
-> Thanks for your review the code and feedback.
-> There are 3 issues in this patch:
-> 1.adds PWM_CLK_DIV_MAX which really should go into its own patch
-> 2.adds mtk_pwm_com_reg which should also go into its own patch
-> 3.remove comments inline /*===*/
->
-> for #1 and #3, I will modify them in the next release.
-> but for #2, I want to discuss with you,
-> adding the structure  "mtk_pwm_com_reg" is only for the registers of 
-> MT2712 PWM8,
-> so we want to keep this modification in this patch.
->
-> what's your opinion about it?
-> Any reply is welcome.
->
->
-> Regards
-> Zhi
->
->
+> >   static inline u32 mtk_pwm_readl(struct mtk_pwm_chip *chip, unsigned int num,
+> >   				unsigned int offset)
+> >   {
 
-Hi Zhi,
+> > @@ -91,10 +128,12 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> >   	if (clkdiv > 7)
+> >   		return -EINVAL;
+> >   
+> > -	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | BIT(3) | clkdiv);
+> > +	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | clkdiv);
+> 
+> this chunk needs to go into its own patch
+> 
 
-I just had a closer look and noticed that the new CON registers are not 
-at the same fixed 0x40 offset as the pwm0-5 ones. sorry i did not notice 
-this. 2) needs to be part of this patch in that case. please add a short 
-info to the patches description explaining this.
+> >   
+> > @@ -102,11 +141,8 @@ static int mtk_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+> >   {
+> >   
+> > -	ret = clk_prepare(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
+> > -	if (ret < 0)
+> > -		return ret;
+> > +	mtk_pwm_clk_enable(chip, pwm);
+> You need to check the error code here and return if clk enabling failed
+> 
 
-     John
+<....>
+Hi John,
+For these above comments, I will modified as your suggestions in the
+next release.
 
+> > 
+> >   
+> >   static int mtk_pwm_remove(struct platform_device *pdev)
+> >   {
+> >   	struct mtk_pwm_chip *pc = platform_get_drvdata(pdev);
+> > -	unsigned int i;
+> > -
+> > -	for (i = 0; i < pc->chip.npwm; i++)
+> > -		pwm_disable(&pc->chip.pwms[i]);
+> why are you removing this chunk ?
+> 
+>      John
+> 
 
->
->
->
-> On Wed, 2017-06-21 at 20:22 +0800, John Crispin wrote:
->> On 21/06/17 10:11, Zhi Mao wrote:
->> > support multiple chip(MT2712, MT7622, MT7623)
->> This patch does more than add extra SoC support. It also
->> * adds PWM_CLK_DIV_MAX which really should go into its own patch
->> * adds mtk_pwm_com_reg which should also go into its own patch
->>
->> more comments inline
->>
->> >
->> > Signed-off-by: Zhi Mao <zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org <mailto:zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>>
->> > ---
->> >   drivers/pwm/pwm-mediatek.c |   63 +++++++++++++++++++++++++++++++++++---------
->> >   1 file changed, 51 insertions(+), 12 deletions(-)
->> >
->> > diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
->> > index c803ff6..d520356 100644
->> > --- a/drivers/pwm/pwm-mediatek.c
->> > +++ b/drivers/pwm/pwm-mediatek.c
->> > @@ -16,6 +16,7 @@
->> >   #include <linux/module.h>
->> >   #include <linux/clk.h>
->> >   #include <linux/of.h>
->> > +#include <linux/of_device.h>
->> >   #include <linux/platform_device.h>
->> >   #include <linux/pwm.h>
->> >   #include <linux/slab.h>
->> [...]
->> > @@ -215,9 +238,25 @@ static int mtk_pwm_remove(struct platform_device *pdev)
->> >   	return pwmchip_remove(&pc->chip);
->> >   }
->> >
->> > +/*==========================================*/
->>
->> please remove these comment lines
->>
->>       John
->> > +static const struct mtk_com_pwm_data mt2712_pwm_data = {
->> > +	.pwm_nums = 8,
->> > +};
->> > +
->> > +static const struct mtk_com_pwm_data mt7622_pwm_data = {
->> > +	.pwm_nums = 6,
->> > +};
->> > +
->> > +static const struct mtk_com_pwm_data mt7623_pwm_data = {
->> > +	.pwm_nums = 5,
->> > +};
->> > +/*==========================================*/
->> > +
->> >   static const struct of_device_id mtk_pwm_of_match[] = {
->> > -	{ .compatible = "mediatek,mt7623-pwm" },
->> > -	{ }
->> > +	{.compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data},
->> > +	{.compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data},
->> > +	{.compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data},
->> > +	{},
->> >   };
->> >   MODULE_DEVICE_TABLE(of, mtk_pwm_of_match);
->> >
->>
->
+After refering to some other vendor's pwm driver, we think the
+"pwm_disable" is no need, and framework control flow should disable all
+the pwms before removing them,
+so we remove it.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Regards,
+Zhi
+
+> >   
+> >   	return pwmchip_remove(&pc->chip);
+> >   }
+> 
