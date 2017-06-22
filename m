@@ -1,96 +1,100 @@
-From: Zhi Mao <zhi.mao@mediatek.com>
-Subject: Re: [PATCH RESEND 2/4] pwm: mediatek: fix clk issue
-Date: Thu, 22 Jun 2017 20:48:07 +0800
-Message-ID: <1498135687.18841.29.camel@mhfsdcap03>
-References: <1498032672-7172-1-git-send-email-zhi.mao@mediatek.com>
-         <1498032672-7172-3-git-send-email-zhi.mao@mediatek.com>
-         <046facdc-b558-146a-dcfd-0ed98bfeb517@phrozen.org>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v2 1/8] dt-bindings: mfd: Add STM32 LPTimer binding
+Date: Thu, 22 Jun 2017 16:43:57 +0100
+Message-ID: <20170622154357.fedg2etrrqdslnr7@dell>
+References: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
+ <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <046facdc-b558-146a-dcfd-0ed98bfeb517@phrozen.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: John Crispin <john@phrozen.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Zhenbao Liu =?UTF-8?Q?=28=E5=88=98=E6=8C=AF=E5=AE=9D=29?= <Zhenbao.Liu@mediatek.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, srv_heupstream <srv_heupstream@mediatek.com>, Sean Wang =?UTF-8?Q?=28=E7=8E=8B=E5=BF=97=E4=BA=98=29?= <sean.wang@mediatek.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, YT Shen =?UTF-8?Q?=28=E6=B2=88=E5=B2=B3=E9=9C=86=29?= <Yt.Shen@mediatek.com>, Yingjoe
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wr0-f170.google.com ([209.85.128.170]:33139 "EHLO
+        mail-wr0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751458AbdFVPoB (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 22 Jun 2017 11:44:01 -0400
+Received: by mail-wr0-f170.google.com with SMTP id r103so28759049wrb.0
+        for <linux-pwm@vger.kernel.org>; Thu, 22 Jun 2017 08:44:01 -0700 (PDT)
+Content-Disposition: inline
+In-Reply-To: <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: benjamin.gaignard@linaro.org, jic23@kernel.org, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-On Wed, 2017-06-21 at 20:07 +0800, John Crispin wrote:
-> Hi
-> 
-> comments inline
-> 
-> 
-> > +static int mtk_pwm_clk_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-> > +{
+On Wed, 21 Jun 2017, Fabrice Gasnier wrote:
 
-> > +	ret = clk_prepare_enable(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
-> > +	if (ret < 0) {
-> > +		clk_disable_unprepare(pc->clks[MTK_CLK_MAIN]);
-> > +		clk_disable_unprepare(pc->clks[MTK_CLK_TOP]);
-> > +		return ret;
-> > +	}
-> > +
-> Rather than disabling the already prepared clks in each error path and 
-> then returning, you should use goto err_clk_{top,main,pwm1} in the same 
-> style as what this patch removes from mtk_pwm_probe()
+> Add documentation for STMicroelectronics STM32 Low-Power Timer binding.
 > 
-> > +	return ret;
-> > +}
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> ---
+> Changes in v2:
+> - Lee's comments: s/Low Power/Low-Power/, remove 0x in example, improve
+>   properties descriptions
+> ---
+>  .../devicetree/bindings/mfd/stm32-lptimer.txt      | 48 ++++++++++++++++++++++
+>  1 file changed, 48 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
 
-> >   static inline u32 mtk_pwm_readl(struct mtk_pwm_chip *chip, unsigned int num,
-> >   				unsigned int offset)
-> >   {
+For my own reference:
+  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+  
+> diff --git a/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+> new file mode 100644
+> index 0000000..af859c8
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+> @@ -0,0 +1,48 @@
+> +STMicroelectronics STM32 Low-Power Timer
+> +
+> +The STM32 Low-Power Timer (LPTIM) is a 16-bit timer that provides several
+> +functions:
+> +- PWM output (with programmable prescaler, configurable polarity)
+> +- Quadrature encoder, counter
+> +- Trigger source for STM32 ADC/DAC (LPTIM_OUT)
+> +
+> +Required properties:
+> +- compatible:		Must be "st,stm32-lptimer".
+> +- reg:			Offset and length of the device's register set.
+> +- clocks:		Phandle to the clock used by the LP Timer module.
+> +- clock-names:		Must be "mux".
+> +- #address-cells:	Should be '<1>'.
+> +- #size-cells:		Should be '<0>'.
+> +
+> +Optional subnodes:
+> +- pwm:			See ../pwm/pwm-stm32-lp.txt
+> +- counter:		See ../iio/timer/stm32-lptimer-cnt.txt
+> +- trigger:		See ../iio/timer/stm32-lptimer-trigger.txt
+> +
+> +Example:
+> +
+> +	lptimer1: lptimer@40002400 {
+> +		compatible = "st,stm32-lptimer";
+> +		reg = <0x40002400 0x400>;
+> +		clocks = <&timer_clk>;
+> +		clock-names = "mux";
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		pwm {
+> +			compatible = "st,stm32-pwm-lp";
+> +			pinctrl-names = "default";
+> +			pinctrl-0 = <&lppwm1_pins>;
+> +		};
+> +
+> +		trigger@0 {
+> +			compatible = "st,stm32-lptimer-trigger";
+> +			reg = <0>;
+> +		};
+> +
+> +		counter {
+> +			compatible = "st,stm32-lptimer-counter";
+> +			pinctrl-names = "default";
+> +			pinctrl-0 = <&lptim1_in_pins>;
+> +		};
+> +	};
 
-> > @@ -91,10 +128,12 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> >   	if (clkdiv > 7)
-> >   		return -EINVAL;
-> >   
-> > -	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | BIT(3) | clkdiv);
-> > +	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | clkdiv);
-> 
-> this chunk needs to go into its own patch
-> 
-
-> >   
-> > @@ -102,11 +141,8 @@ static int mtk_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
-> >   {
-> >   
-> > -	ret = clk_prepare(pc->clks[MTK_CLK_PWM1 + pwm->hwpwm]);
-> > -	if (ret < 0)
-> > -		return ret;
-> > +	mtk_pwm_clk_enable(chip, pwm);
-> You need to check the error code here and return if clk enabling failed
-> 
-
-<....>
-Hi John,
-For these above comments, I will modified as your suggestions in the
-next release.
-
-> > 
-> >   
-> >   static int mtk_pwm_remove(struct platform_device *pdev)
-> >   {
-> >   	struct mtk_pwm_chip *pc = platform_get_drvdata(pdev);
-> > -	unsigned int i;
-> > -
-> > -	for (i = 0; i < pc->chip.npwm; i++)
-> > -		pwm_disable(&pc->chip.pwms[i]);
-> why are you removing this chunk ?
-> 
->      John
-> 
-
-After refering to some other vendor's pwm driver, we think the
-"pwm_disable" is no need, and framework control flow should disable all
-the pwms before removing them,
-so we remove it.
-
-Regards,
-Zhi
-
-> >   
-> >   	return pwmchip_remove(&pc->chip);
-> >   }
-> 
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
