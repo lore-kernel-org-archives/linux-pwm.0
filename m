@@ -1,45 +1,34 @@
-From: Nick Vaccaro <nvaccaro@google.com>
-Subject: [PATCH] FIXUP: CHROMIUM: fix transposed param settings
-Date: Thu, 22 Jun 2017 10:54:39 -0700
-Message-ID: <20170622175439.81256-1-nvaccaro@chromium.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 2/3] dt-bindings: iio: update STM32 timers clock names
+Date: Thu, 22 Jun 2017 16:25:39 -0500
+Message-ID: <20170622212539.l3yblwqurahdvlqq@rob-hp-laptop>
+References: <1497453196-31470-1-git-send-email-fabrice.gasnier@st.com>
+ <1497453196-31470-3-git-send-email-fabrice.gasnier@st.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pg0-f50.google.com ([74.125.83.50]:35801 "EHLO
-        mail-pg0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751221AbdFVRyp (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 22 Jun 2017 13:54:45 -0400
-Received: by mail-pg0-f50.google.com with SMTP id 132so10829449pgb.2
-        for <linux-pwm@vger.kernel.org>; Thu, 22 Jun 2017 10:54:45 -0700 (PDT)
+Received: from mail-yb0-f180.google.com ([209.85.213.180]:33394 "EHLO
+        mail-yb0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751221AbdFVVZm (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 22 Jun 2017 17:25:42 -0400
+Content-Disposition: inline
+In-Reply-To: <1497453196-31470-3-git-send-email-fabrice.gasnier@st.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org, thierry.reding@gmail.com, mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-The __cros_ec_pwm_get_duty() routine was transposing the insize and
-outsize fields when calling cros_ec_cmd_xfer_status().
+On Wed, Jun 14, 2017 at 05:13:15PM +0200, Fabrice Gasnier wrote:
+> Clock name has been updated during driver/DT binding review:
+> https://lkml.org/lkml/2016/12/13/718
+> Update DT binding doc to reflect this.
+> 
+> Fixes: bf2d8581b1b3 (iio: Add bindings for STM32 timer trigger driver)
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> Acked-by: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+> Acked-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-The original code worked without error due to size of the two particular
-parameter blocks passed to cros_ec_cmd_xfer_status(), so this change is
-not fixing an actual runtime problem, just correcting the calling usage.
-
-Signed-off-by: Nick Vaccaro <nvaccaro@chromium.org>
----
- drivers/pwm/pwm-cros-ec.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
-index 2e4ab20cfb83..de5b7c9860b6 100644
---- a/drivers/pwm/pwm-cros-ec.c
-+++ b/drivers/pwm/pwm-cros-ec.c
-@@ -75,8 +75,8 @@ static int __cros_ec_pwm_get_duty(struct cros_ec_device *ec, u8 index,
- 
- 	msg->version = 0;
- 	msg->command = EC_CMD_PWM_GET_DUTY;
--	msg->insize = sizeof(*params);
--	msg->outsize = sizeof(*resp);
-+	msg->insize = sizeof(*resp);
-+	msg->outsize = sizeof(*params);
- 
- 	params->pwm_type = EC_PWM_TYPE_GENERIC;
- 	params->index = index;
--- 
-2.12.2
+Acked-by: Rob Herring <robh@kernel.org>
