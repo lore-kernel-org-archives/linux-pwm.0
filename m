@@ -1,10 +1,10 @@
-From: Zhi Mao <zhi.mao@mediatek.com>
-Subject: [PATCH v2 4/6] pwm: bindings: add MT2712/MT7622 information
-Date: Fri, 23 Jun 2017 13:08:23 +0800
-Message-ID: <1498194505-30930-5-git-send-email-zhi.mao@mediatek.com>
+From: John Crispin <john@phrozen.org>
+Subject: Re: [PATCH v2 0/6] mediatek: pwm driver add MT2712/MT7622 support
+Date: Fri, 23 Jun 2017 07:48:28 +0200
+Message-ID: <f2ddc1ea-ca0d-4375-c2c6-e3f6f35a0834@phrozen.org>
 References: <1498194505-30930-1-git-send-email-zhi.mao@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1498194505-30930-1-git-send-email-zhi.mao@mediatek.com>
@@ -17,40 +17,39 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: john@phrozen.org, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org
-Cc: zhenbao.liu@mediatek.com, devicetree@vger.kernel.org, srv_heupstream@mediatek.com, sean.wang@mediatek.com, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, zhi.mao@mediatek.com, yt.shen@mediatek.com, yingjoe.chen@mediatek.com, linux-arm-kernel@lists.infradead.org
+To: Zhi Mao <zhi.mao@mediatek.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org
+Cc: zhenbao.liu@mediatek.com, devicetree@vger.kernel.org, srv_heupstream@mediatek.com, sean.wang@mediatek.com, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, yt.shen@mediatek.com, yingjoe.chen@mediatek.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-add MT2712/MT7622 pwm information
 
-Signed-off-by: Zhi Mao <zhi.mao@mediatek.com>
----
- .../devicetree/bindings/pwm/pwm-mediatek.txt       |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-index 54c59b0..ef8bd3c 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-mediatek.txt
-@@ -2,6 +2,8 @@ MediaTek PWM controller
- 
- Required properties:
-  - compatible: should be "mediatek,<name>-pwm":
-+   - "mediatek,mt2712-pwm": found on mt2712 SoC.
-+   - "mediatek,mt7622-pwm": found on mt7622 SoC.
-    - "mediatek,mt7623-pwm": found on mt7623 SoC.
-  - reg: physical base address and length of the controller's registers.
-  - #pwm-cells: must be 2. See pwm.txt in this directory for a description of
-@@ -10,7 +12,9 @@ Required properties:
-  - clock-names: must contain the following:
-    - "top": the top clock generator
-    - "main": clock used by the PWM core
--   - "pwm1-5": the five per PWM clocks
-+   - "pwm1-8": the eight per PWM clocks for mt2712
-+   - "pwm1-6": the six per PWM clocks for mt7622
-+   - "pwm1-5": the five per PWM clocks for mt7623
-  - pinctrl-names: Must contain a "default" entry.
-  - pinctrl-0: One property must exist for each entry in pinctrl-names.
-    See pinctrl/pinctrl-bindings.txt for details of the property values.
--- 
-1.7.9.5
+On 23/06/17 07:08, Zhi Mao wrote:
+> change in v2:
+> 1. add error check for enable colock control flow
+> 2. use "goto err_clk(main/top)" coding style, for preparing clk error case
+> 3. remove comments inline /*===*/
+> 4. move "PWM_CLK_DIV_MAX" modification to its own patch
+> 5. move pwm source clock selection to its own patch
+
+Hi,
+thanks for updating the series, i will give it a quick test on MT7623 today
+     John
+
+> Zhi Mao (6):
+>    pwm: kconfig: modify mediatek information
+>    pwm: mediatek: fix pwm source clock selection
+>    pwm: mediatek: fix clock control issue
+>    pwm: bindings: add MT2712/MT7622 information
+>    pwm: mediatek: add PWM_CLK_DIV_MAX
+>    pwm: mediatek: add MT2712/MT7622 support
+>
+>   .../devicetree/bindings/pwm/pwm-mediatek.txt       |    6 +-
+>   drivers/pwm/Kconfig                                |    2 +-
+>   drivers/pwm/pwm-mediatek.c                         |  132 ++++++++++++++------
+>   3 files changed, 103 insertions(+), 37 deletions(-)
+>
+>
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
