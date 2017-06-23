@@ -1,66 +1,65 @@
 From: Brian Norris <briannorris@chromium.org>
 Subject: Re: [PATCH] FIXUP: CHROMIUM: fix transposed param settings
-Date: Fri, 23 Jun 2017 13:23:15 -0700
-Message-ID: <20170623202313.GA122611@google.com>
+Date: Fri, 23 Jun 2017 14:17:58 -0700
+Message-ID: <20170623211757.GA145579@google.com>
 References: <20170622175439.81256-1-nvaccaro@chromium.org>
+ <20170623202313.GA122611@google.com>
+ <CAME0mb0RJ81FBixF-u3Pq7+iJoLKLkqZJiFSdm25_rHCfw_Msw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pg0-f44.google.com ([74.125.83.44]:33999 "EHLO
+        mail-pg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751488AbdFWVSB (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 23 Jun 2017 17:18:01 -0400
+Received: by mail-pg0-f44.google.com with SMTP id e187so25806135pgc.1
+        for <linux-pwm@vger.kernel.org>; Fri, 23 Jun 2017 14:18:01 -0700 (PDT)
 Content-Disposition: inline
-In-Reply-To: <20170622175439.81256-1-nvaccaro@chromium.org>
-Sender: linux-kernel-owner@vger.kernel.org
+In-Reply-To: <CAME0mb0RJ81FBixF-u3Pq7+iJoLKLkqZJiFSdm25_rHCfw_Msw@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
+List-Id: linux-pwm@vger.kernel.org
 To: Nick Vaccaro <nvaccaro@google.com>
 Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
 
-Hi Nick,
+(Kernel mailing lists don't usually like HTML mail. Gmail web interface
+can get plain text if you really try, in one of the 'compose' options.
+But it'll always screw up patch formatting, so it's only worth light
+use)
 
-When sending patches to kernel mailing lists, we don't use prefixes like
-"CHROMIUM" -- those only apply to Chrome OS kernel trees, to indicate
-patches that should be specific to the Chromium (OS) project and not
-necessarily upstream Linux.
+On Fri, Jun 23, 2017 at 02:04:44PM -0700, Nick Vaccaro wrote:
+>    Hi Brian,
+>    Thanks for the info, I'm new to this process.
 
-Here, you want to follow the patterns used by the subsystem. This is
-sort of covered in the Documentation/process/ directory:
+No problem, and understood.
 
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html#the-canonical-patch-format
+>    I was asked to create a FIXUP CL and send it upstream.  Not knowing
+>    format of a "FIXUP" cl, I looked at other FIXUP cl's in the chromeos
+>    kernel and followed suit.
 
-Or you might look at 'git log drivers/pwm/ here.
+There are various reasons we might use a "FIXUP" prefix within the
+Chrome OS kernel; among them: a patch might diverge upstream, as it gets
+reviewed, but we might already have applied the patch to our tree.
 
-i.e., this might have a subject:
+In this case, you have a totally new patch.
 
-[PATCH] pwm: cros-ec: fix transposed param settings
+[If you wanted to represent the "FIXUP" concept here, you might use a
+tag like this, before the Signed-off-by:
 
-On Thu, Jun 22, 2017 at 10:54:39AM -0700, Nick Vaccaro wrote:
-> The __cros_ec_pwm_get_duty() routine was transposing the insize and
-> outsize fields when calling cros_ec_cmd_xfer_status().
-> 
-> The original code worked without error due to size of the two particular
-> parameter blocks passed to cros_ec_cmd_xfer_status(), so this change is
-> not fixing an actual runtime problem, just correcting the calling usage.
-> 
-> Signed-off-by: Nick Vaccaro <nvaccaro@chromium.org>
-> ---
+Fixes: 1f0d3bb02785 ("pwm: Add ChromeOS EC PWM driver")
+]
 
-Patch looks good:
+If in doubt, check the git log for examples (as you did already), but
+note that there are different practices for mainline Linux and for the
+Chromium OS, as Chromium OS is a downstream project.
 
-Reviewed-by: Brian Norris <briannorris@chromium.org>
+>    I emailed it upstream with a "FIXUP: CHROMIUM:" prefix. Should I change
+>    the checkin comment title line to "[PATCH] pwm: cros-ec: fix transposed
+>    param settings" and resend the email?
 
->  drivers/pwm/pwm-cros-ec.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
-> index 2e4ab20cfb83..de5b7c9860b6 100644
-> --- a/drivers/pwm/pwm-cros-ec.c
-> +++ b/drivers/pwm/pwm-cros-ec.c
-> @@ -75,8 +75,8 @@ static int __cros_ec_pwm_get_duty(struct cros_ec_device *ec, u8 index,
->  
->  	msg->version = 0;
->  	msg->command = EC_CMD_PWM_GET_DUTY;
-> -	msg->insize = sizeof(*params);
-> -	msg->outsize = sizeof(*resp);
-> +	msg->insize = sizeof(*resp);
-> +	msg->outsize = sizeof(*params);
->  
->  	params->pwm_type = EC_PWM_TYPE_GENERIC;
->  	params->index = index;
+Yes, that'd be all.
+
+(And you can include my 'Reviewed-by:' tag when you resend.)
+
+>    Please advise, thanks.
+
+Brian
