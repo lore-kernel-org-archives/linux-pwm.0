@@ -1,217 +1,167 @@
-Return-Path: <zhi.mao@mediatek.com>
-Message-ID: <1498111776.18841.10.camel@mhfsdcap03>
-Subject: Re: [PATCH RESEND 4/4] pwm: mediatek: add MT2712/MT7622 support
-From: Zhi Mao <zhi.mao@mediatek.com>
-Date: Thu, 22 Jun 2017 14:09:36 +0800
-In-Reply-To: <4600cf23-5e59-df02-37dc-056cb4a9744c@phrozen.org>
-References: <1498032672-7172-1-git-send-email-zhi.mao@mediatek.com>
-	 <1498032672-7172-5-git-send-email-zhi.mao@mediatek.com>
-	 <4600cf23-5e59-df02-37dc-056cb4a9744c@phrozen.org>
-Content-Type: multipart/alternative; boundary="=-XDuRqSonNTredkI0j06t"
+Return-Path: <nvaccaro@google.com>
 MIME-Version: 1.0
-Return-Path: zhi.mao@mediatek.com
+In-Reply-To: <20170623202313.GA122611@google.com>
+References: <20170622175439.81256-1-nvaccaro@chromium.org> <20170623202313.GA122611@google.com>
+From: Nick Vaccaro <nvaccaro@google.com>
+Date: Fri, 23 Jun 2017 14:04:44 -0700
+Message-ID: <CAME0mb0RJ81FBixF-u3Pq7+iJoLKLkqZJiFSdm25_rHCfw_Msw@mail.gmail.com>
+Subject: Re: [PATCH] FIXUP: CHROMIUM: fix transposed param settings
+Content-Type: multipart/alternative; boundary="001a114156526a97340552a6f3a7"
 List-ID: <linux-pwm.vger.kernel.org>
-To: John Crispin <john@phrozen.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Zhenbao Liu =?UTF-8?Q?=28=E5=88=98=E6=8C=AF=E5=AE=9D=29?= <Zhenbao.Liu@mediatek.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, srv_heupstream <srv_heupstream@mediatek.com>, Sean Wang =?UTF-8?Q?=28=E7=8E=8B=E5=BF=97=E4=BA=98=29?= <sean.wang@mediatek.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, YT Shen =?UTF-8?Q?=28=E6=B2=88=E5=B2=B3=E9=9C=86=29?= <Yt.Shen@mediatek.com>, Yingjoe Chen =?UTF-8?Q?=28=3F=3F=E8=8B=B1=E6=B4=B2=29?= <Yingjoe.Chen@mediatek.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+To: Brian Norris <briannorris@chromium.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
---=-XDuRqSonNTredkI0j06t
+--001a114156526a97340552a6f3a7
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
 
-Hi John,
+Hi Brian,
+Thanks for the info, I'm new to this process.
 
-Thanks for your review the code and feedback.
-There are 3 issues in this patch:
-1.adds PWM_CLK_DIV_MAX which really should go into its own patch
-2.adds mtk_pwm_com_reg which should also go into its own patch
-3.remove comments inline /*===*/
+I was asked to create a FIXUP CL and send it upstream.  Not knowing format
+of a "FIXUP" cl, I looked at other FIXUP cl's in the chromeos kernel and
+followed suit.
+I emailed it upstream with a "FIXUP: CHROMIUM:" prefix. Should I change the
+checkin comment title line to "[PATCH] pwm: cros-ec: fix transposed param
+settings" and resend the email?
+Please advise, thanks.
 
-for #1 and #3, I will modify them in the next release.
-but for #2, I want to discuss with you, 
-adding the structure  "mtk_pwm_com_reg" is only for the registers of
-MT2712 PWM8, 
-so we want to keep this modification in this patch.
+On Fri, Jun 23, 2017 at 1:23 PM, Brian Norris <briannorris@chromium.org>
+wrote:
 
-what's your opinion about it? 
-Any reply is welcome.
-
-
-Regards
-Zhi
-
-
-
-
-
-On Wed, 2017-06-21 at 20:22 +0800, John Crispin wrote:
-
-> 
-> On 21/06/17 10:11, Zhi Mao wrote:
-> > support multiple chip(MT2712, MT7622, MT7623)
-> This patch does more than add extra SoC support. It also
-> * adds PWM_CLK_DIV_MAX which really should go into its own patch
-> * adds mtk_pwm_com_reg which should also go into its own patch
-> 
-> more comments inline
-> 
+> Hi Nick,
+>
+> When sending patches to kernel mailing lists, we don't use prefixes like
+> "CHROMIUM" -- those only apply to Chrome OS kernel trees, to indicate
+> patches that should be specific to the Chromium (OS) project and not
+> necessarily upstream Linux.
+>
+> Here, you want to follow the patterns used by the subsystem. This is
+> sort of covered in the Documentation/process/ directory:
+>
+> https://www.kernel.org/doc/html/latest/process/
+> submitting-patches.html#the-canonical-patch-format
+>
+> Or you might look at 'git log drivers/pwm/ here.
+>
+> i.e., this might have a subject:
+>
+> [PATCH] pwm: cros-ec: fix transposed param settings
+>
+> On Thu, Jun 22, 2017 at 10:54:39AM -0700, Nick Vaccaro wrote:
+> > The __cros_ec_pwm_get_duty() routine was transposing the insize and
+> > outsize fields when calling cros_ec_cmd_xfer_status().
 > >
-> > Signed-off-by: Zhi Mao <zhi.mao@mediatek.com>
+> > The original code worked without error due to size of the two particular
+> > parameter blocks passed to cros_ec_cmd_xfer_status(), so this change is
+> > not fixing an actual runtime problem, just correcting the calling usage.
+> >
+> > Signed-off-by: Nick Vaccaro <nvaccaro@chromium.org>
 > > ---
-> >   drivers/pwm/pwm-mediatek.c |   63 +++++++++++++++++++++++++++++++++++---------
-> >   1 file changed, 51 insertions(+), 12 deletions(-)
+>
+> Patch looks good:
+>
+> Reviewed-by: Brian Norris <briannorris@chromium.org>
+>
+> >  drivers/pwm/pwm-cros-ec.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
 > >
-> > diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-> > index c803ff6..d520356 100644
-> > --- a/drivers/pwm/pwm-mediatek.c
-> > +++ b/drivers/pwm/pwm-mediatek.c
-> > @@ -16,6 +16,7 @@
-> >   #include <linux/module.h>
-> >   #include <linux/clk.h>
-> >   #include <linux/of.h>
-> > +#include <linux/of_device.h>
-> >   #include <linux/platform_device.h>
-> >   #include <linux/pwm.h>
-> >   #include <linux/slab.h>
-> [...]
-> > @@ -215,9 +238,25 @@ static int mtk_pwm_remove(struct platform_device *pdev)
-> >   	return pwmchip_remove(&pc->chip);
-> >   }
-> >   
-> > +/*==========================================*/
-> 
-> please remove these comment lines
-> 
->      John
-> > +static const struct mtk_com_pwm_data mt2712_pwm_data = {
-> > +	.pwm_nums = 8,
-> > +};
-> > +
-> > +static const struct mtk_com_pwm_data mt7622_pwm_data = {
-> > +	.pwm_nums = 6,
-> > +};
-> > +
-> > +static const struct mtk_com_pwm_data mt7623_pwm_data = {
-> > +	.pwm_nums = 5,
-> > +};
-> > +/*==========================================*/
-> > +
-> >   static const struct of_device_id mtk_pwm_of_match[] = {
-> > -	{ .compatible = "mediatek,mt7623-pwm" },
-> > -	{ }
-> > +	{.compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data},
-> > +	{.compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data},
-> > +	{.compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data},
-> > +	{},
-> >   };
-> >   MODULE_DEVICE_TABLE(of, mtk_pwm_of_match);
-> >   
-> 
+> > diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
+> > index 2e4ab20cfb83..de5b7c9860b6 100644
+> > --- a/drivers/pwm/pwm-cros-ec.c
+> > +++ b/drivers/pwm/pwm-cros-ec.c
+> > @@ -75,8 +75,8 @@ static int __cros_ec_pwm_get_duty(struct
+> cros_ec_device *ec, u8 index,
+> >
+> >       msg->version = 0;
+> >       msg->command = EC_CMD_PWM_GET_DUTY;
+> > -     msg->insize = sizeof(*params);
+> > -     msg->outsize = sizeof(*resp);
+> > +     msg->insize = sizeof(*resp);
+> > +     msg->outsize = sizeof(*params);
+> >
+> >       params->pwm_type = EC_PWM_TYPE_GENERIC;
+> >       params->index = index;
+>
 
+--001a114156526a97340552a6f3a7
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+<div dir=3D"ltr">Hi Brian,<br>Thanks for the info, I&#39;m new to this proc=
+ess.<br><br>I was asked to create a FIXUP CL and send it upstream.=C2=A0 No=
+t knowing format of a &quot;FIXUP&quot; cl, I looked at other FIXUP cl&#39;=
+s in the chromeos kernel and followed suit. =C2=A0<br>I emailed it upstream=
+ with a &quot;FIXUP: CHROMIUM:&quot; prefix. Should I change the checkin co=
+mment title line to &quot;[PATCH] pwm: cros-ec: fix transposed param settin=
+gs&quot; and resend the email?<br>Please advise, thanks.</div><div class=3D=
+"gmail_extra"><br><div class=3D"gmail_quote">On Fri, Jun 23, 2017 at 1:23 P=
+M, Brian Norris <span dir=3D"ltr">&lt;<a href=3D"mailto:briannorris@chromiu=
+m.org" target=3D"_blank">briannorris@chromium.org</a>&gt;</span> wrote:<br>=
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">Hi Nick,<br>
+<br>
+When sending patches to kernel mailing lists, we don&#39;t use prefixes lik=
+e<br>
+&quot;CHROMIUM&quot; -- those only apply to Chrome OS kernel trees, to indi=
+cate<br>
+patches that should be specific to the Chromium (OS) project and not<br>
+necessarily upstream Linux.<br>
+<br>
+Here, you want to follow the patterns used by the subsystem. This is<br>
+sort of covered in the Documentation/process/ directory:<br>
+<br>
+<a href=3D"https://www.kernel.org/doc/html/latest/process/submitting-patche=
+s.html#the-canonical-patch-format" rel=3D"noreferrer" target=3D"_blank">htt=
+ps://www.kernel.org/doc/<wbr>html/latest/process/<wbr>submitting-patches.ht=
+ml#the-<wbr>canonical-patch-format</a><br>
+<br>
+Or you might look at &#39;git log drivers/pwm/ here.<br>
+<br>
+i.e., this might have a subject:<br>
+<br>
+[PATCH] pwm: cros-ec: fix transposed param settings<br>
+<span class=3D""><br>
+On Thu, Jun 22, 2017 at 10:54:39AM -0700, Nick Vaccaro wrote:<br>
+&gt; The __cros_ec_pwm_get_duty() routine was transposing the insize and<br=
+>
+&gt; outsize fields when calling cros_ec_cmd_xfer_status().<br>
+&gt;<br>
+&gt; The original code worked without error due to size of the two particul=
+ar<br>
+&gt; parameter blocks passed to cros_ec_cmd_xfer_status(), so this change i=
+s<br>
+&gt; not fixing an actual runtime problem, just correcting the calling usag=
+e.<br>
+&gt;<br>
+&gt; Signed-off-by: Nick Vaccaro &lt;<a href=3D"mailto:nvaccaro@chromium.or=
+g">nvaccaro@chromium.org</a>&gt;<br>
+&gt; ---<br>
+<br>
+</span>Patch looks good:<br>
+<br>
+Reviewed-by: Brian Norris &lt;<a href=3D"mailto:briannorris@chromium.org">b=
+riannorris@chromium.org</a>&gt;<br>
+<div class=3D"HOEnZb"><div class=3D"h5"><br>
+&gt;=C2=A0 drivers/pwm/pwm-cros-ec.c | 4 ++--<br>
+&gt;=C2=A0 1 file changed, 2 insertions(+), 2 deletions(-)<br>
+&gt;<br>
+&gt; diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c<br>
+&gt; index 2e4ab20cfb83..de5b7c9860b6 100644<br>
+&gt; --- a/drivers/pwm/pwm-cros-ec.c<br>
+&gt; +++ b/drivers/pwm/pwm-cros-ec.c<br>
+&gt; @@ -75,8 +75,8 @@ static int __cros_ec_pwm_get_duty(struct cros_ec_dev=
+ice *ec, u8 index,<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0msg-&gt;version =3D 0;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0msg-&gt;command =3D EC_CMD_PWM_GET_DUTY;<br>
+&gt; -=C2=A0 =C2=A0 =C2=A0msg-&gt;insize =3D sizeof(*params);<br>
+&gt; -=C2=A0 =C2=A0 =C2=A0msg-&gt;outsize =3D sizeof(*resp);<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0msg-&gt;insize =3D sizeof(*resp);<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0msg-&gt;outsize =3D sizeof(*params);<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0params-&gt;pwm_type =3D EC_PWM_TYPE_GENERIC;=
+<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0params-&gt;index =3D index;<br>
+</div></div></blockquote></div><br></div>
 
---=-XDuRqSonNTredkI0j06t
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 TRANSITIONAL//EN">
-<HTML>
-<HEAD>
-  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=UTF-8">
-  <META NAME="GENERATOR" CONTENT="GtkHTML/4.2.2">
-</HEAD>
-<BODY>
-Hi John,<BR>
-<BR>
-Thanks for your review the code and feedback.<BR>
-There are 3 issues in this patch:<BR>
-1.adds PWM_CLK_DIV_MAX which really should go into its own patch<BR>
-2.adds mtk_pwm_com_reg which should also go into its own patch<BR>
-3.remove comments inline /*===*/<BR>
-<BR>
-for #1 and #3, I will modify them in the next release.<BR>
-but for #2, I want to discuss with you, <BR>
-adding the structure&nbsp; &quot;mtk_pwm_com_reg&quot; is only for the registers of MT2712 PWM8, <BR>
-so we want to keep this modification in this patch.<BR>
-<BR>
-what's your opinion about it? <BR>
-Any reply is welcome.<BR>
-<BR>
-<BR>
-Regards<BR>
-Zhi<BR>
-<BR>
-<BR>
-<BR>
-<BR>
-<BR>
-On Wed, 2017-06-21 at 20:22 +0800, John Crispin wrote:
-<BLOCKQUOTE TYPE=CITE>
-<PRE>
-
-On 21/06/17 10:11, Zhi Mao wrote:
-&gt; support multiple chip(MT2712, MT7622, MT7623)
-This patch does more than add extra SoC support. It also
-* adds PWM_CLK_DIV_MAX which really should go into its own patch
-* adds mtk_pwm_com_reg which should also go into its own patch
-
-more comments inline
-
-&gt;
-&gt; Signed-off-by: Zhi Mao &lt;<A HREF="mailto:zhi.mao@mediatek.com">zhi.mao@mediatek.com</A>&gt;
-&gt; ---
-&gt;   drivers/pwm/pwm-mediatek.c |   63 +++++++++++++++++++++++++++++++++++---------
-&gt;   1 file changed, 51 insertions(+), 12 deletions(-)
-&gt;
-&gt; diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-&gt; index c803ff6..d520356 100644
-&gt; --- a/drivers/pwm/pwm-mediatek.c
-&gt; +++ b/drivers/pwm/pwm-mediatek.c
-&gt; @@ -16,6 +16,7 @@
-&gt;   #include &lt;linux/module.h&gt;
-&gt;   #include &lt;linux/clk.h&gt;
-&gt;   #include &lt;linux/of.h&gt;
-&gt; +#include &lt;linux/of_device.h&gt;
-&gt;   #include &lt;linux/platform_device.h&gt;
-&gt;   #include &lt;linux/pwm.h&gt;
-&gt;   #include &lt;linux/slab.h&gt;
-[...]
-&gt; @@ -215,9 +238,25 @@ static int mtk_pwm_remove(struct platform_device *pdev)
-&gt;   	return pwmchip_remove(&amp;pc-&gt;chip);
-&gt;   }
-&gt;   
-&gt; +/*==========================================*/
-
-please remove these comment lines
-
-     John
-&gt; +static const struct mtk_com_pwm_data mt2712_pwm_data = {
-&gt; +	.pwm_nums = 8,
-&gt; +};
-&gt; +
-&gt; +static const struct mtk_com_pwm_data mt7622_pwm_data = {
-&gt; +	.pwm_nums = 6,
-&gt; +};
-&gt; +
-&gt; +static const struct mtk_com_pwm_data mt7623_pwm_data = {
-&gt; +	.pwm_nums = 5,
-&gt; +};
-&gt; +/*==========================================*/
-&gt; +
-&gt;   static const struct of_device_id mtk_pwm_of_match[] = {
-&gt; -	{ .compatible = &quot;mediatek,mt7623-pwm&quot; },
-&gt; -	{ }
-&gt; +	{.compatible = &quot;mediatek,mt2712-pwm&quot;, .data = &amp;mt2712_pwm_data},
-&gt; +	{.compatible = &quot;mediatek,mt7622-pwm&quot;, .data = &amp;mt7622_pwm_data},
-&gt; +	{.compatible = &quot;mediatek,mt7623-pwm&quot;, .data = &amp;mt7623_pwm_data},
-&gt; +	{},
-&gt;   };
-&gt;   MODULE_DEVICE_TABLE(of, mtk_pwm_of_match);
-&gt;   
-
-</PRE>
-</BLOCKQUOTE>
-<BR>
-</BODY>
-</HTML>
-
---=-XDuRqSonNTredkI0j06t--
+--001a114156526a97340552a6f3a7--
