@@ -1,28 +1,40 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 3/3] dt-bindings: pwm: update STM32 timers clock names
-Date: Thu, 22 Jun 2017 16:25:57 -0500
-Message-ID: <20170622212557.vwojcyil5sg2jpsg@rob-hp-laptop>
-References: <1497453196-31470-1-git-send-email-fabrice.gasnier@st.com>
- <1497453196-31470-4-git-send-email-fabrice.gasnier@st.com>
+From: Zhi Mao <zhi.mao@mediatek.com>
+Subject: [PATCH v2 1/6] pwm: kconfig: modify mediatek information
+Date: Fri, 23 Jun 2017 13:08:20 +0800
+Message-ID: <1498194505-30930-2-git-send-email-zhi.mao@mediatek.com>
+References: <1498194505-30930-1-git-send-email-zhi.mao@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1497453196-31470-4-git-send-email-fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-Cc: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, benjamin.gaignard-qxv4g6HH51o@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mailgw01.mediatek.com ([210.61.82.183]:14399 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1751241AbdFWFJE (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 23 Jun 2017 01:09:04 -0400
+In-Reply-To: <1498194505-30930-1-git-send-email-zhi.mao@mediatek.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: john@phrozen.org, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org
+Cc: srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, zhi.mao@mediatek.com, yingjoe.chen@mediatek.com, yt.shen@mediatek.com, sean.wang@mediatek.com, zhenbao.liu@mediatek.com
 
-On Wed, Jun 14, 2017 at 05:13:16PM +0200, Fabrice Gasnier wrote:
-> Clock name has been updated during driver/DT binding review:
-> https://lkml.org/lkml/2016/12/13/718
-> Update DT binding doc to reflect this.
-> 
-> Fixes: cd9a99c2f8e8 (dt-bindings: pwm: Add STM32 bindings)
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-stm32.txt | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+modify mediatek information
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Zhi Mao <zhi.mao@mediatek.com>
+---
+ drivers/pwm/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 313c107..45cdf2a 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -300,7 +300,7 @@ config PWM_MEDIATEK
+ 	  Generic PWM framework driver for Mediatek ARM SoC.
+ 
+ 	  To compile this driver as a module, choose M here: the module
+-	  will be called pwm-mxs.
++	  will be called pwm-mediatek.
+ 
+ config PWM_MXS
+ 	tristate "Freescale MXS PWM support"
+-- 
+1.7.9.5
