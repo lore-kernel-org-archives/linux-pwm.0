@@ -1,252 +1,96 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: Re: [PATCH v2 6/8] iio: trigger: Add STM32 LPTimer trigger driver
-Date: Mon, 26 Jun 2017 18:41:36 +0200
-Message-ID: <a1368383-8e5e-72ab-32f9-efe9715aaccb@st.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 1/8] dt-bindings: mfd: Add STM32 LPTimer binding
+Date: Mon, 26 Jun 2017 13:07:44 -0500
+Message-ID: <20170626180744.fyyzjsu4pmurohap@rob-hp-laptop>
 References: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
- <1498055415-31513-7-git-send-email-fabrice.gasnier@st.com>
- <20170624211335.680b5b90@kernel.org>
+ <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:17910 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1751386AbdFZQmN (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 26 Jun 2017 12:42:13 -0400
-In-Reply-To: <20170624211335.680b5b90@kernel.org>
-Content-Language: en-US
+Received: from mail-it0-f67.google.com ([209.85.214.67]:35267 "EHLO
+        mail-it0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751308AbdFZSHr (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 26 Jun 2017 14:07:47 -0400
+Content-Disposition: inline
+In-Reply-To: <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: lee.jones@linaro.org, benjamin.gaignard@linaro.org, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org, thierry.reding@gmail.com, mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-On 06/24/2017 10:13 PM, Jonathan Cameron wrote:
-> On Wed, 21 Jun 2017 16:30:13 +0200
-> Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+On Wed, Jun 21, 2017 at 04:30:08PM +0200, Fabrice Gasnier wrote:
+> Add documentation for STMicroelectronics STM32 Low-Power Timer binding.
 > 
->> Add support for LPTIMx_OUT triggers that can be found on some STM32
->> devices. These triggers can be used then by ADC or DAC.
->> Typical usage is to configure LPTimer as PWM output (via pwm-stm32-lp)
->> and have synchronised analog conversions with these triggers.
->>
->> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-> Given this can't be used as a trigger for other devices (no exposed
-> interrupt?) I'd expect to see a validate_device callback provided for
-> the trigger ops.  That would prevent other devices trying to use it.
-
-Hi Jonathan,
-
-This is something I had in mind also earlier. Only thing is...
-Basically, this is limiting: when trigger poll happens on device side
-(e.g. ADC), another device could use same trigger. But I admit this
-looks like corner case.
-
-I'll add it in next version, with additional patch for ADC part to
-validate it's a valid device (No DAC yet).
-I think I'll use INDIO_HARDWARE_TRIGGERED mode:
-- in adc driver: indio_dev->modes |= INDIO_HARDWARE_TRIGGERED;
-- in lptimer: if (indio_dev->modes & INDIO_HARDWARE_TRIGGERED)...
-
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> ---
+> Changes in v2:
+> - Lee's comments: s/Low Power/Low-Power/, remove 0x in example, improve
+>   properties descriptions
+> ---
+>  .../devicetree/bindings/mfd/stm32-lptimer.txt      | 48 ++++++++++++++++++++++
+>  1 file changed, 48 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
 > 
-> Otherwise, looks good.
+> diff --git a/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+> new file mode 100644
+> index 0000000..af859c8
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+> @@ -0,0 +1,48 @@
+> +STMicroelectronics STM32 Low-Power Timer
+> +
+> +The STM32 Low-Power Timer (LPTIM) is a 16-bit timer that provides several
+> +functions:
+> +- PWM output (with programmable prescaler, configurable polarity)
+> +- Quadrature encoder, counter
+> +- Trigger source for STM32 ADC/DAC (LPTIM_OUT)
+> +
+> +Required properties:
+> +- compatible:		Must be "st,stm32-lptimer".
+> +- reg:			Offset and length of the device's register set.
+> +- clocks:		Phandle to the clock used by the LP Timer module.
+> +- clock-names:		Must be "mux".
+> +- #address-cells:	Should be '<1>'.
+> +- #size-cells:		Should be '<0>'.
+> +
+> +Optional subnodes:
+> +- pwm:			See ../pwm/pwm-stm32-lp.txt
+> +- counter:		See ../iio/timer/stm32-lptimer-cnt.txt
+> +- trigger:		See ../iio/timer/stm32-lptimer-trigger.txt
+> +
+> +Example:
+> +
+> +	lptimer1: lptimer@40002400 {
 
-Many thanks for your review.
-Best Regards,
-Fabrice
+timer@...
 
-> 
-> Jonathan
->> ---
->> Changes in v2:
->> - s/Low Power/Low-Power
->> - update few comments
->> ---
->>  drivers/iio/trigger/Kconfig                   |  11 +++
->>  drivers/iio/trigger/Makefile                  |   1 +
->>  drivers/iio/trigger/stm32-lptimer-trigger.c   | 110 ++++++++++++++++++++++++++
->>  include/linux/iio/timer/stm32-lptim-trigger.h |  24 ++++++
->>  4 files changed, 146 insertions(+)
->>  create mode 100644 drivers/iio/trigger/stm32-lptimer-trigger.c
->>  create mode 100644 include/linux/iio/timer/stm32-lptim-trigger.h
->>
->> diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
->> index e4d4e63..a633d2c 100644
->> --- a/drivers/iio/trigger/Kconfig
->> +++ b/drivers/iio/trigger/Kconfig
->> @@ -24,6 +24,17 @@ config IIO_INTERRUPT_TRIGGER
->>  	  To compile this driver as a module, choose M here: the
->>  	  module will be called iio-trig-interrupt.
->>  
->> +config IIO_STM32_LPTIMER_TRIGGER
->> +	tristate "STM32 Low-Power Timer Trigger"
->> +	depends on MFD_STM32_LPTIMER || COMPILE_TEST
->> +	help
->> +	  Select this option to enable STM32 Low-Power Timer Trigger.
->> +	  This can be used as trigger source for STM32 internal ADC
->> +	  and/or DAC.
->> +
->> +	  To compile this driver as a module, choose M here: the
->> +	  module will be called stm32-lptimer-trigger.
->> +
->>  config IIO_STM32_TIMER_TRIGGER
->>  	tristate "STM32 Timer Trigger"
->>  	depends on (ARCH_STM32 && OF && MFD_STM32_TIMERS) || COMPILE_TEST
->> diff --git a/drivers/iio/trigger/Makefile b/drivers/iio/trigger/Makefile
->> index 5c4ecd3..0a72a2a 100644
->> --- a/drivers/iio/trigger/Makefile
->> +++ b/drivers/iio/trigger/Makefile
->> @@ -6,6 +6,7 @@
->>  
->>  obj-$(CONFIG_IIO_HRTIMER_TRIGGER) += iio-trig-hrtimer.o
->>  obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
->> +obj-$(CONFIG_IIO_STM32_LPTIMER_TRIGGER) += stm32-lptimer-trigger.o
->>  obj-$(CONFIG_IIO_STM32_TIMER_TRIGGER) += stm32-timer-trigger.o
->>  obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
->>  obj-$(CONFIG_IIO_TIGHTLOOP_TRIGGER) += iio-trig-loop.o
->> diff --git a/drivers/iio/trigger/stm32-lptimer-trigger.c b/drivers/iio/trigger/stm32-lptimer-trigger.c
->> new file mode 100644
->> index 0000000..bcb9aa2
->> --- /dev/null
->> +++ b/drivers/iio/trigger/stm32-lptimer-trigger.c
->> @@ -0,0 +1,110 @@
->> +/*
->> + * STM32 Low-Power Timer Trigger driver
->> + *
->> + * Copyright (C) STMicroelectronics 2017
->> + *
->> + * Author: Fabrice Gasnier <fabrice.gasnier@st.com>.
->> + *
->> + * License terms:  GNU General Public License (GPL), version 2
->> + *
->> + * Inspired by Benjamin Gaignard's stm32-timer-trigger driver
->> + */
->> +
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/timer/stm32-lptim-trigger.h>
->> +#include <linux/iio/trigger.h>
->> +#include <linux/mfd/stm32-lptimer.h>
->> +#include <linux/module.h>
->> +#include <linux/platform_device.h>
->> +
->> +/* List Low-Power Timer triggers */
->> +static const char * const stm32_lptim_triggers[] = {
->> +	LPTIM1_OUT,
->> +	LPTIM2_OUT,
->> +	LPTIM3_OUT,
->> +};
->> +
->> +struct stm32_lptim_trigger {
->> +	struct device *dev;
->> +	const char *trg;
->> +};
->> +
->> +static const struct iio_trigger_ops stm32_lptim_trigger_ops = {
->> +	.owner = THIS_MODULE,
->> +};
->> +
->> +/**
->> + * is_stm32_lptim_trigger
->> + * @trig: trigger to be checked
->> + *
->> + * return true if the trigger is a valid STM32 IIO Low-Power Timer Trigger
->> + * either return false
->> + */
->> +bool is_stm32_lptim_trigger(struct iio_trigger *trig)
->> +{
->> +	return (trig->ops == &stm32_lptim_trigger_ops);
->> +}
->> +EXPORT_SYMBOL(is_stm32_lptim_trigger);
->> +
->> +static int stm32_lptim_setup_trig(struct stm32_lptim_trigger *priv)
->> +{
->> +	struct iio_trigger *trig;
->> +
->> +	trig = devm_iio_trigger_alloc(priv->dev, "%s", priv->trg);
->> +	if  (!trig)
->> +		return -ENOMEM;
->> +
->> +	trig->dev.parent = priv->dev->parent;
->> +	trig->ops = &stm32_lptim_trigger_ops;
->> +	iio_trigger_set_drvdata(trig, priv);
->> +
->> +	return devm_iio_trigger_register(priv->dev, trig);
->> +}
->> +
->> +static int stm32_lptim_trigger_probe(struct platform_device *pdev)
->> +{
->> +	struct stm32_lptim_trigger *priv;
->> +	u32 index;
->> +	int ret;
->> +
->> +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
->> +	if (!priv)
->> +		return -ENOMEM;
->> +
->> +	if (of_property_read_u32(pdev->dev.of_node, "reg", &index))
->> +		return -EINVAL;
->> +
->> +	if (index >= ARRAY_SIZE(stm32_lptim_triggers))
->> +		return -EINVAL;
->> +
->> +	priv->dev = &pdev->dev;
->> +	priv->trg = stm32_lptim_triggers[index];
->> +
->> +	ret = stm32_lptim_setup_trig(priv);
->> +	if (ret)
->> +		return ret;
->> +
->> +	platform_set_drvdata(pdev, priv);
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct of_device_id stm32_lptim_trig_of_match[] = {
->> +	{ .compatible = "st,stm32-lptimer-trigger", },
->> +	{},
->> +};
->> +MODULE_DEVICE_TABLE(of, stm32_lptim_trig_of_match);
->> +
->> +static struct platform_driver stm32_lptim_trigger_driver = {
->> +	.probe = stm32_lptim_trigger_probe,
->> +	.driver = {
->> +		.name = "stm32-lptimer-trigger",
->> +		.of_match_table = stm32_lptim_trig_of_match,
->> +	},
->> +};
->> +module_platform_driver(stm32_lptim_trigger_driver);
->> +
->> +MODULE_AUTHOR("Fabrice Gasnier <fabrice.gasnier@st.com>");
->> +MODULE_ALIAS("platform:stm32-lptimer-trigger");
->> +MODULE_DESCRIPTION("STMicroelectronics STM32 LPTIM trigger driver");
->> +MODULE_LICENSE("GPL v2");
->> diff --git a/include/linux/iio/timer/stm32-lptim-trigger.h b/include/linux/iio/timer/stm32-lptim-trigger.h
->> new file mode 100644
->> index 0000000..cb795b1
->> --- /dev/null
->> +++ b/include/linux/iio/timer/stm32-lptim-trigger.h
->> @@ -0,0 +1,24 @@
->> +/*
->> + * Copyright (C) STMicroelectronics 2017
->> + *
->> + * Author: Fabrice Gasnier <fabrice.gasnier@st.com>
->> + *
->> + * License terms:  GNU General Public License (GPL), version 2
->> + */
->> +
->> +#ifndef _STM32_LPTIM_TRIGGER_H_
->> +#define _STM32_LPTIM_TRIGGER_H_
->> +
->> +#define LPTIM1_OUT	"lptim1_out"
->> +#define LPTIM2_OUT	"lptim2_out"
->> +#define LPTIM3_OUT	"lptim3_out"
->> +
->> +#if IS_ENABLED(CONFIG_IIO_STM32_LPTIMER_TRIGGER)
->> +bool is_stm32_lptim_trigger(struct iio_trigger *trig);
->> +#else
->> +static inline bool is_stm32_lptim_trigger(struct iio_trigger *trig)
->> +{
->> +	return false;
->> +}
->> +#endif
->> +#endif
+> +		compatible = "st,stm32-lptimer";
+> +		reg = <0x40002400 0x400>;
+> +		clocks = <&timer_clk>;
+> +		clock-names = "mux";
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		pwm {
+> +			compatible = "st,stm32-pwm-lp";
+> +			pinctrl-names = "default";
+> +			pinctrl-0 = <&lppwm1_pins>;
+> +		};
+> +
+> +		trigger@0 {
+> +			compatible = "st,stm32-lptimer-trigger";
+> +			reg = <0>;
+
+Is there more than 1? 
+
+> +		};
+> +
+> +		counter {
+> +			compatible = "st,stm32-lptimer-counter";
+> +			pinctrl-names = "default";
+> +			pinctrl-0 = <&lptim1_in_pins>;
+> +		};
+> +	};
+> -- 
+> 1.9.1
 > 
