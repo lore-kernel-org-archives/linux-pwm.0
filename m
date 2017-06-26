@@ -1,96 +1,63 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 1/8] dt-bindings: mfd: Add STM32 LPTimer binding
-Date: Mon, 26 Jun 2017 13:07:44 -0500
-Message-ID: <20170626180744.fyyzjsu4pmurohap@rob-hp-laptop>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 3/8] dt-bindings: pwm: Add STM32 LPTimer PWM binding
+Date: Mon, 26 Jun 2017 13:10:02 -0500
+Message-ID: <20170626181002.qipmw7kbww67q4rb@rob-hp-laptop>
 References: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
- <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
+ <1498055415-31513-4-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-it0-f67.google.com ([209.85.214.67]:35267 "EHLO
-        mail-it0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751308AbdFZSHr (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 26 Jun 2017 14:07:47 -0400
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1498055415-31513-4-git-send-email-fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
+Cc: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, benjamin.gaignard-qxv4g6HH51o@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org, thierry.reding@gmail.com, mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-On Wed, Jun 21, 2017 at 04:30:08PM +0200, Fabrice Gasnier wrote:
-> Add documentation for STMicroelectronics STM32 Low-Power Timer binding.
+On Wed, Jun 21, 2017 at 04:30:10PM +0200, Fabrice Gasnier wrote:
+> Add documentation for STMicroelectronics STM32 Low-Power Timer
+> PWM binding.
 > 
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
 > ---
 > Changes in v2:
-> - Lee's comments: s/Low Power/Low-Power/, remove 0x in example, improve
->   properties descriptions
+> - s/Low Power/Low-Power/
+> - remove 0x in example (parent node)
+> - improve properties description
 > ---
->  .../devicetree/bindings/mfd/stm32-lptimer.txt      | 48 ++++++++++++++++++++++
->  1 file changed, 48 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+>  .../devicetree/bindings/pwm/pwm-stm32-lp.txt       | 24 ++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
 > 
-> diff --git a/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
 > new file mode 100644
-> index 0000000..af859c8
+> index 0000000..941c990
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
-> @@ -0,0 +1,48 @@
-> +STMicroelectronics STM32 Low-Power Timer
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
+> @@ -0,0 +1,24 @@
+> +STMicroelectronics STM32 Low-Power Timer PWM
 > +
-> +The STM32 Low-Power Timer (LPTIM) is a 16-bit timer that provides several
-> +functions:
-> +- PWM output (with programmable prescaler, configurable polarity)
-> +- Quadrature encoder, counter
-> +- Trigger source for STM32 ADC/DAC (LPTIM_OUT)
+> +STM32 Low-Power Timer provides single channel PWM.
 > +
-> +Required properties:
-> +- compatible:		Must be "st,stm32-lptimer".
-> +- reg:			Offset and length of the device's register set.
-> +- clocks:		Phandle to the clock used by the LP Timer module.
-> +- clock-names:		Must be "mux".
-> +- #address-cells:	Should be '<1>'.
-> +- #size-cells:		Should be '<0>'.
+> +Must be a sub-node of an STM32 Low-Power Timer device tree node.
+> +See ../mfd/stm32-lptimer.txt for details about the parent node.
 > +
-> +Optional subnodes:
-> +- pwm:			See ../pwm/pwm-stm32-lp.txt
-> +- counter:		See ../iio/timer/stm32-lptimer-cnt.txt
-> +- trigger:		See ../iio/timer/stm32-lptimer-trigger.txt
+> +Required parameters:
+> +- compatible:		Must be "st,stm32-pwm-lp".
+> +
+> +Optional properties:
+> +- pinctrl-names: 	Set to "default".
+> +- pinctrl-0: 		Phandle pointing to pin configuration node for PWM.
 > +
 > +Example:
-> +
 > +	lptimer1: lptimer@40002400 {
 
 timer@...
 
-> +		compatible = "st,stm32-lptimer";
-> +		reg = <0x40002400 0x400>;
-> +		clocks = <&timer_clk>;
-> +		clock-names = "mux";
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		pwm {
-> +			compatible = "st,stm32-pwm-lp";
-> +			pinctrl-names = "default";
-> +			pinctrl-0 = <&lppwm1_pins>;
-> +		};
-> +
-> +		trigger@0 {
-> +			compatible = "st,stm32-lptimer-trigger";
-> +			reg = <0>;
+With that,
 
-Is there more than 1? 
-
-> +		};
-> +
-> +		counter {
-> +			compatible = "st,stm32-lptimer-counter";
-> +			pinctrl-names = "default";
-> +			pinctrl-0 = <&lptim1_in_pins>;
-> +		};
-> +	};
-> -- 
-> 1.9.1
-> 
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
