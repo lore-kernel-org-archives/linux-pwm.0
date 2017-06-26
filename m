@@ -1,44 +1,56 @@
-From: Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 2/3] dt-bindings: iio: update STM32 timers clock
- names
-Date: Sat, 24 Jun 2017 21:48:13 +0100
-Message-ID: <20170624214813.6414e40e@kernel.org>
-References: <1497453196-31470-1-git-send-email-fabrice.gasnier@st.com>
-        <1497453196-31470-3-git-send-email-fabrice.gasnier@st.com>
-        <20170622212539.l3yblwqurahdvlqq@rob-hp-laptop>
+From: m18063 <Claudiu.Beznea@microchip.com>
+Subject: Re: [PATCH v2 5/6] pwm: mediatek: add PWM_CLK_DIV_MAX
+Date: Mon, 26 Jun 2017 11:43:01 +0300
+Message-ID: <8eaabcb6-c7b1-efcc-7dae-967a38feb8f1@microchip.com>
+References: <1498194505-30930-1-git-send-email-zhi.mao@mediatek.com>
+ <1498194505-30930-6-git-send-email-zhi.mao@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170622212539.l3yblwqurahdvlqq@rob-hp-laptop>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>, lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, benjamin.gaignard-qxv4g6HH51o@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1498194505-30930-6-git-send-email-zhi.mao@mediatek.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Zhi Mao <zhi.mao@mediatek.com>, john@phrozen.org, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org
+Cc: zhenbao.liu@mediatek.com, devicetree@vger.kernel.org, srv_heupstream@mediatek.com, sean.wang@mediatek.com, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, yt.shen@mediatek.com, yingjoe.chen@mediatek.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, 22 Jun 2017 16:25:39 -0500
-Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
 
-> On Wed, Jun 14, 2017 at 05:13:15PM +0200, Fabrice Gasnier wrote:
-> > Clock name has been updated during driver/DT binding review:
-> > https://lkml.org/lkml/2016/12/13/718
-> > Update DT binding doc to reflect this.
-> > 
-> > Fixes: bf2d8581b1b3 (iio: Add bindings for STM32 timer trigger driver)
-> > Signed-off-by: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-> > Acked-by: Benjamin Gaignard <benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> > Acked-by: Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> > ---
-> >  Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)  
+
+On 23.06.2017 08:08, Zhi Mao wrote:
+> Replace "7" with "PWM_CLK_DIV_MAX" in function:mtk_pwm_config()
+> to improve the code readablity.
 > 
-> Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-
-Applied to the togreg branch of iio.git.  Might well have missed
-the coming merge window, but guess no major hurry for this.
-
-Jonathan
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Signed-off-by: Zhi Mao <zhi.mao@mediatek.com>
+> ---
+>  drivers/pwm/pwm-mediatek.c |    6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+> index 554a042..e5f6425 100644
+> --- a/drivers/pwm/pwm-mediatek.c
+> +++ b/drivers/pwm/pwm-mediatek.c
+> @@ -30,6 +30,8 @@
+>  #define PWMDWIDTH		0x2c
+>  #define PWMTHRES		0x30
+>  
+> +#define PWM_CLK_DIV_MAX		7
+> +
+>  enum {
+>  	MTK_CLK_MAIN = 0,
+>  	MTK_CLK_TOP,
+> @@ -130,8 +132,10 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  		clkdiv++;
+>  	}
+>  
+> -	if (clkdiv > 7)
+> +	if (clkdiv > PWM_CLK_DIV_MAX) {
+You forgot to:
+		mtk_pwm_clk_disable(chip, pwm);
+> +		dev_err(chip->dev, "period %d not supported\n", period_ns);
+>  		return -EINVAL;
+> +	}
+>  
+>  	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | clkdiv);
+>  	mtk_pwm_writel(pc, pwm->hwpwm, PWMDWIDTH, period_ns / resolution);
+> 
