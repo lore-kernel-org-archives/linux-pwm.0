@@ -1,15 +1,16 @@
 From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: Re: [PATCH v2 1/8] dt-bindings: mfd: Add STM32 LPTimer binding
-Date: Tue, 27 Jun 2017 10:57:32 +0200
-Message-ID: <a69a61c3-95a8-d0cc-10a6-4a7cf65ff2c5@st.com>
+Subject: Re: [PATCH v2 5/8] dt-bindings: iio: Add STM32 LPTimer trigger binding
+Date: Tue, 27 Jun 2017 11:04:22 +0200
+Message-ID: <21a2d75f-8fbe-d3d2-4326-8e506a312d9a@st.com>
 References: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
- <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
- <20170626180744.fyyzjsu4pmurohap@rob-hp-laptop>
+ <1498055415-31513-6-git-send-email-fabrice.gasnier@st.com>
+ <20170626181416.b7wr6wswuzeasuks@rob-hp-laptop>
+ <3D30F4CE-048C-4E5E-BDE1-48660B295066@jic23.retrosnub.co.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20170626180744.fyyzjsu4pmurohap@rob-hp-laptop>
+In-Reply-To: <3D30F4CE-048C-4E5E-BDE1-48660B295066@jic23.retrosnub.co.uk>
 Content-Language: en-US
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
@@ -20,99 +21,80 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Rob Herring <robh@kernel.org>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, Rob Herring <robh@kernel.org>
 Cc: mark.rutland@arm.com, mcoquelin.stm32@gmail.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@linaro.org, lee.jones@linaro.org, jic23@kernel.org, benjamin.gaignard@st.com
 List-Id: linux-pwm@vger.kernel.org
 
-On 06/26/2017 08:07 PM, Rob Herring wrote:
-> On Wed, Jun 21, 2017 at 04:30:08PM +0200, Fabrice Gasnier wrote:
->> Add documentation for STMicroelectronics STM32 Low-Power Timer binding.
+On 06/26/2017 10:38 PM, Jonathan Cameron wrote:
+> 
+> 
+> On 26 June 2017 19:14:16 BST, Rob Herring <robh@kernel.org> wrote:
+>> On Wed, Jun 21, 2017 at 04:30:12PM +0200, Fabrice Gasnier wrote:
+>>> Add documentation for STMicroelectronics STM32 Low-Power Timer
+>> Trigger
+>>> binding.
+>>>
+>>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+>>> ---
+>>> Changes in v2:
+>>> - s/Low Power/Low-Power
+>>> - remove leading 0x in example (parent node)
+>>> - improve reg property description
+>>> ---
+>>>  .../bindings/iio/timer/stm32-lptimer-trigger.txt   | 23
+>> ++++++++++++++++++++++
+>>>  1 file changed, 23 insertions(+)
+>>>  create mode 100644
+>> Documentation/devicetree/bindings/iio/timer/stm32-lptimer-trigger.txt
+>>>
+>>> diff --git
+>> a/Documentation/devicetree/bindings/iio/timer/stm32-lptimer-trigger.txt
+>> b/Documentation/devicetree/bindings/iio/timer/stm32-lptimer-trigger.txt
+>>> new file mode 100644
+>>> index 0000000..466d99f
+>>> --- /dev/null
+>>> +++
+>> b/Documentation/devicetree/bindings/iio/timer/stm32-lptimer-trigger.txt
+>>> @@ -0,0 +1,23 @@
+>>> +STMicroelectronics STM32 Low-Power Timer Trigger
+>>> +
+>>> +STM32 Low-Power Timer provides trigger source (LPTIM output) that
+>> can be used
+>>> +by STM32 internal ADC and/or DAC.
+>>> +
+>>> +Must be a sub-node of an STM32 Low-Power Timer device tree node.
+>>> +See ../mfd/stm32-lptimer.txt for details about the parent node.
+>>> +
+>>> +Required properties:
+>>> +- compatible:		Must be "st,stm32-lptimer-trigger".
+>>> +- reg:			Selects trigger hardware block. Must be 0, 1 or 2
+>>> +			respectively for lptimer1, lptimer2 or lptimer3
+>>> +			trigger output.
 >>
->> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
->> ---
->> Changes in v2:
->> - Lee's comments: s/Low Power/Low-Power/, remove 0x in example, improve
->>   properties descriptions
->> ---
->>  .../devicetree/bindings/mfd/stm32-lptimer.txt      | 48 ++++++++++++++++++++++
->>  1 file changed, 48 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+>> I guess this answers my question. However, this seems like abuse of the
 >>
->> diff --git a/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
->> new file mode 100644
->> index 0000000..af859c8
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
->> @@ -0,0 +1,48 @@
->> +STMicroelectronics STM32 Low-Power Timer
->> +
->> +The STM32 Low-Power Timer (LPTIM) is a 16-bit timer that provides several
->> +functions:
->> +- PWM output (with programmable prescaler, configurable polarity)
->> +- Quadrature encoder, counter
->> +- Trigger source for STM32 ADC/DAC (LPTIM_OUT)
->> +
->> +Required properties:
->> +- compatible:		Must be "st,stm32-lptimer".
->> +- reg:			Offset and length of the device's register set.
->> +- clocks:		Phandle to the clock used by the LP Timer module.
->> +- clock-names:		Must be "mux".
->> +- #address-cells:	Should be '<1>'.
->> +- #size-cells:		Should be '<0>'.
->> +
->> +Optional subnodes:
->> +- pwm:			See ../pwm/pwm-stm32-lp.txt
->> +- counter:		See ../iio/timer/stm32-lptimer-cnt.txt
->> +- trigger:		See ../iio/timer/stm32-lptimer-trigger.txt
->> +
->> +Example:
->> +
->> +	lptimer1: lptimer@40002400 {
-> 
-> timer@...
+>> reg prop. This should not be how you select a trigger. The DT should 
+>> describe all the h/w blocks and then the adc connection is a separate 
+>> property.
+> I think this is miss described. Reg is labelling instances of the hardware block which is providing the trigger.
 
-Hi Rob,
+Hi Rob, Jonathan,
 
-I initially put "lptimer" here to distinguish Low-Power Timer hardware
-from other "timers" hardware that can be found also on stm32 devices.
-I'd prefer to keep it, is it sensible from your point of view ?
-Please advise.
+yes, reg identifies trigger hardware block.
+I'll better describe in v3:
+- reg:         Identify trigger hardware block.
 
-> 
->> +		compatible = "st,stm32-lptimer";
->> +		reg = <0x40002400 0x400>;
->> +		clocks = <&timer_clk>;
->> +		clock-names = "mux";
->> +		#address-cells = <1>;
->> +		#size-cells = <0>;
->> +
->> +		pwm {
->> +			compatible = "st,stm32-pwm-lp";
->> +			pinctrl-names = "default";
->> +			pinctrl-0 = <&lppwm1_pins>;
->> +		};
->> +
->> +		trigger@0 {
->> +			compatible = "st,stm32-lptimer-trigger";
->> +			reg = <0>;
-> 
-> Is there more than 1? 
-
-reg identifies trigger hardware block.
-
-Best Regards,
-Thanks,
+Best regards,
 Fabrice
 
 > 
->> +		};
->> +
->> +		counter {
->> +			compatible = "st,stm32-lptimer-counter";
->> +			pinctrl-names = "default";
->> +			pinctrl-0 = <&lptim1_in_pins>;
->> +		};
->> +	};
->> -- 
->> 1.9.1
+> The connection to an ADC etc is done from userspace.
+> 
+> 
 >>
+>> Rob
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
