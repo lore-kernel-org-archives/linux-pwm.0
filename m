@@ -1,86 +1,101 @@
-From: Enric Balletbo Serra <eballetbo@gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: pwm-backlight: Add pwm-delay-us property
-Date: Wed, 28 Jun 2017 16:15:22 +0200
-Message-ID: <CAFqH_53pUu7w6NTEFPtcawG0mG__71dJMAO2wKNCOqtQ04WYRg@mail.gmail.com>
-References: <20170628111632.22582-1-enric.balletbo@collabora.com> <20170628133004.GA3507@localhost>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 1/8] dt-bindings: mfd: Add STM32 LPTimer binding
+Date: Wed, 28 Jun 2017 11:44:04 -0500
+Message-ID: <20170628164404.kr2fnr3mfumigkt5@rob-hp-laptop>
+References: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
+ <1498055415-31513-2-git-send-email-fabrice.gasnier@st.com>
+ <20170626180744.fyyzjsu4pmurohap@rob-hp-laptop>
+ <a69a61c3-95a8-d0cc-10a6-4a7cf65ff2c5@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170628133004.GA3507@localhost>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Pavel Machek <pavel@ucw.cz>
-Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Rob Herring <robh+dt@kernel.org>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>, Guenter Roeck <groeck@chromium.org>, huang lin <hl@rock-chips.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <a69a61c3-95a8-d0cc-10a6-4a7cf65ff2c5-qxv4g6HH51o@public.gmane.org>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
+Cc: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, benjamin.gaignard-qxv4g6HH51o@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Daniel, Pavel,
+On Tue, Jun 27, 2017 at 10:57:32AM +0200, Fabrice Gasnier wrote:
+> On 06/26/2017 08:07 PM, Rob Herring wrote:
+> > On Wed, Jun 21, 2017 at 04:30:08PM +0200, Fabrice Gasnier wrote:
+> >> Add documentation for STMicroelectronics STM32 Low-Power Timer binding.
+> >>
+> >> Signed-off-by: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
+> >> ---
+> >> Changes in v2:
+> >> - Lee's comments: s/Low Power/Low-Power/, remove 0x in example, improve
+> >>   properties descriptions
+> >> ---
+> >>  .../devicetree/bindings/mfd/stm32-lptimer.txt      | 48 ++++++++++++++++++++++
+> >>  1 file changed, 48 insertions(+)
+> >>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+> >> new file mode 100644
+> >> index 0000000..af859c8
+> >> --- /dev/null
+> >> +++ b/Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
+> >> @@ -0,0 +1,48 @@
+> >> +STMicroelectronics STM32 Low-Power Timer
+> >> +
+> >> +The STM32 Low-Power Timer (LPTIM) is a 16-bit timer that provides several
+> >> +functions:
+> >> +- PWM output (with programmable prescaler, configurable polarity)
+> >> +- Quadrature encoder, counter
+> >> +- Trigger source for STM32 ADC/DAC (LPTIM_OUT)
+> >> +
+> >> +Required properties:
+> >> +- compatible:		Must be "st,stm32-lptimer".
+> >> +- reg:			Offset and length of the device's register set.
+> >> +- clocks:		Phandle to the clock used by the LP Timer module.
+> >> +- clock-names:		Must be "mux".
+> >> +- #address-cells:	Should be '<1>'.
+> >> +- #size-cells:		Should be '<0>'.
+> >> +
+> >> +Optional subnodes:
+> >> +- pwm:			See ../pwm/pwm-stm32-lp.txt
+> >> +- counter:		See ../iio/timer/stm32-lptimer-cnt.txt
+> >> +- trigger:		See ../iio/timer/stm32-lptimer-trigger.txt
+> >> +
+> >> +Example:
+> >> +
+> >> +	lptimer1: lptimer@40002400 {
+> > 
+> > timer@...
+> 
+> Hi Rob,
+> 
+> I initially put "lptimer" here to distinguish Low-Power Timer hardware
+> from other "timers" hardware that can be found also on stm32 devices.
+> I'd prefer to keep it, is it sensible from your point of view ?
+> Please advise.
 
-2017-06-28 15:30 GMT+02:00 Pavel Machek <pavel@ucw.cz>:
-> On Wed 2017-06-28 13:16:31, Enric Balletbo i Serra wrote:
->> From: huang lin <hl@rock-chips.com>
->>
->> Add a pwm-delay-us property to specify the delay between setting an
->> initial (non-zero) PWM value and enabling the backlight, and also the
->> delay between disabling the backlight and setting PWM value to 0.
->
->
->
->> Signed-off-by: huang lin <hl@rock-chips.com>
->> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
->> ---
->>  Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt | 4 ++++
->>  1 file changed, 4 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
->> index 764db86..f75b08f 100644
->> --- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
->> +++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
->> @@ -17,6 +17,9 @@ Optional properties:
->>                 "pwms" property (see PWM binding[0])
->>    - enable-gpios: contains a single GPIO specifier for the GPIO which enables
->>                    and disables the backlight (see GPIO binding[1])
->> +  - pwm-delay-us: delay between setting an initial (non-zero) PWM value and
->> +                  enabling the backlight, and also the delay between disabling
->> +                  the backlight and setting PWM value to 0.
->>
->
->> If is safe to assume power-on delay and power-off delay will be the same?
->>
->> I've only took a quick look but several backlight controllers support asymetric power-on/off sequences..
+Node names are supposed to be the class of device (e.g. ethernet, 
+serial, etc.), not the specific device. The compatible is what 
+distinguishes it from other timers.
 
-Daniel, right the ones I checked are symmetric but asymmetric timings
-are possible I guess, so I think now that specify the two delays is
-more accurate, maybe the binding should be something like this?
+> >> +		compatible = "st,stm32-lptimer";
+> >> +		reg = <0x40002400 0x400>;
+> >> +		clocks = <&timer_clk>;
+> >> +		clock-names = "mux";
+> >> +		#address-cells = <1>;
+> >> +		#size-cells = <0>;
+> >> +
+> >> +		pwm {
+> >> +			compatible = "st,stm32-pwm-lp";
+> >> +			pinctrl-names = "default";
+> >> +			pinctrl-0 = <&lppwm1_pins>;
+> >> +		};
+> >> +
+> >> +		trigger@0 {
+> >> +			compatible = "st,stm32-lptimer-trigger";
+> >> +			reg = <0>;
+> > 
+> > Is there more than 1? 
+> 
+> reg identifies trigger hardware block.
 
-  pwm-delay-us = <delay_before_on  delay_after_off>;
+Okay, the trigger patch needs to be reworded.
 
-> I understood it as "you set PWM and it takes a while for display to
-> light up"
-> but that's not correct. Changelog from second patch makes it
-> clear. Please
-> clarify it here, too.
-
-Pavel, oh, your dude is interesting ...
-
-That's the idea, the sequence is:
-  Power on, you set the PWM signal, wait a bit and set the LED_EN signal.
-  Power off, you clear the LED_EN signal, wait a bit and stop the PWM signal.
-
-Note that the patch inverts the sequence, before this patch first you
-set LED_EN signal and then the PWM signal
-
-I assumed that the sequence was wrong but maybe I'm mistaken and there
-are some panels that follow the original sequence. On the few panels I
-checked the power on/off sequence is how I described above, i.e. see
-[1] p. 17, the sequence is first PWM and then LED_EN. I'll take a look
-at other panel datasheets, or if you know one, could you provide me
-the datasheet?
-
-Thanks,
-
-[1] http://www.jxlcd.com/Upload/PicFiles/N116BGE-L41.pdf
-
->
->                                                                 Pavel
-> --
-> (english) http://www.livejournal.com/~pavelmachek
-> (cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+Rob
