@@ -1,69 +1,35 @@
-From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Subject: Re: [PATCH v2 0/3] pwm: pwm-samsung: fix suspend/resume support
-Date: Thu, 29 Jun 2017 13:14:09 +0200
-Message-ID: <2433336.l2BTX0BETK@amdc3058>
-References: <CGME20170424100128epcas5p20396f75d5626a320a9eb11d89ae87ac5@epcas5p2.samsung.com>
-        <1493028069-32003-1-git-send-email-b.zolnierkie@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1493028069-32003-1-git-send-email-b.zolnierkie@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Kamil Debski <kamil@wypas.org>, Tomasz Figa <tomasz.figa@gmail.com>, linux-pwm@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
+From: David Wu <david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Subject: [PATCH 0/5] Add rk3328 pwm support
+Date: Thu, 29 Jun 2017 20:27:46 +0800
+Message-ID: <1498739271-27431-1-git-send-email-david.wu@rock-chips.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, huangtao-TNX95d0MmH7DzftRWevZcw@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Wu <david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
+There are two features of rk3328 pwm module.
+ - PWM APB and function clocks are different.
+ - Add pwm atomic hardware update
 
-ping. Could this patchset be merged for 4.13, please?
+David Wu (5):
+  pwm: rockchip: Add APB and function both clocks support
+  pwm: rockchip: Remove the judge from return value of pwm_config
+  pwm: rockchip: Move the configuration of polarity from pwm_enable() to
+    pwm_config()
+  pwm: rockchip: Add atomic updated feature for rk3328
+  Arm64: dts: rockchip: Add pwm nodes for rk3328
 
-Best regards,
+ .../devicetree/bindings/pwm/pwm-rockchip.txt       |   9 +-
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi           |  45 +++++
+ drivers/pwm/pwm-rockchip.c                         | 184 ++++++++++++++++-----
+ 3 files changed, 197 insertions(+), 41 deletions(-)
+
+-- 
+1.9.1
+
+
 --
-Bartlomiej Zolnierkiewicz
-Samsung R&D Institute Poland
-Samsung Electronics
-
-On Monday, April 24, 2017 12:01:06 PM Bartlomiej Zolnierkiewicz wrote:
-> Hi,
-> 
-> This patchset fixes suspend/resume support in pwm-samsung
-> driver (which has an effect of fixing suspend/resume support
-> for PWM client drivers such as pwm-fan one). Then it removes
-> no longer needed suspend/resume code from pwm-fan driver.
-> 
-> It was tested on Odroid-XU3 board (with few extra patches
-> adding SoC/board suspend/resume support which are not in
-> upstream yet).
-> 
-> The initial issue that has been observed on this configuration
-> was that after suspend/resume operation the fan was turned on
-> (while the thermal code had explicitly disabled the fan by
-> calling back into pwm-fan driver before the suspend/resume).
-> 
-> Fixing this in the pwm-fan driver itself is not feasible since
-> pwm_config()/pwm_disable() & co. API saves information about
-> current state and doesn't pass the relevant values to PWM core
-> if they are identical to the ones used previously (moreover PWM
-> core itself does the same before calling into the PWM hardware
-> driver).
-> 
-> Changes since v1
-> (https://www.spinics.net/lists/kernel/msg2480445.html):
-> - added Acked-by from Guenter to patch #3
-> - fixed patch #2 to use the right variable (chip -> our_chip)
-> 
-> Best regards,
-> --
-> Bartlomiej Zolnierkiewicz
-> Samsung R&D Institute Poland
-> Samsung Electronics
-> 
-> 
-> Bartlomiej Zolnierkiewicz (3):
->   pwm: pwm-samsung: remove redundant checks from pwm_samsung_config()
->   pwm: pwm-samsung: fix suspend/resume support
->   hwmon: pwm-fan: remove no longer needed suspend/resume code
-> 
->  drivers/hwmon/pwm-fan.c   | 32 ----------------------
->  drivers/pwm/pwm-samsung.c | 70 +++++++++++++++++++++++------------------------
->  2 files changed, 35 insertions(+), 67 deletions(-)
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
