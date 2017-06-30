@@ -1,111 +1,256 @@
-From: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-Subject: Re: [PATCH v2 1/4] dt-bindings: pwm-backlight: add pwm-delay-us
- property
-Date: Fri, 30 Jun 2017 13:25:05 +0200
-Message-ID: <20170630112505.GA18448@amd>
-References: <20170630112109.13785-1-enric.balletbo@collabora.com>
+From: Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 6/8] iio: trigger: Add STM32 LPTimer trigger driver
+Date: Fri, 30 Jun 2017 14:57:13 +0100
+Message-ID: <20170630145713.2e612033@kernel.org>
+References: <1498055415-31513-1-git-send-email-fabrice.gasnier@st.com>
+        <1498055415-31513-7-git-send-email-fabrice.gasnier@st.com>
+        <20170624211335.680b5b90@kernel.org>
+        <a1368383-8e5e-72ab-32f9-efe9715aaccb@st.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============8674726711365158115=="
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20170630112109.13785-1-enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <jacek.anaszewski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, groeck-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, huang lin <hl-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <a1368383-8e5e-72ab-32f9-efe9715aaccb-qxv4g6HH51o@public.gmane.org>
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
+Cc: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, benjamin.gaignard-qxv4g6HH51o@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
+On Mon, 26 Jun 2017 18:41:36 +0200
+Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org> wrote:
 
---===============8674726711365158115==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="vkogqOf2sHV7VnPd"
-Content-Disposition: inline
+> On 06/24/2017 10:13 PM, Jonathan Cameron wrote:
+> > On Wed, 21 Jun 2017 16:30:13 +0200
+> > Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org> wrote:
+> >   
+> >> Add support for LPTIMx_OUT triggers that can be found on some STM32
+> >> devices. These triggers can be used then by ADC or DAC.
+> >> Typical usage is to configure LPTimer as PWM output (via pwm-stm32-lp)
+> >> and have synchronised analog conversions with these triggers.
+> >>
+> >> Signed-off-by: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>  
+> > Given this can't be used as a trigger for other devices (no exposed
+> > interrupt?) I'd expect to see a validate_device callback provided for
+> > the trigger ops.  That would prevent other devices trying to use it.  
+> 
+> Hi Jonathan,
+> 
+> This is something I had in mind also earlier. Only thing is...
+> Basically, this is limiting: when trigger poll happens on device side
+> (e.g. ADC), another device could use same trigger. But I admit this
+> looks like corner case.
+> 
+> I'll add it in next version, with additional patch for ADC part to
+> validate it's a valid device (No DAC yet).
+> I think I'll use INDIO_HARDWARE_TRIGGERED mode:
+> - in adc driver: indio_dev->modes |= INDIO_HARDWARE_TRIGGERED;
+> - in lptimer: if (indio_dev->modes & INDIO_HARDWARE_TRIGGERED)...
+That may not be enough in of itself.  Could be other hardware
+triggered elements on the platform (quite likely with these
+stm parts!)
 
-
---vkogqOf2sHV7VnPd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri 2017-06-30 13:21:06, Enric Balletbo i Serra wrote:
-> From: huang lin <hl-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
->=20
-> Add a pwm-delay-us property to specify the delay between setting an
-> initial (non-zero) PWM value and enabling the backlight, and also the
-> delay between disabling the backlight and setting PWM value to 0.
->=20
-> Signed-off-by: huang lin <hl-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-> ---
-> Changes since v1:
->  - As suggested by Daniel Thompson
->    - Do not assume power-on delay and power-off delay will be the same
->=20
-> v1: https://lkml.org/lkml/2017/6/28/219
->=20
->  Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt | 6 +=
-+++++
->  1 file changed, 6 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-backlig=
-ht.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-> index 764db86..49b037e 100644
-> --- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-> +++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-> @@ -17,6 +17,11 @@ Optional properties:
->                 "pwms" property (see PWM binding[0])
->    - enable-gpios: contains a single GPIO specifier for the GPIO which en=
-ables
->                    and disables the backlight (see GPIO binding[1])
-> +  - pwm-delay-us: delay between setting an initial (non-zero) PWM value =
-and
-> +                  enabling the backlight, and also the delay between dis=
-abling
-> +                  the backlight and setting PWM value to 0.
-
-"Hardware needs a delay between setting an initial (non-zero) PWM and
-enabling the backlight using GPIO. The 1st cell specifies this delay
-in micro seconds. Hardware also needs a delay between disabing the
-backlight using GPIO and setting PWM value to 0. The 2nd cell is this
-delay in micro seconds."
-
-Pavel
-
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---vkogqOf2sHV7VnPd
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAllWNRAACgkQMOfwapXb+vL0lACgrF9/F+yTmwc38tPUt6qc1q6J
-4ioAnjHpcp7oisDTay0pWf7y8XMYk3NJ
-=Kb7S
------END PGP SIGNATURE-----
-
---vkogqOf2sHV7VnPd--
-
-
---===============8674726711365158115==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-Linux-rockchip mailing list
-Linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-http://lists.infradead.org/mailman/listinfo/linux-rockchip
-
---===============8674726711365158115==--
+J
+> 
+> > 
+> > Otherwise, looks good.  
+> 
+> Many thanks for your review.
+> Best Regards,
+> Fabrice
+> 
+> > 
+> > Jonathan  
+> >> ---
+> >> Changes in v2:
+> >> - s/Low Power/Low-Power
+> >> - update few comments
+> >> ---
+> >>  drivers/iio/trigger/Kconfig                   |  11 +++
+> >>  drivers/iio/trigger/Makefile                  |   1 +
+> >>  drivers/iio/trigger/stm32-lptimer-trigger.c   | 110 ++++++++++++++++++++++++++
+> >>  include/linux/iio/timer/stm32-lptim-trigger.h |  24 ++++++
+> >>  4 files changed, 146 insertions(+)
+> >>  create mode 100644 drivers/iio/trigger/stm32-lptimer-trigger.c
+> >>  create mode 100644 include/linux/iio/timer/stm32-lptim-trigger.h
+> >>
+> >> diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
+> >> index e4d4e63..a633d2c 100644
+> >> --- a/drivers/iio/trigger/Kconfig
+> >> +++ b/drivers/iio/trigger/Kconfig
+> >> @@ -24,6 +24,17 @@ config IIO_INTERRUPT_TRIGGER
+> >>  	  To compile this driver as a module, choose M here: the
+> >>  	  module will be called iio-trig-interrupt.
+> >>  
+> >> +config IIO_STM32_LPTIMER_TRIGGER
+> >> +	tristate "STM32 Low-Power Timer Trigger"
+> >> +	depends on MFD_STM32_LPTIMER || COMPILE_TEST
+> >> +	help
+> >> +	  Select this option to enable STM32 Low-Power Timer Trigger.
+> >> +	  This can be used as trigger source for STM32 internal ADC
+> >> +	  and/or DAC.
+> >> +
+> >> +	  To compile this driver as a module, choose M here: the
+> >> +	  module will be called stm32-lptimer-trigger.
+> >> +
+> >>  config IIO_STM32_TIMER_TRIGGER
+> >>  	tristate "STM32 Timer Trigger"
+> >>  	depends on (ARCH_STM32 && OF && MFD_STM32_TIMERS) || COMPILE_TEST
+> >> diff --git a/drivers/iio/trigger/Makefile b/drivers/iio/trigger/Makefile
+> >> index 5c4ecd3..0a72a2a 100644
+> >> --- a/drivers/iio/trigger/Makefile
+> >> +++ b/drivers/iio/trigger/Makefile
+> >> @@ -6,6 +6,7 @@
+> >>  
+> >>  obj-$(CONFIG_IIO_HRTIMER_TRIGGER) += iio-trig-hrtimer.o
+> >>  obj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o
+> >> +obj-$(CONFIG_IIO_STM32_LPTIMER_TRIGGER) += stm32-lptimer-trigger.o
+> >>  obj-$(CONFIG_IIO_STM32_TIMER_TRIGGER) += stm32-timer-trigger.o
+> >>  obj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o
+> >>  obj-$(CONFIG_IIO_TIGHTLOOP_TRIGGER) += iio-trig-loop.o
+> >> diff --git a/drivers/iio/trigger/stm32-lptimer-trigger.c b/drivers/iio/trigger/stm32-lptimer-trigger.c
+> >> new file mode 100644
+> >> index 0000000..bcb9aa2
+> >> --- /dev/null
+> >> +++ b/drivers/iio/trigger/stm32-lptimer-trigger.c
+> >> @@ -0,0 +1,110 @@
+> >> +/*
+> >> + * STM32 Low-Power Timer Trigger driver
+> >> + *
+> >> + * Copyright (C) STMicroelectronics 2017
+> >> + *
+> >> + * Author: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>.
+> >> + *
+> >> + * License terms:  GNU General Public License (GPL), version 2
+> >> + *
+> >> + * Inspired by Benjamin Gaignard's stm32-timer-trigger driver
+> >> + */
+> >> +
+> >> +#include <linux/iio/iio.h>
+> >> +#include <linux/iio/timer/stm32-lptim-trigger.h>
+> >> +#include <linux/iio/trigger.h>
+> >> +#include <linux/mfd/stm32-lptimer.h>
+> >> +#include <linux/module.h>
+> >> +#include <linux/platform_device.h>
+> >> +
+> >> +/* List Low-Power Timer triggers */
+> >> +static const char * const stm32_lptim_triggers[] = {
+> >> +	LPTIM1_OUT,
+> >> +	LPTIM2_OUT,
+> >> +	LPTIM3_OUT,
+> >> +};
+> >> +
+> >> +struct stm32_lptim_trigger {
+> >> +	struct device *dev;
+> >> +	const char *trg;
+> >> +};
+> >> +
+> >> +static const struct iio_trigger_ops stm32_lptim_trigger_ops = {
+> >> +	.owner = THIS_MODULE,
+> >> +};
+> >> +
+> >> +/**
+> >> + * is_stm32_lptim_trigger
+> >> + * @trig: trigger to be checked
+> >> + *
+> >> + * return true if the trigger is a valid STM32 IIO Low-Power Timer Trigger
+> >> + * either return false
+> >> + */
+> >> +bool is_stm32_lptim_trigger(struct iio_trigger *trig)
+> >> +{
+> >> +	return (trig->ops == &stm32_lptim_trigger_ops);
+> >> +}
+> >> +EXPORT_SYMBOL(is_stm32_lptim_trigger);
+> >> +
+> >> +static int stm32_lptim_setup_trig(struct stm32_lptim_trigger *priv)
+> >> +{
+> >> +	struct iio_trigger *trig;
+> >> +
+> >> +	trig = devm_iio_trigger_alloc(priv->dev, "%s", priv->trg);
+> >> +	if  (!trig)
+> >> +		return -ENOMEM;
+> >> +
+> >> +	trig->dev.parent = priv->dev->parent;
+> >> +	trig->ops = &stm32_lptim_trigger_ops;
+> >> +	iio_trigger_set_drvdata(trig, priv);
+> >> +
+> >> +	return devm_iio_trigger_register(priv->dev, trig);
+> >> +}
+> >> +
+> >> +static int stm32_lptim_trigger_probe(struct platform_device *pdev)
+> >> +{
+> >> +	struct stm32_lptim_trigger *priv;
+> >> +	u32 index;
+> >> +	int ret;
+> >> +
+> >> +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+> >> +	if (!priv)
+> >> +		return -ENOMEM;
+> >> +
+> >> +	if (of_property_read_u32(pdev->dev.of_node, "reg", &index))
+> >> +		return -EINVAL;
+> >> +
+> >> +	if (index >= ARRAY_SIZE(stm32_lptim_triggers))
+> >> +		return -EINVAL;
+> >> +
+> >> +	priv->dev = &pdev->dev;
+> >> +	priv->trg = stm32_lptim_triggers[index];
+> >> +
+> >> +	ret = stm32_lptim_setup_trig(priv);
+> >> +	if (ret)
+> >> +		return ret;
+> >> +
+> >> +	platform_set_drvdata(pdev, priv);
+> >> +
+> >> +	return 0;
+> >> +}
+> >> +
+> >> +static const struct of_device_id stm32_lptim_trig_of_match[] = {
+> >> +	{ .compatible = "st,stm32-lptimer-trigger", },
+> >> +	{},
+> >> +};
+> >> +MODULE_DEVICE_TABLE(of, stm32_lptim_trig_of_match);
+> >> +
+> >> +static struct platform_driver stm32_lptim_trigger_driver = {
+> >> +	.probe = stm32_lptim_trigger_probe,
+> >> +	.driver = {
+> >> +		.name = "stm32-lptimer-trigger",
+> >> +		.of_match_table = stm32_lptim_trig_of_match,
+> >> +	},
+> >> +};
+> >> +module_platform_driver(stm32_lptim_trigger_driver);
+> >> +
+> >> +MODULE_AUTHOR("Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>");
+> >> +MODULE_ALIAS("platform:stm32-lptimer-trigger");
+> >> +MODULE_DESCRIPTION("STMicroelectronics STM32 LPTIM trigger driver");
+> >> +MODULE_LICENSE("GPL v2");
+> >> diff --git a/include/linux/iio/timer/stm32-lptim-trigger.h b/include/linux/iio/timer/stm32-lptim-trigger.h
+> >> new file mode 100644
+> >> index 0000000..cb795b1
+> >> --- /dev/null
+> >> +++ b/include/linux/iio/timer/stm32-lptim-trigger.h
+> >> @@ -0,0 +1,24 @@
+> >> +/*
+> >> + * Copyright (C) STMicroelectronics 2017
+> >> + *
+> >> + * Author: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
+> >> + *
+> >> + * License terms:  GNU General Public License (GPL), version 2
+> >> + */
+> >> +
+> >> +#ifndef _STM32_LPTIM_TRIGGER_H_
+> >> +#define _STM32_LPTIM_TRIGGER_H_
+> >> +
+> >> +#define LPTIM1_OUT	"lptim1_out"
+> >> +#define LPTIM2_OUT	"lptim2_out"
+> >> +#define LPTIM3_OUT	"lptim3_out"
+> >> +
+> >> +#if IS_ENABLED(CONFIG_IIO_STM32_LPTIMER_TRIGGER)
+> >> +bool is_stm32_lptim_trigger(struct iio_trigger *trig);
+> >> +#else
+> >> +static inline bool is_stm32_lptim_trigger(struct iio_trigger *trig)
+> >> +{
+> >> +	return false;
+> >> +}
+> >> +#endif
+> >> +#endif  
+> >   
