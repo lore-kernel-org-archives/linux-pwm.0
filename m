@@ -1,40 +1,68 @@
-From: Ralf Baechle <ralf@linux-mips.org>
-Subject: Re: [PATCH v5 05/14] MIPS: ingenic: Enable pinctrl for all ingenic
- SoCs
-Date: Mon, 3 Jul 2017 15:55:55 +0200
-Message-ID: <20170703135555.GA686@linux-mips.org>
-References: <20170402204244.14216-2-paul@crapouillou.net>
- <20170428200824.10906-1-paul@crapouillou.net>
- <20170428200824.10906-6-paul@crapouillou.net>
- <CACRpkdauf5c2i4o5i8QY8YHPNjizkvTu6kAbnquWiP_=v2=KdQ@mail.gmail.com>
- <1499013301.1477.0@smtp.crapouillou.net>
- <CACRpkdb=Zti+C+2me_WP0=m6z12G5Kz+W_cPcZsw=CVzBO_wAg@mail.gmail.com>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH 2/5] pwm: rockchip: Remove the judge from return value
+ of rockchip_pwm_config()
+Date: Mon, 3 Jul 2017 20:31:57 +0200
+Message-ID: <20170703203157.7fa28975@bbrezillon>
+References: <1498739271-27431-1-git-send-email-david.wu@rock-chips.com>
+        <1498739271-27431-3-git-send-email-david.wu@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-mips-bounce@linux-mips.org>
-Content-Disposition: inline
-In-Reply-To: <CACRpkdb=Zti+C+2me_WP0=m6z12G5Kz+W_cPcZsw=CVzBO_wAg@mail.gmail.com>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Paul Cercueil <paul@crapouillou.net>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, James Hogan <james.hogan@imgtec.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux MIPS <linux-mips@linux-mips.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1498739271-27431-3-git-send-email-david.wu@rock-chips.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: David Wu <david.wu@rock-chips.com>
+Cc: thierry.reding@gmail.com, heiko@sntech.de, robh+dt@kernel.org, catalin.marinas@arm.com, briannorris@chromium.org, dianders@chromium.org, mark.rutland@arm.com, huangtao@rock-chips.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Jul 03, 2017 at 11:07:09AM +0200, Linus Walleij wrote:
+On Thu, 29 Jun 2017 20:27:48 +0800
+David Wu <david.wu@rock-chips.com> wrote:
 
-> > There has been no word from Ralf, is this going into 4.13?
+> It seems the rockchip_pwm_config always returns the result 0,
+> so remove the judge.
+> 
+> Signed-off-by: David Wu <david.wu@rock-chips.com>
 
-Acked-by: Ralf Baechle <ralf@linux-mips.org>
+Acked-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 
-for the whole series.
-
-Thanks,
-
-  Ralf
+> ---
+>  drivers/pwm/pwm-rockchip.c | 12 ++----------
+>  1 file changed, 2 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+> index 617824c..cd45f17 100644
+> --- a/drivers/pwm/pwm-rockchip.c
+> +++ b/drivers/pwm/pwm-rockchip.c
+> @@ -165,7 +165,7 @@ static void rockchip_pwm_get_state(struct pwm_chip *chip,
+>  	clk_disable(pc->pclk);
+>  }
+>  
+> -static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> +static void rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  			       int duty_ns, int period_ns)
+>  {
+>  	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
+> @@ -188,8 +188,6 @@ static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  
+>  	writel(period, pc->base + pc->data->regs.period);
+>  	writel(duty, pc->base + pc->data->regs.duty);
+> -
+> -	return 0;
+>  }
+>  
+>  static int rockchip_pwm_enable(struct pwm_chip *chip,
+> @@ -236,13 +234,7 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+>  		enabled = false;
+>  	}
+>  
+> -	ret = rockchip_pwm_config(chip, pwm, state->duty_cycle, state->period);
+> -	if (ret) {
+> -		if (enabled != curstate.enabled)
+> -			rockchip_pwm_enable(chip, pwm, !enabled,
+> -				      state->polarity);
+> -		goto out;
+> -	}
+> +	rockchip_pwm_config(chip, pwm, state->duty_cycle, state->period);
+>  
+>  	if (state->enabled != enabled) {
+>  		ret = rockchip_pwm_enable(chip, pwm, state->enabled,
