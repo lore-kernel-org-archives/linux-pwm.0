@@ -1,29 +1,109 @@
-From: "David.Wu" <david.wu@rock-chips.com>
-Subject: Re: [PATCH 4/5] pwm: rockchip: Add atomic updated feature for rk3328
-Date: Tue, 4 Jul 2017 15:37:54 +0800
-Message-ID: <05cccb3d-2b35-1878-6173-9a96adef17ba@rock-chips.com>
-References: <1498739271-27431-1-git-send-email-david.wu@rock-chips.com>
- <1498739271-27431-5-git-send-email-david.wu@rock-chips.com>
- <20170703203957.03f3d1db@bbrezillon>
+From: Paul Kocialkowski <contact@paulk.fr>
+Subject: PWM backlight initial state assumptions, or how pwm_bl killed my
+ (nyan) cat^W backlight support
+Date: Tue, 04 Jul 2017 23:13:34 +0300
+Message-ID: <1499199214.1347.8.camel@paulk.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=gbk; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lucky1.263xmail.com ([211.157.147.134]:58409 "EHLO
-        lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751954AbdGDHiN (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 4 Jul 2017 03:38:13 -0400
-In-Reply-To: <20170703203957.03f3d1db@bbrezillon>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-+RgIjT78bRCD9g4HcOD+"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Philipp Zabel <p.zabel@pengutronix.de>, Linus Torvalds <torvalds@linux-foundation.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: thierry.reding@gmail.com, heiko@sntech.de, robh+dt@kernel.org, catalin.marinas@arm.com, briannorris@chromium.org, dianders@chromium.org, mark.rutland@arm.com, huangtao@rock-chips.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi Boris,
 
-ÔÚ 2017/7/4 2:39, Boris Brezillon Ð´µÀ:
-> Yet another customization. Don't you think we can extract common parts,
-> expose them as helpers and then have 3 different pwm_ops (with 3
-> different ->apply() implementation), one for each IP revision.
+--=-+RgIjT78bRCD9g4HcOD+
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Sounds reasonable.I will try to implement 3 different apply().
+As I try to maintain support for ARM CrOS (read, ChromeOS/ChromiumOS) devic=
+es in
+upstream Linux on my spare time, I try to test out rc and stable versions a=
+s
+often as time allows. I have been rolling out 4.12 since Monday and noticed=
+ that
+the backlight on my tegra124 nyan big stayed dark for this release.
+
+Not very cool, although I'm not blaming anyone else than myself on this,
+I should have just tested it and brought the issue up during the rc cycle.
+Still, let's try to move forward.
+
+After investigating, it appears that the pwm_bl driver is enforcing a polic=
+y on
+heavily relying on the backlight initial state
+(pwm_backlight_initial_power_state). To make it short, if backlight wasn't
+detected as already enabled by the bootloader, it's going to refuse to enab=
+le it
+during the whole lifetime of the driver.
+
+This policy isn't exactly new (so I do realize that I'm a bit late to the
+party), but it went one step further this cycle by adding a check on the PW=
+M
+state. This broke support for my nyan big, as the pwm driver does not check=
+ for
+the previous state at probe time and reports it as disabled initially.
+
+One could say that the driver has to be fixed to report that state (and I a=
+gree
+it is a desirable thing to do), but I think it is a symptom of a broader is=
+sue.
+
+Basically, do we really want pwm_bl to behave this way? What is the rationa=
+le
+behind this decision, other than "because we can"? A strong argument agains=
+t it
+is that not all bootloaders have support for turning the backlight on (that=
+ is
+definitely not the case on the omap3 sniper and omap4 kc1 boards with upstr=
+eam
+U-Boot, that I introduced to mainline Linux).
+
+Also, we can still expect the gpio/regulator/pwm drivers to be reset at pro=
+be
+time (and I also agree it's not necessarily a good thing, especially as far=
+ as
+backlight is concerned, but that's the reality and dropping backlight suppo=
+rt in
+those cases doesn't seem like an appropriate course of action). This will r=
+esult
+in pwm_bl assuming that backlight was not enabled by the bootloader and thu=
+s
+refuse to enable it at all times.
+
+Comments and reactions are welcome, as I'd really like to find a sane way t=
+o
+resolve this problem.
+
+Cheers!
+
+--=20
+Paul Kocialkowski, developer of free digital technology and hardware suppor=
+t
+
+Website: https://www.paulk.fr/
+Coding blog: https://code.paulk.fr/
+Git repositories: https://git.paulk.fr/ https://git.code.paulk.fr/
+--=-+RgIjT78bRCD9g4HcOD+
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEAbcMXZQMtj1fphLChP3B6o/ulQwFAllb9u4ACgkQhP3B6o/u
+lQwQFw//VYWGK54bxbHx64W3TVdHVZnRWfu+2YKBREMyIeNQ+7PXDVJQKmakh4Fh
+EsTezbs4cUYAD+uWEPk+xuHQHLWwCqmqq+Ntg+QGGQnVaTgZA9FC7cudmsccK8AM
+Y5XeF68wP1W/OYPGu03dSWUSVfqMDCtevfaZyelCl9XhPt/yTJBmE8b7vAT6phhm
+eyV4R8C8Ivq6hf34G61HlLSrUFBpH65vA2HNTZD9x/hIB/YQOFdiaX5GqGrd+fth
+A3BcQrRRitTtQA8VwCLFxgGA4EHwIuPwKOX0IpriQ3FWjXJfMequGt2VeAlw+43q
+1uctcVZMve/zScwnlRwQMon9dSBN0f4A4gxZ8kAHLfZh0glmECA9sIB33Na9DKFR
+cY2hzb6G7ZWLaIgkCLVLpLd+T9sz/YQ5juPOScsOty4YE8FSCtG07CP7BK8nMyUQ
+kNqbFXAIZKitgKCNFS/bd9Pz3nx5gycEt+Gv1nYpwdvtfod5E4M05dt0wAGfsgHA
+Gq3NNS4cvmho0llo+oMskmejjCFHZjbe8Rx6HfWU4lKmyKzhA6KtPvyy1bOf5nW8
+OEy3B5XEDRNsQOTX4MjtOR1232Rj6kMrlmcl4fSFsDxuZqMII/zhGeZAUYTCAI0H
+YUfOA+R7Qp2mXsOp2OoRjQETpHDRFZX0XpWr4EbX6dhXyNKuomk=
+=4N12
+-----END PGP SIGNATURE-----
+
+--=-+RgIjT78bRCD9g4HcOD+--
