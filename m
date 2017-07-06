@@ -1,118 +1,103 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 0/3] pwm: add pwm AO on meson gx
-Date: Thu, 6 Jul 2017 11:17:43 +0200
-Message-ID: <20170706091743.GP16144@ulmo.fritz.box>
-References: <20170608122416.1993-1-jbrunet@baylibre.com>
- <20170706065910.GJ16144@ulmo.fritz.box>
- <1499331740.15362.11.camel@baylibre.com>
+Subject: Re: [PATCH v2 2/4] pwm-backlight: add support for pwm-delay-us
+ property
+Date: Thu, 6 Jul 2017 11:24:48 +0200
+Message-ID: <20170706092448.GQ16144@ulmo.fritz.box>
+References: <20170630112109.13785-1-enric.balletbo@collabora.com>
+ <20170630112109.13785-2-enric.balletbo@collabora.com>
+ <20170706080132.GL16144@ulmo.fritz.box>
+ <20170706091231.GA6741@amd>
+ <ac8bd991-be3c-c090-8e71-8f901b0a45a7@linaro.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="iq/fWD14IMVFWBCD"
+        protocol="application/pgp-signature"; boundary="dUqh8vgUBVXHzm9w"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f194.google.com ([209.85.128.194]:36412 "EHLO
-        mail-wr0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751865AbdGFJRq (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Jul 2017 05:17:46 -0400
+Received: from mail-wr0-f195.google.com ([209.85.128.195]:33344 "EHLO
+        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750778AbdGFJYv (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Jul 2017 05:24:51 -0400
 Content-Disposition: inline
-In-Reply-To: <1499331740.15362.11.camel@baylibre.com>
+In-Reply-To: <ac8bd991-be3c-c090-8e71-8f901b0a45a7@linaro.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Jerome Brunet <jbrunet@baylibre.com>, Jeremy Kerr <jk@ozlabs.org>
-Cc: Kevin Hilman <khilman@baylibre.com>, Neil Armstrong <narmstrong@baylibre.com>, Carlo Caione <carlo@caione.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Pavel Machek <pavel@ucw.cz>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Rob Herring <robh+dt@kernel.org>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org, huang lin <hl@rock-chips.com>
 
 
---iq/fWD14IMVFWBCD
-Content-Type: text/plain; charset=utf-8
+--dUqh8vgUBVXHzm9w
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 06, 2017 at 11:02:20AM +0200, Jerome Brunet wrote:
-> On Thu, 2017-07-06 at 08:59 +0200, Thierry Reding wrote:
-> > On Thu, Jun 08, 2017 at 02:24:13PM +0200, Jerome Brunet wrote:
-> > > The pwms found in the AO domain of the meson gx family have different
-> > > clock sources than the ones found in the EE domain. The AO pwms only
-> > > have 2 connected clock input which are clk81 and the crytal.
+On Thu, Jul 06, 2017 at 10:17:18AM +0100, Daniel Thompson wrote:
+> On 06/07/17 10:12, Pavel Machek wrote:
+> > On Thu 2017-07-06 10:01:32, Thierry Reding wrote:
+> > > On Fri, Jun 30, 2017 at 01:21:07PM +0200, Enric Balletbo i Serra wrot=
+e:
+> > > > From: huang lin <hl@rock-chips.com>
+> > > >=20
+> > > > Some panels (i.e. N116BGE-L41), in their power sequence specificati=
+ons,
+> > > > request a delay between set the PWM signal and enable the backlight=
+ and
+> > > > between clear the PWM signal and disable the backlight. Add support=
+ for
+> > > > the new pwm-delay-us property to meet the timing.
+> > > >=20
+> > > > Note that this patch inverts current sequence. Before this patch the
+> > > > enable signal was set before the PWM signal and vice-versa on power=
+ off.
+> > > >=20
+> > > > I assumed that this sequence was wrong, at least it is on different=
+ panel
+> > > > datasheets that I checked, so I inverted the sequence to follow:
+> > > >=20
+> > > >    On power on, set the PWM signal, wait, and set the LED_EN signal.
+> > > >    On power off, clear the LED_EN signal, wait, and stop the PWM si=
+gnal.
 > > >=20
-> > > This patchset adds the necessary compatible and the clock data for it.
-> > >=20
-> > > Changes since v1: [0]
-> > > * Correct clock source order for gxbb pwm ao. Documenation shows xtal=
- as
-> > > =C2=A0 source #1 while it is actually source #0
-> > > * Add patch 3 to fix pwm calculation. Issue while testing pwm with cl=
-k81
-> > > =C2=A0 as clock source.
-> > >=20
-> > > [0]:=C2=A0=C2=A0https://lkml.kernel.org/r/20170607133013.4766-1-jbrun=
-et@baylibre.com
-> > >=20
-> > > Jerome Brunet (3):
-> > > =C2=A0 dt-bindings: pwm: meson: add comptabible for gxbb ao pwms
-> > > =C2=A0 pwm: meson: add compatible for the gxbb ao pwms
-> > > =C2=A0 pwm: meson: improve pwm calculation precision.
-> > >=20
-> > > =C2=A0.../devicetree/bindings/pwm/pwm-meson.txt=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0|=C2=A0=C2=A04 +-
-> > > =C2=A0drivers/pwm/pwm-meson.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0| 47 +++++++++++++++++
-> > > -----
-> > > =C2=A02 files changed, 41 insertions(+), 10 deletions(-)
+> > > I think this should be two separate patches to make it easier to reve=
+rt
+> > > the inverted sequence should it prove to regress on other panels.
 > >=20
-> > For some reason the Author field keeps getting set to:
-> >=20
-> > 	jbrunet <jbrunet@baylibre.com>
-> >=20
-> > It seems like the headers are correct, so maybe this is patchwork
-> > messing things up?
+> > Don't make this overly complex. This is trivial. No need to split it
+> > into more patches.
 >=20
-> And it strikes again ... :(
-> I already had the issue with https://patchwork.kernel.org a few month ago.
-> I have contacted the kernel.org helpdesk about it and here is the explana=
-tion:
->=20
-> "Patchwork treats users and patch submitters slightly differently, so onc=
-e your
-> entry is created upon first patch submission, it sticks forever. I've adj=
-usted
-> your entry manually per your request."
->=20
-> So my very first patch on the ML must have been malformed somehow.
->=20
-> >=20
-> > Anyway, I've applied the series and manually fixed up the Author field.
->=20
-> Thanks a lot for this !=20
-> Any idea who I may contact to get this "manual adjustment" done on https:=
-//patch
-> work.ozlabs.org/ ?
+> Agree. IMHO getting the code that reads the (optional) new parameter corr=
+ect
+> is the best way to manage risk of regression since in most cases the delay
+> will be skipped anyway.
 
-I /think/ Jeremy Kerr (To'ed) would be a good person to contact about
-this.
+The potential regression that I'm referring to would be caused by
+inversing the sequence (GPIO enable -> PWM enable). That's completely
+unrelated to the delays introduced by this patch. Many boards use this
+driver and they've been running with the old sequence for many years.
+Granted, it's fairly unlikely to regress, but it's still a possibility.
 
-Jeremy, anything you can do about this?
+Given that both changes are logically separate, I think separate patches
+are totally appropriate. I also don't think that this would overly
+complicate things.
 
-Thanks,
 Thierry
 
---iq/fWD14IMVFWBCD
+--dUqh8vgUBVXHzm9w
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlleADYACgkQ3SOs138+
-s6HVAxAAjblEyF4Kjv4FUEIzUf/75caQWWOV4NWm5AjR2mbEUox+mikJ5ebpvTFg
-I/qH9knRNTpcx7Wx+F6V1UHYPreQ/E6cu2govT/Bl9NcfECEsdpXlhgiAFRRehf+
-Ionf+1WtbidSHIDgrEVjahk2Wq3IXDjkCx87RHVBmoQM0dNrXUA0qXjeYny35MOi
-7KCwnjuFN4Xy93R2sZxATsZPYv7RD4jbXnvcc9Y7IORWOFOZRHt4HZ4kpFPa2YOs
-AgR/BFMxVF2/v9yhkGYd9GhHktuVKcgJHM25i/9RcDPS+RehwZ+f+3CqBq+IgiLP
-2FjpXJX2JL94/Z6iWMWa97ba1l9mJmGvEqiJtG92F9Vwv9LKdOKEDYtSDihoUshj
-1vxofyE/jJbF8EEzSWSqv4vM/J1LrAf9q+gowzE6jRq2ztcbaghh9THP3UFZ44zF
-nBKbah10lF4fBpU2CXbtvD6yeBwEJJ1zb1dj8rcRlF0oLDClbCLbbywkDyqvxJab
-+0qNQYZDtTM41o+27Q7wT8IcjGFs9xFMpgoVVj+wYT4RMllJLiZVSRuzuAiRqP0v
-j48EXB5PHn5qlNlvWuHOn04+SC06X6b16uwflN+Z0mOpHFXJoSmmC2/pw46doLAY
-r87kkBtNySzi0UX7m8HQd4v7Q9xrUbM49UbufJ2Ta8t71CHVL0g=
-=TbsQ
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlleAd8ACgkQ3SOs138+
+s6FvpQ/5AZkRMQo/qVT4t08hyAsTpydmq5DyuYGPj8N4lItKGeoadzKM8Byn+k+O
+sf8AXPZD0S4K7OEY8Ecyd+IB4HHdL8rH+Lt0XckOblcUP/vgP9rzuJNrot7iMeVH
+mYuuZ6x35E31vK5kT0ZXgx/wK0b2jG1508H4ojLJdoxvbamQO9Oz6y6+CVJc8rAI
+vnApmAP/dxfzjCDwVRp7Iyep418n5zOhNU2Y/hc2DSeRhYQNkx4mnv/JUUoZyLjA
+gsjujplSruujmaZmU2lPJy+JTGOIUq2k7oD/Z98SwBl9bxhKOn/Kj7Y0UQ90YfCb
+fS10e6T+zHxP+0DmynekaZGrUuexlx2oRnPtdVYYsd9KATOOQ9vbTc3JrrOYarO5
+uGUZZjdAOmWE0vKDCV1huw9w2B2P5xmom1cN/c7kClGSDvmCwDYitF89ejdIs/bM
+Og5omTa7tJ6pWQ2Sc1BU68Rt2DXh/bAtVsSHEeheouf1wKiXLJtfW9l/uhJjrPrK
+S0P4w//X3iVC/+qC4q6elVqlBmK6uYQYpNHTENbvK0wXuETmDB+jouYLSun6l3Mv
+idj2BL6Os2K2xbPyTBIo29pUXW/V7YyJ96VnWadldATCvs6BTEHEvlicbfiw/oN6
+nBOWud/a6kPIanBhReARhVkftt/idgEGDVDfFst+N6CUImmlj7o=
+=SG24
 -----END PGP SIGNATURE-----
 
---iq/fWD14IMVFWBCD--
+--dUqh8vgUBVXHzm9w--
