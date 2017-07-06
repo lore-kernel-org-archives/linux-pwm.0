@@ -1,61 +1,63 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4] dt-bindings: pwm: Add R-Car M3-W device tree bindings
-Date: Thu, 6 Jul 2017 07:42:32 +0200
-Message-ID: <20170706054232.GA16144@ulmo.fritz.box>
-References: <1494576582-17881-1-git-send-email-horms+renesas@verge.net.au>
+Subject: Re: [PATCH v2 3/3] dt-bindings: pwm: update STM32 timers clock names
+Date: Thu, 6 Jul 2017 07:49:15 +0200
+Message-ID: <20170706054915.GB16144@ulmo.fritz.box>
+References: <1497453196-31470-1-git-send-email-fabrice.gasnier@st.com>
+ <1497453196-31470-4-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="yrj/dFKFPuw6o+aM"
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+        protocol="application/pgp-signature"; boundary="oLBj+sq0vYjzfsbl"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wr0-f194.google.com ([209.85.128.194]:35965 "EHLO
+        mail-wr0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750995AbdGFFtT (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Jul 2017 01:49:19 -0400
 Content-Disposition: inline
-In-Reply-To: <1494576582-17881-1-git-send-email-horms+renesas@verge.net.au>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Simon Horman <horms+renesas@verge.net.au>
-Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+In-Reply-To: <1497453196-31470-4-git-send-email-fabrice.gasnier@st.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
 
---yrj/dFKFPuw6o+aM
+--oLBj+sq0vYjzfsbl
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 12, 2017 at 10:09:42AM +0200, Simon Horman wrote:
-> From: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+On Wed, Jun 14, 2017 at 05:13:16PM +0200, Fabrice Gasnier wrote:
+> Clock name has been updated during driver/DT binding review:
+> https://lkml.org/lkml/2016/12/13/718
+> Update DT binding doc to reflect this.
 >=20
-> Add device tree bindings for the PWM controller found on R-Car M3-W SoCs.
->=20
-> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+> Fixes: cd9a99c2f8e8 (dt-bindings: pwm: Add STM32 bindings)
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 > ---
-> v4
-> * Broke out of lager patchset on which it appears to have no dependencies
-> * Added Reviewed by tags=20
-> ---
->  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 1 +
->  1 file changed, 1 insertion(+)
+>  Documentation/devicetree/bindings/pwm/pwm-stm32.txt | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Applied, thanks.
 
 Thierry
 
---yrj/dFKFPuw6o+aM
+--oLBj+sq0vYjzfsbl
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlldzcMACgkQ3SOs138+
-s6EoAg/+O6gw/s7zz86RKzDQh5IOESiSogQMM5yGkMfvjYcUxqxy2LGJtQJc6mgB
-3ljrht2k1WNTltThAeAzVsTi2JCTLU7sOk67Ax/C0JGeI761hY6myCOhc7zl7gxZ
-549MiljdJqabzGE2KRfUDySHC0/m4QdWg0OE+hWKCThKUJAOoL3xMNN4eLPKy6sP
-vGdgCBf8ydKU1aSOqYqNyPIgMqlSHROLE2x5lVuyJnshtKQC9uuSZ5rRHh8CuRvU
-ineO3jULbv4f5qJqblwvmnoAnb3zfoER6dWkLpdeBeB8vrIvL6nHkUtCkZFj6tt8
-AzXIw+7f4PfPEG75PhVZPLJrv2Op7UpVSD996Q5fLZi7Gfl+/o4SKWRJeSSFKCSz
-ZCvQ1ROYsrTRV7/LGnazRC+WnJAJYSsGFQ0j0Etfv5PjqO4QIg9Ddvz6u+6+NEkT
-PsmB7G+gxCE70RtDDwpjd8u3UTPtmpfoeafVEIYZ8YX4HV9oXWttWCvfYDCegJfE
-Cteq0kVj5GJAO274JLllsPgnak4EBdjwb77mLb6//sVZW+QIaeRaX7msfrUnzJcH
-0VCiZx8azjK+84IjW7ZQrFYxNJuIrrQmzwx6SFOb4xlqU8vON9YVfHvO9RYGhaag
-QzrQPbiRlOoQIjpVEEKmRAzxYjDfgnUTtf0XcgESH+5MsERaxEM=
-=HGfn
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlldz1sACgkQ3SOs138+
+s6GlERAAqizstPfL2AWZTMPWwHrg6Ag4ArgczreDTV5rqKF9t6CxQ51oFtdt7EzD
+xAKnK+b6cbPmD5xkBJniTKqi8eSCPhs3S2XpzO9T9tSMCL1Mue0DhqOvlExm1+OZ
+Zet9jTiPDDWOAW7PlSl7lkYTU/YbSx4Ngs3ttoaXdcZPz3gm+tJ+KmOb6i+ZgYjE
+/YqdNUPidRA/zrw/0IxFRRd/1M91Mzy0hfXniK4Wx+doJ5yZeDA/GOijkzL5TIag
+/0XqGQDUiVfr6pBa4imVjhET1kLBleJwgWC3Zn+QgeiYdWGLOh4ZCNBH0Ps01p+Y
+orBfdmArUlSKVoYNutK/wcUiRVdB7sBPrOPtvVxJZoOwbpATTNOUYLQ6Ht+QuUB4
+BvHmBLRYpMHFIGQRcLL+TUUjzuOqgSSXGZxFanUKhyKfcujHMMHvIjzsKGjK96k3
+0AeTcdVwhmB4zOontfqcDuR/qB/m8YTnPOFVms5xvuNvozfXoavBMzIZI6Zw4Tjt
+ErO0m5WrdhwpKsRrEwjwbBvIYa2YqNzwKEoeoiyYbazIs+DCeRip7ocQATjr/cR4
+YXlHHfnnMBNeDo0jxrzVQV483LEqCtHKpTDQ9/pd4SQuAkXFxd8eH5NOZLj8mRJY
+tJsTfwnfn4bURg9xIobkNd5hDt7TdPp/9OtN8FlSiK9guaB9mhY=
+=7zbU
 -----END PGP SIGNATURE-----
 
---yrj/dFKFPuw6o+aM--
+--oLBj+sq0vYjzfsbl--
