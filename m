@@ -1,99 +1,74 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 3/3] mfd: twl: move header file out of I2C realm
-Date: Thu, 6 Jul 2017 08:44:53 +0200
-Message-ID: <20170706064453.GH16144@ulmo.fritz.box>
-References: <20170521220212.1404-1-wsa@the-dreams.de>
- <20170521220212.1404-4-wsa@the-dreams.de>
-Reply-To: rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2 0/3] pwm: sun4i: switch to atomic PWM
+Date: Thu, 6 Jul 2017 08:49:22 +0200
+Message-ID: <20170706064922.GI16144@ulmo.fritz.box>
+References: <20170530193209.19247-1-alexandre.belloni@free-electrons.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="0XhtP95kHFp3KGBe"
-Return-path: <rtc-linux+bncBDTKFPPJUEHRBZ5Y67FAKGQE2BCR6EY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+        protocol="application/pgp-signature"; boundary="+PbGPm1eXpwOoWkI"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wr0-f193.google.com ([209.85.128.193]:34085 "EHLO
+        mail-wr0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752632AbdGFGt0 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Jul 2017 02:49:26 -0400
 Content-Disposition: inline
-In-Reply-To: <20170521220212.1404-4-wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
-List-Post: <https://groups.google.com/group/rtc-linux/post>, <mailto:rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:rtc-linux+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/rtc-linux
-List-Subscribe: <https://groups.google.com/group/rtc-linux/subscribe>, <mailto:rtc-linux+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+712029733259+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/rtc-linux/subscribe>
-To: Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
-Cc: linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Hartmut Knaack <knaack.h-Mmb7MZpHnFY@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Kishon Vijay Abraham I <kishon-l0cyMroinI0@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Wi
+In-Reply-To: <20170530193209.19247-1-alexandre.belloni@free-electrons.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Olliver Schinagl <o.schinagl@ultimaker.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Jonathan Liu <net147@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
 
---0XhtP95kHFp3KGBe
-Content-Type: text/plain; charset="UTF-8"
+--+PbGPm1eXpwOoWkI
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 22, 2017 at 12:02:10AM +0200, Wolfram Sang wrote:
-> include/linux/i2c is not for client devices. Move the header file to a
-> more appropriate location.
-> 
-> Signed-off-by: Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
-> ---
->  arch/arm/mach-omap2/common.h            | 2 +-
->  arch/arm/mach-omap2/omap_twl.c          | 2 +-
->  drivers/gpio/gpio-twl4030.c             | 2 +-
->  drivers/iio/adc/twl4030-madc.c          | 2 +-
->  drivers/iio/adc/twl6030-gpadc.c         | 2 +-
->  drivers/input/keyboard/twl4030_keypad.c | 2 +-
->  drivers/input/misc/twl4030-pwrbutton.c  | 2 +-
->  drivers/input/misc/twl4030-vibra.c      | 2 +-
->  drivers/mfd/twl-core.c                  | 6 +++---
->  drivers/mfd/twl4030-audio.c             | 2 +-
->  drivers/mfd/twl4030-irq.c               | 2 +-
->  drivers/mfd/twl4030-power.c             | 2 +-
->  drivers/mfd/twl6030-irq.c               | 2 +-
->  drivers/phy/phy-twl4030-usb.c           | 2 +-
->  drivers/power/supply/twl4030_charger.c  | 2 +-
->  drivers/pwm/pwm-twl-led.c               | 2 +-
->  drivers/pwm/pwm-twl.c                   | 2 +-
->  drivers/regulator/twl-regulator.c       | 2 +-
->  drivers/regulator/twl6030-regulator.c   | 2 +-
->  drivers/rtc/rtc-twl.c                   | 2 +-
->  drivers/usb/phy/phy-twl6030-usb.c       | 2 +-
->  drivers/video/backlight/pandora_bl.c    | 2 +-
->  drivers/watchdog/twl4030_wdt.c          | 2 +-
->  include/linux/{i2c => mfd}/twl.h        | 0
->  sound/soc/codecs/twl4030.c              | 2 +-
->  25 files changed, 26 insertions(+), 26 deletions(-)
->  rename include/linux/{i2c => mfd}/twl.h (100%)
+On Tue, May 30, 2017 at 09:32:06PM +0200, Alexandre Belloni wrote:
+> Switch to atomic PWM. The main goal is to properly wait for a period befo=
+re
+> disabling a channel to ensure the correct level is set on the output.
+>=20
+> Changes in v2:
+>  - fixed remaining checkpatch warnings
+>  - split the series to ease reviews
+>  - changed the delay handling to ensure the proper amount of time has ela=
+psed
+>    before disabling a channel
+>  - dropped RDY bit handling as it doesn't have any real effect.
+>=20
+> Alexandre Belloni (3):
+>   pwm: sun4i: improve hardware read out
+>   pwm: sun4i: switch to atomic PWM
+>   pwm: sun4i: drop legacy callbacks
+>=20
+>  drivers/pwm/pwm-sun4i.c | 263 +++++++++++++++++++++++++++---------------=
+------
+>  1 file changed, 148 insertions(+), 115 deletions(-)
 
-I didn't see this get applied yet, so just in case anyone was waiting
-for me (this is trivial, so I don't think there's a need):
+Series applied, though you could've just squashed together patches 2 and
+3 because they don't make sense apart.
 
-Acked-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Thierry
 
--- 
-You received this message because you are subscribed to "rtc-linux".
-Membership options at http://groups.google.com/group/rtc-linux .
-Please read http://groups.google.com/group/rtc-linux/web/checklist
-before submitting a driver.
---- 
-You received this message because you are subscribed to the Google Groups "rtc-linux" group.
-To unsubscribe from this group and stop receiving emails from it, send an email to rtc-linux+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
-For more options, visit https://groups.google.com/d/optout.
-
---0XhtP95kHFp3KGBe
+--+PbGPm1eXpwOoWkI
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlld3GQACgkQ3SOs138+
-s6GKZBAAnbaonsyjZHxBKy02VF3I7RgESdTVzw24ZuKTsTfvsFmc2CA381KfPjjt
-Js7AMkJtv1xg+GEZo4NvX9YkJadeOsp1YDqdY+60JV/Zbc7fQKVq/FFxFNiC3+Xj
-ZAUG9SDF3CqERuu89WLgpE612bUJr7xqBBp9e6tC8gClFNrgWpy5obN3dEU3hE/N
-nJ9lDBIKVELG3YfqOHYC8ClAX1WIpPuXpJTVfEa25soRmyZc8HTXMxnQH8oYU9/i
-jTn4MZZ8JukuvxgMsyJ1IHSFJE0qRzWIzbQekjVpagpOoNzx9Ghy4dzs/1at8dZq
-CF3jQ9gdXOChmnFcVZWXcDDRrAk4h0AdcdSr6ZsL739XdUUVy+tKw+4G35fof6xU
-0CBx/lOsbhto9Zc67SmrnwY5TuTj2E34KM5vbdWybd3vEuIVyq+vvJSvi4hCLgBT
-b04xAUBruRDG3gjvRyInWU3E26UCsu4T5GTXmfgoxTBMEiGaeqHSi4J5Oa0mdCeS
-js+bQxkau26nSwVrxXbSEPu37zaJFe/g+tZb7v3xTjq6JM/+yjbVzCu66SiGUZJr
-mg+h/Qyl9v0m59/tHhde3QEaXGCPv1eMN/G92pIRId68wI+nYvlaBe3HkVT7pUj4
-TurLCCSyBwJqn56Sf6711848LT3rcKRmFk16PleVEcWPqHMNTyA=
-=MpPI
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlld3XIACgkQ3SOs138+
+s6HJDQ//Yec+dKL6q6UdD5aq9g91t6BDQhpETfDXks7QiR4LOef5lUMXyQCUxrgh
+iEyZ7iSqfoMGLyIcqfpnpyFfB3gckKOj3s6jJpeeV+t3Tv2GdINmwW3mJ+6LsM9Q
+SqJcuyh9CJ9C5Ef+nsBhWhXQkbFTQ9fevuIpB4AuCo16Yx2DKKsfmDvtJjLZTM0F
+LFueYK+++gKdMpKVsVXeRv+ZrCbwwdN1v5yvTCM7NWrIsnoIx6qfUhvmouNaKzXx
+zUrcyycHl1G7avd9PNnCqF8HebO+KBeUPfph7TRO6m8G2enrTIl5TRZ0dXPzDP0h
++lcFGXiP6xW1NiLKvzdf6biF0/T5sYA9qnml3S2DLEr8wymp+FSMaPl3vNjnocSS
+gAcWI+kc9jWLNrWfe181ZCkxjn70BbDzqSSFULaVKgL3XjfVH6DGjvT+7HAU/nwx
+b+YLZvd0JGPDdkDTZfwncIgVttl+Yk5bluq/qh0dSFm3XoXa4w5/U/Yt+t4U3nIE
+aKUJRF3lvHWXzCqS8Qu6xLohqV0jEhaFSVI+rMPoceQrhYjxKPCUv9CeN3mv12fi
+MqG6b0L9y2l6r3JLNF1GwK1/UkAe/fJsBUgIWSvNZ4RB9/JnwkW34wwJDH4RjzKT
+PIcg3V5lCN+wSnRnGOIZaEOpmSGJO64qR84h1DVe5o0pMxT0a3M=
+=7yi+
 -----END PGP SIGNATURE-----
 
---0XhtP95kHFp3KGBe--
+--+PbGPm1eXpwOoWkI--
