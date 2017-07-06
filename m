@@ -1,70 +1,37 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: PWM backlight initial state assumptions, or how pwm_bl killed my
- (nyan) cat^W backlight support
-Date: Thu, 6 Jul 2017 13:57:43 +0100
-Message-ID: <eb6b0abc-28a7-b7e2-0c25-8c7817a3321e@linaro.org>
-References: <1499199214.1347.8.camel@paulk.fr>
- <dea10517-11f7-0cca-fa2d-f7bc18501384@linaro.org>
- <1499251289.1394.3.camel@paulk.fr> <1499252873.8204.18.camel@pengutronix.de>
- <1499255225.1394.6.camel@paulk.fr> <1499344862.1379.19.camel@paulk.fr>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/2] dt-bindings: pwm: add bindings doc for ZTE ZX PWM
+ controller
+Date: Thu, 6 Jul 2017 09:57:38 -0500
+Message-ID: <20170706145738.5w3vk4cscvbki6vl@rob-hp-laptop>
+References: <1498704874-14599-1-git-send-email-shawnguo@kernel.org>
+ <1498704874-14599-2-git-send-email-shawnguo@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1499344862.1379.19.camel@paulk.fr>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Kocialkowski <contact@paulk.fr>, Philipp Zabel <p.zabel@pengutronix.de>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1498704874-14599-2-git-send-email-shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Shawn Guo <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Baoyou Xie <xie.baoyou-i+zz7BTLltu8dxfXipz/DA@public.gmane.org>, Xin Zhou <zhou.xin8-i+zz7BTLltu8dxfXipz/DA@public.gmane.org>, Jun Nie <jun.nie-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Shawn Guo <shawn.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On 06/07/17 13:41, Paul Kocialkowski wrote:
->>> Some panels have a documented powerup sequence, which usually ends with
->>> the backlight being enabled to avoid showing garbage before the panel is
->>> initialized completely.
->>> The reason for 3698d7e7d221 was a device with the display disabled out
->>> of the bootloader, where the backlight is controlled by the simple-panel
->>> driver. Enabling the backlight from the backlight driver before the
->>> panel driver requests the backlight to be enabled (before the panel is
->>> powered) would result in a white flash during boot.
->>>
->>> I tried to be careful to only let the backlight driver set the initial
->>> state to disabled if a few conditions are met: the GPIO is already
->>> configured as output and disabled, and the backlight device tree node
->>> has a phandle pointing to it, so we can expect there to be some
->>> controlling instance that will enable it when appropriate.
->>>
->>> I wonder why in your case there is a phandle link to the backlight node
->>> but nothing actually enables the backlight during boot. I would expect
->>> that to be handled by the panel driver.
->>
->> I had completely missed the fact that the panel driver is supposed to request
->> backlight enable! With that in mind, this policy no longer concerns "the whole
->> lifetime of the driver" but only the timeframe between backlight probe and
->> panel
->> probe. Thanks for clarifying this. I suppose I agree with this policy now.
->>
->> So remains the question: why does the panel not enable backlight on my device?
->>
->> I will investigate this later today. Hopefully, the probe defer logic should
->> prevent a case where the panel is probed (to the end) before the backlight
->> driver.
+On Thu, Jun 29, 2017 at 10:54:33AM +0800, Shawn Guo wrote:
+> From: Shawn Guo <shawn.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 > 
-> This is actually due to the tegra drm driver not probing. It is happening on my
-> setup (with a somewhat custom, out-of-tree config) on both jetson-tk1 and
-> nyan_big, but also on kernelci, running both tegra_defconfig and
-> multi_v7_defconfig.
+> It adds bindings document for ZTE ZX PWM controller.  The device
+> has two clocks: PCLK and WCLK.  The PCLK is for register access, and
+> WCLK is the reference clock for calculating period and duty cycles.
+> Also, the device supports polarity configuration, so #pwm-cells should
+> be 3.
 > 
-> Since this is no longer a concern related to the pwm backlight driver, I will
-> start a new thread with the relevant addresses in CC.
+> Signed-off-by: Shawn Guo <shawn.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> ---
+>  Documentation/devicetree/bindings/pwm/pwm-zx.txt | 22 ++++++++++++++++++++++
+>  1 file changed, 22 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-zx.txt
 
-Thanks for the update. Much appreciated!
-
-BTW, I got the impression from your first mail that you are chasing a 
-regression between v4.11 and v4.12. If that's the case you should know 
-that the backlight changes we have been discussing landed in v4.11 (so 
-if you do have a regression between these two releases then mentioning 
-backlight in the other thread may just be confusing).
-
-
-Daniel.
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
