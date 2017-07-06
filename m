@@ -1,85 +1,99 @@
-From: Zhi Mao <zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v3 2/6] pwm: mediatek: fix pwm source clock selection
-Date: Thu, 6 Jul 2017 14:43:55 +0800
-Message-ID: <1499323435.22478.26.camel@mhfsdcap03>
-References: <1498802721-32455-1-git-send-email-zhi.mao@mediatek.com>
-         <1498802721-32455-3-git-send-email-zhi.mao@mediatek.com>
-         <d009712e-f0a2-2dc7-2f64-ad8cfa21f98d@gmail.com>
-         <1499321801.22478.12.camel@mhfsdcap03>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 3/3] mfd: twl: move header file out of I2C realm
+Date: Thu, 6 Jul 2017 08:44:53 +0200
+Message-ID: <20170706064453.GH16144@ulmo.fritz.box>
+References: <20170521220212.1404-1-wsa@the-dreams.de>
+ <20170521220212.1404-4-wsa@the-dreams.de>
+Reply-To: rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1499321801.22478.12.camel@mhfsdcap03>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, zhenbao.liu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="0XhtP95kHFp3KGBe"
+Return-path: <rtc-linux+bncBDTKFPPJUEHRBZ5Y67FAKGQE2BCR6EY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Disposition: inline
+In-Reply-To: <20170521220212.1404-4-wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
+List-Post: <https://groups.google.com/group/rtc-linux/post>, <mailto:rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:rtc-linux+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/rtc-linux
+List-Subscribe: <https://groups.google.com/group/rtc-linux/subscribe>, <mailto:rtc-linux+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+712029733259+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/rtc-linux/subscribe>
+To: Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
+Cc: linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Hartmut Knaack <knaack.h-Mmb7MZpHnFY@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Kishon Vijay Abraham I <kishon-l0cyMroinI0@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Wi
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, 2017-07-06 at 14:16 +0800, Zhi Mao wrote:
-> On Wed, 2017-07-05 at 13:09 +0200, Matthias Brugger wrote:
-> > 
-> > On 06/30/2017 08:05 AM, Zhi Mao wrote:
-> > > In original code, the pwm output frequency is not correct
-> > > when set bit<3>=1 to PWMCON register.
-> > > 
-> > > Signed-off-by: Zhi Mao <zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > > ---
-> > >   drivers/pwm/pwm-mediatek.c |    2 +-
-> > >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-> > > index 5c11bc7..d08b5b3 100644
-> > > --- a/drivers/pwm/pwm-mediatek.c
-> > > +++ b/drivers/pwm/pwm-mediatek.c
-> > > @@ -91,7 +91,7 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> > >   	if (clkdiv > 7)
-> > >   		return -EINVAL;
-> > >   
-> > > -	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | BIT(3) | clkdiv);
-> > > +	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | clkdiv);
-> > 
-> > Just for clarification, BIT(15) enables old PWM mode, which ignores 
-> > CLKSEL (BIT(3)). Therefore setting BIT(3) does not have any effect and 
-> > can be discarded.
-> > 
-> > Am I correct? I took mt7623n datasheet for reference.
-> > 
-> > Regards,
-> > Matthias
-> > 
-> Yes, remove setting bit<3> will not take any effect. 
-> PWMCON bit<3> is pwm source clock selecting register.
-> You can check the datasheet of MT7623 for details.
-> 
-> Regards
-> Zhi
-> 
-Hi Mattias,
 
-Ignore the above reply, I explain this bit<3> issue for you.
-In the data sheet of MT7623: 
-PWMCON bit<3> is PWM source clock selecting register
-0: CLK=CLKSRC
-1: CLK=CLKSRC/1625
-for example,
-bit<3>=0, PWM clk source is 26M
-bit<3>=1, PWM clk source is 16K
-The frequency of PWM output will based on this clock source
-if set bit<3>=1, it will cause the frequency of PWM output is not
-correct. I also use the oscilloscope device to measure the output,     
-set bit<3>=0, the output meet expectation. 
- 
-Regards
-Zhi
-> > >   	mtk_pwm_writel(pc, pwm->hwpwm, PWMDWIDTH, period_ns / resolution);
-> > >   	mtk_pwm_writel(pc, pwm->hwpwm, PWMTHRES, duty_ns / resolution);
-> > >   
-> > > 
+--0XhtP95kHFp3KGBe
+Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+
+On Mon, May 22, 2017 at 12:02:10AM +0200, Wolfram Sang wrote:
+> include/linux/i2c is not for client devices. Move the header file to a
+> more appropriate location.
 > 
+> Signed-off-by: Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
+> ---
+>  arch/arm/mach-omap2/common.h            | 2 +-
+>  arch/arm/mach-omap2/omap_twl.c          | 2 +-
+>  drivers/gpio/gpio-twl4030.c             | 2 +-
+>  drivers/iio/adc/twl4030-madc.c          | 2 +-
+>  drivers/iio/adc/twl6030-gpadc.c         | 2 +-
+>  drivers/input/keyboard/twl4030_keypad.c | 2 +-
+>  drivers/input/misc/twl4030-pwrbutton.c  | 2 +-
+>  drivers/input/misc/twl4030-vibra.c      | 2 +-
+>  drivers/mfd/twl-core.c                  | 6 +++---
+>  drivers/mfd/twl4030-audio.c             | 2 +-
+>  drivers/mfd/twl4030-irq.c               | 2 +-
+>  drivers/mfd/twl4030-power.c             | 2 +-
+>  drivers/mfd/twl6030-irq.c               | 2 +-
+>  drivers/phy/phy-twl4030-usb.c           | 2 +-
+>  drivers/power/supply/twl4030_charger.c  | 2 +-
+>  drivers/pwm/pwm-twl-led.c               | 2 +-
+>  drivers/pwm/pwm-twl.c                   | 2 +-
+>  drivers/regulator/twl-regulator.c       | 2 +-
+>  drivers/regulator/twl6030-regulator.c   | 2 +-
+>  drivers/rtc/rtc-twl.c                   | 2 +-
+>  drivers/usb/phy/phy-twl6030-usb.c       | 2 +-
+>  drivers/video/backlight/pandora_bl.c    | 2 +-
+>  drivers/watchdog/twl4030_wdt.c          | 2 +-
+>  include/linux/{i2c => mfd}/twl.h        | 0
+>  sound/soc/codecs/twl4030.c              | 2 +-
+>  25 files changed, 26 insertions(+), 26 deletions(-)
+>  rename include/linux/{i2c => mfd}/twl.h (100%)
 
+I didn't see this get applied yet, so just in case anyone was waiting
+for me (this is trivial, so I don't think there's a need):
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Acked-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+
+-- 
+You received this message because you are subscribed to "rtc-linux".
+Membership options at http://groups.google.com/group/rtc-linux .
+Please read http://groups.google.com/group/rtc-linux/web/checklist
+before submitting a driver.
+--- 
+You received this message because you are subscribed to the Google Groups "rtc-linux" group.
+To unsubscribe from this group and stop receiving emails from it, send an email to rtc-linux+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
+For more options, visit https://groups.google.com/d/optout.
+
+--0XhtP95kHFp3KGBe
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlld3GQACgkQ3SOs138+
+s6GKZBAAnbaonsyjZHxBKy02VF3I7RgESdTVzw24ZuKTsTfvsFmc2CA381KfPjjt
+Js7AMkJtv1xg+GEZo4NvX9YkJadeOsp1YDqdY+60JV/Zbc7fQKVq/FFxFNiC3+Xj
+ZAUG9SDF3CqERuu89WLgpE612bUJr7xqBBp9e6tC8gClFNrgWpy5obN3dEU3hE/N
+nJ9lDBIKVELG3YfqOHYC8ClAX1WIpPuXpJTVfEa25soRmyZc8HTXMxnQH8oYU9/i
+jTn4MZZ8JukuvxgMsyJ1IHSFJE0qRzWIzbQekjVpagpOoNzx9Ghy4dzs/1at8dZq
+CF3jQ9gdXOChmnFcVZWXcDDRrAk4h0AdcdSr6ZsL739XdUUVy+tKw+4G35fof6xU
+0CBx/lOsbhto9Zc67SmrnwY5TuTj2E34KM5vbdWybd3vEuIVyq+vvJSvi4hCLgBT
+b04xAUBruRDG3gjvRyInWU3E26UCsu4T5GTXmfgoxTBMEiGaeqHSi4J5Oa0mdCeS
+js+bQxkau26nSwVrxXbSEPu37zaJFe/g+tZb7v3xTjq6JM/+yjbVzCu66SiGUZJr
+mg+h/Qyl9v0m59/tHhde3QEaXGCPv1eMN/G92pIRId68wI+nYvlaBe3HkVT7pUj4
+TurLCCSyBwJqn56Sf6711848LT3rcKRmFk16PleVEcWPqHMNTyA=
+=MpPI
+-----END PGP SIGNATURE-----
+
+--0XhtP95kHFp3KGBe--
