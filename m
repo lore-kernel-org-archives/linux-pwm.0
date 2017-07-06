@@ -1,74 +1,80 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 0/3] pwm: sun4i: switch to atomic PWM
-Date: Thu, 6 Jul 2017 08:49:22 +0200
-Message-ID: <20170706064922.GI16144@ulmo.fritz.box>
-References: <20170530193209.19247-1-alexandre.belloni@free-electrons.com>
+Subject: Re: [PATCH v2 0/3] pwm: add pwm AO on meson gx
+Date: Thu, 6 Jul 2017 08:59:10 +0200
+Message-ID: <20170706065910.GJ16144@ulmo.fritz.box>
+References: <20170608122416.1993-1-jbrunet@baylibre.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="+PbGPm1eXpwOoWkI"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f193.google.com ([209.85.128.193]:34085 "EHLO
-        mail-wr0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752632AbdGFGt0 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Jul 2017 02:49:26 -0400
+        protocol="application/pgp-signature"; boundary="5me2qT3T17SWzdxI"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170530193209.19247-1-alexandre.belloni@free-electrons.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <20170608122416.1993-1-jbrunet@baylibre.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jerome Brunet <jbrunet@baylibre.com>
+Cc: Kevin Hilman <khilman@baylibre.com>, Neil Armstrong <narmstrong@baylibre.com>, Carlo Caione <carlo@caione.org>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Olliver Schinagl <o.schinagl@ultimaker.com>, Maxime Ripard <maxime.ripard@free-electrons.com>, Chen-Yu Tsai <wens@csie.org>, Boris Brezillon <boris.brezillon@free-electrons.com>, Jonathan Liu <net147@gmail.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 
 
---+PbGPm1eXpwOoWkI
+--5me2qT3T17SWzdxI
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 30, 2017 at 09:32:06PM +0200, Alexandre Belloni wrote:
-> Switch to atomic PWM. The main goal is to properly wait for a period befo=
-re
-> disabling a channel to ensure the correct level is set on the output.
+On Thu, Jun 08, 2017 at 02:24:13PM +0200, Jerome Brunet wrote:
+> The pwms found in the AO domain of the meson gx family have different
+> clock sources than the ones found in the EE domain. The AO pwms only
+> have 2 connected clock input which are clk81 and the crytal.
 >=20
-> Changes in v2:
->  - fixed remaining checkpatch warnings
->  - split the series to ease reviews
->  - changed the delay handling to ensure the proper amount of time has ela=
-psed
->    before disabling a channel
->  - dropped RDY bit handling as it doesn't have any real effect.
+> This patchset adds the necessary compatible and the clock data for it.
 >=20
-> Alexandre Belloni (3):
->   pwm: sun4i: improve hardware read out
->   pwm: sun4i: switch to atomic PWM
->   pwm: sun4i: drop legacy callbacks
+> Changes since v1: [0]
+> * Correct clock source order for gxbb pwm ao. Documenation shows xtal as
+>   source #1 while it is actually source #0
+> * Add patch 3 to fix pwm calculation. Issue while testing pwm with clk81
+>   as clock source.
 >=20
->  drivers/pwm/pwm-sun4i.c | 263 +++++++++++++++++++++++++++---------------=
-------
->  1 file changed, 148 insertions(+), 115 deletions(-)
+> [0]:  https://lkml.kernel.org/r/20170607133013.4766-1-jbrunet@baylibre.com
+>=20
+> Jerome Brunet (3):
+>   dt-bindings: pwm: meson: add comptabible for gxbb ao pwms
+>   pwm: meson: add compatible for the gxbb ao pwms
+>   pwm: meson: improve pwm calculation precision.
+>=20
+>  .../devicetree/bindings/pwm/pwm-meson.txt          |  4 +-
+>  drivers/pwm/pwm-meson.c                            | 47 ++++++++++++++++=
++-----
+>  2 files changed, 41 insertions(+), 10 deletions(-)
 
-Series applied, though you could've just squashed together patches 2 and
-3 because they don't make sense apart.
+For some reason the Author field keeps getting set to:
 
+	jbrunet <jbrunet@baylibre.com>
+
+It seems like the headers are correct, so maybe this is patchwork
+messing things up?
+
+Anyway, I've applied the series and manually fixed up the Author field.
+
+Thanks,
 Thierry
 
---+PbGPm1eXpwOoWkI
+--5me2qT3T17SWzdxI
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlld3XIACgkQ3SOs138+
-s6HJDQ//Yec+dKL6q6UdD5aq9g91t6BDQhpETfDXks7QiR4LOef5lUMXyQCUxrgh
-iEyZ7iSqfoMGLyIcqfpnpyFfB3gckKOj3s6jJpeeV+t3Tv2GdINmwW3mJ+6LsM9Q
-SqJcuyh9CJ9C5Ef+nsBhWhXQkbFTQ9fevuIpB4AuCo16Yx2DKKsfmDvtJjLZTM0F
-LFueYK+++gKdMpKVsVXeRv+ZrCbwwdN1v5yvTCM7NWrIsnoIx6qfUhvmouNaKzXx
-zUrcyycHl1G7avd9PNnCqF8HebO+KBeUPfph7TRO6m8G2enrTIl5TRZ0dXPzDP0h
-+lcFGXiP6xW1NiLKvzdf6biF0/T5sYA9qnml3S2DLEr8wymp+FSMaPl3vNjnocSS
-gAcWI+kc9jWLNrWfe181ZCkxjn70BbDzqSSFULaVKgL3XjfVH6DGjvT+7HAU/nwx
-b+YLZvd0JGPDdkDTZfwncIgVttl+Yk5bluq/qh0dSFm3XoXa4w5/U/Yt+t4U3nIE
-aKUJRF3lvHWXzCqS8Qu6xLohqV0jEhaFSVI+rMPoceQrhYjxKPCUv9CeN3mv12fi
-MqG6b0L9y2l6r3JLNF1GwK1/UkAe/fJsBUgIWSvNZ4RB9/JnwkW34wwJDH4RjzKT
-PIcg3V5lCN+wSnRnGOIZaEOpmSGJO64qR84h1DVe5o0pMxT0a3M=
-=7yi+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlld374ACgkQ3SOs138+
+s6H0vA/9FMJlwUWybKpBR2fiSUdaqFzc4W7lJVvmi1n+6HuBpDvmT/H1ueZDVXJU
+ldTM8M/3pE7BrUtRI+q9KUOJ1+hVhwqGaVuTkdAcIJgFfEj0JrA5SzxRKU+2SzM8
+A/uw5/+krXq0WFiX6W3H0DX/Lsv5iR1SvuCrNpBnh/Z5vRR8pm5ct74oDpfBq80z
+55anErK4DYF/hdVKwrxILOdTXf6Wg2qayR4kmKN5hscbIqzwOniaYQ2wDLiFigym
+8rSBQEXzYcZRdSJyh6wGCsBbI2DRqMs0jAYkkSGZ8B5wD6cL5CW9aKHXy1yofO/Q
+oIHFR6JaiBjGLz2Sp3Edfn2BoCl+K14mWyRyWKh25d5/c1jj/9potOVsRgtLQopx
+Zqv67mQMLaMqdwmKFXWRcht+LR3U1LpI12B1FBdvaUbDalfiQkLTbpTUSOzn7QQT
+TEqLaSPY9W/LboGZJLCKAC18/FQToksnwkthWRgdEknRw3cnCgbCZ5fGSJPj2JBS
+OqPvlfUuLsMgZZKW8Uv/ody9pNercidWP6cWt/d+1Z7Tb1VLuvPBtTM6H1hBKks0
+Gts2KjLAMoPcE8HmjynMm4ix3v4GOASshrRweU/UkCa/H8tKHlbxdI1QTauIdiS3
+3QmI14rtyVfwvGeU2Q77k5u7HdqLBmacfuasj6F2iXZlNVRs+VQ=
+=CTmo
 -----END PGP SIGNATURE-----
 
---+PbGPm1eXpwOoWkI--
+--5me2qT3T17SWzdxI--
