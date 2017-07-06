@@ -1,93 +1,88 @@
-From: Enric Balletbo Serra <eballetbo@gmail.com>
-Subject: Re: [PATCH v2 1/4] dt-bindings: pwm-backlight: add pwm-delay-us property
-Date: Thu, 6 Jul 2017 20:23:26 +0200
-Message-ID: <CAFqH_53tNo1G-ctbmux6AEWWFPXbuiFqTuZ94Gj_mDjFk_MksQ@mail.gmail.com>
-References: <20170630112109.13785-1-enric.balletbo@collabora.com> <CAL_Jsq+xpdsqbreQpN6oTdr+X2cHNnJr8tVEzG+tgTvhZUka6g@mail.gmail.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v2 3/3] pwm: meson: improve pwm calculation precision.
+Date: Thu, 6 Jul 2017 23:21:57 +0200
+Message-ID: <20170706212154.GA28918@mithrandir>
+References: <20170608122416.1993-1-jbrunet@baylibre.com>
+ <20170608122416.1993-4-jbrunet@baylibre.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-it0-f44.google.com ([209.85.214.44]:35620 "EHLO
-        mail-it0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751816AbdGFSX2 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Jul 2017 14:23:28 -0400
-In-Reply-To: <CAL_Jsq+xpdsqbreQpN6oTdr+X2cHNnJr8tVEzG+tgTvhZUka6g@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="h31gzZEtNLTqOjlF"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170608122416.1993-4-jbrunet@baylibre.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jerome Brunet <jbrunet@baylibre.com>
+Cc: Kevin Hilman <khilman@baylibre.com>, Neil Armstrong <narmstrong@baylibre.com>, Carlo Caione <carlo@caione.org>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Rob Herring <robh+dt@kernel.org>
-Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Pavel Machek <pavel@ucw.cz>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Linux PWM List <linux-pwm@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Guenter Roeck <groeck@chromium.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, huang lin <hl@rock-chips.com>
 
-Hi Rob,
 
-2017-07-06 19:07 GMT+02:00 Rob Herring <robh+dt@kernel.org>:
-> On Fri, Jun 30, 2017 at 6:21 AM, Enric Balletbo i Serra
-> <enric.balletbo@collabora.com> wrote:
->> From: huang lin <hl@rock-chips.com>
->>
->> Add a pwm-delay-us property to specify the delay between setting an
->> initial (non-zero) PWM value and enabling the backlight, and also the
->> delay between disabling the backlight and setting PWM value to 0.
->>
->> Signed-off-by: huang lin <hl@rock-chips.com>
->> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
->> ---
->> Changes since v1:
->>  - As suggested by Daniel Thompson
->>    - Do not assume power-on delay and power-off delay will be the same
->>
->> v1: https://lkml.org/lkml/2017/6/28/219
->>
->>  Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt | 6 ++++++
->>  1 file changed, 6 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
->> index 764db86..49b037e 100644
->> --- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
->> +++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
->> @@ -17,6 +17,11 @@ Optional properties:
->>                 "pwms" property (see PWM binding[0])
->>    - enable-gpios: contains a single GPIO specifier for the GPIO which enables
->>                    and disables the backlight (see GPIO binding[1])
->> +  - pwm-delay-us: delay between setting an initial (non-zero) PWM value and
->> +                  enabling the backlight, and also the delay between disabling
->> +                  the backlight and setting PWM value to 0.
->> +                  The 1st cell is the pre-delay in micro seconds.
->> +                  The 2nd cell is the post-delay in micro seconds.
->
-> pre and post imply a time before and after a certain event, but these
-> are for 2 different events. These are more like an enable/on delay and
-> disable/off delay which probably should be separate properties. What
-> happens when we need the opposite sequence or a different sequence?
-> Maybe some panel requires the PWM to be 0 until some time after
-> enabling.
->
+--h31gzZEtNLTqOjlF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Maybe, Only I can say that the panels I checked always first enable
-the PWM and then set the ENABLE signal, but of course I didn't check
-all the panels.
+On Thu, Jun 08, 2017 at 02:24:16PM +0200, Jerome Brunet wrote:
+> When using input clocks with high rates, such as clk81 (166MHz), the
+> fin_ns =3D NSEC_PER_SEC / fin_freq can introduce a significant error.
+>=20
+> Ex: fin_freq =3D 166666667, NSEC_PER_SEC =3D 1000000000
+>     fin_ns =3D 5,9999999
+>=20
+> which is, of course, rounded down to 5. This introduce an error of ~20%
+> on the period requested from the pwm.
+>=20
+> This patch use ps instead of ns (and 64bits integer) to perform the
+> calculation. This should give a good enough precision.
+>=20
+> Fixes: 211ed630753d ("pwm: Add support for Meson PWM Controller")
+> Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+> ---
+>  drivers/pwm/pwm-meson.c | 15 +++++++++------
+>  1 file changed, 9 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+> index b911a944744a..4cdc66f7f718 100644
+> --- a/drivers/pwm/pwm-meson.c
+> +++ b/drivers/pwm/pwm-meson.c
+> @@ -163,7 +163,8 @@ static int meson_pwm_calc(struct meson_pwm *meson,
+>  			  unsigned int duty, unsigned int period)
+>  {
+>  	unsigned int pre_div, cnt, duty_cnt;
+> -	unsigned long fin_freq =3D -1, fin_ns;
+> +	unsigned long fin_freq =3D -1;
+> +	u64 fin_ps;
+> =20
+>  	if (~(meson->inverter_mask >> id) & 0x1)
+>  		duty =3D period - duty;
+> @@ -179,13 +180,14 @@ static int meson_pwm_calc(struct meson_pwm *meson,
+>  	}
+> =20
+>  	dev_dbg(meson->chip.dev, "fin_freq: %lu Hz\n", fin_freq);
+> -	fin_ns =3D NSEC_PER_SEC / fin_freq;
+> +	fin_ps =3D ((u64)NSEC_PER_SEC * 1000) / fin_freq;
 
-Would be more acceptable have enable-delay-us and disable-delay-us proprieties?
+This failed to build, so I had to change this division to a do_div().
 
-> I don't understand why you even need a post delay. The PWM can be set
-> to 0 while enabled, right? So if the PWM is set to 0 while enabled and
-> then disable the backlight, then there's no delay. Plus this doesn't
-> make much sense to me electrically either. The PWM duty cycle is going
-> to be completely async to the enable line change. The PWM state could
-> go from 1 to 0 at any point in time relative to the enable line
-> change.
->
+Thierry
 
-To be honest I'm also not sure why is required the post delay, some
-panels specify a 0 but others specifies a minimum value between you
-off the panel and disable the PWM. The only reason I added the post
-delay is because the different datasheets specifies it, I don't have a
-use case that the post delay is used to fix something.
+--h31gzZEtNLTqOjlF
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks,
- Enric
+-----BEGIN PGP SIGNATURE-----
 
-> These issues are the problem with generic bindings. Adding 1 property
-> is no big deal, but then what happens with the next variation. These
-> timing constraints need to be able to be implied by the panel's
-> compatible.
->
-> Rob
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlleqe8ACgkQ3SOs138+
+s6Gq/BAAji7O2nZvTWjzUWFMZ6B/bC3cfYHj0GFoDD+oHpwfKWmGdYJX+n8zJSng
+Xbj4Xb21ryHsgUK4IiLAz1yUqAaJTx4Y8fbdpJymWdSkI5nhlQRvK83kxOh9bp92
+za6rbEOk04OKZetDGjP4tszhAS6VvKdESkpTVcIXSChIA2cJf2OTQMhOkcDf9soK
+3S3gfqkdfYHpURYLhImkdV+lJpDr4Wf9TtB4UPh8M2AqC5VPWhhmUAy8ymHzRUdK
+5FbYDwP3z5Jla/k7Db17IkH6ZtWxNkDggJ0IxDW64wxhAcWuCS/gm0P1NLbSGFpD
+wXm5I2DXusrtzUe+LZOmcY3LzN439xUj89YjKQcdUFMnFK/SUmcKZ54ez6PfZWYl
+RfzWuLBmmanjdLWUpG4Zn5aFdAUYS6/OfV5hZtaiPepIwa0HnPquQQUILYvm8PHq
+c4wvuq2HM+qEkzvwd8kR+ex8gHJ/WdJjobi8Ca0kP32TDSzlX/q7sE0ROgPIebqV
+0iPFcJO0BxRRzJIXzagclUOPWTiEOaDxbtzT5IRB4q9bW2jjDubP1Homgz/y42nD
+JZoSGEviDCPFTSVE9WtY3hHHMNrKQr8FZbLA08lxh8VqB4M9BrfA58kwNu1BmOyN
+mW7LyJauN9rjUW+KmF/TZbjszwNn2agljYit02qJfdYtgoX4k8A=
+=k7wT
+-----END PGP SIGNATURE-----
+
+--h31gzZEtNLTqOjlF--
