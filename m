@@ -1,33 +1,40 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/5] pwm: rockchip: Add APB and function both clocks
- support
-Date: Thu, 6 Jul 2017 12:12:54 -0500
-Message-ID: <20170706171254.cdjc4dwfwcoitm44@rob-hp-laptop>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 4/5] pwm: rockchip: Add atomic updated feature for rk3328
+Date: Thu, 6 Jul 2017 12:17:57 -0500
+Message-ID: <20170706171757.qmnvmdyjuj77tt27@rob-hp-laptop>
 References: <1498739271-27431-1-git-send-email-david.wu@rock-chips.com>
- <1498739271-27431-2-git-send-email-david.wu@rock-chips.com>
+ <1498739271-27431-5-git-send-email-david.wu@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-it0-f67.google.com ([209.85.214.67]:34193 "EHLO
+        mail-it0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751898AbdGFRSA (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 6 Jul 2017 13:18:00 -0400
 Content-Disposition: inline
-In-Reply-To: <1498739271-27431-2-git-send-email-david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: David Wu <david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Cc: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, huangtao-TNX95d0MmH7DzftRWevZcw@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <1498739271-27431-5-git-send-email-david.wu@rock-chips.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: David Wu <david.wu@rock-chips.com>
+Cc: thierry.reding@gmail.com, heiko@sntech.de, boris.brezillon@free-electrons.com, catalin.marinas@arm.com, briannorris@chromium.org, dianders@chromium.org, mark.rutland@arm.com, huangtao@rock-chips.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Thu, Jun 29, 2017 at 08:27:47PM +0800, David Wu wrote:
-> New PWM module provides two individual clocks of APB clock
-> and function clock.
+On Thu, Jun 29, 2017 at 08:27:50PM +0800, David Wu wrote:
+> The rk3328 soc supports atomic update, we could lock the configuration
+> of period and duty at first, after unlock is configured, the period and
+> duty are effective at the same time.
 > 
-> Signed-off-by: David Wu <david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+> If the polarity, period and duty need to be configured together,
+> the way for atomic update is "configure lock and old polarity" ->
+> "configure period and duty" -> "configure unlock and new polarity".
+> 
+> Signed-off-by: David Wu <david.wu@rock-chips.com>
 > ---
->  .../devicetree/bindings/pwm/pwm-rockchip.txt       |  8 +++-
+>  .../devicetree/bindings/pwm/pwm-rockchip.txt       |  1 +
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+The subject is a bit misleading as you are adding support for a new 
+version of the IP. Otherwise,
 
->  drivers/pwm/pwm-rockchip.c                         | 53 ++++++++++++++++++----
->  2 files changed, 51 insertions(+), 10 deletions(-)
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Acked-by: Rob Herring <robh@kernel.org>
+
+>  drivers/pwm/pwm-rockchip.c                         | 50 +++++++++++++++++++---
+>  2 files changed, 46 insertions(+), 5 deletions(-)
