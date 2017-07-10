@@ -1,38 +1,30 @@
 From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 5/9] dt-bindings: iio: Add STM32 LPTimer trigger
- binding
-Date: Mon, 10 Jul 2017 10:27:11 -0500
-Message-ID: <20170710152711.wl6ujgy3lngtl42d@rob-hp-laptop>
-References: <1499445068-7037-1-git-send-email-fabrice.gasnier@st.com>
- <1499445068-7037-6-git-send-email-fabrice.gasnier@st.com>
+Subject: Re: [PATCH 1/2] dt-bindings: pwm-bcm2835: Increase pwm-cells
+Date: Mon, 10 Jul 2017 11:00:24 -0500
+Message-ID: <20170710160024.5uoplp7hzacereon@rob-hp-laptop>
+References: <1499508838-20715-1-git-send-email-stefan.wahren@i2se.com>
+ <1499508838-20715-2-git-send-email-stefan.wahren@i2se.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1499445068-7037-6-git-send-email-fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-Cc: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, benjamin.gaignard-qxv4g6HH51o@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <1499508838-20715-2-git-send-email-stefan.wahren-eS4NqCHxEME@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Eric Anholt <eric-WhKQ6XTQaPysTnJN9+BGXg@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Jul 07, 2017 at 06:31:04PM +0200, Fabrice Gasnier wrote:
-> Add documentation for STMicroelectronics STM32 Low-Power Timer Trigger
-> binding.
+On Sat, Jul 08, 2017 at 12:13:57PM +0200, Stefan Wahren wrote:
+> We need to increase the pwm-cells for the optional flags parameter,
+> before we can implement support for polarity setting via DT.
 > 
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-> Acked-by: Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Signed-off-by: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
 > ---
-> Changes in v3:
-> - Rob's comments: node name timer@..., update reg property
->   description
-> 
-> Changes in v2:
-> - s/Low Power/Low-Power
-> - remove leading 0x in example (parent node)
-> - improve reg property description
-> ---
->  .../bindings/iio/timer/stm32-lptimer-trigger.txt   | 23 ++++++++++++++++++++++
->  1 file changed, 23 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-lptimer-trigger.txt
+>  Documentation/devicetree/bindings/pwm/pwm-bcm2835.txt | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
 Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
