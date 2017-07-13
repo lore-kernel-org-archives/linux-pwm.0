@@ -1,86 +1,104 @@
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH v2 1/7] pwm: rockchip: Add APB and function both clocks support
-Date: Wed, 12 Jul 2017 21:09:30 +0200
-Message-ID: <2474407.Xar3q3nCx6@diego>
-References: <1499486629-9659-1-git-send-email-david.wu@rock-chips.com> <CAD=FV=Vqkueo_cqU8bJXXT3pV5d1dZR5LF+c=O-Ka1qR-Ff-WQ@mail.gmail.com> <caba81f3-d066-d64e-7e8e-6457b759e757@rock-chips.com>
+From: Enric Balletbo Serra <eballetbo@gmail.com>
+Subject: Re: [PATCH v2 1/4] dt-bindings: pwm-backlight: add pwm-delay-us property
+Date: Thu, 13 Jul 2017 09:22:15 +0200
+Message-ID: <CAFqH_538k_eZ4vtzJJCOmDwFnjEM0B4grgfq0uiDkE3n13Sguw@mail.gmail.com>
+References: <20170630112109.13785-1-enric.balletbo@collabora.com>
+ <CAL_Jsq+xpdsqbreQpN6oTdr+X2cHNnJr8tVEzG+tgTvhZUka6g@mail.gmail.com> <CAFqH_53tNo1G-ctbmux6AEWWFPXbuiFqTuZ94Gj_mDjFk_MksQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <caba81f3-d066-d64e-7e8e-6457b759e757-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "David.Wu" <david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Cc: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, =?utf-8?B?6buE5rab?= <huangtao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, linux-pwm <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAFqH_53tNo1G-ctbmux6AEWWFPXbuiFqTuZ94Gj_mDjFk_MksQ@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Herring <robh+dt@kernel.org>
+Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Pavel Machek <pavel@ucw.cz>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Linux PWM List <linux-pwm@vger.kernel.org>, "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Guenter Roeck <groeck@chromium.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, huang lin <hl@rock-chips.com>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi David,
+Rob,
 
-Am Mittwoch, 12. Juli 2017, 16:38:09 CEST schrieb David.Wu:
-> Hi Doug,
-> 
-> 在 2017/7/12 1:03, Doug Anderson 写道:
-> > Hi,
-> > 
-> > On Fri, Jul 7, 2017 at 9:03 PM, David Wu <david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org> wrote:
-> >> @@ -6,7 +6,13 @@ Required properties:
-> >>      "rockchip,rk3288-pwm": found on RK3288 SoC
-> >>      "rockchip,vop-pwm": found integrated in VOP on RK3288 SoC
-> >>    
-> >>    - reg: physical base address and length of the controller's registers
-> >> 
-> >> - - clocks: phandle and clock specifier of the PWM reference clock
-> >> + - clocks: See ../clock/clock-bindings.txt
-> >> +   - For older hardware (rk2928, rk3066, rk3188, rk3228, rk3288,
-> >> rk3399):
-> >> +     - There is one clock that's used both to derive the functional
-> >> clock
-> >> +       for the device and as the bus clock.
-> >> +   - For newer hardware (rk3328 and future socs): specified by name
-> >> +     - "pwm": This is used to derive the functional clock.
-> >> +     - "pclk": This is the APB bus clock.
-> > 
-> > I'm pretty sure that that the above description doesn't quite match the
-> > code.
-> > 
-> > * The above description says that for old hardware there is one clock
-> > and 'clock-names' was not necessary (though as I understand it it's OK
-> > if it's there).
-> > 
-> > * The old code matched the old description.  AKA: if there was no
-> > "clock-names" then everything was OK.
-> > 
-> > * The new code will not work if there was no "clock-names".
-> > 
-> > Many of the old devices had a clock-names present (and it was "pwm"),
-> > but not all.  Specifically it looks like
-> > "arch/arm/boot/dts/rk3xxx.dtsi" doesn't specify a clock-names.
-> 
-> So we can keep code: the pc->clk = devm_clk_get(&pdev->dev, NULL);
-> If the name is NULL, we can get the first clk defined at DTB.
+2017-07-06 20:23 GMT+02:00 Enric Balletbo Serra <eballetbo@gmail.com>:
+> Hi Rob,
+>
+> 2017-07-06 19:07 GMT+02:00 Rob Herring <robh+dt@kernel.org>:
+>> On Fri, Jun 30, 2017 at 6:21 AM, Enric Balletbo i Serra
+>> <enric.balletbo@collabora.com> wrote:
+>>> From: huang lin <hl@rock-chips.com>
+>>>
+>>> Add a pwm-delay-us property to specify the delay between setting an
+>>> initial (non-zero) PWM value and enabling the backlight, and also the
+>>> delay between disabling the backlight and setting PWM value to 0.
+>>>
+>>> Signed-off-by: huang lin <hl@rock-chips.com>
+>>> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+>>> ---
+>>> Changes since v1:
+>>>  - As suggested by Daniel Thompson
+>>>    - Do not assume power-on delay and power-off delay will be the same
+>>>
+>>> v1: https://lkml.org/lkml/2017/6/28/219
+>>>
+>>>  Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt | 6 ++++++
+>>>  1 file changed, 6 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
+>>> index 764db86..49b037e 100644
+>>> --- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
+>>> +++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
+>>> @@ -17,6 +17,11 @@ Optional properties:
+>>>                 "pwms" property (see PWM binding[0])
+>>>    - enable-gpios: contains a single GPIO specifier for the GPIO which enables
+>>>                    and disables the backlight (see GPIO binding[1])
+>>> +  - pwm-delay-us: delay between setting an initial (non-zero) PWM value and
+>>> +                  enabling the backlight, and also the delay between disabling
+>>> +                  the backlight and setting PWM value to 0.
+>>> +                  The 1st cell is the pre-delay in micro seconds.
+>>> +                  The 2nd cell is the post-delay in micro seconds.
+>>
+>> pre and post imply a time before and after a certain event, but these
+>> are for 2 different events. These are more like an enable/on delay and
+>> disable/off delay which probably should be separate properties. What
+>> happens when we need the opposite sequence or a different sequence?
+>> Maybe some panel requires the PWM to be 0 until some time after
+>> enabling.
+>>
 
-I don't think it will work that way.
+A second proposal, what do you think?
 
-clk_get with NULL argument will likely grab the first clock of the list
-independent of clock-names being present.
+  - post-pwm-on-delay-us: Delay in us after setting an initial (non-zero) PWM
+                          and enabling the backlight using GPIO.
+  - pwm-off-delay-us: Delay in us after disabling the backlight using a GPIO
+                      and setting PWM value to 0.
 
-It might be better to do something like [pseudo-code]:
+Thanks,
+Enric
 
-pwm->pclk = clk_get( ..., "pclk");
-if (IS_ERR(pwm->pclk))
-	pwm->pclk = NULL;
-
-pwm->pwm_clk = clk_get(..., "pwm");
-if (IS_ERR(pwm->pwm_clk))
-	pwm->pwm_clk = clk_get(..., NULL);
-if (IS_ERR(pwm->pwm_clk))
-	return PTR_ERR(pwm->pwm_clk);
-
-That way, you make your way backwards through the pwm-binding-history.
-Ending at the single-clock without clock-names property as the last fallback.
-
-
-Heiko
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+> Maybe, Only I can say that the panels I checked always first enable
+> the PWM and then set the ENABLE signal, but of course I didn't check
+> all the panels.
+>
+> Would be more acceptable have enable-delay-us and disable-delay-us proprieties?
+>
+>> I don't understand why you even need a post delay. The PWM can be set
+>> to 0 while enabled, right? So if the PWM is set to 0 while enabled and
+>> then disable the backlight, then there's no delay. Plus this doesn't
+>> make much sense to me electrically either. The PWM duty cycle is going
+>> to be completely async to the enable line change. The PWM state could
+>> go from 1 to 0 at any point in time relative to the enable line
+>> change.
+>>
+>
+> To be honest I'm also not sure why is required the post delay, some
+> panels specify a 0 but others specifies a minimum value between you
+> off the panel and disable the PWM. The only reason I added the post
+> delay is because the different datasheets specifies it, I don't have a
+> use case that the post delay is used to fix something.
+>
+> Thanks,
+>  Enric
+>
+>> These issues are the problem with generic bindings. Adding 1 property
+>> is no big deal, but then what happens with the next variation. These
+>> timing constraints need to be able to be implied by the panel's
+>> compatible.
+>>
+>> Rob
