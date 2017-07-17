@@ -1,64 +1,55 @@
 From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: [PATCH v3 1/5] pwm-backlight: enable/disable the PWM before/after LCD enable toggle.
-Date: Mon, 17 Jul 2017 23:28:07 +0200
-Message-ID: <20170717212811.25374-1-enric.balletbo@collabora.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:34928 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751383AbdGQV20 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 17 Jul 2017 17:28:26 -0400
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Subject: [PATCH v3 2/5] dt-bindings: pwm-backlight: add PWM delay proprieties.
+Date: Mon, 17 Jul 2017 23:28:08 +0200
+Message-ID: <20170717212811.25374-2-enric.balletbo@collabora.com>
+References: <20170717212811.25374-1-enric.balletbo@collabora.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170717212811.25374-1-enric.balletbo@collabora.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Heiko Stuebner <heiko@sntech.de>
 Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org
+List-Id: linux-pwm@vger.kernel.org
 
-Before this patch the enable signal was set before the PWM signal and
-vice-versa on power off. I guess that this sequence is wrong, at least,
-it is on the different panels datasheets that I checked, so I inverted
-the sequence to follow the specs.
+Hardware needs a delay between setting an initial (non-zero) PWM and
+enabling the backlight using GPIO. The post-pwm-on-delay-us specifies
+this delay in micro seconds. Hardware also needs a delay between disabing
+the backlight using GPIO and setting PWM value to 0. The pwm-off-delay-us
+is this delay in micro seconds.
 
 Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 ---
+Based on the original Huang Lin <hl@rock-chips.com> work.
+
 Changes since v2:
- - Add this as a separate patch (Thierry Reding)
+ - Use separate properties (Rob Herring)
 Changes since v1:
- - None
+ - As suggested by Daniel Thompson
+   - Do not assume power-on delay and power-off delay will be the same
 
- drivers/video/backlight/pwm_bl.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 002f1ce..909a686 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -54,10 +54,11 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
- 	if (err < 0)
- 		dev_err(pb->dev, "failed to enable power supply\n");
+diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
+index 764db86..810527c 100644
+--- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
++++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
+@@ -17,6 +17,10 @@ Optional properties:
+                "pwms" property (see PWM binding[0])
+   - enable-gpios: contains a single GPIO specifier for the GPIO which enables
+                   and disables the backlight (see GPIO binding[1])
++  - post-pwm-on-delay-us: Delay in us between setting an initial (non-zero) PWM
++                          and enabling the backlight using GPIO.
++  - pwm-off-delay-us: Delay in us between disabling the backlight using GPIO
++                      and setting PWM value to 0.
  
-+	pwm_enable(pb->pwm);
-+
- 	if (pb->enable_gpio)
- 		gpiod_set_value_cansleep(pb->enable_gpio, 1);
+ [0]: Documentation/devicetree/bindings/pwm/pwm.txt
+ [1]: Documentation/devicetree/bindings/gpio/gpio.txt
+@@ -32,4 +36,6 @@ Example:
  
--	pwm_enable(pb->pwm);
- 	pb->enabled = true;
- }
- 
-@@ -66,12 +67,12 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
- 	if (!pb->enabled)
- 		return;
- 
--	pwm_config(pb->pwm, 0, pb->period);
--	pwm_disable(pb->pwm);
--
- 	if (pb->enable_gpio)
- 		gpiod_set_value_cansleep(pb->enable_gpio, 0);
- 
-+	pwm_config(pb->pwm, 0, pb->period);
-+	pwm_disable(pb->pwm);
-+
- 	regulator_disable(pb->power_supply);
- 	pb->enabled = false;
- }
+ 		power-supply = <&vdd_bl_reg>;
+ 		enable-gpios = <&gpio 58 0>;
++		post-pwm-on-delay-us = <10000>;
++		pwm-off-delay-us = <10000>;
+ 	};
 -- 
 2.9.3
