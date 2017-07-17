@@ -1,7 +1,7 @@
 From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: [PATCH v3 4/5] ARM: dts: rockchip: set PWM delay backlight settings for Veyron.
-Date: Mon, 17 Jul 2017 23:28:10 +0200
-Message-ID: <20170717212811.25374-4-enric.balletbo@collabora.com>
+Subject: [PATCH v3 5/5] ARM: dts: rockchip: set PWM delay backlight settings for Minnie
+Date: Mon, 17 Jul 2017 23:28:11 +0200
+Message-ID: <20170717212811.25374-5-enric.balletbo@collabora.com>
 References: <20170717212811.25374-1-enric.balletbo@collabora.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170717212811.25374-1-enric.balletbo@collabora.com>
@@ -10,35 +10,37 @@ To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>,
 Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-For veyron the binding should provide both PWM timings, the delay between
-you enable the PWM and set the enable signal, and the delay between you
-disable the PWM signal and clear the enable signal. Update the binding
-accordingly, in this case the panels connected to the veyron boards have
-a symmetric power sequence, hence the same value is used.
+The minnie devices comes with an AUO B101EAN01 panel which is different
+from default veyron devices, thus the power on/off timing sequence is
+slightly different. The datasheet specifies a pwm delay of 200 ms, so
+update the PMW delay proprieties accordingly.
 
 Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 ---
+Heiko,
+ I'm not able to test this patch in a minnie device because I don't have
+one, so could you do a quick try, please?
+
 Changes since v2:
  - Use new names for proprieties.
 Changes since v1:
- - Add this new patch to fix current binding on veyron.
+ - Add this new patch as minnie has differents timings
 
- arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/rk3288-veyron-minnie.dts | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi b/arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi
-index d752a31..4cef71f 100644
---- a/arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi
-+++ b/arch/arm/boot/dts/rk3288-veyron-chromebook.dtsi
-@@ -96,7 +96,8 @@
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&bl_en>;
- 		pwms = <&pwm0 0 1000000 0>;
--		pwm-delay-us = <10000>;
-+		post-pwm-on-delay-us = <10000>;
-+		pwm-off-delay-us = <10000>;
- 	};
+diff --git a/arch/arm/boot/dts/rk3288-veyron-minnie.dts b/arch/arm/boot/dts/rk3288-veyron-minnie.dts
+index 544de60..a5b7387 100644
+--- a/arch/arm/boot/dts/rk3288-veyron-minnie.dts
++++ b/arch/arm/boot/dts/rk3288-veyron-minnie.dts
+@@ -123,6 +123,8 @@
+ 			240 241 242 243 244 245 246 247
+ 			248 249 250 251 252 253 254 255>;
+ 	power-supply = <&backlight_regulator>;
++	post-pwm-on-delay-us = <20000>;
++	pwm-off-delay-us = <20000>;
+ };
  
- 	gpio-charger {
+ &emmc {
 -- 
 2.9.3
