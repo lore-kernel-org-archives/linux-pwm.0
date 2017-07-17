@@ -1,7 +1,7 @@
 From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: [PATCH v3 2/5] dt-bindings: pwm-backlight: add PWM delay proprieties.
-Date: Mon, 17 Jul 2017 23:28:08 +0200
-Message-ID: <20170717212811.25374-2-enric.balletbo@collabora.com>
+Subject: [PATCH v3 3/5] pwm-backlight: add support for PWM delays proprieties.
+Date: Mon, 17 Jul 2017 23:28:09 +0200
+Message-ID: <20170717212811.25374-3-enric.balletbo@collabora.com>
 References: <20170717212811.25374-1-enric.balletbo@collabora.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20170717212811.25374-1-enric.balletbo@collabora.com>
@@ -10,46 +10,99 @@ To: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>,
 Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hardware needs a delay between setting an initial (non-zero) PWM and
-enabling the backlight using GPIO. The post-pwm-on-delay-us specifies
-this delay in micro seconds. Hardware also needs a delay between disabing
-the backlight using GPIO and setting PWM value to 0. The pwm-off-delay-us
-is this delay in micro seconds.
+Some panels (i.e. N116BGE-L41), in their power sequence specifications,
+request a delay between set the PWM signal and enable the backlight and
+between clear the PWM signal and disable the backlight. Add support for
+the new post-pwm-on-delay-us and pwm-off-delay-us proprieties to meet
+the timings.
 
 Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 ---
-Based on the original Huang Lin <hl@rock-chips.com> work.
-
 Changes since v2:
- - Use separate properties (Rob Herring)
+ - Move the pwm/enable sequence to another patch (Thierry Reding)
 Changes since v1:
  - As suggested by Daniel Thompson
    - Do not assume power-on delay and power-off delay will be the same
+ - Move the check of dt property to the parse dt function.
 
- Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/video/backlight/pwm_bl.c | 17 +++++++++++++++++
+ include/linux/pwm_backlight.h    |  1 +
+ 2 files changed, 18 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-index 764db86..810527c 100644
---- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-+++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-@@ -17,6 +17,10 @@ Optional properties:
-                "pwms" property (see PWM binding[0])
-   - enable-gpios: contains a single GPIO specifier for the GPIO which enables
-                   and disables the backlight (see GPIO binding[1])
-+  - post-pwm-on-delay-us: Delay in us between setting an initial (non-zero) PWM
-+                          and enabling the backlight using GPIO.
-+  - pwm-off-delay-us: Delay in us between disabling the backlight using GPIO
-+                      and setting PWM value to 0.
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 909a686..528155d 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -10,6 +10,7 @@
+  * published by the Free Software Foundation.
+  */
  
- [0]: Documentation/devicetree/bindings/pwm/pwm.txt
- [1]: Documentation/devicetree/bindings/gpio/gpio.txt
-@@ -32,4 +36,6 @@ Example:
++#include <linux/delay.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/gpio.h>
+ #include <linux/module.h>
+@@ -35,6 +36,7 @@ struct pwm_bl_data {
+ 	struct gpio_desc	*enable_gpio;
+ 	unsigned int		scale;
+ 	bool			legacy;
++	unsigned int		pwm_delay[2];
+ 	int			(*notify)(struct device *,
+ 					  int brightness);
+ 	void			(*notify_after)(struct device *,
+@@ -56,6 +58,9 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
  
- 		power-supply = <&vdd_bl_reg>;
- 		enable-gpios = <&gpio 58 0>;
-+		post-pwm-on-delay-us = <10000>;
-+		pwm-off-delay-us = <10000>;
- 	};
+ 	pwm_enable(pb->pwm);
+ 
++	if (pb->pwm_delay[0])
++		usleep_range(pb->pwm_delay[0], pb->pwm_delay[0] * 2);
++
+ 	if (pb->enable_gpio)
+ 		gpiod_set_value_cansleep(pb->enable_gpio, 1);
+ 
+@@ -70,6 +75,9 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
+ 	if (pb->enable_gpio)
+ 		gpiod_set_value_cansleep(pb->enable_gpio, 0);
+ 
++	if (pb->pwm_delay[1])
++		usleep_range(pb->pwm_delay[1], pb->pwm_delay[1] * 2);
++
+ 	pwm_config(pb->pwm, 0, pb->period);
+ 	pwm_disable(pb->pwm);
+ 
+@@ -175,6 +183,14 @@ static int pwm_backlight_parse_dt(struct device *dev,
+ 		data->max_brightness--;
+ 	}
+ 
++	/*
++	 * These values are optional and set as 0 by default, the out values
++	 * are modified only if a valid u32 value can be decoded.
++	 */
++	of_property_read_u32(node, "post-pwm-on-delay-us",
++			     &data->pwm_delay[0]);
++	of_property_read_u32(node, "pwm-off-delay-us", &data->pwm_delay[1]);
++
+ 	data->enable_gpio = -EINVAL;
+ 	return 0;
+ }
+@@ -273,6 +289,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	pb->exit = data->exit;
+ 	pb->dev = &pdev->dev;
+ 	pb->enabled = false;
++	memcpy(pb->pwm_delay, data->pwm_delay, sizeof(pb->pwm_delay));
+ 
+ 	pb->enable_gpio = devm_gpiod_get_optional(&pdev->dev, "enable",
+ 						  GPIOD_ASIS);
+diff --git a/include/linux/pwm_backlight.h b/include/linux/pwm_backlight.h
+index efdd922..bf37131 100644
+--- a/include/linux/pwm_backlight.h
++++ b/include/linux/pwm_backlight.h
+@@ -13,6 +13,7 @@ struct platform_pwm_backlight_data {
+ 	unsigned int lth_brightness;
+ 	unsigned int pwm_period_ns;
+ 	unsigned int *levels;
++	unsigned int pwm_delay[2];
+ 	/* TODO remove once all users are switched to gpiod_* API */
+ 	int enable_gpio;
+ 	int (*init)(struct device *dev);
 -- 
 2.9.3
