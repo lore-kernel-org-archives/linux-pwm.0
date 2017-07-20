@@ -1,89 +1,76 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [PATCH v3 3/5] pwm-backlight: add support for PWM delays
- proprieties.
-Date: Thu, 20 Jul 2017 13:05:26 +0200
-Message-ID: <20170720110526.GA22000@amd>
-References: <20170717212811.25374-1-enric.balletbo@collabora.com>
- <20170717212811.25374-3-enric.balletbo@collabora.com>
- <d38fa016-ea9c-edf8-9684-5c1235d27c82@linaro.org>
- <20170720080656.GC13103@amd>
- <38adad8d-754b-d1dd-167a-913afd8075d6@linaro.org>
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH 000/102] Convert drivers to explicit reset API
+Date: Thu, 20 Jul 2017 14:55:12 +0200
+Message-ID: <1500555312.2354.75.camel@pengutronix.de>
+References: <20170719152646.25903-1-p.zabel@pengutronix.de>
+         <20170719211515.46a1196c@windsurf>
+         <1500543415.2354.37.camel@pengutronix.de>
+         <20170720123640.43c2ce01@windsurf>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="vtzGhvizbBRQ85DL"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <38adad8d-754b-d1dd-167a-913afd8075d6@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Rob Herring <robh+dt@kernel.org>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-mips-bounce@linux-mips.org>
+In-Reply-To: <20170720123640.43c2ce01@windsurf>
+Sender: linux-mips-bounce@linux-mips.org
+Errors-to: linux-mips-bounce@linux-mips.org
+List-help: <mailto:ecartis@linux-mips.org?Subject=help>
+List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
+List-software: Ecartis version 1.0.0
+List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
+List-owner: <mailto:ralf@linux-mips.org>
+List-post: <mailto:linux-mips@linux-mips.org>
+List-archive: <http://www.linux-mips.org/archives/linux-mips/>
+To: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
+Cc: linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>, Prashant Gaikwad <pgaikwad@nvidia.com>, Heiko Stuebner <heiko@sntech.de>, Peter Chen <Peter.Chen@nxp.com>, Linus Walleij <linus.walleij@linaro.org>, dri-devel@lists.freedesktop.org, Marc Dietrich <marvin24@gmx.de>, Rakesh Iyer <riyer@nvidia.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-clk@vger.kernel.org, Wim Van Sebroeck <wim@iguana.be>, Wolfram Sang <wsa@the-dreams.de>, Xinliang Liu <z.liuxinliang@hisilicon.com>, Chanwoo Choi <cw00.choi@samsung.com>, Alan Stern <stern@rowland.harvard.edu>, Jiri Slaby <jslaby@suse.com>, Michael Turquette <mturquette@baylibre.com>, Guenter Roeck <linux@roeck-us.net>, Ohad Ben-Cohen <ohad@wizery.com>, linux-pm@vger.kernel.org, Thomas Gleixner <tglx>
 List-Id: linux-pwm@vger.kernel.org
 
+Hi Thomas,
 
---vtzGhvizbBRQ85DL
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Thu, 2017-07-20 at 12:36 +0200, Thomas Petazzoni wrote:
+> Hello,
+> 
+> On Thu, 20 Jul 2017 11:36:55 +0200, Philipp Zabel wrote:
+> 
+> > > I don't know if it has been discussed in the past, so forgive me if it
+> > > has been. Have you considered adding a "int flags" argument to the
+> > > existing reset_control_get_*() functions, rather than introducing
+> > > separate exclusive variants ?
+> > > 
+> > > Indeed, with a "int flags" argument you could in the future add more
+> > > variants/behaviors without actually multiplying the number of
+> > > functions. Something like the "flags" argument for request_irq() for
+> > > example.  
+> > 
+> > I can't find the discussion right now, but I remember we had talked
+> > about this in the past.
+> > Behind the scenes, all the inline API functions already call common
+> > entry points with flags (well, currently separate bool parameters for
+> > shared and optional).
+> > One reason against exposing those as an int flags in the user facing API
+> > is the possibility to accidentally provide a wrong value.
+> 
+> This is a quite strange argument. You could also accidentally use the
+> wrong variant of the function, just like you could use the wrong flag.
 
-On Thu 2017-07-20 11:37:17, Daniel Thompson wrote:
-> On 20/07/17 09:06, Pavel Machek wrote:
-> >Hi!
-> >
-> >>>--- a/drivers/video/backlight/pwm_bl.c
-> >>>+++ b/drivers/video/backlight/pwm_bl.c
-> >>>@@ -10,6 +10,7 @@
-> >>>   * published by the Free Software Foundation.
-> >>>   */
-> >>>+#include <linux/delay.h>
-> >>>  #include <linux/gpio/consumer.h>
-> >>>  #include <linux/gpio.h>
-> >>>  #include <linux/module.h>
-> >>>@@ -35,6 +36,7 @@ struct pwm_bl_data {
-> >>>  	struct gpio_desc	*enable_gpio;
-> >>>  	unsigned int		scale;
-> >>>  	bool			legacy;
-> >>>+	unsigned int		pwm_delay[2];
-> >>
-> >>Two named members would be better here (eliminating the "magic" 0
-> >>and 1).
-> >
-> >My thought, too.
-> >
-> >>>@@ -56,6 +58,9 @@ static void pwm_backlight_power_on(struct pwm_bl_dat=
-a *pb, int brightness)
-> >>>  	pwm_enable(pb->pwm);
-> >>>+	if (pb->pwm_delay[0])
-> >>>+		usleep_range(pb->pwm_delay[0], pb->pwm_delay[0] * 2);
-> >
-> >Plus I'd just do the delay unconditionally :-).
->=20
-> ... does this still apply if this code is switched to msleep()?
->=20
-> msleep() has no wait avoidance[1] and if lots of drivers are reckless abo=
-ut
-> sleeping for 10ms it soon starts to show up in the boot time (especially
-> optimized ones).
+You can't accidentally use no flag at all or a completely bogus value
+with the "plethora of inline functions" variant.
 
-No, not for msleep.
+> Once again, the next time you have another parameter for those reset
+> functions, beyond the exclusive/shared variant, you will multiply again
+> by two the number of functions ? You already have the  exclusive/shared
+> and optional/mandatory variants, so 4 variants. When you'll add a new
+> parameter, you'll have 8 variants. Doesn't seem really good.
 
-Best regards,
-								Pavel
+I'd rather avoid adding more variants, if possible. The complexity
+increases regardless of whether the API is expressed as a bunch of
+functions or as a single function with a bunch of flags.
 
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
+> What about reset_control_get(struct device *, const char *, int flags)
+> to replace all those variants ?
 
---vtzGhvizbBRQ85DL
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+While I like how this looks, unfortunately (devm_)reset_control_get
+already exists without the flags, so we can't change to that with a
+gentle transition.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAllwjnYACgkQMOfwapXb+vLpMgCgmarGNgd3DbEgXqvRGHS2LSp5
-xwAAoL+7wZiNED/sdMLLb4J90eylXU5Z
-=43HD
------END PGP SIGNATURE-----
-
---vtzGhvizbBRQ85DL--
+regards
+Philipp
