@@ -1,71 +1,63 @@
-From: Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH 000/102] Convert drivers to explicit reset API
-Date: Thu, 20 Jul 2017 11:36:55 +0200
-Message-ID: <1500543415.2354.37.camel@pengutronix.de>
-References: <20170719152646.25903-1-p.zabel@pengutronix.de>
-         <20170719211515.46a1196c@windsurf>
+From: Enric Balletbo Serra <eballetbo@gmail.com>
+Subject: Re: [PATCH v3 5/5] ARM: dts: rockchip: set PWM delay backlight
+ settings for Minnie
+Date: Thu, 20 Jul 2017 12:03:40 +0200
+Message-ID: <CAFqH_51DezYBsf9Ny1MngOFxZc5HazbH_RHtbwhHodpQmTw0Mg@mail.gmail.com>
+References: <20170717212811.25374-1-enric.balletbo@collabora.com>
+ <20170717212811.25374-5-enric.balletbo@collabora.com> <20170720081038.GD13103@amd>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <20170719211515.46a1196c@windsurf>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-Cc: linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>, Prashant Gaikwad <pgaikwad@nvidia.com>, Heiko Stuebner <heiko@sntech.de>, Peter Chen <Peter.Chen@nxp.com>, Linus Walleij <linus.walleij@linaro.org>, dri-devel@lists.freedesktop.org, Marc Dietrich <marvin24@gmx.de>, Rakesh Iyer <riyer@nvidia.com>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-clk@vger.kernel.org, Wim Van Sebroeck <wim@iguana.be>, Wolfram Sang <wsa@the-dreams.de>, Xinliang Liu <z.liuxinliang@hisilicon.com>, Chanwoo Choi <cw00.choi@samsung.com>, Alan Stern <stern@rowland.harvard.edu>, Jiri Slaby <jslaby@suse.com>, Michael Turquette <mturquette@baylibre.com>, Guenter Roeck <linux@roeck-us.net>, Ohad Ben-Cohen <ohad@wizery.com>, linux-pm@vger.kernel.org, Thomas Gleixner <tglx>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170720081038.GD13103@amd>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Pavel Machek <pavel@ucw.cz>
+Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Rob Herring <robh+dt@kernel.org>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Linux PWM List <linux-pwm@vger.kernel.org>, linux-fbdev@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>, Guenter Roeck <groeck@chromium.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Thomas,
+Pavel,
 
-On Wed, 2017-07-19 at 21:15 +0200, Thomas Petazzoni wrote:
-> Hello,
-> 
-> On Wed, 19 Jul 2017 17:25:04 +0200, Philipp Zabel wrote:
-> > The reset control API has two modes: exclusive access, where the driver
-> > expects to have full and immediate control over the state of the reset
-> > line, and shared (clock-like) access, where drivers only request reset
-> > deassertion while active, but don't care about the state of the reset line
-> > while inactive.
-> > 
-> > Commit a53e35db70d1 ("reset: Ensure drivers are explicit when requesting
-> > reset lines") started to transition the reset control request API calls
-> > to explicitly state whether the driver needs exclusive or shared reset
-> > control behavior.
-> > 
-> > This series converts all drivers that currently implicitly request
-> > exclusive reset controls to the corresponding explicit API call. It is,
-> > for the most part, generated from the following semantic patch:
-> > 
-> > @@
-> > expression rstc, dev, id;
-> > @@
-> > -rstc = reset_control_get(dev, id);
-> > +rstc = reset_control_get_exclusive(dev, id);
-> 
-> I don't know if it has been discussed in the past, so forgive me if it
-> has been. Have you considered adding a "int flags" argument to the
-> existing reset_control_get_*() functions, rather than introducing
-> separate exclusive variants ?
-> 
-> Indeed, with a "int flags" argument you could in the future add more
-> variants/behaviors without actually multiplying the number of
-> functions. Something like the "flags" argument for request_irq() for
-> example.
+2017-07-20 10:10 GMT+02:00 Pavel Machek <pavel@ucw.cz>:
+> On Mon 2017-07-17 23:28:11, Enric Balletbo i Serra wrote:
+>> The minnie devices comes with an AUO B101EAN01 panel which is different
+>> from default veyron devices, thus the power on/off timing sequence is
+>> slightly different. The datasheet specifies a pwm delay of 200 ms, so
+>> update the PMW delay proprieties accordingly.
+>
+> Wait a wait a moment!
+>
+>> --- a/arch/arm/boot/dts/rk3288-veyron-minnie.dts
+>> +++ b/arch/arm/boot/dts/rk3288-veyron-minnie.dts
+>> @@ -123,6 +123,8 @@
+>>                       240 241 242 243 244 245 246 247
+>>                       248 249 250 251 252 253 254 255>;
+>>       power-supply = <&backlight_regulator>;
+>> +     post-pwm-on-delay-us = <20000>;
+>
+> -us = <20 000>;
+>
+> This is not 200 msec.
+>
 
-I can't find the discussion right now, but I remember we had talked
-about this in the past.
-Behind the scenes, all the inline API functions already call common
-entry points with flags (well, currently separate bool parameters for
-shared and optional).
-One reason against exposing those as an int flags in the user facing API
-is the possibility to accidentally provide a wrong value.
+Oops, good catch.
 
-regards
-Philipp
+> Plus, it is quite anti-social to do udelay(200 000).
+>
+> Plus, it is very anti-socifal to use udelay_range(200msec,
+> 400msec).
+>
+> Whoever told you udelay_range is good thing to use -- it is not, and
+> it is certainly not worth making user wait 200msec more!
+>
+
+Checked again some datasheets and seems that or not require a delay or
+the delays are 10ms+, so according to [1] I'll use msleep instead.
+
+[1] https://www.kernel.org/doc/Documentation/timers/timers-howto.txt
+
+Thanks,
+ Enric
+
+>                                                                         Pavel
+> --
+> (english) http://www.livejournal.com/~pavelmachek
+> (cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
