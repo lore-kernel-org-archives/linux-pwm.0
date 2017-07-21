@@ -1,70 +1,63 @@
-From: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Subject: [PATCH v4 2/5] dt-bindings: pwm-backlight: add PWM delay proprieties.
-Date: Fri, 21 Jul 2017 12:48:10 +0200
-Message-ID: <20170721104813.5389-2-enric.balletbo@collabora.com>
+From: Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH v4 3/5] pwm-backlight: add support for PWM delays
+ proprieties.
+Date: Fri, 21 Jul 2017 13:21:34 +0200
+Message-ID: <20170721112134.GA10340@amd>
 References: <20170721104813.5389-1-enric.balletbo@collabora.com>
+ <20170721104813.5389-3-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20170721104813.5389-1-enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <jacek.anaszewski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: groeck-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="FCuugMFkClbJLl1L"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:33449 "EHLO
+        atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751555AbdGULVg (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 21 Jul 2017 07:21:36 -0400
+Content-Disposition: inline
+In-Reply-To: <20170721104813.5389-3-enric.balletbo@collabora.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Rob Herring <robh+dt@kernel.org>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Heiko Stuebner <heiko@sntech.de>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org
 
-Hardware needs a delay between setting an initial (non-zero) PWM and
-enabling the backlight using GPIO. The post-pwm-on-delay-ms specifies
-this delay in milli seconds. Hardware also needs a delay between disabing
-the backlight using GPIO and setting PWM value to 0. The pwm-off-delay-ms
-is this delay in milli seconds.
 
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
----
-Based on the original Huang Lin <hl-TNX95d0MmH7DzftRWevZcw@public.gmane.org> work.
+--FCuugMFkClbJLl1L
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Changes since v3:
- - Replace us for ms.
- - Add Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-Changes since v2:
- - Use separate properties (Rob Herring)
-Changes since v1:
- - As suggested by Daniel Thompson
-   - Do not assume power-on delay and power-off delay will be the same
+On Fri 2017-07-21 12:48:11, Enric Balletbo i Serra wrote:
+> Some panels (i.e. N116BGE-L41), in their power sequence specifications,
+> request a delay between set the PWM signal and enable the backlight and
+> between clear the PWM signal and disable the backlight. Add support for
+> the new post-pwm-on-delay-ms and pwm-off-delay-ms proprieties to meet
+> the timings.
+>=20
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 
- Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt | 6 ++++++
- 1 file changed, 6 insertions(+)
+For 3-5:
 
-diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-index 764db86..3108109 100644
---- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-+++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-@@ -17,6 +17,10 @@ Optional properties:
-                "pwms" property (see PWM binding[0])
-   - enable-gpios: contains a single GPIO specifier for the GPIO which enables
-                   and disables the backlight (see GPIO binding[1])
-+  - post-pwm-on-delay-ms: Delay in ms between setting an initial (non-zero) PWM
-+                          and enabling the backlight using GPIO.
-+  - pwm-off-delay-ms: Delay in ms between disabling the backlight using GPIO
-+                      and setting PWM value to 0.
- 
- [0]: Documentation/devicetree/bindings/pwm/pwm.txt
- [1]: Documentation/devicetree/bindings/gpio/gpio.txt
-@@ -32,4 +36,6 @@ Example:
- 
- 		power-supply = <&vdd_bl_reg>;
- 		enable-gpios = <&gpio 58 0>;
-+		post-pwm-on-delay-ms = <10>;
-+		pwm-off-delay-ms = <10>;
- 	};
--- 
-2.9.3
+Acked-by: Pavel Machek <pavel@ucw.cz>
+
+I guess you probably meant "properties" and I guess english could be
+improved in the comments, but... this is good enough and not worth
+more iterations.
+
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
+
+--FCuugMFkClbJLl1L
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAllx474ACgkQMOfwapXb+vIlQwCfQXHVlqRrjnka9TAeEzYqRWI+
+SywAn00Bl5ZFSAHZ0EVm1nUU+SDHlzpF
+=0ZKG
+-----END PGP SIGNATURE-----
+
+--FCuugMFkClbJLl1L--
