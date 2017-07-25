@@ -1,67 +1,64 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] pwm: Convert to using %pOF instead of full_name
-Date: Tue, 25 Jul 2017 13:38:54 +0200
-Message-ID: <20170725113854.GA22355@ulmo>
-References: <20170718214339.7774-45-robh@kernel.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v1] pwm: pca9685: clarify pca9685_set_sleep_mode()
+ interface.
+Date: Tue, 25 Jul 2017 13:42:17 +0200
+Message-ID: <20170725114217.GB22355@ulmo>
+References: <1492780742-11251-1-git-send-email-thesven73@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="6TrnltStXW4iwmi0"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+        protocol="application/pgp-signature"; boundary="wzJLGUyc3ArbnUjN"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170718214339.7774-45-robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Carlo Caione <carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org>, Kevin Hilman <khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <1492780742-11251-1-git-send-email-thesven73@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sven Van Asbroeck <thesven73@gmail.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, mika.westerberg@linux.intel.com, andriy.shevchenko@linux.intel.com
 List-Id: linux-pwm@vger.kernel.org
 
 
---6TrnltStXW4iwmi0
+--wzJLGUyc3ArbnUjN
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 18, 2017 at 04:43:25PM -0500, Rob Herring wrote:
-> Now that we have a custom printf format specifier, convert users of
-> full_name to use %pOF instead. This is preparation to remove storing
-> of the full path string for each node.
+On Fri, Apr 21, 2017 at 09:19:02AM -0400, Sven Van Asbroeck wrote:
+> The function
+> static void pca9685_set_sleep_mode(struct pca9685 *pca, int sleep)
+> takes the chip in and out of sleep mode, depending on the value of
+> sleep, which is interpreted as a boolean.
 >=20
-> Signed-off-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Cc: Carlo Caione <carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org>
-> Cc: Kevin Hilman <khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-> Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Cc: linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> To clarify that 'int sleep' is a boolean and not a sleep delay,
+> change the function interface to:
+> static void pca9685_set_sleep_mode(struct pca9685 *pca, bool enable)
+>=20
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
 > ---
->  drivers/pwm/pwm-meson.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/pwm/pwm-pca9685.c | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
 
 Applied, thanks.
 
 Thierry
 
---6TrnltStXW4iwmi0
+--wzJLGUyc3ArbnUjN
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAll3LcoACgkQ3SOs138+
-s6HTMA//fz+bs4r8D0dSnuIYttegcttTvpJk0/5rfZiYhSiMgc/vy2Ysa/1bPtt9
-2ACeEQZM95tW5L45p9hmW3PMSlRXsSy5F0/4UAwnze5C0WvD378xGgJR0pOIuGBd
-8bwBpswV8TV5cu1h5Ly1M36HCJ/paH4CPpJ9wACifDGP1D4j2R1hxHwzxWfhMCTT
-XCcp1Jw+xs0eRqyruQ5PL674IXhsC1eWoAVefL6guVYZYUiNPMp+w8z4Imp3PbHl
-41s4gHU9viLvloOOQTsZg6yQcJmenSq0TTmKkL0RrUvcBmusKurDGf35eo63bXH7
-0Q+uAkX34Br+c1EFCmlbsLZyiktneCk9wsCXzjp0v4l7Sfyy/YOrIxm2e31uzrfi
-aRez4tpSuUYP+8p6OdlvC6mOhGk9lMXs8ymm/e3vbdZLtaswBBUu/K2jZCUApw+r
-XsyO6oyp+qzmWXjgbU4P6O85uVjIp1fWSPO7JXc/Vreyq/DRRfPvvEo1HQsvnrT/
-6VVMsU0CCunnmIt7FabhXSYg5yRUxFET1FJChiIkoDFTsBtCqn/dJlmavc4dfSFV
-F14+/eY21gA7nKfkPfUvu4SnFMRxQcFNtNLuGqNRjiLprxBhGCXfh2WgL+9VfNiD
-X2vIpYVORdqXgJi64sLsXzcwesvTNlGIEK9TKO25RPlyCgLaWIA=
-=pH7M
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAll3LpkACgkQ3SOs138+
+s6G6ag/+Nq26wrIKBxBIs+RQdlriSEytWjOpH/MEV3qj03RIouGN4QAR0bPNl3oV
+Swx2rviFNN/U6+A0tqWuLPftEezNl0LzXgXJBMaP+py7TJfqvfFBIwjs/5CZyStS
+WC1tWrHOm5wqlI1AE+HDwUW2IU9/AIvSDq01BXRXSI/Xah74CbBuE8qna81nfTbu
+uhVp72PkPtp9kIVUF20N04ogYWVR0GDfM9MsDMz4FHf7DibrvCl5LFWe1Pv8kTXL
+u51h5Wfhst+2upY2UrzJpWzo+T0aTH5ohHbjBfOSSsIQD7tbHDysEV0wOe9QoXKy
+3EwRUXmdw2cfLhy6tJgiwzdh+mFGVW6mO4mdcF7M2OqWXFsE8X2RNVDHnnrCuspI
+PMhalNBg8IIJLqrVMAs00foh0UFuVeRjlLQwSm7p7PQcGvOd8NFMJnFabB4r4hMn
+Tf19J6p6OuRi7kHkfQV+OkYfUCHY0Jemaomw2TFOlOxpmDf17bZACLa0W2VJqh32
+7847EiakVdBvzSHOAmCG33LsK1JqMwx3PbP2uOo5S1/Xc0BR3v2OhjvEPOMoPy+M
+mQO/X3wJiTcmMi44EHQ/wZ8ilqo4qr/seHPvgbWooYxVkswiknb6kzJ6BNaKg29p
+DHOeclc78NS9jmgkuG2dvOQPI+KESNesrX/rqksDpyloX8Zugfo=
+=0nzv
 -----END PGP SIGNATURE-----
 
---6TrnltStXW4iwmi0--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--wzJLGUyc3ArbnUjN--
