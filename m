@@ -1,64 +1,56 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v1] pwm: pca9685: clarify pca9685_set_sleep_mode()
- interface.
-Date: Tue, 25 Jul 2017 13:42:17 +0200
-Message-ID: <20170725114217.GB22355@ulmo>
-References: <1492780742-11251-1-git-send-email-thesven73@gmail.com>
+Subject: Re: [PATCH v1] pwm : pwm-vt8500 - Undo preparation of a clock source.
+Date: Tue, 25 Jul 2017 13:44:12 +0200
+Message-ID: <20170725114412.GC22355@ulmo>
+References: <1493971214-3763-1-git-send-email-arvind.yadav.cs@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="wzJLGUyc3ArbnUjN"
+        protocol="application/pgp-signature"; boundary="Izn7cH1Com+I3R9J"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1492780742-11251-1-git-send-email-thesven73@gmail.com>
+In-Reply-To: <1493971214-3763-1-git-send-email-arvind.yadav.cs@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sven Van Asbroeck <thesven73@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, mika.westerberg@linux.intel.com, andriy.shevchenko@linux.intel.com
+To: Arvind Yadav <arvind.yadav.cs@gmail.com>
+Cc: linux@prisktech.co.nz, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---wzJLGUyc3ArbnUjN
+--Izn7cH1Com+I3R9J
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 21, 2017 at 09:19:02AM -0400, Sven Van Asbroeck wrote:
-> The function
-> static void pca9685_set_sleep_mode(struct pca9685 *pca, int sleep)
-> takes the chip in and out of sleep mode, depending on the value of
-> sleep, which is interpreted as a boolean.
+On Fri, May 05, 2017 at 01:30:14PM +0530, Arvind Yadav wrote:
+> Undo preparation of a clock source, if vt8500_pwm_probe is not
+> successful.
 >=20
-> To clarify that 'int sleep' is a boolean and not a sleep delay,
-> change the function interface to:
-> static void pca9685_set_sleep_mode(struct pca9685 *pca, bool enable)
->=20
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+> Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
 > ---
->  drivers/pwm/pwm-pca9685.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
+>  drivers/pwm/pwm-vt8500.c | 1 +
+>  1 file changed, 1 insertion(+)
 
 Applied, thanks.
 
 Thierry
 
---wzJLGUyc3ArbnUjN
+--Izn7cH1Com+I3R9J
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAll3LpkACgkQ3SOs138+
-s6G6ag/+Nq26wrIKBxBIs+RQdlriSEytWjOpH/MEV3qj03RIouGN4QAR0bPNl3oV
-Swx2rviFNN/U6+A0tqWuLPftEezNl0LzXgXJBMaP+py7TJfqvfFBIwjs/5CZyStS
-WC1tWrHOm5wqlI1AE+HDwUW2IU9/AIvSDq01BXRXSI/Xah74CbBuE8qna81nfTbu
-uhVp72PkPtp9kIVUF20N04ogYWVR0GDfM9MsDMz4FHf7DibrvCl5LFWe1Pv8kTXL
-u51h5Wfhst+2upY2UrzJpWzo+T0aTH5ohHbjBfOSSsIQD7tbHDysEV0wOe9QoXKy
-3EwRUXmdw2cfLhy6tJgiwzdh+mFGVW6mO4mdcF7M2OqWXFsE8X2RNVDHnnrCuspI
-PMhalNBg8IIJLqrVMAs00foh0UFuVeRjlLQwSm7p7PQcGvOd8NFMJnFabB4r4hMn
-Tf19J6p6OuRi7kHkfQV+OkYfUCHY0Jemaomw2TFOlOxpmDf17bZACLa0W2VJqh32
-7847EiakVdBvzSHOAmCG33LsK1JqMwx3PbP2uOo5S1/Xc0BR3v2OhjvEPOMoPy+M
-mQO/X3wJiTcmMi44EHQ/wZ8ilqo4qr/seHPvgbWooYxVkswiknb6kzJ6BNaKg29p
-DHOeclc78NS9jmgkuG2dvOQPI+KESNesrX/rqksDpyloX8Zugfo=
-=0nzv
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAll3LwwACgkQ3SOs138+
+s6EaKQ//QLBrfT7Ty2q288lqNdm8b6Q0OzuTcnXEwTgVkYU6fmrqZYFRqtDoOPw4
+3Ex41PbtoRr3zqMULUbnwtvaV6OT2E9CuDX6NqQgHrBfO6TdFjQ+UBUfnsVk3u19
+B/zQ4h8qLWLtSC0wBOWVTxSzWn0Ki7+9EICuRZuLrG/T7NOnK7iSU8+xS2SBkb1F
+lE0jNg1kSQbIiH2fHrwWK4Eg977HfikQ8ZIAeqWX0Sjlm5xEajpGBmQSUIowJMgt
+OqrZplQoqsrnTfRVeXmFJOcmDZCe41fWOIpAQCfO/NlnVvcrRfCz99sfD4B9vUn6
+D2NMcLlgw2ZNgcotW2LUsNBYyQ/ALIImPGJ5JJD1IOxgXChaEsuWm2AEfPAojhed
+CHz6Wq29gpl6HXRNCusumNnfRrbgimKSv9WYZOSnoD7OSLO0GV/OuLwOXL6bbOoA
+BYV7uoDKcq1ynp4YMtUFd7j63vQD5s8YXCfGqxwWqblB+7dyAeWitXOPEqgd3zEj
+DFJglaqo1+en7KP679OWJqQ9hI7byvtD8/65TUu0cPgjpIhEsMbFGxCwy7Uc97cE
+juOxyCBe/6pmbySE3WsqiWJiQbFEMvwVNH/VtGMeXPWQqzDRQSJeVSBYeQF7k1xc
+E9AdOKaETibixA4UscpFmu/RkBRMVsv37ZeWFhw+7JOM/3lo+Lk=
+=i3Xe
 -----END PGP SIGNATURE-----
 
---wzJLGUyc3ArbnUjN--
+--Izn7cH1Com+I3R9J--
