@@ -1,38 +1,31 @@
-From: Stefan Wahren <stefan.wahren@i2se.com>
-Subject: Re: [PATCH 2/2] pwm: bcm2835: Support for polarity setting via DT
-Date: Thu, 27 Jul 2017 11:26:48 +0200
-Message-ID: <409552fa-06af-e1f2-73af-2a9136d06816@i2se.com>
-References: <1499508838-20715-1-git-send-email-stefan.wahren@i2se.com>
- <1499508838-20715-3-git-send-email-stefan.wahren@i2se.com>
- <87pod8qli1.fsf@eliezer.anholt.net>
- <748942990.26302.1500572090339@email.1und1.de>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH v5 05/14] MIPS: ingenic: Enable pinctrl for all ingenic SoCs
+Date: Mon, 31 Jul 2017 15:29:00 +0200
+Message-ID: <CACRpkdZKAR-Ya-j-g=uyb24s1KqyEhbKOxzi=BdAaa29L1BO+w@mail.gmail.com>
+References: <20170402204244.14216-2-paul@crapouillou.net> <20170428200824.10906-1-paul@crapouillou.net>
+ <20170428200824.10906-6-paul@crapouillou.net> <CACRpkdauf5c2i4o5i8QY8YHPNjizkvTu6kAbnquWiP_=v2=KdQ@mail.gmail.com>
+ <1499013301.1477.0@smtp.crapouillou.net> <CACRpkdb=Zti+C+2me_WP0=m6z12G5Kz+W_cPcZsw=CVzBO_wAg@mail.gmail.com>
+ <20170703135555.GA686@linux-mips.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.134]:58242 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750836AbdG0J1k (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 27 Jul 2017 05:27:40 -0400
-In-Reply-To: <748942990.26302.1500572090339@email.1und1.de>
-Content-Language: de-DE
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20170703135555.GA686@linux-mips.org>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Ralf Baechle <ralf@linux-mips.org>
+Cc: Paul Cercueil <paul@crapouillou.net>, Alexandre Courbot <gnurou@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Maarten ter Huurne <maarten@treewalker.org>, Lars-Peter Clausen <lars@metafoo.de>, Paul Burton <paul.burton@imgtec.com>, James Hogan <james.hogan@imgtec.com>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux MIPS <linux-mips@linux-mips.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Eric Anholt <eric@anholt.net>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>
-Cc: linux-pwm@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, devicetree@vger.kernel.org, Thierry Reding <treding@nvidia.com>
 
-Am 20.07.2017 um 19:34 schrieb Stefan Wahren:
+On Mon, Jul 3, 2017 at 3:55 PM, Ralf Baechle <ralf@linux-mips.org> wrote:
+> On Mon, Jul 03, 2017 at 11:07:09AM +0200, Linus Walleij wrote:
 >
->> Eric Anholt <eric@anholt.net> hat am 10. Juli 2017 um 18:56 geschrieben:
->>
->>
->> Stefan Wahren <stefan.wahren@i2se.com> writes:
->>
->>> This adds support for the third (optional) pwm cell to specify the
->>> polarity, which is needed by display backlights for example.
->>>
->>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
->> Reviewed-by: Eric Anholt <eric@anholt.net>
-> gentle ping to Thierry
+>> > There has been no word from Ralf, is this going into 4.13?
+>
+> Acked-by: Ralf Baechle <ralf@linux-mips.org>
+>
+> for the whole series.
 
-ping ...
+Thanks Ralf, I missed to add this in, but everything seems to have
+landed smoothly in v4.13.
+
+Yours,
+Linus Walleij
