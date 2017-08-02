@@ -1,40 +1,58 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: [PATCH] pwm: Kconfig: Enable pwm-tiecap to be built for Keystone
-Date: Wed, 2 Aug 2017 11:43:44 +0530
-Message-ID: <20170802061344.1713-1-vigneshr@ti.com>
+From: Zhi Mao <zhi.mao@mediatek.com>
+Subject: Re: [PATCH v3 0/6] mediatek: pwm driver add MT2712/MT7622 support
+Date: Wed, 2 Aug 2017 15:19:54 +0800
+Message-ID: <1501658394.22478.36.camel@mhfsdcap03>
+References: <1498802721-32455-1-git-send-email-zhi.mao@mediatek.com>
+         <1500261364.22478.32.camel@mhfsdcap03>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from fllnx209.ext.ti.com ([198.47.19.16]:21579 "EHLO
-        fllnx209.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750725AbdHBGO1 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Aug 2017 02:14:27 -0400
+Received: from mailgw01.mediatek.com ([218.249.47.110]:40584 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1751104AbdHBHUD (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Aug 2017 03:20:03 -0400
+In-Reply-To: <1500261364.22478.32.camel@mhfsdcap03>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vignesh R <vigneshr@ti.com>
+To: "john@phrozen.org" <john@phrozen.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, srv_heupstream <srv_heupstream@mediatek.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, Yingjoe Chen =?UTF-8?Q?=28=E9=99=B3=E8=8B=B1=E6=B4=B2=29?= <Yingjoe.Chen@mediatek.com>, YT Shen =?UTF-8?Q?=28=E6=B2=88=E5=B2=B3=E9=9C=86=29?= <Yt.Shen@mediatek.com>, Sean Wang =?UTF-8?Q?=28=E7=8E=8B=E5=BF=97=E4=BA=98=29?=
 
-66AK2G SoC has ECAP subsystem that is used as pwm-backlight provider for
-display. Hence, enable pwm-tiecap driver to be built for Keystone
-architecture.
+Hi John, Matthais & Thierry,
+> 
+> Just a gentle ping on this issue again.
+> Do you have any update?
+> 
+> Regards,
+> Zhi
 
-Signed-off-by: Vignesh R <vigneshr@ti.com>
----
- drivers/pwm/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 313c10789ca2..c7f3a6037c93 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -446,7 +446,7 @@ config PWM_TEGRA
- 
- config  PWM_TIECAP
- 	tristate "ECAP PWM support"
--	depends on ARCH_OMAP2PLUS || ARCH_DAVINCI_DA8XX
-+	depends on ARCH_OMAP2PLUS || ARCH_DAVINCI_DA8XX || ARCH_KEYSTONE
- 	help
- 	  PWM driver support for the ECAP APWM controller found on AM33XX
- 	  TI SOC
--- 
-2.13.3
+On Mon, 2017-07-17 at 11:16 +0800, Zhi Mao wrote:
+> Hi John, Matthais & PWM Maintainers
+> 
+> Just a Gentle ping on this issue :)
+> Is there anything should be modified?
+> 
+> Regards,
+> Zhi
+> 
+> 
+> On Fri, 2017-06-30 at 14:05 +0800, Zhi Mao wrote:
+> > change in v3:
+> > 1. add pwm clk disable in function:mtk_pwm_config()
+> >    for error parameter checking case
+> > 
+> > Zhi Mao (6):
+> >   pwm: kconfig: modify mediatek information
+> >   pwm: mediatek: fix pwm source clock selection
+> >   pwm: mediatek: fix clock control issue
+> >   pwm: bindings: add MT2712/MT7622 information
+> >   pwm: mediatek: add PWM_CLK_DIV_MAX
+> >   pwm: mediatek: add MT2712/MT7622 support
+> > 
+> >  .../devicetree/bindings/pwm/pwm-mediatek.txt       |    6 +-
+> >  drivers/pwm/Kconfig                                |    2 +-
+> >  drivers/pwm/pwm-mediatek.c                         |  133 ++++++++++++++------
+> >  3 files changed, 104 insertions(+), 37 deletions(-)
+> > 
+> 
