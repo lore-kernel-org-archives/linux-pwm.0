@@ -1,58 +1,64 @@
-From: Zhi Mao <zhi.mao@mediatek.com>
-Subject: Re: [PATCH v3 0/6] mediatek: pwm driver add MT2712/MT7622 support
-Date: Wed, 2 Aug 2017 15:19:54 +0800
-Message-ID: <1501658394.22478.36.camel@mhfsdcap03>
-References: <1498802721-32455-1-git-send-email-zhi.mao@mediatek.com>
-         <1500261364.22478.32.camel@mhfsdcap03>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailgw01.mediatek.com ([218.249.47.110]:40584 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1751104AbdHBHUD (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 2 Aug 2017 03:20:03 -0400
-In-Reply-To: <1500261364.22478.32.camel@mhfsdcap03>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Andy Yan <andy.yan@rock-chips.com>
+Subject: [PATCH v2 00/23] Support more devices on rockchip rv1108
+Date: Wed,  2 Aug 2017 16:25:03 +0800
+Message-ID: <1501662303-11687-1-git-send-email-andy.yan@rock-chips.com>
+Return-path: <linux-gpio-owner@vger.kernel.org>
+Sender: linux-gpio-owner@vger.kernel.org
+To: heiko@sntech.de
+Cc: linus.walleij@linaro.org, linux-pwm@vger.kernel.org, robh+dt@kernel.org, david.wu@rock-chips.com, shawn.lin@rock-chips.com, linux-i2c@vger.kernel.org, zhangqing@rock-chips.com, linux-clk@vger.kernel.org, devicetree@vger.kernel.org, mturquette@baylibre.com, sboyd@codeaurora.org, wsa@the-dreams.de, linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org, broonie@kernel.org, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, linux-spi@vger.kernel.org, Andy Yan <andy.yan@rock-chips.com>
 List-Id: linux-pwm@vger.kernel.org
-To: "john@phrozen.org" <john@phrozen.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, srv_heupstream <srv_heupstream@mediatek.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, Yingjoe Chen =?UTF-8?Q?=28=E9=99=B3=E8=8B=B1=E6=B4=B2=29?= <Yingjoe.Chen@mediatek.com>, YT Shen =?UTF-8?Q?=28=E6=B2=88=E5=B2=B3=E9=9C=86=29?= <Yt.Shen@mediatek.com>, Sean Wang =?UTF-8?Q?=28=E7=8E=8B=E5=BF=97=E4=BA=98=29?=
-
-Hi John, Matthais & Thierry,
-> 
-> Just a gentle ping on this issue again.
-> Do you have any update?
-> 
-> Regards,
-> Zhi
 
 
-On Mon, 2017-07-17 at 11:16 +0800, Zhi Mao wrote:
-> Hi John, Matthais & PWM Maintainers
-> 
-> Just a Gentle ping on this issue :)
-> Is there anything should be modified?
-> 
-> Regards,
-> Zhi
-> 
-> 
-> On Fri, 2017-06-30 at 14:05 +0800, Zhi Mao wrote:
-> > change in v3:
-> > 1. add pwm clk disable in function:mtk_pwm_config()
-> >    for error parameter checking case
-> > 
-> > Zhi Mao (6):
-> >   pwm: kconfig: modify mediatek information
-> >   pwm: mediatek: fix pwm source clock selection
-> >   pwm: mediatek: fix clock control issue
-> >   pwm: bindings: add MT2712/MT7622 information
-> >   pwm: mediatek: add PWM_CLK_DIV_MAX
-> >   pwm: mediatek: add MT2712/MT7622 support
-> > 
-> >  .../devicetree/bindings/pwm/pwm-mediatek.txt       |    6 +-
-> >  drivers/pwm/Kconfig                                |    2 +-
-> >  drivers/pwm/pwm-mediatek.c                         |  133 ++++++++++++++------
-> >  3 files changed, 104 insertions(+), 37 deletions(-)
-> > 
-> 
+This series try to support i2c/spi/pwm/saradc/pmic/watchdog and
+the full clk tree on rockchip rv1108 soc.
+
+Changes in v2:
+- split the rename and intentation fix part from id patch
+- split the new added clks and rename.
+- add compatible string "rockchip,rv1108-pwm"
+- add compatible string "rockchip,rv1108-saradc"
+
+Andy Yan (14):
+  pinctrl: rockchip: add schmitt input mode support for rv1108
+  dt-bindings: i2c: rk3x: add support for rv1108
+  i2c: rk3x: add support for rv1108
+  ARM: dts: rockchip: add i2c dt node for rv1108
+  spi: rockchip: add compatible string for rv1108 spi
+  ARM: dts: rockchip: add spi dt node for rv1108
+  dt-bindings: pwm: add description for rv1108 pwm
+  ARM: dts: rockchip: add pwm dt node for rv1108
+  ARM: dts: rockchip: add watchdog dt node for rv1108
+  dt-bindings: adc: add description for rv1108 saradc
+  ARM: dts: rockchip: add saradc support for rv1108
+  ARM: dts: rockchip: add pwm backlight for rv1108 evb
+  ARM: dts: rockchip: add pmic rk805 dt node for rv1108 evb
+  ARM: dts: rockchip: add accelerometer bma250e dt node for rv1108 evb
+
+Elaine Zhang (9):
+  clk: rockchip: add more clk ids for rv1108
+  clk: rockchip: rename the clk id for HCLK_I2S1_2CH
+  clk: rockchip: fix up the indentation stuff for RV1108 SoC
+  clk: rockchip: support more rates for cpuclk
+  clk: rockchip: fix up the pll clks error for rv1108 SoC
+  clk: rockchip: support more clks for rv1108
+  clk: rockchip: fix up some clks describe error for rv1108 SoC
+  clk: rockchip: rename some of clks for rv1108 SoC
+  clk: rockchip: add some critical clocks for rv1108 SoC
+
+ Documentation/devicetree/bindings/i2c/i2c-rk3x.txt |   1 +
+ .../bindings/iio/adc/rockchip-saradc.txt           |   1 +
+ .../devicetree/bindings/pwm/pwm-rockchip.txt       |   2 +-
+ .../devicetree/bindings/spi/spi-rockchip.txt       |   1 +
+ arch/arm/boot/dts/rv1108-evb.dts                   | 158 +++++++
+ arch/arm/boot/dts/rv1108.dtsi                      | 249 ++++++++++
+ drivers/clk/rockchip/clk-rv1108.c                  | 514 ++++++++++++++++-----
+ drivers/i2c/busses/i2c-rk3x.c                      |   9 +
+ drivers/pinctrl/pinctrl-rockchip.c                 |  31 ++
+ drivers/spi/spi-rockchip.c                         |   1 +
+ include/dt-bindings/clock/rv1108-cru.h             | 123 ++++-
+ 11 files changed, 964 insertions(+), 126 deletions(-)
+
+-- 
+2.7.4
+
+
