@@ -1,7 +1,7 @@
 From: Vignesh R <vigneshr@ti.com>
-Subject: [PATCH 1/4] pwm: pwm-tiecap: Add TI 66AK2G SoC specific compatible
-Date: Mon, 7 Aug 2017 17:19:40 +0530
-Message-ID: <20170807114943.22612-2-vigneshr@ti.com>
+Subject: [PATCH 3/4] ARM: dts: keystone-k2g-evm: Enable PWM ECAP0
+Date: Mon, 7 Aug 2017 17:19:42 +0530
+Message-ID: <20170807114943.22612-4-vigneshr@ti.com>
 References: <20170807114943.22612-1-vigneshr@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,25 +12,39 @@ To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>,
 Cc: Vignesh R <vigneshr@ti.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Add a new compatible string "ti,k2g-ecap" to support PWM ECAP IP of
-TI 66AK2G SoC.
+Enable PWM ECAP0 which will be used for display backlight.
 
 Signed-off-by: Vignesh R <vigneshr@ti.com>
 ---
- Documentation/devicetree/bindings/pwm/pwm-tiecap.txt | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/keystone-k2g-evm.dts | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-tiecap.txt b/Documentation/devicetree/bindings/pwm/pwm-tiecap.txt
-index 8007e839a716..06a363d9ccef 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-tiecap.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-tiecap.txt
-@@ -6,6 +6,7 @@ Required properties:
-   for am4372 - compatible = "ti,am4372-ecap", "ti,am3352-ecap", "ti,am33xx-ecap";
-   for da850  - compatible = "ti,da850-ecap", "ti,am3352-ecap", "ti,am33xx-ecap";
-   for dra746 - compatible = "ti,dra746-ecap", "ti,am3352-ecap";
-+  for 66ak2g - compatible = "ti,k2g-ecap", "ti,am3352-ecap";
- - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
-   the cells format. The PWM channel index ranges from 0 to 4. The only third
-   cell flag supported by this binding is PWM_POLARITY_INVERTED.
+diff --git a/arch/arm/boot/dts/keystone-k2g-evm.dts b/arch/arm/boot/dts/keystone-k2g-evm.dts
+index 61883cb969d2..3ce8010622ff 100644
+--- a/arch/arm/boot/dts/keystone-k2g-evm.dts
++++ b/arch/arm/boot/dts/keystone-k2g-evm.dts
+@@ -34,6 +34,12 @@
+ 			K2G_CORE_IOPAD(0x11d0) (BUFFER_CLASS_B | PIN_PULLDOWN | MUX_MODE0)	/* uart0_txd.uart0_txd */
+ 		>;
+ 	};
++
++	ecap0_pins: ecap0_pins {
++		pinctrl-single,pins = <
++			K2G_CORE_IOPAD(0x1374) (BUFFER_CLASS_B | MUX_MODE4)	/* pr1_mdio_data.ecap0_in_apwm0_out */
++		>;
++	};
+ };
+ 
+ &uart0 {
+@@ -41,3 +47,9 @@
+ 	pinctrl-0 = <&uart0_pins>;
+ 	status = "okay";
+ };
++
++&ecap0 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&ecap0_pins>;
++};
 -- 
 2.13.3
