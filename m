@@ -1,74 +1,29 @@
-From: Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v2 3/7] pwm: rockchip: Remove the dumplicate
- rockchip_pwm_ops ops
-Date: Fri, 4 Aug 2017 09:09:35 +0200
-Message-ID: <20170804090935.6aba3351@bbrezillon>
-References: <1499486629-9659-1-git-send-email-david.wu@rock-chips.com>
-        <1499486629-9659-4-git-send-email-david.wu@rock-chips.com>
-        <20170802105902.2d137072@bbrezillon>
-        <af056420-5c33-e6c8-62cb-bcd3456000a7@rock-chips.com>
-        <20170802134011.1124f1dd@bbrezillon>
-        <6d1f60ee-2402-5ee0-54f6-9521c039c36c@rock-chips.com>
+From: Vignesh R <vigneshr@ti.com>
+Subject: [PATCH 0/4] K2G: Add support for PWM ECAP
+Date: Mon, 7 Aug 2017 17:19:39 +0530
+Message-ID: <20170807114943.22612-1-vigneshr@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <6d1f60ee-2402-5ee0-54f6-9521c039c36c-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: "David.Wu" <david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Cc: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, huangtao-TNX95d0MmH7DzftRWevZcw@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Santosh Shilimkar <ssantosh@kernel.org>
+Cc: Vignesh R <vigneshr@ti.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, 4 Aug 2017 10:38:26 +0800
-"David.Wu" <david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org> wrote:
+This series adds support for TI ECAP PWM IP present in 66AK2G SoC.
+Based on linux-next.
 
-> Hi Boris，
-> 
-> 在 2017/8/2 19:40, Boris Brezillon 写道:
-> > Yep, just define 3 different pwm_ops (one for each IP), each of them
-> > implementing ->apply() and ->get_state() and that's all.
-> > 
-> > Something like:
-> > 
-> > static const struct pwm_ops rockchip_pwm_ops_v1 = {
-> > 	.get_state = rockchip_pwm_v1_get_state,
-> > 	.apply = rockchip_pwm_v1_apply,
-> > 	.owner = THIS_MODULE,
-> > };
-> > 
-> > static const struct pwm_ops rockchip_pwm_ops_v2 = {
-> > 	.get_state = rockchip_pwm_v2_get_state,
-> > 	.apply = rockchip_pwm_v2_apply,
-> > 	.owner = THIS_MODULE,
-> > };
-> > 
-> > static const struct pwm_ops rockchip_pwm_ops_vop = {
-> > 	.get_state = rockchip_pwm_vop_get_state,
-> > 	.apply = rockchip_pwm_vop_apply,
-> > 	.owner = THIS_MODULE,
-> > };
-> > 
-> > static const struct of_device_id rockchip_pwm_dt_ids[] = {
-> > 	{ .compatible = "rockchip,rk2928-pwm", .data = &rockchip_pwm_ops_v1 },
-> > 	{ .compatible = "rockchip,rk3288-pwm", .data = &rockchip_pwm_ops_v2 },
-> > 	{ .compatible = "rockchip,vop-pwm", .data = &rockchip_pwm_ops_vop },
-> > 	{ /* sentinel */ }
-> > };
-> > MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);  
-> 
-> I think we should keep the data members in the rockchip_pwm_data，like 
-> supports_polarity and regs...
-> 
-> The supports_polarity is needed for of_pwm_n_cells when pwm registered.
-> And the other data members is helpful for us to use common code.
-> 
-> It's okay for just define 3 different pwm_ops (one for each IP), but 
-> they are with other data members in the struct of rockchip_pwm_data.
-> 
+Vignesh R (4):
+  pwm: pwm-tiecap: Add TI 66AK2G SoC specific compatible
+  ARM: dts: keystone-k2g: Add ECAP PWM DT nodes
+  ARM: dts: keystone-k2g-evm: Enable PWM ECAP0
+  ARM: configs: keystone: Enable TIECAP PWM driver
 
-I think we could even get rid of the other fields in rockchip_pwm_data,
-but ok, let's do that.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ Documentation/devicetree/bindings/pwm/pwm-tiecap.txt |  1 +
+ arch/arm/boot/dts/keystone-k2g-evm.dts               | 12 ++++++++++++
+ arch/arm/boot/dts/keystone-k2g.dtsi                  | 20 ++++++++++++++++++++
+ arch/arm/configs/keystone_defconfig                  |  2 ++
+ 4 files changed, 35 insertions(+)
+
+-- 
+2.13.3
