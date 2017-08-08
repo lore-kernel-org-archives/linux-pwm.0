@@ -1,78 +1,81 @@
-From: David Wu <david.wu@rock-chips.com>
-Subject: [PATCH v3 7/7] arm64: dts: rockchip: Add pwm nodes for rk3328
-Date: Tue,  8 Aug 2017 23:43:15 +0800
-Message-ID: <1502206995-24418-1-git-send-email-david.wu@rock-chips.com>
-References: <1502206715-24174-1-git-send-email-david.wu@rock-chips.com>
+From: "David.Wu" <david.wu@rock-chips.com>
+Subject: Re: [PATCH v2 3/7] pwm: rockchip: Remove the dumplicate
+ rockchip_pwm_ops ops
+Date: Tue, 8 Aug 2017 23:41:46 +0800
+Message-ID: <78121683-137a-eb5c-c447-e763b18ccd12@rock-chips.com>
+References: <1499486629-9659-1-git-send-email-david.wu@rock-chips.com>
+ <1499486629-9659-4-git-send-email-david.wu@rock-chips.com>
+ <20170802105902.2d137072@bbrezillon>
+ <af056420-5c33-e6c8-62cb-bcd3456000a7@rock-chips.com>
+ <20170802134011.1124f1dd@bbrezillon>
+ <6d1f60ee-2402-5ee0-54f6-9521c039c36c@rock-chips.com>
+ <20170804090935.6aba3351@bbrezillon>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1502206715-24174-1-git-send-email-david.wu@rock-chips.com>
+In-Reply-To: <20170804090935.6aba3351@bbrezillon>
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, heiko@sntech.de, boris.brezillon@free-electrons.com, robh+dt@kernel.org
-Cc: catalin.marinas@arm.com, briannorris@chromium.org, dianders@chromium.org, mark.rutland@arm.com, huangtao@rock-chips.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, David Wu <david.wu@rock-chips.com>
+To: Boris Brezillon <boris.brezillon@free-electrons.com>
+Cc: thierry.reding@gmail.com, heiko@sntech.de, robh+dt@kernel.org, catalin.marinas@arm.com, briannorris@chromium.org, dianders@chromium.org, mark.rutland@arm.com, huangtao@rock-chips.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-There are 4 pwm channels built in rk3328 soc, need to configure
-the both APB clock and bus clock.
+Hi Boris,
 
-Signed-off-by: David Wu <david.wu@rock-chips.com>
----
- arch/arm64/boot/dts/rockchip/rk3328.dtsi | 45 ++++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+在 2017/8/4 15:09, Boris Brezillon 写道:
+> On Fri, 4 Aug 2017 10:38:26 +0800
+> "David.Wu" <david.wu@rock-chips.com> wrote:
+> 
+>> Hi Boris，
+>>
+>> 在 2017/8/2 19:40, Boris Brezillon 写道:
+>>> Yep, just define 3 different pwm_ops (one for each IP), each of them
+>>> implementing ->apply() and ->get_state() and that's all.
+>>>
+>>> Something like:
+>>>
+>>> static const struct pwm_ops rockchip_pwm_ops_v1 = {
+>>> 	.get_state = rockchip_pwm_v1_get_state,
+>>> 	.apply = rockchip_pwm_v1_apply,
+>>> 	.owner = THIS_MODULE,
+>>> };
+>>>
+>>> static const struct pwm_ops rockchip_pwm_ops_v2 = {
+>>> 	.get_state = rockchip_pwm_v2_get_state,
+>>> 	.apply = rockchip_pwm_v2_apply,
+>>> 	.owner = THIS_MODULE,
+>>> };
+>>>
+>>> static const struct pwm_ops rockchip_pwm_ops_vop = {
+>>> 	.get_state = rockchip_pwm_vop_get_state,
+>>> 	.apply = rockchip_pwm_vop_apply,
+>>> 	.owner = THIS_MODULE,
+>>> };
+>>>
+>>> static const struct of_device_id rockchip_pwm_dt_ids[] = {
+>>> 	{ .compatible = "rockchip,rk2928-pwm", .data = &rockchip_pwm_ops_v1 },
+>>> 	{ .compatible = "rockchip,rk3288-pwm", .data = &rockchip_pwm_ops_v2 },
+>>> 	{ .compatible = "rockchip,vop-pwm", .data = &rockchip_pwm_ops_vop },
+>>> 	{ /* sentinel */ }
+>>> };
+>>> MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);
+>>
+>> I think we should keep the data members in the rockchip_pwm_data，like
+>> supports_polarity and regs...
+>>
+>> The supports_polarity is needed for of_pwm_n_cells when pwm registered.
+>> And the other data members is helpful for us to use common code.
+>>
+>> It's okay for just define 3 different pwm_ops (one for each IP), but
+>> they are with other data members in the struct of rockchip_pwm_data.
+>>
+> 
+> I think we could even get rid of the other fields in rockchip_pwm_data,
+> but ok, let's do that.
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-index 7e69f1f..1f945d3 100644
---- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-@@ -308,6 +308,51 @@
- 		interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>;
- 	};
- 
-+	pwm0: pwm@ff1b0000 {
-+		compatible = "rockchip,rk3328-pwm";
-+		reg = <0x0 0xff1b0000 0x0 0x10>;
-+		#pwm-cells = <3>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwm0_pin>;
-+		clocks = <&cru SCLK_PWM>, <&cru PCLK_PWM>;
-+		clock-names = "pwm", "pclk";
-+		status = "disabled";
-+	};
-+
-+	pwm1: pwm@ff1b0010 {
-+		compatible = "rockchip,rk3328-pwm";
-+		reg = <0x0 0xff1b0010 0x0 0x10>;
-+		#pwm-cells = <3>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwm1_pin>;
-+		clocks = <&cru SCLK_PWM>, <&cru PCLK_PWM>;
-+		clock-names = "pwm", "pclk";
-+		status = "disabled";
-+	};
-+
-+	pwm2: pwm@ff1b0020 {
-+		compatible = "rockchip,rk3328-pwm";
-+		reg = <0x0 0xff1b0020 0x0 0x10>;
-+		#pwm-cells = <3>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwm2_pin>;
-+		clocks = <&cru SCLK_PWM>, <&cru PCLK_PWM>;
-+		clock-names = "pwm", "pclk";
-+		status = "disabled";
-+	};
-+
-+	pwm3: pwm@ff1b0030 {
-+		compatible = "rockchip,rk3328-pwm";
-+		reg = <0x0 0xff1b0030 0x0 0x10>;
-+		interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>;
-+		#pwm-cells = <3>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwmir_pin>;
-+		clocks = <&cru SCLK_PWM>, <&cru PCLK_PWM>;
-+		clock-names = "pwm", "pclk";
-+		status = "disabled";
-+	};
-+
- 	saradc: adc@ff280000 {
- 		compatible = "rockchip,rk3328-saradc", "rockchip,rk3399-saradc";
- 		reg = <0x0 0xff280000 0x0 0x100>;
--- 
-1.9.1
+I use the same pwm ops for each IP at V3's patch, but defined 3 
+different rockchip_pwm_data for use. I think this might look more clean.
+
+> 
+> 
+> 
