@@ -1,185 +1,146 @@
 From: David Wu <david.wu@rock-chips.com>
-Subject: [PATCH v3 1/7] pwm: rockchip: Add APB and function both clocks support
-Date: Tue,  8 Aug 2017 23:38:29 +0800
-Message-ID: <1502206715-24174-2-git-send-email-david.wu@rock-chips.com>
+Subject: [PATCH v3 4/7] pwm: rockchip: Move the configuration of polarity from rockchip_pwm_set_enable() to rockchip_pwm_config()
+Date: Tue,  8 Aug 2017 23:38:32 +0800
+Message-ID: <1502206715-24174-5-git-send-email-david.wu@rock-chips.com>
 References: <1502206715-24174-1-git-send-email-david.wu@rock-chips.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lucky1.263xmail.com ([211.157.147.134]:49245 "EHLO
-        lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752017AbdHHPeS (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 8 Aug 2017 11:34:18 -0400
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1502206715-24174-1-git-send-email-david.wu@rock-chips.com>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: thierry.reding@gmail.com, heiko@sntech.de, boris.brezillon@free-electrons.com, robh+dt@kernel.org
 Cc: catalin.marinas@arm.com, briannorris@chromium.org, dianders@chromium.org, mark.rutland@arm.com, huangtao@rock-chips.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, David Wu <david.wu@rock-chips.com>
+List-Id: linux-pwm@vger.kernel.org
 
-New PWM module provides two individual clocks for APB clock
-and function clock.
+It is usually possible to configure the polarity, cycle and duty all at once,
+so that the polarity and cycle and duty should be binding together. Move it
+into rockchip_pwm_config(), as well as prepared for the next atomic update
+commit.
 
 Signed-off-by: David Wu <david.wu@rock-chips.com>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
-changes in v3:
- - clk_get with NULL argument again if it was error, when clk_get with "pwm" argument.
- - To get clk count, use of_count_phandle_with_args instead of of_property_count_strings.
+ drivers/pwm/pwm-rockchip.c | 48 +++++++++++++++++++++++-----------------------
+ 1 file changed, 24 insertions(+), 24 deletions(-)
 
- .../devicetree/bindings/pwm/pwm-rockchip.txt       |  8 ++-
- drivers/pwm/pwm-rockchip.c                         | 58 ++++++++++++++++++----
- 2 files changed, 56 insertions(+), 10 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt b/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
-index b8be3d0..2350ef9 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-rockchip.txt
-@@ -6,7 +6,13 @@ Required properties:
-    "rockchip,rk3288-pwm": found on RK3288 SoC
-    "rockchip,vop-pwm": found integrated in VOP on RK3288 SoC
-  - reg: physical base address and length of the controller's registers
-- - clocks: phandle and clock specifier of the PWM reference clock
-+ - clocks: See ../clock/clock-bindings.txt
-+   - For older hardware (rk2928, rk3066, rk3188, rk3228, rk3288, rk3399):
-+     - There is one clock that's used both to derive the functional clock
-+       for the device and as the bus clock.
-+   - For newer hardware (rk3328 and future socs): specified by name
-+     - "pwm": This is used to derive the functional clock.
-+     - "pclk": This is the APB bus clock.
-  - #pwm-cells: must be 2 (rk2928) or 3 (rk3288). See pwm.txt in this directory
-    for a description of the cell format.
- 
 diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-index 744d561..ac3cd5e 100644
+index 4bbecbd..fbd9c1a 100644
 --- a/drivers/pwm/pwm-rockchip.c
 +++ b/drivers/pwm/pwm-rockchip.c
-@@ -33,6 +33,7 @@
- struct rockchip_pwm_chip {
- 	struct pwm_chip chip;
- 	struct clk *clk;
-+	struct clk *pclk;
- 	const struct rockchip_pwm_data *data;
- 	void __iomem *base;
- };
-@@ -145,7 +146,7 @@ static void rockchip_pwm_get_state(struct pwm_chip *chip,
- 	u64 tmp;
+@@ -27,6 +27,7 @@
+ #define PWM_DUTY_NEGATIVE	(0 << 3)
+ #define PWM_INACTIVE_NEGATIVE	(0 << 4)
+ #define PWM_INACTIVE_POSITIVE	(1 << 4)
++#define PWM_POLARITY_MASK	(PWM_DUTY_POSITIVE | PWM_INACTIVE_POSITIVE)
+ #define PWM_OUTPUT_LEFT		(0 << 5)
+ #define PWM_LP_DISABLE		(0 << 8)
+ 
+@@ -123,11 +124,12 @@ static void rockchip_pwm_get_state(struct pwm_chip *chip,
+ }
+ 
+ static void rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+-			       int duty_ns, int period_ns)
++			       struct pwm_state *state)
+ {
+ 	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
+ 	unsigned long period, duty;
+ 	u64 clk_rate, div;
++	u32 ctrl;
+ 
+ 	clk_rate = clk_get_rate(pc->clk);
+ 
+@@ -136,22 +138,31 @@ static void rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	 * bits, every possible input period can be obtained using the
+ 	 * default prescaler value for all practical clock rate values.
+ 	 */
+-	div = clk_rate * period_ns;
++	div = clk_rate * state->period;
+ 	period = DIV_ROUND_CLOSEST_ULL(div,
+ 				       pc->data->prescaler * NSEC_PER_SEC);
+ 
+-	div = clk_rate * duty_ns;
++	div = clk_rate * state->duty_cycle;
+ 	duty = DIV_ROUND_CLOSEST_ULL(div, pc->data->prescaler * NSEC_PER_SEC);
+ 
+ 	writel(period, pc->base + pc->data->regs.period);
+ 	writel(duty, pc->base + pc->data->regs.duty);
++
++	ctrl = readl_relaxed(pc->base + pc->data->regs.ctrl);
++	if (pc->data->supports_polarity) {
++		ctrl &= ~PWM_POLARITY_MASK;
++		if (state->polarity == PWM_POLARITY_INVERSED)
++			ctrl |= PWM_DUTY_NEGATIVE | PWM_INACTIVE_POSITIVE;
++		else
++			ctrl |= PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE;
++	}
++	writel(ctrl, pc->base + pc->data->regs.ctrl);
+ }
+ 
+ static int rockchip_pwm_enable(struct pwm_chip *chip,
+-			 struct pwm_device *pwm,
+-			 bool enable,
+-			 enum pwm_polarity polarity,
+-			 u32 enable_conf)
++			       struct pwm_device *pwm,
++			       bool enable,
++			       u32 enable_conf)
+ {
+ 	struct rockchip_pwm_chip *pc = to_rockchip_pwm_chip(chip);
  	int ret;
- 
--	ret = clk_enable(pc->clk);
-+	ret = clk_enable(pc->pclk);
- 	if (ret)
- 		return;
- 
-@@ -161,7 +162,7 @@ static void rockchip_pwm_get_state(struct pwm_chip *chip,
- 
- 	pc->data->get_state(chip, pwm, state);
- 
--	clk_disable(pc->clk);
-+	clk_disable(pc->pclk);
- }
- 
- static int rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-@@ -224,7 +225,7 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	pwm_get_state(pwm, &curstate);
- 	enabled = curstate.enabled;
- 
--	ret = clk_enable(pc->clk);
-+	ret = clk_enable(pc->pclk);
- 	if (ret)
- 		return ret;
- 
-@@ -257,7 +258,7 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	rockchip_pwm_get_state(chip, pwm, state);
- 
- out:
--	clk_disable(pc->clk);
-+	clk_disable(pc->pclk);
- 
- 	return ret;
- }
-@@ -328,7 +329,7 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
- 	const struct of_device_id *id;
- 	struct rockchip_pwm_chip *pc;
- 	struct resource *r;
--	int ret;
-+	int ret, count;
- 
- 	id = of_match_device(rockchip_pwm_dt_ids, &pdev->dev);
- 	if (!id)
-@@ -343,13 +344,43 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
- 	if (IS_ERR(pc->base))
- 		return PTR_ERR(pc->base);
- 
--	pc->clk = devm_clk_get(&pdev->dev, NULL);
--	if (IS_ERR(pc->clk))
--		return PTR_ERR(pc->clk);
-+	pc->clk = devm_clk_get(&pdev->dev, "pwm");
-+	if (IS_ERR(pc->clk)) {
-+		pc->clk = devm_clk_get(&pdev->dev, NULL);
-+		if (IS_ERR(pc->clk)) {
-+			ret = PTR_ERR(pc->clk);
-+			if (ret != -EPROBE_DEFER)
-+				dev_err(&pdev->dev, "Can't get bus clk: %d\n",
-+					ret);
-+			return ret;
-+		}
-+	}
-+
-+	count = of_count_phandle_with_args(pdev->dev.of_node,
-+					   "clocks", "#clock-cells");
-+	if (count == 2)
-+		pc->pclk = devm_clk_get(&pdev->dev, "pclk");
-+	else
-+		pc->pclk = pc->clk;
-+
-+	if (IS_ERR(pc->pclk)) {
-+		ret = PTR_ERR(pc->pclk);
-+		if (ret != -EPROBE_DEFER)
-+			dev_err(&pdev->dev, "Can't get APB clk: %d\n", ret);
-+		return ret;
-+	}
- 
- 	ret = clk_prepare_enable(pc->clk);
--	if (ret)
-+	if (ret) {
-+		dev_err(&pdev->dev, "Can't prepare enable bus clk: %d\n", ret);
- 		return ret;
-+	}
-+
-+	ret = clk_prepare(pc->pclk);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Can't prepare APB clk: %d\n", ret);
-+		goto err_clk;
-+	}
- 
- 	platform_set_drvdata(pdev, pc);
- 
-@@ -368,12 +399,20 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
- 	if (ret < 0) {
- 		clk_unprepare(pc->clk);
- 		dev_err(&pdev->dev, "pwmchip_add() failed: %d\n", ret);
-+		goto err_pclk;
+@@ -163,15 +174,6 @@ static int rockchip_pwm_enable(struct pwm_chip *chip,
+ 			return ret;
  	}
  
- 	/* Keep the PWM clk enabled if the PWM appears to be up and running. */
- 	if (!pwm_is_enabled(pc->chip.pwms))
- 		clk_disable(pc->clk);
+-	if (pc->data->supports_polarity) {
+-		if (polarity == PWM_POLARITY_INVERSED)
+-			enable_conf |= PWM_DUTY_NEGATIVE |
+-				       PWM_INACTIVE_POSITIVE;
+-		else
+-			enable_conf |= PWM_DUTY_POSITIVE |
+-				       PWM_INACTIVE_NEGATIVE;
+-	}
+-
+ 	val = readl_relaxed(pc->base + pc->data->regs.ctrl);
  
-+	return 0;
-+
-+err_pclk:
-+	clk_unprepare(pc->pclk);
-+err_clk:
-+	clk_disable_unprepare(pc->clk);
-+
+ 	if (enable)
+@@ -199,17 +201,16 @@ static int rockchip_pwm_apply_v1(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	enabled = curstate.enabled;
+ 
+ 	if (state->polarity != curstate.polarity && enabled) {
+-		ret = rockchip_pwm_enable(chip, pwm, false, state->polarity,
+-					  enable_conf);
++		ret = rockchip_pwm_enable(chip, pwm, false, enable_conf);
+ 		if (ret)
+ 			return ret;
+ 		enabled = false;
+ 	}
+ 
+-	rockchip_pwm_config(chip, pwm, state->duty_cycle, state->period);
++	rockchip_pwm_config(chip, pwm, state);
+ 	if (state->enabled != enabled)
+ 		ret = rockchip_pwm_enable(chip, pwm, state->enabled,
+-				    state->polarity, enable_conf);
++					  enable_conf);
+ 
  	return ret;
  }
+@@ -227,17 +228,16 @@ static int rockchip_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	enabled = curstate.enabled;
  
-@@ -395,6 +434,7 @@ static int rockchip_pwm_remove(struct platform_device *pdev)
- 	if (pwm_is_enabled(pc->chip.pwms))
- 		clk_disable(pc->clk);
+ 	if (state->polarity != curstate.polarity && enabled) {
+-		ret = rockchip_pwm_enable(chip, pwm, false, state->polarity,
+-					  enable_conf);
++		ret = rockchip_pwm_enable(chip, pwm, false, enable_conf);
+ 		if (ret)
+ 			return ret;
+ 		enabled = false;
+ 	}
  
-+	clk_unprepare(pc->pclk);
- 	clk_unprepare(pc->clk);
+-	rockchip_pwm_config(chip, pwm, state->duty_cycle, state->period);
++	rockchip_pwm_config(chip, pwm, state);
+ 	if (state->enabled != enabled)
+ 		ret = rockchip_pwm_enable(chip, pwm, state->enabled,
+-					  state->polarity, enable_conf);
++					  enable_conf);
  
- 	return pwmchip_remove(&pc->chip);
+ 	return ret;
+ }
 -- 
 1.9.1
