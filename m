@@ -1,7 +1,7 @@
 From: David Wu <david.wu@rock-chips.com>
-Subject: [PATCH v3 6/7] pwm: rockchip: Add rk3328 pwm support
-Date: Tue,  8 Aug 2017 23:42:47 +0800
-Message-ID: <1502206967-24366-1-git-send-email-david.wu@rock-chips.com>
+Subject: [PATCH v3 7/7] arm64: dts: rockchip: Add pwm nodes for rk3328
+Date: Tue,  8 Aug 2017 23:43:15 +0800
+Message-ID: <1502206995-24418-1-git-send-email-david.wu@rock-chips.com>
 References: <1502206715-24174-1-git-send-email-david.wu@rock-chips.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1502206715-24174-1-git-send-email-david.wu@rock-chips.com>
@@ -10,132 +10,69 @@ To: thierry.reding@gmail.com, heiko@sntech.de, boris.brezillon@free-electrons.co
 Cc: catalin.marinas@arm.com, briannorris@chromium.org, dianders@chromium.org, mark.rutland@arm.com, huangtao@rock-chips.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, David Wu <david.wu@rock-chips.com>
 List-Id: linux-pwm@vger.kernel.org
 
-The rk3328 soc supports atomic update, we could lock the configuration
-of period and duty at first, after unlock is configured, the period and
-duty are effective at the same time.
-
-If the polarity, period and duty need to be configured together,
-the way for atomic update is "configure lock and old polarity" ->
-"configure period and duty" -> "configure unlock and new polarity".
+There are 4 pwm channels built in rk3328 soc, need to configure
+the both APB clock and bus clock.
 
 Signed-off-by: David Wu <david.wu@rock-chips.com>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
- drivers/pwm/pwm-rockchip.c | 43 +++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 41 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi | 45 ++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
 
-diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
-index a3fcb40..4d99d46 100644
---- a/drivers/pwm/pwm-rockchip.c
-+++ b/drivers/pwm/pwm-rockchip.c
-@@ -29,6 +29,7 @@
- #define PWM_INACTIVE_POSITIVE	(1 << 4)
- #define PWM_POLARITY_MASK	(PWM_DUTY_POSITIVE | PWM_INACTIVE_POSITIVE)
- #define PWM_OUTPUT_LEFT		(0 << 5)
-+#define PWM_LOCK_EN		(1 << 6)
- #define PWM_LP_DISABLE		(0 << 8)
+diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+index 7e69f1f..1f945d3 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+@@ -308,6 +308,51 @@
+ 		interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>;
+ 	};
  
- struct rockchip_pwm_chip {
-@@ -50,6 +51,7 @@ struct rockchip_pwm_data {
- 	struct rockchip_pwm_regs regs;
- 	unsigned int prescaler;
- 	bool supports_polarity;
-+	bool supports_lock;
- 	u32 enable_conf;
- };
- 
-@@ -121,10 +123,19 @@ static void rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	div = clk_rate * state->duty_cycle;
- 	duty = DIV_ROUND_CLOSEST_ULL(div, pc->data->prescaler * NSEC_PER_SEC);
- 
-+	/*
-+	 * Lock the period and duty of previous configuration, then
-+	 * change the duty and period, that would not be effective.
-+	 */
-+	ctrl = readl_relaxed(pc->base + pc->data->regs.ctrl);
-+	if (pc->data->supports_lock) {
-+		ctrl |= PWM_LOCK_EN;
-+		writel_relaxed(ctrl, pc->base + pc->data->regs.ctrl);
-+	}
++	pwm0: pwm@ff1b0000 {
++		compatible = "rockchip,rk3328-pwm";
++		reg = <0x0 0xff1b0000 0x0 0x10>;
++		#pwm-cells = <3>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pwm0_pin>;
++		clocks = <&cru SCLK_PWM>, <&cru PCLK_PWM>;
++		clock-names = "pwm", "pclk";
++		status = "disabled";
++	};
 +
- 	writel(period, pc->base + pc->data->regs.period);
- 	writel(duty, pc->base + pc->data->regs.duty);
- 
--	ctrl = readl_relaxed(pc->base + pc->data->regs.ctrl);
- 	if (pc->data->supports_polarity) {
- 		ctrl &= ~PWM_POLARITY_MASK;
- 		if (state->polarity == PWM_POLARITY_INVERSED)
-@@ -132,6 +143,15 @@ static void rockchip_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		else
- 			ctrl |= PWM_DUTY_POSITIVE | PWM_INACTIVE_NEGATIVE;
- 	}
++	pwm1: pwm@ff1b0010 {
++		compatible = "rockchip,rk3328-pwm";
++		reg = <0x0 0xff1b0010 0x0 0x10>;
++		#pwm-cells = <3>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pwm1_pin>;
++		clocks = <&cru SCLK_PWM>, <&cru PCLK_PWM>;
++		clock-names = "pwm", "pclk";
++		status = "disabled";
++	};
 +
-+	/*
-+	 * Unlock and set polarity at the same time,
-+	 * the configuration of duty, period and polarity
-+	 * would be effective together at next period.
-+	 */
-+	if (pc->data->supports_lock)
-+		ctrl &= ~PWM_LOCK_EN;
++	pwm2: pwm@ff1b0020 {
++		compatible = "rockchip,rk3328-pwm";
++		reg = <0x0 0xff1b0020 0x0 0x10>;
++		#pwm-cells = <3>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pwm2_pin>;
++		clocks = <&cru SCLK_PWM>, <&cru PCLK_PWM>;
++		clock-names = "pwm", "pclk";
++		status = "disabled";
++	};
 +
- 	writel(ctrl, pc->base + pc->data->regs.ctrl);
- }
- 
-@@ -180,7 +200,8 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	pwm_get_state(pwm, &curstate);
- 	enabled = curstate.enabled;
- 
--	if (state->polarity != curstate.polarity && enabled) {
-+	if (state->polarity != curstate.polarity && enabled &&
-+	    !pc->data->supports_lock) {
- 		ret = rockchip_pwm_enable(chip, pwm, false);
- 		if (ret)
- 			goto out;
-@@ -221,6 +242,7 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	},
- 	.prescaler = 2,
- 	.supports_polarity = false,
-+	.supports_lock = false,
- 	.enable_conf = PWM_CTRL_OUTPUT_EN | PWM_CTRL_TIMER_EN,
- };
- 
-@@ -233,6 +255,7 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	},
- 	.prescaler = 1,
- 	.supports_polarity = true,
-+	.supports_lock = false,
- 	.enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE |
- 		       PWM_CONTINUOUS,
- };
-@@ -246,6 +269,21 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	},
- 	.prescaler = 1,
- 	.supports_polarity = true,
-+	.supports_lock = false,
-+	.enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE |
-+		       PWM_CONTINUOUS,
-+};
++	pwm3: pwm@ff1b0030 {
++		compatible = "rockchip,rk3328-pwm";
++		reg = <0x0 0xff1b0030 0x0 0x10>;
++		interrupts = <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>;
++		#pwm-cells = <3>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pwmir_pin>;
++		clocks = <&cru SCLK_PWM>, <&cru PCLK_PWM>;
++		clock-names = "pwm", "pclk";
++		status = "disabled";
++	};
 +
-+static const struct rockchip_pwm_data pwm_data_v3 = {
-+	.regs = {
-+		.duty = 0x08,
-+		.period = 0x04,
-+		.cntr = 0x00,
-+		.ctrl = 0x0c,
-+	},
-+	.prescaler = 1,
-+	.supports_polarity = true,
-+	.supports_lock = true,
- 	.enable_conf = PWM_OUTPUT_LEFT | PWM_LP_DISABLE | PWM_ENABLE |
- 		       PWM_CONTINUOUS,
- };
-@@ -254,6 +292,7 @@ static int rockchip_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	{ .compatible = "rockchip,rk2928-pwm", .data = &pwm_data_v1},
- 	{ .compatible = "rockchip,rk3288-pwm", .data = &pwm_data_v2},
- 	{ .compatible = "rockchip,vop-pwm", .data = &pwm_data_vop},
-+	{ .compatible = "rockchip,rk3328-pwm", .data = &pwm_data_v3},
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, rockchip_pwm_dt_ids);
+ 	saradc: adc@ff280000 {
+ 		compatible = "rockchip,rk3328-saradc", "rockchip,rk3399-saradc";
+ 		reg = <0x0 0xff280000 0x0 0x100>;
 -- 
 1.9.1
