@@ -1,107 +1,43 @@
-From: Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
-Subject: Re: [PATCH 3/3] mfd: twl: move header file out of I2C realm
-Date: Sun, 13 Aug 2017 15:37:00 +0200
-Message-ID: <20170813133700.tv4ka7anvbzcplr7@ninjato>
-References: <20170521220212.1404-1-wsa@the-dreams.de>
- <20170521220212.1404-4-wsa@the-dreams.de>
- <20170706064453.GH16144@ulmo.fritz.box>
- <20170706070352.xdecvsnremwqed72@dell>
-Reply-To: rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+From: "David.Wu" <david.wu@rock-chips.com>
+Subject: Re: [PATCH v3 0/7] Add rk3328 pwm support
+Date: Mon, 14 Aug 2017 10:46:54 +0800
+Message-ID: <7e5a11c1-5f1d-9dff-435f-2624d95e16a3@rock-chips.com>
+References: <1502206715-24174-1-git-send-email-david.wu@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="bf2u36sx3yv46k44"
-Return-path: <rtc-linux+bncBDP47C6LHEIP3K6BZQCRUBG2SV53C-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-Content-Disposition: inline
-In-Reply-To: <20170706070352.xdecvsnremwqed72@dell>
-List-Post: <https://groups.google.com/group/rtc-linux/post>, <mailto:rtc-linux-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:rtc-linux+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/rtc-linux
-List-Subscribe: <https://groups.google.com/group/rtc-linux/subscribe>, <mailto:rtc-linux+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+712029733259+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/rtc-linux/subscribe>
-To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tony Lindgren <tony-4v6yS6AI5VpBDgjK7y7TUQ@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Hartmut Knaack <knaack.h-Mmb7MZpHnFY@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Peter Meerwald-Stadler <pmeerw-jW+XmwGofnusTnJN9+BGXg@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kishon Vijay Abraham I <kishon-l0cyMroinI0@public.gmane.org>, Sebastian Reichel <sre-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Alessandro Zummo <a.zummo-BfzFCNDTiLLj+vYz1yj4TQ@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Felipe Balbi <balbi-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lucky1.263xmail.com ([211.157.147.132]:58296 "EHLO
+        lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752105AbdHNCq6 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 13 Aug 2017 22:46:58 -0400
+In-Reply-To: <1502206715-24174-1-git-send-email-david.wu@rock-chips.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: thierry.reding@gmail.com, heiko@sntech.de, boris.brezillon@free-electrons.com, robh+dt@kernel.org
+Cc: catalin.marinas@arm.com, briannorris@chromium.org, dianders@chromium.org, mark.rutland@arm.com, huangtao@rock-chips.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 
+Hi Boris && thierry,
 
---bf2u36sx3yv46k44
-Content-Type: text/plain; charset="UTF-8"
-Content-Disposition: inline
+Do you have any other suggestion for the patches?
 
-On Thu, Jul 06, 2017 at 08:03:52AM +0100, Lee Jones wrote:
-> On Thu, 06 Jul 2017, Thierry Reding wrote:
+ÔÚ 2017/8/8 23:38, David Wu Ð´µÀ:
+> There are two features of rk3328 pwm module.
+>   - PWM APB and function clocks are different.
+>   - Add pwm atomic hardware update
 > 
-> > On Mon, May 22, 2017 at 12:02:10AM +0200, Wolfram Sang wrote:
-> > > include/linux/i2c is not for client devices. Move the header file to a
-> > > more appropriate location.
-> > > 
-> > > Signed-off-by: Wolfram Sang <wsa-z923LK4zBo2bacvFa/9K2g@public.gmane.org>
-> > > ---
-> > >  arch/arm/mach-omap2/common.h            | 2 +-
-> > >  arch/arm/mach-omap2/omap_twl.c          | 2 +-
-> > >  drivers/gpio/gpio-twl4030.c             | 2 +-
-> > >  drivers/iio/adc/twl4030-madc.c          | 2 +-
-> > >  drivers/iio/adc/twl6030-gpadc.c         | 2 +-
-> > >  drivers/input/keyboard/twl4030_keypad.c | 2 +-
-> > >  drivers/input/misc/twl4030-pwrbutton.c  | 2 +-
-> > >  drivers/input/misc/twl4030-vibra.c      | 2 +-
-> > >  drivers/mfd/twl-core.c                  | 6 +++---
-> > >  drivers/mfd/twl4030-audio.c             | 2 +-
-> > >  drivers/mfd/twl4030-irq.c               | 2 +-
-> > >  drivers/mfd/twl4030-power.c             | 2 +-
-> > >  drivers/mfd/twl6030-irq.c               | 2 +-
-> > >  drivers/phy/phy-twl4030-usb.c           | 2 +-
-> > >  drivers/power/supply/twl4030_charger.c  | 2 +-
-> > >  drivers/pwm/pwm-twl-led.c               | 2 +-
-> > >  drivers/pwm/pwm-twl.c                   | 2 +-
-> > >  drivers/regulator/twl-regulator.c       | 2 +-
-> > >  drivers/regulator/twl6030-regulator.c   | 2 +-
-> > >  drivers/rtc/rtc-twl.c                   | 2 +-
-> > >  drivers/usb/phy/phy-twl6030-usb.c       | 2 +-
-> > >  drivers/video/backlight/pandora_bl.c    | 2 +-
-> > >  drivers/watchdog/twl4030_wdt.c          | 2 +-
-> > >  include/linux/{i2c => mfd}/twl.h        | 0
-> > >  sound/soc/codecs/twl4030.c              | 2 +-
-> > >  25 files changed, 26 insertions(+), 26 deletions(-)
-> > >  rename include/linux/{i2c => mfd}/twl.h (100%)
-> > 
-> > I didn't see this get applied yet, so just in case anyone was waiting
-> > for me (this is trivial, so I don't think there's a need):
+> David Wu (7):
+>    pwm: rockchip: Add APB and function both clocks support
+>    pwm: rockchip: Remove the judge from return value of pwm_config
+>    pwm: rockchip: Use pwm_apply instead of the pwm_enable
+>    pwm: rockchip: Move the configuration of polarity from
+>      rockchip_pwm_set_enable() to rockchip_pwm_config()
+>    pwm: rockchip: Use same pwm ops for each IP
+>    pwm: rockchip: Add rk3328 pwm support
+>    arm64: dts: rockchip: Add pwm nodes for rk3328
 > 
-> You're not the last. :)
-
-Given the triviality of the change for non-MFD subsystems, can we apply
-this for 4.14?
-
--- 
-You received this message because you are subscribed to "rtc-linux".
-Membership options at http://groups.google.com/group/rtc-linux .
-Please read http://groups.google.com/group/rtc-linux/web/checklist
-before submitting a driver.
---- 
-You received this message because you are subscribed to the Google Groups "rtc-linux" group.
-To unsubscribe from this group and stop receiving emails from it, send an email to rtc-linux+unsubscribe-/JYPxA39Uh5TLH3MbocFF+G/Ez6ZCGd0@public.gmane.org
-For more options, visit https://groups.google.com/d/optout.
-
---bf2u36sx3yv46k44
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAlmQVfwACgkQFA3kzBSg
-KbanFg//dxik+zStgiZtWtrgtgSmpeUOGOsX3FXnRhJCPNTaXUuGOMuuhjFgK3p3
-uDOXYfGtsdDPrnAGj3m8yjJI8JqQ1GI/9FtMxW9Jwcr3N6ZJ9dQYqzN7XMXwgnhd
-prXN/iTZgkF/XT1ZOc6GMXne2jbqhJOuRY3sk+N40xQHsOBa8ThqxqssFyJbn0BF
-jjSQP5TNp0KefTYS9ZyJGbnFxNZQhMb+AWHCMDgib2jCTQIIAQD5iMLH3aoCZEOn
-rQDxnEHlOwcR+qYKdz8LVPU5tOR2uEsY16F4awUYVR+6lkx3KLKsBFHZr7tZ2QPn
-+w0767Mr+wyphuuG77YoBvTLU8pDJxwSYR21XGYqvJvYNdwVHCy5Y4M+DTV3xG8g
-DsY45lDHNspdDJvwBpZZRBO29uGPtqfCJfDgUpxvDllF99ES72urbNUXn5YrdvVy
-sTrUzmgX4kiBRzA6mpyG4autZE9Z6q/xNslSrV/0ll0arUMbzpMmVFQwE6yRgRsB
-1Ha3prXevF/UNZQcvnhHruUcakuzPgvK0hpdhirON2OTqXChTOHLKWquA+aYQ9lB
-cBe7cZhAUXkimtWvNheqOYEg8ZStjW1uNup5eHujXNYw/HY8+3p/cr/9Jf05xvQz
-H3Qawecv5x3sLjvuv0PuhEdFPr5dKQfLGoDZrLqmFLfYTJ3NWoE=
-=hKZZ
------END PGP SIGNATURE-----
-
---bf2u36sx3yv46k44--
+>   .../devicetree/bindings/pwm/pwm-rockchip.txt       |   8 +-
+>   arch/arm64/boot/dts/rockchip/rk3328.dtsi           |  45 ++++
+>   drivers/pwm/pwm-rockchip.c                         | 281 +++++++++++----------
+>   3 files changed, 199 insertions(+), 135 deletions(-)
+> 
