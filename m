@@ -1,71 +1,64 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 1/7] pwm: rockchip: Add APB and function both clocks
- support
-Date: Fri, 18 Aug 2017 17:31:35 +0200
-Message-ID: <20170818153135.GB18307@ulmo>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v3 2/7] pwm: rockchip: Remove the judge from return value
+ of pwm_config
+Date: Fri, 18 Aug 2017 17:32:55 +0200
+Message-ID: <20170818153255.GC18307@ulmo>
 References: <1502206715-24174-1-git-send-email-david.wu@rock-chips.com>
- <1502206715-24174-2-git-send-email-david.wu@rock-chips.com>
+ <1502206715-24174-3-git-send-email-david.wu@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="KFztAG8eRSV9hGtP"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+        protocol="application/pgp-signature"; boundary="iFRdW5/EC4oqxDHL"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:37152 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751075AbdHRPc6 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 18 Aug 2017 11:32:58 -0400
 Content-Disposition: inline
-In-Reply-To: <1502206715-24174-2-git-send-email-david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: David Wu <david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Cc: heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, huangtao-TNX95d0MmH7DzftRWevZcw@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <1502206715-24174-3-git-send-email-david.wu@rock-chips.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: David Wu <david.wu@rock-chips.com>
+Cc: heiko@sntech.de, boris.brezillon@free-electrons.com, robh+dt@kernel.org, catalin.marinas@arm.com, briannorris@chromium.org, dianders@chromium.org, mark.rutland@arm.com, huangtao@rock-chips.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---KFztAG8eRSV9hGtP
+--iFRdW5/EC4oqxDHL
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Aug 08, 2017 at 11:38:29PM +0800, David Wu wrote:
-> New PWM module provides two individual clocks for APB clock
-> and function clock.
+On Tue, Aug 08, 2017 at 11:38:30PM +0800, David Wu wrote:
+> It seems the rockchip_pwm_config always returns the result 0,
+> so remove the judge.
 >=20
-> Signed-off-by: David Wu <david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-> Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Signed-off-by: David Wu <david.wu@rock-chips.com>
+> Acked-by: Boris Brezillon <boris.brezillon@free-electrons.com>
 > ---
-> changes in v3:
->  - clk_get with NULL argument again if it was error, when clk_get with "p=
-wm" argument.
->  - To get clk count, use of_count_phandle_with_args instead of of_propert=
-y_count_strings.
->=20
->  .../devicetree/bindings/pwm/pwm-rockchip.txt       |  8 ++-
->  drivers/pwm/pwm-rockchip.c                         | 58 ++++++++++++++++=
-++----
->  2 files changed, 56 insertions(+), 10 deletions(-)
+>  drivers/pwm/pwm-rockchip.c | 12 ++----------
+>  1 file changed, 2 insertions(+), 10 deletions(-)
 
-Applied to for-4.14/drivers, thanks.
+I don't understand what the "judge" is supposed to be, but I've applied
+this to for-4.14/drivers anyway. Thanks.
 
 Thierry
 
---KFztAG8eRSV9hGtP
+--iFRdW5/EC4oqxDHL
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmXCFcACgkQ3SOs138+
-s6EXURAApMbJYPOsD8nohmlo+4mCpFDpw6ON+7GP7LnPUZs/fVYxlWP239kfZ+1A
-LiGVjYaySfA+Z+Njq15PZgPQQp/6SBBAYREJJVhTr0sUh7AIJZHB65IEM3IFFrBS
-B8NHOl9YlqSUCigL9FcaCVo3QjcnvnKygAmgJWjjb2n9lI7DwtaD2AFTMhB7A3WA
-qXc1G0Yam2tIUeHtfzq1J/8gitmMtZbLXNTEkVzA8VdL7cEVNMbcNOlrqB6OLMDK
-cJh7Id3sYPIjZEM63gYsVc797ZcF01kDz0FONifW7KA9LjXwwg2V+sUxlknNiSLc
-dNMKdSHfbSCp5uVv7VHbpFa+b7nhlxAnStKMmj0M/MdswEEpaRKgWmidpMkyRT5P
-bRAx3ZUu54X0kkN2dEVuLLwoPJDJtFteMHid3g9o6INeRv4T9eseDb1YHO8Ad6tJ
-PVEsE7II5h2XdvUsXhL1fIe2v7N8pZvWB753gREzxgFU+7qoiyEHR4Kw4dgqpBkX
-Blw/xY0KxyoClugSt9MnBoR+plK9QwymfOnO9n7wnp3LWYfG3DA/VFhxve3ayqZE
-6B4cAMjs0MSZe65NJn4nq4WTToMKVvRB92H91GttZMebXF1vQhl3FOzxIhDHtik0
-6BdjwIFnHl7yPeE2gyITe5aHivEOL6ReEVoDwZtnDzYdbV6hZCg=
-=jUMz
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmXCKcACgkQ3SOs138+
+s6G86xAAglfoLi0BXXtHUNBnnYqktkKYCxP7IiV/Uq2gz4I8WhaKBK248LOetd6T
+bSfhrAsdnSnnIxZ6AYp42G5pwRSjZJCaR4j/v5yTuLtCEa/Y3IJlk83hFP6Qrqwd
+m8oLhAQxiXq11HyGLildTfjqxhHl0UfMJJAO6H1ez7igXBuBCop7/BLmP4KEniWU
+dySFrY8lcLVOUFvdLypN2SPuBV4DdK9dh7mgR5uaB6BF1tFUkALM/Kd8EuSVjh3m
+GT6B1i5vdxa2064+LGWN/sUGh5azSLg6iIUSnrECKbEOFHsL78a5lC4lPeLB8SSv
+FQmn4mGvVQdoGEWRtN4EcCPDlxNp8O83DcL/N+Z0xASLUwZyKAo/QZIPkaWgpcby
+kE0rHafOEqXQcxMVCFEf5gHz7UlD5Q9UHQedabrnpiwBCSiiBoUOJIoVzpt555Cj
+hQRRygj4eMf7iOMwWL1D7C0yBexurxBVx4hZt+nVdivz46PnxcG7/Oj5LfOqhLDP
+Tqeq6romBV4nE3BkUzBguAF+tFSlEm2I2ZdlCVmpJtipscSI9Ql4XqwAvwbi1dz3
+a3OH5IGRpyZrb/jrzPnwsE1SFJt8ZJBRMe4nt3tgg3PkWFvLv0jYRDhBbiJn7AtI
+dROG7KBido1Scptm+7UqP0hDBBcuXxndfX32IsoPWm6zaji7bIM=
+=s4Km
 -----END PGP SIGNATURE-----
 
---KFztAG8eRSV9hGtP--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--iFRdW5/EC4oqxDHL--
