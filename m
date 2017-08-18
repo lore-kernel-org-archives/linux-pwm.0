@@ -1,32 +1,30 @@
-From: Brian Norris <briannorris@chromium.org>
-Subject: Re: [PATCH v3 2/7] pwm: rockchip: Remove the judge from return value
- of pwm_config
-Date: Fri, 18 Aug 2017 09:28:31 -0700
-Message-ID: <20170818162830.GA115593@google.com>
-References: <1502206715-24174-1-git-send-email-david.wu@rock-chips.com>
- <1502206715-24174-3-git-send-email-david.wu@rock-chips.com>
- <20170818153255.GC18307@ulmo>
+From: Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH v3 7/7] arm64: dts: rockchip: Add pwm nodes for rk3328
+Date: Sat, 19 Aug 2017 01:06:43 +0200
+Message-ID: <2426743.6zMP1RcfyD@phil>
+References: <1502206715-24174-1-git-send-email-david.wu@rock-chips.com> <1502206995-24418-1-git-send-email-david.wu@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170818153255.GC18307@ulmo>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: David Wu <david.wu@rock-chips.com>, heiko@sntech.de, boris.brezillon@free-electrons.com, robh+dt@kernel.org, catalin.marinas@arm.com, dianders@chromium.org, mark.rutland@arm.com, huangtao@rock-chips.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from gloria.sntech.de ([95.129.55.99]:35626 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751114AbdHRXGw (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Fri, 18 Aug 2017 19:06:52 -0400
+In-Reply-To: <1502206995-24418-1-git-send-email-david.wu@rock-chips.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: David Wu <david.wu@rock-chips.com>
+Cc: thierry.reding@gmail.com, boris.brezillon@free-electrons.com, robh+dt@kernel.org, catalin.marinas@arm.com, briannorris@chromium.org, dianders@chromium.org, mark.rutland@arm.com, huangtao@rock-chips.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 
-On Fri, Aug 18, 2017 at 05:32:55PM +0200, Thierry Reding wrote:
-> I don't understand what the "judge" is supposed to be, but I've applied
-> this to for-4.14/drivers anyway. Thanks.
+Am Dienstag, 8. August 2017, 23:43:15 CEST schrieb David Wu:
+> There are 4 pwm channels built in rk3328 soc, need to configure
+> the both APB clock and bus clock.
+> 
+> Signed-off-by: David Wu <david.wu@rock-chips.com>
 
-Probably just an artifact of non-native English.
+applied for 4.14 with some property movements.
 
-Judging by context, David probably meant more like "Remove the check for
-the return value". I believe I've seen other non-native English speakers
-use "judge" in a way similar to "check" or "test" in the context of
-comparisons and error checking. (A search through my mailbox for "judge"
-confirms this.)
 
-Regards,
-Brian
+Thanks
+Heiko
