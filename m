@@ -1,64 +1,71 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH repost2] pwm: renesas-tpu: remove support for sh7372
-Date: Fri, 18 Aug 2017 17:28:01 +0200
-Message-ID: <20170818152801.GA18307@ulmo>
-References: <20170818100858.GA15521@verge.net.au>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 1/7] pwm: rockchip: Add APB and function both clocks
+ support
+Date: Fri, 18 Aug 2017 17:31:35 +0200
+Message-ID: <20170818153135.GB18307@ulmo>
+References: <1502206715-24174-1-git-send-email-david.wu@rock-chips.com>
+ <1502206715-24174-2-git-send-email-david.wu@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="UlVJffcvxoiEqYs2"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:34047 "EHLO
-        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751695AbdHRP2F (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 18 Aug 2017 11:28:05 -0400
+        protocol="application/pgp-signature"; boundary="KFztAG8eRSV9hGtP"
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170818100858.GA15521@verge.net.au>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1502206715-24174-2-git-send-email-david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: David Wu <david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Cc: heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, huangtao-TNX95d0MmH7DzftRWevZcw@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Simon Horman <horms+renesas@verge.net.au>
-Cc: Rob Herring <robh+dt@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Geert Uytterhoeven <geert@linux-m68k.org>, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org
 
 
---UlVJffcvxoiEqYs2
+--KFztAG8eRSV9hGtP
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 18, 2017 at 12:09:01PM +0200, Simon Horman wrote:
-> Remove support for the SH7372 (SH-Mobile AP4) from the renesas-tpu driver.
+On Tue, Aug 08, 2017 at 11:38:29PM +0800, David Wu wrote:
+> New PWM module provides two individual clocks for APB clock
+> and function clock.
 >=20
-> Commit edf4100906044225 ("ARM: shmobile: sh7372 dtsi: Remove Legacy file")
-> removes this SoC from the kernel in v4.1.
->=20
-> Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+> Signed-off-by: David Wu <david.wu-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+> Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 > ---
->  Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt | 1 -
->  drivers/pwm/pwm-renesas-tpu.c                             | 1 -
->  2 files changed, 2 deletions(-)
+> changes in v3:
+>  - clk_get with NULL argument again if it was error, when clk_get with "p=
+wm" argument.
+>  - To get clk count, use of_count_phandle_with_args instead of of_propert=
+y_count_strings.
+>=20
+>  .../devicetree/bindings/pwm/pwm-rockchip.txt       |  8 ++-
+>  drivers/pwm/pwm-rockchip.c                         | 58 ++++++++++++++++=
+++----
+>  2 files changed, 56 insertions(+), 10 deletions(-)
 
-Applied, thanks.
+Applied to for-4.14/drivers, thanks.
 
 Thierry
 
---UlVJffcvxoiEqYs2
+--KFztAG8eRSV9hGtP
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmXB4EACgkQ3SOs138+
-s6EQ/BAAuM2XlL+KPSzdKoO3Q26ek1Its1QmuGy5geSATWQI3hvLuC8eNrWTgdOb
-tWAmpJMWzNnBksbSPhVHrDJygkHts81+HKSShueqTd+tYeR+NRh013XlsjcR0d/V
-7TxDRBWT7iz1nAlBgCHYS7F5LESi/XMnwzwo+9JCqFWkYYjBqyzZz+Gwtzj83HgE
-ue6ezrLUtCIGK6qEfm0oLpf8oxYSdYz6TUucUWBvWWiYD7BJe/aCMDZXyFT5Yjgf
-RQl09oZvF+8tbBdCwZZQxeQIUB4SFvoWENtnkZ2793BXHxDaBWMxA/bBTP3SSh9N
-YgDi5g+ZYpGiCpcotcKWkhpjdkkRaxWjeLrK72fDyQLAAgx2eEwSI8ciJ9Z/zryy
-aC5ncG5Pn99X9aSsDFSbDwR1hn0UwuFhfTeuLOt22UUrzfH6u83MZSGQF0JcySH9
-UJivoLng//YkcJwwtqQNfMNAFqjdJX+QWMm1z2tUa8HhtXfajuTdWcJJttVG1n5q
-zEtsrhhoUFgFsW2iFlAQwTCvQmZZG/HD8gXCw7VtANrx5PDtJOjBWUOTd3IgaNf2
-R6pkWcFDEq8aWPYjI6rxqw6j2yhaFlM/JvR2HC6eEtzOYij1M8JrydnCBQbV8w2q
-TMyOeoyPayplz496Z/7N9m6Mr8DQBq4mWQWE4xdiIQtg9ButYPs=
-=QHE3
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmXCFcACgkQ3SOs138+
+s6EXURAApMbJYPOsD8nohmlo+4mCpFDpw6ON+7GP7LnPUZs/fVYxlWP239kfZ+1A
+LiGVjYaySfA+Z+Njq15PZgPQQp/6SBBAYREJJVhTr0sUh7AIJZHB65IEM3IFFrBS
+B8NHOl9YlqSUCigL9FcaCVo3QjcnvnKygAmgJWjjb2n9lI7DwtaD2AFTMhB7A3WA
+qXc1G0Yam2tIUeHtfzq1J/8gitmMtZbLXNTEkVzA8VdL7cEVNMbcNOlrqB6OLMDK
+cJh7Id3sYPIjZEM63gYsVc797ZcF01kDz0FONifW7KA9LjXwwg2V+sUxlknNiSLc
+dNMKdSHfbSCp5uVv7VHbpFa+b7nhlxAnStKMmj0M/MdswEEpaRKgWmidpMkyRT5P
+bRAx3ZUu54X0kkN2dEVuLLwoPJDJtFteMHid3g9o6INeRv4T9eseDb1YHO8Ad6tJ
+PVEsE7II5h2XdvUsXhL1fIe2v7N8pZvWB753gREzxgFU+7qoiyEHR4Kw4dgqpBkX
+Blw/xY0KxyoClugSt9MnBoR+plK9QwymfOnO9n7wnp3LWYfG3DA/VFhxve3ayqZE
+6B4cAMjs0MSZe65NJn4nq4WTToMKVvRB92H91GttZMebXF1vQhl3FOzxIhDHtik0
+6BdjwIFnHl7yPeE2gyITe5aHivEOL6ReEVoDwZtnDzYdbV6hZCg=
+=jUMz
 -----END PGP SIGNATURE-----
 
---UlVJffcvxoiEqYs2--
+--KFztAG8eRSV9hGtP--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
