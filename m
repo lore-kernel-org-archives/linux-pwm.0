@@ -1,128 +1,190 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 0/2] extend PWM framework to support PWM dead-times
-Date: Mon, 21 Aug 2017 10:25:27 +0200
-Message-ID: <20170821082527.GQ18996@ulmo>
-References: <1494332153-14534-1-git-send-email-claudiu.beznea@microchip.com>
+Subject: Re: [PATCH] pwm: pwm-samsung: switch to new atomic PWM API
+Date: Mon, 21 Aug 2017 10:29:48 +0200
+Message-ID: <20170821082948.GR18996@ulmo>
+References: <1493039598-25881-1-git-send-email-b.zolnierkie@samsung.com>
+ <CGME20170424131346epcas1p4584c5e78edfe5055beaba0ce0f5e5ae7@epcas1p4.samsung.com>
+ <1493039598-25881-2-git-send-email-b.zolnierkie@samsung.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="WZLuFERxa6Y0cbOt"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f196.google.com ([209.85.128.196]:34792 "EHLO
-        mail-wr0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752414AbdHUIZb (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Aug 2017 04:25:31 -0400
+        protocol="application/pgp-signature"; boundary="1GSL5ZULXUIqbbH1"
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1494332153-14534-1-git-send-email-claudiu.beznea@microchip.com>
-Sender: linux-pwm-owner@vger.kernel.org
+In-Reply-To: <1493039598-25881-2-git-send-email-b.zolnierkie@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, Kamil Debski <kamil@wypas.org>, Tomasz Figa <tomasz.figa@gmail.com>, linux-pwm@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc: corbet@lwn.net, robh+dt@kernel.org, mark.rutland@arm.com, alexandre.belloni@free-electrons.com, boris.brezillon@free-electrons.com, linux-pwm@vger.kernel.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, nicolas.ferre@microchip.com
 
 
---WZLuFERxa6Y0cbOt
+--1GSL5ZULXUIqbbH1
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 09, 2017 at 03:15:51PM +0300, Claudiu Beznea wrote:
-> Hi all,
+On Mon, Apr 24, 2017 at 03:13:18PM +0200, Bartlomiej Zolnierkiewicz wrote:
+> Switch pwm-samsung driver to new atomic PWM API.
 >=20
-> Please give feedback on these patches which extends the PWM
-> framework in order to support multiple PWM signal types.
-> Since I didn't receive any inputs on RFC series I'm resending it as
-> normal patch series.
+> This is an initial conversion (based on the PWM core's
+> pwm_apply_state() implementation) which can be improved
+> later.
 >=20
-> The current patch series add the following PWM signal types:
-> - PWM complementary signals
-> - PWM push-pull signal
+> There should be no functional changes caused by this
+> patch.
 >=20
-> Definition of PWM complementary mode:
-> For a PWM controllers with more than one outputs per PWM channel,
-> e.g. with 2 outputs per PWM channels, the PWM complementary signals
-> have opposite levels, same duration and same starting times,
-> as in the following diagram:
+> Signed-off-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+> ---
+> Depends on "[PATCH v2 0/3] pwm: pwm-samsung: fix suspend/resume support"
+> patchset (https://www.spinics.net/lists/kernel/msg2495209.html).
 >=20
->         __    __    __    __
-> PWMH __|  |__|  |__|  |__|  |__
->      __    __    __    __    __
-> PWML   |__|  |__|  |__|  |__|
->        <--T-->
-> Where T is the signal period.
->=20
-> Definition of PWM push-pull mode:
-> For PWM controllers with more than one outputs per PWM channel,
-> e.g. with 2 outputs per PWM channel, the PWM push-pull signals
-> have same levels, same duration and are delayed until the begining
-> of the next period, as in the following diagram:
->=20
->         __          __
-> PWMH __|  |________|  |________
->               __          __
-> PWML ________|  |________|  |__
->        <--T-->
->=20
-> Where T is the signal period.
->=20
-> These output signals could be configured by setting PWM mode
-> (a new input in sysfs has been added in order to support this
-> operation).
->=20
-> root@sama5d2-xplained:/sys/devices/platform/ahb/ahb:apb/f802c000.pwm/pwm/=
-pwmchip0/pwm2# ls -l
-> -r--r--r--    1 root     root          4096 Feb  9 10:54 capture
-> -rw-r--r--    1 root     root          4096 Feb  9 10:54 duty_cycle
-> -rw-r--r--    1 root     root          4096 Feb  9 10:54 enable
-> -rw-r--r--    1 root     root          4096 Feb  9 10:54 mode
-> -rw-r--r--    1 root     root          4096 Feb  9 10:54 period
-> -rw-r--r--    1 root     root          4096 Feb  9 10:55 polarity
-> drwxr-xr-x    2 root     root             0 Feb  9 10:54 power
-> -rw-r--r--    1 root     root          4096 Feb  9 10:54 uevent
->=20
-> The PWM push-pull mode could be usefull in applications like
-> half bridge converters.
+>  drivers/pwm/pwm-samsung.c | 59 ++++++++++++++++++++++++++++++++++++-----=
+------
+>  1 file changed, 45 insertions(+), 14 deletions(-)
 
-Sorry for taking an absurdly long time to get back to you on this.
+Sorry, it looks like I never reviewed this.
 
-One problem I see with this is that the PWM framework is built on the
-assumption that we have a single output per PWM channel. This becomes
-important when you start adding features such as this because now the
-users have no way of determining whether or not the PWM they retrieve
-will actually be able to do what they want.
+> diff --git a/drivers/pwm/pwm-samsung.c b/drivers/pwm/pwm-samsung.c
+> index 062f2cf..09868a9 100644
+> --- a/drivers/pwm/pwm-samsung.c
+> +++ b/drivers/pwm/pwm-samsung.c
+> @@ -241,7 +241,7 @@ static void pwm_samsung_free(struct pwm_chip *chip, s=
+truct pwm_device *pwm)
+>  	pwm_set_chip_data(pwm, NULL);
+>  }
+> =20
+> -static int pwm_samsung_enable(struct pwm_chip *chip, struct pwm_device *=
+pwm)
+> +static void pwm_samsung_enable(struct pwm_chip *chip, struct pwm_device =
+*pwm)
+>  {
+>  	struct samsung_pwm_chip *our_chip =3D to_samsung_pwm_chip(chip);
+>  	unsigned int tcon_chan =3D to_tcon_channel(pwm->hwpwm);
+> @@ -263,8 +263,6 @@ static int pwm_samsung_enable(struct pwm_chip *chip, =
+struct pwm_device *pwm)
+>  	our_chip->disabled_mask &=3D ~BIT(pwm->hwpwm);
+> =20
+>  	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
+> -
+> -	return 0;
+>  }
+> =20
+>  static void pwm_samsung_disable(struct pwm_chip *chip, struct pwm_device=
+ *pwm)
+> @@ -385,12 +383,6 @@ static int __pwm_samsung_config(struct pwm_chip *chi=
+p, struct pwm_device *pwm,
+>  	return 0;
+>  }
+> =20
+> -static int pwm_samsung_config(struct pwm_chip *chip, struct pwm_device *=
+pwm,
+> -			      int duty_ns, int period_ns)
+> -{
+> -	return __pwm_samsung_config(chip, pwm, duty_ns, period_ns, false);
+> -}
+> -
+>  static void pwm_samsung_set_invert(struct samsung_pwm_chip *chip,
+>  				   unsigned int channel, bool invert)
+>  {
+> @@ -415,7 +407,7 @@ static void pwm_samsung_set_invert(struct samsung_pwm=
+_chip *chip,
+>  	spin_unlock_irqrestore(&samsung_pwm_lock, flags);
+>  }
+> =20
+> -static int pwm_samsung_set_polarity(struct pwm_chip *chip,
+> +static void pwm_samsung_set_polarity(struct pwm_chip *chip,
+>  				    struct pwm_device *pwm,
+>  				    enum pwm_polarity polarity)
+>  {
+> @@ -424,6 +416,48 @@ static int pwm_samsung_set_polarity(struct pwm_chip =
+*chip,
+> =20
+>  	/* Inverted means normal in the hardware. */
+>  	pwm_samsung_set_invert(our_chip, pwm->hwpwm, invert);
+> +}
+> +
+> +static int pwm_samsung_apply(struct pwm_chip *chip, struct pwm_device *p=
+wm,
+> +			     struct pwm_state *state)
+> +{
+> +	int err;
+> +
+> +	/*
+> +	 * FIXME: restore the initial state in case of error.
+> +	 */
+> +	if (state->polarity !=3D pwm->state.polarity) {
+> +		if (pwm->state.enabled) {
+> +			pwm_samsung_disable(pwm->chip, pwm);
+> +			pwm->state.enabled =3D false;
+> +		}
+> +
+> +		pwm_samsung_set_polarity(pwm->chip, pwm,
+> +					 state->polarity);
+> +
+> +		pwm->state.polarity =3D state->polarity;
+> +	}
 
-For example, let's say you have a half bridge converter driver in the
-kernel and it does a pwm_get() to obtain a PWM to use. There's nothing
-preventing it from using a simple one-output PWM and there's no way to
-check that we're actually doing something wrong.
+The whole point, or at least much of it, of the atomic API is that you
+can perform all computations before writing any registers, exactly so
+that you can avoid having to restore the initial state. Otherwise we're
+no better than the legacy API, really.
 
-I think any in-kernel API would have to be more fully-featured,
-otherwise we're bound to run into problems. At the very least I think
-we'd have to expose some sort of capabilities list.
+> +	if (state->period !=3D pwm->state.period ||
+> +	    state->duty_cycle !=3D pwm->state.duty_cycle) {
+> +		err =3D __pwm_samsung_config(pwm->chip, pwm,
+> +					   state->duty_cycle,
+> +					   state->period, false);
+> +		if (err)
+> +			return err;
+> +
+> +		pwm->state.duty_cycle =3D state->duty_cycle;
+> +		pwm->state.period =3D state->period;
+> +	}
+> +
+> +	if (state->enabled !=3D pwm->state.enabled) {
+> +		if (state->enabled)
+> +			pwm_samsung_enable(pwm->chip, pwm);
+> +		else
+> +			pwm_samsung_disable(pwm->chip, pwm);
+> +
+> +		pwm->state.enabled =3D state->enabled;
+> +	}
+> =20
+>  	return 0;
+>  }
+> @@ -431,10 +465,7 @@ static int pwm_samsung_set_polarity(struct pwm_chip =
+*chip,
+>  static const struct pwm_ops pwm_samsung_ops =3D {
+>  	.request	=3D pwm_samsung_request,
+>  	.free		=3D pwm_samsung_free,
+> -	.enable		=3D pwm_samsung_enable,
+> -	.disable	=3D pwm_samsung_disable,
+> -	.config		=3D pwm_samsung_config,
+> -	.set_polarity	=3D pwm_samsung_set_polarity,
+> +	.apply		=3D pwm_samsung_apply,
 
-A possibly simpler approach might be to restrict this to the driver that
-you need this for. It looks like you will be mainly using this via sysfs
-and in that case you might be able to just extend what information is
-exposed in sysfs for the particular PWM you're dealing with.
+You should always provide a .get_state() implementation as well to go
+along with .apply().
 
 Thierry
 
---WZLuFERxa6Y0cbOt
+--1GSL5ZULXUIqbbH1
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmamPUACgkQ3SOs138+
-s6HSpA/+Oucci/GwlcUsWooTws9Hy1/sGANWSNBNhYAPxfRtL2axFNVSAvJtRKsF
-9pdclYG2vZk4Q16N6fYqhL622b3odtfVeontc++wtKq5WcvbjC5SlvYCYyKhAERM
-iKk3grKVjBt0UJY8AHzW4We6dOEX7YaagwkLj9J2RoZycm9U6xlJOwLnwWSJPhLf
-AkijbRzmrsK+cCvUK3bmPpSRpR99uF+HqCU5SNjV1VnSSfVT8vv05N/zMvxrP9iG
-brS+cowxW1xd8rd0BzKvlYBK8MYy0FSk03eP4zqLxAfzPn9PgrQX+UDN+R9/BpcC
-qflRQE7Fj+zr3xCy2MHLtWBflXmuvvdUsmQgbHblO1G7y5QCHhC2Ms0sPbtgKfqJ
-BrVZVDR2DaHMvgp2npZ8Psj828zh5znRAUb9oWbbLbLy8P6RIFge9rEV/yQL3tso
-jrtVilYXvNqYKO5AQbvXyE1tLyjnCLeR7UKIqJEYn+MuKku+13t5yiDT6qbf0vac
-XweOKQ9B2cHyQ29I2tsxopeCeP7jPSLoj1nt388GvQDU+5XgKVkzTFPGpaVHUpeN
-5AkX5zFeP9NXMaSUhGQX6gBXl00FTjdo/1mPuKNZrNe4DiTKFwoosDLypPpUfNc6
-+Pd2tlT91gVXcrEbQvn2iqsXxStw+7fAbgqNJ/bd208jMNFBmFU=
-=/6FC
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmamfwACgkQ3SOs138+
+s6FXGxAAsUE+eGORYATsiDq8fdmYVm0geEtSi8O+ozQHEFrE9jJrqLq8ed/GUUTo
+CD5f/y3G5mVMpSZ6rDkIILhg8jJRtPJbRf+JXCIM3mvIuW6hrLf36ABAGgHfTDK1
+9w+idegNzFNQ4uGyslVPEXwFNevpRE+qucR49entufoCG2JWynWtv0zDi2tEVEL6
+yV8w16EyPoF0/zeo1q+z73XiRclTu62PoKIlVWiB54R1W9vYzIjTDDx2CDK8Vhp0
+Q/iy6F5er1EOVFWoP1emQZA+9ODD3ONbMibwTfw1LXErLxQCtPwS9zwxzGbr/l7t
+jEEjtEoTpavqY7iHF5Jd0wvMogfl/J5aKThWaofiylk+yaWBySe2lAmtwhF3ZuVz
+BI015OQLv8MATKe4LutdwiXXwYXq9R62v5AfgRtWn2ToO/pwmVIYV3jhRB1FqwEw
+vUSWdjWOKJlf3AMxnKWs/OEEupEYWkTxfMZXj1mB9V1fsp3i6weDczxKiQBHHvJe
+j8qa9x8detDe8QoyeQQ/oGptZUig4hFrH4c79XSca3GhUDq0IvYDDiJj2PvfN0p5
+JELpxO7hVdpLcsq0Xx5nS0XTfq6nHx7jIM1XcCuDQcXUeXFyHVSnsdBCzzy82zGD
+i0ixz1A51qBGLfjEO/dHDLkCCyhFgyUEivqBXQvglNAgk8xMGtM=
+=8KYE
 -----END PGP SIGNATURE-----
 
---WZLuFERxa6Y0cbOt--
+--1GSL5ZULXUIqbbH1--
