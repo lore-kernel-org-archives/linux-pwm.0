@@ -1,60 +1,99 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3  2/6] pwm: mediatek: fix pwm source clock selection
-Date: Mon, 21 Aug 2017 09:35:16 +0200
-Message-ID: <20170821073516.GL18996@ulmo>
+Subject: Re: [PATCH v3 3/6] pwm: mediatek: fix clock control issue
+Date: Mon, 21 Aug 2017 09:47:50 +0200
+Message-ID: <20170821074750.GM18996@ulmo>
 References: <1498802721-32455-1-git-send-email-zhi.mao@mediatek.com>
- <1498802721-32455-3-git-send-email-zhi.mao@mediatek.com>
+ <1498802721-32455-4-git-send-email-zhi.mao@mediatek.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="umrsQkkrw7viUWFs"
+        protocol="application/pgp-signature"; boundary="dzI2QqkSBOAresgT"
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1498802721-32455-3-git-send-email-zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <1498802721-32455-4-git-send-email-zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Zhi Mao <zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Cc: john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, zhenbao.liu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---umrsQkkrw7viUWFs
+--dzI2QqkSBOAresgT
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 30, 2017 at 02:05:17PM +0800, Zhi Mao wrote:
-> In original code, the pwm output frequency is not correct
-> when set bit<3>=3D1 to PWMCON register.
+On Fri, Jun 30, 2017 at 02:05:18PM +0800, Zhi Mao wrote:
+> 1. prepare top/main clk in mtk_pwm_probe() function,
+>    it will increase power consumption
+>    and in original code these clocks is only prepeare but never enabled.
+> 2. pwm clock should be enabled before setting pwm registers
+>    in function: mtk_pwm_config().
+> 3. delete "pwm_disable" in function:mtk_pwm_remove(),
+>    as framework should disable all the pwms, before remove them.
 >=20
 > Signed-off-by: Zhi Mao <zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 > ---
->  drivers/pwm/pwm-mediatek.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/pwm/pwm-mediatek.c |   69 ++++++++++++++++++++++++++++++--------=
+------
+>  1 file changed, 47 insertions(+), 22 deletions(-)
+
+I think the commit description could be better. Try to avoid enumerating
+changes like you did. Not only is it tedious to read, but this kind of
+enumeration is often a sign that you can split the commit up into
+multiple logical changes.
+
+Especially the change described in 3) is not related to the clock. It's
+also not a quite correct description, because there is no code in the
+framework that disables PWMs on chip removal. Users should've disabled
+the PWMs that they were using.
+
+The framework could probably warn about misuse, though.
+
+That said, I've left the change as-is, and changed the commit message to
+this:
+
+--- >8 ---
+pwm: mediatek: Fix clock control issue
+
+In order to save some power, do not prepare the top and main clocks
+during mtk_pwm_probe(). Instead, prepare the clocks only when necessary
+and also make sure to enable the clocks to match the semantics of the
+common clock framework.
+
+While at it, don't explicitly disable all PWM channels in ->remove()
+because all users should have done that already.
+
+Signed-off-by: Zhi Mao <zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Acked-by: John Crispin <john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org>
+Signed-off-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+--- 8< ---
+
+Try to keep this in mind for future patch submissions.
 
 Applied to for-4.14/drivers, thanks.
 
 Thierry
 
---umrsQkkrw7viUWFs
+--dzI2QqkSBOAresgT
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmajTQACgkQ3SOs138+
-s6Fd2A//feFy+1k86XOOv/90kw8EpraGdWn6S7bcMR9gTYIZ9Is1xzjdtPfDgUzb
-JLCdYJp749seRod2ihAR/0786Gf2H+7CV6DRnFgrihfJugj6a+lIxu8p4T+hoLbr
-Imob0mO+HePEMY/LzPN2zXqaYfGOkCwFZxDeecu2T192f7wq/cAD8Iwy6GaSbqdK
-GH4KXwCQdxTghPEBJ83d6cHqZ2z2h0eAIEDkaUOWhORGmNapxCEy7nTftOtxpedJ
-deFN/yS8ziGGbqIFqnKxahyIcElXTMsoDlDBqFRTd2xnGDDlCN0qmBOY97oC3pY8
-2dPD/ykuDHXzLq6pCXCeRZiSmSKelOg1sTd4y6IoPFSWvFDQf9Ml7/+2fYXFLsqE
-3h09y425U+yMr9eSGz0DmoDU2FS7LHNFx/ASQxqmSE0L/oM3KYTp7I1hiHW+SZqx
-/dzCL2N97aRj8oz4EtJ0i8UY//PZQQw6GmYl8Y+Mncf4oDj74SK0nI6EVxHDrFao
-ycYnQrEaVaymSNoBzRiyauTBDLhcndu8/wPSORIQdSc03c6CBknXdw9DZL6/OWlX
-3mzjWY8E11kQ3fWxfuGSHpiTf0aZULogQRL6qWUV0DQUQbtM40Ncykfivsy3qRk5
-9Zvq/yHp3lwH8dT8CsEjeX1plvuO+vJ0R6stOq6yrg1IUXDVVz8=
-=yHWx
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmakCQACgkQ3SOs138+
+s6Fzgg//SimI3CMG0wDFBq5XLzEhPzdCg8WN/YTIQZSb/EHy4R5cI4zAwZuY4Hk+
+mjF/dYazJ6oEaVFt7eFPHv6VgFHMUF410rF3SDxTk2hooGtkfcRcvueEgwyPsJLI
+d7NjiIaTkvLlDmRmbKM63DhO4sToIPrFcrlSLXuTFVfDTgjTMDft4vrG1IMU3HXf
+7D8O+oJ3SsNJdMxaDdx+U8PxpNrex/1pVy8CoOhQmwU7QtbZvJfivpvqMF+QCrR7
+IQiSjxQjEpD7Z7UejZtYZmgH92hl7g2AoIJlHgNVIdhjKltZv200RSn7sMoIHHT5
+4nKfIML7EEdWwK+CAZUhSP25e/2di8iPMQfjmG8PIBS+PSkPC8do9ywvh+RA4+Uk
+klM6op/7bfR9lkika9tF/0OTSqf4smwa1GS6GFZC2i9US1yr6JgHepdc3nB//3fP
+Kaklul7lJPPbvt073TCPuw73sKYM1vZEXGV3QSjaFWS28caMdDiG8RNJPsUsy+e9
+5zAxU0Gk56Va5tGUKsCBviZgC5eB2EuDpOZSCdotdyLvg903Mtu+OGXOraM+lWAV
+DUbZKXjk/aY2BqVw4fsQQDXEVLfenOyTISi3DDFUj90aRPeIO/7CnSHi0eC/7Ycq
+24/9VCEXTM7Tab5lOAYdWFCvKiVvDgg9gTWWj07KCMmkSGueV0I=
+=7kdD
 -----END PGP SIGNATURE-----
 
---umrsQkkrw7viUWFs--
+--dzI2QqkSBOAresgT--
 --
 To unsubscribe from this list: send the line "unsubscribe devicetree" in
 the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
