@@ -1,61 +1,61 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: Kconfig: Enable pwm-tiecap to be built for Keystone
-Date: Mon, 21 Aug 2017 08:05:54 +0200
-Message-ID: <20170821060554.GD18996@ulmo>
-References: <20170802061344.1713-1-vigneshr@ti.com>
+Subject: Re: [PATCH 1/2] pwm: tiehrpwm: fix runtime pm imbalance at unbind
+Date: Mon, 21 Aug 2017 08:09:48 +0200
+Message-ID: <20170821060948.GE18996@ulmo>
+References: <20170720104817.25726-1-johan@kernel.org>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="4zI0WCX1RcnW9Hbu"
+        protocol="application/pgp-signature"; boundary="HeFlAV5LIbMFYYuh"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f193.google.com ([209.85.128.193]:35529 "EHLO
-        mail-wr0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751164AbdHUGF5 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Aug 2017 02:05:57 -0400
+Received: from mail-wr0-f195.google.com ([209.85.128.195]:33723 "EHLO
+        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750985AbdHUGJv (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 21 Aug 2017 02:09:51 -0400
 Content-Disposition: inline
-In-Reply-To: <20170802061344.1713-1-vigneshr@ti.com>
+In-Reply-To: <20170720104817.25726-1-johan@kernel.org>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Vignesh R <vigneshr@ti.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Johan Hovold <johan@kernel.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
 
---4zI0WCX1RcnW9Hbu
+--HeFlAV5LIbMFYYuh
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 02, 2017 at 11:43:44AM +0530, Vignesh R wrote:
-> 66AK2G SoC has ECAP subsystem that is used as pwm-backlight provider for
-> display. Hence, enable pwm-tiecap driver to be built for Keystone
-> architecture.
+On Thu, Jul 20, 2017 at 12:48:16PM +0200, Johan Hovold wrote:
+> Remove unbalanced RPM put at driver unbind which resulted in a negative
+> usage count.
 >=20
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> Fixes: 19891b20e7c2 ("pwm: pwm-tiehrpwm: PWM driver support for EHRPWM")
+> Signed-off-by: Johan Hovold <johan@kernel.org>
 > ---
->  drivers/pwm/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/pwm/pwm-tiehrpwm.c | 1 -
+>  1 file changed, 1 deletion(-)
 
-Applied to for-4.14/drivers, thanks.
+Both patches applied to for-4.14/drivers, thanks.
 
 Thierry
 
---4zI0WCX1RcnW9Hbu
+--HeFlAV5LIbMFYYuh
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmaeEIACgkQ3SOs138+
-s6HA5g/9G5jhtrMK/5elTPbk6snW8iHWP6X+CvOPKp0pWMQvR4P7alBaEvvkY8lq
-Fre2M/n6KdXP4MmxAdC3+Pg64N/TuzYW2CN/khJR4mL1v7l28mUEe/8y5/djfHXT
-93wNRYupsde8y+lefIRVU7lUR50jptBtl+bs7+NUUBiwpG8Eh6doJP72VSejkcHX
-3u9KWTlqu+57rlJx4zUgKIpel6JGhFE46Srmz/7ci7Wfr82iDCCI8vnPvAkyi/fy
-gqgb/i6nrLZ7o3Ndm1a3EiONem1Xai/miuknvRO+hZxq5E4mTZl3k9RKGCcXbg0l
-7cY5x/cGl5npSXm7eAbKAVNXUiF1TJ1IgyAfyCG8oh3zNIREmPJxpgTCYNtlQtK4
-nHudgCJ4l74NCVNHE37zyvGslcNFon3wjTvST6NzzhOAsMuyWO7Eu5twLfayMHHX
-eN0IFU8u6WsSMswqzHbSCumfkIZsxrXQv10lGwQKVnS0nXEnG377xYO7imt4nCnr
-y90Oemn/k1TeUN1j5xnuY2BVC9/WP/FzbVq8+5l84TB8BDWms8iwVw/IWjs13ciw
-eBrpyGwz8BKdupjgKwMYlNq05w30ETQV5VDsBvVH3zkDBrkxVMqNEkDCBDCRQAEe
-4kj1ZVVPan5bIKY/jGiwnhSYImV2t33KTMNug3U4Nj37DvXkC8w=
-=bJHh
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmaeSsACgkQ3SOs138+
+s6FnyhAAhZhc2KycB1TFUZ4PGZr+CtvuRCcLHi3OBwJo2HgCdRmisWIKxY6FXsH4
+2DPm6uCXUfoisWnZEuivfOqonS0IGi3sYNX27k6J75fPhlOMlThy75SzK8iMrE6O
+2zxrtLUNNThLNZZO2wtI/x87r7AvKxbwKCjwKLbWZwL1RNfztxLSf5wk3+bL/30L
+4cTDeeWVsr0K9f9Ihmp+JmzUFa2WxAKWYfo8hOUJ25WJrBMIuPq0fSLi73XxrZ9a
+6lS6pwrSNbwTIw25B7hMn4IMlRynsWkoFJYQd5mo8P9ke8lO8oQO9ITkdnQVZb9D
++b7zk0TrneEqKC/bu6XJI+cn6ragAYfb0NvI8MVtXvoc/c8JcvP8nMXfk1Jup1Et
+PG/esG0thVkTM53l+yD3kArrkY2LlzzwvOAbJs9ZVU0JIUoGpPFYfCJDV7IYqYKC
+EMDALR6ZIGsujas2LaXtq6LpoOP3GQbaP32yuD3Ua7QJQWXpzFlRzHRYM1X6yKJm
+JutN+9R2kOJLwmhwbLbccCHlebkoY/DKQeXzWnauX9GEistf/qeyqe5cvbk8IiLr
+cQcO05tk/p1ndVsfdD4kryrfSYuDj6FJN1Ugd/2RW/SntYEBW6FCJEeiCF6ND+E5
+jiiuNqFHUf7dO0kkzfEHhnwQ4oBfnH+UyB1TkQSl/kAmN8SjDSU=
+=QX6+
 -----END PGP SIGNATURE-----
 
---4zI0WCX1RcnW9Hbu--
+--HeFlAV5LIbMFYYuh--
