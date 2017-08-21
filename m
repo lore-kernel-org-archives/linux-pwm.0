@@ -1,62 +1,65 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 1/4] pwm: pwm-tiecap: Add TI 66AK2G SoC specific
- compatible
-Date: Mon, 21 Aug 2017 08:12:34 +0200
-Message-ID: <20170821061234.GF18996@ulmo>
-References: <20170807114943.22612-1-vigneshr@ti.com>
- <20170807114943.22612-2-vigneshr@ti.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 069/102] pwm: hibvt: explicitly request exclusive reset
+ control
+Date: Mon, 21 Aug 2017 08:54:25 +0200
+Message-ID: <20170821065425.GG18996@ulmo>
+References: <20170719152646.25903-1-p.zabel@pengutronix.de>
+ <20170719152646.25903-70-p.zabel@pengutronix.de>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="rWhLK7VZz0iBluhq"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+        protocol="application/pgp-signature"; boundary="L+ofChggJdETEG3Y"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170807114943.22612-2-vigneshr-l0cyMroinI0@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Vignesh R <vigneshr-l0cyMroinI0@public.gmane.org>
-Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <20170719152646.25903-70-p.zabel@pengutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Philipp Zabel <p.zabel@pengutronix.de>
+Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---rWhLK7VZz0iBluhq
+--L+ofChggJdETEG3Y
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 07, 2017 at 05:19:40PM +0530, Vignesh R wrote:
-> Add a new compatible string "ti,k2g-ecap" to support PWM ECAP IP of
-> TI 66AK2G SoC.
+On Wed, Jul 19, 2017 at 05:26:13PM +0200, Philipp Zabel wrote:
+> Commit a53e35db70d1 ("reset: Ensure drivers are explicit when requesting
+> reset lines") started to transition the reset control request API calls
+> to explicitly state whether the driver needs exclusive or shared reset
+> control behavior. Convert all drivers requesting exclusive resets to the
+> explicit API call so the temporary transition helpers can be removed.
 >=20
-> Signed-off-by: Vignesh R <vigneshr-l0cyMroinI0@public.gmane.org>
+> No functional changes.
+>=20
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: linux-pwm@vger.kernel.org
+> Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
 > ---
->  Documentation/devicetree/bindings/pwm/pwm-tiecap.txt | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/pwm/pwm-hibvt.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Applied to for-4.14/drivers, thanks.
 
 Thierry
 
---rWhLK7VZz0iBluhq
+--L+ofChggJdETEG3Y
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmaedIACgkQ3SOs138+
-s6GZHRAAnuHmEBq/oGgR52BkijTHuQ4yXLF2XLL9nBIPOElBQbz813M2ac9+fXaE
-aNlxVptbt2O/lMhlWpRGxvUm+F3ZM7LvDDWLHkSQF13FncLTQ9tAFofVxhD/UNzy
-0JCBVQJBr+vDJDiNoLChhBz6OzF/lYkBVBPSag4ecOMHJAw2y8ol6ZPSL71V/fH8
-wt2yd18NbdQWjXjuipNWok1gHAgkfz5mqSjjndH15Ct9H/YFcVsQ/dNso1f3POfj
-EybZ+309a9CVThuExkMwGbquCSPxpAtt8nkOyCDLuF8FfEUOPKcIef2jXaYAwj5s
-y76PnG0SX5is8j4USThzpRnEOP1PAxL5GV/QyYdbRXCpcmHgYtr1N6CVNpu0fmIs
-pYNBqJ3eiLQKAWqQx4oYwOlpaIGdLeXQAcdp08CAeFAQMnv6NNVhP1bCxAOupz4t
-pe4NvbA5yTX4Hml6Ouz5zqCeAB5LFmKakoOP+7RMlNiW8h3/SQNOjzXij73WCazH
-yGmUdrR8QUT6NShTNX23o/W+luwFGrhZ2JRQHo5dwCLzW6QDENT/gyl1rYnxG/Bd
-NfJN/XpYlWH7Pv2q1G1Y4tkTRzcbWsLI/KYGvLC2YOhot5rvOOsZuoFPKnWc10XU
-LTkpOfFagTY7iaVhJmakcT6Jn6p9JCd7XTMlPAw8MgzqBdcLgvg=
-=4VF5
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlmag54ACgkQ3SOs138+
+s6E2yg//bQQ648x82pn8hvtvtF862CvZJr1OvIs9JURV5SbMCG56nimuLP9+oARs
+9shy7E1OLrCwf4f1lGmsuJ3fzMD5tGtGYvDMc1fpj4hdxt7F/s6/XB0qgTgBb77j
+avbp7oHPhtv8aJM046QgCU26XVg2xzzeRO7WCZEzsvPCNc0Od5X+/pInojew6BU8
+hF+oav6OpMaGuAC9YJFlvFXMipzpiUc8peuI9Q3gw20KX/1zb7Ku4pK4Y6G42YHB
+S/Z4hgi/ZOJ8SeAPNMnirdLAgEhVkloW6KoS8sxtapzjRhPYtlYI9J2wcM54GoFN
+Zh2EMKr5UNNcHwIBhY4k/jU1AUnF4L0SGG5kc3s1Brra4Cv2SO2HGlDGNunOI8En
+5HxX5Ob6LYIRoQMbCYkxDg/Cb6Gljp6eyhEeeMaW6u1dBfv/V/TfVQZyMLWbeuMB
+lcsV7w3I07S0dBAjUrCNra45b7ujbVkqN+hH70M7HVeXLcFDHe+f8ogVr1rQn9LL
+Gpw1cTbJ1l0ybGUIKZ8NrHg3SszvfEek2WeKKh+GXPtKXRCVvozOX8Qn8n3agLMk
+ddrqc670Szlrqu1pAk6k+Nh6GpmpSSR+LPMbOlW/y3WMJr4Hv4+r+MK6VnXk5La6
+N3c9tHkp8qEEVZPQKseMDPh7kG9sWv8RT0GvcKPqisVX0seE4+k=
+=cW0g
 -----END PGP SIGNATURE-----
 
---rWhLK7VZz0iBluhq--
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+--L+ofChggJdETEG3Y--
