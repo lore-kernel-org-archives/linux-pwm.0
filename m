@@ -1,73 +1,51 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [RESEND PATCH v3 3/9] dt-bindings: pwm: Add STM32 LPTimer PWM binding
-Date: Mon, 28 Aug 2017 12:04:08 +0200
-Message-ID: <1503914654-19963-4-git-send-email-fabrice.gasnier@st.com>
-References: <1503914654-19963-1-git-send-email-fabrice.gasnier@st.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1503914654-19963-1-git-send-email-fabrice.gasnier@st.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: lee.jones@linaro.org, benjamin.gaignard@linaro.org, jic23@kernel.org, thierry.reding@gmail.com, robh+dt@kernel.org
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, vilhelm.gray@gmail.com, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
+From: Derek Basehore <dbasehore@chromium.org>
+Subject: [PATCH] pwm_bl: Fix overflow condition
+Date: Mon, 28 Aug 2017 13:00:33 -0700
+Message-ID: <20170828200033.40673-1-dbasehore@chromium.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pg0-f44.google.com ([74.125.83.44]:34617 "EHLO
+        mail-pg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750735AbdH1UAj (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 28 Aug 2017 16:00:39 -0400
+Received: by mail-pg0-f44.google.com with SMTP id y15so4396616pgc.1
+        for <linux-pwm@vger.kernel.org>; Mon, 28 Aug 2017 13:00:39 -0700 (PDT)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: thierry.reding@gmail.com, jingoohan1@gmail.com, lee.jones@linaro.org, linux-pwm@vger.kernel.org, Derek Basehore <dbasehore@chromium.org>
 
-Add documentation for STMicroelectronics STM32 Low-Power Timer
-PWM binding.
+This fixes and overflow condition that happens with a high value of
+brightness-levels-scale by using a 64-bit variable. The issue would
+prevent a range of higher brightness levels from being set.
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Derek Basehore <dbasehore@chromium.org>
 ---
-Changes in v3:
-- Rob's comment on node name: timer@...
+ drivers/video/backlight/pwm_bl.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Changes in v2:
-- s/Low Power/Low-Power/
-- remove 0x in example (parent node)
-- improve properties description
----
- .../devicetree/bindings/pwm/pwm-stm32-lp.txt       | 24 ++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
-
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
-new file mode 100644
-index 0000000..f8338d1
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
-@@ -0,0 +1,24 @@
-+STMicroelectronics STM32 Low-Power Timer PWM
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 76311ec5e400..e7ffd2108acf 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -88,14 +88,17 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
+ static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
+ {
+ 	unsigned int lth = pb->lth_brightness;
+-	int duty_cycle;
++	s64 duty_cycle;
+ 
+ 	if (pb->levels)
+ 		duty_cycle = pb->levels[brightness];
+ 	else
+ 		duty_cycle = brightness;
+ 
+-	return (duty_cycle * (pb->period - lth) / pb->scale) + lth;
++	duty_cycle *= pb->period - lth;
++	do_div(duty_cycle, pb->scale);
 +
-+STM32 Low-Power Timer provides single channel PWM.
-+
-+Must be a sub-node of an STM32 Low-Power Timer device tree node.
-+See ../mfd/stm32-lptimer.txt for details about the parent node.
-+
-+Required parameters:
-+- compatible:		Must be "st,stm32-pwm-lp".
-+
-+Optional properties:
-+- pinctrl-names: 	Set to "default".
-+- pinctrl-0: 		Phandle pointing to pin configuration node for PWM.
-+
-+Example:
-+	timer@40002400 {
-+		compatible = "st,stm32-lptimer";
-+		...
-+		pwm {
-+			compatible = "st,stm32-pwm-lp";
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&lppwm1_pins>;
-+		};
-+	};
++	return duty_cycle + lth;
+ }
+ 
+ static int pwm_backlight_update_status(struct backlight_device *bl)
 -- 
-1.9.1
+2.14.1.342.g6490525c54-goog
