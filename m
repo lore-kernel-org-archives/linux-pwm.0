@@ -1,7 +1,7 @@
 From: Derek Basehore <dbasehore@chromium.org>
 Subject: [PATCH v2] pwm_bl: Fix overflow condition
-Date: Tue, 29 Aug 2017 13:34:34 -0700
-Message-ID: <20170829203434.6826-1-dbasehore@chromium.org>
+Date: Tue, 29 Aug 2017 13:40:02 -0700
+Message-ID: <20170829204002.8663-1-dbasehore@chromium.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org
@@ -12,6 +12,7 @@ This fixes an overflow condition that can happen with high max
 brightness and period values in compute_duty_cycle. This fixes it by
 using a 64 bit variable for computing the duty cycle.
 
+Change-Id: I745c67c7a24740316d13eaf1be74248ea2249353
 Signed-off-by: Derek Basehore <dbasehore@chromium.org>
 ---
  drivers/video/backlight/pwm_bl.c | 7 +++++--
