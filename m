@@ -1,58 +1,67 @@
-From: Brian Norris <briannorris@chromium.org>
-Subject: Re: [PATCH v2] pwm_bl: Fix overflow condition
-Date: Tue, 29 Aug 2017 13:46:58 -0700
-Message-ID: <20170829204656.GA12941@google.com>
-References: <20170829203434.6826-1-dbasehore@chromium.org>
+From: Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH v2 7/8] arm64: dts: r8a7795-salvator-x: Enable PWM2
+Date: Wed, 30 Aug 2017 10:06:30 +0200
+Message-ID: <20170830080629.GO10398@verge.net.au>
+References: <1493303863-23719-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+ <1493303863-23719-8-git-send-email-ulrich.hecht+renesas@gmail.com>
+ <5664970.rvzlHsyOZi@avalon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from kirsty.vergenet.net ([202.4.237.240]:54534 "EHLO
+        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750983AbdH3IGf (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 30 Aug 2017 04:06:35 -0400
 Content-Disposition: inline
-In-Reply-To: <20170829203434.6826-1-dbasehore@chromium.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Derek Basehore <dbasehore@chromium.org>
-Cc: linux-kernel@vger.kernel.org, thierry.reding@gmail.com, jingoohan1@gmail.com, lee.jones@linaro.org, linux-pwm@vger.kernel.org
+In-Reply-To: <5664970.rvzlHsyOZi@avalon>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>, geert@glider.be, linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, magnus.damm@gmail.com, Takeshi Kihara <takeshi.kihara.df@renesas.com>
 
-On Tue, Aug 29, 2017 at 01:34:34PM -0700, Derek Basehore wrote:
-> This fixes an overflow condition that can happen with high max
-> brightness and period values in compute_duty_cycle. This fixes it by
-> using a 64 bit variable for computing the duty cycle.
+On Thu, Apr 27, 2017 at 05:40:51PM +0300, Laurent Pinchart wrote:
+> Hi Ulrich,
 > 
-> Signed-off-by: Derek Basehore <dbasehore@chromium.org>
-> ---
-
-I believe this is the correct v2 patch, and I agree that Derek is
-confused by his mail client :)
-
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-
->  drivers/video/backlight/pwm_bl.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
+> Thank you for the patch.
 > 
-> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-> index 76311ec5e400..5ccc8e34b7a6 100644
-> --- a/drivers/video/backlight/pwm_bl.c
-> +++ b/drivers/video/backlight/pwm_bl.c
-> @@ -88,14 +88,17 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
->  static int compute_duty_cycle(struct pwm_bl_data *pb, int brightness)
->  {
->  	unsigned int lth = pb->lth_brightness;
-> -	int duty_cycle;
-> +	u64 duty_cycle;
->  
->  	if (pb->levels)
->  		duty_cycle = pb->levels[brightness];
->  	else
->  		duty_cycle = brightness;
->  
-> -	return (duty_cycle * (pb->period - lth) / pb->scale) + lth;
-> +	duty_cycle *= pb->period - lth;
-> +	do_div(duty_cycle, pb->scale);
-> +
-> +	return duty_cycle + lth;
->  }
->  
->  static int pwm_backlight_update_status(struct backlight_device *bl)
-> -- 
-> 2.14.1.342.g6490525c54-goog
+> On Thursday 27 Apr 2017 16:37:42 Ulrich Hecht wrote:
+> > From: Takeshi Kihara <takeshi.kihara.df@renesas.com>
+> > 
+> > This patch enables PWM2 for Salvator-X board on R8A7795 SoC.
+> > 
+> > Signed-off-by: Takeshi Kihara <takeshi.kihara.df@renesas.com>
+> > Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+> > ---
+> >  arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts | 12 ++++++++++++
+> >  1 file changed, 12 insertions(+)
+> > 
+> > diff --git a/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
+> > b/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts index 8558b27..534b17e
+> > 100644
+> > --- a/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
+> > +++ b/arch/arm64/boot/dts/renesas/r8a7795-salvator-x.dts
+> > @@ -381,6 +381,11 @@
+> >  		function = "pwm1";
+> >  	};
+> > 
+> > +	pwm2_pins: pwm2 {
+> > +		groups = "pwm2_a";
+> > +		function = "pwm2";
+> > +	};
+> > +
+> >  	sdhi0_pins: sd0 {
+> >  		groups = "sdhi0_data4", "sdhi0_ctrl";
+> >  		function = "sdhi0";
+> > @@ -463,6 +468,13 @@
+> >  	status = "okay";
+> >  };
+> > 
+> > +&pwm2 {
+> > +	/* PMIC DC/DC switching frequency synchronization */
 > 
+> Please pardon the stupid question, but if the PWM channel is used by the PMIC, 
+> is there a point in enabling it without a PMIC DT node using it ?
+
+Hi Ulrich,
+
+I'm wondering if you have any plans to follow-up on this patch.
