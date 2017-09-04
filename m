@@ -1,88 +1,34 @@
-From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [GIT PULL] Immutable branch between MFD, IIO and PWM due for the
- v4.14 merge window
-Date: Mon, 4 Sep 2017 14:51:39 +0100
-Message-ID: <20170904135139.mfsoh5k4kifrhldq@dell>
-References: <1503914654-19963-1-git-send-email-fabrice.gasnier@st.com>
+From: Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH v2] pwm_bl: Fix overflow condition
+Date: Mon, 4 Sep 2017 16:16:12 +0100
+Message-ID: <20170904151612.bbhb4qrbkut77lyi@dell>
+References: <20170829203434.6826-1-dbasehore@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1503914654-19963-1-git-send-email-fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-Cc: benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, benjamin.gaignard-qxv4g6HH51o@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vilhelm.gray-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+In-Reply-To: <20170829203434.6826-1-dbasehore@chromium.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Derek Basehore <dbasehore@chromium.org>
+Cc: linux-kernel@vger.kernel.org, thierry.reding@gmail.com, jingoohan1@gmail.com, briannorris@chromium.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-Enjoy!
+On Tue, 29 Aug 2017, Derek Basehore wrote:
 
-The following changes since commit 569dbb88e80deb68974ef6fdd6a13edb9d686261:
+> This fixes an overflow condition that can happen with high max
+> brightness and period values in compute_duty_cycle. This fixes it by
+> using a 64 bit variable for computing the duty cycle.
+> 
+> Signed-off-by: Derek Basehore <dbasehore@chromium.org>
+> ---
+>  drivers/video/backlight/pwm_bl.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
 
-  Linux 4.13 (2017-09-03 13:56:17 -0700)
+Applied for v4.15, thanks.
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-iio-pwm-v4.14
-
-for you to fetch changes up to f0b638a7f6dba2eb6bf99fc648eab77f7ad5e59f:
-
-  iio: adc: stm32: add support for lptimer triggers (2017-09-04 14:49:34 +0100)
-
-----------------------------------------------------------------
-Immutable branch between MFD, IIO and PWM due for the v4.14 merge window
-
-----------------------------------------------------------------
-Fabrice Gasnier (9):
-      dt-bindings: mfd: Add STM32 LPTimer binding
-      mfd: Add STM32 LPTimer driver
-      pwm: Add STM32 LPTimer PWM driver
-      dt-bindings: pwm: Add STM32 LPTimer PWM binding
-      dt-bindings: iio: Add STM32 LPTimer trigger binding
-      iio: trigger: Add STM32 LPTimer trigger driver
-      dt-bindings: iio: Add STM32 LPTimer quadrature encoder and counter
-      iio: counter: Add support for STM32 LPTimer
-      iio: adc: stm32: add support for lptimer triggers
-
- .../ABI/testing/sysfs-bus-iio-lptimer-stm32        |  57 +++
- .../bindings/iio/counter/stm32-lptimer-cnt.txt     |  27 ++
- .../bindings/iio/timer/stm32-lptimer-trigger.txt   |  23 ++
- .../devicetree/bindings/mfd/stm32-lptimer.txt      |  48 +++
- .../devicetree/bindings/pwm/pwm-stm32-lp.txt       |  24 ++
- drivers/iio/adc/stm32-adc.c                        |  14 +-
- drivers/iio/counter/Kconfig                        |   9 +
- drivers/iio/counter/Makefile                       |   1 +
- drivers/iio/counter/stm32-lptimer-cnt.c            | 383 +++++++++++++++++++++
- drivers/iio/trigger/Kconfig                        |  11 +
- drivers/iio/trigger/Makefile                       |   1 +
- drivers/iio/trigger/stm32-lptimer-trigger.c        | 118 +++++++
- drivers/mfd/Kconfig                                |  14 +
- drivers/mfd/Makefile                               |   1 +
- drivers/mfd/stm32-lptimer.c                        | 107 ++++++
- drivers/pwm/Kconfig                                |  10 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-stm32-lp.c                         | 246 +++++++++++++
- include/linux/iio/timer/stm32-lptim-trigger.h      |  27 ++
- include/linux/mfd/stm32-lptimer.h                  |  62 ++++
- 20 files changed, 1182 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32
- create mode 100644 Documentation/devicetree/bindings/iio/counter/stm32-lptimer-cnt.txt
- create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-lptimer-trigger.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/stm32-lptimer.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
- create mode 100644 drivers/iio/counter/stm32-lptimer-cnt.c
- create mode 100644 drivers/iio/trigger/stm32-lptimer-trigger.c
- create mode 100644 drivers/mfd/stm32-lptimer.c
- create mode 100644 drivers/pwm/pwm-stm32-lp.c
- create mode 100644 include/linux/iio/timer/stm32-lptim-trigger.h
- create mode 100644 include/linux/mfd/stm32-lptimer.h
- 
 -- 
 Lee Jones
 Linaro STMicroelectronics Landing Team Lead
 Linaro.org │ Open source software for ARM SoCs
 Follow Linaro: Facebook | Twitter | Blog
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
