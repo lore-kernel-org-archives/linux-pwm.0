@@ -1,128 +1,68 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [GIT PULL] pwm: Changes for v4.14-rc1
-Date: Mon, 11 Sep 2017 14:14:42 +0200
-Message-ID: <20170911121442.1243-1-thierry.reding@gmail.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:35646 "EHLO
-        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751118AbdIKMOq (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Sep 2017 08:14:46 -0400
-Sender: linux-pwm-owner@vger.kernel.org
+From: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+Subject: Re: [PATCH v1 02/10] clk: at91: pmc: Save SCSR during suspend
+Date: Wed, 13 Sep 2017 14:10:41 +0200
+Message-ID: <318420d4-044f-d018-f70e-3ed4fcfb0fd0@microchip.com>
+References: <20170908153604.28383-1-romain.izard.pro@gmail.com>
+ <20170908153604.28383-3-romain.izard.pro@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170908153604.28383-3-romain.izard.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
+Sender: linux-iio-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Romain Izard <romain.izard.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Boris Brezillon <boris.brezillon-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Michael Turquette <mturquette-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Ludovic Desroches <ludovic.desroches-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>, Jonathan Cameron <jic23-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Wenyou Yang <wenyou.yang-AIFe0yeh4nAAvxtiuMwx3w@public.gmane.org>, Josh Wu <rainyfeeling-1ViLX0X+lBJBDgjK7y7TUQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Brian Norris <computersforpeace-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marek Vasut <marek.vasut-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Cyrille Pitchen <cyrille.pitchen-yU5RGvR974pGWvitb5QawA@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Genoud <richard.genoud-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Alexandre Belloni <alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
+Cc: linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-iio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mtd-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-serial-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 
-Hi Linus,
+On 08/09/2017 at 17:35, Romain Izard wrote:
+> The contents of the System Clock Status Register (SCSR) needs to be
+> restored into the System Clock Enable Register (SCER).
+> 
+> As the bootloader will restore some clocks by itself, the issue can be
+> missed as only the USB controller, the LCD controller, the Image Sensor
+> controller and the programmable clocks will be impacted.
+> 
+> Fix the obvious typo in the suspend/resume code, as the IMR register
+> does not need to be saved twice.
+> 
+> Signed-off-by: Romain Izard <romain.izard.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
-The following changes since commit 5771a8c08880cdca3bfb4a3fc6d309d6bba20877:
+Yes, it looks like a typo:
+Acked-by: Nicolas Ferre <nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
 
-  Linux v4.13-rc1 (2017-07-15 15:22:10 -0700)
+I didn't experienced the issue with LCD nor USB though.
 
-are available in the git repository at:
+Regards,
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.14-rc1
+> ---
+>  drivers/clk/at91/pmc.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/clk/at91/pmc.c b/drivers/clk/at91/pmc.c
+> index 5c2b26de303e..07dc2861ad3f 100644
+> --- a/drivers/clk/at91/pmc.c
+> +++ b/drivers/clk/at91/pmc.c
+> @@ -86,7 +86,7 @@ static int pmc_suspend(void)
+>  {
+>  	int i;
+>  
+> -	regmap_read(pmcreg, AT91_PMC_IMR, &pmc_cache.scsr);
+> +	regmap_read(pmcreg, AT91_PMC_SCSR, &pmc_cache.scsr);
+>  	regmap_read(pmcreg, AT91_PMC_PCSR, &pmc_cache.pcsr0);
+>  	regmap_read(pmcreg, AT91_CKGR_UCKR, &pmc_cache.uckr);
+>  	regmap_read(pmcreg, AT91_CKGR_MOR, &pmc_cache.mor);
+> @@ -129,7 +129,7 @@ static void pmc_resume(void)
+>  	if (pmc_cache.pllar != tmp)
+>  		pr_warn("PLLAR was not configured properly by the firmware\n");
+>  
+> -	regmap_write(pmcreg, AT91_PMC_IMR, pmc_cache.scsr);
+> +	regmap_write(pmcreg, AT91_PMC_SCER, pmc_cache.scsr);
+>  	regmap_write(pmcreg, AT91_PMC_PCER, pmc_cache.pcsr0);
+>  	regmap_write(pmcreg, AT91_CKGR_UCKR, pmc_cache.uckr);
+>  	regmap_write(pmcreg, AT91_CKGR_MOR, pmc_cache.mor);
+> 
 
-for you to fetch changes up to 7755daf5e7e82499a4cdd7c2ad2be2578cc1df20:
 
-  Merge branch 'for-4.14/drivers' into for-next (2017-08-21 10:39:16 +0200)
-
-Thanks,
-Thierry
-
-----------------------------------------------------------------
-pwm: Changes for v4.14-rc1
-
-The changes for this release include a new driver for the PWM controller
-found on SoCs of the ZTX ZX family. Support for an old SH-Mobile SoC has
-been dropped and the Rockchip and MediaTek drivers gain support for more
-generations.
-
-Other than that there are a bunch of coding style fixes, minor bug fixes
-and cleanup as well as documentation patches.
-
-----------------------------------------------------------------
-Andy Yan (1):
-      dt-bindings: pwm: Add description for rv1108 PWM
-
-Arvind Yadav (1):
-      pwm: vt8500: Undo preparation of a clock source.
-
-Bartlomiej Zolnierkiewicz (2):
-      pwm: samsung: Remove redundant checks from pwm_samsung_config()
-      pwm: pwm-samsung: fix suspend/resume support
-
-David Wu (6):
-      pwm: rockchip: Add APB and function both clocks support
-      pwm: rockchip: Remove the judge from return value of pwm_config()
-      pwm: rockchip: Use pwm_apply() instead of pwm_enable()
-      pwm: rockchip: Move the configuration of polarity
-      pwm: rockchip: Use same PWM ops for each IP
-      pwm: rockchip: Add rk3328 support
-
-Johan Hovold (2):
-      pwm: tiehrpwm: Fix runtime PM imbalance at unbind
-      pwm: tiehrpwm: fix clock imbalance in probe error path
-
-Philipp Zabel (2):
-      pwm: hibvt: Explicitly request exclusive reset control
-      pwm: tegra: Explicitly request exclusive reset control
-
-Rob Herring (1):
-      pwm: Convert to using %pOF instead of full_name
-
-Shawn Guo (2):
-      dt-bindings: pwm: Add bindings doc for ZTE ZX PWM controller
-      pwm: Add ZTE ZX PWM device driver
-
-Simon Horman (1):
-      pwm: renesas-tpu: Remove support for SH7372
-
-Stefan Wahren (2):
-      dt-bindings: pwm: bcm2835: Increase pwm-cells
-      pwm: bcm2835: Support for polarity setting via DT
-
-Sven Van Asbroeck (1):
-      pwm: pca9685: clarify pca9685_set_sleep_mode() interface.
-
-Thierry Reding (5):
-      pwm: tiecap: Miscellaneous coding style fixups
-      pwm: tiecap: Set driver data before runtime PM enable
-      pwm: tiehrpwm: Miscellaneous coding style fixups
-      pwm: tiehrpwm: Set driver data before runtime PM enable
-      Merge branch 'for-4.14/drivers' into for-next
-
-Vignesh R (2):
-      pwm: Kconfig: Enable pwm-tiecap to be built for Keystone
-      dt-bindings: pwm: tiecap: Add TI 66AK2G SoC specific compatible
-
-Zhi Mao (5):
-      pwm: mediatek: Fix Kconfig description
-      pwm: mediatek: Fix PWM source clock selection
-      pwm: mediatek: Fix clock control issue
-      dt-bindings: pwm: Add MT2712/MT7622 information
-      pwm: mediatek: Disable clock on PWM configuration failure
-
- .../devicetree/bindings/pwm/pwm-bcm2835.txt        |   4 +-
- .../devicetree/bindings/pwm/pwm-mediatek.txt       |   6 +-
- .../devicetree/bindings/pwm/pwm-rockchip.txt       |  11 +-
- .../devicetree/bindings/pwm/pwm-tiecap.txt         |   1 +
- Documentation/devicetree/bindings/pwm/pwm-zx.txt   |  22 ++
- .../devicetree/bindings/pwm/renesas,tpu-pwm.txt    |   1 -
- drivers/pwm/Kconfig                                |  13 +-
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-bcm2835.c                          |   2 +
- drivers/pwm/pwm-hibvt.c                            |   2 +-
- drivers/pwm/pwm-mediatek.c                         |  78 ++++--
- drivers/pwm/pwm-meson.c                            |   2 +-
- drivers/pwm/pwm-pca9685.c                          |  14 +-
- drivers/pwm/pwm-renesas-tpu.c                      |   1 -
- drivers/pwm/pwm-rockchip.c                         | 281 ++++++++++----------
- drivers/pwm/pwm-samsung.c                          |  70 ++---
- drivers/pwm/pwm-tegra.c                            |   2 +-
- drivers/pwm/pwm-tiecap.c                           |  90 ++++---
- drivers/pwm/pwm-tiehrpwm.c                         | 122 +++++----
- drivers/pwm/pwm-vt8500.c                           |   1 +
- drivers/pwm/pwm-zx.c                               | 282 +++++++++++++++++++++
- 21 files changed, 699 insertions(+), 307 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-zx.txt
- create mode 100644 drivers/pwm/pwm-zx.c
+-- 
+Nicolas Ferre
