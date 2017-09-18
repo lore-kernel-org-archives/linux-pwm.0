@@ -1,128 +1,104 @@
-From: Romain Izard <romain.izard.pro@gmail.com>
-Subject: [PATCH v2 9/9] tty/serial: atmel: Prevent a warning on suspend
-Date: Fri, 15 Sep 2017 16:04:11 +0200
-Message-ID: <20170915140411.31716-10-romain.izard.pro@gmail.com>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: Re: [PATCH v2 4/9] mtd: nand: atmel: Avoid ECC errors when leaving
+ backup mode
+Date: Mon, 18 Sep 2017 11:50:52 +0200
+Message-ID: <20170918115052.4606d8e5@bbrezillon>
 References: <20170915140411.31716-1-romain.izard.pro@gmail.com>
+        <20170915140411.31716-5-romain.izard.pro@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170915140411.31716-1-romain.izard.pro@gmail.com>
+In-Reply-To: <20170915140411.31716-5-romain.izard.pro@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>
-Cc: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Romain Izard <romain.izard.pro@gmail.com>
+To: Romain Izard <romain.izard.pro@gmail.com>
+Cc: Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, linux-pwm@vger.kernel.org, linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-The atmel serial port driver reported the following warning on suspend:
-atmel_usart f8020000.serial: ttyS1: Unable to drain transmitter
+Hi Romain,
 
-As the ATMEL_US_TXEMPTY status bit in ATMEL_US_CSR is always cleared
-when the transmitter is disabled, we need to know the transmitter's
-state to return the real fifo state. And as ATMEL_US_CR is write-only,
-it is necessary to save the state of the transmitter in a local
-variable, and update the variable when TXEN and TXDIS is written in
-ATMEL_US_CR.
+On Fri, 15 Sep 2017 16:04:06 +0200
+Romain Izard <romain.izard.pro@gmail.com> wrote:
 
-After those changes, atmel_tx_empty can return "empty" on suspend, the
-warning in uart_suspend_port disappears, and suspending is 20ms shorter
-for each enabled Atmel serial port.
+> During backup mode, the contents of all registers will be cleared as the
+> SoC will be completely powered down. For a product that boots on NAND
+> Flash memory, the bootloader will obviously use the related controller
+> to read the Flash and correct any detected error in the memory, before
+> handling back control to the kernel's resuming entry point.
+> 
+> In normal devices, it is up to the driver's suspend/resume code to
+> restore the registers in a valid state. But the PMECC is not a regular
+> device in the driver model when used with the legacy device tree binding
+> for the Atmel NAND controller, and suspend/resume code is not called.
+> 
+> As in my case the bootloader leaves the PMECC controller in a programmed
+> state, and the controller is only reset at boot or after a NAND access,
+> the first NAND Flash access with the Atmel controller will report
+> uncorrectable ECC errors.
+> 
+> To avoid this, systematically reset the PMECC controller before using
+> it.
+> 
+> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+> ---
+>  drivers/mtd/nand/atmel/pmecc.c | 11 +++--------
+>  1 file changed, 3 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/mtd/nand/atmel/pmecc.c b/drivers/mtd/nand/atmel/pmecc.c
+> index 8c210a5776bc..8d1208f38025 100644
+> --- a/drivers/mtd/nand/atmel/pmecc.c
+> +++ b/drivers/mtd/nand/atmel/pmecc.c
+> @@ -777,6 +777,9 @@ int atmel_pmecc_enable(struct atmel_pmecc_user *user, int op)
+>  
+>  	mutex_lock(&user->pmecc->lock);
+>  
+> +	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+> +	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
+> +
+>  	cfg = user->cache.cfg;
+>  	if (op == NAND_ECC_WRITE)
+>  		cfg |= PMECC_CFG_WRITE_OP;
+> @@ -797,10 +800,6 @@ EXPORT_SYMBOL_GPL(atmel_pmecc_enable);
+>  
+>  void atmel_pmecc_disable(struct atmel_pmecc_user *user)
+>  {
+> -	struct atmel_pmecc *pmecc = user->pmecc;
+> -
+> -	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+> -	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
 
-Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
----
- drivers/tty/serial/atmel_serial.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+So know you leave the ECC engine enabled even when it's not in use? Not
+sure what kind of implication this has on power-consumption, but I
+think I'd prefer to keep the write RST+DISABLE sequence in the disable
+path.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 7551cab438ff..783af6648be0 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -171,6 +171,7 @@ struct atmel_uart_port {
- 	bool			has_hw_timer;
- 	struct timer_list	uart_timer;
- 
-+	bool			tx_stopped;
- 	bool			suspended;
- 	unsigned int		pending;
- 	unsigned int		pending_status;
-@@ -380,6 +381,10 @@ static int atmel_config_rs485(struct uart_port *port,
-  */
- static u_int atmel_tx_empty(struct uart_port *port)
- {
-+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
-+
-+	if (atmel_port->tx_stopped)
-+		return TIOCSER_TEMT;
- 	return (atmel_uart_readl(port, ATMEL_US_CSR) & ATMEL_US_TXEMPTY) ?
- 		TIOCSER_TEMT :
- 		0;
-@@ -485,6 +490,7 @@ static void atmel_stop_tx(struct uart_port *port)
- 	 * is fully transmitted.
- 	 */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS);
-+	atmel_port->tx_stopped = true;
- 
- 	/* Disable interrupts */
- 	atmel_uart_writel(port, ATMEL_US_IDR, atmel_port->tx_done_mask);
-@@ -492,6 +498,7 @@ static void atmel_stop_tx(struct uart_port *port)
- 	if ((port->rs485.flags & SER_RS485_ENABLED) &&
- 	    !(port->rs485.flags & SER_RS485_RX_DURING_TX))
- 		atmel_start_rx(port);
-+
- }
- 
- /*
-@@ -521,6 +528,7 @@ static void atmel_start_tx(struct uart_port *port)
- 
- 	/* re-enable the transmitter */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
-+	atmel_port->tx_stopped = false;
- }
- 
- /*
-@@ -1866,6 +1874,7 @@ static int atmel_startup(struct uart_port *port)
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
- 	/* enable xmit & rcvr */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-+	atmel_port->tx_stopped = false;
- 
- 	setup_timer(&atmel_port->uart_timer,
- 			atmel_uart_timer_callback,
-@@ -2122,6 +2131,7 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
- 
- 	/* disable receiver and transmitter */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXDIS | ATMEL_US_RXDIS);
-+	atmel_port->tx_stopped = true;
- 
- 	/* mode */
- 	if (port->rs485.flags & SER_RS485_ENABLED) {
-@@ -2207,6 +2217,7 @@ static void atmel_set_termios(struct uart_port *port, struct ktermios *termios,
- 	atmel_uart_writel(port, ATMEL_US_BRGR, quot);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-+	atmel_port->tx_stopped = false;
- 
- 	/* restore interrupts */
- 	atmel_uart_writel(port, ATMEL_US_IER, imr);
-@@ -2450,6 +2461,7 @@ static void atmel_console_write(struct console *co, const char *s, u_int count)
- 
- 	/* Make sure that tx path is actually able to send characters */
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN);
-+	atmel_port->tx_stopped = false;
- 
- 	uart_console_write(port, s, count, atmel_console_putchar);
- 
-@@ -2511,6 +2523,7 @@ static int __init atmel_console_setup(struct console *co, char *options)
- {
- 	int ret;
- 	struct uart_port *port = &atmel_ports[co->index].uart;
-+	struct atmel_uart_port *atmel_port = to_atmel_uart_port(port);
- 	int baud = 115200;
- 	int bits = 8;
- 	int parity = 'n';
-@@ -2528,6 +2541,7 @@ static int __init atmel_console_setup(struct console *co, char *options)
- 	atmel_uart_writel(port, ATMEL_US_IDR, -1);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_RSTSTA | ATMEL_US_RSTRX);
- 	atmel_uart_writel(port, ATMEL_US_CR, ATMEL_US_TXEN | ATMEL_US_RXEN);
-+	atmel_port->tx_stopped = false;
- 
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
--- 
-2.11.0
+How about creating a atmel_pmecc_reset() function that you'd call from
+the nand-controller resume hook. Something like:
+
+void atmel_pmecc_reset(struct atmel_pmecc *pmecc)
+{
+	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
+}
+
+This way you can re-use the same function and call it from the probe
+and disable path as well.
+
+Regards,
+
+Boris
+
+>  	mutex_unlock(&user->pmecc->lock);
+>  }
+>  EXPORT_SYMBOL_GPL(atmel_pmecc_disable);
+> @@ -856,10 +855,6 @@ static struct atmel_pmecc *atmel_pmecc_create(struct platform_device *pdev,
+>  	/* Disable all interrupts before registering the PMECC handler. */
+>  	writel(0xffffffff, pmecc->regs.base + ATMEL_PMECC_IDR);
+>  
+> -	/* Reset the ECC engine */
+> -	writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
+> -	writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
+> -
+>  	return pmecc;
+>  }
+>  
