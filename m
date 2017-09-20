@@ -1,62 +1,35 @@
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Subject: Re: [PATCH v2 8/9] atmel_flexcom: Support backup mode
-Date: Wed, 20 Sep 2017 11:18:29 +0200
-Message-ID: <20170920091829.wftbjshog3ixvpmu@piout.net>
-References: <20170915140411.31716-1-romain.izard.pro@gmail.com>
- <20170915140411.31716-9-romain.izard.pro@gmail.com>
- <53aa7783-0ecf-1e68-1bf9-c470ba2f79eb@microchip.com>
- <20170919152504.nhp5i734u75gb5gq@dell>
- <CAGkQfmM08UqpLoMegRGQwmamN=Z74fem9VWT5yGcSjkYdS5c=Q@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] arm64: dts: salvator-common: add 12V regulator to backlight
+Date: Wed, 20 Sep 2017 13:55:09 +0200
+Message-ID: <CAMuHMdXOVSUK3q0ZMZXU9CjAWNN37tkK0DUC9CQtFTq8AqMecw@mail.gmail.com>
+References: <1505750174-29888-1-git-send-email-ulrich.hecht+renesas@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:49698 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751554AbdITJSe (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 20 Sep 2017 05:18:34 -0400
-Content-Disposition: inline
-In-Reply-To: <CAGkQfmM08UqpLoMegRGQwmamN=Z74fem9VWT5yGcSjkYdS5c=Q@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1505750174-29888-1-git-send-email-ulrich.hecht+renesas@gmail.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
+Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Simon Horman <horms@verge.net.au>
 List-Id: linux-pwm@vger.kernel.org
-To: Romain Izard <romain.izard.pro@gmail.com>
-Cc: Lee Jones <lee.jones@linaro.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, linux-clk@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>linux-mtd <lin>
 
-On 20/09/2017 at 10:30:31 +0200, Romain Izard wrote:
-> 2017-09-19 17:25 GMT+02:00 Lee Jones <lee.jones@linaro.org>:
-> > On Tue, 19 Sep 2017, Nicolas Ferre wrote:
-> >
-> >> On 15/09/2017 at 16:04, Romain Izard wrote:
-> >> > The controller used by a flexcom module is configured at boot, and left
-> >> > alone after this. As the configuration will be lost after backup mode,
-> >> > restore the state of the flexcom driver on resume.
-> >> >
-> >> > Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
-> >>
-> >> Tested-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-> >> On sama5d2 Xplained board (i2c0 from flexcom 4).
-> >> and obviously:
-> >> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-> >>
-> >> Thanks Romain!
-> >>
-> >> Regards,
-> >>
-> >> > ---
-> >> >  drivers/mfd/atmel-flexcom.c | 65 ++++++++++++++++++++++++++++++++++-----------
-> >> >  1 file changed, 50 insertions(+), 15 deletions(-)
-> >
-> > This is the first time I've seen this patch.  Why's that?
-> >
-> 
-> As the patchset covers many subsystems, get_maintainers.pl provided a
-> very long list of both developpers and mailing lists (28). I thought it
-> was a good idea to shorten it a little. Bad idea. Sorry.
-> 
+On Mon, Sep 18, 2017 at 5:56 PM, Ulrich Hecht
+<ulrich.hecht+renesas@gmail.com> wrote:
+> This fixes the warning "pwm-backlight backlight: backlight supply power
+> not found, using dummy regulator".
+>
+> Fixes: b33be33670217533 ("arm64: dts: salvator-x: Add panel backlight support")
+> Reported-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Signed-off-by: Ulrich Hecht <ulrich.hecht+renesas@gmail.com>
 
-I think the correct way of handling that would have been to send each
-patch to the proper subsystem as there are no dependency here.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
