@@ -1,160 +1,62 @@
-From: Zhi Mao <zhi.mao@mediatek.com>
-Subject: Re: [PATCH v4 1/1] pwm: mediatek: add MT2712/MT7622 support
-Date: Wed, 20 Sep 2017 16:48:32 +0800
-Message-ID: <1505897312.28692.2.camel@mhfsdcap03>
-References: <1503367755-6519-1-git-send-email-zhi.mao@mediatek.com>
-         <1503367755-6519-2-git-send-email-zhi.mao@mediatek.com>
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: Re: [PATCH v2 8/9] atmel_flexcom: Support backup mode
+Date: Wed, 20 Sep 2017 11:18:29 +0200
+Message-ID: <20170920091829.wftbjshog3ixvpmu@piout.net>
+References: <20170915140411.31716-1-romain.izard.pro@gmail.com>
+ <20170915140411.31716-9-romain.izard.pro@gmail.com>
+ <53aa7783-0ecf-1e68-1bf9-c470ba2f79eb@microchip.com>
+ <20170919152504.nhp5i734u75gb5gq@dell>
+ <CAGkQfmM08UqpLoMegRGQwmamN=Z74fem9VWT5yGcSjkYdS5c=Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailgw01.mediatek.com ([218.249.47.110]:48000 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1750884AbdITIsl (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 20 Sep 2017 04:48:41 -0400
-In-Reply-To: <1503367755-6519-2-git-send-email-zhi.mao@mediatek.com>
+Received: from mail.free-electrons.com ([62.4.15.54]:49698 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751554AbdITJSe (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 20 Sep 2017 05:18:34 -0400
+Content-Disposition: inline
+In-Reply-To: <CAGkQfmM08UqpLoMegRGQwmamN=Z74fem9VWT5yGcSjkYdS5c=Q@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: john@phrozen.org
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com, yt.shen@mediatek.com, sean.wang@mediatek.com, zhenbao.liu@mediatek.com
+To: Romain Izard <romain.izard.pro@gmail.com>
+Cc: Lee Jones <lee.jones@linaro.org>, Nicolas Ferre <nicolas.ferre@microchip.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, linux-clk@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>linux-mtd <lin>
 
-Hi Thierry,
-
-Just a gentle ping on this issue.
-Would you please have a review to this patch?
-
-Regards,
-Zhi
-
-
-On Tue, 2017-08-22 at 10:09 +0800, Zhi Mao wrote:
-> Add support to MT2712 and MT7622.
-> Due to register offset address of pwm7 for MT2712 is not fixed 0x40,
-> add mtk_pwm_reg_offset array for pwm register offset.
+On 20/09/2017 at 10:30:31 +0200, Romain Izard wrote:
+> 2017-09-19 17:25 GMT+02:00 Lee Jones <lee.jones@linaro.org>:
+> > On Tue, 19 Sep 2017, Nicolas Ferre wrote:
+> >
+> >> On 15/09/2017 at 16:04, Romain Izard wrote:
+> >> > The controller used by a flexcom module is configured at boot, and left
+> >> > alone after this. As the configuration will be lost after backup mode,
+> >> > restore the state of the flexcom driver on resume.
+> >> >
+> >> > Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+> >>
+> >> Tested-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+> >> On sama5d2 Xplained board (i2c0 from flexcom 4).
+> >> and obviously:
+> >> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+> >>
+> >> Thanks Romain!
+> >>
+> >> Regards,
+> >>
+> >> > ---
+> >> >  drivers/mfd/atmel-flexcom.c | 65 ++++++++++++++++++++++++++++++++++-----------
+> >> >  1 file changed, 50 insertions(+), 15 deletions(-)
+> >
+> > This is the first time I've seen this patch.  Why's that?
+> >
 > 
-> Signed-off-by: Zhi Mao <zhi.mao@mediatek.com>
-> ---
->  drivers/pwm/pwm-mediatek.c |   51 ++++++++++++++++++++++++++++++++++++--------
->  1 file changed, 42 insertions(+), 9 deletions(-)
+> As the patchset covers many subsystems, get_maintainers.pl provided a
+> very long list of both developpers and mailing lists (28). I thought it
+> was a good idea to shorten it a little. Bad idea. Sorry.
 > 
-> diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-> index 1d78ab1..ccd86e7 100644
-> --- a/drivers/pwm/pwm-mediatek.c
-> +++ b/drivers/pwm/pwm-mediatek.c
-> @@ -16,6 +16,7 @@
->  #include <linux/module.h>
->  #include <linux/clk.h>
->  #include <linux/of.h>
-> +#include <linux/of_device.h>
->  #include <linux/platform_device.h>
->  #include <linux/pwm.h>
->  #include <linux/slab.h>
-> @@ -40,11 +41,19 @@ enum {
->  	MTK_CLK_PWM3,
->  	MTK_CLK_PWM4,
->  	MTK_CLK_PWM5,
-> +	MTK_CLK_PWM6,
-> +	MTK_CLK_PWM7,
-> +	MTK_CLK_PWM8,
->  	MTK_CLK_MAX,
->  };
->  
-> -static const char * const mtk_pwm_clk_name[] = {
-> -	"main", "top", "pwm1", "pwm2", "pwm3", "pwm4", "pwm5"
-> +static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
-> +	"main", "top", "pwm1", "pwm2", "pwm3", "pwm4", "pwm5", "pwm6", "pwm7",
-> +	"pwm8"
-> +};
-> +
-> +struct mtk_pwm_platform_data {
-> +	unsigned int num_pwms;
->  };
->  
->  /**
-> @@ -57,6 +66,11 @@ struct mtk_pwm_chip {
->  	struct pwm_chip chip;
->  	void __iomem *regs;
->  	struct clk *clks[MTK_CLK_MAX];
-> +	const struct mtk_pwm_platform_data *data;
-> +};
-> +
-> +static const unsigned int mtk_pwm_reg_offset[] = {
-> +	0x0010, 0x0050, 0x0090, 0x00d0, 0x0110, 0x0150, 0x0190, 0x0220
->  };
->  
->  static inline struct mtk_pwm_chip *to_mtk_pwm_chip(struct pwm_chip *chip)
-> @@ -103,14 +117,14 @@ static void mtk_pwm_clk_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->  static inline u32 mtk_pwm_readl(struct mtk_pwm_chip *chip, unsigned int num,
->  				unsigned int offset)
->  {
-> -	return readl(chip->regs + 0x10 + (num * 0x40) + offset);
-> +	return readl(chip->regs + mtk_pwm_reg_offset[num] + offset);
->  }
->  
->  static inline void mtk_pwm_writel(struct mtk_pwm_chip *chip,
->  				  unsigned int num, unsigned int offset,
->  				  u32 value)
->  {
-> -	writel(value, chip->regs + 0x10 + (num * 0x40) + offset);
-> +	writel(value, chip->regs + mtk_pwm_reg_offset[num] + offset);
->  }
->  
->  static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> @@ -194,15 +208,20 @@ static int mtk_pwm_probe(struct platform_device *pdev)
->  	if (!pc)
->  		return -ENOMEM;
->  
-> +	pc->data = of_device_get_match_data(&pdev->dev);
-> +
->  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->  	pc->regs = devm_ioremap_resource(&pdev->dev, res);
->  	if (IS_ERR(pc->regs))
->  		return PTR_ERR(pc->regs);
->  
-> -	for (i = 0; i < MTK_CLK_MAX; i++) {
-> +	for (i = 0; i < pc->data->num_pwms + 2; i++) {
->  		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
-> -		if (IS_ERR(pc->clks[i]))
-> +		if (IS_ERR(pc->clks[i])) {
-> +			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
-> +				mtk_pwm_clk_name[i], PTR_ERR(pc->clks[i]));
->  			return PTR_ERR(pc->clks[i]);
-> +		}
->  	}
->  
->  	platform_set_drvdata(pdev, pc);
-> @@ -210,7 +229,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
->  	pc->chip.dev = &pdev->dev;
->  	pc->chip.ops = &mtk_pwm_ops;
->  	pc->chip.base = -1;
-> -	pc->chip.npwm = 5;
-> +	pc->chip.npwm = pc->data->num_pwms;
->  
->  	ret = pwmchip_add(&pc->chip);
->  	if (ret < 0) {
-> @@ -228,9 +247,23 @@ static int mtk_pwm_remove(struct platform_device *pdev)
->  	return pwmchip_remove(&pc->chip);
->  }
->  
-> +static const struct mtk_pwm_platform_data mt2712_pwm_data = {
-> +	.num_pwms = 8,
-> +};
-> +
-> +static const struct mtk_pwm_platform_data mt7622_pwm_data = {
-> +	.num_pwms = 6,
-> +};
-> +
-> +static const struct mtk_pwm_platform_data mt7623_pwm_data = {
-> +	.num_pwms = 5,
-> +};
-> +
->  static const struct of_device_id mtk_pwm_of_match[] = {
-> -	{ .compatible = "mediatek,mt7623-pwm" },
-> -	{ }
-> +	{ .compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data },
-> +	{ .compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data },
-> +	{ .compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data },
-> +	{ },
->  };
->  MODULE_DEVICE_TABLE(of, mtk_pwm_of_match);
->  
+
+I think the correct way of handling that would have been to send each
+patch to the proper subsystem as there are no dependency here.
+
+-- 
+Alexandre Belloni, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
