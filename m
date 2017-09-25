@@ -1,143 +1,182 @@
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: Re: [PATCH v2 7/9] pwm: atmel-tcb: Support backup mode
-Date: Fri, 22 Sep 2017 14:42:37 +0200
-Message-ID: <fa66d212-dbfb-08d4-1b2b-aaaa9f9d62de@microchip.com>
+From: Romain Izard <romain.izard.pro@gmail.com>
+Subject: Re: [PATCH v2 3/9] clk: at91: pmc: Support backup for programmable clocks
+Date: Mon, 25 Sep 2017 10:25:35 +0200
+Message-ID: <CAGkQfmOQ_5hb-OKWQxjboPS1V0v-jCPxyyDZyCyZLFYFoeXWbA@mail.gmail.com>
 References: <20170915140411.31716-1-romain.izard.pro@gmail.com>
- <20170915140411.31716-8-romain.izard.pro@gmail.com>
+ <20170915140411.31716-4-romain.izard.pro@gmail.com> <d6359e89-7c78-fdec-fbab-eb885017ec58@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170915140411.31716-8-romain.izard.pro@gmail.com>
-Content-Language: en-US
+In-Reply-To: <d6359e89-7c78-fdec-fbab-eb885017ec58@microchip.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Romain Izard <romain.izard.pro@gmail.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>
-Cc: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Ludovic Desroches <ludovic.desroches@microchip.com>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>, linux-clk@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, linux-mtd <linux-mtd@lists.infradead.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On 15/09/2017 at 16:04, Romain Izard wrote:
-> Save and restore registers for the PWM on suspend and resume, which
-> makes hibernation and backup modes possible.
-> 
-> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+2017-09-22 12:31 GMT+02:00 Nicolas Ferre <nicolas.ferre@microchip.com>:
+> On 15/09/2017 at 16:04, Romain Izard wrote:
+>> From: Romain Izard <romain.izard@mobile-devices.fr>
+>>
+>> When an AT91 programmable clock is declared in the device tree, register
+>> it into the Power Management Controller driver. On entering suspend mode,
+>> the driver saves and restores the Programmable Clock registers to support
+>> the backup mode for these clocks.
+>>
+>> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+>
+> Romain,
+>
+> Some nitpicking and one comment. But on the overall patch, here is my:
+> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+>
+> See below:
+>
+>> ---
+>> Changes in v2:
+>> * register PCKs on clock startup
+>>
+>>  drivers/clk/at91/clk-programmable.c |  2 ++
+>>  drivers/clk/at91/pmc.c              | 27 +++++++++++++++++++++++++++
+>>  drivers/clk/at91/pmc.h              |  2 ++
+>>  3 files changed, 31 insertions(+)
+>>
+>> diff --git a/drivers/clk/at91/clk-programmable.c b/drivers/clk/at91/clk-programmable.c
+>> index 85a449cf61e3..0e6aab1252fc 100644
+>> --- a/drivers/clk/at91/clk-programmable.c
+>> +++ b/drivers/clk/at91/clk-programmable.c
+>> @@ -204,6 +204,8 @@ at91_clk_register_programmable(struct regmap *regmap,
+>>       if (ret) {
+>>               kfree(prog);
+>>               hw = ERR_PTR(ret);
+>
+> Nit: "else" not needed.
+>
+This is a shared idiom in all the atmel clock drivers, so I prefer to keep
+it this way.
 
-Seems good to me:
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+>> +     } else {
+>> +             pmc_register_pck(id);
+>>       }
+>>
+>>       return hw;
+>> diff --git a/drivers/clk/at91/pmc.c b/drivers/clk/at91/pmc.c
+>> index 07dc2861ad3f..3910b7537152 100644
+>> --- a/drivers/clk/at91/pmc.c
+>> +++ b/drivers/clk/at91/pmc.c
+>> @@ -22,6 +22,7 @@
+>>  #include "pmc.h"
+>>
+>>  #define PMC_MAX_IDS 128
+>> +#define PMC_MAX_PCKS 8
+>>
+>>  int of_at91_get_clk_range(struct device_node *np, const char *propname,
+>>                         struct clk_range *range)
+>> @@ -50,6 +51,7 @@ EXPORT_SYMBOL_GPL(of_at91_get_clk_range);
+>>  static struct regmap *pmcreg;
+>>
+>>  static u8 registered_ids[PMC_MAX_IDS];
+>> +static u8 registered_pcks[PMC_MAX_PCKS];
+>>
+>>  static struct
+>>  {
+>> @@ -66,8 +68,10 @@ static struct
+>>       u32 pcr[PMC_MAX_IDS];
+>>       u32 audio_pll0;
+>>       u32 audio_pll1;
+>> +     u32 pckr[PMC_MAX_PCKS];
+>>  } pmc_cache;
+>>
+>> +/* Clock ID 0 is invalid */
+>
+> (read: so we can use the 0 value as an indicator that this place in the
+> table hasn't been filled, so unused)
+>
+>>  void pmc_register_id(u8 id)
+>>  {
+>>       int i;
+>> @@ -82,6 +86,21 @@ void pmc_register_id(u8 id)
+>>       }
+>>  }
+>>
+>> +/* Programmable Clock 0 is valid */
+>
+> I understand the rationale behind these ^^ two comments, but I would
+> like that it's more explicit. Saying that you will store the pck id as
+> (id + 1) and that you would have to invert this operation while using
+> the stored id.
+> Maybe add a comment about this transformation to the struct definition
+> as well...
+>
 
-> ---
->  drivers/pwm/pwm-atmel-tcb.c | 63 +++++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 61 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
-> index 75db585a2a94..acd3ce8ecf3f 100644
-> --- a/drivers/pwm/pwm-atmel-tcb.c
-> +++ b/drivers/pwm/pwm-atmel-tcb.c
-> @@ -37,11 +37,20 @@ struct atmel_tcb_pwm_device {
->  	unsigned period;		/* PWM period expressed in clk cycles */
->  };
->  
-> +struct atmel_tcb_channel {
-> +	u32 enabled;
-> +	u32 cmr;
-> +	u32 ra;
-> +	u32 rb;
-> +	u32 rc;
-> +};
-> +
->  struct atmel_tcb_pwm_chip {
->  	struct pwm_chip chip;
->  	spinlock_t lock;
->  	struct atmel_tc *tc;
->  	struct atmel_tcb_pwm_device *pwms[NPWM];
-> +	struct atmel_tcb_channel bkup[NPWM / 2];
->  };
->  
->  static inline struct atmel_tcb_pwm_chip *to_tcb_chip(struct pwm_chip *chip)
-> @@ -175,12 +184,15 @@ static void atmel_tcb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->  	 * Use software trigger to apply the new setting.
->  	 * If both PWM devices in this group are disabled we stop the clock.
->  	 */
-> -	if (!(cmr & (ATMEL_TC_ACPC | ATMEL_TC_BCPC)))
-> +	if (!(cmr & (ATMEL_TC_ACPC | ATMEL_TC_BCPC))) {
->  		__raw_writel(ATMEL_TC_SWTRG | ATMEL_TC_CLKDIS,
->  			     regs + ATMEL_TC_REG(group, CCR));
-> -	else
-> +		tcbpwmc->bkup[group].enabled = 1;
-> +	} else {
->  		__raw_writel(ATMEL_TC_SWTRG, regs +
->  			     ATMEL_TC_REG(group, CCR));
-> +		tcbpwmc->bkup[group].enabled = 0;
-> +	}
->  
->  	spin_unlock(&tcbpwmc->lock);
->  }
-> @@ -263,6 +275,7 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
->  	/* Use software trigger to apply the new setting */
->  	__raw_writel(ATMEL_TC_CLKEN | ATMEL_TC_SWTRG,
->  		     regs + ATMEL_TC_REG(group, CCR));
-> +	tcbpwmc->bkup[group].enabled = 1;
->  	spin_unlock(&tcbpwmc->lock);
->  	return 0;
->  }
-> @@ -445,10 +458,56 @@ static const struct of_device_id atmel_tcb_pwm_dt_ids[] = {
->  };
->  MODULE_DEVICE_TABLE(of, atmel_tcb_pwm_dt_ids);
->  
-> +#ifdef CONFIG_PM_SLEEP
-> +static int atmel_tcb_pwm_suspend(struct device *dev)
-> +{
-> +	struct platform_device *pdev = to_platform_device(dev);
-> +	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
-> +	void __iomem *base = tcbpwm->tc->regs;
-> +	int i;
-> +
-> +	for (i = 0; i < (NPWM / 2); i++) {
-> +		struct atmel_tcb_channel *chan = &tcbpwm->bkup[i];
-> +
-> +		chan->cmr = readl(base + ATMEL_TC_REG(i, CMR));
-> +		chan->ra = readl(base + ATMEL_TC_REG(i, RA));
-> +		chan->rb = readl(base + ATMEL_TC_REG(i, RB));
-> +		chan->rc = readl(base + ATMEL_TC_REG(i, RC));
-> +	}
-> +	return 0;
-> +}
-> +
-> +static int atmel_tcb_pwm_resume(struct device *dev)
-> +{
-> +	struct platform_device *pdev = to_platform_device(dev);
-> +	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
-> +	void __iomem *base = tcbpwm->tc->regs;
-> +	int i;
-> +
-> +	for (i = 0; i < (NPWM / 2); i++) {
-> +		struct atmel_tcb_channel *chan = &tcbpwm->bkup[i];
-> +
-> +		writel(chan->cmr, base + ATMEL_TC_REG(i, CMR));
-> +		writel(chan->ra, base + ATMEL_TC_REG(i, RA));
-> +		writel(chan->rb, base + ATMEL_TC_REG(i, RB));
-> +		writel(chan->rc, base + ATMEL_TC_REG(i, RC));
-> +		if (chan->enabled) {
-> +			writel(ATMEL_TC_CLKEN | ATMEL_TC_SWTRG,
-> +				base + ATMEL_TC_REG(i, CCR));
-> +		}
-> +	}
-> +	return 0;
-> +}
-> +#endif
-> +
-> +static SIMPLE_DEV_PM_OPS(atmel_tcb_pwm_pm_ops, atmel_tcb_pwm_suspend,
-> +			 atmel_tcb_pwm_resume);
-> +
->  static struct platform_driver atmel_tcb_pwm_driver = {
->  	.driver = {
->  		.name = "atmel-tcb-pwm",
->  		.of_match_table = atmel_tcb_pwm_dt_ids,
-> +		.pm = &atmel_tcb_pwm_pm_ops,
->  	},
->  	.probe = atmel_tcb_pwm_probe,
->  	.remove = atmel_tcb_pwm_remove,
-> 
+I will improve the comments for the next revision.
 
+>
+>> +void pmc_register_pck(u8 pck)
+>> +{
+>> +     int i;
+>> +
+>> +     for (i = 0; i < PMC_MAX_PCKS; i++) {
+>> +             if (registered_pcks[i] == 0) {
+>> +                     registered_pcks[i] = pck + 1;
+>> +                     break;
+>> +             }
+>> +             if (registered_pcks[i] == (pck + 1))
+>> +                     break;
+>> +     }
+>> +}
+>> +
+>>  static int pmc_suspend(void)
+>>  {
+>>       int i;
+>> @@ -103,6 +122,10 @@ static int pmc_suspend(void)
+>>               regmap_read(pmcreg, AT91_PMC_PCR,
+>>                           &pmc_cache.pcr[registered_ids[i]]);
+>>       }
+>> +     for (i = 0; registered_pcks[i]; i++) {
+>> +             u8 num = registered_pcks[i] - 1;
+>
+> Nit: declaration are better made at the beginning of the function. This
+> lead to a checkpatch warning:
+> "WARNING: Missing a blank line after declarations"
+>
+
+I'll fix this as well.
+
+>> +             regmap_read(pmcreg, AT91_PMC_PCKR(num), &pmc_cache.pckr[num]);
+>> +     }
+>>
+>>       return 0;
+>>  }
+>> @@ -143,6 +166,10 @@ static void pmc_resume(void)
+>>                            pmc_cache.pcr[registered_ids[i]] |
+>>                            AT91_PMC_PCR_CMD);
+>>       }
+>> +     for (i = 0; registered_pcks[i]; i++) {
+>> +             u8 num = registered_pcks[i] - 1;
+>
+> Ditto
+>
+>> +             regmap_write(pmcreg, AT91_PMC_PCKR(num), pmc_cache.pckr[num]);
+>> +     }
+>>
+>>       if (pmc_cache.uckr & AT91_PMC_UPLLEN)
+>>               mask |= AT91_PMC_LOCKU;
+>> diff --git a/drivers/clk/at91/pmc.h b/drivers/clk/at91/pmc.h
+>> index 858e8ef7e8db..d22b1fa9ecdc 100644
+>> --- a/drivers/clk/at91/pmc.h
+>> +++ b/drivers/clk/at91/pmc.h
+>> @@ -31,8 +31,10 @@ int of_at91_get_clk_range(struct device_node *np, const char *propname,
+>>
+>>  #ifdef CONFIG_PM
+>>  void pmc_register_id(u8 id);
+>> +void pmc_register_pck(u8 pck);
+>>  #else
+>>  static inline void pmc_register_id(u8 id) {}
+>> +static inline void pmc_register_pck(u8 pck) {}
+>>  #endif
+>>
+>>  #endif /* __PMC_H_ */
+>>
 
 -- 
-Nicolas Ferre
+Romain Izard
