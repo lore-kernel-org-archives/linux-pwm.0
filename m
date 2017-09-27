@@ -1,47 +1,74 @@
-From: gohai@sukzessiv.net
-Subject: [RESEND][PATCH] pwm: Set class for exported channels in sysfs
-Date: Tue, 26 Sep 2017 11:59:51 +0000
-Message-ID: <20170926115951.GA29367@sukzessiv.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Romain Izard <romain.izard.pro@gmail.com>
+Subject: [PATCH v3 1/8] clk: at91: pmc: Wait for clocks when resuming
+Date: Wed, 27 Sep 2017 10:35:48 +0200
+Message-ID: <20170927083555.16580-2-romain.izard.pro@gmail.com>
+References: <20170927083555.16580-1-romain.izard.pro@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from habibi.sukzessiv.net ([192.34.62.119]:36804 "EHLO
-        habibi.sukzessiv.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752167AbdIZMKi (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 26 Sep 2017 08:10:38 -0400
-Content-Disposition: inline
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:46771 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752487AbdI0IgO (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 27 Sep 2017 04:36:14 -0400
+In-Reply-To: <20170927083555.16580-1-romain.izard.pro@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: H Hartley Sweeten <hsweeten@visionengravers.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org, Gottfried Haider <gottfried.haider@gmail.com>
+To: Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, Richard Weinberger <richard@nod.at>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alan Stern <stern@rowland.harvard.edu>, Ludovic Desroches <ludovic.desroches@microchip.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Ale
+Cc: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, Romain Izard <romain.izard.pro@gmail.com>
 
-Notifications for devices without bus or class set get dropped by
-dev_uevent_filter. Adding the class to the exported child matches
-what the gpio subsystem is doing.
+Wait for the syncronization of all clocks when resuming, not only the
+UPLL clock. Do not use regmap_read_poll_timeout, as it will call BUG()
+when interrupts are masked, which is the case in here.
 
-With this change exporting a channel triggers a udev event, which
-gives userspace a chance to fixup permissions and makes it possible
-for non-root users to make use of the pwm subsystem.
-
-Signed-off-by: Gottfried Haider <gottfried.haider@gmail.com>
-CC: Thierry Reding <thierry.reding@gmail.com>
-CC: H Hartley Sweeten <hsweeten@visionengravers.com>
-CC: linux-pwm@vger.kernel.org
-CC: linux-arm-kernel@lists.infradead.org
-CC: linux-rpi-kernel@lists.infradead.org
+Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 ---
- drivers/pwm/sysfs.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/clk/at91/pmc.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index a813239..83f2b0b 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -263,6 +263,7 @@ static int pwm_export_child(struct device *parent, struct pwm_device *pwm)
-        export->pwm = pwm;
-        mutex_init(&export->lock);
-
-+       export->child.class = parent->class;
-        export->child.release = pwm_export_release;
-        export->child.parent = parent;
-        export->child.devt = MKDEV(0, 0);
+diff --git a/drivers/clk/at91/pmc.c b/drivers/clk/at91/pmc.c
+index 775af473fe11..5c2b26de303e 100644
+--- a/drivers/clk/at91/pmc.c
++++ b/drivers/clk/at91/pmc.c
+@@ -107,10 +107,20 @@ static int pmc_suspend(void)
+ 	return 0;
+ }
+ 
++static bool pmc_ready(unsigned int mask)
++{
++	unsigned int status;
++
++	regmap_read(pmcreg, AT91_PMC_SR, &status);
++
++	return ((status & mask) == mask) ? 1 : 0;
++}
++
+ static void pmc_resume(void)
+ {
+-	int i, ret = 0;
++	int i;
+ 	u32 tmp;
++	u32 mask = AT91_PMC_MCKRDY | AT91_PMC_LOCKA;
+ 
+ 	regmap_read(pmcreg, AT91_PMC_MCKR, &tmp);
+ 	if (pmc_cache.mckr != tmp)
+@@ -134,13 +144,11 @@ static void pmc_resume(void)
+ 			     AT91_PMC_PCR_CMD);
+ 	}
+ 
+-	if (pmc_cache.uckr & AT91_PMC_UPLLEN) {
+-		ret = regmap_read_poll_timeout(pmcreg, AT91_PMC_SR, tmp,
+-					       !(tmp & AT91_PMC_LOCKU),
+-					       10, 5000);
+-		if (ret)
+-			pr_crit("USB PLL didn't lock when resuming\n");
+-	}
++	if (pmc_cache.uckr & AT91_PMC_UPLLEN)
++		mask |= AT91_PMC_LOCKU;
++
++	while (!pmc_ready(mask))
++		cpu_relax();
+ }
+ 
+ static struct syscore_ops pmc_syscore_ops = {
+-- 
+2.11.0
