@@ -1,95 +1,74 @@
 From: Romain Izard <romain.izard.pro@gmail.com>
-Subject: Re: [PATCH v3 4/8] mtd: nand: atmel: Avoid ECC errors when leaving
- backup mode
-Date: Wed, 27 Sep 2017 17:32:10 +0200
-Message-ID: <CAGkQfmOYg6Usyd++KuGqMjDnaWaP77U5jfOL++3nN7PTcAhh9A@mail.gmail.com>
-References: <20170927083555.16580-1-romain.izard.pro@gmail.com>
- <20170927083555.16580-5-romain.izard.pro@gmail.com> <20170927170811.57830c1f@bbrezillon>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH v4 1/8] clk: at91: pmc: Wait for clocks when resuming
+Date: Thu, 28 Sep 2017 11:46:20 +0200
+Message-ID: <20170928094627.31017-2-romain.izard.pro@gmail.com>
+References: <20170928094627.31017-1-romain.izard.pro@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qk0-f179.google.com ([209.85.220.179]:52323 "EHLO
-        mail-qk0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752030AbdI0Pcb (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 27 Sep 2017 11:32:31 -0400
-Received: by mail-qk0-f179.google.com with SMTP id o77so13669700qke.9
-        for <linux-pwm@vger.kernel.org>; Wed, 27 Sep 2017 08:32:31 -0700 (PDT)
-In-Reply-To: <20170927170811.57830c1f@bbrezillon>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:53260 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752376AbdI1Jqm (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 28 Sep 2017 05:46:42 -0400
+In-Reply-To: <20170928094627.31017-1-romain.izard.pro@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, Richard Weinberger <richard@nod.at>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alan Stern <stern@rowland.harvard.edu>, Ludovic Desroches <ludovic.desroches@microchip.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Boris Brezillon <boris.brezillon@free-electrons.com>, Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@codeaurora.org>, Lee Jones <lee.jones@linaro.org>, Wenyou Yang <wenyou.yang@atmel.com>, Josh Wu <rainyfeeling@outlook.com>, Richard Weinberger <richard@nod.at>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, Marek Vasut <marek.vasut@gmail.com>, Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>, Thierry Reding <thierry.reding@gmail.com>, Richard Genoud <richard.genoud@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jslaby@suse.com>, Alan Stern <stern@rowland.harvard.edu>, Ludovic Desroches <ludovic.desroches@microchip.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Ale
+Cc: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org, linux-pwm@vger.kernel.org, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, Romain Izard <romain.izard.pro@gmail.com>
 
-2017-09-27 17:08 GMT+02:00 Boris Brezillon <boris.brezillon@free-electrons.com>:
-> On Wed, 27 Sep 2017 10:35:51 +0200
-> Romain Izard <romain.izard.pro@gmail.com> wrote:
->
->> During backup mode, the contents of all registers will be cleared as the
->> SoC will be completely powered down. For a product that boots on NAND
->> Flash memory, the bootloader will obviously use the related controller
->> to read the Flash and correct any detected error in the memory, before
->> handling back control to the kernel's resuming entry point.
->>
->> But it does not clean the NAND controller registers after use and on its
->> side the kernel driver expects the error locator to be powered down and
->> in a clean state. Add a resume hook for the PMECC error locator, and
->> reset its registers.
->>
->> Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
->> ---
->> Change in v3:
->> * keep the PMECC disabled when not in use, and use atmel_pmecc_resume to
->>   reset the controller after the bootloader has left it enabled.
->>
->>  drivers/mtd/nand/atmel/nand-controller.c |  3 +++
->>  drivers/mtd/nand/atmel/pmecc.c           | 22 ++++++++++++++--------
->>  drivers/mtd/nand/atmel/pmecc.h           |  1 +
->>  3 files changed, 18 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/mtd/nand/atmel/nand-controller.c b/drivers/mtd/nand/atmel/nand-controller.c
->> index f25eca79f4e5..86c2199380c2 100644
->> --- a/drivers/mtd/nand/atmel/nand-controller.c
->> +++ b/drivers/mtd/nand/atmel/nand-controller.c
->> @@ -2530,6 +2530,9 @@ static __maybe_unused int atmel_nand_controller_resume(struct device *dev)
->>       struct atmel_nand_controller *nc = dev_get_drvdata(dev);
->>       struct atmel_nand *nand;
->>
->> +     if (nand->pmecc)
->> +             atmel_pmecc_resume(nand->pmecc);
->> +
->
-> nand is used uninitialized here, and atmel_pmecc_resume() should be
-> passed a atmel_pmecc object not a atmel_pmecc_user.
->
->         if (nc->pmecc)
->                 atmel_pmecc_resume(nc->pmecc);
->
-And yet I thought I correctly tested this code...
+Wait for the syncronization of all clocks when resuming, not only the
+UPLL clock. Do not use regmap_read_poll_timeout, as it will call BUG()
+when interrupts are masked, which is the case in here.
 
-:(
+Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+Acked-by: Ludovic Desroches <ludovic.desroches@microchip.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+---
+ drivers/clk/at91/pmc.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
->>       list_for_each_entry(nand, &nc->chips, node) {
->>               int i;
->>
->> diff --git a/drivers/mtd/nand/atmel/pmecc.c b/drivers/mtd/nand/atmel/pmecc.c
->> index 146af8218314..ff09c0f25dd4 100644
->> --- a/drivers/mtd/nand/atmel/pmecc.c
->> +++ b/drivers/mtd/nand/atmel/pmecc.c
->> @@ -765,6 +765,12 @@ void atmel_pmecc_get_generated_eccbytes(struct atmel_pmecc_user *user,
->>  }
->>  EXPORT_SYMBOL_GPL(atmel_pmecc_get_generated_eccbytes);
->>
->> +void atmel_pmecc_reset(struct atmel_pmecc *pmecc)
->> +{
->> +     writel(PMECC_CTRL_RST, pmecc->regs.base + ATMEL_PMECC_CTRL);
->> +     writel(PMECC_CTRL_DISABLE, pmecc->regs.base + ATMEL_PMECC_CTRL);
->> +}
->
-> It's not used outside of this file, so it should have a static
-> specifier. Anyway, I wonder why you don't expose atmel_pmecc_reset()
-> directly instead of creating this atmel_pmecc_resume() wrapper.
-
-I will fix this...
-
+diff --git a/drivers/clk/at91/pmc.c b/drivers/clk/at91/pmc.c
+index 775af473fe11..5c2b26de303e 100644
+--- a/drivers/clk/at91/pmc.c
++++ b/drivers/clk/at91/pmc.c
+@@ -107,10 +107,20 @@ static int pmc_suspend(void)
+ 	return 0;
+ }
+ 
++static bool pmc_ready(unsigned int mask)
++{
++	unsigned int status;
++
++	regmap_read(pmcreg, AT91_PMC_SR, &status);
++
++	return ((status & mask) == mask) ? 1 : 0;
++}
++
+ static void pmc_resume(void)
+ {
+-	int i, ret = 0;
++	int i;
+ 	u32 tmp;
++	u32 mask = AT91_PMC_MCKRDY | AT91_PMC_LOCKA;
+ 
+ 	regmap_read(pmcreg, AT91_PMC_MCKR, &tmp);
+ 	if (pmc_cache.mckr != tmp)
+@@ -134,13 +144,11 @@ static void pmc_resume(void)
+ 			     AT91_PMC_PCR_CMD);
+ 	}
+ 
+-	if (pmc_cache.uckr & AT91_PMC_UPLLEN) {
+-		ret = regmap_read_poll_timeout(pmcreg, AT91_PMC_SR, tmp,
+-					       !(tmp & AT91_PMC_LOCKU),
+-					       10, 5000);
+-		if (ret)
+-			pr_crit("USB PLL didn't lock when resuming\n");
+-	}
++	if (pmc_cache.uckr & AT91_PMC_UPLLEN)
++		mask |= AT91_PMC_LOCKU;
++
++	while (!pmc_ready(mask))
++		cpu_relax();
+ }
+ 
+ static struct syscore_ops pmc_syscore_ops = {
 -- 
-Romain Izard
+2.11.0
