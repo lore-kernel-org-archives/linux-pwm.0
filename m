@@ -1,43 +1,91 @@
-From: Stefan Wahren <stefan.wahren-eS4NqCHxEME@public.gmane.org>
-Subject: Re: [RESEND][PATCH] pwm: Set class for exported channels in sysfs
-Date: Thu, 12 Oct 2017 19:33:50 +0200 (CEST)
-Message-ID: <1245974579.189996.1507829630145@email.1und1.de>
-References: <20170926115951.GA29367@sukzessiv.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20170926115951.GA29367-SJMGYJWzoarE6SqAqhcbZQ@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rpi-kernel>,
- <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rpi-kernel/>
-List-Post: <mailto:linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rpi-kernel>,
- <mailto:linux-rpi-kernel-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "linux-rpi-kernel" <linux-rpi-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rpi-kernel-bounces+glkr-linux-rpi-kernel=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Gottfried Haider <gottfried.haider-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, H Hartley Sweeten <hsweeten-3FF4nKcrg1dE2c76skzGb0EOCMrvLtNR@public.gmane.org>, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, gohai-SJMGYJWzoarE6SqAqhcbZQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Jerome Brunet <jbrunet@baylibre.com>
+Subject: [PATCH] pwm: meson: use generic compatibles
+Date: Fri, 13 Oct 2017 11:16:42 +0200
+Message-ID: <20171013091642.31948-1-jbrunet@baylibre.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f53.google.com ([74.125.82.53]:55631 "EHLO
+        mail-wm0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751650AbdJMJQr (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 13 Oct 2017 05:16:47 -0400
+Received: by mail-wm0-f53.google.com with SMTP id u138so20065231wmu.4
+        for <linux-pwm@vger.kernel.org>; Fri, 13 Oct 2017 02:16:46 -0700 (PDT)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Kevin Hilman <khilman@baylibre.com>, Carlo Caione <carlo@caione.org>
+Cc: Jerome Brunet <jbrunet@baylibre.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
 
+The meson pwm driver seems to be compatible with more SoCs than
+initially thought. Let's use the most generic compatibles he have in
+DT instead of the gxbb specific ones
 
-> gohai-SJMGYJWzoarE6SqAqhcbZQ@public.gmane.org hat am 26. September 2017 um 13:59 geschrieben:
-> 
-> 
-> Notifications for devices without bus or class set get dropped by
-> dev_uevent_filter. Adding the class to the exported child matches
-> what the gpio subsystem is doing.
-> 
-> With this change exporting a channel triggers a udev event, which
-> gives userspace a chance to fixup permissions and makes it possible
-> for non-root users to make use of the pwm subsystem.
-> 
-> Signed-off-by: Gottfried Haider <gottfried.haider-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> CC: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> CC: H Hartley Sweeten <hsweeten-3FF4nKcrg1dE2c76skzGb0EOCMrvLtNR@public.gmane.org>
-> CC: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> CC: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> CC: linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+---
+ Documentation/devicetree/bindings/pwm/pwm-meson.txt |  6 +++---
+ drivers/pwm/pwm-meson.c                             | 12 ++++++------
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
-gentle ping ...
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-meson.txt b/Documentation/devicetree/bindings/pwm/pwm-meson.txt
+index 1ee81321c35e..439e05030553 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-meson.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-meson.txt
+@@ -3,8 +3,8 @@ Amlogic Meson PWM Controller
+ 
+ Required properties:
+ - compatible: Shall contain "amlogic,meson8b-pwm"
+-                         or "amlogic,meson-gxbb-pwm"
+-                         or "amlogic,meson-gxbb-ao-pwm"
++                         or "amlogic,meson-gx-pwm"
++                         or "amlogic,meson-gx-ao-pwm"
+ - #pwm-cells: Should be 3. See pwm.txt in this directory for a description of
+   the cells format.
+ 
+@@ -16,7 +16,7 @@ Optional properties:
+ Example:
+ 
+ 	pwm_ab: pwm@8550 {
+-		compatible = "amlogic,meson-gxbb-pwm";
++		compatible = "amlogic,meson-gx-pwm";
+ 		reg = <0x0 0x08550 0x0 0x10>;
+ 		#pwm-cells = <3>;
+ 		clocks = <&xtal>, <&xtal>;
+diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+index d589331d1884..ababcc5ca3f1 100644
+--- a/drivers/pwm/pwm-meson.c
++++ b/drivers/pwm/pwm-meson.c
+@@ -393,7 +393,7 @@ static const char * const pwm_gxbb_parent_names[] = {
+ 	"xtal", "hdmi_pll", "fclk_div4", "fclk_div3"
+ };
+ 
+-static const struct meson_pwm_data pwm_gxbb_data = {
++static const struct meson_pwm_data pwm_gx_data = {
+ 	.parent_names = pwm_gxbb_parent_names,
+ 	.num_parents = ARRAY_SIZE(pwm_gxbb_parent_names),
+ };
+@@ -406,7 +406,7 @@ static const char * const pwm_gxbb_ao_parent_names[] = {
+ 	"xtal", "clk81"
+ };
+ 
+-static const struct meson_pwm_data pwm_gxbb_ao_data = {
++static const struct meson_pwm_data pwm_gx_ao_data = {
+ 	.parent_names = pwm_gxbb_ao_parent_names,
+ 	.num_parents = ARRAY_SIZE(pwm_gxbb_ao_parent_names),
+ };
+@@ -417,12 +417,12 @@ static const struct of_device_id meson_pwm_matches[] = {
+ 		.data = &pwm_meson8b_data
+ 	},
+ 	{
+-		.compatible = "amlogic,meson-gxbb-pwm",
+-		.data = &pwm_gxbb_data
++		.compatible = "amlogic,meson-gx-pwm",
++		.data = &pwm_gx_data
+ 	},
+ 	{
+-		.compatible = "amlogic,meson-gxbb-ao-pwm",
+-		.data = &pwm_gxbb_ao_data
++		.compatible = "amlogic,meson-gx-ao-pwm",
++		.data = &pwm_gx_ao_data
+ 	},
+ 	{},
+ };
+-- 
+2.13.6
