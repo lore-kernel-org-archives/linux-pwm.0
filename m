@@ -1,41 +1,67 @@
-From: Jeffy Chen <jeffy.chen@rock-chips.com>
-Subject: [RESEND PATCH v2 2/5] backlight: pwm_bl: Add device link for pwm_bl and pwm
-Date: Mon, 16 Oct 2017 18:06:37 +0800
-Message-ID: <20171016100640.26575-3-jeffy.chen@rock-chips.com>
+From: Brian Norris <briannorris@chromium.org>
+Subject: Re: [RESEND PATCH v2 2/5] backlight: pwm_bl: Add device link for
+ pwm_bl and pwm
+Date: Mon, 16 Oct 2017 16:57:11 -0700
+Message-ID: <20171016235710.GA12188@google.com>
 References: <20171016100640.26575-1-jeffy.chen@rock-chips.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20171016100640.26575-1-jeffy.chen@rock-chips.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: dmitry.torokhov@gmail.com, heiko@sntech.de, briannorris@chromium.org, rjw@rjwysocki.net, dianders@chromium.org, tfiga@chromium.org, broonie@kernel.org, seanpaul@chromium.org, Jeffy Chen <jeffy.chen@rock-chips.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>
+ <20171016100640.26575-3-jeffy.chen@rock-chips.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20171016100640.26575-3-jeffy.chen@rock-chips.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Jeffy Chen <jeffy.chen@rock-chips.com>
+Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-kernel@vger.kernel.org, dmitry.torokhov@gmail.com, rjw@rjwysocki.net, dianders@chromium.org, dri-devel@lists.freedesktop.org, tfiga@chromium.org, broonie@kernel.org, Jingoo Han <jingoohan1@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Daniel Thompson <daniel.thompson@linaro.org>, Lee Jones <lee.jones@linaro.org>
 List-Id: linux-pwm@vger.kernel.org
 
-When the pwm driver is unbound, the pwm_bl driver would still hold a
-reference to that pwm, and crash the kernel later(if someone trying
-to access that invalid pwm).
-
-Add a device link to avoid this.
-
-Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
----
-
-Changes in v2: None
-
- drivers/video/backlight/pwm_bl.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 9bd17682655a..a76f147a26e7 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -328,6 +328,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 		goto err_alloc;
- 	}
- 
-+	device_link_add(&pdev->dev, pb->pwm->chip->dev, DL_FLAG_AUTOREMOVE);
-+
- 	dev_dbg(&pdev->dev, "got pwm for backlight\n");
- 
- 	/*
--- 
-2.11.0
+SGksCgpPbiBNb24sIE9jdCAxNiwgMjAxNyBhdCAwNjowNjozN1BNICswODAwLCBKZWZmeSBDaGVu
+IHdyb3RlOgo+IFdoZW4gdGhlIHB3bSBkcml2ZXIgaXMgdW5ib3VuZCwgdGhlIHB3bV9ibCBkcml2
+ZXIgd291bGQgc3RpbGwgaG9sZCBhCj4gcmVmZXJlbmNlIHRvIHRoYXQgcHdtLCBhbmQgY3Jhc2gg
+dGhlIGtlcm5lbCBsYXRlcihpZiBzb21lb25lIHRyeWluZwo+IHRvIGFjY2VzcyB0aGF0IGludmFs
+aWQgcHdtKS4KClRoaXMgaXMgbm90IHRoZSBwcmltYXJ5IHByb2JsZW0geW91J3JlIHRyeWluZyB0
+byBhZGRyZXNzIHRob3VnaCwgaXMgaXQ/IFRoaXMgaXMKbW9zdGx5IHN1cHBvc2VkIHRvIGhhbmRs
+ZSBQTSwgbm90IGRldmljZSByZW1vdmFsICh0aG91Z2ggaXQgc2VlbXMgdG8gZG8gc29tZSBvZgpi
+b3RoKS4KCkJ1dCBmb3IgdGhlIHJlbW92YWwvdW5iaW5kIGNhc2UsIEkgd29uZGVyZWQgd2h5IHRo
+ZSBleGlzdGluZyBQV00gInJlcXVlc3RlZCIKc3RhdHVzIFsxXSBkaWRuJ3QgY2F0Y2ggdGhlIHN0
+YXRlZCBwcm9ibGVtIGFib3ZlLCBidXQgdGhlbiBJIG5vdGljZWQuLi50aGUKZHJpdmVyIGNvcmUg
+ZG9lc24ndCBjYXJlIGlmIHRoZSBkcml2ZXIgcmVtb3ZlKCkgY2FsbGJhY2sgZmFpbHMuIFNvCnB3
+bWNoaXBfcmVtb3ZlKCkgYW4gcmV0dXJuIC1FQlVTWSBhbGwgaXQgd2FudHMgLS0gdGhlIGRldmlj
+ZSBjb3JlIGlzIHN0aWxsCmdvaW5nIHRvIHVuYmluZCB5b3UgKGFuZCBmcmVlIGFsbCB5b3VyIGRl
+dm1fKidzKS4gVGhpcyBzZWVtcyBraW5kYSBiYWQuCgo+IEFkZCBhIGRldmljZSBsaW5rIHRvIGF2
+b2lkIHRoaXMuCgpUaGlzIGlzIGdvaW5nIHRvIGJlIGEgKmxvdCogb2YgY2h1cm4gdGhyb3VnaG91
+dCB0aGUgdHJlZSwgaWYgd2UgZXhwZWN0CmFsbCByZXNvdXJjZSBjb25zdW1lcnMgdG8gZG8gdGhp
+cy4gSSB0aGluayB3ZSdkIHdhbnQgc29tZSBraW5kIG9mCmFncmVlbWVudCBmcm9tIHRoZSBQTSBt
+YWludGFpbmVycyBhbmQgKGxhcmdlcikgc3Vic3lzdGVtIG93bmVycyBiZWZvcmUKZ29pbmcgZG93
+biB0aGlzIHJvdXRlLi4uCgpBbmQgaW4gdGhlIFBXTSBjYXNlLCBwd21fZ2V0KCkgYWxyZWFkeSBo
+YXMgdGhlIGRldmljZSBwb2ludGVyLiBXaHkgY2FuJ3QKd2UganVzdCBpbnN0cnVtZW50IGl0IGlu
+c3RlYWQ/CgpCcmlhbgoKUC5TLiBBIGxpdHRsZSBvZmYtdG9waWMsIGJ1dCB0aGlzIGVudW0gaXMg
+d3JvbmcsIGZvciB1c2Ugd2l0aCB0ZXN0X2JpdCgpOgoKZW51bSB7CiAgICAgICAgUFdNRl9SRVFV
+RVNURUQgPSAxIDw8IDAsCiAgICAgICAgUFdNRl9FWFBPUlRFRCA9IDEgPDwgMSwKfTsKCnRlc3Rf
+Yml0KCkgYW5kIGZyaWVuZHMgdGFrZSBhIGJpdCBudW1iZXIsIG5vdCBhIGJpdCBtYXNrLiBGb3J0
+dW5hdGVseSBpdApkb2Vzbid0IG1hdHRlciBtdWNoLCBzaW5jZSB0aGUgYml0bWFzayBpcyBqdXN0
+IG5vdCB2ZXJ5IGRlbnNlIHRoaXMgd2F5LiBCdXQKaXQncyBtaXNsZWFkaW5nIGFuZCB3aWxsIGNh
+dXNlIHByb2JsZW1zIGlmIHdlIGdldCBhIGxvdCBuZXcgZmxhZ3MuCgo+IFNpZ25lZC1vZmYtYnk6
+IEplZmZ5IENoZW4gPGplZmZ5LmNoZW5Acm9jay1jaGlwcy5jb20+Cj4gLS0tCj4gCj4gQ2hhbmdl
+cyBpbiB2MjogTm9uZQo+IAo+ICBkcml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYyB8IDIg
+KysKPiAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKQo+IAo+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL3ZpZGVvL2JhY2tsaWdodC9wd21fYmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0
+L3B3bV9ibC5jCj4gaW5kZXggOWJkMTc2ODI2NTVhLi5hNzZmMTQ3YTI2ZTcgMTAwNjQ0Cj4gLS0t
+IGEvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvcHdtX2JsLmMKPiArKysgYi9kcml2ZXJzL3ZpZGVv
+L2JhY2tsaWdodC9wd21fYmwuYwo+IEBAIC0zMjgsNiArMzI4LDggQEAgc3RhdGljIGludCBwd21f
+YmFja2xpZ2h0X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4gIAkJZ290byBl
+cnJfYWxsb2M7Cj4gIAl9Cj4gIAo+ICsJZGV2aWNlX2xpbmtfYWRkKCZwZGV2LT5kZXYsIHBiLT5w
+d20tPmNoaXAtPmRldiwgRExfRkxBR19BVVRPUkVNT1ZFKTsKPiArCj4gIAlkZXZfZGJnKCZwZGV2
+LT5kZXYsICJnb3QgcHdtIGZvciBiYWNrbGlnaHRcbiIpOwo+ICAKPiAgCS8qCj4gLS0gCj4gMi4x
+MS4wCj4gCj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpo
+dHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
