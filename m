@@ -1,62 +1,58 @@
 From: Brian Norris <briannorris@chromium.org>
-Subject: Re: [RESEND PATCH v2 2/5] backlight: pwm_bl: Add device link for
- pwm_bl and pwm
-Date: Tue, 17 Oct 2017 09:51:48 -0700
-Message-ID: <20171017165146.GA3408@google.com>
-References: <20171016100640.26575-1-jeffy.chen@rock-chips.com>
- <20171016100640.26575-3-jeffy.chen@rock-chips.com>
- <20171016235710.GA12188@google.com>
- <59E5BBC3.2020504@rock-chips.com>
+Subject: Re: [RFC PATCH v4 7/8] pwm: Add dummy pwmchip for orphan pwms
+Date: Tue, 17 Oct 2017 10:04:29 -0700
+Message-ID: <20171017170428.GB3408@google.com>
+References: <20171017101624.12506-1-jeffy.chen@rock-chips.com>
+ <20171017101624.12506-8-jeffy.chen@rock-chips.com>
+ <20171017124031.GA27983@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <59E5BBC3.2020504@rock-chips.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: jeffy <jeffy.chen@rock-chips.com>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-kernel@vger.kernel.org, dmitry.torokhov@gmail.com, rjw@rjwysocki.net, dianders@chromium.org, dri-devel@lists.freedesktop.org, tfiga@chromium.org, broonie@kernel.org, Jingoo Han <jingoohan1@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Daniel Thompson <daniel.thompson@linaro.org>, Lee Jones <lee.jones@linaro.org>
+In-Reply-To: <20171017124031.GA27983@ulmo>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Jeffy Chen <jeffy.chen@rock-chips.com>, linux-kernel@vger.kernel.org, dmitry.torokhov@gmail.com, heiko@sntech.de, rjw@rjwysocki.net, dianders@chromium.org, tfiga@chromium.org, broonie@kernel.org, seanpaul@chromium.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-SGksCgpPbiBUdWUsIE9jdCAxNywgMjAxNyBhdCAwNDoxMzo1NVBNICswODAwLCBKZWZmeSBDaGVu
-IHdyb3RlOgo+IE9uIDEwLzE3LzIwMTcgMDc6NTcgQU0sIEJyaWFuIE5vcnJpcyB3cm90ZToKPiA+
-VGhpcyBpcyBnb2luZyB0byBiZSBhKmxvdCogIG9mIGNodXJuIHRocm91Z2hvdXQgdGhlIHRyZWUs
-IGlmIHdlIGV4cGVjdAo+ID5hbGwgcmVzb3VyY2UgY29uc3VtZXJzIHRvIGRvIHRoaXMuIEkgdGhp
-bmsgd2UnZCB3YW50IHNvbWUga2luZCBvZgo+ID5hZ3JlZW1lbnQgZnJvbSB0aGUgUE0gbWFpbnRh
-aW5lcnMgYW5kIChsYXJnZXIpIHN1YnN5c3RlbSBvd25lcnMgYmVmb3JlCj4gPmdvaW5nIGRvd24g
-dGhpcyByb3V0ZS4uLgo+ID4KPiA+QW5kIGluIHRoZSBQV00gY2FzZSwgcHdtX2dldCgpIGFscmVh
-ZHkgaGFzIHRoZSBkZXZpY2UgcG9pbnRlci4gV2h5IGNhbid0Cj4gPndlIGp1c3QgaW5zdHJ1bWVu
-dCBpdCBpbnN0ZWFkPwo+IAo+IGFjY29yZGluZyB0byBwd21fYmwgZHJpdmVyLCB3ZSBtYXkgbmVl
-ZCB0byB0YWtlIGNhcmUgb2YgcHdtX3JlcXVlc3QoKSB0b286CgpUaGF0J3MgYSBsZWdhY3kgQVBJ
-LiBJIHdvdWxkbid0IHNwZW5kIGFueSB0aW1lIG9uIGltcHJvdmluZyBpdC4gSW4gZmFjdCwKdGhl
-IG9ubHkgb3RoZXIgMiB1c2VycyBhcmU6CihhKSBkcml2ZXJzL2lucHV0L21pc2MvbWF4ODk5N19o
-YXB0aWMuYzogYWJhbmRvbmVkOyBub2JvZHkgcHJvdmlkZXMKICAgIHBkYXRhIGZvciB0aGF0IGRy
-aXZlciwgc28gcHdtX3JlcXVlc3QoKSBjYW4gbmV2ZXIgYmUgY2FsbGVkLi4uCihiKSBhcmNoL2Fy
-bS9tYWNoLXMzYzI0eHgvbWFjaC1yeDE5NTAuYzogY2FuIGJlIGVhc2lseSBjb252ZXJ0ZWQgdG8K
-ICAgIHRoZSBsb29rdXAgdGFibGUgYXBwcm9hY2ggKHB3bV9hZGRfdGFibGUoKSArIHB3bV9nZXQo
-KSkgaWYgbmVlZGVkCgo+ICAgICAgICAgcGItPnB3bSA9IGRldm1fcHdtX2dldCgmcGRldi0+ZGV2
-LCBOVUxMKTsKPiAgICAgICAgIGlmIChJU19FUlIocGItPnB3bSkgJiYgUFRSX0VSUihwYi0+cHdt
-KSAhPSAtRVBST0JFX0RFRkVSICYmCj4gIW5vZGUpIHsKPiAgICAgICAgICAgICAgICAgZGV2X2Vy
-cigmcGRldi0+ZGV2LCAidW5hYmxlIHRvIHJlcXVlc3QgUFdNLCB0cnlpbmcKPiBsZWdhY3kgQVBJ
-XG4iKTsKPiAgICAgICAgICAgICAgICAgcGItPmxlZ2FjeSA9IHRydWU7Cj4gICAgICAgICAgICAg
-ICAgIHBiLT5wd20gPSBwd21fcmVxdWVzdChkYXRhLT5wd21faWQsICJwd20tYmFja2xpZ2h0Iik7
-Cj4gICAgICAgICB9Cj4gCj4gYW5kIG1heWJlIGFsc28gKm9mX3B3bV9nZXQuLi4KPiAKPiBtYXli
-ZSB3ZSBjYW4gYWRkIGEgZHVtbXkgcHdtIGNoaXAgZm9yIHRob3NlIG9ycGhhbiBwd21zPwoKV2hh
-dD8gVGhhdCBzZWVtcyBsaWtlIGEgdmVyeSBzaWxseSBpZGVhLiBBbmQganVkZ2luZyBieSBUaGll
-cnJ5J3MKcmVzcG9uc2UgdG8geW91ciB2NCwgaGUgZG9lc24ndCB1bmRlcnN0YW5kIGl0IGVpdGhl
-ci4KCkFsbCBJIHdhcyBzdWdnZXN0aW5nIHdhcyB0aGF0IHlvdSBzaG91bGQgdHJ5IHRvIGFkZCB0
-aGUgZGV2aWNlIGxpbmtzIGluCnRoZSBmZXdlc3QgcGxhY2VzIHBvc3NpYmxlLiBCZWNhdXNlIGlm
-IHlvdSByZXF1aXJlIGFsbCBjb25zdW1lcnMgdG8gYWRkCmV4dHJhIGJvaWxlcnBsYXRlIHRvIHJl
-c29sdmUgc29tZSBzdHJhbmdlIGNvcm5lciBjYXNlcywgdGhvc2UgY29ybmVyCmNhc2VzIHdpbGwg
-bGlrZWx5IGdvIHVuc29sdmVkIGluIG1hbnkgY2FzZXMuCgpCcmlhbgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRy
-aS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
-cmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+Hi,
+
+On Tue, Oct 17, 2017 at 02:40:31PM +0200, Thierry Reding wrote:
+> On Tue, Oct 17, 2017 at 06:16:23PM +0800, Jeffy Chen wrote:
+> > When the pwm driver is unbound while the pwm is still requested, the
+> > pwm core would not actually remove the pwmchip(return -EBUSY instead).
+> > 
+> > So it would hold some references to the invalid resources(e.g. pwmchip).
+> > 
+> > And the customer who requested the pwm would have those references too,
+> > and may crash the kernel when trying to access them later.
+> > 
+> > Add a dummy pwmchip, and assign orphan pwms to it to avoid that.
+> > 
+> > Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
+> > ---
+> > 
+> > Changes in v4:
+> > Fix compile warning.
+> > 
+> > Changes in v3:
+> > Assign orphan pwms to dummy pwmchip instead of adding device link in the
+> > customer driver.
+> 
+> What happened to this? Device links were specifically designed to avoid
+> situations like these.
+
+I think Jeffy came up with this as an odd response to my suggestion on
+v2 that we could just handle the device links in the PWM core. I don't
+fully understand why the complete change in direction...
+
+BTW, since you seem to have an opinion about device links: is it
+expected that all consumer drivers will make explicit calls to
+device_link_add()? I thought this should be avoided, if possible (e.g.,
+this can be handled in pwm_get()).
+
+> A dummy PWM chip doesn't seem like the right solution to this.
+
+Agreed.
+
+Brian
