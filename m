@@ -1,45 +1,58 @@
-From: jeffy <jeffy.chen@rock-chips.com>
-Subject: Re: [RESEND PATCH v2 2/5] backlight: pwm_bl: Add device link for
- pwm_bl and pwm
-Date: Tue, 17 Oct 2017 16:13:55 +0800
-Message-ID: <59E5BBC3.2020504@rock-chips.com>
-References: <20171016100640.26575-1-jeffy.chen@rock-chips.com>
- <20171016100640.26575-3-jeffy.chen@rock-chips.com>
- <20171016235710.GA12188@google.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20171016235710.GA12188@google.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Brian Norris <briannorris@chromium.org>
-Cc: linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-kernel@vger.kernel.org, dmitry.torokhov@gmail.com, rjw@rjwysocki.net, dianders@chromium.org, dri-devel@lists.freedesktop.org, tfiga@chromium.org, broonie@kernel.org, Jingoo Han <jingoohan1@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Daniel Thompson <daniel.thompson@linaro.org>, Lee Jones <lee.jones@linaro.org>
+From: Jeffy Chen <jeffy.chen@rock-chips.com>
+Subject: [RFC PATCH v4 0/8] rockchip: kevin: Enable edp display
+Date: Tue, 17 Oct 2017 18:16:16 +0800
+Message-ID: <20171017101624.12506-1-jeffy.chen@rock-chips.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from regular1.263xmail.com ([211.150.99.132]:36295 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752900AbdJQKQp (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 17 Oct 2017 06:16:45 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: dmitry.torokhov@gmail.com, heiko@sntech.de, briannorris@chromium.org, rjw@rjwysocki.net, dianders@chromium.org, tfiga@chromium.org, broonie@kernel.org, seanpaul@chromium.org, Jeffy Chen <jeffy.chen@rock-chips.com>, Andrzej Hajda <a.hajda@samsung.com>, Arnd Bergmann <arnd@arndb.de>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, Jingoo Han <jingoohan1@gmail.com>, David Airlie <airlied@linux.ie>, Catalin Marinas <catalin.marinas@arm.com>, Laurent Pinchart <Laurent.pinchart@ideasonboard.com>, linux-samsung-soc@vger.kernel.org, Seung-Woo Kim <sw0312.kim@samsung.com>, Inki Dae <inki.dae@samsung.com>, linux-rockchip@lists.infradead.org, Kyungmin Park <kyungmin.park@samsung.com>, Krzysztof Kozlowski <krzk@kernel.org>, Will Deacon <will.deacon@arm.com>
 
-SGkgQnJpYW4sCgpPbiAxMC8xNy8yMDE3IDA3OjU3IEFNLCBCcmlhbiBOb3JyaXMgd3JvdGU6Cj4g
-VGhpcyBpcyBnb2luZyB0byBiZSBhKmxvdCogIG9mIGNodXJuIHRocm91Z2hvdXQgdGhlIHRyZWUs
-IGlmIHdlIGV4cGVjdAo+IGFsbCByZXNvdXJjZSBjb25zdW1lcnMgdG8gZG8gdGhpcy4gSSB0aGlu
-ayB3ZSdkIHdhbnQgc29tZSBraW5kIG9mCj4gYWdyZWVtZW50IGZyb20gdGhlIFBNIG1haW50YWlu
-ZXJzIGFuZCAobGFyZ2VyKSBzdWJzeXN0ZW0gb3duZXJzIGJlZm9yZQo+IGdvaW5nIGRvd24gdGhp
-cyByb3V0ZS4uLgo+Cj4gQW5kIGluIHRoZSBQV00gY2FzZSwgcHdtX2dldCgpIGFscmVhZHkgaGFz
-IHRoZSBkZXZpY2UgcG9pbnRlci4gV2h5IGNhbid0Cj4gd2UganVzdCBpbnN0cnVtZW50IGl0IGlu
-c3RlYWQ/CgphY2NvcmRpbmcgdG8gcHdtX2JsIGRyaXZlciwgd2UgbWF5IG5lZWQgdG8gdGFrZSBj
-YXJlIG9mIHB3bV9yZXF1ZXN0KCkgdG9vOgoKICAgICAgICAgcGItPnB3bSA9IGRldm1fcHdtX2dl
-dCgmcGRldi0+ZGV2LCBOVUxMKTsKICAgICAgICAgaWYgKElTX0VSUihwYi0+cHdtKSAmJiBQVFJf
-RVJSKHBiLT5wd20pICE9IC1FUFJPQkVfREVGRVIgJiYgCiFub2RlKSB7CiAgICAgICAgICAgICAg
-ICAgZGV2X2VycigmcGRldi0+ZGV2LCAidW5hYmxlIHRvIHJlcXVlc3QgUFdNLCB0cnlpbmcgCmxl
-Z2FjeSBBUElcbiIpOwogICAgICAgICAgICAgICAgIHBiLT5sZWdhY3kgPSB0cnVlOwogICAgICAg
-ICAgICAgICAgIHBiLT5wd20gPSBwd21fcmVxdWVzdChkYXRhLT5wd21faWQsICJwd20tYmFja2xp
-Z2h0Iik7CiAgICAgICAgIH0KCmFuZCBtYXliZSBhbHNvICpvZl9wd21fZ2V0Li4uCgptYXliZSB3
-ZSBjYW4gYWRkIGEgZHVtbXkgcHdtIGNoaXAgZm9yIHRob3NlIG9ycGhhbiBwd21zPwo+Cj4gQnJp
-YW4KCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmkt
-ZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6
-Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+
+Make edp display works on chromebook kevin(at least for boot animation).
+
+Also solve some issues i meet during the bringup.
+
+Changes in v4:
+Fix compile warning.
+
+Changes in v3:
+Assign orphan pwms to dummy pwmchip instead of adding device link in the
+customer driver.
+
+Changes in v2:
+Use device link to correct the suspend/resume and shutdown ordering,
+instead of converting rockchip spi's suspend/resume PM callbacks to
+late suspend/resume PM callbacks.
+
+Jeffy Chen (7):
+  arm64: dts: rockchip: Enable edp disaplay on kevin
+  drm/rockchip: analogix_dp: Fix error handling path
+  drm/rockchip: dw-mipi-dsi: Fix error handling path
+  drm/rockchip: dw_hdmi: Fix error handling path
+  drm/rockchip: inno_hdmi: Fix error handling path
+  pwm: Add dummy pwmchip for orphan pwms
+  drm/rockchip: Add device links for master and components
+
+Tomasz Figa (1):
+  drm/bridge/analogix: Do not use device's drvdata
+
+ arch/arm64/boot/dts/rockchip/rk3399-gru-kevin.dts  | 29 ++++++++
+ arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi       | 16 +++++
+ drivers/gpu/drm/bridge/analogix/analogix_dp_core.c | 50 ++++++-------
+ drivers/gpu/drm/exynos/exynos_dp.c                 | 26 ++++---
+ drivers/gpu/drm/rockchip/analogix_dp-rockchip.c    | 57 +++++++++------
+ drivers/gpu/drm/rockchip/dw-mipi-dsi.c             | 17 +++--
+ drivers/gpu/drm/rockchip/dw_hdmi-rockchip.c        |  4 +-
+ drivers/gpu/drm/rockchip/inno_hdmi.c               | 20 ++++--
+ drivers/gpu/drm/rockchip/rockchip_drm_drv.c        | 24 ++++++-
+ drivers/pwm/core.c                                 | 81 ++++++++++++++++++++--
+ include/drm/bridge/analogix_dp.h                   | 19 ++---
+ 11 files changed, 254 insertions(+), 89 deletions(-)
+
+-- 
+2.11.0
