@@ -1,48 +1,75 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] pwm: meson: use generic compatibles
-Date: Tue, 17 Oct 2017 17:09:20 -0500
-Message-ID: <20171017220920.acjq6dr3ntf7xkid@rob-hp-laptop>
-References: <20171013091642.31948-1-jbrunet@baylibre.com>
+From: jeffy <jeffy.chen@rock-chips.com>
+Subject: Re: [RFC PATCH v4 7/8] pwm: Add dummy pwmchip for orphan pwms
+Date: Wed, 18 Oct 2017 13:16:16 +0800
+Message-ID: <59E6E3A0.2030105@rock-chips.com>
+References: <20171017101624.12506-1-jeffy.chen@rock-chips.com> <20171017101624.12506-8-jeffy.chen@rock-chips.com> <20171017124031.GA27983@ulmo> <20171017170428.GB3408@google.com> <CAKdAkRRm9aK3KmPTqtD0d1dENyAq7aXrSEjKXZQMXuJin2hoUA@mail.gmail.com> <20171017184603.yluoukqq6hj2cgcb@sirena.co.uk> <20171017185259.GA41348@google.com> <20171017190501.wa272jreg26tprfo@sirena.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20171013091642.31948-1-jbrunet-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jerome Brunet <jbrunet-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Kevin Hilman <khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>, Carlo Caione <carlo-KA+7E9HrN00dnm+yROfE0A@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from regular1.263xmail.com ([211.150.99.135]:53622 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752532AbdJRFQY (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Oct 2017 01:16:24 -0400
+In-Reply-To: <20171017190501.wa272jreg26tprfo@sirena.co.uk>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Mark Brown <broonie@kernel.org>, Brian Norris <briannorris@chromium.org>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, lkml <linux-kernel@vger.kernel.org>, =?UTF-8?B?SGVpa28gU3TDvGJuZXI=?= <heiko@sntech.de>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Doug Anderson <dianders@chromium.org>, tfiga@chromium.org, seanpaul@chromium.org, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
 
-On Fri, Oct 13, 2017 at 11:16:42AM +0200, Jerome Brunet wrote:
-> The meson pwm driver seems to be compatible with more SoCs than
-> initially thought. Let's use the most generic compatibles he have in
-> DT instead of the gxbb specific ones
-> 
-> Signed-off-by: Jerome Brunet <jbrunet-rdvid1DuHRBWk0Htik3J/w@public.gmane.org>
-> ---
->  Documentation/devicetree/bindings/pwm/pwm-meson.txt |  6 +++---
->  drivers/pwm/pwm-meson.c                             | 12 ++++++------
->  2 files changed, 9 insertions(+), 9 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-meson.txt b/Documentation/devicetree/bindings/pwm/pwm-meson.txt
-> index 1ee81321c35e..439e05030553 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm-meson.txt
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-meson.txt
-> @@ -3,8 +3,8 @@ Amlogic Meson PWM Controller
->  
->  Required properties:
->  - compatible: Shall contain "amlogic,meson8b-pwm"
-> -                         or "amlogic,meson-gxbb-pwm"
-> -                         or "amlogic,meson-gxbb-ao-pwm"
-> +                         or "amlogic,meson-gx-pwm"
-> +                         or "amlogic,meson-gx-ao-pwm"
+Hi guys,
 
-I've already said the same on other patches, but so other 
-maintainers see it, this seems like pointless, non-backwards compatible 
-change.
+On 10/18/2017 03:05 AM, Mark Brown wrote:
+> On Tue, Oct 17, 2017 at 11:53:01AM -0700, Brian Norris wrote:
+>> On Tue, Oct 17, 2017 at 07:46:03PM +0100, Mark Brown wrote:
+>
+>>> I would expect we can get a long way in the DT by doing a pass over the
+>>> tree and adding links between device nodes in cases where phandle
+>>> references exist.  There is a potential issue with circular links which
+>>> I'm just going to handwave away right now but I'd expect that to help
+>>> otherwise.
+>
+>> But I didn't think FDTs encoded type info. So you don't really know
+>> whether a phandle is a phandle -- it's just an int (which happens to
+>> have a corresponding property in some other node). Are we trusting our
+>> DT bindings well enough to say that, for example, we know that in any
+>> given device node, a property like 'pwms' must be a phandle to a PWM
+>> provider? OK, maybe 'pwms' is a bad example (it's unlikely to get
+>> reused, and it has a companion '#pwm-cells' property), but grepping the
+>> DT bindings directory shows a ton of one-off properties that contain
+>> phandles.
+>
+> If we're going with the 90% thing we can probably get a long way with a
+> whitelist of properties, and we'll be able to take that a lot further
+> with the validatable schemas if they ever happen.
+>
 
-Rob
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+so it looks like we are going to use device link in common code to fix 
+this issue(and also other dependency issue), then i will drop this patch 
+and the followed rockchip drm device link patch in next version :)
+
+
+also the reason why i try to use dummy chip instead is that:
+
+currently we have these devices: rockchip spi device(master) -> 
+cros_ec_spi device(child) -> cros_ec_pwm(spi based pwm) -> pwm_bl
+
+i added device link to cros_ec_pwm and pwm_bl, that works well for 
+unbind/bind cros_ec_pwm device case, but there's a warning when i try to 
+unbind cros_ec_spi:
+
+
+static void device_links_purge(struct device *dev)
+{
+...
+         list_for_each_entry_safe_reverse(link, ln, 
+&dev->links.consumers, s_node) {
+                 WARN_ON(link->status != DL_STATE_DORMANT &&
+                         link->status != DL_STATE_NONE);        <--- hit 
+warning here!
+                 __device_link_del(link);
+         }
+
+
+but i checked again, that could due to the way spi core unregester 
+children devices. maybe it need to call device_release_driver
