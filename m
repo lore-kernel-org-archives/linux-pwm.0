@@ -1,75 +1,136 @@
-From: jeffy <jeffy.chen@rock-chips.com>
-Subject: Re: [RFC PATCH v4 7/8] pwm: Add dummy pwmchip for orphan pwms
-Date: Wed, 18 Oct 2017 13:16:16 +0800
-Message-ID: <59E6E3A0.2030105@rock-chips.com>
-References: <20171017101624.12506-1-jeffy.chen@rock-chips.com> <20171017101624.12506-8-jeffy.chen@rock-chips.com> <20171017124031.GA27983@ulmo> <20171017170428.GB3408@google.com> <CAKdAkRRm9aK3KmPTqtD0d1dENyAq7aXrSEjKXZQMXuJin2hoUA@mail.gmail.com> <20171017184603.yluoukqq6hj2cgcb@sirena.co.uk> <20171017185259.GA41348@google.com> <20171017190501.wa272jreg26tprfo@sirena.co.uk>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Romain Izard <romain.izard.pro@gmail.com>
+Subject: [PATCH v5] pwm: atmel-tcb: Support backup mode
+Date: Thu, 19 Oct 2017 18:44:10 +0200
+Message-ID: <20171019164410.423-1-romain.izard.pro@gmail.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from regular1.263xmail.com ([211.150.99.135]:53622 "EHLO
-        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752532AbdJRFQY (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 18 Oct 2017 01:16:24 -0400
-In-Reply-To: <20171017190501.wa272jreg26tprfo@sirena.co.uk>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:50076 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752609AbdJSQod (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 19 Oct 2017 12:44:33 -0400
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Mark Brown <broonie@kernel.org>, Brian Norris <briannorris@chromium.org>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, lkml <linux-kernel@vger.kernel.org>, =?UTF-8?B?SGVpa28gU3TDvGJuZXI=?= <heiko@sntech.de>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Doug Anderson <dianders@chromium.org>, tfiga@chromium.org, seanpaul@chromium.org, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+To: Thierry Reding <thierry.reding@gmail.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Romain Izard <romain.izard.pro@gmail.com>
 
-Hi guys,
+Save and restore registers for the PWM on suspend and resume, which
+makes hibernation and backup modes possible.
 
-On 10/18/2017 03:05 AM, Mark Brown wrote:
-> On Tue, Oct 17, 2017 at 11:53:01AM -0700, Brian Norris wrote:
->> On Tue, Oct 17, 2017 at 07:46:03PM +0100, Mark Brown wrote:
->
->>> I would expect we can get a long way in the DT by doing a pass over the
->>> tree and adding links between device nodes in cases where phandle
->>> references exist.  There is a potential issue with circular links which
->>> I'm just going to handwave away right now but I'd expect that to help
->>> otherwise.
->
->> But I didn't think FDTs encoded type info. So you don't really know
->> whether a phandle is a phandle -- it's just an int (which happens to
->> have a corresponding property in some other node). Are we trusting our
->> DT bindings well enough to say that, for example, we know that in any
->> given device node, a property like 'pwms' must be a phandle to a PWM
->> provider? OK, maybe 'pwms' is a bad example (it's unlikely to get
->> reused, and it has a companion '#pwm-cells' property), but grepping the
->> DT bindings directory shows a ton of one-off properties that contain
->> phandles.
->
-> If we're going with the 90% thing we can probably get a long way with a
-> whitelist of properties, and we'll be able to take that a lot further
-> with the validatable schemas if they ever happen.
->
+Signed-off-by: Romain Izard <romain.izard.pro@gmail.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+---
+Changes in v5:
+* extract from the patch series, and send as a standalone patch
 
-so it looks like we are going to use device link in common code to fix 
-this issue(and also other dependency issue), then i will drop this patch 
-and the followed rockchip drm device link patch in next version :)
+ drivers/pwm/pwm-atmel-tcb.c | 63 +++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 61 insertions(+), 2 deletions(-)
 
-
-also the reason why i try to use dummy chip instead is that:
-
-currently we have these devices: rockchip spi device(master) -> 
-cros_ec_spi device(child) -> cros_ec_pwm(spi based pwm) -> pwm_bl
-
-i added device link to cros_ec_pwm and pwm_bl, that works well for 
-unbind/bind cros_ec_pwm device case, but there's a warning when i try to 
-unbind cros_ec_spi:
-
-
-static void device_links_purge(struct device *dev)
-{
-...
-         list_for_each_entry_safe_reverse(link, ln, 
-&dev->links.consumers, s_node) {
-                 WARN_ON(link->status != DL_STATE_DORMANT &&
-                         link->status != DL_STATE_NONE);        <--- hit 
-warning here!
-                 __device_link_del(link);
-         }
-
-
-but i checked again, that could due to the way spi core unregester 
-children devices. maybe it need to call device_release_driver
+diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
+index 75db585a2a94..acd3ce8ecf3f 100644
+--- a/drivers/pwm/pwm-atmel-tcb.c
++++ b/drivers/pwm/pwm-atmel-tcb.c
+@@ -37,11 +37,20 @@ struct atmel_tcb_pwm_device {
+ 	unsigned period;		/* PWM period expressed in clk cycles */
+ };
+ 
++struct atmel_tcb_channel {
++	u32 enabled;
++	u32 cmr;
++	u32 ra;
++	u32 rb;
++	u32 rc;
++};
++
+ struct atmel_tcb_pwm_chip {
+ 	struct pwm_chip chip;
+ 	spinlock_t lock;
+ 	struct atmel_tc *tc;
+ 	struct atmel_tcb_pwm_device *pwms[NPWM];
++	struct atmel_tcb_channel bkup[NPWM / 2];
+ };
+ 
+ static inline struct atmel_tcb_pwm_chip *to_tcb_chip(struct pwm_chip *chip)
+@@ -175,12 +184,15 @@ static void atmel_tcb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	 * Use software trigger to apply the new setting.
+ 	 * If both PWM devices in this group are disabled we stop the clock.
+ 	 */
+-	if (!(cmr & (ATMEL_TC_ACPC | ATMEL_TC_BCPC)))
++	if (!(cmr & (ATMEL_TC_ACPC | ATMEL_TC_BCPC))) {
+ 		__raw_writel(ATMEL_TC_SWTRG | ATMEL_TC_CLKDIS,
+ 			     regs + ATMEL_TC_REG(group, CCR));
+-	else
++		tcbpwmc->bkup[group].enabled = 1;
++	} else {
+ 		__raw_writel(ATMEL_TC_SWTRG, regs +
+ 			     ATMEL_TC_REG(group, CCR));
++		tcbpwmc->bkup[group].enabled = 0;
++	}
+ 
+ 	spin_unlock(&tcbpwmc->lock);
+ }
+@@ -263,6 +275,7 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	/* Use software trigger to apply the new setting */
+ 	__raw_writel(ATMEL_TC_CLKEN | ATMEL_TC_SWTRG,
+ 		     regs + ATMEL_TC_REG(group, CCR));
++	tcbpwmc->bkup[group].enabled = 1;
+ 	spin_unlock(&tcbpwmc->lock);
+ 	return 0;
+ }
+@@ -445,10 +458,56 @@ static const struct of_device_id atmel_tcb_pwm_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, atmel_tcb_pwm_dt_ids);
+ 
++#ifdef CONFIG_PM_SLEEP
++static int atmel_tcb_pwm_suspend(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
++	void __iomem *base = tcbpwm->tc->regs;
++	int i;
++
++	for (i = 0; i < (NPWM / 2); i++) {
++		struct atmel_tcb_channel *chan = &tcbpwm->bkup[i];
++
++		chan->cmr = readl(base + ATMEL_TC_REG(i, CMR));
++		chan->ra = readl(base + ATMEL_TC_REG(i, RA));
++		chan->rb = readl(base + ATMEL_TC_REG(i, RB));
++		chan->rc = readl(base + ATMEL_TC_REG(i, RC));
++	}
++	return 0;
++}
++
++static int atmel_tcb_pwm_resume(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct atmel_tcb_pwm_chip *tcbpwm = platform_get_drvdata(pdev);
++	void __iomem *base = tcbpwm->tc->regs;
++	int i;
++
++	for (i = 0; i < (NPWM / 2); i++) {
++		struct atmel_tcb_channel *chan = &tcbpwm->bkup[i];
++
++		writel(chan->cmr, base + ATMEL_TC_REG(i, CMR));
++		writel(chan->ra, base + ATMEL_TC_REG(i, RA));
++		writel(chan->rb, base + ATMEL_TC_REG(i, RB));
++		writel(chan->rc, base + ATMEL_TC_REG(i, RC));
++		if (chan->enabled) {
++			writel(ATMEL_TC_CLKEN | ATMEL_TC_SWTRG,
++				base + ATMEL_TC_REG(i, CCR));
++		}
++	}
++	return 0;
++}
++#endif
++
++static SIMPLE_DEV_PM_OPS(atmel_tcb_pwm_pm_ops, atmel_tcb_pwm_suspend,
++			 atmel_tcb_pwm_resume);
++
+ static struct platform_driver atmel_tcb_pwm_driver = {
+ 	.driver = {
+ 		.name = "atmel-tcb-pwm",
+ 		.of_match_table = atmel_tcb_pwm_dt_ids,
++		.pm = &atmel_tcb_pwm_pm_ops,
+ 	},
+ 	.probe = atmel_tcb_pwm_probe,
+ 	.remove = atmel_tcb_pwm_remove,
+-- 
+2.11.0
