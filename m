@@ -1,61 +1,41 @@
-From: Claudiu Beznea <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH v6 1/1] pwm: mediatek: add MT2712/MT7622 support
-Date: Wed, 25 Oct 2017 11:34:41 +0300
-Message-ID: <ee597df8-3d59-2dfb-b34f-db9685ab763d@microchip.com>
-References: <1508914504-19253-1-git-send-email-zhi.mao@mediatek.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v5 1/1] pwm: mediatek: add MT2712/MT7622 support
+Date: Wed, 25 Oct 2017 10:35:33 +0200
+Message-ID: <4cdb3861-56bd-3a45-a452-dccb9786aaa1@gmail.com>
+References: <1508759828-22974-1-git-send-email-zhi.mao@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1508914504-19253-1-git-send-email-zhi.mao@mediatek.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:56921 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932198AbdJYIfl (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 25 Oct 2017 04:35:41 -0400
+In-Reply-To: <1508759828-22974-1-git-send-email-zhi.mao@mediatek.com>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Zhi Mao <zhi.mao@mediatek.com>, john@phrozen.org, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org
-Cc: zhenbao.liu@mediatek.com, devicetree@vger.kernel.org, srv_heupstream@mediatek.com, sean.wang@mediatek.com, linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org, yt.shen@mediatek.com, yingjoe.chen@mediatek.com, linux-arm-kernel@lists.infradead.org
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Zhi Mao <zhi.mao@mediatek.com>, john@phrozen.org, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org
+Cc: srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, yingjoe.chen@mediatek.com, yt.shen@mediatek.com, sean.wang@mediatek.com, zhenbao.liu@mediatek.com
 
-Hi Zhi,
 
-I added few cosmetic things below. 
 
-Thanks,
-Claudiu
-
-On 25.10.2017 09:55, Zhi Mao wrote:
+On 10/23/2017 01:57 PM, Zhi Mao wrote:
 > Add support to MT2712 and MT7622.
 > Due to register offset address of pwm7 for MT2712 is not fixed 0x40,
 > add mtk_pwm_reg_offset array for pwm register offset.
-
-> Add NULL pointer checking for "data",
-> and remove "struct mtk_pwm_platform_data" member from "mtk_pwm_chip".
-This could go to changes history (see below)
-> 
-Remove this extra line.
+> Add NULL pointer checking for "pc->data".
 > 
 > Signed-off-by: Zhi Mao <zhi.mao@mediatek.com>
 > ---
-As a general practice you should add here (after the line: ---) changes history
-(these will be ignored by git if placed here), e.g.:
-Changes in v6:
-- this and that
 
-Changes in v5:
-- this and that
-
-...
-
-Changes in v2:
-- this and that
-
-Other than this it is OK from my point of view. After fixing the things I mentioned,
-you can add my:
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
 >  drivers/pwm/pwm-mediatek.c |   53 ++++++++++++++++++++++++++++++++++++--------
 >  1 file changed, 44 insertions(+), 9 deletions(-)
 > 
 > diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-> index 1d78ab1..cdd4d31 100644
+> index 1d78ab1..867cc74 100644
 > --- a/drivers/pwm/pwm-mediatek.c
 > +++ b/drivers/pwm/pwm-mediatek.c
 > @@ -16,6 +16,7 @@
@@ -88,18 +68,19 @@ Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 >  };
 >  
 >  /**
-> @@ -59,6 +68,10 @@ struct mtk_pwm_chip {
+> @@ -57,6 +66,11 @@ struct mtk_pwm_chip {
+>  	struct pwm_chip chip;
+>  	void __iomem *regs;
 >  	struct clk *clks[MTK_CLK_MAX];
->  };
->  
-> +static const unsigned int mtk_pwm_reg_offset[] = {
-> +	0x0010, 0x0050, 0x0090, 0x00d0, 0x0110, 0x0150, 0x0190, 0x0220
+> +	const struct mtk_pwm_platform_data *data;
 > +};
 > +
+> +static const unsigned int mtk_pwm_reg_offset[] = {
+> +	0x0010, 0x0050, 0x0090, 0x00d0, 0x0110, 0x0150, 0x0190, 0x0220
+>  };
+>  
 >  static inline struct mtk_pwm_chip *to_mtk_pwm_chip(struct pwm_chip *chip)
->  {
->  	return container_of(chip, struct mtk_pwm_chip, chip);
-> @@ -103,14 +116,14 @@ static void mtk_pwm_clk_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+> @@ -103,14 +117,14 @@ static void mtk_pwm_clk_disable(struct pwm_chip *chip, struct pwm_device *pwm)
 >  static inline u32 mtk_pwm_readl(struct mtk_pwm_chip *chip, unsigned int num,
 >  				unsigned int offset)
 >  {
@@ -116,20 +97,12 @@ Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 >  }
 >  
 >  static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> @@ -185,6 +198,7 @@ static void mtk_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
->  
->  static int mtk_pwm_probe(struct platform_device *pdev)
->  {
-> +	const struct mtk_pwm_platform_data *data;
->  	struct mtk_pwm_chip *pc;
->  	struct resource *res;
->  	unsigned int i;
 > @@ -194,15 +208,22 @@ static int mtk_pwm_probe(struct platform_device *pdev)
 >  	if (!pc)
 >  		return -ENOMEM;
 >  
-> +	data = of_device_get_match_data(&pdev->dev);
-> +	if (data == NULL)
+> +	pc->data = of_device_get_match_data(&pdev->dev);
+> +	if (pc->data == NULL)
 > +		return -EINVAL;
 > +
 >  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -138,7 +111,7 @@ Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 >  		return PTR_ERR(pc->regs);
 >  
 > -	for (i = 0; i < MTK_CLK_MAX; i++) {
-> +	for (i = 0; i < data->num_pwms + 2; i++) {
+> +	for (i = 0; i < pc->data->num_pwms + 2; i++) {
 >  		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
 > -		if (IS_ERR(pc->clks[i]))
 > +		if (IS_ERR(pc->clks[i])) {
@@ -154,7 +127,7 @@ Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 >  	pc->chip.ops = &mtk_pwm_ops;
 >  	pc->chip.base = -1;
 > -	pc->chip.npwm = 5;
-> +	pc->chip.npwm = data->num_pwms;
+> +	pc->chip.npwm = pc->data->num_pwms;
 >  
 >  	ret = pwmchip_add(&pc->chip);
 >  	if (ret < 0) {
