@@ -1,61 +1,65 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH 2/2] backlight: pwm_bl: add configurable delay between
- re-enabling PWM and switching backlight power on
-Date: Mon, 30 Oct 2017 10:33:34 +0000
-Message-ID: <20171030103334.75ii247j6owrnrdb@dell>
-References: <1509022186-19636-1-git-send-email-LW@KARO-electronics.de>
- <1509022186-19636-4-git-send-email-LW@KARO-electronics.de>
- <20171027140307.x7mtgvy5py7l5nqf@rob-hp-laptop>
+From: Keerthy <j-keerthy@ti.com>
+Subject: [PATCH 0/7] omap: dmtimer: Move driver out of plat-omap
+Date: Tue, 31 Oct 2017 15:58:39 +0530
+Message-ID: <1509445726-21040-1-git-send-email-j-keerthy@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20171027140307.x7mtgvy5py7l5nqf@rob-hp-laptop>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Lothar =?iso-8859-1?Q?Wa=DFmann?= <LW@KARO-electronics.de>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Daniel Thompson <daniel.thompson@linaro.org>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Pavel Machek <pavel@ucw.cz>, Richard Purdie <rpurdie@rpsys.net>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lelnx194.ext.ti.com ([198.47.27.80]:22797 "EHLO
+        lelnx194.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751851AbdJaKaK (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 31 Oct 2017 06:30:10 -0400
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: tony@atomide.com, khilman@kernel.org, aaro.koskinen@iki.fi, thierry.reding@gmail.com
+Cc: daniel.lezcano@linaro.org, linux@armlinux.org.uk, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, j-keerthy@ti.com
 
-On Fri, 27 Oct 2017, Rob Herring wrote:
+The series moves dmtimer out of plat-omap to drivers/clocksource.
+The series also does a bunch of changes to pwm-omap-dmtimer code
+to adapt to the driver migration and clean up plat specific
+pdata-quirks and use the dmtimer platform data.
+ 
+Boot tested on DRA7-EVM and AM437X-GP-EVM.
 
-> On Thu, Oct 26, 2017 at 02:49:46PM +0200, Lothar Waßmann wrote:
-> > When switching the backlight on, the LCD may need some time to adjust
-> > to the configured PWM duty cycle. Add a configurable delay between
-> > configuring the PWM and enabling the backlight regulator to account
-> > for this.
-> > 
-> > Signed-off-by: Lothar Waßmann <LW@KARO-electronics.de>
-> > ---
-> >  .../bindings/leds/backlight/pwm-backlight.txt      |  4 ++++
-> >  drivers/video/backlight/pwm_bl.c                   | 22 +++++++++++++++++++---
-> >  2 files changed, 23 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-> > index 764db86..95594c3 100644
-> > --- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-> > +++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-> > @@ -17,6 +17,10 @@ Optional properties:
-> >                 "pwms" property (see PWM binding[0])
-> >    - enable-gpios: contains a single GPIO specifier for the GPIO which enables
-> >                    and disables the backlight (see GPIO binding[1])
-> > +  - turn-on-delay-ms: delay in milliseconds between configuring the PWM
-> > +		  and switching PWM on. This may be required to eliminate
-> > +		  flicker when switching the PWM on after it has been
-> > +		  disabled.
-> 
-> The subject talks about turning on the backlight regulator, but this 
-> only talks about the PWM.
+More testing would be of great help.
 
-From my understanding "switching PWM on" == enabling the regulator.
+Keerthy (7):
+  clocksource: dmtimer: Remove all the exports
+  arm: omap: Move dmtimer.h out of plat-omap
+  arm: OMAP: Move dmtimer driver out of plat-omap to drivers under
+    clocksource
+  dmtimer: Add timer ops to the platform data structure
+  clocksource: dmtimer: Populate the timer ops to the pdata
+  pwm: pwm-omap-dmtimer: Adapt driver to utilize dmtimer pdata ops
+  arm: omap: pdata-quirks: Remove unused timer pdata
 
-I don't see any disparity here.  Or am I missing something?
-
-> >  [0]: Documentation/devicetree/bindings/pwm/pwm.txt
-> >  [1]: Documentation/devicetree/bindings/gpio/gpio.txt
+ arch/arm/mach-omap1/pm.c                           |    2 +-
+ arch/arm/mach-omap1/timer.c                        |    2 +-
+ arch/arm/mach-omap2/omap_hwmod_2420_data.c         |    2 +-
+ arch/arm/mach-omap2/omap_hwmod_2430_data.c         |    2 +-
+ arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c |    2 +-
+ arch/arm/mach-omap2/omap_hwmod_3xxx_data.c         |    2 +-
+ arch/arm/mach-omap2/omap_hwmod_44xx_data.c         |    2 +-
+ arch/arm/mach-omap2/omap_hwmod_54xx_data.c         |    2 +-
+ arch/arm/mach-omap2/omap_hwmod_7xx_data.c          |    2 +-
+ arch/arm/mach-omap2/omap_hwmod_81xx_data.c         |    2 +-
+ arch/arm/mach-omap2/pdata-quirks.c                 |   32 -
+ arch/arm/mach-omap2/timer.c                        |    2 +-
+ arch/arm/plat-omap/Kconfig                         |    6 -
+ arch/arm/plat-omap/Makefile                        |    1 -
+ arch/arm/plat-omap/dmtimer.c                       | 1003 --------------------
+ arch/arm/plat-omap/include/plat/dmtimer.h          |  418 --------
+ drivers/clocksource/Kconfig                        |    6 +
+ drivers/clocksource/Makefile                       |    1 +
+ drivers/clocksource/dmtimer.c                      | 1001 +++++++++++++++++++
+ drivers/pwm/pwm-omap-dmtimer.c                     |   39 +-
+ include/clocksource/dmtimer.h                      |  418 ++++++++
+ include/linux/platform_data/dmtimer-omap.h         |   38 +
+ 22 files changed, 1497 insertions(+), 1488 deletions(-)
+ delete mode 100644 arch/arm/plat-omap/dmtimer.c
+ delete mode 100644 arch/arm/plat-omap/include/plat/dmtimer.h
+ create mode 100644 drivers/clocksource/dmtimer.c
+ create mode 100644 include/clocksource/dmtimer.h
 
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+1.9.1
