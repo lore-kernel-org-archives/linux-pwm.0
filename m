@@ -1,63 +1,85 @@
-From: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Subject: Re: [PATCH 0/7] omap: dmtimer: Move driver out of plat-omap
-Date: Tue, 31 Oct 2017 12:58:18 +0100
-Message-ID: <20171031115818.zfftupfwmz6day6r@earth>
-References: <1509445726-21040-1-git-send-email-j-keerthy@ti.com>
+From: SF Markus Elfring <elfring@users.sourceforge.net>
+Subject: [PATCH] pwm-twl: Use common error handling code in
+ twl6030_pwm_disable()
+Date: Wed, 1 Nov 2017 21:50:37 +0100
+Message-ID: <97ad7b8f-a5ca-b867-41a9-c3b46507eddb@users.sourceforge.net>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="stsdboy52ijd557m"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:33558 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751050AbdJaL6W (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 31 Oct 2017 07:58:22 -0400
-Content-Disposition: inline
-In-Reply-To: <1509445726-21040-1-git-send-email-j-keerthy@ti.com>
+Received: from mout.web.de ([212.227.15.14]:56106 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751922AbdKAUun (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Wed, 1 Nov 2017 16:50:43 -0400
+Content-Language: en-GB
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Keerthy <j-keerthy@ti.com>
-Cc: tony@atomide.com, khilman@kernel.org, aaro.koskinen@iki.fi, thierry.reding@gmail.com, daniel.lezcano@linaro.org, linux@armlinux.org.uk, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org
+To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Wed, 1 Nov 2017 21:44:30 +0100
 
---stsdboy52ijd557m
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+* Adjust jump targets so that a specific error message is stored only once
+  at the end of this function implementation.
 
-Hi,
+* Replace three calls of the function "dev_err" by goto statements.
 
-On Tue, Oct 31, 2017 at 03:58:39PM +0530, Keerthy wrote:
-> The series moves dmtimer out of plat-omap to drivers/clocksource.
-> The series also does a bunch of changes to pwm-omap-dmtimer code
-> to adapt to the driver migration and clean up plat specific
-> pdata-quirks and use the dmtimer platform data.
-> =20
-> Boot tested on DRA7-EVM and AM437X-GP-EVM.
->=20
-> More testing would be of great help.
+* Adjust three condition checks.
 
-Please resend with "--find-renames" :)
+This issue was detected by using the Coccinelle software.
 
--- Sebastian
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+---
+ drivers/pwm/pwm-twl.c | 25 ++++++++++++-------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
---stsdboy52ijd557m
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAln4ZVcACgkQ2O7X88g7
-+pqtFw/9HpSesgsju8TkaqlgVL3xrxsjRzoK75ukpuor6bB2N/qK9aaTiXOMMSUo
-MRIVx3XtpajaZJLNbRSObmg1U/swWe+Hzpu9/df2cHvQmYHGx/ZJKxUc/kI3N+iV
-+pbvWxUWEIx77Wl9uVOgLvaMgSFV0Jvtu+XZyORifflBPIzLWKKxIbtSIVOn7TEE
-k3temNN3MnsskyjZ/gqoUThlV0n9bK9uig3hCmncDTlTuhXeojFlO61LURLPnGO0
-yXvKzC3eEomdzZVGCkKi6bZa0dDk22bEL0D4y4/hzTp4lGxWG58GnD46U7bgJgpW
-HsnblmUU54yxUnkY5XOzb9Xt2lap/qe+tzBVP0WC9e7PGrJlX++xWmGaSh5+93HM
-VndhVKpGXbuMd8pWKejvvoBZVP+02OzFMDqDKqxXJrYn1kF4lKYebNUsd1r90G+E
-bs3u/CYi1upP/rFHeAsPc1rT7jU2c285TEsNUY5vj7B74QyWAeBk83Araba7HCeW
-2OwxxZi+bdJUpulGTRQBQOSODyDg7xeKhrhFWEBhHnr4NkzyGRVFyt4i7bFVSE/c
-WCbS5+O9EgoGF6yooyZ44blHiiMUPxWWqZuEdoRkwQlk6dX9QjpQdMX3myEQKDuR
-R5Vg1uG/lh82JKq4Q5MMDmuII2PiCHECjI77HnFDDDTQoaWTkns=
-=5saz
------END PGP SIGNATURE-----
-
---stsdboy52ijd557m--
+diff --git a/drivers/pwm/pwm-twl.c b/drivers/pwm/pwm-twl.c
+index b7a45be99815..0367fb8e425b 100644
+--- a/drivers/pwm/pwm-twl.c
++++ b/drivers/pwm/pwm-twl.c
+@@ -264,30 +264,29 @@ static void twl6030_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ 	val &= ~TWL6030_PWM_TOGGLE(pwm->hwpwm, TWL6030_PWMXS | TWL6030_PWMXEN);
+ 
+ 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_TOGGLE3_REG);
+-	if (ret < 0) {
+-		dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
+-		goto out;
+-	}
++	if (ret)
++		goto report_failure;
+ 
+ 	val |= TWL6030_PWM_TOGGLE(pwm->hwpwm, TWL6030_PWMXEN);
+ 
+ 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_TOGGLE3_REG);
+-	if (ret < 0) {
+-		dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
+-		goto out;
+-	}
++	if (ret)
++		goto report_failure;
+ 
+ 	val &= ~TWL6030_PWM_TOGGLE(pwm->hwpwm, TWL6030_PWMXEN);
+ 
+ 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_TOGGLE3_REG);
+-	if (ret < 0) {
+-		dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
+-		goto out;
+-	}
++	if (ret)
++		goto report_failure;
+ 
+ 	twl->twl6030_toggle3 = val;
+-out:
++unlock:
+ 	mutex_unlock(&twl->mutex);
++	return;
++
++report_failure:
++	dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
++	goto unlock;
+ }
+ 
+ static const struct pwm_ops twl4030_pwm_ops = {
+-- 
+2.14.3
