@@ -1,85 +1,39 @@
-From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH] pwm-twl: Use common error handling code in
- twl6030_pwm_disable()
-Date: Wed, 1 Nov 2017 21:50:37 +0100
-Message-ID: <97ad7b8f-a5ca-b867-41a9-c3b46507eddb@users.sourceforge.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Axel Lin <axel.lin@ingics.com>
+Subject: [PATCH] pwm: stm32-lp: Remove pwm_is_enabled check before calling pwm_disable
+Date: Tue,  7 Nov 2017 11:30:41 +0800
+Message-ID: <20171107033041.10905-1-axel.lin@ingics.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mout.web.de ([212.227.15.14]:56106 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751922AbdKAUun (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Wed, 1 Nov 2017 16:50:43 -0400
-Content-Language: en-GB
+Received: from mail-pg0-f66.google.com ([74.125.83.66]:52252 "EHLO
+        mail-pg0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932340AbdKGDa4 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 6 Nov 2017 22:30:56 -0500
+Received: by mail-pg0-f66.google.com with SMTP id a192so9927247pge.9
+        for <linux-pwm@vger.kernel.org>; Mon, 06 Nov 2017 19:30:56 -0800 (PST)
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
+To: linux-pwm@vger.kernel.org
+Cc: Thierry Reding <thierry.reding@gmail.com>, Fabrice Gasnier <fabrice.gasnier@st.com>, Lee Jones <lee.jones@linaro.org>, Axel Lin <axel.lin@ingics.com>
 
-From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Wed, 1 Nov 2017 21:44:30 +0100
+The same checking is done by the implementation of pwm_disable().
 
-* Adjust jump targets so that a specific error message is stored only once
-  at the end of this function implementation.
-
-* Replace three calls of the function "dev_err" by goto statements.
-
-* Adjust three condition checks.
-
-This issue was detected by using the Coccinelle software.
-
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
 ---
- drivers/pwm/pwm-twl.c | 25 ++++++++++++-------------
- 1 file changed, 12 insertions(+), 13 deletions(-)
+ drivers/pwm/pwm-stm32-lp.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/pwm-twl.c b/drivers/pwm/pwm-twl.c
-index b7a45be99815..0367fb8e425b 100644
---- a/drivers/pwm/pwm-twl.c
-+++ b/drivers/pwm/pwm-twl.c
-@@ -264,30 +264,29 @@ static void twl6030_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
- 	val &= ~TWL6030_PWM_TOGGLE(pwm->hwpwm, TWL6030_PWMXS | TWL6030_PWMXEN);
+diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
+index 9793b296108f..1ac9e4384142 100644
+--- a/drivers/pwm/pwm-stm32-lp.c
++++ b/drivers/pwm/pwm-stm32-lp.c
+@@ -219,8 +219,7 @@ static int stm32_pwm_lp_remove(struct platform_device *pdev)
+ 	unsigned int i;
  
- 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_TOGGLE3_REG);
--	if (ret < 0) {
--		dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
--		goto out;
--	}
-+	if (ret)
-+		goto report_failure;
+ 	for (i = 0; i < priv->chip.npwm; i++)
+-		if (pwm_is_enabled(&priv->chip.pwms[i]))
+-			pwm_disable(&priv->chip.pwms[i]);
++		pwm_disable(&priv->chip.pwms[i]);
  
- 	val |= TWL6030_PWM_TOGGLE(pwm->hwpwm, TWL6030_PWMXEN);
- 
- 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_TOGGLE3_REG);
--	if (ret < 0) {
--		dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
--		goto out;
--	}
-+	if (ret)
-+		goto report_failure;
- 
- 	val &= ~TWL6030_PWM_TOGGLE(pwm->hwpwm, TWL6030_PWMXEN);
- 
- 	ret = twl_i2c_write_u8(TWL6030_MODULE_ID1, val, TWL6030_TOGGLE3_REG);
--	if (ret < 0) {
--		dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
--		goto out;
--	}
-+	if (ret)
-+		goto report_failure;
- 
- 	twl->twl6030_toggle3 = val;
--out:
-+unlock:
- 	mutex_unlock(&twl->mutex);
-+	return;
-+
-+report_failure:
-+	dev_err(chip->dev, "%s: Failed to disable PWM\n", pwm->label);
-+	goto unlock;
+ 	return pwmchip_remove(&priv->chip);
  }
- 
- static const struct pwm_ops twl4030_pwm_ops = {
 -- 
-2.14.3
+2.11.0
