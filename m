@@ -1,39 +1,86 @@
-From: Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 0/2] backlight: pwm_bl: prevent backlight flicker when
- switching PWM on
-Date: Wed, 8 Nov 2017 10:48:01 +0000
-Message-ID: <cec1af21-8a6d-f9f3-eaf0-197ba68d87ee@linaro.org>
-References: <1509022186-19636-1-git-send-email-LW@KARO-electronics.de>
- <1509022186-19636-2-git-send-email-LW@KARO-electronics.de>
+From: Keerthy <j-keerthy@ti.com>
+Subject: [PATCH v2 4/7] dmtimer: Add timer ops to the platform data structure
+Date: Wed, 8 Nov 2017 17:58:25 +0530
+Message-ID: <1510144108-29563-5-git-send-email-j-keerthy@ti.com>
+References: <1510144108-29563-1-git-send-email-j-keerthy@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1509022186-19636-2-git-send-email-LW-bxm8fMRDkQLDiMYJYoSAnRvVK+yQ3ZXh@public.gmane.org>
-Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: =?UTF-8?Q?Lothar_Wa=c3=9fmann?= <LW-bxm8fMRDkQLDiMYJYoSAnRvVK+yQ3ZXh@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Jacek Anaszewski <jacek.anaszewski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lelnx194.ext.ti.com ([198.47.27.80]:44104 "EHLO
+        lelnx194.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752196AbdKHM3w (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 8 Nov 2017 07:29:52 -0500
+In-Reply-To: <1510144108-29563-1-git-send-email-j-keerthy@ti.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com
+Cc: khilman@kernel.org, daniel.lezcano@linaro.org, linux@armlinux.org.uk, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, j-keerthy@ti.com
 
-On 26/10/17 13:49, Lothar Waßmann wrote:
-> These patches implement some measures to prevent backlight flicker
-> when the backlight is being switched on for a display with an active
-> low brightness control pin.
-> GIT: [PATCH 1/2] backlight: pwm_bl: Enable PWM before switching regulator
-> GIT: [PATCH 2/2] backlight: pwm_bl: add configurable delay between
+Add timer ops to the platform data structure
 
-Other than hoisting the pwm_enable() even earlier in the setup sequence 
-this patchset seems to have a significant overlap with Enric's recent 
-posting:
+Signed-off-by: Keerthy <j-keerthy@ti.com>
+---
 
-   https://lkml.org/lkml/2017/7/21/211
+No code changes in this v2 version. Only enhanced patch
+statistics for renames.
 
-Any chance of a shared view on this, especially on the DT bindings?
+ include/linux/platform_data/dmtimer-omap.h | 38 ++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-
-
-Daniel.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/include/linux/platform_data/dmtimer-omap.h b/include/linux/platform_data/dmtimer-omap.h
+index a19b78d..a3e1794 100644
+--- a/include/linux/platform_data/dmtimer-omap.h
++++ b/include/linux/platform_data/dmtimer-omap.h
+@@ -20,12 +20,50 @@
+ #ifndef __PLATFORM_DATA_DMTIMER_OMAP_H__
+ #define __PLATFORM_DATA_DMTIMER_OMAP_H__
+ 
++struct omap_dm_timer_ops {
++	struct omap_dm_timer *(*request_by_node)(struct device_node *np);
++	struct omap_dm_timer *(*request_specific)(int timer_id);
++	struct omap_dm_timer *(*request)(void);
++
++	int	(*free)(struct omap_dm_timer *timer);
++
++	void	(*enable)(struct omap_dm_timer *timer);
++	void	(*disable)(struct omap_dm_timer *timer);
++
++	int	(*get_irq)(struct omap_dm_timer *timer);
++	int	(*set_int_enable)(struct omap_dm_timer *timer,
++				  unsigned int value);
++	int	(*set_int_disable)(struct omap_dm_timer *timer, u32 mask);
++
++	struct clk *(*get_fclk)(struct omap_dm_timer *timer);
++
++	int	(*start)(struct omap_dm_timer *timer);
++	int	(*stop)(struct omap_dm_timer *timer);
++	int	(*set_source)(struct omap_dm_timer *timer, int source);
++
++	int	(*set_load)(struct omap_dm_timer *timer, int autoreload,
++			    unsigned int value);
++	int	(*set_match)(struct omap_dm_timer *timer, int enable,
++			     unsigned int match);
++	int	(*set_pwm)(struct omap_dm_timer *timer, int def_on,
++			   int toggle, int trigger);
++	int	(*set_prescaler)(struct omap_dm_timer *timer, int prescaler);
++
++	unsigned int (*read_counter)(struct omap_dm_timer *timer);
++	int	(*write_counter)(struct omap_dm_timer *timer,
++				 unsigned int value);
++	unsigned int (*read_status)(struct omap_dm_timer *timer);
++	int	(*write_status)(struct omap_dm_timer *timer,
++				unsigned int value);
++};
++
+ struct dmtimer_platform_data {
+ 	/* set_timer_src - Only used for OMAP1 devices */
+ 	int (*set_timer_src)(struct platform_device *pdev, int source);
+ 	u32 timer_capability;
+ 	u32 timer_errata;
+ 	int (*get_context_loss_count)(struct device *);
++	struct omap_dm_timer_ops *timer_ops;
+ };
+ 
+ #endif /* __PLATFORM_DATA_DMTIMER_OMAP_H__ */
+-- 
+1.9.1
