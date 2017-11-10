@@ -1,131 +1,48 @@
-From: Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: Re: [PATCH v2 6/7] pwm: pwm-omap-dmtimer: Adapt driver to utilize
- dmtimer pdata ops
-Date: Thu, 9 Nov 2017 15:15:18 -0600
-Message-ID: <c2e14609-fefa-0524-3d62-8038ced2ab31@ti.com>
-References: <1510144108-29563-1-git-send-email-j-keerthy@ti.com>
- <1510144108-29563-7-git-send-email-j-keerthy@ti.com>
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Subject: Re: [PATCH 0/2] backlight: pwm_bl: prevent backlight flicker when
+ switching PWM on
+Date: Fri, 10 Nov 2017 12:22:15 +0100
+Message-ID: <8682e9c4-518d-5dce-55c5-c221dddd5fd6@collabora.com>
+References: <1509022186-19636-1-git-send-email-LW@KARO-electronics.de>
+ <1509022186-19636-2-git-send-email-LW@KARO-electronics.de>
+ <cec1af21-8a6d-f9f3-eaf0-197ba68d87ee@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from fllnx210.ext.ti.com ([198.47.19.17]:58503 "EHLO
-        fllnx210.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752361AbdKIVQN (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 9 Nov 2017 16:16:13 -0500
-In-Reply-To: <1510144108-29563-7-git-send-email-j-keerthy@ti.com>
-Content-Language: en-US
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-leds-owner@vger.kernel.org>
+In-Reply-To: <cec1af21-8a6d-f9f3-eaf0-197ba68d87ee@linaro.org>
+Content-Language: en-GB
+Sender: linux-leds-owner@vger.kernel.org
+To: Daniel Thompson <daniel.thompson@linaro.org>, =?UTF-8?Q?Lothar_Wa=c3=9fmann?= <LW@KARO-electronics.de>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Pavel Machek <pavel@ucw.cz>, Richard Purdie <rpurdie@rpsys.net>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Keerthy <j-keerthy@ti.com>, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com
-Cc: khilman@kernel.org, daniel.lezcano@linaro.org, linux@armlinux.org.uk, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk
 
+Hi all,
 
-
-On 11/08/2017 06:28 AM, Keerthy wrote:
-> Adapt driver to utilize dmtimer pdata ops instead of pdata-quirks.
+On 08/11/17 11:48, Daniel Thompson wrote:
+> On 26/10/17 13:49, Lothar Waßmann wrote:
+>> These patches implement some measures to prevent backlight flicker
+>> when the backlight is being switched on for a display with an active
+>> low brightness control pin.
+>> GIT: [PATCH 1/2] backlight: pwm_bl: Enable PWM before switching regulator
+>> GIT: [PATCH 2/2] backlight: pwm_bl: add configurable delay between
 > 
-> Signed-off-by: Keerthy <j-keerthy@ti.com>
-> ---
+> Other than hoisting the pwm_enable() even earlier in the setup sequence this
+> patchset seems to have a significant overlap with Enric's recent posting:
 > 
-> No code changes in this v2 version. Only enhanced patch
-> statistics for renames.
+>   https://lkml.org/lkml/2017/7/21/211
 > 
->   drivers/pwm/pwm-omap-dmtimer.c | 39 ++++++++++++++++++++++-----------------
->   1 file changed, 22 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
-> index 5ad42f3..3b27aff 100644
-> --- a/drivers/pwm/pwm-omap-dmtimer.c
-> +++ b/drivers/pwm/pwm-omap-dmtimer.c
-> @@ -23,6 +23,7 @@
->   #include <linux/mutex.h>
->   #include <linux/of.h>
->   #include <linux/of_platform.h>
-> +#include <linux/platform_data/dmtimer-omap.h>
->   #include <linux/platform_data/pwm_omap_dmtimer.h>
->   #include <linux/platform_device.h>
->   #include <linux/pm_runtime.h>
-> @@ -37,7 +38,7 @@ struct pwm_omap_dmtimer_chip {
->   	struct pwm_chip chip;
->   	struct mutex mutex;
->   	pwm_omap_dmtimer *dm_timer;
-> -	struct pwm_omap_dmtimer_pdata *pdata;
-> +	struct omap_dm_timer_ops *pdata;
->   	struct platform_device *dm_timer_pdev;
->   };
->   
-> @@ -242,19 +243,33 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
->   {
->   	struct device_node *np = pdev->dev.of_node;
->   	struct device_node *timer;
-> +	struct platform_device *timer_pdev;
->   	struct pwm_omap_dmtimer_chip *omap;
-> -	struct pwm_omap_dmtimer_pdata *pdata;
-> +	struct dmtimer_platform_data *timer_pdata;
-> +	struct omap_dm_timer_ops *pdata;
->   	pwm_omap_dmtimer *dm_timer;
->   	u32 v;
->   	int status;
->   
-> -	pdata = dev_get_platdata(&pdev->dev);
-> -	if (!pdata) {
-> -		dev_err(&pdev->dev, "Missing dmtimer platform data\n");
-> +	timer = of_parse_phandle(np, "ti,timers", 0);
-> +	if (!timer)
-> +		return -ENODEV;
-> +
-> +	timer_pdev = of_find_device_by_node(timer);
-> +	if (!timer_pdev) {
-> +		dev_err(&pdev->dev, "Unable to find Timer pdev\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	timer_pdata = dev_get_platdata(&timer_pdev->dev);
-> +	if (!timer_pdata) {
-> +		dev_err(&pdev->dev, "dmtimer pdata structure NULL\n");
->   		return -EINVAL;
->   	}
-
-I really do not like above code :( It seems need to be hidden
-inside some OF helper.
-
->   
-> -	if (!pdata->request_by_node ||
-> +	pdata = timer_pdata->timer_ops;
-> +
-> +	if (!pdata || !pdata->request_by_node ||
->   	    !pdata->free ||
->   	    !pdata->enable ||
->   	    !pdata->disable ||
-> @@ -270,10 +285,6 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
->   		return -EINVAL;
->   	}
->   
-> -	timer = of_parse_phandle(np, "ti,timers", 0);
-> -	if (!timer)
-> -		return -ENODEV;
-> -
->   	if (!of_get_property(timer, "ti,timer-pwm", NULL)) {
->   		dev_err(&pdev->dev, "Missing ti,timer-pwm capability\n");
->   		return -ENODEV;
-> @@ -291,13 +302,7 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
->   
->   	omap->pdata = pdata;
->   	omap->dm_timer = dm_timer;
-> -
-> -	omap->dm_timer_pdev = of_find_device_by_node(timer);
-> -	if (!omap->dm_timer_pdev) {
-> -		dev_err(&pdev->dev, "Unable to find timer pdev\n");
-> -		omap->pdata->free(dm_timer);
-> -		return -EINVAL;
-> -	}
-> +	omap->dm_timer_pdev = timer_pdev;
->   
->   	/*
->   	 * Ensure that the timer is stopped before we allow PWM core to call
+> Any chance of a shared view on this, especially on the DT bindings?
 > 
 
--- 
-regards,
--grygorii
+The DT binding were discussed some time ago for the patch series I sent, though
+there isn't a final ack from DT maintainer.
+
+Lothar, the series I sent have been reviewed and acked, can you test if the
+series fixes the problem for you too?
+
+Thanks,
+ Enric
+
+> 
+> 
+> Daniel.
