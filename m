@@ -1,54 +1,71 @@
-From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
-Subject: Re: [PATCH 0/2] backlight: pwm_bl: prevent backlight flicker when
- switching PWM on
-Date: Tue, 14 Nov 2017 08:56:16 +0100
-Message-ID: <20171114085616.3dfe6f03@karo-electronics.de>
-References: <1509022186-19636-1-git-send-email-LW@KARO-electronics.de>
-        <1509022186-19636-2-git-send-email-LW@KARO-electronics.de>
-        <cec1af21-8a6d-f9f3-eaf0-197ba68d87ee@linaro.org>
-        <8682e9c4-518d-5dce-55c5-c221dddd5fd6@collabora.com>
+From: Keerthy <j-keerthy@ti.com>
+Subject: [PATCH v3 0/9] omap: dmtimer: Move driver out of plat-omap
+Date: Thu, 16 Nov 2017 09:53:33 +0530
+Message-ID: <1510806222-22096-1-git-send-email-j-keerthy@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from smtprelay02.ispgateway.de ([80.67.18.14]:63000 "EHLO
-        smtprelay02.ispgateway.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751848AbdKNH4Y (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 14 Nov 2017 02:56:24 -0500
-In-Reply-To: <8682e9c4-518d-5dce-55c5-c221dddd5fd6@collabora.com>
+Received: from lelnx193.ext.ti.com ([198.47.27.77]:38321 "EHLO
+        lelnx193.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751455AbdKPEZU (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 15 Nov 2017 23:25:20 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Jingoo Han <jingoohan1@gmail.com>, Lee Jones <lee.jones@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Pavel Machek <pavel@ucw.cz>, Richard Purdie <rpurdie@rpsys.net>, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org, linux-pwm@vger.kernel.org
+To: tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com
+Cc: j-keerthy@ti.com, linux@armlinux.org.uk, daniel.lezcano@linaro.org, robh+dt@kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, grygorii.strashko@ti.com, sebastian.reichel@collabora.co.uk, ladis@linux-mips.org
 
-Hi,
+The series moves dmtimer out of plat-omap to drivers/clocksource.
+The series also does a bunch of changes to pwm-omap-dmtimer code
+to adapt to the driver migration and clean up plat specific
+pdata-quirks and use the dmtimer platform data.
 
-On Fri, 10 Nov 2017 12:22:15 +0100 Enric Balletbo i Serra wrote:
-> Hi all,
-> 
-> On 08/11/17 11:48, Daniel Thompson wrote:
-> > On 26/10/17 13:49, Lothar Waßmann wrote:
-> >> These patches implement some measures to prevent backlight flicker
-> >> when the backlight is being switched on for a display with an active
-> >> low brightness control pin.
-> >> GIT: [PATCH 1/2] backlight: pwm_bl: Enable PWM before switching regulator
-> >> GIT: [PATCH 2/2] backlight: pwm_bl: add configurable delay between
-> > 
-> > Other than hoisting the pwm_enable() even earlier in the setup sequence this
-> > patchset seems to have a significant overlap with Enric's recent posting:
-> > 
-> >   https://lkml.org/lkml/2017/7/21/211
-> > 
-> > Any chance of a shared view on this, especially on the DT bindings?
-> > 
-> 
-> The DT binding were discussed some time ago for the patch series I sent, though
-> there isn't a final ack from DT maintainer.
-> 
-> Lothar, the series I sent have been reviewed and acked, can you test if the
-> series fixes the problem for you too?
-> 
-I'll try to test it within the next couple of days and will report back.
+Boot tested on DRA7-EVM, AM335X-EVM and AM437X-GP-EVM.
+Compile tested omap1_defconfig.
 
+This is based on top of linux-next branch.
 
-Lothar Waßmann
+Changes from V2:
+
+  * Wrapped the inline functions in header file under OMAP2PLUS
+  * Added a new of helper function to fetch plat_data from of node.
+
+Keerthy (9):
+  clocksource: dmtimer: Remove all the exports
+  arm: omap: timer: Move the inline functions under OMAP2PLUS define
+  arm: omap: Move dmtimer.h out of plat-omap
+  arm: OMAP: Move dmtimer driver out of plat-omap to drivers under
+    clocksource
+  dmtimer: Add timer ops to the platform data structure
+  clocksource: dmtimer: Populate the timer ops to the pdata
+  of: platform: Add a function to get platfrom data from device node
+  pwm: pwm-omap-dmtimer: Adapt driver to utilize dmtimer pdata ops
+  arm: omap: pdata-quirks: Remove unused timer pdata
+
+ arch/arm/mach-omap1/pm.c                           |  2 +-
+ arch/arm/mach-omap1/timer.c                        |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_2420_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_2430_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_3xxx_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_44xx_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_54xx_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_7xx_data.c          |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_81xx_data.c         |  2 +-
+ arch/arm/mach-omap2/pdata-quirks.c                 | 32 -------------
+ arch/arm/mach-omap2/timer.c                        |  2 +-
+ arch/arm/plat-omap/Kconfig                         |  6 ---
+ arch/arm/plat-omap/Makefile                        |  1 -
+ drivers/clocksource/Kconfig                        |  6 +++
+ drivers/clocksource/Makefile                       |  1 +
+ .../plat-omap => drivers/clocksource}/dmtimer.c    | 54 +++++++++++-----------
+ drivers/of/platform.c                              | 23 +++++++++
+ drivers/pwm/pwm-omap-dmtimer.c                     | 39 +++++++++-------
+ .../include/plat => include/clocksource}/dmtimer.h |  8 +++-
+ include/linux/of_platform.h                        |  6 +++
+ include/linux/platform_data/dmtimer-omap.h         | 38 +++++++++++++++
+ 22 files changed, 140 insertions(+), 96 deletions(-)
+ rename {arch/arm/plat-omap => drivers/clocksource}/dmtimer.c (95%)
+ rename {arch/arm/plat-omap/include/plat => include/clocksource}/dmtimer.h (97%)
+
+-- 
+1.9.1
