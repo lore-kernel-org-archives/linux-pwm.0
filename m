@@ -1,240 +1,103 @@
-From: Keerthy <j-keerthy@ti.com>
-Subject: [PATCH v3 3/9] arm: omap: Move dmtimer.h out of plat-omap
-Date: Thu, 16 Nov 2017 09:53:36 +0530
-Message-ID: <1510806222-22096-4-git-send-email-j-keerthy@ti.com>
-References: <1510806222-22096-1-git-send-email-j-keerthy@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1510806222-22096-1-git-send-email-j-keerthy@ti.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, grygorii.strashko@ti.com, j-keerthy@ti.com, daniel.lezcano@linaro.org, linux@armlinux.org.uk, robh+dt@kernel.org, ladis@linux-mips.org, sebastian.reichel@collabora.co.uk, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+From: Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] pwm: imx: Allow keeping the PWM active during suspend
+Date: Fri, 17 Nov 2017 20:59:27 -0200
+Message-ID: <1510959567-7956-1-git-send-email-festevam@gmail.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-The header file is currently under plat-omap directory
-under arch/omap. Move this out to an accessible place.
+From: Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>
 
-No Code changes done to the header file.
+In some systems it is desirable to keep the PWM active during system
+suspend.
 
-Signed-off-by: Keerthy <j-keerthy@ti.com>
-Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+One use case is the imx6q-cubox-i board, which has an LED driven by PWM.
+When the system goes into suspend the PWM block is disabled by default,
+the PWM pin goes to zero and turn on the LED during suspend, which is
+not really the behaviour we want to see.
+
+By keeping the PWM enabled during suspend the pwm-leds driver sets
+the brightness to zero in suspend and then the LED is turned off as
+expected.
+
+Introduce the 'fsl,suspend-enable' property to indicate that the PWM
+will stay active during suspend.
+
+Signed-off-by: Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>
 ---
+ Documentation/devicetree/bindings/pwm/imx-pwm.txt | 5 +++++
+ drivers/pwm/pwm-imx.c                             | 8 ++++++++
+ 2 files changed, 13 insertions(+)
 
-Changes in v3:
-
-  * Added Sebastian's Reviewed-by.
-
-Changes in v2:
-
-  * No code changes in this v2 version. Only enhanced patch
-    statistics for renames.
-
- arch/arm/mach-omap1/pm.c                                           | 2 +-
- arch/arm/mach-omap1/timer.c                                        | 2 +-
- arch/arm/mach-omap2/omap_hwmod_2420_data.c                         | 2 +-
- arch/arm/mach-omap2/omap_hwmod_2430_data.c                         | 2 +-
- arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c                 | 2 +-
- arch/arm/mach-omap2/omap_hwmod_3xxx_data.c                         | 2 +-
- arch/arm/mach-omap2/omap_hwmod_44xx_data.c                         | 2 +-
- arch/arm/mach-omap2/omap_hwmod_54xx_data.c                         | 2 +-
- arch/arm/mach-omap2/omap_hwmod_7xx_data.c                          | 2 +-
- arch/arm/mach-omap2/omap_hwmod_81xx_data.c                         | 2 +-
- arch/arm/mach-omap2/pdata-quirks.c                                 | 2 +-
- arch/arm/mach-omap2/timer.c                                        | 2 +-
- arch/arm/plat-omap/dmtimer.c                                       | 2 +-
- {arch/arm/plat-omap/include/plat => include/clocksource}/dmtimer.h | 0
- 14 files changed, 13 insertions(+), 13 deletions(-)
- rename {arch/arm/plat-omap/include/plat => include/clocksource}/dmtimer.h (100%)
-
-diff --git a/arch/arm/mach-omap1/pm.c b/arch/arm/mach-omap1/pm.c
-index f1135bf..a07d47cf 100644
---- a/arch/arm/mach-omap1/pm.c
-+++ b/arch/arm/mach-omap1/pm.c
-@@ -55,7 +55,7 @@
- #include <mach/tc.h>
- #include <mach/mux.h>
- #include <linux/omap-dma.h>
--#include <plat/dmtimer.h>
-+#include <clocksource/dmtimer.h>
+diff --git a/Documentation/devicetree/bindings/pwm/imx-pwm.txt b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
+index c61bdf8..1e00a89 100644
+--- a/Documentation/devicetree/bindings/pwm/imx-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
+@@ -14,6 +14,11 @@ See the clock consumer binding,
+ 	Documentation/devicetree/bindings/clock/clock-bindings.txt
+ - interrupts: The interrupt for the pwm controller
  
- #include <mach/irqs.h>
++Optional properties:
++- fsl,suspend-enable: Boolean property that indicates that the PWM block stays
++		      enabled during system suspend. If not present, the PWM
++		      block will be disabled during suspend.
++
+ Example:
  
-diff --git a/arch/arm/mach-omap1/timer.c b/arch/arm/mach-omap1/timer.c
-index 8fb1ec6..7c057ab 100644
---- a/arch/arm/mach-omap1/timer.c
-+++ b/arch/arm/mach-omap1/timer.c
-@@ -27,7 +27,7 @@
- #include <linux/platform_device.h>
- #include <linux/platform_data/dmtimer-omap.h>
+ pwm1: pwm@53fb4000 {
+diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
+index 2ba5c3a..b9c60fe 100644
+--- a/drivers/pwm/pwm-imx.c
++++ b/drivers/pwm/pwm-imx.c
+@@ -35,6 +35,7 @@
+ #define MX3_PWMSAR			0x0C    /* PWM Sample Register */
+ #define MX3_PWMPR			0x10    /* PWM Period Register */
+ #define MX3_PWMCR_PRESCALER(x)		((((x) - 1) & 0xFFF) << 4)
++#define MX3_PWMCR_STOPEN		(1 << 25)
+ #define MX3_PWMCR_DOZEEN		(1 << 24)
+ #define MX3_PWMCR_WAITEN		(1 << 23)
+ #define MX3_PWMCR_DBGEN			(1 << 22)
+@@ -54,6 +55,7 @@ struct imx_chip {
+ 	void __iomem	*mmio_base;
  
--#include <plat/dmtimer.h>
-+#include <clocksource/dmtimer.h>
+ 	struct pwm_chip	chip;
++	bool suspend_enable;
+ };
  
- #include "soc.h"
+ #define to_imx_chip(chip)	container_of(chip, struct imx_chip, chip)
+@@ -217,6 +219,9 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		if (state->polarity == PWM_POLARITY_INVERSED)
+ 			cr |= MX3_PWMCR_POUTC;
  
-diff --git a/arch/arm/mach-omap2/omap_hwmod_2420_data.c b/arch/arm/mach-omap2/omap_hwmod_2420_data.c
-index 1a15a34..45c1043 100644
---- a/arch/arm/mach-omap2/omap_hwmod_2420_data.c
-+++ b/arch/arm/mach-omap2/omap_hwmod_2420_data.c
-@@ -16,7 +16,7 @@
- #include <linux/i2c-omap.h>
- #include <linux/platform_data/spi-omap2-mcspi.h>
- #include <linux/omap-dma.h>
--#include <plat/dmtimer.h>
-+#include <clocksource/dmtimer.h>
++		if (imx->suspend_enable)
++			cr |= MX3_PWMCR_STOPEN;
++
+ 		writel(cr, imx->mmio_base + MX3_PWMCR);
+ 	} else if (cstate.enabled) {
+ 		writel(0, imx->mmio_base + MX3_PWMCR);
+@@ -264,6 +269,7 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ {
+ 	const struct of_device_id *of_id =
+ 			of_match_device(imx_pwm_dt_ids, &pdev->dev);
++	struct device_node *np = pdev->dev.of_node;
+ 	const struct imx_pwm_data *data;
+ 	struct imx_chip *imx;
+ 	struct resource *r;
+@@ -301,6 +307,8 @@ static int imx_pwm_probe(struct platform_device *pdev)
+ 	if (IS_ERR(imx->mmio_base))
+ 		return PTR_ERR(imx->mmio_base);
  
- #include "omap_hwmod.h"
- #include "l3_2xxx.h"
-diff --git a/arch/arm/mach-omap2/omap_hwmod_2430_data.c b/arch/arm/mach-omap2/omap_hwmod_2430_data.c
-index 3801850..892ca58 100644
---- a/arch/arm/mach-omap2/omap_hwmod_2430_data.c
-+++ b/arch/arm/mach-omap2/omap_hwmod_2430_data.c
-@@ -18,7 +18,7 @@
- #include <linux/platform_data/hsmmc-omap.h>
- #include <linux/platform_data/spi-omap2-mcspi.h>
- #include <linux/omap-dma.h>
--#include <plat/dmtimer.h>
-+#include <clocksource/dmtimer.h>
- 
- #include "omap_hwmod.h"
- #include "l3_2xxx.h"
-diff --git a/arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c b/arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c
-index beec4cd..82b51c0 100644
---- a/arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c
-+++ b/arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c
-@@ -11,7 +11,7 @@
- 
- #include <linux/platform_data/gpio-omap.h>
- #include <linux/omap-dma.h>
--#include <plat/dmtimer.h>
-+#include <clocksource/dmtimer.h>
- #include <linux/platform_data/spi-omap2-mcspi.h>
- 
- #include "omap_hwmod.h"
-diff --git a/arch/arm/mach-omap2/omap_hwmod_3xxx_data.c b/arch/arm/mach-omap2/omap_hwmod_3xxx_data.c
-index 52c9d58..310aef5 100644
---- a/arch/arm/mach-omap2/omap_hwmod_3xxx_data.c
-+++ b/arch/arm/mach-omap2/omap_hwmod_3xxx_data.c
-@@ -25,7 +25,7 @@
- #include "l4_3xxx.h"
- #include <linux/platform_data/asoc-ti-mcbsp.h>
- #include <linux/platform_data/spi-omap2-mcspi.h>
--#include <plat/dmtimer.h>
-+#include <clocksource/dmtimer.h>
- 
- #include "soc.h"
- #include "omap_hwmod.h"
-diff --git a/arch/arm/mach-omap2/omap_hwmod_44xx_data.c b/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
-index c477096..22e0e38 100644
---- a/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
-+++ b/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
-@@ -30,7 +30,7 @@
- 
- #include <linux/platform_data/spi-omap2-mcspi.h>
- #include <linux/platform_data/asoc-ti-mcbsp.h>
--#include <plat/dmtimer.h>
-+#include <clocksource/dmtimer.h>
- 
- #include "omap_hwmod.h"
- #include "omap_hwmod_common_data.h"
-diff --git a/arch/arm/mach-omap2/omap_hwmod_54xx_data.c b/arch/arm/mach-omap2/omap_hwmod_54xx_data.c
-index 988e7ea..530334e 100644
---- a/arch/arm/mach-omap2/omap_hwmod_54xx_data.c
-+++ b/arch/arm/mach-omap2/omap_hwmod_54xx_data.c
-@@ -26,7 +26,7 @@
- #include <linux/omap-dma.h>
- #include <linux/platform_data/spi-omap2-mcspi.h>
- #include <linux/platform_data/asoc-ti-mcbsp.h>
--#include <plat/dmtimer.h>
-+#include <clocksource/dmtimer.h>
- 
- #include "omap_hwmod.h"
- #include "omap_hwmod_common_data.h"
-diff --git a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
-index d05e553d..adabdef 100644
---- a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
-+++ b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
-@@ -26,7 +26,7 @@
- #include <linux/omap-dma.h>
- #include <linux/platform_data/spi-omap2-mcspi.h>
- #include <linux/platform_data/asoc-ti-mcbsp.h>
--#include <plat/dmtimer.h>
-+#include <clocksource/dmtimer.h>
- 
- #include "omap_hwmod.h"
- #include "omap_hwmod_common_data.h"
-diff --git a/arch/arm/mach-omap2/omap_hwmod_81xx_data.c b/arch/arm/mach-omap2/omap_hwmod_81xx_data.c
-index 77a515b..d05dd2d 100644
---- a/arch/arm/mach-omap2/omap_hwmod_81xx_data.c
-+++ b/arch/arm/mach-omap2/omap_hwmod_81xx_data.c
-@@ -18,7 +18,7 @@
- #include <linux/platform_data/gpio-omap.h>
- #include <linux/platform_data/hsmmc-omap.h>
- #include <linux/platform_data/spi-omap2-mcspi.h>
--#include <plat/dmtimer.h>
-+#include <clocksource/dmtimer.h>
- 
- #include "omap_hwmod_common_data.h"
- #include "cm81xx.h"
-diff --git a/arch/arm/mach-omap2/pdata-quirks.c b/arch/arm/mach-omap2/pdata-quirks.c
-index 6b433fc..ad9df86 100644
---- a/arch/arm/mach-omap2/pdata-quirks.c
-+++ b/arch/arm/mach-omap2/pdata-quirks.c
-@@ -27,7 +27,7 @@
- #include <linux/platform_data/pwm_omap_dmtimer.h>
- #include <linux/platform_data/media/ir-rx51.h>
- #include <linux/platform_data/asoc-ti-mcbsp.h>
--#include <plat/dmtimer.h>
-+#include <clocksource/dmtimer.h>
- 
- #include "common.h"
- #include "common-board-devices.h"
-diff --git a/arch/arm/mach-omap2/timer.c b/arch/arm/mach-omap2/timer.c
-index ece09c9..31c1b01 100644
---- a/arch/arm/mach-omap2/timer.c
-+++ b/arch/arm/mach-omap2/timer.c
-@@ -26,6 +26,7 @@
-  * License. See the file "COPYING" in the main directory of this archive
-  * for more details.
-  */
-+#include <clocksource/dmtimer.h>
- #include <linux/init.h>
- #include <linux/time.h>
- #include <linux/interrupt.h>
-@@ -49,7 +50,6 @@
- #include "omap_hwmod.h"
- #include "omap_device.h"
- #include <plat/counter-32k.h>
--#include <plat/dmtimer.h>
- #include "omap-pm.h"
- 
- #include "soc.h"
-diff --git a/arch/arm/plat-omap/dmtimer.c b/arch/arm/plat-omap/dmtimer.c
-index 72565fc..afe1dc9 100644
---- a/arch/arm/plat-omap/dmtimer.c
-+++ b/arch/arm/plat-omap/dmtimer.c
-@@ -47,7 +47,7 @@
- #include <linux/platform_device.h>
- #include <linux/platform_data/dmtimer-omap.h>
- 
--#include <plat/dmtimer.h>
-+#include <clocksource/dmtimer.h>
- 
- static u32 omap_reserved_systimers;
- static LIST_HEAD(omap_timer_list);
-diff --git a/arch/arm/plat-omap/include/plat/dmtimer.h b/include/clocksource/dmtimer.h
-similarity index 100%
-rename from arch/arm/plat-omap/include/plat/dmtimer.h
-rename to include/clocksource/dmtimer.h
++	imx->suspend_enable = of_property_read_bool(np, "fsl,suspend-enable");
++
+ 	ret = pwmchip_add(&imx->chip);
+ 	if (ret < 0)
+ 		return ret;
 -- 
-1.9.1
+2.7.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
