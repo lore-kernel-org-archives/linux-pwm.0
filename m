@@ -1,14 +1,16 @@
-From: Fabio Estevam <festevam-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] pwm: imx: Allow keeping the PWM active during suspend
-Date: Fri, 17 Nov 2017 20:59:27 -0200
-Message-ID: <1510959567-7956-1-git-send-email-festevam@gmail.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Cc: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>
+From: Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH v2] pwm: imx: Allow keeping the PWM active during suspend
+Date: Sat, 18 Nov 2017 12:36:08 -0200
+Message-ID: <1511015768-14140-1-git-send-email-festevam@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-qk0-f194.google.com ([209.85.220.194]:46770 "EHLO
+        mail-qk0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1761708AbdKROgW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 18 Nov 2017 09:36:22 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-
-From: Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>
+To: thierry.reding@gmail.com
+Cc: robh+dt@kernel.org, linux@arm.linux.org.uk, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>
 
 In some systems it is desirable to keep the PWM active during system
 suspend.
@@ -22,17 +24,21 @@ By keeping the PWM enabled during suspend the pwm-leds driver sets
 the brightness to zero in suspend and then the LED is turned off as
 expected.
 
-Introduce the 'fsl,suspend-enable' property to indicate that the PWM
-will stay active during suspend.
+Introduce the 'fsl,active-in-suspend' property to indicate that the
+PWM will stay active during suspend.
 
-Signed-off-by: Fabio Estevam <fabio.estevam-3arQi8VN3Tc@public.gmane.org>
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
 ---
+Changes since v1:
+- Rename the property to 'fsl,active-in-suspend' to better describe
+its purpose.
+
  Documentation/devicetree/bindings/pwm/imx-pwm.txt | 5 +++++
  drivers/pwm/pwm-imx.c                             | 8 ++++++++
  2 files changed, 13 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/pwm/imx-pwm.txt b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
-index c61bdf8..1e00a89 100644
+index c61bdf8..ec2a84c 100644
 --- a/Documentation/devicetree/bindings/pwm/imx-pwm.txt
 +++ b/Documentation/devicetree/bindings/pwm/imx-pwm.txt
 @@ -14,6 +14,11 @@ See the clock consumer binding,
@@ -40,15 +46,15 @@ index c61bdf8..1e00a89 100644
  - interrupts: The interrupt for the pwm controller
  
 +Optional properties:
-+- fsl,suspend-enable: Boolean property that indicates that the PWM block stays
-+		      enabled during system suspend. If not present, the PWM
-+		      block will be disabled during suspend.
++- fsl,active-in-suspend: Boolean property that indicates that the PWM block
++			 stays active during system suspend. If not present,
++			 the PWM block stays inactive during suspend.
 +
  Example:
  
  pwm1: pwm@53fb4000 {
 diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index 2ba5c3a..b9c60fe 100644
+index 2ba5c3a..afa1b20 100644
 --- a/drivers/pwm/pwm-imx.c
 +++ b/drivers/pwm/pwm-imx.c
 @@ -35,6 +35,7 @@
@@ -63,7 +69,7 @@ index 2ba5c3a..b9c60fe 100644
  	void __iomem	*mmio_base;
  
  	struct pwm_chip	chip;
-+	bool suspend_enable;
++	bool active;
  };
  
  #define to_imx_chip(chip)	container_of(chip, struct imx_chip, chip)
@@ -71,7 +77,7 @@ index 2ba5c3a..b9c60fe 100644
  		if (state->polarity == PWM_POLARITY_INVERSED)
  			cr |= MX3_PWMCR_POUTC;
  
-+		if (imx->suspend_enable)
++		if (imx->active)
 +			cr |= MX3_PWMCR_STOPEN;
 +
  		writel(cr, imx->mmio_base + MX3_PWMCR);
@@ -89,15 +95,10 @@ index 2ba5c3a..b9c60fe 100644
  	if (IS_ERR(imx->mmio_base))
  		return PTR_ERR(imx->mmio_base);
  
-+	imx->suspend_enable = of_property_read_bool(np, "fsl,suspend-enable");
++	imx->active = of_property_read_bool(np, "fsl,active-in-suspend");
 +
  	ret = pwmchip_add(&imx->chip);
  	if (ret < 0)
  		return ret;
 -- 
 2.7.4
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
