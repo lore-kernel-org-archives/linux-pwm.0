@@ -1,60 +1,63 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH v3] pwm: imx: Let PWM be active during suspend
-Date: Mon, 20 Nov 2017 21:27:23 -0200
-Message-ID: <1511220443-26629-1-git-send-email-festevam@gmail.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qk0-f194.google.com ([209.85.220.194]:41913 "EHLO
-        mail-qk0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751176AbdKTX1i (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 20 Nov 2017 18:27:38 -0500
-Received: by mail-qk0-f194.google.com with SMTP id f63so9677713qke.8
-        for <linux-pwm@vger.kernel.org>; Mon, 20 Nov 2017 15:27:38 -0800 (PST)
-Sender: linux-pwm-owner@vger.kernel.org
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: [GIT PULL] pwm: Changes for v4.15-rc1
+Date: Wed, 22 Nov 2017 11:47:48 +0100
+Message-ID: <20171122104748.31958-1-thierry.reding@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, robh@kernel.org, linux@arm.linux.org.uk, Fabio Estevam <fabio.estevam@nxp.com>
 
-From: Fabio Estevam <fabio.estevam@nxp.com>
+Hi Linus,
 
-On a imx6q-cubox-i board, which has an LED driven by PWM, when the system
-goes into suspend the PWM block is disabled by default, then the PWM pin
-goes to logic level zero and turn on the LED during suspend, which is not
-really the behaviour we want to see.
+The following changes since commit 2bd6bf03f4c1c59381d62c61d03f6cc3fe71f66e:
 
-By keeping the PWM enabled during suspend via STOPEN bit, the pwm-leds
-driver sets the brightness to zero in suspend and then the LED is
-turned off as expected.
+  Linux 4.14-rc1 (2017-09-16 15:47:51 -0700)
 
-So always set the STOPEN to fix the PWM behaviour in suspend.
+are available in the Git repository at:
 
-Signed-off-by: Fabio Estevam <fabio.estevam@nxp.com>
----
-Changes since v2:
-- Remove the optional dt property and set the STOPEN bit unconditionally (Rob)
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.15-rc1
 
- drivers/pwm/pwm-imx.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+for you to fetch changes up to f83e2ae2606b3754a5b9dfe9dd792c453698df6c:
 
-diff --git a/drivers/pwm/pwm-imx.c b/drivers/pwm/pwm-imx.c
-index 2ba5c3a..08cbe81 100644
---- a/drivers/pwm/pwm-imx.c
-+++ b/drivers/pwm/pwm-imx.c
-@@ -35,6 +35,7 @@
- #define MX3_PWMSAR			0x0C    /* PWM Sample Register */
- #define MX3_PWMPR			0x10    /* PWM Period Register */
- #define MX3_PWMCR_PRESCALER(x)		((((x) - 1) & 0xFFF) << 4)
-+#define MX3_PWMCR_STOPEN		(1 << 25)
- #define MX3_PWMCR_DOZEEN		(1 << 24)
- #define MX3_PWMCR_WAITEN		(1 << 23)
- #define MX3_PWMCR_DBGEN			(1 << 22)
-@@ -210,7 +211,7 @@ static int imx_pwm_apply_v2(struct pwm_chip *chip, struct pwm_device *pwm,
- 		writel(period_cycles, imx->mmio_base + MX3_PWMPR);
- 
- 		cr = MX3_PWMCR_PRESCALER(prescale) |
--		     MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
-+		     MX3_PWMCR_STOPEN | MX3_PWMCR_DOZEEN | MX3_PWMCR_WAITEN |
- 		     MX3_PWMCR_DBGEN | MX3_PWMCR_CLKSRC_IPG_HIGH |
- 		     MX3_PWMCR_EN;
- 
--- 
-2.7.4
+  pwm: stm32-lp: Remove pwm_is_enabled() check before calling pwm_disable() (2017-11-15 11:02:06 +0100)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Changes for v4.15-rc1
+
+The changes for this release include power management improvements for
+the pwm-img driver, support for the backup mode on pwm-atmel-tcb as well
+as support for more hardware with the R-Car and Mediatek drivers.
+
+To round things off there's a bit of cleanup for sunxi and stm32-lp.
+
+----------------------------------------------------------------
+Axel Lin (1):
+      pwm: stm32-lp: Remove pwm_is_enabled() check before calling pwm_disable()
+
+Corentin Labbe (1):
+      pwm: sunxi: Use of_device_get_match_data()
+
+Ed Blake (2):
+      pwm: img: Add suspend / resume handling
+      pwm: img: Add runtime PM
+
+Romain Izard (1):
+      pwm: atmel-tcb: Support backup mode
+
+Yoshihiro Shimoda (1):
+      dt-bindings: pwm: Add R-Car D3 device tree bindings
+
+Zhi Mao (1):
+      pwm: mediatek: Add MT2712/MT7622 support
+
+ .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   |   1 +
+ drivers/pwm/pwm-atmel-tcb.c                        |  63 +++++++-
+ drivers/pwm/pwm-img.c                              | 160 ++++++++++++++++++---
+ drivers/pwm/pwm-mediatek.c                         |  53 +++++--
+ drivers/pwm/pwm-stm32-lp.c                         |   3 +-
+ drivers/pwm/pwm-sun4i.c                            |   8 +-
+ 6 files changed, 252 insertions(+), 36 deletions(-)
