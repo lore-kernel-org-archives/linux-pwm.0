@@ -1,63 +1,38 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [GIT PULL] pwm: Changes for v4.15-rc1
-Date: Wed, 22 Nov 2017 11:47:48 +0100
-Message-ID: <20171122104748.31958-1-thierry.reding@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Axel Lin <axel.lin@ingics.com>
+Subject: Re: [PATCH RFT] pwm: stmpe: Fix wrong register offset for hwpwm=2 case
+Date: Fri, 24 Nov 2017 17:10:14 +0800
+Message-ID: <CAFRkauBhALFxedJ-4nBXpjBF9Sd-NW9bQrgwtHUbYjQ3yZGTCw@mail.gmail.com>
+References: <20171107051853.14492-1-axel.lin@ingics.com> <CACRpkda1G635V3kNXzVcnUStB8tjCdHupf3PcR_t2H5ZX0OftQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f42.google.com ([74.125.82.42]:44416 "EHLO
+        mail-wm0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752432AbdKXJKQ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 24 Nov 2017 04:10:16 -0500
+Received: by mail-wm0-f42.google.com with SMTP id r68so21163212wmr.3
+        for <linux-pwm@vger.kernel.org>; Fri, 24 Nov 2017 01:10:15 -0800 (PST)
+In-Reply-To: <CACRpkda1G635V3kNXzVcnUStB8tjCdHupf3PcR_t2H5ZX0OftQ@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>
 
-Hi Linus,
+2017-11-09 16:45 GMT+08:00 Linus Walleij <linus.walleij@linaro.org>:
+> On Tue, Nov 7, 2017 at 6:18 AM, Axel Lin <axel.lin@ingics.com> wrote:
+>
+>> Fix trivial copy/paste bug.
+>>
+>> Signed-off-by: Axel Lin <axel.lin@ingics.com>
+>> ---
+>> Hi Linus,
+>> I don't have this h/w to test.
+>> Appreciate if you can review and test this patch.
+>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-The following changes since commit 2bd6bf03f4c1c59381d62c61d03f6cc3fe71f66e:
-
-  Linux 4.14-rc1 (2017-09-16 15:47:51 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-4.15-rc1
-
-for you to fetch changes up to f83e2ae2606b3754a5b9dfe9dd792c453698df6c:
-
-  pwm: stm32-lp: Remove pwm_is_enabled() check before calling pwm_disable() (2017-11-15 11:02:06 +0100)
+Hi Thierry,
+Seems this one is still not apply. Should I resend?
 
 Thanks,
-Thierry
-
-----------------------------------------------------------------
-pwm: Changes for v4.15-rc1
-
-The changes for this release include power management improvements for
-the pwm-img driver, support for the backup mode on pwm-atmel-tcb as well
-as support for more hardware with the R-Car and Mediatek drivers.
-
-To round things off there's a bit of cleanup for sunxi and stm32-lp.
-
-----------------------------------------------------------------
-Axel Lin (1):
-      pwm: stm32-lp: Remove pwm_is_enabled() check before calling pwm_disable()
-
-Corentin Labbe (1):
-      pwm: sunxi: Use of_device_get_match_data()
-
-Ed Blake (2):
-      pwm: img: Add suspend / resume handling
-      pwm: img: Add runtime PM
-
-Romain Izard (1):
-      pwm: atmel-tcb: Support backup mode
-
-Yoshihiro Shimoda (1):
-      dt-bindings: pwm: Add R-Car D3 device tree bindings
-
-Zhi Mao (1):
-      pwm: mediatek: Add MT2712/MT7622 support
-
- .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   |   1 +
- drivers/pwm/pwm-atmel-tcb.c                        |  63 +++++++-
- drivers/pwm/pwm-img.c                              | 160 ++++++++++++++++++---
- drivers/pwm/pwm-mediatek.c                         |  53 +++++--
- drivers/pwm/pwm-stm32-lp.c                         |   3 +-
- drivers/pwm/pwm-sun4i.c                            |   8 +-
- 6 files changed, 252 insertions(+), 36 deletions(-)
+Axel
