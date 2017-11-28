@@ -1,84 +1,193 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH RFT] pwm: stmpe: Fix wrong register offset for hwpwm=2
- case
-Date: Fri, 24 Nov 2017 11:42:44 +0100
-Message-ID: <20171124104244.GA3792@ulmo>
-References: <20171107051853.14492-1-axel.lin@ingics.com>
- <CACRpkda1G635V3kNXzVcnUStB8tjCdHupf3PcR_t2H5ZX0OftQ@mail.gmail.com>
- <CAFRkauBhALFxedJ-4nBXpjBF9Sd-NW9bQrgwtHUbYjQ3yZGTCw@mail.gmail.com>
+From: Sean Wang <sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v7 1/1] pwm: mediatek: add MT2712/MT7622 support
+Date: Tue, 28 Nov 2017 14:39:26 +0800
+Message-ID: <1511851166.28444.1.camel@mtkswgap22>
+References: <1508926261-25015-1-git-send-email-zhi.mao@mediatek.com>
+         <1510576744.12324.23.camel@mhfsdcap03>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="HcAYCG3uE/tztfnV"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f47.google.com ([74.125.82.47]:42746 "EHLO
-        mail-wm0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753100AbdKXKmr (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 24 Nov 2017 05:42:47 -0500
-Received: by mail-wm0-f47.google.com with SMTP id 124so4821249wmv.1
-        for <linux-pwm@vger.kernel.org>; Fri, 24 Nov 2017 02:42:47 -0800 (PST)
-Content-Disposition: inline
-In-Reply-To: <CAFRkauBhALFxedJ-4nBXpjBF9Sd-NW9bQrgwtHUbYjQ3yZGTCw@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1510576744.12324.23.camel@mhfsdcap03>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Zhi Mao <zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: john-Pj+rj9U5foFAfugRpC6u6w@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, claudiu.beznea-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, zhenbao.liu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Axel Lin <axel.lin@ingics.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+
+Hi, Zhi
+
+The patch have already got merged in 4.15 rc1 as
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=424268c7494c2ae24c95565b9047bbf30309e88a
 
 
---HcAYCG3uE/tztfnV
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+	Sean
 
-On Fri, Nov 24, 2017 at 05:10:14PM +0800, Axel Lin wrote:
-> 2017-11-09 16:45 GMT+08:00 Linus Walleij <linus.walleij@linaro.org>:
-> > On Tue, Nov 7, 2017 at 6:18 AM, Axel Lin <axel.lin@ingics.com> wrote:
-> >
-> >> Fix trivial copy/paste bug.
-> >>
-> >> Signed-off-by: Axel Lin <axel.lin@ingics.com>
-> >> ---
-> >> Hi Linus,
-> >> I don't have this h/w to test.
-> >> Appreciate if you can review and test this patch.
-> >
-> > Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
->=20
+On Mon, 2017-11-13 at 20:39 +0800, Zhi Mao wrote:
 > Hi Thierry,
-> Seems this one is still not apply. Should I resend?
+> 
+> Just have a ping for this patch.
+> 
+> Regards
+> Zhi
+> 
+> 
+> On Wed, 2017-10-25 at 18:11 +0800, Zhi Mao wrote:
+> > Add support to MT2712 and MT7622.
+> > Due to register offset address of pwm7 for MT2712 is not fixed 0x40,
+> > add mtk_pwm_reg_offset array for pwm register offset.
+> > 
+> > Reviewed-by: Claudiu Beznea <claudiu.beznea-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+> > Reviewed-by: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > Signed-off-by: Zhi Mao <zhi.mao-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> > ---
+> > changee in v7:
+> > - adjust the commit message
+> > 
+> > Changes in v6:
+> > - remove "struct mtk_pwm_platform_data" member from "mtk_pwm_chip". 
+> > 
+> > Changes in v5:
+> > - Add NULL pointer checking for "data"
+> > 
+> >  drivers/pwm/pwm-mediatek.c |   53 ++++++++++++++++++++++++++++++++++++--------
+> >  1 file changed, 44 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+> > index 1d78ab1..cdd4d31 100644
+> > --- a/drivers/pwm/pwm-mediatek.c
+> > +++ b/drivers/pwm/pwm-mediatek.c
+> > @@ -16,6 +16,7 @@
+> >  #include <linux/module.h>
+> >  #include <linux/clk.h>
+> >  #include <linux/of.h>
+> > +#include <linux/of_device.h>
+> >  #include <linux/platform_device.h>
+> >  #include <linux/pwm.h>
+> >  #include <linux/slab.h>
+> > @@ -40,11 +41,19 @@ enum {
+> >  	MTK_CLK_PWM3,
+> >  	MTK_CLK_PWM4,
+> >  	MTK_CLK_PWM5,
+> > +	MTK_CLK_PWM6,
+> > +	MTK_CLK_PWM7,
+> > +	MTK_CLK_PWM8,
+> >  	MTK_CLK_MAX,
+> >  };
+> >  
+> > -static const char * const mtk_pwm_clk_name[] = {
+> > -	"main", "top", "pwm1", "pwm2", "pwm3", "pwm4", "pwm5"
+> > +static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
+> > +	"main", "top", "pwm1", "pwm2", "pwm3", "pwm4", "pwm5", "pwm6", "pwm7",
+> > +	"pwm8"
+> > +};
+> > +
+> > +struct mtk_pwm_platform_data {
+> > +	unsigned int num_pwms;
+> >  };
+> >  
+> >  /**
+> > @@ -59,6 +68,10 @@ struct mtk_pwm_chip {
+> >  	struct clk *clks[MTK_CLK_MAX];
+> >  };
+> >  
+> > +static const unsigned int mtk_pwm_reg_offset[] = {
+> > +	0x0010, 0x0050, 0x0090, 0x00d0, 0x0110, 0x0150, 0x0190, 0x0220
+> > +};
+> > +
+> >  static inline struct mtk_pwm_chip *to_mtk_pwm_chip(struct pwm_chip *chip)
+> >  {
+> >  	return container_of(chip, struct mtk_pwm_chip, chip);
+> > @@ -103,14 +116,14 @@ static void mtk_pwm_clk_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+> >  static inline u32 mtk_pwm_readl(struct mtk_pwm_chip *chip, unsigned int num,
+> >  				unsigned int offset)
+> >  {
+> > -	return readl(chip->regs + 0x10 + (num * 0x40) + offset);
+> > +	return readl(chip->regs + mtk_pwm_reg_offset[num] + offset);
+> >  }
+> >  
+> >  static inline void mtk_pwm_writel(struct mtk_pwm_chip *chip,
+> >  				  unsigned int num, unsigned int offset,
+> >  				  u32 value)
+> >  {
+> > -	writel(value, chip->regs + 0x10 + (num * 0x40) + offset);
+> > +	writel(value, chip->regs + mtk_pwm_reg_offset[num] + offset);
+> >  }
+> >  
+> >  static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+> > @@ -185,6 +198,7 @@ static void mtk_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+> >  
+> >  static int mtk_pwm_probe(struct platform_device *pdev)
+> >  {
+> > +	const struct mtk_pwm_platform_data *data;
+> >  	struct mtk_pwm_chip *pc;
+> >  	struct resource *res;
+> >  	unsigned int i;
+> > @@ -194,15 +208,22 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+> >  	if (!pc)
+> >  		return -ENOMEM;
+> >  
+> > +	data = of_device_get_match_data(&pdev->dev);
+> > +	if (data == NULL)
+> > +		return -EINVAL;
+> > +
+> >  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> >  	pc->regs = devm_ioremap_resource(&pdev->dev, res);
+> >  	if (IS_ERR(pc->regs))
+> >  		return PTR_ERR(pc->regs);
+> >  
+> > -	for (i = 0; i < MTK_CLK_MAX; i++) {
+> > +	for (i = 0; i < data->num_pwms + 2; i++) {
+> >  		pc->clks[i] = devm_clk_get(&pdev->dev, mtk_pwm_clk_name[i]);
+> > -		if (IS_ERR(pc->clks[i]))
+> > +		if (IS_ERR(pc->clks[i])) {
+> > +			dev_err(&pdev->dev, "clock: %s fail: %ld\n",
+> > +				mtk_pwm_clk_name[i], PTR_ERR(pc->clks[i]));
+> >  			return PTR_ERR(pc->clks[i]);
+> > +		}
+> >  	}
+> >  
+> >  	platform_set_drvdata(pdev, pc);
+> > @@ -210,7 +231,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+> >  	pc->chip.dev = &pdev->dev;
+> >  	pc->chip.ops = &mtk_pwm_ops;
+> >  	pc->chip.base = -1;
+> > -	pc->chip.npwm = 5;
+> > +	pc->chip.npwm = data->num_pwms;
+> >  
+> >  	ret = pwmchip_add(&pc->chip);
+> >  	if (ret < 0) {
+> > @@ -228,9 +249,23 @@ static int mtk_pwm_remove(struct platform_device *pdev)
+> >  	return pwmchip_remove(&pc->chip);
+> >  }
+> >  
+> > +static const struct mtk_pwm_platform_data mt2712_pwm_data = {
+> > +	.num_pwms = 8,
+> > +};
+> > +
+> > +static const struct mtk_pwm_platform_data mt7622_pwm_data = {
+> > +	.num_pwms = 6,
+> > +};
+> > +
+> > +static const struct mtk_pwm_platform_data mt7623_pwm_data = {
+> > +	.num_pwms = 5,
+> > +};
+> > +
+> >  static const struct of_device_id mtk_pwm_of_match[] = {
+> > -	{ .compatible = "mediatek,mt7623-pwm" },
+> > -	{ }
+> > +	{ .compatible = "mediatek,mt2712-pwm", .data = &mt2712_pwm_data },
+> > +	{ .compatible = "mediatek,mt7622-pwm", .data = &mt7622_pwm_data },
+> > +	{ .compatible = "mediatek,mt7623-pwm", .data = &mt7623_pwm_data },
+> > +	{ },
+> >  };
+> >  MODULE_DEVICE_TABLE(of, mtk_pwm_of_match);
+> >  
+> 
+> 
 
-No need to resend, I can see it in patchwork. I'm not exactly sure what
-happened, but it looks like this may have just missed the cut-off point
-for v4.15-rc1. Is this a serious bug? Do you want it to go into v4.15?
-By the looks of it this has been wrong since forever (no changes since
-the original patch adding the driver), so I'm wondering if anybody has
-ever used this third PWM at all.
 
-I'm fine either way. If this is something that's creating problems, let
-me know and I'll queue it for v4.15-rc2. If so, you may want it to be
-backported to stable kernel, in which case:
-
-Fixes: ef1f09eca74a ("pwm: Add a driver for the STMPE PWM")
-
-Thierry
-
---HcAYCG3uE/tztfnV
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAloX96EACgkQ3SOs138+
-s6FYphAAm/8HS9GGogPgK4Ycx3neotP6lpgUH66GTkM2QjKS2PLvFL/rmnVg70uO
-3qYULhm7K/r7wbIhPUPjHW+LOE6nxq3fPe7mNLNMANDID1YQf3qOxHM5/n9QYiIL
-J7cN6YSc37KySi2w5uu8WXNJATOrV11dMLbXoe+j+/1GjPb0V26TGYzrUGkZOzPD
-xm/G7jAdMlC2atxNbEOyO1394eLtCXTwyEHWBlYFWYlsGXVqhIH4/93bZXfPjAwA
-v9ubYz2euW6qVLiT2I2c/c6KeOtWEb2jmQ13s1p0Xli3M9QuBp3SlB1PdpSHjhZJ
-ElLIk3VZ5jItsJ3W84aB2rpGgx0ZL1UTXItZXRGjzu8iPqnU+yj5PxebltNMZBWu
-QatOOWc7b2Sg46snbX7Rc/eMjQmr8HAJVV03ldloqsppGZx+w8DGz4mse5WeYtHg
-QtR48IR9DzWyulwn9lmAxShCCo3aMU/89Vrm2QagKaJ7iDDYcIMdO72qII0PqM9H
-dtc20WhWxIarSs+OfZtlB0PDQI72DTmogogrfkRD8qDEXOkmZL3yURLXErdc+FK9
-s54xOHLev3XDp+sDRcEZGa8vTyhy/ArLzrvS0Y5gYtvfpnMd42XiBD9oxfUolxtO
-3Sx89OcVd2Cvpb2uk1m19nb/1le5ORPGxenn9srq8DYSRrMm/cs=
-=np++
------END PGP SIGNATURE-----
-
---HcAYCG3uE/tztfnV--
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
