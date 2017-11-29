@@ -1,103 +1,156 @@
-From: Jerome Brunet <jbrunet@baylibre.com>
-Subject: Re: [PATCH] pwm: meson: fix harware duty calculation
-Date: Wed, 29 Nov 2017 08:34:31 +0100
-Message-ID: <1511940871.27425.4.camel@baylibre.com>
-References: <20171129030308.22036-1-yixun.lan@amlogic.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [RFC] Periodic Output, Timestamped Input
+Date: Wed, 29 Nov 2017 14:31:26 +0100
+Message-ID: <CACRpkdY+72nz9gK=kSESoNdM+xicx-rnpKNz-UbYZ+TFLUXpbA@mail.gmail.com>
+References: <87ineapo5w.fsf@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f196.google.com ([209.85.128.196]:33291 "EHLO
-        mail-wr0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752461AbdK2Heg (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 29 Nov 2017 02:34:36 -0500
-Received: by mail-wr0-f196.google.com with SMTP id v22so2473333wrb.0
-        for <linux-pwm@vger.kernel.org>; Tue, 28 Nov 2017 23:34:35 -0800 (PST)
-In-Reply-To: <20171129030308.22036-1-yixun.lan@amlogic.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <87ineapo5w.fsf@linux.intel.com>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Felipe Balbi <felipe.balbi@linux.intel.com>, linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Cc: linux-gpio@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Yixun Lan <yixun.lan@amlogic.com>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
-Cc: Neil Armstrong <narmstrong@baylibre.com>, Carlo Caione <carlo@caione.org>, Kevin Hilman <khilman@baylibre.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Jian Hu <jian.hu@amlogic.com>
 
-On Wed, 2017-11-29 at 11:03 +0800, Yixun Lan wrote:
-> From: Jian Hu <jian.hu@amlogic.com>
-> 
-> The actual HIGH/LOW signal output from the PWM is equal to
-> the value programed to HW register plus one, this is designed by HW.
-> 
-> This fix should apply to all Meson SoC(include GX/GXL/GXBB, Meson6,8)
-> 
-> Fixes: 211ed630753d ("pwm: Add support for Meson PWM Controller")
-> Signed-off-by: Jian Hu <jian.hu@amlogic.com>
-> Signed-off-by: Yixun Lan <yixun.lan@amlogic.com>
-> ---
->  drivers/pwm/pwm-meson.c | 19 ++++++++++++++-----
->  1 file changed, 14 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
-> index d589331d1884..78d9b8c1a4bc 100644
-> --- a/drivers/pwm/pwm-meson.c
-> +++ b/drivers/pwm/pwm-meson.c
-> @@ -193,6 +193,11 @@ static int meson_pwm_calc(struct meson_pwm *meson,
->  			break;
->  	}
->  
-> +	if (cnt < 2) {
-> +		dev_err(meson->chip.dev, "invalid period\n");
-> +		return -EINVAL;
-> +	}
+Hi Felipe,
+
+this is nice and interesting technology!
+
+I am quoting the whole mail over to linux-pwm and Thierry
+as well as  linux-iio and Jon Cameron for consideration. My comments
+at the end.
+
+On Thu, Nov 16, 2017 at 10:29 AM, Felipe Balbi
+<felipe.balbi@linux.intel.com> wrote:
+>
+> Hi Linus,
+>
+> Before I put a lot of code down, I wanted to get a feeling from you as
+> to how you'd like two new features to be implemented.
+>
+> In a future platform we may have two new features in our GPIO
+> controller which allows for periodic assertion of GPIO Output
+> (controlled by HW, we just program the interval) and Timestamping of
+> GPIO Input events.
+>
+> I was thinking that we could use pin config for that. Something along
+> the lines of:
+>
+> @@ -700,6 +700,12 @@ static int intel_config_set_debounce(struct intel_pinctrl *pctrl, unsigned pin,
+>         return ret;
+>  }
+>
+> +static int intel_config_set_output_periodic(struct intel_pinctrl *pctrl,
+> +                                           unsigned pin, unsigned period_ms)
+> +{
+> +       return 0;
+> +}
 > +
->  	if (pre_div == MISC_CLK_DIV_MASK) {
->  		dev_err(meson->chip.dev, "unable to get period pre_div\n");
->  		return -EINVAL;
-> @@ -201,19 +206,23 @@ static int meson_pwm_calc(struct meson_pwm *meson,
->  	dev_dbg(meson->chip.dev, "period=%u pre_div=%u cnt=%u\n", period,
->  		pre_div, cnt);
->  
-> +	/*
-> +	 * Due to the design of hardware, values of 'hi', 'lo' are 1 based
-> +	 * which mean the actual output from hardware is 'hi' + 1, 'lo' + 1
-> +	 */
->  	if (duty == period) {
->  		channel->pre_div = pre_div;
-> -		channel->hi = cnt;
-> +		channel->hi = cnt - 1;
->  		channel->lo = 0;
->  	} else if (duty == 0) {
->  		channel->pre_div = pre_div;
->  		channel->hi = 0;
-> -		channel->lo = cnt;
-> +		channel->lo = cnt - 1;
->  	} else {
->  		/* Then check is we can have the duty with the same pre_div
-> */
->  		duty_cnt = DIV_ROUND_CLOSEST_ULL((u64)duty * 1000,
->  						 fin_ps * (pre_div + 1));
-> -		if (duty_cnt > 0xffff) {
-> +		if (duty_cnt > 0xffff || !duty_cnt) {
+>  static int intel_config_set(struct pinctrl_dev *pctldev, unsigned pin,
+>                           unsigned long *configs, unsigned nconfigs)
+>  {
+> @@ -726,6 +732,13 @@ static int intel_config_set(struct pinctrl_dev *pctldev, unsigned pin,
+>                                 return ret;
+>                         break;
+>
+> +               case PIN_CONFIG_OUTPUT_PERIODIC:
+> +                       ret = intel_config_set_output_periodic(pctrl, pin,
+> +                               pinconf_to_config_argument(configs[i]));
+> +                       if (ret)
+> +                               return ret;
+> +                       break;
+> +
+>                 default:
+>                         return -ENOTSUPP;
+>                 }
+> modified   include/linux/pinctrl/pinconf-generic.h
+> @@ -90,6 +90,9 @@
+>   * @PIN_CONFIG_SLEW_RATE: if the pin can select slew rate, the argument to
+>   *     this parameter (on a custom format) tells the driver which alternative
+>   *     slew rate to use.
+> + * @PIN_CONFIG_OUTPUT_PERIODIC: this will configure the pin as an
+> + *     output periodic toggle. The argument is period in
+> + *     microseconds.
+>   * @PIN_CONFIG_END: this is the last enumerator for pin configurations, if
+>   *     you need to pass in custom configurations to the pin controller, use
+>   *     PIN_CONFIG_END+1 as the base offset.
+> @@ -117,6 +120,7 @@ enum pin_config_param {
+>         PIN_CONFIG_POWER_SOURCE,
+>         PIN_CONFIG_SLEEP_HARDWARE_STATE,
+>         PIN_CONFIG_SLEW_RATE,
+> +       PIN_CONFIG_OUTPUT_PERIODIC,
+>         PIN_CONFIG_END = 0x7F,
+>         PIN_CONFIG_MAX = 0xFF,
+>  };
+>
+> As for timestamp of input, we would likely request the input as an IRQ
+> and use the IRQ to read whatever register, wherever it may be.
+>
+> Do you have any comments about this? Should I go ahead with current
+> assumptions?
 
-duty_cnt = 0 is a valid value here. It will be the case for duty != 0 but low
-enough for the HW (calculation) to approximate the duty cycle to zero.
+So the first thing: periodic assetion of a GPIO, sounds awfully lot
+like PWM does it not? I guess the output is a square wave?
 
->  			dev_err(meson->chip.dev, "unable to get duty
-> cycle\n");
->  			return -EINVAL;
->  		}
-> @@ -222,8 +231,8 @@ static int meson_pwm_calc(struct meson_pwm *meson,
->  			duty, pre_div, duty_cnt);
->  
->  		channel->pre_div = pre_div;
-> -		channel->hi = duty_cnt;
-> -		channel->lo = cnt - duty_cnt;
-> +		channel->hi = duty_cnt - 1;
+While it is possible to model things like this as pin config, have you
+considered just adding a PWM interface and present it to the kernel
+as a PWM (possibly with a separate resource, in DT we use &phandle
+but in ACPI I guess you Intel people have something else for PWM)?
+If need be we can ask the ACPI people.
 
-As explained above, duty_cnt could be zero, you need to take care of this here
+For the other thing: timestamping of GPIO events, we already
+support timestamps for userspace GPIOs, but all it does is use
+the kernel time, see gpiolib.c:
 
-> +		channel->lo = cnt - duty_cnt - 1;
+static irqreturn_t lineevent_irq_thread(int irq, void *p)
+{
+        struct lineevent_state *le = p;
+        struct gpioevent_data ge;
+        int ret, level;
 
-Same here, it is possible duty_cnt to be egual to cnt so you also need to be
-careful here
+        ge.timestamp = ktime_get_real_ns();
+        level = gpiod_get_value_cansleep(le->desc);
 
->  	}
->  
->  	return 0;
+        if (le->eflags & GPIOEVENT_REQUEST_RISING_EDGE
+            && le->eflags & GPIOEVENT_REQUEST_FALLING_EDGE) {
+                if (level)
+                        /* Emit low-to-high event */
+                        ge.id = GPIOEVENT_EVENT_RISING_EDGE;
+                else
+                        /* Emit high-to-low event */
+                        ge.id = GPIOEVENT_EVENT_FALLING_EDGE;
+        } else if (le->eflags & GPIOEVENT_REQUEST_RISING_EDGE && level) {
+                /* Emit low-to-high event */
+                ge.id = GPIOEVENT_EVENT_RISING_EDGE;
+        } else if (le->eflags & GPIOEVENT_REQUEST_FALLING_EDGE && !level) {
+                /* Emit high-to-low event */
+                ge.id = GPIOEVENT_EVENT_FALLING_EDGE;
+        } else {
+                return IRQ_NONE;
+        }
+
+        ret = kfifo_put(&le->events, ge);
+        if (ret != 0)
+                wake_up_poll(&le->wait, POLLIN);
+
+        return IRQ_HANDLED;
+}
+
+IIO already has a variety of timestamps to use, see
+drivers/iio/industrialio-event.c.
+
+What is on my TODO is to unify GPIO event timestamping with that
+of IIO.
+
+If there is further a *hardware* timestamp, that would be yet another
+alternative timestamp, so we should first extend to use the different
+timestamps supported by IIO and then add "hardware-native"
+timestamping to the mix IMO. Unless there are other ideas.
+
+Lars-Peter Clausen may have a better idea of what to do here, he
+has run a few complex use cases like GNUradio (IIRC) using
+timestamping. Also I think sensorfusion-type scenarios use these
+timestamps quite a lot.
+
+Yours,
+Linus Walleij
