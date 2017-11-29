@@ -1,139 +1,86 @@
-From: Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: Re: [PATCH v3 8/9] pwm: pwm-omap-dmtimer: Adapt driver to utilize
- dmtimer pdata ops
-Date: Tue, 28 Nov 2017 12:27:28 -0600
-Message-ID: <2c5e3e04-9940-43c3-62b1-8cef7d22c5e1@ti.com>
-References: <1510806222-22096-1-git-send-email-j-keerthy@ti.com>
- <1510806222-22096-9-git-send-email-j-keerthy@ti.com>
+From: Yixun Lan <yixun.lan@amlogic.com>
+Subject: [PATCH] pwm: meson: fix harware duty calculation
+Date: Wed, 29 Nov 2017 11:03:08 +0800
+Message-ID: <20171129030308.22036-1-yixun.lan@amlogic.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from lelnx193.ext.ti.com ([198.47.27.77]:23917 "EHLO
-        lelnx193.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751796AbdK1S2f (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 28 Nov 2017 13:28:35 -0500
-In-Reply-To: <1510806222-22096-9-git-send-email-j-keerthy@ti.com>
-Content-Language: en-US
+Received: from mail-sh2.amlogic.com ([58.32.228.45]:46616 "EHLO
+        mail-sh2.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751254AbdK2DDZ (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 28 Nov 2017 22:03:25 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Keerthy <j-keerthy@ti.com>, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com
-Cc: linux@armlinux.org.uk, daniel.lezcano@linaro.org, robh+dt@kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, ladis@linux-mips.org
+To: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
+Cc: Neil Armstrong <narmstrong@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>, Carlo Caione <carlo@caione.org>, Kevin Hilman <khilman@baylibre.com>, Yixun Lan <yixun.lan@amlogic.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Jian Hu <jian.hu@amlogic.com>
 
+From: Jian Hu <jian.hu@amlogic.com>
 
+The actual HIGH/LOW signal output from the PWM is equal to
+the value programed to HW register plus one, this is designed by HW.
 
-On 11/15/2017 10:23 PM, Keerthy wrote:
-> Adapt driver to utilize dmtimer pdata ops instead of pdata-quirks.
-> 
-> Signed-off-by: Keerthy <j-keerthy@ti.com>
-> ---
-> 
-> Changes in v3:
-> 
->    * Used of_find_platdata_by_node function to fetch platform
->      data for timer node.
-> 
->   drivers/pwm/pwm-omap-dmtimer.c | 39 ++++++++++++++++++++++-----------------
->   1 file changed, 22 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
-> index 5ad42f3..2caf46b 100644
-> --- a/drivers/pwm/pwm-omap-dmtimer.c
-> +++ b/drivers/pwm/pwm-omap-dmtimer.c
-> @@ -23,6 +23,7 @@
->   #include <linux/mutex.h>
->   #include <linux/of.h>
->   #include <linux/of_platform.h>
-> +#include <linux/platform_data/dmtimer-omap.h>
->   #include <linux/platform_data/pwm_omap_dmtimer.h>
->   #include <linux/platform_device.h>
->   #include <linux/pm_runtime.h>
-> @@ -37,7 +38,7 @@ struct pwm_omap_dmtimer_chip {
->   	struct pwm_chip chip;
->   	struct mutex mutex;
->   	pwm_omap_dmtimer *dm_timer;
-> -	struct pwm_omap_dmtimer_pdata *pdata;
-> +	struct omap_dm_timer_ops *pdata;
->   	struct platform_device *dm_timer_pdev;
->   };
->   
-> @@ -242,19 +243,33 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
->   {
->   	struct device_node *np = pdev->dev.of_node;
->   	struct device_node *timer;
-> +	struct platform_device *timer_pdev;
->   	struct pwm_omap_dmtimer_chip *omap;
-> -	struct pwm_omap_dmtimer_pdata *pdata;
-> +	struct dmtimer_platform_data *timer_pdata;
-> +	struct omap_dm_timer_ops *pdata;
->   	pwm_omap_dmtimer *dm_timer;
->   	u32 v;
->   	int status;
->   
-> -	pdata = dev_get_platdata(&pdev->dev);
-> -	if (!pdata) {
-> -		dev_err(&pdev->dev, "Missing dmtimer platform data\n");
-> +	timer = of_parse_phandle(np, "ti,timers", 0);
-> +	if (!timer)
-> +		return -ENODEV;
-> +
-> +	timer_pdev = of_find_device_by_node(timer);
-> +	if (!timer_pdev) {
-> +		dev_err(&pdev->dev, "Unable to find Timer pdev\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	timer_pdata = of_find_platdata_by_node(timer);
-> +	if (!timer_pdata) {
-> +		dev_err(&pdev->dev, "dmtimer pdata structure NULL\n");
->   		return -EINVAL;
->   	}
+This fix should apply to all Meson SoC(include GX/GXL/GXBB, Meson6,8)
 
-Huh. I think It might be better if you add smth. like
+Fixes: 211ed630753d ("pwm: Add support for Meson PWM Controller")
+Signed-off-by: Jian Hu <jian.hu@amlogic.com>
+Signed-off-by: Yixun Lan <yixun.lan@amlogic.com>
+---
+ drivers/pwm/pwm-meson.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
-struct omap_dm_timer *dm_timer = of_omap_dm_timer_get(parent_np, "ti,timers", idx);
-
-struct omap_dm_timer_ops *pdata = omap_dm_timer_get_ops(dm_timer);
-
-so all DT and platdata implementation details will be hidden.
-
-
->   
-> -	if (!pdata->request_by_node ||
-> +	pdata = timer_pdata->timer_ops;
-> +
-> +	if (!pdata || !pdata->request_by_node ||
->   	    !pdata->free ||
->   	    !pdata->enable ||
->   	    !pdata->disable ||
-> @@ -270,10 +285,6 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
->   		return -EINVAL;
->   	}
->   
-> -	timer = of_parse_phandle(np, "ti,timers", 0);
-> -	if (!timer)
-> -		return -ENODEV;
-> -
->   	if (!of_get_property(timer, "ti,timer-pwm", NULL)) {
->   		dev_err(&pdev->dev, "Missing ti,timer-pwm capability\n");
->   		return -ENODEV;
-> @@ -291,13 +302,7 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
->   
->   	omap->pdata = pdata;
->   	omap->dm_timer = dm_timer;
-> -
-> -	omap->dm_timer_pdev = of_find_device_by_node(timer);
-> -	if (!omap->dm_timer_pdev) {
-> -		dev_err(&pdev->dev, "Unable to find timer pdev\n");
-> -		omap->pdata->free(dm_timer);
-> -		return -EINVAL;
-> -	}
-> +	omap->dm_timer_pdev = timer_pdev;
->   
->   	/*
->   	 * Ensure that the timer is stopped before we allow PWM core to call
-> 
-
+diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+index d589331d1884..78d9b8c1a4bc 100644
+--- a/drivers/pwm/pwm-meson.c
++++ b/drivers/pwm/pwm-meson.c
+@@ -193,6 +193,11 @@ static int meson_pwm_calc(struct meson_pwm *meson,
+ 			break;
+ 	}
+ 
++	if (cnt < 2) {
++		dev_err(meson->chip.dev, "invalid period\n");
++		return -EINVAL;
++	}
++
+ 	if (pre_div == MISC_CLK_DIV_MASK) {
+ 		dev_err(meson->chip.dev, "unable to get period pre_div\n");
+ 		return -EINVAL;
+@@ -201,19 +206,23 @@ static int meson_pwm_calc(struct meson_pwm *meson,
+ 	dev_dbg(meson->chip.dev, "period=%u pre_div=%u cnt=%u\n", period,
+ 		pre_div, cnt);
+ 
++	/*
++	 * Due to the design of hardware, values of 'hi', 'lo' are 1 based
++	 * which mean the actual output from hardware is 'hi' + 1, 'lo' + 1
++	 */
+ 	if (duty == period) {
+ 		channel->pre_div = pre_div;
+-		channel->hi = cnt;
++		channel->hi = cnt - 1;
+ 		channel->lo = 0;
+ 	} else if (duty == 0) {
+ 		channel->pre_div = pre_div;
+ 		channel->hi = 0;
+-		channel->lo = cnt;
++		channel->lo = cnt - 1;
+ 	} else {
+ 		/* Then check is we can have the duty with the same pre_div */
+ 		duty_cnt = DIV_ROUND_CLOSEST_ULL((u64)duty * 1000,
+ 						 fin_ps * (pre_div + 1));
+-		if (duty_cnt > 0xffff) {
++		if (duty_cnt > 0xffff || !duty_cnt) {
+ 			dev_err(meson->chip.dev, "unable to get duty cycle\n");
+ 			return -EINVAL;
+ 		}
+@@ -222,8 +231,8 @@ static int meson_pwm_calc(struct meson_pwm *meson,
+ 			duty, pre_div, duty_cnt);
+ 
+ 		channel->pre_div = pre_div;
+-		channel->hi = duty_cnt;
+-		channel->lo = cnt - duty_cnt;
++		channel->hi = duty_cnt - 1;
++		channel->lo = cnt - duty_cnt - 1;
+ 	}
+ 
+ 	return 0;
 -- 
-regards,
--grygorii
+2.15.0
