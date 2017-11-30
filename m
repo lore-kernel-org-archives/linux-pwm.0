@@ -1,52 +1,164 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [RFC] Periodic Output, Timestamped Input
-Date: Wed, 29 Nov 2017 23:54:32 +0100
-Message-ID: <CACRpkdabNMHgs_ywzrgSg-AgQL1wtQN8SaxuZtCruiXnfrXGQw@mail.gmail.com>
-References: <87ineapo5w.fsf@linux.intel.com> <CACRpkdY+72nz9gK=kSESoNdM+xicx-rnpKNz-UbYZ+TFLUXpbA@mail.gmail.com>
- <87shcxw5n3.fsf@linux.intel.com>
+From: Keerthy <j-keerthy@ti.com>
+Subject: Re: [PATCH v3 8/9] pwm: pwm-omap-dmtimer: Adapt driver to utilize
+ dmtimer pdata ops
+Date: Thu, 30 Nov 2017 15:06:27 +0530
+Message-ID: <e632a727-1067-7767-1646-f49ec0f8c2ec@ti.com>
+References: <1510806222-22096-1-git-send-email-j-keerthy@ti.com>
+ <1510806222-22096-9-git-send-email-j-keerthy@ti.com>
+ <2c5e3e04-9940-43c3-62b1-8cef7d22c5e1@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <87shcxw5n3.fsf@linux.intel.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Felipe Balbi <felipe.balbi@linux.intel.com>, =?UTF-8?Q?Bartosz_Go=C5=82aszewski?= <bartekgola@gmail.com>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, linux-gpio@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from lelnx194.ext.ti.com ([198.47.27.80]:47218 "EHLO
+        lelnx194.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750760AbdK3Jh3 (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 30 Nov 2017 04:37:29 -0500
+In-Reply-To: <2c5e3e04-9940-43c3-62b1-8cef7d22c5e1@ti.com>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: "Strashko, Grygorii" <grygorii.strashko@ti.com>, "tony@atomide.com" <tony@atomide.com>, "aaro.koskinen@iki.fi" <aaro.koskinen@iki.fi>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>
+Cc: "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "sebastian.reichel@collabora.co.uk" <sebastian.reichel@collabora.co.uk>, "ladis@linux-mips.org" <ladis@linux-mips.org>
 
-On Wed, Nov 29, 2017 at 2:56 PM, Felipe Balbi
-<felipe.balbi@linux.intel.com> wrote:
-> Me:
->> For the other thing: timestamping of GPIO events, we already
->> support timestamps for userspace GPIOs, but all it does is use
->> the kernel time, see gpiolib.c:
+
+
+On Tuesday 28 November 2017 11:57 PM, Strashko, Grygorii wrote:
+> 
+> 
+> On 11/15/2017 10:23 PM, Keerthy wrote:
+>> Adapt driver to utilize dmtimer pdata ops instead of pdata-quirks.
 >>
->> static irqreturn_t lineevent_irq_thread(int irq, void *p)
->> {
->>         struct lineevent_state *le = p;
->>         struct gpioevent_data ge;
->>         int ret, level;
+>> Signed-off-by: Keerthy <j-keerthy@ti.com>
+>> ---
 >>
->>         ge.timestamp = ktime_get_real_ns();
->>         level = gpiod_get_value_cansleep(le->desc);
->
-> this is running as a thread with interrupts enabled, AFAICT. This means
-> this thread can be preempted at least on PREEMPT_RT kernels, so your
-> timestamp can be wrong, right?
+>> Changes in v3:
+>>
+>>    * Used of_find_platdata_by_node function to fetch platform
+>>      data for timer node.
+>>
+>>   drivers/pwm/pwm-omap-dmtimer.c | 39 ++++++++++++++++++++++-----------------
+>>   1 file changed, 22 insertions(+), 17 deletions(-)
+>>
+>> diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
+>> index 5ad42f3..2caf46b 100644
+>> --- a/drivers/pwm/pwm-omap-dmtimer.c
+>> +++ b/drivers/pwm/pwm-omap-dmtimer.c
+>> @@ -23,6 +23,7 @@
+>>   #include <linux/mutex.h>
+>>   #include <linux/of.h>
+>>   #include <linux/of_platform.h>
+>> +#include <linux/platform_data/dmtimer-omap.h>
+>>   #include <linux/platform_data/pwm_omap_dmtimer.h>
+>>   #include <linux/platform_device.h>
+>>   #include <linux/pm_runtime.h>
+>> @@ -37,7 +38,7 @@ struct pwm_omap_dmtimer_chip {
+>>   	struct pwm_chip chip;
+>>   	struct mutex mutex;
+>>   	pwm_omap_dmtimer *dm_timer;
+>> -	struct pwm_omap_dmtimer_pdata *pdata;
+>> +	struct omap_dm_timer_ops *pdata;
+>>   	struct platform_device *dm_timer_pdev;
+>>   };
+>>   
+>> @@ -242,19 +243,33 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+>>   {
+>>   	struct device_node *np = pdev->dev.of_node;
+>>   	struct device_node *timer;
+>> +	struct platform_device *timer_pdev;
+>>   	struct pwm_omap_dmtimer_chip *omap;
+>> -	struct pwm_omap_dmtimer_pdata *pdata;
+>> +	struct dmtimer_platform_data *timer_pdata;
+>> +	struct omap_dm_timer_ops *pdata;
+>>   	pwm_omap_dmtimer *dm_timer;
+>>   	u32 v;
+>>   	int status;
+>>   
+>> -	pdata = dev_get_platdata(&pdev->dev);
+>> -	if (!pdata) {
+>> -		dev_err(&pdev->dev, "Missing dmtimer platform data\n");
+>> +	timer = of_parse_phandle(np, "ti,timers", 0);
+>> +	if (!timer)
+>> +		return -ENODEV;
+>> +
+>> +	timer_pdev = of_find_device_by_node(timer);
+>> +	if (!timer_pdev) {
+>> +		dev_err(&pdev->dev, "Unable to find Timer pdev\n");
+>> +		return -ENODEV;
+>> +	}
+>> +
+>> +	timer_pdata = of_find_platdata_by_node(timer);
+>> +	if (!timer_pdata) {
+>> +		dev_err(&pdev->dev, "dmtimer pdata structure NULL\n");
+>>   		return -EINVAL;
+>>   	}
+> 
+> Huh. I think It might be better if you add smth. like
+> 
+> struct omap_dm_timer *dm_timer = of_omap_dm_timer_get(parent_np, "ti,timers", idx);
+> 
+> struct omap_dm_timer_ops *pdata = omap_dm_timer_get_ops(dm_timer);
+> 
+> so all DT and platdata implementation details will be hidden.
 
-Yes, it can be off. What we should do to get i better is
-something like what I did in:
-drivers/iio/gyro/mpu3050-core.c
+Grygorii,
 
-Here I have both a hard and a soft IRQ handler (fast/slow if
-you like) and take the timestamp in the hard IRQ, then use
-it in the thread.
+This driver is already fetching:
 
-This should be done identically in gpiolib to increase precision
-in the general case.
+omap->dm_timer_pdev = of_find_device_by_node(timer);
 
-I was thinking about it already when implementing it but it fell
-out of my mind. I'm putting in on my TODO. (CC to bartosz
-who might be interested, he's using these ABIs quite a bit.)
+It stores dm_timer_pdev in struct pwm_omap_dmtimer_chip.
+So we already need:
+timer = of_parse_phandle(np, "ti,timers", 0);
+and
+omap->dm_timer_pdev = of_find_device_by_node(timer);
 
-Yours,
-Linus Walleij
+So why not just do:
+
+struct omap_dm_timer_ops *pdata =
+omap_dm_timer_get_ops(omap->dm_timer_pdev);
+
+Regards,
+Keerthy
+
+> 
+> 
+>>   
+>> -	if (!pdata->request_by_node ||
+>> +	pdata = timer_pdata->timer_ops;
+>> +
+>> +	if (!pdata || !pdata->request_by_node ||
+>>   	    !pdata->free ||
+>>   	    !pdata->enable ||
+>>   	    !pdata->disable ||
+>> @@ -270,10 +285,6 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+>>   		return -EINVAL;
+>>   	}
+>>   
+>> -	timer = of_parse_phandle(np, "ti,timers", 0);
+>> -	if (!timer)
+>> -		return -ENODEV;
+>> -
+>>   	if (!of_get_property(timer, "ti,timer-pwm", NULL)) {
+>>   		dev_err(&pdev->dev, "Missing ti,timer-pwm capability\n");
+>>   		return -ENODEV;
+>> @@ -291,13 +302,7 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+>>   
+>>   	omap->pdata = pdata;
+>>   	omap->dm_timer = dm_timer;
+>> -
+>> -	omap->dm_timer_pdev = of_find_device_by_node(timer);
+>> -	if (!omap->dm_timer_pdev) {
+>> -		dev_err(&pdev->dev, "Unable to find timer pdev\n");
+>> -		omap->pdata->free(dm_timer);
+>> -		return -EINVAL;
+>> -	}
+>> +	omap->dm_timer_pdev = timer_pdev;
+
+Here we need timer_pdev anyways.
+
+>>   
+>>   	/*
+>>   	 * Ensure that the timer is stopped before we allow PWM core to call
+>>
+> 
