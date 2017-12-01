@@ -1,66 +1,80 @@
-From: Enric Balletbo Serra <eballetbo@gmail.com>
-Subject: Re: [PATCH v4 3/5] pwm-backlight: add support for PWM delays proprieties.
-Date: Fri, 1 Dec 2017 11:56:52 +0100
-Message-ID: <CAFqH_53tr9JaSj=tLSoBYM9thDOJz4vvLy8_eddFKKn1ZHtdzw@mail.gmail.com>
-References: <20170721104813.5389-1-enric.balletbo@collabora.com>
- <20170721104813.5389-3-enric.balletbo@collabora.com> <0e2d4f9b-0f27-3793-0c27-2a2df5c32cf0@linaro.org>
- <000001d30630$e2a3d160$a7eb7420$@gmail.com> <CAFqH_52odQdYqSZsCYAydQ5vUudZor7gO+Ro3ccVJb6t+e5KhA@mail.gmail.com>
- <20171201105425.bdkusyij5sstka23@dell>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Subject: [PATCH v5 1/5] pwm-backlight: enable/disable the PWM before/after LCD enable toggle.
+Date: Fri,  1 Dec 2017 13:06:47 +0100
+Message-ID: <20171201120651.29633-1-enric.balletbo@collabora.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qk0-f196.google.com ([209.85.220.196]:33605 "EHLO
-        mail-qk0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751615AbdLAK4x (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 1 Dec 2017 05:56:53 -0500
-In-Reply-To: <20171201105425.bdkusyij5sstka23@dell>
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:39114 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752453AbdLAMHC (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 1 Dec 2017 07:07:02 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: Jingoo Han <jingoohan1@gmail.com>, Daniel Thompson <daniel.thompson@linaro.org>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Linux PWM List <linux-pwm@vger.kernel.org>, linux-fbdev@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>, Guenter Roeck <groeck@chromium.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
+To: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>, Heiko Stuebner <heiko@sntech.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org
 
-Hi,
+Before this patch the enable signal was set before the PWM signal and
+vice-versa on power off. This sequence is wrong, at least, it is on
+the different panels datasheets that I checked, so I inverted the sequence
+to follow the specs.
 
-2017-12-01 11:54 GMT+01:00 Lee Jones <lee.jones@linaro.org>:
-> On Fri, 01 Dec 2017, Enric Balletbo Serra wrote:
->> 2017-07-26 19:01 GMT+02:00 Jingoo Han <jingoohan1@gmail.com>:
->> > On Monday, July 24, 2017 11:22 AM, Daniel Thompson wrote:
->> >> On 21/07/17 11:48, Enric Balletbo i Serra wrote:
->> >> > Some panels (i.e. N116BGE-L41), in their power sequence specificati=
-ons,
->> >> > request a delay between set the PWM signal and enable the backlight=
- and
->> >> > between clear the PWM signal and disable the backlight. Add support=
- for
->> >> > the new post-pwm-on-delay-ms and pwm-off-delay-ms proprieties to me=
-et
->> >> > the timings.
->> >> >
->> >> > Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com=
->
->> >>
->> >> Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
->> >
->> > Acked-by: Jingoo Han <jingoohan1@gmail.com>
->> >
->>
->> A lot of time has passed since these patches received the acks but I'm
->> still without seeing the patches in linux-next. There is some action I
->> need to do ? (rebase?). I'd really like to see those to land in next
->> merge window if all is ok.
->
-> Looks like you are still missing Acks on some of the patches and have
-> questions outstanding.
->
-> Best thing to do is rebase and resubmit with all of the Acks you've
-> collected applied.
->
+For reference the following panels have the mentioned sequence:
+  - N133HSE-EA1 (Innolux)
+  - N116BGE (Innolux)
+  - N156BGE-L21 (Innolux)
+  - B101EAN0 (Auo)
+  - B101AW03 (Auo)
+  - LTN101NT05 (Samsung)
+  - CLAA101WA01A (Chunghwa)
 
-Thanks will do that then.
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+Acked-by: Jingoo Han <jingoohan1@gmail.com>
+---
+Changes since v4:
+ - Rebase on top of mainline.
+ - Add the acks from Daniel Thompson and Jingoo Han.
+Changes since v3:
+ - List the part numbers for the panel checked (Daniel Thompson)
+Changes since v2:
+ - Add this as a separate patch (Thierry Reding)
+Changes since v1:
+ - None
 
-> --
-> Lee Jones
-> Linaro STMicroelectronics Landing Team Lead
-> Linaro.org =E2=94=82 Open source software for ARM SoCs
-> Follow Linaro: Facebook | Twitter | Blog
+ drivers/video/backlight/pwm_bl.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 1c2289d..698ec68 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -54,10 +54,11 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
+ 	if (err < 0)
+ 		dev_err(pb->dev, "failed to enable power supply\n");
+ 
++	pwm_enable(pb->pwm);
++
+ 	if (pb->enable_gpio)
+ 		gpiod_set_value_cansleep(pb->enable_gpio, 1);
+ 
+-	pwm_enable(pb->pwm);
+ 	pb->enabled = true;
+ }
+ 
+@@ -66,12 +67,12 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
+ 	if (!pb->enabled)
+ 		return;
+ 
+-	pwm_config(pb->pwm, 0, pb->period);
+-	pwm_disable(pb->pwm);
+-
+ 	if (pb->enable_gpio)
+ 		gpiod_set_value_cansleep(pb->enable_gpio, 0);
+ 
++	pwm_config(pb->pwm, 0, pb->period);
++	pwm_disable(pb->pwm);
++
+ 	regulator_disable(pb->power_supply);
+ 	pb->enabled = false;
+ }
+-- 
+2.9.3
