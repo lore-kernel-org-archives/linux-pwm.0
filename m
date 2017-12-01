@@ -1,80 +1,55 @@
 From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: [PATCH v5 1/5] pwm-backlight: enable/disable the PWM before/after LCD enable toggle.
-Date: Fri,  1 Dec 2017 13:06:47 +0100
-Message-ID: <20171201120651.29633-1-enric.balletbo@collabora.com>
+Subject: [PATCH v5 5/5] ARM: dts: rockchip: set PWM delay backlight settings for Minnie
+Date: Fri,  1 Dec 2017 13:06:51 +0100
+Message-ID: <20171201120651.29633-5-enric.balletbo@collabora.com>
+References: <20171201120651.29633-1-enric.balletbo@collabora.com>
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:39114 "EHLO
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:39152 "EHLO
         bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752453AbdLAMHC (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 1 Dec 2017 07:07:02 -0500
+        with ESMTP id S1752492AbdLAMHG (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 1 Dec 2017 07:07:06 -0500
+In-Reply-To: <20171201120651.29633-1-enric.balletbo@collabora.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>, Heiko Stuebner <heiko@sntech.de>
 Cc: Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org
 
-Before this patch the enable signal was set before the PWM signal and
-vice-versa on power off. This sequence is wrong, at least, it is on
-the different panels datasheets that I checked, so I inverted the sequence
-to follow the specs.
-
-For reference the following panels have the mentioned sequence:
-  - N133HSE-EA1 (Innolux)
-  - N116BGE (Innolux)
-  - N156BGE-L21 (Innolux)
-  - B101EAN0 (Auo)
-  - B101AW03 (Auo)
-  - LTN101NT05 (Samsung)
-  - CLAA101WA01A (Chunghwa)
+The minnie devices comes with an AUO B101EAN01 panel which is different
+from default veyron devices, thus the power on/off timing sequence is
+slightly different. The datasheet specifies a pwm delay of 200 ms, so
+update the PMW delay proprieties accordingly.
 
 Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
-Acked-by: Jingoo Han <jingoohan1@gmail.com>
 ---
+Heiko,
+ I'm not able to test this patch in a minnie device because I don't have
+one, so could you do a quick try, please?
+
 Changes since v4:
  - Rebase on top of mainline.
- - Add the acks from Daniel Thompson and Jingoo Han.
 Changes since v3:
- - List the part numbers for the panel checked (Daniel Thompson)
+ - Use new -ms names for proprieties.
+ - Fix the delay, should be 200ms instead of 20ms (Pavel)
 Changes since v2:
- - Add this as a separate patch (Thierry Reding)
+ - Use new names for proprieties.
 Changes since v1:
- - None
+ - Add this new patch as minnie has differents timings
 
- drivers/video/backlight/pwm_bl.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/rk3288-veyron-minnie.dts | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 1c2289d..698ec68 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -54,10 +54,11 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
- 	if (err < 0)
- 		dev_err(pb->dev, "failed to enable power supply\n");
+diff --git a/arch/arm/boot/dts/rk3288-veyron-minnie.dts b/arch/arm/boot/dts/rk3288-veyron-minnie.dts
+index 544de60..4c5307e6 100644
+--- a/arch/arm/boot/dts/rk3288-veyron-minnie.dts
++++ b/arch/arm/boot/dts/rk3288-veyron-minnie.dts
+@@ -123,6 +123,8 @@
+ 			240 241 242 243 244 245 246 247
+ 			248 249 250 251 252 253 254 255>;
+ 	power-supply = <&backlight_regulator>;
++	post-pwm-on-delay-ms = <200>;
++	pwm-off-delay-ms = <200>;
+ };
  
-+	pwm_enable(pb->pwm);
-+
- 	if (pb->enable_gpio)
- 		gpiod_set_value_cansleep(pb->enable_gpio, 1);
- 
--	pwm_enable(pb->pwm);
- 	pb->enabled = true;
- }
- 
-@@ -66,12 +67,12 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
- 	if (!pb->enabled)
- 		return;
- 
--	pwm_config(pb->pwm, 0, pb->period);
--	pwm_disable(pb->pwm);
--
- 	if (pb->enable_gpio)
- 		gpiod_set_value_cansleep(pb->enable_gpio, 0);
- 
-+	pwm_config(pb->pwm, 0, pb->period);
-+	pwm_disable(pb->pwm);
-+
- 	regulator_disable(pb->power_supply);
- 	pb->enabled = false;
- }
+ &emmc {
 -- 
 2.9.3
