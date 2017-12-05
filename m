@@ -1,172 +1,154 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] drivers: pwm: pwm-atmel: implement suspend/resume
- functions
-Date: Tue, 5 Dec 2017 10:06:28 +0100
-Message-ID: <20171205090628.GA28700@ulmo>
-References: <1491834020-3194-1-git-send-email-claudiu.beznea@microchip.com>
- <20170410163558.494cf9be@bbrezillon>
- <ba255c5b-ff6e-a6fd-0546-9dde04026f4c@microchip.com>
- <20170411105605.5ea65f75@bbrezillon>
- <012f1ab5-0de4-a392-7b43-41077bf251a5@microchip.com>
- <20170411115311.70a7239b@bbrezillon>
+From: Felipe Balbi <felipe.balbi@linux.intel.com>
+Subject: Re: [RFC] Periodic Output, Timestamped Input
+Date: Tue, 05 Dec 2017 11:20:59 +0200
+Message-ID: <87609ltts4.fsf@linux.intel.com>
+References: <87ineapo5w.fsf@linux.intel.com> <CACRpkdY+72nz9gK=kSESoNdM+xicx-rnpKNz-UbYZ+TFLUXpbA@mail.gmail.com> <87shcxw5n3.fsf@linux.intel.com> <CACRpkdabNMHgs_ywzrgSg-AgQL1wtQN8SaxuZtCruiXnfrXGQw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="gKMricLos+KVdGMg"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170411115311.70a7239b@bbrezillon>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>
-Cc: m18063 <Claudiu.Beznea@microchip.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, alexandre.belloni@free-electrons.com, nicolas.ferre@microchip.com
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mga11.intel.com ([192.55.52.93]:2283 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752920AbdLEJVm (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 5 Dec 2017 04:21:42 -0500
+In-Reply-To: <CACRpkdabNMHgs_ywzrgSg-AgQL1wtQN8SaxuZtCruiXnfrXGQw@mail.gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>, Bartosz =?utf-8?Q?Go=C5=82as?= =?utf-8?Q?zewski?= <bartekgola@gmail.com>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, linux-gpio@vger.kernel.org
 
-
---gKMricLos+KVdGMg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--=-=-=
+Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Apr 11, 2017 at 11:53:11AM +0200, Boris Brezillon wrote:
-> On Tue, 11 Apr 2017 12:41:59 +0300
-> m18063 <Claudiu.Beznea@microchip.com> wrote:
->=20
-> > On 11.04.2017 11:56, Boris Brezillon wrote:
-> > > On Tue, 11 Apr 2017 11:22:39 +0300
-> > > m18063 <Claudiu.Beznea@microchip.com> wrote:
-> > >  =20
-> > >> Hi Boris,
-> > >>
-> > >> On 10.04.2017 17:35, Boris Brezillon wrote: =20
-> > >>> On Mon, 10 Apr 2017 17:20:20 +0300
-> > >>> Claudiu Beznea <claudiu.beznea@microchip.com> wrote:
-> > >>>    =20
-> > >>>> Implement suspend and resume power management specific
-> > >>>> function to allow PWM controller to correctly suspend
-> > >>>> and resume.
-> > >>>>
-> > >>>> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> > >>>> ---
-> > >>>>  drivers/pwm/pwm-atmel.c | 81 ++++++++++++++++++++++++++++++++++++=
-+++++++++++++
-> > >>>>  1 file changed, 81 insertions(+)
-> > >>>>
-> > >>>> diff --git a/drivers/pwm/pwm-atmel.c b/drivers/pwm/pwm-atmel.c
-> > >>>> index 530d7dc..75177c6 100644
-> > >>>> --- a/drivers/pwm/pwm-atmel.c
-> > >>>> +++ b/drivers/pwm/pwm-atmel.c
-> > >>>> @@ -58,6 +58,8 @@
-> > >>>>  #define PWM_MAX_PRD		0xFFFF
-> > >>>>  #define PRD_MAX_PRES		10
-> > >>>> =20
-> > >>>> +#define PWM_MAX_CH_NUM		(4)
-> > >>>> +
-> > >>>>  struct atmel_pwm_registers {
-> > >>>>  	u8 period;
-> > >>>>  	u8 period_upd;
-> > >>>> @@ -65,11 +67,18 @@ struct atmel_pwm_registers {
-> > >>>>  	u8 duty_upd;
-> > >>>>  };
-> > >>>> =20
-> > >>>> +struct atmel_pwm_pm_ctx {
-> > >>>> +	u32 cmr;
-> > >>>> +	u32 cdty;
-> > >>>> +	u32 cprd;
-> > >>>> +};
-> > >>>> +
-> > >>>>  struct atmel_pwm_chip {
-> > >>>>  	struct pwm_chip chip;
-> > >>>>  	struct clk *clk;
-> > >>>>  	void __iomem *base;
-> > >>>>  	const struct atmel_pwm_registers *regs;
-> > >>>> +	struct atmel_pwm_pm_ctx ctx[PWM_MAX_CH_NUM];   =20
-> > >>>
-> > >>> Hm, I'm pretty sure you can rely on the current PWM state and call
-> > >>> atmel_pwm_apply() at resume time instead of doing that. See what I =
-did
-> > >>> here [1].   =20
-> > >>
-> > >> I agree with the approach you propose but the thing is the atmel_pwm=
-_apply()
-> > >> take care of both, current PWM state and the new state received as a=
-rgument
-> > >> in order to change only duty factor without disabling the PWM channe=
-l (if
-> > >> channel is enabled) and then returns. Changing PWM duty and period a=
-nd polarity
-> > >> in the same step without disabling + enabling the PWM channel (with =
-atomic
-> > >> approach) may lead to intermediary unwanted output waveforms (the IP=
- doesn't
-> > >> support this for ordinary PWM channels). To take advantage of atmel_=
-pwm_apply()
-> > >> (in the formit is today) in resume() hook might need to first call i=
-t to disable
-> > >> channel and then to enable it. Or atmel_pwm_apply() should be change=
-d to also
-> > >> disable + enable the channel when user changes the duty factor at ru=
-ntime. =20
-> > >=20
-> > > Nope. Just save the state at suspend time, implement ->get_state() and
-> > > use it to retrieve the real PWM state when resuming before restoring
-> > > the state you saved during suspend. =20
-> > Ok.
-> > > But anyway, as Thierry explained, I'm not sure we should take the
-> > > 're-apply PWM state' action here. It's probably better to leave this
-> > > decision to the PWM user.  =20
-> > Do you thinks we should proceed with restoring the registers behind
-> > the re-apply as other drivers does at this moment?
->=20
-> Nope. IMO we'd better start patching PWM users to restore the states
-> rather than supporting suspend/resume in all PWM drivers.
->=20
-> Thierry, what's your opinion?
 
-I just noticed this thread while cleaning up patchwork. I think I had
-already mentioned in an earlier reply that in my opinion we should leave
-PWM suspend/resume to users.
+Hi,
 
-I'm totally fine if we add helpers to the PWM core to help with that
-task. Maybe something like this would work:
+Linus Walleij <linus.walleij@linaro.org> writes:
+> On Wed, Nov 29, 2017 at 2:56 PM, Felipe Balbi
+> <felipe.balbi@linux.intel.com> wrote:
+>> Me:
+>>> For the other thing: timestamping of GPIO events, we already
+>>> support timestamps for userspace GPIOs, but all it does is use
+>>> the kernel time, see gpiolib.c:
+>>>
+>>> static irqreturn_t lineevent_irq_thread(int irq, void *p)
+>>> {
+>>>         struct lineevent_state *le =3D p;
+>>>         struct gpioevent_data ge;
+>>>         int ret, level;
+>>>
+>>>         ge.timestamp =3D ktime_get_real_ns();
+>>>         level =3D gpiod_get_value_cansleep(le->desc);
+>>
+>> this is running as a thread with interrupts enabled, AFAICT. This means
+>> this thread can be preempted at least on PREEMPT_RT kernels, so your
+>> timestamp can be wrong, right?
+>
+> Yes, it can be off. What we should do to get i better is
+> something like what I did in:
+> drivers/iio/gyro/mpu3050-core.c
+>
+> Here I have both a hard and a soft IRQ handler (fast/slow if
+> you like) and take the timestamp in the hard IRQ, then use
+> it in the thread.
+>
+> This should be done identically in gpiolib to increase precision
+> in the general case.
+>
+> I was thinking about it already when implementing it but it fell
+> out of my mind. I'm putting in on my TODO. (CC to bartosz
+> who might be interested, he's using these ABIs quite a bit.)
 
-	void pwm_suspend(struct pwm_device *pwm)
-	{
-		pwm_get_state(pwm, &pwm->suspend);
-		pwm_disable(pwm);
-	}
+fair enough. In that case, it'll probably be easier to implement
+HW-based timestamping with something like below:
 
-	void pwm_resume(struct pwm_device *pwm)
-	{
-		pwm_apply_state(pwm, &pwm->suspend);
-	}
+modified   drivers/gpio/gpiolib.c
+@@ -731,7 +731,11 @@ static irqreturn_t lineevent_irq_thread(int irq, void =
+*p)
+ 	struct gpioevent_data ge;
+ 	int ret, level;
+=20
+=2D	ge.timestamp =3D ktime_get_real_ns();
++	if (le->desc->flags & FLAG_HAS_HW_TIMESTAMP)
++		ge.timestamp =3D gpio_get_hw_timestamp(le->desc);
++	else
++		ge.timestamp =3D ktime_get_real_ns();
++
+ 	level =3D gpiod_get_value_cansleep(le->desc);
+=20
+ 	if (le->eflags & GPIOEVENT_REQUEST_RISING_EDGE
+modified   drivers/gpio/gpiolib.h
+@@ -206,6 +206,7 @@ struct gpio_desc {
+ #define FLAG_USED_AS_IRQ 9	/* GPIO is connected to an IRQ */
+ #define FLAG_IS_HOGGED	11	/* GPIO is hogged */
+ #define FLAG_SLEEP_MAY_LOSE_VALUE 12	/* GPIO may lose value in sleep */
++#define FLAG_HAS_HW_TIMESTAMP 13 /* GPIO has HW-based timestamping */
+=20
+ 	/* Connection label */
+ 	const char		*label;
 
-Though, quite frankly, this is so trivial that drivers could just do
-that themselves. Also, the helpers above aren't flexible at all with
-respect to any special sequences the PWM might need to go through on
-suspend. I suspect that this doesn't matter at all in most cases but
-given how trivial they are we might as well just make drivers do it.
-Also we don't burden users that don't care about suspend/resume with
-the extra suspend state in struct pwm_device.
+We may even extract ktime_get_real_ns() to gpio_get_timestamp() and do
+the branching in that function, like:
 
-Thierry
+modified   drivers/gpio/gpiolib.c
+@@ -731,7 +731,7 @@ static irqreturn_t lineevent_irq_thread(int irq, void *=
+p)
+ 	struct gpioevent_data ge;
+ 	int ret, level;
+=20
+=2D	ge.timestamp =3D ktime_get_real_ns();
++	ge.timestamp =3D gpiod_get_timestamp(le->desc);
+ 	level =3D gpiod_get_value_cansleep(le->desc);
+=20
+ 	if (le->eflags & GPIOEVENT_REQUEST_RISING_EDGE
+@@ -3155,6 +3155,14 @@ int gpiod_get_value_cansleep(const struct gpio_desc =
+*desc)
+ }
+ EXPORT_SYMBOL_GPL(gpiod_get_value_cansleep);
+=20
++u64 gpiod_get_timestamp(const struct gpio_desc *desc)
++{
++	if (desc->flags & FLAG_HAS_HW_TIMESTAMP)
++		return gpiod_get_raw_timestamp(desc);
++	else
++		return ktime_get_real_ns();
++}
++
+ /**
+  * gpiod_get_raw_array_value_cansleep() - read raw values from an array of=
+ GPIOs
+  * @array_size: number of elements in the descriptor / value arrays
+modified   drivers/gpio/gpiolib.h
+@@ -206,6 +206,7 @@ struct gpio_desc {
+ #define FLAG_USED_AS_IRQ 9	/* GPIO is connected to an IRQ */
+ #define FLAG_IS_HOGGED	11	/* GPIO is hogged */
+ #define FLAG_SLEEP_MAY_LOSE_VALUE 12	/* GPIO may lose value in sleep */
++#define FLAG_HAS_HW_TIMESTAMP 13 /* GPIO has HW-based timestamping */
+=20
+ 	/* Connection label */
+ 	const char		*label;
 
---gKMricLos+KVdGMg
+=2D-=20
+balbi
+
+--=-=-=
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlomYZEACgkQ3SOs138+
-s6HrWQ//b5wkTFi8U2JsXrzvLnq2GB2kkHfE1mMsffJPuc8oh05BYraxeGnf4lsR
-HB5CVdgZ1dp3LuU/hnRNaQ738de+N8UAJjOqK5PAVpmVHE/P9DHeiGxN37LRRVdK
-RvZbTX8/q6BloFsCwKKJfroE5kV8vwOSZ2aKWKPGq4Qd6Nxci4zLMMljqHspBR3Z
-OhLa6ogiEHqyIwLXV8SMVLWZ5mLDuFul8S8y44YJvkJ41KJ6A4PkKgptainykwVY
-8T/Iq2qZewFm1HCGpBSbR5hT3EJ2EKukblr05WltrlJmfU3BbmaYfDMFgpQRIT5Q
-p0Qs22SjW2AQmrNLGSG3xQkqeQeFC0U1myB8KWz2nrrpZSXemyG+pnp88vOx1mjr
-frc8JBAxBQg7srI0EJn6/hX6fkYL3yWqE1m1LiRenNyHKNORKVqO0Y5ijw8Artjz
-+2kKahkha9FOrN+FxefaD+d5eesWINkU0QRG0rY0POtgFeZd5YNjwJTIAJ2b55an
-XNWT+M5u2CduUNxYQHVSPkP6Uvo15aYdKlcOTXgs35ljbbFfNDDbm+Nql9waP6dl
-bfCHZJeiANv2j2Y32zAmMQ4FsUNeA6mekJeWuAVFMKRmTLYsIGjy7xvmLG6YcN46
-pNebxXdZj/ul8h+WjqmLCgp9+/jpgP9EdeSOyN8uzBA2HCZqmx4=
-=fEkh
+iQIzBAEBCgAdFiEElLzh7wn96CXwjh2IzL64meEamQYFAlomZPsACgkQzL64meEa
+mQZR8hAAhXWq/g+B9J8Exm+vSrodbhsQA83tlB+PAGNOHicWlIsGoCO86DD0ofiZ
+5RzJTdMcyEnwXPuP9/UXfQkzV6DxsBDYcDf6cwTM1T8fdTcQdldm/P36XS+ODKgt
+wBhsMAvvhbqswi+Kr/zONrZsEYirhYaIhA39Ur5FpkbpEOko3OyBTISWIjEUheN9
+wRkqw7siKJatt5g54zfG/lmkP+B7CpJWxmpBNzG/O3EWXqCsGwqyYg8AMvoyn9eH
+PR3+yS1mK+4BV5B4rZpmXOQLaUIq1DW33ANthqwqzA79xcwE3oVeVceK8f2aOXVz
+GkhH++fLUzq2ayDyU3ThMXIHWC4X7O56FyrWcDBZSkjwKr0ZI4DhDWITQrjxkbim
+z08bWS+kVBiV3NTbhVJoaGl+PiSdOOTcXzM3zkXZYVXBd7hh9U87Sy5dB3Xjw8i2
+aNYEsJbDKi4KQtc5qfaufvOnYLNISLlH6cuyRkVoQCHMjROyRu/TrKah46pmKURn
+jl8CijmacQRgixCs9+bCfkMwK1OzeYgBVvVr3aTMnpw+3CTL05A9rRcZ24yja0MO
+gQpx0WaaeLLxTa7XjKxz/SRcjZmQaNH98xp/g2kEakOGhY7HEHt4O9NQYdugERCw
+5XWMLt/lFyMtXJEUzGi/al30muMp604sCuJZ0b2XNlCgPD/wHOY=
+=Lpak
 -----END PGP SIGNATURE-----
-
---gKMricLos+KVdGMg--
+--=-=-=--
