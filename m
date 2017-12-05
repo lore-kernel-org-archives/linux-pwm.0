@@ -1,10 +1,13 @@
 From: "Andrew F. Davis" <afd@ti.com>
-Subject: [PATCH v4 0/5] Remove unneeded build directory traversals
-Date: Tue, 5 Dec 2017 13:44:51 -0600
-Message-ID: <20171205194456.23612-1-afd@ti.com>
+Subject: [PATCH v4 1/5] pwm: Only descend into pwm directory when CONFIG_PWM
+ is set
+Date: Tue, 5 Dec 2017 13:44:52 -0600
+Message-ID: <20171205194456.23612-2-afd@ti.com>
+References: <20171205194456.23612-1-afd@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Return-path: <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@lists.ozlabs.org>
+In-Reply-To: <20171205194456.23612-1-afd@ti.com>
 List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
  <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
 List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
@@ -12,50 +15,34 @@ List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
 List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
 List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
  <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Errors-To: linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@lists.ozlabs.org
 Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+ <linuxppc-dev-bounces+glppd-linuxppc64-dev=m.gmane.org@lists.ozlabs.org>
 To: Thierry Reding <thierry.reding@gmail.com>, Russell King <linux@armlinux.org.uk>, Samuel Ortiz <sameo@linux.intel.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>
 Cc: linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, "Andrew F . Davis" <afd@ti.com>, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello all,
+When CONFIG_PWM is not set make will still descend into the pwm
+directory but nothing will be built. This produces unneeded build
+artifacts and messages in addition to slowing the build. Fix this here.
 
-I was building a kernel for x86 and noticed Make still descended into
-directories like drivers/gpu/drm/hisilicon, this seems kind of odd given
-nothing will be built here. It looks to be due to some directories being
-included in obj-y unconditionally instead of only when the relevant
-CONFIG_ is set.
+Signed-off-by: Andrew F. Davis <afd@ti.com>
+---
+ drivers/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-These patches are split by subsystem in-case, for some reason, a file in
-a directory does need to be built, I believe I have checked for all
-instances of this, but a quick review from some maintainers would be nice.
-
-Thanks,
-Andrew
-
-Changes from v3:
- - Removed patches already taken by maintainers
- - Rebased on v4.15-rc1 (no changes needed)
-
-Changes from v2:
- - Removed patches that would not work
- - Rebased on v4.11-rc1 (no changes needed)
-
-Changes from v1:
- - Removed patches already taken by maintainers
- - Rebased on v4.10-rc1 (no changes needed)
-
-Andrew F. Davis (5):
-  pwm: Only descend into pwm directory when CONFIG_PWM is set
-  amba: Only descend into amba directory when CONFIG_ARM_AMBA is set
-  NFC: Only descend into nfc directory when CONFIG_NFC is set
-  macintosh: Only descend into directory when CONFIG_MACINTOSH_DRIVERS
-    is set
-  auxdisplay: Only descend into directory when CONFIG_AUXDISPLAY is set
-
- drivers/Makefile | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
-
+diff --git a/drivers/Makefile b/drivers/Makefile
+index 1d034b680431..82ff1fc5f724 100644
+--- a/drivers/Makefile
++++ b/drivers/Makefile
+@@ -14,7 +14,7 @@ obj-$(CONFIG_GENERIC_PHY)	+= phy/
+ # GPIO must come after pinctrl as gpios may need to mux pins etc
+ obj-$(CONFIG_PINCTRL)		+= pinctrl/
+ obj-$(CONFIG_GPIOLIB)		+= gpio/
+-obj-y				+= pwm/
++obj-$(CONFIG_PWM)		+= pwm/
+ 
+ obj-$(CONFIG_PCI)		+= pci/
+ obj-$(CONFIG_PCI_ENDPOINT)	+= pci/endpoint/
 -- 
 2.15.0
