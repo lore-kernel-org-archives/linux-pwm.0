@@ -1,8 +1,8 @@
 From: "Andrew F. Davis" <afd@ti.com>
-Subject: [PATCH v4 2/5] amba: Only descend into amba directory when
- CONFIG_ARM_AMBA is set
-Date: Tue, 5 Dec 2017 13:44:53 -0600
-Message-ID: <20171205194456.23612-3-afd@ti.com>
+Subject: [PATCH v4 3/5] NFC: Only descend into nfc directory when CONFIG_NFC
+ is set
+Date: Tue, 5 Dec 2017 13:44:54 -0600
+Message-ID: <20171205194456.23612-4-afd@ti.com>
 References: <20171205194456.23612-1-afd@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -22,27 +22,31 @@ To: Thierry Reding <thierry.reding@gmail.com>, Russell King <linux@armlinux.org.
 Cc: linux-pwm@vger.kernel.org, kernel-janitors@vger.kernel.org, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, "Andrew F . Davis" <afd@ti.com>, linuxppc-dev@lists.ozlabs.org
 List-Id: linux-pwm@vger.kernel.org
 
-When CONFIG_ARM_AMBA is not set make will still descend into the amba
+When CONFIG_NFC is not set make will still descend into the nfc
 directory but nothing will be built. This produces unneeded build
 artifacts and messages in addition to slowing the build. Fix this here.
 
 Signed-off-by: Andrew F. Davis <afd@ti.com>
 ---
- drivers/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/Makefile | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/Makefile b/drivers/Makefile
-index 82ff1fc5f724..ea2a8bb32818 100644
+index ea2a8bb32818..de33bb24c935 100644
 --- a/drivers/Makefile
 +++ b/drivers/Makefile
-@@ -34,7 +34,7 @@ obj-$(CONFIG_SFI)		+= sfi/
- # PnP must come after ACPI since it will eventually need to check if acpi
- # was used and do nothing if so
- obj-$(CONFIG_PNP)		+= pnp/
--obj-y				+= amba/
-+obj-$(CONFIG_ARM_AMBA)		+= amba/
+@@ -72,7 +72,11 @@ obj-$(CONFIG_FB_INTEL)          += video/fbdev/intelfb/
  
- obj-y				+= clk/
- # Many drivers will want to use DMA so this has to be made available
+ obj-$(CONFIG_PARPORT)		+= parport/
+ obj-$(CONFIG_NVM)		+= lightnvm/
+-obj-y				+= base/ block/ misc/ mfd/ nfc/
++obj-y				+= base/
++obj-y				+= block/
++obj-y				+= misc/
++obj-y				+= mfd/
++obj-$(CONFIG_NFC)		+= nfc/
+ obj-$(CONFIG_LIBNVDIMM)		+= nvdimm/
+ obj-$(CONFIG_DAX)		+= dax/
+ obj-$(CONFIG_DMA_SHARED_BUFFER) += dma-buf/
 -- 
 2.15.0
