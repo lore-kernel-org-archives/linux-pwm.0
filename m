@@ -1,63 +1,82 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: stm32-lp: Remove pwm_is_enabled check before
- calling pwm_disable
-Date: Tue, 5 Dec 2017 09:35:32 +0100
-Message-ID: <20171205083532.GB7386@ulmo>
-References: <20171107033041.10905-1-axel.lin@ingics.com>
+Subject: Re: [PATCH v3] pwm: imx: Let PWM be active during suspend
+Date: Tue, 5 Dec 2017 09:47:01 +0100
+Message-ID: <20171205084701.GC7386@ulmo>
+References: <1511220443-26629-1-git-send-email-festevam@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ftEhullJWpWg/VHq"
+        protocol="application/pgp-signature"; boundary="XMCwj5IQnwKtuyBG"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f173.google.com ([209.85.128.173]:32878 "EHLO
-        mail-wr0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752488AbdLEIff (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 5 Dec 2017 03:35:35 -0500
-Received: by mail-wr0-f173.google.com with SMTP id v22so20069047wrb.0
-        for <linux-pwm@vger.kernel.org>; Tue, 05 Dec 2017 00:35:34 -0800 (PST)
+Received: from mail-wr0-f195.google.com ([209.85.128.195]:36878 "EHLO
+        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751796AbdLEIrE (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 5 Dec 2017 03:47:04 -0500
+Received: by mail-wr0-f195.google.com with SMTP id k61so20115859wrc.4
+        for <linux-pwm@vger.kernel.org>; Tue, 05 Dec 2017 00:47:04 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <20171107033041.10905-1-axel.lin@ingics.com>
+In-Reply-To: <1511220443-26629-1-git-send-email-festevam@gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Axel Lin <axel.lin@ingics.com>
-Cc: linux-pwm@vger.kernel.org, Fabrice Gasnier <fabrice.gasnier@st.com>, Lee Jones <lee.jones@linaro.org>
+To: Fabio Estevam <festevam@gmail.com>
+Cc: linux-pwm@vger.kernel.org, robh@kernel.org, linux@arm.linux.org.uk, Fabio Estevam <fabio.estevam@nxp.com>
 
 
---ftEhullJWpWg/VHq
+--XMCwj5IQnwKtuyBG
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Nov 07, 2017 at 11:30:41AM +0800, Axel Lin wrote:
-> The same checking is done by the implementation of pwm_disable().
+On Mon, Nov 20, 2017 at 09:27:23PM -0200, Fabio Estevam wrote:
+> From: Fabio Estevam <fabio.estevam@nxp.com>
 >=20
-> Signed-off-by: Axel Lin <axel.lin@ingics.com>
-> ---
->  drivers/pwm/pwm-stm32-lp.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+> On a imx6q-cubox-i board, which has an LED driven by PWM, when the system
+> goes into suspend the PWM block is disabled by default, then the PWM pin
+> goes to logic level zero and turn on the LED during suspend, which is not
+> really the behaviour we want to see.
+>=20
+> By keeping the PWM enabled during suspend via STOPEN bit, the pwm-leds
+> driver sets the brightness to zero in suspend and then the LED is
+> turned off as expected.
+>=20
+> So always set the STOPEN to fix the PWM behaviour in suspend.
 
-I don't think I ever mentioned that I had applied this for v4.15-rc1, so
-just letting you know in case you were wondering.
+It looks like this would also keep other PWMs enabled in suspend. If for
+example you hooked up a fan to this PWM this change would make it so
+that the fan would remain on during suspend. That doesn't sound
+desirable to me.
+
+On v2, I see this reply from you:
+
+	Please note that on imx6qdl-cuboxi the pwm is active low.
+
+I also see that imx6q-cubox-i uses the "fsl,imx27-pwm" compatible
+version of this controller and that supports polarity inversion. I think
+the correct thing to do here is to mark the PWM as inverted (according
+to the DTS file it is actually the pwmleds node that has an active-low
+property). If you invert the PWM you could add extra code to the PWM
+driver to deal with this properly and set STOPEN only for inverted PWM
+signals.
 
 Thierry
 
---ftEhullJWpWg/VHq
+--XMCwj5IQnwKtuyBG
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlomWlQACgkQ3SOs138+
-s6HfLA//Xag9Zs5k6AAcxjbJvDv5SpJ55BUnRZvVAHeZGjsnkJazxrVPEvlSLkg/
-sDDpOmBa62Rxpb+Bzg/eYth8i6s3TEi/kg9W2RpyucY9f4Ef95fJRZ8ziQ+lB4AL
-wJPaTpfUbWjeo63AeRT+uB8AbQ1HxnKFfwFLi13Y48BdFOpN6lFa3TCxFGDTzPDj
-l9qwHODREzxRkDb6L8nVo0BgA9tU9PZzRkC/PVzs2bdekvXK2MkqGroiH9hha8ck
-dlT9xFyt/VSRCw3SxGwUSRWYcmkaThUg6XJ6Xnv2kNjF+uVdN35xOpeq/WmD+q1V
-nYkxW4BYJqUQsJ609H65cQGkbbMSAfygX4l7m/cdGZIYrDDCo3khoHBqJh+lK6Zq
-Gpd7yC7lCnyKUiagLYpBy4wF70yXRZpAMsYVSxAhgRXrwEJbx5lhoZA7MdQxSrF0
-uVC5hxeHC5kiPqJDps4p4hR4wLxvCT+129PxQN9Rnw7HJY5lG9GtG931s6r+gpsh
-SJS3316vI5rl2fvDD0+tgQSi5EttE7tQ5Eov6uIeJ3k2EKYAuoW+RUL55JvQ6P2T
-gzPbY3Gkk3VBH72dKI6GJRkJXkcqcD0xXffzkM3heFwYtOd8RPDP0qChxBHKYfnX
-ilk0k5u6fsWZX6I2EmIAWbJQUBmzliYUxJ4zHfeP5VW1OHVZfkc=
-=cy+h
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlomXQMACgkQ3SOs138+
+s6H1VQ//ZQOGs9FDhSsd2caNw/R0vkEapAmrZR1LccO1jKU3tdcDGjrkRxZsHyjA
+lrHejjJUhX3/VQ66XP7sbaVlbMi8M9Tq7bhTYfcjTcmpmgxfSPNgq8SIE/AuOMqI
+APVV4UFU8Kb4qlxZEX/h8Xh4luJuvE62RDLuPpaLJQy1KhDa5046+QZIjz4xMJC4
+xdQi1iINgGF+UC8VSAjczUEKuWS2TotDDIc5zvjk3yIjGVUpj7IUVr6PoounHfWJ
+9LnPHD62yLYtxjPiQBGgx/Gfd+PD7LgANPv7h/S57nh4RDYxA/TkwqbP+TCNbY9O
+fnfBXdfpHpCV6GSW6Bm80Lv7CjMpZqH53AGzKG/tVaLkU74rXZ/PMtDCbiCHeUST
+EkSyWQ0H9P2XQz/Nu3yEHE+f6AbJJRc6KtloJnUqnCBEFj6WkO/1HHaL3BXbqkgv
+wApa2hx1O9G79nLQ0RxmwDratmFPaHmvcarAf+AswyvkJs9aa2OLaZ1+vFEwT6Bv
+rIcWpcGKPfC9mVDQTGKA8ru12M2+6KFRFj0a1lfwJbYc/llpNubVma5MXgfxFy1O
+UuAMgXeae8/EjDMlAozibSN1AGsXgKziBbx7M/5DKEYg4CF8R998ahQYzxcrggRM
+drEyk78q4hcECE+MSswE9sgzgc9uZ1SE4fxuL2HBRiilDz7/45U=
+=HJiY
 -----END PGP SIGNATURE-----
 
---ftEhullJWpWg/VHq--
+--XMCwj5IQnwKtuyBG--
