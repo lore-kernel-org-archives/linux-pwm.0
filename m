@@ -1,73 +1,71 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RESEND][PATCH] pwm: Set class for exported channels in sysfs
-Date: Tue, 5 Dec 2017 09:27:42 +0100
-Message-ID: <20171205082742.GA7174@ulmo>
-References: <1496397921-1713-1-git-send-email-gottfried.haider@gmail.com>
+Subject: Re: [PATCH RFT] pwm: stmpe: Fix wrong register offset for hwpwm=2
+ case
+Date: Tue, 5 Dec 2017 09:33:19 +0100
+Message-ID: <20171205083319.GA7386@ulmo>
+References: <20171107051853.14492-1-axel.lin@ingics.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="y0ulUmNC+osPPQO6"
+        protocol="application/pgp-signature"; boundary="KsGdsel6WgEHnImy"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f195.google.com ([209.85.128.195]:36009 "EHLO
-        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750800AbdLEI1q (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 5 Dec 2017 03:27:46 -0500
-Received: by mail-wr0-f195.google.com with SMTP id v105so20012191wrc.3
-        for <linux-pwm@vger.kernel.org>; Tue, 05 Dec 2017 00:27:45 -0800 (PST)
+Received: from mail-wr0-f181.google.com ([209.85.128.181]:38276 "EHLO
+        mail-wr0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752525AbdLEIdW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 5 Dec 2017 03:33:22 -0500
+Received: by mail-wr0-f181.google.com with SMTP id o2so20069685wro.5
+        for <linux-pwm@vger.kernel.org>; Tue, 05 Dec 2017 00:33:21 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <1496397921-1713-1-git-send-email-gottfried.haider@gmail.com>
+In-Reply-To: <20171107051853.14492-1-axel.lin@ingics.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Gottfried Haider <gottfried.haider@gmail.com>
-Cc: H Hartley Sweeten <hsweeten@visionengravers.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org
+To: Axel Lin <axel.lin@ingics.com>
+Cc: linux-pwm@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>
 
 
---y0ulUmNC+osPPQO6
+--KsGdsel6WgEHnImy
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 02, 2017 at 10:05:21AM +0000, Gottfried Haider wrote:
-> Notifications for devices without bus or class set get dropped by
-> dev_uevent_filter. Adding the class to the exported child matches
-> what the gpio subsystem is doing.
+On Tue, Nov 07, 2017 at 01:18:53PM +0800, Axel Lin wrote:
+> Fix trivial copy/paste bug.
 >=20
-> With this change exporting a channel triggers a udev event, which
-> gives userspace a chance to fixup permissions and makes it possible
-> for non-root users to make use of the pwm subsystem.
->=20
-> Signed-off-by: Gottfried Haider <gottfried.haider@gmail.com>
-> CC: Thierry Reding <thierry.reding@gmail.com>
-> CC: H Hartley Sweeten <hsweeten@visionengravers.com>
-> CC: linux-pwm@vger.kernel.org
-> CC: linux-arm-kernel@lists.infradead.org
-> CC: linux-rpi-kernel@lists.infradead.org
+> Signed-off-by: Axel Lin <axel.lin@ingics.com>
 > ---
->  drivers/pwm/sysfs.c | 1 +
->  1 file changed, 1 insertion(+)
+> Hi Linus,
+> I don't have this h/w to test.
+> Appreciate if you can review and test this patch.
+>=20
+> Thanks,
+> Axel
+>  drivers/pwm/pwm-stmpe.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Sorry for the long delay, applied to for-next now.
+Applied this and added:
+
+	Fixes: ef1f09eca74a ("pwm: Add a driver for the STMPE PWM")
 
 Thanks,
 Thierry
 
---y0ulUmNC+osPPQO6
+--KsGdsel6WgEHnImy
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlomWHwACgkQ3SOs138+
-s6H7KhAAiCiKFsmYqcDdh6SUJOjqbPXJosGCIciXbjDA/SWfvEx9cphVUsISToGf
-QvBwrD+0inpdc+EQB+X2W7ROu6xkbY1PlGmiLy06+XROIuoxgkUjMmtfyqLwtDHM
-nzzgu2lxfFQoAZaHmcXYO0cSRmGCEmlJ9HInh1eGs7Yu5YXNvgS1feFd2ay5A4GG
-EEM2DPxJ04jlsmywEAQKQA2njaAL/vUIVMzEYg1zlGODX3KfOTuSJJqDXcWZvDab
-u9d3E0m49MXqGg9cEHOANt+MGNZHz5fGkuKfZdz/ymnBzKDYBHf8honuHbALUHEZ
-g2e/AjUk9FvSFeSbX+n+DQpRhMzVyKncuBGYzsZqX6cRtOG0y93e+wETSMNssQFG
-09dYoKoUHPe/pEcIOeQyT1aOPja4zoRS9Li8K/mM0Bu+lv6kUiwDBrLi6T7VdPYC
-jqtvlc9Mo1iDiJ8E3xMR9+P2EJw6sEXoBenKsSEts5joLTeXgnOAPc+j9zvKddgH
-VZoKGxbtWuXWwTqdhDmeE0IOBcpkgXcrrHeU6C8JKvuqfn3hFRf5FRQTDtl0Y+Rf
-Pk0hJ8VWnGR9oBC3vdsFR6DeNa0ACybvKDDL79rPu/CXTHRvbqlCyscFobTMfFmw
-54uPxP5jfbfbmiJKfeaXqavaK0khRvSUOFfrro1gbR+XmzEsPMU=
-=z6pB
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlomWc8ACgkQ3SOs138+
+s6GMzBAAjYXLdAeraut1nghelMtipcxPAw27jQw0oM3QZVPEjyvGd/Ppk2tUB61f
+tzSjSRN8BIEOUHW0arj8Ikv1lgpiNevf7zEMDbZateHxV0YbS6tKP675/yWzPIEe
+b+wNygJVdew4vllghgHpBFA4AZAX6Tj2rsjxOQBKmv3qmDETnReMfvMO3uxneCRj
+u3mnOELhqa11HT7Pg2D8VD8S7aXVl/1YnxsIG1qAvmNULXPPOvseHHGX0TLVowtt
+ihj28WExNZANbO4KWOUciK3Oh5W0l5KpkalKi5/5eWUth2Ceu1ta7TUZADU14uUw
+zFQgrUGVHlyNWY9zDE0qrxA52P9aBajdHav74R6UbIPzK2wJ265KMg7Q26y8yyr9
+JA/r07NI7ig8WghPyUxgc3ANQapuazV3/y54E6iinj1XvUv1PnuAUDgeh93Rg6em
+WnpHHSCXsqvYE/wu5O6HoY7mLN7vgq8OoodM/4WPFzHu87lNg1kfk+D2SVWe4Ud3
+tXPSqnFrnXlEWqg5h740MHEYWTS0n8R05n52YF3WMUvXazKKe8w2p4QO/ZO8gXKW
+CGXUWrueV72Hkw3q7Pn8oShk4tdmSMXmmQ94dHYqbHrkr16oJgUMAsI9vSWtCun5
+xJ86TlmJR7KodDZk3JqQemkLJj38bZACHTvBiYJtr7RNSTP1oG4=
+=iS89
 -----END PGP SIGNATURE-----
 
---y0ulUmNC+osPPQO6--
+--KsGdsel6WgEHnImy--
