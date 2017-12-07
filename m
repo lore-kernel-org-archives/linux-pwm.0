@@ -1,76 +1,137 @@
-From: Philippe Ombredanne <pombredanne@nexb.com>
-Subject: Re: [PATCH] pwn: stm32: Adopt SPDX identifier
-Date: Thu, 7 Dec 2017 11:11:13 +0100
-Message-ID: <CAOFm3uFYjUvnwb2zqdJEuHp4WEnfmxrcZxRta2Cnfz3Q1=55rw@mail.gmail.com>
-References: <20171205145721.20403-1-benjamin.gaignard@st.com>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH v4 4/8] arm: OMAP: Move dmtimer driver out of plat-omap to
+ drivers under clocksource
+Date: Thu, 7 Dec 2017 11:54:27 +0100
+Message-ID: <e71f4c7b-e5c7-6305-dc1c-274da6fbf07d@linaro.org>
+References: <1512105397-2544-1-git-send-email-j-keerthy@ti.com>
+ <1512105397-2544-5-git-send-email-j-keerthy@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wr0-f194.google.com ([209.85.128.194]:39117 "EHLO
-        mail-wr0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752248AbdLGKLz (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Dec 2017 05:11:55 -0500
-Received: by mail-wr0-f194.google.com with SMTP id a41so6854471wra.6
-        for <linux-pwm@vger.kernel.org>; Thu, 07 Dec 2017 02:11:54 -0800 (PST)
-In-Reply-To: <20171205145721.20403-1-benjamin.gaignard@st.com>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:41356 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753045AbdLGKyb (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 7 Dec 2017 05:54:31 -0500
+Received: by mail-wm0-f66.google.com with SMTP id g75so12393471wme.0
+        for <linux-pwm@vger.kernel.org>; Thu, 07 Dec 2017 02:54:31 -0800 (PST)
+In-Reply-To: <1512105397-2544-5-git-send-email-j-keerthy@ti.com>
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: thierry.reding@gmail.com, Alexandre Torgue <alexandre.torgue@st.com>, linux-pwm@vger.kernel.org, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>, Benjamin Gaignard <benjamin.gaignard@st.com>
+To: Keerthy <j-keerthy@ti.com>, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com
+Cc: t-kristo@ti.com, linux@armlinux.org.uk, grygorii.strashko@ti.com, robh+dt@kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, ladis@linux-mips.org, linux-kernel@vger.kernel.org
 
-On Tue, Dec 5, 2017 at 3:57 PM, Benjamin Gaignard
-<benjamin.gaignard@linaro.org> wrote:
-> Add SPDX identifer
->
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+On 01/12/2017 06:16, Keerthy wrote:
+> Move the dmtimer driver out of plat-omap to clocksource.
+> So that non-omap devices also could use this.
+> 
+> No Code changes done to the driver file.
+> 
+> Signed-off-by: Keerthy <j-keerthy@ti.com>
+> Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
 > ---
->  drivers/pwm/pwm-stm32-lp.c | 3 +--
->  drivers/pwm/pwm-stm32.c    | 3 +--
->  2 files changed, 2 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
-> index 1ac9e4384142..cbd271e80c3c 100644
-> --- a/drivers/pwm/pwm-stm32-lp.c
-> +++ b/drivers/pwm/pwm-stm32-lp.c
-> @@ -1,3 +1,4 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * STM32 Low-Power Timer PWM driver
->   *
-> @@ -5,8 +6,6 @@
->   *
->   * Author: Gerald Baeza <gerald.baeza@st.com>
->   *
-> - * License terms: GNU General Public License (GPL), version 2
-> - *
->   * Inspired by Gerald Baeza's pwm-stm32 driver
->   */
->
-> diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
-> index 6139512aab7b..be56d7af89c9 100644
-> --- a/drivers/pwm/pwm-stm32.c
-> +++ b/drivers/pwm/pwm-stm32.c
-> @@ -1,10 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * Copyright (C) STMicroelectronics 2016
->   *
->   * Author: Gerald Baeza <gerald.baeza@st.com>
->   *
-> - * License terms: GNU General Public License (GPL), version 2
-> - *
->   * Inspired by timer-stm32.c from Maxime Coquelin
->   *             pwm-atmel.c from Bo Shen
->   */
-> --
-> 2.15.0
->
+> 
+> Changes in v3:
+> 
+>   * Added Sebastian's Reviewed-by.
+> 
+> Changes in v2:
+> 
+>   * No code changes in this v2 version. Only enhanced patch
+>     statistics for renames.
+> 
+>  arch/arm/plat-omap/Kconfig                            | 6 ------
+>  arch/arm/plat-omap/Makefile                           | 1 -
+>  drivers/clocksource/Kconfig                           | 6 ++++++
+>  drivers/clocksource/Makefile                          | 1 +
+>  {arch/arm/plat-omap => drivers/clocksource}/dmtimer.c | 0
+>  5 files changed, 7 insertions(+), 7 deletions(-)
+>  rename {arch/arm/plat-omap => drivers/clocksource}/dmtimer.c (100%)
 
+Take the opportunity to rename it timer-dm.c
 
-Thank you for using the simpler SPDX license ids!
+> diff --git a/arch/arm/plat-omap/Kconfig b/arch/arm/plat-omap/Kconfig
+> index 7276afe..afc1a1d 100644
+> --- a/arch/arm/plat-omap/Kconfig
+> +++ b/arch/arm/plat-omap/Kconfig
+> @@ -106,12 +106,6 @@ config OMAP3_L2_AUX_SECURE_SERVICE_SET_ID
+>  	help
+>  	  PPA routine service ID for setting L2 auxiliary control register.
+>  
+> -config OMAP_DM_TIMER
+> -	bool "Use dual-mode timer"
+> -	depends on ARCH_OMAP16XX || ARCH_OMAP2PLUS
+> -	help
+> -	 Select this option if you want to use OMAP Dual-Mode timers.
+> -
+>  config OMAP_SERIAL_WAKE
+>  	bool "Enable wake-up events for serial ports"
+>  	depends on ARCH_OMAP1 && OMAP_MUX
+> diff --git a/arch/arm/plat-omap/Makefile b/arch/arm/plat-omap/Makefile
+> index 47e1867..7215ada 100644
+> --- a/arch/arm/plat-omap/Makefile
+> +++ b/arch/arm/plat-omap/Makefile
+> @@ -9,5 +9,4 @@ obj-y := sram.o dma.o counter_32k.o
+>  
+>  # omap_device support (OMAP2+ only at the moment)
+>  
+> -obj-$(CONFIG_OMAP_DM_TIMER) += dmtimer.o
+>  obj-$(CONFIG_OMAP_DEBUG_LEDS) += debug-leds.o
+> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
+> index c729a88..4da66cf 100644
+> --- a/drivers/clocksource/Kconfig
+> +++ b/drivers/clocksource/Kconfig
+> @@ -46,6 +46,12 @@ config DIGICOLOR_TIMER
+>  	help
+>  	  Enables the support for the digicolor timer driver.
+>  
+> +config OMAP_DM_TIMER
+> +	bool "Use dual-mode timer"
+> +	depends on ARCH_OMAP16XX || ARCH_OMAP2PLUS
+> +	help
+> +	 Select this option if you want to use Dual-Mode timers.
+> +
 
-Acked-by: Philippe Ombredanne <pombredanne@nexb.com>
+So in the clocksource directory the rule is the following:
+
+The config option is silent except if COMPILE_TEST is set.
+
+It is the Kconfig's platform which select the driver so there is no deps
+on the ARCH.
+
+config OMAP_DM_TIMER
+	bool "Use dual-mode timer" if COMPILE_TEST
+	help
+	 Select this option if you want to use Dual-Mode timers.
+
+Here you will have to make sure the driver compiles on x86.
+
+>  config DW_APB_TIMER
+>  	bool "DW APB timer driver" if COMPILE_TEST
+>  	help
+> diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
+> index 72711f1..b077076 100644
+> --- a/drivers/clocksource/Makefile
+> +++ b/drivers/clocksource/Makefile
+> @@ -16,6 +16,7 @@ obj-$(CONFIG_EM_TIMER_STI)	+= em_sti.o
+>  obj-$(CONFIG_CLKBLD_I8253)	+= i8253.o
+>  obj-$(CONFIG_CLKSRC_MMIO)	+= mmio.o
+>  obj-$(CONFIG_DIGICOLOR_TIMER)	+= timer-digicolor.o
+> +obj-$(CONFIG_OMAP_DM_TIMER)	+= dmtimer.o
+>  obj-$(CONFIG_DW_APB_TIMER)	+= dw_apb_timer.o
+>  obj-$(CONFIG_DW_APB_TIMER_OF)	+= dw_apb_timer_of.o
+>  obj-$(CONFIG_FTTMR010_TIMER)	+= timer-fttmr010.o
+> diff --git a/arch/arm/plat-omap/dmtimer.c b/drivers/clocksource/dmtimer.c
+> similarity index 100%
+> rename from arch/arm/plat-omap/dmtimer.c
+> rename to drivers/clocksource/dmtimer.c
+> 
+
 
 -- 
-Cordially
-Philippe Ombredanne
+ <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
