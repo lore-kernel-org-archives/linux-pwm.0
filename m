@@ -1,86 +1,76 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v3] pwm: imx: Let PWM be active during suspend
-Date: Fri, 8 Dec 2017 15:22:22 -0200
-Message-ID: <CAOMZO5BWFWCZ2afX0XMtX9Dg1az3PBmP7u7U6S0dNpWzx=SXRQ@mail.gmail.com>
-References: <1511220443-26629-1-git-send-email-festevam@gmail.com>
- <20171205084701.GC7386@ulmo> <CAOMZO5DsWN_N5ygkCmNK_Dktp7UANdkSXi+iLacXnVHQ9j53AA@mail.gmail.com>
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH v4 4/8] arm: OMAP: Move dmtimer driver out of plat-omap to
+ drivers under clocksource
+Date: Fri, 8 Dec 2017 18:50:32 +0100
+Message-ID: <a2f06a16-2468-6b09-171a-ad96e39af3eb@linaro.org>
+References: <1512105397-2544-1-git-send-email-j-keerthy@ti.com>
+ <1512105397-2544-5-git-send-email-j-keerthy@ti.com>
+ <e71f4c7b-e5c7-6305-dc1c-274da6fbf07d@linaro.org>
+ <20171208172031.GA4146@lenoch>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-ot0-f181.google.com ([74.125.82.181]:36488 "EHLO
-        mail-ot0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752563AbdLHRWY (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Dec 2017 12:22:24 -0500
-Received: by mail-ot0-f181.google.com with SMTP id d5so9729689oti.3
-        for <linux-pwm@vger.kernel.org>; Fri, 08 Dec 2017 09:22:24 -0800 (PST)
-In-Reply-To: <CAOMZO5DsWN_N5ygkCmNK_Dktp7UANdkSXi+iLacXnVHQ9j53AA@mail.gmail.com>
+Received: from mail-wr0-f195.google.com ([209.85.128.195]:41193 "EHLO
+        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752987AbdLHRug (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Dec 2017 12:50:36 -0500
+Received: by mail-wr0-f195.google.com with SMTP id z18so11543076wrb.8
+        for <linux-pwm@vger.kernel.org>; Fri, 08 Dec 2017 09:50:35 -0800 (PST)
+In-Reply-To: <20171208172031.GA4146@lenoch>
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Rob Herring <robh@kernel.org>, Russell King <linux@arm.linux.org.uk>, Fabio Estevam <fabio.estevam@nxp.com>
+To: Ladislav Michl <ladis@linux-mips.org>
+Cc: Keerthy <j-keerthy@ti.com>, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com, t-kristo@ti.com, linux@armlinux.org.uk, grygorii.strashko@ti.com, robh+dt@kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org
 
-Hi Thierry,
-
-On Tue, Dec 5, 2017 at 4:56 PM, Fabio Estevam <festevam@gmail.com> wrote:
-> Hi Thierry,
->
-> On Tue, Dec 5, 2017 at 6:47 AM, Thierry Reding <thierry.reding@gmail.com> wrote:
->
->> It looks like this would also keep other PWMs enabled in suspend. If for
->> example you hooked up a fan to this PWM this change would make it so
->> that the fan would remain on during suspend. That doesn't sound
->> desirable to me.
->
-> It is expected that the PWM fan driver would disable the fan upon
-> entering into suspend.
-
-and the PWM fan driver does disable the PWM as expected:
-pwm_fan_suspend() calls pwm_disable().
-
-> The old vendor driver also sets the STOPEN bit unconditionally:
-> http://git.freescale.com/git/cgit.cgi/imx/linux-2.6-imx.git/tree/arch/arm/plat-mxc/pwm.c?h=imx_2.6.35_11.09.01#n97
-
-Same on the 3.0.35 vendor kernel for MX6:
-http://git.freescale.com/git/cgit.cgi/imx/linux-2.6-imx.git/tree/arch/arm/plat-mxc/pwm.c?h=imx_3.0.35_4.1.0#n106
-
+On 08/12/2017 18:20, Ladislav Michl wrote:
+> Daniel,
+> 
+> On Thu, Dec 07, 2017 at 11:54:27AM +0100, Daniel Lezcano wrote:
+>> On 01/12/2017 06:16, Keerthy wrote:
+>>> Move the dmtimer driver out of plat-omap to clocksource.
+>>> So that non-omap devices also could use this.
+>>>
+>>> No Code changes done to the driver file.
+>>>
+>>> Signed-off-by: Keerthy <j-keerthy@ti.com>
+>>> Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+>>> ---
+>>>
+>>> Changes in v3:
+>>>
+>>>   * Added Sebastian's Reviewed-by.
+>>>
+>>> Changes in v2:
+>>>
+>>>   * No code changes in this v2 version. Only enhanced patch
+>>>     statistics for renames.
+>>>
+>>>  arch/arm/plat-omap/Kconfig                            | 6 ------
+>>>  arch/arm/plat-omap/Makefile                           | 1 -
+>>>  drivers/clocksource/Kconfig                           | 6 ++++++
+>>>  drivers/clocksource/Makefile                          | 1 +
+>>>  {arch/arm/plat-omap => drivers/clocksource}/dmtimer.c | 0
+>>>  5 files changed, 7 insertions(+), 7 deletions(-)
+>>>  rename {arch/arm/plat-omap => drivers/clocksource}/dmtimer.c (100%)
 >>
->> On v2, I see this reply from you:
->>
->>         Please note that on imx6qdl-cuboxi the pwm is active low.
->
-> What I meant to say is that a logic level 0 turns on the LED.
->
->> I also see that imx6q-cubox-i uses the "fsl,imx27-pwm" compatible
->> version of this controller and that supports polarity inversion. I think
->> the correct thing to do here is to mark the PWM as inverted (according
->> to the DTS file it is actually the pwmleds node that has an active-low
->> property). If you invert the PWM you could add extra code to the PWM
->> driver to deal with this properly and set STOPEN only for inverted PWM
->> signals.
->
-> Polarity is correct:
->
-> echo 0 > brightness --> turns off the LED
-> echo 248 > brightness ---> turns on the LED with the maximum brightness
->
-> It is only the behaviour during suspend which is not correct (LCD turns on).
->
-> Tried your suggestion of changing the polarity and it does not work
-> and breaks the usage during normal mode (non low power).
->
-> Another way to fix this would be to do like tegra pwm driver does in
-> implementing suspend/resume:
-> https://pastebin.com/sAFdKpDv
->
-> where the pinctrl state can be switched.
->
-> I tested it here and it works too.
->
-> Would it be acceptable to do add suspend/resume hooks for pwm-imx?
+>> Take the opportunity to rename it timer-dm.c
+> 
+> seems the drivers/clocksource subdirectory contains what its name state.
 
-It works, but I am still happier with the current proposal in version
-3, where STOPEN bit is set.
+Yes, clocksource, clockevent.
 
-Please let me know if you are willing to consider such proposal.
+> However OMAP dual mode timers have also event capture capability, which
+> I'd like to use to measure pulse/space width and pass measured values
+> to IR protocol decoders.
+> Do you have any idea how to split code, so that event capture capability
+> could be used by other drivers?
+Not 100% sure but could be drivers/pwm, using the capture API.
 
-Thanks
+-- 
+ <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
