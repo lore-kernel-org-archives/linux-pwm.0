@@ -1,18 +1,17 @@
-From: Keerthy <j-keerthy@ti.com>
-Subject: Re: [PATCH v4 4/8] arm: OMAP: Move dmtimer driver out of plat-omap to
- drivers under clocksource
-Date: Fri, 8 Dec 2017 20:01:13 +0530
-Message-ID: <e84d4096-33f9-b23c-d68a-af21c33eacd0@ti.com>
+From: Ladislav Michl <ladis@linux-mips.org>
+Subject: Re: [PATCH v4 4/8] arm: OMAP: Move dmtimer driver out of plat-omap
+ to drivers under clocksource
+Date: Fri, 8 Dec 2017 18:20:31 +0100
+Message-ID: <20171208172031.GA4146@lenoch>
 References: <1512105397-2544-1-git-send-email-j-keerthy@ti.com>
  <1512105397-2544-5-git-send-email-j-keerthy@ti.com>
  <e71f4c7b-e5c7-6305-dc1c-274da6fbf07d@linaro.org>
- <996847a8-d927-638b-3eee-de496d21fe65@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <996847a8-d927-638b-3eee-de496d21fe65@ti.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <e71f4c7b-e5c7-6305-dc1c-274da6fbf07d@linaro.org>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -22,147 +21,95 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Daniel Lezcano <daniel.lezcano@linaro.org>, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, grygorii.strashko@ti.com, linux@armlinux.org.uk, linux-kernel@vger.kernel.org, t-kristo@ti.com, robh+dt@kernel.org, ladis@linux-mips.org, sebastian.reichel@collabora.co.uk, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: linux-pwm@vger.kernel.org, grygorii.strashko@ti.com, aaro.koskinen@iki.fi, tony@atomide.com, Keerthy <j-keerthy@ti.com>, linux@armlinux.org.uk, robh+dt@kernel.org, linux-kernel@vger.kernel.org, t-kristo@ti.com, thierry.reding@gmail.com, sebastian.reichel@collabora.co.uk, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-
-
-On Friday 08 December 2017 09:25 AM, Keerthy wrote:
-> 
-> 
-> On Thursday 07 December 2017 04:24 PM, Daniel Lezcano wrote:
->> On 01/12/2017 06:16, Keerthy wrote:
->>> Move the dmtimer driver out of plat-omap to clocksource.
->>> So that non-omap devices also could use this.
->>>
->>> No Code changes done to the driver file.
->>>
->>> Signed-off-by: Keerthy <j-keerthy@ti.com>
->>> Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
->>> ---
->>>
->>> Changes in v3:
->>>
->>>   * Added Sebastian's Reviewed-by.
->>>
->>> Changes in v2:
->>>
->>>   * No code changes in this v2 version. Only enhanced patch
->>>     statistics for renames.
->>>
->>>  arch/arm/plat-omap/Kconfig                            | 6 ------
->>>  arch/arm/plat-omap/Makefile                           | 1 -
->>>  drivers/clocksource/Kconfig                           | 6 ++++++
->>>  drivers/clocksource/Makefile                          | 1 +
->>>  {arch/arm/plat-omap => drivers/clocksource}/dmtimer.c | 0
->>>  5 files changed, 7 insertions(+), 7 deletions(-)
->>>  rename {arch/arm/plat-omap => drivers/clocksource}/dmtimer.c (100%)
->>
->> Take the opportunity to rename it timer-dm.c
-> 
-> okay.
-> 
->>
->>> diff --git a/arch/arm/plat-omap/Kconfig b/arch/arm/plat-omap/Kconfig
->>> index 7276afe..afc1a1d 100644
->>> --- a/arch/arm/plat-omap/Kconfig
->>> +++ b/arch/arm/plat-omap/Kconfig
->>> @@ -106,12 +106,6 @@ config OMAP3_L2_AUX_SECURE_SERVICE_SET_ID
->>>  	help
->>>  	  PPA routine service ID for setting L2 auxiliary control register.
->>>  
->>> -config OMAP_DM_TIMER
->>> -	bool "Use dual-mode timer"
->>> -	depends on ARCH_OMAP16XX || ARCH_OMAP2PLUS
->>> -	help
->>> -	 Select this option if you want to use OMAP Dual-Mode timers.
->>> -
->>>  config OMAP_SERIAL_WAKE
->>>  	bool "Enable wake-up events for serial ports"
->>>  	depends on ARCH_OMAP1 && OMAP_MUX
->>> diff --git a/arch/arm/plat-omap/Makefile b/arch/arm/plat-omap/Makefile
->>> index 47e1867..7215ada 100644
->>> --- a/arch/arm/plat-omap/Makefile
->>> +++ b/arch/arm/plat-omap/Makefile
->>> @@ -9,5 +9,4 @@ obj-y := sram.o dma.o counter_32k.o
->>>  
->>>  # omap_device support (OMAP2+ only at the moment)
->>>  
->>> -obj-$(CONFIG_OMAP_DM_TIMER) += dmtimer.o
->>>  obj-$(CONFIG_OMAP_DEBUG_LEDS) += debug-leds.o
->>> diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
->>> index c729a88..4da66cf 100644
->>> --- a/drivers/clocksource/Kconfig
->>> +++ b/drivers/clocksource/Kconfig
->>> @@ -46,6 +46,12 @@ config DIGICOLOR_TIMER
->>>  	help
->>>  	  Enables the support for the digicolor timer driver.
->>>  
->>> +config OMAP_DM_TIMER
->>> +	bool "Use dual-mode timer"
->>> +	depends on ARCH_OMAP16XX || ARCH_OMAP2PLUS
->>> +	help
->>> +	 Select this option if you want to use Dual-Mode timers.
->>> +
->>
->> So in the clocksource directory the rule is the following:
->>
->> The config option is silent except if COMPILE_TEST is set.
->>
->> It is the Kconfig's platform which select the driver so there is no deps
->> on the ARCH.
-> 
-> Okay understood.
-
-Tony,
-
-The driver requirements force me to remove all ARCH specific #ifdef in
-Patch #2. I will reduce that patch to a comment.
-
-Hope that is okay.
-
-Regards,
-Keerthy
-
-> 
->>
->> config OMAP_DM_TIMER
->> 	bool "Use dual-mode timer" if COMPILE_TEST
->> 	help
->> 	 Select this option if you want to use Dual-Mode timers.
->>
->> Here you will have to make sure the driver compiles on x86.
-> 
-> Okay. I will check that in my next version.
-> 
-> Thanks for reviewing!
-> 
->>
->>>  config DW_APB_TIMER
->>>  	bool "DW APB timer driver" if COMPILE_TEST
->>>  	help
->>> diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
->>> index 72711f1..b077076 100644
->>> --- a/drivers/clocksource/Makefile
->>> +++ b/drivers/clocksource/Makefile
->>> @@ -16,6 +16,7 @@ obj-$(CONFIG_EM_TIMER_STI)	+= em_sti.o
->>>  obj-$(CONFIG_CLKBLD_I8253)	+= i8253.o
->>>  obj-$(CONFIG_CLKSRC_MMIO)	+= mmio.o
->>>  obj-$(CONFIG_DIGICOLOR_TIMER)	+= timer-digicolor.o
->>> +obj-$(CONFIG_OMAP_DM_TIMER)	+= dmtimer.o
->>>  obj-$(CONFIG_DW_APB_TIMER)	+= dw_apb_timer.o
->>>  obj-$(CONFIG_DW_APB_TIMER_OF)	+= dw_apb_timer_of.o
->>>  obj-$(CONFIG_FTTMR010_TIMER)	+= timer-fttmr010.o
->>> diff --git a/arch/arm/plat-omap/dmtimer.c b/drivers/clocksource/dmtimer.c
->>> similarity index 100%
->>> rename from arch/arm/plat-omap/dmtimer.c
->>> rename to drivers/clocksource/dmtimer.c
->>>
->>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+RGFuaWVsLAoKT24gVGh1LCBEZWMgMDcsIDIwMTcgYXQgMTE6NTQ6MjdBTSArMDEwMCwgRGFuaWVs
+IExlemNhbm8gd3JvdGU6Cj4gT24gMDEvMTIvMjAxNyAwNjoxNiwgS2VlcnRoeSB3cm90ZToKPiA+
+IE1vdmUgdGhlIGRtdGltZXIgZHJpdmVyIG91dCBvZiBwbGF0LW9tYXAgdG8gY2xvY2tzb3VyY2Uu
+Cj4gPiBTbyB0aGF0IG5vbi1vbWFwIGRldmljZXMgYWxzbyBjb3VsZCB1c2UgdGhpcy4KPiA+IAo+
+ID4gTm8gQ29kZSBjaGFuZ2VzIGRvbmUgdG8gdGhlIGRyaXZlciBmaWxlLgo+ID4gCj4gPiBTaWdu
+ZWQtb2ZmLWJ5OiBLZWVydGh5IDxqLWtlZXJ0aHlAdGkuY29tPgo+ID4gUmV2aWV3ZWQtYnk6IFNl
+YmFzdGlhbiBSZWljaGVsIDxzZWJhc3RpYW4ucmVpY2hlbEBjb2xsYWJvcmEuY28udWs+Cj4gPiAt
+LS0KPiA+IAo+ID4gQ2hhbmdlcyBpbiB2MzoKPiA+IAo+ID4gICAqIEFkZGVkIFNlYmFzdGlhbidz
+IFJldmlld2VkLWJ5Lgo+ID4gCj4gPiBDaGFuZ2VzIGluIHYyOgo+ID4gCj4gPiAgICogTm8gY29k
+ZSBjaGFuZ2VzIGluIHRoaXMgdjIgdmVyc2lvbi4gT25seSBlbmhhbmNlZCBwYXRjaAo+ID4gICAg
+IHN0YXRpc3RpY3MgZm9yIHJlbmFtZXMuCj4gPiAKPiA+ICBhcmNoL2FybS9wbGF0LW9tYXAvS2Nv
+bmZpZyAgICAgICAgICAgICAgICAgICAgICAgICAgICB8IDYgLS0tLS0tCj4gPiAgYXJjaC9hcm0v
+cGxhdC1vbWFwL01ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAxIC0KPiA+ICBk
+cml2ZXJzL2Nsb2Nrc291cmNlL0tjb25maWcgICAgICAgICAgICAgICAgICAgICAgICAgICB8IDYg
+KysrKysrCj4gPiAgZHJpdmVycy9jbG9ja3NvdXJjZS9NYWtlZmlsZSAgICAgICAgICAgICAgICAg
+ICAgICAgICAgfCAxICsKPiA+ICB7YXJjaC9hcm0vcGxhdC1vbWFwID0+IGRyaXZlcnMvY2xvY2tz
+b3VyY2V9L2RtdGltZXIuYyB8IDAKPiA+ICA1IGZpbGVzIGNoYW5nZWQsIDcgaW5zZXJ0aW9ucygr
+KSwgNyBkZWxldGlvbnMoLSkKPiA+ICByZW5hbWUge2FyY2gvYXJtL3BsYXQtb21hcCA9PiBkcml2
+ZXJzL2Nsb2Nrc291cmNlfS9kbXRpbWVyLmMgKDEwMCUpCj4gCj4gVGFrZSB0aGUgb3Bwb3J0dW5p
+dHkgdG8gcmVuYW1lIGl0IHRpbWVyLWRtLmMKCnNlZW1zIHRoZSBkcml2ZXJzL2Nsb2Nrc291cmNl
+IHN1YmRpcmVjdG9yeSBjb250YWlucyB3aGF0IGl0cyBuYW1lIHN0YXRlLgpIb3dldmVyIE9NQVAg
+ZHVhbCBtb2RlIHRpbWVycyBoYXZlIGFsc28gZXZlbnQgY2FwdHVyZSBjYXBhYmlsaXR5LCB3aGlj
+aApJJ2QgbGlrZSB0byB1c2UgdG8gbWVhc3VyZSBwdWxzZS9zcGFjZSB3aWR0aCBhbmQgcGFzcyBt
+ZWFzdXJlZCB2YWx1ZXMKdG8gSVIgcHJvdG9jb2wgZGVjb2RlcnMuCgpEbyB5b3UgaGF2ZSBhbnkg
+aWRlYSBob3cgdG8gc3BsaXQgY29kZSwgc28gdGhhdCBldmVudCBjYXB0dXJlIGNhcGFiaWxpdHkK
+Y291bGQgYmUgdXNlZCBieSBvdGhlciBkcml2ZXJzPwoKVGhhbmsgeW91LAoJbGFkaXMKCj4gPiBk
+aWZmIC0tZ2l0IGEvYXJjaC9hcm0vcGxhdC1vbWFwL0tjb25maWcgYi9hcmNoL2FybS9wbGF0LW9t
+YXAvS2NvbmZpZwo+ID4gaW5kZXggNzI3NmFmZS4uYWZjMWExZCAxMDA2NDQKPiA+IC0tLSBhL2Fy
+Y2gvYXJtL3BsYXQtb21hcC9LY29uZmlnCj4gPiArKysgYi9hcmNoL2FybS9wbGF0LW9tYXAvS2Nv
+bmZpZwo+ID4gQEAgLTEwNiwxMiArMTA2LDYgQEAgY29uZmlnIE9NQVAzX0wyX0FVWF9TRUNVUkVf
+U0VSVklDRV9TRVRfSUQKPiA+ICAJaGVscAo+ID4gIAkgIFBQQSByb3V0aW5lIHNlcnZpY2UgSUQg
+Zm9yIHNldHRpbmcgTDIgYXV4aWxpYXJ5IGNvbnRyb2wgcmVnaXN0ZXIuCj4gPiAgCj4gPiAtY29u
+ZmlnIE9NQVBfRE1fVElNRVIKPiA+IC0JYm9vbCAiVXNlIGR1YWwtbW9kZSB0aW1lciIKPiA+IC0J
+ZGVwZW5kcyBvbiBBUkNIX09NQVAxNlhYIHx8IEFSQ0hfT01BUDJQTFVTCj4gPiAtCWhlbHAKPiA+
+IC0JIFNlbGVjdCB0aGlzIG9wdGlvbiBpZiB5b3Ugd2FudCB0byB1c2UgT01BUCBEdWFsLU1vZGUg
+dGltZXJzLgo+ID4gLQo+ID4gIGNvbmZpZyBPTUFQX1NFUklBTF9XQUtFCj4gPiAgCWJvb2wgIkVu
+YWJsZSB3YWtlLXVwIGV2ZW50cyBmb3Igc2VyaWFsIHBvcnRzIgo+ID4gIAlkZXBlbmRzIG9uIEFS
+Q0hfT01BUDEgJiYgT01BUF9NVVgKPiA+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9wbGF0LW9tYXAv
+TWFrZWZpbGUgYi9hcmNoL2FybS9wbGF0LW9tYXAvTWFrZWZpbGUKPiA+IGluZGV4IDQ3ZTE4Njcu
+LjcyMTVhZGEgMTAwNjQ0Cj4gPiAtLS0gYS9hcmNoL2FybS9wbGF0LW9tYXAvTWFrZWZpbGUKPiA+
+ICsrKyBiL2FyY2gvYXJtL3BsYXQtb21hcC9NYWtlZmlsZQo+ID4gQEAgLTksNSArOSw0IEBAIG9i
+ai15IDo9IHNyYW0ubyBkbWEubyBjb3VudGVyXzMyay5vCj4gPiAgCj4gPiAgIyBvbWFwX2Rldmlj
+ZSBzdXBwb3J0IChPTUFQMisgb25seSBhdCB0aGUgbW9tZW50KQo+ID4gIAo+ID4gLW9iai0kKENP
+TkZJR19PTUFQX0RNX1RJTUVSKSArPSBkbXRpbWVyLm8KPiA+ICBvYmotJChDT05GSUdfT01BUF9E
+RUJVR19MRURTKSArPSBkZWJ1Zy1sZWRzLm8KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2Nsb2Nr
+c291cmNlL0tjb25maWcgYi9kcml2ZXJzL2Nsb2Nrc291cmNlL0tjb25maWcKPiA+IGluZGV4IGM3
+MjlhODguLjRkYTY2Y2YgMTAwNjQ0Cj4gPiAtLS0gYS9kcml2ZXJzL2Nsb2Nrc291cmNlL0tjb25m
+aWcKPiA+ICsrKyBiL2RyaXZlcnMvY2xvY2tzb3VyY2UvS2NvbmZpZwo+ID4gQEAgLTQ2LDYgKzQ2
+LDEyIEBAIGNvbmZpZyBESUdJQ09MT1JfVElNRVIKPiA+ICAJaGVscAo+ID4gIAkgIEVuYWJsZXMg
+dGhlIHN1cHBvcnQgZm9yIHRoZSBkaWdpY29sb3IgdGltZXIgZHJpdmVyLgo+ID4gIAo+ID4gK2Nv
+bmZpZyBPTUFQX0RNX1RJTUVSCj4gPiArCWJvb2wgIlVzZSBkdWFsLW1vZGUgdGltZXIiCj4gPiAr
+CWRlcGVuZHMgb24gQVJDSF9PTUFQMTZYWCB8fCBBUkNIX09NQVAyUExVUwo+ID4gKwloZWxwCj4g
+PiArCSBTZWxlY3QgdGhpcyBvcHRpb24gaWYgeW91IHdhbnQgdG8gdXNlIER1YWwtTW9kZSB0aW1l
+cnMuCj4gPiArCj4gCj4gU28gaW4gdGhlIGNsb2Nrc291cmNlIGRpcmVjdG9yeSB0aGUgcnVsZSBp
+cyB0aGUgZm9sbG93aW5nOgo+IAo+IFRoZSBjb25maWcgb3B0aW9uIGlzIHNpbGVudCBleGNlcHQg
+aWYgQ09NUElMRV9URVNUIGlzIHNldC4KPiAKPiBJdCBpcyB0aGUgS2NvbmZpZydzIHBsYXRmb3Jt
+IHdoaWNoIHNlbGVjdCB0aGUgZHJpdmVyIHNvIHRoZXJlIGlzIG5vIGRlcHMKPiBvbiB0aGUgQVJD
+SC4KPiAKPiBjb25maWcgT01BUF9ETV9USU1FUgo+IAlib29sICJVc2UgZHVhbC1tb2RlIHRpbWVy
+IiBpZiBDT01QSUxFX1RFU1QKPiAJaGVscAo+IAkgU2VsZWN0IHRoaXMgb3B0aW9uIGlmIHlvdSB3
+YW50IHRvIHVzZSBEdWFsLU1vZGUgdGltZXJzLgo+IAo+IEhlcmUgeW91IHdpbGwgaGF2ZSB0byBt
+YWtlIHN1cmUgdGhlIGRyaXZlciBjb21waWxlcyBvbiB4ODYuCj4gCj4gPiAgY29uZmlnIERXX0FQ
+Ql9USU1FUgo+ID4gIAlib29sICJEVyBBUEIgdGltZXIgZHJpdmVyIiBpZiBDT01QSUxFX1RFU1QK
+PiA+ICAJaGVscAo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvY2xvY2tzb3VyY2UvTWFrZWZpbGUg
+Yi9kcml2ZXJzL2Nsb2Nrc291cmNlL01ha2VmaWxlCj4gPiBpbmRleCA3MjcxMWYxLi5iMDc3MDc2
+IDEwMDY0NAo+ID4gLS0tIGEvZHJpdmVycy9jbG9ja3NvdXJjZS9NYWtlZmlsZQo+ID4gKysrIGIv
+ZHJpdmVycy9jbG9ja3NvdXJjZS9NYWtlZmlsZQo+ID4gQEAgLTE2LDYgKzE2LDcgQEAgb2JqLSQo
+Q09ORklHX0VNX1RJTUVSX1NUSSkJKz0gZW1fc3RpLm8KPiA+ICBvYmotJChDT05GSUdfQ0xLQkxE
+X0k4MjUzKQkrPSBpODI1My5vCj4gPiAgb2JqLSQoQ09ORklHX0NMS1NSQ19NTUlPKQkrPSBtbWlv
+Lm8KPiA+ICBvYmotJChDT05GSUdfRElHSUNPTE9SX1RJTUVSKQkrPSB0aW1lci1kaWdpY29sb3Iu
+bwo+ID4gK29iai0kKENPTkZJR19PTUFQX0RNX1RJTUVSKQkrPSBkbXRpbWVyLm8KPiA+ICBvYmot
+JChDT05GSUdfRFdfQVBCX1RJTUVSKQkrPSBkd19hcGJfdGltZXIubwo+ID4gIG9iai0kKENPTkZJ
+R19EV19BUEJfVElNRVJfT0YpCSs9IGR3X2FwYl90aW1lcl9vZi5vCj4gPiAgb2JqLSQoQ09ORklH
+X0ZUVE1SMDEwX1RJTUVSKQkrPSB0aW1lci1mdHRtcjAxMC5vCj4gPiBkaWZmIC0tZ2l0IGEvYXJj
+aC9hcm0vcGxhdC1vbWFwL2RtdGltZXIuYyBiL2RyaXZlcnMvY2xvY2tzb3VyY2UvZG10aW1lci5j
+Cj4gPiBzaW1pbGFyaXR5IGluZGV4IDEwMCUKPiA+IHJlbmFtZSBmcm9tIGFyY2gvYXJtL3BsYXQt
+b21hcC9kbXRpbWVyLmMKPiA+IHJlbmFtZSB0byBkcml2ZXJzL2Nsb2Nrc291cmNlL2RtdGltZXIu
+Ywo+ID4gCj4gCj4gCj4gLS0gCj4gIDxodHRwOi8vd3d3LmxpbmFyby5vcmcvPiBMaW5hcm8ub3Jn
+IOKUgiBPcGVuIHNvdXJjZSBzb2Z0d2FyZSBmb3IgQVJNIFNvQ3MKPiAKPiBGb2xsb3cgTGluYXJv
+OiAgPGh0dHA6Ly93d3cuZmFjZWJvb2suY29tL3BhZ2VzL0xpbmFybz4gRmFjZWJvb2sgfAo+IDxo
+dHRwOi8vdHdpdHRlci5jb20vIyEvbGluYXJvb3JnPiBUd2l0dGVyIHwKPiA8aHR0cDovL3d3dy5s
+aW5hcm8ub3JnL2xpbmFyby1ibG9nLz4gQmxvZwo+IAo+IC0tCj4gVG8gdW5zdWJzY3JpYmUgZnJv
+bSB0aGlzIGxpc3Q6IHNlbmQgdGhlIGxpbmUgInVuc3Vic2NyaWJlIGxpbnV4LW9tYXAiIGluCj4g
+dGhlIGJvZHkgb2YgYSBtZXNzYWdlIHRvIG1ham9yZG9tb0B2Z2VyLmtlcm5lbC5vcmcKPiBNb3Jl
+IG1ham9yZG9tbyBpbmZvIGF0ICBodHRwOi8vdmdlci5rZXJuZWwub3JnL21ham9yZG9tby1pbmZv
+Lmh0bWwKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxp
+bnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFk
+ZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4
+LWFybS1rZXJuZWwK
