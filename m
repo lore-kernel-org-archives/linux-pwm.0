@@ -1,77 +1,111 @@
-From: Ladislav Michl <ladis@linux-mips.org>
-Subject: Re: [PATCH v4 4/8] arm: OMAP: Move dmtimer driver out of plat-omap
- to drivers under clocksource
-Date: Fri, 8 Dec 2017 20:19:59 +0100
-Message-ID: <20171208191959.GA5801@lenoch>
-References: <1512105397-2544-1-git-send-email-j-keerthy@ti.com>
- <1512105397-2544-5-git-send-email-j-keerthy@ti.com>
- <e71f4c7b-e5c7-6305-dc1c-274da6fbf07d@linaro.org>
- <20171208172031.GA4146@lenoch>
- <a2f06a16-2468-6b09-171a-ad96e39af3eb@linaro.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v3] pwm: imx: Let PWM be active during suspend
+Date: Mon, 11 Dec 2017 10:16:25 +0100
+Message-ID: <20171211091625.GA10671@ulmo>
+References: <1511220443-26629-1-git-send-email-festevam@gmail.com>
+ <20171205084701.GC7386@ulmo>
+ <CAOMZO5DsWN_N5ygkCmNK_Dktp7UANdkSXi+iLacXnVHQ9j53AA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="+HP7ph2BbKc20aGI"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from eddie.linux-mips.org ([148.251.95.138]:43820 "EHLO
-        cvs.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752431AbdLHTUE (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 8 Dec 2017 14:20:04 -0500
+Received: from mail-qt0-f170.google.com ([209.85.216.170]:37053 "EHLO
+        mail-qt0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751759AbdLKJQa (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Dec 2017 04:16:30 -0500
+Received: by mail-qt0-f170.google.com with SMTP id f2so36743768qtj.4
+        for <linux-pwm@vger.kernel.org>; Mon, 11 Dec 2017 01:16:30 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <a2f06a16-2468-6b09-171a-ad96e39af3eb@linaro.org>
+In-Reply-To: <CAOMZO5DsWN_N5ygkCmNK_Dktp7UANdkSXi+iLacXnVHQ9j53AA@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Keerthy <j-keerthy@ti.com>, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com, t-kristo@ti.com, linux@armlinux.org.uk, grygorii.strashko@ti.com, robh+dt@kernel.org, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org
+To: Fabio Estevam <festevam@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Rob Herring <robh@kernel.org>, Russell King <linux@arm.linux.org.uk>, Fabio Estevam <fabio.estevam@nxp.com>
 
-On Fri, Dec 08, 2017 at 06:50:32PM +0100, Daniel Lezcano wrote:
-> On 08/12/2017 18:20, Ladislav Michl wrote:
-> > Daniel,
-> > 
-> > On Thu, Dec 07, 2017 at 11:54:27AM +0100, Daniel Lezcano wrote:
-> >> On 01/12/2017 06:16, Keerthy wrote:
-> >>> Move the dmtimer driver out of plat-omap to clocksource.
-> >>> So that non-omap devices also could use this.
-> >>>
-> >>> No Code changes done to the driver file.
-> >>>
-> >>> Signed-off-by: Keerthy <j-keerthy@ti.com>
-> >>> Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-> >>> ---
-> >>>
-> >>> Changes in v3:
-> >>>
-> >>>   * Added Sebastian's Reviewed-by.
-> >>>
-> >>> Changes in v2:
-> >>>
-> >>>   * No code changes in this v2 version. Only enhanced patch
-> >>>     statistics for renames.
-> >>>
-> >>>  arch/arm/plat-omap/Kconfig                            | 6 ------
-> >>>  arch/arm/plat-omap/Makefile                           | 1 -
-> >>>  drivers/clocksource/Kconfig                           | 6 ++++++
-> >>>  drivers/clocksource/Makefile                          | 1 +
-> >>>  {arch/arm/plat-omap => drivers/clocksource}/dmtimer.c | 0
-> >>>  5 files changed, 7 insertions(+), 7 deletions(-)
-> >>>  rename {arch/arm/plat-omap => drivers/clocksource}/dmtimer.c (100%)
-> >>
-> >> Take the opportunity to rename it timer-dm.c
-> > 
-> > seems the drivers/clocksource subdirectory contains what its name state.
-> 
-> Yes, clocksource, clockevent.
-> 
-> > However OMAP dual mode timers have also event capture capability, which
-> > I'd like to use to measure pulse/space width and pass measured values
-> > to IR protocol decoders.
-> > Do you have any idea how to split code, so that event capture capability
-> > could be used by other drivers?
-> Not 100% sure but could be drivers/pwm, using the capture API.
 
-I hoped for another answer as pwm_capture is blocking operation while
-something event (interrupt) driven would be more usefull.
+--+HP7ph2BbKc20aGI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-But that's for different debate, so I'll prepare quick and dirty patch
-to start with.
+On Tue, Dec 05, 2017 at 04:56:00PM -0200, Fabio Estevam wrote:
+> Hi Thierry,
+>=20
+> On Tue, Dec 5, 2017 at 6:47 AM, Thierry Reding <thierry.reding@gmail.com>=
+ wrote:
+>=20
+> > It looks like this would also keep other PWMs enabled in suspend. If for
+> > example you hooked up a fan to this PWM this change would make it so
+> > that the fan would remain on during suspend. That doesn't sound
+> > desirable to me.
+>=20
+> It is expected that the PWM fan driver would disable the fan upon
+> entering into suspend.
+>=20
+> The old vendor driver also sets the STOPEN bit unconditionally:
+> http://git.freescale.com/git/cgit.cgi/imx/linux-2.6-imx.git/tree/arch/arm=
+/plat-mxc/pwm.c?h=3Dimx_2.6.35_11.09.01#n97
+>=20
+> >
+> > On v2, I see this reply from you:
+> >
+> >         Please note that on imx6qdl-cuboxi the pwm is active low.
+>=20
+> What I meant to say is that a logic level 0 turns on the LED.
 
-Thank you,
-	ladis
+That's the same thing.
+
+> > I also see that imx6q-cubox-i uses the "fsl,imx27-pwm" compatible
+> > version of this controller and that supports polarity inversion. I think
+> > the correct thing to do here is to mark the PWM as inverted (according
+> > to the DTS file it is actually the pwmleds node that has an active-low
+> > property). If you invert the PWM you could add extra code to the PWM
+> > driver to deal with this properly and set STOPEN only for inverted PWM
+> > signals.
+>=20
+> Polarity is correct:
+>=20
+> echo 0 > brightness --> turns off the LED
+> echo 248 > brightness ---> turns on the LED with the maximum brightness
+>=20
+> It is only the behaviour during suspend which is not correct (LCD turns o=
+n).
+
+This does indicate all the more that you're trying to invert the
+polarity in the user driver. If you look at the driver code it will
+simply invert the duty cycle for active-low LEDs. That matches the
+symptoms that you describe: when you set zero brightness you will
+in fact get full duty cycle and hence the LED turns off. However,
+this does no longer work if the PWM signal is truly inverted, since
+the "off" state of the PWM signal will actually be "on".
+
+> Tried your suggestion of changing the polarity and it does not work
+> and breaks the usage during normal mode (non low power).
+
+How does it break? Note that you have to change the polarity of the PWM
+signal (in the pwms property) and then remove the "active-low" property
+=66rom the leds device tree node to avoid double inversion.
+
+Thierry
+
+--+HP7ph2BbKc20aGI
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlouTOYACgkQ3SOs138+
+s6EMIA/+KZKqQCDLwfRSQB/wUppJeHGixrGJMnC3mvaLEE086veASHnNbuytL8/H
+BC06xEn11Pe+xZqtusuDVOJxeXNO03bBPQ6ivAzOBbdJwZzTh8zuIWUVISj0B+Fi
+Sk6kDhclBZS5BNrl1XLzh0oY1SBDpjI8nXNKI7+amtJNhxRXPgDAACzJCz9yf4ha
+BbuqtNOTGlfjBOn9Mlf5BCcOettbfIHHVa7b5DajMLwL/YY7sVayAwVkaVVq1TPB
+8CtwjGnF/il19vQP5od55bKBTP6IVr1fSsi0TO0NwP5/wE39kt5IkjrrzVEKCC8c
+hzUOhZX8e3eP93qRqhW4vXTPzA8Qf18HELYEt6C6FB4Lfp4b/DV0YFuOmGYXHnAz
+XB5kcJ64fU5Ai3KfQ1fXn6mdCjqjlzF6MdCFLADgM2HGry7FA1UnFD+C23H3JuRu
+xJk9joqkCDnN40dXWTaVf8jacQjgarGRpHlbRv4Z/tQ8+wMvkY+pjjqUMIQW7U/6
+gTLRJlXfbBdSIQs6X+OQ5WFWJitun54mXT8eg3EVjxAljSkKvbxQPr7OblekREzc
+YWve+/kxCN2fVaVOQNvA0H5DWSV091DK+6+dwHlft4OJEAhIAohFY/cSEYYZVo5R
+EfF4LAUnWJrPRwCtNnzvxeYBzy/jDr+WQkueITutiA/e0NbhEj0=
+=OGjM
+-----END PGP SIGNATURE-----
+
+--+HP7ph2BbKc20aGI--
