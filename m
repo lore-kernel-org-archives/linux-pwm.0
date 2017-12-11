@@ -1,64 +1,70 @@
-From: Lothar =?UTF-8?B?V2HDn21hbm4=?= <LW@KARO-electronics.de>
+From: Fabio Estevam <festevam@gmail.com>
 Subject: Re: [PATCH v3] pwm: imx: Let PWM be active during suspend
-Date: Mon, 11 Dec 2017 16:55:45 +0100
-Message-ID: <20171211165545.2d4b21bd@karo-electronics.de>
+Date: Mon, 11 Dec 2017 14:06:31 -0200
+Message-ID: <CAOMZO5D-g-H2n0Fx9h=3vX_ryvPbXB64nsvzuTo_ddJeBke7Uw@mail.gmail.com>
 References: <1511220443-26629-1-git-send-email-festevam@gmail.com>
-        <20171205084701.GC7386@ulmo>
-        <CAOMZO5DsWN_N5ygkCmNK_Dktp7UANdkSXi+iLacXnVHQ9j53AA@mail.gmail.com>
-        <20171211091625.GA10671@ulmo>
-        <CAOMZO5DiOx5m1Wew9v5xaqgbcNDR7gio93EKP48bdM3kaqfkoA@mail.gmail.com>
-        <20171211121306.GK10671@ulmo>
-        <CAOMZO5DsyCbTKqRv4kZqa3n7Hp-xHkCrXjegEQt9Fi694men=w@mail.gmail.com>
-        <20171211142040.757f1313@karo-electronics.de>
-        <CAOMZO5AwijXQi=gR9BaW_WYVPBpCpa8V=wWMcHBt+xCqNySo8A@mail.gmail.com>
+ <20171205084701.GC7386@ulmo> <CAOMZO5DsWN_N5ygkCmNK_Dktp7UANdkSXi+iLacXnVHQ9j53AA@mail.gmail.com>
+ <20171211091625.GA10671@ulmo> <CAOMZO5DiOx5m1Wew9v5xaqgbcNDR7gio93EKP48bdM3kaqfkoA@mail.gmail.com>
+ <20171211121306.GK10671@ulmo> <CAOMZO5DsyCbTKqRv4kZqa3n7Hp-xHkCrXjegEQt9Fi694men=w@mail.gmail.com>
+ <20171211142040.757f1313@karo-electronics.de> <CAOMZO5AwijXQi=gR9BaW_WYVPBpCpa8V=wWMcHBt+xCqNySo8A@mail.gmail.com>
+ <20171211165545.2d4b21bd@karo-electronics.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from smtprelay05.ispgateway.de ([80.67.31.93]:24357 "EHLO
-        smtprelay05.ispgateway.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750707AbdLKPzw (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Dec 2017 10:55:52 -0500
-In-Reply-To: <CAOMZO5AwijXQi=gR9BaW_WYVPBpCpa8V=wWMcHBt+xCqNySo8A@mail.gmail.com>
+Received: from mail-ot0-f196.google.com ([74.125.82.196]:43330 "EHLO
+        mail-ot0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751628AbdLKQGc (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Dec 2017 11:06:32 -0500
+Received: by mail-ot0-f196.google.com with SMTP id y10so15123300otg.10
+        for <linux-pwm@vger.kernel.org>; Mon, 11 Dec 2017 08:06:32 -0800 (PST)
+In-Reply-To: <20171211165545.2d4b21bd@karo-electronics.de>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Fabio Estevam <festevam@gmail.com>
+To: =?UTF-8?Q?Lothar_Wa=C3=9Fmann?= <LW@karo-electronics.de>
 Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Rob Herring <robh@kernel.org>, Russell King <linux@arm.linux.org.uk>, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <lukma@denx.de>
 
-Hi,
+Hi Lothar,
 
-On Mon, 11 Dec 2017 13:07:46 -0200 Fabio Estevam wrote:
-> Hi Lothar,
-> 
-> On Mon, Dec 11, 2017 at 11:20 AM, Lothar Waßmann <LW@karo-electronics.de> wrote:
-> 
-> > The problem is, that the PWM output goes low whenever the PWM is
-> > disabled, no matter what polarity is programmed. So, you would need to
-> > prevent the PWM from being disabled whenever the duty cycle is set to 0.
-> 
-> Yes, that's the key point: PWM output goes low when PWM is disabled.
-> 
-> I don't think we can workaround this behaviour in the pwm-imx driver.
-> 
-> So at the moment I see two ways to fix this:
-> 
-> 1. Set the STOPEN bit which is what I do in this patch
-> 
-This should probably work.
-But this won't fix the issue, that the LED or backlight is turned fully
-on when the brightness value is set to 0, since both the leds-pwm and
-the pwmbl driver explicitly disable the PWM, when the brightness
-value is set to 0.
+On Mon, Dec 11, 2017 at 1:55 PM, Lothar Wa=C3=9Fmann <LW@karo-electronics.d=
+e> wrote:
 
-> 2. Add support for allowing changing pinctrl in suspend:
-> https://pastebin.com/71UGrnkA
-> 
-> This way we can configure the pwm output pin as Hi-Z during suspend.
-> 
-> What do you think?
->
-It would be better to enable the 22K pullup on the pin. Otherwise the
-pin will be floating when there is no external pullup resistor.
+>> 1. Set the STOPEN bit which is what I do in this patch
+>>
+> This should probably work.
+> But this won't fix the issue, that the LED or backlight is turned fully
+> on when the brightness value is set to 0, since both the leds-pwm and
+> the pwmbl driver explicitly disable the PWM, when the brightness
+> value is set to 0.
 
+Yes, but in the case of imx6qdl-cubox-i.dtsi the PWM is used in the
+normal polarity and the inversion is achieved via 'active-low'
+property of pwm-leds.
 
-Lothar Waßmann
+On this board the current dts + current pwm-imx driver behaves
+incorrecly only during suspend (LED is on). During normal mode the PWM
+operation is correct.
+
+By setting the STOPEN bit the LED is off in suspend.
+
+>> 2. Add support for allowing changing pinctrl in suspend:
+>> https://pastebin.com/71UGrnkA
+>>
+>> This way we can configure the pwm output pin as Hi-Z during suspend.
+>>
+>> What do you think?
+>>
+> It would be better to enable the 22K pullup on the pin. Otherwise the
+> pin will be floating when there is no external pullup resistor.
+
+Yes, but first we need to come to a conclusion if we go with solution
+1 (enable STOPEN) or with solution 2 (allow changinh pinctrl) :-)
+
+I am more inclined to go with solution 1 as this was also used in the
+old vendor 3.0.35 kernel:
+http://git.freescale.com/git/cgit.cgi/imx/linux-2.6-imx.git/tree/arch/arm/p=
+lat-mxc/pwm.c?h=3Dimx_3.0.35_4.1.0#n106
+
+Please let me know what you prefer.
+
+Thanks
