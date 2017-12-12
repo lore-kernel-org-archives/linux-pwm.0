@@ -1,40 +1,255 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v3] pwm: imx: Let PWM be active during suspend
-Date: Mon, 11 Dec 2017 16:48:39 -0200
-Message-ID: <CAOMZO5Dc8ssuvr52Kk6iipCQfB1ftPU3fryw6qSDBy8xttKNOw@mail.gmail.com>
-References: <1511220443-26629-1-git-send-email-festevam@gmail.com>
- <20171205084701.GC7386@ulmo> <CAOMZO5DsWN_N5ygkCmNK_Dktp7UANdkSXi+iLacXnVHQ9j53AA@mail.gmail.com>
- <20171211091625.GA10671@ulmo> <CAOMZO5DiOx5m1Wew9v5xaqgbcNDR7gio93EKP48bdM3kaqfkoA@mail.gmail.com>
- <20171211121306.GK10671@ulmo> <CAOMZO5DsyCbTKqRv4kZqa3n7Hp-xHkCrXjegEQt9Fi694men=w@mail.gmail.com>
- <20171211142040.757f1313@karo-electronics.de> <CAOMZO5AwijXQi=gR9BaW_WYVPBpCpa8V=wWMcHBt+xCqNySo8A@mail.gmail.com>
- <20171211165545.2d4b21bd@karo-electronics.de> <CAOMZO5D-g-H2n0Fx9h=3vX_ryvPbXB64nsvzuTo_ddJeBke7Uw@mail.gmail.com>
- <20171211175250.73289f27@karo-electronics.de>
+From: Keerthy <j-keerthy@ti.com>
+Subject: [PATCH v5 1/8] clocksource: dmtimer: Remove all the exports
+Date: Tue, 12 Dec 2017 11:42:10 +0530
+Message-ID: <1513059137-21593-2-git-send-email-j-keerthy@ti.com>
+References: <1513059137-21593-1-git-send-email-j-keerthy@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi0-f45.google.com ([209.85.218.45]:45330 "EHLO
-        mail-oi0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752103AbdLKSsk (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 11 Dec 2017 13:48:40 -0500
-Received: by mail-oi0-f45.google.com with SMTP id x20so12278811oix.12
-        for <linux-pwm@vger.kernel.org>; Mon, 11 Dec 2017 10:48:40 -0800 (PST)
-In-Reply-To: <20171211175250.73289f27@karo-electronics.de>
+Received: from lelnx194.ext.ti.com ([198.47.27.80]:50410 "EHLO
+        lelnx194.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750955AbdLLGOe (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 12 Dec 2017 01:14:34 -0500
+In-Reply-To: <1513059137-21593-1-git-send-email-j-keerthy@ti.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: =?UTF-8?Q?Lothar_Wa=C3=9Fmann?= <LW@karo-electronics.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Rob Herring <robh@kernel.org>, Russell King <linux@arm.linux.org.uk>, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <lukma@denx.de>
+To: daniel.lezcano@linaro.org, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com
+Cc: grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org, t-kristo@ti.com, j-keerthy@ti.com, linux@armlinux.org.uk
 
-Hi Lothar,
+Remove all the unwanted exports from the driver
 
-On Mon, Dec 11, 2017 at 2:52 PM, Lothar Wa=C3=9Fmann <LW@karo-electronics.d=
-e> wrote:
+Signed-off-by: Keerthy <j-keerthy@ti.com>
+Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+---
+Changes in v3:
 
-> I also prefer the patch that doesn't mess with the pin configs.
+  * Added Sebastian's Reviewed-by.
 
-Thanks for your feedback.
+Changes in v2:
 
-Would you mind testing this patch on your system?
-https://patchwork.ozlabs.org/patch/839834/
+  * No code changes in this v2 version. Only enhanced patch
+    statistics for renames.
 
-Thanks
+ arch/arm/plat-omap/dmtimer.c | 27 ---------------------------
+ 1 file changed, 27 deletions(-)
+
+diff --git a/arch/arm/plat-omap/dmtimer.c b/arch/arm/plat-omap/dmtimer.c
+index d443e48..72565fc 100644
+--- a/arch/arm/plat-omap/dmtimer.c
++++ b/arch/arm/plat-omap/dmtimer.c
+@@ -302,7 +302,6 @@ struct omap_dm_timer *omap_dm_timer_request(void)
+ {
+ 	return _omap_dm_timer_request(REQUEST_ANY, NULL);
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_request);
+ 
+ struct omap_dm_timer *omap_dm_timer_request_specific(int id)
+ {
+@@ -315,7 +314,6 @@ struct omap_dm_timer *omap_dm_timer_request_specific(int id)
+ 
+ 	return _omap_dm_timer_request(REQUEST_BY_ID, &id);
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_request_specific);
+ 
+ /**
+  * omap_dm_timer_request_by_cap - Request a timer by capability
+@@ -330,7 +328,6 @@ struct omap_dm_timer *omap_dm_timer_request_by_cap(u32 cap)
+ {
+ 	return _omap_dm_timer_request(REQUEST_BY_CAP, &cap);
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_request_by_cap);
+ 
+ /**
+  * omap_dm_timer_request_by_node - Request a timer by device-tree node
+@@ -346,7 +343,6 @@ struct omap_dm_timer *omap_dm_timer_request_by_node(struct device_node *np)
+ 
+ 	return _omap_dm_timer_request(REQUEST_BY_NODE, np);
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_request_by_node);
+ 
+ int omap_dm_timer_free(struct omap_dm_timer *timer)
+ {
+@@ -359,7 +355,6 @@ int omap_dm_timer_free(struct omap_dm_timer *timer)
+ 	timer->reserved = 0;
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_free);
+ 
+ void omap_dm_timer_enable(struct omap_dm_timer *timer)
+ {
+@@ -379,13 +374,11 @@ void omap_dm_timer_enable(struct omap_dm_timer *timer)
+ 		}
+ 	}
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_enable);
+ 
+ void omap_dm_timer_disable(struct omap_dm_timer *timer)
+ {
+ 	pm_runtime_put_sync(&timer->pdev->dev);
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_disable);
+ 
+ int omap_dm_timer_get_irq(struct omap_dm_timer *timer)
+ {
+@@ -393,7 +386,6 @@ int omap_dm_timer_get_irq(struct omap_dm_timer *timer)
+ 		return timer->irq;
+ 	return -EINVAL;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_get_irq);
+ 
+ #if defined(CONFIG_ARCH_OMAP1)
+ #include <mach/hardware.h>
+@@ -429,7 +421,6 @@ __u32 omap_dm_timer_modify_idlect_mask(__u32 inputmask)
+ 
+ 	return inputmask;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_modify_idlect_mask);
+ 
+ #else
+ 
+@@ -439,7 +430,6 @@ struct clk *omap_dm_timer_get_fclk(struct omap_dm_timer *timer)
+ 		return timer->fclk;
+ 	return NULL;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_get_fclk);
+ 
+ __u32 omap_dm_timer_modify_idlect_mask(__u32 inputmask)
+ {
+@@ -447,7 +437,6 @@ __u32 omap_dm_timer_modify_idlect_mask(__u32 inputmask)
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_modify_idlect_mask);
+ 
+ #endif
+ 
+@@ -461,7 +450,6 @@ int omap_dm_timer_trigger(struct omap_dm_timer *timer)
+ 	omap_dm_timer_write_reg(timer, OMAP_TIMER_TRIGGER_REG, 0);
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_trigger);
+ 
+ int omap_dm_timer_start(struct omap_dm_timer *timer)
+ {
+@@ -482,7 +470,6 @@ int omap_dm_timer_start(struct omap_dm_timer *timer)
+ 	timer->context.tclr = l;
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_start);
+ 
+ int omap_dm_timer_stop(struct omap_dm_timer *timer)
+ {
+@@ -506,7 +493,6 @@ int omap_dm_timer_stop(struct omap_dm_timer *timer)
+ 	omap_dm_timer_disable(timer);
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_stop);
+ 
+ int omap_dm_timer_set_source(struct omap_dm_timer *timer, int source)
+ {
+@@ -569,7 +555,6 @@ int omap_dm_timer_set_source(struct omap_dm_timer *timer, int source)
+ 
+ 	return ret;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_set_source);
+ 
+ int omap_dm_timer_set_load(struct omap_dm_timer *timer, int autoreload,
+ 			    unsigned int load)
+@@ -595,7 +580,6 @@ int omap_dm_timer_set_load(struct omap_dm_timer *timer, int autoreload,
+ 	omap_dm_timer_disable(timer);
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_set_load);
+ 
+ /* Optimized set_load which removes costly spin wait in timer_start */
+ int omap_dm_timer_set_load_start(struct omap_dm_timer *timer, int autoreload,
+@@ -625,7 +609,6 @@ int omap_dm_timer_set_load_start(struct omap_dm_timer *timer, int autoreload,
+ 	timer->context.tcrr = load;
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_set_load_start);
+ 
+ int omap_dm_timer_set_match(struct omap_dm_timer *timer, int enable,
+ 			     unsigned int match)
+@@ -650,7 +633,6 @@ int omap_dm_timer_set_match(struct omap_dm_timer *timer, int enable,
+ 	omap_dm_timer_disable(timer);
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_set_match);
+ 
+ int omap_dm_timer_set_pwm(struct omap_dm_timer *timer, int def_on,
+ 			   int toggle, int trigger)
+@@ -676,7 +658,6 @@ int omap_dm_timer_set_pwm(struct omap_dm_timer *timer, int def_on,
+ 	omap_dm_timer_disable(timer);
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_set_pwm);
+ 
+ int omap_dm_timer_set_prescaler(struct omap_dm_timer *timer, int prescaler)
+ {
+@@ -699,7 +680,6 @@ int omap_dm_timer_set_prescaler(struct omap_dm_timer *timer, int prescaler)
+ 	omap_dm_timer_disable(timer);
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_set_prescaler);
+ 
+ int omap_dm_timer_set_int_enable(struct omap_dm_timer *timer,
+ 				  unsigned int value)
+@@ -716,7 +696,6 @@ int omap_dm_timer_set_int_enable(struct omap_dm_timer *timer,
+ 	omap_dm_timer_disable(timer);
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_set_int_enable);
+ 
+ /**
+  * omap_dm_timer_set_int_disable - disable timer interrupts
+@@ -747,7 +726,6 @@ int omap_dm_timer_set_int_disable(struct omap_dm_timer *timer, u32 mask)
+ 	omap_dm_timer_disable(timer);
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_set_int_disable);
+ 
+ unsigned int omap_dm_timer_read_status(struct omap_dm_timer *timer)
+ {
+@@ -762,7 +740,6 @@ unsigned int omap_dm_timer_read_status(struct omap_dm_timer *timer)
+ 
+ 	return l;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_read_status);
+ 
+ int omap_dm_timer_write_status(struct omap_dm_timer *timer, unsigned int value)
+ {
+@@ -773,7 +750,6 @@ int omap_dm_timer_write_status(struct omap_dm_timer *timer, unsigned int value)
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_write_status);
+ 
+ unsigned int omap_dm_timer_read_counter(struct omap_dm_timer *timer)
+ {
+@@ -784,7 +760,6 @@ unsigned int omap_dm_timer_read_counter(struct omap_dm_timer *timer)
+ 
+ 	return __omap_dm_timer_read_counter(timer, timer->posted);
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_read_counter);
+ 
+ int omap_dm_timer_write_counter(struct omap_dm_timer *timer, unsigned int value)
+ {
+@@ -799,7 +774,6 @@ int omap_dm_timer_write_counter(struct omap_dm_timer *timer, unsigned int value)
+ 	timer->context.tcrr = value;
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timer_write_counter);
+ 
+ int omap_dm_timers_active(void)
+ {
+@@ -816,7 +790,6 @@ int omap_dm_timers_active(void)
+ 	}
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(omap_dm_timers_active);
+ 
+ static const struct of_device_id omap_timer_match[];
+ 
+-- 
+1.9.1
