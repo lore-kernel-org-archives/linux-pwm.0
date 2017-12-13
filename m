@@ -1,84 +1,90 @@
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH v4 3/4] ARM: dts: add pwm node for r40.
-Date: Wed, 13 Dec 2017 16:57:42 +0100
-Message-ID: <20171213155742.he2wmdf6camsua5k@flea.lan>
-References: <20171213144628.GA18246@arx-s1>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH v5 1/8] clocksource: dmtimer: Remove all the exports
+Date: Wed, 13 Dec 2017 08:51:10 -0800
+Message-ID: <20171213165110.GG14441@atomide.com>
+References: <20171212071624.GA3453@lenoch>
+ <c6a407a8-41c5-f0fd-931c-a58e7e627c82@ti.com>
+ <20171212080134.GA9589@lenoch>
+ <9de9b3dc-09f4-d58b-ba5a-60fcb563c665@ti.com>
+ <20171212081923.GA10084@lenoch>
+ <7c92b0c2-8784-9c14-66b0-a19fe68f08ad@ti.com>
+ <20171212170054.GD14441@atomide.com>
+ <20171212180317.GB10337@lenoch>
+ <20171212182150.GF14441@atomide.com>
+ <20171213091527.GA18859@lenoch>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="42iglaxyb27fxpbd"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:39101 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751026AbdLMP5o (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 13 Dec 2017 10:57:44 -0500
-Content-Disposition: inline
-In-Reply-To: <20171213144628.GA18246@arx-s1>
-Sender: linux-pwm-owner@vger.kernel.org
-List-Id: linux-pwm@vger.kernel.org
-To: hao_zhang <hao5781286@gmail.com>
-Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, wens@csie.org, linus.walleij@linaro.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
-
-
---42iglaxyb27fxpbd
 Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20171213091527.GA18859@lenoch>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ladislav Michl <ladis@linux-mips.org>
+Cc: Keerthy <j-keerthy@ti.com>, daniel.lezcano@linaro.org, aaro.koskinen@iki.fi, thierry.reding@gmail.com, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org, t-kristo@ti.com, linux@armlinux.org.uk
+List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+* Ladislav Michl <ladis@linux-mips.org> [171213 09:17]:
+> On Tue, Dec 12, 2017 at 10:21:50AM -0800, Tony Lindgren wrote:
+> > * Ladislav Michl <ladis@linux-mips.org> [171212 18:06]:
+> > > I do not follow. Each general-purpose timer module has its own interrupt line,
+> > > so claiming that irq directly using request_irq seems enough. Could you
+> > > explain interrupt controller idea a bit more?
+> > 
+> > Well let's assume we have drivers/clocksource/timer-dm.c implement
+> > an irq controller. Then the pwm driver would just do:
+> > 
+> > pwm9: dmtimer-pwm {
+> > 	compatible = "ti,omap-dmtimer-pwm";
+> > 	#pwm-cells = <3>;
+> > 	ti,timers = <&timer9>;
+> > 	ti,clock-source = <0x00>; /* timer_sys_ck */
+> > 	interrupts-extended = <&timer9 IRQ_TYPE_SOMETHING>;
+> > };
+> > 
+> > Then you can do whatever you need to in the pwm driver with
+> > enable_irq/disable_irq + a handler?
+> 
+> That seems to work. Now should we map 1:1 to timer interrupt or
+> have separate interrupt for match, overflow and capture?
+> Former would need some more dm_timer_ops to determine interrupt
+> source, while later would work "automagically" - but I haven't
+> tested it yet.
 
-On Wed, Dec 13, 2017 at 10:46:28PM +0800, hao_zhang wrote:
-> This patch add pwm node for r40.
->=20
-> Signed-off-by: hao_zhang <hao5781286@gmail.com>
-> ---
->  arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts |  6 ++++++
->  arch/arm/boot/dts/sun8i-r40.dtsi                  | 13 +++++++++++++
->  2 files changed, 19 insertions(+)
->=20
-> diff --git a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts b/arch/arm=
-/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
-> index 8c5efe2..6cf6273 100644
-> --- a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
-> +++ b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
-> @@ -196,6 +196,12 @@
->  	status =3D "okay";
->  };
-> =20
-> +&pwm {
-> +	pinctrl-names =3D "default";
-> +	pinctrl-0 =3D <&pwm_pins>;
-> +	status =3D "okay";
-> +};
-> +
+Hmm the second option sounds appealing to me as then the device
+tree binding really follows the hardware:
 
-Can you split this part into a separate patch?
+bit 2 capture interrupt
+bit 1 overflow interrupt
+bit 0 match interrupt
 
-Thanks!
-Maxime
+and in the dts we can describe these with:
 
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+interrupts-extended = <&timer 9 2 IRQ_TYPE_EDGE_SOMETHING>;
+interrupts-extended = <&timer 9 1 IRQ_TYPE_EDGE_SOMETHING>;
+interrupts-extended = <&timer 9 0 IRQ_TYPE_EDGE_SOMETHING>;
 
---42iglaxyb27fxpbd
-Content-Type: application/pgp-signature; name="signature.asc"
+I think these are all edge based on "Capture Mode Functionality"
+chapter in the TRM?
 
------BEGIN PGP SIGNATURE-----
+> > If reading the line status is needed.. Then maybe the GPIO framework
+> > needs to have hardware timer support instead?
+> 
+> It does not seem OMAP can read event pin value in event capture mode.
 
-iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAloxTfMACgkQ0rTAlCFN
-r3T1JBAAkcNkMs6L2a036oSrW3tiMA8/E5fSwKdOOUvXiZcbj/FFwafcwctQdo7A
-e8VIgTiPy4YecfG+8OZ6Bq9UkogINye6uZDBkJcy8VaF48a1rVMTHNAUha7Ft5CK
-T9F8VknSpwUaGYxTda+4FHSQ43gMPYPJ+yo6LzTfwxd4t/E0mAl9OzyXnIeSDfzA
-JlUzwfDFv483zZJ6b39tyDWGbBlTkFpHlcEdqJz3PaKThM8hVnC9kD5wnXFLs7Ln
-duUQHOWvbg8gv/KCf0Mn68VONgR9MeUDzUUmlkNZfT4g1tn3I1xfOdbfMENT+Pqd
-v5mHKU+ErE+dy8+hbqBoyLOc/Ch/e2ximpsEtBiLKrOLCr92CcgZCHxCk3bJMWuc
-ynz43me38gOGzcF7y/JRCvXqyS6tX4CKT+/G9EBWqr9tiNcKIZN/vvcc4RHPwpGe
-Vuzi2P0N+8j5gjzf8VkO89E7DbCX/Dkr3XEu5eAGdpzSHnY0/oatjVrJNtIFs05h
-C/bElXdvucmAkDHcq1vwsLxtVkJsSuPdCFUKGbrBowGqrUxpQvi9giIDJQLLSBs7
-1xG4GJlWRyCj+0uRQQeSxlLGmaPRx4Bn2uewr8PPcKnAxU/VO08n0Nf7SOWVVw5a
-cYaVZ2D9ygubwx49bNeCOvmDcXIMJs3KUCyDH1E4Z6aj5pAZszI=
-=5ADU
------END PGP SIGNATURE-----
+Sounds like a bug somehwere, probably in software?
 
---42iglaxyb27fxpbd--
+> > Anyways, just thinking out loud how we could have a Linux generic
+> > hardware timer framework that drivers like pwm could then use.
+> 
+> I need a bit longer chain:
+> dmtimer -> pwm -> rc (which calls ir_raw_event_store from interrupt)
+> Is extending pwm core with interrpt callback the right thing there?
+> Something like:
+> (*pulse_captured)(ktime_t width, ktime_t last_edge);
+
+OK seems like having drivers/clocksource/timer-dm.c a chained
+interrupt handler should do it :) Anyways, that's a different
+set of patches on top of these.
+
+Regards,
+
+Tony
