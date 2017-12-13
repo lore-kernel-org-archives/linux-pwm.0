@@ -1,78 +1,56 @@
 From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH v4 4/4] ARM: pinctrl: sunxi-pinctrl: fix pin funtion can
- not be match correctly.
-Date: Wed, 13 Dec 2017 16:45:49 +0100
-Message-ID: <20171213154549.5zn4uxhsssqw3pb7@flea.lan>
-References: <20171213144748.GA18267@arx-s1>
+Subject: Re: [PATCH v4 1/4] dt-bindings: pwm: binding allwinner sun8i
+ R40/V40/T3.
+Date: Wed, 13 Dec 2017 16:50:00 +0100
+Message-ID: <20171213155000.5qrykowmsawhy3sx@flea.lan>
+References: <20171213144309.GA18167@arx-s1>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="7fibj5sxfyoheezo"
+        protocol="application/pgp-signature"; boundary="y2veovlt2pdexrge"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:38685 "EHLO
+Received: from mail.free-electrons.com ([62.4.15.54]:38878 "EHLO
         mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753305AbdLMPpv (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 13 Dec 2017 10:45:51 -0500
+        with ESMTP id S1751916AbdLMPuB (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 13 Dec 2017 10:50:01 -0500
 Content-Disposition: inline
-In-Reply-To: <20171213144748.GA18267@arx-s1>
+In-Reply-To: <20171213144309.GA18167@arx-s1>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 To: hao_zhang <hao5781286@gmail.com>
 Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, wens@csie.org, linus.walleij@linaro.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
 
 
---7fibj5sxfyoheezo
+--y2veovlt2pdexrge
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-Thanks for your patch!
-
-On Wed, Dec 13, 2017 at 10:47:48PM +0800, hao_zhang wrote:
-> Pin function can not be match correctly when SUNXI_PIN describe with
-> mutiple variant and same function.
->=20
-> such as:
-> on pinctrl-sun4i-a10.c
->=20
-> SUNXI_PIN(SUNXI_PINCTRL_PIN(B, 2),
-> 		SUNXI_FUNCTION(0x0, "gpio_in"),
-> 		SUNXI_FUNCTION(0x1, "gpio_out"),
-> 		SUNXI_FUNCTION_VARIANT(0x2, "pwm",    /* PWM0 */
-> 			PINCTRL_SUN4I_A10 |
-> 			PINCTRL_SUN7I_A20),
-> 		SUNXI_FUNCTION_VARIANT(0x3, "pwm",    /* PWM0 */
-> 			PINCTRL_SUN8I_R40)),
->=20
-> it would always match to the first variant function
-> (PINCTRL_SUN4I_A10, PINCTRL_SUN7I_A20)
->=20
-> so we should add variant compare on it.
+On Wed, Dec 13, 2017 at 10:43:09PM +0800, hao_zhang wrote:
+> This patch adds allwinner R40, V40, T3 pwm binding documents.
 >=20
 > Signed-off-by: hao_zhang <hao5781286@gmail.com>
 > ---
->  drivers/pinctrl/sunxi/pinctrl-sunxi.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+>  Documentation/devicetree/bindings/pwm/pwm-sun8i.txt | 18 +++++++++++++++=
++++
+>  1 file changed, 18 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
 >=20
-> diff --git a/drivers/pinctrl/sunxi/pinctrl-sunxi.c b/drivers/pinctrl/sunx=
-i/pinctrl-sunxi.c
-> index 4b6cb25..f23e74e 100644
-> --- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
-> +++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
-> @@ -83,9 +83,11 @@ sunxi_pinctrl_desc_find_function_by_name(struct sunxi_=
-pinctrl *pctl,
->  			struct sunxi_desc_function *func =3D pin->functions;
-> =20
->  			while (func->name) {
-> -				if (!strcmp(func->name, func_name))
-> +				if (!strcmp(func->name, func_name)) {
-> +					if (!(func->variant) ||
-> +					   (func->variant & pctl->variant))
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun8i.txt b/Docume=
+ntation/devicetree/bindings/pwm/pwm-sun8i.txt
+> new file mode 100644
+> index 0000000..76750d8
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
+> @@ -0,0 +1,18 @@
+> +Allwinner sun8i R40/V40/T3 SoC PWM controller
+> +
+> +Required properties:
+> +- compatible: should be one of:
+> +- "allwinner,sun8i-r40-pwm"
 
-I guess it would be better to have:
-	if (!strcmp(func->name, func_name) &&
-	    (!func->variant || (func->variant & pctl->variant)))
+Please indent that part.
 
 Once fixed,
 Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
@@ -85,24 +63,24 @@ Maxime Ripard, Free Electrons
 Embedded Linux and Kernel engineering
 http://free-electrons.com
 
---7fibj5sxfyoheezo
+--y2veovlt2pdexrge
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAloxSyoACgkQ0rTAlCFN
-r3TSDg/9E7vpgikt5S3ycM1TUVZA6IbxYUJZB9Q82EYIQix+dEmNPGTeErPl3AtJ
-Ob0CiSmWSMPhqMuZh+WmxBjkZ4dEXFOwRdnqJ1ChOH5gzXTqVUi5UZ5tl27blV2P
-oex4ngR45l6oROKhBdR4t/qh0S6s9SgrgHsuqCOIHMraeKiumRYg6XcE5xSciigp
-whOV/qtf09bzZGBXDn2KjK45P1b7brqsd7j43q/VAPitAtfYkJvT/hx/ro4Mx+IB
-UIwcKUvrA9hWTK51fl5Yg8jPMcKyJjacoNu92iE0e2TQ3YDn3+eeWIrnWwOZZBvw
-FlDqs9Y+rhOEStMokyaauV4Xg3jLd1cZ8ByH+v77F/fLLuKwsGFUsyMz25TEWWyB
-dgwxmyvFnpaB3v23KwDJ6to3Q1Xf3OiOMVlLbnCzgyJwyKOvdONO0MnCDKF9PtBm
-xPfYs0fHsopBrupoet9ZGacMkPFRHdhICeqeRo/WvEESyvdMrFjsc/Mdo6h3MAYz
-Cx1yZXRTDFOrZEKICn5iylX3oSvA3IOoJ1tVO1flVlmyfXk+BFOF68/wQd2tXELR
-+fA+F6A6vmHuuS+y85E2Ie/pXnB45cFdEk5DF9Z3NEW8CmU4e8rYf7iZrQ79iWUl
-JAPwGBRmn5hjQ5FF42S2Irf9xdG8Jp/SK0N7ja94ueICCasy5OU=
-=qWcZ
+iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAloxTCQACgkQ0rTAlCFN
+r3SFsQ/+LtikxtEBXrVwdbjoZeWHwK1bfPCTgHV2vt4hSUVwAO8Tx+RiJGiVOnuI
+nlJ0p+TX7YVQ1enWhxarNGUSwxQ4JOUGWmj0x5NKbRcEF4XolLeQZDBmDDxE6lI6
+9tvu1jRuT0O7Gv9Ep6gCokz8n/rL1D6HqfKD+bHRvUFK9fGRBHZuzvs0DLEYjJYT
+XU4lK1syVw4PqZ/yV+0NHDAoyvx0XQSjbSj570oI/DsfGRUygM+CvoYj52p69VAH
+9gh6MRJNIlBCm713tMU/OSwVEwVrvIzqMDnKETxe4/7tYIfgziSmPtdVxPJlBzJz
+dj5II556DK0qXD4GzQI+8ZbMleizJ9RX0gJGyN8aarFsoFv1vxMY0NQJOP3MtuxF
+1GuveFG5VJGuVIkMVFf+ZrgGCyDvt6ryhLhkrevNLzhrKo0o6GHyELK9yk2pwYn4
+gtpmwCJRJjxUiBqe+F0dQAKtdyLhRKtwOylFDf4y2msbXzYSFOWp9xGZX1GwgwAf
+DzlPecMZe/PY5+Ye24DzQ7lDh6cR2zKTqq4KMxim04mz2rlJxhhtYv+3z0OWP60q
+vqYbzs5AhnuGE0lMShWIxShP9ZclS16oNEdnwZ41Aqx4L/N/Snhe8cOf9vedZg+V
+7aLgL6zcT8AWuqnREPjkao+YYmiZTmLgm1htvK6hxb54fTHlsmo=
+=BQJC
 -----END PGP SIGNATURE-----
 
---7fibj5sxfyoheezo--
+--y2veovlt2pdexrge--
