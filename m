@@ -1,66 +1,61 @@
-From: Ladislav Michl <ladis@linux-mips.org>
-Subject: Re: [PATCH v5 1/8] clocksource: dmtimer: Remove all the exports
-Date: Wed, 13 Dec 2017 10:15:27 +0100
-Message-ID: <20171213091527.GA18859@lenoch>
-References: <1513059137-21593-2-git-send-email-j-keerthy@ti.com>
- <20171212071624.GA3453@lenoch>
- <c6a407a8-41c5-f0fd-931c-a58e7e627c82@ti.com>
- <20171212080134.GA9589@lenoch>
- <9de9b3dc-09f4-d58b-ba5a-60fcb563c665@ti.com>
- <20171212081923.GA10084@lenoch>
- <7c92b0c2-8784-9c14-66b0-a19fe68f08ad@ti.com>
- <20171212170054.GD14441@atomide.com>
- <20171212180317.GB10337@lenoch>
- <20171212182150.GF14441@atomide.com>
+From: hao_zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v4 0/4] pwm support for allwinner sun8i R40/V40/T3 SOCs.
+Date: Wed, 13 Dec 2017 22:38:40 +0800
+Message-ID: <20171213143840.GA17754@arx-s1>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20171212182150.GF14441@atomide.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Keerthy <j-keerthy@ti.com>, daniel.lezcano@linaro.org, aaro.koskinen@iki.fi, thierry.reding@gmail.com, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org, t-kristo@ti.com, linux@armlinux.org.uk
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Dec 12, 2017 at 10:21:50AM -0800, Tony Lindgren wrote:
-> * Ladislav Michl <ladis@linux-mips.org> [171212 18:06]:
-> > I do not follow. Each general-purpose timer module has its own interrupt line,
-> > so claiming that irq directly using request_irq seems enough. Could you
-> > explain interrupt controller idea a bit more?
-> 
-> Well let's assume we have drivers/clocksource/timer-dm.c implement
-> an irq controller. Then the pwm driver would just do:
-> 
-> pwm9: dmtimer-pwm {
-> 	compatible = "ti,omap-dmtimer-pwm";
-> 	#pwm-cells = <3>;
-> 	ti,timers = <&timer9>;
-> 	ti,clock-source = <0x00>; /* timer_sys_ck */
-> 	interrupts-extended = <&timer9 IRQ_TYPE_SOMETHING>;
-> };
-> 
-> Then you can do whatever you need to in the pwm driver with
-> enable_irq/disable_irq + a handler?
+This patchset add pwm support for allwinner sun8i R40/V40/T3 SOCs.
 
-That seems to work. Now should we map 1:1 to timer interrupt or
-have separate interrupt for match, overflow and capture?
-Former would need some more dm_timer_ops to determine interrupt
-source, while later would work "automagically" - but I haven't
-tested it yet.
+all has been teat on T3 board.
 
-> If reading the line status is needed.. Then maybe the GPIO framework
-> needs to have hardware timer support instead?
+Some features
+	8 PWM channels outputs(4 PWM pairs) 
+	Supports capturing input 
+	Supports three kinds of output waveforms: continuous waveform, pulse
+	waveform and complementarity pair 
+	Programmable deadzone generator and controllable dead-time 
+	0% to 100% adjustable duty cycle 
+	Up to 24/100MHz output frequency 
+	Minimum resolution is 1/65536 
+	Supports interrupt for PWM output and capturing input
 
-It does not seem OMAP can read event pin value in event capture mode.
 
-> Anyways, just thinking out loud how we could have a Linux generic
-> hardware timer framework that drivers like pwm could then use.
+DOC:
+https://github.com/tinalinux/docs/blob/r40-v1.y/Allwinner_R40_User_Manual_V1.0.pdf
+https://github.com/tinalinux/docs/blob/r40-v1.y/R40_Datasheet_V1.0.pdf
 
-I need a bit longer chain:
-dmtimer -> pwm -> rc (which calls ir_raw_event_store from interrupt)
-Is extending pwm core with interrpt callback the right thing there?
-Something like:
-(*pulse_captured)(ktime_t width, ktime_t last_edge);
+Regards;-)
+Hao Zhang
 
-Thank you,
-	ladis
+hao_zhang (4):
+  dt-bindings: pwm: binding allwinner R40, V40, T3
+  ARM: PWM: add allwinner sun8i R40/V40/T3 pwm support.
+  ARM: dts: add pwm node for r40.
+  ARM: pinctrl: sunxi-pinctrl: fix pin funtion can not be match
+    correctly.
+
+ .../devicetree/bindings/pwm/pwm-sun8i.txt          |  18 +
+ arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts  |   6 +
+ arch/arm/boot/dts/sun8i-r40.dtsi                   |  13 +
+ drivers/pinctrl/sunxi/pinctrl-sunxi.c              |   6 +-
+ drivers/pwm/Kconfig                                |  10 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sun8i-r40.c                        | 449 +++++++++++++++++++++
+ 7 files changed, 501 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
+ create mode 100644 drivers/pwm/pwm-sun8i-r40.c
+
+-- 
+2.7.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
