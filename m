@@ -1,61 +1,47 @@
-From: hao_zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v4 0/4] pwm support for allwinner sun8i R40/V40/T3 SOCs.
-Date: Wed, 13 Dec 2017 22:38:40 +0800
-Message-ID: <20171213143840.GA17754@arx-s1>
+From: hao_zhang <hao5781286@gmail.com>
+Subject: [PATCH v4 1/4] dt-bindings: pwm: binding allwinner sun8i R40/V40/T3.
+Date: Wed, 13 Dec 2017 22:43:09 +0800
+Message-ID: <20171213144309.GA18167@arx-s1>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, wens@csie.org, linus.walleij@linaro.org, maxime.ripard@free-electrons.com
+Cc: linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, hao5781286@gmail.com
 List-Id: linux-pwm@vger.kernel.org
 
-This patchset add pwm support for allwinner sun8i R40/V40/T3 SOCs.
+This patch adds allwinner R40, V40, T3 pwm binding documents.
 
-all has been teat on T3 board.
-
-Some features
-	8 PWM channels outputs(4 PWM pairs) 
-	Supports capturing input 
-	Supports three kinds of output waveforms: continuous waveform, pulse
-	waveform and complementarity pair 
-	Programmable deadzone generator and controllable dead-time 
-	0% to 100% adjustable duty cycle 
-	Up to 24/100MHz output frequency 
-	Minimum resolution is 1/65536 
-	Supports interrupt for PWM output and capturing input
-
-
-DOC:
-https://github.com/tinalinux/docs/blob/r40-v1.y/Allwinner_R40_User_Manual_V1.0.pdf
-https://github.com/tinalinux/docs/blob/r40-v1.y/R40_Datasheet_V1.0.pdf
-
-Regards;-)
-Hao Zhang
-
-hao_zhang (4):
-  dt-bindings: pwm: binding allwinner R40, V40, T3
-  ARM: PWM: add allwinner sun8i R40/V40/T3 pwm support.
-  ARM: dts: add pwm node for r40.
-  ARM: pinctrl: sunxi-pinctrl: fix pin funtion can not be match
-    correctly.
-
- .../devicetree/bindings/pwm/pwm-sun8i.txt          |  18 +
- arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts  |   6 +
- arch/arm/boot/dts/sun8i-r40.dtsi                   |  13 +
- drivers/pinctrl/sunxi/pinctrl-sunxi.c              |   6 +-
- drivers/pwm/Kconfig                                |  10 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-sun8i-r40.c                        | 449 +++++++++++++++++++++
- 7 files changed, 501 insertions(+), 2 deletions(-)
+Signed-off-by: hao_zhang <hao5781286@gmail.com>
+---
+ Documentation/devicetree/bindings/pwm/pwm-sun8i.txt | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
- create mode 100644 drivers/pwm/pwm-sun8i-r40.c
 
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun8i.txt b/Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
+new file mode 100644
+index 0000000..76750d8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
+@@ -0,0 +1,18 @@
++Allwinner sun8i R40/V40/T3 SoC PWM controller
++
++Required properties:
++- compatible: should be one of:
++- "allwinner,sun8i-r40-pwm"
++- reg: physical base address and length of the controller's registers
++- #pwm-cells: should be 3. See pwm.txt in this directory for a description of
++the cells format.
++- clocks: From common clock binding, handle to the parent clock.
++
++Example:
++
++pwm: pwm@1c23400 {
++	     compatible = "allwinner,sun8i-r40-pwm";
++	     reg = <0x01c23400 0x154>;
++	     clocks = <&osc24M>;
++	     #pwm-cells = <3>;
++};
 -- 
 2.7.4
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
