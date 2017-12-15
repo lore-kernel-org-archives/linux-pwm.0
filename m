@@ -1,45 +1,172 @@
-From: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Subject: [PATCH 4/6] dt-bindings: pwm: renesas-tpu: Document r8a774[35] support
-Date: Thu, 14 Dec 2017 10:56:14 +0000
-Message-ID: <1513248976-26700-5-git-send-email-fabrizio.castro@bp.renesas.com>
-References: <1513248976-26700-1-git-send-email-fabrizio.castro@bp.renesas.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1513248976-26700-1-git-send-email-fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Yixun Lan <yixun.lan@amlogic.com>
+Subject: [PATCH v2] ARM64: dts: meson-axg: add PWM DT info for Meson-Axg SoC
+Date: Fri, 15 Dec 2017 10:47:39 +0800
+Message-ID: <20171215024739.106705-1-yixun.lan@amlogic.com>
+Mime-Version: 1.0
+Content-Type: text/plain
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-sh2.amlogic.com ([58.32.228.45]:27736 "EHLO
+        mail-sh2.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754718AbdLOCrY (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Thu, 14 Dec 2017 21:47:24 -0500
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Kevin Hilman <khilman@baylibre.com>, linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org
+Cc: Neil Armstrong <narmstrong@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>, Carlo Caione <carlo@caione.org>, Yixun Lan <yixun.lan@amlogic.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Jian Hu <jian.hu@amlogic.com>
 
-Document r8a774[35] specific compatible strings. No driver change is
-needed as the fallback compatible string "renesas,tpu" activates the
-right code in the driver.
+From: Jian Hu <jian.hu@amlogic.com>
 
-Signed-off-by: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Reviewed-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Add PWM DT info for the Amlogic's Meson-Axg SoC.
+
+Signed-off-by: Jian Hu <jian.hu@amlogic.com>
+Signed-off-by: Yixun Lan <yixun.lan@amlogic.com>
+
 ---
- Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Changes in v2 since [1]
+ - drop clock DT info from soc.dtsi
 
-diff --git a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
-index 1aadc80..16e5748 100644
---- a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
-+++ b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
-@@ -5,8 +5,10 @@ Required Properties:
-   - compatible: should be one of the following.
-     - "renesas,tpu-r8a73a4": for R8A77A4 (R-Mobile APE6) compatible PWM controller.
-     - "renesas,tpu-r8a7740": for R8A7740 (R-Mobile A1) compatible PWM controller.
-+    - "renesas,tpu-r8a7743": for R8A7743 (RZ/G1M) compatible PWM controller.
-+    - "renesas,tpu-r8a7745": for R8A7745 (RZ/G1E) compatible PWM controller.
-     - "renesas,tpu-r8a7790": for R8A7790 (R-Car H2) compatible PWM controller.
--    - "renesas,tpu": for generic R-Car TPU PWM controller.
-+    - "renesas,tpu": for generic R-Car and RZ/G1 TPU PWM controller.
+[1]
+http://lists.infradead.org/pipermail/linux-amlogic/2017-December/005578.html
+---
+ arch/arm64/boot/dts/amlogic/meson-axg.dtsi | 112 +++++++++++++++++++++++++++++
+ 1 file changed, 112 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-axg.dtsi b/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
+index a0d7b10da512..1ee5f12115b6 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
+@@ -120,6 +120,20 @@
+ 			#size-cells = <2>;
+ 			ranges = <0x0 0x0 0x0 0xffd00000 0x0 0x25000>;
  
-   - reg: Base address and length of each memory resource used by the PWM
-     controller hardware module.
++			pwm_ab: pwm@1b000 {
++				compatible = "amlogic,meson-axg-ee-pwm";
++				reg = <0x0 0x1b000 0x0 0x20>;
++				#pwm-cells = <3>;
++				status = "disabled";
++			};
++
++			pwm_cd: pwm@1a000 {
++				compatible = "amlogic,meson-axg-ee-pwm";
++				reg = <0x0 0x1a000 0x0 0x20>;
++				#pwm-cells = <3>;
++				status = "disabled";
++			};
++
+ 			uart_A: serial@24000 {
+ 				compatible = "amlogic,meson-gx-uart", "amlogic,meson-uart";
+ 				reg = <0x0 0x24000 0x0 0x14>;
+@@ -180,6 +194,90 @@
+ 					#gpio-cells = <2>;
+ 					gpio-ranges = <&pinctrl_periphs 0 0 86>;
+ 				};
++
++				pwm_a_a_pins: pwm_a_a {
++					mux {
++						groups = "pwm_a_a";
++						function = "pwm_a";
++					};
++				};
++
++				pwm_a_x18_pins: pwm_a_x18 {
++					mux {
++						groups = "pwm_a_x18";
++						function = "pwm_a";
++					};
++				};
++
++				pwm_a_x20_pins: pwm_a_x20 {
++					mux {
++						groups = "pwm_a_x20";
++						function = "pwm_a";
++					};
++				};
++
++				pwm_a_z_pins: pwm_a_z {
++					mux {
++						groups = "pwm_a_z";
++						function = "pwm_a";
++					};
++				};
++
++				pwm_b_a_pins: pwm_b_a {
++					mux {
++						groups = "pwm_b_a";
++						function = "pwm_b";
++					};
++				};
++
++				pwm_b_x_pins: pwm_b_x {
++					mux {
++						groups = "pwm_b_x";
++						function = "pwm_b";
++					};
++				};
++
++				pwm_b_z_pins: pwm_b_z {
++					mux {
++						groups = "pwm_b_z";
++						function = "pwm_b";
++					};
++				};
++
++				pwm_c_a_pins: pwm_c_a {
++					mux {
++						groups = "pwm_c_a";
++						function = "pwm_c";
++					};
++				};
++
++				pwm_c_x10_pins: pwm_c_x10 {
++					mux {
++						groups = "pwm_c_x10";
++						function = "pwm_c";
++					};
++				};
++
++				pwm_c_x17_pins: pwm_c_x17 {
++					mux {
++						groups = "pwm_c_x17";
++						function = "pwm_c";
++					};
++				};
++
++				pwm_d_x11_pins: pwm_d_x11 {
++					mux {
++						groups = "pwm_d_x11";
++						function = "pwm_d";
++					};
++				};
++
++				pwm_d_x16_pins: pwm_d_x16 {
++					mux {
++						groups = "pwm_d_x16";
++						function = "pwm_d";
++					};
++				};
+ 			};
+ 		};
+ 
+@@ -225,6 +323,20 @@
+ 				};
+ 			};
+ 
++			pwm_AO_ab: pwm@7000 {
++				compatible = "amlogic,meson-axg-ao-pwm";
++				reg = <0x0 0x07000 0x0 0x20>;
++				#pwm-cells = <3>;
++				status = "disabled";
++			};
++
++			pwm_AO_cd: pwm@2000 {
++				compatible = "amlogic,axg-ao-pwm";
++				reg = <0x0 0x02000  0x0 0x20>;
++				#pwm-cells = <3>;
++				status = "disabled";
++			};
++
+ 			uart_AO: serial@3000 {
+ 				compatible = "amlogic,meson-gx-uart", "amlogic,meson-ao-uart";
+ 				reg = <0x0 0x3000 0x0 0x18>;
 -- 
-2.7.4
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2.15.1
