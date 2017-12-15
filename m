@@ -1,39 +1,29 @@
-From: Kevin Hilman <khilman@baylibre.com>
-Subject: Re: [PATCH v2] ARM64: dts: meson-axg: add PWM DT info for Meson-Axg SoC
-Date: Fri, 15 Dec 2017 11:51:05 -0800
-Message-ID: <7h609793di.fsf@baylibre.com>
-References: <20171215024739.106705-1-yixun.lan@amlogic.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 4/6] dt-bindings: pwm: renesas-tpu: Document r8a774[35]
+ support
+Date: Fri, 15 Dec 2017 14:13:56 -0600
+Message-ID: <20171215201356.qitvuiuuir6fon2l@rob-hp-laptop>
+References: <1513248976-26700-1-git-send-email-fabrizio.castro@bp.renesas.com>
+ <1513248976-26700-5-git-send-email-fabrizio.castro@bp.renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pg0-f67.google.com ([74.125.83.67]:33709 "EHLO
-        mail-pg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756139AbdLOTvH (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Fri, 15 Dec 2017 14:51:07 -0500
-Received: by mail-pg0-f67.google.com with SMTP id g7so6467902pgs.0
-        for <linux-pwm@vger.kernel.org>; Fri, 15 Dec 2017 11:51:07 -0800 (PST)
-In-Reply-To: <20171215024739.106705-1-yixun.lan@amlogic.com> (Yixun Lan's
-        message of "Fri, 15 Dec 2017 10:47:39 +0800")
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1513248976-26700-5-git-send-email-fabrizio.castro@bp.renesas.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Yixun Lan <yixun.lan@amlogic.com>
-Cc: linux-pwm@vger.kernel.org, linux-amlogic@lists.infradead.org, Neil Armstrong <narmstrong@baylibre.com>, Jerome Brunet <jbrunet@baylibre.com>, Carlo Caione <carlo@caione.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Jian Hu <jian.hu@amlogic.com>
 
-Yixun Lan <yixun.lan@amlogic.com> writes:
-
-> From: Jian Hu <jian.hu@amlogic.com>
->
-> Add PWM DT info for the Amlogic's Meson-Axg SoC.
->
-> Signed-off-by: Jian Hu <jian.hu@amlogic.com>
-> Signed-off-by: Yixun Lan <yixun.lan@amlogic.com>
->
+On Thu, Dec 14, 2017 at 10:56:14AM +0000, Fabrizio Castro wrote:
+> Document r8a774[35] specific compatible strings. No driver change is
+> needed as the fallback compatible string "renesas,tpu" activates the
+> right code in the driver.
+> 
+> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das@bp.renesas.com>
 > ---
-> Changes in v2 since [1]
->  - drop clock DT info from soc.dtsi
+>  Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
-Applied to v4.16/dt64,
-
-Thanks,
-
-Kevin
+Reviewed-by: Rob Herring <robh@kernel.org>
