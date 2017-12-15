@@ -1,20 +1,20 @@
 From: SF Markus Elfring <elfring@users.sourceforge.net>
-Subject: [PATCH] pwm-puv3: Delete an error message for a failed memory
- allocation in pwm_probe()
-Date: Fri, 15 Dec 2017 18:33:49 +0100
-Message-ID: <93e81e95-01e0-1493-5b4a-92f36f998dac@users.sourceforge.net>
+Subject: [PATCH] pwm: atmel-tcb: Delete an error message for a failed memory
+ allocation in atmel_tcb_pwm_probe()
+Date: Fri, 15 Dec 2017 19:00:46 +0100
+Message-ID: <8274c498-1d1b-2ece-365c-98ded714a53c@users.sourceforge.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <kernel-janitors-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Language: en-GB
-Sender: kernel-janitors-owner@vger.kernel.org
-To: linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-pwm@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Nicolas Ferre <nicolas.ferre@microchip.com>, Thierry Reding <thierry.reding@gmail.com>
 Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Fri, 15 Dec 2017 18:29:49 +0100
+Date: Fri, 15 Dec 2017 18:55:11 +0100
 
 Omit an extra message for a memory allocation failure in this function.
 
@@ -22,25 +22,20 @@ This issue was detected by using the Coccinelle software.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 ---
- drivers/pwm/pwm-puv3.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/pwm/pwm-atmel-tcb.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-puv3.c b/drivers/pwm/pwm-puv3.c
-index ed6007b27585..754fd9a98f6b 100644
---- a/drivers/pwm/pwm-puv3.c
-+++ b/drivers/pwm/pwm-puv3.c
-@@ -107,10 +107,8 @@ static int pwm_probe(struct platform_device *pdev)
- 	int ret;
- 
- 	puv3 = devm_kzalloc(&pdev->dev, sizeof(*puv3), GFP_KERNEL);
--	if (puv3 == NULL) {
+diff --git a/drivers/pwm/pwm-atmel-tcb.c b/drivers/pwm/pwm-atmel-tcb.c
+index acd3ce8ecf3f..4fb1be246c44 100644
+--- a/drivers/pwm/pwm-atmel-tcb.c
++++ b/drivers/pwm/pwm-atmel-tcb.c
+@@ -401,7 +401,6 @@ static int atmel_tcb_pwm_probe(struct platform_device *pdev)
+ 	tcbpwm = devm_kzalloc(&pdev->dev, sizeof(*tcbpwm), GFP_KERNEL);
+ 	if (tcbpwm == NULL) {
+ 		err = -ENOMEM;
 -		dev_err(&pdev->dev, "failed to allocate memory\n");
-+	if (!puv3)
- 		return -ENOMEM;
--	}
+ 		goto err_free_tc;
+ 	}
  
- 	puv3->clk = devm_clk_get(&pdev->dev, "OST_CLK");
- 	if (IS_ERR(puv3->clk))
 -- 
 2.15.1
-
