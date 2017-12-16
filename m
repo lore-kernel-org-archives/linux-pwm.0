@@ -1,38 +1,59 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 2/6] dt-bindings: pwm: rcar: Document r8a774[35] PWM
- bindings
-Date: Fri, 15 Dec 2017 17:30:16 -0600
-Message-ID: <20171215233016.s6bych6qlg7baquu@rob-hp-laptop>
-References: <1513248976-26700-1-git-send-email-fabrizio.castro@bp.renesas.com>
- <1513248976-26700-3-git-send-email-fabrizio.castro@bp.renesas.com>
+From: 59184701@mylife.unisa.ac.za
+Subject: Hallo mein lieber Freund,
+Date: Sat, 16 Dec 2017 16:32:45 +0530
+Message-ID: <AM6PR0102MB3064405355B93A2E500C76CAB8080@AM6PR0102MB3064.eurprd01.prod.exchangelabs.com>
+Reply-To: verahollin88@gmail.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1513248976-26700-3-git-send-email-fabrizio.castro@bp.renesas.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Mark Rutland <mark.rutland@arm.com>, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-db5eur01hn0236.outbound.protection.outlook.com ([104.47.2.236]:46282
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1752535AbdLPLCH (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Sat, 16 Dec 2017 06:02:07 -0500
+Content-Description: Mail message body
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Recipients <59184701@mylife.unisa.ac.za>
 
-On Thu, Dec 14, 2017 at 10:56:12AM +0000, Fabrizio Castro wrote:
-> This patch adds compatible strings specific to r8a774[35], no driver
-> change is needed as the fallback compatible string will activate the
-> right code. Also, this patch replaces the example with a DT snippet used
-> for adding PWM0 support to an r8a7743 based platform.
-> 
-> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das@bp.renesas.com>
-> ---
-> Dear All,
-> 
-> the reason for replacing the example with one of a different SoC is that
-> the new example refers to recent code from a real use case. I hope that's ok.
-> 
-> Thanks,
-> Fabrizio
-> 
->  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
+Hallo mein lieber Freund,
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Ich schreibe Ihnen diese Post mit schweren Tr=E4nen In meinen Augen und gro=
+=DFem Kummer in meinem Herzen, Mein Name ist Vera Hollin Kvan, und ich kont=
+aktiere Sie aus meinem Land Indien Ich m=F6chte Ihnen dies sagen, weil ich =
+keine habe andere Option, als Ihnen zu sagen, wie ich ber=FChrt wurde, um S=
+ie zu =F6ffnen, ich heiratete mit Herrn Hollin Kvan, der mit der tunesische=
+n Botschaft in Madrid Spanien f=FCr neun Jahre arbeitete, bevor er im Jahr =
+2005 starb.Wir waren seit elf Jahren ohne eine Kind.
+
+Er starb nach einer kurzen Krankheit, die nur f=FCnf Tage dauerte. Seit sei=
+nem Tod habe ich beschlossen, nicht wieder zu heiraten. Als mein verstorben=
+er Ehemann lebte, deponierte er die Summe von $ 4,850,000.00USD (vier Milli=
+onen achthundertundf=FCnfzigtausend Dollar) in einer Bank hier in Indien. N=
+ew Delhi die Hauptstadt von Indien, derzeit dieses Geld ist immer noch in d=
+er Bank.
+
+Er machte dieses Geld f=FCr den Export von Gold aus Madrid Spanien Bergbau-=
+Factary.K=FCrzlich mein Arzt sagte mir, dass ich nicht f=FCr die Dauer von =
+sieben Monaten wegen Krebs Problem dauern w=FCrde. Derjenige, der mich am m=
+eisten st=F6rt, ist meine Schlaganfallkrankheit. Nachdem ich meinen Zustand=
+ gekannt habe, habe ich mich entschlossen, Ihnen dieses Geld zu geben, um a=
+uf die weniger privilegierten Leute aufzupassen, Sie werden dieses Geld ver=
+wenden, wie ich hier unterweisen werde.
+
+Ich m=F6chte, dass Sie 30 Prozent des gesamten Geldes f=FCr Ihren pers=F6nl=
+ichen Gebrauch verwenden, w=E4hrend 70% des Geldes f=FCr wohlt=E4tige Zweck=
+e, Menschen auf der Stra=DFe und Hilfe f=FCr das Waisenhaus verwendet werde=
+n. Ich bin als Waise aufgewachsen und habe keinen K=F6rper als Familienmitg=
+lied, nur um zu enden, dass das Haus Gottes auch erhalten bleibt. Tue dies,=
+ damit Gott meine S=FCnden vergibt und meine Seele annimmt, weil diese Kran=
+kheiten mich so sehr gelitten haben. Sobald ich Ihre Antwort erhalten habe,=
+ werde ich Ihnen den Kontakt der Bank hier in Delhi Indien geben und ich we=
+rde auch den Bankmanager anweisen, Ihnen ein Autorit=E4tsschreiben auszuste=
+llen, das Sie als den gegenw=E4rtigen Beg=FCnstigten des Geldes in der Bank=
+ beweisen wird, wenn Sie versichern mir, dass Sie entsprechend handeln, wie=
+ ich es hier dargelegt habe.
+
+In der Hoffnung, Ihre Antwort zu erhalten.
+Von Vera Hollin kVan
