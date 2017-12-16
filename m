@@ -1,59 +1,46 @@
-From: 59184701@mylife.unisa.ac.za
-Subject: Hallo mein lieber Freund,
-Date: Sat, 16 Dec 2017 16:32:45 +0530
-Message-ID: <AM6PR0102MB3064405355B93A2E500C76CAB8080@AM6PR0102MB3064.eurprd01.prod.exchangelabs.com>
-Reply-To: verahollin88@gmail.com
+From: Fabio Estevam <festevam@gmail.com>
+Subject: Re: [PATCH v3] pwm: imx: Let PWM be active during suspend
+Date: Sat, 16 Dec 2017 16:26:13 -0200
+Message-ID: <CAOMZO5Bsnxzdjo6PLPK4V4=7jj_dnG2tm_OZPX-dAqUinB8vJQ@mail.gmail.com>
+References: <1511220443-26629-1-git-send-email-festevam@gmail.com>
+ <20171205084701.GC7386@ulmo> <CAOMZO5DsWN_N5ygkCmNK_Dktp7UANdkSXi+iLacXnVHQ9j53AA@mail.gmail.com>
+ <20171211091625.GA10671@ulmo> <CAOMZO5DiOx5m1Wew9v5xaqgbcNDR7gio93EKP48bdM3kaqfkoA@mail.gmail.com>
+ <20171211121306.GK10671@ulmo> <CAOMZO5DsyCbTKqRv4kZqa3n7Hp-xHkCrXjegEQt9Fi694men=w@mail.gmail.com>
+ <20171211142040.757f1313@karo-electronics.de> <CAOMZO5AwijXQi=gR9BaW_WYVPBpCpa8V=wWMcHBt+xCqNySo8A@mail.gmail.com>
+ <20171211165545.2d4b21bd@karo-electronics.de> <CAOMZO5D-g-H2n0Fx9h=3vX_ryvPbXB64nsvzuTo_ddJeBke7Uw@mail.gmail.com>
+ <20171211175250.73289f27@karo-electronics.de> <CAOMZO5Dc8ssuvr52Kk6iipCQfB1ftPU3fryw6qSDBy8xttKNOw@mail.gmail.com>
+ <20171215130207.226bf773@karo-electronics.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-db5eur01hn0236.outbound.protection.outlook.com ([104.47.2.236]:46282
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1752535AbdLPLCH (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sat, 16 Dec 2017 06:02:07 -0500
-Content-Description: Mail message body
+Received: from mail-oi0-f44.google.com ([209.85.218.44]:42532 "EHLO
+        mail-oi0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756694AbdLPS0O (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sat, 16 Dec 2017 13:26:14 -0500
+Received: by mail-oi0-f44.google.com with SMTP id o64so8237805oia.9
+        for <linux-pwm@vger.kernel.org>; Sat, 16 Dec 2017 10:26:14 -0800 (PST)
+In-Reply-To: <20171215130207.226bf773@karo-electronics.de>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Recipients <59184701@mylife.unisa.ac.za>
+To: =?UTF-8?Q?Lothar_Wa=C3=9Fmann?= <LW@karo-electronics.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Rob Herring <robh@kernel.org>, Russell King <linux@arm.linux.org.uk>, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <lukma@denx.de>
 
-Hallo mein lieber Freund,
+Hi Lothar,
 
-Ich schreibe Ihnen diese Post mit schweren Tr=E4nen In meinen Augen und gro=
-=DFem Kummer in meinem Herzen, Mein Name ist Vera Hollin Kvan, und ich kont=
-aktiere Sie aus meinem Land Indien Ich m=F6chte Ihnen dies sagen, weil ich =
-keine habe andere Option, als Ihnen zu sagen, wie ich ber=FChrt wurde, um S=
-ie zu =F6ffnen, ich heiratete mit Herrn Hollin Kvan, der mit der tunesische=
-n Botschaft in Madrid Spanien f=FCr neun Jahre arbeitete, bevor er im Jahr =
-2005 starb.Wir waren seit elf Jahren ohne eine Kind.
+On Fri, Dec 15, 2017 at 10:02 AM, Lothar Wa=C3=9Fmann <LW@karo-electronics.=
+de> wrote:
 
-Er starb nach einer kurzen Krankheit, die nur f=FCnf Tage dauerte. Seit sei=
-nem Tod habe ich beschlossen, nicht wieder zu heiraten. Als mein verstorben=
-er Ehemann lebte, deponierte er die Summe von $ 4,850,000.00USD (vier Milli=
-onen achthundertundf=FCnfzigtausend Dollar) in einer Bank hier in Indien. N=
-ew Delhi die Hauptstadt von Indien, derzeit dieses Geld ist immer noch in d=
-er Bank.
+>> Would you mind testing this patch on your system?
+>> https://patchwork.ozlabs.org/patch/839834/
+>>
+> Sorry for the late response.
+> The patch does not affect the usage of the PWM with the pwm_bl driver,
+> since the pwm_bl driver configures the duty cycle to '0' and disables
+> the PWM upon suspend.
 
-Er machte dieses Geld f=FCr den Export von Gold aus Madrid Spanien Bergbau-=
-Factary.K=FCrzlich mein Arzt sagte mir, dass ich nicht f=FCr die Dauer von =
-sieben Monaten wegen Krebs Problem dauern w=FCrde. Derjenige, der mich am m=
-eisten st=F6rt, ist meine Schlaganfallkrankheit. Nachdem ich meinen Zustand=
- gekannt habe, habe ich mich entschlossen, Ihnen dieses Geld zu geben, um a=
-uf die weniger privilegierten Leute aufzupassen, Sie werden dieses Geld ver=
-wenden, wie ich hier unterweisen werde.
+Ok,so I take this as a no-objection for this patch from you.
 
-Ich m=F6chte, dass Sie 30 Prozent des gesamten Geldes f=FCr Ihren pers=F6nl=
-ichen Gebrauch verwenden, w=E4hrend 70% des Geldes f=FCr wohlt=E4tige Zweck=
-e, Menschen auf der Stra=DFe und Hilfe f=FCr das Waisenhaus verwendet werde=
-n. Ich bin als Waise aufgewachsen und habe keinen K=F6rper als Familienmitg=
-lied, nur um zu enden, dass das Haus Gottes auch erhalten bleibt. Tue dies,=
- damit Gott meine S=FCnden vergibt und meine Seele annimmt, weil diese Kran=
-kheiten mich so sehr gelitten haben. Sobald ich Ihre Antwort erhalten habe,=
- werde ich Ihnen den Kontakt der Bank hier in Delhi Indien geben und ich we=
-rde auch den Bankmanager anweisen, Ihnen ein Autorit=E4tsschreiben auszuste=
-llen, das Sie als den gegenw=E4rtigen Beg=FCnstigten des Geldes in der Bank=
- beweisen wird, wenn Sie versichern mir, dass Sie entsprechend handeln, wie=
- ich es hier dargelegt habe.
+Thierry, could you please consider applying this one?
 
-In der Hoffnung, Ihre Antwort zu erhalten.
-Von Vera Hollin kVan
+Thanks
