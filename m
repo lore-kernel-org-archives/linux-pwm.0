@@ -1,39 +1,39 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 4/6] dt-bindings: pwm: renesas-tpu: Document r8a774[35] support
-Date: Mon, 18 Dec 2017 11:58:28 +0100
-Message-ID: <CAMuHMdUiyTL=Sw5Z-cxBq4zng27JHr7iCdvChkPxKQD7KVqvxg@mail.gmail.com>
-References: <1513248976-26700-1-git-send-email-fabrizio.castro@bp.renesas.com> <1513248976-26700-5-git-send-email-fabrizio.castro@bp.renesas.com>
+From: Ladislav Michl <ladis@linux-mips.org>
+Subject: Re: [PATCH v5 0/8] omap: dmtimer: Move driver out of plat-omap
+Date: Mon, 18 Dec 2017 12:16:10 +0100
+Message-ID: <20171218111610.GA16906@lenoch>
+References: <1513059137-21593-1-git-send-email-j-keerthy@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qt0-f196.google.com ([209.85.216.196]:36818 "EHLO
-        mail-qt0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932672AbdLRK63 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Dec 2017 05:58:29 -0500
-In-Reply-To: <1513248976-26700-5-git-send-email-fabrizio.castro@bp.renesas.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1513059137-21593-1-git-send-email-j-keerthy@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Keerthy <j-keerthy@ti.com>
+Cc: daniel.lezcano@linaro.org, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org, t-kristo@ti.com, linux@armlinux.org.uk
 List-Id: linux-pwm@vger.kernel.org
-To: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, Linux PWM List <linux-pwm@vger.kernel.org>, devicetree@vger.kernel.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 
-On Thu, Dec 14, 2017 at 11:56 AM, Fabrizio Castro
-<fabrizio.castro@bp.renesas.com> wrote:
-> Document r8a774[35] specific compatible strings. No driver change is
-> needed as the fallback compatible string "renesas,tpu" activates the
-> right code in the driver.
->
-> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das@bp.renesas.com>
+Keerthy,
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+On Tue, Dec 12, 2017 at 11:42:09AM +0530, Keerthy wrote:
+> The series moves dmtimer out of plat-omap to drivers/clocksource.
+> The series also does a bunch of changes to pwm-omap-dmtimer code
+> to adapt to the driver migration and clean up plat specific
+> pdata-quirks and use the dmtimer platform data.
 
-Gr{oetje,eeting}s,
+thanks for nice work. I'll send two more patches as a reply to this
+one. I'd be glad if you could make them part of your serie. One of
+them would be nice to have for pwm driver prescaler fix which will
+be send independently.
+Also, if that helps you can have my
+Tested-by: Ladislav Michl <ladis@linux-mips.org>
+on IGEPv2 (OMAP3430 based)
 
-                        Geert
+> Boot tested on DRA7-EVM and AM437X-GP-EVM.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+I guess PWM driver was not tested, right? See comment to PATCH 7/8.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> Compile tested omap1_defconfig.
+
+Thank you,
+	ladis
