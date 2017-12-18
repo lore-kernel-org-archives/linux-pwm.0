@@ -1,46 +1,63 @@
-From: Fabio Estevam <festevam@gmail.com>
-Subject: Re: [PATCH v3] pwm: imx: Let PWM be active during suspend
-Date: Sat, 16 Dec 2017 16:26:13 -0200
-Message-ID: <CAOMZO5Bsnxzdjo6PLPK4V4=7jj_dnG2tm_OZPX-dAqUinB8vJQ@mail.gmail.com>
-References: <1511220443-26629-1-git-send-email-festevam@gmail.com>
- <20171205084701.GC7386@ulmo> <CAOMZO5DsWN_N5ygkCmNK_Dktp7UANdkSXi+iLacXnVHQ9j53AA@mail.gmail.com>
- <20171211091625.GA10671@ulmo> <CAOMZO5DiOx5m1Wew9v5xaqgbcNDR7gio93EKP48bdM3kaqfkoA@mail.gmail.com>
- <20171211121306.GK10671@ulmo> <CAOMZO5DsyCbTKqRv4kZqa3n7Hp-xHkCrXjegEQt9Fi694men=w@mail.gmail.com>
- <20171211142040.757f1313@karo-electronics.de> <CAOMZO5AwijXQi=gR9BaW_WYVPBpCpa8V=wWMcHBt+xCqNySo8A@mail.gmail.com>
- <20171211165545.2d4b21bd@karo-electronics.de> <CAOMZO5D-g-H2n0Fx9h=3vX_ryvPbXB64nsvzuTo_ddJeBke7Uw@mail.gmail.com>
- <20171211175250.73289f27@karo-electronics.de> <CAOMZO5Dc8ssuvr52Kk6iipCQfB1ftPU3fryw6qSDBy8xttKNOw@mail.gmail.com>
- <20171215130207.226bf773@karo-electronics.de>
+From: Ladislav Michl <ladis@linux-mips.org>
+Subject: Re: [PATCH v5 7/8] pwm: pwm-omap-dmtimer: Adapt driver to utilize
+ dmtimer pdata ops
+Date: Mon, 18 Dec 2017 10:31:53 +0100
+Message-ID: <20171218093153.GA22729@lenoch>
+References: <1513059137-21593-1-git-send-email-j-keerthy@ti.com>
+ <1513059137-21593-8-git-send-email-j-keerthy@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-oi0-f44.google.com ([209.85.218.44]:42532 "EHLO
-        mail-oi0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756694AbdLPS0O (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Sat, 16 Dec 2017 13:26:14 -0500
-Received: by mail-oi0-f44.google.com with SMTP id o64so8237805oia.9
-        for <linux-pwm@vger.kernel.org>; Sat, 16 Dec 2017 10:26:14 -0800 (PST)
-In-Reply-To: <20171215130207.226bf773@karo-electronics.de>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1513059137-21593-8-git-send-email-j-keerthy@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Keerthy <j-keerthy@ti.com>
+Cc: daniel.lezcano@linaro.org, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org, t-kristo@ti.com, linux@armlinux.org.uk
 List-Id: linux-pwm@vger.kernel.org
-To: =?UTF-8?Q?Lothar_Wa=C3=9Fmann?= <LW@karo-electronics.de>
-Cc: Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, Rob Herring <robh@kernel.org>, Russell King <linux@arm.linux.org.uk>, Fabio Estevam <fabio.estevam@nxp.com>, Lukasz Majewski <lukma@denx.de>
 
-Hi Lothar,
+Keerthy,
 
-On Fri, Dec 15, 2017 at 10:02 AM, Lothar Wa=C3=9Fmann <LW@karo-electronics.=
-de> wrote:
+On Tue, Dec 12, 2017 at 11:42:16AM +0530, Keerthy wrote:
+> Adapt driver to utilize dmtimer pdata ops instead of pdata-quirks.
+> 
+> Signed-off-by: Keerthy <j-keerthy@ti.com>
+> ---
+> 
+> Changes in v4:
+> 
+>   * Switched to dev_get_platdata.
 
->> Would you mind testing this patch on your system?
->> https://patchwork.ozlabs.org/patch/839834/
->>
-> Sorry for the late response.
-> The patch does not affect the usage of the PWM with the pwm_bl driver,
-> since the pwm_bl driver configures the duty cycle to '0' and disables
-> the PWM upon suspend.
+Where do you expect dev.platform_data to be set? PWM driver is failing
+with:
+omap-dmtimer-pwm dmtimer-pwm: dmtimer pdata structure NULL
+omap-dmtimer-pwm: probe of dmtimer-pwm failed with error -22
 
-Ok,so I take this as a no-objection for this patch from you.
+Which I fixed with patch bellow, to be able to test your patchset.
 
-Thierry, could you please consider applying this one?
+Also I'm running a bit out of time, so I'll send few clean up
+patches and event capture code to get some feedback early.
 
-Thanks
+Regards,
+	ladis
+
+diff --git a/drivers/clocksource/timer-dm.c b/drivers/clocksource/timer-dm.c
+index 39be39e6a8dd..d3d8a49cae0d 100644
+--- a/drivers/clocksource/timer-dm.c
++++ b/drivers/clocksource/timer-dm.c
+@@ -773,6 +773,7 @@ static int omap_dm_timer_probe(struct platform_device *pdev)
+ 		dev_err(dev, "%s: no platform data.\n", __func__);
+ 		return -ENODEV;
+ 	}
++	dev->platform_data = pdata;
+ 
+ 	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+ 	if (unlikely(!irq)) {
+
+> 
+> Changes in v3:
+> 
+>   * Used of_find_platdata_by_node function to fetch platform
+>     data for timer node.
+> 
+>  drivers/pwm/pwm-omap-dmtimer.c | 39 ++++++++++++++++++++++-----------------
+>  1 file changed, 22 insertions(+), 17 deletions(-)
