@@ -1,63 +1,36 @@
-From: Ladislav Michl <ladis@linux-mips.org>
-Subject: Re: [PATCH v5 7/8] pwm: pwm-omap-dmtimer: Adapt driver to utilize
- dmtimer pdata ops
-Date: Mon, 18 Dec 2017 10:31:53 +0100
-Message-ID: <20171218093153.GA22729@lenoch>
-References: <1513059137-21593-1-git-send-email-j-keerthy@ti.com>
- <1513059137-21593-8-git-send-email-j-keerthy@ti.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 2/6] dt-bindings: pwm: rcar: Document r8a774[35] PWM bindings
+Date: Mon, 18 Dec 2017 11:57:17 +0100
+Message-ID: <CAMuHMdVRvBk8SCNv5wWoLFf3ap9jQ6K--ytD93bmG=My+2ij5w@mail.gmail.com>
+References: <1513248976-26700-1-git-send-email-fabrizio.castro@bp.renesas.com> <1513248976-26700-3-git-send-email-fabrizio.castro@bp.renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1513059137-21593-8-git-send-email-j-keerthy@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Keerthy <j-keerthy@ti.com>
-Cc: daniel.lezcano@linaro.org, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org, t-kristo@ti.com, linux@armlinux.org.uk
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1513248976-26700-3-git-send-email-fabrizio.castro@bp.renesas.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, Linux PWM List <linux-pwm@vger.kernel.org>, devicetree@vger.kernel.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Keerthy,
+On Thu, Dec 14, 2017 at 11:56 AM, Fabrizio Castro
+<fabrizio.castro@bp.renesas.com> wrote:
+> This patch adds compatible strings specific to r8a774[35], no driver
+> change is needed as the fallback compatible string will activate the
+> right code. Also, this patch replaces the example with a DT snippet used
+> for adding PWM0 support to an r8a7743 based platform.
+>
+> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das@bp.renesas.com>
 
-On Tue, Dec 12, 2017 at 11:42:16AM +0530, Keerthy wrote:
-> Adapt driver to utilize dmtimer pdata ops instead of pdata-quirks.
-> 
-> Signed-off-by: Keerthy <j-keerthy@ti.com>
-> ---
-> 
-> Changes in v4:
-> 
->   * Switched to dev_get_platdata.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Where do you expect dev.platform_data to be set? PWM driver is failing
-with:
-omap-dmtimer-pwm dmtimer-pwm: dmtimer pdata structure NULL
-omap-dmtimer-pwm: probe of dmtimer-pwm failed with error -22
+Gr{oetje,eeting}s,
 
-Which I fixed with patch bellow, to be able to test your patchset.
+                        Geert
 
-Also I'm running a bit out of time, so I'll send few clean up
-patches and event capture code to get some feedback early.
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Regards,
-	ladis
-
-diff --git a/drivers/clocksource/timer-dm.c b/drivers/clocksource/timer-dm.c
-index 39be39e6a8dd..d3d8a49cae0d 100644
---- a/drivers/clocksource/timer-dm.c
-+++ b/drivers/clocksource/timer-dm.c
-@@ -773,6 +773,7 @@ static int omap_dm_timer_probe(struct platform_device *pdev)
- 		dev_err(dev, "%s: no platform data.\n", __func__);
- 		return -ENODEV;
- 	}
-+	dev->platform_data = pdata;
- 
- 	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 	if (unlikely(!irq)) {
-
-> 
-> Changes in v3:
-> 
->   * Used of_find_platdata_by_node function to fetch platform
->     data for timer node.
-> 
->  drivers/pwm/pwm-omap-dmtimer.c | 39 ++++++++++++++++++++++-----------------
->  1 file changed, 22 insertions(+), 17 deletions(-)
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
