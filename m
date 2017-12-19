@@ -1,7 +1,7 @@
 From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Subject: [PATCH 1/3] ARM: dts: r8a7740: Correct TPU register block size
-Date: Tue, 19 Dec 2017 17:02:05 +0100
-Message-ID: <1513699327-27357-2-git-send-email-geert+renesas@glider.be>
+Subject: [PATCH 2/3] dt-bindings: pwm: renesas-tpu: Correct example TPU register block size
+Date: Tue, 19 Dec 2017 17:02:06 +0100
+Message-ID: <1513699327-27357-3-git-send-email-geert+renesas@glider.be>
 References: <1513699327-27357-1-git-send-email-geert+renesas@glider.be>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <1513699327-27357-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
@@ -10,30 +10,26 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob
 Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-The Timer Pulse Unit has registers that lie outside the declared
-register block.  Enlarge the register block size to fix this.
+The Timer Pulse Unit on R-Mobile A1 has registers that lie outside the
+declared register block.  Enlarge the register block size to fix this.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 ---
-This was probably based on the old platform code, which also assumed a
-register block size of 0x100.
-
- arch/arm/boot/dts/r8a7740.dtsi | 2 +-
+ Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/r8a7740.dtsi b/arch/arm/boot/dts/r8a7740.dtsi
-index 95c408b11991fb77..afd3bc5e6cf2e23f 100644
---- a/arch/arm/boot/dts/r8a7740.dtsi
-+++ b/arch/arm/boot/dts/r8a7740.dtsi
-@@ -317,7 +317,7 @@
+diff --git a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
+index 1aadc804dae4e30b..641b5b4c648340ee 100644
+--- a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
++++ b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
+@@ -22,6 +22,6 @@ Example: R8A7740 (R-Car A1) TPU controller node
  
  	tpu: pwm@e6600000 {
  		compatible = "renesas,tpu-r8a7740", "renesas,tpu";
 -		reg = <0xe6600000 0x100>;
 +		reg = <0xe6600000 0x148>;
- 		clocks = <&mstp3_clks R8A7740_CLK_TPU0>;
- 		power-domains = <&pd_a3sp>;
- 		status = "disabled";
+ 		#pwm-cells = <3>;
+ 	};
 -- 
 2.7.4
 
