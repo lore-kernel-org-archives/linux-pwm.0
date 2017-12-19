@@ -1,50 +1,93 @@
-From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-Subject: [PATCH v2 4/6] dt-bindings: pwm: renesas-tpu: Document r8a774[35] support
-Date: Mon, 18 Dec 2017 17:52:06 +0000
-Message-ID: <1513619528-12060-5-git-send-email-fabrizio.castro@bp.renesas.com>
-References: <1513619528-12060-1-git-send-email-fabrizio.castro@bp.renesas.com>
+From: Keerthy <j-keerthy@ti.com>
+Subject: Re: [PATCH v5 7/8] pwm: pwm-omap-dmtimer: Adapt driver to utilize
+ dmtimer pdata ops
+Date: Tue, 19 Dec 2017 10:28:09 +0530
+Message-ID: <b780d238-91fa-035e-65dc-4e8ee607f6a7@ti.com>
+References: <1513059137-21593-1-git-send-email-j-keerthy@ti.com>
+ <1513059137-21593-8-git-send-email-j-keerthy@ti.com>
+ <20171218093153.GA22729@lenoch> <e215a5e3-f729-1de4-2837-24c4a0120114@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from relmlor2.renesas.com ([210.160.252.172]:16402 "EHLO
-        relmlie1.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S934240AbdLRRwd (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Dec 2017 12:52:33 -0500
-In-Reply-To: <1513619528-12060-1-git-send-email-fabrizio.castro@bp.renesas.com>
+Received: from fllnx210.ext.ti.com ([198.47.19.17]:24566 "EHLO
+        fllnx210.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932612AbdLSE7Y (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 18 Dec 2017 23:59:24 -0500
+In-Reply-To: <e215a5e3-f729-1de4-2837-24c4a0120114@ti.com>
+Content-Language: en-US
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
-Cc: Fabrizio Castro <fabrizio.castro@bp.renesas.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, linux-renesas-soc@vger.kernel.org
+To: Ladislav Michl <ladis@linux-mips.org>
+Cc: daniel.lezcano@linaro.org, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org, t-kristo@ti.com, linux@armlinux.org.uk
 
 
-Document r8a774[35] specific compatible strings. No driver change is
-needed as the fallback compatible string "renesas,tpu" activates the
-right code in the driver.
 
-Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das@bp.renesas.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
-v1->v2
-* No change
+On Monday 18 December 2017 06:25 PM, Keerthy wrote:
+> 
+> 
+> On Monday 18 December 2017 03:01 PM, Ladislav Michl wrote:
+>> Keerthy,
+>>
+>> On Tue, Dec 12, 2017 at 11:42:16AM +0530, Keerthy wrote:
+>>> Adapt driver to utilize dmtimer pdata ops instead of pdata-quirks.
+>>>
+>>> Signed-off-by: Keerthy <j-keerthy@ti.com>
+>>> ---
+>>>
+>>> Changes in v4:
+>>>
+>>>   * Switched to dev_get_platdata.
+>>
+>> Where do you expect dev.platform_data to be set? PWM driver is failing
+>> with:
+>> omap-dmtimer-pwm dmtimer-pwm: dmtimer pdata structure NULL
+>> omap-dmtimer-pwm: probe of dmtimer-pwm failed with error -22
+>>
+>> Which I fixed with patch bellow, to be able to test your patchset.
+> 
+> Thanks! I will make the below patch part of my series.
+> 
+>>
+>> Also I'm running a bit out of time, so I'll send few clean up
+>> patches and event capture code to get some feedback early.
+>>
+>> Regards,
+>> 	ladis
+>>
+>> diff --git a/drivers/clocksource/timer-dm.c b/drivers/clocksource/timer-dm.c
+>> index 39be39e6a8dd..d3d8a49cae0d 100644
+>> --- a/drivers/clocksource/timer-dm.c
+>> +++ b/drivers/clocksource/timer-dm.c
+>> @@ -773,6 +773,7 @@ static int omap_dm_timer_probe(struct platform_device *pdev)
+>>  		dev_err(dev, "%s: no platform data.\n", __func__);
+>>  		return -ENODEV;
+>>  	}
+>> +	dev->platform_data = pdata;
 
- Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+drivers/clocksource/timer-dm.c: In function 'omap_dm_timer_probe':
+drivers/clocksource/timer-dm.c:744:21: warning: assignment discards
+'const' qualifier from pointer target type
 
-diff --git a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
-index 1aadc80..16e5748 100644
---- a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
-+++ b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
-@@ -5,8 +5,10 @@ Required Properties:
-   - compatible: should be one of the following.
-     - "renesas,tpu-r8a73a4": for R8A77A4 (R-Mobile APE6) compatible PWM controller.
-     - "renesas,tpu-r8a7740": for R8A7740 (R-Mobile A1) compatible PWM controller.
-+    - "renesas,tpu-r8a7743": for R8A7743 (RZ/G1M) compatible PWM controller.
-+    - "renesas,tpu-r8a7745": for R8A7745 (RZ/G1E) compatible PWM controller.
-     - "renesas,tpu-r8a7790": for R8A7790 (R-Car H2) compatible PWM controller.
--    - "renesas,tpu": for generic R-Car TPU PWM controller.
-+    - "renesas,tpu": for generic R-Car and RZ/G1 TPU PWM controller.
- 
-   - reg: Base address and length of each memory resource used by the PWM
-     controller hardware module.
--- 
-2.7.4
+This cannot be done as we are assigning a const pointer to a non-const
+pointer.
+
+I will figure out a different way for this fix.
+
+>>  
+>>  	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+>>  	if (unlikely(!irq)) {
+>>
+>>>
+>>> Changes in v3:
+>>>
+>>>   * Used of_find_platdata_by_node function to fetch platform
+>>>     data for timer node.
+>>>
+>>>  drivers/pwm/pwm-omap-dmtimer.c | 39 ++++++++++++++++++++++-----------------
+>>>  1 file changed, 22 insertions(+), 17 deletions(-)
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
