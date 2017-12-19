@@ -1,160 +1,43 @@
-From: Ladislav Michl <ladis@linux-mips.org>
-Subject: Re: [PATCH v5 7/8] pwm: pwm-omap-dmtimer: Adapt driver to utilize
- dmtimer pdata ops
-Date: Tue, 19 Dec 2017 16:21:40 +0100
-Message-ID: <20171219152140.GA22971@lenoch>
-References: <1513059137-21593-1-git-send-email-j-keerthy@ti.com>
- <1513059137-21593-8-git-send-email-j-keerthy@ti.com>
- <20171218093153.GA22729@lenoch>
- <e215a5e3-f729-1de4-2837-24c4a0120114@ti.com>
- <b780d238-91fa-035e-65dc-4e8ee607f6a7@ti.com>
- <a62814d7-f2d4-8740-92f5-114992ef5db1@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from eddie.linux-mips.org ([148.251.95.138]:38462 "EHLO
-        cvs.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753130AbdLSPVu (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 19 Dec 2017 10:21:50 -0500
-Content-Disposition: inline
-In-Reply-To: <a62814d7-f2d4-8740-92f5-114992ef5db1@ti.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Subject: [PATCH 1/3] ARM: dts: r8a7740: Correct TPU register block size
+Date: Tue, 19 Dec 2017 17:02:05 +0100
+Message-ID: <1513699327-27357-2-git-send-email-geert+renesas@glider.be>
+References: <1513699327-27357-1-git-send-email-geert+renesas@glider.be>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1513699327-27357-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
-To: Keerthy <j-keerthy@ti.com>
-Cc: daniel.lezcano@linaro.org, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org, t-kristo@ti.com, linux@armlinux.org.uk
 
-On Tue, Dec 19, 2017 at 01:55:48PM +0530, Keerthy wrote:
-> On Tuesday 19 December 2017 10:28 AM, Keerthy wrote:
-> > On Monday 18 December 2017 06:25 PM, Keerthy wrote:
-> >> On Monday 18 December 2017 03:01 PM, Ladislav Michl wrote:
-> >>> Keerthy,
-> >>>
-> >>> On Tue, Dec 12, 2017 at 11:42:16AM +0530, Keerthy wrote:
-> >>>> Adapt driver to utilize dmtimer pdata ops instead of pdata-quirks.
-> >>>>
-> >>>> Signed-off-by: Keerthy <j-keerthy@ti.com>
-> >>>> ---
-> >>>>
-> >>>> Changes in v4:
-> >>>>
-> >>>>   * Switched to dev_get_platdata.
-> >>>
-> >>> Where do you expect dev.platform_data to be set? PWM driver is failing
-> >>> with:
-> >>> omap-dmtimer-pwm dmtimer-pwm: dmtimer pdata structure NULL
-> >>> omap-dmtimer-pwm: probe of dmtimer-pwm failed with error -22
-> >>>
-> >>> Which I fixed with patch bellow, to be able to test your patchset.
-> >>
-> >> Thanks! I will make the below patch part of my series.
-> >>
-> >>>
-> >>> Also I'm running a bit out of time, so I'll send few clean up
-> >>> patches and event capture code to get some feedback early.
-> >>>
-> >>> Regards,
-> >>> 	ladis
-> >>>
-> >>> diff --git a/drivers/clocksource/timer-dm.c b/drivers/clocksource/timer-dm.c
-> >>> index 39be39e6a8dd..d3d8a49cae0d 100644
-> >>> --- a/drivers/clocksource/timer-dm.c
-> >>> +++ b/drivers/clocksource/timer-dm.c
-> >>> @@ -773,6 +773,7 @@ static int omap_dm_timer_probe(struct platform_device *pdev)
-> >>>  		dev_err(dev, "%s: no platform data.\n", __func__);
-> >>>  		return -ENODEV;
-> >>>  	}
-> >>> +	dev->platform_data = pdata;
-> > 
-> > drivers/clocksource/timer-dm.c: In function 'omap_dm_timer_probe':
-> > drivers/clocksource/timer-dm.c:744:21: warning: assignment discards
-> > 'const' qualifier from pointer target type
-> > 
-> > This cannot be done as we are assigning a const pointer to a non-const
-> > pointer.
+The Timer Pulse Unit has registers that lie outside the declared
+register block.  Enlarge the register block size to fix this.
 
-Oh, I didn't even assume it as proper fix, just to show what is missing :)
+Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+---
+This was probably based on the old platform code, which also assumed a
+register block size of 0x100.
 
-But technically 'struct dmtimer_platform_data *pdata' is a constant which
-should not be changed. Also look how all that of_populate chain works -
-at the end const pointer is assigned to void* platform_data by simple
-(void *) overcast.
+ arch/arm/boot/dts/r8a7740.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > I will figure out a different way for this fix.
-> 
-> Ladis,
-> 
-> I fixed that:
-> 
-> diff --git a/drivers/clocksource/timer-dm.c b/drivers/clocksource/timer-dm.c
-> index 1cbd954..e58f555 100644
-> --- a/drivers/clocksource/timer-dm.c
-> +++ b/drivers/clocksource/timer-dm.c
-> @@ -807,17 +807,21 @@ static int omap_dm_timer_probe(struct
-> platform_device *pdev)
->         struct resource *mem, *irq;
->         struct device *dev = &pdev->dev;
->         const struct of_device_id *match;
-> -       const struct dmtimer_platform_data *pdata;
-> +       struct dmtimer_platform_data *pdata;
->         int ret;
-> 
->         match = of_match_device(of_match_ptr(omap_timer_match), dev);
-> -       pdata = match ? match->data : dev->platform_data;
-> +       pdata = match ? (struct dmtimer_platform_data *)match->data :
-> +               dev->platform_data;
-
-All that seems needlesly complicated, what about patch bellow?
-
->         if (!pdata && !dev->of_node) {
->                 dev_err(dev, "%s: no platform data.\n", __func__);
->                 return -ENODEV;
->         }
-> 
-> +       if (!dev->platform_data)
-> +               dev->platform_data = pdata;
-
-Does the above condition bring us anything?
-
->         irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
->         if (unlikely(!irq)) {
->                 dev_err(dev, "%s: no IRQ resource.\n", __func__);
-> @@ -946,7 +950,7 @@ static int omap_dm_timer_remove(struct
-> platform_device *pdev)
->         .write_status = omap_dm_timer_write_status,
->  };
-> 
-> -static const struct dmtimer_platform_data omap3plus_pdata = {
-> +static struct dmtimer_platform_data omap3plus_pdata = {
->         .timer_errata = OMAP_TIMER_ERRATA_I103_I767,
->         .timer_ops = &dmtimer_ops,
->  };
-> 
-> Can you check at your end if this works for you?
-
-Note, it is untested as I ran out of time and will continue after New Year.
-
-diff --git a/drivers/clocksource/timer-dm.c b/drivers/clocksource/timer-dm.c
-index 1cbd95420914..85024f11773a 100644
---- a/drivers/clocksource/timer-dm.c
-+++ b/drivers/clocksource/timer-dm.c
-@@ -806,14 +806,16 @@ static int omap_dm_timer_probe(struct platform_device *pdev)
- 	struct omap_dm_timer *timer;
- 	struct resource *mem, *irq;
- 	struct device *dev = &pdev->dev;
--	const struct of_device_id *match;
- 	const struct dmtimer_platform_data *pdata;
- 	int ret;
+diff --git a/arch/arm/boot/dts/r8a7740.dtsi b/arch/arm/boot/dts/r8a7740.dtsi
+index 95c408b11991fb77..afd3bc5e6cf2e23f 100644
+--- a/arch/arm/boot/dts/r8a7740.dtsi
++++ b/arch/arm/boot/dts/r8a7740.dtsi
+@@ -317,7 +317,7 @@
  
--	match = of_match_device(of_match_ptr(omap_timer_match), dev);
--	pdata = match ? match->data : dev->platform_data;
-+	pdata = of_device_get_match_data(dev);
-+	if (!pdata)
-+		pdata = dev_get_platdata(dev);
-+	else
-+		dev->platform_data = (void *) pdata;
- 
--	if (!pdata && !dev->of_node) {
-+	if (!pdata) {
- 		dev_err(dev, "%s: no platform data.\n", __func__);
- 		return -ENODEV;
- 	}
+ 	tpu: pwm@e6600000 {
+ 		compatible = "renesas,tpu-r8a7740", "renesas,tpu";
+-		reg = <0xe6600000 0x100>;
++		reg = <0xe6600000 0x148>;
+ 		clocks = <&mstp3_clks R8A7740_CLK_TPU0>;
+ 		power-domains = <&pd_a3sp>;
+ 		status = "disabled";
+-- 
+2.7.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
