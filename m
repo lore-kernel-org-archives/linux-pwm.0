@@ -1,47 +1,36 @@
-From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Subject: [PATCH 0/3] pwm: renesas-tpu: Misc Fixes
-Date: Tue, 19 Dec 2017 17:02:04 +0100
-Message-ID: <1513699327-27357-1-git-send-email-geert+renesas@glider.be>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+From: SF Markus Elfring <elfring@users.sourceforge.net>
+Subject: Re: pwm: atmel-tcb: Delete an error message for a failed memory
+ allocation in atmel_tcb_pwm_probe()
+Date: Tue, 19 Dec 2017 18:12:13 +0100
+Message-ID: <a40d72aa-a8bd-a9df-358b-cfb368b71e46@users.sourceforge.net>
+References: <8274c498-1d1b-2ece-365c-98ded714a53c@users.sourceforge.net>
+ <6d607786-4c1b-0949-0768-1bc0a4749fd5@microchip.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mout.web.de ([217.72.192.78]:60725 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751236AbdLSRMl (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 19 Dec 2017 12:12:41 -0500
+In-Reply-To: <6d607786-4c1b-0949-0768-1bc0a4749fd5@microchip.com>
+Content-Language: en-GB
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Nicolas Ferre <nicolas.ferre@microchip.com>, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>, Thierry Reding <thierry.reding@gmail.com>, LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
 
-	Hi all,
+>> Omit an extra message for a memory allocation failure in this function.
+>>
+>> This issue was detected by using the Coccinelle software.
+> 
+> Can you point which coccinelle script highlited this issue?
 
-Here are three small fixes related to the Renesas Timer Pulse Unit PWM
-driver.
+Not directly (so far).
 
-The first patch is meant for Simon's tree.
-The other two patches are meant for either the PWM or DT tree.
+I constructed an approach for the semantic patch language based on
+information from the script “checkpatch.pl”.
+Would you like to improve it any ways?
 
-Thanks!
-
-Geert Uytterhoeven (3):
-  ARM: dts: r8a7740: Correct TPU register block size
-  dt-bindings: pwm: renesas-tpu: Correct example TPU register block size
-  dt-bindings: pwm: renesas-tpu: Correct SoC part numbers and family
-    names
-
- Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt | 6 +++---
- arch/arm/boot/dts/r8a7740.dtsi                            | 2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
-
--- 
-2.7.4
-
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Regards,
+Markus
