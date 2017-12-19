@@ -1,33 +1,63 @@
 From: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Subject: [PATCH v3 0/5] Add PWM and TPU support to r8a7743
-Date: Tue, 19 Dec 2017 13:34:55 +0000
-Message-ID: <1513690500-12165-1-git-send-email-fabrizio.castro@bp.renesas.com>
+Subject: [PATCH v3 2/5] dt-bindings: pwm: rcar: Document r8a774[35] PWM bindings
+Date: Tue, 19 Dec 2017 13:34:57 +0000
+Message-ID: <1513690500-12165-3-git-send-email-fabrizio.castro@bp.renesas.com>
+References: <1513690500-12165-1-git-send-email-fabrizio.castro@bp.renesas.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1513690500-12165-1-git-send-email-fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Cc: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Dear All,
+This patch adds compatible strings specific to r8a774[35], no driver
+change is needed as the fallback compatible string will activate the
+right code. Also, this patch replaces the example with a DT snippet used
+for adding PWM0 support to an r8a7743 based platform.
 
-this series includes all that is required to add PWM and TPU SoC specific
-support for the r8a7743.
+Signed-off-by: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Reviewed-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+---
+v2->v3:
+* No change
 
-Thanks,
+ Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-Fabrizio Castro (5):
-  ARM: shmobile: defconfig: Enable PWM
-  dt-bindings: pwm: rcar: Document r8a774[35] PWM bindings
-  ARM: dts: r8a7743: Add PWM SoC support
-  dt-bindings: pwm: renesas-tpu: Document r8a774[35] support
-  ARM: dts: r8a7743: Add TPU support
-
- .../devicetree/bindings/pwm/renesas,pwm-rcar.txt   | 10 ++-
- .../devicetree/bindings/pwm/renesas,tpu-pwm.txt    |  4 +-
- arch/arm/boot/dts/r8a7743.dtsi                     | 80 ++++++++++++++++++++++
- arch/arm/configs/shmobile_defconfig                |  1 +
- 4 files changed, 91 insertions(+), 4 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+index 74c1180..f3bba59 100644
+--- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
++++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+@@ -2,6 +2,8 @@
+ 
+ Required Properties:
+ - compatible: should be "renesas,pwm-rcar" and one of the following.
++ - "renesas,pwm-r8a7743": for RZ/G1M
++ - "renesas,pwm-r8a7745": for RZ/G1E
+  - "renesas,pwm-r8a7778": for R-Car M1A
+  - "renesas,pwm-r8a7779": for R-Car H1
+  - "renesas,pwm-r8a7790": for R-Car H2
+@@ -17,13 +19,15 @@ Required Properties:
+ - pinctrl-0: phandle, referring to a default pin configuration node.
+ - pinctrl-names: Set to "default".
+ 
+-Example: R8A7790 (R-Car H2) PWM Timer node
++Example: R8A7743 (RZ/G1M) PWM Timer node
+ 
+ 	pwm0: pwm@e6e30000 {
+-		compatible = "renesas,pwm-r8a7790", "renesas,pwm-rcar";
++		compatible = "renesas,pwm-r8a7743", "renesas,pwm-rcar";
+ 		reg = <0 0xe6e30000 0 0x8>;
++		clocks = <&cpg CPG_MOD 523>;
++		power-domains = <&sysc R8A7743_PD_ALWAYS_ON>;
++		resets = <&cpg 523>;
+ 		#pwm-cells = <2>;
+-		clocks = <&mstp5_clks R8A7790_CLK_PWM>;
+ 		pinctrl-0 = <&pwm0_pins>;
+ 		pinctrl-names = "default";
+ 	};
 -- 
 2.7.4
 
