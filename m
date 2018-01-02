@@ -1,120 +1,88 @@
-From: <sean.wang@mediatek.com>
-Subject: [PATCH] pwm: mediatek: fix up PWM4 and PWM5 malfunction on MT7623
-Date: Mon, 25 Dec 2017 22:59:54 +0800
-Message-ID: <7ddf36f5b9400b29578d4897ddea72c57c1c8d11.1514213639.git.sean.wang@mediatek.com>
+From: Keerthy <j-keerthy@ti.com>
+Subject: [PATCH v6 00/10]  omap: dmtimer: Move driver out of plat-omap
+Date: Tue, 2 Jan 2018 15:39:49 +0530
+Message-ID: <1514887799-24605-1-git-send-email-j-keerthy@ti.com>
 Mime-Version: 1.0
 Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mailgw02.mediatek.com ([210.61.82.184]:63289 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1752321AbdLYPAD (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 25 Dec 2017 10:00:03 -0500
+Received: from fllnx210.ext.ti.com ([198.47.19.17]:60559 "EHLO
+        fllnx210.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752290AbeABKKq (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 2 Jan 2018 05:10:46 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: thierry.reding@gmail.com, matthias.bgg@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>, Zhi Mao <zhi.mao@mediatek.com>, John Crispin <john@phrozen.org>
+To: daniel.lezcano@linaro.org, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com
+Cc: ladis@linux-mips.org, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org, t-kristo@ti.com, j-keerthy@ti.com
 
-From: Sean Wang <sean.wang@mediatek.com>
+The series moves dmtimer out of plat-omap to drivers/clocksource.
+The series also does a bunch of changes to pwm-omap-dmtimer code
+to adapt to the driver migration and clean up plat specific
+pdata-quirks and use the dmtimer platform data.
 
-Since the offset for both registers, PWMDWIDTH and PWMTHRES, used to
-control PWM4 or PWM5 are distinct from the other PWMs, whose wrong
-programming on PWM hardware causes waveform cannot be output as expected.
-Thus, the patch adds the extra condition for fixing up the weird case to
-let PWM4 or PWM5 able to work on MT7623.
+Boot tested on DRA7-EVM and AM437X-GP-EVM.
+Compile tested omap1_defconfig.
 
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Cc: Zhi Mao <zhi.mao@mediatek.com>
-Cc: John Crispin <john@phrozen.org>
----
- drivers/pwm/pwm-mediatek.c | 24 +++++++++++++++++++++---
- 1 file changed, 21 insertions(+), 3 deletions(-)
+This is based on top of linux-next branch.
 
-diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index f5d97e0..9311574 100644
---- a/drivers/pwm/pwm-mediatek.c
-+++ b/drivers/pwm/pwm-mediatek.c
-@@ -29,7 +29,9 @@
- #define PWMGDUR			0x0c
- #define PWMWAVENUM		0x28
- #define PWMDWIDTH		0x2c
-+#define PWM45DWIDTH_QUIRK	0x30
- #define PWMTHRES		0x30
-+#define PWM45THRES_QUIRK	0x34
- 
- #define PWM_CLK_DIV_MAX		7
- 
-@@ -54,6 +56,7 @@ static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
- 
- struct mtk_pwm_platform_data {
- 	unsigned int num_pwms;
-+	bool pwm45_quirk;
- };
- 
- /**
-@@ -66,6 +69,7 @@ struct mtk_pwm_chip {
- 	struct pwm_chip chip;
- 	void __iomem *regs;
- 	struct clk *clks[MTK_CLK_MAX];
-+	const struct mtk_pwm_platform_data *soc;
- };
- 
- static const unsigned int mtk_pwm_reg_offset[] = {
-@@ -131,7 +135,8 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
- 	struct clk *clk = pc->clks[MTK_CLK_PWM1 + pwm->hwpwm];
--	u32 resolution, clkdiv = 0;
-+	u32 resolution, clkdiv = 0, reg_width = PWMDWIDTH,
-+	    reg_thres = PWMTHRES;
- 	int ret;
- 
- 	ret = mtk_pwm_clk_enable(chip, pwm);
-@@ -151,9 +156,18 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		return -EINVAL;
- 	}
- 
-+	if (pc->soc->pwm45_quirk && pwm->hwpwm > 2) {
-+		/*
-+		 * PWM[4,5] has distinct offset for PWMDWIDTH and PWMTHRES
-+		 * from the other PWMs on MT7623.
-+		 */
-+		reg_width = PWM45DWIDTH_QUIRK;
-+		reg_thres = PWM45THRES_QUIRK;
-+	}
-+
- 	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | clkdiv);
--	mtk_pwm_writel(pc, pwm->hwpwm, PWMDWIDTH, period_ns / resolution);
--	mtk_pwm_writel(pc, pwm->hwpwm, PWMTHRES, duty_ns / resolution);
-+	mtk_pwm_writel(pc, pwm->hwpwm, reg_width, period_ns / resolution);
-+	mtk_pwm_writel(pc, pwm->hwpwm, reg_thres, duty_ns / resolution);
- 
- 	mtk_pwm_clk_disable(chip, pwm);
- 
-@@ -211,6 +225,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
- 	data = of_device_get_match_data(&pdev->dev);
- 	if (data == NULL)
- 		return -EINVAL;
-+	pc->soc = data;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	pc->regs = devm_ioremap_resource(&pdev->dev, res);
-@@ -251,14 +266,17 @@ static int mtk_pwm_remove(struct platform_device *pdev)
- 
- static const struct mtk_pwm_platform_data mt2712_pwm_data = {
- 	.num_pwms = 8,
-+	.pwm45_quirk = false,
- };
- 
- static const struct mtk_pwm_platform_data mt7622_pwm_data = {
- 	.num_pwms = 6,
-+	.pwm45_quirk = false,
- };
- 
- static const struct mtk_pwm_platform_data mt7623_pwm_data = {
- 	.num_pwms = 5,
-+	.pwm45_quirk = true,
- };
- 
- static const struct of_device_id mtk_pwm_of_match[] = {
+This is tested on on IGEPv2 (OMAP3430 based) by Ladis.
+
+Changes from V5:
+
+  * Added couple of fixes from Ladis for  pwm-dmtimer.
+
+Changes from v4:
+
+  * Made OMAP_DM_TIMER config option silent.
+  * Changed the driver name to timer-dm.c
+
+Changes from v3:
+
+  * Reverted to v2 approach of using dev_get_platdata to fetch dmtimer ops.
+
+Changes from V2:
+
+  * Wrapped the inline functions in header file under OMAP2PLUS
+  * Added a new of helper function to fetch plat_data from of node. 
+
+Keerthy (8):
+  clocksource: dmtimer: Remove all the exports
+  arm: omap: timer: Wrap the inline functions under OMAP2PLUS define
+  arm: omap: Move dmtimer.h out of plat-omap
+  arm: OMAP: Move dmtimer driver out of plat-omap to drivers under
+    clocksource
+  dmtimer: Add timer ops to the platform data structure
+  clocksource: dmtimer: Populate the timer ops to the pdata
+  pwm: pwm-omap-dmtimer: Adapt driver to utilize dmtimer pdata ops
+  arm: omap: pdata-quirks: Remove unused timer pdata
+
+Ladislav Michl (2):
+  clocksource: timer-dm: Hook device platform data if not already
+    assigned
+  clocksource: timer-dm: Check prescaler value
+
+ arch/arm/mach-omap1/pm.c                           |  2 +-
+ arch/arm/mach-omap1/timer.c                        |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_2420_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_2430_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_3xxx_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_44xx_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_54xx_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_7xx_data.c          |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_81xx_data.c         |  2 +-
+ arch/arm/mach-omap2/pdata-quirks.c                 | 32 -----------
+ arch/arm/mach-omap2/timer.c                        |  2 +-
+ arch/arm/plat-omap/Kconfig                         |  6 --
+ arch/arm/plat-omap/Makefile                        |  1 -
+ drivers/clocksource/Kconfig                        |  3 +
+ drivers/clocksource/Makefile                       |  1 +
+ .../dmtimer.c => drivers/clocksource/timer-dm.c    | 67 +++++++++++-----------
+ drivers/pwm/pwm-omap-dmtimer.c                     | 39 +++++++------
+ .../include/plat => include/clocksource}/dmtimer.h |  8 ++-
+ include/linux/platform_data/dmtimer-omap.h         | 38 ++++++++++++
+ 20 files changed, 117 insertions(+), 100 deletions(-)
+ rename arch/arm/plat-omap/dmtimer.c => drivers/clocksource/timer-dm.c (94%)
+ rename {arch/arm/plat-omap/include/plat => include/clocksource}/dmtimer.h (97%)
+
 -- 
-2.7.4
+1.9.1
