@@ -1,42 +1,19 @@
-From: Keerthy <j-keerthy@ti.com>
-Subject: [PATCH v6 10/10] clocksource: timer-dm: Check prescaler value
-Date: Tue, 2 Jan 2018 15:39:59 +0530
-Message-ID: <1514887799-24605-11-git-send-email-j-keerthy@ti.com>
-References: <1514887799-24605-1-git-send-email-j-keerthy@ti.com>
+From: foundation@gmail.com
+Subject: =?utf-8?q?Spende_von_=E2=82=AC_3=2E400=2E000=2C00_EUR?=
+Date: Tue, 02 Jan 2018 12:21:40 +0200
+Message-ID: <20180102104233.0283C2704D74@wsbmail01.wsb.wroclaw.pl>
+Reply-To: roycockrumpovertyfoundation@gmail.com
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1514887799-24605-1-git-send-email-j-keerthy@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: daniel.lezcano@linaro.org, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com
-Cc: ladis@linux-mips.org, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org, t-kristo@ti.com, j-keerthy@ti.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail.wsb.wroclaw.pl ([95.143.242.162]:48613 "EHLO
+        wsbmail01.wsb.wroclaw.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751546AbeABKWl (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 2 Jan 2018 05:22:41 -0500
+Content-Description: Mail message body
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Recipients <foundation@gmail.com>
 
-From: Ladislav Michl <ladis@linux-mips.org>
-
-Invalid prescaler value is silently ignored. Fix that
-by returning -EINVAL in such case. As invalid value
-disabled use of the prescaler, use -1 explicitely for
-that purpose.
-
-Signed-off-by: Ladislav Michl <ladis@linux-mips.org>
----
- drivers/clocksource/timer-dm.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/clocksource/timer-dm.c b/drivers/clocksource/timer-dm.c
-index 60db173..01a9cb0 100644
---- a/drivers/clocksource/timer-dm.c
-+++ b/drivers/clocksource/timer-dm.c
-@@ -672,6 +672,9 @@ int omap_dm_timer_set_prescaler(struct omap_dm_timer *timer, int prescaler)
- 	if (prescaler >= 0x00 && prescaler <= 0x07) {
- 		l |= OMAP_TIMER_CTRL_PRE;
- 		l |= prescaler << 2;
-+	} else {
-+		if (prescaler != -1)
-+			return -EINVAL;
- 	}
- 	omap_dm_timer_write_reg(timer, OMAP_TIMER_CTRL_REG, l);
- 
--- 
-1.9.1
+Hallo, ich Roy Cockrum, 58, aus Knoxville, Tennessee Vereinigte Staaten von Amerika, du hast eine Wohltätigkeitsspende von € 3.400.000,00 EUR, ich gewann die America Lotterie in Amerika im Wert von $ 259,9 Millionen, und ich gebe einen Teil davon Zu fünf glücklichen Leuten und Wohltätigkeitshäusern in Gelübde, um die Armut vor dieser Welt zu beseitigen, ich kämpfe gegen die Armut. Kontaktieren Sie mich für weitere Details: roycockrumpovertyfoundation@gmail.com
