@@ -1,51 +1,45 @@
-From: Ladislav Michl <ladis@linux-mips.org>
-Subject: Re: [PATCH v6 10/10] clocksource: timer-dm: Check prescaler value
-Date: Thu, 4 Jan 2018 23:47:13 +0100
-Message-ID: <20180104224713.GA11557@lenoch>
-References: <1514887799-24605-1-git-send-email-j-keerthy@ti.com>
- <1514887799-24605-11-git-send-email-j-keerthy@ti.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH 1/4] pwm: jz4740: Make disable operation compatible with TCU2 mode
+Date: Sat,  6 Jan 2018 17:58:40 +0100
+Message-ID: <20180106165843.3461-1-paul@crapouillou.net>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1514887799-24605-11-git-send-email-j-keerthy@ti.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Keerthy <j-keerthy@ti.com>
-Cc: daniel.lezcano@linaro.org, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org, t-kristo@ti.com
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Maarten ter Huurne <maarten@treewalker.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Jan 02, 2018 at 03:39:59PM +0530, Keerthy wrote:
-> From: Ladislav Michl <ladis@linux-mips.org>
-> 
-> Invalid prescaler value is silently ignored. Fix that
-> by returning -EINVAL in such case. As invalid value
-> disabled use of the prescaler, use -1 explicitely for
-> that purpose.
-> 
-> Signed-off-by: Ladislav Michl <ladis@linux-mips.org>
-> ---
->  drivers/clocksource/timer-dm.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/clocksource/timer-dm.c b/drivers/clocksource/timer-dm.c
-> index 60db173..01a9cb0 100644
-> --- a/drivers/clocksource/timer-dm.c
-> +++ b/drivers/clocksource/timer-dm.c
-> @@ -672,6 +672,9 @@ int omap_dm_timer_set_prescaler(struct omap_dm_timer *timer, int prescaler)
->  	if (prescaler >= 0x00 && prescaler <= 0x07) {
->  		l |= OMAP_TIMER_CTRL_PRE;
->  		l |= prescaler << 2;
-> +	} else {
-> +		if (prescaler != -1)
-> +			return -EINVAL;
+From: Maarten ter Huurne <maarten@treewalker.org>
 
-Argh... This is actually wrong, as it leaves timer enabled.
-I suggest simply dropping this patch and I'll rethink whole
-approach a bit later (and better).
+On the JZ4750 and later SoCs, channel 1 and 2 operate in a different
+way (TCU2 mode) as the other channels. If a TCU2 mode counter is
+stopped before its PWM functionality is disabled, the output is not
+guaranteed to return to the initial level.
 
->  	}
->  	omap_dm_timer_write_reg(timer, OMAP_TIMER_CTRL_REG, l);
->  
+Signed-off-by: Maarten ter Huurne <maarten@treewalker.org>
+---
+ drivers/pwm/pwm-jz4740.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Sorry for the noise,
-	ladis
+diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+index a75ff3622450..2e41ba213f39 100644
+--- a/drivers/pwm/pwm-jz4740.c
++++ b/drivers/pwm/pwm-jz4740.c
+@@ -71,9 +71,15 @@ static void jz4740_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
+ {
+ 	uint32_t ctrl = jz4740_timer_get_ctrl(pwm->hwpwm);
+ 
++	/* Disable PWM output.
++	 * In TCU2 mode (channel 1/2 on JZ4750+), this must be done before the
++	 * counter is stopped, while in TCU1 mode the order does not matter.
++	 */
+ 	ctrl &= ~JZ_TIMER_CTRL_PWM_ENABLE;
+-	jz4740_timer_disable(pwm->hwpwm);
+ 	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
++
++	/* Stop counter */
++	jz4740_timer_disable(pwm->hwpwm);
+ }
+ 
+ static int jz4740_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+-- 
+2.11.0
