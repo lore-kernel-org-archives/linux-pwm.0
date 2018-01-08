@@ -1,83 +1,140 @@
-From: Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4 4/4] ARM: pinctrl: sunxi-pinctrl: fix pin funtion can
- not be match correctly.
-Date: Mon, 8 Jan 2018 19:08:53 +0800
-Message-ID: <CAJeuY79_w+8Gv=jRxK4tajiecNSAZkMGYY_d7PJmsjyOZHPkJw@mail.gmail.com>
-References: <20171213144748.GA18267@arx-s1> <20171213154549.5zn4uxhsssqw3pb7@flea.lan>
+From: Keerthy <j-keerthy@ti.com>
+Subject: Re: [PATCH v6 08/10] pwm: pwm-omap-dmtimer: Adapt driver to utilize
+ dmtimer pdata ops
+Date: Mon, 8 Jan 2018 20:03:49 +0530
+Message-ID: <fd544471-63d0-dbf1-cee5-53f05c837cdd@ti.com>
+References: <1514887799-24605-1-git-send-email-j-keerthy@ti.com>
+ <1514887799-24605-9-git-send-email-j-keerthy@ti.com>
+ <e9f73341-5262-0d9c-ecb8-f04f18d0bb05@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20171213154549.5zn4uxhsssqw3pb7-ZC1Zs529Oq4@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "moderated list:ARM/Allwinner sunXi SoC support" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <e9f73341-5262-0d9c-ecb8-f04f18d0bb05@microchip.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Claudiu Beznea <Claudiu.Beznea@microchip.com>, daniel.lezcano@linaro.org, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, ladis@linux-mips.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, t-kristo@ti.com, grygorii.strashko@ti.com, sebastian.reichel@collabora.co.uk, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-2017-12-13 23:45 GMT+08:00 Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>:
-> Hi,
->
-> Thanks for your patch!
->
-> On Wed, Dec 13, 2017 at 10:47:48PM +0800, hao_zhang wrote:
->> Pin function can not be match correctly when SUNXI_PIN describe with
->> mutiple variant and same function.
+
+
+On Monday 08 January 2018 02:14 PM, Claudiu Beznea wrote:
+> 
+> 
+> On 02.01.2018 12:09, Keerthy wrote:
+>> Adapt driver to utilize dmtimer pdata ops instead of pdata-quirks.
 >>
->> such as:
->> on pinctrl-sun4i-a10.c
->>
->> SUNXI_PIN(SUNXI_PINCTRL_PIN(B, 2),
->>               SUNXI_FUNCTION(0x0, "gpio_in"),
->>               SUNXI_FUNCTION(0x1, "gpio_out"),
->>               SUNXI_FUNCTION_VARIANT(0x2, "pwm",    /* PWM0 */
->>                       PINCTRL_SUN4I_A10 |
->>                       PINCTRL_SUN7I_A20),
->>               SUNXI_FUNCTION_VARIANT(0x3, "pwm",    /* PWM0 */
->>                       PINCTRL_SUN8I_R40)),
->>
->> it would always match to the first variant function
->> (PINCTRL_SUN4I_A10, PINCTRL_SUN7I_A20)
->>
->> so we should add variant compare on it.
->>
->> Signed-off-by: hao_zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> Signed-off-by: Keerthy <j-keerthy@ti.com>
+>> Tested-by: Ladislav Michl <ladis@linux-mips.org>
 >> ---
->>  drivers/pinctrl/sunxi/pinctrl-sunxi.c | 6 ++++--
->>  1 file changed, 4 insertions(+), 2 deletions(-)
+>>  drivers/pwm/pwm-omap-dmtimer.c | 39 ++++++++++++++++++++++-----------------
+>>  1 file changed, 22 insertions(+), 17 deletions(-)
 >>
->> diff --git a/drivers/pinctrl/sunxi/pinctrl-sunxi.c b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
->> index 4b6cb25..f23e74e 100644
->> --- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
->> +++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
->> @@ -83,9 +83,11 @@ sunxi_pinctrl_desc_find_function_by_name(struct sunxi_pinctrl *pctl,
->>                       struct sunxi_desc_function *func = pin->functions;
+>> diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
+>> index 5ad42f3..3b27aff 100644
+>> --- a/drivers/pwm/pwm-omap-dmtimer.c
+>> +++ b/drivers/pwm/pwm-omap-dmtimer.c
+>> @@ -23,6 +23,7 @@
+>>  #include <linux/mutex.h>
+>>  #include <linux/of.h>
+>>  #include <linux/of_platform.h>
+>> +#include <linux/platform_data/dmtimer-omap.h>
+>>  #include <linux/platform_data/pwm_omap_dmtimer.h>
+>>  #include <linux/platform_device.h>
+>>  #include <linux/pm_runtime.h>
+>> @@ -37,7 +38,7 @@ struct pwm_omap_dmtimer_chip {
+>>  	struct pwm_chip chip;
+>>  	struct mutex mutex;
+>>  	pwm_omap_dmtimer *dm_timer;
+>> -	struct pwm_omap_dmtimer_pdata *pdata;
+>> +	struct omap_dm_timer_ops *pdata;
+>>  	struct platform_device *dm_timer_pdev;
+>>  };
+>>  
+>> @@ -242,19 +243,33 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+>>  {
+>>  	struct device_node *np = pdev->dev.of_node;
+>>  	struct device_node *timer;
+>> +	struct platform_device *timer_pdev;
+>>  	struct pwm_omap_dmtimer_chip *omap;
+>> -	struct pwm_omap_dmtimer_pdata *pdata;
+>> +	struct dmtimer_platform_data *timer_pdata;
+>> +	struct omap_dm_timer_ops *pdata;
+>>  	pwm_omap_dmtimer *dm_timer;
+>>  	u32 v;
+>>  	int status;
+>>  
+>> -	pdata = dev_get_platdata(&pdev->dev);
+>> -	if (!pdata) {
+>> -		dev_err(&pdev->dev, "Missing dmtimer platform data\n");
+>> +	timer = of_parse_phandle(np, "ti,timers", 0);
+> of_node_put() should be called when done with device_node pointer returned
+> by of_parse_phandle() (you may want to check the return ERROR cases below
+> regarding this statement):
+>> +	if (!timer)
+>> +		return -ENODEV;
+>> +
+>> +	timer_pdev = of_find_device_by_node(timer);
+>> +	if (!timer_pdev) {
+>> +		dev_err(&pdev->dev, "Unable to find Timer pdev\n");
+> here
+>> +		return -ENODEV;
+>> +	}
+>> +
+>> +	timer_pdata = dev_get_platdata(&timer_pdev->dev);
+>> +	if (!timer_pdata) {
+>> +		dev_err(&pdev->dev, "dmtimer pdata structure NULL\n");
+> here
+>>  		return -EINVAL;
+>>  	}
+>>  
+>> -	if (!pdata->request_by_node ||
+>> +	pdata = timer_pdata->timer_ops;
+>> +
+>> +	if (!pdata || !pdata->request_by_node ||
+>>  	    !pdata->free ||
+>>  	    !pdata->enable ||
+>>  	    !pdata->disable ||
+>> @@ -270,10 +285,6 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+>>  		return -EINVAL;
+>>  	}
+>>  
+>> -	timer = of_parse_phandle(np, "ti,timers", 0);
+>> -	if (!timer)
+>> -		return -ENODEV;
+>> -
+>>  	if (!of_get_property(timer, "ti,timer-pwm", NULL)) {
+> here
+>>  		dev_err(&pdev->dev, "Missing ti,timer-pwm capability\n");
+>>  		return -ENODEV;
+>> @@ -291,13 +302,7 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+>>  
+>>  	omap->pdata = pdata;
+>>  	omap->dm_timer = dm_timer;
+>> -
+>> -	omap->dm_timer_pdev = of_find_device_by_node(timer);
+>> -	if (!omap->dm_timer_pdev) {
+>> -		dev_err(&pdev->dev, "Unable to find timer pdev\n");
+>> -		omap->pdata->free(dm_timer);
+>> -		return -EINVAL;
+>> -	}
+>> +	omap->dm_timer_pdev = timer_pdev;
+>>  
+>>  	/*
+>>  	 * Ensure that the timer is stopped before we allow PWM core to call
 >>
->>                       while (func->name) {
->> -                             if (!strcmp(func->name, func_name))
->> +                             if (!strcmp(func->name, func_name)) {
->> +                                     if (!(func->variant) ||
->> +                                        (func->variant & pctl->variant))
->
-> I guess it would be better to have:
->         if (!strcmp(func->name, func_name) &&
->             (!func->variant || (func->variant & pctl->variant)))
+> And all the other return instructions from probe function not listed by git diff
 
-It would over 80 characters, can i change it by this ?
-if (!strcmp(func->name, func_name) &&
-         (func->variant & pctl->variant ||
-          !func->variant))
+Thanks for reviewing. I will add the of_node_put call for all the error
+paths.
 
->
-> Once fixed,
-> Acked-by: Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>
->
-> Thanks!
-> Maxime
->
-> --
-> Maxime Ripard, Free Electrons
-> Embedded Linux and Kernel engineering
-> http://free-electrons.com
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
