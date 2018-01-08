@@ -1,238 +1,119 @@
-From: Ladislav Michl <ladis@linux-mips.org>
-Subject: [RFC 5/5] pwm: pwm-omap-dmtimer: Add capture functionality
-Date: Mon, 8 Jan 2018 16:43:37 +0100
-Message-ID: <20180108154336.GE4077@lenoch>
-References: <20180108153926.GA3916@lenoch>
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: Re: [PATCH v4 4/4] ARM: pinctrl: sunxi-pinctrl: fix pin funtion can
+ not be match correctly.
+Date: Mon, 8 Jan 2018 16:46:36 +0100
+Message-ID: <20180108154636.vqwcyb4cznqyclip@flea>
+References: <20171213144748.GA18267@arx-s1>
+ <20171213154549.5zn4uxhsssqw3pb7@flea.lan>
+ <CAJeuY79_w+8Gv=jRxK4tajiecNSAZkMGYY_d7PJmsjyOZHPkJw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="smfllbht5q2nnop2"
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from eddie.linux-mips.org ([148.251.95.138]:48860 "EHLO
-        cvs.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932428AbeAHPnj (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 8 Jan 2018 10:43:39 -0500
-Received: (from localhost user: 'ladis' uid#1021 fake: STDIN
-        (ladis@eddie.linux-mips.org)) by eddie.linux-mips.org
-        id S23991534AbeAHPniAKfhT (ORCPT <rfc822;linux-pwm@vger.kernel.org>
-        + 1 other); Mon, 8 Jan 2018 16:43:38 +0100
+Received: from mail.free-electrons.com ([62.4.15.54]:56662 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932282AbeAHPqk (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 8 Jan 2018 10:46:40 -0500
 Content-Disposition: inline
-In-Reply-To: <20180108153926.GA3916@lenoch>
+In-Reply-To: <CAJeuY79_w+8Gv=jRxK4tajiecNSAZkMGYY_d7PJmsjyOZHPkJw@mail.gmail.com>
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Keerthy <j-keerthy@ti.com>, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com, daniel.lezcano@linaro.org
-Cc: grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, t-kristo@ti.com
+To: Hao Zhang <hao5781286@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>, linux@armlinux.org.uk, Chen-Yu Tsai <wens@csie.org>, Linus Walleij <linus.walleij@linaro.org>, open list <linux-kernel@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "moderated list:ARM/Allwinner sunXi SoC support" <linux-arm-kernel@lists.infradead.org>, linux-pwm@vger.kernel.org
 
-Call for help:
-For testing purposes pwm_evt pin is driven by a signal generator,
-in this example at 200us period and 80% duty cycle.
-Repeated testing gives:
-$ cat /sys/class/pwm/pwmchip4/pwm0/capture
-200000 160000
-or:
-$ cat /sys/class/pwm/pwmchip4/pwm0/capture
-200000 40000
-Here it seems hardware can capture both edges, but I do not see a way
-how to tell it I want start from either low to high or high to low
-transition. Clues?
 
-Also there is probably bug in the code as for shorter periods (here 10us)
-I'm getting:
-$ cat /sys/class/pwm/pwmchip4/pwm0/capture
-omap_dm_timer_read_status: timer not available or enabled.
-10000 2000
-Unfortunately I do not see how it can happen in the code.
+--smfllbht5q2nnop2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Any hints greatly appreciated, thank you...
+On Mon, Jan 08, 2018 at 07:08:53PM +0800, Hao Zhang wrote:
+> 2017-12-13 23:45 GMT+08:00 Maxime Ripard <maxime.ripard@free-electrons.co=
+m>:
+> > Hi,
+> >
+> > Thanks for your patch!
+> >
+> > On Wed, Dec 13, 2017 at 10:47:48PM +0800, hao_zhang wrote:
+> >> Pin function can not be match correctly when SUNXI_PIN describe with
+> >> mutiple variant and same function.
+> >>
+> >> such as:
+> >> on pinctrl-sun4i-a10.c
+> >>
+> >> SUNXI_PIN(SUNXI_PINCTRL_PIN(B, 2),
+> >>               SUNXI_FUNCTION(0x0, "gpio_in"),
+> >>               SUNXI_FUNCTION(0x1, "gpio_out"),
+> >>               SUNXI_FUNCTION_VARIANT(0x2, "pwm",    /* PWM0 */
+> >>                       PINCTRL_SUN4I_A10 |
+> >>                       PINCTRL_SUN7I_A20),
+> >>               SUNXI_FUNCTION_VARIANT(0x3, "pwm",    /* PWM0 */
+> >>                       PINCTRL_SUN8I_R40)),
+> >>
+> >> it would always match to the first variant function
+> >> (PINCTRL_SUN4I_A10, PINCTRL_SUN7I_A20)
+> >>
+> >> so we should add variant compare on it.
+> >>
+> >> Signed-off-by: hao_zhang <hao5781286@gmail.com>
+> >> ---
+> >>  drivers/pinctrl/sunxi/pinctrl-sunxi.c | 6 ++++--
+> >>  1 file changed, 4 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/pinctrl/sunxi/pinctrl-sunxi.c b/drivers/pinctrl/s=
+unxi/pinctrl-sunxi.c
+> >> index 4b6cb25..f23e74e 100644
+> >> --- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+> >> +++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+> >> @@ -83,9 +83,11 @@ sunxi_pinctrl_desc_find_function_by_name(struct sun=
+xi_pinctrl *pctl,
+> >>                       struct sunxi_desc_function *func =3D pin->functi=
+ons;
+> >>
+> >>                       while (func->name) {
+> >> -                             if (!strcmp(func->name, func_name))
+> >> +                             if (!strcmp(func->name, func_name)) {
+> >> +                                     if (!(func->variant) ||
+> >> +                                        (func->variant & pctl->varian=
+t))
+> >
+> > I guess it would be better to have:
+> >         if (!strcmp(func->name, func_name) &&
+> >             (!func->variant || (func->variant & pctl->variant)))
+>=20
+> It would over 80 characters, can i change it by this ?
+> if (!strcmp(func->name, func_name) &&
+>          (func->variant & pctl->variant ||
+>           !func->variant))
 
-Signed-off-by: Ladislav Michl <ladis@linux-mips.org>
+It feels more natural to have !func->variant first, but feel free to
+have it split that way yes.
 
-diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
-index ee1cd92b1744..90d07df0f69d 100644
---- a/drivers/pwm/pwm-omap-dmtimer.c
-+++ b/drivers/pwm/pwm-omap-dmtimer.c
-@@ -17,7 +17,9 @@
-  */
- 
- #include <linux/clk.h>
-+#include <clocksource/dmtimer.h>
- #include <linux/err.h>
-+#include <linux/interrupt.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-@@ -30,17 +32,21 @@
- #include <linux/pwm.h>
- #include <linux/slab.h>
- #include <linux/time.h>
-+#include <linux/wait.h>
- 
- #define DM_TIMER_LOAD_MIN 0xfffffffe
- #define DM_TIMER_MAX      0xffffffff
- 
- struct pwm_omap_dmtimer_chip {
- 	struct pwm_chip chip;
-+	spinlock_t lock;
- 	struct mutex mutex;
-+	wait_queue_head_t wait;
- 	pwm_omap_dmtimer *dm_timer;
- 	struct omap_dm_timer_ops *pdata;
- 	struct platform_device *dm_timer_pdev;
- 	unsigned long freq;
-+	unsigned int ev_cnt, overflow, width;
- };
- 
- static inline struct pwm_omap_dmtimer_chip *
-@@ -55,6 +61,22 @@ pwm_omap_dmtimer_get_clock_cycles(struct pwm_omap_dmtimer_chip *omap, int ns)
- 	return DIV_ROUND_CLOSEST_ULL((u64)omap->freq * ns, NSEC_PER_SEC);
- }
- 
-+static inline unsigned int
-+pwm_omap_dmtimer_ticks_to_ns(struct pwm_omap_dmtimer_chip *omap,
-+			     unsigned int ticks)
-+{
-+	return DIV_ROUND_CLOSEST_ULL((u64)ticks * NSEC_PER_SEC, omap->freq);
-+}
-+
-+static unsigned int pwm_omap_dmtimer_get_width(struct pwm_omap_dmtimer_chip *omap,
-+					       unsigned int c1, unsigned int c2)
-+{
-+	if (c1 <= c2)
-+		return c2 - c1;
-+
-+	return (c2 - omap->overflow) + (DM_TIMER_MAX - c1);
-+}
-+
- static void pwm_omap_dmtimer_start(struct pwm_omap_dmtimer_chip *omap)
- {
- 	/*
-@@ -218,7 +240,101 @@ static int pwm_omap_dmtimer_set_polarity(struct pwm_chip *chip,
- 	return 0;
- }
- 
-+static int pwm_omap_dmtimer_capture(struct pwm_chip *chip,
-+				    struct pwm_device *pwm,
-+				    struct pwm_capture *result,
-+				    unsigned long timeout)
-+
-+{
-+	int res;
-+	unsigned long flags;
-+	struct pwm_omap_dmtimer_chip *omap = to_pwm_omap_dmtimer_chip(chip);
-+
-+	mutex_lock(&omap->mutex);
-+
-+	if (pm_runtime_active(&omap->dm_timer_pdev->dev))
-+		omap->pdata->stop(omap->dm_timer);
-+
-+	/* Let timer overflow every 1 second */
-+	omap->overflow = DM_TIMER_MAX - (1 * omap->freq);
-+	timeout = msecs_to_jiffies(timeout);
-+	result->period = result->duty_cycle = 0;
-+
-+	spin_lock_irqsave(&omap->lock, flags);
-+	omap->pdata->set_int_enable(omap->dm_timer, OMAP_TIMER_INT_CAPTURE |
-+				    OMAP_TIMER_INT_OVERFLOW);
-+	omap->pdata->set_capture(omap->dm_timer, 1, 1);
-+	omap->pdata->set_load_start(omap->dm_timer, true, omap->overflow);
-+	omap->ev_cnt = omap->width = 0;
-+	spin_unlock_irqrestore(&omap->lock, flags);
-+
-+	res = wait_event_interruptible_timeout(omap->wait,
-+					       omap->width > 0, timeout);
-+	if (res > 0) {
-+		spin_lock_irqsave(&omap->lock, flags);
-+		result->period =
-+			pwm_omap_dmtimer_ticks_to_ns(omap, omap->width);
-+		omap->pdata->stop(omap->dm_timer);
-+		omap->pdata->set_capture(omap->dm_timer, 1, 3);
-+		omap->pdata->start(omap->dm_timer);
-+		omap->ev_cnt = omap->width = 0;
-+		spin_unlock_irqrestore(&omap->lock, flags);
-+
-+		res = wait_event_interruptible_timeout(omap->wait,
-+						       omap->width > 0,
-+						       timeout);
-+	}
-+
-+	spin_lock_irqsave(&omap->lock, flags);
-+	omap->pdata->stop(omap->dm_timer);
-+	omap->pdata->set_int_disable(omap->dm_timer, OMAP_TIMER_INT_CAPTURE |
-+				     OMAP_TIMER_INT_OVERFLOW);
-+	spin_unlock_irqrestore(&omap->lock, flags);
-+
-+	if (res == 0) {
-+		res = -ETIMEDOUT;
-+	} else if (res > 0) {
-+		result->duty_cycle =
-+			pwm_omap_dmtimer_ticks_to_ns(omap, omap->width);
-+		res = 0;
-+	}
-+
-+	mutex_unlock(&omap->mutex);
-+
-+	return res;
-+}
-+
-+static irqreturn_t pwm_omap_dmtimer_irq(int irq, void *dev_id)
-+{
-+	u32 l;
-+	unsigned int c1, c2;
-+	unsigned long flags;
-+        struct pwm_omap_dmtimer_chip *omap = dev_id;
-+
-+	spin_lock_irqsave(&omap->lock, flags);
-+
-+	l = omap->pdata->read_status(omap->dm_timer);
-+	if (l & OMAP_TIMER_INT_CAPTURE) {
-+		if (!omap->width && omap->ev_cnt == 1) {
-+			omap->pdata->read_capture(omap->dm_timer, &c1, &c2);
-+			omap->width = pwm_omap_dmtimer_get_width(omap, c1, c2);
-+			wake_up(&omap->wait);
-+		}
-+		omap->ev_cnt++;
-+	}
-+	/* TODO: handle overflow as well
-+	if (l & OMAP_TIMER_INT_OVERFLOW)
-+		overflow++;
-+	*/
-+	omap->pdata->write_status(omap->dm_timer, l);
-+
-+	spin_unlock_irqrestore(&omap->lock, flags);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static const struct pwm_ops pwm_omap_dmtimer_ops = {
-+	.capture = pwm_omap_dmtimer_capture,
- 	.enable	= pwm_omap_dmtimer_enable,
- 	.disable = pwm_omap_dmtimer_disable,
- 	.config	= pwm_omap_dmtimer_config,
-@@ -237,7 +353,7 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
- 	pwm_omap_dmtimer *dm_timer;
- 	struct clk *fclk;
- 	u32 v;
--	int status;
-+	int irq, status;
- 
- 	timer = of_parse_phandle(np, "ti,timers", 0);
- 	if (!timer)
-@@ -338,7 +454,18 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
- 	omap->chip.of_xlate = of_pwm_xlate_with_flags;
- 	omap->chip.of_pwm_n_cells = 3;
- 
-+	spin_lock_init(&omap->lock);
- 	mutex_init(&omap->mutex);
-+	init_waitqueue_head(&omap->wait);
-+
-+	irq = omap->pdata->get_irq(omap->dm_timer);
-+	if (irq < 0)
-+		return irq;
-+
-+	status = devm_request_irq(&pdev->dev, irq, pwm_omap_dmtimer_irq, 0,
-+				  "event_capture", omap);
-+	if (status)
-+		return status;
- 
- 	status = pwmchip_add(&omap->chip);
- 	if (status < 0) {
--- 
-2.15.1
+Maxime
+
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
+
+--smfllbht5q2nnop2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlpTklsACgkQ0rTAlCFN
+r3RwxhAAjWqcU+len+EEdYH75LkzkI4KQAdOJVxV7QeX/8lY8xPr4kPCg3wSvy+9
+I4U5+/MMIVyr9jP5oVSnQnhOaMLtecGKImQfgGkM9BbcvR+04JngWUYnCH0vpu8A
+4WBDEv7fdPD4KQXQ18nUC1dHPmpbY46rJS5AihtBNbFJfHTu5pUqzCWxQd2y08in
+KFnkmngZ2DiuXSzzM84PC/hgJocT8D+t0NOD5m2iIgKLrqtjP02ZzzQnFRJL9qFu
+Z+8gLtWPRsGhYGWnDLk5bsoUOn239bmryNr4NYhKHniWp50R7HrDeJdtMvcbfRB5
+svW3BJl/h9EDRecOIPml/OzdhsV6cU3kLnbFy6xnAONQByxLWPy8bsDMzrOmhQ/S
+i6L6biIWoVOV/k7XhRjyuKcEPATUwl7s1PyNWInfTWrfvr3nNwt2EqYSA1LiMd9E
++Az02lpXHuJo132xwtKpTMHggyeWIqb0RxOsvPgUilIBFzthCGmrXjjchpv2SDaE
+51feRdyEp+0yvQXRmVOxZrTSeKyIYsRbrDdBPY2qxvTDI8BIQ0Jdj4PsXvTBJSb+
+uGethP0BAgo9oHqGCGLEUM6JtYcSkF8Yglfbd+VG+YL2BrmmivPrQakwucLHLP9d
+W+By68rVaW3JbrKqCLLEboEQJ0Z3jXB3CDYmBnQKI8xWclsC8OE=
+=JdF4
+-----END PGP SIGNATURE-----
+
+--smfllbht5q2nnop2--
