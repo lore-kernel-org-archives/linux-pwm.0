@@ -1,63 +1,127 @@
-From: Ladislav Michl <ladis@linux-mips.org>
-Subject: Re: [PATCH v6 10/10] clocksource: timer-dm: Check prescaler value
-Date: Sun, 7 Jan 2018 20:26:33 +0100
-Message-ID: <20180107192633.GA19198@lenoch>
+From: Claudiu Beznea <Claudiu.Beznea@microchip.com>
+Subject: Re: [PATCH v6 08/10] pwm: pwm-omap-dmtimer: Adapt driver to utilize
+ dmtimer pdata ops
+Date: Mon, 8 Jan 2018 10:44:16 +0200
+Message-ID: <e9f73341-5262-0d9c-ecb8-f04f18d0bb05@microchip.com>
 References: <1514887799-24605-1-git-send-email-j-keerthy@ti.com>
- <1514887799-24605-11-git-send-email-j-keerthy@ti.com>
- <20180104224713.GA11557@lenoch>
- <f743a25e-d29e-8693-f2c6-87d2f648d613@ti.com>
+ <1514887799-24605-9-git-send-email-j-keerthy@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <f743a25e-d29e-8693-f2c6-87d2f648d613@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Keerthy <j-keerthy@ti.com>
-Cc: daniel.lezcano@linaro.org, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, linux-kernel@vger.kernel.org, t-kristo@ti.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:15771 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755990AbeAHIoW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Mon, 8 Jan 2018 03:44:22 -0500
+In-Reply-To: <1514887799-24605-9-git-send-email-j-keerthy@ti.com>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Keerthy <j-keerthy@ti.com>, daniel.lezcano@linaro.org, tony@atomide.com, aaro.koskinen@iki.fi, thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, grygorii.strashko@ti.com, linux-kernel@vger.kernel.org, robh+dt@kernel.org, t-kristo@ti.com, ladis@linux-mips.org, sebastian.reichel@collabora.co.uk, linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 
-On Sun, Jan 07, 2018 at 09:26:44PM +0530, Keerthy wrote:
-> On 1/5/2018 4:17 AM, Ladislav Michl wrote:
-> > On Tue, Jan 02, 2018 at 03:39:59PM +0530, Keerthy wrote:
-> > > From: Ladislav Michl <ladis@linux-mips.org>
-> > > 
-> > > Invalid prescaler value is silently ignored. Fix that
-> > > by returning -EINVAL in such case. As invalid value
-> > > disabled use of the prescaler, use -1 explicitely for
-> > > that purpose.
-> > > 
-> > > Signed-off-by: Ladislav Michl <ladis@linux-mips.org>
-> > > ---
-> > >   drivers/clocksource/timer-dm.c | 3 +++
-> > >   1 file changed, 3 insertions(+)
-> > > 
-> > > diff --git a/drivers/clocksource/timer-dm.c b/drivers/clocksource/timer-dm.c
-> > > index 60db173..01a9cb0 100644
-> > > --- a/drivers/clocksource/timer-dm.c
-> > > +++ b/drivers/clocksource/timer-dm.c
-> > > @@ -672,6 +672,9 @@ int omap_dm_timer_set_prescaler(struct omap_dm_timer *timer, int prescaler)
-> > >   	if (prescaler >= 0x00 && prescaler <= 0x07) {
-> > >   		l |= OMAP_TIMER_CTRL_PRE;
-> > >   		l |= prescaler << 2;
-> > > +	} else {
-> > > +		if (prescaler != -1)
-> > > +			return -EINVAL;
-> > 
-> > Argh... This is actually wrong, as it leaves timer enabled.
-> > I suggest simply dropping this patch and I'll rethink whole
-> > approach a bit later (and better).
+
+
+On 02.01.2018 12:09, Keerthy wrote:
+> Adapt driver to utilize dmtimer pdata ops instead of pdata-quirks.
 > 
-> Okay. I hope the rest 9 patches work well for you.
-
-Yes. I rebased event capture patches on top of this serie (based on
-linux-next) and will post them during next week for review. Fixed
-patch will be included (note, it is not really needed for your serie
-as noone is calling this function).
-
-> > 
-> > >   	}
-> > >   	omap_dm_timer_write_reg(timer, OMAP_TIMER_CTRL_REG, l);
-> > 
-> > Sorry for the noise,
-> > 	ladis
-> > 
+> Signed-off-by: Keerthy <j-keerthy@ti.com>
+> Tested-by: Ladislav Michl <ladis@linux-mips.org>
+> ---
+>  drivers/pwm/pwm-omap-dmtimer.c | 39 ++++++++++++++++++++++-----------------
+>  1 file changed, 22 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
+> index 5ad42f3..3b27aff 100644
+> --- a/drivers/pwm/pwm-omap-dmtimer.c
+> +++ b/drivers/pwm/pwm-omap-dmtimer.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/mutex.h>
+>  #include <linux/of.h>
+>  #include <linux/of_platform.h>
+> +#include <linux/platform_data/dmtimer-omap.h>
+>  #include <linux/platform_data/pwm_omap_dmtimer.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/pm_runtime.h>
+> @@ -37,7 +38,7 @@ struct pwm_omap_dmtimer_chip {
+>  	struct pwm_chip chip;
+>  	struct mutex mutex;
+>  	pwm_omap_dmtimer *dm_timer;
+> -	struct pwm_omap_dmtimer_pdata *pdata;
+> +	struct omap_dm_timer_ops *pdata;
+>  	struct platform_device *dm_timer_pdev;
+>  };
+>  
+> @@ -242,19 +243,33 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+>  {
+>  	struct device_node *np = pdev->dev.of_node;
+>  	struct device_node *timer;
+> +	struct platform_device *timer_pdev;
+>  	struct pwm_omap_dmtimer_chip *omap;
+> -	struct pwm_omap_dmtimer_pdata *pdata;
+> +	struct dmtimer_platform_data *timer_pdata;
+> +	struct omap_dm_timer_ops *pdata;
+>  	pwm_omap_dmtimer *dm_timer;
+>  	u32 v;
+>  	int status;
+>  
+> -	pdata = dev_get_platdata(&pdev->dev);
+> -	if (!pdata) {
+> -		dev_err(&pdev->dev, "Missing dmtimer platform data\n");
+> +	timer = of_parse_phandle(np, "ti,timers", 0);
+of_node_put() should be called when done with device_node pointer returned
+by of_parse_phandle() (you may want to check the return ERROR cases below
+regarding this statement):
+> +	if (!timer)
+> +		return -ENODEV;
+> +
+> +	timer_pdev = of_find_device_by_node(timer);
+> +	if (!timer_pdev) {
+> +		dev_err(&pdev->dev, "Unable to find Timer pdev\n");
+here
+> +		return -ENODEV;
+> +	}
+> +
+> +	timer_pdata = dev_get_platdata(&timer_pdev->dev);
+> +	if (!timer_pdata) {
+> +		dev_err(&pdev->dev, "dmtimer pdata structure NULL\n");
+here
+>  		return -EINVAL;
+>  	}
+>  
+> -	if (!pdata->request_by_node ||
+> +	pdata = timer_pdata->timer_ops;
+> +
+> +	if (!pdata || !pdata->request_by_node ||
+>  	    !pdata->free ||
+>  	    !pdata->enable ||
+>  	    !pdata->disable ||
+> @@ -270,10 +285,6 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+>  		return -EINVAL;
+>  	}
+>  
+> -	timer = of_parse_phandle(np, "ti,timers", 0);
+> -	if (!timer)
+> -		return -ENODEV;
+> -
+>  	if (!of_get_property(timer, "ti,timer-pwm", NULL)) {
+here
+>  		dev_err(&pdev->dev, "Missing ti,timer-pwm capability\n");
+>  		return -ENODEV;
+> @@ -291,13 +302,7 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+>  
+>  	omap->pdata = pdata;
+>  	omap->dm_timer = dm_timer;
+> -
+> -	omap->dm_timer_pdev = of_find_device_by_node(timer);
+> -	if (!omap->dm_timer_pdev) {
+> -		dev_err(&pdev->dev, "Unable to find timer pdev\n");
+> -		omap->pdata->free(dm_timer);
+> -		return -EINVAL;
+> -	}
+> +	omap->dm_timer_pdev = timer_pdev;
+>  
+>  	/*
+>  	 * Ensure that the timer is stopped before we allow PWM core to call
+> 
+And all the other return instructions from probe function not listed by git diff
