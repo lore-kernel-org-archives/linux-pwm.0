@@ -1,67 +1,92 @@
-From: Ladislav Michl <ladis@linux-mips.org>
-Subject: Re: [RFC 5/5] pwm: pwm-omap-dmtimer: Add capture functionality
-Date: Mon, 8 Jan 2018 23:26:19 +0100
-Message-ID: <20180108222619.GA21427@lenoch>
-References: <20180108153926.GA3916@lenoch>
- <20180108154336.GE4077@lenoch>
- <20180108215931.GV3875@atomide.com>
- <20180108220602.GA17615@lenoch>
- <20180108221327.GW3875@atomide.com>
+From: Keerthy <j-keerthy@ti.com>
+Subject: [PATCH v7 0/9] omap: dmtimer: Move driver out of plat-omap
+Date: Tue, 9 Jan 2018 11:52:58 +0530
+Message-ID: <1515478987-5786-1-git-send-email-j-keerthy@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from eddie.linux-mips.org ([148.251.95.138]:50688 "EHLO
-        cvs.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754828AbeAHW0W (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 8 Jan 2018 17:26:22 -0500
-Received: (from localhost user: 'ladis' uid#1021 fake: STDIN
-        (ladis@eddie.linux-mips.org)) by eddie.linux-mips.org
-        id S23992917AbeAHW0UuDaWB (ORCPT <rfc822;linux-pwm@vger.kernel.org>
-        + 1 other); Mon, 8 Jan 2018 23:26:20 +0100
-Content-Disposition: inline
-In-Reply-To: <20180108221327.GW3875@atomide.com>
+Received: from lelnx194.ext.ti.com ([198.47.27.80]:45564 "EHLO
+        lelnx194.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1757269AbeAIGYS (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 9 Jan 2018 01:24:18 -0500
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: Keerthy <j-keerthy@ti.com>, aaro.koskinen@iki.fi, thierry.reding@gmail.com, daniel.lezcano@linaro.org, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, sebastian.reichel@collabora.co.uk, t-kristo@ti.com
+To: daniel.lezcano@linaro.org, thierry.reding@gmail.com, tony@atomide.com, aaro.koskinen@iki.fi
+Cc: j-keerthy@ti.com, Claudiu.Beznea@microchip.com, narmstrong@baylibre.com, linux-pwm@vger.kernel.org, ladis@linux-mips.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, sebastian.reichel@collabora.co.uk, linux-omap@vger.kernel.org, robh+dt@kernel.org, t-kristo@ti.com, grygorii.strashko@ti.com
 
-On Mon, Jan 08, 2018 at 02:13:27PM -0800, Tony Lindgren wrote:
-> * Ladislav Michl <ladis@linux-mips.org> [180108 22:09]:
-> > On Mon, Jan 08, 2018 at 01:59:31PM -0800, Tony Lindgren wrote:
-> > > * Ladislav Michl <ladis@linux-mips.org> [180108 15:46]:
-> > > > Here it seems hardware can capture both edges, but I do not see a way
-> > > > how to tell it I want start from either low to high or high to low
-> > > > transition. Clues?
-> > > 
-> > > At least dm3730 TRM documents TCM bits [9:8] for TCLR, but you
-> > > probably know that already..
-> > > 
-> > > If you're having hard time getting things starting, maybe something
-> > > like this helps:
-> > > 
-> > > stop timer in TCLR register
-> > > configure timer in TCLR
-> > > write some value to TLDR, maybe 0?
-> > > set ST bit in TCLR to start
-> > 
-> > Let me clarify it a bit more. I have no problem starting timer and capture
-> > events. I just didn't find a way how to tell hardware I want to start
-> > with for example rising edge, so rising edge goes to TCAR1 and failing edge
-> > to TCAR2. Substracting those gives pulse width.
-> 
-> Oh I see, yeah that would be cool :) Maybe you can first configure
-> an interrupt to trigger on rising edge, then configure things for
-> falling edge, then subtract..
+The series moves dmtimer out of plat-omap to drivers/clocksource.
+The series also does a bunch of changes to pwm-omap-dmtimer code
+to adapt to the driver migration and clean up plat specific
+pdata-quirks and use the dmtimer platform data.
 
-That will work only for very long periods. I did test where value captured
-into TCAR was compared to value read from TCRR. Sometimes those differ by
-few hundreds microseconds...
+Boot tested on DRA7-EVM and AM437X-GP-EVM.
+Compile tested omap1_defconfig.
 
-I started this work to overcome GPIO edge interrupts latency, but so far
-I'm a bit dissapointed.
+This is based on top of linux-next branch.
 
-(also please read the code, reconfiguration is done to get period and
-duty cycle - but in case of duty cycle it is not clear whenever we are
-measuring pulse or space length)
+This is tested on on IGEPv2 (OMAP3430 based) by Ladis.
 
-	ladis
+Changes from V6:
+
+  * Fixed error checking for pwm driver patch.
+  * Removed one of the fixes from Ladis as per request.
+
+Changes from V5:
+
+  * Added couple of fixes from Ladis for  pwm-dmtimer.
+
+Changes from v4:
+
+  * Made OMAP_DM_TIMER config option silent.
+  * Changed the driver name to timer-dm.c
+
+Changes from v3:
+
+  * Reverted to v2 approach of using dev_get_platdata to fetch dmtimer ops.
+
+Changes from V2:
+
+  * Wrapped the inline functions in header file under OMAP2PLUS
+  * Added a new of helper function to fetch plat_data from of node. 
+
+Keerthy (8):
+  clocksource: dmtimer: Remove all the exports
+  arm: omap: timer: Wrap the inline functions under OMAP2PLUS define
+  arm: omap: Move dmtimer.h out of plat-omap
+  arm: OMAP: Move dmtimer driver out of plat-omap to drivers under
+    clocksource
+  dmtimer: Add timer ops to the platform data structure
+  clocksource: dmtimer: Populate the timer ops to the pdata
+  pwm: pwm-omap-dmtimer: Adapt driver to utilize dmtimer pdata ops
+  arm: omap: pdata-quirks: Remove unused timer pdata
+
+Ladislav Michl (1):
+  clocksource: timer-dm: Hook device platform data if not already
+    assigned
+
+ arch/arm/mach-omap1/pm.c                           |  2 +-
+ arch/arm/mach-omap1/timer.c                        |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_2420_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_2430_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_3xxx_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_44xx_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_54xx_data.c         |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_7xx_data.c          |  2 +-
+ arch/arm/mach-omap2/omap_hwmod_81xx_data.c         |  2 +-
+ arch/arm/mach-omap2/pdata-quirks.c                 | 32 ----------
+ arch/arm/mach-omap2/timer.c                        |  2 +-
+ arch/arm/plat-omap/Kconfig                         |  6 --
+ arch/arm/plat-omap/Makefile                        |  1 -
+ drivers/clocksource/Kconfig                        |  3 +
+ drivers/clocksource/Makefile                       |  1 +
+ .../dmtimer.c => drivers/clocksource/timer-dm.c    | 64 ++++++++++----------
+ drivers/pwm/pwm-omap-dmtimer.c                     | 68 +++++++++++++---------
+ .../include/plat => include/clocksource}/dmtimer.h |  8 ++-
+ include/linux/platform_data/dmtimer-omap.h         | 38 ++++++++++++
+ 20 files changed, 134 insertions(+), 109 deletions(-)
+ rename arch/arm/plat-omap/dmtimer.c => drivers/clocksource/timer-dm.c (94%)
+ rename {arch/arm/plat-omap/include/plat => include/clocksource}/dmtimer.h (97%)
+
+-- 
+1.9.1
