@@ -1,100 +1,119 @@
-From: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-Subject: Re: [PATCH v7 7/9] clocksource: timer-dm: Hook device platform data
- if not already assigned
-Date: Tue, 9 Jan 2018 10:19:46 +0100
-Message-ID: <20180109091946.xxribrhf2ayt3gny@earth.universe>
-References: <1515478987-5786-1-git-send-email-j-keerthy@ti.com>
- <1515478987-5786-8-git-send-email-j-keerthy@ti.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH] pwm: mediatek: fix up PWM4 and PWM5 malfunction on MT7623
+Date: Tue, 9 Jan 2018 16:32:02 +0100
+Message-ID: <0ebe339a-f40e-8567-e475-a0e671409777@gmail.com>
+References: <7ddf36f5b9400b29578d4897ddea72c57c1c8d11.1514213639.git.sean.wang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="w6ozopqxpdaejaqk"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1515478987-5786-8-git-send-email-j-keerthy@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Keerthy <j-keerthy@ti.com>
-Cc: daniel.lezcano@linaro.org, thierry.reding@gmail.com, tony@atomide.com, aaro.koskinen@iki.fi, Claudiu.Beznea@microchip.com, narmstrong@baylibre.com, linux-pwm@vger.kernel.org, ladis@linux-mips.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, robh+dt@kernel.org, t-kristo@ti.com, grygorii.strashko@ti.com
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pf0-f169.google.com ([209.85.192.169]:42398 "EHLO
+        mail-pf0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932520AbeAIPcI (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Tue, 9 Jan 2018 10:32:08 -0500
+In-Reply-To: <7ddf36f5b9400b29578d4897ddea72c57c1c8d11.1514213639.git.sean.wang@mediatek.com>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: sean.wang@mediatek.com, thierry.reding@gmail.com
+Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Zhi Mao <zhi.mao@mediatek.com>, John Crispin <john@phrozen.org>
 
 
---w6ozopqxpdaejaqk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-On Tue, Jan 09, 2018 at 11:53:05AM +0530, Keerthy wrote:
-> From: Ladislav Michl <ladis@linux-mips.org>
->=20
-> In the case of device tree boot the device platform data is usually
-> NULL so hook the platform data obtained from the match.
-> As part of un-constify the platform_data pointer.
->=20
-> Signed-off-by: Ladislav Michl <ladis@linux-mips.org>
-> Signed-off-by: Keerthy <j-keerthy@ti.com>
-
-Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-
--- Sebastian
-
+On 12/25/2017 03:59 PM, sean.wang@mediatek.com wrote:
+> From: Sean Wang <sean.wang@mediatek.com>
+> 
+> Since the offset for both registers, PWMDWIDTH and PWMTHRES, used to
+> control PWM4 or PWM5 are distinct from the other PWMs, whose wrong
+> programming on PWM hardware causes waveform cannot be output as expected.
+> Thus, the patch adds the extra condition for fixing up the weird case to
+> let PWM4 or PWM5 able to work on MT7623.
+> 
+> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+> Cc: Zhi Mao <zhi.mao@mediatek.com>
+> Cc: John Crispin <john@phrozen.org>
 > ---
->  drivers/clocksource/timer-dm.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/clocksource/timer-dm.c b/drivers/clocksource/timer-d=
-m.c
-> index 1cbd954..60db173 100644
-> --- a/drivers/clocksource/timer-dm.c
-> +++ b/drivers/clocksource/timer-dm.c
-> @@ -806,14 +806,16 @@ static int omap_dm_timer_probe(struct platform_devi=
-ce *pdev)
->  	struct omap_dm_timer *timer;
->  	struct resource *mem, *irq;
->  	struct device *dev =3D &pdev->dev;
-> -	const struct of_device_id *match;
->  	const struct dmtimer_platform_data *pdata;
+>  drivers/pwm/pwm-mediatek.c | 24 +++++++++++++++++++++---
+>  1 file changed, 21 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+> index f5d97e0..9311574 100644
+> --- a/drivers/pwm/pwm-mediatek.c
+> +++ b/drivers/pwm/pwm-mediatek.c
+> @@ -29,7 +29,9 @@
+>  #define PWMGDUR			0x0c
+>  #define PWMWAVENUM		0x28
+>  #define PWMDWIDTH		0x2c
+> +#define PWM45DWIDTH_QUIRK	0x30
+>  #define PWMTHRES		0x30
+> +#define PWM45THRES_QUIRK	0x34
+>  
+>  #define PWM_CLK_DIV_MAX		7
+>  
+> @@ -54,6 +56,7 @@ static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
+>  
+>  struct mtk_pwm_platform_data {
+>  	unsigned int num_pwms;
+> +	bool pwm45_quirk;
+>  };
+>  
+>  /**
+> @@ -66,6 +69,7 @@ struct mtk_pwm_chip {
+>  	struct pwm_chip chip;
+>  	void __iomem *regs;
+>  	struct clk *clks[MTK_CLK_MAX];
+> +	const struct mtk_pwm_platform_data *soc;
+>  };
+>  
+>  static const unsigned int mtk_pwm_reg_offset[] = {
+> @@ -131,7 +135,8 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  {
+>  	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
+>  	struct clk *clk = pc->clks[MTK_CLK_PWM1 + pwm->hwpwm];
+> -	u32 resolution, clkdiv = 0;
+> +	u32 resolution, clkdiv = 0, reg_width = PWMDWIDTH,
+> +	    reg_thres = PWMTHRES;
 >  	int ret;
-> =20
-> -	match =3D of_match_device(of_match_ptr(omap_timer_match), dev);
-> -	pdata =3D match ? match->data : dev->platform_data;
-> +	pdata =3D of_device_get_match_data(dev);
-> +	if (!pdata)
-> +		pdata =3D dev_get_platdata(dev);
-> +	else
-> +		dev->platform_data =3D (void *)pdata;
-> =20
-> -	if (!pdata && !dev->of_node) {
-> +	if (!pdata) {
->  		dev_err(dev, "%s: no platform data.\n", __func__);
->  		return -ENODEV;
+>  
+>  	ret = mtk_pwm_clk_enable(chip, pwm);
+> @@ -151,9 +156,18 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+>  		return -EINVAL;
 >  	}
-> --=20
-> 1.9.1
->=20
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>  
+> +	if (pc->soc->pwm45_quirk && pwm->hwpwm > 2) {
+> +		/*
+> +		 * PWM[4,5] has distinct offset for PWMDWIDTH and PWMTHRES
+> +		 * from the other PWMs on MT7623.
+> +		 */
+> +		reg_width = PWM45DWIDTH_QUIRK;
+> +		reg_thres = PWM45THRES_QUIRK;
+> +	}
+> +
+>  	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | clkdiv);
+> -	mtk_pwm_writel(pc, pwm->hwpwm, PWMDWIDTH, period_ns / resolution);
+> -	mtk_pwm_writel(pc, pwm->hwpwm, PWMTHRES, duty_ns / resolution);
+> +	mtk_pwm_writel(pc, pwm->hwpwm, reg_width, period_ns / resolution);
+> +	mtk_pwm_writel(pc, pwm->hwpwm, reg_thres, duty_ns / resolution);
+>  
+>  	mtk_pwm_clk_disable(chip, pwm);
+>  
+> @@ -211,6 +225,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
+>  	data = of_device_get_match_data(&pdev->dev);
+>  	if (data == NULL)
+>  		return -EINVAL;
+> +	pc->soc = data;
+>  
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	pc->regs = devm_ioremap_resource(&pdev->dev, res);
+> @@ -251,14 +266,17 @@ static int mtk_pwm_remove(struct platform_device *pdev)
+>  
+>  static const struct mtk_pwm_platform_data mt2712_pwm_data = {
+>  	.num_pwms = 8,
+> +	.pwm45_quirk = false,
 
---w6ozopqxpdaejaqk
-Content-Type: application/pgp-signature; name="signature.asc"
+Hm for me it doesn't look like a quirk but just the values a different. I wonder
+why you decided to add a quirk flag. I'd added the access values to the
+mtk_pwm_platform_data struct directly.
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlpUiTIACgkQ2O7X88g7
-+pq/jBAAoq4AGDg38Mi1LutJO/yKzWGNl88yHA4jUM7mPYawg76vVSEIsiCLo3Iw
-8uKmcEGVxsZ4Wtez+dHM8wr3WbLpN0Z7iLcSKtE9MKUyFFKL6qrk2gxUzp/2bJZS
-nndLfYWxCet5c+daMGz4D1KSY5Wo9O/hB+48COopv7JigAcI174iy6QjLBz3QhQy
-dKpha2oUlhKtVgg4IwsQe9OXK1HnMVfU/XFnMr+PqjFYe/OXAGU0g7hZyfPfbzdY
-jmrDvNsR5zuwVmYybVQ3mXJNaodetz+ZPPRylphoE+BWRijQXMGYpl2rmgRm3jA+
-EbQVMUYG2tmAdSC3G2wDJ34K5sf7Gb/PcbfwLOncoqAwWFyYEtJnQItVBYtw2gWP
-pECQ7pfZ2EaQU6ZDao8RcWWOJpKJFpyYB+hvMWbXZCBK7vIV0LS4s/9wi0lIyOmF
-MHFcO0zOGJpHS9B10V3kp56fFkaSvKVqS8hn+624LgbzacRe4BOviBlI6VhouMZ3
-Bddwhw0cAw/wdpTO2wUE5kYrh5CHiR6VrnF7f2OY0lOrLrBzfiHBWZEeCOf5ML2t
-fQp32m0MZScAFsxgnG/2P+Jb6sdt27il8+8wr6d58KwH4Fp5kLAyFETnzK0GOdcx
-9BO87ehn5myiG9vdoRq1hDWOJpgmUGotikU0dzhNdmaZoN14si0=
-=zhlt
------END PGP SIGNATURE-----
-
---w6ozopqxpdaejaqk--
+Regards,
+Matthias
