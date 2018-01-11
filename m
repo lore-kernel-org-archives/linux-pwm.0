@@ -1,80 +1,57 @@
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Subject: Re: [PATCH] pwn: stm32: Adopt SPDX identifier
-Date: Wed, 10 Jan 2018 16:16:22 +0100
-Message-ID: <CA+M3ks64Kb5b9auSK6Mkck9ipfEZ=8uL8FKE_jfjYDNgNrc16A@mail.gmail.com>
-References: <20171205145721.20403-1-benjamin.gaignard@st.com> <CAOFm3uFYjUvnwb2zqdJEuHp4WEnfmxrcZxRta2Cnfz3Q1=55rw@mail.gmail.com>
+From: hao_zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v1 0/4] pwm support for allwinner sun8i R40/V40/T3 SOCs.
+Date: Thu, 11 Jan 2018 19:31:00 +0800
+Message-ID: <20180111113100.GA21386@arx-s1>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qk0-f195.google.com ([209.85.220.195]:45661 "EHLO
-        mail-qk0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S965507AbeAJPQX (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 10 Jan 2018 10:16:23 -0500
-Received: by mail-qk0-f195.google.com with SMTP id z12so2110563qkf.12
-        for <linux-pwm@vger.kernel.org>; Wed, 10 Jan 2018 07:16:23 -0800 (PST)
-In-Reply-To: <CAOFm3uFYjUvnwb2zqdJEuHp4WEnfmxrcZxRta2Cnfz3Q1=55rw@mail.gmail.com>
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org
+Cc: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: Philippe Ombredanne <pombredanne@nexb.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Alexandre Torgue <alexandre.torgue@st.com>, Linux PWM List <linux-pwm@vger.kernel.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>, Benjamin Gaignard <benjamin.gaignard@st.com>
 
-2017-12-07 11:11 GMT+01:00 Philippe Ombredanne <pombredanne@nexb.com>:
-> On Tue, Dec 5, 2017 at 3:57 PM, Benjamin Gaignard
-> <benjamin.gaignard@linaro.org> wrote:
->> Add SPDX identifer
->>
->> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
->> ---
->>  drivers/pwm/pwm-stm32-lp.c | 3 +--
->>  drivers/pwm/pwm-stm32.c    | 3 +--
->>  2 files changed, 2 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
->> index 1ac9e4384142..cbd271e80c3c 100644
->> --- a/drivers/pwm/pwm-stm32-lp.c
->> +++ b/drivers/pwm/pwm-stm32-lp.c
->> @@ -1,3 +1,4 @@
->> +// SPDX-License-Identifier: GPL-2.0
->>  /*
->>   * STM32 Low-Power Timer PWM driver
->>   *
->> @@ -5,8 +6,6 @@
->>   *
->>   * Author: Gerald Baeza <gerald.baeza@st.com>
->>   *
->> - * License terms: GNU General Public License (GPL), version 2
->> - *
->>   * Inspired by Gerald Baeza's pwm-stm32 driver
->>   */
->>
->> diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
->> index 6139512aab7b..be56d7af89c9 100644
->> --- a/drivers/pwm/pwm-stm32.c
->> +++ b/drivers/pwm/pwm-stm32.c
->> @@ -1,10 +1,9 @@
->> +// SPDX-License-Identifier: GPL-2.0
->>  /*
->>   * Copyright (C) STMicroelectronics 2016
->>   *
->>   * Author: Gerald Baeza <gerald.baeza@st.com>
->>   *
->> - * License terms: GNU General Public License (GPL), version 2
->> - *
->>   * Inspired by timer-stm32.c from Maxime Coquelin
->>   *             pwm-atmel.c from Bo Shen
->>   */
->> --
->> 2.15.0
->>
->
->
-> Thank you for using the simpler SPDX license ids!
->
-> Acked-by: Philippe Ombredanne <pombredanne@nexb.com>
->
+This patchset add pwm support for allwinner sun8i R40/V40/T3 SOCs.
 
-Gentle ping on this patch before the merge window
+Beause of my mistake, previous patch set from v4.
+this patch set i resend it from v1 and fix some error.
 
-> --
-> Cordially
-> Philippe Ombredanne
+PATCH LOG:
+[v4,1/4] dt-bindings: pwm: binding allwinner sun8i R40/V40/T3.
+https://patchwork.kernel.org/patch/10110177/
+[v4,2/4] ARM: PWM: add allwinner sun8i R40/V40/T3 pwm support.
+https://patchwork.kernel.org/patch/10110185/
+[v4,3/4] ARM: dts: add pwm node for r40.
+https://patchwork.kernel.org/patch/10110191/
+
+Fixed:
+    1.change readl/writel to regmap.
+    2.undo the previous polarity, do clk_disable_unprepare()
+      and unlock spinlock while error return.
+
+Regards,
+Hao Zhang
+
+hao_zhang (4):
+  dt-bindings: pwm: binding allwinner sun8i R40/V40/T3.
+  ARM: PWM: add allwinner sun8i R40/V40/T3 pwm support.
+  ARM: dts: add pwm pins for r40.
+  ARM: dts: add pwm node for r40.
+
+ .../devicetree/bindings/pwm/pwm-sun8i.txt          |  18 +
+ arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts  |   6 +
+ arch/arm/boot/dts/sun8i-r40.dtsi                   |  13 +
+ drivers/pwm/Kconfig                                |  10 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sun8i-r40.c                        | 394 +++++++++++++++++++++
+ 6 files changed, 442 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
+ create mode 100644 drivers/pwm/pwm-sun8i-r40.c
+
+-- 
+2.7.4
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
