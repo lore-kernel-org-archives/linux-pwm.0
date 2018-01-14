@@ -1,52 +1,64 @@
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: [PATCH 3/3] backlight: pwm_bl: don't use GPIOF_* with gpiod_get_direction
-Date: Sun, 14 Jan 2018 22:07:10 +0100
-Message-ID: <20180114210711.13863-4-wsa+renesas@sang-engineering.com>
-References: <20180114210711.13863-1-wsa+renesas@sang-engineering.com>
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from sauhun.de ([88.99.104.3]:36573 "EHLO pokefinder.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752116AbeANVHk (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
-        Sun, 14 Jan 2018 16:07:40 -0500
-In-Reply-To: <20180114210711.13863-1-wsa+renesas@sang-engineering.com>
-Sender: linux-pwm-owner@vger.kernel.org
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH] ACPI / LPSS: Do not instiate a platform_dev for devs
+ without a mmio resource
+Date: Mon, 15 Jan 2018 00:36:01 +0100
+Message-ID: <CAJZ5v0iFwWB+3oooV+vZM99SQnUpA-kuYYaNQsre9e_T_UeBxA@mail.gmail.com>
+References: <20180114200148.11771-1-hdegoede@redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20180114200148.11771-1-hdegoede@redhat.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, MyungJoo Ham <myungjoo.ham@samsung.com>, Chanwoo Choi <cw00.choi@samsung.com>, Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: linux-pwm@vger.kernel.org
-To: linux-gpio@vger.kernel.org
-Cc: linux-renesas-soc@vger.kernel.org, Wolfram Sang <wsa+renesas@sang-engineering.com>, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
 
-The documentation was wrong, gpiod_get_direction() returns 0/1 instead
-of the GPIOF_* flags. The docs were fixed with commit 94fc73094abe47
-("gpio: correct docs about return value of gpiod_get_direction"). Now,
-fix this user (until a better, system-wide solution is in place).
+On Sun, Jan 14, 2018 at 9:01 PM, Hans de Goede <hdegoede@redhat.com> wrote:
+> acpi_lpss_create_device() skips handling LPSS devices which do not have
+> a mmio resources in their resource list (typically these devices are
+> disabled by the firmware). But since the LPSS code does not bind to the
+> device, acpi_bus_attach() ends up still creating a platform device for
+> it and the regular platform_driver for the ACPI HID still tries to bind
+> to it.
+>
+> This happens e.g. on some boards which do not use the pwm-controller
+> and have an empty or invalid resource-table for it. Currently this causes
+> these error messages to get logged:
+> [    3.281966] pwm-lpss 80862288:00: invalid resource
+> [    3.287098] pwm-lpss: probe of 80862288:00 failed with error -22
+>
+> This commit stops the undesirable creation of a platform_device for
+> disabled LPSS devices by setting pnp.type.platform_id to 0. Note that
+> acpi_scan_attach_handler() also sets pnp.type.platform_id to 0 when there
+> is a matching handler for the device and that handler has no attach
+> callback, so we simply behave as a handler without an attach function
+> in this case.
+>
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
-Only build tested!
+Does this fix new behavior or is it an old issue?
 
- drivers/video/backlight/pwm_bl.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 1c2289ddd555a6..0fa7d2bd0e4811 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -301,14 +301,14 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 
- 	/*
- 	 * If the GPIO is not known to be already configured as output, that
--	 * is, if gpiod_get_direction returns either GPIOF_DIR_IN or -EINVAL,
--	 * change the direction to output and set the GPIO as active.
-+	 * is, if gpiod_get_direction returns either 1 or -EINVAL, change the
-+	 * direction to output and set the GPIO as active.
- 	 * Do not force the GPIO to active when it was already output as it
- 	 * could cause backlight flickering or we would enable the backlight too
- 	 * early. Leave the decision of the initial backlight state for later.
- 	 */
- 	if (pb->enable_gpio &&
--	    gpiod_get_direction(pb->enable_gpio) != GPIOF_DIR_OUT)
-+	    gpiod_get_direction(pb->enable_gpio) != 0)
- 		gpiod_direction_output(pb->enable_gpio, 1);
- 
- 	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
--- 
-2.11.0
+> ---
+>  drivers/acpi/acpi_lpss.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/acpi/acpi_lpss.c b/drivers/acpi/acpi_lpss.c
+> index 9cfe6b71078b..166a8e582d96 100644
+> --- a/drivers/acpi/acpi_lpss.c
+> +++ b/drivers/acpi/acpi_lpss.c
+> @@ -610,6 +610,8 @@ static int acpi_lpss_create_device(struct acpi_device *adev,
+>         acpi_dev_free_resource_list(&resource_list);
+>
+>         if (!pdata->mmio_base) {
+> +               /* Avoid acpi_bus_attach() instantiating a pdev for this dev. */
+> +               adev->pnp.type.platform_id = 0;
+>                 /* Skip the device, but continue the namespace scan. */
+>                 ret = 0;
+>                 goto err_out;
+> --
+> 2.14.3
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-acpi" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
