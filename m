@@ -1,46 +1,81 @@
-From: Hao Zhang <hao5781286@gmail.com>
-Subject: Re: [PATCH v1 3/4] ARM: dts: add pwm pins for r40.
-Date: Sun, 14 Jan 2018 15:07:46 +0800
-Message-ID: <CAJeuY7-FeiEtSkg=udnEx_==3SS=dinyk7fKqhLwdXcKE3510g@mail.gmail.com>
-References: <20180111113323.GA21976@arx-s1> <20180111124701.g52kjm3hozn72je5@flea.lan>
+From: Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH] pwm: lpss-platform: Cleanly exit probe on boards without
+ resources
+Date: Sun, 14 Jan 2018 20:58:51 +0100
+Message-ID: <bc345627-cbe2-8f59-18ca-82ed21871dbe@redhat.com>
+References: <20180112113802.3888-1-hdegoede@redhat.com>
+ <1515762291.7000.947.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20180111124701.g52kjm3hozn72je5@flea.lan>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>, linux@armlinux.org.uk, Chen-Yu Tsai <wens@csie.org>, Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, open list <linux-kernel@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "moderated list:ARM/Allwinner sunXi SoC support" <linux-arm-kernel@lists.infradead.org>, linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:37122 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751348AbeANT6z (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 14 Jan 2018 14:58:55 -0500
+Received: by mail-wm0-f66.google.com with SMTP id f140so20691116wmd.2
+        for <linux-pwm@vger.kernel.org>; Sun, 14 Jan 2018 11:58:54 -0800 (PST)
+In-Reply-To: <1515762291.7000.947.camel@linux.intel.com>
+Content-Language: en-US
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-pwm@vger.kernel.org, Mika Westerberg <mika.westerberg@linux.intel.com>
 
-2018-01-11 20:47 GMT+08:00 Maxime Ripard <maxime.ripard@free-electrons.com>:
-> Hi,
->
-> On Thu, Jan 11, 2018 at 07:33:23PM +0800, hao_zhang wrote:
->> This patch add pwm pins for r40.
+Hi,
+
+On 12-01-18 14:04, Andy Shevchenko wrote:
+> +Cc: Mika
+> 
+> On Fri, 2018-01-12 at 12:38 +0100, Hans de Goede wrote:
+>> Some boards which do not use the pwm-controller have an empty or
+>> invalid
+>> resource-table in ACPI the for pwm-controller. Currently this causes
+>> these
+>> error messages to get logged:
+>> [    3.281966] pwm-lpss 80862288:00: invalid resource
+>> [    3.287098] pwm-lpss: probe of 80862288:00 failed with error -22
 >>
->> Signed-off-by: hao_zhang <hao5781286@gmail.com>
->
-> You should order your patches differently. We try to be as bisectable
-> as possible, and if we just apply this patch the DT will not compile
-> anymore.
->
-> Your patch 4 should come before this one.
->
+>> This commit silences these error messages on these boards by cleanly
+>> exiting pwm_lpss_probe_platform() if there is no memory resource.
+>>
+> 
+> I don't see anything wrong with message per se.
 
-Do you mean that the order of patch be applied is from the first to
-the last in the patch set ?
-because you apply the last patch first also break the DT compile...
+Given all the effort distros have done with splash-screens to give
+users a nice clean boot experience, we really want dmesg --level=err
+to not print anything unless there is a real problem with either the
+hardware or the kernel.
 
-Thinks :)
-Hao Zhang
+(Note that plymouth will drop back to text-mode when kernel errors
+do show up.)
 
-> Your commit title and log doesn't seem to match the content of the
-> patch either.
->
-> Thanks!
-> Maxime
->
-> --
-> Maxime Ripard, Free Electrons
-> Embedded Linux and Kernel engineering
-> http://free-electrons.com
+>> +
+>> +	/*
+>> +	 * Some boards which don't use the pwm controller have an
+>> empty
+>> +	 * resources table, so if we cannot get the resource, return
+>> -ENODEV.
+>> +	 */
+>>   	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>> +	if (!r)
+>> +		return -ENODEV;
+> 
+> But this one looks like a quirk for some platforms when other can
+> survive without.
+
+Right, this is something platform specific, but on platforms which
+have a proper resource for the PWM this patch is a no-op, so there
+is no need to do a quirk table for this, we can just silence the
+error and be done with it.
+
+> Can we actually check this in acpi_lpss.c and prevent platform device
+> registration at all?
+
+That is a good idea, it was not entirely trivial to achieve this
+but I've come up with a patch which does that. If that is deemed
+acceptable then we can go with that patch instead.
+
+Regards,
+
+Hans
