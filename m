@@ -1,76 +1,232 @@
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: Re: [PATCH v1 3/4] ARM: dts: add pwm pins for r40.
-Date: Mon, 15 Jan 2018 09:39:16 +0100
-Message-ID: <20180115083916.z7wn5cwungywyevh@flea.lan>
-References: <20180111113323.GA21976@arx-s1>
- <20180111124701.g52kjm3hozn72je5@flea.lan>
- <CAJeuY7-FeiEtSkg=udnEx_==3SS=dinyk7fKqhLwdXcKE3510g@mail.gmail.com>
+From: Claudiu Beznea <Claudiu.Beznea-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+Subject: Re: [PATCH v2 01/16] drivers: pwm: core: use a single of xlate
+ function
+Date: Mon, 15 Jan 2018 10:41:50 +0200
+Message-ID: <6441df76-fb4a-ce00-1019-f7ff9143b75e@microchip.com>
+References: <1515766983-15151-1-git-send-email-claudiu.beznea@microchip.com>
+ <1515766983-15151-2-git-send-email-claudiu.beznea@microchip.com>
+ <20180112183512.GB102880@google.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="qbqwrsydzs6jhe5t"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAJeuY7-FeiEtSkg=udnEx_==3SS=dinyk7fKqhLwdXcKE3510g@mail.gmail.com>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Hao Zhang <hao5781286@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>, linux@armlinux.org.uk, Chen-Yu Tsai <wens@csie.org>, Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, open list <linux-kernel@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "moderated list:ARM/Allwinner sunXi SoC support" <linux-arm-kernel@lists.infradead.org>, linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20180112183512.GB102880-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, daniel-cYrQPVfZoowdnm+yROfE0A@public.gmane.org, haojian.zhuang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robert.jarzmik-GANU6spQydw@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org, nicolas.ferre-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org, alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mike Dunn <mikedunn-kFrNdAxtuftBDgjK7y7TUQ@public.gmane.org>, Alexander Shiyan <shc_work-JGs/UdohzUI@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
+Hi Boris,
 
---qbqwrsydzs6jhe5t
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks for your review. See below my answers.
 
-On Sun, Jan 14, 2018 at 03:07:46PM +0800, Hao Zhang wrote:
-> 2018-01-11 20:47 GMT+08:00 Maxime Ripard <maxime.ripard@free-electrons.co=
-m>:
-> > Hi,
-> >
-> > On Thu, Jan 11, 2018 at 07:33:23PM +0800, hao_zhang wrote:
-> >> This patch add pwm pins for r40.
-> >>
-> >> Signed-off-by: hao_zhang <hao5781286@gmail.com>
-> >
-> > You should order your patches differently. We try to be as bisectable
-> > as possible, and if we just apply this patch the DT will not compile
-> > anymore.
-> >
-> > Your patch 4 should come before this one.
-> >
->=20
-> Do you mean that the order of patch be applied is from the first to
-> the last in the patch set ?
+On 12.01.2018 20:35, Brian Norris wrote:
+> Hi,
+> 
+> On Fri, Jan 12, 2018 at 04:22:48PM +0200, Claudiu Beznea wrote:
+>> Remove of_pwm_simple_xlate() and of_pwm_xlate_with_flags() functions
+>> and add of_pwm_xlate() which is used in all cases no mather if the OF
+>> bindings are with PWM flags or not. This should not affect the old
+>> behavior since the xlate will be based on #pwm-cells property of the
+>> PWM controller. Based on #pwm-cells property the xlate will consider
+>> the flags or not. This will permit the addition of other inputs to OF
+>> xlate by just adding proper code at the end of of_pwm_xlate() and a new
+>> input to enum pwm_args_xlate_options. With this changes there will be
+>> no need to fill of_xlate and of_pwm_n_cells of struct pwm_chip from
+>> the drivers probe methods. References in drives to references to of_xlate
+>> and of_pwm_n_cells were removed. Drivers which used private of_xlate
+>> functions switched to the generic of_pwm_xlate() function which fits
+>> for it but with little changes in device trees (these drivers translated
+>> differently the "pwms" bindings; the "pwms" bindings now are generic to
+>> all drivers and all drivers should provide them in the format described
+>> in pwm documentation).
+>>
+>> Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> Cc: Mike Dunn <mikedunn-kFrNdAxtuftBDgjK7y7TUQ@public.gmane.org>
+>> Cc: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>> Cc: Alexander Shiyan <shc_work-JGs/UdohzUI@public.gmane.org>
+>> Signed-off-by: Claudiu Beznea <claudiu.beznea-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
+>> ---
+>>
+>> This patch (and the next 7) could be applied independetly by this series, if
+>> any, but I choosed to have it here since it makes easy the PWM modes parsing.
+>> If you feel it could be independently of this series I could send a new version.
+>>
+>> Also, Thierry, Mike, Brian, Shiyan, please take an extra look over pwm-pxa.c,
+>> pwm-cros-ec.c and pwm-clps711x.c since these were moved to use the generic
+>> pwms (minimum 2 pwm-cells).
+>>
+>>  drivers/pwm/core.c             | 56 +++++++++++-------------------------------
+>>  drivers/pwm/pwm-atmel-hlcdc.c  |  2 --
+>>  drivers/pwm/pwm-atmel-tcb.c    |  2 --
+>>  drivers/pwm/pwm-atmel.c        |  6 -----
+>>  drivers/pwm/pwm-bcm-iproc.c    |  2 --
+>>  drivers/pwm/pwm-bcm-kona.c     |  2 --
+>>  drivers/pwm/pwm-bcm2835.c      |  2 --
+>>  drivers/pwm/pwm-berlin.c       |  2 --
+>>  drivers/pwm/pwm-clps711x.c     | 11 ---------
+>>  drivers/pwm/pwm-cros-ec.c      | 20 ---------------
+> 
+> For pwm-cros-ec.c:
+> 
+> Nacked-by: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> 
+> This is a fiat change of the documented binding, which breaks the RK3399
+> Kevin board. That's not how we do device tree.
+> 
+> You can extend the binding if you want, so you can represent the period
+> in the device tree if you'd like (though the value won't mean anything;
+> it can't be changed by the kernel), but don't break existing device
+> trees.
 
-Yes and each steps should compile and not introduce any regressions
-(ideally :)).
+That wasn't the idea, I wasn't intended to break something. The idea was
+to have a generic device tree parsing function since all the drivers,
+except pwm-pxa.c, pwm-cros-ec.c and pwm-clps711x.c, uses the same function
+to parse DT bindings. And I think, these 3 drivers could use this way of
+parsing, which is not something new, is what all the current PWM drivers
+uses (except pwm-pxa.c, pwm-cros-ec.c and pwm-clps711x.c). It is true
+I have no RK3399 board to run any tests.
 
-Thanks!
-Maxime
+pwm-cross-ec.c it is true that it's period cannot be changed. It is fixed, as
+I saw in the driver, at EC_PWM_MAX_DUTY=0xffff. The driver itself won't apply
+any PWM state if the period is different from EC_PWM_MAX_DUTY.
+For this driver, the PWM bindings were changed (I did a grep by "google,cros-ec-pwm"
+and located only:
+arch/arm64/boot/dts/rockchip/rk3399-gru-kevin.dts
+arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
+files) and changed the bindings in this series, as follows, patch 7 from this series:
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-gru-kevin.dts b/arch/arm64/boot/dts/rockchip/rk3399-gru-kevin.dts
+index 0384e3121f18..0c790ec387eb 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-gru-kevin.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-gru-kevin.dts
+@@ -77,7 +77,7 @@
+ 
+        backlight: backlight {
+                compatible = "pwm-backlight";
+-               pwms = <&cros_ec_pwm 1>;
++               pwms = <&cros_ec_pwm 1 65535>;
+                brightness-levels = <0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+                                     17 18 19 20 21 22 23 24 25 26 27 28 29 30
+                                     31 32 33 34 35 36 37 38 39 40 41 42 43 44
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
+index 5772c52fbfd3..aa377f9ae6ad 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
+@@ -853,7 +853,7 @@ ap_i2c_audio: &i2c8 {
+ 
+                cros_ec_pwm: ec-pwm {
+                        compatible = "google,cros-ec-pwm";
+-                       #pwm-cells = <1>;
++                       #pwm-cells = <2>;
+                };
+        };
+};
 
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+The code that was removed requests a PWM, the one that was set in the bindings, and
+then set pwm->args.period:
+-static struct pwm_device *
+-cros_ec_pwm_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
+-{
+-	struct pwm_device *pwm;
+-
+-	if (args->args[0] >= pc->npwm)
+-		return ERR_PTR(-EINVAL);
+-
+-	pwm = pwm_request_from_chip(pc, args->args[0], NULL);
+-	if (IS_ERR(pwm))
+-		return pwm;
+-
+-	/* The EC won't let us change the period */
+-	pwm->args.period = EC_PWM_MAX_DUTY;
+-
+-	return pwm;
+-}
 
---qbqwrsydzs6jhe5t
-Content-Type: application/pgp-signature; name="signature.asc"
+The old flow is as follows:
+of_pwm_get() -> cros_ec_pwm_xlate() { request chip and set constant period }
 
------BEGIN PGP SIGNATURE-----
+The new flow uses of_pwm_xlate():
+of_pwm_get() -> of_pwm_xlate() -> { parse PWM args: channel number, period, flags +
+request PWM chip + set pwm->args; }
 
-iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlpcaLMACgkQ0rTAlCFN
-r3Q5UQ//Z4h/LQucBXfTs1nC1b3kulyl0cIhaomwLqiWbWMrjHAHZ+UlOBA7ZbrR
-vaq/5h2npdtWfAn0GAYH/Z3ucShe5S1/+lintmjjfz3m07khMckI5reeemHbB+Tc
-n8jdHa/oS6K6u3A5gFSTUX6wZMqwNZE9eUtR6MhF5nuysgw5pKOMzLgmdyrtiUjV
-cWTrNMHVqMpk+TI1tBTM9Qdhq8/zk5WTxATd3Jn7NLIbMWBj01a9ZN/T3Uegk2nj
-hQvjOAVCvFnjS8fZjp+iFQDzwYGcBZERQKQWaP88bCIpAccYaGjcKqtG64v5euGl
-vzWeieWKgk853uY8vwTXRKMVQ2NNDgPUUWVIhggO/XbG2Y0m8tZWnsCRMSe0hChs
-IxIZao+sQ6vWrI3VDk8gi6l3YxM3GMDgL5YMcdZKUSuGiTf7v2+S8a8xzg67pjRd
-abS19Ofwmrkpkx4Et/yXDaNU9KJc4qIxRpsrEMYU90+07BNgY+JjWfsfBlUC03zq
-LZb99L7POT8ASTRc6L3c+tuj/Bn7CkgIAxjTfCzmLRqb0MaiBkne29uviYIlcXwx
-ztO7iQr2JsTDjagndzJkuVS/skG6QOw35Vg4hM5zfgKFm3rnEqEVcvuqaJxPsoXB
-qZgn13jBniELbJ4laeCeLcFGuRGEUT6atD6w9lGljggwclzcM6I=
-=FDFV
------END PGP SIGNATURE-----
+This path is only used at DT parsing.
 
---qbqwrsydzs6jhe5t--
+In case of PWM channel requested by PWM backlight driver it looks good to me
+with the changes in rk3399-gru-kevin.dts (please correct me if I'm wrong).
+
+Since this driver accepts only EC_PWM_MAX_DUTY period maybe the documentation should
+be updated regarding this value?
+
+Please, let me know what you think!
+
+Thanks,
+Claudiu
+> 
+>>  drivers/pwm/pwm-fsl-ftm.c      |  2 --
+>>  drivers/pwm/pwm-hibvt.c        |  2 --
+>>  drivers/pwm/pwm-imx.c          |  8 ------
+>>  drivers/pwm/pwm-lpc18xx-sct.c  |  2 --
+>>  drivers/pwm/pwm-meson.c        |  2 --
+>>  drivers/pwm/pwm-omap-dmtimer.c |  2 --
+>>  drivers/pwm/pwm-pxa.c          | 19 --------------
+>>  drivers/pwm/pwm-renesas-tpu.c  |  2 --
+>>  drivers/pwm/pwm-rockchip.c     |  5 ----
+>>  drivers/pwm/pwm-samsung.c      |  3 ---
+>>  drivers/pwm/pwm-sun4i.c        |  2 --
+>>  drivers/pwm/pwm-tiecap.c       |  2 --
+>>  drivers/pwm/pwm-tiehrpwm.c     |  2 --
+>>  drivers/pwm/pwm-vt8500.c       |  2 --
+>>  drivers/pwm/pwm-zx.c           |  2 --
+>>  include/linux/pwm.h            | 23 ++++++++++-------
+>>  26 files changed, 29 insertions(+), 156 deletions(-)
+>>
+> ...
+> 
+>> diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
+>> index 9c13694eaa24..692298693768 100644
+>> --- a/drivers/pwm/pwm-cros-ec.c
+>> +++ b/drivers/pwm/pwm-cros-ec.c
+>> @@ -133,24 +133,6 @@ static void cros_ec_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+>>  	state->duty_cycle = ret;
+>>  }
+>>  
+>> -static struct pwm_device *
+>> -cros_ec_pwm_xlate(struct pwm_chip *pc, const struct of_phandle_args *args)
+>> -{
+>> -	struct pwm_device *pwm;
+>> -
+>> -	if (args->args[0] >= pc->npwm)
+>> -		return ERR_PTR(-EINVAL);
+>> -
+>> -	pwm = pwm_request_from_chip(pc, args->args[0], NULL);
+>> -	if (IS_ERR(pwm))
+>> -		return pwm;
+>> -
+>> -	/* The EC won't let us change the period */
+>> -	pwm->args.period = EC_PWM_MAX_DUTY;
+>> -
+>> -	return pwm;
+>> -}
+>> -
+>>  static const struct pwm_ops cros_ec_pwm_ops = {
+>>  	.get_state	= cros_ec_pwm_get_state,
+>>  	.apply		= cros_ec_pwm_apply,
+>> @@ -207,8 +189,6 @@ static int cros_ec_pwm_probe(struct platform_device *pdev)
+>>  	/* PWM chip */
+>>  	chip->dev = dev;
+>>  	chip->ops = &cros_ec_pwm_ops;
+>> -	chip->of_xlate = cros_ec_pwm_xlate;
+>> -	chip->of_pwm_n_cells = 1;
+>>  	chip->base = -1;
+>>  	ret = cros_ec_num_pwms(ec);
+>>  	if (ret < 0) {
+> 
+> ...
+> 
+> Brian
+> 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
