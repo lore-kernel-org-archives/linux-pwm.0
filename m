@@ -1,104 +1,62 @@
-From: Hao Zhang <hao5781286@gmail.com>
-Subject: Re: [PATCH v1 4/4] ARM: dts: add pwm node for r40.
-Date: Mon, 15 Jan 2018 19:19:04 +0800
-Message-ID: <CAJeuY799nhZazzRb8JRf6juvWs158pj2LAHpfQ78d-mtO73Y=Q@mail.gmail.com>
-References: <20180111113412.GA22008@arx-s1> <20180111124752.2ljspnaclwgz2s62@flea.lan>
- <CAJeuY78QLOYZUUS7ghakqqpdzigdvpdHCsw+6onkUCjgZMqTzA@mail.gmail.com> <20180115083813.ad2yqdwnd2nskbhs@flea.lan>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH] ACPI / LPSS: Do not instiate a platform_dev for devs
+ without a mmio resource
+Date: Mon, 15 Jan 2018 13:33:45 +0200
+Message-ID: <1516016025.7000.992.camel@linux.intel.com>
+References: <20180114200148.11771-1-hdegoede@redhat.com>
+         <20180115093615.GA27654@lahna.fi.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-gpio-owner@vger.kernel.org>
-In-Reply-To: <20180115083813.ad2yqdwnd2nskbhs@flea.lan>
-Sender: linux-gpio-owner@vger.kernel.org
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>, linux@armlinux.org.uk, Chen-Yu Tsai <wens@csie.org>, Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, open list <linux-kernel@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "moderated list:ARM/Allwinner sunXi SoC support" <linux-arm-kernel@lists.infradead.org>, linux-pwm@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20180115093615.GA27654@lahna.fi.intel.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Mika Westerberg <mika.westerberg@linux.intel.com>, Hans de Goede <hdegoede@redhat.com>
+Cc: "Rafael J . Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, MyungJoo Ham <myungjoo.ham@samsung.com>, Chanwoo Choi <cw00.choi@samsung.com>, Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-2018-01-15 16:38 GMT+08:00 Maxime Ripard <maxime.ripard@free-electrons.com>:
-> Hi,
->
-> On Sun, Jan 14, 2018 at 02:43:39PM +0800, Hao Zhang wrote:
->> 2018-01-11 20:47 GMT+08:00 Maxime Ripard <maxime.ripard@free-electrons.com>:
->> > On Thu, Jan 11, 2018 at 07:34:12PM +0800, hao_zhang wrote:
->> >> This patch add pwm node for r40.
->> >>
->> >> Signed-off-by: hao_zhang <hao5781286@gmail.com>
->> >> ---
->> >>  arch/arm/boot/dts/sun8i-r40.dtsi | 13 +++++++++++++
->> >>  1 file changed, 13 insertions(+)
->> >>
->> >> diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r40.dtsi
->> >> index 173dcc1..84c963c 100644
->> >> --- a/arch/arm/boot/dts/sun8i-r40.dtsi
->> >> +++ b/arch/arm/boot/dts/sun8i-r40.dtsi
->> >> @@ -295,6 +295,11 @@
->> >>                               bias-pull-up;
->> >>                       };
->> >>
->> >> +                     pwm_pins: pwm-pins {
->> >> +                             pins = "PB2", "PB3";
->> >> +                             function = "pwm";
->> >> +                     };
->> >> +
->> >
->> > Is it the only combination of pins that is usable?
->> >
->> > If so, you can add the pinctrl-0 property directly in the pwm nodes.
->> >
->>
->> There are 8 channel pwm of R40/V40/T3, the pins that can be configed
->> to pwm are: PB2, PB3, PI20, PI21, PB20, PB21, PB9, PB10
->
-> And a single controller, or several of them?
+On Mon, 2018-01-15 at 11:36 +0200, Mika Westerberg wrote:
+> On Sun, Jan 14, 2018 at 09:01:48PM +0100, Hans de Goede wrote:
+> > acpi_lpss_create_device() skips handling LPSS devices which do not
+> > have
+> > a mmio resources in their resource list (typically these devices are
+> > disabled by the firmware). But since the LPSS code does not bind to
+> > the
+> > device, acpi_bus_attach() ends up still creating a platform device
+> > for
+> > it and the regular platform_driver for the ACPI HID still tries to
+> > bind
+> > to it.
+> > 
+> > This happens e.g. on some boards which do not use the pwm-controller
+> > and have an empty or invalid resource-table for it. Currently this
+> > causes
+> > these error messages to get logged:
+> > [    3.281966] pwm-lpss 80862288:00: invalid resource
+> > [    3.287098] pwm-lpss: probe of 80862288:00 failed with error -22
+> > 
+> > This commit stops the undesirable creation of a platform_device for
+> > disabled LPSS devices by setting pnp.type.platform_id to 0. Note
+> > that
+> > acpi_scan_attach_handler() also sets pnp.type.platform_id to 0 when
+> > there
+> > is a matching handler for the device and that handler has no attach
+> > callback, so we simply behave as a handler without an attach
+> > function
+> > in this case.
+> > 
+> > Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> 
+> Seems like a good way to fix it IMHO,
 
-Single controller with 8 channels pwm output.
+Yeah, looks much better for my opinion than previous hack to PWM
+platform driver.
 
->
->> PB2, PB3 can be configed on bananapi-m2-ultra and on my T3 board,
->> but the other pins is not exist on the board or some pin is confilct
->> with other functions, so i just add PB2, PB3. but i think split it
->> is better, just like this :
->>
->> pwm0_pin: pwm0-pin {
->>     pins = "PB2";
->>     function = "pwm";
->> };
->>
->> pwm1_pin: pwm1-pin {
->>     pins = "PB3";
->>     function = "pwm";
->> };
->
-> Yep, that would be better. If it's just a matter of channels, maybe we
-> can even name them pwm-ch0-pin and pwm-ch1-pin? That would be more
-> explicit.
->
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Agree
+> 
+> Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 
->> the node of pwm2~7 should also be added here?
->
-> If there's no users, no.
->
->> On sun8i-r40-bananapi-m2-ultra.dts:
->> because of the special customize board, i think just add pinctrl-0 = <&pwm0_pin>
->> (PB3 I just use to test pwm channel 1)for bananapi-m2-ultra board is enough.
->>
->> &pwm {
->>     pinctrl-names = "default";
->>     pinctrl-0 = <&pwm0_pin>;
->>     status = "okay";
->> };
->
-> It depends if that PWM is used as a PWM all the time (for example to
-> drive a backlight for a panel tied to the board), or if it's exported
-> through one of the generic pin headers, please leave it populated but
-> disabled (with a comment that it is exported on one of the pin of the
-> headers)
->
-> Thanks!
-> Maxime
->
-> --
-> Maxime Ripard, Free Electrons
-> Embedded Linux and Kernel engineering
-> http://free-electrons.com
+-- 
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Intel Finland Oy
