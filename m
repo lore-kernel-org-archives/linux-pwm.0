@@ -1,66 +1,104 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH 3/3] backlight: pwm_bl: don't use GPIOF_* with
- gpiod_get_direction
-Date: Mon, 15 Jan 2018 10:13:23 +0000
-Message-ID: <55b3506a-9192-1b36-9c2a-38ec8502514a@linaro.org>
-References: <20180114210711.13863-1-wsa+renesas@sang-engineering.com>
- <20180114210711.13863-4-wsa+renesas@sang-engineering.com>
+From: Hao Zhang <hao5781286@gmail.com>
+Subject: Re: [PATCH v1 4/4] ARM: dts: add pwm node for r40.
+Date: Mon, 15 Jan 2018 19:19:04 +0800
+Message-ID: <CAJeuY799nhZazzRb8JRf6juvWs158pj2LAHpfQ78d-mtO73Y=Q@mail.gmail.com>
+References: <20180111113412.GA22008@arx-s1> <20180111124752.2ljspnaclwgz2s62@flea.lan>
+ <CAJeuY78QLOYZUUS7ghakqqpdzigdvpdHCsw+6onkUCjgZMqTzA@mail.gmail.com> <20180115083813.ad2yqdwnd2nskbhs@flea.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:42034 "EHLO
-        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932627AbeAOKN1 (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Mon, 15 Jan 2018 05:13:27 -0500
-Received: by mail-wm0-f66.google.com with SMTP id b141so741704wme.1
-        for <linux-pwm@vger.kernel.org>; Mon, 15 Jan 2018 02:13:27 -0800 (PST)
-In-Reply-To: <20180114210711.13863-4-wsa+renesas@sang-engineering.com>
-Content-Language: en-US
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-gpio-owner@vger.kernel.org>
+In-Reply-To: <20180115083813.ad2yqdwnd2nskbhs@flea.lan>
+Sender: linux-gpio-owner@vger.kernel.org
+To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>, linux@armlinux.org.uk, Chen-Yu Tsai <wens@csie.org>, Linus Walleij <linus.walleij@linaro.org>, linux-gpio@vger.kernel.org, open list <linux-kernel@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "moderated list:ARM/Allwinner sunXi SoC support" <linux-arm-kernel@lists.infradead.org>, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-gpio@vger.kernel.org
-Cc: linux-renesas-soc@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, linux-pwm@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org
 
+2018-01-15 16:38 GMT+08:00 Maxime Ripard <maxime.ripard@free-electrons.com>:
+> Hi,
+>
+> On Sun, Jan 14, 2018 at 02:43:39PM +0800, Hao Zhang wrote:
+>> 2018-01-11 20:47 GMT+08:00 Maxime Ripard <maxime.ripard@free-electrons.com>:
+>> > On Thu, Jan 11, 2018 at 07:34:12PM +0800, hao_zhang wrote:
+>> >> This patch add pwm node for r40.
+>> >>
+>> >> Signed-off-by: hao_zhang <hao5781286@gmail.com>
+>> >> ---
+>> >>  arch/arm/boot/dts/sun8i-r40.dtsi | 13 +++++++++++++
+>> >>  1 file changed, 13 insertions(+)
+>> >>
+>> >> diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r40.dtsi
+>> >> index 173dcc1..84c963c 100644
+>> >> --- a/arch/arm/boot/dts/sun8i-r40.dtsi
+>> >> +++ b/arch/arm/boot/dts/sun8i-r40.dtsi
+>> >> @@ -295,6 +295,11 @@
+>> >>                               bias-pull-up;
+>> >>                       };
+>> >>
+>> >> +                     pwm_pins: pwm-pins {
+>> >> +                             pins = "PB2", "PB3";
+>> >> +                             function = "pwm";
+>> >> +                     };
+>> >> +
+>> >
+>> > Is it the only combination of pins that is usable?
+>> >
+>> > If so, you can add the pinctrl-0 property directly in the pwm nodes.
+>> >
+>>
+>> There are 8 channel pwm of R40/V40/T3, the pins that can be configed
+>> to pwm are: PB2, PB3, PI20, PI21, PB20, PB21, PB9, PB10
+>
+> And a single controller, or several of them?
 
+Single controller with 8 channels pwm output.
 
-On 14/01/18 21:07, Wolfram Sang wrote:
-> The documentation was wrong, gpiod_get_direction() returns 0/1 instead
-> of the GPIOF_* flags. The docs were fixed with commit 94fc73094abe47
-> ("gpio: correct docs about return value of gpiod_get_direction"). Now,
-> fix this user (until a better, system-wide solution is in place).
-> 
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+>
+>> PB2, PB3 can be configed on bananapi-m2-ultra and on my T3 board,
+>> but the other pins is not exist on the board or some pin is confilct
+>> with other functions, so i just add PB2, PB3. but i think split it
+>> is better, just like this :
+>>
+>> pwm0_pin: pwm0-pin {
+>>     pins = "PB2";
+>>     function = "pwm";
+>> };
+>>
+>> pwm1_pin: pwm1-pin {
+>>     pins = "PB3";
+>>     function = "pwm";
+>> };
+>
+> Yep, that would be better. If it's just a matter of channels, maybe we
+> can even name them pwm-ch0-pin and pwm-ch1-pin? That would be more
+> explicit.
+>
 
-Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+Agree
 
-
-> ---
-> Only build tested!
-> 
->   drivers/video/backlight/pwm_bl.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-> index 1c2289ddd555a6..0fa7d2bd0e4811 100644
-> --- a/drivers/video/backlight/pwm_bl.c
-> +++ b/drivers/video/backlight/pwm_bl.c
-> @@ -301,14 +301,14 @@ static int pwm_backlight_probe(struct platform_device *pdev)
->   
->   	/*
->   	 * If the GPIO is not known to be already configured as output, that
-> -	 * is, if gpiod_get_direction returns either GPIOF_DIR_IN or -EINVAL,
-> -	 * change the direction to output and set the GPIO as active.
-> +	 * is, if gpiod_get_direction returns either 1 or -EINVAL, change the
-> +	 * direction to output and set the GPIO as active.
->   	 * Do not force the GPIO to active when it was already output as it
->   	 * could cause backlight flickering or we would enable the backlight too
->   	 * early. Leave the decision of the initial backlight state for later.
->   	 */
->   	if (pb->enable_gpio &&
-> -	    gpiod_get_direction(pb->enable_gpio) != GPIOF_DIR_OUT)
-> +	    gpiod_get_direction(pb->enable_gpio) != 0)
->   		gpiod_direction_output(pb->enable_gpio, 1);
->   
->   	pb->power_supply = devm_regulator_get(&pdev->dev, "power");
-> 
+>> the node of pwm2~7 should also be added here?
+>
+> If there's no users, no.
+>
+>> On sun8i-r40-bananapi-m2-ultra.dts:
+>> because of the special customize board, i think just add pinctrl-0 = <&pwm0_pin>
+>> (PB3 I just use to test pwm channel 1)for bananapi-m2-ultra board is enough.
+>>
+>> &pwm {
+>>     pinctrl-names = "default";
+>>     pinctrl-0 = <&pwm0_pin>;
+>>     status = "okay";
+>> };
+>
+> It depends if that PWM is used as a PWM all the time (for example to
+> drive a backlight for a panel tied to the board), or if it's exported
+> through one of the generic pin headers, please leave it populated but
+> disabled (with a comment that it is exported on one of the pin of the
+> headers)
+>
+> Thanks!
+> Maxime
+>
+> --
+> Maxime Ripard, Free Electrons
+> Embedded Linux and Kernel engineering
+> http://free-electrons.com
