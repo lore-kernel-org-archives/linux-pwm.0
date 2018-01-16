@@ -1,80 +1,134 @@
 From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [PATCH 2/8] pwm: stm32: protect common prescaler for all channels
-Date: Tue, 16 Jan 2018 13:43:45 +0100
-Message-ID: <1516106631-18722-3-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH 4/8] mfd: stm32-timers: add support for dmas
+Date: Tue, 16 Jan 2018 13:43:47 +0100
+Message-ID: <1516106631-18722-5-git-send-email-fabrice.gasnier@st.com>
 References: <1516106631-18722-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1516106631-18722-1-git-send-email-fabrice.gasnier@st.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: lee.jones@linaro.org, thierry.reding@gmail.com, robh+dt@kernel.org, alexandre.torgue@st.com, benjamin.gaignard@linaro.org
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, benjamin.gaignard@st.com, linux-pwm@vger.kernel.org, linux@armlinux.org.uk, linux-kernel@vger.kernel.org, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, linux-arm-kernel@lists.infradead.org
+Cc: mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-There may be a race, when configuring two pwm channels, with different
-prescaler values, when there's no active channel yet.
-Add mutex lock to avoid concurrent access on pwm apply state.
-This is also precursor patch for pwm capture support.
+STM32 Timers can support up to 7 dma requests:
+4 channels, update, compare and trigger.
+Optionally request part, or all dmas from stm32-timers MFD core.
+Also, keep reference of device's bus address to allow child drivers to
+transfer data from/to device by using dma.
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
- drivers/pwm/pwm-stm32.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+ drivers/mfd/stm32-timers.c       | 37 ++++++++++++++++++++++++++++++++++++-
+ include/linux/mfd/stm32-timers.h | 14 ++++++++++++++
+ 2 files changed, 50 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
-index 59524f9..3ac55df 100644
---- a/drivers/pwm/pwm-stm32.c
-+++ b/drivers/pwm/pwm-stm32.c
-@@ -21,6 +21,7 @@
- 
- struct stm32_pwm {
- 	struct pwm_chip chip;
-+	struct mutex lock; /* protect pwm config/enable */
- 	struct clk *clk;
- 	struct regmap *regmap;
- 	u32 max_arr;
-@@ -213,9 +214,23 @@ static int stm32_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
- 	return ret;
+diff --git a/drivers/mfd/stm32-timers.c b/drivers/mfd/stm32-timers.c
+index a6675a4..372b51e 100644
+--- a/drivers/mfd/stm32-timers.c
++++ b/drivers/mfd/stm32-timers.c
+@@ -29,6 +29,23 @@ static void stm32_timers_get_arr_size(struct stm32_timers *ddata)
+ 	regmap_write(ddata->regmap, TIM_ARR, 0x0);
  }
  
-+static int stm32_pwm_apply_locked(struct pwm_chip *chip, struct pwm_device *pwm,
-+				  struct pwm_state *state)
++static void stm32_timers_dma_probe(struct device *dev,
++				   struct stm32_timers *ddata)
 +{
-+	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
-+	int ret;
++	int i;
++	char name[4];
 +
-+	/* protect common prescaler for all active channels */
-+	mutex_lock(&priv->lock);
-+	ret = stm32_pwm_apply(chip, pwm, state);
-+	mutex_unlock(&priv->lock);
-+
-+	return ret;
++	for (i = STM32_TIMERS_DMA_CH1; i <= STM32_TIMERS_DMA_CH4; i++) {
++		snprintf(name, ARRAY_SIZE(name), "ch%1d", i + 1);
++		ddata->dmas[i] = dma_request_slave_channel(dev, name);
++	}
++	ddata->dmas[STM32_TIMERS_DMA_UP] = dma_request_slave_channel(dev, "up");
++	ddata->dmas[STM32_TIMERS_DMA_TRIG] =
++		dma_request_slave_channel(dev, "trig");
++	ddata->dmas[STM32_TIMERS_DMA_COM] =
++		dma_request_slave_channel(dev, "com");
 +}
 +
- static const struct pwm_ops stm32pwm_ops = {
- 	.owner = THIS_MODULE,
--	.apply = stm32_pwm_apply,
-+	.apply = stm32_pwm_apply_locked,
+ static int stm32_timers_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -44,6 +61,7 @@ static int stm32_timers_probe(struct platform_device *pdev)
+ 	mmio = devm_ioremap_resource(dev, res);
+ 	if (IS_ERR(mmio))
+ 		return PTR_ERR(mmio);
++	ddata->phys_base = res->start;
+ 
+ 	ddata->regmap = devm_regmap_init_mmio_clk(dev, "int", mmio,
+ 						  &stm32_timers_regmap_cfg);
+@@ -56,9 +74,25 @@ static int stm32_timers_probe(struct platform_device *pdev)
+ 
+ 	stm32_timers_get_arr_size(ddata);
+ 
++	stm32_timers_dma_probe(dev, ddata);
++
+ 	platform_set_drvdata(pdev, ddata);
+ 
+-	return devm_of_platform_populate(&pdev->dev);
++	return of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
++}
++
++static int stm32_timers_remove(struct platform_device *pdev)
++{
++	struct stm32_timers *ddata = platform_get_drvdata(pdev);
++	int i;
++
++	of_platform_depopulate(&pdev->dev);
++
++	for (i = 0; i < STM32_TIMERS_MAX_DMAS; i++)
++		if (ddata->dmas[i])
++			dma_release_channel(ddata->dmas[i]);
++
++	return 0;
+ }
+ 
+ static const struct of_device_id stm32_timers_of_match[] = {
+@@ -69,6 +103,7 @@ static int stm32_timers_probe(struct platform_device *pdev)
+ 
+ static struct platform_driver stm32_timers_driver = {
+ 	.probe = stm32_timers_probe,
++	.remove = stm32_timers_remove,
+ 	.driver	= {
+ 		.name = "stm32-timers",
+ 		.of_match_table = stm32_timers_of_match,
+diff --git a/include/linux/mfd/stm32-timers.h b/include/linux/mfd/stm32-timers.h
+index ce7346e..2b4ffb9 100644
+--- a/include/linux/mfd/stm32-timers.h
++++ b/include/linux/mfd/stm32-timers.h
+@@ -10,6 +10,7 @@
+ #define _LINUX_STM32_GPTIMER_H_
+ 
+ #include <linux/clk.h>
++#include <linux/dmaengine.h>
+ #include <linux/regmap.h>
+ 
+ #define TIM_CR1		0x00	/* Control Register 1      */
+@@ -67,9 +68,22 @@
+ #define TIM_BDTR_BKF_SHIFT	16
+ #define TIM_BDTR_BK2F_SHIFT	20
+ 
++enum stm32_timers_dmas {
++	STM32_TIMERS_DMA_CH1,
++	STM32_TIMERS_DMA_CH2,
++	STM32_TIMERS_DMA_CH3,
++	STM32_TIMERS_DMA_CH4,
++	STM32_TIMERS_DMA_UP,
++	STM32_TIMERS_DMA_TRIG,
++	STM32_TIMERS_DMA_COM,
++	STM32_TIMERS_MAX_DMAS,
++};
++
+ struct stm32_timers {
+ 	struct clk *clk;
+ 	struct regmap *regmap;
++	phys_addr_t phys_base;
+ 	u32 max_arr;
++	struct dma_chan *dmas[STM32_TIMERS_MAX_DMAS];
  };
- 
- static int stm32_pwm_set_breakinput(struct stm32_pwm *priv,
-@@ -335,6 +350,7 @@ static int stm32_pwm_probe(struct platform_device *pdev)
- 	if (!priv)
- 		return -ENOMEM;
- 
-+	mutex_init(&priv->lock);
- 	priv->regmap = ddata->regmap;
- 	priv->clk = ddata->clk;
- 	priv->max_arr = ddata->max_arr;
+ #endif
 -- 
 1.9.1
