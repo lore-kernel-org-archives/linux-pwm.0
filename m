@@ -1,134 +1,143 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [PATCH 4/8] mfd: stm32-timers: add support for dmas
-Date: Tue, 16 Jan 2018 13:43:47 +0100
-Message-ID: <1516106631-18722-5-git-send-email-fabrice.gasnier@st.com>
+From: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
+Subject: [PATCH 7/8] pwm: stm32: use input prescaler to improve period capture
+Date: Tue, 16 Jan 2018 13:43:50 +0100
+Message-ID: <1516106631-18722-8-git-send-email-fabrice.gasnier@st.com>
 References: <1516106631-18722-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1516106631-18722-1-git-send-email-fabrice.gasnier@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: lee.jones@linaro.org, thierry.reding@gmail.com, robh+dt@kernel.org, alexandre.torgue@st.com, benjamin.gaignard@linaro.org
-Cc: mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1516106631-18722-1-git-send-email-fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, benjamin.gaignard-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-STM32 Timers can support up to 7 dma requests:
-4 channels, update, compare and trigger.
-Optionally request part, or all dmas from stm32-timers MFD core.
-Also, keep reference of device's bus address to allow child drivers to
-transfer data from/to device by using dma.
+Using input prescaler, capture unit will trigger DMA once every
+configurable /2, /4 or /8 events (rising edge). This can help improve
+period (only) capture accuracy.
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
 ---
- drivers/mfd/stm32-timers.c       | 37 ++++++++++++++++++++++++++++++++++++-
- include/linux/mfd/stm32-timers.h | 14 ++++++++++++++
- 2 files changed, 50 insertions(+), 1 deletion(-)
+ drivers/pwm/pwm-stm32.c          | 67 ++++++++++++++++++++++++++++++++++++++--
+ include/linux/mfd/stm32-timers.h |  1 +
+ 2 files changed, 66 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mfd/stm32-timers.c b/drivers/mfd/stm32-timers.c
-index a6675a4..372b51e 100644
---- a/drivers/mfd/stm32-timers.c
-+++ b/drivers/mfd/stm32-timers.c
-@@ -29,6 +29,23 @@ static void stm32_timers_get_arr_size(struct stm32_timers *ddata)
- 	regmap_write(ddata->regmap, TIM_ARR, 0x0);
- }
+diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
+index c890404..6b99d92 100644
+--- a/drivers/pwm/pwm-stm32.c
++++ b/drivers/pwm/pwm-stm32.c
+@@ -9,6 +9,7 @@
+  *             pwm-atmel.c from Bo Shen
+  */
  
-+static void stm32_timers_dma_probe(struct device *dev,
-+				   struct stm32_timers *ddata)
-+{
-+	int i;
-+	char name[4];
++#include <linux/bitfield.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/mfd/stm32-timers.h>
+ #include <linux/module.h>
+@@ -257,7 +258,7 @@ static int stm32_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
+ 	unsigned long long prd, div, dty;
+ 	unsigned long rate;
+-	unsigned int psc = 0, scale;
++	unsigned int psc = 0, icpsc, scale;
+ 	u32 raw_prd, raw_dty;
+ 	int ret = 0;
+ 
+@@ -314,6 +315,7 @@ static int stm32_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	/*
+ 	 * Got a capture. Try to improve accuracy at high rates:
+ 	 * - decrease counter clock prescaler, scale up to max rate.
++	 * - use input prescaler, capture once every /2 /4 or /8 edges.
+ 	 */
+ 	if (raw_prd) {
+ 		u32 max_arr = priv->max_arr - 0x1000; /* arbitrary margin */
+@@ -335,8 +337,69 @@ static int stm32_pwm_capture(struct pwm_chip *chip, struct pwm_device *pwm,
+ 		raw_dty = priv->capture[1];
+ 	}
+ 
++	/* Compute intermediate period not to exceed timeout at low rates */
+ 	prd = (unsigned long long)raw_prd * (psc + 1) * NSEC_PER_SEC;
+-	result->period = DIV_ROUND_UP_ULL(prd, rate);
++	do_div(prd, rate);
 +
-+	for (i = STM32_TIMERS_DMA_CH1; i <= STM32_TIMERS_DMA_CH4; i++) {
-+		snprintf(name, ARRAY_SIZE(name), "ch%1d", i + 1);
-+		ddata->dmas[i] = dma_request_slave_channel(dev, name);
++	for (icpsc = 0; icpsc < MAX_TIM_ICPSC ; icpsc++) {
++		/* input prescaler: also keep arbitrary margin */
++		if (raw_prd >= (priv->max_arr - 0x1000) >> (icpsc + 1))
++			break;
++		if (prd >= (tmo_ms * NSEC_PER_MSEC) >> (icpsc + 2))
++			break;
 +	}
-+	ddata->dmas[STM32_TIMERS_DMA_UP] = dma_request_slave_channel(dev, "up");
-+	ddata->dmas[STM32_TIMERS_DMA_TRIG] =
-+		dma_request_slave_channel(dev, "trig");
-+	ddata->dmas[STM32_TIMERS_DMA_COM] =
-+		dma_request_slave_channel(dev, "com");
-+}
 +
- static int stm32_timers_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-@@ -44,6 +61,7 @@ static int stm32_timers_probe(struct platform_device *pdev)
- 	mmio = devm_ioremap_resource(dev, res);
- 	if (IS_ERR(mmio))
- 		return PTR_ERR(mmio);
-+	ddata->phys_base = res->start;
- 
- 	ddata->regmap = devm_regmap_init_mmio_clk(dev, "int", mmio,
- 						  &stm32_timers_regmap_cfg);
-@@ -56,9 +74,25 @@ static int stm32_timers_probe(struct platform_device *pdev)
- 
- 	stm32_timers_get_arr_size(ddata);
- 
-+	stm32_timers_dma_probe(dev, ddata);
++	if (!icpsc)
++		goto done;
 +
- 	platform_set_drvdata(pdev, ddata);
- 
--	return devm_of_platform_populate(&pdev->dev);
-+	return of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
-+}
++	/* Last chance to improve period accuracy, using input prescaler */
++	regmap_update_bits(priv->regmap,
++			   pwm->hwpwm < 2 ? TIM_CCMR1 : TIM_CCMR2,
++			   TIM_CCMR_IC1PSC | TIM_CCMR_IC2PSC,
++			   FIELD_PREP(TIM_CCMR_IC1PSC, icpsc) |
++			   FIELD_PREP(TIM_CCMR_IC2PSC, icpsc));
 +
-+static int stm32_timers_remove(struct platform_device *pdev)
-+{
-+	struct stm32_timers *ddata = platform_get_drvdata(pdev);
-+	int i;
++	ret = stm32_pwm_do_capture(priv, pwm, tmo_ms);
++	if (ret)
++		goto stop;
 +
-+	of_platform_depopulate(&pdev->dev);
++	raw_prd = priv->capture[0];
++	raw_dty = priv->capture[1];
 +
-+	for (i = 0; i < STM32_TIMERS_MAX_DMAS; i++)
-+		if (ddata->dmas[i])
-+			dma_release_channel(ddata->dmas[i]);
++	if (raw_dty >= (raw_prd >> icpsc)) {
++		/*
++		 * We may fall here using input prescaler, when input
++		 * capture starts on high side (before falling edge).
++		 * Example with icpsc to capture on each 4 events:
++		 *
++		 *       start   1st capture                     2nd capture
++		 *         v     v                               v
++		 *         ___   _____   _____   _____   _____   ____
++		 * TI1..4     |__|    |__|    |__|    |__|    |__|
++		 *            v  v    .  .    .  .    .       v  v
++		 * icpsc1/3:  .  0    .  1    .  2    .  3    .  0
++		 * icpsc2/4:  0       1       2       3       0
++		 *            v  v                            v  v
++		 * CCR1/3  ......t0..............................t2
++		 * CCR2/4  ..t1..............................t1'...
++		 *               .                            .  .
++		 * Capture0:     .<----------------------------->.
++		 * Capture1:     .<-------------------------->.  .
++		 *               .                            .  .
++		 * Period:       .<------>                    .  .
++		 * Low side:                                  .<>.
++		 *
++		 * Result:
++		 * - Period = (t2 - t0) / icpsc
++		 * - Duty = Period - Low side = Period - (Capture0 - Capture1)
++		 */
++		raw_dty = priv->capture[0] - priv->capture[1];
++		raw_dty = (raw_prd >> icpsc) - raw_dty;
++	}
 +
-+	return 0;
- }
- 
- static const struct of_device_id stm32_timers_of_match[] = {
-@@ -69,6 +103,7 @@ static int stm32_timers_probe(struct platform_device *pdev)
- 
- static struct platform_driver stm32_timers_driver = {
- 	.probe = stm32_timers_probe,
-+	.remove = stm32_timers_remove,
- 	.driver	= {
- 		.name = "stm32-timers",
- 		.of_match_table = stm32_timers_of_match,
++done:
++	prd = (unsigned long long)raw_prd * (psc + 1) * NSEC_PER_SEC;
++	result->period = DIV_ROUND_UP_ULL(prd, rate << icpsc);
+ 	dty = (unsigned long long)raw_dty * (psc + 1) * NSEC_PER_SEC;
+ 	result->duty_cycle = DIV_ROUND_UP_ULL(dty, rate);
+ stop:
 diff --git a/include/linux/mfd/stm32-timers.h b/include/linux/mfd/stm32-timers.h
-index ce7346e..2b4ffb9 100644
+index 219eccc..b67cb28 100644
 --- a/include/linux/mfd/stm32-timers.h
 +++ b/include/linux/mfd/stm32-timers.h
-@@ -10,6 +10,7 @@
- #define _LINUX_STM32_GPTIMER_H_
+@@ -77,6 +77,7 @@
+ #define TIM_BDTR_BK2P	BIT(25) /* Break 2 input polarity  */
  
- #include <linux/clk.h>
-+#include <linux/dmaengine.h>
- #include <linux/regmap.h>
- 
- #define TIM_CR1		0x00	/* Control Register 1      */
-@@ -67,9 +68,22 @@
- #define TIM_BDTR_BKF_SHIFT	16
- #define TIM_BDTR_BK2F_SHIFT	20
- 
-+enum stm32_timers_dmas {
-+	STM32_TIMERS_DMA_CH1,
-+	STM32_TIMERS_DMA_CH2,
-+	STM32_TIMERS_DMA_CH3,
-+	STM32_TIMERS_DMA_CH4,
-+	STM32_TIMERS_DMA_UP,
-+	STM32_TIMERS_DMA_TRIG,
-+	STM32_TIMERS_DMA_COM,
-+	STM32_TIMERS_MAX_DMAS,
-+};
-+
- struct stm32_timers {
- 	struct clk *clk;
- 	struct regmap *regmap;
-+	phys_addr_t phys_base;
- 	u32 max_arr;
-+	struct dma_chan *dmas[STM32_TIMERS_MAX_DMAS];
- };
- #endif
+ #define MAX_TIM_PSC		0xFFFF
++#define MAX_TIM_ICPSC		0x3
+ #define TIM_CR2_MMS_SHIFT	4
+ #define TIM_CR2_MMS2_SHIFT	20
+ #define TIM_SMCR_TS_SHIFT	4
 -- 
 1.9.1
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
