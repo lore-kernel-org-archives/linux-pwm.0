@@ -1,55 +1,35 @@
-From: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v2 03/16] pwm: cros-ec: update documentation regarding
- pwm-cells
-Date: Wed, 17 Jan 2018 15:10:57 -0800
-Message-ID: <20180117231056.GB112833@google.com>
+From: Brian Norris <briannorris@chromium.org>
+Subject: Re: [PATCH v2 01/16] drivers: pwm: core: use a single of xlate
+ function
+Date: Wed, 17 Jan 2018 15:14:19 -0800
+Message-ID: <20180117231357.GC112833@google.com>
 References: <1515766983-15151-1-git-send-email-claudiu.beznea@microchip.com>
- <1515766983-15151-4-git-send-email-claudiu.beznea@microchip.com>
- <20180112183122.GA102880@google.com>
- <61b85600-7aee-e9d1-6587-17e5e419b03a@microchip.com>
- <c2078487-8cc6-429e-6c38-092d776c33aa@microchip.com>
+ <1515766983-15151-2-git-send-email-claudiu.beznea@microchip.com>
+ <20180112183512.GB102880@google.com>
+ <6441df76-fb4a-ce00-1019-f7ff9143b75e@microchip.com>
+ <CAHp75VcaFDEQ1cBzeU2eBj_vf19ok6EWLC07SOTQLRH8BQSbzA@mail.gmail.com>
+ <9a130c0b-572d-be0b-8ac7-596714208d41@microchip.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pg0-f66.google.com ([74.125.83.66]:33763 "EHLO
+        mail-pg0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753438AbeAQXOW (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 17 Jan 2018 18:14:22 -0500
+Received: by mail-pg0-f66.google.com with SMTP id i196so12353160pgd.0
+        for <linux-pwm@vger.kernel.org>; Wed, 17 Jan 2018 15:14:22 -0800 (PST)
 Content-Disposition: inline
-In-Reply-To: <c2078487-8cc6-429e-6c38-092d776c33aa-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Claudiu Beznea <Claudiu.Beznea-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rpi-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, alexandre.belloni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, haojian.zhuang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-amlogic-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, robert.jarzmik-GANU6spQydw@public.gmane.org, daniel-cYrQPVfZoowdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <9a130c0b-572d-be0b-8ac7-596714208d41@microchip.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Claudiu Beznea <Claudiu.Beznea@microchip.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Russell King - ARM Linux <linux@armlinux.org.uk>, Daniel Mack <daniel@zonque.org>, Haojian Zhuang <haojian.zhuang@gmail.com>, Robert Jarzmik <robert.jarzmik@free.fr>, Jonathan Corbet <corbet@lwn.net>, Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, linux-pwm@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, linux-amlogic@lists.infradead.org, linux-rockchip@lists.infradead.org, linux-rpi-kernel@lists.infradead.org, devicetree <devicetree@vger.kernel.org>
 
-On Wed, Jan 17, 2018 at 10:29:53AM +0200, Claudiu Beznea wrote:
-> With these changes, if pwm-cells=1 then only PWM-channel will be parsed,
+On Tue, Jan 16, 2018 at 10:24:59AM +0200, Claudiu Beznea wrote:
+> Please explain me further. From this I understand, as a general rule,
+> that the device tree binaries from, e.g. 3 years ago, should be
+> compatible with, e.g. the current version of kernel?
 
-I'm not sure if I'm understanding you correctly but...no. If cells is 1,
-then your driver change just causes us not to parse correctly, and
-everything fails.
+Yes.
 
-> if it is 2 PWM-channel and PWM-period will be parsed, if pwm-cells=3
-> then PWM-channel, PWM-period and PWM-flags will be parsed.
-> In your driver you used to have only one cell because you wanted to allow
-> user to give as argument only PWM channel, and you did not want a change
-> of PWM period (and in of_xlate function you initialize pwm period with 0xffff
-> value: this is why I changed the binding in patch 7 of this series, file
-
-It's not a matter of "allow", it's a matter of description. The period
-isn't actually even 0xffff, that's just a pseudo-period, to reflect that
-you have a choice of duty cycles of 0 to 0xffff. I (justifiably, I
-think) didn't think putting this false value in the device tree was
-accurate.
-
-> rk3399-gru-kevin.dts). But e.g. sysfs could try to change the PWM period,
-> there is no restriction to change the PWM period from sysfs, in the sysfs
-> interface but the restriction is in PWM apply of the drive. The same things
-> happens with these changes too. The user could introduce any PWM period via
-> DT but the pwm apply function of the driver will return error.
-
-sysfs has no bearing on a device tree binding. Just because we have a
-broken interface here doesn't mean we should change how we describe the
-hardware.
-
-Brian
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+https://www.kernel.org/doc/Documentation/devicetree/bindings/ABI.txt
