@@ -1,7 +1,7 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
+From: "cas" <cas@matrixfiles.com>
 Subject: Re: [PATCH 4/8] mfd: stm32-timers: add support for dmas
-Date: Wed, 24 Jan 2018 16:30:58 +0100
-Message-ID: <0c6a185c-cc12-38ae-3909-5c0e82f8da3f@st.com>
+Date: Wed, 24 Jan 2018 10:43:37 -0500
+Message-ID: <4E69ABAE738243638F41986C65034974@toshiba>
 References: <1516106631-18722-1-git-send-email-fabrice.gasnier@st.com>
  <1516106631-18722-5-git-send-email-fabrice.gasnier@st.com>
  <20180123133234.xmep76cgdremnj47@dell>
@@ -11,110 +11,94 @@ References: <1516106631-18722-1-git-send-email-fabrice.gasnier@st.com>
  <20180123164121.xjzhypqe2u5c7zza@dell>
  <2e6afc46-9ad4-a858-29c7-692798ece82f@st.com>
  <20180124145633.tnblnqau7ncju7dp@dell>
+ <0c6a185c-cc12-38ae-3909-5c0e82f8da3f@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:50948 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S933936AbeAXPbh (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 24 Jan 2018 10:31:37 -0500
-In-Reply-To: <20180124145633.tnblnqau7ncju7dp@dell>
-Content-Language: en-US
-Sender: linux-pwm-owner@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Lee Jones <lee.jones@linaro.org>, Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: mark.rutland@arm.com, mcoquelin.stm32@gmail.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux@armlinux.org.uk, robh+dt@kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, benjamin.gaignard@linaro.org, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
 List-Id: linux-pwm@vger.kernel.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: thierry.reding@gmail.com, robh+dt@kernel.org, alexandre.torgue@st.com, benjamin.gaignard@linaro.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-On 01/24/2018 03:56 PM, Lee Jones wrote:
-> On Wed, 24 Jan 2018, Fabrice Gasnier wrote:
->> On 01/23/2018 05:41 PM, Lee Jones wrote:
->>> On Tue, 23 Jan 2018, Fabrice Gasnier wrote:
->>>> On 01/23/2018 04:30 PM, Lee Jones wrote:
->>>>> On Tue, 23 Jan 2018, Fabrice Gasnier wrote:
->>>>>
->>>>>> On 01/23/2018 02:32 PM, Lee Jones wrote:
->>>>>>> On Tue, 16 Jan 2018, Fabrice Gasnier wrote:
->>>>>>>
->>>>>>>> STM32 Timers can support up to 7 dma requests:
->>>>>>>> 4 channels, update, compare and trigger.
->>>>>>>> Optionally request part, or all dmas from stm32-timers MFD core.
->>>>>>>> Also, keep reference of device's bus address to allow child drivers to
->>>>>>>> transfer data from/to device by using dma.
->>>>>>>>
->>>>>>>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
->>>>>>>> ---
->>>>>>>>  drivers/mfd/stm32-timers.c       | 37 ++++++++++++++++++++++++++++++++++++-
->>>>>>>>  include/linux/mfd/stm32-timers.h | 14 ++++++++++++++
->>>>>>>>  2 files changed, 50 insertions(+), 1 deletion(-)
->>>>>>>>
->>>>>>>> diff --git a/drivers/mfd/stm32-timers.c b/drivers/mfd/stm32-timers.c
->>>>>>>>  static int stm32_timers_probe(struct platform_device *pdev)
->>>>>>>>  {
->>>>>>>>  	struct device *dev = &pdev->dev;
->>>>>>>> @@ -44,6 +61,7 @@ static int stm32_timers_probe(struct platform_device *pdev)
->>>>>>>>  	mmio = devm_ioremap_resource(dev, res);
->>>>>>>>  	if (IS_ERR(mmio))
->>>>>>>>  		return PTR_ERR(mmio);
->>>>>>>> +	ddata->phys_base = res->start;
->>>>>>>
->>>>>>> What do you use this for?
->>>>>>
->>>>>> This is used in in child driver (pwm) for capture data transfer by dma.
->>>>>
->>>>> Might be worth being clear about that.
->>>>>
->>>>> Perhaps pass in 'dma_base' (phys_base + offset) instead?
->>>>
->>>> I guess you've had a look at [PATCH 5/8] pwm: stm32: add capture
->>>> support. Are you talking about passing phys_base + TIM_DMAR ?
->>>
->>> I have and I am.
->>>
->>>> If this is the case, I'd prefer to keep phys base only if you don't
->>>> mind, and handle TIM_DMAR offset in pwm driver. This way, all dma slave
->>>> config is kept locally at one place.
->>>> Or do you mean something else ?
->>>>
->>>> Maybe I can add a comment here about this ?
->>>> Something like:
->>>> /* phys_base to be used by child driver, e.g. DMA burst mode */
->>>
->>> I haven't seen the memory map for this device, so it's not easy for me
->>> to comment, but passing in the physical address of the parent MFD into
->>> a child device doesn't quite sit right with me.
->>>
->>> At what level does TIM_DMAR sit?  Is it a child (PWM) specific
->>> property, or is it described at parent (Timer) level?
->>>
->> Hi Lee,
->>
->> This isn't child (PWM) specific. TIM_DMAR is described at timer level as
->> well as all timers DMA requests lines. Current patchset make it useful
->> for PWM capture. Basically, I think this can be seen as interrupts, as
->> each (0..7) dma request has an enable bit (in DIER: interrupt enable
->> register). This is similar as interrupts at timer level.
->>
->> So, I understand your point regarding passing physical address of the
->> parent MFD... Speaking of interrupts, I'd probably have looked at
->> irq_chip. Regarding dma, i'm not sure what is preferred way ?
->>
->> Another way maybe to export a routine (export symbol) from MFD core, to
->> handle dma transfer from there?
->> By looking into drivers/mfd, I found similar approach, e.g.
->> rtsx_pci_dma_transfer(). Do you think this is better approach ?
->>
->> Please let me know your opinion.
-> 
-> It sounds fine in principle.  You are in a better position to make
-> that decision as you know the H/W more intimately than I, however it
-> does sound like a good idea to abstract the DMA handling from the
-> device if these aren't device-{level|specific} operations.
-> 
+Apologies for interrupting any work/messages being undertaken. I am a newbie 
+here (1st post) and felt this was the only way to get this information to 
+Linus Torvalds.
+____
+The following was posted on a forum on the 22nd March 2017:
 
-Hi Lee,
+'I've been working at Intel for the last 15 years as an electrical engineer. 
+3 years ago I [got] bored with my job and wanted to move to a different 
+department. Intel is pretty good about letting employees move around within 
+the company. An opening came up on the Management Engine team, and since I 
+have experience with micro-controllers I figured I'd give it a shot. The 
+interview went great and they wanted me on board, but the final step was to 
+get securuty clearance.
 
-Thanks, I'll rework this in v2 to follow your advice.
+I asked them WTF I need a security clearance for, and they said they 
+couldn't tell me unitl I was on the team. Thus began a 3 year trip down the 
+fucking rabbit hole.
 
-Best Regards,
-Fabrice
+I'm coming forward today because of the news that Trump was spied on. I know 
+exactly how it was done because I spent the last three years adding 
+backdoors into the ME. For those of you that are unaware, the ME is ona 
+separate CPU and cannot be disabled, and it exists at a level below the 
+operating system. Intel has been working with the intelligence community for 
+years to get backdoors into physical hardware so they don't have to worry 
+about finding OS exploits. If the hardware itself is compromised then the 
+whole machine is compromised.
+
+----Next post----
+
+The ME has full access to memory without the parent CPU having any 
+knowledge, it has full access to the TCP/IP stacl, and full access to every 
+peripheral connected to the computer. It also runs when the computer is 
+hibernating. It doesn't matter if you're using Windows, Linux, Mac OS X, 
+Whonix, Tails, Qubes OS, or Subgraph. If you have an i3, i5, or i7 hen 
+you're completely owned by the intelligence community.
+
+We added similar finctionality to Samsung's WEEPING ANGEL, except the 
+intelligence community calls our project ODIN'S EYE. Through the ME we can 
+activate the mic and webcam even though the computer appears to be off or 
+sleeping.
+
+Evidence of surveillance on Trump, his family, and key people in his 
+campaign will come out eventually. I know the surveillance happened for a 
+fact. Future leaks are coming, watch out for ODIN'S EYE.'
+
+---END POST---
+
+Jim Stone over at
+
+82.221.129.208/.zj3.html
+
+has the image of the text of the above (you need to scroll down a bit). He 
+also mentioned this stuff, and more, over 7 years ago, though not in the 
+same exact terms as the above, and states that this has actually occured 
+since the Centrino processor, which is where the first backdoors started to 
+be placed.
+
+I am here to pass on the information to all of you, if you do not already 
+have it (and since I have just joined to explicitly to send this I have no 
+idea if any of you know this or not), and primarily to get this information 
+to Linus Torvalds who has been quoted by RT very recently as saying that the 
+patches announced by intel (for the Spectre and Meltdown bug) are 'garbage'.
+
+I hope that the above information can now be used to understand the real 
+extent of the problem.
+
+[Note: if one is not able to find the image of the text at the above site 
+you can find it here:
+
+liferepairspecialist.com/Memes/
+
+look for the image called 'inteladmission' - it is in this folder and not in 
+any subfolders.] 
