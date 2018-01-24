@@ -1,110 +1,203 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: Re: [PATCH 4/8] mfd: stm32-timers: add support for dmas
-Date: Wed, 24 Jan 2018 09:40:36 +0100
-Message-ID: <2e6afc46-9ad4-a858-29c7-692798ece82f@st.com>
-References: <1516106631-18722-1-git-send-email-fabrice.gasnier@st.com>
- <1516106631-18722-5-git-send-email-fabrice.gasnier@st.com>
- <20180123133234.xmep76cgdremnj47@dell>
- <e611b40f-bd37-aa2d-afd9-997b86d55441@st.com>
- <20180123153035.2rvhspe2m5ej57op@dell>
- <ee021839-3298-d01b-8890-619aca0399a7@st.com>
- <20180123164121.xjzhypqe2u5c7zza@dell>
+From: Ladislav Michl <ladis@linux-mips.org>
+Subject: Re: [PATCH v8 8/9] pwm: pwm-omap-dmtimer: Adapt driver to utilize
+ dmtimer pdata ops
+Date: Wed, 24 Jan 2018 10:32:43 +0100
+Message-ID: <20180124093243.GA18581@lenoch>
+References: <1516772680-28256-1-git-send-email-j-keerthy@ti.com>
+ <20180124072432.GA11294@lenoch>
+ <e90aed55-e8db-e849-0e07-cbeb453b583c@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180123164121.xjzhypqe2u5c7zza@dell>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Lee Jones <lee.jones@linaro.org>
-Cc: mark.rutland@arm.com, mcoquelin.stm32@gmail.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux@armlinux.org.uk, robh+dt@kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, benjamin.gaignard@linaro.org, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from eddie.linux-mips.org ([148.251.95.138]:55130 "EHLO
+        cvs.linux-mips.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932553AbeAXJct (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 24 Jan 2018 04:32:49 -0500
+Content-Disposition: inline
+In-Reply-To: <e90aed55-e8db-e849-0e07-cbeb453b583c@ti.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Keerthy <j-keerthy@ti.com>
+Cc: daniel.lezcano@linaro.org, thierry.reding@gmail.com, tony@atomide.com, aaro.koskinen@iki.fi, Claudiu.Beznea@microchip.com, narmstrong@baylibre.com, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, sebastian.reichel@collabora.co.uk, linux-omap@vger.kernel.org, robh+dt@kernel.org, t-kristo@ti.com, grygorii.strashko@ti.com
 
-On 01/23/2018 05:41 PM, Lee Jones wrote:
-> On Tue, 23 Jan 2018, Fabrice Gasnier wrote:
->> On 01/23/2018 04:30 PM, Lee Jones wrote:
->>> On Tue, 23 Jan 2018, Fabrice Gasnier wrote:
->>>
->>>> On 01/23/2018 02:32 PM, Lee Jones wrote:
->>>>> On Tue, 16 Jan 2018, Fabrice Gasnier wrote:
->>>>>
->>>>>> STM32 Timers can support up to 7 dma requests:
->>>>>> 4 channels, update, compare and trigger.
->>>>>> Optionally request part, or all dmas from stm32-timers MFD core.
->>>>>> Also, keep reference of device's bus address to allow child drivers to
->>>>>> transfer data from/to device by using dma.
->>>>>>
->>>>>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
->>>>>> ---
->>>>>>  drivers/mfd/stm32-timers.c       | 37 ++++++++++++++++++++++++++++++++++++-
->>>>>>  include/linux/mfd/stm32-timers.h | 14 ++++++++++++++
->>>>>>  2 files changed, 50 insertions(+), 1 deletion(-)
->>>>>>
->>>>>> diff --git a/drivers/mfd/stm32-timers.c b/drivers/mfd/stm32-timers.c
->>>>>>  static int stm32_timers_probe(struct platform_device *pdev)
->>>>>>  {
->>>>>>  	struct device *dev = &pdev->dev;
->>>>>> @@ -44,6 +61,7 @@ static int stm32_timers_probe(struct platform_device *pdev)
->>>>>>  	mmio = devm_ioremap_resource(dev, res);
->>>>>>  	if (IS_ERR(mmio))
->>>>>>  		return PTR_ERR(mmio);
->>>>>> +	ddata->phys_base = res->start;
->>>>>
->>>>> What do you use this for?
->>>>
->>>> This is used in in child driver (pwm) for capture data transfer by dma.
->>>
->>> Might be worth being clear about that.
->>>
->>> Perhaps pass in 'dma_base' (phys_base + offset) instead?
->>
->> I guess you've had a look at [PATCH 5/8] pwm: stm32: add capture
->> support. Are you talking about passing phys_base + TIM_DMAR ?
+On Wed, Jan 24, 2018 at 01:58:19PM +0530, Keerthy wrote:
+> On Wednesday 24 January 2018 12:54 PM, Ladislav Michl wrote:
+> > Keerthy,
+> > 
+> > On Wed, Jan 24, 2018 at 11:14:40AM +0530, Keerthy wrote:
+> >> Adapt driver to utilize dmtimer pdata ops instead of pdata-quirks.
+> >>
+> >> Signed-off-by: Keerthy <j-keerthy@ti.com>
+> >> Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+> >> Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> >> ---
+> >>
+> >> Changes in v8:
+> >>
+> >>   * Added of_node_put call in success case of probe.
+> >>
+> >> Boot tested on am437x-gp-evm and dra7xx-evm.
+> >> Also compile tested omap1_defconfig with other patches of v7
+> >> posted here:
+> >>
+> >> https://www.spinics.net/lists/linux-omap/msg141100.html
+> >>
+> >> With v8 version of Patch 8/9.
+> >>
+> >>  drivers/pwm/pwm-omap-dmtimer.c | 68 ++++++++++++++++++++++++++----------------
+> >>  1 file changed, 42 insertions(+), 26 deletions(-)
+> >>
+> >> diff --git a/drivers/pwm/pwm-omap-dmtimer.c b/drivers/pwm/pwm-omap-dmtimer.c
+> >> index 5ad42f3..c00e474 100644
+> >> --- a/drivers/pwm/pwm-omap-dmtimer.c
+> >> +++ b/drivers/pwm/pwm-omap-dmtimer.c
+> >> @@ -23,6 +23,7 @@
+> >>  #include <linux/mutex.h>
+> >>  #include <linux/of.h>
+> >>  #include <linux/of_platform.h>
+> >> +#include <linux/platform_data/dmtimer-omap.h>
+> >>  #include <linux/platform_data/pwm_omap_dmtimer.h>
+> >>  #include <linux/platform_device.h>
+> >>  #include <linux/pm_runtime.h>
+> >> @@ -37,7 +38,7 @@ struct pwm_omap_dmtimer_chip {
+> >>  	struct pwm_chip chip;
+> >>  	struct mutex mutex;
+> >>  	pwm_omap_dmtimer *dm_timer;
+> >> -	struct pwm_omap_dmtimer_pdata *pdata;
+> >> +	struct omap_dm_timer_ops *pdata;
+> >>  	struct platform_device *dm_timer_pdev;
+> >>  };
+> >>  
+> >> @@ -242,19 +243,35 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+> >>  {
+> >>  	struct device_node *np = pdev->dev.of_node;
+> >>  	struct device_node *timer;
+> >> +	struct platform_device *timer_pdev;
+> >>  	struct pwm_omap_dmtimer_chip *omap;
+> >> -	struct pwm_omap_dmtimer_pdata *pdata;
+> >> +	struct dmtimer_platform_data *timer_pdata;
+> >> +	struct omap_dm_timer_ops *pdata;
+> >>  	pwm_omap_dmtimer *dm_timer;
+> >>  	u32 v;
+> >> -	int status;
+> >> +	int status, ret = 0;
+> >>  
+> >> -	pdata = dev_get_platdata(&pdev->dev);
+> >> -	if (!pdata) {
+> >> -		dev_err(&pdev->dev, "Missing dmtimer platform data\n");
+> >> -		return -EINVAL;
+> >> +	timer = of_parse_phandle(np, "ti,timers", 0);
+> >> +	if (!timer)
+> >> +		return -ENODEV;
+> >> +
+> >> +	timer_pdev = of_find_device_by_node(timer);
+> >> +	if (!timer_pdev) {
+> >> +		dev_err(&pdev->dev, "Unable to find Timer pdev\n");
+> >> +		ret = -ENODEV;
+> >> +		goto put;
+> >>  	}
+> >>  
+> >> -	if (!pdata->request_by_node ||
+> >> +	timer_pdata = dev_get_platdata(&timer_pdev->dev);
+> >> +	if (!timer_pdata) {
+> >> +		dev_err(&pdev->dev, "dmtimer pdata structure NULL\n");
+> >> +		ret = -EINVAL;
+> >> +		goto put;
+> >> +	}
+> >> +
+> >> +	pdata = timer_pdata->timer_ops;
+> >> +
+> >> +	if (!pdata || !pdata->request_by_node ||
+> >>  	    !pdata->free ||
+> >>  	    !pdata->enable ||
+> >>  	    !pdata->disable ||
+> >> @@ -267,37 +284,32 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+> >>  	    !pdata->set_prescaler ||
+> >>  	    !pdata->write_counter) {
+> >>  		dev_err(&pdev->dev, "Incomplete dmtimer pdata structure\n");
+> >> -		return -EINVAL;
+> >> +		ret = -EINVAL;
+> >> +		goto put;
+> >>  	}
+> >>  
+> >> -	timer = of_parse_phandle(np, "ti,timers", 0);
+> >> -	if (!timer)
+> >> -		return -ENODEV;
+> >> -
+> >>  	if (!of_get_property(timer, "ti,timer-pwm", NULL)) {
+> >>  		dev_err(&pdev->dev, "Missing ti,timer-pwm capability\n");
+> >> -		return -ENODEV;
+> >> +		ret = -ENODEV;
+> >> +		goto put;
+> > 
+> > Should we call of_node_put() even from here? of_get_property() failed, so
+> > reference was not updated.
 > 
-> I have and I am.
+> The of_node_put to balance the of_parse_handle called for timer. I hope
+> that is what you wanted to check right?
+
+Right, your code does it already, so please ignore my previous comment.
+
+> > 
+> >>  	}
+> >>  
+> >>  	dm_timer = pdata->request_by_node(timer);
+> > 
+> > And timer seems to be used only here, so calling
+> > 	of_node_put(timer);
+> > just here should be enough.
 > 
->> If this is the case, I'd prefer to keep phys base only if you don't
->> mind, and handle TIM_DMAR offset in pwm driver. This way, all dma slave
->> config is kept locally at one place.
->> Or do you mean something else ?
->>
->> Maybe I can add a comment here about this ?
->> Something like:
->> /* phys_base to be used by child driver, e.g. DMA burst mode */
-> 
-> I haven't seen the memory map for this device, so it's not easy for me
-> to comment, but passing in the physical address of the parent MFD into
-> a child device doesn't quite sit right with me.
-> 
-> At what level does TIM_DMAR sit?  Is it a child (PWM) specific
-> property, or is it described at parent (Timer) level?
-> 
-Hi Lee,
+> Okay yes. This can be optimized. of_node_put(timer); can be called
+> here and the instances below need not have that additional step.
 
-This isn't child (PWM) specific. TIM_DMAR is described at timer level as
-well as all timers DMA requests lines. Current patchset make it useful
-for PWM capture. Basically, I think this can be seen as interrupts, as
-each (0..7) dma request has an enable bit (in DIER: interrupt enable
-register). This is similar as interrupts at timer level.
+Yes, thank you. Then I'll send rebased patches.
 
-So, I understand your point regarding passing physical address of the
-parent MFD... Speaking of interrupts, I'd probably have looked at
-irq_chip. Regarding dma, i'm not sure what is preferred way ?
-
-Another way maybe to export a routine (export symbol) from MFD core, to
-handle dma transfer from there?
-By looking into drivers/mfd, I found similar approach, e.g.
-rtsx_pci_dma_transfer(). Do you think this is better approach ?
-
-Please let me know your opinion.
-
-Best Regards,
-Fabrice
+> >> -	if (!dm_timer)
+> >> -		return -EPROBE_DEFER;
+> >> +	if (!dm_timer) {
+> >> +		ret = -EPROBE_DEFER;
+> >> +		goto put;
+> >> +	}
+> >>  
+> >>  	omap = devm_kzalloc(&pdev->dev, sizeof(*omap), GFP_KERNEL);
+> >>  	if (!omap) {
+> >>  		pdata->free(dm_timer);
+> >> -		return -ENOMEM;
+> >> +		ret = -ENOMEM;
+> >> +		goto put;
+> >>  	}
+> >>  
+> >>  	omap->pdata = pdata;
+> >>  	omap->dm_timer = dm_timer;
+> >> -
+> >> -	omap->dm_timer_pdev = of_find_device_by_node(timer);
+> >> -	if (!omap->dm_timer_pdev) {
+> >> -		dev_err(&pdev->dev, "Unable to find timer pdev\n");
+> >> -		omap->pdata->free(dm_timer);
+> >> -		return -EINVAL;
+> >> -	}
+> >> +	omap->dm_timer_pdev = timer_pdev;
+> >>  
+> >>  	/*
+> >>  	 * Ensure that the timer is stopped before we allow PWM core to call
+> >> @@ -326,12 +338,16 @@ static int pwm_omap_dmtimer_probe(struct platform_device *pdev)
+> >>  	if (status < 0) {
+> >>  		dev_err(&pdev->dev, "failed to register PWM\n");
+> >>  		omap->pdata->free(omap->dm_timer);
+> >> -		return status;
+> >> +		ret = status;
+> >> +		goto put;
+> >>  	}
+> >>  
+> >>  	platform_set_drvdata(pdev, omap);
+> >>  
+> >> -	return 0;
+> >> +put:
+> >> +	of_node_put(timer);
+> >> +
+> >> +	return ret;
+> >>  }
+> >>  
+> >>  static int pwm_omap_dmtimer_remove(struct platform_device *pdev)
+> >> -- 
+> >> 1.9.1
