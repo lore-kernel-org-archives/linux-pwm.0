@@ -1,18 +1,19 @@
-From: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Subject: RE: [PATCH v4] dt-bindings: pwm: rcar: Document r8a774[35] PWM
- bindings
-Date: Wed, 24 Jan 2018 17:14:25 +0000
-Message-ID: <SG2PR06MB0886D203D3F529D4AD3B07B6C0E20@SG2PR06MB0886.apcprd06.prod.outlook.com>
-References: <1513768543-7943-1-git-send-email-fabrizio.castro@bp.renesas.com>
+From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+Subject: RE: [PATCH v3 4/5] dt-bindings: pwm: renesas-tpu: Document r8a774[35]
+ support
+Date: Wed, 24 Jan 2018 17:16:41 +0000
+Message-ID: <SG2PR06MB088652C92964C6FE6959EF1FC0E20@SG2PR06MB0886.apcprd06.prod.outlook.com>
+References: <1513690500-12165-1-git-send-email-fabrizio.castro@bp.renesas.com>
+ <1513690500-12165-5-git-send-email-fabrizio.castro@bp.renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1513768543-7943-1-git-send-email-fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <1513690500-12165-5-git-send-email-fabrizio.castro@bp.renesas.com>
 Content-Language: en-US
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, Fabrizio Castro <fabrizio.castro@bp.renesas.com>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>
 List-Id: linux-pwm@vger.kernel.org
 
 Hello Thierry,
@@ -23,63 +24,46 @@ nd up in v4.16?
 Thanks,
 Fabrizio
 
-> Subject: [PATCH v4] dt-bindings: pwm: rcar: Document r8a774[35] PWM bindi=
-ngs
+> Subject: [PATCH v3 4/5] dt-bindings: pwm: renesas-tpu: Document r8a774[35=
+] support
 >
-> This patch adds compatible strings specific to r8a774[35], no driver
-> change is needed as the fallback compatible string will activate the
-> right code.
+> Document r8a774[35] specific compatible strings. No driver change is
+> needed as the fallback compatible string "renesas,tpu" activates the
+> right code in the driver.
 >
-> Also, this patch replaces the example with a DT snippet used
-> for adding PWM0 support to an r8a7743 based platform as the r8a7743 is
-> now the first platform fully compatible with this driver and its PWM DT
-> nodes refer to up-to-date code.
->
-> Signed-off-by: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-> Reviewed-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-> Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das@bp.renesas.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > ---
-> v3->v4:
-> * The changelog now explains why the patch is replacing the example.
+> v2->v3:
+> * No change
 >
->  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 10 +++++++-=
---
->  1 file changed, 7 insertions(+), 3 deletions(-)
+>  Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 >
-> diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-> b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-> index 74c1180..f3bba59 100644
-> --- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-> +++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-> @@ -2,6 +2,8 @@
+> diff --git a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
+> b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
+> index 1aadc80..16e5748 100644
+> --- a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
+> +++ b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
+> @@ -5,8 +5,10 @@ Required Properties:
+>    - compatible: should be one of the following.
+>      - "renesas,tpu-r8a73a4": for R8A77A4 (R-Mobile APE6) compatible PWM =
+controller.
+>      - "renesas,tpu-r8a7740": for R8A7740 (R-Mobile A1) compatible PWM co=
+ntroller.
+> +    - "renesas,tpu-r8a7743": for R8A7743 (RZ/G1M) compatible PWM control=
+ler.
+> +    - "renesas,tpu-r8a7745": for R8A7745 (RZ/G1E) compatible PWM control=
+ler.
+>      - "renesas,tpu-r8a7790": for R8A7790 (R-Car H2) compatible PWM contr=
+oller.
+> -    - "renesas,tpu": for generic R-Car TPU PWM controller.
+> +    - "renesas,tpu": for generic R-Car and RZ/G1 TPU PWM controller.
 >
->  Required Properties:
->  - compatible: should be "renesas,pwm-rcar" and one of the following.
-> + - "renesas,pwm-r8a7743": for RZ/G1M
-> + - "renesas,pwm-r8a7745": for RZ/G1E
->   - "renesas,pwm-r8a7778": for R-Car M1A
->   - "renesas,pwm-r8a7779": for R-Car H1
->   - "renesas,pwm-r8a7790": for R-Car H2
-> @@ -17,13 +19,15 @@ Required Properties:
->  - pinctrl-0: phandle, referring to a default pin configuration node.
->  - pinctrl-names: Set to "default".
->
-> -Example: R8A7790 (R-Car H2) PWM Timer node
-> +Example: R8A7743 (RZ/G1M) PWM Timer node
->
->  pwm0: pwm@e6e30000 {
-> -compatible =3D "renesas,pwm-r8a7790", "renesas,pwm-rcar";
-> +compatible =3D "renesas,pwm-r8a7743", "renesas,pwm-rcar";
->  reg =3D <0 0xe6e30000 0 0x8>;
-> +clocks =3D <&cpg CPG_MOD 523>;
-> +power-domains =3D <&sysc R8A7743_PD_ALWAYS_ON>;
-> +resets =3D <&cpg 523>;
->  #pwm-cells =3D <2>;
-> -clocks =3D <&mstp5_clks R8A7790_CLK_PWM>;
->  pinctrl-0 =3D <&pwm0_pins>;
->  pinctrl-names =3D "default";
->  };
+>    - reg: Base address and length of each memory resource used by the PWM
+>      controller hardware module.
 > --
 > 2.7.4
 
@@ -89,7 +73,3 @@ ngs
 Renesas Electronics Europe Ltd, Dukes Meadow, Millboard Road, Bourne End, B=
 uckinghamshire, SL8 5FH, UK. Registered in England & Wales under Registered=
  No. 04586709.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
