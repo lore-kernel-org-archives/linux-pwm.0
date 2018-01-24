@@ -1,104 +1,95 @@
-From: "cas" <cas@matrixfiles.com>
-Subject: Re: [PATCH 4/8] mfd: stm32-timers: add support for dmas
-Date: Wed, 24 Jan 2018 10:43:37 -0500
-Message-ID: <4E69ABAE738243638F41986C65034974@toshiba>
-References: <1516106631-18722-1-git-send-email-fabrice.gasnier@st.com>
- <1516106631-18722-5-git-send-email-fabrice.gasnier@st.com>
- <20180123133234.xmep76cgdremnj47@dell>
- <e611b40f-bd37-aa2d-afd9-997b86d55441@st.com>
- <20180123153035.2rvhspe2m5ej57op@dell>
- <ee021839-3298-d01b-8890-619aca0399a7@st.com>
- <20180123164121.xjzhypqe2u5c7zza@dell>
- <2e6afc46-9ad4-a858-29c7-692798ece82f@st.com>
- <20180124145633.tnblnqau7ncju7dp@dell>
- <0c6a185c-cc12-38ae-3909-5c0e82f8da3f@st.com>
+From: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Subject: RE: [PATCH v4] dt-bindings: pwm: rcar: Document r8a774[35] PWM
+ bindings
+Date: Wed, 24 Jan 2018 17:14:25 +0000
+Message-ID: <SG2PR06MB0886D203D3F529D4AD3B07B6C0E20@SG2PR06MB0886.apcprd06.prod.outlook.com>
+References: <1513768543-7943-1-git-send-email-fabrizio.castro@bp.renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Lee Jones <lee.jones@linaro.org>, Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: mark.rutland@arm.com, mcoquelin.stm32@gmail.com, alexandre.torgue@st.com, devicetree@vger.kernel.org, linux@armlinux.org.uk, robh+dt@kernel.org, linux-kernel@vger.kernel.org, thierry.reding@gmail.com, linux-pwm@vger.kernel.org, benjamin.gaignard@linaro.org, linux-arm-kernel@lists.infradead.org, benjamin.gaignard@st.com
+Content-Transfer-Encoding: quoted-printable
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1513768543-7943-1-git-send-email-fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Content-Language: en-US
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-Apologies for interrupting any work/messages being undertaken. I am a newbie 
-here (1st post) and felt this was the only way to get this information to 
-Linus Torvalds.
-____
-The following was posted on a forum on the 22nd March 2017:
+Hello Thierry,
 
-'I've been working at Intel for the last 15 years as an electrical engineer. 
-3 years ago I [got] bored with my job and wanted to move to a different 
-department. Intel is pretty good about letting employees move around within 
-the company. An opening came up on the Management Engine team, and since I 
-have experience with micro-controllers I figured I'd give it a shot. The 
-interview went great and they wanted me on board, but the final step was to 
-get securuty clearance.
+I am sorry to bother you,  just wondering if this patch has any chance to e=
+nd up in v4.16?
 
-I asked them WTF I need a security clearance for, and they said they 
-couldn't tell me unitl I was on the team. Thus began a 3 year trip down the 
-fucking rabbit hole.
+Thanks,
+Fabrizio
 
-I'm coming forward today because of the news that Trump was spied on. I know 
-exactly how it was done because I spent the last three years adding 
-backdoors into the ME. For those of you that are unaware, the ME is ona 
-separate CPU and cannot be disabled, and it exists at a level below the 
-operating system. Intel has been working with the intelligence community for 
-years to get backdoors into physical hardware so they don't have to worry 
-about finding OS exploits. If the hardware itself is compromised then the 
-whole machine is compromised.
+> Subject: [PATCH v4] dt-bindings: pwm: rcar: Document r8a774[35] PWM bindi=
+ngs
+>
+> This patch adds compatible strings specific to r8a774[35], no driver
+> change is needed as the fallback compatible string will activate the
+> right code.
+>
+> Also, this patch replaces the example with a DT snippet used
+> for adding PWM0 support to an r8a7743 based platform as the r8a7743 is
+> now the first platform fully compatible with this driver and its PWM DT
+> nodes refer to up-to-date code.
+>
+> Signed-off-by: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> Reviewed-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> ---
+> v3->v4:
+> * The changelog now explains why the patch is replacing the example.
+>
+>  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 10 +++++++-=
+--
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+> b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+> index 74c1180..f3bba59 100644
+> --- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+> +++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+> @@ -2,6 +2,8 @@
+>
+>  Required Properties:
+>  - compatible: should be "renesas,pwm-rcar" and one of the following.
+> + - "renesas,pwm-r8a7743": for RZ/G1M
+> + - "renesas,pwm-r8a7745": for RZ/G1E
+>   - "renesas,pwm-r8a7778": for R-Car M1A
+>   - "renesas,pwm-r8a7779": for R-Car H1
+>   - "renesas,pwm-r8a7790": for R-Car H2
+> @@ -17,13 +19,15 @@ Required Properties:
+>  - pinctrl-0: phandle, referring to a default pin configuration node.
+>  - pinctrl-names: Set to "default".
+>
+> -Example: R8A7790 (R-Car H2) PWM Timer node
+> +Example: R8A7743 (RZ/G1M) PWM Timer node
+>
+>  pwm0: pwm@e6e30000 {
+> -compatible =3D "renesas,pwm-r8a7790", "renesas,pwm-rcar";
+> +compatible =3D "renesas,pwm-r8a7743", "renesas,pwm-rcar";
+>  reg =3D <0 0xe6e30000 0 0x8>;
+> +clocks =3D <&cpg CPG_MOD 523>;
+> +power-domains =3D <&sysc R8A7743_PD_ALWAYS_ON>;
+> +resets =3D <&cpg 523>;
+>  #pwm-cells =3D <2>;
+> -clocks =3D <&mstp5_clks R8A7790_CLK_PWM>;
+>  pinctrl-0 =3D <&pwm0_pins>;
+>  pinctrl-names =3D "default";
+>  };
+> --
+> 2.7.4
 
-----Next post----
 
-The ME has full access to memory without the parent CPU having any 
-knowledge, it has full access to the TCP/IP stacl, and full access to every 
-peripheral connected to the computer. It also runs when the computer is 
-hibernating. It doesn't matter if you're using Windows, Linux, Mac OS X, 
-Whonix, Tails, Qubes OS, or Subgraph. If you have an i3, i5, or i7 hen 
-you're completely owned by the intelligence community.
 
-We added similar finctionality to Samsung's WEEPING ANGEL, except the 
-intelligence community calls our project ODIN'S EYE. Through the ME we can 
-activate the mic and webcam even though the computer appears to be off or 
-sleeping.
 
-Evidence of surveillance on Trump, his family, and key people in his 
-campaign will come out eventually. I know the surveillance happened for a 
-fact. Future leaks are coming, watch out for ODIN'S EYE.'
-
----END POST---
-
-Jim Stone over at
-
-82.221.129.208/.zj3.html
-
-has the image of the text of the above (you need to scroll down a bit). He 
-also mentioned this stuff, and more, over 7 years ago, though not in the 
-same exact terms as the above, and states that this has actually occured 
-since the Centrino processor, which is where the first backdoors started to 
-be placed.
-
-I am here to pass on the information to all of you, if you do not already 
-have it (and since I have just joined to explicitly to send this I have no 
-idea if any of you know this or not), and primarily to get this information 
-to Linus Torvalds who has been quoted by RT very recently as saying that the 
-patches announced by intel (for the Spectre and Meltdown bug) are 'garbage'.
-
-I hope that the above information can now be used to understand the real 
-extent of the problem.
-
-[Note: if one is not able to find the image of the text at the above site 
-you can find it here:
-
-liferepairspecialist.com/Memes/
-
-look for the image called 'inteladmission' - it is in this folder and not in 
-any subfolders.] 
+Renesas Electronics Europe Ltd, Dukes Meadow, Millboard Road, Bourne End, B=
+uckinghamshire, SL8 5FH, UK. Registered in England & Wales under Registered=
+ No. 04586709.
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
