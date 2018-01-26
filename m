@@ -1,75 +1,46 @@
-From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-Subject: RE: [PATCH v3 4/5] dt-bindings: pwm: renesas-tpu: Document r8a774[35]
- support
-Date: Wed, 24 Jan 2018 17:16:41 +0000
-Message-ID: <SG2PR06MB088652C92964C6FE6959EF1FC0E20@SG2PR06MB0886.apcprd06.prod.outlook.com>
-References: <1513690500-12165-1-git-send-email-fabrizio.castro@bp.renesas.com>
- <1513690500-12165-5-git-send-email-fabrizio.castro@bp.renesas.com>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Subject: [PATCH v2 1/8] pwm: stm32: fix, remove unused struct device
+Date: Fri, 26 Jan 2018 16:11:32 +0100
+Message-ID: <1516979499-3665-2-git-send-email-fabrice.gasnier@st.com>
+References: <1516979499-3665-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1513690500-12165-5-git-send-email-fabrizio.castro@bp.renesas.com>
-Content-Language: en-US
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, Fabrizio Castro <fabrizio.castro@bp.renesas.com>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1516979499-3665-1-git-send-email-fabrice.gasnier@st.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: lee.jones@linaro.org, thierry.reding@gmail.com, robh+dt@kernel.org, alexandre.torgue@st.com, benjamin.gaignard@linaro.org
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, benjamin.gaignard@st.com, linux-pwm@vger.kernel.org, linux@armlinux.org.uk, linux-kernel@vger.kernel.org, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hello Thierry,
+dev is never assigned nor used. remove it.
 
-I am sorry to bother you,  just wondering if this patch has any chance to e=
-nd up in v4.16?
+Fixes: 7edf7369205b ("pwm: Add driver for STM32 plaftorm")
 
-Thanks,
-Fabrizio
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+---
+ drivers/pwm/pwm-stm32.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-> Subject: [PATCH v3 4/5] dt-bindings: pwm: renesas-tpu: Document r8a774[35=
-] support
->
-> Document r8a774[35] specific compatible strings. No driver change is
-> needed as the fallback compatible string "renesas,tpu" activates the
-> right code in the driver.
->
-> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das@bp.renesas.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
-> v2->v3:
-> * No change
->
->  Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
-> b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
-> index 1aadc80..16e5748 100644
-> --- a/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
-> +++ b/Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.txt
-> @@ -5,8 +5,10 @@ Required Properties:
->    - compatible: should be one of the following.
->      - "renesas,tpu-r8a73a4": for R8A77A4 (R-Mobile APE6) compatible PWM =
-controller.
->      - "renesas,tpu-r8a7740": for R8A7740 (R-Mobile A1) compatible PWM co=
-ntroller.
-> +    - "renesas,tpu-r8a7743": for R8A7743 (RZ/G1M) compatible PWM control=
-ler.
-> +    - "renesas,tpu-r8a7745": for R8A7745 (RZ/G1E) compatible PWM control=
-ler.
->      - "renesas,tpu-r8a7790": for R8A7790 (R-Car H2) compatible PWM contr=
-oller.
-> -    - "renesas,tpu": for generic R-Car TPU PWM controller.
-> +    - "renesas,tpu": for generic R-Car and RZ/G1 TPU PWM controller.
->
->    - reg: Base address and length of each memory resource used by the PWM
->      controller hardware module.
-> --
-> 2.7.4
-
-
-
-
-Renesas Electronics Europe Ltd, Dukes Meadow, Millboard Road, Bourne End, B=
-uckinghamshire, SL8 5FH, UK. Registered in England & Wales under Registered=
- No. 04586709.
+diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
+index 6139512..59524f9 100644
+--- a/drivers/pwm/pwm-stm32.c
++++ b/drivers/pwm/pwm-stm32.c
+@@ -21,7 +21,6 @@
+ 
+ struct stm32_pwm {
+ 	struct pwm_chip chip;
+-	struct device *dev;
+ 	struct clk *clk;
+ 	struct regmap *regmap;
+ 	u32 max_arr;
+-- 
+1.9.1
