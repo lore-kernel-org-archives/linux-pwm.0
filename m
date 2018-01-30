@@ -1,72 +1,37 @@
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Subject: Re: [PATCH v2 0/8] Add support for PWM input capture on STM32
-Date: Tue, 30 Jan 2018 11:15:58 +0100
-Message-ID: <CA+M3ks7Z+A--e5MTkARkHoDmAEhTyzE-_QaJ4HPd7O6CJrWm+Q@mail.gmail.com>
-References: <1516979499-3665-1-git-send-email-fabrice.gasnier@st.com>
+From: 57658005@mylife.unisa.ac.za
+Subject: Darlehensangebot
+Date: Tue, 30 Jan 2018 20:38:30 +0530
+Message-ID: <AM6PR0102MB351086E2F8B79826266CB143B3E40@AM6PR0102MB3510.eurprd01.prod.exchangelabs.com>
+Reply-To: david.loanfirm09@gmail.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-qk0-f195.google.com ([209.85.220.195]:33609 "EHLO
-        mail-qk0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751378AbeA3KQA (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Tue, 30 Jan 2018 05:16:00 -0500
-Received: by mail-qk0-f195.google.com with SMTP id i141so9373683qke.0
-        for <linux-pwm@vger.kernel.org>; Tue, 30 Jan 2018 02:16:00 -0800 (PST)
-In-Reply-To: <1516979499-3665-1-git-send-email-fabrice.gasnier@st.com>
+Received: from mail-am5eur03hn0216.outbound.protection.outlook.com ([104.47.8.216]:49477
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1752864AbeA3PHJ (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 30 Jan 2018 10:07:09 -0500
+Content-Description: Mail message body
 Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
-To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: Lee Jones <lee.jones@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Alexandre Torgue <alexandre.torgue@st.com>, Mark Rutland <mark.rutland@arm.com>, Russell King - ARM Linux <linux@armlinux.org.uk>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, Benjamin GAIGNARD <benjamin.gaignard@st.com>, devicetree@vger.kernel.org, Linux ARM <linux-arm-kernel@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux PWM List <linux-pwm@vger.kernel.org>
+To: Recipients <57658005@mylife.unisa.ac.za>
 
-2018-01-26 16:11 GMT+01:00 Fabrice Gasnier <fabrice.gasnier@st.com>:
-> This series adds support for capture to stm32-pwm driver.
-> Capture is based on DMAs.
-> - First two patches are precursor patches
-> - Subsequent two patches add support for requesting DMAs to MFD core
-> - Next three patches add support for capture to stm32-pwm driver
-> - This has been tested on stm32429i-eval board.
->
-> ---
-> Changes in v2:
-> - Abstract DMA handling from child driver: move it to MFD core
-> - Rework pwm capture routines to adopt this change
-> - Comment on optional dma support, beautify DMAs probe
+Sch=C3=B6nen Tag,
 
-For this series:
-Reviewed-by: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Sie ben=C3=B6tigen einen echten Kredit online Ihre Rechnungen zu sichern?
+Startet ein neues Unternehmen? Sie ben=C3=B6tigen einen pers=C3=B6nlichen K=
+redit
+oder Business-Darlehen? Wir bieten ein Darlehen von =E2=82=AC 10.000 bis =
+=E2=82=AC
+500,000.000.00 mit 2% Zinsen pro Jahr und auch mit einem
+erschwinglichen R=C3=BCckzahlungsbedingungen und Zustand. Ich suche f=C3=BCr
+Darlehen und Projektinvestmentfonds ? Wir halten professionelle
+Exzellenz, unsere Definition von Exzellenz liegt in hervorragenden
+Kundenservice, erschwingliche Zahlung und R=C3=BCckzahlung Pl=C3=A4ne, schn=
+ell
+und einfach-Prozess.
+Hochachtungsvoll....
 
->
-> Fabrice Gasnier (8):
->   pwm: stm32: fix, remove unused struct device
->   pwm: stm32: protect common prescaler for all channels
->   dt-bindings: mfd: stm32-timers: add support for dmas
->   mfd: stm32-timers: add support for dmas
->   pwm: stm32: add capture support
->   pwm: stm32: improve capture by tuning counter prescaler
->   pwm: stm32: use input prescaler to improve period capture
->   ARM: dts: stm32: Enable pwm3 input capture on stm32f429i-eval
->
->  .../devicetree/bindings/mfd/stm32-timers.txt       |  20 ++
->  arch/arm/boot/dts/stm32429i-eval.dts               |   3 +
->  drivers/mfd/stm32-timers.c                         | 215 +++++++++++++++=
--
->  drivers/pwm/pwm-stm32.c                            | 276 +++++++++++++++=
-+++++-
->  include/linux/mfd/stm32-timers.h                   |  39 +++
->  5 files changed, 547 insertions(+), 6 deletions(-)
->
-> --
-> 1.9.1
->
-
-
-
---=20
-Benjamin Gaignard
-
-Graphic Study Group
-
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-
-Follow Linaro: Facebook | Twitter | Blog
+Freundliche Gr=C3=BC=C3=9Fe,
+Herr David Williams
