@@ -1,7 +1,7 @@
 From: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-Subject: [PATCH 2/3] pwm: stm32: LPTimer: use 3 cells xlate
-Date: Thu, 1 Feb 2018 14:44:37 +0100
-Message-ID: <1517492678-767-3-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH 3/3] ARM: dts: stm32: update pwm-cells for LPTimer on stm32h743
+Date: Thu, 1 Feb 2018 14:44:38 +0100
+Message-ID: <1517492678-767-4-git-send-email-fabrice.gasnier@st.com>
 References: <1517492678-767-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,30 +12,58 @@ To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygd
 Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-From: Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>
+LPTimer pwm cells should be updated to 3, to allow initialization of
+channel, period and polarity.
 
-STM32 Low-Power Timer supports generic 3 cells pwm to encode
-PWM number, period and polarity.
-
-Signed-off-by: Gerald Baeza <gerald.baeza-qxv4g6HH51o@public.gmane.org>
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
 ---
- drivers/pwm/pwm-stm32-lp.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/stm32h743.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
-index 1ac9e43..346b7bd 100644
---- a/drivers/pwm/pwm-stm32-lp.c
-+++ b/drivers/pwm/pwm-stm32-lp.c
-@@ -203,6 +203,8 @@ static int stm32_pwm_lp_probe(struct platform_device *pdev)
- 	priv->chip.dev = &pdev->dev;
- 	priv->chip.ops = &stm32_pwm_lp_ops;
- 	priv->chip.npwm = 1;
-+	priv->chip.of_xlate = of_pwm_xlate_with_flags;
-+	priv->chip.of_pwm_n_cells = 3;
+diff --git a/arch/arm/boot/dts/stm32h743.dtsi b/arch/arm/boot/dts/stm32h743.dtsi
+index bbfcbac..40d7d76 100644
+--- a/arch/arm/boot/dts/stm32h743.dtsi
++++ b/arch/arm/boot/dts/stm32h743.dtsi
+@@ -85,6 +85,7 @@
  
- 	ret = pwmchip_add(&priv->chip);
- 	if (ret < 0)
+ 			pwm {
+ 				compatible = "st,stm32-pwm-lp";
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 
+@@ -238,6 +239,7 @@
+ 
+ 			pwm {
+ 				compatible = "st,stm32-pwm-lp";
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 
+@@ -264,6 +266,7 @@
+ 
+ 			pwm {
+ 				compatible = "st,stm32-pwm-lp";
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 
+@@ -285,6 +288,7 @@
+ 
+ 			pwm {
+ 				compatible = "st,stm32-pwm-lp";
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 		};
+@@ -300,6 +304,7 @@
+ 
+ 			pwm {
+ 				compatible = "st,stm32-pwm-lp";
++				#pwm-cells = <3>;
+ 				status = "disabled";
+ 			};
+ 		};
 -- 
 1.9.1
 
