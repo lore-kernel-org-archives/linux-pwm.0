@@ -1,73 +1,97 @@
-From: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-Subject: [PATCH 3/3] ARM: dts: stm32: update pwm-cells for LPTimer on stm32h743
-Date: Thu, 1 Feb 2018 14:44:38 +0100
-Message-ID: <1517492678-767-4-git-send-email-fabrice.gasnier@st.com>
-References: <1517492678-767-1-git-send-email-fabrice.gasnier@st.com>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1517492678-767-1-git-send-email-fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, fabrice.gasnier-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Ulf Magnusson <ulfalizer@gmail.com>
+Subject: [PATCH 03/20] kconfig: Remove leftover references to AVR32 symbol
+Date: Mon,  5 Feb 2018 02:21:15 +0100
+Message-ID: <20180205012146.23981-4-ulfalizer@gmail.com>
+References: <20180205012146.23981-1-ulfalizer@gmail.com>
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-lf0-f65.google.com ([209.85.215.65]:33636 "EHLO
+        mail-lf0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752327AbeBEBXi (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 4 Feb 2018 20:23:38 -0500
+In-Reply-To: <20180205012146.23981-1-ulfalizer@gmail.com>
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: linux-kbuild@vger.kernel.org, tfiga@chromium.org, paul.burton@mips.com, m.szyprowski@samsung.com, egtvedt@samfundet.no, linus.walleij@linaro.org, vgupta@synopsys.com, mgorman@techsingularity.net, hch@lst.de, mina86@mina86.com, robh@kernel.org, sboyd@codeaurora.org, paulus@ozlabs.org, will.deacon@arm.com, tony@atomide.com, npiggin@gmail.com, yamada.masahiro@socionext.com, Ulf Magnusson <ulfalizer@gmail.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Viresh Kumar <viresh.kumar@linaro.org>, Thierry Reding <thierry.reding@gmail.com>, Mark Brown <broonie@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Sean Paul <seanpaul@chromium.org>, Daniel Vetter <daniel.vetter@ffwll.ch>, Christophe Leroy <christophe.leroy@c-s.fr>, linux-pm@vger.kernel.orgl
 
-LPTimer pwm cells should be updated to 3, to allow initialization of
-channel, period and polarity.
+The AVR32 symbol was removed in commit 26202873bb51 ("avr32: remove
+support for AVR32 architecture"). Remove the remaining references to it
+from the Kconfig files.
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
+No references remain to the removed AVR32_AT32AP_CPUFREQ symbol either,
+so remove that one too.
+
+Discovered with the
+https://github.com/ulfalizer/Kconfiglib/blob/master/examples/list_undefined.py
+script.
+
+Signed-off-by: Ulf Magnusson <ulfalizer@gmail.com>
 ---
- arch/arm/boot/dts/stm32h743.dtsi | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/cpufreq/Kconfig       | 10 ----------
+ drivers/pwm/Kconfig           |  2 +-
+ drivers/spi/Kconfig           |  2 +-
+ drivers/video/console/Kconfig |  2 +-
+ 4 files changed, 3 insertions(+), 13 deletions(-)
 
-diff --git a/arch/arm/boot/dts/stm32h743.dtsi b/arch/arm/boot/dts/stm32h743.dtsi
-index bbfcbac..40d7d76 100644
---- a/arch/arm/boot/dts/stm32h743.dtsi
-+++ b/arch/arm/boot/dts/stm32h743.dtsi
-@@ -85,6 +85,7 @@
+diff --git a/drivers/cpufreq/Kconfig b/drivers/cpufreq/Kconfig
+index d8addbce40bc..608af20a3494 100644
+--- a/drivers/cpufreq/Kconfig
++++ b/drivers/cpufreq/Kconfig
+@@ -239,16 +239,6 @@ if PPC32 || PPC64
+ source "drivers/cpufreq/Kconfig.powerpc"
+ endif
  
- 			pwm {
- 				compatible = "st,stm32-pwm-lp";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
+-if AVR32
+-config AVR32_AT32AP_CPUFREQ
+-	bool "CPU frequency driver for AT32AP"
+-	depends on PLATFORM_AT32AP
+-	default n
+-	help
+-	  This enables the CPU frequency driver for AT32AP processors.
+-	  If in doubt, say N.
+-endif
+-
+ if IA64
+ config IA64_ACPI_CPUFREQ
+ 	tristate "ACPI Processor P-States driver"
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index 763ee50ea57d..f16aad3bf5d6 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -43,7 +43,7 @@ config PWM_AB8500
  
-@@ -238,6 +239,7 @@
+ config PWM_ATMEL
+ 	tristate "Atmel PWM support"
+-	depends on ARCH_AT91 || AVR32
++	depends on ARCH_AT91
+ 	help
+ 	  Generic PWM framework driver for Atmel SoC.
  
- 			pwm {
- 				compatible = "st,stm32-pwm-lp";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 
-@@ -264,6 +266,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm-lp";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 
-@@ -285,6 +288,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm-lp";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 		};
-@@ -300,6 +304,7 @@
- 
- 			pwm {
- 				compatible = "st,stm32-pwm-lp";
-+				#pwm-cells = <3>;
- 				status = "disabled";
- 			};
- 		};
+diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+index 603783976b81..c1e455d46c7f 100644
+--- a/drivers/spi/Kconfig
++++ b/drivers/spi/Kconfig
+@@ -72,7 +72,7 @@ config SPI_ARMADA_3700
+ config SPI_ATMEL
+ 	tristate "Atmel SPI Controller"
+ 	depends on HAS_DMA
+-	depends on (ARCH_AT91 || AVR32 || COMPILE_TEST)
++	depends on (ARCH_AT91 || COMPILE_TEST)
+ 	help
+ 	  This selects a driver for the Atmel SPI Controller, present on
+ 	  many AT32 (AVR32) and AT91 (ARM) chips.
+diff --git a/drivers/video/console/Kconfig b/drivers/video/console/Kconfig
+index 7f1f1fbcef9e..be63759b6027 100644
+--- a/drivers/video/console/Kconfig
++++ b/drivers/video/console/Kconfig
+@@ -7,7 +7,7 @@ menu "Console display driver support"
+ config VGA_CONSOLE
+ 	bool "VGA text console" if EXPERT || !X86
+ 	depends on !4xx && !PPC_8xx && !SPARC && !M68K && !PARISC && !FRV && \
+-		!SUPERH && !BLACKFIN && !AVR32 && !MN10300 && !CRIS && \
++		!SUPERH && !BLACKFIN && !MN10300 && !CRIS && \
+ 		(!ARM || ARCH_FOOTBRIDGE || ARCH_INTEGRATOR || ARCH_NETWINDER) && \
+ 		!ARM64 && !ARC && !MICROBLAZE && !OPENRISC
+ 	default y
 -- 
-1.9.1
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2.14.1
