@@ -1,39 +1,45 @@
-From: Ulf Magnusson <ulfalizer@gmail.com>
-Subject: Re: [PATCH v3 03/20] kconfig: Remove leftover references to AVR32 symbol
-Date: Tue, 6 Feb 2018 23:58:34 +0100
-Message-ID: <CAFkk2KSck-D0AiCgh3wQ4xL=Aozaah8CiPNn4V5-1VNZ9sLw_w@mail.gmail.com>
-References: <20180205081151.GA11907@Red> <20180205190552.14282-1-ulfalizer@gmail.com>
- <20180206120825.GF5681@sirena.org.uk>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH] spi: kconfig: Remove AVR32 dep. from SPI_ATMEL
+Date: Wed, 7 Feb 2018 09:58:50 +0100
+Message-ID: <7f2bebe1-2931-7ec9-ef9f-0d3e6dda6c0b@gmail.com>
+References: <20180206120825.GF5681@sirena.org.uk>
+ <20180206225519.20248-1-ulfalizer@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180206120825.GF5681@sirena.org.uk>
+In-Reply-To: <20180206225519.20248-1-ulfalizer@gmail.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mark Brown <broonie@kernel.org>
-Cc: corentin labbe <clabbe.montjoie@gmail.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Viresh Kumar <viresh.kumar@linaro.org>, Matthias Brugger <matthias.bgg@gmail.com>, linux-pwm@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Daniel Vetter <daniel.vetter@ffwll.ch>, Christophe Leroy <christophe.leroy@c-s.fr>, Sean Paul <seanpaul@chromium.org>, linux-spi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+To: Ulf Magnusson <ulfalizer@gmail.com>, broonie@kernel.org, linux-kernel@vger.kernel.org
+Cc: clabbe.montjoie@gmail.com, viresh.kumar@linaro.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, b.zolnierkie@samsung.com, daniel.vetter@ffwll.ch, christophe.leroy@c-s.fr, seanpaul@chromium.org, linux-spi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Tue, Feb 6, 2018 at 1:08 PM, Mark Brown <broonie@kernel.org> wrote:
-> On Mon, Feb 05, 2018 at 08:05:39PM +0100, Ulf Magnusson wrote:
->> The AVR32 symbol was removed in commit 26202873bb51 ("avr32: remove
->> support for AVR32 architecture"). Remove the remaining references to it
->> from the Kconfig files.
->
->>  drivers/spi/Kconfig           | 2 +-
->>  drivers/video/console/Kconfig | 2 +-
->>  2 files changed, 2 insertions(+), 2 deletions(-)
->
-> It'd probably be easier to just submit these as separate patches to the
-> individual subsystems, that'd make it more likely that reviewers will
-> see them.  As I've no context for this I can't tell if there's any
-> dependencies, I'm guessing not but just in case
->
-> Acked-by: Mark Brown <broonie@kernel.org>
 
-Done
 
-https://lkml.org/lkml/2018/2/6/805
-https://lkml.org/lkml/2018/2/6/808
+On 02/06/2018 11:55 PM, Ulf Magnusson wrote:
+> The AVR32 symbol was removed in commit 26202873bb51 ("avr32: remove
+> support for AVR32 architecture").
+> 
+> Signed-off-by: Ulf Magnusson <ulfalizer@gmail.com>
+> ---
 
-Cheers,
-Ulf
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+
+>  drivers/spi/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+> index 603783976b81..c1e455d46c7f 100644
+> --- a/drivers/spi/Kconfig
+> +++ b/drivers/spi/Kconfig
+> @@ -72,7 +72,7 @@ config SPI_ARMADA_3700
+>  config SPI_ATMEL
+>  	tristate "Atmel SPI Controller"
+>  	depends on HAS_DMA
+> -	depends on (ARCH_AT91 || AVR32 || COMPILE_TEST)
+> +	depends on (ARCH_AT91 || COMPILE_TEST)
+>  	help
+>  	  This selects a driver for the Atmel SPI Controller, present on
+>  	  many AT32 (AVR32) and AT91 (ARM) chips.
+> 
