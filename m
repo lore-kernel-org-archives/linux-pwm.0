@@ -1,129 +1,51 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v2] pwm: mediatek: fix up PWM4 and PWM5 malfunction on
- MT7623
-Date: Wed, 7 Feb 2018 10:54:28 +0100
-Message-ID: <45d75d8d-d1ed-fe69-e936-c369ccb2fd6b@gmail.com>
-References: <f94b2d4146ebe0f8eaae02b0dd951f39af0972d4.1517994540.git.sean.wang@mediatek.com>
+From: Ulf Magnusson <ulfalizer-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v2] spi: kconfig: Remove AVR32 dep. from SPI_ATMEL
+Date: Thu, 8 Feb 2018 03:44:14 +0100
+Message-ID: <20180208024414.jjcxvd2q4o5rifgh@huvuddator>
+References: <20180206120825.GF5681@sirena.org.uk>
+ <20180206225519.20248-1-ulfalizer@gmail.com>
+ <7f2bebe1-2931-7ec9-ef9f-0d3e6dda6c0b@gmail.com>
+ <a8d2076b-6863-6ff1-5442-0587ad973766@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <f94b2d4146ebe0f8eaae02b0dd951f39af0972d4.1517994540.git.sean.wang@mediatek.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: sean.wang@mediatek.com, thierry.reding@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Zhi Mao <zhi.mao@mediatek.com>, John Crispin <john@phrozen.org>
+Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <a8d2076b-6863-6ff1-5442-0587ad973766-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, clabbe.montjoie-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, daniel.vetter-/w4YWyX8dFk@public.gmane.org, christophe.leroy-GgN8y9CXRhA@public.gmane.org, seanpaul-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
+The AVR32 symbol was removed in commit 26202873bb51 ("avr32: remove
+support for AVR32 architecture").
+---
+Changes in v2:
+Remove the AVR32 reference from the help text too.
 
+ drivers/spi/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On 02/07/2018 10:14 AM, sean.wang@mediatek.com wrote:
-> From: Sean Wang <sean.wang@mediatek.com>
-> 
-> Since the offset for both registers, PWMDWIDTH and PWMTHRES, used to
-> control PWM4 or PWM5 are distinct from the other PWMs, whose wrong
-> programming on PWM hardware causes waveform cannot be output as expected.
-> Thus, the patch adds the extra condition for fixing up the weird case to
-> let PWM4 or PWM5 able to work on MT7623.
-> 
-> v1 -> v2: use pwm45_fixup naming instead of pwm45_quirk
-> 
-> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-> Cc: Zhi Mao <zhi.mao@mediatek.com>
-> Cc: John Crispin <john@phrozen.org>
-> Cc: Matthias Brugger <matthias.bgg@gmail.com>
-> ---
->  drivers/pwm/pwm-mediatek.c | 24 +++++++++++++++++++++---
->  1 file changed, 21 insertions(+), 3 deletions(-)
-> 
+diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+index 603783976b81..6fb0347a24f2 100644
+--- a/drivers/spi/Kconfig
++++ b/drivers/spi/Kconfig
+@@ -72,10 +72,10 @@ config SPI_ARMADA_3700
+ config SPI_ATMEL
+ 	tristate "Atmel SPI Controller"
+ 	depends on HAS_DMA
+-	depends on (ARCH_AT91 || AVR32 || COMPILE_TEST)
++	depends on (ARCH_AT91 || COMPILE_TEST)
+ 	help
+ 	  This selects a driver for the Atmel SPI Controller, present on
+-	  many AT32 (AVR32) and AT91 (ARM) chips.
++	  many AT91 (ARM) chips.
+ 
+ config SPI_AU1550
+ 	tristate "Au1550/Au1200/Au1300 SPI Controller"
+-- 
+2.14.1
 
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-
-> diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-> index f5d97e0..796baea 100644
-> --- a/drivers/pwm/pwm-mediatek.c
-> +++ b/drivers/pwm/pwm-mediatek.c
-> @@ -29,7 +29,9 @@
->  #define PWMGDUR			0x0c
->  #define PWMWAVENUM		0x28
->  #define PWMDWIDTH		0x2c
-> +#define PWM45DWIDTH_FIXUP	0x30
->  #define PWMTHRES		0x30
-> +#define PWM45THRES_FIXUP	0x34
->  
->  #define PWM_CLK_DIV_MAX		7
->  
-> @@ -54,6 +56,7 @@ static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
->  
->  struct mtk_pwm_platform_data {
->  	unsigned int num_pwms;
-> +	bool pwm45_fixup;
->  };
->  
->  /**
-> @@ -66,6 +69,7 @@ struct mtk_pwm_chip {
->  	struct pwm_chip chip;
->  	void __iomem *regs;
->  	struct clk *clks[MTK_CLK_MAX];
-> +	const struct mtk_pwm_platform_data *soc;
->  };
->  
->  static const unsigned int mtk_pwm_reg_offset[] = {
-> @@ -131,7 +135,8 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->  {
->  	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
->  	struct clk *clk = pc->clks[MTK_CLK_PWM1 + pwm->hwpwm];
-> -	u32 resolution, clkdiv = 0;
-> +	u32 resolution, clkdiv = 0, reg_width = PWMDWIDTH,
-> +	    reg_thres = PWMTHRES;
->  	int ret;
->  
->  	ret = mtk_pwm_clk_enable(chip, pwm);
-> @@ -151,9 +156,18 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->  		return -EINVAL;
->  	}
->  
-> +	if (pc->soc->pwm45_fixup && pwm->hwpwm > 2) {
-> +		/*
-> +		 * PWM[4,5] has distinct offset for PWMDWIDTH and PWMTHRES
-> +		 * from the other PWMs on MT7623.
-> +		 */
-> +		reg_width = PWM45DWIDTH_FIXUP;
-> +		reg_thres = PWM45THRES_FIXUP;
-> +	}
-> +
->  	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | clkdiv);
-> -	mtk_pwm_writel(pc, pwm->hwpwm, PWMDWIDTH, period_ns / resolution);
-> -	mtk_pwm_writel(pc, pwm->hwpwm, PWMTHRES, duty_ns / resolution);
-> +	mtk_pwm_writel(pc, pwm->hwpwm, reg_width, period_ns / resolution);
-> +	mtk_pwm_writel(pc, pwm->hwpwm, reg_thres, duty_ns / resolution);
->  
->  	mtk_pwm_clk_disable(chip, pwm);
->  
-> @@ -211,6 +225,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
->  	data = of_device_get_match_data(&pdev->dev);
->  	if (data == NULL)
->  		return -EINVAL;
-> +	pc->soc = data;
->  
->  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->  	pc->regs = devm_ioremap_resource(&pdev->dev, res);
-> @@ -251,14 +266,17 @@ static int mtk_pwm_remove(struct platform_device *pdev)
->  
->  static const struct mtk_pwm_platform_data mt2712_pwm_data = {
->  	.num_pwms = 8,
-> +	.pwm45_fixup = false,
->  };
->  
->  static const struct mtk_pwm_platform_data mt7622_pwm_data = {
->  	.num_pwms = 6,
-> +	.pwm45_fixup = false,
->  };
->  
->  static const struct mtk_pwm_platform_data mt7623_pwm_data = {
->  	.num_pwms = 5,
-> +	.pwm45_fixup = true,
->  };
->  
->  static const struct of_device_id mtk_pwm_of_match[] = {
-> 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-spi" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
