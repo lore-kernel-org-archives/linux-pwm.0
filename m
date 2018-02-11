@@ -1,53 +1,41 @@
-From: Ulf Magnusson <ulfalizer@gmail.com>
-Subject: [PATCH v3] spi: kconfig: Remove AVR32 dep. from SPI_ATMEL
-Date: Thu, 8 Feb 2018 23:00:16 +0100
-Message-ID: <20180208220016.w7km4f233nc3uw34@huvuddator>
-References: <20180206120825.GF5681@sirena.org.uk>
- <20180206225519.20248-1-ulfalizer@gmail.com>
- <7f2bebe1-2931-7ec9-ef9f-0d3e6dda6c0b@gmail.com>
- <a8d2076b-6863-6ff1-5442-0587ad973766@gmail.com>
- <20180208024414.jjcxvd2q4o5rifgh@huvuddator>
- <97250c63-cb2b-b1e8-63ac-59b9c749fd52@gmail.com>
+From: "askaninvestment@gmail.com" <sergeant.frank1@gmail.com>
+Subject: investment
+Date: Sun, 11 Feb 2018 06:36:07 -0800
+Message-ID: <CABqt9aU7GGs_6JmTQiZTuM_=GZAoL6pEr7zfHVFLig=HpsZZDg@mail.gmail.com>
+Reply-To: askaninvestment@gmail.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <97250c63-cb2b-b1e8-63ac-59b9c749fd52@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: broonie@kernel.org, linux-kernel@vger.kernel.org, clabbe.montjoie@gmail.com, viresh.kumar@linaro.org, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, b.zolnierkie@samsung.com, daniel.vetter@ffwll.ch, christophe.leroy@c-s.fr, seanpaul@chromium.org, linux-spi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-oi0-f65.google.com ([209.85.218.65]:34693 "EHLO
+        mail-oi0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751956AbeBKOgI (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Sun, 11 Feb 2018 09:36:08 -0500
+Received: by mail-oi0-f65.google.com with SMTP id k15so9372224oib.1
+        for <linux-pwm@vger.kernel.org>; Sun, 11 Feb 2018 06:36:08 -0800 (PST)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-The AVR32 symbol was removed in commit 26202873bb51 ("avr32: remove
-support for AVR32 architecture").
+Dear Entrepreneur,
 
-Signed-off-by: Ulf Magnusson <ulfalizer@gmail.com>
----
-Changes in v3:
-Add Signed-off-by tag
+Askan Investments Management Group is venture capital firm
+specializing in growth capital investments.It seeks to invest in
+public
+and private securities in a broad range of areas including real
+estate, energy, oil and gas, emerging markets, and high-technology.
+Within the
+technology sector, the firm focuses on communications, Agricultural
+Projects, Renewable Energy Real estate services. They wish to loan out
+or
+invest between $20Million and above in any viable projects. If your
+company requires funding on an investor capacity, after review of your
+Business Plan we shall determine the projects possible funding. This
+will be a private and confidential Investments...
 
-Changes in v2:
-Remove the AVR32 reference from the help text too.
+The funding is collateral free.
 
- drivers/spi/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Endeavor to respond promptly if the investment
+the proposal meets your company's proposal.
 
-diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-index 603783976b81..6fb0347a24f2 100644
---- a/drivers/spi/Kconfig
-+++ b/drivers/spi/Kconfig
-@@ -72,10 +72,10 @@ config SPI_ARMADA_3700
- config SPI_ATMEL
- 	tristate "Atmel SPI Controller"
- 	depends on HAS_DMA
--	depends on (ARCH_AT91 || AVR32 || COMPILE_TEST)
-+	depends on (ARCH_AT91 || COMPILE_TEST)
- 	help
- 	  This selects a driver for the Atmel SPI Controller, present on
--	  many AT32 (AVR32) and AT91 (ARM) chips.
-+	  many AT91 (ARM) chips.
- 
- config SPI_AU1550
- 	tristate "Au1550/Au1200/Au1300 SPI Controller"
--- 
-2.14.1
+Contact
+Askan Investments management
+Kindly Regards,
