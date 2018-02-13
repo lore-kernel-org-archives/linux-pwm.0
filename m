@@ -1,77 +1,263 @@
-From: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Applied "spi: kconfig: Remove AVR32 dep. from SPI_ATMEL" to the spi tree
-Date: Mon, 12 Feb 2018 12:10:05 +0000
-Message-ID: <E1elCvt-0007br-Ss@debutante>
-References: <20180208024414.jjcxvd2q4o5rifgh@huvuddator>
-Return-path: <linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20180208024414.jjcxvd2q4o5rifgh@huvuddator>
-Sender: linux-spi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Ulf Magnusson <ulfalizer-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, clabbe.montjoie-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, viresh.kumar-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, daniel.vetter-/w4YWyX8dFk@public.gmane.org, christophe.leroy-GgN8y9CXRhA@public.gmane.org, seanpaul-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.orglinux-spi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Suman Anna <s-anna@ti.com>
+Subject: Re: [PATCH v7 3/9] arm: omap: Move dmtimer.h out of plat-omap
+Date: Mon, 12 Feb 2018 20:06:26 -0600
+Message-ID: <1c9f5c72-f589-d7c7-399f-ef55ecb828a0@ti.com>
+References: <1515478987-5786-1-git-send-email-j-keerthy@ti.com>
+ <1515478987-5786-4-git-send-email-j-keerthy@ti.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1515478987-5786-4-git-send-email-j-keerthy@ti.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: "J, KEERTHY" <j-keerthy@ti.com>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "tony@atomide.com" <tony@atomide.com>, "aaro.koskinen@iki.fi" <aaro.koskinen@iki.fi>
+Cc: "Claudiu.Beznea@microchip.com" <Claudiu.Beznea@microchip.com>, "narmstrong@baylibre.com" <narmstrong@baylibre.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "ladis@linux-mips.org" <ladis@linux-mips.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "sebastian.reichel@collabora.co.uk" <sebastian.reichel@collabora.co.uk>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "Kristo, Tero" <t-kristo@ti.com>, "Strashko, Grygorii" <grygorii.strashko@ti.com>
 List-Id: linux-pwm@vger.kernel.org
 
-The patch
+Hi Keerthy,
 
-   spi: kconfig: Remove AVR32 dep. from SPI_ATMEL
+On 01/09/2018 12:23 AM, J, KEERTHY wrote:
+> The header file is currently under plat-omap directory
+> under arch/omap. Move this out to an accessible place.
+> 
+> No Code changes done to the header file.
+> 
+> Signed-off-by: Keerthy <j-keerthy@ti.com>
+> Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+> Tested-by: Ladislav Michl <ladis@linux-mips.org>
+> ---
+>   arch/arm/mach-omap1/pm.c                                           | 2 +-
+>   arch/arm/mach-omap1/timer.c                                        | 2 +-
+>   arch/arm/mach-omap2/omap_hwmod_2420_data.c                         | 2 +-
+>   arch/arm/mach-omap2/omap_hwmod_2430_data.c                         | 2 +-
+>   arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c                 | 2 +-
+>   arch/arm/mach-omap2/omap_hwmod_3xxx_data.c                         | 2 +-
+>   arch/arm/mach-omap2/omap_hwmod_44xx_data.c                         | 2 +-
+>   arch/arm/mach-omap2/omap_hwmod_54xx_data.c                         | 2 +-
+>   arch/arm/mach-omap2/omap_hwmod_7xx_data.c                          | 2 +-
+>   arch/arm/mach-omap2/omap_hwmod_81xx_data.c                         | 2 +-
+>   arch/arm/mach-omap2/pdata-quirks.c                                 | 2 +-
+>   arch/arm/mach-omap2/timer.c                                        | 2 +-
+>   arch/arm/plat-omap/dmtimer.c                                       | 2 +-
+>   {arch/arm/plat-omap/include/plat => include/clocksource}/dmtimer.h | 0
+>   14 files changed, 13 insertions(+), 13 deletions(-)
+>   rename {arch/arm/plat-omap/include/plat => include/clocksource}/dmtimer.h (100%)
+> 
+> diff --git a/arch/arm/mach-omap1/pm.c b/arch/arm/mach-omap1/pm.c
+> index f1135bf..a07d47cf 100644
+> --- a/arch/arm/mach-omap1/pm.c
+> +++ b/arch/arm/mach-omap1/pm.c
+> @@ -55,7 +55,7 @@
+>   #include <mach/tc.h>
+>   #include <mach/mux.h>
+>   #include <linux/omap-dma.h>
+> -#include <plat/dmtimer.h>
+> +#include <clocksource/dmtimer.h>
+> 
+>   #include <mach/irqs.h>
+> 
+> diff --git a/arch/arm/mach-omap1/timer.c b/arch/arm/mach-omap1/timer.c
+> index 8fb1ec6..7c057ab 100644
+> --- a/arch/arm/mach-omap1/timer.c
+> +++ b/arch/arm/mach-omap1/timer.c
+> @@ -27,7 +27,7 @@
+>   #include <linux/platform_device.h>
+>   #include <linux/platform_data/dmtimer-omap.h>
+> 
+> -#include <plat/dmtimer.h>
+> +#include <clocksource/dmtimer.h>
+> 
+>   #include "soc.h"
+> 
+> diff --git a/arch/arm/mach-omap2/omap_hwmod_2420_data.c 
+> b/arch/arm/mach-omap2/omap_hwmod_2420_data.c
+> index 0afb014..0a8b95f 100644
+> --- a/arch/arm/mach-omap2/omap_hwmod_2420_data.c
+> +++ b/arch/arm/mach-omap2/omap_hwmod_2420_data.c
+> @@ -16,7 +16,7 @@
+>   #include <linux/i2c-omap.h>
+>   #include <linux/platform_data/spi-omap2-mcspi.h>
+>   #include <linux/omap-dma.h>
+> -#include <plat/dmtimer.h>
+> +#include <clocksource/dmtimer.h>
+> 
+>   #include "omap_hwmod.h"
+>   #include "l3_2xxx.h"
+> diff --git a/arch/arm/mach-omap2/omap_hwmod_2430_data.c 
+> b/arch/arm/mach-omap2/omap_hwmod_2430_data.c
+> index 013b26b..16e3d8c 100644
+> --- a/arch/arm/mach-omap2/omap_hwmod_2430_data.c
+> +++ b/arch/arm/mach-omap2/omap_hwmod_2430_data.c
+> @@ -18,7 +18,7 @@
+>   #include <linux/platform_data/hsmmc-omap.h>
+>   #include <linux/platform_data/spi-omap2-mcspi.h>
+>   #include <linux/omap-dma.h>
+> -#include <plat/dmtimer.h>
+> +#include <clocksource/dmtimer.h>
 
-has been applied to the spi tree at
+These headers are actually not needed in the first-place since we no
+longer create any non-DT timer devices. I have submitted a series to
+cleanup the presence of this header file, as part of a larger hwmod data
+cleanup series.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git 
+> 
+>   #include "omap_hwmod.h"
+>   #include "l3_2xxx.h"
+> diff --git a/arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c 
+> b/arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c
+> index 4b094cb..8a65f70 100644
+> --- a/arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c
+> +++ b/arch/arm/mach-omap2/omap_hwmod_2xxx_ipblock_data.c
+> @@ -11,7 +11,7 @@
+> 
+>   #include <linux/platform_data/gpio-omap.h>
+>   #include <linux/omap-dma.h>
+> -#include <plat/dmtimer.h>
+> +#include <clocksource/dmtimer.h>
+>   #include <linux/platform_data/spi-omap2-mcspi.h>
+> 
+>   #include "omap_hwmod.h"
+> diff --git a/arch/arm/mach-omap2/omap_hwmod_3xxx_data.c 
+> b/arch/arm/mach-omap2/omap_hwmod_3xxx_data.c
+> index 1a2f224..b030137 100644
+> --- a/arch/arm/mach-omap2/omap_hwmod_3xxx_data.c
+> +++ b/arch/arm/mach-omap2/omap_hwmod_3xxx_data.c
+> @@ -25,7 +25,7 @@
+>   #include "l4_3xxx.h"
+>   #include <linux/platform_data/asoc-ti-mcbsp.h>
+>   #include <linux/platform_data/spi-omap2-mcspi.h>
+> -#include <plat/dmtimer.h>
+> +#include <clocksource/dmtimer.h>
+> 
+>   #include "soc.h"
+>   #include "omap_hwmod.h"
+> diff --git a/arch/arm/mach-omap2/omap_hwmod_44xx_data.c 
+> b/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
+> index a1901c2..51c7d62 100644
+> --- a/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
+> +++ b/arch/arm/mach-omap2/omap_hwmod_44xx_data.c
+> @@ -30,7 +30,7 @@
+> 
+>   #include <linux/platform_data/spi-omap2-mcspi.h>
+>   #include <linux/platform_data/asoc-ti-mcbsp.h>
+> -#include <plat/dmtimer.h>
+> +#include <clocksource/dmtimer.h>
+> 
+>   #include "omap_hwmod.h"
+>   #include "omap_hwmod_common_data.h"
+> diff --git a/arch/arm/mach-omap2/omap_hwmod_54xx_data.c 
+> b/arch/arm/mach-omap2/omap_hwmod_54xx_data.c
+> index 988e7ea..530334e 100644
+> --- a/arch/arm/mach-omap2/omap_hwmod_54xx_data.c
+> +++ b/arch/arm/mach-omap2/omap_hwmod_54xx_data.c
+> @@ -26,7 +26,7 @@
+>   #include <linux/omap-dma.h>
+>   #include <linux/platform_data/spi-omap2-mcspi.h>
+>   #include <linux/platform_data/asoc-ti-mcbsp.h>
+> -#include <plat/dmtimer.h>
+> +#include <clocksource/dmtimer.h>
+> 
+>   #include "omap_hwmod.h"
+>   #include "omap_hwmod_common_data.h"
+> diff --git a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c 
+> b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
+> index 4c2a05b..2452649 100644
+> --- a/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
+> +++ b/arch/arm/mach-omap2/omap_hwmod_7xx_data.c
+> @@ -26,7 +26,7 @@
+>   #include <linux/omap-dma.h>
+>   #include <linux/platform_data/spi-omap2-mcspi.h>
+>   #include <linux/platform_data/asoc-ti-mcbsp.h>
+> -#include <plat/dmtimer.h>
+> +#include <clocksource/dmtimer.h>
+> 
+>   #include "omap_hwmod.h"
+>   #include "omap_hwmod_common_data.h"
+> diff --git a/arch/arm/mach-omap2/omap_hwmod_81xx_data.c 
+> b/arch/arm/mach-omap2/omap_hwmod_81xx_data.c
+> index 84f1182..94f3bb1 100644
+> --- a/arch/arm/mach-omap2/omap_hwmod_81xx_data.c
+> +++ b/arch/arm/mach-omap2/omap_hwmod_81xx_data.c
+> @@ -18,7 +18,7 @@
+>   #include <linux/platform_data/gpio-omap.h>
+>   #include <linux/platform_data/hsmmc-omap.h>
+>   #include <linux/platform_data/spi-omap2-mcspi.h>
+> -#include <plat/dmtimer.h>
+> +#include <clocksource/dmtimer.h>
+> 
+>   #include "omap_hwmod_common_data.h"
+>   #include "cm81xx.h"
+> diff --git a/arch/arm/mach-omap2/pdata-quirks.c b/arch/arm/mach-omap2/pdata-quirks.c
+> index 6b433fc..ad9df86 100644
+> --- a/arch/arm/mach-omap2/pdata-quirks.c
+> +++ b/arch/arm/mach-omap2/pdata-quirks.c
+> @@ -27,7 +27,7 @@
+>   #include <linux/platform_data/pwm_omap_dmtimer.h>
+>   #include <linux/platform_data/media/ir-rx51.h>
+>   #include <linux/platform_data/asoc-ti-mcbsp.h>
+> -#include <plat/dmtimer.h>
+> +#include <clocksource/dmtimer.h>
+> 
+>   #include "common.h"
+>   #include "common-board-devices.h"
+> diff --git a/arch/arm/mach-omap2/timer.c b/arch/arm/mach-omap2/timer.c
+> index ece09c9..31c1b01 100644
+> --- a/arch/arm/mach-omap2/timer.c
+> +++ b/arch/arm/mach-omap2/timer.c
+> @@ -26,6 +26,7 @@
+>    * License. See the file "COPYING" in the main directory of this archive
+>    * for more details.
+>    */
+> +#include <clocksource/dmtimer.h>
+>   #include <linux/init.h>
+>   #include <linux/time.h>
+>   #include <linux/interrupt.h>
+> @@ -49,7 +50,6 @@
+>   #include "omap_hwmod.h"
+>   #include "omap_device.h"
+>   #include <plat/counter-32k.h>
+> -#include <plat/dmtimer.h>
+>   #include "omap-pm.h"
+> 
+>   #include "soc.h"
+> diff --git a/arch/arm/plat-omap/dmtimer.c b/arch/arm/plat-omap/dmtimer.c
+> index 72565fc..afe1dc9 100644
+> --- a/arch/arm/plat-omap/dmtimer.c
+> +++ b/arch/arm/plat-omap/dmtimer.c
+> @@ -47,7 +47,7 @@
+>   #include <linux/platform_device.h>
+>   #include <linux/platform_data/dmtimer-omap.h>
+> 
+> -#include <plat/dmtimer.h>
+> +#include <clocksource/dmtimer.h>
+> 
+>   static u32 omap_reserved_systimers;
+>   static LIST_HEAD(omap_timer_list);
+> diff --git a/arch/arm/plat-omap/include/plat/dmtimer.h 
+> b/include/clocksource/dmtimer.h
+> similarity index 100%
+> rename from arch/arm/plat-omap/include/plat/dmtimer.h
+> rename to include/clocksource/dmtimer.h
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.  
+Can you fix up the file name and the header guard to appropriate names
+as per the include/clocksource folder convention.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+arch/arm/plat-omap/include/plat/dmtimer.h => include/clocksource/dmtimer.h
+and
+__ASM_ARCH_DMTIMER_H => __CLOCKSOURCE_DMTIMER_H
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+I still see this file as OMAP-specific, so should this be renamed to
+dmtimer-omap.h instead of a generic dmtimer.h name?
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+regards
+Suman
 
-Thanks,
-Mark
-
-From e3d001a0c29d6c9a87dd9e86bcb84fc66c2ddbe8 Mon Sep 17 00:00:00 2001
-From: Ulf Magnusson <ulfalizer-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Date: Thu, 8 Feb 2018 23:00:16 +0100
-Subject: [PATCH] spi: kconfig: Remove AVR32 dep. from SPI_ATMEL
-
-The AVR32 symbol was removed in commit 26202873bb51 ("avr32: remove
-support for AVR32 architecture").
-
-Signed-off-by: Ulf Magnusson <ulfalizer-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
----
- drivers/spi/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
-index 603783976b81..6fb0347a24f2 100644
---- a/drivers/spi/Kconfig
-+++ b/drivers/spi/Kconfig
-@@ -72,10 +72,10 @@ config SPI_ARMADA_3700
- config SPI_ATMEL
- 	tristate "Atmel SPI Controller"
- 	depends on HAS_DMA
--	depends on (ARCH_AT91 || AVR32 || COMPILE_TEST)
-+	depends on (ARCH_AT91 || COMPILE_TEST)
- 	help
- 	  This selects a driver for the Atmel SPI Controller, present on
--	  many AT32 (AVR32) and AT91 (ARM) chips.
-+	  many AT91 (ARM) chips.
- 
- config SPI_AU1550
- 	tristate "Au1550/Au1200/Au1300 SPI Controller"
--- 
-2.16.1
-
---
-To unsubscribe from this list: send the line "unsubscribe linux-spi" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> -- 
+> 1.9.1
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-omap" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at http://vger.kernel.org/majordomo-info.html
+> 
