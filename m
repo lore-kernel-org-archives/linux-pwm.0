@@ -1,39 +1,22 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH v7 3/9] arm: omap: Move dmtimer.h out of plat-omap
-Date: Tue, 13 Feb 2018 07:09:00 -0800
-Message-ID: <20180213150900.GD6364@atomide.com>
-References: <1515478987-5786-1-git-send-email-j-keerthy@ti.com>
- <1515478987-5786-4-git-send-email-j-keerthy@ti.com>
- <1c9f5c72-f589-d7c7-399f-ef55ecb828a0@ti.com>
+From: "Crown Fin-Aid" <62198432@mylife.unisa.ac.za>
+Subject: Ich warte auf deine Post.
+Date: Tue, 13 Feb 2018 20:04:55 +0100
+Message-ID: <VI1PR0101MB23366C395F3F4960C189201EBEF60@VI1PR0101MB2336.eurprd01.prod.exchangelabs.com>
+Reply-To: rice_anderson@yahoo.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1c9f5c72-f589-d7c7-399f-ef55ecb828a0@ti.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Suman Anna <s-anna@ti.com>
-Cc: "J, KEERTHY" <j-keerthy@ti.com>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "aaro.koskinen@iki.fi" <aaro.koskinen@iki.fi>, "Claudiu.Beznea@microchip.com" <Claudiu.Beznea@microchip.com>, "narmstrong@baylibre.com" <narmstrong@baylibre.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "ladis@linux-mips.org" <ladis@linux-mips.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "sebastian.reichel@collabora.co.uk" <sebastian.reichel@collabora.co.uk>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "Kristo, Tero" <t-kristo@ti.com>, St
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-he1eur01hn0215.outbound.protection.outlook.com ([104.47.0.215]:8026
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1753260AbeBMTOO (ORCPT <rfc822;linux-pwm@vger.kernel.org>);
+        Tue, 13 Feb 2018 14:14:14 -0500
+Content-Description: Mail message body
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: Recipients <62198432@mylife.unisa.ac.za>
 
-* Suman Anna <s-anna@ti.com> [180213 02:07]:
-> On 01/09/2018 12:23 AM, J, KEERTHY wrote:
-> > The header file is currently under plat-omap directory
-> > under arch/omap. Move this out to an accessible place.
-> > @@ -18,7 +18,7 @@
-> >   #include <linux/platform_data/hsmmc-omap.h>
-> >   #include <linux/platform_data/spi-omap2-mcspi.h>
-> >   #include <linux/omap-dma.h>
-> > -#include <plat/dmtimer.h>
-> > +#include <clocksource/dmtimer.h>
-> 
-> These headers are actually not needed in the first-place since we no
-> longer create any non-DT timer devices. I have submitted a series to
-> cleanup the presence of this header file, as part of a larger hwmod data
-> cleanup series.
-
-OK great. Keerthy, care to take a look? Seems like it
-simplifies things a bit.
-
-Regards,
-
-Tony
+Erhalten Sie einen Zinssatz von 2% auf alle unsere Kreditangebote bei Crown=
+ Financial Inc. Antworten Sie f=FCr weitere Details auf, wie man sich bewir=
+bt, und ich werde mehr Details mitteilen, wie dieser Kreditprozess arbeitet.
