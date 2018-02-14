@@ -1,61 +1,50 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Subject: Re: [PATCH v2 0/8] Add support for PWM input capture on STM32
-Date: Wed, 14 Feb 2018 09:23:10 +0100
-Message-ID: <5ade7f05-f5cc-e272-842c-22effa78b716@st.com>
+Date: Wed, 14 Feb 2018 09:38:53 +0000
+Message-ID: <20180214093853.4sskffpd5iasswen@dell>
 References: <1516979499-3665-1-git-send-email-fabrice.gasnier@st.com>
+ <5ade7f05-f5cc-e272-842c-22effa78b716@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:13586 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1754556AbeBNIXr (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 14 Feb 2018 03:23:47 -0500
-In-Reply-To: <1516979499-3665-1-git-send-email-fabrice.gasnier@st.com>
-Content-Language: en-US
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <5ade7f05-f5cc-e272-842c-22effa78b716-qxv4g6HH51o@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Fabrice Gasnier <fabrice.gasnier-qxv4g6HH51o@public.gmane.org>
+Cc: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, alexandre.torgue-qxv4g6HH51o@public.gmane.org, benjamin.gaignard-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, mcoquelin.stm32-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, benjamin.gaignard-qxv4g6HH51o@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
-To: lee.jones@linaro.org, thierry.reding@gmail.com
-Cc: robh+dt@kernel.org, alexandre.torgue@st.com, benjamin.gaignard@linaro.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
 
-On 01/26/2018 04:11 PM, Fabrice Gasnier wrote:
-> This series adds support for capture to stm32-pwm driver.
-> Capture is based on DMAs.
-> - First two patches are precursor patches
-> - Subsequent two patches add support for requesting DMAs to MFD core
-> - Next three patches add support for capture to stm32-pwm driver
-> - This has been tested on stm32429i-eval board.
+On Wed, 14 Feb 2018, Fabrice Gasnier wrote:
+
+> On 01/26/2018 04:11 PM, Fabrice Gasnier wrote:
+> > This series adds support for capture to stm32-pwm driver.
+> > Capture is based on DMAs.
+> > - First two patches are precursor patches
+> > - Subsequent two patches add support for requesting DMAs to MFD core
+> > - Next three patches add support for capture to stm32-pwm driver
+> > - This has been tested on stm32429i-eval board.
+> > 
+> > ---
+> > Changes in v2:
+> > - Abstract DMA handling from child driver: move it to MFD core
+> > - Rework pwm capture routines to adopt this change
+> > - Comment on optional dma support, beautify DMAs probe
 > 
-> ---
-> Changes in v2:
-> - Abstract DMA handling from child driver: move it to MFD core
-> - Rework pwm capture routines to adopt this change
-> - Comment on optional dma support, beautify DMAs probe
-
-Hi all,
-
-Gentle ping for v2 driver review since DT Bindings has been reviewed by
-Rob and the series by Benjamin.
-
-Many thanks in advance
-Regards
-Fabrice
-
+> Hi all,
 > 
-> Fabrice Gasnier (8):
->   pwm: stm32: fix, remove unused struct device
->   pwm: stm32: protect common prescaler for all channels
->   dt-bindings: mfd: stm32-timers: add support for dmas
->   mfd: stm32-timers: add support for dmas
->   pwm: stm32: add capture support
->   pwm: stm32: improve capture by tuning counter prescaler
->   pwm: stm32: use input prescaler to improve period capture
->   ARM: dts: stm32: Enable pwm3 input capture on stm32f429i-eval
-> 
->  .../devicetree/bindings/mfd/stm32-timers.txt       |  20 ++
->  arch/arm/boot/dts/stm32429i-eval.dts               |   3 +
->  drivers/mfd/stm32-timers.c                         | 215 +++++++++++++++-
->  drivers/pwm/pwm-stm32.c                            | 276 ++++++++++++++++++++-
->  include/linux/mfd/stm32-timers.h                   |  39 +++
->  5 files changed, 547 insertions(+), 6 deletions(-)
-> 
+> Gentle ping for v2 driver review since DT Bindings has been reviewed by
+> Rob and the series by Benjamin.
+
+Best thing to do is collect the Acks you have and send the set out as
+a [RESEND].
+
+-- 
+Lee Jones
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
