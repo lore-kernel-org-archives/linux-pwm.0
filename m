@@ -1,43 +1,35 @@
-From: Emil Lenngren <emil.lenngren@gmail.com>
-Subject: About disabling sun4i-pwm
-Date: Wed, 14 Feb 2018 18:17:45 +0100
-Message-ID: <CAO1O6sebSwTR7ONQxq2WwPzMve5yq1z+EctrYgZ9Ynve-CU4AQ@mail.gmail.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH v7 3/9] arm: omap: Move dmtimer.h out of plat-omap
+Date: Wed, 14 Feb 2018 10:59:24 -0800
+Message-ID: <20180214185924.GR6364@atomide.com>
+References: <1515478987-5786-1-git-send-email-j-keerthy@ti.com>
+ <1515478987-5786-4-git-send-email-j-keerthy@ti.com>
+ <1c9f5c72-f589-d7c7-399f-ef55ecb828a0@ti.com>
+ <37f28584-20c2-51c1-e476-75ef81f03af6@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-pwm-owner@vger.kernel.org>
-Received: from mail-pl0-f47.google.com ([209.85.160.47]:45928 "EHLO
-        mail-pl0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1033317AbeBNRRq (ORCPT
-        <rfc822;linux-pwm@vger.kernel.org>); Wed, 14 Feb 2018 12:17:46 -0500
-Received: by mail-pl0-f47.google.com with SMTP id p5so8872182plo.12
-        for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2018 09:17:46 -0800 (PST)
-Sender: linux-pwm-owner@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <37f28584-20c2-51c1-e476-75ef81f03af6@ti.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Keerthy <j-keerthy@ti.com>
+Cc: Suman Anna <s-anna@ti.com>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "aaro.koskinen@iki.fi" <aaro.koskinen@iki.fi>, "Claudiu.Beznea@microchip.com" <Claudiu.Beznea@microchip.com>, "narmstrong@baylibre.com" <narmstrong@baylibre.com>, "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "ladis@linux-mips.org" <ladis@linux-mips.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "sebastian.reichel@collabora.co.uk" <sebastian.reichel@collabora.co.uk>, "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "Kristo, Tero" <t-kristo@ti.com>, Strashk
 List-Id: linux-pwm@vger.kernel.org
-To: linux-pwm@vger.kernel.org
 
-Hi. I saw some discussions on disabling the PWM for sun4i and some
-troubles about if it was being disabled during an active pulse, it
-doesn't turn off the output but it stays active.
+* Keerthy <j-keerthy@ti.com> [180214 04:51]:
+> On Tuesday 13 February 2018 07:36 AM, Suman Anna wrote:
+> > These headers are actually not needed in the first-place since we no
+> > longer create any non-DT timer devices. I have submitted a series to
+> > cleanup the presence of this header file, as part of a larger hwmod data
+> > cleanup series.
+> 
+> I will rebase my series on top of your clean up series. Thanks for clean
+> ups.
 
-The original code is something like the following:
-val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
-val &= ~BIT_CH(PWM_EN, pwm->hwpwm);
-val &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
-sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
+I've now pushed Suman's series into omap-for-v4.17/soc and
+merged it into my for-next. So please rebase your updated
+patches against omap-for-v4.17/soc.
 
-A suggested fix was to add a delay so it gets disabled during a low pulse.
+Thanks,
 
-But instead of the delay, I found it seems to be enough first writing
-the ctrl reg with the PWM_EN bit disabled and then again writing the
-ctrl reg with the PWM_CLK_GATING bit disabled, like this:
-
-val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
-val &= ~BIT_CH(PWM_EN, pwm->hwpwm);
-sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
-val &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
-sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
-
-I have an Allwinner R8 chip, so not sure if that applies for the other
-chips though. Anyone who has tested this more simpler fix?
-
-/Emil
+Tony
