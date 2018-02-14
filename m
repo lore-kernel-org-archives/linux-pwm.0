@@ -1,38 +1,43 @@
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [RESEND PATCH v2 8/8] ARM: dts: stm32: Enable pwm3 input capture on stm32f429i-eval
-Date: Wed, 14 Feb 2018 11:04:39 +0100
-Message-ID: <1518602679-3064-9-git-send-email-fabrice.gasnier@st.com>
-References: <1518602679-3064-1-git-send-email-fabrice.gasnier@st.com>
+From: Emil Lenngren <emil.lenngren@gmail.com>
+Subject: About disabling sun4i-pwm
+Date: Wed, 14 Feb 2018 18:17:45 +0100
+Message-ID: <CAO1O6sebSwTR7ONQxq2WwPzMve5yq1z+EctrYgZ9Ynve-CU4AQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1518602679-3064-1-git-send-email-fabrice.gasnier@st.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: lee.jones@linaro.org, thierry.reding@gmail.com, alexandre.torgue@st.com
-Cc: benjamin.gaignard@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, fabrice.gasnier@st.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-pwm-owner@vger.kernel.org>
+Received: from mail-pl0-f47.google.com ([209.85.160.47]:45928 "EHLO
+        mail-pl0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1033317AbeBNRRq (ORCPT
+        <rfc822;linux-pwm@vger.kernel.org>); Wed, 14 Feb 2018 12:17:46 -0500
+Received: by mail-pl0-f47.google.com with SMTP id p5so8872182plo.12
+        for <linux-pwm@vger.kernel.org>; Wed, 14 Feb 2018 09:17:46 -0800 (PST)
+Sender: linux-pwm-owner@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
+To: linux-pwm@vger.kernel.org
 
-Enable pwm3 input capture on stm32f429i-eval, by using DMA.
+Hi. I saw some discussions on disabling the PWM for sun4i and some
+troubles about if it was being disabled during an active pulse, it
+doesn't turn off the output but it stays active.
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-Reviewed-by: Benjamin Gaignard <benjamin.gaignard@linaro.org>
----
- arch/arm/boot/dts/stm32429i-eval.dts | 3 +++
- 1 file changed, 3 insertions(+)
+The original code is something like the following:
+val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+val &= ~BIT_CH(PWM_EN, pwm->hwpwm);
+val &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
+sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
 
-diff --git a/arch/arm/boot/dts/stm32429i-eval.dts b/arch/arm/boot/dts/stm32429i-eval.dts
-index 293ecb9..d5498dd 100644
---- a/arch/arm/boot/dts/stm32429i-eval.dts
-+++ b/arch/arm/boot/dts/stm32429i-eval.dts
-@@ -271,6 +271,9 @@
- &timers3 {
- 	status = "okay";
- 
-+	/* Enable PWM input capture by using dma */
-+	dmas = <&dma1 4 5 0x400 0x0>;
-+	dma-names = "ch1";
- 	pwm {
- 		pinctrl-0 = <&pwm3_pins>;
- 		pinctrl-names = "default";
--- 
-1.9.1
+A suggested fix was to add a delay so it gets disabled during a low pulse.
+
+But instead of the delay, I found it seems to be enough first writing
+the ctrl reg with the PWM_EN bit disabled and then again writing the
+ctrl reg with the PWM_CLK_GATING bit disabled, like this:
+
+val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
+val &= ~BIT_CH(PWM_EN, pwm->hwpwm);
+sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
+val &= ~BIT_CH(PWM_CLK_GATING, pwm->hwpwm);
+sun4i_pwm_writel(sun4i_pwm, val, PWM_CTRL_REG);
+
+I have an Allwinner R8 chip, so not sure if that applies for the other
+chips though. Anyone who has tested this more simpler fix?
+
+/Emil
