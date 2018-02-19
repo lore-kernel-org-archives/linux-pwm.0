@@ -1,16 +1,17 @@
-From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+From: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Subject: Re: [RESEND PATCH v5 2/5] dt-bindings: pwm-backlight: add PWM delay
  proprieties.
-Date: Mon, 19 Feb 2018 10:56:04 +0100
-Message-ID: <4692672.MjQUXlf6O3@phil>
+Date: Mon, 19 Feb 2018 10:39:36 +0000
+Message-ID: <20180219103936.vsvzbiwr3g7oqsyh@dell>
 References: <20180216174034.15936-1-enric.balletbo@collabora.com>
  <20180216174034.15936-2-enric.balletbo@collabora.com>
- <20180219092247.estv4d2v6cbopx6z@dell>
+ <20180219092247.estv4d2v6cbopx6z@dell> <4692672.MjQUXlf6O3@phil>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20180219092247.estv4d2v6cbopx6z@dell>
+Content-Disposition: inline
+In-Reply-To: <4692672.MjQUXlf6O3@phil>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
@@ -20,53 +21,45 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
  <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
 Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, groeck-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jacek Anaszewski <jacek.anaszewski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, kernel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi Lee,
-
-Am Montag, 19. Februar 2018, 10:22:47 CET schrieb Lee Jones:
-> On Fri, 16 Feb 2018, Enric Balletbo i Serra wrote:
-> 
-> > Hardware needs a delay between setting an initial (non-zero) PWM and
-> > enabling the backlight using GPIO. The post-pwm-on-delay-ms specifies
-> > this delay in milli seconds. Hardware also needs a delay between disabing
-> > the backlight using GPIO and setting PWM value to 0. The pwm-off-delay-ms
-> > is this delay in milli seconds.
-> > 
-> > Signed-off-by: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-> > Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-> > ---
-> > Based on the original Huang Lin <hl-TNX95d0MmH7DzftRWevZcw@public.gmane.org> work.
-> > 
-> > Changes since v4:
-> >  - Rebase on top of mainline.
-> > Changes since v3:
-> >  - Replace us for ms.
-> >  - Add Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-> > Changes since v2:
-> >  - Use separate properties (Rob Herring)
-> > Changes since v1:
-> >  - As suggested by Daniel Thompson
-> >    - Do not assume power-on delay and power-off delay will be the same
-> > 
-> >  Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> 
-> Looks like this still needs an Ack.
-> 
-> Also, you didn't supply a 0th (cover-letter) patch, so I have no idea
-> of patch history or your future intentions.
-> 
-> Are there build-time dependencies between them or can each patch be
-> merged via their respective trees without the fear of merge/build
-> failure?
-
-When looking at the patches, there do not seem to be any build-time
-dependencies between the patch 1-3 (backlight) and 4+5 devicetree,
-so after Rob hopefully has time to look at the binding change, I'd suspect
-you take the code changes and I'll take the dts changes.
-
-
-Heiko
+T24gTW9uLCAxOSBGZWIgMjAxOCwgSGVpa28gU3R1ZWJuZXIgd3JvdGU6Cj4gQW0gTW9udGFnLCAx
+OS4gRmVicnVhciAyMDE4LCAxMDoyMjo0NyBDRVQgc2NocmllYiBMZWUgSm9uZXM6Cj4gPiBPbiBG
+cmksIDE2IEZlYiAyMDE4LCBFbnJpYyBCYWxsZXRibyBpIFNlcnJhIHdyb3RlOgo+ID4gCj4gPiA+
+IEhhcmR3YXJlIG5lZWRzIGEgZGVsYXkgYmV0d2VlbiBzZXR0aW5nIGFuIGluaXRpYWwgKG5vbi16
+ZXJvKSBQV00gYW5kCj4gPiA+IGVuYWJsaW5nIHRoZSBiYWNrbGlnaHQgdXNpbmcgR1BJTy4gVGhl
+IHBvc3QtcHdtLW9uLWRlbGF5LW1zIHNwZWNpZmllcwo+ID4gPiB0aGlzIGRlbGF5IGluIG1pbGxp
+IHNlY29uZHMuIEhhcmR3YXJlIGFsc28gbmVlZHMgYSBkZWxheSBiZXR3ZWVuIGRpc2FiaW5nCj4g
+PiA+IHRoZSBiYWNrbGlnaHQgdXNpbmcgR1BJTyBhbmQgc2V0dGluZyBQV00gdmFsdWUgdG8gMC4g
+VGhlIHB3bS1vZmYtZGVsYXktbXMKPiA+ID4gaXMgdGhpcyBkZWxheSBpbiBtaWxsaSBzZWNvbmRz
+Lgo+ID4gPiAKPiA+ID4gU2lnbmVkLW9mZi1ieTogRW5yaWMgQmFsbGV0Ym8gaSBTZXJyYSA8ZW5y
+aWMuYmFsbGV0Ym9AY29sbGFib3JhLmNvbT4KPiA+ID4gQWNrZWQtYnk6IFBhdmVsIE1hY2hlayA8
+cGF2ZWxAdWN3LmN6Pgo+ID4gPiAtLS0KPiA+ID4gQmFzZWQgb24gdGhlIG9yaWdpbmFsIEh1YW5n
+IExpbiA8aGxAcm9jay1jaGlwcy5jb20+IHdvcmsuCj4gPiA+IAo+ID4gPiBDaGFuZ2VzIHNpbmNl
+IHY0Ogo+ID4gPiAgLSBSZWJhc2Ugb24gdG9wIG9mIG1haW5saW5lLgo+ID4gPiBDaGFuZ2VzIHNp
+bmNlIHYzOgo+ID4gPiAgLSBSZXBsYWNlIHVzIGZvciBtcy4KPiA+ID4gIC0gQWRkIEFja2VkLWJ5
+OiBQYXZlbCBNYWNoZWsgPHBhdmVsQHVjdy5jej4KPiA+ID4gQ2hhbmdlcyBzaW5jZSB2MjoKPiA+
+ID4gIC0gVXNlIHNlcGFyYXRlIHByb3BlcnRpZXMgKFJvYiBIZXJyaW5nKQo+ID4gPiBDaGFuZ2Vz
+IHNpbmNlIHYxOgo+ID4gPiAgLSBBcyBzdWdnZXN0ZWQgYnkgRGFuaWVsIFRob21wc29uCj4gPiA+
+ICAgIC0gRG8gbm90IGFzc3VtZSBwb3dlci1vbiBkZWxheSBhbmQgcG93ZXItb2ZmIGRlbGF5IHdp
+bGwgYmUgdGhlIHNhbWUKPiA+ID4gCj4gPiA+ICBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmlu
+ZGluZ3MvbGVkcy9iYWNrbGlnaHQvcHdtLWJhY2tsaWdodC50eHQgfCA2ICsrKysrKwo+ID4gPiAg
+MSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKQo+ID4gCj4gPiBMb29rcyBsaWtlIHRoaXMg
+c3RpbGwgbmVlZHMgYW4gQWNrLgo+ID4gCj4gPiBBbHNvLCB5b3UgZGlkbid0IHN1cHBseSBhIDB0
+aCAoY292ZXItbGV0dGVyKSBwYXRjaCwgc28gSSBoYXZlIG5vIGlkZWEKPiA+IG9mIHBhdGNoIGhp
+c3Rvcnkgb3IgeW91ciBmdXR1cmUgaW50ZW50aW9ucy4KPiA+IAo+ID4gQXJlIHRoZXJlIGJ1aWxk
+LXRpbWUgZGVwZW5kZW5jaWVzIGJldHdlZW4gdGhlbSBvciBjYW4gZWFjaCBwYXRjaCBiZQo+ID4g
+bWVyZ2VkIHZpYSB0aGVpciByZXNwZWN0aXZlIHRyZWVzIHdpdGhvdXQgdGhlIGZlYXIgb2YgbWVy
+Z2UvYnVpbGQKPiA+IGZhaWx1cmU/Cj4gCj4gV2hlbiBsb29raW5nIGF0IHRoZSBwYXRjaGVzLCB0
+aGVyZSBkbyBub3Qgc2VlbSB0byBiZSBhbnkgYnVpbGQtdGltZQo+IGRlcGVuZGVuY2llcyBiZXR3
+ZWVuIHRoZSBwYXRjaCAxLTMgKGJhY2tsaWdodCkgYW5kIDQrNSBkZXZpY2V0cmVlLAo+IHNvIGFm
+dGVyIFJvYiBob3BlZnVsbHkgaGFzIHRpbWUgdG8gbG9vayBhdCB0aGUgYmluZGluZyBjaGFuZ2Us
+IEknZCBzdXNwZWN0Cj4geW91IHRha2UgdGhlIGNvZGUgY2hhbmdlcyBhbmQgSSdsbCB0YWtlIHRo
+ZSBkdHMgY2hhbmdlcy4KCldvcmtzIGZvciBtZS4KCi0tIApMZWUgSm9uZXMKTGluYXJvIFNlcnZp
+Y2VzIFRlY2huaWNhbCBMZWFkCkxpbmFyby5vcmcg4pSCIE9wZW4gc291cmNlIHNvZnR3YXJlIGZv
+ciBBUk0gU29DcwpGb2xsb3cgTGluYXJvOiBGYWNlYm9vayB8IFR3aXR0ZXIgfCBCbG9nCgpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpMaW51eC1yb2NrY2hp
+cCBtYWlsaW5nIGxpc3QKTGludXgtcm9ja2NoaXBAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8v
+bGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LXJvY2tjaGlwCg==
