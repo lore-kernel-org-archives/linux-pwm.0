@@ -1,80 +1,93 @@
-From: Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [RESEND PATCH v5 2/5] dt-bindings: pwm-backlight: add PWM delay
- proprieties.
-Date: Mon, 19 Feb 2018 11:11:36 +0000
-Message-ID: <20180219111136.jpv4wtcm6h2hfwac@oak.lan>
-References: <20180216174034.15936-1-enric.balletbo@collabora.com>
- <20180216174034.15936-2-enric.balletbo@collabora.com>
+From: Rajkumar Rampelli <rrajk@nvidia.com>
+Subject: [PATCH 00/10] Implementation of Tegra Tachometer driver
+Date: Wed, 21 Feb 2018 12:28:49 +0530
+Message-ID: <1519196339-9377-1-git-send-email-rrajk@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180216174034.15936-2-enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <jacek.anaszewski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, groeck-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, kernel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, jdelvare@suse.com, linux@roeck-us.net, corbet@lwn.net, catalin.marinas@arm.com, will.deacon@arm.com, kstewart@linuxfoundation.org, gregkh@linuxfoundation.org, pombredanne@nexb.com, mmaddireddy@nvidia.com, mperttunen@nvidia.com, arnd@arndb.de, gregory.clement@free-electrons.com, timur@codeaurora.org, andy.gross@linaro.org, xuwei5@hisilicon.com, elder@linaro.org, heiko@sntech.de, krzk@kernel.org, ard.biesheuvel@linaro.org
+Cc: linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, rrajk@nvidia.com, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, ldewangan@nvidia.com, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, Feb 16, 2018 at 06:40:31PM +0100, Enric Balletbo i Serra wrote:
-> Hardware needs a delay between setting an initial (non-zero) PWM and
-> enabling the backlight using GPIO. The post-pwm-on-delay-ms specifies
-> this delay in milli seconds. Hardware also needs a delay between disabing
-> the backlight using GPIO and setting PWM value to 0. The pwm-off-delay-ms
-> is this delay in milli seconds.
-> 
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-> Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
+The following patches adds support for PWM based Tegra Tachometer driver
+which implements PWM capture interface to analyze the PWM signal of a
+electronic fan and reports it in periods and duty cycles.
 
-Acked-by: Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Generic PWM Tachometer implemented to monitor the speed of fan in rpms
+using PWM interface. RPM of Fan will be exposed to user interface through
+HWMON sysfs interface avialable at below location
+/sys/devices/platform/generic_pwm_tachometer/hwmon/hwmon0/rpm
 
-> ---
-> Based on the original Huang Lin <hl-TNX95d0MmH7DzftRWevZcw@public.gmane.org> work.
-> 
-> Changes since v4:
->  - Rebase on top of mainline.
-> Changes since v3:
->  - Replace us for ms.
->  - Add Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-> Changes since v2:
->  - Use separate properties (Rob Herring)
-> Changes since v1:
->  - As suggested by Daniel Thompson
->    - Do not assume power-on delay and power-off delay will be the same
-> 
->  Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-> index 764db86d441a..310810906613 100644
-> --- a/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-> +++ b/Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt
-> @@ -17,6 +17,10 @@ Optional properties:
->                 "pwms" property (see PWM binding[0])
->    - enable-gpios: contains a single GPIO specifier for the GPIO which enables
->                    and disables the backlight (see GPIO binding[1])
-> +  - post-pwm-on-delay-ms: Delay in ms between setting an initial (non-zero) PWM
-> +                          and enabling the backlight using GPIO.
-> +  - pwm-off-delay-ms: Delay in ms between disabling the backlight using GPIO
-> +                      and setting PWM value to 0.
->  
->  [0]: Documentation/devicetree/bindings/pwm/pwm.txt
->  [1]: Documentation/devicetree/bindings/gpio/gpio.txt
-> @@ -32,4 +36,6 @@ Example:
->  
->  		power-supply = <&vdd_bl_reg>;
->  		enable-gpios = <&gpio 58 0>;
-> +		post-pwm-on-delay-ms = <10>;
-> +		pwm-off-delay-ms = <10>;
->  	};
-> -- 
-> 2.15.1
-> 
+Steps to validate Tachometer:
+A. push modules pwm-tegra.ko, pwm-tegra-tachometer.ko and
+   generic-pwm-tachometer.ko to linux device using scp command.
+   scp build/tegra186/drivers/pwm/pwm-tegra.ko ubuntu@10.19.65.176:/tmp/
+   scp build/tegra186/drivers/pwm/pwm-tegra-tachometer.ko ubuntu@10.19.65.176:/tmp/
+   scp build/tegra186/drivers/hwmon/generic-pwm-tachometer.ko ubuntu@10.19.65.176:/tmp/
+B. On Linux device console, insert these modules using insmod command.
+   insmod /tmp/pwm-tegra.ko
+   insmod /tmp/pwm-tegra-tachometer.ko
+   insmod /tmp/generic-pwm-tachometer.ko
+C. Read RPM value at below sysfs node
+   cat /sys/devices/platform/generic_pwm_tachometer/hwmon/hwmon0/rpm
+D. Change the FAN speed using PWM sysfs interface. Follow below steps for the same:
+   a. cd /sys/class/pwm/pwmchip0
+   b. ls -la (make sure pwm controller is c340000.pwm)
+      Output should be: device -> ../../../c340000.pwm
+   c. echo 0 > export
+   d. cd pwmchip0:0
+   e. echo 8000 > period
+   f. echo 1 > enable
+   g. echo 7000 > duty_cycle # change duty_cycles from 0 to 7000 and see FAN speed
+   h. cat /sys/devices/platform/generic_pwm_tachometer/hwmon/hwmon0/rpm
+   i. echo 4000 > duty_cycle
+   h. cat /sys/devices/platform/generic_pwm_tachometer/hwmon/hwmon0/rpm
+   i. echo 2000 > duty_cycle
+   h. cat /sys/devices/platform/generic_pwm_tachometer/hwmon/hwmon0/rpm
+   i. echo 0 > duty_cycle
+   h. cat /sys/devices/platform/generic_pwm_tachometer/hwmon/hwmon0/rpm
+
+Rajkumar Rampelli (10):
+  pwm: core: Add support for PWM HW driver with pwm capture only
+  dt-bindings: Tegra186 tachometer device tree bindings
+  pwm: tegra: Add PWM based Tachometer driver
+  hwmon: generic-pwm-tachometer: Add DT binding details
+  hwmon: generic-pwm-tachometer: Add generic PWM based tachometer
+  arm64: tegra: Add Tachometer Controller on Tegra186
+  arm64: tegra: Add PWM based Tachometer support on Tegra186
+  arm64: defconfig: enable Nvidia Tegra Tachometer as a module
+  arm64: defconfig: Enable Generic PWM based Tachometer driver
+  arm64: tegra: Add PWM controller on Tegra186 soc
+
+ .../bindings/hwmon/generic-pwm-tachometer.txt      |  25 ++
+ .../bindings/pwm/pwm-tegra-tachometer.txt          |  31 +++
+ Documentation/hwmon/generic-pwm-tachometer         |  17 ++
+ arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dts |   5 +
+ arch/arm64/boot/dts/nvidia/tegra186.dtsi           |  28 ++
+ arch/arm64/configs/defconfig                       |   2 +
+ drivers/hwmon/Kconfig                              |  10 +
+ drivers/hwmon/Makefile                             |   1 +
+ drivers/hwmon/generic-pwm-tachometer.c             | 112 ++++++++
+ drivers/pwm/Kconfig                                |  10 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/core.c                                 |   4 +
+ drivers/pwm/pwm-tegra-tachometer.c                 | 303 +++++++++++++++++++++
+ 13 files changed, 549 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/hwmon/generic-pwm-tachometer.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-tegra-tachometer.txt
+ create mode 100644 Documentation/hwmon/generic-pwm-tachometer
+ create mode 100644 drivers/hwmon/generic-pwm-tachometer.c
+ create mode 100644 drivers/pwm/pwm-tegra-tachometer.c
+
+-- 
+2.1.4
