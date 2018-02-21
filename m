@@ -1,7 +1,8 @@
 From: Rajkumar Rampelli <rrajk@nvidia.com>
-Subject: [PATCH 10/10] arm64: tegra: Add PWM controller on Tegra186 soc
-Date: Wed, 21 Feb 2018 12:28:59 +0530
-Message-ID: <1519196339-9377-11-git-send-email-rrajk@nvidia.com>
+Subject: [PATCH 09/10] arm64: defconfig: Enable Generic PWM based Tachometer
+ driver
+Date: Wed, 21 Feb 2018 12:28:58 +0530
+Message-ID: <1519196339-9377-10-git-send-email-rrajk@nvidia.com>
 References: <1519196339-9377-1-git-send-email-rrajk@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,35 +22,27 @@ To: robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathan
 Cc: linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, rrajk@nvidia.com, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, ldewangan@nvidia.com, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-The NVIDIA Tegra186 SoC has a PWM controller which is
-used in FAN control use case.
+Enable Generic PWM based Tachometer driver which implements a simple
+interface for monitoring the speed of a fan in roatations per minute,
+and exposes it to the user space by using the hwmon's sysfs interface.
+Enable this driver as a module in the ARM64 defconfig.
 
 Signed-off-by: Rajkumar Rampelli <rrajk@nvidia.com>
 ---
- arch/arm64/boot/dts/nvidia/tegra186.dtsi | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/arm64/configs/defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-index 37149e9..c6f154e 100644
---- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-@@ -1032,6 +1032,17 @@
- 		interrupt-parent = <&gic>;
- 	};
- 
-+	pwm@c340000 {
-+		compatible = "nvidia,tegra186-pwm";
-+		reg = <0x0 0xc340000 0x0 0x10000>;
-+		clocks = <&bpmp TEGRA186_CLK_PWM4>;
-+		clock-names = "pwm";
-+		#pwm-cells = <2>;
-+		resets = <&bpmp TEGRA186_RESET_PWM4>;
-+		reset-names = "pwm";
-+		status = "disabled";
-+	};
-+
- 	tegra_tachometer: tachometer@39c0000 {
- 		compatible = "nvidia,tegra186-pwm-tachometer";
- 		reg = <0x0 0x039c0000 0x0 0x10>;
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 8b2bda7..1b29109 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -321,6 +321,7 @@ CONFIG_BATTERY_BQ27XXX=y
+ CONFIG_SENSORS_ARM_SCPI=y
+ CONFIG_SENSORS_LM90=m
+ CONFIG_SENSORS_INA2XX=m
++CONFIG_GENERIC_PWM_TACHOMETER=m
+ CONFIG_THERMAL_GOV_POWER_ALLOCATOR=y
+ CONFIG_CPU_THERMAL=y
+ CONFIG_THERMAL_EMULATION=y
 -- 
 2.1.4
