@@ -1,8 +1,7 @@
 From: Rajkumar Rampelli <rrajk@nvidia.com>
-Subject: [PATCH 01/10] pwm: core: Add support for PWM HW driver with pwm
- capture only
-Date: Wed, 21 Feb 2018 12:28:50 +0530
-Message-ID: <1519196339-9377-2-git-send-email-rrajk@nvidia.com>
+Subject: [PATCH 02/10] dt-bindings: Tegra186 tachometer device tree bindings
+Date: Wed, 21 Feb 2018 12:28:51 +0530
+Message-ID: <1519196339-9377-3-git-send-email-rrajk@nvidia.com>
 References: <1519196339-9377-1-git-send-email-rrajk@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,31 +21,51 @@ To: robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathan
 Cc: linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, rrajk@nvidia.com, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, ldewangan@nvidia.com, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Add support for pwm HW driver which has only capture functionality.
-This helps to implement the PWM based Tachometer driver which reads
-the PWM output signals from electronic fans.
-
-PWM Tachometer captures the period and duty cycle of the PWM signal
+Supply Device tree binding documentation for the NVIDIA
+Tegra186 SoC's Tachometer Controller
 
 Signed-off-by: Rajkumar Rampelli <rrajk@nvidia.com>
 ---
- drivers/pwm/core.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../bindings/pwm/pwm-tegra-tachometer.txt          | 31 ++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-tegra-tachometer.txt
 
-diff --git a/drivers/pwm/core.c b/drivers/pwm/core.c
-index 1581f6a..87d14c9 100644
---- a/drivers/pwm/core.c
-+++ b/drivers/pwm/core.c
-@@ -246,6 +246,10 @@ static bool pwm_ops_check(const struct pwm_ops *ops)
- 	if (ops->apply)
- 		return true;
- 
-+	/* driver supports capture operation */
-+	if (ops->capture)
-+		return true;
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-tegra-tachometer.txt b/Documentation/devicetree/bindings/pwm/pwm-tegra-tachometer.txt
+new file mode 100644
+index 0000000..4a7ead4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/pwm-tegra-tachometer.txt
+@@ -0,0 +1,31 @@
++Bindings for a PWM based Tachometer driver
 +
- 	return false;
- }
- 
++Required properties:
++- compatible: Must be "nvidia,tegra186-pwm-tachometer"
++- reg: physical base addresses of the controller and length of
++  memory mapped region.
++- #pwm-cells: should be 2. See pwm.txt in this directory for a
++  description of the cells format.
++- clocks: phandle list of tachometer clocks
++- clock-names: should be "tachometer". See clock-bindings.txt in documentations
++- resets: phandle to the reset controller for the Tachometer IP
++- reset-names: should be "tachometer". See reset.txt in documentations
++- nvidia,pulse-per-rev: Integer, pulses per revolution of a Fan. This value
++  obtained from Fan specification document.
++- nvidia,capture-window-len: Integer, window of the Fan Tach monitor, it indicates
++  that how many period of the input fan tach signal will the FAN TACH logic
++  monitor. Valid values are 1, 2, 4 and 8 only.
++
++Example:
++	tegra_tachometer: tachometer@39c0000 {
++		compatible = "nvidia,tegra186-pwm-tachometer";
++		reg = <0x0 0x039c0000 0x0 0x10>;
++		#pwm-cells = <2>;
++		clocks = <&tegra_car TEGRA186_CLK_TACH>;
++		clock-names = "tachometer";
++		resets = <&tegra_car TEGRA186_RESET_TACH>;
++		reset-names = "tachometer";
++		nvidia,pulse-per-rev = <2>;
++		nvidia,capture-window-len = <2>;
++		status = "disabled";
++	};
 -- 
 2.1.4
