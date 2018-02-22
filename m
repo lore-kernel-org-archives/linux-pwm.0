@@ -1,16 +1,16 @@
-From: Claudiu Beznea <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH v3 06/10] pwm: add PWM modes
-Date: Thu, 22 Feb 2018 19:42:29 +0200
-Message-ID: <e5090740-520a-34c0-6b52-09cc8ada11b1@microchip.com>
-References: <1519300881-8136-1-git-send-email-claudiu.beznea@microchip.com>
- <1519300881-8136-7-git-send-email-claudiu.beznea@microchip.com>
- <CAHp75Ver6GuKSDooAr2DW+eqt=B3p8O+X6+rOSWNgfhHxgVqNQ@mail.gmail.com>
+From: Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH v11 04/10] clocksource: timer-ti-dm: Replace architecture
+Date: Thu, 22 Feb 2018 10:45:42 -0800
+Message-ID: <20180222184541.GB5184@atomide.com>
+References: <1518674511-26421-1-git-send-email-j-keerthy@ti.com>
+ <1518674511-26421-5-git-send-email-j-keerthy@ti.com>
+ <20180222105713.GA30885@lenoch>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAHp75Ver6GuKSDooAr2DW+eqt=B3p8O+X6+rOSWNgfhHxgVqNQ@mail.gmail.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180222105713.GA30885@lenoch>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -20,35 +20,46 @@ List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, milo.kim@ti.com, linux-fbdev@vger.kernel.org, Sean Young <sean@mess.org>, devicetree <devicetree@vger.kernel.org>, David Airlie <airlied@linux.ie>, Michael Turquette <mturquette@baylibre.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, kamil@wypas.org, dri-devel@lists.freedesktop.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Alexandre Belloni <alexandre.belloni@free-electrons.com>, Pavel Machek <pavel@ucw.cz>, Lee Jones <lee.jones@linaro.org>, linux-clk@vger.kernel.org, Linux LED Subsystem <linux-leds@vger.kernel.org>, Daniel Thompson <daniel.thompson@linaro.org>, linux-samsung-soc@vger.kernel.org, Alexander Shiyan <shc_work@mail.ru>, Jonathan Corbet <corbet@lwn.net>, Linux Documentation List <linux-doc@vger.kernel.org>, Russell King - ARM Linux <linux@armlinux.org.>
+To: Ladislav Michl <ladis@linux-mips.org>
+Cc: linux-pwm@vger.kernel.org, linux-omap@vger.kernel.org, narmstrong@baylibre.com, Keerthy <j-keerthy@ti.com>, daniel.lezcano@linaro.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org, t-kristo@ti.com, thierry.reding@gmail.com, sebastian.reichel@collabora.co.uk, aaro.koskinen@iki.fi, grygorii.strashko@ti.com, Claudiu.Beznea@microchip.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-
-
-On 22.02.2018 19:28, Andy Shevchenko wrote:
-> On Thu, Feb 22, 2018 at 2:01 PM, Claudiu Beznea
-> <claudiu.beznea@microchip.com> wrote:
->> Add PWM normal and complementary modes.
+* Ladislav Michl <ladis@linux-mips.org> [180222 10:58]:
+> On Thu, Feb 15, 2018 at 11:31:45AM +0530, Keerthy wrote:
+> > Replace architecture specific guard with clocksource guard.
+> > 
+> > Signed-off-by: Keerthy <j-keerthy@ti.com>
+> > Replace architecture specific defines with clocksource
 > 
->> +- PWM_DTMODE_COMPLEMENTARY: PWM complementary working mode (for PWM
->> +channels two outputs); if not specified, the default for PWM channel will
->> +be used
-> 
-> What DT stands for?
-It stands for Device Tree. It remained this way from the previous version. In
-the previous version I had modes described in an enum, to be used by PWM core,
-as follows:
-enum pwm_mode {
-	PWM_MODE_NORMAL,
-	PWM_MODE_COMPLEMENTARY,
-};
+> This looks like a bit unussual commit log. Also, what about merging
+> it with previous patch?
 
-and, to avoid conflict b/w these defines and the one from
-include/dt-bindings/pwm/pwm.h I introduced this DT in the define names from
-dt-bindings. But now the DT might be removed since I've changed the way the PWM
-mode is identified in PWM core. I will remove the DT in the next version, if not
-requested otherwise.
+I'll just remove that line locally to avoid yet another set
+of patches being posted :)
 
-Thank you,
-Claudiu Benea
+> Btw, I tested whole serie again on the top of today's -next and it is
+> still working fine. What is preventing these patches from being merged?
+
+Well I noticed we need a fix for omap1 that I just posted.
+And patch 4/10 needs the following select for omap16xx that
+I'll fold in.
+
+I'll push it all to omap-for-v4.17/timer and will merge into
+my for-next after some more testing. It seems any further
+patching can be done after move to drivers.
+
+Regards,
+
+Tony
+
+8< -----------------
+--- a/arch/arm/mach-omap1/Kconfig
++++ b/arch/arm/mach-omap1/Kconfig
+@@ -30,6 +30,7 @@ config ARCH_OMAP16XX
+ 	bool "OMAP16xx Based System"
+ 	select ARCH_OMAP_OTG
+ 	select CPU_ARM926T
++	select OMAP_DM_TIMER
+ 
+ config OMAP_MUX
+ 	bool "OMAP multiplexing support"
