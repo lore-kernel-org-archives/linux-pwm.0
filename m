@@ -1,59 +1,51 @@
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH] pwm: sun4i: properly check current state
-Date: Sun, 25 Feb 2018 02:55:58 +0100
-Message-ID: <20180225015558.4843-1-alexandre.belloni@bootlin.com>
+From: hao_zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v2 0/4] pwm support for allwinner sun8i SOCs.
+Date: Sun, 25 Feb 2018 21:49:46 +0800
+Message-ID: <20180225134946.GA14015@arx-s1>
+Reply-To: hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Alexandre Belloni <alexandre.belloni@bootlin.com>, Maxime Ripard <maxime.ripard@bootlin.com>, linux-kernel@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-sunxi+bncBDKITZOARQMBBBH6ZLKAKGQEWVI3FFI-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Disposition: inline
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, Claudiu.Beznea-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org
+Cc: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Correctly extract the prescaler value from CTRL_REG before comparing it to
-PWM_PRESCAL_MASK.
+PWM support for allwinner sun8i SOCs.
 
-Also, check that both PWM_CLK_GATING and PWM_EN to ensure the PWM is
-enabled instead of relying on only one of those.
+This patchset adds pwm support for allwinner sun8i SOCs.
 
-Fixes: 93e0dfb2c52f ("pwm: sun4i: Improve hardware read out")
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
----
- drivers/pwm/pwm-sun4i.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index 334199c58f1d..42e6f0873d1c 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -117,7 +117,8 @@ static void sun4i_pwm_get_state(struct pwm_chip *chip,
- 
- 	val = sun4i_pwm_readl(sun4i_pwm, PWM_CTRL_REG);
- 
--	if ((val == PWM_PRESCAL_MASK) && sun4i_pwm->data->has_prescaler_bypass)
-+	if ((PWM_REG_PRESCAL(val, pwm->hwpwm) == PWM_PRESCAL_MASK) &&
-+	    sun4i_pwm->data->has_prescaler_bypass)
- 		prescaler = 1;
- 	else
- 		prescaler = prescaler_table[PWM_REG_PRESCAL(val, pwm->hwpwm)];
-@@ -130,7 +131,8 @@ static void sun4i_pwm_get_state(struct pwm_chip *chip,
- 	else
- 		state->polarity = PWM_POLARITY_INVERSED;
- 
--	if (val & BIT_CH(PWM_CLK_GATING | PWM_EN, pwm->hwpwm))
-+	if ((val & BIT_CH(PWM_CLK_GATING | PWM_EN, pwm->hwpwm)) ==
-+	    BIT_CH(PWM_CLK_GATING | PWM_EN, pwm->hwpwm))
- 		state->enabled = true;
- 	else
- 		state->enabled = false;
+v2 Changes:
+1. change sun8i-r40 symbol to sun8i.
+2. change pwm0_pin, pwm0-pin to pwm_ch0_pin, pwm-ch0-pin.
+3. remove clk_disable_unprepare(), check !match and IS_ERR(pwm->regmap).
+
+
+
+
+hao_zhang (4):
+  dt-bindings: pwm: binding allwinner sun8i.
+  ARM: dtsi: add pwm node for sun8i.
+  ARM: dts: add pwm status for r40.
+  ARM: PWM: add allwinner sun8i pwm support.
+
+ .../devicetree/bindings/pwm/pwm-sun8i.txt          |  18 +
+ arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts  |   6 +
+ arch/arm/boot/dts/sun8i-r40.dtsi                   |  13 +
+ drivers/pwm/Kconfig                                |  10 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-sun8i.c                            | 401 +++++++++++++++++++++
+ 6 files changed, 449 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
+ create mode 100644 drivers/pwm/pwm-sun8i.c
+
 -- 
-2.16.1
+2.7.4
