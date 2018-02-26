@@ -1,68 +1,61 @@
 From: Maxime Ripard <maxime.ripard@bootlin.com>
-Subject: Re: [PATCH v2 1/4] dt-bindings: pwm: binding allwinner sun8i.
-Date: Mon, 26 Feb 2018 09:44:33 +0100
-Message-ID: <20180226084433.jcahdixnz63jo34m@flea.lan>
-References: <20180225135045.GA14508@arx-s1>
+Subject: Re: [PATCH v2 2/4] ARM: dtsi: add pwm node for sun8i.
+Date: Mon, 26 Feb 2018 09:49:19 +0100
+Message-ID: <20180226084919.wt2yljq3nxr5g2vu@flea.lan>
+References: <20180225135134.GA14529@arx-s1>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="rzg4gjmtenrchmoq"
+        protocol="application/pgp-signature"; boundary="fexov7z6xzyq67m7"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180225135045.GA14508@arx-s1>
+In-Reply-To: <20180225135134.GA14529@arx-s1>
 Sender: linux-kernel-owner@vger.kernel.org
 To: hao_zhang <hao5781286@gmail.com>
 Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, wens@csie.org, Claudiu.Beznea@microchip.com, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-sunxi@googlegroups.com
 List-Id: linux-pwm@vger.kernel.org
 
 
---rzg4gjmtenrchmoq
+--fexov7z6xzyq67m7
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-On Sun, Feb 25, 2018 at 09:50:45PM +0800, hao_zhang wrote:
-> This patch adds allwinner sun8i pwm binding documents.
+On Sun, Feb 25, 2018 at 09:51:34PM +0800, hao_zhang wrote:
+> This patch adds pwm node for sun8i.
 >=20
 > Signed-off-by: hao_zhang <hao5781286@gmail.com>
 > ---
->  Documentation/devicetree/bindings/pwm/pwm-sun8i.txt | 18 +++++++++++++++=
-+++
->  1 file changed, 18 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
+>  arch/arm/boot/dts/sun8i-r40.dtsi | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
 >=20
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun8i.txt b/Docume=
-ntation/devicetree/bindings/pwm/pwm-sun8i.txt
-> new file mode 100644
-> index 0000000..e8c48be
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
-> @@ -0,0 +1,18 @@
-> +Allwinner sun8i R40/V40/T3 SoC PWM controller
+> diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r=
+40.dtsi
+> index 173dcc1..99a0261 100644
+> --- a/arch/arm/boot/dts/sun8i-r40.dtsi
+> +++ b/arch/arm/boot/dts/sun8i-r40.dtsi
+> @@ -295,6 +295,11 @@
+>  				bias-pull-up;
+>  			};
+> =20
+> +			pwm_ch0_pin: pwm-ch0-pin {
+> +				pins =3D "PB2";
+> +				function =3D "pwm";
+> +			};
 > +
-> +Required properties:
-> +  - compatible: should be one of:
-> +    - "allwinner,sun8i-r40-pwm"
-> +  - reg: physical base address and length of the controller's registers
-> +  - #pwm-cells: should be 3. See pwm.txt in this directory for a descrip=
-tion of
-> +    the cells format.
-> +  - clocks: From common clock binding, handle to the parent clock.
-> +
-> +Example:
-> +
-> +pwm: pwm@1c23400 {
-> +	     compatible =3D "allwinner,sun8i-pwm";
+>  			uart0_pb_pins: uart0-pb-pins {
+>  				pins =3D "PB22", "PB23";
+>  				function =3D "uart0";
+> @@ -306,6 +311,14 @@
+>  			reg =3D <0x01c20c90 0x10>;
+>  		};
+> =20
+> +		pwm: pwm@1c23400 {
+> +			     compatible =3D "allwinner,sun8i-r40-pwm";
+> +			     reg =3D <0x01c23400 0x154>;
 
-The compatible you have here isn't the one documented.
+The size must be the size of the whole memory block allocated to the
+controller, so that would be 0x400 in this case.
 
-> +	     reg =3D <0x01c23400 0x154>;
-
-And the size isn't correct, even though that doesn't really make any
-difference here.
-
-Thanks!
 Maxime
 
 --=20
@@ -70,24 +63,24 @@ Maxime Ripard, Bootlin (formerly Free Electrons)
 Embedded Linux and Kernel engineering
 https://bootlin.com
 
---rzg4gjmtenrchmoq
+--fexov7z6xzyq67m7
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlqTyPAACgkQ0rTAlCFN
-r3TyaQ/9GikdziVYAKqwaqJ5Ak1H9bU3XgtLpJ3uYTelfB0Zcq1sTY50v0Iw24+U
-FtXspyouhbrOe5RTHQYIVLyXrXvI65Ufo3oCVKGtS27txUB6FpVkkuRZCUD9Jgbv
-BvMGteYfADuOv+COxonHuuRNTvbxP8ZaMRpgFUhwKzVEKmBucUP/yAB9xyiznori
-dlm0VCIIHp/G6HL0FWuCLC1f/AzSw3vtQvbtvfx8CnmT9HDXxLTjO20WiNpUeCEM
-NhqY93sNBr8UAH1wLRBh3fFcwgOxI9e7+1fs3WKxY2gNinZsVFO3c2kvPQBxwrpj
-qqYxE+0qc6Y49CyWCx+4VuWgytDo3vDavkhm0sopgihd8GDeA6kUQpK0COpSV8LE
-h4OrOaBkNfsZBQgIdWtJGeaWZCEjuaDqMZnyJ+ZKkvzJZERWC2gRgNqilxqssT1W
-OLMz3MQMnxQExGe9iPScxDteYPFlcTEiJd+z3pSsHBX2B4OTSLS+bdW/mSyIHazP
-L5GUNTe6M271WczTHCbg89/n5fBvpIJTOYwlk/pUgNgl85eLAVAWY0p9ultCmH+Y
-cuUzzWA5kR1dm3tSBX+kK3ndiaFyn/h3w0bVpbwOBoC9tKnJqic0KmDRjMG5FcMt
-biOpZ6ahEeXj3j7X6VOVcUGKEUXnnN7AfVrPj4jweeacWRZGKeM=
-=naAz
+iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlqTyg4ACgkQ0rTAlCFN
+r3Rkig/9GI/xqfLzW6iT4OlKaSseYWJWJ6rvEt1oY8o7bkVa4mMLV7POVS12FbCc
+fGQeq9vDI4ohMwW6Wgu7PARNXRTMaVUkt2CKVewaniGiWoFshUTvmw8UiEWKtshK
+Nu8P9DfhfTIEU1SPWBTy3y6LcPwbCTVMbNzqFthNCI5/ac3yzHPP4UrYhwFPQh3M
+JYVfG5c+pard1iSIt4+kX3P9AEnmDuX3SY2QHxsDTwYG2v6GT/ExazLidBb1JeFn
+scMeZvXmpK7X+XmNaAMECU59m41W6exkbPAYu5o1XqQFKvrkjpbVB1rEaCdc6RWH
+T7dh+G6KJi/1J+PE9MScYFkJIiEXugnVygKGhq7La3lrXDuv5QmnasBTVJvUlf2L
+lUpe7OMy8+WfqUaR4n7smhCU2/IFWODp6UxHg0ZpXjjlQjWN7n+iyQYLfHti8iVk
+2EoB1EhOTtB6dcxHN53MirTw3jy4XtHYuRthODDkMmdC+qBJJgI9VSqtBHkrznnT
+uc5V6lRfpyIiqI3Mhzqfyvs2mqZrZO1P/m2iFF37ngN1uHDvzej/bNPiuWb4rNxO
+Eqg9TLroJfnaKw/f+asfdF3JmIrHUHl7fmL4RqPYFMFJaVDgqHM63o4vlecMO8zD
+uby9ebszip4put0K3SMa/egmkkCdrRlagMSsiJyasAoldZBb9CY=
+=ZRzc
 -----END PGP SIGNATURE-----
 
---rzg4gjmtenrchmoq--
+--fexov7z6xzyq67m7--
