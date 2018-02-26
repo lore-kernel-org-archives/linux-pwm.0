@@ -1,126 +1,70 @@
-From: Maxime Ripard <maxime.ripard@bootlin.com>
-Subject: Re: [PATCH v2 4/4] ARM: PWM: add allwinner sun8i pwm support.
-Date: Mon, 26 Feb 2018 10:00:38 +0100
-Message-ID: <20180226090038.etk5q4pd4rl5dvf6@flea.lan>
-References: <20180225135308.GA14561@arx-s1>
+From: Jani Nikula <jani.nikula@linux.intel.com>
+Subject: Re: [PATCH v3 05/10] pwm: add PWM mode to pwm_config()
+Date: Mon, 26 Feb 2018 11:57:25 +0200
+Message-ID: <87po4s2hve.fsf@intel.com>
+References: <1519300881-8136-1-git-send-email-claudiu.beznea@microchip.com>
+ <1519300881-8136-6-git-send-email-claudiu.beznea@microchip.com>
+ <20180222123308.mypx2r7n6o63mj5z@oak.lan>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5412464591013981586=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180225135308.GA14561@arx-s1>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: hao_zhang <hao5781286@gmail.com>
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, linux-sunxi@googlegroups.com, linux@armlinux.org.uk, robh+dt@kernel.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, wens@csie.org, thierry.reding@gmail.com, Claudiu.Beznea@microchip.com, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <20180222123308.mypx2r7n6o63mj5z@oak.lan>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Daniel Thompson <daniel.thompson@linaro.org>, Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc: mark.rutland@arm.com, milo.kim@ti.com, linux-fbdev@vger.kernel.org, sean@mess.org, devicetree@vger.kernel.org, airlied@linux.ie, mturquette@baylibre.com, kamil@wypas.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, alexandre.belloni@free-electrons.com, pavel@ucw.cz, lee.jones@linaro.org, linux-clk@vger.kernel.org, linux-leds@vger.kernel.org, linux-samsung-soc@vger.kernel.org, shc_work@mail.ru, corbet@lwn.net, linux-doc@vger.kernel.org, linux@armlinux.org.uk, krzk@kernel.org, kgene@kernel.org, linux-input@vger.kernel.org, linux@roeck-us.net, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, jdelvare@suse.com, b.zolnierkie@samsung.com, intel-gfx@lists.freedesktop.org, robh+dt@kernel.org, jacek.anaszewski@gmail.com, rodrigo.vivi@intel.com, mchehab@kernel.org, linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org, jingoohan1@gmail.com, dm
 List-Id: linux-pwm@vger.kernel.org
 
-
---===============5412464591013981586==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="qll7qxses6t7myt2"
-Content-Disposition: inline
-
-
---qll7qxses6t7myt2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-Thanks for respinning this serie. It looks mostly good, but you still
-have a quite significant number of checkpatch (--strict) warnings that
-you should address.
-
-On Sun, Feb 25, 2018 at 09:53:08PM +0800, hao_zhang wrote:
-> +#define CAPTURE_IRQ_ENABLE_REG	0x0010
-> +#define CFIE(ch)	BIT(ch << 1 + 1)
-> +#define CRIE(ch)	BIT(ch << 1)
-
-You should also put your argument between parentheses here (and in all
-your other macros).
-
-> +static const u16 div_m_table[] =3D {
-> +	1,
-> +	2,
-> +	4,
-> +	8,
-> +	16,
-> +	32,
-> +	64,
-> +	128,
-> +	256
-> +};
-
-If this is just a power of two, you can use either the power of two /
-ilog2 to switch back and forth, instead of using that table.
-
-> +static int sun8i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-> +		struct pwm_state *state)
-> +{
-> +	int ret;
-> +	struct sun8i_pwm_chip *sun8i_pwm =3D to_sun8i_pwm_chip(chip);
-> +	struct pwm_state cstate;
-> +
-> +	pwm_get_state(pwm, &cstate);
-> +	if (!cstate.enabled) {
-> +		ret =3D clk_prepare_enable(sun8i_pwm->clk);
-> +		if (ret) {
-> +			dev_err(chip->dev, "Failed to enable PWM clock\n");
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	spin_lock(&sun8i_pwm->ctrl_lock);
-
-What do you need that spinlock for? Can you use a mutex instead?
-
-Thanks!
-Maxime
-
---=20
-Maxime Ripard, Bootlin (formerly Free Electrons)
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
---qll7qxses6t7myt2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlqTzLUACgkQ0rTAlCFN
-r3SqOg//bo7m7IUR7oYaiZbqV2DycgSB6AAogE2/r1a6VnXdnqndUd/7wd0OPG0C
-lxdFSuONBYUgz0nrl7gobSCN59TMN4b2IFVW547jvjxZ95s5D8otpujTFTQes2kx
-ss37r7SCClQvmtr8H3uJYiIzt7NGRVT+/XUGSthHGVBZmkgHdpWfDboiDFyko3ZU
-bC4lofM2UoOOAsfHns9AZE+9BiXhZ7/sT7q19Msmd4zcC8xv5Su6b1zZAkSHvI1J
-9kay0dUMzI37/1XqR6xAMWQeMybK4sO9+OKnSYYmID7NKrTGdTA0G0rUsLOa+QTf
-ycMkUYJoq6ddxejrpNzHrkTuhJ9FGGZEoYtDT4gpH9LWC96/8Asq3VIrX/Gxg8uM
-6DjYa4ehkGxBMZ74wyBDxn71w9Pv1OlIgbg/AtvDt4QcvVMI6cF+yy8Qnj0YSu3w
-If9eybVDcdBUEp6d+xT0eq/JOJ2sqxRsIRwrXSiaVc9379yeO0EpJsT1bXF7P5zw
-fHhCYfUByrvOEDE+Ql/0LCn2y6FyrHQ6jc4kuEpf9ZdqDw6On4WQFardROmkeN87
-ThtGBKNX5n4fb1rLA/qgVlQp1vt2ULGRkiBjklMbxglIlbiyTSZmM+m+UfZJSmtV
-4qvUCB7rzWd3SveRbF1fm/XNXpjFTfwxaBdBRtjuEHcTK4u+s3E=
-=LwIi
------END PGP SIGNATURE-----
-
---qll7qxses6t7myt2--
-
-
---===============5412464591013981586==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---===============5412464591013981586==--
+T24gVGh1LCAyMiBGZWIgMjAxOCwgRGFuaWVsIFRob21wc29uIDxkYW5pZWwudGhvbXBzb25AbGlu
+YXJvLm9yZz4gd3JvdGU6Cj4gT24gVGh1LCBGZWIgMjIsIDIwMTggYXQgMDI6MDE6MTZQTSArMDIw
+MCwgQ2xhdWRpdSBCZXpuZWEgd3JvdGU6Cj4+IEFkZCBQV00gbW9kZSB0byBwd21fY29uZmlnKCkg
+ZnVuY3Rpb24uIFRoZSBkcml2ZXJzIHdoaWNoIHVzZXMgcHdtX2NvbmZpZygpCj4+IHdlcmUgYWRh
+cHRlZCB0byB0aGlzIGNoYW5nZS4KPj4gCj4+IFNpZ25lZC1vZmYtYnk6IENsYXVkaXUgQmV6bmVh
+IDxjbGF1ZGl1LmJlem5lYUBtaWNyb2NoaXAuY29tPgo+PiAtLS0KPj4gIGFyY2gvYXJtL21hY2gt
+czNjMjR4eC9tYWNoLXJ4MTk1MC5jICB8IDExICsrKysrKysrKy0tCj4+ICBkcml2ZXJzL2J1cy90
+cy1uYnVzLmMgICAgICAgICAgICAgICAgfCAgMiArLQo+PiAgZHJpdmVycy9jbGsvY2xrLXB3bS5j
+ICAgICAgICAgICAgICAgIHwgIDMgKystCj4+ICBkcml2ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9w
+YW5lbC5jICAgfCAxNyArKysrKysrKysrKysrKy0tLQo+PiAgZHJpdmVycy9od21vbi9wd20tZmFu
+LmMgICAgICAgICAgICAgIHwgIDIgKy0KPj4gIGRyaXZlcnMvaW5wdXQvbWlzYy9tYXg3NzY5My1o
+YXB0aWMuYyB8ICAyICstCj4+ICBkcml2ZXJzL2lucHV0L21pc2MvbWF4ODk5N19oYXB0aWMuYyAg
+fCAgNiArKysrKy0KPj4gIGRyaXZlcnMvbGVkcy9sZWRzLXB3bS5jICAgICAgICAgICAgICB8ICA1
+ICsrKystCj4+ICBkcml2ZXJzL21lZGlhL3JjL2lyLXJ4NTEuYyAgICAgICAgICAgfCAgNSArKysr
+LQo+PiAgZHJpdmVycy9tZWRpYS9yYy9wd20taXItdHguYyAgICAgICAgIHwgIDUgKysrKy0KPj4g
+IGRyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L2xtMzYzMGFfYmwuYyB8ICA0ICsrKy0KPj4gIGRyaXZl
+cnMvdmlkZW8vYmFja2xpZ2h0L2xwODU1eF9ibC5jICB8ICA0ICsrKy0KPj4gIGRyaXZlcnMvdmlk
+ZW8vYmFja2xpZ2h0L2xwODc4OF9ibC5jICB8ICA1ICsrKystCj4+ICBkcml2ZXJzL3ZpZGVvL2Jh
+Y2tsaWdodC9wd21fYmwuYyAgICAgfCAxMSArKysrKysrKystLQo+PiAgZHJpdmVycy92aWRlby9m
+YmRldi9zc2QxMzA3ZmIuYyAgICAgIHwgIDMgKystCj4+ICBpbmNsdWRlL2xpbnV4L3B3bS5oICAg
+ICAgICAgICAgICAgICAgfCAgNiArKysrLS0KPj4gIDE2IGZpbGVzIGNoYW5nZWQsIDcwIGluc2Vy
+dGlvbnMoKyksIDIxIGRlbGV0aW9ucygtKQo+PiAKPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmlk
+ZW8vYmFja2xpZ2h0L2xtMzYzMGFfYmwuYyBiL2RyaXZlcnMvdmlkZW8vYmFja2xpZ2h0L2xtMzYz
+MGFfYmwuYwo+PiBpbmRleCAyMDMwYTZiNzdhMDkuLjY5NmZhMjVkYWZkMiAxMDA2NDQKPj4gLS0t
+IGEvZHJpdmVycy92aWRlby9iYWNrbGlnaHQvbG0zNjMwYV9ibC5jCj4+ICsrKyBiL2RyaXZlcnMv
+dmlkZW8vYmFja2xpZ2h0L2xtMzYzMGFfYmwuYwo+PiBAQCAtMTY1LDggKzE2NSwxMCBAQCBzdGF0
+aWMgdm9pZCBsbTM2MzBhX3B3bV9jdHJsKHN0cnVjdCBsbTM2MzBhX2NoaXAgKnBjaGlwLCBpbnQg
+YnIsIGludCBicl9tYXgpCj4+ICB7Cj4+ICAJdW5zaWduZWQgaW50IHBlcmlvZCA9IHBjaGlwLT5w
+ZGF0YS0+cHdtX3BlcmlvZDsKPj4gIAl1bnNpZ25lZCBpbnQgZHV0eSA9IGJyICogcGVyaW9kIC8g
+YnJfbWF4Owo+PiArCXN0cnVjdCBwd21fY2FwcyBjYXBzID0geyB9Owo+PiAgCj4+IC0JcHdtX2Nv
+bmZpZyhwY2hpcC0+cHdtZCwgZHV0eSwgcGVyaW9kKTsKPj4gKwlwd21fZ2V0X2NhcHMocGNoaXAt
+PnB3bWQtPmNoaXAsIHBjaGlwLT5wd21kLCAmY2Fwcyk7Cj4+ICsJcHdtX2NvbmZpZyhwY2hpcC0+
+cHdtZCwgZHV0eSwgcGVyaW9kLCBCSVQoZmZzKGNhcHMubW9kZXMpIC0gMSkpOwo+Cj4gV2VsbC4u
+LiBJIGFkbWl0IEkndmUgb25seSByZWFsbHkgbG9va2VkIGF0IHRoZSBwYXRjaGVzIHRoYXQgaW1w
+YWN0IAo+IGJhY2tsaWdodCBidXQgZGlzcGVyc2luZyB0aGlzIHJlYWxseSBvZGQgbG9va2luZyBi
+aXQgdHdpZGRsaW5nIAo+IHRocm91Z2hvdXQgdGhlIGtlcm5lbCBkb2Vzbid0IHN0cmlrZSBtZSBh
+IGdyZWF0IEFQSSBkZXNpZ24uCj4KPiBJTUhPIGNhbGxlcnMgc2hvdWxkIG5vdCBiZSByZXF1aXJl
+ZCB0byBmaW5kIHRoZSBmaXJzdCBzZXQgYml0IGluCj4gc29tZSBzcGVjaWFsbHkgY3JhZnRlZCBz
+ZXQgb2YgY2FwYWJpbGl0eSBiaXRzIHNpbXBseSB0byBnZXQgc2FuZSAKPiBkZWZhdWx0IGJlaGF2
+aW91ci4KCkFncmVlZC4gSU1ITyB0aGUgcmVndWxhciB1c2UgY2FzZSBiZWNvbWVzIHJhdGhlciB0
+ZWRpb3VzLCB1Z2x5LCBhbmQKZXJyb3IgcHJvbmUuCgpCUiwKSmFuaS4KCgotLSAKSmFuaSBOaWt1
+bGEsIEludGVsIE9wZW4gU291cmNlIFRlY2hub2xvZ3kgQ2VudGVyCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkludGVsLWdmeCBtYWlsaW5nIGxpc3QKSW50
+ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9y
+Zy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdmeAo=
