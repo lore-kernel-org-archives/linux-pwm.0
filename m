@@ -1,61 +1,87 @@
 From: Maxime Ripard <maxime.ripard@bootlin.com>
-Subject: Re: [PATCH v2 2/4] ARM: dtsi: add pwm node for sun8i.
-Date: Mon, 26 Feb 2018 09:49:19 +0100
-Message-ID: <20180226084919.wt2yljq3nxr5g2vu@flea.lan>
-References: <20180225135134.GA14529@arx-s1>
+Subject: Re: [PATCH v2 4/4] ARM: PWM: add allwinner sun8i pwm support.
+Date: Mon, 26 Feb 2018 10:00:38 +0100
+Message-ID: <20180226090038.etk5q4pd4rl5dvf6@flea.lan>
+References: <20180225135308.GA14561@arx-s1>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="fexov7z6xzyq67m7"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180225135134.GA14529@arx-s1>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============5412464591013981586=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180225135308.GA14561@arx-s1>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: hao_zhang <hao5781286@gmail.com>
-Cc: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, wens@csie.org, Claudiu.Beznea@microchip.com, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-sunxi@googlegroups.com
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, linux-pwm@vger.kernel.org, linux-sunxi@googlegroups.com, linux@armlinux.org.uk, robh+dt@kernel.org, linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, wens@csie.org, thierry.reding@gmail.com, Claudiu.Beznea@microchip.com, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---fexov7z6xzyq67m7
+--===============5412464591013981586==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="qll7qxses6t7myt2"
+Content-Disposition: inline
+
+
+--qll7qxses6t7myt2
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Feb 25, 2018 at 09:51:34PM +0800, hao_zhang wrote:
-> This patch adds pwm node for sun8i.
->=20
-> Signed-off-by: hao_zhang <hao5781286@gmail.com>
-> ---
->  arch/arm/boot/dts/sun8i-r40.dtsi | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
->=20
-> diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r=
-40.dtsi
-> index 173dcc1..99a0261 100644
-> --- a/arch/arm/boot/dts/sun8i-r40.dtsi
-> +++ b/arch/arm/boot/dts/sun8i-r40.dtsi
-> @@ -295,6 +295,11 @@
->  				bias-pull-up;
->  			};
-> =20
-> +			pwm_ch0_pin: pwm-ch0-pin {
-> +				pins =3D "PB2";
-> +				function =3D "pwm";
-> +			};
+Hi,
+
+Thanks for respinning this serie. It looks mostly good, but you still
+have a quite significant number of checkpatch (--strict) warnings that
+you should address.
+
+On Sun, Feb 25, 2018 at 09:53:08PM +0800, hao_zhang wrote:
+> +#define CAPTURE_IRQ_ENABLE_REG	0x0010
+> +#define CFIE(ch)	BIT(ch << 1 + 1)
+> +#define CRIE(ch)	BIT(ch << 1)
+
+You should also put your argument between parentheses here (and in all
+your other macros).
+
+> +static const u16 div_m_table[] =3D {
+> +	1,
+> +	2,
+> +	4,
+> +	8,
+> +	16,
+> +	32,
+> +	64,
+> +	128,
+> +	256
+> +};
+
+If this is just a power of two, you can use either the power of two /
+ilog2 to switch back and forth, instead of using that table.
+
+> +static int sun8i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+> +		struct pwm_state *state)
+> +{
+> +	int ret;
+> +	struct sun8i_pwm_chip *sun8i_pwm =3D to_sun8i_pwm_chip(chip);
+> +	struct pwm_state cstate;
 > +
->  			uart0_pb_pins: uart0-pb-pins {
->  				pins =3D "PB22", "PB23";
->  				function =3D "uart0";
-> @@ -306,6 +311,14 @@
->  			reg =3D <0x01c20c90 0x10>;
->  		};
-> =20
-> +		pwm: pwm@1c23400 {
-> +			     compatible =3D "allwinner,sun8i-r40-pwm";
-> +			     reg =3D <0x01c23400 0x154>;
+> +	pwm_get_state(pwm, &cstate);
+> +	if (!cstate.enabled) {
+> +		ret =3D clk_prepare_enable(sun8i_pwm->clk);
+> +		if (ret) {
+> +			dev_err(chip->dev, "Failed to enable PWM clock\n");
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	spin_lock(&sun8i_pwm->ctrl_lock);
 
-The size must be the size of the whole memory block allocated to the
-controller, so that would be 0x400 in this case.
+What do you need that spinlock for? Can you use a mutex instead?
 
+Thanks!
 Maxime
 
 --=20
@@ -63,24 +89,38 @@ Maxime Ripard, Bootlin (formerly Free Electrons)
 Embedded Linux and Kernel engineering
 https://bootlin.com
 
---fexov7z6xzyq67m7
+--qll7qxses6t7myt2
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlqTyg4ACgkQ0rTAlCFN
-r3Rkig/9GI/xqfLzW6iT4OlKaSseYWJWJ6rvEt1oY8o7bkVa4mMLV7POVS12FbCc
-fGQeq9vDI4ohMwW6Wgu7PARNXRTMaVUkt2CKVewaniGiWoFshUTvmw8UiEWKtshK
-Nu8P9DfhfTIEU1SPWBTy3y6LcPwbCTVMbNzqFthNCI5/ac3yzHPP4UrYhwFPQh3M
-JYVfG5c+pard1iSIt4+kX3P9AEnmDuX3SY2QHxsDTwYG2v6GT/ExazLidBb1JeFn
-scMeZvXmpK7X+XmNaAMECU59m41W6exkbPAYu5o1XqQFKvrkjpbVB1rEaCdc6RWH
-T7dh+G6KJi/1J+PE9MScYFkJIiEXugnVygKGhq7La3lrXDuv5QmnasBTVJvUlf2L
-lUpe7OMy8+WfqUaR4n7smhCU2/IFWODp6UxHg0ZpXjjlQjWN7n+iyQYLfHti8iVk
-2EoB1EhOTtB6dcxHN53MirTw3jy4XtHYuRthODDkMmdC+qBJJgI9VSqtBHkrznnT
-uc5V6lRfpyIiqI3Mhzqfyvs2mqZrZO1P/m2iFF37ngN1uHDvzej/bNPiuWb4rNxO
-Eqg9TLroJfnaKw/f+asfdF3JmIrHUHl7fmL4RqPYFMFJaVDgqHM63o4vlecMO8zD
-uby9ebszip4put0K3SMa/egmkkCdrRlagMSsiJyasAoldZBb9CY=
-=ZRzc
+iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlqTzLUACgkQ0rTAlCFN
+r3SqOg//bo7m7IUR7oYaiZbqV2DycgSB6AAogE2/r1a6VnXdnqndUd/7wd0OPG0C
+lxdFSuONBYUgz0nrl7gobSCN59TMN4b2IFVW547jvjxZ95s5D8otpujTFTQes2kx
+ss37r7SCClQvmtr8H3uJYiIzt7NGRVT+/XUGSthHGVBZmkgHdpWfDboiDFyko3ZU
+bC4lofM2UoOOAsfHns9AZE+9BiXhZ7/sT7q19Msmd4zcC8xv5Su6b1zZAkSHvI1J
+9kay0dUMzI37/1XqR6xAMWQeMybK4sO9+OKnSYYmID7NKrTGdTA0G0rUsLOa+QTf
+ycMkUYJoq6ddxejrpNzHrkTuhJ9FGGZEoYtDT4gpH9LWC96/8Asq3VIrX/Gxg8uM
+6DjYa4ehkGxBMZ74wyBDxn71w9Pv1OlIgbg/AtvDt4QcvVMI6cF+yy8Qnj0YSu3w
+If9eybVDcdBUEp6d+xT0eq/JOJ2sqxRsIRwrXSiaVc9379yeO0EpJsT1bXF7P5zw
+fHhCYfUByrvOEDE+Ql/0LCn2y6FyrHQ6jc4kuEpf9ZdqDw6On4WQFardROmkeN87
+ThtGBKNX5n4fb1rLA/qgVlQp1vt2ULGRkiBjklMbxglIlbiyTSZmM+m+UfZJSmtV
+4qvUCB7rzWd3SveRbF1fm/XNXpjFTfwxaBdBRtjuEHcTK4u+s3E=
+=LwIi
 -----END PGP SIGNATURE-----
 
---fexov7z6xzyq67m7--
+--qll7qxses6t7myt2--
+
+
+--===============5412464591013981586==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============5412464591013981586==--
