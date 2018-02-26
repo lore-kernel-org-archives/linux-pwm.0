@@ -1,472 +1,75 @@
-From: hao_zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 4/4] ARM: PWM: add allwinner sun8i pwm support.
-Date: Sun, 25 Feb 2018 21:53:08 +0800
-Message-ID: <20180225135308.GA14561@arx-s1>
-Reply-To: hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+From: Claudiu Beznea <Claudiu.Beznea@microchip.com>
+Subject: Re: [PATCH v3 01/10] pwm: extend PWM framework with PWM modes
+Date: Mon, 26 Feb 2018 10:11:45 +0200
+Message-ID: <a26cdf7b-024e-957b-8691-c3c898d0d9d6@microchip.com>
+References: <1519300881-8136-2-git-send-email-claudiu.beznea@microchip.com>
+ <201802250410.reI8wAy2%fengguang.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-sunxi+bncBDKITZOARQMBBT77ZLKAKGQERUDVEKQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-Content-Disposition: inline
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, wens-jdAy2FN1RRM@public.gmane.org, maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org, Claudiu.Beznea-UWL1GkI3JZL3oGB3hsPCZA@public.gmane.org
-Cc: linux-gpio-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <201802250410.reI8wAy2%fengguang.wu@intel.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: kbuild test robot <lkp@intel.com>
+Cc: kbuild-all@01.org, thierry.reding@gmail.com, shc_work@mail.ru, kgene@kernel.org, krzk@kernel.org, linux@armlinux.org.uk, mturquette@baylibre.com, sboyd@codeaurora.org, jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com, airlied@linux.ie, kamil@wypas.org, b.zolnierkie@samsung.com, jdelvare@suse.com, linux@roeck-us.net, dmitry.torokhov@gmail.com, rpurdie@rpsys.net, jacek.anaszewski@gmail.com, pavel@ucw.cz, mchehab@kernel.org, sean@mess.org, lee.jones@linaro.org, daniel.thompson@linaro.org, jingoohan1@gmail.com, milo.kim@ti.com, robh+dt@kernel.org, mark.rutland@arm.com, corbet@lwn.net, nicolas.ferre@microchip.com, alexandre.belloni@free-electrons.com, linux-pwm@vger.kernel.orgl
 List-Id: linux-pwm@vger.kernel.org
 
-This patch add allwinner sun8i pwm support.
+I'll rebase it on latest for-next in next version.
 
-Signed-off-by: hao_zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
- drivers/pwm/Kconfig     |  10 ++
- drivers/pwm/Makefile    |   1 +
- drivers/pwm/pwm-sun8i.c | 401 ++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 412 insertions(+)
- create mode 100644 drivers/pwm/pwm-sun8i.c
+Thank you,
+Claudiu Beznea
 
-diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 763ee50..7e68d0f 100644
---- a/drivers/pwm/Kconfig
-+++ b/drivers/pwm/Kconfig
-@@ -444,6 +444,16 @@ config PWM_SUN4I
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called pwm-sun4i.
- 
-+config PWM_SUN8I
-+	tristate "Allwinner PWM SUN8I support"
-+	depends on ARCH_SUNXI || COMPILE_TEST
-+	depends on HAS_IOMEM && COMMON_CLK
-+	help
-+	  Generic PWM framework driver for Allwinner SoCs.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called pwm-sun8i.
-+
- config PWM_TEGRA
- 	tristate "NVIDIA Tegra PWM support"
- 	depends on ARCH_TEGRA
-diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-index 0258a74..cd6bf40 100644
---- a/drivers/pwm/Makefile
-+++ b/drivers/pwm/Makefile
-@@ -44,6 +44,7 @@ obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
- obj-$(CONFIG_PWM_STM32_LP)	+= pwm-stm32-lp.o
- obj-$(CONFIG_PWM_STMPE)		+= pwm-stmpe.o
- obj-$(CONFIG_PWM_SUN4I)		+= pwm-sun4i.o
-+obj-$(CONFIG_PWM_SUN8I)		+= pwm-sun8i.o
- obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
- obj-$(CONFIG_PWM_TIECAP)	+= pwm-tiecap.o
- obj-$(CONFIG_PWM_TIEHRPWM)	+= pwm-tiehrpwm.o
-diff --git a/drivers/pwm/pwm-sun8i.c b/drivers/pwm/pwm-sun8i.c
-new file mode 100644
-index 0000000..cf23b0a
---- /dev/null
-+++ b/drivers/pwm/pwm-sun8i.c
-@@ -0,0 +1,401 @@
-+#include <linux/bitops.h>
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/pwm.h>
-+#include <linux/slab.h>
-+#include <linux/spinlock.h>
-+#include <linux/time.h>
-+#include <linux/regmap.h>
-+
-+#define PWM_IRQ_ENABLE_REG	0x0000
-+#define PCIE(ch)	BIT(ch)
-+
-+#define PWM_IRQ_STATUS_REG	0x0004
-+#define PIS(ch)	BIT(ch)
-+
-+#define CAPTURE_IRQ_ENABLE_REG	0x0010
-+#define CFIE(ch)	BIT(ch << 1 + 1)
-+#define CRIE(ch)	BIT(ch << 1)
-+
-+#define CAPTURE_IRQ_STATUS_REG	0x0014
-+#define CFIS(ch)	BIT(ch << 1 + 1)
-+#define CRIS(ch)	BIT(ch << 1)
-+
-+#define CLK_CFG_REG(ch)	(0x0020 + (ch >> 1) * 4)
-+#define CLK_SRC	BIT(7)
-+#define CLK_SRC_BYPASS_SEC	BIT(6)
-+#define CLK_SRC_BYPASS_FIR	BIT(5)
-+#define CLK_GATING	BIT(4)
-+#define CLK_DIV_M	GENMASK(3, 0)
-+
-+#define PWM_DZ_CTR_REG(ch)	(0x0030 + (ch >> 1) * 4)
-+#define PWM_DZ_INTV	GENMASK(15, 8)
-+#define PWM_DZ_EN	BIT(0)
-+
-+#define PWM_ENABLE_REG	0x0040
-+#define PWM_EN(ch)	BIT(ch)
-+
-+#define CAPTURE_ENABLE_REG	0x0044
-+#define CAP_EN(ch)	BIT(ch)
-+
-+#define PWM_CTR_REG(ch)	(0x0060 + ch * 0x20)
-+#define PWM_PERIOD_RDY	BIT(11)
-+#define PWM_PUL_START	BIT(10)
-+#define PWM_MODE	BIT(9)
-+#define PWM_ACT_STA	BIT(8)
-+#define PWM_PRESCAL_K	GENMASK(7, 0)
-+
-+#define PWM_PERIOD_REG(ch)	(0x0064 + ch * 0x20)
-+#define PWM_ENTIRE_CYCLE	GENMASK(31, 16)
-+#define PWM_ACT_CYCLE	GENMASK(15, 0)
-+
-+#define PWM_CNT_REG(ch)	(0x0068 + ch * 0x20)
-+#define PWM_CNT_VAL	GENMASK(15, 0)
-+
-+#define CAPTURE_CTR_REG(ch)	(0x006c + ch * 0x20)
-+#define CAPTURE_CRLF	BIT(2)
-+#define CAPTURE_CFLF	BIT(1)
-+#define CAPINV	BIT(0)
-+
-+#define CAPTURE_RISE_REG(ch)	(0x0070 + ch * 0x20)
-+#define CAPTURE_CRLR	GENMASK(15, 0)
-+
-+#define CAPTURE_FALL_REG(ch)	(0x0074 + ch * 0x20)
-+#define CAPTURE_CFLR	GENMASK(15, 0)
-+
-+struct sun8i_pwm_data {
-+	bool has_prescaler_bypass;
-+	bool has_rdy;
-+	unsigned int npwm;
-+};
-+
-+struct sun8i_pwm_chip {
-+	struct pwm_chip chip;
-+	struct clk *clk;
-+	void __iomem *base;
-+	spinlock_t ctrl_lock;
-+	const struct sun8i_pwm_data *data;
-+	struct regmap *regmap;
-+};
-+
-+static const u16 div_m_table[] = {
-+	1,
-+	2,
-+	4,
-+	8,
-+	16,
-+	32,
-+	64,
-+	128,
-+	256
-+};
-+
-+static inline struct sun8i_pwm_chip *to_sun8i_pwm_chip(struct pwm_chip *chip)
-+{
-+	return container_of(chip, struct sun8i_pwm_chip, chip);
-+}
-+
-+static u32 sun8i_pwm_read(struct sun8i_pwm_chip *sun8i_pwm,
-+		unsigned long offset)
-+{
-+	u32 val;
-+
-+	regmap_read(sun8i_pwm->regmap, offset, &val);
-+
-+	return val;
-+}
-+
-+static inline void sun8i_pwm_set_bit(struct sun8i_pwm_chip *sun8i_pwm,
-+		unsigned long reg, u32 bit)
-+{
-+	regmap_update_bits(sun8i_pwm->regmap, reg, bit, bit);
-+}
-+
-+static inline void sun8i_pwm_clear_bit(struct sun8i_pwm_chip *sun8i_pwm,
-+		unsigned long reg, u32 bit)
-+{
-+	regmap_update_bits(sun8i_pwm->regmap, reg, bit, 0);
-+}
-+
-+static inline void sun8i_pwm_set_value(struct sun8i_pwm_chip *sun8i_pwm,
-+		unsigned long reg, u32 mask, u32 val)
-+{
-+	regmap_update_bits(sun8i_pwm->regmap, reg, mask, val);
-+}
-+
-+static void sun8i_pwm_set_polarity(struct sun8i_pwm_chip *chip, u32 ch,
-+		enum pwm_polarity polarity)
-+{
-+	if (polarity == PWM_POLARITY_NORMAL)
-+		sun8i_pwm_set_bit(chip, PWM_CTR_REG(ch), PWM_ACT_STA);
-+	else
-+		sun8i_pwm_clear_bit(chip, PWM_CTR_REG(ch), PWM_ACT_STA);
-+}
-+
-+static int sun8i_pwm_config(struct sun8i_pwm_chip *sun8i_pwm, u8 ch,
-+		struct pwm_state *state)
-+{
-+	u64 clk_rate, clk_div, val;
-+	u16 prescaler = 0;
-+	u8 id = 0;
-+
-+	clk_rate = clk_get_rate(sun8i_pwm->clk);
-+
-+	if (clk_rate == 24000000)
-+		sun8i_pwm_clear_bit(sun8i_pwm, CLK_CFG_REG(ch), CLK_SRC);
-+	else
-+		sun8i_pwm_set_bit(sun8i_pwm, CLK_CFG_REG(ch), CLK_SRC);
-+
-+	if (sun8i_pwm->data->has_prescaler_bypass) {
-+		/* pwm output bypass */
-+		if (ch % 2)
-+			sun8i_pwm_set_bit(sun8i_pwm, CLK_CFG_REG(ch),
-+					CLK_SRC_BYPASS_FIR);
-+		else
-+			sun8i_pwm_set_bit(sun8i_pwm, CLK_CFG_REG(ch),
-+					CLK_SRC_BYPASS_SEC);
-+		return 0;
-+	}
-+
-+	val = state->period * clk_rate;
-+	do_div(val, NSEC_PER_SEC);
-+	if (val < 1) {
-+		dev_err(sun8i_pwm->chip.dev,
-+				"Period expects a larger value\n");
-+		return -EINVAL;
-+	}
-+
-+	/* calculate and set prescalar, div table, pwn entrie cycle */
-+	clk_div = val;
-+
-+	while (clk_div > 65535) {
-+		prescaler++;
-+		clk_div = val;
-+		do_div(clk_div, prescaler + 1);
-+		do_div(clk_div, div_m_table[id]);
-+
-+		if (prescaler == 255) {
-+			prescaler = 0;
-+			id++;
-+			if (id == 9)
-+				return -EINVAL;
-+		}
-+	}
-+
-+	sun8i_pwm_set_value(sun8i_pwm, PWM_PERIOD_REG(ch),
-+			PWM_ENTIRE_CYCLE, clk_div << 16);
-+	sun8i_pwm_set_value(sun8i_pwm, PWM_CTR_REG(ch),
-+			PWM_PRESCAL_K, prescaler << 0);
-+	sun8i_pwm_set_value(sun8i_pwm, CLK_CFG_REG(ch),
-+			CLK_DIV_M, id << 0);
-+
-+	/* set duty cycle */
-+	val = (prescaler + 1) * div_m_table[id] * clk_div;
-+	val = state->period;
-+	do_div(val, clk_div);
-+	clk_div = state->duty_cycle;
-+	do_div(clk_div, val);
-+
-+	sun8i_pwm_set_value(sun8i_pwm, PWM_PERIOD_REG(ch),
-+			PWM_ACT_CYCLE, clk_div << 0);
-+
-+	return 0;
-+}
-+
-+static int sun8i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+		struct pwm_state *state)
-+{
-+	int ret;
-+	struct sun8i_pwm_chip *sun8i_pwm = to_sun8i_pwm_chip(chip);
-+	struct pwm_state cstate;
-+
-+	pwm_get_state(pwm, &cstate);
-+	if (!cstate.enabled) {
-+		ret = clk_prepare_enable(sun8i_pwm->clk);
-+		if (ret) {
-+			dev_err(chip->dev, "Failed to enable PWM clock\n");
-+			return ret;
-+		}
-+	}
-+
-+	spin_lock(&sun8i_pwm->ctrl_lock);
-+
-+	if ((cstate.period != state->period) ||
-+			(cstate.duty_cycle != state->duty_cycle)) {
-+		ret = sun8i_pwm_config(sun8i_pwm, pwm->hwpwm, state);
-+		if (ret) {
-+			spin_unlock(&sun8i_pwm->ctrl_lock);
-+			dev_err(chip->dev, "Failed to config PWM\n");
-+			return ret;
-+		}
-+	}
-+
-+	if (state->polarity != cstate.polarity)
-+		sun8i_pwm_set_polarity(sun8i_pwm, pwm->hwpwm, state->polarity);
-+
-+	if (state->enabled) {
-+		sun8i_pwm_set_bit(sun8i_pwm,
-+				CLK_CFG_REG(pwm->hwpwm), CLK_GATING);
-+
-+		sun8i_pwm_set_bit(sun8i_pwm,
-+				PWM_ENABLE_REG, PWM_EN(pwm->hwpwm));
-+	} else {
-+		sun8i_pwm_clear_bit(sun8i_pwm,
-+				CLK_CFG_REG(pwm->hwpwm), CLK_GATING);
-+
-+		sun8i_pwm_clear_bit(sun8i_pwm,
-+				PWM_ENABLE_REG, PWM_EN(pwm->hwpwm));
-+	}
-+
-+	spin_unlock(&sun8i_pwm->ctrl_lock);
-+
-+	return 0;
-+}
-+
-+static void sun8i_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-+		struct pwm_state *state)
-+{
-+	struct sun8i_pwm_chip *sun8i_pwm = to_sun8i_pwm_chip(chip);
-+	u64 clk_rate, tmp;
-+	u32 val;
-+	u16 clk_div, act_cycle;
-+	u8 prescal, id;
-+
-+	clk_rate = clk_get_rate(sun8i_pwm->clk);
-+
-+	val = sun8i_pwm_read(sun8i_pwm, PWM_CTR_REG(pwm->hwpwm));
-+	if (PWM_ACT_STA & val)
-+		state->polarity = PWM_POLARITY_NORMAL;
-+	else
-+		state->polarity = PWM_POLARITY_INVERSED;
-+
-+	prescal = PWM_PRESCAL_K & val;
-+
-+	val = sun8i_pwm_read(sun8i_pwm, PWM_ENABLE_REG);
-+	if (PWM_EN(pwm->hwpwm) & val)
-+		state->enabled = true;
-+	else
-+		state->enabled = false;
-+
-+	val = sun8i_pwm_read(sun8i_pwm, PWM_PERIOD_REG(pwm->hwpwm));
-+	act_cycle = PWM_ACT_CYCLE & val;
-+	clk_div = val >> 16;
-+
-+	val = sun8i_pwm_read(sun8i_pwm, CLK_CFG_REG(pwm->hwpwm));
-+	id = CLK_DIV_M & val;
-+
-+	tmp = act_cycle * prescal * div_m_table[id] * NSEC_PER_SEC;
-+	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
-+	tmp = clk_div * prescal * div_m_table[id] * NSEC_PER_SEC;
-+	state->period = DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
-+}
-+
-+static const struct regmap_config sun8i_pwm_regmap_config = {
-+	.reg_bits = 32,
-+	.reg_stride = 4,
-+	.val_bits = 32,
-+	.max_register = CAPTURE_FALL_REG(7),
-+};
-+
-+static const struct pwm_ops sun8i_pwm_ops = {
-+	.apply = sun8i_pwm_apply,
-+	.get_state = sun8i_pwm_get_state,
-+	.owner = THIS_MODULE,
-+};
-+
-+static const struct sun8i_pwm_data sun8i_pwm_data_r40 = {
-+	.has_prescaler_bypass = false,
-+	.has_rdy = true,
-+	.npwm = 8,
-+};
-+
-+static const struct of_device_id sun8i_pwm_dt_ids[] = {
-+	{
-+		.compatible = "allwinner,sun8i-r40-pwm",
-+		.data = &sun8i_pwm_data_r40,
-+	},
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, sun8i_pwm_dt_ids);
-+
-+static int sun8i_pwm_probe(struct platform_device *pdev)
-+{
-+	struct sun8i_pwm_chip *pwm;
-+	struct resource *res;
-+	int ret;
-+	const struct of_device_id *match;
-+
-+	match = of_match_device(sun8i_pwm_dt_ids, &pdev->dev);
-+	if (!match) {
-+		dev_err(&pdev->dev, "Error: No device match found\n");
-+		return -ENODEV;
-+	}
-+
-+	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
-+	if (!pwm)
-+		return -ENOMEM;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	pwm->base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(pwm->base))
-+		return PTR_ERR(pwm->base);
-+
-+	pwm->regmap = devm_regmap_init_mmio(&pdev->dev, pwm->base,
-+			&sun8i_pwm_regmap_config);
-+	if (IS_ERR(pwm->regmap)) {
-+		dev_err(&pdev->dev, "Failed to create regmap\n");
-+		return PTR_ERR(pwm->regmap);
-+	}
-+
-+	pwm->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(pwm->clk))
-+		return PTR_ERR(pwm->clk);
-+
-+	pwm->data = match->data;
-+	pwm->chip.dev = &pdev->dev;
-+	pwm->chip.ops = &sun8i_pwm_ops;
-+	pwm->chip.base = -1;
-+	pwm->chip.npwm = pwm->data->npwm;
-+	pwm->chip.of_xlate = of_pwm_xlate_with_flags;
-+	pwm->chip.of_pwm_n_cells = 3;
-+
-+	spin_lock_init(&pwm->ctrl_lock);
-+
-+	ret = pwmchip_add(&pwm->chip);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "Failed to add PWM chip: %d\n", ret);
-+		return ret;
-+	}
-+
-+	platform_set_drvdata(pdev, pwm);
-+
-+	return 0;
-+}
-+
-+static int sun8i_pwm_remove(struct platform_device *pdev)
-+{
-+	struct sun8i_pwm_chip *pwm = platform_get_drvdata(pdev);
-+
-+	return pwmchip_remove(&pwm->chip);
-+}
-+
-+static struct platform_driver sun8i_pwm_driver = {
-+	.driver = {
-+		.name = "sun8i-pwm",
-+		.of_match_table = sun8i_pwm_dt_ids,
-+	},
-+	.probe = sun8i_pwm_probe,
-+	.remove = sun8i_pwm_remove,
-+};
-+module_platform_driver(sun8i_pwm_driver);
-+
-+MODULE_ALIAS("platform: sun8i-pwm");
-+MODULE_AUTHOR("Hao Zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>");
-+MODULE_DESCRIPTION("Allwinner sun8i PWM driver");
-+MODULE_LICENSE("GPL v2");
--- 
-2.7.4
+On 24.02.2018 22:49, kbuild test robot wrote:
+> Hi Claudiu,
+> 
+> Thank you for the patch! Perhaps something to improve:
+> 
+> [auto build test WARNING on pwm/for-next]
+> [also build test WARNING on v4.16-rc2 next-20180223]
+> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Claudiu-Beznea/extend-PWM-framework-to-support-PWM-modes/20180225-024011
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git for-next
+> config: xtensa-allmodconfig (attached as .config)
+> compiler: xtensa-linux-gcc (GCC) 7.2.0
+> reproduce:
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # save the attached .config to linux build tree
+>         make.cross ARCH=xtensa 
+> 
+> All warnings (new ones prefixed by >>):
+> 
+>>> drivers//pwm/pwm-sun4i.c:36:0: warning: "PWM_MODE" redefined
+>     #define PWM_MODE  BIT(7)
+>     
+>    In file included from drivers//pwm/pwm-sun4i.c:19:0:
+>    include/linux/pwm.h:40:0: note: this is the location of the previous definition
+>     #define PWM_MODE(name)  BIT(PWM_MODE_##name##_BIT)
+>     
+> 
+> vim +/PWM_MODE +36 drivers//pwm/pwm-sun4i.c
+> 
+> 09853ce7 Alexandre Belloni 2014-12-17  29  
+> 09853ce7 Alexandre Belloni 2014-12-17  30  #define PWMCH_OFFSET		15
+> 09853ce7 Alexandre Belloni 2014-12-17  31  #define PWM_PRESCAL_MASK	GENMASK(3, 0)
+> 09853ce7 Alexandre Belloni 2014-12-17  32  #define PWM_PRESCAL_OFF		0
+> 09853ce7 Alexandre Belloni 2014-12-17  33  #define PWM_EN			BIT(4)
+> 09853ce7 Alexandre Belloni 2014-12-17  34  #define PWM_ACT_STATE		BIT(5)
+> 09853ce7 Alexandre Belloni 2014-12-17  35  #define PWM_CLK_GATING		BIT(6)
+> 09853ce7 Alexandre Belloni 2014-12-17 @36  #define PWM_MODE		BIT(7)
+> 09853ce7 Alexandre Belloni 2014-12-17  37  #define PWM_PULSE		BIT(8)
+> 09853ce7 Alexandre Belloni 2014-12-17  38  #define PWM_BYPASS		BIT(9)
+> 09853ce7 Alexandre Belloni 2014-12-17  39  
+> 
+> :::::: The code at line 36 was first introduced by commit
+> :::::: 09853ce7bc1003a490c7ee74a5705d7a7cf16b7d pwm: Add Allwinner SoC support
+> 
+> :::::: TO: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> :::::: CC: Thierry Reding <thierry.reding@gmail.com>
+> 
+> ---
+> 0-DAY kernel test infrastructure                Open Source Technology Center
+> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+> 
