@@ -1,456 +1,473 @@
-From: Ladislav Michl <ladis@linux-mips.org>
-Subject: [PATCH v2] clocksource: timer-ti-dm: Make unexported functions static
-Date: Wed, 28 Feb 2018 08:25:19 +0100
-Message-ID: <20180228072519.GA8961@lenoch>
+From: Claudiu Beznea <Claudiu.Beznea@microchip.com>
+Subject: Re: [PATCH v2 4/4] ARM: PWM: add allwinner sun8i pwm support.
+Date: Wed, 28 Feb 2018 10:17:27 +0200
+Message-ID: <83f63105-e60e-a7a9-f691-c011981ff305@microchip.com>
+References: <20180225135308.GA14561@arx-s1>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Tony Lindgren <tony@atomide.com>
-Cc: linux-pwm@vger.kernel.org, aaro.koskinen@iki.fi, Keerthy <j-keerthy@ti.com>, daniel.lezcano@linaro.org, t-kristo@ti.com, robh+dt@kernel.org, narmstrong@baylibre.com, thierry.reding@gmail.com, Thomas Gleixner <tglx@linutronix.de>, Brecht Neyrinck <brechtneyrinck@gmail.com>, sebastian.reichel@collabora.co.uk, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, Claudiu.Beznea@microchip.com, linux-arm-kernel@lists.infradead.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180225135308.GA14561@arx-s1>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: hao_zhang <hao5781286@gmail.com>, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, wens@csie.org, maxime.ripard@free-electrons.com
+Cc: linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-sunxi@googlegroups.com
 List-Id: linux-pwm@vger.kernel.org
 
-As dmtimer no longer exports functions, make those previously
-exported static (this requires few functions to be moved around
-as their prototypes were deleted).
 
-Signed-off-by: Ladislav Michl <ladis@linux-mips.org>
----
- Changes:
- - v2: Fix compilation for OMAP1
 
- drivers/clocksource/timer-ti-dm.c | 224 +++++++++++++++++++-------------------
- include/clocksource/timer-ti-dm.h |  33 ------
- 2 files changed, 115 insertions(+), 142 deletions(-)
-
-diff --git a/drivers/clocksource/timer-ti-dm.c b/drivers/clocksource/timer-ti-dm.c
-index 70782a41c493..935350176c01 100644
---- a/drivers/clocksource/timer-ti-dm.c
-+++ b/drivers/clocksource/timer-ti-dm.c
-@@ -163,6 +163,92 @@ static int omap_dm_timer_of_set_source(struct omap_dm_timer *timer)
- 	return ret;
- }
- 
-+static int omap_dm_timer_set_source(struct omap_dm_timer *timer, int source)
-+{
-+	int ret;
-+	char *parent_name = NULL;
-+	struct clk *parent;
-+	struct dmtimer_platform_data *pdata;
-+
-+	if (unlikely(!timer))
-+		return -EINVAL;
-+
-+	pdata = timer->pdev->dev.platform_data;
-+
-+	if (source < 0 || source >= 3)
-+		return -EINVAL;
-+
-+	/*
-+	 * FIXME: Used for OMAP1 devices only because they do not currently
-+	 * use the clock framework to set the parent clock. To be removed
-+	 * once OMAP1 migrated to using clock framework for dmtimers
-+	 */
-+	if (pdata && pdata->set_timer_src)
-+		return pdata->set_timer_src(timer->pdev, source);
-+
-+	if (IS_ERR(timer->fclk))
-+		return -EINVAL;
-+
-+#if defined(CONFIG_COMMON_CLK)
-+	/* Check if the clock has configurable parents */
-+	if (clk_hw_get_num_parents(__clk_get_hw(timer->fclk)) < 2)
-+		return 0;
-+#endif
-+
-+	switch (source) {
-+	case OMAP_TIMER_SRC_SYS_CLK:
-+		parent_name = "timer_sys_ck";
-+		break;
-+
-+	case OMAP_TIMER_SRC_32_KHZ:
-+		parent_name = "timer_32k_ck";
-+		break;
-+
-+	case OMAP_TIMER_SRC_EXT_CLK:
-+		parent_name = "timer_ext_ck";
-+		break;
-+	}
-+
-+	parent = clk_get(&timer->pdev->dev, parent_name);
-+	if (IS_ERR(parent)) {
-+		pr_err("%s: %s not found\n", __func__, parent_name);
-+		return -EINVAL;
-+	}
-+
-+	ret = clk_set_parent(timer->fclk, parent);
-+	if (ret < 0)
-+		pr_err("%s: failed to set %s as parent\n", __func__,
-+			parent_name);
-+
-+	clk_put(parent);
-+
-+	return ret;
-+}
-+
-+static void omap_dm_timer_enable(struct omap_dm_timer *timer)
-+{
-+	int c;
-+
-+	pm_runtime_get_sync(&timer->pdev->dev);
-+
-+	if (!(timer->capability & OMAP_TIMER_ALWON)) {
-+		if (timer->get_context_loss_count) {
-+			c = timer->get_context_loss_count(&timer->pdev->dev);
-+			if (c != timer->ctx_loss_count) {
-+				omap_timer_restore_context(timer);
-+				timer->ctx_loss_count = c;
-+			}
-+		} else {
-+			omap_timer_restore_context(timer);
-+		}
-+	}
-+}
-+
-+static void omap_dm_timer_disable(struct omap_dm_timer *timer)
-+{
-+	pm_runtime_put_sync(&timer->pdev->dev);
-+}
-+
- static int omap_dm_timer_prepare(struct omap_dm_timer *timer)
- {
- 	int rc;
-@@ -298,16 +384,16 @@ static struct omap_dm_timer *_omap_dm_timer_request(int req_type, void *data)
- 	return timer;
- }
- 
--struct omap_dm_timer *omap_dm_timer_request(void)
-+static struct omap_dm_timer *omap_dm_timer_request(void)
- {
- 	return _omap_dm_timer_request(REQUEST_ANY, NULL);
- }
- 
--struct omap_dm_timer *omap_dm_timer_request_specific(int id)
-+static struct omap_dm_timer *omap_dm_timer_request_specific(int id)
- {
- 	/* Requesting timer by ID is not supported when device tree is used */
- 	if (of_have_populated_dt()) {
--		pr_warn("%s: Please use omap_dm_timer_request_by_cap/node()\n",
-+		pr_warn("%s: Please use omap_dm_timer_request_by_node()\n",
- 			__func__);
- 		return NULL;
- 	}
-@@ -336,7 +422,7 @@ struct omap_dm_timer *omap_dm_timer_request_by_cap(u32 cap)
-  * Request a timer based upon a device node pointer. Returns pointer to
-  * timer handle on success and a NULL pointer on failure.
-  */
--struct omap_dm_timer *omap_dm_timer_request_by_node(struct device_node *np)
-+static struct omap_dm_timer *omap_dm_timer_request_by_node(struct device_node *np)
- {
- 	if (!np)
- 		return NULL;
-@@ -344,7 +430,7 @@ struct omap_dm_timer *omap_dm_timer_request_by_node(struct device_node *np)
- 	return _omap_dm_timer_request(REQUEST_BY_NODE, np);
- }
- 
--int omap_dm_timer_free(struct omap_dm_timer *timer)
-+static int omap_dm_timer_free(struct omap_dm_timer *timer)
- {
- 	if (unlikely(!timer))
- 		return -EINVAL;
-@@ -356,30 +442,6 @@ int omap_dm_timer_free(struct omap_dm_timer *timer)
- 	return 0;
- }
- 
--void omap_dm_timer_enable(struct omap_dm_timer *timer)
--{
--	int c;
--
--	pm_runtime_get_sync(&timer->pdev->dev);
--
--	if (!(timer->capability & OMAP_TIMER_ALWON)) {
--		if (timer->get_context_loss_count) {
--			c = timer->get_context_loss_count(&timer->pdev->dev);
--			if (c != timer->ctx_loss_count) {
--				omap_timer_restore_context(timer);
--				timer->ctx_loss_count = c;
--			}
--		} else {
--			omap_timer_restore_context(timer);
--		}
--	}
--}
--
--void omap_dm_timer_disable(struct omap_dm_timer *timer)
--{
--	pm_runtime_put_sync(&timer->pdev->dev);
--}
--
- int omap_dm_timer_get_irq(struct omap_dm_timer *timer)
- {
- 	if (timer)
-@@ -389,6 +451,12 @@ int omap_dm_timer_get_irq(struct omap_dm_timer *timer)
- 
- #if defined(CONFIG_ARCH_OMAP1)
- #include <mach/hardware.h>
-+
-+static struct clk *omap_dm_timer_get_fclk(struct omap_dm_timer *timer)
-+{
-+	return NULL;
-+}
-+
- /**
-  * omap_dm_timer_modify_idlect_mask - Check if any running timers use ARMXOR
-  * @inputmask: current value of idlect mask
-@@ -424,7 +492,7 @@ __u32 omap_dm_timer_modify_idlect_mask(__u32 inputmask)
- 
- #else
- 
--struct clk *omap_dm_timer_get_fclk(struct omap_dm_timer *timer)
-+static struct clk *omap_dm_timer_get_fclk(struct omap_dm_timer *timer)
- {
- 	if (timer && !IS_ERR(timer->fclk))
- 		return timer->fclk;
-@@ -451,7 +519,7 @@ int omap_dm_timer_trigger(struct omap_dm_timer *timer)
- 	return 0;
- }
- 
--int omap_dm_timer_start(struct omap_dm_timer *timer)
-+static int omap_dm_timer_start(struct omap_dm_timer *timer)
- {
- 	u32 l;
- 
-@@ -471,7 +539,7 @@ int omap_dm_timer_start(struct omap_dm_timer *timer)
- 	return 0;
- }
- 
--int omap_dm_timer_stop(struct omap_dm_timer *timer)
-+static int omap_dm_timer_stop(struct omap_dm_timer *timer)
- {
- 	unsigned long rate = 0;
- 
-@@ -494,70 +562,8 @@ int omap_dm_timer_stop(struct omap_dm_timer *timer)
- 	return 0;
- }
- 
--int omap_dm_timer_set_source(struct omap_dm_timer *timer, int source)
--{
--	int ret;
--	char *parent_name = NULL;
--	struct clk *parent;
--	struct dmtimer_platform_data *pdata;
--
--	if (unlikely(!timer))
--		return -EINVAL;
--
--	pdata = timer->pdev->dev.platform_data;
--
--	if (source < 0 || source >= 3)
--		return -EINVAL;
--
--	/*
--	 * FIXME: Used for OMAP1 devices only because they do not currently
--	 * use the clock framework to set the parent clock. To be removed
--	 * once OMAP1 migrated to using clock framework for dmtimers
--	 */
--	if (pdata && pdata->set_timer_src)
--		return pdata->set_timer_src(timer->pdev, source);
--
--	if (IS_ERR(timer->fclk))
--		return -EINVAL;
--
--#if defined(CONFIG_COMMON_CLK)
--	/* Check if the clock has configurable parents */
--	if (clk_hw_get_num_parents(__clk_get_hw(timer->fclk)) < 2)
--		return 0;
--#endif
--
--	switch (source) {
--	case OMAP_TIMER_SRC_SYS_CLK:
--		parent_name = "timer_sys_ck";
--		break;
--
--	case OMAP_TIMER_SRC_32_KHZ:
--		parent_name = "timer_32k_ck";
--		break;
--
--	case OMAP_TIMER_SRC_EXT_CLK:
--		parent_name = "timer_ext_ck";
--		break;
--	}
--
--	parent = clk_get(&timer->pdev->dev, parent_name);
--	if (IS_ERR(parent)) {
--		pr_err("%s: %s not found\n", __func__, parent_name);
--		return -EINVAL;
--	}
--
--	ret = clk_set_parent(timer->fclk, parent);
--	if (ret < 0)
--		pr_err("%s: failed to set %s as parent\n", __func__,
--			parent_name);
--
--	clk_put(parent);
--
--	return ret;
--}
--
--int omap_dm_timer_set_load(struct omap_dm_timer *timer, int autoreload,
--			    unsigned int load)
-+static int omap_dm_timer_set_load(struct omap_dm_timer *timer, int autoreload,
-+				  unsigned int load)
- {
- 	u32 l;
- 
-@@ -609,9 +615,8 @@ int omap_dm_timer_set_load_start(struct omap_dm_timer *timer, int autoreload,
- 	timer->context.tcrr = load;
- 	return 0;
- }
--
--int omap_dm_timer_set_match(struct omap_dm_timer *timer, int enable,
--			     unsigned int match)
-+static int omap_dm_timer_set_match(struct omap_dm_timer *timer, int enable,
-+				   unsigned int match)
- {
- 	u32 l;
- 
-@@ -634,8 +639,8 @@ int omap_dm_timer_set_match(struct omap_dm_timer *timer, int enable,
- 	return 0;
- }
- 
--int omap_dm_timer_set_pwm(struct omap_dm_timer *timer, int def_on,
--			   int toggle, int trigger)
-+static int omap_dm_timer_set_pwm(struct omap_dm_timer *timer, int def_on,
-+				 int toggle, int trigger)
- {
- 	u32 l;
- 
-@@ -659,7 +664,8 @@ int omap_dm_timer_set_pwm(struct omap_dm_timer *timer, int def_on,
- 	return 0;
- }
- 
--int omap_dm_timer_set_prescaler(struct omap_dm_timer *timer, int prescaler)
-+static int omap_dm_timer_set_prescaler(struct omap_dm_timer *timer,
-+					int prescaler)
- {
- 	u32 l;
- 
-@@ -681,8 +687,8 @@ int omap_dm_timer_set_prescaler(struct omap_dm_timer *timer, int prescaler)
- 	return 0;
- }
- 
--int omap_dm_timer_set_int_enable(struct omap_dm_timer *timer,
--				  unsigned int value)
-+static int omap_dm_timer_set_int_enable(struct omap_dm_timer *timer,
-+					unsigned int value)
- {
- 	if (unlikely(!timer))
- 		return -EINVAL;
-@@ -704,7 +710,7 @@ int omap_dm_timer_set_int_enable(struct omap_dm_timer *timer,
-  *
-  * Disables the specified timer interrupts for a timer.
-  */
--int omap_dm_timer_set_int_disable(struct omap_dm_timer *timer, u32 mask)
-+static int omap_dm_timer_set_int_disable(struct omap_dm_timer *timer, u32 mask)
- {
- 	u32 l = mask;
- 
-@@ -727,7 +733,7 @@ int omap_dm_timer_set_int_disable(struct omap_dm_timer *timer, u32 mask)
- 	return 0;
- }
- 
--unsigned int omap_dm_timer_read_status(struct omap_dm_timer *timer)
-+static unsigned int omap_dm_timer_read_status(struct omap_dm_timer *timer)
- {
- 	unsigned int l;
- 
-@@ -741,7 +747,7 @@ unsigned int omap_dm_timer_read_status(struct omap_dm_timer *timer)
- 	return l;
- }
- 
--int omap_dm_timer_write_status(struct omap_dm_timer *timer, unsigned int value)
-+static int omap_dm_timer_write_status(struct omap_dm_timer *timer, unsigned int value)
- {
- 	if (unlikely(!timer || pm_runtime_suspended(&timer->pdev->dev)))
- 		return -EINVAL;
-@@ -751,7 +757,7 @@ int omap_dm_timer_write_status(struct omap_dm_timer *timer, unsigned int value)
- 	return 0;
- }
- 
--unsigned int omap_dm_timer_read_counter(struct omap_dm_timer *timer)
-+static unsigned int omap_dm_timer_read_counter(struct omap_dm_timer *timer)
- {
- 	if (unlikely(!timer || pm_runtime_suspended(&timer->pdev->dev))) {
- 		pr_err("%s: timer not iavailable or enabled.\n", __func__);
-@@ -761,7 +767,7 @@ unsigned int omap_dm_timer_read_counter(struct omap_dm_timer *timer)
- 	return __omap_dm_timer_read_counter(timer, timer->posted);
- }
- 
--int omap_dm_timer_write_counter(struct omap_dm_timer *timer, unsigned int value)
-+static int omap_dm_timer_write_counter(struct omap_dm_timer *timer, unsigned int value)
- {
- 	if (unlikely(!timer || pm_runtime_suspended(&timer->pdev->dev))) {
- 		pr_err("%s: timer not available or enabled.\n", __func__);
-diff --git a/include/clocksource/timer-ti-dm.h b/include/clocksource/timer-ti-dm.h
-index 4f310957c21b..7d9598dc578d 100644
---- a/include/clocksource/timer-ti-dm.h
-+++ b/include/clocksource/timer-ti-dm.h
-@@ -119,46 +119,13 @@ struct omap_dm_timer {
- };
- 
- int omap_dm_timer_reserve_systimer(int id);
--struct omap_dm_timer *omap_dm_timer_request(void);
--struct omap_dm_timer *omap_dm_timer_request_specific(int timer_id);
- struct omap_dm_timer *omap_dm_timer_request_by_cap(u32 cap);
--struct omap_dm_timer *omap_dm_timer_request_by_node(struct device_node *np);
--int omap_dm_timer_free(struct omap_dm_timer *timer);
--void omap_dm_timer_enable(struct omap_dm_timer *timer);
--void omap_dm_timer_disable(struct omap_dm_timer *timer);
- 
- int omap_dm_timer_get_irq(struct omap_dm_timer *timer);
- 
- u32 omap_dm_timer_modify_idlect_mask(u32 inputmask);
- 
--#ifndef CONFIG_ARCH_OMAP1
--struct clk *omap_dm_timer_get_fclk(struct omap_dm_timer *timer);
--#else
--static inline
--struct clk *omap_dm_timer_get_fclk(struct omap_dm_timer *timer)
--{
--	return NULL;
--}
--#endif
--
- int omap_dm_timer_trigger(struct omap_dm_timer *timer);
--int omap_dm_timer_start(struct omap_dm_timer *timer);
--int omap_dm_timer_stop(struct omap_dm_timer *timer);
--
--int omap_dm_timer_set_source(struct omap_dm_timer *timer, int source);
--int omap_dm_timer_set_load(struct omap_dm_timer *timer, int autoreload, unsigned int value);
--int omap_dm_timer_set_load_start(struct omap_dm_timer *timer, int autoreload, unsigned int value);
--int omap_dm_timer_set_match(struct omap_dm_timer *timer, int enable, unsigned int match);
--int omap_dm_timer_set_pwm(struct omap_dm_timer *timer, int def_on, int toggle, int trigger);
--int omap_dm_timer_set_prescaler(struct omap_dm_timer *timer, int prescaler);
--
--int omap_dm_timer_set_int_enable(struct omap_dm_timer *timer, unsigned int value);
--int omap_dm_timer_set_int_disable(struct omap_dm_timer *timer, u32 mask);
--
--unsigned int omap_dm_timer_read_status(struct omap_dm_timer *timer);
--int omap_dm_timer_write_status(struct omap_dm_timer *timer, unsigned int value);
--unsigned int omap_dm_timer_read_counter(struct omap_dm_timer *timer);
--int omap_dm_timer_write_counter(struct omap_dm_timer *timer, unsigned int value);
- 
- int omap_dm_timers_active(void);
- 
--- 
-2.16.2
+On 25.02.2018 15:53, hao_zhang wrote:
+> This patch add allwinner sun8i pwm support.
+> 
+> Signed-off-by: hao_zhang <hao5781286@gmail.com>
+> ---
+>  drivers/pwm/Kconfig     |  10 ++
+>  drivers/pwm/Makefile    |   1 +
+>  drivers/pwm/pwm-sun8i.c | 401 ++++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 412 insertions(+)
+>  create mode 100644 drivers/pwm/pwm-sun8i.c
+> 
+> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+> index 763ee50..7e68d0f 100644
+> --- a/drivers/pwm/Kconfig
+> +++ b/drivers/pwm/Kconfig
+> @@ -444,6 +444,16 @@ config PWM_SUN4I
+>  	  To compile this driver as a module, choose M here: the module
+>  	  will be called pwm-sun4i.
+>  
+> +config PWM_SUN8I
+> +	tristate "Allwinner PWM SUN8I support"
+> +	depends on ARCH_SUNXI || COMPILE_TEST
+> +	depends on HAS_IOMEM && COMMON_CLK
+> +	help
+> +	  Generic PWM framework driver for Allwinner SoCs.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called pwm-sun8i.
+> +
+>  config PWM_TEGRA
+>  	tristate "NVIDIA Tegra PWM support"
+>  	depends on ARCH_TEGRA
+> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+> index 0258a74..cd6bf40 100644
+> --- a/drivers/pwm/Makefile
+> +++ b/drivers/pwm/Makefile
+> @@ -44,6 +44,7 @@ obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
+>  obj-$(CONFIG_PWM_STM32_LP)	+= pwm-stm32-lp.o
+>  obj-$(CONFIG_PWM_STMPE)		+= pwm-stmpe.o
+>  obj-$(CONFIG_PWM_SUN4I)		+= pwm-sun4i.o
+> +obj-$(CONFIG_PWM_SUN8I)		+= pwm-sun8i.o
+>  obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
+>  obj-$(CONFIG_PWM_TIECAP)	+= pwm-tiecap.o
+>  obj-$(CONFIG_PWM_TIEHRPWM)	+= pwm-tiehrpwm.o
+> diff --git a/drivers/pwm/pwm-sun8i.c b/drivers/pwm/pwm-sun8i.c
+> new file mode 100644
+> index 0000000..cf23b0a
+> --- /dev/null
+> +++ b/drivers/pwm/pwm-sun8i.c
+> @@ -0,0 +1,401 @@
+> +#include <linux/bitops.h>
+> +#include <linux/clk.h>
+> +#include <linux/delay.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pwm.h>
+> +#include <linux/slab.h>
+> +#include <linux/spinlock.h>
+> +#include <linux/time.h>
+> +#include <linux/regmap.h>
+> +
+> +#define PWM_IRQ_ENABLE_REG	0x0000
+> +#define PCIE(ch)	BIT(ch)
+> +
+> +#define PWM_IRQ_STATUS_REG	0x0004
+> +#define PIS(ch)	BIT(ch)
+> +
+> +#define CAPTURE_IRQ_ENABLE_REG	0x0010
+> +#define CFIE(ch)	BIT(ch << 1 + 1)
+> +#define CRIE(ch)	BIT(ch << 1)
+> +
+> +#define CAPTURE_IRQ_STATUS_REG	0x0014
+> +#define CFIS(ch)	BIT(ch << 1 + 1)
+> +#define CRIS(ch)	BIT(ch << 1)
+> +
+> +#define CLK_CFG_REG(ch)	(0x0020 + (ch >> 1) * 4)
+> +#define CLK_SRC	BIT(7)
+> +#define CLK_SRC_BYPASS_SEC	BIT(6)
+> +#define CLK_SRC_BYPASS_FIR	BIT(5)
+> +#define CLK_GATING	BIT(4)
+> +#define CLK_DIV_M	GENMASK(3, 0)
+> +
+> +#define PWM_DZ_CTR_REG(ch)	(0x0030 + (ch >> 1) * 4)
+> +#define PWM_DZ_INTV	GENMASK(15, 8)
+> +#define PWM_DZ_EN	BIT(0)
+> +
+> +#define PWM_ENABLE_REG	0x0040
+> +#define PWM_EN(ch)	BIT(ch)
+> +
+> +#define CAPTURE_ENABLE_REG	0x0044
+> +#define CAP_EN(ch)	BIT(ch)
+> +
+> +#define PWM_CTR_REG(ch)	(0x0060 + ch * 0x20)
+> +#define PWM_PERIOD_RDY	BIT(11)
+> +#define PWM_PUL_START	BIT(10)
+> +#define PWM_MODE	BIT(9)
+> +#define PWM_ACT_STA	BIT(8)
+> +#define PWM_PRESCAL_K	GENMASK(7, 0)
+> +
+> +#define PWM_PERIOD_REG(ch)	(0x0064 + ch * 0x20)
+> +#define PWM_ENTIRE_CYCLE	GENMASK(31, 16)
+> +#define PWM_ACT_CYCLE	GENMASK(15, 0)
+> +
+> +#define PWM_CNT_REG(ch)	(0x0068 + ch * 0x20)
+> +#define PWM_CNT_VAL	GENMASK(15, 0)
+> +
+> +#define CAPTURE_CTR_REG(ch)	(0x006c + ch * 0x20)
+> +#define CAPTURE_CRLF	BIT(2)
+> +#define CAPTURE_CFLF	BIT(1)
+> +#define CAPINV	BIT(0)
+> +
+> +#define CAPTURE_RISE_REG(ch)	(0x0070 + ch * 0x20)
+> +#define CAPTURE_CRLR	GENMASK(15, 0)
+> +
+> +#define CAPTURE_FALL_REG(ch)	(0x0074 + ch * 0x20)
+> +#define CAPTURE_CFLR	GENMASK(15, 0)
+> +
+> +struct sun8i_pwm_data {
+> +	bool has_prescaler_bypass;
+> +	bool has_rdy;
+> +	unsigned int npwm;
+> +};
+> +
+> +struct sun8i_pwm_chip {
+> +	struct pwm_chip chip;
+> +	struct clk *clk;
+> +	void __iomem *base;
+> +	spinlock_t ctrl_lock;
+> +	const struct sun8i_pwm_data *data;
+> +	struct regmap *regmap;
+> +};
+> +
+> +static const u16 div_m_table[] = {
+> +	1,
+> +	2,
+> +	4,
+> +	8,
+> +	16,
+> +	32,
+> +	64,
+> +	128,
+> +	256
+> +};
+> +
+> +static inline struct sun8i_pwm_chip *to_sun8i_pwm_chip(struct pwm_chip *chip)
+> +{
+> +	return container_of(chip, struct sun8i_pwm_chip, chip);
+> +}
+> +
+> +static u32 sun8i_pwm_read(struct sun8i_pwm_chip *sun8i_pwm,
+> +		unsigned long offset)
+> +{
+> +	u32 val;
+> +
+> +	regmap_read(sun8i_pwm->regmap, offset, &val);
+> +
+> +	return val;
+> +}
+> +
+> +static inline void sun8i_pwm_set_bit(struct sun8i_pwm_chip *sun8i_pwm,
+> +		unsigned long reg, u32 bit)
+> +{
+> +	regmap_update_bits(sun8i_pwm->regmap, reg, bit, bit);
+> +}
+> +
+> +static inline void sun8i_pwm_clear_bit(struct sun8i_pwm_chip *sun8i_pwm,
+> +		unsigned long reg, u32 bit)
+> +{
+> +	regmap_update_bits(sun8i_pwm->regmap, reg, bit, 0);
+> +}
+> +
+> +static inline void sun8i_pwm_set_value(struct sun8i_pwm_chip *sun8i_pwm,
+> +		unsigned long reg, u32 mask, u32 val)
+> +{
+> +	regmap_update_bits(sun8i_pwm->regmap, reg, mask, val);
+> +}
+> +
+> +static void sun8i_pwm_set_polarity(struct sun8i_pwm_chip *chip, u32 ch,
+> +		enum pwm_polarity polarity)
+> +{
+> +	if (polarity == PWM_POLARITY_NORMAL)
+> +		sun8i_pwm_set_bit(chip, PWM_CTR_REG(ch), PWM_ACT_STA);
+> +	else
+> +		sun8i_pwm_clear_bit(chip, PWM_CTR_REG(ch), PWM_ACT_STA);
+> +}
+> +
+> +static int sun8i_pwm_config(struct sun8i_pwm_chip *sun8i_pwm, u8 ch,
+> +		struct pwm_state *state)
+> +{
+> +	u64 clk_rate, clk_div, val;
+> +	u16 prescaler = 0;
+> +	u8 id = 0;
+> +
+> +	clk_rate = clk_get_rate(sun8i_pwm->clk);
+> +
+> +	if (clk_rate == 24000000)
+> +		sun8i_pwm_clear_bit(sun8i_pwm, CLK_CFG_REG(ch), CLK_SRC);
+> +	else
+> +		sun8i_pwm_set_bit(sun8i_pwm, CLK_CFG_REG(ch), CLK_SRC);
+> +
+> +	if (sun8i_pwm->data->has_prescaler_bypass) {
+> +		/* pwm output bypass */
+> +		if (ch % 2)
+> +			sun8i_pwm_set_bit(sun8i_pwm, CLK_CFG_REG(ch),
+> +					CLK_SRC_BYPASS_FIR);
+> +		else
+> +			sun8i_pwm_set_bit(sun8i_pwm, CLK_CFG_REG(ch),
+> +					CLK_SRC_BYPASS_SEC);
+> +		return 0;
+> +	}
+> +
+> +	val = state->period * clk_rate;
+> +	do_div(val, NSEC_PER_SEC);
+> +	if (val < 1) {
+> +		dev_err(sun8i_pwm->chip.dev,
+> +				"Period expects a larger value\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* calculate and set prescalar, div table, pwn entrie cycle */
+> +	clk_div = val;
+> +
+> +	while (clk_div > 65535) {
+> +		prescaler++;
+> +		clk_div = val;
+> +		do_div(clk_div, prescaler + 1);
+> +		do_div(clk_div, div_m_table[id]);
+> +
+> +		if (prescaler == 255) {
+> +			prescaler = 0;
+> +			id++;
+> +			if (id == 9)
+> +				return -EINVAL;
+> +		}
+> +	}
+> +
+> +	sun8i_pwm_set_value(sun8i_pwm, PWM_PERIOD_REG(ch),
+> +			PWM_ENTIRE_CYCLE, clk_div << 16);
+> +	sun8i_pwm_set_value(sun8i_pwm, PWM_CTR_REG(ch),
+> +			PWM_PRESCAL_K, prescaler << 0);
+> +	sun8i_pwm_set_value(sun8i_pwm, CLK_CFG_REG(ch),
+> +			CLK_DIV_M, id << 0);
+> +
+> +	/* set duty cycle */
+> +	val = (prescaler + 1) * div_m_table[id] * clk_div;
+> +	val = state->period;
+> +	do_div(val, clk_div);
+> +	clk_div = state->duty_cycle;
+> +	do_div(clk_div, val);
+> +
+> +	sun8i_pwm_set_value(sun8i_pwm, PWM_PERIOD_REG(ch),
+> +			PWM_ACT_CYCLE, clk_div << 0);
+> +
+> +	return 0;
+> +}
+> +
+> +static int sun8i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
+> +		struct pwm_state *state)
+> +{
+> +	int ret;
+> +	struct sun8i_pwm_chip *sun8i_pwm = to_sun8i_pwm_chip(chip);
+> +	struct pwm_state cstate;
+> +
+> +	pwm_get_state(pwm, &cstate);
+> +	if (!cstate.enabled) {
+> +		ret = clk_prepare_enable(sun8i_pwm->clk);
+> +		if (ret) {
+> +			dev_err(chip->dev, "Failed to enable PWM clock\n");
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	spin_lock(&sun8i_pwm->ctrl_lock);
+> +
+> +	if ((cstate.period != state->period) ||
+> +			(cstate.duty_cycle != state->duty_cycle)) {
+> +		ret = sun8i_pwm_config(sun8i_pwm, pwm->hwpwm, state);
+> +		if (ret) {
+> +			spin_unlock(&sun8i_pwm->ctrl_lock);
+Shouldn't clk_disable_unprepare() be called here in case you enabled it before?
+> +			dev_err(chip->dev, "Failed to config PWM\n");
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	if (state->polarity != cstate.polarity)
+> +		sun8i_pwm_set_polarity(sun8i_pwm, pwm->hwpwm, state->polarity);
+> +
+> +	if (state->enabled) {
+> +		sun8i_pwm_set_bit(sun8i_pwm,
+> +				CLK_CFG_REG(pwm->hwpwm), CLK_GATING);
+> +
+> +		sun8i_pwm_set_bit(sun8i_pwm,
+> +				PWM_ENABLE_REG, PWM_EN(pwm->hwpwm));
+> +	} else {
+> +		sun8i_pwm_clear_bit(sun8i_pwm,
+> +				CLK_CFG_REG(pwm->hwpwm), CLK_GATING);
+> +
+> +		sun8i_pwm_clear_bit(sun8i_pwm,
+> +				PWM_ENABLE_REG, PWM_EN(pwm->hwpwm));
+Also, here, in case cstate.enabled is false and state->enabled is false
+shouldn't clk_disable_unprepare() be called?
+> +	}
+> +
+> +	spin_unlock(&sun8i_pwm->ctrl_lock);
+> +
+> +	return 0;
+> +}
+> +
+> +static void sun8i_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
+> +		struct pwm_state *state)
+> +{
+> +	struct sun8i_pwm_chip *sun8i_pwm = to_sun8i_pwm_chip(chip);
+> +	u64 clk_rate, tmp;
+> +	u32 val;
+> +	u16 clk_div, act_cycle;
+> +	u8 prescal, id;
+> +
+> +	clk_rate = clk_get_rate(sun8i_pwm->clk);
+> +
+> +	val = sun8i_pwm_read(sun8i_pwm, PWM_CTR_REG(pwm->hwpwm));
+> +	if (PWM_ACT_STA & val)
+> +		state->polarity = PWM_POLARITY_NORMAL;
+> +	else
+> +		state->polarity = PWM_POLARITY_INVERSED;
+> +
+> +	prescal = PWM_PRESCAL_K & val;
+> +
+> +	val = sun8i_pwm_read(sun8i_pwm, PWM_ENABLE_REG);
+> +	if (PWM_EN(pwm->hwpwm) & val)
+> +		state->enabled = true;
+> +	else
+> +		state->enabled = false;
+> +
+> +	val = sun8i_pwm_read(sun8i_pwm, PWM_PERIOD_REG(pwm->hwpwm));
+> +	act_cycle = PWM_ACT_CYCLE & val;
+> +	clk_div = val >> 16;
+> +
+> +	val = sun8i_pwm_read(sun8i_pwm, CLK_CFG_REG(pwm->hwpwm));
+> +	id = CLK_DIV_M & val;
+> +
+> +	tmp = act_cycle * prescal * div_m_table[id] * NSEC_PER_SEC;
+> +	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
+> +	tmp = clk_div * prescal * div_m_table[id] * NSEC_PER_SEC;
+> +	state->period = DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
+> +}
+> +
+> +static const struct regmap_config sun8i_pwm_regmap_config = {
+> +	.reg_bits = 32,
+> +	.reg_stride = 4,
+> +	.val_bits = 32,
+> +	.max_register = CAPTURE_FALL_REG(7),
+> +};
+> +
+> +static const struct pwm_ops sun8i_pwm_ops = {
+> +	.apply = sun8i_pwm_apply,
+> +	.get_state = sun8i_pwm_get_state,
+> +	.owner = THIS_MODULE,
+> +};
+> +
+> +static const struct sun8i_pwm_data sun8i_pwm_data_r40 = {
+> +	.has_prescaler_bypass = false,
+> +	.has_rdy = true,
+> +	.npwm = 8,
+> +};
+> +
+> +static const struct of_device_id sun8i_pwm_dt_ids[] = {
+> +	{
+> +		.compatible = "allwinner,sun8i-r40-pwm",
+> +		.data = &sun8i_pwm_data_r40,
+> +	},
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, sun8i_pwm_dt_ids);
+> +
+> +static int sun8i_pwm_probe(struct platform_device *pdev)
+> +{
+> +	struct sun8i_pwm_chip *pwm;
+> +	struct resource *res;
+> +	int ret;
+> +	const struct of_device_id *match;
+> +
+> +	match = of_match_device(sun8i_pwm_dt_ids, &pdev->dev);
+> +	if (!match) {
+> +		dev_err(&pdev->dev, "Error: No device match found\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
+> +	if (!pwm)
+> +		return -ENOMEM;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	pwm->base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(pwm->base))
+> +		return PTR_ERR(pwm->base);
+> +
+> +	pwm->regmap = devm_regmap_init_mmio(&pdev->dev, pwm->base,
+> +			&sun8i_pwm_regmap_config);
+> +	if (IS_ERR(pwm->regmap)) {
+> +		dev_err(&pdev->dev, "Failed to create regmap\n");
+> +		return PTR_ERR(pwm->regmap);
+> +	}
+> +
+> +	pwm->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(pwm->clk))
+> +		return PTR_ERR(pwm->clk);
+> +
+> +	pwm->data = match->data;
+> +	pwm->chip.dev = &pdev->dev;
+> +	pwm->chip.ops = &sun8i_pwm_ops;
+> +	pwm->chip.base = -1;
+> +	pwm->chip.npwm = pwm->data->npwm;
+> +	pwm->chip.of_xlate = of_pwm_xlate_with_flags;
+> +	pwm->chip.of_pwm_n_cells = 3;
+> +
+> +	spin_lock_init(&pwm->ctrl_lock);
+> +
+> +	ret = pwmchip_add(&pwm->chip);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "Failed to add PWM chip: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, pwm);
+> +
+> +	return 0;
+> +}
+> +
+> +static int sun8i_pwm_remove(struct platform_device *pdev)
+> +{
+> +	struct sun8i_pwm_chip *pwm = platform_get_drvdata(pdev);
+> +
+> +	return pwmchip_remove(&pwm->chip);
+> +}
+> +
+> +static struct platform_driver sun8i_pwm_driver = {
+> +	.driver = {
+> +		.name = "sun8i-pwm",
+> +		.of_match_table = sun8i_pwm_dt_ids,
+> +	},
+> +	.probe = sun8i_pwm_probe,
+> +	.remove = sun8i_pwm_remove,
+> +};
+> +module_platform_driver(sun8i_pwm_driver);
+> +
+> +MODULE_ALIAS("platform: sun8i-pwm");
+> +MODULE_AUTHOR("Hao Zhang <hao5781286@gmail.com>");
+> +MODULE_DESCRIPTION("Allwinner sun8i PWM driver");
+> +MODULE_LICENSE("GPL v2");
+> 
