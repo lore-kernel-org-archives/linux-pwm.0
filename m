@@ -1,14 +1,14 @@
 From: =?UTF-8?Q?Andr=c3=a9_Przywara?= <andre.przywara-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 2/4] ARM: dtsi: add pwm node for sun8i.
-Date: Wed, 28 Feb 2018 01:53:49 +0000
-Message-ID: <b8af4f6a-c2df-7382-9a1c-9c1a9ea5f8c4@arm.com>
-References: <20180225135134.GA14529@arx-s1>
+Subject: Re: [PATCH v2 3/4] ARM: dts: add pwm status for r40.
+Date: Wed, 28 Feb 2018 01:54:57 +0000
+Message-ID: <0fd023da-214a-c4ef-63f7-0cc41ca716bf@arm.com>
+References: <20180225135225.GA14544@arx-s1>
 Reply-To: andre.przywara-5wv7dgnIgG8@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-sunxi+bncBDNZNK75ZIKRBW4X3DKAKGQEI23KV3Q-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBDNZNK75ZIKRBH4Y3DKAKGQE7L4UPZQ-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20180225135134.GA14529@arx-s1>
+In-Reply-To: <20180225135225.GA14544@arx-s1>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -21,56 +21,39 @@ List-Id: linux-pwm@vger.kernel.org
 
 Hi,
 
-The subject line should mention the R40, there are far too many sun8i SoCs.
+the subject line should mention the BananaPi M2 Ultra board.
 
-On 25/02/18 13:51, hao_zhang wrote:
-> This patch adds pwm node for sun8i.
-> 
-> Signed-off-by: hao_zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  arch/arm/boot/dts/sun8i-r40.dtsi | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/sun8i-r40.dtsi b/arch/arm/boot/dts/sun8i-r40.dtsi
-> index 173dcc1..99a0261 100644
-> --- a/arch/arm/boot/dts/sun8i-r40.dtsi
-> +++ b/arch/arm/boot/dts/sun8i-r40.dtsi
-> @@ -295,6 +295,11 @@
->  				bias-pull-up;
->  			};
->  
-> +			pwm_ch0_pin: pwm-ch0-pin {
-> +				pins = "PB2";
-> +				function = "pwm";
-> +			};
-> +
->  			uart0_pb_pins: uart0-pb-pins {
->  				pins = "PB22", "PB23";
->  				function = "uart0";
-> @@ -306,6 +311,14 @@
->  			reg = <0x01c20c90 0x10>;
->  		};
->  
-> +		pwm: pwm@1c23400 {
-> +			     compatible = "allwinner,sun8i-r40-pwm";
-> +			     reg = <0x01c23400 0x154>;
-
-Following my comments on the binding document:
-			interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
-
-> +			     clocks = <&osc24M>;
-
-And possibly multiple clocks here (though I fail to find the APB1 clock
-being exposed by our CCU).
+Otherwise this looks good, although I wonder if this should somehow
+mention "LCD-PWM" (in the commit message?), since this is how this pin
+is described in the BananaPi GPIO documentation for this board.
+And it seems to be dedicated for this purpose here.
 
 Cheers,
 Andre.
 
-> +			     #pwm-cells = <3>;
-> +			     status = "disabled";
-> +		};
+On 25/02/18 13:52, hao_zhang wrote:
+> This patch adds pwm status for r40.
+> 
+> Signed-off-by: hao_zhang <hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>  arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+> index 8c5efe2..e4eb074 100644
+> --- a/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+> +++ b/arch/arm/boot/dts/sun8i-r40-bananapi-m2-ultra.dts
+> @@ -196,6 +196,12 @@
+>  	status = "okay";
+>  };
+>  
+> +&pwm {
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&pwm_ch0_pin>;
+> +	status = "okay";
+> +};
 > +
->  		uart0: serial@1c28000 {
->  			compatible = "snps,dw-apb-uart";
->  			reg = <0x01c28000 0x400>;
+>  &uart0 {
+>  	pinctrl-names = "default";
+>  	pinctrl-0 = <&uart0_pb_pins>;
 > 
