@@ -1,473 +1,208 @@
-From: Claudiu Beznea <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH v2 4/4] ARM: PWM: add allwinner sun8i pwm support.
-Date: Wed, 28 Feb 2018 10:17:27 +0200
-Message-ID: <83f63105-e60e-a7a9-f691-c011981ff305@microchip.com>
-References: <20180225135308.GA14561@arx-s1>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH 05/10] hwmon: generic-pwm-tachometer: Add generic PWM
+ based tachometer
+Date: Wed, 28 Feb 2018 06:29:21 -0800
+Message-ID: <62ba7f67-5a99-51ab-1214-eb68ebb7e642@roeck-us.net>
+References: <1519196339-9377-1-git-send-email-rrajk@nvidia.com>
+ <1519196339-9377-6-git-send-email-rrajk@nvidia.com>
+ <5172edff-fe29-7ed1-f0d2-b0359ea2c24d@roeck-us.net>
+ <2510b525-ec36-b49d-5a62-81f335c0d10d@nvidia.com>
+ <cfe0d0ce-3a89-bad0-85ba-6edf1135d2dc@roeck-us.net>
+ <2628eff2-dd33-34f4-a7e1-cfe46ef88a3f@nvidia.com>
+ <4556a8d2-947d-72c4-2962-3167afb53978@kapsi.fi>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180225135308.GA14561@arx-s1>
+In-Reply-To: <4556a8d2-947d-72c4-2962-3167afb53978@kapsi.fi>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: hao_zhang <hao5781286@gmail.com>, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, wens@csie.org, maxime.ripard@free-electrons.com
-Cc: linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-sunxi@googlegroups.com
+To: Mikko Perttunen <cyndis@kapsi.fi>, Rajkumar Rampelli <rrajk@nvidia.com>, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, jdelvare@suse.com, corbet@lwn.net, catalin.marinas@arm.com, will.deacon@arm.com, kstewart@linuxfoundation.org, gregkh@linuxfoundation.org, pombredanne@nexb.com, mmaddireddy@nvidia.com, mperttunen@nvidia.com, arnd@arndb.de, timur@codeaurora.org, andy.gross@linaro.org, xuwei5@hisilicon.com, elder@linaro.org, heiko@sntech.de, krzk@kernel.org, ard.biesheuvel@linaro.org
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, ldewangan@nvidia.com
 List-Id: linux-pwm@vger.kernel.org
 
-
-
-On 25.02.2018 15:53, hao_zhang wrote:
-> This patch add allwinner sun8i pwm support.
+On 02/27/2018 11:03 PM, Mikko Perttunen wrote:
+> On 02/28/2018 08:12 AM, Rajkumar Rampelli wrote:
+>>
+>> On Wednesday 28 February 2018 11:28 AM, Guenter Roeck wrote:
+>>> On 02/27/2018 09:38 PM, Rajkumar Rampelli wrote:
+>>>>
+>>>> On Wednesday 21 February 2018 08:20 PM, Guenter Roeck wrote:
+>>>>> On 02/20/2018 10:58 PM, Rajkumar Rampelli wrote:
+>>>>>> Add generic PWM based tachometer driver via HWMON interface
+>>>>>> to report the RPM of motor. This drivers get the period/duty
+>>>>>> cycle from PWM IP which captures the motor PWM output.
+>>>>>>
+>>>>>> This driver implements a simple interface for monitoring the speed of
+>>>>>> a fan and exposes it in roatations per minute (RPM) to the user space
+>>>>>> by using the hwmon's sysfs interface
+>>>>>>
+>>>>>> Signed-off-by: Rajkumar Rampelli <rrajk@nvidia.com>
+>>>>>> ---
+>>>>>>   Documentation/hwmon/generic-pwm-tachometer |  17 +++++
+>>>>>>   drivers/hwmon/Kconfig                      |  10 +++
+>>>>>>   drivers/hwmon/Makefile                     |   1 +
+>>>>>>   drivers/hwmon/generic-pwm-tachometer.c     | 112 +++++++++++++++++++++++++++++
+>>>>>>   4 files changed, 140 insertions(+)
+>>>>>>   create mode 100644 Documentation/hwmon/generic-pwm-tachometer
+>>>>>>   create mode 100644 drivers/hwmon/generic-pwm-tachometer.c
+>>>>>>
+>>>>>> diff --git a/Documentation/hwmon/generic-pwm-tachometer b/Documentation/hwmon/generic-pwm-tachometer
+>>>>>> new file mode 100644
+>>>>>> index 0000000..e0713ee
+>>>>>> --- /dev/null
+>>>>>> +++ b/Documentation/hwmon/generic-pwm-tachometer
+>>>>>> @@ -0,0 +1,17 @@
+>>>>>> +Kernel driver generic-pwm-tachometer
+>>>>>> +====================================
+>>>>>> +
+>>>>>> +This driver enables the use of a PWM module to monitor a fan. It uses the
+>>>>>> +generic PWM interface and can be used on SoCs as along as the SoC supports
+>>>>>> +Tachometer controller that moniors the Fan speed in periods.
+>>>>>> +
+>>>>>> +Author: Rajkumar Rampelli <rrajk@nvidia.com>
+>>>>>> +
+>>>>>> +Description
+>>>>>> +-----------
+>>>>>> +
+>>>>>> +The driver implements a simple interface for monitoring the Fan speed using
+>>>>>> +PWM module and Tachometer controller. It requests period value through PWM
+>>>>>> +capture interface to Tachometer and measures the Rotations per minute using
+>>>>>> +received period value. It exposes the Fan speed in RPM to the user space by
+>>>>>> +using the hwmon's sysfs interface.
+>>>>>> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+>>>>>> index ef23553..8912dcb 100644
+>>>>>> --- a/drivers/hwmon/Kconfig
+>>>>>> +++ b/drivers/hwmon/Kconfig
+>>>>>> @@ -1878,6 +1878,16 @@ config SENSORS_XGENE
+>>>>>>         If you say yes here you get support for the temperature
+>>>>>>         and power sensors for APM X-Gene SoC.
+>>>>>>   +config GENERIC_PWM_TACHOMETER
+>>>>>> +    tristate "Generic PWM based tachometer driver"
+>>>>>> +    depends on PWM
+>>>>>> +    help
+>>>>>> +      Enables a driver to use PWM signal from motor to use
+>>>>>> +      for measuring the motor speed. The RPM is captured by
+>>>>>> +      PWM modules which has PWM capture capability and this
+>>>>>> +      drivers reads the captured data from PWM IP to convert
+>>>>>> +      it to speed in RPM.
+>>>>>> +
+>>>>>>   if ACPI
+>>>>>>     comment "ACPI drivers"
+>>>>>> diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
+>>>>>> index f814b4a..9dcc374 100644
+>>>>>> --- a/drivers/hwmon/Makefile
+>>>>>> +++ b/drivers/hwmon/Makefile
+>>>>>> @@ -175,6 +175,7 @@ obj-$(CONFIG_SENSORS_WM8350)    += wm8350-hwmon.o
+>>>>>>   obj-$(CONFIG_SENSORS_XGENE)    += xgene-hwmon.o
+>>>>>>     obj-$(CONFIG_PMBUS)        += pmbus/
+>>>>>> +obj-$(CONFIG_GENERIC_PWM_TACHOMETER) += generic-pwm-tachometer.o
+>>>>>>     ccflags-$(CONFIG_HWMON_DEBUG_CHIP) := -DDEBUG
+>>>>>>   diff --git a/drivers/hwmon/generic-pwm-tachometer.c b/drivers/hwmon/generic-pwm-tachometer.c
+>>>>>> new file mode 100644
+>>>>>> index 0000000..9354d43
+>>>>>> --- /dev/null
+>>>>>> +++ b/drivers/hwmon/generic-pwm-tachometer.c
+>>>>>> @@ -0,0 +1,112 @@
+>>>>>> +/*
+>>>>>> + * Copyright (c) 2017-2018, NVIDIA CORPORATION.  All rights reserved.
+>>>>>> + *
+>>>>>> + * This program is free software; you can redistribute it and/or modify it
+>>>>>> + * under the terms and conditions of the GNU General Public License,
+>>>>>> + * version 2, as published by the Free Software Foundation.
+>>>>>> + *
+>>>>>> + * This program is distributed in the hope it will be useful, but WITHOUT
+>>>>>> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+>>>>>> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+>>>>>> + * more details.
+>>>>>> + *
+>>>>>> + */
+>>>>>> +
+>>>>>> +#include <linux/module.h>
+>>>>>> +#include <linux/platform_device.h>
+>>>>>> +#include <linux/err.h>
+>>>>>> +#include <linux/pwm.h>
+>>>>>> +#include <linux/hwmon.h>
+>>>>>> +#include <linux/hwmon-sysfs.h>
+>>>>>> +
+>>>>>> +struct pwm_hwmon_tach {
+>>>>>> +    struct device        *dev;
+>>>>>> +    struct pwm_device    *pwm;
+>>>>>> +    struct device        *hwmon;
+>>>>>> +};
+>>>>>> +
+>>>>>> +static ssize_t show_rpm(struct device *dev, struct device_attribute *attr,
+>>>>>> +            char *buf)
+>>>>>> +{
+>>>>>> +    struct pwm_hwmon_tach *ptt = dev_get_drvdata(dev);
+>>>>>> +    struct pwm_device *pwm = ptt->pwm;
+>>>>>> +    struct pwm_capture result;
+>>>>>> +    int err;
+>>>>>> +    unsigned int rpm = 0;
+>>>>>> +
+>>>>>> +    err = pwm_capture(pwm, &result, 0);
+>>>>>> +    if (err < 0) {
+>>>>>> +        dev_err(ptt->dev, "Failed to capture PWM: %d\n", err);
+>>>>>> +        return err;
+>>>>>> +    }
+>>>>>> +
+>>>>>> +    if (result.period)
+>>>>>> +        rpm = DIV_ROUND_CLOSEST_ULL(60ULL * NSEC_PER_SEC,
+>>>>>> +                        result.period);
+>>>>>> +
+>>>>>> +    return sprintf(buf, "%u\n", rpm);
+>>>>>> +}
+>>>>>> +
+>>>>>> +static SENSOR_DEVICE_ATTR(rpm, 0444, show_rpm, NULL, 0);
+>>>>>> +
+>>>>>> +static struct attribute *pwm_tach_attrs[] = {
+>>>>>> +    &sensor_dev_attr_rpm.dev_attr.attr,
+>>>>>> +    NULL,
+>>>>>> +};
+>>>>>
+>>>>> "rpm" is not a standard hwmon sysfs attribute. If you don't provide
+>>>>> a single standard hwmon sysfs attribute, having a hwmon driver is pointless.
+>>>> Guenter Roeck,
+>>>> I will define a new hwmon sysfs attribute node called "hwmon_tachometer_attributes" in hwmon.h like below and update the same in tachometer hwmon driver. Is it fine ?
+>>>> enum hwmon_tachometer_attributes {
+>>>
+>>> Are you kidding me ?
+>>>
+>>> Guenter
+>> Sorry, I just wanted to confirm whether my understanding is correct or not before implementing it actually.
+>> Or, shall I add this attribute as a part of fan attributes with "hwmon_fan_rpm" ? or any other way to do it ? I need your inputs in fixing this.
 > 
-> Signed-off-by: hao_zhang <hao5781286@gmail.com>
-> ---
->  drivers/pwm/Kconfig     |  10 ++
->  drivers/pwm/Makefile    |   1 +
->  drivers/pwm/pwm-sun8i.c | 401 ++++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 412 insertions(+)
->  create mode 100644 drivers/pwm/pwm-sun8i.c
+> I think he wants the attribute to be named according to the properties in this document: https://www.kernel.org/doc/Documentation/hwmon/sysfs-interface. I guess the attribute would then map to fan1_input, though I'm not sure if that's 100% correct either since this could technically be attached to something other than a fan. But I would think in practice that's not a big concern.
 > 
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index 763ee50..7e68d0f 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -444,6 +444,16 @@ config PWM_SUN4I
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called pwm-sun4i.
->  
-> +config PWM_SUN8I
-> +	tristate "Allwinner PWM SUN8I support"
-> +	depends on ARCH_SUNXI || COMPILE_TEST
-> +	depends on HAS_IOMEM && COMMON_CLK
-> +	help
-> +	  Generic PWM framework driver for Allwinner SoCs.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called pwm-sun8i.
-> +
->  config PWM_TEGRA
->  	tristate "NVIDIA Tegra PWM support"
->  	depends on ARCH_TEGRA
-> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> index 0258a74..cd6bf40 100644
-> --- a/drivers/pwm/Makefile
-> +++ b/drivers/pwm/Makefile
-> @@ -44,6 +44,7 @@ obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
->  obj-$(CONFIG_PWM_STM32_LP)	+= pwm-stm32-lp.o
->  obj-$(CONFIG_PWM_STMPE)		+= pwm-stmpe.o
->  obj-$(CONFIG_PWM_SUN4I)		+= pwm-sun4i.o
-> +obj-$(CONFIG_PWM_SUN8I)		+= pwm-sun8i.o
->  obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
->  obj-$(CONFIG_PWM_TIECAP)	+= pwm-tiecap.o
->  obj-$(CONFIG_PWM_TIEHRPWM)	+= pwm-tiehrpwm.o
-> diff --git a/drivers/pwm/pwm-sun8i.c b/drivers/pwm/pwm-sun8i.c
-> new file mode 100644
-> index 0000000..cf23b0a
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-sun8i.c
-> @@ -0,0 +1,401 @@
-> +#include <linux/bitops.h>
-> +#include <linux/clk.h>
-> +#include <linux/delay.h>
-> +#include <linux/err.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pwm.h>
-> +#include <linux/slab.h>
-> +#include <linux/spinlock.h>
-> +#include <linux/time.h>
-> +#include <linux/regmap.h>
-> +
-> +#define PWM_IRQ_ENABLE_REG	0x0000
-> +#define PCIE(ch)	BIT(ch)
-> +
-> +#define PWM_IRQ_STATUS_REG	0x0004
-> +#define PIS(ch)	BIT(ch)
-> +
-> +#define CAPTURE_IRQ_ENABLE_REG	0x0010
-> +#define CFIE(ch)	BIT(ch << 1 + 1)
-> +#define CRIE(ch)	BIT(ch << 1)
-> +
-> +#define CAPTURE_IRQ_STATUS_REG	0x0014
-> +#define CFIS(ch)	BIT(ch << 1 + 1)
-> +#define CRIS(ch)	BIT(ch << 1)
-> +
-> +#define CLK_CFG_REG(ch)	(0x0020 + (ch >> 1) * 4)
-> +#define CLK_SRC	BIT(7)
-> +#define CLK_SRC_BYPASS_SEC	BIT(6)
-> +#define CLK_SRC_BYPASS_FIR	BIT(5)
-> +#define CLK_GATING	BIT(4)
-> +#define CLK_DIV_M	GENMASK(3, 0)
-> +
-> +#define PWM_DZ_CTR_REG(ch)	(0x0030 + (ch >> 1) * 4)
-> +#define PWM_DZ_INTV	GENMASK(15, 8)
-> +#define PWM_DZ_EN	BIT(0)
-> +
-> +#define PWM_ENABLE_REG	0x0040
-> +#define PWM_EN(ch)	BIT(ch)
-> +
-> +#define CAPTURE_ENABLE_REG	0x0044
-> +#define CAP_EN(ch)	BIT(ch)
-> +
-> +#define PWM_CTR_REG(ch)	(0x0060 + ch * 0x20)
-> +#define PWM_PERIOD_RDY	BIT(11)
-> +#define PWM_PUL_START	BIT(10)
-> +#define PWM_MODE	BIT(9)
-> +#define PWM_ACT_STA	BIT(8)
-> +#define PWM_PRESCAL_K	GENMASK(7, 0)
-> +
-> +#define PWM_PERIOD_REG(ch)	(0x0064 + ch * 0x20)
-> +#define PWM_ENTIRE_CYCLE	GENMASK(31, 16)
-> +#define PWM_ACT_CYCLE	GENMASK(15, 0)
-> +
-> +#define PWM_CNT_REG(ch)	(0x0068 + ch * 0x20)
-> +#define PWM_CNT_VAL	GENMASK(15, 0)
-> +
-> +#define CAPTURE_CTR_REG(ch)	(0x006c + ch * 0x20)
-> +#define CAPTURE_CRLF	BIT(2)
-> +#define CAPTURE_CFLF	BIT(1)
-> +#define CAPINV	BIT(0)
-> +
-> +#define CAPTURE_RISE_REG(ch)	(0x0070 + ch * 0x20)
-> +#define CAPTURE_CRLR	GENMASK(15, 0)
-> +
-> +#define CAPTURE_FALL_REG(ch)	(0x0074 + ch * 0x20)
-> +#define CAPTURE_CFLR	GENMASK(15, 0)
-> +
-> +struct sun8i_pwm_data {
-> +	bool has_prescaler_bypass;
-> +	bool has_rdy;
-> +	unsigned int npwm;
-> +};
-> +
-> +struct sun8i_pwm_chip {
-> +	struct pwm_chip chip;
-> +	struct clk *clk;
-> +	void __iomem *base;
-> +	spinlock_t ctrl_lock;
-> +	const struct sun8i_pwm_data *data;
-> +	struct regmap *regmap;
-> +};
-> +
-> +static const u16 div_m_table[] = {
-> +	1,
-> +	2,
-> +	4,
-> +	8,
-> +	16,
-> +	32,
-> +	64,
-> +	128,
-> +	256
-> +};
-> +
-> +static inline struct sun8i_pwm_chip *to_sun8i_pwm_chip(struct pwm_chip *chip)
-> +{
-> +	return container_of(chip, struct sun8i_pwm_chip, chip);
-> +}
-> +
-> +static u32 sun8i_pwm_read(struct sun8i_pwm_chip *sun8i_pwm,
-> +		unsigned long offset)
-> +{
-> +	u32 val;
-> +
-> +	regmap_read(sun8i_pwm->regmap, offset, &val);
-> +
-> +	return val;
-> +}
-> +
-> +static inline void sun8i_pwm_set_bit(struct sun8i_pwm_chip *sun8i_pwm,
-> +		unsigned long reg, u32 bit)
-> +{
-> +	regmap_update_bits(sun8i_pwm->regmap, reg, bit, bit);
-> +}
-> +
-> +static inline void sun8i_pwm_clear_bit(struct sun8i_pwm_chip *sun8i_pwm,
-> +		unsigned long reg, u32 bit)
-> +{
-> +	regmap_update_bits(sun8i_pwm->regmap, reg, bit, 0);
-> +}
-> +
-> +static inline void sun8i_pwm_set_value(struct sun8i_pwm_chip *sun8i_pwm,
-> +		unsigned long reg, u32 mask, u32 val)
-> +{
-> +	regmap_update_bits(sun8i_pwm->regmap, reg, mask, val);
-> +}
-> +
-> +static void sun8i_pwm_set_polarity(struct sun8i_pwm_chip *chip, u32 ch,
-> +		enum pwm_polarity polarity)
-> +{
-> +	if (polarity == PWM_POLARITY_NORMAL)
-> +		sun8i_pwm_set_bit(chip, PWM_CTR_REG(ch), PWM_ACT_STA);
-> +	else
-> +		sun8i_pwm_clear_bit(chip, PWM_CTR_REG(ch), PWM_ACT_STA);
-> +}
-> +
-> +static int sun8i_pwm_config(struct sun8i_pwm_chip *sun8i_pwm, u8 ch,
-> +		struct pwm_state *state)
-> +{
-> +	u64 clk_rate, clk_div, val;
-> +	u16 prescaler = 0;
-> +	u8 id = 0;
-> +
-> +	clk_rate = clk_get_rate(sun8i_pwm->clk);
-> +
-> +	if (clk_rate == 24000000)
-> +		sun8i_pwm_clear_bit(sun8i_pwm, CLK_CFG_REG(ch), CLK_SRC);
-> +	else
-> +		sun8i_pwm_set_bit(sun8i_pwm, CLK_CFG_REG(ch), CLK_SRC);
-> +
-> +	if (sun8i_pwm->data->has_prescaler_bypass) {
-> +		/* pwm output bypass */
-> +		if (ch % 2)
-> +			sun8i_pwm_set_bit(sun8i_pwm, CLK_CFG_REG(ch),
-> +					CLK_SRC_BYPASS_FIR);
-> +		else
-> +			sun8i_pwm_set_bit(sun8i_pwm, CLK_CFG_REG(ch),
-> +					CLK_SRC_BYPASS_SEC);
-> +		return 0;
-> +	}
-> +
-> +	val = state->period * clk_rate;
-> +	do_div(val, NSEC_PER_SEC);
-> +	if (val < 1) {
-> +		dev_err(sun8i_pwm->chip.dev,
-> +				"Period expects a larger value\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* calculate and set prescalar, div table, pwn entrie cycle */
-> +	clk_div = val;
-> +
-> +	while (clk_div > 65535) {
-> +		prescaler++;
-> +		clk_div = val;
-> +		do_div(clk_div, prescaler + 1);
-> +		do_div(clk_div, div_m_table[id]);
-> +
-> +		if (prescaler == 255) {
-> +			prescaler = 0;
-> +			id++;
-> +			if (id == 9)
-> +				return -EINVAL;
-> +		}
-> +	}
-> +
-> +	sun8i_pwm_set_value(sun8i_pwm, PWM_PERIOD_REG(ch),
-> +			PWM_ENTIRE_CYCLE, clk_div << 16);
-> +	sun8i_pwm_set_value(sun8i_pwm, PWM_CTR_REG(ch),
-> +			PWM_PRESCAL_K, prescaler << 0);
-> +	sun8i_pwm_set_value(sun8i_pwm, CLK_CFG_REG(ch),
-> +			CLK_DIV_M, id << 0);
-> +
-> +	/* set duty cycle */
-> +	val = (prescaler + 1) * div_m_table[id] * clk_div;
-> +	val = state->period;
-> +	do_div(val, clk_div);
-> +	clk_div = state->duty_cycle;
-> +	do_div(clk_div, val);
-> +
-> +	sun8i_pwm_set_value(sun8i_pwm, PWM_PERIOD_REG(ch),
-> +			PWM_ACT_CYCLE, clk_div << 0);
-> +
-> +	return 0;
-> +}
-> +
-> +static int sun8i_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-> +		struct pwm_state *state)
-> +{
-> +	int ret;
-> +	struct sun8i_pwm_chip *sun8i_pwm = to_sun8i_pwm_chip(chip);
-> +	struct pwm_state cstate;
-> +
-> +	pwm_get_state(pwm, &cstate);
-> +	if (!cstate.enabled) {
-> +		ret = clk_prepare_enable(sun8i_pwm->clk);
-> +		if (ret) {
-> +			dev_err(chip->dev, "Failed to enable PWM clock\n");
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	spin_lock(&sun8i_pwm->ctrl_lock);
-> +
-> +	if ((cstate.period != state->period) ||
-> +			(cstate.duty_cycle != state->duty_cycle)) {
-> +		ret = sun8i_pwm_config(sun8i_pwm, pwm->hwpwm, state);
-> +		if (ret) {
-> +			spin_unlock(&sun8i_pwm->ctrl_lock);
-Shouldn't clk_disable_unprepare() be called here in case you enabled it before?
-> +			dev_err(chip->dev, "Failed to config PWM\n");
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	if (state->polarity != cstate.polarity)
-> +		sun8i_pwm_set_polarity(sun8i_pwm, pwm->hwpwm, state->polarity);
-> +
-> +	if (state->enabled) {
-> +		sun8i_pwm_set_bit(sun8i_pwm,
-> +				CLK_CFG_REG(pwm->hwpwm), CLK_GATING);
-> +
-> +		sun8i_pwm_set_bit(sun8i_pwm,
-> +				PWM_ENABLE_REG, PWM_EN(pwm->hwpwm));
-> +	} else {
-> +		sun8i_pwm_clear_bit(sun8i_pwm,
-> +				CLK_CFG_REG(pwm->hwpwm), CLK_GATING);
-> +
-> +		sun8i_pwm_clear_bit(sun8i_pwm,
-> +				PWM_ENABLE_REG, PWM_EN(pwm->hwpwm));
-Also, here, in case cstate.enabled is false and state->enabled is false
-shouldn't clk_disable_unprepare() be called?
-> +	}
-> +
-> +	spin_unlock(&sun8i_pwm->ctrl_lock);
-> +
-> +	return 0;
-> +}
-> +
-> +static void sun8i_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
-> +		struct pwm_state *state)
-> +{
-> +	struct sun8i_pwm_chip *sun8i_pwm = to_sun8i_pwm_chip(chip);
-> +	u64 clk_rate, tmp;
-> +	u32 val;
-> +	u16 clk_div, act_cycle;
-> +	u8 prescal, id;
-> +
-> +	clk_rate = clk_get_rate(sun8i_pwm->clk);
-> +
-> +	val = sun8i_pwm_read(sun8i_pwm, PWM_CTR_REG(pwm->hwpwm));
-> +	if (PWM_ACT_STA & val)
-> +		state->polarity = PWM_POLARITY_NORMAL;
-> +	else
-> +		state->polarity = PWM_POLARITY_INVERSED;
-> +
-> +	prescal = PWM_PRESCAL_K & val;
-> +
-> +	val = sun8i_pwm_read(sun8i_pwm, PWM_ENABLE_REG);
-> +	if (PWM_EN(pwm->hwpwm) & val)
-> +		state->enabled = true;
-> +	else
-> +		state->enabled = false;
-> +
-> +	val = sun8i_pwm_read(sun8i_pwm, PWM_PERIOD_REG(pwm->hwpwm));
-> +	act_cycle = PWM_ACT_CYCLE & val;
-> +	clk_div = val >> 16;
-> +
-> +	val = sun8i_pwm_read(sun8i_pwm, CLK_CFG_REG(pwm->hwpwm));
-> +	id = CLK_DIV_M & val;
-> +
-> +	tmp = act_cycle * prescal * div_m_table[id] * NSEC_PER_SEC;
-> +	state->duty_cycle = DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
-> +	tmp = clk_div * prescal * div_m_table[id] * NSEC_PER_SEC;
-> +	state->period = DIV_ROUND_CLOSEST_ULL(tmp, clk_rate);
-> +}
-> +
-> +static const struct regmap_config sun8i_pwm_regmap_config = {
-> +	.reg_bits = 32,
-> +	.reg_stride = 4,
-> +	.val_bits = 32,
-> +	.max_register = CAPTURE_FALL_REG(7),
-> +};
-> +
-> +static const struct pwm_ops sun8i_pwm_ops = {
-> +	.apply = sun8i_pwm_apply,
-> +	.get_state = sun8i_pwm_get_state,
-> +	.owner = THIS_MODULE,
-> +};
-> +
-> +static const struct sun8i_pwm_data sun8i_pwm_data_r40 = {
-> +	.has_prescaler_bypass = false,
-> +	.has_rdy = true,
-> +	.npwm = 8,
-> +};
-> +
-> +static const struct of_device_id sun8i_pwm_dt_ids[] = {
-> +	{
-> +		.compatible = "allwinner,sun8i-r40-pwm",
-> +		.data = &sun8i_pwm_data_r40,
-> +	},
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, sun8i_pwm_dt_ids);
-> +
-> +static int sun8i_pwm_probe(struct platform_device *pdev)
-> +{
-> +	struct sun8i_pwm_chip *pwm;
-> +	struct resource *res;
-> +	int ret;
-> +	const struct of_device_id *match;
-> +
-> +	match = of_match_device(sun8i_pwm_dt_ids, &pdev->dev);
-> +	if (!match) {
-> +		dev_err(&pdev->dev, "Error: No device match found\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	pwm = devm_kzalloc(&pdev->dev, sizeof(*pwm), GFP_KERNEL);
-> +	if (!pwm)
-> +		return -ENOMEM;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	pwm->base = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(pwm->base))
-> +		return PTR_ERR(pwm->base);
-> +
-> +	pwm->regmap = devm_regmap_init_mmio(&pdev->dev, pwm->base,
-> +			&sun8i_pwm_regmap_config);
-> +	if (IS_ERR(pwm->regmap)) {
-> +		dev_err(&pdev->dev, "Failed to create regmap\n");
-> +		return PTR_ERR(pwm->regmap);
-> +	}
-> +
-> +	pwm->clk = devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(pwm->clk))
-> +		return PTR_ERR(pwm->clk);
-> +
-> +	pwm->data = match->data;
-> +	pwm->chip.dev = &pdev->dev;
-> +	pwm->chip.ops = &sun8i_pwm_ops;
-> +	pwm->chip.base = -1;
-> +	pwm->chip.npwm = pwm->data->npwm;
-> +	pwm->chip.of_xlate = of_pwm_xlate_with_flags;
-> +	pwm->chip.of_pwm_n_cells = 3;
-> +
-> +	spin_lock_init(&pwm->ctrl_lock);
-> +
-> +	ret = pwmchip_add(&pwm->chip);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "Failed to add PWM chip: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	platform_set_drvdata(pdev, pwm);
-> +
-> +	return 0;
-> +}
-> +
-> +static int sun8i_pwm_remove(struct platform_device *pdev)
-> +{
-> +	struct sun8i_pwm_chip *pwm = platform_get_drvdata(pdev);
-> +
-> +	return pwmchip_remove(&pwm->chip);
-> +}
-> +
-> +static struct platform_driver sun8i_pwm_driver = {
-> +	.driver = {
-> +		.name = "sun8i-pwm",
-> +		.of_match_table = sun8i_pwm_dt_ids,
-> +	},
-> +	.probe = sun8i_pwm_probe,
-> +	.remove = sun8i_pwm_remove,
-> +};
-> +module_platform_driver(sun8i_pwm_driver);
-> +
-> +MODULE_ALIAS("platform: sun8i-pwm");
-> +MODULE_AUTHOR("Hao Zhang <hao5781286@gmail.com>");
-> +MODULE_DESCRIPTION("Allwinner sun8i PWM driver");
-> +MODULE_LICENSE("GPL v2");
+> Guenter,
+> Please correct me as well if I'm wrong.
+> 
+You are absolutely correct.
+
+While I am not opposed to ABI changes, the merits of those would need to be
+discussed on the mailing list. But replacing "fan1_input" with "rpm" is
+not an acceptable ABI change, even if it may measure something that turns
+but isn't a fan.
+
+If this _is_ in fact supposed to be used for something else but fans, we
+would have to discuss what that might be, and if hwmon is the appropriate
+subsystem to measure and report it. This does to some degree lead back to
+my concern of having the "fan" part of this patch series in the pwm core.
+I am still not sure if that makes sense.
+
+Thanks,
+Guenter
+
+> Thank you,
+> Mikko
+> 
+>>
+>> -- 
+>> To unsubscribe from this list: send the line "unsubscribe linux-tegra" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-hwmon" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
