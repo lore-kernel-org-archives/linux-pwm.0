@@ -1,208 +1,103 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 05/10] hwmon: generic-pwm-tachometer: Add generic PWM
- based tachometer
-Date: Wed, 28 Feb 2018 06:29:21 -0800
-Message-ID: <62ba7f67-5a99-51ab-1214-eb68ebb7e642@roeck-us.net>
-References: <1519196339-9377-1-git-send-email-rrajk@nvidia.com>
- <1519196339-9377-6-git-send-email-rrajk@nvidia.com>
- <5172edff-fe29-7ed1-f0d2-b0359ea2c24d@roeck-us.net>
- <2510b525-ec36-b49d-5a62-81f335c0d10d@nvidia.com>
- <cfe0d0ce-3a89-bad0-85ba-6edf1135d2dc@roeck-us.net>
- <2628eff2-dd33-34f4-a7e1-cfe46ef88a3f@nvidia.com>
- <4556a8d2-947d-72c4-2962-3167afb53978@kapsi.fi>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v3 05/10] pwm: add PWM mode to pwm_config()
+Date: Wed, 28 Feb 2018 20:44:30 +0100
+Message-ID: <20180228194429.GD22932@mithrandir>
+References: <1519300881-8136-1-git-send-email-claudiu.beznea@microchip.com>
+ <1519300881-8136-6-git-send-email-claudiu.beznea@microchip.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <4556a8d2-947d-72c4-2962-3167afb53978@kapsi.fi>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mikko Perttunen <cyndis@kapsi.fi>, Rajkumar Rampelli <rrajk@nvidia.com>, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, jdelvare@suse.com, corbet@lwn.net, catalin.marinas@arm.com, will.deacon@arm.com, kstewart@linuxfoundation.org, gregkh@linuxfoundation.org, pombredanne@nexb.com, mmaddireddy@nvidia.com, mperttunen@nvidia.com, arnd@arndb.de, timur@codeaurora.org, andy.gross@linaro.org, xuwei5@hisilicon.com, elder@linaro.org, heiko@sntech.de, krzk@kernel.org, ard.biesheuvel@linaro.org
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, ldewangan@nvidia.com
+Content-Type: multipart/mixed; boundary="===============0117355413=="
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <1519300881-8136-6-git-send-email-claudiu.beznea@microchip.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc: mark.rutland@arm.com, milo.kim@ti.com, linux-fbdev@vger.kernel.org, sean@mess.org, devicetree@vger.kernel.org, airlied@linux.ie, mturquette@baylibre.com, kamil@wypas.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, alexandre.belloni@free-electrons.com, pavel@ucw.cz, lee.jones@linaro.org, linux-clk@vger.kernel.org, linux-leds@vger.kernel.org, daniel.thompson@linaro.org, linux-samsung-soc@vger.kernel.org, shc_work@mail.ru, corbet@lwn.net, linux-doc@vger.kernel.org, linux@armlinux.org.uk, krzk@kernel.org, kgene@kernel.org, linux-input@vger.kernel.org, linux@roeck-us.net, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, jdelvare@suse.com, b.zolnierkie@samsung.com, intel-gfx@lists.freedesktop.org, robh+dt@kernel.org, jacek.anaszewski@gmail.com, rodrigo.vivi@intel.com, mchehab@kernel.org, linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.or
 List-Id: linux-pwm@vger.kernel.org
 
-On 02/27/2018 11:03 PM, Mikko Perttunen wrote:
-> On 02/28/2018 08:12 AM, Rajkumar Rampelli wrote:
->>
->> On Wednesday 28 February 2018 11:28 AM, Guenter Roeck wrote:
->>> On 02/27/2018 09:38 PM, Rajkumar Rampelli wrote:
->>>>
->>>> On Wednesday 21 February 2018 08:20 PM, Guenter Roeck wrote:
->>>>> On 02/20/2018 10:58 PM, Rajkumar Rampelli wrote:
->>>>>> Add generic PWM based tachometer driver via HWMON interface
->>>>>> to report the RPM of motor. This drivers get the period/duty
->>>>>> cycle from PWM IP which captures the motor PWM output.
->>>>>>
->>>>>> This driver implements a simple interface for monitoring the speed of
->>>>>> a fan and exposes it in roatations per minute (RPM) to the user space
->>>>>> by using the hwmon's sysfs interface
->>>>>>
->>>>>> Signed-off-by: Rajkumar Rampelli <rrajk@nvidia.com>
->>>>>> ---
->>>>>>   Documentation/hwmon/generic-pwm-tachometer |  17 +++++
->>>>>>   drivers/hwmon/Kconfig                      |  10 +++
->>>>>>   drivers/hwmon/Makefile                     |   1 +
->>>>>>   drivers/hwmon/generic-pwm-tachometer.c     | 112 +++++++++++++++++++++++++++++
->>>>>>   4 files changed, 140 insertions(+)
->>>>>>   create mode 100644 Documentation/hwmon/generic-pwm-tachometer
->>>>>>   create mode 100644 drivers/hwmon/generic-pwm-tachometer.c
->>>>>>
->>>>>> diff --git a/Documentation/hwmon/generic-pwm-tachometer b/Documentation/hwmon/generic-pwm-tachometer
->>>>>> new file mode 100644
->>>>>> index 0000000..e0713ee
->>>>>> --- /dev/null
->>>>>> +++ b/Documentation/hwmon/generic-pwm-tachometer
->>>>>> @@ -0,0 +1,17 @@
->>>>>> +Kernel driver generic-pwm-tachometer
->>>>>> +====================================
->>>>>> +
->>>>>> +This driver enables the use of a PWM module to monitor a fan. It uses the
->>>>>> +generic PWM interface and can be used on SoCs as along as the SoC supports
->>>>>> +Tachometer controller that moniors the Fan speed in periods.
->>>>>> +
->>>>>> +Author: Rajkumar Rampelli <rrajk@nvidia.com>
->>>>>> +
->>>>>> +Description
->>>>>> +-----------
->>>>>> +
->>>>>> +The driver implements a simple interface for monitoring the Fan speed using
->>>>>> +PWM module and Tachometer controller. It requests period value through PWM
->>>>>> +capture interface to Tachometer and measures the Rotations per minute using
->>>>>> +received period value. It exposes the Fan speed in RPM to the user space by
->>>>>> +using the hwmon's sysfs interface.
->>>>>> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
->>>>>> index ef23553..8912dcb 100644
->>>>>> --- a/drivers/hwmon/Kconfig
->>>>>> +++ b/drivers/hwmon/Kconfig
->>>>>> @@ -1878,6 +1878,16 @@ config SENSORS_XGENE
->>>>>>         If you say yes here you get support for the temperature
->>>>>>         and power sensors for APM X-Gene SoC.
->>>>>>   +config GENERIC_PWM_TACHOMETER
->>>>>> +    tristate "Generic PWM based tachometer driver"
->>>>>> +    depends on PWM
->>>>>> +    help
->>>>>> +      Enables a driver to use PWM signal from motor to use
->>>>>> +      for measuring the motor speed. The RPM is captured by
->>>>>> +      PWM modules which has PWM capture capability and this
->>>>>> +      drivers reads the captured data from PWM IP to convert
->>>>>> +      it to speed in RPM.
->>>>>> +
->>>>>>   if ACPI
->>>>>>     comment "ACPI drivers"
->>>>>> diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
->>>>>> index f814b4a..9dcc374 100644
->>>>>> --- a/drivers/hwmon/Makefile
->>>>>> +++ b/drivers/hwmon/Makefile
->>>>>> @@ -175,6 +175,7 @@ obj-$(CONFIG_SENSORS_WM8350)    += wm8350-hwmon.o
->>>>>>   obj-$(CONFIG_SENSORS_XGENE)    += xgene-hwmon.o
->>>>>>     obj-$(CONFIG_PMBUS)        += pmbus/
->>>>>> +obj-$(CONFIG_GENERIC_PWM_TACHOMETER) += generic-pwm-tachometer.o
->>>>>>     ccflags-$(CONFIG_HWMON_DEBUG_CHIP) := -DDEBUG
->>>>>>   diff --git a/drivers/hwmon/generic-pwm-tachometer.c b/drivers/hwmon/generic-pwm-tachometer.c
->>>>>> new file mode 100644
->>>>>> index 0000000..9354d43
->>>>>> --- /dev/null
->>>>>> +++ b/drivers/hwmon/generic-pwm-tachometer.c
->>>>>> @@ -0,0 +1,112 @@
->>>>>> +/*
->>>>>> + * Copyright (c) 2017-2018, NVIDIA CORPORATION.  All rights reserved.
->>>>>> + *
->>>>>> + * This program is free software; you can redistribute it and/or modify it
->>>>>> + * under the terms and conditions of the GNU General Public License,
->>>>>> + * version 2, as published by the Free Software Foundation.
->>>>>> + *
->>>>>> + * This program is distributed in the hope it will be useful, but WITHOUT
->>>>>> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
->>>>>> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
->>>>>> + * more details.
->>>>>> + *
->>>>>> + */
->>>>>> +
->>>>>> +#include <linux/module.h>
->>>>>> +#include <linux/platform_device.h>
->>>>>> +#include <linux/err.h>
->>>>>> +#include <linux/pwm.h>
->>>>>> +#include <linux/hwmon.h>
->>>>>> +#include <linux/hwmon-sysfs.h>
->>>>>> +
->>>>>> +struct pwm_hwmon_tach {
->>>>>> +    struct device        *dev;
->>>>>> +    struct pwm_device    *pwm;
->>>>>> +    struct device        *hwmon;
->>>>>> +};
->>>>>> +
->>>>>> +static ssize_t show_rpm(struct device *dev, struct device_attribute *attr,
->>>>>> +            char *buf)
->>>>>> +{
->>>>>> +    struct pwm_hwmon_tach *ptt = dev_get_drvdata(dev);
->>>>>> +    struct pwm_device *pwm = ptt->pwm;
->>>>>> +    struct pwm_capture result;
->>>>>> +    int err;
->>>>>> +    unsigned int rpm = 0;
->>>>>> +
->>>>>> +    err = pwm_capture(pwm, &result, 0);
->>>>>> +    if (err < 0) {
->>>>>> +        dev_err(ptt->dev, "Failed to capture PWM: %d\n", err);
->>>>>> +        return err;
->>>>>> +    }
->>>>>> +
->>>>>> +    if (result.period)
->>>>>> +        rpm = DIV_ROUND_CLOSEST_ULL(60ULL * NSEC_PER_SEC,
->>>>>> +                        result.period);
->>>>>> +
->>>>>> +    return sprintf(buf, "%u\n", rpm);
->>>>>> +}
->>>>>> +
->>>>>> +static SENSOR_DEVICE_ATTR(rpm, 0444, show_rpm, NULL, 0);
->>>>>> +
->>>>>> +static struct attribute *pwm_tach_attrs[] = {
->>>>>> +    &sensor_dev_attr_rpm.dev_attr.attr,
->>>>>> +    NULL,
->>>>>> +};
->>>>>
->>>>> "rpm" is not a standard hwmon sysfs attribute. If you don't provide
->>>>> a single standard hwmon sysfs attribute, having a hwmon driver is pointless.
->>>> Guenter Roeck,
->>>> I will define a new hwmon sysfs attribute node called "hwmon_tachometer_attributes" in hwmon.h like below and update the same in tachometer hwmon driver. Is it fine ?
->>>> enum hwmon_tachometer_attributes {
->>>
->>> Are you kidding me ?
->>>
->>> Guenter
->> Sorry, I just wanted to confirm whether my understanding is correct or not before implementing it actually.
->> Or, shall I add this attribute as a part of fan attributes with "hwmon_fan_rpm" ? or any other way to do it ? I need your inputs in fixing this.
-> 
-> I think he wants the attribute to be named according to the properties in this document: https://www.kernel.org/doc/Documentation/hwmon/sysfs-interface. I guess the attribute would then map to fan1_input, though I'm not sure if that's 100% correct either since this could technically be attached to something other than a fan. But I would think in practice that's not a big concern.
-> 
-> Guenter,
-> Please correct me as well if I'm wrong.
-> 
-You are absolutely correct.
 
-While I am not opposed to ABI changes, the merits of those would need to be
-discussed on the mailing list. But replacing "fan1_input" with "rpm" is
-not an acceptable ABI change, even if it may measure something that turns
-but isn't a fan.
+--===============0117355413==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="YToU2i3Vx8H2dn7O"
+Content-Disposition: inline
 
-If this _is_ in fact supposed to be used for something else but fans, we
-would have to discuss what that might be, and if hwmon is the appropriate
-subsystem to measure and report it. This does to some degree lead back to
-my concern of having the "fan" part of this patch series in the pwm core.
-I am still not sure if that makes sense.
 
-Thanks,
-Guenter
+--YToU2i3Vx8H2dn7O
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Thank you,
-> Mikko
-> 
->>
->> -- 
->> To unsubscribe from this list: send the line "unsubscribe linux-tegra" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-hwmon" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+On Thu, Feb 22, 2018 at 02:01:16PM +0200, Claudiu Beznea wrote:
+> Add PWM mode to pwm_config() function. The drivers which uses pwm_config()
+> were adapted to this change.
+>=20
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> ---
+>  arch/arm/mach-s3c24xx/mach-rx1950.c  | 11 +++++++++--
+>  drivers/bus/ts-nbus.c                |  2 +-
+>  drivers/clk/clk-pwm.c                |  3 ++-
+>  drivers/gpu/drm/i915/intel_panel.c   | 17 ++++++++++++++---
+>  drivers/hwmon/pwm-fan.c              |  2 +-
+>  drivers/input/misc/max77693-haptic.c |  2 +-
+>  drivers/input/misc/max8997_haptic.c  |  6 +++++-
+>  drivers/leds/leds-pwm.c              |  5 ++++-
+>  drivers/media/rc/ir-rx51.c           |  5 ++++-
+>  drivers/media/rc/pwm-ir-tx.c         |  5 ++++-
+>  drivers/video/backlight/lm3630a_bl.c |  4 +++-
+>  drivers/video/backlight/lp855x_bl.c  |  4 +++-
+>  drivers/video/backlight/lp8788_bl.c  |  5 ++++-
+>  drivers/video/backlight/pwm_bl.c     | 11 +++++++++--
+>  drivers/video/fbdev/ssd1307fb.c      |  3 ++-
+>  include/linux/pwm.h                  |  6 ++++--
+>  16 files changed, 70 insertions(+), 21 deletions(-)
+
+I don't think it makes sense to leak mode support into the legacy API.
+The pwm_config() function is considered legacy and should eventually go
+away. As such it doesn't make sense to integrate a new feature such as
+PWM modes into it. All users of pwm_config() assume normal mode, and
+that's what pwm_config() should provide.
+
+Anyone that needs something other than normal mode should use the new
+atomic PWM API.
+
+Thierry
+
+--YToU2i3Vx8H2dn7O
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlqXBpoACgkQ3SOs138+
+s6GLrhAAuRLaoghLArJWd7JYjdi7JlVWdIer5OiGaY3qO2G2OnJBxBWctd+VJ/t+
+uTtC29oNgm7jzgwf7JiGUm3yVMx/S2rW6+s0JbeVp0xXBO7Lhd6EMZbSzOC3BBHB
+0RyqgEGoZRfaI++4LM9L6sMvHQ5lEt0PimKAug9MsXsxWOW88slB4Ll9Z/APl/Wr
+mCWW1qN2fs2F1hQdFAhE3ujMogEfRuW0/KwFkHa223ud/i1LJNe0jkIMnEYgWsCX
+x1my31QvhyMRxYQwp1FA3eAqHGnWo3yTXZYOYGBc3nJdm0UVQL59XX0UXduCVVPo
+YDwxSRZn04DADA5nBXplNIpG7qsELxrLUXcnB84D6Jstz17m4NSDknnHh/XkHgS7
+Q0SM/+jDqLzHHlhnCWmAJ9SBbvvrUDnXlCoMzmDoTzGN7fp74wFT1flIXILA91Lh
+AF/x1TWs5HV78+fowFUWVK2Fhc0zyNGYmDd7wQ2jlKjxETDcmXH+IoRHn48bcuio
+FphZkj4Un2o5X9O7jSRi5vHuJcmlHT30NsWgMduK9dWzq0wXih6zH/TTQk8N2rHM
+2+eijd/BDQum2RuK8mg2klvye5jrXp7f+iT305hUYoz4fmmMddqFiybi1nUHkTkA
+UG05BweYZ6hjEkpavMW0zeGEvWuZWwZZNHzKaOpJ/aRseA7Jpb0=
+=zbqh
+-----END PGP SIGNATURE-----
+
+--YToU2i3Vx8H2dn7O--
+
+--===============0117355413==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
+IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
+dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
+
+--===============0117355413==--
