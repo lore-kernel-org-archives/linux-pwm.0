@@ -1,102 +1,63 @@
-From: Maxime Ripard <maxime.ripard@bootlin.com>
-Subject: Re: [linux-sunxi] [PATCH v2 1/4] dt-bindings: pwm: binding allwinner
- sun8i.
-Date: Thu, 1 Mar 2018 10:26:46 +0100
-Message-ID: <20180301092646.44rxuwui2ssiar4u@flea>
-References: <20180225135045.GA14508@arx-s1>
- <56645bca-9f4a-3191-72d8-32b60ebbc26e@arm.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 05/10] hwmon: generic-pwm-tachometer: Add generic PWM
+ based tachometer
+Date: Thu, 1 Mar 2018 16:08:36 -0600
+Message-ID: <20180301220836.a77o5i5g7g2k7lei@rob-hp-laptop>
+References: <1519196339-9377-1-git-send-email-rrajk@nvidia.com>
+ <1519196339-9377-6-git-send-email-rrajk@nvidia.com>
+ <ee03e1e5-bbeb-1238-04ed-b992fe3a3ce6@kapsi.fi>
+ <c1192f75-0e6e-c735-67e1-2901624831ae@roeck-us.net>
+ <a5db25f7-6999-ff3a-21c2-161cfcf4db35@kapsi.fi>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="dtiwzdbgltohjq4r"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <56645bca-9f4a-3191-72d8-32b60ebbc26e@arm.com>
+In-Reply-To: <a5db25f7-6999-ff3a-21c2-161cfcf4db35@kapsi.fi>
 Sender: linux-kernel-owner@vger.kernel.org
-To: =?utf-8?B?QW5kcsOp?= Przywara <andre.przywara@arm.com>
-Cc: hao5781286@gmail.com, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, wens@csie.org, Claudiu.Beznea@microchip.com, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-sunxi@googlegroups.com
+To: Mikko Perttunen <cyndis@kapsi.fi>
+Cc: Guenter Roeck <linux@roeck-us.net>, Rajkumar Rampelli <rrajk@nvidia.com>, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, jdelvare@suse.com, corbet@lwn.net, catalin.marinas@arm.com, will.deacon@arm.com, kstewart@linuxfoundation.org, gregkh@linuxfoundation.org, pombredanne@nexb.com, mmaddireddy@nvidia.com, mperttunen@nvidia.com, arnd@arndb.de, gregory.clement@free-electrons.com, timur@codeaurora.org, andy.gross@linaro.org, xuwei5@hisilicon.com, elder@linaro.org, heiko@sntech.de, krzk@kernel.org, ard.biesheuvel@linaro.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, ldewangan@nvidia.com
 List-Id: linux-pwm@vger.kernel.org
 
+On Wed, Feb 21, 2018 at 05:20:29PM +0200, Mikko Perttunen wrote:
+> On 21.02.2018 16:46, Guenter Roeck wrote:
+> > On 02/20/2018 11:15 PM, Mikko Perttunen wrote:
+> > > AIUI, the PWM framework already exposes a sysfs node with period
+> > > information. We should just use that instead of adding a new driver
+> > > for this.
+> > > 
+> > 
+> > I am kind of lost. Please explain.
+> > 
+> > Are you saying that we should drop the pwm-fan driver as well (which goes
+> > the opposite way), as well as any other drivers doing anything with pwm
+> > signals,
+> > because after all those signals are already exposed to userspace a sysfs
+> > attributes,
+> > and a kernel driver to abstract those values is thus not needed ?
+> 
+> The only thing this driver does is do a constant division in kernelspace.
+> I'm not really seeing why that couldn't be done in userspace. But if you
+> think it's appropriate to do the RPM conversion in kernelspace then I'm not
+> greatly opposed to that.
+> 
+> > 
+> > > In any case, we cannot add something like this to device tree since
+> > > it's not a hardware device.
+> > > 
+> > 
+> > So you are saying there is no means to express in devicetree that
+> > a pwm input is connected to a fan ? How is that not hardware ?
+> > 
+> > If so, how do you express in devicetree that a pwm signal is connected
+> > to anything ?
+> 
+> If we want to describe that the tachometer is connected to a fan, then we
+> should have a fan node in the board's device tree. We don't have a chip that
+> has a thing called "generic-pwm-tachometer" attached to it. (We have chips
+> that have a "nvidia,tegra186-tachometer", so it's proper to have that.)
 
---dtiwzdbgltohjq4r
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+We already have some fan control bindings in the tree. Follow those. 
+There's only so many ways to control fans, so lets have some alignment. 
+And yes, we should have a fan node. 
 
-Hi,
-
-On Wed, Feb 28, 2018 at 01:51:59AM +0000, Andr=E9 Przywara wrote:
-> On 25/02/18 13:50, hao_zhang wrote:
-> > This patch adds allwinner sun8i pwm binding documents.
-> >=20
-> > Signed-off-by: hao_zhang <hao5781286@gmail.com>
-> > ---
-> >  Documentation/devicetree/bindings/pwm/pwm-sun8i.txt | 18 +++++++++++++=
-+++++
-> >  1 file changed, 18 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun8i.txt b/Docu=
-mentation/devicetree/bindings/pwm/pwm-sun8i.txt
-> > new file mode 100644
-> > index 0000000..e8c48be
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
-> > @@ -0,0 +1,18 @@
-> > +Allwinner sun8i R40/V40/T3 SoC PWM controller
-> > +
-> > +Required properties:
-> > +  - compatible: should be one of:
-> > +    - "allwinner,sun8i-r40-pwm"
-> > +  - reg: physical base address and length of the controller's registers
-> > +  - #pwm-cells: should be 3. See pwm.txt in this directory for a descr=
-iption of
-> > +    the cells format.
-> > +  - clocks: From common clock binding, handle to the parent clock.
->=20
-> The manual tells me that there are two possible clock sources (24 MHz
-> OSC and APB1), with actually two bits for encoding the mux source,
-> allowing for two more potential clock sources.
-> So can we extend this description to provide up to four clocks, with a
-> clock-names property telling the driver how this maps to the mux value?
-> Either we use clock names matching the clocks mentioned in the manual:
-> 	clocks =3D <&osc24M>, <&ccu CLK_APB1>;
-> 	clock-names =3D "osc", "apb1";
-> or we encode the mux values in the clock-names:
-> 	clock-names =3D "mux-0", "mux-1";
-
-I'd prefer the former.
-
-> Don't know what's more widely used in those cases, the latter seems to
-> be more future-proof.
-
-Not really, nothing prevents the next generation to have three bits,
-or even 32 bits to do the muxing :)
-
-Maxime
-
---=20
-Maxime Ripard, Bootlin (formerly Free Electrons)
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
---dtiwzdbgltohjq4r
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlqXx1UACgkQ0rTAlCFN
-r3SzDA/+PXFChqP0apbpYbna3qlRQMoRUMhWdpYY5FNXrE6+rp0zvrIFRaM1GkXp
-RVAcYhGjFJkWUPz8ydKVsWf6CFfwCP1OAEFP63LpXWDZG7CDfFxTdXwdsdEnBlL5
-f9VwZnZnWU+pq8xH1GSqrz55VQJmEOUJIsrknoMb/jP7IiFwTcn1zij3pUVDgj01
-mtRn/23JVxcWA1gYuT8LmmY6mftmwG+Oo0T2jQwnaasxsknNnQpbNOflj00L49RE
-e4tOA6pVXjYAlLCQEAVzp0uS7TTs6MJXCeuK7yzfE5yY2Pigo+1lPQIl/shGUz9r
-ZmhtCt6QuGnpDEg4WDBrjUL7FtPMazsxAwocoY2TCRGi1dUzwqh8KoHl3HAPIt75
-LpK9Qmm2LEpFvClIRzUIeFaFSkovSIWmPBePD3mQ1vw/6Euce9/R/t4MpRQHy5VQ
-JVAbSPFhomjPRh8n0WQau6x/X2sOC59Ici/oehO1qxQBlHfdX2Nd1e3WnghrJzz/
-wWA678qpqe5saLFrt5jS+fWJSLY9E38IVqgu3xpeFwnRGOfJMALOViCVFQUu7cjZ
-VbGUApsK4siERQNziR3dw8I+OOPSoe/pyw8LWu1fv6/1C7cvR7aKPvgXtbHoRN9d
-CvzZQ3+CqCl+bkHToTpf3L5/ZomQcChAm2w1rGtxR++dQx2wrqU=
-=AruB
------END PGP SIGNATURE-----
-
---dtiwzdbgltohjq4r--
+Rob
