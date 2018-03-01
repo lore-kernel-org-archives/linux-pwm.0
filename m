@@ -1,123 +1,102 @@
-From: <sean.wang@mediatek.com>
-Subject: [PATCH v3] pwm: mediatek: fix up PWM4 and PWM5 malfunction on MT7623
-Date: Thu, 1 Mar 2018 16:19:12 +0800
-Message-ID: <051f401bcca48ece188023ccf10b2cedc7a25a64.1519891948.git.sean.wang@mediatek.com>
+From: Maxime Ripard <maxime.ripard@bootlin.com>
+Subject: Re: [linux-sunxi] [PATCH v2 1/4] dt-bindings: pwm: binding allwinner
+ sun8i.
+Date: Thu, 1 Mar 2018 10:26:46 +0100
+Message-ID: <20180301092646.44rxuwui2ssiar4u@flea>
+References: <20180225135045.GA14508@arx-s1>
+ <56645bca-9f4a-3191-72d8-32b60ebbc26e@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: thierry.reding@gmail.com, matthias.bgg@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>, stable@vger.kernel.org, Zhi Mao <zhi.mao@mediatek.com>, John Crispin <john@phrozen.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="dtiwzdbgltohjq4r"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <56645bca-9f4a-3191-72d8-32b60ebbc26e@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?utf-8?B?QW5kcsOp?= Przywara <andre.przywara@arm.com>
+Cc: hao5781286@gmail.com, thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, wens@csie.org, Claudiu.Beznea@microchip.com, linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org, linux-sunxi@googlegroups.com
 List-Id: linux-pwm@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
 
-Since the offset for both registers, PWMDWIDTH and PWMTHRES, used to
-control PWM4 or PWM5 are distinct from the other PWMs, whose wrong
-programming on PWM hardware causes waveform cannot be output as expected.
-Thus, the patch adds the extra condition for fixing up the weird case to
-let PWM4 or PWM5 able to work on MT7623.
+--dtiwzdbgltohjq4r
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-v1 -> v2: use pwm45_fixup naming instead of pwm45_quirk
-v2 -> v3: add more tags for Reviewed-by, Fixes, and Cc stable
+Hi,
 
-Cc: stable@vger.kernel.org
-Fixes: caf065f8fd58 ("pwm: Add MediaTek PWM support")
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Zhi Mao <zhi.mao@mediatek.com>
-Cc: John Crispin <john@phrozen.org>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
----
- drivers/pwm/pwm-mediatek.c | 24 +++++++++++++++++++++---
- 1 file changed, 21 insertions(+), 3 deletions(-)
+On Wed, Feb 28, 2018 at 01:51:59AM +0000, Andr=E9 Przywara wrote:
+> On 25/02/18 13:50, hao_zhang wrote:
+> > This patch adds allwinner sun8i pwm binding documents.
+> >=20
+> > Signed-off-by: hao_zhang <hao5781286@gmail.com>
+> > ---
+> >  Documentation/devicetree/bindings/pwm/pwm-sun8i.txt | 18 +++++++++++++=
++++++
+> >  1 file changed, 18 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun8i.txt b/Docu=
+mentation/devicetree/bindings/pwm/pwm-sun8i.txt
+> > new file mode 100644
+> > index 0000000..e8c48be
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/pwm/pwm-sun8i.txt
+> > @@ -0,0 +1,18 @@
+> > +Allwinner sun8i R40/V40/T3 SoC PWM controller
+> > +
+> > +Required properties:
+> > +  - compatible: should be one of:
+> > +    - "allwinner,sun8i-r40-pwm"
+> > +  - reg: physical base address and length of the controller's registers
+> > +  - #pwm-cells: should be 3. See pwm.txt in this directory for a descr=
+iption of
+> > +    the cells format.
+> > +  - clocks: From common clock binding, handle to the parent clock.
+>=20
+> The manual tells me that there are two possible clock sources (24 MHz
+> OSC and APB1), with actually two bits for encoding the mux source,
+> allowing for two more potential clock sources.
+> So can we extend this description to provide up to four clocks, with a
+> clock-names property telling the driver how this maps to the mux value?
+> Either we use clock names matching the clocks mentioned in the manual:
+> 	clocks =3D <&osc24M>, <&ccu CLK_APB1>;
+> 	clock-names =3D "osc", "apb1";
+> or we encode the mux values in the clock-names:
+> 	clock-names =3D "mux-0", "mux-1";
 
-diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index f5d97e0..796baea 100644
---- a/drivers/pwm/pwm-mediatek.c
-+++ b/drivers/pwm/pwm-mediatek.c
-@@ -29,7 +29,9 @@
- #define PWMGDUR			0x0c
- #define PWMWAVENUM		0x28
- #define PWMDWIDTH		0x2c
-+#define PWM45DWIDTH_FIXUP	0x30
- #define PWMTHRES		0x30
-+#define PWM45THRES_FIXUP	0x34
- 
- #define PWM_CLK_DIV_MAX		7
- 
-@@ -54,6 +56,7 @@ static const char * const mtk_pwm_clk_name[MTK_CLK_MAX] = {
- 
- struct mtk_pwm_platform_data {
- 	unsigned int num_pwms;
-+	bool pwm45_fixup;
- };
- 
- /**
-@@ -66,6 +69,7 @@ struct mtk_pwm_chip {
- 	struct pwm_chip chip;
- 	void __iomem *regs;
- 	struct clk *clks[MTK_CLK_MAX];
-+	const struct mtk_pwm_platform_data *soc;
- };
- 
- static const unsigned int mtk_pwm_reg_offset[] = {
-@@ -131,7 +135,8 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
- 	struct clk *clk = pc->clks[MTK_CLK_PWM1 + pwm->hwpwm];
--	u32 resolution, clkdiv = 0;
-+	u32 resolution, clkdiv = 0, reg_width = PWMDWIDTH,
-+	    reg_thres = PWMTHRES;
- 	int ret;
- 
- 	ret = mtk_pwm_clk_enable(chip, pwm);
-@@ -151,9 +156,18 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		return -EINVAL;
- 	}
- 
-+	if (pc->soc->pwm45_fixup && pwm->hwpwm > 2) {
-+		/*
-+		 * PWM[4,5] has distinct offset for PWMDWIDTH and PWMTHRES
-+		 * from the other PWMs on MT7623.
-+		 */
-+		reg_width = PWM45DWIDTH_FIXUP;
-+		reg_thres = PWM45THRES_FIXUP;
-+	}
-+
- 	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | clkdiv);
--	mtk_pwm_writel(pc, pwm->hwpwm, PWMDWIDTH, period_ns / resolution);
--	mtk_pwm_writel(pc, pwm->hwpwm, PWMTHRES, duty_ns / resolution);
-+	mtk_pwm_writel(pc, pwm->hwpwm, reg_width, period_ns / resolution);
-+	mtk_pwm_writel(pc, pwm->hwpwm, reg_thres, duty_ns / resolution);
- 
- 	mtk_pwm_clk_disable(chip, pwm);
- 
-@@ -211,6 +225,7 @@ static int mtk_pwm_probe(struct platform_device *pdev)
- 	data = of_device_get_match_data(&pdev->dev);
- 	if (data == NULL)
- 		return -EINVAL;
-+	pc->soc = data;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	pc->regs = devm_ioremap_resource(&pdev->dev, res);
-@@ -251,14 +266,17 @@ static int mtk_pwm_remove(struct platform_device *pdev)
- 
- static const struct mtk_pwm_platform_data mt2712_pwm_data = {
- 	.num_pwms = 8,
-+	.pwm45_fixup = false,
- };
- 
- static const struct mtk_pwm_platform_data mt7622_pwm_data = {
- 	.num_pwms = 6,
-+	.pwm45_fixup = false,
- };
- 
- static const struct mtk_pwm_platform_data mt7623_pwm_data = {
- 	.num_pwms = 5,
-+	.pwm45_fixup = true,
- };
- 
- static const struct of_device_id mtk_pwm_of_match[] = {
--- 
-2.7.4
+I'd prefer the former.
+
+> Don't know what's more widely used in those cases, the latter seems to
+> be more future-proof.
+
+Not really, nothing prevents the next generation to have three bits,
+or even 32 bits to do the muxing :)
+
+Maxime
+
+--=20
+Maxime Ripard, Bootlin (formerly Free Electrons)
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--dtiwzdbgltohjq4r
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlqXx1UACgkQ0rTAlCFN
+r3SzDA/+PXFChqP0apbpYbna3qlRQMoRUMhWdpYY5FNXrE6+rp0zvrIFRaM1GkXp
+RVAcYhGjFJkWUPz8ydKVsWf6CFfwCP1OAEFP63LpXWDZG7CDfFxTdXwdsdEnBlL5
+f9VwZnZnWU+pq8xH1GSqrz55VQJmEOUJIsrknoMb/jP7IiFwTcn1zij3pUVDgj01
+mtRn/23JVxcWA1gYuT8LmmY6mftmwG+Oo0T2jQwnaasxsknNnQpbNOflj00L49RE
+e4tOA6pVXjYAlLCQEAVzp0uS7TTs6MJXCeuK7yzfE5yY2Pigo+1lPQIl/shGUz9r
+ZmhtCt6QuGnpDEg4WDBrjUL7FtPMazsxAwocoY2TCRGi1dUzwqh8KoHl3HAPIt75
+LpK9Qmm2LEpFvClIRzUIeFaFSkovSIWmPBePD3mQ1vw/6Euce9/R/t4MpRQHy5VQ
+JVAbSPFhomjPRh8n0WQau6x/X2sOC59Ici/oehO1qxQBlHfdX2Nd1e3WnghrJzz/
+wWA678qpqe5saLFrt5jS+fWJSLY9E38IVqgu3xpeFwnRGOfJMALOViCVFQUu7cjZ
+VbGUApsK4siERQNziR3dw8I+OOPSoe/pyw8LWu1fv6/1C7cvR7aKPvgXtbHoRN9d
+CvzZQ3+CqCl+bkHToTpf3L5/ZomQcChAm2w1rGtxR++dQx2wrqU=
+=AruB
+-----END PGP SIGNATURE-----
+
+--dtiwzdbgltohjq4r--
