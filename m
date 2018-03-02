@@ -1,116 +1,89 @@
-From: Claudiu Beznea <Claudiu.Beznea@microchip.com>
-Subject: Re: [PATCH v3 05/10] pwm: add PWM mode to pwm_config()
-Date: Fri, 2 Mar 2018 11:28:09 +0200
-Message-ID: <585cc4ae-3674-c119-295b-e59f4242e619@microchip.com>
-References: <1519300881-8136-1-git-send-email-claudiu.beznea@microchip.com>
- <1519300881-8136-6-git-send-email-claudiu.beznea@microchip.com>
- <20180228194429.GD22932@mithrandir> <87r2p4hod7.fsf@intel.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v3] pwm: mediatek: fix up PWM4 and PWM5 malfunction on
+ MT7623
+Date: Fri, 2 Mar 2018 11:57:19 +0100
+Message-ID: <20180302105719.GC27178@ulmo>
+References: <051f401bcca48ece188023ccf10b2cedc7a25a64.1519891948.git.sean.wang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <87r2p4hod7.fsf@intel.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jani Nikula <jani.nikula@linux.intel.com>, Thierry Reding <thierry.reding@gmail.com>
-Cc: mark.rutland@arm.com, milo.kim@ti.com, linux-fbdev@vger.kernel.org, sean@mess.org, devicetree@vger.kernel.org, airlied@linux.ie, mturquette@baylibre.com, joonas.lahtinen@linux.intel.com, kamil@wypas.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, alexandre.belloni@free-electrons.com, pavel@ucw.cz, lee.jones@linaro.org, linux-clk@vger.kernel.org, linux-leds@vger.kernel.org, daniel.thompson@linaro.org, linux-samsung-soc@vger.kernel.org, shc_work@mail.ru, corbet@lwn.net, linux-doc@vger.kernel.org, linux@armlinux.org.uk, krzk@kernel.org, kgene@kernel.org, linux-input@vger.kernel.org, linux@roeck-us.net, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, jdelvare@suse.com, b.zolnierkie@samsung.com, intel-gfx@lists.freedesktop.org, robh+dt@kernel.org, jacek.anaszewski@gmail.com, rodrigo.vivi@intel.com, mchehab@kernel.org, linux-arm-kernel@lists.infrade
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="6zdv2QT/q3FMhpsV"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <051f401bcca48ece188023ccf10b2cedc7a25a64.1519891948.git.sean.wang@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: sean.wang@mediatek.com
+Cc: matthias.bgg@gmail.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org, Zhi Mao <zhi.mao@mediatek.com>, John Crispin <john@phrozen.org>
 List-Id: linux-pwm@vger.kernel.org
 
 
+--6zdv2QT/q3FMhpsV
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 28.02.2018 22:04, Jani Nikula wrote:
-> On Wed, 28 Feb 2018, Thierry Reding <thierry.reding@gmail.com> wrote:
->> Anyone that needs something other than normal mode should use the new
->> atomic PWM API.
-> 
-> At the risk of revealing my true ignorance, what is the new atomic PWM
-> API? Where? Examples of how one would convert old code over to the new
-> API?
-As far as I know, the old PWM core code uses config(), set_polarity(),
-enable(), disable() methods of driver, registered as pwm_ops:
-struct pwm_ops {
+On Thu, Mar 01, 2018 at 04:19:12PM +0800, sean.wang@mediatek.com wrote:
+> From: Sean Wang <sean.wang@mediatek.com>
+>=20
+> Since the offset for both registers, PWMDWIDTH and PWMTHRES, used to
+> control PWM4 or PWM5 are distinct from the other PWMs, whose wrong
+> programming on PWM hardware causes waveform cannot be output as expected.
+> Thus, the patch adds the extra condition for fixing up the weird case to
+> let PWM4 or PWM5 able to work on MT7623.
+>=20
+> v1 -> v2: use pwm45_fixup naming instead of pwm45_quirk
+> v2 -> v3: add more tags for Reviewed-by, Fixes, and Cc stable
+>=20
+> Cc: stable@vger.kernel.org
+> Fixes: caf065f8fd58 ("pwm: Add MediaTek PWM support")
+> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+> Cc: Zhi Mao <zhi.mao@mediatek.com>
+> Cc: John Crispin <john@phrozen.org>
+> Cc: Matthias Brugger <matthias.bgg@gmail.com>
+> ---
+>  drivers/pwm/pwm-mediatek.c | 24 +++++++++++++++++++++---
+>  1 file changed, 21 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
+[...]
+> @@ -151,9 +156,18 @@ static int mtk_pwm_config(struct pwm_chip *chip, str=
+uct pwm_device *pwm,
+>  		return -EINVAL;
+>  	}
+> =20
+> +	if (pc->soc->pwm45_fixup && pwm->hwpwm > 2) {
+> +		/*
+> +		 * PWM[4,5] has distinct offset for PWMDWIDTH and PWMTHRES
+> +		 * from the other PWMs on MT7623.
+> +		 */
+> +		reg_width =3D PWM45DWIDTH_FIXUP;
+> +		reg_thres =3D PWM45THRES_FIXUP;
+> +	}
 
-        int (*request)(struct pwm_chip *chip, struct pwm_device *pwm);
+I don't understand this. According to the condition above the above
+would also use the PWM[4,5] "fixup" register offsets with PWM[3]. Should
+the condition be pwm->hwpwm > 3?
 
-        void (*free)(struct pwm_chip *chip, struct pwm_device *pwm);
+Thierry
 
-        int (*config)(struct pwm_chip *chip, struct pwm_device *pwm,
+--6zdv2QT/q3FMhpsV
+Content-Type: application/pgp-signature; name="signature.asc"
 
-                      int duty_ns, int period_ns);
+-----BEGIN PGP SIGNATURE-----
 
-        int (*set_polarity)(struct pwm_chip *chip, struct pwm_device *pwm,
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlqZLgwACgkQ3SOs138+
+s6FX2w//SIhj+docsdzcwMIo27Gc2qmUL1sMCZXhB8dEGZ8CDXRDRyGsNE/eCkkD
+5bZrN3ie7XkkcoLjDqhJZM5PvsiqR4367yRlWg5N/PsCwlji0wZ/1ZfV0bxBxa7G
+k9A9aJt4PdRAzT6gJh7IQmbnlMvbHN1NpkSli5HYrGtEO7t0MewAPRjJ8/KIcscI
+IlXX6ESptOP3+3xbu21dOzxV3T2zmlPKQmUIfDLH9PkcC4RYOuANbkWb0em9hpeq
+dJtLSqqwXh3WSMjRgJpKIT5qiKhuuiQRoWJyUkImQfjU5kH8QC89/yVNUXcNo3pT
+NvZ5cqihFktL+dLd+qS+nIxh2VQDF+NLHD0G8OBlYtSe/X44NkPtS+gOMBYDSKLJ
+L3g0REZRfQXK2QtWZ818acUnd/MC9E5x2O3C0VVh/YzIEzUr6qKTstk33+QX7xUc
+6kLWtO5ctV180OdiyWW0qE/v8ZoioY/KTeNQU5Mgfz1YMEkhSP8wSLLRBMknJ4+n
+n7CE172HhAUGsbhYA2/eRG9e8vnTyk4fdWrcjryRoxtjGGsG2JTOkOj5x0M5XR3o
+b6O2JQXS8hGJXBzjK7/PtKnbXc8hMjRFT1HcZ4z4ztNnaSufCEdKPWlXRLZQs0ix
+2PAvnqATUdF3IegKJZSmWJ5joIT/kJu7JmmzXM2GoOM9FAUNZ18=
+=4k2G
+-----END PGP SIGNATURE-----
 
-                            enum pwm_polarity polarity);
-
-        int (*capture)(struct pwm_chip *chip, struct pwm_device *pwm,
-
-                       struct pwm_capture *result, unsigned long timeout);
-
-        int (*enable)(struct pwm_chip *chip, struct pwm_device *pwm);
-
-        void (*disable)(struct pwm_chip *chip, struct pwm_device *pwm);
-
-        int (*apply)(struct pwm_chip *chip, struct pwm_device *pwm,
-
-                     struct pwm_state *state);
-
-        void (*get_state)(struct pwm_chip *chip, struct pwm_device *pwm,
-
-                          struct pwm_state *state);
-
-#ifdef CONFIG_DEBUG_FS
-
-        void (*dbg_show)(struct pwm_chip *chip, struct seq_file *s);
-
-#endif
-
-        struct module *owner;
-
-};
-
-
-to do settings on hardware. In order to so settings on a PWM the users
-should have been follow the below steps:
-->config()
-->set_polarity()
-->enable()
-Moreover, if the PWM was previously enabled it should have been first
-disable and then to follow the above steps in order to apply a new settings
-on hardware.
-The driver should have been provide, at probe, all the above function:
-->config(), ->set_polarity(), ->disable(), ->enable(), function that were
-used by PWM core.
-
-Now, having atomic PWM, the driver should provide one function to PWM core,
-which is ->apply() function. Every PWM has a state associated, which keeps
-the period, duty cycle, polarity and enable/disable status. The driver's
-->apply() function takes as argument the state that should be applied and
-it takes care of applying this new state directly without asking user to
-call ->disable(), then ->config()/->set_polarity(), then ->enable() to
-apply new hardware settings.
-
-The PWM consumer could set a new state for PWM it uses, using
-pwm_apply_state(pwm, new_state);
-
-Regarding the models to switch on atomic PWM, on the controller side you
-can check for drivers that registers apply function at probe time.
-Regarding the PWM users, you can look for pwm_apply_state()
-(drivers/hwmon/pwm-fan.c or drivers/input/misc/pwm-beeper.c are some examples).
-
-Thierry, please correct me if I'm wrong.
-
-Thank you,
-Claudiu Beznea
-
-> 
-> BR,
-> Jani.
-> 
+--6zdv2QT/q3FMhpsV--
