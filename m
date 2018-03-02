@@ -1,79 +1,74 @@
-From: <sean.wang@mediatek.com>
-Subject: [PATCH v1] pwm: mediatek: improve precision in rate calculation
-Date: Fri, 2 Mar 2018 16:49:14 +0800
-Message-ID: <72b74a30ced1c7e7549dcbb56d6123fc27fac405.1519980119.git.sean.wang@mediatek.com>
+From: Claudiu Beznea <Claudiu.Beznea@microchip.com>
+Subject: Re: [PATCH v3 05/10] pwm: add PWM mode to pwm_config()
+Date: Fri, 2 Mar 2018 11:19:43 +0200
+Message-ID: <0c3fc3ba-8640-0b2c-a9ec-ab848227c92d@microchip.com>
+References: <1519300881-8136-1-git-send-email-claudiu.beznea@microchip.com>
+ <1519300881-8136-6-git-send-email-claudiu.beznea@microchip.com>
+ <20180228194429.GD22932@mithrandir>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, matthias.bgg@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>, stable@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180228194429.GD22932@mithrandir>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: mark.rutland@arm.com, milo.kim@ti.com, linux-fbdev@vger.kernel.org, sean@mess.org, devicetree@vger.kernel.org, airlied@linux.ie, mturquette@baylibre.com, joonas.lahtinen@linux.intel.com, kamil@wypas.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, alexandre.belloni@free-electrons.com, pavel@ucw.cz, lee.jones@linaro.org, linux-clk@vger.kernel.org, linux-leds@vger.kernel.org, daniel.thompson@linaro.org, linux-samsung-soc@vger.kernel.org, shc_work@mail.ru, corbet@lwn.net, linux-doc@vger.kernel.org, linux@armlinux.org.uk, krzk@kernel.org, kgene@kernel.org, linux-input@vger.kernel.org, linux@roeck-us.net, linux-media@vger.kernel.org, linux-pwm@vger.kernel.org, jdelvare@suse.com, b.zolnierkie@samsung.com, intel-gfx@lists.freedesktop.org, jani.nikula@linux.intel.com, robh+dt@kernel.org, jacek.anaszewski@gmail.com, rodrigo.vivi@intel.com, mchehab@kernel.orgl
 List-Id: linux-pwm@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
 
-Add a way that turning resolution from in nanosecond into in picosecond
-to improve noticeably almost 4.5% precision.
 
-It's necessary to hold the new resolution with type u64 and thus related
-operations on u64 are applied instead in those rate calculations.
+On 28.02.2018 21:44, Thierry Reding wrote:
+> On Thu, Feb 22, 2018 at 02:01:16PM +0200, Claudiu Beznea wrote:
+>> Add PWM mode to pwm_config() function. The drivers which uses pwm_config()
+>> were adapted to this change.
+>>
+>> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+>> ---
+>>  arch/arm/mach-s3c24xx/mach-rx1950.c  | 11 +++++++++--
+>>  drivers/bus/ts-nbus.c                |  2 +-
+>>  drivers/clk/clk-pwm.c                |  3 ++-
+>>  drivers/gpu/drm/i915/intel_panel.c   | 17 ++++++++++++++---
+>>  drivers/hwmon/pwm-fan.c              |  2 +-
+>>  drivers/input/misc/max77693-haptic.c |  2 +-
+>>  drivers/input/misc/max8997_haptic.c  |  6 +++++-
+>>  drivers/leds/leds-pwm.c              |  5 ++++-
+>>  drivers/media/rc/ir-rx51.c           |  5 ++++-
+>>  drivers/media/rc/pwm-ir-tx.c         |  5 ++++-
+>>  drivers/video/backlight/lm3630a_bl.c |  4 +++-
+>>  drivers/video/backlight/lp855x_bl.c  |  4 +++-
+>>  drivers/video/backlight/lp8788_bl.c  |  5 ++++-
+>>  drivers/video/backlight/pwm_bl.c     | 11 +++++++++--
+>>  drivers/video/fbdev/ssd1307fb.c      |  3 ++-
+>>  include/linux/pwm.h                  |  6 ++++--
+>>  16 files changed, 70 insertions(+), 21 deletions(-)
+> 
+> I don't think it makes sense to leak mode support into the legacy API.
+> The pwm_config() function is considered legacy
+I missed this aspect.
 
-And the patch has a dependency on [1].
+ and should eventually go
+> away. As such it doesn't make sense to integrate a new feature such as
+> PWM modes into it. 
+Agree.
 
-[1] http://lists.infradead.org/pipermail/linux-mediatek/2018-March/012225.html
+All users of pwm_config() assume normal mode, and
+> that's what pwm_config() should provide.
+Agree.
 
-Cc: stable@vger.kernel.org
-Fixes: caf065f8fd58 ("pwm: Add MediaTek PWM support")
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
----
- drivers/pwm/pwm-mediatek.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+> 
+> Anyone that needs something other than normal mode should use the new
+> atomic PWM API.
+Agree.
 
-diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index 796baea..98b0a93 100644
---- a/drivers/pwm/pwm-mediatek.c
-+++ b/drivers/pwm/pwm-mediatek.c
-@@ -135,19 +135,25 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- {
- 	struct mtk_pwm_chip *pc = to_mtk_pwm_chip(chip);
- 	struct clk *clk = pc->clks[MTK_CLK_PWM1 + pwm->hwpwm];
--	u32 resolution, clkdiv = 0, reg_width = PWMDWIDTH,
-+	u32 clkdiv = 0, cnt_period, cnt_duty, reg_width = PWMDWIDTH,
- 	    reg_thres = PWMTHRES;
-+	u64 resolution;
- 	int ret;
- 
- 	ret = mtk_pwm_clk_enable(chip, pwm);
- 	if (ret < 0)
- 		return ret;
- 
--	resolution = NSEC_PER_SEC / clk_get_rate(clk);
-+	/* Using resolution in picosecond gets accuracy higher */
-+	resolution = (u64)NSEC_PER_SEC * 1000;
-+	do_div(resolution, clk_get_rate(clk));
- 
--	while (period_ns / resolution > 8191) {
-+	cnt_period = DIV_ROUND_CLOSEST_ULL((u64)period_ns * 1000, resolution);
-+	while (cnt_period > 8191) {
- 		resolution *= 2;
- 		clkdiv++;
-+		cnt_period = DIV_ROUND_CLOSEST_ULL((u64)period_ns * 1000,
-+						   resolution);
- 	}
- 
- 	if (clkdiv > PWM_CLK_DIV_MAX) {
-@@ -165,9 +171,10 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 		reg_thres = PWM45THRES_FIXUP;
- 	}
- 
-+	cnt_duty = DIV_ROUND_CLOSEST_ULL((u64)duty_ns * 1000, resolution);
- 	mtk_pwm_writel(pc, pwm->hwpwm, PWMCON, BIT(15) | clkdiv);
--	mtk_pwm_writel(pc, pwm->hwpwm, reg_width, period_ns / resolution);
--	mtk_pwm_writel(pc, pwm->hwpwm, reg_thres, duty_ns / resolution);
-+	mtk_pwm_writel(pc, pwm->hwpwm, reg_width, cnt_period);
-+	mtk_pwm_writel(pc, pwm->hwpwm, reg_thres, cnt_duty);
- 
- 	mtk_pwm_clk_disable(chip, pwm);
- 
--- 
-2.7.4
+> 
+> Thierry
+> 
