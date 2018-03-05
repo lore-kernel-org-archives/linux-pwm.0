@@ -1,74 +1,89 @@
-From: Sean Wang <sean.wang@mediatek.com>
-Subject: Re: [PATCH v3] pwm: mediatek: fix up PWM4 and PWM5 malfunction on
- MT7623
-Date: Sat, 3 Mar 2018 06:34:50 +0800
-Message-ID: <1520030090.8089.186.camel@mtkswgap22>
-References: <051f401bcca48ece188023ccf10b2cedc7a25a64.1519891948.git.sean.wang@mediatek.com>
- <20180302105719.GC27178@ulmo>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] dt-bindings: pwm: Add generic
+ "pwm-channels" property
+Date: Mon, 5 Mar 2018 17:53:00 -0600
+Message-ID: <20180305235300.fvelyl7vqcjc4u5f@rob-hp-laptop>
+References: <20180228013732.8506-1-andre.przywara@arm.com>
+Reply-To: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180302105719.GC27178@ulmo>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org, linux-mediatek@lists.infradead.org, Zhi Mao <zhi.mao@mediatek.com>, John Crispin <john@phrozen.org>, matthias.bgg@gmail.com, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-sunxi+bncBDJIP47K7MERBXVQ67KAKGQEGHRRGCA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+Content-Disposition: inline
+In-Reply-To: <20180228013732.8506-1-andre.przywara-5wv7dgnIgG8@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Fri, 2018-03-02 at 11:57 +0100, Thierry Reding wrote:
-> On Thu, Mar 01, 2018 at 04:19:12PM +0800, sean.wang@mediatek.com wrote:
-> > From: Sean Wang <sean.wang@mediatek.com>
-> > 
-> > Since the offset for both registers, PWMDWIDTH and PWMTHRES, used to
-> > control PWM4 or PWM5 are distinct from the other PWMs, whose wrong
-> > programming on PWM hardware causes waveform cannot be output as expected.
-> > Thus, the patch adds the extra condition for fixing up the weird case to
-> > let PWM4 or PWM5 able to work on MT7623.
-> > 
-> > v1 -> v2: use pwm45_fixup naming instead of pwm45_quirk
-> > v2 -> v3: add more tags for Reviewed-by, Fixes, and Cc stable
-> > 
-> > Cc: stable@vger.kernel.org
-> > Fixes: caf065f8fd58 ("pwm: Add MediaTek PWM support")
-> > Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-> > Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-> > Cc: Zhi Mao <zhi.mao@mediatek.com>
-> > Cc: John Crispin <john@phrozen.org>
-> > Cc: Matthias Brugger <matthias.bgg@gmail.com>
-> > ---
-> >  drivers/pwm/pwm-mediatek.c | 24 +++++++++++++++++++++---
-> >  1 file changed, 21 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-> [...]
-> > @@ -151,9 +156,18 @@ static int mtk_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
-> >  		return -EINVAL;
-> >  	}
-> >  
-> > +	if (pc->soc->pwm45_fixup && pwm->hwpwm > 2) {
-> > +		/*
-> > +		 * PWM[4,5] has distinct offset for PWMDWIDTH and PWMTHRES
-> > +		 * from the other PWMs on MT7623.
-> > +		 */
-> > +		reg_width = PWM45DWIDTH_FIXUP;
-> > +		reg_thres = PWM45THRES_FIXUP;
-> > +	}
+On Wed, Feb 28, 2018 at 01:37:32AM +0000, Andre Przywara wrote:
+> Many PWM drivers seem to hardcode the number of PWM channels
+> (brcm,iproc-pwm, brcm,kona-pwm.txt). If this is only one device
+> supported by the binding, that's probably OK, but for instance for
+> sun4i-pwm I see one or two channels, depending on the particular SoC.
+> amlogic,meson-gxbb-pwm seems to deduce the number of channels from the
+> number of input clocks, and pwm-st has a vendor-specific property for
+> that (st,pwm-num-chan).
+> To cover all those cases more elegantly in (future) bindings, add a new
+> generic property to specify the number of PWM channels a particular
+> controller implements.
+> For instance the sun4i-pwm driver could be extended to support this for
+> future SoCs as well.
 > 
-> I don't understand this. According to the condition above the above
-> would also use the PWM[4,5] "fixup" register offsets with PWM[3]. Should
-> the condition be pwm->hwpwm > 3?
+> Signed-off-by: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
 > 
-> Thierry
+> ---
+> Hi,
+> 
+> while looking at the bindings for PWM drivers, I was wondering if we
+> should have a generic property to note the number of implemented
+> channels? We have something for instance for DMA controllers
+> (dma-channels), so adding this to PWM controller bindings sounds
+> natural.
+> In particular the new sun8i-pwm IP seems to be scalable to a number of
+> channels, judging from the register and bit layout and from the bit
+> assignment in the manual. I have the gut feeling we will meet this fella
+> again in another Allwinner SoC with a different number of channels.
 
+Often this should be implied by the compatible string. However, there 
+are no doubt some cases that may need this. One I could think of is the 
+PWM controller has more channels than are pinned out.
 
-PWM[4,5] are the naming specified in datasheet and kept it as is here
-and driver or userspace would use index 3 and 4 to have a reference to
-them respectively.
+Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+
+> 
+> Thanks!
+> Andre.
+> 
+>  Documentation/devicetree/bindings/pwm/pwm.txt | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pwm/pwm.txt b/Documentation/devicetree/bindings/pwm/pwm.txt
+> index 8556263b8502..770f3aee17af 100644
+> --- a/Documentation/devicetree/bindings/pwm/pwm.txt
+> +++ b/Documentation/devicetree/bindings/pwm/pwm.txt
+> @@ -60,10 +60,16 @@ Example with optional PWM specifier for inverse polarity
+>  PWM controller nodes must specify the number of cells used for the
+>  specifier using the '#pwm-cells' property.
+>  
+> +A specific controller binding might specify the implemented number of
+> +PWM channels using this generic property:
+> +	pwm-channels = <8>;
+> +This property holds a single 32 bit integer.
+> +
+>  An example PWM controller might look like this:
+>  
+>  	pwm: pwm@7000a000 {
+>  		compatible = "nvidia,tegra20-pwm";
+>  		reg = <0x7000a000 0x100>;
+>  		#pwm-cells = <2>;
+> +		pwm-channels = <4>;
+>  	};
+> -- 
+> 2.14.1
+> 
