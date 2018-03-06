@@ -1,91 +1,113 @@
-Return-Path: <geert.uytterhoeven@gmail.com>
+Return-Path: <fabrizio.castro@bp.renesas.com>
+From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+Subject: RE: [PATCH v4] dt-bindings: pwm: rcar: Document r8a774[35] PWM
+ bindings
+Date: Tue, 6 Mar 2018 16:49:54 +0000
+Message-ID: <TY1PR01MB1770084635548C8981CF8C83C0D90@TY1PR01MB1770.jpnprd01.prod.outlook.com>
+References: <1513768543-7943-1-git-send-email-fabrizio.castro@bp.renesas.com>
+ <SG2PR06MB0886D203D3F529D4AD3B07B6C0E20@SG2PR06MB0886.apcprd06.prod.outlook.com>
+In-Reply-To: <SG2PR06MB0886D203D3F529D4AD3B07B6C0E20@SG2PR06MB0886.apcprd06.prod.outlook.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Sender: geert.uytterhoeven@gmail.com
-In-Reply-To: <TY1PR06MB0992451635511B45D8D7C345D8D20@TY1PR06MB0992.apcprd06.prod.outlook.com>
-References: <1520596498-4801-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <1520596498-4801-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <CAMuHMdV-vutHutGJnOhqJ14_+-ig2jzFakeWzOxBy+5F6XRFXw@mail.gmail.com> <TY1PR06MB0992451635511B45D8D7C345D8D20@TY1PR06MB0992.apcprd06.prod.outlook.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 13 Mar 2018 08:31:58 +0100
-Message-ID: <CAMuHMdXoJNZBcgTvryd0a7FfAngR_dYBwxV5GewwFAuCHSuspg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] pwm: rcar: add suspend/resume support
-Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-pwm.vger.kernel.org>
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, "Chris Paterson  <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
 
-Hi Shimoda-san,
+Dear All,
 
-On Tue, Mar 13, 2018 at 8:04 AM, Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
->> From: Geert Uytterhoeven, Sent: Friday, March 9, 2018 9:53 PM
->> On Fri, Mar 9, 2018 at 12:54 PM, Yoshihiro Shimoda
->> <yoshihiro.shimoda.uh@renesas.com> wrote:
->> > This patch adds suspend/resume support for Renesas PWM driver.
->> >
->> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
->>
->> Thanks for your patch!
+I am very sorry to bother you, just wondering if someone can take this patc=
+h?
+
+Thanks,
+Fab
+
+> -----Original Message-----
+> From: Fabrizio Castro
+> Sent: 24 January 2018 17:14
+> To: Thierry Reding <thierry.reding@gmail.com>
+> Cc: linux-pwm@vger.kernel.org; devicetree@vger.kernel.org; Simon Horman <=
+horms@verge.net.au>; Geert Uytterhoeven
+> <geert+renesas@glider.be>; Chris Paterson <Chris.Paterson2@renesas.com>; =
+Biju Das <biju.das@bp.renesas.com>; linux-renesas-
+> soc@vger.kernel.org; Fabrizio Castro <fabrizio.castro@bp.renesas.com>; Ro=
+b Herring <robh+dt@kernel.org>; Mark Rutland
+> <mark.rutland@arm.com>
+> Subject: RE: [PATCH v4] dt-bindings: pwm: rcar: Document r8a774[35] PWM b=
+indings
 >
-> Thank you for your review!
+> Hello Thierry,
 >
->> > --- a/drivers/pwm/pwm-rcar.c
->> > +++ b/drivers/pwm/pwm-rcar.c
->> > @@ -254,11 +254,38 @@ static int rcar_pwm_remove(struct platform_device *pdev)
->> >  };
->> >  MODULE_DEVICE_TABLE(of, rcar_pwm_of_table);
->> >
->> > +#ifdef CONFIG_PM_SLEEP
->> > +static int rcar_pwm_suspend(struct device *dev)
->> > +{
->> > +       pm_runtime_put(dev);
->> > +
->> > +       return 0;
->> > +}
->> > +
->> > +static int rcar_pwm_resume(struct device *dev)
->> > +{
->> > +       struct platform_device *pdev = to_platform_device(dev);
->> > +       struct rcar_pwm_chip *rcar_pwm = platform_get_drvdata(pdev);
->> > +       struct pwm_chip *chip = &rcar_pwm->chip;
->> > +       struct pwm_device *pwm = &chip->pwms[0];
->> > +
->> > +       pm_runtime_get_sync(dev);
->>
->> This enables the module clock unconditionally, so you can restore the
->> register values below...
->>
->> > +       rcar_pwm_config(chip, pwm, pwm->state.duty_cycle, pwm->state.period);
->> > +       if (pwm_is_enabled(pwm))
->> > +               rcar_pwm_enable(chip, pwm);
->>
->> ... but shouldn't you disable the clock again if the PWM is not in use,
->> like below?
->>
->>         else
->>                 pm_runtime_put(dev);
+> I am sorry to bother you,  just wondering if this patch has any chance to=
+ end up in v4.16?
 >
-> Thank you for the pointing out.
-> I realize that this suspend/resume function should check PWMF_REQUESTED condition
-> because this driver enables the clock after the .request(rcar_pwm_request) was called.
-> So, I will fix this patch in v2.
+> Thanks,
+> Fabrizio
+>
+> > Subject: [PATCH v4] dt-bindings: pwm: rcar: Document r8a774[35] PWM bin=
+dings
+> >
+> > This patch adds compatible strings specific to r8a774[35], no driver
+> > change is needed as the fallback compatible string will activate the
+> > right code.
+> >
+> > Also, this patch replaces the example with a DT snippet used
+> > for adding PWM0 support to an r8a7743 based platform as the r8a7743 is
+> > now the first platform fully compatible with this driver and its PWM DT
+> > nodes refer to up-to-date code.
+> >
+> > Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+> > Reviewed-by: Biju Das <biju.das@bp.renesas.com>
+> > Reviewed-by: Rob Herring <robh@kernel.org>
+> > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > ---
+> > v3->v4:
+> > * The changelog now explains why the patch is replacing the example.
+> >
+> >  Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 10 ++++++=
++---
+> >  1 file changed, 7 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+> > b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+> > index 74c1180..f3bba59 100644
+> > --- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+> > +++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
+> > @@ -2,6 +2,8 @@
+> >
+> >  Required Properties:
+> >  - compatible: should be "renesas,pwm-rcar" and one of the following.
+> > + - "renesas,pwm-r8a7743": for RZ/G1M
+> > + - "renesas,pwm-r8a7745": for RZ/G1E
+> >   - "renesas,pwm-r8a7778": for R-Car M1A
+> >   - "renesas,pwm-r8a7779": for R-Car H1
+> >   - "renesas,pwm-r8a7790": for R-Car H2
+> > @@ -17,13 +19,15 @@ Required Properties:
+> >  - pinctrl-0: phandle, referring to a default pin configuration node.
+> >  - pinctrl-names: Set to "default".
+> >
+> > -Example: R8A7790 (R-Car H2) PWM Timer node
+> > +Example: R8A7743 (RZ/G1M) PWM Timer node
+> >
+> >  pwm0: pwm@e6e30000 {
+> > -compatible =3D "renesas,pwm-r8a7790", "renesas,pwm-rcar";
+> > +compatible =3D "renesas,pwm-r8a7743", "renesas,pwm-rcar";
+> >  reg =3D <0 0xe6e30000 0 0x8>;
+> > +clocks =3D <&cpg CPG_MOD 523>;
+> > +power-domains =3D <&sysc R8A7743_PD_ALWAYS_ON>;
+> > +resets =3D <&cpg 523>;
+> >  #pwm-cells =3D <2>;
+> > -clocks =3D <&mstp5_clks R8A7790_CLK_PWM>;
+> >  pinctrl-0 =3D <&pwm0_pins>;
+> >  pinctrl-names =3D "default";
+> >  };
+> > --
+> > 2.7.4
 
-OK.
 
-> Also, reducing power point of view, this driver should call not pm_runtime_get_sync/put()
-> in _request/_free(). But, I would like to implement such code as a next step :)
 
-That makes sense.  I was already wondering whether those are the best
-locations to call the pm_runtime_*() functions, but I'm not sufficiently
-familiar with the PWM subsystem.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Renesas Electronics Europe Ltd, Dukes Meadow, Millboard Road, Bourne End, B=
+uckinghamshire, SL8 5FH, UK. Registered in England & Wales under Registered=
+ No. 04586709.
