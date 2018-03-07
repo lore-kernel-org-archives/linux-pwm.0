@@ -1,89 +1,59 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] dt-bindings: pwm: Add generic
- "pwm-channels" property
-Date: Mon, 5 Mar 2018 17:53:00 -0600
-Message-ID: <20180305235300.fvelyl7vqcjc4u5f@rob-hp-laptop>
-References: <20180228013732.8506-1-andre.przywara@arm.com>
-Reply-To: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+From: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 0/5] drivers: pwm: sun4i: Improve support for
+ A64 and H6 SoCs
+Date: Wed,  7 Mar 2018 02:07:14 +0000
+Message-ID: <20180307020719.6675-1-andre.przywara@arm.com>
+Reply-To: andre.przywara-5wv7dgnIgG8@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-sunxi+bncBDJIP47K7MERBXVQ67KAKGQEGHRRGCA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBDNZNK75ZIKRBD4U7XKAKGQEEAGTCAA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-Content-Disposition: inline
-In-Reply-To: <20180228013732.8506-1-andre.przywara-5wv7dgnIgG8@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
 List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
  <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hao5781286-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On Wed, Feb 28, 2018 at 01:37:32AM +0000, Andre Przywara wrote:
-> Many PWM drivers seem to hardcode the number of PWM channels
-> (brcm,iproc-pwm, brcm,kona-pwm.txt). If this is only one device
-> supported by the binding, that's probably OK, but for instance for
-> sun4i-pwm I see one or two channels, depending on the particular SoC.
-> amlogic,meson-gxbb-pwm seems to deduce the number of channels from the
-> number of input clocks, and pwm-st has a vendor-specific property for
-> that (st,pwm-num-chan).
-> To cover all those cases more elegantly in (future) bindings, add a new
-> generic property to specify the number of PWM channels a particular
-> controller implements.
-> For instance the sun4i-pwm driver could be extended to support this for
-> future SoCs as well.
-> 
-> Signed-off-by: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
-> 
-> ---
-> Hi,
-> 
-> while looking at the bindings for PWM drivers, I was wondering if we
-> should have a generic property to note the number of implemented
-> channels? We have something for instance for DMA controllers
-> (dma-channels), so adding this to PWM controller bindings sounds
-> natural.
-> In particular the new sun8i-pwm IP seems to be scalable to a number of
-> channels, judging from the register and bit layout and from the bit
-> assignment in the manual. I have the gut feeling we will meet this fella
-> again in another Allwinner SoC with a different number of channels.
+This series adds PWM support for new Allwinner SoCs. Actually the A64 PWM 
+is fully compatible with the A13 and H3 PWM IP, so the driver does not
+need any additional code. But I use this opportunity to provide some
+cleanup and to add optional reset controller support, which will be needed
+for the H6.
+Patch 1 removes a no longer used parameter from our per-SoC data structure,
+to simplify patch 2, which groups SoCs with a compatible PWM controller.
+Patch 3 adds optional reset controller support, the line will be deasserted
+and asserted at the same time we enable and disable the clock. Patch 4 adds
+the new compatible strings to the binding documentation (and just there,
+we expect to use "allwinner,sun5i-a13-pwm" as a fallback compatible string).
+The final patch 5 adds the respective PWM nodes to the A64 .dtsi.
+This eventually does not enable the PWM on any new board at the moment, as
+the PWM pins are either not usable (muxed with Ethernet) or exposed on
+a header pin not dedicated to PWM. But the Pinebook (and Teres I) should be
+able to use the PWM for the LCD backlights, plus users can enable the
+R_PWM on their Pine64 boards, if they like.
 
-Often this should be implied by the compatible string. However, there 
-are no doubt some cases that may need this. One I could think of is the 
-PWM controller has more channels than are pinned out.
+Tested by manually enabling r_pwm on a Pine64-LTS.
 
-Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Let me know how you like it and what needs to change.
 
-> 
-> Thanks!
-> Andre.
-> 
->  Documentation/devicetree/bindings/pwm/pwm.txt | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm.txt b/Documentation/devicetree/bindings/pwm/pwm.txt
-> index 8556263b8502..770f3aee17af 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm.txt
-> +++ b/Documentation/devicetree/bindings/pwm/pwm.txt
-> @@ -60,10 +60,16 @@ Example with optional PWM specifier for inverse polarity
->  PWM controller nodes must specify the number of cells used for the
->  specifier using the '#pwm-cells' property.
->  
-> +A specific controller binding might specify the implemented number of
-> +PWM channels using this generic property:
-> +	pwm-channels = <8>;
-> +This property holds a single 32 bit integer.
-> +
->  An example PWM controller might look like this:
->  
->  	pwm: pwm@7000a000 {
->  		compatible = "nvidia,tegra20-pwm";
->  		reg = <0x7000a000 0x100>;
->  		#pwm-cells = <2>;
-> +		pwm-channels = <4>;
->  	};
-> -- 
-> 2.14.1
-> 
+Cheers,
+Andre.
+
+Andre Przywara (5):
+  pwm: sun4i: drop unused .has_rdy member
+  pwm: sun4i: simplify controller mapping
+  pwm: sun4i: Introduce (optional) reset support
+  dt-bindings: pwm: sunxi: add new compatible strings
+  dts: sunxi: A64: Add PWM controllers
+
+ .../devicetree/bindings/pwm/pwm-sun4i.txt          |  6 ++
+ arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi      | 28 +++++++++
+ drivers/pwm/pwm-sun4i.c                            | 66 ++++++++++++----------
+ 3 files changed, 69 insertions(+), 31 deletions(-)
+
+-- 
+2.14.1
