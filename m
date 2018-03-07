@@ -1,13 +1,13 @@
 From: Maxime Ripard <maxime.ripard@bootlin.com>
-Subject: Re: [PATCH 1/5] pwm: sun4i: drop unused .has_rdy member
-Date: Wed, 7 Mar 2018 08:40:58 +0100
-Message-ID: <20180307074058.yvnayz7zywk24jt3@flea.lan>
+Subject: Re: [PATCH 2/5] pwm: sun4i: simplify controller mapping
+Date: Wed, 7 Mar 2018 08:44:25 +0100
+Message-ID: <20180307074425.72s4zufhesxh3i6r@flea.lan>
 References: <20180307020719.6675-1-andre.przywara@arm.com>
- <20180307020719.6675-2-andre.przywara@arm.com>
+ <20180307020719.6675-3-andre.przywara@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============3893909859571066365=="
+Content-Type: multipart/mixed; boundary="===============8674248048013750601=="
 Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180307020719.6675-2-andre.przywara@arm.com>
+In-Reply-To: <20180307020719.6675-3-andre.przywara@arm.com>
 List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
 List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
@@ -22,28 +22,29 @@ Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-sunxi@googlegro
 List-Id: linux-pwm@vger.kernel.org
 
 
---===============3893909859571066365==
+--===============8674248048013750601==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="54ilskwua3nbnhf2"
+	protocol="application/pgp-signature"; boundary="aurcpak7v3r4mxbe"
 Content-Disposition: inline
 
 
---54ilskwua3nbnhf2
+--aurcpak7v3r4mxbe
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 07, 2018 at 02:07:15AM +0000, Andre Przywara wrote:
-> Commit a054c4d68408 ("pwm: sun4i: Drop legacy callbacks") dropped the
-> only user of the .has_rdy member in our sun4i_pwm_data struct.
-> Consequently we don't need to store this anymore for the various SoCs,
-> which paves the way for further simplifications.
+On Wed, Mar 07, 2018 at 02:07:16AM +0000, Andre Przywara wrote:
+> At the moment we assign our supported compatible strings to a respective
+> instance of our sun4i_pwm_data structure, even though some of them
+> are the same.
+> To avoid further clutter, split out the three different combinations of
+> features we have at the moment and name them accordingly.
+> This should make it more obvious which compatible string to use for new
+> SoCs.
 >=20
 > Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 
 Acked-by: Maxime Ripard <maxime.ripard@bootlin.com>
-
-Thanks!
 Maxime
 
 --=20
@@ -51,30 +52,30 @@ Maxime Ripard, Bootlin (formerly Free Electrons)
 Embedded Linux and Kernel engineering
 https://bootlin.com
 
---54ilskwua3nbnhf2
+--aurcpak7v3r4mxbe
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlqfl3cACgkQ0rTAlCFN
-r3RDIA/+J28ErDXVI4PdDfYmPYP6Nj4zaLGUFnvoCDOdJ5b2nXhSbwrL6EBLAaUT
-oQ4dF6yRuip3bBbLhX+Aj3lsH6G/1JrSvpeFIVehDOrrifzf0dEPCqn19lp0jZw2
-FEtFeWRToSAl0eg87uparGb3yBq1SN/2T+Bx3whWNfxLhHLSXyFqmNStG9i7gND8
-WXeZmUao4LRGuXoYposo07KdE0xs09tDHnTDVQ8rif6sXrqRAyO9Gmf4XSmcIBqx
-PaUTyISbJbEp90jYp6y+aF8kad/C/WIGOrKMY2QWNMnm5tnDfCmcfYsYUIQ0rzP+
-Mf7jYz6kT6nvwOIQshUrMBY5kWU7UVfePaAlwucbl2yJ5NNs3KMXCzqUIccNQWPX
-WwlIOzZPIKerYBXXKD9ZeUBsi4nKXPqjDRtGMXRLYD+nOp3Yua9ab/ypsg+FVv2a
-AGfSgzqSMMTK8Hhd85JN72Rg+zAPFvpgYklFw8vKfkeSLqOIFs612OKFeaeEQMWy
-Ecc5hKAK4g4eTkMqSKopuxDw0/X0/O7jp5BD4XgWAOpmqBNdg8uur0wy/VTTsDos
-wnWHYbVQRLwlisxQm3g8fr+isGqgFchCFnMv2Q5B/cx2hoFTzHAD839AmcmUP3wC
-YgIvv8QKORtJfAe4p0rMlMSIYU2BRDO6Or/QQy1brtRqI/Zwbcg=
-=whpa
+iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlqfmFgACgkQ0rTAlCFN
+r3TPfw//ZwL3Y4rcAcjZAJPKeY5PzlYHVyO1a17bwqvLTT3PPwJcvn86/QpCfgOz
+JnB7PStFEF7TTBKjgI4FVuxtYOjInGUUNQTnRyC4oU7mBJUMN7FwRzuaBtPKZP0C
+KwGtegqJMzRbpubPbqegHaMVVJo6yYBa2ZYeJDOQ/gS0ZgdwEGDC/7vDTHJxajB1
+5pLSUvRBq2AFp/ZVuiVNi6/c0EtJPxL3pz05vyrIg1IgspBTWvxw9QTX5/hyMemW
+mdrqmJwW+3l6x6w45vpf3UVgcvn4j5kucTdnvKWLmzE/J+6JvzhO5YJpXQjCD1Re
+yGQjcjq8AIGwIgFDZhZUdZkDZXB2wN8pzyVlpDouYkqQBmxV2BA0kD0Lxk4o3yJJ
+T2XljmGWiZ8q0e2WwuMoXzf/l28tfmZrVZuJkAbE8WgF7eIzPPd/yH0NljwJFXuB
+/D3Jma+Y9dVz3JjfMkim4vv2+YysWideuifS5na5Zn9ucB0Xu0eWPn+NFCGXvDmQ
+GeGCWdRGROVGSLPyeXmfxh0XEY+iI8lJIgFLnqlOp52gueM4Ii/onWtoI/44j1/S
+oj9e7DWj3PzAyMHPEpj/LZrtOWuRCtizurfa/VUfMetsYpDWIYaF+sHHGdR5veL3
+r0MrjjdK6A/NDyn9WiwV7nGQmHoUpvyMtEfcG8ac5SFVuvhhoy0=
+=sDyF
 -----END PGP SIGNATURE-----
 
---54ilskwua3nbnhf2--
+--aurcpak7v3r4mxbe--
 
 
---===============3893909859571066365==
+--===============8674248048013750601==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -85,4 +86,4 @@ linux-arm-kernel mailing list
 linux-arm-kernel@lists.infradead.org
 http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 
---===============3893909859571066365==--
+--===============8674248048013750601==--
