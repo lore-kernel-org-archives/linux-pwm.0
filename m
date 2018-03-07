@@ -1,57 +1,88 @@
-From: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 4/5] dt-bindings: pwm: sunxi: add new compatible strings
-Date: Wed,  7 Mar 2018 02:07:18 +0000
-Message-ID: <20180307020719.6675-5-andre.przywara@arm.com>
+From: Maxime Ripard <maxime.ripard@bootlin.com>
+Subject: Re: [PATCH 1/5] pwm: sun4i: drop unused .has_rdy member
+Date: Wed, 7 Mar 2018 08:40:58 +0100
+Message-ID: <20180307074058.yvnayz7zywk24jt3@flea.lan>
 References: <20180307020719.6675-1-andre.przywara@arm.com>
-Reply-To: andre.przywara-5wv7dgnIgG8@public.gmane.org
+ <20180307020719.6675-2-andre.przywara@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-sunxi+bncBDNZNK75ZIKRBF4U7XKAKGQE3FKPL4A-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20180307020719.6675-1-andre.przywara-5wv7dgnIgG8@public.gmane.org>
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Content-Type: multipart/mixed; boundary="===============3893909859571066365=="
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180307020719.6675-2-andre.przywara@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-sunxi@googlegroups.com, Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-The PWM controllers found in the Allwinner A64, H5 and H6 SoCs are fully
-compatible to the PWM controllers found in the A13 and H3.
-Add new compatible strings for those SoCs to the binding document, so
-that they can be safely used, together with a fallback string
-(preferably "allwinner,sun5i-a13-pwm").
-Add add the optionals "resets" property, needed by the H6.
 
-Signed-off-by: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
----
- Documentation/devicetree/bindings/pwm/pwm-sun4i.txt | 6 ++++++
- 1 file changed, 6 insertions(+)
+--===============3893909859571066365==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="54ilskwua3nbnhf2"
+Content-Disposition: inline
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
-index 51ff54c8b8ef..b3a127a0e58c 100644
---- a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
-+++ b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
-@@ -7,11 +7,17 @@ Required properties:
-     - "allwinner,sun5i-a13-pwm"
-     - "allwinner,sun7i-a20-pwm"
-     - "allwinner,sun8i-h3-pwm"
-+    - "allwinner,sun50i-a64-pwm"
-+    - "allwinner,sun50i-h5-pwm"
-+    - "allwinner,sun50i-h6-pwm"
-   - reg: physical base address and length of the controller's registers
-   - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
-     the cells format.
-   - clocks: From common clock binding, handle to the parent clock.
- 
-+Optional properties:
-+  - resets: shall be the reset control phandle for the PWM block, if required.
-+
- Example:
- 
- 	pwm: pwm@1c20e00 {
--- 
-2.14.1
+
+--54ilskwua3nbnhf2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Mar 07, 2018 at 02:07:15AM +0000, Andre Przywara wrote:
+> Commit a054c4d68408 ("pwm: sun4i: Drop legacy callbacks") dropped the
+> only user of the .has_rdy member in our sun4i_pwm_data struct.
+> Consequently we don't need to store this anymore for the various SoCs,
+> which paves the way for further simplifications.
+>=20
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+
+Acked-by: Maxime Ripard <maxime.ripard@bootlin.com>
+
+Thanks!
+Maxime
+
+--=20
+Maxime Ripard, Bootlin (formerly Free Electrons)
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--54ilskwua3nbnhf2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlqfl3cACgkQ0rTAlCFN
+r3RDIA/+J28ErDXVI4PdDfYmPYP6Nj4zaLGUFnvoCDOdJ5b2nXhSbwrL6EBLAaUT
+oQ4dF6yRuip3bBbLhX+Aj3lsH6G/1JrSvpeFIVehDOrrifzf0dEPCqn19lp0jZw2
+FEtFeWRToSAl0eg87uparGb3yBq1SN/2T+Bx3whWNfxLhHLSXyFqmNStG9i7gND8
+WXeZmUao4LRGuXoYposo07KdE0xs09tDHnTDVQ8rif6sXrqRAyO9Gmf4XSmcIBqx
+PaUTyISbJbEp90jYp6y+aF8kad/C/WIGOrKMY2QWNMnm5tnDfCmcfYsYUIQ0rzP+
+Mf7jYz6kT6nvwOIQshUrMBY5kWU7UVfePaAlwucbl2yJ5NNs3KMXCzqUIccNQWPX
+WwlIOzZPIKerYBXXKD9ZeUBsi4nKXPqjDRtGMXRLYD+nOp3Yua9ab/ypsg+FVv2a
+AGfSgzqSMMTK8Hhd85JN72Rg+zAPFvpgYklFw8vKfkeSLqOIFs612OKFeaeEQMWy
+Ecc5hKAK4g4eTkMqSKopuxDw0/X0/O7jp5BD4XgWAOpmqBNdg8uur0wy/VTTsDos
+wnWHYbVQRLwlisxQm3g8fr+isGqgFchCFnMv2Q5B/cx2hoFTzHAD839AmcmUP3wC
+YgIvv8QKORtJfAe4p0rMlMSIYU2BRDO6Or/QQy1brtRqI/Zwbcg=
+=whpa
+-----END PGP SIGNATURE-----
+
+--54ilskwua3nbnhf2--
+
+
+--===============3893909859571066365==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+linux-arm-kernel mailing list
+linux-arm-kernel@lists.infradead.org
+http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--===============3893909859571066365==--
