@@ -1,12 +1,12 @@
 From: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 2/5] pwm: sun4i: simplify controller mapping
-Date: Wed,  7 Mar 2018 02:07:16 +0000
-Message-ID: <20180307020719.6675-3-andre.przywara@arm.com>
+Subject: [PATCH 4/5] dt-bindings: pwm: sunxi: add new compatible strings
+Date: Wed,  7 Mar 2018 02:07:18 +0000
+Message-ID: <20180307020719.6675-5-andre.przywara@arm.com>
 References: <20180307020719.6675-1-andre.przywara@arm.com>
 Reply-To: andre.przywara-5wv7dgnIgG8@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-sunxi+bncBDNZNK75ZIKRBE4U7XKAKGQENVKWXSY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBDNZNK75ZIKRBF4U7XKAKGQE3FKPL4A-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 In-Reply-To: <20180307020719.6675-1-andre.przywara-5wv7dgnIgG8@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
@@ -16,81 +16,42 @@ List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto
 List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
  <https://groups.google.com/group/linux-sunxi/subscribe>
 To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-At the moment we assign our supported compatible strings to a respective
-instance of our sun4i_pwm_data structure, even though some of them
-are the same.
-To avoid further clutter, split out the three different combinations of
-features we have at the moment and name them accordingly.
-This should make it more obvious which compatible string to use for new
-SoCs.
+The PWM controllers found in the Allwinner A64, H5 and H6 SoCs are fully
+compatible to the PWM controllers found in the A13 and H3.
+Add new compatible strings for those SoCs to the binding document, so
+that they can be safely used, together with a fallback string
+(preferably "allwinner,sun5i-a13-pwm").
+Add add the optionals "resets" property, needed by the H6.
 
 Signed-off-by: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/pwm/pwm-sun4i.c | 26 ++++++++------------------
- 1 file changed, 8 insertions(+), 18 deletions(-)
+ Documentation/devicetree/bindings/pwm/pwm-sun4i.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
-index b3e4a4b3774d..078172dee462 100644
---- a/drivers/pwm/pwm-sun4i.c
-+++ b/drivers/pwm/pwm-sun4i.c
-@@ -310,27 +310,17 @@ static const struct pwm_ops sun4i_pwm_ops = {
- 	.owner = THIS_MODULE,
- };
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+index 51ff54c8b8ef..b3a127a0e58c 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
+@@ -7,11 +7,17 @@ Required properties:
+     - "allwinner,sun5i-a13-pwm"
+     - "allwinner,sun7i-a20-pwm"
+     - "allwinner,sun8i-h3-pwm"
++    - "allwinner,sun50i-a64-pwm"
++    - "allwinner,sun50i-h5-pwm"
++    - "allwinner,sun50i-h6-pwm"
+   - reg: physical base address and length of the controller's registers
+   - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
+     the cells format.
+   - clocks: From common clock binding, handle to the parent clock.
  
--static const struct sun4i_pwm_data sun4i_pwm_data_a10 = {
-+static const struct sun4i_pwm_data sun4i_pwm_dual_nobypass = {
- 	.has_prescaler_bypass = false,
- 	.npwm = 2,
- };
++Optional properties:
++  - resets: shall be the reset control phandle for the PWM block, if required.
++
+ Example:
  
--static const struct sun4i_pwm_data sun4i_pwm_data_a10s = {
-+static const struct sun4i_pwm_data sun4i_pwm_dual_bypass = {
- 	.has_prescaler_bypass = true,
- 	.npwm = 2,
- };
- 
--static const struct sun4i_pwm_data sun4i_pwm_data_a13 = {
--	.has_prescaler_bypass = true,
--	.npwm = 1,
--};
--
--static const struct sun4i_pwm_data sun4i_pwm_data_a20 = {
--	.has_prescaler_bypass = true,
--	.npwm = 2,
--};
--
--static const struct sun4i_pwm_data sun4i_pwm_data_h3 = {
-+static const struct sun4i_pwm_data sun4i_pwm_single_bypass = {
- 	.has_prescaler_bypass = true,
- 	.npwm = 1,
- };
-@@ -338,19 +328,19 @@ static const struct sun4i_pwm_data sun4i_pwm_data_h3 = {
- static const struct of_device_id sun4i_pwm_dt_ids[] = {
- 	{
- 		.compatible = "allwinner,sun4i-a10-pwm",
--		.data = &sun4i_pwm_data_a10,
-+		.data = &sun4i_pwm_dual_nobypass,
- 	}, {
- 		.compatible = "allwinner,sun5i-a10s-pwm",
--		.data = &sun4i_pwm_data_a10s,
-+		.data = &sun4i_pwm_dual_bypass,
- 	}, {
- 		.compatible = "allwinner,sun5i-a13-pwm",
--		.data = &sun4i_pwm_data_a13,
-+		.data = &sun4i_pwm_single_bypass,
- 	}, {
- 		.compatible = "allwinner,sun7i-a20-pwm",
--		.data = &sun4i_pwm_data_a20,
-+		.data = &sun4i_pwm_dual_bypass,
- 	}, {
- 		.compatible = "allwinner,sun8i-h3-pwm",
--		.data = &sun4i_pwm_data_h3,
-+		.data = &sun4i_pwm_single_bypass,
- 	}, {
- 		/* sentinel */
- 	},
+ 	pwm: pwm@1c20e00 {
 -- 
 2.14.1
