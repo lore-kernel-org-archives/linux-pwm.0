@@ -1,264 +1,70 @@
-From: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 05/10] hwmon: generic-pwm-tachometer: Add generic PWM
- based tachometer
-Date: Thu, 8 Mar 2018 06:33:03 -0800
-Message-ID: <e85734cd-c91a-a7ed-380e-e2b95fc1632f@roeck-us.net>
-References: <1519196339-9377-1-git-send-email-rrajk@nvidia.com>
- <1519196339-9377-6-git-send-email-rrajk@nvidia.com>
- <5172edff-fe29-7ed1-f0d2-b0359ea2c24d@roeck-us.net>
- <2510b525-ec36-b49d-5a62-81f335c0d10d@nvidia.com>
- <cfe0d0ce-3a89-bad0-85ba-6edf1135d2dc@roeck-us.net>
- <2628eff2-dd33-34f4-a7e1-cfe46ef88a3f@nvidia.com>
- <4556a8d2-947d-72c4-2962-3167afb53978@kapsi.fi>
- <62ba7f67-5a99-51ab-1214-eb68ebb7e642@roeck-us.net>
- <952cb50e-d9a0-ae5e-d9f6-d1ce268f0384@nvidia.com>
- <f7818e4c-17b6-c58b-3424-85749bb9c1cc@roeck-us.net>
- <73ca5840-865b-b44e-45e6-703b7749fb6f@nvidia.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 4/5] dt-bindings: pwm: sunxi: add new
+ compatible strings
+Date: Thu, 8 Mar 2018 08:37:15 -0600
+Message-ID: <CAL_Jsq+e8uRm0gi1dn3Ln-b37SC9WGw5aWPaBKoRA2vi-==j6A@mail.gmail.com>
+References: <20180307020719.6675-1-andre.przywara@arm.com> <20180307020719.6675-5-andre.przywara@arm.com>
+ <20180308020822.35utrgw3ksoldr24@rob-hp-laptop> <9431a141-8b9c-9743-0907-8f0720df34a2@arm.com>
+Reply-To: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <73ca5840-865b-b44e-45e6-703b7749fb6f@nvidia.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mikko Perttunen <mperttunen@nvidia.com>, Rajkumar Rampelli <rrajk@nvidia.com>, Mikko Perttunen <cyndis@kapsi.fi>, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, jdelvare@suse.com, corbet@lwn.net, catalin.marinas@arm.com, will.deacon@arm.com, kstewart@linuxfoundation.org, gregkh@linuxfoundation.org, pombredanne@nexb.com, mmaddireddy@nvidia.com, arnd@arndb.de, timur@codeaurora.org, andy.gross@linaro.org, xuwei5@hisilicon.com, elder@linaro.org, heiko@sntech.de, krzk@kernel.org, ard.biesheuvel@linaro.org
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, ldewangan@nvidia.com
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-sunxi+bncBDJIP47K7MERBMMVQXKQKGQEQ4DOEOY-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <9431a141-8b9c-9743-0907-8f0720df34a2-5wv7dgnIgG8@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Linux PWM List <linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-sunxi <linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 List-Id: linux-pwm@vger.kernel.org
 
-On 03/07/2018 11:57 PM, Mikko Perttunen wrote:
-> 
-> 
-> On 07.03.2018 16:20, Guenter Roeck wrote:
->> On 03/07/2018 01:47 AM, Rajkumar Rampelli wrote:
->>>
->>>
->>> On Wednesday 28 February 2018 07:59 PM, Guenter Roeck wrote:
->>>> On 02/27/2018 11:03 PM, Mikko Perttunen wrote:
->>>>> On 02/28/2018 08:12 AM, Rajkumar Rampelli wrote:
->>>>>>
->>>>>> On Wednesday 28 February 2018 11:28 AM, Guenter Roeck wrote:
->>>>>>> On 02/27/2018 09:38 PM, Rajkumar Rampelli wrote:
->>>>>>>>
->>>>>>>> On Wednesday 21 February 2018 08:20 PM, Guenter Roeck wrote:
->>>>>>>>> On 02/20/2018 10:58 PM, Rajkumar Rampelli wrote:
->>>>>>>>>> Add generic PWM based tachometer driver via HWMON interface
->>>>>>>>>> to report the RPM of motor. This drivers get the period/duty
->>>>>>>>>> cycle from PWM IP which captures the motor PWM output.
->>>>>>>>>>
->>>>>>>>>> This driver implements a simple interface for monitoring the
->>>>>>>>>> speed of
->>>>>>>>>> a fan and exposes it in roatations per minute (RPM) to the user
->>>>>>>>>> space
->>>>>>>>>> by using the hwmon's sysfs interface
->>>>>>>>>>
->>>>>>>>>> Signed-off-by: Rajkumar Rampelli <rrajk@nvidia.com>
->>>>>>>>>> ---
->>>>>>>>>>   Documentation/hwmon/generic-pwm-tachometer |  17 +++++
->>>>>>>>>>   drivers/hwmon/Kconfig                      |  10 +++
->>>>>>>>>>   drivers/hwmon/Makefile                     |   1 +
->>>>>>>>>>   drivers/hwmon/generic-pwm-tachometer.c     | 112
->>>>>>>>>> +++++++++++++++++++++++++++++
->>>>>>>>>>   4 files changed, 140 insertions(+)
->>>>>>>>>>   create mode 100644 Documentation/hwmon/generic-pwm-tachometer
->>>>>>>>>>   create mode 100644 drivers/hwmon/generic-pwm-tachometer.c
->>>>>>>>>>
->>>>>>>>>> diff --git a/Documentation/hwmon/generic-pwm-tachometer
->>>>>>>>>> b/Documentation/hwmon/generic-pwm-tachometer
->>>>>>>>>> new file mode 100644
->>>>>>>>>> index 0000000..e0713ee
->>>>>>>>>> --- /dev/null
->>>>>>>>>> +++ b/Documentation/hwmon/generic-pwm-tachometer
->>>>>>>>>> @@ -0,0 +1,17 @@
->>>>>>>>>> +Kernel driver generic-pwm-tachometer
->>>>>>>>>> +====================================
->>>>>>>>>> +
->>>>>>>>>> +This driver enables the use of a PWM module to monitor a fan.
->>>>>>>>>> It uses the
->>>>>>>>>> +generic PWM interface and can be used on SoCs as along as the
->>>>>>>>>> SoC supports
->>>>>>>>>> +Tachometer controller that moniors the Fan speed in periods.
->>>>>>>>>> +
->>>>>>>>>> +Author: Rajkumar Rampelli <rrajk@nvidia.com>
->>>>>>>>>> +
->>>>>>>>>> +Description
->>>>>>>>>> +-----------
->>>>>>>>>> +
->>>>>>>>>> +The driver implements a simple interface for monitoring the
->>>>>>>>>> Fan speed using
->>>>>>>>>> +PWM module and Tachometer controller. It requests period value
->>>>>>>>>> through PWM
->>>>>>>>>> +capture interface to Tachometer and measures the Rotations per
->>>>>>>>>> minute using
->>>>>>>>>> +received period value. It exposes the Fan speed in RPM to the
->>>>>>>>>> user space by
->>>>>>>>>> +using the hwmon's sysfs interface.
->>>>>>>>>> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
->>>>>>>>>> index ef23553..8912dcb 100644
->>>>>>>>>> --- a/drivers/hwmon/Kconfig
->>>>>>>>>> +++ b/drivers/hwmon/Kconfig
->>>>>>>>>> @@ -1878,6 +1878,16 @@ config SENSORS_XGENE
->>>>>>>>>>         If you say yes here you get support for the temperature
->>>>>>>>>>         and power sensors for APM X-Gene SoC.
->>>>>>>>>>   +config GENERIC_PWM_TACHOMETER
->>>>>>>>>> +    tristate "Generic PWM based tachometer driver"
->>>>>>>>>> +    depends on PWM
->>>>>>>>>> +    help
->>>>>>>>>> +      Enables a driver to use PWM signal from motor to use
->>>>>>>>>> +      for measuring the motor speed. The RPM is captured by
->>>>>>>>>> +      PWM modules which has PWM capture capability and this
->>>>>>>>>> +      drivers reads the captured data from PWM IP to convert
->>>>>>>>>> +      it to speed in RPM.
->>>>>>>>>> +
->>>>>>>>>>   if ACPI
->>>>>>>>>>     comment "ACPI drivers"
->>>>>>>>>> diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
->>>>>>>>>> index f814b4a..9dcc374 100644
->>>>>>>>>> --- a/drivers/hwmon/Makefile
->>>>>>>>>> +++ b/drivers/hwmon/Makefile
->>>>>>>>>> @@ -175,6 +175,7 @@ obj-$(CONFIG_SENSORS_WM8350)    +=
->>>>>>>>>> wm8350-hwmon.o
->>>>>>>>>>   obj-$(CONFIG_SENSORS_XGENE)    += xgene-hwmon.o
->>>>>>>>>>     obj-$(CONFIG_PMBUS)        += pmbus/
->>>>>>>>>> +obj-$(CONFIG_GENERIC_PWM_TACHOMETER) += generic-pwm-tachometer.o
->>>>>>>>>>     ccflags-$(CONFIG_HWMON_DEBUG_CHIP) := -DDEBUG
->>>>>>>>>>   diff --git a/drivers/hwmon/generic-pwm-tachometer.c
->>>>>>>>>> b/drivers/hwmon/generic-pwm-tachometer.c
->>>>>>>>>> new file mode 100644
->>>>>>>>>> index 0000000..9354d43
->>>>>>>>>> --- /dev/null
->>>>>>>>>> +++ b/drivers/hwmon/generic-pwm-tachometer.c
->>>>>>>>>> @@ -0,0 +1,112 @@
->>>>>>>>>> +/*
->>>>>>>>>> + * Copyright (c) 2017-2018, NVIDIA CORPORATION.  All rights
->>>>>>>>>> reserved.
->>>>>>>>>> + *
->>>>>>>>>> + * This program is free software; you can redistribute it
->>>>>>>>>> and/or modify it
->>>>>>>>>> + * under the terms and conditions of the GNU General Public
->>>>>>>>>> License,
->>>>>>>>>> + * version 2, as published by the Free Software Foundation.
->>>>>>>>>> + *
->>>>>>>>>> + * This program is distributed in the hope it will be useful,
->>>>>>>>>> but WITHOUT
->>>>>>>>>> + * ANY WARRANTY; without even the implied warranty of
->>>>>>>>>> MERCHANTABILITY or
->>>>>>>>>> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
->>>>>>>>>> Public License for
->>>>>>>>>> + * more details.
->>>>>>>>>> + *
->>>>>>>>>> + */
->>>>>>>>>> +
->>>>>>>>>> +#include <linux/module.h>
->>>>>>>>>> +#include <linux/platform_device.h>
->>>>>>>>>> +#include <linux/err.h>
->>>>>>>>>> +#include <linux/pwm.h>
->>>>>>>>>> +#include <linux/hwmon.h>
->>>>>>>>>> +#include <linux/hwmon-sysfs.h>
->>>>>>>>>> +
->>>>>>>>>> +struct pwm_hwmon_tach {
->>>>>>>>>> +    struct device        *dev;
->>>>>>>>>> +    struct pwm_device    *pwm;
->>>>>>>>>> +    struct device        *hwmon;
->>>>>>>>>> +};
->>>>>>>>>> +
->>>>>>>>>> +static ssize_t show_rpm(struct device *dev, struct
->>>>>>>>>> device_attribute *attr,
->>>>>>>>>> +            char *buf)
->>>>>>>>>> +{
->>>>>>>>>> +    struct pwm_hwmon_tach *ptt = dev_get_drvdata(dev);
->>>>>>>>>> +    struct pwm_device *pwm = ptt->pwm;
->>>>>>>>>> +    struct pwm_capture result;
->>>>>>>>>> +    int err;
->>>>>>>>>> +    unsigned int rpm = 0;
->>>>>>>>>> +
->>>>>>>>>> +    err = pwm_capture(pwm, &result, 0);
->>>>>>>>>> +    if (err < 0) {
->>>>>>>>>> +        dev_err(ptt->dev, "Failed to capture PWM: %d\n", err);
->>>>>>>>>> +        return err;
->>>>>>>>>> +    }
->>>>>>>>>> +
->>>>>>>>>> +    if (result.period)
->>>>>>>>>> +        rpm = DIV_ROUND_CLOSEST_ULL(60ULL * NSEC_PER_SEC,
->>>>>>>>>> +                        result.period);
->>>>>>>>>> +
->>>>>>>>>> +    return sprintf(buf, "%u\n", rpm);
->>>>>>>>>> +}
->>>>>>>>>> +
->>>>>>>>>> +static SENSOR_DEVICE_ATTR(rpm, 0444, show_rpm, NULL, 0);
->>>>>>>>>> +
->>>>>>>>>> +static struct attribute *pwm_tach_attrs[] = {
->>>>>>>>>> +    &sensor_dev_attr_rpm.dev_attr.attr,
->>>>>>>>>> +    NULL,
->>>>>>>>>> +};
->>>>>>>>>
->>>>>>>>> "rpm" is not a standard hwmon sysfs attribute. If you don't provide
->>>>>>>>> a single standard hwmon sysfs attribute, having a hwmon driver
->>>>>>>>> is pointless.
->>>>>>>> Guenter Roeck,
->>>>>>>> I will define a new hwmon sysfs attribute node called
->>>>>>>> "hwmon_tachometer_attributes" in hwmon.h like below and update
->>>>>>>> the same in tachometer hwmon driver. Is it fine ?
->>>>>>>> enum hwmon_tachometer_attributes {
->>>>>>>
->>>>>>> Are you kidding me ?
->>>>>>>
->>>>>>> Guenter
->>>>>> Sorry, I just wanted to confirm whether my understanding is correct
->>>>>> or not before implementing it actually.
->>>>>> Or, shall I add this attribute as a part of fan attributes with
->>>>>> "hwmon_fan_rpm" ? or any other way to do it ? I need your inputs in
->>>>>> fixing this.
->>>>>
->>>>> I think he wants the attribute to be named according to the
->>>>> properties in this document:
->>>>> https://www.kernel.org/doc/Documentation/hwmon/sysfs-interface. I
->>>>> guess the attribute would then map to fan1_input, though I'm not
->>>>> sure if that's 100% correct either since this could technically be
->>>>> attached to something other than a fan. But I would think in
->>>>> practice that's not a big concern.
->>>>>
->>>>> Guenter,
->>>>> Please correct me as well if I'm wrong.
->>>>>
->>>> You are absolutely correct.
->>>>
->>>> While I am not opposed to ABI changes, the merits of those would need
->>>> to be
->>>> discussed on the mailing list. But replacing "fan1_input" with "rpm" is
->>>> not an acceptable ABI change, even if it may measure something that
->>>> turns
->>>> but isn't a fan.
->>>>
->>>> If this _is_ in fact supposed to be used for something else but fans, we
->>>> would have to discuss what that might be, and if hwmon is the
->>>> appropriate
->>>> subsystem to measure and report it. This does to some degree lead
->>>> back to
->>>> my concern of having the "fan" part of this patch series in the pwm
->>>> core.
->>>> I am still not sure if that makes sense.
->>>>
->>>> Thanks,
->>>> Guenter
->>> I am planning to add tachometer support in pwm-fan.c driver
->>> (drivers/hwmon/) instead of adding new generic-pwm-tachometer.c
->>> driver. Measuring RPM value will be done in pwm-fan driver itself
->>> using pwm capture feature and will add new sysfs attributes under this
->>> driver to report rpm value of fan.
+On Thu, Mar 8, 2018 at 3:09 AM, Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org> wrote:
+> Hi,
+>
+> On 08/03/18 02:08, Rob Herring wrote:
+>> On Wed, Mar 07, 2018 at 02:07:18AM +0000, Andre Przywara wrote:
+>>> The PWM controllers found in the Allwinner A64, H5 and H6 SoCs are fully
+>>> compatible to the PWM controllers found in the A13 and H3.
 >>
->> There is an existing attribute to report the RPM of fans. It is called
->> fan[1..n]_input.
->>
->> "replacing "fan1_input" with "rpm" is not an acceptable ABI change"
->>
->> Preemptive NACK.
->>
->> Guenter
->>
-> 
-> I think the idea here (based on personal discussion with Rajkumar) was to add a "new" sysfs attribute the driver exports, but that attribute would be the existing fan[1..n]_input.
-> 
+>> If fully compatible, then shouldn't there be a fallback to one of the
+>> existing compatible strings?
+>
+> Yes, that was the idea. I was already wondering how we would
+> differentiate that from "real" compatible strings, but couldn't find
+> convincing examples. So should that read:
+>
+> - compatible: should at least contain be one of:
+>     - "allwinner,sun4i-a10-pwm"
+>     - "allwinner,sun5i-a10s-pwm"
+>     - "allwinner,sun5i-a13-pwm"
+>     - "allwinner,sun7i-a20-pwm"
+>     - "allwinner,sun8i-h3-pwm"
+>   May in addition contain one of:
+>     - "allwinner,sun50i-a64-pwm"
+>     - "allwinner,sun50i-h5-pwm"
+>     - "allwinner,sun50i-h6-pwm"
 
-Ah, sorry, in this case misunderstanding on my side.
+I can't validate a dts is correct with it written like this. Just list
+each valid combination on each line:
 
-Guenter
+"allwinner,sun8i-h3-pwm", "allwinner,sun50i-h6-pwm"
+
+(Assuming "allwinner,sun50i-h6-pwm" was the first implementation and
+h3 has the same block).
+
+> And this would possibly need to be amended once we need to actually use
+> one of those strings (to implement a quirk, for instance)?
+
+The most specific compatible provides that. The driver matches on the
+least specific one until you have a quirk to implement.
+
+> Or is there some other way of reserving those compatible strings, which
+> are not expected to be matched in drivers directly?
+
+The binding should just list all that are appropriate from the start
+and the driver is free to match on which ever string it wants.
+
+Rob
