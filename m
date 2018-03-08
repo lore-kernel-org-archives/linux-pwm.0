@@ -1,93 +1,65 @@
-From: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 4/5] dt-bindings: pwm: sunxi: add new
- compatible strings
-Date: Thu, 8 Mar 2018 09:09:02 +0000
-Message-ID: <9431a141-8b9c-9743-0907-8f0720df34a2@arm.com>
-References: <20180307020719.6675-1-andre.przywara@arm.com>
- <20180307020719.6675-5-andre.przywara@arm.com>
- <20180308020822.35utrgw3ksoldr24@rob-hp-laptop>
-Reply-To: andre.przywara-5wv7dgnIgG8@public.gmane.org
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH 05/10] hwmon: generic-pwm-tachometer: Add generic PWM
+ based tachometer
+Date: Thu, 8 Mar 2018 06:31:24 -0800
+Message-ID: <d4e745a6-5534-662e-f6d5-a91bf580f550@roeck-us.net>
+References: <1519196339-9377-1-git-send-email-rrajk@nvidia.com>
+ <1519196339-9377-6-git-send-email-rrajk@nvidia.com>
+ <5172edff-fe29-7ed1-f0d2-b0359ea2c24d@roeck-us.net>
+ <2510b525-ec36-b49d-5a62-81f335c0d10d@nvidia.com>
+ <cfe0d0ce-3a89-bad0-85ba-6edf1135d2dc@roeck-us.net>
+ <2628eff2-dd33-34f4-a7e1-cfe46ef88a3f@nvidia.com>
+ <4556a8d2-947d-72c4-2962-3167afb53978@kapsi.fi>
+ <62ba7f67-5a99-51ab-1214-eb68ebb7e642@roeck-us.net>
+ <952cb50e-d9a0-ae5e-d9f6-d1ce268f0384@nvidia.com>
+ <f7818e4c-17b6-c58b-3424-85749bb9c1cc@roeck-us.net>
+ <5bffef40-a4a7-5f7d-a448-b2a381c57822@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-sunxi+bncBDNZNK75ZIKRBOP3QPKQKGQERIHME2I-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
-In-Reply-To: <20180308020822.35utrgw3ksoldr24@rob-hp-laptop>
-Content-Language: en-GB
-List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Archive: <https://groups.google.com/group/linux-sunxi
-List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
-List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
- <https://groups.google.com/group/linux-sunxi/subscribe>
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5bffef40-a4a7-5f7d-a448-b2a381c57822@nvidia.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Laxman Dewangan <ldewangan@nvidia.com>, Rajkumar Rampelli <rrajk@nvidia.com>, Mikko Perttunen <cyndis@kapsi.fi>, robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathanh@nvidia.com, jdelvare@suse.com, corbet@lwn.net, catalin.marinas@arm.com, will.deacon@arm.com, kstewart@linuxfoundation.org, gregkh@linuxfoundation.org, pombredanne@nexb.com, mmaddireddy@nvidia.com, mperttunen@nvidia.com, arnd@arndb.de, timur@codeaurora.org, andy.gross@linaro.org, xuwei5@hisilicon.com, elder@linaro.org, heiko@sntech.de, krzk@kernel.org, ard.biesheuvel@linaro.org
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
-
-On 08/03/18 02:08, Rob Herring wrote:
-> On Wed, Mar 07, 2018 at 02:07:18AM +0000, Andre Przywara wrote:
->> The PWM controllers found in the Allwinner A64, H5 and H6 SoCs are fully
->> compatible to the PWM controllers found in the A13 and H3.
+On 03/07/2018 10:06 PM, Laxman Dewangan wrote:
 > 
-> If fully compatible, then shouldn't there be a fallback to one of the 
-> existing compatible strings?
-
-Yes, that was the idea. I was already wondering how we would
-differentiate that from "real" compatible strings, but couldn't find
-convincing examples. So should that read:
-
-- compatible: should at least contain be one of:
-    - "allwinner,sun4i-a10-pwm"
-    - "allwinner,sun5i-a10s-pwm"
-    - "allwinner,sun5i-a13-pwm"
-    - "allwinner,sun7i-a20-pwm"
-    - "allwinner,sun8i-h3-pwm"
-  May in addition contain one of:
-    - "allwinner,sun50i-a64-pwm"
-    - "allwinner,sun50i-h5-pwm"
-    - "allwinner,sun50i-h6-pwm"
-
-And this would possibly need to be amended once we need to actually use
-one of those strings (to implement a quirk, for instance)?
-Or is there some other way of reserving those compatible strings, which
-are not expected to be matched in drivers directly?
-
-Cheers,
-Andre.
-
->> Add new compatible strings for those SoCs to the binding document, so
->> that they can be safely used, together with a fallback string
->> (preferably "allwinner,sun5i-a13-pwm").
->> Add add the optionals "resets" property, needed by the H6.
+> 
+> On Wednesday 07 March 2018 07:50 PM, Guenter Roeck wrote:
+>> On 03/07/2018 01:47 AM, Rajkumar Rampelli wrote:
+>>>
+>>>>
+>>>> While I am not opposed to ABI changes, the merits of those would need to be
+>>>> discussed on the mailing list. But replacing "fan1_input" with "rpm" is
+>>>> not an acceptable ABI change, even if it may measure something that turns
+>>>> but isn't a fan.
+>>>>
+>>>> If this _is_ in fact supposed to be used for something else but fans, we
+>>>> would have to discuss what that might be, and if hwmon is the appropriate
+>>>> subsystem to measure and report it. This does to some degree lead back to
+>>>> my concern of having the "fan" part of this patch series in the pwm core.
+>>>> I am still not sure if that makes sense.
+>>>>
+>>>> Thanks,
+>>>> Guenter
+>>> I am planning to add tachometer support in pwm-fan.c driver (drivers/hwmon/) instead of adding new generic-pwm-tachometer.c driver. Measuring RPM value will be done in pwm-fan driver itself using pwm capture feature and will add new sysfs attributes under this driver to report rpm value of fan.
 >>
->> Signed-off-by: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
->> ---
->>  Documentation/devicetree/bindings/pwm/pwm-sun4i.txt | 6 ++++++
->>  1 file changed, 6 insertions(+)
+>> There is an existing attribute to report the RPM of fans. It is called fan[1..n]_input.
 >>
->> diff --git a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
->> index 51ff54c8b8ef..b3a127a0e58c 100644
->> --- a/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
->> +++ b/Documentation/devicetree/bindings/pwm/pwm-sun4i.txt
->> @@ -7,11 +7,17 @@ Required properties:
->>      - "allwinner,sun5i-a13-pwm"
->>      - "allwinner,sun7i-a20-pwm"
->>      - "allwinner,sun8i-h3-pwm"
->> +    - "allwinner,sun50i-a64-pwm"
->> +    - "allwinner,sun50i-h5-pwm"
->> +    - "allwinner,sun50i-h6-pwm"
->>    - reg: physical base address and length of the controller's registers
->>    - #pwm-cells: should be 3. See pwm.txt in this directory for a description of
->>      the cells format.
->>    - clocks: From common clock binding, handle to the parent clock.
->>  
->> +Optional properties:
->> +  - resets: shall be the reset control phandle for the PWM block, if required.
->> +
->>  Example:
->>  
->>  	pwm: pwm@1c20e00 {
->> -- 
->> 2.14.1
+>> "replacing "fan1_input" with "rpm" is not an acceptable ABI change"
 >>
+>> Preemptive NACK.
+> 
+> The RPM is measured speed via PWM signal capture  which is output from fan.
+> So should we have the fan[1..n]_output_rpm?
+> 
+
+No. I hear you clearly that you for some reason dislike fan[1..n]_input.
+While ABIs are not always to our liking, that doesn't mean that we get
+to change them at our whim. If that is not acceptable for you, I can't
+help you. And you can't change inX_input to inX_voltage either, sorry.
+
+Guenter
