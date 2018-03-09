@@ -1,32 +1,33 @@
-Return-Path: <>
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH] dt-bindings: pwm: renesas,pwm-rcar: add bindings for R-Car M3N support
-Date: Fri,  9 Mar 2018 20:53:17 +0900
-Message-Id: <1520596397-4716-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Return-Path: <geert.uytterhoeven@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Sender: geert.uytterhoeven@gmail.com
+In-Reply-To: <1520596397-4716-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+References: <1520596397-4716-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Fri, 9 Mar 2018 13:53:29 +0100
+Message-ID: <CAMuHMdX6Nr9BFdkoQ2Vq10ZVe2ezdX=2W1aXga5=UAxLh+n2ug@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: pwm: renesas,pwm-rcar: add bindings for
+ R-Car M3N support
+Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-pwm.vger.kernel.org>
-To: thierry.reding@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com
-Cc: linux-pwm@vger.kernel.org, linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>
 
-This patch adds bindings for R-Car M3N. No driver update is needed.
+On Fri, Mar 9, 2018 at 12:53 PM, Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> This patch adds bindings for R-Car M3N. No driver update is needed.
+>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
----
- Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt | 1 +
- 1 file changed, 1 insertion(+)
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-diff --git a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-index 74c1180..e1a163e 100644
---- a/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-+++ b/Documentation/devicetree/bindings/pwm/renesas,pwm-rcar.txt
-@@ -9,6 +9,7 @@ Required Properties:
-  - "renesas,pwm-r8a7794": for R-Car E2
-  - "renesas,pwm-r8a7795": for R-Car H3
-  - "renesas,pwm-r8a7796": for R-Car M3-W
-+ - "renesas,pwm-r8a77965": for R-Car M3-N
-  - "renesas,pwm-r8a77995": for R-Car D3
- - reg: base address and length of the registers block for the PWM.
- - #pwm-cells: should be 2. See pwm.txt in this directory for a description of
--- 
-1.9.1
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
