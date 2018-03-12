@@ -1,50 +1,31 @@
-From: Lee Jones <lee.jones@linaro.org>
-Subject: Re: [RESEND PATCH v5 2/5] dt-bindings: pwm-backlight: add PWM delay
- proprieties.
-Date: Mon, 12 Mar 2018 09:10:41 +0000
-Message-ID: <20180312091041.5sk3t27n5tryikie@dell>
-References: <20180216174034.15936-1-enric.balletbo@collabora.com>
- <20180216174034.15936-2-enric.balletbo@collabora.com>
- <20180219111136.jpv4wtcm6h2hfwac@oak.lan>
- <CAFqH_51EGNzMx76WrjEr9Ss7QoU8FSHAhUf2OeencUC-XXtSWQ@mail.gmail.com>
+From: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Subject: Re: [PATCH] video: console: kconfig: Remove AVR32 dep. from
+ VGA_CONSOLE
+Date: Mon, 12 Mar 2018 16:01:45 +0100
+Message-ID: <12268684.R5uc9OLfbC@amdc3058>
+References: <20180206120825.GF5681@sirena.org.uk>
+        <CGME20180206225334epcas4p3f1bf4f40c1fbc4bed23dd79445df1b3a@epcas4p3.samsung.com>
+        <20180206225254.20036-1-ulfalizer@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAFqH_51EGNzMx76WrjEr9Ss7QoU8FSHAhUf2OeencUC-XXtSWQ@mail.gmail.com>
+In-reply-to: <20180206225254.20036-1-ulfalizer@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Enric Balletbo Serra <eballetbo@gmail.com>
-Cc: Daniel Thompson <daniel.thompson@linaro.org>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Jingoo Han <jingoohan1@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>, Heiko Stuebner <heiko@sntech.de>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, linux-fbdev@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>, Guenter Roeck <groeck@chromium.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, kernel@collabora.com, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>
+To: Ulf Magnusson <ulfalizer@gmail.com>
+Cc: broonie@kernel.org, linux-kernel@vger.kernel.org, clabbe.montjoie@gmail.com, viresh.kumar@linaro.org, matthias.bgg@gmail.com, linux-pwm@vger.kernel.org, thierry.reding@gmail.com, daniel.vetter@ffwll.ch, christophe.leroy@c-s.fr, seanpaul@chromium.org, linux-spi@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
-FAO Thierry,
-
-> oh, devicetree mailing list is not added, sorry, so cc'ing ...
+On Tuesday, February 06, 2018 11:52:46 PM Ulf Magnusson wrote:
+> The AVR32 symbol was removed in commit 26202873bb51 ("avr32: remove
+> support for AVR32 architecture").
 > 
-> 2018-02-19 12:11 GMT+01:00 Daniel Thompson <daniel.thompson@linaro.org>:
-> > On Fri, Feb 16, 2018 at 06:40:31PM +0100, Enric Balletbo i Serra wrote:
-> >> Hardware needs a delay between setting an initial (non-zero) PWM and
-> >> enabling the backlight using GPIO. The post-pwm-on-delay-ms specifies
-> >> this delay in milli seconds. Hardware also needs a delay between disabing
-> >> the backlight using GPIO and setting PWM value to 0. The pwm-off-delay-ms
-> >> is this delay in milli seconds.
-> >>
-> >> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> >> Acked-by: Pavel Machek <pavel@ucw.cz>
-> >
-> > Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
-> >
-> 
-> Lee, I guess that after Daniel ack the only ack missing here is one
-> from Rob Herring?
+> Signed-off-by: Ulf Magnusson <ulfalizer@gmail.com>
 
-I'd also like an ACK from the PWM Maintainer if possible.
+Patch queued for 4.17, thanks.
 
-> Rob, if you have a chance to look at this I'd appreciate.
-
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Best regards,
+--
+Bartlomiej Zolnierkiewicz
+Samsung R&D Institute Poland
+Samsung Electronics
