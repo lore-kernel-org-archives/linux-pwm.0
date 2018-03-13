@@ -1,63 +1,91 @@
-Return-Path: <yoshihiro.shimoda.uh@renesas.com>
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: RE: [PATCH 2/2] pwm: rcar: add suspend/resume support
-Date: Tue, 13 Mar 2018 07:04:06 +0000
-Message-ID: <TY1PR06MB0992451635511B45D8D7C345D8D20@TY1PR06MB0992.apcprd06.prod.outlook.com>
+Return-Path: <geert.uytterhoeven@gmail.com>
+MIME-Version: 1.0
+Sender: geert.uytterhoeven@gmail.com
+In-Reply-To: <TY1PR06MB0992451635511B45D8D7C345D8D20@TY1PR06MB0992.apcprd06.prod.outlook.com>
 References: <1520596498-4801-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
  <1520596498-4801-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <CAMuHMdV-vutHutGJnOhqJ14_+-ig2jzFakeWzOxBy+5F6XRFXw@mail.gmail.com>
-In-Reply-To: <CAMuHMdV-vutHutGJnOhqJ14_+-ig2jzFakeWzOxBy+5F6XRFXw@mail.gmail.com>
-Content-Language: ja-JP
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+ <CAMuHMdV-vutHutGJnOhqJ14_+-ig2jzFakeWzOxBy+5F6XRFXw@mail.gmail.com> <TY1PR06MB0992451635511B45D8D7C345D8D20@TY1PR06MB0992.apcprd06.prod.outlook.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 13 Mar 2018 08:31:58 +0100
+Message-ID: <CAMuHMdXoJNZBcgTvryd0a7FfAngR_dYBwxV5GewwFAuCHSuspg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] pwm: rcar: add suspend/resume support
+Content-Type: text/plain; charset="UTF-8"
 List-ID: <linux-pwm.vger.kernel.org>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 Cc: Thierry Reding <thierry.reding@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 
-SGkgR2VlcnQtc2FuLA0KDQo+IEZyb206IEdlZXJ0IFV5dHRlcmhvZXZlbiwgU2VudDogRnJpZGF5
-LCBNYXJjaCA5LCAyMDE4IDk6NTMgUE0NCj4gDQo+IEhpIFNoaW1vZGEtc2FuLA0KPiANCj4gT24g
-RnJpLCBNYXIgOSwgMjAxOCBhdCAxMjo1NCBQTSwgWW9zaGloaXJvIFNoaW1vZGENCj4gPHlvc2hp
-aGlyby5zaGltb2RhLnVoQHJlbmVzYXMuY29tPiB3cm90ZToNCj4gPiBUaGlzIHBhdGNoIGFkZHMg
-c3VzcGVuZC9yZXN1bWUgc3VwcG9ydCBmb3IgUmVuZXNhcyBQV00gZHJpdmVyLg0KPiA+DQo+ID4g
-U2lnbmVkLW9mZi1ieTogWW9zaGloaXJvIFNoaW1vZGEgPHlvc2hpaGlyby5zaGltb2RhLnVoQHJl
-bmVzYXMuY29tPg0KPiANCj4gVGhhbmtzIGZvciB5b3VyIHBhdGNoIQ0KDQpUaGFuayB5b3UgZm9y
-IHlvdXIgcmV2aWV3IQ0KDQo+ID4gLS0tIGEvZHJpdmVycy9wd20vcHdtLXJjYXIuYw0KPiA+ICsr
-KyBiL2RyaXZlcnMvcHdtL3B3bS1yY2FyLmMNCj4gPiBAQCAtMjU0LDExICsyNTQsMzggQEAgc3Rh
-dGljIGludCByY2FyX3B3bV9yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4g
-PiAgfTsNCj4gPiAgTU9EVUxFX0RFVklDRV9UQUJMRShvZiwgcmNhcl9wd21fb2ZfdGFibGUpOw0K
-PiA+DQo+ID4gKyNpZmRlZiBDT05GSUdfUE1fU0xFRVANCj4gPiArc3RhdGljIGludCByY2FyX3B3
-bV9zdXNwZW5kKHN0cnVjdCBkZXZpY2UgKmRldikNCj4gPiArew0KPiA+ICsgICAgICAgcG1fcnVu
-dGltZV9wdXQoZGV2KTsNCj4gPiArDQo+ID4gKyAgICAgICByZXR1cm4gMDsNCj4gPiArfQ0KPiA+
-ICsNCj4gPiArc3RhdGljIGludCByY2FyX3B3bV9yZXN1bWUoc3RydWN0IGRldmljZSAqZGV2KQ0K
-PiA+ICt7DQo+ID4gKyAgICAgICBzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2ID0gdG9fcGxh
-dGZvcm1fZGV2aWNlKGRldik7DQo+ID4gKyAgICAgICBzdHJ1Y3QgcmNhcl9wd21fY2hpcCAqcmNh
-cl9wd20gPSBwbGF0Zm9ybV9nZXRfZHJ2ZGF0YShwZGV2KTsNCj4gPiArICAgICAgIHN0cnVjdCBw
-d21fY2hpcCAqY2hpcCA9ICZyY2FyX3B3bS0+Y2hpcDsNCj4gPiArICAgICAgIHN0cnVjdCBwd21f
-ZGV2aWNlICpwd20gPSAmY2hpcC0+cHdtc1swXTsNCj4gPiArDQo+ID4gKyAgICAgICBwbV9ydW50
-aW1lX2dldF9zeW5jKGRldik7DQo+IA0KPiBUaGlzIGVuYWJsZXMgdGhlIG1vZHVsZSBjbG9jayB1
-bmNvbmRpdGlvbmFsbHksIHNvIHlvdSBjYW4gcmVzdG9yZSB0aGUNCj4gcmVnaXN0ZXIgdmFsdWVz
-IGJlbG93Li4uDQo+IA0KPiA+ICsgICAgICAgcmNhcl9wd21fY29uZmlnKGNoaXAsIHB3bSwgcHdt
-LT5zdGF0ZS5kdXR5X2N5Y2xlLCBwd20tPnN0YXRlLnBlcmlvZCk7DQo+ID4gKyAgICAgICBpZiAo
-cHdtX2lzX2VuYWJsZWQocHdtKSkNCj4gPiArICAgICAgICAgICAgICAgcmNhcl9wd21fZW5hYmxl
-KGNoaXAsIHB3bSk7DQo+IA0KPiAuLi4gYnV0IHNob3VsZG4ndCB5b3UgZGlzYWJsZSB0aGUgY2xv
-Y2sgYWdhaW4gaWYgdGhlIFBXTSBpcyBub3QgaW4gdXNlLA0KPiBsaWtlIGJlbG93Pw0KPiANCj4g
-ICAgICAgICBlbHNlDQo+ICAgICAgICAgICAgICAgICBwbV9ydW50aW1lX3B1dChkZXYpOw0KDQpU
-aGFuayB5b3UgZm9yIHRoZSBwb2ludGluZyBvdXQuDQpJIHJlYWxpemUgdGhhdCB0aGlzIHN1c3Bl
-bmQvcmVzdW1lIGZ1bmN0aW9uIHNob3VsZCBjaGVjayBQV01GX1JFUVVFU1RFRCBjb25kaXRpb24N
-CmJlY2F1c2UgdGhpcyBkcml2ZXIgZW5hYmxlcyB0aGUgY2xvY2sgYWZ0ZXIgdGhlIC5yZXF1ZXN0
-KHJjYXJfcHdtX3JlcXVlc3QpIHdhcyBjYWxsZWQuDQpTbywgSSB3aWxsIGZpeCB0aGlzIHBhdGNo
-IGluIHYyLg0KDQpBbHNvLCByZWR1Y2luZyBwb3dlciBwb2ludCBvZiB2aWV3LCB0aGlzIGRyaXZl
-ciBzaG91bGQgY2FsbCBub3QgcG1fcnVudGltZV9nZXRfc3luYy9wdXQoKQ0KaW4gX3JlcXVlc3Qv
-X2ZyZWUoKS4gQnV0LCBJIHdvdWxkIGxpa2UgdG8gaW1wbGVtZW50IHN1Y2ggY29kZSBhcyBhIG5l
-eHQgc3RlcCA6KQ0KDQpCZXN0IHJlZ2FyZHMsDQpZb3NoaWhpcm8gU2hpbW9kYQ0KDQo+IExpa2V3
-aXNlLCBJIHRoaW5rIHRoZSBjYWxsIHRvICJwbV9ydW50aW1lX3B1dChkZXYpIiBpbiByY2FyX3B3
-bV9zdXNwZW5kKCkNCj4gc2hvdWxkIGJlIHByb3RlY3RlZCBieSBhIHB3bV9pc19lbmFibGVkKHB3
-bSkgY2hlY2suDQo+IA0KPiA+ICsgICAgICAgcmV0dXJuIDA7DQo+ID4gK30NCj4gDQo+IEdye29l
-dGplLGVldGluZ31zLA0KPiANCj4gICAgICAgICAgICAgICAgICAgICAgICAgR2VlcnQNCj4gDQo+
-IC0tDQo+IEdlZXJ0IFV5dHRlcmhvZXZlbiAtLSBUaGVyZSdzIGxvdHMgb2YgTGludXggYmV5b25k
-IGlhMzIgLS0gZ2VlcnRAbGludXgtbTY4ay5vcmcNCj4gDQo+IEluIHBlcnNvbmFsIGNvbnZlcnNh
-dGlvbnMgd2l0aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNhbGwgbXlzZWxmIGEgaGFja2VyLiBCdXQN
-Cj4gd2hlbiBJJ20gdGFsa2luZyB0byBqb3VybmFsaXN0cyBJIGp1c3Qgc2F5ICJwcm9ncmFtbWVy
-IiBvciBzb21ldGhpbmcgbGlrZSB0aGF0Lg0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIC0tIExpbnVzIFRvcnZhbGRzDQo=
+Hi Shimoda-san,
+
+On Tue, Mar 13, 2018 at 8:04 AM, Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+>> From: Geert Uytterhoeven, Sent: Friday, March 9, 2018 9:53 PM
+>> On Fri, Mar 9, 2018 at 12:54 PM, Yoshihiro Shimoda
+>> <yoshihiro.shimoda.uh@renesas.com> wrote:
+>> > This patch adds suspend/resume support for Renesas PWM driver.
+>> >
+>> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+>>
+>> Thanks for your patch!
+>
+> Thank you for your review!
+>
+>> > --- a/drivers/pwm/pwm-rcar.c
+>> > +++ b/drivers/pwm/pwm-rcar.c
+>> > @@ -254,11 +254,38 @@ static int rcar_pwm_remove(struct platform_device *pdev)
+>> >  };
+>> >  MODULE_DEVICE_TABLE(of, rcar_pwm_of_table);
+>> >
+>> > +#ifdef CONFIG_PM_SLEEP
+>> > +static int rcar_pwm_suspend(struct device *dev)
+>> > +{
+>> > +       pm_runtime_put(dev);
+>> > +
+>> > +       return 0;
+>> > +}
+>> > +
+>> > +static int rcar_pwm_resume(struct device *dev)
+>> > +{
+>> > +       struct platform_device *pdev = to_platform_device(dev);
+>> > +       struct rcar_pwm_chip *rcar_pwm = platform_get_drvdata(pdev);
+>> > +       struct pwm_chip *chip = &rcar_pwm->chip;
+>> > +       struct pwm_device *pwm = &chip->pwms[0];
+>> > +
+>> > +       pm_runtime_get_sync(dev);
+>>
+>> This enables the module clock unconditionally, so you can restore the
+>> register values below...
+>>
+>> > +       rcar_pwm_config(chip, pwm, pwm->state.duty_cycle, pwm->state.period);
+>> > +       if (pwm_is_enabled(pwm))
+>> > +               rcar_pwm_enable(chip, pwm);
+>>
+>> ... but shouldn't you disable the clock again if the PWM is not in use,
+>> like below?
+>>
+>>         else
+>>                 pm_runtime_put(dev);
+>
+> Thank you for the pointing out.
+> I realize that this suspend/resume function should check PWMF_REQUESTED condition
+> because this driver enables the clock after the .request(rcar_pwm_request) was called.
+> So, I will fix this patch in v2.
+
+OK.
+
+> Also, reducing power point of view, this driver should call not pm_runtime_get_sync/put()
+> in _request/_free(). But, I would like to implement such code as a next step :)
+
+That makes sense.  I was already wondering whether those are the best
+locations to call the pm_runtime_*() functions, but I'm not sufficiently
+familiar with the PWM subsystem.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
