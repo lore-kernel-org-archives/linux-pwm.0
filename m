@@ -1,113 +1,90 @@
-From: Maxime Ripard <maxime.ripard@bootlin.com>
-Subject: Re: [PATCH 3/5] pwm: sun4i: Introduce (optional) reset support
-Date: Tue, 13 Mar 2018 16:32:35 +0100
-Message-ID: <20180313153235.zyuelfcmayc6s73z@flea>
-References: <20180307020719.6675-1-andre.przywara@arm.com>
- <20180307020719.6675-4-andre.przywara@arm.com>
- <20180307074516.dbak7ztkua4p7mr5@flea.lan>
- <f001134a-987d-2491-a22e-d1d634f7b024@arm.com>
+From: Alvaro Gamez Machado <alvaro.gamez@hazent.com>
+Subject: Re: [RFC] pwm: Add Xilinx AXI Timer in PWM mode support
+Date: Wed, 14 Mar 2018 11:35:38 +0100
+Message-ID: <20180314103536.GA8772@salem.gmr.ssr.upm.es>
+References: <20170627100522.30447-1-alvaro.gamez@hazent.com>
+ <20170706091344.GO16144@ulmo.fritz.box>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4868719150356676472=="
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <f001134a-987d-2491-a22e-d1d634f7b024@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-sunxi@googlegroups.com, Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170706091344.GO16144@ulmo.fritz.box>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
+On Thu, Jul 06, 2017 at 11:13:44AM +0200, Thierry Reding wrote:
+> On Tue, Jun 27, 2017 at 12:05:22PM +0200, Alvaro Gamez Machado wrote:
+> > a) Changing "xlnx,axi-timer-2.0" compatible string for this device to something
+> >    different like xlnx,axi-pwm-2.0?
+> 
+> I don't see a xlnx,axi-timer-2.0 compatible string defined in the
+> kernel. There's an xlnx,xps-timer-1.00.a used in Microblaze and PowerPC,
+> but it might not be related.
+ 
 
---===============4868719150356676472==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="brldrkr34ipq6igk"
-Content-Disposition: inline
-
-
---brldrkr34ipq6igk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Mar 13, 2018 at 02:05:34PM +0000, Andre Przywara wrote:
-> Hi Maxime,
->=20
-> thanks for looking into this and for the Acks!
->=20
-> On 07/03/18 07:45, Maxime Ripard wrote:
-> > On Wed, Mar 07, 2018 at 02:07:17AM +0000, Andre Przywara wrote:
-> >> While the PWM IP in the Allwinner H6 SoC is fully compatible to those
-> >> used in older SoCs (H3, A64), it features a dedicated reset line which
-> >> needs to be de-asserted.
-> >> Add support for an optional "resets" DT property in our pwm-sun4i probe
-> >> routine, and assert and de-assert the reset line, where needed.
-> >> This allows to enable PWM support on the H6.
-> >=20
-> > This isn't optional then. It's mandatory on the H6, and unneeded on
-> > everything else. This is what we should have.
->=20
-> So are you aiming at:
-> 	if (of_device_is_compatible(np, "allwinner,sun50i-h6-pwm")) {
-> 		... devm_reset_control_get() ...
->=20
-> I guess this is preferable over coding something based on a new member
-> in struct sun4i_pwm_data?
-
-It's basically a long term vs short term debate :)
-
-If we're thinking short term, then yes, sure it would make
-sense. However, if we start having more and more SoCs, we'll have a
-longer and longer condition.
-
-Since we already have a structure available, I'd still prefer to go
-for the structure flag. This is faster (no string comparison), it'll
-be easier to extend, and the patch size is pretty much the same.
-
-Maxime
-
---=20
-Maxime Ripard, Bootlin (formerly Free Electrons)
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
---brldrkr34ipq6igk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEE0VqZU19dR2zEVaqr0rTAlCFNr3QFAlqn7xIACgkQ0rTAlCFN
-r3SvEQ//U42v6hNTxLugEFv1QTsbpIwgqK9nr/AvEEIBZvoUVjtfh+WA7qNra0tF
-GlJHvYIF/U+y3UHgUtMfRy9u7ElVTtzB3mdO+L26SW3MTaHyAwlmR58zBj8D1uO5
-uNoVcWDPwBm9GvgUPntiKPAEM2PNh39VMYheadCQoeDc1YTCBpxxkzcN1Wpsg3x6
-qBHoNnbrm32OxzTT0RY7FHeyNfIT+kSdVejeV2ycJDa5OVScswO0gdJ1gXmcLlru
-SXcftKF3HcBQj+2YkUTDPTNMN6J6nM5wfJh1mIlg6kjzrLuLS2x2wRHrWdEsfl/f
-kc9/yfCu4EhiI9N30ZKKNwl2iN5YTI6ziIUr9cVozC8iu13nj0V0p+eWBVIvq1So
-v7xE9t4vGzDfqWShf8Fns0FHKe4a4jrpOxKct7gzKbSTDnV036kzBEVc0CCG+Qlg
-8uIj9MLRGzP1sYTegzF5+BqBnEbR9A4b8pw4rg2QZf5NSgJd3LqWli63MqxVTKtP
-Sx2YnjSH0dyZFxfYS+E5cy60Rb8scCzJS1gzQbadVkJcO2JZuJHyD/dasdV8JnG6
-xb+1U+53yyeO5QYgxmhthKJrQkUFNvEJW1QufNt8dCyf0NT4U8g0shXn9fb7Jc89
-kxvFXKb2HkLaOoUziFPEyUSC5+yoPN7vvSOmbWDt6uBW9fRSJKk=
-=0o2Y
------END PGP SIGNATURE-----
-
---brldrkr34ipq6igk--
+Yes, that was a mistake of mine.  I was talking about xlnx,xps-timer-1.00.a. 
+XPS was the previous name of some Xilinx utility, and after they pushed for
+the axi protocol, they started renaming lots of IP Cores, but the
+compatibility strings were kept even in their own software; so xps-timer is
+basically the same as axi-timer, thus my mistake when writing from memory
+instead of looking at the code.
 
 
---===============4868719150356676472==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+> > b) Is there a way to make arch/microblaze/kernel/timer.c take full posession
+> >    of its axi timer device so that any further driver can't access it?
+> 
+> > I've tried option (a) and works flawlessly as far as I can tell (tested
+> > through /sys interface), but I think option (b) would be better, if it's
+> > something that can be done.
+> 
+> I think (a) is certainly the cleaner approach because it lets you select
+> the mode via DT. However, it's probably best to get DT maintainers'
+> opinion on this. Cc'ing them. Quoting in full for context.
+> 
+> As you point out, using a completely different compatible string is the
+> easiest way to side-step the problem. However, it's also "wrong" in that
+> you're still dealing with the same hardware, and consequently should be
+> identified by the same compatible string.
+> 
+> One possible option I can think of would be to define a somewhat generic
+> compatible string to identify the block as a whole and require a second
+> compatible string to specify what mode to use the block in.
+> 
+> Another alternative would be to mark the node as PWM controller with an
+> additional property (e.g. pwm-controller) and use that as the selector
+> for the mode. The timer code would have to be modified to abort if it
+> encounters a node marked with this property, and similarily the PWM
+> driver would abort if the property is absent.
 
-_______________________________________________
-linux-arm-kernel mailing list
-linux-arm-kernel@lists.infradead.org
-http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+I've given this a thought and came up with the idea of adding an attribute
+to the device tree -something like say xlnx,pwm-outputs- which would take
+the value of 1 for timers instantiated with the PWM capability, as it is
+optional.
 
---===============4868719150356676472==--
+This way, timer.c could check that xlnx,pwm-outputs equals 0 or is
+undefined, so we keep old device trees compatible, whereas pwm-axi-timer.c
+checks if this attribute is equal to 1. Even if it's not something that is
+probable to happen, this would also leave the door open to supporting this
+future versions of this IP core providing more than one pwm output.
+
+Problem is, there should probably be a timer-axi.c driver under clocksource,
+because the number of timers available on a given Microblaze/Zynq design is
+unconstrained, and it'd probably be good to aim for full compatibility with
+this small chunk of hardware.
+
+The more I think about this the less sure I am about which is the best way
+to go... it wouldn't make much sense having three pieces of code talking to
+the same hardware, or to different instances of the same IP core
+(arch/microblaze/kernel/timer.c, pwm/pwm-axi-timer.c and
+clocksource/timer-axi.c).
+ 
+> Anyway, let's see what the device tree maintainers think about it.
+
+They haven't manifested themselves, but I think I should have pushed this a
+little bit earlier, sorry for the delay!
+
+Best regards
+-- 
+Alvaro G. M.
