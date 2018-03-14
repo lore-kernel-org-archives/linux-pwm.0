@@ -1,90 +1,101 @@
-From: Alvaro Gamez Machado <alvaro.gamez@hazent.com>
-Subject: Re: [RFC] pwm: Add Xilinx AXI Timer in PWM mode support
-Date: Wed, 14 Mar 2018 11:35:38 +0100
-Message-ID: <20180314103536.GA8772@salem.gmr.ssr.upm.es>
-References: <20170627100522.30447-1-alvaro.gamez@hazent.com>
- <20170706091344.GO16144@ulmo.fritz.box>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 00/16] remove eight obsolete architectures
+Date: Wed, 14 Mar 2018 15:34:59 +0100
+Message-ID: <20180314143529.1456168-1-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170706091344.GO16144@ulmo.fritz.box>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: linux-arch@vger.kernel.org
+Cc: linux-rtc@vger.kernel.org, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-watchdog@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org, netdev@vger.kernel.org, linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-spi@vger.kernel.org, linux-block@vger.kernel.org, linux-ide@vger.kernel.org, linux-input@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Thu, Jul 06, 2017 at 11:13:44AM +0200, Thierry Reding wrote:
-> On Tue, Jun 27, 2017 at 12:05:22PM +0200, Alvaro Gamez Machado wrote:
-> > a) Changing "xlnx,axi-timer-2.0" compatible string for this device to something
-> >    different like xlnx,axi-pwm-2.0?
-> 
-> I don't see a xlnx,axi-timer-2.0 compatible string defined in the
-> kernel. There's an xlnx,xps-timer-1.00.a used in Microblaze and PowerPC,
-> but it might not be related.
- 
-
-Yes, that was a mistake of mine.  I was talking about xlnx,xps-timer-1.00.a. 
-XPS was the previous name of some Xilinx utility, and after they pushed for
-the axi protocol, they started renaming lots of IP Cores, but the
-compatibility strings were kept even in their own software; so xps-timer is
-basically the same as axi-timer, thus my mistake when writing from memory
-instead of looking at the code.
-
-
-> > b) Is there a way to make arch/microblaze/kernel/timer.c take full posession
-> >    of its axi timer device so that any further driver can't access it?
-> 
-> > I've tried option (a) and works flawlessly as far as I can tell (tested
-> > through /sys interface), but I think option (b) would be better, if it's
-> > something that can be done.
-> 
-> I think (a) is certainly the cleaner approach because it lets you select
-> the mode via DT. However, it's probably best to get DT maintainers'
-> opinion on this. Cc'ing them. Quoting in full for context.
-> 
-> As you point out, using a completely different compatible string is the
-> easiest way to side-step the problem. However, it's also "wrong" in that
-> you're still dealing with the same hardware, and consequently should be
-> identified by the same compatible string.
-> 
-> One possible option I can think of would be to define a somewhat generic
-> compatible string to identify the block as a whole and require a second
-> compatible string to specify what mode to use the block in.
-> 
-> Another alternative would be to mark the node as PWM controller with an
-> additional property (e.g. pwm-controller) and use that as the selector
-> for the mode. The timer code would have to be modified to abort if it
-> encounters a node marked with this property, and similarily the PWM
-> driver would abort if the property is absent.
-
-I've given this a thought and came up with the idea of adding an attribute
-to the device tree -something like say xlnx,pwm-outputs- which would take
-the value of 1 for timers instantiated with the PWM capability, as it is
-optional.
-
-This way, timer.c could check that xlnx,pwm-outputs equals 0 or is
-undefined, so we keep old device trees compatible, whereas pwm-axi-timer.c
-checks if this attribute is equal to 1. Even if it's not something that is
-probable to happen, this would also leave the door open to supporting this
-future versions of this IP core providing more than one pwm output.
-
-Problem is, there should probably be a timer-axi.c driver under clocksource,
-because the number of timers available on a given Microblaze/Zynq design is
-unconstrained, and it'd probably be good to aim for full compatibility with
-this small chunk of hardware.
-
-The more I think about this the less sure I am about which is the best way
-to go... it wouldn't make much sense having three pieces of code talking to
-the same hardware, or to different instances of the same IP core
-(arch/microblaze/kernel/timer.c, pwm/pwm-axi-timer.c and
-clocksource/timer-axi.c).
- 
-> Anyway, let's see what the device tree maintainers think about it.
-
-They haven't manifested themselves, but I think I should have pushed this a
-little bit earlier, sorry for the delay!
-
-Best regards
--- 
-Alvaro G. M.
+SGVyZSBpcyB0aGUgY29sbGVjdGlvbiBvZiBwYXRjaGVzIEkgaGF2ZSBhcHBsaWVkIHRvIG15ICdh
+c20tZ2VuZXJpYycgdHJlZQpvbiB0b3Agb2YgdGhlICdtZXRhZycgcmVtb3ZhbC4gVGhpcyBkb2Vz
+IG5vdCBpbmNsdWRlIGFueSBvZiB0aGUgZGV2aWNlCmRyaXZlcnMsIEknbGwgc2VuZCB0aG9zZSBz
+ZXBhcmF0ZWx5IHRvIGEgc29tZW9uZSBkaWZmZXJlbnQgbGlzdCBvZiBwZW9wbGUuCgpUaGUgcmVt
+b3ZhbCBjYW1lIG91dCBvZiBhIGRpc2N1c3Npb24gdGhhdCBpcyBub3cgZG9jdW1lbnRlZCBhdApo
+dHRwczovL2x3bi5uZXQvQXJ0aWNsZXMvNzQ4MDc0LwoKRm9sbG93aW5nIHVwIGZyb20gdGhlIHN0
+YXRlIGRlc2NyaWJlZCB0aGVyZSwgSSBlbmRlZCB1cCByZW1vdmluZyB0aGUKbW4xMDMwMCwgdGls
+ZSwgYmxhY2tmaW4gYW5kIGNyaXMgYXJjaGl0ZWN0dXJlcyBkaXJlY3RseSwgcmF0aGVyIHRoYW4K
+d2FpdGluZywgYWZ0ZXIgY29uc3VsdGluZyB3aXRoIHRoZSByZXNwZWN0aXZlIG1haW50YWluZXJz
+LgoKSG93ZXZlciwgdGhlIHVuaWNvcmUzMiBhcmNoaXRlY3R1cmUgaXMgbm8gbG9uZ2VyIHBhcnQg
+b2YgdGhlIHJlbW92YWwsCmFmdGVyIGl0cyBtYWludGFpbmVyIFh1ZXRhbyBHdWFuIHNhaWQgdGhh
+dCB0aGUgcG9ydCBpcyBzdGlsbCBhY3RpdmVseQpiZWluZyB1c2VkIGFuZCB0aGF0IGhlIGludGVu
+ZHMgdG8ga2VlcCB3b3JraW5nIG9uIGl0LCBhbmQgdGhhdCBoZSB3aWxsCnRyeSB0byBwcm92aWRl
+IHVwZGF0ZWQgdG9vbGNoYWluIHNvdXJjZXMuCgpJbiB0aGUgZW5kLCBpdCBzZWVtcyB0aGF0IHdo
+aWxlIHRoZSBlaWdodCBhcmNoaXRlY3R1cmVzIGFyZSBleHRyZW1lbHkKZGlmZmVyZW50LCB0aGV5
+IGFsbCBzdWZmZXJlZCB0aGUgc2FtZSBmYXRlOiBUaGVyZSB3YXMgb25lIGNvbXBhbnkgaW4KY2hh
+cmdlIG9mIGFuIFNvQyBsaW5lLCBhIENQVSBtaWNyb2FyY2hpdGVjdHVyZSBhbmQgYSBzb2Z0d2Fy
+ZSBlY29zeXN0ZW0sCndoaWNoIHdhcyBtb3JlIGNvc3RseSB0aGFuIGxpY2Vuc2luZyBuZXdlciBv
+ZmYtdGhlLXNoZWxmIENQVSBjb3JlcyBmcm9tCmEgdGhpcmQgcGFydHkgKHR5cGljYWxseSBBUk0s
+IE1JUFMsIG9yIFJJU0MtVikuIEl0IHNlZW1zIHRoYXQgYWxsIHRoZQpTb0MgcHJvZHVjdCBsaW5l
+cyBhcmUgc3RpbGwgYXJvdW5kLCBidXQgaGF2ZSBub3QgdXNlZCB0aGUgY3VzdG9tIENQVQphcmNo
+aXRlY3R1cmVzIGZvciBzZXZlcmFsIHllYXJzIGF0IHRoaXMgcG9pbnQuCgogICAgICBBcm5kCgpB
+cm5kIEJlcmdtYW5uICgxNCk6CiAgYXJjaDogcmVtb3ZlIGZydiBwb3J0CiAgYXJjaDogcmVtb3Zl
+IG0zMnIgcG9ydAogIGFyY2g6IHJlbW92ZSBzY29yZSBwb3J0CiAgYXJjaDogcmVtb3ZlIGJsYWNr
+ZmluIHBvcnQKICBhcmNoOiByZW1vdmUgdGlsZSBwb3J0CiAgcHJvY2ZzOiByZW1vdmUgQ09ORklH
+X0hBUkRXQUxMIGRlcGVuZGVuY3kKICBtbTogcmVtb3ZlIGJsYWNrZmluIE1QVSBzdXBwb3J0CiAg
+bW06IHJlbW92ZSBvYnNvbGV0ZSBhbGxvY19yZW1hcCgpCiAgdHJlZXdpZGU6IHNpbXBsaWZ5IEtj
+b25maWcgZGVwZW5kZW5jaWVzIGZvciByZW1vdmVkIGFyY2hzCiAgYXNtLWdlbmVyaWM6IHNpZ2lu
+Zm86IHJlbW92ZSBvYnNvbGV0ZSAjaWZkZWZzCiAgRG9jdW1lbnRhdGlvbjogYXJjaC1zdXBwb3J0
+OiByZW1vdmUgb2Jzb2xldGUgYXJjaGl0ZWN0dXJlcwogIGFzbS1nZW5lcmljOiBjbGVhbiB1cCBh
+c20vdW5pc3RkLmgKICByZWNvcmRtY291bnQucGw6IGRyb3AgYmxhY2tpbiBhbmQgdGlsZSBzdXBw
+b3J0CiAga3Rlc3Q6IHJlbW92ZSBvYnNvbGV0ZSBhcmNoaXRlY3R1cmVzCgpEYXZpZCBIb3dlbGxz
+ICgxKToKICBtbjEwMzAwOiBSZW1vdmUgdGhlIGFyY2hpdGVjdHVyZQoKSmVzcGVyIE5pbHNzb24g
+KDEpOgogIENSSVM6IERyb3Agc3VwcG9ydCBmb3IgdGhlIENSSVMgcG9ydAoKRGlyc3RhdCBvbmx5
+IChmdWxsIGRpZmZzdGF0IGlzIG92ZXIgMTAwS0IpOgoKICAgNi4zJSBhcmNoL2JsYWNrZmluL21h
+Y2gtYmY1NDgvaW5jbHVkZS9tYWNoLwogICA0LjUlIGFyY2gvYmxhY2tmaW4vbWFjaC1iZjYwOS9p
+bmNsdWRlL21hY2gvCiAgMjYuMyUgYXJjaC9ibGFja2Zpbi8KICAgNC4xJSBhcmNoL2NyaXMvYXJj
+aC12MzIvCiAgIDUuNiUgYXJjaC9jcmlzL2luY2x1ZGUvYXJjaC12MzIvYXJjaC9od3JlZ3MvaW9w
+LwogICA0LjElIGFyY2gvY3Jpcy9pbmNsdWRlL2FyY2gtdjMyL21hY2gtYTMvbWFjaC9od3JlZ3Mv
+CiAgIDQuNyUgYXJjaC9jcmlzL2luY2x1ZGUvYXJjaC12MzIvCiAgIDcuOCUgYXJjaC9jcmlzLwog
+ICA1LjYlIGFyY2gvZnJ2LwogICA1LjUlIGFyY2gvbTMyci8KICAgNy4wJSBhcmNoL21uMTAzMDAv
+CiAgIDcuNiUgYXJjaC90aWxlL2luY2x1ZGUvCiAgIDYuNCUgYXJjaC90aWxlL2tlcm5lbC8KICAg
+MC4wJSBEb2N1bWVudGF0aW9uL2FkbWluLWd1aWRlLwogICAwLjAlIERvY3VtZW50YXRpb24vYmxh
+Y2tmaW4vCiAgIDAuMCUgRG9jdW1lbnRhdGlvbi9jcmlzLwogICAwLjAlIERvY3VtZW50YXRpb24v
+ZGV2aWNldHJlZS9iaW5kaW5ncy9jcmlzLwogICAwLjAlIERvY3VtZW50YXRpb24vZGV2aWNldHJl
+ZS9iaW5kaW5ncy9pbnRlcnJ1cHQtY29udHJvbGxlci8KICAgMi44JSBEb2N1bWVudGF0aW9uL2Zl
+YXR1cmVzLwogICAwLjUlIERvY3VtZW50YXRpb24vZnJ2LwogICAwLjAlIERvY3VtZW50YXRpb24v
+aW9jdGwvCiAgIDAuMCUgRG9jdW1lbnRhdGlvbi9tbjEwMzAwLwogICAwLjAlIERvY3VtZW50YXRp
+b24vCiAgIDAuMCUgYmxvY2svCiAgIDAuMCUgY3J5cHRvLwogICAwLjAlIGRyaXZlcnMvaWRlLwog
+ICAwLjAlIGRyaXZlcnMvaW5wdXQvam95c3RpY2svCiAgIDAuMCUgZHJpdmVycy9pc2RuL2hpc2F4
+LwogICAwLjAlIGRyaXZlcnMvbmV0L2V0aGVybmV0L2Rhdmljb20vCiAgIDAuMCUgZHJpdmVycy9u
+ZXQvZXRoZXJuZXQvc21zYy8KICAgMC4wJSBkcml2ZXJzL25ldC93aXJlbGVzcy9jaXNjby8KICAg
+MC4wJSBkcml2ZXJzL3BjaS8KICAgMC4wJSBkcml2ZXJzL3B3bS8KICAgMC4wJSBkcml2ZXJzL3J0
+Yy8KICAgMC4wJSBkcml2ZXJzL3NwaS8KICAgMC4wJSBkcml2ZXJzL3N0YWdpbmcvc3BlYWt1cC8K
+ICAgMC4wJSBkcml2ZXJzL3VzYi9tdXNiLwogICAwLjAlIGRyaXZlcnMvdmlkZW8vY29uc29sZS8K
+ICAgMC4wJSBkcml2ZXJzL3dhdGNoZG9nLwogICAwLjAlIGZzL21pbml4LwogICAwLjAlIGZzL3By
+b2MvCiAgIDAuMCUgZnMvCiAgIDAuMCUgaW5jbHVkZS9hc20tZ2VuZXJpYy8KICAgMC4wJSBpbmNs
+dWRlL2xpbnV4LwogICAwLjAlIGluY2x1ZGUvdWFwaS9hc20tZ2VuZXJpYy8KICAgMC4wJSBpbml0
+LwogICAwLjAlIGtlcm5lbC8KICAgMC4wJSBsaWIvCiAgIDAuMCUgbW0vCiAgIDAuMCUgc2FtcGxl
+cy9ibGFja2Zpbi8KICAgMC4wJSBzYW1wbGVzL2twcm9iZXMvCiAgIDAuMCUgc2FtcGxlcy8KICAg
+MC4wJSBzY3JpcHRzL21vZC8KICAgMC4wJSBzY3JpcHRzLwogICAwLjAlIHRvb2xzL2FyY2gvZnJ2
+L2luY2x1ZGUvdWFwaS9hc20vCiAgIDAuMCUgdG9vbHMvYXJjaC9tMzJyL2luY2x1ZGUvdWFwaS9h
+c20vCiAgIDAuMCUgdG9vbHMvYXJjaC9tbjEwMzAwL2luY2x1ZGUvdWFwaS9hc20vCiAgIDAuMCUg
+dG9vbHMvYXJjaC9zY29yZS9pbmNsdWRlL3VhcGkvYXNtLwogICAwLjAlIHRvb2xzL2FyY2gvdGls
+ZS9pbmNsdWRlL2FzbS8KICAgMC4wJSB0b29scy9hcmNoL3RpbGUvaW5jbHVkZS91YXBpL2FzbS8K
+ICAgMC4wJSB0b29scy9pbmNsdWRlL2FzbS1nZW5lcmljLwogICAwLjAlIHRvb2xzL3NjcmlwdHMv
+CiAgIDAuMCUgdG9vbHMvdGVzdGluZy9rdGVzdC9leGFtcGxlcy8KICAgMC4wJSB0b29scy90ZXN0
+aW5nL2t0ZXN0LwoKQ2M6IGxpbnV4LWRvY0B2Z2VyLmtlcm5lbC5vcmcKQ2M6IGxpbnV4LWtlcm5l
+bEB2Z2VyLmtlcm5lbC5vcmcKQ2M6IGxpbnV4LWJsb2NrQHZnZXIua2VybmVsLm9yZwpDYzogbGlu
+dXgtaWRlQHZnZXIua2VybmVsLm9yZwpDYzogbGludXgtaW5wdXRAdmdlci5rZXJuZWwub3JnCkNj
+OiBuZXRkZXZAdmdlci5rZXJuZWwub3JnCkNjOiBsaW51eC13aXJlbGVzc0B2Z2VyLmtlcm5lbC5v
+cmcKQ2M6IGxpbnV4LXB3bUB2Z2VyLmtlcm5lbC5vcmcKQ2M6IGxpbnV4LXJ0Y0B2Z2VyLmtlcm5l
+bC5vcmcKQ2M6IGxpbnV4LXNwaUB2Z2VyLmtlcm5lbC5vcmcKQ2M6IGxpbnV4LXVzYkB2Z2VyLmtl
+cm5lbC5vcmcKQ2M6IGRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKQ2M6IGxpbnV4LWZi
+ZGV2QHZnZXIua2VybmVsLm9yZwpDYzogbGludXgtd2F0Y2hkb2dAdmdlci5rZXJuZWwub3JnCkNj
+OiBsaW51eC1mc2RldmVsQHZnZXIua2VybmVsLm9yZwpDYzogbGludXgtYXJjaEB2Z2VyLmtlcm5l
+bC5vcmcKQ2M6IGxpbnV4LW1tQGt2YWNrLm9yZwpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0
+cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9kcmktZGV2ZWwK
