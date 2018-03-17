@@ -1,47 +1,75 @@
-From: afzal mohammed <afzal.mohd.ma@gmail.com>
-Subject: Re: [PATCH 00/16] remove eight obsolete architectures
-Date: Fri, 16 Mar 2018 10:20:16 +0530
-Message-ID: <20180316045016.GA7697@afzalpc>
-References: <20180314143529.1456168-1-arnd@arndb.de>
- <2929.1521106970@warthog.procyon.org.uk>
- <CAK8P3a10hBz7QYk5v5MfhVMPOwFnWYTn95WZp1HtHrd7-GQpRg@mail.gmail.com>
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 2/4] pwm: pwm-jz4740: Implement set_polarity
+Date: Sat, 17 Mar 2018 21:46:04 +0100
+Message-ID: <1521319566.2835.0@smtp.crapouillou.net>
+References: <20180106165843.3461-1-paul@crapouillou.net>
+        <20180106165843.3461-2-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a10hBz7QYk5v5MfhVMPOwFnWYTn95WZp1HtHrd7-GQpRg@mail.gmail.com>
+In-Reply-To: <20180106165843.3461-2-paul@crapouillou.net>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: David Howells <dhowells@redhat.com>, linux-arch <linux-arch@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>, linux-block <linux-block@vger.kernel.org>, IDE-ML <linux-ide@vger.kernel.org>, "open list:HID CORE LAYER" <linux-input@vger.kernel.org>, Networking <netdev@vger.kernel.org>, linux-wireless <linux-wireless@vger.kernel.org>, linux-pwm@vger.kernel.org, linux-rtc@vger.kernel.org, linux-spi <linux-spi@vger.kernel.org>, linux-usb@vger.kernel.org, dri-devel <dri-devel@lists.freedesktop.org>, linux-fbdev@vger.kernel.org, linux-watchdog@vger.kernel.org, Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 Hi,
 
-On Thu, Mar 15, 2018 at 10:56:48AM +0100, Arnd Bergmann wrote:
-> On Thu, Mar 15, 2018 at 10:42 AM, David Howells <dhowells@redhat.com> wrote:
+Could this patchset get a bit of love?
+I have other changes waiting for this patchset to get in, so it'd be=20
+great
+to see it in 4.17-rc1.
 
-> > Do we have anything left that still implements NOMMU?
+Thanks,
+-Paul
 
-Please don't kill !MMU.
-
-> Yes, plenty.
-
-> I've made an overview of the remaining architectures for my own reference[1].
-> The remaining NOMMU architectures are:
-> 
-> - arch/arm has ARMv7-M (Cortex-M microcontroller), which is actually
-> gaining traction
-
-ARMv7-R as well, also seems ARM is coming up with more !MMU's - v8-M,
-v8-R. In addition, though only of academic interest, ARM MMU capable
-platform's can run !MMU Linux.
-
-afzal
-
-> - arch/sh has an open-source J2 core that was added not that long ago,
-> it seems to
->   be the only SH compatible core that anyone is working on.
-> - arch/microblaze supports both MMU/NOMMU modes (most use an MMU)
-> - arch/m68k supports several NOMMU targets, both the coldfire SoCs and the
->   classic processors
-> - c6x has no MMU
+Le sam. 6 janv. 2018 =E0 17:58, Paul Cercueil <paul@crapouillou.net> a=20
+=E9crit :
+> This permits clients of this driver to specify the polarity to use for
+> their PWM channel.
+>=20
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> ---
+>  drivers/pwm/pwm-jz4740.c | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+>=20
+> diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
+> index 2e41ba213f39..6539c001fe32 100644
+> --- a/drivers/pwm/pwm-jz4740.c
+> +++ b/drivers/pwm/pwm-jz4740.c
+> @@ -130,10 +130,29 @@ static int jz4740_pwm_config(struct pwm_chip=20
+> *chip, struct pwm_device *pwm,
+>  	return 0;
+>  }
+>=20
+> +static int jz4740_pwm_set_polarity(struct pwm_chip *chip,
+> +		struct pwm_device *pwm, enum pwm_polarity polarity)
+> +{
+> +	uint32_t ctrl =3D jz4740_timer_get_ctrl(pwm->pwm);
+> +
+> +	switch (polarity) {
+> +	case PWM_POLARITY_NORMAL:
+> +		ctrl &=3D ~JZ_TIMER_CTRL_PWM_ACTIVE_LOW;
+> +		break;
+> +	case PWM_POLARITY_INVERSED:
+> +		ctrl |=3D JZ_TIMER_CTRL_PWM_ACTIVE_LOW;
+> +		break;
+> +	}
+> +
+> +	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
+> +	return 0;
+> +}
+> +
+>  static const struct pwm_ops jz4740_pwm_ops =3D {
+>  	.request =3D jz4740_pwm_request,
+>  	.free =3D jz4740_pwm_free,
+>  	.config =3D jz4740_pwm_config,
+> +	.set_polarity =3D jz4740_pwm_set_polarity,
+>  	.enable =3D jz4740_pwm_enable,
+>  	.disable =3D jz4740_pwm_disable,
+>  	.owner =3D THIS_MODULE,
+> --
+> 2.11.0
+>=20
+=
