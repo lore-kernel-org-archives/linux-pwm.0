@@ -1,75 +1,57 @@
-From: Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 2/4] pwm: pwm-jz4740: Implement set_polarity
-Date: Sat, 17 Mar 2018 21:46:04 +0100
-Message-ID: <1521319566.2835.0@smtp.crapouillou.net>
-References: <20180106165843.3461-1-paul@crapouillou.net>
-        <20180106165843.3461-2-paul@crapouillou.net>
+From: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v2 0/4] drivers: pwm: sun4i: Improve support for
+ A64 SoCs
+Date: Sun, 18 Mar 2018 23:28:43 +0000
+Message-ID: <20180318232847.14278-1-andre.przywara@arm.com>
+Reply-To: andre.przywara-5wv7dgnIgG8@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180106165843.3461-2-paul@crapouillou.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
-Cc: linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-sunxi+bncBDNZNK75ZIKRBPHMXPKQKGQEEKFQZLA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <rob.herring-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Hi,
+A rework addressing the comments. I dropped the H6 and the reset support
+for now, to simplify merging this series.
 
-Could this patchset get a bit of love?
-I have other changes waiting for this patchset to get in, so it'd be=20
-great
-to see it in 4.17-rc1.
+This series adds PWM support for new Allwinner SoCs. Actually the A64 PWM 
+is fully compatible with the A13 and H3 PWM IP, so the driver does not
+need any additional code. But I use this opportunity to provide some
+cleanup.
+Patch 1 removes a no longer used parameter from our per-SoC data structure,
+to simplify patch 2, which groups SoCs with a compatible PWM controller.
+Patch 3 adds the new compatible strings to the binding documentation
+(and just there, we expect to use "allwinner,sun5i-a13-pwm" as a fallback
+compatible string).
+The final patch 4 adds the respective PWM nodes to the A64 .dtsi.
+This eventually does not enable the PWM on any new board at the moment, as
+the PWM pins are either not usable (muxed with Ethernet) or exposed on
+a header pin not dedicated to PWM. But the Pinebook (and Teres I) should be
+able to use the PWM for the LCD backlights, plus users can enable the
+R_PWM on their Pine64 boards, if they like.
 
-Thanks,
--Paul
+Tested by manually enabling r_pwm on a Pine64-LTS.
 
-Le sam. 6 janv. 2018 =E0 17:58, Paul Cercueil <paul@crapouillou.net> a=20
-=E9crit :
-> This permits clients of this driver to specify the polarity to use for
-> their PWM channel.
->=20
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> ---
->  drivers/pwm/pwm-jz4740.c | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
->=20
-> diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-> index 2e41ba213f39..6539c001fe32 100644
-> --- a/drivers/pwm/pwm-jz4740.c
-> +++ b/drivers/pwm/pwm-jz4740.c
-> @@ -130,10 +130,29 @@ static int jz4740_pwm_config(struct pwm_chip=20
-> *chip, struct pwm_device *pwm,
->  	return 0;
->  }
->=20
-> +static int jz4740_pwm_set_polarity(struct pwm_chip *chip,
-> +		struct pwm_device *pwm, enum pwm_polarity polarity)
-> +{
-> +	uint32_t ctrl =3D jz4740_timer_get_ctrl(pwm->pwm);
-> +
-> +	switch (polarity) {
-> +	case PWM_POLARITY_NORMAL:
-> +		ctrl &=3D ~JZ_TIMER_CTRL_PWM_ACTIVE_LOW;
-> +		break;
-> +	case PWM_POLARITY_INVERSED:
-> +		ctrl |=3D JZ_TIMER_CTRL_PWM_ACTIVE_LOW;
-> +		break;
-> +	}
-> +
-> +	jz4740_timer_set_ctrl(pwm->hwpwm, ctrl);
-> +	return 0;
-> +}
-> +
->  static const struct pwm_ops jz4740_pwm_ops =3D {
->  	.request =3D jz4740_pwm_request,
->  	.free =3D jz4740_pwm_free,
->  	.config =3D jz4740_pwm_config,
-> +	.set_polarity =3D jz4740_pwm_set_polarity,
->  	.enable =3D jz4740_pwm_enable,
->  	.disable =3D jz4740_pwm_disable,
->  	.owner =3D THIS_MODULE,
-> --
-> 2.11.0
->=20
-=
+Cheers,
+Andre.
+
+Andre Przywara (4):
+  pwm: sun4i: drop unused .has_rdy member
+  pwm: sun4i: simplify controller mapping
+  dt-bindings: pwm: sunxi: add new compatible strings
+  dts: sunxi: A64: Add PWM controllers
+
+ .../devicetree/bindings/pwm/pwm-sun4i.txt          |  2 ++
+ arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi      | 28 +++++++++++++++++++
+ drivers/pwm/pwm-sun4i.c                            | 32 ++++++----------------
+ 3 files changed, 38 insertions(+), 24 deletions(-)
+
+-- 
+2.14.1
