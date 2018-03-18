@@ -1,13 +1,14 @@
 From: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 0/4] drivers: pwm: sun4i: Improve support for
- A64 SoCs
-Date: Sun, 18 Mar 2018 23:28:43 +0000
-Message-ID: <20180318232847.14278-1-andre.przywara@arm.com>
+Subject: [PATCH v2 2/4] pwm: sun4i: simplify controller mapping
+Date: Sun, 18 Mar 2018 23:28:45 +0000
+Message-ID: <20180318232847.14278-3-andre.przywara@arm.com>
+References: <20180318232847.14278-1-andre.przywara@arm.com>
 Reply-To: andre.przywara-5wv7dgnIgG8@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-sunxi+bncBDNZNK75ZIKRBPHMXPKQKGQEEKFQZLA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Return-path: <linux-sunxi+bncBDNZNK75ZIKRBQHMXPKQKGQEVWVV5DA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
+In-Reply-To: <20180318232847.14278-1-andre.przywara-5wv7dgnIgG8@public.gmane.org>
 List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
 List-Archive: <https://groups.google.com/group/linux-sunxi
@@ -18,40 +19,79 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Max
 Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <rob.herring-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-A rework addressing the comments. I dropped the H6 and the reset support
-for now, to simplify merging this series.
+At the moment we assign our supported compatible strings to a respective
+instance of our sun4i_pwm_data structure, even though some of them
+are the same.
+To avoid further clutter, split out the three different combinations of
+features we have at the moment and name them accordingly.
+This should make it more obvious which compatible string to use for new
+SoCs.
 
-This series adds PWM support for new Allwinner SoCs. Actually the A64 PWM 
-is fully compatible with the A13 and H3 PWM IP, so the driver does not
-need any additional code. But I use this opportunity to provide some
-cleanup.
-Patch 1 removes a no longer used parameter from our per-SoC data structure,
-to simplify patch 2, which groups SoCs with a compatible PWM controller.
-Patch 3 adds the new compatible strings to the binding documentation
-(and just there, we expect to use "allwinner,sun5i-a13-pwm" as a fallback
-compatible string).
-The final patch 4 adds the respective PWM nodes to the A64 .dtsi.
-This eventually does not enable the PWM on any new board at the moment, as
-the PWM pins are either not usable (muxed with Ethernet) or exposed on
-a header pin not dedicated to PWM. But the Pinebook (and Teres I) should be
-able to use the PWM for the LCD backlights, plus users can enable the
-R_PWM on their Pine64 boards, if they like.
+Signed-off-by: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
+Acked-by: Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>
+---
+ drivers/pwm/pwm-sun4i.c | 26 ++++++++------------------
+ 1 file changed, 8 insertions(+), 18 deletions(-)
 
-Tested by manually enabling r_pwm on a Pine64-LTS.
-
-Cheers,
-Andre.
-
-Andre Przywara (4):
-  pwm: sun4i: drop unused .has_rdy member
-  pwm: sun4i: simplify controller mapping
-  dt-bindings: pwm: sunxi: add new compatible strings
-  dts: sunxi: A64: Add PWM controllers
-
- .../devicetree/bindings/pwm/pwm-sun4i.txt          |  2 ++
- arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi      | 28 +++++++++++++++++++
- drivers/pwm/pwm-sun4i.c                            | 32 ++++++----------------
- 3 files changed, 38 insertions(+), 24 deletions(-)
-
+diff --git a/drivers/pwm/pwm-sun4i.c b/drivers/pwm/pwm-sun4i.c
+index b3e4a4b3774d..078172dee462 100644
+--- a/drivers/pwm/pwm-sun4i.c
++++ b/drivers/pwm/pwm-sun4i.c
+@@ -310,27 +310,17 @@ static const struct pwm_ops sun4i_pwm_ops = {
+ 	.owner = THIS_MODULE,
+ };
+ 
+-static const struct sun4i_pwm_data sun4i_pwm_data_a10 = {
++static const struct sun4i_pwm_data sun4i_pwm_dual_nobypass = {
+ 	.has_prescaler_bypass = false,
+ 	.npwm = 2,
+ };
+ 
+-static const struct sun4i_pwm_data sun4i_pwm_data_a10s = {
++static const struct sun4i_pwm_data sun4i_pwm_dual_bypass = {
+ 	.has_prescaler_bypass = true,
+ 	.npwm = 2,
+ };
+ 
+-static const struct sun4i_pwm_data sun4i_pwm_data_a13 = {
+-	.has_prescaler_bypass = true,
+-	.npwm = 1,
+-};
+-
+-static const struct sun4i_pwm_data sun4i_pwm_data_a20 = {
+-	.has_prescaler_bypass = true,
+-	.npwm = 2,
+-};
+-
+-static const struct sun4i_pwm_data sun4i_pwm_data_h3 = {
++static const struct sun4i_pwm_data sun4i_pwm_single_bypass = {
+ 	.has_prescaler_bypass = true,
+ 	.npwm = 1,
+ };
+@@ -338,19 +328,19 @@ static const struct sun4i_pwm_data sun4i_pwm_data_h3 = {
+ static const struct of_device_id sun4i_pwm_dt_ids[] = {
+ 	{
+ 		.compatible = "allwinner,sun4i-a10-pwm",
+-		.data = &sun4i_pwm_data_a10,
++		.data = &sun4i_pwm_dual_nobypass,
+ 	}, {
+ 		.compatible = "allwinner,sun5i-a10s-pwm",
+-		.data = &sun4i_pwm_data_a10s,
++		.data = &sun4i_pwm_dual_bypass,
+ 	}, {
+ 		.compatible = "allwinner,sun5i-a13-pwm",
+-		.data = &sun4i_pwm_data_a13,
++		.data = &sun4i_pwm_single_bypass,
+ 	}, {
+ 		.compatible = "allwinner,sun7i-a20-pwm",
+-		.data = &sun4i_pwm_data_a20,
++		.data = &sun4i_pwm_dual_bypass,
+ 	}, {
+ 		.compatible = "allwinner,sun8i-h3-pwm",
+-		.data = &sun4i_pwm_data_h3,
++		.data = &sun4i_pwm_single_bypass,
+ 	}, {
+ 		/* sentinel */
+ 	},
 -- 
 2.14.1
