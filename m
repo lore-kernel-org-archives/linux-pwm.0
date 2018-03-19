@@ -1,109 +1,74 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RESEND PATCH v5 1/5] pwm-backlight: enable/disable the PWM
- before/after LCD enable toggle.
-Date: Mon, 19 Mar 2018 17:58:29 +0100
-Message-ID: <20180319165829.GB22770@ulmo>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [RESEND PATCH v5 2/5] dt-bindings: pwm-backlight: add PWM delay
+ proprieties.
+Date: Mon, 19 Mar 2018 17:58:57 +0100
+Message-ID: <20180319165857.GC22770@ulmo>
 References: <20180216174034.15936-1-enric.balletbo@collabora.com>
+ <20180216174034.15936-2-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============6113318384672132869=="
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20180216174034.15936-1-enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <jacek.anaszewski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>, groeck-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, kernel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="hYooF8G/hrfVAmum"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180216174034.15936-2-enric.balletbo@collabora.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>, Heiko Stuebner <heiko@sntech.de>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org, kernel@collabora.com
 List-Id: linux-pwm@vger.kernel.org
 
 
---===============6113318384672132869==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="JYK4vJDZwFMowpUq"
-Content-Disposition: inline
-
-
---JYK4vJDZwFMowpUq
+--hYooF8G/hrfVAmum
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 16, 2018 at 06:40:30PM +0100, Enric Balletbo i Serra wrote:
-> Before this patch the enable signal was set before the PWM signal and
-> vice-versa on power off. This sequence is wrong, at least, it is on
-> the different panels datasheets that I checked, so I inverted the sequence
-> to follow the specs.
+On Fri, Feb 16, 2018 at 06:40:31PM +0100, Enric Balletbo i Serra wrote:
+> Hardware needs a delay between setting an initial (non-zero) PWM and
+> enabling the backlight using GPIO. The post-pwm-on-delay-ms specifies
+> this delay in milli seconds. Hardware also needs a delay between disabing
+> the backlight using GPIO and setting PWM value to 0. The pwm-off-delay-ms
+> is this delay in milli seconds.
 >=20
-> For reference the following panels have the mentioned sequence:
->   - N133HSE-EA1 (Innolux)
->   - N116BGE (Innolux)
->   - N156BGE-L21 (Innolux)
->   - B101EAN0 (Auo)
->   - B101AW03 (Auo)
->   - LTN101NT05 (Samsung)
->   - CLAA101WA01A (Chunghwa)
->=20
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-> Acked-by: Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> Acked-by: Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> Acked-by: Pavel Machek <pavel@ucw.cz>
 > ---
+> Based on the original Huang Lin <hl@rock-chips.com> work.
+>=20
 > Changes since v4:
 >  - Rebase on top of mainline.
->  - Add the acks from Daniel Thompson and Jingoo Han.
 > Changes since v3:
->  - List the part numbers for the panel checked (Daniel Thompson)
+>  - Replace us for ms.
+>  - Add Acked-by: Pavel Machek <pavel@ucw.cz>
 > Changes since v2:
->  - Add this as a separate patch (Thierry Reding)
+>  - Use separate properties (Rob Herring)
 > Changes since v1:
->  - None
+>  - As suggested by Daniel Thompson
+>    - Do not assume power-on delay and power-off delay will be the same
 >=20
->  drivers/video/backlight/pwm_bl.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
+>  Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt | 6 +=
++++++
+>  1 file changed, 6 insertions(+)
 
-I'm surprised that panels even care about this. Do you see actual
-breakage if these are the other way around?
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
 
-Anyway, this seems to me as legit as the other way around, so:
-
-Acked-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-
---JYK4vJDZwFMowpUq
+--hYooF8G/hrfVAmum
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlqv7DUACgkQ3SOs138+
-s6FtSA/+J4+ctso+elhrUgaQEp71DttppYWGb10uYQS8GV16ZtVU2367zWt+9WNF
-u0VGLmrwwvqFpvxDAQ8YYE07758CbkdWb5qonRmdN4pLOi3aNw7ywHS5ysljyPfi
-Wv6tw2RaNGVCPcRH9MNwK903y8flOVLgz83CsnBtIWvM9nnSRp8IlQrzh/GIPb92
-FdrrG1cDpwzgMvD+gnXH2TBvMTM8MH4qIpYSixkim4QNZ61LDHJ9CBcc+DLpiCjX
-Qb31E6SemW+S4sdAq+dpgRH3e+/CCxyHcLkQWfBpsLd1aGA2AWgDhI2OdIVqLai7
-QFE8eiJMqra0hV7MYF2IvYjMzJcUp4+JkPXA5slo0wW+CuJ7Vs4oDF1gHzLjsMmR
-lpHUvIKoDddEaGwk7BCaiTDaDz4YPcdzcreBdwstD05faxDkPxycuEmwRpS0HvSB
-q6Vaiuh3DaCBnkQFy3dlSSrWJ/f3B2x9g4rD1f2vv887tB3IP1lBna9sr7u9WJzD
-95K0baI/rbXmRrGh/K+bT2zxmSUjlTOM407n1IG/ig8+06/J6Y4bOCvcHBqUGG8Y
-R/8xqTSKtfutsDJBn7CrN0hZladFG0b5csW3ZMW0BYuqyyYWklHI95eAgoRS3xH8
-QZADh2oGyMr4Ja12GTl8ynvGkO5k+aKDrze0CXwbkeTyL+tOvDU=
-=6Ehc
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlqv7FEACgkQ3SOs138+
+s6EmRhAAvQoqOUtOrU9WHdPx2cIEabOUKHd8FRVlipvxdmyWbokiKCtb/Aii2Fb+
+Fzb6na2uuhixgnpdouYDA39G10Y6ol1nQFIrr4/QjEgdAuDRkLgpYOcyDTNQAAc2
+TXdbndRtdckEWoqIRt285DnKAAk9/L2ya8YUWN5Y9sHGuTwQy6sIEa0UdDmp95hn
+GlcFr4M6+zhovrk7K8wg7AwqqH1h8VFlycieoiGJbe7LI08kMh8M6IVGUV9DjVCT
+gWeukCAdvlzbf7osoEs1faKmpA+75XGYGrOhaD0/zRdNZ1rxvy5hKxDOYwcq+Rxp
+MZnO6RNYGzp8k7y4HTjInunrGx7MWCGejxk5CTf7do7zADb9ppESKDzEaJdlNs6Z
+bRA7C9LLKdazQz/EYoDVnFzmOYSjlxsmEQ1Qri3xr9ylnzRy/QJSICsKQOh+OHdo
+M4/qoHPszt9yMWJFuZ9rqSZWVwfoQ7nmfqhNgl+lGJ9c6KJNokywL5OCx+ojbZAK
+J+cp7cHS1Of4OnRFkkvITGPapN0TU8hLQt7WCL/ZPmsBkfCuEHCzqlIbyAf5UGOF
+pJNmlxHJVJwGUC0w9yspywWce5gwfN3iuTI9Dt5Klz0dlidQSzF1HtzPmgYKWCMV
+yO8+bJfNDHxDQGm71hVUmTQTsFdPIR1nk6TKnLNyJP4YecNXZ0s=
+=oc2Q
 -----END PGP SIGNATURE-----
 
---JYK4vJDZwFMowpUq--
-
-
---===============6113318384672132869==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-Linux-rockchip mailing list
-Linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-http://lists.infradead.org/mailman/listinfo/linux-rockchip
-
---===============6113318384672132869==--
+--hYooF8G/hrfVAmum--
