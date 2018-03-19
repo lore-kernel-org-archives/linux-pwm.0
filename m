@@ -1,76 +1,114 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RESEND PATCH v5 3/5] pwm-backlight: add support for PWM delays
- proprieties.
-Date: Mon, 19 Mar 2018 17:59:22 +0100
-Message-ID: <20180319165922.GD22770@ulmo>
-References: <20180216174034.15936-1-enric.balletbo@collabora.com>
- <20180216174034.15936-3-enric.balletbo@collabora.com>
+From: Harald Geyer <harald@ccbib.org>
+Subject: Re: [v2,4/4] dts: sunxi: A64: Add PWM controllers
+Date: Mon, 19 Mar 2018 19:15:17 +0100
+Message-ID: <E1exzJV-0000LZ-EY@stardust.g4.wien.funkfeuer.at>
+References: <20180318232847.14278-5-andre.przywara@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="g7w8+K/95kPelPD2"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180216174034.15936-3-enric.balletbo@collabora.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Rob Herring <robh+dt@kernel.org>, Pavel Machek <pavel@ucw.cz>, Heiko Stuebner <heiko@sntech.de>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org, kernel@collabora.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-reply-to: <20180318232847.14278-5-andre.przywara@arm.com>
+Content-ID: <1335.1521483316.1@stardust.g4.wien.funkfeuer.at>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, Rob Herring <rob.herring@linaro.org>, Maxime Ripard <maxime.ripard@bootlin.com>, linux-sunxi@googlegroups.com, linux-pwm@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>, Thierry Reding <thierry.reding@gmail.com>, linux-arm-kernel@lists.infradead.org
 List-Id: linux-pwm@vger.kernel.org
 
+Andre Przywara writes:
+> The Allwinner A64 SoC features two PWM controllers, which are fully
+> compatible to the one used in the A13 and H3 chips.
+> Add the respective device nodes (one for the "normal" PWM, the other for
+> the one in the CPUS domain) and the pin their output is connected to.
+> On the A64 the "normal" PWM is muxed together with one of the MDIO pins
+> used to communicate with the Ethernet PHY, so it won't be usable on many
+> boards. But the Pinebook laptop uses this pin for controlling the LCD
+> backlight.
 
---g7w8+K/95kPelPD2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+for the entire series:
+Tested-by: Harald Geyer <harald@ccbib.org> on Teres-I (only the "normal" PWM)
 
-On Fri, Feb 16, 2018 at 06:40:32PM +0100, Enric Balletbo i Serra wrote:
-> Some panels (i.e. N116BGE-L41), in their power sequence specifications,
-> request a delay between set the PWM signal and enable the backlight and
-> between clear the PWM signal and disable the backlight. Add support for
-> the new post-pwm-on-delay-ms and pwm-off-delay-ms proprieties to meet
-> the timings.
->=20
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> Acked-by: Pavel Machek <pavel@ucw.cz>
-> Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
-> Acked-by: Jingoo Han <jingoohan1@gmail.com>
+Thanks for your work,
+Harald
+
+> The CPUS PWM pin however is routed to the "RPi2" header, at the same
+> location as the PWM pin on the RaspberryPi.
+> 
+> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 > ---
-> Changes since v4:
->  - Rebased on top of mainline.
->  - Added the acks from Pavel Machek, Daniel thompson and Jingoo Han
-> Changes since v3:
->  - Use two named members instead of pwm_delay[] (Daniel and Pavel)
->  - Use msleep instead of usleep_range. (Pavel)
-> Changes since v2:
->  - Move the pwm/enable sequence to another patch (Thierry Reding)
-> Changes since v1:
->  - As suggested by Daniel Thompson
->    - Do not assume power-on delay and power-off delay will be the same
->  - Move the check of dt property to the parse dt function.
->=20
->  drivers/video/backlight/pwm_bl.c | 19 +++++++++++++++++++
->  include/linux/pwm_backlight.h    |  2 ++
->  2 files changed, 21 insertions(+)
+>  arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi | 28 +++++++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
+> index d783d164b9c3..fda1783b1c86 100644
+> --- a/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
+> +++ b/arch/arm64/boot/dts/allwinner/sun50i-a64.dtsi
+> @@ -321,6 +321,11 @@
+>  				bias-pull-up;
+>  			};
+>  
+> +			pwm_pin: pwm_pin {
+> +				pins = "PD22";
+> +				function = "pwm";
+> +			};
+> +
+>  			rmii_pins: rmii_pins {
+>  				pins = "PD10", "PD11", "PD13", "PD14", "PD17",
+>  				       "PD18", "PD19", "PD20", "PD22", "PD23";
+> @@ -537,6 +542,15 @@
+>  			#interrupt-cells = <3>;
+>  		};
+>  
+> +		pwm: pwm@1c21400 {
+> +			compatible = "allwinner,sun50i-a64-pwm",
+> +				     "allwinner,sun5i-a13-pwm";
+> +			reg = <0x01c21400 0x400>;
+> +			clocks = <&osc24M>;
+> +			#pwm-cells = <3>;
+> +			status = "disabled";
+> +		};
+> +
+>  		rtc: rtc@1f00000 {
+>  			compatible = "allwinner,sun6i-a31-rtc";
+>  			reg = <0x01f00000 0x54>;
+> @@ -563,6 +577,15 @@
+>  			#reset-cells = <1>;
+>  		};
+>  
+> +		r_pwm: pwm@1f03800 {
+> +			compatible = "allwinner,sun50i-a64-pwm",
+> +				     "allwinner,sun5i-a13-pwm";
+> +			reg = <0x01f03800 0x400>;
+> +			clocks = <&osc24M>;
+> +			#pwm-cells = <3>;
+> +			status = "disabled";
+> +		};
+> +
+>  		r_pio: pinctrl@1f02c00 {
+>  			compatible = "allwinner,sun50i-a64-r-pinctrl";
+>  			reg = <0x01f02c00 0x400>;
+> @@ -578,6 +601,11 @@
+>  				pins = "PL0", "PL1";
+>  				function = "s_rsb";
+>  			};
+> +
+> +			r_pwm_pin: pwm {
+> +				pins = "PL10";
+> +				function = "s_pwm";
+> +			};
+>  		};
+>  
+>  		r_rsb: rsb@1f03400 {
 
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
-
---g7w8+K/95kPelPD2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlqv7GoACgkQ3SOs138+
-s6F9GxAAqXp9JE/VvfuJ/zqbvGh/hLA1/RJzfV05dGFb5pk9QoKYjKgIZSaJ9VyB
-rNEnjma8Mbj89T4emlMg+3jMXXBiMGUv9vfDR+XO7GQI1bhGgp7JQUUmYg3d6a/F
-CUL3jR0RJWlqChyDgU4VkZJqlfF15t7Vdmu8zrpVaMSmNSSCnlNDYM6EZ7v7Fmct
-zWxgfovvsV+E/cCAcJQvUxPL5bZWFlTcoWAbhL+xUyCNmChBKPIgiFMbaYBlBREC
-7teXLSnQ2OVD4p0H/SpkMDD2fTAUChpSoUWVWhnxa1Z8NCY0ZikF5srsWr+W25bO
-tixRdRPR/1l/1x6/3kKvWO5/mrKxHhMcCHxfe4QY5PgtsDCiFgFwJ/nmN5HPVuYa
-+clnAbDcytGfv31fLlnvd4+04CnVFyHjzaSIWjw4kKjmJd6d6rWs+4E4XlVmJtku
-s2QMW4bN5GBFqteNRR0zLDz0bbEYjiZtTwOf0bs3bViw8sNh2rw0/KUogfFumI3F
-4WYqbapezDnXiHoA7MX349f9z9TVuHvE7fioK+GQW+6wfkTuY5GAmqCxfsO254Uk
-E9gtIZ0W9qFlga2mHp0hBUwzLdAhei4x8uZ8bNF6hKSlBLRj4Agn+XOaLzJYJmiZ
-DrOaqv0lpcX/1ERM5HDsLjKdj5VaKov1lyjUo4G5JCl59TmDZLo=
-=3DKy
------END PGP SIGNATURE-----
-
---g7w8+K/95kPelPD2--
+-- 
+If you want to support my work:
+see http://friends.ccbib.org/harald/supporting/
+or donate via CLAM to xASPBtezLNqj4cUe8MT5nZjthRSEjrRQXN
+or via peercoin to P98LRdhit3gZbHDBe7ta5jtXrMJUms4p7w
