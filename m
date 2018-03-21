@@ -1,7 +1,7 @@
 From: Rajkumar Rampelli <rrajk@nvidia.com>
-Subject: [PATCH V2 3/9] dt-bindings: Tegra186 tachometer device tree bindings
-Date: Wed, 21 Mar 2018 10:10:38 +0530
-Message-ID: <1521607244-29734-4-git-send-email-rrajk@nvidia.com>
+Subject: [PATCH V2 4/9] arm64: tegra: Add Tachometer Controller on Tegra186
+Date: Wed, 21 Mar 2018 10:10:39 +0530
+Message-ID: <1521607244-29734-5-git-send-email-rrajk@nvidia.com>
 References: <1521607244-29734-1-git-send-email-rrajk@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,56 +12,52 @@ To: robh+dt@kernel.org, mark.rutland@arm.com, thierry.reding@gmail.com, jonathan
 Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, linux-tegra@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, ldewangan@nvidia.com, rrajk@nvidia.com
 List-Id: linux-pwm@vger.kernel.org
 
-Supply Device tree binding documentation for the NVIDIA
-Tegra186 SoC's Tachometer Controller
+The NVIDIA Tegra186 SoC has a Tachometer Controller that analyzes the
+PWM signal of a Fan and reports the period value through pwm interface.
 
 Signed-off-by: Rajkumar Rampelli <rrajk@nvidia.com>
 ---
 
-V2: Renamed compatible string to "nvidia,tegra186-pwm-tachometer"
-    Renamed dt property values of clock-names and reset-names to "tachometer"
-    from "tach"
+V2: Renamed clock-names/reset-names dt properties values to "tachometer"
+    Renamed compatible property value to "nvidia-tegra186-pwm-tachometer"
 
- .../bindings/pwm/pwm-tegra-tachometer.txt          | 31 ++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-tegra-tachometer.txt
+ arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dts |  5 +++++
+ arch/arm64/boot/dts/nvidia/tegra186.dtsi           | 11 +++++++++++
+ 2 files changed, 16 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-tegra-tachometer.txt b/Documentation/devicetree/bindings/pwm/pwm-tegra-tachometer.txt
-new file mode 100644
-index 0000000..4a7ead4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/pwm-tegra-tachometer.txt
-@@ -0,0 +1,31 @@
-+Bindings for a PWM based Tachometer driver
+diff --git a/arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dts b/arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dts
+index bd5305a..13c3e59 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dts
++++ b/arch/arm64/boot/dts/nvidia/tegra186-p2771-0000.dts
+@@ -172,4 +172,9 @@
+ 			vin-supply = <&vdd_5v0_sys>;
+ 		};
+ 	};
 +
-+Required properties:
-+- compatible: Must be "nvidia,tegra186-pwm-tachometer"
-+- reg: physical base addresses of the controller and length of
-+  memory mapped region.
-+- #pwm-cells: should be 2. See pwm.txt in this directory for a
-+  description of the cells format.
-+- clocks: phandle list of tachometer clocks
-+- clock-names: should be "tachometer". See clock-bindings.txt in documentations
-+- resets: phandle to the reset controller for the Tachometer IP
-+- reset-names: should be "tachometer". See reset.txt in documentations
-+- nvidia,pulse-per-rev: Integer, pulses per revolution of a Fan. This value
-+  obtained from Fan specification document.
-+- nvidia,capture-window-len: Integer, window of the Fan Tach monitor, it indicates
-+  that how many period of the input fan tach signal will the FAN TACH logic
-+  monitor. Valid values are 1, 2, 4 and 8 only.
++	tachometer@39c0000 {
++		nvidia,pulse-per-rev = <2>;
++		nvidia,capture-window-len = <2>;
++	};
+ };
+diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+index 731cd01..19e1afc 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+@@ -1042,4 +1042,15 @@
+ 		reset-names = "pwm";
+ 		status = "disabled";
+ 	};
 +
-+Example:
 +	tegra_tachometer: tachometer@39c0000 {
 +		compatible = "nvidia,tegra186-pwm-tachometer";
 +		reg = <0x0 0x039c0000 0x0 0x10>;
 +		#pwm-cells = <2>;
-+		clocks = <&tegra_car TEGRA186_CLK_TACH>;
++		clocks = <&bpmp TEGRA186_CLK_TACH>;
 +		clock-names = "tachometer";
-+		resets = <&tegra_car TEGRA186_RESET_TACH>;
++		resets = <&bpmp TEGRA186_RESET_TACH>;
 +		reset-names = "tachometer";
-+		nvidia,pulse-per-rev = <2>;
-+		nvidia,capture-window-len = <2>;
 +		status = "disabled";
 +	};
+ };
 -- 
 2.1.4
