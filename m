@@ -1,62 +1,37 @@
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Subject: Re: [PATCH v6 1/5] pwm-backlight: enable/disable the PWM
- before/after LCD enable toggle.
-Date: Mon, 26 Mar 2018 16:18:05 +0100
-Message-ID: <20180326151805.dzqqar36npmwzpdr@holly.lan>
-References: <20180326095213.18362-1-enric.balletbo@collabora.com>
- <20180326104205.GA12425@amd>
- <CAFqH_52fFLhuj6gkRNJsPozNfLSAKd0OpQKMjrdhqHRYU4xZ3Q@mail.gmail.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 3/4] dt-bindings: pwm: sunxi: add new
+ compatible strings
+Date: Mon, 26 Mar 2018 17:23:08 -0500
+Message-ID: <20180326222308.x25zptv7qwnwy4gi@rob-hp-laptop>
+References: <20180318232847.14278-1-andre.przywara@arm.com>
+ <20180318232847.14278-4-andre.przywara@arm.com>
+Reply-To: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-sunxi+bncBDJIP47K7MERBTXF4XKQKGQEYGNS6FA-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+Sender: linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org
 Content-Disposition: inline
-In-Reply-To: <CAFqH_52fFLhuj6gkRNJsPozNfLSAKd0OpQKMjrdhqHRYU4xZ3Q@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Enric Balletbo Serra <eballetbo@gmail.com>
-Cc: Pavel Machek <pavel@ucw.cz>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Rob Herring <robh+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, Linux PWM List <linux-pwm@vger.kernel.org>, linux-fbdev@vger.kernel.org, linux-kernel <linux-kernel@vger.kernel.org>, Guenter Roeck <groeck@chromium.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, linux-leds@vger.kernel.org, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, kernel@collabora.com
+In-Reply-To: <20180318232847.14278-4-andre.przywara-5wv7dgnIgG8@public.gmane.org>
+List-Post: <https://groups.google.com/group/linux-sunxi/post>, <mailto:linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Help: <https://groups.google.com/support/>, <mailto:linux-sunxi+help-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Archive: <https://groups.google.com/group/linux-sunxi
+List-Subscribe: <https://groups.google.com/group/linux-sunxi/subscribe>, <mailto:linux-sunxi+subscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>
+List-Unsubscribe: <mailto:googlegroups-manage+1076902468213+unsubscribe-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>,
+ <https://groups.google.com/group/linux-sunxi/subscribe>
+To: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Maxime Ripard <maxime.ripard-LDxbnhwyfcJBDgjK7y7TUQ@public.gmane.org>, Chen-Yu Tsai <wens-jdAy2FN1RRM@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <rob.herring-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sunxi-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Mar 26, 2018 at 04:40:21PM +0200, Enric Balletbo Serra wrote:
-> Hi Pavel,
+On Sun, Mar 18, 2018 at 11:28:46PM +0000, Andre Przywara wrote:
+> The PWM controllers found in the Allwinner A64 and H5 SoCs are fully
+> compatible to the PWM controllers found in the A13 and H3.
+> Add new compatible strings for those SoCs to the binding document, so
+> that they can be safely used, together with a fallback string
+> (preferably "allwinner,sun5i-a13-pwm").
 > 
-> 2018-03-26 12:42 GMT+02:00 Pavel Machek <pavel@ucw.cz>:
-> > On Mon 2018-03-26 11:52:09, Enric Balletbo i Serra wrote:
-> >> Before this patch the enable signal was set before the PWM signal and
-> >> vice-versa on power off. This sequence is wrong, at least, it is on
-> >> the different panels datasheets that I checked, so I inverted the sequence
-> >> to follow the specs.
-> >>
-> >> For reference the following panels have the mentioned sequence:
-> >>   - N133HSE-EA1 (Innolux)
-> >>   - N116BGE (Innolux)
-> >>   - N156BGE-L21 (Innolux)
-> >>   - B101EAN0 (Auo)
-> >>   - B101AW03 (Auo)
-> >>   - LTN101NT05 (Samsung)
-> >>   - CLAA101WA01A (Chunghwa)
-> >
-> > Ok, but this changes behaviour for other panels, too. Are you sure you
-> > are not breaking one of those?
-> 
-> I can't say that I am 100% sure because I didn't find all the
-> datasheets of all the panels supported in the kernel. But all the
-> datasheets I checked specifies this sequence as valid. In general I
-> think that doesn't really matter, but I know that at least the
-> B116XTN02 panel requires enable first the PWM, wait 10ms and then
-> enable BL_EN to avoid garbage. So the other way around is not valid
-> for this panel. That's the reason for this patchset.
+> Signed-off-by: Andre Przywara <andre.przywara-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  Documentation/devicetree/bindings/pwm/pwm-sun4i.txt | 2 ++
+>  1 file changed, 2 insertions(+)
 
-This is certainly a patch that could cause regressions... but it would
-be a very odd panel that *likes* to be exposed to all the weird edges
-that might occur whilst the PWM stablizes and a panel that *needs* to
-see weird edges to work seems even less likely (since it could act
-different with each SoC).
-
-So whilst the patch is not absolutely cast iron guaranteed free of
-risk, I think it is well enough argued for.
-
-Naturally I may change my position *very* quickly on receipt of the
-first bug report ;-)
-
-
-Daniel.
+Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
