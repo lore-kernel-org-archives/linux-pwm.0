@@ -1,7 +1,8 @@
 From: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Subject: [PATCH v6 3/5] pwm-backlight: add support for PWM delays proprieties.
-Date: Mon, 26 Mar 2018 11:52:11 +0200
-Message-ID: <20180326095213.18362-3-enric.balletbo@collabora.com>
+Subject: [PATCH v6 5/5] ARM: dts: rockchip: set PWM delay backlight settings
+ for Minnie
+Date: Mon, 26 Mar 2018 11:52:13 +0200
+Message-ID: <20180326095213.18362-5-enric.balletbo@collabora.com>
 References: <20180326095213.18362-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,114 +22,41 @@ To: Lee Jones <lee.jones-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Daniel Thomps
 Cc: linux-pwm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Richard Purdie <rpurdie-Fm38FmjxZ/leoWH0uzbU5w@public.gmane.org>, Jacek Anaszewski <jacek.anaszewski-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, groeck-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, kernel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, linux-leds-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: linux-pwm@vger.kernel.org
 
-Some panels (i.e. N116BGE-L41), in their power sequence specifications,
-request a delay between set the PWM signal and enable the backlight and
-between clear the PWM signal and disable the backlight. Add support for
-the new post-pwm-on-delay-ms and pwm-off-delay-ms proprieties to meet
-the timings.
+The minnie devices comes with an AUO B101EAN01 panel which is different
+from default veyron devices, thus the power on/off timing sequence is
+slightly different. The datasheet specifies a pwm delay of 200 ms, so
+update the PMW delay proprieties accordingly.
 
 Signed-off-by: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
 Acked-by: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-Acked-by: Daniel Thompson <daniel.thompson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Acked-by: Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Acked-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
 Changes since v5:
- - Add Acked-by: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+ - None.
 Changes since v4:
- - Rebased on top of mainline.
- - Added the acks from Pavel Machek, Daniel thompson and Jingoo Han
+ - Rebase on top of mainline.
 Changes since v3:
- - Use two named members instead of pwm_delay[] (Daniel and Pavel)
- - Use msleep instead of usleep_range. (Pavel)
+ - Use new -ms names for proprieties.
+ - Fix the delay, should be 200ms instead of 20ms (Pavel)
 Changes since v2:
- - Move the pwm/enable sequence to another patch (Thierry Reding)
+ - Use new names for proprieties.
 Changes since v1:
- - As suggested by Daniel Thompson
-   - Do not assume power-on delay and power-off delay will be the same
- - Move the check of dt property to the parse dt function.
+ - Add this new patch as minnie has differents timings
 ---
- drivers/video/backlight/pwm_bl.c | 19 +++++++++++++++++++
- include/linux/pwm_backlight.h    |  2 ++
- 2 files changed, 21 insertions(+)
+ arch/arm/boot/dts/rk3288-veyron-minnie.dts | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 698ec68bcdc9..8e3f1245f5c5 100644
---- a/drivers/video/backlight/pwm_bl.c
-+++ b/drivers/video/backlight/pwm_bl.c
-@@ -10,6 +10,7 @@
-  * published by the Free Software Foundation.
-  */
+diff --git a/arch/arm/boot/dts/rk3288-veyron-minnie.dts b/arch/arm/boot/dts/rk3288-veyron-minnie.dts
+index 544de6027aaa..4c5307e62001 100644
+--- a/arch/arm/boot/dts/rk3288-veyron-minnie.dts
++++ b/arch/arm/boot/dts/rk3288-veyron-minnie.dts
+@@ -123,6 +123,8 @@
+ 			240 241 242 243 244 245 246 247
+ 			248 249 250 251 252 253 254 255>;
+ 	power-supply = <&backlight_regulator>;
++	post-pwm-on-delay-ms = <200>;
++	pwm-off-delay-ms = <200>;
+ };
  
-+#include <linux/delay.h>
- #include <linux/gpio/consumer.h>
- #include <linux/gpio.h>
- #include <linux/module.h>
-@@ -35,6 +36,8 @@ struct pwm_bl_data {
- 	struct gpio_desc	*enable_gpio;
- 	unsigned int		scale;
- 	bool			legacy;
-+	unsigned int		post_pwm_on_delay;
-+	unsigned int		pwm_off_delay;
- 	int			(*notify)(struct device *,
- 					  int brightness);
- 	void			(*notify_after)(struct device *,
-@@ -56,6 +59,9 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
- 
- 	pwm_enable(pb->pwm);
- 
-+	if (pb->post_pwm_on_delay)
-+		msleep(pb->post_pwm_on_delay);
-+
- 	if (pb->enable_gpio)
- 		gpiod_set_value_cansleep(pb->enable_gpio, 1);
- 
-@@ -70,6 +76,9 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
- 	if (pb->enable_gpio)
- 		gpiod_set_value_cansleep(pb->enable_gpio, 0);
- 
-+	if (pb->pwm_off_delay)
-+		msleep(pb->pwm_off_delay);
-+
- 	pwm_config(pb->pwm, 0, pb->period);
- 	pwm_disable(pb->pwm);
- 
-@@ -178,6 +187,14 @@ static int pwm_backlight_parse_dt(struct device *dev,
- 		data->max_brightness--;
- 	}
- 
-+	/*
-+	 * These values are optional and set as 0 by default, the out values
-+	 * are modified only if a valid u32 value can be decoded.
-+	 */
-+	of_property_read_u32(node, "post-pwm-on-delay-ms",
-+			     &data->post_pwm_on_delay);
-+	of_property_read_u32(node, "pwm-off-delay-ms", &data->pwm_off_delay);
-+
- 	data->enable_gpio = -EINVAL;
- 	return 0;
- }
-@@ -276,6 +293,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
- 	pb->exit = data->exit;
- 	pb->dev = &pdev->dev;
- 	pb->enabled = false;
-+	pb->post_pwm_on_delay = data->post_pwm_on_delay;
-+	pb->pwm_off_delay = data->pwm_off_delay;
- 
- 	pb->enable_gpio = devm_gpiod_get_optional(&pdev->dev, "enable",
- 						  GPIOD_ASIS);
-diff --git a/include/linux/pwm_backlight.h b/include/linux/pwm_backlight.h
-index e8afbd71a140..8ea265a022fd 100644
---- a/include/linux/pwm_backlight.h
-+++ b/include/linux/pwm_backlight.h
-@@ -14,6 +14,8 @@ struct platform_pwm_backlight_data {
- 	unsigned int lth_brightness;
- 	unsigned int pwm_period_ns;
- 	unsigned int *levels;
-+	unsigned int post_pwm_on_delay;
-+	unsigned int pwm_off_delay;
- 	/* TODO remove once all users are switched to gpiod_* API */
- 	int enable_gpio;
- 	int (*init)(struct device *dev);
+ &emmc {
 -- 
 2.16.2
