@@ -1,37 +1,60 @@
-From: <sean.wang@mediatek.com>
-Subject: [PATCH] pwm: mediatek: remove redundant MODULE_ALIAS entries
-Date: Mon, 26 Mar 2018 18:02:01 +0800
-Message-ID: <0fbf589c69bc584c46c683ee7fa38d80e04624f6.1522055092.git.sean.wang@mediatek.com>
+From: Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH v6 1/5] pwm-backlight: enable/disable the PWM
+ before/after LCD enable toggle.
+Date: Mon, 26 Mar 2018 12:42:05 +0200
+Message-ID: <20180326104205.GA12425@amd>
+References: <20180326095213.18362-1-enric.balletbo@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="mP3DRpeJDSE+ciuQ"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180326095213.18362-1-enric.balletbo@collabora.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: thierry.reding@gmail.com, matthias.bgg@gmail.com
-Cc: linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Rob Herring <robh+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org, linux-leds@vger.kernel.org, devicetree@vger.kernel.org, kernel@collabora.com
 List-Id: linux-pwm@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
 
-MODULE_ALIAS exports information to allow the module to be auto-loaded at
-boot for the drivers registered using legacy platform registration.
+--mP3DRpeJDSE+ciuQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-However, currently the driver is always used by DT-only platform,
-MODULE_ALIAS is redundant and should be removed properly.
+On Mon 2018-03-26 11:52:09, Enric Balletbo i Serra wrote:
+> Before this patch the enable signal was set before the PWM signal and
+> vice-versa on power off. This sequence is wrong, at least, it is on
+> the different panels datasheets that I checked, so I inverted the sequence
+> to follow the specs.
+>=20
+> For reference the following panels have the mentioned sequence:
+>   - N133HSE-EA1 (Innolux)
+>   - N116BGE (Innolux)
+>   - N156BGE-L21 (Innolux)
+>   - B101EAN0 (Auo)
+>   - B101AW03 (Auo)
+>   - LTN101NT05 (Samsung)
+>   - CLAA101WA01A (Chunghwa)
 
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
----
- drivers/pwm/pwm-mediatek.c | 1 -
- 1 file changed, 1 deletion(-)
+Ok, but this changes behaviour for other panels, too. Are you sure you
+are not breaking one of those?
+								Pavel
+							=09
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
 
-diff --git a/drivers/pwm/pwm-mediatek.c b/drivers/pwm/pwm-mediatek.c
-index 98b0a93..328c1247 100644
---- a/drivers/pwm/pwm-mediatek.c
-+++ b/drivers/pwm/pwm-mediatek.c
-@@ -305,5 +305,4 @@ static struct platform_driver mtk_pwm_driver = {
- module_platform_driver(mtk_pwm_driver);
- 
- MODULE_AUTHOR("John Crispin <blogic@openwrt.org>");
--MODULE_ALIAS("platform:mtk-pwm");
- MODULE_LICENSE("GPL");
--- 
-2.7.4
+--mP3DRpeJDSE+ciuQ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlq4zn0ACgkQMOfwapXb+vKSXACfZaOfjeF95+CzMhuUpGBOPHww
+tr8An3bjundCo47dYL3pdQr6jE33jl1s
+=7evW
+-----END PGP SIGNATURE-----
+
+--mP3DRpeJDSE+ciuQ--
