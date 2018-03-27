@@ -1,57 +1,77 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH] pwm: sysfs: use put_device() instead of kfree()
-Date: Wed, 28 Mar 2018 01:19:40 +0200
-Message-ID: <20180327231939.GC4097@mithrandir>
-References: <416c89ec3cff87e842a0ff148df13bed35a44c46.1520502811.git.arvind.yadav.cs@gmail.com>
+Subject: Re: [PATCH] pwm: rcar: fix a condition to prevent mismatch value
+ setting to duty
+Date: Wed, 28 Mar 2018 01:21:08 +0200
+Message-ID: <20180327232107.GD4097@mithrandir>
+References: <1520594661-6897-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Y5rl02BVI9TCfPar"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+        protocol="application/pgp-signature"; boundary="48TaNjbzBVislYPb"
+Return-path: <stable-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <416c89ec3cff87e842a0ff148df13bed35a44c46.1520502811.git.arvind.yadav.cs@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arvind Yadav <arvind.yadav.cs@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+In-Reply-To: <1520594661-6897-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Sender: stable-owner@vger.kernel.org
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: ryo.kodama.vz@renesas.com, linux-pwm@vger.kernel.org, stable@vger.kernel.org, linux-renesas-soc@vger.kernel.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---Y5rl02BVI9TCfPar
+--48TaNjbzBVislYPb
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 08, 2018 at 03:27:37PM +0530, Arvind Yadav wrote:
-> Never directly free @dev after calling device_register(), even
-> if it returned an error! Always use put_device() to give up the
-> reference initialized.
+On Fri, Mar 09, 2018 at 08:24:21PM +0900, Yoshihiro Shimoda wrote:
+> From: Ryo Kodama <ryo.kodama.vz@renesas.com>
 >=20
-> Signed-off-by: Arvind Yadav <arvind.yadav.cs@gmail.com>
+> This patch fixes an issue that is possible to set mismatch value
+> to duty for R-Car PWM if we input the following commands:
+>=20
+>  # cd /sys/class/pwm/<pwmchip>/
+>  # echo 0 > export
+>  # cd pwm0
+>  # echo 30 > period
+>  # echo 30 > duty_cycle
+>  # echo 0 > duty_cycle
+>  # cat duty_cycle
+>  0
+>  # echo 1 > enable
+>  --> Then, the actual duty_cycle is 30, not 0.
+>=20
+> So, this patch adds a condition into rcar_pwm_config() to fix
+> this issue.
+>=20
+> Signed-off-by: Ryo Kodama <ryo.kodama.vz@renesas.com>
+> [shimoda: revise the commit log and add Fixes and Cc tags]
+> Fixes: ed6c1476bf7f ("pwm: Add support for R-Car PWM Timer")
+> Cc: Cc: <stable@vger.kernel.org> # v4.4+
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 > ---
->  drivers/pwm/sysfs.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  drivers/pwm/pwm-rcar.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
 
 Applied, thanks.
 
 Thierry
 
---Y5rl02BVI9TCfPar
+--48TaNjbzBVislYPb
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq60YoACgkQ3SOs138+
-s6HFxhAAk8Nln8GGhahf69otsHcHtigBEMI/pk9R1j+Tlf1fFkuPYKWsFykX7Zog
-+1Vz0VxnSjwj1d63VT3hdxRvCJ6B8jmE6mvPEG7XsUPDst2PwMhOVo6G7dmkTHNf
-33mHH+7QNikGPa4K9MaAlRuhuUIaaEQRhq+614dIx+xuXU3BXef7b18e8rWSUgSh
-EN5+WVULbHtfQCBkClqpa9mgwfIJ/eXPe9PNM7Erq9GuAISz6l5ekzEaQvAMpGez
-O9rGMAgG1TPhTKR0if3ZjVfwfinl5MfKlPqk+TRx2hDFnqKjwZgBjQ3IpSPjLfEG
-G3Azty8Vv4mHONczDWcg4TFKV1A6niJvBh6R7xeaPTx52DPKXbMZbQW289Hrdbic
-WyWP+EXL/cUKmNDNCjJCCeTmEPajLOrPus9bA7kGJSU8ZidssOXLE+uC5xon0Nnm
-EUia1aAuC1unqMv7DRBWSfrKG65yR+50G8C0h/9zTwHOwU1X89WHpq+JGguAk6Yd
-c68JdofbCJamRleIPF8aLRpy43V73yOqZojEvf4VykUx3wL3zrw00kgq7+F1f4Sa
-fxMluge6lnfbWQ5TpNC2PtrkDbPVJHYaNUIRi8rBYpsN/BzjWSoCIbeF3f7extRp
-E3q4lPa7LnEC+3fFG49KB/AjdnFI04sGg3f5S7wM3s7pBDUAYzg=
-=+scC
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq60eMACgkQ3SOs138+
+s6EoBw/8Ci1i8K/d4aBCM0kdtAgaG08yMGzH0j8+z/1s9C6Yhu1QOBOqBqrmUqlT
+TqsHcTNlfBZZ463FLPNMWz7gEaJ0SRCoGJxsmWMGmE8ccEO/YinxDnuD3urG9MvD
+Ty4PMILaYWkgTQbxU4BqDHMpJHOX7fgZSe9TJ12m8c5IpVOxsryMT9+3IhrVhm5n
+XsgRG3+kCFTTGGy5ZwbVsy1vhC2rhHztVIkwIBgUbRosTnBCwQlBKyC0LpEvOqwg
+T0CWsF3A5m80VYzNC1sB3YQujhBqqbWX+xerAV1Cnby8yfWBrQPDCw5fVdWMT9zF
+yCSIMsCpOhbml7dFAQtxexUfUHdP9ZR2YVcrBjITDhEXNvy/kxFWPGEtA6canD5d
+LcsCk4RVz3n4wujal6z1cWHKkHiE+zSyOZeMlOyOhW9Ma54FWSx4GLAKWvsNXaNG
+2ck+KZcPreWkCoCNewxnxyRN6IpSfZ5KoWKqBtMdzvHpPL2mvD0tB+TZyNKeomvL
+M3AACoFZxt22DplAD8Xhd7CNOycnA6M0dGLTgXKfEQdrmjIvsudKmMRHHzxw6iWh
+ch0t5hOuWQHMQpjUohI66NRFt8ik47qCpzYWQsNM7ArrXb301OBCmdWEiFBh9ub+
+O+WRpO3gR4ZRLJ2KlmalwNHzkDD+W4/Y7Iw9AfbkWslsqG8kJAo=
+=Oeqe
 -----END PGP SIGNATURE-----
 
---Y5rl02BVI9TCfPar--
+--48TaNjbzBVislYPb--
