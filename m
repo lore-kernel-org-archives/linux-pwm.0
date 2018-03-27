@@ -1,88 +1,63 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [RESEND PATCH v2 0/8] Add support for PWM input capture on STM32
-Date: Wed, 28 Mar 2018 00:51:02 +0200
-Message-ID: <20180327225101.GJ28163@mithrandir>
-References: <1518602679-3064-1-git-send-email-fabrice.gasnier@st.com>
+Subject: Re: [RESEND PATCH 0/3] Add pwm-cells on STM32 LPTimer
+Date: Wed, 28 Mar 2018 00:57:58 +0200
+Message-ID: <20180327225757.GK28163@mithrandir>
+References: <1519392965-28235-1-git-send-email-fabrice.gasnier@st.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ofZMSlrAVk9bLeVm"
+        protocol="application/pgp-signature"; boundary="YZQs1kEQY307C4ut"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1518602679-3064-1-git-send-email-fabrice.gasnier@st.com>
+In-Reply-To: <1519392965-28235-1-git-send-email-fabrice.gasnier@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Fabrice Gasnier <fabrice.gasnier@st.com>, Lee Jones <lee.jones@linaro.org>
-Cc: alexandre.torgue@st.com, benjamin.gaignard@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, benjamin.gaignard@st.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: alexandre.torgue@st.com, robh+dt@kernel.org, mark.rutland@arm.com, linux@armlinux.org.uk, mcoquelin.stm32@gmail.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, benjamin.gaignard@linaro.org
 List-Id: linux-pwm@vger.kernel.org
 
 
---ofZMSlrAVk9bLeVm
+--YZQs1kEQY307C4ut
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 14, 2018 at 11:04:31AM +0100, Fabrice Gasnier wrote:
-> This series adds support for capture to stm32-pwm driver.
-> Capture is based on DMAs.
-> - First two patches are precursor patches
-> - Subsequent two patches add support for requesting DMAs to MFD core
-> - Next three patches add support for capture to stm32-pwm driver
-> - This has been tested on stm32429i-eval board.
+On Fri, Feb 23, 2018 at 02:36:02PM +0100, Fabrice Gasnier wrote:
+> Add missing generic #pwm-cells on STM32 LPTimer to allow initialization
+> of channel, period and polarity.
 >=20
-> ---
-> Resend v2:
-> - Add collected Acks
+> Fabrice Gasnier (1):
+>   ARM: dts: stm32: update pwm-cells for LPTimer on stm32h743
 >=20
-> Changes in v2:
-> - Abstract DMA handling from child driver: move it to MFD core
-> - Rework pwm capture routines to adopt this change
-> - Comment on optional dma support, beautify DMAs probe
+> Gerald Baeza (2):
+>   dt-bindings: pwm-stm32-lp: add #pwm-cells
+>   pwm: stm32: LPTimer: use 3 cells xlate
 >=20
-> Fabrice Gasnier (8):
->   pwm: stm32: fix, remove unused struct device
->   pwm: stm32: protect common prescaler for all channels
->   dt-bindings: mfd: stm32-timers: add support for dmas
->   mfd: stm32-timers: add support for dmas
->   pwm: stm32: add capture support
->   pwm: stm32: improve capture by tuning counter prescaler
->   pwm: stm32: use input prescaler to improve period capture
->   ARM: dts: stm32: Enable pwm3 input capture on stm32f429i-eval
->=20
->  .../devicetree/bindings/mfd/stm32-timers.txt       |  20 ++
->  arch/arm/boot/dts/stm32429i-eval.dts               |   3 +
->  drivers/mfd/stm32-timers.c                         | 215 +++++++++++++++-
->  drivers/pwm/pwm-stm32.c                            | 276 +++++++++++++++=
-+++++-
->  include/linux/mfd/stm32-timers.h                   |  39 +++
->  5 files changed, 547 insertions(+), 6 deletions(-)
+>  Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt | 3 +++
+>  arch/arm/boot/dts/stm32h743.dtsi                       | 5 +++++
+>  drivers/pwm/pwm-stm32-lp.c                             | 2 ++
+>  3 files changed, 10 insertions(+)
 
-I can't apply patches 1-2 and 5-6 since they depend on patches 3-4 for
-which I'd need an Acked-by: from Lee if I'm to pick them up. Same goes
-for patch 7.
-
-By the looks of it there are minor conflicts with the MFD tree, but no
-major ones. Perhaps it'd be better for Lee to pick up 3-4 for v4.17-rc1
-and ack patch 7, then I can take the rest after v4.17-rc1?
+Applied patches 1 and 2, thanks.
 
 Thierry
 
---ofZMSlrAVk9bLeVm
+--YZQs1kEQY307C4ut
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq6ytIACgkQ3SOs138+
-s6Fr9g/+KQ2WA9ip9DbgL8elChIvKtWOVCS3lcsNMKOS6GpIQkwMoIFKZyImNd1x
-sONlawlZ1mtgMX6MCbtUY/FUR2KZlRcPRWAyNp+c/Ya+XcrYIrVpM8OHvIeENcsB
-iImDC5Kroio77hku6KeYtl+oyKDgcQYOgDYGWCDyfvia33/zd66FkvTL8tDzAVQj
-8xOn6f6sqKs8qm/YCIXZvD1kJZS32xLN8Cxi33B4IbqOA8lUs0i07ZR9ugHuMdAP
-gElgw9The25eEFoM58J3oZTe55aE6RfI/6Ur2v8KVUOVLKU6XPVIupiV/j2C9iWX
-icWhZoissyVw9uexTnFYAA91U+w7Yp3B9ZmRY0jK0CXMY6Zf4vpjTDyBlWRFF3ja
-d++ud0V+pBHelAipOvEX5myzmR5mUs/nTLmRjWGwSe0poR/VYeLcASm59BZ45zzd
-AcXBtlEze8JAGP8e8NLKW30XkxvS6AoynCLDTuJeghq8frH11Ltq7SjF42PAj1wt
-rleLcsW2S6TXMxubS7zrG85AOM6RwZglpk5+4rTLKJv1Vaf2u+eElefPj8fMMuBT
-GMyjgDPA0zmxxt4ywnmJoHP7RFeJXuGAq4co6ZGTlZYSvpOWs+iCq0E4nHN5euW8
-LBRM0ucagBCbA9AizX41eYJZfkhnsz/kYhcKi2oDqM9SCgFhN0E=
-=MQsM
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq6zHUACgkQ3SOs138+
+s6Ewuw/+Pvzqzm3HeKqw5SBFJCQzapVxLd5mXoopTKym8rM19GYk3fyNQmTOPdqc
+zRNtxBolzGPAZzPtyLtW9p9W85j6C9SVbaXDsANMY+s/bNetjZ5j/YI6MaGd0MPO
+As7akyi+NBWmar645OFXeYGyT7v5mVAg+0Yp3h8KMg7mBgpdnAmi2QmdPHGrtSK5
+pumEVCXztIpWRm+TXilUh0xNuex9WvHRINH9uLIiORmsBH0zCrSFU9H/nOH84t8a
+hxwJCKSDGNRpeSOV4ZCdmlYDYiG7nP7IN0AN2FSIyJgmdHrfakNkyqZTyZ0g/cF+
+Jl0xdBw8BnNzKEQob4j95ypdaE2SirIOGSNSKhHv2BcDW/fdfH9wyb44V2QLEckH
+wGwH/eeuuCP2gu6uij5ZmGvQX9vRn1LXnQyobDHV4bgp1Nuwgus1DeM2EBY0aPrG
+N03kcr+SNbjf7gpwft+0pEFoTmsA5oQtOPoRvSDmRjh+Zd0LwcFTtt6TBhkAvX9x
+zRGtTe8QmHEj+iwoONSpcjTVJYw6oSC96y8u/t8H6WiiRVUxF5cOnyeQOXNkrDin
+on4e+KwOUmqdxS4Nm/6f9nLefsBNNBJd5OmXm4eJ7bSbB8t8lxcUQIsR3O4uVZBn
+3nTDkumEWxOYHefz2zYLYba2kudNOuDdKvt7IhQhxh2HlRcP/6A=
+=7nCY
 -----END PGP SIGNATURE-----
 
---ofZMSlrAVk9bLeVm--
+--YZQs1kEQY307C4ut--
