@@ -1,69 +1,61 @@
-From: Tony Lindgren <tony@atomide.com>
-Subject: Re: [PATCH 4/6] pwm: pwm-omap-dmtimer: Fix frequency when using
- prescaler
-Date: Tue, 27 Mar 2018 15:23:49 -0700
-Message-ID: <20180327222349.GK5700@atomide.com>
-References: <20180223101254.GA5746@lenoch> <20180223101553.GE5746@lenoch>
- <20180327215332.GC28163@mithrandir>
- <20180327221401.GD28163@mithrandir>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 1/4] pwm: jz4740: Make disable operation compatible with
+ TCU2 mode
+Date: Wed, 28 Mar 2018 00:25:00 +0200
+Message-ID: <20180327222459.GF28163@mithrandir>
+References: <20180106165843.3461-1-paul@crapouillou.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="hK8Uo4Yp55NZU70L"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180327221401.GD28163@mithrandir>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: linux-pwm@vger.kernel.org, Ladislav Michl <ladis@linux-mips.org>, aaro.koskinen@iki.fi, Keerthy <j-keerthy@ti.com>, daniel.lezcano@linaro.org, t-kristo@ti.com, narmstrong@baylibre.com, sebastian.reichel@collabora.co.uk, robh+dt@kernel.org, Thomas Gleixner <tglx@linutronix.de>, Brecht Neyrinck <brechtneyrinck@gmail.com>, grygorii.strashko@ti.com, linux-omap@vger.kernel.org, Claudiu.Beznea@microchip.com, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20180106165843.3461-1-paul@crapouillou.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Cercueil <paul@crapouillou.net>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-pwm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Maarten ter Huurne <maarten@treewalker.org>
 List-Id: linux-pwm@vger.kernel.org
 
-* Thierry Reding <thierry.reding@gmail.com> [180327 22:15]:
-> On Tue, Mar 27, 2018 at 11:53:33PM +0200, Thierry Reding wrote:
-> > On Fri, Feb 23, 2018 at 11:15:53AM +0100, Ladislav Michl wrote:
-> > > Prescaler setting is currently not taken into account.
-> > > Fix that by introducing freq member variable and initialize
-> > > it at device probe time. This also avoids frequency
-> > > recomputing at each pwm configure time.
-> > > 
-> > > Signed-off-by: Ladislav Michl <ladis@linux-mips.org>
-> > > ---
-> > >  drivers/pwm/pwm-omap-dmtimer.c | 93 +++++++++++++++++++++++++-----------------
-> > >  1 file changed, 55 insertions(+), 38 deletions(-)
-> > 
-> > Applied, thanks.
-> 
-> Actually, that was a little premature. It seems like this conflicts with
-> a patch series by Keerthy that Tony merged into his tree and that you've
-> based this on.
-> 
-> I think it'd be easiest if Tony merged this through the TI tree, or we
-> wait until v4.17-rc1 to resolve the dependency. Given how late we are in
-> the release cycle, I think it'd have to be the latter.
 
-Sorry about the extra hassle caused by the timer move to drivers.
+--hK8Uo4Yp55NZU70L
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Tony, if you think you can find a way to still take this in for
-> v4.17-rc1, feel free to do so:
-> 
-> Acked-by: Thierry Reding <thierry.reding@gmail.com>
+On Sat, Jan 06, 2018 at 05:58:40PM +0100, Paul Cercueil wrote:
+> From: Maarten ter Huurne <maarten@treewalker.org>
+>=20
+> On the JZ4750 and later SoCs, channel 1 and 2 operate in a different
+> way (TCU2 mode) as the other channels. If a TCU2 mode counter is
+> stopped before its PWM functionality is disabled, the output is not
+> guaranteed to return to the initial level.
+>=20
+> Signed-off-by: Maarten ter Huurne <maarten@treewalker.org>
+> ---
+>  drivers/pwm/pwm-jz4740.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
 
-I pretty much only apply fixes after -rc6. So let's wait for the
-dependencies to clear at this point. This seems like a "fix for
-a feature that never worked" so might be hard to justify it as
-a fix :)
+Applied patches 1-4, thanks.
 
-Ladis, can you please resend the pending patches again to
-Thierry after v4.17-rc? Then Thierry can queue it as a fix or
-for v4.18.
+Thierry
 
-Regards,
+--hK8Uo4Yp55NZU70L
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Tony
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq6xLsACgkQ3SOs138+
+s6G7Cw/+LFLqLDBxg+Iv8MhX2p4gqp1tzC6xaibAEDZyD3pYtbBTMT5sQEWvYvGb
+X6VypbFBDI/ISAG8/IsE2dFC/bJbQdM9q00W9VYk9rif6UruiNi2GLmkQ50uokjA
+9Uw4ZjBnTsHb4yh6wTqhueYyFDgIojSb5Grvkp5tMP3uWIYP2OVFLU74OHCw+tXm
+gWGQstA+/QbHKOFBh3cVqN/G/GUrZCAzifDn8Cm2ZaIb/4cM3tW2oC7F76CcrZw/
+NsEOrKFIZnIgXDbyiJccDwQTUggVnmlDKfQfddXyYorT3wplvObJK3h0tzgWTpYF
+NRa88liLU7upD5hMiExrevWzBMeuC4xVWIz6NbZdFVE7dgrN3Qg85OACL+kKhX4r
+qVREb0cgyEiMySM4gHQnEzN70rwYWxa5O3z4jW5mahNDjxf9EheGkRZx/hViDhXz
+HXEdS4CM0rceukeHDU3hrmSn9ayODEESaLwYpuOBwH8XLXyXH8U2uR4bDazQLfXr
+ohpYQh+jnylu6xDMwVujoFo1q6BVuKJoNvhR5509JA/hkHFn1MsncMcv7MH2JJcr
+h5kln/oB/PAsu4MVKne/ETBYRPkUi/75yChMIGVi/czVl1de8Xkukfko/aokT8e9
+Khr39wzZV6HuEG/rIy7ExnSJ25gUDSdPDB9dntf4eBKMYRQzHFE=
+=WaEz
+-----END PGP SIGNATURE-----
+
+--hK8Uo4Yp55NZU70L--
