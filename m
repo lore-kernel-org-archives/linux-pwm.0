@@ -1,48 +1,56 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v6 2/5] dt-bindings: pwm-backlight: add PWM delay
- proprieties.
-Date: Tue, 27 Mar 2018 10:08:27 -0500
-Message-ID: <20180327150827.i7b4urmjrf2mqj3t@rob-hp-laptop>
-References: <20180326095213.18362-1-enric.balletbo@collabora.com>
- <20180326095213.18362-2-enric.balletbo@collabora.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] pwn: stm32: Adopt SPDX identifier
+Date: Tue, 27 Mar 2018 23:25:32 +0200
+Message-ID: <20180327212530.GA28058@mithrandir>
+References: <20171205145721.20403-1-benjamin.gaignard@st.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="GvXjxJ+pjyke8COw"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180326095213.18362-2-enric.balletbo@collabora.com>
+In-Reply-To: <20171205145721.20403-1-benjamin.gaignard@st.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: Lee Jones <lee.jones@linaro.org>, Daniel Thompson <daniel.thompson@linaro.org>, Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>, Heiko Stuebner <heiko@sntech.de>, Thierry Reding <thierry.reding@gmail.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Richard Purdie <rpurdie@rpsys.net>, Jacek Anaszewski <jacek.anaszewski@gmail.com>, linux-pwm@vger.kernel.org, linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org, groeck@chromium.org, linux-rockchip@lists.infradead.org, linux-leds@vger.kernel.org, devicetree@vger.kernel.org, kernel@collabora.com
+To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Cc: alexandre.torgue@st.com, linux-pwm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Benjamin Gaignard <benjamin.gaignard@st.com>
 List-Id: linux-pwm@vger.kernel.org
 
-On Mon, Mar 26, 2018 at 11:52:10AM +0200, Enric Balletbo i Serra wrote:
-> Hardware needs a delay between setting an initial (non-zero) PWM and
-> enabling the backlight using GPIO. The post-pwm-on-delay-ms specifies
-> this delay in milli seconds. Hardware also needs a delay between disabing
-> the backlight using GPIO and setting PWM value to 0. The pwm-off-delay-ms
-> is this delay in milli seconds.
-> 
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> Acked-by: Pavel Machek <pavel@ucw.cz>
-> Acked-by: Thierry Reding <thierry.reding@gmail.com>
-> ---
-> Based on the original Huang Lin <hl@rock-chips.com> work.
-> Changes since v5:
->  - Add Acked-by: Thierry Reding <thierry.reding@gmail.com>
->  - CC DT mainling list (for some reason dropped at some point, my
->    fault)
-> Changes since v4:
->  - Rebase on top of mainline.
-> Changes since v3:
->  - Replace us for ms.
->  - Add Acked-by: Pavel Machek <pavel@ucw.cz>
-> Changes since v2:
->  - Use separate properties (Rob Herring)
-> Changes since v1:
->  - As suggested by Daniel Thompson
->    - Do not assume power-on delay and power-off delay will be the same
-> ---
->  Documentation/devicetree/bindings/leds/backlight/pwm-backlight.txt | 6 ++++++
->  1 file changed, 6 insertions(+)
 
-Reviewed-by: Rob Herring <robh@kernel.org> 
+--GvXjxJ+pjyke8COw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Dec 05, 2017 at 03:57:21PM +0100, Benjamin Gaignard wrote:
+> Add SPDX identifer
+>=20
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+> ---
+>  drivers/pwm/pwm-stm32-lp.c | 3 +--
+>  drivers/pwm/pwm-stm32.c    | 3 +--
+>  2 files changed, 2 insertions(+), 4 deletions(-)
+
+Applied, thanks.
+
+Thierry
+
+--GvXjxJ+pjyke8COw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlq6tsIACgkQ3SOs138+
+s6Hedg/8CsNgFI6sAH2vJXzPw9BEZ8vDopedDE4ZSxMkWIlUHXZC7iZmwaVFRqf8
+2hOZIONf6AlHmsj0xBCyGxMdnGdVpMd+AAMWT7cupQDaFLJtLI5puxTjyrWFuOvM
+zVbaEHrlaw17coqncuWIeWMAOKzFRa4FDzOCCovxMgIpzE59+vNBRDs9VltESnWw
+UlmH0908+7YIilGqseRvOq5+s8zr1IPU/xKuSfvVCji2Ug6NTnuaPNxhfQQXKYq9
+xs5SjyHn3GVCeAGgXK52W2mt8RHiteENrYLr9JwWfsv9tYJ2t25z+2ThBTiSJN/Z
+8Ge7Wt9EBWQ1Enujyb1KvpZdHeFg1+HCsd+2PCEe2HtgT/yOTG920djbgTubbTdr
+GOy/O3ljwRlrTXzSdR1HP5VtDDemLtrfT1TyH8dJrs4qNcyDxLXsGOmAJOzDbJUP
+P5lWkOr63PGLVTExL1nQ0huSWDJ3+E4/33VgYKAx4RhT+bzMZw99nO9WT+Ai3PeT
+/PQWiXBRF9OKHWi6jMsA0QlsS1AUDoZpxLyDFc+S4QaoJbvmIRwclHoTaP9QUPWP
+fneoDyWQlSl1IGNmVCoe9XYQylbsqbEKSsqkteYKOJtFBq4GEZB2p3OAS9i6Q8EW
+wNJKt4RCCk5fGHajYvUsCnfnDzBp8nH3OMEwKnPDFLZzqTNNWIw=
+=Zw4F
+-----END PGP SIGNATURE-----
+
+--GvXjxJ+pjyke8COw--
